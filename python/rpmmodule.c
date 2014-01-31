@@ -8,6 +8,7 @@
 #include <rpm/rpmmacro.h>
 
 #include "header-py.h"
+#include "rpmarchive-py.h"
 #include "rpmds-py.h"
 #include "rpmfd-py.h"
 #include "rpmfi-py.h"
@@ -217,6 +218,7 @@ static void addRpmTags(PyObject *module)
 static int prepareInitModule(void)
 {
     if (PyType_Ready(&hdr_Type) < 0) return 0;
+    if (PyType_Ready(&rpmarchive_Type) < 0) return 0;
     if (PyType_Ready(&rpmds_Type) < 0) return 0;
     if (PyType_Ready(&rpmfd_Type) < 0) return 0;
     if (PyType_Ready(&rpmfi_Type) < 0) return 0;
@@ -311,6 +313,9 @@ static int initModule(PyObject *m)
 
     Py_INCREF(&hdr_Type);
     PyModule_AddObject(m, "hdr", (PyObject *) &hdr_Type);
+
+    Py_INCREF(&rpmarchive_Type);
+    PyModule_AddObject(m, "archive", (PyObject *) &rpmarchive_Type);
 
     Py_INCREF(&rpmds_Type);
     PyModule_AddObject(m, "ds", (PyObject *) &rpmds_Type);

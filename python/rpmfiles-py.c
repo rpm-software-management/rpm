@@ -6,6 +6,8 @@
 #include "header-py.h"
 #include "rpmfi-py.h"
 #include "rpmfiles-py.h"
+#include "rpmfd-py.h"
+#include "rpmarchive-py.h"
 #include "rpmstrpool-py.h"
 
 /* A single file from rpmfiles set, can't be independently instanciated */
@@ -399,6 +401,30 @@ static PyObject * rpmfiles_find(rpmfileObject *s,
     Py_RETURN_NONE;
 }
 
+static PyObject *rpmfiles_archive(rpmfilesObject *s,
+				  PyObject *args, PyObject *kwds)
+{
+    char * kwlist[] = {"fd", "write", NULL};
+    rpmfdObject *fdo = NULL;
+    FD_t fd = NULL;
+    rpmfi archive = NULL;
+    int writer = 0;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&|i", kwlist,
+				     rpmfdFromPyObject, &fdo, &writer)) {
+	return NULL;
+    }
+
+    fd = rpmfdGetFd(fdo);
+    if (writer) {
+	archive = rpmfiNewArchiveWriter(fd, s->files);
+    } else {
+	archive = rpmfiNewArchiveReader(fd, s->files);
+    }
+
+    return rpmarchive_Wrap(&rpmarchive_Type, s->files, archive);
+}
+
 static PyObject *rpmfiles_subscript(rpmfilesObject *s, PyObject *item)
 {
     PyObject *str = NULL;
@@ -453,6 +479,8 @@ static PyMappingMethods rpmfiles_as_mapping = {
 };
 
 static struct PyMethodDef rpmfiles_methods[] = {
+    { "archive", (PyCFunction) rpmfiles_archive, METH_VARARGS|METH_KEYWORDS,
+	NULL },
     { "find",	(PyCFunction) rpmfiles_find,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
     { NULL, NULL, 0, NULL }

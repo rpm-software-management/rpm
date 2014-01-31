@@ -345,3 +345,25 @@ P bar = 2.0
 P bar = 2.0
 ],
 [])
+
+RPMPY_TEST([archive 1],[
+import hashlib
+ts = rpm.ts()
+fd = rpm.fd.open('${RPMDATA}/SRPMS/hello-1.0-1.src.rpm')
+h = ts.hdrFromFdno(fd)
+payload = rpm.fd.open(fd, flags=h['payloadcompressor'])
+files = rpm.files(h)
+archive = files.archive(payload)
+for f in archive:
+    if not f.fflags & rpm.RPMFILE_SPECFILE:
+        continue
+    spec = archive.read()
+    hash = hashlib.md5(spec)
+    if f.digest != hash.hexdigest():
+        myprint('%s should be %s' % (hash.hexdigest(), f.digest))
+    break
+],
+[],
+[])
+
+
