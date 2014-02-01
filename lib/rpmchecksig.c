@@ -264,17 +264,12 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     rpmDigestBundle hdrbundle = rpmDigestBundleNew();
 
     if ((rc = rpmLeadRead(fd, NULL, NULL, &msg)) != RPMRC_OK) {
-	rpmlog(RPMLOG_ERR, "%s: %s\n", fn, msg);
-	free(msg);
 	goto exit;
     }
 
     rc = rpmReadSignature(fd, &sigh, RPMSIGTYPE_HEADERSIG, &msg);
 
     if (rc != RPMRC_OK) {
-	rpmlog(RPMLOG_ERR, _("%s: rpmReadSignature failed: %s"), fn,
-		    (msg && *msg ? msg : "\n"));
-	msg = _free(msg);
 	goto exit;
     }
 
@@ -388,6 +383,9 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     free(untrustedKeys);
 
 exit:
+    if (rc != RPMRC_OK && msg != NULL)
+	rpmlog(RPMLOG_ERR, "%s: %s\n", fn, msg);
+    free(msg);
     free(buf);
     rpmDigestBundleFree(hdrbundle);
     rpmDigestBundleFree(plbundle);
