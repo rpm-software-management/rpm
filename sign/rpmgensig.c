@@ -428,21 +428,12 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
     }
 
     rc = rpmReadSignature(fd, &sigh, RPMSIGTYPE_HEADERSIG, &msg);
-    switch (rc) {
-    default:
+    if (rc != RPMRC_OK) {
 	rpmlog(RPMLOG_ERR, _("%s: rpmReadSignature failed: %s"), rpm,
 		    (msg && *msg ? msg : "\n"));
 	msg = _free(msg);
 	goto exit;
-	break;
-    case RPMRC_OK:
-	if (sigh == NULL) {
-	    rpmlog(RPMLOG_ERR, _("%s: No signature available\n"), rpm);
-	    goto exit;
-	}
-	break;
     }
-    msg = _free(msg);
 
     ofd = rpmMkTempFile(NULL, &sigtarget);
     if (ofd == NULL || Ferror(ofd)) {

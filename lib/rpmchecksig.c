@@ -270,21 +270,13 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     }
 
     rc = rpmReadSignature(fd, &sigh, RPMSIGTYPE_HEADERSIG, &msg);
-    switch (rc) {
-    default:
+
+    if (rc != RPMRC_OK) {
 	rpmlog(RPMLOG_ERR, _("%s: rpmReadSignature failed: %s"), fn,
 		    (msg && *msg ? msg : "\n"));
 	msg = _free(msg);
 	goto exit;
-	break;
-    case RPMRC_OK:
-	if (sigh == NULL) {
-	    rpmlog(RPMLOG_ERR, _("%s: No signature available\n"), fn);
-	    goto exit;
-	}
-	break;
     }
-    msg = _free(msg);
 
     /* Grab a hint of what needs doing to avoid duplication. */
     sigtag = bestSig(sigh, nosignatures, nodigests);

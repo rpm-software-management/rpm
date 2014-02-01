@@ -538,22 +538,13 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 
     /* Read the signature header. */
     rc = rpmReadSignature(fd, &sigh, RPMSIGTYPE_HEADERSIG, &msg);
-    switch (rc) {
-    default:
+
+    if (rc != RPMRC_OK) {
 	rpmlog(RPMLOG_ERR, _("%s: rpmReadSignature failed: %s"), fn,
 		(msg && *msg ? msg : "\n"));
 	msg = _free(msg);
 	goto exit;
-	break;
-    case RPMRC_OK:
-	if (sigh == NULL) {
-	    rpmlog(RPMLOG_ERR, _("%s: No signature available\n"), fn);
-	    rc = RPMRC_FAIL;
-	    goto exit;
-	}
-	break;
     }
-    msg = _free(msg);
 
 #define	_chk(_mask, _tag) \
 	(sigtag == 0 && !(vsflags & (_mask)) && headerIsEntry(sigh, (_tag)))
