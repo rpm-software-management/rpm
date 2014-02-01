@@ -281,7 +281,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 		sigtag == RPMSIGTAG_DSA || sigtag == RPMSIGTAG_GPG) {
 	unsigned int hashalgo;
 	if (headerGet(sigh, sigtag, &sigtd, HEADERGET_DEFAULT)) {
-	    parsePGPSig(&sigtd, "package", fn, &sig, &msg);
+	    parsePGPSig(&sigtd, "package", &sig, &msg);
 	    rpmtdFreeData(&sigtd);
 	}
 	if (sig == NULL) goto exit;
@@ -332,7 +332,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 	case RPMSIGTAG_DSA:
 	    if (nosignatures)
 		 continue;
-	    if (parsePGPSig(&sigtd, "package", fn, &sig, &msg))
+	    if (parsePGPSig(&sigtd, "package", &sig, &msg))
 		goto exit;
 	    ctx = rpmDigestBundleDupCtx(havekey ? plbundle : hdrbundle,
 					pgpDigParamsAlgo(sig, PGPVAL_HASHALGO));

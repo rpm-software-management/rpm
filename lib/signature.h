@@ -75,7 +75,7 @@ Header rpmFreeSignature(Header h);
 
 /* Dumb wrapper around pgpPrtParams() to log some error messages on failure */
 RPM_GNUC_INTERNAL
-int parsePGPSig(rpmtd sigtd, const char *type, const char *fn,
+int parsePGPSig(rpmtd sigtd, const char *type,
 		 pgpDigParams *sig, char **msg);
 
 #ifdef __cplusplus

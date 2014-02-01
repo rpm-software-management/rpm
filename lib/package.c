@@ -146,20 +146,13 @@ exit:
     return seen;
 }
 
-int parsePGPSig(rpmtd sigtd, const char *type, const char *fn,
+int parsePGPSig(rpmtd sigtd, const char *type,
 		 pgpDigParams *sig, char **msg)
 {
     int rc = pgpPrtParams(sigtd->data, sigtd->count, PGPTAG_SIGNATURE, sig);
 
-    if (rc != 0) {
-	if (type && fn) {
-	    rasprintf(msg,
-		   _("skipping %s %s with unverifiable signature\n"), type, fn);
-	} else if (type) {
-	    rasprintf(msg,
-		   _("skipping %s with unverifiable signature\n"), type);
-	}
-    }
+    if (rc != 0 && type != NULL)
+	rasprintf(msg, _("%s has unverifiable signature\n"), type);
     return rc;
 }
 
@@ -254,7 +247,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     switch (info.tag) {
     case RPMTAG_RSAHEADER:
     case RPMTAG_DSAHEADER:
-	if (parsePGPSig(&sigtd, "header", NULL, &sig, buf))
+	if (parsePGPSig(&sigtd, "header", &sig, buf))
 	    goto exit;
 	hashalgo = pgpDigParamsAlgo(sig, PGPVAL_HASHALGO);
 	break;
@@ -595,7 +588,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     switch (sigtag) {
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_DSA:
-	if (parsePGPSig(&sigtd, "package", fn, &sig, msg)) {
+	if (parsePGPSig(&sigtd, "package", &sig, msg)) {
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
@@ -616,7 +609,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     case RPMSIGTAG_GPG:
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	if (parsePGPSig(&sigtd, "package", fn, &sig, msg)) {
+	if (parsePGPSig(&sigtd, "package", &sig, msg)) {
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
