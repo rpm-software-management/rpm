@@ -96,13 +96,18 @@ static void headerMergeLegacySigs(Header h, Header sigh)
     headerFreeIterator(hi);
 }
 
+static unsigned int getKeyid(pgpDigParams sigp)
+{
+    return (sigp != NULL) ? pgpGrab(sigp->signid+4, 4) : 0;
+}
+
 /**
  * Remember current key id.
  * XXX: This s*** needs to die. Hook it into keyring or sumthin...
- * @param dig		OpenPGP packet containter
+ * @param keyid		signature keyid
  * @return		0 if new keyid, otherwise 1
  */
-static int stashKeyid(pgpDigParams sigp)
+static int stashKeyid(unsigned int keyid)
 {
     static pthread_mutex_t keyid_lock = PTHREAD_MUTEX_INITIALIZER;
     static const unsigned int nkeyids_max = 256;
@@ -110,14 +115,9 @@ static int stashKeyid(pgpDigParams sigp)
     static unsigned int nextkeyid  = 0;
     static unsigned int * keyids;
 
-    unsigned int keyid;
     int i;
     int seen = 0;
 
-    if (sigp == NULL)
-	return 0;
-
-    keyid = pgpGrab(sigp->signid+4, 4);
     if (keyid == 0)
 	return 0;
 
@@ -507,7 +507,8 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
 }
 
 static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags, 
-			FD_t fd, const char * fn, Header * hdrp)
+			FD_t fd, const char * fn,
+			Header * hdrp, unsigned int *keyidp)
 {
     pgpDigParams sig = NULL;
     char buf[8*BUFSIZ];
@@ -519,6 +520,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     char * msg = NULL;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int leadtype = -1;
+    unsigned int keyid = 0;
     headerGetFlags hgeflags = HEADERGET_DEFAULT;
     DIGEST_CTX ctx = NULL;
 
@@ -648,7 +650,10 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 
     /** @todo Implement disable/enable/warn/error/anal policy. */
     rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, &msg);
-	
+    keyid = getKeyid(sig);
+    if (keyidp)
+	*keyidp = keyid;
+
     switch (rc) {
     case RPMRC_OK:		/* Signature is OK. */
 	rpmlog(RPMLOG_DEBUG, "%s: %s", fn, msg);
@@ -656,7 +661,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
     case RPMRC_NOKEY:		/* Public key is unavailable. */
 	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
-    {	int lvl = (stashKeyid(sig) ? RPMLOG_DEBUG : RPMLOG_WARNING);
+    {	int lvl = (stashKeyid(keyid) ? RPMLOG_DEBUG : RPMLOG_WARNING);
 	rpmlog(lvl, "%s: %s", fn, msg);
     }	break;
     case RPMRC_NOTFOUND:	/* Signature is unknown type. */
@@ -715,8 +720,9 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     rpmRC rc;
     rpmVSFlags vsflags = rpmtsVSFlags(ts);
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+    unsigned int keyid = 0;
 
-    rc = rpmpkgRead(keyring, vsflags, fd, fn, hdrp);
+    rc = rpmpkgRead(keyring, vsflags, fd, fn, hdrp, &keyid);
 
     rpmKeyringFree(keyring);
 
