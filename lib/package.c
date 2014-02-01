@@ -500,7 +500,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
 }
 
 static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags, 
-			FD_t fd, const char * fn,
+			FD_t fd,
 			Header * hdrp, unsigned int *keyidp, char **msg)
 {
     pgpDigParams sig = NULL;
@@ -517,8 +517,6 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     DIGEST_CTX ctx = NULL;
 
     if (hdrp) *hdrp = NULL;
-    if (fn == NULL)
-	fn = Fdescr(fd);
 
     rpmtdReset(&sigtd);
 
@@ -686,7 +684,10 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     unsigned int keyid = 0;
     char *msg = NULL;
 
-    rc = rpmpkgRead(keyring, vsflags, fd, fn, hdrp, &keyid, &msg);
+    if (fn == NULL)
+	fn = Fdescr(fd);
+
+    rc = rpmpkgRead(keyring, vsflags, fd, hdrp, &keyid, &msg);
 
     switch (rc) {
     case RPMRC_OK:		/* Signature is OK. */
