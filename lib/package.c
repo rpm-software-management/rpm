@@ -508,7 +508,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
 
 static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags, 
 			FD_t fd, const char * fn,
-			Header * hdrp, unsigned int *keyidp)
+			Header * hdrp, unsigned int *keyidp, char **msg)
 {
     pgpDigParams sig = NULL;
     char buf[8*BUFSIZ];
@@ -517,7 +517,6 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     rpmTagVal sigtag;
     struct rpmtd_s sigtd;
     Header h = NULL;
-    char * msg = NULL;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int leadtype = -1;
     unsigned int keyid = 0;
@@ -530,21 +529,18 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 
     rpmtdReset(&sigtd);
 
-    if ((rc = rpmLeadRead(fd, NULL, &leadtype, &msg)) != RPMRC_OK) {
+    if ((rc = rpmLeadRead(fd, NULL, &leadtype, msg)) != RPMRC_OK) {
 	/* Avoid message spew on manifests */
-	if (rc != RPMRC_NOTFOUND) 
-	    rpmlog(RPMLOG_ERR, "%s: %s\n", fn, msg);
-	free(msg);
+	if (rc == RPMRC_NOTFOUND) {
+	    *msg = _free(*msg);
+	}
 	goto exit;
     }
 
     /* Read the signature header. */
-    rc = rpmReadSignature(fd, &sigh, RPMSIGTYPE_HEADERSIG, &msg);
+    rc = rpmReadSignature(fd, &sigh, RPMSIGTYPE_HEADERSIG, msg);
 
     if (rc != RPMRC_OK) {
-	rpmlog(RPMLOG_ERR, _("%s: rpmReadSignature failed: %s"), fn,
-		(msg && *msg ? msg : "\n"));
-	msg = _free(msg);
 	goto exit;
     }
 
@@ -577,17 +573,12 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 
     /* Read the metadata, computing digest(s) on the fly. */
     h = NULL;
-    msg = NULL;
 
-    rc = rpmpkgReadHeader(keyring, vsflags, fd, &h, &msg);
+    rc = rpmpkgReadHeader(keyring, vsflags, fd, &h, msg);
 
     if (rc != RPMRC_OK || h == NULL) {
-	rpmlog(RPMLOG_ERR, _("%s: headerRead failed: %s"), fn,
-		(msg && *msg ? msg : "\n"));
-	msg = _free(msg);
 	goto exit;
     }
-    msg = _free(msg);
 
     /* Any digests or signatures to check? */
     if (sigtag == 0) {
@@ -634,8 +625,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 	/* Legacy signatures need the compressed payload in the digest too. */
 	while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0) {}
 	if (count < 0) {
-	    rpmlog(RPMLOG_ERR, _("%s: Fread failed: %s\n"),
-					fn, Fstrerror(fd));
+	    rasprintf(msg, _("Fread failed: %s\n"), Fstrerror(fd));
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
@@ -649,30 +639,10 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     }
 
     /** @todo Implement disable/enable/warn/error/anal policy. */
-    rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, &msg);
+    rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, msg);
     keyid = getKeyid(sig);
     if (keyidp)
 	*keyidp = keyid;
-
-    switch (rc) {
-    case RPMRC_OK:		/* Signature is OK. */
-	rpmlog(RPMLOG_DEBUG, "%s: %s", fn, msg);
-	break;
-    case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
-    case RPMRC_NOKEY:		/* Public key is unavailable. */
-	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
-    {	int lvl = (stashKeyid(keyid) ? RPMLOG_DEBUG : RPMLOG_WARNING);
-	rpmlog(lvl, "%s: %s", fn, msg);
-    }	break;
-    case RPMRC_NOTFOUND:	/* Signature is unknown type. */
-	rpmlog(RPMLOG_WARNING, "%s: %s", fn, msg);
-	break;
-    default:
-    case RPMRC_FAIL:		/* Signature does not verify. */
-	rpmlog(RPMLOG_ERR, "%s: %s", fn, msg);
-	break;
-    }
-    free(msg);
 
 exit:
     if (rc != RPMRC_FAIL && h != NULL && hdrp != NULL) {
@@ -721,9 +691,30 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     rpmVSFlags vsflags = rpmtsVSFlags(ts);
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
     unsigned int keyid = 0;
+    char *msg = NULL;
 
-    rc = rpmpkgRead(keyring, vsflags, fd, fn, hdrp, &keyid);
+    rc = rpmpkgRead(keyring, vsflags, fd, fn, hdrp, &keyid, &msg);
 
+    switch (rc) {
+    case RPMRC_OK:		/* Signature is OK. */
+	rpmlog(RPMLOG_DEBUG, "%s: %s", fn, msg);
+	break;
+    case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
+    case RPMRC_NOKEY:		/* Public key is unavailable. */
+	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
+    {	int lvl = (stashKeyid(keyid) ? RPMLOG_DEBUG : RPMLOG_WARNING);
+	rpmlog(lvl, "%s: %s", fn, msg);
+    }	break;
+    case RPMRC_NOTFOUND:	/* Signature is unknown type or manifest. */
+	/* msg == NULL is probably a manifest */
+	if (msg)
+	    rpmlog(RPMLOG_WARNING, "%s: %s", fn, msg);
+	break;
+    default:
+    case RPMRC_FAIL:		/* Signature does not verify. */
+	rpmlog(RPMLOG_ERR, "%s: %s", fn, msg);
+	break;
+    }
     rpmKeyringFree(keyring);
 
     return rc;
