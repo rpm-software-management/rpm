@@ -87,24 +87,24 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 
     memset(block, 0, sizeof(block));
     if ((xx = Freadall(fd, block, sizeof(block))) != sizeof(block)) {
-	rasprintf(&buf, _("sigh size(%d): BAD, read returned %d\n"), 
+	rasprintf(&buf, _("sigh size(%d): BAD, read returned %d"), 
 		  (int)sizeof(block), xx);
 	goto exit;
     }
     if (memcmp(block, rpm_header_magic, sizeof(rpm_header_magic))) {
-	rasprintf(&buf, _("sigh magic: BAD\n"));
+	rasprintf(&buf, _("sigh magic: BAD"));
 	goto exit;
     }
     il = ntohl(block[2]);
     if (il < 0 || il > 32) {
 	rasprintf(&buf, 
-		  _("sigh tags: BAD, no. of tags(%d) out of range\n"), il);
+		  _("sigh tags: BAD, no. of tags(%d) out of range"), il);
 	goto exit;
     }
     dl = ntohl(block[3]);
     if (dl < 0 || dl > 8192) {
 	rasprintf(&buf, 
-		  _("sigh data: BAD, no. of  bytes(%d) out of range\n"), dl);
+		  _("sigh data: BAD, no. of  bytes(%d) out of range"), dl);
 	goto exit;
     }
 
@@ -120,14 +120,14 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     dataStart = (unsigned char *) (pe + il);
     if ((xx = Freadall(fd, pe, nb)) != nb) {
 	rasprintf(&buf,
-		  _("sigh blob(%d): BAD, read returned %d\n"), (int)nb, xx);
+		  _("sigh blob(%d): BAD, read returned %d"), (int)nb, xx);
 	goto exit;
     }
     
     /* Check (and convert) the 1st tag element. */
     xx = headerVerifyInfo(1, dl, pe, &entry.info, 0);
     if (xx != -1) {
-	rasprintf(&buf, _("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
+	rasprintf(&buf, _("tag[%d]: BAD, tag %d type %d offset %d count %d"),
 		  0, entry.info.tag, entry.info.type,
 		  entry.info.offset, entry.info.count);
 	goto exit;
@@ -139,7 +139,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	if (!(entry.info.type == REGION_TAG_TYPE &&
 	      entry.info.count == REGION_TAG_COUNT)) {
 	    rasprintf(&buf,
-		_("region tag: BAD, tag %d type %d offset %d count %d\n"),
+		_("region tag: BAD, tag %d type %d offset %d count %d"),
 		entry.info.tag, entry.info.type,
 		entry.info.offset, entry.info.count);
 	    goto exit;
@@ -148,7 +148,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	/* Is the trailer within the data area? */
 	if (entry.info.offset + REGION_TAG_COUNT > dl) {
 	    rasprintf(&buf, 
-		_("region offset: BAD, tag %d type %d offset %d count %d\n"),
+		_("region offset: BAD, tag %d type %d offset %d count %d"),
 		entry.info.tag, entry.info.type,
 		entry.info.offset, entry.info.count);
 	    goto exit;
@@ -172,7 +172,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	   && entry.info.count == REGION_TAG_COUNT))
 	{
 	    rasprintf(&buf,
-		_("region trailer: BAD, tag %d type %d offset %d count %d\n"),
+		_("region trailer: BAD, tag %d type %d offset %d count %d"),
 		entry.info.tag, entry.info.type,
 		entry.info.offset, entry.info.count);
 	    goto exit;
@@ -182,7 +182,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	/* Is the no. of tags in the region less than the total no. of tags? */
 	ril = entry.info.offset/sizeof(*pe);
 	if ((entry.info.offset % sizeof(*pe)) || ril > il) {
-	    rasprintf(&buf, _("region size: BAD, ril(%d) > il(%d)\n"), ril, il);
+	    rasprintf(&buf, _("region size: BAD, ril(%d) > il(%d)"), ril, il);
 	    goto exit;
 	}
     }
@@ -193,7 +193,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	xx = headerVerifyInfo(1, dl, pe+i, &entry.info, 0);
 	if (xx != -1) {
 	    rasprintf(&buf, 
-		_("sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
+		_("sigh tag[%d]: BAD, tag %d type %d offset %d count %d"),
 		i, entry.info.tag, entry.info.type,
 		entry.info.offset, entry.info.count);
 	    goto exit;
@@ -203,7 +203,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     /* OK, blob looks sane, load the header. */
     sigh = headerImport(ei, uc, 0);
     if (sigh == NULL) {
-	rasprintf(&buf, _("sigh load: BAD\n"));
+	rasprintf(&buf, _("sigh load: BAD"));
 	goto exit;
     }
 
@@ -216,7 +216,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	/* Position at beginning of header. */
 	if (pad && (trc = Freadall(fd, block, pad)) != pad) {
 	    rasprintf(&buf,
-		      _("sigh pad(%zd): BAD, read %zd bytes\n"), pad, trc);
+		      _("sigh pad(%zd): BAD, read %zd bytes"), pad, trc);
 	    goto exit;
 	}
 
@@ -232,7 +232,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	rc = printSize(fd, sigSize, pad, archSize);
 	if (rc != RPMRC_OK) {
 	    rasprintf(&buf,
-		   _("sigh sigSize(%zd): BAD, fstat(2) failed\n"), sigSize);
+		   _("sigh sigSize(%zd): BAD, fstat(2) failed"), sigSize);
 	    goto exit;
 	}
     }
@@ -410,7 +410,7 @@ verifyMD5Digest(rpmtd sigtd, DIGEST_CTX md5ctx, char **msg)
     DIGEST_CTX ctx = rpmDigestDup(md5ctx);
 
     if (ctx == NULL) {
-	rasprintf(msg, "%s %s\n", title, rpmSigString(res));
+	rasprintf(msg, "%s %s", title, rpmSigString(res));
 	goto exit;
     }
 
@@ -419,12 +419,12 @@ verifyMD5Digest(rpmtd sigtd, DIGEST_CTX md5ctx, char **msg)
     md5 = pgpHexStr(md5sum, md5len);
     if (md5len != sigtd->count || memcmp(md5sum, sigtd->data, md5len)) {
 	char *hex = rpmtdFormat(sigtd, RPMTD_FORMAT_STRING, NULL);
-	rasprintf(msg, "%s %s Expected(%s) != (%s)\n", title,
+	rasprintf(msg, "%s %s Expected(%s) != (%s)", title,
 		  rpmSigString(res), hex, md5);
 	free(hex);
     } else {
 	res = RPMRC_OK;
-	rasprintf(msg, "%s %s (%s)\n", title, rpmSigString(res), md5);
+	rasprintf(msg, "%s %s (%s)", title, rpmSigString(res), md5);
     }
     free(md5);
 
@@ -450,18 +450,18 @@ verifySHA1Digest(rpmtd sigtd, DIGEST_CTX sha1ctx, char **msg)
     DIGEST_CTX ctx = rpmDigestDup(sha1ctx);
 
     if (ctx == NULL) {
-	rasprintf(msg, "%s %s\n", title, rpmSigString(res));
+	rasprintf(msg, "%s %s", title, rpmSigString(res));
 	goto exit;
     }
 
     (void) rpmDigestFinal(ctx, (void **)&SHA1, NULL, 1);
 
     if (SHA1 == NULL || !rstreq(SHA1, sig)) {
-	rasprintf(msg, "%s %s Expected(%s) != (%s)\n", title,
+	rasprintf(msg, "%s %s Expected(%s) != (%s)", title,
 		  rpmSigString(res), sig, SHA1 ? SHA1 : "(nil)");
     } else {
 	res = RPMRC_OK;
-	rasprintf(msg, "%s %s (%s)\n", title, rpmSigString(res), SHA1);
+	rasprintf(msg, "%s %s (%s)", title, rpmSigString(res), SHA1);
     }
 
 exit:
@@ -486,7 +486,7 @@ verifySignature(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX hashctx,
     rpmRC res = rpmKeyringVerifySig(keyring, sig, hashctx);
 
     char *sigid = pgpIdentItem(sig);
-    rasprintf(msg, "%s%s: %s\n", isHdr ? _("Header ") : "", sigid, 
+    rasprintf(msg, "%s%s: %s", isHdr ? _("Header ") : "", sigid, 
 		rpmSigString(res));
     free(sigid);
     return res;
@@ -527,7 +527,7 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDigParams sig,
 exit:
     if (res == RPMRC_NOTFOUND) {
 	rasprintf(&msg,
-		  _("Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"),
+		  _("Verify signature: BAD PARAMETERS (%d %p %d %p %p)"),
 		  sigtd->tag, sigtd->data, sigtd->count, ctx, sig);
 	res = RPMRC_FAIL;
     }
