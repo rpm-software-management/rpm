@@ -69,11 +69,8 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     int32_t * ei = NULL;
     entryInfo pe;
     unsigned int nb, uc;
-    int32_t ril = 0;
     struct indexEntry_s entry;
-    struct entryInfo_s info;
     unsigned char * dataStart;
-    unsigned char * dataEnd = NULL;
     Header sigh = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
@@ -109,7 +106,6 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     }
 
     memset(&entry, 0, sizeof(entry));
-    memset(&info, 0, sizeof(info));
 
     nb = (il * sizeof(struct entryInfo_s)) + dl;
     uc = sizeof(il) + sizeof(dl) + nb;
@@ -124,65 +120,15 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	goto exit;
     }
     
-    /* Check (and convert) the 1st tag element. */
-    xx = headerVerifyInfo(1, dl, pe, &entry.info, 0);
-    if (xx != -1) {
-	rasprintf(&buf, _("tag[%d]: BAD, tag %d type %d offset %d count %d"),
-		  0, entry.info.tag, entry.info.type,
-		  entry.info.offset, entry.info.count);
+    /* Verify header immutable region if there is one */
+    xx = headerVerifyRegion(RPMTAG_HEADERSIGNATURES,
+			    &entry, il, dl, pe, dataStart,
+			    NULL, NULL, &buf);
+    /* Not found means a legacy V3 package with no immutable region */
+    if (xx != RPMRC_OK && xx != RPMRC_NOTFOUND)
 	goto exit;
-    }
-
-    /* Is there an immutable header region tag? */
-    if (entry.info.tag == RPMTAG_HEADERSIGNATURES) {
-	/* Is the region tag sane? */
-	if (!(entry.info.type == REGION_TAG_TYPE &&
-	      entry.info.count == REGION_TAG_COUNT)) {
-	    rasprintf(&buf,
-		_("region tag: BAD, tag %d type %d offset %d count %d"),
-		entry.info.tag, entry.info.type,
-		entry.info.offset, entry.info.count);
-	    goto exit;
-	}
-	
-	/* Is the trailer within the data area? */
-	if (entry.info.offset + REGION_TAG_COUNT > dl) {
-	    rasprintf(&buf, 
-		_("region offset: BAD, tag %d type %d offset %d count %d"),
-		entry.info.tag, entry.info.type,
-		entry.info.offset, entry.info.count);
-	    goto exit;
-	}
-
-	/* Is there an immutable header region tag trailer? */
-	dataEnd = dataStart + entry.info.offset;
-	(void) memcpy(&info, dataEnd, REGION_TAG_COUNT);
-	dataEnd += REGION_TAG_COUNT;
-
-	xx = headerVerifyInfo(1, il * sizeof(*pe), &info, &entry.info, 1);
-	if (xx != -1 ||
-	    !((entry.info.tag == RPMTAG_HEADERSIGNATURES || entry.info.tag == RPMTAG_HEADERIMAGE)
-	   && entry.info.type == REGION_TAG_TYPE
-	   && entry.info.count == REGION_TAG_COUNT))
-	{
-	    rasprintf(&buf,
-		_("region trailer: BAD, tag %d type %d offset %d count %d"),
-		entry.info.tag, entry.info.type,
-		entry.info.offset, entry.info.count);
-	    goto exit;
-	}
-	memset(&info, 0, sizeof(info));
-
-	/* Is the no. of tags in the region less than the total no. of tags? */
-	ril = entry.info.offset/sizeof(*pe);
-	if ((entry.info.offset % sizeof(*pe)) || ril > il) {
-	    rasprintf(&buf, _("region size: BAD, ril(%d) > il(%d)"), ril, il);
-	    goto exit;
-	}
-    }
 
     /* Sanity check signature tags */
-    memset(&info, 0, sizeof(info));
     for (i = 1; i < il; i++) {
 	xx = headerVerifyInfo(1, dl, pe+i, &entry.info, 0);
 	if (xx != -1) {
