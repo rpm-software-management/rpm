@@ -64,6 +64,13 @@ struct indexEntry_s {
 extern "C" {
 #endif
 
+rpmRC headerVerifyRegion(rpmTagVal regionTag,
+                        struct indexEntry_s *entry, int il, int dl,
+                        entryInfo pe, unsigned char *dataStart,
+                        int *ril, int *rdl, char **buf);
+
+
+
 /** \ingroup header
  * Set header instance (rpmdb record number)
  * @param h		header
