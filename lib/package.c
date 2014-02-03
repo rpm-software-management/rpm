@@ -539,7 +539,6 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     Header h = NULL;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int leadtype = -1;
-    unsigned int keyid = 0;
     headerGetFlags hgeflags = HEADERGET_DEFAULT;
     DIGEST_CTX ctx = NULL;
 
@@ -658,9 +657,6 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 
     /** @todo Implement disable/enable/warn/error/anal policy. */
     rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, msg);
-    keyid = getKeyid(sig);
-    if (keyidp)
-	*keyidp = keyid;
 
 exit:
     if (rc != RPMRC_FAIL && h != NULL && hdrp != NULL) {
@@ -694,6 +690,9 @@ exit:
 
 	/* Bump reference count for return. */
 	*hdrp = headerLink(h);
+
+	if (keyidp)
+	    *keyidp = getKeyid(sig);
     }
     rpmtdFreeData(&sigtd);
     rpmDigestFinal(ctx, NULL, NULL, 0);
