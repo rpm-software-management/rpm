@@ -223,7 +223,7 @@ static void formatResult(rpmTagVal sigtag, rpmRC sigres, const char *result,
 {
     char *msg = NULL;
     if (rpmIsVerbose()) {
-	rasprintf(&msg, "    %s", result);
+	rasprintf(&msg, "    %s\n", result);
     } else { 
 	/* Check for missing / untrusted keys in result. */
 	const char *signame = sigtagname(sigtag, (sigres != RPMRC_OK));

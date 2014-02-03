@@ -1461,9 +1461,9 @@ static rpmRC miVerifyHeader(rpmdbMatchIterator mi, const void *uh, size_t uhlen)
 
 	rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, uh, uhlen, &msg);
 	lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
-	rpmlog(lvl, "%s h#%8u %s",
+	rpmlog(lvl, "%s h#%8u %s\n",
 	    (rpmrc == RPMRC_FAIL ? _("rpmdbNextIterator: skipping") : " read"),
-		    mi->mi_offset, (msg ? msg : "\n"));
+		    mi->mi_offset, (msg ? msg : ""));
 	msg = _free(msg);
 
 	/* Mark header checked. */
