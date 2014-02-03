@@ -737,6 +737,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	break;
     }
     rpmKeyringFree(keyring);
+    free(msg);
 
     return rc;
 }
