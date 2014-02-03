@@ -157,12 +157,6 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	/* Is there an immutable header region tag trailer? */
 	dataEnd = dataStart + entry.info.offset;
 	(void) memcpy(&info, dataEnd, REGION_TAG_COUNT);
-	/* XXX Really old packages have HEADER_IMAGE, not HEADER_SIGNATURES. */
-	if (info.tag == htonl(RPMTAG_HEADERIMAGE)) {
-	    rpmTagVal stag = htonl(RPMTAG_HEADERSIGNATURES);
-	    info.tag = stag;
-	    memcpy(dataEnd, &stag, sizeof(stag));
-	}
 	dataEnd += REGION_TAG_COUNT;
 
 	xx = headerVerifyInfo(1, il * sizeof(*pe), &info, &entry.info, 1);
