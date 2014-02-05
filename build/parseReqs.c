@@ -39,7 +39,7 @@ static int checkSep(const char *s, char c, char **emsg)
 {
     const char *sep = strchr(s, c);
     if (sep && strchr(sep + 1, c)) {
-	rasprintf(emsg, "Double separator '%c' in: %s", c, s);
+	rasprintf(emsg, "Invalid version (double separator '%c'): %s", c, s);
 	return 1;
     }
     return 0;
