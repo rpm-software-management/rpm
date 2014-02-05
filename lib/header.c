@@ -68,8 +68,13 @@ static const int typeSizes[16] =  {
     0
 };
 
+enum headerSorted_e {
+    HEADERSORT_NONE	= 0,	/* Not sorted */
+    HEADERSORT_OFFSET	= 1,	/* Sorted by offset (on-disk format) */
+    HEADERSORT_INDEX	= 2,	/* Sorted by index  */
+};
+
 enum headerFlags_e {
-    HEADERFLAG_SORTED    = (1 << 0), /*!< Are header entries sorted? */
     HEADERFLAG_ALLOCATED = (1 << 1), /*!< Is 1st header region allocated? */
     HEADERFLAG_LEGACY    = (1 << 2), /*!< Header came from legacy source? */
     HEADERFLAG_DEBUG     = (1 << 3), /*!< Debug this header? */
@@ -87,6 +92,7 @@ struct headerToken_s {
     int indexAlloced;		/*!< Allocated size of tag array. */
     unsigned int instance;	/*!< Rpmdb instance (offset) */
     headerFlags flags;
+    int sorted;			/*!< Current sort method */
     int nrefs;			/*!< Reference count. */
 };
 
@@ -169,7 +175,7 @@ static Header headerCreate(void *blob, unsigned int pvlen, int32_t indexLen)
 	h->indexUsed = 0;
     }
     h->instance = 0;
-    h->flags |= HEADERFLAG_SORTED;
+    h->sorted = HEADERSORT_NONE;
 
     h->index = (h->indexAlloced
 	? xcalloc(h->indexAlloced, sizeof(*h->index))
@@ -219,9 +225,9 @@ static int indexCmp(const void * avp, const void * bvp)
 
 void headerSort(Header h)
 {
-    if (!(h->flags & HEADERFLAG_SORTED)) {
+    if (h->sorted != HEADERSORT_INDEX) {
 	qsort(h->index, h->indexUsed, sizeof(*h->index), indexCmp);
-	h->flags |= HEADERFLAG_SORTED;
+	h->sorted = HEADERSORT_INDEX;
     }
 }
 
@@ -242,9 +248,9 @@ static int offsetCmp(const void * avp, const void * bvp)
 
 void headerUnsort(Header h)
 {
-    if (h->flags & HEADERFLAG_SORTED) {
+    if (h->sorted != HEADERSORT_OFFSET) {
 	qsort(h->index, h->indexUsed, sizeof(*h->index), offsetCmp);
-	h->flags &= ~HEADERFLAG_SORTED;
+	h->sorted = HEADERSORT_OFFSET;
     }
 }
 
@@ -721,7 +727,8 @@ indexEntry findEntry(Header h, rpmTagVal tag, rpm_tagtype_t type)
     struct indexEntry_s key;
 
     if (h == NULL) return NULL;
-    if (!(h->flags & HEADERFLAG_SORTED)) headerSort(h);
+    if (h->sorted != HEADERSORT_INDEX)
+	headerSort(h);
 
     key.info.tag = tag;
 
@@ -907,7 +914,8 @@ Header headerImport(void * blob, unsigned int bsize, headerImportFlags flags)
 	    goto errxit;
     }
 
-    h->flags &= ~HEADERFLAG_SORTED;
+    /* Force sorting, dribble lookups can cause early sort on partial header */
+    h->sorted = HEADERSORT_NONE;
     headerSort(h);
     h->flags |= HEADERFLAG_ALLOCATED;
 
@@ -1439,7 +1447,7 @@ static int intAddEntry(Header h, rpmtd td)
     entry->length = length;
 
     if (h->indexUsed > 0 && td->tag < h->index[h->indexUsed-1].info.tag)
-	h->flags &= ~HEADERFLAG_SORTED;
+	h->sorted = HEADERSORT_NONE;
     h->indexUsed++;
 
     return 1;
