@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2013-06-20 10:31+0300\n"
+"POT-Creation-Date: 2014-02-05 15:07+0200\n"
 "PO-Revision-Date: 2012-11-05 08:10+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Swedish (http://www.transifex.com/projects/p/rpm/language/"
@@ -632,196 +632,196 @@ msgstr "&& och || stöds inte för strängar\n"
 msgid "syntax error in expression\n"
 msgstr "syntaxfel i uttryck\n"
 
-#: build/files.c:327 build/files.c:496 build/files.c:710
+#: build/files.c:283 build/files.c:456 build/files.c:670
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "”(” saknas i %s %s\n"
 
-#: build/files.c:337 build/files.c:632 build/files.c:720 build/files.c:779
+#: build/files.c:293 build/files.c:592 build/files.c:680 build/files.c:739
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "”)” saknas i %s(%s\n"
 
-#: build/files.c:362 build/files.c:651
+#: build/files.c:318 build/files.c:611
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Ogiltigt %s-element: %s\n"
 
-#: build/files.c:465
+#: build/files.c:425
 #, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "%s saknas i %s %s\n"
 
-#: build/files.c:511
+#: build/files.c:471
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Annat än blanktecken följer på %s(): %s\n"
 
-#: build/files.c:547
+#: build/files.c:507
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Felaktig syntax: %s(%s)\n"
 
-#: build/files.c:556
+#: build/files.c:516
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Felaktig rättighetsspecifikation: %s(%s)\n"
 
-#: build/files.c:568
+#: build/files.c:528
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Felaktig specifikation av katalogrättigheter: %s(%s)\n"
 
-#: build/files.c:672
+#: build/files.c:632
 #, c-format
 msgid "Unusual locale length: \"%s\" in %%lang(%s)\n"
 msgstr "Ovanlig lokallängd: ”%s” i %%lang(%s)\n"
 
-#: build/files.c:679
+#: build/files.c:639
 #, c-format
 msgid "Duplicate locale %s in %%lang(%s)\n"
 msgstr "Duplicerad lokal %s i %%lang(%s)\n"
 
-#: build/files.c:794
+#: build/files.c:754
 #, c-format
 msgid "Invalid capability: %s\n"
 msgstr "Ogiltig förmåga (capability): %s\n"
 
-#: build/files.c:804
+#: build/files.c:764
 msgid "File capability support not built in\n"
 msgstr "Stöd för filförmågor (capability) är inte inbyggt\n"
 
-#: build/files.c:853
+#: build/files.c:813
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Filnamn måste börja med ”/”: %s\n"
 
-#: build/files.c:974
+#: build/files.c:934
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr "Okänd filkontrollsummealgoritm %u, faller tillbaka på MD5\n"
 
-#: build/files.c:1002
+#: build/files.c:962
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Filen uppräknad två gånger: %s\n"
 
-#: build/files.c:1124
+#: build/files.c:1086
 #, c-format
 msgid "reading symlink %s failed: %s\n"
 msgstr "läsning av symlänk %s misslyckades: %s\n"
 
-#: build/files.c:1132
+#: build/files.c:1094
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolisk länk pekar på BuildRoot: %s → %s\n"
 
-#: build/files.c:1310
+#: build/files.c:1273
 #, c-format
 msgid "Path is outside buildroot: %s\n"
 msgstr ""
 
-#: build/files.c:1350
+#: build/files.c:1313
 #, c-format
 msgid "Directory not found: %s\n"
 msgstr "Katalogen hittades inte: %s\n"
 
-#: build/files.c:1351
+#: build/files.c:1314
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Filen hittades inte: %s\n"
 
-#: build/files.c:1363
+#: build/files.c:1326
 #, fuzzy, c-format
 msgid "Not a directory: %s\n"
 msgstr "misslyckades att skapa katalogen %s: %s\n"
 
-#: build/files.c:1554
+#: build/files.c:1517
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: kan inte läsa okänd tagg (%d).\n"
 
-#: build/files.c:1560
+#: build/files.c:1523
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: läsning av publik nyckel misslyckades.\n"
 
-#: build/files.c:1564
+#: build/files.c:1527
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: inte en publik nyckel med skal.\n"
 
-#: build/files.c:1573
+#: build/files.c:1536
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s: misslyckades att koda\n"
 
-#: build/files.c:1618
+#: build/files.c:1581
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Filen behöver inledande ”/”: %s\n"
 
-#: build/files.c:1642
+#: build/files.c:1605
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr "%%dev-matchning inte tillåten: %s\n"
 
-#: build/files.c:1655
+#: build/files.c:1618
 #, c-format
 msgid "Directory not found by glob: %s\n"
 msgstr "Hittade ingen katalog vid matchningen: %s\n"
 
-#: build/files.c:1656 lib/rpminstall.c:426
+#: build/files.c:1619 lib/rpminstall.c:426
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Hittade ingen fil vid matchningen: %s\n"
 
-#: build/files.c:1692
+#: build/files.c:1655
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "Kunde inte öppna %%files-fil %s: %m\n"
 
-#: build/files.c:1699
+#: build/files.c:1662
 #, c-format
 msgid "line: %s\n"
 msgstr "rad: %s\n"
 
-#: build/files.c:1706
+#: build/files.c:1669
 #, c-format
 msgid "Error reading %%files file %s: %m\n"
 msgstr "Fel vid läsning av %%files-fil %s: %m\n"
 
-#: build/files.c:1728
+#: build/files.c:1691
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr ""
 
-#: build/files.c:1887
+#: build/files.c:1853
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:1904
+#: build/files.c:1870
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr ""
 
-#: build/files.c:2032
+#: build/files.c:2000
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Felaktig fil: %s: %s\n"
 
-#: build/files.c:2057 build/parsePrep.c:33
+#: build/files.c:2025 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Felaktig ägare/grupp: %s\n"
 
-#: build/files.c:2090
+#: build/files.c:2058
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Letar efter opackade fil(er): %s\n"
 
-#: build/files.c:2103
+#: build/files.c:2071
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -830,51 +830,51 @@ msgstr ""
 "Installerade (men opaketerade) filer funna:\n"
 "%s"
 
-#: build/files.c:2134
+#: build/files.c:2102
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Bearberar filer: %s\n"
 
-#: build/files.c:2148
+#: build/files.c:2116
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 
-#: build/files.c:2154
+#: build/files.c:2122
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Arkitekturberoende binärfiler i noarch-paket\n"
 
-#: build/pack.c:45
+#: build/pack.c:46
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr ""
 
-#: build/pack.c:48
+#: build/pack.c:49
 #, c-format
 msgid "create archive failed: %s\n"
 msgstr ""
 
-#: build/pack.c:75
+#: build/pack.c:76
 #, c-format
 msgid "Could not open %s file: %s\n"
 msgstr "Kunde inte öppna %s-fil: %s\n"
 
-#: build/pack.c:91
+#: build/pack.c:92
 #, c-format
 msgid "%s: line: %s\n"
 msgstr "%s: rad: %s\n"
 
-#: build/pack.c:129
+#: build/pack.c:130
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Kunde inte kanonisera värdnamn: %s\n"
 
-#: build/pack.c:193
+#: build/pack.c:194
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kan inte skriva last till %s: %s\n"
 
-#: build/pack.c:201
+#: build/pack.c:202
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Kan inte läsa last från %s: %s\n"
@@ -900,61 +900,61 @@ msgstr "Kan inte skriva temporärhuvud\n"
 msgid "Bad CSA data\n"
 msgstr "Felaktig CSA-data\n"
 
-#: build/pack.c:420
+#: build/pack.c:418
 msgid "Unable to reload signature header.\n"
 msgstr "Kan inte läsa om signaturhuvud.\n"
 
-#: build/pack.c:428
+#: build/pack.c:426
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Kunde inte öppna %s: %s\n"
 
-#: build/pack.c:440
+#: build/pack.c:438
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kunde inte skriva paket: %s\n"
 
-#: build/pack.c:456
+#: build/pack.c:454
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Kan inte läsa signaturen %s: %s\n"
 
-#: build/pack.c:467
+#: build/pack.c:465
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Kan inte läsa huvud från %s: %s\n"
 
-#: build/pack.c:477
+#: build/pack.c:475
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Kan inte skriva huvud till %s: %s\n"
 
-#: build/pack.c:510
+#: build/pack.c:508
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
 
-#: build/pack.c:529
+#: build/pack.c:527
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr "Kör ”%s”:\n"
 
-#: build/pack.c:532
+#: build/pack.c:530
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "Körning av ”%s” misslyckades.\n"
 
-#: build/pack.c:536
+#: build/pack.c:534
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "Paketkontroll ”%s” misslyckades.\n"
 
-#: build/pack.c:583
+#: build/pack.c:581
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Kunde inte generera utfilnamn för paketet %s: %s\n"
 
-#: build/pack.c:600
+#: build/pack.c:598
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "kan inte skapa %s: %s\n"
@@ -1037,177 +1037,177 @@ msgstr "rad %d: Fel i tolkning av %%files: %s\n"
 msgid "line %d: Error parsing %%policies: %s\n"
 msgstr "rad %d: Fel vid tolkning av %%policies: %s\n"
 
-#: build/parsePreamble.c:69
+#: build/parsePreamble.c:71
 #, c-format
 msgid "Error parsing tag field: %s\n"
 msgstr "Fel vid tolkning av taggfält: %s\n"
 
-#: build/parsePreamble.c:162
+#: build/parsePreamble.c:164
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "rad %d: Felaktigt nummer: %s\n"
 
-#: build/parsePreamble.c:168
+#: build/parsePreamble.c:170
 #, c-format
 msgid "line %d: Bad no%s number: %u\n"
 msgstr "rad %d: Felaktigt no%s-nummer: %u\n"
 
-#: build/parsePreamble.c:231
+#: build/parsePreamble.c:233
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "rad %d: Felaktigt %s-tal: %s\n"
 
-#: build/parsePreamble.c:245
+#: build/parsePreamble.c:247
 #, c-format
 msgid "%s %d defined multiple times\n"
 msgstr "%s %d definierat flera gånger\n"
 
-#: build/parsePreamble.c:290
+#: build/parsePreamble.c:292
 #, c-format
 msgid "Downloading %s to %s\n"
 msgstr "Hämtar %s till %s\n"
 
-#: build/parsePreamble.c:293
+#: build/parsePreamble.c:295
 #, c-format
 msgid "Couldn't download %s\n"
 msgstr "Kunde inte hämta %s\n"
 
-#: build/parsePreamble.c:432
+#: build/parsePreamble.c:434
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Arkitekturen är utesluten: %s\n"
 
-#: build/parsePreamble.c:437
+#: build/parsePreamble.c:439
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Arkitekturen är inte medtagen: %s\n"
 
-#: build/parsePreamble.c:442
+#: build/parsePreamble.c:444
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS är uteslutet: %s\n"
 
-#: build/parsePreamble.c:447
+#: build/parsePreamble.c:449
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS är inte medtaget: %s\n"
 
-#: build/parsePreamble.c:473
+#: build/parsePreamble.c:475
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "%s-fält måste finnas med i paketet: %s\n"
 
-#: build/parsePreamble.c:496
+#: build/parsePreamble.c:498
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Dubbla %s-poster i paketet: %s\n"
 
-#: build/parsePreamble.c:554
+#: build/parsePreamble.c:556
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Kan inte öppna ikon %s: %s\n"
 
-#: build/parsePreamble.c:570
+#: build/parsePreamble.c:572
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Kan inte läsa ikon %s: %s\n"
 
-#: build/parsePreamble.c:580
+#: build/parsePreamble.c:582
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Okänd ikontyp: %s\n"
 
-#: build/parsePreamble.c:594
+#: build/parsePreamble.c:596
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "rad %d: Taggen tar endast ett värde: %s\n"
 
-#: build/parsePreamble.c:614
+#: build/parsePreamble.c:616
 #, c-format
 msgid "line %d: Illegal char '%c' in: %s\n"
 msgstr "rad %d: Otillåtet tecken ”%c” i: %s\n"
 
-#: build/parsePreamble.c:617
+#: build/parsePreamble.c:619
 #, c-format
 msgid "line %d: Illegal char in: %s\n"
 msgstr "rad %d: Otillåtet tecken i: %s\n"
 
-#: build/parsePreamble.c:623
+#: build/parsePreamble.c:625
 #, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
 msgstr "rad %d: Otillåten sekvens ”..” i: %s\n"
 
-#: build/parsePreamble.c:646
+#: build/parsePreamble.c:648
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "rad %d: Felaktig tagg: %s\n"
 
-#: build/parsePreamble.c:654
+#: build/parsePreamble.c:656
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "rad %d: Tom tagg: %s\n"
 
-#: build/parsePreamble.c:718
+#: build/parsePreamble.c:720
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "rad %d: Prefix får inte sluta med ”/”: %s\n"
 
-#: build/parsePreamble.c:730
+#: build/parsePreamble.c:732
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "rad %d: Docdir måste börja med ”/”: %s\n"
 
-#: build/parsePreamble.c:743
+#: build/parsePreamble.c:745
 #, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "rad %d: Epoch-fält måste vara ett teckenlöst tal: %s\n"
 
-#: build/parsePreamble.c:780
+#: build/parsePreamble.c:782
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "rad %d: Felaktigt %s: bestämningar: %s\n"
 
-#: build/parsePreamble.c:810
+#: build/parsePreamble.c:812
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "rad %d: Felaktigt BuildArchitecture-format: %s\n"
 
-#: build/parsePreamble.c:820
+#: build/parsePreamble.c:822
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr "rad %d: Endast noarch-underpaket stöds: %s\n"
 
-#: build/parsePreamble.c:836
+#: build/parsePreamble.c:838
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Internt fel: felaktig tagg %d\n"
 
-#: build/parsePreamble.c:921
+#: build/parsePreamble.c:923
 #, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr "rad %d: %s är föråldrad: %s\n"
 
-#: build/parsePreamble.c:982
+#: build/parsePreamble.c:984
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Felaktig paketangivelse %s\n"
 
-#: build/parsePreamble.c:988
+#: build/parsePreamble.c:993
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Paketet existerar redan: %s\n"
 
-#: build/parsePreamble.c:1023
+#: build/parsePreamble.c:1028
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "rad %d: Okänd tagg: %s\n"
 
-#: build/parsePreamble.c:1055
+#: build/parsePreamble.c:1060
 #, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "%%{buildroot} fick inte vara tom\n"
 
-#: build/parsePreamble.c:1059
+#: build/parsePreamble.c:1064
 #, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "%%{buildroot} kan inte vara ”/”\n"
@@ -1266,23 +1266,23 @@ msgstr "Felaktigt patch-nummer %s: %s\n"
 msgid "line %d: second %%prep\n"
 msgstr "rad %d: andra %%prep\n"
 
-#: build/parseReqs.c:109
+#: build/parseReqs.c:119
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr "Beroenden måste börja alfanumeriskt, med ”_” eller med ”/”"
 
-#: build/parseReqs.c:134
+#: build/parseReqs.c:144
 msgid "Versioned file name not permitted"
 msgstr "Filnamn med version inte tillåtet"
 
-#: build/parseReqs.c:151
+#: build/parseReqs.c:161
 msgid "Version required"
 msgstr "Version krävs"
 
-#: build/parseReqs.c:162
+#: build/parseReqs.c:177
 msgid "invalid dependency"
 msgstr "ogiltigt beroende"
 
-#: build/parseReqs.c:178
+#: build/parseReqs.c:193
 #, c-format
 msgid "line %d: %s: %s\n"
 msgstr "rad %d: %s: %s\n"
@@ -1443,70 +1443,84 @@ msgstr "För många argument på rad: %s\n"
 msgid "Processing policies: %s\n"
 msgstr "Bearbetning policyer: %s\n"
 
-#: build/rpmfc.c:108
+#: build/rpmfc.c:109
 #, c-format
 msgid "Ignoring invalid regex %s\n"
 msgstr "Ignorerar ogiltigt reguttr %s\n"
 
-#: build/rpmfc.c:204
+#: build/rpmfc.c:206
 #, c-format
 msgid "Couldn't create pipe for %s: %m\n"
 msgstr "Kunde inte öppna rör för %s: %m\n"
 
-#: build/rpmfc.c:229
+#: build/rpmfc.c:231
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Kunde inte köra %s: %s\n"
 
-#: build/rpmfc.c:234 lib/rpmscript.c:255
+#: build/rpmfc.c:236 lib/rpmscript.c:255
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Kunde inte grena (fork) %s: %s\n"
 
-#: build/rpmfc.c:317
+#: build/rpmfc.c:319
 #, c-format
 msgid "%s failed: %x\n"
 msgstr "%s misslyckades: %x\n"
 
-#: build/rpmfc.c:321
+#: build/rpmfc.c:323
 #, c-format
 msgid "failed to write all data to %s: %s\n"
 msgstr "misslyckades med att skriva all data till %s: %s\n"
 
-#: build/rpmfc.c:831
+#: build/rpmfc.c:454
+msgid "bad operator"
+msgstr ""
+
+#: build/rpmfc.c:473
+#, fuzzy
+msgid "bad format"
+msgstr "tomt taggformat"
+
+#: build/rpmfc.c:539
+#, fuzzy, c-format
+msgid "invalid dependency (%s): %s\n"
+msgstr "ogiltigt beroende"
+
+#: build/rpmfc.c:870
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr "Konvertering av %s till långt heltal misslyckades.\n"
 
-#: build/rpmfc.c:909
+#: build/rpmfc.c:948
 msgid "Empty file classifier\n"
 msgstr "Tom filklassificerare\n"
 
-#: build/rpmfc.c:918
+#: build/rpmfc.c:957
 msgid "No file attributes configured\n"
 msgstr "Inga filattribut konfigurerade\n"
 
-#: build/rpmfc.c:938
+#: build/rpmfc.c:977
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) misslyckades: %s\n"
 
-#: build/rpmfc.c:944
+#: build/rpmfc.c:983
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load misslyckades: %s\n"
 
-#: build/rpmfc.c:986
+#: build/rpmfc.c:1025
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Igenkänning av filen ”%s” misslyckades: läge %06o %s\n"
 
-#: build/rpmfc.c:1172
+#: build/rpmfc.c:1211
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Letar efter %s: %s\n"
 
-#: build/rpmfc.c:1181 build/rpmfc.c:1190
+#: build/rpmfc.c:1220 build/rpmfc.c:1229
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Misslyckades med att hitta %s:\n"
@@ -2744,81 +2758,81 @@ msgstr "%s är föråldrat av %s%s"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "okänt fel %d uppträdde under behandling av paket %s"
 
-#: lib/rpmrc.c:194
+#: lib/rpmrc.c:198
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "andra ”:” saknas vid %s:%d\n"
 
-#: lib/rpmrc.c:197
+#: lib/rpmrc.c:201
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "arkitekturnamn saknas vid %s:%d\n"
 
-#: lib/rpmrc.c:342
+#: lib/rpmrc.c:346
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Ofullständig datarad vid %s:%d\n"
 
-#: lib/rpmrc.c:347
+#: lib/rpmrc.c:351
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "För många argument i datarad vid %s:%d\n"
 
-#: lib/rpmrc.c:354
+#: lib/rpmrc.c:358
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Felaktigt arkitektur-/os-nummer: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:385
+#: lib/rpmrc.c:389
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Ofullständig standardvärdesrad vid %s:%d\n"
 
-#: lib/rpmrc.c:390
+#: lib/rpmrc.c:394
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "För många argument i standardvärdesrad vid %s:%d\n"
 
-#: lib/rpmrc.c:495
+#: lib/rpmrc.c:499
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "”:” saknas (hittade 0x%02x) vid %s:%d\n"
 
-#: lib/rpmrc.c:512 lib/rpmrc.c:544
+#: lib/rpmrc.c:516 lib/rpmrc.c:548
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "argument till %s saknas vid %s:%d\n"
 
-#: lib/rpmrc.c:523
+#: lib/rpmrc.c:527
 #, c-format
 msgid "cannot open %s at %s:%d: %m\n"
 msgstr "kan inte öppna %s vid %s:%d: %m\n"
 
-#: lib/rpmrc.c:536
+#: lib/rpmrc.c:540
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "arkitektur saknas för %s vid %s:%d\n"
 
-#: lib/rpmrc.c:603
+#: lib/rpmrc.c:607
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "okänd flagga ”%s” vid %s:%d\n"
 
-#: lib/rpmrc.c:927
+#: lib/rpmrc.c:937
 msgid "Failed to read auxiliary vector, /proc not mounted?\n"
 msgstr ""
 
-#: lib/rpmrc.c:1349
+#: lib/rpmrc.c:1362
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Okänt system: %s\n"
 
-#: lib/rpmrc.c:1350
+#: lib/rpmrc.c:1363
 #, c-format
 msgid "Please contact %s\n"
 msgstr "Var god kontakta %s\n"
 
-#: lib/rpmrc.c:1591
+#: lib/rpmrc.c:1604
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Kan inte öppna %s för läsning: %m.\n"
@@ -3428,22 +3442,22 @@ msgstr "misslyckades att skapa katalog"
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "felaktig syntax i lua-skript: %s\n"
 
-#: rpmio/rpmlua.c:530
+#: rpmio/rpmlua.c:532
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "felaktig syntax i lua-skript: %s\n"
 
-#: rpmio/rpmlua.c:535 rpmio/rpmlua.c:554
+#: rpmio/rpmlua.c:537 rpmio/rpmlua.c:556
 #, c-format
 msgid "lua script failed: %s\n"
 msgstr "lua-skript misslyckades: %s\n"
 
-#: rpmio/rpmlua.c:549
+#: rpmio/rpmlua.c:551
 #, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "felaktig syntax i lua-fil: %s\n"
 
-#: rpmio/rpmlua.c:717
+#: rpmio/rpmlua.c:719
 #, c-format
 msgid "lua hook failed: %s\n"
 msgstr "lua-hake misslyckades: %s\n"
@@ -3473,12 +3487,12 @@ msgstr "varning: "
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "minnesallokering (%u byte) returnerade NULL.\n"
 
-#: rpmio/rpmpgp.c:1008
+#: rpmio/rpmpgp.c:1016
 #, c-format
 msgid "V%d %s/%s %s, key ID %s"
 msgstr "V%d %s/%s %s, nyckel-ID %s"
 
-#: rpmio/rpmpgp.c:1016
+#: rpmio/rpmpgp.c:1024
 msgid "(none)"
 msgstr "(ingen)"
 

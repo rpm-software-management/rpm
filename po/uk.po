@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2013-06-20 10:31+0300\n"
+"POT-Creation-Date: 2014-02-05 15:07+0200\n"
 "PO-Revision-Date: 2012-11-05 11:05+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
@@ -648,198 +648,198 @@ msgstr "&& і || не підтримуються для рядків\n"
 msgid "syntax error in expression\n"
 msgstr "синтаксична помилка у виразі\n"
 
-#: build/files.c:327 build/files.c:496 build/files.c:710
+#: build/files.c:283 build/files.c:456 build/files.c:670
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Не вистачає «(» у %s %s\n"
 
-#: build/files.c:337 build/files.c:632 build/files.c:720 build/files.c:779
+#: build/files.c:293 build/files.c:592 build/files.c:680 build/files.c:739
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "Не вистачає «)» у %s(%s\n"
 
-#: build/files.c:362 build/files.c:651
+#: build/files.c:318 build/files.c:611
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Некоректний елемент %s: %s\n"
 
-#: build/files.c:465
+#: build/files.c:425
 #, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "Не вистачає %s у %s %s\n"
 
-#: build/files.c:511
+#: build/files.c:471
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "За %s() вказано непробільне значення: %s\n"
 
-#: build/files.c:547
+#: build/files.c:507
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Помилковий синтаксис: %s(%s)\n"
 
-#: build/files.c:556
+#: build/files.c:516
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Помилкові права доступу: %s(%s)\n"
 
-#: build/files.c:568
+#: build/files.c:528
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Помилкові права доступу до каталогу: %s(%s)\n"
 
-#: build/files.c:672
+#: build/files.c:632
 #, c-format
 msgid "Unusual locale length: \"%s\" in %%lang(%s)\n"
 msgstr "Незвичайна довжина locale: «%s» у %%lang(%s)\n"
 
-#: build/files.c:679
+#: build/files.c:639
 #, c-format
 msgid "Duplicate locale %s in %%lang(%s)\n"
 msgstr "Дублювання locale %s у %%lang(%s)\n"
 
-#: build/files.c:794
+#: build/files.c:754
 #, c-format
 msgid "Invalid capability: %s\n"
 msgstr "Некоректний мандат: %s\n"
 
-#: build/files.c:804
+#: build/files.c:764
 msgid "File capability support not built in\n"
 msgstr "Підтримку мандатів на файли не було зібрано\n"
 
-#: build/files.c:853
+#: build/files.c:813
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Назва файла має починатися з «/»: %s\n"
 
-#: build/files.c:974
+#: build/files.c:934
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr ""
 "Невідомий алгоритм обчислення контрольної суми файла %u, буде використано "
 "MD5\n"
 
-#: build/files.c:1002
+#: build/files.c:962
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Файл вказано двічі: %s\n"
 
-#: build/files.c:1124
+#: build/files.c:1086
 #, c-format
 msgid "reading symlink %s failed: %s\n"
 msgstr "під час спроби читання символічного посилання %s сталася помилка: %s\n"
 
-#: build/files.c:1132
+#: build/files.c:1094
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Символічне посилання вказує на BuildRoot: %s -> %s\n"
 
-#: build/files.c:1310
+#: build/files.c:1273
 #, c-format
 msgid "Path is outside buildroot: %s\n"
 msgstr ""
 
-#: build/files.c:1350
+#: build/files.c:1313
 #, c-format
 msgid "Directory not found: %s\n"
 msgstr "Не знайдено каталогу: %s\n"
 
-#: build/files.c:1351
+#: build/files.c:1314
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Файл не знайдено: %s\n"
 
-#: build/files.c:1363
+#: build/files.c:1326
 #, fuzzy, c-format
 msgid "Not a directory: %s\n"
 msgstr "не вдалося створити каталог %s: %s\n"
 
-#: build/files.c:1554
+#: build/files.c:1517
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: не вдалося завантажити невідомий теґ (%d).\n"
 
-#: build/files.c:1560
+#: build/files.c:1523
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: невдала спроба читання відкритого ключа.\n"
 
-#: build/files.c:1564
+#: build/files.c:1527
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: не є захищеним відкритим ключем.\n"
 
-#: build/files.c:1573
+#: build/files.c:1536
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s: не вдалося закодувати\n"
 
-#: build/files.c:1618
+#: build/files.c:1581
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Назва файла має починатися з «/»: %s\n"
 
-#: build/files.c:1642
+#: build/files.c:1605
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr "Не можна використовувати glob %%dev: %s\n"
 
-#: build/files.c:1655
+#: build/files.c:1618
 #, c-format
 msgid "Directory not found by glob: %s\n"
 msgstr "Каталог не знайдено glob: %s\n"
 
-#: build/files.c:1656 lib/rpminstall.c:426
+#: build/files.c:1619 lib/rpminstall.c:426
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "У glob файла не виявлено: %s\n"
 
-#: build/files.c:1692
+#: build/files.c:1655
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "Не вдалося відкрити файл %%files %s: %m\n"
 
-#: build/files.c:1699
+#: build/files.c:1662
 #, c-format
 msgid "line: %s\n"
 msgstr "рядок: %s\n"
 
-#: build/files.c:1706
+#: build/files.c:1669
 #, c-format
 msgid "Error reading %%files file %s: %m\n"
 msgstr "Помилка під час спроби читання файла %%files %s: %m\n"
 
-#: build/files.c:1728
+#: build/files.c:1691
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr "некоректний формат каталогу документації %s: %s\n"
 
-#: build/files.c:1887
+#: build/files.c:1853
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr "Не можна змішувати спеціальний %s з іншими формами: %s\n"
 
-#: build/files.c:1904
+#: build/files.c:1870
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr "Декілька файлів у одному рядку: %s\n"
 
-#: build/files.c:2032
+#: build/files.c:2000
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Помилковий файл: %s: %s\n"
 
-#: build/files.c:2057 build/parsePrep.c:33
+#: build/files.c:2025 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Помилкові дані щодо власника/групи: %s\n"
 
-#: build/files.c:2090
+#: build/files.c:2058
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Пошук незапакованих файлів: %s\n"
 
-#: build/files.c:2103
+#: build/files.c:2071
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -848,53 +848,53 @@ msgstr ""
 "Виявлено встановлені (але не запаковані) файли:\n"
 "%s"
 
-#: build/files.c:2134
+#: build/files.c:2102
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Обробка файлів: %s\n"
 
-#: build/files.c:2148
+#: build/files.c:2116
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 "Архітектура виконуваних файлів (%d) не збігається з архітектурою пакунка "
 "(%d).\n"
 
-#: build/files.c:2154
+#: build/files.c:2122
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Виявлено залежні від архітектури бінарні файли у пакунку noarch\n"
 
-#: build/pack.c:45
+#: build/pack.c:46
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "спроба створення архіву зазнала невдачі на файлі %s: %s\n"
 
-#: build/pack.c:48
+#: build/pack.c:49
 #, c-format
 msgid "create archive failed: %s\n"
 msgstr "спроба створення архіву зазнала невдачі: %s\n"
 
-#: build/pack.c:75
+#: build/pack.c:76
 #, c-format
 msgid "Could not open %s file: %s\n"
 msgstr "Не вдалося відкрити файл %s: %s\n"
 
-#: build/pack.c:91
+#: build/pack.c:92
 #, c-format
 msgid "%s: line: %s\n"
 msgstr "%s: рядок: %s\n"
 
-#: build/pack.c:129
+#: build/pack.c:130
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Не вдалося привести до канонічної форми назву вузла: %s\n"
 
-#: build/pack.c:193
+#: build/pack.c:194
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Не вдалося записати вміст до %s: %s\n"
 
-#: build/pack.c:201
+#: build/pack.c:202
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Не вдалося прочитати вміст з %s: %s\n"
@@ -920,61 +920,61 @@ msgstr "Не вдалося записати тимчасовий заголов
 msgid "Bad CSA data\n"
 msgstr "Помилкові дані CSA\n"
 
-#: build/pack.c:420
+#: build/pack.c:418
 msgid "Unable to reload signature header.\n"
 msgstr "Не вдалося перезавантажити заголовок підпису.\n"
 
-#: build/pack.c:428
+#: build/pack.c:426
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Не вдалося відкрити %s: %s\n"
 
-#: build/pack.c:440
+#: build/pack.c:438
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Не вдалося записати пакунок: %s\n"
 
-#: build/pack.c:456
+#: build/pack.c:454
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Не вдалося відкрити ціль підписування %s: %s\n"
 
-#: build/pack.c:467
+#: build/pack.c:465
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Не вдалося прочитати заголовок з %s: %s\n"
 
-#: build/pack.c:477
+#: build/pack.c:475
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Не вдалося записати заголовок до %s: %s\n"
 
-#: build/pack.c:510
+#: build/pack.c:508
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записано: %s\n"
 
-#: build/pack.c:529
+#: build/pack.c:527
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr "Виконання «%s»:\n"
 
-#: build/pack.c:532
+#: build/pack.c:530
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "Спроба виконання «%s» зазнала невдачі.\n"
 
-#: build/pack.c:536
+#: build/pack.c:534
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "Спроба перевірки пакунка «%s» зазнала невдачі.\n"
 
-#: build/pack.c:583
+#: build/pack.c:581
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Не вдалося створити назву файла виведених даних для пакунка %s: %s\n"
 
-#: build/pack.c:600
+#: build/pack.c:598
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "не вдалося створити %s: %s\n"
@@ -1057,177 +1057,177 @@ msgstr "рядок %d: помилка під час обробки %%files: %s\n
 msgid "line %d: Error parsing %%policies: %s\n"
 msgstr "рядок %d: помилка під час обробки %%policies: %s\n"
 
-#: build/parsePreamble.c:69
+#: build/parsePreamble.c:71
 #, c-format
 msgid "Error parsing tag field: %s\n"
 msgstr "Помилка під час спроби обробки поля теґу: %s\n"
 
-#: build/parsePreamble.c:162
+#: build/parsePreamble.c:164
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "рядок %d: помилкова кількість: %s\n"
 
-#: build/parsePreamble.c:168
+#: build/parsePreamble.c:170
 #, c-format
 msgid "line %d: Bad no%s number: %u\n"
 msgstr "рядок %d: помилкова кількість no%s: %u\n"
 
-#: build/parsePreamble.c:231
+#: build/parsePreamble.c:233
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "рядок %d: помилкова кількість %s: %s\n"
 
-#: build/parsePreamble.c:245
+#: build/parsePreamble.c:247
 #, c-format
 msgid "%s %d defined multiple times\n"
 msgstr "%s %d визначено декілька разів\n"
 
-#: build/parsePreamble.c:290
+#: build/parsePreamble.c:292
 #, c-format
 msgid "Downloading %s to %s\n"
 msgstr "Звантаження %s до %s\n"
 
-#: build/parsePreamble.c:293
+#: build/parsePreamble.c:295
 #, c-format
 msgid "Couldn't download %s\n"
 msgstr "Не вдалося звантажити %s\n"
 
-#: build/parsePreamble.c:432
+#: build/parsePreamble.c:434
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Виключено архітектуру: %s\n"
 
-#: build/parsePreamble.c:437
+#: build/parsePreamble.c:439
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Не включено архітектуру: %s\n"
 
-#: build/parsePreamble.c:442
+#: build/parsePreamble.c:444
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "Виключено ОС: %s\n"
 
-#: build/parsePreamble.c:447
+#: build/parsePreamble.c:449
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "Не включено ОС: %s\n"
 
-#: build/parsePreamble.c:473
+#: build/parsePreamble.c:475
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "У пакунку має бути поле %s: %s\n"
 
-#: build/parsePreamble.c:496
+#: build/parsePreamble.c:498
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Дублювання записів %s у пакунку: %s\n"
 
-#: build/parsePreamble.c:554
+#: build/parsePreamble.c:556
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Не вдалося відкрити піктограму %s: %s\n"
 
-#: build/parsePreamble.c:570
+#: build/parsePreamble.c:572
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Не вдалося прочитати піктограму %s: %s\n"
 
-#: build/parsePreamble.c:580
+#: build/parsePreamble.c:582
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Невідомий тип піктограми: %s\n"
 
-#: build/parsePreamble.c:594
+#: build/parsePreamble.c:596
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "рядок %d: у тезі має бути лише один елемент: %s\n"
 
-#: build/parsePreamble.c:614
+#: build/parsePreamble.c:616
 #, c-format
 msgid "line %d: Illegal char '%c' in: %s\n"
 msgstr "рядок %d: некоректний символ «%c» у: %s\n"
 
-#: build/parsePreamble.c:617
+#: build/parsePreamble.c:619
 #, c-format
 msgid "line %d: Illegal char in: %s\n"
 msgstr "рядок %d: некоректний символ у: %s\n"
 
-#: build/parsePreamble.c:623
+#: build/parsePreamble.c:625
 #, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
 msgstr "рядок %d: некоректна послідовність «..» у: %s\n"
 
-#: build/parsePreamble.c:646
+#: build/parsePreamble.c:648
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "рядок %d: помилковий теґ: %s\n"
 
-#: build/parsePreamble.c:654
+#: build/parsePreamble.c:656
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "рядок %d: порожній теґ: %s\n"
 
-#: build/parsePreamble.c:718
+#: build/parsePreamble.c:720
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "рядок %d: префікси не повинні завершуватися на «/»: %s\n"
 
-#: build/parsePreamble.c:730
+#: build/parsePreamble.c:732
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "рядок %d: запис Docdir має починатися з «/»: %s\n"
 
-#: build/parsePreamble.c:743
+#: build/parsePreamble.c:745
 #, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "рядок %d: у полі Epoch має бути вказано ціле невід’ємне число: %s\n"
 
-#: build/parsePreamble.c:780
+#: build/parsePreamble.c:782
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "рядок %d: помилкове значення %s: специфікатори: %s\n"
 
-#: build/parsePreamble.c:810
+#: build/parsePreamble.c:812
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "рядок %d: помилковий формат BuildArchitecture: %s\n"
 
-#: build/parsePreamble.c:820
+#: build/parsePreamble.c:822
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr "рядок %d: передбачено підтримку лише підпакунків типу noarch: %s\n"
 
-#: build/parsePreamble.c:836
+#: build/parsePreamble.c:838
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Внутрішня помилка: зайвий теґ %d\n"
 
-#: build/parsePreamble.c:921
+#: build/parsePreamble.c:923
 #, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr "рядок %d: %s вважається застарілим: %s\n"
 
-#: build/parsePreamble.c:982
+#: build/parsePreamble.c:984
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Помилкова специфікація пакунка: %s\n"
 
-#: build/parsePreamble.c:988
+#: build/parsePreamble.c:993
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Пакунок вже існує: %s\n"
 
-#: build/parsePreamble.c:1023
+#: build/parsePreamble.c:1028
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "рядок %d: невідомий теґ: %s\n"
 
-#: build/parsePreamble.c:1055
+#: build/parsePreamble.c:1060
 #, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "%%{buildroot} не може бути порожнім\n"
 
-#: build/parsePreamble.c:1059
+#: build/parsePreamble.c:1064
 #, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "%%{buildroot} не може приймати значення «/»\n"
@@ -1286,23 +1286,23 @@ msgstr "Некоректний номер латки %s: %s\n"
 msgid "line %d: second %%prep\n"
 msgstr "рядок %d: друге %%prep\n"
 
-#: build/parseReqs.c:109
+#: build/parseReqs.c:119
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr "записи залежностей мають починатися з букви, числа, «_» або «/»"
 
-#: build/parseReqs.c:134
+#: build/parseReqs.c:144
 msgid "Versioned file name not permitted"
 msgstr "не можна використовувати версії у назвах файлів"
 
-#: build/parseReqs.c:151
+#: build/parseReqs.c:161
 msgid "Version required"
 msgstr "Слід вказати версію"
 
-#: build/parseReqs.c:162
+#: build/parseReqs.c:177
 msgid "invalid dependency"
 msgstr "некоректна залежність"
 
-#: build/parseReqs.c:178
+#: build/parseReqs.c:193
 #, c-format
 msgid "line %d: %s: %s\n"
 msgstr "рядок %d: %s: %s\n"
@@ -1467,70 +1467,84 @@ msgstr "Забагато аргументів у рядку: %s\n"
 msgid "Processing policies: %s\n"
 msgstr "Обробка правил: %s\n"
 
-#: build/rpmfc.c:108
+#: build/rpmfc.c:109
 #, c-format
 msgid "Ignoring invalid regex %s\n"
 msgstr "Ігноруємо некоректний формальний вираз %s\n"
 
-#: build/rpmfc.c:204
+#: build/rpmfc.c:206
 #, c-format
 msgid "Couldn't create pipe for %s: %m\n"
 msgstr "Не вдалося створити канал для %s: %m\n"
 
-#: build/rpmfc.c:229
+#: build/rpmfc.c:231
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Не вдалося виконати %s: %s\n"
 
-#: build/rpmfc.c:234 lib/rpmscript.c:255
+#: build/rpmfc.c:236 lib/rpmscript.c:255
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Не вдалося розгалуження %s: %s\n"
 
-#: build/rpmfc.c:317
+#: build/rpmfc.c:319
 #, c-format
 msgid "%s failed: %x\n"
 msgstr "Помилка %s: %x\n"
 
-#: build/rpmfc.c:321
+#: build/rpmfc.c:323
 #, c-format
 msgid "failed to write all data to %s: %s\n"
 msgstr "Не вдалося записати всі дані до %s: %s\n"
 
-#: build/rpmfc.c:831
+#: build/rpmfc.c:454
+msgid "bad operator"
+msgstr ""
+
+#: build/rpmfc.c:473
+#, fuzzy
+msgid "bad format"
+msgstr "порожній формат теґу"
+
+#: build/rpmfc.c:539
+#, fuzzy, c-format
+msgid "invalid dependency (%s): %s\n"
+msgstr "некоректна залежність"
+
+#: build/rpmfc.c:870
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr "Невдала спроба перетворення %s у формат long integer.\n"
 
-#: build/rpmfc.c:909
+#: build/rpmfc.c:948
 msgid "Empty file classifier\n"
 msgstr "Порожній класифікатор файла\n"
 
-#: build/rpmfc.c:918
+#: build/rpmfc.c:957
 msgid "No file attributes configured\n"
 msgstr "Не вказано атрибутів файла\n"
 
-#: build/rpmfc.c:938
+#: build/rpmfc.c:977
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "помилка magic_open(0x%x): %s\n"
 
-#: build/rpmfc.c:944
+#: build/rpmfc.c:983
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "помилка magic_load: %s\n"
 
-#: build/rpmfc.c:986
+#: build/rpmfc.c:1025
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Спроба розпізнавання файла «%s» зазнала невдачі: режим %06o %s\n"
 
-#: build/rpmfc.c:1172
+#: build/rpmfc.c:1211
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Пошук %s: %s\n"
 
-#: build/rpmfc.c:1181 build/rpmfc.c:1190
+#: build/rpmfc.c:1220 build/rpmfc.c:1229
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Не вдалося знайти %s:\n"
@@ -2782,81 +2796,81 @@ msgstr "%s став застарілим через %s%s"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "сталася невідома помилка %d під час обробки пакунка %s"
 
-#: lib/rpmrc.c:194
+#: lib/rpmrc.c:198
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "не вказано другий символ «:» у %s:%d\n"
 
-#: lib/rpmrc.c:197
+#: lib/rpmrc.c:201
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "не вказано назву архітектури у %s:%d\n"
 
-#: lib/rpmrc.c:342
+#: lib/rpmrc.c:346
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Неповний рядок даних у %s:%d\n"
 
-#: lib/rpmrc.c:347
+#: lib/rpmrc.c:351
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Забагато аргументів у рядку даних %s:%d\n"
 
-#: lib/rpmrc.c:354
+#: lib/rpmrc.c:358
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Помилкове число архітектури/ОС: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:385
+#: lib/rpmrc.c:389
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Неповний типовий рядок у %s:%d\n"
 
-#: lib/rpmrc.c:390
+#: lib/rpmrc.c:394
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Забагато аргументів у типовому рядку у %s:%d\n"
 
-#: lib/rpmrc.c:495
+#: lib/rpmrc.c:499
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "не вистачає «:» (виявлено 0x%02x) у %s:%d\n"
 
-#: lib/rpmrc.c:512 lib/rpmrc.c:544
+#: lib/rpmrc.c:516 lib/rpmrc.c:548
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "не вистачає аргументу для %s у %s:%d\n"
 
-#: lib/rpmrc.c:523
+#: lib/rpmrc.c:527
 #, c-format
 msgid "cannot open %s at %s:%d: %m\n"
 msgstr "Не вдалося відкрити %s у %s:%d: %m\n"
 
-#: lib/rpmrc.c:536
+#: lib/rpmrc.c:540
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "не вистачає архітектури для %s у %s:%d\n"
 
-#: lib/rpmrc.c:603
+#: lib/rpmrc.c:607
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "помилковий параметр «%s» у %s:%d\n"
 
-#: lib/rpmrc.c:927
+#: lib/rpmrc.c:937
 msgid "Failed to read auxiliary vector, /proc not mounted?\n"
 msgstr "Не вдалося прочитати допоміжний вектор, /proc не змонтовано?\n"
 
-#: lib/rpmrc.c:1349
+#: lib/rpmrc.c:1362
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Невідома система: %s\n"
 
-#: lib/rpmrc.c:1350
+#: lib/rpmrc.c:1363
 #, c-format
 msgid "Please contact %s\n"
 msgstr "Будь ласка, зв’яжіться з %s\n"
 
-#: lib/rpmrc.c:1591
+#: lib/rpmrc.c:1604
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Не вдалося відкрити %s для читання: %m.\n"
@@ -3473,22 +3487,22 @@ msgstr "не вдалося створити каталог"
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "некоректний синтаксис у допоміжному скрипті lua: %s\n"
 
-#: rpmio/rpmlua.c:530
+#: rpmio/rpmlua.c:532
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "некоректний синтаксис у скрипті lua: %s\n"
 
-#: rpmio/rpmlua.c:535 rpmio/rpmlua.c:554
+#: rpmio/rpmlua.c:537 rpmio/rpmlua.c:556
 #, c-format
 msgid "lua script failed: %s\n"
 msgstr "помилка скрипту lua: %s\n"
 
-#: rpmio/rpmlua.c:549
+#: rpmio/rpmlua.c:551
 #, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "некоректний синтаксис у файлі lua: %s\n"
 
-#: rpmio/rpmlua.c:717
+#: rpmio/rpmlua.c:719
 #, c-format
 msgid "lua hook failed: %s\n"
 msgstr "помилка виклику lua: %s\n"
@@ -3519,12 +3533,12 @@ msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr ""
 "у відповідь на спробу отримання області пам’яті (%u байтів) повернуто NULL.\n"
 
-#: rpmio/rpmpgp.c:1008
+#: rpmio/rpmpgp.c:1016
 #, c-format
 msgid "V%d %s/%s %s, key ID %s"
 msgstr "V%d %s/%s %s, ід. ключа %s"
 
-#: rpmio/rpmpgp.c:1016
+#: rpmio/rpmpgp.c:1024
 msgid "(none)"
 msgstr "(нічого)"
 
