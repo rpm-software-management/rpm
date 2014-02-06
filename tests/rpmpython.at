@@ -366,4 +366,20 @@ for f in archive:
 [],
 [])
 
+RPMPY_TEST([header unload],[
+ts = rpm.ts()
+h = ts.hdrFromFdno('${RPMDATA}/RPMS/hello-2.0-1.i686.rpm')
+# Add some garbage to header to make it non-sorted
+h['installtime'] = 0
+# RhBug:1061730 causes export of non-sorted header to be larger than it should
+len1 = len(h.unload())
+# Accessing the header before export forces sorting to take place even on
+# buggy versions
+t = h['installtime']
+len2 = len(h.unload())
+myprint(len1 == len2)
+],
+[True
+],
+[])
 
