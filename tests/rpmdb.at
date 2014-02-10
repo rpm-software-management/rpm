@@ -136,7 +136,7 @@ RPMDB_INIT
 tpkg="/data/RPMS/hello-2.0-1.i686.rpm"
 
 runroot rpm -U --nodeps --ignorearch "${tpkg}" && 
-  runroot rpm -U --nodeps --nodocs --replacepkgs "${tpkg}" &&
+  runroot rpm -U --nodeps --ignorearch --nodocs --replacepkgs "${tpkg}" &&
   runroot rpm -e hello
 test -d "${RPMTEST}"/usr/share/doc/hello-2.0
 ],
