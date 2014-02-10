@@ -103,7 +103,7 @@ AT_CLEANUP
 
 # ------------------------------
 # reinstall a noarch package (with no files)
-AT_SETUP([rpm -U --replacepkgs])
+AT_SETUP([rpm -U --replacepkgs 1])
 AT_KEYWORDS([rpmdb install])
 
 AT_CHECK([
@@ -123,6 +123,28 @@ runroot rpm -i "${tpkg}" &&
 
 AT_CLEANUP
 
+# ------------------------------
+# reinstall a package with different file policies
+AT_SETUP([rpm -U --replacepkgs 2])
+AT_KEYWORDS([rpmdb install])
+
+AT_CHECK([
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+RPMDB_CLEAR
+RPMDB_INIT
+
+tpkg="/data/RPMS/hello-2.0-1.i686.rpm"
+
+runroot rpm -U --nodeps --ignorearch "${tpkg}" && 
+  runroot rpm -U --nodeps --nodocs --replacepkgs "${tpkg}" &&
+  runroot rpm -e hello
+test -d "${RPMTEST}"/usr/share/doc/hello-2.0
+],
+[1],
+[],
+[])
+
+AT_CLEANUP
 # ------------------------------
 # install a package into a local rpmdb
 # * Shall only work with relocation
