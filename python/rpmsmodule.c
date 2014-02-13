@@ -66,8 +66,8 @@ static struct PyModuleDef moduledef = {
     NULL         /* m_free */
 };
 
-PyObject * PyInit__rpm(void);	/* XXX eliminate gcc warning */
-PyObject * PyInit__rpm(void)
+PyObject * PyInit__rpms(void);	/* XXX eliminate gcc warning */
+PyObject * PyInit__rpms(void)
 {
     PyObject *m;
 
