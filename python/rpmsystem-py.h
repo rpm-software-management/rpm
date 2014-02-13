@@ -48,6 +48,7 @@ typedef Py_ssize_t (*lenfunc)(PyObject *);
 #define PyInt_FromLong PyLong_FromLong
 #define PyInt_AsUnsignedLongMask PyLong_AsUnsignedLongMask
 #define PyInt_AsUnsignedLongLongMask PyLong_AsUnsignedLongLongMask
+#define PyInt_AsSsize_t PyLong_AsSsize_t
 #endif
 
 #endif	/* H_SYSTEM_PYTHON */
