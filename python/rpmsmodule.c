@@ -59,7 +59,7 @@ static struct PyModuleDef moduledef = {
     "_rpms",     /* m_name */
     rpms__doc__, /* m_doc */
     0,           /* m_size */
-    NULL,        /* m_methods */
+    modMethods,  /* m_methods */
     NULL,        /* m_reload */
     NULL,        /* m_traverse */
     NULL,        /* m_clear */
