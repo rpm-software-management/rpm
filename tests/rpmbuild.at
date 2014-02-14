@@ -200,10 +200,16 @@ runroot rpmbuild -bb --quiet \
 	--define "ens zap = 3" \
 	  /data/SPECS/deptest.spec
 
-runroot rpm -qp --qf "[%{supplementname}\n]" /build/RPMS/noarch/deptest-weakdeps-1.0-1.noarch.rpm
+runroot rpm -qp --recommends /build/RPMS/noarch/deptest-weakdeps-1.0-1.noarch.rpm
+runroot rpm -qp --suggests /build/RPMS/noarch/deptest-weakdeps-1.0-1.noarch.rpm
+runroot rpm -qp --supplements /build/RPMS/noarch/deptest-weakdeps-1.0-1.noarch.rpm
+runroot rpm -qp --enhances /build/RPMS/noarch/deptest-weakdeps-1.0-1.noarch.rpm
 ],
 [0],
-[baz
+[foo > 1.2.3
+bar >= 0.1.2
+baz
+zap = 3
 ],
 [ignore])
 AT_CLEANUP
