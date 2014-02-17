@@ -324,6 +324,10 @@ typedef enum rpmTag_e {
 #define	RPMTAG_ENHANCES RPMTAG_ENHANCENAME	/* s[] */
     RPMTAG_ENHANCEVERSION	= 5056,	/* s[] */
     RPMTAG_ENHANCEFLAGS		= 5057,	/* i[] */
+    RPMTAG_RECOMMENDNEVRS	= 5058, /* s[] extension */
+    RPMTAG_SUGGESTNEVRS		= 5059, /* s[] extension */
+    RPMTAG_SUPPLEMENTNEVRS	= 5060, /* s[] extension */
+    RPMTAG_ENHANCENEVRS		= 5061, /* s[] extension */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;

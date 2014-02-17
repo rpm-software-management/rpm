@@ -761,6 +761,26 @@ static int requirenevrsTag(Header h, rpmtd td, headerGetFlags hgflags)
     return depnevrsTag(h, td, hgflags, RPMTAG_REQUIRENAME);
 }
 
+static int recommendnevrsTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return depnevrsTag(h, td, hgflags, RPMTAG_RECOMMENDNAME);
+}
+
+static int suggestnevrsTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return depnevrsTag(h, td, hgflags, RPMTAG_SUGGESTNAME);
+}
+
+static int supplementnevrsTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return depnevrsTag(h, td, hgflags, RPMTAG_SUPPLEMENTNAME);
+}
+
+static int enhancenevrsTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return depnevrsTag(h, td, hgflags, RPMTAG_ENHANCENAME);
+}
+
 static int providenevrsTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     return depnevrsTag(h, td, hgflags, RPMTAG_PROVIDENAME);
@@ -823,6 +843,10 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_EPOCHNUM,		epochnumTag },
     { RPMTAG_INSTFILENAMES,	instfilenamesTag },
     { RPMTAG_REQUIRENEVRS,	requirenevrsTag },
+    { RPMTAG_RECOMMENDNEVRS,	recommendnevrsTag},
+    { RPMTAG_SUGGESTNEVRS,	suggestnevrsTag},
+    { RPMTAG_SUPPLEMENTNEVRS,	supplementnevrsTag},
+    { RPMTAG_ENHANCENEVRS,	enhancenevrsTag},
     { RPMTAG_PROVIDENEVRS,	providenevrsTag },
     { RPMTAG_OBSOLETENEVRS,	obsoletenevrsTag },
     { RPMTAG_CONFLICTNEVRS,	conflictnevrsTag },
