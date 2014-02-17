@@ -217,14 +217,14 @@ typedef enum rpmTag_e {
     RPMTAG_PRETRANSPROG		= 1153,	/* s[] */
     RPMTAG_POSTTRANSPROG	= 1154,	/* s[] */
     RPMTAG_DISTTAG		= 1155,	/* s */
-    RPMTAG_SUGGESTSNAME		= 1156,	/* s[] extension (unimplemented) */
-#define	RPMTAG_SUGGESTS RPMTAG_SUGGESTSNAME	/* s[] (unimplemented) */
-    RPMTAG_SUGGESTSVERSION	= 1157,	/* s[] extension (unimplemented) */
-    RPMTAG_SUGGESTSFLAGS	= 1158,	/* i[] extension (unimplemented) */
-    RPMTAG_ENHANCESNAME		= 1159,	/* s[] extension placeholder (unimplemented) */
-#define	RPMTAG_ENHANCES RPMTAG_ENHANCESNAME	/* s[] (unimplemented) */
-    RPMTAG_ENHANCESVERSION	= 1160,	/* s[] extension placeholder (unimplemented) */
-    RPMTAG_ENHANCESFLAGS	= 1161,	/* i[] extension placeholder (unimplemented) */
+    RPMTAG_OLDSUGGESTSNAME	= 1156,	/* s[] (unimplemented) */
+#define	RPMTAG_OLDSUGGESTS RPMTAG_OLDSUGGESTSNAME /* s[] (unimplemented) */
+    RPMTAG_OLDSUGGESTSVERSION	= 1157,	/* s[] (unimplemented) */
+    RPMTAG_OLDSUGGESTSFLAGS	= 1158,	/* i[] (unimplemented) */
+    RPMTAG_OLDENHANCESNAME		= 1159,	/* s[] (unimplemented) */
+#define	RPMTAG_OLDENHANCES RPMTAG_OLDENHANCESNAME /* s[] (unimplemented) */
+    RPMTAG_OLDENHANCESVERSION	= 1160,	/* s[] (unimplemented) */
+    RPMTAG_OLDENHANCESFLAGS	= 1161,	/* i[] (unimplemented) */
     RPMTAG_PRIORITY		= 1162, /* i[] extension placeholder (unimplemented) */
     RPMTAG_CVSID		= 1163, /* s (unimplemented) */
 #define	RPMTAG_SVNID	RPMTAG_CVSID	/* s (unimplemented) */
@@ -261,6 +261,7 @@ typedef enum rpmTag_e {
     RPMTAG_BUILDOBSOLETES	= 1194, /* internal (unimplemented) */
     RPMTAG_DBINSTANCE		= 1195, /* i extension */
     RPMTAG_NVRA			= 1196, /* s extension */
+
     /* tags 1997-4999 reserved */
     RPMTAG_FILENAMES		= 5000, /* s[] extension */
     RPMTAG_FILEPROVIDE		= 5001, /* s[] extension */
