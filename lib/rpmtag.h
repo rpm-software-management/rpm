@@ -308,6 +308,22 @@ typedef enum rpmTag_e {
     RPMTAG_OBSOLETENEVRS	= 5043, /* s[] extension */
     RPMTAG_CONFLICTNEVRS	= 5044, /* s[] extension */
     RPMTAG_FILENLINKS		= 5045,	/* i[] extension */
+    RPMTAG_RECOMMENDNAME	= 5046,	/* s[] */
+#define	RPMTAG_RECOMMENDS RPMTAG_RECOMMENDNAME	/* s[] */
+    RPMTAG_RECOMMENDVERSION	= 5047,	/* s[] */
+    RPMTAG_RECOMMENDFLAGS	= 5048,	/* i[] */
+    RPMTAG_SUGGESTNAME		= 5049,	/* s[] */
+#define	RPMTAG_SUGGESTS RPMTAG_SUGGESTNAME	/* s[] */
+    RPMTAG_SUGGESTVERSION	= 5050,	/* s[] extension */
+    RPMTAG_SUGGESTFLAGS		= 5051,	/* i[] extension */
+    RPMTAG_SUPPLEMENTNAME	= 5052,	/* s[] */
+#define	RPMTAG_SUPPLEMENTS RPMTAG_SUPPLEMENTNAME /* s[] */
+    RPMTAG_SUPPLEMENTVERSION	= 5053,	/* s[] */
+    RPMTAG_SUPPLEMENTFLAGS	= 5054,	/* i[] */
+    RPMTAG_ENHANCENAME		= 5055,	/* s[] */
+#define	RPMTAG_ENHANCES RPMTAG_ENHANCENAME	/* s[] */
+    RPMTAG_ENHANCEVERSION	= 5056,	/* s[] */
+    RPMTAG_ENHANCEFLAGS		= 5057,	/* i[] */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;
