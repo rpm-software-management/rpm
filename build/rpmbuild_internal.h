@@ -93,6 +93,10 @@ struct Package_s {
     rpmds ds;			/*!< Requires: N = EVR */
     rpmds requires;
     rpmds provides;
+    rpmds recommends;
+    rpmds suggests;
+    rpmds supplements;
+    rpmds enhances;
     rpmds conflicts;
     rpmds obsoletes;
     rpmds triggers;

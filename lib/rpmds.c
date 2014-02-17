@@ -52,6 +52,22 @@ static int dsType(rpmTagVal tag,
 	t = "Requires";
 	evr = RPMTAG_REQUIREVERSION;
 	f = RPMTAG_REQUIREFLAGS;
+    } else if (tag == RPMTAG_SUPPLEMENTNAME) {
+	t = "Supplements";
+	evr = RPMTAG_SUPPLEMENTVERSION;
+	f = RPMTAG_SUPPLEMENTFLAGS;
+    } else if (tag == RPMTAG_ENHANCENAME) {
+	t = "Enhances";
+	evr = RPMTAG_ENHANCEVERSION;
+	f = RPMTAG_ENHANCEFLAGS;
+    } else if (tag == RPMTAG_RECOMMENDNAME) {
+	t = "Recommends";
+	evr = RPMTAG_RECOMMENDVERSION;
+	f = RPMTAG_RECOMMENDFLAGS;
+    } else if (tag == RPMTAG_SUGGESTNAME) {
+	t = "Suggests";
+	evr = RPMTAG_SUGGESTVERSION;
+	f = RPMTAG_SUGGESTFLAGS;
     } else if (tag == RPMTAG_CONFLICTNAME) {
 	t = "Conflicts";
 	evr = RPMTAG_CONFLICTVERSION;

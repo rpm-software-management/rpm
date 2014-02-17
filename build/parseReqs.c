@@ -61,6 +61,18 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	nametag = RPMTAG_REQUIRENAME;
 	tagflags |= RPMSENSE_ANY;
 	break;
+    case RPMTAG_RECOMMENDFLAGS:
+	nametag = RPMTAG_RECOMMENDNAME;
+	break;
+    case RPMTAG_SUGGESTFLAGS:
+	nametag = RPMTAG_SUGGESTNAME;
+	break;
+    case RPMTAG_SUPPLEMENTFLAGS:
+	nametag = RPMTAG_SUPPLEMENTNAME;
+	break;
+    case RPMTAG_ENHANCEFLAGS:
+	nametag = RPMTAG_ENHANCENAME;
+	break;
     case RPMTAG_PROVIDEFLAGS:
 	nametag = RPMTAG_PROVIDENAME;
 	break;

@@ -81,6 +81,30 @@ int addReqProv(Package pkg, rpmTagVal tagN,
 	extra = Flags & RPMSENSE_TRIGGER;
 	dsp = &pkg->triggers;
 	break;
+    case RPMTAG_RECOMMENDNAME:
+	versiontag = RPMTAG_RECOMMENDVERSION;
+	flagtag = RPMTAG_RECOMMENDFLAGS;
+	extra = Flags & _ALL_REQUIRES_MASK;
+	dsp = &pkg->recommends;
+	break;
+    case RPMTAG_SUGGESTNAME:
+	versiontag = RPMTAG_SUGGESTVERSION;
+	flagtag = RPMTAG_SUGGESTFLAGS;
+	extra = Flags & _ALL_REQUIRES_MASK;
+	dsp = &pkg->suggests;
+	break;
+    case RPMTAG_SUPPLEMENTNAME:
+	versiontag = RPMTAG_SUPPLEMENTVERSION;
+	flagtag = RPMTAG_SUPPLEMENTFLAGS;
+	extra = Flags & _ALL_REQUIRES_MASK;
+	dsp = &pkg->supplements;
+	break;
+    case RPMTAG_ENHANCENAME:
+	versiontag = RPMTAG_ENHANCEVERSION;
+	flagtag = RPMTAG_ENHANCEFLAGS;
+	extra = Flags & _ALL_REQUIRES_MASK;
+	dsp = &pkg->enhances;
+	break;
     case RPMTAG_REQUIRENAME:
     default:
 	tagN = RPMTAG_REQUIRENAME;

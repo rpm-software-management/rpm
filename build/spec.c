@@ -139,6 +139,11 @@ static Package freePackage(Package pkg)
     pkg->ds = rpmdsFree(pkg->ds);
     pkg->requires = rpmdsFree(pkg->requires);
     pkg->provides = rpmdsFree(pkg->provides);
+    pkg->recommends = rpmdsFree(pkg->recommends);
+    pkg->suggests = rpmdsFree(pkg->suggests);
+    pkg->supplements = rpmdsFree(pkg->supplements);
+    pkg->enhances = rpmdsFree(pkg->enhances);
+
     pkg->conflicts = rpmdsFree(pkg->conflicts);
     pkg->obsoletes = rpmdsFree(pkg->obsoletes);
     pkg->triggers = rpmdsFree(pkg->triggers);

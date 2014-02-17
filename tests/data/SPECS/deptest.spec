@@ -10,6 +10,10 @@ BuildArch:	noarch
 %{?provs:Provides: %{provs}}
 %{?cfls:Conflicts: %{cfls}}
 %{?obs:Obsoletes: %{obs}}
+%{?recs:Recommends: %{recs}}
+%{?sugs:Suggests: %{sugs}}
+%{?sups:Supplements: %{sups}}
+%{?ens:Enhances: %{ens}}
 
 %description
 %{summary}
