@@ -158,6 +158,22 @@ sub process_file {
 
     my $modver_re = qr/[.0-9]+/;
 
+    #
+    # The (require|use) match further down in this subroutine will match lines
+    # within a multi-line print statement.  So, let's skip over such print
+    # statements whose content should not be loading modules anyway. -BEF-
+    #
+    if ( m/print(\s+|\s+\S+\s+)\<\<(.*)/g ) {
+        my $tag = $2;
+        $tag =~ s/^\s*['"]//;       # strip off leading space and quote
+        $tag =~ s/["']\s*;\s*$//;   # strip off trailing quote and space and semicolon
+        while (<FILE>) {
+            chomp;
+            ( $_ eq $tag ) && last;
+        }
+        $_ = <FILE>;
+    }
+
     if (
 
 # ouch could be in a eval, perhaps we do not want these since we catch
