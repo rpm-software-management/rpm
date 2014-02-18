@@ -1589,6 +1589,7 @@ static rpmRC readFilesManifest(rpmSpec spec, Package pkg, const char *path)
     char *fn, buf[BUFSIZ];
     FILE *fd = NULL;
     rpmRC rc = RPMRC_FAIL;
+    unsigned int nlines = 0;
 
     if (*path == '/') {
 	fn = rpmGetPath(path, NULL);
@@ -1604,13 +1605,18 @@ static rpmRC readFilesManifest(rpmSpec spec, Package pkg, const char *path)
     }
 
     while (fgets(buf, sizeof(buf), fd)) {
-	handleComments(buf);
+	if (handleComments(buf))
+	    continue;
 	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
 	    rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
 	    goto exit;
 	}
 	argvAdd(&(pkg->fileList), buf);
+	nlines++;
     }
+
+    if (nlines == 0)
+	rpmlog(RPMLOG_WARNING, _("Empty %%files file %s\n"), fn);
 
     if (ferror(fd))
 	rpmlog(RPMLOG_ERR, _("Error reading %%files file %s: %m\n"), fn);
