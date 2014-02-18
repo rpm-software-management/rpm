@@ -102,11 +102,14 @@ static int matchTok(const char *token, const char *line)
     return rc;
 }
 
-void handleComments(char *s)
+int handleComments(char *s)
 {
     SKIPSPACE(s);
-    if (*s == '#')
+    if (*s == '#') {
 	*s = '\0';
+	return 1;
+    }
+    return 0;
 }
 
 /* Push a file to spec's file stack, return the newly pushed entry */

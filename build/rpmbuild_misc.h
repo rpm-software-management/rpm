@@ -12,9 +12,10 @@ extern "C" {
 /** \ingroup rpmbuild
  * Truncate comment lines.
  * @param s		skip white space, truncate line at '#'
+ * @return		1 on comment lines, 0 otherwise
  */
 RPM_GNUC_INTERNAL
-void handleComments(char * s);
+int handleComments(char * s);
 
 /** \ingroup rpmstring
  */
