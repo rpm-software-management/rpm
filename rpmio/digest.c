@@ -8,7 +8,7 @@
 
 #include "debug.h"
 
-#define DIGESTS_MAX 11
+#define DIGESTS_MAX 12
 struct rpmDigestBundle_s {
     int index_min;			/*!< Smallest index of active digest */
     int index_max;			/*!< Largest index of active digest */
