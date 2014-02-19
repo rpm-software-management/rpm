@@ -45,6 +45,42 @@ runroot rpm --define "this that" --define "that_that foo" --eval '%{expand:%{%{t
 ])
 AT_CLEANUP
 
+AT_SETUP([parametrized macro 1])
+AT_KEYWORDS([macros])
+AT_CHECK([
+cat << EOF > ${abs_builddir}/testing/mtest
+%bar() bar
+%foo()\\
+%bar\\
+foo 1\\
+%{bar}\\
+foo 2\\
+%bar x\\
+foo 3\\
+%{bar x}\\
+foo 4\\
+%bar \\
+foo 5
+EOF
+
+runroot rpm --eval '%{load:mtest}%{foo}'
+],
+[0],
+[
+bar
+foo 1
+bar
+foo 2
+bar
+foo 3
+bar
+foo 4
+bar
+foo 5
+],
+[])
+AT_CLEANUP
+
 AT_SETUP([uncompress macro])
 AT_KEYWORDS([macros])
 AT_CHECK([
