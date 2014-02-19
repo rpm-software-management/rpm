@@ -764,7 +764,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 
 exit:
     argvFree(argv);
-    return *lastc ? lastc + 1 : lastc; 
+    return (*lastc == '\0' || *lastc == '\n') ? lastc : lastc + 1;
 }
 
 /**
