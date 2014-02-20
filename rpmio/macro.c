@@ -1106,14 +1106,12 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 		}
 		f = parseMacroFlags(s + 1 /* skip { */, &negate, &chkexist);
 		fe = parseMacroName(f);
-		se++;	/* skip } */
-		/* no valid name? syntax error */
+		/* no valid name? assume as-is substitution */
 		if (fe == NULL) {
-			rpmlog(RPMLOG_ERR,
-				_("Invalid macro name: %%%.*s\n"), (int)(se - s), s);
-			rc = 1;
+			mbAppend(mb, '%');
 			continue;
 		}
+		se++;	/* skip } */
 		switch (*fe) {
 		case ':':
 			g = fe + 1;

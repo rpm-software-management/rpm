@@ -33,11 +33,9 @@ runroot rpm --define "this that" --eval '%{?that}'
 ])
 AT_CLEANUP
 
-# XXX this was broken by commit c22d5b12999de6633d89828165ea3ab2112993e8
 AT_SETUP([nested macro in name])
 AT_KEYWORDS([macros])
 AT_CHECK([
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 runroot rpm --define "this that" --define "that_that foo" --eval '%{expand:%{%{this}_that}}'
 ],
 [0],
