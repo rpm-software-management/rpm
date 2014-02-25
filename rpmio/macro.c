@@ -902,93 +902,6 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 }
 
 /**
- * Parse for flags before macro name, such as in %{?!name:subst}.
- * @param s		macro flags start
- * @param negate	flipped by each '!' flag
- * @param chkexist	increased by each '?' flag
- * @return		macro flags end
- */
-static const char *
-parseMacroFlags(const char *s, int *negate, int *chkexist)
-{
-    while (1) {
-	switch (*s) {
-	case '!':
-	    *negate = !*negate;
-	    s++;
-	    break;
-	case '?':
-	    (*chkexist)++;
-	    s++;
-	    break;
-	default:
-	    return s;
-	}
-    }
-    /* not reached */
-    return s;
-}
-
-/**
- * Parse for valid macro name (during expansion).
- * @param s		macro name start
- * @return		macro name end, NULL on error
- */
-static const char *
-parseMacroName(const char *s)
-{
-    /* alnum identifiers */
-    if (risalpha(*s) || *s == '_') {
-	const char *se = s + 1;
-	while (risalnum(*se) || *se == '_')
-	    se++;
-	switch (se - s) {
-	case 1:
-	    /* recheck for [SPF] */
-	    break;
-	case 2:
-	    return NULL;
-	default:
-	    return se;
-	}
-    }
-    /* simple special names */
-    switch (*s) {
-    case '0':
-    case '#':
-    case 'S':
-    case 'P':
-    case 'F':
-	s++;
-	return s;
-    case '*':
-	s++;
-	if (*s == '*')
-	    s++;
-	return s;
-    /* option names */
-    case '-':
-	s++;
-	if (risalnum(*s))
-	    s++;
-	else
-	    return NULL;
-	if (*s == '*')
-	    s++;
-	return s;
-    }
-    /* argument names */
-    if (risdigit(*s)) {
-	s++;
-	while (risdigit(*s))
-	    s++;
-	return s;
-    }
-    /* invalid macro name */
-    return NULL;
-}
-
-/**
  * The main macro recursion loop.
  * @param mb		macro expansion state
  * @param src		string to expand
@@ -1067,14 +980,34 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	chkexist = 0;
 	switch ((c = *s)) {
 	default:		/* %name substitution */
-		f = parseMacroFlags(s, &negate, &chkexist);
-		fe = parseMacroName(f);
-		/* no valid name? assume as-is substitution */
-		if (fe == NULL) {
-			mbAppend(mb, '%');
-			continue;
+		while (strchr("!?", *s) != NULL) {
+			switch(*s++) {
+			case '!':
+				negate = ((negate + 1) % 2);
+				break;
+			case '?':
+				chkexist++;
+				break;
+			}
 		}
-		se = fe;
+		f = se = s;
+		if (*se == '-')
+			se++;
+		while((c = *se) && (risalnum(c) || c == '_'))
+			se++;
+		/* Recognize non-alnum macros too */
+		switch (*se) {
+		case '*':
+			se++;
+			if (*se == '*') se++;
+			break;
+		case '#':
+			se++;
+			break;
+		default:
+			break;
+		}
+		fe = se;
 		/* For "%name " macros ... */
 		if ((c = *fe) && isblank(c))
 			if ((lastc = strchr(fe,'\n')) == NULL)
@@ -1104,37 +1037,48 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 			rc = 1;
 			continue;
 		}
-		f = parseMacroFlags(s + 1 /* skip { */, &negate, &chkexist);
-		fe = parseMacroName(f);
-		/* no valid name? assume as-is substitution */
-		if (fe == NULL) {
-			mbAppend(mb, '%');
-			continue;
-		}
+		f = s+1;/* skip { */
 		se++;	/* skip } */
-		switch (*fe) {
+		while (strchr("!?", *f) != NULL) {
+			switch(*f++) {
+			case '!':
+				negate = ((negate + 1) % 2);
+				break;
+			case '?':
+				chkexist++;
+				break;
+			}
+		}
+		for (fe = f; (c = *fe) && !strchr(" :}", c);)
+			fe++;
+		switch (c) {
 		case ':':
 			g = fe + 1;
 			ge = se - 1;
 			break;
 		case ' ':
-		case '\t':
 			lastc = se-1;
 			break;
-		case '}':
-			break;
 		default:
-			rpmlog(RPMLOG_ERR,
-				_("Invalid macro syntax: %%%.*s\n"), (int)(se - s), s);
-			rc = 1;
-			continue;
+			break;
 		}
 		break;
 	}
 
-	assert(fe > f);
+	/* XXX Everything below expects fe > f */
 	fn = (fe - f);
 	gn = (ge - g);
+	if ((fe - f) <= 0) {
+/* XXX Process % in unknown context */
+		c = '%';	/* XXX only need to save % */
+		mbAppend(mb, c);
+#if 0
+		rpmlog(RPMLOG_ERR,
+			_("A %% is followed by an unparseable macro\n"));
+#endif
+		s = se;
+		continue;
+	}
 
 	if (mb->macro_trace)
 		printMacro(mb, s, se);
