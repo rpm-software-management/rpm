@@ -630,25 +630,54 @@ rpmRC rpmCharCheck(rpmSpec spec, const char *field, size_t fsize, const char *wh
     return RPMRC_OK;
 }
 
-static rpm_count_t numEntries(Header h, rpmTagVal tag)
+static int haveLangTag(Header h, rpmTagVal tag, const char *lang)
 {
-    struct rpmtd_s entry;
-    rpm_count_t num = 0;
+    int rc = 0;	/* assume tag not present */
+    int langNum = -1;
 
-    if (headerGet(h, tag, &entry, (HEADERGET_MINMEM|HEADERGET_RAW))) {
-	num = rpmtdCount(&entry);
-	rpmtdFreeData(&entry);
+    if (lang && *lang) {
+	/* See if the language is in header i18n table */
+	struct rpmtd_s langtd;
+	const char *s = NULL;
+	headerGet(h, RPMTAG_HEADERI18NTABLE, &langtd, HEADERGET_MINMEM);
+	while ((s = rpmtdNextString(&langtd)) != NULL) {
+	    if (rstreq(s, lang)) {
+		langNum = rpmtdGetIndex(&langtd);
+		break;
+	    }
+	}
+	rpmtdFreeData(&langtd);
+    } else {
+	/* C locale */
+	langNum = 0;
     }
-    return num;
+
+    /* If locale is present, check the actual tag content */
+    if (langNum >= 0) {
+	struct rpmtd_s td;
+	headerGet(h, tag, &td, HEADERGET_MINMEM|HEADERGET_RAW);
+	if (rpmtdSetIndex(&td, langNum) == langNum) {
+	    const char *s = rpmtdGetString(&td);
+	    /* non-empty string means a dupe */
+	    if (s && *s)
+		rc = 1;
+	}
+	rpmtdFreeData(&td);
+    };
+
+    return rc;
 }
 
 int addLangTag(rpmSpec spec, Header h, rpmTagVal tag,
 		      const char *field, const char *lang)
 {
-    rpmTagVal langtag = RPMTAG_HEADERI18NTABLE;
-    rpm_count_t numstr = numEntries(h, tag);
-    rpm_count_t numlang = numEntries(h, langtag);
     int skip = 0;
+
+    if (haveLangTag(h, tag, lang)) {
+	rpmlog(RPMLOG_ERR, _("line %d: second %s\n"),
+		spec->lineNum, rpmTagGetName(tag));
+	return 1;
+    }
 
     if (!*lang) {
 	headerPutString(h, tag, field);
@@ -660,12 +689,6 @@ int addLangTag(rpmSpec spec, Header h, rpmTagVal tag,
 	headerAddI18NString(h, tag, field, lang);
     }
 
-    /* If neither i18n or group entries grew, its a dupe */
-    if (numstr == numEntries(h, tag) && numlang == numEntries(h, langtag)) {
-	rpmlog(RPMLOG_ERR, _("line %d: second %s\n"),
-		spec->lineNum, rpmTagGetName(tag));
-	return 1;
-    }
     return 0;
 }
 
