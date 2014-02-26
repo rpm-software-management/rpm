@@ -756,6 +756,34 @@ static int depnevrsTag(Header h, rpmtd td, headerGetFlags hgflags,
     return (ndeps > 0);
 }
 
+#define RPMSENSE_STRONG (1 << 27)
+
+static int depnevrsTagFiltered(Header h, rpmtd td, headerGetFlags hgflags,
+			rpmTagVal tag, int strong)
+{
+    rpmds ds = rpmdsNew(h, tag, 0);
+    int ndeps = rpmdsCount(ds);
+
+    if (ndeps > 0) {
+	char **deps = xmalloc(sizeof(*deps) * ndeps);
+	ndeps = 0;
+	while (rpmdsNext(ds) >= 0) {
+	    if ((rpmdsFlags(ds) & RPMSENSE_STRONG) == (strong ? RPMSENSE_STRONG : 0))
+		deps[ndeps++] = rpmdsNewDNEVR(NULL, ds);
+	}
+	if (ndeps) {
+	    td->data = deps;
+	    td->type = RPM_STRING_ARRAY_TYPE;
+	    td->count = ndeps;
+	    td->flags |= (RPMTD_ALLOCED | RPMTD_PTR_ALLOCED);
+	} else {
+	    _free(deps);
+        }
+    }
+    rpmdsFree(ds);
+    return (ndeps > 0);
+}
+
 static int requirenevrsTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     return depnevrsTag(h, td, hgflags, RPMTAG_REQUIRENAME);
@@ -763,22 +791,26 @@ static int requirenevrsTag(Header h, rpmtd td, headerGetFlags hgflags)
 
 static int recommendnevrsTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
-    return depnevrsTag(h, td, hgflags, RPMTAG_RECOMMENDNAME);
+    return depnevrsTag(h, td, hgflags, RPMTAG_RECOMMENDNAME) ||
+           depnevrsTagFiltered(h, td, hgflags, RPMTAG_OLDSUGGESTSNAME, 1);
 }
 
 static int suggestnevrsTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
-    return depnevrsTag(h, td, hgflags, RPMTAG_SUGGESTNAME);
+    return depnevrsTag(h, td, hgflags, RPMTAG_SUGGESTNAME) ||
+           depnevrsTagFiltered(h, td, hgflags, RPMTAG_OLDSUGGESTSNAME, 0);
 }
 
 static int supplementnevrsTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
-    return depnevrsTag(h, td, hgflags, RPMTAG_SUPPLEMENTNAME);
+    return depnevrsTag(h, td, hgflags, RPMTAG_SUPPLEMENTNAME) ||
+           depnevrsTagFiltered(h, td, hgflags, RPMTAG_OLDENHANCESNAME, 1);
 }
 
 static int enhancenevrsTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
-    return depnevrsTag(h, td, hgflags, RPMTAG_ENHANCENAME);
+    return depnevrsTag(h, td, hgflags, RPMTAG_ENHANCENAME) ||
+           depnevrsTagFiltered(h, td, hgflags, RPMTAG_OLDENHANCESNAME, 0);
 }
 
 static int providenevrsTag(Header h, rpmtd td, headerGetFlags hgflags)

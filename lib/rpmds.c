@@ -84,6 +84,14 @@ static int dsType(rpmTagVal tag,
 	t = "Trigger";
 	evr = RPMTAG_TRIGGERVERSION;
 	f = RPMTAG_TRIGGERFLAGS;
+    } else if (tag == RPMTAG_OLDSUGGESTSNAME) {
+	t = "Oldsuggests";
+	evr = RPMTAG_OLDSUGGESTSVERSION;
+	f = RPMTAG_OLDSUGGESTSFLAGS;
+    } else if (tag == RPMTAG_OLDENHANCESNAME) {
+	t = "Oldenhances";
+	evr = RPMTAG_OLDENHANCESVERSION;
+	f = RPMTAG_OLDENHANCESFLAGS;
     } else {
 	rc = 1;
     } 
