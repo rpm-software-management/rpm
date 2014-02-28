@@ -674,9 +674,9 @@ int addLangTag(rpmSpec spec, Header h, rpmTagVal tag,
     int skip = 0;
 
     if (haveLangTag(h, tag, lang)) {
-	rpmlog(RPMLOG_ERR, _("line %d: second %s\n"),
+	/* Turn this into an error eventually */
+	rpmlog(RPMLOG_WARNING, _("line %d: second %s\n"),
 		spec->lineNum, rpmTagGetName(tag));
-	return 1;
     }
 
     if (!*lang) {
