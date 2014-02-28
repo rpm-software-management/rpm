@@ -638,12 +638,13 @@ freeArgs(MacroBuf mb, int delete)
 	assert(me);
 	if (me->level < mb->depth)
 	    continue;
+	/* Warn on defined but unused non-automatic, scoped macros */
 	if (!(me->flags & (ME_AUTO|ME_USED))) {
-#if NOTYET
-	    rpmlog(RPMLOG_ERR,
-			_("Macro %%%s (%s) was not used below level %d\n"),
-			me->name, me->body, me->level);
-#endif
+	    rpmlog(RPMLOG_WARNING,
+			_("Macro %%%s defined but not used within scope\n"),
+			me->name);
+	    /* Only whine once */
+	    me->flags |= ME_USED;
 	}
 	if (!delete)
 	    continue;
@@ -1266,6 +1267,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     }
 
     mb->buf[mb->tpos] = '\0';
+    freeArgs(mb, 0);
     mb->depth--;
     if (rc != 0 || mb->expand_trace)
 	printExpansion(mb, mb->buf+tpos, mb->buf+mb->tpos);
