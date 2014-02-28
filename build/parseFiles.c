@@ -67,9 +67,15 @@ int parseFiles(rpmSpec spec)
 	goto exit;
     }
 
+    /*
+     * This should be an error, but its surprisingly commonly abused for the
+     * effect of multiple -f arguments in versions that dont support it.
+     * Warn but preserve behavior, except for leaking memory.
+     */
     if (pkg->fileList != NULL) {
-	rpmlog(RPMLOG_ERR, _("line %d: second %%files\n"), spec->lineNum);
-	goto exit;
+	rpmlog(RPMLOG_WARNING, _("line %d: second %%files\n"), spec->lineNum);
+	pkg->fileList = argvFree(pkg->fileList);
+	
     }
 
     for (arg=1; arg<argc; arg++) {
