@@ -1195,10 +1195,12 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	mep = findEntry(mb->mc, f, fn, NULL);
 	me = (mep ? *mep : NULL);
 
+	/* If we looked up a macro, consider it used */
+	if (me)
+	    me->flags |= ME_USED;
+
 	/* XXX Special processing for flags */
 	if (*f == '-') {
-		if (me)
-			me->flags |= ME_USED; /* Mark macro as used */
 		if ((me == NULL && !negate) ||	/* Without -f, skip %{-f...} */
 		    (me != NULL && negate)) {	/* With -f, skip %{!-f...} */
 			s = se;
@@ -1254,8 +1256,6 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	/* Recursively expand body of macro */
 	if (me->body && *me->body) {
 		rc = expandMacro(mb, me->body, 0);
-		if (rc == 0)
-			me->flags |= ME_USED;	/* Mark macro as used */
 	}
 
 	/* Free args for "%name " macros with opts */
