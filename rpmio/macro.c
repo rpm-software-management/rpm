@@ -39,6 +39,7 @@ extern int optind;
 enum macroFlags_e {
     ME_NONE	= 0,
     ME_AUTO	= (1 << 0),
+    ME_USED	= (1 << 1),
 };
 
 /*! The structure used to store a macro. */
@@ -47,7 +48,6 @@ struct rpmMacroEntry_s {
     const char *name;  	/*!< Macro name. */
     const char *opts;  	/*!< Macro parameters (a la getopt) */
     const char *body;	/*!< Macro body. */
-    int used;           /*!< No. of expansions. */
     int flags;		/*!< Macro state bits. */
     int level;          /*!< Scoping level. */
     char arena[];   	/*!< String arena. */
@@ -638,7 +638,7 @@ freeArgs(MacroBuf mb)
 	assert(me);
 	if (me->level < mb->depth)
 	    continue;
-	if (!(me->flags & ME_AUTO) && me->used <= 0) {
+	if (!(me->flags & (ME_AUTO|ME_USED))) {
 #if NOTYET
 	    rpmlog(RPMLOG_ERR,
 			_("Macro %%%s (%s) was not used below level %d\n"),
@@ -1195,7 +1195,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	/* XXX Special processing for flags */
 	if (*f == '-') {
 		if (me)
-			me->used++;	/* Mark macro as used */
+			me->flags |= ME_USED; /* Mark macro as used */
 		if ((me == NULL && !negate) ||	/* Without -f, skip %{-f...} */
 		    (me != NULL && negate)) {	/* With -f, skip %{!-f...} */
 			s = se;
@@ -1252,7 +1252,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	if (me->body && *me->body) {
 		rc = expandMacro(mb, me->body, 0);
 		if (rc == 0)
-			me->used++;	/* Mark macro as used */
+			me->flags |= ME_USED;	/* Mark macro as used */
 	}
 
 	/* Free args for "%name " macros with opts */
@@ -1354,7 +1354,7 @@ static void pushMacro(rpmMacroContext mc,
 	me->opts = o ? "" : NULL;
     /* initialize */
     me->flags = flags;
-    me->used = 0;
+    me->flags &= ~(ME_USED);
     me->level = level;
     /* push over previous definition */
     me->prev = *mep;
@@ -1465,7 +1465,7 @@ rpmDumpMacroTable(rpmMacroContext mc, FILE * fp)
 	rpmMacroEntry me = mc->tab[i];
 	assert(me);
 	fprintf(fp, "%3d%c %s", me->level,
-		    (me->used > 0 ? '=' : ':'), me->name);
+		    ((me->flags & ME_USED) ? '=' : ':'), me->name);
 	if (me->opts && *me->opts)
 		fprintf(fp, "(%s)", me->opts);
 	if (me->body && *me->body)
