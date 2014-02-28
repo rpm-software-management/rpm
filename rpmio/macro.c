@@ -628,7 +628,7 @@ exit:
  * @param mb		macro expansion state
  */
 static void
-freeArgs(MacroBuf mb)
+freeArgs(MacroBuf mb, int delete)
 {
     rpmMacroContext mc = mb->mc;
 
@@ -645,6 +645,9 @@ freeArgs(MacroBuf mb)
 			me->name, me->body, me->level);
 #endif
 	}
+	if (!delete)
+	    continue;
+
 	/* compensate if the slot is to go away */
 	if (me->prev == NULL)
 	    i--;
@@ -1257,7 +1260,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 
 	/* Free args for "%name " macros with opts */
 	if (me->opts != NULL)
-		freeArgs(mb);
+		freeArgs(mb, 1);
 
 	s = se;
     }
