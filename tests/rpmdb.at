@@ -143,8 +143,29 @@ test -d "${RPMTEST}"/usr/share/doc/hello-2.0
 [1],
 [],
 [])
-
 AT_CLEANUP
+
+# ------------------------------
+# reinstall a package with different file policies
+AT_SETUP([rpm --reinstall 1])
+AT_KEYWORDS([rpmdb install])
+
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+tpkg="/data/RPMS/hello-2.0-1.i686.rpm"
+
+runroot rpm -U --nodeps --ignorearch "${tpkg}" && 
+  runroot rpm --reinstall --nodeps --ignorearch --nodocs "${tpkg}" &&
+  runroot rpm -e hello
+test -d "${RPMTEST}"/usr/share/doc/hello-2.0
+],
+[1],
+[],
+[])
+AT_CLEANUP
+
 # ------------------------------
 # install a package into a local rpmdb
 # * Shall only work with relocation
