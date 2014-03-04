@@ -127,7 +127,7 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
 }
 
 /* Return rpmdb iterator with removals optionally pruned out */
-static rpmdbMatchIterator rpmtsPrunedIterator(rpmts ts, rpmDbiTagVal tag,
+rpmdbMatchIterator rpmtsPrunedIterator(rpmts ts, rpmDbiTagVal tag,
 					      const char * key, int prune)
 {
     rpmdbMatchIterator mi = rpmtsInitIterator(ts, tag, key, 0);
