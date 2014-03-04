@@ -74,7 +74,7 @@ class TransactionSet(TransactionSetCore):
     def addReinstall(self, item, key):
         header = self._f2hdr(item)
 
-        if not TransactionSetCore.addRenstall(self, header, key):
+        if not TransactionSetCore.addReinstall(self, header, key):
             raise rpm.error("adding package to transaction failed")
 
     def addErase(self, item):
