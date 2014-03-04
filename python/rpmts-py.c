@@ -188,6 +188,24 @@ rpmts_AddInstall(rpmtsObject * s, PyObject * args)
 }
 
 static PyObject *
+rpmts_AddReinstall(rpmtsObject * s, PyObject * args)
+{
+    Header h = NULL;
+    PyObject * key;
+    int rc;
+
+    if (!PyArg_ParseTuple(args, "O&O:AddReinstall", 
+			  hdrFromPyObject, &h, &key))
+	return NULL;
+
+    rc = rpmtsAddReinstallElement(s->ts, h, key);
+    if (key && rc == 0) {
+	PyList_Append(s->keyList, key);
+    }
+    return PyBool_FromLong((rc == 0));
+}
+
+static PyObject *
 rpmts_AddErase(rpmtsObject * s, PyObject * args)
 {
     Header h;
@@ -673,6 +691,8 @@ exit:
 
 static struct PyMethodDef rpmts_methods[] = {
  {"addInstall",	(PyCFunction) rpmts_AddInstall,	METH_VARARGS,
+	NULL },
+ {"addReinstall",	(PyCFunction) rpmts_AddReinstall,	METH_VARARGS,
 	NULL },
  {"addErase",	(PyCFunction) rpmts_AddErase,	METH_VARARGS|METH_KEYWORDS,
 	NULL },

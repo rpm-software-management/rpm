@@ -50,7 +50,7 @@ class TransactionSet(TransactionSetCore):
         else:
             return tuple(keys)
 
-    def addInstall(self, item, key, how="u"):
+    def _f2hdr(self, item):
         if isinstance(item, _string_types):
             f = open(item)
             header = self.hdrFromFdno(f)
@@ -59,12 +59,22 @@ class TransactionSet(TransactionSetCore):
             header = item
         else:
             header = self.hdrFromFdno(item)
+        return header
+
+    def addInstall(self, item, key, how="u"):
+        header = self._f2hdr(item)
 
         if not how in ['u', 'i']:
             raise ValueError('how argument must be "u" or "i"')
         upgrade = (how == "u")
 
         if not TransactionSetCore.addInstall(self, header, key, upgrade):
+            raise rpm.error("adding package to transaction failed")
+
+    def addReinstall(self, item, key):
+        header = self._f2hdr(item)
+
+        if not TransactionSetCore.addRenstall(self, header, key):
             raise rpm.error("adding package to transaction failed")
 
     def addErase(self, item):
