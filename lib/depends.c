@@ -55,6 +55,11 @@ const int rpmFLAGS = RPMSENSE_EQUAL;
 #undef HASHTYPE
 #undef HTKEYTYPE
 
+enum addOp_e {
+    RPMTE_INSTALL	= 0,
+    RPMTE_UPGRADE	= 1,
+};
+
 /**
  * Check for supported payload format in header.
  * @param h		header to check
@@ -153,22 +158,25 @@ static int skipColor(rpm_color_t tscolor, rpm_color_t color, rpm_color_t ocolor)
 }
 
 /* Add erase elements for older packages of same color (if any). */
-static int addUpgradeErasures(rpmts ts, rpm_color_t tscolor,
+static int addSelfErasures(rpmts ts, rpm_color_t tscolor, int op,
 				rpmte p, rpm_color_t hcolor, Header h)
 {
     Header oh;
     rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(p), 0);
     int rc = 0;
+    int cmp;
 
     while((oh = rpmdbNextIterator(mi)) != NULL) {
 	/* Ignore colored packages not in our rainbow. */
 	if (skipColor(tscolor, hcolor, headerGetNumber(oh, RPMTAG_HEADERCOLOR)))
 	    continue;
 
-	/* Skip packages that contain identical NEVR. */
-	if (rpmVersionCompare(h, oh) == 0)
-	    continue;
+	cmp = rpmVersionCompare(h, oh);
 
+	/* On upgrade, skip packages that contain identical NEVR. */
+	if ((op == RPMTE_UPGRADE) && (cmp == 0))
+	    continue;
+	
 	if (removePackage(ts, oh, p)) {
 	    rc = 1;
 	    break;
@@ -386,8 +394,8 @@ rpmal rpmtsCreateAl(rpmts ts, rpmElementTypes types)
     return al;
 }
 
-int rpmtsAddInstallElement(rpmts ts, Header h,
-			fnpyKey key, int upgrade, rpmRelocation * relocs)
+static int addPackage(rpmts ts, Header h,
+		    fnpyKey key, int op, rpmRelocation * relocs)
 {
     tsMembers tsmem = rpmtsMembers(ts);
     rpm_color_t tscolor = rpmtsColor(ts);
@@ -395,11 +403,6 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     int isSource = headerIsSource(h);
     int ec = 0;
     int oc = tsmem->orderCount;
-
-    if (rpmtsSetupTransactionPlugins(ts) == RPMRC_FAIL) {
-	ec = 1;
-	goto exit;
-    }
 
     /* Check for supported payload format if it's a package */
     if (key && headerCheckPayloadFormat(h) != RPMRC_OK) {
@@ -409,10 +412,10 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 
     /* Source packages are never "upgraded" */
     if (isSource)
-	upgrade = 0;
+	op = RPMTE_INSTALL;
 
     /* Do lazy (readonly?) open of rpm database for upgrades. */
-    if (upgrade && rpmtsGetRdb(ts) == NULL && rpmtsGetDBMode(ts) != -1) {
+    if (op != RPMTE_INSTALL && rpmtsGetRdb(ts) == NULL && rpmtsGetDBMode(ts) != -1) {
 	if ((ec = rpmtsOpenDB(ts, rpmtsGetDBMode(ts))) != 0)
 	    goto exit;
     }
@@ -425,7 +428,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 
     /* Check binary packages for redundancies in the set */
     if (!isSource) {
-	oc = findPos(ts, tscolor, p, upgrade);
+	oc = findPos(ts, tscolor, p, (op == RPMTE_UPGRADE));
 	/* If we're replacing a previously added element, free the old one */
 	if (oc >= 0 && oc < tsmem->orderCount) {
 	    rpmalDel(tsmem->addedPackages, tsmem->order[oc]);
@@ -457,13 +460,22 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 
     /* Add erasure elements for old versions and obsoletions on upgrades */
     /* XXX TODO: If either of these fails, we'd need to undo all additions */
-    if (upgrade) {
-	addUpgradeErasures(ts, tscolor, p, rpmteColor(p), h);
+    if (op != RPMTE_INSTALL)
+	addSelfErasures(ts, tscolor, op, p, rpmteColor(p), h);
+    if (op == RPMTE_UPGRADE)
 	addObsoleteErasures(ts, tscolor, p);
-    }
 
 exit:
     return ec;
+}
+
+int rpmtsAddInstallElement(rpmts ts, Header h,
+			fnpyKey key, int upgrade, rpmRelocation * relocs)
+{
+    int op = (upgrade == 0) ? RPMTE_INSTALL : RPMTE_UPGRADE;
+    if (rpmtsSetupTransactionPlugins(ts) == RPMRC_FAIL)
+	return 1;
+    return addPackage(ts, h, key, op, relocs);
 }
 
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
