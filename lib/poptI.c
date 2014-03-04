@@ -253,6 +253,10 @@ struct poptOption rpmInstallPoptTable[] = {
 	&rpmIArgs.installInterfaceFlags, (INSTALL_UPGRADE|INSTALL_INSTALL),
 	N_("upgrade package(s)"),
 	N_("<packagefile>+") },
+ { "reinstall", '\0', POPT_BIT_SET,
+	&rpmIArgs.installInterfaceFlags, (INSTALL_REINSTALL|INSTALL_INSTALL),
+	N_("reinstall package(s)"),
+	N_("<packagefile>+") },
 
    POPT_TABLEEND
 };

@@ -282,7 +282,8 @@ enum rpmInstallFlags_e {
     INSTALL_FRESHEN	= (1 << 6),	/*!< from --freshen */
     INSTALL_INSTALL	= (1 << 7),	/*!< from --install */
     INSTALL_ERASE	= (1 << 8),	/*!< from --erase */
-    INSTALL_ALLMATCHES	= (1 << 9)	/*!< from --allmatches */
+    INSTALL_ALLMATCHES	= (1 << 9),	/*!< from --allmatches */
+    INSTALL_REINSTALL	= (1 << 10),	/*!< from --reinstall */
 };
 
 typedef rpmFlags rpmInstallFlags;
@@ -343,7 +344,7 @@ struct rpmInstallArguments_s {
 };
 
 /** \ingroup rpmcli
- * Install/upgrade/freshen binary rpm package.
+ * Install/upgrade/freshen/reinstall binary rpm package.
  * @param ts		transaction set
  * @param ia		mode flags and parameters
  * @param fileArgv	array of package file names (NULL terminated)

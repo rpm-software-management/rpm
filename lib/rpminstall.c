@@ -552,7 +552,10 @@ restart:
 	        continue;
 	    }
 
-	rc = rpmtsAddInstallElement(ts, h, (fnpyKey)fileName,
+	if (ia->installInterfaceFlags & INSTALL_REINSTALL)
+	    rc = rpmtsAddReinstallElement(ts, h, (fnpyKey)fileName);
+	else
+	    rc = rpmtsAddInstallElement(ts, h, (fnpyKey)fileName,
 			(ia->installInterfaceFlags & INSTALL_UPGRADE) != 0,
 			relocations);
 

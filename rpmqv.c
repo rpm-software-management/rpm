@@ -135,7 +135,8 @@ int main(int argc, char *argv[])
 #ifdef	IAM_RPMEIU
   if (bigMode == MODE_UNKNOWN || (bigMode & MODES_IE))
     {	int iflags = (ia->installInterfaceFlags &
-		(INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL));
+			(INSTALL_UPGRADE|INSTALL_FRESHEN|
+			 INSTALL_INSTALL|INSTALL_REINSTALL));
 	int eflags = (ia->installInterfaceFlags & INSTALL_ERASE);
 
 	if (iflags & eflags)
