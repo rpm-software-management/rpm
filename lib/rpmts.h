@@ -562,6 +562,16 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 		rpmRelocation * relocs);
 
 /** \ingroup rpmts
+ * Add package to be reinstalled to transaction set.
+ *
+ * @param ts		transaction set
+ * @param h		header
+ * @param key		package retrieval key (e.g. file name)
+ * @return		0 on success
+ */
+int rpmtsAddReinstallElement(rpmts ts, Header h, const fnpyKey key);
+
+/** \ingroup rpmts
  * Add package to be erased to transaction set.
  * @param ts		transaction set
  * @param h		header

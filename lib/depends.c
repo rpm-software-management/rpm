@@ -58,6 +58,7 @@ const int rpmFLAGS = RPMSENSE_EQUAL;
 enum addOp_e {
     RPMTE_INSTALL	= 0,
     RPMTE_UPGRADE	= 1,
+    RPMTE_REINSTALL	= 2,
 };
 
 /**
@@ -175,6 +176,10 @@ static int addSelfErasures(rpmts ts, rpm_color_t tscolor, int op,
 
 	/* On upgrade, skip packages that contain identical NEVR. */
 	if ((op == RPMTE_UPGRADE) && (cmp == 0))
+	    continue;
+
+	/* On reinstall, skip packages with differing NEVR. */
+	if ((op == RPMTE_REINSTALL) && (cmp != 0))
 	    continue;
 	
 	if (removePackage(ts, oh, p)) {
@@ -476,6 +481,15 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     if (rpmtsSetupTransactionPlugins(ts) == RPMRC_FAIL)
 	return 1;
     return addPackage(ts, h, key, op, relocs);
+}
+
+int rpmtsAddReinstallElement(rpmts ts, Header h, fnpyKey key)
+{
+    if (rpmtsSetupTransactionPlugins(ts) == RPMRC_FAIL)
+	return 1;
+    /* TODO: pull relocations from installed package */
+    /* TODO: should reinstall of non-installed package fail? */
+    return addPackage(ts, h, key, RPMTE_REINSTALL, NULL);
 }
 
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
