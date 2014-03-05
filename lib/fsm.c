@@ -565,18 +565,18 @@ static int fsmMkdirs(rpmfiles files, rpmfs fs, rpmPlugins plugins)
 		rpmFsmOp op = (FA_CREATE|FAF_UNOWNED);
 
 		/* Run fsm file pre hook for all plugins */
-		rc = rpmpluginsCallFsmFilePre(plugins, dn, mode, op);
+		rc = rpmpluginsCallFsmFilePre(plugins, NULL, dn, mode, op);
 
 		if (!rc)
 		    rc = fsmMkdir(dn, mode);
 
 		if (!rc) {
-		    rc = rpmpluginsCallFsmFilePrepare(plugins, dn, dn,
+		    rc = rpmpluginsCallFsmFilePrepare(plugins, NULL, dn, dn,
 						      mode, op);
 		}
 
 		/* Run fsm file post hook for all plugins */
-		rpmpluginsCallFsmFilePost(plugins, dn, mode, op, rc);
+		rpmpluginsCallFsmFilePost(plugins, NULL, dn, mode, op, rc);
 
 		if (!rc) {
 		    rpmlog(RPMLOG_DEBUG,
@@ -900,8 +900,8 @@ static int fsmSetmeta(FSM_t fsm, const struct stat * st)
 	rc = fsmUtime(fsm->path, st->st_mode, rpmfiFMtime(fsm->fi));
     }
     if (!rc) {
-	rc = rpmpluginsCallFsmFilePrepare(fsm->plugins, fsm->path, dest,
-					  st->st_mode,
+	rc = rpmpluginsCallFsmFilePrepare(fsm->plugins, fsm->fi,
+					  fsm->path, dest, st->st_mode,
 					  rpmfsGetAction(fsm->fs,
 							 rpmfiFX(fsm->fi)));
     }
@@ -1031,7 +1031,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
             break;
 
 	/* Run fsm file pre hook for all plugins */
-	rc = rpmpluginsCallFsmFilePre(fsm->plugins, fsm->path,
+	rc = rpmpluginsCallFsmFilePre(fsm->plugins, fsm->fi, fsm->path,
 				      fsm->sb.st_mode,
 				      rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi)));
 	if (rc) {
@@ -1138,7 +1138,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	}
 
 	/* Run fsm file post hook for all plugins */
-	rpmpluginsCallFsmFilePost(fsm->plugins, fsm->path,
+	rpmpluginsCallFsmFilePost(fsm->plugins, fsm->fi, fsm->path,
 				  fsm->sb.st_mode,
 				  rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi)),
 				  rc);
@@ -1169,7 +1169,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 	rpmFileAction action = rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi));
 
 	/* Run fsm file pre hook for all plugins */
-	rc = rpmpluginsCallFsmFilePre(fsm->plugins, fsm->path,
+	rc = rpmpluginsCallFsmFilePre(fsm->plugins, fsm->fi, fsm->path,
 				      fsm->sb.st_mode, action);
 
 	if (!fsm->postpone)
@@ -1214,7 +1214,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
         }
 
 	/* Run fsm file post hook for all plugins */
-	rpmpluginsCallFsmFilePost(fsm->plugins, fsm->path,
+	rpmpluginsCallFsmFilePost(fsm->plugins, fsm->fi, fsm->path,
 				  fsm->sb.st_mode, action, rc);
 
         /* XXX Failure to remove is not (yet) cause for failure. */

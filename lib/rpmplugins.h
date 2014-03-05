@@ -164,18 +164,20 @@ rpmRC rpmpluginsCallScriptletPost(rpmPlugins plugins, const char *s_name, int ty
 /** \ingroup rpmplugins
  * Call the fsm file pre plugin hook
  * @param plugins	plugins structure
+ * @param fi		file info iterator (or NULL)
  * @param path		file object path
  * @param file_mode	file object mode
  * @param op		file operation + associated flags
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
 RPM_GNUC_INTERNAL
-rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, const char* path,
+rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, rpmfi fi, const char* path,
                                 mode_t file_mode, rpmFsmOp op);
 
 /** \ingroup rpmplugins
  * Call the fsm file post plugin hook
  * @param plugins	plugins structure
+ * @param fi		file info iterator (or NULL)
  * @param path		file object path
  * @param file_mode	file object mode
  * @param op		file operation + associated flags
@@ -183,13 +185,14 @@ rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, const char* path,
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
 RPM_GNUC_INTERNAL
-rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, const char* path,
+rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, rpmfi fi, const char* path,
                                 mode_t file_mode, rpmFsmOp op, int res);
 
 /** \ingroup rpmplugins
  * Call the fsm file prepare plugin hook. Called after setting
  * permissions etc, but before committing file to destination path.
  * @param plugins	plugins structure
+ * @param fi		file info iterator (or NULL)
  * @param path		file object current path
  * @param path		file object destination path
  * @param file_mode	file object mode
@@ -197,7 +200,7 @@ rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, const char* path,
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
 RPM_GNUC_INTERNAL
-rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins,
+rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins, rpmfi fi,
                                    const char *path, const char *dest,
                                    mode_t mode, rpmFsmOp op);
 

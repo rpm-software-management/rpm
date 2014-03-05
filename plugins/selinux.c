@@ -140,7 +140,7 @@ exit:
     return rc;
 }
 
-static rpmRC selinux_fsm_file_prepare(rpmPlugin plugin,
+static rpmRC selinux_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
 					const char *path, const char *dest,
 				        mode_t file_mode, rpmFsmOp op)
 {

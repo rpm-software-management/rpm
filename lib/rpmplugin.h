@@ -54,13 +54,13 @@ typedef rpmRC (*plugin_scriptlet_fork_post_func)(rpmPlugin plugin,
 typedef rpmRC (*plugin_scriptlet_post_func)(rpmPlugin plugin,
 					    const char *s_name, int type,
 					    int res);
-typedef rpmRC (*plugin_fsm_file_pre_func)(rpmPlugin plugin,
+typedef rpmRC (*plugin_fsm_file_pre_func)(rpmPlugin plugin, rpmfi fi,
 					  const char* path, mode_t file_mode,
 					  rpmFsmOp op);
-typedef rpmRC (*plugin_fsm_file_post_func)(rpmPlugin plugin,
+typedef rpmRC (*plugin_fsm_file_post_func)(rpmPlugin plugin, rpmfi fi,
 					   const char* path, mode_t file_mode,
 					   rpmFsmOp op, int res);
-typedef rpmRC (*plugin_fsm_file_prepare_func)(rpmPlugin plugin,
+typedef rpmRC (*plugin_fsm_file_prepare_func)(rpmPlugin plugin, rpmfi fi,
 					      const char* path,
 					      const char *dest,
 					      mode_t file_mode, rpmFsmOp op);

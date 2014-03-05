@@ -378,8 +378,8 @@ rpmRC rpmpluginsCallScriptletPost(rpmPlugins plugins, const char *s_name, int ty
     return rc;
 }
 
-rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, const char* path,
-                                mode_t file_mode, rpmFsmOp op)
+rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, rpmfi fi, const char *path,
+			       mode_t file_mode, rpmFsmOp op)
 {
     plugin_fsm_file_pre_func hookFunc;
     int i;
@@ -388,14 +388,14 @@ rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, const char* path,
     for (i = 0; i < plugins->count; i++) {
 	rpmPlugin plugin = plugins->plugins[i];
 	RPMPLUGINS_SET_HOOK_FUNC(fsm_file_pre);
-	if (hookFunc && hookFunc(plugin, path, file_mode, op) == RPMRC_FAIL)
+	if (hookFunc && hookFunc(plugin, fi, path, file_mode, op) == RPMRC_FAIL)
 	    rc = RPMRC_FAIL;
     }
 
     return rc;
 }
 
-rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, const char* path,
+rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, rpmfi fi, const char *path,
                                 mode_t file_mode, rpmFsmOp op, int res)
 {
     plugin_fsm_file_post_func hookFunc;
@@ -405,14 +405,14 @@ rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, const char* path,
     for (i = 0; i < plugins->count; i++) {
 	rpmPlugin plugin = plugins->plugins[i];
 	RPMPLUGINS_SET_HOOK_FUNC(fsm_file_post);
-	if (hookFunc && hookFunc(plugin, path, file_mode, op, res) == RPMRC_FAIL)
+	if (hookFunc && hookFunc(plugin, fi, path, file_mode, op, res) == RPMRC_FAIL)
 	    rc = RPMRC_FAIL;
     }
 
     return rc;
 }
 
-rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins,
+rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins, rpmfi fi,
 				   const char *path, const char *dest,
 				   mode_t file_mode, rpmFsmOp op)
 {
@@ -423,7 +423,7 @@ rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins,
     for (i = 0; i < plugins->count; i++) {
 	rpmPlugin plugin = plugins->plugins[i];
 	RPMPLUGINS_SET_HOOK_FUNC(fsm_file_prepare);
-	if (hookFunc && hookFunc(plugin, path, dest, file_mode, op) == RPMRC_FAIL)
+	if (hookFunc && hookFunc(plugin, fi, path, dest, file_mode, op) == RPMRC_FAIL)
 	    rc = RPMRC_FAIL;
     }
 
