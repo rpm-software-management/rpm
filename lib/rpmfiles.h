@@ -135,9 +135,13 @@ typedef rpmFlags rpmfiFlags;
 typedef enum rpmFileIter_e {
     RPMFI_ITER_FWD	= 0,
     RPMFI_ITER_BACK	= 1,
-    RPMFI_ITER_READ_ARCHIVE	= 2,
-    RPMFI_ITER_WRITE_ARCHIVE	= 3,
+    RPMFI_ITER_WRITE_ARCHIVE	= 2,
+    RPMFI_ITER_READ_ARCHIVE	= 3,
+    RPMFI_ITER_READ_ARCHIVE_CONTENT_FIRST = 4,
+    RPMFI_ITER_READ_ARCHIVE_OMIT_HARDLINKS = 5,
 } rpmFileIter;
+
+#define RPMFILEITERMAX 5
 
 #ifdef __cplusplus
 extern "C" {

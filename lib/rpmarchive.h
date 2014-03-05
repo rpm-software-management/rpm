@@ -78,9 +78,10 @@ rpmfi rpmfiNewArchiveWriter(FD_t fd, rpmfiles files);
  * rpmfiSetFX() is not supported for this type of iterator.
  * @param fd		file
  * @param fi            file info
+ * @param itype		how to handle hard links. See rpmFileIter.
  * @return		new rpmfi
  */
-rpmfi rpmfiNewArchiveReader(FD_t fd, rpmfiles files);
+    rpmfi rpmfiNewArchiveReader(FD_t fd, rpmfiles files, int itype);
 
 /** \ingroup payload
  * Close payload archive

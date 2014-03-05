@@ -968,7 +968,7 @@ static void setFileState(rpmfs fs, int i)
 int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
               rpmpsm psm, char ** failedFile)
 {
-    rpmfi fi = rpmfiNewArchiveReader(cfd, files);
+    rpmfi fi = rpmfiNewArchiveReader(cfd, files, RPMFI_ITER_READ_ARCHIVE);
     FSM_t fsm = fsmNew(ts, te, fi, failedFile);
     rpmPlugins plugins = rpmtsPlugins(ts);
     struct stat sb;
