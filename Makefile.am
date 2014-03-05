@@ -96,6 +96,9 @@ rpmbindir = `echo $(bindir) | $(SED) -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm
 
 bin_PROGRAMS =		rpm2cpio rpmbuild rpmdb rpmkeys rpmsign rpmspec
+if WITH_ARCHIVE
+bin_PROGRAMS += 	rpm2archive 
+endif
 
 rpmlibexec_PROGRAMS =
 rpmconfig_SCRIPTS =	autodeps/find-provides autodeps/find-requires \
@@ -149,6 +152,10 @@ rpmspec_LDADD +=	@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 rpm2cpio_SOURCES =	rpm2cpio.c debug.h system.h
 rpm2cpio_LDADD =	lib/librpm.la rpmio/librpmio.la
 rpm2cpio_LDADD +=	@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+
+rpm2archive_SOURCES =	rpm2archive.c debug.h system.h
+rpm2archive_LDADD =	lib/librpm.la rpmio/librpmio.la
+rpm2archive_LDADD +=	@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@ @WITH_ARCHIVE_LIB@
 
 
 if LIBELF

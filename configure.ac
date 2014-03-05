@@ -335,6 +335,31 @@ AC_SUBST(WITH_POPT_INCLUDE)
 AC_SUBST(WITH_POPT_LIB)
 
 #=================
+# Check for libarchive library.
+AC_ARG_WITH([archive], [AS_HELP_STRING([--with-archive], [build rpm2archive - requires libarchive])],
+            [],
+            [with_archive=yes])
+
+WITH_ARCHIVE_INCLUDE=
+WITH_ARCHIVE_LIB=
+AS_IF([test "$with_archive" != no],[
+  AC_CHECK_HEADER([archive.h], [
+    AC_CHECK_LIB(archive, archive_write_open_filename, [
+      WITH_ARCHIVE_INCLUDE=
+      WITH_ARCHIVE_LIB="-larchive"
+    ],[
+      AC_MSG_ERROR([missing required library 'libarchive'])
+    ])
+],[
+      AC_MSG_ERROR([missing required header archive.h])
+  ])
+])
+
+AC_SUBST(WITH_ARCHIVE_INCLUDE)
+AC_SUBST(WITH_ARCHIVE_LIB)
+AM_CONDITIONAL(WITH_ARCHIVE,[test "$with_archive" = yes])
+
+#=================
 # Process --with/without-external-db
 AC_ARG_WITH(external_db, [AS_HELP_STRING([--with-external-db],[build against an external Berkeley db])],
 [case "$with_external_db" in
