@@ -17,7 +17,6 @@
 
 #include "rpmio/rpmio_internal.h"	/* fdInit/FiniDigest */
 #include "lib/fsm.h"
-#include "lib/rpmfi_internal.h"	/* XXX rpmfiles for now ... */
 #include "lib/rpmte_internal.h"	/* XXX rpmfs */
 #include "lib/rpmplugins.h"	/* rpm plugins hooks */
 #include "lib/rpmug.h"
@@ -1052,7 +1051,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 			    rc = expandRegular(fsm, psm, nodigest, 1);
 			} else {
 			    /* Create hard links for others */
-			    rc = link(rpmfilesFN(rpmfiFiles(fi), hardlinks[0]),
+			    rc = link(rpmfilesFN(files, hardlinks[0]),
 				      fsm->path);
 			    if (rc < 0) {
 				rc = RPMERR_LINK_FAILED;
