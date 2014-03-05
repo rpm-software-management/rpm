@@ -238,22 +238,18 @@ const char * dnlNextIterator(DNLI_t dnli)
 /**
  * Map next file path and action.
  * @param fsm		file state machine
- * @param i		file index
  */
-static int fsmMapPath(FSM_t fsm, int i)
+static int fsmMapPath(FSM_t fsm)
 {
-    rpmfiles fi = rpmfiFiles(fsm->fi);
     int rc = 0;
 
     fsm->osuffix = NULL;
     fsm->nsuffix = NULL;
 
-    if (fi && i >= 0 && i < rpmfilesFC(fi)) {
-	/* XXX these should use rpmfiFFlags() etc */
-
+    if (fsm->fi) {
 	/* Never create backup for %ghost files. */
-	if (!(rpmfilesFFlags(fi, i) & RPMFILE_GHOST)) {
-	    switch (rpmfsGetAction(fsm->fs, i)) {
+	if (!(rpmfiFFlags(fsm->fi) & RPMFILE_GHOST)) {
+	    switch (rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi))) {
 	    case FA_ALTNAME:
 		fsm->nsuffix = SUFFIX_RPMNEW;
 		break;
@@ -648,7 +644,7 @@ static int fsmInit(FSM_t fsm)
     fsm->sb.st_mode = rpmfiFMode(fsm->fi);
 
     /* Generate file path. */
-    rc = fsmMapPath(fsm, rpmfiFX(fsm->fi));
+    rc = fsmMapPath(fsm);
     if (rc) return rc;
 
     /* Perform lstat/stat for disk file. */
