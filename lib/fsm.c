@@ -396,6 +396,37 @@ exit:
     return rc;
 }
 
+static int fsmMkfile(rpmfi fi, const char *dest, rpmfiles files,
+		     rpmpsm psm, int nodigest, int *setmeta)
+{
+    int rc = 0;
+    const int * hardlinks = NULL;
+    int numHardlinks = rpmfiFLinks(fi, &hardlinks);
+
+    if (numHardlinks > 1) {
+	/* Create first hardlinked file empty */
+	if (hardlinks[0] == rpmfiFX(fi)) {
+	    rc = expandRegular(fi, dest, psm, nodigest, 1);
+	} else {
+	    /* Create hard links for others */
+	    rc = link(rpmfilesFN(files, hardlinks[0]), dest);
+	    if (rc < 0) {
+		rc = RPMERR_LINK_FAILED;
+	    }
+	}
+    }
+    /* Write normal files or fill the last hardlinked (already
+       existing) file with content */
+    if (numHardlinks<=1 || hardlinks[numHardlinks-1] == rpmfiFX(fi)) {
+	if (!rc)
+	    rc = expandRegular(fi, dest, psm, nodigest, 0);
+    } else {
+	setmeta = 0;
+    }
+
+    return rc;
+}
+
 static int fsmReadLink(const char *path,
 		       char *buf, size_t bufsize, size_t *linklen)
 {
@@ -1042,31 +1073,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
             if (S_ISREG(st->st_mode)) {
                 rc = fsmVerify(fsm);
 		if (rc == RPMERR_ENOENT) {
-		    const int * hardlinks = NULL;
-		    int numHardlinks = rpmfiFLinks(fi, &hardlinks);
-		    rc = 0;
-		    if (numHardlinks > 1) {
-			/* Create first hardlinked file empty */
-			if (hardlinks[0] == rpmfiFX(fi)) {
-			    rc = expandRegular(fi, fsm->path, psm, nodigest, 1);
-			} else {
-			    /* Create hard links for others */
-			    rc = link(rpmfilesFN(files, hardlinks[0]),
-				      fsm->path);
-			    if (rc < 0) {
-				rc = RPMERR_LINK_FAILED;
-			    }
-			}
-		    }
-		    /* Write normal files or fill the last hardlinked (already
-		       existing) file with content */
-		    if (numHardlinks<=1 ||
-				hardlinks[numHardlinks-1] == rpmfiFX(fi)) {
-			if (!rc)
-			    rc = expandRegular(fi, fsm->path, psm, nodigest, 0);
-		    } else {
-			setmeta = 0;
-		    }
+		    rc = fsmMkfile(fi, fsm->path, files, psm, nodigest,
+				   &setmeta);
 		}
             } else if (S_ISDIR(st->st_mode)) {
 		/* Directories replacing something need early backup */
