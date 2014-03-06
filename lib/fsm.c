@@ -1042,6 +1042,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	}
 
         if (!fsm->postpone) {
+	    int setmeta = 1;
             if (S_ISREG(st->st_mode)) {
                 rc = fsmVerify(fsm);
 		if (rc == RPMERR_ENOENT) {
@@ -1063,6 +1064,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 		    if (numHardlinks<=1 ||
 				hardlinks[numHardlinks-1] == rpmfiFX(fi)) {
 			rc = expandRegular(fsm, psm, nodigest, 0);
+		    } else {
+			setmeta = 0;
 		    }
 		}
             } else if (S_ISDIR(st->st_mode)) {
@@ -1109,7 +1112,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
                     rc = RPMERR_UNKNOWN_FILETYPE;
             }
 	    /* Set permissions, timestamps etc for non-hardlink entries */
-	    if (!rc) {
+	    if (!rc && setmeta) {
 		rc = fsmSetmeta(fsm, st);
 	    }
         }
