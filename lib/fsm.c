@@ -1046,6 +1046,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
             if (S_ISREG(st->st_mode)) {
                 rc = fsmVerify(fsm);
 		if (rc == RPMERR_ENOENT) {
+		    rc = 0;
 		    if (numHardlinks > 1) {
 			/* Create first hardlinked file empty */
 			if (hardlinks[0] == rpmfiFX(fi)) {
@@ -1063,7 +1064,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 		       existing) file with content */
 		    if (numHardlinks<=1 ||
 				hardlinks[numHardlinks-1] == rpmfiFX(fi)) {
-			rc = expandRegular(fsm, psm, nodigest, 0);
+			if (!rc)
+			    rc = expandRegular(fsm, psm, nodigest, 0);
 		    } else {
 			setmeta = 0;
 		    }
