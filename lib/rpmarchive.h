@@ -124,6 +124,13 @@ int rpmfiArchiveWriteFile(rpmfi fi, FD_t fd);
 size_t rpmfiArchiveRead(rpmfi fi, void * buf, size_t size);
 
 /** \ingroup payload
+ * Has current file content stored in the archive
+ * @param fi            file info
+ * @ return		1 for regular files but 0 for hardlinks without content
+ */
+int rpmfiArchiveHasContent(rpmfi fi);
+
+/** \ingroup payload
  * Write content from current file in archive to a file
  * @param fi		file info
  * @param fd		file descriptor of file to write to

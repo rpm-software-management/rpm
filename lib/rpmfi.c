@@ -1999,6 +1999,26 @@ static int iterReadArchiveNextContentFirst(rpmfi fi)
     return fx;
 }
 
+int rpmfiArchiveHasContent(rpmfi fi)
+{
+    int res = 0;
+    if (fi && S_ISREG(rpmfiFMode(fi))) {
+	const int * links;
+	int nlink = rpmfiFLinks(fi, &links);
+	if (nlink > 1) {
+	    if (fi->next == iterReadArchiveNext ||
+		fi->next == iterReadArchiveNextOmitHardlinks) {
+		res = rpmfiFX(fi) == links[nlink-1];
+	    } else if (fi->next == iterReadArchiveNextContentFirst) {
+		res = rpmfiFX(fi) == links[0];
+	    }
+	} else {
+	    res = 1;
+	}
+    }
+    return res;
+}
+
 size_t rpmfiArchiveRead(rpmfi fi, void * buf, size_t size)
 {
     if (fi == NULL || fi->archive == NULL)
