@@ -372,22 +372,21 @@ static int fsmMapAttrs(rpmfi fi, int warn, struct stat * st)
 
 /** \ingroup payload
  * Create file from payload stream.
- * @param fsm		file state machine data
  * @return		0 on success
  */
-static int expandRegular(FSM_t fsm, rpmpsm psm, int nodigest, int nocontent)
+static int expandRegular(rpmfi fi, const char *dest, rpmpsm psm, int nodigest, int nocontent)
 {
     FD_t wfd = NULL;
     int rc = 0;
 
-    wfd = Fopen(fsm->path, "w.ufdio");
+    wfd = Fopen(dest, "w.ufdio");
     if (Ferror(wfd)) {
 	rc = RPMERR_OPEN_FAILED;
 	goto exit;
     }
 
     if (!nocontent)
-	rc = rpmfiArchiveReadToFile(fsm->fi, wfd, nodigest);
+	rc = rpmfiArchiveReadToFile(fi, wfd, nodigest);
 exit:
     if (wfd) {
 	int myerrno = errno;
@@ -1049,7 +1048,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 		    if (numHardlinks > 1) {
 			/* Create first hardlinked file empty */
 			if (hardlinks[0] == rpmfiFX(fi)) {
-			    rc = expandRegular(fsm, psm, nodigest, 1);
+			    rc = expandRegular(fi, fsm->path, psm, nodigest, 1);
 			} else {
 			    /* Create hard links for others */
 			    rc = link(rpmfilesFN(files, hardlinks[0]),
@@ -1064,7 +1063,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 		    if (numHardlinks<=1 ||
 				hardlinks[numHardlinks-1] == rpmfiFX(fi)) {
 			if (!rc)
-			    rc = expandRegular(fsm, psm, nodigest, 0);
+			    rc = expandRegular(fi, fsm->path, psm, nodigest, 0);
 		    } else {
 			setmeta = 0;
 		    }
