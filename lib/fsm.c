@@ -1000,8 +1000,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
     int saveerrno = errno;
     int rc = 0;
     int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST) ? 1 : 0;
-    const int * hardlinks;
-    int numHardlinks;
 
     /* transaction id used for temporary path suffix while installing */
     rasprintf(&fsm->suffix, ";%08x", (unsigned)rpmtsGetTid(ts));
@@ -1038,7 +1036,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    fsm->postpone = 1;
 	} else {
 	    setFileState(fsm->fs, rpmfiFX(fi));
-	    numHardlinks = rpmfiFLinks(fi, &hardlinks);
 	}
 
         if (!fsm->postpone) {
@@ -1046,6 +1043,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
             if (S_ISREG(st->st_mode)) {
                 rc = fsmVerify(fsm);
 		if (rc == RPMERR_ENOENT) {
+		    const int * hardlinks = NULL;
+		    int numHardlinks = rpmfiFLinks(fi, &hardlinks);
 		    rc = 0;
 		    if (numHardlinks > 1) {
 			/* Create first hardlinked file empty */
