@@ -826,8 +826,7 @@ static int fsmVerify(FSM_t fsm, const struct stat *st, struct stat *ost)
             rc = fsmReadLink(fsm->path, buf, 8 * BUFSIZ, &len);
             errno = saveerrno;
             if (rc) return rc;
-	    /* FSM_PROCESS puts link target to fsm->buf. */
-            if (rstreq(fsm->buf, buf)) return 0;
+            if (rstreq(rpmfiFLink(fsm->fi), buf)) return 0;
         }
     } else if (S_ISFIFO(st->st_mode)) {
         if (S_ISFIFO(ost->st_mode)) return 0;
@@ -1060,8 +1059,11 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
                 } else {
 
                     fsm->buf[sb.st_size] = '\0';
-                    /* fsmVerify() assumes link target in fsm->buf */
-                    rc = fsmVerify(fsm, &sb, &osb);
+		    if (nodigest || rstreq(rpmfiFLink(fi), fsm->buf)) {
+			rc = fsmVerify(fsm, &sb, &osb);
+		    } else {
+			rc = RPMERR_DIGEST_MISMATCH;
+		    }
                     if (rc == RPMERR_ENOENT) {
                         rc = fsmSymlink(fsm->buf, fsm->path);
                     }
