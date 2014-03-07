@@ -888,13 +888,13 @@ static int fsmVerify(FSM_t fsm)
 
 
 /* Rename pre-existing modified or unmanaged file. */
-static int fsmBackup(FSM_t fsm)
+static int fsmBackup(FSM_t fsm, mode_t mode)
 {
     int rc = 0;
     rpmFileAction action = rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi));
     /* FIXME: %ghost can have backup action but no suffix */
     if ((action == FA_SAVE || action == FA_BACKUP) && fsm->osuffix) {
-        char * opath = fsmFsPath(fsm->fi, S_ISDIR(fsm->sb.st_mode), NULL);
+        char * opath = fsmFsPath(fsm->fi, S_ISDIR(mode), NULL);
         char * path = fsmFsPath(fsm->fi, 0, fsm->osuffix);
         rc = fsmRename(opath, path, fsm->mapFlags);
         if (!rc) {
@@ -952,7 +952,7 @@ static int fsmCommit(FSM_t fsm, const struct stat * st)
 
     /* Backup on-disk file if needed. Directories are handled earlier */
     if (!S_ISDIR(st->st_mode))
-	rc = fsmBackup(fsm);
+	rc = fsmBackup(fsm, st->st_mode);
 
     if (!rc) {
 	char *dest = fsm->path;
@@ -1078,7 +1078,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 		}
             } else if (S_ISDIR(st->st_mode)) {
 		/* Directories replacing something need early backup */
-                rc = fsmBackup(fsm);
+                rc = fsmBackup(fsm, st->st_mode);
                 rc = fsmVerify(fsm);
                 if (rc == RPMERR_ENOENT) {
                     mode_t mode = st->st_mode;
@@ -1184,7 +1184,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 				      fsm->sb.st_mode, action);
 
 	if (!fsm->postpone)
-	    rc = fsmBackup(fsm);
+	    rc = fsmBackup(fsm, fsm->sb.st_mode);
 
         /* Remove erased files. */
         if (!fsm->postpone && action == FA_ERASE) {
