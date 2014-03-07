@@ -1022,8 +1022,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
     FSM_t fsm = fsmNew(FSM_PKGINSTALL, ts, te, fi, failedFile);
     struct stat sb;
     struct stat osb;
-    struct stat *st = &sb;
-    struct stat *ost = &osb;
     int saveerrno = errno;
     int rc = 0;
     int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST) ? 1 : 0;
@@ -1067,47 +1065,47 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 
         if (!fsm->postpone) {
 	    int setmeta = 1;
-            if (S_ISREG(st->st_mode)) {
-                rc = fsmVerify(fsm, st, ost);
+            if (S_ISREG(sb.st_mode)) {
+                rc = fsmVerify(fsm, &sb, &osb);
 		if (rc == RPMERR_ENOENT) {
 		    rc = fsmMkfile(fi, fsm->path, files, psm, nodigest,
 				   &setmeta);
 		}
-            } else if (S_ISDIR(st->st_mode)) {
+            } else if (S_ISDIR(sb.st_mode)) {
 		/* Directories replacing something need early backup */
-                rc = fsmBackup(fsm, st->st_mode);
-                rc = fsmVerify(fsm, st, ost);
+                rc = fsmBackup(fsm, sb.st_mode);
+                rc = fsmVerify(fsm, &sb, &osb);
                 if (rc == RPMERR_ENOENT) {
-                    mode_t mode = st->st_mode;
+                    mode_t mode = sb.st_mode;
                     mode &= ~07777;
                     mode |=  00700;
                     rc = fsmMkdir(fsm->path, mode);
                 }
-            } else if (S_ISLNK(st->st_mode)) {
-                if ((st->st_size + 1) > fsm->bufsize) {
+            } else if (S_ISLNK(sb.st_mode)) {
+                if ((sb.st_size + 1) > fsm->bufsize) {
                     rc = RPMERR_HDR_SIZE;
-                } else if (rpmfiArchiveRead(fi, fsm->buf, st->st_size) != st->st_size) {
+                } else if (rpmfiArchiveRead(fi, fsm->buf, sb.st_size) != sb.st_size) {
                     rc = RPMERR_READ_FAILED;
                 } else {
 
-                    fsm->buf[st->st_size] = '\0';
+                    fsm->buf[sb.st_size] = '\0';
                     /* fsmVerify() assumes link target in fsm->buf */
-                    rc = fsmVerify(fsm, st, ost);
+                    rc = fsmVerify(fsm, &sb, &osb);
                     if (rc == RPMERR_ENOENT) {
                         rc = fsmSymlink(fsm->buf, fsm->path);
                     }
                 }
-            } else if (S_ISFIFO(st->st_mode)) {
+            } else if (S_ISFIFO(sb.st_mode)) {
                 /* This mimics cpio S_ISSOCK() behavior but probably isn't right */
-                rc = fsmVerify(fsm, st, ost);
+                rc = fsmVerify(fsm, &sb, &osb);
                 if (rc == RPMERR_ENOENT) {
                     rc = fsmMkfifo(fsm->path, 0000);
                 }
-            } else if (S_ISCHR(st->st_mode) ||
-                       S_ISBLK(st->st_mode) ||
-                       S_ISSOCK(st->st_mode))
+            } else if (S_ISCHR(sb.st_mode) ||
+                       S_ISBLK(sb.st_mode) ||
+                       S_ISSOCK(sb.st_mode))
             {
-                rc = fsmVerify(fsm, st, ost);
+                rc = fsmVerify(fsm, &sb, &osb);
                 if (rc == RPMERR_ENOENT) {
                     rc = fsmMknod(fsm->path, sb.st_mode, sb.st_rdev);
                 }
@@ -1118,7 +1116,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
             }
 	    /* Set permissions, timestamps etc for non-hardlink entries */
 	    if (!rc && setmeta) {
-		rc = fsmSetmeta(fsm, st);
+		rc = fsmSetmeta(fsm, &sb);
 	    }
         }
 
@@ -1126,7 +1124,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
             if (!fsm->postpone) {
                 /* XXX only erase if temp fn w suffix is in use */
                 if (fsm->suffix) {
-                    if (S_ISDIR(st->st_mode)) {
+                    if (S_ISDIR(sb.st_mode)) {
                         (void) fsmRmdir(fsm->path);
                     } else {
                         (void) fsmUnlink(fsm->path, fsm->mapFlags);
@@ -1141,7 +1139,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmfiArchiveTell(fi));
 
 	    if (!fsm->postpone) {
-                rc = fsmCommit(fsm, st);
+                rc = fsmCommit(fsm, &sb);
 	    }
 	}
 
