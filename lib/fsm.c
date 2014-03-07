@@ -822,11 +822,9 @@ static int fsmUtime(const char *path, mode_t mode, time_t mtime)
     return rc;
 }
 
-static int fsmVerify(FSM_t fsm)
+static int fsmVerify(FSM_t fsm, const struct stat *st, struct stat *ost)
 {
     int rc;
-    struct stat * st = &fsm->sb;
-    struct stat * ost = &fsm->osb;
     int saveerrno = errno;
 
     if (fsm->diskchecked && !fsm->exists) {
@@ -846,7 +844,7 @@ static int fsmVerify(FSM_t fsm)
     } else if (S_ISDIR(st->st_mode)) {
         if (S_ISDIR(ost->st_mode)) return 0;
         if (S_ISLNK(ost->st_mode)) {
-            rc = fsmStat(fsm->path, 0, &fsm->osb);
+            rc = fsmStat(fsm->path, 0, ost);
             if (rc == RPMERR_ENOENT) rc = 0;
             if (rc) return rc;
             errno = saveerrno;
@@ -1024,6 +1022,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
     rpmfi fi = rpmfiNewArchiveReader(cfd, files);
     FSM_t fsm = fsmNew(FSM_PKGINSTALL, ts, te, fi, failedFile);
     struct stat * st = &fsm->sb;
+    struct stat * ost = &fsm->osb;
     int saveerrno = errno;
     int rc = 0;
     int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST) ? 1 : 0;
@@ -1068,7 +1067,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
         if (!fsm->postpone) {
 	    int setmeta = 1;
             if (S_ISREG(st->st_mode)) {
-                rc = fsmVerify(fsm);
+                rc = fsmVerify(fsm, st, ost);
 		if (rc == RPMERR_ENOENT) {
 		    rc = fsmMkfile(fi, fsm->path, files, psm, nodigest,
 				   &setmeta);
@@ -1076,7 +1075,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
             } else if (S_ISDIR(st->st_mode)) {
 		/* Directories replacing something need early backup */
                 rc = fsmBackup(fsm, st->st_mode);
-                rc = fsmVerify(fsm);
+                rc = fsmVerify(fsm, st, ost);
                 if (rc == RPMERR_ENOENT) {
                     mode_t mode = st->st_mode;
                     mode &= ~07777;
@@ -1092,14 +1091,14 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 
                     fsm->buf[st->st_size] = '\0';
                     /* fsmVerify() assumes link target in fsm->buf */
-                    rc = fsmVerify(fsm);
+                    rc = fsmVerify(fsm, st, ost);
                     if (rc == RPMERR_ENOENT) {
                         rc = fsmSymlink(fsm->buf, fsm->path);
                     }
                 }
             } else if (S_ISFIFO(st->st_mode)) {
                 /* This mimics cpio S_ISSOCK() behavior but probably isn't right */
-                rc = fsmVerify(fsm);
+                rc = fsmVerify(fsm, st, ost);
                 if (rc == RPMERR_ENOENT) {
                     rc = fsmMkfifo(fsm->path, 0000);
                 }
@@ -1107,7 +1106,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
                        S_ISBLK(st->st_mode) ||
                        S_ISSOCK(st->st_mode))
             {
-                rc = fsmVerify(fsm);
+                rc = fsmVerify(fsm, st, ost);
                 if (rc == RPMERR_ENOENT) {
                     rc = fsmMknod(fsm->path, fsm->sb.st_mode, fsm->sb.st_rdev);
                 }
