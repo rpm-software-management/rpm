@@ -661,12 +661,11 @@ static void fsmReset(FSM_t fsm)
     fsm->nsuffix = NULL;
 }
 
-static int fsmInit(FSM_t fsm, struct stat *st, struct stat *ost)
+static int fsmInit(FSM_t fsm, struct stat *st)
 {
     int rc = 0;
 
     memset(st, 0, sizeof(*st));
-    memset(ost, 0, sizeof(*ost));
 
     /* Generate file path. */
     rc = fsmMapPath(fsm);
@@ -676,7 +675,7 @@ static int fsmInit(FSM_t fsm, struct stat *st, struct stat *ost)
     if (fsm->path != NULL &&
 	!(fsm->goal == FSM_PKGINSTALL && S_ISREG(rpmfiFMode(fsm->fi))))
     {
-	rc = fsmStat(fsm->path, 1, ost);
+	rc = fsmStat(fsm->path, 1, st);
 	if (rc == RPMERR_ENOENT) {
 	    // errno = saveerrno; XXX temporary commented out
 	    rc = 0;
@@ -689,14 +688,6 @@ static int fsmInit(FSM_t fsm, struct stat *st, struct stat *ost)
 	fsm->exists = 0;
     }
     fsm->diskchecked = 1;
-    if (rc) return rc;
-
-    /* On non-install, the disk file stat is what's remapped. */
-    if (fsm->goal != FSM_PKGINSTALL)
-	*st = *ost;			/* structure assignment */
-
-    /* Remap file perms, owner, and group. */
-    rc = fsmMapAttrs(fsm->fi, (fsm->goal == FSM_PKGINSTALL), st);
     if (rc) return rc;
 
     rpmFileAction action = rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi));
@@ -1047,7 +1038,11 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    break;
 	}
 
-        rc = fsmInit(fsm, &sb, &osb); /* Sets fsm->postpone for skipped files */
+        rc = fsmInit(fsm, &osb); /* Sets fsm->postpone for skipped files */
+
+	/* Remap file perms, owner, and group. */
+	if (!rc)
+	    rc = fsmMapAttrs(fsm->fi, 1, &sb);
 
         /* Exit on error. */
         if (rc)
@@ -1166,14 +1161,13 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
     rpmfi fi = rpmfilesIter(files, RPMFI_ITER_BACK);
     FSM_t fsm = fsmNew(FSM_PKGERASE, ts, te, fi, failedFile);
     struct stat sb;
-    struct stat osb;
     int rc = 0;
 
     while (!rc && rpmfiNext(fsm->fi) >= 0) {
         /* Clean fsm, free'ing memory. */
 	fsmReset(fsm);
 
-        rc = fsmInit(fsm, &sb, &osb);
+        rc = fsmInit(fsm, &sb);
 	rpmFileAction action = rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi));
 
 	/* Run fsm file pre hook for all plugins */
