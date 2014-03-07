@@ -61,8 +61,6 @@ struct fsm_s {
     rpmPlugins plugins;    	/*!< Rpm plugins handle */
 
     fileStage goal;		/*!< Package state machine goal. */
-    struct stat sb;		/*!< Current file stat(2) info. */
-    struct stat osb;		/*!< Original file stat(2) info. */
     rpmfi fi;			/*!< File iterator. */
     rpmfs fs;			/*!< File states. */
 };
@@ -661,13 +659,14 @@ static void fsmReset(FSM_t fsm)
     fsm->diskchecked = fsm->exists = 0;
     fsm->osuffix = NULL;
     fsm->nsuffix = NULL;
-    memset(&(fsm->sb), 0, sizeof(fsm->sb));
-    memset(&(fsm->osb), 0, sizeof(fsm->sb));
 }
 
 static int fsmInit(FSM_t fsm, struct stat *st, struct stat *ost)
 {
     int rc = 0;
+
+    memset(st, 0, sizeof(*st));
+    memset(ost, 0, sizeof(*ost));
 
     /* Generate file path. */
     rc = fsmMapPath(fsm);
@@ -1021,8 +1020,10 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 {
     rpmfi fi = rpmfiNewArchiveReader(cfd, files);
     FSM_t fsm = fsmNew(FSM_PKGINSTALL, ts, te, fi, failedFile);
-    struct stat * st = &fsm->sb;
-    struct stat * ost = &fsm->osb;
+    struct stat sb;
+    struct stat osb;
+    struct stat *st = &sb;
+    struct stat *ost = &osb;
     int saveerrno = errno;
     int rc = 0;
     int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST) ? 1 : 0;
@@ -1048,7 +1049,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    break;
 	}
 
-        rc = fsmInit(fsm, &fsm->sb, &fsm->osb); /* Sets fsm->postpone for skipped files */
+        rc = fsmInit(fsm, &sb, &osb); /* Sets fsm->postpone for skipped files */
 
         /* Exit on error. */
         if (rc)
@@ -1056,7 +1057,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 
 	/* Run fsm file pre hook for all plugins */
 	rc = rpmpluginsCallFsmFilePre(fsm->plugins, fsm->fi, fsm->path,
-				      fsm->sb.st_mode,
+				      sb.st_mode,
 				      rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi)));
 	if (rc) {
 	    fsm->postpone = 1;
@@ -1108,7 +1109,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
             {
                 rc = fsmVerify(fsm, st, ost);
                 if (rc == RPMERR_ENOENT) {
-                    rc = fsmMknod(fsm->path, fsm->sb.st_mode, fsm->sb.st_rdev);
+                    rc = fsmMknod(fsm->path, sb.st_mode, sb.st_rdev);
                 }
             } else {
                 /* XXX Special case /dev/log, which shouldn't be packaged anyways */
@@ -1146,7 +1147,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 
 	/* Run fsm file post hook for all plugins */
 	rpmpluginsCallFsmFilePost(fsm->plugins, fsm->fi, fsm->path,
-				  fsm->sb.st_mode,
+				  sb.st_mode,
 				  rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi)),
 				  rc);
 
@@ -1166,27 +1167,29 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 {
     rpmfi fi = rpmfilesIter(files, RPMFI_ITER_BACK);
     FSM_t fsm = fsmNew(FSM_PKGERASE, ts, te, fi, failedFile);
+    struct stat sb;
+    struct stat osb;
     int rc = 0;
 
     while (!rc && rpmfiNext(fsm->fi) >= 0) {
         /* Clean fsm, free'ing memory. */
 	fsmReset(fsm);
 
-        rc = fsmInit(fsm, &fsm->sb, &fsm->osb);
+        rc = fsmInit(fsm, &sb, &osb);
 	rpmFileAction action = rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi));
 
 	/* Run fsm file pre hook for all plugins */
 	rc = rpmpluginsCallFsmFilePre(fsm->plugins, fsm->fi, fsm->path,
-				      fsm->sb.st_mode, action);
+				      sb.st_mode, action);
 
 	if (!fsm->postpone)
-	    rc = fsmBackup(fsm, fsm->sb.st_mode);
+	    rc = fsmBackup(fsm, sb.st_mode);
 
         /* Remove erased files. */
         if (!fsm->postpone && action == FA_ERASE) {
 	    int missingok = (rpmfiFFlags(fi) & (RPMFILE_MISSINGOK | RPMFILE_GHOST));
 
-            if (S_ISDIR(fsm->sb.st_mode)) {
+            if (S_ISDIR(sb.st_mode)) {
                 rc = fsmRmdir(fsm->path);
             } else {
                 rc = fsmUnlink(fsm->path, fsm->mapFlags);
@@ -1215,14 +1218,14 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 	    if (rc) {
 		int lvl = strict_erasures ? RPMLOG_ERR : RPMLOG_WARNING;
 		rpmlog(lvl, _("%s %s: remove failed: %s\n"),
-			S_ISDIR(fsm->sb.st_mode) ? _("directory") : _("file"),
+			S_ISDIR(sb.st_mode) ? _("directory") : _("file"),
 			fsm->path, strerror(errno));
             }
         }
 
 	/* Run fsm file post hook for all plugins */
 	rpmpluginsCallFsmFilePost(fsm->plugins, fsm->fi, fsm->path,
-				  fsm->sb.st_mode, action, rc);
+				  sb.st_mode, action, rc);
 
         /* XXX Failure to remove is not (yet) cause for failure. */
         if (!strict_erasures) rc = 0;
