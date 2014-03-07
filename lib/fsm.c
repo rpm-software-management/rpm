@@ -41,8 +41,6 @@ static int strict_erasures = 0;
  */
 struct fsm_s {
     char * path;		/*!< Current file name. */
-    char * buf;			/*!<  read: Buffer. */
-    size_t bufsize;		/*!<  read: Buffer allocated size. */
     char ** failedFile;		/*!< First file name that failed. */
     const char * osuffix;	/*!< Old, preserved, file suffix. */
     const char * nsuffix;	/*!< New, created, file suffix. */
@@ -269,11 +267,6 @@ static FSM_t fsmNew(fileStage goal, rpmts ts, rpmte te, rpmfi fi, char ** failed
     fsm->fs = rpmteGetFileStates(te);
     fsm->plugins = rpmtsPlugins(ts);
 
-    if (fsm->goal == FSM_PKGINSTALL) {
-        fsm->bufsize = 8 * BUFSIZ;
-        fsm->buf = xmalloc(fsm->bufsize);
-    }
-
     fsm->failedFile = failedFile;
     if (fsm->failedFile)
 	*fsm->failedFile = NULL;
@@ -283,9 +276,6 @@ static FSM_t fsmNew(fileStage goal, rpmts ts, rpmte te, rpmfi fi, char ** failed
 
 static FSM_t fsmFree(FSM_t fsm)
 {
-    fsm->buf = _free(fsm->buf);
-    fsm->bufsize = 0;
-
     fsm->failedFile = NULL;
 
     fsm->path = _free(fsm->path);
@@ -1052,22 +1042,22 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
                     rc = fsmMkdir(fsm->path, mode);
                 }
             } else if (S_ISLNK(sb.st_mode)) {
-                if ((sb.st_size + 1) > fsm->bufsize) {
-                    rc = RPMERR_HDR_SIZE;
-                } else if (rpmfiArchiveRead(fi, fsm->buf, sb.st_size) != sb.st_size) {
+		/* Sane symlinks should fit in stack but to be safe... */
+		char *buf = xmalloc(sb.st_size + 1);
+		if (rpmfiArchiveRead(fi, buf, sb.st_size) != sb.st_size) {
                     rc = RPMERR_READ_FAILED;
                 } else {
-
-                    fsm->buf[sb.st_size] = '\0';
-		    if (nodigest || rstreq(rpmfiFLink(fi), fsm->buf)) {
+		    buf[sb.st_size] = '\0';
+		    if (nodigest || rstreq(rpmfiFLink(fi), buf)) {
 			rc = fsmVerify(fsm, &sb, &osb);
 		    } else {
 			rc = RPMERR_DIGEST_MISMATCH;
 		    }
                     if (rc == RPMERR_ENOENT) {
-                        rc = fsmSymlink(fsm->buf, fsm->path);
+                        rc = fsmSymlink(buf, fsm->path);
                     }
                 }
+		free(buf);
             } else if (S_ISFIFO(sb.st_mode)) {
                 /* This mimics cpio S_ISSOCK() behavior but probably isn't right */
                 rc = fsmVerify(fsm, &sb, &osb);
