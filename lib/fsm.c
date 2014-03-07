@@ -650,22 +650,16 @@ static void removeSBITS(const char *path)
     }
 }
 
-/********************************************************************/
-
-static void fsmReset(FSM_t fsm)
-{
-    fsm->path = _free(fsm->path);
-    fsm->postpone = 0;
-    fsm->diskchecked = fsm->exists = 0;
-    fsm->osuffix = NULL;
-    fsm->nsuffix = NULL;
-}
-
 static int fsmInit(FSM_t fsm, struct stat *st)
 {
     int rc = 0;
 
     memset(st, 0, sizeof(*st));
+    fsm->path = _free(fsm->path);
+    fsm->postpone = 0;
+    fsm->diskchecked = fsm->exists = 0;
+    fsm->osuffix = NULL;
+    fsm->nsuffix = NULL;
 
     /* Generate file path. */
     rc = fsmMapPath(fsm);
@@ -1026,9 +1020,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
     }
 
     while (!rc) {
-        /* Clean fsm, free'ing memory. */
-	fsmReset(fsm);
-
 	/* Read next payload header. */
 	rc = rpmfiNext(fi);
 
@@ -1164,9 +1155,6 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
     int rc = 0;
 
     while (!rc && rpmfiNext(fsm->fi) >= 0) {
-        /* Clean fsm, free'ing memory. */
-	fsmReset(fsm);
-
         rc = fsmInit(fsm, &sb);
 	rpmFileAction action = rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi));
 
