@@ -26,13 +26,6 @@
 #define	_FSM_DEBUG	0
 int _fsm_debug = _FSM_DEBUG;
 
-/** \ingroup payload
- */
-enum cpioMapFlags_e {
-    CPIO_SBIT_CHECK	= (1 << 9)
-};
-typedef rpmFlags cpioMapFlags;
-
 typedef struct fsm_s * FSM_t;
 
 typedef enum fileStage_e {
@@ -57,7 +50,6 @@ struct fsm_s {
     int postpone;		/*!< Skip remaining stages? */
     int diskchecked;		/*!< Has stat(2) been performed? */
     int exists;			/*!< Does current file exist on disk? */
-    cpioMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
     rpmPlugins plugins;    	/*!< Rpm plugins handle */
 
     fileStage goal;		/*!< Package state machine goal. */
@@ -277,8 +269,6 @@ static FSM_t fsmNew(fileStage goal, rpmts ts, rpmte te, rpmfi fi, char ** failed
     fsm->fi = fi;
     fsm->fs = rpmteGetFileStates(te);
     fsm->plugins = rpmtsPlugins(ts);
-
-    fsm->mapFlags = rpmteIsSource(te) ? 0 : CPIO_SBIT_CHECK; 
 
     if (fsm->goal == FSM_PKGINSTALL) {
         fsm->bufsize = 8 * BUFSIZ;
@@ -711,11 +701,10 @@ static int fsmSymlink(const char *opath, const char *path)
     return rc;
 }
 
-static int fsmUnlink(const char *path, cpioMapFlags mapFlags)
+static int fsmUnlink(const char *path)
 {
     int rc = 0;
-    if (mapFlags & CPIO_SBIT_CHECK)
-        removeSBITS(path);
+    removeSBITS(path);
     rc = unlink(path);
     if (_fsm_debug)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", __func__,
@@ -725,11 +714,9 @@ static int fsmUnlink(const char *path, cpioMapFlags mapFlags)
     return rc;
 }
 
-static int fsmRename(const char *opath, const char *path,
-		     cpioMapFlags mapFlags)
+static int fsmRename(const char *opath, const char *path)
 {
-    if (mapFlags & CPIO_SBIT_CHECK)
-        removeSBITS(path);
+    removeSBITS(path);
     int rc = rename(opath, path);
 #if defined(ETXTBSY) && defined(__HPUX__)
     /* XXX HP-UX (and other os'es) don't permit rename to busy files. */
@@ -817,10 +804,10 @@ static int fsmVerify(FSM_t fsm, const struct stat *st, struct stat *ost)
     if (S_ISREG(st->st_mode)) {
 	/* HP-UX (and other os'es) don't permit unlink on busy files. */
 	char *rmpath = rstrscat(NULL, fsm->path, "-RPMDELETE", NULL);
-	rc = fsmRename(fsm->path, rmpath, fsm->mapFlags);
+	rc = fsmRename(fsm->path, rmpath);
 	/* XXX shouldn't we take unlink return code here? */
 	if (!rc)
-	    (void) fsmUnlink(rmpath, fsm->mapFlags);
+	    (void) fsmUnlink(rmpath);
 	else
 	    rc = RPMERR_UNLINK_FAILED;
 	free(rmpath);
@@ -853,7 +840,7 @@ static int fsmVerify(FSM_t fsm, const struct stat *st, struct stat *ost)
         if (S_ISSOCK(ost->st_mode)) return 0;
     }
     /* XXX shouldn't do this with commit/undo. */
-    rc = fsmUnlink(fsm->path, fsm->mapFlags);
+    rc = fsmUnlink(fsm->path);
     if (rc == 0)	rc = RPMERR_ENOENT;
     return (rc ? rc : RPMERR_ENOENT);	/* XXX HACK */
 }
@@ -875,7 +862,7 @@ static int fsmBackup(FSM_t fsm, mode_t mode)
     if ((action == FA_SAVE || action == FA_BACKUP) && fsm->osuffix) {
         char * opath = fsmFsPath(fsm->fi, S_ISDIR(mode), NULL);
         char * path = fsmFsPath(fsm->fi, 0, fsm->osuffix);
-        rc = fsmRename(opath, path, fsm->mapFlags);
+        rc = fsmRename(opath, path);
         if (!rc) {
             rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"), opath, path);
             fsm->exists = 0; /* it doesn't exist anymore... */
@@ -941,7 +928,7 @@ static int fsmCommit(FSM_t fsm, const struct stat * st)
 
 	/* Rename temporary to final file name if needed. */
 	if (dest != fsm->path) {
-	    rc = fsmRename(fsm->path, dest, fsm->mapFlags);
+	    rc = fsmRename(fsm->path, dest);
 	    if (!rc && fsm->nsuffix) {
 		char * opath = fsmFsPath(fsm->fi, 0, NULL);
 		rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
@@ -1113,7 +1100,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
                     if (S_ISDIR(sb.st_mode)) {
                         (void) fsmRmdir(fsm->path);
                     } else {
-                        (void) fsmUnlink(fsm->path, fsm->mapFlags);
+                        (void) fsmUnlink(fsm->path);
                     }
                 }
                 errno = saveerrno;
@@ -1172,7 +1159,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
             if (S_ISDIR(sb.st_mode)) {
                 rc = fsmRmdir(fsm->path);
             } else {
-                rc = fsmUnlink(fsm->path, fsm->mapFlags);
+                rc = fsmUnlink(fsm->path);
 	    }
 
 	    /*
