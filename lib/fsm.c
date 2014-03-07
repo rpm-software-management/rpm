@@ -265,7 +265,7 @@ static int fsmMapPath(FSM_t fsm)
 	}
 
 	fsm->path = _free(fsm->path);
-	fsm->path = fsmFsPath(fsm->fi, S_ISDIR(fsm->sb.st_mode),
+	fsm->path = fsmFsPath(fsm->fi, S_ISDIR(rpmfiFMode(fsm->fi)),
 		(fsm->suffix ? fsm->suffix : fsm->nsuffix));
     }
     return rc;
@@ -669,16 +669,13 @@ static int fsmInit(FSM_t fsm)
 {
     int rc = 0;
 
-    /* mode must be known so that dirs don't get suffix. */
-    fsm->sb.st_mode = rpmfiFMode(fsm->fi);
-
     /* Generate file path. */
     rc = fsmMapPath(fsm);
     if (rc) return rc;
 
     /* Perform lstat/stat for disk file. */
     if (fsm->path != NULL &&
-	!(fsm->goal == FSM_PKGINSTALL && S_ISREG(fsm->sb.st_mode)))
+	!(fsm->goal == FSM_PKGINSTALL && S_ISREG(rpmfiFMode(fsm->fi))))
     {
 	rc = fsmStat(fsm->path, 1, &fsm->osb);
 	if (rc == RPMERR_ENOENT) {
