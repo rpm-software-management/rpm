@@ -48,7 +48,6 @@ struct fsm_s {
     const char * nsuffix;	/*!< New, created, file suffix. */
     char * suffix;		/*!< Current file suffix. */
     int postpone;		/*!< Skip remaining stages? */
-    int diskchecked;		/*!< Has stat(2) been performed? */
     int exists;			/*!< Does current file exist on disk? */
     rpmPlugins plugins;    	/*!< Rpm plugins handle */
 
@@ -647,7 +646,7 @@ static int fsmInit(FSM_t fsm, struct stat *st)
     memset(st, 0, sizeof(*st));
     fsm->path = _free(fsm->path);
     fsm->postpone = 0;
-    fsm->diskchecked = fsm->exists = 0;
+    fsm->exists = 0;
     fsm->osuffix = NULL;
     fsm->nsuffix = NULL;
 
@@ -671,7 +670,6 @@ static int fsmInit(FSM_t fsm, struct stat *st)
 	/* Regular files are created with tmp suffix, assume they dont exist */
 	fsm->exists = 0;
     }
-    fsm->diskchecked = 1;
     if (rc) return rc;
 
     rpmFileAction action = rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi));
@@ -798,7 +796,7 @@ static int fsmVerify(FSM_t fsm, const struct stat *st, struct stat *ost)
     int rc;
     int saveerrno = errno;
 
-    if (fsm->diskchecked && !fsm->exists) {
+    if (!fsm->exists) {
         return RPMERR_ENOENT;
     }
     if (S_ISREG(st->st_mode)) {
