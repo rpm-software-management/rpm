@@ -83,16 +83,16 @@ static const char * fileActionString(rpmFileAction a);
 
 /** \ingroup payload
  * Build path to file from file info, optionally ornamented with suffix.
- * @param fsm		file state machine data
+ * @param fi		file info iterator
  * @param isDir		directory or regular path?
  * @param suffix	suffix to use (NULL disables)
  * @retval		path to file (malloced)
  */
-static char * fsmFsPath(const FSM_t fsm, int isDir,
+static char * fsmFsPath(rpmfi fi, int isDir,
 			const char * suffix)
 {
     return rstrscat(NULL,
-		    rpmfiDN(fsm->fi), rpmfiBN(fsm->fi),
+		    rpmfiDN(fi), rpmfiBN(fi),
 		    (!isDir && suffix) ? suffix : "",
 		    NULL);
 }
@@ -265,7 +265,7 @@ static int fsmMapPath(FSM_t fsm)
 	}
 
 	fsm->path = _free(fsm->path);
-	fsm->path = fsmFsPath(fsm, S_ISDIR(fsm->sb.st_mode),
+	fsm->path = fsmFsPath(fsm->fi, S_ISDIR(fsm->sb.st_mode),
 		(fsm->suffix ? fsm->suffix : fsm->nsuffix));
     }
     return rc;
@@ -894,8 +894,8 @@ static int fsmBackup(FSM_t fsm)
     rpmFileAction action = rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi));
     /* FIXME: %ghost can have backup action but no suffix */
     if ((action == FA_SAVE || action == FA_BACKUP) && fsm->osuffix) {
-        char * opath = fsmFsPath(fsm, S_ISDIR(fsm->sb.st_mode), NULL);
-        char * path = fsmFsPath(fsm, 0, fsm->osuffix);
+        char * opath = fsmFsPath(fsm->fi, S_ISDIR(fsm->sb.st_mode), NULL);
+        char * path = fsmFsPath(fsm->fi, 0, fsm->osuffix);
         rc = fsmRename(opath, path, fsm->mapFlags);
         if (!rc) {
             rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"), opath, path);
@@ -914,7 +914,7 @@ static int fsmSetmeta(FSM_t fsm, const struct stat * st)
 
     /* Construct final destination path (nsuffix is usually NULL) */
     if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix))
-	dest = fsmFsPath(fsm, 0, fsm->nsuffix);
+	dest = fsmFsPath(fsm->fi, 0, fsm->nsuffix);
 
     if (!rc && !getuid()) {
 	rc = fsmChown(fsm->path, st->st_mode, st->st_uid, st->st_gid);
@@ -958,13 +958,13 @@ static int fsmCommit(FSM_t fsm, const struct stat * st)
 	char *dest = fsm->path;
 	/* Construct final destination path (nsuffix is usually NULL) */
 	if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix))
-	    dest = fsmFsPath(fsm, 0, fsm->nsuffix);
+	    dest = fsmFsPath(fsm->fi, 0, fsm->nsuffix);
 
 	/* Rename temporary to final file name if needed. */
 	if (dest != fsm->path) {
 	    rc = fsmRename(fsm->path, dest, fsm->mapFlags);
 	    if (!rc && fsm->nsuffix) {
-		char * opath = fsmFsPath(fsm, 0, NULL);
+		char * opath = fsmFsPath(fsm->fi, 0, NULL);
 		rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
 		       opath, dest);
 		free(opath);
