@@ -42,7 +42,6 @@ typedef enum pkgStage_e {
     PSM_CREATE		= 17,
     PSM_DESTROY		= 23,
 
-    PSM_SCRIPT		= 53,
     PSM_TRIGGERS	= 54,
     PSM_IMMED_TRIGGERS	= 55,
 
@@ -669,7 +668,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPRE)) {
-		rc = rpmpsmNext(psm, PSM_SCRIPT);
+		rc = runInstScript(psm);
 		if (rc) break;
 	    }
 	}
@@ -690,7 +689,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPREUN))
-		rc = rpmpsmNext(psm, PSM_SCRIPT);
+		rc = runInstScript(psm);
 	}
 	break;
     case PSM_PROCESS:
@@ -794,7 +793,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    psm->countCorrection = 0;
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOST)) {
-		rc = rpmpsmNext(psm, PSM_SCRIPT);
+		rc = runInstScript(psm);
 		if (rc) break;
 	    }
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERIN)) {
@@ -817,7 +816,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    psm->countCorrection = -1;
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOSTUN)) {
-		rc = rpmpsmNext(psm, PSM_SCRIPT);
+		rc = runInstScript(psm);
 		if (rc) break;
 	    }
 
@@ -855,9 +854,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     case PSM_CREATE:
 	break;
     case PSM_DESTROY:
-	break;
-    case PSM_SCRIPT:	/* Run current package scriptlets. */
-	rc = runInstScript(psm);
 	break;
     case PSM_TRIGGERS:
 	/* Run triggers in other package(s) this package sets off. */
@@ -954,7 +950,7 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 	case PKG_POSTTRANS:
 	case PKG_VERIFY:
 	    psm->scriptTag = goal;
-	    rc = rpmpsmStage(psm, PSM_SCRIPT);
+	    rc = runInstScript(psm);
 	    break;
 	default:
 	    break;
