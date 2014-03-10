@@ -31,12 +31,10 @@
 #include "debug.h"
 
 typedef enum pkgStage_e {
-    PSM_UNKNOWN		=  0,
     PSM_INIT		=  1,
     PSM_PRE		=  2,
     PSM_PROCESS		=  3,
     PSM_POST		=  4,
-    PSM_UNDO		=  5,
     PSM_FINI		=  6,
 } pkgStage;
 
@@ -625,8 +623,6 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
     rpmRC rc = RPMRC_OK;
 
     switch (stage) {
-    case PSM_UNKNOWN:
-	break;
     case PSM_INIT:
 	rpmlog(RPMLOG_DEBUG, "%s: %s has %d files\n",
 		psm->goalName, rpmteNEVR(psm->te), fc);
@@ -829,8 +825,6 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
 
 	    rc = dbRemove(ts, psm->te);
 	}
-	break;
-    case PSM_UNDO:
 	break;
     case PSM_FINI:
 	if (rc) {
