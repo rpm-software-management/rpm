@@ -594,12 +594,6 @@ static rpmRC dbAdd(rpmts ts, rpmte te)
     Header h = rpmteHeader(te);
     rpmRC rc;
 
-    if (!headerIsEntry(h, RPMTAG_INSTALLTID)) {
-	rpm_tid_t tid = rpmtsGetTid(ts);
-	if (tid != 0 && tid != (rpm_tid_t)-1)
-	    headerPutUint32(h, RPMTAG_INSTALLTID, &tid, 1);
-    }
-
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
     rc = (rpmdbAdd(rpmtsGetRdb(ts), h) == 0) ? RPMRC_OK : RPMRC_FAIL;
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
@@ -787,11 +781,13 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    rpm_fstate_t * fileStates = rpmfsGetStates(fs);
 	    Header h = rpmteHeader(psm->te);
 	    rpm_color_t tscolor = rpmtsColor(ts);
+	    rpm_tid_t tid = rpmtsGetTid(ts);
 
 	    if (fileStates != NULL && fc > 0) {
 		headerPutChar(h, RPMTAG_FILESTATES, fileStates, fc);
 	    }
 
+	    headerPutUint32(h, RPMTAG_INSTALLTID, &tid, 1);
 	    headerPutUint32(h, RPMTAG_INSTALLTIME, &installTime, 1);
 	    headerPutUint32(h, RPMTAG_INSTALLCOLOR, &tscolor, 1);
 	    headerFree(h);
