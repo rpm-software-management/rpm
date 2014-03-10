@@ -38,10 +38,6 @@ typedef enum pkgStage_e {
     PSM_POST		=  4,
     PSM_UNDO		=  5,
     PSM_FINI		=  6,
-
-    PSM_RPMDB_ADD	= 98,
-    PSM_RPMDB_REMOVE	= 99
-
 } pkgStage;
 
 struct rpmpsm_s {
@@ -593,6 +589,41 @@ static void markReplacedInstance(rpmts ts, rpmte te)
     rpmdbFreeIterator(mi);
 }
 
+static rpmRC dbAdd(rpmts ts, rpmte te)
+{
+    Header h = rpmteHeader(te);
+    rpmRC rc;
+
+    if (!headerIsEntry(h, RPMTAG_INSTALLTID)) {
+	rpm_tid_t tid = rpmtsGetTid(ts);
+	if (tid != 0 && tid != (rpm_tid_t)-1)
+	    headerPutUint32(h, RPMTAG_INSTALLTID, &tid, 1);
+    }
+
+    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
+    rc = (rpmdbAdd(rpmtsGetRdb(ts), h) == 0) ? RPMRC_OK : RPMRC_FAIL;
+    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
+
+    if (rc == RPMRC_OK)
+	rpmteSetDBInstance(te, headerGetInstance(h));
+    headerFree(h);
+    return rc;
+}
+
+static rpmRC dbRemove(rpmts ts, rpmte te)
+{
+    rpmRC rc;
+
+    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
+    rc = (rpmdbRemove(rpmtsGetRdb(ts), rpmteDBInstance(te)) == 0) ?
+						RPMRC_OK : RPMRC_FAIL;
+    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
+
+    if (rc == RPMRC_OK)
+	rpmteSetDBInstance(te, 0);
+    return rc;
+}
+
 static rpmRC rpmpsmNext(rpmpsm psm, pkgStage nstage)
 {
     psm->nstage = nstage;
@@ -770,11 +801,11 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	     * the database before adding the new one.
 	     */
 	    if (rpmteDBInstance(psm->te)) {
-		rc = rpmpsmNext(psm, PSM_RPMDB_REMOVE);
+		rc = dbRemove(ts, psm->te);
 		if (rc) break;
 	    }
 
-	    rc = rpmpsmNext(psm, PSM_RPMDB_ADD);
+	    rc = dbAdd(ts, psm->te);
 	    if (rc) break;
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOST)) {
@@ -806,7 +837,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 		if (rc) break;
 	    }
 
-	    rc = rpmpsmNext(psm, PSM_RPMDB_REMOVE);
+	    rc = dbRemove(ts, psm->te);
 	}
 	break;
     case PSM_UNDO:
@@ -830,34 +861,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	psm->failedFile = _free(psm->failedFile);
 
 	break;
-
-    case PSM_RPMDB_ADD: {
-	Header h = rpmteHeader(psm->te);
-
-	if (!headerIsEntry(h, RPMTAG_INSTALLTID)) {
-	    rpm_tid_t tid = rpmtsGetTid(ts);
-	    if (tid != 0 && tid != (rpm_tid_t)-1)
-		headerPutUint32(h, RPMTAG_INSTALLTID, &tid, 1);
-	}
-	
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
-	rc = (rpmdbAdd(rpmtsGetRdb(ts), h) == 0) ? RPMRC_OK : RPMRC_FAIL;
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
-
-	if (rc == RPMRC_OK)
-	    rpmteSetDBInstance(psm->te, headerGetInstance(h));
-	headerFree(h);
-    }   break;
-
-    case PSM_RPMDB_REMOVE:
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
-	rc = (rpmdbRemove(rpmtsGetRdb(ts), rpmteDBInstance(psm->te)) == 0) ?
-						    RPMRC_OK : RPMRC_FAIL;
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
-	if (rc == RPMRC_OK)
-	    rpmteSetDBInstance(psm->te, 0);
-	break;
-
     default:
 	break;
    }
