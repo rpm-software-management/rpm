@@ -42,9 +42,6 @@ typedef enum pkgStage_e {
     PSM_CREATE		= 17,
     PSM_DESTROY		= 23,
 
-    PSM_TRIGGERS	= 54,
-    PSM_IMMED_TRIGGERS	= 55,
-
     PSM_RPMDB_ADD	= 98,
     PSM_RPMDB_REMOVE	= 99
 
@@ -657,11 +654,11 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPREIN)) {
 		/* Run triggers in other package(s) this package sets off. */
-		rc = rpmpsmNext(psm, PSM_TRIGGERS);
+		rc = runTriggers(psm);
 		if (rc) break;
 
 		/* Run triggers in this package other package(s) set off. */
-		rc = rpmpsmNext(psm, PSM_IMMED_TRIGGERS);
+		rc = runImmedTriggers(psm);
 		if (rc) break;
 	    }
 
@@ -677,11 +674,11 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERUN)) {
 		/* Run triggers in this package other package(s) set off. */
-		rc = rpmpsmNext(psm, PSM_IMMED_TRIGGERS);
+		rc = runImmedTriggers(psm);
 		if (rc) break;
 
 		/* Run triggers in other package(s) this package sets off. */
-		rc = rpmpsmNext(psm, PSM_TRIGGERS);
+		rc = runTriggers(psm);
 		if (rc) break;
 	    }
 
@@ -794,11 +791,11 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    }
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERIN)) {
 		/* Run triggers in other package(s) this package sets off. */
-		rc = rpmpsmNext(psm, PSM_TRIGGERS);
+		rc = runTriggers(psm);
 		if (rc) break;
 
 		/* Run triggers in this package other package(s) set off. */
-		rc = rpmpsmNext(psm, PSM_IMMED_TRIGGERS);
+		rc = runImmedTriggers(psm);
 		if (rc) break;
 	    }
 
@@ -817,7 +814,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPOSTUN)) {
 		/* Run triggers in other package(s) this package sets off. */
-		rc = rpmpsmNext(psm, PSM_TRIGGERS);
+		rc = runTriggers(psm);
 		if (rc) break;
 	    }
 
@@ -850,15 +847,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	break;
     case PSM_DESTROY:
 	break;
-    case PSM_TRIGGERS:
-	/* Run triggers in other package(s) this package sets off. */
-	rc = runTriggers(psm);
-	break;
-    case PSM_IMMED_TRIGGERS:
-	/* Run triggers in this package other package(s) set off. */
-	rc = runImmedTriggers(psm);
-	break;
-
     case PSM_RPMDB_ADD: {
 	Header h = rpmteHeader(psm->te);
 
