@@ -285,7 +285,8 @@ static rpmTagVal triggertag(rpmsenseFlags sense)
  * /bin/sh will be used. If the interpreter is /bin/sh, then the args from
  * the header will be ignored, passing instead arg1 and arg2.
  *
- * @param psm		package state machine data
+ * @param ts		transaction set
+ * @param te		transaction element
  * @param prefixes	install prefixes
  * @param script	scriptlet from header
  * @param arg1		no. instances of package installed after scriptlet exec
@@ -293,7 +294,7 @@ static rpmTagVal triggertag(rpmsenseFlags sense)
  * @param arg2		ditto, but for the target package
  * @return		0 on success
  */
-static rpmRC runScript(rpmpsm psm, ARGV_const_t prefixes, 
+static rpmRC runScript(rpmts ts, rpmte te, ARGV_const_t prefixes, 
 		       rpmScript script, int arg1, int arg2)
 {
     rpmRC stoprc, rc = RPMRC_OK;
@@ -304,18 +305,18 @@ static rpmRC runScript(rpmpsm psm, ARGV_const_t prefixes,
 		     stag != RPMTAG_PRETRANS &&
 		     stag != RPMTAG_VERIFYSCRIPT);
 
-    sfd = rpmtsNotify(psm->ts, psm->te, RPMCALLBACK_SCRIPT_START, stag, 0);
+    sfd = rpmtsNotify(ts, te, RPMCALLBACK_SCRIPT_START, stag, 0);
     if (sfd == NULL)
-	sfd = rpmtsScriptFd(psm->ts);
+	sfd = rpmtsScriptFd(ts);
 
-    rpmswEnter(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
+    rpmswEnter(rpmtsOp(ts, RPMTS_OP_SCRIPTLETS), 0);
     rc = rpmScriptRun(script, arg1, arg2, sfd,
-		      prefixes, warn_only, rpmtsPlugins(psm->ts));
-    rpmswExit(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
+		      prefixes, warn_only, rpmtsPlugins(ts));
+    rpmswExit(rpmtsOp(ts, RPMTS_OP_SCRIPTLETS), 0);
 
     /* Map warn-only errors to "notfound" for script stop callback */
     stoprc = (rc != RPMRC_OK && warn_only) ? RPMRC_NOTFOUND : rc;
-    rpmtsNotify(psm->ts, psm->te, RPMCALLBACK_SCRIPT_STOP, stag, stoprc);
+    rpmtsNotify(ts, te, RPMCALLBACK_SCRIPT_STOP, stag, stoprc);
 
     /* 
      * Notify callback for all errors. "total" abused for warning/error,
@@ -326,7 +327,7 @@ static rpmRC runScript(rpmpsm psm, ARGV_const_t prefixes,
 	if (warn_only) {
 	    rc = RPMRC_OK;
 	}
-	rpmtsNotify(psm->ts, psm->te, RPMCALLBACK_SCRIPT_ERROR, stag, rc);
+	rpmtsNotify(ts, te, RPMCALLBACK_SCRIPT_ERROR, stag, rc);
     }
 
     return rc;
@@ -341,7 +342,7 @@ static rpmRC runInstScript(rpmpsm psm, rpmTagVal scriptTag)
 
     if (script) {
 	headerGet(h, RPMTAG_INSTPREFIXES, &pfx, HEADERGET_ALLOC|HEADERGET_ARGV);
-	rc = runScript(psm, pfx.data, script, psm->scriptArg, -1);
+	rc = runScript(psm->ts, psm->te, pfx.data, script, psm->scriptArg, -1);
 	rpmtdFreeData(&pfx);
     }
 
@@ -413,7 +414,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm, rpmsenseFlags sense,
 		rpmScript script = rpmScriptFromTriggerTag(trigH,
 						 triggertag(sense), tix);
 		arg1 += countCorrection;
-		rc = runScript(psm, pfx.data, script, arg1, arg2);
+		rc = runScript(psm->ts, psm->te, pfx.data, script, arg1, arg2);
 
 		if (triggersAlreadyRun != NULL)
 		    triggersAlreadyRun[tix] = 1;
