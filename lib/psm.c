@@ -55,7 +55,6 @@ struct rpmpsm_s {
     char * failedFile;
     int npkgs_installed;	/*!< No. of installed instances. */
     int scriptArg;		/*!< Scriptlet package arg. */
-    rpmsenseFlags sense;	/*!< One of RPMSENSE_TRIGGER{PREIN,IN,UN,POSTUN}. */
     int countCorrection;	/*!< 0 if installing, -1 if removing. */
     rpmCallbackType what;	/*!< Callback type. */
     rpm_loff_t amount;		/*!< Callback amount. */
@@ -363,13 +362,14 @@ static rpmRC runInstScript(rpmpsm psm, rpmTagVal scriptTag)
  * Execute triggers.
  * @todo Trigger on any provides, not just package NVR.
  * @param psm		package state machine data
+ * @param sense		trigger type
  * @param sourceH	header of trigger source
  * @param trigH		header of triggered package
  * @param arg2
  * @param triggersAlreadyRun
  * @return
  */
-static rpmRC handleOneTrigger(const rpmpsm psm,
+static rpmRC handleOneTrigger(const rpmpsm psm, rpmsenseFlags sense,
 			Header sourceH, Header trigH,
 			int arg2, unsigned char * triggersAlreadyRun)
 {
@@ -391,7 +391,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 	struct rpmtd_s tindexes;
 	uint32_t tix;
 
-	if (!(rpmdsFlags(trigger) & psm->sense))
+	if (!(rpmdsFlags(trigger) & sense))
 	    continue;
 
  	if (!rstreq(rpmdsN(trigger), sourceName))
@@ -418,7 +418,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 		rc = RPMRC_FAIL;
 	    } else {
 		rpmScript script = rpmScriptFromTriggerTag(trigH,
-						 triggertag(psm->sense), tix);
+						 triggertag(sense), tix);
 		arg1 += psm->countCorrection;
 		rc = runScript(psm, pfx.data, script, arg1, arg2);
 
@@ -447,9 +447,10 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 /**
  * Run trigger scripts in the database that are fired by this header.
  * @param psm		package state machine data
+ * @param sense		trigger type
  * @return		0 on success
  */
-static rpmRC runTriggers(rpmpsm psm)
+static rpmRC runTriggers(rpmpsm psm, rpmsenseFlags sense)
 {
     const rpmts ts = psm->ts;
     int numPackage = -1;
@@ -471,8 +472,10 @@ static rpmRC runTriggers(rpmpsm psm)
 
 	psm->countCorrection = 0;
 	mi = rpmtsInitIterator(ts, RPMDBI_TRIGGERNAME, N, 0);
-	while((triggeredH = rpmdbNextIterator(mi)) != NULL)
-	    nerrors += handleOneTrigger(psm, h, triggeredH, numPackage, NULL);
+	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
+	    nerrors += handleOneTrigger(psm, sense, h, triggeredH,
+					numPackage, NULL);
+	}
 	rpmdbFreeIterator(mi);
 	psm->countCorrection = countCorrection;
 	headerFree(h);
@@ -484,9 +487,10 @@ static rpmRC runTriggers(rpmpsm psm)
 /**
  * Run triggers from this header that are fired by headers in the database.
  * @param psm		package state machine data
+ * @param sense		trigger type
  * @return		0 on success
  */
-static rpmRC runImmedTriggers(rpmpsm psm)
+static rpmRC runImmedTriggers(rpmpsm psm, rpmsenseFlags sense)
 {
     const rpmts ts = psm->ts;
     unsigned char * triggersRun;
@@ -513,7 +517,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
 	    mi = rpmtsInitIterator(ts, RPMDBI_NAME, trigName, 0);
 
 	    while((sourceH = rpmdbNextIterator(mi)) != NULL) {
-		nerrors += handleOneTrigger(psm, sourceH, h,
+		nerrors += handleOneTrigger(psm, sense, sourceH, h,
 				rpmdbGetIteratorCount(mi),
 				triggersRun);
 	    }
@@ -649,16 +653,15 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	break;
     case PSM_PRE:
 	if (psm->goal == PKG_INSTALL) {
-	    psm->sense = RPMSENSE_TRIGGERPREIN;
 	    psm->countCorrection = 0;   /* XXX is this correct?!? */
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPREIN)) {
 		/* Run triggers in other package(s) this package sets off. */
-		rc = runTriggers(psm);
+		rc = runTriggers(psm, RPMSENSE_TRIGGERPREIN);
 		if (rc) break;
 
 		/* Run triggers in this package other package(s) set off. */
-		rc = runImmedTriggers(psm);
+		rc = runImmedTriggers(psm, RPMSENSE_TRIGGERPREIN);
 		if (rc) break;
 	    }
 
@@ -669,16 +672,15 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	}
 
 	if (psm->goal == PKG_ERASE) {
-	    psm->sense = RPMSENSE_TRIGGERUN;
 	    psm->countCorrection = -1;
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERUN)) {
 		/* Run triggers in this package other package(s) set off. */
-		rc = runImmedTriggers(psm);
+		rc = runImmedTriggers(psm, RPMSENSE_TRIGGERUN);
 		if (rc) break;
 
 		/* Run triggers in other package(s) this package sets off. */
-		rc = runTriggers(psm);
+		rc = runTriggers(psm, RPMSENSE_TRIGGERUN);
 		if (rc) break;
 	    }
 
@@ -782,7 +784,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    rc = rpmpsmNext(psm, PSM_RPMDB_ADD);
 	    if (rc) break;
 
-	    psm->sense = RPMSENSE_TRIGGERIN;
 	    psm->countCorrection = 0;
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOST)) {
@@ -791,11 +792,11 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    }
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERIN)) {
 		/* Run triggers in other package(s) this package sets off. */
-		rc = runTriggers(psm);
+		rc = runTriggers(psm, RPMSENSE_TRIGGERIN);
 		if (rc) break;
 
 		/* Run triggers in this package other package(s) set off. */
-		rc = runImmedTriggers(psm);
+		rc = runImmedTriggers(psm, RPMSENSE_TRIGGERIN);
 		if (rc) break;
 	    }
 
@@ -804,7 +805,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	}
 	if (psm->goal == PKG_ERASE) {
 
-	    psm->sense = RPMSENSE_TRIGGERPOSTUN;
 	    psm->countCorrection = -1;
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOSTUN)) {
@@ -814,7 +814,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPOSTUN)) {
 		/* Run triggers in other package(s) this package sets off. */
-		rc = runTriggers(psm);
+		rc = runTriggers(psm, RPMSENSE_TRIGGERPOSTUN);
 		if (rc) break;
 	    }
 
