@@ -53,15 +53,13 @@ struct rpmpsm_s {
     rpm_loff_t amount;		/*!< Callback amount. */
     rpm_loff_t total;		/*!< Callback total. */
     pkgGoal goal;
-    pkgStage stage;		/*!< Current psm stage. */
-    pkgStage nstage;		/*!< Next psm stage. */
 
     int nrefs;			/*!< Reference count. */
 };
 
 static rpmpsm rpmpsmNew(rpmts ts, rpmte te);
 static rpmpsm rpmpsmFree(rpmpsm psm);
-static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage);
+static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage);
 
 /**
  * Adjust file states in database for files shared with this package:
@@ -232,10 +230,10 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     psm->goal = PKG_INSTALL;
 
    	/* FIX: psm->fi->dnl should be owned. */
-    if (rpmpsmStage(psm, PSM_PROCESS) == RPMRC_OK)
+    if (rpmpsmNext(psm, PSM_PROCESS) == RPMRC_OK)
 	rpmrc = RPMRC_OK;
 
-    (void) rpmpsmStage(psm, PSM_FINI);
+    (void) rpmpsmNext(psm, PSM_FINI);
     rpmpsmFree(psm);
 
 exit:
@@ -620,13 +618,7 @@ static rpmRC dbRemove(rpmts ts, rpmte te)
     return rc;
 }
 
-static rpmRC rpmpsmNext(rpmpsm psm, pkgStage nstage)
-{
-    psm->nstage = nstage;
-    return rpmpsmStage(psm, psm->nstage);
-}
-
-static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
+static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
 {
     const rpmts ts = psm->ts;
     int fc = rpmfilesFC(psm->files);
