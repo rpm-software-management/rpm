@@ -56,7 +56,6 @@ struct rpmpsm_s {
     rpmfiles files;		/*!< transaction element file info */
     const char * goalName;
     char * failedFile;
-    rpmTagVal scriptTag;	/*!< Scriptlet data tag. */
     int npkgs_installed;	/*!< No. of installed instances. */
     int scriptArg;		/*!< Scriptlet package arg. */
     rpmsenseFlags sense;	/*!< One of RPMSENSE_TRIGGER{PREIN,IN,UN,POSTUN}. */
@@ -344,12 +343,12 @@ static rpmRC runScript(rpmpsm psm, ARGV_const_t prefixes,
     return rc;
 }
 
-static rpmRC runInstScript(rpmpsm psm)
+static rpmRC runInstScript(rpmpsm psm, rpmTagVal scriptTag)
 {
     rpmRC rc = RPMRC_OK;
     struct rpmtd_s pfx;
     Header h = rpmteHeader(psm->te);
-    rpmScript script = rpmScriptFromTag(h, psm->scriptTag);
+    rpmScript script = rpmScriptFromTag(h, scriptTag);
 
     if (script) {
 	headerGet(h, RPMTAG_INSTPREFIXES, &pfx, HEADERGET_ALLOC|HEADERGET_ARGV);
@@ -653,7 +652,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	break;
     case PSM_PRE:
 	if (psm->goal == PKG_INSTALL) {
-	    psm->scriptTag = RPMTAG_PREIN;
 	    psm->sense = RPMSENSE_TRIGGERPREIN;
 	    psm->countCorrection = 0;   /* XXX is this correct?!? */
 
@@ -668,13 +666,12 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPRE)) {
-		rc = runInstScript(psm);
+		rc = runInstScript(psm, RPMTAG_PREIN);
 		if (rc) break;
 	    }
 	}
 
 	if (psm->goal == PKG_ERASE) {
-	    psm->scriptTag = RPMTAG_PREUN;
 	    psm->sense = RPMSENSE_TRIGGERUN;
 	    psm->countCorrection = -1;
 
@@ -689,7 +686,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPREUN))
-		rc = runInstScript(psm);
+		rc = runInstScript(psm, RPMTAG_PREUN);
 	}
 	break;
     case PSM_PROCESS:
@@ -788,12 +785,11 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    rc = rpmpsmNext(psm, PSM_RPMDB_ADD);
 	    if (rc) break;
 
-	    psm->scriptTag = RPMTAG_POSTIN;
 	    psm->sense = RPMSENSE_TRIGGERIN;
 	    psm->countCorrection = 0;
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOST)) {
-		rc = runInstScript(psm);
+		rc = runInstScript(psm, RPMTAG_POSTIN);
 		if (rc) break;
 	    }
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERIN)) {
@@ -811,12 +807,11 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	}
 	if (psm->goal == PKG_ERASE) {
 
-	    psm->scriptTag = RPMTAG_POSTUN;
 	    psm->sense = RPMSENSE_TRIGGERPOSTUN;
 	    psm->countCorrection = -1;
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOSTUN)) {
-		rc = runInstScript(psm);
+		rc = runInstScript(psm, RPMTAG_POSTUN);
 		if (rc) break;
 	    }
 
@@ -949,8 +944,7 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 	case PKG_PRETRANS:
 	case PKG_POSTTRANS:
 	case PKG_VERIFY:
-	    psm->scriptTag = goal;
-	    rc = runInstScript(psm);
+	    rc = runInstScript(psm, goal);
 	    break;
 	default:
 	    break;
