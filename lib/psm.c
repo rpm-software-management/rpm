@@ -631,6 +631,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	if (psm->goal == PKG_INSTALL) {
 	    Header h = rpmteHeader(psm->te);
 	    psm->scriptArg = psm->npkgs_installed + 1;
+	    psm->countCorrection = 0;
 
 	    psm->amount = 0;
 	    psm->total = headerGetNumber(h, RPMTAG_LONGARCHIVESIZE);
@@ -646,6 +647,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	}
 	if (psm->goal == PKG_ERASE) {
 	    psm->scriptArg = psm->npkgs_installed - 1;
+	    psm->countCorrection = -1;
 
 	    psm->amount = 0;
 	    psm->total = fc ? fc : 100;
@@ -653,8 +655,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	break;
     case PSM_PRE:
 	if (psm->goal == PKG_INSTALL) {
-	    psm->countCorrection = 0;   /* XXX is this correct?!? */
-
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPREIN)) {
 		/* Run triggers in other package(s) this package sets off. */
 		rc = runTriggers(psm, RPMSENSE_TRIGGERPREIN);
@@ -672,8 +672,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	}
 
 	if (psm->goal == PKG_ERASE) {
-	    psm->countCorrection = -1;
-
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERUN)) {
 		/* Run triggers in this package other package(s) set off. */
 		rc = runImmedTriggers(psm, RPMSENSE_TRIGGERUN);
@@ -784,8 +782,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    rc = rpmpsmNext(psm, PSM_RPMDB_ADD);
 	    if (rc) break;
 
-	    psm->countCorrection = 0;
-
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOST)) {
 		rc = runInstScript(psm, RPMTAG_POSTIN);
 		if (rc) break;
@@ -804,9 +800,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	}
 	if (psm->goal == PKG_ERASE) {
-
-	    psm->countCorrection = -1;
-
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOSTUN)) {
 		rc = runInstScript(psm, RPMTAG_POSTUN);
 		if (rc) break;
