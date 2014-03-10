@@ -28,11 +28,6 @@ int _fsm_debug = _FSM_DEBUG;
 
 typedef struct fsm_s * FSM_t;
 
-typedef enum fileStage_e {
-    FSM_PKGINSTALL,
-    FSM_PKGERASE,
-} fileStage;
-
 /* XXX Failure to remove is not (yet) cause for failure. */
 static int strict_erasures = 0;
 
@@ -49,7 +44,6 @@ struct fsm_s {
     int exists;			/*!< Does current file exist on disk? */
     rpmPlugins plugins;    	/*!< Rpm plugins handle */
 
-    fileStage goal;		/*!< Package state machine goal. */
     rpmfi fi;			/*!< File iterator. */
     rpmfs fs;			/*!< File states. */
 };
@@ -225,7 +219,7 @@ const char * dnlNextIterator(DNLI_t dnli)
  * Map next file path and action.
  * @param fsm		file state machine
  */
-static int fsmMapPath(FSM_t fsm)
+static int fsmMapPath(FSM_t fsm, rpmElementType goal)
 {
     int rc = 0;
 
@@ -243,7 +237,7 @@ static int fsmMapPath(FSM_t fsm)
 		fsm->osuffix = SUFFIX_RPMSAVE;
 		break;
 	    case FA_BACKUP:
-		fsm->osuffix = (fsm->goal == FSM_PKGINSTALL) ?
+		fsm->osuffix = (goal == TR_ADDED) ?
 				SUFFIX_RPMORIG : SUFFIX_RPMSAVE;
 		break;
 	    default:
@@ -258,11 +252,10 @@ static int fsmMapPath(FSM_t fsm)
     return rc;
 }
 
-static FSM_t fsmNew(fileStage goal, rpmts ts, rpmte te, rpmfi fi, char ** failedFile)
+static FSM_t fsmNew(rpmts ts, rpmte te, rpmfi fi, char ** failedFile)
 {
     FSM_t fsm = xcalloc(1, sizeof(*fsm));
 
-    fsm->goal = goal;
     fsm->fi = fi;
     fsm->fs = rpmteGetFileStates(te);
     fsm->plugins = rpmtsPlugins(ts);
@@ -629,7 +622,7 @@ static void removeSBITS(const char *path)
     }
 }
 
-static int fsmInit(FSM_t fsm, struct stat *st)
+static int fsmInit(FSM_t fsm, rpmElementType goal, struct stat *st)
 {
     int rc = 0;
 
@@ -641,12 +634,12 @@ static int fsmInit(FSM_t fsm, struct stat *st)
     fsm->nsuffix = NULL;
 
     /* Generate file path. */
-    rc = fsmMapPath(fsm);
+    rc = fsmMapPath(fsm, goal);
     if (rc) return rc;
 
     /* Perform lstat/stat for disk file. */
     if (fsm->path != NULL &&
-	!(fsm->goal == FSM_PKGINSTALL && S_ISREG(rpmfiFMode(fsm->fi))))
+	!(goal == TR_ADDED && S_ISREG(rpmfiFMode(fsm->fi))))
     {
 	rc = fsmStat(fsm->path, 1, st);
 	if (rc == RPMERR_ENOENT) {
@@ -978,7 +971,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
               rpmpsm psm, char ** failedFile)
 {
     rpmfi fi = rpmfiNewArchiveReader(cfd, files);
-    FSM_t fsm = fsmNew(FSM_PKGINSTALL, ts, te, fi, failedFile);
+    FSM_t fsm = fsmNew(ts, te, fi, failedFile);
     struct stat sb;
     struct stat osb;
     int saveerrno = errno;
@@ -1003,7 +996,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    break;
 	}
 
-        rc = fsmInit(fsm, &osb); /* Sets fsm->postpone for skipped files */
+	/* Sets fsm->postpone for skipped files */
+	rc = fsmInit(fsm, TR_ADDED, &osb);
 
 	/* Remap file perms, owner, and group. */
 	if (!rc)
@@ -1127,12 +1121,12 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile)
 {
     rpmfi fi = rpmfilesIter(files, RPMFI_ITER_BACK);
-    FSM_t fsm = fsmNew(FSM_PKGERASE, ts, te, fi, failedFile);
+    FSM_t fsm = fsmNew(ts, te, fi, failedFile);
     struct stat sb;
     int rc = 0;
 
     while (!rc && rpmfiNext(fsm->fi) >= 0) {
-        rc = fsmInit(fsm, &sb);
+        rc = fsmInit(fsm, TR_REMOVED, &sb);
 	rpmFileAction action = rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi));
 
 	/* Run fsm file pre hook for all plugins */
