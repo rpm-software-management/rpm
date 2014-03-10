@@ -355,7 +355,8 @@ static rpmRC runInstScript(rpmpsm psm, rpmTagVal scriptTag)
 /**
  * Execute triggers.
  * @todo Trigger on any provides, not just package NVR.
- * @param psm		package state machine data
+ * @param ts		transaction set
+ * @param te		transaction element
  * @param sense		trigger type
  * @param sourceH	header of trigger source
  * @param trigH		header of triggered package
@@ -363,11 +364,10 @@ static rpmRC runInstScript(rpmpsm psm, rpmTagVal scriptTag)
  * @param triggersAlreadyRun
  * @return
  */
-static rpmRC handleOneTrigger(const rpmpsm psm, rpmsenseFlags sense,
+static rpmRC handleOneTrigger(rpmts ts, rpmte te, rpmsenseFlags sense,
 			Header sourceH, Header trigH, int countCorrection,
 			int arg2, unsigned char * triggersAlreadyRun)
 {
-    const rpmts ts = psm->ts;
     rpmds trigger = rpmdsInit(rpmdsNew(trigH, RPMTAG_TRIGGERNAME, 0));
     struct rpmtd_s pfx;
     const char * sourceName = headerGetString(sourceH, RPMTAG_NAME);
@@ -414,7 +414,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm, rpmsenseFlags sense,
 		rpmScript script = rpmScriptFromTriggerTag(trigH,
 						 triggertag(sense), tix);
 		arg1 += countCorrection;
-		rc = runScript(psm->ts, psm->te, pfx.data, script, arg1, arg2);
+		rc = runScript(ts, te, pfx.data, script, arg1, arg2);
 
 		if (triggersAlreadyRun != NULL)
 		    triggersAlreadyRun[tix] = 1;
@@ -465,7 +465,7 @@ static rpmRC runTriggers(rpmpsm psm, rpmsenseFlags sense)
 
 	mi = rpmtsInitIterator(ts, RPMDBI_TRIGGERNAME, N, 0);
 	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
-	    nerrors += handleOneTrigger(psm, sense, h, triggeredH,
+	    nerrors += handleOneTrigger(ts, psm->te, sense, h, triggeredH,
 					0, numPackage, NULL);
 	}
 	rpmdbFreeIterator(mi);
@@ -508,7 +508,8 @@ static rpmRC runImmedTriggers(rpmpsm psm, rpmsenseFlags sense)
 	    mi = rpmtsInitIterator(ts, RPMDBI_NAME, trigName, 0);
 
 	    while((sourceH = rpmdbNextIterator(mi)) != NULL) {
-		nerrors += handleOneTrigger(psm, sense, sourceH, h,
+		nerrors += handleOneTrigger(psm->ts, psm->te,
+				sense, sourceH, h,
 				psm->countCorrection,
 				rpmdbGetIteratorCount(mi),
 				triggersRun);
