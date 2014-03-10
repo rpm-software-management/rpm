@@ -370,7 +370,7 @@ static rpmRC runInstScript(rpmpsm psm, rpmTagVal scriptTag)
  * @return
  */
 static rpmRC handleOneTrigger(const rpmpsm psm, rpmsenseFlags sense,
-			Header sourceH, Header trigH,
+			Header sourceH, Header trigH, int countCorrection,
 			int arg2, unsigned char * triggersAlreadyRun)
 {
     const rpmts ts = psm->ts;
@@ -419,7 +419,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm, rpmsenseFlags sense,
 	    } else {
 		rpmScript script = rpmScriptFromTriggerTag(trigH,
 						 triggertag(sense), tix);
-		arg1 += psm->countCorrection;
+		arg1 += countCorrection;
 		rc = runScript(psm, pfx.data, script, arg1, arg2);
 
 		if (triggersAlreadyRun != NULL)
@@ -468,16 +468,13 @@ static rpmRC runTriggers(rpmpsm psm, rpmsenseFlags sense)
     {	Header triggeredH;
 	Header h = rpmteHeader(psm->te);
 	rpmdbMatchIterator mi;
-	int countCorrection = psm->countCorrection;
 
-	psm->countCorrection = 0;
 	mi = rpmtsInitIterator(ts, RPMDBI_TRIGGERNAME, N, 0);
 	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
 	    nerrors += handleOneTrigger(psm, sense, h, triggeredH,
-					numPackage, NULL);
+					0, numPackage, NULL);
 	}
 	rpmdbFreeIterator(mi);
-	psm->countCorrection = countCorrection;
 	headerFree(h);
     }
 
@@ -518,6 +515,7 @@ static rpmRC runImmedTriggers(rpmpsm psm, rpmsenseFlags sense)
 
 	    while((sourceH = rpmdbNextIterator(mi)) != NULL) {
 		nerrors += handleOneTrigger(psm, sense, sourceH, h,
+				psm->countCorrection,
 				rpmdbGetIteratorCount(mi),
 				triggersRun);
 	    }
