@@ -365,19 +365,20 @@ exit:
 }
 
 static int fsmMkfile(rpmfi fi, const char *dest, rpmfiles files,
-		     rpmpsm psm, int nodigest, int *setmeta)
+		     rpmpsm psm, int nodigest, int *setmeta,
+		     int * firsthardlink)
 {
     int rc = 0;
-    const int * hardlinks = NULL;
-    int numHardlinks = rpmfiFLinks(fi, &hardlinks);
+    int numHardlinks = rpmfiFNlink(fi);
 
     if (numHardlinks > 1) {
 	/* Create first hardlinked file empty */
-	if (hardlinks[0] == rpmfiFX(fi)) {
+	if (*firsthardlink < 0) {
+	    *firsthardlink = rpmfiFX(fi);
 	    rc = expandRegular(fi, dest, psm, nodigest, 1);
 	} else {
 	    /* Create hard links for others */
-	    rc = link(rpmfilesFN(files, hardlinks[0]), dest);
+	    rc = link(rpmfilesFN(files, *firsthardlink), dest);
 	    if (rc < 0) {
 		rc = RPMERR_LINK_FAILED;
 	    }
@@ -385,9 +386,13 @@ static int fsmMkfile(rpmfi fi, const char *dest, rpmfiles files,
     }
     /* Write normal files or fill the last hardlinked (already
        existing) file with content */
-    if (numHardlinks<=1 || hardlinks[numHardlinks-1] == rpmfiFX(fi)) {
+    if (numHardlinks<=1) {
 	if (!rc)
 	    rc = expandRegular(fi, dest, psm, nodigest, 0);
+    } else if (rpmfiArchiveHasContent(fi)) {
+	if (!rc)
+	    rc = expandRegular(fi, dest, psm, nodigest, 0);
+	*firsthardlink = -1;
     } else {
 	setmeta = 0;
     }
@@ -976,6 +981,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
     int saveerrno = errno;
     int rc = 0;
     int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST) ? 1 : 0;
+    int firsthardlink = -1;
 
     /* transaction id used for temporary path suffix while installing */
     rasprintf(&fsm->suffix, ";%08x", (unsigned)rpmtsGetTid(ts));
@@ -1022,7 +1028,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
                 rc = fsmVerify(fsm, &sb, &osb);
 		if (rc == RPMERR_ENOENT) {
 		    rc = fsmMkfile(fi, fsm->path, files, psm, nodigest,
-				   &setmeta);
+				   &setmeta, &firsthardlink);
 		}
             } else if (S_ISDIR(sb.st_mode)) {
 		/* Directories replacing something need early backup */
@@ -1074,7 +1080,13 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    if (!rc && setmeta) {
 		rc = fsmSetmeta(fsm, plugins, &sb);
 	    }
-        }
+        } else if (firsthardlink >= 0 && rpmfiArchiveHasContent(fi)) {
+	    /* we skip the hard linked file containing the content */
+	    /* write the content to the first used instead */
+	    rc = expandRegular(fi, rpmfilesFN(files, firsthardlink),
+			       psm, nodigest, 0);
+	    firsthardlink = -1;
+	}
 
         if (rc) {
             if (!fsm->postpone) {
