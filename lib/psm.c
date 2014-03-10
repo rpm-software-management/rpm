@@ -39,9 +39,6 @@ typedef enum pkgStage_e {
     PSM_UNDO		=  5,
     PSM_FINI		=  6,
 
-    PSM_CREATE		= 17,
-    PSM_DESTROY		= 23,
-
     PSM_RPMDB_ADD	= 98,
     PSM_RPMDB_REMOVE	= 99
 
@@ -834,10 +831,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	break;
 
-    case PSM_CREATE:
-	break;
-    case PSM_DESTROY:
-	break;
     case PSM_RPMDB_ADD: {
 	Header h = rpmteHeader(psm->te);
 
