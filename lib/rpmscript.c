@@ -19,6 +19,7 @@
 #include "debug.h"
 
 struct rpmScript_s {
+    rpmscriptTypes type;	/* script type */
     rpmTagVal tag;		/* script tag */
     char **args;		/* scriptlet call arguments */
     char *body;			/* script body */
@@ -338,6 +339,24 @@ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
     return rc;
 }
 
+static rpmscriptTypes getScriptType(rpmTagVal scriptTag)
+{
+    switch (scriptTag) {
+    case RPMTAG_PREIN:		return RPMSCRIPT_PREIN;
+    case RPMTAG_PREUN: 		return RPMSCRIPT_PREUN;
+    case RPMTAG_POSTIN: 	return RPMSCRIPT_POSTIN;
+    case RPMTAG_POSTUN: 	return RPMSCRIPT_POSTUN;
+    case RPMTAG_TRIGGERPREIN:	return RPMSCRIPT_TRIGGERPREIN;
+    case RPMTAG_TRIGGERUN: 	return RPMSCRIPT_TRIGGERUN;
+    case RPMTAG_TRIGGERIN: 	return RPMSCRIPT_TRIGGERIN;
+    case RPMTAG_TRIGGERPOSTUN: 	return RPMSCRIPT_TRIGGERPOSTUN;
+    case RPMTAG_PRETRANS: 	return RPMSCRIPT_PRETRANS;
+    case RPMTAG_POSTTRANS:	return RPMSCRIPT_POSTTRANS;
+    case RPMTAG_VERIFYSCRIPT:	return RPMSCRIPT_VERIFY;
+    }
+    return 0;
+}
+
 static rpmTagVal getProgTag(rpmTagVal scriptTag)
 {
     switch (scriptTag) {
@@ -394,6 +413,7 @@ static rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
     char *nevra = headerGetAsString(h, RPMTAG_NEVRA);
     rpmScript script = xcalloc(1, sizeof(*script));
     script->tag = tag;
+    script->type = getScriptType(tag);
     script->flags = flags;
     script->body = (body != NULL) ? xstrdup(body) : NULL;
     rasprintf(&script->descr, "%s(%s)", tag2sln(tag), nevra);
@@ -481,4 +501,9 @@ rpmScript rpmScriptFree(rpmScript script)
 rpmTagVal rpmScriptTag(rpmScript script)
 {
     return (script != NULL) ? script->tag : RPMTAG_NOT_FOUND;
+}
+
+rpmscriptTypes rpmScriptType(rpmScript script)
+{
+    return (script != NULL) ? script->type : 0;
 }

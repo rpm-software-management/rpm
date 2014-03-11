@@ -4,6 +4,24 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/argv.h>
 
+/* Rpm scriptlet types */
+enum rpmscriptTypes_e {
+    RPMSCRIPT_PREIN		= (1 << 0),
+    RPMSCRIPT_PREUN		= (1 << 1),
+    RPMSCRIPT_POSTIN		= (1 << 2),
+    RPMSCRIPT_POSTUN		= (1 << 3),
+    RPMSCRIPT_TRIGGERPREIN	= (1 << 4),
+    RPMSCRIPT_TRIGGERUN		= (1 << 6),
+    RPMSCRIPT_TRIGGERIN		= (1 << 5),
+    RPMSCRIPT_TRIGGERPOSTUN	= (1 << 7),
+    RPMSCRIPT_PRETRANS		= (1 << 8),
+    RPMSCRIPT_POSTTRANS		= (1 << 9),
+    /* ... */
+    RPMSCRIPT_VERIFY		= (1 << 24),
+};
+
+typedef rpmFlags rpmscriptTypes;
+
 enum rpmscriptFlags_e {
     RPMSCRIPT_FLAG_NONE		= 0,
     RPMSCRIPT_FLAG_EXPAND	= (1 << 0), /* macro expansion */
@@ -33,6 +51,9 @@ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
 
 RPM_GNUC_INTERNAL
 rpmTagVal rpmScriptTag(rpmScript script);
+
+RPM_GNUC_INTERNAL
+rpmscriptTypes rpmScriptType(rpmScript script);
 #ifdef __cplusplus
 }
 #endif
