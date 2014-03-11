@@ -10,6 +10,7 @@
 #include <rpm/rpmio.h>
 #include <rpm/rpmlog.h>
 #include <rpm/header.h>
+#include <rpm/rpmds.h>
 
 #include "rpmio/rpmlua.h"
 #include "lib/rpmscript.h"
@@ -27,6 +28,49 @@ struct rpmScript_s {
     rpmscriptFlags flags;	/* flags to control operation */
 };
 
+struct scriptInfo_s {
+    rpmscriptTypes type;
+    const char *desc;
+    rpmsenseFlags sense;
+    rpmTagVal tag;
+    rpmTagVal progtag;
+    rpmTagVal flagtag;
+};
+
+static const struct scriptInfo_s scriptInfo[] = {
+    { RPMSCRIPT_PREIN, "%prein", 0,
+	RPMTAG_PREIN, RPMTAG_PREINPROG, RPMTAG_PREINFLAGS },
+    { RPMSCRIPT_PREUN, "%preun", 0,
+	RPMTAG_PREUN, RPMTAG_PREUNPROG, RPMTAG_PREUNFLAGS },
+    { RPMSCRIPT_POSTIN, "%post", 0,
+	RPMTAG_POSTIN, RPMTAG_POSTINPROG, RPMTAG_POSTINFLAGS },
+    { RPMSCRIPT_POSTUN, "%postun", 0,
+	RPMTAG_POSTUN, RPMTAG_POSTUNPROG, RPMTAG_POSTUNFLAGS },
+    { RPMSCRIPT_PRETRANS, "%pretrans", 0,
+	RPMTAG_PRETRANS, RPMTAG_PRETRANSPROG, RPMTAG_PRETRANSFLAGS },
+    { RPMSCRIPT_POSTTRANS, "%posttrans", 0,
+	RPMTAG_POSTTRANS, RPMTAG_POSTTRANSPROG, RPMTAG_POSTTRANSFLAGS },
+    { RPMSCRIPT_TRIGGERPREIN, "%triggerprein", RPMSENSE_TRIGGERPREIN,
+	RPMTAG_TRIGGERPREIN, 0, 0 },
+    { RPMSCRIPT_TRIGGERUN, "%triggerun", RPMSENSE_TRIGGERUN,
+	RPMTAG_TRIGGERUN, 0, 0 },
+    { RPMSCRIPT_TRIGGERIN, "%triggerin", RPMSENSE_TRIGGERIN,
+	RPMTAG_TRIGGERIN, 0, 0 },
+    { RPMSCRIPT_TRIGGERPOSTUN, "%triggerpostun", RPMSENSE_TRIGGERPOSTUN,
+	RPMTAG_TRIGGERPOSTUN, 0, 0 },
+    { RPMSCRIPT_VERIFY, "%verify", 0,
+	RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG, RPMTAG_VERIFYSCRIPTFLAGS},
+    { 0, "unknown", 0,
+	RPMTAG_NOT_FOUND, RPMTAG_NOT_FOUND, RPMTAG_NOT_FOUND }
+};
+
+static const struct scriptInfo_s * findTag(rpmTagVal tag)
+{
+    const struct scriptInfo_s * si = scriptInfo;
+    while (si->type && si->tag != tag)
+	si++;
+    return si;
+}
 /**
  * Run internal Lua script.
  */
@@ -341,70 +385,22 @@ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
 
 static rpmscriptTypes getScriptType(rpmTagVal scriptTag)
 {
-    switch (scriptTag) {
-    case RPMTAG_PREIN:		return RPMSCRIPT_PREIN;
-    case RPMTAG_PREUN: 		return RPMSCRIPT_PREUN;
-    case RPMTAG_POSTIN: 	return RPMSCRIPT_POSTIN;
-    case RPMTAG_POSTUN: 	return RPMSCRIPT_POSTUN;
-    case RPMTAG_TRIGGERPREIN:	return RPMSCRIPT_TRIGGERPREIN;
-    case RPMTAG_TRIGGERUN: 	return RPMSCRIPT_TRIGGERUN;
-    case RPMTAG_TRIGGERIN: 	return RPMSCRIPT_TRIGGERIN;
-    case RPMTAG_TRIGGERPOSTUN: 	return RPMSCRIPT_TRIGGERPOSTUN;
-    case RPMTAG_PRETRANS: 	return RPMSCRIPT_PRETRANS;
-    case RPMTAG_POSTTRANS:	return RPMSCRIPT_POSTTRANS;
-    case RPMTAG_VERIFYSCRIPT:	return RPMSCRIPT_VERIFY;
-    }
-    return 0;
+    return findTag(scriptTag)->type;
 }
 
 static rpmTagVal getProgTag(rpmTagVal scriptTag)
 {
-    switch (scriptTag) {
-    case RPMTAG_PREIN:		return RPMTAG_PREINPROG;
-    case RPMTAG_POSTIN: 	return RPMTAG_POSTINPROG;
-    case RPMTAG_PREUN: 		return RPMTAG_PREUNPROG;
-    case RPMTAG_POSTUN: 	return RPMTAG_POSTUNPROG;
-    case RPMTAG_PRETRANS: 	return RPMTAG_PRETRANSPROG;
-    case RPMTAG_POSTTRANS:	return RPMTAG_POSTTRANSPROG;
-    case RPMTAG_VERIFYSCRIPT:	return RPMTAG_VERIFYSCRIPTPROG;
-    default:			return RPMTAG_NOT_FOUND;
-    }
+    return findTag(scriptTag)->progtag;
 }
 
 static rpmTagVal getFlagTag(rpmTagVal scriptTag)
 {
-    switch (scriptTag) {
-    case RPMTAG_PRETRANS:	return RPMTAG_PRETRANSFLAGS;
-    case RPMTAG_POSTTRANS:	return RPMTAG_POSTTRANSFLAGS;
-    case RPMTAG_PREUN:		return RPMTAG_PREUNFLAGS;
-    case RPMTAG_POSTUN:		return RPMTAG_POSTUNFLAGS;
-    case RPMTAG_PREIN:		return RPMTAG_PREINFLAGS;
-    case RPMTAG_POSTIN:		return RPMTAG_POSTINFLAGS;
-    case RPMTAG_VERIFYSCRIPT:	return RPMTAG_VERIFYSCRIPTFLAGS;
-    case RPMTAG_TRIGGERSCRIPTS:	return RPMTAG_TRIGGERSCRIPTFLAGS;
-    default:
-       break;
-    }
-    return RPMTAG_NOT_FOUND;
+    return findTag(scriptTag)->flagtag;
 }
 
 static const char * tag2sln(rpmTagVal tag)
 {
-    switch (tag) {
-    case RPMTAG_PRETRANS:       return "%pretrans";
-    case RPMTAG_TRIGGERPREIN:   return "%triggerprein";
-    case RPMTAG_PREIN:          return "%pre";
-    case RPMTAG_POSTIN:         return "%post";
-    case RPMTAG_TRIGGERIN:      return "%triggerin";
-    case RPMTAG_TRIGGERUN:      return "%triggerun";
-    case RPMTAG_PREUN:          return "%preun";
-    case RPMTAG_POSTUN:         return "%postun";
-    case RPMTAG_POSTTRANS:      return "%posttrans";
-    case RPMTAG_TRIGGERPOSTUN:  return "%triggerpostun";
-    case RPMTAG_VERIFYSCRIPT:   return "%verify";
-    default: break;
-    }
-    return "%unknownscript";
+    return findTag(tag)->desc;
 }
 
 static rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
