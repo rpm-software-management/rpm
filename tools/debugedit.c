@@ -1166,6 +1166,10 @@ edit_dwarf2 (DSO *dso)
 		    goto fail;
 		  break;
 #endif
+		case EM_68K:
+		  if (rtype != R_68K_32)
+		    goto fail;
+		  break;
 		default:
 		fail:
 		  error (1, 0, "%s: Unhandled relocation %d in .debug_info section",

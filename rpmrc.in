@@ -69,6 +69,8 @@ optflags: armv5tejl -O2 -g -march=armv5te
 optflags: armv6l -O2 -g -march=armv6
 optflags: armv7l -O2 -g -march=armv7
 
+optflags: m68k -O2 -g -fomit-frame-pointer
+
 optflags: atarist -O2 -g -fomit-frame-pointer
 optflags: atariste -O2 -g -fomit-frame-pointer
 optflags: ataritt -O2 -g -fomit-frame-pointer
@@ -107,6 +109,8 @@ archcolor: armv5tel 1
 archcolor: armv5tejl 1
 archcolor: armv6l 1
 archcolor: armv7l 1
+
+archcolor: m68k 1
 
 archcolor: m68kmint 1
 
@@ -295,6 +299,8 @@ buildarchtranslate: armv5tejl: armv5tejl
 buildarchtranslate: armv6l: armv6l
 buildarchtranslate: armv7l: armv7l
 
+buildarchtranslate: m68k: m68k
+
 buildarchtranslate: atarist: m68kmint
 buildarchtranslate: atariste: m68kmint
 buildarchtranslate: ataritt: m68kmint
@@ -386,6 +392,8 @@ arch_compat: armv5tel: armv4tl
 arch_compat: armv4tl: armv4l
 arch_compat: armv4l: armv3l
 arch_compat: armv3l: noarch
+
+arch_compat: m68k: noarch
 
 arch_compat: atarist: m68kmint noarch
 arch_compat: atariste: m68kmint noarch
