@@ -394,7 +394,7 @@ static int fsmMkfile(rpmfi fi, const char *dest, rpmfiles files,
 	    rc = expandRegular(fi, dest, psm, nodigest, 0);
 	*firsthardlink = -1;
     } else {
-	setmeta = 0;
+	*setmeta = 0;
     }
 
     return rc;
