@@ -114,6 +114,12 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
 	CANONARCH=aarch64
 	CANONCOLOR=3
 	;;
+    m68k)
+	ISANAME=m68k
+	ISABITS=32
+	CANONARCH=m68k
+	CANONCOLOR=0
+	;;
     noarch)
 	CANONARCH=noarch
 	CANONCOLOR=0
