@@ -36,7 +36,6 @@ static int strict_erasures = 0;
  */
 struct fsm_s {
     char * path;		/*!< Current file name. */
-    char ** failedFile;		/*!< First file name that failed. */
     const char * osuffix;	/*!< Old, preserved, file suffix. */
     const char * nsuffix;	/*!< New, created, file suffix. */
     char * suffix;		/*!< Current file suffix. */
@@ -251,24 +250,18 @@ static int fsmMapPath(FSM_t fsm, rpmElementType goal)
     return rc;
 }
 
-static FSM_t fsmNew(rpmts ts, rpmte te, rpmfi fi, char ** failedFile)
+static FSM_t fsmNew(rpmts ts, rpmte te, rpmfi fi)
 {
     FSM_t fsm = xcalloc(1, sizeof(*fsm));
 
     fsm->fi = fi;
     fsm->fs = rpmteGetFileStates(te);
 
-    fsm->failedFile = failedFile;
-    if (fsm->failedFile)
-	*fsm->failedFile = NULL;
-
     return fsm;
 }
 
 static FSM_t fsmFree(FSM_t fsm)
 {
-    fsm->failedFile = NULL;
-
     fsm->path = _free(fsm->path);
     fsm->suffix = _free(fsm->suffix);
 
@@ -923,10 +916,6 @@ static int fsmCommit(FSM_t fsm, const struct stat * st)
 	}
     }
 
-    if (rc && fsm->failedFile && *fsm->failedFile == NULL) {
-        *fsm->failedFile = fsm->path;
-        fsm->path = NULL;
-    }
     return rc;
 }
 
@@ -974,7 +963,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
               rpmpsm psm, char ** failedFile)
 {
     rpmfi fi = rpmfiNewArchiveReader(cfd, files, RPMFI_ITER_READ_ARCHIVE);
-    FSM_t fsm = fsmNew(ts, te, fi, failedFile);
+    FSM_t fsm = fsmNew(ts, te, fi);
     rpmPlugins plugins = rpmtsPlugins(ts);
     struct stat sb;
     struct stat osb;
@@ -1099,8 +1088,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
                     }
                 }
                 errno = saveerrno;
-                if (fsm->failedFile && *fsm->failedFile == NULL)
-                    *fsm->failedFile = xstrdup(fsm->path);
             }
         } else {
 	    /* Notify on success. */
@@ -1110,6 +1097,9 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
                 rc = fsmCommit(fsm, &sb);
 	    }
 	}
+
+	if (rc)
+	    *failedFile = xstrdup(fsm->path);
 
 	/* Run fsm file post hook for all plugins */
 	rpmpluginsCallFsmFilePost(plugins, fsm->fi, fsm->path,
@@ -1132,7 +1122,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile)
 {
     rpmfi fi = rpmfilesIter(files, RPMFI_ITER_BACK);
-    FSM_t fsm = fsmNew(ts, te, fi, failedFile);
+    FSM_t fsm = fsmNew(ts, te, fi);
     rpmPlugins plugins = rpmtsPlugins(ts);
     struct stat sb;
     int rc = 0;
@@ -1192,6 +1182,9 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 
         /* XXX Failure to remove is not (yet) cause for failure. */
         if (!strict_erasures) rc = 0;
+
+	if (rc)
+	    *failedFile = xstrdup(fsm->path);
 
 	if (rc == 0) {
 	    /* Notify on success. */
