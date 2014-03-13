@@ -1093,11 +1093,11 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 	rc = rpmpluginsCallFsmFilePre(plugins, fi, fsm->path,
 				      sb.st_mode, action);
 
-	if (!fsm->postpone)
+	if (!XFA_SKIPPING(action))
 	    rc = fsmBackup(fsm, fi, action, sb.st_mode);
 
         /* Remove erased files. */
-        if (!fsm->postpone && action == FA_ERASE) {
+        if (action == FA_ERASE) {
 	    int missingok = (rpmfiFFlags(fi) & (RPMFILE_MISSINGOK | RPMFILE_GHOST));
 
             if (S_ISDIR(sb.st_mode)) {
