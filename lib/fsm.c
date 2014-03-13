@@ -36,7 +36,6 @@ static int strict_erasures = 0;
  */
 struct fsm_s {
     char * path;		/*!< Current file name. */
-    char * suffix;		/*!< Current file suffix. */
     int exists;			/*!< Does current file exist on disk? */
 };
 
@@ -216,8 +215,6 @@ static FSM_t fsmNew(void)
 static FSM_t fsmFree(FSM_t fsm)
 {
     fsm->path = _free(fsm->path);
-    fsm->suffix = _free(fsm->suffix);
-
     free(fsm);
     return NULL;
 }
@@ -571,7 +568,7 @@ static void removeSBITS(const char *path)
     }
 }
 
-static int fsmInit(FSM_t fsm, rpmfi fi, rpmFileAction action, rpmElementType goal, struct stat *st)
+static int fsmInit(FSM_t fsm, rpmfi fi, rpmFileAction action, rpmElementType goal, const char *suffix, struct stat *st)
 {
     int rc = 0;
 
@@ -580,7 +577,7 @@ static int fsmInit(FSM_t fsm, rpmfi fi, rpmFileAction action, rpmElementType goa
     fsm->exists = 0;
 
     /* Generate file path. */
-    fsm->path = fsmFsPath(fi, S_ISDIR(rpmfiFMode(fi)), fsm->suffix);
+    fsm->path = fsmFsPath(fi, S_ISDIR(rpmfiFMode(fi)), suffix);
 
     /* Perform lstat/stat for disk file. */
     if (fsm->path != NULL &&
@@ -839,7 +836,7 @@ static int fsmSetmeta(FSM_t fsm, rpmfi fi, rpmPlugins plugins,
     return rc;
 }
 
-static int fsmCommit(FSM_t fsm, rpmfi fi, rpmFileAction action, const struct stat * st)
+static int fsmCommit(FSM_t fsm, rpmfi fi, rpmFileAction action, const char *suffix, const struct stat * st)
 {
     int rc = 0;
 
@@ -855,7 +852,7 @@ static int fsmCommit(FSM_t fsm, rpmfi fi, rpmFileAction action, const struct sta
 	const char *nsuffix = (action == FA_ALTNAME) ? SUFFIX_RPMNEW : NULL;
 	char *dest = fsm->path;
 	/* Construct final destination path (nsuffix is usually NULL) */
-	if (!S_ISDIR(st->st_mode) && fsm->suffix)
+	if (!S_ISDIR(st->st_mode))
 	    dest = fsmFsPath(fi, 0, nsuffix);
 
 	/* Rename temporary to final file name if needed. */
@@ -930,9 +927,11 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
     int firsthardlink = -1;
     int skip;
     rpmFileAction action;
+    char *tid = NULL;
+    const char *suffix;
 
     /* transaction id used for temporary path suffix while installing */
-    rasprintf(&fsm->suffix, ";%08x", (unsigned)rpmtsGetTid(ts));
+    rasprintf(&tid, ";%08x", (unsigned)rpmtsGetTid(ts));
 
     /* Detect and create directories not explicitly in package. */
     if (!rc) {
@@ -951,8 +950,9 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 
 	action = rpmfsGetAction(fs, rpmfiFX(fi));
 	skip = XFA_SKIPPING(action);
+	suffix = S_ISDIR(rpmfiFMode(fi)) ? NULL : tid;
 
-	rc = fsmInit(fsm, fi, action, TR_ADDED, &osb);
+	rc = fsmInit(fsm, fi, action, TR_ADDED, suffix, &osb);
 
 	/* Remap file perms, owner, and group. */
 	if (!rc)
@@ -1040,7 +1040,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
         if (rc) {
             if (!skip) {
                 /* XXX only erase if temp fn w suffix is in use */
-                if (fsm->suffix) {
+                if (suffix) {
 		    (void) fsmRemove(fsm->path, sb.st_mode);
                 }
                 errno = saveerrno;
@@ -1050,7 +1050,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmfiArchiveTell(fi));
 
 	    if (!skip) {
-                rc = fsmCommit(fsm, fi, action, &sb);
+                rc = fsmCommit(fsm, fi, action, suffix, &sb);
 	    }
 	}
 
@@ -1067,6 +1067,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
     rpmfiArchiveClose(fi);
     fsmFree(fsm);
     rpmfiFree(fi);
+    free(tid);
 
     return rc;
 }
@@ -1084,7 +1085,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 
     while (!rc && rpmfiNext(fi) >= 0) {
 	rpmFileAction action = rpmfsGetAction(fs, rpmfiFX(fi));
-	rc = fsmInit(fsm, fi, action, TR_REMOVED, &sb);
+	rc = fsmInit(fsm, fi, action, TR_REMOVED, NULL, &sb);
 
 	/* Run fsm file pre hook for all plugins */
 	rc = rpmpluginsCallFsmFilePre(plugins, fi, fsm->path,
