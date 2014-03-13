@@ -628,7 +628,7 @@ assert(otherFi != NULL);
 		
 	    /* Pre-existing modified config files need to be saved. */
 	    if (rpmfilesConfigConflict(fi, i)) {
-		rpmfsSetAction(fs, i, FA_BACKUP);
+		rpmfsSetAction(fs, i, FA_SAVE);
 		break;
 	    }
 	

@@ -217,7 +217,7 @@ const char * dnlNextIterator(DNLI_t dnli)
  * Map next file path and action.
  * @param fsm		file state machine
  */
-static int fsmMapPath(FSM_t fsm, rpmElementType goal)
+static int fsmMapPath(FSM_t fsm)
 {
     int rc = 0;
 
@@ -235,8 +235,7 @@ static int fsmMapPath(FSM_t fsm, rpmElementType goal)
 		fsm->osuffix = SUFFIX_RPMSAVE;
 		break;
 	    case FA_BACKUP:
-		fsm->osuffix = (goal == TR_ADDED) ?
-				SUFFIX_RPMORIG : SUFFIX_RPMSAVE;
+		fsm->osuffix = SUFFIX_RPMORIG;
 		break;
 	    default:
 		break;
@@ -630,7 +629,7 @@ static int fsmInit(FSM_t fsm, rpmElementType goal, struct stat *st)
     fsm->nsuffix = NULL;
 
     /* Generate file path. */
-    rc = fsmMapPath(fsm, goal);
+    rc = fsmMapPath(fsm);
     if (rc) return rc;
 
     /* Perform lstat/stat for disk file. */
