@@ -809,28 +809,28 @@ static int fsmBackup(FSM_t fsm, rpmfi fi, rpmFileAction action, mode_t mode)
     return rc;
 }
 
-static int fsmSetmeta(FSM_t fsm, rpmfi fi, rpmPlugins plugins,
+static int fsmSetmeta(const char *path, rpmfi fi, rpmPlugins plugins,
 		      rpmFileAction action, const struct stat * st)
 {
     int rc = 0;
     const char *dest = rpmfiFN(fi);
 
     if (!rc && !getuid()) {
-	rc = fsmChown(fsm->path, st->st_mode, st->st_uid, st->st_gid);
+	rc = fsmChown(path, st->st_mode, st->st_uid, st->st_gid);
     }
     if (!rc && !S_ISLNK(st->st_mode)) {
-	rc = fsmChmod(fsm->path, st->st_mode);
+	rc = fsmChmod(path, st->st_mode);
     }
     /* Set file capabilities (if enabled) */
     if (!rc && S_ISREG(st->st_mode) && !getuid()) {
-	rc = fsmSetFCaps(fsm->path, rpmfiFCaps(fi));
+	rc = fsmSetFCaps(path, rpmfiFCaps(fi));
     }
     if (!rc) {
-	rc = fsmUtime(fsm->path, st->st_mode, rpmfiFMtime(fi));
+	rc = fsmUtime(path, st->st_mode, rpmfiFMtime(fi));
     }
     if (!rc) {
 	rc = rpmpluginsCallFsmFilePrepare(plugins, fi,
-					  fsm->path, dest, st->st_mode, action);
+					  path, dest, st->st_mode, action);
     }
 
     return rc;
@@ -1027,7 +1027,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
             }
 	    /* Set permissions, timestamps etc for non-hardlink entries */
 	    if (!rc && setmeta) {
-		rc = fsmSetmeta(fsm, fi, plugins, action, &sb);
+		rc = fsmSetmeta(fsm->path, fi, plugins, action, &sb);
 	    }
         } else if (firsthardlink >= 0 && rpmfiArchiveHasContent(fi)) {
 	    /* we skip the hard linked file containing the content */
