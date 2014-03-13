@@ -36,7 +36,6 @@ static int strict_erasures = 0;
  */
 struct fsm_s {
     char * path;		/*!< Current file name. */
-    const char * nsuffix;	/*!< New, created, file suffix. */
     char * suffix;		/*!< Current file suffix. */
     int postpone;		/*!< Skip remaining stages? */
     int exists;			/*!< Does current file exist on disk? */
@@ -220,23 +219,10 @@ static int fsmMapPath(FSM_t fsm)
 {
     int rc = 0;
 
-    fsm->nsuffix = NULL;
-
     if (fsm->fi) {
-	/* Never create backup for %ghost files. */
-	if (!(rpmfiFFlags(fsm->fi) & RPMFILE_GHOST)) {
-	    switch (rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi))) {
-	    case FA_ALTNAME:
-		fsm->nsuffix = SUFFIX_RPMNEW;
-		break;
-	    default:
-		break;
-	    }
-	}
-
 	fsm->path = _free(fsm->path);
 	fsm->path = fsmFsPath(fsm->fi, S_ISDIR(rpmfiFMode(fsm->fi)),
-		(fsm->suffix ? fsm->suffix : fsm->nsuffix));
+			      fsm->suffix);
     }
     return rc;
 }
@@ -617,7 +603,6 @@ static int fsmInit(FSM_t fsm, rpmElementType goal, struct stat *st)
     fsm->path = _free(fsm->path);
     fsm->postpone = 0;
     fsm->exists = 0;
-    fsm->nsuffix = NULL;
 
     /* Generate file path. */
     rc = fsmMapPath(fsm);
@@ -892,15 +877,16 @@ static int fsmCommit(FSM_t fsm, rpmFileAction action, const struct stat * st)
 	rc = fsmBackup(fsm, action, st->st_mode);
 
     if (!rc) {
+	const char *nsuffix = (action == FA_ALTNAME) ? SUFFIX_RPMNEW : NULL;
 	char *dest = fsm->path;
 	/* Construct final destination path (nsuffix is usually NULL) */
-	if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix))
-	    dest = fsmFsPath(fsm->fi, 0, fsm->nsuffix);
+	if (!S_ISDIR(st->st_mode) && fsm->suffix)
+	    dest = fsmFsPath(fsm->fi, 0, nsuffix);
 
 	/* Rename temporary to final file name if needed. */
 	if (dest != fsm->path) {
 	    rc = fsmRename(fsm->path, dest);
-	    if (!rc && fsm->nsuffix) {
+	    if (!rc && nsuffix) {
 		char * opath = fsmFsPath(fsm->fi, 0, NULL);
 		rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
 		       opath, dest);
