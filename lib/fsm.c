@@ -856,11 +856,7 @@ static int fsmBackup(FSM_t fsm, mode_t mode)
 static int fsmSetmeta(FSM_t fsm, rpmPlugins plugins, const struct stat * st)
 {
     int rc = 0;
-    char *dest = fsm->path;
-
-    /* Construct final destination path (nsuffix is usually NULL) */
-    if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix))
-	dest = fsmFsPath(fsm->fi, 0, fsm->nsuffix);
+    const char *dest = rpmfiFN(fsm->fi);
 
     if (!rc && !getuid()) {
 	rc = fsmChown(fsm->path, st->st_mode, st->st_uid, st->st_gid);
@@ -881,9 +877,6 @@ static int fsmSetmeta(FSM_t fsm, rpmPlugins plugins, const struct stat * st)
 					  rpmfsGetAction(fsm->fs,
 							 rpmfiFX(fsm->fi)));
     }
-
-    if (dest != fsm->path)
-	free(dest);
 
     return rc;
 }
