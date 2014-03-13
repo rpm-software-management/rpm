@@ -39,8 +39,6 @@ struct fsm_s {
     char * suffix;		/*!< Current file suffix. */
     int postpone;		/*!< Skip remaining stages? */
     int exists;			/*!< Does current file exist on disk? */
-
-    rpmfi fi;			/*!< File iterator. */
 };
 
 #define	SUFFIX_RPMORIG	".rpmorig"
@@ -213,9 +211,6 @@ const char * dnlNextIterator(DNLI_t dnli)
 static FSM_t fsmNew(rpmts ts, rpmte te, rpmfi fi)
 {
     FSM_t fsm = xcalloc(1, sizeof(*fsm));
-
-    fsm->fi = fi;
-
     return fsm;
 }
 
@@ -577,7 +572,7 @@ static void removeSBITS(const char *path)
     }
 }
 
-static int fsmInit(FSM_t fsm, rpmFileAction action, rpmElementType goal, struct stat *st)
+static int fsmInit(FSM_t fsm, rpmfi fi, rpmFileAction action, rpmElementType goal, struct stat *st)
 {
     int rc = 0;
 
@@ -587,11 +582,11 @@ static int fsmInit(FSM_t fsm, rpmFileAction action, rpmElementType goal, struct 
     fsm->exists = 0;
 
     /* Generate file path. */
-    fsm->path = fsmFsPath(fsm->fi, S_ISDIR(rpmfiFMode(fsm->fi)), fsm->suffix);
+    fsm->path = fsmFsPath(fi, S_ISDIR(rpmfiFMode(fi)), fsm->suffix);
 
     /* Perform lstat/stat for disk file. */
     if (fsm->path != NULL &&
-	!(goal == TR_ADDED && S_ISREG(rpmfiFMode(fsm->fi))))
+	!(goal == TR_ADDED && S_ISREG(rpmfiFMode(fi))))
     {
 	rc = fsmStat(fsm->path, 1, st);
 	if (rc == RPMERR_ENOENT) {
@@ -725,7 +720,7 @@ static int fsmUtime(const char *path, mode_t mode, time_t mtime)
     return rc;
 }
 
-static int fsmVerify(FSM_t fsm, const struct stat *st, struct stat *ost)
+static int fsmVerify(FSM_t fsm, rpmfi fi, const struct stat *st, struct stat *ost)
 {
     int rc;
     int saveerrno = errno;
@@ -760,7 +755,7 @@ static int fsmVerify(FSM_t fsm, const struct stat *st, struct stat *ost)
             rc = fsmReadLink(fsm->path, buf, 8 * BUFSIZ, &len);
             errno = saveerrno;
             if (rc) return rc;
-            if (rstreq(rpmfiFLink(fsm->fi), buf)) return 0;
+            if (rstreq(rpmfiFLink(fi), buf)) return 0;
         }
     } else if (S_ISFIFO(st->st_mode)) {
         if (S_ISFIFO(ost->st_mode)) return 0;
@@ -785,12 +780,12 @@ static int fsmVerify(FSM_t fsm, const struct stat *st, struct stat *ost)
 
 
 /* Rename pre-existing modified or unmanaged file. */
-static int fsmBackup(FSM_t fsm, rpmFileAction action, mode_t mode)
+static int fsmBackup(FSM_t fsm, rpmfi fi, rpmFileAction action, mode_t mode)
 {
     int rc = 0;
     const char *suffix = NULL;
 
-    if (!(rpmfiFFlags(fsm->fi) & RPMFILE_GHOST)) {
+    if (!(rpmfiFFlags(fi) & RPMFILE_GHOST)) {
 	switch (action) {
 	case FA_SAVE:
 	    suffix = SUFFIX_RPMSAVE;
@@ -804,8 +799,8 @@ static int fsmBackup(FSM_t fsm, rpmFileAction action, mode_t mode)
     }
 
     if (suffix) {
-	char * opath = fsmFsPath(fsm->fi, S_ISDIR(mode), NULL);
-	char * path = fsmFsPath(fsm->fi, 0, suffix);
+	char * opath = fsmFsPath(fi, S_ISDIR(mode), NULL);
+	char * path = fsmFsPath(fi, 0, suffix);
 	rc = fsmRename(opath, path);
 	if (!rc) {
 	    rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"), opath, path);
@@ -817,11 +812,11 @@ static int fsmBackup(FSM_t fsm, rpmFileAction action, mode_t mode)
     return rc;
 }
 
-static int fsmSetmeta(FSM_t fsm, rpmPlugins plugins,
+static int fsmSetmeta(FSM_t fsm, rpmfi fi, rpmPlugins plugins,
 		      rpmFileAction action, const struct stat * st)
 {
     int rc = 0;
-    const char *dest = rpmfiFN(fsm->fi);
+    const char *dest = rpmfiFN(fi);
 
     if (!rc && !getuid()) {
 	rc = fsmChown(fsm->path, st->st_mode, st->st_uid, st->st_gid);
@@ -831,20 +826,20 @@ static int fsmSetmeta(FSM_t fsm, rpmPlugins plugins,
     }
     /* Set file capabilities (if enabled) */
     if (!rc && S_ISREG(st->st_mode) && !getuid()) {
-	rc = fsmSetFCaps(fsm->path, rpmfiFCaps(fsm->fi));
+	rc = fsmSetFCaps(fsm->path, rpmfiFCaps(fi));
     }
     if (!rc) {
-	rc = fsmUtime(fsm->path, st->st_mode, rpmfiFMtime(fsm->fi));
+	rc = fsmUtime(fsm->path, st->st_mode, rpmfiFMtime(fi));
     }
     if (!rc) {
-	rc = rpmpluginsCallFsmFilePrepare(plugins, fsm->fi,
+	rc = rpmpluginsCallFsmFilePrepare(plugins, fi,
 					  fsm->path, dest, st->st_mode, action);
     }
 
     return rc;
 }
 
-static int fsmCommit(FSM_t fsm, rpmFileAction action, const struct stat * st)
+static int fsmCommit(FSM_t fsm, rpmfi fi, rpmFileAction action, const struct stat * st)
 {
     int rc = 0;
 
@@ -854,20 +849,20 @@ static int fsmCommit(FSM_t fsm, rpmFileAction action, const struct stat * st)
 
     /* Backup on-disk file if needed. Directories are handled earlier */
     if (!S_ISDIR(st->st_mode))
-	rc = fsmBackup(fsm, action, st->st_mode);
+	rc = fsmBackup(fsm, fi, action, st->st_mode);
 
     if (!rc) {
 	const char *nsuffix = (action == FA_ALTNAME) ? SUFFIX_RPMNEW : NULL;
 	char *dest = fsm->path;
 	/* Construct final destination path (nsuffix is usually NULL) */
 	if (!S_ISDIR(st->st_mode) && fsm->suffix)
-	    dest = fsmFsPath(fsm->fi, 0, nsuffix);
+	    dest = fsmFsPath(fi, 0, nsuffix);
 
 	/* Rename temporary to final file name if needed. */
 	if (dest != fsm->path) {
 	    rc = fsmRename(fsm->path, dest);
 	    if (!rc && nsuffix) {
-		char * opath = fsmFsPath(fsm->fi, 0, NULL);
+		char * opath = fsmFsPath(fi, 0, NULL);
 		rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
 		       opath, dest);
 		free(opath);
@@ -953,21 +948,21 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    break;
 	}
 
-	action = rpmfsGetAction(fs, rpmfiFX(fsm->fi));
+	action = rpmfsGetAction(fs, rpmfiFX(fi));
 
 	/* Sets fsm->postpone for skipped files */
-	rc = fsmInit(fsm, action, TR_ADDED, &osb);
+	rc = fsmInit(fsm, fi, action, TR_ADDED, &osb);
 
 	/* Remap file perms, owner, and group. */
 	if (!rc)
-	    rc = fsmMapAttrs(fsm->fi, 1, &sb);
+	    rc = fsmMapAttrs(fi, 1, &sb);
 
         /* Exit on error. */
         if (rc)
             break;
 
 	/* Run fsm file pre hook for all plugins */
-	rc = rpmpluginsCallFsmFilePre(plugins, fsm->fi, fsm->path,
+	rc = rpmpluginsCallFsmFilePre(plugins, fi, fsm->path,
 				      sb.st_mode, action);
 	if (rc) {
 	    fsm->postpone = 1;
@@ -978,15 +973,15 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
         if (!fsm->postpone) {
 	    int setmeta = 1;
             if (S_ISREG(sb.st_mode)) {
-                rc = fsmVerify(fsm, &sb, &osb);
+                rc = fsmVerify(fsm, fi, &sb, &osb);
 		if (rc == RPMERR_ENOENT) {
 		    rc = fsmMkfile(fi, fsm->path, files, psm, nodigest,
 				   &setmeta, &firsthardlink);
 		}
             } else if (S_ISDIR(sb.st_mode)) {
 		/* Directories replacing something need early backup */
-                rc = fsmBackup(fsm, action, sb.st_mode);
-                rc = fsmVerify(fsm, &sb, &osb);
+                rc = fsmBackup(fsm, fi, action, sb.st_mode);
+                rc = fsmVerify(fsm, fi, &sb, &osb);
                 if (rc == RPMERR_ENOENT) {
                     mode_t mode = sb.st_mode;
                     mode &= ~07777;
@@ -1001,7 +996,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
                 } else {
 		    buf[sb.st_size] = '\0';
 		    if (nodigest || rstreq(rpmfiFLink(fi), buf)) {
-			rc = fsmVerify(fsm, &sb, &osb);
+			rc = fsmVerify(fsm, fi, &sb, &osb);
 		    } else {
 			rc = RPMERR_DIGEST_MISMATCH;
 		    }
@@ -1012,7 +1007,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 		free(buf);
             } else if (S_ISFIFO(sb.st_mode)) {
                 /* This mimics cpio S_ISSOCK() behavior but probably isn't right */
-                rc = fsmVerify(fsm, &sb, &osb);
+                rc = fsmVerify(fsm, fi, &sb, &osb);
                 if (rc == RPMERR_ENOENT) {
                     rc = fsmMkfifo(fsm->path, 0000);
                 }
@@ -1020,7 +1015,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
                        S_ISBLK(sb.st_mode) ||
                        S_ISSOCK(sb.st_mode))
             {
-                rc = fsmVerify(fsm, &sb, &osb);
+                rc = fsmVerify(fsm, fi, &sb, &osb);
                 if (rc == RPMERR_ENOENT) {
                     rc = fsmMknod(fsm->path, sb.st_mode, sb.st_rdev);
                 }
@@ -1031,7 +1026,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
             }
 	    /* Set permissions, timestamps etc for non-hardlink entries */
 	    if (!rc && setmeta) {
-		rc = fsmSetmeta(fsm, plugins, action, &sb);
+		rc = fsmSetmeta(fsm, fi, plugins, action, &sb);
 	    }
         } else if (firsthardlink >= 0 && rpmfiArchiveHasContent(fi)) {
 	    /* we skip the hard linked file containing the content */
@@ -1058,7 +1053,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmfiArchiveTell(fi));
 
 	    if (!fsm->postpone) {
-                rc = fsmCommit(fsm, action, &sb);
+                rc = fsmCommit(fsm, fi, action, &sb);
 	    }
 	}
 
@@ -1066,7 +1061,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    *failedFile = xstrdup(fsm->path);
 
 	/* Run fsm file post hook for all plugins */
-	rpmpluginsCallFsmFilePost(plugins, fsm->fi, fsm->path,
+	rpmpluginsCallFsmFilePost(plugins, fi, fsm->path,
 				  sb.st_mode, action, rc);
 
     }
@@ -1090,16 +1085,16 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
     struct stat sb;
     int rc = 0;
 
-    while (!rc && rpmfiNext(fsm->fi) >= 0) {
-	rpmFileAction action = rpmfsGetAction(fs, rpmfiFX(fsm->fi));
-	rc = fsmInit(fsm, action, TR_REMOVED, &sb);
+    while (!rc && rpmfiNext(fi) >= 0) {
+	rpmFileAction action = rpmfsGetAction(fs, rpmfiFX(fi));
+	rc = fsmInit(fsm, fi, action, TR_REMOVED, &sb);
 
 	/* Run fsm file pre hook for all plugins */
-	rc = rpmpluginsCallFsmFilePre(plugins, fsm->fi, fsm->path,
+	rc = rpmpluginsCallFsmFilePre(plugins, fi, fsm->path,
 				      sb.st_mode, action);
 
 	if (!fsm->postpone)
-	    rc = fsmBackup(fsm, action, sb.st_mode);
+	    rc = fsmBackup(fsm, fi, action, sb.st_mode);
 
         /* Remove erased files. */
         if (!fsm->postpone && action == FA_ERASE) {
@@ -1140,7 +1135,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
         }
 
 	/* Run fsm file post hook for all plugins */
-	rpmpluginsCallFsmFilePost(plugins, fsm->fi, fsm->path,
+	rpmpluginsCallFsmFilePost(plugins, fi, fsm->path,
 				  sb.st_mode, action, rc);
 
         /* XXX Failure to remove is not (yet) cause for failure. */
@@ -1152,7 +1147,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 	if (rc == 0) {
 	    /* Notify on success. */
 	    /* On erase we're iterating backwards, fixup for progress */
-	    rpm_loff_t amount = rpmfiFC(fsm->fi) - rpmfiFX(fsm->fi);
+	    rpm_loff_t amount = rpmfiFC(fi) - rpmfiFX(fi);
 	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, amount);
 	}
     }
