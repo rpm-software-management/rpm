@@ -211,22 +211,6 @@ const char * dnlNextIterator(DNLI_t dnli)
     return dn;
 }
 
-/**
- * Map next file path and action.
- * @param fsm		file state machine
- */
-static int fsmMapPath(FSM_t fsm)
-{
-    int rc = 0;
-
-    if (fsm->fi) {
-	fsm->path = _free(fsm->path);
-	fsm->path = fsmFsPath(fsm->fi, S_ISDIR(rpmfiFMode(fsm->fi)),
-			      fsm->suffix);
-    }
-    return rc;
-}
-
 static FSM_t fsmNew(rpmts ts, rpmte te, rpmfi fi)
 {
     FSM_t fsm = xcalloc(1, sizeof(*fsm));
@@ -605,8 +589,7 @@ static int fsmInit(FSM_t fsm, rpmElementType goal, struct stat *st)
     fsm->exists = 0;
 
     /* Generate file path. */
-    rc = fsmMapPath(fsm);
-    if (rc) return rc;
+    fsm->path = fsmFsPath(fsm->fi, S_ISDIR(rpmfiFMode(fsm->fi)), fsm->suffix);
 
     /* Perform lstat/stat for disk file. */
     if (fsm->path != NULL &&
