@@ -54,6 +54,7 @@ Makefile.in.in
 /po/stamp-po
 /rpm
 /rpm.pc
+/rpm2archive
 /rpm2cpio
 /rpmb
 /rpmbuild
@@ -76,3 +77,9 @@ Makefile.in.in
 /scripts/macros.python
 /stamp-h1
 /tests/atconfig
+/tests/atlocal
+/tests/package.m4
+/tests/rpmtests
+/tests/rpmtests.dir
+/tests/rpmtests.log
+/tests/testing/
