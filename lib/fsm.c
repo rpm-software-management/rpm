@@ -56,17 +56,12 @@ static const char * fileActionString(rpmFileAction a);
 /** \ingroup payload
  * Build path to file from file info, optionally ornamented with suffix.
  * @param fi		file info iterator
- * @param isDir		directory or regular path?
  * @param suffix	suffix to use (NULL disables)
  * @retval		path to file (malloced)
  */
-static char * fsmFsPath(rpmfi fi, int isDir,
-			const char * suffix)
+static char * fsmFsPath(rpmfi fi, const char * suffix)
 {
-    return rstrscat(NULL,
-		    rpmfiDN(fi), rpmfiBN(fi),
-		    (!isDir && suffix) ? suffix : "",
-		    NULL);
+    return rstrscat(NULL, rpmfiDN(fi), rpmfiBN(fi), suffix ? suffix : "", NULL);
 }
 
 /** \ingroup payload
@@ -577,7 +572,7 @@ static int fsmInit(FSM_t fsm, rpmfi fi, rpmFileAction action, rpmElementType goa
     fsm->exists = 0;
 
     /* Generate file path. */
-    fsm->path = fsmFsPath(fi, S_ISDIR(rpmfiFMode(fi)), suffix);
+    fsm->path = fsmFsPath(fi, suffix);
 
     /* Perform lstat/stat for disk file. */
     if (fsm->path != NULL &&
@@ -796,8 +791,8 @@ static int fsmBackup(FSM_t fsm, rpmfi fi, rpmFileAction action, mode_t mode)
     }
 
     if (suffix) {
-	char * opath = fsmFsPath(fi, S_ISDIR(mode), NULL);
-	char * path = fsmFsPath(fi, 0, suffix);
+	char * opath = fsmFsPath(fi, NULL);
+	char * path = fsmFsPath(fi, suffix);
 	rc = fsmRename(opath, path);
 	if (!rc) {
 	    rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"), opath, path);
@@ -853,13 +848,13 @@ static int fsmCommit(FSM_t fsm, rpmfi fi, rpmFileAction action, const char *suff
 	char *dest = fsm->path;
 	/* Construct final destination path (nsuffix is usually NULL) */
 	if (!S_ISDIR(st->st_mode))
-	    dest = fsmFsPath(fi, 0, nsuffix);
+	    dest = fsmFsPath(fi, nsuffix);
 
 	/* Rename temporary to final file name if needed. */
 	if (dest != fsm->path) {
 	    rc = fsmRename(fsm->path, dest);
 	    if (!rc && nsuffix) {
-		char * opath = fsmFsPath(fi, 0, NULL);
+		char * opath = fsmFsPath(fi, NULL);
 		rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
 		       opath, dest);
 		free(opath);
