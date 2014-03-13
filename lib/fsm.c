@@ -208,7 +208,7 @@ const char * dnlNextIterator(DNLI_t dnli)
     return dn;
 }
 
-static FSM_t fsmNew(rpmts ts, rpmte te, rpmfi fi)
+static FSM_t fsmNew(void)
 {
     FSM_t fsm = xcalloc(1, sizeof(*fsm));
     return fsm;
@@ -920,7 +920,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 {
     rpmfi fi = rpmfiNewArchiveReader(cfd, files, RPMFI_ITER_READ_ARCHIVE);
     rpmfs fs = rpmteGetFileStates(te);
-    FSM_t fsm = fsmNew(ts, te, fi);
+    FSM_t fsm = fsmNew();
     rpmPlugins plugins = rpmtsPlugins(ts);
     struct stat sb;
     struct stat osb;
@@ -1080,7 +1080,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 {
     rpmfi fi = rpmfilesIter(files, RPMFI_ITER_BACK);
     rpmfs fs = rpmteGetFileStates(te);
-    FSM_t fsm = fsmNew(ts, te, fi);
+    FSM_t fsm = fsmNew();
     rpmPlugins plugins = rpmtsPlugins(ts);
     struct stat sb;
     int rc = 0;
