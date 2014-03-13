@@ -37,7 +37,6 @@ static int strict_erasures = 0;
 struct fsm_s {
     char * path;		/*!< Current file name. */
     char * suffix;		/*!< Current file suffix. */
-    int postpone;		/*!< Skip remaining stages? */
     int exists;			/*!< Does current file exist on disk? */
 };
 
@@ -578,7 +577,6 @@ static int fsmInit(FSM_t fsm, rpmfi fi, rpmFileAction action, rpmElementType goa
 
     memset(st, 0, sizeof(*st));
     fsm->path = _free(fsm->path);
-    fsm->postpone = 0;
     fsm->exists = 0;
 
     /* Generate file path. */
@@ -601,8 +599,6 @@ static int fsmInit(FSM_t fsm, rpmfi fi, rpmFileAction action, rpmElementType goa
 	fsm->exists = 0;
     }
     if (rc) return rc;
-
-    fsm->postpone = XFA_SKIPPING(action);
 
     rpmlog(RPMLOG_DEBUG, "%-10s %06o%3d (%4d,%4d)%6d %s\n",
 	   fileActionString(action), (int)st->st_mode,
@@ -932,6 +928,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
     int rc = 0;
     int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST) ? 1 : 0;
     int firsthardlink = -1;
+    int skip;
     rpmFileAction action;
 
     /* transaction id used for temporary path suffix while installing */
@@ -953,8 +950,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	}
 
 	action = rpmfsGetAction(fs, rpmfiFX(fi));
+	skip = XFA_SKIPPING(action);
 
-	/* Sets fsm->postpone for skipped files */
 	rc = fsmInit(fsm, fi, action, TR_ADDED, &osb);
 
 	/* Remap file perms, owner, and group. */
@@ -969,12 +966,12 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	rc = rpmpluginsCallFsmFilePre(plugins, fi, fsm->path,
 				      sb.st_mode, action);
 	if (rc) {
-	    fsm->postpone = 1;
+	    skip = 1;
 	} else {
 	    setFileState(fs, rpmfiFX(fi));
 	}
 
-        if (!fsm->postpone) {
+        if (!skip) {
 	    int setmeta = 1;
             if (S_ISREG(sb.st_mode)) {
                 rc = fsmVerify(fsm, fi, &sb, &osb);
@@ -1041,7 +1038,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	}
 
         if (rc) {
-            if (!fsm->postpone) {
+            if (!skip) {
                 /* XXX only erase if temp fn w suffix is in use */
                 if (fsm->suffix) {
 		    (void) fsmRemove(fsm->path, sb.st_mode);
@@ -1052,7 +1049,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    /* Notify on success. */
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmfiArchiveTell(fi));
 
-	    if (!fsm->postpone) {
+	    if (!skip) {
                 rc = fsmCommit(fsm, fi, action, &sb);
 	    }
 	}
