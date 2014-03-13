@@ -662,6 +662,10 @@ static int fsmRename(const char *opath, const char *path)
     return rc;
 }
 
+static int fsmRemove(const char *path, mode_t mode)
+{
+    return S_ISDIR(mode) ? fsmRmdir(path) : fsmUnlink(path);
+}
 
 static int fsmChown(const char *path, mode_t mode, uid_t uid, gid_t gid)
 {
@@ -1040,11 +1044,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
             if (!fsm->postpone) {
                 /* XXX only erase if temp fn w suffix is in use */
                 if (fsm->suffix) {
-                    if (S_ISDIR(sb.st_mode)) {
-                        (void) fsmRmdir(fsm->path);
-                    } else {
-                        (void) fsmUnlink(fsm->path);
-                    }
+		    (void) fsmRemove(fsm->path, sb.st_mode);
                 }
                 errno = saveerrno;
             }
@@ -1100,11 +1100,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
         if (action == FA_ERASE) {
 	    int missingok = (rpmfiFFlags(fi) & (RPMFILE_MISSINGOK | RPMFILE_GHOST));
 
-            if (S_ISDIR(sb.st_mode)) {
-                rc = fsmRmdir(fsm->path);
-            } else {
-                rc = fsmUnlink(fsm->path);
-	    }
+	    rc = fsmRemove(fsm->path, sb.st_mode);
 
 	    /*
 	     * Missing %ghost or %missingok entries are not errors.
