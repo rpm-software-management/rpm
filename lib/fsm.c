@@ -41,7 +41,6 @@ struct fsm_s {
     int exists;			/*!< Does current file exist on disk? */
 
     rpmfi fi;			/*!< File iterator. */
-    rpmfs fs;			/*!< File states. */
 };
 
 #define	SUFFIX_RPMORIG	".rpmorig"
@@ -216,7 +215,6 @@ static FSM_t fsmNew(rpmts ts, rpmte te, rpmfi fi)
     FSM_t fsm = xcalloc(1, sizeof(*fsm));
 
     fsm->fi = fi;
-    fsm->fs = rpmteGetFileStates(te);
 
     return fsm;
 }
@@ -579,7 +577,7 @@ static void removeSBITS(const char *path)
     }
 }
 
-static int fsmInit(FSM_t fsm, rpmElementType goal, struct stat *st)
+static int fsmInit(FSM_t fsm, rpmFileAction action, rpmElementType goal, struct stat *st)
 {
     int rc = 0;
 
@@ -609,7 +607,6 @@ static int fsmInit(FSM_t fsm, rpmElementType goal, struct stat *st)
     }
     if (rc) return rc;
 
-    rpmFileAction action = rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi));
     fsm->postpone = XFA_SKIPPING(action);
 
     rpmlog(RPMLOG_DEBUG, "%-10s %06o%3d (%4d,%4d)%6d %s\n",
@@ -927,6 +924,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
               rpmpsm psm, char ** failedFile)
 {
     rpmfi fi = rpmfiNewArchiveReader(cfd, files, RPMFI_ITER_READ_ARCHIVE);
+    rpmfs fs = rpmteGetFileStates(te);
     FSM_t fsm = fsmNew(ts, te, fi);
     rpmPlugins plugins = rpmtsPlugins(ts);
     struct stat sb;
@@ -942,7 +940,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 
     /* Detect and create directories not explicitly in package. */
     if (!rc) {
-	rc = fsmMkdirs(files, fsm->fs, plugins);
+	rc = fsmMkdirs(files, fs, plugins);
     }
 
     while (!rc) {
@@ -955,10 +953,10 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    break;
 	}
 
-	action = rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi));
+	action = rpmfsGetAction(fs, rpmfiFX(fsm->fi));
 
 	/* Sets fsm->postpone for skipped files */
-	rc = fsmInit(fsm, TR_ADDED, &osb);
+	rc = fsmInit(fsm, action, TR_ADDED, &osb);
 
 	/* Remap file perms, owner, and group. */
 	if (!rc)
@@ -974,7 +972,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	if (rc) {
 	    fsm->postpone = 1;
 	} else {
-	    setFileState(fsm->fs, rpmfiFX(fi));
+	    setFileState(fs, rpmfiFX(fi));
 	}
 
         if (!fsm->postpone) {
@@ -1086,14 +1084,15 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile)
 {
     rpmfi fi = rpmfilesIter(files, RPMFI_ITER_BACK);
+    rpmfs fs = rpmteGetFileStates(te);
     FSM_t fsm = fsmNew(ts, te, fi);
     rpmPlugins plugins = rpmtsPlugins(ts);
     struct stat sb;
     int rc = 0;
 
     while (!rc && rpmfiNext(fsm->fi) >= 0) {
-        rc = fsmInit(fsm, TR_REMOVED, &sb);
-	rpmFileAction action = rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi));
+	rpmFileAction action = rpmfsGetAction(fs, rpmfiFX(fsm->fi));
+	rc = fsmInit(fsm, action, TR_REMOVED, &sb);
 
 	/* Run fsm file pre hook for all plugins */
 	rc = rpmpluginsCallFsmFilePre(plugins, fsm->fi, fsm->path,
