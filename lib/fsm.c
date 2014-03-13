@@ -836,14 +836,7 @@ static int fsmCommit(FSM_t fsm, rpmfi fi, rpmFileAction action, const char *suff
     int rc = 0;
 
     /* XXX Special case /dev/log, which shouldn't be packaged anyways */
-    if (S_ISSOCK(st->st_mode) && IS_DEV_LOG(fsm->path))
-	return 0;
-
-    /* Backup on-disk file if needed. Directories are handled earlier */
-    if (!S_ISDIR(st->st_mode))
-	rc = fsmBackup(fsm, fi, action, st->st_mode);
-
-    if (!rc) {
+    if (!(S_ISSOCK(st->st_mode) && IS_DEV_LOG(fsm->path))) {
 	const char *nsuffix = (action == FA_ALTNAME) ? SUFFIX_RPMNEW : NULL;
 	char *dest = fsm->path;
 	/* Construct final destination path (nsuffix is usually NULL) */
@@ -1045,7 +1038,12 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmfiArchiveTell(fi));
 
 	    if (!skip) {
-                rc = fsmCommit(fsm, fi, action, suffix, &sb);
+		/* Backup file if needed. Directories are handled earlier */
+		if (!S_ISDIR(sb.st_mode))
+		    rc = fsmBackup(fsm, fi, action, sb.st_mode);
+
+		if (!rc)
+		    rc = fsmCommit(fsm, fi, action, suffix, &sb);
 	    }
 	}
 
