@@ -36,7 +36,6 @@ static int strict_erasures = 0;
  */
 struct fsm_s {
     char * path;		/*!< Current file name. */
-    const char * osuffix;	/*!< Old, preserved, file suffix. */
     const char * nsuffix;	/*!< New, created, file suffix. */
     char * suffix;		/*!< Current file suffix. */
     int postpone;		/*!< Skip remaining stages? */
@@ -221,7 +220,6 @@ static int fsmMapPath(FSM_t fsm)
 {
     int rc = 0;
 
-    fsm->osuffix = NULL;
     fsm->nsuffix = NULL;
 
     if (fsm->fi) {
@@ -230,12 +228,6 @@ static int fsmMapPath(FSM_t fsm)
 	    switch (rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi))) {
 	    case FA_ALTNAME:
 		fsm->nsuffix = SUFFIX_RPMNEW;
-		break;
-	    case FA_SAVE:
-		fsm->osuffix = SUFFIX_RPMSAVE;
-		break;
-	    case FA_BACKUP:
-		fsm->osuffix = SUFFIX_RPMORIG;
 		break;
 	    default:
 		break;
@@ -625,7 +617,6 @@ static int fsmInit(FSM_t fsm, rpmElementType goal, struct stat *st)
     fsm->path = _free(fsm->path);
     fsm->postpone = 0;
     fsm->exists = 0;
-    fsm->osuffix = NULL;
     fsm->nsuffix = NULL;
 
     /* Generate file path. */
@@ -832,18 +823,32 @@ static int fsmVerify(FSM_t fsm, const struct stat *st, struct stat *ost)
 static int fsmBackup(FSM_t fsm, mode_t mode)
 {
     int rc = 0;
-    rpmFileAction action = rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi));
-    /* FIXME: %ghost can have backup action but no suffix */
-    if ((action == FA_SAVE || action == FA_BACKUP) && fsm->osuffix) {
-        char * opath = fsmFsPath(fsm->fi, S_ISDIR(mode), NULL);
-        char * path = fsmFsPath(fsm->fi, 0, fsm->osuffix);
-        rc = fsmRename(opath, path);
-        if (!rc) {
-            rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"), opath, path);
-            fsm->exists = 0; /* it doesn't exist anymore... */
-        }
-        free(path);
-        free(opath);
+    const char *suffix = NULL;
+
+    if (!(rpmfiFFlags(fsm->fi) & RPMFILE_GHOST)) {
+	rpmFileAction action = rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi));
+	switch (action) {
+	case FA_SAVE:
+	    suffix = SUFFIX_RPMSAVE;
+	    break;
+	case FA_BACKUP:
+	    suffix = SUFFIX_RPMORIG;
+	    break;
+	default:
+	    break;
+	}
+    }
+
+    if (suffix) {
+	char * opath = fsmFsPath(fsm->fi, S_ISDIR(mode), NULL);
+	char * path = fsmFsPath(fsm->fi, 0, suffix);
+	rc = fsmRename(opath, path);
+	if (!rc) {
+	    rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"), opath, path);
+	    fsm->exists = 0; /* it doesn't exist anymore... */
+	}
+	free(path);
+	free(opath);
     }
     return rc;
 }
