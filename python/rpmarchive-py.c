@@ -54,6 +54,11 @@ static PyObject *rpmarchive_close(rpmarchiveObject *s)
     Py_RETURN_NONE;
 }
 
+static PyObject *rpmarchive_has_content(rpmarchiveObject *s)
+{
+    return PyLong_FromLong(rpmfiArchiveHasContent(s->archive));
+}
+
 static PyObject *rpmarchive_read(rpmarchiveObject *s,
 				 PyObject *args, PyObject *kwds)
 {
@@ -183,6 +188,8 @@ static struct PyMethodDef rpmarchive_methods[] = {
     { "readto",	(PyCFunction)rpmarchive_readto,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
     { "writeto", (PyCFunction)rpmarchive_writeto,METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    { "hascontent", (PyCFunction)rpmarchive_has_content, METH_NOARGS,
 	NULL },
     { NULL, NULL, 0, NULL }
 };
