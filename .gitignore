@@ -14,6 +14,8 @@
 *.lo
 *.la
 *.tmp
+*.pyc
+*.pyo
 Makefile
 Makefile.in
 Makefile.in.in
