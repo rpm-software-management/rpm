@@ -962,16 +962,19 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 
         if (!skip) {
 	    int setmeta = 1;
+
+	    /* Directories replacing something need early backup */
+	    if (S_ISDIR(sb.st_mode)) {
+		rc = fsmBackup(fi, action, sb.st_mode, &fsm->exists);
+	    }
+	    rc = fsmVerify(fsm, fi, &sb, &osb);
+
             if (S_ISREG(sb.st_mode)) {
-                rc = fsmVerify(fsm, fi, &sb, &osb);
 		if (rc == RPMERR_ENOENT) {
 		    rc = fsmMkfile(fi, fsm->path, files, psm, nodigest,
 				   &setmeta, &firsthardlink);
 		}
             } else if (S_ISDIR(sb.st_mode)) {
-		/* Directories replacing something need early backup */
-                rc = fsmBackup(fi, action, sb.st_mode, &fsm->exists);
-                rc = fsmVerify(fsm, fi, &sb, &osb);
                 if (rc == RPMERR_ENOENT) {
                     mode_t mode = sb.st_mode;
                     mode &= ~07777;
@@ -979,7 +982,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
                     rc = fsmMkdir(fsm->path, mode);
                 }
             } else if (S_ISLNK(sb.st_mode)) {
-		rc = fsmVerify(fsm, fi, &sb, &osb);
 		/* Sane symlinks should fit in stack but to be safe... */
 		char *buf = xmalloc(sb.st_size + 1);
 		if (rpmfiArchiveRead(fi, buf, sb.st_size) != sb.st_size) {
@@ -996,7 +998,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 		free(buf);
             } else if (S_ISFIFO(sb.st_mode)) {
                 /* This mimics cpio S_ISSOCK() behavior but probably isn't right */
-                rc = fsmVerify(fsm, fi, &sb, &osb);
                 if (rc == RPMERR_ENOENT) {
                     rc = fsmMkfifo(fsm->path, 0000);
                 }
@@ -1004,7 +1005,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
                        S_ISBLK(sb.st_mode) ||
                        S_ISSOCK(sb.st_mode))
             {
-                rc = fsmVerify(fsm, fi, &sb, &osb);
                 if (rc == RPMERR_ENOENT) {
                     rc = fsmMknod(fsm->path, sb.st_mode, sb.st_rdev);
                 }
