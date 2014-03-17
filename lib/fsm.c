@@ -832,12 +832,12 @@ static int fsmSetmeta(const char *path, rpmfi fi, rpmPlugins plugins,
     return rc;
 }
 
-static int fsmCommit(FSM_t fsm, rpmfi fi, rpmFileAction action, const char *suffix, const struct stat * st)
+static int fsmCommit(FSM_t fsm, rpmfi fi, rpmFileAction action, const char *suffix)
 {
     int rc = 0;
 
     /* XXX Special case /dev/log, which shouldn't be packaged anyways */
-    if (!(S_ISSOCK(st->st_mode) && IS_DEV_LOG(fsm->path))) {
+    if (!(S_ISSOCK(rpmfiFMode(fi)) && IS_DEV_LOG(fsm->path))) {
 	const char *nsuffix = (action == FA_ALTNAME) ? SUFFIX_RPMNEW : NULL;
 	char *dest = fsm->path;
 	/* Construct final destination path (nsuffix is usually NULL) */
@@ -1043,7 +1043,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 		    rc = fsmBackup(fi, action, NULL);
 
 		if (!rc)
-		    rc = fsmCommit(fsm, fi, action, suffix, &sb);
+		    rc = fsmCommit(fsm, fi, action, suffix);
 	    }
 	}
 
