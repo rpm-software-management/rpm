@@ -772,7 +772,7 @@ static int fsmVerify(FSM_t fsm, rpmfi fi, const struct stat *st, struct stat *os
 
 
 /* Rename pre-existing modified or unmanaged file. */
-static int fsmBackup(rpmfi fi, rpmFileAction action, mode_t mode, int *exists)
+static int fsmBackup(rpmfi fi, rpmFileAction action, int *exists)
 {
     int rc = 0;
     const char *suffix = NULL;
@@ -965,7 +965,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 
 	    /* Directories replacing something need early backup */
 	    if (S_ISDIR(sb.st_mode)) {
-		rc = fsmBackup(fi, action, sb.st_mode, &fsm->exists);
+		rc = fsmBackup(fi, action, &fsm->exists);
 	    }
 	    rc = fsmVerify(fsm, fi, &sb, &osb);
 
@@ -1040,7 +1040,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    if (!skip) {
 		/* Backup file if needed. Directories are handled earlier */
 		if (!S_ISDIR(sb.st_mode))
-		    rc = fsmBackup(fi, action, sb.st_mode, NULL);
+		    rc = fsmBackup(fi, action, NULL);
 
 		if (!rc)
 		    rc = fsmCommit(fsm, fi, action, suffix, &sb);
@@ -1085,7 +1085,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 				      sb.st_mode, action);
 
 	if (!XFA_SKIPPING(action))
-	    rc = fsmBackup(fi, action, sb.st_mode, NULL);
+	    rc = fsmBackup(fi, action, NULL);
 
         /* Remove erased files. */
         if (action == FA_ERASE) {
