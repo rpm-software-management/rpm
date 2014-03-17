@@ -841,7 +841,7 @@ static int fsmCommit(FSM_t fsm, rpmfi fi, rpmFileAction action, const char *suff
 	const char *nsuffix = (action == FA_ALTNAME) ? SUFFIX_RPMNEW : NULL;
 	char *dest = fsm->path;
 	/* Construct final destination path (nsuffix is usually NULL) */
-	if (!S_ISDIR(st->st_mode))
+	if (suffix)
 	    dest = fsmFsPath(fi, nsuffix);
 
 	/* Rename temporary to final file name if needed. */
@@ -964,7 +964,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    int setmeta = 1;
 
 	    /* Directories replacing something need early backup */
-	    if (S_ISDIR(sb.st_mode)) {
+	    if (!suffix) {
 		rc = fsmBackup(fi, action, &fsm->exists);
 	    }
 	    rc = fsmVerify(fsm, fi, &sb, &osb);
@@ -1039,7 +1039,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 
 	    if (!skip) {
 		/* Backup file if needed. Directories are handled earlier */
-		if (!S_ISDIR(sb.st_mode))
+		if (suffix)
 		    rc = fsmBackup(fi, action, NULL);
 
 		if (!rc)
