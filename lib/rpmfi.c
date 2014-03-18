@@ -1738,51 +1738,16 @@ rpm_loff_t rpmfiArchiveTell(rpmfi fi)
 static int rpmfiArchiveWriteHeader(rpmfi fi)
 {
     int rc;
+    struct stat st;
 
-    if (fi == NULL)
+    if (rpmfiStat(fi, 0, &st))
 	return -1;
 
-    rpm_loff_t fsize = rpmfiFSize(fi);
-    mode_t finalMode = rpmfiFMode(fi);
     rpmfiles files = fi->files;
 
-    const int * hardlinks = NULL;
-    int numHardlinks = rpmfiFLinks(fi, &hardlinks);
-
-    if (S_ISDIR(finalMode)) {
-	fsize = 0;
-    } else if (S_ISLNK(finalMode)) {
-	fsize = strlen(rpmfiFLink(fi)); // XXX ugly!!!
-    } else {
-	/* Set fsize to 0 for all but the very last hardlinked file */
-	if (numHardlinks > 1 && hardlinks[numHardlinks-1]!=fi->i) {
-	    fsize = 0;
-	}
-    }
-
     if (files->lfsizes) {
-	return rpmcpioStrippedHeaderWrite(fi->archive, rpmfiFX(fi), fsize);
+	return rpmcpioStrippedHeaderWrite(fi->archive, rpmfiFX(fi), st.st_size);
     } else {
-	struct stat st;
-	memset(&st, 0, sizeof(st));
-
-	const char *user = rpmfiFUser(fi);
-	const char *group = rpmfiFGroup(fi);
-	uid_t uid = 0;
-	gid_t gid = 0;
-
-	if (user) rpmugUid(user, &uid);
-	if (group) rpmugGid(group, &gid);
-
-	st.st_mode = finalMode;
-	st.st_ino = rpmfiFInode(fi);
-	st.st_rdev = rpmfiFRdev(fi);
-	st.st_mtime = rpmfiFMtime(fi);
-	st.st_nlink = numHardlinks;
-	st.st_uid = uid;
-	st.st_gid = gid;
-	st.st_size = fsize;
-
 	const char * dn = rpmfiDN(fi);
 	char * path = rstrscat(NULL, (dn[0] == '/') ? "." : "",
 			       dn, rpmfiBN(fi), NULL);
