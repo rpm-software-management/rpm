@@ -1882,6 +1882,7 @@ static int iterReadArchiveNext(rpmfi fi)
 {
     int rc;
     int fx = -1;
+    int fc = rpmfilesFC(fi->files);
     char * path;
 
     if (fi->archive == NULL)
@@ -1892,7 +1893,6 @@ static int iterReadArchiveNext(rpmfi fi)
 
     /* if archive ended, check if we found all files */
     if (rc == RPMERR_ITER_END) {
-	int fc = rpmfiFC(fi);
 	for (int i=0; i<fc; i++) {
 	    if (!rpmfiFound(fi, i) &&
 			!(rpmfilesFFlags(fi->files, i) & RPMFILE_GHOST)) {
@@ -1907,7 +1907,6 @@ static int iterReadArchiveNext(rpmfi fi)
 
     if (fx == -1) {
 	/* Identify mapping index. */
-	int fc = rpmfiFC(fi);
 	if (fc > 0) {
 	    fx = rpmfiFindOFN(fi, path);
 	}
