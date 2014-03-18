@@ -1883,7 +1883,7 @@ static int iterReadArchiveNext(rpmfi fi)
     int rc;
     int fx = -1;
     int fc = rpmfilesFC(fi->files);
-    char * path;
+    char * path = NULL;
 
     if (fi->archive == NULL)
 	return -1;
@@ -1905,13 +1905,13 @@ static int iterReadArchiveNext(rpmfi fi)
 	return rc;
     }
 
-    if (fx == -1) {
-	/* Identify mapping index. */
-	if (fc > 0) {
-	    fx = rpmfiFindOFN(fi, path);
-	}
+    if (path) {
+	/* Regular cpio archive, identify mapping index. */
+	fx = rpmfilesFindOFN(fi->files, path);
 	free(path);
-    } else {
+    }
+
+    if (fx >= 0 && fx < fc) {
 	uint32_t numlinks;
 	const int * links;
 	rpm_loff_t fsize = 0;
@@ -1928,12 +1928,11 @@ static int iterReadArchiveNext(rpmfi fi)
 	    fsize = rpmfilesFSize(fi->files, fx);
 	}
 	rpmcpioSetExpectedFileSize(fi->archive, fsize);
+	rpmfiSetFound(fi, fx);
+    } else {
+	/* Mapping error */
+	fx = RPMERR_UNMAPPED_FILE;
     }
-    /* Mapping error */
-    if (fx < 0) {
-	return RPMERR_UNMAPPED_FILE;
-    }
-    rpmfiSetFound(fi, fx);
     return fx;
 }
 
