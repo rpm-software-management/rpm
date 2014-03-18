@@ -993,7 +993,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 		    }
                 }
 		if (rc == RPMERR_ENOENT) {
-		    rc = fsmSymlink(buf, fsm->path);
+		    rc = fsmSymlink(rpmfiFLink(fi), fsm->path);
 		}
 		free(buf);
             } else if (S_ISFIFO(sb.st_mode)) {
