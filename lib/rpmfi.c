@@ -1912,13 +1912,12 @@ static int iterReadArchiveNext(rpmfi fi)
     }
 
     if (fx >= 0 && fx < fc) {
-	uint32_t numlinks;
-	const int * links;
 	rpm_loff_t fsize = 0;
 	rpm_mode_t mode = rpmfilesFMode(fi->files, fx);
 
-	numlinks = rpmfilesFLinks(fi->files, fx, &links);
 	if (S_ISREG(mode)) {
+	    const int * links;
+	    uint32_t numlinks = rpmfilesFLinks(fi->files, fx, &links);
 	    if (numlinks>1 && links[numlinks-1]!=fx) {
 		fsize = 0;
 	    } else {
