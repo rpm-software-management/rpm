@@ -1946,7 +1946,7 @@ static int iterReadArchiveNextOmitHardlinks(rpmfi fi)
     int nlink;
     do {
 	fx = iterReadArchiveNext(fi);
-	nlink = rpmfiFLinks(fi, &links);
+	nlink = rpmfilesFLinks(fi->files, fx, &links);
     } while (fx>=0 && nlink>1 && links[nlink-1]!=fx);
     return fx;
 }
@@ -1957,7 +1957,7 @@ static int iterReadArchiveNextContentFirst(rpmfi fi)
     const int * links;
     int nlink;
     /* decide what to do on the basis of the last entry */
-    nlink = rpmfiFLinks(fi, &links);
+    nlink = rpmfilesFLinks(fi->files, fx, &links);
     if (nlink > 1) {
 	/* currently reading through hard links */
 	if (fx == links[nlink-1]) {
@@ -1969,12 +1969,10 @@ static int iterReadArchiveNextContentFirst(rpmfi fi)
 	    for (int i=0; i<nlink; i++) {
 		if (links[i] == fx) {
 		    fx = links[i+1];
-		    rpmfiSetFX(fi, fx);
 		    return fx;
 		}
 	    }
 	    /* should never happend */
-	    rpmfiSetFX(fi, -1);
 	    return -1;
 	}
     } else {
@@ -1982,8 +1980,7 @@ static int iterReadArchiveNextContentFirst(rpmfi fi)
     }
 
     /* look at the new entry */
-    rpmfiSetFX(fi, fx);
-    nlink = rpmfiFLinks(fi, &links);
+    nlink = rpmfilesFLinks(fi->files, fx, &links);
     /* arrived at new set of hardlinks? */
     if (nlink > 1) {
 	/* read over all entries to the last one (containing the content) */
@@ -1993,7 +1990,6 @@ static int iterReadArchiveNextContentFirst(rpmfi fi)
 	/* rewind to the first entry */
 	if (fx >= 0) {
 	    fx = links[0];
-	    rpmfiSetFX(fi, fx);
 	}
     }
     return fx;
