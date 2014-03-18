@@ -1692,8 +1692,7 @@ static int rpmfiArchiveWriteHeader(rpmfi fi)
     rpmfiles files = fi->files;
 
     const int * hardlinks = NULL;
-    int numHardlinks;
-    numHardlinks = rpmfiFLinks(fi, &hardlinks);
+    int numHardlinks = rpmfiFLinks(fi, &hardlinks);
 
     if (S_ISDIR(finalMode)) {
 	fsize = 0;
@@ -1701,9 +1700,6 @@ static int rpmfiArchiveWriteHeader(rpmfi fi)
 	fsize = strlen(rpmfiFLink(fi)); // XXX ugly!!!
     } else {
 	/* Set fsize to 0 for all but the very last hardlinked file */
-	const int * hardlinks = NULL;
-	int numHardlinks;
-	numHardlinks = rpmfiFLinks(fi, &hardlinks);
 	if (numHardlinks > 1 && hardlinks[numHardlinks-1]!=fi->i) {
 	    fsize = 0;
 	}
