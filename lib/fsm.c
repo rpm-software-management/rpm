@@ -982,20 +982,9 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
                     rc = fsmMkdir(fsm->path, mode);
                 }
             } else if (S_ISLNK(sb.st_mode)) {
-		/* Sane symlinks should fit in stack but to be safe... */
-		char *buf = xmalloc(sb.st_size + 1);
-		if (rpmfiArchiveRead(fi, buf, sb.st_size) != sb.st_size) {
-                    rc = RPMERR_READ_FAILED;
-                } else {
-		    buf[sb.st_size] = '\0';
-		    if (!(nodigest || rstreq(rpmfiFLink(fi), buf))) {
-			rc = RPMERR_DIGEST_MISMATCH;
-		    }
-                }
 		if (rc == RPMERR_ENOENT) {
 		    rc = fsmSymlink(rpmfiFLink(fi), fsm->path);
 		}
-		free(buf);
             } else if (S_ISFIFO(sb.st_mode)) {
                 /* This mimics cpio S_ISSOCK() behavior but probably isn't right */
                 if (rc == RPMERR_ENOENT) {

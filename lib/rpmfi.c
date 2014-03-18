@@ -1918,21 +1918,24 @@ static int iterReadArchiveNext(rpmfi fi)
 	if (S_ISREG(mode)) {
 	    const int * links;
 	    uint32_t numlinks = rpmfilesFLinks(fi->files, fx, &links);
-	    if (numlinks>1 && links[numlinks-1]!=fx) {
-		fsize = 0;
-	    } else {
+	    if (!(numlinks > 1 && links[numlinks-1] != fx))
 		fsize = rpmfilesFSize(fi->files, fx);
-	    }
 	} else if (S_ISLNK(mode)) {
-	    fsize = rpmfilesFSize(fi->files, fx);
+	    /* Skip over symlink target data in payload */
+	    rpm_loff_t lsize = rpmfilesFSize(fi->files, fx);
+	    char *buf = xmalloc(lsize + 1);
+	    if (rpmcpioRead(fi->archive, buf, lsize) != lsize)
+		rc = RPMERR_READ_FAILED;
+	    /* XXX should we validate the payload matches? */
+	    free(buf);
 	}
 	rpmcpioSetExpectedFileSize(fi->archive, fsize);
 	rpmfiSetFound(fi, fx);
     } else {
 	/* Mapping error */
-	fx = RPMERR_UNMAPPED_FILE;
+	rc = RPMERR_UNMAPPED_FILE;
     }
-    return fx;
+    return (rc != 0) ? rc : fx;
 }
 
 
