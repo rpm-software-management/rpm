@@ -1884,7 +1884,7 @@ static int iterReadArchiveNext(rpmfi fi)
     int fx = -1;
     char * path;
 
-    if (fi == NULL || fi->archive == NULL)
+    if (fi->archive == NULL)
 	return -1;
 
     /* Read next payload header. */
