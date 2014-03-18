@@ -229,53 +229,6 @@ static int fsmSetFCaps(const char *path, const char *captxt)
     return rc;
 }
 
-/**
- * Map file stat(2) info.
- * @param fi		file info iterator
- * @param warn		warn on user/group mapping error
- * @retval st		mapped stat(2) data
- * @return		0 on success
- */
-static int fsmMapAttrs(rpmfi fi, int warn, struct stat * st)
-{
-    mode_t finalMode = rpmfiFMode(fi);
-    const char *user = rpmfiFUser(fi);
-    const char *group = rpmfiFGroup(fi);
-    uid_t uid = 0;
-    gid_t gid = 0;
-
-    if (user && rpmugUid(user, &uid)) {
-	if (warn)
-	    rpmlog(RPMLOG_WARNING,
-		    _("user %s does not exist - using root\n"), user);
-	finalMode &= ~S_ISUID;	  /* turn off suid bit */
-    }
-
-    if (group && rpmugGid(group, &gid)) {
-	if (warn)
-	    rpmlog(RPMLOG_WARNING,
-		    _("group %s does not exist - using root\n"), group);
-	finalMode &= ~S_ISGID;	/* turn off sgid bit */
-    }
-
-    st->st_uid = uid;
-    st->st_gid = gid;
-
-    st->st_mode = finalMode;
-    st->st_dev = 0;
-    st->st_ino = rpmfiFInode(fi);
-    st->st_rdev = rpmfiFRdev(fi);
-    st->st_mtime = rpmfiFMtime(fi);
-    st->st_size = rpmfiFSize(fi);
-    st->st_nlink = rpmfiFNlink(fi);
-
-    if ((S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode))
-	    && st->st_nlink == 0) {
-	st->st_nlink = 1;
-    }
-    return 0;
-}
-
 /** \ingroup payload
  * Create file from payload stream.
  * @return		0 on success
@@ -945,7 +898,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 
 	/* Remap file perms, owner, and group. */
 	if (!rc)
-	    rc = fsmMapAttrs(fi, 1, &sb);
+	    rc = rpmfiStat(fi, 1, &sb);
 
         /* Exit on error. */
         if (rc)
