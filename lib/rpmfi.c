@@ -742,6 +742,56 @@ const char * rpmfilesFLangs(rpmfiles fi, int ix)
     return flangs;
 }
 
+int rpmfilesStat(rpmfiles fi, int ix, int flags, struct stat *sb)
+{
+    int rc = -1;
+    if (fi && sb) {
+	/* XXX FIXME define proper flags with sane semantics... */
+	int warn = flags & 0x1;
+	const char *user = rpmfilesFUser(fi, ix);
+	const char *group = rpmfilesFGroup(fi, ix);
+	const int * hardlinks = NULL;
+	uint32_t nlinks = rpmfilesFLinks(fi, ix, &hardlinks);
+
+	memset(sb, 0, sizeof(*sb));
+	sb->st_nlink = nlinks;
+	sb->st_ino = rpmfilesFInode(fi, ix);
+	sb->st_rdev = rpmfilesFRdev(fi, ix);
+	sb->st_mode = rpmfilesFMode(fi, ix);
+	sb->st_mtime = rpmfilesFMtime(fi, ix);
+
+	/* Only regular files and symlinks have a size */
+	if (S_ISREG(sb->st_mode)) {
+	    /* Content and thus size comes with last hardlink */
+	    if (!(nlinks > 1 && hardlinks[nlinks-1] != ix))
+		sb->st_size = rpmfilesFSize(fi, ix);
+	} else if (S_ISLNK(sb->st_mode)) {
+	    /*
+	     * Normally rpmfilesFSize() is correct for symlinks too, this is
+	     * only needed for glob()'ed links from fakechroot environment.
+	     */
+	    sb->st_size = strlen(rpmfilesFLink(fi, ix));
+	}
+
+	if (user && rpmugUid(user, &sb->st_uid)) {
+	    if (warn)
+		rpmlog(RPMLOG_WARNING,
+			_("user %s does not exist - using root\n"), user);
+	    sb->st_mode &= ~S_ISUID;	  /* turn off suid bit */
+	}
+
+	if (group && rpmugGid(group, &sb->st_gid)) {
+	    if (warn)
+		rpmlog(RPMLOG_WARNING,
+			_("group %s does not exist - using root\n"), group);
+	    sb->st_mode &= ~S_ISGID;	/* turn off sgid bit */
+	}
+
+	rc = 0;
+    }
+    return rc;
+}
+
 struct fingerPrint_s *rpmfilesFps(rpmfiles fi)
 {
     return (fi != NULL) ? fi->fps : NULL;
@@ -1601,6 +1651,11 @@ const unsigned char * rpmfiFDigest(rpmfi fi, int *algo, size_t *len)
 uint32_t rpmfiFDepends(rpmfi fi, const uint32_t ** fddictp)
 {
     return rpmfilesFDepends(fi->files,  fi ? fi->i : -1, fddictp);
+}
+
+int rpmfiStat(rpmfi fi, int flags, struct stat *sb)
+{
+    return rpmfilesStat(fi->files, fi->i, flags, sb);
 }
 
 int rpmfiCompare(const rpmfi afi, const rpmfi bfi)

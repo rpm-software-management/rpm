@@ -5,6 +5,10 @@
  * \file lib/rpmfiles.h
  * File info set API.
  */
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmvf.h>
 #include <rpm/rpmpgp.h>
@@ -462,6 +466,15 @@ const char * rpmfilesFGroup(rpmfiles fi, int ix);
  */
 const char * rpmfilesFCaps(rpmfiles fi, int ix);
 
+/** \ingroup rpmfi
+ * Map file stat(2) info.
+ * @param fi		file info set
+ * @param ix		file index
+ * @param flags		flags
+ * @retval sb		mapped stat(2) data
+ * @return		0 on success
+ */
+int rpmfilesStat(rpmfiles fi, int ix, int flags, struct stat *sb);
 #ifdef __cplusplus
 }
 #endif

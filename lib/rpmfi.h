@@ -301,6 +301,14 @@ const char * rpmfiFCaps(rpmfi fi);
 const char * rpmfiFLangs(rpmfi fi);
 
 /** \ingroup rpmfi
+ * Map file stat(2) info.
+ * @param fi		file info iterator
+ * @param flags		flags
+ * @retval sb		mapped stat(2) data
+ */
+int rpmfiStat(rpmfi fi, int flags, struct stat *sb);
+
+/** \ingroup rpmfi
  * Return next file iterator index.
  * @param fi		file info set iterator
  * @return		file iterator index, -1 on termination
