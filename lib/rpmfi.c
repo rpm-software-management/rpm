@@ -1916,17 +1916,17 @@ static int iterReadArchiveNext(rpmfi fi)
 	uint32_t numlinks;
 	const int * links;
 	rpm_loff_t fsize = 0;
-	rpm_mode_t mode = rpmfiFMode(fi);
+	rpm_mode_t mode = rpmfilesFMode(fi->files, fx);
 
-	numlinks = rpmfiFLinks(fi, &links);
+	numlinks = rpmfilesFLinks(fi->files, fx, &links);
 	if (S_ISREG(mode)) {
 	    if (numlinks>1 && links[numlinks-1]!=fx) {
 		fsize = 0;
 	    } else {
-		fsize = rpmfiFSize(fi);
+		fsize = rpmfilesFSize(fi->files, fx);
 	    }
 	} else if (S_ISLNK(mode)) {
-	    fsize = rpmfiFSize(fi);
+	    fsize = rpmfilesFSize(fi->files, fx);
 	}
 	rpmcpioSetExpectedFileSize(fi->archive, fsize);
     }
