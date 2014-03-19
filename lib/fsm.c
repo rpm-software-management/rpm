@@ -516,7 +516,7 @@ static void removeSBITS(const char *path)
     }
 }
 
-static int fsmInit(FSM_t fsm, rpmfi fi, rpmFileAction action, rpmElementType goal, const char *suffix, struct stat *st)
+static int fsmInit(FSM_t fsm, rpmfi fi, rpmFileAction action, const char *suffix, struct stat *st)
 {
     int rc = 0;
 
@@ -892,7 +892,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	skip = XFA_SKIPPING(action);
 	suffix = S_ISDIR(rpmfiFMode(fi)) ? NULL : tid;
 
-	rc = fsmInit(fsm, fi, action, TR_ADDED, suffix, &osb);
+	rc = fsmInit(fsm, fi, action, suffix, &osb);
 
 	/* Remap file perms, owner, and group. */
 	if (!rc)
@@ -1018,7 +1018,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 
     while (!rc && rpmfiNext(fi) >= 0) {
 	rpmFileAction action = rpmfsGetAction(fs, rpmfiFX(fi));
-	rc = fsmInit(fsm, fi, action, TR_REMOVED, NULL, &sb);
+	rc = fsmInit(fsm, fi, action, NULL, &sb);
 
 	/* Run fsm file pre hook for all plugins */
 	rc = rpmpluginsCallFsmFilePre(plugins, fi, fsm->path,
