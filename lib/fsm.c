@@ -504,23 +504,11 @@ static void fsmDebug(const char *fpath, rpmFileAction action,
 }
 
 static int fsmInit(rpmfi fi, rpmFileAction action, const char *suffix,
-		   char **path, struct stat *st)
+		   char **path)
 {
     int rc = 0;
     /* Generate file path. */
     char *fpath = fsmFsPath(fi, suffix);
-
-    memset(st, 0, sizeof(*st));
-
-    /* Perform lstat/stat for disk file. */
-    if (suffix == NULL) {
-	rc = fsmStat(fpath, 1, st);
-	if (rc == RPMERR_ENOENT) {
-	    // errno = saveerrno; XXX temporary commented out
-	    rc = 0;
-	}
-    }
-
     free(*path);
     *path = fpath;
 
@@ -638,16 +626,18 @@ static int fsmUtime(const char *path, mode_t mode, time_t mtime)
     return rc;
 }
 
-static int fsmVerify(const char *path, rpmfi fi, struct stat *ost)
+static int fsmVerify(const char *path, rpmfi fi)
 {
     int rc;
     int saveerrno = errno;
+    struct stat dsb;
+    struct stat *ost = &dsb;
     mode_t mode = rpmfiFMode(fi);
 
-    /* A file with zero link count does not exist */
-    if (ost->st_nlink == 0) {
-        return RPMERR_ENOENT;
-    }
+    rc = fsmStat(path, 1, &dsb);
+    if (rc)
+	return rc;
+
     if (S_ISREG(mode)) {
 	/* HP-UX (and other os'es) don't permit unlink on busy files. */
 	char *rmpath = rstrscat(NULL, path, "-RPMDELETE", NULL);
@@ -834,7 +824,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
     rpmfs fs = rpmteGetFileStates(te);
     rpmPlugins plugins = rpmtsPlugins(ts);
     struct stat sb;
-    struct stat osb;
     int saveerrno = errno;
     int rc = 0;
     int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST) ? 1 : 0;
@@ -867,7 +856,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	skip = XFA_SKIPPING(action);
 	suffix = S_ISDIR(rpmfiFMode(fi)) ? NULL : tid;
 
-	rc = fsmInit(fi, action, suffix, &fpath, &osb);
+	rc = fsmInit(fi, action, suffix, &fpath);
 
 	/* Remap file perms, owner, and group. */
 	if (!rc)
@@ -895,7 +884,12 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    if (!suffix) {
 		rc = fsmBackup(fi, action);
 	    }
-	    rc = fsmVerify(fpath, fi, &osb);
+	    /* Assume file does't exist when tmp suffix is in use */
+	    if (!suffix) {
+		rc = fsmVerify(fpath, fi);
+	    } else {
+		rc = RPMERR_ENOENT;
+	    }
 
             if (S_ISREG(sb.st_mode)) {
 		if (rc == RPMERR_ENOENT) {
@@ -995,7 +989,8 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 
     while (!rc && rpmfiNext(fi) >= 0) {
 	rpmFileAction action = rpmfsGetAction(fs, rpmfiFX(fi));
-	rc = fsmInit(fi, action, NULL, &fpath, &sb);
+	rc = fsmInit(fi, action, NULL, &fpath);
+	rc = fsmStat(fpath, 1, &sb);
 
 	fsmDebug(fpath, action, &sb);
 
