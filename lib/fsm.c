@@ -325,8 +325,8 @@ static int fsmStat(const char *path, int dolstat, struct stat *sb)
                path, (rc < 0 ? strerror(errno) : ""));
     if (rc < 0) {
         rc = (errno == ENOENT ? RPMERR_ENOENT : RPMERR_LSTAT_FAILED);
-	/* WTH is this, and is it really needed, still? */
-        memset(sb, 0, sizeof(*sb));	/* XXX s390x hackery */
+	/* Ensure consistent struct content on failure */
+        memset(sb, 0, sizeof(*sb));
     }
     return rc;
 }
