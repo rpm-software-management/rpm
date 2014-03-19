@@ -528,9 +528,7 @@ static int fsmInit(FSM_t fsm, rpmfi fi, rpmFileAction action, rpmElementType goa
     fsm->path = fsmFsPath(fi, suffix);
 
     /* Perform lstat/stat for disk file. */
-    if (fsm->path != NULL &&
-	!(goal == TR_ADDED && S_ISREG(rpmfiFMode(fi))))
-    {
+    if (suffix == NULL) {
 	rc = fsmStat(fsm->path, 1, st);
 	if (rc == RPMERR_ENOENT) {
 	    // errno = saveerrno; XXX temporary commented out
