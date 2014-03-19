@@ -655,7 +655,7 @@ static int fsmUtime(const char *path, mode_t mode, time_t mtime)
     return rc;
 }
 
-static int fsmVerify(FSM_t fsm, rpmfi fi, const struct stat *st, struct stat *ost)
+static int fsmVerify(const char *path, rpmfi fi, const struct stat *st, struct stat *ost)
 {
     int rc;
     int saveerrno = errno;
@@ -666,8 +666,8 @@ static int fsmVerify(FSM_t fsm, rpmfi fi, const struct stat *st, struct stat *os
     }
     if (S_ISREG(st->st_mode)) {
 	/* HP-UX (and other os'es) don't permit unlink on busy files. */
-	char *rmpath = rstrscat(NULL, fsm->path, "-RPMDELETE", NULL);
-	rc = fsmRename(fsm->path, rmpath);
+	char *rmpath = rstrscat(NULL, path, "-RPMDELETE", NULL);
+	rc = fsmRename(path, rmpath);
 	/* XXX shouldn't we take unlink return code here? */
 	if (!rc)
 	    (void) fsmUnlink(rmpath);
@@ -678,7 +678,7 @@ static int fsmVerify(FSM_t fsm, rpmfi fi, const struct stat *st, struct stat *os
     } else if (S_ISDIR(st->st_mode)) {
         if (S_ISDIR(ost->st_mode)) return 0;
         if (S_ISLNK(ost->st_mode)) {
-            rc = fsmStat(fsm->path, 0, ost);
+            rc = fsmStat(path, 0, ost);
             if (rc == RPMERR_ENOENT) rc = 0;
             if (rc) return rc;
             errno = saveerrno;
@@ -688,7 +688,7 @@ static int fsmVerify(FSM_t fsm, rpmfi fi, const struct stat *st, struct stat *os
         if (S_ISLNK(ost->st_mode)) {
             char buf[8 * BUFSIZ];
             size_t len;
-            rc = fsmReadLink(fsm->path, buf, 8 * BUFSIZ, &len);
+            rc = fsmReadLink(path, buf, 8 * BUFSIZ, &len);
             errno = saveerrno;
             if (rc) return rc;
             if (rstreq(rpmfiFLink(fi), buf)) return 0;
@@ -702,7 +702,7 @@ static int fsmVerify(FSM_t fsm, rpmfi fi, const struct stat *st, struct stat *os
         if (S_ISSOCK(ost->st_mode)) return 0;
     }
     /* XXX shouldn't do this with commit/undo. */
-    rc = fsmUnlink(fsm->path);
+    rc = fsmUnlink(path);
     if (rc == 0)	rc = RPMERR_ENOENT;
     return (rc ? rc : RPMERR_ENOENT);	/* XXX HACK */
 }
@@ -909,7 +909,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    if (!suffix) {
 		rc = fsmBackup(fi, action);
 	    }
-	    rc = fsmVerify(fsm, fi, &sb, &osb);
+	    rc = fsmVerify(fsm->path, fi, &sb, &osb);
 
             if (S_ISREG(sb.st_mode)) {
 		if (rc == RPMERR_ENOENT) {
