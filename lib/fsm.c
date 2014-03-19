@@ -493,6 +493,16 @@ static void removeSBITS(const char *path)
     }
 }
 
+static void fsmDebug(const char *fpath, rpmFileAction action,
+		     const struct stat *st)
+{
+    rpmlog(RPMLOG_DEBUG, "%-10s %06o%3d (%4d,%4d)%6d %s\n",
+	   fileActionString(action), (int)st->st_mode,
+	   (int)st->st_nlink, (int)st->st_uid,
+	   (int)st->st_gid, (int)st->st_size,
+	    (fpath ? fpath : ""));
+}
+
 static int fsmInit(rpmfi fi, rpmFileAction action, const char *suffix,
 		   char **path, struct stat *st)
 {
@@ -510,12 +520,6 @@ static int fsmInit(rpmfi fi, rpmFileAction action, const char *suffix,
 	    rc = 0;
 	}
     }
-
-    rpmlog(RPMLOG_DEBUG, "%-10s %06o%3d (%4d,%4d)%6d %s\n",
-	   fileActionString(action), (int)st->st_mode,
-	   (int)st->st_nlink, (int)st->st_uid,
-	   (int)st->st_gid, (int)st->st_size,
-	    (fpath ? fpath : ""));
 
     free(*path);
     *path = fpath;
@@ -869,6 +873,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	if (!rc)
 	    rc = rpmfiStat(fi, 1, &sb);
 
+	fsmDebug(fpath, action, &sb);
+
         /* Exit on error. */
         if (rc)
             break;
@@ -990,6 +996,8 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
     while (!rc && rpmfiNext(fi) >= 0) {
 	rpmFileAction action = rpmfsGetAction(fs, rpmfiFX(fi));
 	rc = fsmInit(fi, action, NULL, &fpath, &sb);
+
+	fsmDebug(fpath, action, &sb);
 
 	/* Run fsm file pre hook for all plugins */
 	rc = rpmpluginsCallFsmFilePre(plugins, fi, fpath,
