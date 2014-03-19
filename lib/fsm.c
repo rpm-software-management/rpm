@@ -775,29 +775,29 @@ static int fsmSetmeta(const char *path, rpmfi fi, rpmPlugins plugins,
     return rc;
 }
 
-static int fsmCommit(FSM_t fsm, rpmfi fi, rpmFileAction action, const char *suffix)
+static int fsmCommit(char **path, rpmfi fi, rpmFileAction action, const char *suffix)
 {
     int rc = 0;
 
     /* XXX Special case /dev/log, which shouldn't be packaged anyways */
-    if (!(S_ISSOCK(rpmfiFMode(fi)) && IS_DEV_LOG(fsm->path))) {
+    if (!(S_ISSOCK(rpmfiFMode(fi)) && IS_DEV_LOG(*path))) {
 	const char *nsuffix = (action == FA_ALTNAME) ? SUFFIX_RPMNEW : NULL;
-	char *dest = fsm->path;
+	char *dest = *path;
 	/* Construct final destination path (nsuffix is usually NULL) */
 	if (suffix)
 	    dest = fsmFsPath(fi, nsuffix);
 
 	/* Rename temporary to final file name if needed. */
-	if (dest != fsm->path) {
-	    rc = fsmRename(fsm->path, dest);
+	if (dest != *path) {
+	    rc = fsmRename(*path, dest);
 	    if (!rc && nsuffix) {
 		char * opath = fsmFsPath(fi, NULL);
 		rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
 		       opath, dest);
 		free(opath);
 	    }
-	    free(fsm->path);
-	    fsm->path = dest;
+	    free(*path);
+	    *path = dest;
 	}
     }
 
@@ -975,7 +975,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 		    rc = fsmBackup(fi, action);
 
 		if (!rc)
-		    rc = fsmCommit(fsm, fi, action, suffix);
+		    rc = fsmCommit(&fsm->path, fi, action, suffix);
 	    }
 	}
 
