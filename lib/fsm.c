@@ -503,19 +503,6 @@ static void fsmDebug(const char *fpath, rpmFileAction action,
 	    (fpath ? fpath : ""));
 }
 
-static int fsmInit(rpmfi fi, rpmFileAction action, const char *suffix,
-		   char **path)
-{
-    int rc = 0;
-    /* Generate file path. */
-    char *fpath = fsmFsPath(fi, suffix);
-    free(*path);
-    *path = fpath;
-
-    return rc;
-
-}
-
 static int fsmSymlink(const char *opath, const char *path)
 {
     int rc = symlink(opath, path);
@@ -855,12 +842,10 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	action = rpmfsGetAction(fs, rpmfiFX(fi));
 	skip = XFA_SKIPPING(action);
 	suffix = S_ISDIR(rpmfiFMode(fi)) ? NULL : tid;
-
-	rc = fsmInit(fi, action, suffix, &fpath);
+	fpath = fsmFsPath(fi, suffix);
 
 	/* Remap file perms, owner, and group. */
-	if (!rc)
-	    rc = rpmfiStat(fi, 1, &sb);
+	rc = rpmfiStat(fi, 1, &sb);
 
 	fsmDebug(fpath, action, &sb);
 
@@ -964,7 +949,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	/* Run fsm file post hook for all plugins */
 	rpmpluginsCallFsmFilePost(plugins, fi, fpath,
 				  sb.st_mode, action, rc);
-
+	fpath = _free(fpath);
     }
 
     /* No need to bother with close errors on read */
@@ -989,7 +974,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 
     while (!rc && rpmfiNext(fi) >= 0) {
 	rpmFileAction action = rpmfsGetAction(fs, rpmfiFX(fi));
-	rc = fsmInit(fi, action, NULL, &fpath);
+	fpath = fsmFsPath(fi, NULL);
 	rc = fsmStat(fpath, 1, &sb);
 
 	fsmDebug(fpath, action, &sb);
@@ -1051,6 +1036,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 	    rpm_loff_t amount = rpmfiFC(fi) - rpmfiFX(fi);
 	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, amount);
 	}
+	fpath = _free(fpath);
     }
 
     free(fpath);
