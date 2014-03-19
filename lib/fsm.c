@@ -515,31 +515,32 @@ static void removeSBITS(const char *path)
     }
 }
 
-static int fsmInit(FSM_t fsm, rpmfi fi, rpmFileAction action, const char *suffix, struct stat *st)
+static int fsmInit(rpmfi fi, rpmFileAction action, const char *suffix,
+		   char **path, struct stat *st)
 {
     int rc = 0;
+    /* Generate file path. */
+    char *fpath = fsmFsPath(fi, suffix);
 
     memset(st, 0, sizeof(*st));
-    fsm->path = _free(fsm->path);
-
-    /* Generate file path. */
-    fsm->path = fsmFsPath(fi, suffix);
 
     /* Perform lstat/stat for disk file. */
     if (suffix == NULL) {
-	rc = fsmStat(fsm->path, 1, st);
+	rc = fsmStat(fpath, 1, st);
 	if (rc == RPMERR_ENOENT) {
 	    // errno = saveerrno; XXX temporary commented out
 	    rc = 0;
 	}
     }
-    if (rc) return rc;
 
     rpmlog(RPMLOG_DEBUG, "%-10s %06o%3d (%4d,%4d)%6d %s\n",
 	   fileActionString(action), (int)st->st_mode,
 	   (int)st->st_nlink, (int)st->st_uid,
 	   (int)st->st_gid, (int)st->st_size,
-	    (fsm->path ? fsm->path : ""));
+	    (fpath ? fpath : ""));
+
+    free(*path);
+    *path = fpath;
 
     return rc;
 
@@ -883,7 +884,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	skip = XFA_SKIPPING(action);
 	suffix = S_ISDIR(rpmfiFMode(fi)) ? NULL : tid;
 
-	rc = fsmInit(fsm, fi, action, suffix, &osb);
+	rc = fsmInit(fi, action, suffix, &fsm->path, &osb);
 
 	/* Remap file perms, owner, and group. */
 	if (!rc)
@@ -1009,7 +1010,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 
     while (!rc && rpmfiNext(fi) >= 0) {
 	rpmFileAction action = rpmfsGetAction(fs, rpmfiFX(fi));
-	rc = fsmInit(fsm, fi, action, NULL, &sb);
+	rc = fsmInit(fi, action, NULL, &fsm->path, &sb);
 
 	/* Run fsm file pre hook for all plugins */
 	rc = rpmpluginsCallFsmFilePre(plugins, fi, fsm->path,
