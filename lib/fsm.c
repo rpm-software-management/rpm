@@ -634,16 +634,17 @@ static int fsmUtime(const char *path, mode_t mode, time_t mtime)
     return rc;
 }
 
-static int fsmVerify(const char *path, rpmfi fi, const struct stat *st, struct stat *ost)
+static int fsmVerify(const char *path, rpmfi fi, struct stat *ost)
 {
     int rc;
     int saveerrno = errno;
+    mode_t mode = rpmfiFMode(fi);
 
     /* A file with zero link count does not exist */
     if (ost->st_nlink == 0) {
         return RPMERR_ENOENT;
     }
-    if (S_ISREG(st->st_mode)) {
+    if (S_ISREG(mode)) {
 	/* HP-UX (and other os'es) don't permit unlink on busy files. */
 	char *rmpath = rstrscat(NULL, path, "-RPMDELETE", NULL);
 	rc = fsmRename(path, rmpath);
@@ -654,7 +655,7 @@ static int fsmVerify(const char *path, rpmfi fi, const struct stat *st, struct s
 	    rc = RPMERR_UNLINK_FAILED;
 	free(rmpath);
         return (rc ? rc : RPMERR_ENOENT);	/* XXX HACK */
-    } else if (S_ISDIR(st->st_mode)) {
+    } else if (S_ISDIR(mode)) {
         if (S_ISDIR(ost->st_mode)) return 0;
         if (S_ISLNK(ost->st_mode)) {
             rc = fsmStat(path, 0, ost);
@@ -663,7 +664,7 @@ static int fsmVerify(const char *path, rpmfi fi, const struct stat *st, struct s
             errno = saveerrno;
             if (S_ISDIR(ost->st_mode)) return 0;
         }
-    } else if (S_ISLNK(st->st_mode)) {
+    } else if (S_ISLNK(mode)) {
         if (S_ISLNK(ost->st_mode)) {
             char buf[8 * BUFSIZ];
             size_t len;
@@ -672,12 +673,12 @@ static int fsmVerify(const char *path, rpmfi fi, const struct stat *st, struct s
             if (rc) return rc;
             if (rstreq(rpmfiFLink(fi), buf)) return 0;
         }
-    } else if (S_ISFIFO(st->st_mode)) {
+    } else if (S_ISFIFO(mode)) {
         if (S_ISFIFO(ost->st_mode)) return 0;
-    } else if (S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode)) {
+    } else if (S_ISCHR(mode) || S_ISBLK(mode)) {
         if ((S_ISCHR(ost->st_mode) || S_ISBLK(ost->st_mode)) &&
-            (ost->st_rdev == st->st_rdev)) return 0;
-    } else if (S_ISSOCK(st->st_mode)) {
+            (ost->st_rdev == rpmfiFRdev(fi))) return 0;
+    } else if (S_ISSOCK(mode)) {
         if (S_ISSOCK(ost->st_mode)) return 0;
     }
     /* XXX shouldn't do this with commit/undo. */
@@ -888,7 +889,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    if (!suffix) {
 		rc = fsmBackup(fi, action);
 	    }
-	    rc = fsmVerify(fpath, fi, &sb, &osb);
+	    rc = fsmVerify(fpath, fi, &osb);
 
             if (S_ISREG(sb.st_mode)) {
 		if (rc == RPMERR_ENOENT) {
