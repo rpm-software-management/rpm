@@ -824,9 +824,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
     rasprintf(&tid, ";%08x", (unsigned)rpmtsGetTid(ts));
 
     /* Detect and create directories not explicitly in package. */
-    if (!rc) {
-	rc = fsmMkdirs(files, fs, plugins);
-    }
+    rc = fsmMkdirs(files, fs, plugins);
 
     while (!rc) {
 	/* Read next payload header. */
