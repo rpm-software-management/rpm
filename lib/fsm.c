@@ -36,7 +36,6 @@ static int strict_erasures = 0;
  */
 struct fsm_s {
     char * path;		/*!< Current file name. */
-    int exists;			/*!< Does current file exist on disk? */
 };
 
 #define	SUFFIX_RPMORIG	".rpmorig"
@@ -522,7 +521,6 @@ static int fsmInit(FSM_t fsm, rpmfi fi, rpmFileAction action, const char *suffix
 
     memset(st, 0, sizeof(*st));
     fsm->path = _free(fsm->path);
-    fsm->exists = 0;
 
     /* Generate file path. */
     fsm->path = fsmFsPath(fi, suffix);
@@ -533,13 +531,7 @@ static int fsmInit(FSM_t fsm, rpmfi fi, rpmFileAction action, const char *suffix
 	if (rc == RPMERR_ENOENT) {
 	    // errno = saveerrno; XXX temporary commented out
 	    rc = 0;
-	    fsm->exists = 0;
-	} else if (rc == 0) {
-	    fsm->exists = 1;
 	}
-    } else {
-	/* Regular files are created with tmp suffix, assume they dont exist */
-	fsm->exists = 0;
     }
     if (rc) return rc;
 
@@ -668,7 +660,8 @@ static int fsmVerify(FSM_t fsm, rpmfi fi, const struct stat *st, struct stat *os
     int rc;
     int saveerrno = errno;
 
-    if (!fsm->exists) {
+    /* A file with zero link count does not exist */
+    if (ost->st_nlink == 0) {
         return RPMERR_ENOENT;
     }
     if (S_ISREG(st->st_mode)) {
@@ -723,7 +716,7 @@ static int fsmVerify(FSM_t fsm, rpmfi fi, const struct stat *st, struct stat *os
 
 
 /* Rename pre-existing modified or unmanaged file. */
-static int fsmBackup(rpmfi fi, rpmFileAction action, int *exists)
+static int fsmBackup(rpmfi fi, rpmFileAction action)
 {
     int rc = 0;
     const char *suffix = NULL;
@@ -747,8 +740,6 @@ static int fsmBackup(rpmfi fi, rpmFileAction action, int *exists)
 	rc = fsmRename(opath, path);
 	if (!rc) {
 	    rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"), opath, path);
-	    if (exists)
-		*exists = 0; /* it doesn't exist anymore... */
 	}
 	free(path);
 	free(opath);
@@ -916,7 +907,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 
 	    /* Directories replacing something need early backup */
 	    if (!suffix) {
-		rc = fsmBackup(fi, action, &fsm->exists);
+		rc = fsmBackup(fi, action);
 	    }
 	    rc = fsmVerify(fsm, fi, &sb, &osb);
 
@@ -980,7 +971,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    if (!skip) {
 		/* Backup file if needed. Directories are handled earlier */
 		if (suffix)
-		    rc = fsmBackup(fi, action, NULL);
+		    rc = fsmBackup(fi, action);
 
 		if (!rc)
 		    rc = fsmCommit(fsm, fi, action, suffix);
@@ -1025,7 +1016,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 				      sb.st_mode, action);
 
 	if (!XFA_SKIPPING(action))
-	    rc = fsmBackup(fi, action, NULL);
+	    rc = fsmBackup(fi, action);
 
         /* Remove erased files. */
         if (action == FA_ERASE) {
