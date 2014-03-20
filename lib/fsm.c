@@ -246,10 +246,12 @@ static int fsmMkfile(rpmfi fi, const char *dest, rpmfiles files,
 	    rc = expandRegular(fi, dest, psm, nodigest, 1);
 	} else {
 	    /* Create hard links for others */
-	    rc = link(rpmfilesFN(files, *firsthardlink), dest);
+	    char *path = rpmfilesFN(files, *firsthardlink);
+	    rc = link(fn, dest);
 	    if (rc < 0) {
 		rc = RPMERR_LINK_FAILED;
 	    }
+	    free(fn);
 	}
     }
     /* Write normal files or fill the last hardlinked (already
@@ -913,9 +915,10 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
         } else if (firsthardlink >= 0 && rpmfiArchiveHasContent(fi)) {
 	    /* we skip the hard linked file containing the content */
 	    /* write the content to the first used instead */
-	    rc = expandRegular(fi, rpmfilesFN(files, firsthardlink),
-			       psm, nodigest, 0);
+	    char *fn = rpmfilesFN(files, firsthardlink);
+	    rc = expandRegular(fi, fn, psm, nodigest, 0);
 	    firsthardlink = -1;
+	    free(fn);
 	}
 
         if (rc) {
