@@ -39,7 +39,6 @@ struct rpmpsm_s {
     rpmCallbackType what;	/*!< Callback type. */
     rpm_loff_t amount;		/*!< Callback amount. */
     rpm_loff_t total;		/*!< Callback total. */
-    pkgGoal goal;
 
     int nrefs;			/*!< Reference count. */
 };
@@ -528,7 +527,6 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal)
     psm->ts = rpmtsLink(ts);
     psm->files = rpmteFiles(te);
     psm->te = te; /* XXX rpmte not refcounted yet */
-    psm->goal = goal;
     if (!rpmteIsSource(te)) {
 	/*
 	 * When we run scripts, we pass an argument which is the number of
