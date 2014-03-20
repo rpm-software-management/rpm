@@ -31,11 +31,9 @@
 #include "debug.h"
 
 typedef enum pkgStage_e {
-    PSM_INIT		=  1,
     PSM_PRE		=  2,
     PSM_PROCESS		=  3,
     PSM_POST		=  4,
-    PSM_FINI		=  6,
 } pkgStage;
 
 struct rpmpsm_s {
@@ -228,7 +226,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     if (rpmpsmNext(psm, PSM_PROCESS) == RPMRC_OK)
 	rpmrc = RPMRC_OK;
 
-    (void) rpmpsmNext(psm, PSM_FINI);
     rpmpsmFree(psm);
 
 exit:
@@ -662,8 +659,6 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
     rpmRC rc = RPMRC_OK;
 
     switch (stage) {
-    case PSM_INIT:
-	break;
     case PSM_PRE:
 	if (psm->goal == PKG_INSTALL) {
 	    /* HACK: replacepkgs abuses te instance to remove old header */
@@ -834,8 +829,6 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
 	    rc = dbRemove(ts, psm->te);
 	}
 	break;
-    case PSM_FINI:
-	break;
     default:
 	break;
    }
@@ -877,11 +870,9 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 		op = (goal == PKG_INSTALL) ? RPMTS_OP_INSTALL : RPMTS_OP_ERASE;
 		rpmswEnter(rpmtsOp(psm->ts, op), 0);
 
-		rc = rpmpsmNext(psm, PSM_INIT);
-		if (!rc) rc = rpmpsmNext(psm, PSM_PRE);
+		rc = rpmpsmNext(psm, PSM_PRE);
 		if (!rc) rc = rpmpsmNext(psm, PSM_PROCESS);
 		if (!rc) rc = rpmpsmNext(psm, PSM_POST);
-		(void) rpmpsmNext(psm, PSM_FINI);
 
 		rpmswExit(rpmtsOp(psm->ts, op), 0);
 	    }
