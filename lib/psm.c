@@ -42,7 +42,6 @@ struct rpmpsm_s {
     rpmts ts;			/*!< transaction set */
     rpmte te;			/*!< current transaction element */
     rpmfiles files;		/*!< transaction element file info */
-    const char * goalName;
     char * failedFile;
     int scriptArg;		/*!< Scriptlet package arg. */
     int countCorrection;	/*!< 0 if installing, -1 if removing. */
@@ -541,7 +540,6 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal)
     psm->files = rpmteFiles(te);
     psm->te = te; /* XXX rpmte not refcounted yet */
     psm->goal = goal;
-    psm->goalName = pkgGoalString(goal);
     if (!rpmteIsSource(te)) {
 	/*
 	 * When we run scripts, we pass an argument which is the number of
@@ -579,6 +577,9 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal)
     /* Fake up something for packages with no files */
     if (psm->total == 0)
 	psm->total = 100;
+
+    rpmlog(RPMLOG_DEBUG, "%s: %s has %d files\n", pkgGoalString(goal),
+	    rpmteNEVRA(psm->te), rpmfilesFC(psm->files));
 
     return psm;
 }
@@ -663,9 +664,6 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
 
     switch (stage) {
     case PSM_INIT:
-	rpmlog(RPMLOG_DEBUG, "%s: %s has %d files\n",
-		psm->goalName, rpmteNEVR(psm->te), fc);
-
 	if (psm->goal == PKG_INSTALL) {
 	    /* HACK: reinstall abuses te instance to remove old header */
 	    if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG)
@@ -838,13 +836,14 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
     case PSM_FINI:
 	if (rc) {
 	    char *emsg = rpmfileStrerror(rc);
+	    const char *goalName = pkgGoalString(psm->goal);
 	    if (psm->failedFile)
 		rpmlog(RPMLOG_ERR,
 			_("%s failed on file %s: %s\n"),
-			psm->goalName, psm->failedFile, emsg);
+			goalName, psm->failedFile, emsg);
 	    else
 		rpmlog(RPMLOG_ERR, _("%s failed: %s\n"),
-			psm->goalName, emsg);
+			goalName, emsg);
 	    free(emsg);
 
 	    /* XXX notify callback on error. */
