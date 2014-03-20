@@ -664,14 +664,13 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
 
     switch (stage) {
     case PSM_INIT:
-	if (psm->goal == PKG_INSTALL) {
-	    /* HACK: reinstall abuses te instance to remove old header */
-	    if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG)
-		markReplacedInstance(ts, psm->te);
-	}
 	break;
     case PSM_PRE:
 	if (psm->goal == PKG_INSTALL) {
+	    /* HACK: replacepkgs abuses te instance to remove old header */
+	    if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG)
+		markReplacedInstance(ts, psm->te);
+
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPREIN)) {
 		/* Run triggers in other package(s) this package sets off. */
 		rc = runTriggers(psm, RPMSENSE_TRIGGERPREIN);
