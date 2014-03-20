@@ -30,12 +30,6 @@
 
 #include "debug.h"
 
-typedef enum pkgStage_e {
-    PSM_PRE		=  2,
-    PSM_PROCESS		=  3,
-    PSM_POST		=  4,
-} pkgStage;
-
 struct rpmpsm_s {
     rpmts ts;			/*!< transaction set */
     rpmte te;			/*!< current transaction element */
@@ -51,8 +45,8 @@ struct rpmpsm_s {
 };
 
 static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal);
+static rpmRC rpmpsmUnpack(rpmpsm psm);
 static rpmpsm rpmpsmFree(rpmpsm psm);
-static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage);
 static const char * pkgGoalString(pkgGoal goal);
 
 /**
@@ -222,8 +216,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 
     psm = rpmpsmNew(ts, te, PKG_INSTALL);
 
-   	/* FIX: psm->fi->dnl should be owned. */
-    if (rpmpsmNext(psm, PSM_PROCESS) == RPMRC_OK)
+    if (rpmpsmUnpack(psm) == RPMRC_OK)
 	rpmrc = RPMRC_OK;
 
     rpmpsmFree(psm);
@@ -725,124 +718,117 @@ static rpmRC rpmpsmRemove(rpmpsm psm)
     return (fsmrc == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
 
-static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
+static rpmRC rpmPackageInstall(rpmts ts, rpmpsm psm)
 {
-    const rpmts ts = psm->ts;
     rpmRC rc = RPMRC_OK;
+    int once = 1;
 
-    switch (stage) {
-    case PSM_PRE:
-	if (psm->goal == PKG_INSTALL) {
-	    /* HACK: replacepkgs abuses te instance to remove old header */
-	    if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG)
-		markReplacedInstance(ts, psm->te);
+    while (once--) {
+	/* HACK: replacepkgs abuses te instance to remove old header */
+	if (rpmtsFilterFlags(psm->ts) & RPMPROB_FILTER_REPLACEPKG)
+	    markReplacedInstance(ts, psm->te);
 
-	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPREIN)) {
-		/* Run triggers in other package(s) this package sets off. */
-		rc = runTriggers(psm, RPMSENSE_TRIGGERPREIN);
-		if (rc) break;
-
-		/* Run triggers in this package other package(s) set off. */
-		rc = runImmedTriggers(psm, RPMSENSE_TRIGGERPREIN);
-		if (rc) break;
-	    }
-
-	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPRE)) {
-		rc = runInstScript(psm, RPMTAG_PREIN);
-		if (rc) break;
-	    }
-	}
-
-	if (psm->goal == PKG_ERASE) {
-	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERUN)) {
-		/* Run triggers in this package other package(s) set off. */
-		rc = runImmedTriggers(psm, RPMSENSE_TRIGGERUN);
-		if (rc) break;
-
-		/* Run triggers in other package(s) this package sets off. */
-		rc = runTriggers(psm, RPMSENSE_TRIGGERUN);
-		if (rc) break;
-	    }
-
-	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPREUN))
-		rc = runInstScript(psm, RPMTAG_PREUN);
-	}
-	break;
-    case PSM_PROCESS:
-	if (psm->goal == PKG_INSTALL) {
-	    rpmpsmNotify(psm, RPMCALLBACK_INST_START, 0);
-	    /* make sure first progress call gets made */
-	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, 0);
-
-	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB))
-		rc = rpmpsmUnpack(psm);
-
-	    /* XXX make sure progress reaches 100% */
-	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, psm->total);
-	    rpmpsmNotify(psm, RPMCALLBACK_INST_STOP, psm->total);
-	}
-	if (psm->goal == PKG_ERASE) {
-	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_START, 0);
-	    /* make sure first progress call gets made */
-	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, 0);
-
-	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB))
-		rc = rpmpsmRemove(psm);
-
-	    /* XXX make sure progress reaches 100% */
-	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, psm->total);
-	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_STOP, psm->total);
-	}
-	break;
-    case PSM_POST:
-	if (psm->goal == PKG_INSTALL) {
-	    /*
-	     * If this package has already been installed, remove it from
-	     * the database before adding the new one.
-	     */
-	    if (rpmteDBInstance(psm->te)) {
-		rc = dbRemove(ts, psm->te);
-		if (rc) break;
-	    }
-
-	    rc = dbAdd(ts, psm->te);
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPREIN)) {
+	    /* Run triggers in other package(s) this package sets off. */
+	    rc = runTriggers(psm, RPMSENSE_TRIGGERPREIN);
 	    if (rc) break;
 
-	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOST)) {
-		rc = runInstScript(psm, RPMTAG_POSTIN);
-		if (rc) break;
-	    }
-	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERIN)) {
-		/* Run triggers in other package(s) this package sets off. */
-		rc = runTriggers(psm, RPMSENSE_TRIGGERIN);
-		if (rc) break;
-
-		/* Run triggers in this package other package(s) set off. */
-		rc = runImmedTriggers(psm, RPMSENSE_TRIGGERIN);
-		if (rc) break;
-	    }
-
-	    rc = markReplacedFiles(psm);
-
+	    /* Run triggers in this package other package(s) set off. */
+	    rc = runImmedTriggers(psm, RPMSENSE_TRIGGERPREIN);
+	    if (rc) break;
 	}
-	if (psm->goal == PKG_ERASE) {
-	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOSTUN)) {
-		rc = runInstScript(psm, RPMTAG_POSTUN);
-		if (rc) break;
-	    }
 
-	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPOSTUN)) {
-		/* Run triggers in other package(s) this package sets off. */
-		rc = runTriggers(psm, RPMSENSE_TRIGGERPOSTUN);
-		if (rc) break;
-	    }
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPRE)) {
+	    rc = runInstScript(psm, RPMTAG_PREIN);
+	    if (rc) break;
+	}
 
+	rpmpsmNotify(psm, RPMCALLBACK_INST_START, 0);
+	/* make sure first progress call gets made */
+	rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, 0);
+
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB))
+	    rc = rpmpsmUnpack(psm);
+
+	/* XXX make sure progress reaches 100% */
+	rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, psm->total);
+	rpmpsmNotify(psm, RPMCALLBACK_INST_STOP, psm->total);
+
+	/*
+	 * If this package has already been installed, remove it from
+	 * the database before adding the new one.
+	 */
+	if (rpmteDBInstance(psm->te)) {
 	    rc = dbRemove(ts, psm->te);
+	    if (rc) break;
 	}
-	break;
-    default:
-	break;
-   }
+
+	rc = dbAdd(ts, psm->te);
+	if (rc) break;
+
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOST)) {
+	    rc = runInstScript(psm, RPMTAG_POSTIN);
+	    if (rc) break;
+	}
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERIN)) {
+	    /* Run triggers in other package(s) this package sets off. */
+	    rc = runTriggers(psm, RPMSENSE_TRIGGERIN);
+	    if (rc) break;
+
+	    /* Run triggers in this package other package(s) set off. */
+	    rc = runImmedTriggers(psm, RPMSENSE_TRIGGERIN);
+	    if (rc) break;
+	}
+
+	rc = markReplacedFiles(psm);
+    }
+
+    return rc;
+}
+
+static rpmRC rpmPackageErase(rpmts ts, rpmpsm psm)
+{
+    rpmRC rc = RPMRC_OK;
+    int once = 1;
+
+    while (once--) {
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERUN)) {
+	    /* Run triggers in this package other package(s) set off. */
+	    rc = runImmedTriggers(psm, RPMSENSE_TRIGGERUN);
+	    if (rc) break;
+
+	    /* Run triggers in other package(s) this package sets off. */
+	    rc = runTriggers(psm, RPMSENSE_TRIGGERUN);
+	    if (rc) break;
+	}
+
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPREUN))
+	    rc = runInstScript(psm, RPMTAG_PREUN);
+
+	rpmpsmNotify(psm, RPMCALLBACK_UNINST_START, 0);
+	/* make sure first progress call gets made */
+	rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, 0);
+
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB))
+	    rc = rpmpsmRemove(psm);
+
+	/* XXX make sure progress reaches 100% */
+	rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, psm->total);
+	rpmpsmNotify(psm, RPMCALLBACK_UNINST_STOP, psm->total);
+
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOSTUN)) {
+	    rc = runInstScript(psm, RPMTAG_POSTUN);
+	    if (rc) break;
+	}
+
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPOSTUN)) {
+	    /* Run triggers in other package(s) this package sets off. */
+	    rc = runTriggers(psm, RPMSENSE_TRIGGERPOSTUN);
+	    if (rc) break;
+	}
+
+	rc = dbRemove(ts, psm->te);
+    }
 
     return rc;
 }
@@ -881,10 +867,8 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 		op = (goal == PKG_INSTALL) ? RPMTS_OP_INSTALL : RPMTS_OP_ERASE;
 		rpmswEnter(rpmtsOp(psm->ts, op), 0);
 
-		rc = rpmpsmNext(psm, PSM_PRE);
-		if (!rc) rc = rpmpsmNext(psm, PSM_PROCESS);
-		if (!rc) rc = rpmpsmNext(psm, PSM_POST);
-
+		rc = (goal == PKG_INSTALL) ? rpmPackageInstall(ts, psm) :
+					     rpmPackageErase(ts, psm);
 		rpmswExit(rpmtsOp(psm->ts, op), 0);
 	    }
 
