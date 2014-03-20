@@ -603,6 +603,9 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 	goto exit;
     }
 
+    /* Free up any previous "ok" message before signature/digest check */
+    *msg = _free(*msg);
+
     /* Retrieve the tag parameters from the signature header. */
     if (!headerGet(sigh, sigtag, &sigtd, hgeflags)) {
 	rc = RPMRC_FAIL;
