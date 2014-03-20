@@ -833,22 +833,6 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
 	}
 	break;
     case PSM_FINI:
-	if (rc) {
-	    char *emsg = rpmfileStrerror(rc);
-	    const char *goalName = pkgGoalString(psm->goal);
-	    if (psm->failedFile)
-		rpmlog(RPMLOG_ERR,
-			_("%s failed on file %s: %s\n"),
-			goalName, psm->failedFile, emsg);
-	    else
-		rpmlog(RPMLOG_ERR, _("%s failed: %s\n"),
-			goalName, emsg);
-	    free(emsg);
-
-	    /* XXX notify callback on error. */
-	    rpmtsNotify(ts, psm->te, RPMCALLBACK_CPIO_ERROR, 0, 0);
-	}
-
 	psm->failedFile = _free(psm->failedFile);
 
 	break;
