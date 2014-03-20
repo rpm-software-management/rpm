@@ -568,6 +568,18 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal)
 	    break;
 	}
     }
+
+    if (goal == PKG_INSTALL) {
+	Header h = rpmteHeader(te);
+	psm->total = headerGetNumber(h, RPMTAG_LONGARCHIVESIZE);
+	headerFree(h);
+    } else if (goal == PKG_ERASE) {
+	psm->total = rpmfilesFC(psm->files);
+    }
+    /* Fake up something for packages with no files */
+    if (psm->total == 0)
+	psm->total = 100;
+
     return psm;
 }
 
@@ -655,22 +667,9 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
 		psm->goalName, rpmteNEVR(psm->te), fc);
 
 	if (psm->goal == PKG_INSTALL) {
-	    Header h = rpmteHeader(psm->te);
-	    psm->amount = 0;
-	    psm->total = headerGetNumber(h, RPMTAG_LONGARCHIVESIZE);
-	    /* fake up something for packages with no files */
-	    if (psm->total == 0)
-		psm->total = 100;
-
 	    /* HACK: reinstall abuses te instance to remove old header */
 	    if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG)
 		markReplacedInstance(ts, psm->te);
-
-	    headerFree(h);
-	}
-	if (psm->goal == PKG_ERASE) {
-	    psm->amount = 0;
-	    psm->total = fc ? fc : 100;
 	}
 	break;
     case PSM_PRE:
