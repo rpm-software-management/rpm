@@ -29,3 +29,7 @@ echo %{name}-%{version}-%{release} POSTUN $*
 
 %posttrans
 echo %{name}-%{version}-%{release} POSTTRANS $*
+
+%verifyscript
+echo %{name}-%{version}-%{release} VERIFY $*
+
