@@ -42,7 +42,6 @@ struct rpmpsm_s {
     rpmts ts;			/*!< transaction set */
     rpmte te;			/*!< current transaction element */
     rpmfiles files;		/*!< transaction element file info */
-    char * failedFile;
     int scriptArg;		/*!< Scriptlet package arg. */
     int countCorrection;	/*!< 0 if installing, -1 if removing. */
     rpmCallbackType what;	/*!< Callback type. */
@@ -704,6 +703,7 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
 	break;
     case PSM_PROCESS:
 	if (psm->goal == PKG_INSTALL) {
+	    char *failedFile = NULL;
 	    int fsmrc = 0;
 	    int saved_errno = 0;
 
@@ -719,7 +719,7 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
 		}
 
 		fsmrc = rpmPackageFilesInstall(psm->ts, psm->te, psm->files,
-				  payload, psm, &psm->failedFile);
+				  payload, psm, &failedFile);
 		saved_errno = errno;
 
 		rpmswAdd(rpmtsOp(psm->ts, RPMTS_OP_UNCOMPRESS),
@@ -740,18 +740,19 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
 		emsg = rpmfileStrerror(fsmrc);
 		rpmlog(RPMLOG_ERR,
 			_("unpacking of archive failed%s%s: %s\n"),
-			(psm->failedFile != NULL ? _(" on file ") : ""),
-			(psm->failedFile != NULL ? psm->failedFile : ""),
+			(failedFile != NULL ? _(" on file ") : ""),
+			(failedFile != NULL ? failedFile : ""),
 			emsg);
 		free(emsg);
 		rc = RPMRC_FAIL;
 
 		/* XXX notify callback on error. */
 		rpmtsNotify(ts, psm->te, RPMCALLBACK_UNPACK_ERROR, 0, 0);
-		break;
 	    }
+	    free(failedFile);
 	}
 	if (psm->goal == PKG_ERASE) {
+	    char *failedFile = NULL;
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
 
 	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_START, 0);
@@ -761,12 +762,13 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
 	    /* XXX should't we log errors from here? */
 	    if (fc > 0 && !(rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)) {
 		rc = rpmPackageFilesRemove(psm->ts, psm->te, psm->files,
-				  psm, &psm->failedFile);
+				  psm, &failedFile);
 	    }
 
 	    /* XXX make sure progress reaches 100% */
 	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, psm->total);
 	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_STOP, psm->total);
+	    free(failedFile);
 	}
 	break;
     case PSM_POST:
@@ -833,8 +835,6 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
 	}
 	break;
     case PSM_FINI:
-	psm->failedFile = _free(psm->failedFile);
-
 	break;
     default:
 	break;
