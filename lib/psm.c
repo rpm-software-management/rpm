@@ -712,10 +712,22 @@ exit:
     return rc;
 }
 
+static rpmRC rpmpsmRemove(rpmpsm psm)
+{
+    char *failedFile = NULL;
+    int fsmrc = 0;
+    /* XXX should't we log errors from here? */
+    if (rpmfilesFC(psm->files) > 0) {
+	fsmrc = rpmPackageFilesRemove(psm->ts, psm->te, psm->files,
+			  psm, &failedFile);
+    }
+    free(failedFile);
+    return (fsmrc == 0) ? RPMRC_OK : RPMRC_FAIL;
+}
+
 static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
 {
     const rpmts ts = psm->ts;
-    int fc = rpmfilesFC(psm->files);
     rpmRC rc = RPMRC_OK;
 
     switch (stage) {
@@ -770,23 +782,16 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_STOP, psm->total);
 	}
 	if (psm->goal == PKG_ERASE) {
-	    char *failedFile = NULL;
-	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
-
 	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_START, 0);
 	    /* make sure first progress call gets made */
 	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, 0);
 
-	    /* XXX should't we log errors from here? */
-	    if (fc > 0 && !(rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)) {
-		rc = rpmPackageFilesRemove(psm->ts, psm->te, psm->files,
-				  psm, &failedFile);
-	    }
+	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB))
+		rc = rpmpsmRemove(psm);
 
 	    /* XXX make sure progress reaches 100% */
 	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, psm->total);
 	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_STOP, psm->total);
-	    free(failedFile);
 	}
 	break;
     case PSM_POST:
