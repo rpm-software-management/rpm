@@ -721,6 +721,7 @@ static rpmRC rpmPackageInstall(rpmts ts, rpmpsm psm)
     rpmRC rc = RPMRC_OK;
     int once = 1;
 
+    rpmswEnter(rpmtsOp(psm->ts, RPMTS_OP_INSTALL), 0);
     while (once--) {
 	/* HACK: replacepkgs abuses te instance to remove old header */
 	if (rpmtsFilterFlags(psm->ts) & RPMPROB_FILTER_REPLACEPKG)
@@ -780,6 +781,7 @@ static rpmRC rpmPackageInstall(rpmts ts, rpmpsm psm)
 
 	rc = markReplacedFiles(psm);
     }
+    rpmswExit(rpmtsOp(psm->ts, RPMTS_OP_INSTALL), 0);
 
     return rc;
 }
@@ -789,6 +791,7 @@ static rpmRC rpmPackageErase(rpmts ts, rpmpsm psm)
     rpmRC rc = RPMRC_OK;
     int once = 1;
 
+    rpmswEnter(rpmtsOp(psm->ts, RPMTS_OP_ERASE), 0);
     while (once--) {
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERUN)) {
 	    /* Run triggers in this package other package(s) set off. */
@@ -827,6 +830,7 @@ static rpmRC rpmPackageErase(rpmts ts, rpmpsm psm)
 
 	rc = dbRemove(ts, psm->te);
     }
+    rpmswExit(rpmtsOp(psm->ts, RPMTS_OP_ERASE), 0);
 
     return rc;
 }
@@ -854,20 +858,13 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 
     psm = rpmpsmNew(ts, te, goal);
     if (rpmChrootIn() == 0) {
-	rpmtsOpX op;
-
 	switch (goal) {
 	case PKG_INSTALL:
 	case PKG_ERASE:
 	    /* Run pre transaction element hook for all plugins */
 	    if (rpmpluginsCallPsmPre(rpmtsPlugins(ts), te) != RPMRC_FAIL) {
-
-		op = (goal == PKG_INSTALL) ? RPMTS_OP_INSTALL : RPMTS_OP_ERASE;
-		rpmswEnter(rpmtsOp(psm->ts, op), 0);
-
 		rc = (goal == PKG_INSTALL) ? rpmPackageInstall(ts, psm) :
 					     rpmPackageErase(ts, psm);
-		rpmswExit(rpmtsOp(psm->ts, op), 0);
 	    }
 
 	    /* Run post transaction element hook for all plugins */
