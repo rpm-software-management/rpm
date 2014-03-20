@@ -55,9 +55,10 @@ struct rpmpsm_s {
     int nrefs;			/*!< Reference count. */
 };
 
-static rpmpsm rpmpsmNew(rpmts ts, rpmte te);
+static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal);
 static rpmpsm rpmpsmFree(rpmpsm psm);
 static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage);
+static const char * pkgGoalString(pkgGoal goal);
 
 /**
  * Adjust file states in database for files shared with this package:
@@ -224,8 +225,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	    rpmfsSetAction(fs, i, FA_CREATE);
     }
 
-    psm = rpmpsmNew(ts, te);
-    psm->goal = PKG_INSTALL;
+    psm = rpmpsmNew(ts, te, PKG_INSTALL);
 
    	/* FIX: psm->fi->dnl should be owned. */
     if (rpmpsmNext(psm, PSM_PROCESS) == RPMRC_OK)
@@ -535,12 +535,14 @@ static rpmpsm rpmpsmFree(rpmpsm psm)
     return NULL;
 }
 
-static rpmpsm rpmpsmNew(rpmts ts, rpmte te)
+static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal)
 {
     rpmpsm psm = xcalloc(1, sizeof(*psm));
     psm->ts = rpmtsLink(ts);
     psm->files = rpmteFiles(te);
     psm->te = te; /* XXX rpmte not refcounted yet */
+    psm->goal = goal;
+    psm->goalName = pkgGoalString(goal);
     return psm;
 }
 
@@ -873,11 +875,9 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)
 	return RPMRC_OK;
 
-    psm = rpmpsmNew(ts, te);
+    psm = rpmpsmNew(ts, te, goal);
     if (rpmChrootIn() == 0) {
 	rpmtsOpX op;
-	psm->goal = goal;
-	psm->goalName = pkgGoalString(goal);
 
 	switch (goal) {
 	case PKG_INSTALL:
