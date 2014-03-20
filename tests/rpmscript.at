@@ -21,16 +21,16 @@ runroot rpm -U "${TOPDIR}"/RPMS/noarch/scripts-1.0-2.noarch.rpm
 runroot rpm -e scripts
 ],
 [0],
-[scripts-1.0-1 PRETRANS 0
+[scripts-1.0-1 PRETRANS 1
 scripts-1.0-1 PRE 1
 scripts-1.0-1 POST 1
-scripts-1.0-1 POSTTRANS 0
-scripts-1.0-2 PRETRANS 0
+scripts-1.0-1 POSTTRANS 1
+scripts-1.0-2 PRETRANS 2
 scripts-1.0-2 PRE 2
 scripts-1.0-2 POST 2
 scripts-1.0-1 PREUN 1
 scripts-1.0-1 POSTUN 1
-scripts-1.0-2 POSTTRANS 0
+scripts-1.0-2 POSTTRANS 1
 scripts-1.0-2 PREUN 0
 scripts-1.0-2 POSTUN 0
 ],

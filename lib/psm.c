@@ -551,6 +551,7 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal)
 	int npkgs_installed = rpmdbCountPackages(rpmtsGetRdb(ts), rpmteN(te));
 	switch (goal) {
 	case PKG_INSTALL:
+	case PKG_PRETRANS:
 	    psm->scriptArg = npkgs_installed + 1;
 	    psm->countCorrection = 0;
 	    break;
@@ -558,10 +559,13 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal)
 	    psm->scriptArg = npkgs_installed - 1;
 	    psm->countCorrection = -1;
 	    break;
+	case PKG_POSTTRANS:
+	    psm->scriptArg = npkgs_installed;
+	    psm->countCorrection = 0;
+	    break;
 	default:
 	    break;
 	}
-	    
     }
     return psm;
 }
