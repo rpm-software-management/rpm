@@ -246,7 +246,7 @@ static int fsmMkfile(rpmfi fi, const char *dest, rpmfiles files,
 	    rc = expandRegular(fi, dest, psm, nodigest, 1);
 	} else {
 	    /* Create hard links for others */
-	    char *path = rpmfilesFN(files, *firsthardlink);
+	    char *fn = rpmfilesFN(files, *firsthardlink);
 	    rc = link(fn, dest);
 	    if (rc < 0) {
 		rc = RPMERR_LINK_FAILED;
