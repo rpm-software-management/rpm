@@ -626,7 +626,21 @@ static void markReplacedInstance(rpmts ts, rpmte te)
 static rpmRC dbAdd(rpmts ts, rpmte te)
 {
     Header h = rpmteHeader(te);
+    rpm_time_t installTime = (rpm_time_t) time(NULL);
+    rpmfs fs = rpmteGetFileStates(te);
+    rpm_count_t fc = rpmfsFC(fs);
+    rpm_fstate_t * fileStates = rpmfsGetStates(fs);
+    rpm_color_t tscolor = rpmtsColor(ts);
+    rpm_tid_t tid = rpmtsGetTid(ts);
     rpmRC rc;
+
+    if (fileStates != NULL && fc > 0) {
+	headerPutChar(h, RPMTAG_FILESTATES, fileStates, fc);
+    }
+
+    headerPutUint32(h, RPMTAG_INSTALLTID, &tid, 1);
+    headerPutUint32(h, RPMTAG_INSTALLTIME, &installTime, 1);
+    headerPutUint32(h, RPMTAG_INSTALLCOLOR, &tscolor, 1);
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
     rc = (rpmdbAdd(rpmtsGetRdb(ts), h) == 0) ? RPMRC_OK : RPMRC_FAIL;
@@ -777,23 +791,6 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
 	break;
     case PSM_POST:
 	if (psm->goal == PKG_INSTALL) {
-	    rpm_time_t installTime = (rpm_time_t) time(NULL);
-	    rpmfs fs = rpmteGetFileStates(psm->te);
-	    rpm_count_t fc = rpmfsFC(fs);
-	    rpm_fstate_t * fileStates = rpmfsGetStates(fs);
-	    Header h = rpmteHeader(psm->te);
-	    rpm_color_t tscolor = rpmtsColor(ts);
-	    rpm_tid_t tid = rpmtsGetTid(ts);
-
-	    if (fileStates != NULL && fc > 0) {
-		headerPutChar(h, RPMTAG_FILESTATES, fileStates, fc);
-	    }
-
-	    headerPutUint32(h, RPMTAG_INSTALLTID, &tid, 1);
-	    headerPutUint32(h, RPMTAG_INSTALLTIME, &installTime, 1);
-	    headerPutUint32(h, RPMTAG_INSTALLCOLOR, &tscolor, 1);
-	    headerFree(h);
-
 	    /*
 	     * If this package has already been installed, remove it from
 	     * the database before adding the new one.
