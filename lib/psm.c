@@ -652,6 +652,52 @@ static rpmRC dbRemove(rpmts ts, rpmte te)
     return rc;
 }
 
+static rpmRC rpmpsmUnpack(rpmpsm psm)
+{
+    char *failedFile = NULL;
+    int fsmrc = 0;
+    int saved_errno = 0;
+    rpmRC rc = RPMRC_OK;
+
+    if (rpmfilesFC(psm->files) > 0) {
+	FD_t payload = rpmtePayload(psm->te);
+	if (payload == NULL) {
+	    rc = RPMRC_FAIL;
+	    goto exit;
+	}
+
+	fsmrc = rpmPackageFilesInstall(psm->ts, psm->te, psm->files,
+			  payload, psm, &failedFile);
+	saved_errno = errno;
+
+	rpmswAdd(rpmtsOp(psm->ts, RPMTS_OP_UNCOMPRESS),
+		 fdOp(payload, FDSTAT_READ));
+	rpmswAdd(rpmtsOp(psm->ts, RPMTS_OP_DIGEST),
+		 fdOp(payload, FDSTAT_DIGEST));
+
+	Fclose(payload);
+    }
+
+exit:
+    if (fsmrc) {
+	char *emsg;
+	errno = saved_errno;
+	emsg = rpmfileStrerror(fsmrc);
+	rpmlog(RPMLOG_ERR,
+		_("unpacking of archive failed%s%s: %s\n"),
+		(failedFile != NULL ? _(" on file ") : ""),
+		(failedFile != NULL ? failedFile : ""),
+		emsg);
+	free(emsg);
+	rc = RPMRC_FAIL;
+
+	/* XXX notify callback on error. */
+	rpmtsNotify(psm->ts, psm->te, RPMCALLBACK_UNPACK_ERROR, 0, 0);
+    }
+    free(failedFile);
+    return rc;
+}
+
 static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
 {
     const rpmts ts = psm->ts;
@@ -698,53 +744,16 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
 	break;
     case PSM_PROCESS:
 	if (psm->goal == PKG_INSTALL) {
-	    char *failedFile = NULL;
-	    int fsmrc = 0;
-	    int saved_errno = 0;
-
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_START, 0);
 	    /* make sure first progress call gets made */
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, 0);
 
-	    if (fc > 0 && !(rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)) {
-		FD_t payload = rpmtePayload(psm->te);
-		if (payload == NULL) {
-		    rc = RPMRC_FAIL;
-		    break;
-		}
-
-		fsmrc = rpmPackageFilesInstall(psm->ts, psm->te, psm->files,
-				  payload, psm, &failedFile);
-		saved_errno = errno;
-
-		rpmswAdd(rpmtsOp(psm->ts, RPMTS_OP_UNCOMPRESS),
-			 fdOp(payload, FDSTAT_READ));
-		rpmswAdd(rpmtsOp(psm->ts, RPMTS_OP_DIGEST),
-			 fdOp(payload, FDSTAT_DIGEST));
-
-		Fclose(payload);
-	    }
+	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB))
+		rc = rpmpsmUnpack(psm);
 
 	    /* XXX make sure progress reaches 100% */
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, psm->total);
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_STOP, psm->total);
-
-	    if (fsmrc) {
-		char *emsg;
-		errno = saved_errno;
-		emsg = rpmfileStrerror(fsmrc);
-		rpmlog(RPMLOG_ERR,
-			_("unpacking of archive failed%s%s: %s\n"),
-			(failedFile != NULL ? _(" on file ") : ""),
-			(failedFile != NULL ? failedFile : ""),
-			emsg);
-		free(emsg);
-		rc = RPMRC_FAIL;
-
-		/* XXX notify callback on error. */
-		rpmtsNotify(ts, psm->te, RPMCALLBACK_UNPACK_ERROR, 0, 0);
-	    }
-	    free(failedFile);
 	}
 	if (psm->goal == PKG_ERASE) {
 	    char *failedFile = NULL;
