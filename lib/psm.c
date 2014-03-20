@@ -44,7 +44,6 @@ struct rpmpsm_s {
     rpmfiles files;		/*!< transaction element file info */
     const char * goalName;
     char * failedFile;
-    int npkgs_installed;	/*!< No. of installed instances. */
     int scriptArg;		/*!< Scriptlet package arg. */
     int countCorrection;	/*!< 0 if installing, -1 if removing. */
     rpmCallbackType what;	/*!< Callback type. */
@@ -543,6 +542,27 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal)
     psm->te = te; /* XXX rpmte not refcounted yet */
     psm->goal = goal;
     psm->goalName = pkgGoalString(goal);
+    if (!rpmteIsSource(te)) {
+	/*
+	 * When we run scripts, we pass an argument which is the number of
+	 * versions of this package that will be installed when we are
+	 * finished.
+	 */
+	int npkgs_installed = rpmdbCountPackages(rpmtsGetRdb(ts), rpmteN(te));
+	switch (goal) {
+	case PKG_INSTALL:
+	    psm->scriptArg = npkgs_installed + 1;
+	    psm->countCorrection = 0;
+	    break;
+	case PKG_ERASE:
+	    psm->scriptArg = npkgs_installed - 1;
+	    psm->countCorrection = -1;
+	    break;
+	default:
+	    break;
+	}
+	    
+    }
     return psm;
 }
 
@@ -629,22 +649,8 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
 	rpmlog(RPMLOG_DEBUG, "%s: %s has %d files\n",
 		psm->goalName, rpmteNEVR(psm->te), fc);
 
-	/*
-	 * When we run scripts, we pass an argument which is the number of
-	 * versions of this package that will be installed when we are
-	 * finished.
-	 */
-	psm->npkgs_installed = rpmdbCountPackages(rpmtsGetRdb(ts), rpmteN(psm->te));
-	if (psm->npkgs_installed < 0) {
-	    rc = RPMRC_FAIL;
-	    break;
-	}
-
 	if (psm->goal == PKG_INSTALL) {
 	    Header h = rpmteHeader(psm->te);
-	    psm->scriptArg = psm->npkgs_installed + 1;
-	    psm->countCorrection = 0;
-
 	    psm->amount = 0;
 	    psm->total = headerGetNumber(h, RPMTAG_LONGARCHIVESIZE);
 	    /* fake up something for packages with no files */
@@ -658,9 +664,6 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage stage)
 	    headerFree(h);
 	}
 	if (psm->goal == PKG_ERASE) {
-	    psm->scriptArg = psm->npkgs_installed - 1;
-	    psm->countCorrection = -1;
-
 	    psm->amount = 0;
 	    psm->total = fc ? fc : 100;
 	}
