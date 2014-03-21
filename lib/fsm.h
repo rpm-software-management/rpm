@@ -18,14 +18,13 @@ typedef struct rpmpsm_s * rpmpsm;
  * Execute a file actions for package
  * @param ts		transaction set
  * @param fi		transaction element file info
- * @param cfd
  * @param psm		owner psm (or NULL)
  * @retval archiveSize	pointer to archive size
  * @retval failedFile	pointer to first file name that failed (malloced)
  * @return		0 on success
  */
 
-int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
+int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile);
 
 int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,

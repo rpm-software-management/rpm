@@ -805,10 +805,11 @@ static void setFileState(rpmfs fs, int i)
     }
 }
 
-int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
+int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile)
 {
-    rpmfi fi = rpmfiNewArchiveReader(cfd, files, RPMFI_ITER_READ_ARCHIVE);
+    FD_t payload = rpmtePayload(te);
+    rpmfi fi = rpmfiNewArchiveReader(payload, files, RPMFI_ITER_READ_ARCHIVE);
     rpmfs fs = rpmteGetFileStates(te);
     rpmPlugins plugins = rpmtsPlugins(ts);
     struct stat sb;
@@ -821,6 +822,11 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
     char *tid = NULL;
     const char *suffix;
     char *fpath = NULL;
+
+    if (fi == NULL) {
+	rc = RPMERR_BAD_MAGIC;
+	goto exit;
+    }
 
     /* transaction id used for temporary path suffix while installing */
     rasprintf(&tid, ";%08x", (unsigned)rpmtsGetTid(ts));
@@ -952,9 +958,15 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	fpath = _free(fpath);
     }
 
+    rpmswAdd(rpmtsOp(ts, RPMTS_OP_UNCOMPRESS), fdOp(payload, FDSTAT_READ));
+    rpmswAdd(rpmtsOp(ts, RPMTS_OP_DIGEST), fdOp(payload, FDSTAT_DIGEST));
+
+exit:
+
     /* No need to bother with close errors on read */
     rpmfiArchiveClose(fi);
     rpmfiFree(fi);
+    Fclose(payload);
     free(tid);
     free(fpath);
 

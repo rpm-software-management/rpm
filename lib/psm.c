@@ -665,22 +665,9 @@ static rpmRC rpmpsmUnpack(rpmpsm psm)
     rpmRC rc = RPMRC_OK;
 
     if (rpmfilesFC(psm->files) > 0) {
-	FD_t payload = rpmtePayload(psm->te);
-	if (payload == NULL) {
-	    rc = RPMRC_FAIL;
-	    goto exit;
-	}
-
 	fsmrc = rpmPackageFilesInstall(psm->ts, psm->te, psm->files,
-			  payload, psm, &failedFile);
+				   psm, &failedFile);
 	saved_errno = errno;
-
-	rpmswAdd(rpmtsOp(psm->ts, RPMTS_OP_UNCOMPRESS),
-		 fdOp(payload, FDSTAT_READ));
-	rpmswAdd(rpmtsOp(psm->ts, RPMTS_OP_DIGEST),
-		 fdOp(payload, FDSTAT_DIGEST));
-
-	Fclose(payload);
     }
 
 exit:
