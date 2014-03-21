@@ -664,13 +664,22 @@ static rpmRC rpmpsmUnpack(rpmpsm psm)
     int saved_errno = 0;
     rpmRC rc = RPMRC_OK;
 
-    if (rpmfilesFC(psm->files) > 0) {
-	fsmrc = rpmPackageFilesInstall(psm->ts, psm->te, psm->files,
+    rpmpsmNotify(psm, RPMCALLBACK_INST_START, 0);
+    /* make sure first progress call gets made */
+    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, 0);
+
+    if (!(rpmtsFlags(psm->ts) & RPMTRANS_FLAG_JUSTDB)) {
+	if (rpmfilesFC(psm->files) > 0) {
+	    fsmrc = rpmPackageFilesInstall(psm->ts, psm->te, psm->files,
 				   psm, &failedFile);
-	saved_errno = errno;
+	    saved_errno = errno;
+	}
     }
 
-exit:
+    /* XXX make sure progress reaches 100% */
+    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, psm->total);
+    rpmpsmNotify(psm, RPMCALLBACK_INST_STOP, psm->total);
+
     if (fsmrc) {
 	char *emsg;
 	errno = saved_errno;
@@ -694,11 +703,22 @@ static rpmRC rpmpsmRemove(rpmpsm psm)
 {
     char *failedFile = NULL;
     int fsmrc = 0;
+
+    rpmpsmNotify(psm, RPMCALLBACK_UNINST_START, 0);
+    /* make sure first progress call gets made */
+    rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, 0);
+
     /* XXX should't we log errors from here? */
-    if (rpmfilesFC(psm->files) > 0) {
-	fsmrc = rpmPackageFilesRemove(psm->ts, psm->te, psm->files,
-			  psm, &failedFile);
+    if (!(rpmtsFlags(psm->ts) & RPMTRANS_FLAG_JUSTDB)) {
+	if (rpmfilesFC(psm->files) > 0) {
+	    fsmrc = rpmPackageFilesRemove(psm->ts, psm->te, psm->files,
+					  psm, &failedFile);
+	}
     }
+    /* XXX make sure progress reaches 100% */
+    rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, psm->total);
+    rpmpsmNotify(psm, RPMCALLBACK_UNINST_STOP, psm->total);
+
     free(failedFile);
     return (fsmrc == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
@@ -729,16 +749,8 @@ static rpmRC rpmPackageInstall(rpmts ts, rpmpsm psm)
 	    if (rc) break;
 	}
 
-	rpmpsmNotify(psm, RPMCALLBACK_INST_START, 0);
-	/* make sure first progress call gets made */
-	rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, 0);
-
-	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB))
-	    rc = rpmpsmUnpack(psm);
-
-	/* XXX make sure progress reaches 100% */
-	rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, psm->total);
-	rpmpsmNotify(psm, RPMCALLBACK_INST_STOP, psm->total);
+	rc = rpmpsmUnpack(psm);
+	if (rc) break;
 
 	/*
 	 * If this package has already been installed, remove it from
@@ -793,16 +805,8 @@ static rpmRC rpmPackageErase(rpmts ts, rpmpsm psm)
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPREUN))
 	    rc = runInstScript(psm, RPMTAG_PREUN);
 
-	rpmpsmNotify(psm, RPMCALLBACK_UNINST_START, 0);
-	/* make sure first progress call gets made */
-	rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, 0);
-
-	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB))
-	    rc = rpmpsmRemove(psm);
-
-	/* XXX make sure progress reaches 100% */
-	rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, psm->total);
-	rpmpsmNotify(psm, RPMCALLBACK_UNINST_STOP, psm->total);
+	rc = rpmpsmRemove(psm);
+	if (rc) break;
 
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOSTUN)) {
 	    rc = runInstScript(psm, RPMTAG_POSTUN);
