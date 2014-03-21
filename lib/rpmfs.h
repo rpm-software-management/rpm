@@ -57,6 +57,9 @@ rpmFileAction rpmfsGetAction(rpmfs fs, unsigned int ix);
 RPM_GNUC_INTERNAL
 void rpmfsSetAction(rpmfs fs, unsigned int ix, rpmFileAction action);
 
+RPM_GNUC_INTERNAL
+void rpmfsResetActions(rpmfs fs);
+
 #ifdef __cplusplus
 }
 #endif

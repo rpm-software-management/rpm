@@ -1323,11 +1323,14 @@ static int rpmtsPrepare(rpmts ts)
 
     rpmlog(RPMLOG_DEBUG, "computing %" PRIu64 " file fingerprints\n", fileCount);
 
-    /* Skip netshared paths, not our i18n files, and excluded docs */
+    /* Reset actions, set skip for netshared paths and excluded files */
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	if (rpmfiFC(rpmteFI(p)) == 0)
 	    continue;
+	rpmfs fs = rpmteGetFileStates(p);
+	/* Ensure clean state, this could get called more than once. */
+	rpmfsResetActions(fs);
 	if (rpmteType(p) == TR_ADDED) {
 	    skipInstallFiles(ts, p);
 	} else {

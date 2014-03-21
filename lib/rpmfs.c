@@ -18,7 +18,7 @@ rpmfs rpmfsNew(rpm_count_t fc, int initState)
     rpmfs fs = xcalloc(1, sizeof(*fs));
     fs->fc = fc;
     fs->actions = xmalloc(fs->fc * sizeof(*fs->actions));
-    memset(fs->actions, FA_UNKNOWN, fs->fc * sizeof(*fs->actions));
+    rpmfsResetActions(fs);
     if (initState) {
 	fs->states = xmalloc(sizeof(*fs->states) * fs->fc);
 	memset(fs->states, RPMFILE_STATE_NORMAL, fs->fc);
@@ -113,5 +113,12 @@ void rpmfsSetAction(rpmfs fs, unsigned int ix, rpmFileAction action)
 {
     if (fs->actions != NULL && ix < fs->fc) {
 	fs->actions[ix] = action;
+    }
+}
+
+void rpmfsResetActions(rpmfs fs)
+{
+    if (fs && fs->actions) {
+	memset(fs->actions, FA_UNKNOWN, fs->fc * sizeof(*fs->actions));
     }
 }
