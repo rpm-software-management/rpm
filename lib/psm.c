@@ -849,26 +849,29 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 
     psm = rpmpsmNew(ts, te, goal);
     if (rpmChrootIn() == 0) {
-	switch (goal) {
-	case PKG_INSTALL:
-	case PKG_ERASE:
-	    /* Run pre transaction element hook for all plugins */
-	    if (rpmpluginsCallPsmPre(rpmtsPlugins(ts), te) != RPMRC_FAIL) {
-		rc = (goal == PKG_INSTALL) ? rpmPackageInstall(ts, psm) :
-					     rpmPackageErase(ts, psm);
-	    }
+	/* Run pre transaction element hook for all plugins */
+	rc = rpmpluginsCallPsmPre(rpmtsPlugins(ts), te);
 
-	    /* Run post transaction element hook for all plugins */
-	    rpmpluginsCallPsmPost(rpmtsPlugins(ts), te, rc);
-	    break;
-	case PKG_PRETRANS:
-	case PKG_POSTTRANS:
-	case PKG_VERIFY:
-	    rc = runInstScript(psm, goal);
-	    break;
-	default:
-	    break;
+	if (!rc) {
+	    switch (goal) {
+	    case PKG_INSTALL:
+		rc = rpmPackageInstall(ts, psm);
+		break;
+	    case PKG_ERASE:
+		rc = rpmPackageErase(ts, psm);
+		break;
+	    case PKG_PRETRANS:
+	    case PKG_POSTTRANS:
+	    case PKG_VERIFY:
+		rc = runInstScript(psm, goal);
+		break;
+	    default:
+		break;
+	    }
 	}
+	/* Run post transaction element hook for all plugins */
+	rpmpluginsCallPsmPost(rpmtsPlugins(ts), te, rc);
+
 	/* XXX an error here would require a full abort */
 	(void) rpmChrootOut();
     }
