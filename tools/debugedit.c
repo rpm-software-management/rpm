@@ -1541,6 +1541,12 @@ main (int argc, char *argv[])
 	}
     }
 
+  /* Ensure clean paths, users can muck with these */
+  if (base_dir)
+    canonicalize_path(base_dir, base_dir);
+  if (dest_dir)
+    canonicalize_path(dest_dir, dest_dir);
+
   /* Make sure there are trailing slashes in dirs */
   if (base_dir != NULL && base_dir[strlen (base_dir)-1] != '/')
     {
