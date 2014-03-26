@@ -594,6 +594,9 @@ restart:
     }
 
     if (eiu->numSRPMS && (eiu->sourceURL != NULL)) {
+	rpmcliProgressState = 0;
+	rpmcliProgressTotal = 0;
+	rpmcliProgressCurrent = 0;
 	for (i = 0; i < eiu->numSRPMS; i++) {
 	    rpmdbCheckSignals();
 	    if (eiu->sourceURL[i] != NULL) {
