@@ -22,6 +22,7 @@ static int rpmcliHashesCurrent = 0;
 static int rpmcliHashesTotal = 0;
 static int rpmcliProgressCurrent = 0;
 static int rpmcliProgressTotal = 0;
+static int rpmcliProgressState = 0;
 
 /**
  * Print a CLI progress bar.
@@ -103,7 +104,6 @@ void * rpmShowProgress(const void * arg,
     void * rc = NULL;
     const char * filename = (const char *)key;
     static FD_t fd = NULL;
-    static int state = -1;
 
     switch (what) {
     case RPMCALLBACK_INST_OPEN_FILE:
@@ -134,8 +134,8 @@ void * rpmShowProgress(const void * arg,
 
     case RPMCALLBACK_INST_START:
     case RPMCALLBACK_UNINST_START:
-	if (state != what) {
-	    state = what;
+	if (rpmcliProgressState != what) {
+	    rpmcliProgressState = what;
 	    if (flags & INSTALL_HASH) {
 		if (what == RPMCALLBACK_INST_START) {
 		    fprintf(stdout, _("Updating / installing...\n"));
@@ -185,7 +185,7 @@ void * rpmShowProgress(const void * arg,
 	rpmcliProgressTotal = 1;
 	rpmcliProgressCurrent = 0;
 	rpmcliPackagesTotal = total;
-	state = what;
+	rpmcliProgressState = what;
 	if (!(flags & INSTALL_LABEL))
 	    break;
 	if (flags & INSTALL_HASH)
