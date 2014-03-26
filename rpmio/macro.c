@@ -1267,7 +1267,9 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     }
 
     mb->buf[mb->tpos] = '\0';
-    freeArgs(mb, 0);
+    /* Warn on unused macros, but only on error/tracing as its very expesive */
+    if (rc != 0 || mb->expand_trace)
+	freeArgs(mb, 0);
     mb->depth--;
     if (rc != 0 || mb->expand_trace)
 	printExpansion(mb, mb->buf+tpos, mb->buf+mb->tpos);
