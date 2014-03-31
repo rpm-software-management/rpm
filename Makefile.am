@@ -8,8 +8,7 @@ include $(top_srcdir)/rpm.am
 
 CLEANFILES =
 EXTRA_DIST = CHANGES ChangeLog CREDITS GROUPS INSTALL \
-	autodeps autogen.sh \
-	db3/configure installplatform platform.in
+	autogen.sh db3/configure installplatform platform.in
 BUILT_SOURCES =
 
 SUBDIRS = po misc
