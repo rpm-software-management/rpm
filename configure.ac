@@ -813,31 +813,6 @@ host_os_major=`echo "${host_os}" | sed 's/\..*$//'`
 host_os_noversion=`echo "${host_os}" | sed 's/[0-9]*\..*$//'`
 changequote([, ])
 
-for provscript in ${host_cpu}-${host_os_exact}.prov ${host_os_exact}.prov ${host_os_major}.prov ${host_os_noversion}.prov none ; do {
-    if test -f ${srcdir}/autodeps/${provscript} ; then
-       if [[ ${provscript} == none ]] ; then
-           echo "*** no default provides information is available for ${host_os_noversion}"
-       else
-           echo "using ${srcdir}/autodeps/${provscript} for automatic provides generation"
-       fi
-       ln -sf ${provscript} ${srcdir}/autodeps/find-provides
-       break
-    fi
-}; done
-
-
-for reqscript in ${host_cpu}-${host_os_exact}.req ${host_os_exact}.req ${host_os_major}.req ${host_os_noversion}.req none ; do {
-    if test -f ${srcdir}/autodeps/${reqscript} ; then
-       if [[ ${reqscript} == none ]] ; then
-           echo "*** no default requires information is available for ${host_os_noversion}"
-       else
-	  echo "using ${srcdir}/autodeps/${reqscript} for automatic requires generation"
-       fi
-       ln -sf ${reqscript} ${srcdir}/autodeps/find-requires
-       break
-    fi
-} done
-
 dnl permit overriding build_vendor for "canonical rpm vendor"
 RPMCANONVENDOR="$build_vendor"
 AC_ARG_WITH([vendor], 
