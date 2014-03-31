@@ -14,6 +14,7 @@ EXTRA_DIST = \
 	perldeps.pl perl.prov perl.req pythondeps.sh osgideps.pl \
 	rpmdb_loadcvt rpm.daily rpm.log rpm.supp rpm2cpio.sh \
 	tcl.req tgpg vpkg-provides.sh \
+	find-requires find-provides \
 	find-requires.php find-provides.php \
 	find-php-provides find-php-requires \
 	mono-find-requires mono-find-provides \
@@ -28,7 +29,7 @@ rpmconfig_SCRIPTS = \
 	brp-strip-shared brp-strip-static-archive \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
-	find-lang.sh \
+	find-lang.sh find-requires find-provides \
 	perl.prov perl.req perldeps.pl pythondeps.sh osgideps.pl \
 	mono-find-requires mono-find-provides \
 	pkgconfigdeps.sh libtooldeps.sh \

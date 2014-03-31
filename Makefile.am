@@ -101,11 +101,8 @@ bin_PROGRAMS += 	rpm2archive
 endif
 
 rpmlibexec_PROGRAMS =
-rpmconfig_SCRIPTS =	autodeps/find-provides autodeps/find-requires \
-			mkinstalldirs \
+rpmconfig_SCRIPTS =	mkinstalldirs \
 			config.guess config.sub
-DISTCLEANFILES = autodeps/find-provides
-DISTCLEANFILES += autodeps/find-requires
 
 noinst_LTLIBRARIES = 		libcliutils.la
 libcliutils_la_SOURCES = 	cliutils.h cliutils.c
@@ -295,7 +292,7 @@ db.h:	$(top_builddir)/db3/db.h
 	$(LN_S) $(top_builddir)/db3/db.h $@
 BUILT_SOURCES += db.h
 endif
-DISTCLEANFILES += db.h
+DISTCLEANFILES = db.h
 
 clean-local:
 	rm -rf doc/hacking/html
