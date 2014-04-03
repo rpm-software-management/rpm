@@ -16,6 +16,7 @@
 #include "lib/rpmfi_internal.h"
 #include "lib/rpmte_internal.h"	/* relocations */
 #include "lib/cpio.h"	/* XXX CPIO_FOO */
+#include "lib/fsm.h"	/* rpmpsm stuff for now */
 #include "lib/rpmug.h"
 #include "rpmio/rpmio_internal.h"       /* fdInit/FiniDigest */
 
@@ -2038,7 +2039,7 @@ size_t rpmfiArchiveRead(rpmfi fi, void * buf, size_t size)
     return rpmcpioRead(fi->archive, buf, size);
 }
 
-int rpmfiArchiveReadToFile(rpmfi fi, FD_t fd, int nodigest)
+int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm)
 {
     if (fi == NULL || fi->archive == NULL || fd == NULL)
 	return -1;
@@ -2067,6 +2068,7 @@ int rpmfiArchiveReadToFile(rpmfi fi, FD_t fd, int nodigest)
 	    goto exit;
 	}
 
+	rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmfiArchiveTell(fi));
 	left -= len;
     }
 
@@ -2089,6 +2091,11 @@ int rpmfiArchiveReadToFile(rpmfi fi, FD_t fd, int nodigest)
 
 exit:
     return rc;
+}
+
+int rpmfiArchiveReadToFile(rpmfi fi, FD_t fd, int nodigest)
+{
+    return rpmfiArchiveReadToFilePsm(fi, fd, nodigest, NULL);
 }
 
 char * rpmfileStrerror(int rc)

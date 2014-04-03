@@ -222,7 +222,7 @@ static int expandRegular(rpmfi fi, const char *dest, rpmpsm psm, int nodigest, i
     }
 
     if (!nocontent)
-	rc = rpmfiArchiveReadToFile(fi, wfd, nodigest);
+	rc = rpmfiArchiveReadToFilePsm(fi, wfd, nodigest, psm);
 exit:
     if (wfd) {
 	int myerrno = errno;
