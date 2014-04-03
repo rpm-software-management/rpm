@@ -2,6 +2,7 @@
 
 from distutils.core import setup, Extension
 import subprocess
+import os
 
 def pkgconfig(what):
     out = []
@@ -12,6 +13,17 @@ def pkgconfig(what):
     return out
 
 cflags = ['-std=c99']
+additional_link_args = []
+
+# See if we're building in-tree
+if os.access('Makefile.am', os.F_OK):
+    cflags.append('-I../include')
+    additional_link_args.extend(['-Wl,-L../rpmio/.libs',
+                                 '-Wl,-L../lib/.libs',
+                                 '-Wl,-L../build/.libs',
+                                 '-Wl,-L../sign/.libs'])
+    os.environ['PKG_CONFIG_PATH'] = '..'
+
 
 rpmmod = Extension('rpm._rpm',
                    sources = [  'header-py.c', 'rpmds-py.c', 'rpmfd-py.c',
@@ -22,21 +34,24 @@ rpmmod = Extension('rpm._rpm',
                              ],
                    include_dirs = pkgconfig('--cflags'),
                    libraries = pkgconfig('--libs'),
-                   extra_compile_args = cflags
+                   extra_compile_args = cflags,
+                   extra_link_args = additional_link_args
                   )
 
 rpmbuild_mod = Extension('rpm._rpmb',
                    sources = ['rpmbmodule.c', 'spec-py.c'],
                    include_dirs = pkgconfig('--cflags'),
                    libraries = pkgconfig('--libs') + ['rpmbuild'],
-                   extra_compile_args = cflags
+                   extra_compile_args = cflags,
+                   extra_link_args = additional_link_args
                   )
 
 rpmsign_mod = Extension('rpm._rpms',
                    sources = ['rpmbmodule.c'],
                    include_dirs = pkgconfig('--cflags'),
                    libraries = pkgconfig('--libs') + ['rpmsign'],
-                   extra_compile_args = cflags
+                   extra_compile_args = cflags,
+                   extra_link_args = additional_link_args
                   )
 
 setup(name='@PACKAGE_NAME@-python',
