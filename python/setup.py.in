@@ -2,7 +2,6 @@
 
 from distutils.core import setup, Extension
 import subprocess
-from glob import glob
 
 def pkgconfig(what):
     out = []
@@ -12,35 +11,29 @@ def pkgconfig(what):
         out.append(token[2:])
     return out
 
-def mksources(names):
-    srcs = []
-    for n in names:
-        srcs.extend(glob('%s*.c' % n))
-    return srcs
-
 cflags = ['-std=c99']
 
 rpmmod = Extension('rpm._rpm',
-                   sources = mksources([
-                                'header', 'rpmds', 'rpmfd', 'rpmfi', 'rpmii',
-                                'rpmkeyring', 'rpmmacro', 'rpmmi', 'rpmps',
-                                'rpmstrpool',
-                                'rpmtd', 'rpmte', 'rpmts', 'rpmmodule',
-                             ]),
+                   sources = [  'header-py.c', 'rpmds-py.c', 'rpmfd-py.c',
+				'rpmfi-py.c', 'rpmii-py.c', 'rpmkeyring-py.c',
+                                'rpmmacro-py.c', 'rpmmi-py.c', 'rpmps-py.c',
+                                'rpmstrpool-py.c', 'rpmtd-py.c',
+                                'rpmte-py.c', 'rpmts-py.c', 'rpmmodule.c',
+                             ],
                    include_dirs = pkgconfig('--cflags'),
                    libraries = pkgconfig('--libs'),
                    extra_compile_args = cflags
                   )
 
 rpmbuild_mod = Extension('rpm._rpmb',
-                   sources = mksources(['rpmbmodule', 'spec']),
+                   sources = ['rpmbmodule.c', 'spec-py.c'],
                    include_dirs = pkgconfig('--cflags'),
                    libraries = pkgconfig('--libs') + ['rpmbuild'],
                    extra_compile_args = cflags
                   )
 
 rpmsign_mod = Extension('rpm._rpms',
-                   sources = mksources(['rpmbmodule']),
+                   sources = ['rpmbmodule.c'],
                    include_dirs = pkgconfig('--cflags'),
                    libraries = pkgconfig('--libs') + ['rpmsign'],
                    extra_compile_args = cflags
