@@ -1078,6 +1078,13 @@ done \
 %{__git} apply --index %{-p:-p%{-p*}} -\
 %{__git} commit %{-q} -m %{-m*} --author "%{__scm_author}"
 
+# Git, using "git am" (-m is unused)
+%__scm_setup_git_am(q)\
+%{expand:%__scm_setup_git %{-q}}
+
+%__scm_apply_git_am(qp:m:)\
+%{__git} am %{-q} %{-p:-p%{-p*}}
+
 # Quilt
 %__scm_setup_quilt(q) %{nil}
 %__scm_apply_quilt(qp:m:)\
