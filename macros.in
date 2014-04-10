@@ -1109,8 +1109,9 @@ done \
 # Automatically apply all patches
 %autopatch(vp:)\
 %{lua:\
+local options = rpm.expand("%{!-v:-q} %{-p:-p%{-p*}} ")\
 for i, p in ipairs(patches) do\
-    print(rpm.expand("%apply_patch -m %{basename:"..p.."}  "..rpm.expand("%{!-v:-q} %{-p:-p%{-p*}} ")..p.."\\n"))\
+    print(rpm.expand("%apply_patch -m %{basename:"..p.."}  "..options..p.."\\n"))\
 end}
 
 # One macro to (optionally) do it all.
