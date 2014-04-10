@@ -143,6 +143,14 @@ rpmds rpmdsSingle(rpmTagVal tagN, const char * N, const char * EVR, rpmsenseFlag
 rpmds rpmdsCurrent(rpmds ds);
 
 /** \ingroup rpmds
+ * Write content of the dependency set to the header
+ * @param ds		dependency set
+ * @param h             header
+ * @return		0 on success
+ */
+int rpmdsPutToHeader(rpmds ds, Header h);
+
+/** \ingroup rpmds
  * Return dependency set count.
  * @param ds		dependency set
  * @return		current count

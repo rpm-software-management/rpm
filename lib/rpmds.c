@@ -381,6 +381,24 @@ rpmds rpmdsCurrent(rpmds ds)
     return cds;
 }
 
+int rpmdsPutToHeader(rpmds ds, Header h)
+{
+    rpmTagVal tagN = rpmdsTagN(ds);
+    rpmTagVal tagEVR = rpmdsTagEVR(ds);
+    rpmTagVal tagF = rpmdsTagF(ds);
+    if (!tagN)
+	return -1;
+
+    rpmds pi = rpmdsInit(ds);
+    while (rpmdsNext(pi) >= 0) {
+	rpmsenseFlags flags = rpmdsFlags(pi);
+	headerPutString(h, tagN, rpmdsN(pi));
+	headerPutString(h, tagEVR, rpmdsEVR(pi));
+	headerPutUint32(h, tagF, &flags, 1);
+    }
+    return 0;
+}
+
 int rpmdsCount(const rpmds ds)
 {
     return (ds != NULL ? ds->Count : 0);
