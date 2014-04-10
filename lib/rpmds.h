@@ -200,6 +200,20 @@ rpmsenseFlags rpmdsFlags(const rpmds ds);
 rpmTagVal rpmdsTagN(const rpmds ds);
 
 /** \ingroup rpmds
+ * Return current dependency type.
+ * @param ds		dependency set
+ * @return		current dependency type version tag, 0 on invalid
+ */
+rpmTagVal rpmdsTagEVR(const rpmds ds);
+
+/** \ingroup rpmds
+ * Return current dependency type.
+ * @param ds		dependency set
+ * @return		current dependency type flags tag, 0 on invalid
+ */
+rpmTagVal rpmdsTagF(const rpmds ds);
+
+/** \ingroup rpmds
  * Return dependency header instance, ie whether the dependency comes from 
  * an installed header or not.
  * @param ds		dependency set

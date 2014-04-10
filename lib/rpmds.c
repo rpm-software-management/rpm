@@ -451,6 +451,24 @@ rpmTagVal rpmdsTagN(const rpmds ds)
     return tagN;
 }
 
+rpmTagVal rpmdsTagEVR(const rpmds ds)
+{
+    rpmTagVal tagEVR = RPMTAG_NOT_FOUND;
+
+    if (ds != NULL)
+	dsType(ds->tagN, NULL, &tagEVR, NULL);
+    return tagEVR;
+}
+
+rpmTagVal rpmdsTagF(const rpmds ds)
+{
+    rpmTagVal tagF = RPMTAG_NOT_FOUND;
+
+    if (ds != NULL)
+	dsType(ds->tagN, NULL, NULL, &tagF);
+    return tagF;
+}
+
 unsigned int rpmdsInstance(rpmds ds)
 {
     return (ds != NULL) ? ds->instance : 0;
