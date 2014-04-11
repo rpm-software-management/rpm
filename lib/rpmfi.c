@@ -1776,7 +1776,7 @@ static int iterWriteArchiveNextFile(rpmfi fi)
 	    if (rpmfilesFFlags(files, i) & RPMFILE_GHOST)
 		continue;
 	    numHardlinks = rpmfilesFLinks(files, i, &hardlinks);
-	    if (numHardlinks > 2 && hardlinks[0] == i) {
+	    if (numHardlinks > 1 && hardlinks[0] == i) {
 		rpmfiSetFX(fi, i);
 		break;
 	    }
@@ -1800,7 +1800,7 @@ static int iterWriteArchiveNextFile(rpmfi fi)
 		if (rpmfilesFFlags(files, i) & RPMFILE_GHOST)
 		    continue;
 		numHardlinks = rpmfilesFLinks(files, i, &hardlinks);
-		if (numHardlinks > 2) {
+		if (numHardlinks > 1) {
 		    rpmfiSetFX(fi, i);
 		    break;
 		}
