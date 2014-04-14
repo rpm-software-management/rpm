@@ -24,6 +24,7 @@ EXTRA_DIST = \
 	macros.perl macros.php macros.python
 
 rpmconfig_SCRIPTS = \
+	appdata.prov \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-python-hardlink \
 	brp-strip-shared brp-strip-static-archive \
