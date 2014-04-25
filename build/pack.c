@@ -409,7 +409,6 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     (void) unlink(fileName);
 
     /* Generate the signature */
-    (void) fflush(stdout);
     sig = rpmNewSignature();
 
     /*
@@ -436,7 +435,6 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	td.data = SHA1;
 	td.count = 1;
 	headerPut(sig, &td, HEADERPUT_DEFAULT);
-	SHA1 = _free(SHA1);
     }
 
     {	
