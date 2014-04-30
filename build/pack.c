@@ -227,30 +227,6 @@ exit:
     return rc;
 }
 
-static rpmRC copyPayload(FD_t ifd, const char *ifn, FD_t ofd, const char *ofn)
-{
-    char buf[BUFSIZ];
-    size_t nb;
-    rpmRC rc = RPMRC_OK;
-
-    while ((nb = Fread(buf, 1, sizeof(buf), ifd)) > 0) {
-	if (Fwrite(buf, sizeof(buf[0]), nb, ofd) != nb) {
-	    rpmlog(RPMLOG_ERR, _("Unable to write payload to %s: %s\n"),
-		     ofn, Fstrerror(ofd));
-	    rc = RPMRC_FAIL;
-	    break;
-	}
-    }
-
-    if (nb < 0) {
-	rpmlog(RPMLOG_ERR, _("Unable to read payload from %s: %s\n"),
-		 ifn, Fstrerror(ifd));
-	rc = RPMRC_FAIL;
-    }
-
-    return rc;
-}
-
 static int depContainsTilde(Header h, rpmTagVal tagEVR)
 {
     struct rpmtd_s evrs;
@@ -289,20 +265,107 @@ static int haveTildeDep(Header h)
     return 0;
 }
 
+static rpm_loff_t estimateCpioSize(Package pkg)
+{
+    rpmfi fi;
+    rpm_loff_t size = 0;
+
+    fi = rpmfilesIter(pkg->cpioList, RPMFI_ITER_FWD);
+    while (rpmfiNext(fi) >= 0) {
+	size += strlen(rpmfiDN(fi)) + strlen(rpmfiBN(fi));
+	size += rpmfiFSize(fi);
+	size += 300;
+    }
+    return size;
+}
+
+static rpmRC generateSignature(char *SHA1, uint8_t *MD5, rpm_loff_t size,
+				rpm_loff_t payloadSize, FD_t fd)
+{
+    Header sig = NULL;
+    struct rpmtd_s td;
+    rpmTagVal sizetag;
+    rpmTagVal payloadtag;
+    rpm_tagtype_t typetag;
+    rpmRC rc = RPMRC_OK;
+
+    /* Prepare signature */
+    sig = rpmNewSignature();
+
+    rpmtdReset(&td);
+    td.tag = RPMSIGTAG_SHA1;
+    td.count = 1;
+    td.type = RPM_STRING_TYPE;
+    td.data = SHA1;
+    headerPut(sig, &td, HEADERPUT_DEFAULT);
+
+    rpmtdReset(&td);
+    td.tag = RPMSIGTAG_MD5;
+    td.count = 16;
+    td.type = RPM_BIN_TYPE;
+    td.data = MD5;
+    headerPut(sig, &td, HEADERPUT_DEFAULT);
+
+    if (payloadSize < UINT32_MAX) {
+	sizetag = RPMSIGTAG_SIZE;
+	payloadtag = RPMSIGTAG_PAYLOADSIZE;
+	typetag = RPM_INT32_TYPE;
+    } else {
+	sizetag = RPMSIGTAG_LONGSIZE;
+	payloadtag = RPMSIGTAG_LONGARCHIVESIZE;
+	typetag = RPM_INT64_TYPE;
+    }
+
+    rpmtdReset(&td);
+    td.tag = payloadtag;
+    td.count = 1;
+    td.type = typetag;
+    td.data = &payloadSize;
+    headerPut(sig, &td, HEADERPUT_DEFAULT);
+
+    rpmtdReset(&td);
+    td.tag = sizetag;
+    td.count = 1;
+    td.type = typetag;
+    td.data = &size;
+    headerPut(sig, &td, HEADERPUT_DEFAULT);
+
+    /* Reallocate the signature into one contiguous region. */
+    sig = headerReload(sig, RPMTAG_HEADERSIGNATURES);
+    if (sig == NULL) { /* XXX can't happen */
+	rpmlog(RPMLOG_ERR, _("Unable to reload signature header.\n"));
+	rc = RPMRC_FAIL;
+	goto exit;
+    }
+
+    /* Write the signature section into the package. */
+    if (rpmWriteSignature(fd, sig)) {
+	rc = RPMRC_FAIL;
+	goto exit;
+    }
+
+exit:
+    rpmFreeSignature(sig);
+    return rc;
+}
+
+
 static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 		      const char *fileName, char **cookie)
 {
     FD_t fd = NULL;
-    FD_t ifd = NULL;
-    char * sigtarget = NULL;;
     char * rpmio_flags = NULL;
     char * SHA1 = NULL;
+    uint8_t * MD5 = NULL;
     const char *s;
-    Header sig = NULL;
-    int xx;
     rpmRC rc = RPMRC_OK;
-    struct rpmtd_s td;
-    rpmTagVal payloadtag;
+    rpm_loff_t estimatedCpioSize;
+    unsigned char buf[32*BUFSIZ];
+    uint8_t zeros[] =  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    char *zerosS = "0000000000000000000000000000000000000000";
+    off_t sigStart;
+    off_t sigTargetStart;
+    off_t sigTargetSize;
 
     if (pkgidp)
 	*pkgidp = NULL;
@@ -375,96 +438,8 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	goto exit;
     }
 
-    /*
-     * Write the header+archive into a temp file so that the size of
-     * archive (after compression) can be added to the header.
-     */
-    fd = rpmMkTempFile(NULL, &sigtarget);
-    if (fd == NULL || Ferror(fd)) {
-	rc = RPMRC_FAIL;
-	rpmlog(RPMLOG_ERR, _("Unable to open temp file.\n"));
-	goto exit;
-    }
-
-    fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
-    if (headerWrite(fd, pkg->header, HEADER_MAGIC_YES)) {
-	rc = RPMRC_FAIL;
-	rpmlog(RPMLOG_ERR, _("Unable to write temp header\n"));
-    } else { /* Write the archive and get the size */
-	(void) Fflush(fd);
-	fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&SHA1, NULL, 1);
-	if (pkg->cpioList != NULL) {
-	    rc = cpio_doio(fd, pkg, rpmio_flags);
-	} else {
-	    rc = RPMRC_FAIL;
-	    rpmlog(RPMLOG_ERR, _("Bad CSA data\n"));
-	}
-    }
-
-    if (rc != RPMRC_OK)
-	goto exit;
-
-    (void) Fclose(fd);
-    fd = NULL;
-    (void) unlink(fileName);
-
-    /* Generate the signature */
-    sig = rpmNewSignature();
-
-    /*
-     * There should be rpmlib() dependency on this, but that doesn't
-     * really do much good as these are signature tags that get read
-     * way before dependency checking has a chance to figure out anything.
-     * On the positive side, not inserting the 32bit tag at all means
-     * older rpm will just bail out with error message on attempt to read
-     * such a package.
-     */
-    if (pkg->cpioArchiveSize < UINT32_MAX) {
-	payloadtag = RPMSIGTAG_PAYLOADSIZE;
-    } else {
-	payloadtag = RPMSIGTAG_LONGARCHIVESIZE;
-    }
-    (void) rpmGenDigest(sig, sigtarget, RPMSIGTAG_SIZE);
-    (void) rpmGenDigest(sig, sigtarget, RPMSIGTAG_MD5);
-
-    if (SHA1) {
-	/* XXX can't use rpmtdFromFoo() on RPMSIGTAG_* items */
-	rpmtdReset(&td);
-	td.tag = RPMSIGTAG_SHA1;
-	td.type = RPM_STRING_TYPE;
-	td.data = SHA1;
-	td.count = 1;
-	headerPut(sig, &td, HEADERPUT_DEFAULT);
-    }
-
-    {	
-	/* XXX can't use headerPutType() on legacy RPMSIGTAG_* items */
-	rpmtdReset(&td);
-	td.tag = payloadtag;
-	td.count = 1;
-	if (payloadtag == RPMSIGTAG_PAYLOADSIZE) {
-	    rpm_off_t asize = pkg->cpioArchiveSize;
-	    td.type = RPM_INT32_TYPE;
-	    td.data = &asize;
-	    headerPut(sig, &td, HEADERPUT_DEFAULT);
-	} else {
-	    rpm_loff_t asize = pkg->cpioArchiveSize;
-	    td.type = RPM_INT64_TYPE;
-	    td.data = &asize;
-	    headerPut(sig, &td, HEADERPUT_DEFAULT);
-	}
-    }
-
-    /* Reallocate the signature into one contiguous region. */
-    sig = headerReload(sig, RPMTAG_HEADERSIGNATURES);
-    if (sig == NULL) {	/* XXX can't happen */
-	rc = RPMRC_FAIL;
-	rpmlog(RPMLOG_ERR, _("Unable to reload signature header.\n"));
-	goto exit;
-    }
-
     /* Open the output file */
-    fd = Fopen(fileName, "w.ufdio");
+    fd = Fopen(fileName, "w+.ufdio");
     if (fd == NULL || Ferror(fd)) {
 	rc = RPMRC_FAIL;
 	rpmlog(RPMLOG_ERR, _("Could not open %s: %s\n"),
@@ -485,68 +460,87 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	}
     }
 
-    /* Write the signature section into the package. */
-    if (rpmWriteSignature(fd, sig)) {
+    /* Estimate cpio archive size to decide if use 32 bits or 64 bit tags. */
+    estimatedCpioSize = estimateCpioSize(pkg);
+
+    /* Save the position of signature section */
+    sigStart = Ftell(fd);
+
+    /* Generate and write a placeholder signature header */
+    rc = generateSignature(zerosS, zeros, 0, estimatedCpioSize, fd);
+    if (rc != RPMRC_OK) {
 	rc = RPMRC_FAIL;
 	goto exit;
     }
 
-    /* Append the header and archive */
-    ifd = Fopen(sigtarget, "r.ufdio");
-    if (ifd == NULL || Ferror(ifd)) {
+    /* Write the header and archive section. Calculate SHA1 from them. */
+    sigTargetStart = Ftell(fd);
+    fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
+    if (headerWrite(fd, pkg->header, HEADER_MAGIC_YES)) {
 	rc = RPMRC_FAIL;
-	rpmlog(RPMLOG_ERR, _("Unable to open sigtarget %s: %s\n"),
-		sigtarget, Fstrerror(ifd));
+	rpmlog(RPMLOG_ERR, _("Unable to write temp header\n"));
+	goto exit;
+    }
+    (void) Fflush(fd);
+    fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&SHA1, NULL, 1);
+
+    /* Write payload section (cpio archive) */
+    if (pkg->cpioList == NULL) {
+	rc = RPMRC_FAIL;
+	rpmlog(RPMLOG_ERR, _("Bad CSA data\n"));
+	goto exit;
+    }
+    rc = cpio_doio(fd, pkg, rpmio_flags);
+    if (rc != RPMRC_OK)
+	goto exit;
+
+    sigTargetSize = Ftell(fd) - sigTargetStart;
+
+    if(Fseek(fd, sigTargetStart, SEEK_SET) < 0) {
+	rc = RPMRC_FAIL;
+	rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
+		fileName, Fstrerror(fd));
 	goto exit;
     }
 
-    /* Add signatures to header, and write header into the package. */
-    /* XXX header+payload digests/signatures might be checked again here. */
-    {	Header nh = headerRead(ifd, HEADER_MAGIC_YES);
-
-	if (nh == NULL) {
-	    rc = RPMRC_FAIL;
-	    rpmlog(RPMLOG_ERR, _("Unable to read header from %s: %s\n"),
-			sigtarget, Fstrerror(ifd));
-	    goto exit;
-	}
-
-	xx = headerWrite(fd, nh, HEADER_MAGIC_YES);
-	headerFree(nh);
-
-	if (xx) {
-	    rc = RPMRC_FAIL;
-	    rpmlog(RPMLOG_ERR, _("Unable to write header to %s: %s\n"),
-			fileName, Fstrerror(fd));
-	    goto exit;
-	}
+    /* Calculate MD5 checksum from header and archive section. */
+    fdInitDigest(fd, PGPHASHALGO_MD5, 0);
+    while (Fread(buf, sizeof(buf[0]), sizeof(buf), fd) > 0)
+	;
+    if (Ferror(fd)) {
+	rc = RPMRC_FAIL;
+	rpmlog(RPMLOG_ERR, _("Fread failed in file %s: %s\n"),
+		fileName, Fstrerror(fd));
+	goto exit;
     }
-	
-    /* Write the payload into the package. */
-    rc = copyPayload(ifd, fileName, fd, sigtarget);
+    fdFiniDigest(fd, PGPHASHALGO_MD5, (void **)&MD5, NULL, 0);
+
+    if(Fseek(fd, sigStart, SEEK_SET) < 0) {
+	rc = RPMRC_FAIL;
+	rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
+		fileName, Fstrerror(fd));
+	goto exit;
+    }
+
+    /* Generate the signature. Now with right values */
+    rc = generateSignature(SHA1, MD5, sigTargetSize, pkg->cpioArchiveSize, fd);
+    if (rc != RPMRC_OK) {
+	rc = RPMRC_FAIL;
+	goto exit;
+    }
 
 exit:
     free(rpmio_flags);
     free(SHA1);
 
     /* XXX Fish the pkgid out of the signature header. */
-    if (sig != NULL && pkgidp != NULL) {
-	struct rpmtd_s md5tag;
-	headerGet(sig, RPMSIGTAG_MD5, &md5tag, HEADERGET_DEFAULT);
-	if (rpmtdType(&md5tag) == RPM_BIN_TYPE &&
-	    			md5tag.count == 16 && md5tag.data != NULL) {
-	    *pkgidp = md5tag.data;
+    if (pkgidp != NULL) {
+	if (MD5 != NULL) {
+	    *pkgidp = MD5;
 	}
     }
 
-    rpmFreeSignature(sig);
-    Fclose(ifd);
     Fclose(fd);
-
-    if (sigtarget) {
-	(void) unlink(sigtarget);
-	free(sigtarget);
-    }
 
     if (rc == RPMRC_OK)
 	rpmlog(RPMLOG_NOTICE, _("Wrote: %s\n"), fileName);
