@@ -41,15 +41,15 @@ optflags: sparc64v -O2 -g -m64 -mtune=niagara
 
 optflags: m68k -O2 -g -fomit-frame-pointer
 
-optflags: ppc -O2 -g -fsigned-char
-optflags: ppc8260 -O2 -g -fsigned-char
-optflags: ppc8560 -O2 -g -fsigned-char
-optflags: ppc32dy4 -O2 -g -fsigned-char
-optflags: ppciseries -O2 -g -fsigned-char
-optflags: ppcpseries -O2 -g -fsigned-char
-optflags: ppc64 -O2 -g -fsigned-char
-optflags: ppc64le -O2 -g -fsigned-char
-optflags: ppc64p7 -O3 -mtune=power7 -mcpu=power7 -g -fsigned-char
+optflags: ppc -O2 -g
+optflags: ppc8260 -O2 -g
+optflags: ppc8560 -O2 -g
+optflags: ppc32dy4 -O2 -g
+optflags: ppciseries -O2 -g
+optflags: ppcpseries -O2 -g
+optflags: ppc64 -O2 -g
+optflags: ppc64le -O2 -g
+optflags: ppc64p7 -O3 -mtune=power7 -mcpu=power7 -g
 
 optflags: parisc -O2 -g -mpa-risc-1-0
 optflags: hppa1.0 -O2 -g -mpa-risc-1-0
