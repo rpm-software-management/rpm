@@ -814,6 +814,13 @@ AC_SUBST(RPMCANONVENDOR)
 AC_SUBST(RPMCANONOS)
 AC_SUBST(RPMCANONGNU)
 
+RUNDIR="/run"
+AC_ARG_WITH([rundir], 
+  AS_HELP_STRING([--with-rundir=RUNDIR], [specify run-time variable directory]),
+  [RUNDIR=$withval])
+AC_DEFINE_UNQUOTED([RUNDIR],["${RUNDIR}"],[run-time variable directory])
+AC_SUBST(RUNDIR)
+
 if test X"$prefix" = XNONE ; then
     usrprefix="$ac_default_prefix"
 else
