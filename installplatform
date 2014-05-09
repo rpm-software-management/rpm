@@ -154,5 +154,5 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
 
 done
 
-# gently adjust autoconf variables to rpm macros...
-cat $MACROS | sed -e '/\${\w*:-/!s,\${,%{_,' > ${DESTDIR}/${pkglibdir}/macros
+# gently adjust undefined autoconf variables to rpm macros...
+cat $MACROS | sed -e 's,${prefix},%{_prefix},g' > ${DESTDIR}/${pkglibdir}/macros
