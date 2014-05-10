@@ -1,4 +1,13 @@
 /*! \mainpage librpm API Documentation.
+     This documents the librpm API as available to rpm itself and to the
+     various depsolvers or language bindings that rely upon it.
+
+    It enables to build tools for:
+    - \link rpmbuild	creating \endlink,
+    - \link rpmsign	signing \endlink,
+    - \link rpmtd	querying \endlink,
+    - or \link rpmts	(un)installing \endlink RPM packages.
+
  */
 /** \defgroup	rpmcli	Command Line API.
  */
