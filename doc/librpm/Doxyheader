@@ -17,6 +17,8 @@
  */
 /** \defgroup	rpmtypes	RPM data types.
  */
+/** \defgroup	rpmcallback	Callback signature & types.
+ */
 /** \defgroup	rpmts	Transaction Set API.
  */
 /** \defgroup	rpmte	Transaction Element API.
@@ -33,6 +35,8 @@
  */
 /** \defgroup	rpmprob	Problem Element API.
  */
+/** \defgroup	rpmvf	Verify API.
+ */
 /** \defgroup	rpmkeyring	RPM keyring API.
  */
 /** \defgroup	rpmmacro	Macro API.
@@ -45,7 +49,9 @@
  */
 /** \defgroup	rpmsw	Statistics API.
  */
-/** \defgroup	signature	Signature API.
+/** \defgroup	signature	Signature Tags API.
+ */
+/** \defgroup	rpmsign	Signature API.
  */
 /** \defgroup	header	Header API.
  */
