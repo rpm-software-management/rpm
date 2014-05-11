@@ -4,6 +4,7 @@
 /** \ingroup rpmio
  * \file rpmio/rpmio.h
  *
+ * RPM I/O API (Fd_t is RPM equivalent to libc's FILE)
  */
 
 #include <sys/types.h>

@@ -1,5 +1,7 @@
 /**
  * \file system.h
+ *
+ *  Some misc low-level API
  */
 
 #ifndef	H_SYSTEM

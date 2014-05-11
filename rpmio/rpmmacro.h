@@ -3,6 +3,8 @@
 
 /** \ingroup rpmio
  * \file rpmio/rpmmacro.h
+ *
+ * Macro API
  */
 
 #include <stdio.h>

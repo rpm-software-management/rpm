@@ -1,6 +1,12 @@
 #ifndef _RPMTD_H
 #define _RPMTD_H
 
+/** \ingroup rpmtd
+ *  \file lib/rpmtd.h
+ *
+ *  RPM Tag Data Container API
+ */
+
 #include <rpm/rpmtypes.h>
 #include <rpm/argv.h>
 

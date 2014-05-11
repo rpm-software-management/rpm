@@ -3,6 +3,8 @@
 
 /** \ingroup rpmargv
  * \file rpmio/argv.h
+ *
+ * Argument Manipulation API.
  */
 
 #include <stdio.h>

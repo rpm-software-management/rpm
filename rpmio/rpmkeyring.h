@@ -3,6 +3,8 @@
 
 /** \ingroup rpmkeyring
  * \file rpmio/rpmkeyring.h
+ *
+ * RPM keyring API
  */
 
 #include <rpm/rpmtypes.h>

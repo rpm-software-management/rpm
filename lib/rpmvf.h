@@ -4,6 +4,8 @@
 /** \ingroup rpmvf
  * \file lib/rpmvf.h
  * @todo Add a more complete API...
+ *
+ * \brief Verify a package. The constants that enable/disable some sanity checks (mainly used at post (un)install)
  */
 #include <rpm/rpmtypes.h>
 

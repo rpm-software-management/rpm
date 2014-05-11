@@ -3,6 +3,8 @@
 
 /** \ingroup rpmio
  * \file rpmio/rpmurl.h
+ *
+ * A couple utils for URL Manipulation
  */
 
 #ifdef __cplusplus

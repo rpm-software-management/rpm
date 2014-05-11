@@ -1,6 +1,12 @@
 #ifndef _RPMTAG_H
 #define _RPMTAG_H
 
+/** \ingroup rpmtag
+ *  \file lib/rpmtag.h
+ *
+ * Accessing RPM tags: values, types, ...
+ */
+
 #include <rpm/rpmtypes.h>
 
 #ifdef __cplusplus

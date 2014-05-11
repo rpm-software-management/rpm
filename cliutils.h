@@ -1,6 +1,11 @@
 #ifndef _CLIUTIL_H
 #define _CLIUTIL_H
 
+/** \file cliutils.h
+ *
+ *  Misc helpers for RPM CLI tools
+ */
+
 #include <stdio.h>
 #include <popt.h>
 #include <rpm/rpmutil.h>

@@ -1,6 +1,12 @@
 #ifndef _RPMCALLBACK_H
 #define _RPMCALLBACK_H
 
+/** \ingroup rpmcallback
+ *  \file lib/rpmcallback.h
+ *
+ *  (un)install callbacks
+ */
+
 #include <rpm/rpmtypes.h>
 
 #ifdef __cplusplus

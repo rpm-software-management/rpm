@@ -1,6 +1,13 @@
 #ifndef _RPMSTRPOOL_H
 #define _RPMSTRPOOL_H
 
+/** \ingroup rpmstrpool
+ * \file rpmio/rpmstrpool.h
+ *
+ * String pools manipulation helper functions
+ *
+ */
+
 #include <rpm/rpmtypes.h>
 
 #ifdef __cplusplus

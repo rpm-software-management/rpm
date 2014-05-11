@@ -1,6 +1,11 @@
 #ifndef _RPMLEGACY_H
 #define _RPMLEGACY_H
 
+/** \ingroup header_legacy
+ *  \file lib/rpmlegacy.h
+ *
+ * Some deprecated legacy API (do NOT use)
+ */
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmutil.h>
 
