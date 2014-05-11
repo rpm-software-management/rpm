@@ -3,6 +3,8 @@
 
 /** \ingroup rpmcli rpmbuild
  * \file lib/rpmcli.h
+ *
+ * Parsing RPM command line arguments
  */
 
 #include <popt.h>

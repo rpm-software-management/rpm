@@ -3,7 +3,8 @@
 
 #include <unistd.h>
 
-/*
+/** \file rpmio/rpmutil.h
+ *
  * Miscellaneous utility macros:
  * - portability wrappers for various gcc extensions like __attribute__()
  * - ...

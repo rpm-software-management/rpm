@@ -3,6 +3,8 @@
 
 /** \ingroup rpmio
  * \file rpmio/rpmsw.h
+ *
+ * Statistics API
  */
 
 #include <unistd.h>

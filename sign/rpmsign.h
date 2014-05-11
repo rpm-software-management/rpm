@@ -1,6 +1,11 @@
 #ifndef _RPMSIGN_H
 #define _RPMSIGN_H
 
+/** \file sign/rpmsign.h
+ *
+ * Signature API
+ */
+
 #include <rpm/argv.h>
 #include <rpm/rpmpgp.h>
 
