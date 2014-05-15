@@ -45,15 +45,6 @@ rpmRC rpmReadSignature(FD_t fd, Header *sighp, sigType sig_type, char ** msg);
 int rpmWriteSignature(FD_t fd, Header h);
 
 /** \ingroup signature
- * Generate digest(s) from a header+payload file, save in signature header.
- * @param sigh		signature header
- * @param file		header+payload file name
- * @param sigTag	type of digest(s) to add
- * @return		0 on success, -1 on failure
- */
-int rpmGenDigest(Header sigh, const char * file, rpmTagVal sigTag);
-
-/** \ingroup signature
  * Verify a signature from a package.
  *
  * @param keyring	keyring handle

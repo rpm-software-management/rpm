@@ -19,19 +19,6 @@
 
 #include "debug.h"
 
-/* Dumb wrapper around headerPut() for signature header */
-static int sighdrPut(Header h, rpmTagVal tag, rpmTagType type,
-                     rpm_data_t p, rpm_count_t c)
-{
-    struct rpmtd_s sigtd;
-    rpmtdReset(&sigtd);
-    sigtd.tag = tag;
-    sigtd.type = type;
-    sigtd.data = p;
-    sigtd.count = c;
-    return headerPut(h, &sigtd, HEADERPUT_DEFAULT);
-}
-
 /**
  * Print package size.
  * @todo rpmio: use fdSize rather than fstat(2) to get file size.
@@ -222,106 +209,6 @@ Header rpmNewSignature(void)
 Header rpmFreeSignature(Header sigh)
 {
     return headerFree(sigh);
-}
-
-static int makeHDRDigest(Header sigh, const char * file, rpmTagVal sigTag)
-{
-    Header h = NULL;
-    FD_t fd = NULL;
-    char * SHA1 = NULL;
-    int ret = -1;	/* assume failure. */
-
-    switch (sigTag) {
-    case RPMSIGTAG_SHA1:
-	fd = Fopen(file, "r.fdio");
-	if (fd == NULL || Ferror(fd))
-	    goto exit;
-	h = headerRead(fd, HEADER_MAGIC_YES);
-	if (h == NULL)
-	    goto exit;
-
-	if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
-	    DIGEST_CTX ctx;
-	    struct rpmtd_s utd;
-	
-	    if (!headerGet(h, RPMTAG_HEADERIMMUTABLE, &utd, HEADERGET_DEFAULT)
-	     	||  utd.data == NULL)
-	    {
-		rpmlog(RPMLOG_ERR, 
-				_("Immutable header region could not be read. "
-				"Corrupted package?\n"));
-		goto exit;
-	    }
-	    ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	    (void) rpmDigestUpdate(ctx, rpm_header_magic, sizeof(rpm_header_magic));
-	    (void) rpmDigestUpdate(ctx, utd.data, utd.count);
-	    (void) rpmDigestFinal(ctx, (void **)&SHA1, NULL, 1);
-	    rpmtdFreeData(&utd);
-	} else {
-	    rpmlog(RPMLOG_ERR, _("Cannot sign RPM v3 packages\n"));
-	    goto exit;
-	}
-
-	if (SHA1 == NULL)
-	    goto exit;
-	if (!sighdrPut(sigh, RPMSIGTAG_SHA1, RPM_STRING_TYPE, SHA1, 1))
-	    goto exit;
-	ret = 0;
-	break;
-    default:
-	break;
-    }
-
-exit:
-    free(SHA1);
-    headerFree(h);
-    if (fd != NULL) (void) Fclose(fd);
-    return ret;
-}
-
-int rpmGenDigest(Header sigh, const char * file, rpmTagVal sigTag)
-{
-    struct stat st;
-    uint8_t * pkt = NULL;
-    size_t pktlen;
-    int ret = -1;	/* assume failure. */
-
-    switch (sigTag) {
-    case RPMSIGTAG_SIZE:
-    case RPMSIGTAG_LONGSIZE:
-	if (stat(file, &st) != 0)
-	    break;
-	if (st.st_size>UINT32_MAX || sigTag==RPMSIGTAG_LONGSIZE) {
-	    rpm_loff_t size;
-	    size = st.st_size;
-	    if (!sighdrPut(sigh, RPMSIGTAG_LONGSIZE, RPM_INT64_TYPE, &size, 1))
-		break;
-	    ret = 0;
-	} else {
-	    rpm_off_t size;
-	    size = st.st_size;
-	    if (!sighdrPut(sigh, RPMSIGTAG_SIZE, RPM_INT32_TYPE, &size, 1))
-		break;
-	    ret = 0;
-	}
-	break;
-    case RPMSIGTAG_MD5:
-	pktlen = 16;
-	pkt = xcalloc(pktlen, sizeof(*pkt));
-	if (rpmDoDigest(PGPHASHALGO_MD5, file, 0, pkt, NULL)
-	 || !sighdrPut(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
-	    break;
-	ret = 0;
-	break;
-    case RPMSIGTAG_SHA1:
-	ret = makeHDRDigest(sigh, file, sigTag);
-	break;
-    default:
-	break;
-    }
-    free(pkt);
-
-    return ret;
 }
 
 static const char * rpmSigString(rpmRC res)
