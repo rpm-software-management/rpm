@@ -26,6 +26,13 @@
 char ** environ = NULL;
 #endif
 
+typedef struct sigTarget_s {
+    FD_t fd;
+    const char *fileName;
+    off_t start;
+    rpm_loff_t size;
+} *sigTarget;
+
 static int closeFile(FD_t *fdp)
 {
     if (fdp == NULL || *fdp == NULL)
@@ -162,11 +169,16 @@ exit:
     return rc;
 }
 
-static int runGPG(const char *file, const char *sigfile, const char * passPhrase)
+static int runGPG(sigTarget sigt, const char *sigfile, const char * passPhrase)
 {
-    int pid, status;
+    int pid = 0, status;
     int inpipe[2];
-    FILE * fpipe;
+    int inpipe2[2];
+    FILE * fpipe = NULL;
+    unsigned char buf[BUFSIZ];
+    ssize_t count;
+    ssize_t wantCount;
+    rpm_loff_t size;
     int rc = 1; /* assume failure */
 
     inpipe[0] = inpipe[1] = 0;
@@ -175,7 +187,13 @@ static int runGPG(const char *file, const char *sigfile, const char * passPhrase
 	goto exit;
     }
 
-    addMacro(NULL, "__plaintext_filename", NULL, file, -1);
+    inpipe2[0] = inpipe2[1] = 0;
+    if (pipe(inpipe2) < 0) {
+	rpmlog(RPMLOG_ERR, _("Couldn't create pipe for signing: %m"));
+	goto exit;
+    }
+
+    addMacro(NULL, "__plaintext_filename", NULL, "-", -1);
     addMacro(NULL, "__signature_filename", NULL, sigfile, -1);
 
     if (!(pid = fork())) {
@@ -185,6 +203,9 @@ static int runGPG(const char *file, const char *sigfile, const char * passPhrase
 
 	(void) dup2(inpipe[0], 3);
 	(void) close(inpipe[1]);
+
+	(void) dup2(inpipe2[0], STDIN_FILENO);
+	(void) close(inpipe2[1]);
 
 	if (gpg_path && *gpg_path != '\0')
 	    (void) setenv("GNUPGHOME", gpg_path, 1);
@@ -204,20 +225,85 @@ static int runGPG(const char *file, const char *sigfile, const char * passPhrase
     delMacro(NULL, "__plaintext_filename");
     delMacro(NULL, "__signature_filename");
 
-    fpipe = fdopen(inpipe[1], "w");
     (void) close(inpipe[0]);
-    if (fpipe) {
-	fprintf(fpipe, "%s\n", (passPhrase ? passPhrase : ""));
-	(void) fclose(fpipe);
+    inpipe[0] = 0;
+    (void) close(inpipe2[0]);
+    inpipe2[0] = 0;
+
+    fpipe = fdopen(inpipe[1], "w");
+    if (!fpipe) {
+	rpmlog(RPMLOG_ERR, _("fdopen failed\n"));
+	goto exit;
+    }
+    inpipe[1] = 0;
+
+    if (fprintf(fpipe, "%s\n", (passPhrase ? passPhrase : "")) < 0) {
+	rpmlog(RPMLOG_ERR, _("Could not write to pipe\n"));
+	goto exit;
+    }
+    (void) fclose(fpipe);
+    fpipe = NULL;
+
+    fpipe = fdopen(inpipe2[1], "w");
+    if (!fpipe) {
+	rpmlog(RPMLOG_ERR, _("fdopen failed\n"));
+	goto exit;
+    }
+    inpipe2[1] = 0;
+
+    if (Fseek(sigt->fd, sigt->start, SEEK_SET) < 0) {
+	rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
+		sigt->fileName, Fstrerror(sigt->fd));
+	goto exit;
     }
 
+    size = sigt->size;
+    wantCount = size < sizeof(buf) ? size : sizeof(buf);
+    while ((count = Fread(buf, sizeof(buf[0]), wantCount, sigt->fd)) > 0) {
+	fwrite(buf, sizeof(buf[0]), count, fpipe);
+	if (ferror(fpipe)) {
+	    rpmlog(RPMLOG_ERR, _("Could not write to pipe\n"));
+	    goto exit;
+	}
+	size -= count;
+	wantCount = size < sizeof(buf) ? size : sizeof(buf);
+    }
+    if (count < 0) {
+	rpmlog(RPMLOG_ERR, _("Could not read from file %s: %s\n"),
+		sigt->fileName, Fstrerror(sigt->fd));
+	goto exit;
+    }
+    fclose(fpipe);
+    fpipe = NULL;
+
     (void) waitpid(pid, &status, 0);
+    pid = 0;
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmlog(RPMLOG_ERR, _("gpg exec failed (%d)\n"), WEXITSTATUS(status));
     } else {
 	rc = 0;
     }
+
 exit:
+    if (fpipe)
+	fclose(fpipe);
+
+    if (inpipe[0])
+	close(inpipe[0]);
+
+    if (inpipe[1])
+	close(inpipe[1]);
+
+    if (inpipe2[0])
+	close(inpipe[0]);
+
+    if (inpipe2[1])
+	close(inpipe[1]);
+
+    if (pid)
+	waitpid(pid, &status, 0);
+
+
     return rc;
 }
 
@@ -225,20 +311,20 @@ exit:
  * Generate GPG signature(s) for a header+payload file.
  * @param sigh		signature header
  * @param ishdr		header-only signature?
- * @param file		header+payload file name
+ * @param sigt		signature target
  * @param passPhrase	private key pass phrase
  * @return		0 on success, 1 on failure
  */
-static int makeGPGSignature(Header sigh, int ishdr,
-			    const char * file, const char * passPhrase)
+static int makeGPGSignature(Header sigh, int ishdr, sigTarget sigt,
+			    const char * passPhrase)
 {
-    char * sigfile = rstrscat(NULL, file, ".sig", NULL);
+    char * sigfile = rstrscat(NULL, sigt->fileName, ".sig", NULL);
     struct stat st;
     uint8_t * pkt = NULL;
     size_t pktlen = 0;
     int rc = 1; /* assume failure */
 
-    if (runGPG(file, sigfile, passPhrase))
+    if (runGPG(sigt, sigfile, passPhrase))
 	goto exit;
 
     if (stat(sigfile, &st)) {
@@ -277,57 +363,19 @@ exit:
     return rc;
 }
 
-/**
- * Generate header only signature(s) from a header+payload file.
- * @param sigh		signature header
- * @param file		header+payload file name
- * @param passPhrase	private key pass phrase
- * @return		0 on success, -1 on failure
- */
-static int makeHDRSignature(Header sigh, const char * file,
-		const char * passPhrase)
+static int rpmGenSignature(Header sigh, sigTarget sigt1, sigTarget sigt2,
+			    const char * passPhrase)
 {
-    Header h = NULL;
-    FD_t fd = NULL;
-    char * fn = NULL;
-    int ret = -1;	/* assume failure. */
+    int ret;
 
-    fd = Fopen(file, "r.fdio");
-    if (fd == NULL || Ferror(fd))
-	goto exit;
-    h = headerRead(fd, HEADER_MAGIC_YES);
-    if (h == NULL)
-	goto exit;
-    (void) Fclose(fd);
-
-    fd = rpmMkTempFile(NULL, &fn);
-    if (fd == NULL || Ferror(fd))
-	goto exit;
-    if (headerWrite(fd, h, HEADER_MAGIC_YES))
+    ret = makeGPGSignature(sigh, 0, sigt1, passPhrase);
+    if (ret)
 	goto exit;
 
-    ret = makeGPGSignature(sigh, 1, fn, passPhrase);
-
+    ret = makeGPGSignature(sigh, 1, sigt2, passPhrase);
+    if (ret)
+	goto exit;
 exit:
-    if (fn) {
-	(void) unlink(fn);
-	free(fn);
-    }
-    headerFree(h);
-    if (fd != NULL) (void) Fclose(fd);
-    return ret;
-}
-
-static int rpmGenSignature(Header sigh, const char * file,
-		const char * passPhrase)
-{
-    int ret = -1;	/* assume failure. */
-
-    if (makeGPGSignature(sigh, 0, file, passPhrase) == 0) {
-	/* XXX Piggyback a header-only DSA/RSA signature as well. */
-	ret = makeHDRSignature(sigh, file, passPhrase);
-    }
-
     return ret;
 }
 
@@ -370,7 +418,7 @@ static int sameSignature(rpmTagVal sigtag, Header h1, Header h2)
     return (rc == 0);
 }
 
-static int replaceSignature(Header sigh, const char *sigtarget,
+static int replaceSignature(Header sigh, sigTarget sigt1, sigTarget sigt2,
 			    const char *passPhrase)
 {
     /* Grab a copy of the header so we can compare the result */
@@ -384,7 +432,7 @@ static int replaceSignature(Header sigh, const char *sigtarget,
      * rpmGenSignature() internals parse the actual signing result and 
      * adds appropriate tags for DSA/RSA.
      */
-    if (rpmGenSignature(sigh, sigtarget, passPhrase) == 0) {
+    if (rpmGenSignature(sigh, sigt1, sigt2, passPhrase) == 0) {
 	/* Lets see what we got and whether its the same signature as before */
 	rpmTagVal sigtag = headerIsEntry(sigh, RPMSIGTAG_DSA) ?
 					RPMSIGTAG_DSA : RPMSIGTAG_RSA;
@@ -409,12 +457,16 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
     FD_t fd = NULL;
     FD_t ofd = NULL;
     rpmlead lead = NULL;
-    char *sigtarget = NULL, *trpm = NULL;
+    char *trpm = NULL;
     Header sigh = NULL;
+    Header h = NULL;
     char * msg = NULL;
     int res = -1; /* assume failure */
     rpmRC rc;
     struct rpmtd_s utd;
+    off_t headerStart;
+    struct sigTarget_s sigt1;
+    struct sigTarget_s sigt2;
 
     fprintf(stdout, "%s:\n", rpm);
 
@@ -435,15 +487,17 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 	goto exit;
     }
 
-    ofd = rpmMkTempFile(NULL, &sigtarget);
-    if (ofd == NULL || Ferror(ofd)) {
-	rpmlog(RPMLOG_ERR, _("rpmMkTemp failed\n"));
+    headerStart = Ftell(fd);
+    if (rpmReadHeader(NULL, fd, &h, &msg) != RPMRC_OK) {
+	rpmlog(RPMLOG_ERR, _("%s: headerRead failed: %s\n"), rpm, msg);
+	msg = _free(msg);
 	goto exit;
     }
-    /* Write the header and archive to a temp file */
-    if (copyFile(&fd, rpm, &ofd, sigtarget))
+
+    if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
+	rpmlog(RPMLOG_ERR, _("Cannot sign RPM v3 packages\n"));
 	goto exit;
-    /* Both fd and ofd are now closed. sigtarget contains tempfile name. */
+    }
 
     /* Dump the immutable region (if present). */
     if (headerGet(sigh, RPMTAG_HEADERSIGNATURES, &utd, HEADERGET_DEFAULT)) {
@@ -468,7 +522,17 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
     if (deleting) {	/* Nuke all the signature tags. */
 	deleteSigs(sigh);
     } else {
-	res = replaceSignature(sigh, sigtarget, passPhrase);
+	/* Signature target containing header + payload */
+	sigt1.fd = fd;
+	sigt1.start = headerStart;
+	sigt1.fileName = rpm;
+	sigt1.size = fdSize(fd) - headerStart;
+
+	/* Signature target containing only header */
+	sigt2 = sigt1;
+	sigt2.size = headerSizeof(h, HEADER_MAGIC_YES);
+
+	res = replaceSignature(sigh, &sigt1, &sigt2, passPhrase);
 	if (res != 0) {
 	    if (res == 1) {
 		rpmlog(RPMLOG_WARNING,
@@ -507,8 +571,14 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 	goto exit;
     }
 
+    if (Fseek(fd, headerStart, SEEK_SET) < 0) {
+	rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
+		rpm, Fstrerror(fd));
+	goto exit;
+    }
+
     /* Append the header and archive from the temp file */
-    if (copyFile(&fd, sigtarget, &ofd, trpm) == 0) {
+    if (copyFile(&fd, rpm, &ofd, trpm) == 0) {
 	struct stat st;
 
 	/* Move final target into place, restore file permissions. */
@@ -526,13 +596,10 @@ exit:
     if (ofd)	(void) closeFile(&ofd);
 
     rpmFreeSignature(sigh);
+    headerFree(h);
     rpmLeadFree(lead);
 
     /* Clean up intermediate target */
-    if (sigtarget) {
-	unlink(sigtarget);
-	free(sigtarget);
-    }
     if (trpm) {
 	(void) unlink(trpm);
 	free(trpm);
