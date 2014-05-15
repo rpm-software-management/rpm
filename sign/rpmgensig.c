@@ -49,13 +49,25 @@ static int closeFile(FD_t *fdp)
 static int manageFile(FD_t *fdp, const char *fn, int flags)
 {
     FD_t fd;
+    char *fmode;
 
     if (fdp == NULL || fn == NULL)	/* programmer error */
 	return 1;
 
     /* open a file and set *fdp */
     if (*fdp == NULL && fn != NULL) {
-	fd = Fopen(fn, (flags & O_ACCMODE) == O_WRONLY ? "w.ufdio" : "r.ufdio");
+	switch(flags & O_ACCMODE) {
+	    case O_WRONLY:
+		fmode = "w.ufdio";
+		break;
+	    case O_RDONLY:
+		fmode = "r.ufdio";
+		break;
+	    case O_RDWR:
+		fmode = "r+.ufdio";
+		break;
+	}
+	fd = Fopen(fn, fmode);
 	if (fd == NULL || Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("%s: open failed: %s\n"), fn,
 		Fstrerror(fd));
