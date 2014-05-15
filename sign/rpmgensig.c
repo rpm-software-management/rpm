@@ -465,20 +465,6 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 	headerFree(nh);
     }
 
-    /* Toss and recalculate header+payload size and digests. */
-    {
-	rpmTagVal const sigs[] = { 	RPMSIGTAG_SIZE, 
-				    RPMSIGTAG_MD5,
-				    RPMSIGTAG_SHA1,
-				 };
-	int nsigs = sizeof(sigs) / sizeof(rpmTagVal);
-	for (int i = 0; i < nsigs; i++) {
-	    (void) headerDel(sigh, sigs[i]);
-	    if (rpmGenDigest(sigh, sigtarget, sigs[i]))
-		goto exit;
-	}
-    }
-
     if (deleting) {	/* Nuke all the signature tags. */
 	deleteSigs(sigh);
     } else {
