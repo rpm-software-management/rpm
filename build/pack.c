@@ -288,6 +288,8 @@ static rpmRC generateSignature(char *SHA1, uint8_t *MD5, rpm_loff_t size,
     rpmTagVal payloadtag;
     rpm_tagtype_t typetag;
     rpmRC rc = RPMRC_OK;
+    char *reservedSpace;
+    int spaceSize = 0;
 
     /* Prepare signature */
     sig = rpmNewSignature();
@@ -329,6 +331,18 @@ static rpmRC generateSignature(char *SHA1, uint8_t *MD5, rpm_loff_t size,
     td.type = typetag;
     td.data = &size;
     headerPut(sig, &td, HEADERPUT_DEFAULT);
+
+    spaceSize = rpmExpandNumeric("%{__gpg_reserved_space}");
+    if(spaceSize > 0) {
+	reservedSpace = xcalloc(spaceSize, sizeof(char));
+	rpmtdReset(&td);
+	td.tag = RPMSIGTAG_RESERVEDSPACE;
+	td.count = spaceSize;
+	td.type = RPM_BIN_TYPE;
+	td.data = reservedSpace;
+	headerPut(sig, &td, HEADERPUT_DEFAULT);
+	free(reservedSpace);
+    }
 
     /* Reallocate the signature into one contiguous region. */
     sig = headerReload(sig, RPMTAG_HEADERSIGNATURES);

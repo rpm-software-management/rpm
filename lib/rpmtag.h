@@ -367,6 +367,7 @@ typedef enum rpmSigTag_e {
     RPMSIGTAG_GPG	= 1005, /*!< internal GnuPG signature. */
     RPMSIGTAG_PGP5	= 1006,	/*!< internal PGP5 signature @deprecated legacy. */
     RPMSIGTAG_PAYLOADSIZE = 1007,/*!< internal uncompressed payload size (32bit) in bytes. */
+    RPMSIGTAG_RESERVEDSPACE = 1008,/*!< internal space reserved for signatures */
     RPMSIGTAG_BADSHA1_1	= RPMTAG_BADSHA1_1,	/*!< internal Broken SHA1, take 1. */
     RPMSIGTAG_BADSHA1_2	= RPMTAG_BADSHA1_2,	/*!< internal Broken SHA1, take 2. */
     RPMSIGTAG_SHA1	= RPMTAG_SHA1HEADER,	/*!< internal sha1 header digest. */

@@ -477,12 +477,15 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
     rpmRC rc;
     struct rpmtd_s utd;
     off_t headerStart;
+    off_t sigStart;
     struct sigTarget_s sigt1;
     struct sigTarget_s sigt2;
+    unsigned int origSigSize;
+    int insSig = 0;
 
     fprintf(stdout, "%s:\n", rpm);
 
-    if (manageFile(&fd, rpm, O_RDONLY))
+    if (manageFile(&fd, rpm, O_RDWR))
 	goto exit;
 
     if ((rc = rpmLeadRead(fd, &lead, NULL, &msg)) != RPMRC_OK) {
@@ -491,6 +494,7 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 	goto exit;
     }
 
+    sigStart = Ftell(fd);
     rc = rpmReadSignature(fd, &sigh, RPMSIGTYPE_HEADERSIG, &msg);
     if (rc != RPMRC_OK) {
 	rpmlog(RPMLOG_ERR, _("%s: rpmReadSignature failed: %s"), rpm,
@@ -530,6 +534,7 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 	sigh = headerLink(nh);
 	headerFree(nh);
     }
+    origSigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
 
     if (deleting) {	/* Nuke all the signature tags. */
 	deleteSigs(sigh);
@@ -557,49 +562,88 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 	}
     }
 
+    /* Try to make new signature smaller to have size of original signature */
+    rpmtdReset(&utd);
+    if (headerGet(sigh, RPMSIGTAG_RESERVEDSPACE, &utd, HEADERGET_MINMEM)) {
+	int diff;
+	int count;
+	char *reservedSpace = NULL;
+
+	count = utd.count;
+	diff = headerSizeof(sigh, HEADER_MAGIC_YES) - origSigSize;
+
+	if (diff < count) {
+	    reservedSpace = xcalloc(count - diff, sizeof(char));
+	    headerDel(sigh, RPMSIGTAG_RESERVEDSPACE);
+	    rpmtdReset(&utd);
+	    utd.tag = RPMSIGTAG_RESERVEDSPACE;
+	    utd.count = count - diff;
+	    utd.type = RPM_BIN_TYPE;
+	    utd.data = reservedSpace;
+	    headerPut(sigh, &utd, HEADERPUT_DEFAULT);
+	    free(reservedSpace);
+	    insSig = 1;
+	}
+    }
+
     /* Reallocate the signature into one contiguous region. */
     sigh = headerReload(sigh, RPMTAG_HEADERSIGNATURES);
     if (sigh == NULL)	/* XXX can't happen */
 	goto exit;
 
-    rasprintf(&trpm, "%s.XXXXXX", rpm);
-    ofd = rpmMkTemp(trpm);
-    if (ofd == NULL || Ferror(ofd)) {
-	rpmlog(RPMLOG_ERR, _("rpmMkTemp failed\n"));
-	goto exit;
-    }
+    if (insSig) {
+	/* Insert new signature into original rpm */
+	if (Fseek(fd, sigStart, SEEK_SET) < 0) {
+	    rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
+		    rpm, Fstrerror(fd));
+	    goto exit;
+	}
 
-    /* Write the lead/signature of the output rpm */
-    rc = rpmLeadWrite(ofd, lead);
-    if (rc != RPMRC_OK) {
-	rpmlog(RPMLOG_ERR, _("%s: writeLead failed: %s\n"), trpm,
-	    Fstrerror(ofd));
-	goto exit;
-    }
+	if (rpmWriteSignature(fd, sigh)) {
+	    rpmlog(RPMLOG_ERR, _("%s: rpmWriteSignature failed: %s\n"), trpm,
+		Fstrerror(ofd));
+	    goto exit;
+	}
+    } else {
+	/* Replace orignal rpm with new rpm containing new signature */
+	rasprintf(&trpm, "%s.XXXXXX", rpm);
+	ofd = rpmMkTemp(trpm);
+	if (ofd == NULL || Ferror(ofd)) {
+	    rpmlog(RPMLOG_ERR, _("rpmMkTemp failed\n"));
+	    goto exit;
+	}
 
-    if (rpmWriteSignature(ofd, sigh)) {
-	rpmlog(RPMLOG_ERR, _("%s: rpmWriteSignature failed: %s\n"), trpm,
-	    Fstrerror(ofd));
-	goto exit;
-    }
+	/* Write the lead/signature of the output rpm */
+	rc = rpmLeadWrite(ofd, lead);
+	if (rc != RPMRC_OK) {
+	    rpmlog(RPMLOG_ERR, _("%s: writeLead failed: %s\n"), trpm,
+		Fstrerror(ofd));
+	    goto exit;
+	}
 
-    if (Fseek(fd, headerStart, SEEK_SET) < 0) {
-	rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
-		rpm, Fstrerror(fd));
-	goto exit;
-    }
+	if (rpmWriteSignature(ofd, sigh)) {
+	    rpmlog(RPMLOG_ERR, _("%s: rpmWriteSignature failed: %s\n"), trpm,
+		Fstrerror(ofd));
+	    goto exit;
+	}
 
-    /* Append the header and archive from the temp file */
-    if (copyFile(&fd, rpm, &ofd, trpm) == 0) {
-	struct stat st;
+	if (Fseek(fd, headerStart, SEEK_SET) < 0) {
+	    rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
+		    rpm, Fstrerror(fd));
+	    goto exit;
+	}
+	/* Append the header and archive from the temp file */
+	if (copyFile(&fd, rpm, &ofd, trpm) == 0) {
+	    struct stat st;
 
-	/* Move final target into place, restore file permissions. */
-	if (stat(rpm, &st) == 0 && unlink(rpm) == 0 &&
-		    rename(trpm, rpm) == 0 && chmod(rpm, st.st_mode) == 0) {
-	    res = 0;
-	} else {
-	    rpmlog(RPMLOG_ERR, _("replacing %s failed: %s\n"),
-		   rpm, strerror(errno));
+	    /* Move final target into place, restore file permissions. */
+	    if (stat(rpm, &st) == 0 && unlink(rpm) == 0 &&
+			rename(trpm, rpm) == 0 && chmod(rpm, st.st_mode) == 0) {
+		res = 0;
+	    } else {
+		rpmlog(RPMLOG_ERR, _("replacing %s failed: %s\n"),
+		       rpm, strerror(errno));
+	    }
 	}
     }
 

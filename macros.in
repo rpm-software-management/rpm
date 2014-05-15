@@ -472,6 +472,13 @@ package or when debugging this package.\
 #
 %_fileattrsdir		%{_rpmconfigdir}/fileattrs
 
+# This macro defines how much space (in bytes) in package should be
+# reserved for gpg signatures during building of a package. If this space is
+# big enough for gpg signatures to fit into it then signing of the packages is
+# very quick because it is not necessary to rewrite the whole package to make
+# some space for gpg signatures.
+%__gpg_reserved_space 4096
+
 #==============================================================================
 # ---- Database configuration macros.
 #	Macros used to configure Berkley db parameters.
