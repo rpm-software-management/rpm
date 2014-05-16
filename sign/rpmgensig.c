@@ -465,10 +465,6 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 	headerFree(nh);
     }
 
-    /* Eliminate broken digest values. */
-    headerDel(sigh, RPMSIGTAG_BADSHA1_1);
-    headerDel(sigh, RPMSIGTAG_BADSHA1_2);
-
     /* Toss and recalculate header+payload size and digests. */
     {
 	rpmTagVal const sigs[] = { 	RPMSIGTAG_SIZE, 
