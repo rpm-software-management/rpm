@@ -467,6 +467,7 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 	}
 	headerFreeIterator(hi);
 	headerFree(oh);
+	rpmtdFreeData(&utd);
 
 	headerFree(sigh);
 	sigh = headerLink(nh);
