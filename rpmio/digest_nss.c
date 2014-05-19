@@ -295,25 +295,27 @@ static SECKEYPublicKey *pgpNewPublicKey(KeyType type)
 }
 
 /* compatibility with nss < 3.14 */
-#ifndef DSA_MAX_Q_BITS
-#define DSA_MAX_Q_BITS DSA_Q_BITS
+#ifndef DSA1_SUBPRIME_LEN
+#define DSA1_SUBPRIME_LEN DSA_SUBPRIME_LEN
 #endif
-#ifndef DSA_MIN_Q_BITS
-#define DSA_MIN_Q_BITS DSA_Q_BITS
+#ifndef DSA1_SIGNATURE_LEN
+#define DSA1_SIGNATURE_LEN DSA_SIGNATURE_LEN
+#endif
+#ifndef DSA1_Q_BITS
+#define DSA1_Q_BITS DSA_Q_BITS
 #endif
 
 static int pgpSetSigMpiDSA(pgpDigAlg pgpsig, int num, const uint8_t *p)
 {
     SECItem *sig = pgpsig->data;
-    unsigned int subprlen = (num == 0) ? pgpMpiLen(p) - 2 : sig->len / 2;
-    unsigned int siglen = subprlen * 2;
-    unsigned int qbits = subprlen * 8;
+    unsigned int qbits = DSA1_Q_BITS;
+    unsigned int subprlen = DSA1_SUBPRIME_LEN;
+    unsigned int siglen = DSA1_SIGNATURE_LEN;
     int rc = 1; /* assume failure */
 
     switch (num) {
     case 0:
-	if (qbits >= DSA_MIN_Q_BITS && qbits <= DSA_MAX_Q_BITS)
-	    sig = pgpsig->data = SECITEM_AllocItem(NULL, NULL, siglen);
+	sig = pgpsig->data = SECITEM_AllocItem(NULL, NULL, siglen);
 	if (sig) {
 	    memset(sig->data, 0, siglen);
 	    rc = pgpMpiSet(qbits, sig->data, p);
