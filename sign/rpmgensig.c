@@ -601,8 +601,8 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 	}
 
 	if (rpmWriteSignature(fd, sigh)) {
-	    rpmlog(RPMLOG_ERR, _("%s: rpmWriteSignature failed: %s\n"), trpm,
-		Fstrerror(ofd));
+	    rpmlog(RPMLOG_ERR, _("%s: rpmWriteSignature failed: %s\n"), rpm,
+		Fstrerror(fd));
 	    goto exit;
 	}
 	res = 0;
