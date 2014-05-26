@@ -605,6 +605,7 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 		Fstrerror(ofd));
 	    goto exit;
 	}
+	res = 0;
     } else {
 	/* Replace orignal rpm with new rpm containing new signature */
 	rasprintf(&trpm, "%s.XXXXXX", rpm);
