@@ -560,6 +560,7 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 	    }
 	    goto exit;
 	}
+	res = -1;
     }
 
     /* Try to make new signature smaller to have size of original signature */
