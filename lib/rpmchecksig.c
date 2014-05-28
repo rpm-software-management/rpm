@@ -383,7 +383,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     free(untrustedKeys);
 
 exit:
-    if (rc != RPMRC_OK && msg != NULL)
+    if (res && msg != NULL)
 	rpmlog(RPMLOG_ERR, "%s: %s\n", fn, msg);
     free(msg);
     free(buf);
