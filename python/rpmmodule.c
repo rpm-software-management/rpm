@@ -365,6 +365,9 @@ static int initModule(PyObject *m)
 
     PyModule_AddStringConstant(m, "__version__", RPMVERSION);
 
+    PyModule_AddObject(m, "header_magic",
+		PyBytes_FromStringAndSize((const char *)rpm_header_magic, 8));
+
 #define REGISTER_ENUM(val) PyModule_AddIntConstant(m, #val, val)
 
     REGISTER_ENUM(RPMTAG_NOT_FOUND);
