@@ -197,6 +197,13 @@ const char * rpmdsDNEVR(const rpmds ds);
 char rpmdsD(const rpmds ds);
 
 /** \ingroup rpmds
+ * Return matching tagN for one char dependency type description.
+ * @param deptype	character
+ * @return		type of dependency
+ */
+rpmTagVal rpmdsDToTagN(char deptype);
+
+/** \ingroup rpmds
  * Return current dependency name.
  * @param ds		dependency set
  * @return		current dependency name, NULL on invalid

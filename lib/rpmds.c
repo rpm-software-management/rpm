@@ -139,6 +139,41 @@ static char tagNToChar(rpmTagVal tagN)
     }
 }
 
+rpmTagVal rpmdsDToTagN(char deptype)
+{
+    rpmTagVal tagN = RPMTAG_REQUIRENAME;
+    switch (deptype) {
+    default:
+	tagN = RPMTAG_NOT_FOUND;
+	break;
+    case 'P':
+	tagN = RPMTAG_PROVIDENAME;
+	break;
+    case 'R':
+	tagN = RPMTAG_REQUIRENAME;
+	break;
+    case 'r':
+	tagN = RPMTAG_RECOMMENDNAME;
+	break;
+    case 's':
+	tagN = RPMTAG_SUGGESTNAME;
+	break;
+    case 'S':
+	tagN = RPMTAG_SUPPLEMENTNAME;
+	break;
+    case 'e':
+	tagN = RPMTAG_ENHANCENAME;
+	break;
+    case 'C':
+	tagN = RPMTAG_CONFLICTNAME;
+	break;
+    case 'O':
+	tagN = RPMTAG_OBSOLETENAME;
+	break;
+    }
+    return tagN;
+}
+
 rpmsid rpmdsNIdIndex(rpmds ds, int i)
 {
     rpmsid id = 0;
