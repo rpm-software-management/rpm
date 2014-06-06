@@ -106,6 +106,39 @@ static int dsType(rpmTagVal tag,
     return rc;
 }    
 
+static char tagNToChar(rpmTagVal tagN)
+{
+    switch (tagN) {
+    default:
+	return 'R';
+	break;
+    case RPMTAG_REQUIRENAME:
+	return 'R';
+	break;
+    case RPMTAG_PROVIDENAME:
+	return 'P';
+	break;
+    case RPMTAG_RECOMMENDNAME:
+	return 'r';
+	break;
+    case RPMTAG_SUGGESTNAME:
+	return 's';
+	break;
+    case RPMTAG_SUPPLEMENTNAME:
+	return 'S';
+	break;
+    case RPMTAG_ENHANCENAME:
+	return 'e';
+	break;
+    case RPMTAG_CONFLICTNAME:
+	return 'C';
+	break;
+    case RPMTAG_OBSOLETENAME:
+	return 'O';
+	break;
+    }
+}
+
 rpmsid rpmdsNIdIndex(rpmds ds, int i)
 {
     rpmsid id = 0;
@@ -467,7 +500,7 @@ const char * rpmdsDNEVR(const rpmds ds)
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
 	if (ds->DNEVR == NULL) {
-	    char t[2] = { ds->Type[0], '\0' };
+	    char t[2] = { tagNToChar(ds->tagN), '\0' };
 	    ds->DNEVR = rpmdsNewDNEVR(t, ds);
 	}
 	DNEVR = ds->DNEVR;
