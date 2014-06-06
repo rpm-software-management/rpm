@@ -237,14 +237,42 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     if (flags & RPMVERIFY_USER) {
 	const char * name = rpmugUname(sb.st_uid);
 	const char * fuser = rpmfiFUser(fi);
-	if (name == NULL || fuser == NULL || !rstreq(name, fuser))
+	uid_t uid;
+	int namematch = 0;
+	int idmatch = 0;
+
+	if (name && fuser)
+	   namematch =  rstreq(name, fuser);
+	if (fuser && rpmugUid(fuser, &uid) == 0)
+	    idmatch = (uid == sb.st_uid);
+
+	if (namematch != idmatch) {
+	    rpmlog(RPMLOG_WARNING,
+		    _("Duplicate username or UID for user %s\n"), fuser);
+	}
+
+	if (!(namematch || idmatch))
 	    *res |= RPMVERIFY_USER;
     }
 
     if (flags & RPMVERIFY_GROUP) {
 	const char * name = rpmugGname(sb.st_gid);
 	const char * fgroup = rpmfiFGroup(fi);
-	if (name == NULL || fgroup == NULL || !rstreq(name, fgroup))
+	gid_t gid;
+	int namematch = 0;
+	int idmatch = 0;
+
+	if (name && fgroup)
+	    namematch = rstreq(name, fgroup);
+	if (fgroup && rpmugGid(fgroup, &gid) == 0)
+	    idmatch = (gid == sb.st_gid);
+
+	if (namematch != idmatch) {
+	    rpmlog(RPMLOG_WARNING,
+		    _("Duplicate groupname or GID for group %s\n"), fgroup);
+	}
+
+	if (!(namematch || idmatch))
 	    *res |= RPMVERIFY_GROUP;
     }
 
