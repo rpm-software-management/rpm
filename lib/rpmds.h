@@ -85,6 +85,16 @@ typedef rpmFlags rpmsenseFlags;
 #define	isInstallPreReq(_x)	((_x) & _INSTALL_ONLY_MASK)
 #define	isErasePreReq(_x)	((_x) & _ERASE_ONLY_MASK)
 
+
+
+/** \ingroup rpmds
+ * Return only those flags allowed for given type of dependencies
+ * @param tagN		type of dependency
+ * @param flags		flags
+ * @return		flags filtered to allowed bits
+ */
+rpmFlags rpmSanitizeDSFlags(rpmTagVal tagN, rpmFlags Flags);
+
 /** \ingroup rpmds
  * Reference a dependency set instance.
  * @param ds		dependency set

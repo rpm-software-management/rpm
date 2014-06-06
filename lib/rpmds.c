@@ -1158,3 +1158,26 @@ rpmstrPool rpmdsPool(rpmds ds)
 {
     return (ds != NULL) ? ds->pool : NULL;
 }
+
+rpmFlags rpmSanitizeDSFlags(rpmTagVal tagN, rpmFlags Flags)
+{
+    rpmsenseFlags extra = RPMSENSE_ANY;
+    switch (tagN) {
+    case RPMTAG_PROVIDENAME:
+	extra = Flags & RPMSENSE_FIND_PROVIDES;
+	break;
+    case RPMTAG_TRIGGERNAME:
+	extra = Flags & RPMSENSE_TRIGGER;
+	break;
+    case RPMTAG_RECOMMENDNAME:
+    case RPMTAG_SUGGESTNAME:
+    case RPMTAG_SUPPLEMENTNAME:
+    case RPMTAG_ENHANCENAME:
+    case RPMTAG_REQUIRENAME:
+	extra = Flags & _ALL_REQUIRES_MASK;
+	break;
+    default:
+	break;
+    }
+    return (Flags & RPMSENSE_SENSEMASK) | extra;
+}
