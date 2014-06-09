@@ -461,16 +461,16 @@ exit:
  * Parse (and execute) new macro definition.
  * @param mb		macro expansion state
  * @param se		macro definition to parse
+ * @param slen		length of se argument
  * @param level		macro recursion level
  * @param expandbody	should body be expanded?
  * @return		address to continue parsing
  */
 static const char *
-doDefine(MacroBuf mb, const char * se, int level, int expandbody)
+doDefine(MacroBuf mb, const char * se, size_t slen, int level, int expandbody)
 {
     const char *s = se;
-    size_t blen = MACROBUFSIZ;
-    char *buf = xmalloc(blen);
+    char *buf = xmalloc(slen + 3); /* Some leeway for termination issues... */
     char *n = buf, *ne = n;
     char *o = NULL, *oe;
     char *b, *be, *ebody = NULL;
@@ -592,13 +592,14 @@ exit:
  * Parse (and execute) macro undefinition.
  * @param mc		macro context
  * @param se		macro name to undefine
+ * @param slen		length of se argument
  * @return		address to continue parsing
  */
 static const char *
-doUndefine(rpmMacroContext mc, const char * se)
+doUndefine(rpmMacroContext mc, const char * se, size_t slen)
 {
     const char *s = se;
-    char *buf = xmalloc(MACROBUFSIZ);
+    char *buf = xmalloc(slen + 1);
     char *n = buf, *ne = n;
     int c;
 
@@ -1105,15 +1106,15 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 		continue;
 	}
 	if (STREQ("global", f, fn)) {
-		s = doDefine(mb, se, RMIL_GLOBAL, 1);
+		s = doDefine(mb, se, slen - (se - s), RMIL_GLOBAL, 1);
 		continue;
 	}
 	if (STREQ("define", f, fn)) {
-		s = doDefine(mb, se, mb->depth, 0);
+		s = doDefine(mb, se, slen - (se - s), mb->depth, 0);
 		continue;
 	}
 	if (STREQ("undefine", f, fn)) {
-		s = doUndefine(mb->mc, se);
+		s = doUndefine(mb->mc, se, slen - (se - s));
 		continue;
 	}
 
@@ -1398,7 +1399,7 @@ static int defineMacro(rpmMacroContext mc, const char * macro, int level)
 
     /* XXX just enough to get by */
     mb->mc = mc;
-    (void) doDefine(mb, macro, level, 0);
+    (void) doDefine(mb, macro, strlen(macro), level, 0);
     _free(mb);
     return 0;
 }
