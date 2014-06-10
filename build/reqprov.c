@@ -11,109 +11,26 @@
 #include "build/rpmbuild_internal.h"
 #include "debug.h"
 
-static int isNewDep(rpmds *dsp, rpmds bds,
-		  Header h, rpmTagVal indextag, uint32_t index)
-{
-    int isnew;
-
-    isnew = (rpmdsMerge(dsp, bds) > 0);
-    return isnew;
-}
-
 int addReqProv(Package pkg, rpmTagVal tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		uint32_t index)
 {
-    rpmTagVal versiontag = 0;
-    rpmTagVal flagtag = 0;
-    rpmTagVal indextag = 0;
-    rpmsenseFlags extra = RPMSENSE_ANY;
-    Header h = pkg->header; /* just a shortcut */
     rpmds newds, *dsp = NULL;
 
-    switch (tagN) {
-    case RPMTAG_PROVIDENAME:
-	versiontag = RPMTAG_PROVIDEVERSION;
-	flagtag = RPMTAG_PROVIDEFLAGS;
-	extra = Flags & RPMSENSE_FIND_PROVIDES;
-	dsp = &pkg->provides;
-	break;
-    case RPMTAG_OBSOLETENAME:
-	versiontag = RPMTAG_OBSOLETEVERSION;
-	flagtag = RPMTAG_OBSOLETEFLAGS;
-	dsp = &pkg->obsoletes;
-	break;
-    case RPMTAG_CONFLICTNAME:
-	versiontag = RPMTAG_CONFLICTVERSION;
-	flagtag = RPMTAG_CONFLICTFLAGS;
-	dsp = &pkg->conflicts;
-	break;
-    case RPMTAG_ORDERNAME:
-	versiontag = RPMTAG_ORDERVERSION;
-	flagtag = RPMTAG_ORDERFLAGS;
-	dsp = &pkg->order;
-	break;
-    case RPMTAG_TRIGGERNAME:
-	versiontag = RPMTAG_TRIGGERVERSION;
-	flagtag = RPMTAG_TRIGGERFLAGS;
-	indextag = RPMTAG_TRIGGERINDEX;
-	extra = Flags & RPMSENSE_TRIGGER;
-	dsp = &pkg->triggers;
-	break;
-    case RPMTAG_RECOMMENDNAME:
-	versiontag = RPMTAG_RECOMMENDVERSION;
-	flagtag = RPMTAG_RECOMMENDFLAGS;
-	extra = Flags & _ALL_REQUIRES_MASK;
-	dsp = &pkg->recommends;
-	break;
-    case RPMTAG_SUGGESTNAME:
-	versiontag = RPMTAG_SUGGESTVERSION;
-	flagtag = RPMTAG_SUGGESTFLAGS;
-	extra = Flags & _ALL_REQUIRES_MASK;
-	dsp = &pkg->suggests;
-	break;
-    case RPMTAG_SUPPLEMENTNAME:
-	versiontag = RPMTAG_SUPPLEMENTVERSION;
-	flagtag = RPMTAG_SUPPLEMENTFLAGS;
-	extra = Flags & _ALL_REQUIRES_MASK;
-	dsp = &pkg->supplements;
-	break;
-    case RPMTAG_ENHANCENAME:
-	versiontag = RPMTAG_ENHANCEVERSION;
-	flagtag = RPMTAG_ENHANCEFLAGS;
-	extra = Flags & _ALL_REQUIRES_MASK;
-	dsp = &pkg->enhances;
-	break;
-    case RPMTAG_REQUIRENAME:
-    default:
-	tagN = RPMTAG_REQUIRENAME;
-	versiontag = RPMTAG_REQUIREVERSION;
-	flagtag = RPMTAG_REQUIREFLAGS;
-	extra = Flags & _ALL_REQUIRES_MASK;
-	dsp = &pkg->requires;
-    }
+    dsp = packageDependencies(pkg, tagN);
 
     /* rpmlib() dependency sanity: only requires permitted, ensure sense bit */
     if (rstreqn(N, "rpmlib(", sizeof("rpmlib(")-1)) {
 	if (tagN != RPMTAG_REQUIRENAME) return 1;
-	extra |= RPMSENSE_RPMLIB;
+	Flags |= RPMSENSE_RPMLIB;
     }
 
-    Flags = (Flags & RPMSENSE_SENSEMASK) | extra;
-
-    if (EVR == NULL)
-	EVR = "";
-    
-    newds = rpmdsSinglePoolTix(pkg->pool, tagN, N, EVR, Flags, index);
+    newds = rpmdsSinglePoolTix(pkg->pool, tagN, N, EVR,
+			       rpmSanitizeDSFlags(tagN, Flags), index);
 
     /* Avoid adding duplicate dependencies. */
-    if (isNewDep(dsp, newds, h, indextag, index)) {
-	headerPutString(h, tagN, N);
-	headerPutString(h, versiontag, EVR);
-	headerPutUint32(h, flagtag, &Flags, 1);
-	if (indextag) {
-	    headerPutUint32(h, indextag, &index, 1);
-	}
+    if (rpmdsMerge(dsp, newds) > 0) {
+	rpmdsPutToHeader(newds, pkg->header);
     }
     rpmdsFree(newds);
 
