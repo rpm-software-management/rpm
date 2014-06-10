@@ -340,6 +340,16 @@ rpmRC lookupPackage(rpmSpec spec, const char * name, int flag,
 RPM_GNUC_INTERNAL
 Package newPackage(const char *name, rpmstrPool pool, Package * pkglist);
 
+
+/** \ingroup rpmbuild
+ * Return rpmds containing the dependencies of a given type
+ * @param pkg		package
+ * @param tag		name tag denominating the dependency
+ * @return		pointer to dependency set
+ */
+RPM_GNUC_INTERNAL
+rpmds * packageDependencies(Package pkg, rpmTagVal tag);
+
 /** \ingroup rpmbuild
  * Post-build processing for binary package(s).
  * @param spec		spec file control structure

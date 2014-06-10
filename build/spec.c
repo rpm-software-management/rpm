@@ -174,6 +174,48 @@ static Package freePackages(Package packages)
     return NULL;
 }
 
+rpmds * packageDependencies(Package pkg, rpmTagVal tag)
+{ 
+    if (!pkg)
+	return NULL;
+
+    switch (tag) {
+    default:
+    case RPMTAG_REQUIRENAME:
+	return &pkg->requires;
+	break;
+    case RPMTAG_PROVIDENAME:
+	return &pkg->provides;
+	break;
+    case RPMTAG_RECOMMENDNAME:
+	return &pkg->recommends;
+	break;
+    case RPMTAG_SUGGESTNAME:
+	return &pkg->suggests;
+	break;
+    case RPMTAG_SUPPLEMENTNAME:
+	return &pkg->supplements;
+	break;
+    case RPMTAG_ENHANCENAME:
+	return &pkg->enhances;
+	break;
+    case RPMTAG_CONFLICTNAME:
+	return &pkg->conflicts;
+	break;
+    case RPMTAG_OBSOLETENAME:
+	return &pkg->obsoletes;
+	break;
+    case RPMTAG_TRIGGERNAME:
+	return &pkg->triggers;
+	break;
+    case RPMTAG_ORDERNAME:
+	return &pkg->order;
+	break;
+    }
+    return NULL;
+}
+
+
 rpmSpec newSpec(void)
 {
     rpmSpec spec = xcalloc(1, sizeof(*spec));
