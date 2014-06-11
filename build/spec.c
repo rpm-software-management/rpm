@@ -137,17 +137,11 @@ static Package freePackage(Package pkg)
 
     pkg->header = headerFree(pkg->header);
     pkg->ds = rpmdsFree(pkg->ds);
-    pkg->requires = rpmdsFree(pkg->requires);
-    pkg->provides = rpmdsFree(pkg->provides);
-    pkg->recommends = rpmdsFree(pkg->recommends);
-    pkg->suggests = rpmdsFree(pkg->suggests);
-    pkg->supplements = rpmdsFree(pkg->supplements);
-    pkg->enhances = rpmdsFree(pkg->enhances);
 
-    pkg->conflicts = rpmdsFree(pkg->conflicts);
-    pkg->obsoletes = rpmdsFree(pkg->obsoletes);
-    pkg->triggers = rpmdsFree(pkg->triggers);
-    pkg->order = rpmdsFree(pkg->order);
+    for (int i=0; i<PACKAGE_NUM_DEPS; i++) {
+	pkg->dependencies[i] = rpmdsFree(pkg->dependencies[i]);
+    }
+
     pkg->fileList = argvFree(pkg->fileList);
     pkg->fileFile = argvFree(pkg->fileFile);
     pkg->policyList = argvFree(pkg->policyList);
@@ -175,42 +169,15 @@ static Package freePackages(Package packages)
 }
 
 rpmds * packageDependencies(Package pkg, rpmTagVal tag)
-{ 
-    if (!pkg)
-	return NULL;
-
-    switch (tag) {
-    default:
-    case RPMTAG_REQUIRENAME:
-	return &pkg->requires;
-	break;
-    case RPMTAG_PROVIDENAME:
-	return &pkg->provides;
-	break;
-    case RPMTAG_RECOMMENDNAME:
-	return &pkg->recommends;
-	break;
-    case RPMTAG_SUGGESTNAME:
-	return &pkg->suggests;
-	break;
-    case RPMTAG_SUPPLEMENTNAME:
-	return &pkg->supplements;
-	break;
-    case RPMTAG_ENHANCENAME:
-	return &pkg->enhances;
-	break;
-    case RPMTAG_CONFLICTNAME:
-	return &pkg->conflicts;
-	break;
-    case RPMTAG_OBSOLETENAME:
-	return &pkg->obsoletes;
-	break;
-    case RPMTAG_TRIGGERNAME:
-	return &pkg->triggers;
-	break;
-    case RPMTAG_ORDERNAME:
-	return &pkg->order;
-	break;
+{
+    for (int i=0; i<PACKAGE_NUM_DEPS; i++) {
+	if (pkg->dependencies[i] == NULL) {
+	    return &pkg->dependencies[i];
+	}
+	rpmTagVal tagN = rpmdsTagN(pkg->dependencies[i]);
+	if (tagN == tag || tagN == 0) {
+	    return &pkg->dependencies[i];
+	}
     }
     return NULL;
 }
