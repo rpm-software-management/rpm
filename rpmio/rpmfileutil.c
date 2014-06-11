@@ -146,8 +146,8 @@ int rpmDoDigest(int algo, const char * fn,int asAscii,
     const char * path;
     urltype ut = urlPath(fn, &path);
     unsigned char * dig = NULL;
-    size_t diglen;
-    unsigned char buf[32*BUFSIZ];
+    size_t diglen, buflen = 32 * BUFSIZ;
+    unsigned char *buf = xmalloc(buflen);
     FD_t fd;
     rpm_loff_t fsize = 0;
     pid_t pid = 0;
@@ -181,7 +181,7 @@ int rpmDoDigest(int algo, const char * fn,int asAscii,
 	
 	fdInitDigest(fd, algo, 0);
 	fsize = 0;
-	while ((rc = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
+	while ((rc = Fread(buf, sizeof(*buf), buflen, fd)) > 0)
 	    fsize += rc;
 	fdFiniDigest(fd, algo, (void **)&dig, &diglen, asAscii);
 	if (dig == NULL || Ferror(fd))
@@ -205,6 +205,7 @@ exit:
     if (!rc)
 	memcpy(digest, dig, diglen);
     dig = _free(dig);
+    free(buf);
 
     return rc;
 }
