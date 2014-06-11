@@ -83,6 +83,8 @@ struct rpmSpec_s {
     Package packages;		/*!< Package list. */
 };
 
+#define PACKAGE_NUM_DEPS 10
+
 /** \ingroup rpmbuild
  * The structure used to store values for a package.
  */
@@ -91,16 +93,7 @@ struct Package_s {
     rpmstrPool pool;
     Header header;
     rpmds ds;			/*!< Requires: N = EVR */
-    rpmds requires;
-    rpmds provides;
-    rpmds recommends;
-    rpmds suggests;
-    rpmds supplements;
-    rpmds enhances;
-    rpmds conflicts;
-    rpmds obsoletes;
-    rpmds triggers;
-    rpmds order;
+    rpmds dependencies[PACKAGE_NUM_DEPS];
     rpmfiles cpioList;
     rpm_loff_t  cpioArchiveSize;
     ARGV_t dpaths;
@@ -431,13 +424,14 @@ int addLangTag(rpmSpec spec, Header h, rpmTagVal tag,
  * @param N		(e.g. Requires: foo < 0:1.2-3, "foo")
  * @param EVR		(e.g. Requires: foo < 0:1.2-3, "0:1.2-3")
  * @param Flags		(e.g. Requires: foo < 0:1.2-3, both "Requires:" and "<")
- * @param index		(0 always)
+ * @param index         (# trigger script for triggers, 0 for others)
  * @return		0 on success, 1 on error
  */
 RPM_GNUC_INTERNAL
 int addReqProv(Package pkg, rpmTagVal tagN,
-		const char * N, const char * EVR, rpmsenseFlags Flags,
-		uint32_t index);
+	       const char * N, const char * EVR, rpmsenseFlags Flags,
+	       uint32_t index);
+
 
 /** \ingroup rpmbuild
  * Add rpmlib feature dependency.
