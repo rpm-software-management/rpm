@@ -455,9 +455,15 @@ doDefine(MacroBuf mb, const char * se, size_t slen, int level, int expandbody)
     oe = ne + 1;
     if (*s == '(') {
 	s++;	/* skip ( */
-	o = oe;
-	COPYOPTS(oe, s, oc);
-	s++;	/* skip ) */
+	/* Options must be terminated with ')' */
+	if (strchr(s, ')')) {
+	    o = oe;
+	    COPYOPTS(oe, s, oc);
+	    s++;	/* skip ) */
+	} else {
+	    rpmlog(RPMLOG_ERR, _("Macro %%%s has unterminated opts\n"), n);
+	    goto exit;
+	}
     }
 
     /* Copy body, skipping over escaped newlines */
@@ -525,12 +531,6 @@ doDefine(MacroBuf mb, const char * se, size_t slen, int level, int expandbody)
     if (!((c = *n) && (risalpha(c) || c == '_') && (ne - n) > 2)) {
 	rpmlog(RPMLOG_ERR,
 		_("Macro %%%s has illegal name (%%define)\n"), n);
-	goto exit;
-    }
-
-    /* Options must be terminated with ')' */
-    if (o && oc != ')') {
-	rpmlog(RPMLOG_ERR, _("Macro %%%s has unterminated opts\n"), n);
 	goto exit;
     }
 
