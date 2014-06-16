@@ -36,6 +36,7 @@ typedef struct rpmfcAttr_s {
 /**
  */
 struct rpmfc_s {
+    Package pkg;
     int nfiles;		/*!< no. of files */
     int fknown;		/*!< no. of classified files */
     int fwhite;		/*!< no. of "white" files */
@@ -58,8 +59,6 @@ struct rpmfc_s {
     rpmstrPool ddict;	/*!< file depends dictionary */
 
     rpmstrPool pool;	/*!< general purpose string storage */
-    rpmds provides;	/*!< (no. provides) package provides */
-    rpmds requires;	/*!< (no. requires) package requires */
 };
 
 struct rpmfcTokens_s {
@@ -489,7 +488,7 @@ static const char *parseDep(char **depav, int depac,
  * @return		0 on success
  */
 static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
-		       rpmds *depsp, rpmsenseFlags dsContext, rpmTagVal tagN)
+		       rpmsenseFlags dsContext, rpmTagVal tagN)
 {
     ARGV_t pav = NULL;
     const char * fn = fc->fn[fc->ix];
@@ -531,7 +530,7 @@ static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
 
 	    /* Add to package and file dependencies unless filtered */
 	    if (regMatch(exclude, rpmdsDNEVR(ds)+2) == 0) {
-		(void) rpmdsMerge(depsp, ds);
+		(void) rpmdsMerge(packageDependencies(fc->pkg, tagN), ds);
 		rpmfcAddFileDep(fc->ddict, fc->ix, ds,
 				tagN == RPMTAG_PROVIDENAME ? 'P' : 'R');
 	    }
@@ -565,7 +564,7 @@ static int rpmfcHelperProvides(rpmfc fc, const char * nsdep)
     if (fc->skipProv)
 	return 0;
 
-    return rpmfcHelper(fc, nsdep, "provides", &fc->provides,
+    return rpmfcHelper(fc, nsdep, "provides",
 			RPMSENSE_FIND_PROVIDES, RPMTAG_PROVIDENAME);
 }
 
@@ -580,7 +579,7 @@ static int rpmfcHelperRequires(rpmfc fc, const char * nsdep)
     if (fc->skipReq)
 	return 0;
 
-    return rpmfcHelper(fc, nsdep, "requires", &fc->requires,
+    return rpmfcHelper(fc, nsdep, "requires",
 			RPMSENSE_FIND_REQUIRES, RPMTAG_REQUIRENAME);
 }
 
@@ -702,16 +701,10 @@ void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp)
     int dx;
     int fx;
 
-int nprovides;
-int nrequires;
-
     if (fp == NULL) fp = stderr;
 
     if (msg)
 	fprintf(fp, "===================================== %s\n", msg);
-
-nprovides = rpmdsCount(fc->provides);
-nrequires = rpmdsCount(fc->requires);
 
     if (fc)
     for (fx = 0; fx < fc->nfiles; fx++) {
@@ -745,32 +738,16 @@ assert(fx < fc->fddictn->nvals);
 	    const char * depval;
 	    unsigned char deptype;
 	    unsigned ix;
+	    rpmds ds;
 
 	    ix = fc->ddictx->vals[dx++];
 	    deptype = ((ix >> 24) & 0xff);
 	    ix &= 0x00ffffff;
 	    depval = NULL;
-	    switch (deptype) {
-	    default:
-assert(depval != NULL);
-		break;
-	    case 'P':
-		if (nprovides > 0) {
-assert(ix < nprovides);
-		    (void) rpmdsSetIx(fc->provides, ix-1);
-		    if (rpmdsNext(fc->provides) >= 0)
-			depval = rpmdsDNEVR(fc->provides);
-		}
-		break;
-	    case 'R':
-		if (nrequires > 0) {
-assert(ix < nrequires);
-		    (void) rpmdsSetIx(fc->requires, ix-1);
-		    if (rpmdsNext(fc->requires) >= 0)
-			depval = rpmdsDNEVR(fc->requires);
-		}
-		break;
-	    }
+	    ds = rpmfcDependencies(fc, rpmdsDToTagN(deptype));
+	    (void) rpmdsSetIx(ds, ix-1);
+	    if (rpmdsNext(ds) >= 0)
+		depval = rpmdsDNEVR(ds);
 	    if (depval)
 		fprintf(fp, "\t%s\n", depval);
 	}
@@ -799,8 +776,6 @@ rpmfc rpmfcFree(rpmfc fc)
 	rpmstrPoolFree(fc->ddict);
 	rpmstrPoolFree(fc->cdict);
 
-	rpmdsFree(fc->provides);
-	rpmdsFree(fc->requires);
 	rpmstrPoolFree(fc->pool);
 	memset(fc, 0, sizeof(*fc)); /* trash and burn */
 	free(fc);
@@ -824,14 +799,22 @@ rpmfc rpmfcNew(void)
     return rpmfcCreate(NULL, 0);
 }
 
+rpmds rpmfcDependencies(rpmfc fc, rpmTagVal tag)
+{
+    if (fc) {
+	return *packageDependencies(fc->pkg, tag);
+    }
+    return NULL;
+}
+
 rpmds rpmfcProvides(rpmfc fc)
 {
-    return (fc != NULL ? fc->provides : NULL);
+    return rpmfcDependencies(fc, RPMTAG_PROVIDENAME);
 }
 
 rpmds rpmfcRequires(rpmfc fc)
 {
-    return (fc != NULL ? fc->requires : NULL);
+    return rpmfcDependencies(fc, RPMTAG_REQUIRENAME);
 }
 
 rpmRC rpmfcApply(rpmfc fc)
@@ -890,12 +873,12 @@ rpmRC rpmfcApply(rpmfc fc)
 	    break;
 	case 'P':
 	    ds = rpmdsSinglePool(fc->pool, RPMTAG_PROVIDENAME, N, EVR, Flags);
-	    dix = rpmdsFind(fc->provides, ds);
+	    dix = rpmdsFind(rpmfcDependencies(fc, RPMTAG_PROVIDENAME), ds);
 	    rpmdsFree(ds);
 	    break;
 	case 'R':
 	    ds = rpmdsSinglePool(fc->pool, RPMTAG_REQUIRENAME, N, EVR, Flags);
-	    dix = rpmdsFind(fc->requires, ds);
+	    dix = rpmdsFind(rpmfcDependencies(fc, RPMTAG_REQUIRENAME), ds);
 	    rpmdsFree(ds);
 	    break;
 	}
@@ -1281,42 +1264,25 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     av[ac] = NULL;
 
     fc = rpmfcCreate(spec->buildRoot, 0);
+    fc->pkg = pkg;
     fc->skipProv = !pkg->autoProv;
     fc->skipReq = !pkg->autoReq;
 
-    /* Copy (and delete) manually generated dependencies to dictionary. */
-    if (!fc->skipProv) {
-	rpmdsMerge(&fc->provides, pkg->provides);
-
-	headerDel(pkg->header, RPMTAG_PROVIDENAME);
-	headerDel(pkg->header, RPMTAG_PROVIDEVERSION);
-	headerDel(pkg->header, RPMTAG_PROVIDEFLAGS);
-
+    if (!fc->skipProv && genConfigDeps) {
 	/* Add config dependency, Provides: config(N) = EVR */
-	if (genConfigDeps) {
-	    rpmds ds = rpmdsSingleNS(fc->pool, RPMTAG_PROVIDENAME, "config",
-			       rpmdsN(pkg->ds), rpmdsEVR(pkg->ds),
-			       (RPMSENSE_EQUAL|RPMSENSE_CONFIG));
-	    rpmdsMerge(&fc->provides, ds);
-	    rpmdsFree(ds);
-	}
+	rpmds ds = rpmdsSingleNS(fc->pool, RPMTAG_PROVIDENAME, "config",
+				 rpmdsN(pkg->ds), rpmdsEVR(pkg->ds),
+				 (RPMSENSE_EQUAL|RPMSENSE_CONFIG));
+	//printf("%s\n", rpmdsDNEVR(ds));
+	rpmdsMerge(packageDependencies(pkg, RPMTAG_PROVIDENAME), ds);
+	rpmdsFree(ds);
     }
-
-    if (!fc->skipReq) {
-	rpmdsMerge(&fc->requires, pkg->requires);
-
-	headerDel(pkg->header, RPMTAG_REQUIRENAME);
-	headerDel(pkg->header, RPMTAG_REQUIREVERSION);
-	headerDel(pkg->header, RPMTAG_REQUIREFLAGS);
-
-	/* Add config dependency,  Requires: config(N) = EVR */
-	if (genConfigDeps) {
-	    rpmds ds = rpmdsSingleNS(fc->pool, RPMTAG_REQUIRENAME, "config",
-			       rpmdsN(pkg->ds), rpmdsEVR(pkg->ds),
-			       (RPMSENSE_EQUAL|RPMSENSE_CONFIG));
-	    rpmdsMerge(&fc->requires, ds);
-	    rpmdsFree(ds);
-	}
+    if (!fc->skipReq && genConfigDeps) {
+	rpmds ds = rpmdsSingleNS(fc->pool, RPMTAG_REQUIRENAME, "config",
+				 rpmdsN(pkg->ds), rpmdsEVR(pkg->ds),
+				 (RPMSENSE_EQUAL|RPMSENSE_CONFIG));
+	rpmdsMerge(packageDependencies(pkg, RPMTAG_REQUIRENAME), ds);
+	rpmdsFree(ds);
     }
 
     /* Build file class dictionary. */
@@ -1343,30 +1309,6 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 
     /* Add per-file classes(#files) */
     headerPutUint32(pkg->header, RPMTAG_FILECLASS, fc->fcdictx, fc->nfiles);
-
-    /* Add Provides: */
-    if (!fc->skipProv) {
-	rpmds pi = rpmdsInit(fc->provides);
-	while (rpmdsNext(pi) >= 0) {
-	    rpmsenseFlags flags = rpmdsFlags(pi);
-	
-	    headerPutString(pkg->header, RPMTAG_PROVIDENAME, rpmdsN(pi));
-	    headerPutString(pkg->header, RPMTAG_PROVIDEVERSION, rpmdsEVR(pi));
-	    headerPutUint32(pkg->header, RPMTAG_PROVIDEFLAGS, &flags, 1);
-	}
-    }
-
-    /* Add Requires: */
-    if (!fc->skipReq) {
-	rpmds pi = rpmdsInit(fc->requires);
-	while (rpmdsNext(pi) >= 0) {
-	    rpmsenseFlags flags = rpmdsFlags(pi);
-	
-	    headerPutString(pkg->header, RPMTAG_REQUIRENAME, rpmdsN(pi));
-	    headerPutString(pkg->header, RPMTAG_REQUIREVERSION, rpmdsEVR(pi));
-	    headerPutUint32(pkg->header, RPMTAG_REQUIREFLAGS, &flags, 1);
-	}
-    }
 
     /* Add dependency dictionary(#dependencies) */
     if (rpmtdFromArgi(&td, RPMTAG_DEPENDSDICT, fc->ddictx)) {

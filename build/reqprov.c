@@ -28,10 +28,7 @@ int addReqProv(Package pkg, rpmTagVal tagN,
     newds = rpmdsSinglePoolTix(pkg->pool, tagN, N, EVR,
 			       rpmSanitizeDSFlags(tagN, Flags), index);
 
-    /* Avoid adding duplicate dependencies. */
-    if (rpmdsMerge(dsp, newds) > 0) {
-	rpmdsPutToHeader(newds, pkg->header);
-    }
+    rpmdsMerge(dsp, newds);
     rpmdsFree(newds);
 
     return 0;
