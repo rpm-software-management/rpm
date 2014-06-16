@@ -617,6 +617,17 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 	headerPutString(pkg->header, RPMTAG_BUILDHOST, buildHost());
 	headerPutUint32(pkg->header, RPMTAG_BUILDTIME, getBuildTime(), 1);
 
+	rpmdsPutToHeader(pkg->requires, pkg->header);
+	rpmdsPutToHeader(pkg->provides, pkg->header);
+	rpmdsPutToHeader(pkg->recommends, pkg->header);
+	rpmdsPutToHeader(pkg->suggests, pkg->header);
+	rpmdsPutToHeader(pkg->supplements, pkg->header);
+	rpmdsPutToHeader(pkg->enhances, pkg->header);
+	rpmdsPutToHeader(pkg->conflicts, pkg->header);
+	rpmdsPutToHeader(pkg->obsoletes, pkg->header);
+	rpmdsPutToHeader(pkg->triggers, pkg->header);
+	rpmdsPutToHeader(pkg->order, pkg->header);
+
 	if (spec->sourcePkgId != NULL) {
 	    headerPutBin(pkg->header, RPMTAG_SOURCEPKGID, spec->sourcePkgId,16);
 	}
@@ -697,6 +708,17 @@ rpmRC packageSources(rpmSpec spec, char **cookie)
     headerPutString(sourcePkg->header, RPMTAG_RPMVERSION, VERSION);
     headerPutString(sourcePkg->header, RPMTAG_BUILDHOST, buildHost());
     headerPutUint32(sourcePkg->header, RPMTAG_BUILDTIME, getBuildTime(), 1);
+
+    rpmdsPutToHeader(sourcePkg->requires, sourcePkg->header);
+    rpmdsPutToHeader(sourcePkg->provides, sourcePkg->header);
+    rpmdsPutToHeader(sourcePkg->recommends, sourcePkg->header);
+    rpmdsPutToHeader(sourcePkg->suggests, sourcePkg->header);
+    rpmdsPutToHeader(sourcePkg->supplements, sourcePkg->header);
+    rpmdsPutToHeader(sourcePkg->enhances, sourcePkg->header);
+    rpmdsPutToHeader(sourcePkg->conflicts, sourcePkg->header);
+    rpmdsPutToHeader(sourcePkg->obsoletes, sourcePkg->header);
+    rpmdsPutToHeader(sourcePkg->triggers, sourcePkg->header);
+    rpmdsPutToHeader(sourcePkg->order, sourcePkg->header);
 
     /* XXX this should be %_srpmdir */
     {	char *fn = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);
