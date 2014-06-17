@@ -39,10 +39,6 @@ typedef rpmFlags rpmFsmOp;
 /* plugin hook typedefs */
 typedef rpmRC (*plugin_init_func)(rpmPlugin plugin, rpmts ts);
 typedef void (*plugin_cleanup_func)(rpmPlugin plugin);
-typedef rpmRC (*plugin_opente_func)(rpmPlugin plugin, rpmte te);
-typedef rpmRC (*plugin_coll_post_any_func)(rpmPlugin plugin);
-typedef rpmRC (*plugin_coll_post_add_func)(rpmPlugin plugin);
-typedef rpmRC (*plugin_coll_pre_remove_func)(rpmPlugin plugin);
 typedef rpmRC (*plugin_tsm_pre_func)(rpmPlugin plugin, rpmts ts);
 typedef rpmRC (*plugin_tsm_post_func)(rpmPlugin plugin, rpmts ts, int res);
 typedef rpmRC (*plugin_psm_pre_func)(rpmPlugin plugin, rpmte te);
@@ -70,11 +66,6 @@ struct rpmPluginHooks_s {
     /* plugin constructor and destructor hooks */
     plugin_init_func			init;
     plugin_cleanup_func			cleanup;
-    /* collection plugin hooks */
-    plugin_opente_func			opente;
-    plugin_coll_post_any_func		coll_post_any;
-    plugin_coll_post_add_func		coll_post_add;
-    plugin_coll_pre_remove_func		coll_pre_remove;
     /* per transaction plugin hooks */
     plugin_tsm_pre_func			tsm_pre;
     plugin_tsm_post_func		tsm_post;

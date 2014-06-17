@@ -72,11 +72,6 @@ struct rpmte_s {
     int failed;			/*!< (parent) install/erase failed */
 
     rpmfs fs;
-
-    ARGV_t lastInCollectionsAny;	/*!< list of collections this te is the last to be installed or removed */
-    ARGV_t lastInCollectionsAdd;	/*!< list of collections this te is the last to be only installed */
-    ARGV_t firstInCollectionsRemove;	/*!< list of collections this te is the first to be only removed */
-    ARGV_t collections;			/*!< list of collections */
 };
 
 /* forward declarations */
@@ -125,7 +120,7 @@ static rpmfiles getFiles(rpmte p, Header h)
 static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
 {
     rpmstrPool tspool = rpmtsPool(p->ts);
-    struct rpmtd_s colls, bnames;
+    struct rpmtd_s bnames;
     int rc = 1; /* assume failure */
 
     p->name = headerGetAsString(h, RPMTAG_NAME);
@@ -189,19 +184,6 @@ static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
 			 headerIsEntry(h, RPMTAG_POSTTRANSPROG)) ?
 			RPMTE_HAVE_POSTTRANS : 0;
 
-    p->lastInCollectionsAny = NULL;
-    p->lastInCollectionsAdd = NULL;
-    p->firstInCollectionsRemove = NULL;
-    p->collections = NULL;
-    if (headerGet(h, RPMTAG_COLLECTIONS, &colls, HEADERGET_MINMEM)) {
-	const char *collname;
-	while ((collname = rpmtdNextString(&colls))) {
-	    argvAdd(&p->collections, collname);
-	}
-	argvSort(p->collections, NULL);
-	rpmtdFreeData(&colls);
-    }
-
     rpmteColorDS(p, RPMTAG_PROVIDENAME);
     rpmteColorDS(p, RPMTAG_REQUIRENAME);
 
@@ -242,11 +224,6 @@ rpmte rpmteFree(rpmte te)
 	rpmfsFree(te->fs);
 	rpmpsFree(te->probs);
 	rpmteCleanDS(te);
-
-	argvFree(te->collections);
-	argvFree(te->lastInCollectionsAny);
-	argvFree(te->lastInCollectionsAdd);
-	argvFree(te->firstInCollectionsRemove);
 
 	memset(te, 0, sizeof(*te));	/* XXX trash and burn */
 	free(te);
@@ -349,46 +326,6 @@ rpm_color_t rpmteSetColor(rpmte te, rpm_color_t color)
 	te->color = color;
     }
     return ocolor;
-}
-
-ARGV_const_t rpmteCollections(rpmte te)
-{
-    return (te != NULL) ? te->collections : NULL;
-}
-
-int rpmteHasCollection(rpmte te, const char *collname)
-{
-    return (argvSearch(rpmteCollections(te), collname, NULL) != NULL);
-}
-
-int rpmteAddToLastInCollectionAdd(rpmte te, const char *collname)
-{
-    if (te != NULL) {
-	argvAdd(&te->lastInCollectionsAdd, collname);
-	argvSort(te->lastInCollectionsAdd, NULL);
-	return 0;
-    }
-    return -1;
-}
-
-int rpmteAddToLastInCollectionAny(rpmte te, const char *collname)
-{
-    if (te != NULL) {
-	argvAdd(&te->lastInCollectionsAny, collname);
-	argvSort(te->lastInCollectionsAny, NULL);
-	return 0;
-    }
-    return -1;
-}
-
-int rpmteAddToFirstInCollectionRemove(rpmte te, const char *collname)
-{
-    if (te != NULL) {
-	argvAdd(&te->firstInCollectionsRemove, collname);
-	argvSort(te->firstInCollectionsRemove, NULL);
-	return 0;
-    }
-    return -1;
 }
 
 rpm_loff_t rpmtePkgFileSize(rpmte te)
@@ -800,50 +737,6 @@ rpmfs rpmteGetFileStates(rpmte te)
     return te->fs;
 }
 
-rpmRC rpmteSetupCollectionPlugins(rpmte te)
-{
-    ARGV_const_t colls = rpmteCollections(te);
-    rpmPlugins plugins = rpmtsPlugins(te->ts);
-    rpmRC rc = RPMRC_OK;
-
-    if (!colls) {
-	return rc;
-    }
-
-    rpmteOpen(te, 0);
-    for (; colls && *colls; colls++) {
-	if (!rpmpluginsPluginAdded(plugins, *colls)) {
-	    rc = rpmpluginsAddPlugin(plugins, "collection", *colls);
-	    if (rc != RPMRC_OK) {
-		break;
-	    }
-	}
-	rc = rpmpluginsCallOpenTE(plugins, *colls, te);
-	if (rc != RPMRC_OK) {
-	    break;
-	}
-    }
-    rpmteClose(te, 0);
-
-    return rc;
-}
-
-typedef rpmRC (*collhook_func)(rpmPlugins, const char *);
-
-static rpmRC rpmteRunAllCollections(rpmte te, ARGV_const_t colls,
-				    collhook_func collHook)
-{
-    rpmRC rc = RPMRC_OK;
-
-    if (!(rpmtsFlags(te->ts) & RPMTRANS_FLAG_NOCOLLECTIONS)) {
-	for (; colls && *colls; colls++) {
-	    rc = collHook(rpmtsPlugins(te->ts), *colls);
-	}
-    }
-
-    return rc;
-}
-
 int rpmteProcess(rpmte te, pkgGoal goal)
 {
     /* Only install/erase resets pkg file info */
@@ -859,23 +752,11 @@ int rpmteProcess(rpmte te, pkgGoal goal)
 	}
     }
 
-    if (!scriptstage) {
-	rpmteRunAllCollections(te, te->firstInCollectionsRemove,
-			       rpmpluginsCallCollectionPreRemove);
-    }
-
     if (rpmteOpen(te, reset_fi)) {
 	failed = rpmpsmRun(te->ts, te, goal);
 	rpmteClose(te, reset_fi);
     }
     
-    if (!scriptstage) {
-	rpmteRunAllCollections(te, te->lastInCollectionsAdd,
-			       rpmpluginsCallCollectionPostAdd);
-	rpmteRunAllCollections(te, te->lastInCollectionsAny,
-			       rpmpluginsCallCollectionPostAny);
-    }
-
     if (failed) {
 	failed = rpmteMarkFailed(te);
     }

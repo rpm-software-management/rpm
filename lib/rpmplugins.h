@@ -38,7 +38,7 @@ rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path, cons
 
 /** \ingroup rpmplugins
  * Add and open a rpm plugin
- * @param plugins	plugins structure to add a collection plugin to
+ * @param plugins	plugins structure to add a plugin to
  * @param type     type of plugin
  * @param name		name of plugin
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
@@ -54,43 +54,6 @@ rpmRC rpmpluginsAddPlugin(rpmPlugins plugins, const char *type, const char *name
  */
 RPM_GNUC_INTERNAL
 int rpmpluginsPluginAdded(rpmPlugins plugins, const char *name);
-
-/** \ingroup rpmplugins
- * Call the open te plugin hook
- * @param plugins	plugins structure
- * @param name		name of plugin
- * @param te		transaction element opened
- * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
- */
-RPM_GNUC_INTERNAL
-rpmRC rpmpluginsCallOpenTE(rpmPlugins plugins, const char *name, rpmte te);
-
-/** \ingroup rpmplugins
- * Call the collection post add plugin hook
- * @param plugins	plugins structure
- * @param name		name of plugin
- * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
- */
-RPM_GNUC_INTERNAL
-rpmRC rpmpluginsCallCollectionPostAdd(rpmPlugins plugins, const char *name);
-
-/** \ingroup rpmplugins
- * Call the collection post any plugin hook
- * @param plugins	plugins structure
- * @param name		name of plugin
- * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
- */
-RPM_GNUC_INTERNAL
-rpmRC rpmpluginsCallCollectionPostAny(rpmPlugins plugins, const char *name);
-
-/** \ingroup rpmplugins
- * Call the collection pre remove plugin hook
- * @param plugins	plugins structure
- * @param name		name of plugin
- * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
- */
-RPM_GNUC_INTERNAL
-rpmRC rpmpluginsCallCollectionPreRemove(rpmPlugins plugins, const char *name);
 
 /** \ingroup rpmplugins
  * Call the pre transaction plugin hook

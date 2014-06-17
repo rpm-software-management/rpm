@@ -1188,87 +1188,6 @@ static int runTransScripts(rpmts ts, pkgGoal goal)
     return rc;
 }
 
-static int rpmtsSetupCollections(rpmts ts)
-{
-    /* seenCollectionsPost and TEs are basically a key-value pair. each item in
-     * seenCollectionsPost is a collection that has been seen from any package,
-     * and the associated index in the TEs is the last transaction element
-     * where that collection was seen. */
-    ARGV_t seenCollectionsPost = NULL;
-    rpmte *TEs = NULL;
-    int numSeenPost = 0;
-
-    /* seenCollectionsPre is a list of collections that have been seen from
-     * only removed packages */
-    ARGV_t seenCollectionsPre = NULL;
-    int numSeenPre = 0;
-
-    ARGV_const_t collname;
-    int installing = 1;
-    int i;
-
-    rpmte p;
-    rpmtsi pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	/* detect when we switch from installing to removing packages, and
-	 * update the lastInCollectionAdd lists */
-	if (installing && rpmteType(p) == TR_REMOVED) {
-	    installing = 0;
-	    for (i = 0; i < numSeenPost; i++) {
-		rpmteAddToLastInCollectionAdd(TEs[i], seenCollectionsPost[i]);
-	    }
-	}
-
-	rpmteSetupCollectionPlugins(p);
-
-	for (collname = rpmteCollections(p); collname && *collname; collname++) {
-	    /* figure out if we've seen this collection in post before */
-	    for (i = 0; i < numSeenPost && strcmp(*collname, seenCollectionsPost[i]); i++) {
-	    }
-	    if (i < numSeenPost) {
-		/* we've seen the collection, update the index */
-		TEs[i] = p;
-	    } else {
-		/* haven't seen the collection yet, add it */
-		argvAdd(&seenCollectionsPost, *collname);
-		TEs = xrealloc(TEs, sizeof(*TEs) * (numSeenPost + 1));
-		TEs[numSeenPost] = p;
-		numSeenPost++;
-	    }
-
-	    /* figure out if we've seen this collection in pre remove before */
-	    if (installing == 0) {
-		for (i = 0; i < numSeenPre && strcmp(*collname, seenCollectionsPre[i]); i++) {
-		}
-		if (i >= numSeenPre) {
-		    /* haven't seen this collection, add it */
-		    rpmteAddToFirstInCollectionRemove(p, *collname);
-		    argvAdd(&seenCollectionsPre, *collname);
-		    numSeenPre++;
-		}
-	    }
-	}
-    }
-    rpmtsiFree(pi);
-
-    /* we've looked at all the rpmte's, update the lastInCollectionAny lists */
-    for (i = 0; i < numSeenPost; i++) {
-	rpmteAddToLastInCollectionAny(TEs[i], seenCollectionsPost[i]);
-	if (installing == 1) {
-	    /* lastInCollectionAdd is only updated above if packages were
-	     * removed. if nothing is removed in the transaction, we need to
-	     * update that list here */
-	    rpmteAddToLastInCollectionAdd(TEs[i], seenCollectionsPost[i]);
-	}
-    }
-
-    argvFree(seenCollectionsPost);
-    argvFree(seenCollectionsPre);
-    _free(TEs);
-
-    return 0;
-}
-
 static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet)
 {
     rpm_tid_t tid = (rpm_tid_t) time(NULL);
@@ -1280,7 +1199,7 @@ static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransTriggers));
 
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_JUSTDB | RPMTRANS_FLAG_TEST))
-	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers | RPMTRANS_FLAG_NOCOLLECTIONS));
+	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
 
     /* 
      * Make sure the database is open RDWR for package install/erase.
@@ -1497,8 +1416,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     if (rpmtsSetup(ts, ignoreSet)) {
 	goto exit;
     }
-
-    rpmtsSetupCollections(ts);
 
     /* Check package set for problems */
     tsprobs = checkProblems(ts);

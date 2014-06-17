@@ -73,8 +73,6 @@ lib/tagexts.c
 lib/tagname.c
 lib/backend/db3.c
 lib/backend/dbconfig.c
-plugins/exec.c
-plugins/sepolicy.c
 python/rpmts-py.c
 rpmio/argv.c
 rpmio/digest.c

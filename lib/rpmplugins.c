@@ -218,54 +218,6 @@ static rpmRC rpmpluginsCallInit(rpmPlugin plugin, rpmts ts)
     return rc;
 }
 
-rpmRC rpmpluginsCallOpenTE(rpmPlugins plugins, const char *name, rpmte te)
-{
-    rpmRC rc = RPMRC_OK;
-    plugin_opente_func hookFunc;
-    rpmPlugin plugin = NULL;
-    RPMPLUGINS_GET_PLUGIN(name);
-    RPMPLUGINS_SET_HOOK_FUNC(opente);
-    if (hookFunc)
-	rc = hookFunc(plugin, te);
-    return rc;
-}
-
-rpmRC rpmpluginsCallCollectionPostAdd(rpmPlugins plugins, const char *name)
-{
-    rpmRC rc = RPMRC_OK;
-    plugin_coll_post_add_func hookFunc;
-    rpmPlugin plugin = NULL;
-    RPMPLUGINS_GET_PLUGIN(name);
-    RPMPLUGINS_SET_HOOK_FUNC(coll_post_add);
-    if (hookFunc)
-	rc = hookFunc(plugin);
-    return rc;
-}
-
-rpmRC rpmpluginsCallCollectionPostAny(rpmPlugins plugins, const char *name)
-{
-    rpmRC rc = RPMRC_OK;
-    plugin_coll_post_any_func hookFunc;
-    rpmPlugin plugin = NULL;
-    RPMPLUGINS_GET_PLUGIN(name);
-    RPMPLUGINS_SET_HOOK_FUNC(coll_post_any);
-    if (hookFunc)
-	rc = hookFunc(plugin);
-    return rc;
-}
-
-rpmRC rpmpluginsCallCollectionPreRemove(rpmPlugins plugins, const char *name)
-{
-    rpmRC rc = RPMRC_OK;
-    plugin_coll_pre_remove_func hookFunc;
-    rpmPlugin plugin = NULL;
-    RPMPLUGINS_GET_PLUGIN(name);
-    RPMPLUGINS_SET_HOOK_FUNC(coll_pre_remove);
-    if (hookFunc)
-	rc = hookFunc(plugin);
-    return rc;
-}
-
 rpmRC rpmpluginsCallTsmPre(rpmPlugins plugins, rpmts ts)
 {
     plugin_tsm_pre_func hookFunc;
