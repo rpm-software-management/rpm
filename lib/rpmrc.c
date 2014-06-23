@@ -1137,6 +1137,20 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 #	endif	/* __ORDER_BIG_ENDIAN__ */
 #	endif	/* ppc64*-linux */
 
+#	if defined(__linux__) && defined(__arm__)
+	if (rstreq(un.machine, "armv7l")) {
+	    if (rpmat.hwcap & HWCAP_ARM_VFPv3D16) {
+		if (rpmat.hwcap & HWCAP_ARM_NEON)
+		    strcpy(un.machine, "armv7hnl");
+		else
+		    strcpy(un.machine, "armv7hl");
+	    }
+	} else if (rstreq(un.machine, "armv6l")) {
+	    if (rpmat.hwcap & HWCAP_ARM_VFP)
+		strcpy(un.machine, "armv6hl");
+	}
+#	endif	/* arm*-linux */
+
 #	if defined(__GNUC__) && defined(__alpha__)
 	{
 	    unsigned long amask, implver;
