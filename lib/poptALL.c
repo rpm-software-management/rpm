@@ -187,6 +187,11 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("read <FILE:...> instead of default file(s)"),
 	N_("<FILE:...>") },
 
+ /* XXX this is a bit out of place here but kinda unavoidable... */
+ { "noplugins", '\0', POPT_BIT_SET,
+	&rpmIArgs.transFlags, RPMTRANS_FLAG_NOPLUGINS,
+	N_("don't enable any plugins"), NULL },
+
  { "nodigest", '\0', 0, 0, RPMCLI_POPT_NODIGEST,
         N_("don't verify package digest(s)"), NULL },
  { "nohdrchk", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOHDRCHK,

@@ -1361,7 +1361,7 @@ rpmRC rpmtsSetupTransactionPlugins(rpmts ts)
      * (verification of non-installed package) where this is not true
      * currently but that's not a new issue.
      */
-    if (ts->plugins != NULL)
+    if ((rpmtsFlags(ts) & RPMTRANS_FLAG_NOPLUGINS) || ts->plugins != NULL)
 	return RPMRC_OK;
 
     dsoPath = rpmExpand("%{__plugindir}/*.so", NULL);

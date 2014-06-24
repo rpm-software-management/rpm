@@ -30,6 +30,6 @@ function run()
 function runroot()
 {
     (cd ${RPMTEST} && \
-     MAGIC="/magic/magic" FAKECHROOT_BASE="${RPMTEST}" fakechroot "$@" --define "_topdir /build"
+     MAGIC="/magic/magic" FAKECHROOT_BASE="${RPMTEST}" fakechroot "$@" --define "_topdir /build" --noplugins
     )
 }
