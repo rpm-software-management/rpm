@@ -151,8 +151,9 @@ rpmRC rpmpluginsAddPlugin(rpmPlugins plugins, const char *type, const char *name
 
     path = rpmExpand("%{?__", type, "_", name, "}", NULL);
     if (!path || rstreq(path, "")) {
-	rpmlog(RPMLOG_ERR, _("Failed to expand %%__%s_%s macro\n"),
+	rpmlog(RPMLOG_DEBUG, _("Plugin %%__%s_%s not configured\n"),
 	       type, name);
+	rc = RPMRC_NOTFOUND;
 	goto exit;
     }
 

@@ -1352,9 +1352,9 @@ static int rpmtsProcess(rpmts ts)
 rpmRC rpmtsSetupTransactionPlugins(rpmts ts)
 {
     rpmRC rc = RPMRC_OK;
-    char *plugins = NULL, *plugin = NULL;
-    const char *delims = ",";
-    rpmPlugins tsplugins;
+    ARGV_t files = NULL;
+    int nfiles = 0;
+    char *dsoPath = NULL;
 
     /*
      * Assume allocated equals initialized. There are some oddball cases
@@ -1364,27 +1364,19 @@ rpmRC rpmtsSetupTransactionPlugins(rpmts ts)
     if (ts->plugins != NULL)
 	return RPMRC_OK;
 
-    plugins = rpmExpand("%{?__transaction_plugins}", NULL);
-    if (!plugins || rstreq(plugins, "")) {
-	goto exit;
-    }
-
-    tsplugins = rpmtsPlugins(ts);
-    plugin = strtok(plugins, delims);
-    while(plugin != NULL) {
-	rpmlog(RPMLOG_DEBUG, "plugin is %s\n", plugin);
-	if (!rpmpluginsPluginAdded(tsplugins, plugin)) {
-	    if (rpmpluginsAddPlugin(tsplugins, "transaction",
-				    plugin) == RPMRC_FAIL) {
-		/* any configured plugin failing to load is a failure */
+    dsoPath = rpmExpand("%{__plugindir}/*.so", NULL);
+    if (rpmGlob(dsoPath, &nfiles, &files) == 0) {
+	rpmPlugins tsplugins = rpmtsPlugins(ts);
+	for (int i = 0; i < nfiles; i++) {
+	    char *bn = basename(files[i]);
+	    bn[strlen(bn)-strlen(".so")] = '\0';
+	    if (rpmpluginsAddPlugin(tsplugins, "transaction", bn) == RPMRC_FAIL)
 		rc = RPMRC_FAIL;
-	    }
 	}
-	plugin = strtok(NULL, delims);
+	files = argvFree(files);
     }
+    free(dsoPath);
 
-exit:
-    free(plugins);
     return rc;
 }
 
