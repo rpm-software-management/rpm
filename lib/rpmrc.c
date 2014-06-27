@@ -1102,6 +1102,9 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 #	endif	/* hpux */
 
 #	if defined(__linux__) && defined(__sparc__)
+#	if !defined(HWCAP_SPARC_BLKINIT)
+#	    define HWCAP_SPARC_BLKINIT	0x00000040
+#	endif
 	if (rstreq(un.machine, "sparc")) {
 	    #define PERS_LINUX		0x00000000
 	    #define PERS_LINUX_32BIT	0x00800000
@@ -1120,6 +1123,15 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 		    }
 		}
 		personality(oldpers);
+	    }
+
+	    /* This is how glibc detects Niagara so... */
+	    if (rpmat.hwcap & HWCAP_SPARC_BLKINIT) {
+		if (rstreq(un.machine, "sparcv9") || rstreq(un.machine, "sparc")) {
+		    strcpy(un.machine, "sparcv9v");
+		} else if (rstreq(un.machine, "sparc64")) {
+		    strcpy(un.machine, "sparc64v");
+		}
 	    }
 	}
 #	endif	/* sparc*-linux */
