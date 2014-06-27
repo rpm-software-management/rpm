@@ -1138,6 +1138,15 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 #	endif	/* ppc64*-linux */
 
 #	if defined(__linux__) && defined(__arm__)
+#	if !defined(HWCAP_ARM_VFP)
+#	    define HWCAP_ARM_VFP	(1 << 6)
+#	endif
+#	if !defined(HWCAP_ARM_NEON)
+#	    define HWCAP_ARM_NEON	(1 << 12)
+#	endif
+#	if !defined(HWCAP_ARM_VFPv3D16)
+#	    define HWCAP_ARM_VFPv3D16	(1 << 13)
+#	endif
 	if (rstreq(un.machine, "armv7l")) {
 	    if (rpmat.hwcap & HWCAP_ARM_VFPv3D16) {
 		if (rpmat.hwcap & HWCAP_ARM_NEON)
