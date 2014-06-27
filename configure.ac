@@ -411,6 +411,7 @@ AC_CHECK_HEADERS(sys/utsname.h)
 
 AC_CHECK_HEADERS(sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/param.h)
+AC_CHECK_HEADERS(sys/auxv.h)
 
 dnl statfs portability fiddles.
 dnl

@@ -20,7 +20,7 @@
 #define __power_pc() 0
 #endif
 
-#ifdef HAVE_GETAUXVAL
+#ifdef HAVE_SYS_AUXV_H
 #include <sys/auxv.h>
 #endif
 
