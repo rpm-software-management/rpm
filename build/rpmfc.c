@@ -1091,6 +1091,18 @@ static struct DepMsg_s depMsgs[] = {
   { "Obsoletes",	{ "%{?__find_obsoletes}", NULL, NULL, NULL },
 	RPMTAG_OBSOLETENAME, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS,
 	0, -1 },
+  { "Recommends",		{ "%{?__find_recommends}", NULL, NULL, NULL },
+	RPMTAG_RECOMMENDNAME, RPMTAG_RECOMMENDVERSION, RPMTAG_RECOMMENDFLAGS,
+	0, -1 },
+  { "Suggests",	{ "%{?__find_suggests}", NULL, NULL, NULL },
+	RPMTAG_SUGGESTNAME, RPMTAG_SUGGESTVERSION, RPMTAG_SUGGESTFLAGS,
+	0, -1 },
+  { "Supplements",	{ "%{?__find_supplements}", NULL, NULL, NULL },
+	RPMTAG_SUPPLEMENTNAME, RPMTAG_SUPPLEMENTVERSION, RPMTAG_SUPPLEMENTFLAGS,
+	0, -1 },
+  { "Enhances",		{ "%{?__find_enhances}", NULL, NULL, NULL },
+	RPMTAG_ENHANCENAME, RPMTAG_ENHANCEVERSION, RPMTAG_ENHANCEFLAGS,
+	0, -1 },
   { NULL,		{ NULL, NULL, NULL, NULL },	0, 0, 0, 0, 0 }
 };
 
@@ -1165,6 +1177,12 @@ static rpmRC rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi f
 	    tagflags = RPMSENSE_FIND_PROVIDES;
 	    break;
 	case RPMTAG_REQUIREFLAGS:
+	case RPMTAG_RECOMMENDNAME:
+	case RPMTAG_SUGGESTNAME:
+	case RPMTAG_SUPPLEMENTNAME:
+	case RPMTAG_ENHANCENAME:
+	case RPMTAG_CONFLICTNAME:
+	case RPMTAG_OBSOLETENAME:
 	    if (!pkg->autoReq)
 		continue;
 	    tagflags = RPMSENSE_FIND_REQUIRES;
