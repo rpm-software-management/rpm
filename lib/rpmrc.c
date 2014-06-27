@@ -1149,7 +1149,7 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 #	endif	/* __ORDER_BIG_ENDIAN__ */
 #	endif	/* ppc64*-linux */
 
-#	if defined(__linux__) && defined(__arm__)
+#	if defined(__linux__) && defined(__arm__) && defined(__ARM_PCS_VFP)
 #	if !defined(HWCAP_ARM_VFP)
 #	    define HWCAP_ARM_VFP	(1 << 6)
 #	endif
