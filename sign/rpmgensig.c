@@ -49,7 +49,7 @@ static int closeFile(FD_t *fdp)
 static int manageFile(FD_t *fdp, const char *fn, int flags)
 {
     FD_t fd;
-    char *fmode;
+    const char *fmode;
 
     if (fdp == NULL || fn == NULL)	/* programmer error */
 	return 1;
@@ -63,6 +63,7 @@ static int manageFile(FD_t *fdp, const char *fn, int flags)
 	    case O_RDONLY:
 		fmode = "r.ufdio";
 		break;
+	    default:
 	    case O_RDWR:
 		fmode = "r+.ufdio";
 		break;
