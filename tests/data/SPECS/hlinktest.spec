@@ -17,6 +17,8 @@ EOF
 
 cd $RPM_BUILD_ROOT/foo
 cat hello > copyllo
+cat hello > aaaa
+ln aaaa zzzz
 chmod a+x hello copyllo
 for f in foo bar world; do
     ln hello hello-${f}
