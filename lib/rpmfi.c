@@ -1819,6 +1819,7 @@ static int iterWriteArchiveNextFile(rpmfi fi)
 		return rc;
 	    }
 	}
+	rpmfiSetFX(fi, hardlinks[0]);
     } else {
 	int rc = rpmfiArchiveWriteHeader(fi);
 	if (rc) {
