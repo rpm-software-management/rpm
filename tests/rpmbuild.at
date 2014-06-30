@@ -143,12 +143,14 @@ ls -i "${RPMTEST}"/foo/hello* | awk {'print $1'} | sort -u | wc -l
 
 ],
 [0],
-[1 /foo/copyllo
+[2 /foo/aaaa
+1 /foo/copyllo
 4 /foo/hello
 4 /foo/hello-bar
 4 /foo/hello-foo
 4 /foo/hello-world
-58
+2 /foo/zzzz
+87
 1
 ],
 [])
