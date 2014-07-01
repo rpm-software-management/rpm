@@ -1093,16 +1093,15 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 
 	/* Expand builtin macros */
 	if (STREQ("load", f, fn)) {
-		if (g && gn > 0) {
-			char arg[gn + 1];
-			strncpy(arg, g, gn);
-			arg[gn] = '\0';
+		char *arg = NULL;
+		if (g && gn > 0 && expandThis(mb, g, gn, &arg) == 0) {
 			/* Print failure iff %{load:...} or %{!?load:...} */
 			if (loadMacroFile(mb->mc, arg) && chkexist == negate) {
 				rpmlog(RPMLOG_ERR,
 				       _("failed to load macro file %s"), arg);
 			}
 		}
+		free(arg);
 		s = se;
 		continue;
 	}
