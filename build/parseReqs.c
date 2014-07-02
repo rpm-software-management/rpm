@@ -167,6 +167,30 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
     case RPMTAG_BUILDCONFLICTS:
 	nametag = RPMTAG_CONFLICTNAME;
 	break;
+    case RPMTAG_FILETRIGGERIN:
+	nametag = RPMTAG_FILETRIGGERNAME;
+	tagflags |= RPMSENSE_TRIGGERIN;
+	break;
+    case RPMTAG_FILETRIGGERUN:
+	nametag = RPMTAG_FILETRIGGERNAME;
+	tagflags |= RPMSENSE_TRIGGERUN;
+	break;
+    case RPMTAG_FILETRIGGERPOSTUN:
+	nametag = RPMTAG_FILETRIGGERNAME;
+	tagflags |= RPMSENSE_TRIGGERPOSTUN;
+	break;
+    case RPMTAG_TRANSFILETRIGGERIN:
+	nametag = RPMTAG_TRANSFILETRIGGERNAME;
+	tagflags |= RPMSENSE_TRIGGERIN;
+	break;
+    case RPMTAG_TRANSFILETRIGGERUN:
+	nametag = RPMTAG_TRANSFILETRIGGERNAME;
+	tagflags |= RPMSENSE_TRIGGERUN;
+	break;
+    case RPMTAG_TRANSFILETRIGGERPOSTUN:
+	nametag = RPMTAG_TRANSFILETRIGGERNAME;
+	tagflags |= RPMSENSE_TRIGGERPOSTUN;
+	break;
     }
 
     for (r = field; *r != '\0'; r = re) {
@@ -238,6 +262,14 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	/* check that dependency is well-formed */
 	if (checkDep(spec, N, EVR, &emsg))
 	    goto exit;
+
+	if (nametag == RPMTAG_FILETRIGGERNAME ||
+	    nametag == RPMTAG_TRANSFILETRIGGERNAME) {
+	    if (N[0] != '/') {
+		rasprintf(&emsg, _("Only absolute paths are allowed in "
+				    "file triggers"));
+	    }
+	}
 
 	if (addReqProv(pkg, nametag, N, EVR, Flags, index)) {
 	    rasprintf(&emsg, _("invalid dependency"));

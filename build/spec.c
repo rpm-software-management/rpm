@@ -150,6 +150,8 @@ static Package freePackage(Package pkg)
 
     pkg->icon = freeSources(pkg->icon);
     pkg->triggerFiles = freeTriggerFiles(pkg->triggerFiles);
+    pkg->fileTriggerFiles = freeTriggerFiles(pkg->fileTriggerFiles);
+    pkg->transFileTriggerFiles = freeTriggerFiles(pkg->transFileTriggerFiles);
     pkg->pool = rpmstrPoolFree(pkg->pool);
 
     free(pkg);

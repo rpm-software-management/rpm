@@ -183,6 +183,22 @@ static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
     int addflags = 0;
     rpmRC rc = RPMRC_FAIL;
     Header h = pkg->header;
+    struct TriggerFileEntry *tfa[] = {pkg->triggerFiles,
+				      pkg->fileTriggerFiles,
+				      pkg->transFileTriggerFiles};
+
+    rpmTagVal progTags[] = {RPMTAG_TRIGGERSCRIPTPROG,
+			    RPMTAG_FILETRIGGERSCRIPTPROG,
+			    RPMTAG_TRANSFILETRIGGERSCRIPTPROG};
+
+    rpmTagVal flagTags[] = {RPMTAG_TRIGGERSCRIPTFLAGS,
+			    RPMTAG_FILETRIGGERSCRIPTFLAGS,
+			    RPMTAG_TRANSFILETRIGGERSCRIPTFLAGS};
+
+    rpmTagVal scriptTags[] = {RPMTAG_TRIGGERSCRIPTS,
+			      RPMTAG_FILETRIGGERSCRIPTS,
+			      RPMTAG_TRANSFILETRIGGERSCRIPTS};
+    int i;
     
     if (addFileToTag(spec, pkg->preInFile, h, RPMTAG_PREIN, 1) ||
 	addFileToTag(spec, pkg->preUnFile, h, RPMTAG_PREUN, 1) ||
@@ -195,30 +211,35 @@ static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
 	goto exit;
     }
 
-    /* if any trigger has flags, we need to add flags entry for all of them */
-    for (p = pkg->triggerFiles; p != NULL; p = p->next) {
-	if (p->flags) {
-	    addflags = 1;
-	    break;
-	}
-    }
 
-    for (p = pkg->triggerFiles; p != NULL; p = p->next) {
-	headerPutString(h, RPMTAG_TRIGGERSCRIPTPROG, p->prog);
-	if (addflags) {
-	    headerPutUint32(h, RPMTAG_TRIGGERSCRIPTFLAGS, &p->flags, 1);
-	}
-
-	if (p->script) {
-	    headerPutString(h, RPMTAG_TRIGGERSCRIPTS, p->script);
-	} else if (p->fileName) {
-	    if (addFileToTag(spec, p->fileName, h, RPMTAG_TRIGGERSCRIPTS, 0)) {
-		goto exit;
+    for (i = 0; i < sizeof(tfa)/sizeof(tfa[0]); i++) {
+	addflags = 0;
+	/* if any trigger has flags, we need to add flags entry for all of them */
+	for (p = tfa[i]; p != NULL; p = p->next) {
+	    if (p->flags) {
+		addflags = 1;
+		break;
 	    }
-	} else {
-	    /* This is dumb.  When the header supports NULL string */
-	    /* this will go away.                                  */
-	    headerPutString(h, RPMTAG_TRIGGERSCRIPTS, "");
+	}
+
+	for (p = tfa[i]; p != NULL; p = p->next) {
+	    headerPutString(h, progTags[i], p->prog);
+
+	    if (addflags) {
+		headerPutUint32(h, flagTags[i], &p->flags, 1);
+	    }
+
+	    if (p->script) {
+		headerPutString(h, scriptTags[i], p->script);
+	    } else if (p->fileName) {
+		if (addFileToTag(spec, p->fileName, h, scriptTags[i], 0)) {
+		    goto exit;
+		}
+	    } else {
+		/* This is dumb.  When the header supports NULL string */
+		/* this will go away.                                  */
+		headerPutString(h, scriptTags[i], "");
+	    }
 	}
     }
     rc = RPMRC_OK;

@@ -63,6 +63,15 @@ static const struct PartRec {
     { PART_TRIGGERIN,     LEN_AND_STR("%trigger")},
     { PART_VERIFYSCRIPT,  LEN_AND_STR("%verifyscript")},
     { PART_POLICIES,      LEN_AND_STR("%sepolicy")},
+    { PART_FILETRIGGERIN,	    LEN_AND_STR("%filetriggerin")},
+    { PART_FILETRIGGERIN,	    LEN_AND_STR("%filetrigger")},
+    { PART_FILETRIGGERUN,	    LEN_AND_STR("%filetriggerun")},
+    { PART_FILETRIGGERPOSTUN,	    LEN_AND_STR("%filetriggerpostun")},
+    { PART_TRANSFILETRIGGERIN,	    LEN_AND_STR("%transfiletriggerin")},
+    { PART_TRANSFILETRIGGERIN,	    LEN_AND_STR("%transfiletrigger")},
+    { PART_TRANSFILETRIGGERUN,	    LEN_AND_STR("%transfiletriggerun")},
+    { PART_TRANSFILETRIGGERUN,  LEN_AND_STR("%transfiletriggerun")},
+    { PART_TRANSFILETRIGGERPOSTUN,  LEN_AND_STR("%transfiletriggerpostun")},
     {0, 0, 0}
 };
 
@@ -700,6 +709,12 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 	case PART_TRIGGERIN:
 	case PART_TRIGGERUN:
 	case PART_TRIGGERPOSTUN:
+	case PART_FILETRIGGERIN:
+	case PART_FILETRIGGERUN:
+	case PART_FILETRIGGERPOSTUN:
+	case PART_TRANSFILETRIGGERIN:
+	case PART_TRANSFILETRIGGERUN:
+	case PART_TRANSFILETRIGGERPOSTUN:
 	    parsePart = parseScript(spec, parsePart);
 	    break;
 

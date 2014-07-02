@@ -96,6 +96,16 @@ static int dsType(rpmTagVal tag,
 	t = "Oldenhances";
 	evr = RPMTAG_OLDENHANCESVERSION;
 	f = RPMTAG_OLDENHANCESFLAGS;
+    } else if (tag == RPMTAG_FILETRIGGERNAME) {
+	t = "FileTrigger";
+	evr = RPMTAG_FILETRIGGERVERSION;
+	f = RPMTAG_FILETRIGGERFLAGS;
+	ti = RPMTAG_FILETRIGGERINDEX;
+    } else if (tag == RPMTAG_TRANSFILETRIGGERNAME) {
+	t = "TransFileTrigger";
+	evr = RPMTAG_TRANSFILETRIGGERVERSION;
+	f = RPMTAG_TRANSFILETRIGGERFLAGS;
+	ti = RPMTAG_TRANSFILETRIGGERINDEX;
     } else {
 	rc = 1;
     } 
@@ -1255,6 +1265,8 @@ rpmsenseFlags rpmSanitizeDSFlags(rpmTagVal tagN, rpmsenseFlags Flags)
 	extra = Flags & RPMSENSE_FIND_PROVIDES;
 	break;
     case RPMTAG_TRIGGERNAME:
+    case RPMTAG_FILETRIGGERNAME:
+    case RPMTAG_TRANSFILETRIGGERNAME:
 	extra = Flags & RPMSENSE_TRIGGER;
 	break;
     case RPMTAG_RECOMMENDNAME:

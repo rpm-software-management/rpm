@@ -19,12 +19,24 @@
 /**
  */
 static int addTriggerIndex(Package pkg, const char *file,
-	const char *script, const char *prog, rpmscriptFlags flags)
+	const char *script, const char *prog, rpmscriptFlags flags,
+	rpmTagVal tag)
 {
     struct TriggerFileEntry *tfe;
-    struct TriggerFileEntry *list = pkg->triggerFiles;
+    struct TriggerFileEntry *list;
     struct TriggerFileEntry *last = NULL;
     int index = 0;
+    struct TriggerFileEntry **tfp;
+
+    if (tag == RPMTAG_FILETRIGGERSCRIPTS) {
+	tfp = &pkg->fileTriggerFiles;
+    } else if (tag == RPMTAG_TRANSFILETRIGGERSCRIPTS) {
+	tfp = &pkg->transFileTriggerFiles;
+    } else {
+	tfp = &pkg->triggerFiles;
+    }
+
+    list = *tfp;
 
     while (list) {
 	last = list;
@@ -46,7 +58,7 @@ static int addTriggerIndex(Package pkg, const char *file,
     if (last)
 	last->next = tfe;
     else
-	pkg->triggerFiles = tfe;
+	*tfp = tfe;
 
     return index;
 }
@@ -183,9 +195,58 @@ int parseScript(rpmSpec spec, int parsePart)
 	flagtag = RPMTAG_TRIGGERSCRIPTFLAGS;
 	partname = "%triggerpostun";
 	break;
+      case PART_FILETRIGGERIN:
+	tag = RPMTAG_FILETRIGGERSCRIPTS;
+	tagflags = 0;
+	reqtag = RPMTAG_FILETRIGGERIN;
+	progtag = RPMTAG_FILETRIGGERSCRIPTPROG;
+	flagtag = RPMTAG_FILETRIGGERSCRIPTFLAGS;
+	partname = "%filetriggerin";
+	break;
+      case PART_FILETRIGGERUN:
+	tag = RPMTAG_FILETRIGGERSCRIPTS;
+	tagflags = 0;
+	reqtag = RPMTAG_FILETRIGGERUN;
+	progtag = RPMTAG_FILETRIGGERSCRIPTPROG;
+	flagtag = RPMTAG_FILETRIGGERSCRIPTFLAGS;
+	partname = "%filetriggerun";
+	break;
+      case PART_FILETRIGGERPOSTUN:
+	tag = RPMTAG_FILETRIGGERSCRIPTS;
+	tagflags = 0;
+	reqtag = RPMTAG_FILETRIGGERPOSTUN;
+	progtag = RPMTAG_FILETRIGGERSCRIPTPROG;
+	flagtag = RPMTAG_FILETRIGGERSCRIPTFLAGS;
+	partname = "%filetriggerpostun";
+	break;
+      case PART_TRANSFILETRIGGERIN:
+	tag = RPMTAG_TRANSFILETRIGGERSCRIPTS;
+	tagflags = 0;
+	reqtag = RPMTAG_TRANSFILETRIGGERIN;
+	progtag = RPMTAG_TRANSFILETRIGGERSCRIPTPROG;
+	flagtag = RPMTAG_TRANSFILETRIGGERSCRIPTFLAGS;
+	partname = "%transfiletriggerin";
+	break;
+      case PART_TRANSFILETRIGGERUN:
+	tag = RPMTAG_TRANSFILETRIGGERSCRIPTS;
+	tagflags = 0;
+	reqtag = RPMTAG_TRANSFILETRIGGERUN;
+	progtag = RPMTAG_TRANSFILETRIGGERSCRIPTPROG;
+	flagtag = RPMTAG_TRANSFILETRIGGERSCRIPTFLAGS;
+	partname = "%transfiletriggerun";
+	break;
+      case PART_TRANSFILETRIGGERPOSTUN:
+	tag = RPMTAG_TRANSFILETRIGGERSCRIPTS;
+	tagflags = 0;
+	reqtag = RPMTAG_TRANSFILETRIGGERPOSTUN;
+	progtag = RPMTAG_TRANSFILETRIGGERSCRIPTPROG;
+	flagtag = RPMTAG_TRANSFILETRIGGERSCRIPTFLAGS;
+	partname = "%transfiletriggerpostun";
+	break;
     }
 
-    if (tag == RPMTAG_TRIGGERSCRIPTS) {
+    if (tag == RPMTAG_TRIGGERSCRIPTS || tag == RPMTAG_FILETRIGGERSCRIPTS ||
+	tag == RPMTAG_TRANSFILETRIGGERSCRIPTS) {
 	/* break line into two */
 	char *s = strstr(spec->line, "--");
 	if (!s) {
@@ -311,7 +372,8 @@ int parseScript(rpmSpec spec, int parsePart)
 
     /* Trigger script insertion is always delayed in order to */
     /* get the index right.                                   */
-    if (tag == RPMTAG_TRIGGERSCRIPTS) {
+    if (tag == RPMTAG_TRIGGERSCRIPTS || tag == RPMTAG_FILETRIGGERSCRIPTS ||
+	tag == RPMTAG_TRANSFILETRIGGERSCRIPTS) {
 	if (progArgc > 1) {
 	    rpmlog(RPMLOG_ERR,
 	      _("line %d: interpreter arguments not allowed in triggers: %s\n"),
@@ -319,7 +381,7 @@ int parseScript(rpmSpec spec, int parsePart)
 	    goto exit;
 	}
 	/* Add file/index/prog triple to the trigger file list */
-	index = addTriggerIndex(pkg, file, p, progArgv[0], scriptFlags);
+	index = addTriggerIndex(pkg, file, p, progArgv[0], scriptFlags, tag);
 
 	/* Generate the trigger tags */
 	if (parseRCPOT(spec, pkg, reqargs, reqtag, index, tagflags))

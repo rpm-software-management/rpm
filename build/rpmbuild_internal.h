@@ -83,7 +83,7 @@ struct rpmSpec_s {
     Package packages;		/*!< Package list. */
 };
 
-#define PACKAGE_NUM_DEPS 10
+#define PACKAGE_NUM_DEPS 12
 
 /** \ingroup rpmbuild
  * The structure used to store values for a package.
@@ -112,6 +112,8 @@ struct Package_s {
     char * verifyFile;	/*!< %verifyscript scriptlet. */
 
     struct TriggerFileEntry * triggerFiles;
+    struct TriggerFileEntry * fileTriggerFiles;
+    struct TriggerFileEntry * transFileTriggerFiles;
 
     ARGV_t fileFile;
     ARGV_t fileList;		/* If NULL, package will not be written */
@@ -153,7 +155,13 @@ typedef enum rpmParseState_e {
     PART_TRIGGERPOSTUN  = 30+PART_BASE, /*!< */ 
     PART_TRIGGERPREIN   = 31+PART_BASE, /*!< */ 
     PART_POLICIES       = 32+PART_BASE, /*!< */
-    PART_LAST           = 33+PART_BASE  /*!< */
+    PART_FILETRIGGERIN		= 33+PART_BASE, /*!< */
+    PART_FILETRIGGERUN		= 34+PART_BASE, /*!< */
+    PART_FILETRIGGERPOSTUN	= 35+PART_BASE, /*!< */
+    PART_TRANSFILETRIGGERIN	= 36+PART_BASE, /*!< */
+    PART_TRANSFILETRIGGERUN	= 37+PART_BASE, /*!< */
+    PART_TRANSFILETRIGGERPOSTUN	= 38+PART_BASE, /*!< */
+    PART_LAST			= 39+PART_BASE  /*!< */
 } rpmParseState; 
 
 
