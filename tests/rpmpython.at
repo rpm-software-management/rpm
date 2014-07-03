@@ -213,6 +213,17 @@ for h in ts.dbMatch('packages', ix):
 
 RPMPY_CHECK([
 ts = rpm.ts()
+mi = ts.dbMatch()
+mi.pattern('name', rpm.RPMMIRE_DEFAULT, 'f*')
+for h in mi:
+    myprint(h['nevra'])
+],
+[foo-1.0-1.noarch
+],
+[])
+
+RPMPY_CHECK([
+ts = rpm.ts()
 for h in ts.dbMatch('name'):
     myprint(h['nevra'])
 ],
