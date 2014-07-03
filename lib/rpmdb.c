@@ -1556,9 +1556,7 @@ top:
      * Skip this header if iterator selector (if any) doesn't match.
      */
     if (mireSkip(mi)) {
-	if (mi->mi_set)
-	    goto top;
-	return NULL;
+	goto top;
     }
     headerSetInstance(mi->mi_h, mi->mi_offset);
 
