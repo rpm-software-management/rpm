@@ -364,7 +364,6 @@ static rpmRC handleOneTrigger(rpmts ts, rpmte te, rpmsenseFlags sense,
     (void) rpmdsSetNoPromote(trigger, 1);
 
     while ((i = rpmdsNext(trigger)) >= 0) {
-	struct rpmtd_s tindexes;
 	uint32_t tix;
 
 	if (!(rpmdsFlags(trigger) & sense))
@@ -377,15 +376,7 @@ static rpmRC handleOneTrigger(rpmts ts, rpmte te, rpmsenseFlags sense,
 	if (!rpmdsAnyMatchesDep(sourceH, trigger, 1))
 	    continue;
 
-	if (!headerGet(trigH, RPMTAG_TRIGGERINDEX, &tindexes, HEADERGET_MINMEM))
-	    continue;
-
-	if (rpmtdSetIndex(&tindexes, i) < 0) {
-	    rpmtdFreeData(&tindexes);
-	    continue;
-	}
-
-	tix = rpmtdGetNumber(&tindexes);
+	tix = rpmdsTi(trigger);
 	if (triggersAlreadyRun == NULL || triggersAlreadyRun[tix] == 0) {
 	    int arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), triggerName);
 
@@ -404,8 +395,6 @@ static rpmRC handleOneTrigger(rpmts ts, rpmte te, rpmsenseFlags sense,
 		rpmScriptFree(script);
 	    }
 	}
-
-	rpmtdFreeData(&tindexes);
 
 	/*
 	 * Each target/source header pair can only result in a single

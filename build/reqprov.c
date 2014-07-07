@@ -14,30 +14,9 @@
 static int isNewDep(rpmds *dsp, rpmds bds,
 		  Header h, rpmTagVal indextag, uint32_t index)
 {
-    int isnew = 1;
+    int isnew;
 
-    if (!indextag) {
-	/* With normal deps, we can just merge and see if anything got added */
-	isnew = (rpmdsMerge(dsp, bds) > 0);
-    } else {
-	struct rpmtd_s idx;
-	rpmds ads = *dsp;
-	headerGet(h, indextag, &idx, HEADERGET_MINMEM);
-
-	/* rpmdsFind/Merge() probably isn't realiable with triggers... */
-	rpmdsInit(ads);
-	while (isnew && rpmdsNext(ads) >= 0) {
-	    if (!rstreq(rpmdsN(ads), rpmdsN(bds))) continue;
-	    if (!rstreq(rpmdsEVR(ads), rpmdsEVR(bds))) continue;
-	    if (rpmdsFlags(ads) != rpmdsFlags(bds)) continue;
-	    if (indextag && rpmtdSetIndex(&idx, rpmdsIx(ads)) >= 0 &&
-			    rpmtdGetNumber(&idx) != index) continue;
-	    isnew = 0;
-	}
-	rpmtdFreeData(&idx);
-	rpmdsMerge(dsp, bds);
-    }
-
+    isnew = (rpmdsMerge(dsp, bds) > 0);
     return isnew;
 }
 
@@ -125,7 +104,8 @@ int addReqProv(Package pkg, rpmTagVal tagN,
     if (EVR == NULL)
 	EVR = "";
     
-    newds = rpmdsSinglePool(pkg->pool, tagN, N, EVR, Flags);
+    newds = rpmdsSinglePoolTix(pkg->pool, tagN, N, EVR, Flags, index);
+
     /* Avoid adding duplicate dependencies. */
     if (isNewDep(dsp, newds, h, indextag, index)) {
 	headerPutString(h, tagN, N);
