@@ -194,6 +194,13 @@ const char * rpmdsN(const rpmds ds);
 const char * rpmdsEVR(const rpmds ds);
 
 /** \ingroup rpmds
+ * Return current dependency triggerindex.
+ * @param ds		dependency set
+ * @return		current dependency trigger index, 0 on invalid
+ */
+int rpmdsTi(const rpmds ds);
+
+/** \ingroup rpmds
  * Return current dependency flags.
  * @param ds		dependency set
  * @return		current dependency flags, 0 on invalid
@@ -220,6 +227,13 @@ rpmTagVal rpmdsTagEVR(const rpmds ds);
  * @return		current dependency type flags tag, 0 on invalid
  */
 rpmTagVal rpmdsTagF(const rpmds ds);
+
+/** \ingroup rpmds
+ * Return current dependency type.
+ * @param ds		dependency set
+ * @return		current dependency type trigger index tag, 0 on invalid
+ */
+rpmTagVal rpmdsTagTi(const rpmds ds);
 
 /** \ingroup rpmds
  * Return dependency header instance, ie whether the dependency comes from 
@@ -392,6 +406,20 @@ rpmds rpmdsThisPool(rpmstrPool pool,
  */
 rpmds rpmdsSinglePool(rpmstrPool pool, rpmTagVal tagN,
 		      const char * N, const char * EVR, rpmsenseFlags Flags);
+
+/** \ingroup rpmds
+ * Create, load and initialize a trigger dependency set of size 1.
+ * @param pool		string pool (or NULL for private pool)
+ * @param tagN		type of dependency
+ * @param N		name
+ * @param EVR		epoch:version-release
+ * @param Flags		comparison flags
+ * @param triggerIndex	trigger index
+ * @return		new dependency set
+ */
+rpmds rpmdsSinglePoolTix(rpmstrPool pool, rpmTagVal tagN,
+			    const char * N, const char * EVR, 
+			    rpmsenseFlags Flags, int triggerIndex);
 
 /**
  * Load rpmlib provides into a dependency set.

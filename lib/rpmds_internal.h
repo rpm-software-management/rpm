@@ -61,6 +61,9 @@ RPM_GNUC_INTERNAL
 rpmsenseFlags rpmdsFlagsIndex(rpmds ds, int i);
 
 RPM_GNUC_INTERNAL
+int rpmdsTiIndex(rpmds ds, int i);
+
+RPM_GNUC_INTERNAL
 rpm_color_t rpmdsColorIndex(rpmds ds, int i);
 
 RPM_GNUC_INTERNAL
