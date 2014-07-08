@@ -190,6 +190,13 @@ int rpmdsSetIx(rpmds ds, int ix);
 const char * rpmdsDNEVR(const rpmds ds);
 
 /** \ingroup rpmds
+ * Return one char indicating the type of the dependency.
+ * @param ds		dependency set
+ * @return		character
+ */
+char rpmdsD(const rpmds ds);
+
+/** \ingroup rpmds
  * Return current dependency name.
  * @param ds		dependency set
  * @return		current dependency name, NULL on invalid

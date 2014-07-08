@@ -494,6 +494,15 @@ int rpmdsSetIx(rpmds ds, int ix)
     return i;
 }
 
+char rpmdsD(const rpmds ds)
+{
+    if (ds != NULL) {
+	return tagNToChar(ds->tagN);
+    } else {
+	return '\0';
+    }
+}
+
 const char * rpmdsDNEVR(const rpmds ds)
 {
     const char * DNEVR = NULL;
