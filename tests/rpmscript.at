@@ -41,3 +41,60 @@ scripts-1.0-2 POSTUN 0
 [])
 AT_CLEANUP
 
+AT_SETUP([basic trigger scripts and arguments])
+AT_KEYWORDS([trigger script])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
+runroot rpmbuild --quiet -bb --define "rel 1" /data/SPECS/scripts.spec
+runroot rpmbuild --quiet -bb --define "rel 2" /data/SPECS/scripts.spec
+runroot rpmbuild --quiet -bb --define "rel 1" --define "trigpkg scripts" /data/SPECS/triggers.spec
+runroot rpmbuild --quiet -bb --define "rel 2" --define "trigpkg scripts" /data/SPECS/triggers.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/fakeshell-1.0-1.noarch.rpm
+echo TRIGGERS 1
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/triggers-1.0-1.noarch.rpm
+echo SCRIPTS 1
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/scripts-1.0-1.noarch.rpm
+echo SCRIPTS 2
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/scripts-1.0-2.noarch.rpm
+echo TRIGGERS 2
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/triggers-1.0-2.noarch.rpm
+echo ERASE
+runroot rpm -e scripts
+],
+[0],
+[TRIGGERS 1
+SCRIPTS 1
+scripts-1.0-1 PRETRANS 1
+triggers-1.0-1 TRIGGERPREIN 1 0
+scripts-1.0-1 PRE 1
+scripts-1.0-1 POST 1
+triggers-1.0-1 TRIGGERIN 1 1
+scripts-1.0-1 POSTTRANS 1
+SCRIPTS 2
+scripts-1.0-2 PRETRANS 2
+triggers-1.0-1 TRIGGERPREIN 1 1
+scripts-1.0-2 PRE 2
+scripts-1.0-2 POST 2
+triggers-1.0-1 TRIGGERIN 1 2
+triggers-1.0-1 TRIGGERUN 1 1
+scripts-1.0-1 PREUN 1
+scripts-1.0-1 POSTUN 1
+triggers-1.0-1 TRIGGERPOSTUN 1 1
+scripts-1.0-2 POSTTRANS 1
+TRIGGERS 2
+triggers-1.0-2 TRIGGERPREIN 1 1
+triggers-1.0-2 TRIGGERIN 2 1
+triggers-1.0-1 TRIGGERUN 1 1
+ERASE
+triggers-1.0-2 TRIGGERUN 1 0
+scripts-1.0-2 PREUN 0
+scripts-1.0-2 POSTUN 0
+triggers-1.0-2 TRIGGERPOSTUN 1 0
+],
+[])
+AT_CLEANUP
