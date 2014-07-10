@@ -105,7 +105,6 @@ typedef struct _parseState {
     char *p;		/*!< current position in expression string */
     int nextToken;	/*!< current lookahead token */
     Value tokenValue;	/*!< valid when TOK_INTEGER or TOK_STRING */
-    rpmSpec spec;	/*!< spec file that we are parsing inside of */
 } *ParseState;
 
 
@@ -644,7 +643,7 @@ static Value doLogical(ParseState state)
   return v1;
 }
 
-int parseExpressionBoolean(rpmSpec spec, const char *expr)
+int parseExpressionBoolean(const char *expr)
 {
   struct _parseState state;
   int result = -1;
@@ -654,7 +653,6 @@ int parseExpressionBoolean(rpmSpec spec, const char *expr)
 
   /* Initialize the expression parser state. */
   state.p = state.str = xstrdup(expr);
-  state.spec = spec;
   state.nextToken = 0;
   state.tokenValue = NULL;
   (void) rdToken(&state);

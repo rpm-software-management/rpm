@@ -352,7 +352,7 @@ int readLine(rpmSpec spec, int strip)
 	match = !match;
     } else if (ISMACROWITHARG(s, "%if")) {
 	s += 3;
-        match = parseExpressionBoolean(spec, s);
+        match = parseExpressionBoolean(s);
 	if (match < 0) {
 	    rpmlog(RPMLOG_ERR,
 			_("%s:%d: bad %%if condition\n"),
