@@ -77,7 +77,7 @@ rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds);
  * @return		best provider for the dependency, NULL if none
  */
 RPM_GNUC_INTERNAL
-rpmte rpmalSatisfiesDepend(const rpmal al, const rpmds ds);
+rpmte rpmalSatisfiesDepend(const rpmal al, const rpmte te, const rpmds ds);
 
 #ifdef __cplusplus
 }
