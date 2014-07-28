@@ -94,7 +94,7 @@ static int parseSimplePart(const char *line, char **name, int *flag)
     *name = NULL;
 
     if (!(tok = strtok(NULL, " \t\n"))) {
-	rc = 0;
+	rc = 1;
 	goto exit;
     }
     
