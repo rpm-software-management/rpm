@@ -55,6 +55,13 @@ const int rpmFLAGS = RPMSENSE_EQUAL;
 #undef HASHTYPE
 #undef HTKEYTYPE
 
+#define HASHTYPE requiresCache
+#define HTKEYTYPE const char *
+#include "rpmhash.H"
+#include "rpmhash.C"
+#undef HASHTYPE
+#undef HTKEYTYPE
+
 enum addOp_e {
     RPMTE_INSTALL	= 0,
     RPMTE_UPGRADE	= 1,
@@ -740,6 +747,7 @@ int rpmtsCheck(rpmts ts)
     int rc = 0;
     depCache dcache = NULL;
     conflictsCache confcache = NULL;
+    requiresCache reqcache = NULL;
     
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
 
@@ -776,6 +784,33 @@ int rpmtsCheck(rpmts ts)
 		memcpy(k, key + 1, keylen - 1);
 		k[keylen - 1] = 0;
 		conflictsCacheAddEntry(confcache, k);
+	    }
+	    rpmdbIndexIteratorFree(ii);
+	}
+    }
+
+    /* build cache of all file requires dependencies */
+    reqcache = requiresCacheCreate(65537, rstrhash, strcmp,
+				     (depCacheFreeKey)rfree);
+    if (reqcache) {
+	rpmdbIndexIterator ii = rpmdbIndexIteratorInit(rpmtsGetRdb(ts), RPMTAG_REQUIRENAME);
+	if (ii) {
+	    char *key;
+	    size_t keylen;
+	    while ((rpmdbIndexIteratorNext(ii, (const void**)&key, &keylen)) == 0) {
+		char *k;
+		if (!key || keylen == 0 || key[0] != '/')
+		    continue;
+		while (keylen > 1 && (k = memchr(key + 1, '/', keylen - 1))) {
+		    keylen -= k - key;
+		    key += k - key;
+		}
+		if (keylen <= 1)
+		    continue;
+		k = rmalloc(keylen);
+		memcpy(k, key + 1, keylen - 1);
+		k[keylen - 1] = 0;
+		requiresCacheAddEntry(reqcache, k);
 	    }
 	    rpmdbIndexIteratorFree(ii);
 	}
@@ -845,8 +880,11 @@ int rpmtsCheck(rpmts ts)
 	}
 
 	while (rpmfiNext(fi) >= 0) {
-	    if (RPMFILE_IS_INSTALLED(rpmfiFState(fi)))
+	    if (RPMFILE_IS_INSTALLED(rpmfiFState(fi))) {
+		if (!requiresCacheHasEntry(reqcache, rpmfiBN(fi)))
+		    continue;
 		checkInstDeps(ts, dcache, p, RPMTAG_REQUIRENAME, rpmfiFN(fi));
+	    }
 	}
 	rpmfiFree(fi);
 	rpmfilesFree(files);
@@ -856,6 +894,7 @@ int rpmtsCheck(rpmts ts)
 exit:
     depCacheFree(dcache);
     conflictsCacheFree(confcache);
+    requiresCacheFree(reqcache);
 
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
 
