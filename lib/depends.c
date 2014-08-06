@@ -754,6 +754,7 @@ int rpmtsCheck(rpmts ts)
     dcache = depCacheCreate(5001, rstrhash, strcmp,
 				     (depCacheFreeKey)rfree, NULL);
 
+    /* build cache of all file conflicts dependencies */
     confcache = conflictsCacheCreate(257, rstrhash, strcmp,
 				     (depCacheFreeKey)rfree);
     if (confcache) {
@@ -765,9 +766,15 @@ int rpmtsCheck(rpmts ts)
 		char *k;
 		if (!key || keylen == 0 || key[0] != '/')
 		    continue;
-		k = rmalloc(keylen + 1);
-		memcpy(k, key, keylen);
-		k[keylen] = 0;
+		while (keylen > 1 && (k = memchr(key + 1, '/', keylen - 1))) {
+		    keylen -= k - key;
+		    key += k - key;
+		}
+		if (keylen <= 1)
+		    continue;
+		k = rmalloc(keylen);
+		memcpy(k, key + 1, keylen - 1);
+		k[keylen - 1] = 0;
 		conflictsCacheAddEntry(confcache, k);
 	    }
 	    rpmdbIndexIteratorFree(ii);
@@ -810,10 +817,9 @@ int rpmtsCheck(rpmts ts)
 	    rpmfiles files = rpmteFiles(p);
 	    rpmfi fi = rpmfilesIter(files, RPMFI_ITER_FWD);
 	    while (rpmfiNext(fi) >= 0) {
-		const char *fn = rpmfiFN(fi);
-		if (!conflictsCacheHasEntry(confcache, fn))
+		if (!conflictsCacheHasEntry(confcache, rpmfiBN(fi)))
 		    continue;
-		checkInstDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, fn);
+		checkInstDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, rpmfiFN(fi));
 	    }
 	    rpmfiFree(fi);
 	    rpmfilesFree(files);
