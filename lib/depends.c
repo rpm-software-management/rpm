@@ -687,7 +687,7 @@ exit:
 /* Check a dependency set for problems */
 static void checkDS(rpmts ts, depCache dcache, rpmte te,
 		const char * pkgNEVRA, rpmds ds,
-		const char * depName, rpm_color_t tscolor)
+		rpm_color_t tscolor)
 {
     rpm_color_t dscolor;
     /* require-problems are unsatisfied, others appear "satisfied" */
@@ -695,10 +695,6 @@ static void checkDS(rpmts ts, depCache dcache, rpmte te,
 
     ds = rpmdsInit(ds);
     while (rpmdsNext(ds) >= 0) {
-	/* Filter out dependencies that came along for the ride. */
-	if (depName != NULL && !rstreq(depName, rpmdsN(ds)))
-	    continue;
-
 	/* Ignore colored dependencies not in our rainbow. */
 	dscolor = rpmdsColor(ds);
 	if (tscolor && dscolor && !(tscolor & dscolor))
@@ -709,13 +705,15 @@ static void checkDS(rpmts ts, depCache dcache, rpmte te,
     }
 }
 
-/* Check a given dependency type against installed packages */
+/* Check a given dependency against installed packages */
 static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
 			  rpmTag depTag, const char *dep)
 {
     Header h;
     rpmdbMatchIterator mi = rpmtsPrunedIterator(ts, depTag, dep, 1);
     rpmstrPool pool = rpmtsPool(ts);
+    /* require-problems are unsatisfied, others appear "satisfied" */
+    int is_problem = (depTag == RPMTAG_REQUIRENAME);
 
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	char * pkgNEVRA;
@@ -730,8 +728,10 @@ static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
 
 	pkgNEVRA = headerGetAsString(h, RPMTAG_NEVRA);
 	ds = rpmdsNewPool(pool, h, depTag, 0);
+	rpmdsSetIx(ds, rpmdbGetIteratorFileNum(mi));
 
-	checkDS(ts, dcache, te, pkgNEVRA, ds, dep, 0);
+	if (unsatisfiedDepend(ts, dcache, ds) == is_problem)
+	    rpmteAddDepProblem(te, pkgNEVRA, ds, NULL);
 
 	rpmdsFree(ds);
 	free(pkgNEVRA);
@@ -829,11 +829,11 @@ int rpmtsCheck(rpmts ts)
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
 	checkDS(ts, dcache, p, rpmteNEVRA(p), rpmteDS(p, RPMTAG_REQUIRENAME),
-		NULL, tscolor);
+		tscolor);
 	checkDS(ts, dcache, p, rpmteNEVRA(p), rpmteDS(p, RPMTAG_CONFLICTNAME),
-		NULL, tscolor);
+		tscolor);
 	checkDS(ts, dcache, p, rpmteNEVRA(p), rpmteDS(p, RPMTAG_OBSOLETENAME),
-		NULL, tscolor);
+		tscolor);
 
 	/* Check provides against conflicts in installed packages. */
 	while (rpmdsNext(provides) >= 0) {
