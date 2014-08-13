@@ -790,7 +790,7 @@ int rpmtsCheck(rpmts ts)
     }
 
     /* build cache of all file requires dependencies */
-    reqcache = requiresCacheCreate(65537, rstrhash, strcmp,
+    reqcache = requiresCacheCreate(8191, rstrhash, strcmp,
 				     (depCacheFreeKey)rfree);
     if (reqcache) {
 	rpmdbIndexIterator ii = rpmdbIndexIteratorInit(rpmtsGetRdb(ts), RPMTAG_REQUIRENAME);
