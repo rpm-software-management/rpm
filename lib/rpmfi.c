@@ -392,11 +392,14 @@ char * rpmfilesOFN(rpmfiles fi, int ix)
     return (fi != NULL) ? rpmfnFN(fi->pool, fi->ofndata, ix) : NULL;
 }
 
+/* Fn is expected to be relative path, convert directory to relative too */
 static int cmpPoolFn(rpmstrPool pool, rpmfn files, int ix, const char * fn)
 {
     rpmsid dnid = rpmfnDNId(files, rpmfnDI(files, ix));
-    size_t l = rpmstrPoolStrlen(pool, dnid);
-    int cmp = strncmp(rpmstrPoolStr(pool, dnid), fn, l);
+    const char *dn = rpmstrPoolStr(pool, dnid);
+    const char *reldn = (dn[0] == '/') ? dn + 1 : dn;
+    size_t l = strlen(reldn);
+    int cmp = strncmp(reldn, fn, l);
     if (cmp == 0)
 	cmp = strcmp(rpmfnBN(pool, files, ix), fn + l);
     return cmp;
@@ -406,9 +409,15 @@ static int rpmfnFindFN(rpmstrPool pool, rpmfn files, const char * fn)
 {
     int fc = rpmfnFC(files);
 
-    if (fn[0] == '.' && fn[1] == '/') {
-	fn++;
-    }
+    /*
+     * Skip payload prefix, turn absolute paths into relative. This
+     * allows handling binary rpm payloads with and without ./ prefix and
+     * srpm payloads which only contain basenames.
+     */
+    if (fn[0] == '.' && fn[1] == '/')
+	fn += 2;
+    if (fn[0] == '/')
+	fn += 1;
 
     /* try binary search */
 
