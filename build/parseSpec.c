@@ -466,6 +466,10 @@ static void initSourceHeader(rpmSpec spec)
     headerCopyTags(spec->packages->header, sourcePkg->header, sourceTags);
 
     /* Add the build restrictions */
+    for (int i=0; i<PACKAGE_NUM_DEPS; i++) {
+	rpmdsPutToHeader(sourcePkg->dependencies[i], sourcePkg->header);
+    }
+
     {
 	HeaderIterator hi = headerInitIterator(spec->buildRestrictions);
 	struct rpmtd_s td;
