@@ -233,3 +233,23 @@ runroot rpmbuild -bb --quiet \
 	foo > 1.2.3 is needed by deptest-buildreq-1.0-1.noarch
 ])
 AT_CLEANUP
+
+# ------------------------------
+# Test spec query functionality
+AT_SETUP([rpmspec query 1])
+AT_KEYWORDS([build])
+AT_CHECK([
+
+runroot rpmspec -q \
+		--define "pkg dep" \
+		--define "reqs foo > 1.2.3 bar <= 2.3" \
+		--requires \
+		/data/SPECS/deptest.spec
+],
+[0],
+[bar <= 2.3
+foo > 1.2.3
+],
+[])
+
+AT_CLEANUP
