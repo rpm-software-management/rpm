@@ -215,3 +215,21 @@ zap = 3
 ],
 [ignore])
 AT_CLEANUP
+
+# ------------------------------
+# Test BuildRequire functionality
+AT_SETUP([Build requires])
+AT_KEYWORDS([build])
+AT_CHECK([
+
+runroot rpmbuild -bb --quiet \
+		--define "pkg buildreq" \
+		--define "buildreqs foo > 1.2.3" \
+		/data/SPECS/deptest.spec
+],
+[1],
+[],
+[error: Failed build dependencies:
+	zoo > 1.2.3 is needed by deptest-buildreq-1.0-1.noarch
+])
+AT_CLEANUP
