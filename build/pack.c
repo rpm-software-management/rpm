@@ -702,10 +702,6 @@ rpmRC packageSources(rpmSpec spec, char **cookie)
     headerPutString(sourcePkg->header, RPMTAG_BUILDHOST, buildHost());
     headerPutUint32(sourcePkg->header, RPMTAG_BUILDTIME, getBuildTime(), 1);
 
-    for (int i=0; i<PACKAGE_NUM_DEPS; i++) {
-	rpmdsPutToHeader(sourcePkg->dependencies[i], sourcePkg->header);
-    }
-
     /* XXX this should be %_srpmdir */
     {	char *fn = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);
 	char *pkgcheck = rpmExpand("%{?_build_pkgcheck_srpm} ", fn, NULL);
