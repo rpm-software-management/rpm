@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2014-06-25 13:38+0300\n"
+"POT-Creation-Date: 2014-08-18 10:16+0300\n"
 "PO-Revision-Date: 2014-04-10 01:15+0000\n"
 "Last-Translator: dongfengweixiao <dongfengweixiao@gmail.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/rpm/"
@@ -491,7 +491,7 @@ msgstr "删除软件包签名"
 msgid "Signature options:"
 msgstr "签名选项："
 
-#: rpmsign.c:93 sign/rpmgensig.c:232
+#: rpmsign.c:93 sign/rpmgensig.c:233
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "无法exec %s: %s\n"
@@ -583,52 +583,52 @@ msgstr ""
 "\n"
 "RPM 构建错误：\n"
 
-#: build/expression.c:216
+#: build/expression.c:215
 msgid "syntax error while parsing ==\n"
 msgstr "== 语法解析错误\n"
 
-#: build/expression.c:246
+#: build/expression.c:245
 msgid "syntax error while parsing &&\n"
 msgstr "&& 语法解析错误\n"
 
-#: build/expression.c:255
+#: build/expression.c:254
 msgid "syntax error while parsing ||\n"
 msgstr "解析 || 时有语法错误\n"
 
-#: build/expression.c:305
+#: build/expression.c:304
 msgid "parse error in expression\n"
 msgstr "表达式解析错误\n"
 
-#: build/expression.c:337
+#: build/expression.c:336
 msgid "unmatched (\n"
 msgstr "不匹配的 (\n"
 
-#: build/expression.c:369
+#: build/expression.c:368
 msgid "- only on numbers\n"
 msgstr "- 只用于数字\n"
 
-#: build/expression.c:385
+#: build/expression.c:384
 msgid "! only on numbers\n"
 msgstr "! 只用于数字\n"
 
-#: build/expression.c:427 build/expression.c:475 build/expression.c:533
-#: build/expression.c:625
+#: build/expression.c:426 build/expression.c:474 build/expression.c:532
+#: build/expression.c:624
 msgid "types must match\n"
 msgstr "类型必须匹配\n"
 
-#: build/expression.c:440
+#: build/expression.c:439
 msgid "* / not suported for strings\n"
 msgstr "* / 不支持字符串\n"
 
-#: build/expression.c:491
+#: build/expression.c:490
 msgid "- not suported for strings\n"
 msgstr "- 不支持字符串\n"
 
-#: build/expression.c:638
+#: build/expression.c:637
 msgid "&& and || not suported for strings\n"
 msgstr "&& 和 || 不支持字符串\n"
 
-#: build/expression.c:671
+#: build/expression.c:669
 msgid "syntax error in expression\n"
 msgstr "表达式语法错误\n"
 
@@ -905,8 +905,8 @@ msgstr "无法写入临时头\n"
 msgid "Bad CSA data\n"
 msgstr "不合法的CSA数据\n"
 
-#: build/pack.c:515 build/pack.c:534 sign/rpmgensig.c:267 sign/rpmgensig.c:598
-#: sign/rpmgensig.c:633
+#: build/pack.c:515 build/pack.c:534 sign/rpmgensig.c:268 sign/rpmgensig.c:599
+#: sign/rpmgensig.c:634
 #, fuzzy, c-format
 msgid "Could not seek in file %s: %s\n"
 msgstr "不能打开文件 %s：%s\n"
@@ -936,12 +936,12 @@ msgstr " \"%s\" 执行失败。\n"
 msgid "Package check \"%s\" failed.\n"
 msgstr "软件包检查 \"%s\" 失败。\n"
 
-#: build/pack.c:633
+#: build/pack.c:637
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "无法为软件包 %s 生成输出文件名: %s\n"
 
-#: build/pack.c:650
+#: build/pack.c:654
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "无法创建 %s: %s\n"
@@ -1434,108 +1434,108 @@ msgstr "此行存在过多参数：%s\n"
 msgid "Processing policies: %s\n"
 msgstr "处理策略：%s\n"
 
-#: build/rpmfc.c:110
+#: build/rpmfc.c:109
 #, c-format
 msgid "Ignoring invalid regex %s\n"
 msgstr "忽略无效的正则表达式 %s\n"
 
-#: build/rpmfc.c:207
+#: build/rpmfc.c:206
 #, c-format
 msgid "Couldn't create pipe for %s: %m\n"
 msgstr "无法为 %s建立管道： %m\n"
 
-#: build/rpmfc.c:232
+#: build/rpmfc.c:231
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "无法执行%s：%s\n"
 
-#: build/rpmfc.c:237 lib/rpmscript.c:297
+#: build/rpmfc.c:236 lib/rpmscript.c:297
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "无法抽取分支 %s：%s\n"
 
-#: build/rpmfc.c:320
+#: build/rpmfc.c:319
 #, c-format
 msgid "%s failed: %x\n"
 msgstr "%s 失败：%x\n"
 
-#: build/rpmfc.c:324
+#: build/rpmfc.c:323
 #, c-format
 msgid "failed to write all data to %s: %s\n"
 msgstr "无法写入所有的数据到 %s：%s\n"
 
-#: build/rpmfc.c:455
+#: build/rpmfc.c:454
 msgid "bad operator"
 msgstr "错误的操作"
 
-#: build/rpmfc.c:474
+#: build/rpmfc.c:473
 msgid "bad format"
 msgstr "错误的格式"
 
-#: build/rpmfc.c:540
+#: build/rpmfc.c:539
 #, c-format
 msgid "invalid dependency (%s): %s\n"
 msgstr ""
 
-#: build/rpmfc.c:871
+#: build/rpmfc.c:843
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr "%s 转换到长整型失败。\n"
 
-#: build/rpmfc.c:949
+#: build/rpmfc.c:913
 msgid "Empty file classifier\n"
 msgstr "空文件分类\n"
 
-#: build/rpmfc.c:958
+#: build/rpmfc.c:922
 msgid "No file attributes configured\n"
 msgstr "没有配置文件属性\n"
 
-#: build/rpmfc.c:978
+#: build/rpmfc.c:942
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) 失败：%s\n"
 
-#: build/rpmfc.c:984
+#: build/rpmfc.c:948
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load 失败：%s\n"
 
-#: build/rpmfc.c:1026
+#: build/rpmfc.c:990
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "文件 \"%s\" 辨识失败: 模式 %06o %s\n"
 
-#: build/rpmfc.c:1214
+#: build/rpmfc.c:1196
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "正在查找 %s：%s\n"
 
-#: build/rpmfc.c:1223 build/rpmfc.c:1232
+#: build/rpmfc.c:1205 build/rpmfc.c:1214
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "查找 %s 失败：\n"
 
-#: build/spec.c:425
+#: build/spec.c:434
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "查询 spec 文件 %s 失败，无法解析\n"
 
-#: lib/depends.c:82
+#: lib/depends.c:89
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s 是一个 Delta RPM 并且无法直接被安装。\n"
 
-#: lib/depends.c:86
+#: lib/depends.c:93
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
 
-#: lib/depends.c:365
+#: lib/depends.c:372
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "软件包 %s 已被加入，跳过 %s\n"
 
-#: lib/depends.c:366
+#: lib/depends.c:373
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "软件包 %s 已被加入，以 %s 替换\n"
@@ -2204,12 +2204,12 @@ msgstr "期望源代码包，但找到二进制包\n"
 msgid "source package contains no .spec file\n"
 msgstr "源代码包中没有找到 .spec 文件\n"
 
-#: lib/psm.c:688
+#: lib/psm.c:677
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "解压压缩文件 %s%s 失败：%s\n"
 
-#: lib/psm.c:689
+#: lib/psm.c:678
 msgid " on file "
 msgstr "  在文件"
 
@@ -2334,7 +2334,7 @@ msgstr "%s：公钥 %d  不受到保护。\n"
 msgid "%s: import read failed(%d).\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:119 sign/rpmgensig.c:508
+#: lib/rpmchecksig.c:119 sign/rpmgensig.c:509
 #, c-format
 msgid "%s: headerRead failed: %s\n"
 msgstr "%s：headerRead 函数执行失败：%s\n"
@@ -2344,7 +2344,7 @@ msgstr "%s：headerRead 函数执行失败：%s\n"
 msgid "%s: Immutable header region could not be read. Corrupted package?\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:140 sign/rpmgensig.c:112
+#: lib/rpmchecksig.c:140 sign/rpmgensig.c:113
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s：Fread 函数执行失败：%s\n"
@@ -2373,7 +2373,7 @@ msgstr " (不受信任的密钥："
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:423 sign/rpmgensig.c:72
+#: lib/rpmchecksig.c:423 sign/rpmgensig.c:73
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: 打开失败：%s\n"
@@ -2398,133 +2398,133 @@ msgstr "无法更改根目录： %m\n"
 msgid "Unable to restore root directory: %m\n"
 msgstr "无法恢复根目录：%m\n"
 
-#: lib/rpmds.c:547
+#: lib/rpmds.c:678
 msgid "NO "
 msgstr "否"
 
-#: lib/rpmds.c:547
+#: lib/rpmds.c:678
 msgid "YES"
 msgstr "是"
 
-#: lib/rpmds.c:1000
+#: lib/rpmds.c:1147
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 
-#: lib/rpmds.c:1003
+#: lib/rpmds.c:1150
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 
-#: lib/rpmds.c:1007
+#: lib/rpmds.c:1154
 msgid "package payload can be compressed using bzip2."
 msgstr "软件包净负荷可以使用 bzip2 压缩。"
 
-#: lib/rpmds.c:1012
+#: lib/rpmds.c:1159
 msgid "package payload can be compressed using xz."
 msgstr "软件包净负荷可以使用 xz 压缩。"
 
-#: lib/rpmds.c:1015
+#: lib/rpmds.c:1162
 msgid "package payload can be compressed using lzma."
 msgstr "软件包净负荷可以使用 lzma 压缩。"
 
-#: lib/rpmds.c:1019
+#: lib/rpmds.c:1166
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "软件包净负荷有\"./\" 前缀。"
 
-#: lib/rpmds.c:1022
+#: lib/rpmds.c:1169
 msgid "package name-version-release is not implicitly provided."
 msgstr "软件包 name-version-release 没有隐含地提供。"
 
-#: lib/rpmds.c:1025
+#: lib/rpmds.c:1172
 msgid "header tags are always sorted after being loaded."
 msgstr "头标签总是排序后被加载。"
 
-#: lib/rpmds.c:1028
+#: lib/rpmds.c:1175
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 
-#: lib/rpmds.c:1031
+#: lib/rpmds.c:1178
 msgid "a hardlink file set may be installed without being complete."
 msgstr "硬链接文件集没有被完整的安装。"
 
-#: lib/rpmds.c:1034
+#: lib/rpmds.c:1181
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "软件包脚本在安装过程中允许访问 rpm 数据库。"
 
-#: lib/rpmds.c:1038
+#: lib/rpmds.c:1185
 msgid "internal support for lua scripts."
 msgstr "lua 脚本的内部支持"
 
-#: lib/rpmds.c:1042
+#: lib/rpmds.c:1189
 msgid "file digest algorithm is per package configurable"
 msgstr ""
 
-#: lib/rpmds.c:1046
+#: lib/rpmds.c:1193
 msgid "support for POSIX.1e file capabilities"
 msgstr ""
 
-#: lib/rpmds.c:1050
+#: lib/rpmds.c:1197
 msgid "package scriptlets can be expanded at install time."
 msgstr ""
 
-#: lib/rpmds.c:1053
+#: lib/rpmds.c:1200
 msgid "dependency comparison supports versions with tilde."
 msgstr ""
 
-#: lib/rpmds.c:1056
+#: lib/rpmds.c:1203
 msgid "support files larger than 4GB"
 msgstr "支持超过 4G 的文件"
 
-#: lib/rpmfi.c:780
+#: lib/rpmfi.c:789
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "用户%s 不存在 - 使用root\n"
 
-#: lib/rpmfi.c:787
+#: lib/rpmfi.c:796
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "群组%s 不存在 - 使用root\n"
 
-#: lib/rpmfi.c:2111
+#: lib/rpmfi.c:2121
 msgid "Bad magic"
 msgstr "Bad magic"
 
-#: lib/rpmfi.c:2112
+#: lib/rpmfi.c:2122
 msgid "Bad/unreadable  header"
 msgstr "错误/不可读的  头部"
 
-#: lib/rpmfi.c:2135
+#: lib/rpmfi.c:2145
 msgid "Header size too big"
 msgstr "头部太大"
 
-#: lib/rpmfi.c:2136
+#: lib/rpmfi.c:2146
 msgid "File too large for archive"
 msgstr "对于压缩文件来说文件太大了"
 
-#: lib/rpmfi.c:2137
+#: lib/rpmfi.c:2147
 msgid "Unknown file type"
 msgstr "未知文件类型"
 
-#: lib/rpmfi.c:2138
+#: lib/rpmfi.c:2148
 msgid "Missing file(s)"
 msgstr "丢失文件"
 
-#: lib/rpmfi.c:2139
+#: lib/rpmfi.c:2149
 msgid "Digest mismatch"
 msgstr "摘要不匹配"
 
-#: lib/rpmfi.c:2140
+#: lib/rpmfi.c:2150
 msgid "Internal error"
 msgstr "内部错误"
 
-#: lib/rpmfi.c:2141
+#: lib/rpmfi.c:2151
 msgid "Archive file not in header"
 msgstr "在头中不存在归档"
 
-#: lib/rpmfi.c:2149
+#: lib/rpmfi.c:2159
 msgid " failed - "
 msgstr " 失败 - "
 
-#: lib/rpmfi.c:2152
+#: lib/rpmfi.c:2162
 #, c-format
 msgid "%s: (error 0x%x)"
 msgstr ""
@@ -2795,17 +2795,17 @@ msgstr "坏的选项 “%s” 位于 %s:%d\n"
 msgid "Failed to read auxiliary vector, /proc not mounted?\n"
 msgstr "读取辅助载体失败, 是 /proc 没有挂载么？\n"
 
-#: lib/rpmrc.c:1365
+#: lib/rpmrc.c:1400
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "未知系统：%s\n"
 
-#: lib/rpmrc.c:1367
+#: lib/rpmrc.c:1402
 #, c-format
 msgid "Please contact %s\n"
 msgstr "请联系 %s\n"
 
-#: lib/rpmrc.c:1500
+#: lib/rpmrc.c:1535
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "不能打开 %s 供读取：%m。\n"
@@ -3087,44 +3087,44 @@ msgstr "rpmdbNextIterator：跳过"
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2000
+#: lib/rpmdb.c:1998
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s：无法读取位于 0x%x 的表头\n"
 
-#: lib/rpmdb.c:2300
+#: lib/rpmdb.c:2298
 msgid "no dbpath has been set"
 msgstr "没有设置 dbpath"
 
-#: lib/rpmdb.c:2318
+#: lib/rpmdb.c:2316
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "無法建立 %s 目录： %s\n"
 
-#: lib/rpmdb.c:2352
+#: lib/rpmdb.c:2350
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2365
+#: lib/rpmdb.c:2363
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "无法加入原本位于 %u 的记录\n"
 
-#: lib/rpmdb.c:2381
+#: lib/rpmdb.c:2379
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "重建数据库失败：原始数据库仍保持原状\n"
 
-#: lib/rpmdb.c:2389
+#: lib/rpmdb.c:2387
 msgid "failed to replace old database with new database!\n"
 msgstr "用新的数据库取代旧的数据库失败！\n"
 
-#: lib/rpmdb.c:2391
+#: lib/rpmdb.c:2389
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "用 %2$s 文件取代 %1$s 文件來恢复"
 
-#: lib/rpmdb.c:2402
+#: lib/rpmdb.c:2400
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "移除目录失败 %s：%s\n"
@@ -3278,12 +3278,12 @@ msgstr "未结束的 %c：%s\n"
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "在一个不可解析的宏之之后跟着 %%\n"
 
-#: rpmio/macro.c:1103
+#: rpmio/macro.c:1101
 #, c-format
 msgid "failed to load macro file %s"
 msgstr "载入宏文件 %s 失败"
 
-#: rpmio/macro.c:1484
+#: rpmio/macro.c:1483
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== 作用中 %d 清空 %d\n"
@@ -3366,92 +3366,92 @@ msgstr "V%d %s/%s %s, 密钥 ID %s"
 msgid "(none)"
 msgstr "(无)"
 
-#: sign/rpmgensig.c:106
+#: sign/rpmgensig.c:107
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite 失败: %s\n"
 
-#: sign/rpmgensig.c:116
+#: sign/rpmgensig.c:117
 #, c-format
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush 失败：%s\n"
 
-#: sign/rpmgensig.c:144
+#: sign/rpmgensig.c:145
 msgid "Unsupported PGP signature\n"
 msgstr "不支持的 PGP 签名\n"
 
-#: sign/rpmgensig.c:150
+#: sign/rpmgensig.c:151
 #, c-format
 msgid "Unsupported PGP hash algorithm %u\n"
 msgstr "不支持的 PGP hash 算法 %u\n"
 
-#: sign/rpmgensig.c:163
+#: sign/rpmgensig.c:164
 #, c-format
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr "不支持的 PGP 公钥算法 %u\n"
 
-#: sign/rpmgensig.c:198 sign/rpmgensig.c:204
+#: sign/rpmgensig.c:199 sign/rpmgensig.c:205
 #, c-format
 msgid "Couldn't create pipe for signing: %m"
 msgstr "无法创建签名用的管道：%m"
 
-#: sign/rpmgensig.c:247 sign/rpmgensig.c:261
+#: sign/rpmgensig.c:248 sign/rpmgensig.c:262
 #, fuzzy
 msgid "fdopen failed\n"
 msgstr "%s: 打开失败：%s\n"
 
-#: sign/rpmgensig.c:253 sign/rpmgensig.c:277
+#: sign/rpmgensig.c:254 sign/rpmgensig.c:278
 #, fuzzy
 msgid "Could not write to pipe\n"
 msgstr "不能打开文件 %s：%s\n"
 
-#: sign/rpmgensig.c:284
+#: sign/rpmgensig.c:285
 #, fuzzy, c-format
 msgid "Could not read from file %s: %s\n"
 msgstr "无法打开 %%files 文件 %s: %m\n"
 
-#: sign/rpmgensig.c:294
+#: sign/rpmgensig.c:295
 #, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "gpg 执行失败 (%d)\n"
 
-#: sign/rpmgensig.c:344
+#: sign/rpmgensig.c:345
 msgid "gpg failed to write signature\n"
 msgstr "写入签名时 gpg 验证失败\n"
 
-#: sign/rpmgensig.c:361
+#: sign/rpmgensig.c:362
 msgid "unable to read the signature\n"
 msgstr "无法读取签名\n"
 
-#: sign/rpmgensig.c:500
+#: sign/rpmgensig.c:501
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s：rpmReadSignature 函数执行失败：%s"
 
-#: sign/rpmgensig.c:514
+#: sign/rpmgensig.c:515
 msgid "Cannot sign RPM v3 packages\n"
 msgstr "无法对 RPM v3 版本的软件包签名\n"
 
-#: sign/rpmgensig.c:556
+#: sign/rpmgensig.c:557
 #, c-format
 msgid "%s already contains identical signature, skipping\n"
 msgstr "%s 已经包含了相同的签名，跳过\n"
 
-#: sign/rpmgensig.c:604 sign/rpmgensig.c:627
+#: sign/rpmgensig.c:605 sign/rpmgensig.c:628
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s：rpmWriteSignature 失败：%s\n"
 
-#: sign/rpmgensig.c:614
+#: sign/rpmgensig.c:615
 msgid "rpmMkTemp failed\n"
 msgstr "rpmMkTemp 失败\n"
 
-#: sign/rpmgensig.c:621
+#: sign/rpmgensig.c:622
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s：writeLead 失败：%s\n"
 
-#: sign/rpmgensig.c:646
+#: sign/rpmgensig.c:647
 #, c-format
 msgid "replacing %s failed: %s\n"
 msgstr "替换 %s 失败：%s\n"

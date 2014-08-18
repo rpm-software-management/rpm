@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2014-06-25 13:38+0300\n"
+"POT-Creation-Date: 2014-08-18 10:16+0300\n"
 "PO-Revision-Date: 2014-04-07 10:19+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/rpm/"
@@ -516,7 +516,7 @@ msgstr "remover a assinatura dos pacotes"
 msgid "Signature options:"
 msgstr "Opções de assinatura:"
 
-#: rpmsign.c:93 sign/rpmgensig.c:232
+#: rpmsign.c:93 sign/rpmgensig.c:233
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Não foi possível executar %s: %s\n"
@@ -608,52 +608,52 @@ msgstr ""
 "\n"
 "Erros na construção do RPM:\n"
 
-#: build/expression.c:216
+#: build/expression.c:215
 msgid "syntax error while parsing ==\n"
 msgstr "erro de sintaxe ao analisar ==\n"
 
-#: build/expression.c:246
+#: build/expression.c:245
 msgid "syntax error while parsing &&\n"
 msgstr "erro de sintaxe ao analisar &&\n"
 
-#: build/expression.c:255
+#: build/expression.c:254
 msgid "syntax error while parsing ||\n"
 msgstr "erro de sintaxe ao analisar ||\n"
 
-#: build/expression.c:305
+#: build/expression.c:304
 msgid "parse error in expression\n"
 msgstr "erro de análise na expressão\n"
 
-#: build/expression.c:337
+#: build/expression.c:336
 msgid "unmatched (\n"
 msgstr "( sem correspondência\n"
 
-#: build/expression.c:369
+#: build/expression.c:368
 msgid "- only on numbers\n"
 msgstr "- somente em números\n"
 
-#: build/expression.c:385
+#: build/expression.c:384
 msgid "! only on numbers\n"
 msgstr "! somente em números\n"
 
-#: build/expression.c:427 build/expression.c:475 build/expression.c:533
-#: build/expression.c:625
+#: build/expression.c:426 build/expression.c:474 build/expression.c:532
+#: build/expression.c:624
 msgid "types must match\n"
 msgstr "os tipos devem corresponder\n"
 
-#: build/expression.c:440
+#: build/expression.c:439
 msgid "* / not suported for strings\n"
 msgstr "* / não são suportados para strings\n"
 
-#: build/expression.c:491
+#: build/expression.c:490
 msgid "- not suported for strings\n"
 msgstr "- não é suportado para strings\n"
 
-#: build/expression.c:638
+#: build/expression.c:637
 msgid "&& and || not suported for strings\n"
 msgstr "&& e || não são suportados para strings\n"
 
-#: build/expression.c:671
+#: build/expression.c:669
 msgid "syntax error in expression\n"
 msgstr "erro de sintaxe na expressão\n"
 
@@ -932,8 +932,8 @@ msgstr "Não foi possível gravar o cabeçalho temporário\n"
 msgid "Bad CSA data\n"
 msgstr "Dados CSA inválidos\n"
 
-#: build/pack.c:515 build/pack.c:534 sign/rpmgensig.c:267 sign/rpmgensig.c:598
-#: sign/rpmgensig.c:633
+#: build/pack.c:515 build/pack.c:534 sign/rpmgensig.c:268 sign/rpmgensig.c:599
+#: sign/rpmgensig.c:634
 #, fuzzy, c-format
 msgid "Could not seek in file %s: %s\n"
 msgstr "Não foi possível abrir %%files arquivo %s: %m\n"
@@ -963,13 +963,13 @@ msgstr "A execução de \"%s\" falhou.\n"
 msgid "Package check \"%s\" failed.\n"
 msgstr "Falha na verificação \"%s\" do pacote.\n"
 
-#: build/pack.c:633
+#: build/pack.c:637
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 "Não foi possível gerar o nome de arquivo de saída para o pacote %s: %s\n"
 
-#: build/pack.c:650
+#: build/pack.c:654
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "Não foi possível criar %s: %s\n"
@@ -1462,108 +1462,108 @@ msgstr ""
 msgid "Processing policies: %s\n"
 msgstr ""
 
-#: build/rpmfc.c:110
+#: build/rpmfc.c:109
 #, c-format
 msgid "Ignoring invalid regex %s\n"
 msgstr "Ignorar regex inválida %s\n"
 
-#: build/rpmfc.c:207
+#: build/rpmfc.c:206
 #, c-format
 msgid "Couldn't create pipe for %s: %m\n"
 msgstr "Não foi possível criar um pipe para %s: %m\n"
 
-#: build/rpmfc.c:232
+#: build/rpmfc.c:231
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Não foi possível executar %s: %s\n"
 
-#: build/rpmfc.c:237 lib/rpmscript.c:297
+#: build/rpmfc.c:236 lib/rpmscript.c:297
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Não foi possível bifurcar %s: %s\n"
 
-#: build/rpmfc.c:320
+#: build/rpmfc.c:319
 #, c-format
 msgid "%s failed: %x\n"
 msgstr ""
 
-#: build/rpmfc.c:324
+#: build/rpmfc.c:323
 #, c-format
 msgid "failed to write all data to %s: %s\n"
 msgstr ""
 
-#: build/rpmfc.c:455
+#: build/rpmfc.c:454
 msgid "bad operator"
 msgstr ""
 
-#: build/rpmfc.c:474
+#: build/rpmfc.c:473
 msgid "bad format"
 msgstr ""
 
-#: build/rpmfc.c:540
+#: build/rpmfc.c:539
 #, c-format
 msgid "invalid dependency (%s): %s\n"
 msgstr ""
 
-#: build/rpmfc.c:871
+#: build/rpmfc.c:843
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr "A conversão de %s para inteiro longo falhou.\n"
 
-#: build/rpmfc.c:949
+#: build/rpmfc.c:913
 msgid "Empty file classifier\n"
 msgstr ""
 
-#: build/rpmfc.c:958
+#: build/rpmfc.c:922
 msgid "No file attributes configured\n"
 msgstr "Os atributos do arquivo não foram configurados\n"
 
-#: build/rpmfc.c:978
+#: build/rpmfc.c:942
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) falhou: %s\n"
 
-#: build/rpmfc.c:984
+#: build/rpmfc.c:948
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load falhou: %s\n"
 
-#: build/rpmfc.c:1026
+#: build/rpmfc.c:990
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Falha no reconhecimento do arquivo \"%s\": modo %06o %s\n"
 
-#: build/rpmfc.c:1214
+#: build/rpmfc.c:1196
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Localizando %s: %s\n"
 
-#: build/rpmfc.c:1223 build/rpmfc.c:1232
+#: build/rpmfc.c:1205 build/rpmfc.c:1214
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Falha ao localizar %s:\n"
 
-#: build/spec.c:425
+#: build/spec.c:434
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "a consulta ao specfile %s falhou, não foi possível analisá-lo\n"
 
-#: lib/depends.c:82
+#: lib/depends.c:89
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s é um Delta RPM e não pode ser instalado diretamente\n"
 
-#: lib/depends.c:86
+#: lib/depends.c:93
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Carga útil (%s) não suportada no pacote %s\n"
 
-#: lib/depends.c:365
+#: lib/depends.c:372
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "o pacote %s já foi adicionado, ignorando %s\n"
 
-#: lib/depends.c:366
+#: lib/depends.c:373
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "o pacote %s já foi adicionado, substituindo por %s\n"
@@ -2235,12 +2235,12 @@ msgstr "um pacote fonte era esperado, mas um binário foi encontrado\n"
 msgid "source package contains no .spec file\n"
 msgstr "o pacote fonte não contém um arquivo .spec\n"
 
-#: lib/psm.c:688
+#: lib/psm.c:677
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "a descompactação do arquivo falhou %s%s: %s\n"
 
-#: lib/psm.c:689
+#: lib/psm.c:678
 msgid " on file "
 msgstr " no arquivo "
 
@@ -2365,7 +2365,7 @@ msgstr "%s: %d não é uma chave pública blindada.\n"
 msgid "%s: import read failed(%d).\n"
 msgstr "%s: leitura de importação falhou (%d).\n"
 
-#: lib/rpmchecksig.c:119 sign/rpmgensig.c:508
+#: lib/rpmchecksig.c:119 sign/rpmgensig.c:509
 #, c-format
 msgid "%s: headerRead failed: %s\n"
 msgstr ""
@@ -2376,7 +2376,7 @@ msgid "%s: Immutable header region could not be read. Corrupted package?\n"
 msgstr ""
 "%s: A região de cabeçalho imutável não pôde ser lida. Pacote corrompido?\n"
 
-#: lib/rpmchecksig.c:140 sign/rpmgensig.c:112
+#: lib/rpmchecksig.c:140 sign/rpmgensig.c:113
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread falhou: %s\n"
@@ -2405,7 +2405,7 @@ msgstr " (CHAVES NÃO CONFIÁVEIS:"
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:423 sign/rpmgensig.c:72
+#: lib/rpmchecksig.c:423 sign/rpmgensig.c:73
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: falha ao abrir: %s\n"
@@ -2430,141 +2430,141 @@ msgstr "Não foi possível alterar o diretório raiz: %m\n"
 msgid "Unable to restore root directory: %m\n"
 msgstr "Não foi possível restaurar o diretório raiz: %m\n"
 
-#: lib/rpmds.c:547
+#: lib/rpmds.c:678
 msgid "NO "
 msgstr "NÃO "
 
-#: lib/rpmds.c:547
+#: lib/rpmds.c:678
 msgid "YES"
 msgstr "SIM"
 
-#: lib/rpmds.c:1000
+#: lib/rpmds.c:1147
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 "PreReq:, Capacidades: e Obsoletos: as dependências suportam as versões."
 
-#: lib/rpmds.c:1003
+#: lib/rpmds.c:1150
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "Nome(s) de arquivo(s) armazenados como tuplas (dirName,baseName,dirIndex), "
 "não como um caminho."
 
-#: lib/rpmds.c:1007
+#: lib/rpmds.c:1154
 msgid "package payload can be compressed using bzip2."
 msgstr "a carga útil do pacote pode ser compactada utilizando bzip2."
 
-#: lib/rpmds.c:1012
+#: lib/rpmds.c:1159
 msgid "package payload can be compressed using xz."
 msgstr "a carga útil do pacote pode ser compactada utilizando o xz."
 
-#: lib/rpmds.c:1015
+#: lib/rpmds.c:1162
 msgid "package payload can be compressed using lzma."
 msgstr "a carga útil do pacote pode ser compactada utilizando lzma."
 
-#: lib/rpmds.c:1019
+#: lib/rpmds.c:1166
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "o(s) arquivo(s) da carga útil do pacote tem o prefixo \"./\"."
 
-#: lib/rpmds.c:1022
+#: lib/rpmds.c:1169
 msgid "package name-version-release is not implicitly provided."
 msgstr "o nome-versão-lançamento do pacote não está fornecido implicitamente."
 
-#: lib/rpmds.c:1025
+#: lib/rpmds.c:1172
 msgid "header tags are always sorted after being loaded."
 msgstr ""
 "As etiquetas de cabeçalho sempre são classificadas após serem carregadas."
 
-#: lib/rpmds.c:1028
+#: lib/rpmds.c:1175
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "o interpretador do scriptlet pode usar argumentos do cabeçalho."
 
-#: lib/rpmds.c:1031
+#: lib/rpmds.c:1178
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 "um conjunto de arquivos de ligação absoluta podem ser instalados sem estarem "
 "completos."
 
-#: lib/rpmds.c:1034
+#: lib/rpmds.c:1181
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "scriptlets de pacotes podem acessar o banco de dados rpm durante a "
 "instalação."
 
-#: lib/rpmds.c:1038
+#: lib/rpmds.c:1185
 msgid "internal support for lua scripts."
 msgstr "suporte interno para scripts lua."
 
-#: lib/rpmds.c:1042
+#: lib/rpmds.c:1189
 msgid "file digest algorithm is per package configurable"
 msgstr "o algoritmo digest é configurável por pacote"
 
-#: lib/rpmds.c:1046
+#: lib/rpmds.c:1193
 msgid "support for POSIX.1e file capabilities"
 msgstr "suporte para as capacidades de arquivo do POSIX.1e"
 
-#: lib/rpmds.c:1050
+#: lib/rpmds.c:1197
 msgid "package scriptlets can be expanded at install time."
 msgstr "scriptlets de pacotes podem ser expandidos durante a instalação."
 
-#: lib/rpmds.c:1053
+#: lib/rpmds.c:1200
 msgid "dependency comparison supports versions with tilde."
 msgstr ""
 
-#: lib/rpmds.c:1056
+#: lib/rpmds.c:1203
 msgid "support files larger than 4GB"
 msgstr ""
 
-#: lib/rpmfi.c:780
+#: lib/rpmfi.c:789
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "o usuário %s não existe - usando o root\n"
 
-#: lib/rpmfi.c:787
+#: lib/rpmfi.c:796
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "o grupo %s não existe - usando o root\n"
 
-#: lib/rpmfi.c:2111
+#: lib/rpmfi.c:2121
 msgid "Bad magic"
 msgstr "Magic inválido"
 
-#: lib/rpmfi.c:2112
+#: lib/rpmfi.c:2122
 msgid "Bad/unreadable  header"
 msgstr "Cabeçalho inválido/impossível de ler"
 
-#: lib/rpmfi.c:2135
+#: lib/rpmfi.c:2145
 msgid "Header size too big"
 msgstr "Tamanho do cabeçalho muito grande"
 
-#: lib/rpmfi.c:2136
+#: lib/rpmfi.c:2146
 msgid "File too large for archive"
 msgstr ""
 
-#: lib/rpmfi.c:2137
+#: lib/rpmfi.c:2147
 msgid "Unknown file type"
 msgstr "Tipo de arquivo desconhecido"
 
-#: lib/rpmfi.c:2138
+#: lib/rpmfi.c:2148
 msgid "Missing file(s)"
 msgstr ""
 
-#: lib/rpmfi.c:2139
+#: lib/rpmfi.c:2149
 msgid "Digest mismatch"
 msgstr "Digest incompatível"
 
-#: lib/rpmfi.c:2140
+#: lib/rpmfi.c:2150
 msgid "Internal error"
 msgstr "Erro interno"
 
-#: lib/rpmfi.c:2141
+#: lib/rpmfi.c:2151
 msgid "Archive file not in header"
 msgstr "Arquivo de pacote não está no cabeçalho"
 
-#: lib/rpmfi.c:2149
+#: lib/rpmfi.c:2159
 msgid " failed - "
 msgstr " falhou - "
 
-#: lib/rpmfi.c:2152
+#: lib/rpmfi.c:2162
 #, c-format
 msgid "%s: (error 0x%x)"
 msgstr ""
@@ -2838,17 +2838,17 @@ msgstr "opção inválida \"%s\" em %s:%d\n"
 msgid "Failed to read auxiliary vector, /proc not mounted?\n"
 msgstr ""
 
-#: lib/rpmrc.c:1365
+#: lib/rpmrc.c:1400
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Sistema desconhecido: %s\n"
 
-#: lib/rpmrc.c:1367
+#: lib/rpmrc.c:1402
 #, c-format
 msgid "Please contact %s\n"
 msgstr "Por favor, contate %s\n"
 
-#: lib/rpmrc.c:1500
+#: lib/rpmrc.c:1535
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Não foi possível abrir %s para leitura: %m.\n"
@@ -3130,46 +3130,46 @@ msgstr "rpmdbNextIterator: ignorando"
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: cabeçalho danificado #%u recuperado -- ignorando.\n"
 
-#: lib/rpmdb.c:2000
+#: lib/rpmdb.c:1998
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: não foi possível ler o cabeçalho em 0x%x\n"
 
-#: lib/rpmdb.c:2300
+#: lib/rpmdb.c:2298
 msgid "no dbpath has been set"
 msgstr "nenhum dbpath foi definido"
 
-#: lib/rpmdb.c:2318
+#: lib/rpmdb.c:2316
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "falha ao criar o diretório %s: %s\n"
 
-#: lib/rpmdb.c:2352
+#: lib/rpmdb.c:2350
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "o cabeçalho #%u do banco de dados é inválido -- ignorando.\n"
 
-#: lib/rpmdb.c:2365
+#: lib/rpmdb.c:2363
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "não é possível adicionar o registro originalmente em %u\n"
 
-#: lib/rpmdb.c:2381
+#: lib/rpmdb.c:2379
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "falha ao reconstruir o banco de dados: o banco de dados original permanece "
 "no lugar\n"
 
-#: lib/rpmdb.c:2389
+#: lib/rpmdb.c:2387
 msgid "failed to replace old database with new database!\n"
 msgstr "falha ao substituir o banco de dados velho pela novo!\n"
 
-#: lib/rpmdb.c:2391
+#: lib/rpmdb.c:2389
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "substituir arquivos em %s com arquivos de %s para recuperação"
 
-#: lib/rpmdb.c:2402
+#: lib/rpmdb.c:2400
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "falha ao remover o diretório %s: %s\n"
@@ -3323,12 +3323,12 @@ msgstr "%c incompleto: %s\n"
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Um %% é seguido por um macro não analisável\n"
 
-#: rpmio/macro.c:1103
+#: rpmio/macro.c:1101
 #, c-format
 msgid "failed to load macro file %s"
 msgstr ""
 
-#: rpmio/macro.c:1484
+#: rpmio/macro.c:1483
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== %d ativo %d vazio\n"
@@ -3411,92 +3411,92 @@ msgstr "V%d %s/%s %s, ID da chave %s"
 msgid "(none)"
 msgstr "(nada)"
 
-#: sign/rpmgensig.c:106
+#: sign/rpmgensig.c:107
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite falhou: %s\n"
 
-#: sign/rpmgensig.c:116
+#: sign/rpmgensig.c:117
 #, c-format
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush falhou: %s\n"
 
-#: sign/rpmgensig.c:144
+#: sign/rpmgensig.c:145
 msgid "Unsupported PGP signature\n"
 msgstr ""
 
-#: sign/rpmgensig.c:150
+#: sign/rpmgensig.c:151
 #, c-format
 msgid "Unsupported PGP hash algorithm %u\n"
 msgstr ""
 
-#: sign/rpmgensig.c:163
+#: sign/rpmgensig.c:164
 #, c-format
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr ""
 
-#: sign/rpmgensig.c:198 sign/rpmgensig.c:204
+#: sign/rpmgensig.c:199 sign/rpmgensig.c:205
 #, c-format
 msgid "Couldn't create pipe for signing: %m"
 msgstr "Não foi possível criar um canal para assinar: %m"
 
-#: sign/rpmgensig.c:247 sign/rpmgensig.c:261
+#: sign/rpmgensig.c:248 sign/rpmgensig.c:262
 #, fuzzy
 msgid "fdopen failed\n"
 msgstr "%s: falha ao abrir: %s\n"
 
-#: sign/rpmgensig.c:253 sign/rpmgensig.c:277
+#: sign/rpmgensig.c:254 sign/rpmgensig.c:278
 #, fuzzy
 msgid "Could not write to pipe\n"
 msgstr "Não foi possível executar %s: %s\n"
 
-#: sign/rpmgensig.c:284
+#: sign/rpmgensig.c:285
 #, fuzzy, c-format
 msgid "Could not read from file %s: %s\n"
 msgstr "Não foi possível abrir %%files arquivo %s: %m\n"
 
-#: sign/rpmgensig.c:294
+#: sign/rpmgensig.c:295
 #, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "a execução do gpg falhou (%d)\n"
 
-#: sign/rpmgensig.c:344
+#: sign/rpmgensig.c:345
 msgid "gpg failed to write signature\n"
 msgstr "o gpg falhou ao gravar a assinatura\n"
 
-#: sign/rpmgensig.c:361
+#: sign/rpmgensig.c:362
 msgid "unable to read the signature\n"
 msgstr "não foi possível ler a assinatura\n"
 
-#: sign/rpmgensig.c:500
+#: sign/rpmgensig.c:501
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature falhou: %s"
 
-#: sign/rpmgensig.c:514
+#: sign/rpmgensig.c:515
 msgid "Cannot sign RPM v3 packages\n"
 msgstr ""
 
-#: sign/rpmgensig.c:556
+#: sign/rpmgensig.c:557
 #, c-format
 msgid "%s already contains identical signature, skipping\n"
 msgstr ""
 
-#: sign/rpmgensig.c:604 sign/rpmgensig.c:627
+#: sign/rpmgensig.c:605 sign/rpmgensig.c:628
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature falhou: %s\n"
 
-#: sign/rpmgensig.c:614
+#: sign/rpmgensig.c:615
 msgid "rpmMkTemp failed\n"
 msgstr "o rpmMkTemp falhou\n"
 
-#: sign/rpmgensig.c:621
+#: sign/rpmgensig.c:622
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead falhou: %s\n"
 
-#: sign/rpmgensig.c:646
+#: sign/rpmgensig.c:647
 #, c-format
 msgid "replacing %s failed: %s\n"
 msgstr ""
