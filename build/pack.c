@@ -618,6 +618,11 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 	headerPutUint32(pkg->header, RPMTAG_BUILDTIME, getBuildTime(), 1);
 
 	for (int i=0; i<PACKAGE_NUM_DEPS; i++) {
+	    /* Nuke any previously added dependencies from the header */
+	    headerDel(pkg->header, rpmdsTagN(pkg->dependencies[i]));
+	    headerDel(pkg->header, rpmdsTagEVR(pkg->dependencies[i]));
+	    headerDel(pkg->header, rpmdsTagF(pkg->dependencies[i]));
+	    /* ...and add again, now with automatic dependencies included */
 	    rpmdsPutToHeader(pkg->dependencies[i], pkg->header);
 	}
 
