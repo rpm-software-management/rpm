@@ -230,6 +230,6 @@ runroot rpmbuild -bb --quiet \
 [1],
 [],
 [error: Failed build dependencies:
-	zoo > 1.2.3 is needed by deptest-buildreq-1.0-1.noarch
+	foo > 1.2.3 is needed by deptest-buildreq-1.0-1.noarch
 ])
 AT_CLEANUP
