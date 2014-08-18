@@ -548,6 +548,11 @@ static void addTargets(Package Pkgs)
 	headerPutString(pkg->header, RPMTAG_PLATFORM, platform);
 	headerPutString(pkg->header, RPMTAG_OPTFLAGS, optflags);
 
+	/* Add manual dependencies early for rpmspec etc to look at */
+	for (int i=0; i<PACKAGE_NUM_DEPS; i++) {
+	    rpmdsPutToHeader(pkg->dependencies[i], pkg->header);
+	}
+
 	pkg->ds = rpmdsThis(pkg->header, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
 	addPackageProvides(pkg);
     }
