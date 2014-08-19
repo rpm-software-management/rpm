@@ -38,11 +38,6 @@ typedef struct availableIndexEntry_s {
     unsigned int entryIx;	/*!< Dependency index. */
 } * availableIndexEntry;
 
-struct fileNameEntry_s {
-    rpmsid dirName;
-    rpmsid baseName;
-};
-
 #undef HASHTYPE
 #undef HTKEYTYPE
 #undef HTDATATYPE
@@ -52,12 +47,18 @@ struct fileNameEntry_s {
 #include "lib/rpmhash.H"
 #include "lib/rpmhash.C"
 
+typedef struct availableIndexFileEntry_s {
+    rpmsid dirName;
+    rpmalNum pkgNum;	        /*!< Containing package index. */
+    unsigned int entryIx;	/*!< Dependency index. */
+} * availableIndexFileEntry;
+
 #undef HASHTYPE
 #undef HTKEYTYPE
 #undef HTDATATYPE
 #define HASHTYPE rpmalFileHash
-#define HTKEYTYPE struct fileNameEntry_s
-#define HTDATATYPE struct availableIndexEntry_s
+#define HTKEYTYPE rpmsid
+#define HTDATATYPE struct availableIndexFileEntry_s
 #include "lib/rpmhash.H"
 #include "lib/rpmhash.C"
 
@@ -76,6 +77,7 @@ struct rpmal_s {
     rpmtransFlags tsflags;	/*!< Transaction control flags. */
     rpm_color_t tscolor;	/*!< Transaction color. */
     rpm_color_t prefcolor;	/*!< Transaction preferred color. */
+    fingerPrintCache fpc;
 };
 
 /**
@@ -87,6 +89,7 @@ static void rpmalFreeIndex(rpmal al)
     al->providesHash = rpmalDepHashFree(al->providesHash);
     al->obsoletesHash = rpmalDepHashFree(al->obsoletesHash);
     al->fileHash = rpmalFileHashFree(al->fileHash);
+    al->fpc = fpCacheFree(al->fpc);
 }
 
 rpmal rpmalCreate(rpmstrPool pool, int delta, rpmtransFlags tsflags,
@@ -146,19 +149,6 @@ static int sidCmp(rpmsid a, rpmsid b)
     return (a != b);
 }
 
-static unsigned int fileHash(struct fileNameEntry_s file)
-{
-    return file.dirName ^ file.baseName;
-}
-
-static int fileCompare(struct fileNameEntry_s one, struct fileNameEntry_s two)
-{
-    int rc = (one.dirName != two.dirName);;
-    if (!rc)
-	rc = (one.baseName != two.baseName);
-    return rc;
-}
-
 void rpmalDel(rpmal al, rpmte p)
 {
     availablePackage alp;
@@ -183,8 +173,7 @@ void rpmalDel(rpmal al, rpmte p)
 
 static void rpmalAddFiles(rpmal al, rpmalNum pkgNum, rpmfiles fi)
 {
-    struct fileNameEntry_s fileName;
-    struct availableIndexEntry_s fileEntry;
+    struct availableIndexFileEntry_s fileEntry;
     int fc = rpmfilesFC(fi);
     rpm_color_t ficolor;
     int skipdoc = (al->tsflags & RPMTRANS_FLAG_NODOCS);
@@ -204,12 +193,10 @@ static void rpmalAddFiles(rpmal al, rpmalNum pkgNum, rpmfiles fi)
 	if (skipconf && (rpmfilesFFlags(fi, i) & RPMFILE_CONFIG))
 	    continue;
 
-	fileName.dirName = rpmfilesDNId(fi, rpmfilesDI(fi, i));
-	fileName.baseName = rpmfilesBNId(fi, i);
-
+	fileEntry.dirName = rpmfilesDNId(fi, rpmfilesDI(fi, i));
 	fileEntry.entryIx = i;
 
-	rpmalFileHashAddEntry(al->fileHash, fileName, fileEntry);
+	rpmalFileHashAddEntry(al->fileHash, rpmfilesBNId(fi, i), fileEntry);
     }
 }
 
@@ -315,7 +302,7 @@ static void rpmalMakeFileIndex(rpmal al)
 	    fileCnt += rpmfilesFC(alp->fi);
     }
     al->fileHash = rpmalFileHashCreate(fileCnt/4+128,
-				       fileHash, fileCompare, NULL, NULL);
+				       sidHash, sidCmp, NULL, NULL);
     for (i = 0; i < al->size; i++) {
 	alp = al->list + i;
 	rpmalAddFiles(al, i, alp->fi);
@@ -413,31 +400,42 @@ static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const char *fileName)
 
     /* Split path into dirname and basename components for lookup */
     if ((slash = strrchr(fileName, '/')) != NULL) {
-	availableIndexEntry result;
+	availableIndexFileEntry result;
 	int resultCnt = 0;
 	size_t bnStart = (slash - fileName) + 1;
-	struct fileNameEntry_s fne;
-
-	fne.baseName = rpmstrPoolId(al->pool, fileName + bnStart, 0);
-	fne.dirName = rpmstrPoolIdn(al->pool, fileName, bnStart, 0);
+	rpmsid baseName;
 
 	if (al->fileHash == NULL)
 	    rpmalMakeFileIndex(al);
 
-	rpmalFileHashGetEntry(al->fileHash, fne, &result, &resultCnt, NULL);
+	baseName = rpmstrPoolId(al->pool, fileName + bnStart, 0);
+	if (!baseName)
+	    return NULL;	/* no match possible */
+
+	rpmalFileHashGetEntry(al->fileHash, baseName, &result, &resultCnt, NULL);
 
 	if (resultCnt > 0) {
 	    int i, found;
 	    ret = xmalloc((resultCnt+1) * sizeof(*ret));
+	    fingerPrint * fp = NULL;
+	    rpmsid dirName = rpmstrPoolIdn(al->pool, fileName, bnStart, 1);
+
+	    if (!al->fpc)
+		al->fpc = fpCacheCreate(1001, NULL);
+	    fpLookup(al->fpc, rpmstrPoolStr(al->pool, dirName), fileName + bnStart, &fp);
 
 	    for (found = i = 0; i < resultCnt; i++) {
 		availablePackage alp = al->list + result[i].pkgNum;
-		if (alp->p == NULL) // deleted
+		if (alp->p == NULL) /* deleted */
+		    continue;
+		if (result[i].dirName != dirName &&
+		    !fpLookupEquals(al->fpc, fp, rpmstrPoolStr(al->pool, result[i].dirName), fileName + bnStart))
 		    continue;
 
 		ret[found] = alp->p;
 		found++;
 	    }
+	    _free(fp);
 	    ret[found] = NULL;
 	}
     }
