@@ -48,19 +48,14 @@ const int rpmFLAGS = RPMSENSE_EQUAL;
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
-#define HASHTYPE conflictsCache
+#define HASHTYPE filedepCache
 #define HTKEYTYPE const char *
+#define HTDATATYPE const char *
 #include "rpmhash.H"
 #include "rpmhash.C"
 #undef HASHTYPE
 #undef HTKEYTYPE
-
-#define HASHTYPE requiresCache
-#define HTKEYTYPE const char *
-#include "rpmhash.H"
-#include "rpmhash.C"
-#undef HASHTYPE
-#undef HTKEYTYPE
+#undef HTDATATYPE
 
 enum addOp_e {
     RPMTE_INSTALL	= 0,
@@ -739,6 +734,56 @@ static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
     rpmdbFreeIterator(mi);
 }
 
+static void checkInstFileDeps(rpmts ts, depCache dcache, rpmte te,
+			      rpmTag depTag, rpmfi fi,
+			      filedepCache cache, fingerPrintCache *fpcp)
+{
+    fingerPrintCache fpc = *fpcp;
+    fingerPrint * fp = NULL;
+    const char *basename = rpmfiBN(fi);
+    const char *dirname;
+    const char **dirnames = 0;
+    int ndirnames = 0;
+    int i;
+
+    filedepCacheGetEntry(cache, basename, &dirnames, &ndirnames, NULL);
+    if (!ndirnames)
+	return;
+    if (!fpc)
+	*fpcp = fpc = fpCacheCreate(1001, NULL);
+    dirname = rpmfiDN(fi);
+    fpLookup(fpc, dirname, basename, &fp);
+    for (i = 0; i < ndirnames; i++) {
+	if (!strcmp(dirnames[i], dirname)) {
+	    checkInstDeps(ts, dcache, te, depTag, rpmfiFN(fi));
+	} else {
+	    char *dep = rmalloc(strlen(dirnames[i]) + strlen(basename) + 1);
+	    strcpy(dep, dirnames[i]);
+	    strcat(dep, basename);
+	    checkInstDeps(ts, dcache, te, depTag, dep);
+	    free(dep);
+	}
+    }
+    _free(fp);
+}
+
+static void addFileDepToCache(filedepCache cache, char *key, size_t keylen)
+{
+    int i;
+    char *basename, *dirname;
+    if (!key || keylen == 0 || key[0] != '/')
+	return;
+    for (i = keylen - 1; key[i] != '/'; i--) 
+	;
+    dirname = rmalloc(i + 2);
+    memcpy(dirname, key, i + 1);
+    dirname[i + 1] = 0; 
+    basename = rmalloc(keylen - i);
+    memcpy(basename, key + i + 1, keylen - i - 1);
+    basename[keylen - i - 1] = 0; 
+    filedepCacheAddEntry(cache, basename, dirname);
+}
+
 int rpmtsCheck(rpmts ts)
 {
     rpm_color_t tscolor = rpmtsColor(ts);
@@ -746,8 +791,9 @@ int rpmtsCheck(rpmts ts)
     int closeatexit = 0;
     int rc = 0;
     depCache dcache = NULL;
-    conflictsCache confcache = NULL;
-    requiresCache reqcache = NULL;
+    filedepCache confcache = NULL;
+    filedepCache reqcache = NULL;
+    fingerPrintCache fpc = NULL;
     
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
 
@@ -763,55 +809,34 @@ int rpmtsCheck(rpmts ts)
 				     (depCacheFreeKey)rfree, NULL);
 
     /* build cache of all file conflicts dependencies */
-    confcache = conflictsCacheCreate(257, rstrhash, strcmp,
-				     (depCacheFreeKey)rfree);
+    confcache = filedepCacheCreate(257, rstrhash, strcmp,
+				     (filedepCacheFreeKey)rfree,
+				     (filedepCacheFreeData)rfree);
     if (confcache) {
 	rpmdbIndexIterator ii = rpmdbIndexIteratorInit(rpmtsGetRdb(ts), RPMTAG_CONFLICTNAME);
 	if (ii) {
 	    char *key;
 	    size_t keylen;
-	    while ((rpmdbIndexIteratorNext(ii, (const void**)&key, &keylen)) == 0) {
-		char *k;
-		if (!key || keylen == 0 || key[0] != '/')
-		    continue;
-		while (keylen > 1 && (k = memchr(key + 1, '/', keylen - 1))) {
-		    keylen -= k - key;
-		    key += k - key;
-		}
-		if (keylen <= 1)
-		    continue;
-		k = rmalloc(keylen);
-		memcpy(k, key + 1, keylen - 1);
-		k[keylen - 1] = 0;
-		conflictsCacheAddEntry(confcache, k);
-	    }
+	    while ((rpmdbIndexIteratorNext(ii, (const void**)&key, &keylen)) == 0)
+		addFileDepToCache(confcache, key, keylen);
 	    rpmdbIndexIteratorFree(ii);
 	}
+	/* free if empty */
+	if (!filedepCacheNumKeys(confcache))
+            confcache = filedepCacheFree(confcache);
     }
 
     /* build cache of all file requires dependencies */
-    reqcache = requiresCacheCreate(8191, rstrhash, strcmp,
-				     (depCacheFreeKey)rfree);
+    reqcache = filedepCacheCreate(8191, rstrhash, strcmp,
+				     (filedepCacheFreeKey)rfree,
+				     (filedepCacheFreeData)rfree);
     if (reqcache) {
 	rpmdbIndexIterator ii = rpmdbIndexIteratorInit(rpmtsGetRdb(ts), RPMTAG_REQUIRENAME);
 	if (ii) {
 	    char *key;
 	    size_t keylen;
-	    while ((rpmdbIndexIteratorNext(ii, (const void**)&key, &keylen)) == 0) {
-		char *k;
-		if (!key || keylen == 0 || key[0] != '/')
-		    continue;
-		while (keylen > 1 && (k = memchr(key + 1, '/', keylen - 1))) {
-		    keylen -= k - key;
-		    key += k - key;
-		}
-		if (keylen <= 1)
-		    continue;
-		k = rmalloc(keylen);
-		memcpy(k, key + 1, keylen - 1);
-		k[keylen - 1] = 0;
-		requiresCacheAddEntry(reqcache, k);
-	    }
+	    while ((rpmdbIndexIteratorNext(ii, (const void**)&key, &keylen)) == 0)
+		addFileDepToCache(reqcache, key, keylen);
 	    rpmdbIndexIteratorFree(ii);
 	}
     }
@@ -848,13 +873,11 @@ int rpmtsCheck(rpmts ts)
 	checkInstDeps(ts, dcache, p, RPMTAG_OBSOLETENAME, rpmteN(p));
 
 	/* Check filenames against installed conflicts */
-        if (conflictsCacheNumKeys(confcache)) {
+        if (confcache) {
 	    rpmfiles files = rpmteFiles(p);
 	    rpmfi fi = rpmfilesIter(files, RPMFI_ITER_FWD);
 	    while (rpmfiNext(fi) >= 0) {
-		if (!conflictsCacheHasEntry(confcache, rpmfiBN(fi)))
-		    continue;
-		checkInstDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, rpmfiFN(fi));
+		checkInstFileDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, fi, confcache, &fpc);
 	    }
 	    rpmfiFree(fi);
 	    rpmfilesFree(files);
@@ -881,9 +904,7 @@ int rpmtsCheck(rpmts ts)
 
 	while (rpmfiNext(fi) >= 0) {
 	    if (RPMFILE_IS_INSTALLED(rpmfiFState(fi))) {
-		if (!requiresCacheHasEntry(reqcache, rpmfiBN(fi)))
-		    continue;
-		checkInstDeps(ts, dcache, p, RPMTAG_REQUIRENAME, rpmfiFN(fi));
+		checkInstFileDeps(ts, dcache, p, RPMTAG_REQUIRENAME, fi, reqcache, &fpc);
 	    }
 	}
 	rpmfiFree(fi);
@@ -893,8 +914,9 @@ int rpmtsCheck(rpmts ts)
 
 exit:
     depCacheFree(dcache);
-    conflictsCacheFree(confcache);
-    requiresCacheFree(reqcache);
+    filedepCacheFree(confcache);
+    filedepCacheFree(reqcache);
+    fpCacheFree(fpc);
 
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
 
