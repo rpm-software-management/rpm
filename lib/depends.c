@@ -756,7 +756,7 @@ static void checkInstFileDeps(rpmts ts, depCache dcache, rpmte te,
     for (i = 0; i < ndirnames; i++) {
 	if (!strcmp(dirnames[i], dirname)) {
 	    checkInstDeps(ts, dcache, te, depTag, rpmfiFN(fi));
-	} else {
+	} else if (fpLookupEquals(fpc, fp, dirnames[i], basename)) {
 	    char *dep = rmalloc(strlen(dirnames[i]) + strlen(basename) + 1);
 	    strcpy(dep, dirnames[i]);
 	    strcat(dep, basename);
