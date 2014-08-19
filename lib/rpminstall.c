@@ -290,8 +290,8 @@ static int rpmcliTransaction(rpmts ts, struct rpmInstallArguments_s * ia,
 
 	ps = rpmtsProblems(ts);
 
-	if ((rpmpsNumProblems(ps) > 0) && (eflags? 1 : (rc > 0)))
-	    rpmpsPrint((eflags? NULL : stderr), ps);
+	if (rpmpsNumProblems(ps) > 0 && (eflags || rc > 0))
+	    rpmpsPrint(NULL, ps);
 	ps = rpmpsFree(ps);
     }
 
