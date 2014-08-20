@@ -617,8 +617,9 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 	headerPutString(pkg->header, RPMTAG_BUILDHOST, buildHost());
 	headerPutUint32(pkg->header, RPMTAG_BUILDTIME, getBuildTime(), 1);
 
+	/* Nuke any previously added dependencies from the header */
+	headerDel(pkg->header, RPMTAG_TRIGGERINDEX);
 	for (int i=0; i<PACKAGE_NUM_DEPS; i++) {
-	    /* Nuke any previously added dependencies from the header */
 	    headerDel(pkg->header, rpmdsTagN(pkg->dependencies[i]));
 	    headerDel(pkg->header, rpmdsTagEVR(pkg->dependencies[i]));
 	    headerDel(pkg->header, rpmdsTagF(pkg->dependencies[i]));
