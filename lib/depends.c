@@ -791,8 +791,8 @@ int rpmtsCheck(rpmts ts)
     int closeatexit = 0;
     int rc = 0;
     depCache dcache = NULL;
-    filedepCache confcache = NULL;
-    filedepCache reqcache = NULL;
+    filedepCache confilecache = NULL;	/* file conflicts of installed packages */
+    filedepCache reqfilecache = NULL;	/* file requires of installed packages */
     fingerPrintCache fpc = NULL;
     
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
@@ -809,34 +809,34 @@ int rpmtsCheck(rpmts ts)
 				     (depCacheFreeKey)rfree, NULL);
 
     /* build cache of all file conflicts dependencies */
-    confcache = filedepCacheCreate(257, rstrhash, strcmp,
-				     (filedepCacheFreeKey)rfree,
-				     (filedepCacheFreeData)rfree);
-    if (confcache) {
+    confilecache = filedepCacheCreate(257, rstrhash, strcmp,
+					(filedepCacheFreeKey)rfree,
+					(filedepCacheFreeData)rfree);
+    if (confilecache) {
 	rpmdbIndexIterator ii = rpmdbIndexIteratorInit(rpmtsGetRdb(ts), RPMTAG_CONFLICTNAME);
 	if (ii) {
 	    char *key;
 	    size_t keylen;
 	    while ((rpmdbIndexIteratorNext(ii, (const void**)&key, &keylen)) == 0)
-		addFileDepToCache(confcache, key, keylen);
+		addFileDepToCache(confilecache, key, keylen);
 	    rpmdbIndexIteratorFree(ii);
 	}
 	/* free if empty */
-	if (!filedepCacheNumKeys(confcache))
-            confcache = filedepCacheFree(confcache);
+	if (!filedepCacheNumKeys(confilecache))
+            confilecache = filedepCacheFree(confilecache);
     }
 
     /* build cache of all file requires dependencies */
-    reqcache = filedepCacheCreate(8191, rstrhash, strcmp,
-				     (filedepCacheFreeKey)rfree,
-				     (filedepCacheFreeData)rfree);
-    if (reqcache) {
+    reqfilecache = filedepCacheCreate(8191, rstrhash, strcmp,
+					(filedepCacheFreeKey)rfree,
+					(filedepCacheFreeData)rfree);
+    if (reqfilecache) {
 	rpmdbIndexIterator ii = rpmdbIndexIteratorInit(rpmtsGetRdb(ts), RPMTAG_REQUIRENAME);
 	if (ii) {
 	    char *key;
 	    size_t keylen;
 	    while ((rpmdbIndexIteratorNext(ii, (const void**)&key, &keylen)) == 0)
-		addFileDepToCache(reqcache, key, keylen);
+		addFileDepToCache(reqfilecache, key, keylen);
 	    rpmdbIndexIteratorFree(ii);
 	}
     }
@@ -873,11 +873,11 @@ int rpmtsCheck(rpmts ts)
 	checkInstDeps(ts, dcache, p, RPMTAG_OBSOLETENAME, rpmteN(p));
 
 	/* Check filenames against installed conflicts */
-        if (confcache) {
+        if (confilecache) {
 	    rpmfiles files = rpmteFiles(p);
 	    rpmfi fi = rpmfilesIter(files, RPMFI_ITER_FWD);
 	    while (rpmfiNext(fi) >= 0) {
-		checkInstFileDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, fi, confcache, &fpc);
+		checkInstFileDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, fi, confilecache, &fpc);
 	    }
 	    rpmfiFree(fi);
 	    rpmfilesFree(files);
@@ -904,7 +904,7 @@ int rpmtsCheck(rpmts ts)
 
 	while (rpmfiNext(fi) >= 0) {
 	    if (RPMFILE_IS_INSTALLED(rpmfiFState(fi))) {
-		checkInstFileDeps(ts, dcache, p, RPMTAG_REQUIRENAME, fi, reqcache, &fpc);
+		checkInstFileDeps(ts, dcache, p, RPMTAG_REQUIRENAME, fi, reqfilecache, &fpc);
 	    }
 	}
 	rpmfiFree(fi);
@@ -914,8 +914,8 @@ int rpmtsCheck(rpmts ts)
 
 exit:
     depCacheFree(dcache);
-    filedepCacheFree(confcache);
-    filedepCacheFree(reqcache);
+    filedepCacheFree(confilecache);
+    filedepCacheFree(reqfilecache);
     fpCacheFree(fpc);
 
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
