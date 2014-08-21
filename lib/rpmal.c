@@ -494,17 +494,16 @@ rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 
 	rc = rpmdsCompareIndex(alp->provides, ix, ds, rpmdsIx(ds));
 
-	if (rc) {
-	    rpmdsNotify(ds, "(added provide)", 0);
-	    ret[found] = alp->p;
-	    found++;
-	}
+	if (rc)
+	    ret[found++] = alp->p;
     }
 
-    if (found)
+    if (found) {
+	rpmdsNotify(ds, "(added provide)", 0);
 	ret[found] = NULL;
-    else
+    } else {
 	ret = _free(ret);
+    }
 
     return ret;
 }
