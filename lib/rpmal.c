@@ -488,11 +488,16 @@ rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 	    continue;
 	ix = result[i].entryIx;
 
-	/* Obsoletes are on package name, filter out other provide matches */
-	if (obsolete && !rstreq(rpmdsNIndex(alp->provides, ix), rpmteN(alp->p)))
-	    continue;
-
-	rc = rpmdsCompareIndex(alp->provides, ix, ds, rpmdsIx(ds));
+	if (obsolete) {
+	    /* Obsoletes are on package NEVR only */
+	    rpmds thisds;
+	    if (!rstreq(rpmdsNIndex(alp->provides, ix), rpmteN(alp->p)))
+		continue;
+	    thisds = rpmteDS(alp->p, RPMTAG_NAME);
+	    rc = rpmdsCompareIndex(thisds, rpmdsIx(thisds), ds, rpmdsIx(ds));
+	} else {
+	    rc = rpmdsCompareIndex(alp->provides, ix, ds, rpmdsIx(ds));
+	}
 
 	if (rc)
 	    ret[found++] = alp->p;
