@@ -390,7 +390,7 @@ rpmte * rpmalAllObsoletes(rpmal al, rpmds ds)
     return ret;
 }
 
-static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const char *fileName)
+static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const char *fileName, const rpmds filterds)
 {
     const char *slash; 
     rpmte * ret = NULL;
@@ -428,6 +428,9 @@ static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const char *fileName)
 		availablePackage alp = al->list + result[i].pkgNum;
 		if (alp->p == NULL) /* deleted */
 		    continue;
+		/* ignore self-conflicts/obsoletes */
+		if (filterds && rpmteDS(alp->p, rpmdsTagN(filterds)) == filterds)
+		    continue;
 		if (result[i].dirName != dirName &&
 		    !fpLookupEquals(al->fpc, fp, rpmstrPoolStr(al->pool, result[i].dirName), fileName + bnStart))
 		    continue;
@@ -452,6 +455,8 @@ rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
     availableIndexEntry result;
     int resultCnt;
     int obsolete;
+    rpmTagVal dtag;
+    rpmds filterds = NULL;
 
     availablePackage alp;
     int rc;
@@ -459,11 +464,14 @@ rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
     if (al == NULL || ds == NULL || (nameId = rpmdsNId(ds)) == 0)
 	return ret;
 
-    obsolete = (rpmdsTagN(ds) == RPMTAG_OBSOLETENAME);
+    dtag = rpmdsTagN(ds);
+    obsolete = (dtag == RPMTAG_OBSOLETENAME);
+    if (dtag == RPMTAG_OBSOLETENAME || dtag == RPMTAG_CONFLICTNAME)
+	filterds = ds;
     name = rpmstrPoolStr(al->pool, nameId);
     if (!obsolete && *name == '/') {
 	/* First, look for files "contained" in package ... */
-	ret = rpmalAllFileSatisfiesDepend(al, name);
+	ret = rpmalAllFileSatisfiesDepend(al, name, filterds);
 	if (ret != NULL && *ret != NULL) {
 	    rpmdsNotify(ds, "(added files)", 0);
 	    return ret;
@@ -484,7 +492,10 @@ rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 
     for (found=i=0; i<resultCnt; i++) {
 	alp = al->list + result[i].pkgNum;
-	if (alp->p == NULL) // deleted
+	if (alp->p == NULL) /* deleted */
+	    continue;
+	/* ignore self-conflicts/obsoletes */
+	if (filterds && rpmteDS(alp->p, rpmdsTagN(filterds)) == filterds)
 	    continue;
 	ix = result[i].entryIx;
 
