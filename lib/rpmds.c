@@ -817,6 +817,12 @@ int rpmdsMerge(rpmds * dsp, rpmds ods)
 	ds->EVR = xcalloc(ds->Count, sizeof(*ds->EVR));
     if (ds->Flags == NULL)
 	ds->Flags = xcalloc(ds->Count, sizeof(*ds->Flags));
+    if (ds->ti == NULL && ods->ti) {
+	int i;
+	ds->ti = xcalloc(ds->Count, sizeof(*ds->ti));
+	for (i = 0; i < ds->Count; i++)
+	    ds->ti[i] = -1;
+    }
 
     /*
      * Add new entries.
@@ -858,12 +864,14 @@ int rpmdsMerge(rpmds * dsp, rpmds ods)
 	}
 	ds->Flags[u] = rpmdsFlags(ods);
 
-	ds->ti = xrealloc(ds->ti, (ds->Count+1) * sizeof(*ds->ti));
-	if (u < ds->Count) {
-	    memmove(ds->ti + u + 1, ds->ti + u,
-		    (ds->Count - u) * sizeof(*ds->ti));
+	if (ds->ti || ods->ti) {
+	    ds->ti = xrealloc(ds->ti, (ds->Count+1) * sizeof(*ds->ti));
+	    if (u < ds->Count) {
+		memmove(ds->ti + u + 1, ds->ti + u,
+			(ds->Count - u) * sizeof(*ds->ti));
+	    }
+	    ds->ti[u] = rpmdsTi(ods);
 	}
-	ds->ti[u] = rpmdsTi(ods);
 
 	ds->i = ds->Count;
 	ds->Count++;
