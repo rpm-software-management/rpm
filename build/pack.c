@@ -708,6 +708,16 @@ rpmRC packageSources(rpmSpec spec, char **cookie)
     headerPutString(sourcePkg->header, RPMTAG_BUILDHOST, buildHost());
     headerPutUint32(sourcePkg->header, RPMTAG_BUILDTIME, getBuildTime(), 1);
 
+    for (int i=0; i<PACKAGE_NUM_DEPS; i++) {
+	/* Nuke any previously added dependencies from the header */
+	headerDel(sourcePkg->header, rpmdsTagN(sourcePkg->dependencies[i]));
+	headerDel(sourcePkg->header, rpmdsTagEVR(sourcePkg->dependencies[i]));
+	headerDel(sourcePkg->header, rpmdsTagF(sourcePkg->dependencies[i]));
+	headerDel(sourcePkg->header, rpmdsTagTi(sourcePkg->dependencies[i]));
+	/* ...and add again, now with automatic dependencies included */
+	rpmdsPutToHeader(sourcePkg->dependencies[i], sourcePkg->header);
+    }
+
     /* XXX this should be %_srpmdir */
     {	char *fn = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);
 	char *pkgcheck = rpmExpand("%{?_build_pkgcheck_srpm} ", fn, NULL);
