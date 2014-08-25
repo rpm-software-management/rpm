@@ -1110,7 +1110,7 @@ static DepMsg_t DepMsgs = depMsgs;
 
 /**
  */
-static void printDeps(rpmstrPool pool, Header h)
+static void printDeps(rpmfc fc)
 {
     DepMsg_t dm;
     rpmds ds = NULL;
@@ -1120,8 +1120,7 @@ static void printDeps(rpmstrPool pool, Header h)
 
     for (dm = DepMsgs; dm->msg != NULL; dm++) {
 	if (dm->ntag != -1) {
-	    rpmdsFree(ds);
-	    ds = rpmdsNewPool(pool, h, dm->ntag, 0);
+	    ds = rpmfcDependencies(fc, dm->ntag);
 	}
 	if (dm->ftag == 0)
 	    continue;
@@ -1148,7 +1147,6 @@ static void printDeps(rpmstrPool pool, Header h)
 	if (bingo)
 	    rpmlog(RPMLOG_NOTICE, "\n");
     }
-    rpmdsFree(ds);
 }
 
 static rpmRC rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi fi)
@@ -1333,7 +1331,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 	free(msg);
     }
 exit:
-    printDeps(fc ? fc->pool : NULL, pkg->header);
+    printDeps(fc);
 
     /* Clean up. */
     free(fmode);
