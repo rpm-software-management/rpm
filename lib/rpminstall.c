@@ -385,6 +385,19 @@ static int checkFreshenStatus(rpmts ts, Header h)
     return (oldH != NULL);
 }
 
+static int rpmNoGlob(const char *fn, int *argcPtr, ARGV_t * argvPtr)
+{
+    struct stat sb;
+    int rc = stat(fn, &sb);
+    if (rc == 0) {
+	argvAdd(argvPtr, fn);
+	*argcPtr = 1;
+    } else {
+	*argcPtr = 0;
+    }
+    return rc;
+}
+
 /** @todo Generalize --freshen policies. */
 int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 {
@@ -420,10 +433,18 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 	char * fn;
 
 	fn = rpmEscapeSpaces(*eiu->fnp);
-	rc = rpmGlob(fn, &ac, &av);
+	if (giFlags & RPMGI_NOGLOB) {
+	    rc = rpmNoGlob(fn, &ac, &av);
+	} else {
+	    rc = rpmGlob(fn, &ac, &av);
+	}
 	fn = _free(fn);
 	if (rc || ac == 0) {
-	    rpmlog(RPMLOG_ERR, _("File not found by glob: %s\n"), *eiu->fnp);
+	    if (giFlags & RPMGI_NOGLOB) {
+		rpmlog(RPMLOG_ERR, _("File not found: %s\n"), *eiu->fnp);
+	    } else {
+		rpmlog(RPMLOG_ERR, _("File not found by glob: %s\n"), *eiu->fnp);
+	    }
 	    eiu->numFailed++;
 	    continue;
 	}
