@@ -206,6 +206,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	rasprintf(&buf, _("sigh load: BAD\n"));
 	goto exit;
     }
+    ei = NULL; /* XXX will be freed with header */
 
     {	size_t sigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
 	size_t pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
@@ -236,7 +237,6 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	    goto exit;
 	}
     }
-    ei = NULL; /* XXX will be freed with header */
 
 exit:
     if (sighp && sigh && rc == RPMRC_OK)
