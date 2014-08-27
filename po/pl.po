@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2014-08-18 10:16+0300\n"
+"POT-Creation-Date: 2014-08-27 08:46+0300\n"
 "PO-Revision-Date: 2014-04-07 16:05+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish (http://www.transifex.com/projects/p/rpm/language/"
@@ -957,12 +957,12 @@ msgstr "Wykonanie \"%s\" się nie powiodło.\n"
 msgid "Package check \"%s\" failed.\n"
 msgstr "Sprawdzenie pakietu \"%s\" się nie powiodło.\n"
 
-#: build/pack.c:637
+#: build/pack.c:643
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Nie można utworzyć wyjściowej nazwy pliku dla pakietu %s: %s\n"
 
-#: build/pack.c:654
+#: build/pack.c:660
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "nie można utworzyć %s: %s\n"
@@ -1383,11 +1383,11 @@ msgstr "%s:%d: napotkano %%endif bez %%if\n"
 msgid "%s:%d: malformed %%include statement\n"
 msgstr "%s:%d: błędnie sformatowany zwrot %%include\n"
 
-#: build/parseSpec.c:669
+#: build/parseSpec.c:678
 msgid "No compatible architectures found for build\n"
 msgstr "Nie odnaleziono zgodnych architektur do zbudowania\n"
 
-#: build/parseSpec.c:703
+#: build/parseSpec.c:712
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Pakiet nie posiada %%description: %s\n"
@@ -1503,30 +1503,30 @@ msgstr "błędny format"
 msgid "invalid dependency (%s): %s\n"
 msgstr "nieprawidłowa zależność (%s): %s\n"
 
-#: build/rpmfc.c:843
+#: build/rpmfc.c:845
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr "Konwersja %s na długą liczbę całkowitą się nie powiodła.\n"
 
-#: build/rpmfc.c:913
+#: build/rpmfc.c:915
 msgid "Empty file classifier\n"
 msgstr "Pusty klasyfikator pliku\n"
 
-#: build/rpmfc.c:922
+#: build/rpmfc.c:924
 msgid "No file attributes configured\n"
 msgstr "Brak skonfigurowanych atrybutów plików\n"
 
-#: build/rpmfc.c:942
+#: build/rpmfc.c:944
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) się nie powiodło: %s\n"
 
-#: build/rpmfc.c:948
+#: build/rpmfc.c:950
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load się nie powiodło: %s\n"
 
-#: build/rpmfc.c:990
+#: build/rpmfc.c:992
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Rozpoznanie pliku \"%s\" się nie powiodło: tryb %06o %s\n"
@@ -2440,74 +2440,74 @@ msgstr "NIE "
 msgid "YES"
 msgstr "TAK"
 
-#: lib/rpmds.c:1147
+#: lib/rpmds.c:1155
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "Zależności PreReq:, Provides: i Obsoletes: obsługują wersje."
 
-#: lib/rpmds.c:1150
+#: lib/rpmds.c:1158
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "nazwy plików przechowano jako krotka (dirName,baseName,dirIndex), a nie jako "
 "ścieżki."
 
-#: lib/rpmds.c:1154
+#: lib/rpmds.c:1162
 msgid "package payload can be compressed using bzip2."
 msgstr "dane pakietu mogą zostać skompresowane używając bzip2."
 
-#: lib/rpmds.c:1159
+#: lib/rpmds.c:1167
 msgid "package payload can be compressed using xz."
 msgstr "dane pakietu mogą zostać skompresowane używając xz."
 
-#: lib/rpmds.c:1162
+#: lib/rpmds.c:1170
 msgid "package payload can be compressed using lzma."
 msgstr "dane pakietu mogą zostać skompresowane używając lzma."
 
-#: lib/rpmds.c:1166
+#: lib/rpmds.c:1174
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "pliki danych pakietu posiadają przedrostek \"./\"."
 
-#: lib/rpmds.c:1169
+#: lib/rpmds.c:1177
 msgid "package name-version-release is not implicitly provided."
 msgstr "pakiet nazwa-wersja-wydanie nie jest domyślnie dostarczany."
 
-#: lib/rpmds.c:1172
+#: lib/rpmds.c:1180
 msgid "header tags are always sorted after being loaded."
 msgstr "znaczniki nagłówka są zawsze porządkowane po wczytaniu."
 
-#: lib/rpmds.c:1175
+#: lib/rpmds.c:1183
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "interpreter skryptów może używać parametrów z nagłówka."
 
-#: lib/rpmds.c:1178
+#: lib/rpmds.c:1186
 msgid "a hardlink file set may be installed without being complete."
 msgstr "plik twardego dowiązania może zostać zainstalowany bez ukończenia."
 
-#: lib/rpmds.c:1181
+#: lib/rpmds.c:1189
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "skrypty pakietu mogą odwoływać się do bazy danych RPM podczas instalowania."
 
-#: lib/rpmds.c:1185
+#: lib/rpmds.c:1193
 msgid "internal support for lua scripts."
 msgstr "wewnętrzna obsługa skryptów Lua."
 
-#: lib/rpmds.c:1189
+#: lib/rpmds.c:1197
 msgid "file digest algorithm is per package configurable"
 msgstr "algorytm skrótu pliku jest konfigurowalny dla każdego pakietu osobno"
 
-#: lib/rpmds.c:1193
+#: lib/rpmds.c:1201
 msgid "support for POSIX.1e file capabilities"
 msgstr "obsługa możliwości plików POSIX.1e"
 
-#: lib/rpmds.c:1197
+#: lib/rpmds.c:1205
 msgid "package scriptlets can be expanded at install time."
 msgstr "skrypty pakietu mogą być rozszerzane w czasie instalacji."
 
-#: lib/rpmds.c:1200
+#: lib/rpmds.c:1208
 msgid "dependency comparison supports versions with tilde."
 msgstr "rozwiązywanie zależności obsługuje wersje zawierające tyldę."
 
-#: lib/rpmds.c:1203
+#: lib/rpmds.c:1211
 msgid "support files larger than 4GB"
 msgstr "obsługa plików większych niż 4 GB"
 
@@ -2956,12 +2956,12 @@ msgstr "znacznik sigh(%d): BŁĘDNY, znacznik %d typ %d offset %d licznik %d"
 msgid "sigh load: BAD"
 msgstr "load sigh: BŁĘDNE"
 
-#: lib/signature.c:146
+#: lib/signature.c:147
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr "pad sigh(%zd): BŁĘDNE, odczyt %zd bajtów"
 
-#: lib/signature.c:162
+#: lib/signature.c:163
 #, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed"
 msgstr "sigSize sigh(%zd): BŁĘDNE, fstat(2) się nie powiodło"

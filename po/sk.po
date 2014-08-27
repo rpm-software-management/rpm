@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2014-08-18 10:16+0300\n"
+"POT-Creation-Date: 2014-08-27 08:46+0300\n"
 "PO-Revision-Date: 2014-04-07 10:19+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Slovak (http://www.transifex.com/projects/p/rpm/language/"
@@ -947,12 +947,12 @@ msgstr "Spustenie \"%s\" zlyhalo.\n"
 msgid "Package check \"%s\" failed.\n"
 msgstr "Kontrola balíčka \"%s\" zlyhala.\n"
 
-#: build/pack.c:637
+#: build/pack.c:643
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Nie je možné vytvoriť meno výstupného súboru pre balík %s: %s\n"
 
-#: build/pack.c:654
+#: build/pack.c:660
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "nie je možné vytvoriť %s: %s\n"
@@ -1370,11 +1370,11 @@ msgstr "%s:%d: %%endif bez počiatočného %%if\n"
 msgid "%s:%d: malformed %%include statement\n"
 msgstr ""
 
-#: build/parseSpec.c:669
+#: build/parseSpec.c:678
 msgid "No compatible architectures found for build\n"
 msgstr "Nenájdené žiadne kompatibilné architektúry pre zostavenie\n"
 
-#: build/parseSpec.c:703
+#: build/parseSpec.c:712
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Balíček neobsahuje %%description: %s\n"
@@ -1489,30 +1489,30 @@ msgstr ""
 msgid "invalid dependency (%s): %s\n"
 msgstr ""
 
-#: build/rpmfc.c:843
+#: build/rpmfc.c:845
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr "Konverzia %s na dlhý integer zlyhala.\n"
 
-#: build/rpmfc.c:913
+#: build/rpmfc.c:915
 msgid "Empty file classifier\n"
 msgstr "Klasifikátor prázdneho súboru\n"
 
-#: build/rpmfc.c:922
+#: build/rpmfc.c:924
 msgid "No file attributes configured\n"
 msgstr "Nenastavené žiadne atribúty\n"
 
-#: build/rpmfc.c:942
+#: build/rpmfc.c:944
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) zlyhalo: %s\n"
 
-#: build/rpmfc.c:948
+#: build/rpmfc.c:950
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load zlyhal: %s\n"
 
-#: build/rpmfc.c:990
+#: build/rpmfc.c:992
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Rozpoznávanie súboru \"%s\" zlyhalo: režim %06o %s\n"
@@ -2423,71 +2423,71 @@ msgstr "NIE"
 msgid "YES"
 msgstr "ÁNO"
 
-#: lib/rpmds.c:1147
+#: lib/rpmds.c:1155
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, a Obsoletes: verzie pre podporu závislostí."
 
-#: lib/rpmds.c:1150
+#: lib/rpmds.c:1158
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "názvy súborov uložené ako (dirName,baseName,dirIndex), nie ako cesta."
 
-#: lib/rpmds.c:1154
+#: lib/rpmds.c:1162
 msgid "package payload can be compressed using bzip2."
 msgstr "payload balíčka môže byť komprimovaný pomocou bzip2."
 
-#: lib/rpmds.c:1159
+#: lib/rpmds.c:1167
 msgid "package payload can be compressed using xz."
 msgstr "payload balíčka môže byť komprimovaný pomocou xz."
 
-#: lib/rpmds.c:1162
+#: lib/rpmds.c:1170
 msgid "package payload can be compressed using lzma."
 msgstr "payload balíčka môže byť komprimovaný pomocou lzma."
 
-#: lib/rpmds.c:1166
+#: lib/rpmds.c:1174
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "súbory payloadu balíčka majú predponu \"./\"."
 
-#: lib/rpmds.c:1169
+#: lib/rpmds.c:1177
 msgid "package name-version-release is not implicitly provided."
 msgstr "názov-verzia-vydanie balíčka nie je implicitne sprostredkované."
 
-#: lib/rpmds.c:1172
+#: lib/rpmds.c:1180
 msgid "header tags are always sorted after being loaded."
 msgstr "značky hlavičky sú vždy zoradené po nahratí."
 
-#: lib/rpmds.c:1175
+#: lib/rpmds.c:1183
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "interpreter skriptletov môže použiť argumenty z hlavičky."
 
-#: lib/rpmds.c:1178
+#: lib/rpmds.c:1186
 msgid "a hardlink file set may be installed without being complete."
 msgstr "hardlinkovaný súbor môže byť inštalovaný bez toho, aby bol kompletný."
 
-#: lib/rpmds.c:1181
+#: lib/rpmds.c:1189
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "skriptlety balíčka môžu pristupovať k databáze rpm pri inštalácii."
 
-#: lib/rpmds.c:1185
+#: lib/rpmds.c:1193
 msgid "internal support for lua scripts."
 msgstr "interná podpora pre lua skripty."
 
-#: lib/rpmds.c:1189
+#: lib/rpmds.c:1197
 msgid "file digest algorithm is per package configurable"
 msgstr "prehľad algoritmu súboru je nastaviteľný v každom balíčku"
 
-#: lib/rpmds.c:1193
+#: lib/rpmds.c:1201
 msgid "support for POSIX.1e file capabilities"
 msgstr "podpora pre schopnosti súboru POSIX.1e"
 
-#: lib/rpmds.c:1197
+#: lib/rpmds.c:1205
 msgid "package scriptlets can be expanded at install time."
 msgstr "skriptlety balíčka môžu byť rozbalené počas inštalácie."
 
-#: lib/rpmds.c:1200
+#: lib/rpmds.c:1208
 msgid "dependency comparison supports versions with tilde."
 msgstr ""
 
-#: lib/rpmds.c:1203
+#: lib/rpmds.c:1211
 msgid "support files larger than 4GB"
 msgstr ""
 
@@ -2936,12 +2936,12 @@ msgstr ""
 msgid "sigh load: BAD"
 msgstr ""
 
-#: lib/signature.c:146
+#: lib/signature.c:147
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr ""
 
-#: lib/signature.c:162
+#: lib/signature.c:163
 #, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed"
 msgstr ""

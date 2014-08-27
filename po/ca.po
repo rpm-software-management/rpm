@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2014-08-18 10:16+0300\n"
+"POT-Creation-Date: 2014-08-27 08:46+0300\n"
 "PO-Revision-Date: 2014-04-07 10:19+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Catalan (http://www.transifex.com/projects/p/rpm/language/"
@@ -967,12 +967,12 @@ msgstr "Ha fallat l'execució de \"%s\" .\n"
 msgid "Package check \"%s\" failed.\n"
 msgstr "Ha fallat la verificació del paquet \"%s\".\n"
 
-#: build/pack.c:637
+#: build/pack.c:643
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "No es pot generar el nom de fitxer de sortida per al paquet %s: %s\n"
 
-#: build/pack.c:654
+#: build/pack.c:660
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "no es pot crear %s: %s\n"
@@ -1390,11 +1390,11 @@ msgstr "%s:%d: s'ha obtingut un %%endif sense %%if\n"
 msgid "%s:%d: malformed %%include statement\n"
 msgstr ""
 
-#: build/parseSpec.c:669
+#: build/parseSpec.c:678
 msgid "No compatible architectures found for build\n"
 msgstr "No s'ha trobat cap arquitectura compatible per al muntatge\n"
 
-#: build/parseSpec.c:703
+#: build/parseSpec.c:712
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "El paquet no té %%description: %s\n"
@@ -1508,30 +1508,30 @@ msgstr ""
 msgid "invalid dependency (%s): %s\n"
 msgstr ""
 
-#: build/rpmfc.c:843
+#: build/rpmfc.c:845
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr "Ha fallat la conversió de %s a enter gran.\n"
 
-#: build/rpmfc.c:913
+#: build/rpmfc.c:915
 msgid "Empty file classifier\n"
 msgstr ""
 
-#: build/rpmfc.c:922
+#: build/rpmfc.c:924
 msgid "No file attributes configured\n"
 msgstr ""
 
-#: build/rpmfc.c:942
+#: build/rpmfc.c:944
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "Ha fallat magic_open(0x%x): %s\n"
 
-#: build/rpmfc.c:948
+#: build/rpmfc.c:950
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "Ha fallat magic_load: %s\n"
 
-#: build/rpmfc.c:990
+#: build/rpmfc.c:992
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Ha fallat el reconeixement del fitxer \"%s\": mode %06o %s\n"
@@ -2446,79 +2446,79 @@ msgstr "NO "
 msgid "YES"
 msgstr "SÍ"
 
-#: lib/rpmds.c:1147
+#: lib/rpmds.c:1155
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 "Les dependències PreReq:, Provides:, i Obsoletes: disposen de versionatge."
 
-#: lib/rpmds.c:1150
+#: lib/rpmds.c:1158
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "els noms de fitxer s'han emmagatzemat com una tupla (dirName,baseName,"
 "dirIndex), no com a camí"
 
-#: lib/rpmds.c:1154
+#: lib/rpmds.c:1162
 msgid "package payload can be compressed using bzip2."
 msgstr "les dades del paquet es poden comprimir amb el bzip2."
 
-#: lib/rpmds.c:1159
+#: lib/rpmds.c:1167
 msgid "package payload can be compressed using xz."
 msgstr "Les dades del paquet es poden comprimir amb xz."
 
-#: lib/rpmds.c:1162
+#: lib/rpmds.c:1170
 msgid "package payload can be compressed using lzma."
 msgstr "Les dades del paquet es poden comprimir amb bzip2."
 
-#: lib/rpmds.c:1166
+#: lib/rpmds.c:1174
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "els fitxer de les dades del paquet tenen el prefix «./»."
 
-#: lib/rpmds.c:1169
+#: lib/rpmds.c:1177
 msgid "package name-version-release is not implicitly provided."
 msgstr ""
 "no s'ha proporcionat implícitament el nom-versió-alliberament del paquet."
 
-#: lib/rpmds.c:1172
+#: lib/rpmds.c:1180
 msgid "header tags are always sorted after being loaded."
 msgstr "les etiquetes de la capçalera sempre s'ordenen després de carregar-se."
 
-#: lib/rpmds.c:1175
+#: lib/rpmds.c:1183
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "l'íntèrpret de l'scriptlet pot emprar arguments de la capçalera."
 
-#: lib/rpmds.c:1178
+#: lib/rpmds.c:1186
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 "es pot instal·lar un conjunt d'enllaços durs a fitxer sense que estiguin "
 "complets."
 
-#: lib/rpmds.c:1181
+#: lib/rpmds.c:1189
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "els scriptlets del paquet poden accedir la base de dades rpm durant la "
 "instal·lació"
 
-#: lib/rpmds.c:1185
+#: lib/rpmds.c:1193
 msgid "internal support for lua scripts."
 msgstr "es poden emprar scripts en lua."
 
-#: lib/rpmds.c:1189
+#: lib/rpmds.c:1197
 msgid "file digest algorithm is per package configurable"
 msgstr "l'algorisme de resum de fitxer és configurable per paquet"
 
-#: lib/rpmds.c:1193
+#: lib/rpmds.c:1201
 msgid "support for POSIX.1e file capabilities"
 msgstr "suport per a capacitats de fitxer POSIX.1e"
 
-#: lib/rpmds.c:1197
+#: lib/rpmds.c:1205
 msgid "package scriptlets can be expanded at install time."
 msgstr ""
 
-#: lib/rpmds.c:1200
+#: lib/rpmds.c:1208
 msgid "dependency comparison supports versions with tilde."
 msgstr ""
 
-#: lib/rpmds.c:1203
+#: lib/rpmds.c:1211
 msgid "support files larger than 4GB"
 msgstr ""
 
@@ -2971,12 +2971,12 @@ msgstr ""
 msgid "sigh load: BAD"
 msgstr ""
 
-#: lib/signature.c:146
+#: lib/signature.c:147
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr ""
 
-#: lib/signature.c:162
+#: lib/signature.c:163
 #, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed"
 msgstr ""

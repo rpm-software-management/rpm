@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2014-08-18 10:16+0300\n"
+"POT-Creation-Date: 2014-08-27 08:46+0300\n"
 "PO-Revision-Date: 2014-04-07 12:06+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian (http://www.transifex.com/projects/p/rpm/language/"
@@ -965,12 +965,12 @@ msgstr "Спроба виконання «%s» зазнала невдачі.\n"
 msgid "Package check \"%s\" failed.\n"
 msgstr "Спроба перевірки пакунка «%s» зазнала невдачі.\n"
 
-#: build/pack.c:637
+#: build/pack.c:643
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Не вдалося створити назву файла виведених даних для пакунка %s: %s\n"
 
-#: build/pack.c:654
+#: build/pack.c:660
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "не вдалося створити %s: %s\n"
@@ -1391,11 +1391,11 @@ msgstr "%s:%d: вказано %%endif без %%if\n"
 msgid "%s:%d: malformed %%include statement\n"
 msgstr "%s:%d: помилкове форматування інструкції %%include\n"
 
-#: build/parseSpec.c:669
+#: build/parseSpec.c:678
 msgid "No compatible architectures found for build\n"
 msgstr "Не знайдено сумісних архітектур для збирання\n"
 
-#: build/parseSpec.c:703
+#: build/parseSpec.c:712
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "У пакунка немає поля %%description: %s\n"
@@ -1511,30 +1511,30 @@ msgstr "помилковий формат"
 msgid "invalid dependency (%s): %s\n"
 msgstr "некоректна залежність (%s): %s\n"
 
-#: build/rpmfc.c:843
+#: build/rpmfc.c:845
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr "Невдала спроба перетворення %s у формат long integer.\n"
 
-#: build/rpmfc.c:913
+#: build/rpmfc.c:915
 msgid "Empty file classifier\n"
 msgstr "Порожній класифікатор файла\n"
 
-#: build/rpmfc.c:922
+#: build/rpmfc.c:924
 msgid "No file attributes configured\n"
 msgstr "Не вказано атрибутів файла\n"
 
-#: build/rpmfc.c:942
+#: build/rpmfc.c:944
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "помилка magic_open(0x%x): %s\n"
 
-#: build/rpmfc.c:948
+#: build/rpmfc.c:950
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "помилка magic_load: %s\n"
 
-#: build/rpmfc.c:990
+#: build/rpmfc.c:992
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Спроба розпізнавання файла «%s» зазнала невдачі: режим %06o %s\n"
@@ -2453,77 +2453,77 @@ msgstr "НІ "
 msgid "YES"
 msgstr "ТАК"
 
-#: lib/rpmds.c:1147
+#: lib/rpmds.c:1155
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides: і Obsoletes: підтримка версій залежностей."
 
-#: lib/rpmds.c:1150
+#: lib/rpmds.c:1158
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "назви файлів збережено як кортеж (dirName,baseName,dirIndex), а не як шлях."
 
-#: lib/rpmds.c:1154
+#: lib/rpmds.c:1162
 msgid "package payload can be compressed using bzip2."
 msgstr "вміст пакунка може бути стиснуто за допомогою bzip2."
 
-#: lib/rpmds.c:1159
+#: lib/rpmds.c:1167
 msgid "package payload can be compressed using xz."
 msgstr "вміст пакунка може бути стиснуто за допомогою xz."
 
-#: lib/rpmds.c:1162
+#: lib/rpmds.c:1170
 msgid "package payload can be compressed using lzma."
 msgstr "вміст пакунка може бути стиснуто за допомогою lzma."
 
-#: lib/rpmds.c:1166
+#: lib/rpmds.c:1174
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "файли вмісту пакунка мають префікс «./»."
 
-#: lib/rpmds.c:1169
+#: lib/rpmds.c:1177
 msgid "package name-version-release is not implicitly provided."
 msgstr "назва-версія-випуск пакунка не надаються автоматично."
 
-#: lib/rpmds.c:1172
+#: lib/rpmds.c:1180
 msgid "header tags are always sorted after being loaded."
 msgstr "теґи заголовка завжди впорядковуються після завантаження."
 
-#: lib/rpmds.c:1175
+#: lib/rpmds.c:1183
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 "інтерпретатор допоміжних скриптів може використовувати аргументи з заголовка."
 
-#: lib/rpmds.c:1178
+#: lib/rpmds.c:1186
 msgid "a hardlink file set may be installed without being complete."
 msgstr "підтримується часткове встановлення набору жорстких посилань пакунка."
 
-#: lib/rpmds.c:1181
+#: lib/rpmds.c:1189
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "допоміжні скрипти пакунка можуть отримувати доступ до бази даних rpm під час "
 "встановлення."
 
-#: lib/rpmds.c:1185
+#: lib/rpmds.c:1193
 msgid "internal support for lua scripts."
 msgstr "вбудована підтримка скриптів lua."
 
-#: lib/rpmds.c:1189
+#: lib/rpmds.c:1197
 msgid "file digest algorithm is per package configurable"
 msgstr ""
 "алгоритм обчислення контрольних сум може бути вибрано для кожного з пакунків "
 "окремо"
 
-#: lib/rpmds.c:1193
+#: lib/rpmds.c:1201
 msgid "support for POSIX.1e file capabilities"
 msgstr "підтримка мандатів файлів POSIX.1e"
 
-#: lib/rpmds.c:1197
+#: lib/rpmds.c:1205
 msgid "package scriptlets can be expanded at install time."
 msgstr "допоміжні скрипти пакунка може бути розширено під час встановлення."
 
-#: lib/rpmds.c:1200
+#: lib/rpmds.c:1208
 msgid "dependency comparison supports versions with tilde."
 msgstr "порівнянням залежностей підтримується запис версій з тильдою."
 
-#: lib/rpmds.c:1203
+#: lib/rpmds.c:1211
 msgid "support files larger than 4GB"
 msgstr "підтримка файлів, розмір яких перевищує 4 ГБ"
 
@@ -2974,12 +2974,12 @@ msgstr "теґ sigh[%d]: ПОМИЛКА, теґ %d тип %d зміщення %d
 msgid "sigh load: BAD"
 msgstr "завантаження sigh: ПОМИЛКА"
 
-#: lib/signature.c:146
+#: lib/signature.c:147
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr "pad sigh (%zd): ПОМИЛКА, прочитано %zd байтів"
 
-#: lib/signature.c:162
+#: lib/signature.c:163
 #, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed"
 msgstr "sigSize sigh (%zd): ПОМИЛКА, помилка fstat(2)"

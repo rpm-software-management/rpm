@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2014-08-18 10:16+0300\n"
+"POT-Creation-Date: 2014-08-27 08:46+0300\n"
 "PO-Revision-Date: 2014-04-07 10:19+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Arabic (http://www.transifex.com/projects/p/rpm/language/"
@@ -930,12 +930,12 @@ msgstr ""
 msgid "Package check \"%s\" failed.\n"
 msgstr ""
 
-#: build/pack.c:637
+#: build/pack.c:643
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:654
+#: build/pack.c:660
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr ""
@@ -1353,11 +1353,11 @@ msgstr ""
 msgid "%s:%d: malformed %%include statement\n"
 msgstr ""
 
-#: build/parseSpec.c:669
+#: build/parseSpec.c:678
 msgid "No compatible architectures found for build\n"
 msgstr ""
 
-#: build/parseSpec.c:703
+#: build/parseSpec.c:712
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr ""
@@ -1471,30 +1471,30 @@ msgstr ""
 msgid "invalid dependency (%s): %s\n"
 msgstr ""
 
-#: build/rpmfc.c:843
+#: build/rpmfc.c:845
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
-#: build/rpmfc.c:913
+#: build/rpmfc.c:915
 msgid "Empty file classifier\n"
 msgstr ""
 
-#: build/rpmfc.c:922
+#: build/rpmfc.c:924
 msgid "No file attributes configured\n"
 msgstr ""
 
-#: build/rpmfc.c:942
+#: build/rpmfc.c:944
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr ""
 
-#: build/rpmfc.c:948
+#: build/rpmfc.c:950
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr ""
 
-#: build/rpmfc.c:990
+#: build/rpmfc.c:992
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr ""
@@ -2398,71 +2398,71 @@ msgstr "لا"
 msgid "YES"
 msgstr "نعم"
 
-#: lib/rpmds.c:1147
+#: lib/rpmds.c:1155
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 
-#: lib/rpmds.c:1150
+#: lib/rpmds.c:1158
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 
-#: lib/rpmds.c:1154
+#: lib/rpmds.c:1162
 msgid "package payload can be compressed using bzip2."
 msgstr ""
 
-#: lib/rpmds.c:1159
+#: lib/rpmds.c:1167
 msgid "package payload can be compressed using xz."
 msgstr ""
 
-#: lib/rpmds.c:1162
+#: lib/rpmds.c:1170
 msgid "package payload can be compressed using lzma."
 msgstr ""
 
-#: lib/rpmds.c:1166
+#: lib/rpmds.c:1174
 msgid "package payload file(s) have \"./\" prefix."
 msgstr ""
 
-#: lib/rpmds.c:1169
+#: lib/rpmds.c:1177
 msgid "package name-version-release is not implicitly provided."
 msgstr ""
 
-#: lib/rpmds.c:1172
+#: lib/rpmds.c:1180
 msgid "header tags are always sorted after being loaded."
 msgstr ""
 
-#: lib/rpmds.c:1175
+#: lib/rpmds.c:1183
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 
-#: lib/rpmds.c:1178
+#: lib/rpmds.c:1186
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 
-#: lib/rpmds.c:1181
+#: lib/rpmds.c:1189
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 
-#: lib/rpmds.c:1185
+#: lib/rpmds.c:1193
 msgid "internal support for lua scripts."
 msgstr ""
 
-#: lib/rpmds.c:1189
+#: lib/rpmds.c:1197
 msgid "file digest algorithm is per package configurable"
 msgstr ""
 
-#: lib/rpmds.c:1193
+#: lib/rpmds.c:1201
 msgid "support for POSIX.1e file capabilities"
 msgstr ""
 
-#: lib/rpmds.c:1197
+#: lib/rpmds.c:1205
 msgid "package scriptlets can be expanded at install time."
 msgstr ""
 
-#: lib/rpmds.c:1200
+#: lib/rpmds.c:1208
 msgid "dependency comparison supports versions with tilde."
 msgstr ""
 
-#: lib/rpmds.c:1203
+#: lib/rpmds.c:1211
 msgid "support files larger than 4GB"
 msgstr ""
 
@@ -2910,12 +2910,12 @@ msgstr ""
 msgid "sigh load: BAD"
 msgstr ""
 
-#: lib/signature.c:146
+#: lib/signature.c:147
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr ""
 
-#: lib/signature.c:162
+#: lib/signature.c:163
 #, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed"
 msgstr ""
