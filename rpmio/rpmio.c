@@ -1028,15 +1028,17 @@ int Fclose(FD_t fd)
     fd = fdLink(fd);
     fdstat_enter(fd, FDSTAT_CLOSE);
     for (FDSTACK_t fps = fd->fps; fps != NULL; fps = fdPop(fd)) {
-	fdio_close_function_t _close = FDIOVEC(fps, close);
-	rc = _close ? _close(fps) : -2;
+	if (fps->fdno >= 0) {
+	    fdio_close_function_t _close = FDIOVEC(fps, close);
+	    rc = _close ? _close(fps) : -2;
+
+	    if (ec == 0 && rc)
+		ec = rc;
+	}
 
 	/* Debugging stats for compresed types */
 	if ((_rpmio_debug || rpmIsDebug()) && fps->fdno == -1)
 	    fdstat_print(fd, fps->io->ioname, stderr);
-
-	if (ec == 0 && rc)
-	    ec = rc;
 
 	/* Leave freeing the last one after stats */
 	if (fps->prev == NULL)
