@@ -57,6 +57,7 @@ struct rpmMacroEntry_s {
 struct rpmMacroContext_s {
     rpmMacroEntry *tab;  /*!< Macro entry table (array of pointers). */
     int n;      /*!< No. of macros. */
+    unsigned int defcnt; /*!< Non-global define tracking */
     pthread_mutex_t lock;
     pthread_mutexattr_t lockattr;
 };
@@ -918,6 +919,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 static int
 expandMacro(MacroBuf mb, const char *src, size_t slen)
 {
+    rpmMacroContext mc = mb->mc;
     rpmMacroEntry *mep;
     rpmMacroEntry me;
     const char *s = src, *se;
@@ -930,6 +932,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     const char * lastc;
     int chkexist;
     char *source = NULL;
+    unsigned int prevcnt = mc->defcnt;
 
     /*
      * Always make a (terminated) copy of the source string.
@@ -1268,8 +1271,8 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     }
 
     mb->buf[mb->tpos] = '\0';
-    /* Warn on unused macros, but only on error/tracing as its very expesive */
-    if (rc != 0 || mb->expand_trace)
+    /* Warn on unused non-global macros */
+    if (prevcnt != mc->defcnt)
 	freeArgs(mb, 0);
     mb->depth--;
     if (rc != 0 || mb->expand_trace)
@@ -1367,6 +1370,10 @@ static void pushMacro(rpmMacroContext mc,
     /* push over previous definition */
     me->prev = *mep;
     *mep = me;
+
+    /* Track for non-global definitions */
+    if (level > 0)
+	mc->defcnt++;
 }
 
 static void popMacro(rpmMacroContext mc, const char * n)
