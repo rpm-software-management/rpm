@@ -25,7 +25,7 @@ librpmio_la_SOURCES += digest_nss.c
 endif
 
 
-librpmio_la_LDFLAGS = -version-info 5:1:2
+librpmio_la_LDFLAGS = -version-info 5:2:2
 librpmio_la_LIBADD = \
 	../misc/libmisc.la \
 	@WITH_NSS_LIB@ \

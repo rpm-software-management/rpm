@@ -11,7 +11,7 @@ usrlibdir = $(libdir)
 
 usrlib_LTLIBRARIES = librpmsign.la
 librpmsign_la_SOURCES = rpmgensig.c
-librpmsign_la_LDFLAGS = -version-info 3:1:2
+librpmsign_la_LDFLAGS = -version-info 3:2:2
 librpmsign_la_LIBADD = \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmio/librpmio.la \
