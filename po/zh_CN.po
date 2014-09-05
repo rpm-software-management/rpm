@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2014-02-05 15:07+0200\n"
+"POT-Creation-Date: 2014-09-05 12:30+0300\n"
 "PO-Revision-Date: 2013-02-27 02:54+0000\n"
 "Last-Translator: dongfengweixiao <dongfengweixiao@gmail.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/rpm/"
@@ -1629,19 +1629,19 @@ msgstr "无效日期%u"
 msgid "normal"
 msgstr "正常"
 
-#: lib/formats.c:515 lib/verify.c:341
+#: lib/formats.c:515 lib/verify.c:369
 msgid "replaced"
 msgstr "已被替换"
 
-#: lib/formats.c:518 lib/verify.c:335
+#: lib/formats.c:518 lib/verify.c:363
 msgid "not installed"
 msgstr "未安装"
 
-#: lib/formats.c:521 lib/verify.c:337
+#: lib/formats.c:521 lib/verify.c:365
 msgid "net shared"
 msgstr "网络共享"
 
-#: lib/formats.c:524 lib/verify.c:339
+#: lib/formats.c:524 lib/verify.c:367
 msgid "wrong color"
 msgstr "错误颜色"
 
@@ -2381,7 +2381,7 @@ msgstr "无效的软件包编号：%s\n"
 msgid "record %u could not be read\n"
 msgstr "记录 %u 不能读取\n"
 
-#: lib/query.c:458 lib/rpminstall.c:654
+#: lib/query.c:458 lib/rpminstall.c:657
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "未安装软件包 %s \n"
@@ -2575,7 +2575,7 @@ msgstr "依赖检测失败：\n"
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: 不是 rpm 软件包 (或者没有manifest)：%s\n"
 
-#: lib/rpminstall.c:357 lib/rpminstall.c:716 tools/rpmgraph.c:112
+#: lib/rpminstall.c:357 lib/rpminstall.c:719 tools/rpmgraph.c:112
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "不能安装 %s \n"
@@ -2600,17 +2600,17 @@ msgstr "软件包 %s 不能重定位\n"
 msgid "error reading from file %s\n"
 msgstr "文件 %s 读取错误\n"
 
-#: lib/rpminstall.c:661
+#: lib/rpminstall.c:664
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "\"%s\" 指定多个软件包：\n"
 
-#: lib/rpminstall.c:700
+#: lib/rpminstall.c:703
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "无法打开 %s：%s\n"
 
-#: lib/rpminstall.c:706
+#: lib/rpminstall.c:709
 #, c-format
 msgid "Installing %s\n"
 msgstr "正在安装 %s\n"
@@ -2931,12 +2931,12 @@ msgstr "sigh 标签[%d]：BAD，标签 %d 类型 %d 偏移 %d 计数 %d\n"
 msgid "sigh load: BAD\n"
 msgstr "sigh 载入：BAD\n"
 
-#: lib/signature.c:219
+#: lib/signature.c:220
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes\n"
 msgstr ""
 
-#: lib/signature.c:235
+#: lib/signature.c:236
 #, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed\n"
 msgstr ""
@@ -2966,30 +2966,40 @@ msgstr "头"
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr ""
 
-#: lib/transaction.c:1426
+#: lib/transaction.c:1429
 msgid "skipped"
 msgstr "已跳过"
 
-#: lib/transaction.c:1426
+#: lib/transaction.c:1429
 msgid "failed"
 msgstr "已失败"
 
-#: lib/verify.c:343
+#: lib/verify.c:251
+#, c-format
+msgid "Duplicate username or UID for user %s\n"
+msgstr ""
+
+#: lib/verify.c:272
+#, c-format
+msgid "Duplicate groupname or GID for group %s\n"
+msgstr ""
+
+#: lib/verify.c:371
 #, fuzzy
 msgid "no state"
 msgstr "(无状态)    "
 
-#: lib/verify.c:345
+#: lib/verify.c:373
 #, fuzzy
 msgid "unknown state"
 msgstr "未知标签"
 
-#: lib/verify.c:396
+#: lib/verify.c:424
 #, c-format
 msgid "missing   %c %s"
 msgstr "遗漏   %c %s"
 
-#: lib/verify.c:448
+#: lib/verify.c:476
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "未满足的依赖关系 %s：\n"
@@ -3339,20 +3349,20 @@ msgstr "%3d>%*s(清空)"
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(清空)\n"
 
-#: rpmio/macro.c:470 rpmio/macro.c:508
+#: rpmio/macro.c:464
+#, c-format
+msgid "Macro %%%s has unterminated opts\n"
+msgstr "宏 %%%s 具有未结束的选项\n"
+
+#: rpmio/macro.c:476 rpmio/macro.c:514
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "宏 %%%s 主体未结束\n"
 
-#: rpmio/macro.c:527
+#: rpmio/macro.c:533
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "宏 %%%s 中存在无效的名称 (%%define)\n"
-
-#: rpmio/macro.c:533
-#, c-format
-msgid "Macro %%%s has unterminated opts\n"
-msgstr "宏 %%%s 具有未结束的选项\n"
 
 #: rpmio/macro.c:538
 #, c-format
@@ -3369,53 +3379,53 @@ msgstr "宏 %%%s 中存在空内容\n"
 msgid "Macro %%%s failed to expand\n"
 msgstr "宏 %%%s 展开失败\n"
 
-#: rpmio/macro.c:585
+#: rpmio/macro.c:586
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "宏 %%%s 中存在无效的名称 (%%undefine)\n"
 
-#: rpmio/macro.c:618
+#: rpmio/macro.c:619
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "宏 %%%s (%s) 没有使用 %d 以下的等级\n"
 
-#: rpmio/macro.c:697
+#: rpmio/macro.c:698
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "在 %2$s(%3$s) 中存在未知的选项 %1$c\n"
 
-#: rpmio/macro.c:926
+#: rpmio/macro.c:927
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
 msgstr "宏扩展中存在太多层的递归。这有可能是由宏的递归声明引起的。\n"
 
-#: rpmio/macro.c:995 rpmio/macro.c:1012
+#: rpmio/macro.c:996 rpmio/macro.c:1013
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "未结束的 %c：%s\n"
 
-#: rpmio/macro.c:1053
+#: rpmio/macro.c:1054
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "在一个不可解析的宏之之后跟着 %%\n"
 
-#: rpmio/rpmfileutil.c:255
+#: rpmio/rpmfileutil.c:256
 #, c-format
 msgid "error creating temporary file %s: %m\n"
 msgstr "临时文件创建失败 %s：%m\n"
 
-#: rpmio/rpmfileutil.c:320 rpmio/rpmfileutil.c:326
+#: rpmio/rpmfileutil.c:321 rpmio/rpmfileutil.c:327
 #, c-format
 msgid "File %s: %s\n"
 msgstr "文件 %s：%s\n"
 
-#: rpmio/rpmfileutil.c:329
+#: rpmio/rpmfileutil.c:330
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "文件 %s 小于 %u 字节\n"
 
-#: rpmio/rpmfileutil.c:597
+#: rpmio/rpmfileutil.c:598
 msgid "failed to create directory"
 msgstr "创建目录失败"
 
@@ -3520,26 +3530,26 @@ msgstr "写入签名时 gpg 验证失败\n"
 msgid "unable to read the signature\n"
 msgstr "无法读取签名\n"
 
-#: sign/rpmgensig.c:449 sign/rpmgensig.c:518
+#: sign/rpmgensig.c:449 sign/rpmgensig.c:519
 msgid "rpmMkTemp failed\n"
 msgstr "rpmMkTemp 失败\n"
 
-#: sign/rpmgensig.c:501
+#: sign/rpmgensig.c:502
 #, c-format
 msgid "%s already contains identical signature, skipping\n"
 msgstr "%s 已经包含了相同的签名，跳过\n"
 
-#: sign/rpmgensig.c:525
+#: sign/rpmgensig.c:526
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s：writeLead 失败：%s\n"
 
-#: sign/rpmgensig.c:531
+#: sign/rpmgensig.c:532
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s：rpmWriteSignature 失败：%s\n"
 
-#: sign/rpmgensig.c:545
+#: sign/rpmgensig.c:546
 #, c-format
 msgid "replacing %s failed: %s\n"
 msgstr "替换 %s 失败：%s\n"

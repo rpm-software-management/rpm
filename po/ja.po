@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2014-02-05 15:07+0200\n"
+"POT-Creation-Date: 2014-09-05 12:30+0300\n"
 "PO-Revision-Date: 2013-05-07 07:15+0000\n"
 "Last-Translator: Tomoyuki KATO <tomo@dream.daynight.jp>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/rpm/language/"
@@ -1647,19 +1647,19 @@ msgstr "無効な日付 %u"
 msgid "normal"
 msgstr "通常"
 
-#: lib/formats.c:515 lib/verify.c:341
+#: lib/formats.c:515 lib/verify.c:369
 msgid "replaced"
 msgstr "置換"
 
-#: lib/formats.c:518 lib/verify.c:335
+#: lib/formats.c:518 lib/verify.c:363
 msgid "not installed"
 msgstr "未インストール"
 
-#: lib/formats.c:521 lib/verify.c:337
+#: lib/formats.c:521 lib/verify.c:365
 msgid "net shared"
 msgstr "ネット共有"
 
-#: lib/formats.c:524 lib/verify.c:339
+#: lib/formats.c:524 lib/verify.c:367
 msgid "wrong color"
 msgstr "間違った色"
 
@@ -2403,7 +2403,7 @@ msgstr "無効なパッケージ番号: %s\n"
 msgid "record %u could not be read\n"
 msgstr "レコード %u は読み込めませんでした\n"
 
-#: lib/query.c:458 lib/rpminstall.c:654
+#: lib/query.c:458 lib/rpminstall.c:657
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません。\n"
@@ -2602,7 +2602,7 @@ msgstr "依存性の欠如:\n"
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: RPM パッケージ(またはパッケージのリスト)ではありません: %s\n"
 
-#: lib/rpminstall.c:357 lib/rpminstall.c:716 tools/rpmgraph.c:112
+#: lib/rpminstall.c:357 lib/rpminstall.c:719 tools/rpmgraph.c:112
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s をインストールできません。\n"
@@ -2627,17 +2627,17 @@ msgstr "パッケージ %s は再配置できません。\n"
 msgid "error reading from file %s\n"
 msgstr "ファイル %s の読み込みエラー\n"
 
-#: lib/rpminstall.c:661
+#: lib/rpminstall.c:664
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "\"%s\" は複数のパッケージを指定しています:\n"
 
-#: lib/rpminstall.c:700
+#: lib/rpminstall.c:703
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s を開けません: %s\n"
 
-#: lib/rpminstall.c:706
+#: lib/rpminstall.c:709
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s をインストール中です。\n"
@@ -2965,12 +2965,12 @@ msgstr "署名タグ[%d]: 不正、タグ %d タイプ %d オフセット %d カ
 msgid "sigh load: BAD\n"
 msgstr "署名の読み込み: 不正。\n"
 
-#: lib/signature.c:219
+#: lib/signature.c:220
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes\n"
 msgstr "署名の pad 容量(%zd): 異常、%zd バイト読み込みました。\n"
 
-#: lib/signature.c:235
+#: lib/signature.c:236
 #, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed\n"
 msgstr "署名の容量(%zd): 異常、fstat(2) に失敗しました。\n"
@@ -3002,30 +3002,40 @@ msgstr "ヘッダー "
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr "署名の検証: 不正なパラメーター (%d %p %d %p %p)\n"
 
-#: lib/transaction.c:1426
+#: lib/transaction.c:1429
 msgid "skipped"
 msgstr "スキップした"
 
-#: lib/transaction.c:1426
+#: lib/transaction.c:1429
 msgid "failed"
 msgstr "失敗"
 
-#: lib/verify.c:343
+#: lib/verify.c:251
+#, c-format
+msgid "Duplicate username or UID for user %s\n"
+msgstr ""
+
+#: lib/verify.c:272
+#, c-format
+msgid "Duplicate groupname or GID for group %s\n"
+msgstr ""
+
+#: lib/verify.c:371
 #, fuzzy
 msgid "no state"
 msgstr "(状態なし)    "
 
-#: lib/verify.c:345
+#: lib/verify.c:373
 #, fuzzy
 msgid "unknown state"
 msgstr "不明なタグ"
 
-#: lib/verify.c:396
+#: lib/verify.c:424
 #, c-format
 msgid "missing   %c %s"
 msgstr "%c %s が見つかりません。"
 
-#: lib/verify.c:448
+#: lib/verify.c:476
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "%s のための依存性を満たしていません。\n"
@@ -3380,20 +3390,20 @@ msgstr "%3d>%*s(空)"
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(空)\n"
 
-#: rpmio/macro.c:470 rpmio/macro.c:508
+#: rpmio/macro.c:464
+#, c-format
+msgid "Macro %%%s has unterminated opts\n"
+msgstr "マクロ %%%s はオプションが終端されていません。\n"
+
+#: rpmio/macro.c:476 rpmio/macro.c:514
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "マクロ %%%s はボディが終端していません。\n"
 
-#: rpmio/macro.c:527
+#: rpmio/macro.c:533
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "マクロ %%%s は不正な名前です (%%define)\n"
-
-#: rpmio/macro.c:533
-#, c-format
-msgid "Macro %%%s has unterminated opts\n"
-msgstr "マクロ %%%s はオプションが終端されていません。\n"
 
 #: rpmio/macro.c:538
 #, c-format
@@ -3410,22 +3420,22 @@ msgstr "マクロ %%%s のボディは空です。\n"
 msgid "Macro %%%s failed to expand\n"
 msgstr "マクロ %%%s の展開に失敗しました。\n"
 
-#: rpmio/macro.c:585
+#: rpmio/macro.c:586
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "マクロ %%%s は不正な名前です (%%undefine)\n"
 
-#: rpmio/macro.c:618
+#: rpmio/macro.c:619
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "マクロ %%%s (%s) はレベル %d 未満で使用されませんでした。\n"
 
-#: rpmio/macro.c:697
+#: rpmio/macro.c:698
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "不明なオプション %c (%s(%s)中に)\n"
 
-#: rpmio/macro.c:926
+#: rpmio/macro.c:927
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
@@ -3433,32 +3443,32 @@ msgstr ""
 "マクロ展開の再帰呼び出しが深すぎます。これは再帰的マクロ定義が原因で発生して"
 "いる可能性があります。\n"
 
-#: rpmio/macro.c:995 rpmio/macro.c:1012
+#: rpmio/macro.c:996 rpmio/macro.c:1013
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "終端されていない %c: %s\n"
 
-#: rpmio/macro.c:1053
+#: rpmio/macro.c:1054
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "%% の後ろに構文解析できないマクロが続いています。\n"
 
-#: rpmio/rpmfileutil.c:255
+#: rpmio/rpmfileutil.c:256
 #, c-format
 msgid "error creating temporary file %s: %m\n"
 msgstr "一時ファイル %s の作成に失敗しました: %m\n"
 
-#: rpmio/rpmfileutil.c:320 rpmio/rpmfileutil.c:326
+#: rpmio/rpmfileutil.c:321 rpmio/rpmfileutil.c:327
 #, c-format
 msgid "File %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: rpmio/rpmfileutil.c:329
+#: rpmio/rpmfileutil.c:330
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "ファイル %s は %u バイトより小さくなっています。\n"
 
-#: rpmio/rpmfileutil.c:597
+#: rpmio/rpmfileutil.c:598
 msgid "failed to create directory"
 msgstr "ディレクトリーの作成に失敗しました"
 
@@ -3563,26 +3573,26 @@ msgstr "gpg が署名を書き込むのに失敗しました。\n"
 msgid "unable to read the signature\n"
 msgstr "署名を読み込めませんでした。\n"
 
-#: sign/rpmgensig.c:449 sign/rpmgensig.c:518
+#: sign/rpmgensig.c:449 sign/rpmgensig.c:519
 msgid "rpmMkTemp failed\n"
 msgstr "rpmMkTemp に失敗しました。\n"
 
-#: sign/rpmgensig.c:501
+#: sign/rpmgensig.c:502
 #, c-format
 msgid "%s already contains identical signature, skipping\n"
 msgstr "%s はすでに同一の署名を含みます、スキップしています\n"
 
-#: sign/rpmgensig.c:525
+#: sign/rpmgensig.c:526
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead に失敗しました: %s\n"
 
-#: sign/rpmgensig.c:531
+#: sign/rpmgensig.c:532
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature に失敗しました: %s\n"
 
-#: sign/rpmgensig.c:545
+#: sign/rpmgensig.c:546
 #, c-format
 msgid "replacing %s failed: %s\n"
 msgstr "%s の置換に失敗: %s\n"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2014-02-05 15:07+0200\n"
+"POT-Creation-Date: 2014-09-05 12:30+0300\n"
 "PO-Revision-Date: 2012-11-05 11:05+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
@@ -1666,19 +1666,19 @@ msgstr "Некоректна дата %u"
 msgid "normal"
 msgstr "звичайний"
 
-#: lib/formats.c:515 lib/verify.c:341
+#: lib/formats.c:515 lib/verify.c:369
 msgid "replaced"
 msgstr "замінено"
 
-#: lib/formats.c:518 lib/verify.c:335
+#: lib/formats.c:518 lib/verify.c:363
 msgid "not installed"
 msgstr "не встановлено"
 
-#: lib/formats.c:521 lib/verify.c:337
+#: lib/formats.c:521 lib/verify.c:365
 msgid "net shared"
 msgstr "мережевий"
 
-#: lib/formats.c:524 lib/verify.c:339
+#: lib/formats.c:524 lib/verify.c:367
 msgid "wrong color"
 msgstr "помилковий колір"
 
@@ -2425,7 +2425,7 @@ msgstr "некоректний номер пакунка: %s\n"
 msgid "record %u could not be read\n"
 msgstr "не вдалося прочитати запис %u\n"
 
-#: lib/query.c:458 lib/rpminstall.c:654
+#: lib/query.c:458 lib/rpminstall.c:657
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакунок %s не встановлено\n"
@@ -2626,7 +2626,7 @@ msgstr "Помилкові залежності:\n"
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: не є пакунком rpm (або маніфестом пакунка): %s\n"
 
-#: lib/rpminstall.c:357 lib/rpminstall.c:716 tools/rpmgraph.c:112
+#: lib/rpminstall.c:357 lib/rpminstall.c:719 tools/rpmgraph.c:112
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s не можна встановити\n"
@@ -2651,17 +2651,17 @@ msgstr "пакунок %s не придатний до переміщення\n"
 msgid "error reading from file %s\n"
 msgstr "помилка читання з файла %s\n"
 
-#: lib/rpminstall.c:661
+#: lib/rpminstall.c:664
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "«%s» задає декілька пакунків:\n"
 
-#: lib/rpminstall.c:700
+#: lib/rpminstall.c:703
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "не вдалося відкрити %s: %s\n"
 
-#: lib/rpminstall.c:706
+#: lib/rpminstall.c:709
 #, c-format
 msgid "Installing %s\n"
 msgstr "Встановлення %s\n"
@@ -2985,12 +2985,12 @@ msgstr "теґ sigh[%d]: ПОМИЛКА, теґ %d тип %d зміщення %d
 msgid "sigh load: BAD\n"
 msgstr "завантаження sigh: ПОМИЛКА\n"
 
-#: lib/signature.c:219
+#: lib/signature.c:220
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes\n"
 msgstr "pad sigh (%zd): ПОМИЛКА, прочитано %zd байтів\n"
 
-#: lib/signature.c:235
+#: lib/signature.c:236
 #, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed\n"
 msgstr "sigSize sigh (%zd): ПОМИЛКА, помилка fstat(2)\n"
@@ -3020,30 +3020,40 @@ msgstr "Заголовок "
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr "Перевірка підпису: ПОМИЛКОВІ ПАРАМЕТРИ (%d %p %d %p %p)\n"
 
-#: lib/transaction.c:1426
+#: lib/transaction.c:1429
 msgid "skipped"
 msgstr "пропущено"
 
-#: lib/transaction.c:1426
+#: lib/transaction.c:1429
 msgid "failed"
 msgstr "невдача"
 
-#: lib/verify.c:343
+#: lib/verify.c:251
+#, c-format
+msgid "Duplicate username or UID for user %s\n"
+msgstr ""
+
+#: lib/verify.c:272
+#, c-format
+msgid "Duplicate groupname or GID for group %s\n"
+msgstr ""
+
+#: lib/verify.c:371
 #, fuzzy
 msgid "no state"
 msgstr "(не має стану)"
 
-#: lib/verify.c:345
+#: lib/verify.c:373
 #, fuzzy
 msgid "unknown state"
 msgstr "невідома мітка"
 
-#: lib/verify.c:396
+#: lib/verify.c:424
 #, c-format
 msgid "missing   %c %s"
 msgstr "не вистачає   %c %s"
 
-#: lib/verify.c:448
+#: lib/verify.c:476
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Незадоволені залежності для %s:\n"
@@ -3400,20 +3410,20 @@ msgstr "%3d>%*s(порожньо)"
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(порожньо)\n"
 
-#: rpmio/macro.c:470 rpmio/macro.c:508
+#: rpmio/macro.c:464
+#, c-format
+msgid "Macro %%%s has unterminated opts\n"
+msgstr "Запис параметрів макросу %%%s не завершено\n"
+
+#: rpmio/macro.c:476 rpmio/macro.c:514
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Запис макросу %%%s не завершено\n"
 
-#: rpmio/macro.c:527
+#: rpmio/macro.c:533
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "Макрос %%%s має некоректну назву (%%define)\n"
-
-#: rpmio/macro.c:533
-#, c-format
-msgid "Macro %%%s has unterminated opts\n"
-msgstr "Запис параметрів макросу %%%s не завершено\n"
 
 #: rpmio/macro.c:538
 #, c-format
@@ -3430,22 +3440,22 @@ msgstr "Тіло макросу %%%s є порожнім\n"
 msgid "Macro %%%s failed to expand\n"
 msgstr "Не вдалося розгорнути макрос %%%s\n"
 
-#: rpmio/macro.c:585
+#: rpmio/macro.c:586
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "Макрос %%%s має некоректну назву (%%undefine)\n"
 
-#: rpmio/macro.c:618
+#: rpmio/macro.c:619
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Макрос %%%s (%s) не було використано під рівнем %d\n"
 
-#: rpmio/macro.c:697
+#: rpmio/macro.c:698
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Невідомий параметр %c у %s(%s)\n"
 
-#: rpmio/macro.c:926
+#: rpmio/macro.c:927
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
@@ -3453,32 +3463,32 @@ msgstr ""
 "Забагато рівнів вкладеності у макросі. Ймовірно, це викликано рекурсивним "
 "оголошенням макросу.\n"
 
-#: rpmio/macro.c:995 rpmio/macro.c:1012
+#: rpmio/macro.c:996 rpmio/macro.c:1013
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Не закрито %c: %s\n"
 
-#: rpmio/macro.c:1053
+#: rpmio/macro.c:1054
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "За %% вказано непридатний до обробки макрос\n"
 
-#: rpmio/rpmfileutil.c:255
+#: rpmio/rpmfileutil.c:256
 #, c-format
 msgid "error creating temporary file %s: %m\n"
 msgstr "помилка під час створення тимчасового файла %s: %m\n"
 
-#: rpmio/rpmfileutil.c:320 rpmio/rpmfileutil.c:326
+#: rpmio/rpmfileutil.c:321 rpmio/rpmfileutil.c:327
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Файл %s: %s\n"
 
-#: rpmio/rpmfileutil.c:329
+#: rpmio/rpmfileutil.c:330
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Розмір файла %s є меншим за %u байтів\n"
 
-#: rpmio/rpmfileutil.c:597
+#: rpmio/rpmfileutil.c:598
 msgid "failed to create directory"
 msgstr "не вдалося створити каталог"
 
@@ -3584,26 +3594,26 @@ msgstr "gpg не вдалося записати підпис\n"
 msgid "unable to read the signature\n"
 msgstr "не вдалося прочитати підпис\n"
 
-#: sign/rpmgensig.c:449 sign/rpmgensig.c:518
+#: sign/rpmgensig.c:449 sign/rpmgensig.c:519
 msgid "rpmMkTemp failed\n"
 msgstr "помилка rpmMkTemp\n"
 
-#: sign/rpmgensig.c:501
+#: sign/rpmgensig.c:502
 #, c-format
 msgid "%s already contains identical signature, skipping\n"
 msgstr "%s вже містить ідентичний підпис, пропускаємо\n"
 
-#: sign/rpmgensig.c:525
+#: sign/rpmgensig.c:526
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: помилка writeLead: %s\n"
 
-#: sign/rpmgensig.c:531
+#: sign/rpmgensig.c:532
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: помилка rpmWriteSignature: %s\n"
 
-#: sign/rpmgensig.c:545
+#: sign/rpmgensig.c:546
 #, c-format
 msgid "replacing %s failed: %s\n"
 msgstr "спроба заміни %s зазнала невдачі: %s\n"

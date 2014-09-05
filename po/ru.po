@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2014-02-05 15:07+0200\n"
+"POT-Creation-Date: 2014-09-05 12:30+0300\n"
 "PO-Revision-Date: 2012-11-05 08:10+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/rpm/language/"
@@ -1645,19 +1645,19 @@ msgstr "Неверная дата %u"
 msgid "normal"
 msgstr "нормальный"
 
-#: lib/formats.c:515 lib/verify.c:341
+#: lib/formats.c:515 lib/verify.c:369
 msgid "replaced"
 msgstr "перемещен"
 
-#: lib/formats.c:518 lib/verify.c:335
+#: lib/formats.c:518 lib/verify.c:363
 msgid "not installed"
 msgstr "не установлен"
 
-#: lib/formats.c:521 lib/verify.c:337
+#: lib/formats.c:521 lib/verify.c:365
 msgid "net shared"
 msgstr ""
 
-#: lib/formats.c:524 lib/verify.c:339
+#: lib/formats.c:524 lib/verify.c:367
 msgid "wrong color"
 msgstr ""
 
@@ -2401,7 +2401,7 @@ msgstr "неверный номер пакета: %s\n"
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:458 lib/rpminstall.c:654
+#: lib/query.c:458 lib/rpminstall.c:657
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
@@ -2595,7 +2595,7 @@ msgstr "Неудовлетворенные зависимости:\n"
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: не пакет (или манифест пакета) rpm : %s\n"
 
-#: lib/rpminstall.c:357 lib/rpminstall.c:716 tools/rpmgraph.c:112
+#: lib/rpminstall.c:357 lib/rpminstall.c:719 tools/rpmgraph.c:112
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s не может быть установлен\n"
@@ -2620,17 +2620,17 @@ msgstr ""
 msgid "error reading from file %s\n"
 msgstr "ошибка чтения из файла %s\n"
 
-#: lib/rpminstall.c:661
+#: lib/rpminstall.c:664
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr ""
 
-#: lib/rpminstall.c:700
+#: lib/rpminstall.c:703
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
-#: lib/rpminstall.c:706
+#: lib/rpminstall.c:709
 #, c-format
 msgid "Installing %s\n"
 msgstr "Устанавливается %s\n"
@@ -2952,12 +2952,12 @@ msgstr ""
 msgid "sigh load: BAD\n"
 msgstr ""
 
-#: lib/signature.c:219
+#: lib/signature.c:220
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes\n"
 msgstr ""
 
-#: lib/signature.c:235
+#: lib/signature.c:236
 #, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed\n"
 msgstr ""
@@ -2987,30 +2987,40 @@ msgstr "Заголовок "
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr ""
 
-#: lib/transaction.c:1426
+#: lib/transaction.c:1429
 msgid "skipped"
 msgstr "пропущено"
 
-#: lib/transaction.c:1426
+#: lib/transaction.c:1429
 msgid "failed"
 msgstr ""
 
-#: lib/verify.c:343
+#: lib/verify.c:251
+#, c-format
+msgid "Duplicate username or UID for user %s\n"
+msgstr ""
+
+#: lib/verify.c:272
+#, c-format
+msgid "Duplicate groupname or GID for group %s\n"
+msgstr ""
+
+#: lib/verify.c:371
 #, fuzzy
 msgid "no state"
 msgstr "(сост. нет)   "
 
-#: lib/verify.c:345
+#: lib/verify.c:373
 #, fuzzy
 msgid "unknown state"
 msgstr "неизвестный тэг"
 
-#: lib/verify.c:396
+#: lib/verify.c:424
 #, c-format
 msgid "missing   %c %s"
 msgstr ""
 
-#: lib/verify.c:448
+#: lib/verify.c:476
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr ""
@@ -3362,20 +3372,20 @@ msgstr "%3d>%*s(пусто)"
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(пусто)\n"
 
-#: rpmio/macro.c:470 rpmio/macro.c:508
+#: rpmio/macro.c:464
+#, c-format
+msgid "Macro %%%s has unterminated opts\n"
+msgstr "Незакрытые параметры в макросе %%%s\n"
+
+#: rpmio/macro.c:476 rpmio/macro.c:514
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Незакрытый макрос %%%s\n"
 
-#: rpmio/macro.c:527
+#: rpmio/macro.c:533
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "Недопустимое имя (%%define) макроса %%%s\n"
-
-#: rpmio/macro.c:533
-#, c-format
-msgid "Macro %%%s has unterminated opts\n"
-msgstr "Незакрытые параметры в макросе %%%s\n"
 
 #: rpmio/macro.c:538
 #, c-format
@@ -3392,53 +3402,53 @@ msgstr "Макрос %%%s пуст\n"
 msgid "Macro %%%s failed to expand\n"
 msgstr "Невозможно раскрыть макрос %%%s\n"
 
-#: rpmio/macro.c:585
+#: rpmio/macro.c:586
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "Недопустимое имя (%%undefine) макроса %%%s\n"
 
-#: rpmio/macro.c:618
+#: rpmio/macro.c:619
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Макрос %%%s (%s) не был использован ниже уровня %d\n"
 
-#: rpmio/macro.c:697
+#: rpmio/macro.c:698
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Неизвестный параметр %c в %s(%s)\n"
 
-#: rpmio/macro.c:926
+#: rpmio/macro.c:927
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
 msgstr ""
 
-#: rpmio/macro.c:995 rpmio/macro.c:1012
+#: rpmio/macro.c:996 rpmio/macro.c:1013
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Незакрытая %c: %s\n"
 
-#: rpmio/macro.c:1053
+#: rpmio/macro.c:1054
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "непонятный макрос после %%\n"
 
-#: rpmio/rpmfileutil.c:255
+#: rpmio/rpmfileutil.c:256
 #, c-format
 msgid "error creating temporary file %s: %m\n"
 msgstr ""
 
-#: rpmio/rpmfileutil.c:320 rpmio/rpmfileutil.c:326
+#: rpmio/rpmfileutil.c:321 rpmio/rpmfileutil.c:327
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Файл %s: %s\n"
 
-#: rpmio/rpmfileutil.c:329
+#: rpmio/rpmfileutil.c:330
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Длина файла %s меньше чем %u байт\n"
 
-#: rpmio/rpmfileutil.c:597
+#: rpmio/rpmfileutil.c:598
 msgid "failed to create directory"
 msgstr ""
 
@@ -3543,26 +3553,26 @@ msgstr "ошибка gpg при записи подписи\n"
 msgid "unable to read the signature\n"
 msgstr "невозможно прочесть подпись\n"
 
-#: sign/rpmgensig.c:449 sign/rpmgensig.c:518
+#: sign/rpmgensig.c:449 sign/rpmgensig.c:519
 msgid "rpmMkTemp failed\n"
 msgstr ""
 
-#: sign/rpmgensig.c:501
+#: sign/rpmgensig.c:502
 #, c-format
 msgid "%s already contains identical signature, skipping\n"
 msgstr ""
 
-#: sign/rpmgensig.c:525
+#: sign/rpmgensig.c:526
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: ошибка writeLead: %s\n"
 
-#: sign/rpmgensig.c:531
+#: sign/rpmgensig.c:532
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: ошибка rpmWriteSignature: %s\n"
 
-#: sign/rpmgensig.c:545
+#: sign/rpmgensig.c:546
 #, c-format
 msgid "replacing %s failed: %s\n"
 msgstr ""
