@@ -398,6 +398,7 @@ AC_SUBST([WITH_DB_LIB])
 
 AM_GNU_GETTEXT_VERSION([0.16.1])
 AM_GNU_GETTEXT([external])
+AM_ICONV
 
 dnl Checks for header files we can live without.
 AC_HEADER_STDC

@@ -442,6 +442,8 @@ int addReqProv(Package pkg, rpmTagVal tagN,
 RPM_GNUC_INTERNAL
 int rpmlibNeedsFeature(Package pkg, const char * feature, const char * featureEVR);
 
+RPM_GNUC_INTERNAL
+rpmRC checkForEncoding(Header h, int addtag);
 #ifdef __cplusplus
 }
 #endif

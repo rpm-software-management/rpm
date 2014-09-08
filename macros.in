@@ -392,6 +392,9 @@ package or when debugging this package.\
 # Should binaries in noarch packages terminate a build?
 %_binaries_in_noarch_packages_terminate_build	1
 
+# Should invalid utf8 encoding in package metadata terminate a build?
+%_invalid_encoding_terminates_build 0
+
 #
 # Should rpm try to download missing sources at build-time?
 # Enabling this is dangerous as long as rpm has no means to validate

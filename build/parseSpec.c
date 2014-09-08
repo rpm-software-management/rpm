@@ -6,6 +6,9 @@
 #include "system.h"
 
 #include <errno.h>
+#ifdef HAVE_ICONV
+#include <iconv.h>
+#endif
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>		/* RPM_MACHTABLE & related */
@@ -562,6 +565,76 @@ static void addTargets(Package Pkgs)
     free(optflags);
 }
 
+rpmRC checkForEncoding(Header h, int addtag)
+{
+    rpmRC rc = RPMRC_OK;
+#if HAVE_ICONV
+    const char *encoding = "utf-8";
+    rpmTagVal tag;
+    iconv_t ic = (iconv_t) -1;
+    char *dest = NULL;
+    size_t destlen = 0;
+    int strict = rpmExpandNumeric("%{_invalid_encoding_terminates_build}");
+    HeaderIterator hi = headerInitIterator(h);
+
+    ic = iconv_open(encoding, encoding);
+    if (ic == (iconv_t) -1) {
+	rpmlog(RPMLOG_WARNING,
+		_("encoding %s not supported by system\n"), encoding);
+	goto exit;
+    }
+
+    while ((tag = headerNextTag(hi)) != RPMTAG_NOT_FOUND) {
+	struct rpmtd_s td;
+	const char *src = NULL;
+
+	if (rpmTagGetClass(tag) != RPM_STRING_CLASS)
+	    continue;
+
+	headerGet(h, tag, &td, (HEADERGET_RAW|HEADERGET_MINMEM));
+	while ((src = rpmtdNextString(&td)) != NULL) {
+	    size_t srclen = strlen(src);
+	    size_t outlen, inlen = srclen;
+	    char *out, *in = (char *) src;
+
+	    if (destlen < srclen) {
+		destlen = srclen * 2;
+		dest = xrealloc(dest, destlen);
+	    }
+	    out = dest;
+	    outlen = destlen;
+
+	    /* reset conversion state */
+	    iconv(ic, NULL, &inlen, &out, &outlen);
+
+	    if (iconv(ic, &in, &inlen, &out, &outlen) == (size_t) -1) {
+		rpmlog(strict ? RPMLOG_ERR : RPMLOG_WARNING,
+			_("Package %s: invalid %s encoding in %s: %s - %s\n"),
+			headerGetString(h, RPMTAG_NAME),
+			encoding, rpmTagGetName(tag), src, strerror(errno));
+		rc = RPMRC_FAIL;
+	    }
+
+	}
+	rpmtdFreeData(&td);
+    }
+
+    /* Stomp "known good utf" mark in header if requested */
+    if (rc == RPMRC_OK && addtag)
+	headerPutString(h, RPMTAG_ENCODING, encoding);
+    if (!strict)
+	rc = RPMRC_OK;
+
+exit:
+    if (ic != (iconv_t) -1)
+	iconv_close(ic);
+    headerFreeIterator(hi);
+    free(dest);
+#endif /* HAVE_ICONV */
+
+    return rc;
+}
+
 static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 			 const char *buildRoot, int recursing)
 {
@@ -717,6 +790,18 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 
     /* Add arch, os and platform, self-provides etc for each package */
     addTargets(spec->packages);
+
+    /* Check for encoding in each package unless disabled */
+    if (!(spec->flags & RPMSPEC_NOUTF8)) {
+	int badenc = 0;
+	for (Package pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+	    if (checkForEncoding(pkg->header, 0) != RPMRC_OK) {
+		badenc = 1;
+	    }
+	}
+	if (badenc)
+	    goto errxit;
+    }
 
     closeSpec(spec);
 exit:
