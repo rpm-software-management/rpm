@@ -47,6 +47,10 @@ static rpmRC checkSep(const char *s, char c, char **emsg)
 
 static rpmRC checkDep(rpmSpec spec, char *N, char *EVR, char **emsg)
 {
+    /* 
+     * Tokens must begin with alphanumeric, _, or /, but we don't know
+     * the spec's encoding so we only check what we can: plain ascii.
+     */
     if (isascii(N[0]) && !(risalnum(N[0]) || N[0] == '_' || N[0] == '/')) {
         rasprintf(emsg, _("Dependency tokens must begin with alpha-numeric, '_' or '/'"));
         return RPMRC_FAIL;
