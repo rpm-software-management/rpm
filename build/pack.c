@@ -438,6 +438,17 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     if (haveTildeDep(pkg->header))
 	(void) rpmlibNeedsFeature(pkg, "TildeInVersions", "4.10.0-1");
 
+    /* All dependencies added finally, write them into the header */
+    for (int i = 0; i < PACKAGE_NUM_DEPS; i++) {
+	/* Nuke any previously added dependencies from the header */
+	headerDel(pkg->header, rpmdsTagN(pkg->dependencies[i]));
+	headerDel(pkg->header, rpmdsTagEVR(pkg->dependencies[i]));
+	headerDel(pkg->header, rpmdsTagF(pkg->dependencies[i]));
+	headerDel(pkg->header, rpmdsTagTi(pkg->dependencies[i]));
+	/* ...and add again, now with automatic dependencies included */
+	rpmdsPutToHeader(pkg->dependencies[i], pkg->header);
+    }
+
     /* Create and add the cookie */
     if (cookie) {
 	rasprintf(cookie, "%s %d", buildHost(), (int) (*getBuildTime()));
@@ -623,16 +634,6 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 	headerPutString(pkg->header, RPMTAG_BUILDHOST, buildHost());
 	headerPutUint32(pkg->header, RPMTAG_BUILDTIME, getBuildTime(), 1);
 
-	for (int i=0; i<PACKAGE_NUM_DEPS; i++) {
-	    /* Nuke any previously added dependencies from the header */
-	    headerDel(pkg->header, rpmdsTagN(pkg->dependencies[i]));
-	    headerDel(pkg->header, rpmdsTagEVR(pkg->dependencies[i]));
-	    headerDel(pkg->header, rpmdsTagF(pkg->dependencies[i]));
-	    headerDel(pkg->header, rpmdsTagTi(pkg->dependencies[i]));
-	    /* ...and add again, now with automatic dependencies included */
-	    rpmdsPutToHeader(pkg->dependencies[i], pkg->header);
-	}
-
 	if (spec->sourcePkgId != NULL) {
 	    headerPutBin(pkg->header, RPMTAG_SOURCEPKGID, spec->sourcePkgId,16);
 	}
@@ -713,16 +714,6 @@ rpmRC packageSources(rpmSpec spec, char **cookie)
     headerPutString(sourcePkg->header, RPMTAG_RPMVERSION, VERSION);
     headerPutString(sourcePkg->header, RPMTAG_BUILDHOST, buildHost());
     headerPutUint32(sourcePkg->header, RPMTAG_BUILDTIME, getBuildTime(), 1);
-
-    for (int i=0; i<PACKAGE_NUM_DEPS; i++) {
-	/* Nuke any previously added dependencies from the header */
-	headerDel(sourcePkg->header, rpmdsTagN(sourcePkg->dependencies[i]));
-	headerDel(sourcePkg->header, rpmdsTagEVR(sourcePkg->dependencies[i]));
-	headerDel(sourcePkg->header, rpmdsTagF(sourcePkg->dependencies[i]));
-	headerDel(sourcePkg->header, rpmdsTagTi(sourcePkg->dependencies[i]));
-	/* ...and add again, now with automatic dependencies included */
-	rpmdsPutToHeader(sourcePkg->dependencies[i], sourcePkg->header);
-    }
 
     /* XXX this should be %_srpmdir */
     {	char *fn = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);
