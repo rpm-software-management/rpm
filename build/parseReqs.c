@@ -35,14 +35,14 @@ const char * token;
 #define	SKIPWHITE(_x)	{while(*(_x) && (risspace(*_x) || *(_x) == ',')) (_x)++;}
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(risspace(*_x) || *(_x) == ',')) (_x)++;}
 
-static int checkSep(const char *s, char c, char **emsg)
+static rpmRC checkSep(const char *s, char c, char **emsg)
 {
     const char *sep = strchr(s, c);
     if (sep && strchr(sep + 1, c)) {
 	rasprintf(emsg, "Invalid version (double separator '%c'): %s", c, s);
-	return 1;
+	return RPMRC_FAIL;
     }
-    return 0;
+    return RPMRC_OK;
 }
 
 rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
@@ -178,7 +178,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	    if (rpmCharCheck(spec, EVR, ve-v, ".-_+:%{}~")) goto exit;
 
             /* While ':' and '-' are valid, only one of each is valid. */
-	    if (checkSep(EVR, '-', &emsg) || checkSep(EVR, ':', &emsg))
+	    if (checkSep(EVR, '-', &emsg) != RPMRC_OK || checkSep(EVR, ':', &emsg) != RPMRC_OK)
 		goto exit;
 
 	    re = ve;	/* ==> next token after EVR string starts here */
