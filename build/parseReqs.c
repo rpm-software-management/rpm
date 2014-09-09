@@ -45,6 +45,25 @@ static rpmRC checkSep(const char *s, char c, char **emsg)
     return RPMRC_OK;
 }
 
+static rpmRC checkDep(rpmSpec spec, char *N, char *EVR, char **emsg)
+{
+    if (isascii(N[0]) && !(risalnum(N[0]) || N[0] == '_' || N[0] == '/')) {
+        rasprintf(emsg, _("Dependency tokens must begin with alpha-numeric, '_' or '/'"));
+        return RPMRC_FAIL;
+    }
+    if (EVR) {
+        if (N[0] == '/') {
+            rasprintf(emsg, _("Versioned file name not permitted"));
+            return RPMRC_FAIL;
+        }
+        if (rpmCharCheck(spec, EVR, strlen(EVR), ".-_+:%{}~"))
+            return RPMRC_FAIL;
+        if (checkSep(EVR, '-', emsg) != RPMRC_OK || checkSep(EVR, ':', emsg) != RPMRC_OK)
+            return RPMRC_FAIL;
+    }
+    return RPMRC_OK;
+}
+
 rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	       int index, rpmsenseFlags tagflags)
 {
@@ -123,15 +142,6 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 
 	Flags = (tagflags & ~RPMSENSE_SENSEMASK);
 
-	/* 
-	 * Tokens must begin with alphanumeric, _, or /, but we don't know
-	 * the spec's encoding so we only check what we can: plain ascii.
-	 */
-	if (isascii(r[0]) && !(risalnum(r[0]) || r[0] == '_' || r[0] == '/')) {
-	    rasprintf(&emsg, _("Dependency tokens must begin with alpha-numeric, '_' or '/'"));
-	    goto exit;
-	}
-
 	re = r;
 	SKIPNONWHITE(re);
 	N = xmalloc((re-r) + 1);
@@ -152,11 +162,6 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	    if ((ve-v) != strlen(rc->token) || !rstreqn(v, rc->token, (ve-v)))
 		continue;
 
-	    if (r[0] == '/') {
-		rasprintf(&emsg, _("Versioned file name not permitted"));
-		goto exit;
-	    }
-
 	    Flags |= rc->sense;
 
 	    /* now parse EVR */
@@ -175,15 +180,13 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	    }
 	    EVR = xmalloc((ve-v) + 1);
 	    rstrlcpy(EVR, v, (ve-v) + 1);
-	    if (rpmCharCheck(spec, EVR, ve-v, ".-_+:%{}~")) goto exit;
-
-            /* While ':' and '-' are valid, only one of each is valid. */
-	    if (checkSep(EVR, '-', &emsg) != RPMRC_OK || checkSep(EVR, ':', &emsg) != RPMRC_OK)
-		goto exit;
-
 	    re = ve;	/* ==> next token after EVR string starts here */
 	} else
 	    EVR = NULL;
+
+	/* check that dependency is well-formed */
+	if (checkDep(spec, N, EVR, &emsg))
+	    goto exit;
 
 	if (addReqProv(pkg, nametag, N, EVR, Flags, index)) {
 	    rasprintf(&emsg, _("invalid dependency"));
