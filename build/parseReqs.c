@@ -148,6 +148,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	rstrlcpy(N, r, (re-r) + 1);
 
 	/* Parse EVR */
+	EVR = NULL;
 	v = re;
 	SKIPWHITE(v);
 	ve = v;
@@ -157,32 +158,28 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 
 	/* Check for possible logical operator */
 	if (ve > v) {
-	  const struct ReqComp *rc;
-	  for (rc = ReqComparisons; rc->token != NULL; rc++) {
-	    if ((ve-v) != strlen(rc->token) || !rstreqn(v, rc->token, (ve-v)))
-		continue;
+	    const struct ReqComp *rc;
+	    for (rc = ReqComparisons; rc->token != NULL; rc++)
+		if ((ve-v) == strlen(rc->token) && rstreqn(v, rc->token, (ve-v)))
+		    break;
 
-	    Flags |= rc->sense;
+	    if (rc->token != NULL) {
+		Flags |= rc->sense;
 
-	    /* now parse EVR */
-	    v = ve;
-	    SKIPWHITE(v);
-	    ve = v;
-	    SKIPNONWHITE(ve);
-	    break;
-	  }
-	}
-
-	if (Flags & RPMSENSE_SENSEMASK) {
-	    if (*v == '\0' || ve == v) {
-		rasprintf(&emsg, _("Version required"));
-		goto exit;
+		/* now parse EVR */
+		v = ve;
+		SKIPWHITE(v);
+		ve = v;
+		SKIPNONWHITE(ve);
+		if (*v == '\0' || ve == v) {
+		    rasprintf(&emsg, _("Version required"));
+		    goto exit;
+		}
+		EVR = xmalloc((ve-v) + 1);
+		rstrlcpy(EVR, v, (ve-v) + 1);
+		re = ve;	/* ==> next token after EVR string starts here */
 	    }
-	    EVR = xmalloc((ve-v) + 1);
-	    rstrlcpy(EVR, v, (ve-v) + 1);
-	    re = ve;	/* ==> next token after EVR string starts here */
-	} else
-	    EVR = NULL;
+	}
 
 	/* check that dependency is well-formed */
 	if (checkDep(spec, N, EVR, &emsg))
@@ -210,8 +207,8 @@ exit:
 	}
 	free(emsg);
     }
-    free(N);
-    free(EVR);
+    _free(N);
+    _free(EVR);
 
     return rc;
 }
