@@ -227,41 +227,15 @@ exit:
     return rc;
 }
 
-static int depContainsTilde(Header h, rpmTagVal tagEVR)
+static int haveTildeDep(Package pkg)
 {
-    struct rpmtd_s evrs;
-    const char *evr = NULL;
-
-    if (headerGet(h, tagEVR, &evrs, HEADERGET_MINMEM)) {
-	while ((evr = rpmtdNextString(&evrs)) != NULL)
-	    if (strchr(evr, '~'))
-		break;
-	rpmtdFreeData(&evrs);
+    for (int i = 0; i < PACKAGE_NUM_DEPS; i++) {
+	rpmds ds = rpmdsInit(pkg->dependencies[i]);
+	while (rpmdsNext(ds) >= 0) {
+	    if (strchr(rpmdsEVR(ds), '~'))
+		return 1;
+	}
     }
-    return evr != NULL;
-}
-
-static rpmTagVal depevrtags[] = {
-    RPMTAG_PROVIDEVERSION,
-    RPMTAG_REQUIREVERSION,
-    RPMTAG_OBSOLETEVERSION,
-    RPMTAG_CONFLICTVERSION,
-    RPMTAG_ORDERVERSION,
-    RPMTAG_TRIGGERVERSION,
-    RPMTAG_SUGGESTVERSION,
-    RPMTAG_ENHANCEVERSION,
-    RPMTAG_RECOMMENDVERSION,
-    RPMTAG_SUPPLEMENTVERSION,
-    0
-};
-
-static int haveTildeDep(Header h)
-{
-    int i;
-
-    for (i = 0; depevrtags[i] != 0; i++)
-	if (depContainsTilde(h, depevrtags[i]))
-	    return 1;
     return 0;
 }
 
@@ -435,7 +409,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     }
 
     /* check if the package has a dependency with a '~' */
-    if (haveTildeDep(pkg->header))
+    if (haveTildeDep(pkg))
 	(void) rpmlibNeedsFeature(pkg, "TildeInVersions", "4.10.0-1");
 
     /* All dependencies added finally, write them into the header */
