@@ -60,7 +60,7 @@ static rpmRC checkDep(rpmSpec spec, char *N, char *EVR, char **emsg)
             rasprintf(emsg, _("Versioned file name not permitted"));
             return RPMRC_FAIL;
         }
-        if (rpmCharCheck(spec, EVR, strlen(EVR), ".-_+:%{}~"))
+        if (rpmCharCheck(spec, EVR, ".-_+:%{}~"))
             return RPMRC_FAIL;
         if (checkSep(EVR, '-', emsg) != RPMRC_OK || checkSep(EVR, ':', emsg) != RPMRC_OK)
             return RPMRC_FAIL;
