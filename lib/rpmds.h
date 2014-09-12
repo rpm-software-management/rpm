@@ -93,7 +93,7 @@ typedef rpmFlags rpmsenseFlags;
  * @param flags		flags
  * @return		flags filtered to allowed bits
  */
-rpmFlags rpmSanitizeDSFlags(rpmTagVal tagN, rpmFlags Flags);
+rpmsenseFlags rpmSanitizeDSFlags(rpmTagVal tagN, rpmsenseFlags Flags);
 
 /** \ingroup rpmds
  * Convert a string to the sense flags
@@ -101,7 +101,7 @@ rpmFlags rpmSanitizeDSFlags(rpmTagVal tagN, rpmFlags Flags);
  * @param len		length of the string
  * @return		flags, zero for unknwon relations
  */
-rpmFlags rpmParseDSFlags(const char *str, size_t len);
+rpmsenseFlags rpmParseDSFlags(const char *str, size_t len);
 
 /** \ingroup rpmds
  * Reference a dependency set instance.

@@ -143,7 +143,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 
 	/* Check for possible logical operator */
 	if (ve > v) {
-	    rpmFlags sense = rpmParseDSFlags(v, ve - v);
+	    rpmsenseFlags sense = rpmParseDSFlags(v, ve - v);
 	    if (sense) {
 		Flags |= sense;
 

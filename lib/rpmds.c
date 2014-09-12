@@ -1244,7 +1244,7 @@ rpmstrPool rpmdsPool(rpmds ds)
     return (ds != NULL) ? ds->pool : NULL;
 }
 
-rpmFlags rpmSanitizeDSFlags(rpmTagVal tagN, rpmFlags Flags)
+rpmsenseFlags rpmSanitizeDSFlags(rpmTagVal tagN, rpmsenseFlags Flags)
 {
     rpmsenseFlags extra = RPMSENSE_ANY;
     switch (tagN) {
@@ -1285,7 +1285,7 @@ const char * token;
     { NULL, 0 },
 };
 
-rpmFlags rpmParseDSFlags(const char *str, size_t len)
+rpmsenseFlags rpmParseDSFlags(const char *str, size_t len)
 {
     const struct ReqComp *rc;
     for (rc = ReqComparisons; rc->token != NULL; rc++)
