@@ -1299,3 +1299,155 @@ rpmsenseFlags rpmParseDSFlags(const char *str, size_t len)
 	    return rc->sense;
     return 0;
 }
+
+static struct RichOpComp {
+    const char * token;
+    rpmrichOp op;
+} const RichOps[] = { 
+    { "&",	RPMRICHOP_AND},
+    { "&&",	RPMRICHOP_AND},
+    { "AND",	RPMRICHOP_AND},
+    { "|",	RPMRICHOP_OR},
+    { "||",	RPMRICHOP_OR},
+    { "OR",	RPMRICHOP_OR},
+    { "IF",	RPMRICHOP_IF},
+    { NULL, 0 },
+};
+
+static rpmRC parseRichDepOp(const char **dstrp, rpmrichOp *opp, char **emsg)
+{
+    const char *p = *dstrp, *pe = p;
+    const struct RichOpComp *ro;
+
+    while (*pe && !risspace(*pe) && *pe != ')')
+	pe++;
+    for (ro = RichOps; ro->token != NULL; ro++)
+	if (pe - p == strlen(ro->token) && rstreqn(p, ro->token, pe - p)) {
+	    *opp = ro->op;
+	    *dstrp = pe; 
+	    return RPMRC_OK;
+	}
+    if (emsg)
+	rasprintf(emsg, _("Unknown rich dependency op '%.*s'"), (int)(pe - p), p); 
+    return RPMRC_FAIL;
+}
+
+const char *rpmrichOpStr(rpmrichOp op)
+{
+    if (op == RPMRICHOP_SINGLE)
+	return "SINGLE";
+    if (op == RPMRICHOP_AND)
+	return "&";
+    if (op == RPMRICHOP_OR)
+	return "|";
+    if (op == RPMRICHOP_IF)
+	return "IF";
+    return NULL;
+}
+
+
+#define SKIPWHITE(_x)   {while(*(_x) && (risspace(*_x) || *(_x) == ',')) (_x)++;}
+#define SKIPNONWHITEX(_x){int bl = 0; while(*(_x) &&!(risspace(*_x) || *(_x) == ',' || (*(_x) == ')' && bl-- <= 0))) if (*(_x)++ == '(') bl++;}
+
+static rpmRC parseSimpleDep(const char **dstrp, char **emsg, rpmrichParseFunction cb, void *cbdata)
+{
+    const char *p = *dstrp;
+    const char *n, *e = 0;
+    int nl, el = 0;
+    rpmsenseFlags sense = 0;
+
+    n = p;
+    SKIPNONWHITEX(p);
+    nl = p - n;
+    if (nl == 0) {
+        if (emsg)
+          rasprintf(emsg, _("Name required"));
+        return RPMRC_FAIL;
+    }   
+    SKIPWHITE(p);
+    if (*p) {
+        const char *pe = p;
+
+        SKIPNONWHITEX(pe);
+	sense = rpmParseDSFlags(p, pe - p);
+        if (sense) {
+            p = pe; 
+            SKIPWHITE(p);
+            e = p;
+            SKIPNONWHITEX(p);
+            el = p - e;
+        }
+    }   
+    if (e && el == 0) {
+        if (emsg)
+          rasprintf(emsg, _("Version required"));
+        return RPMRC_FAIL;
+    }
+    if (cb(cbdata, RPMRICH_PARSE_SIMPLE, n, nl, e, el, sense, RPMRICHOP_SINGLE, emsg) != RPMRC_OK)
+	return RPMRC_FAIL;
+    *dstrp = p;
+    return RPMRC_OK;
+}
+
+rpmRC rpmrichParse(const char **dstrp, char **emsg, rpmrichParseFunction cb, void *cbdata)
+{
+    const char *p = *dstrp, *pe;
+    rpmrichOp op = RPMRICHOP_SINGLE, chainop = 0;
+
+    if (cb(cbdata, RPMRICH_PARSE_ENTER, p, 0, 0, 0, 0, op, emsg) != RPMRC_OK)
+        return RPMRC_FAIL;
+    if (*p++ != '(') {
+        if (emsg)
+          rasprintf(emsg, _("Rich dependency does not start with '('"));
+        return RPMRC_FAIL;
+    }
+    for (;;) {
+        SKIPWHITE(p);
+        if (*p == ')') {
+            if (emsg) {
+                if (chainop)
+                    rasprintf(emsg, _("Missing argument to rich dependency op"));
+                else
+                    rasprintf(emsg, _("Empty rich dependency"));
+            }
+            return RPMRC_FAIL;
+        }
+        if (*p == '(') {
+            if (rpmrichParse(&p, emsg, cb, cbdata) != RPMRC_OK)
+                return RPMRC_FAIL;
+        } else {
+            if (parseSimpleDep(&p, emsg, cb, cbdata) != RPMRC_OK)
+                return RPMRC_FAIL;
+        }
+        SKIPWHITE(p);
+        if (!*p) {
+            if (emsg)
+                rasprintf(emsg, _("Unterminated rich dependency: %s"), *dstrp);
+            return RPMRC_FAIL;
+        }
+        if (*p == ')')
+            break;
+        pe = p;
+        if (parseRichDepOp(&pe, &op, emsg) != RPMRC_OK)
+            return RPMRC_FAIL;
+        if (chainop && op != chainop) {
+            if (emsg)
+                rasprintf(emsg, _("Cannot chain different ops"));
+            return RPMRC_FAIL;
+        }
+        if (chainop == RPMRICHOP_IF) {
+            if (emsg)
+                rasprintf(emsg, _("Cannot chain IF ops"));
+            return RPMRC_FAIL;
+        }
+        chainop = op;
+        if (cb(cbdata, RPMRICH_PARSE_OP, p, pe - p, 0, 0, 0, op, emsg) != RPMRC_OK)
+            return RPMRC_FAIL;
+        p = pe;
+    }
+    p++;
+    if (cb(cbdata, RPMRICH_PARSE_LEAVE, *dstrp, p - *dstrp , 0, 0, 0, op, emsg) != RPMRC_OK)
+        return RPMRC_FAIL;
+    *dstrp = p;
+    return RPMRC_OK;
+}

@@ -463,6 +463,42 @@ rpmds rpmdsSinglePoolTix(rpmstrPool pool, rpmTagVal tagN,
  */
 int rpmdsRpmlibPool(rpmstrPool pool, rpmds * dsp, const void * tblp);
 
+
+typedef enum rpmrichOp_e {
+    RPMRICHOP_SINGLE = 1,
+    RPMRICHOP_AND    = 2,
+    RPMRICHOP_OR     = 3,
+    RPMRICHOP_IF     = 4
+} rpmrichOp;
+
+typedef enum rpmrichParseType_e {
+    RPMRICH_PARSE_SIMPLE = 1,	/* standard N <=> EVR dep */
+    RPMRICH_PARSE_ENTER  = 2,	/* entering sub-dependency */
+    RPMRICH_PARSE_LEAVE  = 3,	/* leaving sub-dependency */
+    RPMRICH_PARSE_OP     = 4	/* parsed a rich dependency op */
+} rpmrichParseType;
+
+typedef rpmRC (*rpmrichParseFunction) (void *cbdata, rpmrichParseType type,
+			 const char *n, int nl, const char *e, int el, rpmsenseFlags sense,
+			 rpmrichOp op, char **emsg);
+
+/**
+ * Parse a rich dependency string
+ * @param dstrp		pointer to sting, will be updated
+ * @param emsg		returns the error string, can be NULL
+ * @param cb		callback function
+ * @param cbdata	callback function data
+ * @return		RPMRC_OK on success
+ */
+rpmRC rpmrichParse(const char **dstrp, char **emsg, rpmrichParseFunction cb, void *cbdata);
+
+/**
+ * Return a string representation of the rich dependency op
+ * @param op		the dependency op
+ * @return		constant string, do not free
+ */
+const char *rpmrichOpStr(rpmrichOp op);
+
 #ifdef __cplusplus
 }
 #endif
