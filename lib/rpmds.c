@@ -1209,6 +1209,9 @@ static const struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(LargeFiles)", 	"4.12.0-1",
 	(		RPMSENSE_EQUAL),
     N_("support files larger than 4GB") },
+    { "rpmlib(RichDependencies)",    "4.12.0-1",
+	(		RPMSENSE_EQUAL),
+    N_("support for rich dependencies.") },
     { NULL,				NULL, 0,	NULL }
 };
 
@@ -1259,7 +1262,10 @@ rpmsenseFlags rpmSanitizeDSFlags(rpmTagVal tagN, rpmsenseFlags Flags)
     case RPMTAG_SUPPLEMENTNAME:
     case RPMTAG_ENHANCENAME:
     case RPMTAG_REQUIRENAME:
-	extra = Flags & _ALL_REQUIRES_MASK;
+	extra = Flags & (_ALL_REQUIRES_MASK | RPMSENSE_RICH);
+	break;
+    case RPMTAG_CONFLICTNAME:
+	extra = Flags & RPMSENSE_RICH;
 	break;
     default:
 	break;

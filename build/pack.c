@@ -239,6 +239,21 @@ static int haveTildeDep(Package pkg)
     return 0;
 }
 
+static int haveRichDep(Package pkg)
+{
+    for (int i = 0; i < PACKAGE_NUM_DEPS; i++) {
+	rpmds ds = rpmdsInit(pkg->dependencies[i]);
+	rpmTagVal tagN = rpmdsTagN(ds);
+	if (tagN != RPMTAG_REQUIRENAME && tagN != RPMTAG_CONFLICTNAME)
+	    continue;
+	while (rpmdsNext(ds) >= 0) {
+	    if (rpmdsFlags(ds) & RPMSENSE_RICH)
+		return 1;
+	}
+    }
+    return 0;
+}
+
 static rpm_loff_t estimateCpioSize(Package pkg)
 {
     rpmfi fi;
@@ -411,6 +426,10 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     /* check if the package has a dependency with a '~' */
     if (haveTildeDep(pkg))
 	(void) rpmlibNeedsFeature(pkg, "TildeInVersions", "4.10.0-1");
+
+    /* check if the package has a rich dependency */
+    if (haveRichDep(pkg))
+	(void) rpmlibNeedsFeature(pkg, "RichDependencies", "4.12.0-1");
 
     /* All dependencies added finally, write them into the header */
     for (int i = 0; i < PACKAGE_NUM_DEPS; i++) {

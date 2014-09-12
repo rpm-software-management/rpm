@@ -49,7 +49,8 @@ enum rpmsenseFlags_e {
     RPMSENSE_TRIGGERPREIN = (1 << 25),	/*!< %triggerprein dependency. */
     RPMSENSE_KEYRING	= (1 << 26),
     /* bit 27 unused */
-    RPMSENSE_CONFIG	= (1 << 28)
+    RPMSENSE_CONFIG	= (1 << 28),
+    RPMSENSE_RICH	= (1 << 29)
 };
 
 typedef rpmFlags rpmsenseFlags;
