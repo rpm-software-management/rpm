@@ -1493,6 +1493,9 @@ static rpmRC rpmdsParseRichDepCB(void *cbdata, rpmrichParseType type,
     if ((type == RPMRICH_PARSE_SIMPLE || type == RPMRICH_PARSE_LEAVE) && !data->dochain) {
 	if (type == RPMRICH_PARSE_LEAVE)
 	    sense = RPMSENSE_RICH;
+	else if (data->dep->tagN == RPMTAG_REQUIRENAME && nl > 7 &&
+			 rstreqn(n, "rpmlib(", sizeof("rpmlib(")-1))
+	    sense |= RPMSENSE_RPMLIB;
 	ds = singleDS(data->dep->pool, data->dep->tagN, 0, 0, sense | data->depflags, 0, 0, 0);
 	ds->N[0] = rpmstrPoolIdn(ds->pool, n, nl, 1);
 	ds->EVR[0] = rpmstrPoolIdn(ds->pool, e ? e : "", el, 1);
