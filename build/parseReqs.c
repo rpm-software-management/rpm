@@ -49,6 +49,61 @@ static rpmRC checkDep(rpmSpec spec, char *N, char *EVR, char **emsg)
     return RPMRC_OK;
 }
 
+struct parseRCPOTRichData {
+    rpmSpec spec;
+    StringBuf sb;
+    int no_if;
+};
+
+/* Callback for the rich dependency parser. We use this to do check for invalid
+ * characters and to build a normailzed version of the dependency */
+static rpmRC parseRCPOTRichCB(void *cbdata, rpmrichParseType type,
+		const char *n, int nl, const char *e, int el, rpmsenseFlags sense,
+		rpmrichOp op, char **emsg) {
+    struct parseRCPOTRichData *data = cbdata;
+    StringBuf sb = data->sb;
+    rpmRC rc = RPMRC_OK;
+
+    if (type == RPMRICH_PARSE_ENTER) {
+	appendStringBuf(sb, "(");
+    } else if (type == RPMRICH_PARSE_LEAVE) {
+	appendStringBuf(sb, ")");
+    } else if (type == RPMRICH_PARSE_SIMPLE) {
+	char *N = xmalloc(nl + 1);
+	char *EVR = NULL;
+	rstrlcpy(N, n, nl + 1);
+	appendStringBuf(sb, N);
+	if (el) {
+	    char rel[6], *rp = rel;
+	    EVR = xmalloc(el + 1);
+	    rstrlcpy(EVR, e, el + 1);
+	    *rp++ = ' ';
+	    if (sense & RPMSENSE_LESS)
+		*rp++ = '<';
+	    if (sense & RPMSENSE_GREATER)
+		*rp++ = '>';
+	    if (sense & RPMSENSE_EQUAL)
+		*rp++ = '=';
+	    *rp++ = ' ';
+	    *rp = 0;
+	    appendStringBuf(sb, rel);
+	    appendStringBuf(sb, EVR);
+	}
+	rc = checkDep(data->spec, N, EVR, emsg);
+	_free(N);
+	_free(EVR);
+    } else if (type == RPMRICH_PARSE_OP) {
+	if (op == RPMRICHOP_IF && data->no_if) {
+	    rasprintf(emsg, _("IF not allowed in conflicts dependencies"));
+	    rc = RPMRC_FAIL;
+	}
+	appendStringBuf(sb, " ");
+	appendStringBuf(sb, rpmrichOpStr(op));
+	appendStringBuf(sb, " ");
+    }
+    return rc;
+}
+
 rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	       int index, rpmsenseFlags tagflags)
 {
@@ -126,6 +181,31 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	    break;
 
 	Flags = (tagflags & ~RPMSENSE_SENSEMASK);
+
+	if (r[0] == '(') {
+	    struct parseRCPOTRichData data;
+	    if (nametag != RPMTAG_REQUIRENAME && nametag != RPMTAG_CONFLICTNAME &&
+			nametag != RPMTAG_RECOMMENDNAME && nametag != RPMTAG_SUPPLEMENTNAME &&
+			nametag != RPMTAG_SUGGESTNAME && nametag != RPMTAG_ENHANCENAME) {
+		rasprintf(&emsg, _("No rich dependencies allowed for this type"));
+		goto exit;
+	    }
+	    data.spec = spec;
+	    data.sb = newStringBuf();
+	    data.no_if = (nametag == RPMTAG_CONFLICTNAME);
+	    if (rpmrichParse(&r, &emsg, parseRCPOTRichCB, &data) != RPMRC_OK) {
+		freeStringBuf(data.sb);
+		goto exit;
+	    }
+	    if (addReqProv(pkg, nametag, getStringBuf(data.sb), NULL, Flags | RPMSENSE_RICH, index)) {
+		rasprintf(&emsg, _("invalid dependency"));
+		freeStringBuf(data.sb);
+		goto exit;
+	    }
+	    freeStringBuf(data.sb);
+	    re = r;
+	    continue;
+	}
 
 	re = r;
 	SKIPNONWHITE(re);
