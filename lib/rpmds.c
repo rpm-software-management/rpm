@@ -1451,3 +1451,90 @@ rpmRC rpmrichParse(const char **dstrp, char **emsg, rpmrichParseFunction cb, voi
     *dstrp = p;
     return RPMRC_OK;
 }
+
+
+struct rpmdsParseRichDepData {
+    rpmds dep;
+    rpmsenseFlags depflags;
+
+    rpmds leftds;
+    rpmds rightds;
+    rpmrichOp op;
+
+    int depth;
+    const char *rightstart;
+    int dochain;
+};
+
+static rpmRC rpmdsParseRichDepCB(void *cbdata, rpmrichParseType type,
+		const char *n, int nl, const char *e, int el, rpmsenseFlags sense,
+		rpmrichOp op, char **emsg) {
+    struct rpmdsParseRichDepData *data = cbdata;
+    rpmds ds = 0;
+
+    if (type == RPMRICH_PARSE_ENTER)
+	data->depth++;
+    else if (type == RPMRICH_PARSE_LEAVE) {
+	if (--data->depth == 0 && data->dochain && data->rightstart) {
+	    /* chain op hack, construct a sub-ds from the right side of the chain */
+	    char *right = xmalloc(n + nl - data->rightstart + 2);
+	    right[0] = '(';
+	    strncpy(right + 1, data->rightstart, n + nl - data->rightstart);
+	    right[n + nl - data->rightstart + 1] = 0;
+	    data->rightds = rpmdsFree(data->rightds);
+	    ds = singleDS(data->dep->pool, data->dep->tagN, 0, 0, RPMSENSE_RICH | data->depflags, 0, 0, 0);
+	    ds->N[0] = rpmstrPoolIdn(ds->pool, n, nl, 1);
+	    ds->EVR[0] = rpmstrPoolIdn(ds->pool, e ? e : "", el, 1);
+	    data->rightds = ds;
+	}
+    }
+    if (data->depth != 1)
+	return RPMRC_OK;	/* we're only interested in top-level parsing */
+    if ((type == RPMRICH_PARSE_SIMPLE || type == RPMRICH_PARSE_LEAVE) && !data->dochain) {
+	if (type == RPMRICH_PARSE_LEAVE)
+	    sense = RPMSENSE_RICH;
+	ds = singleDS(data->dep->pool, data->dep->tagN, 0, 0, sense | data->depflags, 0, 0, 0);
+	ds->N[0] = rpmstrPoolIdn(ds->pool, n, nl, 1);
+	ds->EVR[0] = rpmstrPoolIdn(ds->pool, e ? e : "", el, 1);
+	if (!data->leftds)
+	    data->leftds = ds;
+	else {
+	    data->rightds = ds;
+	    data->rightstart = n;
+	}
+    }
+    if (type == RPMRICH_PARSE_OP) {
+	if (data->op != RPMRICHOP_SINGLE)
+	    data->dochain = 1;	/* this is a chained op */
+	data->op = op;
+    }
+    return RPMRC_OK;
+}
+
+
+rpmRC rpmdsParseRichDep(rpmds dep, rpmds *leftds, rpmds *rightds, rpmrichOp *op, char **emsg)
+{
+    rpmRC rc;
+    struct rpmdsParseRichDepData data;
+    const char *depstr = rpmdsN(dep);
+    memset(&data, 0, sizeof(data));
+    data.dep = dep;
+    data.op = RPMRICHOP_SINGLE;
+    data.depflags = rpmdsFlags(dep) & ~(RPMSENSE_SENSEMASK | RPMSENSE_RICH | RPMSENSE_MISSINGOK);
+    rc = rpmrichParse(&depstr, emsg, rpmdsParseRichDepCB, &data);
+    if (rc == RPMRC_OK && *depstr) {
+	if (emsg)
+	    rasprintf(emsg, _("Junk after rich dependency"));
+	rc = RPMRC_FAIL;
+    }
+    if (rc != RPMRC_OK) {
+	rpmdsFree(data.leftds);
+	rpmdsFree(data.rightds);
+    } else {
+	*leftds = data.leftds;
+	*rightds = data.rightds;
+	*op = data.op;
+    }
+    return rc;
+}
+

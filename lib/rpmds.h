@@ -499,6 +499,17 @@ rpmRC rpmrichParse(const char **dstrp, char **emsg, rpmrichParseFunction cb, voi
  */
 const char *rpmrichOpStr(rpmrichOp op);
 
+/**
+ * Parse a rich dependency string
+ * @param dep		the dependency
+ * @param leftds	returns the left dependency
+ * @param rightds	returns the right dependency
+ * @param op		returns the rich dep op
+ * @param emsg		returns the error string
+ * @return		RPMRC_OK on success
+ */
+rpmRC rpmdsParseRichDep(rpmds dep, rpmds *leftds, rpmds *rightds, rpmrichOp *op, char **emsg);
+
 #ifdef __cplusplus
 }
 #endif
