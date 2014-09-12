@@ -2032,6 +2032,52 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
     return 0;
 }
 
+struct updateRichDepData {
+    ARGV_t argv;
+    int neg;
+};
+
+static rpmRC updateRichDepCB(void *cbdata, rpmrichParseType type,
+		const char *n, int nl, const char *e, int el, rpmsenseFlags sense,
+		rpmrichOp op, char **emsg) {
+    struct updateRichDepData *data = cbdata;
+    if (type == RPMRICH_PARSE_SIMPLE && nl) {
+	char *name = xmalloc(data->neg + nl + 1);
+	*name = '!';
+	strncpy(name + data->neg, n, nl);
+	name[data->neg + nl] = 0;
+	argvAdd(&data->argv, name);
+	_free(name);
+    } else if ((type == RPMRICH_PARSE_OP || RPMRICH_PARSE_LEAVE) && op == RPMRICHOP_IF) {
+	data->neg ^= 1;
+    }
+    return RPMRC_OK;
+}
+
+static rpmRC updateRichDep(dbiCursor dbc, const char *str,
+                           struct dbiIndexItem_s *rec,
+                           idxfunc idxupdate)
+{
+    int n, i, rc = 0;
+    struct updateRichDepData data;
+
+    data.argv = argvNew();
+    data.neg = 0;
+    if (rpmrichParse(&str, NULL, updateRichDepCB, &data) == RPMRC_OK) {
+	n = argvCount(data.argv);
+	if (n) {
+	    argvSort(data.argv, NULL);
+	    for (i = 0; i < n; i++) {
+		if (i && !strcmp(data.argv[i - 1], data.argv[i]))
+		    continue;       /* ignore dups */
+		rc += idxupdate(dbc, data.argv[i], strlen(data.argv[i]), rec);
+	    }
+	}
+    }
+    argvFree(data.argv);
+    return rc;
+}
+
 static rpmRC tag2index(dbiIndex dbi, rpmTagVal rpmtag,
 		       unsigned int hdrNum, Header h,
 		       idxfunc idxupdate)
@@ -2098,6 +2144,12 @@ static rpmRC tag2index(dbiIndex dbi, rpmTagVal rpmtag,
 	    continue;
 
 	rc += idxupdate(dbc, key, keylen, &rec);
+
+	if ((rpmtag == RPMTAG_REQUIRENAME || rpmtag == RPMTAG_CONFLICTNAME) && *(char *)key == '(') {
+	    if (rpmtdType(&tagdata) == RPM_STRING_ARRAY_TYPE) {
+		rc += updateRichDep(dbc, rpmtdGetString(&tagdata), &rec, idxupdate);
+	    }
+	}
     }
 
     dbiCursorFree(dbc);
@@ -2106,6 +2158,7 @@ exit:
     rpmtdFreeData(&tagdata);
     return (rc == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
+
 static rpmRC indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
 {
     return tag2index(dbi, rpmtag, hdrNum, h, dbcCursorPut);
