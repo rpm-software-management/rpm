@@ -1266,3 +1266,30 @@ rpmFlags rpmSanitizeDSFlags(rpmTagVal tagN, rpmFlags Flags)
     }
     return (Flags & RPMSENSE_SENSEMASK) | extra;
 }
+
+static struct ReqComp {
+const char * token;
+    rpmsenseFlags sense;
+} const ReqComparisons[] = { 
+    { "<=", RPMSENSE_LESS | RPMSENSE_EQUAL},
+    { "=<", RPMSENSE_LESS | RPMSENSE_EQUAL},
+    { "<",  RPMSENSE_LESS},
+
+    { "==", RPMSENSE_EQUAL},
+    { "=",  RPMSENSE_EQUAL},
+    
+    { ">=", RPMSENSE_GREATER | RPMSENSE_EQUAL},
+    { "=>", RPMSENSE_GREATER | RPMSENSE_EQUAL},
+    { ">",  RPMSENSE_GREATER},
+
+    { NULL, 0 },
+};
+
+rpmFlags rpmParseDSFlags(const char *str, size_t len)
+{
+    const struct ReqComp *rc;
+    for (rc = ReqComparisons; rc->token != NULL; rc++)
+	if (len == strlen(rc->token) && rstreqn(str, rc->token, len))
+	    return rc->sense;
+    return 0;
+}

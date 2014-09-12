@@ -96,6 +96,14 @@ typedef rpmFlags rpmsenseFlags;
 rpmFlags rpmSanitizeDSFlags(rpmTagVal tagN, rpmFlags Flags);
 
 /** \ingroup rpmds
+ * Convert a string to the sense flags
+ * @param str		the string
+ * @param len		length of the string
+ * @return		flags, zero for unknwon relations
+ */
+rpmFlags rpmParseDSFlags(const char *str, size_t len);
+
+/** \ingroup rpmds
  * Reference a dependency set instance.
  * @param ds		dependency set
  * @return		new dependency set reference

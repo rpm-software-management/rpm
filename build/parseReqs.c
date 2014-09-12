@@ -12,25 +12,6 @@
 #include "build/rpmbuild_misc.h"
 #include "debug.h"
 
-/**
- */
-static struct ReqComp {
-const char * token;
-    rpmsenseFlags sense;
-} const ReqComparisons[] = {
-    { "<=", RPMSENSE_LESS | RPMSENSE_EQUAL},
-    { "=<", RPMSENSE_LESS | RPMSENSE_EQUAL},
-    { "<", RPMSENSE_LESS},
-
-    { "==", RPMSENSE_EQUAL},
-    { "=", RPMSENSE_EQUAL},
-    
-    { ">=", RPMSENSE_GREATER | RPMSENSE_EQUAL},
-    { "=>", RPMSENSE_GREATER | RPMSENSE_EQUAL},
-    { ">", RPMSENSE_GREATER},
-
-    { NULL, 0 },
-};
 
 #define	SKIPWHITE(_x)	{while(*(_x) && (risspace(*_x) || *(_x) == ',')) (_x)++;}
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(risspace(*_x) || *(_x) == ',')) (_x)++;}
@@ -162,13 +143,9 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 
 	/* Check for possible logical operator */
 	if (ve > v) {
-	    const struct ReqComp *rc;
-	    for (rc = ReqComparisons; rc->token != NULL; rc++)
-		if ((ve-v) == strlen(rc->token) && rstreqn(v, rc->token, (ve-v)))
-		    break;
-
-	    if (rc->token != NULL) {
-		Flags |= rc->sense;
+	    rpmFlags sense = rpmParseDSFlags(v, ve - v);
+	    if (sense) {
+		Flags |= sense;
 
 		/* now parse EVR */
 		v = ve;
