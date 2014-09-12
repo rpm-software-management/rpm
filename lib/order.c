@@ -152,6 +152,18 @@ static inline int addRelation(rpmts ts,
     if (dsflags & (RPMSENSE_RPMLIB|RPMSENSE_CONFIG|RPMSENSE_PRETRANS|RPMSENSE_POSTTRANS))
 	return 0;
 
+    if (dsflags & RPMSENSE_RICH) {
+	rpmds ds1, ds2;
+	rpmrichOp op;
+	if (rpmdsParseRichDep(requires, &ds1, &ds2, &op, NULL) == RPMRC_OK) {
+	    addRelation(ts, al, p, ds1);
+	    if (op == RPMRICHOP_AND || op == RPMRICHOP_OR)
+		addRelation(ts, al, p, ds2);
+	    ds1 = rpmdsFree(ds1);
+	    ds2 = rpmdsFree(ds2);
+	}
+	return 0;
+    }
     q = rpmalSatisfiesDepend(al, p, requires);
 
     /* Avoid deps outside this transaction and self dependencies */
