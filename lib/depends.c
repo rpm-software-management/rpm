@@ -48,7 +48,7 @@ const int rpmFLAGS = RPMSENSE_EQUAL;
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
-#define HASHTYPE filedepCache
+#define HASHTYPE filedepHash
 #define HTKEYTYPE const char *
 #define HTDATATYPE const char *
 #include "rpmhash.H"
@@ -57,7 +57,7 @@ const int rpmFLAGS = RPMSENSE_EQUAL;
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
-#define HASHTYPE depexistsCache
+#define HASHTYPE depexistsHash
 #define HTKEYTYPE const char *
 #include "lib/rpmhash.H"
 #include "lib/rpmhash.C"
@@ -759,7 +759,7 @@ static void checkNotInstDeps(rpmts ts, depCache dcache, rpmte te,
 
 static void checkInstFileDeps(rpmts ts, depCache dcache, rpmte te,
 			      rpmTag depTag, rpmfi fi, int is_not,
-			      filedepCache cache, fingerPrintCache *fpcp)
+			      filedepHash cache, fingerPrintCache *fpcp)
 {
     fingerPrintCache fpc = *fpcp;
     fingerPrint * fp = NULL;
@@ -769,7 +769,7 @@ static void checkInstFileDeps(rpmts ts, depCache dcache, rpmte te,
     int ndirnames = 0;
     int i;
 
-    filedepCacheGetEntry(cache, basename, &dirnames, &ndirnames, NULL);
+    filedepHashGetEntry(cache, basename, &dirnames, &ndirnames, NULL);
     if (!ndirnames)
 	return;
     if (!fpc)
@@ -798,7 +798,7 @@ static void checkInstFileDeps(rpmts ts, depCache dcache, rpmte te,
     _free(fp);
 }
 
-static void addFileDepToCache(filedepCache cache, char *key, size_t keylen)
+static void addFileDepToHash(filedepHash hash, char *key, size_t keylen)
 {
     int i;
     char *basename, *dirname;
@@ -812,7 +812,7 @@ static void addFileDepToCache(filedepCache cache, char *key, size_t keylen)
     basename = rmalloc(keylen - i);
     memcpy(basename, key + i + 1, keylen - i - 1);
     basename[keylen - i - 1] = 0; 
-    filedepCacheAddEntry(cache, basename, dirname);
+    filedepHashAddEntry(hash, basename, dirname);
 }
 
 int rpmtsCheck(rpmts ts)
@@ -822,10 +822,10 @@ int rpmtsCheck(rpmts ts)
     int closeatexit = 0;
     int rc = 0;
     depCache dcache = NULL;
-    filedepCache confilecache = NULL;	/* file conflicts of installed packages */
-    filedepCache reqfilecache = NULL;	/* file requires of installed packages */
-    filedepCache reqnotfilecache = NULL;	/* file requires of installed packages */
-    depexistsCache reqnotcache = NULL;
+    filedepHash confilehash = NULL;	/* file conflicts of installed packages */
+    filedepHash reqfilehash = NULL;	/* file requires of installed packages */
+    filedepHash reqnotfilehash = NULL;	/* file requires of installed packages */
+    depexistsHash reqnothash = NULL;
     fingerPrintCache fpc = NULL;
     
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
@@ -841,35 +841,35 @@ int rpmtsCheck(rpmts ts)
     dcache = depCacheCreate(5001, rstrhash, strcmp,
 				     (depCacheFreeKey)rfree, NULL);
 
-    /* build cache of all file conflicts dependencies */
-    confilecache = filedepCacheCreate(257, rstrhash, strcmp,
-					(filedepCacheFreeKey)rfree,
-					(filedepCacheFreeData)rfree);
-    if (confilecache) {
+    /* build hash of all file conflicts dependencies */
+    confilehash = filedepHashCreate(257, rstrhash, strcmp,
+					(filedepHashFreeKey)rfree,
+					(filedepHashFreeData)rfree);
+    if (confilehash) {
 	rpmdbIndexIterator ii = rpmdbIndexIteratorInit(rpmtsGetRdb(ts), RPMTAG_CONFLICTNAME);
 	if (ii) {
 	    char *key;
 	    size_t keylen;
 	    while ((rpmdbIndexIteratorNext(ii, (const void**)&key, &keylen)) == 0)
-		addFileDepToCache(confilecache, key, keylen);
+		addFileDepToHash(confilehash, key, keylen);
 	    rpmdbIndexIteratorFree(ii);
 	}
 	/* free if empty */
-	if (!filedepCacheNumKeys(confilecache))
-            confilecache = filedepCacheFree(confilecache);
+	if (!filedepHashNumKeys(confilehash))
+            confilehash = filedepHashFree(confilehash);
     }
 
-    /* build cache of all file requires dependencies */
-    reqfilecache = filedepCacheCreate(8191, rstrhash, strcmp,
-					(filedepCacheFreeKey)rfree,
-					(filedepCacheFreeData)rfree);
-    if (reqfilecache) {
+    /* build hash of all file requires dependencies */
+    reqfilehash = filedepHashCreate(8191, rstrhash, strcmp,
+					(filedepHashFreeKey)rfree,
+					(filedepHashFreeData)rfree);
+    if (reqfilehash) {
 	rpmdbIndexIterator ii = rpmdbIndexIteratorInit(rpmtsGetRdb(ts), RPMTAG_REQUIRENAME);
-	reqnotcache = depexistsCacheCreate(257, rstrhash, strcmp,
-					(filedepCacheFreeKey)rfree);
-	reqnotfilecache = filedepCacheCreate(257, rstrhash, strcmp,
-					(filedepCacheFreeKey)rfree,
-					(filedepCacheFreeData)rfree);
+	reqnothash = depexistsHashCreate(257, rstrhash, strcmp,
+					(filedepHashFreeKey)rfree);
+	reqnotfilehash = filedepHashCreate(257, rstrhash, strcmp,
+					(filedepHashFreeKey)rfree,
+					(filedepHashFreeData)rfree);
 	if (ii) {
 	    char *key;
 	    size_t keylen;
@@ -882,18 +882,18 @@ int rpmtsCheck(rpmts ts)
 		    keystr = rmalloc(keylen + 1);
 		    strncpy(keystr, key, keylen);
 		    keystr[keylen] = 0;
-		    depexistsCacheAddEntry(reqnotcache, keystr);
-		    addFileDepToCache(reqnotfilecache, key, keylen);
+		    depexistsHashAddEntry(reqnothash, keystr);
+		    addFileDepToHash(reqnotfilehash, key, keylen);
 		    continue;
 		}
-		addFileDepToCache(reqfilecache, key, keylen);
+		addFileDepToHash(reqfilehash, key, keylen);
 	    }
 	    rpmdbIndexIteratorFree(ii);
 	}
-	if (reqnotcache && !depexistsCacheNumKeys(reqnotcache))
-	    reqnotcache = depexistsCacheFree(reqnotcache);
-	if (reqnotfilecache && !filedepCacheNumKeys(reqnotfilecache))
-	    reqnotfilecache = filedepCacheFree(reqnotfilecache);
+	if (reqnothash && !depexistsHashNumKeys(reqnothash))
+	    reqnothash = depexistsHashFree(reqnothash);
+	if (reqnotfilehash && !filedepHashNumKeys(reqnotfilehash))
+	    reqnotfilehash = filedepHashFree(reqnotfilehash);
     }
 
     
@@ -919,7 +919,7 @@ int rpmtsCheck(rpmts ts)
 	while (rpmdsNext(provides) >= 0) {
 	    const char *dep = rpmdsN(provides);
 	    checkInstDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, dep);
-	    if (reqnotcache && depexistsCacheHasEntry(reqnotcache, dep))
+	    if (reqnothash && depexistsHashHasEntry(reqnothash, dep))
 		checkNotInstDeps(ts, dcache, p, RPMTAG_REQUIRENAME, dep);
 	}
 
@@ -931,14 +931,14 @@ int rpmtsCheck(rpmts ts)
 	checkInstDeps(ts, dcache, p, RPMTAG_OBSOLETENAME, rpmteN(p));
 
 	/* Check filenames against installed conflicts */
-        if (confilecache || reqnotfilecache) {
+        if (confilehash || reqnotfilehash) {
 	    rpmfiles files = rpmteFiles(p);
 	    rpmfi fi = rpmfilesIter(files, RPMFI_ITER_FWD);
 	    while (rpmfiNext(fi) >= 0) {
-		if (confilecache)
-		    checkInstFileDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, fi, 0, confilecache, &fpc);
-		if (reqnotfilecache)
-		    checkInstFileDeps(ts, dcache, p, RPMTAG_REQUIRENAME, fi, 1, reqnotfilecache, &fpc);
+		if (confilehash)
+		    checkInstFileDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, fi, 0, confilehash, &fpc);
+		if (reqnotfilehash)
+		    checkInstFileDeps(ts, dcache, p, RPMTAG_REQUIRENAME, fi, 1, reqnotfilehash, &fpc);
 	    }
 	    rpmfiFree(fi);
 	    rpmfilesFree(files);
@@ -961,12 +961,12 @@ int rpmtsCheck(rpmts ts)
 	    checkInstDeps(ts, dcache, p, RPMTAG_REQUIRENAME, rpmdsN(provides));
 	}
 
-	if (reqfilecache) {
+	if (reqfilehash) {
 	    rpmfiles files = rpmteFiles(p);
 	    rpmfi fi = rpmfilesIter(files, RPMFI_ITER_FWD);;
 	    while (rpmfiNext(fi) >= 0) {
 		if (RPMFILE_IS_INSTALLED(rpmfiFState(fi))) {
-		    checkInstFileDeps(ts, dcache, p, RPMTAG_REQUIRENAME, fi, 0, reqfilecache, &fpc);
+		    checkInstFileDeps(ts, dcache, p, RPMTAG_REQUIRENAME, fi, 0, reqfilehash, &fpc);
 		}
 	    }
 	    rpmfiFree(fi);
@@ -977,10 +977,10 @@ int rpmtsCheck(rpmts ts)
 
 exit:
     depCacheFree(dcache);
-    filedepCacheFree(confilecache);
-    filedepCacheFree(reqfilecache);
-    filedepCacheFree(reqnotfilecache);
-    depexistsCacheFree(reqnotcache);
+    filedepHashFree(confilehash);
+    filedepHashFree(reqfilehash);
+    filedepHashFree(reqnotfilehash);
+    depexistsHashFree(reqnothash);
     fpCacheFree(fpc);
 
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
