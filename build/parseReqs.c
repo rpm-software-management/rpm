@@ -52,7 +52,6 @@ static rpmRC checkDep(rpmSpec spec, char *N, char *EVR, char **emsg)
 struct parseRCPOTRichData {
     rpmSpec spec;
     StringBuf sb;
-    int no_if;
 };
 
 /* Callback for the rich dependency parser. We use this to do check for invalid
@@ -93,10 +92,6 @@ static rpmRC parseRCPOTRichCB(void *cbdata, rpmrichParseType type,
 	_free(N);
 	_free(EVR);
     } else if (type == RPMRICH_PARSE_OP) {
-	if (op == RPMRICHOP_IF && data->no_if) {
-	    rasprintf(emsg, _("IF not allowed in conflicts dependencies"));
-	    rc = RPMRC_FAIL;
-	}
 	appendStringBuf(sb, " ");
 	appendStringBuf(sb, rpmrichOpStr(op));
 	appendStringBuf(sb, " ");
@@ -192,7 +187,6 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	    }
 	    data.spec = spec;
 	    data.sb = newStringBuf();
-	    data.no_if = (nametag == RPMTAG_CONFLICTNAME);
 	    if (rpmrichParse(&r, &emsg, parseRCPOTRichCB, &data) != RPMRC_OK) {
 		freeStringBuf(data.sb);
 		goto exit;
