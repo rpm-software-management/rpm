@@ -270,7 +270,7 @@ EXTRA_DIST += doc/hacking.doxy.in doc/hacking/Doxyheader
 
 # Always build librpm docs
 if DOXYGEN
-doc/librpm.doxy: doc/librpm.doxy.in doc/librpm/Doxyheader Makefile.am $(pkginclude_HEADERS)
+doc/librpm.doxy: doc/librpm.doxy.in doc/librpm/Doxyheader Makefile.am configure.ac $(pkginclude_HEADERS)
 	files=`echo " $(HEADERS)" | $(SED) -e "s, , \@top_srcdir\@/,g"`; \
 	$(SED) -e "s,[@]pkginclude_HEADERS[@],$$files," \
 	  -e "s,\@top_srcdir\@/,$(top_srcdir)/,g" \
