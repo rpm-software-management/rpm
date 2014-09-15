@@ -983,7 +983,7 @@ int rpmtsCheck(rpmts ts)
 	    const char *dep = rpmdsN(provides);
 	    checkInstDeps(ts, dcache, p, RPMTAG_REQUIRENAME, dep);
 	    if (connothash && depexistsHashHasEntry(connothash, dep))
-		checkNotInstDeps(ts, dcache, p, RPMTAG_CONFILCTNAME, dep);
+		checkNotInstDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, dep);
 	}
 
 	if (reqfilehash || connotfilehash) {
@@ -993,7 +993,7 @@ int rpmtsCheck(rpmts ts)
 		if (RPMFILE_IS_INSTALLED(rpmfiFState(fi))) {
 		    if (reqfilehash)
 			checkInstFileDeps(ts, dcache, p, RPMTAG_REQUIRENAME, fi, 0, reqfilehash, &fpc);
-		    if (confnotfilehash)
+		    if (connotfilehash)
 			checkInstFileDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, fi, 1, connotfilehash, &fpc);
 		}
 	    }
