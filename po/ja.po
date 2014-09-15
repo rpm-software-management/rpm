@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2014-08-27 08:46+0300\n"
+"POT-Creation-Date: 2014-09-15 10:38+0300\n"
 "PO-Revision-Date: 2014-04-07 10:19+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/rpm/language/"
@@ -895,65 +895,65 @@ msgstr "署名ヘッダーの再読み込みができません。\n"
 msgid "Unknown payload compression: %s\n"
 msgstr "不明なペイロード圧縮: %s\n"
 
-#: build/pack.c:451
+#: build/pack.c:462
 msgid "Unable to create immutable header region.\n"
 msgstr "不変ヘッダー領域を作成できません。\n"
 
-#: build/pack.c:459
+#: build/pack.c:470
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: build/pack.c:471
+#: build/pack.c:482
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗: %s\n"
 
-#: build/pack.c:495
+#: build/pack.c:506
 msgid "Unable to write temp header\n"
 msgstr "一時ヘッダーの書き込みができません。\n"
 
-#: build/pack.c:504
+#: build/pack.c:515
 msgid "Bad CSA data\n"
 msgstr "不正な CSA データ\n"
 
-#: build/pack.c:515 build/pack.c:534 sign/rpmgensig.c:268 sign/rpmgensig.c:599
+#: build/pack.c:526 build/pack.c:545 sign/rpmgensig.c:268 sign/rpmgensig.c:599
 #: sign/rpmgensig.c:634
 #, fuzzy, c-format
 msgid "Could not seek in file %s: %s\n"
 msgstr "%s ファイルを開けませんでした: %s\n"
 
-#: build/pack.c:526
+#: build/pack.c:537
 #, fuzzy, c-format
 msgid "Fread failed in file %s: %s\n"
 msgstr "ファイル %s にアーカイブの作成を失敗しました: %s\n"
 
-#: build/pack.c:560
+#: build/pack.c:571
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み完了: %s\n"
 
-#: build/pack.c:579
+#: build/pack.c:590
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr "「%s」を実行しています:\n"
 
-#: build/pack.c:582
+#: build/pack.c:593
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "「%s」の実行に失敗しました。\n"
 
-#: build/pack.c:586
+#: build/pack.c:597
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "パッケージ \"%s\" のチェックに失敗しました。\n"
 
-#: build/pack.c:643
+#: build/pack.c:644
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:660
+#: build/pack.c:661
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
