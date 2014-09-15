@@ -1483,7 +1483,7 @@ static rpmRC rpmdsParseRichDepCB(void *cbdata, rpmrichParseType type,
 	    right[n + nl - data->rightstart + 1] = 0;
 	    data->rightds = rpmdsFree(data->rightds);
 	    ds = singleDS(data->dep->pool, data->dep->tagN, 0, 0, RPMSENSE_RICH | data->depflags, 0, 0, 0);
-	    ds->N[0] = rpmstrPoolId(ds->pool, right 1);
+	    ds->N[0] = rpmstrPoolId(ds->pool, right, 1);
 	    ds->EVR[0] = rpmstrPoolId(ds->pool, "", 1);
 	    data->rightds = ds;
 	    free(right);
