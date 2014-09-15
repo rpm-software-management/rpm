@@ -645,7 +645,26 @@ retry:
 	    rc = !unsatisfiedDepend(ts, dcache, ds2);
 	if (op != RPMRICHOP_IF || rc)
 	    rc = unsatisfiedDepend(ts, dcache, ds1);
-	if ((rc && op == RPMRICHOP_OR) || (!rc && op == RPMRICHOP_AND)) {
+	if (op == RPMRICHOP_THEN) {
+	    if (rpmdsFlags(ds2) & RPMSENSE_RICH) {
+		/* check if this is a THEN...ELSE combination */
+		rpmds ds21, ds22;
+		rpmrichOp op2;
+		if (rpmdsParseRichDep(ds2, &ds21, &ds22, &op2, NULL) == RPMRC_OK && op2 == RPMRICHOP_ELSE) {
+		    ds2 = rpmdsFree(ds2);
+		    if (!rc) {
+			ds2 = ds21;
+			rpmdsFree(ds22);
+		    } else {
+			ds2 = ds22;
+			rpmdsFree(ds21);
+		    }
+		    rc = 0;
+		}
+	    }
+	    rc = !rc;
+	}
+	if ((rc && op == RPMRICHOP_OR) || (!rc && op == RPMRICHOP_AND) || (rc && op == RPMRICHOP_THEN)) {
 	    rc = unsatisfiedDepend(ts, dcache, ds2);
 	}
 	ds1 = rpmdsFree(ds1);

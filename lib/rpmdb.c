@@ -2034,6 +2034,9 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 
 struct updateRichDepData {
     ARGV_t argv;
+    int nargv;
+    int *nargvs;
+    int level;
     int neg;
 };
 
@@ -2041,15 +2044,41 @@ static rpmRC updateRichDepCB(void *cbdata, rpmrichParseType type,
 		const char *n, int nl, const char *e, int el, rpmsenseFlags sense,
 		rpmrichOp op, char **emsg) {
     struct updateRichDepData *data = cbdata;
-    if (type == RPMRICH_PARSE_SIMPLE && nl) {
-	char *name = xmalloc(data->neg + nl + 1);
-	*name = '!';
-	strncpy(name + data->neg, n, nl);
-	name[data->neg + nl] = 0;
+    int i;
+    if (type == RPMRICH_PARSE_ENTER) {
+	data->level++;
+	data->nargvs = xrealloc(data->nargvs, data->level * (2 * sizeof(int)));
+	data->nargvs[2 * data->level - 2] = data->nargv;
+	data->nargvs[2 * data->level - 1] = data->nargv;
+    }
+    if (type == RPMRICH_PARSE_LEAVE) {
+	data->level--;
+    }
+    if (type == RPMRICH_PARSE_SIMPLE && nl && !(nl > 7 && !strncmp(n, "rpmlib(", 7))) {
+	char *name = xmalloc(nl + 2);
+	*name = data->neg ? '!' : ' ';
+	strncpy(name + 1, n, nl);
+	name[1 + nl] = 0;
 	argvAdd(&data->argv, name);
+	data->nargv++;
 	_free(name);
     } else if ((type == RPMRICH_PARSE_OP || RPMRICH_PARSE_LEAVE) && op == RPMRICHOP_IF) {
 	data->neg ^= 1;
+    }
+    if (type == RPMRICH_PARSE_OP && op == RPMRICHOP_THEN) {
+	/* need to invert last pushes... */
+	for (i = data->nargvs[2 * data->level - 2]; i < data->nargv; i++)
+	    data->argv[i][0] ^= ' ' ^ '!';
+	data->nargvs[2 * data->level - 1] = data->nargv;
+    }
+    if (type == RPMRICH_PARSE_OP && op == RPMRICHOP_ELSE) {
+	/* copy and invert THEN block */
+	for (i = data->nargvs[2 * data->level - 2]; i < data->nargvs[2 * data->level - 1]; i++) {
+	    char *name = data->argv[i];
+	    argvAdd(&data->argv, name);
+	    data->nargv++;
+	    *name ^= ' ' ^ '!';
+	}
     }
     return RPMRC_OK;
 }
@@ -2063,17 +2092,24 @@ static rpmRC updateRichDep(dbiCursor dbc, const char *str,
 
     data.argv = argvNew();
     data.neg = 0;
+    data.nargv = 0;
+    data.nargvs = xcalloc(2, sizeof(int));
+    data.level = 0;
     if (rpmrichParse(&str, NULL, updateRichDepCB, &data) == RPMRC_OK) {
 	n = argvCount(data.argv);
 	if (n) {
 	    argvSort(data.argv, NULL);
 	    for (i = 0; i < n; i++) {
-		if (i && !strcmp(data.argv[i - 1], data.argv[i]))
+		char *name = data.argv[i];
+		if (i && !strcmp(data.argv[i - 1], name))
 		    continue;       /* ignore dups */
-		rc += idxupdate(dbc, data.argv[i], strlen(data.argv[i]), rec);
+		if (*name == ' ')
+		    name++;
+		rc += idxupdate(dbc, name, strlen(name) - 1, rec);
 	    }
 	}
     }
+    _free(data.nargvs);
     argvFree(data.argv);
     return rc;
 }

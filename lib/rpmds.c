@@ -1311,6 +1311,10 @@ static struct RichOpComp {
     { "||",	RPMRICHOP_OR},
     { "OR",	RPMRICHOP_OR},
     { "IF",	RPMRICHOP_IF},
+    { "?",	RPMRICHOP_THEN},
+    { "THEN",	RPMRICHOP_THEN},
+    { ":",	RPMRICHOP_ELSE},
+    { "ELSE",	RPMRICHOP_ELSE},
     { NULL, 0 },
 };
 
@@ -1342,6 +1346,10 @@ const char *rpmrichOpStr(rpmrichOp op)
 	return "|";
     if (op == RPMRICHOP_IF)
 	return "IF";
+    if (op == RPMRICHOP_THEN)
+	return "?";
+    if (op == RPMRICHOP_ELSE)
+	return ":";
     return NULL;
 }
 
@@ -1430,19 +1438,21 @@ rpmRC rpmrichParse(const char **dstrp, char **emsg, rpmrichParseFunction cb, voi
         pe = p;
         if (parseRichDepOp(&pe, &op, emsg) != RPMRC_OK)
             return RPMRC_FAIL;
+	if (op == RPMRICHOP_ELSE && chainop == RPMRICHOP_THEN)
+	    chainop = 0;
         if (chainop && op != chainop) {
             if (emsg)
                 rasprintf(emsg, _("Cannot chain different ops"));
             return RPMRC_FAIL;
         }
-        if (chainop == RPMRICHOP_IF) {
+        if (chainop && op != RPMRICHOP_AND && op != RPMRICHOP_OR) {
             if (emsg)
-                rasprintf(emsg, _("Cannot chain IF ops"));
+                rasprintf(emsg, _("Can only chain AND and OR ops"));
             return RPMRC_FAIL;
-        }
-        chainop = op;
+	}
         if (cb(cbdata, RPMRICH_PARSE_OP, p, pe - p, 0, 0, 0, op, emsg) != RPMRC_OK)
             return RPMRC_FAIL;
+        chainop = op;
         p = pe;
     }
     p++;
@@ -1510,7 +1520,8 @@ static rpmRC rpmdsParseRichDepCB(void *cbdata, rpmrichParseType type,
     if (type == RPMRICH_PARSE_OP) {
 	if (data->op != RPMRICHOP_SINGLE)
 	    data->dochain = 1;	/* this is a chained op */
-	data->op = op;
+	else
+	    data->op = op;
     }
     return RPMRC_OK;
 }
