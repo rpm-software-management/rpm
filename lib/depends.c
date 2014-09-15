@@ -651,22 +651,17 @@ retry:
 		rpmds ds21, ds22;
 		rpmrichOp op2;
 		if (rpmdsParseRichDep(ds2, &ds21, &ds22, &op2, NULL) == RPMRC_OK && op2 == RPMRICHOP_ELSE) {
-		    ds2 = rpmdsFree(ds2);
-		    if (!rc) {
-			ds2 = ds21;
-			rpmdsFree(ds22);
-		    } else {
-			ds2 = ds22;
-			rpmdsFree(ds21);
-		    }
+		    rpmdsFree(ds2);
+		    ds2 = rc ? ds22 : ds21;
+		    rpmdsFree(rc ? ds21 : ds22);
 		    rc = 0;
 		}
 	    }
-	    rc = !rc;
+	    rc = !rc;		/* A THEN B is the same as (NOT A) OR B */
+	    op = RPMRICHOP_OR;
 	}
-	if ((rc && op == RPMRICHOP_OR) || (!rc && op == RPMRICHOP_AND) || (rc && op == RPMRICHOP_THEN)) {
+	if ((rc && op == RPMRICHOP_OR) || (!rc && op == RPMRICHOP_AND))
 	    rc = unsatisfiedDepend(ts, dcache, ds2);
-	}
 	ds1 = rpmdsFree(ds1);
 	ds2 = rpmdsFree(ds2);
 	rpmdsNotify(dep, "(rich)", rc);
