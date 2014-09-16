@@ -1667,22 +1667,31 @@ int rpmdbExtendIterator(rpmdbMatchIterator mi,
     return rc;
 }
 
-int rpmdbPruneIterator(rpmdbMatchIterator mi, removedHash hdrNums)
+int rpmdbFilterIterator(rpmdbMatchIterator mi, removedHash hdrNums, int neg)
 {
-    if (mi == NULL || hdrNums == NULL || removedHashNumKeys(hdrNums) <= 0)
+    if (mi == NULL || hdrNums == NULL)
 	return 1;
 
     if (!mi->mi_set)
-        return 0;
+	return 0;
+
+    if (removedHashNumKeys(hdrNums) == 0) {
+	if (!neg)
+	    mi->mi_set->count = 0;
+	return 0;
+    }
 
     unsigned int from;
     unsigned int to = 0;
     unsigned int num = mi->mi_set->count;
+    int cond;
 
     assert(mi->mi_set->count > 0);
 
     for (from = 0; from < num; from++) {
-	if (removedHashHasEntry(hdrNums, mi->mi_set->recs[from].hdrNum)) {
+	cond = !removedHashHasEntry(hdrNums, mi->mi_set->recs[from].hdrNum);
+	cond = neg ? !cond : cond;
+	if (cond) {
 	    mi->mi_set->count--;
 	    continue;
 	}
@@ -1692,6 +1701,15 @@ int rpmdbPruneIterator(rpmdbMatchIterator mi, removedHash hdrNums)
     }
     return 0;
 }
+
+int rpmdbPruneIterator(rpmdbMatchIterator mi, removedHash hdrNums)
+{
+    if (removedHashNumKeys(hdrNums) <= 0)
+	return 1;
+
+    return rpmdbFilterIterator(mi, hdrNums, 1);
+}
+
 
 int rpmdbAppendIterator(rpmdbMatchIterator mi,
 			const unsigned int * hdrNums, unsigned int nHdrNums)

@@ -128,6 +128,16 @@ void rpmdbSortIterator(rpmdbMatchIterator mi);
 void rpmdbUniqIterator(rpmdbMatchIterator mi);
 
 /** \ingroup rpmdb
+ * If neg equals to zero then it leaves in iterator only packages that
+ * header numbers are in hdrNums. If neg is not zero then removes from iterator
+ * all packages that header numbers are in hdrNums.
+ * @param mi		rpm database iterator
+ * @param hdrNums	hash of package numbers
+ * return		0 on success, 1 on failure (bad args)
+ */
+int rpmdbFilterIterator(rpmdbMatchIterator mi, removedHash hdrNums, int neg);
+
+/** \ingroup rpmdb
  * Remove items from set of package instances to iterate.
  * @note Sorted hdrNums are always passed in rpmlib.
  * @param mi		rpm database iterator
