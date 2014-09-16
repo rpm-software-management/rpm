@@ -648,14 +648,21 @@ retry:
 	if (op == RPMRICHOP_THEN) {
 	    if (rpmdsFlags(ds2) & RPMSENSE_RICH) {
 		/* check if this is a THEN...ELSE combination */
-		rpmds ds21, ds22;
+		rpmds ds21 = NULL, ds22 = NULL;
 		rpmrichOp op2;
 		if (rpmdsParseRichDep(ds2, &ds21, &ds22, &op2, NULL) == RPMRC_OK && op2 == RPMRICHOP_ELSE) {
 		    rpmdsFree(ds2);
-		    ds2 = rc ? ds22 : ds21;
-		    rpmdsFree(rc ? ds21 : ds22);
+		    if (rc) {
+			ds2 = ds22;
+			ds22 = NULL;
+		    } else {
+			ds2 = ds21;
+			ds21 = NULL;
+		    }
 		    rc = 0;
 		}
+		rpmdsFree(ds21);
+		rpmdsFree(ds22);
 	    }
 	    rc = !rc;		/* A THEN B is the same as (NOT A) OR B */
 	    op = RPMRICHOP_OR;
