@@ -493,6 +493,8 @@ static rpmdb newRpmdb(const char * root, const char * home,
 	RPMDBI_INSTALLTID,
 	RPMDBI_SIGMD5,
 	RPMDBI_SHA1HEADER,
+	RPMDBI_FILETRIGGERNAME,
+	RPMDBI_TRANSFILETRIGGERNAME,
     };
 
     if (!(db_home && db_home[0] != '%')) {
