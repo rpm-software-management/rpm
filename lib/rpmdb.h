@@ -217,7 +217,6 @@ unsigned int rpmdbIndexIteratorTagNum(rpmdbIndexIterator ii, unsigned int nr);
  */
 rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii);
 
-
 #ifdef __cplusplus
 }
 #endif

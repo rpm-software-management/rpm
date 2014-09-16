@@ -139,6 +139,20 @@ int rpmdbPruneIterator(rpmdbMatchIterator mi, removedHash hdrNums);
 RPM_GNUC_INTERNAL
 rpmdbMatchIterator rpmdbNewIterator(rpmdb db, rpmDbiTagVal dbitag);
 
+/** \ingroup rpmdb
+ * Return database iterator that iterates over database items
+ * starting with pfx.
+ * @param db		rpm database
+ * @param rpmtag	database index tag
+ * @param pfx		prefix data
+ * @param plen		prefix data length (0 will use strlen(keyp))
+ * @return		NULL on failure
+ */
+RPM_GNUC_INTERNAL
+rpmdbMatchIterator rpmdbInitPrefixIterator(rpmdb db, rpmDbiTagVal rpmtag,
+					const void * pfx, size_t plen);
+
+
 #ifdef __cplusplus
 }
 #endif

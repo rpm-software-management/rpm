@@ -71,6 +71,11 @@ enum dbcFlags_e {
     DBC_WRITE	= (1 << 0),
 };
 
+enum dbcSearchType_e {
+    DBC_NORMAL_SEARCH   = 0,
+    DBC_RANGE_SEARCH    = (1 << 0),
+};
+
 /** \ingroup dbi
  * Describes an index database (implemented on Berkeley db functionality).
  */
@@ -209,7 +214,7 @@ int pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
 
 RPM_GNUC_INTERNAL
 rpmRC dbcCursorGet(dbiCursor dbc, const char *keyp, size_t keylen,
-                   dbiIndexSet *set);
+		   dbiIndexSet *set, int curFlags);
 RPM_GNUC_INTERNAL
 rpmRC dbcCursorPut(dbiCursor dbc, const char *keyp, size_t keylen,
 		   dbiIndexItem rec);

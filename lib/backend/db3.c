@@ -838,7 +838,7 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
 }
 
 rpmRC dbcCursorGet(dbiCursor dbc, const char *keyp, size_t keylen,
-			  dbiIndexSet *set)
+			  dbiIndexSet *set, int searchType)
 {
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     if (dbc != NULL && set != NULL) {
@@ -852,7 +852,11 @@ rpmRC dbcCursorGet(dbiCursor dbc, const char *keyp, size_t keylen,
 	if (keyp) {
 	    key.data = (void *) keyp; /* discards const */
 	    key.size = keylen;
-	    cflags = DB_SET;
+
+	    if (searchType == DBC_RANGE_SEARCH)
+		cflags = DB_SET_RANGE;
+	    else
+		cflags = DB_SET;
 	}
 
 	dbrc = dbiCursorGet(dbc, &key, &data, cflags);
@@ -925,7 +929,7 @@ rpmRC dbcCursorPut(dbiCursor dbc, const char *keyp, size_t keylen,
 		   dbiIndexItem rec)
 {
     dbiIndexSet set = NULL;
-    rpmRC rc = dbcCursorGet(dbc, keyp, keylen, &set);
+    rpmRC rc = dbcCursorGet(dbc, keyp, keylen, &set, DBC_NORMAL_SEARCH);
 
     /* Not found means a new key and is not an error. */
     if (rc && rc != RPMRC_NOTFOUND)
@@ -945,7 +949,7 @@ rpmRC dbcCursorDel(dbiCursor dbc, const char *keyp, size_t keylen,
 		   dbiIndexItem rec)
 {
     dbiIndexSet set = NULL;
-    rpmRC rc = dbcCursorGet(dbc, keyp, keylen, &set);
+    rpmRC rc = dbcCursorGet(dbc, keyp, keylen, &set, DBC_NORMAL_SEARCH);
     if (rc)
 	return rc;
 

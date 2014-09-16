@@ -227,10 +227,10 @@ static rpmRC indexGet(dbiIndex dbi, const char *keyp, size_t keylen,
 		if (keylen == 0)
 		    keylen++; /* XXX "/" fixup */
 	    }
-	    rc = dbcCursorGet(dbc, keyp, keylen, set);
+	    rc = dbcCursorGet(dbc, keyp, keylen, set, DBC_NORMAL_SEARCH);
 	} else {
 	    do {
-		rc = dbcCursorGet(dbc, NULL, 0, set);
+		rc = dbcCursorGet(dbc, NULL, 0, set, DBC_NORMAL_SEARCH);
 	    } while (rc == RPMRC_OK);
 
 	    /* If we got some results, not found is not an error */
@@ -242,6 +242,60 @@ static rpmRC indexGet(dbiIndex dbi, const char *keyp, size_t keylen,
     }
     return rc;
 }
+
+static rpmRC indexPrefixGet(dbiIndex dbi, const char *pfx, size_t plen,
+			    dbiIndexSet *set)
+{
+    rpmRC rc = RPMRC_FAIL; /* assume failure */
+    unsigned int keylen;
+    const void *key;
+
+
+    if (dbi != NULL) {
+	dbiCursor dbc = dbiCursorInit(dbi, DBC_READ);
+
+	if (plen == 0) {
+	    plen = strlen(pfx);
+	    if (plen == 0)
+		plen++; /* XXX "/" fixup */
+	}
+	/*
+	 * Start searching at  position of the first db key greater than or
+	 * equal to pfx. All db keys which starts with pfx must be located
+	 * at this or at following positions.
+	 */
+	rc = dbcCursorGet(dbc, pfx, plen, set, DBC_RANGE_SEARCH);
+
+	while (1) {
+	    if (rc != RPMRC_OK)
+		break;
+
+	    key = dbiCursorKey(dbc, &keylen);
+
+	    if (keylen < plen) {
+		(*set)->count--;
+		break;
+	    }
+
+	    if (memcmp(key, pfx, plen)) {
+		(*set)->count--;
+		break;
+	    }
+
+	    rc = dbcCursorGet(dbc, NULL, 0, set, DBC_NORMAL_SEARCH);
+	}
+
+	if (rc == RPMRC_NOTFOUND && *set && (*set)->count > 0)
+	    rc = RPMRC_OK;
+
+	if (rc == RPMRC_OK && (*set)->count == 0)
+	    rc = RPMRC_NOTFOUND;
+
+	dbiCursorFree(dbc);
+    }
+    return rc;
+}
+
 
 typedef struct miRE_s {
     rpmTagVal		tag;		/*!< header tag */
@@ -1766,6 +1820,40 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
     return mi;
 }
 
+rpmdbMatchIterator rpmdbInitPrefixIterator(rpmdb db, rpmDbiTagVal rpmtag,
+					    const void * pfx, size_t plen)
+{
+    rpmdbMatchIterator mi = NULL;
+    dbiIndexSet set = NULL;
+    dbiIndex dbi = NULL;
+    rpmDbiTagVal dbtag = rpmtag;
+
+    if (!pfx)
+	return NULL;
+
+    if (db != NULL && rpmtag != RPMDBI_PACKAGES) {
+	(void) rpmdbCheckSignals();
+
+
+	if (indexOpen(db, dbtag, 0, &dbi) == 0) {
+	    int rc = 0;
+
+	    rc = indexPrefixGet(dbi, pfx, plen, &set);
+
+	    if (rc)	{
+		set = dbiIndexSetFree(set);
+	    } else {
+		mi = rpmdbNewIterator(db, dbtag);
+		mi->mi_set = set;
+		rpmdbSortIterator(mi);
+	    }
+	}
+
+    }
+
+    return mi;
+}
+
 /*
  * Convert current tag data to db key
  * @param tagdata	Tag data container
@@ -1864,7 +1952,7 @@ int rpmdbIndexIteratorNext(rpmdbIndexIterator ii, const void ** key, size_t * ke
     /* free old data */
     ii->ii_set = dbiIndexSetFree(ii->ii_set);
 
-    rc = dbcCursorGet(ii->ii_dbc, NULL, 0, &ii->ii_set);
+    rc = dbcCursorGet(ii->ii_dbc, NULL, 0, &ii->ii_set, DBC_NORMAL_SEARCH);
 
     *key = dbiCursorKey(ii->ii_dbc, &iikeylen);
     *keylen = iikeylen;
