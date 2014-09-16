@@ -142,6 +142,8 @@ void HASHPREFIX(AddHEntry)(HASHTYPE ht, HTKEYTYPE key, unsigned int keyHash
     }
 #ifdef HTDATATYPE
     else {
+	if (ht->freeKey)
+	    ht->freeKey(key);
 	// resizing bucket TODO: increase exponentially
 	// Bucket_s already contains space for one dataset
 	b = *b_addr = xrealloc(
