@@ -50,6 +50,9 @@ struct rpmfi_s {
     char * fn;			/*!< File name buffer. */
     char * ofn;			/*!< Original file name buffer. */
 
+    int intervalStart;		/*!< Start of iterating interval. */
+    int intervalEnd;		/*!< End of iterating interval. */
+
     rpmfiles files;		/*!< File info set */
     rpmcpio_t archive;		/*!< Archive with payload */
     unsigned char * found;	/*!< Bit field of files found in the archive */
@@ -475,6 +478,12 @@ int rpmfiFindOFN(rpmfi fi, const char * fn)
     return ix;
 }
 
+static int cmpPfx(rpmfiles files, int ix, const char *pfx)
+{
+    int plen = strlen(pfx);
+    return strncmp(pfx, rpmfilesDN(files, rpmfilesDI(files, ix)), plen);
+}
+
 rpmfileAttrs rpmfilesFFlags(rpmfiles fi, int ix)
 {
     rpmfileAttrs FFlags = 0;
@@ -815,6 +824,16 @@ static int iterFwd(rpmfi fi)
 static int iterBack(rpmfi fi)
 {
     return fi->i - 1;
+}
+
+static int iterInterval(rpmfi fi)
+{
+    if (fi->i == -1)
+	return fi->intervalStart;
+    else if (fi->i + 1 < fi->intervalEnd)
+	return fi->i + 1;
+    else
+	return RPMERR_ITER_END;
 }
 
 int rpmfiNext(rpmfi fi)
@@ -1512,6 +1531,7 @@ int (*nextfuncs[])(rpmfi fi) = {
     iterReadArchiveNext,
     iterReadArchiveNextContentFirst,
     iterReadArchiveNextOmitHardlinks,
+    iterInterval,
 };
 
 
@@ -1527,7 +1547,9 @@ static rpmfi initIter(rpmfiles files, int itype, int link)
 	fi->i = -1;
 	if (itype == RPMFI_ITER_BACK) {
 	    fi->i = rpmfilesFC(fi->files);
-	} else if (itype >=RPMFI_ITER_READ_ARCHIVE) {
+	} else if (itype >=RPMFI_ITER_READ_ARCHIVE
+	    && itype <= RPMFI_ITER_READ_ARCHIVE_OMIT_HARDLINKS) {
+
 	    fi->found = xcalloc(1, (rpmfiFC(fi)>>3) + 1);
 	}
 	rpmfiLink(fi);
@@ -1539,6 +1561,50 @@ rpmfi rpmfilesIter(rpmfiles files, int itype)
 {
     /* standalone iterators need to bump our refcount */
     return initIter(files, itype, 1);
+}
+
+rpmfi rpmfilesFindPrefix(rpmfiles fi, const char *pfx)
+{
+    int l, u, c, comparison;
+    rpmfi iterator = NULL;
+
+    if (!fi || !pfx)
+	return NULL;
+
+    l = 0;
+    u = rpmfilesFC(fi);
+    while (l < u) {
+	c = (l + u) / 2;
+
+	comparison = cmpPfx(fi, c, pfx);
+
+	if (comparison < 0)
+	    u = c;
+	else if (comparison > 0)
+	    l = c + 1;
+	else {
+	    if (cmpPfx(fi, l, pfx))
+		l = c;
+	    while (l > 0 && !cmpPfx(fi, l - 1, pfx))
+		l--;
+	    if ( u >= rpmfilesFC(fi) || cmpPfx(fi, u, pfx))
+		u = c;
+	    while (++u < rpmfilesFC(fi)) {
+		if (cmpPfx(fi, u, pfx))
+		    break;
+	    }
+	    break;
+	}
+
+    }
+
+    if (l < u) {
+	iterator = initIter(fi, RPMFI_ITER_INTERVAL, 1);
+	iterator->intervalStart = l;
+	iterator->intervalEnd = u;
+    }
+
+    return iterator;
 }
 
 rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)

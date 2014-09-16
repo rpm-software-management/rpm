@@ -87,6 +87,14 @@ void rpmfilesFpLookup(rpmfiles fi, fingerPrintCache fpc);
 
 rpmfiles rpmfiFiles(rpmfi fi);
 
+/** \ingroup rpmfi
+ * Return file iterator through files starting with given prefix.
+ * @param fi		file info set
+ * @param pfx		prefix
+ * @return		file iterator
+ */
+RPM_GNUC_INTERNAL
+rpmfi rpmfilesFindPrefix(rpmfiles fi, const char *pfx);
 #ifdef __cplusplus
 }
 #endif

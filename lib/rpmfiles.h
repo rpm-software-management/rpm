@@ -143,9 +143,10 @@ typedef enum rpmFileIter_e {
     RPMFI_ITER_READ_ARCHIVE	= 3,
     RPMFI_ITER_READ_ARCHIVE_CONTENT_FIRST = 4,
     RPMFI_ITER_READ_ARCHIVE_OMIT_HARDLINKS = 5,
+    RPMFI_ITER_INTERVAL = 6,
 } rpmFileIter;
 
-#define RPMFILEITERMAX 5
+#define RPMFILEITERMAX 6
 
 #ifdef __cplusplus
 extern "C" {
