@@ -69,6 +69,15 @@ rpm_color_t rpmdsColorIndex(rpmds ds, int i);
 RPM_GNUC_INTERNAL
 int rpmdsCompareIndex(rpmds A, int aix, rpmds B, int bix);
 
+/** \ingroup rpmds
+ * Filter dependency set and return new dependency set containing only items
+ * with given trigger index.
+ * @param ds		dependency set
+ * @param ti		trigger index
+ * @return		new filtered dependency set
+ */
+RPM_GNUC_INTERNAL
+rpmds rpmdsFilterTi(rpmds ds, int ti);
 #ifdef __cplusplus
 }
 #endif

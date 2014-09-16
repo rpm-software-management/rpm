@@ -494,6 +494,44 @@ rpmds rpmdsCurrent(rpmds ds)
     return cds;
 }
 
+rpmds rpmdsFilterTi(rpmds ds, int ti)
+{
+    int i, i2, tiCount = 0;
+    rpmds fds;
+
+    if (ds == NULL || !ds->ti || !ds->Count)
+	return NULL;
+
+    for (i = 0; i < ds->Count; i++) {
+	if (ds->ti[i] == ti)
+	    tiCount++;
+    }
+
+    if (!tiCount)
+	return NULL;
+
+    fds = rpmdsCreate(ds->pool, ds->tagN, ds->Type, tiCount, ds->instance);
+
+    fds->N = xmalloc(tiCount * sizeof(*fds->N));
+    fds->EVR = xmalloc(tiCount * sizeof(*fds->EVR));
+    fds->Flags = xmalloc(tiCount * sizeof(*fds->Flags));
+    fds->ti = xmalloc(tiCount * sizeof(*fds->ti));
+    fds->i = -1;
+
+    i2 = 0;
+    for (i = 0; i < ds->Count; i++) {
+	if (ds->ti[i] == ti) {
+	    fds->N[i2] = ds->N[i];
+	    fds->EVR[i2] = ds->EVR[i];
+	    fds->Flags[i2] = ds->Flags[i];
+	    fds->ti[i2] = ds->ti[i];
+	    i2++;
+	}
+    }
+
+    return fds;
+}
+
 int rpmdsPutToHeader(rpmds ds, Header h)
 {
     rpmTagVal tagN = rpmdsTagN(ds);
