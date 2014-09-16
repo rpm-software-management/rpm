@@ -53,6 +53,28 @@ void dbiIndexSetSort(dbiIndexSet set)
     }
 }
 
+void dbiIndexSetUniq(dbiIndexSet set, int sorted)
+{
+    unsigned int from;
+    unsigned int to = 0;
+    unsigned int num = set->count;
+
+    assert(set->count > 0);
+
+    if (!sorted)
+	dbiIndexSetSort(set);
+
+    for (from = 0; from < num; from++) {
+	if (from > 0 && set->recs[from - 1].hdrNum == set->recs[from].hdrNum) {
+	    set->count--;
+	    continue;
+	}
+	if (from != to)
+	    set->recs[to] = set->recs[from]; /* structure assignment */
+	to++;
+    }
+}
+
 int dbiIndexSetAppendSet(dbiIndexSet dest, dbiIndexSet src, int sortset)
 {
     if (dest == NULL || src == NULL || src->count == 0)

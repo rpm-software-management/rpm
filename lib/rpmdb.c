@@ -1635,6 +1635,13 @@ void rpmdbSortIterator(rpmdbMatchIterator mi)
     }
 }
 
+void rpmdbUniqIterator(rpmdbMatchIterator mi)
+{
+    if (mi && mi->mi_set) {
+	dbiIndexSetUniq(mi->mi_set, mi->mi_sorted);
+    }
+}
+
 int rpmdbExtendIterator(rpmdbMatchIterator mi,
 			const void * keyp, size_t keylen)
 {

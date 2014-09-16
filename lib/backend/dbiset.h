@@ -32,6 +32,10 @@ void dbiIndexSetGrow(dbiIndexSet set, unsigned int nrecs);
 RPM_GNUC_INTERNAL
 void dbiIndexSetSort(dbiIndexSet set);
 
+/* Uniq an index set */
+RPM_GNUC_INTERNAL
+void dbiIndexSetUniq(dbiIndexSet set, int sorted);
+
 /* Append an index set to another */
 RPM_GNUC_INTERNAL
 int dbiIndexSetAppendSet(dbiIndexSet set, dbiIndexSet oset, int sortset);

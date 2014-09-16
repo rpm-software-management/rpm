@@ -121,6 +121,13 @@ int rpmdbExtendIterator(rpmdbMatchIterator mi,
 void rpmdbSortIterator(rpmdbMatchIterator mi);
 
 /** \ingroup rpmdb
+ * uniq the iterator by recnum
+ * Return database iterator.
+ * @param mi		rpm database iterator
+ */
+void rpmdbUniqIterator(rpmdbMatchIterator mi);
+
+/** \ingroup rpmdb
  * Remove items from set of package instances to iterate.
  * @note Sorted hdrNums are always passed in rpmlib.
  * @param mi		rpm database iterator
