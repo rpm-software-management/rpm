@@ -238,28 +238,6 @@ exit:
     return rpmrc;
 }
 
-static rpmTagVal triggertag(rpmsenseFlags sense) 
-{
-    rpmTagVal tag = RPMTAG_NOT_FOUND;
-    switch (sense) {
-    case RPMSENSE_TRIGGERIN:
-	tag = RPMTAG_TRIGGERIN;
-	break;
-    case RPMSENSE_TRIGGERUN:
-	tag = RPMTAG_TRIGGERUN;
-	break;
-    case RPMSENSE_TRIGGERPOSTUN:
-	tag = RPMTAG_TRIGGERPOSTUN;
-	break;
-    case RPMSENSE_TRIGGERPREIN:
-	tag = RPMTAG_TRIGGERPREIN;
-	break;
-    default:
-	break;
-    }
-    return tag;
-}
-
 /**
  * Run a scriptlet with args.
  *
@@ -385,7 +363,7 @@ static rpmRC handleOneTrigger(rpmts ts, rpmte te, rpmsenseFlags sense,
 		rc = RPMRC_FAIL;
 	    } else {
 		rpmScript script = rpmScriptFromTriggerTag(trigH,
-						 triggertag(sense), tix);
+			     triggertag(sense), RPMSCRIPT_NORMALTRIGGER, tix);
 		arg1 += countCorrection;
 		rc = runScript(ts, te, pfx.data, script, arg1, arg2);
 

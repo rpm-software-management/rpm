@@ -483,16 +483,87 @@ void rpmScriptSetNextFileFunc(rpmScript script, char *(*func)(void *),
     script->nextFileFunc.param = param;
 }
 
-rpmScript rpmScriptFromTriggerTag(Header h, rpmTagVal triggerTag, uint32_t ix)
+rpmTagVal triggerDsTag(rpmscriptTriggerModes tm)
+{
+    rpmTagVal tag = RPMTAG_NOT_FOUND;
+    switch (tm) {
+    case RPMSCRIPT_NORMALTRIGGER:
+	tag = RPMTAG_TRIGGERNAME;
+	break;
+    case RPMSCRIPT_FILETRIGGER:
+	tag = RPMTAG_FILETRIGGERNAME;
+	break;
+    case RPMSCRIPT_TRANSFILETRIGGER:
+	tag = RPMTAG_TRANSFILETRIGGERNAME;
+	break;
+    }
+    return tag;
+}
+
+rpmscriptTriggerModes triggerMode(rpmTagVal tag)
+{
+    rpmscriptTriggerModes tm;
+    switch (tag) {
+    case RPMTAG_TRIGGERNAME:
+	tm = RPMSCRIPT_NORMALTRIGGER;
+	break;
+    case RPMTAG_FILETRIGGERNAME:
+	tm = RPMSCRIPT_FILETRIGGER;
+	break;
+    case RPMTAG_TRANSFILETRIGGERNAME:
+	tm = RPMSCRIPT_TRANSFILETRIGGER;
+	break;
+    }
+    return tm;
+}
+
+rpmTagVal triggertag(rpmsenseFlags sense)
+{
+    rpmTagVal tag = RPMTAG_NOT_FOUND;
+    switch (sense) {
+    case RPMSENSE_TRIGGERIN:
+	tag = RPMTAG_TRIGGERIN;
+	break;
+    case RPMSENSE_TRIGGERUN:
+	tag = RPMTAG_TRIGGERUN;
+	break;
+    case RPMSENSE_TRIGGERPOSTUN:
+	tag = RPMTAG_TRIGGERPOSTUN;
+	break;
+    case RPMSENSE_TRIGGERPREIN:
+	tag = RPMTAG_TRIGGERPREIN;
+	break;
+    default:
+	break;
+    }
+    return tag;
+}
+
+rpmScript rpmScriptFromTriggerTag(Header h, rpmTagVal triggerTag,
+			    rpmscriptTriggerModes tm, uint32_t ix)
 {
     rpmScript script = NULL;
     struct rpmtd_s tscripts, tprogs, tflags;
     headerGetFlags hgflags = HEADERGET_MINMEM;
 
-    headerGet(h, RPMTAG_TRIGGERSCRIPTS, &tscripts, hgflags);
-    headerGet(h, RPMTAG_TRIGGERSCRIPTPROG, &tprogs, hgflags);
-    headerGet(h, RPMTAG_TRIGGERSCRIPTFLAGS, &tflags, hgflags);
-    
+    switch(tm) {
+	case RPMSCRIPT_NORMALTRIGGER:
+	    headerGet(h, RPMTAG_TRIGGERSCRIPTS, &tscripts, hgflags);
+	    headerGet(h, RPMTAG_TRIGGERSCRIPTPROG, &tprogs, hgflags);
+	    headerGet(h, RPMTAG_TRIGGERSCRIPTFLAGS, &tflags, hgflags);
+	    break;
+	case RPMSCRIPT_FILETRIGGER:
+	    headerGet(h, RPMTAG_FILETRIGGERSCRIPTS, &tscripts, hgflags);
+	    headerGet(h, RPMTAG_FILETRIGGERSCRIPTPROG, &tprogs, hgflags);
+	    headerGet(h, RPMTAG_FILETRIGGERSCRIPTFLAGS, &tflags, hgflags);
+	    break;
+	case RPMSCRIPT_TRANSFILETRIGGER:
+	    headerGet(h, RPMTAG_TRANSFILETRIGGERSCRIPTS, &tscripts, hgflags);
+	    headerGet(h, RPMTAG_TRANSFILETRIGGERSCRIPTPROG, &tprogs, hgflags);
+	    headerGet(h, RPMTAG_TRANSFILETRIGGERSCRIPTFLAGS, &tflags, hgflags);
+	    break;
+    }
+
     if (rpmtdSetIndex(&tscripts, ix) >= 0 && rpmtdSetIndex(&tprogs, ix) >= 0) {
 	rpmscriptFlags sflags = 0;
 	const char *prog = rpmtdGetString(&tprogs);

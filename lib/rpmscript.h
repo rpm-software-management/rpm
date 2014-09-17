@@ -3,6 +3,7 @@
 
 #include <rpm/rpmtypes.h>
 #include <rpm/argv.h>
+#include <rpm/rpmds.h>
 
 /* Rpm scriptlet types */
 enum rpmscriptTypes_e {
@@ -22,6 +23,14 @@ enum rpmscriptTypes_e {
 
 typedef rpmFlags rpmscriptTypes;
 
+enum rpmscriptTriggerMode_e {
+    RPMSCRIPT_NORMALTRIGGER	= (1 << 0),
+    RPMSCRIPT_FILETRIGGER	= (1 << 1),
+    RPMSCRIPT_TRANSFILETRIGGER	= (1 << 2),
+};
+
+typedef rpmFlags rpmscriptTriggerModes;
+
 enum rpmscriptFlags_e {
     RPMSCRIPT_FLAG_NONE		= 0,
     RPMSCRIPT_FLAG_EXPAND	= (1 << 0), /* macro expansion */
@@ -37,10 +46,20 @@ extern "C" {
 #endif
 
 RPM_GNUC_INTERNAL
+rpmTagVal triggerDsTag(rpmscriptTriggerModes tm);
+
+RPM_GNUC_INTERNAL
+rpmscriptTriggerModes triggerMode(rpmTagVal tag);
+
+RPM_GNUC_INTERNAL
+rpmTagVal triggertag(rpmsenseFlags sense);
+
+RPM_GNUC_INTERNAL
 rpmScript rpmScriptFromTag(Header h, rpmTagVal scriptTag);
 
 RPM_GNUC_INTERNAL
-rpmScript rpmScriptFromTriggerTag(Header h, rpmTagVal triggerTag, uint32_t ix);
+rpmScript rpmScriptFromTriggerTag(Header h, rpmTagVal triggerTag,
+				    rpmscriptTriggerModes tm, uint32_t ix);
 
 RPM_GNUC_INTERNAL
 rpmScript rpmScriptFree(rpmScript script);
