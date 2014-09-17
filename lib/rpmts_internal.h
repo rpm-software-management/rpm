@@ -26,6 +26,17 @@ typedef struct tsMembers_s {
     int delta;			/*!< Delta for reallocation. */
 } * tsMembers;
 
+typedef struct tsTrigger_s {
+    unsigned int hdrNum;
+    int index;
+} tsTrigger;
+
+typedef struct tsTriggers_s {
+    tsTrigger *trigger;
+    int count;
+    int alloced;
+} tsTriggers;
+
 /** \ingroup rpmts
  * The set of packages to be installed/removed atomically.
  */
@@ -70,6 +81,8 @@ struct rpmts_s {
     rpmPlugins plugins;		/*!< Transaction plugins */
 
     int nrefs;			/*!< Reference count. */
+
+    tsTriggers trigs2run;   /*!< Transaction file triggers */
 };
 
 #ifdef __cplusplus
@@ -112,6 +125,12 @@ rpmRC runImmedFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
 RPM_GNUC_INTERNAL
 rpmRC runScript(rpmts ts, rpmte te, ARGV_const_t prefixes,
 		       rpmScript script, int arg1, int arg2);
+RPM_GNUC_INTERNAL
+void rpmtsAddTrigger(rpmts ts, unsigned int hdrNum, int index);
+
+RPM_GNUC_INTERNAL
+void rpmtsUniqTriggers(rpmts ts);
+
 
 #ifdef __cplusplus
 }

@@ -1819,6 +1819,42 @@ rpmRC runImmedFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
     return (nerrors == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
 
+/* Run triggers stored in ts */
+static int runPostUnTransFileTrigs(rpmts ts)
+{
+    int i;
+    Header trigH;
+    struct rpmtd_s installPrefixes;
+    rpmScript script;
+    int nerrors = 0;
+
+    rpmtsUniqTriggers(ts);
+    /* Iterate over stored triggers */
+    for (i = 0; i < ts->trigs2run.count; i++) {
+	/* Get header containing trigger script */
+	trigH = rpmdbGetHeaderAt(rpmtsGetRdb(ts),
+				ts->trigs2run.trigger[i].hdrNum);
+
+	/* Maybe package whith this trigger is already uninstalled */
+	if (trigH == NULL)
+	    continue;
+
+	/* Prepare and run script */
+	script = rpmScriptFromTriggerTag(trigH, RPMSENSE_TRIGGERPOSTUN,
+		RPMSCRIPT_TRANSFILETRIGGER, ts->trigs2run.trigger[i].index);
+
+	headerGet(trigH, RPMTAG_INSTPREFIXES, &installPrefixes,
+		HEADERGET_ALLOC|HEADERGET_ARGV);
+
+	nerrors += runScript(ts, NULL, installPrefixes.data, script, 0, 0);
+	rpmtdFreeData(&installPrefixes);
+	rpmScriptFree(script);
+	headerFree(trigH);
+
+    }
+    return nerrors;
+}
+
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
     int rc = -1; /* assume failure */
@@ -1911,6 +1947,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     /* Run file triggers in other package(s) this package sets off. */
     runFileTriggers(ts, NULL, RPMSENSE_TRIGGERIN, RPMSCRIPT_TRANSFILETRIGGER);
+    runPostUnTransFileTrigs(ts);
 
     /* Run file triggers in this package other package(s) set off. */
     runTransScripts(ts, PKG_TRANSFILETRIGGERIN);

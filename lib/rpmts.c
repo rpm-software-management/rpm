@@ -56,6 +56,72 @@ static rpmts rpmtsUnlink(rpmts ts)
     return NULL;
 }
 
+/* Prepare space in memory for storing transaction triggers */
+static void rpmtsInitTriggers(rpmts ts)
+{
+    if (ts) {
+	ts->trigs2run.count = 0;
+	ts->trigs2run.alloced = 10;
+	ts->trigs2run.trigger = xmalloc(sizeof(*ts->trigs2run.trigger) *
+						ts->trigs2run.alloced);
+    }
+}
+
+static void rpmtsFreeTriggers(rpmts ts)
+{
+    free(ts->trigs2run.trigger);
+}
+
+/* Add transaction trigger that should be set off after transaction */
+void rpmtsAddTrigger(rpmts ts, unsigned int hdrNum, int index)
+{
+    if (ts->trigs2run.alloced < ts->trigs2run.count + 1) {
+	ts->trigs2run.alloced <<= 1;
+	ts->trigs2run.trigger = xrealloc(ts->trigs2run.trigger,
+			sizeof(*ts->trigs2run.trigger) * ts->trigs2run.alloced);
+    }
+
+    ts->trigs2run.trigger[ts->trigs2run.count].hdrNum = hdrNum;
+    ts->trigs2run.trigger[ts->trigs2run.count].index = index;
+    ts->trigs2run.count++;
+}
+
+static int triggerCmp(const void *one, const void *two)
+{
+    int rc;
+    const tsTrigger *a = one, *b = two;
+
+    rc = a->hdrNum - b->hdrNum;
+    if (rc == 0)
+	rc = a->index - b->index;
+    return rc;
+}
+
+void rpmtsUniqTriggers(rpmts ts)
+{
+    unsigned int from;
+    unsigned int to = 0;
+    unsigned int count = ts->trigs2run.count;
+
+    if (ts->trigs2run.count > 1) {
+	qsort(ts->trigs2run.trigger, ts->trigs2run.count,
+		    sizeof(*ts->trigs2run.trigger), triggerCmp);
+    }
+
+    for (from = 0; from < count; from++) {
+	if (from > 0 &&
+	    !triggerCmp((const void *) &ts->trigs2run.trigger[from - 1],
+			(const void *) &ts->trigs2run.trigger[from])) {
+
+	    ts->trigs2run.count--;
+	    continue;
+	}
+	if (from != to)
+	    ts->trigs2run.trigger[to] = ts->trigs2run.trigger[from];
+	to++;
+    }
+}
+
 rpmts rpmtsLink(rpmts ts)
 {
     if (ts)
@@ -678,6 +744,8 @@ rpmts rpmtsFree(rpmts ts)
 
     ts->plugins = rpmpluginsFree(ts->plugins);
 
+    rpmtsFreeTriggers(ts);
+
     if (_rpmts_stats)
 	rpmtsPrintStats(ts);
 
@@ -979,6 +1047,8 @@ rpmts rpmtsCreate(void)
     ts->nrefs = 0;
 
     ts->plugins = NULL;
+
+    rpmtsInitTriggers(ts);
 
     return rpmtsLink(ts);
 }

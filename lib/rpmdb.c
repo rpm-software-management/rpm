@@ -678,7 +678,7 @@ int rpmdbVerify(const char * prefix)
     return rc;
 }
 
-static Header rpmdbGetHeaderAt(rpmdb db, unsigned int offset)
+Header rpmdbGetHeaderAt(rpmdb db, unsigned int offset)
 {   
     rpmdbMatchIterator mi = rpmdbInitIterator(db, RPMDBI_PACKAGES,
 					      &offset, sizeof(offset));

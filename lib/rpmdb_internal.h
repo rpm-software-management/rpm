@@ -200,6 +200,15 @@ void rpmdbSetIteratorIndex(rpmdbMatchIterator mi, unsigned int ix);
 RPM_GNUC_INTERNAL
 unsigned int rpmdbGetIteratorOffsetFor(rpmdbMatchIterator mi, unsigned int ix);
 
+/** \ingroup rpmdb
+ * Return header located in rpmdb at given offset.
+ * @param db		rpm database
+ * @param offset	database offset
+ * @return		header at given offset
+ */
+RPM_GNUC_INTERNAL
+Header rpmdbGetHeaderAt(rpmdb db, unsigned int offset);
+
 #ifdef __cplusplus
 }
 #endif
