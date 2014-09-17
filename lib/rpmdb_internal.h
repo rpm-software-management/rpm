@@ -168,6 +168,13 @@ rpmdbMatchIterator rpmdbNewIterator(rpmdb db, rpmDbiTagVal dbitag);
 RPM_GNUC_INTERNAL
 rpmdbMatchIterator rpmdbInitPrefixIterator(rpmdb db, rpmDbiTagVal rpmtag,
 					const void * pfx, size_t plen);
+/** \ingroup rpmdb
+ * Get package offsets of entries
+ * @param ii		index iterator
+ * @return		db offsets of pkgs
+ */
+RPM_GNUC_INTERNAL
+unsigned int *rpmdbIndexIteratorPkgOffsets(rpmdbIndexIterator ii);
 
 
 #ifdef __cplusplus
