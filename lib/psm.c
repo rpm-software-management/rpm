@@ -238,61 +238,6 @@ exit:
     return rpmrc;
 }
 
-/**
- * Run a scriptlet with args.
- *
- * Run a script with an interpreter. If the interpreter is not specified,
- * /bin/sh will be used. If the interpreter is /bin/sh, then the args from
- * the header will be ignored, passing instead arg1 and arg2.
- *
- * @param ts		transaction set
- * @param te		transaction element
- * @param prefixes	install prefixes
- * @param script	scriptlet from header
- * @param arg1		no. instances of package installed after scriptlet exec
- *			(-1 is no arg)
- * @param arg2		ditto, but for the target package
- * @return		0 on success
- */
-static rpmRC runScript(rpmts ts, rpmte te, ARGV_const_t prefixes, 
-		       rpmScript script, int arg1, int arg2)
-{
-    rpmRC stoprc, rc = RPMRC_OK;
-    rpmTagVal stag = rpmScriptTag(script);
-    FD_t sfd = NULL;
-    int warn_only = (stag != RPMTAG_PREIN &&
-		     stag != RPMTAG_PREUN &&
-		     stag != RPMTAG_PRETRANS &&
-		     stag != RPMTAG_VERIFYSCRIPT);
-
-    sfd = rpmtsNotify(ts, te, RPMCALLBACK_SCRIPT_START, stag, 0);
-    if (sfd == NULL)
-	sfd = rpmtsScriptFd(ts);
-
-    rpmswEnter(rpmtsOp(ts, RPMTS_OP_SCRIPTLETS), 0);
-    rc = rpmScriptRun(script, arg1, arg2, sfd,
-		      prefixes, warn_only, rpmtsPlugins(ts));
-    rpmswExit(rpmtsOp(ts, RPMTS_OP_SCRIPTLETS), 0);
-
-    /* Map warn-only errors to "notfound" for script stop callback */
-    stoprc = (rc != RPMRC_OK && warn_only) ? RPMRC_NOTFOUND : rc;
-    rpmtsNotify(ts, te, RPMCALLBACK_SCRIPT_STOP, stag, stoprc);
-
-    /* 
-     * Notify callback for all errors. "total" abused for warning/error,
-     * rc only reflects whether the condition prevented install/erase 
-     * (which is only happens with %prein and %preun scriptlets) or not.
-     */
-    if (rc != RPMRC_OK) {
-	if (warn_only) {
-	    rc = RPMRC_OK;
-	}
-	rpmtsNotify(ts, te, RPMCALLBACK_SCRIPT_ERROR, stag, rc);
-    }
-
-    return rc;
-}
-
 static rpmRC runInstScript(rpmpsm psm, rpmTagVal scriptTag)
 {
     rpmRC rc = RPMRC_OK;
@@ -704,6 +649,7 @@ static rpmRC rpmPackageInstall(rpmts ts, rpmpsm psm)
 	if (rpmtsFilterFlags(psm->ts) & RPMPROB_FILTER_REPLACEPKG)
 	    markReplacedInstance(ts, psm->te);
 
+
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPREIN)) {
 	    /* Run triggers in other package(s) this package sets off. */
 	    rc = runTriggers(psm, RPMSENSE_TRIGGERPREIN);
@@ -748,8 +694,19 @@ static rpmRC rpmPackageInstall(rpmts ts, rpmpsm psm)
 	    if (rc) break;
 	}
 
+	/* Run file triggers in other package(s) this package sets off. */
+	rc = runFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERIN,
+			    RPMSCRIPT_FILETRIGGER);
+	if (rc) break;
+
+	/* Run file triggers in this package other package(s) set off. */
+	rc = runImmedFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERIN,
+				RPMSCRIPT_FILETRIGGER);
+	if (rc) break;
+
 	rc = markReplacedFiles(psm);
     }
+
     rpmswExit(rpmtsOp(psm->ts, RPMTS_OP_INSTALL), 0);
 
     return rc;
@@ -762,6 +719,17 @@ static rpmRC rpmPackageErase(rpmts ts, rpmpsm psm)
 
     rpmswEnter(rpmtsOp(psm->ts, RPMTS_OP_ERASE), 0);
     while (once--) {
+
+	/* Run file triggers in this package other package(s) set off. */
+	rc = runImmedFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERUN,
+				RPMSCRIPT_FILETRIGGER);
+	if (rc) break;
+
+	/* Run file triggers in other package(s) this package sets off. */
+	rc = runFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERUN,
+			    RPMSCRIPT_FILETRIGGER);
+	if (rc) break;
+
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERUN)) {
 	    /* Run triggers in this package other package(s) set off. */
 	    rc = runImmedTriggers(psm, RPMSENSE_TRIGGERUN);
@@ -789,8 +757,14 @@ static rpmRC rpmPackageErase(rpmts ts, rpmpsm psm)
 	    if (rc) break;
 	}
 
+	/* Run file triggers in other package(s) this package sets off. */
+	rc = runFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERPOSTUN,
+			    RPMSCRIPT_FILETRIGGER);
+	if (rc) break;
+
 	rc = dbRemove(ts, psm->te);
     }
+
     rpmswExit(rpmtsOp(psm->ts, RPMTS_OP_ERASE), 0);
 
     return rc;
@@ -834,6 +808,14 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 	    case PKG_POSTTRANS:
 	    case PKG_VERIFY:
 		rc = runInstScript(psm, goal);
+		break;
+	    case PKG_TRANSFILETRIGGERIN:
+		rc = runImmedFileTriggers(ts, te, RPMSENSE_TRIGGERIN,
+					    RPMSCRIPT_TRANSFILETRIGGER);
+		break;
+	    case PKG_TRANSFILETRIGGERUN:
+		rc = runImmedFileTriggers(ts, te, RPMSENSE_TRIGGERUN,
+					    RPMSCRIPT_TRANSFILETRIGGER);
 		break;
 	    default:
 		break;

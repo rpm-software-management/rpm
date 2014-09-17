@@ -8,6 +8,7 @@
 #include "lib/fprint.h"
 #include "lib/rpmlock.h"
 #include "lib/rpmdb_internal.h"
+#include "lib/rpmscript.h"
 
 typedef struct diskspaceInfo_s * rpmDiskSpaceInfo;
 
@@ -100,6 +101,18 @@ int rpmtsSolve(rpmts ts, rpmds key);
 
 RPM_GNUC_INTERNAL
 rpmRC rpmtsSetupTransactionPlugins(rpmts ts);
+
+RPM_GNUC_INTERNAL
+rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
+			rpmscriptTriggerModes tm);
+
+RPM_GNUC_INTERNAL
+rpmRC runImmedFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
+			    rpmscriptTriggerModes tm);
+RPM_GNUC_INTERNAL
+rpmRC runScript(rpmts ts, rpmte te, ARGV_const_t prefixes,
+		       rpmScript script, int arg1, int arg2);
+
 #ifdef __cplusplus
 }
 #endif
