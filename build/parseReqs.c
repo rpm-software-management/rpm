@@ -21,7 +21,6 @@ static rpmRC checkSep(const char *s, char c, char **emsg)
     const char *sep = strchr(s, c);
     if (sep && strchr(sep + 1, c)) {
 	rasprintf(emsg, "Invalid version (double separator '%c'): %s", c, s);
-	return RPMRC_FAIL;
     }
     return RPMRC_OK;
 }
@@ -253,11 +252,12 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 
 exit:
     if (emsg) {
+	int lvl = (rc == RPMRC_OK) ? RPMLOG_WARNING : RPMLOG_ERR;
 	/* Automatic dependencies don't relate to spec lines */
 	if (tagflags & (RPMSENSE_FIND_REQUIRES|RPMSENSE_FIND_PROVIDES)) {
-	    rpmlog(RPMLOG_ERR, "%s: %s\n", emsg, r);
+	    rpmlog(lvl, "%s: %s\n", emsg, r);
 	} else {
-	    rpmlog(RPMLOG_ERR, _("line %d: %s: %s\n"),
+	    rpmlog(lvl, _("line %d: %s: %s\n"),
 		   spec->lineNum, emsg, spec->line);
 	}
 	free(emsg);
