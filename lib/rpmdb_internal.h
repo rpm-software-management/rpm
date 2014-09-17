@@ -176,6 +176,29 @@ rpmdbMatchIterator rpmdbInitPrefixIterator(rpmdb db, rpmDbiTagVal rpmtag,
 RPM_GNUC_INTERNAL
 unsigned int *rpmdbIndexIteratorPkgOffsets(rpmdbIndexIterator ii);
 
+/** \ingroup rpmdb
+ * Return current index (position) in iterator.
+ * @param mi		rpm database iterator
+ * @return		current index
+ */
+RPM_GNUC_INTERNAL
+int rpmdbGetIteratorIndex(rpmdbMatchIterator mi);
+
+/** \ingroup rpmdb
+ * Set iterator index.
+ * @param mi		rpm database iterator
+ * @param ix		index
+ */
+RPM_GNUC_INTERNAL
+void rpmdbSetIteratorIndex(rpmdbMatchIterator mi, unsigned int ix);
+
+/** \ingroup rpmdb
+ * Return offset of package with given index.
+ * @param mi		rpm database iterator
+ * @return		package offset
+ */
+RPM_GNUC_INTERNAL
+unsigned int rpmdbGetIteratorOffsetFor(rpmdbMatchIterator mi, unsigned int ix);
 
 #ifdef __cplusplus
 }

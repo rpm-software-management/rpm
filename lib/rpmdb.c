@@ -1154,6 +1154,24 @@ int rpmdbGetIteratorCount(rpmdbMatchIterator mi)
     return (mi && mi->mi_set ?  mi->mi_set->count : 0);
 }
 
+int rpmdbGetIteratorIndex(rpmdbMatchIterator mi)
+{
+    return (mi ? mi->mi_setx : 0);
+}
+
+void rpmdbSetIteratorIndex(rpmdbMatchIterator mi, unsigned int ix)
+{
+    if (mi)
+	mi->mi_setx = ix;
+}
+
+unsigned int rpmdbGetIteratorOffsetFor(rpmdbMatchIterator mi, unsigned int ix)
+{
+    if (mi && mi->mi_set && ix < mi->mi_set->count)
+	return mi->mi_set->recs[ix].hdrNum;
+    return 0;
+}
+
 /**
  * Return pattern match.
  * @param mire		match iterator regex
