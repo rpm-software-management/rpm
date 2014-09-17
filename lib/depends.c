@@ -40,7 +40,7 @@ const int rpmFLAGS = RPMSENSE_EQUAL;
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
-#define HASHTYPE removedHash
+#define HASHTYPE packageHash
 #define HTKEYTYPE unsigned int
 #define HTDATATYPE struct rpmte_s *
 #include "rpmhash.C"
@@ -118,7 +118,7 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
     if (dboffset == 0) return 1;
 
     /* Filter out duplicate erasures. */
-    if (removedHashHasEntry(tsmem->removedPackages, dboffset)) {
+    if (packageHashHasEntry(tsmem->removedPackages, dboffset)) {
         return 0;
     }
 
@@ -126,7 +126,7 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
     if (p == NULL)
 	return 1;
 
-    removedHashAddEntry(tsmem->removedPackages, dboffset, p);
+    packageHashAddEntry(tsmem->removedPackages, dboffset, p);
 
     if (tsmem->orderCount >= tsmem->orderAlloced) {
 	tsmem->orderAlloced += (tsmem->orderCount - tsmem->orderAlloced) + tsmem->delta;

@@ -604,8 +604,11 @@ static rpmRC dbAdd(rpmts ts, rpmte te)
     rc = (rpmdbAdd(rpmtsGetRdb(ts), h) == 0) ? RPMRC_OK : RPMRC_FAIL;
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 
-    if (rc == RPMRC_OK)
+    if (rc == RPMRC_OK) {
 	rpmteSetDBInstance(te, headerGetInstance(h));
+	packageHashAddEntry(ts->members->installedPackages,
+			    headerGetInstance(h), te);
+    }
     headerFree(h);
     return rc;
 }

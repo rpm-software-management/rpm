@@ -608,7 +608,7 @@ void rpmtsEmpty(rpmts ts)
     tsmem->orderCount = 0;
     /* The pool cannot be emptied, there might be references to its contents */
     tsmem->pool = rpmstrPoolFree(tsmem->pool);
-    removedHashEmpty(tsmem->removedPackages);
+    packageHashEmpty(tsmem->removedPackages);
     return;
 }
 
@@ -657,7 +657,8 @@ rpmts rpmtsFree(rpmts ts)
 
     (void) rpmtsCloseDB(ts);
 
-    tsmem->removedPackages = removedHashFree(tsmem->removedPackages);
+    tsmem->removedPackages = packageHashFree(tsmem->removedPackages);
+    tsmem->installedPackages = packageHashFree(tsmem->installedPackages);
     tsmem->order = _free(tsmem->order);
     ts->members = _free(ts->members);
 
@@ -965,7 +966,8 @@ rpmts rpmtsCreate(void)
     tsmem->pool = NULL;
     tsmem->delta = 5;
     tsmem->addedPackages = NULL;
-    tsmem->removedPackages = removedHashCreate(128, uintId, uintCmp, NULL, NULL);
+    tsmem->removedPackages = packageHashCreate(128, uintId, uintCmp, NULL, NULL);
+    tsmem->installedPackages = packageHashCreate(128, uintId, uintCmp, NULL, NULL);
     tsmem->orderAlloced = 0;
     tsmem->orderCount = 0;
     tsmem->order = NULL;

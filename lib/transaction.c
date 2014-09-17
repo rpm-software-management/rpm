@@ -1023,7 +1023,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 
 	/* Is this package being removed? */
 	installedPkg = rpmdbGetIteratorOffset(mi);
-	if (removedHashGetEntry(tsmem->removedPackages, installedPkg,
+	if (packageHashGetEntry(tsmem->removedPackages, installedPkg,
 				&removedPkg, NULL, NULL)) {
 	    beingRemoved = 1;
 	    otherFi = rpmteFiles(removedPkg[0]);

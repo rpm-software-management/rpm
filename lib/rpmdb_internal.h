@@ -15,7 +15,7 @@ extern "C" {
 #undef HASHTYPE
 #undef HTKEYTYPE
 #undef HTDATATYPE
-#define HASHTYPE removedHash
+#define HASHTYPE packageHash
 #define HTKEYTYPE unsigned int
 #define HTDATATYPE struct rpmte_s *
 #include "rpmhash.H"
@@ -135,7 +135,7 @@ void rpmdbUniqIterator(rpmdbMatchIterator mi);
  * @param hdrNums	hash of package numbers
  * return		0 on success, 1 on failure (bad args)
  */
-int rpmdbFilterIterator(rpmdbMatchIterator mi, removedHash hdrNums, int neg);
+int rpmdbFilterIterator(rpmdbMatchIterator mi, packageHash hdrNums, int neg);
 
 /** \ingroup rpmdb
  * Remove items from set of package instances to iterate.
@@ -144,7 +144,7 @@ int rpmdbFilterIterator(rpmdbMatchIterator mi, removedHash hdrNums, int neg);
  * @param hdrNums	hash of package instances
  * @return		0 on success, 1 on failure (bad args)
  */
-int rpmdbPruneIterator(rpmdbMatchIterator mi, removedHash hdrNums);
+int rpmdbPruneIterator(rpmdbMatchIterator mi, packageHash hdrNums);
 
 /** \ingroup rpmdb
  * Create a new, empty match iterator (for purposes of extending it

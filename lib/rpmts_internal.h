@@ -14,7 +14,8 @@ typedef struct diskspaceInfo_s * rpmDiskSpaceInfo;
 /* Transaction set elements information */
 typedef struct tsMembers_s {
     rpmstrPool pool;		/*!< Global string pool */
-    removedHash removedPackages;	/*!< Set of packages being removed. */
+    packageHash removedPackages;	/*!< Set of packages being removed. */
+    packageHash installedPackages;	/*!< Set of installed packages */
     rpmal addedPackages;	/*!< Set of packages being installed. */
 
     rpmds rpmlib;		/*!< rpmlib() dependency set. */
