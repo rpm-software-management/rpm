@@ -61,6 +61,7 @@ rpm	alias --obsoletes	--qf \
 rpm	alias --provides	--qf \
   "[%|VERBOSE?{%{PROVIDEFLAGS:deptype}: }:{}|%{PROVIDENEVRS}\n]" \
 	--POPTdesc=$"list capabilities that this package provides"
+rpm	alias -P --provides
 
 rpm	alias --requires	--qf \
   "[%|VERBOSE?{%{REQUIREFLAGS:deptype}: }:{}|%{REQUIRENEVRS}\n]" \
