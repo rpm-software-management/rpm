@@ -55,12 +55,12 @@ static int rpmPackageFilesArchive(rpmfiles fi, int isSrc,
     if (rc == RPMERR_ITER_END)
 	rc = 0;
 
-    if (archiveSize)
-	*archiveSize = (rc == 0) ? rpmfiArchiveTell(archive) : 0;
-
     /* Finish the payload stream */
     if (!rc)
 	rc = rpmfiArchiveClose(archive);
+
+    if (archiveSize)
+	*archiveSize = (rc == 0) ? rpmfiArchiveTell(archive) : 0;
 
     rpmfiFree(archive);
 
