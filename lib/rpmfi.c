@@ -1199,6 +1199,7 @@ rpmfi rpmfiFree(rpmfi fi)
     fi->fn = _free(fi->fn);
     fi->ofn = _free(fi->ofn);
     fi->found = _free(fi->found);
+    fi->archive = rpmcpioFree(fi->archive);
 
     free(fi);
     return NULL;
@@ -1734,7 +1735,6 @@ int rpmfiArchiveClose(rpmfi fi)
     if (fi == NULL)
 	return -1;
     int rc = rpmcpioClose(fi->archive);
-    fi->archive = rpmcpioFree(fi->archive);
     return rc;
 }
 
