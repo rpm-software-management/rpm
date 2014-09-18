@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2014-09-15 10:38+0300\n"
+"POT-Creation-Date: 2014-09-18 14:01+0300\n"
 "PO-Revision-Date: 2014-04-07 10:19+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/rpm/language/"
@@ -1270,20 +1270,20 @@ msgstr "無効なパッケージ番号 %s: %s\n"
 msgid "line %d: second %%prep\n"
 msgstr "%d 行目: ふたつ目の %%prep\n"
 
-#: build/parseReqs.c:131
+#: build/parseReqs.c:130
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr ""
 "依存関係トークンは、英数字、'_' または '/' で始まらなければいけません。"
 
-#: build/parseReqs.c:156
+#: build/parseReqs.c:155
 msgid "Versioned file name not permitted"
 msgstr "バージョン付きファイル名は許可されません"
 
-#: build/parseReqs.c:173
+#: build/parseReqs.c:172
 msgid "Version required"
 msgstr "バージョン要件"
 
-#: build/parseReqs.c:189
+#: build/parseReqs.c:188
 msgid "invalid dependency"
 msgstr "無効な依存性"
 

@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2014-09-15 10:38+0300\n"
+"POT-Creation-Date: 2014-09-18 14:01+0300\n"
 "PO-Revision-Date: 2014-04-10 01:15+0000\n"
 "Last-Translator: dongfengweixiao <dongfengweixiao@gmail.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/rpm/"
@@ -1258,19 +1258,19 @@ msgstr "无效的补丁编号 %s：%s\n"
 msgid "line %d: second %%prep\n"
 msgstr "行 %d：第二个 %%prep\n"
 
-#: build/parseReqs.c:131
+#: build/parseReqs.c:130
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr ""
 
-#: build/parseReqs.c:156
+#: build/parseReqs.c:155
 msgid "Versioned file name not permitted"
 msgstr "不允许的版本控制命名"
 
-#: build/parseReqs.c:173
+#: build/parseReqs.c:172
 msgid "Version required"
 msgstr "版本要求"
 
-#: build/parseReqs.c:189
+#: build/parseReqs.c:188
 msgid "invalid dependency"
 msgstr "无效的依赖"
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2014-09-15 10:38+0300\n"
+"POT-Creation-Date: 2014-09-18 14:01+0300\n"
 "PO-Revision-Date: 2014-04-07 12:06+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian (http://www.transifex.com/projects/p/rpm/language/"
@@ -1287,19 +1287,19 @@ msgstr "Некоректний номер латки %s: %s\n"
 msgid "line %d: second %%prep\n"
 msgstr "рядок %d: друге %%prep\n"
 
-#: build/parseReqs.c:131
+#: build/parseReqs.c:130
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr "записи залежностей мають починатися з букви, числа, «_» або «/»"
 
-#: build/parseReqs.c:156
+#: build/parseReqs.c:155
 msgid "Versioned file name not permitted"
 msgstr "не можна використовувати версії у назвах файлів"
 
-#: build/parseReqs.c:173
+#: build/parseReqs.c:172
 msgid "Version required"
 msgstr "Слід вказати версію"
 
-#: build/parseReqs.c:189
+#: build/parseReqs.c:188
 msgid "invalid dependency"
 msgstr "некоректна залежність"
 

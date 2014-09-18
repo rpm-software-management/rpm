@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2014-09-15 10:38+0300\n"
+"POT-Creation-Date: 2014-09-18 14:01+0300\n"
 "PO-Revision-Date: 2014-05-28 17:29+0000\n"
 "Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
 "Language-Team: Turkish (http://www.transifex.com/projects/p/rpm/language/"
@@ -1272,19 +1272,19 @@ msgstr "Geçersiz yama numarası %s: %s\n"
 msgid "line %d: second %%prep\n"
 msgstr "satır %d: %%prep saniye\n"
 
-#: build/parseReqs.c:131
+#: build/parseReqs.c:130
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr ""
 
-#: build/parseReqs.c:156
+#: build/parseReqs.c:155
 msgid "Versioned file name not permitted"
 msgstr ""
 
-#: build/parseReqs.c:173
+#: build/parseReqs.c:172
 msgid "Version required"
 msgstr ""
 
-#: build/parseReqs.c:189
+#: build/parseReqs.c:188
 msgid "invalid dependency"
 msgstr ""
 
