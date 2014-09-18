@@ -253,3 +253,21 @@ foo > 1.2.3
 [])
 
 AT_CLEANUP
+
+# ------------------------------
+# archive sanity check
+AT_SETUP([rpmbuild archive sanity])
+AT_KEYWORDS([build])
+AT_CHECK([
+rm -rf ${TOPDIR}
+
+runroot rpmbuild \
+  -bb --quiet /data/SPECS/attrtest.spec
+
+runroot rpm2cpio \
+  "${TOPDIR}"/RPMS/noarch/attrtest-1.0-1.noarch.rpm > /tmp/attrtest.cpio
+],
+[0],
+[],
+[])
+AT_CLEANUP
