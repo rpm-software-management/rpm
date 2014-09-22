@@ -14,11 +14,8 @@ find $1 \( -name "*$2" -o -name ".*$2" \) -print | sort |
 while read f; do
     U="${GENDIFF_DIFF_ARGS}"
     [ "`basename $f`" = "ChangeLog$2" ] && U="${GENDIFF_DIFF_CHANGELOG_ARGS}"
-    diffcmd="${DIFF} ${U} /dev/null ${f%$2}"
-#    ${DIFF} ${U} $f `echo $f | sed s/$2\$//`
-    if [ -r "$f" ]; then
-        diffcmd="${DIFF} ${U} ${f} ${f%$2}"
-    fi
-    echo "${diffcmd}"
-    ${diffcmd}
+    F=/dev/null
+    [ -r "${f}" ] && F="${f}"
+    echo "${DIFF} ${U} ${F} ${f%$2}"
+    ${DIFF} ${U} "${F}" "${f%$2}"
 done
