@@ -63,6 +63,28 @@ runroot rpm -Vva --nodeps --nouser --nogroup
 [])
 AT_CLEANUP
 
+# Test file verify when no errors expected in verbose mode.
+AT_SETUP([directory replaced with a directory symlink])
+AT_KEYWORDS([verify])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
+	/data/RPMS/hello-1.0-1.i386.rpm
+mv "${RPMTEST}"/usr/share/doc/hello-1.0 "${RPMTEST}"/usr/share/doc/hello-1.0.orig
+ln -s hello-1.0.orig "${RPMTEST}"/usr/share/doc/hello-1.0
+runroot rpm -Vva --nodeps --nouser --nogroup
+rm -rf "${RPMTEST}"/usr/share/doc/
+],
+[0],
+[.........    /usr/local/bin/hello
+.........    /usr/share/doc/hello-1.0
+.........  d /usr/share/doc/hello-1.0/FAQ
+],
+[])
+AT_CLEANUP
+
 # Test file verify after mutilating the files a bit.
 AT_SETUP([verify from db, with problems present])
 AT_KEYWORDS([verify])
