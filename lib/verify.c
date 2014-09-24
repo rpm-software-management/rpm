@@ -96,6 +96,12 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	return 1;
     }
 
+    /* If we expected a directory but got a symlink to one, follow the link */
+    if (S_ISDIR(fmode) && S_ISLNK(sb.st_mode) && stat(fn, &sb) != 0) {
+	*res |= RPMVERIFY_LSTATFAIL;
+	return 1;
+    }
+
     /* Links have no mode, other types have no linkto */
     if (S_ISLNK(sb.st_mode))
 	flags &= ~(RPMVERIFY_MODE);
