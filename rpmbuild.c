@@ -310,7 +310,7 @@ static char * getTarSpec(const char *arg)
 	char *cmd;
 
 	cmd = rpmExpand("%{uncompress: ", arg, "} | ",
-			"%{__tar} xOvf - --wildcards ", *spec,
+			"%{__tar} xOvof - --wildcards ", *spec,
 			" 2>&1 > ", tmpSpecFile, NULL);
 
 	if (!(fp = popen(cmd, "r"))) {
