@@ -124,10 +124,11 @@ rpmlock rpmlockNew(const char *lock_path, const char *descr)
 int rpmlockAcquire(rpmlock lock)
 {
     int locked = 0; /* assume failure */
+    int maywait = isatty(STDIN_FILENO); /* dont wait within scriptlets */
 
     if (lock) {
 	locked = rpmlock_acquire(lock, RPMLOCK_WRITE);
-	if (!locked && (lock->openmode & RPMLOCK_WRITE)) {
+	if (!locked && (lock->openmode & RPMLOCK_WRITE) && maywait) {
 	    rpmlog(RPMLOG_WARNING, _("waiting for %s lock on %s\n"),
 		    lock->descr, lock->path);
 	    locked = rpmlock_acquire(lock, (RPMLOCK_WRITE|RPMLOCK_WAIT));
