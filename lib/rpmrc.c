@@ -144,6 +144,7 @@ struct rpmrcCtx_s {
     int currTables[2];
     struct rpmvarValue values[RPMVAR_NUM];
     struct tableType_s tables[RPM_MACHTABLE_COUNT];
+    int machDefaults;
     pthread_rwlock_t lock;
 };
 
@@ -988,7 +989,6 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 {
     const char * const platform_path = SYSCONFDIR "/rpm/platform";
     static struct utsname un;
-    static int gotDefaults = 0;
     char * chptr;
     canonEntry canon;
     int rc;
@@ -998,7 +998,7 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
     read_auxv();
 #endif
 
-    while (!gotDefaults) {
+    while (!ctx->machDefaults) {
 	if (!rpmPlatform(ctx, platform_path)) {
 	    char * s = rpmExpand("%{_host_cpu}", NULL);
 	    if (s) {
@@ -1010,7 +1010,7 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 		rstrlcpy(un.sysname, s, sizeof(un.sysname));
 		free(s);
 	    }
-	    gotDefaults = 1;
+	    ctx->machDefaults = 1;
 	    break;
 	}
 	rc = uname(&un);
@@ -1227,7 +1227,7 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 			   ctx->tables[RPM_MACHTABLE_INSTOS].canonsLength);
 	if (canon)
 	    rstrlcpy(un.sysname, canon->short_name, sizeof(un.sysname));
-	gotDefaults = 1;
+	ctx->machDefaults = 1;
 	break;
     }
 
@@ -1660,6 +1660,7 @@ void rpmFreeRpmrc(void)
     }
     ctx->current[OS] = _free(ctx->current[OS]);
     ctx->current[ARCH] = _free(ctx->current[ARCH]);
+    ctx->machDefaults = 0;
     defaultsInitialized = 0;
 
     /* XXX doesn't really belong here but... */
