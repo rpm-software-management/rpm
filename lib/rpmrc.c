@@ -135,8 +135,6 @@ static const size_t optionTableSize = sizeof(optionTable) / sizeof(*optionTable)
 #define OS	0
 #define ARCH	1
 
-static int defaultsInitialized = 0;
-
 typedef struct rpmrcCtx_s * rpmrcCtx;
 struct rpmrcCtx_s {
     ARGV_t platpat;
@@ -145,6 +143,7 @@ struct rpmrcCtx_s {
     struct rpmvarValue values[RPMVAR_NUM];
     struct tableType_s tables[RPM_MACHTABLE_COUNT];
     int machDefaults;
+    int pathDefaults;
     pthread_rwlock_t lock;
 };
 
@@ -1507,9 +1506,9 @@ static rpmRC rpmReadRC(rpmrcCtx ctx, const char * rcfiles)
     ARGV_t p, globs = NULL, files = NULL;
     rpmRC rc = RPMRC_FAIL;
 
-    if (!defaultsInitialized) {
+    if (!ctx->pathDefaults) {
 	setDefaults();
-	defaultsInitialized = 1;
+	ctx->pathDefaults = 1;
     }
 
     if (rcfiles == NULL)
@@ -1661,7 +1660,7 @@ void rpmFreeRpmrc(void)
     ctx->current[OS] = _free(ctx->current[OS]);
     ctx->current[ARCH] = _free(ctx->current[ARCH]);
     ctx->machDefaults = 0;
-    defaultsInitialized = 0;
+    ctx->pathDefaults = 0;
 
     /* XXX doesn't really belong here but... */
     rpmFreeCrypto();
