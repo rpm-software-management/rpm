@@ -273,9 +273,6 @@ static rpmRC generateSignature(char *SHA1, uint8_t *MD5, rpm_loff_t size,
 {
     Header sig = NULL;
     struct rpmtd_s td;
-    rpmTagVal sizetag;
-    rpmTagVal payloadtag;
-    rpm_tagtype_t typetag;
     rpmRC rc = RPMRC_OK;
     char *reservedSpace;
     int spaceSize = 0;
@@ -297,29 +294,33 @@ static rpmRC generateSignature(char *SHA1, uint8_t *MD5, rpm_loff_t size,
     td.data = MD5;
     headerPut(sig, &td, HEADERPUT_DEFAULT);
 
+    rpmtdReset(&td);
+    td.count = 1;
     if (payloadSize < UINT32_MAX) {
-	sizetag = RPMSIGTAG_SIZE;
-	payloadtag = RPMSIGTAG_PAYLOADSIZE;
-	typetag = RPM_INT32_TYPE;
+	rpm_off_t p = payloadSize;
+	rpm_off_t s = size;
+	td.type = RPM_INT32_TYPE;
+
+	td.tag = RPMSIGTAG_PAYLOADSIZE;
+	td.data = &p;
+	headerPut(sig, &td, HEADERPUT_DEFAULT);
+
+	td.tag = RPMSIGTAG_SIZE;
+	td.data = &s;
+	headerPut(sig, &td, HEADERPUT_DEFAULT);
     } else {
-	sizetag = RPMSIGTAG_LONGSIZE;
-	payloadtag = RPMSIGTAG_LONGARCHIVESIZE;
-	typetag = RPM_INT64_TYPE;
+	rpm_loff_t p = payloadSize;
+	rpm_loff_t s = size;
+	td.type = RPM_INT64_TYPE;
+
+	td.tag = RPMSIGTAG_LONGARCHIVESIZE;
+	td.data = &p;
+	headerPut(sig, &td, HEADERPUT_DEFAULT);
+
+	td.tag = RPMSIGTAG_LONGSIZE;
+	td.data = &s;
+	headerPut(sig, &td, HEADERPUT_DEFAULT);
     }
-
-    rpmtdReset(&td);
-    td.tag = payloadtag;
-    td.count = 1;
-    td.type = typetag;
-    td.data = &payloadSize;
-    headerPut(sig, &td, HEADERPUT_DEFAULT);
-
-    rpmtdReset(&td);
-    td.tag = sizetag;
-    td.count = 1;
-    td.type = typetag;
-    td.data = &size;
-    headerPut(sig, &td, HEADERPUT_DEFAULT);
 
     spaceSize = rpmExpandNumeric("%{__gpg_reserved_space}");
     if(spaceSize > 0) {
