@@ -600,7 +600,7 @@ if (multiToken) { \
 
 /**
  * Check for inappropriate characters. All alphanums are considered sane.
- * @param spec		spec
+ * @param spec		spec (or NULL)
  * @param field		string to check
  * @param whitelist	string of permitted characters
  * @return		RPMRC_OK if OK
@@ -608,25 +608,29 @@ if (multiToken) { \
 rpmRC rpmCharCheck(rpmSpec spec, const char *field, const char *whitelist)
 {
     const char *ch;
+    char *err = NULL;
+    rpmRC rc = RPMRC_OK;
 
     for (ch=field; *ch; ch++) {
 	if (risalnum(*ch) || strchr(whitelist, *ch)) continue;
-	if (isprint(*ch)) {
-	    rpmlog(RPMLOG_ERR, _("line %d: Illegal char '%c' in: %s\n"),
-		spec->lineNum, *ch, spec->line);
+	rasprintf(&err, _("Illegal char '%c' (0x%x)"),
+		  isprint(*ch) ? *ch : '?', *ch);
+    }
+    if (err == NULL && strstr(field, "..") != NULL) {
+	rasprintf(&err, _("Illegal sequence \"..\""));
+    }
+
+    if (err) {
+	if (spec) {
+	    rpmlog(RPMLOG_ERR, _("line %d: %s in: %s\n"),
+		   spec->lineNum, err, spec->line);
 	} else {
-	    rpmlog(RPMLOG_ERR, _("line %d: Illegal char in: %s\n"),
-		spec->lineNum, spec->line);
+	    rpmlog(RPMLOG_ERR, _("%s in: %s\n"), err, field);
 	}
-	return RPMRC_FAIL;
+	free(err);
+	rc = RPMRC_FAIL;
     }
-    if (strstr(field, "..") != NULL) {
-	rpmlog(RPMLOG_ERR, _("line %d: Illegal sequence \"..\" in: %s\n"),
-	    spec->lineNum, spec->line);
-	return RPMRC_FAIL;
-    }
-    
-    return RPMRC_OK;
+    return rc;
 }
 
 static int haveLangTag(Header h, rpmTagVal tag, const char *lang)
