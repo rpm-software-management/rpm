@@ -1314,15 +1314,15 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     /* Add dependency dictionary(#dependencies) */
     if (rpmtdFromArgi(&td, RPMTAG_DEPENDSDICT, fc->ddictx)) {
 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-    }
 
-    /* Add per-file dependency (start,number) pairs (#files) */
-    if (rpmtdFromArgi(&td, RPMTAG_FILEDEPENDSX, fc->fddictx)) {
-	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-    }
+	/* Add per-file dependency (start,number) pairs (#files) */
+	if (rpmtdFromArgi(&td, RPMTAG_FILEDEPENDSX, fc->fddictx)) {
+	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	}
 
-    if (rpmtdFromArgi(&td, RPMTAG_FILEDEPENDSN, fc->fddictn)) {
-	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	if (rpmtdFromArgi(&td, RPMTAG_FILEDEPENDSN, fc->fddictn)) {
+	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	}
     }
 
 
