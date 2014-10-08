@@ -1237,17 +1237,6 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     if (ac <= 0)
 	goto exit;
 
-    /* Skip packages that have dependency generation disabled. */
-    if (! (pkg->autoReq || pkg->autoProv))
-	goto exit;
-
-    /* If new-fangled dependency generation is disabled ... */
-    if (!rpmExpandNumeric("%{?_use_internal_dependency_generator}")) {
-	/* ... then generate dependencies using %{__find_requires} et al. */
-	rc = rpmfcGenerateDependsHelper(spec, pkg, fi);
-	goto exit;
-    }
-
     /* Extract absolute file paths in argv format. */
     av = xcalloc(ac+1, sizeof(*av));
     fmode = xcalloc(ac+1, sizeof(*fmode));
@@ -1291,8 +1280,15 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 	goto exit;
 
     /* Build file/package dependency dictionary. */
-    rc = rpmfcApply(fc);
-    if ( rc != RPMRC_OK )
+    /* If new-fangled dependency generation is disabled ... */
+    if (!rpmExpandNumeric("%{?_use_internal_dependency_generator}")) {
+	/* ... then generate dependencies using %{__find_requires} et al. */
+	rc = rpmfcGenerateDependsHelper(spec, pkg, fi);
+    } else {
+	rc = rpmfcApply(fc);
+    }
+
+    if (rc != RPMRC_OK)
 	goto exit;
 
     /* Add per-file colors(#files) */
