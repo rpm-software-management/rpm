@@ -1152,7 +1152,7 @@ static void printDeps(rpmfc fc)
     }
 }
 
-static rpmRC rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi fi)
+static rpmRC rpmfcGenerateDependsHelper(rpmfc fc, Package pkg, rpmfi fi)
 {
     StringBuf sb_stdin = newStringBuf();
     rpmRC rc = RPMRC_OK;
@@ -1160,7 +1160,7 @@ static rpmRC rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi f
     /* Create file manifest buffer to deliver to dependency finder. */
     fi = rpmfiInit(fi, 0);
     while (rpmfiNext(fi) >= 0) {
-	appendStringBuf(sb_stdin, spec->buildRoot);
+	appendStringBuf(sb_stdin, fc->buildRoot);
 	appendLineStringBuf(sb_stdin, rpmfiFN(fi));
     }
 
@@ -1198,7 +1198,7 @@ static rpmRC rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi f
 	free(s);
 
 	if (rpmfcExec(dm->argv, sb_stdin, &sb_stdout,
-			failnonzero, spec->buildRoot) == -1)
+			failnonzero, fc->buildRoot) == -1)
 	    continue;
 
 	if (sb_stdout == NULL) {
@@ -1208,7 +1208,7 @@ static rpmRC rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi f
 	}
 
 	/* Parse dependencies into header */
-	rc = parseRCPOT(spec, pkg, getStringBuf(sb_stdout), tag, 0, tagflags);
+	rc = parseRCPOT(NULL, pkg, getStringBuf(sb_stdout), tag, 0, tagflags);
 	freeStringBuf(sb_stdout);
 
 	if (rc) {
@@ -1284,7 +1284,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     /* If new-fangled dependency generation is disabled ... */
     if (!rpmExpandNumeric("%{?_use_internal_dependency_generator}")) {
 	/* ... then generate dependencies using %{__find_requires} et al. */
-	rc = rpmfcGenerateDependsHelper(spec, pkg, fi);
+	rc = rpmfcGenerateDependsHelper(fc, pkg, fi);
     } else {
 	rc = rpmfcApply(fc);
     }
