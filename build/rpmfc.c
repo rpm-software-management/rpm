@@ -1152,7 +1152,7 @@ static void printDeps(rpmfc fc)
     }
 }
 
-static rpmRC rpmfcGenerateDependsHelper(rpmfc fc, Package pkg)
+static rpmRC rpmfcGenerateDependsHelper(rpmfc fc)
 {
     StringBuf sb_stdin = newStringBuf();
     rpmRC rc = RPMRC_OK;
@@ -1170,7 +1170,7 @@ static rpmRC rpmfcGenerateDependsHelper(rpmfc fc, Package pkg)
 
 	switch(tag) {
 	case RPMTAG_PROVIDEFLAGS:
-	    if (!pkg->autoProv)
+	    if (fc->skipProv)
 		continue;
 	    tagflags = RPMSENSE_FIND_PROVIDES;
 	    break;
@@ -1181,7 +1181,7 @@ static rpmRC rpmfcGenerateDependsHelper(rpmfc fc, Package pkg)
 	case RPMTAG_ENHANCENAME:
 	case RPMTAG_CONFLICTNAME:
 	case RPMTAG_OBSOLETENAME:
-	    if (!pkg->autoReq)
+	    if (fc->skipReq)
 		continue;
 	    tagflags = RPMSENSE_FIND_REQUIRES;
 	    break;
@@ -1205,7 +1205,7 @@ static rpmRC rpmfcGenerateDependsHelper(rpmfc fc, Package pkg)
 	}
 
 	/* Parse dependencies into header */
-	rc = parseRCPOT(NULL, pkg, getStringBuf(sb_stdout), tag, 0, tagflags);
+	rc = parseRCPOT(NULL, fc->pkg, getStringBuf(sb_stdout), tag, 0, tagflags);
 	freeStringBuf(sb_stdout);
 
 	if (rc) {
@@ -1281,7 +1281,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     /* If new-fangled dependency generation is disabled ... */
     if (!rpmExpandNumeric("%{?_use_internal_dependency_generator}")) {
 	/* ... then generate dependencies using %{__find_requires} et al. */
-	rc = rpmfcGenerateDependsHelper(fc, pkg);
+	rc = rpmfcGenerateDependsHelper(fc);
     } else {
 	rc = rpmfcApply(fc);
     }
