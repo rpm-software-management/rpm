@@ -790,7 +790,7 @@ rpmds rpmfcRequires(rpmfc fc)
     return rpmfcDependencies(fc, RPMTAG_REQUIRENAME);
 }
 
-rpmRC rpmfcApply(rpmfc fc)
+static rpmRC rpmfcApplyInternal(rpmfc fc)
 {
     const char * s;
     char * se;
@@ -1152,7 +1152,7 @@ static void printDeps(rpmfc fc)
     }
 }
 
-static rpmRC rpmfcGenerateDependsHelper(rpmfc fc)
+static rpmRC rpmfcApplyExternal(rpmfc fc)
 {
     StringBuf sb_stdin = newStringBuf();
     rpmRC rc = RPMRC_OK;
@@ -1219,6 +1219,20 @@ static rpmRC rpmfcGenerateDependsHelper(rpmfc fc)
     return rc;
 }
 
+rpmRC rpmfcApply(rpmfc fc)
+{
+    rpmRC rc;
+    /* If new-fangled dependency generation is disabled ... */
+    if (!rpmExpandNumeric("%{?_use_internal_dependency_generator}")) {
+	/* ... then generate dependencies using %{__find_requires} et al. */
+	rc = rpmfcApplyExternal(fc);
+    } else {
+	/* ... otherwise generate per-file dependencies */
+	rc = rpmfcApplyInternal(fc);
+    }
+    return rc;
+}
+
 rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 {
     rpmfi fi = rpmfilesIter(pkg->cpioList, RPMFI_ITER_FWD);
@@ -1278,14 +1292,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 	goto exit;
 
     /* Build file/package dependency dictionary. */
-    /* If new-fangled dependency generation is disabled ... */
-    if (!rpmExpandNumeric("%{?_use_internal_dependency_generator}")) {
-	/* ... then generate dependencies using %{__find_requires} et al. */
-	rc = rpmfcGenerateDependsHelper(fc);
-    } else {
-	rc = rpmfcApply(fc);
-    }
-
+    rc = rpmfcApply(fc);
     if (rc != RPMRC_OK)
 	goto exit;
 
