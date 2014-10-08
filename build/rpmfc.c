@@ -40,7 +40,6 @@ struct rpmfc_s {
     int nfiles;		/*!< no. of files */
     int fknown;		/*!< no. of classified files */
     int fwhite;		/*!< no. of "white" files */
-    int ix;		/*!< current file index */
     int skipProv;	/*!< Don't auto-generate Provides:? */
     int skipReq;	/*!< Don't auto-generate Requires:? */
     char *buildRoot;	/*!< (Build) root dir */
@@ -480,6 +479,7 @@ static const char *parseDep(char **depav, int depac,
 /**
  * Run per-interpreter dependency helper.
  * @param fc		file classifier
+ * @param ix		file index
  * @param nsdep		class name for interpreter (e.g. "perl")
  * @param depname	"provides" or "requires"
  * @param depsp		fc->provides or fc->requires
@@ -487,11 +487,12 @@ static const char *parseDep(char **depav, int depac,
  * @param tagN		RPMTAG_PROVIDENAME or RPMTAG_REQUIRENAME
  * @return		0 on success
  */
-static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
+static int rpmfcHelper(rpmfc fc, int ix,
+		       const char *nsdep, const char *depname,
 		       rpmsenseFlags dsContext, rpmTagVal tagN)
 {
     ARGV_t pav = NULL;
-    const char * fn = fc->fn[fc->ix];
+    const char * fn = fc->fn[ix];
     char *namespace = NULL;
     int pac;
     int rc = 0;
@@ -531,7 +532,7 @@ static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
 	    /* Add to package and file dependencies unless filtered */
 	    if (regMatch(exclude, rpmdsDNEVR(ds)+2) == 0) {
 		(void) rpmdsMerge(packageDependencies(fc->pkg, tagN), ds);
-		rpmfcAddFileDep(fc->ddict, fc->ix, ds,
+		rpmfcAddFileDep(fc->ddict, ix, ds,
 				tagN == RPMTAG_PROVIDENAME ? 'P' : 'R');
 	    }
 	    rpmdsFree(ds);
@@ -625,7 +626,7 @@ static int matches(const struct matchRule *rule,
     }
 }
 
-static void rpmfcAttributes(rpmfc fc, const char *ftype, const char *fullpath)
+static void rpmfcAttributes(rpmfc fc, int ix, const char *ftype, const char *fullpath)
 {
     const char *path = fullpath + fc->brlen;
     int is_executable = 0;
@@ -642,7 +643,7 @@ static void rpmfcAttributes(rpmfc fc, const char *ftype, const char *fullpath)
 
 	/* Add attributes on libmagic type & path pattern matches */
 	if (matches(&(*attr)->incl, ftype, path, is_executable))
-	    argvAddTokens(&fc->fattrs[fc->ix], (*attr)->name);
+	    argvAddTokens(&fc->fattrs[ix], (*attr)->name);
     }
 }
 
@@ -806,26 +807,26 @@ rpmRC rpmfcApply(rpmfc fc)
     int ix;
 
     /* Generate package and per-file dependencies. */
-    for (fc->ix = 0; fc->ix < fc->nfiles && fc->fn[fc->ix] != NULL; fc->ix++) {
-	for (ARGV_t fattr = fc->fattrs[fc->ix]; fattr && *fattr; fattr++) {
+    for (ix = 0; ix < fc->nfiles && fc->fn[ix] != NULL; ix++) {
+	for (ARGV_t fattr = fc->fattrs[ix]; fattr && *fattr; fattr++) {
 	    if (!fc->skipProv) {
-		rpmfcHelper(fc, *fattr, "provides",
+		rpmfcHelper(fc, ix, *fattr, "provides",
 			    RPMSENSE_FIND_PROVIDES, RPMTAG_PROVIDENAME);
 	    }
 	    if (!fc->skipReq) {
-		rpmfcHelper(fc, *fattr, "requires",
+		rpmfcHelper(fc, ix, *fattr, "requires",
 			    RPMSENSE_FIND_REQUIRES, RPMTAG_REQUIRENAME);
-		rpmfcHelper(fc, *fattr, "recommends",
+		rpmfcHelper(fc, ix, *fattr, "recommends",
 			    RPMSENSE_FIND_REQUIRES, RPMTAG_RECOMMENDNAME);
-		rpmfcHelper(fc, *fattr, "suggests",
+		rpmfcHelper(fc, ix, *fattr, "suggests",
 			    RPMSENSE_FIND_REQUIRES, RPMTAG_SUGGESTNAME);
-		rpmfcHelper(fc, *fattr, "supplements",
+		rpmfcHelper(fc, ix, *fattr, "supplements",
 			    RPMSENSE_FIND_REQUIRES, RPMTAG_SUPPLEMENTNAME);
-		rpmfcHelper(fc, *fattr, "enhances",
+		rpmfcHelper(fc, ix, *fattr, "enhances",
 			    RPMSENSE_FIND_REQUIRES, RPMTAG_ENHANCENAME);
-		rpmfcHelper(fc, *fattr, "conflicts",
+		rpmfcHelper(fc, ix, *fattr, "conflicts",
 			    RPMSENSE_FIND_REQUIRES, RPMTAG_CONFLICTNAME);
-		rpmfcHelper(fc, *fattr, "obsoletes",
+		rpmfcHelper(fc, ix, *fattr, "obsoletes",
 			    RPMSENSE_FIND_REQUIRES, RPMTAG_OBSOLETENAME);
 	    }
 	}
@@ -951,13 +952,13 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	goto exit;
     }
 
-    for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
+    for (int ix = 0; ix < fc->nfiles; ix++) {
 	rpmsid ftypeId;
 	const char * ftype;
-	const char * s = argv[fc->ix];
+	const char * s = argv[ix];
 	size_t slen = strlen(s);
 	int fcolor = RPMFC_BLACK;
-	rpm_mode_t mode = (fmode ? fmode[fc->ix] : 0);
+	rpm_mode_t mode = (fmode ? fmode[ix] : 0);
 	int is_executable = (mode & (S_IXUSR|S_IXGRP|S_IXOTH));
 
 	switch (mode & S_IFMT) {
@@ -1003,15 +1004,15 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	rpmlog(RPMLOG_DEBUG, "%s: %s\n", s, ftype);
 
 	/* Save the path. */
-	fc->fn[fc->ix] = xstrdup(s);
+	fc->fn[ix] = xstrdup(s);
 
 	/* Add (filtered) file coloring */
 	fcolor |= rpmfcColor(ftype);
 
 	/* Add attributes based on file type and/or path */
-	rpmfcAttributes(fc, ftype, s);
+	rpmfcAttributes(fc, ix, ftype, s);
 
-	fc->fcolor[fc->ix] = fcolor;
+	fc->fcolor[ix] = fcolor;
 
 	/* Add to file class dictionary and index array */
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE)) {
@@ -1022,7 +1023,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	    fc->fwhite++;
 	}
 	/* Pool id's start from 1, for headers we want it from 0 */
-	fc->fcdictx[fc->ix] = ftypeId - 1;
+	fc->fcdictx[ix] = ftypeId - 1;
     }
     rc = RPMRC_OK;
 
