@@ -1274,7 +1274,6 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 	rpmds ds = rpmdsSingleNS(fc->pool, RPMTAG_PROVIDENAME, "config",
 				 rpmdsN(pkg->ds), rpmdsEVR(pkg->ds),
 				 (RPMSENSE_EQUAL|RPMSENSE_CONFIG));
-	//printf("%s\n", rpmdsDNEVR(ds));
 	rpmdsMerge(packageDependencies(pkg, RPMTAG_PROVIDENAME), ds);
 	rpmdsFree(ds);
     }
