@@ -1152,17 +1152,14 @@ static void printDeps(rpmfc fc)
     }
 }
 
-static rpmRC rpmfcGenerateDependsHelper(rpmfc fc, Package pkg, rpmfi fi)
+static rpmRC rpmfcGenerateDependsHelper(rpmfc fc, Package pkg)
 {
     StringBuf sb_stdin = newStringBuf();
     rpmRC rc = RPMRC_OK;
 
     /* Create file manifest buffer to deliver to dependency finder. */
-    fi = rpmfiInit(fi, 0);
-    while (rpmfiNext(fi) >= 0) {
-	appendStringBuf(sb_stdin, fc->buildRoot);
-	appendLineStringBuf(sb_stdin, rpmfiFN(fi));
-    }
+    for (int i = 0; i < fc->nfiles; i++)
+	appendLineStringBuf(sb_stdin, fc->fn[i]);
 
     for (DepMsg_t dm = DepMsgs; dm->msg != NULL; dm++) {
 	rpmTagVal tag = (dm->ftag > 0) ? dm->ftag : dm->ntag;
@@ -1284,7 +1281,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     /* If new-fangled dependency generation is disabled ... */
     if (!rpmExpandNumeric("%{?_use_internal_dependency_generator}")) {
 	/* ... then generate dependencies using %{__find_requires} et al. */
-	rc = rpmfcGenerateDependsHelper(fc, pkg, fi);
+	rc = rpmfcGenerateDependsHelper(fc, pkg);
     } else {
 	rc = rpmfcApply(fc);
     }
