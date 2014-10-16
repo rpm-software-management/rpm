@@ -225,74 +225,31 @@ static const char * rpmSigString(rpmRC res)
     return str;
 }
 
-static rpmRC
-verifyMD5Digest(rpmtd sigtd, DIGEST_CTX md5ctx, char **msg)
+static rpmRC verifyDigest(rpmtd sigtd, DIGEST_CTX digctx, const char *title,
+			  char **msg)
 {
     rpmRC res = RPMRC_FAIL; /* assume failure */
-    uint8_t * md5sum = NULL;
-    size_t md5len = 0;
-    char *md5;
-    const char *title = _("MD5 digest:");
-    *msg = NULL;
-    DIGEST_CTX ctx = rpmDigestDup(md5ctx);
+    char * dig = NULL;
+    size_t diglen = 0;
+    char *pkgdig = rpmtdFormat(sigtd, RPMTD_FORMAT_STRING, NULL);
+    DIGEST_CTX ctx = rpmDigestDup(digctx);
 
-    if (ctx == NULL) {
+    if (rpmDigestFinal(ctx, (void **)&dig, &diglen, 1) || diglen == 0) {
 	rasprintf(msg, "%s %s", title, rpmSigString(res));
 	goto exit;
     }
 
-    (void) rpmDigestFinal(ctx, (void **)&md5sum, &md5len, 0);
-
-    md5 = pgpHexStr(md5sum, md5len);
-    if (md5len != sigtd->count || memcmp(md5sum, sigtd->data, md5len)) {
-	char *hex = rpmtdFormat(sigtd, RPMTD_FORMAT_STRING, NULL);
-	rasprintf(msg, "%s %s Expected(%s) != (%s)", title,
-		  rpmSigString(res), hex, md5);
-	free(hex);
-    } else {
+    if (strcmp(pkgdig, dig) == 0) {
 	res = RPMRC_OK;
-	rasprintf(msg, "%s %s (%s)", title, rpmSigString(res), md5);
-    }
-    free(md5);
-
-exit:
-    md5sum = _free(md5sum);
-    return res;
-}
-
-/**
- * Verify header immutable region SHA1 digest.
- * @retval msg		verbose success/failure text
- * @param sha1ctx
- * @return 		RPMRC_OK on success
- */
-static rpmRC
-verifySHA1Digest(rpmtd sigtd, DIGEST_CTX sha1ctx, char **msg)
-{
-    rpmRC res = RPMRC_FAIL; /* assume failure */
-    char * SHA1 = NULL;
-    const char *title = _("Header SHA1 digest:");
-    const char *sig = sigtd->data;
-    *msg = NULL;
-    DIGEST_CTX ctx = rpmDigestDup(sha1ctx);
-
-    if (ctx == NULL) {
-	rasprintf(msg, "%s %s", title, rpmSigString(res));
-	goto exit;
-    }
-
-    (void) rpmDigestFinal(ctx, (void **)&SHA1, NULL, 1);
-
-    if (SHA1 == NULL || !rstreq(SHA1, sig)) {
-	rasprintf(msg, "%s %s Expected(%s) != (%s)", title,
-		  rpmSigString(res), sig, SHA1 ? SHA1 : "(nil)");
+	rasprintf(msg, "%s %s (%s)", title, rpmSigString(res), pkgdig);
     } else {
-	res = RPMRC_OK;
-	rasprintf(msg, "%s %s (%s)", title, rpmSigString(res), SHA1);
+	rasprintf(msg, "%s: %s Expected(%s) != (%s)",
+		  title, rpmSigString(res), pkgdig, dig);
     }
 
 exit:
-    SHA1 = _free(SHA1);
+    free(dig);
+    free(pkgdig);
     return res;
 }
 
@@ -332,10 +289,10 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDigParams sig,
 
     switch (sigtd->tag) {
     case RPMSIGTAG_MD5:
-	res = verifyMD5Digest(sigtd, ctx, &msg);
+	res = verifyDigest(sigtd, ctx, _("MD5 digest:"), &msg);
 	break;
     case RPMSIGTAG_SHA1:
-	res = verifySHA1Digest(sigtd, ctx, &msg);
+	res = verifyDigest(sigtd, ctx,  _("Header SHA1 digest:"), &msg);
 	break;
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_DSA:
