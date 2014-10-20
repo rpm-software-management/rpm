@@ -1,4 +1,7 @@
 #include <dbus/dbus.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmts.h>
 #include "lib/rpmplugin.h"
@@ -55,6 +58,19 @@ static int inhibit(void)
     return fd;
 }
 
+static rpmRC systemd_inhibit_init(rpmPlugin plugin, rpmts ts)
+{
+    struct stat st;
+
+    if (lstat("/run/systemd/system/", &st) == 0) {
+        if (S_ISDIR(st.st_mode)) {
+            return RPMRC_OK;
+        }
+    }
+
+    return RPMRC_NOTFOUND;
+}
+
 static rpmRC systemd_inhibit_tsm_pre(rpmPlugin plugin, rpmts ts)
 {
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_BUILD_PROBS))
@@ -83,6 +99,7 @@ static rpmRC systemd_inhibit_tsm_post(rpmPlugin plugin, rpmts ts, int res)
 }
 
 struct rpmPluginHooks_s systemd_inhibit_hooks = {
+    .init = systemd_inhibit_init,
     .tsm_pre = systemd_inhibit_tsm_pre,
     .tsm_post = systemd_inhibit_tsm_post,
 };
