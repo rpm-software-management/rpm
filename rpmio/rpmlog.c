@@ -84,14 +84,12 @@ const char * rpmlogMessage(void)
 
 const char * rpmlogRecMessage(rpmlogRec rec)
 {
-    assert(rec != NULL);
-    return (rec->message);
+    return (rec != NULL) ? rec->message : NULL;
 }
 
 rpmlogLvl rpmlogRecPriority(rpmlogRec rec)
 {
-    assert(rec != NULL);
-    return (rec->pri);
+    return (rec != NULL) ? rec->pri : (rpmlogLvl)-1;
 }
 
 void rpmlogPrint(FILE *f)
