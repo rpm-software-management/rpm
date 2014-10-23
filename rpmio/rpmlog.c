@@ -70,7 +70,6 @@ int rpmlogCode(void)
     return code;
 }
 
-/* XXX: This is not thread-safe, we should return a malloced copy */
 const char * rpmlogMessage(void)
 {
     const char *msg = _("(no error)");
