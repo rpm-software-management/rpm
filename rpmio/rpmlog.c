@@ -33,27 +33,31 @@ static rpmlogCtx rpmlogCtxAcquire(int write)
 					     RPMLOG_UPTO(RPMLOG_NOTICE),
 					     0, NULL, NULL, NULL, NULL };
     rpmlogCtx ctx = &_globalCtx;
+    int xx;
 
-    /* XXX: errors should be handled */
+    /* XXX Silently failing is bad, but we can't very well use log here... */
     if (write)
-	pthread_rwlock_wrlock(&ctx->lock);
+	xx = pthread_rwlock_wrlock(&ctx->lock);
     else
-	pthread_rwlock_rdlock(&ctx->lock);
+	xx = pthread_rwlock_rdlock(&ctx->lock);
 
-    return ctx;
+    return (xx == 0) ? ctx : NULL;
 }
 
 /* Release log context */
 static rpmlogCtx rpmlogCtxRelease(rpmlogCtx ctx)
 {
-    pthread_rwlock_unlock(&ctx->lock);
+    if (ctx)
+	pthread_rwlock_unlock(&ctx->lock);
     return NULL;
 }
 
 int rpmlogGetNrecs(void)
 {
     rpmlogCtx ctx = rpmlogCtxAcquire(0);
-    int nrecs = ctx->nrecs;
+    int nrecs = -1;
+    if (ctx)
+	nrecs = ctx->nrecs;
     rpmlogCtxRelease(ctx);
     return nrecs;
 }
@@ -63,7 +67,7 @@ int rpmlogCode(void)
     int code = -1;
     rpmlogCtx ctx = rpmlogCtxAcquire(0);
     
-    if (ctx->recs != NULL && ctx->nrecs > 0)
+    if (ctx && ctx->recs != NULL && ctx->nrecs > 0)
 	code = ctx->recs[ctx->nrecs-1].code;
 
     rpmlogCtxRelease(ctx);
@@ -75,7 +79,7 @@ const char * rpmlogMessage(void)
     const char *msg = _("(no error)");
     rpmlogCtx ctx = rpmlogCtxAcquire(0);
 
-    if (ctx->recs != NULL && ctx->nrecs > 0)
+    if (ctx && ctx->recs != NULL && ctx->nrecs > 0)
 	msg = ctx->recs[ctx->nrecs-1].message;
 
     rpmlogCtxRelease(ctx);
@@ -96,6 +100,9 @@ void rpmlogPrint(FILE *f)
 {
     rpmlogCtx ctx = rpmlogCtxAcquire(0);
 
+    if (ctx == NULL)
+	return;
+
     if (f == NULL)
 	f = stderr;
 
@@ -111,6 +118,9 @@ void rpmlogPrint(FILE *f)
 void rpmlogClose (void)
 {
     rpmlogCtx ctx = rpmlogCtxAcquire(1);
+
+    if (ctx == NULL)
+	return;
 
     for (int i = 0; i < ctx->nrecs; i++) {
 	rpmlogRec rec = ctx->recs + i;
@@ -135,9 +145,12 @@ int rpmlogSetMask (int mask)
 {
     rpmlogCtx ctx = rpmlogCtxAcquire(1);
 
-    int omask = ctx->mask;
-    if (mask)
-        ctx->mask = mask;
+    int omask = -1;
+    if (ctx) {
+	omask = ctx->mask;
+	if (mask)
+	    ctx->mask = mask;
+    }
 
     rpmlogCtxRelease(ctx);
     return omask;
@@ -147,9 +160,12 @@ rpmlogCallback rpmlogSetCallback(rpmlogCallback cb, rpmlogCallbackData data)
 {
     rpmlogCtx ctx = rpmlogCtxAcquire(1);
 
-    rpmlogCallback ocb = ctx->cbfunc;
-    ctx->cbfunc = cb;
-    ctx->cbdata = data;
+    rpmlogCallback ocb = NULL;
+    if (ctx) {
+	ocb = ctx->cbfunc;
+	ctx->cbfunc = cb;
+	ctx->cbdata = data;
+    }
 
     rpmlogCtxRelease(ctx);
     return ocb;
@@ -187,8 +203,11 @@ FILE * rpmlogSetFile(FILE * fp)
 {
     rpmlogCtx ctx = rpmlogCtxAcquire(1);
 
-    FILE * ofp = ctx->stdlog;
-    ctx->stdlog = fp;
+    FILE * ofp = NULL;
+    if (ctx) {
+	ofp = ctx->stdlog;
+	ctx->stdlog = fp;
+    }
 
     rpmlogCtxRelease(ctx);
     return ofp;
@@ -255,7 +274,7 @@ void rpmlog (int code, const char *fmt, ...)
 
     rpmlogCtx ctx = rpmlogCtxAcquire(saverec);
 
-    if ((mask & ctx->mask) == 0)
+    if (ctx == NULL || (mask & ctx->mask) == 0)
 	goto exit;
 
     va_start(ap, fmt);
