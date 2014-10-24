@@ -1176,6 +1176,7 @@ static int copyTdEntry(const indexEntry entry, rpmtd td, headerGetFlags flags)
     }
     td->type = entry->info.type;
     td->count = count;
+    td->size = entry->length;
 
     if (td->data && entry->data != td->data) {
 	td->flags |= RPMTD_ALLOCED;

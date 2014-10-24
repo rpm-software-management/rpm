@@ -30,6 +30,7 @@ struct rpmtd_s {
     rpm_data_t data;	/* pointer to actual data */
     rpmtdFlags flags;	/* flags on memory allocation etc */
     int ix;		/* iteration index */
+    rpm_count_t size;	/* size of data (only works for RPMTD_IMMUTABLE atm) */
 };
 
 /** \ingroup rpmtd
@@ -65,6 +66,14 @@ void rpmtdFreeData(rpmtd td);
  * @return		Number of entries in contained data.
  */
 rpm_count_t rpmtdCount(rpmtd td);
+
+/** \ingroup rpmtd
+ * Retrieve container data size (eg required for allocation).
+ * Note this currently only works for RPMTD_IMMUTABLE data.
+ * @param td		Tag data container
+ * @return		Data size in bytes.
+ */
+rpm_count_t rpmtdSize(rpmtd td);
 
 /** \ingroup rpmtd
  * Retrieve tag of the container.

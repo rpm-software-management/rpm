@@ -57,6 +57,11 @@ rpm_count_t rpmtdCount(rpmtd td)
     return (td->type == RPM_BIN_TYPE) ? 1 : td->count;
 }
 
+rpm_count_t rpmtdSize(rpmtd td)
+{
+    return (td != NULL) ? td->size : 0;
+}
+
 rpmTagVal rpmtdTag(rpmtd td)
 {
     assert(td != NULL);
