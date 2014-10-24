@@ -171,14 +171,14 @@ rpmlogCallback rpmlogSetCallback(rpmlogCallback cb, rpmlogCallbackData data)
     return ocb;
 }
 
-static int rpmlogDefault(rpmlogCtx ctx, rpmlogRec rec)
+static int rpmlogDefault(FILE *stdlog, rpmlogRec rec)
 {
-    FILE *msgout = (ctx->stdlog ? ctx->stdlog : stderr);
+    FILE *msgout = (stdlog ? stdlog : stderr);
 
     switch (rec->pri) {
     case RPMLOG_INFO:
     case RPMLOG_NOTICE:
-        msgout = (ctx->stdlog ? ctx->stdlog : stdout);
+        msgout = (stdlog ? stdlog : stdout);
         break;
     case RPMLOG_EMERG:
     case RPMLOG_ALERT:
@@ -238,6 +238,9 @@ static void dolog(struct rpmlogRec_s *rec, int saverec)
 {
     int cbrc = RPMLOG_DEFAULT;
     int needexit = 0;
+    FILE *clog = NULL;
+    rpmlogCallbackData *cbdata = NULL;
+    rpmlogCallback cbfunc = NULL;
     rpmlogCtx ctx = rpmlogCtxAcquire(saverec);
 
     if (ctx == NULL)
@@ -253,21 +256,26 @@ static void dolog(struct rpmlogRec_s *rec, int saverec)
 	ctx->recs[ctx->nrecs+1].message = NULL;
 	ctx->nrecs++;
     }
+    cbfunc = ctx->cbfunc;
+    cbdata = ctx->cbdata;
+    clog = ctx->stdlog;
 
-    if (ctx->cbfunc) {
-	cbrc = ctx->cbfunc(rec, ctx->cbdata);
+    /* Free the context for callback and actual log output */
+    ctx = rpmlogCtxRelease(ctx);
+
+    if (cbfunc) {
+	cbrc = cbfunc(rec, cbdata);
 	needexit += cbrc & RPMLOG_EXIT;
     }
 
     if (cbrc & RPMLOG_DEFAULT) {
-	cbrc = rpmlogDefault(ctx, rec);
+	cbrc = rpmlogDefault(clog, rec);
 	needexit += cbrc & RPMLOG_EXIT;
     }
     
     if (needexit)
 	exit(EXIT_FAILURE);
 
-    rpmlogCtxRelease(ctx);
 }
 
 void rpmlog (int code, const char *fmt, ...)
