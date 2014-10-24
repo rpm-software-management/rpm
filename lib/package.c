@@ -531,8 +531,6 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 			Header * hdrp, unsigned int *keyidp, char **msg)
 {
     pgpDigParams sig = NULL;
-    char buf[8*BUFSIZ];
-    ssize_t count;
     Header sigh = NULL;
     rpmTagVal sigtag;
     struct rpmtd_s sigtd;
@@ -565,27 +563,17 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 	(sigtag == 0 && !(vsflags & (_mask)) && headerIsEntry(sigh, (_tag)))
 
     /*
-     * Figger the most effective available signature.
-     * Prefer signatures over digests, then header-only over header+payload.
+     * Figger the most effective means of verification available, prefer
+     * signatures over digests. Legacy header+payload entries are not used.
      * DSA will be preferred over RSA if both exist because tested first.
-     * Note that NEEDPAYLOAD prevents header+payload signatures and digests.
      */
     sigtag = 0;
     if (_chk(RPMVSF_NODSAHEADER, RPMSIGTAG_DSA)) {
 	sigtag = RPMSIGTAG_DSA;
     } else if (_chk(RPMVSF_NORSAHEADER, RPMSIGTAG_RSA)) {
 	sigtag = RPMSIGTAG_RSA;
-    } else if (_chk(RPMVSF_NODSA|RPMVSF_NEEDPAYLOAD, RPMSIGTAG_GPG)) {
-	sigtag = RPMSIGTAG_GPG;
-	fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
-    } else if (_chk(RPMVSF_NORSA|RPMVSF_NEEDPAYLOAD, RPMSIGTAG_PGP)) {
-	sigtag = RPMSIGTAG_PGP;
-	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
     } else if (_chk(RPMVSF_NOSHA1HEADER, RPMSIGTAG_SHA1)) {
 	sigtag = RPMSIGTAG_SHA1;
-    } else if (_chk(RPMVSF_NOMD5|RPMVSF_NEEDPAYLOAD, RPMSIGTAG_MD5)) {
-	sigtag = RPMSIGTAG_MD5;
-	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
     }
 
     /* Read the metadata, computing digest(s) on the fly. */
@@ -633,27 +621,6 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 	(void) rpmDigestUpdate(ctx, utd.data, utd.count);
 	rpmtdFreeData(&utd);
     }	break;
-    case RPMSIGTAG_GPG:
-    case RPMSIGTAG_PGP5:	/* XXX legacy */
-    case RPMSIGTAG_PGP:
-	if (parsePGPSig(&sigtd, "package", &sig, msg)) {
-	    rc = RPMRC_FAIL;
-	    goto exit;
-	}
-	/* fallthrough */
-    case RPMSIGTAG_MD5:
-	/* Legacy signatures need the compressed payload in the digest too. */
-	while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0) {}
-	if (count < 0) {
-	    rasprintf(msg, _("Fread failed: %s"), Fstrerror(fd));
-	    rc = RPMRC_FAIL;
-	    goto exit;
-	}
-
-	ctx = rpmDigestBundleDupCtx(fdGetBundle(fd),(sigtag == RPMSIGTAG_MD5) ?
-				    PGPHASHALGO_MD5 :
-				    pgpDigParamsAlgo(sig, PGPVAL_HASHALGO));
-	break;
     default:
 	break;
     }
