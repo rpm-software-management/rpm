@@ -315,7 +315,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     hi = headerInitIterator(sigh);
     for (; headerNext(hi, &sigtd) != 0; rpmtdFreeData(&sigtd)) {
 	char *result = NULL;
-	int havekey = 0;
+	int need_payload = 0;
 	DIGEST_CTX ctx = NULL;
 	if (sigtd.data == NULL) /* XXX can't happen */
 	    continue;
@@ -327,14 +327,14 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 	case RPMSIGTAG_GPG:
 	case RPMSIGTAG_PGP5:	/* XXX legacy */
 	case RPMSIGTAG_PGP:
-	    havekey = 1;
+	    need_payload = 1;
 	case RPMSIGTAG_RSA:
 	case RPMSIGTAG_DSA:
 	    if (nosignatures)
 		 continue;
 	    if (parsePGPSig(&sigtd, "package", &sig, &msg))
 		goto exit;
-	    ctx = rpmDigestBundleDupCtx(havekey ? plbundle : hdrbundle,
+	    ctx = rpmDigestBundleDupCtx(need_payload ? plbundle : hdrbundle,
 					pgpDigParamsAlgo(sig, PGPVAL_HASHALGO));
 	    break;
 	case RPMSIGTAG_SHA1:
