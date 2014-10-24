@@ -234,10 +234,14 @@ const char * rpmlogLevelPrefix(rpmlogLvl pri)
 
 /* FIX: rpmlogMsgPrefix[] dependent, not unqualified */
 /* FIX: rpmlogMsgPrefix[] may be NULL */
-static void dolog(rpmlogCtx ctx, struct rpmlogRec_s *rec, int saverec)
+static void dolog(struct rpmlogRec_s *rec, int saverec)
 {
     int cbrc = RPMLOG_DEFAULT;
     int needexit = 0;
+    rpmlogCtx ctx = rpmlogCtxAcquire(saverec);
+
+    if (ctx == NULL)
+	return;
 
     /* Save copy of all messages at warning (or below == "more important"). */
     if (saverec) {
@@ -262,6 +266,8 @@ static void dolog(rpmlogCtx ctx, struct rpmlogRec_s *rec, int saverec)
     
     if (needexit)
 	exit(EXIT_FAILURE);
+
+    rpmlogCtxRelease(ctx);
 }
 
 void rpmlog (int code, const char *fmt, ...)
@@ -272,10 +278,8 @@ void rpmlog (int code, const char *fmt, ...)
     va_list ap;
     int n;
 
-    rpmlogCtx ctx = rpmlogCtxAcquire(saverec);
-
-    if (ctx == NULL || (mask & ctx->mask) == 0)
-	goto exit;
+    if ((mask & rpmlogSetMask(0)) == 0)
+	return;
 
     va_start(ap, fmt);
     n = vsnprintf(NULL, 0, fmt, ap);
@@ -294,12 +298,9 @@ void rpmlog (int code, const char *fmt, ...)
 	rec.pri = pri;
 	rec.message = msg;
 
-	dolog(ctx, &rec, saverec);
+	dolog(&rec, saverec);
 
 	free(msg);
     }
-
-exit:
-    rpmlogCtxRelease(ctx);
 }
 
