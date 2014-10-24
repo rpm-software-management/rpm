@@ -77,11 +77,6 @@ rpmRC rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDigParams sig,
  */
 Header rpmFreeSignature(Header h);
 
-/* Dumb wrapper around pgpPrtParams() to log some error messages on failure */
-RPM_GNUC_INTERNAL
-int parsePGPSig(rpmtd sigtd, const char *type,
-		 pgpDigParams *sig, char **msg);
-
 RPM_GNUC_INTERNAL
 rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
                      struct sigtInfo_s *sigt, pgpDigParams *sigp, char **msg);

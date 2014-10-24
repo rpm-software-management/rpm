@@ -146,16 +146,6 @@ exit:
     return seen;
 }
 
-int parsePGPSig(rpmtd sigtd, const char *type,
-		 pgpDigParams *sig, char **msg)
-{
-    int rc = pgpPrtParams(sigtd->data, sigtd->count, PGPTAG_SIGNATURE, sig);
-
-    if (rc != 0 && type != NULL)
-	rasprintf(msg, _("%s has unverifiable signature"), type);
-    return rc;
-}
-
 /*
  * Argument monster to verify header-only signature/digest if there is
  * one, otherwisereturn RPMRC_NOTFOUND to signal for plain sanity check.
