@@ -260,6 +260,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     int failed = 0;
     int nodigests = !(flags & VERIFY_DIGEST);
     int nosignatures = !(flags & VERIFY_SIGNATURE);
+    struct sigtInfo_s sinfo;
     rpmDigestBundle plbundle = rpmDigestBundleNew();
     rpmDigestBundle hdrbundle = rpmDigestBundleNew();
 
@@ -279,17 +280,15 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     /* XXX RSA needs the hash_algo, so decode early. */
     if (sigtag == RPMSIGTAG_RSA || sigtag == RPMSIGTAG_PGP ||
 		sigtag == RPMSIGTAG_DSA || sigtag == RPMSIGTAG_GPG) {
-	unsigned int hashalgo;
 	if (headerGet(sigh, sigtag, &sigtd, HEADERGET_DEFAULT)) {
-	    parsePGPSig(&sigtd, "package", &sig, &msg);
+	    rpmSigInfoParse(&sigtd, "package", &sinfo, &sig, &msg);
 	    rpmtdFreeData(&sigtd);
 	}
 	if (sig == NULL) goto exit;
 	    
 	/* XXX assume same hash_algo in header-only and header+payload */
-	hashalgo = pgpDigParamsAlgo(sig, PGPVAL_HASHALGO);
-	rpmDigestBundleAdd(plbundle, hashalgo, RPMDIGEST_NONE);
-	rpmDigestBundleAdd(hdrbundle, hashalgo, RPMDIGEST_NONE);
+	rpmDigestBundleAdd(plbundle, sinfo.hashalgo, RPMDIGEST_NONE);
+	rpmDigestBundleAdd(hdrbundle, sinfo.hashalgo, RPMDIGEST_NONE);
     }
 
     if (headerIsEntry(sigh, RPMSIGTAG_PGP) ||
@@ -315,7 +314,6 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     hi = headerInitIterator(sigh);
     for (; headerNext(hi, &sigtd) != 0; rpmtdFreeData(&sigtd)) {
 	char *result = NULL;
-	int need_payload = 0;
 	DIGEST_CTX ctx = NULL;
 	if (sigtd.data == NULL) /* XXX can't happen */
 	    continue;
@@ -323,42 +321,29 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 	/* Clean up parameters from previous sigtag. */
 	sig = pgpDigParamsFree(sig);
 
-	switch (sigtd.tag) {
-	case RPMSIGTAG_GPG:
-	case RPMSIGTAG_PGP5:	/* XXX legacy */
-	case RPMSIGTAG_PGP:
-	    need_payload = 1;
-	case RPMSIGTAG_RSA:
-	case RPMSIGTAG_DSA:
-	    if (nosignatures)
-		 continue;
-	    if (parsePGPSig(&sigtd, "package", &sig, &msg))
-		goto exit;
-	    ctx = rpmDigestBundleDupCtx(need_payload ? plbundle : hdrbundle,
-					pgpDigParamsAlgo(sig, PGPVAL_HASHALGO));
-	    break;
-	case RPMSIGTAG_SHA1:
-	    if (nodigests)
-		 continue;
-	    ctx = rpmDigestBundleDupCtx(hdrbundle, PGPHASHALGO_SHA1);
-	    break;
-	case RPMSIGTAG_MD5:
-	    if (nodigests)
-		 continue;
-	    ctx = rpmDigestBundleDupCtx(plbundle, PGPHASHALGO_MD5);
-	    break;
-	default:
+	/* Note: we permit failures to be ignored via disablers */
+	rc = rpmSigInfoParse(&sigtd, "package", &sinfo, &sig, &result);
+
+	if (nosignatures && sinfo.type == RPMSIG_SIGNATURE_TYPE)
 	    continue;
-	    break;
+	if (nodigests &&  sinfo.type == RPMSIG_DIGEST_TYPE)
+	    continue;
+	if (sinfo.type == RPMSIG_OTHER_TYPE)
+	    continue;
+
+	if (rc == RPMRC_OK) {
+	    ctx = rpmDigestBundleDupCtx(sinfo.payload ? plbundle : hdrbundle,
+					sinfo.hashalgo);
+	    rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, &result);
+	    rpmDigestFinal(ctx, NULL, NULL, 0);
 	}
 
-	rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, &result);
-	rpmDigestFinal(ctx, NULL, NULL, 0);
-
-	formatResult(sigtd.tag, rc, result,
+	if (result) {
+	    formatResult(sigtd.tag, rc, result,
 		     (rc == RPMRC_NOKEY ? &missingKeys : &untrustedKeys),
 		     &buf);
-	free(result);
+	    free(result);
+	}
 
 	if (rc != RPMRC_OK) {
 	    failed = 1;
