@@ -143,7 +143,7 @@ static unsigned rpmlogFacility = RPMLOG_USER;
 
 int rpmlogSetMask (int mask)
 {
-    rpmlogCtx ctx = rpmlogCtxAcquire(1);
+    rpmlogCtx ctx = rpmlogCtxAcquire(mask ? 1 : 0);
 
     int omask = -1;
     if (ctx) {
