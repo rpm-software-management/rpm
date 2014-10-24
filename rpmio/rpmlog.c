@@ -236,6 +236,8 @@ const char * rpmlogLevelPrefix(rpmlogLvl pri)
 /* FIX: rpmlogMsgPrefix[] may be NULL */
 static void dolog(struct rpmlogRec_s *rec, int saverec)
 {
+    static pthread_mutex_t serialize = PTHREAD_MUTEX_INITIALIZER;
+
     int cbrc = RPMLOG_DEFAULT;
     int needexit = 0;
     FILE *clog = NULL;
@@ -263,14 +265,18 @@ static void dolog(struct rpmlogRec_s *rec, int saverec)
     /* Free the context for callback and actual log output */
     ctx = rpmlogCtxRelease(ctx);
 
-    if (cbfunc) {
-	cbrc = cbfunc(rec, cbdata);
-	needexit += cbrc & RPMLOG_EXIT;
-    }
+    /* Always serialize callback and output to avoid interleaved messages. */
+    if (pthread_mutex_lock(&serialize) == 0) {
+	if (cbfunc) {
+	    cbrc = cbfunc(rec, cbdata);
+	    needexit += cbrc & RPMLOG_EXIT;
+	}
 
-    if (cbrc & RPMLOG_DEFAULT) {
-	cbrc = rpmlogDefault(clog, rec);
-	needexit += cbrc & RPMLOG_EXIT;
+	if (cbrc & RPMLOG_DEFAULT) {
+	    cbrc = rpmlogDefault(clog, rec);
+	    needexit += cbrc & RPMLOG_EXIT;
+	}
+	pthread_mutex_unlock(&serialize);
     }
     
     if (needexit)
