@@ -149,32 +149,6 @@ exit:
     return rc;
 }
 
-/* 
- * Figure best available signature. 
- * XXX TODO: Similar detection in rpmReadPackageFile(), unify these.
- */
-static rpmTagVal bestSig(Header sigh, int nosignatures, int nodigests)
-{
-    rpmTagVal sigtag = 0;
-    if (sigtag == 0 && !nosignatures) {
-	if (headerIsEntry(sigh, RPMSIGTAG_DSA))
-	    sigtag = RPMSIGTAG_DSA;
-	else if (headerIsEntry(sigh, RPMSIGTAG_RSA))
-	    sigtag = RPMSIGTAG_RSA;
-	else if (headerIsEntry(sigh, RPMSIGTAG_GPG))
-	    sigtag = RPMSIGTAG_GPG;
-	else if (headerIsEntry(sigh, RPMSIGTAG_PGP))
-	    sigtag = RPMSIGTAG_PGP;
-    }
-    if (sigtag == 0 && !nodigests) {
-	if (headerIsEntry(sigh, RPMSIGTAG_MD5))
-	    sigtag = RPMSIGTAG_MD5;
-	else if (headerIsEntry(sigh, RPMSIGTAG_SHA1))
-	    sigtag = RPMSIGTAG_SHA1;	/* XXX never happens */
-    }
-    return sigtag;
-}
-
 static const char *sigtagname(rpmTagVal sigtag, int upper)
 {
     const char *n = NULL;
@@ -250,7 +224,6 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     char *missingKeys = NULL; 
     char *untrustedKeys = NULL;
     struct rpmtd_s sigtd;
-    rpmTagVal sigtag;
     pgpDigParams sig = NULL;
     Header sigh = NULL;
     HeaderIterator hi = NULL;
@@ -274,34 +247,21 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 	goto exit;
     }
 
-    /* Grab a hint of what needs doing to avoid duplication. */
-    sigtag = bestSig(sigh, nosignatures, nodigests);
+    /* Initialize all digests we'll be needing */
+    hi = headerInitIterator(sigh);
+    for (; headerNext(hi, &sigtd) != 0; rpmtdFreeData(&sigtd)) {
+	rc = rpmSigInfoParse(&sigtd, "package", &sinfo, NULL, NULL);
 
-    /* XXX RSA needs the hash_algo, so decode early. */
-    if (sigtag == RPMSIGTAG_RSA || sigtag == RPMSIGTAG_PGP ||
-		sigtag == RPMSIGTAG_DSA || sigtag == RPMSIGTAG_GPG) {
-	if (headerGet(sigh, sigtag, &sigtd, HEADERGET_DEFAULT)) {
-	    rpmSigInfoParse(&sigtd, "package", &sinfo, &sig, &msg);
-	    rpmtdFreeData(&sigtd);
+	if (nosignatures && sinfo.type == RPMSIG_SIGNATURE_TYPE)
+	    continue;
+	if (nodigests && sinfo.type == RPMSIG_DIGEST_TYPE)
+	    continue;
+	if (rc == RPMRC_OK && sinfo.hashalgo) {
+	    rpmDigestBundleAdd(sinfo.payload ? plbundle : hdrbundle,
+			       sinfo.hashalgo, RPMDIGEST_NONE);
 	}
-	if (sig == NULL) goto exit;
-	    
-	/* XXX assume same hash_algo in header-only and header+payload */
-	rpmDigestBundleAdd(plbundle, sinfo.hashalgo, RPMDIGEST_NONE);
-	rpmDigestBundleAdd(hdrbundle, sinfo.hashalgo, RPMDIGEST_NONE);
     }
-
-    if (headerIsEntry(sigh, RPMSIGTAG_PGP) ||
-		      headerIsEntry(sigh, RPMSIGTAG_PGP5) ||
-		      headerIsEntry(sigh, RPMSIGTAG_MD5)) {
-	rpmDigestBundleAdd(plbundle, PGPHASHALGO_MD5, RPMDIGEST_NONE);
-    }
-    if (headerIsEntry(sigh, RPMSIGTAG_GPG)) {
-	rpmDigestBundleAdd(plbundle, PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-    }
-
-    /* always do sha1 hash of header */
-    rpmDigestBundleAdd(hdrbundle, PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+    hi = headerFreeIterator(hi);
 
     /* Read the file, generating digest(s) on the fly. */
     fdSetBundle(fd, plbundle);
