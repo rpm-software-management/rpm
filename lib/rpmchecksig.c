@@ -219,7 +219,7 @@ static const char *sigtagname(rpmTagVal sigtag, int upper)
  * and stash the key id as <SIGTYPE>#<keyid>. Pfft.
  */
 static void formatResult(rpmTagVal sigtag, rpmRC sigres, const char *result,
-			 int havekey, char **keyprob, char **buf)
+			 char **keyprob, char **buf)
 {
     char *msg = NULL;
     if (rpmIsVerbose()) {
@@ -228,7 +228,7 @@ static void formatResult(rpmTagVal sigtag, rpmRC sigres, const char *result,
 	/* Check for missing / untrusted keys in result. */
 	const char *signame = sigtagname(sigtag, (sigres != RPMRC_OK));
 	
-	if (havekey && (sigres == RPMRC_NOKEY || sigres == RPMRC_NOTTRUSTED)) {
+	if (sigres == RPMRC_NOKEY || sigres == RPMRC_NOTTRUSTED) {
 	    const char *tempKey = strstr(result, "ey ID");
 	    if (tempKey) {
 		char keyid[sizeof(pgpKeyID_t) + 1];
@@ -355,7 +355,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 	rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, &result);
 	rpmDigestFinal(ctx, NULL, NULL, 0);
 
-	formatResult(sigtd.tag, rc, result, havekey, 
+	formatResult(sigtd.tag, rc, result,
 		     (rc == RPMRC_NOKEY ? &missingKeys : &untrustedKeys),
 		     &buf);
 	free(result);
