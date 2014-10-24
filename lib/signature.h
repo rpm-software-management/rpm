@@ -15,6 +15,19 @@ typedef	enum sigType_e {
     RPMSIGTYPE_HEADERSIG= 5	/*!< Header style signature */
 } sigType;
 
+enum {
+    RPMSIG_UNKNOWN_TYPE		= 0,
+    RPMSIG_DIGEST_TYPE		= 1,
+    RPMSIG_SIGNATURE_TYPE	= 2,
+    RPMSIG_OTHER_TYPE		= 3,
+};
+
+struct sigtInfo_s {
+    int hashalgo;
+    int payload;
+    int type;
+};
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -68,6 +81,10 @@ Header rpmFreeSignature(Header h);
 RPM_GNUC_INTERNAL
 int parsePGPSig(rpmtd sigtd, const char *type,
 		 pgpDigParams *sig, char **msg);
+
+RPM_GNUC_INTERNAL
+rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
+                     struct sigtInfo_s *sigt, pgpDigParams *sigp, char **msg);
 
 #ifdef __cplusplus
 }

@@ -19,6 +19,91 @@
 
 #include "debug.h"
 
+rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
+		      struct sigtInfo_s *sinfo, pgpDigParams *sigp, char **msg)
+{
+    rpmRC rc = RPMRC_FAIL;
+    rpm_tagtype_t tagtype = 0;
+    rpm_count_t tagsize = 0;
+    pgpDigParams sig = NULL;
+
+    memset(sinfo, 0, sizeof(*sinfo));
+    switch (td->tag) {
+    case RPMSIGTAG_GPG:
+    case RPMSIGTAG_PGP5:	/* XXX legacy */
+    case RPMSIGTAG_PGP:
+	sinfo->payload = 1;
+	/* fallthrough */
+    case RPMSIGTAG_RSA:
+    case RPMSIGTAG_DSA:
+	tagtype = RPM_BIN_TYPE;
+	sinfo->type = RPMSIG_SIGNATURE_TYPE;
+	break;
+    case RPMSIGTAG_SHA1:
+	tagsize = 41; /* includes trailing \0 */
+	tagtype = RPM_STRING_TYPE;
+	sinfo->hashalgo = PGPHASHALGO_SHA1;
+	sinfo->type = RPMSIG_DIGEST_TYPE;
+	break;
+    case RPMSIGTAG_MD5:
+	tagtype = RPM_BIN_TYPE;
+	tagsize = 16;
+	sinfo->hashalgo = PGPHASHALGO_MD5;
+	sinfo->type = RPMSIG_DIGEST_TYPE;
+	sinfo->payload = 1;
+	break;
+    case RPMSIGTAG_SIZE:
+    case RPMSIGTAG_PAYLOADSIZE:
+	tagsize = 4;
+	tagtype = RPM_INT32_TYPE;
+	sinfo->type = RPMSIG_OTHER_TYPE;
+	break;
+    case RPMSIGTAG_LONGSIZE:
+    case RPMSIGTAG_LONGARCHIVESIZE:
+	tagsize = 8;
+	tagtype = RPM_INT64_TYPE;
+	sinfo->type = RPMSIG_OTHER_TYPE;
+	break;
+    case RPMSIGTAG_RESERVEDSPACE:
+	tagtype = RPM_BIN_TYPE;
+	sinfo->type = RPMSIG_OTHER_TYPE;
+	break;
+    default:
+	/* anything unknown just falls through for now */
+	break;
+    }
+
+    if (tagsize && (td->flags & RPMTD_IMMUTABLE) && tagsize != td->size) {
+	rasprintf(msg, _("%s tag %u: BAD, invalid size %u"),
+			origin, td->tag, td->size);
+	goto exit;
+    }
+
+    if (tagtype && tagtype != td->type) {
+	rasprintf(msg, _("%s tag %u: BAD, invalid type %u"),
+			origin, td->tag, td->type);
+	goto exit;
+    }
+
+    if (sinfo->type == RPMSIG_SIGNATURE_TYPE) {
+	if (pgpPrtParams(td->data, td->count, PGPTAG_SIGNATURE, &sig)) {
+	    rasprintf(msg, _("%s tag %u: BAD, invalid OpenPGP signature"),
+		    origin, td->tag);
+	    goto exit;
+	}
+	sinfo->hashalgo = pgpDigParamsAlgo(sig, PGPVAL_HASHALGO);
+    }
+
+    rc = RPMRC_OK;
+    if (sigp)
+	*sigp = sig;
+    else
+	pgpDigParamsFree(sig);
+
+exit:
+    return rc;
+}
+
 /**
  * Print package size.
  * @todo rpmio: use fdSize rather than fstat(2) to get file size.
