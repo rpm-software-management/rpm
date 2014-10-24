@@ -170,7 +170,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     pgpDigParams sig = NULL;
     struct rpmtd_s sigtd;
     struct entryInfo_s info, einfo;
-    unsigned int hashalgo = 0;
+    struct sigtInfo_s sinfo;
 
     rpmtdReset(&sigtd);
     memset(&info, 0, sizeof(info));
@@ -244,22 +244,11 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     sigtd.data = memcpy(xmalloc(siglen), dataStart + info.offset, siglen);
     sigtd.flags = RPMTD_ALLOCED;
 
-    switch (info.tag) {
-    case RPMTAG_RSAHEADER:
-    case RPMTAG_DSAHEADER:
-	if (parsePGPSig(&sigtd, "header", &sig, buf))
-	    goto exit;
-	hashalgo = pgpDigParamsAlgo(sig, PGPVAL_HASHALGO);
-	break;
-    case RPMTAG_SHA1HEADER:
-	hashalgo = PGPHASHALGO_SHA1;
-	break;
-    default:
-	break;
-    }
+    if (rpmSigInfoParse(&sigtd, "header", &sinfo, &sig, buf))
+	goto exit;
 
-    if (hashalgo) {
-	DIGEST_CTX ctx = rpmDigestInit(hashalgo, RPMDIGEST_NONE);
+    if (sinfo.hashalgo) {
+	DIGEST_CTX ctx = rpmDigestInit(sinfo.hashalgo, RPMDIGEST_NONE);
 	int32_t ildl[2] = { htonl(ril), htonl(rdl) };
 
 	rpmDigestUpdate(ctx, rpm_header_magic, sizeof(rpm_header_magic));
@@ -534,11 +523,11 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     Header sigh = NULL;
     rpmTagVal sigtag;
     struct rpmtd_s sigtd;
+    struct sigtInfo_s sinfo;
     Header h = NULL;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int leadtype = -1;
     headerGetFlags hgeflags = HEADERGET_DEFAULT;
-    DIGEST_CTX ctx = NULL;
 
     if (hdrp) *hdrp = NULL;
 
@@ -600,33 +589,22 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 	goto exit;
     }
 
-    switch (sigtag) {
-    case RPMSIGTAG_RSA:
-    case RPMSIGTAG_DSA:
-	if (parsePGPSig(&sigtd, "package", &sig, msg)) {
-	    rc = RPMRC_FAIL;
-	    goto exit;
+    if (rpmSigInfoParse(&sigtd, "package", &sinfo, &sig, msg) == RPMRC_OK) {
+	struct rpmtd_s utd;
+	DIGEST_CTX ctx = rpmDigestInit(sinfo.hashalgo, RPMDIGEST_NONE);
+
+	if (headerGet(h, RPMTAG_HEADERIMMUTABLE, &utd, hgeflags)) {
+	    rpmDigestUpdate(ctx, rpm_header_magic, sizeof(rpm_header_magic));
+	    rpmDigestUpdate(ctx, utd.data, utd.count);
+	    rpmtdFreeData(&utd);
 	}
-	/* fallthrough */
-    case RPMSIGTAG_SHA1:
-    {	struct rpmtd_s utd;
-	unsigned int hashalgo = (sigtag == RPMSIGTAG_SHA1) ?
-				PGPHASHALGO_SHA1 :
-				pgpDigParamsAlgo(sig, PGPVAL_HASHALGO);
+	/** @todo Implement disable/enable/warn/error/anal policy. */
+	rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, msg);
 
-	if (!headerGet(h, RPMTAG_HEADERIMMUTABLE, &utd, hgeflags))
-	    break;
-	ctx = rpmDigestInit(hashalgo, RPMDIGEST_NONE);
-	(void) rpmDigestUpdate(ctx, rpm_header_magic, sizeof(rpm_header_magic));
-	(void) rpmDigestUpdate(ctx, utd.data, utd.count);
-	rpmtdFreeData(&utd);
-    }	break;
-    default:
-	break;
+	rpmDigestFinal(ctx, NULL, NULL, 0);
+    } else {
+	rc = RPMRC_FAIL;
     }
-
-    /** @todo Implement disable/enable/warn/error/anal policy. */
-    rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, msg);
 
 exit:
     if (rc != RPMRC_FAIL && h != NULL && hdrp != NULL) {
@@ -665,7 +643,6 @@ exit:
 	    *keyidp = getKeyid(sig);
     }
     rpmtdFreeData(&sigtd);
-    rpmDigestFinal(ctx, NULL, NULL, 0);
     h = headerFree(h);
     pgpDigParamsFree(sig);
     sigh = rpmFreeSignature(sigh);
