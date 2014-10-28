@@ -1945,6 +1945,10 @@ static int iterReadArchiveNext(rpmfi fi)
 	rpm_loff_t fsize = 0;
 	rpm_mode_t mode = rpmfilesFMode(fi->files, fx);
 
+	/* %ghost in payload, should not be there but rpm < 4.11 sometimes did this */
+	if (rpmfilesFFlags(fi->files, fx) & RPMFILE_GHOST)
+	    return RPMERR_ITER_SKIP;
+
 	if (S_ISREG(mode)) {
 	    const int * links;
 	    uint32_t numlinks = rpmfilesFLinks(fi->files, fx, &links);
