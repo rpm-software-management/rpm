@@ -821,7 +821,10 @@ int rpmfiNext(rpmfi fi)
 {
     int next = -1;
     if (fi != NULL) {
-	next = fi->next(fi);
+	do {
+	    next = fi->next(fi);
+	} while (next == RPMERR_ITER_SKIP);
+
 	if (next >= 0 && next < rpmfilesFC(fi->files)) {
 	    fi->i = next;
 	    fi->j = rpmfilesDI(fi->files, fi->i);
