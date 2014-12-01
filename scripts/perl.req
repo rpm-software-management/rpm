@@ -165,8 +165,8 @@ sub process_file {
     #
     if ( m/print(\s+|\s+\S+\s+)\<\<(.*)/g ) {
         my $tag = $2;
-        $tag =~ s/^\s*['"]//;       # strip off leading space and quote
-        $tag =~ s/["']\s*;\s*$//;   # strip off trailing quote and space and semicolon
+        $tag =~ s/^\s*['"]?//;       # strip off leading space and quote
+        $tag =~ s/["']?\s*;\s*$//;   # strip off trailing quote and space and semicolon
         while (<FILE>) {
             chomp;
             ( $_ eq $tag ) && last;
