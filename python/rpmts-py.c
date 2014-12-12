@@ -691,15 +691,55 @@ exit:
 
 static struct PyMethodDef rpmts_methods[] = {
  {"addInstall",	(PyCFunction) rpmts_AddInstall,	METH_VARARGS,
-	NULL },
+  "ts.addInstall(hdr, data, mode) --  Add transaction element(s)\n"
+  "representing an installation or update of a package.\n\n"
+  "Args:\n"
+  "  hdr : the header to be added\n"
+  "  data : user data that will be passed to the transaction callback\n\t\tduring transaction execution\n"
+  "  mode : optional argument that specifies if this package should be\n\t\tinstalled ('i'), upgraded ('u')"},
  {"addReinstall",	(PyCFunction) rpmts_AddReinstall,	METH_VARARGS,
-	NULL },
+  "ts.addReinstall(hdr, data) -- Adds transaction elements\nrepresenting a reinstall of an already installed package.\n\nSee addInstall for details."},
  {"addErase",	(PyCFunction) rpmts_AddErase,	METH_VARARGS|METH_KEYWORDS,
-	NULL },
+  "addErase(name) -- Add a transaction element representing an erase\nof an installed package.\n\n"
+  "  name: the package name to be erased"},
  {"check",	(PyCFunction) rpmts_Check,	METH_VARARGS|METH_KEYWORDS,
-	NULL },
+  "ts.check( )-- Perform a dependency check on the transaction set.\n"
+  "		After headers have been added to a transaction set,\n"
+  "		a dependencycheck can be performed to make sure that\n"
+  "		all package dependencies are satisfied.\n"
+  "Return	None If there are no unresolved dependencies\n"
+  "		Otherwise a list of complex tuples is returned,\n"
+  "		one tuple per unresolved dependency, with\n"
+  "The format of the dependency tuple is:\n"
+  "    ((packageName, packageVersion, packageRelease),\n"
+  "     (reqName, reqVersion),\n"
+  "     needsFlags,\n"
+  "     suggestedPackage,\n"
+  "     sense)\n"
+  "  packageName, packageVersion, packageRelease are the name,\n"
+  "    version, and release of the package that has the unresolved\n"
+  "    dependency or conflict.\n"
+  "  The reqName and reqVersion are the name and version of the\n"
+  "    requirement or conflict.\n"
+  "  The needsFlags is a bitfield that describes the versioned\n"
+  "    nature of a requirement or conflict.  The constants\n"
+  "    rpm.RPMSENSE_LESS, rpm.RPMSENSE_GREATER, and\n"
+  "    rpm.RPMSENSE_EQUAL can be logical ANDed with the needsFlags\n"
+  "    to get versioned dependency information.\n"
+  "  suggestedPackage is a tuple if the dependency check was aware\n"
+  "    of a package that solves this dependency problem when the\n"
+  "    dependency check was run.  Packages that are added to the\n"
+  "    transaction set as \"available\" are examined during the\n"
+  "    dependency check as possible dependency solvers. The tuple\n"
+  "    contains two values, (header, suggestedName).  These are set to\n"
+  "    the header of the suggested package and its name, respectively.\n"
+  "    If there is no known package to solve the dependency problem,\n"
+  "    suggestedPackage is None.\n"
+  "  The constants rpm.RPMDEP_SENSE_CONFLICTS and\n"
+  "    rpm.RPMDEP_SENSE_REQUIRES are set to show a dependency as a\n"
+  "    requirement or a conflict.\n"},
  {"order",	(PyCFunction) rpmts_Order,	METH_NOARGS,
-	NULL },
+  "ts.order() Do a topological sort of added element relations." },
  {"problems",	(PyCFunction) rpmts_Problems,	METH_NOARGS,
 "ts.problems() -> ps\n\
 - Return current problem set.\n" },
@@ -708,18 +748,18 @@ static struct PyMethodDef rpmts_methods[] = {
 - Run a transaction set, returning list of problems found.\n\
   Note: The callback may not be None.\n" },
  {"clean",	(PyCFunction) rpmts_Clean,	METH_NOARGS,
-	NULL },
+  "ts.clean()-- Free memory needed only for dependency checks\nand ordering. Should not be needed in normal operation." },
  {"clear",	(PyCFunction) rpmts_Clear,	METH_NOARGS,
 "ts.clear() -> None\n\
 Remove all elements from the transaction set\n" },
  {"openDB",	(PyCFunction) rpmts_OpenDB,	METH_NOARGS,
-"ts.openDB() -> None\n\
-- Open the default transaction rpmdb.\n\
-  Note: The transaction rpmdb is lazily opened, so ts.openDB() is seldom needed.\n" },
+"ts.openDB() -> None -- Open the default transaction rpmdb.\n\n\
+  Note: The transaction rpmdb is lazily opened,\n  so ts.openDB() is seldom needed.\n" },
  {"closeDB",	(PyCFunction) rpmts_CloseDB,	METH_NOARGS,
 "ts.closeDB() -> None\n\
 - Close the default transaction rpmdb.\n\
-  Note: ts.closeDB() disables lazy opens, and should hardly ever be used.\n" },
+  Note: ts.closeDB() disables lazy opens,\n\
+  and should hardly ever be used.\n" },
  {"initDB",	(PyCFunction) rpmts_InitDB,	METH_NOARGS,
 "ts.initDB() -> None\n\
 - Initialize the default transaction rpmdb.\n\
@@ -734,15 +774,21 @@ Remove all elements from the transaction set\n" },
 "ts.hdrFromFdno(fdno) -> hdr\n\
 - Read a package header from a file descriptor.\n" },
  {"hdrCheck",	(PyCFunction) rpmts_HdrCheck,	METH_O,
-	NULL },
+  "ts.hdrCheck(hdrblob) -- Check header consistency,\nperforming headerGetEntry() the hard way.\n\n"
+  "Sanity checks on the header are performed while looking for a\n"
+  "header-only digest or signature to verify the blob. If found,\n"
+  "the digest or signature is verified.\n\n"
+  "\thdrblob : unloaded header blob\n"
+  "Return tuple (int status, message string)"},
  {"pgpPrtPkts",	(PyCFunction) rpmts_PgpPrtPkts,	METH_VARARGS|METH_KEYWORDS,
-	NULL },
+  "pgpPrtPkts(octets) -- Print/parse a OpenPGP packet(s).\n\nReturn 0 on success." },
  {"pgpImportPubkey",	(PyCFunction) rpmts_PgpImportPubkey,	METH_VARARGS|METH_KEYWORDS,
-	NULL },
+  "pgpImportPubkey(pubkey) -- Import public key packet." },
  {"getKeyring",	(PyCFunction) rpmts_getKeyring,	METH_VARARGS|METH_KEYWORDS, 
-	NULL },
+  "ts.getKeyring(autoload=False) -- Return key ring object." },
  {"setKeyring",	(PyCFunction) rpmts_setKeyring,	METH_O, 
-	NULL },
+  "ts.setKeyring(keyring) -- Set key ring used for checking signatures\n\n"
+  "Pass None for an empty key ring." },
  {"dbMatch",	(PyCFunction) rpmts_Match,	METH_VARARGS|METH_KEYWORDS,
 "ts.dbMatch([TagN, [key]]) -> mi\n\
 - Create a match iterator for the default transaction rpmdb.\n" },
@@ -880,13 +926,38 @@ static PyObject *rpmts_get_vsflags(rpmtsObject *s, void *closure)
 }
 
 static char rpmts_doc[] =
-"";
+  "A python rpm.ts object represents an RPM transaction set.\n"
+  "\n"
+  "The transaction set is the workhorse of RPM. It performs the\n"
+  "installation and upgrade of packages. The rpm.ts object is\n"
+  "instantiated by the TransactionSet function in the rpm module.\n"
+  "\n"
+  "The TransactionSet function takes two optional arguments. The first\n"
+  "argument is the root path. The second is the verify signature disable\n"
+  "flags, a set of the following bits:\n"
+  "\n"
+  "-    rpm.RPMVSF_NOHDRCHK	if set, don't check rpmdb headers\n"
+  "-    rpm.RPMVSF_NEEDPAYLOAD	if not set, check header+payload\n"
+  "				(if possible)\n"
+  "-    rpm.RPMVSF_NOSHA1HEADER	if set, don't check header SHA1 digest\n"
+  "-    rpm.RPMVSF_NODSAHEADER	if set, don't check header DSA signature\n"
+  "-    rpm.RPMVSF_NOMD5	if set, don't check header+payload MD5 digest\n"
+  "-    rpm.RPMVSF_NODSA	if set, don't check header+payload DSA signature\n"
+  "-    rpm.RPMVSF_NORSA	if set, don't check header+payload RSA signature\n"
+  "\n"
+  "For convenience, there are the following masks:\n"
+  "-    rpm._RPMVSF_NODIGESTS	if set, don't check digest(s).\n"
+  "-    rpm._RPMVSF_NOSIGNATURES	if set, don't check signature(s).\n\n"
+  "The transaction set offers an read only iterable interface for the\ntransaction elements added by the .addInstall(), .addErase() and\n.addReinstall() methods.";
 
 static PyGetSetDef rpmts_getseters[] = {
 	/* only provide a setter until we have rpmfd wrappings */
-	{"scriptFd",	NULL,	(setter)rpmts_set_scriptFd, NULL },
-	{"tid",		(getter)rpmts_get_tid, NULL, NULL },
-	{"rootDir",	(getter)rpmts_get_rootDir, NULL, NULL },
+	{"scriptFd",	NULL,	(setter)rpmts_set_scriptFd,
+	 "write only, file descriptor the output of script gets written to." },
+	{"tid",		(getter)rpmts_get_tid, NULL,
+	 "read only, current transaction id, i.e. transaction time stamp."},
+	{"rootDir",	(getter)rpmts_get_rootDir, NULL,
+	 "read only, directory rpm treats as root of the file system." },
 	{"_color",	(getter)rpmts_get_color, (setter)rpmts_set_color, NULL},
 	{"_prefcolor",	(getter)rpmts_get_prefcolor, (setter)rpmts_set_prefcolor, NULL},
 	{"_flags",	(getter)rpmts_get_flags, (setter)rpmts_set_flags, NULL},
