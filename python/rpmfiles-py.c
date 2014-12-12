@@ -24,8 +24,7 @@ static void rpmfile_dealloc(rpmfileObject * s)
     Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
-static char rpmfile_doc[] =
-"";
+static char rpmfile_doc[] = "The meta data of a single file";
 
 static PyObject *rpmfile_fx(rpmfileObject *s)
 {
@@ -216,32 +215,56 @@ static PyObject *rpmfile_matches(rpmfileObject *s, PyObject *o)
 }
 
 static PyGetSetDef rpmfile_getseters[] = {
-    { "fx",		(getter) rpmfile_fx,		NULL, NULL },
-    { "dx",		(getter) rpmfile_dx,		NULL, NULL },
-    { "name",		(getter) rpmfile_name,		NULL, NULL },
+    { "fx",		(getter) rpmfile_fx,		NULL,
+      "index in header and rpm.files object" },
+    { "dx",		(getter) rpmfile_dx,		NULL,
+      "index of dirname entry" },
+    { "name",		(getter) rpmfile_name,		NULL,
+      "file name (path)" },
     { "basename",	(getter) rpmfile_basename,	NULL, NULL },
     { "dirname",	(getter) rpmfile_dirname,	NULL, NULL },
-    { "orig_name",	(getter) rpmfile_orig_name,	NULL, NULL },
-    { "orig_basename",	(getter) rpmfile_orig_basename,	NULL, NULL },
-    { "orig_dirname",	(getter) rpmfile_orig_dirname,	NULL, NULL },
-    { "mode",		(getter) rpmfile_mode,		NULL, NULL },
-    { "mtime",		(getter) rpmfile_mtime,		NULL, NULL },
-    { "size",		(getter) rpmfile_size,		NULL, NULL },
-    { "rdev",		(getter) rpmfile_rdev,		NULL, NULL },
-    { "inode",		(getter) rpmfile_inode,		NULL, NULL },
-    { "fflags",		(getter) rpmfile_fflags,	NULL, NULL },
-    { "vflags",		(getter) rpmfile_vflags,	NULL, NULL },
-    { "linkto",		(getter) rpmfile_linkto,	NULL, NULL },
-    { "color",		(getter) rpmfile_color,		NULL, NULL },
-    { "nlink",		(getter) rpmfile_nlink,		NULL, NULL },
-    { "links",		(getter) rpmfile_links,		NULL, NULL },
-    { "user",		(getter) rpmfile_user,		NULL, NULL },
-    { "group",		(getter) rpmfile_group,		NULL, NULL },
-    { "digest",		(getter) rpmfile_digest,	NULL, NULL },
-    { "class",		(getter) rpmfile_class,		NULL, NULL },
-    { "state",		(getter) rpmfile_state,		NULL, NULL },
-    { "langs",		(getter) rpmfile_langs,		NULL, NULL },
-    { "caps",		(getter) rpmfile_caps,		NULL, NULL },
+    { "orig_name",	(getter) rpmfile_orig_name,	NULL,
+      "original file name (may differ due to relocation)" },
+    { "orig_basename",	(getter) rpmfile_orig_basename,	NULL,
+      "original base name (may differ due to relocation)" },
+    { "orig_dirname",	(getter) rpmfile_orig_dirname,	NULL,
+      "original dir name (may differ due to relocation)" },
+    { "mode",		(getter) rpmfile_mode,		NULL,
+      "mode flags / unix permissions" },
+    { "mtime",		(getter) rpmfile_mtime,		NULL,
+      "modification time (in unix time)" },
+    { "size",		(getter) rpmfile_size,		NULL,
+      "file size" },
+    { "rdev",		(getter) rpmfile_rdev,		NULL,
+      "device number - for device files only" },
+    { "inode",		(getter) rpmfile_inode,		NULL,
+      "inode number - contains fake, data used to identify hard liked files" },
+    { "fflags",		(getter) rpmfile_fflags,	NULL,
+      "file flags - see RPMFILE_* constants" },
+    { "vflags",		(getter) rpmfile_vflags,	NULL,
+      "verification flags - see RPMVERIFY_* (in rpmvf.h)" },
+    { "linkto",		(getter) rpmfile_linkto,	NULL,
+      "link target - symlinks only" },
+    { "color",		(getter) rpmfile_color,		NULL,
+      "file color - 2 for 64 bit binaries, 1 for 32 bit binaries, 0 else" },
+    { "nlink",		(getter) rpmfile_nlink,		NULL,
+      "number of hardlinks pointing to the same content as this file" },
+    { "links",		(getter) rpmfile_links,		NULL,
+      "list of file indexes that are hardlinked with this file" },
+    { "user",		(getter) rpmfile_user,		NULL,
+      "user name owning this file" },
+    { "group",		(getter) rpmfile_group,		NULL,
+      "group name owning this file" },
+    { "digest",		(getter) rpmfile_digest,	NULL,
+      "check sum of file content" },
+    { "class",		(getter) rpmfile_class,		NULL,
+      "classfication of file content based on libmagic/file(1)" },
+    { "state",		(getter) rpmfile_state,		NULL,
+      "file state  - see RPMFILE_STATE_* constants" },
+    { "langs",		(getter) rpmfile_langs,		NULL,
+      "language the file provides (typically for doc files)" },
+    { "caps",		(getter) rpmfile_caps,		NULL,
+      "file capabilities" },
     { NULL, NULL, NULL, NULL }
 };
 
@@ -484,15 +507,20 @@ static PyMappingMethods rpmfiles_as_mapping = {
 
 static struct PyMethodDef rpmfiles_methods[] = {
     { "archive", (PyCFunction) rpmfiles_archive, METH_VARARGS|METH_KEYWORDS,
-	NULL },
+      "files.archive(fd, write=False) -- Return a rpm.archive object\n\n"
+      "Args:\n"
+      "  fd : File to read from or write to.\n"
+      "  write : True to get an archive writer, False for an archive reader"},
     { "find",	(PyCFunction) rpmfiles_find,	METH_VARARGS|METH_KEYWORDS,
-	NULL },
+      "files.find(filename, orig=False) -- Return index of given file name.\n\n"
+      "  Return -1 if file is not found.\n"
+      "  Leading \".\" in filename is ignored."},
     { NULL, NULL, 0, NULL }
 };
 
 static char rpmfiles_doc[] =
-"";
-
+    "Stores the meta data of a package's files.\n\n"
+    "Basically a sequence of rpm.file objects. Note that this is a read only\ndata structure. To write file data you have to write it directly into a\nheader object.";
 
 PyTypeObject rpmfiles_Type = {
 	PyVarObject_HEAD_INIT(&PyType_Type, 0)
