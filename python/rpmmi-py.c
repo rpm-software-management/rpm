@@ -36,20 +36,20 @@
  * \code
  *	import rpm
  *	ts = rpm.TransactionSet()
- *	mi = ts.dbMatch('name', "kernel")
+ *	mi = ts.dbMatch('name', 'kernel')
  *	for h in mi:
- *	    print "%s-%s-%s" % (h['name'], h['version'], h['release'])
+ *	    print '%s-%s-%s' % (h['name'], h['version'], h['release'])
  * \endcode
  *
  * Finally, here's an example that retrieves all packages whose name
- * matches the glob expression "XFree*":
+ * matches the glob expression 'XFree*':
  * \code
  *	import rpm
  *	ts = rpm.TransactionSet()
  *	mi = ts.dbMatch()
- *	mi.pattern('name', rpm.RPMMIRE_GLOB, "XFree*")
+ *	mi.pattern('name', rpm.RPMMIRE_GLOB, 'XFree*')
  *	for h in mi:
- *	    print "%s-%s-%s" % (h['name'], h['version'], h['release'])
+ *	    print '%s-%s-%s' % (h['name'], h['version'], h['release'])
  * \endcode
  *
  */
@@ -114,7 +114,7 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args, PyObject * kwds)
 
 static struct PyMethodDef rpmmi_methods[] = {
     {"instance",    (PyCFunction) rpmmi_Instance,	METH_NOARGS,
-	NULL },
+     "mi.instance() -- Return the number (db key) of the current header."},
     {"count",       (PyCFunction) rpmmi_Count,		METH_NOARGS,
 "Deprecated, use len(mi) instead.\n" },
     {"pattern",	    (PyCFunction) rpmmi_Pattern,	METH_VARARGS|METH_KEYWORDS,
@@ -162,7 +162,40 @@ static PyNumberMethods rpmmi_as_number = {
 };
 
 static char rpmmi_doc[] =
-"";
+  "rpm.mi match iterator object represents the result of a\n"
+  "	database query.\n"
+  "\n"
+  "Instances of the rpm.mi object provide access to headers that match\n"
+  "certain criteria. Typically, a primary index is accessed to find\n"
+  "a set of headers that contain a key, and each header is returned\n"
+  "serially.\n"
+  "\n"
+  "To obtain a rpm.mi object to query the database used by a transaction,\n"
+  "the ts.match(tag,key,len) method is used.\n"
+  "\n"
+  "Here's an example that prints the name of all installed packages:\n"
+  "	import rpm\n"
+  "	ts = rpm.TransactionSet()\n"
+  "	for h in ts.dbMatch():\n"
+  "	    print h['name']\n"
+  "\n"
+  "Here's a more typical example that uses the Name index to retrieve\n"
+  "all installed kernel(s):\n"
+  "	import rpm\n"
+  "	ts = rpm.TransactionSet()\n"
+  "	mi = ts.dbMatch('name', 'kernel')\n"
+  "	for h in mi:\n"
+  "	    print '%s-%s-%s' % (h['name'], h['version'], h['release'])\n"
+  "\n"
+  "Finally, here's an example that retrieves all packages whose name\n"
+  "matches the glob expression 'XFree*':\n"
+  "	import rpm\n"
+  "	ts = rpm.TransactionSet()\n"
+  "	mi = ts.dbMatch()\n"
+  "	mi.pattern('name', rpm.RPMMIRE_GLOB, 'XFree*')\n"
+  "	for h in mi:\n"
+  "	    print '%s-%s-%s' % (h['name'], h['version'], h['release'])\n"
+;
 
 PyTypeObject rpmmi_Type = {
 	PyVarObject_HEAD_INIT(&PyType_Type, 0)
