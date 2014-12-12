@@ -178,24 +178,29 @@ static PyObject *rpmarchive_writeto(rpmarchiveObject *s,
 
 static struct PyMethodDef rpmarchive_methods[] = {
     { "tell",	(PyCFunction)rpmarchive_tell,		METH_NOARGS,
-	NULL },
+      "archive.tell() -- Return current position in archive." },
     { "close",	(PyCFunction)rpmarchive_close,		METH_NOARGS,
-	NULL },
+      "archive.close() -- Close archive and do final consistency checks."},
     { "read",	(PyCFunction)rpmarchive_read,	METH_VARARGS|METH_KEYWORDS,
-	NULL },
+      "archive.read(size=None) -- Read next size bytes from current file.\n\n"
+      "Returns bytes\n"},
     { "write",	(PyCFunction)rpmarchive_write,	METH_VARARGS|METH_KEYWORDS,
-	NULL },
+      "archive.write(buffer) -- Write buffer to current file." },
     { "readto",	(PyCFunction)rpmarchive_readto,	METH_VARARGS|METH_KEYWORDS,
-	NULL },
+      "archive.readto(fd, nodigest=None) -- Read content of fd\n"
+      "and write as content of the current file to archive." },
     { "writeto", (PyCFunction)rpmarchive_writeto,METH_VARARGS|METH_KEYWORDS,
-	NULL },
+      "archive.writeto(fd) -- Write content of current file in archive\n to fd." },
     { "hascontent", (PyCFunction)rpmarchive_has_content, METH_NOARGS,
-	NULL },
+      "archive.hascontent() -- Return if current file has a content.\n\n"
+      "Returns false for non regular and all but one of hardlinked files."},
     { NULL, NULL, 0, NULL }
 };
 
 static char rpmarchive_doc[] =
-"";
+"Gives access to the payload of an rpm package.\n\n"
+"Is returned by .archive() method of an rpm.files instance.\n"
+"All methods can raise an IOError exception.";
 
 static PyObject *rpmarchive_iternext(rpmarchiveObject *s)
 {
