@@ -136,40 +136,49 @@ static PyObject * reloadConfig(PyObject * self, PyObject * args, PyObject *kwds)
 
 static PyMethodDef rpmModuleMethods[] = {
     { "addMacro", (PyCFunction) rpmmacro_AddMacro, METH_VARARGS|METH_KEYWORDS,
-	NULL },
+      "addMacro(macro, value)\n"
+    },
     { "delMacro", (PyCFunction) rpmmacro_DelMacro, METH_VARARGS|METH_KEYWORDS,
-	NULL },
+      "delMacro(macro)\n"
+    },
     { "expandMacro", (PyCFunction) rpmmacro_ExpandMacro, METH_VARARGS|METH_KEYWORDS,
-	NULL },
+      "expandMacro(string, numeric=False) -- expands a string containing macros\n\n"
+      "Returns an int if numeric is True. 'Y' or 'y' returns 1,\n'N' or 'n' returns 0\nAn undefined macro returns 0."},
 
     { "archscore", (PyCFunction) archScore, METH_O,
-	NULL },
+      "archscore(archname) -- How well does an architecture fit on this machine\n\n"
+      "0 for non matching arch names\n1 for best arch\nhigher numbers for less fitting arches\n(e.g. 2 for \"i586\" on an i686 machine)" },
 
     { "signalCaught", (PyCFunction) signalCaught, METH_O, 
-	NULL },
+	"signalCaught(signo) -- Returns True if signal was caught." },
     { "checkSignals", (PyCFunction) checkSignals, METH_NOARGS,
-        NULL },
+      "checkSignals() -- Check for and exit on termination signals."},
 
     { "mergeHeaderListFromFD", (PyCFunction) rpmMergeHeadersFromFD, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
     { "log",		(PyCFunction) doLog, METH_VARARGS|METH_KEYWORDS,
-	NULL },
+	"log(level, msg) -- Write msg to log if level is selected to be logged.\n\n"
+    "level must be one of the RPMLOG_* constants."},
     { "setLogFile", (PyCFunction) setLogFile, METH_O,
-	NULL },
+	"setLogFile(file) -- set file to write log messages to or None." },
 
     { "versionCompare", (PyCFunction) versionCompare, METH_VARARGS|METH_KEYWORDS,
-	NULL },
+      "versionCompare(version0, version1) -- compares two version strings\n\n"
+      "Returns 1 if version0 > version1\n"
+      "Returns 0 if version0 == version1\n"
+      "Returns -1 if version0 < version1\n"},
     { "labelCompare", (PyCFunction) labelCompare, METH_VARARGS|METH_KEYWORDS,
-	NULL },
+      "labelCompare(version0, version1) -- as versionCompare()\n\n"
+      "but arguments are tuples of of strings for (epoch, version, release)"},
     { "setVerbosity", (PyCFunction) setVerbosity, METH_O,
-	NULL },
+      "setVerbosity(level) -- Set log level. See RPMLOG_* constants." },
     { "setEpochPromote", (PyCFunction) setEpochPromote, METH_O,
-	NULL },
+	"setEpochPromote(bool) -- Set if no epoch shall be treated as epoch 0" },
     { "setStats", (PyCFunction) setStats, METH_O,
-	NULL },
+      "setStats(bool) -- Set if timing stats are printed after a transaction."},
     { "reloadConfig", (PyCFunction) reloadConfig, METH_VARARGS|METH_KEYWORDS,
-	NULL },
+      "readloadConfig(path=None) -- Read config file.\n\nSet all macros and settings accordingly."},
 
     { NULL }
 } ;
@@ -182,8 +191,7 @@ static void rpm_exithook(void)
    rpmdbCheckTerminate(1);
 }
 
-static char rpm__doc__[] =
-"";
+static char rpm__doc__[] = "";
 
 /*
  * Add rpm tag dictionaries to the module
