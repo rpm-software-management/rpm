@@ -204,58 +204,49 @@ rpmte_Files(rpmteObject * s, PyObject * args, PyObject * kwds)
 }
 static struct PyMethodDef rpmte_methods[] = {
     {"Type",	(PyCFunction)rpmte_TEType,	METH_NOARGS,
-"te.Type() -> Type\n\
-- Return element type (rpm.TR_ADDED | rpm.TR_REMOVED).\n" },
+     "te.Type() -- Return element type (rpm.TR_ADDED | rpm.TR_REMOVED).\n" },
     {"N",	(PyCFunction)rpmte_N,		METH_NOARGS,
-"te.N() -> N\n\
-- Return element name.\n" },
+     "te.N() -- Return element name.\n" },
     {"E",	(PyCFunction)rpmte_E,		METH_NOARGS,
-"te.E() -> E\n\
-- Return element epoch.\n" },
+     "te.E() -- Return element epoch.\n" },
     {"V",	(PyCFunction)rpmte_V,		METH_NOARGS,
-"te.V() -> V\n\
-- Return element version.\n" },
+     "te.V() -- Return element version.\n" },
     {"R",	(PyCFunction)rpmte_R,		METH_NOARGS,
-"te.R() -> R\n\
-- Return element release.\n" },
+     "te.R() -- Return element release.\n" },
     {"A",	(PyCFunction)rpmte_A,		METH_NOARGS,
-"te.A() -> A\n\
-- Return element arch.\n" },
+     "te.A() -- Return element arch.\n" },
     {"O",	(PyCFunction)rpmte_O,		METH_NOARGS,
-"te.O() -> O\n\
-- Return element os.\n" },
+     "te.O() -- Return element os.\n" },
     {"NEVR",	(PyCFunction)rpmte_NEVR,	METH_NOARGS,
-"te.NEVR() -> NEVR\n\
-- Return element name-[epoch:]version-release.\n" },
+     "te.NEVR() -- Return element name-[epoch:]version-release.\n" },
     {"NEVRA",	(PyCFunction)rpmte_NEVRA,	METH_NOARGS,
-"te.NEVRA() -> NEVRA\n\
-- Return element name-[epoch:]version-release.arch\n" },
+     "te.NEVRA() -- Return element name-[epoch:]version-release.arch\n" },
     {"Color",(PyCFunction)rpmte_Color,		METH_NOARGS,
-	NULL},
+     "te.Color() -- Return package color bits."},
     {"PkgFileSize",(PyCFunction)rpmte_PkgFileSize,	METH_NOARGS,
-	NULL},
+     "te.PkgFileSize() -- Return no. of bytes in package file (approx)."},
     {"Parent",	(PyCFunction)rpmte_Parent,	METH_NOARGS,
-	NULL},
+     "te.Parent() -- Return the parent element index."},
     {"Problems",(PyCFunction)rpmte_Problems,	METH_NOARGS,
-	NULL},
+     "te.Problems() -- Return problems associated with this element."},
 /*    {"DependsOnKey",(PyCFunction)rpmte_DependsOnKey,	METH_NOARGS,
       NULL}, */
     {"DBOffset",(PyCFunction)rpmte_DBOffset,	METH_NOARGS,
-	NULL},
+     "te.DBOffset() -- Return the Package's database instance number.\n\nTR_REMOVED only"},
     {"Failed",	(PyCFunction)rpmte_Failed,	METH_NOARGS,
-	NULL},
+     "te.Failed() -- Return if there are any related errors."},
     {"Key",	(PyCFunction)rpmte_Key,		METH_NOARGS,
-	NULL},
+     "te.Key() -- Return the associated opaque key aka user data\n\
+	as passed e.g. as data arg ts.addInstall()"},
     {"DS",	(PyCFunction)rpmte_DS,		METH_VARARGS|METH_KEYWORDS,
-"te.DS(TagN) -> DS\n\
-- Return the TagN dependency set (or None). TagN is one of\n\
-	'Providename', 'Requirename', 'Obsoletename', 'Conflictname'\n" },
+"te.DS(TagN) -- Return the TagN dependency set (or None).\n\
+	TagN is one of 'Providename', 'Requirename', 'Obsoletename',\n\
+	'Conflictname', 'Triggername', 'Recommendname', 'Suggestname',\n\
+	'Supplementname', 'Enhancename'" },
     {"FI",	(PyCFunction)rpmte_FI,		METH_VARARGS|METH_KEYWORDS,
-"te.FI(TagN) -> FI\n\
-- Return file info iterator of element. Deprecated, use .Files() instead.\n" },
+"te.FI(TagN) -- Return file info iterator of element.\n\n DEPRECATED! Use .Files() instead.\n" },
     {"Files",	(PyCFunction)rpmte_Files,	METH_NOARGS,
-"te.Files() -> files\n\
-- Return file info set of element.\n" },
+"te.Files() -- Return file info set of element.\n" },
     {NULL,		NULL}		/* sentinel */
 };
 
