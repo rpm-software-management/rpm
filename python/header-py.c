@@ -347,31 +347,31 @@ static PyObject * hdr_reduce(hdrObject *s)
 
 static struct PyMethodDef hdr_methods[] = {
     {"keys",		(PyCFunction) hdrKeyList,	METH_NOARGS,
-	NULL },
+     "hdr.keys() -- Return a list of the header's rpm tags (int RPMTAG_*)." },
     {"unload",		(PyCFunction) hdrUnload,	METH_VARARGS|METH_KEYWORDS,
-	NULL },
+     "hdr.unload(legacyHeader=False) -- Return binary representation\nof the header." },
     {"expandFilelist",	(PyCFunction) hdrExpandFilelist,METH_NOARGS,
-	NULL },
+     "DEPRECATED -- Use hdr.convert() instead." },
     {"compressFilelist",(PyCFunction) hdrCompressFilelist,METH_NOARGS,
-	NULL },
+     "DEPRECATED -- Use hdr.convert() instead." },
     {"fullFilelist",	(PyCFunction) hdrFullFilelist,	METH_NOARGS,
-	NULL },
+     "DEPRECATED -- Obsolete method."},
     {"convert",		(PyCFunction) hdrConvert,	METH_VARARGS|METH_KEYWORDS,
-	NULL },
+     "hdr.convert(op=-1) -- Convert header - See HEADERCONV_*\nfor possible values of op."},
     {"format",		(PyCFunction) hdrFormat,	METH_VARARGS|METH_KEYWORDS,
-	NULL },
+     "hdr.format(format) -- Expand a query string with the header data.\n\nSee rpm -q for syntax." },
     {"sprintf",		(PyCFunction) hdrFormat,	METH_VARARGS|METH_KEYWORDS,
-	NULL },
+     "Alias for .format()." },
     {"isSource",	(PyCFunction)hdrIsSource,	METH_NOARGS, 
-	NULL },
+     "hdr.isSource() -- Return if header describes a source package." },
     {"write",		(PyCFunction)hdrWrite,		METH_VARARGS|METH_KEYWORDS,
-	NULL },
+     "hdr.write(file, magic=True) -- Write header to file." },
     {"dsOfHeader",	(PyCFunction)hdr_dsOfHeader,	METH_NOARGS,
-	NULL},
+     "hdr.dsOfHeader() -- Return dependency set with the header's NEVR."},
     {"dsFromHeader",	(PyCFunction)hdr_dsFromHeader,	METH_VARARGS|METH_KEYWORDS,
-	NULL},
+     "hdr.dsFromHeader(to=RPMTAG_REQUIRENAME, flags=None)\nGet dependency set from header. to must be one of the NAME tags\nbelonging to a dependency:\n'Providename', 'Requirename', 'Obsoletename', 'Conflictname',\n'Triggername', 'Recommendname', 'Suggestname', 'Supplementname',\n'Enhancename' or one of the corresponding RPMTAG_*NAME constants." },
     {"fiFromHeader",	(PyCFunction)hdr_fiFromHeader,	METH_VARARGS|METH_KEYWORDS,
-	NULL},
+     "hdr.fiFromHeader() -- Return rpm.fi object containing the file\nmeta data from the header.\n\nDEPRECATED - Use rpm.files(hdr) instead."},
     {"__reduce__",	(PyCFunction)hdr_reduce,	METH_NOARGS,
 	NULL},
 
@@ -680,7 +680,56 @@ static PySequenceMethods hdr_as_sequence = {
 };
 
 static char hdr_doc[] =
-"";
+  "A header object represents an RPM package header.\n"
+  "\n"
+  "All RPM packages have headers that provide metadata for the package.\n"
+  "Header objects can be returned by database queries or loaded from a\n"
+  "binary package on disk.\n"
+  "\n"
+  "The ts.hdrFromFdno() function returns the package header from a\n"
+  "package on disk, verifying package signatures and digests of the\n"
+  "package while reading.\n"
+  "\n"
+  "Note: The older method rpm.headerFromPackage() which has been replaced\n"
+  "by ts.hdrFromFdno() used to return a (hdr, isSource) tuple.\n"
+  "\n"
+  "If you need to distinguish source/binary headers, do:\n"
+  "\n"
+  "	import os, rpm\n"
+  "\n"
+  "	ts = rpm.TransactionSet()\n"
+  "	fdno = os.open('/tmp/foo-1.0-1.i386.rpm', os.O_RDONLY)\n"
+  "	hdr = ts.hdrFromFdno(fdno)\n"
+  "	os.close(fdno)\n"
+  "	if hdr[rpm.RPMTAG_SOURCEPACKAGE]:\n"
+  "	   print 'header is from a source package'\n"
+  "	else:\n"
+  "	   print 'header is from a binary package'\n"
+  "\n"
+  "The Python interface to the header data is quite elegant.  It\n"
+  "presents the data in a dictionary form.  We'll take the header we\n"
+  "just loaded and access the data within it:\n"
+  "\n"
+  "	print hdr[rpm.RPMTAG_NAME]\n"
+  "	print hdr[rpm.RPMTAG_VERSION]\n"
+  "	print hdr[rpm.RPMTAG_RELEASE]\n"
+  "\n"
+  "in the case of our 'foo-1.0-1.i386.rpm' package, this code would\n"
+  "output:\n"
+  "	foo\n"
+  "	1.0\n"
+  "	1\n"
+  "\n"
+  "You make also access the header data by string name:\n"
+  "\n"
+  "	print hdr['name']\n"
+  "	print hdr['version']\n"
+  "	print hdr['release']\n"
+  "\n"
+  "This method of access is a teensy bit slower because the name must be\n"
+  "translated into the tag number dynamically. You also must make sure\n"
+  "the strings in header lookups don't get translated, or the lookups\n"
+  "will fail.\n";
 
 PyTypeObject hdr_Type = {
 	PyVarObject_HEAD_INIT(&PyType_Type, 0)
