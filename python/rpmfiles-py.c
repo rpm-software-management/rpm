@@ -24,7 +24,9 @@ static void rpmfile_dealloc(rpmfileObject * s)
     Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
-static char rpmfile_doc[] = "The meta data of a single file";
+static char rpmfile_doc[] =
+    "Gives access to the meta data of a single file.\n\n"
+    "Instances of this class are only available through an rpm.files object.";
 
 static PyObject *rpmfile_fx(rpmfileObject *s)
 {
@@ -519,8 +521,14 @@ static struct PyMethodDef rpmfiles_methods[] = {
 };
 
 static char rpmfiles_doc[] =
+    "rpm.files(hdr, tag=RPMTAG_BASENAMES, flags=None, pool=None)\n\n"
     "Stores the meta data of a package's files.\n\n"
-    "Basically a sequence of rpm.file objects. Note that this is a read only\ndata structure. To write file data you have to write it directly into a\nheader object.";
+    "Args:\n"
+    "\thdr: The header object to get the data from.\n"
+    "\tflags : Controls which data to store and whether to create\n\t\tcopies or use the data from the header.\n\t\tBy default all data is copied.\n\t\tSee RPMFI_* constants in rpmfiles.h.\n"
+    "\tpool : rpm.strpool object to store the strings in.\n\t\tLeave empty to use global pool.\n"
+    "\ttag : Obsolete. Leave alone!\n\n"
+    "rpm.files is basically a sequence of rpm.file objects.\nNote that this is a read only data structure. To write file data you\nhave to write it directly into aheader object.";
 
 PyTypeObject rpmfiles_Type = {
 	PyVarObject_HEAD_INIT(&PyType_Type, 0)
