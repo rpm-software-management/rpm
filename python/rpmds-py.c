@@ -190,39 +190,41 @@ static struct PyMethodDef rpmds_methods[] = {
  {"Count",	(PyCFunction)rpmds_Count,	METH_NOARGS,
 	"Deprecated, use len(ds) instead.\n" },
  {"Ix",		(PyCFunction)rpmds_Ix,		METH_NOARGS,
-	"ds.Ix -> Ix		- Return current element index.\n" },
+	"ds.Ix -> Ix -- Return current element index.\n" },
  {"DNEVR",	(PyCFunction)rpmds_DNEVR,	METH_NOARGS,
-	"ds.DNEVR -> DNEVR	- Return current DNEVR.\n" },
+	"ds.DNEVR -> DNEVR -- Return current DNEVR.\n" },
  {"N",		(PyCFunction)rpmds_N,		METH_NOARGS,
-	"ds.N -> N		- Return current N.\n" },
+	"ds.N -> N -- Return current N.\n" },
  {"EVR",	(PyCFunction)rpmds_EVR,		METH_NOARGS,
-	"ds.EVR -> EVR		- Return current EVR.\n" },
+	"ds.EVR -> EVR -- Return current EVR.\n" },
  {"Flags",	(PyCFunction)rpmds_Flags,	METH_NOARGS,
-	"ds.Flags -> Flags	- Return current Flags.\n" },
+	"ds.Flags -> Flags -- Return current Flags.\n" },
  {"TagN",	(PyCFunction)rpmds_TagN,	METH_NOARGS,
-	"ds.TagN -> TagN	- Return current TagN.\n" },
+  "ds.TagN -> TagN -- Return TagN (RPMTAG_*NAME)\n\n"
+  "the type of all dependencies in this set.\n" },
  {"Color",	(PyCFunction)rpmds_Color,	METH_NOARGS,
-	"ds.Color -> Color	- Return current Color.\n" },
+	"ds.Color -> Color -- Return current Color.\n" },
  {"SetNoPromote",(PyCFunction)rpmds_SetNoPromote, METH_VARARGS|METH_KEYWORDS,
-	NULL},
+  "ds.SetNoPromote(noPromote) -- Set noPromote for this instance.\n\n"
+  "If True non existing epochs are no longer equal to an epoch of 0."},
  {"Notify",	(PyCFunction)rpmds_Notify,	METH_VARARGS|METH_KEYWORDS,
-	NULL},
+  "ds.Notify(location, returnCode) -- Print debug info message\n\n if debugging is enabled."},
  {"Sort",	(PyCFunction)rpmds_Sort,	METH_NOARGS,
 	NULL},
  {"Find",	(PyCFunction)rpmds_Find,	METH_O,
-	NULL},
+  "ds.find(other_ds) -- Return index of other_ds in ds"},
  {"Merge",	(PyCFunction)rpmds_Merge,	METH_O,
 	NULL},
  {"Search",     (PyCFunction)rpmds_Search,      METH_O,
 "ds.Search(element) -> matching ds index (-1 on failure)\n\
-- Check that element dependency range overlaps some member of ds.\n\
-The current index in ds is positioned at overlapping member upon success.\n" },
+Check that element dependency range overlaps some member of ds.\n\
+The current index in ds is positioned at overlapping member." },
  {"Rpmlib",     (PyCFunction)rpmds_Rpmlib,      METH_VARARGS|METH_KEYWORDS|METH_STATIC,
-	"ds.Rpmlib -> nds       - Return internal rpmlib dependency set.\n"},
+	"ds.Rpmlib -> nds -- Return internal rpmlib dependency set.\n"},
  {"Compare",	(PyCFunction)rpmds_Compare,	METH_O,
-	NULL},
+  "ds.compare(other) -- Compare current entries of self and other.\n\nReturns True if the entries match each other, False otherwise"},
  {"Instance",	(PyCFunction)rpmds_Instance,	METH_NOARGS,
-	NULL},
+  "ds.Instance() -- Return rpmdb key of corresponding package or 0."},
  {NULL,		NULL}		/* sentinel */
 };
 
@@ -346,7 +348,11 @@ static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 }
 
 static char rpmds_doc[] =
-"";
+    "rpm.ds (dependendcy set) gives a more convenient access to dependencies\n\n"
+    "It can hold multiple entries of Name Flags and EVR.\n"
+    "It typically represents all dependencies of one kind of a package\n"
+    "e.g. all Requires or all Conflicts.\n"
+    ;
 
 PyTypeObject rpmds_Type = {
 	PyVarObject_HEAD_INIT(&PyType_Type, 0)
