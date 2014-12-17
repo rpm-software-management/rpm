@@ -587,6 +587,9 @@ assert(otherFi != NULL);
 		    if (!(oflags & RPMFILE_GHOST)) {
 			rpmfsSetAction(fs, i, FA_SKIP);
 		    }
+		/* if the other file is color skipped then skip this file too */
+		} else if (oaction == FA_SKIPCOLOR) {
+		    rpmfsSetAction(fs, i, FA_SKIPCOLOR);
 		}
 	    }
 
