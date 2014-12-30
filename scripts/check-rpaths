@@ -17,7 +17,7 @@
 
 
 test -z "$QA_SKIP_RPATHS" || {
-    echo $"WARNING: '\$QA_SKIP_RPATHS' is obsoleted by 'QA_RPATHS=[0-7]'" >&2
+    echo "WARNING: '\$QA_SKIP_RPATHS' is obsoleted by 'QA_RPATHS=[0-7]'" >&2
     exit 0
 }
 
