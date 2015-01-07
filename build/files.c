@@ -931,6 +931,30 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	digestalgo = defaultalgo;
     }
     
+    /* Adjust paths if needed */
+    for (i = 0, flp = fl->files.recs; i < fl->files.used; i++, flp++) {
+	int changed = 0;
+	char * cpiopath = flp->cpioPath;
+
+	if (!isSrc && pkg->removePostfixes)
+	for (ARGV_const_t postfix_p = pkg->removePostfixes; *postfix_p; postfix_p++) {
+	    int len = strlen(*postfix_p);
+	    int plen = strlen(cpiopath);
+	    if (len <= plen && !strncmp(cpiopath+plen-len, *postfix_p, len)) {
+		cpiopath[plen-len] = '\0';
+		changed = 1;
+		if (plen-len > 0 && cpiopath[plen-len-1] == '/') {
+		    cpiopath[plen-len-1] = '\0';
+		}
+	    }
+	}
+	if (changed) {
+	    char * tmp = xstrdup(cpiopath);
+	    _free(flp->cpioPath);
+	    flp->cpioPath = tmp;
+	}
+    }
+
     /* Sort the big list */
     qsort(fl->files.recs, fl->files.used,
 	  sizeof(*(fl->files.recs)), compareFileListRecs);

@@ -145,6 +145,7 @@ static Package freePackage(Package pkg)
     pkg->fileList = argvFree(pkg->fileList);
     pkg->fileFile = argvFree(pkg->fileFile);
     pkg->policyList = argvFree(pkg->policyList);
+    pkg->removePostfixes = argvFree(pkg->removePostfixes);
     pkg->cpioList = rpmfilesFree(pkg->cpioList);
     pkg->dpaths = argvFree(pkg->dpaths);
 

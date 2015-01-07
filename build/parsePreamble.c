@@ -896,6 +896,9 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	    spec->BANames = _free(spec->BANames);
 	break;
     }
+    case RPMTAG_REMOVEPATHPOSTFIXES:
+	argvSplit(&pkg->removePostfixes, field, ":");
+	break;
     default:
 	rpmlog(RPMLOG_ERR, _("Internal error: Bogus tag %d\n"), tag);
 	goto exit;
@@ -970,6 +973,7 @@ static struct PreambleRec_s const preambleList[] = {
     {RPMTAG_DISTTAG,		0, 0, LEN_AND_STR("disttag")},
     {RPMTAG_BUGURL,		0, 0, LEN_AND_STR("bugurl")},
     {RPMTAG_ORDERFLAGS,		2, 0, LEN_AND_STR("orderwithrequires")},
+    {RPMTAG_REMOVEPATHPOSTFIXES,0, 0, LEN_AND_STR("removepathpostfixes")},
     {0, 0, 0, 0}
 };
 

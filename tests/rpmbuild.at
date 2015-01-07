@@ -188,6 +188,39 @@ lrwxrwxrwx /opt/globtest/linkgood
 [])
 AT_CLEANUP
 
+AT_SETUP([rpmbuild prefixpostfix])
+AT_KEYWORDS([build])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf ${TOPDIR}
+
+runroot rpmbuild -bb --quiet \
+	/data/SPECS/prefixtest.spec
+runroot rpm -qp \
+	--qf "[[%{filemodes:perms} %{filenames}\n]]" \
+	"${TOPDIR}"/RPMS/noarch/prefixtest-1.0-1.noarch.rpm
+],
+[0],
+[-rw-r--r-- /opt/prefixtest/ba
+drwxr-xr-x /opt/prefixtest/ban
+-rw-r--r-- /opt/prefixtest/bi
+drwxr-xr-x /opt/prefixtest/bin
+drwxr-xr-x /opt/prefixtest/bon
+drwxr-xr-x /opt/prefixtest/foo
+-rw-r--r-- /opt/prefixtest/foo/one
+-rw-r--r-- /opt/prefixtest/foo/three
+-rw-r--r-- /opt/prefixtest/foo/two
+lrwxrwxrwx /opt/prefixtest/linkbad
+lrwxrwxrwx /opt/prefixtest/linkgood
+-rw-r--r-- /opt/prefixtest/weird%name
+-rw-r--r-- /opt/prefixtest/zab
+-rw-r--r-- /opt/prefixtest/zeb
+-rw-r--r-- /opt/prefixtest/zib
+],
+[])
+AT_CLEANUP
+
 # ------------------------------
 # Check if weak and reverse requires can be built
 AT_SETUP([Weak and reverse requires])
