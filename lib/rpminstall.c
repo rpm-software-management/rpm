@@ -430,15 +430,14 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
     for (eiu->fnp = fileArgv; *eiu->fnp != NULL; eiu->fnp++) {
     	ARGV_t av = NULL;
     	int ac = 0;
-	char * fn;
 
-	fn = rpmEscapeSpaces(*eiu->fnp);
 	if (giFlags & RPMGI_NOGLOB) {
-	    rc = rpmNoGlob(fn, &ac, &av);
+	    rc = rpmNoGlob(*eiu->fnp, &ac, &av);
 	} else {
+	    char * fn = rpmEscapeSpaces(*eiu->fnp);
 	    rc = rpmGlob(fn, &ac, &av);
+	    fn = _free(fn);
 	}
-	fn = _free(fn);
 	if (rc || ac == 0) {
 	    if (giFlags & RPMGI_NOGLOB) {
 		rpmlog(RPMLOG_ERR, _("File not found: %s\n"), *eiu->fnp);
