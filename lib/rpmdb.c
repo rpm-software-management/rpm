@@ -2105,7 +2105,7 @@ static rpmRC updateRichDep(dbiCursor dbc, const char *str,
 		    continue;       /* ignore dups */
 		if (*name == ' ')
 		    name++;
-		rc += idxupdate(dbc, name, strlen(name) - 1, rec);
+		rc += idxupdate(dbc, name, strlen(name), rec);
 	    }
 	}
     }
