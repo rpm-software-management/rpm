@@ -631,6 +631,8 @@ AS_IF([test "$with_selinux" = yes],[
       AC_MSG_ERROR([--with-selinux given, but selinux_getpolicytype not found in libselinux])])
     AC_CHECK_LIB([selinux],[selinux_reset_config],[],[
       AC_MSG_ERROR([--with-selinux given, but selinux_reset_config not found in libselinux])])
+    AC_CHECK_LIB([selinux],[setexecfilecon],[
+      AC_DEFINE([HAVE_SETEXECFILECON],[1],[Define to 1 if SELinux setexecfilecon is present])])
     LIBS="$save_LIBS"
   ],[
     AC_MSG_ERROR([--with-selinux given, but selinux/selinux.h not found])

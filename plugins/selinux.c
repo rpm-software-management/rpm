@@ -91,9 +91,10 @@ static rpmRC selinux_scriptlet_fork_post(rpmPlugin plugin,
 						 const char *path, int type)
 {
     rpmRC rc = RPMRC_FAIL;
+    int xx;
+#ifndef HAVE_SETEXECFILECON
     security_context_t mycon = NULL, fcon = NULL, newcon = NULL;
     context_t con = NULL;
-    int xx;
 
     if (sehandle == NULL)
 	return RPMRC_OK;
@@ -136,6 +137,18 @@ exit:
     /* If selinux is not enforcing, we don't care either */
     if (rc && security_getenforce() < 1)
 	rc = RPMRC_OK;
+#else
+    if (sehandle == NULL)
+	return RPMRC_OK;
+
+    if ((xx = setexecfilecon(path, "rpm_script_t") == 0))
+	rc = RPMRC_OK;
+
+    if (rpmIsDebug()) {
+	rpmlog(RPMLOG_DEBUG, "setexecfilecon: (%s) %s\n",
+	       path, (xx < 0 ? strerror(errno) : ""));
+    }
+#endif
 
     return rc;
 }
