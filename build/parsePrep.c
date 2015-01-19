@@ -62,6 +62,7 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
     char *arg_patch_flags = rpmExpand("%{?_default_patch_flags}", NULL);
     struct Source *sp;
     char *patchcmd;
+    rpmCompressedMagic compressed = COMPRESSED_NOT;
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
 	if ((sp->flags & RPMBUILD_ISPATCH) && (sp->num == c)) {
@@ -80,7 +81,7 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
     fn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
     /* On non-build parse's, file cannot be stat'd or read. */
-    if ((spec->flags & RPMSPEC_FORCE) || checkOwners(fn)) goto exit;
+    if ((spec->flags & RPMSPEC_FORCE) || rpmFileIsCompressed(fn, &compressed) || checkOwners(fn)) goto exit;
 
     if (db) {
 	rasprintf(&arg_backup,
@@ -102,7 +103,12 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 		reverse ? " -R" : "", 
 		removeEmpties ? " -E" : "");
 
-    patchcmd = rpmExpand("%{uncompress: ", fn, "} | %{__patch} ", args, NULL);
+    /* Avoid the extra cost of fork and pipe for uncompressed patches */
+    if (compressed != COMPRESSED_NOT) {
+	patchcmd = rpmExpand("%{uncompress: ", fn, "} | %{__patch} ", args, NULL);
+    } else {
+	patchcmd = rpmExpand("%{__patch} ", args, " < ", fn, NULL);
+    }
 
     free(arg_fuzz);
     free(arg_dir);
