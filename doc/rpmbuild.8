@@ -14,6 +14,8 @@ rpmbuild \- Build RPM Package(s)
 \fBrpmbuild\fR {\fB-ba|-bb|-bp|-bc|-bi|-bl|-bs\fR} [\fBrpmbuild-options\fR] \fB\fISPECFILE\fB\fR\fI ...\fR
 
 
+\fBrpmbuild\fR {\fB-ra|-rb|-rp|-rc|-ri|-rl|-rs\fR} [\fBrpmbuild-options\fR] \fB\fISOURCEPACKAGE\fB\fR\fI ...\fR
+
 
 \fBrpmbuild\fR {\fB-ta|-tb|-tp|-tc|-ti|-tl|-ts\fR} [\fBrpmbuild-options\fR] \fB\fITARBALL\fB\fR\fI ...\fR
 
@@ -109,12 +111,13 @@ Defines \fIMACRO\fR with value \fIEXPR\fR.
 The general form of an rpm build command is 
 .PP
 
-\fBrpmbuild\fR \fB-b\fISTAGE\fB|-t\fISTAGE\fB\fR [ \fB     rpmbuild-options
+\fBrpmbuild\fR \fB-b\fISTAGE\fB|-r\fISTAGE\fB|-t\fISTAGE\fB\fR [ \fB     rpmbuild-options
 \fR ] \fB\fIFILE\fB\fR\fI ...\fR
 
 .PP
 The argument used is \fB-b\fR if a spec file is being
-used to build the package and \fB-t\fR if \fBrpmbuild\fR
+used to build the package, \fB-r\fR if a source package is to be rebuild
+and \fB-t\fR if \fBrpmbuild\fR
 should look inside of a (possibly compressed) tar file for
 the spec file to use. After the first argument, the next
 character (\fISTAGE\fR) specifies the stages
@@ -206,6 +209,8 @@ package, and does a prep, compile and install.  In addition,
 has completed, the build directory is removed (as in
 \fB--clean\fR) and the the sources and spec file for
 the package are removed.
+
+These options are noaways superseded by the \fB-r*\fR options which allow more more fine control over what stages of the build to run. 
 .SS "SHOWRC"
 .PP
 The command
