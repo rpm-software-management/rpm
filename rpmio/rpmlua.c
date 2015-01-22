@@ -60,6 +60,9 @@ struct rpmluapb_s {
 
 static rpmlua globalLuaState = NULL;
 
+static char *(*nextFileFunc)(void *) = NULL;
+static void *nextFileFuncParam = NULL;
+
 static int luaopen_rpm(lua_State *L);
 static int rpm_print(lua_State *L);
 
@@ -210,6 +213,12 @@ static int pushvar(lua_State *L, rpmluavType type, void *value)
 	    break;
     }
     return ret;
+}
+
+void rpmluaSetNextFileFunc(char *(*func)(void *), void *funcParam)
+{
+    nextFileFunc = func;
+    nextFileFuncParam = funcParam;
 }
 
 void rpmluaSetVar(rpmlua _lua, rpmluav var)
@@ -685,6 +694,16 @@ static int rpm_interactive(lua_State *L)
     return 0;
 }
 
+static int rpm_next_file(lua_State *L)
+{
+    if (nextFileFunc)
+	lua_pushstring(L, nextFileFunc(nextFileFuncParam));
+    else
+	lua_pushstring(L, NULL);
+
+    return 1;
+}
+
 typedef struct rpmluaHookData_s {
     lua_State *L;
     int funcRef;
@@ -876,6 +895,7 @@ static const luaL_Reg rpmlib[] = {
     {"unregister", rpm_unregister},
     {"call", rpm_call},
     {"interactive", rpm_interactive},
+    {"next_file", rpm_next_file},
     {NULL, NULL}
 };
 

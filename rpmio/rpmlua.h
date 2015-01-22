@@ -62,6 +62,8 @@ void rpmluaSetData(rpmlua lua, const char *key, const void *data);
 char *rpmluaPopPrintBuffer(rpmlua lua);
 void rpmluaPushPrintBuffer(rpmlua lua);
 
+void rpmluaSetNextFileFunc(char *(*func)(void *), void *funcParam);
+
 void rpmluaGetVar(rpmlua lua, rpmluav var);
 void rpmluaSetVar(rpmlua lua, rpmluav var);
 void rpmluaDelVar(rpmlua lua, const char *key, ...);

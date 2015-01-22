@@ -19,6 +19,13 @@
 
 #include "debug.h"
 
+struct scriptNextFileFunc_s {
+    char *(*func)(void *);	/* function producing input for script */
+    void *param;		/* parameter for func */
+};
+
+typedef struct scriptNextFileFunc_s *scriptNextFileFunc;
+
 struct rpmScript_s {
     rpmscriptTypes type;	/* script type */
     rpmTagVal tag;		/* script tag */
@@ -26,6 +33,7 @@ struct rpmScript_s {
     char *body;			/* script body */
     char *descr;		/* description for logging */
     rpmscriptFlags flags;	/* flags to control operation */
+    struct scriptNextFileFunc_s nextFileFunc;  /* input function */
 };
 
 struct scriptInfo_s {
@@ -76,7 +84,8 @@ static const struct scriptInfo_s * findTag(rpmTagVal tag)
  */
 static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 		   const char *sname, rpmlogLvl lvl, FD_t scriptFd,
-		   ARGV_t * argvp, const char *script, int arg1, int arg2)
+		   ARGV_t * argvp, const char *script, int arg1, int arg2,
+		   scriptNextFileFunc nextFileFunc)
 {
     rpmRC rc = RPMRC_FAIL;
 #ifdef WITH_LUA
@@ -90,6 +99,7 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
     /* Create arg variable */
     rpmluaPushTable(lua, "arg");
     rpmluavSetListMode(var, 1);
+    rpmluaSetNextFileFunc(nextFileFunc->func, nextFileFunc->param);
     if (argv) {
 	char **p;
 	for (p = argv; *p; p++) {
@@ -141,19 +151,12 @@ static const char * const SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr
 static void doScriptExec(ARGV_const_t argv, ARGV_const_t prefixes,
 			FD_t scriptFd, FD_t out)
 {
-    int pipes[2];
     int flag;
     int fdno;
     int xx;
     int open_max;
 
     (void) signal(SIGPIPE, SIG_DFL);
-    pipes[0] = pipes[1] = 0;
-    /* make stdin inaccessible */
-    xx = pipe(pipes);
-    xx = close(pipes[1]);
-    xx = dup2(pipes[0], STDIN_FILENO);
-    xx = close(pipes[0]);
 
     /* XXX Force FD_CLOEXEC on all inherited fdno's. */
     open_max = sysconf(_SC_OPEN_MAX);
@@ -246,12 +249,17 @@ exit:
  */
 static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
 		   const char *sname, rpmlogLvl lvl, FD_t scriptFd,
-		   ARGV_t * argvp, const char *script, int arg1, int arg2)
+		   ARGV_t * argvp, const char *script, int arg1, int arg2,
+		   scriptNextFileFunc nextFileFunc)
 {
     FD_t out = NULL;
     char * fn = NULL;
     pid_t pid, reaped;
     int status;
+    int inpipe[2];
+    FILE *in;
+    const char *line;
+    char *mline = NULL;
     rpmRC rc = RPMRC_FAIL;
 
     rpmlog(RPMLOG_DEBUG, "%s: scriptlet start\n", sname);
@@ -273,6 +281,14 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	    argvAddNum(argvp, arg2);
 	}
     }
+
+    if (pipe(inpipe) < 0) {
+	rpmlog(RPMLOG_ERR,
+		("Couldn't create pipe: %s\n"), strerror(errno));
+	goto exit;
+    }
+    in = fdopen(inpipe[1], "w");
+    inpipe[1] = 0;
 
     if (scriptFd != NULL) {
 	if (rpmIsVerbose()) {
@@ -301,6 +317,9 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	rpmlog(RPMLOG_DEBUG, "%s: execv(%s) pid %d\n",
 	       sname, *argvp[0], (unsigned)getpid());
 
+	fclose(in);
+	dup2(inpipe[0], STDIN_FILENO);
+
 	/* Run scriptlet post fork hook for all plugins */
 	if (rpmpluginsCallScriptletForkPost(plugins, *argvp[0], RPMSCRIPTLET_FORK | RPMSCRIPTLET_EXEC) != RPMRC_FAIL) {
 	    doScriptExec(*argvp, prefixes, scriptFd, out);
@@ -308,6 +327,25 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	    _exit(126); /* exit 126 for compatibility with bash(1) */
 	}
     }
+
+    if (nextFileFunc->func) {
+	while ((line = nextFileFunc->func(nextFileFunc->param)) != NULL) {
+	    size_t size = strlen(line);
+	    mline = xstrdup(line);
+	    mline[size] = '\n';
+
+	    if (fwrite(mline, size + 1, 1, in) != 1) {
+		if (errno != EPIPE) {
+		    rpmlog(RPMLOG_ERR, _("Fwrite failed: %s"), strerror(errno));
+		    rc = RPMRC_FAIL;
+		    goto exit;
+		}
+	    }
+	    mline = _free(mline);
+	}
+    }
+    fclose(in);
+    in = NULL;
 
     do {
 	reaped = waitpid(pid, &status, 0);
@@ -333,6 +371,9 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
     }
 
 exit:
+    if (in)
+	fclose(in);
+
     if (out)
 	Fclose(out);	/* XXX dup'd STDOUT_FILENO */
 
@@ -341,6 +382,7 @@ exit:
 	    unlink(fn);
 	free(fn);
     }
+    free(mline);
     return rc;
 }
 
@@ -369,9 +411,9 @@ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
 
     if (rc != RPMRC_FAIL) {
 	if (script_type & RPMSCRIPTLET_EXEC) {
-	    rc = runExtScript(plugins, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2);
+	    rc = runExtScript(plugins, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2, &script->nextFileFunc);
 	} else {
-	    rc = runLuaScript(plugins, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2);
+	    rc = runLuaScript(plugins, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2, &script->nextFileFunc);
 	}
     }
 
@@ -427,8 +469,18 @@ static rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
 	script->body = body;
     }
 
+    script->nextFileFunc.func = NULL;
+    script->nextFileFunc.param = NULL;
+
     free(nevra);
     return script;
+}
+
+void rpmScriptSetNextFileFunc(rpmScript script, char *(*func)(void *),
+			    void *param)
+{
+    script->nextFileFunc.func = func;
+    script->nextFileFunc.param = param;
 }
 
 rpmScript rpmScriptFromTriggerTag(Header h, rpmTagVal triggerTag, uint32_t ix)
