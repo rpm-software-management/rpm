@@ -37,8 +37,8 @@ class TransactionSet(TransactionSetCore):
         return self._wrapSetGet('_probFilter', ignoreSet)
 
     def parseSpec(self, specfile):
-        import _rpmb
-        return _rpmb.spec(specfile)
+        import rpm._rpmb
+        return rpm._rpmb.spec(specfile)
 
     def getKeys(self):
         keys = []
