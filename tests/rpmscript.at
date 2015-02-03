@@ -98,3 +98,106 @@ triggers-1.0-2 TRIGGERPOSTUN 1 0
 ],
 [])
 AT_CLEANUP
+
+AT_SETUP([basic file trigger scripts])
+AT_KEYWORDS([file trigger script])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
+runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
+runroot rpmbuild --quiet -bb /data/SPECS/hlinktest.spec
+runroot rpmbuild --quiet -bb /data/SPECS/filetriggers.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/fakeshell-1.0-1.noarch.rpm
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/filetriggers-1.0-1.noarch.rpm
+echo INSTALLATION
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/hello-script-1.0-1.noarch.rpm \
+"${TOPDIR}"/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+echo ERASE
+runroot rpm -e hello-script hlinktest
+],
+[0],
+[INSTALLATION
+filetriggerin(/foo*):
+/foo/aaaa
+/foo/copyllo
+/foo/hello
+/foo/hello-bar
+/foo/hello-foo
+/foo/hello-world
+/foo/zzzz
+
+filetriggerin(/foo*)<lua>:
+/foo/aaaa
+/foo/copyllo
+/foo/hello
+/foo/hello-bar
+/foo/hello-foo
+/foo/hello-world
+/foo/zzzz
+
+filetriggerin(/usr/bin*):
+/usr/bin/hello
+
+filetriggerin(/usr/bin*)<lua>:
+/usr/bin/hello
+
+transfiletriggerin(/usr/bin*):
+/usr/bin/hello
+
+transfiletriggerin(/foo*):
+/foo/aaaa
+/foo/copyllo
+/foo/hello
+/foo/hello-bar
+/foo/hello-foo
+/foo/hello-world
+/foo/zzzz
+
+ERASE
+transfiletriggerun(/usr/bin*):
+/usr/bin/hello
+
+transfiletriggerun(/foo*):
+/foo/aaaa
+/foo/copyllo
+/foo/hello
+/foo/hello-bar
+/foo/hello-foo
+/foo/hello-world
+/foo/zzzz
+
+filetriggerun(/foo*):
+/foo/aaaa
+/foo/copyllo
+/foo/hello
+/foo/hello-bar
+/foo/hello-foo
+/foo/hello-world
+/foo/zzzz
+
+filetriggerpostun(/foo*):
+/foo/aaaa
+/foo/copyllo
+/foo/hello
+/foo/hello-bar
+/foo/hello-foo
+/foo/hello-world
+/foo/zzzz
+
+filetriggerun(/usr/bin*):
+/usr/bin/hello
+
+filetriggerpostun(/usr/bin*):
+/usr/bin/hello
+
+transfiletriggerpostun(/usr/bin*):
+
+transfiletriggerpostun(/foo*):
+
+],
+[])
+AT_CLEANUP
