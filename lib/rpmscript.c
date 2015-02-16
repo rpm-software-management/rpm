@@ -327,6 +327,8 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	    _exit(126); /* exit 126 for compatibility with bash(1) */
 	}
     }
+    close(inpipe[0]);
+    inpipe[0] = 0;
 
     if (nextFileFunc->func) {
 	while ((line = nextFileFunc->func(nextFileFunc->param)) != NULL) {
@@ -373,6 +375,9 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
 exit:
     if (in)
 	fclose(in);
+
+    if (inpipe[0])
+	close(inpipe[0]);
 
     if (out)
 	Fclose(out);	/* XXX dup'd STDOUT_FILENO */
