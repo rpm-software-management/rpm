@@ -205,7 +205,7 @@ $strict || strict_error=WARNING
 find "$RPM_BUILD_ROOT" ! -path "${debugdir}/*.debug" -type f \
      		     \( -perm -0100 -or -perm -0010 -or -perm -0001 \) \
 		     -print |
-file -N -f - | sed -n -e 's/^\(.*\):[ 	]*.*ELF.*, not stripped/\1/p' |
+file -N -f - | sed -n -e 's/^\(.*\):[ 	]*.*ELF.*, not stripped.*/\1/p' |
 xargs --no-run-if-empty stat -c '%h %D_%i %n' |
 while read nlinks inum f; do
   get_debugfn "$f"
