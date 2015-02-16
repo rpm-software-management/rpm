@@ -1530,7 +1530,7 @@ static matchFilesIter matchDBFilesIterator(rpmds trigger, rpmts ts,
 static const char *matchFilesNext(matchFilesIter mfi)
 {
     const char *matchFile = NULL;
-    int fx;
+    int fx = 0;
 
     /* Decide if we iterate over given files (mfi->files) */
     if (!mfi->ts)
@@ -1624,7 +1624,7 @@ static int runHandleTriggersInPkg(rpmts ts, rpmte te, Header h,
     rpmds rpmdsTriggers, rpmdsTrigger;
     int ti = 0;
     rpmfiles files = NULL;
-    matchFilesIter mfi;
+    matchFilesIter mfi = NULL;
     rpmScript script;
     struct rpmtd_s installPrefixes;
     char *(*inputFunc)(void *);

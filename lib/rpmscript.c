@@ -257,7 +257,7 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
     pid_t pid, reaped;
     int status;
     int inpipe[2];
-    FILE *in;
+    FILE *in = NULL;
     const char *line;
     char *mline = NULL;
     rpmRC rc = RPMRC_FAIL;
@@ -502,7 +502,7 @@ rpmTagVal triggerDsTag(rpmscriptTriggerModes tm)
 
 rpmscriptTriggerModes triggerMode(rpmTagVal tag)
 {
-    rpmscriptTriggerModes tm;
+    rpmscriptTriggerModes tm = 0;
     switch (tag) {
     case RPMTAG_TRIGGERNAME:
 	tm = RPMSCRIPT_NORMALTRIGGER;
