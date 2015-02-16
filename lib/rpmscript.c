@@ -333,17 +333,21 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
     if (nextFileFunc->func) {
 	while ((line = nextFileFunc->func(nextFileFunc->param)) != NULL) {
 	    size_t size = strlen(line);
+	    size_t ret_size;
 	    mline = xstrdup(line);
 	    mline[size] = '\n';
 
-	    if (fwrite(mline, size + 1, 1, in) != 1) {
-		if (errno != EPIPE) {
+	    ret_size = fwrite(mline, size + 1, 1, in);
+	    mline = _free(mline);
+	    if (ret_size != 1) {
+		if (errno == EPIPE) {
+		    break;
+		} else {
 		    rpmlog(RPMLOG_ERR, _("Fwrite failed: %s"), strerror(errno));
 		    rc = RPMRC_FAIL;
 		    goto exit;
 		}
 	    }
-	    mline = _free(mline);
 	}
     }
     fclose(in);
