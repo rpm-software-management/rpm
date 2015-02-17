@@ -202,7 +202,8 @@ rpm_count_t rpmfilesDC(rpmfiles fi);
  * Return file index of the given file name or -1 if file is not in the rpmfi.
  * The file name may have "." prefixed but is then interpreted as a global
  * path without the prefixing "."
- * @param fi            file info set
+ * @param files         file info set
+ * @param fn		file name
  * @return              file index or -1
  */
 int rpmfilesFindFN(rpmfiles files, const char * fn);
@@ -211,7 +212,8 @@ int rpmfilesFindFN(rpmfiles files, const char * fn);
  * Return file index of the given original file name or -1 if file is not
  * in the rpmfi. The file name may have "." prefixed but is then interpreted
  * as a global path without the prefixing "."
- * @param fi            file info set
+ * @param files         file info set
+ * @param fn		file name
  * @return              file index or -1
  */
 int rpmfilesFindOFN(rpmfiles files, const char * fn);
@@ -227,7 +229,7 @@ int rpmfilesDigestAlgo(rpmfiles fi);
 
 /** \ingroup rpmfiles
  * Return union of all file color bits from file info set.
- * @param fi		file info set
+ * @param files		file info set
  * @return		color
  */
 rpm_color_t rpmfilesColor(rpmfiles files);
@@ -258,7 +260,7 @@ const char * rpmfilesBN(rpmfiles fi, int ix);
  * you'd catenate the results of rpmfilesDN(f, rpmfilesDI(f, X)) and
  * rpmfilesBN(f, X).
  * @param fi		file info set
- * @param ix		directory index
+ * @param jx		directory index
  * @return		directory, NULL on invalid
  */
 const char * rpmfilesDN(rpmfiles fi, int jx);
@@ -303,7 +305,7 @@ const char * rpmfilesOBN(rpmfiles fi, int ix);
  * you'd catenate the results of rpmfilesODN(f, rpmfilesODI(f, X)) and
  * rpmfilesOBN(f, X). 
  * @param fi		file info set
- * @param ix		directory index
+ * @param jx		directory index
  * @return		directory, NULL on invalid
  */
 const char * rpmfilesODN(rpmfiles fi, int jx);
@@ -420,7 +422,7 @@ rpm_mode_t rpmfilesFMode(rpmfiles fi, int ix);
  * @param fi		file info set
  * @param ix		file index
  * @retval algo		digest hash algorithm used (pass NULL to ignore)
- * @retval diglen	digest hash length (pass NULL to ignore)
+ * @retval len		digest hash length (pass NULL to ignore)
  * @return		file digest, NULL on invalid
  */
 const unsigned char * rpmfilesFDigest(rpmfiles fi, int ix, int *algo, size_t *len);

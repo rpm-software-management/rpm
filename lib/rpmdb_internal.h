@@ -133,6 +133,7 @@ void rpmdbUniqIterator(rpmdbMatchIterator mi);
  * all packages that header numbers are in hdrNums.
  * @param mi		rpm database iterator
  * @param hdrNums	hash of package numbers
+ * @param neg		mode
  * return		0 on success, 1 on failure (bad args)
  */
 int rpmdbFilterIterator(rpmdbMatchIterator mi, packageHash hdrNums, int neg);
@@ -195,6 +196,7 @@ void rpmdbSetIteratorIndex(rpmdbMatchIterator mi, unsigned int ix);
 /** \ingroup rpmdb
  * Return offset of package with given index.
  * @param mi		rpm database iterator
+ * @param ix		index
  * @return		package offset
  */
 RPM_GNUC_INTERNAL

@@ -594,6 +594,7 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
 /**
  * Check dep for an unsatisfied dependency.
  * @param ts		transaction set
+ * @param dcache	dependency cache
  * @param dep		dependency
  * @return		0 if satisfied, 1 if not satisfied
  */

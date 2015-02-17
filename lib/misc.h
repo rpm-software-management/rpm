@@ -43,7 +43,7 @@ int headerFindSpec(Header h);
 /**
  * Relocate files in header.
  * @todo multilib file dispositions need to be checked.
- * @param relocations		relocations
+ * @param relocs		relocations
  * @param numRelocations	number of relocations
  * @param fs			file state set
  * @param h			package header to relocate

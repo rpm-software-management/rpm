@@ -186,7 +186,7 @@ findEntry(rpmMacroContext mc, const char *name, size_t namelen, size_t *pos)
  * fgets(3) analogue that reads \ continuations. Last newline always trimmed.
  * @param buf		input buffer
  * @param size		inbut buffer size (bytes)
- * @param fd		file handle
+ * @param f		file handle
  * @return		buffer, or NULL on end-of-file
  */
 static char *
@@ -628,6 +628,7 @@ exit:
 /**
  * Free parsed arguments for parameterized macro.
  * @param mb		macro expansion state
+ * @param delete	
  */
 static void
 freeArgs(MacroBuf mb, int delete)
@@ -914,6 +915,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
  * The main macro recursion loop.
  * @param mb		macro expansion state
  * @param src		string to expand
+ * @param slen		length of string buffer
  * @return		0 on success, 1 on failure
  */
 static int

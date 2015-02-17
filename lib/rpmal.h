@@ -73,6 +73,7 @@ rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds);
 /**
  * Lookup best provider for a dependency in the available list
  * @param al		available list
+ * @param te		transaction element
  * @param ds		dependency set
  * @return		best provider for the dependency, NULL if none
  */

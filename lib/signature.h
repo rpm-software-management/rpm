@@ -63,6 +63,7 @@ int rpmWriteSignature(FD_t fd, Header h);
  * @param keyring	keyring handle
  * @param sigtd		signature tag data container
  * @param sig		signature/pubkey parameters
+ * @param ctx		digest context
  * @retval result	detailed text result of signature verification
  * 			(malloc'd)
  * @return		result of signature verification

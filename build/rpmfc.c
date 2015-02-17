@@ -482,7 +482,6 @@ static const char *parseDep(char **depav, int depac,
  * @param ix		file index
  * @param nsdep		class name for interpreter (e.g. "perl")
  * @param depname	"provides" or "requires"
- * @param depsp		fc->provides or fc->requires
  * @param dsContext	RPMSENSE_FIND_PROVIDES or RPMSENSE_FIND_REQUIRES
  * @param tagN		RPMTAG_PROVIDENAME or RPMTAG_REQUIRENAME
  * @return		0 on success

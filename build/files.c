@@ -429,6 +429,7 @@ exit:
 
 /**
  * Parse %attr and %defattr from file manifest.
+ * @param pool		string pool
  * @param buf		current spec file line
  * @param def		parse for %defattr or %attr?
  * @param entry		file entry data (current / default)
@@ -862,7 +863,7 @@ static int isHardLink(FileListRec flp, FileListRec tlp)
 /**
  * Verify that file attributes scope over hardlinks correctly.
  * If partial hardlink sets are possible, then add tracking dependency.
- * @param fl		package file records
+ * @param files		package file records
  * @return		1 if partial hardlink sets can exist, 0 otherwise.
  */
 static int checkHardLinks(FileRecords files)
@@ -901,9 +902,8 @@ static int seenHardLink(FileRecords files, FileListRec flp, rpm_ino_t *fileid)
  * @todo Should directories have %doc/%config attributes? (#14531)
  * @todo Remove RPMTAG_OLDFILENAMES, add dirname/basename instead.
  * @param fl		package file tree walk data
- * @retval *fip		file info for package
- * @param h
- * @param isSrc
+ * @param pkg		(sub) package
+ * @param isSrc		pass 1 for source packages 0 otherwise
  */
 static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 {
@@ -2019,6 +2019,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 
 /**
  * Check packaged file list against what's in the build root.
+ * @param buildRoot	path of build root
  * @param fileList	packaged file list
  * @return		-1 if skipped, 0 on OK, 1 on error
  */

@@ -1059,7 +1059,6 @@ int headerIsEntry(Header h, rpmTagVal tag)
  * @todo Permit retrieval of regions other than HEADER_IMUTABLE.
  * @param entry		header entry
  * @param td		tag data container
- * @param minMem	string pointers refer to header memory?
  * @param flags		flags to control memory allocation
  * @return		1 on success, otherwise error.
  */

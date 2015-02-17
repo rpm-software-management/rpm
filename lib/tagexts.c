@@ -195,6 +195,7 @@ exit:
  * Retrieve trigger info.
  * @param h		header
  * @retval td		tag data container
+ * @param hgflags	header get flags
  * @return		1 on success
  */
 static int triggercondsTag(Header h, rpmtd td, headerGetFlags hgflags)
@@ -265,6 +266,7 @@ static int triggercondsTag(Header h, rpmtd td, headerGetFlags hgflags)
  * Retrieve trigger type info.
  * @param h		header
  * @retval td		tag data container
+ * @param hgflags	header get flags
  * @return		1 on success
  */
 static int triggertypeTag(Header h, rpmtd td, headerGetFlags hgflags)
@@ -339,6 +341,7 @@ static int filenamesTag(Header h, rpmtd td, headerGetFlags hgflags)
  * Retrieve original file paths (wrt relocation).
  * @param h		header
  * @retval td		tag data container
+ * @param hgflags	header get flags
  * @return		1 on success
  */
 static int origfilenamesTag(Header h, rpmtd td, headerGetFlags hgflags)
@@ -389,6 +392,7 @@ static char *makeFClass(rpmfi fi)
  * Retrieve/generate file classes.
  * @param h		header
  * @retval td		tag data container
+ * @param hgflags	header get flags
  * @return		1 on success
  */
 static int fileclassTag(Header h, rpmtd td, headerGetFlags hgflags)
@@ -419,6 +423,7 @@ static int fileclassTag(Header h, rpmtd td, headerGetFlags hgflags)
  * Retrieve file provides.
  * @param h		header
  * @retval td		tag data container
+ * @param hgflags	header get flags
  * @return		1 on success
  */
 static int fileprovideTag(Header h, rpmtd td, headerGetFlags hgflags)
@@ -430,6 +435,7 @@ static int fileprovideTag(Header h, rpmtd td, headerGetFlags hgflags)
  * Retrieve file requires.
  * @param h		header
  * @retval td		tag data container
+ * @param hgflags	header get flags
  * @return		1 on success
  */
 static int filerequireTag(Header h, rpmtd td, headerGetFlags hgflags)
@@ -451,6 +457,7 @@ static const char * const _macro_i18ndomains = "%{?_i18ndomains}";
  * @param h		header
  * @param tag		tag
  * @retval td		tag data container
+ * @param hgflags	header get flags
  * @return		1 on success
  */
 static int i18nTag(Header h, rpmTag tag, rpmtd td, headerGetFlags hgflags)
@@ -515,6 +522,7 @@ static int i18nTag(Header h, rpmTag tag, rpmtd td, headerGetFlags hgflags)
  * Retrieve summary text.
  * @param h		header
  * @retval td		tag data container
+ * @param hgflags	header get flags
  * @return		1 on success
  */
 static int summaryTag(Header h, rpmtd td, headerGetFlags hgflags)
@@ -526,6 +534,7 @@ static int summaryTag(Header h, rpmtd td, headerGetFlags hgflags)
  * Retrieve description text.
  * @param h		header
  * @retval td		tag data container
+ * @param hgflags	header get flags
  * @return		1 on success
  */
 static int descriptionTag(Header h, rpmtd td, headerGetFlags hgflags)
@@ -537,6 +546,7 @@ static int descriptionTag(Header h, rpmtd td, headerGetFlags hgflags)
  * Retrieve group text.
  * @param h		header
  * @retval td		tag data container
+ * @param hgflags	header get flags
  * @return		1 on success
  */
 static int groupTag(Header h, rpmtd td, headerGetFlags hgflags)
@@ -583,6 +593,7 @@ static int get64(Header h, rpmtd td, rpmTag newtag, rpmTag oldtag)
  * Retrieve file sizes as 64bit regardless of how they're stored.
  * @param h		header
  * @retval td		tag data container
+ * @param hgflags	header get flags
  * @return		1 on success
  */
 static int longfilesizesTag(Header h, rpmtd td, headerGetFlags hgflags)

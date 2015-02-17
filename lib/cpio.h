@@ -34,8 +34,9 @@ rpmcpio_t rpmcpioFree(rpmcpio_t cpio);
 
 /**
  * Write cpio header.
- * @retval fsm		file path and stat info
- * @param st
+ * @param cpio		cpio archive
+ * @param path		file name
+ * @param st		stat struct with meta data
  * @return		0 on success
  */
 RPM_GNUC_INTERNAL

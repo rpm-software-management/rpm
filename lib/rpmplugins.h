@@ -157,8 +157,8 @@ rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, rpmfi fi, const char* path,
  * @param plugins	plugins structure
  * @param fi		file info iterator (or NULL)
  * @param path		file object current path
- * @param path		file object destination path
- * @param file_mode	file object mode
+ * @param dest		file object destination path
+ * @param mode		file object mode
  * @param op		file operation + associated flags
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */

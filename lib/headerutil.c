@@ -1,5 +1,5 @@
 /** \ingroup rpmdb
- * \file lib/hdrNVR.c
+ * \file lib/headerutil.c
  */
 
 #include "system.h"

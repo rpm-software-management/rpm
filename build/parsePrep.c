@@ -378,8 +378,8 @@ exit:
 /**
  * Parse %patch line.
  * This supports too many crazy syntaxes:
- * - %patchN is equal to %patch -P<N>
- * - -P<N> -P<N+1>... can be used to apply several patch on a single line
+ * - %patchN is equal to %patch -P\<N\>
+ * - -P\<N\> -P\<N+1\>... can be used to apply several patch on a single line
  * - Any trailing arguments are treated as patch numbers
  * - Any combination of the above, except unless at least one -P is specified,
  *   %patch is treated as %patch -P0 so that "%patch 1" is actually

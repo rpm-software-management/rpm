@@ -245,9 +245,9 @@ int headerPut(Header h, rpmtd td, headerPutFlags flags);
  * @return		1 on success, 0 on failure
  * 
  */
+int headerPutBin(Header h, rpmTagVal tag, const uint8_t *val, rpm_count_t size);
 int headerPutString(Header h, rpmTagVal tag, const char *val);
 int headerPutStringArray(Header h, rpmTagVal tag, const char **val, rpm_count_t size);
-int headerPutBin(Header h, rpmTagVal tag, const uint8_t *val, rpm_count_t size);
 int headerPutChar(Header h, rpmTagVal tag, const char *val, rpm_count_t size);
 int headerPutUint8(Header h, rpmTagVal tag, const uint8_t *val, rpm_count_t size);
 int headerPutUint16(Header h, rpmTagVal tag, const uint16_t *val, rpm_count_t size);

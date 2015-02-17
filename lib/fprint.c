@@ -251,7 +251,7 @@ int fpLookup(fingerPrintCache cache,
 /**
  * Return hash value for a finger print.
  * Hash based on dev and inode only!
- * @param key		pointer to finger print entry
+ * @param fp		pointer to finger print entry
  * @return hash value
  */
 static unsigned int fpHashFunction(const fingerPrint * fp)

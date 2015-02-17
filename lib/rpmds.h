@@ -91,7 +91,7 @@ typedef rpmFlags rpmsenseFlags;
 /** \ingroup rpmds
  * Return only those flags allowed for given type of dependencies
  * @param tagN		type of dependency
- * @param flags		flags
+ * @param Flags		flags
  * @return		flags filtered to allowed bits
  */
 rpmsenseFlags rpmSanitizeDSFlags(rpmTagVal tagN, rpmsenseFlags Flags);

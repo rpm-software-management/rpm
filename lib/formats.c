@@ -90,7 +90,8 @@ static char * hexFormat(rpmtd td)
 }
 
 /**
- * @param td		tag data container
+ * @param td			tag data container
+ * @param strftimeFormat	format string
  * @return		formatted string
  */
 static char * realDateFormat(rpmtd td, const char * strftimeFormat)

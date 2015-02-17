@@ -67,7 +67,7 @@ typedef struct dnli_s {
 
 /** \ingroup payload
  * Destroy directory name iterator.
- * @param a		directory name iterator
+ * @param dnli		directory name iterator
  * @retval		NULL always
  */
 static DNLI_t dnlFreeIterator(DNLI_t dnli)
@@ -371,7 +371,8 @@ static int fsmMknod(const char *path, mode_t mode, dev_t dev)
 
 /**
  * Create (if necessary) directories not explicitly included in package.
- * @param dnli		file state machine data
+ * @param files		file data
+ * @param fs		file states
  * @param plugins	rpm plugins handle
  * @return		0 on success
  */

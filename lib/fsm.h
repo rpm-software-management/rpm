@@ -17,9 +17,9 @@ typedef struct rpmpsm_s * rpmpsm;
 /**
  * Execute a file actions for package
  * @param ts		transaction set
- * @param fi		transaction element file info
+ * @param te		transaction set element
+ * @param files		transaction element file info
  * @param psm		owner psm (or NULL)
- * @retval archiveSize	pointer to archive size
  * @retval failedFile	pointer to first file name that failed (malloced)
  * @return		0 on success
  */

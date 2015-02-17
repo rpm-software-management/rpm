@@ -66,7 +66,7 @@ char * rpmfileStrerror(int rc);
  * rpmfiArchiveClose() to get the trailer written.
  * rpmfiSetFX() is not supported for this type of iterator.
  * @param fd		file
- * @param fi            file info
+ * @param files         file info
  * @return		new rpmfi
  */
 rpmfi rpmfiNewArchiveWriter(FD_t fd, rpmfiles files);
@@ -78,7 +78,7 @@ rpmfi rpmfiNewArchiveWriter(FD_t fd, rpmfiles files);
  * rpmfiArchiveReadToFile() when they are visited with rpmfiNext().
  * rpmfiSetFX() is not supported for this type of iterator.
  * @param fd		file
- * @param fi            file info
+ * @param files         file info
  * @param itype		how to handle hard links. See rpmFileIter.
  * @return		new rpmfi
  */
@@ -102,7 +102,7 @@ rpm_loff_t rpmfiArchiveTell(rpmfi fi);
  * Write content into current file in archive
  * @param fi		file info
  * @param buf		pointer to content
- * @prama size		number of bytes to write
+ * @param size		number of bytes to write
  * @return		bytes actually written
  */
 size_t rpmfiArchiveWrite(rpmfi fi, const void * buf, size_t size);
@@ -119,7 +119,7 @@ int rpmfiArchiveWriteFile(rpmfi fi, FD_t fd);
  * Read content from current file in archive
  * @param fi		file info
  * @param buf		pointer to buffer
- * @prama size		number of bytes to read
+ * @param size		number of bytes to read
  * @return		bytes actually read
  */
 size_t rpmfiArchiveRead(rpmfi fi, void * buf, size_t size);

@@ -379,9 +379,11 @@ static int handleColorConflict(rpmts ts,
  * @param ts		transaction set
  * @param p		current transaction element
  * @param fi		file info set
- * @param shared	shared file info
- * @param sharedCount	no. of shared elements
- * @param reportConflicts
+ * @param fx		file index
+ * @param otherHeader	header containing the matching file
+ * @param otherFi	matching file info set
+ * @param ofx		matching file index
+ * @param beingRemoved  file being removed (installed otherwise)
  */
 /* XXX only ts->{probs,rpmdb} modified */
 static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfiles fi, int fx,
@@ -654,7 +656,6 @@ assert(otherFi != NULL);
  * @param tspool	transaction string pool
  * @param p		current transaction element
  * @param h		installed header
- * @param ps		problem set
  */
 static void ensureOlder(rpmstrPool tspool, const rpmte p, const Header h)
 {
@@ -746,7 +747,8 @@ static void skipEraseFiles(const rpmts ts, rpmfiles files, rpmfs fs)
 /**
  * Skip any files that do not match install policies.
  * @param ts		transaction set
- * @param fi		file info set
+ * @param files		file info set
+ * @param fs		file states
  */
 static void skipInstallFiles(const rpmts ts, rpmfiles files, rpmfs fs)
 {

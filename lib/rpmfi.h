@@ -91,6 +91,7 @@ const char * rpmfiFN(rpmfi fi);
  * The file name may have "." prefixed but is then interpreted as a global
  * path without the prefixing "."
  * @param fi            file info set iterator
+ * @param fn		file name
  * @return              file index or -1
  */
 int rpmfiFindFN(rpmfi fi, const char * fn);
@@ -121,6 +122,7 @@ const char * rpmfiOFN(rpmfi fi);
  * in the rpmfi. The file name may have "." prefixed but is then interpreted
  * as a global path without the prefixing "."
  * @param fi            file info set iterator
+ * @param fn		file name
  * @return              file index or -1
  */
 int rpmfiFindOFN(rpmfi fi, const char * fn);
