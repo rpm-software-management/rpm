@@ -16,6 +16,7 @@
 
 #include "debug.h"
 
+static int disableInterruptSafety;
 static sigset_t rpmsqCaught;
 
 typedef struct rpmsig_s * rpmsig;
@@ -70,6 +71,9 @@ int rpmsqEnable(int signum, rpmsqAction_t handler)
     rpmsig tbl;
     int ret = -1;
 
+    if (disableInterruptSafety)
+      return 0;
+
     for (tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
 	if (tblsignum != tbl->signum)
 	    continue;
@@ -112,3 +116,25 @@ int rpmsqEnable(int signum, rpmsqAction_t handler)
     return ret;
 }
 
+
+/** \ingroup rpmio
+ * 
+ * By default, librpm will trap various unix signals such as SIGINT and SIGTERM,
+ * in order to avoid process exit while locks are held or a transaction is being
+ * performed.  However, there exist tools that operate on non-running roots (traditionally
+ * build systems such as mock), as well as deployment tools such as rpm-ostree.
+ *
+ * These tools are more robust against interruption - typically they
+ * will just throw away the partially constructed root.  This function
+ * is designed for use by those tools, so an operator can happily
+ * press Control-C.
+ *
+ * It's recommended to call this once only at process startup if this
+ * behavior is desired (and to then avoid using librpm against "live"
+ * databases), because currently signal handlers will not be retroactively
+ * applied if a database is open.
+ */
+void rpmsqSetInterruptSafety(int on)
+{
+  disableInterruptSafety = !on;
+}

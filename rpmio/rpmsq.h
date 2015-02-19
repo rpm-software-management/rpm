@@ -52,6 +52,8 @@ void rpmsqAction(int signum);
  */
 int rpmsqEnable(int signum, rpmsqAction_t handler);
 
+void rpmsqSetInterruptSafety(int on);
+
 #ifdef __cplusplus
 }
 #endif
