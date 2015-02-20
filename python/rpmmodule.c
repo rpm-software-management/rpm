@@ -134,6 +134,20 @@ static PyObject * reloadConfig(PyObject * self, PyObject * args, PyObject *kwds)
     return PyBool_FromLong(rc == 0);
 }
 
+static PyObject * setInterruptSafety(PyObject * self, PyObject * args, PyObject *kwds)
+{
+    int on = 1;
+    PyObject * obj;
+    char * kwlist[] = { "on", NULL };
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O", kwlist, &obj))
+	return NULL;
+    if (obj) {
+	on = PyObject_IsTrue(obj);
+    }
+    rpmsqSetInterruptSafety(on);
+    Py_RETURN_NONE;
+}
+
 static PyMethodDef rpmModuleMethods[] = {
     { "addMacro", (PyCFunction) rpmmacro_AddMacro, METH_VARARGS|METH_KEYWORDS,
       "addMacro(macro, value)\n"
@@ -180,6 +194,16 @@ static PyMethodDef rpmModuleMethods[] = {
     { "reloadConfig", (PyCFunction) reloadConfig, METH_VARARGS|METH_KEYWORDS,
       "readloadConfig(path=None) -- Read config file.\n\nSet all macros and settings accordingly."},
 
+    { "setInterruptSafety", (PyCFunction) setInterruptSafety,
+      METH_VARARGS|METH_KEYWORDS,
+      "setInterruptSafety(on=True) -- Set if various signals get intercepted.\n\n"
+      "By default, librpm will trap various unix signals (like SIGINT and\n"
+      "SIGTERM), in order to avoid process exit while locks are held or\n"
+      "a transaction is being performed.\n\n"
+      "If this is not the desired behaviour it's recommended to call this\n"
+      "once only at process startup because currently signal handlers will\n"
+      "not be retroactively applied if a database is open."
+    },
     { NULL }
 } ;
 
