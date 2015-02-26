@@ -1642,8 +1642,14 @@ static rpmRC readFilesManifest(rpmSpec spec, Package pkg, const char *path)
 	nlines++;
     }
 
-    if (nlines == 0)
-	rpmlog(RPMLOG_WARNING, _("Empty %%files file %s\n"), fn);
+    if (nlines == 0) {
+	int terminate =
+		rpmExpandNumeric("%{?_empty_manifest_terminate_build}");
+	rpmlog(terminate ? RPMLOG_ERR : RPMLOG_WARNING,
+	       _("Empty %%files file %s\n"), fn);
+	if (terminate)
+		goto exit;
+    }
 
     if (ferror(fd))
 	rpmlog(RPMLOG_ERR, _("Error reading %%files file %s: %m\n"), fn);
