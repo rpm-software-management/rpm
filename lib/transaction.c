@@ -851,7 +851,8 @@ static void skipInstallFiles(const rpmts ts, rpmfiles files, rpmfs fs)
     }
 
     /* Skip (now empty) directories that had skipped files. */
-    for (j = 0; j < dc; j++) {
+    /* Iterate over dirs in reversed order to solve subdirs at first */
+    for (j = dc; j >= 0; j--) {
 	const char * dn, * bn;
 	size_t dnlen, bnlen;
 
@@ -892,6 +893,11 @@ static void skipInstallFiles(const rpmts ts, rpmfiles files, rpmfs fs)
 		continue;
 	    rpmlog(RPMLOG_DEBUG, "excluding directory %s\n", dn);
 	    rpmfsSetAction(fs, i, FA_SKIPNSTATE);
+	    ix = rpmfiDX(fi);
+	    /* Decrease count of files for parent directory */
+	    drc[ix]--;
+	    /* Mark directory because something was removed from them */
+	    dff[ix] = 1;
 	    break;
 	}
     }
