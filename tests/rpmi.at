@@ -320,3 +320,34 @@ runroot rpm -U --test --ignoreos --badreloc --relocate /usr=/opt \
 [],
 [])
 AT_CLEANUP
+
+AT_SETUP([rpm -i with/without --excludedocs])
+AT_KEYWORDS([install excludedocs])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpmbuild --quiet -bb /data/SPECS/testdoc.spec
+
+runroot rpm -i --excludedocs \
+  "${TOPDIR}"/RPMS/noarch/testdoc-1.0-1.noarch.rpm
+
+test ! -e ${RPMTEST}/usr/share/doc/testdoc || exit 1
+test -e ${RPMTEST}/usr/share/testdoc/nodoc || exit 1
+
+runroot rpm -e testdoc
+
+runroot rpm -i \
+  "${TOPDIR}"/RPMS/noarch/testdoc-1.0-1.noarch.rpm
+test -e ${RPMTEST}/usr/share/doc/testdoc/documentation1 || exit 1
+test -e ${RPMTEST}/usr/share/doc/testdoc/documentation2 || exit 1
+test -e ${RPMTEST}/usr/share/doc/testdoc/examples/example1 || exit 1
+test -e ${RPMTEST}/usr/share/doc/testdoc/examples/example2 || exit 1
+test -e ${RPMTEST}/usr/share/testdoc/nodoc || exit 1
+
+runroot rpm -e testdoc
+],
+[0],
+[],
+[])
+AT_CLEANUP
