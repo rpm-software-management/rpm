@@ -602,6 +602,7 @@ package or when debugging this package.\
 %_vsflags_erase		%{__vsflags}
 %_vsflags_install	%{__vsflags}
 %_vsflags_query		%{__vsflags}
+%_vsflags_query_rpmdb	0xf0f00
 %_vsflags_rebuilddb	0xc0c00
 %_vsflags_verify	%{__vsflags}
 
