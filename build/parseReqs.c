@@ -277,7 +277,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	rpmdsInit(*pdsp);
 	if (nametag == RPMTAG_TRIGGERNAME) {
 	    while (rpmdsNext(*pdsp) >= 0) {
-		if (rstreq(rpmdsN(*pdsp), N)) {
+		if (rstreq(rpmdsN(*pdsp), N) && ((rpmdsFlags(*pdsp) & tagflags))) {
 		    rasprintf(&emsg, _("Trigger fired by the same package "
 			"is already defined in spec file"));
 		    goto exit;
