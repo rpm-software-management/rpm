@@ -882,6 +882,7 @@ package or when debugging this package.\
 # Former make install analogue, kept for compatibility and for old/broken
 #  packages that don't support DESTDIR properly.
 %makeinstall \
+  echo "warning: %%makeinstall is deprecated, try %%make_install instead" 1>&2\
   %{__make} \\\
 	prefix=%{?buildroot:%{buildroot}}%{_prefix} \\\
 	exec_prefix=%{?buildroot:%{buildroot}}%{_exec_prefix} \\\
