@@ -37,6 +37,7 @@ rpmbuild \- Build RPM Package(s)
  [\fB--rmsource\fR] [\fB--rmspec\fR] [\fB--short-circuit\fR]
  [\fB--noclean\fR] [\fB--nocheck\fR]
  [\fB--target \fIPLATFORM\fB\fR]
+ [\fB--with \fIOPTION\fB\fR] [\fB--without \fIOPTION\fB\fR]
 
 .SH "DESCRIPTION"
 .PP
@@ -195,6 +196,12 @@ as \fBarch-vendor-os\fR and set the macros
 \fB%_target_cpu\fR, and
 \fB%_target_os\fR
 accordingly.
+.TP
+\fB--with \fIOPTION\fB\fR
+Enable configure \fIOPTION\fR for build.
+.TP
+\fB--without \fIOPTION\fB\fR
+Disable configure \fIOPTION\fR for build.
 .SS "REBUILD AND RECOMPILE OPTIONS"
 .PP
 There are two other ways to invoke building with rpm:
