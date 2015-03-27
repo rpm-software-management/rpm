@@ -190,10 +190,14 @@ static int rpmlogDefault(FILE *stdlog, rpmlogRec rec)
         break;
     }
 
-    (void) fputs(rpmlogLevelPrefix(rec->pri), msgout);
+    if (fputs(rpmlogLevelPrefix(rec->pri), msgout) == EOF)
+	perror("Error occurred during writing of a log message");
 
-    (void) fputs(rec->message, msgout);
-    (void) fflush(msgout);
+    if (fputs(rec->message, msgout) == EOF)
+	perror("Error occurred during writing of a log message");
+
+    if (fflush(msgout) == EOF)
+	perror("Error occurred during writing of a log message");
 
     return (rec->pri <= RPMLOG_CRIT ? RPMLOG_EXIT : 0);
 }
