@@ -7,7 +7,7 @@
 #			   [[-l filelist]... [-p 'pattern'] -o debuginfo.list]
 #			   [builddir]
 #
-# The -g flag says to use strip -g instead of full strip on DSOs.
+# The -g flag says to use strip -g instead of full strip on DSOs or EXEs.
 # The --strict-build-id flag says to exit with failure status if
 # any ELF binary processed fails to contain a build-id note.
 # The -r flag says to use eu-strip --reloc-debug-sections.
@@ -23,7 +23,7 @@
 # All file names in switches are relative to builddir (. if not given).
 #
 
-# With -g arg, pass it to strip on libraries.
+# With -g arg, pass it to strip on libraries or executables.
 strip_g=false
 
 # with -r arg, pass --reloc-debug-sections to eu-strip.
@@ -100,6 +100,7 @@ strip_to_debug()
   $strip_r && r=--reloc-debug-sections
   $strip_g && case "$(file -bi "$2")" in
   application/x-sharedlib*) g=-g ;;
+  application/x-executable*) g=-g ;;
   esac
   eu-strip --remove-comment $r $g -f "$1" "$2" || exit
   chmod 444 "$1" || exit
