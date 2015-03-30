@@ -852,7 +852,7 @@ static void skipInstallFiles(const rpmts ts, rpmfiles files, rpmfs fs)
 
     /* Skip (now empty) directories that had skipped files. */
     /* Iterate over dirs in reversed order to solve subdirs at first */
-    for (j = dc; j >= 0; j--) {
+    for (j = dc - 1; j >= 0; j--) {
 	const char * dn, * bn;
 	size_t dnlen, bnlen;
 
