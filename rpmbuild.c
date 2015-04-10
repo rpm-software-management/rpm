@@ -344,6 +344,7 @@ static char * getTarSpec(const char *arg)
     for (spec = tryspec; *spec != NULL; spec++) {
 	FILE *fp;
 	char *cmd;
+	int specfiles = 0;
 
 	cmd = rpmExpand("%{uncompress: ", arg, "} | ",
 			"%{__tar} xOvof - --wildcards ", *spec,
@@ -355,12 +356,19 @@ static char * getTarSpec(const char *arg)
 	    char *fok;
 	    for (;;) {
 		fok = fgets(tarbuf, sizeof(tarbuf) - 1, fp);
+		if (!fok) break;
 		/* tar sometimes prints "tar: Record size = 16" messages */
-		if (!fok || strncmp(fok, "tar: ", 5) != 0)
-		    break;
+		if (strstr(fok, "tar: ")) {
+		    continue;
+		}
+		specfiles++;
 	    }
 	    pclose(fp);
-	    gotspec = (fok != NULL) && isSpecFile(tmpSpecFile);
+	    gotspec = (specfiles == 1) && isSpecFile(tmpSpecFile);
+	    if (specfiles > 1) {
+		rpmlog(RPMLOG_ERR, _("Found more than one spec file in %s\n"), arg);
+		goto exit;
+	    }
 	}
 
 	if (!gotspec) 
