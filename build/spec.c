@@ -239,6 +239,8 @@ rpmSpec newSpec(void)
     {
     /* make sure patches and sources tables always exist */
     rpmlua lua = NULL; /* global state */
+    rpmluaDelVar(lua, "patches");
+    rpmluaDelVar(lua, "sources");
     rpmluaPushTable(lua, "patches");
     rpmluaPushTable(lua, "sources");
     rpmluaPop(lua);

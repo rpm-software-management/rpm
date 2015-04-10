@@ -308,7 +308,7 @@ static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag
 	addMacro(spec->macros, buf, NULL, p->fullSource, RMIL_SPEC);
 	free(buf);
 #ifdef WITH_LUA
-	if (!spec->recursing) {
+	{
 	    rpmlua lua = NULL; /* global state */
 	    const char * what = (flag & RPMBUILD_ISPATCH) ? "patches" : "sources";
 	    rpmluaPushTable(lua, what);
