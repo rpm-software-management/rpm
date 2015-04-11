@@ -939,7 +939,7 @@ static struct PreambleRec_s const preambleList[] = {
     {RPMTAG_GROUP,		1, 0, LEN_AND_STR("group")},
     {RPMTAG_PACKAGER,		0, 0, LEN_AND_STR("packager")},
     {RPMTAG_URL,		0, 0, LEN_AND_STR("url")},
-    {RPMTAG_VCS,        0, 0, LEN_AND_STR("vcs")},
+    {RPMTAG_VCS,		0, 0, LEN_AND_STR("vcs")},
     {RPMTAG_SOURCE,		0, 0, LEN_AND_STR("source")},
     {RPMTAG_PATCH,		0, 0, LEN_AND_STR("patch")},
     {RPMTAG_NOSOURCE,		0, 0, LEN_AND_STR("nosource")},
