@@ -480,7 +480,7 @@ edit_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir, int phase)
   unsigned char *endcu, *endprol;
   unsigned char opcode_base;
   uint32_t value, dirt_cnt;
-  size_t comp_dir_len = strlen (comp_dir);
+  size_t comp_dir_len = !comp_dir ? 0 : strlen (comp_dir);
   size_t abs_file_cnt = 0, abs_dir_cnt = 0;
 
   if (phase != 0)
@@ -950,7 +950,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	}
     }
 
-  if (found_list_offs && comp_dir)
+  if (found_list_offs)
     edit_dwarf2_line (dso, list_offs, comp_dir, phase);
 
   free (comp_dir);
