@@ -106,7 +106,6 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
     char * N = NULL, * EVR = NULL;
     rpmTagVal nametag = RPMTAG_NOT_FOUND;
     rpmsenseFlags Flags;
-    rpmds *pdsp = NULL;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
 
     switch (tagN) {
@@ -272,17 +271,22 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	    }
 	}
 
+
 	/* Deny more "normal" triggers fired by the same pakage. File triggers are ok */
-	pdsp = packageDependencies(pkg, nametag);
-	rpmdsInit(*pdsp);
 	if (nametag == RPMTAG_TRIGGERNAME) {
+	    rpmds *pdsp = packageDependencies(pkg, nametag);
+	    rpmds newds = rpmdsSingle(nametag, N, EVR, Flags);
+	    rpmdsInit(*pdsp);
 	    while (rpmdsNext(*pdsp) >= 0) {
-		if (rstreq(rpmdsN(*pdsp), N) && ((rpmdsFlags(*pdsp) & tagflags))) {
+		if (rpmdsCompare(*pdsp, newds) && (rpmdsFlags(*pdsp) & tagflags )) {
 		    rasprintf(&emsg, _("Trigger fired by the same package "
 			"is already defined in spec file"));
-		    goto exit;
+		    break;
 		}
 	    }
+	    rpmdsFree(newds);
+	    if (emsg)
+		goto exit;
 	}
 
 	if (addReqProv(pkg, nametag, N, EVR, Flags, index)) {
