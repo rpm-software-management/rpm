@@ -9,6 +9,7 @@ if sys.version_info[0] == 3:
 else:
     _string_types = basestring,
 
+
 # TODO: migrate relevant documentation from C-side
 class TransactionSet(TransactionSetCore):
     _probFilter = 0
@@ -17,7 +18,7 @@ class TransactionSet(TransactionSetCore):
         oval = getattr(self, attr)
         setattr(self, attr, val)
         return oval
-        
+
     def setVSFlags(self, flags):
         return self._wrapSetGet('_vsflags', flags)
 
@@ -64,7 +65,7 @@ class TransactionSet(TransactionSetCore):
     def addInstall(self, item, key, how="u"):
         header = self._f2hdr(item)
 
-        if not how in ['u', 'i']:
+        if how not in ['u', 'i']:
             raise ValueError('how argument must be "u" or "i"')
         upgrade = (how == "u")
 
@@ -138,14 +139,18 @@ class TransactionSet(TransactionSetCore):
             needflags = rpm.RPMSENSE_ANY
             if len(needs) == 3:
                 needop = needs[1]
-                if needop.find('<') >= 0: needflags |= rpm.RPMSENSE_LESS
-                if needop.find('=') >= 0: needflags |= rpm.RPMSENSE_EQUAL
-                if needop.find('>') >= 0: needflags |= rpm.RPMSENSE_GREATER
+                if needop.find('<') >= 0:
+                    needflags |= rpm.RPMSENSE_LESS
+                if needop.find('=') >= 0:
+                    needflags |= rpm.RPMSENSE_EQUAL
+                if needop.find('>') >= 0:
+                    needflags |= rpm.RPMSENSE_GREATER
                 needver = needs[2]
             else:
                 needver = ""
 
-            res.append(((n, v, r),(needname,needver),needflags,sense,p.key))
+            res.append(((n, v, r),
+                        (needname, needver), needflags, sense, p.key))
 
         return res
 
