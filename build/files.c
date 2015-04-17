@@ -1712,6 +1712,7 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     const char *sdname = (sd->sdtype == RPMFILE_DOC) ? "%doc" : "%license";
     char *mkdocdir = rpmExpand("%{__mkdir_p} $", sdenv, NULL);
     StringBuf docScript = newStringBuf();
+    char **files, *file;
 
     appendStringBuf(docScript, sdenv);
     appendStringBuf(docScript, "=$RPM_BUILD_ROOT");
@@ -1746,6 +1747,15 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     dupAttrRec(&(sd->ar), &(fl->cur.ar));
     dupAttrRec(&(sd->def_ar), &(fl->def.ar));
 
+    files = sd->files;
+    while (*files != NULL) {
+	rasprintf(&file, "%s/%s", sd->dirname, *files);
+	processBinaryFile(pkg, fl, file);
+	free(file);
+	files++;
+    }
+
+    fl->cur.isDir = 1;
     (void) processBinaryFile(pkg, fl, sd->dirname);
 
     freeStringBuf(docScript);
