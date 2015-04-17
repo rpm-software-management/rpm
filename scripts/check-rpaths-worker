@@ -59,7 +59,7 @@ function showHint()
 *
 * Examples:
 * - to ignore standard and empty RPATHs, execute 'rpmbuild' like
-*   \$ QA_RPATHS=\$[ 0x0001|0x0010 ] rpmbuild my-package.src.rpm
+*   \$ QA_RPATHS=\$(( 0x0001|0x0010 )) rpmbuild my-package.src.rpm
 * - to check existing files, set \$RPM_BUILD_ROOT and execute check-rpaths like
 *   \$ RPM_BUILD_ROOT=<top-dir> /usr/lib/rpm/check-rpaths
 *  
