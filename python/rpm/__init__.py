@@ -35,7 +35,6 @@ is very useful for resolving dependencies.
 """
 
 import warnings
-import os
 from rpm._rpm import *
 from rpm.transaction import *
 import rpm._rpm as _rpm
@@ -62,10 +61,12 @@ except ImportError:
 # backwards compatibility + give the same class both ways
 ts = TransactionSet
 
+
 def headerLoad(*args, **kwds):
     """DEPRECATED! Use rpm.hdr() instead."""
     warnings.warn("Use rpm.hdr() instead.", DeprecationWarning, stacklevel=2)
     return hdr(*args, **kwds)
+
 
 def _doHeaderListFromFD(rpm_fd, retrofit):
     hlist = []
@@ -80,17 +81,20 @@ def _doHeaderListFromFD(rpm_fd, retrofit):
 
     return hlist
 
-def readHeaderListFromFD(file_desc, retrofit = True):
+
+def readHeaderListFromFD(file_desc, retrofit=True):
     if not isinstance(file_desc, fd):
         file_desc = fd(file_desc)
     return _doHeaderListFromFD(file_desc, retrofit)
-        
-def readHeaderListFromFile(path, retrofit = True):
+
+
+def readHeaderListFromFile(path, retrofit=True):
     f = fd(path)
     hlist = _doHeaderListFromFD(f, retrofit)
     f.close()
     return hlist
-    
+
+
 def readHeaderFromFD(file_desc):
     """Return (header, pos_before_hdr)"""
     if not isinstance(file_desc, fd):
@@ -104,6 +108,7 @@ def readHeaderFromFD(file_desc):
 
     return (h, offset)
 
+
 def signalsCaught(siglist):
     """Returns True if any of the signals was caught."""
     caught = []
@@ -113,7 +118,8 @@ def signalsCaught(siglist):
 
     return caught
 
-def dsSingle(TagN, N, EVR = "", Flags = RPMSENSE_ANY):
+
+def dsSingle(TagN, N, EVR="", Flags=RPMSENSE_ANY):
     """
     Creates a single entry dependency set (ds)
 
