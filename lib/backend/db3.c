@@ -852,17 +852,17 @@ rpmRC dbcCursorGet(dbiCursor dbc, const char *keyp, size_t keylen,
 	if (keyp) {
 	    key.data = (void *) keyp; /* discards const */
 	    key.size = keylen;
-
-	    if (searchType == DBC_RANGE_SEARCH)
-		cflags = DB_SET_RANGE;
-	    else
-		cflags = DB_SET;
+	    cflags = searchType == DBC_PREFIX_SEARCH ? DB_SET_RANGE : DB_SET;
 	}
 
-	dbrc = dbiCursorGet(dbc, &key, &data, cflags);
-
-	if (dbrc == 0) {
+	for (;;) {
 	    dbiIndexSet newset = NULL;
+	    dbrc = dbiCursorGet(dbc, &key, &data, cflags);
+	    if (dbrc != 0)
+		break;
+	    if (searchType == DBC_PREFIX_SEARCH &&
+		    (key.size < keylen || memcmp(key.data, keyp, keylen) != 0))
+		break;
 	    dbt2set(dbi, &data, &newset);
 	    if (*set == NULL) {
 		*set = newset;
@@ -870,6 +870,22 @@ rpmRC dbcCursorGet(dbiCursor dbc, const char *keyp, size_t keylen,
 		dbiIndexSetAppendSet(*set, newset, 0);
 		dbiIndexSetFree(newset);
 	    }
+	    if (searchType != DBC_PREFIX_SEARCH)
+		break;
+	    key.data = NULL;
+	    key.size = 0;
+	    cflags = DB_NEXT;
+	}
+
+	/* fixup result status for prefix search */
+	if (searchType == DBC_PREFIX_SEARCH) {
+	    if (dbrc == DB_NOTFOUND && *set != NULL && (*set)->count > 0)
+		dbrc = 0;
+	    else if (dbrc == 0 && (*set)->count == 0)
+		dbrc = DB_NOTFOUND;
+	}
+
+	if (dbrc == 0) {
 	    rc = RPMRC_OK;
 	} else if (dbrc == DB_NOTFOUND) {
 	    rc = RPMRC_NOTFOUND;

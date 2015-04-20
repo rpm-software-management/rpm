@@ -247,11 +247,8 @@ static rpmRC indexPrefixGet(dbiIndex dbi, const char *pfx, size_t plen,
 			    dbiIndexSet *set)
 {
     rpmRC rc = RPMRC_FAIL; /* assume failure */
-    unsigned int keylen;
-    const void *key;
 
-
-    if (dbi != NULL) {
+    if (dbi != NULL && pfx) {
 	dbiCursor dbc = dbiCursorInit(dbi, DBC_READ);
 
 	if (plen == 0) {
@@ -259,37 +256,7 @@ static rpmRC indexPrefixGet(dbiIndex dbi, const char *pfx, size_t plen,
 	    if (plen == 0)
 		plen++; /* XXX "/" fixup */
 	}
-	/*
-	 * Start searching at  position of the first db key greater than or
-	 * equal to pfx. All db keys which starts with pfx must be located
-	 * at this or at following positions.
-	 */
-	rc = dbcCursorGet(dbc, pfx, plen, set, DBC_RANGE_SEARCH);
-
-	while (1) {
-	    if (rc != RPMRC_OK)
-		break;
-
-	    key = dbiCursorKey(dbc, &keylen);
-
-	    if (keylen < plen) {
-		(*set)->count--;
-		break;
-	    }
-
-	    if (memcmp(key, pfx, plen)) {
-		(*set)->count--;
-		break;
-	    }
-
-	    rc = dbcCursorGet(dbc, NULL, 0, set, DBC_NORMAL_SEARCH);
-	}
-
-	if (rc == RPMRC_NOTFOUND && *set && (*set)->count > 0)
-	    rc = RPMRC_OK;
-
-	if (rc == RPMRC_OK && (*set)->count == 0)
-	    rc = RPMRC_NOTFOUND;
+	rc = dbcCursorGet(dbc, pfx, plen, set, DBC_PREFIX_SEARCH);
 
 	dbiCursorFree(dbc);
     }

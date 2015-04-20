@@ -73,7 +73,7 @@ enum dbcFlags_e {
 
 enum dbcSearchType_e {
     DBC_NORMAL_SEARCH   = 0,
-    DBC_RANGE_SEARCH    = (1 << 0),
+    DBC_PREFIX_SEARCH   = (1 << 0),
 };
 
 /** \ingroup dbi
