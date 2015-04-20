@@ -100,7 +100,7 @@ extern "C" {
 
 RPM_GNUC_INTERNAL
 /* Globally enable/disable fsync in the backend */
-void dbSetFSync(void *dbenv, int enable);
+void dbSetFSync(rpmdb rdb, int enable);
 
 /** \ingroup dbi
  * Return new configured index database handle instance.

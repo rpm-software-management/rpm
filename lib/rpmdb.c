@@ -75,7 +75,7 @@ static int buildIndexes(rpmdb db)
     /* Don't call us again */
     db->db_buildindex = 0;
 
-    dbSetFSync(db->db_dbenv, 0);
+    dbSetFSync(db, 0);
 
     mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
     while ((h = rpmdbNextIterator(mi))) {
@@ -89,7 +89,7 @@ static int buildIndexes(rpmdb db)
 	}
     }
     rpmdbFreeIterator(mi);
-    dbSetFSync(db->db_dbenv, !db->cfg.db_no_fsync);
+    dbSetFSync(db, !db->cfg.db_no_fsync);
     return rc;
 }
 
@@ -154,7 +154,7 @@ static int pkgdbOpen(rpmdb db, int flags, dbiIndex *dbip)
 	if ((!verifyonly && (dbiFlags(dbi) & DBI_CREATED)) || db->cfg.db_no_fsync) {
 	    rpmlog(RPMLOG_DEBUG, "disabling fsync on database\n");
 	    db->cfg.db_no_fsync = 1;
-	    dbSetFSync(db->db_dbenv, 0);
+	    dbSetFSync(db, 0);
 	}
     } else {
 	rpmlog(RPMLOG_ERR, _("cannot open %s index using %s - %s (%d)\n"),
@@ -455,7 +455,7 @@ int rpmdbClose(rpmdb db)
 
     /* Always re-enable fsync on close of rw-database */
     if ((db->db_mode & O_ACCMODE) != O_RDONLY)
-	dbSetFSync(db->db_dbenv, 1);
+	dbSetFSync(db, 1);
 
     if (db->db_pkgs)
 	rc = dbiClose(db->db_pkgs, 0);

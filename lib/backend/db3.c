@@ -288,7 +288,7 @@ errxit:
     return rc;
 }
 
-void dbSetFSync(void *dbenv, int enable)
+void dbSetFSync(rpmdb rdb, int enable)
 {
 #ifdef HAVE_FDATASYNC
     db_env_set_func_fsync(enable ? fdatasync : fsync_disable);
