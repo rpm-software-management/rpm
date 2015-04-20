@@ -447,7 +447,7 @@ static int dbiCursorDel(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags
     return rc;
 }
 
-const void * dbiCursorKey(dbiCursor dbc, unsigned int *keylen)
+const void * idxdbKey(dbiCursor dbc, unsigned int *keylen)
 {
     const void *key = NULL;
     if (dbc) {
@@ -837,7 +837,7 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
     return 0;
 }
 
-rpmRC dbcCursorGet(dbiCursor dbc, const char *keyp, size_t keylen,
+rpmRC idxdbGet(dbiCursor dbc, const char *keyp, size_t keylen,
 			  dbiIndexSet *set, int searchType)
 {
     rpmRC rc = RPMRC_FAIL; /* assume failure */
@@ -945,8 +945,8 @@ static rpmRC updateIndex(dbiCursor dbc, const char *keyp, unsigned int keylen,
     return rc;
 }
 
-rpmRC dbcCursorPut(dbiCursor dbc, const char *keyp, size_t keylen,
-		   dbiIndexItem rec)
+rpmRC idxdbPut(dbiCursor dbc, const char *keyp, size_t keylen,
+	       dbiIndexItem rec)
 {
     dbiIndexSet set = NULL;
     rpmRC rc;
@@ -955,7 +955,7 @@ rpmRC dbcCursorPut(dbiCursor dbc, const char *keyp, size_t keylen,
 	keyp = "";
 	keylen++;
     }
-    rc = dbcCursorGet(dbc, keyp, keylen, &set, DBC_NORMAL_SEARCH);
+    rc = idxdbGet(dbc, keyp, keylen, &set, DBC_NORMAL_SEARCH);
 
     /* Not found means a new key and is not an error. */
     if (rc && rc != RPMRC_NOTFOUND)
@@ -971,8 +971,8 @@ rpmRC dbcCursorPut(dbiCursor dbc, const char *keyp, size_t keylen,
     return rc;
 }
 
-rpmRC dbcCursorDel(dbiCursor dbc, const char *keyp, size_t keylen,
-		   dbiIndexItem rec)
+rpmRC idxdbDel(dbiCursor dbc, const char *keyp, size_t keylen,
+	       dbiIndexItem rec)
 {
     dbiIndexSet set = NULL;
     rpmRC rc;
@@ -981,7 +981,7 @@ rpmRC dbcCursorDel(dbiCursor dbc, const char *keyp, size_t keylen,
 	keyp = "";
 	keylen++;
     }
-    rc = dbcCursorGet(dbc, keyp, keylen, &set, DBC_NORMAL_SEARCH);
+    rc = idxdbGet(dbc, keyp, keylen, &set, DBC_NORMAL_SEARCH);
     if (rc)
 	return rc;
 

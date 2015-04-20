@@ -224,10 +224,10 @@ static rpmRC indexGet(dbiIndex dbi, const char *keyp, size_t keylen,
 	if (keyp) {
 	    if (keylen == 0)
 		keylen = strlen(keyp);
-	    rc = dbcCursorGet(dbc, keyp, keylen, set, DBC_NORMAL_SEARCH);
+	    rc = idxdbGet(dbc, keyp, keylen, set, DBC_NORMAL_SEARCH);
 	} else {
 	    do {
-		rc = dbcCursorGet(dbc, NULL, 0, set, DBC_NORMAL_SEARCH);
+		rc = idxdbGet(dbc, NULL, 0, set, DBC_NORMAL_SEARCH);
 	    } while (rc == RPMRC_OK);
 
 	    /* If we got some results, not found is not an error */
@@ -250,7 +250,7 @@ static rpmRC indexPrefixGet(dbiIndex dbi, const char *pfx, size_t plen,
 
 	if (plen == 0)
 	    plen = strlen(pfx);
-	rc = dbcCursorGet(dbc, pfx, plen, set, DBC_PREFIX_SEARCH);
+	rc = idxdbGet(dbc, pfx, plen, set, DBC_PREFIX_SEARCH);
 
 	dbiCursorFree(dbc);
     }
@@ -1955,9 +1955,9 @@ int rpmdbIndexIteratorNext(rpmdbIndexIterator ii, const void ** key, size_t * ke
     /* free old data */
     ii->ii_set = dbiIndexSetFree(ii->ii_set);
 
-    rc = dbcCursorGet(ii->ii_dbc, NULL, 0, &ii->ii_set, DBC_NORMAL_SEARCH);
+    rc = idxdbGet(ii->ii_dbc, NULL, 0, &ii->ii_set, DBC_NORMAL_SEARCH);
 
-    *key = dbiCursorKey(ii->ii_dbc, &iikeylen);
+    *key = idxdbKey(ii->ii_dbc, &iikeylen);
     *keylen = iikeylen;
 
     return (rc == RPMRC_OK) ? 0 : -1;
@@ -2093,7 +2093,7 @@ static void logAddRemove(const char *dbiname, int removing, rpmtd tagdata)
 
 static rpmRC indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
 {
-    return tag2index(dbi, rpmtag, hdrNum, h, dbcCursorDel);
+    return tag2index(dbi, rpmtag, hdrNum, h, idxdbDel);
 }
 
 int rpmdbRemove(rpmdb db, unsigned int hdrNum)
@@ -2314,7 +2314,7 @@ exit:
 
 static rpmRC indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
 {
-    return tag2index(dbi, rpmtag, hdrNum, h, dbcCursorPut);
+    return tag2index(dbi, rpmtag, hdrNum, h, idxdbPut);
 }
 
 int rpmdbAdd(rpmdb db, Header h)
