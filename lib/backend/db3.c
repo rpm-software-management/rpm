@@ -971,8 +971,7 @@ rpmRC dbcCursorDel(dbiCursor dbc, const char *keyp, size_t keylen,
 
 /* Update primary Packages index. NULL hdr means remove */
 static int updatePackages(dbiIndex dbi, dbiCursor dbc,
-			  unsigned int hdrNum, DBT *hdr,
-			  unsigned int *hdrOffset)
+			  unsigned int hdrNum, DBT *hdr)
 {
     union _dbswap mi_offset;
     int rc = 0;
@@ -994,9 +993,6 @@ static int updatePackages(dbiIndex dbi, dbiCursor dbc,
 	if (rc) {
 	    rpmlog(RPMLOG_ERR,
 		   _("error(%d) adding header #%d record\n"), rc, hdrNum);
-	} else {
-	    if (hdrOffset)
-		*hdrOffset = hdrNum;
 	}
     } else {
 	DBT data;
@@ -1070,21 +1066,18 @@ static unsigned int pkgInstance(dbiIndex dbi, int alloc)
 }
 
 int pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum,
-	     unsigned char *hdrBlob, unsigned int hdrLen,
-	     unsigned int *hdrOffset)
+	     unsigned char *hdrBlob, unsigned int hdrLen)
 {
     DBT hdr;
     memset(&hdr, 0, sizeof(hdr));
     hdr.data = hdrBlob;
     hdr.size = hdrLen;
-    if (hdrNum == 0)
-	hdrNum = pkgInstance(dbi, 1);
-    return updatePackages(dbi, dbc, hdrNum, &hdr, hdrOffset);
+    return updatePackages(dbi, dbc, hdrNum, &hdr);
 }
 
 int pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
 {
-    return updatePackages(dbi, dbc, hdrNum, NULL, NULL);
+    return updatePackages(dbi, dbc, hdrNum, NULL);
 }
 
 int pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
@@ -1129,3 +1122,14 @@ int pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
     return rc;
 }
 
+int pkgdbNew(dbiIndex dbi, dbiCursor dbc, unsigned int *hdrNum)
+{
+    unsigned int num;
+    if (dbi == NULL || dbc == NULL)
+	return 1;
+    num = pkgInstance(dbi, 1);
+    if (!num)
+	return 1;
+    *hdrNum = num;
+    return 0;
+}

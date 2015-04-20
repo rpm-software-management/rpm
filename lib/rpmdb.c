@@ -1077,7 +1077,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 
 	    blockSignals(&signalMask);
 	    rc = pkgdbPut(dbi, mi->mi_dbc, mi->mi_prevoffset,
-			  hdrBlob, hdrLen, NULL);
+			  hdrBlob, hdrLen);
 	    unblockSignals(&signalMask);
 
 	    if (rc) {
@@ -2385,7 +2385,9 @@ int rpmdbAdd(rpmdb db, Header h)
 
     /* Add header to primary index */
     dbc = dbiCursorInit(dbi, DBC_WRITE);
-    ret = pkgdbPut(dbi, dbc, 0, hdrBlob, hdrLen, &hdrNum);
+    ret = pkgdbNew(dbi, dbc, &hdrNum);
+    if (ret == 0)
+	ret = pkgdbPut(dbi, dbc, hdrNum, hdrBlob, hdrLen);
     dbiCursorFree(dbc);
 
     /* Add associated data to secondary indexes */
