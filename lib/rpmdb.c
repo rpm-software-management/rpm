@@ -222,11 +222,8 @@ static rpmRC indexGet(dbiIndex dbi, const char *keyp, size_t keylen,
 	dbiCursor dbc = dbiCursorInit(dbi, DBC_READ);
 
 	if (keyp) {
-	    if (keylen == 0) {
+	    if (keylen == 0)
 		keylen = strlen(keyp);
-		if (keylen == 0)
-		    keylen++; /* XXX "/" fixup */
-	    }
 	    rc = dbcCursorGet(dbc, keyp, keylen, set, DBC_NORMAL_SEARCH);
 	} else {
 	    do {
@@ -251,11 +248,8 @@ static rpmRC indexPrefixGet(dbiIndex dbi, const char *pfx, size_t plen,
     if (dbi != NULL && pfx) {
 	dbiCursor dbc = dbiCursorInit(dbi, DBC_READ);
 
-	if (plen == 0) {
+	if (plen == 0)
 	    plen = strlen(pfx);
-	    if (plen == 0)
-		plen++; /* XXX "/" fixup */
-	}
 	rc = dbcCursorGet(dbc, pfx, plen, set, DBC_PREFIX_SEARCH);
 
 	dbiCursorFree(dbc);
@@ -1905,8 +1899,6 @@ static const void * td2key(rpmtd tagdata, unsigned int *keylen)
 	str = rpmtdGetString(tagdata);
 	if (str) {
 	    size = strlen(str);
-	    if (size == 0)
-		size++; /* fixup for empty strings */
 	    data = str;
 	}
 	break;
