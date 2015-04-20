@@ -1113,8 +1113,7 @@ int pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
 }
 
 int pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
-	     unsigned char **hdrBlob, unsigned int *hdrLen,
-	     unsigned int *hdrOffset)
+	     unsigned char **hdrBlob, unsigned int *hdrLen)
 {
     DBT key, data;
     union _dbswap mi_offset;
@@ -1143,15 +1142,21 @@ int pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
 	    *hdrBlob = data.data;
 	if (hdrLen)
 	    *hdrLen = data.size;
-	if (hdrOffset) {
-	    memcpy(&mi_offset, key.data, sizeof(mi_offset.ui));
-	    if (dbiByteSwapped(dbi) == 1)
-		_DBSWAP(mi_offset);
-	    *hdrOffset = mi_offset.ui;
-	}
     }
 
     return rc;
+}
+
+unsigned int pkgdbKey(dbiIndex dbi, dbiCursor dbc)
+{
+    union _dbswap mi_offset;
+
+    if (dbi == NULL || dbc == NULL || dbc->key == NULL)
+	return 0;
+    memcpy(&mi_offset, dbc->key, sizeof(mi_offset.ui));
+    if (dbiByteSwapped(dbi) == 1)
+	_DBSWAP(mi_offset);
+    return mi_offset.ui;
 }
 
 int pkgdbNew(dbiIndex dbi, dbiCursor dbc, unsigned int *hdrNum)

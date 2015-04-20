@@ -1547,7 +1547,9 @@ top:
 	    mi->mi_offset = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
 	    mi->mi_filenum = dbiIndexRecordFileNumber(mi->mi_set, mi->mi_setx);
 	} else {
-	    rc = pkgdbGet(dbi, mi->mi_dbc, 0, &uh, &uhlen, &mi->mi_offset);
+	    rc = pkgdbGet(dbi, mi->mi_dbc, 0, &uh, &uhlen);
+	    if (rc == 0)
+		mi->mi_offset = pkgdbKey(dbi, mi->mi_dbc);
 
 	    /* Terminate on error or end of keys */
 	    if (rc || (mi->mi_setx && mi->mi_offset == 0))
@@ -1562,7 +1564,7 @@ top:
 
     /* Retrieve next header blob for index iterator. */
     if (uh == NULL) {
-	rc = pkgdbGet(dbi, mi->mi_dbc, mi->mi_offset, &uh, &uhlen, NULL);
+	rc = pkgdbGet(dbi, mi->mi_dbc, mi->mi_offset, &uh, &uhlen);
 	if (rc)
 	    return NULL;
     }
