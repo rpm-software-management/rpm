@@ -2140,6 +2140,7 @@ static rpmRC indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Heade
 int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 {
     dbiIndex dbi = NULL;
+    dbiCursor dbc = NULL;
     Header h;
     sigset_t signalMask;
     int ret = 0;
@@ -2165,7 +2166,9 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
     (void) blockSignals(&signalMask);
 
     /* Remove header from primary index */
-    ret = pkgdbDel(dbi, NULL, hdrNum);
+    dbc = dbiCursorInit(dbi, DBC_WRITE);
+    ret = pkgdbDel(dbi, dbc, hdrNum);
+    dbiCursorFree(dbc);
 
     /* Remove associated data from secondary indexes */
     if (ret == 0) {
@@ -2359,6 +2362,7 @@ int rpmdbAdd(rpmdb db, Header h)
 {
     sigset_t signalMask;
     dbiIndex dbi = NULL;
+    dbiCursor dbc = NULL;
     unsigned int hdrNum = 0;
     unsigned int hdrLen = 0;
     unsigned char *hdrBlob = NULL;
@@ -2380,7 +2384,9 @@ int rpmdbAdd(rpmdb db, Header h)
     (void) blockSignals(&signalMask);
 
     /* Add header to primary index */
-    ret = pkgdbPut(dbi, NULL, 0, hdrBlob, hdrLen, &hdrNum);
+    dbc = dbiCursorInit(dbi, DBC_WRITE);
+    ret = pkgdbPut(dbi, dbc, 0, hdrBlob, hdrLen, &hdrNum);
+    dbiCursorFree(dbc);
 
     /* Add associated data to secondary indexes */
     if (ret == 0) {	

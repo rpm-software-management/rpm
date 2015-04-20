@@ -970,22 +970,18 @@ rpmRC dbcCursorDel(dbiCursor dbc, const char *keyp, size_t keylen,
 }
 
 /* Update primary Packages index. NULL hdr means remove */
-static int updatePackages(dbiIndex dbi, dbiCursor cursor,
+static int updatePackages(dbiIndex dbi, dbiCursor dbc,
 			  unsigned int hdrNum, DBT *hdr,
 			  unsigned int *hdrOffset)
 {
     union _dbswap mi_offset;
     int rc = 0;
-    dbiCursor dbc = cursor;;
     DBT key;
 
-    if (dbi == NULL || hdrNum == 0)
+    if (dbi == NULL || dbc == NULL || hdrNum == 0)
 	return 1;
 
     memset(&key, 0, sizeof(key));
-
-    if (dbc == NULL)
-	dbc = dbiCursorInit(dbi, DBC_WRITE);
 
     mi_offset.ui = hdrNum;
     if (dbiByteSwapped(dbi) == 1)
@@ -1013,10 +1009,6 @@ static int updatePackages(dbiIndex dbi, dbiCursor cursor,
 	} else
 	    rc = dbiCursorDel(dbc, &key, &data, 0);
     }
-
-    /* only free the cursor if we created it here */
-    if (dbc != cursor)
-	dbiCursorFree(dbc);
 
     return rc;
 }
