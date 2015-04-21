@@ -235,6 +235,21 @@ dbiIndex dbiNew(rpmdb rdb, rpmDbiTagVal rpmtag)
     return dbi;
 }
 
+dbiIndexType dbiType(dbiIndex dbi)
+{
+    return dbi->dbi_type;
+}
+
+const char * dbiName(dbiIndex dbi)
+{
+    return dbi->dbi_file;
+}
+
+int dbiFlags(dbiIndex dbi)
+{
+    return dbi->dbi_flags;
+}
+
 char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 {
     ARGV_t flags = NULL;

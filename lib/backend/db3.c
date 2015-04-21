@@ -322,7 +322,7 @@ dbiCursor dbiCursorInit(dbiIndex dbi, unsigned int flags)
 	
        /* DB_WRITECURSOR requires CDB and writable db */
 	if ((flags & DBC_WRITE) &&
-	    (eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
+	    (eflags & DB_INIT_CDB) && !(dbi->dbi_flags & DBI_RDONLY))
 	{
 	    cflags = DB_WRITECURSOR;
 	} else
@@ -473,31 +473,6 @@ static int dbiByteSwapped(dbiIndex dbi)
 	    dbi->dbi_byteswapped = rc = isswapped;
     }
     return rc;
-}
-
-dbiIndexType dbiType(dbiIndex dbi)
-{
-    return dbi->dbi_type;
-}
-
-int dbiFlags(dbiIndex dbi)
-{
-    DB *db = dbi->dbi_db;
-    int flags = DBI_NONE;
-    uint32_t oflags = 0;
-
-    if (db && db->get_open_flags(db, &oflags) == 0) {
-	if (oflags & DB_CREATE)
-	    flags |= DBI_CREATED;
-	if (oflags & DB_RDONLY)
-	    flags |= DBI_RDONLY;
-    }
-    return flags;
-}
-
-const char * dbiName(dbiIndex dbi)
-{
-    return dbi->dbi_file;
 }
 
 int dbiVerify(dbiIndex dbi, unsigned int flags)
@@ -686,6 +661,12 @@ int dbiOpen(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 
     dbi->dbi_db = db;
     dbi->dbi_oflags = oflags;
+
+    dbi->dbi_flags = 0;
+    if (oflags & DB_CREATE)
+	dbi->dbi_flags |= DBI_CREATED;
+    if (oflags & DB_RDONLY)
+	dbi->dbi_flags |= DBI_RDONLY;
 
     if (!verifyonly && rc == 0 && dbi->dbi_lockdbfd && _lockdbfd++ == 0) {
 	rc = dbiFlock(dbi, rdb->db_mode);

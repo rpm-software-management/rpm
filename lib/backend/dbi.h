@@ -81,6 +81,7 @@ enum dbcSearchType_e {
  */
 struct dbiIndex_s {
     const char * dbi_file;	/*!< file component of path */
+    int dbi_flags;
 
     int	dbi_oflags;		/*!< db->open flags */
     int	dbi_no_dbsync;		/*!< don't call dbiSync */
