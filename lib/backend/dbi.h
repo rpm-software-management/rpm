@@ -189,33 +189,33 @@ dbiCursor dbiCursorInit(dbiIndex dbi, unsigned int flags);
  * @return		NULL always
  */
 RPM_GNUC_INTERNAL
-dbiCursor dbiCursorFree(dbiCursor dbc);
+dbiCursor dbiCursorFree(dbiIndex dbi, dbiCursor dbc);
 
 
 RPM_GNUC_INTERNAL
-rpmRC pkgdbPut(dbiCursor dbc,  unsigned int hdrNum,
-             unsigned char *hdrBlob, unsigned int hdrLen);
+rpmRC pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum,
+               unsigned char *hdrBlob, unsigned int hdrLen);
 RPM_GNUC_INTERNAL
-rpmRC pkgdbDel(dbiCursor dbc,  unsigned int hdrNum);
+rpmRC pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum);
 RPM_GNUC_INTERNAL
-rpmRC pkgdbGet(dbiCursor dbc, unsigned int hdrNum,
-             unsigned char **hdrBlob, unsigned int *hdrLen);
+rpmRC pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
+               unsigned char **hdrBlob, unsigned int *hdrLen);
 RPM_GNUC_INTERNAL
-rpmRC pkgdbNew(dbiCursor dbc,  unsigned int *hdrNum);
+rpmRC pkgdbNew(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum);
 RPM_GNUC_INTERNAL
-unsigned int pkgdbKey(dbiCursor dbc);
+unsigned int pkgdbKey(dbiIndex dbi, dbiCursor dbc);
 
 RPM_GNUC_INTERNAL
-rpmRC idxdbGet(dbiCursor dbc, const char *keyp, size_t keylen,
+rpmRC idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
                dbiIndexSet *set, int curFlags);
 RPM_GNUC_INTERNAL
-rpmRC idxdbPut(dbiCursor dbc, const char *keyp, size_t keylen,
+rpmRC idxdbPut(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
                dbiIndexItem rec);
 RPM_GNUC_INTERNAL
-rpmRC idxdbDel(dbiCursor dbc, const char *keyp, size_t keylen,
+rpmRC idxdbDel(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
                dbiIndexItem rec);
 RPM_GNUC_INTERNAL
-const void * idxdbKey(dbiCursor dbc, unsigned int *keylen);
+const void * idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen);
 
 #ifdef __cplusplus
 }

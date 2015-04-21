@@ -357,7 +357,7 @@ dbiCursor dbiCursorInit(dbiIndex dbi, unsigned int flags)
     return dbc;
 }
 
-dbiCursor dbiCursorFree(dbiCursor dbc)
+dbiCursor dbiCursorFree(dbiIndex dbi, dbiCursor dbc)
 {
     if (dbc) {
 	/* Automatically sync on write-cursor close */
@@ -768,12 +768,11 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
     return 0;
 }
 
-rpmRC idxdbGet(dbiCursor dbc, const char *keyp, size_t keylen,
+rpmRC idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
 			  dbiIndexSet *set, int searchType)
 {
     rpmRC rc = RPMRC_FAIL; /* assume failure */
-    if (dbc != NULL && set != NULL) {
-	dbiIndex dbi = dbc->dbi;
+    if (dbi != NULL && dbc != NULL && set != NULL) {
 	int cflags = DB_NEXT;
 	int dbrc;
 	DBT data, key;
@@ -876,7 +875,7 @@ static rpmRC updateIndex(dbiCursor dbc, const char *keyp, unsigned int keylen,
     return rc;
 }
 
-rpmRC idxdbPut(dbiCursor dbc, const char *keyp, size_t keylen,
+rpmRC idxdbPut(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
 	       dbiIndexItem rec)
 {
     dbiIndexSet set = NULL;
@@ -886,7 +885,7 @@ rpmRC idxdbPut(dbiCursor dbc, const char *keyp, size_t keylen,
 	keyp = "";
 	keylen++;
     }
-    rc = idxdbGet(dbc, keyp, keylen, &set, DBC_NORMAL_SEARCH);
+    rc = idxdbGet(dbi, dbc, keyp, keylen, &set, DBC_NORMAL_SEARCH);
 
     /* Not found means a new key and is not an error. */
     if (rc && rc != RPMRC_NOTFOUND)
@@ -902,7 +901,7 @@ rpmRC idxdbPut(dbiCursor dbc, const char *keyp, size_t keylen,
     return rc;
 }
 
-rpmRC idxdbDel(dbiCursor dbc, const char *keyp, size_t keylen,
+rpmRC idxdbDel(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
 	       dbiIndexItem rec)
 {
     dbiIndexSet set = NULL;
@@ -912,7 +911,7 @@ rpmRC idxdbDel(dbiCursor dbc, const char *keyp, size_t keylen,
 	keyp = "";
 	keylen++;
     }
-    rc = idxdbGet(dbc, keyp, keylen, &set, DBC_NORMAL_SEARCH);
+    rc = idxdbGet(dbi, dbc, keyp, keylen, &set, DBC_NORMAL_SEARCH);
     if (rc)
 	return rc;
 
@@ -932,7 +931,7 @@ rpmRC idxdbDel(dbiCursor dbc, const char *keyp, size_t keylen,
     return rc;
 }
 
-const void * idxdbKey(dbiCursor dbc, unsigned int *keylen)
+const void * idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen)
 {
     const void *key = NULL;
     if (dbc) {
@@ -1033,14 +1032,14 @@ static unsigned int pkgInstance(dbiIndex dbi, int alloc)
 		    _("error(%d) allocating new package instance\n"), ret);
 	    }
 	}
-	dbiCursorFree(dbc);
+	dbiCursorFree(dbi, dbc);
     }
     
     return hdrNum;
 }
 
-rpmRC pkgdbPut(dbiCursor dbc,  unsigned int hdrNum,
-	     unsigned char *hdrBlob, unsigned int hdrLen)
+rpmRC pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum,
+               unsigned char *hdrBlob, unsigned int hdrLen)
 {
     DBT hdr;
     memset(&hdr, 0, sizeof(hdr));
@@ -1049,12 +1048,12 @@ rpmRC pkgdbPut(dbiCursor dbc,  unsigned int hdrNum,
     return updatePackages(dbc, hdrNum, &hdr);
 }
 
-rpmRC pkgdbDel(dbiCursor dbc,  unsigned int hdrNum)
+rpmRC pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
 {
     return updatePackages(dbc, hdrNum, NULL);
 }
 
-rpmRC pkgdbGet(dbiCursor dbc, unsigned int hdrNum,
+rpmRC pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
 	     unsigned char **hdrBlob, unsigned int *hdrLen)
 {
     DBT key, data;
@@ -1091,7 +1090,7 @@ rpmRC pkgdbGet(dbiCursor dbc, unsigned int hdrNum,
 	return RPMRC_FAIL;
 }
 
-unsigned int pkgdbKey(dbiCursor dbc)
+unsigned int pkgdbKey(dbiIndex dbi, dbiCursor dbc)
 {
     union _dbswap mi_offset;
 
@@ -1103,7 +1102,7 @@ unsigned int pkgdbKey(dbiCursor dbc)
     return mi_offset.ui;
 }
 
-rpmRC pkgdbNew(dbiCursor dbc, unsigned int *hdrNum)
+rpmRC pkgdbNew(dbiIndex dbi, dbiCursor dbc, unsigned int *hdrNum)
 {
     unsigned int num;
     if (dbc == NULL)

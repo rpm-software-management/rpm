@@ -47,7 +47,7 @@
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
-typedef rpmRC (*idxfunc)(dbiCursor dbc, const char *keyp, size_t keylen,
+typedef rpmRC (*idxfunc)(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
 			 dbiIndexItem rec);
 
 static rpmRC tag2index(dbiIndex dbi, rpmTagVal rpmtag,
@@ -224,10 +224,10 @@ static rpmRC indexGet(dbiIndex dbi, const char *keyp, size_t keylen,
 	if (keyp) {
 	    if (keylen == 0)
 		keylen = strlen(keyp);
-	    rc = idxdbGet(dbc, keyp, keylen, set, DBC_NORMAL_SEARCH);
+	    rc = idxdbGet(dbi, dbc, keyp, keylen, set, DBC_NORMAL_SEARCH);
 	} else {
 	    do {
-		rc = idxdbGet(dbc, NULL, 0, set, DBC_NORMAL_SEARCH);
+		rc = idxdbGet(dbi, dbc, NULL, 0, set, DBC_NORMAL_SEARCH);
 	    } while (rc == RPMRC_OK);
 
 	    /* If we got some results, not found is not an error */
@@ -235,7 +235,7 @@ static rpmRC indexGet(dbiIndex dbi, const char *keyp, size_t keylen,
 		rc = RPMRC_OK;
 	}
 
-	dbiCursorFree(dbc);
+	dbiCursorFree(dbi, dbc);
     }
     return rc;
 }
@@ -250,9 +250,9 @@ static rpmRC indexPrefixGet(dbiIndex dbi, const char *pfx, size_t plen,
 
 	if (plen == 0)
 	    plen = strlen(pfx);
-	rc = idxdbGet(dbc, pfx, plen, set, DBC_PREFIX_SEARCH);
+	rc = idxdbGet(dbi, dbc, pfx, plen, set, DBC_PREFIX_SEARCH);
 
-	dbiCursorFree(dbc);
+	dbiCursorFree(dbi, dbc);
     }
     return rc;
 }
@@ -1037,7 +1037,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	    sigset_t signalMask;
 
 	    blockSignals(&signalMask);
-	    rc = pkgdbPut(mi->mi_dbc, mi->mi_prevoffset,
+	    rc = pkgdbPut(dbi, mi->mi_dbc, mi->mi_prevoffset,
 			  hdrBlob, hdrLen);
 	    unblockSignals(&signalMask);
 
@@ -1076,7 +1076,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 
     miFreeHeader(mi, dbi);
 
-    mi->mi_dbc = dbiCursorFree(mi->mi_dbc);
+    mi->mi_dbc = dbiCursorFree(dbi, mi->mi_dbc);
 
     if (mi->mi_re != NULL)
     for (i = 0; i < mi->mi_nre; i++) {
@@ -1547,9 +1547,9 @@ top:
 	    mi->mi_offset = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
 	    mi->mi_filenum = dbiIndexRecordFileNumber(mi->mi_set, mi->mi_setx);
 	} else {
-	    rc = pkgdbGet(mi->mi_dbc, 0, &uh, &uhlen);
+	    rc = pkgdbGet(dbi, mi->mi_dbc, 0, &uh, &uhlen);
 	    if (rc == 0)
-		mi->mi_offset = pkgdbKey(mi->mi_dbc);
+		mi->mi_offset = pkgdbKey(dbi, mi->mi_dbc);
 
 	    /* Terminate on error or end of keys */
 	    if (rc || (mi->mi_setx && mi->mi_offset == 0))
@@ -1564,7 +1564,7 @@ top:
 
     /* Retrieve next header blob for index iterator. */
     if (uh == NULL) {
-	rc = pkgdbGet(mi->mi_dbc, mi->mi_offset, &uh, &uhlen);
+	rc = pkgdbGet(dbi, mi->mi_dbc, mi->mi_offset, &uh, &uhlen);
 	if (rc)
 	    return NULL;
     }
@@ -1957,9 +1957,9 @@ int rpmdbIndexIteratorNext(rpmdbIndexIterator ii, const void ** key, size_t * ke
     /* free old data */
     ii->ii_set = dbiIndexSetFree(ii->ii_set);
 
-    rc = idxdbGet(ii->ii_dbc, NULL, 0, &ii->ii_set, DBC_NORMAL_SEARCH);
+    rc = idxdbGet(ii->ii_dbi, ii->ii_dbc, NULL, 0, &ii->ii_set, DBC_NORMAL_SEARCH);
 
-    *key = idxdbKey(ii->ii_dbc, &iikeylen);
+    *key = idxdbKey(ii->ii_dbi, ii->ii_dbc, &iikeylen);
     *keylen = iikeylen;
 
     return (rc == RPMRC_OK) ? 0 : -1;
@@ -2067,7 +2067,7 @@ rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii)
         next->ii_next = NULL;
     }
 
-    ii->ii_dbc = dbiCursorFree(ii->ii_dbc);
+    ii->ii_dbc = dbiCursorFree(ii->ii_dbi, ii->ii_dbc);
     ii->ii_dbi = NULL;
     rpmdbClose(ii->ii_db);
     ii->ii_set = dbiIndexSetFree(ii->ii_set);
@@ -2128,8 +2128,8 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 
     /* Remove header from primary index */
     dbc = dbiCursorInit(dbi, DBC_WRITE);
-    ret = pkgdbDel(dbc, hdrNum);
-    dbiCursorFree(dbc);
+    ret = pkgdbDel(dbi, dbc, hdrNum);
+    dbiCursorFree(dbi, dbc);
 
     /* Remove associated data from secondary indexes */
     if (ret == 0) {
@@ -2202,7 +2202,7 @@ static rpmRC updateRichDepCB(void *cbdata, rpmrichParseType type,
     return RPMRC_OK;
 }
 
-static rpmRC updateRichDep(dbiCursor dbc, const char *str,
+static rpmRC updateRichDep(dbiIndex dbi, dbiCursor dbc, const char *str,
                            struct dbiIndexItem_s *rec,
                            idxfunc idxupdate)
 {
@@ -2224,7 +2224,7 @@ static rpmRC updateRichDep(dbiCursor dbc, const char *str,
 		    continue;       /* ignore dups */
 		if (*name == ' ')
 		    name++;
-		rc += idxupdate(dbc, name, strlen(name), rec);
+		rc += idxupdate(dbi, dbc, name, strlen(name), rec);
 	    }
 	}
     }
@@ -2298,16 +2298,16 @@ static rpmRC tag2index(dbiIndex dbi, rpmTagVal rpmtag,
 	if ((key = td2key(&tagdata, &keylen)) == NULL)
 	    continue;
 
-	rc += idxupdate(dbc, key, keylen, &rec);
+	rc += idxupdate(dbi, dbc, key, keylen, &rec);
 
 	if ((rpmtag == RPMTAG_REQUIRENAME || rpmtag == RPMTAG_CONFLICTNAME) && *(char *)key == '(') {
 	    if (rpmtdType(&tagdata) == RPM_STRING_ARRAY_TYPE) {
-		rc += updateRichDep(dbc, rpmtdGetString(&tagdata), &rec, idxupdate);
+		rc += updateRichDep(dbi, dbc, rpmtdGetString(&tagdata), &rec, idxupdate);
 	    }
 	}
     }
 
-    dbiCursorFree(dbc);
+    dbiCursorFree(dbi, dbc);
 
 exit:
     rpmtdFreeData(&tagdata);
@@ -2346,10 +2346,10 @@ int rpmdbAdd(rpmdb db, Header h)
 
     /* Add header to primary index */
     dbc = dbiCursorInit(dbi, DBC_WRITE);
-    ret = pkgdbNew(dbc, &hdrNum);
+    ret = pkgdbNew(dbi, dbc, &hdrNum);
     if (ret == 0)
-	ret = pkgdbPut(dbc, hdrNum, hdrBlob, hdrLen);
-    dbiCursorFree(dbc);
+	ret = pkgdbPut(dbi, dbc, hdrNum, hdrBlob, hdrLen);
+    dbiCursorFree(dbi, dbc);
 
     /* Add associated data to secondary indexes */
     if (ret == 0) {	
