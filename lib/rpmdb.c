@@ -1037,7 +1037,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	    sigset_t signalMask;
 
 	    blockSignals(&signalMask);
-	    rc = pkgdbPut(dbi, mi->mi_dbc, mi->mi_prevoffset,
+	    rc = pkgdbPut(mi->mi_dbc, mi->mi_prevoffset,
 			  hdrBlob, hdrLen);
 	    unblockSignals(&signalMask);
 
@@ -1547,9 +1547,9 @@ top:
 	    mi->mi_offset = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
 	    mi->mi_filenum = dbiIndexRecordFileNumber(mi->mi_set, mi->mi_setx);
 	} else {
-	    rc = pkgdbGet(dbi, mi->mi_dbc, 0, &uh, &uhlen);
+	    rc = pkgdbGet(mi->mi_dbc, 0, &uh, &uhlen);
 	    if (rc == 0)
-		mi->mi_offset = pkgdbKey(dbi, mi->mi_dbc);
+		mi->mi_offset = pkgdbKey(mi->mi_dbc);
 
 	    /* Terminate on error or end of keys */
 	    if (rc || (mi->mi_setx && mi->mi_offset == 0))
@@ -1564,7 +1564,7 @@ top:
 
     /* Retrieve next header blob for index iterator. */
     if (uh == NULL) {
-	rc = pkgdbGet(dbi, mi->mi_dbc, mi->mi_offset, &uh, &uhlen);
+	rc = pkgdbGet(mi->mi_dbc, mi->mi_offset, &uh, &uhlen);
 	if (rc)
 	    return NULL;
     }
@@ -2128,7 +2128,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 
     /* Remove header from primary index */
     dbc = dbiCursorInit(dbi, DBC_WRITE);
-    ret = pkgdbDel(dbi, dbc, hdrNum);
+    ret = pkgdbDel(dbc, hdrNum);
     dbiCursorFree(dbc);
 
     /* Remove associated data from secondary indexes */
@@ -2346,9 +2346,9 @@ int rpmdbAdd(rpmdb db, Header h)
 
     /* Add header to primary index */
     dbc = dbiCursorInit(dbi, DBC_WRITE);
-    ret = pkgdbNew(dbi, dbc, &hdrNum);
+    ret = pkgdbNew(dbc, &hdrNum);
     if (ret == 0)
-	ret = pkgdbPut(dbi, dbc, hdrNum, hdrBlob, hdrLen);
+	ret = pkgdbPut(dbc, hdrNum, hdrBlob, hdrLen);
     dbiCursorFree(dbc);
 
     /* Add associated data to secondary indexes */

@@ -1002,20 +1002,19 @@ rpmRC idxdbDel(dbiCursor dbc, const char *keyp, size_t keylen,
 }
 
 /* Update primary Packages index. NULL hdr means remove */
-static int updatePackages(dbiIndex dbi, dbiCursor dbc,
-			  unsigned int hdrNum, DBT *hdr)
+static int updatePackages(dbiCursor dbc, unsigned int hdrNum, DBT *hdr)
 {
     union _dbswap mi_offset;
     int rc = 0;
     DBT key;
 
-    if (dbi == NULL || dbc == NULL || hdrNum == 0)
+    if (dbc == NULL || hdrNum == 0)
 	return 1;
 
     memset(&key, 0, sizeof(key));
 
     mi_offset.ui = hdrNum;
-    if (dbiByteSwapped(dbi) == 1)
+    if (dbiByteSwapped(dbc->dbi) == 1)
 	_DBSWAP(mi_offset);
     key.data = (void *) &mi_offset;
     key.size = sizeof(mi_offset.ui);
@@ -1097,29 +1096,29 @@ static unsigned int pkgInstance(dbiIndex dbi, int alloc)
     return hdrNum;
 }
 
-int pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum,
+int pkgdbPut(dbiCursor dbc,  unsigned int hdrNum,
 	     unsigned char *hdrBlob, unsigned int hdrLen)
 {
     DBT hdr;
     memset(&hdr, 0, sizeof(hdr));
     hdr.data = hdrBlob;
     hdr.size = hdrLen;
-    return updatePackages(dbi, dbc, hdrNum, &hdr);
+    return updatePackages(dbc, hdrNum, &hdr);
 }
 
-int pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
+int pkgdbDel(dbiCursor dbc,  unsigned int hdrNum)
 {
-    return updatePackages(dbi, dbc, hdrNum, NULL);
+    return updatePackages(dbc, hdrNum, NULL);
 }
 
-int pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
+int pkgdbGet(dbiCursor dbc, unsigned int hdrNum,
 	     unsigned char **hdrBlob, unsigned int *hdrLen)
 {
     DBT key, data;
     union _dbswap mi_offset;
     int rc = 0;
 
-    if (dbi == NULL || dbc == NULL)
+    if (dbc == NULL)
 	return 1;
 
     memset(&key, 0, sizeof(key));
@@ -1127,7 +1126,7 @@ int pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
 
     if (hdrNum) {
 	mi_offset.ui = hdrNum;
-	if (dbiByteSwapped(dbi) == 1)
+	if (dbiByteSwapped(dbc->dbi) == 1)
 	    _DBSWAP(mi_offset);
 	key.data = (void *) &mi_offset;
 	key.size = sizeof(mi_offset.ui);
@@ -1147,24 +1146,24 @@ int pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
     return rc;
 }
 
-unsigned int pkgdbKey(dbiIndex dbi, dbiCursor dbc)
+unsigned int pkgdbKey(dbiCursor dbc)
 {
     union _dbswap mi_offset;
 
-    if (dbi == NULL || dbc == NULL || dbc->key == NULL)
+    if (dbc == NULL || dbc->key == NULL)
 	return 0;
     memcpy(&mi_offset, dbc->key, sizeof(mi_offset.ui));
-    if (dbiByteSwapped(dbi) == 1)
+    if (dbiByteSwapped(dbc->dbi) == 1)
 	_DBSWAP(mi_offset);
     return mi_offset.ui;
 }
 
-int pkgdbNew(dbiIndex dbi, dbiCursor dbc, unsigned int *hdrNum)
+int pkgdbNew(dbiCursor dbc, unsigned int *hdrNum)
 {
     unsigned int num;
-    if (dbi == NULL || dbc == NULL)
+    if (dbc == NULL)
 	return 1;
-    num = pkgInstance(dbi, 1);
+    num = pkgInstance(dbc->dbi, 1);
     if (!num)
 	return 1;
     *hdrNum = num;
