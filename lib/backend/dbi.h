@@ -193,15 +193,15 @@ dbiCursor dbiCursorFree(dbiCursor dbc);
 
 
 RPM_GNUC_INTERNAL
-int pkgdbPut(dbiCursor dbc,  unsigned int hdrNum,
+rpmRC pkgdbPut(dbiCursor dbc,  unsigned int hdrNum,
              unsigned char *hdrBlob, unsigned int hdrLen);
 RPM_GNUC_INTERNAL
-int pkgdbDel(dbiCursor dbc,  unsigned int hdrNum);
+rpmRC pkgdbDel(dbiCursor dbc,  unsigned int hdrNum);
 RPM_GNUC_INTERNAL
-int pkgdbGet(dbiCursor dbc, unsigned int hdrNum,
+rpmRC pkgdbGet(dbiCursor dbc, unsigned int hdrNum,
              unsigned char **hdrBlob, unsigned int *hdrLen);
 RPM_GNUC_INTERNAL
-int pkgdbNew(dbiCursor dbc,  unsigned int *hdrNum);
+rpmRC pkgdbNew(dbiCursor dbc,  unsigned int *hdrNum);
 RPM_GNUC_INTERNAL
 unsigned int pkgdbKey(dbiCursor dbc);
 

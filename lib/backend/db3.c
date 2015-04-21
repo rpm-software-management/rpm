@@ -945,14 +945,14 @@ const void * idxdbKey(dbiCursor dbc, unsigned int *keylen)
 
 
 /* Update primary Packages index. NULL hdr means remove */
-static int updatePackages(dbiCursor dbc, unsigned int hdrNum, DBT *hdr)
+static rpmRC updatePackages(dbiCursor dbc, unsigned int hdrNum, DBT *hdr)
 {
     union _dbswap mi_offset;
     int rc = 0;
     DBT key;
 
     if (dbc == NULL || hdrNum == 0)
-	return 1;
+	return RPMRC_FAIL;
 
     memset(&key, 0, sizeof(key));
 
@@ -980,7 +980,7 @@ static int updatePackages(dbiCursor dbc, unsigned int hdrNum, DBT *hdr)
 	    rc = dbiCursorDel(dbc, &key, &data, 0);
     }
 
-    return rc;
+    return rc == 0 ? RPMRC_OK : RPMRC_FAIL;
 }
 
 /* Get current header instance number or try to allocate a new one */
@@ -1039,7 +1039,7 @@ static unsigned int pkgInstance(dbiIndex dbi, int alloc)
     return hdrNum;
 }
 
-int pkgdbPut(dbiCursor dbc,  unsigned int hdrNum,
+rpmRC pkgdbPut(dbiCursor dbc,  unsigned int hdrNum,
 	     unsigned char *hdrBlob, unsigned int hdrLen)
 {
     DBT hdr;
@@ -1049,20 +1049,20 @@ int pkgdbPut(dbiCursor dbc,  unsigned int hdrNum,
     return updatePackages(dbc, hdrNum, &hdr);
 }
 
-int pkgdbDel(dbiCursor dbc,  unsigned int hdrNum)
+rpmRC pkgdbDel(dbiCursor dbc,  unsigned int hdrNum)
 {
     return updatePackages(dbc, hdrNum, NULL);
 }
 
-int pkgdbGet(dbiCursor dbc, unsigned int hdrNum,
+rpmRC pkgdbGet(dbiCursor dbc, unsigned int hdrNum,
 	     unsigned char **hdrBlob, unsigned int *hdrLen)
 {
     DBT key, data;
     union _dbswap mi_offset;
-    int rc = 0;
+    int rc;
 
     if (dbc == NULL)
-	return 1;
+	return RPMRC_FAIL;
 
     memset(&key, 0, sizeof(key));
     memset(&data, 0, sizeof(data));
@@ -1084,9 +1084,11 @@ int pkgdbGet(dbiCursor dbc, unsigned int hdrNum,
 	    *hdrBlob = data.data;
 	if (hdrLen)
 	    *hdrLen = data.size;
-    }
-
-    return rc;
+	return RPMRC_OK;
+    } else if (rc == DB_NOTFOUND)
+	return RPMRC_NOTFOUND;
+    else
+	return RPMRC_FAIL;
 }
 
 unsigned int pkgdbKey(dbiCursor dbc)
@@ -1101,14 +1103,14 @@ unsigned int pkgdbKey(dbiCursor dbc)
     return mi_offset.ui;
 }
 
-int pkgdbNew(dbiCursor dbc, unsigned int *hdrNum)
+rpmRC pkgdbNew(dbiCursor dbc, unsigned int *hdrNum)
 {
     unsigned int num;
     if (dbc == NULL)
-	return 1;
+	return RPMRC_FAIL;
     num = pkgInstance(dbc->dbi, 1);
     if (!num)
-	return 1;
+	return RPMRC_FAIL;
     *hdrNum = num;
-    return 0;
+    return RPMRC_OK;
 }
