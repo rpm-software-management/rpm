@@ -632,7 +632,7 @@ int dbiOpen(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 	    if (rc == ENOENT) {
 		oflags |= DB_CREATE;
 		oflags &= ~DB_RDONLY;
-		dbtype = (dbiType(dbi) == DBI_PRIMARY) ?  DB_HASH : DB_BTREE;
+		dbtype = (rpmtag == RPMDBI_PACKAGES) ?  DB_HASH : DB_BTREE;
 		retry_open--;
 	    } else {
 		retry_open = 0;
@@ -707,7 +707,6 @@ static int dbt2set(dbiIndex dbi, DBT * data, dbiIndexSet * setp)
     const char * sdbir;
     dbiIndexSet set;
     unsigned int i;
-    dbiIndexType itype = dbiType(dbi);
 
     if (dbi == NULL || data == NULL || setp == NULL)
 	return -1;
@@ -717,40 +716,22 @@ static int dbt2set(dbiIndex dbi, DBT * data, dbiIndexSet * setp)
 	return 0;
     }
 
-    set = dbiIndexSetNew(data->size / itype);
-    set->count = data->size / itype;
+    set = dbiIndexSetNew(data->size / (2 * sizeof(int32_t)));
+    set->count = data->size / (2 * sizeof(int32_t));
 
-    switch (itype) {
-    default:
-    case DBI_SECONDARY:
-	for (i = 0; i < set->count; i++) {
-	    union _dbswap hdrNum, tagNum;
+    for (i = 0; i < set->count; i++) {
+	union _dbswap hdrNum, tagNum;
 
-	    memcpy(&hdrNum.ui, sdbir, sizeof(hdrNum.ui));
-	    sdbir += sizeof(hdrNum.ui);
-	    memcpy(&tagNum.ui, sdbir, sizeof(tagNum.ui));
-	    sdbir += sizeof(tagNum.ui);
-	    if (_dbbyteswapped) {
-		_DBSWAP(hdrNum);
-		_DBSWAP(tagNum);
-	    }
-	    set->recs[i].hdrNum = hdrNum.ui;
-	    set->recs[i].tagNum = tagNum.ui;
+	memcpy(&hdrNum.ui, sdbir, sizeof(hdrNum.ui));
+	sdbir += sizeof(hdrNum.ui);
+	memcpy(&tagNum.ui, sdbir, sizeof(tagNum.ui));
+	sdbir += sizeof(tagNum.ui);
+	if (_dbbyteswapped) {
+	    _DBSWAP(hdrNum);
+	    _DBSWAP(tagNum);
 	}
-	break;
-    case DBI_PRIMARY:
-	for (i = 0; i < set->count; i++) {
-	    union _dbswap hdrNum;
-
-	    memcpy(&hdrNum.ui, sdbir, sizeof(hdrNum.ui));
-	    sdbir += sizeof(hdrNum.ui);
-	    if (_dbbyteswapped) {
-		_DBSWAP(hdrNum);
-	    }
-	    set->recs[i].hdrNum = hdrNum.ui;
-	    set->recs[i].tagNum = 0;
-	}
-	break;
+	set->recs[i].hdrNum = hdrNum.ui;
+	set->recs[i].tagNum = tagNum.ui;
     }
     *setp = set;
     return 0;
@@ -768,53 +749,33 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
     int _dbbyteswapped = dbiByteSwapped(dbi);
     char * tdbir;
     unsigned int i;
-    dbiIndexType itype = dbiType(dbi);
 
     if (dbi == NULL || data == NULL || set == NULL)
 	return -1;
 
-    data->size = set->count * itype;
+    data->size = set->count * (2 * sizeof(int32_t));
     if (data->size == 0) {
 	data->data = NULL;
 	return 0;
     }
     tdbir = data->data = xmalloc(data->size);
 
-    switch (itype) {
-    default:
-    case DBI_SECONDARY:
-	for (i = 0; i < set->count; i++) {
-	    union _dbswap hdrNum, tagNum;
+    for (i = 0; i < set->count; i++) {
+	union _dbswap hdrNum, tagNum;
 
-	    memset(&hdrNum, 0, sizeof(hdrNum));
-	    memset(&tagNum, 0, sizeof(tagNum));
-	    hdrNum.ui = set->recs[i].hdrNum;
-	    tagNum.ui = set->recs[i].tagNum;
-	    if (_dbbyteswapped) {
-		_DBSWAP(hdrNum);
-		_DBSWAP(tagNum);
-	    }
-	    memcpy(tdbir, &hdrNum.ui, sizeof(hdrNum.ui));
-	    tdbir += sizeof(hdrNum.ui);
-	    memcpy(tdbir, &tagNum.ui, sizeof(tagNum.ui));
-	    tdbir += sizeof(tagNum.ui);
+	memset(&hdrNum, 0, sizeof(hdrNum));
+	memset(&tagNum, 0, sizeof(tagNum));
+	hdrNum.ui = set->recs[i].hdrNum;
+	tagNum.ui = set->recs[i].tagNum;
+	if (_dbbyteswapped) {
+	    _DBSWAP(hdrNum);
+	    _DBSWAP(tagNum);
 	}
-	break;
-    case DBI_PRIMARY:
-	for (i = 0; i < set->count; i++) {
-	    union _dbswap hdrNum;
-
-	    memset(&hdrNum, 0, sizeof(hdrNum));
-	    hdrNum.ui = set->recs[i].hdrNum;
-	    if (_dbbyteswapped) {
-		_DBSWAP(hdrNum);
-	    }
-	    memcpy(tdbir, &hdrNum.ui, sizeof(hdrNum.ui));
-	    tdbir += sizeof(hdrNum.ui);
-	}
-	break;
+	memcpy(tdbir, &hdrNum.ui, sizeof(hdrNum.ui));
+	tdbir += sizeof(hdrNum.ui);
+	memcpy(tdbir, &tagNum.ui, sizeof(tagNum.ui));
+	tdbir += sizeof(tagNum.ui);
     }
-
     return 0;
 }
 
