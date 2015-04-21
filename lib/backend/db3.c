@@ -987,7 +987,7 @@ static unsigned int pkgInstance(dbiIndex dbi, int alloc)
 {
     unsigned int hdrNum = 0;
 
-    if (dbi != NULL && dbiType(dbi) == DBI_PRIMARY) {
+    if (dbi != NULL && dbi->dbi_type == DBI_PRIMARY) {
 	dbiCursor dbc;
 	DBT key, data;
 	unsigned int firstkey = 0;

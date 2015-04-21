@@ -235,11 +235,6 @@ dbiIndex dbiNew(rpmdb rdb, rpmDbiTagVal rpmtag)
     return dbi;
 }
 
-dbiIndexType dbiType(dbiIndex dbi)
-{
-    return dbi->dbi_type;
-}
-
 const char * dbiName(dbiIndex dbi)
 {
     return dbi->dbi_file;

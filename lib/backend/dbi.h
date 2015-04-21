@@ -159,14 +159,6 @@ RPM_GNUC_INTERNAL
 int dbiVerify(dbiIndex dbi, unsigned int flags);
 
 /** \ingroup dbi
- * Type of dbi (primary data / index)
- * @param dbi		index database handle
- * @return		type of dbi
- */
-RPM_GNUC_INTERNAL
-dbiIndexType dbiType(dbiIndex dbi);
-
-/** \ingroup dbi
  * Retrieve index control flags (new/existing, read-only etc)
  * @param dbi		index database handle
  * @return		dbi control flags
