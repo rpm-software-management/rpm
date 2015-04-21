@@ -447,17 +447,6 @@ static int dbiCursorDel(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags
     return rc;
 }
 
-const void * idxdbKey(dbiCursor dbc, unsigned int *keylen)
-{
-    const void *key = NULL;
-    if (dbc) {
-	key = dbc->key;
-	if (key && keylen)
-	    *keylen = dbc->keylen;
-    }
-    return key;
-}
-
 static int dbiByteSwapped(dbiIndex dbi)
 {
     DB * db = dbi->dbi_db;
@@ -942,6 +931,18 @@ rpmRC idxdbDel(dbiCursor dbc, const char *keyp, size_t keylen,
 
     return rc;
 }
+
+const void * idxdbKey(dbiCursor dbc, unsigned int *keylen)
+{
+    const void *key = NULL;
+    if (dbc) {
+	key = dbc->key;
+	if (key && keylen)
+	    *keylen = dbc->keylen;
+    }
+    return key;
+}
+
 
 /* Update primary Packages index. NULL hdr means remove */
 static int updatePackages(dbiCursor dbc, unsigned int hdrNum, DBT *hdr)
