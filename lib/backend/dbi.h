@@ -20,6 +20,13 @@ struct dbConfig_s {
     int	db_cachesize;	/*!< (128Kb) */
     int	db_verbose;
     int	db_no_fsync;	/*!< no-op fsync for db */
+    int db_eflags;	/*!< obsolete */
+};
+
+struct dbiConfig_s {
+    int	dbi_oflags;		/*!< open flags */
+    int	dbi_no_dbsync;		/*!< don't call dbiSync */
+    int	dbi_lockdbfd;		/*!< do fcntl lock on db fd */
 };
 
 /** \ingroup rpmdb
@@ -80,16 +87,13 @@ enum dbcSearchType_e {
  * Describes an index database (implemented on Berkeley db functionality).
  */
 struct dbiIndex_s {
-    const char * dbi_file;	/*!< file component of path */
-    int dbi_flags;
-
-    int	dbi_oflags;		/*!< db->open flags */
-    int	dbi_no_dbsync;		/*!< don't call dbiSync */
-    int	dbi_lockdbfd;		/*!< do fcntl lock on db fd */
-    int	dbi_byteswapped;
-
     rpmdb dbi_rpmdb;		/*!< the parent rpm database */
     dbiIndexType dbi_type;	/*! Type of dbi (primary / index) */
+    const char * dbi_file;	/*!< file component of path */
+    int dbi_flags;
+    int	dbi_byteswapped;
+
+    struct dbiConfig_s cfg;
 
     void * dbi_db;		/*!< Backend private handle */
 };
@@ -119,15 +123,6 @@ dbiIndex dbiNew(rpmdb rdb, rpmDbiTagVal rpmtag);
  */
 RPM_GNUC_INTERNAL
 dbiIndex dbiFree( dbiIndex dbi);
-
-/** \ingroup dbi
- * Format dbi open flags for debugging print.
- * @param dbflags		db open flags
- * @param print_dbenv_flags	format db env flags instead?
- * @return			formatted flags (malloced)
- */
-RPM_GNUC_INTERNAL
-char * prDbiOpenFlags(int dbflags, int print_dbenv_flags);
 
 /** \ingroup dbi
  * Actually open the database of the index.

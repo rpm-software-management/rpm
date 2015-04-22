@@ -8,6 +8,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #include <errno.h>
 #include <sys/wait.h>
+#include <popt.h>
 #include <db.h>
 
 #include <rpm/rpmtypes.h>
@@ -28,6 +29,65 @@ struct dbiCursor_s {
     int flags;
     DBC *cursor;
 };
+
+static struct dbiConfig_s staticdbicfg;
+static struct dbConfig_s staticcfg;
+
+/** \ingroup dbi
+ */
+static const struct poptOption rdbOptions[] = {
+ /* Environment options */
+   
+ { "cdb",	0,POPT_BIT_SET,	&staticcfg.db_eflags, DB_INIT_CDB,
+	NULL, NULL },
+ { "lock",	0,POPT_BIT_SET,	&staticcfg.db_eflags, DB_INIT_LOCK,
+	NULL, NULL },
+ { "log",	0,POPT_BIT_SET,	&staticcfg.db_eflags, DB_INIT_LOG,
+	NULL, NULL },
+ { "txn",	0,POPT_BIT_SET,	&staticcfg.db_eflags, DB_INIT_TXN,
+	NULL, NULL },
+ { "recover",	0,POPT_BIT_SET,	&staticcfg.db_eflags, DB_RECOVER,
+	NULL, NULL },
+ { "recover_fatal", 0,POPT_BIT_SET,	&staticcfg.db_eflags, DB_RECOVER_FATAL,
+	NULL, NULL },
+ { "lockdown",	0,POPT_BIT_SET,	&staticcfg.db_eflags, DB_LOCKDOWN,
+	NULL, NULL },
+ { "private",	0,POPT_BIT_SET,	&staticcfg.db_eflags, DB_PRIVATE,
+	NULL, NULL },
+
+ { "deadlock",	0,POPT_BIT_SET,	&staticcfg.db_verbose, DB_VERB_DEADLOCK,
+	NULL, NULL },
+ { "recovery",	0,POPT_BIT_SET,	&staticcfg.db_verbose, DB_VERB_RECOVERY,
+	NULL, NULL },
+ { "waitsfor",	0,POPT_BIT_SET,	&staticcfg.db_verbose, DB_VERB_WAITSFOR,
+	NULL, NULL },
+ { "verbose",	0,POPT_ARG_VAL,		&staticcfg.db_verbose, -1,
+	NULL, NULL },
+
+ { "cachesize",	0,POPT_ARG_INT,		&staticcfg.db_cachesize, 0,
+	NULL, NULL },
+ { "mmapsize", 0,POPT_ARG_INT,		&staticcfg.db_mmapsize, 0,
+	NULL, NULL },
+ { "mp_mmapsize", 0,POPT_ARG_INT,	&staticcfg.db_mmapsize, 0,
+	NULL, NULL },
+ { "mp_size",	0,POPT_ARG_INT,		&staticcfg.db_cachesize, 0,
+	NULL, NULL },
+
+ { "nofsync",	0,POPT_ARG_NONE,	&staticcfg.db_no_fsync, 0,
+	NULL, NULL },
+
+ /* Per-dbi options */
+ { "nommap",	0,POPT_BIT_SET,		&staticdbicfg.dbi_oflags, DB_NOMMAP,
+	NULL, NULL },
+
+ { "nodbsync",	0,POPT_ARG_NONE,	&staticdbicfg.dbi_no_dbsync, 0,
+	NULL, NULL },
+ { "lockdbfd",	0,POPT_ARG_NONE,	&staticdbicfg.dbi_lockdbfd, 0,
+	NULL, NULL },
+
+    POPT_TABLEEND
+};
+
 
 static int dbapi_err(rpmdb rdb, const char * msg, int error, int printit)
 {
@@ -157,6 +217,182 @@ static int isalive(DB_ENV *dbenv, pid_t pid, db_threadid_t tid, uint32_t flags)
     }
     
     return alive;
+}
+
+
+static void dbConfigure(rpmDbiTagVal rpmtag, struct dbConfig_s *cfg, struct dbiConfig_s  *dbicfg)
+{
+    char *dbOpts;
+
+    dbOpts = rpmExpand("%{_dbi_config_", rpmTagGetName(rpmtag), "}", NULL);
+    
+    if (!(dbOpts && *dbOpts && *dbOpts != '%')) {
+	dbOpts = _free(dbOpts);
+	dbOpts = rpmExpand("%{_dbi_config}", NULL);
+	if (!(dbOpts && *dbOpts && *dbOpts != '%')) {
+	    dbOpts = _free(dbOpts);
+	}
+    }
+
+    /* Parse the options for the database element(s). */
+    if (dbOpts && *dbOpts && *dbOpts != '%') {
+	char *o, *oe;
+	char *p, *pe;
+
+	memset(&staticdbicfg, 0, sizeof(staticdbicfg));
+/*=========*/
+	for (o = dbOpts; o && *o; o = oe) {
+	    const struct poptOption *opt;
+	    const char * tok;
+	    unsigned int argInfo;
+
+	    /* Skip leading white space. */
+	    while (*o && risspace(*o))
+		o++;
+
+	    /* Find and terminate next key=value pair. Save next start point. */
+	    for (oe = o; oe && *oe; oe++) {
+		if (risspace(*oe))
+		    break;
+		if (oe[0] == ':' && !(oe[1] == '/' && oe[2] == '/'))
+		    break;
+	    }
+	    if (oe && *oe)
+		*oe++ = '\0';
+	    if (*o == '\0')
+		continue;
+
+	    /* Separate key from value, save value start (if any). */
+	    for (pe = o; pe && *pe && *pe != '='; pe++)
+		{};
+	    p = (pe ? *pe++ = '\0', pe : NULL);
+
+	    /* Skip over negation at start of token. */
+	    for (tok = o; *tok == '!'; tok++)
+		{};
+
+	    /* Find key in option table. */
+	    for (opt = rdbOptions; opt->longName != NULL; opt++) {
+		if (!rstreq(tok, opt->longName))
+		    continue;
+		break;
+	    }
+	    if (opt->longName == NULL) {
+		rpmlog(RPMLOG_ERR,
+			_("unrecognized db option: \"%s\" ignored.\n"), o);
+		continue;
+	    }
+
+	    /* Toggle the flags for negated tokens, if necessary. */
+	    argInfo = opt->argInfo;
+	    if (argInfo == POPT_BIT_SET && *o == '!' && ((tok - o) % 2))
+		argInfo = POPT_BIT_CLR;
+
+	    /* Save value in template as appropriate. */
+	    switch (argInfo & POPT_ARG_MASK) {
+
+	    case POPT_ARG_NONE:
+		(void) poptSaveInt((int *)opt->arg, argInfo, 1L);
+		break;
+	    case POPT_ARG_VAL:
+		(void) poptSaveInt((int *)opt->arg, argInfo, (long)opt->val);
+	    	break;
+	    case POPT_ARG_STRING:
+	    {	char ** t = opt->arg;
+		if (t) {
+/* FIX: opt->arg annotation in popt.h */
+		    *t = _free(*t);
+		    *t = xstrdup( (p ? p : "") );
+		}
+	    }	break;
+
+	    case POPT_ARG_INT:
+	    case POPT_ARG_LONG:
+	      {	long aLong = strtol(p, &pe, 0);
+		if (pe) {
+		    if (!rstrncasecmp(pe, "Mb", 2))
+			aLong *= 1024 * 1024;
+		    else if (!rstrncasecmp(pe, "Kb", 2))
+			aLong *= 1024;
+		    else if (*pe != '\0') {
+			rpmlog(RPMLOG_ERR,
+				_("%s has invalid numeric value, skipped\n"),
+				opt->longName);
+			continue;
+		    }
+		}
+
+		if ((argInfo & POPT_ARG_MASK) == POPT_ARG_LONG) {
+		    if (aLong == LONG_MIN || aLong == LONG_MAX) {
+			rpmlog(RPMLOG_ERR,
+				_("%s has too large or too small long value, skipped\n"),
+				opt->longName);
+			continue;
+		    }
+		    (void) poptSaveLong((long *)opt->arg, argInfo, aLong);
+		    break;
+		} else {
+		    if (aLong > INT_MAX || aLong < INT_MIN) {
+			rpmlog(RPMLOG_ERR,
+				_("%s has too large or too small integer value, skipped\n"),
+				opt->longName);
+			continue;
+		    }
+		    (void) poptSaveInt((int *)opt->arg, argInfo, aLong);
+		}
+	      }	break;
+	    default:
+		break;
+	    }
+	}
+/*=========*/
+    }
+
+    dbOpts = _free(dbOpts);
+    if (cfg) {
+	*cfg = staticcfg;	/* structure assignment */
+	/* Throw in some defaults if configuration didn't set any */
+	if (!cfg->db_mmapsize)
+	    cfg->db_mmapsize = 16 * 1024 * 1024;
+	if (!cfg->db_cachesize)
+	    cfg->db_cachesize = 8 * 1024 * 1024;
+    }
+    if (dbicfg) {
+	*dbicfg = staticdbicfg;
+    }
+}
+
+static char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
+{
+    ARGV_t flags = NULL;
+    const struct poptOption *opt;
+    char *buf;
+
+    for (opt = rdbOptions; opt->longName != NULL; opt++) {
+        if (opt->argInfo != POPT_BIT_SET)
+            continue;
+        if (print_dbenv_flags) {
+            if (!(opt->arg == &staticcfg.db_eflags))
+                continue;
+        } else {
+            if (!(opt->arg == &staticdbicfg.dbi_oflags))
+                continue;
+        }
+        if ((dbflags & opt->val) != opt->val)
+            continue;
+        argvAdd(&flags, opt->longName);
+        dbflags &= ~opt->val;
+    }   
+    if (dbflags) {
+        char *df = NULL;
+        rasprintf(&df, "0x%x", (unsigned)dbflags);
+        argvAdd(&flags, df);
+        free(df);
+    }   
+    buf = argvJoin(flags, ":");
+    argvFree(flags);
+            
+    return buf ? buf : xstrdup("(none)");
 }
 
 static int db_init(rpmdb rdb, const char * dbhome)
@@ -302,7 +538,7 @@ static int dbiSync(dbiIndex dbi, unsigned int flags)
     DB * db = dbi->dbi_db;
     int rc = 0;
 
-    if (db != NULL && !dbi->dbi_no_dbsync) {
+    if (db != NULL && !dbi->cfg.dbi_no_dbsync) {
 	rc = db->sync(db, flags);
 	rc = cvtdberr(dbi, "db->sync", rc, _debug);
     }
@@ -582,18 +818,20 @@ int dbiOpen(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
     if (dbip)
 	*dbip = NULL;
 
-    /*
-     * Parse db configuration parameters.
-     */
     if ((dbi = dbiNew(rdb, rpmtag)) == NULL)
 	return 1;
 
-    oflags = dbi->dbi_oflags;
+    /*
+     * Parse db configuration parameters.
+     */
+    dbConfigure(rpmtag, rdb->db_dbenv == NULL ? &rdb->cfg : NULL, &dbi->cfg);
 
     /*
      * Map open mode flags onto configured database/environment flags.
      */
-    if ((rdb->db_mode & O_ACCMODE) == O_RDONLY) oflags |= DB_RDONLY;
+    oflags = dbi->cfg.dbi_oflags;
+    if ((rdb->db_mode & O_ACCMODE) == O_RDONLY)
+	oflags |= DB_RDONLY;
 
     rc = db_init(rdb, dbhome);
 
@@ -649,7 +887,6 @@ int dbiOpen(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
     }
 
     dbi->dbi_db = db;
-    dbi->dbi_oflags = oflags;
 
     dbi->dbi_flags = 0;
     if (oflags & DB_CREATE)
@@ -657,7 +894,7 @@ int dbiOpen(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
     if (oflags & DB_RDONLY)
 	dbi->dbi_flags |= DBI_RDONLY;
 
-    if (!verifyonly && rc == 0 && dbi->dbi_lockdbfd && _lockdbfd++ == 0) {
+    if (!verifyonly && rc == 0 && dbi->cfg.dbi_lockdbfd && _lockdbfd++ == 0) {
 	rc = dbiFlock(dbi, rdb->db_mode);
     }
 
