@@ -1712,7 +1712,7 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     const char *sdname = (sd->sdtype == RPMFILE_DOC) ? "%doc" : "%license";
     char *mkdocdir = rpmExpand("%{__mkdir_p} $", sdenv, NULL);
     StringBuf docScript = newStringBuf();
-    char **files, *file, *tmp;
+    char *basepath, **files;
 
     appendStringBuf(docScript, sdenv);
     appendStringBuf(docScript, "=$RPM_BUILD_ROOT");
@@ -1747,15 +1747,31 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     dupAttrRec(&(sd->ar), &(fl->cur.ar));
     dupAttrRec(&(sd->def_ar), &(fl->def.ar));
 
+    basepath = rpmGenPath(spec->rootDir, "%{_builddir}", spec->buildSubdir);
     files = sd->files;
     while (*files != NULL) {
-	tmp = xstrdup(*files);
-	rasprintf(&file, "%s/%s", sd->dirname, basename(tmp));
-	processBinaryFile(pkg, fl, file);
-	free(file);
-	free(tmp);
+	char *origfile = rpmGenPath(basepath, *files, NULL);
+	char *eorigfile = rpmEscapeSpaces(origfile);
+	ARGV_t globFiles;
+	int globFilesCount, i;
+	char *newfile;
+
+	if (rpmGlob(eorigfile, &globFilesCount, &globFiles) == 0) {
+	    for (i = 0; i < globFilesCount; i++) {
+		rasprintf(&newfile, "%s/%s", sd->dirname, basename(globFiles[i]));
+		processBinaryFile(pkg, fl, newfile);
+		free(newfile);
+	    }
+	    argvFree(globFiles);
+	} else {
+	    rpmlog(RPMLOG_ERR, _("File not found by glob: %s\n"), eorigfile);
+	    fl->processingFailed = 1;
+	}
+	free(eorigfile);
+	free(origfile);
 	files++;
     }
+    free(basepath);
 
     fl->cur.isDir = 1;
     (void) processBinaryFile(pkg, fl, sd->dirname);
