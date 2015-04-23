@@ -2002,23 +2002,32 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	    flp->fl_mode &= S_IFMT;
 	    flp->fl_mode |= fl.def.ar.ar_fmode;
 	}
+
 	if (fl.def.ar.ar_user) {
 	    flp->uname = fl.def.ar.ar_user;
 	} else {
 	    flp->uname = rpmstrPoolId(fl.pool, rpmugUname(flp->fl_uid), 1);
 	}
+	if (! flp->uname) {
+	    flp->uname = rpmstrPoolId(fl.pool, rpmugUname(getuid()), 1);
+	}
+	if (! flp->uname) {
+	    flp->uname = rpmstrPoolId(fl.pool, "root", 1);
+	}
+
 	if (fl.def.ar.ar_group) {
 	    flp->gname = fl.def.ar.ar_group;
 	} else {
 	    flp->gname = rpmstrPoolId(fl.pool, rpmugGname(flp->fl_gid), 1);
 	}
-	flp->langs = xstrdup("");
-	
-	if (! (flp->uname && flp->gname)) {
-	    rpmlog(RPMLOG_ERR, _("Bad owner/group: %s\n"), diskPath);
-	    fl.processingFailed = 1;
+	if (! flp->gname) {
+	    flp->gname = rpmstrPoolId(fl.pool, rpmugGname(getgid()), 1);
+	}
+	if (! flp->gname) {
+	    flp->gname = rpmstrPoolId(fl.pool, "root", 1);
 	}
 
+	flp->langs = xstrdup("");
 	fl.files.used++;
     }
     argvFree(files);
