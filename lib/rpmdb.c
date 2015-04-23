@@ -496,7 +496,6 @@ static rpmdb newRpmdb(const char * root, const char * home,
     char * db_home = rpmGetPath((home && *home) ? home : "%{_dbpath}", NULL);
 
     static rpmDbiTag const dbiTags[] = {
-	RPMDBI_PACKAGES,
 	RPMDBI_NAME,
 	RPMDBI_BASENAMES,
 	RPMDBI_GROUP,
@@ -630,7 +629,10 @@ int rpmdbVerify(const char * prefix)
 	int xx;
 	rc = rpmdbOpenAll(db);
 
-	rc = dbiForeach(db->db_indexes, db->db_ndbi, dbiVerify, 0);
+	
+	if (db->db_pkgs)
+	    rc += dbiVerify(db->db_pkgs, 0);
+	rc += dbiForeach(db->db_indexes, db->db_ndbi, dbiVerify, 0);
 
 	xx = rpmdbClose(db);
 	if (xx && rc == 0) rc = xx;
@@ -1713,8 +1715,13 @@ rpmdbMatchIterator rpmdbNewIterator(rpmdb db, rpmDbiTagVal dbitag)
 {
     rpmdbMatchIterator mi = NULL;
 
-    if (indexOpen(db, dbitag, 0, NULL))
-	return NULL;
+    if (dbitag == RPMDBI_PACKAGES) {
+	if (pkgdbOpen(db, 0, NULL))
+	    return NULL;
+    } else {
+	if (indexOpen(db, dbitag, 0, NULL))
+	    return NULL;
+    }
 
     mi = xcalloc(1, sizeof(*mi));
     mi->mi_set = NULL;
