@@ -111,15 +111,16 @@ static rpmRC headerCheckPayloadFormat(Header h) {
 static int removePackage(rpmts ts, Header h, rpmte depends)
 {
     tsMembers tsmem = rpmtsMembers(ts);
-    rpmte p;
+    rpmte p, *pp;
     unsigned int dboffset = headerGetInstance(h);
 
     /* Can't remove what's not installed */
     if (dboffset == 0) return 1;
 
     /* Filter out duplicate erasures. */
-    if (packageHashHasEntry(tsmem->removedPackages, dboffset)) {
-        return 0;
+    if (packageHashGetEntry(tsmem->removedPackages, dboffset, &pp, NULL, NULL)) {
+	rpmteSetDependsOn(pp[0], depends);
+	return 0;
     }
 
     p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL);
