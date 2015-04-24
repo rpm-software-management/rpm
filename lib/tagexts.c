@@ -320,16 +320,19 @@ static int triggertypeTag(Header h, rpmtd td, headerGetFlags hgflags)
  * Retrieve installed file paths.
  * @param h		header
  * @retval td		tag data container
+ * @param hgflags	header get flags
  * @return		1 on success
  */
 static int instfilenamesTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     return fnTag(h, RPMTAG_BASENAMES, 1, td);
 }
+
 /**
  * Retrieve file paths.
  * @param h		header
  * @retval td		tag data container
+ * @param hgflags	header get flags
  * @return		1 on success
  */
 static int filenamesTag(Header h, rpmtd td, headerGetFlags hgflags)
