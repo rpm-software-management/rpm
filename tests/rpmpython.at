@@ -260,7 +260,7 @@ for h in ts.dbMatch('basenames', '/usr/share/doc/hello-2.0/FAQ'):
 [])
 RPMPY_CHECK([
 ts = rpm.ts()
-for di in ts.dbIndex('obsoletes'):
+for di in sorted(ts.dbIndex('obsoletes')):
     myprint(di)
 ],
 [howdy
@@ -269,7 +269,7 @@ for di in ts.dbIndex('obsoletes'):
 
 RPMPY_CHECK([
 ts = rpm.ts()
-for di in ts.dbIndex('provides'):
+for di in sorted(ts.dbIndex('provides')):
     myprint(di)
 ],
 [foo

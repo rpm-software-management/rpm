@@ -15,34 +15,34 @@ BuildArch:	noarch
 %pretrans
 echo %{name}-%{version}-%{release} PRETRANS $*
 echo Nice value is $(/bin/nice)
-echo IOnice value is $(/usr/bin/ionice)
+echo IOnice value is $(/usr/bin/ionice | sed -e 's/^unknown:/none:/')
 
 %pre
 echo %{name}-%{version}-%{release} PRE $*
 echo Nice value is $(/bin/nice)
-echo IOnice value is $(/usr/bin/ionice)
+echo IOnice value is $(/usr/bin/ionice | sed -e 's/^unknown:/none:/')
 
 %post
 echo %{name}-%{version}-%{release} POST $*
 echo Nice value is $(/bin/nice)
-echo IOnice value is $(/usr/bin/ionice)
+echo IOnice value is $(/usr/bin/ionice | sed -e 's/^unknown:/none:/')
 
 %preun
 echo %{name}-%{version}-%{release} PREUN $*
 echo Nice value is $(/bin/nice)
-echo IOnice value is $(/usr/bin/ionice)
+echo IOnice value is $(/usr/bin/ionice | sed -e 's/^unknown:/none:/')
 
 %postun
 echo %{name}-%{version}-%{release} POSTUN $*
 echo Nice value is $(/bin/nice)
-echo IOnice value is $(/usr/bin/ionice)
+echo IOnice value is $(/usr/bin/ionice | sed -e 's/^unknown:/none:/')
 
 %posttrans
 echo %{name}-%{version}-%{release} POSTTRANS $*
 echo Nice value is $(/bin/nice)
-echo IOnice value is $(/usr/bin/ionice)
+echo IOnice value is $(/usr/bin/ionice | sed -e 's/^unknown:/none:/')
 
 %verifyscript
 echo %{name}-%{version}-%{release} VERIFY $*
 echo Nice value is $(/bin/nice)
-echo IOnice value is $(/usr/bin/ionice)
+echo IOnice value is $(/usr/bin/ionice | sed -e 's/^unknown:/none:/')
