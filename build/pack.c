@@ -198,6 +198,9 @@ static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
     rpmTagVal scriptTags[] = {RPMTAG_TRIGGERSCRIPTS,
 			      RPMTAG_FILETRIGGERSCRIPTS,
 			      RPMTAG_TRANSFILETRIGGERSCRIPTS};
+    rpmTagVal priorityTags[] = {0,
+				RPMTAG_FILETRIGGERPRIORITIES,
+				RPMTAG_TRANSFILETRIGGERPRIORITIES};
     int i;
     
     if (addFileToTag(spec, pkg->preInFile, h, RPMTAG_PREIN, 1) ||
@@ -224,6 +227,10 @@ static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
 
 	for (p = tfa[i]; p != NULL; p = p->next) {
 	    headerPutString(h, progTags[i], p->prog);
+
+	    if (priorityTags[i]) {
+		headerPutUint32(h, priorityTags[i], &p->priority, 1);
+	    }
 
 	    if (addflags) {
 		headerPutUint32(h, flagTags[i], &p->flags, 1);
