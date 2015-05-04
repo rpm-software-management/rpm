@@ -2261,17 +2261,21 @@ static rpmRC tag2index(dbiIndex dbi, rpmTagVal rpmtag,
 		       idxfunc idxupdate)
 {
     int i, rc = 0;
-    struct rpmtd_s tagdata, reqflags;
+    struct rpmtd_s tagdata, reqflags, trig_index;
     dbiCursor dbc = NULL;
 
     switch (rpmtag) {
     case RPMTAG_REQUIRENAME:
 	headerGet(h, RPMTAG_REQUIREFLAGS, &reqflags, HEADERGET_MINMEM);
-	/* fallthrough */
-    default:
-	headerGet(h, rpmtag, &tagdata, HEADERGET_MINMEM);
+	break;
+    case RPMTAG_FILETRIGGERNAME:
+	headerGet(h, RPMTAG_FILETRIGGERINDEX, &trig_index, HEADERGET_MINMEM);
+	break;
+    case RPMTAG_TRANSFILETRIGGERNAME:
+	headerGet(h, RPMTAG_TRANSFILETRIGGERINDEX, &trig_index, HEADERGET_MINMEM);
 	break;
     }
+    headerGet(h, rpmtag, &tagdata, HEADERGET_MINMEM);
 
     if (rpmtdCount(&tagdata) == 0) {
 	if (rpmtag != RPMTAG_GROUP)
@@ -2290,8 +2294,22 @@ static rpmRC tag2index(dbiIndex dbi, rpmTagVal rpmtag,
 	const void * key = NULL;
 	unsigned int keylen = 0;
 	int j;
-	/* Include the tagNum in all indices (only files use though) */
-	struct dbiIndexItem_s rec = { .hdrNum = hdrNum, .tagNum = i };
+	struct dbiIndexItem_s rec;
+
+	switch (rpmtag) {
+	/* Include trigger index in db index for triggers */
+	case RPMTAG_FILETRIGGERNAME:
+	case RPMTAG_TRANSFILETRIGGERNAME:
+	    rec.hdrNum = hdrNum;
+	    rec.tagNum = *rpmtdNextUint32(&trig_index);
+	    break;
+
+	/* Include the tagNum in the others indices (only files use though) */
+	default:
+	    rec.hdrNum = hdrNum;
+	    rec.tagNum = i;
+	    break;
+	}
 
 	switch (rpmtag) {
 	case RPMTAG_REQUIRENAME: {
