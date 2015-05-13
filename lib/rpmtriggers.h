@@ -7,6 +7,7 @@
 struct triggerInfo_s {
     unsigned int hdrNum;
     unsigned int tix;
+    unsigned int priority;
 };
 
 typedef struct rpmtriggers_s {

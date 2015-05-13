@@ -31,7 +31,8 @@ rpmtriggers rpmtriggersFree(rpmtriggers triggers)
     return NULL;
 }
 
-static void rpmtriggersAdd(rpmtriggers trigs, unsigned int hdrNum, unsigned int tix)
+static void rpmtriggersAdd(rpmtriggers trigs, unsigned int hdrNum,
+			    unsigned int tix, unsigned int priority)
 {
     if (trigs->count == trigs->alloced) {
 	trigs->alloced <<= 1;
@@ -41,12 +42,19 @@ static void rpmtriggersAdd(rpmtriggers trigs, unsigned int hdrNum, unsigned int 
 
     trigs->triggerInfo[trigs->count].hdrNum = hdrNum;
     trigs->triggerInfo[trigs->count].tix = tix;
+    trigs->triggerInfo[trigs->count].priority = priority;
     trigs->count++;
 }
 
 static int trigCmp(const void *a, const void *b)
 {
     const struct triggerInfo_s *trigA = a, *trigB = b;
+
+    if (trigA->priority < trigB->priority)
+	return 1;
+
+    if (trigA->priority > trigB->priority)
+	return -1;
 
     if (trigA->hdrNum < trigB->hdrNum)
 	return -1;
@@ -63,7 +71,7 @@ static int trigCmp(const void *a, const void *b)
     return 0;
 }
 
-static void rpmtriggersUniq(rpmtriggers trigs)
+static void rpmtriggersSortAndUniq(rpmtriggers trigs)
 {
     unsigned int from;
     unsigned int to = 0;
@@ -123,8 +131,13 @@ void rpmtriggersPrepPostUnTransFileTrigs(rpmts ts, rpmte te)
 	    while ((rpmdsTrigger = rpmdsFilterTi(rpmdsTriggers, tix))) {
 		if ((rpmdsNext(rpmdsTrigger) >= 0) &&
 		    (rpmdsFlags(rpmdsTrigger) & RPMSENSE_TRIGGERPOSTUN)) {
+		    struct rpmtd_s priorities;
 
-		    rpmtriggersAdd(ts->trigs2run, rpmdbGetIteratorOffset(mi), tix);
+		    headerGet(trigH, RPMTAG_TRANSFILETRIGGERPRIORITIES,
+				&priorities, HEADERGET_MINMEM);
+		    rpmtdSetIndex(&priorities, tix);
+		    rpmtriggersAdd(ts->trigs2run, rpmdbGetIteratorOffset(mi),
+				    tix, *rpmtdGetUint32(&priorities));
 		}
 		rpmdsFree(rpmdsTrigger);
 		tix++;
@@ -144,7 +157,7 @@ int runPostUnTransFileTrigs(rpmts ts)
     rpmtriggers trigs = ts->trigs2run;
     int nerrors = 0;
 
-    rpmtriggersUniq(trigs);
+    rpmtriggersSortAndUniq(trigs);
     /* Iterate over stored triggers */
     for (i = 0; i < trigs->count; i++) {
 	/* Get header containing trigger script */
@@ -347,11 +360,10 @@ static matchFilesIter matchFilesIteratorFree(matchFilesIter mfi)
  */
 static int runHandleTriggersInPkg(rpmts ts, rpmte te, Header h,
 				rpmsenseFlags sense, rpmscriptTriggerModes tm,
-				int searchMode)
+				int searchMode, int ti)
 {
     int nerrors = 0;
     rpmds rpmdsTriggers, rpmdsTrigger;
-    int ti = 0;
     rpmfiles files = NULL;
     matchFilesIter mfi = NULL;
     rpmScript script;
@@ -359,62 +371,58 @@ static int runHandleTriggersInPkg(rpmts ts, rpmte te, Header h,
     char *(*inputFunc)(void *);
 
     rpmdsTriggers = rpmdsNew(h, triggerDsTag(tm), 0);
+    rpmdsTrigger = rpmdsFilterTi(rpmdsTriggers, ti);
+    /*
+     * Now rpmdsTrigger contains all dependencies belonging to one trigger
+     * with trigger index tix. Have a look at the first one to check flags.
+     */
+    if ((rpmdsNext(rpmdsTrigger) >= 0) &&
+	(rpmdsFlags(rpmdsTrigger) & sense)) {
 
-    /* Loop over triggers in pakage (in header h) */
-    while ((rpmdsTrigger = rpmdsFilterTi(rpmdsTriggers, ti))) {
-	/*
-	 * Now rpmdsTrigger contains all dependencies belonging to one trigger
-	 * with trigger index tix. Have a look at the first one to check flags.
-	 */
-	if ((rpmdsNext(rpmdsTrigger) >= 0) &&
-	    (rpmdsFlags(rpmdsTrigger) & sense)) {
-
-	    switch (searchMode) {
-		case 0:
-		    /* Create iterator over files in te that this trigger matches */
-		    files = rpmteFiles(te);
-		    mfi = matchFilesIterator(rpmdsTrigger, files);
-		    break;
-		case 1:
-		    /* Create iterator over files in ts that this trigger matches */
-		    mfi = matchDBFilesIterator(rpmdsTrigger, ts, 1);
-		    break;
-		case 2:
-		    /* Create iterator over files in whole rpmd that this trigger matches */
-		    mfi = matchDBFilesIterator(rpmdsTrigger, ts, 0);
-		    break;
-	    }
-
-	    /* If this trigger matches any file then run trigger script */
-	    if (!matchFilesEmpty(mfi)) {
-		script = rpmScriptFromTriggerTag(h, triggertag(sense), tm, ti);
-
-		headerGet(h, RPMTAG_INSTPREFIXES, &installPrefixes,
-			HEADERGET_ALLOC|HEADERGET_ARGV);
-
-
-		/*
-		 * As input function set function to get next file from
-		 * matching file iterator. As parameter for this function
-		 * set matching file iterator. Input function will be called
-		 * during execution of trigger script in order to get data
-		 * that will be passed as stdin to trigger script. To get
-		 * these data from lua script function rpm.input() can be used.
-		 */
-		inputFunc = (char *(*)(void *)) matchFilesNext;
-		rpmScriptSetNextFileFunc(script, inputFunc, mfi);
-
-		nerrors += runScript(ts, te, installPrefixes.data,
-				    script, 0, 0);
-		rpmtdFreeData(&installPrefixes);
-		rpmScriptFree(script);
-	    }
-	    rpmfilesFree(files);
-	    matchFilesIteratorFree(mfi);
+	switch (searchMode) {
+	    case 0:
+		/* Create iterator over files in te that this trigger matches */
+		files = rpmteFiles(te);
+		mfi = matchFilesIterator(rpmdsTrigger, files);
+		break;
+	    case 1:
+		/* Create iterator over files in ts that this trigger matches */
+		mfi = matchDBFilesIterator(rpmdsTrigger, ts, 1);
+		break;
+	    case 2:
+		/* Create iterator over files in whole rpmd that this trigger matches */
+		mfi = matchDBFilesIterator(rpmdsTrigger, ts, 0);
+		break;
 	}
-	rpmdsFree(rpmdsTrigger);
-	ti++;
+
+	/* If this trigger matches any file then run trigger script */
+	if (!matchFilesEmpty(mfi)) {
+	    script = rpmScriptFromTriggerTag(h, triggertag(sense), tm, ti);
+
+	    headerGet(h, RPMTAG_INSTPREFIXES, &installPrefixes,
+		    HEADERGET_ALLOC|HEADERGET_ARGV);
+
+
+	    /*
+	     * As input function set function to get next file from
+	     * matching file iterator. As parameter for this function
+	     * set matching file iterator. Input function will be called
+	     * during execution of trigger script in order to get data
+	     * that will be passed as stdin to trigger script. To get
+	     * these data from lua script function rpm.input() can be used.
+	     */
+	    inputFunc = (char *(*)(void *)) matchFilesNext;
+	    rpmScriptSetNextFileFunc(script, inputFunc, mfi);
+
+	    nerrors += runScript(ts, te, installPrefixes.data,
+				script, 0, 0);
+	    rpmtdFreeData(&installPrefixes);
+	    rpmScriptFree(script);
+	}
+	rpmfilesFree(files);
+	matchFilesIteratorFree(mfi);
     }
+    rpmdsFree(rpmdsTrigger);
     rpmdsFree(rpmdsTriggers);
 
     return nerrors;
@@ -460,23 +468,26 @@ static int matchFilesInTran(rpmts ts, rpmte te, const char *pfx,
 rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
 			rpmscriptTriggerModes tm)
 {
-    int nerrors = 0;
+    int nerrors = 0, i;
     rpmdbIndexIterator ii;
-    rpmdbMatchIterator mi;
     const void *key;
     char *pfx;
     size_t keylen;
     Header trigH;
     int (*matchFunc)(rpmts, rpmte, const char*, rpmsenseFlags sense);
+    rpmTagVal priorityTag;
+    rpmtriggers triggers = rpmtriggersCreate(10);
 
     /* Decide if we match triggers against files in te or in whole ts */
-    if (tm == RPMSCRIPT_FILETRIGGER)
+    if (tm == RPMSCRIPT_FILETRIGGER) {
 	matchFunc = matchFilesInPkg;
-    else
+	priorityTag = RPMTAG_FILETRIGGERPRIORITIES;
+    } else {
 	matchFunc = matchFilesInTran;
+	priorityTag = RPMTAG_TRANSFILETRIGGERPRIORITIES;
+    }
 
     ii = rpmdbIndexIteratorInit(rpmtsGetRdb(ts), triggerDsTag(tm));
-    mi = rpmdbNewIterator(rpmtsGetRdb(ts), RPMDBI_PACKAGES);
 
     /* Loop over all file triggers in rpmdb */
     while ((rpmdbIndexIteratorNext(ii, &key, &keylen)) == 0) {
@@ -485,36 +496,53 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
 	pfx[keylen] = '\0';
 
 	/* Check if file trigger is fired by any file in ts/te */
-	if (matchFunc(ts, te, pfx, sense))
-	    /* If yes then store it */
-	    rpmdbAppendIterator(mi, rpmdbIndexIteratorPkgOffsets(ii),
-				rpmdbIndexIteratorNumPkgs(ii));
+	if (matchFunc(ts, te, pfx, sense)) {
+	    for (i = 0; i < rpmdbIndexIteratorNumPkgs(ii); i++) {
+		struct rpmtd_s priorities;
+		unsigned int priority;
+		unsigned int offset = rpmdbIndexIteratorPkgOffset(ii, i);
+		unsigned int tix = rpmdbIndexIteratorTagNum(ii, i);
+
+		/*
+		 * Don't handle transaction triggers installed in current
+		 * transaction to avoid executing the same script two times.
+		 * These triggers are handled in runImmedFileTriggers().
+		 */
+		if (tm == RPMSCRIPT_TRANSFILETRIGGER &&
+		    (packageHashHasEntry(ts->members->removedPackages, offset) ||
+		    packageHashHasEntry(ts->members->installedPackages, offset)))
+		    continue;
+
+		/* Get priority of trigger from header */
+		trigH = rpmdbGetHeaderAt(rpmtsGetRdb(ts), offset);
+		headerGet(trigH, priorityTag, &priorities, HEADERGET_MINMEM);
+		rpmtdSetIndex(&priorities, tix);
+		priority = *rpmtdGetUint32(&priorities);
+		headerFree(trigH);
+
+		/* Store file trigger in array */
+		rpmtriggersAdd(triggers, offset, tix, priority);
+	    }
+	}
 	free(pfx);
     }
     rpmdbIndexIteratorFree(ii);
 
-    rpmdbUniqIterator(mi);
-    /*
-     * Don't handle transaction triggers installed in current transaction
-     * to avoid executing the same script two times. These triggers are
-     * handled in runImmedFileTriggers().
-     */
-    if (tm == RPMSCRIPT_TRANSFILETRIGGER) {
-	rpmdbFilterIterator(mi, ts->members->removedPackages, 1);
-	rpmdbFilterIterator(mi, ts->members->installedPackages, 1);
-    }
+    /* Sort triggers by priority, offset, trigger index */
+    rpmtriggersSortAndUniq(triggers);
 
     /* Handle stored triggers */
-    if (rpmdbGetIteratorCount(mi)) {
-	while((trigH = rpmdbNextIterator(mi)) != NULL) {
-
-	    if (tm == RPMSCRIPT_FILETRIGGER)
-		nerrors += runHandleTriggersInPkg(ts, te, trigH, sense, tm, 0);
-	    else
-		nerrors += runHandleTriggersInPkg(ts, te, trigH, sense, tm, 1);
-	}
+    for (i = 0; i < triggers->count; i++) {
+	trigH = rpmdbGetHeaderAt(rpmtsGetRdb(ts), triggers->triggerInfo[i].hdrNum);
+	if (tm == RPMSCRIPT_FILETRIGGER)
+	    nerrors += runHandleTriggersInPkg(ts, te, trigH, sense, tm, 0,
+						triggers->triggerInfo[i].tix);
+	else
+	    nerrors += runHandleTriggersInPkg(ts, te, trigH, sense, tm, 1,
+						triggers->triggerInfo[i].tix);
+	headerFree(trigH);
     }
-    rpmdbFreeIterator(mi);
+    rpmtriggersFree(triggers);
 
     return (nerrors == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
@@ -523,7 +551,36 @@ rpmRC runImmedFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
 			    rpmscriptTriggerModes tm)
 {
     int nerrors = 0;
+    int triggersCount, i;
+    Header trigH = rpmteHeader(te);
+    struct rpmtd_s priorities;
+    rpmTagVal priorityTag;
+    rpmtriggers triggers;
 
-    nerrors += runHandleTriggersInPkg(ts, te, rpmteHeader(te), sense, tm, 2);
+    if (tm == RPMSCRIPT_FILETRIGGER) {
+	priorityTag = RPMTAG_FILETRIGGERPRIORITIES;
+    } else {
+	priorityTag = RPMTAG_TRANSFILETRIGGERPRIORITIES;
+    }
+    headerGet(trigH, priorityTag, &priorities, HEADERGET_MINMEM);
+
+    triggersCount = rpmtdCount(&priorities);
+    triggers = rpmtriggersCreate(triggersCount);
+
+    for (i = 0; i < triggersCount; i++) {
+	rpmtdSetIndex(&priorities, i);
+	/* Offset is not important, all triggers are from the same package */
+	rpmtriggersAdd(triggers, 0, i, *rpmtdGetUint32(&priorities));
+    }
+
+    /* Sort triggers by priority, offset, trigger index */
+    rpmtriggersSortAndUniq(triggers);
+
+    for (i = 0; i < triggersCount; i++) {
+	nerrors += runHandleTriggersInPkg(ts, te, trigH, sense, tm, 2,
+					    triggers->triggerInfo[i].tix);
+    }
+    rpmtriggersFree(triggers);
+
     return (nerrors == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
