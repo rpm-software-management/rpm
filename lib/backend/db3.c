@@ -1052,7 +1052,7 @@ rpmRC idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
 	if (searchType == DBC_PREFIX_SEARCH) {
 	    if (dbrc == DB_NOTFOUND && *set != NULL && (*set)->count > 0)
 		dbrc = 0;
-	    else if (dbrc == 0 && (*set)->count == 0)
+	    else if (dbrc == 0 && (*set == NULL || (*set)->count == 0))
 		dbrc = DB_NOTFOUND;
 	}
 
