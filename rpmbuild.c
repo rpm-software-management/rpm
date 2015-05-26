@@ -566,6 +566,10 @@ static int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 
 	/* Read in configuration for target. */
 	rpmFreeMacros(NULL);
+	if (buildInPlace) {
+		/* Need to redefine this after freeing all the macros */
+		rpmDefineMacro(NULL, "_build_in_place 1", 0);
+	}
 	rpmFreeRpmrc();
 	(void) rpmReadConfigFiles(rcfile, *target);
 	rc = buildForTarget(ts, arg, ba);
