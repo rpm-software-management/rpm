@@ -17,6 +17,8 @@
 
 #include "debug.h"
 
+#define MANIFEST_RECURSIONS 1000 /* Max. number of allowed manifest recursions */
+
 RPM_GNUC_INTERNAL
 rpmgiFlags giFlags = RPMGI_NONE;
 
@@ -31,6 +33,10 @@ struct rpmgi_s {
 
     ARGV_t argv;
     int argc;
+
+    int curLvl;			/*!< Current recursion level */
+    int	recLvls[MANIFEST_RECURSIONS]; /*!< Reversed end index for given level */
+
 };
 
 /**
@@ -123,10 +129,23 @@ static Header rpmgiLoadReadHeader(rpmgi gi)
     if (gi->argv != NULL && gi->argv[gi->i] != NULL)
     do {
 	char * fn = gi->argv[gi->i];
-	int rc = rpmgiReadHeader(gi, fn, &h);
+	int rc;
+
+	while (gi->recLvls[gi->curLvl] > gi->argc - gi->i)
+	    gi->curLvl--;
+
+	rc = rpmgiReadHeader(gi, fn, &h);
 
 	if (h != NULL || (gi->flags & RPMGI_NOMANIFEST) || rc == 0)
 	    break;
+
+	if (gi->curLvl == MANIFEST_RECURSIONS - 1) {
+	    rpmlog(RPMLOG_ERR,
+		   _("Max level of manifest recursion exceeded: %s\n"), fn);
+	    break;
+	}
+	gi->curLvl++;
+	gi->recLvls[gi->curLvl] = gi->argc - gi->i;
 
 	/* Not a header, so try for a manifest. */
 	gi->argv[gi->i] = NULL;		/* Mark the insertion point */
@@ -199,6 +218,9 @@ rpmgi rpmgiNew(rpmts ts, rpmgiFlags flags, ARGV_const_t argv)
     gi->argv = argvNew();
     gi->argc = 0;
     rpmgiGlobArgv(gi, argv);
+
+    gi->curLvl = 0;
+    gi->recLvls[gi->curLvl] = 1;
 
     return gi;
 }
