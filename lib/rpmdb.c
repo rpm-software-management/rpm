@@ -510,6 +510,10 @@ static rpmdb newRpmdb(const char * root, const char * home,
 	RPMDBI_SHA1HEADER,
 	RPMDBI_FILETRIGGERNAME,
 	RPMDBI_TRANSFILETRIGGERNAME,
+	RPMDBI_RECOMMENDNAME,
+	RPMDBI_SUGGESTNAME,
+	RPMDBI_SUPPLEMENTNAME,
+	RPMDBI_ENHANCENAME,
     };
 
     if (!(db_home && db_home[0] != '%')) {
