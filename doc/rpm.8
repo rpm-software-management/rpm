@@ -58,6 +58,8 @@ rpm \- RPM Package Manager
  [\fB--hdrid \fISHA1\fB\fR] [\fB--pkgid \fIMD5\fB\fR] [\fB--tid \fITID\fB\fR]
  [\fB--querybynumber \fIHDRNUM\fB\fR] [\fB--triggeredby \fIPACKAGE_NAME\fB\fR]
  [\fB--whatprovides \fICAPABILITY\fB\fR] [\fB--whatrequires \fICAPABILITY\fB\fR]
+ [\fB--whatrecommends \fICAPABILITY\fB\fR] [\fB--whatsuggests \fICAPABILITY\fB\fR]
+ [\fB--whatsupplements \fICAPABILITY\fB\fR] [\fB--whatenhances \fICAPABILITY\fB\fR]
 
 .SS "query-options"
 .PP
@@ -588,6 +590,18 @@ Query all packages that provide the \fICAPABILITY\fR capability.
 .TP
 \fB--whatrequires \fICAPABILITY\fB\fR
 Query all packages that require \fICAPABILITY\fR for proper functioning.
+.TP
+\fB--whatrecommends \fICAPABILITY\fB\fR
+Query all packages that recommend \fICAPABILITY\fR.
+.TP
+\fB--whatsuggests \fICAPABILITY\fB\fR
+Query all packages that suggest \fICAPABILITY\fR.
+.TP
+\fB--whatsupplements \fICAPABILITY\fB\fR
+Query all packages that supplement \fICAPABILITY\fR.
+.TP
+\fB--whatenhances \fICAPABILITY\fB\fR
+Query all packages that enhance \fICAPABILITY\fR.
 .SS "PACKAGE QUERY OPTIONS:"
 .PP
 .TP

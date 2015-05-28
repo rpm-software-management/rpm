@@ -384,6 +384,34 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
 	}
 	break;
 
+    case RPMQV_WHATRECOMMENDS:
+	mi = rpmtsInitIterator(ts, RPMDBI_RECOMMENDNAME, arg, 0);
+	if (mi == NULL) {
+	    rpmlog(RPMLOG_NOTICE, _("no package recommends %s\n"), arg);
+	}
+	break;
+
+    case RPMQV_WHATSUGGESTS:
+	mi = rpmtsInitIterator(ts, RPMDBI_SUGGESTNAME, arg, 0);
+	if (mi == NULL) {
+	    rpmlog(RPMLOG_NOTICE, _("no package suggests %s\n"), arg);
+	}
+	break;
+
+    case RPMQV_WHATSUPPLEMENTS:
+	mi = rpmtsInitIterator(ts, RPMDBI_SUPPLEMENTNAME, arg, 0);
+	if (mi == NULL) {
+	    rpmlog(RPMLOG_NOTICE, _("no package supplements %s\n"), arg);
+	}
+	break;
+
+    case RPMQV_WHATENHANCES:
+	mi = rpmtsInitIterator(ts, RPMDBI_ENHANCENAME, arg, 0);
+	if (mi == NULL) {
+	    rpmlog(RPMLOG_NOTICE, _("no package enhances %s\n"), arg);
+	}
+	break;
+
     case RPMQV_WHATPROVIDES:
 	if (arg[0] != '/' && arg[0] != '.') {
 	    mi = rpmtsInitIterator(ts, RPMDBI_PROVIDENAME, arg, 0);

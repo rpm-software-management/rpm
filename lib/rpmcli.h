@@ -91,6 +91,10 @@ enum rpmQVSources_e {
     RPMQV_HDRID,	/*!< ... from header id (immutable header SHA1). */
     RPMQV_TID,		/*!< ... from install transaction id (time stamp). */
     RPMQV_SPECSRPM,	/*!< ... from spec file source (query only). */
+    RPMQV_WHATRECOMMENDS,	/*!< ... from recommends db search. */
+    RPMQV_WHATSUGGESTS,		/*!< ... from suggests db search. */
+    RPMQV_WHATSUPPLEMENTS,	/*!< ... from supplements db search. */
+    RPMQV_WHATENHANCES,		/*!< ... from enhances db search. */
 };
 
 typedef rpmFlags rpmQVSources;

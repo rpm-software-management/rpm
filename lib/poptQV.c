@@ -21,6 +21,10 @@ struct rpmQVKArguments_s rpmQVKArgs;
 #define POPT_QUERYBYPKGID	-1007
 #define POPT_QUERYBYHDRID	-1008
 #define POPT_QUERYBYTID		-1010
+#define POPT_WHATRECOMMENDS	-1011
+#define POPT_WHATSUGGESTS	-1012
+#define POPT_WHATSUPPLEMENTS	-1013
+#define POPT_WHATENHANCES	-1014
 
 /* ========== Query/Verify/Signature source args */
 static void rpmQVSourceArgCallback( poptContext con,
@@ -45,6 +49,10 @@ static void rpmQVSourceArgCallback( poptContext con,
     case 'p': qva->qva_source |= RPMQV_RPM; break;
     case POPT_WHATPROVIDES: qva->qva_source |= RPMQV_WHATPROVIDES; break;
     case POPT_WHATREQUIRES: qva->qva_source |= RPMQV_WHATREQUIRES; break;
+    case POPT_WHATRECOMMENDS: qva->qva_source |= RPMQV_WHATRECOMMENDS; break;
+    case POPT_WHATSUGGESTS: qva->qva_source |= RPMQV_WHATSUGGESTS; break;
+    case POPT_WHATSUPPLEMENTS: qva->qva_source |= RPMQV_WHATSUPPLEMENTS; break;
+    case POPT_WHATENHANCES: qva->qva_source |= RPMQV_WHATENHANCES; break;
     case POPT_TRIGGEREDBY: qva->qva_source |= RPMQV_TRIGGEREDBY; break;
     case POPT_QUERYBYPKGID: qva->qva_source |= RPMQV_PKGID; break;
     case POPT_QUERYBYHDRID: qva->qva_source |= RPMQV_HDRID; break;
@@ -93,6 +101,14 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("query/verify the package(s) which require a dependency"), "CAPABILITY" },
  { "whatprovides", '\0', 0, 0, POPT_WHATPROVIDES, 
 	N_("query/verify the package(s) which provide a dependency"), "CAPABILITY" },
+ { "whatrecommends", '\0', 0, 0, POPT_WHATRECOMMENDS,
+	N_("query/verify the package(s) which recommends a dependency"), "CAPABILITY" },
+ { "whatsuggests", '\0', 0, 0, POPT_WHATSUGGESTS,
+	N_("query/verify the package(s) which suggests a dependency"), "CAPABILITY" },
+ { "whatsupplements", '\0', 0, 0, POPT_WHATSUPPLEMENTS,
+	N_("query/verify the package(s) which supplements a dependency"), "CAPABILITY" },
+ { "whatenhances", '\0', 0, 0, POPT_WHATENHANCES,
+	N_("query/verify the package(s) which enhances a dependency"), "CAPABILITY" },
 
  { "noglob", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &giFlags, RPMGI_NOGLOB,
 	N_("do not glob arguments"), NULL},
