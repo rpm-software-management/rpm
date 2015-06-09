@@ -41,72 +41,6 @@ static struct poptOption optionsTable[] = {
     POPT_TABLEEND
 };
 
-static int checkPassPhrase(const char * passPhrase)
-{
-    int passPhrasePipe[2];
-    int pid, status;
-    int rc = -1;
-    int xx;
-
-    if (passPhrase == NULL)
-	return -1;
-
-    passPhrasePipe[0] = passPhrasePipe[1] = 0;
-    if (pipe(passPhrasePipe))
-	return -1;
-
-    pid = fork();
-    if (pid < 0) {
-	close(passPhrasePipe[0]);
-	close(passPhrasePipe[1]);
-	return -1;
-    }
-
-    if (pid == 0) {
-	char * cmd, * gpg_path;
-	char *const *av;
-	int fdno;
-
-	close(STDIN_FILENO);
-	close(STDOUT_FILENO);
-	close(passPhrasePipe[1]);
-	if ((fdno = open("/dev/null", O_RDONLY)) != STDIN_FILENO) {
-	    xx = dup2(fdno, STDIN_FILENO);
-	    close(fdno);
-	}
-	if ((fdno = open("/dev/null", O_WRONLY)) != STDOUT_FILENO) {
-	    xx = dup2(fdno, STDOUT_FILENO);
-	    close(fdno);
-	}
-	xx = dup2(passPhrasePipe[0], 3);
-
-	unsetenv("MALLOC_CHECK_");
-	gpg_path = rpmExpand("%{?_gpg_path}", NULL);
-
-	if (!rstreq(gpg_path, ""))
-	    setenv("GNUPGHOME", gpg_path, 1);
-	
-	cmd = rpmExpand("%{?__gpg_check_password_cmd}", NULL);
-	rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
-	if (xx >= 0 && rc == 0) {
-	    rc = execve(av[0], av+1, environ);
-	    fprintf(stderr, _("Could not exec %s: %s\n"), "gpg",
-			strerror(errno));
-	}
-	_exit(EXIT_FAILURE);
-    }
-
-    close(passPhrasePipe[0]);
-    xx = write(passPhrasePipe[1], passPhrase, strlen(passPhrase));
-    xx = write(passPhrasePipe[1], "\n", 1);
-    close(passPhrasePipe[1]);
-
-    if (xx >= 0 && waitpid(pid, &status, 0) >= 0)
-	rc = (WIFEXITED(status) && WEXITSTATUS(status) == 0) ? 0 : 1;
-
-    return rc;
-}
-
 /* TODO: permit overriding macro setup on the command line */
 static int doSign(poptContext optCon)
 {
@@ -119,18 +53,10 @@ static int doSign(poptContext optCon)
 	goto exit;
     }
 
-    /* XXX FIXME: eliminate obsolete getpass() usage */
-    passPhrase = getpass(_("Enter pass phrase: "));
-    passPhrase = (passPhrase != NULL) ? rstrdup(passPhrase) : NULL;
-    if (checkPassPhrase(passPhrase) == 0) {
-	const char *arg;
-	fprintf(stderr, _("Pass phrase is good.\n"));
-	rc = 0;
-	while ((arg = poptGetArg(optCon)) != NULL) {
-	    rc += rpmPkgSign(arg, NULL, passPhrase);
-	}
-    } else {
-	fprintf(stderr, _("Pass phrase check failed or gpg key expired\n"));
+    const char *arg;
+    rc = 0;
+    while ((arg = poptGetArg(optCon)) != NULL) {
+	rc += rpmPkgSign(arg, NULL);
     }
 
 exit:

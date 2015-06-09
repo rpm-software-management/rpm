@@ -245,11 +245,9 @@ exit:
     return rc;
 }
 
-static int runGPG(sigTarget sigt, const char *sigfile, const char * passPhrase)
+static int runGPG(sigTarget sigt, const char *sigfile)
 {
     int pid = 0, status;
-    int inpipe[2];
-    FILE * fpipe = NULL;
     FD_t fnamedPipe = NULL;
     char *namedPipeName = NULL;
     unsigned char buf[BUFSIZ];
@@ -257,12 +255,6 @@ static int runGPG(sigTarget sigt, const char *sigfile, const char * passPhrase)
     ssize_t wantCount;
     rpm_loff_t size;
     int rc = 1; /* assume failure */
-
-    inpipe[0] = inpipe[1] = 0;
-    if (pipe(inpipe) < 0) {
-	rpmlog(RPMLOG_ERR, _("Couldn't create pipe for signing: %m"));
-	goto exit;
-    }
 
     namedPipeName = mkTempFifo();
 
@@ -273,9 +265,6 @@ static int runGPG(sigTarget sigt, const char *sigfile, const char * passPhrase)
 	char *const *av;
 	char *cmd = NULL;
 	const char *gpg_path = rpmExpand("%{?_gpg_path}", NULL);
-
-	(void) dup2(inpipe[0], 3);
-	(void) close(inpipe[1]);
 
 	if (gpg_path && *gpg_path != '\0')
 	    (void) setenv("GNUPGHOME", gpg_path, 1);
@@ -294,23 +283,6 @@ static int runGPG(sigTarget sigt, const char *sigfile, const char * passPhrase)
 
     delMacro(NULL, "__plaintext_filename");
     delMacro(NULL, "__signature_filename");
-
-    (void) close(inpipe[0]);
-    inpipe[0] = 0;
-
-    fpipe = fdopen(inpipe[1], "w");
-    if (!fpipe) {
-	rpmlog(RPMLOG_ERR, _("fdopen failed\n"));
-	goto exit;
-    }
-    inpipe[1] = 0;
-
-    if (fprintf(fpipe, "%s\n", (passPhrase ? passPhrase : "")) < 0) {
-	rpmlog(RPMLOG_ERR, _("Could not write to pipe\n"));
-	goto exit;
-    }
-    (void) fclose(fpipe);
-    fpipe = NULL;
 
     fnamedPipe = Fopen(namedPipeName, "w");
     if (!fnamedPipe) {
@@ -352,14 +324,6 @@ static int runGPG(sigTarget sigt, const char *sigfile, const char * passPhrase)
     }
 
 exit:
-    if (fpipe)
-	fclose(fpipe);
-
-    if (inpipe[0])
-	close(inpipe[0]);
-
-    if (inpipe[1])
-	close(inpipe[1]);
 
     if (fnamedPipe)
 	Fclose(fnamedPipe);
@@ -383,8 +347,7 @@ exit:
  * @param passPhrase	private key pass phrase
  * @return		0 on success, 1 on failure
  */
-static int makeGPGSignature(Header sigh, int ishdr, sigTarget sigt,
-			    const char * passPhrase)
+static int makeGPGSignature(Header sigh, int ishdr, sigTarget sigt)
 {
     char * sigfile = rstrscat(NULL, sigt->fileName, ".sig", NULL);
     struct stat st;
@@ -392,7 +355,7 @@ static int makeGPGSignature(Header sigh, int ishdr, sigTarget sigt,
     size_t pktlen = 0;
     int rc = 1; /* assume failure */
 
-    if (runGPG(sigt, sigfile, passPhrase))
+    if (runGPG(sigt, sigfile))
 	goto exit;
 
     if (stat(sigfile, &st)) {
@@ -431,16 +394,15 @@ exit:
     return rc;
 }
 
-static int rpmGenSignature(Header sigh, sigTarget sigt1, sigTarget sigt2,
-			    const char * passPhrase)
+static int rpmGenSignature(Header sigh, sigTarget sigt1, sigTarget sigt2)
 {
     int ret;
 
-    ret = makeGPGSignature(sigh, 0, sigt1, passPhrase);
+    ret = makeGPGSignature(sigh, 0, sigt1);
     if (ret)
 	goto exit;
 
-    ret = makeGPGSignature(sigh, 1, sigt2, passPhrase);
+    ret = makeGPGSignature(sigh, 1, sigt2);
     if (ret)
 	goto exit;
 exit:
@@ -486,8 +448,7 @@ static int sameSignature(rpmTagVal sigtag, Header h1, Header h2)
     return (rc == 0);
 }
 
-static int replaceSignature(Header sigh, sigTarget sigt1, sigTarget sigt2,
-			    const char *passPhrase)
+static int replaceSignature(Header sigh, sigTarget sigt1, sigTarget sigt2)
 {
     /* Grab a copy of the header so we can compare the result */
     Header oldsigh = headerCopy(sigh);
@@ -500,7 +461,7 @@ static int replaceSignature(Header sigh, sigTarget sigt1, sigTarget sigt2,
      * rpmGenSignature() internals parse the actual signing result and 
      * adds appropriate tags for DSA/RSA.
      */
-    if (rpmGenSignature(sigh, sigt1, sigt2, passPhrase) == 0) {
+    if (rpmGenSignature(sigh, sigt1, sigt2) == 0) {
 	/* Lets see what we got and whether its the same signature as before */
 	rpmTagVal sigtag = headerIsEntry(sigh, RPMSIGTAG_DSA) ?
 					RPMSIGTAG_DSA : RPMSIGTAG_RSA;
@@ -517,10 +478,9 @@ static int replaceSignature(Header sigh, sigTarget sigt1, sigTarget sigt2,
  * Create/modify elements in signature header.
  * @param rpm		path to package
  * @param deleting	adding or deleting signature?
- * @param passPhrase	passPhrase (ignored when deleting)
  * @return		0 on success, -1 on error
  */
-static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
+static int rpmSign(const char *rpm, int deleting)
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
@@ -605,7 +565,7 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 	sigt2 = sigt1;
 	sigt2.size = headerSizeof(h, HEADER_MAGIC_YES);
 
-	res = replaceSignature(sigh, &sigt1, &sigt2, passPhrase);
+	res = replaceSignature(sigh, &sigt1, &sigt2);
 	if (res != 0) {
 	    if (res == 1) {
 		rpmlog(RPMLOG_WARNING,
@@ -722,8 +682,7 @@ exit:
     return res;
 }
 
-int rpmPkgSign(const char *path,
-		const struct rpmSignArgs * args, const char *passPhrase)
+int rpmPkgSign(const char *path, const struct rpmSignArgs * args)
 {
     int rc;
 
@@ -739,7 +698,7 @@ int rpmPkgSign(const char *path,
 	}
     }
 
-    rc = rpmSign(path, 0, passPhrase);
+    rc = rpmSign(path, 0);
 
     if (args) {
 	if (args->hashalgo) {
@@ -755,5 +714,5 @@ int rpmPkgSign(const char *path,
 
 int rpmPkgDelSign(const char *path)
 {
-    return rpmSign(path, 1, NULL);
+    return rpmSign(path, 1);
 }

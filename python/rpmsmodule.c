@@ -8,19 +8,18 @@ static char rpms__doc__[] =
 static PyObject * addSign(PyObject * self, PyObject * args, PyObject *kwds)
 {
     const char *path = NULL;
-    const char *passPhrase = NULL;
-    char * kwlist[] = { "path", "passPhrase", "keyid", "hashalgo", NULL };
+    char * kwlist[] = { "path", "keyid", "hashalgo", NULL };
     struct rpmSignArgs sig, *sigp = NULL;
 
     memset(&sig, 0, sizeof(sig));
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "ss|si", kwlist,
-				&path, &passPhrase, &sig.keyid, &sig.hashalgo))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|si", kwlist,
+				&path, &sig.keyid, &sig.hashalgo))
 	return NULL;
 
     if (sig.keyid || sig.hashalgo)
 	sigp = &sig;
 
-    return PyBool_FromLong(rpmPkgSign(path, sigp, passPhrase) == 0);
+    return PyBool_FromLong(rpmPkgSign(path, sigp) == 0);
 }
 
 static PyObject * delSign(PyObject * self, PyObject * args, PyObject *kwds)

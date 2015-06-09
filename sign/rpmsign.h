@@ -21,8 +21,7 @@ struct rpmSignArgs {
  * @param passPhrase	passphrase for the signing key
  * @return		0 on success
  */
-int rpmPkgSign(const char *path,
-	       const struct rpmSignArgs * args, const char *passPhrase);
+int rpmPkgSign(const char *path, const struct rpmSignArgs * args);
 
 /** \ingroup rpmsign
  * Delete signature(s) from a package
