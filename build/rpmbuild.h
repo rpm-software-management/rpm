@@ -15,7 +15,8 @@ extern "C" {
 #endif
 
 /** \ingroup rpmbuild
- * Bit(s) to control rpmSpecBuild() operation.
+ * Bit(s) to control rpmSpecBuild() operation. Also used as argument to
+ * rpmSpecGetSection and rpmSpecPkgGetSection.
  */
 enum rpmBuildFlags_e {
     RPMBUILD_NONE	= 0,
@@ -31,6 +32,9 @@ enum rpmBuildFlags_e {
     RPMBUILD_RMBUILD	= (1 <<  9),	/*!< Remove build sub-tree. */
     RPMBUILD_STRINGBUF	= (1 << 10),	/*!< Internal use only */
     RPMBUILD_RMSPEC	= (1 << 11),	/*!< Remove spec file. */
+    RPMBUILD_FILE_FILE  = (1 << 16),    /*!< rpmSpecPkgGetSection: %files -f */
+    RPMBUILD_FILE_LIST  = (1 << 17),    /*!< rpmSpecPkgGetSection: %files */
+    RPMBUILD_POLICY     = (1 << 18),    /*!< rpmSpecPkgGetSection: %policy */
 
     RPMBUILD_NOBUILD	= (1 << 31)	/*!< Don't execute or package. */
 };

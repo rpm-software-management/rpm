@@ -376,6 +376,18 @@ Header rpmSpecPkgHeader(rpmSpecPkg pkg)
     return (pkg != NULL) ? pkg->header : NULL;
 }
 
+char* rpmSpecPkgGetSection(rpmSpecPkg pkg, int section)
+{
+    if (pkg) {
+        switch (section) {
+        case RPMBUILD_FILE_FILE: return argvJoin(pkg->fileFile, "");
+        case RPMBUILD_FILE_LIST: return argvJoin(pkg->fileList, "");
+        case RPMBUILD_POLICY:    return argvJoin(pkg->policyList, "");
+        }
+    }
+    return NULL;
+}
+
 rpmSpecSrcIter rpmSpecSrcIterInit(rpmSpec spec)
 {
     SPEC_LISTITER_INIT(rpmSpecSrcIter, sources);

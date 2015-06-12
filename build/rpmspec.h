@@ -56,6 +56,13 @@ rpmSpecPkgIter rpmSpecPkgIterFree(rpmSpecPkgIter iter);
 /* Getters for spec package attributes */
 Header rpmSpecPkgHeader(rpmSpecPkg pkg);
 
+/*
+ * Retrieve package specific parsed spec script section (RPMBUILD_FILE_LIST,
+ * RPMBUILD_FILE_FILE, RPMBUILD_POLICY) as a malloc'ed string.
+ */
+char * rpmSpecPkgGetSection(rpmSpecPkg pkg, int section);
+
+
 /* Iterator for spec sources */
 rpmSpecSrcIter rpmSpecSrcIterInit(rpmSpec spec);
 rpmSpecSrc rpmSpecSrcIterNext(rpmSpecSrcIter iter);
