@@ -47,17 +47,47 @@ struct specPkgObject_s {
     rpmSpecPkg pkg;
 };
 
+static PyObject *pkgGetSection(rpmSpecPkg pkg, int section)
+{
+    char *sect = rpmSpecPkgGetSection(pkg, section);
+    if (sect != NULL) {
+        PyObject *ps = PyString_FromString(sect);
+        free(sect);
+        if (ps != NULL)
+            return ps;
+    }
+    Py_RETURN_NONE;
+}
+
 static char specPkg_doc[] =
-"";
+"Package data parsed from spec file.";
 
 static PyObject * specpkg_get_header(specPkgObject *s, void *closure)
 {
     return makeHeader(rpmSpecPkgHeader(s->pkg));
 }
 
+static PyObject * specpkg_get_fileFile(specPkgObject *s, void *closure)
+{
+    return  pkgGetSection(s->pkg, RPMBUILD_FILE_FILE);
+}
+
+static PyObject * specpkg_get_fileList(specPkgObject *s, void *closure)
+{
+    return  pkgGetSection(s->pkg, RPMBUILD_FILE_LIST);
+}
+
+static PyObject * specpkg_get_policyList(specPkgObject *s, void *closure)
+{
+    return  pkgGetSection(s->pkg, RPMBUILD_POLICY);
+}
+
 static PyGetSetDef specpkg_getseters[] = {
-    { "header",	(getter) specpkg_get_header, NULL, NULL },
-    { NULL } 	/* sentinel */
+    { "header",     (getter) specpkg_get_header,     NULL, NULL },
+    { "fileFile",   (getter) specpkg_get_fileFile,   NULL, NULL },
+    { "fileList",   (getter) specpkg_get_fileList,   NULL, NULL },
+    { "policyList", (getter) specpkg_get_policyList, NULL, NULL },
+    { NULL }   /* sentinel */
 };
 
 PyTypeObject specPkg_Type = {
