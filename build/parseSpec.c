@@ -166,8 +166,45 @@ static int restoreFirstChar(rpmSpec spec)
     return 0;
 }
 
+static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
+{
+    char *lbuf = NULL;
+    int rc = 0, isComment = 0;
+
+     /* Don't expand macros (eg. %define) in false branch of %if clause */
+    if (!spec->readStack->reading)
+	return 0;
+
+    lbuf = spec->lbuf;
+    SKIPSPACE(lbuf);
+    if (lbuf[0] == '#')
+	isComment = 1;
+
+    lbuf = xstrdup(spec->lbuf);
+
+    rc = expandMacros(spec, spec->macros, spec->lbuf, spec->lbufSize);
+    if (rc) {
+	rpmlog(RPMLOG_ERR, _("line %d: %s\n"),
+		spec->lineNum, spec->lbuf);
+	goto exit;
+    }
+
+    if (strip & STRIP_COMMENTS &&
+	isComment && !rstreq(spec->lbuf, lbuf)) {
+
+	rpmlog(RPMLOG_WARNING,
+	    _("Macro expanded in comment on line %d: %s\n"),
+	    spec->lineNum, lbuf);
+    }
+
+exit:
+    free(lbuf);
+
+    return rc;
+}
+
 /* Return zero on success, 1 if we need to read more and -1 on errors. */
-static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi)
+static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi, int strip)
 {
     /* Expand next line from file into line buffer */
     if (!(spec->nextline && *spec->nextline)) {
@@ -218,13 +255,9 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi)
 	}
 	spec->lbufOff = 0;
 
-	/* Don't expand macros (eg. %define) in false branch of %if clause */
-	if (spec->readStack->reading &&
-	    expandMacros(spec, spec->macros, spec->lbuf, spec->lbufSize)) {
-		rpmlog(RPMLOG_ERR, _("line %d: %s\n"),
-			spec->lineNum, spec->lbuf);
-		return -1;
-	}
+	if (expandMacrosInSpecBuf(spec, strip))
+	    return -1;
+
 	spec->nextline = spec->lbuf;
     }
     return 0;
@@ -334,7 +367,7 @@ int readLine(rpmSpec spec, int strip)
 	ofi = spec->fileStack;
 
 	/* Copy next file line into the spec line buffer */
-	rc = copyNextLineFromOFI(spec, ofi);
+	rc = copyNextLineFromOFI(spec, ofi, strip);
 	if (rc > 0) {
 	    if (startLine == 0)
 		startLine = spec->lineNum;
