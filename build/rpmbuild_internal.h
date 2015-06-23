@@ -104,7 +104,6 @@ struct rpmSpec_s {
 
     char * specFile;	/*!< Name of the spec file. */
     char * buildRoot;
-    char * buildSubdir;
     const char * rootDir;
 
     struct OpenFileInfo * fileStack;

@@ -292,18 +292,22 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     }
 
     if (dirName) {
-	spec->buildSubdir = xstrdup(dirName);
+	rpmPushMacro(spec->macros, "buildsubdir", NULL, dirName, RMIL_SPEC);
     } else {
-	rasprintf(&spec->buildSubdir, "%s-%s", 
-		  headerGetString(spec->packages->header, RPMTAG_NAME),
-		  headerGetString(spec->packages->header, RPMTAG_VERSION));
+	char * buildSubdir = rpmExpand("%{?buildsubdir}", NULL);
+	if (buildSubdir[0] == '\0') {
+	    rasprintf(&buildSubdir, "%s-%s",
+		      headerGetString(spec->packages->header, RPMTAG_NAME),
+		      headerGetString(spec->packages->header, RPMTAG_VERSION));
+	    rpmPushMacro(spec->macros, "buildsubdir", NULL, buildSubdir, RMIL_SPEC);
+	}
+	free(buildSubdir);
     }
     /* Mer addition - support --build-in-place */
     if (rpmExpandNumeric("%{_build_in_place}")) {
 	buildInPlace = 1;
-	spec->buildSubdir = NULL;
+	rpmPushMacro(spec->macros, "buildsubdir", NULL, "", RMIL_SPEC);
     }
-    rpmPushMacro(spec->macros, "buildsubdir", NULL, spec->buildSubdir, RMIL_SPEC);
     if (buildInPlace) {
 	rc = RPMRC_OK;
 	goto exit;
@@ -320,7 +324,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     
     /* delete any old sources */
     if (!leaveDirs) {
-	rasprintf(&buf, "rm -rf '%s'", spec->buildSubdir);
+	buf = rpmExpand("%{?buildsubdir:rm -rf '%{?buildsubdir}}'", NULL);
 	appendLineStringBuf(spec->prep, buf);
 	free(buf);
     }
@@ -329,8 +333,8 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 
     /* if necessary, create and cd into the proper dir */
     if (createDir) {
-	buf = rpmExpand("%{__mkdir_p} ", spec->buildSubdir, "\n",
-			"cd '", spec->buildSubdir, "'", NULL);
+	buf = rpmExpand("%{?buildsubdir:%{__mkdir_p} '%{buildsubdir}'\n",
+			"cd '%{buildsubdir}'}", NULL);
 	appendLineStringBuf(spec->prep, buf);
 	free(buf);
     }
@@ -345,7 +349,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     }
 
     if (!createDir) {
-	rasprintf(&buf, "cd '%s'", spec->buildSubdir);
+	buf = rpmExpand("%{?buildsubdir:cd '%{buildsubdir}'}", NULL);
 	appendLineStringBuf(spec->prep, buf);
 	free(buf);
     }
