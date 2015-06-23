@@ -56,6 +56,8 @@
 %__semodule		@__SEMODULE@
 %__ssh			@__SSH@
 %__tar			@__TAR@
+%__tar_opts_verbose	-vv
+%__tar_opts		-xof
 %__unzip		@__UNZIP@
 %__zstd			@__ZSTD@
 %__gem			@__GEM@

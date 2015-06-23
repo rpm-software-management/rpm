@@ -129,7 +129,9 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 {
     char *buf = NULL;
     char *tar = NULL;
-    const char *taropts = ((rpmIsVerbose() && !quietly) ? "-xvvof" : "-xof");
+    const char *taropts = rpmExpand((rpmIsVerbose() && !quietly) ?
+				    "%{__tar_opts_verbose} %{__tar_opts}" :
+				    "%{__tar_opts}", NULL);
     struct Source *sp;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
 
