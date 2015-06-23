@@ -297,13 +297,15 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     }
 
     if (dirName) {
-	spec->buildSubdir = xstrdup(dirName);
+	rpmPushMacro(spec->macros, "buildsubdir", NULL, dirName, RMIL_SPEC);
     } else {
-	rasprintf(&spec->buildSubdir, "%s-%s", 
+	char * buildSubdir = NULL;
+	rasprintf(&buildSubdir, "%s-%s",
 		  headerGetString(spec->packages->header, RPMTAG_NAME),
 		  headerGetString(spec->packages->header, RPMTAG_VERSION));
+	rpmPushMacro(spec->macros, "buildsubdir", NULL, buildSubdir, RMIL_SPEC);
+	free(buildSubdir);
     }
-    rpmPushMacroFlags(spec->macros, "buildsubdir", NULL, spec->buildSubdir, RMIL_SPEC, RPMMACRO_LITERAL);
     
     /* cd to the build dir */
     {	char * buildDir = rpmGenPath(spec->rootDir, "%{_builddir}", "");
@@ -316,7 +318,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     
     /* delete any old sources */
     if (!leaveDirs) {
-	rasprintf(&buf, "rm -rf '%s'", spec->buildSubdir);
+	buf = rpmExpand("rm -rf '%{buildsubdir}'", NULL);
 	appendLineStringBuf(spec->prep, buf);
 	free(buf);
     }
@@ -325,8 +327,8 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 
     /* if necessary, create and cd into the proper dir */
     if (createDir) {
-	buf = rpmExpand("%{__mkdir_p} ", spec->buildSubdir, "\n",
-			"cd '", spec->buildSubdir, "'", NULL);
+	buf = rpmExpand("%{__mkdir_p} '%{buildsubdir}'\n",
+			"cd '%{buildsubdir}'", NULL);
 	appendLineStringBuf(spec->prep, buf);
 	free(buf);
     }
@@ -341,7 +343,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     }
 
     if (!createDir) {
-	rasprintf(&buf, "cd '%s'", spec->buildSubdir);
+	buf = rpmExpand("cd '%{buildsubdir}'", NULL);
 	appendLineStringBuf(spec->prep, buf);
 	free(buf);
     }

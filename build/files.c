@@ -1625,7 +1625,6 @@ static rpmRC recurseDir(FileList fl, const char * diskPath)
 static rpmRC processMetadataFile(Package pkg, FileList fl, 
 				 const char * fileName, rpmTagVal tag)
 {
-    const char * buildDir = "%{_builddir}/%{?buildsubdir}/";
     char * fn = NULL;
     char * apkt = NULL;
     uint8_t * pkt = NULL;
@@ -1638,7 +1637,7 @@ static rpmRC processMetadataFile(Package pkg, FileList fl,
 	fn = rpmGenPath(fl->buildRoot, NULL, fileName);
 	absolute = 1;
     } else
-	fn = rpmGenPath(buildDir, NULL, fileName);
+	fn = rpmGenPath("%{_builddir}", "%{?buildsubdir}", fileName);
 
     switch (tag) {
     default:
@@ -2240,8 +2239,7 @@ int readManifest(rpmSpec spec, const char *path, const char *descr, int flags,
     if (*path == '/') {
 	fn = rpmGetPath(path, NULL);
     } else {
-	fn = rpmGetPath("%{_builddir}/",
-	    (spec->buildSubdir ? spec->buildSubdir : "") , "/", path, NULL);
+	fn = rpmGenPath("%{_builddir}", "%{?buildsubdir}", path);
     }
     fd = fopen(fn, "r");
 
@@ -2413,7 +2411,7 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
 	}
     }
 
-    basepath = rpmGenPath(spec->rootDir, "%{_builddir}", spec->buildSubdir);
+    basepath = rpmGenPath(spec->rootDir, "%{_builddir}", "%{?buildsubdir}");
     files = sd->files;
     fi = 0;
     while (*files != NULL) {
