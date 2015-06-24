@@ -66,10 +66,12 @@ rpm \- RPM Package Manager
 
 
  [\fB--changelog\fR] [\fB-c,--configfiles\fR] [\fB--conflicts\fR]
- [\fB-d,--docfiles\fR] [\fB--dump\fR] [\fB--filesbypkg\fR] [\fB-i,--info\fR]
- [\fB--last\fR] [\fB-l,--list\fR] [\fB--obsoletes\fR] [\fB--provides\fR]
- [\fB--qf,--queryformat \fIQUERYFMT\fB\fR] [\fB-R,--requires\fR]
- [\fB--scripts\fR] [\fB-s,--state\fR] [\fB--triggers,--triggerscripts\fR]
+ [\fB-d,--docfiles\fR] [\fB--dump\fR] [\fB--enhances\fR] [\fB--filesbypkg\fR]
+ [\fB-i,--info\fR] [\fB--last\fR] [\fB-l,--list\fR] [\fB--obsoletes\fR]
+ [\fB--provides\fR] [\fB--qf,--queryformat \fIQUERYFMT\fB\fR]
+ [\fB--recommends\fR] [\fB-R,--requires\fR] [\fB--suggests\fR]
+ [\fB--supplements\fR] [\fB--scripts\fR] [\fB-s,--state\fR]
+ [\fB--triggers,--triggerscripts\fR]
 
 .SS "verify-options"
 .PP
@@ -628,6 +630,9 @@ path size mtime digest mode owner group isconfig isdoc rdev symlink
 .fi
 .RE
 .TP
+\fB--enhances\fR
+List capabilities enhanced by package(s)
+.TP
 \fB--filesbypkg\fR
 List all the files in each selected package.
 .TP
@@ -651,8 +656,17 @@ List packages this package obsoletes.
 \fB--provides\fR
 List capabilities this package provides.
 .TP
+\fB--recommends\fR
+List capabilities recommended by package(s)
+.TP
 \fB-R, --requires\fR
 List capabilities on which this package depends.
+.TP
+\fB--suggests\fR
+List capabilities suggested by package(s)
+.TP
+\fB--supplements\fR
+List capabilities supplemented by package(s)
 .TP
 \fB--scripts\fR
 List the package specific scriptlet(s) that are used as part
