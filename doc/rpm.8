@@ -789,6 +789,8 @@ sets user/group ownership of files in the given package. This command can
 change permissions of files in that package. It is caused by calling command
 \fBchmod\fR that can clear SUID and SGID bits in some situations. So it is
 safer to call also \fB--setperms\fR after calling \fB--setugids\fR.
+.TP
+Options \fB--setperms\fR and \fB--setugids\fR are mutually exclusive.
 
 .SS "FTP/HTTP OPTIONS"
 .PP
