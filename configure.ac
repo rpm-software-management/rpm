@@ -757,8 +757,6 @@ if test "$with_dmalloc" = yes ; then
   LIBS="$LIBS -ldmalloc"
 fi
 
-AC_CHECK_FUNCS(getpassphrase)
-
 #
 # get rid of the 4-th tuple, if config.guess returned "linux-gnu" for host_os
 #
