@@ -20,6 +20,6 @@ esac
 for f in `find "$RPM_BUILD_ROOT" -type f -a -exec file {} \; | \
         grep -v "^${RPM_BUILD_ROOT}/\?usr/lib/debug"  | \
 	grep ' shared object,' | \
-	sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped/\1/p'`; do
+	sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped.*/\1/p'`; do
 	$STRIP --strip-unneeded "$f"
 done
