@@ -35,14 +35,32 @@ static int doImport(rpmts ts, const char *fn, char *buf, ssize_t blen)
 
     do {
 	uint8_t *pkt = NULL;
+	uint8_t *pkti = NULL;
 	size_t pktlen = 0;
+	size_t certlen;
 	
 	/* Read pgp packet. */
 	if (pgpParsePkts(start, &pkt, &pktlen) == PGPARMOR_PUBKEY) {
-	    /* Import pubkey packet(s). */
-	    if (rpmtsImportPubkey(ts, pkt, pktlen) != RPMRC_OK) {
-		rpmlog(RPMLOG_ERR, _("%s: key %d import failed.\n"), fn, keyno);
-		res++;
+	    pkti = pkt;
+
+	    /* Iterate over certificates in pkt */
+	    while (pktlen > 0) {
+		if(pgpPubKeyCertLen(pkti, pktlen, &certlen)) {
+		    rpmlog(RPMLOG_ERR, _("%s: key %d import failed.\n"), fn,
+			    keyno);
+		    res++;
+		    continue;
+		}
+
+		/* Import pubkey certificate. */
+		if (rpmtsImportPubkey(ts, pkti, certlen) != RPMRC_OK) {
+		    rpmlog(RPMLOG_ERR, _("%s: key %d import failed.\n"), fn,
+			    keyno);
+		    res++;
+		    continue;
+		}
+		pkti += certlen;
+		pktlen -= certlen;
 	    }
 	} else {
 	    rpmlog(RPMLOG_ERR, _("%s: key %d not an armored public key.\n"),
