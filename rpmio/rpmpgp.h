@@ -1028,6 +1028,20 @@ pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen);
 pgpArmor pgpParsePkts(const char *armor, uint8_t ** pkt, size_t * pktlen);
 
 /** \ingroup rpmpgp
+ * Return a length of the first public key certificate in a buffer given
+ * by pkts that contains one or more certificates. A public key certificate
+ * consits of packets like Public key packet, User ID packet and so on.
+ * In a buffer every certificate starts with Public key packet and it ends
+ * with the start of the next certificate or with the end of the buffer.
+ *
+ * @param pkts		pointer to a buffer with certificates
+ * @param pktslen	length of the buffer with certificates
+ * @param certlen	length of the first certificate in the buffer
+ * @return		0 on success
+ */
+int pgpPubKeyCertLen(const uint8_t *pkts, size_t pktslen, size_t *certlen);
+
+/** \ingroup rpmpgp
  * Wrap a OpenPGP packets in ascii armor for transport.
  * @param atype		type of armor
  * @param s		binary pkt data
