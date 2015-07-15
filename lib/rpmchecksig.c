@@ -49,7 +49,7 @@ static int doImport(rpmts ts, const char *fn, char *buf, ssize_t blen)
 		    rpmlog(RPMLOG_ERR, _("%s: key %d import failed.\n"), fn,
 			    keyno);
 		    res++;
-		    continue;
+		    break;
 		}
 
 		/* Import pubkey certificate. */
@@ -57,7 +57,6 @@ static int doImport(rpmts ts, const char *fn, char *buf, ssize_t blen)
 		    rpmlog(RPMLOG_ERR, _("%s: key %d import failed.\n"), fn,
 			    keyno);
 		    res++;
-		    continue;
 		}
 		pkti += certlen;
 		pktlen -= certlen;
