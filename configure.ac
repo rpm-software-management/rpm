@@ -396,6 +396,20 @@ esac
 
 AC_SUBST([WITH_DB_LIB])
 
+#=================
+# Process --enable-ndb
+AC_ARG_ENABLE([ndb], [AS_HELP_STRING([--enable-ndb],[enable the new rpm database format])],
+[case "$enable_ndb" in
+yes|no) ;;
+*) AC_MSG_ERROR([invalid argument to --enable-ndb])
+  ;;
+esac],
+[enable_ndb=no])
+AS_IF([test "$enable_ndb" = yes],[
+  AC_DEFINE(ENABLE_NDB, 1, [Enable new rpm database format?])
+])
+AM_CONDITIONAL([NDB], [test "$enable_ndb" = yes])
+
 AM_GNU_GETTEXT_VERSION([0.16.1])
 AM_GNU_GETTEXT([external])
 AM_ICONV

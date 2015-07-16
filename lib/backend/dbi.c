@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <rpm/rpmtypes.h>
+#include <rpm/rpmstring.h>
 #include "lib/rpmdb_internal.h"
 #include "debug.h"
 
@@ -32,7 +33,16 @@ dbiIndex dbiNew(rpmdb rdb, rpmDbiTagVal rpmtag)
 static void
 dbDetectBackend(rpmdb rdb)
 {
+#ifdef ENABLE_NDB
+    const char *dbhome = rpmdbHome(rdb);
+    char *path = rstrscat(NULL, dbhome, "/Packages", NULL);
+    rdb->db_ops = &ndb_dbops;
+    if (access(path, F_OK) == 0)
+	rdb->db_ops = &db3_dbops;
+    free(path);
+#else
     rdb->db_ops = &db3_dbops;
+#endif
 }
 
 const char * dbiName(dbiIndex dbi)

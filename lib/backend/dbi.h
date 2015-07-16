@@ -240,6 +240,11 @@ struct rpmdbOps_s {
 RPM_GNUC_INTERNAL
 extern struct rpmdbOps_s db3_dbops;
 
+#ifdef ENABLE_NDB
+RPM_GNUC_INTERNAL
+extern struct rpmdbOps_s ndb_dbops;
+#endif
+
 #ifdef __cplusplus
 }
 #endif

@@ -2448,10 +2448,9 @@ static int rpmdbRemoveDatabase(const char * prefix, const char * dbpath)
 
 static int renameTag(const char * prefix,
 		     const char * olddbpath, const char *newdbpath,
-		     rpmTagVal dbtag)
+		     const char * base)
 {
     int xx, rc = 0;
-    const char *base = rpmTagGetName(dbtag);
     char *src = rpmGetPath(prefix, "/", olddbpath, "/", base, NULL);
     char *dest = rpmGetPath(prefix, "/", newdbpath, "/", base, NULL);
     struct stat st;
@@ -2489,10 +2488,14 @@ static int rpmdbMoveDatabase(const char * prefix,
     rpmdb db = newRpmdb(prefix, newdbpath, O_RDONLY, 0644, RPMDB_FLAG_REBUILD);
 
     blockSignals(&sigMask);
-    rc = renameTag(prefix, olddbpath, newdbpath, RPMDBI_PACKAGES);
+    rc = renameTag(prefix, olddbpath, newdbpath, rpmTagGetName(RPMDBI_PACKAGES));
     for (int i = 0; i < db->db_ndbi; i++) {
-	rc += renameTag(prefix, olddbpath, newdbpath, db->db_tags[i]);
+	rc += renameTag(prefix, olddbpath, newdbpath, rpmTagGetName(db->db_tags[i]));
     }
+#ifdef ENABLE_NDB
+    rc += renameTag(prefix, olddbpath, newdbpath, "Packages.db");
+    rc += renameTag(prefix, olddbpath, newdbpath, "Index.db");
+#endif
 
     cleanDbenv(prefix, olddbpath);
     cleanDbenv(prefix, newdbpath);

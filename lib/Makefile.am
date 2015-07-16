@@ -61,6 +61,14 @@ else
 librpm_la_LIBADD += @WITH_DB_LIB@
 endif
 
+if NDB
+librpm_la_SOURCES += \
+	backend/ndb/glue.c \
+	backend/ndb/rpmpkg.c \
+	backend/ndb/rpmidx.c \
+	backend/ndb/rpmxdb.c
+endif
+
 tagtbl.C: Makefile.am $(srcdir)/rpmtag.h gentagtbl.sh
 	@AWK=${AWK} ${SHELL} $(srcdir)/gentagtbl.sh \
 		    	     $(srcdir)/rpmtag.h > $@.new && \
