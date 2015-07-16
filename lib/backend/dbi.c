@@ -62,6 +62,13 @@ void dbSetFSync(rpmdb rdb, int enable)
     rdb->db_ops->setFSync(rdb, enable);
 }
 
+int dbCtrl(rpmdb rdb, dbCtrlOp ctrl)
+{
+    if (!rdb->db_ops)
+	dbDetectBackend(rdb);
+    return rdb->db_ops->ctrl(rdb, ctrl);
+}
+
 int dbiOpen(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 {
     if (!rdb->db_ops)

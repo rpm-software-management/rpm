@@ -533,6 +533,11 @@ static void db3_dbSetFSync(rpmdb rdb, int enable)
 #endif
 }
 
+static int db3_Ctrl(rpmdb rdb, dbCtrlOp ctrl)
+{
+    return 0;
+}
+
 static int dbiSync(dbiIndex dbi, unsigned int flags)
 {
     DB * db = dbi->dbi_db;
@@ -1357,6 +1362,7 @@ struct rpmdbOps_s db3_dbops = {
     .verify = db3_dbiVerify,
 
     .setFSync = db3_dbSetFSync,
+    .ctrl = db3_Ctrl,
 
     .cursorInit = db3_dbiCursorInit,
     .cursorFree = db3_dbiCursorFree,

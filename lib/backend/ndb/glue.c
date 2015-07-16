@@ -166,6 +166,31 @@ static void ndb_SetFSync(rpmdb rdb, int enable)
 {
 }
 
+static int ndb_Ctrl(rpmdb rdb, dbCtrlOp ctrl)
+{
+    switch (ctrl) {
+    case DB_CTRL_LOCK_RO:
+	if (!rdb->db_pkgs)
+	    return 1;
+	return rpmpkgLock(rdb->db_pkgs->dbi_db, 0);
+    case DB_CTRL_LOCK_RW:
+	if (!rdb->db_pkgs)
+	    return 1;
+	return rpmpkgLock(rdb->db_pkgs->dbi_db, 1);
+    case DB_CTRL_UNLOCK_RO:
+	if (!rdb->db_pkgs)
+	    return 1;
+	return rpmpkgUnlock(rdb->db_pkgs->dbi_db, 0);
+    case DB_CTRL_UNLOCK_RW:
+	if (!rdb->db_pkgs)
+	    return 1;
+	return rpmpkgUnlock(rdb->db_pkgs->dbi_db, 1);
+    default:
+	break;
+    }
+    return 0;
+}
+
 static dbiCursor ndb_CursorInit(dbiIndex dbi, unsigned int flags)
 {
     dbiCursor dbc = xcalloc(1, sizeof(*dbc));
@@ -410,6 +435,7 @@ struct rpmdbOps_s ndb_dbops = {
     .close	= ndb_Close,
     .verify	= ndb_Verify,
     .setFSync	= ndb_SetFSync,
+    .ctrl	= ndb_Ctrl,
 
     .cursorInit	= ndb_CursorInit,
     .cursorFree	= ndb_CursorFree,

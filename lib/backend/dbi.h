@@ -12,6 +12,13 @@ enum rpmdbFlags {
     RPMDB_FLAG_VERIFYONLY	= (1 << 2),
 };
 
+typedef enum dbCtrlOp_e {
+    DB_CTRL_LOCK_RO          = 1,
+    DB_CTRL_UNLOCK_RO        = 2,
+    DB_CTRL_LOCK_RW          = 3,
+    DB_CTRL_UNLOCK_RW        = 4
+} dbCtrlOp;
+
 typedef struct dbiIndex_s * dbiIndex;
 typedef struct dbiCursor_s * dbiCursor;
 
@@ -110,6 +117,9 @@ extern "C" {
 RPM_GNUC_INTERNAL
 /* Globally enable/disable fsync in the backend */
 void dbSetFSync(rpmdb rdb, int enable);
+
+RPM_GNUC_INTERNAL
+int dbCtrl(rpmdb rdb, dbCtrlOp ctrl);
 
 /** \ingroup dbi
  * Return new configured index database handle instance.
@@ -221,6 +231,7 @@ struct rpmdbOps_s {
     int (*close)(dbiIndex dbi, unsigned int flags);
     int (*verify)(dbiIndex dbi, unsigned int flags);
     void (*setFSync)(rpmdb rdb, int enable);
+    int (*ctrl)(rpmdb rdb, dbCtrlOp ctrl);
 
     dbiCursor (*cursorInit)(dbiIndex dbi, unsigned int flags);
     dbiCursor (*cursorFree)(dbiIndex dbi, dbiCursor dbc);

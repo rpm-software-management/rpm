@@ -2634,3 +2634,24 @@ exit:
 
     return rc;
 }
+
+int rpmdbCtrl(rpmdb db, rpmdbCtrlOp ctrl)
+{
+    dbCtrlOp dbctrl = 0;
+    switch (ctrl) {
+    case RPMDB_CTRL_LOCK_RO:
+	dbctrl = DB_CTRL_LOCK_RO;
+	break;
+    case RPMDB_CTRL_UNLOCK_RO:
+	dbctrl = DB_CTRL_UNLOCK_RO;
+	break;
+    case RPMDB_CTRL_LOCK_RW:
+	dbctrl = DB_CTRL_LOCK_RW;
+	break;
+    case RPMDB_CTRL_UNLOCK_RW:
+	dbctrl = DB_CTRL_UNLOCK_RW;
+	break;
+    }
+    return dbctrl ? dbCtrl(db, dbctrl) : 1;
+}
+

@@ -30,6 +30,13 @@ typedef enum rpmdbOpX_e {
     RPMDB_OP_MAX		= 4
 } rpmdbOpX;
 
+typedef enum rpmdbCtrlOp_e {
+    RPMDB_CTRL_LOCK_RO         = 1,
+    RPMDB_CTRL_UNLOCK_RO       = 2,
+    RPMDB_CTRL_LOCK_RW         = 3,
+    RPMDB_CTRL_UNLOCK_RW       = 4
+} rpmdbCtrlOp;
+
 /** \ingroup rpmdb
  * Retrieve operation timestamp from rpm database.
  * @param db            rpm database
@@ -216,6 +223,14 @@ unsigned int rpmdbIndexIteratorTagNum(rpmdbIndexIterator ii, unsigned int nr);
  * return 		NULL
  */
 rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii);
+
+/** \ingroup rpmdb
+ * manipulate the rpm database
+ * @param db		rpm database
+ * @param ctrl		operation
+ * @return 		0 on success; != 0 on error
+ */
+int rpmdbCtrl(rpmdb db, rpmdbCtrlOp ctrl);
 
 #ifdef __cplusplus
 }
