@@ -77,6 +77,8 @@ static int buildIndexes(rpmdb db)
 
     dbSetFSync(db, 0);
 
+    dbCtrl(db, RPMDB_CTRL_LOCK_RW);
+
     mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
     while ((h = rpmdbNextIterator(mi))) {
 	unsigned int hdrNum = headerGetInstance(h);
@@ -89,6 +91,9 @@ static int buildIndexes(rpmdb db)
 	}
     }
     rpmdbFreeIterator(mi);
+
+    dbCtrl(db, DB_CTRL_UNLOCK_RW);
+
     dbSetFSync(db, !db->cfg.db_no_fsync);
     return rc;
 }
@@ -1043,8 +1048,10 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	    sigset_t signalMask;
 
 	    blockSignals(&signalMask);
+	    dbCtrl(mi->mi_db, DB_CTRL_LOCK_RW);
 	    rc = pkgdbPut(dbi, mi->mi_dbc, mi->mi_prevoffset,
 			  hdrBlob, hdrLen);
+	    dbCtrl(mi->mi_db, DB_CTRL_UNLOCK_RW);
 	    unblockSignals(&signalMask);
 
 	    if (rc) {
@@ -2136,6 +2143,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 	return 1;
 
     (void) blockSignals(&signalMask);
+    dbCtrl(db, DB_CTRL_LOCK_RW);
 
     /* Remove header from primary index */
     dbc = dbiCursorInit(dbi, DBC_WRITE);
@@ -2154,6 +2162,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 	}
     }
 
+    dbCtrl(db, DB_CTRL_UNLOCK_RW);
     (void) unblockSignals(&signalMask);
 
     headerFree(h);
@@ -2354,6 +2363,7 @@ int rpmdbAdd(rpmdb db, Header h)
 	goto exit;
 	
     (void) blockSignals(&signalMask);
+    dbCtrl(db, DB_CTRL_LOCK_RW);
 
     /* Add header to primary index */
     dbc = dbiCursorInit(dbi, DBC_WRITE);
@@ -2374,6 +2384,7 @@ int rpmdbAdd(rpmdb db, Header h)
 	}
     }
 
+    dbCtrl(db, DB_CTRL_UNLOCK_RW);
     (void) unblockSignals(&signalMask);
 
     /* If everything ok, mark header as installed now */
