@@ -524,7 +524,7 @@ errxit:
     return rc;
 }
 
-void dbSetFSync(rpmdb rdb, int enable)
+static void db3_dbSetFSync(rpmdb rdb, int enable)
 {
 #ifdef HAVE_FDATASYNC
     db_env_set_func_fsync(enable ? fdatasync : fsync_disable);
@@ -545,7 +545,7 @@ static int dbiSync(dbiIndex dbi, unsigned int flags)
     return rc;
 }
 
-dbiCursor dbiCursorInit(dbiIndex dbi, unsigned int flags)
+static dbiCursor db3_dbiCursorInit(dbiIndex dbi, unsigned int flags)
 {
     dbiCursor dbc = NULL;
     
@@ -593,7 +593,7 @@ dbiCursor dbiCursorInit(dbiIndex dbi, unsigned int flags)
     return dbc;
 }
 
-dbiCursor dbiCursorFree(dbiIndex dbi, dbiCursor dbc)
+static dbiCursor db3_dbiCursorFree(dbiIndex dbi, dbiCursor dbc)
 {
     if (dbc) {
 	/* Automatically sync on write-cursor close */
@@ -700,7 +700,7 @@ static int dbiByteSwapped(dbiIndex dbi)
     return rc;
 }
 
-int dbiVerify(dbiIndex dbi, unsigned int flags)
+static int db3_dbiVerify(dbiIndex dbi, unsigned int flags)
 {
     int rc = 0;
 
@@ -718,7 +718,7 @@ int dbiVerify(dbiIndex dbi, unsigned int flags)
     return rc;
 }
 
-int dbiClose(dbiIndex dbi, unsigned int flags)
+static int db3_dbiClose(dbiIndex dbi, unsigned int flags)
 {
     rpmdb rdb = dbi->dbi_rpmdb;
     const char * dbhome = rpmdbHome(rdb);
@@ -802,7 +802,7 @@ static int dbiFlock(dbiIndex dbi, int mode)
     return rc;
 }
 
-int dbiOpen(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
+static int db3_dbiOpen(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 {
     const char *dbhome = rpmdbHome(rdb);
     dbiIndex dbi = NULL;
@@ -1005,7 +1005,7 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
     return 0;
 }
 
-rpmRC idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
+static rpmRC db3_idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
 			  dbiIndexSet *set, int searchType)
 {
     rpmRC rc = RPMRC_FAIL; /* assume failure */
@@ -1112,7 +1112,7 @@ static rpmRC updateIndex(dbiCursor dbc, const char *keyp, unsigned int keylen,
     return rc;
 }
 
-rpmRC idxdbPut(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
+static rpmRC db3_idxdbPut(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
 	       dbiIndexItem rec)
 {
     dbiIndexSet set = NULL;
@@ -1138,7 +1138,7 @@ rpmRC idxdbPut(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
     return rc;
 }
 
-rpmRC idxdbDel(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
+static rpmRC db3_idxdbDel(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
 	       dbiIndexItem rec)
 {
     dbiIndexSet set = NULL;
@@ -1168,7 +1168,7 @@ rpmRC idxdbDel(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
     return rc;
 }
 
-const void * idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen)
+static const void * db3_idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen)
 {
     const void *key = NULL;
     if (dbc) {
@@ -1275,7 +1275,7 @@ static unsigned int pkgInstance(dbiIndex dbi, int alloc)
     return hdrNum;
 }
 
-rpmRC pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum,
+static rpmRC db3_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum,
                unsigned char *hdrBlob, unsigned int hdrLen)
 {
     DBT hdr;
@@ -1285,12 +1285,12 @@ rpmRC pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum,
     return updatePackages(dbc, hdrNum, &hdr);
 }
 
-rpmRC pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
+static rpmRC db3_pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
 {
     return updatePackages(dbc, hdrNum, NULL);
 }
 
-rpmRC pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
+static rpmRC db3_pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
 	     unsigned char **hdrBlob, unsigned int *hdrLen)
 {
     DBT key, data;
@@ -1327,7 +1327,7 @@ rpmRC pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
 	return RPMRC_FAIL;
 }
 
-unsigned int pkgdbKey(dbiIndex dbi, dbiCursor dbc)
+static unsigned int db3_pkgdbKey(dbiIndex dbi, dbiCursor dbc)
 {
     union _dbswap mi_offset;
 
@@ -1339,7 +1339,7 @@ unsigned int pkgdbKey(dbiIndex dbi, dbiCursor dbc)
     return mi_offset.ui;
 }
 
-rpmRC pkgdbNew(dbiIndex dbi, dbiCursor dbc, unsigned int *hdrNum)
+static rpmRC db3_pkgdbNew(dbiIndex dbi, dbiCursor dbc, unsigned int *hdrNum)
 {
     unsigned int num;
     if (dbc == NULL)
@@ -1350,3 +1350,26 @@ rpmRC pkgdbNew(dbiIndex dbi, dbiCursor dbc, unsigned int *hdrNum)
     *hdrNum = num;
     return RPMRC_OK;
 }
+
+struct rpmdbOps_s db3_dbops = {
+    .open   = db3_dbiOpen,
+    .close  = db3_dbiClose,
+    .verify = db3_dbiVerify,
+
+    .setFSync = db3_dbSetFSync,
+
+    .cursorInit = db3_dbiCursorInit,
+    .cursorFree = db3_dbiCursorFree,
+
+    .pkgdbGet = db3_pkgdbGet,
+    .pkgdbPut = db3_pkgdbPut,
+    .pkgdbDel = db3_pkgdbDel,
+    .pkgdbNew = db3_pkgdbNew,
+    .pkgdbKey = db3_pkgdbKey,
+
+    .idxdbGet = db3_idxdbGet,
+    .idxdbPut = db3_idxdbPut,
+    .idxdbDel = db3_idxdbDel,
+    .idxdbKey = db3_idxdbKey
+};
+

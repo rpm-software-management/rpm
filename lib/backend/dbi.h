@@ -29,6 +29,8 @@ struct dbiConfig_s {
     int	dbi_lockdbfd;		/*!< do fcntl lock on db fd */
 };
 
+struct rpmdbOps_s;
+
 /** \ingroup rpmdb
  * Describes the collection of index databases used by rpm.
  */
@@ -48,6 +50,8 @@ struct rpmdb_s {
     int		db_ndbi;	/*!< No. of tag indices. */
     dbiIndex 	* db_indexes;	/*!< Tag indices. */
     int		db_buildindex;	/*!< Index rebuild indicator */
+
+    struct rpmdbOps_s * db_ops;	/*!< backend ops */
 
     /* dbenv and related parameters */
     void * db_dbenv;		/*!< Backend private handle */
@@ -211,6 +215,30 @@ rpmRC idxdbDel(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
                dbiIndexItem rec);
 RPM_GNUC_INTERNAL
 const void * idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen);
+
+struct rpmdbOps_s {
+    int (*open)(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags);
+    int (*close)(dbiIndex dbi, unsigned int flags);
+    int (*verify)(dbiIndex dbi, unsigned int flags);
+    void (*setFSync)(rpmdb rdb, int enable);
+
+    dbiCursor (*cursorInit)(dbiIndex dbi, unsigned int flags);
+    dbiCursor (*cursorFree)(dbiIndex dbi, dbiCursor dbc);
+
+    rpmRC (*pkgdbGet)(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum, unsigned char **hdrBlob, unsigned int *hdrLen);
+    rpmRC (*pkgdbPut)(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum, unsigned char *hdrBlob, unsigned int hdrLen);
+    rpmRC (*pkgdbDel)(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum);
+    rpmRC (*pkgdbNew)(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum);
+    unsigned int (*pkgdbKey)(dbiIndex dbi, dbiCursor dbc);
+
+    rpmRC (*idxdbGet)(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexSet *set, int curFlags);
+    rpmRC (*idxdbPut)(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec);
+    rpmRC (*idxdbDel)(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec);
+    const void * (*idxdbKey)(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen);
+};
+
+RPM_GNUC_INTERNAL
+extern struct rpmdbOps_s db3_dbops;
 
 #ifdef __cplusplus
 }
