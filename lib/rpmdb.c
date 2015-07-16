@@ -92,6 +92,7 @@ static int buildIndexes(rpmdb db)
     }
     rpmdbFreeIterator(mi);
 
+    dbCtrl(db, DB_CTRL_INDEXSYNC);
     dbCtrl(db, DB_CTRL_UNLOCK_RW);
 
     dbSetFSync(db, !db->cfg.db_no_fsync);
@@ -1051,6 +1052,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	    dbCtrl(mi->mi_db, DB_CTRL_LOCK_RW);
 	    rc = pkgdbPut(dbi, mi->mi_dbc, mi->mi_prevoffset,
 			  hdrBlob, hdrLen);
+	    dbCtrl(mi->mi_db, DB_CTRL_INDEXSYNC);
 	    dbCtrl(mi->mi_db, DB_CTRL_UNLOCK_RW);
 	    unblockSignals(&signalMask);
 
@@ -2162,6 +2164,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 	}
     }
 
+    dbCtrl(db, DB_CTRL_INDEXSYNC);
     dbCtrl(db, DB_CTRL_UNLOCK_RW);
     (void) unblockSignals(&signalMask);
 
@@ -2384,6 +2387,7 @@ int rpmdbAdd(rpmdb db, Header h)
 	}
     }
 
+    dbCtrl(db, DB_CTRL_INDEXSYNC);
     dbCtrl(db, DB_CTRL_UNLOCK_RW);
     (void) unblockSignals(&signalMask);
 
@@ -2661,6 +2665,9 @@ int rpmdbCtrl(rpmdb db, rpmdbCtrlOp ctrl)
 	break;
     case RPMDB_CTRL_UNLOCK_RW:
 	dbctrl = DB_CTRL_UNLOCK_RW;
+	break;
+    case RPMDB_CTRL_INDEXSYNC:
+	dbctrl = DB_CTRL_INDEXSYNC;
 	break;
     }
     return dbctrl ? dbCtrl(db, dbctrl) : 1;

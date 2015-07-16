@@ -13,10 +13,11 @@ enum rpmdbFlags {
 };
 
 typedef enum dbCtrlOp_e {
-    DB_CTRL_LOCK_RO          = 1,
-    DB_CTRL_UNLOCK_RO        = 2,
-    DB_CTRL_LOCK_RW          = 3,
-    DB_CTRL_UNLOCK_RW        = 4
+    DB_CTRL_LOCK_RO		= 1,
+    DB_CTRL_UNLOCK_RO		= 2,
+    DB_CTRL_LOCK_RW		= 3,
+    DB_CTRL_UNLOCK_RW		= 4,
+    DB_CTRL_INDEXSYNC		= 5
 } dbCtrlOp;
 
 typedef struct dbiIndex_s * dbiIndex;

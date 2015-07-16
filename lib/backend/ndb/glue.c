@@ -166,8 +166,27 @@ static void ndb_SetFSync(rpmdb rdb, int enable)
 {
 }
 
+static int indexSync(rpmpkgdb pkgdb, rpmxdb xdb)
+{
+    unsigned int generation;
+    int rc;
+    if (!pkgdb || !xdb)
+        return 1;
+    if (rpmpkgLock(pkgdb, 1))
+        return 1;
+    if (rpmpkgGeneration(pkgdb, &generation)) {
+        rpmpkgUnlock(pkgdb, 1);
+        return 1;
+    }
+    rc = rpmxdbSetUserGeneration(xdb, generation);
+    rpmpkgUnlock(pkgdb, 1);
+    return rc;
+}
+
 static int ndb_Ctrl(rpmdb rdb, dbCtrlOp ctrl)
 {
+    struct ndbEnv_s *ndbenv = rdb->db_dbenv;
+
     switch (ctrl) {
     case DB_CTRL_LOCK_RO:
 	if (!rdb->db_pkgs)
@@ -185,6 +204,10 @@ static int ndb_Ctrl(rpmdb rdb, dbCtrlOp ctrl)
 	if (!rdb->db_pkgs)
 	    return 1;
 	return rpmpkgUnlock(rdb->db_pkgs->dbi_db, 1);
+    case DB_CTRL_INDEXSYNC:
+	if (!ndbenv)
+	    return 1;
+	return indexSync(ndbenv->pkgdb, ndbenv->xdb);
     default:
 	break;
     }

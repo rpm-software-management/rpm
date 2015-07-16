@@ -34,7 +34,8 @@ typedef enum rpmdbCtrlOp_e {
     RPMDB_CTRL_LOCK_RO         = 1,
     RPMDB_CTRL_UNLOCK_RO       = 2,
     RPMDB_CTRL_LOCK_RW         = 3,
-    RPMDB_CTRL_UNLOCK_RW       = 4
+    RPMDB_CTRL_UNLOCK_RW       = 4,
+    RPMDB_CTRL_INDEXSYNC       = 5
 } rpmdbCtrlOp;
 
 /** \ingroup rpmdb
