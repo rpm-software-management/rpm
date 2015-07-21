@@ -471,6 +471,33 @@ static int replaceSignature(Header sigh, sigTarget sigt1, sigTarget sigt2)
     return rc;
 }
 
+static void unloadImmutableRegion(Header *hdrp, rpmTagVal tag, rpmtd utd)
+{
+    struct rpmtd_s copytd;
+    Header nh;
+    Header oh;
+    HeaderIterator hi;
+
+    if (headerGet(*hdrp, tag, utd, HEADERGET_DEFAULT)) {
+	nh = headerNew();
+	oh = headerCopyLoad(utd->data);
+	hi = headerInitIterator(oh);
+
+	while (headerNext(hi, &copytd)) {
+	    if (copytd.data)
+		headerPut(nh, &copytd, HEADERPUT_DEFAULT);
+	    rpmtdFreeData(&copytd);
+	}
+
+	headerFreeIterator(hi);
+	headerFree(oh);
+	rpmtdFreeData(utd);
+	headerFree(*hdrp);
+	*hdrp = headerLink(nh);
+	headerFree(nh);
+    }
+}
+
 /** \ingroup rpmcli
  * Create/modify elements in signature header.
  * @param rpm		path to package
@@ -528,25 +555,7 @@ static int rpmSign(const char *rpm, int deleting)
 	goto exit;
     }
 
-    /* Dump the immutable region (if present). */
-    if (headerGet(sigh, RPMTAG_HEADERSIGNATURES, &utd, HEADERGET_DEFAULT)) {
-	struct rpmtd_s copytd;
-	Header nh = headerNew();
-	Header oh = headerCopyLoad(utd.data);
-	HeaderIterator hi = headerInitIterator(oh);
-	while (headerNext(hi, &copytd)) {
-	    if (copytd.data)
-		headerPut(nh, &copytd, HEADERPUT_DEFAULT);
-	    rpmtdFreeData(&copytd);
-	}
-	headerFreeIterator(hi);
-	headerFree(oh);
-	rpmtdFreeData(&utd);
-
-	headerFree(sigh);
-	sigh = headerLink(nh);
-	headerFree(nh);
-    }
+    unloadImmutableRegion(&sigh, RPMTAG_HEADERSIGNATURES, &utd);
     origSigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
 
     if (deleting) {	/* Nuke all the signature tags. */
