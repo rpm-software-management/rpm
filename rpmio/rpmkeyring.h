@@ -64,6 +64,14 @@ rpmKeyring rpmKeyringLink(rpmKeyring keyring);
  */
 rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen);
 
+/** \ingroupt rpmkeyring
+ * Return array of subkeys belonging to maikey
+ * param mainkey	main rpmPubkey
+ * param count		count of returned subkeys
+ * @return		an array of subkey's handles
+ */
+rpmPubkey *rpmGetSubkeys(rpmPubkey mainkey, int *count);
+
 /** \ingroup rpmkeyring
  * Create a new rpmPubkey from ASCII-armored pubkey file
  * @param filename	Path to pubkey file

@@ -152,6 +152,38 @@ exit:
     return key;
 }
 
+rpmPubkey *rpmGetSubkeys(rpmPubkey mainkey, int *count)
+{
+    rpmPubkey *subkeys = NULL;
+    pgpDigParams *pgpsubkeys = NULL;
+    int pgpsubkeysCount = 0;
+    int i;
+
+    if (!pgpPrtParamsSubkeys(mainkey->pkt, mainkey->pktlen, mainkey->pgpkey,
+			    &pgpsubkeys, &pgpsubkeysCount)) {
+
+
+	subkeys = xmalloc(pgpsubkeysCount * sizeof(*subkeys));
+
+	for (i = 0; i < pgpsubkeysCount; i++) {
+	    rpmPubkey subkey = xcalloc(1, sizeof(*subkey));
+	    subkeys[i] = subkey;
+
+	    /* Packets with all subkeys already stored in main key */
+	    subkey->pkt = NULL;
+	    subkey->pktlen = 0;
+
+	    subkey->pgpkey = pgpsubkeys[i];
+	    memcpy(subkey->keyid, pgpsubkeys[i]->signid, sizeof(subkey->keyid));
+	    subkey->nrefs = 1;
+	    pthread_rwlock_init(&subkey->lock, NULL);
+	}
+    }
+    *count = pgpsubkeysCount;
+
+    return subkeys;
+}
+
 rpmPubkey rpmPubkeyFree(rpmPubkey key)
 {
     if (key == NULL)

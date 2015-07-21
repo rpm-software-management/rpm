@@ -668,7 +668,9 @@ static int pgpPrtPubkeyParams(uint8_t pubkey_algo,
 	rc = 0;
 
     /* We can't handle more than one key at a time */
-    if (rc == 0 && keyp->alg == NULL && keyp->tag == PGPTAG_PUBLIC_KEY)
+    if (rc == 0 && keyp->alg == NULL && (keyp->tag == PGPTAG_PUBLIC_KEY ||
+	keyp->tag == PGPTAG_PUBLIC_SUBKEY))
+
 	keyp->alg = keyalg;
     else
 	pgpDigAlgFree(keyalg);
@@ -697,7 +699,8 @@ static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
 		fprintf(stderr, " %-24.24s(0x%08x)", ctime(&t), (unsigned)t);
 	    pgpPrtNL();
 
-	    if (_digp->tag == tag) {
+	    /* If _digp->hash is not NULL then signature is already loaded */
+	    if (_digp->hash == NULL) {
 		_digp->version = v->version;
 		memcpy(_digp->time, v->time, sizeof(_digp->time));
 		_digp->pubkey_algo = v->pubkey_algo;
@@ -980,6 +983,61 @@ int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
     } else {
 	pgpDigParamsFree(digp);
     }
+    return rc;
+}
+
+int pgpPrtParamsSubkeys(const uint8_t *pkts, size_t pktlen,
+			pgpDigParams mainkey, pgpDigParams **subkeys,
+			int *subkeysCount)
+{
+    const uint8_t *p = pkts;
+    const uint8_t *pend = pkts + pktlen;
+    pgpDigParams *digps = NULL;
+    int count = 0;
+    int alloced = 10;
+    struct pgpPkt pkt;
+    int rc, i;
+
+    digps = xmalloc(alloced * sizeof(*digps));
+
+    while (p < pend) {
+	if (decodePkt(p, (pend - p), &pkt))
+	    break;
+
+	p += (pkt.body - pkt.head) + pkt.blen;
+
+	if (pkt.tag == PGPTAG_PUBLIC_SUBKEY) {
+	    if (count == alloced) {
+		alloced <<= 1;
+		digps = xrealloc(digps, alloced * sizeof(*digps));
+	    }
+
+	    digps[count] = xcalloc(1, sizeof(**digps));
+	    digps[count]->tag = PGPTAG_PUBLIC_SUBKEY;
+	    /* Copy UID from main key to subkey */
+	    digps[count]->userid = xstrdup(mainkey->userid);
+
+	    if(getFingerprint(pkt.body, pkt.blen, digps[count]->signid))
+		continue;
+
+	    if(pgpPrtKey(pkt.tag, pkt.body, pkt.blen, digps[count])) {
+		pgpDigParamsFree(digps[count]);
+		continue;
+	    }
+	    count++;
+	}
+    }
+    rc = (p == pend) ? 0 : -1;
+
+    if (rc == 0) {
+	*subkeys = xrealloc(digps, count * sizeof(*digps));
+	*subkeysCount = count;
+    } else {
+	for (i = 0; i < count; i++)
+	    pgpDigParamsFree(digps[i]);
+	free(digps);
+    }
+
     return rc;
 }
 
