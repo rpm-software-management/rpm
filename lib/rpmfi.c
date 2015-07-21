@@ -114,7 +114,9 @@ struct rpmfiles_s {
     struct fingerPrint_s * fps;	/*!< File fingerprint(s). */
 
     int digestalgo;		/*!< File digest algorithm */
+    int signaturelength;	/*!< File signature length */
     unsigned char * digests;	/*!< File digests in binary. */
+    unsigned char * signatures; /*!< File signatures in binary. */
 
     struct nlinkHash_s * nlinks;/*!< Files connected by hardlinks */
     rpm_off_t * replacedSizes;	/*!< (TR_ADDED) */
@@ -567,6 +569,19 @@ char * rpmfiFDigestHex(rpmfi fi, int *algo)
 	fdigest = pgpHexStr(digest, diglen);
     }
     return fdigest;
+}
+
+const unsigned char * rpmfilesFSignature(rpmfiles fi, int ix, size_t *len)
+{
+	const unsigned char *signature = NULL;
+
+	if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
+	     if (fi->signatures != NULL)
+		signature = fi->signatures + (fi->signaturelength * ix);
+	     if (len)
+		*len = fi->signaturelength;
+	}
+	return signature;
 }
 
 const char * rpmfilesFLink(rpmfiles fi, int ix)
@@ -1165,6 +1180,7 @@ rpmfiles rpmfilesFree(rpmfiles fi)
 	fi->flinks = _free(fi->flinks);
 	fi->flangs = _free(fi->flangs);
 	fi->digests = _free(fi->digests);
+	fi->signatures = _free(fi->signatures);
 	fi->fcaps = _free(fi->fcaps);
 
 	fi->cdict = _free(fi->cdict);
@@ -1379,7 +1395,7 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
     headerGetFlags scareFlags = (flags & RPMFI_KEEPHEADER) ? 
 				HEADERGET_MINMEM : HEADERGET_ALLOC;
     headerGetFlags defFlags = HEADERGET_ALLOC;
-    struct rpmtd_s fdigests, digalgo, td;
+    struct rpmtd_s fdigests, fsignatures, digalgo, td;
     unsigned char * t;
 
     /* XXX TODO: all these should be sanity checked, ugh... */
@@ -1430,6 +1446,8 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 	}
     }
 
+    fi->signaturelength = headerGetNumber(h, RPMTAG_FILESIGNATURELENGTH);
+
     fi->digests = NULL;
     /* grab hex digests from header and store in binary format */
     if (!(flags & RPMFI_NOFILEDIGESTS) &&
@@ -1448,6 +1466,25 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 		*t = (rnibble(fdigest[0]) << 4) | rnibble(fdigest[1]);
 	}
 	rpmtdFreeData(&fdigests);
+    }
+
+    fi->signatures = NULL;
+    /* grab hex signatures from header and store in binary format */
+    if (! (flags & RPMFI_NOFILESIGNATURES) &&
+	headerGet(h, RPMTAG_FILESIGNATURES, &fsignatures, HEADERGET_MINMEM)) {
+	const char *fsignature;
+	fi->signatures = t = xmalloc(rpmtdCount(&fsignatures) * fi->signaturelength);
+
+	while ((fsignature = rpmtdNextString(&fsignatures))) {
+	    if (*fsignature == '\0') {
+		memset(t, 0, fi->signaturelength);
+		t += fi->signaturelength;
+		continue;
+	    }
+	    for (int j = 0; j < fi->signaturelength; j++, t++, fsignature += 2)
+		*t = (rnibble(fsignature[0]) << 4) | rnibble(fsignature[1]);
+	}
+	rpmtdFreeData(&fsignatures);
     }
 
     /* XXX TR_REMOVED doesn;t need fmtimes, frdevs, finodes */
@@ -1726,6 +1763,11 @@ const char * rpmfiOFN(rpmfi fi)
 const unsigned char * rpmfiFDigest(rpmfi fi, int *algo, size_t *len)
 {
     return rpmfilesFDigest(fi->files, fi ? fi->i : -1, algo, len);
+}
+
+const unsigned char * rpmfiFSignature(rpmfi fi, size_t *len)
+{
+    return rpmfilesFSignature(fi->files, fi ? fi->i : -1, len);
 }
 
 uint32_t rpmfiFDepends(rpmfi fi, const uint32_t ** fddictp)

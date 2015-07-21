@@ -116,6 +116,7 @@ enum rpmfiFlags_e {
     RPMFI_NOFILECOLORS		= (1 << 15),
     RPMFI_NOFILEVERIFYFLAGS	= (1 << 16),
     RPMFI_NOFILEFLAGS		= (1 << 17),
+    RPMFI_NOFILESIGNATURES	= (1 << 18),
 };
 
 typedef rpmFlags rpmfiFlags;
@@ -426,6 +427,15 @@ rpm_mode_t rpmfilesFMode(rpmfiles fi, int ix);
  * @return		file digest, NULL on invalid
  */
 const unsigned char * rpmfilesFDigest(rpmfiles fi, int ix, int *algo, size_t *len);
+
+/** \ingroup rpmfiles
+ * Return file (binary) digest of file info set.
+ * @param fi            file info set
+ * @param ix            file index
+ * @retval siglen       signature length (pass NULL to ignore)
+ * @return              file signature, NULL on invalid
+ */
+const unsigned char * rpmfilesFSignature(rpmfiles fi, int ix, size_t *len);
 
 /** \ingroup rpmfiles
  * Return file rdev from file info set.

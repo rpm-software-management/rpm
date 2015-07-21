@@ -183,6 +183,14 @@ const unsigned char * rpmfiFDigest(rpmfi fi, int *algo, size_t *diglen);
 char * rpmfiFDigestHex(rpmfi fi, int *algo);
 
 /** \ingroup rpmfi
+ * Return current file (binary) signature of file info set iterator.
+ * @param fi		file info set iterator
+ * @retval siglen	signature length (pass NULL to ignore)
+ * @return		current file signature, NULL on invalid
+ */
+const unsigned char * rpmfiFSignature(rpmfi fi, size_t *siglen);
+
+/** \ingroup rpmfi
  * Return current file (binary) md5 digest from file info set iterator.
  * @deprecated		Use rpmfiFDigest() instead
  * @param fi		file info set iterator
