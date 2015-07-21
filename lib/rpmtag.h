@@ -356,6 +356,8 @@ typedef enum rpmTag_e {
     RPMTAG_FILETRIGGERTYPE		= 5087, /* s[] extension */
     RPMTAG_TRANSFILETRIGGERCONDS	= 5088, /* s[] extension */
     RPMTAG_TRANSFILETRIGGERTYPE		= 5089, /* s[] extension */
+    RPMTAG_FILESIGNATURES	= 5090, /* s[] */
+    RPMTAG_FILESIGNATURELENGTH  = 5091, /* i */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;
