@@ -151,6 +151,10 @@ static int manageFile(FD_t *fdp, const char *fn, int flags)
 
 /**
  * Copy header+payload, calculating digest(s) on the fly.
+ * @param sfdp source file
+ * @param sfnp source path
+ * @param tfdp destination file
+ * @param tfnp destination path
  */
 static int copyFile(FD_t *sfdp, const char *sfnp,
 		FD_t *tfdp, const char *tfnp)
@@ -158,11 +162,6 @@ static int copyFile(FD_t *sfdp, const char *sfnp,
     unsigned char buf[BUFSIZ];
     ssize_t count;
     int rc = 1;
-
-    if (manageFile(sfdp, sfnp, O_RDONLY))
-	goto exit;
-    if (manageFile(tfdp, tfnp, O_WRONLY|O_CREAT|O_TRUNC))
-	goto exit;
 
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), *sfdp)) > 0)
     {
@@ -184,8 +183,6 @@ static int copyFile(FD_t *sfdp, const char *sfnp,
     rc = 0;
 
 exit:
-    if (*sfdp)	(void) closeFile(sfdp);
-    if (*tfdp)	(void) closeFile(tfdp);
     return rc;
 }
 
