@@ -107,6 +107,13 @@ pgpDig rpmPubkeyDig(rpmPubkey key);
  */
 char * rpmPubkeyBase64(rpmPubkey key);
 
+/** \ingroup rpmkeyring
+ * Return pgp params of key
+ * @param key		Pubkey
+ * @return		pgp params, NULL on error
+ */
+pgpDigParams rpmPubkeyPgpDigParams(rpmPubkey key);
+
 #ifdef __cplusplus
 }
 #endif

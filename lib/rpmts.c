@@ -410,7 +410,8 @@ static void loadKeyring(rpmts ts)
 }
 
 /* Build pubkey header. */
-static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header * hdrp)
+static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
+			    int subkeysCount, Header * hdrp)
 {
     Header h = headerNew();
     const char * afmt = "%{pubkeys:armor}";
@@ -431,6 +432,7 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header * hdrp)
     char * r = NULL;
     char * evr = NULL;
     int rc = -1;
+    int i;
 
     if ((enc = rpmPubkeyBase64(key)) == NULL)
 	goto exit;
@@ -477,6 +479,27 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header * hdrp)
     headerPutString(h, RPMTAG_BUILDHOST, buildhost);
     headerPutUint32(h, RPMTAG_BUILDTIME, &keytime, 1);
     headerPutString(h, RPMTAG_SOURCERPM, "(none)");
+
+    for (i = 0; i < subkeysCount; i++) {
+	char *v, *r, *n, *evr;
+	pgpDigParams pgpkey;
+
+	pgpkey = rpmPubkeyPgpDigParams(subkeys[i]);
+	v = pgpHexStr(pgpkey->signid, sizeof(pgpkey->signid));
+	r = pgpHexStr(pgpkey->time, sizeof(pgpkey->time));
+
+	rasprintf(&n, "gpg(%s)", v+8);
+	rasprintf(&evr, "%d:%s-%s", pubp->version, v, r);
+
+	headerPutString(h, RPMTAG_PROVIDENAME, n);
+	headerPutString(h, RPMTAG_PROVIDEVERSION, evr);
+	headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &pflags, 1);
+
+	free(v);
+	free(r);
+	free(n);
+	free(evr);
+    }
 
     /* Reload the lot to immutable region and stomp sha1 digest on it */
     h = headerReload(h, RPMTAG_HEADERIMMUTABLE);
@@ -530,10 +553,12 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     Header h = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     rpmPubkey pubkey = NULL;
+    rpmPubkey *subkeys = NULL;
+    int subkeysCount = 0;
     rpmVSFlags oflags = rpmtsVSFlags(ts);
     rpmKeyring keyring;
     rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
-    int krc;
+    int krc, i;
 
     if (txn == NULL)
 	return rc;
@@ -545,6 +570,10 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
 
     if ((pubkey = rpmPubkeyNew(pkt, pktlen)) == NULL)
 	goto exit;
+
+    if ((subkeys = rpmGetSubkeys(pubkey, &subkeysCount)) == NULL)
+	goto exit;
+
     krc = rpmKeyringAddKey(keyring, pubkey);
     if (krc < 0)
 	goto exit;
@@ -553,7 +582,7 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     if (krc == 0) {
 	rpm_tid_t tid = rpmtsGetTid(ts);
 
-	if (makePubkeyHeader(ts, pubkey, &h) != 0) 
+	if (makePubkeyHeader(ts, pubkey, subkeys, subkeysCount, &h) != 0)
 	    goto exit;
 
 	headerPutUint32(h, RPMTAG_INSTALLTIME, &tid, 1);
@@ -570,6 +599,10 @@ exit:
     /* Clean up. */
     headerFree(h);
     rpmPubkeyFree(pubkey);
+    for (i = 0; i < subkeysCount; i++)
+	rpmPubkeyFree(subkeys[i]);
+    free(subkeys);
+
     rpmKeyringFree(keyring);
     rpmtxnEnd(txn);
     return rc;

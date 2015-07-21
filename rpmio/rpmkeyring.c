@@ -254,6 +254,16 @@ char * rpmPubkeyBase64(rpmPubkey key)
     return enc;
 }
 
+pgpDigParams rpmPubkeyPgpDigParams(rpmPubkey key)
+{
+    pgpDigParams params= NULL;
+
+    if (key) {
+	params = key->pgpkey;
+    }
+    return params;
+}
+
 static rpmPubkey findbySig(rpmKeyring keyring, pgpDigParams sig)
 {
     rpmPubkey key = NULL;
