@@ -340,7 +340,10 @@ static int loadKeyringFromFiles(rpmts ts)
     }
 
     for (char **f = files; *f; f++) {
+	int subkeysCount, i;
+	rpmPubkey *subkeys;
 	rpmPubkey key = rpmPubkeyRead(*f);
+
 	if (!key) {
 	    rpmlog(RPMLOG_ERR, _("%s: reading of public key failed.\n"), *f);
 	    continue;
@@ -349,7 +352,22 @@ static int loadKeyringFromFiles(rpmts ts)
 	    nkeys++;
 	    rpmlog(RPMLOG_DEBUG, "added key %s to keyring\n", *f);
 	}
+	subkeys = rpmGetSubkeys(key, &subkeysCount);
 	rpmPubkeyFree(key);
+
+	for (i = 0; i < subkeysCount; i++) {
+	    rpmPubkey subkey = subkeys[i];
+
+	    if (rpmKeyringAddKey(ts->keyring, subkey) == 0) {
+		rpmlog(RPMLOG_DEBUG,
+		    "added subkey %d of main key %s to keyring\n",
+		    i, *f);
+
+		nkeys++;
+	    }
+	    rpmPubkeyFree(subkey);
+	}
+	free(subkeys);
     }
 exit:
     free(pkpath);
@@ -378,6 +396,9 @@ static int loadKeyringFromDB(rpmts ts)
 
 	    if (rpmBase64Decode(key, (void **) &pkt, &pktlen) == 0) {
 		rpmPubkey key = rpmPubkeyNew(pkt, pktlen);
+		int subkeysCount, i;
+		rpmPubkey *subkeys = rpmGetSubkeys(key, &subkeysCount);
+
 		if (rpmKeyringAddKey(ts->keyring, key) == 0) {
 		    char *nvr = headerGetAsString(h, RPMTAG_NVR);
 		    rpmlog(RPMLOG_DEBUG, "added key %s to keyring\n", nvr);
@@ -385,6 +406,22 @@ static int loadKeyringFromDB(rpmts ts)
 		    nkeys++;
 		}
 		rpmPubkeyFree(key);
+
+		for (i = 0; i < subkeysCount; i++) {
+		    rpmPubkey subkey = subkeys[i];
+
+		    if (rpmKeyringAddKey(ts->keyring, subkey) == 0) {
+			char *nvr = headerGetAsString(h, RPMTAG_NVR);
+			rpmlog(RPMLOG_DEBUG,
+			    "added subkey %d of main key %s to keyring\n",
+			    i, nvr);
+
+			free(nvr);
+			nkeys++;
+		    }
+		    rpmPubkeyFree(subkey);
+		}
+		free(subkeys);
 		free(pkt);
 	    }
 	}
