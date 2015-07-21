@@ -6,6 +6,7 @@
 #include <rpm/rpmcli.h>
 #include <rpm/rpmsign.h>
 #include "cliutils.h"
+#include "lib/rpmsignfiles.h"
 #include "debug.h"
 
 #if !defined(__GLIBC__) && !defined(__APPLE__)
@@ -20,8 +21,9 @@ enum modes {
 
 static int mode = 0;
 
-static int signfiles = 0;
+static int signfiles = 0, fskpass = 0;
 static char * fileSigningKey = NULL;
+static char * fileSigningKeyPassword = NULL;
 
 static struct poptOption signOptsTable[] = {
     { "addsign", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_ADDSIGN,
@@ -35,6 +37,8 @@ static struct poptOption signOptsTable[] = {
     { "fskpath", '\0', POPT_ARG_STRING, &fileSigningKey, 0,
 	N_("use file signing key <key>"),
 	N_("<key>") },
+    { "fskpass", '\0', POPT_ARG_NONE, &fskpass, 0,
+	N_("prompt for file signing key password"), NULL},
     POPT_TABLEEND
 };
 
@@ -72,6 +76,22 @@ static int doSign(poptContext optCon)
 	    fprintf(stderr, _("You must set \"$$_file_signing_key\" in your macro file or on the command line with --fskpath\n"));
 	    goto exit;
 	}
+
+	if (fskpass) {
+#ifndef WITH_IMAEVM
+	    argerror(_("--fskpass may only be specified when signing files"));
+#else
+	    fileSigningKeyPassword = get_fskpass();
+#endif
+	}
+
+	addMacro(NULL, "_file_signing_key_password", NULL,
+	    fileSigningKeyPassword, RMIL_CMDLINE);
+	if (fileSigningKeyPassword) {
+	    memset(fileSigningKeyPassword, 0, strlen(fileSigningKeyPassword));
+	    free(fileSigningKeyPassword);
+	}
+
 	sig.signfiles = 1;
     }
 

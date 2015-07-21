@@ -7,6 +7,8 @@
 #include "system.h"
 #include "imaevm.h"
 
+#include <termios.h>
+
 #include <rpm/rpmlog.h>		/* rpmlog */
 #include <rpm/rpmstring.h>	/* rnibble */
 #include <rpm/rpmpgp.h>		/* rpmDigestLength */
@@ -30,7 +32,41 @@ static const char *hash_algo_name[] = {
     [PGPHASHALGO_SHA224]       = "sha224",
 };
 
-static char *signFile(const char *algo, const char *fdigest, int diglen, const char *key)
+char *get_fskpass(void)
+{
+    struct termios flags, tmp_flags;
+    char *password, *pwd;
+    int passlen = 64;
+
+    password = malloc(passlen);
+    if (!password) {
+	perror("malloc");
+	return NULL;
+    }
+
+    tcgetattr(fileno(stdin), &flags);
+    tmp_flags = flags;
+    tmp_flags.c_lflag &= ~ECHO;
+    tmp_flags.c_lflag |= ECHONL;
+
+    if (tcsetattr(fileno(stdin), TCSANOW, &tmp_flags) != 0) {
+	perror("tcsetattr");
+	return NULL;
+    }
+
+    printf("PEM password: ");
+    pwd = fgets(password, passlen, stdin);
+    pwd[strlen(pwd) - 1] = '\0';  /* remove newline */
+
+    if (tcsetattr(fileno(stdin), TCSANOW, &flags) != 0) {
+	perror("tcsetattr");
+	return NULL;
+    }
+    return pwd;
+}
+
+static char *signFile(const char *algo, const char *fdigest, int diglen,
+const char *key, char *keypass)
 {
     char *fsignature;
     unsigned char digest[diglen];
@@ -52,7 +88,7 @@ static char *signFile(const char *algo, const char *fdigest, int diglen, const c
     signature[0] = '\x03';
 
     /* calculate file signature */
-    siglen = sign_hash(algo, digest, diglen, key, signature+1);
+    siglen = sign_hash(algo, digest, diglen, key, keypass, signature+1);
     if (siglen < 0) {
 	rpmlog(RPMLOG_ERR, _("sign_hash failed\n"));
 	return NULL;
@@ -63,7 +99,8 @@ static char *signFile(const char *algo, const char *fdigest, int diglen, const c
     return fsignature;
 }
 
-static uint32_t signatureLength(const char *algo, int diglen, const char *key)
+static uint32_t signatureLength(const char *algo, int diglen, const char *key,
+char *keypass)
 {
     unsigned char digest[diglen];
     unsigned char signature[MAX_SIGNATURE_LENGTH];
@@ -72,11 +109,12 @@ static uint32_t signatureLength(const char *algo, int diglen, const char *key)
     memset(signature, 0, MAX_SIGNATURE_LENGTH);
     signature[0] = '\x03';
 
-    uint32_t siglen = sign_hash(algo, digest, diglen, key, signature+1);
+    uint32_t siglen = sign_hash(algo, digest, diglen, key, keypass,
+				signature+1);
     return siglen + 1;
 }
 
-rpmRC rpmSignFiles(Header h, const char *key)
+rpmRC rpmSignFiles(Header h, const char *key, char *keypass)
 {
     struct rpmtd_s digests;
     int algo;
@@ -100,14 +138,14 @@ rpmRC rpmSignFiles(Header h, const char *key)
 	return RPMRC_FAIL;
     }
 
-    headerDel(h, RPMTAG_FILESIGNATURELENGTH);
-    headerDel(h, RPMTAG_FILESIGNATURES);
-    siglen = signatureLength(algoname, diglen, key);
-    headerPutUint32(h, RPMTAG_FILESIGNATURELENGTH, &siglen, 1);
+	headerDel(h, RPMTAG_FILESIGNATURELENGTH);
+	headerDel(h, RPMTAG_FILESIGNATURES);
+	siglen = signatureLength(algoname, diglen, key, keypass);
+	headerPutUint32(h, RPMTAG_FILESIGNATURELENGTH, &siglen, 1);
 
-    headerGet(h, RPMTAG_FILEDIGESTS, &digests, HEADERGET_MINMEM);
-    while ((digest = rpmtdNextString(&digests))) {
-	signature = signFile(algoname, digest, diglen, key);
+	headerGet(h, RPMTAG_FILEDIGESTS, &digests, HEADERGET_MINMEM);
+	while ((digest = rpmtdNextString(&digests))) {
+	signature = signFile(algoname, digest, diglen, key, keypass);
 	if (!signature) {
 	    rpmlog(RPMLOG_ERR, _("signFile failed\n"));
 	    rc = RPMRC_FAIL;

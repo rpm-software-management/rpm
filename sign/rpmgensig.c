@@ -553,6 +553,7 @@ static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
     FD_t ofd = NULL;
     char *trpm = NULL;
     const char *key;
+    char *keypass;
     char *SHA1 = NULL;
     uint8_t *MD5 = NULL;
     size_t sha1len;
@@ -571,7 +572,11 @@ static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
 
     key = rpmExpand("%{?_file_signing_key}", NULL);
 
-    rc = rpmSignFiles(*hdrp, key);
+    keypass = rpmExpand("%{_file_signing_key_password}", NULL);
+    if (rstreq(keypass, ""))
+	keypass = NULL;
+
+    rc = rpmSignFiles(*hdrp, key, keypass);
     if (rc != RPMRC_OK) {
 	goto exit;
     }
