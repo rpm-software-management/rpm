@@ -1053,6 +1053,7 @@ done \
 %__transaction_systemd_inhibit	%{__plugindir}/systemd_inhibit.so
 %__transaction_selinux		%{__plugindir}/selinux.so
 %__transaction_syslog		%{__plugindir}/syslog.so
+%__transaction_ima		%{__plugindir}/ima.so
 
 #------------------------------------------------------------------------------
 # Macros for further automated spec %setup and patch application

@@ -31,3 +31,7 @@ endif
 syslog_la_SOURCES = syslog.c
 syslog_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la
 plugins_LTLIBRARIES += syslog.la
+
+ima_la_sources = ima.c
+ima_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la
+plugins_LTLIBRARIES += ima.la
