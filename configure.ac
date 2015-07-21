@@ -674,6 +674,15 @@ AC_SUBST(WITH_SELINUX_LIB)
 AC_SUBST(WITH_SEMANAGE_LIB)
 AM_CONDITIONAL(SELINUX,[test "$with_selinux" = yes])
 
+# libimaevm
+with_iamevm=no
+AC_ARG_WITH(imaevm, [AS_HELP_STRING([--with-imaevm],[build with imaevm support])])
+if test "$with_imaevm" = yes ; then
+  AC_DEFINE(WITH_IMAEVM, 1, [Build with imaevm support?])
+  LIBS="$LIBS -limaevm"
+fi
+AM_CONDITIONAL(WITH_IMAEVM,[test "$with_imaevm" = yes])
+
 # libcap
 WITH_CAP_LIB=
 AC_ARG_WITH(cap, [AS_HELP_STRING([--with-cap],[build with capability support])],
