@@ -20,6 +20,9 @@ enum modes {
 
 static int mode = 0;
 
+static int signfiles = 0;
+static char * fileSigningKey = NULL;
+
 static struct poptOption signOptsTable[] = {
     { "addsign", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_ADDSIGN,
 	N_("sign package(s)"), NULL },
@@ -27,6 +30,11 @@ static struct poptOption signOptsTable[] = {
 	N_("sign package(s) (identical to --addsign)"), NULL },
     { "delsign", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_DELSIGN,
 	N_("delete package signatures"), NULL },
+    { "signfiles", '\0', POPT_ARG_NONE, &signfiles, 0,
+	N_("sign package(s) files"), NULL},
+    { "fskpath", '\0', POPT_ARG_STRING, &fileSigningKey, 0,
+	N_("use file signing key <key>"),
+	N_("<key>") },
     POPT_TABLEEND
 };
 
@@ -47,16 +55,30 @@ static int doSign(poptContext optCon)
     int rc = EXIT_FAILURE;
     char * passPhrase = NULL;
     char * name = rpmExpand("%{?_gpg_name}", NULL);
+    struct rpmSignArgs sig = {NULL, 0, 0};
 
     if (rstreq(name, "")) {
 	fprintf(stderr, _("You must set \"%%_gpg_name\" in your macro file\n"));
 	goto exit;
     }
 
+    if (fileSigningKey) {
+	addMacro(NULL, "_file_signing_key", NULL, fileSigningKey, RMIL_GLOBAL);
+    }
+
+    if (signfiles) {
+	const char *key = rpmExpand("%{?_file_signing_key}", NULL);
+	if (rstreq(key, "")) {
+	    fprintf(stderr, _("You must set \"$$_file_signing_key\" in your macro file or on the command line with --fskpath\n"));
+	    goto exit;
+	}
+	sig.signfiles = 1;
+    }
+
     const char *arg;
     rc = 0;
     while ((arg = poptGetArg(optCon)) != NULL) {
-	rc += rpmPkgSign(arg, NULL);
+	rc += rpmPkgSign(arg, &sig);
     }
 
 exit:
@@ -78,6 +100,10 @@ int main(int argc, char *argv[])
 
     if (poptPeekArg(optCon) == NULL) {
 	argerror(_("no arguments given"));
+    }
+
+    if (fileSigningKey && !signfiles) {
+	argerror(_("--fskpath may only be specified when signing files"));
     }
 
     switch (mode) {

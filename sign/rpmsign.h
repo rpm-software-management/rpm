@@ -11,6 +11,7 @@ extern "C" {
 struct rpmSignArgs {
     char *keyid;
     pgpHashAlgo hashalgo;
+    int signfiles;
     /* ... what else? */
 };
 

@@ -170,6 +170,7 @@ rpm	alias --httpproxy	--define '_httpproxy !#:+'
 rpm	exec --addsign		rpmsign --addsign
 rpm	exec --delsign		rpmsign --delsign
 rpm	exec --resign		rpmsign --resign
+#rpm	exec --signfiles	rpmsign --signfiles
 rpm	exec --checksig		rpmkeys --checksig
 rpm	exec -K			rpmkeys --checksig
 rpm	exec --import		rpmkeys --import
