@@ -37,7 +37,7 @@ static char *signFile(const char *algo, const char *fdigest, int diglen, const c
     unsigned char signature[MAX_SIGNATURE_LENGTH];
     int siglen;
 
-#ifndef IMAEVM
+#ifndef WITH_IMAEVM
     rpmlog(RPMLOG_ERR, _("missing libimaevm\n"));
     return NULL;
 #endif
