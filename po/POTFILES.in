@@ -72,7 +72,7 @@ lib/rpmdb.c
 lib/tagexts.c
 lib/tagname.c
 lib/backend/db3.c
-lib/backend/dbconfig.c
+lib/backend/dbi.c
 python/rpmts-py.c
 rpmio/argv.c
 rpmio/digest.c
