@@ -215,7 +215,12 @@ static int expandRegular(rpmfi fi, const char *dest, rpmpsm psm, int nodigest, i
     FD_t wfd = NULL;
     int rc = 0;
 
-    wfd = Fopen(dest, "w.ufdio");
+    /* Create the file with 000 permissions. */
+    {
+	mode_t old_umask = umask(0777);
+	wfd = Fopen(dest, "w.ufdio");
+	umask(old_umask);
+    }
     if (Ferror(wfd)) {
 	rc = RPMERR_OPEN_FAILED;
 	goto exit;
