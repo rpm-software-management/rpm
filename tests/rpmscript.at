@@ -206,6 +206,7 @@ AT_CLEANUP
 AT_SETUP([Proper reset of nice/ionice levels on scripts - only works as root!])
 AT_KEYWORDS([verify nice])
 AT_CHECK([
+AT_XFAIL_IF([test `whoami` != root ])
 RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
