@@ -34,7 +34,7 @@ rpmbuild \- Build RPM Package(s)
 
 
  [\fB--buildroot \fIDIRECTORY\fB\fR] [\fB--clean\fR] [\fB--nobuild\fR]
- [\fB--rmsource\fR] [\fB--rmspec\fR] [\fB--short-circuit\fR]
+ [\fB--rmsource\fR] [\fB--rmspec\fR] [\fB--short-circuit\fR] [\fB--build-in-place\fR]
  [\fB--noprep\fR] [\fB--noclean\fR] [\fB--nocheck\fR]
  [\fB--target \fIPLATFORM\fB\fR]
  [\fB--with \fIOPTION\fB\fR] [\fB--without \fIOPTION\fB\fR]
@@ -191,6 +191,11 @@ up to the specified stage).  Only valid with \fB-bc\fR, \fB-bi\fR,
 and \fB-bb\fR.  Useful for local testing only.  Packages built this
 way will be marked with an unsatisfiable dependency to prevent
 their accidental use.
+.TP
+\fB--build-in-place\fR
+Build from locally checked out sources. Sets _builddir to current working
+directory. Skips handling of -n and untar in the %setup and the deletion of
+the buildSubdir.
 .TP
 \fB--target \fIPLATFORM\fB\fR
 When building the package, interpret \fIPLATFORM\fR
