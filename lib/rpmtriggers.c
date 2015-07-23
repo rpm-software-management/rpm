@@ -12,6 +12,7 @@
 #include "lib/rpmds_internal.h"
 #include "lib/rpmfi_internal.h"
 
+#define TRIGGER_PRIORITY_BOUND 10000
 
 rpmtriggers rpmtriggersCreate(unsigned int hint)
 {
@@ -466,7 +467,7 @@ static int matchFilesInTran(rpmts ts, rpmte te, const char *pfx,
 }
 
 rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
-			rpmscriptTriggerModes tm)
+			rpmscriptTriggerModes tm, int priorityClass)
 {
     int nerrors = 0, i;
     rpmdbIndexIterator ii;
@@ -533,6 +534,14 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
 
     /* Handle stored triggers */
     for (i = 0; i < triggers->count; i++) {
+	if (priorityClass == 1) {
+	    if (triggers->triggerInfo[i].priority < TRIGGER_PRIORITY_BOUND)
+		continue;
+	} else if (priorityClass == 2) {
+	    if (triggers->triggerInfo[i].priority >= TRIGGER_PRIORITY_BOUND)
+		continue;
+	}
+
 	trigH = rpmdbGetHeaderAt(rpmtsGetRdb(ts), triggers->triggerInfo[i].hdrNum);
 	if (tm == RPMSCRIPT_FILETRIGGER)
 	    nerrors += runHandleTriggersInPkg(ts, te, trigH, sense, tm, 0,
@@ -548,7 +557,7 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
 }
 
 rpmRC runImmedFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
-			    rpmscriptTriggerModes tm)
+			    rpmscriptTriggerModes tm, int priorityClass)
 {
     int nerrors = 0;
     int triggersCount, i;
@@ -577,6 +586,14 @@ rpmRC runImmedFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
     rpmtriggersSortAndUniq(triggers);
 
     for (i = 0; i < triggersCount; i++) {
+	if (priorityClass == 1) {
+	    if (triggers->triggerInfo[i].priority < TRIGGER_PRIORITY_BOUND)
+		continue;
+	} else if (priorityClass == 2) {
+	    if (triggers->triggerInfo[i].priority >= TRIGGER_PRIORITY_BOUND)
+		continue;
+	}
+
 	nerrors += runHandleTriggersInPkg(ts, te, trigH, sense, tm, 2,
 					    triggers->triggerInfo[i].tix);
     }

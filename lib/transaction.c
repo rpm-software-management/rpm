@@ -1491,7 +1491,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     if (!rpmpsNumProblems(tsprobs)) {
 	/* Run file triggers in this package other package(s) set off. */
 	runFileTriggers(ts, NULL, RPMSENSE_TRIGGERUN,
-			RPMSCRIPT_TRANSFILETRIGGER);
+			RPMSCRIPT_TRANSFILETRIGGER, 0);
 	/* Run file triggers in other package(s) this package sets off. */
 	runTransScripts(ts, PKG_TRANSFILETRIGGERUN);
     }
@@ -1541,7 +1541,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     }
 
     /* Run file triggers in other package(s) this package sets off. */
-    runFileTriggers(ts, NULL, RPMSENSE_TRIGGERIN, RPMSCRIPT_TRANSFILETRIGGER);
+    runFileTriggers(ts, NULL, RPMSENSE_TRIGGERIN, RPMSCRIPT_TRANSFILETRIGGER, 0);
     runPostUnTransFileTrigs(ts);
 
     /* Run file triggers in this package other package(s) set off. */
