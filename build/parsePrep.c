@@ -101,7 +101,7 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 
     /* Avoid the extra cost of fork and pipe for uncompressed patches */
     if (compressed != COMPRESSED_NOT) {
-	patchcmd = rpmExpand("%{uncompress: ", fn, "} || echo patch_fail | "
+	patchcmd = rpmExpand("{ %{uncompress: ", fn, "} || echo patch_fail ; } | "
                              "%{__patch} ", args, NULL);
     } else {
 	patchcmd = rpmExpand("%{__patch} ", args, " < ", fn, NULL);
