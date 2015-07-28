@@ -33,7 +33,19 @@ typedef enum rpmCallbackType_e {
     RPMCALLBACK_INST_STOP	= (1 << 18),
 } rpmCallbackType;
 
-/**
+/** \ingroup rpmts
+ * Function pointer type for rpmtsSetNotifyCallback() triggered by
+ * rpmtsNotify()
+ *
+ * @param h		related header or NULL
+ * @param what  	kind of notification (See RPMCALLBACK_ constants above)
+ * @param amount	number of bytes/packages already processed or
+ *			tag of the scriptlet involved
+ *			or 0 or some other number
+ * @param total		total number of bytes/packages to be processed or
+ * 			return code of the scriptlet or 0
+ * @param key		result of rpmteKey() of related rpmte or 0
+ * @param data		user data as passed to rpmtsSetNotifyCallback()
  */
 typedef void * (*rpmCallbackFunction)
 		(const void * h, 
