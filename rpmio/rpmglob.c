@@ -150,7 +150,7 @@ static inline const char *next_brace_sub(const char *begin)
     return cp;
 }
 
-static int __glob_pattern_p(const char *pattern, int flags);
+static int __glob_pattern_p(const char *pattern, int quote);
 
 /* Do glob searching for PATTERN, placing results in PGLOB.
    The bits defined above may be set in FLAGS.
@@ -419,7 +419,7 @@ glob(const char *pattern, int flags,
 	return GLOB_NOMATCH;
     }
 
-    if (__glob_pattern_p(dirname, flags)) {
+    if (__glob_pattern_p(dirname, !(flags & GLOB_NOESCAPE))) {
 	/* The directory name contains metacharacters, so we
 	   have to glob for the directory, and then glob for
 	   the pattern in each directory found.  */
@@ -646,11 +646,10 @@ static int prefix_array(const char *dirname, char **array, size_t n)
 
 /* Return nonzero if PATTERN contains any metacharacters.
    Metacharacters can be quoted with backslashes if QUOTE is nonzero.  */
-static int __glob_pattern_p(const char *pattern, int flags)
+static int __glob_pattern_p(const char *pattern, int quote)
 {
     register const char *p;
     int openBrackets = 0;
-    int openBraces = 0;
 
     for (p = pattern; *p != '\0'; ++p)
 	switch (*p) {
@@ -659,7 +658,7 @@ static int __glob_pattern_p(const char *pattern, int flags)
 	    return 1;
 
 	case '\\':
-	    if (!(flags & GLOB_NOESCAPE) && p[1] != '\0')
+	    if (quote && p[1] != '\0')
 		++p;
 	    break;
 
@@ -671,17 +670,6 @@ static int __glob_pattern_p(const char *pattern, int flags)
 	    if (openBrackets)
 		return 1;
 	    break;
-
-	case '{':
-	    if (flags & GLOB_BRACE)
-		openBraces = 1;
-	    break;
-
-	case '}':
-	    if (openBraces)
-		return 1;
-	    break;
-
 	}
 
     return 0;
@@ -706,7 +694,7 @@ glob_in_dir(const char *pattern, const char *directory, int flags,
     int meta;
     int save;
 
-    meta = __glob_pattern_p(pattern, flags);
+    meta = __glob_pattern_p(pattern, !(flags & GLOB_NOESCAPE));
     if (meta == 0) {
 	if (flags & (GLOB_NOCHECK | GLOB_NOMAGIC))
 	    /* We need not do any tests.  The PATTERN contains no meta
@@ -888,9 +876,7 @@ int rpmGlob(const char * patterns, int * argcPtr, ARGV_t * argvPtr)
 	int dir_only = (plen > 0 && path[plen-1] == '/');
 	glob_t gl;
 
-	if (!local || (!rpmIsGlob(av[j], GLOB_NOESCAPE | flags) &&
-	    strchr(path, '~') == NULL)) {
-
+	if (!local || (!rpmIsGlob(av[j], 0) && strchr(path, '~') == NULL)) {
 	    argvAdd(&argv, av[j]);
 	    continue;
 	}
@@ -982,11 +968,32 @@ exit:
 
 int rpmIsGlob(const char * pattern, int quote)
 {
-    int flags = 0;
-    if (!quote) {
-	flags |= GLOB_NOESCAPE;
-    }
-    flags |= GLOB_BRACE;
+    if(!__glob_pattern_p(pattern, quote)) {
 
-    return __glob_pattern_p(pattern, flags);
+	const char *begin;
+	const char *next;
+	const char *rest;
+
+	begin = strchr(pattern, '{');
+	if (begin == NULL)
+	    return 0;
+	/*
+	 * Find the first sub-pattern and at the same time find the
+	 *  rest after the closing brace.
+	 */
+	next = next_brace_sub(begin + 1);
+	if (next == NULL)
+	    return 0;
+
+	/* Now find the end of the whole brace expression.  */
+	rest = next;
+	while (*rest != '}') {
+	    rest = next_brace_sub(rest + 1);
+	    if (rest == NULL)
+		return 0;
+	}
+	/* Now we can be sure that brace expression is well-foermed. */
+    }
+
+    return 1;
 }
