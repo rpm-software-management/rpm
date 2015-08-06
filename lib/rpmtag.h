@@ -352,6 +352,10 @@ typedef enum rpmTag_e {
     RPMTAG_REMOVEPATHPOSTFIXES  = 5083, /* s internal */
     RPMTAG_FILETRIGGERPRIORITIES	= 5084, /* i[] */
     RPMTAG_TRANSFILETRIGGERPRIORITIES	= 5085, /* i[] */
+    RPMTAG_FILETRIGGERCONDS		= 5086, /* s[] extension */
+    RPMTAG_FILETRIGGERTYPE		= 5087, /* s[] extension */
+    RPMTAG_TRANSFILETRIGGERCONDS	= 5088, /* s[] extension */
+    RPMTAG_TRANSFILETRIGGERTYPE		= 5089, /* s[] extension */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;
