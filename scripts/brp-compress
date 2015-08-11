@@ -8,8 +8,8 @@ fi
 cd "$RPM_BUILD_ROOT"
 
 # Compress man pages
-COMPRESS="gzip -9 -n"
-COMPRESS_EXT=.gz
+COMPRESS=${COMPRESS:-gzip -9 -n}
+COMPRESS_EXT=${COMPRESS_EXT:-.gz}
 
 for d in ./usr/man/man* ./usr/man/*/man* ./usr/info \
 	./usr/share/man/man* ./usr/share/man/*/man* ./usr/share/info \
