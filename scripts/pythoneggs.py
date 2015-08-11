@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2010 Per Øyvind Karlsen <peroyvind@mandriva.org>
+# Copyright 2010 Per Øyvind Karlsen <proyvind@moondrake.org>
 #
 # This program is free software. It may be redistributed and/or modified under
 # the terms of the LGPL version 2.1 (or later).
 #
-# RPM5 python (egg) dependency generator.
+# RPM python (egg) dependency generator.
 #
 
 from getopt import getopt
