@@ -158,8 +158,8 @@ for f in files:
                 deps = depsextras
             # add requires/suggests based on egg metadata
             for dep in deps:
-                if f.find('python3') > 0:
-                    name = 'python3egg(%s)' % dep.key
+                if f.find('python2') > 0:
+                    name = 'python2egg(%s)' % dep.key
                 else:
                     name = 'pythonegg(%s)' % dep.key
                 for spec in dep.specs:
