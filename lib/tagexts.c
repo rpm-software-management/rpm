@@ -191,6 +191,12 @@ exit:
     return rc;
 }
 
+typedef enum tMode_e {
+    NORMALTRIGGER     = 0,
+    FILETRIGGER       = 1,
+    TRANSFILETRIGGER  = 2,
+} tMode;
+
 /**
  * Retrieve trigger info.
  * @param h		header
@@ -198,22 +204,49 @@ exit:
  * @param hgflags	header get flags
  * @return		1 on success
  */
-static int triggercondsTag(Header h, rpmtd td, headerGetFlags hgflags)
+static int triggercondsTagFor(tMode mode, Header h, rpmtd td,
+				headerGetFlags hgflags)
 {
     uint32_t * indices;
     int i, j;
     char ** conds;
     struct rpmtd_s nametd, indextd, flagtd, versiontd, scripttd;
     int hgeflags = HEADERGET_MINMEM;
+    rpmTagVal triggername, triggerindex, triggerflags;
+    rpmTagVal triggerversion, triggerscripts;
 
-    if (!headerGet(h, RPMTAG_TRIGGERNAME, &nametd, hgeflags)) {
+    switch (mode) {
+	case NORMALTRIGGER:
+	    triggername = RPMTAG_TRIGGERNAME;
+	    triggerindex = RPMTAG_TRIGGERINDEX;
+	    triggerflags = RPMTAG_TRIGGERFLAGS;
+	    triggerversion = RPMTAG_TRIGGERVERSION;
+	    triggerscripts = RPMTAG_TRIGGERSCRIPTS;
+	    break;
+	case FILETRIGGER:
+	    triggername = RPMTAG_FILETRIGGERNAME;
+	    triggerindex = RPMTAG_FILETRIGGERINDEX;
+	    triggerflags = RPMTAG_FILETRIGGERFLAGS;
+	    triggerversion = RPMTAG_FILETRIGGERVERSION;
+	    triggerscripts = RPMTAG_FILETRIGGERSCRIPTS;
+	    break;
+	case TRANSFILETRIGGER:
+	    triggername = RPMTAG_TRANSFILETRIGGERNAME;
+	    triggerindex = RPMTAG_TRANSFILETRIGGERINDEX;
+	    triggerflags = RPMTAG_TRANSFILETRIGGERFLAGS;
+	    triggerversion = RPMTAG_TRANSFILETRIGGERVERSION;
+	    triggerscripts = RPMTAG_TRANSFILETRIGGERSCRIPTS;
+	    break;
+    }
+
+    if (!headerGet(h, triggername, &nametd, hgeflags)) {
 	return 0;
     }
 
-    headerGet(h, RPMTAG_TRIGGERINDEX, &indextd, hgeflags);
-    headerGet(h, RPMTAG_TRIGGERFLAGS, &flagtd, hgeflags);
-    headerGet(h, RPMTAG_TRIGGERVERSION, &versiontd, hgeflags);
-    headerGet(h, RPMTAG_TRIGGERSCRIPTS, &scripttd, hgeflags);
+    headerGet(h, triggerindex, &indextd, hgeflags);
+    headerGet(h, triggerflags, &flagtd, hgeflags);
+    headerGet(h, triggerversion, &versiontd, hgeflags);
+    headerGet(h, triggerscripts, &scripttd, hgeflags);
 
     td->type = RPM_STRING_ARRAY_TYPE;
     td->flags = RPMTD_ALLOCED | RPMTD_PTR_ALLOCED;
@@ -262,6 +295,21 @@ static int triggercondsTag(Header h, rpmtd td, headerGetFlags hgflags)
     return 1;
 }
 
+static int triggercondsTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return triggercondsTagFor(NORMALTRIGGER, h, td, hgflags);
+}
+
+static int filetriggercondsTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return triggercondsTagFor(FILETRIGGER, h, td, hgflags);
+}
+
+static int transfiletriggercondsTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return triggercondsTagFor(TRANSFILETRIGGER, h, td, hgflags);
+}
+
 /**
  * Retrieve trigger type info.
  * @param h		header
@@ -269,18 +317,38 @@ static int triggercondsTag(Header h, rpmtd td, headerGetFlags hgflags)
  * @param hgflags	header get flags
  * @return		1 on success
  */
-static int triggertypeTag(Header h, rpmtd td, headerGetFlags hgflags)
+static int triggertypeTagFor(tMode mode, Header h, rpmtd td,
+				headerGetFlags hgflags)
 {
     int i;
     char ** conds;
     struct rpmtd_s indices, flags, scripts;
+    rpmTagVal triggerindex, triggerflags, triggerscripts;
 
-    if (!headerGet(h, RPMTAG_TRIGGERINDEX, &indices, HEADERGET_MINMEM)) {
+    switch (mode) {
+	case NORMALTRIGGER:
+	    triggerindex = RPMTAG_TRIGGERINDEX;
+	    triggerflags = RPMTAG_TRIGGERFLAGS;
+	    triggerscripts = RPMTAG_TRIGGERSCRIPTS;
+	    break;
+	case FILETRIGGER:
+	    triggerindex = RPMTAG_FILETRIGGERINDEX;
+	    triggerflags = RPMTAG_FILETRIGGERFLAGS;
+	    triggerscripts = RPMTAG_FILETRIGGERSCRIPTS;
+	    break;
+	case TRANSFILETRIGGER:
+	    triggerindex = RPMTAG_TRANSFILETRIGGERINDEX;
+	    triggerflags = RPMTAG_TRANSFILETRIGGERFLAGS;
+	    triggerscripts = RPMTAG_TRANSFILETRIGGERSCRIPTS;
+	    break;
+    }
+
+    if (!headerGet(h, triggerindex, &indices, HEADERGET_MINMEM)) {
 	return 0;
     }
 
-    headerGet(h, RPMTAG_TRIGGERFLAGS, &flags, HEADERGET_MINMEM);
-    headerGet(h, RPMTAG_TRIGGERSCRIPTS, &scripts, HEADERGET_MINMEM);
+    headerGet(h, triggerflags, &flags, HEADERGET_MINMEM);
+    headerGet(h, triggerscripts, &scripts, HEADERGET_MINMEM);
 
     td->flags = RPMTD_ALLOCED | RPMTD_PTR_ALLOCED;
     td->count = rpmtdCount(&scripts);
@@ -314,6 +382,21 @@ static int triggertypeTag(Header h, rpmtd td, headerGetFlags hgflags)
     rpmtdFreeData(&scripts);
 
     return 1;
+}
+
+static int triggertypeTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return triggertypeTagFor(NORMALTRIGGER, h, td, hgflags);
+}
+
+static int filetriggertypeTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return triggertypeTagFor(FILETRIGGER, h, td, hgflags);
+}
+
+static int transfiletriggertypeTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return triggertypeTagFor(TRANSFILETRIGGER, h, td, hgflags);
 }
 
 /**
@@ -873,7 +956,11 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_FILEPROVIDE,	fileprovideTag },
     { RPMTAG_FILEREQUIRE,	filerequireTag },
     { RPMTAG_TRIGGERCONDS,	triggercondsTag },
+    { RPMTAG_FILETRIGGERCONDS,	filetriggercondsTag },
+    { RPMTAG_TRANSFILETRIGGERCONDS,	transfiletriggercondsTag },
     { RPMTAG_TRIGGERTYPE,	triggertypeTag },
+    { RPMTAG_FILETRIGGERTYPE,	filetriggertypeTag },
+    { RPMTAG_TRANSFILETRIGGERTYPE,	transfiletriggertypeTag },
     { RPMTAG_LONGFILESIZES,	longfilesizesTag },
     { RPMTAG_LONGARCHIVESIZE,	longarchivesizeTag },
     { RPMTAG_LONGSIZE,		longsizeTag },

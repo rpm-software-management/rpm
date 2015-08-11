@@ -20,7 +20,7 @@
  */
 static int addTriggerIndex(Package pkg, const char *file,
 	const char *script, const char *prog, rpmscriptFlags flags,
-	rpmTagVal tag)
+	rpmTagVal tag, uint32_t priority)
 {
     struct TriggerFileEntry *tfe;
     struct TriggerFileEntry *list;
@@ -53,6 +53,7 @@ static int addTriggerIndex(Package pkg, const char *file,
     tfe->prog = xstrdup(prog);
     tfe->flags = flags;
     tfe->index = index;
+    tfe->priority = priority;
     tfe->next = NULL;
 
     if (last)
@@ -102,6 +103,7 @@ int parseScript(rpmSpec spec, int parsePart)
     const char *name = NULL;
     const char *prog = "/bin/sh";
     const char *file = NULL;
+    int priority = 1000000;
     struct poptOption optionsTable[] = {
 	{ NULL, 'p', POPT_ARG_STRING, &prog, 'p',	NULL, NULL},
 	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},
@@ -110,6 +112,7 @@ int parseScript(rpmSpec spec, int parsePart)
 	  NULL, NULL},
 	{ NULL, 'q', POPT_BIT_SET, &scriptFlags, RPMSCRIPT_FLAG_QFORMAT,
 	  NULL, NULL},
+	{ "--priority", 'P', POPT_ARG_INT, &priority, 'P', NULL, NULL},
 	{ 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
@@ -286,9 +289,19 @@ int parseScript(rpmSpec spec, int parsePart)
 	case 'n':
 	    flag = PART_NAME;
 	    break;
+	case 'P':
+	    if (tag != RPMTAG_TRIGGERSCRIPTS &&
+		tag != RPMTAG_FILETRIGGERSCRIPTS &&
+		tag != RPMTAG_TRANSFILETRIGGERSCRIPTS) {
+
+		rpmlog(RPMLOG_ERR,
+			 _("line %d: Priorities are allowed only for file "
+			 "triggers : %s\n"), spec->lineNum, prog);
+		goto exit;
+	    }
 	}
     }
-    
+
     if (arg < -1) {
 	rpmlog(RPMLOG_ERR, _("line %d: Bad option %s: %s\n"),
 		 spec->lineNum,
@@ -381,7 +394,8 @@ int parseScript(rpmSpec spec, int parsePart)
 	    goto exit;
 	}
 	/* Add file/index/prog triple to the trigger file list */
-	index = addTriggerIndex(pkg, file, p, progArgv[0], scriptFlags, tag);
+	index = addTriggerIndex(pkg, file, p, progArgv[0], scriptFlags, tag,
+				priority);
 
 	/* Generate the trigger tags */
 	if (parseRCPOT(spec, pkg, reqargs, reqtag, index, tagflags))

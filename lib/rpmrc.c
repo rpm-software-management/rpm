@@ -1052,10 +1052,22 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 
 #	if defined(__MIPSEL__) || defined(__MIPSEL) || defined(_MIPSEL)
 	    /* little endian */
-	    strcpy(un.machine, "mipsel");
+#		if defined(__LP64__) || defined(_LP64)
+		    /* 64-bit */
+		    strcpy(un.machine, "mips64el");
+#		else
+		    /* 32-bit */
+		    strcpy(un.machine, "mipsel");
+#		endif
 #	elif defined(__MIPSEB__) || defined(__MIPSEB) || defined(_MIPSEB)
 	   /* big endian */
-		strcpy(un.machine, "mips");
+#		if defined(__LP64__) || defined(_LP64)
+		    /* 64-bit */
+		    strcpy(un.machine, "mips64");
+#		else
+		    /* 32-bit */
+		    strcpy(un.machine, "mips");
+#		endif
 #	endif
 
 #	if defined(__hpux) && defined(_SC_CPU_VERSION)

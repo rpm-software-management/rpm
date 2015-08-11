@@ -9,6 +9,7 @@
 #include "lib/rpmlock.h"
 #include "lib/rpmdb_internal.h"
 #include "lib/rpmscript.h"
+#include "lib/rpmtriggers.h"
 
 typedef struct diskspaceInfo_s * rpmDiskSpaceInfo;
 
@@ -82,7 +83,7 @@ struct rpmts_s {
 
     int nrefs;			/*!< Reference count. */
 
-    tsTriggers trigs2run;   /*!< Transaction file triggers */
+    rpmtriggers trigs2run;   /*!< Transaction file triggers */
 };
 
 #ifdef __cplusplus
@@ -116,21 +117,8 @@ RPM_GNUC_INTERNAL
 rpmRC rpmtsSetupTransactionPlugins(rpmts ts);
 
 RPM_GNUC_INTERNAL
-rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
-			rpmscriptTriggerModes tm);
-
-RPM_GNUC_INTERNAL
-rpmRC runImmedFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
-			    rpmscriptTriggerModes tm);
-RPM_GNUC_INTERNAL
 rpmRC runScript(rpmts ts, rpmte te, ARGV_const_t prefixes,
 		       rpmScript script, int arg1, int arg2);
-RPM_GNUC_INTERNAL
-void rpmtsAddTrigger(rpmts ts, unsigned int hdrNum, int index);
-
-RPM_GNUC_INTERNAL
-void rpmtsUniqTriggers(rpmts ts);
-
 
 #ifdef __cplusplus
 }

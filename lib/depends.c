@@ -894,15 +894,21 @@ int rpmtsCheck(rpmts ts)
     filedepHash reqnotfilehash = NULL;	/* file requires of installed packages */
     depexistsHash reqnothash = NULL;
     fingerPrintCache fpc = NULL;
+    rpmdb rdb = NULL;
     
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
 
     /* Do lazy, readonly, open of rpm database. */
-    if (rpmtsGetRdb(ts) == NULL && rpmtsGetDBMode(ts) != -1) {
+    rdb = rpmtsGetRdb(ts);
+    if (rdb == NULL && rpmtsGetDBMode(ts) != -1) {
 	if ((rc = rpmtsOpenDB(ts, rpmtsGetDBMode(ts))) != 0)
 	    goto exit;
+	rdb = rpmtsGetRdb(ts);
 	closeatexit = 1;
     }
+
+    if (rdb)
+	rpmdbCtrl(rdb, RPMDB_CTRL_LOCK_RO);
 
     /* XXX FIXME: figure some kind of heuristic for the cache size */
     dcache = depCacheCreate(5001, rstrhash, strcmp,
@@ -1025,6 +1031,9 @@ int rpmtsCheck(rpmts ts)
 	}
     }
     rpmtsiFree(pi);
+
+    if (rdb)
+	rpmdbCtrl(rdb, RPMDB_CTRL_UNLOCK_RO);
 
 exit:
     depCacheFree(dcache);

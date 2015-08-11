@@ -77,6 +77,8 @@ static int buildIndexes(rpmdb db)
 
     dbSetFSync(db, 0);
 
+    dbCtrl(db, RPMDB_CTRL_LOCK_RW);
+
     mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
     while ((h = rpmdbNextIterator(mi))) {
 	unsigned int hdrNum = headerGetInstance(h);
@@ -89,6 +91,10 @@ static int buildIndexes(rpmdb db)
 	}
     }
     rpmdbFreeIterator(mi);
+
+    dbCtrl(db, DB_CTRL_INDEXSYNC);
+    dbCtrl(db, DB_CTRL_UNLOCK_RW);
+
     dbSetFSync(db, !db->cfg.db_no_fsync);
     return rc;
 }
@@ -1043,8 +1049,11 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	    sigset_t signalMask;
 
 	    blockSignals(&signalMask);
+	    dbCtrl(mi->mi_db, DB_CTRL_LOCK_RW);
 	    rc = pkgdbPut(dbi, mi->mi_dbc, mi->mi_prevoffset,
 			  hdrBlob, hdrLen);
+	    dbCtrl(mi->mi_db, DB_CTRL_INDEXSYNC);
+	    dbCtrl(mi->mi_db, DB_CTRL_UNLOCK_RW);
 	    unblockSignals(&signalMask);
 
 	    if (rc) {
@@ -2136,6 +2145,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 	return 1;
 
     (void) blockSignals(&signalMask);
+    dbCtrl(db, DB_CTRL_LOCK_RW);
 
     /* Remove header from primary index */
     dbc = dbiCursorInit(dbi, DBC_WRITE);
@@ -2154,6 +2164,8 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 	}
     }
 
+    dbCtrl(db, DB_CTRL_INDEXSYNC);
+    dbCtrl(db, DB_CTRL_UNLOCK_RW);
     (void) unblockSignals(&signalMask);
 
     headerFree(h);
@@ -2249,17 +2261,21 @@ static rpmRC tag2index(dbiIndex dbi, rpmTagVal rpmtag,
 		       idxfunc idxupdate)
 {
     int i, rc = 0;
-    struct rpmtd_s tagdata, reqflags;
+    struct rpmtd_s tagdata, reqflags, trig_index;
     dbiCursor dbc = NULL;
 
     switch (rpmtag) {
     case RPMTAG_REQUIRENAME:
 	headerGet(h, RPMTAG_REQUIREFLAGS, &reqflags, HEADERGET_MINMEM);
-	/* fallthrough */
-    default:
-	headerGet(h, rpmtag, &tagdata, HEADERGET_MINMEM);
+	break;
+    case RPMTAG_FILETRIGGERNAME:
+	headerGet(h, RPMTAG_FILETRIGGERINDEX, &trig_index, HEADERGET_MINMEM);
+	break;
+    case RPMTAG_TRANSFILETRIGGERNAME:
+	headerGet(h, RPMTAG_TRANSFILETRIGGERINDEX, &trig_index, HEADERGET_MINMEM);
 	break;
     }
+    headerGet(h, rpmtag, &tagdata, HEADERGET_MINMEM);
 
     if (rpmtdCount(&tagdata) == 0) {
 	if (rpmtag != RPMTAG_GROUP)
@@ -2278,8 +2294,22 @@ static rpmRC tag2index(dbiIndex dbi, rpmTagVal rpmtag,
 	const void * key = NULL;
 	unsigned int keylen = 0;
 	int j;
-	/* Include the tagNum in all indices (only files use though) */
-	struct dbiIndexItem_s rec = { .hdrNum = hdrNum, .tagNum = i };
+	struct dbiIndexItem_s rec;
+
+	switch (rpmtag) {
+	/* Include trigger index in db index for triggers */
+	case RPMTAG_FILETRIGGERNAME:
+	case RPMTAG_TRANSFILETRIGGERNAME:
+	    rec.hdrNum = hdrNum;
+	    rec.tagNum = *rpmtdNextUint32(&trig_index);
+	    break;
+
+	/* Include the tagNum in the others indices (only files use though) */
+	default:
+	    rec.hdrNum = hdrNum;
+	    rec.tagNum = i;
+	    break;
+	}
 
 	switch (rpmtag) {
 	case RPMTAG_REQUIRENAME: {
@@ -2354,6 +2384,7 @@ int rpmdbAdd(rpmdb db, Header h)
 	goto exit;
 	
     (void) blockSignals(&signalMask);
+    dbCtrl(db, DB_CTRL_LOCK_RW);
 
     /* Add header to primary index */
     dbc = dbiCursorInit(dbi, DBC_WRITE);
@@ -2374,6 +2405,8 @@ int rpmdbAdd(rpmdb db, Header h)
 	}
     }
 
+    dbCtrl(db, DB_CTRL_INDEXSYNC);
+    dbCtrl(db, DB_CTRL_UNLOCK_RW);
     (void) unblockSignals(&signalMask);
 
     /* If everything ok, mark header as installed now */
@@ -2448,10 +2481,9 @@ static int rpmdbRemoveDatabase(const char * prefix, const char * dbpath)
 
 static int renameTag(const char * prefix,
 		     const char * olddbpath, const char *newdbpath,
-		     rpmTagVal dbtag)
+		     const char * base)
 {
     int xx, rc = 0;
-    const char *base = rpmTagGetName(dbtag);
     char *src = rpmGetPath(prefix, "/", olddbpath, "/", base, NULL);
     char *dest = rpmGetPath(prefix, "/", newdbpath, "/", base, NULL);
     struct stat st;
@@ -2489,10 +2521,14 @@ static int rpmdbMoveDatabase(const char * prefix,
     rpmdb db = newRpmdb(prefix, newdbpath, O_RDONLY, 0644, RPMDB_FLAG_REBUILD);
 
     blockSignals(&sigMask);
-    rc = renameTag(prefix, olddbpath, newdbpath, RPMDBI_PACKAGES);
+    rc = renameTag(prefix, olddbpath, newdbpath, rpmTagGetName(RPMDBI_PACKAGES));
     for (int i = 0; i < db->db_ndbi; i++) {
-	rc += renameTag(prefix, olddbpath, newdbpath, db->db_tags[i]);
+	rc += renameTag(prefix, olddbpath, newdbpath, rpmTagGetName(db->db_tags[i]));
     }
+#ifdef ENABLE_NDB
+    rc += renameTag(prefix, olddbpath, newdbpath, "Packages.db");
+    rc += renameTag(prefix, olddbpath, newdbpath, "Index.db");
+#endif
 
     cleanDbenv(prefix, olddbpath);
     cleanDbenv(prefix, newdbpath);
@@ -2631,3 +2667,27 @@ exit:
 
     return rc;
 }
+
+int rpmdbCtrl(rpmdb db, rpmdbCtrlOp ctrl)
+{
+    dbCtrlOp dbctrl = 0;
+    switch (ctrl) {
+    case RPMDB_CTRL_LOCK_RO:
+	dbctrl = DB_CTRL_LOCK_RO;
+	break;
+    case RPMDB_CTRL_UNLOCK_RO:
+	dbctrl = DB_CTRL_UNLOCK_RO;
+	break;
+    case RPMDB_CTRL_LOCK_RW:
+	dbctrl = DB_CTRL_LOCK_RW;
+	break;
+    case RPMDB_CTRL_UNLOCK_RW:
+	dbctrl = DB_CTRL_UNLOCK_RW;
+	break;
+    case RPMDB_CTRL_INDEXSYNC:
+	dbctrl = DB_CTRL_INDEXSYNC;
+	break;
+    }
+    return dbctrl ? dbCtrl(db, dbctrl) : 1;
+}
+

@@ -189,12 +189,25 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
 	goto exit;
     }
 
-    if (strip & STRIP_COMMENTS &&
-	isComment && !rstreq(spec->lbuf, lbuf)) {
+    if (strip & STRIP_COMMENTS && isComment) {
+	char *bufA = lbuf;
+	char *bufB = spec->lbuf;
 
-	rpmlog(RPMLOG_WARNING,
-	    _("Macro expanded in comment on line %d: %s\n"),
-	    spec->lineNum, lbuf);
+	while (*bufA != '\0' && *bufB != '\0') {
+	    if (*bufA == '%' && *(bufA + 1) == '%')
+		bufA++;
+
+	    if (*bufA != *bufB)
+		break;
+
+	    bufA++;
+	    bufB++;
+	}
+
+	if (*bufA != '\0' || *bufB != '\0')
+	    rpmlog(RPMLOG_WARNING,
+		_("Macro expanded in comment on line %d: %s\n"),
+		spec->lineNum, lbuf);
     }
 
 exit:

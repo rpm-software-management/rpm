@@ -1584,16 +1584,13 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
 	    }
 	    argvFree(argv);
 	} else {
-	    int lvl = RPMLOG_WARNING;
 	    const char *msg = (fl->cur.isDir) ?
-				_("Directory not found by glob: %s\n") :
-				_("File not found by glob: %s\n");
-	    if (!(fl->cur.attrFlags & RPMFILE_EXCLUDE)) {
-		lvl = RPMLOG_ERR;
-		rc = RPMRC_FAIL;
-	    }
-	    rpmlog(lvl, msg, diskPath);
-	    goto exit;
+				_("Directory not found by glob: %s. "
+				"Trying without globbing.\n") :
+				_("File not found by glob: %s. "
+				"Trying without globbing.\n");
+	    rpmlog(RPMLOG_DEBUG, msg, diskPath);
+	    rc = addFile(fl, diskPath, NULL);
 	}
     } else {
 	rc = addFile(fl, diskPath, NULL);

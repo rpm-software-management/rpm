@@ -51,7 +51,7 @@ static PyObject *pkgGetSection(rpmSpecPkg pkg, int section)
 {
     char *sect = rpmSpecPkgGetSection(pkg, section);
     if (sect != NULL) {
-        PyObject *ps = PyString_FromString(sect);
+        PyObject *ps = PyBytes_FromString(sect);
         free(sect);
         if (ps != NULL)
             return ps;

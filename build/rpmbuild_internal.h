@@ -13,6 +13,7 @@ struct TriggerFileEntry {
     char * prog;
     uint32_t flags;
     struct TriggerFileEntry * next;
+    uint32_t priority;
 };
 
 typedef struct ReadLevelEntry {

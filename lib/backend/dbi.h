@@ -12,6 +12,14 @@ enum rpmdbFlags {
     RPMDB_FLAG_VERIFYONLY	= (1 << 2),
 };
 
+typedef enum dbCtrlOp_e {
+    DB_CTRL_LOCK_RO		= 1,
+    DB_CTRL_UNLOCK_RO		= 2,
+    DB_CTRL_LOCK_RW		= 3,
+    DB_CTRL_UNLOCK_RW		= 4,
+    DB_CTRL_INDEXSYNC		= 5
+} dbCtrlOp;
+
 typedef struct dbiIndex_s * dbiIndex;
 typedef struct dbiCursor_s * dbiCursor;
 
@@ -28,6 +36,8 @@ struct dbiConfig_s {
     int	dbi_no_dbsync;		/*!< don't call dbiSync */
     int	dbi_lockdbfd;		/*!< do fcntl lock on db fd */
 };
+
+struct rpmdbOps_s;
 
 /** \ingroup rpmdb
  * Describes the collection of index databases used by rpm.
@@ -48,6 +58,8 @@ struct rpmdb_s {
     int		db_ndbi;	/*!< No. of tag indices. */
     dbiIndex 	* db_indexes;	/*!< Tag indices. */
     int		db_buildindex;	/*!< Index rebuild indicator */
+
+    struct rpmdbOps_s * db_ops;	/*!< backend ops */
 
     /* dbenv and related parameters */
     void * db_dbenv;		/*!< Backend private handle */
@@ -106,6 +118,9 @@ extern "C" {
 RPM_GNUC_INTERNAL
 /* Globally enable/disable fsync in the backend */
 void dbSetFSync(rpmdb rdb, int enable);
+
+RPM_GNUC_INTERNAL
+int dbCtrl(rpmdb rdb, dbCtrlOp ctrl);
 
 /** \ingroup dbi
  * Return new configured index database handle instance.
@@ -211,6 +226,36 @@ rpmRC idxdbDel(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
                dbiIndexItem rec);
 RPM_GNUC_INTERNAL
 const void * idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen);
+
+struct rpmdbOps_s {
+    int (*open)(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags);
+    int (*close)(dbiIndex dbi, unsigned int flags);
+    int (*verify)(dbiIndex dbi, unsigned int flags);
+    void (*setFSync)(rpmdb rdb, int enable);
+    int (*ctrl)(rpmdb rdb, dbCtrlOp ctrl);
+
+    dbiCursor (*cursorInit)(dbiIndex dbi, unsigned int flags);
+    dbiCursor (*cursorFree)(dbiIndex dbi, dbiCursor dbc);
+
+    rpmRC (*pkgdbGet)(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum, unsigned char **hdrBlob, unsigned int *hdrLen);
+    rpmRC (*pkgdbPut)(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum, unsigned char *hdrBlob, unsigned int hdrLen);
+    rpmRC (*pkgdbDel)(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum);
+    rpmRC (*pkgdbNew)(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum);
+    unsigned int (*pkgdbKey)(dbiIndex dbi, dbiCursor dbc);
+
+    rpmRC (*idxdbGet)(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexSet *set, int curFlags);
+    rpmRC (*idxdbPut)(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec);
+    rpmRC (*idxdbDel)(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec);
+    const void * (*idxdbKey)(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen);
+};
+
+RPM_GNUC_INTERNAL
+extern struct rpmdbOps_s db3_dbops;
+
+#ifdef ENABLE_NDB
+RPM_GNUC_INTERNAL
+extern struct rpmdbOps_s ndb_dbops;
+#endif
 
 #ifdef __cplusplus
 }

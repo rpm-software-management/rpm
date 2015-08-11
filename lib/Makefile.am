@@ -38,7 +38,8 @@ librpm_la_SOURCES = \
 	verify.c rpmlock.c rpmlock.h misc.h relocation.c \
 	rpmscript.h rpmscript.c legacy.c \
 	rpmchroot.c rpmchroot.h \
-	rpmplugins.c rpmplugins.h rpmplugin.h rpmug.c rpmug.h
+	rpmplugins.c rpmplugins.h rpmplugin.h rpmug.c rpmug.h \
+	rpmtriggers.h rpmtriggers.c
 
 librpm_la_LDFLAGS = -version-info $(rpm_version_info)
 
@@ -59,6 +60,14 @@ if WITH_INTERNAL_DB
 librpm_la_LIBADD += $(libdb_la)
 else
 librpm_la_LIBADD += @WITH_DB_LIB@
+endif
+
+if NDB
+librpm_la_SOURCES += \
+	backend/ndb/glue.c \
+	backend/ndb/rpmpkg.c \
+	backend/ndb/rpmidx.c \
+	backend/ndb/rpmxdb.c
 endif
 
 tagtbl.C: Makefile.am $(srcdir)/rpmtag.h gentagtbl.sh

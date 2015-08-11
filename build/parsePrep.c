@@ -101,7 +101,7 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 
     /* Avoid the extra cost of fork and pipe for uncompressed patches */
     if (compressed != COMPRESSED_NOT) {
-	patchcmd = rpmExpand("%{uncompress: ", fn, "} || echo patch_fail | "
+	patchcmd = rpmExpand("{ %{uncompress: ", fn, "} || echo patch_fail ; } | "
                              "%{__patch} ", args, NULL);
     } else {
 	patchcmd = rpmExpand("%{__patch} ", args, " < ", fn, NULL);
@@ -248,6 +248,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     uint32_t num;
     int leaveDirs = 0, skipDefaultAction = 0;
     int createDir = 0, quietly = 0;
+    int buildInPlace = 0;
     const char * dirName = NULL;
     struct poptOption optionsTable[] = {
 	    { NULL, 'a', POPT_ARG_STRING, NULL, 'a',	NULL, NULL},
@@ -301,7 +302,16 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 		  headerGetString(spec->packages->header, RPMTAG_NAME),
 		  headerGetString(spec->packages->header, RPMTAG_VERSION));
     }
+    /* Mer addition - support --build-in-place */
+    if (rpmExpandNumeric("%{_build_in_place}")) {
+	buildInPlace = 1;
+	spec->buildSubdir = NULL;
+    }
     addMacro(spec->macros, "buildsubdir", NULL, spec->buildSubdir, RMIL_SPEC);
+    if (buildInPlace) {
+	rc = RPMRC_OK;
+	goto exit;
+    }
     
     /* cd to the build dir */
     {	char * buildDir = rpmGenPath(spec->rootDir, "%{_builddir}", "");

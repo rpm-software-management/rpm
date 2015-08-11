@@ -28,6 +28,7 @@
 #include "lib/rpmts_internal.h"
 #include "lib/rpmte_internal.h"
 #include "lib/misc.h"
+#include "lib/rpmtriggers.h"
 
 #include "debug.h"
 
@@ -54,72 +55,6 @@ static rpmts rpmtsUnlink(rpmts ts)
     if (ts)
 	ts->nrefs--;
     return NULL;
-}
-
-/* Prepare space in memory for storing transaction triggers */
-static void rpmtsInitTriggers(rpmts ts)
-{
-    if (ts) {
-	ts->trigs2run.count = 0;
-	ts->trigs2run.alloced = 10;
-	ts->trigs2run.trigger = xmalloc(sizeof(*ts->trigs2run.trigger) *
-						ts->trigs2run.alloced);
-    }
-}
-
-static void rpmtsFreeTriggers(rpmts ts)
-{
-    free(ts->trigs2run.trigger);
-}
-
-/* Add transaction trigger that should be set off after transaction */
-void rpmtsAddTrigger(rpmts ts, unsigned int hdrNum, int index)
-{
-    if (ts->trigs2run.alloced < ts->trigs2run.count + 1) {
-	ts->trigs2run.alloced <<= 1;
-	ts->trigs2run.trigger = xrealloc(ts->trigs2run.trigger,
-			sizeof(*ts->trigs2run.trigger) * ts->trigs2run.alloced);
-    }
-
-    ts->trigs2run.trigger[ts->trigs2run.count].hdrNum = hdrNum;
-    ts->trigs2run.trigger[ts->trigs2run.count].index = index;
-    ts->trigs2run.count++;
-}
-
-static int triggerCmp(const void *one, const void *two)
-{
-    int rc;
-    const tsTrigger *a = one, *b = two;
-
-    rc = a->hdrNum - b->hdrNum;
-    if (rc == 0)
-	rc = a->index - b->index;
-    return rc;
-}
-
-void rpmtsUniqTriggers(rpmts ts)
-{
-    unsigned int from;
-    unsigned int to = 0;
-    unsigned int count = ts->trigs2run.count;
-
-    if (ts->trigs2run.count > 1) {
-	qsort(ts->trigs2run.trigger, ts->trigs2run.count,
-		    sizeof(*ts->trigs2run.trigger), triggerCmp);
-    }
-
-    for (from = 0; from < count; from++) {
-	if (from > 0 &&
-	    !triggerCmp((const void *) &ts->trigs2run.trigger[from - 1],
-			(const void *) &ts->trigs2run.trigger[from])) {
-
-	    ts->trigs2run.count--;
-	    continue;
-	}
-	if (from != to)
-	    ts->trigs2run.trigger[to] = ts->trigs2run.trigger[from];
-	to++;
-    }
 }
 
 rpmts rpmtsLink(rpmts ts)
@@ -340,7 +275,10 @@ static int loadKeyringFromFiles(rpmts ts)
     }
 
     for (char **f = files; *f; f++) {
+	int subkeysCount, i;
+	rpmPubkey *subkeys;
 	rpmPubkey key = rpmPubkeyRead(*f);
+
 	if (!key) {
 	    rpmlog(RPMLOG_ERR, _("%s: reading of public key failed.\n"), *f);
 	    continue;
@@ -349,7 +287,22 @@ static int loadKeyringFromFiles(rpmts ts)
 	    nkeys++;
 	    rpmlog(RPMLOG_DEBUG, "added key %s to keyring\n", *f);
 	}
+	subkeys = rpmGetSubkeys(key, &subkeysCount);
 	rpmPubkeyFree(key);
+
+	for (i = 0; i < subkeysCount; i++) {
+	    rpmPubkey subkey = subkeys[i];
+
+	    if (rpmKeyringAddKey(ts->keyring, subkey) == 0) {
+		rpmlog(RPMLOG_DEBUG,
+		    "added subkey %d of main key %s to keyring\n",
+		    i, *f);
+
+		nkeys++;
+	    }
+	    rpmPubkeyFree(subkey);
+	}
+	free(subkeys);
     }
 exit:
     free(pkpath);
@@ -378,6 +331,9 @@ static int loadKeyringFromDB(rpmts ts)
 
 	    if (rpmBase64Decode(key, (void **) &pkt, &pktlen) == 0) {
 		rpmPubkey key = rpmPubkeyNew(pkt, pktlen);
+		int subkeysCount, i;
+		rpmPubkey *subkeys = rpmGetSubkeys(key, &subkeysCount);
+
 		if (rpmKeyringAddKey(ts->keyring, key) == 0) {
 		    char *nvr = headerGetAsString(h, RPMTAG_NVR);
 		    rpmlog(RPMLOG_DEBUG, "added key %s to keyring\n", nvr);
@@ -385,6 +341,22 @@ static int loadKeyringFromDB(rpmts ts)
 		    nkeys++;
 		}
 		rpmPubkeyFree(key);
+
+		for (i = 0; i < subkeysCount; i++) {
+		    rpmPubkey subkey = subkeys[i];
+
+		    if (rpmKeyringAddKey(ts->keyring, subkey) == 0) {
+			char *nvr = headerGetAsString(h, RPMTAG_NVR);
+			rpmlog(RPMLOG_DEBUG,
+			    "added subkey %d of main key %s to keyring\n",
+			    i, nvr);
+
+			free(nvr);
+			nkeys++;
+		    }
+		    rpmPubkeyFree(subkey);
+		}
+		free(subkeys);
 		free(pkt);
 	    }
 	}
@@ -410,7 +382,8 @@ static void loadKeyring(rpmts ts)
 }
 
 /* Build pubkey header. */
-static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header * hdrp)
+static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
+			    int subkeysCount, Header * hdrp)
 {
     Header h = headerNew();
     const char * afmt = "%{pubkeys:armor}";
@@ -431,6 +404,7 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header * hdrp)
     char * r = NULL;
     char * evr = NULL;
     int rc = -1;
+    int i;
 
     if ((enc = rpmPubkeyBase64(key)) == NULL)
 	goto exit;
@@ -477,6 +451,27 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header * hdrp)
     headerPutString(h, RPMTAG_BUILDHOST, buildhost);
     headerPutUint32(h, RPMTAG_BUILDTIME, &keytime, 1);
     headerPutString(h, RPMTAG_SOURCERPM, "(none)");
+
+    for (i = 0; i < subkeysCount; i++) {
+	char *v, *r, *n, *evr;
+	pgpDigParams pgpkey;
+
+	pgpkey = rpmPubkeyPgpDigParams(subkeys[i]);
+	v = pgpHexStr(pgpkey->signid, sizeof(pgpkey->signid));
+	r = pgpHexStr(pgpkey->time, sizeof(pgpkey->time));
+
+	rasprintf(&n, "gpg(%s)", v+8);
+	rasprintf(&evr, "%d:%s-%s", pubp->version, v, r);
+
+	headerPutString(h, RPMTAG_PROVIDENAME, n);
+	headerPutString(h, RPMTAG_PROVIDEVERSION, evr);
+	headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &pflags, 1);
+
+	free(v);
+	free(r);
+	free(n);
+	free(evr);
+    }
 
     /* Reload the lot to immutable region and stomp sha1 digest on it */
     h = headerReload(h, RPMTAG_HEADERIMMUTABLE);
@@ -530,10 +525,12 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     Header h = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     rpmPubkey pubkey = NULL;
+    rpmPubkey *subkeys = NULL;
+    int subkeysCount = 0;
     rpmVSFlags oflags = rpmtsVSFlags(ts);
     rpmKeyring keyring;
     rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
-    int krc;
+    int krc, i;
 
     if (txn == NULL)
 	return rc;
@@ -545,6 +542,10 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
 
     if ((pubkey = rpmPubkeyNew(pkt, pktlen)) == NULL)
 	goto exit;
+
+    if ((subkeys = rpmGetSubkeys(pubkey, &subkeysCount)) == NULL)
+	goto exit;
+
     krc = rpmKeyringAddKey(keyring, pubkey);
     if (krc < 0)
 	goto exit;
@@ -553,7 +554,7 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     if (krc == 0) {
 	rpm_tid_t tid = rpmtsGetTid(ts);
 
-	if (makePubkeyHeader(ts, pubkey, &h) != 0) 
+	if (makePubkeyHeader(ts, pubkey, subkeys, subkeysCount, &h) != 0)
 	    goto exit;
 
 	headerPutUint32(h, RPMTAG_INSTALLTIME, &tid, 1);
@@ -570,6 +571,10 @@ exit:
     /* Clean up. */
     headerFree(h);
     rpmPubkeyFree(pubkey);
+    for (i = 0; i < subkeysCount; i++)
+	rpmPubkeyFree(subkeys[i]);
+    free(subkeys);
+
     rpmKeyringFree(keyring);
     rpmtxnEnd(txn);
     return rc;
@@ -744,7 +749,7 @@ rpmts rpmtsFree(rpmts ts)
 
     ts->plugins = rpmpluginsFree(ts->plugins);
 
-    rpmtsFreeTriggers(ts);
+    rpmtriggersFree(ts->trigs2run);
 
     if (_rpmts_stats)
 	rpmtsPrintStats(ts);
@@ -1048,7 +1053,7 @@ rpmts rpmtsCreate(void)
 
     ts->plugins = NULL;
 
-    rpmtsInitTriggers(ts);
+    ts->trigs2run = rpmtriggersCreate(10);
 
     return rpmtsLink(ts);
 }

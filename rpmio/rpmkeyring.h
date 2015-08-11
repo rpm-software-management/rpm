@@ -64,6 +64,14 @@ rpmKeyring rpmKeyringLink(rpmKeyring keyring);
  */
 rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen);
 
+/** \ingroupt rpmkeyring
+ * Return array of subkeys belonging to maikey
+ * param mainkey	main rpmPubkey
+ * param count		count of returned subkeys
+ * @return		an array of subkey's handles
+ */
+rpmPubkey *rpmGetSubkeys(rpmPubkey mainkey, int *count);
+
 /** \ingroup rpmkeyring
  * Create a new rpmPubkey from ASCII-armored pubkey file
  * @param filename	Path to pubkey file
@@ -98,6 +106,13 @@ pgpDig rpmPubkeyDig(rpmPubkey key);
  * @return              base64 encoded pubkey (malloced), NULL on error
  */
 char * rpmPubkeyBase64(rpmPubkey key);
+
+/** \ingroup rpmkeyring
+ * Return pgp params of key
+ * @param key		Pubkey
+ * @return		pgp params, NULL on error
+ */
+pgpDigParams rpmPubkeyPgpDigParams(rpmPubkey key);
 
 #ifdef __cplusplus
 }

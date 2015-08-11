@@ -649,7 +649,7 @@ static int prefix_array(const char *dirname, char **array, size_t n)
 static int __glob_pattern_p(const char *pattern, int quote)
 {
     register const char *p;
-    int open = 0;
+    int openBrackets = 0;
 
     for (p = pattern; *p != '\0'; ++p)
 	switch (*p) {
@@ -663,11 +663,11 @@ static int __glob_pattern_p(const char *pattern, int quote)
 	    break;
 
 	case '[':
-	    open = 1;
+	    openBrackets = 1;
 	    break;
 
 	case ']':
-	    if (open)
+	    if (openBrackets)
 		return 1;
 	    break;
 	}
@@ -844,6 +844,8 @@ int rpmGlob(const char * patterns, int * argcPtr, ARGV_t * argvPtr)
     int i, j;
     int rc;
 
+    gflags |= GLOB_BRACE;
+
     if (home != NULL && strlen(home) > 0) 
 	gflags |= GLOB_TILDE;
 
@@ -966,5 +968,32 @@ exit:
 
 int rpmIsGlob(const char * pattern, int quote)
 {
-    return __glob_pattern_p(pattern, quote);
+    if(!__glob_pattern_p(pattern, quote)) {
+
+	const char *begin;
+	const char *next;
+	const char *rest;
+
+	begin = strchr(pattern, '{');
+	if (begin == NULL)
+	    return 0;
+	/*
+	 * Find the first sub-pattern and at the same time find the
+	 *  rest after the closing brace.
+	 */
+	next = next_brace_sub(begin + 1);
+	if (next == NULL)
+	    return 0;
+
+	/* Now find the end of the whole brace expression.  */
+	rest = next;
+	while (*rest != '}') {
+	    rest = next_brace_sub(rest + 1);
+	    if (rest == NULL)
+		return 0;
+	}
+	/* Now we can be sure that brace expression is well-foermed. */
+    }
+
+    return 1;
 }

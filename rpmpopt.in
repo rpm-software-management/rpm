@@ -115,6 +115,14 @@ rpm	alias --triggerscripts --qf '\
 rpm	alias --triggers --triggerscripts \
 	--POPTdesc=$"list trigger scriptlets from package(s)"
 
+rpm	alias --filetriggerscripts --qf '\
+[filetrigger%{FILETRIGGERTYPE} scriptlet (using %{FILETRIGGERSCRIPTPROG}) -- \
+%{FILETRIGGERCONDS}\n%{FILETRIGGERSCRIPTS}\n]\
+[transfiletrigger%{TRANSFILETRIGGERTYPE} scriptlet (using %{TRANSFILETRIGGERSCRIPTPROG}) -- \
+%{TRANSFILETRIGGERCONDS}\n%{TRANSFILETRIGGERSCRIPTS}\n]'
+rpm	alias --filetriggers --filetriggerscripts \
+	--POPTdesc=$"list filetrigger scriptlets from package(s)"
+
 rpm	alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NVRA} %|INSTALLTIME?{%{INSTALLTIME:date}}:{(not installed)}|\n' \
 	--pipe "LC_NUMERIC=C sort -r -n | sed 's,^[0-9]\+ ,,' | awk '{printf(\"%-45s %-s\n\", $1, substr($0,length($1)+2))}' " \
 	--POPTdesc=$"list package(s) by install time, most recent first"
@@ -187,7 +195,7 @@ rpmbuild alias --buildpolicy --define '__os_install_post %{_rpmconfigdir}/brp-!#
 	--POPTargs=$"<policy>"
 # Minimally preserve rpmbuild's --sign functionality
 rpmbuild alias --sign \
-	--pipe "grep '.*: .*\.rpm$'|cut -d: -f2|xargs -r rpm --addsign" \
+	--pipe 'rpm --addsign `grep ".*: .*\.rpm$"|cut -d: -f2` < "/dev/"`ps -p $$ -o tty | tail -n 1`' \
 	--POPTdesc=$"generate GPG signature (deprecated, use command rpmsign instead)"
 
 rpmsign alias --key-id  --define '_gpg_name !#:+' \

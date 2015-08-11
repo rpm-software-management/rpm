@@ -26,6 +26,7 @@
 #include "lib/rpmds_internal.h" /* rpmdsFilterTi() */
 #include "lib/rpmscript.h"
 #include "lib/misc.h"
+#include "lib/rpmtriggers.h"
 
 #include "lib/rpmplugins.h"
 
@@ -681,6 +682,17 @@ static rpmRC rpmPackageInstall(rpmts ts, rpmpsm psm)
 	rc = dbAdd(ts, psm->te);
 	if (rc) break;
 
+	/* Run upper file triggers i. e. with higher priorities */
+	/* Run file triggers in other package(s) this package sets off. */
+	rc = runFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERIN,
+			    RPMSCRIPT_FILETRIGGER, 1);
+	if (rc) break;
+
+	/* Run file triggers in this package other package(s) set off. */
+	rc = runImmedFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERIN,
+				RPMSCRIPT_FILETRIGGER, 1);
+	if (rc) break;
+
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOST)) {
 	    rc = runInstScript(psm, RPMTAG_POSTIN);
 	    if (rc) break;
@@ -695,14 +707,15 @@ static rpmRC rpmPackageInstall(rpmts ts, rpmpsm psm)
 	    if (rc) break;
 	}
 
+	/* Run lower file triggers i. e. with lower priorities */
 	/* Run file triggers in other package(s) this package sets off. */
 	rc = runFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERIN,
-			    RPMSCRIPT_FILETRIGGER);
+			    RPMSCRIPT_FILETRIGGER, 2);
 	if (rc) break;
 
 	/* Run file triggers in this package other package(s) set off. */
 	rc = runImmedFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERIN,
-				RPMSCRIPT_FILETRIGGER);
+				RPMSCRIPT_FILETRIGGER, 2);
 	if (rc) break;
 
 	rc = markReplacedFiles(psm);
@@ -711,62 +724,6 @@ static rpmRC rpmPackageInstall(rpmts ts, rpmpsm psm)
     rpmswExit(rpmtsOp(psm->ts, RPMTS_OP_INSTALL), 0);
 
     return rc;
-}
-
-/*
- * Prepare post trans uninstall file triggers. After transcation uninstalled
- * files are not saved anywhere. So we need during uninstalation of every
- * package, in time when the files to uninstall are still available,
- * to determine and store triggers that should be set off after transaction.
- */
-static void prepPostUnTransFileTrigs(rpmts ts, rpmte te)
-{
-    rpmdbMatchIterator mi;
-    rpmdbIndexIterator ii;
-    Header trigH;
-    const void *key;
-    size_t keylen;
-    rpmfiles files;
-    rpmds rpmdsTriggers;
-    rpmds rpmdsTrigger;
-    int tix = 0;
-
-    ii = rpmdbIndexIteratorInit(rpmtsGetRdb(ts), RPMDBI_TRANSFILETRIGGERNAME);
-    mi = rpmdbNewIterator(rpmtsGetRdb(ts), RPMDBI_PACKAGES);
-    files = rpmteFiles(te);
-
-    /* Iterate over file triggers in rpmdb */
-    while ((rpmdbIndexIteratorNext(ii, &key, &keylen)) == 0) {
-	/* Check if file trigger matches any file in this te */
-	rpmfi fi = rpmfilesFindPrefix(files, key);
-	if (rpmfiFC(fi) > 0) {
-	    /* If yes then store it */
-	    rpmdbAppendIterator(mi, rpmdbIndexIteratorPkgOffsets(ii),
-				rpmdbIndexIteratorNumPkgs(ii));
-	}
-	rpmfiFree(fi);
-    }
-    rpmdbIndexIteratorFree(ii);
-
-    rpmdbUniqIterator(mi);
-    if (rpmdbGetIteratorCount(mi)) {
-	/* Filter triggers and save only trans postun triggers into ts */
-	while((trigH = rpmdbNextIterator(mi)) != NULL) {
-	    rpmdsTriggers = rpmdsNew(trigH, RPMTAG_TRANSFILETRIGGERNAME, 0);
-	    while ((rpmdsTrigger = rpmdsFilterTi(rpmdsTriggers, tix))) {
-		if ((rpmdsNext(rpmdsTrigger) >= 0) &&
-		    (rpmdsFlags(rpmdsTrigger) & RPMSENSE_TRIGGERPOSTUN)) {
-
-			rpmtsAddTrigger(ts, rpmdbGetIteratorOffset(mi) ,tix);
-
-		}
-		rpmdsFree(rpmdsTrigger);
-		tix++;
-	    }
-	    rpmdsFree(rpmdsTriggers);
-	}
-    }
-    rpmdbFreeIterator(mi);
 }
 
 static rpmRC rpmPackageErase(rpmts ts, rpmpsm psm)
@@ -779,12 +736,12 @@ static rpmRC rpmPackageErase(rpmts ts, rpmpsm psm)
 
 	/* Run file triggers in this package other package(s) set off. */
 	rc = runImmedFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERUN,
-				RPMSCRIPT_FILETRIGGER);
+				RPMSCRIPT_FILETRIGGER, 1);
 	if (rc) break;
 
 	/* Run file triggers in other package(s) this package sets off. */
 	rc = runFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERUN,
-			    RPMSCRIPT_FILETRIGGER);
+			    RPMSCRIPT_FILETRIGGER, 1);
 	if (rc) break;
 
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERUN)) {
@@ -800,8 +757,22 @@ static rpmRC rpmPackageErase(rpmts ts, rpmpsm psm)
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPREUN))
 	    rc = runInstScript(psm, RPMTAG_PREUN);
 
+	/* Run file triggers in this package other package(s) set off. */
+	rc = runImmedFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERUN,
+				RPMSCRIPT_FILETRIGGER, 2);
+	if (rc) break;
+
+	/* Run file triggers in other package(s) this package sets off. */
+	rc = runFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERUN,
+			    RPMSCRIPT_FILETRIGGER, 2);
+	if (rc) break;
+
 	rc = rpmpsmRemove(psm);
 	if (rc) break;
+
+	/* Run file triggers in other package(s) this package sets off. */
+	rc = runFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERPOSTUN,
+			    RPMSCRIPT_FILETRIGGER, 1);
 
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOSTUN)) {
 	    rc = runInstScript(psm, RPMTAG_POSTUN);
@@ -816,11 +787,11 @@ static rpmRC rpmPackageErase(rpmts ts, rpmpsm psm)
 
 	/* Run file triggers in other package(s) this package sets off. */
 	rc = runFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERPOSTUN,
-			    RPMSCRIPT_FILETRIGGER);
+			    RPMSCRIPT_FILETRIGGER, 2);
 	if (rc) break;
 
 	/* Prepare post transaction uninstall triggers */
-	prepPostUnTransFileTrigs(psm->ts, psm->te);
+	rpmtriggersPrepPostUnTransFileTrigs(psm->ts, psm->te);
 
 	rc = dbRemove(ts, psm->te);
     }
@@ -871,11 +842,11 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 		break;
 	    case PKG_TRANSFILETRIGGERIN:
 		rc = runImmedFileTriggers(ts, te, RPMSENSE_TRIGGERIN,
-					    RPMSCRIPT_TRANSFILETRIGGER);
+					    RPMSCRIPT_TRANSFILETRIGGER, 0);
 		break;
 	    case PKG_TRANSFILETRIGGERUN:
 		rc = runImmedFileTriggers(ts, te, RPMSENSE_TRIGGERUN,
-					    RPMSCRIPT_TRANSFILETRIGGER);
+					    RPMSCRIPT_TRANSFILETRIGGER, 0);
 		break;
 	    default:
 		break;
