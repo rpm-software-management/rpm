@@ -18,12 +18,12 @@ from subprocess import Popen, PIPE, STDOUT
 import os
 
 
-opts, args = getopt(argv[1:], 'hPRSCOEb:',
-        ['help', 'provides', 'requires', 'suggests', 'conflicts', 'obsoletes', 'extras','buildroot='])
+opts, args = getopt(argv[1:], 'hPRrCOEb:',
+        ['help', 'provides', 'requires', 'recommends', 'conflicts', 'obsoletes', 'extras','buildroot='])
 
 Provides = False
 Requires = False
-Suggests = False
+Recommends = False
 Conflicts = False
 Obsoletes = False
 Extras = False
@@ -34,7 +34,7 @@ for o, a in opts:
         print('-h, --help\tPrint help')
         print('-P, --provides\tPrint Provides')
         print('-R, --requires\tPrint Requires')
-        print('-S, --suggests\tPrint Suggests')
+        print('-r, --recommends\tPrint Recommends')
         print('-C, --conflicts\tPrint Conflicts')
         print('-O, --obsoletes\tPrint Obsoletes (unused)')
         print('-E, --extras\tPrint Extras ')
@@ -44,8 +44,8 @@ for o, a in opts:
         Provides = True
     elif o in ('-R', '--requires'):
         Requires = True
-    elif o in ('-S', '--suggests'):
-        Suggests = True
+    elif o in ('-r', '--recommends'):
+        Recommends = True
     elif o in ('-C', '--conflicts'):
         Conflicts = True
     elif o in ('-O', '--obsoletes'):
@@ -106,7 +106,7 @@ for f in files:
             dlower.endswith('.egg-link'):
         lower = dlower
         f = dirname(f)
-    # Determine provide, requires, conflicts & suggests based on egg metadata
+    # Determine provide, requires, conflicts & recommends based on egg metadata
     if lower.endswith('.egg') or \
             lower.endswith('.egg-info') or \
             lower.endswith('.egg-link'):
@@ -135,7 +135,7 @@ for f in files:
                 spec = ('==', dist.version)
                 if not spec in py_deps[name]:
                     py_deps[name].append(spec)
-        if Requires or (Suggests and dist.extras):
+        if Requires or (Recommends and dist.extras):
             name = 'python(abi)'
             # If egg metadata says package name is python, we don't add dependency on python(abi)
             if dist.key == 'python':
@@ -149,14 +149,14 @@ for f in files:
                 if not spec in py_deps[name]:
                     py_deps[name].append(spec)
             deps = dist.requires()
-            if Suggests:
+            if Recommends:
                 depsextras = dist.requires(extras=dist.extras)
                 if not Requires:
                     for dep in reversed(depsextras):
                         if dep in deps:
                             depsextras.remove(dep)
                 deps = depsextras
-            # add requires/suggests based on egg metadata
+            # add requires/recommends based on egg metadata
             for dep in deps:
                 if f.find('python2') > 0:
                     name = 'python2egg(%s)' % dep.key
@@ -196,7 +196,7 @@ for f in files:
                 print('%%files\t\textras-%s\n' % extra)
         if Conflicts:
             # Should we really add conflicts for extras?
-            # Creating a meta package per extra with suggests on, which has
+            # Creating a meta package per extra with recommends on, which has
             # the requires/conflicts in stead might be a better solution...
             for dep in dist.requires(extras=dist.extras):
                 name = dep.key
@@ -211,9 +211,9 @@ names = list(py_deps.keys())
 names.sort()
 for name in names:
     if py_deps[name]:
-        # Print out versioned provides, requires, suggests, conflicts
+        # Print out versioned provides, requires, recommends, conflicts
         for spec in py_deps[name]:
             print('%s %s %s' % (name, spec[0], spec[1]))
     else:
-        # Print out unversioned provides, requires, suggests, conflicts
+        # Print out unversioned provides, requires, recommends, conflicts
         print(name)
