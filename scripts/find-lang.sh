@@ -33,6 +33,7 @@ PACKAGE_NAME.lang unless \$3 is given in which case output is written
 to \$3.
 Additional options:
   --with-gnome		find GNOME help files
+  --with-mate		find MATE help files
   --with-kde		find KDE help files
   --with-qt		find Qt translation files
   --with-html		find HTML files
@@ -58,6 +59,7 @@ fi
 shift
 
 GNOME=#
+MATE=#
 KDE=#
 QT=#
 MAN=#
@@ -71,6 +73,10 @@ while test $# -gt 0 ; do
     case "${1}" in
 	--with-gnome )
   		GNOME=
+		shift
+		;;
+	--with-mate )
+		MATE=
 		shift
 		;;
 	--with-kde )
@@ -145,6 +151,34 @@ find "$TOP_DIR" -type f|sed '
 s:'"$TOP_DIR"'::
 '"$NO_ALL_NAME$GNOME"'s:\(.*/omf/'"$NAME"'/'"$NAME"'-\([^/.]\+\)\.omf\):%lang(\2) \1:
 '"$ALL_NAME$GNOME"'s:\(.*/omf/[a-zA-Z0-9.\_\-]\+/[a-zA-Z0-9.\_\-]\+-\([^/.]\+\)\.omf\):%lang(\2) \1:
+s:^[^%].*::
+s:%lang(C) ::
+/^$/d' >> $MO_NAME
+
+find $TOP_DIR -type d|sed '
+s:'"$TOP_DIR"'::
+'"$NO_ALL_NAME$MATE"'s:\(.*/mate/help/'"$NAME"'$\):%dir \1:
+'"$NO_ALL_NAME$MATE"'s:\(.*/mate/help/'"$NAME"'/[a-zA-Z0-9.\_\-]/.\+\)::
+'"$NO_ALL_NAME$MATE"'s:\(.*/mate/help/'"$NAME"'\/\)\([^/_]\+\):%lang(\2) \1\2:
+'"$ALL_NAME$MATE"'s:\(.*/mate/help/[a-zA-Z0-9.\_\-]\+$\):%dir \1:
+'"$ALL_NAME$MATE"'s:\(.*/mate/help/[a-zA-Z0-9.\_\-]\+/[a-zA-Z0-9.\_\-]/.\+\)::
+'"$ALL_NAME$GNOME"'s:\(.*/mate/help/[a-zA-Z0-9.\_\-]\+\/\)\([^/_]\+\):%lang(\2) \1\2:
+s:%lang(.*) .*/mate/help/[a-zA-Z0-9.\_\-]\+/[a-zA-Z0-9.\_\-]\+/.*::
+s:^\([^%].*\)::
+s:%lang(C) ::
+/^$/d' >> $MO_NAME
+
+find "$TOP_DIR" -type d|sed '
+s:'"$TOP_DIR"'::
+'"$NO_ALL_NAME$MATE"'s:\(.*/omf/'"$NAME"'$\):%dir \1:
+'"$ALL_NAME$MATE"'s:\(.*/omf/[a-zA-Z0-9.\_\-]\+$\):%dir \1:
+s:^\([^%].*\)::
+/^$/d' >> $MO_NAME
+
+find "$TOP_DIR" -type f|sed '
+s:'"$TOP_DIR"'::
+'"$NO_ALL_NAME$MATE"'s:\(.*/omf/'"$NAME"'/'"$NAME"'-\([^/.]\+\)\.omf\):%lang(\2) \1:
+'"$ALL_NAME$MATE"'s:\(.*/omf/[a-zA-Z0-9.\_\-]\+/[a-zA-Z0-9.\_\-]\+-\([^/.]\+\)\.omf\):%lang(\2) \1:
 s:^[^%].*::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
