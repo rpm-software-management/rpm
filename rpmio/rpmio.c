@@ -5,6 +5,7 @@
 #include "system.h"
 #include <stdarg.h>
 #include <errno.h>
+#include <ctype.h>
 
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
@@ -730,6 +731,7 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
     lzma_ret ret;
     lzma_stream init_strm = LZMA_STREAM_INIT;
     uint64_t mem_limit = rpmExpandNumeric("%{_xz_memlimit}");
+    int threads = 0;
 
     for (; *mode; mode++) {
 	if (*mode == 'w')
@@ -738,6 +740,17 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 	    encoding = 0;
 	else if (*mode >= '0' && *mode <= '9')
 	    level = *mode - '0';
+	else if (*mode == 'T') {
+	    if (isdigit(*(mode+1))) {
+		threads = atoi(++mode);
+		/* skip past rest of digits in string that atoi()
+		 * should've processed
+		 * */
+		while(isdigit(*++mode));
+	    }
+	    else
+		threads = -1;
+	}
     }
     fp = fdopen(fd, encoding ? "w" : "r");
     if (!fp)
@@ -749,7 +762,22 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
     lzfile->strm = init_strm;
     if (encoding) {
 	if (xz) {
-	    ret = lzma_easy_encoder(&lzfile->strm, level, LZMA_CHECK_SHA256);
+	    if (!threads) {
+		ret = lzma_easy_encoder(&lzfile->strm, level, LZMA_CHECK_SHA256);
+	    } else {
+		if (threads == -1)
+		    threads = sysconf(_SC_NPROCESSORS_ONLN);
+		lzma_mt mt_options = {
+		    .flags = 0,
+		    .threads = threads,
+		    .block_size = 0,
+		    .timeout = 0,
+		    .preset = level,
+		    .filters = NULL,
+		    .check = LZMA_CHECK_SHA256 };
+
+		ret = lzma_stream_encoder_mt(&lzfile->strm, &mt_options);
+	    }
 	} else {
 	    lzma_options_lzma options;
 	    lzma_lzma_preset(&options, level);
