@@ -730,9 +730,7 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
     lzma_ret ret;
     lzma_stream init_strm = LZMA_STREAM_INIT;
     uint64_t mem_limit = rpmExpandNumeric("%{_xz_memlimit}");
-#ifdef LZMA_UNSTABLE
     int threads = rpmExpandNumeric("%{_xz_threads}");
-#endif
 
     for (; *mode; mode++) {
 	if (*mode == 'w')
@@ -752,9 +750,6 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
     lzfile->strm = init_strm;
     if (encoding) {
 	if (xz) {
-#ifndef LZMA_UNSTABLE
-	    ret = lzma_easy_encoder(&lzfile->strm, level, LZMA_CHECK_SHA256);
-#else
 	    if (!threads) {
 		ret = lzma_easy_encoder(&lzfile->strm, level, LZMA_CHECK_SHA256);
 	    } else {
@@ -771,7 +766,6 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 
 		ret = lzma_stream_encoder_mt(&lzfile->strm, &mt_options);
 	    }
-#endif
 	} else {
 	    lzma_options_lzma options;
 	    lzma_lzma_preset(&options, level);
