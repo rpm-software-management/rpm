@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #findlang - automagically generate list of language specific files
 #for inclusion in an rpm spec file.
 #This does assume that the *.mo files are under .../locale/...
@@ -46,7 +46,7 @@ fi
 shift
 
 if [ -z "$1" ] ; then usage
-else NAME=$1
+else NAMES[0]=$1
 fi
 shift
 
@@ -57,10 +57,9 @@ QT=#
 MAN=#
 HTML=#
 MO=
-MO_NAME=$NAME.lang
+MO_NAME=${NAMES[0]}.lang
 ALL_NAME=#
 NO_ALL_NAME=
-
 while test $# -gt 0 ; do
     case "${1}" in
 	--with-gnome )
@@ -97,11 +96,20 @@ while test $# -gt 0 ; do
 		shift
 		;;
 	* )
+		if [ $MO_NAME != ${NAMES[$#]}.lang ]; then
+		    NAMES[${#NAMES[@]}]=$MO_NAME
+		fi
 		MO_NAME=${1}
 		shift
 		;;
     esac
 done    
+
+if [ -f $MO_NAME ]; then
+    rm $MO_NAME
+fi
+
+for NAME in ${NAMES[@]}; do
 
 find "$TOP_DIR" -type f -o -type l|sed '
 s:'"$TOP_DIR"'::
@@ -109,7 +117,7 @@ s:'"$TOP_DIR"'::
 '"$NO_ALL_NAME$MO"'s:\(.*/locale/\)\([^/_]\+\)\(.*/'"$NAME"'\.mo$\):%lang(\2) \1\2\3:
 s:^\([^%].*\)::
 s:%lang(C) ::
-/^$/d' > $MO_NAME
+/^$/d' >> $MO_NAME
 
 find "$TOP_DIR" -type d|sed '
 s:'"$TOP_DIR"'::
@@ -251,6 +259,8 @@ s:'"$TOP_DIR"'::
 s:^\([^%].*\)::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
+
+done # for NAME in ${NAMES[@]}
 
 if ! grep -q / $MO_NAME; then
 	echo "No translations found for ${NAME} in ${TOP_DIR}"
