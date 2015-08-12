@@ -758,6 +758,19 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 	ret = lzma_auto_decoder(&lzfile->strm, 100<<20, 0);
     }
     if (ret != LZMA_OK) {
+	switch (ret) {
+	    case LZMA_MEM_ERROR:
+		rpmlog(RPMLOG_ERR, "liblzma: Memory allocation failed");
+		break;
+
+	    case LZMA_DATA_ERROR:
+		rpmlog(RPMLOG_ERR, "liblzma: File size limits exceeded");
+		break;
+
+	    default:
+		rpmlog(RPMLOG_ERR, "liblzma: <Unknown error (%d), possibly a bug", ret);
+		break;
+	}
 	fclose(fp);
 	free(lzfile);
 	return NULL;
