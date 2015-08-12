@@ -11,7 +11,7 @@ EXTRA_DIST = \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-debuginfo.sh find-lang.sh \
-	perl.prov perl.req pythondeps.sh \
+	perl.prov perl.req pythondeps.sh pythoneggs.py \
 	rpmdb_loadcvt rpm.daily rpm.log rpm.supp rpm2cpio.sh \
 	tgpg vpkg-provides.sh \
 	find-requires find-provides \
@@ -30,7 +30,7 @@ rpmconfig_SCRIPTS = \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-lang.sh find-requires find-provides \
-	perl.prov perl.req pythondeps.sh \
+	perl.prov perl.req pythondeps.sh pythoneggs.py \
 	mono-find-requires mono-find-provides \
 	pkgconfigdeps.sh libtooldeps.sh \
 	ocaml-find-requires.sh ocaml-find-provides.sh \
