@@ -11,6 +11,8 @@
 #in tact and are included with any redistribution of this file or any
 #work based on this file.
 
+# 2011-11-16 Per Øyvind Karlsen <peroyvind@mandriva.org>
+#   * add support for HTML files (from Mandriva)
 # 2004-06-20 Arkadiusz Miśkiewicz <arekm@pld-linux.org>
 #   * merge PLD changes, kde, all-name (mkochano,pascalek@PLD)
 # 1999-10-19 Artur Frysiak <wiget@pld-linux.org>
@@ -33,6 +35,7 @@ Additional options:
   --with-gnome		find GNOME help files
   --with-kde		find KDE help files
   --with-qt		find Qt translation files
+  --with-html		find HTML files
   --with-man		find localized man pages
   --all-name		match all package/domain names
   --without-mo		do not find locale files
@@ -58,6 +61,7 @@ GNOME=#
 KDE=#
 QT=#
 MAN=#
+HTML=#
 MO=
 MO_NAME=$NAME.lang
 ALL_NAME=#
@@ -79,6 +83,10 @@ while test $# -gt 0 ; do
 		;;
 	--with-man )
 		MAN=
+		shift
+		;;
+	--with-html )
+		HTML=
 		shift
 		;;
 	--without-mo )
@@ -166,6 +174,16 @@ s:^\([^%].*\)::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
 fi
+
+find "$TOP_DIR" -type d|sed '
+s:'"$TOP_DIR"'::
+'"$NO_ALL_NAME$HTML"'s:\(.*/doc/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'/\)::
+'"$NO_ALL_NAME$HTML"'s:\(.*/doc/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'\)$:%lang(\2) \1\2\3:
+'"$ALL_NAME$HTML"'s:\(.*/doc/HTML/\)\([^/_]\+\)\(.*/[a-zA-Z0-9.\_\-]\+/\)::
+'"$ALL_NAME$HTML"'s:\(.*/doc/HTML/\)\([^/_]\+\)\(.*/[a-zA-Z0-9.\_\-]\+$\):%lang(\2) \1\2\3:
+s:^\([^%].*\)::
+s:%lang(C) ::
+/^$/d' >> $MO_NAME
 
 find "$TOP_DIR" -type f -o -type l|sed '
 s:'"$TOP_DIR"'::
