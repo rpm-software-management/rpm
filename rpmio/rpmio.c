@@ -723,19 +723,20 @@ typedef struct lzfile {
 
 static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 {
-    int level = 7;	/* Use XZ's default compression level if unspecified */
+    int level = LZMA_PRESET_DEFAULT;	/* Use XZ's default compression level if unspecified */
     int encoding = 0;
     FILE *fp;
     LZFILE *lzfile;
     lzma_ret ret;
     lzma_stream init_strm = LZMA_STREAM_INIT;
 
+
     for (; *mode; mode++) {
 	if (*mode == 'w')
 	    encoding = 1;
 	else if (*mode == 'r')
 	    encoding = 0;
-	else if (*mode >= '1' && *mode <= '9')
+	else if (*mode >= '0' && *mode <= '9')
 	    level = *mode - '0';
     }
     fp = fdopen(fd, encoding ? "w" : "r");
