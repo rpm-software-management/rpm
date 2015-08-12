@@ -729,6 +729,7 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
     LZFILE *lzfile;
     lzma_ret ret;
     lzma_stream init_strm = LZMA_STREAM_INIT;
+    uint64_t mem_limit = rpmExpandNumeric("%{_xz_memlimit}");
 
     for (; *mode; mode++) {
 	if (*mode == 'w')
@@ -755,7 +756,7 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 	    ret = lzma_alone_encoder(&lzfile->strm, &options);
 	}
     } else {	/* lzma_easy_decoder_memusage(level) is not ready yet, use hardcoded limit for now */
-	ret = lzma_auto_decoder(&lzfile->strm, 100<<20, 0);
+	ret = lzma_auto_decoder(&lzfile->strm, mem_limit ? mem_limit : 100<<20, 0);
     }
     if (ret != LZMA_OK) {
 	switch (ret) {
