@@ -204,7 +204,7 @@ s:^\([^%].*\)::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
 
-find "$TOP_DIR" -type f -o -type l|sed '
+find "$TOP_DIR" -type f -o -type l|sed -r 's/\.(bz2|gz|xz|lzma|Z)$//g' | sed '
 s:'"$TOP_DIR"'::
 '"$NO_ALL_NAME$MAN"'s:\(.*/man/\([^/_]\+\).*/man[a-z0-9]\+/'"$NAME"'\.[a-z0-9].*\):%lang(\2) \1*:
 s:^\([^%].*\)::
