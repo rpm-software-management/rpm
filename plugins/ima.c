@@ -25,14 +25,7 @@ static rpmRC ima_psm_post(rpmPlugin plugin, rpmte te, int res)
 	    goto exit;
 	}
 
-	while (!rc) {
-	    rc = rpmfiNext(fi);
-	    if (rc < 0) {
-		if (rc == RPMERR_ITER_END)
-		    rc = 0;
-		break;
-	    }
-
+	while (rpmfiNext(fi) >= 0) {
 	    /* Don't install signatures for (mutable) config files */
 	    if (!(rpmfiFFlags(fi) & RPMFILE_CONFIG)) {
 		fpath = rpmfiFN(fi);
