@@ -70,8 +70,11 @@ if NDB
 librpm_la_SOURCES += \
 	backend/ndb/glue.c \
 	backend/ndb/rpmpkg.c \
+	backend/ndb/rpmpkg.h \
 	backend/ndb/rpmidx.c \
-	backend/ndb/rpmxdb.c
+	backend/ndb/rpmidx.h \
+	backend/ndb/rpmxdb.c \
+	backend/ndb/rpmxdb.h
 endif
 
 tagtbl.C: Makefile.am $(srcdir)/rpmtag.h gentagtbl.sh
