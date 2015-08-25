@@ -643,32 +643,28 @@ retry:
 	    _free(emsg);
 	    goto exit;
 	}
-	if (op == RPMRICHOP_IF)
-	    rc = !unsatisfiedDepend(ts, dcache, ds2);
-	if (op != RPMRICHOP_IF || rc)
-	    rc = unsatisfiedDepend(ts, dcache, ds1);
-	if (op == RPMRICHOP_THEN) {
+	if (op == RPMRICHOP_IF) {
 	    if (rpmdsFlags(ds2) & RPMSENSE_RICH) {
-		/* check if this is a THEN...ELSE combination */
+		/* check if this is a IF...ELSE combination */
 		rpmds ds21 = NULL, ds22 = NULL;
 		rpmrichOp op2;
 		if (rpmdsParseRichDep(ds2, &ds21, &ds22, &op2, NULL) == RPMRC_OK && op2 == RPMRICHOP_ELSE) {
-		    rpmdsFree(ds2);
+		    rc = unsatisfiedDepend(ts, dcache, ds21);
 		    if (rc) {
-			ds2 = ds22;
+			rpmdsFree(ds1);
+			ds1 = ds22;
 			ds22 = NULL;
-		    } else {
-			ds2 = ds21;
-			ds21 = NULL;
 		    }
-		    rc = 0;
+		    rc = 1;
 		}
 		rpmdsFree(ds21);
 		rpmdsFree(ds22);
 	    }
-	    rc = !rc;		/* A THEN B is the same as (NOT A) OR B */
-	    op = RPMRICHOP_OR;
+	    if (!rc)
+		rc = !unsatisfiedDepend(ts, dcache, ds2);
 	}
+	if (op != RPMRICHOP_IF || rc)
+	    rc = unsatisfiedDepend(ts, dcache, ds1);
 	if ((rc && op == RPMRICHOP_OR) || (!rc && op == RPMRICHOP_AND))
 	    rc = unsatisfiedDepend(ts, dcache, ds2);
 	ds1 = rpmdsFree(ds1);

@@ -1361,9 +1361,6 @@ static struct RichOpComp {
     { "||",	RPMRICHOP_OR},
     { "OR",	RPMRICHOP_OR},
     { "IF",	RPMRICHOP_IF},
-    { "?",	RPMRICHOP_THEN},
-    { "THEN",	RPMRICHOP_THEN},
-    { ":",	RPMRICHOP_ELSE},
     { "ELSE",	RPMRICHOP_ELSE},
     { NULL, 0 },
 };
@@ -1396,10 +1393,8 @@ const char *rpmrichOpStr(rpmrichOp op)
 	return "|";
     if (op == RPMRICHOP_IF)
 	return "IF";
-    if (op == RPMRICHOP_THEN)
-	return "?";
     if (op == RPMRICHOP_ELSE)
-	return ":";
+	return "ELSE";
     return NULL;
 }
 
@@ -1488,7 +1483,7 @@ rpmRC rpmrichParse(const char **dstrp, char **emsg, rpmrichParseFunction cb, voi
         pe = p;
         if (parseRichDepOp(&pe, &op, emsg) != RPMRC_OK)
             return RPMRC_FAIL;
-	if (op == RPMRICHOP_ELSE && chainop == RPMRICHOP_THEN)
+	if (op == RPMRICHOP_ELSE && chainop == RPMRICHOP_IF)
 	    chainop = 0;
         if (chainop && op != chainop) {
             if (emsg)
