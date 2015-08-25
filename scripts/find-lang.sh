@@ -11,6 +11,9 @@
 #in tact and are included with any redistribution of this file or any
 #work based on this file.
 
+# 2011-11-16 Per Øyvind Karlsen <peroyvind@mandriva.org>
+#   * add support for HTML files (from Mandriva)
+#   * add support for multiple names
 # 2004-06-20 Arkadiusz Miśkiewicz <arekm@pld-linux.org>
 #   * merge PLD changes, kde, all-name (mkochano,pascalek@PLD)
 # 1999-10-19 Artur Frysiak <wiget@pld-linux.org>
@@ -31,8 +34,10 @@ PACKAGE_NAME.lang unless \$3 is given in which case output is written
 to \$3.
 Additional options:
   --with-gnome		find GNOME help files
+  --with-mate		find MATE help files
   --with-kde		find KDE help files
   --with-qt		find Qt translation files
+  --with-html		find HTML files
   --with-man		find localized man pages
   --all-name		match all package/domain names
   --without-mo		do not find locale files
@@ -50,23 +55,28 @@ fi
 shift
 
 if [ -z "$1" ] ; then usage
-else NAME=$1
+else NAMES[0]=$1
 fi
 shift
 
 GNOME=#
+MATE=#
 KDE=#
 QT=#
 MAN=#
+HTML=#
 MO=
-MO_NAME=$NAME.lang
+MO_NAME=${NAMES[0]}.lang
 ALL_NAME=#
 NO_ALL_NAME=
-
 while test $# -gt 0 ; do
     case "${1}" in
 	--with-gnome )
   		GNOME=
+		shift
+		;;
+	--with-mate )
+		MATE=
 		shift
 		;;
 	--with-kde )
@@ -81,6 +91,10 @@ while test $# -gt 0 ; do
 		MAN=
 		shift
 		;;
+	--with-html )
+		HTML=
+		shift
+		;;
 	--without-mo )
 		MO=#
 		shift
@@ -91,11 +105,20 @@ while test $# -gt 0 ; do
 		shift
 		;;
 	* )
+		if [ $MO_NAME != $NAME.lang ]; then
+		    NAMES[${#NAMES[@]}]=$MO_NAME
+		fi
 		MO_NAME=${1}
 		shift
 		;;
     esac
 done    
+
+if [ -f $MO_NAME ]; then
+    rm $MO_NAME
+fi
+
+for NAME in ${NAMES[@]}; do
 
 find "$TOP_DIR" -type f -o -type l|sed '
 s:'"$TOP_DIR"'::
@@ -103,7 +126,7 @@ s:'"$TOP_DIR"'::
 '"$NO_ALL_NAME$MO"'s:\(.*/locale/\)\([^/_]\+\)\(.*/'"$NAME"'\.mo$\):%lang(\2) \1\2\3:
 s:^\([^%].*\)::
 s:%lang(C) ::
-/^$/d' > $MO_NAME
+/^$/d' >> $MO_NAME
 
 find "$TOP_DIR" -type d|sed '
 s:'"$TOP_DIR"'::
@@ -141,6 +164,34 @@ s:^[^%].*::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
 
+find $TOP_DIR -type d|sed '
+s:'"$TOP_DIR"'::
+'"$NO_ALL_NAME$MATE"'s:\(.*/mate/help/'"$NAME"'$\):%dir \1:
+'"$NO_ALL_NAME$MATE"'s:\(.*/mate/help/'"$NAME"'/[a-zA-Z0-9.\_\-]/.\+\)::
+'"$NO_ALL_NAME$MATE"'s:\(.*/mate/help/'"$NAME"'\/\)\([^/_]\+\):%lang(\2) \1\2:
+'"$ALL_NAME$MATE"'s:\(.*/mate/help/[a-zA-Z0-9.\_\-]\+$\):%dir \1:
+'"$ALL_NAME$MATE"'s:\(.*/mate/help/[a-zA-Z0-9.\_\-]\+/[a-zA-Z0-9.\_\-]/.\+\)::
+'"$ALL_NAME$GNOME"'s:\(.*/mate/help/[a-zA-Z0-9.\_\-]\+\/\)\([^/_]\+\):%lang(\2) \1\2:
+s:%lang(.*) .*/mate/help/[a-zA-Z0-9.\_\-]\+/[a-zA-Z0-9.\_\-]\+/.*::
+s:^\([^%].*\)::
+s:%lang(C) ::
+/^$/d' >> $MO_NAME
+
+find "$TOP_DIR" -type d|sed '
+s:'"$TOP_DIR"'::
+'"$NO_ALL_NAME$MATE"'s:\(.*/omf/'"$NAME"'$\):%dir \1:
+'"$ALL_NAME$MATE"'s:\(.*/omf/[a-zA-Z0-9.\_\-]\+$\):%dir \1:
+s:^\([^%].*\)::
+/^$/d' >> $MO_NAME
+
+find "$TOP_DIR" -type f|sed '
+s:'"$TOP_DIR"'::
+'"$NO_ALL_NAME$MATE"'s:\(.*/omf/'"$NAME"'/'"$NAME"'-\([^/.]\+\)\.omf\):%lang(\2) \1:
+'"$ALL_NAME$MATE"'s:\(.*/omf/[a-zA-Z0-9.\_\-]\+/[a-zA-Z0-9.\_\-]\+-\([^/.]\+\)\.omf\):%lang(\2) \1:
+s:^[^%].*::
+s:%lang(C) ::
+/^$/d' >> $MO_NAME
+
 KDE3_HTML=`kde-config --expandvars --install html 2>/dev/null`
 if [ x"$KDE3_HTML" != x -a -d "$TOP_DIR$KDE3_HTML" ]; then
 find "$TOP_DIR$KDE3_HTML" -type d|sed '
@@ -167,6 +218,16 @@ s:%lang(C) ::
 /^$/d' >> $MO_NAME
 fi
 
+find "$TOP_DIR" -type d|sed '
+s:'"$TOP_DIR"'::
+'"$NO_ALL_NAME$HTML"'s:\(.*/doc/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'/\)::
+'"$NO_ALL_NAME$HTML"'s:\(.*/doc/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'\)$:%lang(\2) \1\2\3:
+'"$ALL_NAME$HTML"'s:\(.*/doc/HTML/\)\([^/_]\+\)\(.*/[a-zA-Z0-9.\_\-]\+/\)::
+'"$ALL_NAME$HTML"'s:\(.*/doc/HTML/\)\([^/_]\+\)\(.*/[a-zA-Z0-9.\_\-]\+$\):%lang(\2) \1\2\3:
+s:^\([^%].*\)::
+s:%lang(C) ::
+/^$/d' >> $MO_NAME
+
 find "$TOP_DIR" -type f -o -type l|sed '
 s:'"$TOP_DIR"'::
 '"$NO_ALL_NAME$QT"'s:\(.*/'"$NAME"'_\([a-zA-Z]\{2\}\([_@].*\)\?\)\.qm$\):%lang(\2) \1:
@@ -186,12 +247,14 @@ s:^\([^%].*\)::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
 
-find "$TOP_DIR" -type f -o -type l|sed '
+find "$TOP_DIR" -type f -o -type l|sed -r 's/\.(bz2|gz|xz|lzma|Z)$//g' | sed '
 s:'"$TOP_DIR"'::
 '"$NO_ALL_NAME$MAN"'s:\(.*/man/\([^/_]\+\).*/man[a-z0-9]\+/'"$NAME"'\.[a-z0-9].*\):%lang(\2) \1*:
 s:^\([^%].*\)::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
+
+done
 
 if ! grep -q / $MO_NAME; then
 	echo "No translations found for ${NAME} in ${TOP_DIR}"
