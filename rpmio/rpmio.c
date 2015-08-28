@@ -723,19 +723,21 @@ typedef struct lzfile {
 
 static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 {
-    int level = 7;	/* Use XZ's default compression level if unspecified */
+    int level = LZMA_PRESET_DEFAULT;	/* Use XZ's default compression level if unspecified */
     int encoding = 0;
     FILE *fp;
     LZFILE *lzfile;
     lzma_ret ret;
     lzma_stream init_strm = LZMA_STREAM_INIT;
+    uint64_t mem_limit = rpmExpandNumeric("%{_xz_memlimit}");
+    int threads = rpmExpandNumeric("%{_xz_threads}");
 
     for (; *mode; mode++) {
 	if (*mode == 'w')
 	    encoding = 1;
 	else if (*mode == 'r')
 	    encoding = 0;
-	else if (*mode >= '1' && *mode <= '9')
+	else if (*mode >= '0' && *mode <= '9')
 	    level = *mode - '0';
     }
     fp = fdopen(fd, encoding ? "w" : "r");
@@ -748,16 +750,44 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
     lzfile->strm = init_strm;
     if (encoding) {
 	if (xz) {
-	    ret = lzma_easy_encoder(&lzfile->strm, level, LZMA_CHECK_SHA256);
+	    if (!threads) {
+		ret = lzma_easy_encoder(&lzfile->strm, level, LZMA_CHECK_SHA256);
+	    } else {
+		if (threads == -1)
+		    threads = sysconf(_SC_NPROCESSORS_ONLN);
+		lzma_mt mt_options = {
+		    .flags = 0,
+		    .threads = threads,
+		    .block_size = 0,
+		    .timeout = 0,
+		    .preset = level,
+		    .filters = NULL,
+		    .check = LZMA_CHECK_SHA256 };
+
+		ret = lzma_stream_encoder_mt(&xzfile->strm, &mt_options);
+	    }
 	} else {
 	    lzma_options_lzma options;
 	    lzma_lzma_preset(&options, level);
 	    ret = lzma_alone_encoder(&lzfile->strm, &options);
 	}
     } else {	/* lzma_easy_decoder_memusage(level) is not ready yet, use hardcoded limit for now */
-	ret = lzma_auto_decoder(&lzfile->strm, 100<<20, 0);
+	ret = lzma_auto_decoder(&xzfile->strm, mem_limit ? mem_limit : 100<<20, 0);
     }
     if (ret != LZMA_OK) {
+	switch (ret) {
+	    case LZMA_MEM_ERROR:
+		rpmlog(RPMLOG_ERR, "liblzma: Memory allocation failed");
+		break;
+
+	    case LZMA_DATA_ERROR:
+		rpmlog(RPMLOG_ERR, "liblzma: File size limits exceeded");
+		break;
+
+	    default:
+		rpmlog(RPMLOG_ERR, "liblzma: <Unknown error (%d), possibly a bug", ret);
+		break;
+	}
 	fclose(fp);
 	free(lzfile);
 	return NULL;
