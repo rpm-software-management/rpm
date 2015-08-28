@@ -521,6 +521,9 @@ static rpmRC replaceSigDigests(FD_t fd, const char *rpm, Header *sigp,
 	archiveSize = headerGetNumber(*sigp, RPMSIGTAG_LONGARCHIVESIZE);
     }
 
+    /* Set reserved space to 0 */
+    addMacro(NULL, "__gpg_reserved_space", NULL, 0, RMIL_GLOBAL);
+
     /* Replace old digests in sigh */
     rc = rpmGenerateSignature(SHA1, MD5, sigTargetSize, archiveSize, fd);
     if (rc != RPMRC_OK) {
