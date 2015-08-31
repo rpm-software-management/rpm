@@ -1365,6 +1365,12 @@ static struct RichOpComp {
     { NULL, 0 },
 };
 
+int rpmdsIsRich(rpmds dep)
+{
+    const char * n = rpmdsN(dep);
+    return (n && n[0] == '(');
+}
+
 static rpmRC parseRichDepOp(const char **dstrp, rpmrichOp *opp, char **emsg)
 {
     const char *p = *dstrp, *pe = p;
