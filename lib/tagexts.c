@@ -237,6 +237,8 @@ static int triggercondsTagFor(tMode mode, Header h, rpmtd td,
 	    triggerversion = RPMTAG_TRANSFILETRIGGERVERSION;
 	    triggerscripts = RPMTAG_TRANSFILETRIGGERSCRIPTS;
 	    break;
+	default:
+	    return 0;
     }
 
     if (!headerGet(h, triggername, &nametd, hgeflags)) {
@@ -341,6 +343,8 @@ static int triggertypeTagFor(tMode mode, Header h, rpmtd td,
 	    triggerflags = RPMTAG_TRANSFILETRIGGERFLAGS;
 	    triggerscripts = RPMTAG_TRANSFILETRIGGERSCRIPTS;
 	    break;
+	default:
+	   return 0;
     }
 
     if (!headerGet(h, triggerindex, &indices, HEADERGET_MINMEM)) {
