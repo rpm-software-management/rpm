@@ -1354,14 +1354,10 @@ static struct RichOpComp {
     const char * token;
     rpmrichOp op;
 } const RichOps[] = { 
-    { "&",	RPMRICHOP_AND},
-    { "&&",	RPMRICHOP_AND},
-    { "AND",	RPMRICHOP_AND},
-    { "|",	RPMRICHOP_OR},
-    { "||",	RPMRICHOP_OR},
-    { "OR",	RPMRICHOP_OR},
-    { "IF",	RPMRICHOP_IF},
-    { "ELSE",	RPMRICHOP_ELSE},
+    { "and",	RPMRICHOP_AND},
+    { "or",	RPMRICHOP_OR},
+    { "if",	RPMRICHOP_IF},
+    { "else",	RPMRICHOP_ELSE},
     { NULL, 0 },
 };
 
