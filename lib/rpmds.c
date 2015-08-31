@@ -1312,10 +1312,10 @@ rpmsenseFlags rpmSanitizeDSFlags(rpmTagVal tagN, rpmsenseFlags Flags)
     case RPMTAG_SUPPLEMENTNAME:
     case RPMTAG_ENHANCENAME:
     case RPMTAG_REQUIRENAME:
-	extra = Flags & (_ALL_REQUIRES_MASK | RPMSENSE_RICH);
+	extra = Flags & (_ALL_REQUIRES_MASK);
 	break;
     case RPMTAG_CONFLICTNAME:
-	extra = Flags & RPMSENSE_RICH;
+	extra = Flags;
 	break;
     default:
 	break;
@@ -1543,7 +1543,7 @@ static rpmRC rpmdsParseRichDepCB(void *cbdata, rpmrichParseType type,
 	    strncpy(right + 1, data->rightstart, n + nl - data->rightstart);
 	    right[n + nl - data->rightstart + 1] = 0;
 	    data->rightds = rpmdsFree(data->rightds);
-	    ds = singleDS(data->dep->pool, data->dep->tagN, 0, 0, RPMSENSE_RICH | data->depflags, 0, 0, 0);
+	    ds = singleDS(data->dep->pool, data->dep->tagN, 0, 0, data->depflags, 0, 0, 0);
 	    ds->N[0] = rpmstrPoolId(ds->pool, right, 1);
 	    ds->EVR[0] = rpmstrPoolId(ds->pool, "", 1);
 	    data->rightds = ds;
@@ -1553,9 +1553,7 @@ static rpmRC rpmdsParseRichDepCB(void *cbdata, rpmrichParseType type,
     if (data->depth != 1)
 	return RPMRC_OK;	/* we're only interested in top-level parsing */
     if ((type == RPMRICH_PARSE_SIMPLE || type == RPMRICH_PARSE_LEAVE) && !data->dochain) {
-	if (type == RPMRICH_PARSE_LEAVE)
-	    sense = RPMSENSE_RICH;
-	else if (data->dep->tagN == RPMTAG_REQUIRENAME && nl > 7 &&
+	if (type == RPMRICH_PARSE_SIMPLE && data->dep->tagN == RPMTAG_REQUIRENAME && nl > 7 &&
 			 rstreqn(n, "rpmlib(", sizeof("rpmlib(")-1))
 	    sense |= RPMSENSE_RPMLIB;
 	ds = singleDS(data->dep->pool, data->dep->tagN, 0, 0, sense | data->depflags, 0, 0, 0);
@@ -1586,7 +1584,7 @@ rpmRC rpmdsParseRichDep(rpmds dep, rpmds *leftds, rpmds *rightds, rpmrichOp *op,
     memset(&data, 0, sizeof(data));
     data.dep = dep;
     data.op = RPMRICHOP_SINGLE;
-    data.depflags = rpmdsFlags(dep) & ~(RPMSENSE_SENSEMASK | RPMSENSE_RICH | RPMSENSE_MISSINGOK);
+    data.depflags = rpmdsFlags(dep) & ~(RPMSENSE_SENSEMASK | RPMSENSE_MISSINGOK);
     rc = rpmrichParse(&depstr, emsg, rpmdsParseRichDepCB, &data);
     if (rc == RPMRC_OK && *depstr) {
 	if (emsg)

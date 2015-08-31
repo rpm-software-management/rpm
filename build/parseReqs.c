@@ -214,7 +214,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 		freeStringBuf(data.sb);
 		goto exit;
 	    }
-	    if (addReqProv(pkg, nametag, getStringBuf(data.sb), NULL, Flags | RPMSENSE_RICH, index)) {
+	    if (addReqProv(pkg, nametag, getStringBuf(data.sb), NULL, Flags, index)) {
 		rasprintf(&emsg, _("invalid dependency"));
 		freeStringBuf(data.sb);
 		goto exit;
