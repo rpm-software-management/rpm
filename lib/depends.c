@@ -631,7 +631,7 @@ retry:
 	goto exit;
 
     /* Handle rich dependencies */
-    if (dsflags & RPMSENSE_RICH) {
+    if (rpmdsIsRich(dep)) {
 	rpmds ds1, ds2; 
 	rpmrichOp op;
 	char *emsg = 0; 
@@ -644,7 +644,7 @@ retry:
 	    goto exit;
 	}
 	if (op == RPMRICHOP_IF) {
-	    if (rpmdsFlags(ds2) & RPMSENSE_RICH) {
+	    if (rpmdsIsRich(ds2)) {
 		/* check if this is a IF...ELSE combination */
 		rpmds ds21 = NULL, ds22 = NULL;
 		rpmrichOp op2;

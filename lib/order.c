@@ -153,7 +153,7 @@ static inline int addRelation(rpmts ts,
     if (dsflags & (RPMSENSE_RPMLIB|RPMSENSE_CONFIG|RPMSENSE_PRETRANS|RPMSENSE_POSTTRANS))
 	return 0;
 
-    if (dsflags & RPMSENSE_RICH) {
+    if (rpmdsIsRich(requires)) {
 	rpmds ds1, ds2;
 	rpmrichOp op;
 	if (rpmdsParseRichDep(requires, &ds1, &ds2, &op, NULL) == RPMRC_OK) {

@@ -275,7 +275,7 @@ static int haveRichDep(Package pkg)
 	if (tagN != RPMTAG_REQUIRENAME && tagN != RPMTAG_CONFLICTNAME)
 	    continue;
 	while (rpmdsNext(ds) >= 0) {
-	    if (rpmdsFlags(ds) & RPMSENSE_RICH)
+	    if (rpmdsIsRich(ds))
 		return 1;
 	}
     }
