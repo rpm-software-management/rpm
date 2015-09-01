@@ -432,7 +432,7 @@ const unsigned char * rpmfilesFDigest(rpmfiles fi, int ix, int *algo, size_t *le
  * Return file (binary) digest of file info set.
  * @param fi            file info set
  * @param ix            file index
- * @retval siglen       signature length (pass NULL to ignore)
+ * @retval len       signature length (pass NULL to ignore)
  * @return              file signature, NULL on invalid
  */
 const unsigned char * rpmfilesFSignature(rpmfiles fi, int ix, size_t *len);

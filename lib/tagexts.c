@@ -199,6 +199,7 @@ typedef enum tMode_e {
 
 /**
  * Retrieve trigger info.
+ * @param mode		type of trigger (see tMode_e)
  * @param h		header
  * @retval td		tag data container
  * @param hgflags	header get flags
@@ -314,6 +315,7 @@ static int transfiletriggercondsTag(Header h, rpmtd td, headerGetFlags hgflags)
 
 /**
  * Retrieve trigger type info.
+ * @param mode		type of trigger (see tMode_e)
  * @param h		header
  * @retval td		tag data container
  * @param hgflags	header get flags
