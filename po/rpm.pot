@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2015-07-24 08:13+0200\n"
+"POT-Creation-Date: 2015-09-02 13:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -79,7 +79,7 @@ msgstr ""
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:64 rpmbuild.c:269 rpmdb.c:44 rpmkeys.c:42 rpmsign.c:37 rpmspec.c:48
+#: rpmqv.c:64 rpmbuild.c:269 rpmdb.c:44 rpmkeys.c:42 rpmsign.c:49 rpmspec.c:48
 #: tools/rpmdeps.c:32 tools/rpmgraph.c:222
 msgid "Common options for all rpm modes and executables:"
 msgstr ""
@@ -100,7 +100,7 @@ msgstr ""
 msgid "unexpected query source"
 msgstr ""
 
-#: rpmqv.c:143 rpmdb.c:126 rpmkeys.c:82 rpmsign.c:95
+#: rpmqv.c:143 rpmdb.c:126 rpmkeys.c:82 rpmsign.c:141
 msgid "only one major mode may be specified"
 msgstr ""
 
@@ -505,29 +505,60 @@ msgstr ""
 msgid "Keyring options:"
 msgstr ""
 
-#: rpmkeys.c:64 rpmsign.c:80
+#: rpmkeys.c:64 rpmsign.c:122
 msgid "no arguments given"
 msgstr ""
 
-#: rpmsign.c:25
+#: rpmsign.c:30
 msgid "sign package(s)"
 msgstr ""
 
-#: rpmsign.c:27
+#: rpmsign.c:32
 msgid "sign package(s) (identical to --addsign)"
 msgstr ""
 
-#: rpmsign.c:29
+#: rpmsign.c:34
 msgid "delete package signatures"
 msgstr ""
 
-#: rpmsign.c:35
+#: rpmsign.c:36
+msgid "sign package(s) files"
+msgstr ""
+
+#: rpmsign.c:38
+msgid "use file signing key <key>"
+msgstr ""
+
+#: rpmsign.c:39
+msgid "<key>"
+msgstr ""
+
+#: rpmsign.c:41
+msgid "prompt for file signing key password"
+msgstr ""
+
+#: rpmsign.c:47
 msgid "Signature options:"
 msgstr ""
 
-#: rpmsign.c:52
+#: rpmsign.c:65
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
+msgstr ""
+
+#: rpmsign.c:76
+#, c-format
+msgid ""
+"You must set \"$$_file_signing_key\" in your macro file or on the command "
+"line with --fskpath\n"
+msgstr ""
+
+#: rpmsign.c:82
+msgid "--fskpass may only be specified when signing files"
+msgstr ""
+
+#: rpmsign.c:126
+msgid "--fskpath may only be specified when signing files"
 msgstr ""
 
 #: rpmspec.c:26
@@ -778,79 +809,84 @@ msgstr ""
 msgid "%%dev glob not permitted: %s\n"
 msgstr ""
 
-#: build/files.c:1589
+#: build/files.c:1588
 #, c-format
-msgid "Directory not found by glob: %s\n"
+msgid "Directory not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:1590 build/files.c:1773 lib/rpminstall.c:445
+#: build/files.c:1590
 #, c-format
-msgid "File not found by glob: %s\n"
+msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:1627
+#: build/files.c:1624
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr ""
 
-#: build/files.c:1638
+#: build/files.c:1635
 #, c-format
 msgid "line: %s\n"
 msgstr ""
 
-#: build/files.c:1649
+#: build/files.c:1646
 #, c-format
 msgid "Empty %%files file %s\n"
 msgstr ""
 
-#: build/files.c:1655
+#: build/files.c:1652
 #, c-format
 msgid "Error reading %%files file %s: %m\n"
 msgstr ""
 
-#: build/files.c:1678
+#: build/files.c:1675
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr ""
 
-#: build/files.c:1868
+#: build/files.c:1770 lib/rpminstall.c:445
+#, c-format
+msgid "File not found by glob: %s\n"
+msgstr ""
+
+#: build/files.c:1865
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:1885
+#: build/files.c:1882
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr ""
 
-#: build/files.c:2015
+#: build/files.c:2012
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr ""
 
-#: build/files.c:2083
+#: build/files.c:2080
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr ""
 
-#: build/files.c:2096
+#: build/files.c:2093
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2127
+#: build/files.c:2124
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
 
-#: build/files.c:2141
+#: build/files.c:2138
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 
-#: build/files.c:2147
+#: build/files.c:2144
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 
@@ -879,74 +915,71 @@ msgstr ""
 msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
 
-#: build/pack.c:368
-msgid "Unable to reload signature header.\n"
-msgstr ""
-
-#: build/pack.c:441
+#: build/pack.c:355
 #, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr ""
 
-#: build/pack.c:490
+#: build/pack.c:404
 msgid "Unable to create immutable header region.\n"
 msgstr ""
 
-#: build/pack.c:498
+#: build/pack.c:412
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:510
+#: build/pack.c:424
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
 
-#: build/pack.c:534
+#: build/pack.c:448
 msgid "Unable to write temp header\n"
 msgstr ""
 
-#: build/pack.c:543
+#: build/pack.c:457
 msgid "Bad CSA data\n"
 msgstr ""
 
-#: build/pack.c:554 build/pack.c:573 sign/rpmgensig.c:294 sign/rpmgensig.c:614
-#: sign/rpmgensig.c:649
+#: build/pack.c:468 build/pack.c:487 sign/rpmgensig.c:293 sign/rpmgensig.c:513
+#: sign/rpmgensig.c:536 sign/rpmgensig.c:610 sign/rpmgensig.c:630
+#: sign/rpmgensig.c:786 sign/rpmgensig.c:821
 #, c-format
 msgid "Could not seek in file %s: %s\n"
 msgstr ""
 
-#: build/pack.c:565
+#: build/pack.c:479
 #, c-format
 msgid "Fread failed in file %s: %s\n"
 msgstr ""
 
-#: build/pack.c:599
+#: build/pack.c:513
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:618
+#: build/pack.c:532
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr ""
 
-#: build/pack.c:621
+#: build/pack.c:535
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr ""
 
-#: build/pack.c:625
+#: build/pack.c:539
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr ""
 
-#: build/pack.c:672
+#: build/pack.c:586
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:689
+#: build/pack.c:603
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr ""
@@ -1283,7 +1316,7 @@ msgstr ""
 msgid "invalid dependency"
 msgstr ""
 
-#: build/parseReqs.c:253 lib/rpmds.c:1441
+#: build/parseReqs.c:253 lib/rpmds.c:1438
 msgid "Version required"
 msgstr ""
 
@@ -1345,66 +1378,66 @@ msgstr ""
 msgid "line %d: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:196
+#: build/parseSpec.c:209
 #, c-format
 msgid "Macro expanded in comment on line %d: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:300
+#: build/parseSpec.c:313
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:334
+#: build/parseSpec.c:347
 #, c-format
 msgid "%s:%d: Argument expected for %s\n"
 msgstr ""
 
-#: build/parseSpec.c:356
+#: build/parseSpec.c:369
 #, c-format
 msgid "line %d: Unclosed %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:361
+#: build/parseSpec.c:374
 #, c-format
 msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr ""
 
-#: build/parseSpec.c:403
+#: build/parseSpec.c:416
 #, c-format
 msgid "%s:%d: bad %%if condition\n"
 msgstr ""
 
-#: build/parseSpec.c:411
+#: build/parseSpec.c:424
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:422
+#: build/parseSpec.c:435
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:440
+#: build/parseSpec.c:453
 #, c-format
 msgid "%s:%d: malformed %%include statement\n"
 msgstr ""
 
-#: build/parseSpec.c:625
+#: build/parseSpec.c:638
 #, c-format
 msgid "encoding %s not supported by system\n"
 msgstr ""
 
-#: build/parseSpec.c:654
+#: build/parseSpec.c:667
 #, c-format
 msgid "Package %s: invalid %s encoding in %s: %s - %s\n"
 msgstr ""
 
-#: build/parseSpec.c:799
+#: build/parseSpec.c:812
 msgid "No compatible architectures found for build\n"
 msgstr ""
 
-#: build/parseSpec.c:833
+#: build/parseSpec.c:846
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr ""
@@ -2399,7 +2432,7 @@ msgstr ""
 msgid "%s: import read failed(%d).\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:136 sign/rpmgensig.c:524
+#: lib/rpmchecksig.c:136 sign/rpmgensig.c:710
 #, c-format
 msgid "%s: headerRead failed: %s\n"
 msgstr ""
@@ -2409,7 +2442,7 @@ msgstr ""
 msgid "%s: Immutable header region could not be read. Corrupted package?\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:157 sign/rpmgensig.c:176
+#: lib/rpmchecksig.c:157 sign/rpmgensig.c:177
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr ""
@@ -2438,7 +2471,7 @@ msgstr ""
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:385 sign/rpmgensig.c:136
+#: lib/rpmchecksig.c:385 sign/rpmgensig.c:138
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr ""
@@ -2543,95 +2576,95 @@ msgstr ""
 msgid "support for rich dependencies."
 msgstr ""
 
-#: lib/rpmds.c:1385
+#: lib/rpmds.c:1384
 #, c-format
 msgid "Unknown rich dependency op '%.*s'"
 msgstr ""
 
-#: lib/rpmds.c:1422
+#: lib/rpmds.c:1419
 msgid "Name required"
 msgstr ""
 
-#: lib/rpmds.c:1459
+#: lib/rpmds.c:1456
 msgid "Rich dependency does not start with '('"
 msgstr ""
 
-#: lib/rpmds.c:1467
+#: lib/rpmds.c:1464
 msgid "Missing argument to rich dependency op"
 msgstr ""
 
-#: lib/rpmds.c:1469
+#: lib/rpmds.c:1466
 msgid "Empty rich dependency"
 msgstr ""
 
-#: lib/rpmds.c:1483
+#: lib/rpmds.c:1480
 #, c-format
 msgid "Unterminated rich dependency: %s"
 msgstr ""
 
-#: lib/rpmds.c:1495
+#: lib/rpmds.c:1492
 msgid "Cannot chain different ops"
 msgstr ""
 
-#: lib/rpmds.c:1500
+#: lib/rpmds.c:1497
 msgid "Can only chain AND and OR ops"
 msgstr ""
 
-#: lib/rpmds.c:1592
+#: lib/rpmds.c:1587
 msgid "Junk after rich dependency"
 msgstr ""
 
-#: lib/rpmfi.c:798
+#: lib/rpmfi.c:813
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/rpmfi.c:805
+#: lib/rpmfi.c:820
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/rpmfi.c:2194
+#: lib/rpmfi.c:2236
 msgid "Bad magic"
 msgstr ""
 
-#: lib/rpmfi.c:2195
+#: lib/rpmfi.c:2237
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/rpmfi.c:2218
+#: lib/rpmfi.c:2260
 msgid "Header size too big"
 msgstr ""
 
-#: lib/rpmfi.c:2219
+#: lib/rpmfi.c:2261
 msgid "File too large for archive"
 msgstr ""
 
-#: lib/rpmfi.c:2220
+#: lib/rpmfi.c:2262
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/rpmfi.c:2221
+#: lib/rpmfi.c:2263
 msgid "Missing file(s)"
 msgstr ""
 
-#: lib/rpmfi.c:2222
+#: lib/rpmfi.c:2264
 msgid "Digest mismatch"
 msgstr ""
 
-#: lib/rpmfi.c:2223
+#: lib/rpmfi.c:2265
 msgid "Internal error"
 msgstr ""
 
-#: lib/rpmfi.c:2224
+#: lib/rpmfi.c:2266
 msgid "Archive file not in header"
 msgstr ""
 
-#: lib/rpmfi.c:2232
+#: lib/rpmfi.c:2274
 msgid " failed - "
 msgstr ""
 
-#: lib/rpmfi.c:2235
+#: lib/rpmfi.c:2277
 #, c-format
 msgid "%s: (error 0x%x)"
 msgstr ""
@@ -2903,21 +2936,21 @@ msgstr ""
 msgid "bad option '%s' at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:959
+#: lib/rpmrc.c:964
 msgid "Failed to read auxiliary vector, /proc not mounted?\n"
 msgstr ""
 
-#: lib/rpmrc.c:1411
+#: lib/rpmrc.c:1416
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1413
+#: lib/rpmrc.c:1418
 #, c-format
 msgid "Please contact %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1546
+#: lib/rpmrc.c:1551
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr ""
@@ -3016,77 +3049,81 @@ msgstr ""
 msgid "transaction"
 msgstr ""
 
-#: lib/signature.c:77
+#: lib/signature.c:78
 #, c-format
 msgid "%s tag %u: BAD, invalid size %u"
 msgstr ""
 
-#: lib/signature.c:83
+#: lib/signature.c:84
 #, c-format
 msgid "%s tag %u: BAD, invalid type %u"
 msgstr ""
 
-#: lib/signature.c:90
+#: lib/signature.c:91
 #, c-format
 msgid "%s tag %u: BAD, invalid OpenPGP signature"
 msgstr ""
 
-#: lib/signature.c:159
+#: lib/signature.c:160
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d"
 msgstr ""
 
-#: lib/signature.c:164
+#: lib/signature.c:165
 msgid "sigh magic: BAD"
 msgstr ""
 
-#: lib/signature.c:170
+#: lib/signature.c:171
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%d) out of range"
 msgstr ""
 
-#: lib/signature.c:176
+#: lib/signature.c:177
 #, c-format
 msgid "sigh data: BAD, no. of  bytes(%d) out of range"
 msgstr ""
 
-#: lib/signature.c:191
+#: lib/signature.c:192
 #, c-format
 msgid "sigh blob(%d): BAD, read returned %d"
 msgstr ""
 
-#: lib/signature.c:208
+#: lib/signature.c:209
 #, c-format
 msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d"
 msgstr ""
 
-#: lib/signature.c:218
+#: lib/signature.c:219
 msgid "sigh load: BAD"
 msgstr ""
 
-#: lib/signature.c:232
+#: lib/signature.c:233
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr ""
 
-#: lib/signature.c:248
+#: lib/signature.c:249
 #, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed"
 msgstr ""
 
-#: lib/signature.c:358
+#: lib/signature.c:369
+msgid "Unable to reload signature header.\n"
+msgstr ""
+
+#: lib/signature.c:445
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:377
+#: lib/signature.c:464
 msgid "MD5 digest:"
 msgstr ""
 
-#: lib/signature.c:380
+#: lib/signature.c:467
 msgid "Header SHA1 digest:"
 msgstr ""
 
-#: lib/signature.c:399
+#: lib/signature.c:486
 #, c-format
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)"
 msgstr ""
@@ -3238,39 +3275,39 @@ msgstr ""
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: lib/rpmdb.c:2558
+#: lib/rpmdb.c:2528
 msgid "no dbpath has been set"
 msgstr ""
 
-#: lib/rpmdb.c:2576
+#: lib/rpmdb.c:2546
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2610
+#: lib/rpmdb.c:2580
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2623
+#: lib/rpmdb.c:2593
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: lib/rpmdb.c:2639
+#: lib/rpmdb.c:2609
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2647
+#: lib/rpmdb.c:2617
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2649
+#: lib/rpmdb.c:2619
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2660
+#: lib/rpmdb.c:2630
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
@@ -3512,110 +3549,139 @@ msgstr ""
 msgid "(none)"
 msgstr ""
 
-#: sign/rpmgensig.c:56
+#: sign/rpmgensig.c:58
 #, c-format
 msgid "error creating temp directory %s: %m\n"
 msgstr ""
 
-#: sign/rpmgensig.c:64
+#: sign/rpmgensig.c:66
 #, c-format
 msgid "error creating fifo %s: %m\n"
 msgstr ""
 
-#: sign/rpmgensig.c:85
+#: sign/rpmgensig.c:87
 #, c-format
 msgid "error delete fifo %s: %m\n"
 msgstr ""
 
-#: sign/rpmgensig.c:93
+#: sign/rpmgensig.c:95
 #, c-format
 msgid "error delete directory %s: %m\n"
 msgstr ""
 
-#: sign/rpmgensig.c:170
+#: sign/rpmgensig.c:171
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr ""
 
-#: sign/rpmgensig.c:180
+#: sign/rpmgensig.c:181
 #, c-format
 msgid "%s: Fflush failed: %s\n"
 msgstr ""
 
-#: sign/rpmgensig.c:208
+#: sign/rpmgensig.c:207
 msgid "Unsupported PGP signature\n"
 msgstr ""
 
-#: sign/rpmgensig.c:214
+#: sign/rpmgensig.c:213
 #, c-format
 msgid "Unsupported PGP hash algorithm %u\n"
 msgstr ""
 
-#: sign/rpmgensig.c:227
+#: sign/rpmgensig.c:226
 #, c-format
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr ""
 
-#: sign/rpmgensig.c:279
+#: sign/rpmgensig.c:278
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr ""
 
-#: sign/rpmgensig.c:289
+#: sign/rpmgensig.c:288
 msgid "Fopen failed\n"
 msgstr ""
 
-#: sign/rpmgensig.c:304
+#: sign/rpmgensig.c:303
 msgid "Could not write to pipe\n"
 msgstr ""
 
-#: sign/rpmgensig.c:311
+#: sign/rpmgensig.c:310
 #, c-format
 msgid "Could not read from file %s: %s\n"
 msgstr ""
 
-#: sign/rpmgensig.c:321
+#: sign/rpmgensig.c:320
 #, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr ""
 
-#: sign/rpmgensig.c:363
+#: sign/rpmgensig.c:362
 msgid "gpg failed to write signature\n"
 msgstr ""
 
-#: sign/rpmgensig.c:380
+#: sign/rpmgensig.c:379
 msgid "unable to read the signature\n"
 msgstr ""
 
-#: sign/rpmgensig.c:516
+#: sign/rpmgensig.c:530
+msgid "generateSignature failed\n"
+msgstr ""
+
+#: sign/rpmgensig.c:544
+msgid "rpmReadSignature failed\n"
+msgstr ""
+
+#: sign/rpmgensig.c:571
+msgid "missing libimaevm\n"
+msgstr ""
+
+#: sign/rpmgensig.c:590
+msgid "headerReload failed\n"
+msgstr ""
+
+#: sign/rpmgensig.c:597 sign/rpmgensig.c:802
+msgid "rpmMkTemp failed\n"
+msgstr ""
+
+#: sign/rpmgensig.c:604 sign/rpmgensig.c:636
+msgid "copyFile failed\n"
+msgstr ""
+
+#: sign/rpmgensig.c:622
+msgid "headerWrite failed\n"
+msgstr ""
+
+#: sign/rpmgensig.c:652
+#, c-format
+msgid "%s already contains identical file signatures\n"
+msgstr ""
+
+#: sign/rpmgensig.c:702
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr ""
 
-#: sign/rpmgensig.c:530
+#: sign/rpmgensig.c:716
 msgid "Cannot sign RPM v3 packages\n"
 msgstr ""
 
-#: sign/rpmgensig.c:572
+#: sign/rpmgensig.c:744
 #, c-format
 msgid "%s already contains identical signature, skipping\n"
 msgstr ""
 
-#: sign/rpmgensig.c:620 sign/rpmgensig.c:643
+#: sign/rpmgensig.c:792 sign/rpmgensig.c:815
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr ""
 
-#: sign/rpmgensig.c:630
-msgid "rpmMkTemp failed\n"
-msgstr ""
-
-#: sign/rpmgensig.c:637
+#: sign/rpmgensig.c:809
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr ""
 
-#: sign/rpmgensig.c:662
+#: sign/rpmgensig.c:834
 #, c-format
 msgid "replacing %s failed: %s\n"
 msgstr ""
