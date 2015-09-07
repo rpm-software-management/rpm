@@ -51,11 +51,6 @@ for o, a in opts:
     elif o in ('-E', '--extras'):
         Extras = True
 
-
-def is_exe(fpath):
-    return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
-
-
 if Requires:
     py_abi = True
 else:
