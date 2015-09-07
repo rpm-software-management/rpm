@@ -1390,13 +1390,13 @@ const char *rpmrichOpStr(rpmrichOp op)
     if (op == RPMRICHOP_SINGLE)
 	return "SINGLE";
     if (op == RPMRICHOP_AND)
-	return "&";
+	return "and";
     if (op == RPMRICHOP_OR)
-	return "|";
+	return "or";
     if (op == RPMRICHOP_IF)
-	return "IF";
+	return "if";
     if (op == RPMRICHOP_ELSE)
-	return "ELSE";
+	return "else";
     return NULL;
 }
 
