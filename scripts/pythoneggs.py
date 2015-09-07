@@ -15,8 +15,6 @@ from getopt import getopt
 from os.path import basename, dirname, isdir, sep
 from sys import argv, stdin, version
 from distutils.sysconfig import get_python_lib
-from subprocess import Popen, PIPE, STDOUT
-import os
 
 
 opts, args = getopt(
@@ -61,13 +59,6 @@ for o, a in opts:
 def is_exe(fpath):
     return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
-typelib_check = False
-
-if is_exe("/usr/lib/rpm/gi-find-deps.sh") and is_exe("/usr/bin/g-ir-dep-tool"):
-    if not buildroot:
-        pass
-    else:
-        typelib_check = True
 
 if Requires:
     py_abi = True
@@ -94,13 +85,6 @@ for f in files:
                 spec = ('==', f.split(lib)[1].split(sep)[0])
                 if spec not in py_deps[name]:
                     py_deps[name].append(spec)
-        # Pipe files to find typelib requires
-        if typelib_check:
-            p = Popen(['/usr/lib/rpm/gi-find-deps.sh', '-R', str(buildroot)], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
-            (stdoutdata, stderrdata) = p.communicate(input=str(f)+"\n")
-
-            if stdoutdata and stdoutdata:
-                py_deps[stdoutdata.strip()] = ""
 
     # XXX: hack to workaround RPM internal dependency generator not passing directories
     lower_dir = dirname(lower)
