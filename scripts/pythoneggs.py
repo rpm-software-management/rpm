@@ -18,8 +18,8 @@ from distutils.sysconfig import get_python_lib
 
 
 opts, args = getopt(
-    argv[1:], 'hPRrCOEb:',
-    ['help', 'provides', 'requires', 'recommends', 'conflicts', 'obsoletes', 'extras', 'buildroot='])
+    argv[1:], 'hPRrCOE:',
+    ['help', 'provides', 'requires', 'recommends', 'conflicts', 'obsoletes', 'extras'])
 
 Provides = False
 Requires = False
@@ -27,7 +27,6 @@ Recommends = False
 Conflicts = False
 Obsoletes = False
 Extras = False
-buildroot = None
 
 for o, a in opts:
     if o in ('-h', '--help'):
@@ -38,7 +37,6 @@ for o, a in opts:
         print('-C, --conflicts\tPrint Conflicts')
         print('-O, --obsoletes\tPrint Obsoletes (unused)')
         print('-E, --extras\tPrint Extras ')
-        print('-b, --buildroot\tBuildroot for package ')
         exit(1)
     elif o in ('-P', '--provides'):
         Provides = True
@@ -52,8 +50,6 @@ for o, a in opts:
         Obsoletes = True
     elif o in ('-E', '--extras'):
         Extras = True
-    elif o in ('-b', '--buildroot'):
-        buildroot = a
 
 
 def is_exe(fpath):
