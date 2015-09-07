@@ -19,13 +19,12 @@ from distutils.sysconfig import get_python_lib
 
 opts, args = getopt(
     argv[1:], 'hPRrCOE:',
-    ['help', 'provides', 'requires', 'recommends', 'conflicts', 'obsoletes', 'extras'])
+    ['help', 'provides', 'requires', 'recommends', 'conflicts', 'extras'])
 
 Provides = False
 Requires = False
 Recommends = False
 Conflicts = False
-Obsoletes = False
 Extras = False
 
 for o, a in opts:
@@ -35,7 +34,6 @@ for o, a in opts:
         print('-R, --requires\tPrint Requires')
         print('-r, --recommends\tPrint Recommends')
         print('-C, --conflicts\tPrint Conflicts')
-        print('-O, --obsoletes\tPrint Obsoletes (unused)')
         print('-E, --extras\tPrint Extras ')
         exit(1)
     elif o in ('-P', '--provides'):
@@ -46,8 +44,6 @@ for o, a in opts:
         Recommends = True
     elif o in ('-C', '--conflicts'):
         Conflicts = True
-    elif o in ('-O', '--obsoletes'):
-        Obsoletes = True
     elif o in ('-E', '--extras'):
         Extras = True
 
