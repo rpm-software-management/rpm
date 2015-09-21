@@ -993,7 +993,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	chkexist = 0;
 	switch ((c = *s)) {
 	default:		/* %name substitution */
-		while (strchr("!?", *s) != NULL) {
+		while (*s != '\0' && strchr("!?", *s) != NULL) {
 			switch(*s++) {
 			case '!':
 				negate = ((negate + 1) % 2);
