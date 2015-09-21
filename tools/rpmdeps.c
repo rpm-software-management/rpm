@@ -14,6 +14,18 @@ static int print_provides;
 
 static int print_requires;
 
+static int print_recommends;
+
+static int print_suggests;
+
+static int print_supplements;
+
+static int print_enhances;
+
+static int print_conflicts;
+
+static int print_obsoletes;
+
 static void rpmdsPrint(const char * msg, rpmds ds, FILE * fp)
 {
     if (fp == NULL) fp = stderr;
@@ -35,6 +47,18 @@ static struct poptOption optionsTable[] = {
  { "provides", 'P', POPT_ARG_VAL, &print_provides, -1,
         NULL, NULL },
  { "requires", 'R', POPT_ARG_VAL, &print_requires, -1,
+        NULL, NULL },
+ { "recommends", '\0', POPT_ARG_VAL, &print_recommends, -1,
+        NULL, NULL },
+ { "suggests", '\0', POPT_ARG_VAL, &print_suggests, -1,
+        NULL, NULL },
+ { "supplements", '\0', POPT_ARG_VAL, &print_supplements, -1,
+        NULL, NULL },
+ { "enhances", '\0', POPT_ARG_VAL, &print_enhances, -1,
+        NULL, NULL },
+ { "conflicts", '\0', POPT_ARG_VAL, &print_conflicts, -1,
+        NULL, NULL },
+ { "obsoletes", '\0', POPT_ARG_VAL, &print_obsoletes, -1,
         NULL, NULL },
 
    POPT_AUTOALIAS
@@ -89,6 +113,18 @@ main(int argc, char *argv[])
 	rpmdsPrint(NULL, rpmfcProvides(fc), stdout);
     if (print_requires)
 	rpmdsPrint(NULL, rpmfcRequires(fc), stdout);
+    if (print_recommends)
+	rpmdsPrint(NULL, rpmfcRecommends(fc), stdout);
+    if (print_suggests)
+	rpmdsPrint(NULL, rpmfcSuggests(fc), stdout);
+    if (print_supplements)
+	rpmdsPrint(NULL, rpmfcSupplements(fc), stdout);
+    if (print_enhances)
+	rpmdsPrint(NULL, rpmfcEnhances(fc), stdout);
+    if (print_conflicts)
+	rpmdsPrint(NULL, rpmfcConflicts(fc), stdout);
+    if (print_obsoletes)
+	rpmdsPrint(NULL, rpmfcObsoletes(fc), stdout);
 
     ec = 0;
 

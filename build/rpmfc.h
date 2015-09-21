@@ -107,6 +107,48 @@ rpmds rpmfcProvides(rpmfc fc);
 rpmds rpmfcRequires(rpmfc fc);
 
 /** \ingroup rpmfc
+ * Retrieve file classification recommends
+ * @param fc		file classifier
+ * @return		rpmds dependency set of fc recommends
+ */
+rpmds rpmfcRecommends(rpmfc fc);
+
+/** \ingroup rpmfc
+ * Retrieve file classification suggests
+ * @param fc		file classifier
+ * @return		rpmds dependency set of fc suggests
+ */
+rpmds rpmfcSuggests(rpmfc fc);
+
+/** \ingroup rpmfc
+ * Retrieve file classification supplements
+ * @param fc		file classifier
+ * @return		rpmds dependency set of fc supplements
+ */
+rpmds rpmfcSupplements(rpmfc fc);
+
+/** \ingroup rpmfc
+ * Retrieve file classification enhances
+ * @param fc		file classifier
+ * @return		rpmds dependency set of fc enhances
+ */
+rpmds rpmfcEnhances(rpmfc fc);
+
+/** \ingroup rpmfc
+ * Retrieve file classification conflicts
+ * @param fc		file classifier
+ * @return		rpmds dependency set of fc conflicts
+ */
+rpmds rpmfcConflicts(rpmfc fc);
+
+/** \ingroup rpmfc
+ * Retrieve file classification obsoletes
+ * @param fc		file classifier
+ * @return		rpmds dependency set of fc obsoletes
+ */
+rpmds rpmfcObsoletes(rpmfc fc);
+
+/** \ingroup rpmfc
  * Retrieve file classification dependencies
  * @param fc		file classifier
  * @param tagN		name tag of the wanted dependency
