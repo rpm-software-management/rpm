@@ -789,6 +789,36 @@ rpmds rpmfcRequires(rpmfc fc)
     return rpmfcDependencies(fc, RPMTAG_REQUIRENAME);
 }
 
+rpmds rpmfcRecommends(rpmfc fc)
+{
+    return rpmfcDependencies(fc, RPMTAG_RECOMMENDNAME);
+}
+
+rpmds rpmfcSuggests(rpmfc fc)
+{
+    return rpmfcDependencies(fc, RPMTAG_SUGGESTNAME);
+}
+
+rpmds rpmfcSupplements(rpmfc fc)
+{
+    return rpmfcDependencies(fc, RPMTAG_SUPPLEMENTNAME);
+}
+
+rpmds rpmfcEnhances(rpmfc fc)
+{
+    return rpmfcDependencies(fc, RPMTAG_ENHANCENAME);
+}
+
+rpmds rpmfcConflicts(rpmfc fc)
+{
+    return rpmfcDependencies(fc, RPMTAG_CONFLICTNAME);
+}
+
+rpmds rpmfcObsoletes(rpmfc fc)
+{
+    return rpmfcDependencies(fc, RPMTAG_OBSOLETENAME);
+}
+
 static rpmRC rpmfcApplyInternal(rpmfc fc)
 {
     const char * s;
