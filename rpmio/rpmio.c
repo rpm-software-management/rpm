@@ -5,6 +5,7 @@
 #include "system.h"
 #include <stdarg.h>
 #include <errno.h>
+#include <ctype.h>
 
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
@@ -730,7 +731,7 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
     lzma_ret ret;
     lzma_stream init_strm = LZMA_STREAM_INIT;
     uint64_t mem_limit = rpmExpandNumeric("%{_xz_memlimit}");
-    int threads = rpmExpandNumeric("%{_xz_threads}");
+    int threads = 0;
 
     for (; *mode; mode++) {
 	if (*mode == 'w')
@@ -739,6 +740,17 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 	    encoding = 0;
 	else if (*mode >= '0' && *mode <= '9')
 	    level = *mode - '0';
+	else if (*mode == 'T') {
+	    if (*(mode+1) != '\0' && isdigit(*(mode+1))) {
+		threads = atoi(++mode);
+		/* skip past rest of digits in string that atoi()
+		 * should've processed
+		 * */
+		while(isdigit(*++mode));
+	    }
+	    else
+		threads = -1;
+	}
     }
     fp = fdopen(fd, encoding ? "w" : "r");
     if (!fp)
