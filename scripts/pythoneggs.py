@@ -125,10 +125,10 @@ for f in files:
                 if not name in py_deps:
                     py_deps[name] = []
                 py_deps[name].append(('==', dist.py_version))
-            if f.find('python3') > 0:
+            if f.find('python2') > 0:
+                name = 'python2egg(%s)' % dist.key
+            elif f.find('python3') > 0:
                 name = 'python3egg(%s)' % dist.key
-            else:
-                name = 'pythonegg(%s)' % dist.key
             if not name in py_deps:
                 py_deps[name] = []
             if dist.version:
@@ -160,8 +160,8 @@ for f in files:
             for dep in deps:
                 if f.find('python2') > 0:
                     name = 'python2egg(%s)' % dep.key
-                else:
-                    name = 'pythonegg(%s)' % dep.key
+                elif f.find('python3') > 0:
+                    name = 'python3egg(%s)' % dep.key
                 for spec in dep.specs:
                     if spec[0] != '!=':
                         if not name in py_deps:
