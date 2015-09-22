@@ -735,7 +735,7 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 	    encoding = 1;
 	else if (*mode == 'r')
 	    encoding = 0;
-	else if (*mode >= '1' && *mode <= '9')
+	else if (*mode >= '0' && *mode <= '9')
 	    level = *mode - '0';
     }
     fp = fdopen(fd, encoding ? "w" : "r");
