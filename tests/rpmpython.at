@@ -53,7 +53,7 @@ for iot in [ 'fpio', 'fdio', 'ufdio', 'gzdio' ]:
     fd = rpm.fd(fn, 'r', iot)
     rdata = fd.read()
     if rdata != data:
-        myprint('%s read fail (got %d bytes)' % (iot, len(rdata), rdata))
+        myprint('%s read fail (got %d bytes)\n%s' % (iot, len(rdata), rdata))
     # compressed io types can't seek
     if iot == 'ufdio':
         fd.seek(0)
