@@ -78,6 +78,10 @@ char * stpncpy(char * dest, const char * src, size_t n);
 #endif
 #endif
 
+#if defined(HAVE_FDATASYNC) && !HAVE_DECL_FDATASYNC
+extern int fdatasync(int fildes);
+#endif
+
 #include "rpmio/rpmutil.h"
 /* compatibility macros to avoid a mass-renaming all over the codebase */
 #define xmalloc(_size) rmalloc((_size))
