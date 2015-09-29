@@ -107,6 +107,7 @@ static const size_t headerMaxbytes = (32*1024*1024);
 	(((_e)->info.tag >= RPMTAG_HEADERIMAGE) && ((_e)->info.tag < RPMTAG_HEADERREGIONS))
 #define	ENTRY_IN_REGION(_e)	((_e)->info.offset < 0)
 
+#ifndef htonll
 /* Convert a 64bit value to network byte order. */
 RPM_GNUC_CONST
 static uint64_t htonll(uint64_t n)
@@ -119,6 +120,7 @@ static uint64_t htonll(uint64_t n)
 #endif
     return n;
 }
+#endif
 
 Header headerLink(Header h)
 {
