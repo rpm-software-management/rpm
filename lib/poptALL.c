@@ -4,7 +4,6 @@
  */
 
 #include "system.h"
-const char *__progname;
 
 #include <rpm/rpmcli.h>
 #include <rpm/rpmlib.h>		/* rpmEVR, rpmReadConfigFiles etc */
@@ -261,12 +260,6 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     const char *ctx, *execPath;
 
     setprogname(argv[0]);       /* Retrofit glibc __progname */
-
-    /* XXX glibc churn sanity */
-    if (__progname == NULL) {
-	if ((__progname = strrchr(argv[0], '/')) != NULL) __progname++;
-	else __progname = argv[0];
-    }
 
 #if defined(ENABLE_NLS)
     (void) setlocale(LC_ALL, "" );

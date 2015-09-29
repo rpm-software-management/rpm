@@ -90,20 +90,7 @@ extern int fdatasync(int fildes);
 #define xstrdup(_str) rstrdup((_str))
 #define _free(_ptr) rfree((_ptr))
 
-/* Retrofit glibc __progname */
-#if defined __GLIBC__ && __GLIBC__ >= 2
-#if __GLIBC_MINOR__ >= 1
-#define	__progname	__assert_program_name
-#endif
-#define	setprogname(pn)
-#else
-#define	__progname	program_name
-#define	setprogname(pn)	\
-  { if ((__progname = strrchr(pn, '/')) != NULL) __progname++; \
-    else __progname = pn;		\
-  }
-#endif
-extern const char *__progname;
+#define __progname getprogname()
 
 /* Take care of NLS matters.  */
 #if ENABLE_NLS

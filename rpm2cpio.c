@@ -1,7 +1,6 @@
 /* rpmarchive: spit out the main archive portion of a package */
 
 #include "system.h"
-const char *__progname;
 
 #include <rpm/rpmlib.h>		/* rpmReadPackageFile .. */
 #include <rpm/rpmtag.h>
