@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <inttypes.h>
+#include <libgen.h>
 
 #include <rpm/rpmlib.h>		/* rpmMachineScore, rpmReadPackageFile */
 #include <rpm/rpmmacro.h>	/* XXX for rpmExpand */

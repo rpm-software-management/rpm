@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <errno.h>
+#include <libgen.h>
 #include <sys/select.h>
 #include <sys/wait.h>
 #include <signal.h>

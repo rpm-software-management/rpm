@@ -17,7 +17,9 @@
    Boston, MA 02111-1307, USA.  */
 
 # include "system.h"
+# include <ctype.h>
 # include <stdlib.h>
+# include <string.h>
 
 /* Find the first occurrence of C in S or the final NUL byte.  */
 static inline char *
