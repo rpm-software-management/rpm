@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <errno.h>
+#include <libgen.h>
 
 #include <rpm/header.h>
 #include <rpm/rpmlog.h>
