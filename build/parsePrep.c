@@ -49,7 +49,7 @@ static rpmRC checkOwners(const char * urlfn)
 
 static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 		     int reverse, int removeEmpties, int fuzz, const char *dir,
-		     char *outfile)
+		     const char *outfile)
 {
     char *fn = NULL;
     char *buf = NULL;
