@@ -115,6 +115,7 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
     }
 
     free(arg_fuzz);
+    free(arg_outfile);
     free(arg_dir);
     free(arg_backup);
     free(args);
