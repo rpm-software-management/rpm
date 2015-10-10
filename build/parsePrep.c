@@ -258,7 +258,6 @@ exit:
 
 /**
  * Parse %setup macro.
- * @todo FIXME: Option -q broken when not immediately after %setup.
  * @param spec		build info
  * @param line		current line from spec file
  * @return		RPMRC_OK on success
@@ -290,6 +289,8 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 	    { NULL, 'q', 0, &quietly, 0,		NULL, NULL},
 	    { 0, 0, 0, 0, 0,	NULL, NULL}
     };
+
+    if (strstr(line+6, " -q")) quietly = 1;
 
     if ((xx = poptParseArgvString(line, &argc, &argv))) {
 	rpmlog(RPMLOG_ERR, _("Error parsing %%setup: %s\n"), poptStrerror(xx));
