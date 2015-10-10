@@ -118,6 +118,8 @@ for f in files:
             path_item = f
             metadata = FileMetadata(f)
         dist = Distribution.from_location(path_item, dist_name, metadata)
+        # Get the Python major version
+        pyver_major = dist.py_version.split('.')[0]
         if Provides:
             # If egg metadata says package name is python, we provide python(abi)
             if dist.key == 'python':
@@ -125,10 +127,7 @@ for f in files:
                 if not name in py_deps:
                     py_deps[name] = []
                 py_deps[name].append(('==', dist.py_version))
-            if f.find('python2') > 0:
-                name = 'python2egg(%s)' % dist.key
-            elif f.find('python3') > 0:
-                name = 'python3egg(%s)' % dist.key
+            name = 'python%segg(%s)' % (pyver_major, dist.key)
             if not name in py_deps:
                 py_deps[name] = []
             if dist.version:
@@ -158,10 +157,7 @@ for f in files:
                 deps = depsextras
             # add requires/recommends based on egg metadata
             for dep in deps:
-                if f.find('python2') > 0:
-                    name = 'python2egg(%s)' % dep.key
-                elif f.find('python3') > 0:
-                    name = 'python3egg(%s)' % dep.key
+                name = 'python%segg(%s)' % (pyver_major, dep.key)
                 for spec in dep.specs:
                     if spec[0] != '!=':
                         if not name in py_deps:
