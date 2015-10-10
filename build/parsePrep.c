@@ -420,8 +420,8 @@ exit:
  * - -P\<N\> -P\<N+1\>... can be used to apply several patch on a single line
  * - Any trailing arguments are treated as patch numbers
  * - Any combination of the above, except unless at least one -P is specified,
- *   %patch is treated as %patch -P0 so that "%patch 1" is actually
- *   equal to "%patch -P0 -P1".
+ *   %patch is treated as "numberless patch" so that "%patch 1" actually tries
+ *   to pull in numberless "Patch:" and numbered "Patch1:".
  *
  * @param spec		build info
  * @param line		current line from spec file
