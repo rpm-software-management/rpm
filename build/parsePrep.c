@@ -360,6 +360,8 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 	free(buf);
     }
 
+    appendStringBuf(spec->prep, getStringBuf(before));
+
     /* if necessary, create and cd into the proper dir */
     if (createDir) {
 	buf = rpmExpand("%{__mkdir_p} ", spec->buildSubdir, "\n",
@@ -376,8 +378,6 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 	appendLineStringBuf(spec->prep, chptr);
 	free(chptr);
     }
-
-    appendStringBuf(spec->prep, getStringBuf(before));
 
     if (!createDir) {
 	rasprintf(&buf, "cd '%s'", spec->buildSubdir);
