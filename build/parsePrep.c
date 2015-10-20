@@ -360,21 +360,18 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 	free(buf);
     }
 
+    appendStringBuf(spec->prep, getStringBuf(before));
+
     /* if necessary, create and cd into the proper dir */
     if (createDir) {
-	buf = rpmExpand("%{__mkdir_p} ", spec->buildSubdir, "\n", NULL);
-	appendLineStringBuf(spec->prep, buf);
-	free(buf);
-
-	appendStringBuf(spec->prep, getStringBuf(before));
-
-	rasprintf(&buf, "cd '%s'", spec->buildSubdir);
+	buf = rpmExpand("%{__mkdir_p} ", spec->buildSubdir, "\n",
+			"cd '", spec->buildSubdir, "'", NULL);
 	appendLineStringBuf(spec->prep, buf);
 	free(buf);
     }
 
     /* do the default action */
-    else if (!skipDefaultAction) {
+   if (!createDir && !skipDefaultAction) {
 	char *chptr = doUntar(spec, 0, quietly);
 	if (!chptr)
 	    goto exit;
@@ -383,14 +380,12 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     }
 
     if (!createDir) {
-	appendStringBuf(spec->prep, getStringBuf(before));
-
 	rasprintf(&buf, "cd '%s'", spec->buildSubdir);
 	appendLineStringBuf(spec->prep, buf);
 	free(buf);
     }
 
-    else if (!skipDefaultAction) {
+    if (createDir && !skipDefaultAction) {
 	char *chptr = doUntar(spec, 0, quietly);
 	if (chptr == NULL)
 	    goto exit;
