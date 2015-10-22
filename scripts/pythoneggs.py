@@ -101,11 +101,11 @@ for f in files:
                 py_deps[stdoutdata.strip()]= ""
 
     # XXX: hack to workaround RPM internal dependency generator not passing directories
-    dlower = dirname(lower)
-    if dlower.endswith('.egg') or \
-            dlower.endswith('.egg-info') or \
-            dlower.endswith('.egg-link'):
-        lower = dlower
+    lower_dir = dirname(lower)
+    if lower_dir.endswith('.egg') or \
+            lower_dir.endswith('.egg-info') or \
+            lower_dir.endswith('.egg-link'):
+        lower = lower_dir
         f = dirname(f)
     # Determine provide, requires, conflicts & recommends based on egg metadata
     if lower.endswith('.egg') or \
