@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright 2010 Per Øyvind Karlsen <proyvind@moondrake.org>
+# Copyright 2015 Neal Gompa <ngompa13@gmail.com>
 #
 # This program is free software. It may be redistributed and/or modified under
 # the terms of the LGPL version 2.1 (or later).
@@ -9,6 +10,7 @@
 # RPM python (egg) dependency generator.
 #
 
+from __future__ import print_function
 from getopt import getopt
 from os.path import basename, dirname, isdir, sep, splitext
 from sys import argv, stdin, version
@@ -118,6 +120,8 @@ for f in files:
             path_item = f
             metadata = FileMetadata(f)
         dist = Distribution.from_location(path_item, dist_name, metadata)
+        # Get the Python major version
+        pyver_major = dist.py_version.split('.')[0]
         if Provides:
             # If egg metadata says package name is python, we provide python(abi)
             if dist.key == 'python':
@@ -125,10 +129,7 @@ for f in files:
                 if not name in py_deps:
                     py_deps[name] = []
                 py_deps[name].append(('==', dist.py_version))
-            if f.find('python3') > 0:
-                name = 'python3egg(%s)' % dist.key
-            else:
-                name = 'pythonegg(%s)' % dist.key
+            name = 'python{}egg({})'.format(pyver_major, dist.key)
             if not name in py_deps:
                 py_deps[name] = []
             if dist.version:
@@ -158,10 +159,7 @@ for f in files:
                 deps = depsextras
             # add requires/recommends based on egg metadata
             for dep in deps:
-                if f.find('python2') > 0:
-                    name = 'python2egg(%s)' % dep.key
-                else:
-                    name = 'pythonegg(%s)' % dep.key
+                name = 'python{}egg({})'.format(pyver_major, dep.key)
                 for spec in dep.specs:
                     if spec[0] != '!=':
                         if not name in py_deps:
@@ -177,8 +175,8 @@ for f in files:
             extras = dist.extras
             print(extras)
             for extra in extras:
-                print('%%package\textras-%s' % extra)
-                print('Summary:\t%s extra for %s python egg' % (extra, dist.key))
+                print('%%package\textras-{}'.format(extra))
+                print('Summary:\t{} extra for {} python egg'.format(extra, dist.key))
                 print('Group:\t\tDevelopment/Python')
                 depsextras = dist.requires(extras=[extra])
                 for dep in reversed(depsextras):
@@ -188,12 +186,12 @@ for f in files:
                 for dep in deps:
                     for spec in dep.specs:
                         if spec[0] == '!=':
-                            print('Conflicts:\t%s %s %s' % (dep.key, '==', spec[1]))
+                            print('Conflicts:\t{} {} {}'.format(dep.key, '==', spec[1]))
                         else:
-                            print('Requires:\t%s %s %s' % (dep.key, spec[0], spec[1]))
-                print('%%description\t%s' % extra)
-                print('%s extra for %s python egg' % (extra, dist.key))
-                print('%%files\t\textras-%s\n' % extra)
+                            print('Requires:\t{} {} {}'.format(dep.key, spec[0], spec[1]))
+                print('%%description\t{}'.format(extra))
+                print('{} extra for {} python egg'.format(extra, dist.key))
+                print('%%files\t\textras-{}\n'.format(extra))
         if Conflicts:
             # Should we really add conflicts for extras?
             # Creating a meta package per extra with recommends on, which has
@@ -213,7 +211,7 @@ for name in names:
     if py_deps[name]:
         # Print out versioned provides, requires, recommends, conflicts
         for spec in py_deps[name]:
-            print('%s %s %s' % (name, spec[0], spec[1]))
+            print('{} {} {}'.format(name, spec[0], spec[1]))
     else:
         # Print out unversioned provides, requires, recommends, conflicts
         print(name)
