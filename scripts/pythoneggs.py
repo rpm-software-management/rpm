@@ -14,7 +14,6 @@ from __future__ import print_function
 from getopt import getopt
 from os.path import basename, dirname, isdir, sep, splitext
 from sys import argv, stdin, version
-from pkg_resources import Distribution, FileMetadata, PathMetadata
 from distutils.sysconfig import get_python_lib
 from subprocess import Popen, PIPE, STDOUT
 import os
@@ -112,6 +111,8 @@ for f in files:
     if lower.endswith('.egg') or \
             lower.endswith('.egg-info') or \
             lower.endswith('.egg-link'):
+        # This import is very slow, so only do it if needed
+        from pkg_resources import Distribution, FileMetadata, PathMetadata
         dist_name = basename(f)
         if isdir(f):
             path_item = dirname(f)
