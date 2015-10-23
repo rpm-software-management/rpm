@@ -21,6 +21,7 @@ static rpmRC checkSep(const char *s, char c, char **emsg)
     const char *sep = strchr(s, c);
     if (sep && strchr(sep + 1, c)) {
 	rasprintf(emsg, "Invalid version (double separator '%c'): %s", c, s);
+	return RPMRC_FAIL;
     }
     return RPMRC_OK;
 }
@@ -35,7 +36,7 @@ static rpmRC checkEpoch(const char *s, char **emsg)
     for (si = s; si != sep; si++) {
 	if (!risdigit(*si)) {
 	    rasprintf(emsg, "Invalid version (epoch must be unsigned integer): %s", s);
-	    break;
+	    return RPMRC_FAIL;
 	}
     }
     return RPMRC_OK;
@@ -58,10 +59,13 @@ static rpmRC checkDep(rpmSpec spec, char *N, char *EVR, char **emsg)
         }
         if (rpmCharCheck(spec, EVR, ".-_+:%{}~"))
             return RPMRC_FAIL;
-        if (checkSep(EVR, '-', emsg) != RPMRC_OK || checkSep(EVR, ':', emsg) != RPMRC_OK)
-            return RPMRC_FAIL;
-	if (checkEpoch(EVR, emsg) != RPMRC_OK)
-	    return RPMRC_FAIL;
+	if (checkSep(EVR, '-', emsg) != RPMRC_OK ||
+	    checkSep(EVR, ':', emsg) != RPMRC_OK ||
+	    checkEpoch(EVR, emsg) != RPMRC_OK) {
+
+	    if (rpmExpandNumeric("%{?_wrong_version_format_terminate_build}"))
+		return RPMRC_FAIL;
+	}
     }
     return RPMRC_OK;
 }
