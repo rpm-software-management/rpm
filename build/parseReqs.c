@@ -25,6 +25,22 @@ static rpmRC checkSep(const char *s, char c, char **emsg)
     return RPMRC_OK;
 }
 
+static rpmRC checkEpoch(const char *s, char **emsg)
+{
+    const char *si, *sep = strchr(s, ':');
+
+    if (!sep)
+	return RPMRC_OK;
+
+    for (si = s; si != sep; si++) {
+	if (!risdigit(*si)) {
+	    rasprintf(emsg, "Invalid version (epoch must be unsigned integer): %s", s);
+	    break;
+	}
+    }
+    return RPMRC_OK;
+}
+
 static rpmRC checkDep(rpmSpec spec, char *N, char *EVR, char **emsg)
 {
     /* 
@@ -44,6 +60,8 @@ static rpmRC checkDep(rpmSpec spec, char *N, char *EVR, char **emsg)
             return RPMRC_FAIL;
         if (checkSep(EVR, '-', emsg) != RPMRC_OK || checkSep(EVR, ':', emsg) != RPMRC_OK)
             return RPMRC_FAIL;
+	if (checkEpoch(EVR, emsg) != RPMRC_OK)
+	    return RPMRC_FAIL;
     }
     return RPMRC_OK;
 }
