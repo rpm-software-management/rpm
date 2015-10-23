@@ -401,6 +401,9 @@ package or when debugging this package.\
 # Should invalid utf8 encoding in package metadata terminate a build?
 %_invalid_encoding_terminates_build 0
 
+# Should invalid version format in requires, provides, ... terminate a build?
+%_wrong_version_format_terminate_build 1
+
 #
 # Should rpm try to download missing sources at build-time?
 # Enabling this is dangerous as long as rpm has no means to validate
