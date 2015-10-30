@@ -271,6 +271,7 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
     const char *line;
     char *mline = NULL;
     rpmRC rc = RPMRC_FAIL;
+    struct sigaction newact, oldact;
 
     rpmlog(RPMLOG_DEBUG, "%s: scriptlet start\n", sname);
 
@@ -317,6 +318,12 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	       sname, strerror(errno));
 	goto exit;
     }
+
+    /* Ignore SIGPIPE during execution of scriptlets */
+    sigemptyset(&newact.sa_mask);
+    newact.sa_flags = 0;
+    newact.sa_handler = SIG_IGN;
+    sigaction(SIGPIPE, &newact, &oldact);
 
     pid = fork();
     if (pid == (pid_t) -1) {
@@ -428,6 +435,10 @@ exit:
 	free(fn);
     }
     free(mline);
+
+    /* Restore SIGPIPE handler */
+    sigaction(SIGPIPE, &oldact, NULL);
+
     return rc;
 }
 
