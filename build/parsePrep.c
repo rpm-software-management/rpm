@@ -170,6 +170,7 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
     if (compressed != COMPRESSED_NOT) {
 	char *zipper, *t = NULL;
 	int needtar = 1;
+	int needgemspec = 0;
 
 	switch (compressed) {
 	case COMPRESSED_NOT:	/* XXX can't happen */
@@ -200,6 +201,11 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	    t = "%{__7zip} x";
 	    needtar = 0;
 	    break;
+	case COMPRESSED_GEM:
+	    t = "%{__gem} unpack";
+	    needtar = 0;
+	    needgemspec = 1;
+	    break;
 	}
 	zipper = rpmGetPath(t, NULL);
 	if (needtar) {
@@ -208,6 +214,22 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 		"if [ $STATUS -ne 0 ]; then\n"
 		"  exit $STATUS\n"
 		"fi", zipper, fn, tar, taropts);
+	} else if (needgemspec) {
+	    char *gem = rpmGetPath("%{__gem}", NULL);
+	    char *gemspec = NULL;
+	    char gemnameversion[strlen(sp->source) - 3];
+
+	    rstrlcpy(gemnameversion, sp->source, strlen(sp->source) - 3);
+	    gemspec = rpmGetPath("%{_builddir}/", gemnameversion, ".gemspec", NULL);
+
+	    rasprintf(&buf, "%s '%s' && %s spec '%s' --ruby > '%s'\n"
+		"STATUS=$?\n"
+		"if [ $STATUS -ne 0 ]; then\n"
+		"  exit $STATUS\n"
+		"fi", zipper, fn, gem, fn, gemspec);
+
+	    free(gemspec);
+	    free(gem);
 	} else {
 	    rasprintf(&buf, "%s '%s'\n"
 		"STATUS=$?\n"
