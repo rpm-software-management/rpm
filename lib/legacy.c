@@ -25,7 +25,7 @@ static void compressFilelist(Header h)
     char ** dirNames;
     const char ** baseNames;
     uint32_t * dirIndexes;
-    rpm_count_t count;
+    rpm_count_t count, realCount = 0;
     int i;
     int dirIndex = -1;
 
@@ -58,6 +58,7 @@ static void compressFilelist(Header h)
 	    while ((i = rpmtdNext(&fileNames)) >= 0) {
 		dirIndexes[i] = dirIndex;
 		baseNames[i] = rpmtdGetString(&fileNames);
+		realCount++;
 	    }
 	    goto exit;
 	}
@@ -87,19 +88,20 @@ static void compressFilelist(Header h)
 	    (needle = bsearch(&filename, dirNames, dirIndex + 1, sizeof(dirNames[0]), dncmp)) == NULL) {
 	    char *s = xmalloc(len + 1);
 	    rstrlcpy(s, filename, len + 1);
-	    dirIndexes[i] = ++dirIndex;
+	    dirIndexes[realCount] = ++dirIndex;
 	    dirNames[dirIndex] = s;
 	} else
-	    dirIndexes[i] = needle - dirNames;
+	    dirIndexes[realCount] = needle - dirNames;
 
 	*baseName = savechar;
-	baseNames[i] = baseName;
+	baseNames[realCount] = baseName;
+	realCount++;
     }
 
 exit:
     if (count > 0) {
-	headerPutUint32(h, RPMTAG_DIRINDEXES, dirIndexes, count);
-	headerPutStringArray(h, RPMTAG_BASENAMES, baseNames, count);
+	headerPutUint32(h, RPMTAG_DIRINDEXES, dirIndexes, realCount);
+	headerPutStringArray(h, RPMTAG_BASENAMES, baseNames, realCount);
 	headerPutStringArray(h, RPMTAG_DIRNAMES, 
 			     (const char **) dirNames, dirIndex + 1);
     }
