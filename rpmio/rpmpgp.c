@@ -624,6 +624,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	rc = pgpPrtSigParams(tag, v->pubkey_algo, v->sigtype, p, h, hlen, _digp);
     }	break;
     default:
+	rpmlog(RPMLOG_WARNING, _("Unsupported version of key: V%d\n"), h[0]);
 	rc = 1;
 	break;
     }
@@ -710,6 +711,8 @@ static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
 	    rc = pgpPrtPubkeyParams(v->pubkey_algo, p, h, hlen, _digp);
 	}
     }	break;
+    default:
+	rpmlog(RPMLOG_WARNING, _("Unsupported version of key: V%d\n"), h[0]);
     }
     return rc;
 }
@@ -775,6 +778,8 @@ static int getFingerprint(const uint8_t *h, size_t hlen, pgpKeyID_t keyid)
 	}
 
       }	break;
+    default:
+	rpmlog(RPMLOG_WARNING, _("Unsupported version of key: V%d\n"), h[0]);
     }
     return rc;
 }
