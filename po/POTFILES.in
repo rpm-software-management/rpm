@@ -58,6 +58,7 @@ lib/rpmprob.c
 lib/rpmps.c
 lib/rpmrc.c
 lib/rpmscript.c
+lib/rpmsignfiles.c
 lib/rpmtd.c
 lib/rpmte.c
 lib/rpmts.c
@@ -76,6 +77,7 @@ lib/backend/dbi.c
 python/rpmts-py.c
 rpmio/argv.c
 rpmio/digest.c
+rpmio/digest_nss.c
 rpmio/macro.c
 rpmio/rpmfileutil.c
 rpmio/rpmlua.c
