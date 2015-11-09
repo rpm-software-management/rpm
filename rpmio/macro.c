@@ -34,6 +34,11 @@ extern int optind;
 #include "rpmio/rpmlua.h"
 #endif
 
+#ifdef WITH_PYTHONEMBED
+#include <popt.h>
+#include "rpmio/rpmpython.h"
+#endif
+
 #include "debug.h"
 
 enum macroFlags_e {
@@ -911,6 +916,47 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
     free(buf);
 }
 
+#if defined(WITH_PYTHONEMBED)
+/**
+ * Parse args and string for PHP like %{foo <args> : <string> } syntax.
+ * @param s		"{ ... }" construct to parse
+ * @param nb		no. of bytes
+ * @retval *avp		invocation args
+ * @return		script string
+ */
+static char * parseEmbedded(const char * s, size_t nb, char *** avp)
+{
+    char * script = NULL;
+    const char * se;
+
+    /* XXX FIXME: args might have embedded : too. */
+    for (se = s + 1; se < (s+nb); se++)
+    switch (*se) {
+    default:	continue;	break;
+    case ':':	goto bingo;
+    }
+
+bingo:
+    {	size_t na = (size_t)(se-s-1);
+	char * args = NULL;
+	int ac;
+
+	args = (char *) memcpy(xmalloc(na+1), s+1, na);
+	args[na] = '\0';
+
+	ac = 0;
+	poptParseArgvString(args, &ac, (const char***)avp);
+	args = _free(args);
+	nb -= na;
+    }
+
+    nb -= (nb >= (sizeof("{:}")-1) ? (sizeof("{:}")-1) : nb);
+    script = (char *) memcpy(xmalloc(nb+1), se+1, nb+1);
+    script[nb] = '\0';
+    return script;
+}
+#endif
+
 /**
  * The main macro recursion loop.
  * @param mb		macro expansion state
@@ -1173,6 +1219,29 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 		    free(printbuf);
 		}
 		free(scriptbuf);
+		s = se;
+		continue;
+	}
+#endif
+
+#ifdef	WITH_PYTHONEMBED
+	if (STREQ("python", f, fn)) {
+		char **av = NULL;
+		char *scriptbuf = parseEmbedded(s, (size_t)(se-s), &av);
+		rpmpython python = rpmpythonNew(av);
+		char *printbuf = NULL;
+
+		if (rpmpythonRun(python, scriptbuf, &printbuf) != RPMRC_OK)
+		    rc = 1;
+		else {
+		  if (printbuf != NULL && *printbuf != '\0') {
+		      mbAppendStr(mb, printbuf);
+		      free(printbuf);
+		  }
+		}
+		/*python = rpmpythonFree(python);*/
+		av = _free(av);
+		scriptbuf = _free(scriptbuf);
 		s = se;
 		continue;
 	}
