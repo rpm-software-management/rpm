@@ -64,8 +64,8 @@ zpkglib_LTLIBRARIES =
 librpmio_la_LDFLAGS	+= -Wl,-rpath=$(zpkglibdir)
 zpkglib_LTLIBRARIES	+= rpmpython.la
 rpmpython_la_SOURCES	= rpmpython.c
-rpmpython_la_CPPFLAGS	= $(AM_CPP_FLAGS) -I$(top_srcdir) -I$(top_srcdir)/include $(shell pkg-config --cflags python) -DMODULE_EMBED
-rpmpython_la_LDFLAGS	= -module -avoid-version  $(shell pkg-config --libs python)
+rpmpython_la_CPPFLAGS	= $(AM_CPP_FLAGS) -I$(top_srcdir) -I$(top_srcdir)/include $(shell pkg-config --cflags python3) -DMODULE_EMBED
+rpmpython_la_LDFLAGS	= -module -avoid-version  $(shell pkg-config --libs python3)
 rpmpython_la_LIBADD	= $(RPMIO_LDADD_COMMON)
 
 check_PROGRAMS =
