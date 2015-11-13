@@ -390,7 +390,10 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 	    token->type = PTOK_TAG;
 
 	    if (findTag(hsa, token, start)) {
-		hsa->errmsg = _("unknown tag");
+		/* Use static buffer as hsa->errmsg is const char * */
+		static char errmsg[1024];
+		snprintf(errmsg, 1024, _("unknown tag: \"%s\""), start);
+		hsa->errmsg = (const char *)(&errmsg);
 		goto errxit;
 	    }
 

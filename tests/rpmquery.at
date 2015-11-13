@@ -369,7 +369,7 @@ runroot rpm \
 ],
 [0],
 [],
-[error: incorrect format: unknown tag
+[error: incorrect format: unknown tag: "notag"
 ])
 AT_CLEANUP
 
