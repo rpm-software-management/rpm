@@ -34,7 +34,7 @@
 
 #include <rpm/rpmutil.h>
 
-#if defined(__GLIBC__)
+#if defined(linux)
 #include <features.h>
 #else
 
