@@ -6,10 +6,7 @@ if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
 fi
 
 hardlink_if_same() {
-	[ -f "$1" ] && [ -f "$2" ] && \
-	sum1="$(sha1sum -b "$1" | cut -d' ' -f 1)" && \
-	sum2="$(sha1sum -b "$2" | cut -d' ' -f 1)" && \
-	if [ "$sum1" = "$sum2" ] ; then
+	if cmp -s "$1" "$2" ; then
 		ln -f "$1" "$2"
 		return 0
 	fi
@@ -18,7 +15,6 @@ hardlink_if_same() {
 
 # Hardlink identical *.pyc, *.pyo, and *.opt-[12].pyc.
 # Originally from PLD's rpm-build-macros
-# Modified to use sha1sum instead of cmp to avoid a diffutils dependency.
 find "$RPM_BUILD_ROOT" -type f -name "*.pyc" -not -name "*.opt-[12].pyc" | while read pyc ; do
 	hardlink_if_same "$pyc" "${pyc%c}o"
 	o1pyc="${pyc%pyc}opt-1.pyc"
