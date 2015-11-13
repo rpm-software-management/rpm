@@ -32,12 +32,10 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #endif /* LIBC_SCCS and not lint */
 
 /* Conditional to set up proper fstat64 implementation */
-#if defined(__GLIBC__) && !defined(__UCLIBC__)
-#   define FTS_FSTAT64(_fd, _sbp)   __fxstat64(_STAT_VER, (_fd), (_sbp))
-#elif defined(__APPLE__)
-#   define FTS_FSTAT64(_fd, _sbp)   fstat64((_fd), (_sbp))
-#else
+#if defined(hpux) || defined(sun)
 #   define FTS_FSTAT64(_fd, _sbp)   fstat((_fd), (_sbp))
+#else
+#   define FTS_FSTAT64(_fd, _sbp)   fstat64((_fd), (_sbp))
 #endif
 
 #if defined(_LIBC)
