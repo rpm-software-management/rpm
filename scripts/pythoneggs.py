@@ -12,15 +12,16 @@
 
 from __future__ import print_function
 from getopt import getopt
-from os.path import basename, dirname, isdir, sep, splitext
+from os.path import basename, dirname, isdir, sep
 from sys import argv, stdin, version
 from distutils.sysconfig import get_python_lib
 from subprocess import Popen, PIPE, STDOUT
 import os
 
 
-opts, args = getopt(argv[1:], 'hPRrCOEb:',
-        ['help', 'provides', 'requires', 'recommends', 'conflicts', 'obsoletes', 'extras','buildroot='])
+opts, args = getopt(
+    argv[1:], 'hPRrCOEb:',
+    ['help', 'provides', 'requires', 'recommends', 'conflicts', 'obsoletes', 'extras', 'buildroot='])
 
 Provides = False
 Requires = False
@@ -56,6 +57,7 @@ for o, a in opts:
     elif o in ('-b', '--buildroot'):
         buildroot = a
 
+
 def is_exe(fpath):
     return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
@@ -83,22 +85,22 @@ for f in files:
     name = 'python(abi)'
     # add dependency based on path, versioned if within versioned python directory
     if py_abi and (lower.endswith('.py') or lower.endswith('.pyc') or lower.endswith('.pyo')):
-        if not name in py_deps:
+        if name not in py_deps:
             py_deps[name] = []
         purelib = get_python_lib(standard_lib=1, plat_specific=0).split(version[:3])[0]
         platlib = get_python_lib(standard_lib=1, plat_specific=1).split(version[:3])[0]
         for lib in (purelib, platlib):
             if lib in f:
-                spec = ('==',f.split(lib)[1].split(sep)[0])
-                if not spec in py_deps[name]:
+                spec = ('==', f.split(lib)[1].split(sep)[0])
+                if spec not in py_deps[name]:
                     py_deps[name].append(spec)
-        # Pipe files to find typelib requires 
+        # Pipe files to find typelib requires
         if typelib_check:
-            p = Popen(['/usr/lib/rpm/gi-find-deps.sh', '-R',str(buildroot)], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+            p = Popen(['/usr/lib/rpm/gi-find-deps.sh', '-R', str(buildroot)], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
             (stdoutdata, stderrdata) = p.communicate(input=str(f)+"\n")
-            
+
             if stdoutdata and stdoutdata:
-                py_deps[stdoutdata.strip()]= ""
+                py_deps[stdoutdata.strip()] = ""
 
     # XXX: hack to workaround RPM internal dependency generator not passing directories
     lower_dir = dirname(lower)
@@ -127,15 +129,15 @@ for f in files:
             # If egg metadata says package name is python, we provide python(abi)
             if dist.key == 'python':
                 name = 'python(abi)'
-                if not name in py_deps:
+                if name not in py_deps:
                     py_deps[name] = []
                 py_deps[name].append(('==', dist.py_version))
             name = 'python{}egg({})'.format(pyver_major, dist.key)
-            if not name in py_deps:
+            if name not in py_deps:
                 py_deps[name] = []
             if dist.version:
                 spec = ('==', dist.version)
-                if not spec in py_deps[name]:
+                if spec not in py_deps[name]:
                     py_deps[name].append(spec)
         if Requires or (Recommends and dist.extras):
             name = 'python(abi)'
@@ -145,10 +147,10 @@ for f in files:
                 if name in py_deps:
                     py_deps.pop(name)
             elif py_abi and dist.py_version:
-                if not name in py_deps:
+                if name not in py_deps:
                     py_deps[name] = []
                 spec = ('==', dist.py_version)
-                if not spec in py_deps[name]:
+                if spec not in py_deps[name]:
                     py_deps[name].append(spec)
             deps = dist.requires()
             if Recommends:
@@ -163,9 +165,9 @@ for f in files:
                 name = 'python{}egg({})'.format(pyver_major, dep.key)
                 for spec in dep.specs:
                     if spec[0] != '!=':
-                        if not name in py_deps:
+                        if name not in py_deps:
                             py_deps[name] = []
-                        if not spec in py_deps[name]:
+                        if spec not in py_deps[name]:
                             py_deps[name].append(spec)
                 if not dep.specs:
                     py_deps[name] = []
@@ -201,10 +203,10 @@ for f in files:
                 name = dep.key
                 for spec in dep.specs:
                     if spec[0] == '!=':
-                        if not name in py_deps:
+                        if name not in py_deps:
                             py_deps[name] = []
                         spec = ('==', spec[1])
-                        if not spec in py_deps[name]:
+                        if spec not in py_deps[name]:
                             py_deps[name].append(spec)
 names = list(py_deps.keys())
 names.sort()
