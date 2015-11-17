@@ -132,11 +132,13 @@ static rpmRC addFileToTag(rpmSpec spec, const char * file,
     }
 
     while (fgets(buf, sizeof(buf), f)) {
-	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
+	char *expanded = expandMacrosU(spec, spec->macros, buf);
+	if (expanded == NULL) {
 	    rpmlog(RPMLOG_ERR, _("%s: line: %s\n"), fn, buf);
 	    goto exit;
 	}
-	appendStringBuf(sb, buf);
+	appendStringBuf(sb, expanded);
+	free(expanded);
     }
     headerPutString(h, tag, getStringBuf(sb));
     rc = RPMRC_OK;

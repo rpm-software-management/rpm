@@ -1631,11 +1631,13 @@ static rpmRC readFilesManifest(rpmSpec spec, Package pkg, const char *path)
     while (fgets(buf, sizeof(buf), fd)) {
 	if (handleComments(buf))
 	    continue;
-	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
+	char *expanded = expandMacrosU(spec, spec->macros, buf);
+	if (expanded == NULL) {
 	    rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
 	    goto exit;
 	}
-	argvAdd(&(pkg->fileList), buf);
+	argvAdd(&(pkg->fileList), expanded);
+	free(expanded);
 	nlines++;
     }
 

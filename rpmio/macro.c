@@ -1471,6 +1471,23 @@ int expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
     return rc;
 }
 
+char *expandMacrosU(void * spec, rpmMacroContext mc, char * sbuf)
+{
+    char *target = NULL;
+    int rc;
+
+    mc = rpmmctxAcquire(mc);
+    rc = doExpandMacros(mc, sbuf, &target);
+    rpmmctxRelease(mc);
+
+    if (rc) {
+	free(target);
+	target = NULL;
+    }
+
+    return target;
+}
+
 void
 rpmDumpMacroTable(rpmMacroContext mc, FILE * fp)
 {
