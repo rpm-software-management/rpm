@@ -180,13 +180,15 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
     if (lbuf[0] == '#')
 	isComment = 1;
 
-    lbuf = xstrdup(spec->lbuf);
+    lbuf = spec->lbuf;
 
-    rc = expandMacros(spec, spec->macros, spec->lbuf, spec->lbufSize);
-    if (rc) {
+    spec->lbuf = expandMacrosU(spec, spec->macros, lbuf);
+    if (spec->lbuf == NULL) {
 	rpmlog(RPMLOG_ERR, _("line %d: %s\n"),
-		spec->lineNum, spec->lbuf);
+		spec->lineNum, lbuf);
 	goto exit;
+    } else {
+	spec->lbufSize = strlen(spec->lbuf) + 1;
     }
 
     if (strip & STRIP_COMMENTS && isComment) {

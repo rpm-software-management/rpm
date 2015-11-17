@@ -66,6 +66,18 @@ int	expandMacros	(void * spec, rpmMacroContext mc,
 				size_t slen);
 
 /** \ingroup rpmmacro
+ * Expand macro into buffer.
+ * @deprecated Use rpmExpand().
+ * @todo Eliminate from API.
+ * @param spec		cookie (unused)
+ * @param mc		macro context (NULL uses global context).
+ * @retval sbuf		input macro to expand
+ * @return		macro expansion (malloc'ed) or NULL on failure
+ */
+char	*expandMacrosU	(void * spec, rpmMacroContext mc,
+				char * sbuf);
+
+/** \ingroup rpmmacro
  * Add macro to context.
  * @deprecated Use rpmDefineMacro().
  * @param mc		macro context (NULL uses global context).
