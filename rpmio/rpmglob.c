@@ -124,30 +124,15 @@ static inline const char *next_brace_sub(const char *begin)
     unsigned int depth = 0;
     const char *cp = begin;
 
-    while (1) {
-	if (depth == 0) {
-	    if (*cp != ',' && *cp != '}' && *cp != '\0') {
-		if (*cp == '{')
-		    ++depth;
-		++cp;
-		continue;
-	    }
-	} else {
-	    while (*cp != '\0' && (*cp != '}' || depth > 0)) {
-		if (*cp == '}')
-		    --depth;
-		++cp;
-	    }
-	    if (*cp == '\0')
-		/* An incorrectly terminated brace expression.  */
-		return NULL;
+    while (*cp != '\0') {
+	if ((*cp == '}' && depth-- == 0) || (*cp == ',' && depth == 0))
+	    break;
 
-	    continue;
-	}
-	break;
+	if (*cp++ == '{')
+	    depth++;
     }
 
-    return cp;
+    return *cp != '\0' ? cp : NULL;
 }
 
 static int __glob_pattern_p(const char *pattern, int quote);
