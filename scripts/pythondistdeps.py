@@ -7,7 +7,7 @@
 # This program is free software. It may be redistributed and/or modified under
 # the terms of the LGPL version 2.1 (or later).
 #
-# RPM python (egg) dependency generator.
+# RPM python dependency generator, using .egg-info/.egg-link/.dist-info data
 #
 
 from __future__ import print_function
@@ -20,8 +20,8 @@ import os
 
 
 opts, args = getopt(
-    argv[1:], 'hPRrCOEb:',
-    ['help', 'provides', 'requires', 'recommends', 'conflicts', 'obsoletes', 'extras', 'buildroot='])
+    argv[1:], 'hPRrCOEMb:',
+    ['help', 'provides', 'requires', 'recommends', 'conflicts', 'obsoletes', 'extras', 'majorver-provides', 'buildroot='])
 
 Provides = False
 Requires = False
@@ -29,6 +29,7 @@ Recommends = False
 Conflicts = False
 Obsoletes = False
 Extras = False
+Provides_PyMajorVer_Variant = False
 buildroot = None
 
 for o, a in opts:
@@ -39,7 +40,8 @@ for o, a in opts:
         print('-r, --recommends\tPrint Recommends')
         print('-C, --conflicts\tPrint Conflicts')
         print('-O, --obsoletes\tPrint Obsoletes (unused)')
-        print('-E, --extras\tPrint Extras ')
+        print('-E, --extras\tPrint Extras')
+        print('-M, --majorver-provides\tPrint extra Provides with Python major version only')
         print('-b, --buildroot\tBuildroot for package ')
         exit(1)
     elif o in ('-P', '--provides'):
@@ -54,6 +56,8 @@ for o, a in opts:
         Obsoletes = True
     elif o in ('-E', '--extras'):
         Extras = True
+    elif o in ('-M', '--majorver-provides'):
+        Provides_PyMajorVer_Variant = True
     elif o in ('-b', '--buildroot'):
         buildroot = a
 
@@ -106,13 +110,15 @@ for f in files:
     lower_dir = dirname(lower)
     if lower_dir.endswith('.egg') or \
             lower_dir.endswith('.egg-info') or \
-            lower_dir.endswith('.egg-link'):
+            lower_dir.endswith('.egg-link') or \
+            lower_dir.endswith('.dist-info'):
         lower = lower_dir
         f = dirname(f)
-    # Determine provide, requires, conflicts & recommends based on egg metadata
+    # Determine provide, requires, conflicts & recommends based on egg/dist metadata
     if lower.endswith('.egg') or \
             lower.endswith('.egg-info') or \
-            lower.endswith('.egg-link'):
+            lower.endswith('.egg-link') or \
+            lower.endswith('.dist-info'):
         # This import is very slow, so only do it if needed
         from pkg_resources import Distribution, FileMetadata, PathMetadata
         dist_name = basename(f)
@@ -123,25 +129,32 @@ for f in files:
             path_item = f
             metadata = FileMetadata(f)
         dist = Distribution.from_location(path_item, dist_name, metadata)
-        # Get the Python major version
-        pyver_major = dist.py_version.split('.')[0]
+        if Provides_PyMajorVer_Variant and Provides:
+            # Get the Python major version
+            pyver_major = dist.py_version.split('.')[0]
         if Provides:
-            # If egg metadata says package name is python, we provide python(abi)
+            # If egg/dist metadata says package name is python, we provide python(abi)
             if dist.key == 'python':
                 name = 'python(abi)'
                 if name not in py_deps:
                     py_deps[name] = []
                 py_deps[name].append(('==', dist.py_version))
-            name = 'python{}egg({})'.format(pyver_major, dist.key)
+            name = 'python{}dist({})'.format(dist.py_version, dist.key)
             if name not in py_deps:
                 py_deps[name] = []
+            if Provides_PyMajorVer_Variant:
+                pymajor_name = 'python{}dist({})'.format(pyver_major, dist.key)
+                if pymajor_name not in py_deps:
+                    py_deps[pymajor_name] = []
             if dist.version:
                 spec = ('==', dist.version)
                 if spec not in py_deps[name]:
                     py_deps[name].append(spec)
+                    if Provides_PyMajorVer_Variant:
+                        py_deps[pymajor_name].append(spec)
         if Requires or (Recommends and dist.extras):
             name = 'python(abi)'
-            # If egg metadata says package name is python, we don't add dependency on python(abi)
+            # If egg/dist metadata says package name is python, we don't add dependency on python(abi)
             if dist.key == 'python':
                 py_abi = False
                 if name in py_deps:
@@ -160,9 +173,9 @@ for f in files:
                         if dep in deps:
                             depsextras.remove(dep)
                 deps = depsextras
-            # add requires/recommends based on egg metadata
+            # add requires/recommends based on egg/dist metadata
             for dep in deps:
-                name = 'python{}egg({})'.format(pyver_major, dep.key)
+                name = 'python{}dist({})'.format(dist.py_version, dep.key)
                 for spec in dep.specs:
                     if spec[0] != '!=':
                         if name not in py_deps:
@@ -171,7 +184,7 @@ for f in files:
                             py_deps[name].append(spec)
                 if not dep.specs:
                     py_deps[name] = []
-        # Unused, for automatic sub-package generation based on 'extras' from egg metadata
+        # Unused, for automatic sub-package generation based on 'extras' from egg/dist metadata
         # TODO: implement in rpm later, or...?
         if Extras:
             deps = dist.requires()
@@ -179,7 +192,7 @@ for f in files:
             print(extras)
             for extra in extras:
                 print('%%package\textras-{}'.format(extra))
-                print('Summary:\t{} extra for {} python egg'.format(extra, dist.key))
+                print('Summary:\t{} extra for {} python package'.format(extra, dist.key))
                 print('Group:\t\tDevelopment/Python')
                 depsextras = dist.requires(extras=[extra])
                 for dep in reversed(depsextras):
@@ -193,7 +206,7 @@ for f in files:
                         else:
                             print('Requires:\t{} {} {}'.format(dep.key, spec[0], spec[1]))
                 print('%%description\t{}'.format(extra))
-                print('{} extra for {} python egg'.format(extra, dist.key))
+                print('{} extra for {} python package'.format(extra, dist.key))
                 print('%%files\t\textras-{}\n'.format(extra))
         if Conflicts:
             # Should we really add conflicts for extras?
