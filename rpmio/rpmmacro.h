@@ -57,13 +57,11 @@ void	rpmDumpMacroTable	(rpmMacroContext mc,
  * @todo Eliminate from API.
  * @param spec		cookie (unused)
  * @param mc		macro context (NULL uses global context).
- * @retval sbuf		input macro to expand, output expansion
- * @param slen		size of buffer
- * @return		0 on success
+ * @retval sbuf		input macro to expand
+ * @return		macro expansion (malloc'ed) or NULL on failure
  */
-int	expandMacros	(void * spec, rpmMacroContext mc,
-				char * sbuf,
-				size_t slen);
+char	*expandMacros	(void * spec, rpmMacroContext mc,
+				char * sbuf);
 
 /** \ingroup rpmmacro
  * Add macro to context.
