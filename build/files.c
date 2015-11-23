@@ -1624,7 +1624,7 @@ static rpmRC readFilesManifest(rpmSpec spec, Package pkg, const char *path)
     while (fgets(buf, sizeof(buf), fd)) {
 	if (handleComments(buf))
 	    continue;
-	char *expanded = expandMacrosU(spec, spec->macros, buf);
+	char *expanded = rpmExpandMacros(spec->macros, buf, 0);
 	if (expanded == NULL) {
 	    rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
 	    goto exit;
