@@ -985,7 +985,7 @@ static int rpmpkgDelInternal(rpmpkgdb pkgdb, unsigned int pkgidx)
 	slot->blkoff = 0;
 	slot->blkcnt = 0;
 	slot = pkgdb->slots + pkgdb->nslots - 2;
-	if (slot->blkoff < slot[1].blkoff)
+	if (slot->blkcnt < slot[1].blkcnt)
 	  slot++;	/* bigger slot first */
 	for (i = 0; i < 2; i++, slot++) {
 	    if (slot == pkgdb->slots + pkgdb->nslots)
