@@ -20,8 +20,8 @@ import os
 
 
 opts, args = getopt(
-    argv[1:], 'hPRrCOEMb:',
-    ['help', 'provides', 'requires', 'recommends', 'conflicts', 'obsoletes', 'extras', 'majorver-provides', 'buildroot='])
+    argv[1:], 'hPRrCOEMlb:',
+    ['help', 'provides', 'requires', 'recommends', 'conflicts', 'obsoletes', 'extras', 'majorver-provides', 'legacy', 'buildroot='])
 
 Provides = False
 Requires = False
@@ -30,6 +30,7 @@ Conflicts = False
 Obsoletes = False
 Extras = False
 Provides_PyMajorVer_Variant = False
+legacy = False
 buildroot = None
 
 for o, a in opts:
@@ -42,6 +43,7 @@ for o, a in opts:
         print('-O, --obsoletes\tPrint Obsoletes (unused)')
         print('-E, --extras\tPrint Extras')
         print('-M, --majorver-provides\tPrint extra Provides with Python major version only')
+        print('-l, --legacy\tPrint extra legacy pythonegg Provides (also enables "--majorver-provides")')
         print('-b, --buildroot\tBuildroot for package ')
         exit(1)
     elif o in ('-P', '--provides'):
@@ -57,6 +59,9 @@ for o, a in opts:
     elif o in ('-E', '--extras'):
         Extras = True
     elif o in ('-M', '--majorver-provides'):
+        Provides_PyMajorVer_Variant = True
+    elif o in ('-l', '--legacy'):
+        legacy = True
         Provides_PyMajorVer_Variant = True
     elif o in ('-b', '--buildroot'):
         buildroot = a
@@ -146,12 +151,18 @@ for f in files:
                 pymajor_name = 'python{}dist({})'.format(pyver_major, dist.key)
                 if pymajor_name not in py_deps:
                     py_deps[pymajor_name] = []
+            if legacy:
+                legacy_name = 'pythonegg({})({})'.format(pyver_major, dist.key)
+                if legacy_name not in py_deps:
+                    py_deps[legacy_name] = []
             if dist.version:
                 spec = ('==', dist.version)
                 if spec not in py_deps[name]:
                     py_deps[name].append(spec)
                     if Provides_PyMajorVer_Variant:
                         py_deps[pymajor_name].append(spec)
+                    if legacy:
+                        py_deps[legacy_name].append(spec)
         if Requires or (Recommends and dist.extras):
             name = 'python(abi)'
             # If egg/dist metadata says package name is python, we don't add dependency on python(abi)
