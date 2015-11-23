@@ -182,7 +182,7 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
 
     lbuf = spec->lbuf;
 
-    spec->lbuf = expandMacrosU(spec, spec->macros, lbuf);
+    spec->lbuf = rpmExpandMacros(spec->macros, lbuf, 0);
     if (spec->lbuf == NULL) {
 	rpmlog(RPMLOG_ERR, _("line %d: %s\n"),
 		spec->lineNum, lbuf);
