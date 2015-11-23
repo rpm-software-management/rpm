@@ -942,6 +942,7 @@ static int rpmpkgPutInternal(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned char 
 	/* just update the slot, no need to free the slot data */
 	oldslot->blkoff = blkoff;
 	oldslot->blkcnt = blkcnt;
+	pkgdb->slotorder = SLOTORDER_UNORDERED;
     } else {
 	free(pkgdb->slots);
 	pkgdb->slots = 0;
