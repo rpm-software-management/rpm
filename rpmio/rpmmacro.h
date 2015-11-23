@@ -67,15 +67,13 @@ int	expandMacros	(void * spec, rpmMacroContext mc,
 
 /** \ingroup rpmmacro
  * Expand macro into buffer.
- * @deprecated Use rpmExpand().
- * @todo Eliminate from API.
- * @param spec		cookie (unused)
  * @param mc		macro context (NULL uses global context).
- * @retval sbuf		input macro to expand
+ * @param sbuf		input macro to expand
+ * @param flags		flags (currently unused)
  * @return		macro expansion (malloc'ed) or NULL on failure
  */
-char	*expandMacrosU	(void * spec, rpmMacroContext mc,
-				char * sbuf);
+char	*rpmExpandMacros	(rpmMacroContext mc, const char * sbuf,
+					int flags);
 
 /** \ingroup rpmmacro
  * Add macro to context.
