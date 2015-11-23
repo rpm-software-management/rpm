@@ -115,7 +115,7 @@ static int mapslot(rpmxdb xdb, struct xdb_slot *slot)
 	shift = off & (xdb->systempagesize - 1);
 	off -= shift;
 	size += shift;
-	size = (size + xdb->systempagesize - 1) & (xdb->systempagesize - 1);
+	size = (size + xdb->systempagesize - 1) & ~(xdb->systempagesize - 1);
     }
     mapped = mmap(0, size, slot->mapflags, MAP_SHARED, xdb->fd, off);
     if (mapped == MAP_FAILED)
@@ -136,7 +136,7 @@ static void unmapslot(rpmxdb xdb, struct xdb_slot *slot)
 	size_t shift = off & (xdb->systempagesize - 1);
 	mapped -= shift;
 	size += shift;
-	size = (size + xdb->systempagesize - 1) & (xdb->systempagesize - 1);
+	size = (size + xdb->systempagesize - 1) & ~(xdb->systempagesize - 1);
     }
     munmap(mapped, size);
     slot->mapped = 0;
@@ -155,9 +155,9 @@ static int remapslot(rpmxdb xdb, struct xdb_slot *slot, unsigned int newpagecnt)
 	shift = off & (xdb->systempagesize - 1);
 	off -= shift;
 	oldsize += shift;
-	oldsize = (oldsize + xdb->systempagesize - 1) & (xdb->systempagesize - 1);
+	oldsize = (oldsize + xdb->systempagesize - 1) & ~(xdb->systempagesize - 1);
 	newsize += shift;
-	newsize = (newsize + xdb->systempagesize - 1) & (xdb->systempagesize - 1);
+	newsize = (newsize + xdb->systempagesize - 1) & ~(xdb->systempagesize - 1);
     }
     if (slot->mapped)
 	mapped = mremap(slot->mapped - shift, oldsize, newsize, MREMAP_MAYMOVE);
