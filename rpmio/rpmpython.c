@@ -25,6 +25,8 @@
 #if defined(MODULE_EMBED)
 struct rpmpython_s {
     PyThreadState * I;
+    char *(*nextFileFunc)(void *);
+    void *nextFileFuncParam;
 };
 #endif
 
@@ -39,6 +41,7 @@ static rpmpython (*rpmpythonFree_p) (rpmpython python);
 static rpmpython (*rpmpythonNew_p) (ARGV_t * av, uint32_t flags);
 static rpmRC (*rpmpythonRunFile_p) (rpmpython python, const char * fn, char ** resultp);
 static rpmRC (*rpmpythonRun_p) (rpmpython python, const char * str, char ** resultp);
+static void (*rpmpythonSetNextFileFunc_p) (rpmpython python, char *(*func)(void *), void *funcParam);
 
 static void loadModule(void) {
     static const char librpmpython[] = "rpmpython.so";
@@ -54,6 +57,7 @@ static void loadModule(void) {
     else if(!((rpmpythonNew_p = dlsym(h, "rpmpythonNew"))
 		&& (rpmpythonFree_p = dlsym(h, "rpmpythonFree"))
 		&& (rpmpythonRunFile_p = dlsym(h, "rpmpythonRunFile"))
+		&& (rpmpythonSetNextFileFunc_p = dlsym(h, "rpmpythonSetNextFileFunc"))
 		&& (rpmpythonRun_p = dlsym(h, "rpmpythonRun")))) {
 	rpmlog(RPMLOG_WARNING, "Opened library \"%s\" is incompatible (%s), "
 		    "embedded python will not be available\n",
@@ -197,12 +201,34 @@ rpmRC rpmpythonRun(rpmpython python, const char * str, char **resultp)
     if (_dlopened) return rpmpythonRun_p(python, str, resultp);
 #else
     struct stat sb;
+    PyObject *fileList = NULL;
+    const char *line = NULL;
 
 if (_rpmpython_debug)
 fprintf(stderr, "==> %s(%p,%s,%p)\n", __FUNCTION__, python, str, resultp);
 
     if (python == NULL) python = _rpmpythonI;
     PyThreadState_Swap(python->I);
+
+    if (python->nextFileFunc) {
+	fileList = PyList_New(0);
+	while ((line = python->nextFileFunc(python->nextFileFuncParam)) != NULL) {
+	    size_t size = strlen(line);
+	    PyObject * fileName = PyUnicode_FromStringAndSize(line, size);
+	    PyList_Append(fileList, fileName);
+	    Py_XDECREF(fileName);
+	}
+	PyObject * modDict = PyImport_GetModuleDict();
+	/* XXX: not really optimal, depends on rpm module being loaded... */
+	PyObject * rpmString = PyUnicode_FromString("rpm");
+	if (PyDict_Contains(modDict, rpmString)) {
+	    PyObject * module = PyDict_GetItemString(modDict, "rpm");
+	    PyModule_AddObject(module, "files", fileList);
+
+	    Py_XDECREF(module);
+	}
+	Py_XDECREF(rpmString);
+    }
 
     if (str != NULL) {
 	if ((!strcmp(str, "-")) /* Macros from stdin arg. */
@@ -240,6 +266,7 @@ fprintf(stderr, "==> %s(%p,%s,%p)\n", __FUNCTION__, python, str, resultp);
 	}
 
 	Py_XDECREF(v);
+	Py_XDECREF(fileList);
 
 	val = _free(val);
 	rc = RPMRC_OK;
@@ -247,4 +274,16 @@ fprintf(stderr, "==> %s(%p,%s,%p)\n", __FUNCTION__, python, str, resultp);
 #endif
 #endif
     return rc;
+}
+
+void rpmpythonSetNextFileFunc(rpmpython python, char *(*func)(void *), void *funcParam)
+{
+#if defined(WITH_PYTHONEMBED)
+#if !defined(MODULE_EMBED)
+    rpmpythonSetNextFileFunc_p(python, func, funcParam);
+#else
+    python->nextFileFunc = func;
+    python->nextFileFuncParam = funcParam;
+#endif
+#endif
 }

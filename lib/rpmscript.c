@@ -182,7 +182,7 @@ static rpmRC runPythonScript(rpmPlugins plugins, ARGV_const_t prefixes,
 
     python = rpmpythonNew(argvp, RPMPYTHON_NO_IO_REDIR); /* use local subinterpreter*/
 
-    /* TODO: implement functionality for getting files using nextFileFunc */
+    rpmpythonSetNextFileFunc(python, nextFileFunc->func, nextFileFunc->param);
 
     /* Python scripts can change our cwd and umask, save and restore */
     /* XXX TODO: use cwd from chroot state to save unnecessary open here */

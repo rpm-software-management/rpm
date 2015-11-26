@@ -66,6 +66,8 @@ rpmRC rpmpythonRunFile(rpmpython python, const char * fn,
 rpmRC rpmpythonRun(rpmpython python, const char * str,
 		char ** resultp);
 
+void rpmpythonSetNextFileFunc(rpmpython python, char *(*func)(void *), void *funcParam);
+
 #ifdef __cplusplus
 }
 #endif
