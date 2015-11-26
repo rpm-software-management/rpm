@@ -10,15 +10,26 @@
 #include <rpm/rpmio.h>
 
 typedef struct rpmpython_s * rpmpython;
+#if defined(_RPMPYTHON_INTERNAL)
+struct rpmpython_s {
+    PyThreadState * I;
+};
+#endif /* _RPMPYTHON_INTERNAL */
 
 extern int _rpmpython_debug;
 
 extern rpmpython _rpmpythonI;
-#if defined(_RPMPYTHON_INTERNAL)
-struct rpmpython_s {
-    void * I;			/* (unused) */
-};
-#endif /* _RPMPYTHON_INTERNAL */
+
+
+/** \ingroup rpmpython
+ * Initialization flags for rpmpythonNew().
+ */
+typedef	enum rpmpythonFlag_e {
+    RPMPYTHON_GLOBAL_INTERP     = 1<<31,
+    RPMPYTHON_NO_INIT           = 1<<30,
+    RPMPYTHON_NO_IO_REDIR	= 1<<29
+} rpmpythonFlag;
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,7 +37,7 @@ extern "C" {
 
 /**
  * Destroy a python interpreter.
- * @param python	python interpreter
+ * @param python	python interpreter (NULL uses global interpreter)
  * @return		NULL on last dereference
  */
 rpmpython rpmpythonFree(rpmpython python);
@@ -34,9 +45,10 @@ rpmpython rpmpythonFree(rpmpython python);
 /**
  * Create and load a python interpreter.
  * @param av		python interpreter args (or NULL)
+ * @param flags		python interpreter flags ((1<<31): use global interpreter)
  * @return		new python interpreter
  */
-rpmpython rpmpythonNew(char ** av);
+rpmpython rpmpythonNew(char ** av, uint32_t flags);
 
 /**
  * Execute python from a file.

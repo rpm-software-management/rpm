@@ -1228,7 +1228,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	if (STREQ("python", f, fn)) {
 		char **av = NULL;
 		char *scriptbuf = parseEmbedded(s, (size_t)(se-s), &av);
-		rpmpython python = rpmpythonNew(av);
+		rpmpython python = rpmpythonNew(av, RPMPYTHON_GLOBAL_INTERP);
 		char *printbuf = NULL;
 
 		if (rpmpythonRun(python, scriptbuf, &printbuf) != RPMRC_OK)
