@@ -241,7 +241,7 @@ fprintf(stderr, "==> %s(%p,%s,%p)\n", __FUNCTION__, python, str, resultp);
 	PyCompilerFlags cf = { 0 };
 	PyObject * m = PyImport_AddModule("__main__");
 	PyObject * d = (m ? PyModule_GetDict(m) : NULL);
-	PyObject * v = (m ? PyRun_StringFlags(val, Py_single_input, d, d, &cf) : NULL);
+	PyObject * v = (m ? PyRun_StringFlags(val, Py_file_input, d, d, &cf) : NULL);
 
 	if (v == NULL) {
 	    PyErr_Print();
