@@ -132,8 +132,8 @@ static rpmRC addFileToTag(rpmSpec spec, const char * file,
     }
 
     while (fgets(buf, sizeof(buf), f)) {
-	char *expanded = rpmExpandMacros(spec->macros, buf, 0);
-	if (expanded == NULL) {
+	char *expanded;
+	if(rpmExpandMacros(spec->macros, buf, &expanded, 0) < 0) {
 	    rpmlog(RPMLOG_ERR, _("%s: line: %s\n"), fn, buf);
 	    goto exit;
 	}

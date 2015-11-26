@@ -1471,7 +1471,7 @@ int expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
     return rc;
 }
 
-char *rpmExpandMacros(rpmMacroContext mc, const char * sbuf, int flags)
+int rpmExpandMacros(rpmMacroContext mc, const char * sbuf, char ** obuf, int flags)
 {
     char *target = NULL;
     int rc;
@@ -1482,10 +1482,11 @@ char *rpmExpandMacros(rpmMacroContext mc, const char * sbuf, int flags)
 
     if (rc) {
 	free(target);
-	target = NULL;
+	return -1;
+    } else {
+	*obuf = target;
+	return 1;
     }
-
-    return target;
 }
 
 void

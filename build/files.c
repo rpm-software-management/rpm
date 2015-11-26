@@ -1611,6 +1611,7 @@ static rpmRC readFilesManifest(rpmSpec spec, Package pkg, const char *path)
     FILE *fd = NULL;
     rpmRC rc = RPMRC_FAIL;
     unsigned int nlines = 0;
+    char *expanded;
 
     if (*path == '/') {
 	fn = rpmGetPath(path, NULL);
@@ -1631,8 +1632,7 @@ static rpmRC readFilesManifest(rpmSpec spec, Package pkg, const char *path)
     while (fgets(buf, sizeof(buf), fd)) {
 	if (handleComments(buf))
 	    continue;
-	char *expanded = rpmExpandMacros(spec->macros, buf, 0);
-	if (expanded == NULL) {
+	if(rpmExpandMacros(spec->macros, buf, &expanded, 0) < 0) {
 	    rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
 	    goto exit;
 	}

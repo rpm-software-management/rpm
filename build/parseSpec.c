@@ -169,7 +169,7 @@ static int restoreFirstChar(rpmSpec spec)
 static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
 {
     char *lbuf = NULL;
-    int rc = 0, isComment = 0;
+    int isComment = 0;
 
      /* Don't expand macros (eg. %define) in false branch of %if clause */
     if (!spec->readStack->reading)
@@ -180,16 +180,16 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
     if (lbuf[0] == '#')
 	isComment = 1;
 
-    lbuf = spec->lbuf;
 
-    spec->lbuf = rpmExpandMacros(spec->macros, lbuf, 0);
-    if (spec->lbuf == NULL) {
+    if(rpmExpandMacros(spec->macros, spec->lbuf, &lbuf, 0) < 0) {
 	rpmlog(RPMLOG_ERR, _("line %d: %s\n"),
-		spec->lineNum, lbuf);
-	goto exit;
-    } else {
-	spec->lbufSize = strlen(spec->lbuf) + 1;
+		spec->lineNum, spec->lbuf);
+	return 1;
     }
+
+    free(spec->lbuf);
+    spec->lbuf = lbuf;
+    spec->lbufSize = strlen(spec->lbuf) + 1;
 
     if (strip & STRIP_COMMENTS && isComment) {
 	char *bufA = lbuf;
@@ -212,10 +212,7 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
 		spec->lineNum, lbuf);
     }
 
-exit:
-    free(lbuf);
-
-    return rc;
+    return 0;
 }
 
 /* Return zero on success, 1 if we need to read more and -1 on errors. */
