@@ -167,9 +167,6 @@ static rpmRC runPythonScript(rpmPlugins plugins, ARGV_const_t prefixes,
 {
     rpmRC rc = RPMRC_FAIL;
 #ifdef WITH_PYTHONEMBED
-    int inpipe[2];
-    FILE *in = NULL;
-    ARGV_t argv = argvp ? *argvp : NULL;
     rpmpython python = NULL;
     int cwd = -1;
 
@@ -191,7 +188,6 @@ static rpmRC runPythonScript(rpmPlugins plugins, ARGV_const_t prefixes,
     /* XXX TODO: use cwd from chroot state to save unnecessary open here */
     cwd = open(".", O_RDONLY);
     if (cwd != -1) {
-	char *printbuf = NULL;
 	mode_t oldmask = umask(0);
 	umask(oldmask);
 	pid_t pid = getpid();
@@ -200,8 +196,8 @@ static rpmRC runPythonScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	    rc = RPMRC_OK;
 	}
 	if (pid != getpid()) {
-	    /* Terminate child process forked in lua scriptlet */
-	    rpmlog(RPMLOG_ERR, _("No exec() called after fork() in lua scriptlet\n"));
+	    /* Terminate child process forked in python scriptlet */
+	    rpmlog(RPMLOG_ERR, _("No exec() called after fork() in python scriptlet\n"));
 	    _exit(EXIT_FAILURE);
 	}
 	/* This failing would be fatal, return something different for it... */
