@@ -57,12 +57,10 @@ librpmio_la_LIBADD += $(top_builddir)/luaext/libluaext.la
 endif
 
 if WITH_PYTHONEMBED
-zpkgdir = @RPMCONFIGDIR@
-zpkglibdir = $(zpkgdir)/lib
-zpkglib_LTLIBRARIES =
+pluginsdir = $(libdir)/rpm-plugins
+plugins_LTLIBRARIES =
 
-librpmio_la_LDFLAGS	+= -Wl,-rpath=$(zpkglibdir)
-zpkglib_LTLIBRARIES	+= rpmpython.la
+plugins_LTLIBRARIES	+= rpmpython.la
 rpmpython_la_SOURCES	= rpmpython.c
 rpmpython_la_CPPFLAGS	= $(AM_CPP_FLAGS) -I$(top_srcdir) -I$(top_srcdir)/include -I@WITH_PYTHON_INCLUDE@ -DMODULE_EMBED
 rpmpython_la_LDFLAGS	= -module -avoid-version @WITH_PYTHON_LIB@
