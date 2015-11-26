@@ -370,7 +370,7 @@ int parseScript(rpmSpec spec, int parsePart)
     } else
 #endif
 #ifdef WITH_PYTHONEMBED
-    if (!rstreq(progArgv[0], "<python>")) {
+    if (rstreq(progArgv[0], "<python>")) {
 	(void) rpmlibNeedsFeature(pkg,
 				  "BuiltinPythonScripts", "5.2-1");
 /*
