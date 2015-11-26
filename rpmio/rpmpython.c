@@ -24,7 +24,6 @@
 #include <rpm/rpmio.h>
 #include <rpm/rpmmacro.h>
 #include "rpmio_internal.h"
-#include "argv.h"
 
 #include "debug.h"
 
@@ -35,7 +34,7 @@ rpmpython _rpmpythonI = NULL;
 #if defined(WITH_PYTHONEMBED)
 static int _dlopened = 0;
 static rpmpython (*rpmpythonFree_p) (rpmpython python);
-static rpmpython (*rpmpythonNew_p) (char ** av, uint32_t flags);
+static rpmpython (*rpmpythonNew_p) (ARGV_t * av, uint32_t flags);
 static rpmRC (*rpmpythonRunFile_p) (rpmpython python, const char * fn, char ** resultp);
 static rpmRC (*rpmpythonRun_p) (rpmpython python, const char * str, char ** resultp);
 
@@ -96,14 +95,15 @@ static const char _rpmpythonI_init[] =	"import sys;"
 
 #endif
 
-rpmpython rpmpythonNew(char ** av, uint32_t flags)
+rpmpython rpmpythonNew(ARGV_t * argvp, uint32_t flags)
 {
     rpmpython python = NULL;
 #if defined(WITH_PYTHONEMBED)
     if (!_dlopened) loadModule();
-    if (_dlopened) python = rpmpythonNew_p(av, flags);
+    if (_dlopened) python = rpmpythonNew_p(argvp, flags);
 #else
     static const wchar_t *_wav[] = { L"python", NULL };
+    ARGV_t argv = argvp ? *argvp : NULL;
 
     if (_rpmpythonI == NULL)
 	_rpmpythonI = xcalloc(1, sizeof(rpmpython));
@@ -123,15 +123,15 @@ rpmpython rpmpythonNew(char ** av, uint32_t flags)
     PyThreadState_Swap(python->I);
 
     if (!(flags & RPMPYTHON_NO_INIT)) {
-	int ac = argvCount((ARGV_t)av);
+	int ac = argvCount((ARGV_t)argv);
 	wchar_t ** wav = NULL;
 	static const char _pythonI_init[] = "%{?_pythonI_init}";
 	char * s = rpmExpand((flags & RPMPYTHON_NO_IO_REDIR) ? "" : _rpmpythonI_init, _pythonI_init, NULL);
 
-	if (av) {
+	if (argv) {
 	    wav = xmalloc(ac * sizeof(wchar_t*));
 	    for (int i = 0; i < ac; i++)
-		wav[i] = Py_DecodeLocale(av[i], NULL);
+		wav[i] = Py_DecodeLocale(argv[i], NULL);
 	}
 	PySys_SetArgvEx(ac, wav ? wav : (wchar_t**)_wav, 0);
 	if (_rpmpython_debug)

@@ -5,6 +5,7 @@
  * \file rpmio/rpmpython.h
  */
 
+#include <rpm/argv.h>
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmsw.h>
 #include <rpm/rpmio.h>
@@ -48,7 +49,7 @@ rpmpython rpmpythonFree(rpmpython python);
  * @param flags		python interpreter flags ((1<<31): use global interpreter)
  * @return		new python interpreter
  */
-rpmpython rpmpythonNew(char ** av, uint32_t flags);
+rpmpython rpmpythonNew(ARGV_t * av, uint32_t flags);
 
 /**
  * Execute python from a file.
