@@ -85,8 +85,7 @@ rpmpython rpmpythonFree(rpmpython python)
 }
 
 #if defined(MODULE_EMBED)
-static const char _rpmpythonI_init[] =	"import sys;"
-					"from io import StringIO;"
+static const char _rpmpythonI_init[] =	"from io import StringIO;"
 					"sys.stdout = StringIO();\n";
 
 #endif
@@ -124,7 +123,7 @@ rpmpython rpmpythonNew(ARGV_t * argvp, uint32_t flags)
 	int ac = argvCount((ARGV_t)argv);
 	wchar_t ** wav = NULL;
 	static const char _pythonI_init[] = "%{?_pythonI_init}";
-	char * s = rpmExpand((flags & RPMPYTHON_NO_IO_REDIR) ? "" : _rpmpythonI_init, _pythonI_init, NULL);
+	char * s = rpmExpand("import sys;", (flags & RPMPYTHON_NO_IO_REDIR) ? "" : _rpmpythonI_init, _pythonI_init, NULL);
 
 	if (ac) {
 	    wav = xmalloc(ac * sizeof(wchar_t*));
@@ -134,8 +133,7 @@ rpmpython rpmpythonNew(ARGV_t * argvp, uint32_t flags)
 	}
 	if (_rpmpython_debug)
 	    fprintf(stderr, "==========\n%s\n==========\n", s);
-	if (s && *s)
-	    rpmpythonRun(python, s, NULL);
+	rpmpythonRun(python, s, NULL);
 	s = _free(s);
 
 	if(wav) {
