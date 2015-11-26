@@ -2,7 +2,7 @@
 
 #if defined(MODULE_EMBED)
 #include <Python.h>
-#if PY_VERSION_HEX < 0x03050000
+#if PY_VERSION_HEX < 0x03050000 && PY_VERSION_HEX >= 0x03000000
 #include <fileutils.h>
 #define Py_DecodeLocale _Py_char2wchar
 #endif
@@ -85,13 +85,14 @@ rpmpython rpmpythonFree(rpmpython python)
 }
 
 #if defined(MODULE_EMBED)
+
+#if PY_VERSION_HEX >= 0x03000000
 static const char _rpmpythonI_init[] =	"from io import StringIO;"
 					"sys.stdout = StringIO();\n";
-
+#else
+static const char _rpmpythonI_init[] =	"from cStringIO import StringIO;"
+					"sys.stdout = StringIO();\n";
 #endif
-
-#if defined(WITH_PYTHONEMBED)
-
 #endif
 
 rpmpython rpmpythonNew(ARGV_t * argvp, uint32_t flags)
@@ -121,26 +122,34 @@ rpmpython rpmpythonNew(ARGV_t * argvp, uint32_t flags)
 
     if (!(flags & RPMPYTHON_NO_INIT)) {
 	int ac = argvCount((ARGV_t)argv);
+#if PY_VERSION_HEX >= 0x03000000
 	wchar_t ** wav = NULL;
+#endif
 	static const char _pythonI_init[] = "%{?_pythonI_init}";
 	char * s = rpmExpand("import sys;", (flags & RPMPYTHON_NO_IO_REDIR) ? "" : _rpmpythonI_init, _pythonI_init, NULL);
 
 	if (ac) {
+#if PY_VERSION_HEX >= 0x03000000
 	    wav = xmalloc(ac * sizeof(wchar_t*));
 	    for (int i = 0; i < ac; i++)
 		wav[i] = Py_DecodeLocale(argv[i], NULL);
 	    PySys_SetArgvEx(ac, wav, 0);
+#else
+	    PySys_SetArgvEx(ac, (char **)argv, 0);
+#endif
 	}
 	if (_rpmpython_debug)
 	    fprintf(stderr, "==========\n%s\n==========\n", s);
 	rpmpythonRun(python, s, NULL);
 	s = _free(s);
 
+#if PY_VERSION_HEX >= 0x03000000
 	if(wav) {
 	    for (int i = 0; i < ac; i++)
 		free(wav[i]);
 	    wav = _free(wav);
 	}
+#endif
     }
 
 #endif
@@ -208,8 +217,11 @@ fprintf(stderr, "==> %s(%p,%s,%p)\n", __FUNCTION__, python, str, resultp);
 	    if (sys_stdout != NULL) {
 		if (resultp != NULL) {
 		    PyObject * o = PyObject_CallMethod(sys_stdout, "getvalue", NULL);
-
+#if PY_VERSION_HEX >= 0x03000000
 		    *resultp = xstrdup((PyUnicode_Check(o) ? PyUnicode_AsUTF8(o) : ""));
+#else
+		    *resultp = xstrdup((PyString_Check(o) ? PyString_AsString(o) : ""));
+#endif
 		    PyObject_CallMethod(sys_stdout, "seek", "i",0);
 		    PyObject_CallMethod(sys_stdout, "truncate", NULL);
 
