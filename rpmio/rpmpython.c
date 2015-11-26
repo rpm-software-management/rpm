@@ -6,7 +6,6 @@
 #include <fileutils.h>
 #define Py_DecodeLocale _Py_char2wchar
 #endif
-#undef WITH_PYTHONEMBED
 #endif
 
 #if defined(MODULE_EMBED)
@@ -15,7 +14,7 @@
 #include "rpmpython.h"
 
 
-#if defined(WITH_PYTHONEMBED)
+#if defined(WITH_PYTHONEMBED) && !defined(MODULE_EMBED)
 #include <dlfcn.h>
 #include <rpm/rpmlog.h>
 #endif
@@ -32,6 +31,7 @@ int _rpmpython_debug = 0;
 rpmpython _rpmpythonI = NULL;
 
 #if defined(WITH_PYTHONEMBED)
+#if !defined(MODULE_EMBED)
 static int _dlopened = 0;
 static rpmpython (*rpmpythonFree_p) (rpmpython python);
 static rpmpython (*rpmpythonNew_p) (ARGV_t * av, uint32_t flags);
@@ -63,14 +63,15 @@ static void loadModule(void) {
 	_dlopened = 1;
 }
 #endif
+#endif
 
 rpmpython rpmpythonFree(rpmpython python)
 {
 #if defined(WITH_PYTHONEMBED)
+#if !defined(MODULE_EMBED)
     if (_dlopened) return rpmpythonFree_p(python);
     else return NULL;
-#endif
-#if defined(MODULE_EMBED)
+#else
     if (python == NULL) python = _rpmpythonI;
 
     if (python->I != _rpmpythonI->I) {
@@ -81,11 +82,11 @@ rpmpython rpmpythonFree(rpmpython python)
     }
     python = _free(python);
 #endif
+#endif
     return python;
 }
 
 #if defined(MODULE_EMBED)
-
 #if PY_VERSION_HEX >= 0x03000000
 static const char _rpmpythonI_init[] =	"from io import StringIO;"
 					"sys.stdout = StringIO();\n";
@@ -99,6 +100,7 @@ rpmpython rpmpythonNew(ARGV_t * argvp, uint32_t flags)
 {
     rpmpython python = NULL;
 #if defined(WITH_PYTHONEMBED)
+#if !defined(MODULE_EMBED)
     if (!_dlopened) loadModule();
     if (_dlopened) python = rpmpythonNew_p(argvp, flags);
 #else
@@ -151,7 +153,7 @@ rpmpython rpmpythonNew(ARGV_t * argvp, uint32_t flags)
 	}
 #endif
     }
-
+#endif
 #endif
     return python;
 }
@@ -160,6 +162,7 @@ rpmRC rpmpythonRunFile(rpmpython python, const char * fn, char **resultp)
 {
     rpmRC rc = RPMRC_FAIL;
 #if defined(WITH_PYTHONEMBED)
+#if !defined(MODULE_EMBED)
     if (_dlopened) rc = rpmpythonRunFile_p(python, fn, resultp);
 #else
 if (_rpmpython_debug)
@@ -180,6 +183,7 @@ fprintf(stderr, "==> %s(%p,%s)\n", __FUNCTION__, python, fn);
 	}
     }
 #endif
+#endif
     return rc;
 }
 
@@ -187,6 +191,7 @@ rpmRC rpmpythonRun(rpmpython python, const char * str, char **resultp)
 {
     rpmRC rc = RPMRC_FAIL;
 #if defined(WITH_PYTHONEMBED)
+#if !defined(MODULE_EMBED)
     if (_dlopened) return rpmpythonRun_p(python, str, resultp);
 #else
     struct stat sb;
@@ -237,6 +242,7 @@ fprintf(stderr, "==> %s(%p,%s,%p)\n", __FUNCTION__, python, str, resultp);
 	val = _free(val);
 	rc = RPMRC_OK;
     }
+#endif
 #endif
     return rc;
 }
