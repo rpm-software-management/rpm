@@ -91,10 +91,10 @@ rpmpython rpmpythonFree(rpmpython python)
 #if defined(MODULE_EMBED)
 #if PY_VERSION_HEX >= 0x03000000
 static const char _rpmpythonI_init[] =	"from io import StringIO;"
-					"sys.stdout = StringIO();\n";
+					"sys.stdout = StringIO();";
 #else
 static const char _rpmpythonI_init[] =	"from cStringIO import StringIO;"
-					"sys.stdout = StringIO();\n";
+					"sys.stdout = StringIO();";
 #endif
 #endif
 
