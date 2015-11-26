@@ -706,6 +706,10 @@ static const FDIO_t bzdio = &bzdio_s ;
 #include <sys/types.h>
 #include <inttypes.h>
 #include <lzma.h>
+/* Multithreading support in stable API since xz 5.2.0 */
+#if LZMA_VERSION >= 50020002
+#define HAVE_LZMA_MT
+#endif
 
 #define kBufferSize (1 << 15)
 
@@ -731,8 +735,9 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
     lzma_ret ret;
     lzma_stream init_strm = LZMA_STREAM_INIT;
     uint64_t mem_limit = rpmExpandNumeric("%{_xz_memlimit}");
+#ifdef HAVE_LZMA_MT
     int threads = 0;
-
+#endif
     for (; *mode; mode++) {
 	if (*mode == 'w')
 	    encoding = 1;
@@ -742,14 +747,18 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 	    level = *mode - '0';
 	else if (*mode == 'T') {
 	    if (isdigit(*(mode+1))) {
+#ifdef HAVE_LZMA_MT
 		threads = atoi(++mode);
+#endif
 		/* skip past rest of digits in string that atoi()
 		 * should've processed
 		 * */
 		while(isdigit(*++mode));
 	    }
+#ifdef HAVE_LZMA_MT
 	    else
 		threads = -1;
+#endif
 	}
     }
     fp = fdopen(fd, encoding ? "w" : "r");
@@ -762,8 +771,11 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
     lzfile->strm = init_strm;
     if (encoding) {
 	if (xz) {
+#ifdef HAVE_LZMA_MT
 	    if (!threads) {
+#endif
 		ret = lzma_easy_encoder(&lzfile->strm, level, LZMA_CHECK_SHA256);
+#ifdef HAVE_LZMA_MT
 	    } else {
 		if (threads == -1)
 		    threads = sysconf(_SC_NPROCESSORS_ONLN);
@@ -778,12 +790,13 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 
 		ret = lzma_stream_encoder_mt(&lzfile->strm, &mt_options);
 	    }
+#endif
 	} else {
 	    lzma_options_lzma options;
 	    lzma_lzma_preset(&options, level);
 	    ret = lzma_alone_encoder(&lzfile->strm, &options);
 	}
-    } else {	/* lzma_easy_decoder_memusage(level) is not ready yet, use hardcoded limit for now */
+    } else {   /* lzma_easy_decoder_memusage(level) is not ready yet, use hardcoded limit for now */
 	ret = lzma_auto_decoder(&lzfile->strm, mem_limit ? mem_limit : 100<<20, 0);
     }
     if (ret != LZMA_OK) {
