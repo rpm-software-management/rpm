@@ -14,7 +14,6 @@ typedef struct rpmpython_s * rpmpython;
 extern int _rpmpython_debug;
 
 extern rpmpython _rpmpythonI;
-#define _RPMPYTHON_INTERNAL
 #if defined(_RPMPYTHON_INTERNAL)
 struct rpmpython_s {
     void * I;			/* (unused) */
