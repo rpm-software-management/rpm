@@ -11,11 +11,6 @@
 #include <rpm/rpmio.h>
 
 typedef struct rpmpython_s * rpmpython;
-#if defined(_RPMPYTHON_INTERNAL)
-struct rpmpython_s {
-    PyThreadState * I;
-};
-#endif /* _RPMPYTHON_INTERNAL */
 
 extern int _rpmpython_debug;
 

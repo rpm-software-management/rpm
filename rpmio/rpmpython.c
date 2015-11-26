@@ -8,12 +8,6 @@
 #endif
 #endif
 
-#if defined(MODULE_EMBED)
-#define _RPMPYTHON_INTERNAL
-#endif
-#include "rpmpython.h"
-
-
 #if defined(WITH_PYTHONEMBED) && !defined(MODULE_EMBED)
 #include <dlfcn.h>
 #include <rpm/rpmlog.h>
@@ -25,6 +19,14 @@
 #include "rpmio_internal.h"
 
 #include "debug.h"
+
+#include "rpmpython.h"
+
+#if defined(MODULE_EMBED)
+struct rpmpython_s {
+    PyThreadState * I;
+};
+#endif
 
 int _rpmpython_debug = 0;
 
