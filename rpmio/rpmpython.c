@@ -102,7 +102,6 @@ rpmpython rpmpythonNew(ARGV_t * argvp, uint32_t flags)
     if (!_dlopened) loadModule();
     if (_dlopened) python = rpmpythonNew_p(argvp, flags);
 #else
-    static const wchar_t *_wav[] = { L"python", NULL };
     ARGV_t argv = argvp ? *argvp : NULL;
 
     if (_rpmpythonI == NULL)
@@ -112,7 +111,6 @@ rpmpython rpmpythonNew(ARGV_t * argvp, uint32_t flags)
 	? _rpmpythonI : xcalloc(1, sizeof(rpmpython));
 
     if (!Py_IsInitialized()) {
-	Py_SetProgramName((wchar_t*)_wav[0]);
 	Py_Initialize();
 	_rpmpythonI->I = PyThreadState_Get();
     }
@@ -128,12 +126,12 @@ rpmpython rpmpythonNew(ARGV_t * argvp, uint32_t flags)
 	static const char _pythonI_init[] = "%{?_pythonI_init}";
 	char * s = rpmExpand((flags & RPMPYTHON_NO_IO_REDIR) ? "" : _rpmpythonI_init, _pythonI_init, NULL);
 
-	if (argv) {
+	if (ac) {
 	    wav = xmalloc(ac * sizeof(wchar_t*));
 	    for (int i = 0; i < ac; i++)
 		wav[i] = Py_DecodeLocale(argv[i], NULL);
+	    PySys_SetArgvEx(ac, wav, 0);
 	}
-	PySys_SetArgvEx(ac, wav ? wav : (wchar_t**)_wav, 0);
 	if (_rpmpython_debug)
 	    fprintf(stderr, "==========\n%s\n==========\n", s);
 	if (s && *s)
