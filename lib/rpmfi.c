@@ -1255,12 +1255,14 @@ rpmfi rpmfiFree(rpmfi fi)
     return NULL;
 }
 
-static rpmsid * tag2pool(rpmstrPool pool, Header h, rpmTag tag)
+static rpmsid * tag2pool(rpmstrPool pool, Header h, rpmTag tag, rpm_count_t size)
 {
     rpmsid *sids = NULL;
     struct rpmtd_s td;
     if (headerGet(h, tag, &td, HEADERGET_MINMEM)) {
-	sids = rpmtdToPool(&td, pool);
+	if ((size >= 0) && (rpmtdCount(&td) == size)) { /* ensure right size */
+	    sids = rpmtdToPool(&td, pool);
+	}
 	rpmtdFreeData(&td);
     }
     return sids;
@@ -1409,6 +1411,7 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
     headerGetFlags defFlags = HEADERGET_ALLOC;
     struct rpmtd_s fdigests, fsignatures, digalgo, td;
     unsigned char * t;
+    rpm_count_t totalfc = rpmfilesFC(fi);
 
     /* XXX TODO: all these should be sanity checked, ugh... */
     if (!(flags & RPMFI_NOFILEMODES))
@@ -1443,10 +1446,10 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 	_hgfi(h, RPMTAG_FILECAPS, &td, defFlags, fi->fcaps);
 
     if (!(flags & RPMFI_NOFILELINKTOS))
-	fi->flinks = tag2pool(fi->pool, h, RPMTAG_FILELINKTOS);
+	fi->flinks = tag2pool(fi->pool, h, RPMTAG_FILELINKTOS, totalfc);
     /* FILELANGS are only interesting when installing */
     if ((headerGetInstance(h) == 0) && !(flags & RPMFI_NOFILELANGS))
-	fi->flangs = tag2pool(fi->pool, h, RPMTAG_FILELANGS);
+	fi->flangs = tag2pool(fi->pool, h, RPMTAG_FILELANGS, totalfc);
 
     /* See if the package has non-md5 file digests */
     fi->digestalgo = PGPHASHALGO_MD5;
@@ -1465,6 +1468,8 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
     if (!(flags & RPMFI_NOFILEDIGESTS) &&
 	headerGet(h, RPMTAG_FILEDIGESTS, &fdigests, HEADERGET_MINMEM)) {
 	const char *fdigest;
+	if (rpmtdCount(&fdigests) != totalfc)
+	    goto err;
 	size_t diglen = rpmDigestLength(fi->digestalgo);
 	fi->digests = t = xmalloc(rpmtdCount(&fdigests) * diglen);
 
@@ -1485,6 +1490,8 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
     if (! (flags & RPMFI_NOFILESIGNATURES) &&
 	headerGet(h, RPMTAG_FILESIGNATURES, &fsignatures, HEADERGET_MINMEM)) {
 	const char *fsignature;
+	if (rpmtdCount(&fsignatures) != totalfc)
+	    goto err;
 	fi->signatures = t = xmalloc(rpmtdCount(&fsignatures) * fi->signaturelength);
 
 	while ((fsignature = rpmtdNextString(&fsignatures))) {
@@ -1508,13 +1515,18 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 	_hgfi(h, RPMTAG_FILEINODES, &td, scareFlags, fi->finodes);
 	rpmfilesBuildNLink(fi, h);
     }
-    if (!(flags & RPMFI_NOFILEUSER)) 
-	fi->fuser = tag2pool(fi->pool, h, RPMTAG_FILEUSERNAME);
-    if (!(flags & RPMFI_NOFILEGROUP)) 
-	fi->fgroup = tag2pool(fi->pool, h, RPMTAG_FILEGROUPNAME);
-
+    if (!(flags & RPMFI_NOFILEUSER)) {
+	fi->fuser = tag2pool(fi->pool, h, RPMTAG_FILEUSERNAME, totalfc);
+	if (!fi->fuser) goto err;
+    }
+    if (!(flags & RPMFI_NOFILEGROUP)) {
+	fi->fgroup = tag2pool(fi->pool, h, RPMTAG_FILEGROUPNAME, totalfc);
+	if (!fi->fgroup) goto err;
+    }
     /* TODO: validate and return a real error */
     return 0;
+ err:
+    return -1;
 }
 
 rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
