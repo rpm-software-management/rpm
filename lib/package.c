@@ -269,6 +269,12 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
     int32_t ril = 0;
     int32_t rdl = 0;
 
+    /* Check that we have at least on tag */
+    if (il < 1) {
+	rasprintf(buf, _("region: no tags"));
+	goto exit;
+    }
+
     memset(entry, 0, sizeof(*entry));
 
     /* Check (and convert) the 1st tag element. */
