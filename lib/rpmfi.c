@@ -1292,9 +1292,20 @@ static int indexSane(rpmtd xd, rpmtd yd, rpmtd zd)
     return sane;
 }
 
+/* Get file data from header */
+/* Requires totalfc to be set and label err: to goto on error */
 #define _hgfi(_h, _tag, _td, _flags, _data) \
-    if (headerGet((_h), (_tag), (_td), (_flags))) \
-	_data = (td.data)
+    if (headerGet((_h), (_tag), (_td), (_flags))) {\
+	if (rpmtdCount(_td) != totalfc) {	   \
+	    goto err;				\
+	}\
+	_data = ((_td)->data);	   \
+    }
+/* Get file data from header without checking number of entries */
+#define _hgfinc(_h, _tag, _td, _flags, _data) \
+    if (headerGet((_h), (_tag), (_td), (_flags))) {\
+	_data = ((_td)->data);	   \
+    }
 
 /*** Hard link handling ***/
 
@@ -1352,7 +1363,7 @@ static void rpmfilesBuildNLink(rpmfiles fi, Header h)
 	rpm_dev_t * fdevs = NULL;
 	struct rpmtd_s td;
 	int fc = 0;
-	int totalfc;
+	int totalfc = rpmfilesFC(fi);
 
 	if (!fi->finodes)
 	return;
@@ -1361,7 +1372,6 @@ static void rpmfilesBuildNLink(rpmfiles fi, Header h)
 	if (!fdevs)
 	return;
 
-	totalfc = rpmfilesFC(fi);
 	files = fileidHashCreate(totalfc, fidHashFunc, fidCmp, NULL, NULL);
 	for (int i=0; i < totalfc; i++) {
 		if (!S_ISREG(rpmfilesFMode(fi, i)) ||
@@ -1402,6 +1412,8 @@ static void rpmfilesBuildNLink(rpmfiles fi, Header h)
 	}
 	_free(fdevs);
 	files = fileidHashFree(files);
+ err:
+	return;
 }
 
 static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
@@ -1428,15 +1440,15 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 	_hgfi(h, RPMTAG_FILECOLORS, &td, scareFlags, fi->fcolors);
 
     if (!(flags & RPMFI_NOFILECLASS)) {
-	_hgfi(h, RPMTAG_CLASSDICT, &td, scareFlags, fi->cdict);
+	_hgfinc(h, RPMTAG_CLASSDICT, &td, scareFlags, fi->cdict);
 	fi->ncdict = rpmtdCount(&td);
-	_hgfi(h, RPMTAG_FILECLASS, &td, scareFlags, fi->fcdictx);
+	_hgfinc(h, RPMTAG_FILECLASS, &td, scareFlags, fi->fcdictx);
     }
     if (!(flags & RPMFI_NOFILEDEPS)) {
-	_hgfi(h, RPMTAG_DEPENDSDICT, &td, scareFlags, fi->ddict);
+	_hgfinc(h, RPMTAG_DEPENDSDICT, &td, scareFlags, fi->ddict);
 	fi->nddict = rpmtdCount(&td);
-	_hgfi(h, RPMTAG_FILEDEPENDSX, &td, scareFlags, fi->fddictx);
-	_hgfi(h, RPMTAG_FILEDEPENDSN, &td, scareFlags, fi->fddictn);
+	_hgfinc(h, RPMTAG_FILEDEPENDSX, &td, scareFlags, fi->fddictx);
+	_hgfinc(h, RPMTAG_FILEDEPENDSN, &td, scareFlags, fi->fddictn);
     }
 
     if (!(flags & RPMFI_NOFILESTATES))
@@ -1564,7 +1576,8 @@ rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags
 	    fi->ofndata = &fi->fndata;
 	}
 	    
-	rpmfilesPopulate(fi, h, flags);
+	if (rpmfilesPopulate(fi, h, flags))
+	    goto err;
     }
 
     /* freeze the pool to save memory, but only if private pool */
