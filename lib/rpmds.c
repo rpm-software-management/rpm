@@ -310,19 +310,37 @@ rpmds rpmdsNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, int flags)
 
     if (headerGet(h, tagN, &names, HEADERGET_MINMEM)) {
 	struct rpmtd_s evr, flags, tindices;
+	rpm_count_t count = rpmtdCount(&names);
 
-	ds = rpmdsCreate(pool, tagN, Type,
-			 rpmtdCount(&names), headerGetInstance(h));
-
-	ds->N = rpmtdToPool(&names, ds->pool);
 	headerGet(h, tagEVR, &evr, HEADERGET_MINMEM);
-	ds->EVR = rpmtdToPool(&evr, ds->pool);
+	if (evr.count && evr.count != count) {
+	    rpmtdFreeData(&evr);
+	    return NULL;
+	}
+
 	headerGet(h, tagF, &flags, HEADERGET_ALLOC);
-	ds->Flags = flags.data;
+	if (flags.count && flags.count != count) {
+	    rpmtdFreeData(&flags);
+	    return NULL;
+	}
+
 	if (tagTi != RPMTAG_NOT_FOUND) {
 	    headerGet(h, tagTi, &tindices, HEADERGET_ALLOC);
+	    if (tindices.count && tindices.count != count) {
+		rpmtdFreeData(&tindices);
+		return NULL;
+	    }
+	}
+
+	ds = rpmdsCreate(pool, tagN, Type, count, headerGetInstance(h));
+
+	ds->N = names.count ? rpmtdToPool(&names, ds->pool) : NULL;
+	ds->EVR = evr.count ? rpmtdToPool(&evr, ds->pool): NULL;
+	ds->Flags = flags.data;
+	if (tagTi != RPMTAG_NOT_FOUND) {
 	    ds->ti = tindices.data;
 	}
+
 	/* ensure rpmlib() requires always have RPMSENSE_RPMLIB flag set */
 	if (tagN == RPMTAG_REQUIRENAME && ds->Flags) {
 	    for (int i = 0; i < ds->Count; i++) {
