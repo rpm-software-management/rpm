@@ -1295,11 +1295,14 @@ static int indexSane(rpmtd xd, rpmtd yd, rpmtd zd)
 /* Get file data from header */
 /* Requires totalfc to be set and label err: to goto on error */
 #define _hgfi(_h, _tag, _td, _flags, _data) \
-    if (headerGet((_h), (_tag), (_td), (_flags))) {\
-	if (rpmtdCount(_td) != totalfc) {	   \
-	    goto err;				\
-	}\
-	_data = ((_td)->data);	   \
+    if (headerGet((_h), (_tag), (_td), (_flags))) { \
+	if (rpmtdCount(_td) != totalfc) { \
+	    goto err; \
+	} \
+	if ((_td)->size < totalfc * sizeof(*(_data))) { \
+	    goto err; \
+	} \
+	_data = ((_td)->data); \
     }
 /* Get file data from header without checking number of entries */
 #define _hgfinc(_h, _tag, _td, _flags, _data) \
