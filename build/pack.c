@@ -154,9 +154,23 @@ exit:
 static rpm_time_t * getBuildTime(void)
 {
     static rpm_time_t buildTime[1];
+    char *srcdate;
+    time_t epoch;
+    char *endptr;
 
-    if (buildTime[0] == 0)
-	buildTime[0] = (int32_t) time(NULL);
+    if (buildTime[0] == 0) {
+        srcdate = getenv("SOURCE_DATE_EPOCH");
+        if (srcdate) {
+            errno = 0;
+            epoch = strtol(srcdate, &endptr, 10);
+            if (srcdate == endptr || *endptr || errno != 0)
+                rpmlog(RPMLOG_ERR, _("unable to parse SOURCE_DATE_EPOCH\n"));
+            else
+                buildTime[0] = (int32_t) epoch;
+        } else
+            buildTime[0] = (int32_t) time(NULL);
+    }
+
     return buildTime;
 }
 
