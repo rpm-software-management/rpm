@@ -1445,7 +1445,7 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
     if (!(flags & RPMFI_NOFILECLASS)) {
 	_hgfinc(h, RPMTAG_CLASSDICT, &td, scareFlags, fi->cdict);
 	fi->ncdict = rpmtdCount(&td);
-	_hgfinc(h, RPMTAG_FILECLASS, &td, scareFlags, fi->fcdictx);
+	_hgfi(h, RPMTAG_FILECLASS, &td, scareFlags, fi->fcdictx);
     }
     if (!(flags & RPMFI_NOFILEDEPS)) {
 	_hgfinc(h, RPMTAG_DEPENDSDICT, &td, scareFlags, fi->ddict);
