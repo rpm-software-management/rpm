@@ -1058,6 +1058,8 @@ int rpmidxOpen(rpmidxdb *idxdbp, rpmpkgdb pkgdb, const char *filename, int flags
     if ((flags & (O_RDONLY|O_RDWR)) == O_RDONLY)
 	idxdb->rdonly = 1;
     if ((idxdb->fd = open(filename, flags, mode)) == -1) {
+	free(idxdb->filename);
+	free(idxdb);
 	return RPMRC_FAIL;
     }   
     if (fstat(idxdb->fd, &stb)) {

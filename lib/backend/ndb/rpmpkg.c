@@ -824,16 +824,20 @@ int rpmpkgOpen(rpmpkgdb *pkgdbp, const char *filename, int flags, int mode)
     if ((flags & (O_RDONLY|O_RDWR)) == O_RDONLY)
 	pkgdb->rdonly = 1;
     if ((pkgdb->fd = open(filename, flags, mode)) == -1) {
+	free(pkgdb->filename);
+	free(pkgdb);
         return RPMRC_FAIL;
     }
     if (fstat(pkgdb->fd, &stb)) {
 	close(pkgdb->fd);
+	free(pkgdb->filename);
 	free(pkgdb);
         return RPMRC_FAIL;
     }
     if (stb.st_size == 0) {
 	if (rpmpkgInit(pkgdb)) {
 	    close(pkgdb->fd);
+	    free(pkgdb->filename);
 	    free(pkgdb);
 	    return RPMRC_FAIL;
 	}
