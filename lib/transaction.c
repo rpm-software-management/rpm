@@ -1345,12 +1345,16 @@ exit:
 static int rpmtsProcess(rpmts ts)
 {
     rpmtsi pi;	rpmte p;
+    tsMembers tsmem = rpmtsMembers(ts);
     int rc = 0;
+    int i = 0;
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	int failed;
 
+	rpmtsNotify(ts, NULL, RPMCALLBACK_ELEM_PROGRESS, i++,
+		tsmem->orderCount);
 	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
