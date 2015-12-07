@@ -1,3 +1,7 @@
+#include "system.h"
+
+#include <rpm/rpmlog.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/file.h>
@@ -113,7 +117,7 @@ static unsigned int update_adler32(unsigned int adler, unsigned char *buf, unsig
 
 static int rpmpkgReadHeader(rpmpkgdb pkgdb)
 {
-    unsigned int generation, slotnpages, nextpkgidx;
+    unsigned int generation, slotnpages, nextpkgidx, version;
     unsigned char header[PKGDB_HEADER_SIZE];
 
     /* if we always head the write lock then our data matches */
@@ -123,6 +127,12 @@ static int rpmpkgReadHeader(rpmpkgdb pkgdb)
 	return RPMRC_FAIL;
     }
     if (le2h(header + PKGDB_OFFSET_MAGIC) != PKGDB_MAGIC) {
+	return RPMRC_FAIL;
+    }
+    version = le2h(header + PKGDB_OFFSET_VERSION);
+    if (version != PKGDB_VERSION) {
+	rpmlog(RPMLOG_ERR, _("rpmpkg: Version mismatch. Expected version: %u. "
+	    "Found version: %u\n"), PKGDB_VERSION, version);
 	return RPMRC_FAIL;
     }
     generation = le2h(header + PKGDB_OFFSET_GENERATION);

@@ -1,5 +1,9 @@
 #define _GNU_SOURCE
 
+#include "system.h"
+
+#include <rpm/rpmlog.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/file.h>
@@ -233,6 +237,8 @@ static int rpmidxHandleObsolete(rpmidxdb idxdb)
 
 static int rpmidxReadHeader(rpmidxdb idxdb)
 {
+    unsigned int version;
+
     if (idxdb->head_mapped) {
 	if (le2ha(idxdb->head_mapped + IDXDB_OFFSET_GENERATION) == idxdb->generation)
 	    return RPMRC_OK;
@@ -243,6 +249,13 @@ static int rpmidxReadHeader(rpmidxdb idxdb)
 	return RPMRC_FAIL;
 
     if (le2ha(idxdb->head_mapped + IDXDB_OFFSET_MAGIC) != IDXDB_MAGIC) {
+	rpmidxUnmap(idxdb);
+	return RPMRC_FAIL;
+    }
+    version = le2ha(idxdb->head_mapped + IDXDB_OFFSET_VERSION);
+    if (version != IDXDB_VERSION) {
+	rpmlog(RPMLOG_ERR, _("rpmidx: Version mismatch. Expected version: %u. "
+	    "Found version: %u\n"), IDXDB_VERSION, version);
 	rpmidxUnmap(idxdb);
 	return RPMRC_FAIL;
     }

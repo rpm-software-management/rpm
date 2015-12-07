@@ -1,5 +1,9 @@
 #define _GNU_SOURCE
 
+#include "system.h"
+
+#include <rpm/rpmlog.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/file.h>
@@ -185,7 +189,7 @@ static int rpmxdbReadHeader(rpmxdb xdb)
 {
     struct xdb_slot *slot;
     unsigned int header[XDB_HEADER_SIZE / sizeof(unsigned int)];
-    unsigned int slotnpages, pagesize, generation, usergeneration;
+    unsigned int slotnpages, pagesize, generation, usergeneration, version;
     unsigned int page, *lastfreep;
     unsigned char *pageptr;
     struct xdb_slot *slots, **usedslots, *lastslot;
@@ -209,6 +213,13 @@ static int rpmxdbReadHeader(rpmxdb xdb)
     }
     if (le2ha((unsigned char *)header + XDB_OFFSET_MAGIC) != XDB_MAGIC)
 	return RPMRC_FAIL;
+    version = le2ha((unsigned char *)header + XDB_OFFSET_VERSION);
+    if (version != XDB_VERSION) {
+	rpmlog(RPMLOG_ERR, _("rpmxdb: Version mismatch. Expected version: %u. "
+	    "Found version: %u\n"), XDB_VERSION, version);
+	return RPMRC_FAIL;
+    }
+
     generation = le2ha((unsigned char *)header + XDB_OFFSET_GENERATION);
     slotnpages = le2ha((unsigned char *)header + XDB_OFFSET_SLOTNPAGES);
     pagesize = le2ha((unsigned char *)header + XDB_OFFSET_PAGESIZE);
