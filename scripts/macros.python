@@ -3,7 +3,7 @@
 # %include %{_rpmconfigdir}/macros.python
 
 # python main version
-%define py_ver         %(echo `python -c "import sys; sys.stdout.write(sys.version[:3])"`)
+%define py_ver         %python_version
 
 # directories
 %define py_prefix      %(echo `python -c "import sys; sys.stdout.write(sys.prefix)"`)
