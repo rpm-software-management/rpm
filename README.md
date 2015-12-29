@@ -1,13 +1,20 @@
 # RPM Next
 
-One day, @cjacker has an idea: there are OS layer (/var/lib/rpm) and AppStore 
-layer (/var/lib/appstore) physical isolated. so rpm -ivh/-e only install/erase 
-Apps into AppStore layer, OS is totally READ-ONLY. when installing Apps, check 
-dependency in OS layer at first, if unsatisfied depend, then switch to AppStore 
-layer for checking dependency again, if still unsatisfied depend, add dependency 
-problem, otherwise installed Apps successfully.
+One day [Cjacker](https://github.com/cjacker) has an idea: there are OS layer 
+(/var/lib/rpm) and AppStore layer (/var/lib/appstore) physical isolated. 
+so rpm -ivh/-e only install/erase Apps into AppStore layer, OS is totally 
+READ-ONLY. when installing Apps, check dependency in OS layer at first, if 
+unsatisfied depend, then switch to AppStore layer for checking dependency again, 
+if still unsatisfied depend, add dependency problem, otherwise installed Apps 
+successfully.
 
 ![RPM isolatation design](https://raw.github.com/AOSC-Dev/rpm/isolate/doc/rpm-isolatation-design.png)
+
+## Goal
+
+* keep rpm original commmand unbroken;
+* keep librpm original API unbroken;
+* just like Mac ***make install*** still is able to pollute OS layer;
 
 The implementation, very big patch more than 2K lines, will open source in 2K16 ;-)
 
