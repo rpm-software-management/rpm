@@ -968,33 +968,6 @@ done \
 %sources %{lua: for i, s in ipairs(sources) do print(s.." ") end}
 
 #------------------------------------------------------------------------------
-# Useful perl macros (from Artur Frysiak <wiget@t17.ds.pwr.wroc.pl>)
-#
-# For example, these can be used as (from ImageMagick.spec from PLD site)
-#	[...]
-#	BuildPrereq: perl
-#	[...]
-#	%package perl
-#	Summary: libraries and modules for access to ImageMagick from perl
-#	Group: Development/Languages/Perl
-#	Requires: %{name} = %{version}
-#	%requires_eq    perl
-#	[...]
-#	%install
-#	rm -fr $RPM_BUILD_ROOT
-#	install -d $RPM_BUILD_ROOT/%{perl_sitearch}
-#	[...]
-#	%files perl
-#	%defattr(644,root,root,755)
-#	%{perl_sitearch}/Image
-#	%dir %{perl_sitearch}/auto/Image
-#
-%requires_eq()	%(LC_ALL="C" echo '%*' | xargs -r rpm -q --qf 'Requires: %%{name} = %%{epoch}:%%{version}\\n' | sed -e 's/ (none):/ /' -e 's/ 0:/ /' | grep -v "is not")
-# To make use of the Perl-related macros insert the following line into your
-# spec file:
-# %include %{_rpmconfigdir}/macros.perl
-
-#------------------------------------------------------------------------------
 # Useful python macros for determining python version and paths
 #
 %python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib())")
