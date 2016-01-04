@@ -16,8 +16,6 @@ successfully.
 * keep librpm original API unbroken;
 * just like Mac ***make install*** is still able to pollute OS layer;
 
-The implementation, very big patch more than 2K lines, will open source in 2016 ;-)
-
 ## Build
 
 ```
