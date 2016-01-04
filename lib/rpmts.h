@@ -175,6 +175,19 @@ typedef rpmFlags rpmtxnFlags;
 int rpmtsCheck(rpmts ts);
 
 /** \ingroup rpmts
+ * Perform dependency resolution on the transaction set. for example, under 
+ * /var/lib/rpm and /var/lib/appstore
+ *
+ * Any problems found by rpmtsCheck() can be examined by retrieving the
+ * problem set with rpmtsProblems(), success here only means that
+ * the resolution was successfully attempted for all packages in the set.
+ *
+ * @param ts        transaction set
+ * @return      0 on success
+ */
+int rpmtsCheckAppStore(rpmts ts, const char *dbpath);
+
+/** \ingroup rpmts
  * Determine package order in a transaction set according to dependencies.
  *
  * Order packages, returning error if circular dependencies cannot be
@@ -212,6 +225,25 @@ int rpmtsOrder(rpmts ts);
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet);
 
 /** \ingroup rpmts
+ * Process all package elements in a transaction set.  Before calling
+ * rpmtsRun be sure to have:
+ *
+ *    - setup the rpm root dir via rpmtsSetRoot().
+ *    - setup the rpm notify callback via rpmtsSetNotifyCallback().
+ *    - setup the rpm transaction flags via rpmtsSetFlags().
+ * 
+ * Additionally, though not required you may want to:
+ *
+ *    - setup the rpm verify signature flags via rpmtsSetVSFlags().
+ *       
+ * @param ts		transaction set
+ * @param okProbs	unused
+ * @param ignoreSet	bits to filter problem types
+ * @return		0 on success, -1 on error, >0 with newProbs set
+ */
+int rpmtsRunAppStore(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet);
+
+/** \ingroup rpmts
  * Reference a transaction set instance.
  * @param ts		transaction set
  * @return		new transaction set reference
@@ -232,6 +264,14 @@ int rpmtsCloseDB(rpmts ts);
  * @return		0 on success
  */
 int rpmtsOpenDB(rpmts ts, int dbmode);
+
+/** \ingroup rpmts
+ * Open the database used by the transaction for AppStore.
+ * @param ts		transaction set
+ * @param dbmode	O_RDONLY or O_RDWR
+ * @return		0 on success
+ */
+int rpmtsOpenDBAppStore(rpmts ts, int dbmode);
 
 /** \ingroup rpmts
  * Initialize the database used by the transaction.
@@ -282,6 +322,19 @@ int rpmtsVerifyDB(rpmts ts);
  */
 rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmDbiTagVal rpmtag,
 			const void * keyp, size_t keylen);
+
+/** \ingroup rpmts
+ * Return transaction database iterator for AppStore.
+ * @param ts		transaction set
+ * @param rpmtag	database index tag
+ * @param keyp		key data (NULL for sequential access)
+ * @param keylen	key data length (0 will use strlen(keyp))
+ * @return		NULL on failure
+ */
+rpmdbMatchIterator rpmtsInitIteratorAppStore(const rpmts ts, rpmDbiTagVal rpmtag,
+			const void * keyp, size_t keylen);
+
+int rpmtsSetMacro(const char *path);
 
 /** \ingroup rpmts
  * Import a header into the rpmdb
@@ -558,6 +611,23 @@ rpmts rpmtsCreate(void);
  * @return		0 on success, 1 on I/O error, 2 needs capabilities
  */
 int rpmtsAddInstallElement(rpmts ts, Header h,
+		const fnpyKey key, int upgrade,
+		rpmRelocation * relocs);
+
+/** \ingroup rpmts
+ * Add package to be installed to transaction set for AppStore.
+ *
+ * The transaction set is checked for duplicate package names.
+ * If found, the package with the "newest" EVR will be replaced.
+ *
+ * @param ts		transaction set
+ * @param h		header
+ * @param key		package retrieval key (e.g. file name)
+ * @param upgrade	is package being upgraded?
+ * @param relocs	package file relocations
+ * @return		0 on success, 1 on I/O error, 2 needs capabilities
+ */
+int rpmtsAddInstallElementAppStore(rpmts ts, Header h,
 		const fnpyKey key, int upgrade,
 		rpmRelocation * relocs);
 

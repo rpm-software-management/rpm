@@ -32,6 +32,7 @@ enum modes {
 #define	MODES_FOR_TEST		(MODES_IE)
 
 static int quiet;
+static int appStore = 0;
 
 /* the structure describing the options we take and the defaults */
 static struct poptOption optionsTable[] = {
@@ -63,6 +64,10 @@ static struct poptOption optionsTable[] = {
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
 	N_("Common options for all rpm modes and executables:"),
 	NULL },
+
+ { "appstore", '\0', POPT_ARGFLAG_OR, &appStore, 0, 
+    N_("Operate AppStore"), 
+    NULL},
 
    POPT_AUTOALIAS
    POPT_AUTOHELP
@@ -256,7 +261,9 @@ int main(int argc, char *argv[])
 	if (!poptPeekArg(optCon)) {
 	    argerror(_("no packages given for erase"));
 	} else {
-	    ec += rpmErase(ts, ia, (ARGV_const_t) poptGetArgs(optCon));
+	    ec += appStore | rpmExpandNumeric("%{_appstore}")? 
+              rpmEraseAppStore(ts, ia, (ARGV_const_t) poptGetArgs(optCon)) : 
+              rpmErase(ts, ia, (ARGV_const_t) poptGetArgs(optCon));
 	}
 	break;
 
@@ -291,7 +298,9 @@ int main(int argc, char *argv[])
 	    argerror(_("no packages given for install"));
 	} else {
 	    /* FIX: ia->relocations[0].newPath undefined */
-	    ec += rpmInstall(ts, ia, (ARGV_t) poptGetArgs(optCon));
+        ec += appStore | rpmExpandNumeric("%{_appstore}") ? 
+              rpmInstallAppStore(ts, ia, (ARGV_t) poptGetArgs(optCon), NULL) : 
+              rpmInstall(ts, ia, (ARGV_t) poptGetArgs(optCon));
 	}
 	break;
 
@@ -302,7 +311,9 @@ int main(int argc, char *argv[])
 	if (!poptPeekArg(optCon) && !(qva->qva_source == RPMQV_ALL))
 	    argerror(_("no arguments given for query"));
 
-	ec = rpmcliQuery(ts, qva, (ARGV_const_t) poptGetArgs(optCon));
+	ec = appStore | rpmExpandNumeric("%{_appstore}") ? 
+         rpmcliQueryAppStore(ts, qva, (ARGV_const_t) poptGetArgs(optCon)) : 
+         rpmcliQuery(ts, qva, (ARGV_const_t) poptGetArgs(optCon));
 	break;
 
     case MODE_VERIFY:
@@ -313,7 +324,9 @@ int main(int argc, char *argv[])
 
 	if (!poptPeekArg(optCon) && !(qva->qva_source == RPMQV_ALL))
 	    argerror(_("no arguments given for verify"));
-	ec = rpmcliVerify(ts, qva, (ARGV_const_t) poptGetArgs(optCon));
+	ec = appStore | rpmExpandNumeric("%{_appstore}") ? 
+         rpmcliVerifyAppStore(ts, qva, (ARGV_const_t) poptGetArgs(optCon)) : 
+         rpmcliVerify(ts, qva, (ARGV_const_t) poptGetArgs(optCon));
     }	break;
 #endif	/* IAM_RPMQV */
 

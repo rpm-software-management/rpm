@@ -80,6 +80,10 @@ int rpmtsCloseDB(rpmts ts)
     }
     return rc;
 }
+int rpmtsSetMacro(const char *path)
+{
+	addMacro(NULL, "_dbpath", NULL, path, RMIL_GLOBAL);
+}
 
 int rpmtsOpenDB(rpmts ts, int dbmode)
 {
@@ -94,6 +98,27 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
 
     ts->dbmode = dbmode;
     rc = rpmdbOpen(ts->rootDir, &ts->rdb, ts->dbmode, 0644);
+    if (rc) {
+	char * dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
+	rpmlog(RPMLOG_ERR, _("cannot open Packages database in %s\n"), dn);
+	free(dn);
+    }
+    return rc;
+}
+
+int rpmtsOpenDBAppStore(rpmts ts, int dbmode)
+{
+    int rc = 0;
+
+    if (ts->rdb != NULL && ts->dbmode == dbmode)
+	return 0;
+
+    (void) rpmtsCloseDB(ts);
+
+    /* XXX there's a potential db lock race here. */
+
+    ts->dbmode = dbmode;
+    rc = rpmdbOpenAppStore(ts->rootDir, &ts->rdb, ts->dbmode, 0644);
     if (rc) {
 	char * dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
 	rpmlog(RPMLOG_ERR, _("cannot open Packages database in %s\n"), dn);
@@ -176,6 +201,83 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmDbiTagVal rpmtag,
 
     if (ts->rdb == NULL && rpmtsOpenDB(ts, ts->dbmode))
 	return NULL;
+
+    /* Parse out "N(EVR)" tokens from a label key if present */
+    if (rpmtag == RPMDBI_LABEL && keyp != NULL && strchr(keyp, '(')) {
+	const char *se, *s = keyp;
+	char *t;
+	size_t slen = strlen(s);
+	int level = 0;
+	int c;
+
+	tmp = xmalloc(slen+1);
+	keyp = t = tmp;
+	while ((c = *s++) != '\0') {
+	    switch (c) {
+	    default:
+		*t++ = c;
+		break;
+	    case '(':
+		/* XXX Fail if nested parens. */
+		if (level++ != 0) {
+		    rpmlog(RPMLOG_ERR, _("extra '(' in package label: %s\n"), (const char*)keyp);
+		    goto exit;
+		}
+		/* Parse explicit epoch. */
+		for (se = s; *se && risdigit(*se); se++)
+		    {};
+		if (*se == ':') {
+		    /* XXX skip explicit epoch's (for now) */
+		    *t++ = '-';
+		    s = se + 1;
+		} else {
+		    /* No Epoch: found. Convert '(' to '-' and chug. */
+		    *t++ = '-';
+		}
+		break;
+	    case ')':
+		/* XXX Fail if nested parens. */
+		if (--level != 0) {
+		    rpmlog(RPMLOG_ERR, _("missing '(' in package label: %s\n"), (const char*)keyp);
+		    goto exit;
+		}
+		/* Don't copy trailing ')' */
+		break;
+	    }
+	}
+	if (level) {
+	    rpmlog(RPMLOG_ERR, _("missing ')' in package label: %s\n"), (const char*)keyp);
+	    goto exit;
+	}
+	*t = '\0';
+    }
+
+    mi = rpmdbInitIterator(ts->rdb, rpmtag, keyp, keylen);
+
+    /* Verify header signature/digest during retrieve (if not disabled). */
+    if (mi && !(ts->vsflags & RPMVSF_NOHDRCHK))
+	(void) rpmdbSetHdrChk(mi, ts, headerCheck);
+
+exit:
+    free(tmp);
+
+    return mi;
+}
+
+/* keyp might no be defined. */
+rpmdbMatchIterator rpmtsInitIteratorAppStore(const rpmts ts, rpmDbiTagVal rpmtag,
+			const void * keyp, size_t keylen)
+{
+    rpmdbMatchIterator mi = NULL;
+    char *tmp = NULL;
+
+    if (ts == NULL)
+	return NULL;
+
+    if (ts && ts->keyring == NULL)
+	loadKeyring(ts);
+
+    openDatabase(ts->rootDir, "/var/lib/appstore", &ts->rdb, O_RDONLY, 0644, 0);
 
     /* Parse out "N(EVR)" tokens from a label key if present */
     if (rpmtag == RPMDBI_LABEL && keyp != NULL && strchr(keyp, '(')) {

@@ -331,6 +331,20 @@ rpmps rpmSpecCheckDeps(rpmts ts, rpmSpec spec)
     return probs;
 }
 
+rpmps rpmSpecCheckDepsAppStore(rpmts ts, rpmSpec spec)
+{
+    rpmps probs = NULL;
+
+    rpmtsEmpty(ts);
+
+    rpmtsAddInstallElement(ts, rpmSpecSourceHeader(spec), NULL, 0, NULL);
+    rpmtsCheckAppStore(ts, NULL);
+    probs = rpmtsProblems(ts);
+
+    rpmtsEmpty(ts);
+    return probs;
+}
+
 struct rpmSpecIter_s {
     void *next;
 };

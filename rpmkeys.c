@@ -18,6 +18,7 @@ enum modes {
 
 static int mode = 0;
 static int test = 0;
+static int appStore = 0;
 
 static struct poptOption keyOptsTable[] = {
     { "checksig", 'K', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_CHECKSIG,
@@ -40,6 +41,9 @@ static struct poptOption optionsTable[] = {
 	N_("Keyring options:"), NULL },
     { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
 	N_("Common options for all rpm modes and executables:"), NULL },
+
+    { "appstore", '\0', POPT_ARGFLAG_OR, &appStore, 0, 
+      N_("Operate AppStore"), NULL},
 
     POPT_AUTOALIAS
     POPT_AUTOHELP
@@ -67,12 +71,16 @@ int main(int argc, char *argv[])
 
     switch (mode) {
     case MODE_CHECKSIG:
-	ec = rpmcliVerifySignatures(ts, args);
+	ec = appStore ? 
+         rpmcliVerifySignaturesAppStore(ts, args) : 
+         rpmcliVerifySignatures(ts, args);
 	break;
     case MODE_IMPORTKEY:
 	if (test)
 	    rpmtsSetFlags(ts, (rpmtsFlags(ts)|RPMTRANS_FLAG_TEST));
-	ec = rpmcliImportPubkeys(ts, args);
+	ec = appStore ? 
+         rpmcliImportPubkeysAppStore(ts, args) : 
+         rpmcliImportPubkeys(ts, args);
 	break;
     /* XXX TODO: actually implement these... */
     case MODE_DELKEY:

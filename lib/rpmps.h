@@ -14,6 +14,11 @@
 extern "C" {
 #endif
 
+typedef struct {
+    char *memory;
+    size_t size;
+} chunk_t;
+
 /** \ingroup rpmps
  * Problem set iterator
  */
@@ -87,6 +92,13 @@ rpmps rpmpsFree(rpmps ps);
  * @param ps		problem set
  */
 void rpmpsPrint(FILE *fp, rpmps ps);
+
+/** \ingroup rpmps
+ * Convert problems to chunk.
+ * @param ptr	    chunk ptr
+ * @param ps		problem set
+ */
+void rpmpsToChunk(void *ptr, rpmps ps);
 
 /** \ingroup rpmps
  * Append a problem to current set of problems.

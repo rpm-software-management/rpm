@@ -497,6 +497,39 @@ static int verifyDependencies(rpmts ts, Header h)
     return rc;
 }
 
+static int verifyDependenciesAppStore(rpmts ts, Header h)
+{
+    rpmps ps;
+    rpmte te;
+    int rc;
+
+    rpmtsEmpty(ts);
+    (void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
+
+    (void) rpmtsCheckAppStore(ts, NULL);
+    te = rpmtsElement(ts, 0);
+    ps = rpmteProblems(te);
+    rc = rpmpsNumProblems(ps);
+
+    if (rc > 0) {
+	rpmlog(RPMLOG_NOTICE, _("Unsatisfied dependencies for %s:\n"),
+	       rpmteNEVRA(te));
+	rpmpsi psi = rpmpsInitIterator(ps);
+	rpmProblem p;
+
+	while ((p = rpmpsiNext(psi)) != NULL) {
+	    char * ps = rpmProblemString(p);
+	    rpmlog(RPMLOG_NOTICE, "\t%s\n", ps);
+	    free(ps);
+	}
+	rpmpsFreeIterator(psi);
+    }
+    rpmpsFree(ps);
+    rpmtsEmpty(ts);
+
+    return rc;
+}
+
 int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 {
     rpmVerifyAttrs omitMask = ((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
@@ -506,6 +539,29 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 
     if (qva->qva_flags & VERIFY_DEPS) {
 	if ((rc = verifyDependencies(ts, h)) != 0)
+	    ec = rc;
+    }
+    if (qva->qva_flags & VERIFY_FILES) {
+	if ((rc = verifyHeader(ts, h, omitMask, ghosts)) != 0)
+	    ec = rc;
+    }
+    if (qva->qva_flags & VERIFY_SCRIPT) {
+	if ((rc = rpmVerifyScript(ts, h)) != 0)
+	    ec = rc;
+    }
+
+    return ec;
+}
+
+int showVerifyPackageAppStore(QVA_t qva, rpmts ts, Header h)
+{
+    rpmVerifyAttrs omitMask = ((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
+    int ghosts = (qva->qva_fflags & RPMFILE_GHOST);
+    int ec = 0;
+    int rc;
+
+    if (qva->qva_flags & VERIFY_DEPS) {
+	if ((rc = verifyDependenciesAppStore(ts, h)) != 0)
 	    ec = rc;
     }
     if (qva->qva_flags & VERIFY_FILES) {
@@ -556,6 +612,57 @@ int rpmcliVerify(rpmts ts, QVA_t qva, char * const * argv)
     rpmtsSetScriptFd(ts, NULL);
 
     if (qva->qva_showPackage == showVerifyPackage)
+        qva->qva_showPackage = NULL;
+
+    rpmtsEmpty(ts);
+
+    if (rpmChrootOut() || rpmChrootSet(NULL))
+	ec = 1;
+
+exit:
+    Fclose(scriptFd);
+
+    return ec;
+}
+
+int rpmcliVerifyAppStore(rpmts ts, QVA_t qva, char * const * argv)
+{
+    rpmVSFlags vsflags, ovsflags;
+    int ec = 0;
+    FD_t scriptFd = fdDup(STDOUT_FILENO);
+
+    addMacro(NULL, "_dbpath", NULL, "/var/lib/appstore", RMIL_GLOBAL);
+
+    /* 
+     * Open the DB + indices explicitly before possible chroot,
+     * otherwises BDB is going to be unhappy...
+     */
+    rpmtsOpenDB(ts, O_RDONLY);
+    rpmdbOpenAll(rpmtsGetRdb(ts));
+    if (rpmChrootSet(rpmtsRootDir(ts)) || rpmChrootIn()) {
+	ec = 1;
+	goto exit;
+    }
+
+    if (qva->qva_showPackage == NULL)
+        qva->qva_showPackage = showVerifyPackageAppStore;
+
+    vsflags = rpmExpandNumeric("%{?_vsflags_verify}");
+    if (rpmcliQueryFlags & VERIFY_DIGEST)
+	vsflags |= _RPMVSF_NODIGESTS;
+    if (rpmcliQueryFlags & VERIFY_SIGNATURE)
+	vsflags |= _RPMVSF_NOSIGNATURES;
+    if (rpmcliQueryFlags & VERIFY_HDRCHK)
+	vsflags |= RPMVSF_NOHDRCHK;
+    vsflags &= ~RPMVSF_NEEDPAYLOAD;
+
+    rpmtsSetScriptFd(ts, scriptFd);
+    ovsflags = rpmtsSetVSFlags(ts, vsflags);
+    ec = rpmcliArgIterAppStore(ts, qva, argv);
+    rpmtsSetVSFlags(ts, ovsflags);
+    rpmtsSetScriptFd(ts, NULL);
+
+    if (qva->qva_showPackage == showVerifyPackageAppStore)
         qva->qva_showPackage = NULL;
 
     rpmtsEmpty(ts);

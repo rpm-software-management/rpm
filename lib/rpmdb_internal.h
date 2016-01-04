@@ -42,6 +42,17 @@ RPM_GNUC_INTERNAL
 int rpmdbOpen (const char * prefix, rpmdb * dbp, int mode, int perms);
 
 /** \ingroup rpmdb
+ * Open appstore database.
+ * @param prefix	path to top of install tree
+ * @retval dbp		address of rpm database
+ * @param mode		open(2) flags:  O_RDWR or O_RDONLY (O_CREAT also)
+ * @param perms		database permissions
+ * @return		0 on success
+ */
+RPM_GNUC_INTERNAL
+int rpmdbOpenAppStore(const char * prefix, rpmdb * dbp, int mode, int perms);
+
+/** \ingroup rpmdb
  * Initialize database.
  * @param prefix	path to top of install tree
  * @param perms		database permissions
@@ -49,14 +60,6 @@ int rpmdbOpen (const char * prefix, rpmdb * dbp, int mode, int perms);
  */
 RPM_GNUC_INTERNAL
 int rpmdbInit(const char * prefix, int perms);
-
-/** \ingroup rpmdb
- * Close all database indices and free rpmdb.
- * @param db		rpm database
- * @return		0 on success
- */
-RPM_GNUC_INTERNAL
-int rpmdbClose (rpmdb db);
 
 /** \ingroup rpmdb
  * Rebuild database indices from package headers.

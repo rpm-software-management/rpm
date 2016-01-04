@@ -298,6 +298,23 @@ static int rpmcliShowMatches(QVA_t qva, rpmts ts, rpmdbMatchIterator mi)
     return ec;
 }
 
+static int rpmcliShowMatchesAppStore(QVA_t qva, rpmts ts, rpmdbMatchIterator mi)
+{
+    Header h;
+    int ec = 0;
+
+    if (mi == NULL)
+        return 1;
+
+    while ((h = rpmdbNextIteratorAppStore(mi, "/var/lib/appstore")) != NULL) {
+	    int rc;
+	    rpmdbCheckSignals();
+	    if ((rc = qva->qva_showPackage(qva, ts, h)) != 0)
+	        ec = rc;
+    }
+    return ec;
+}
+
 static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * arg)
 {
     const char * s;
@@ -529,6 +546,35 @@ static rpmdbMatchIterator initFilterIterator(rpmts ts, ARGV_const_t argv)
     return mi;
 }
 
+static rpmdbMatchIterator initFilterIteratorAppStore(rpmts ts, ARGV_const_t argv)
+{
+    rpmdbMatchIterator mi = rpmtsInitIteratorAppStore(ts, RPMDBI_PACKAGES, NULL, 0);
+
+    for (ARGV_const_t arg = argv; arg && *arg != NULL; arg++) {
+	rpmTagVal tag = RPMTAG_NAME;
+	char a[strlen(*arg)+1], *ae;
+	const char *pat = a;
+
+	strcpy(a, *arg);
+
+	/* Parse for "tag=pattern" args. */
+	if ((ae = strchr(a, '=')) != NULL) {
+	    *ae++ = '\0';
+	    tag = rpmTagGetValue(a);
+	    if (tag == RPMTAG_NOT_FOUND) {
+		rpmlog(RPMLOG_ERR, _("unknown tag: \"%s\"\n"), a);
+		mi = rpmdbFreeIterator(mi);
+		break;
+	    }
+	    pat = ae;
+	}
+
+	rpmdbSetIteratorRE(mi, tag, RPMMIRE_DEFAULT, pat);
+    }
+
+    return mi;
+}
+
 int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
 {
     int ec = 0;
@@ -565,10 +611,90 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
     return ec;
 }
 
+int rpmcliArgIterAppStore(rpmts ts, QVA_t qva, ARGV_const_t argv)
+{
+    int ec = 0;
+
+    switch (qva->qva_source) {
+    case RPMQV_ALL: {
+        rpmdbMatchIterator mi = initFilterIteratorAppStore(ts, argv);
+	    ec = rpmcliShowMatchesAppStore(qva, ts, mi);
+	    break;
+    }
+    case RPMQV_RPM: {
+	    rpmgi gi = rpmgiNew(ts, giFlags, argv);
+	    ec = rpmcliShowMatchesAppStore(qva, ts, gi);
+	    rpmgiFree(gi);
+	    break;
+    }
+    case RPMQV_SPECRPMS:
+    case RPMQV_SPECSRPM:
+	    for (ARGV_const_t arg = argv; arg && *arg; arg++) {
+	        ec += ((qva->qva_specQuery != NULL)
+		        ? qva->qva_specQuery(ts, qva, *arg) : 1);
+	    }
+	    break;
+    default:
+	    for (ARGV_const_t arg = argv; arg && *arg; arg++) {
+	        rpmdbMatchIterator mi = initQueryIterator(qva, ts, *arg);
+	        ec += rpmcliShowMatchesAppStore(qva, ts, mi);
+	        rpmdbFreeIterator(mi);
+	    }
+	    break;
+    }
+
+    return ec;
+}
+
 int rpmcliQuery(rpmts ts, QVA_t qva, char * const * argv)
 {
     rpmVSFlags vsflags, ovsflags;
     int ec = 0;
+
+    if (qva->qva_showPackage == NULL)
+	qva->qva_showPackage = showQueryPackage;
+
+    /* If --queryformat unspecified, then set default now. */
+    if (!(qva->qva_flags & _QUERY_FOR_BITS) && qva->qva_queryFormat == NULL) {
+	char * fmt = rpmExpand("%{?_query_all_fmt}\n", NULL);
+	if (fmt == NULL || strlen(fmt) <= 1) {
+	    free(fmt);
+	    fmt = xstrdup("%{nvra}\n");
+	}
+	qva->qva_queryFormat = fmt;
+    }
+
+    if (!(qva->qva_source & RPMQV_RPM) &&
+	rpmExpandNumeric("%{?_vsflags_query_rpmdb:1}")) {
+
+	vsflags = rpmExpandNumeric("%{?_vsflags_query_rpmdb}");
+    } else {
+	vsflags = rpmExpandNumeric("%{?_vsflags_query}");
+    }
+
+    if (rpmcliQueryFlags & VERIFY_DIGEST)
+	vsflags |= _RPMVSF_NODIGESTS;
+    if (rpmcliQueryFlags & VERIFY_SIGNATURE)
+	vsflags |= _RPMVSF_NOSIGNATURES;
+    if (rpmcliQueryFlags & VERIFY_HDRCHK)
+	vsflags |= RPMVSF_NOHDRCHK;
+
+    ovsflags = rpmtsSetVSFlags(ts, vsflags);
+    ec = rpmcliArgIter(ts, qva, argv);
+    rpmtsSetVSFlags(ts, ovsflags);
+
+    if (qva->qva_showPackage == showQueryPackage)
+	qva->qva_showPackage = NULL;
+
+    return ec;
+}
+
+int rpmcliQueryAppStore(rpmts ts, QVA_t qva, char * const *argv)
+{
+    rpmVSFlags vsflags, ovsflags;
+    int ec = 0;
+
+    addMacro(NULL, "_dbpath", NULL, "/var/lib/appstore", RMIL_GLOBAL);
 
     if (qva->qva_showPackage == NULL)
 	qva->qva_showPackage = showQueryPackage;

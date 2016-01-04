@@ -119,6 +119,45 @@ int rpmcliImportPubkeys(rpmts ts, ARGV_const_t argv)
     return res;
 }
 
+int rpmcliImportPubkeysAppStore(rpmts ts, ARGV_const_t argv)
+{
+    int res = 0;
+    addMacro(NULL, "_dbpath", NULL, "/var/lib/appstore", RMIL_GLOBAL);
+    for (ARGV_const_t arg = argv; arg && *arg; arg++) {
+	const char *fn = *arg;
+	uint8_t *buf = NULL;
+	ssize_t blen = 0;
+	char *t = NULL;
+	int iorc;
+
+	/* If arg looks like a keyid, then attempt keyserver retrieve. */
+	if (rstreqn(fn, "0x", 2)) {
+	    const char * s = fn + 2;
+	    int i;
+	    for (i = 0; *s && isxdigit(*s); s++, i++)
+		{};
+	    if (i == 8 || i == 16) {
+		t = rpmExpand("%{_hkp_keyserver_query}", fn+2, NULL);
+		if (t && *t != '%')
+		    fn = t;
+	    }
+	}
+
+	/* Read the file and try to import all contained keys */
+	iorc = rpmioSlurp(fn, &buf, &blen);
+	if (iorc || buf == NULL || blen < 64) {
+	    rpmlog(RPMLOG_ERR, _("%s: import read failed(%d).\n"), fn, iorc);
+	    res++;
+	} else {
+	    res += doImport(ts, fn, (char *)buf, blen);
+	}
+
+	free(t);
+	free(buf);
+    }
+    return res;
+}
+
 /**
  * @todo If the GPG key was known available, the md5 digest could be skipped.
  */
@@ -379,6 +418,32 @@ int rpmcliVerifySignatures(rpmts ts, ARGV_const_t argv)
     
     verifyFlags &= ~rpmcliQueryFlags;
 
+    while ((arg = *argv++) != NULL) {
+	FD_t fd = Fopen(arg, "r.ufdio");
+	if (fd == NULL || Ferror(fd)) {
+	    rpmlog(RPMLOG_ERR, _("%s: open failed: %s\n"), 
+		     arg, Fstrerror(fd));
+	    res++;
+	} else if (rpmpkgVerifySigs(keyring, verifyFlags, fd, arg)) {
+	    res++;
+	}
+
+	Fclose(fd);
+	rpmdbCheckSignals();
+    }
+    rpmKeyringFree(keyring);
+    return res;
+}
+
+int rpmcliVerifySignaturesAppStore(rpmts ts, ARGV_const_t argv)
+{
+    const char * arg;
+    int res = 0;
+    rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+    rpmVerifyFlags verifyFlags = (VERIFY_DIGEST|VERIFY_SIGNATURE);
+    
+    verifyFlags &= ~rpmcliQueryFlags;
+    addMacro(NULL, "_dbpath", NULL, "/var/lib/appstore", RMIL_GLOBAL);
     while ((arg = *argv++) != NULL) {
 	FD_t fd = Fopen(arg, "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {

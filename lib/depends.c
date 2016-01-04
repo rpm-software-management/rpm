@@ -10,12 +10,14 @@
 #include <rpm/rpmdb.h>
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>
+#include <rpm/rpmmacro.h>
 
 #include "lib/rpmts_internal.h"
 #include "lib/rpmte_internal.h"
 #include "lib/rpmds_internal.h"
 #include "lib/rpmfi_internal.h" /* rpmfiles stuff for now */
 #include "lib/misc.h"
+#include "lib/rpmdb_internal.h"
 
 #include "debug.h"
 
@@ -69,6 +71,8 @@ enum addOp_e {
     RPMTE_UPGRADE	= 1,
     RPMTE_REINSTALL	= 2,
 };
+
+static int m_dbOpened = 0;
 
 /**
  * Check for supported payload format in header.
@@ -170,10 +174,12 @@ static int skipColor(rpm_color_t tscolor, rpm_color_t color, rpm_color_t ocolor)
 
 /* Add erase elements for older packages of same color (if any). */
 static int addSelfErasures(rpmts ts, rpm_color_t tscolor, int op,
-				rpmte p, rpm_color_t hcolor, Header h)
+				rpmte p, rpm_color_t hcolor, Header h, int appStore)
 {
     Header oh;
-    rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(p), 0);
+    rpmdbMatchIterator mi = appStore ? 
+        rpmtsInitIteratorAppStore(ts, RPMDBI_NAME, rpmteN(p), 0) : 
+        rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(p), 0);
     int rc = 0;
     int cmp;
 
@@ -410,7 +416,7 @@ rpmal rpmtsCreateAl(rpmts ts, rpmElementTypes types)
 }
 
 static int addPackage(rpmts ts, Header h,
-		    fnpyKey key, int op, rpmRelocation * relocs)
+		    fnpyKey key, int op, rpmRelocation * relocs, int appStore)
 {
     tsMembers tsmem = rpmtsMembers(ts);
     rpm_color_t tscolor = rpmtsColor(ts);
@@ -476,7 +482,7 @@ static int addPackage(rpmts ts, Header h,
     /* Add erasure elements for old versions and obsoletions on upgrades */
     /* XXX TODO: If either of these fails, we'd need to undo all additions */
     if (op != RPMTE_INSTALL)
-	addSelfErasures(ts, tscolor, op, p, rpmteColor(p), h);
+	addSelfErasures(ts, tscolor, op, p, rpmteColor(p), h, appStore);
     if (op == RPMTE_UPGRADE)
 	addObsoleteErasures(ts, tscolor, p);
 
@@ -490,7 +496,16 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     int op = (upgrade == 0) ? RPMTE_INSTALL : RPMTE_UPGRADE;
     if (rpmtsSetupTransactionPlugins(ts) == RPMRC_FAIL)
 	return 1;
-    return addPackage(ts, h, key, op, relocs);
+    return addPackage(ts, h, key, op, relocs, 0);
+}
+
+int rpmtsAddInstallElementAppStore(rpmts ts, Header h,
+			fnpyKey key, int upgrade, rpmRelocation * relocs)
+{
+    int op = (upgrade == 0) ? RPMTE_INSTALL : RPMTE_UPGRADE;
+    if (rpmtsSetupTransactionPlugins(ts) == RPMRC_FAIL)
+	return 1;
+    return addPackage(ts, h, key, op, relocs, 1);
 }
 
 int rpmtsAddReinstallElement(rpmts ts, Header h, fnpyKey key)
@@ -499,7 +514,7 @@ int rpmtsAddReinstallElement(rpmts ts, Header h, fnpyKey key)
 	return 1;
     /* TODO: pull relocations from installed package */
     /* TODO: should reinstall of non-installed package fail? */
-    return addPackage(ts, h, key, RPMTE_REINSTALL, NULL);
+    return addPackage(ts, h, key, RPMTE_REINSTALL, NULL, 0);
 }
 
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
@@ -540,7 +555,7 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
      */
     if (deptag != RPMTAG_OBSOLETENAME && Name[0] == '/') {
 	mi = rpmtsPrunedIterator(ts, RPMDBI_INSTFILENAMES, Name, prune);
-	while ((h = rpmdbNextIterator(mi)) != NULL) {
+    while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    /* Ignore self-conflicts */
 	    if (deptag == RPMTAG_CONFLICTNAME) {
 		unsigned int instance = headerGetInstance(h);
@@ -592,6 +607,39 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
     return rc;
 }
 
+static int rpmdbProvidesAppStore(rpmts ts, depCache dcache, rpmds dep, const char *dbpath) 
+{
+    const char * Name = rpmdsN(dep);
+    const char * DNEVR = rpmdsDNEVR(dep);
+    rpmTagVal deptag = rpmdsTagN(dep);
+    int rc = 0;
+    rpmdb appdb = NULL;
+    int count = 0;
+    int provides = 0;
+
+    openDatabase(ts->rootDir, dbpath ? dbpath : "/var/lib/appstore", &appdb, O_RDONLY, 0644, 0);
+    if (appdb == NULL) {
+        rc = 1;
+        goto cleanup;
+    }
+
+    count = rpmdbCountPackages(appdb, Name);
+    provides = rpmdbCountProvides(appdb, Name);
+#ifdef RPM_DEBUG
+    printf("DEBUG: %s, %s, line %d: %s %s %s %d %d\n", 
+           __FILE__, __func__, __LINE__, dbpath, Name, DNEVR, count, provides);
+#endif
+    if (count == 0 && provides == 0)
+        rc = 1;
+
+cleanup:
+    if (appdb) {
+        rpmdbClose(appdb);
+        appdb = NULL;
+    }
+    return rc;
+}
+
 /**
  * Check dep for an unsatisfied dependency.
  * @param ts		transaction set
@@ -601,6 +649,10 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
  */
 static int unsatisfiedDepend(rpmts ts, depCache dcache, rpmds dep)
 {
+    if (m_dbOpened == 0) {
+        openDatabase(ts->rootDir, "/var/lib/rpm", &ts->rdb, O_RDONLY, 0644, 0);
+        m_dbOpened = 1;
+    }
     tsMembers tsmem = rpmtsMembers(ts);
     int rc;
     int retrying = 0;
@@ -729,6 +781,29 @@ static void checkDS(rpmts ts, depCache dcache, rpmte te,
 
 	if (unsatisfiedDepend(ts, dcache, ds) == is_problem)
 	    rpmteAddDepProblem(te, pkgNEVRA, ds, NULL);
+    }
+}
+
+/* Check a dependency set for AppStore problems */
+static void checkDSAppStore(rpmts ts, depCache dcache, rpmte te,
+		const char * pkgNEVRA, rpmds ds,
+		rpm_color_t tscolor, const char *dbpath)
+{
+    rpm_color_t dscolor;
+    /* require-problems are unsatisfied, others appear "satisfied" */
+    int is_problem = (rpmdsTagN(ds) == RPMTAG_REQUIRENAME);
+
+    ds = rpmdsInit(ds);
+    while (rpmdsNext(ds) >= 0) {
+	    /* Ignore colored dependencies not in our rainbow. */
+	    dscolor = rpmdsColor(ds);
+	    if (tscolor && dscolor && !(tscolor & dscolor))
+	        continue;
+
+	    if (unsatisfiedDepend(ts, dcache, ds) == is_problem) {
+            if (rpmdbProvidesAppStore(ts, dcache, ds, dbpath) != 0)
+                rpmteAddDepProblem(te, pkgNEVRA, ds, NULL);
+        }
     }
 }
 
@@ -961,6 +1036,179 @@ int rpmtsCheck(rpmts ts)
 		tscolor);
 	checkDS(ts, dcache, p, rpmteNEVRA(p), rpmteDS(p, RPMTAG_OBSOLETENAME),
 		tscolor);
+
+	/* Check provides against conflicts in installed packages. */
+	while (rpmdsNext(provides) >= 0) {
+	    const char *dep = rpmdsN(provides);
+	    checkInstDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, dep);
+	    if (reqnothash && depexistsHashHasEntry(reqnothash, dep))
+		checkNotInstDeps(ts, dcache, p, RPMTAG_REQUIRENAME, dep);
+	}
+
+	/* Skip obsoletion checks for source packages (ie build) */
+	if (rpmteIsSource(p))
+	    continue;
+
+	/* Check package name (not provides!) against installed obsoletes */
+	checkInstDeps(ts, dcache, p, RPMTAG_OBSOLETENAME, rpmteN(p));
+
+	/* Check filenames against installed conflicts */
+        if (confilehash || reqnotfilehash) {
+	    rpmfiles files = rpmteFiles(p);
+	    rpmfi fi = rpmfilesIter(files, RPMFI_ITER_FWD);
+	    while (rpmfiNext(fi) >= 0) {
+		if (confilehash)
+		    checkInstFileDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, fi, 0, confilehash, &fpc);
+		if (reqnotfilehash)
+		    checkInstFileDeps(ts, dcache, p, RPMTAG_REQUIRENAME, fi, 1, reqnotfilehash, &fpc);
+	    }
+	    rpmfiFree(fi);
+	    rpmfilesFree(files);
+	}
+    }
+    rpmtsiFree(pi);
+
+    /*
+     * Look at the removed packages and make sure they aren't critical.
+     */
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
+	rpmds provides = rpmdsInit(rpmteDS(p, RPMTAG_PROVIDENAME));
+
+	rpmlog(RPMLOG_DEBUG, "========== --- %s %s/%s 0x%x\n",
+		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
+
+	/* Check provides and filenames against installed dependencies. */
+	while (rpmdsNext(provides) >= 0) {
+	    const char *dep = rpmdsN(provides);
+	    checkInstDeps(ts, dcache, p, RPMTAG_REQUIRENAME, dep);
+	    if (connothash && depexistsHashHasEntry(connothash, dep))
+		checkNotInstDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, dep);
+	}
+
+	if (reqfilehash || connotfilehash) {
+	    rpmfiles files = rpmteFiles(p);
+	    rpmfi fi = rpmfilesIter(files, RPMFI_ITER_FWD);;
+	    while (rpmfiNext(fi) >= 0) {
+		if (RPMFILE_IS_INSTALLED(rpmfiFState(fi))) {
+		    if (reqfilehash)
+			checkInstFileDeps(ts, dcache, p, RPMTAG_REQUIRENAME, fi, 0, reqfilehash, &fpc);
+		    if (connotfilehash)
+			checkInstFileDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, fi, 1, connotfilehash, &fpc);
+		}
+	    }
+	    rpmfiFree(fi);
+	    rpmfilesFree(files);
+	}
+    }
+    rpmtsiFree(pi);
+
+    if (rdb)
+	rpmdbCtrl(rdb, RPMDB_CTRL_UNLOCK_RO);
+
+exit:
+    depCacheFree(dcache);
+    filedepHashFree(confilehash);
+    filedepHashFree(connotfilehash);
+    depexistsHashFree(connothash);
+    filedepHashFree(reqfilehash);
+    filedepHashFree(reqnotfilehash);
+    depexistsHashFree(reqnothash);
+    fpCacheFree(fpc);
+
+    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
+
+    if (closeatexit)
+	(void) rpmtsCloseDB(ts);
+    return rc;
+}
+
+int rpmtsCheckAppStore(rpmts ts, const char *dbpath)
+{
+    m_dbOpened = 0;
+    rpm_color_t tscolor = rpmtsColor(ts);
+    rpmtsi pi = NULL; rpmte p;
+    int closeatexit = 0;
+    int rc = 0;
+    depCache dcache = NULL;
+    filedepHash confilehash = NULL;	/* file conflicts of installed packages */
+    filedepHash connotfilehash = NULL;	/* file conflicts of installed packages */
+    depexistsHash connothash = NULL;
+    filedepHash reqfilehash = NULL;	/* file requires of installed packages */
+    filedepHash reqnotfilehash = NULL;	/* file requires of installed packages */
+    depexistsHash reqnothash = NULL;
+    fingerPrintCache fpc = NULL;
+    rpmdb rdb = NULL;
+
+    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
+
+    /* Do lazy, readonly, open of rpm database. */
+    rdb = rpmtsGetRdb(ts);
+    if (rdb == NULL && rpmtsGetDBMode(ts) != -1) {
+	if ((rc = rpmtsOpenDB(ts, rpmtsGetDBMode(ts))) != 0)
+	    goto exit;
+	rdb = rpmtsGetRdb(ts);
+	closeatexit = 1;
+    }
+
+    if (rdb)
+	rpmdbCtrl(rdb, RPMDB_CTRL_LOCK_RO);
+
+    /* XXX FIXME: figure some kind of heuristic for the cache size */
+    dcache = depCacheCreate(5001, rstrhash, strcmp,
+				     (depCacheFreeKey)rfree, NULL);
+
+    /* build hashes of all confilict sdependencies */
+    confilehash = filedepHashCreate(257, rstrhash, strcmp,
+				    (filedepHashFreeKey)rfree,
+				    (filedepHashFreeData)rfree);
+    connothash = depexistsHashCreate(257, rstrhash, strcmp,
+				    (filedepHashFreeKey)rfree);
+    connotfilehash = filedepHashCreate(257, rstrhash, strcmp,
+				    (filedepHashFreeKey)rfree,
+				    (filedepHashFreeData)rfree);
+    addIndexToDepHashes(ts, RPMTAG_CONFLICTNAME, NULL, confilehash, connothash, connotfilehash);
+    if (!filedepHashNumKeys(confilehash))
+	confilehash = filedepHashFree(confilehash);
+    if (!depexistsHashNumKeys(connothash))
+	connothash= depexistsHashFree(connothash);
+    if (!filedepHashNumKeys(connotfilehash))
+	connotfilehash = filedepHashFree(connotfilehash);
+
+    /* build hashes of all requires dependencies */
+    reqfilehash = filedepHashCreate(8191, rstrhash, strcmp,
+				    (filedepHashFreeKey)rfree,
+				    (filedepHashFreeData)rfree);
+    reqnothash = depexistsHashCreate(257, rstrhash, strcmp,
+				    (filedepHashFreeKey)rfree);
+    reqnotfilehash = filedepHashCreate(257, rstrhash, strcmp,
+				    (filedepHashFreeKey)rfree,
+				    (filedepHashFreeData)rfree);
+    addIndexToDepHashes(ts, RPMTAG_REQUIRENAME, NULL, reqfilehash, reqnothash, reqnotfilehash);
+    if (!filedepHashNumKeys(reqfilehash))
+	reqfilehash = filedepHashFree(reqfilehash);
+    if (!depexistsHashNumKeys(reqnothash))
+	reqnothash= depexistsHashFree(reqnothash);
+    if (!filedepHashNumKeys(reqnotfilehash))
+	reqnotfilehash = filedepHashFree(reqnotfilehash);
+
+    /*
+     * Look at all of the added packages and make sure their dependencies
+     * are satisfied.
+     */
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
+	rpmds provides = rpmdsInit(rpmteDS(p, RPMTAG_PROVIDENAME));
+
+	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s/%s 0x%x\n",
+		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
+
+	checkDSAppStore(ts, dcache, p, rpmteNEVRA(p), rpmteDS(p, RPMTAG_REQUIRENAME),
+		tscolor, dbpath);
+	checkDSAppStore(ts, dcache, p, rpmteNEVRA(p), rpmteDS(p, RPMTAG_CONFLICTNAME),
+		tscolor, dbpath);
+	checkDSAppStore(ts, dcache, p, rpmteNEVRA(p), rpmteDS(p, RPMTAG_OBSOLETENAME),
+		tscolor, dbpath);
 
 	/* Check provides against conflicts in installed packages. */
 	while (rpmdsNext(provides) >= 0) {
