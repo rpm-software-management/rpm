@@ -13,7 +13,7 @@
 %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib())")
 %define python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib(1))")
 
-%define py_prefix      %(python -c "import sys; sys.stdout.write(sys.prefix)")
+%define py_prefix      %(%{__python} -c "import sys; sys.stdout.write(sys.prefix)")
 %define py_libdir      %{py_prefix}/lib/python%{py_ver}
 %define py_incdir      /usr/include/python%{py_ver}
 %define py_sitedir     %{py_libdir}/site-packages
