@@ -530,6 +530,9 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
     /* Sort triggers by priority, offset, trigger index */
     rpmtriggersSortAndUniq(triggers);
 
+    if (rpmChrootIn() != 0)
+	return RPMRC_FAIL;
+
     /* Handle stored triggers */
     for (i = 0; i < triggers->count; i++) {
 	if (priorityClass == 1) {
@@ -550,6 +553,8 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
 	headerFree(trigH);
     }
     rpmtriggersFree(triggers);
+    /* XXX an error here would require a full abort */
+    (void) rpmChrootOut();
 
     return (nerrors == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
