@@ -599,3 +599,13 @@ rpmRC runImmedFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
 
     return (nerrors == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
+
+rpmRC runImmedFileTriggersInChroot(rpmts ts, rpmte te, rpmsenseFlags sense,
+			    rpmscriptTriggerModes tm, int priorityClass)
+{
+    if (rpmChrootIn() == 0) {
+	runImmedFileTriggers(ts, te, sense, tm, priorityClass);
+	/* XXX an error here would require a full abort */
+	(void) rpmChrootOut();
+    }
+}
