@@ -76,6 +76,22 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
  */
 rpmRC runImmedFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
 			    rpmscriptTriggerModes tm, int upper);
+
+/* Run file triggers in this te other package(s) set off (but goes in chroot first).
+ * This is used for transaction file triggers.
+ * @param ts		transaction set
+ * @param te		transaction entry
+ * @param sense		defines which triggers should be set off (triggerin,
+ *			triggerun, triggerpostun)
+ * @param triggerClass	1 to run triggers that should be executed before
+ *			standard scriptlets
+ *			2 to run triggers that should be executed after
+ *			standard scriptlets
+ *			0 to run all triggers
+ * @param tm		trigger mode, (filetrigger/transfiletrigger)
+ */
+rpmRC runImmedFileTriggersInChroot(rpmts ts, rpmte te, rpmsenseFlags sense,
+			    rpmscriptTriggerModes tm, int upper);
 #ifdef __cplusplus
 }
 #endif
