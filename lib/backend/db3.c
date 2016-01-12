@@ -112,6 +112,11 @@ static void errlog(const DB_ENV * env, const char *errpfx, const char *msg)
     rpmlog(RPMLOG_ERR, "%s: %s\n", errpfx, msg);
 }
 
+static void warnlog(const DB_ENV *env, const char *msg)
+{
+    rpmlog(RPMLOG_WARNING, "%s: %s\n", _errpfx, msg);
+}
+
 static uint32_t db_envflags(DB * db)
 {
     DB_ENV * env = db->get_env(db);
@@ -433,6 +438,7 @@ static int db_init(rpmdb rdb, const char * dbhome)
     dbenv->set_alloc(dbenv, rmalloc, rrealloc, NULL);
     dbenv->set_errcall(dbenv, NULL);
     dbenv->set_errpfx(dbenv, _errpfx);
+    dbenv->set_msgcall(dbenv, warnlog);
 
     /* 
      * These enable automatic stale lock removal. 
