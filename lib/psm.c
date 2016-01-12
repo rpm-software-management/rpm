@@ -850,11 +850,11 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 		rc = runInstScript(psm, goal);
 		break;
 	    case PKG_TRANSFILETRIGGERIN:
-		rc = runImmedFileTriggers(ts, te, RPMSENSE_TRIGGERIN,
+		rc = runImmedFileTriggersInChroot(ts, te, RPMSENSE_TRIGGERIN,
 					    RPMSCRIPT_TRANSFILETRIGGER, 0);
 		break;
 	    case PKG_TRANSFILETRIGGERUN:
-		rc = runImmedFileTriggers(ts, te, RPMSENSE_TRIGGERUN,
+		rc = runImmedFileTriggersInChroot(ts, te, RPMSENSE_TRIGGERUN,
 					    RPMSCRIPT_TRANSFILETRIGGER, 0);
 		break;
 	    default:
