@@ -1,4 +1,0 @@
-%__pythoneggs_provides	%{_rpmconfigdir}/pythoneggs.py --provides
-%__pythoneggs_requires	%{_rpmconfigdir}/pythoneggs.py --requires
-%__pythoneggs_path	^((/usr/lib(64)?/python[[:digit:]]\\.[[:digit:]]/.*\\.(py[oc]?|egg.*))|(%{_bindir}/python[[:digit:]]\\.[[:digit:]]))$
-%__pythoneggs_magic	[Pp]ython.*(executable|byte-compiled)
