@@ -1,0 +1,4 @@
+%__pythondistdeps_provides	%{_rpmconfigdir}/pythondistdeps.py --provides
+%__pythondistdeps_requires	%{_rpmconfigdir}/pythondistdeps.py --requires
+%__pythondistdeps_path	^((/usr/lib(64)?/python[[:digit:]]\\.[[:digit:]]/.*\\.(py[oc]?|egg.*|dist.*))|(%{_bindir}/python[[:digit:]]\\.[[:digit:]]))$
+%__pythondistdeps_magic	[Pp]ython.*(executable|byte-compiled)
