@@ -1121,8 +1121,15 @@ done \
 
 # Single patch application
 %apply_patch(qp:m:)\
-test -f %{1} || exit 1 ; \
-%{uncompress:%{1}} | %{expand:%__scm_apply_%{__scm} %{-q} %{-p:-p%{-p*}} %{-m:-m%{-m*}}}
+%{lua:\
+local file = rpm.expand("%{1}")\
+if posix.access(file, "r") then\
+    local options = rpm.expand("%{-q} %{-p:-p%{-p*}} %{-m:-m%{-m*}}")\
+    local scm_apply = rpm.expand("%__scm_apply_%{__scm}")\
+    print(rpm.expand("%{uncompress:"..file.."} | "..scm_apply.." "..options.."\\n"))\
+else\
+    print("echo 'Cannot read "..file.."'; exit 1;".."\\n")\
+end}
 
 # Automatically apply all patches
 %autopatch(vp:)\
