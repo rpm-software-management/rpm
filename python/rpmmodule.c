@@ -192,7 +192,8 @@ static PyMethodDef rpmModuleMethods[] = {
     { "setStats", (PyCFunction) setStats, METH_O,
       "setStats(bool) -- Set if timing stats are printed after a transaction."},
     { "reloadConfig", (PyCFunction) reloadConfig, METH_VARARGS|METH_KEYWORDS,
-      "readloadConfig(path=None) -- Read config file.\n\nSet all macros and settings accordingly."},
+      "reloadConfig(target=None) -- Reload config from files.\n\n"
+      "Set all macros and settings accordingly."},
 
     { "setInterruptSafety", (PyCFunction) setInterruptSafety,
       METH_VARARGS|METH_KEYWORDS,
