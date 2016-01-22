@@ -548,30 +548,54 @@ static Header rpmteFDHeader(rpmte te)
     return h;
 }
 
-static int rpmteOpen(rpmte te, int reload_fi)
+typedef enum {
+  RPMTE_OPEN_RELOAD_FILES,
+  RPMTE_OPEN_RELOAD_HEADER,
+  RPMTE_OPEN_RELOAD_HEADER_FILES
+} rpmteOpenMode;
+  
+static int rpmteOpen(rpmte te, rpmteOpenMode mode)
 {
     int rc = 0; /* assume failure */
     Header h = NULL;
     if (te == NULL || te->ts == NULL || rpmteFailed(te))
 	goto exit;
 
-    rpmteSetHeader(te, NULL);
-
-    switch (rpmteType(te)) {
-    case TR_ADDED:
+    /* For justdb transactions, we assume the caller is taking more
+     * direct ownership of the headers (e.g. what rpm-ostree wants),
+     * so we don't try to reload them from the original file again.
+     */
+    switch (mode) {
+    case RPMTE_OPEN_RELOAD_FILES:
+      if (te->h)
+	h = headerLink(te->h);
+      break;
+    default:
+      rpmteSetHeader(te, NULL);
+      
+      switch (rpmteType(te)) {
+      case TR_ADDED:
 	h = rpmteDBInstance(te) ? rpmteDBHeader(te) : rpmteFDHeader(te);
 	break;
-    case TR_REMOVED:
+      case TR_REMOVED:
 	h = rpmteDBHeader(te);
-    	break;
+	break;
+      }
+      break;
     }
+
     if (h != NULL) {
-	if (reload_fi) {
+      switch (mode)
+	{
+	case RPMTE_OPEN_RELOAD_FILES:
+	case RPMTE_OPEN_RELOAD_HEADER_FILES:
 	    /* This can fail if we get a different, bad header from callback */
 	    te->files = getFiles(te, h);
 	    rc = (te->files != NULL);
-	} else {
-	    rc = 1;
+	    break;
+	case RPMTE_OPEN_RELOAD_HEADER:
+	  rc = 1;
+	  break;
 	}
 	
 	rpmteSetHeader(te, h);
@@ -739,10 +763,13 @@ rpmfs rpmteGetFileStates(rpmte te)
 
 int rpmteProcess(rpmte te, pkgGoal goal)
 {
-    /* Only install/erase resets pkg file info */
+    /* Only install/erase resets pkg file info, and justdb won't
+     * reload the header either.
+     */
+    int justdb = (rpmtsFlags(te->ts) & RPMTRANS_FLAG_JUSTDB);
     int scriptstage = (goal != PKG_INSTALL && goal != PKG_ERASE);
     int test = (rpmtsFlags(te->ts) & RPMTRANS_FLAG_TEST);
-    int reset_fi = (scriptstage == 0 && test == 0);
+    rpmteOpenMode openmode;
     int failed = 1;
 
     /* Dont bother opening for elements without pre/posttrans scripts */
@@ -752,8 +779,15 @@ int rpmteProcess(rpmte te, pkgGoal goal)
 	}
     }
 
-    if (rpmteOpen(te, reset_fi)) {
-	failed = rpmpsmRun(te->ts, te, goal);
+    if (justdb)
+      openmode = RPMTE_OPEN_RELOAD_FILES;
+    else if (scriptstage == 0 && test == 0)
+      openmode = RPMTE_OPEN_RELOAD_HEADER_FILES;
+    else
+      openmode = RPMTE_OPEN_RELOAD_HEADER;
+    
+    if (rpmteOpen(te, openmode)) {
+	failed = rpmpsmRun(te->ts, te, goal); 
 	rpmteClose(te, reset_fi);
     }
     
