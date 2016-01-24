@@ -1106,7 +1106,7 @@ done \
 # Quilt
 %__scm_setup_quilt(q) %{nil}
 %__scm_apply_quilt(qp:m:)\
-%{__quilt} import %{-p:-p%{-p*}} %{1} && %{__quilt} push
+%{__quilt} import %{-p:-p%{-p*}} %{1} && %{__quilt} push %{-q}
 
 # Bzr
 %__scm_setup_bzr(q)\
