@@ -1166,7 +1166,8 @@ end}
 %{__svn} up %{-q}
 # Subversion 1.7 learned to apply patches
 #%__scm_apply_svn(qp:m:)\
-#%{__svn} patch %{-p:--strip %{-p*}} %{-q}\
+#%{__svn} patch %{-p:--strip %{-p*}} %{-q} %{_sourcedir}/%{-m*}\
+#%{__svn} commit %{-q} -m %{-m*}\
 #%{__svn} up %{-q}
 
 # \endverbatim
