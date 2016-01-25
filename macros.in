@@ -73,6 +73,8 @@
 %__hg			@__HG@
 %__bzr			@__BZR@
 %__quilt		@__QUILT@
+%__svn			@__SVN@
+%__svnadmin		@__SVNADMIN@
 
 #==============================================================================
 # ---- Build system path macros.
@@ -1118,8 +1120,6 @@ done \
 %{__bzr} commit %{-q} -m %{-m*}
 
 # Subversion
-%__svn /usr/bin/svn
-%__svnadmin /usr/bin/svnadmin
 %__scm_setup_svn(q)\
 %{__svnadmin} create .svnrepos\
 %{__svn} mkdir %{-q} -m "Create directory structure." file://`pwd`/.svnrepos/trunk\
@@ -1128,7 +1128,7 @@ done \
 %{__svn} commit %{-q} -m "Initial import."\
 %{__svn} up %{-q}
 
-# Subversion 1.6 doesn't have its own command to appy patches
+# Subversion 1.6 doesn't have its own command to apply patches
 #%__scm_apply_svn(qp:m:)\
 #%{__patch} %{-p:-p%{-p*}} %{-q:-s}\
 #%{__svn} commit %{-q} -m %{-m*}\
