@@ -1125,19 +1125,16 @@ done \
 %{__svn} mkdir %{-q} -m "Create directory structure." file://`pwd`/.svnrepos/trunk\
 %{__svn} checkout %{-q} file://`pwd`/.svnrepos/trunk ./\
 %{__svn} add %{-q} --force ./\
-%{__svn} commit %{-q} -m "Initial import."\
-%{__svn} up %{-q}
+%{__svn} commit %{-q} -m "Initial import." && %{__svn} update %{-q}
 
 # Subversion 1.6 doesn't have its own command to apply patches
 #%__scm_apply_svn(qp:m:)\
 #%{__patch} %{-p:-p%{-p*}} %{-q:-s}\
-#%{__svn} commit %{-q} -m %{-m*}\
-#%{__svn} up %{-q}
+#%{__svn} commit %{-q} -m %{-m*} && %{__svn} update %{-q}
 # Subversion 1.7 learned to apply patches
 %__scm_apply_svn(qp:m:)\
 %{__svn} patch %{-p:--strip %{-p*}} %{-q} %{1}\
-%{__svn} commit %{-q} -m %{-m*}\
-%{__svn} up %{-q}
+%{__svn} commit %{-q} -m %{-m*} && %{__svn} update %{-q}
 
 # Single patch application
 %apply_patch(qp:m:)\
