@@ -1297,10 +1297,12 @@ static int indexSane(rpmtd xd, rpmtd yd, rpmtd zd)
 #define _hgfi(_h, _tag, _td, _flags, _data) \
     if (headerGet((_h), (_tag), (_td), (_flags))) { \
 	if (rpmtdCount(_td) != totalfc) { \
+	    rpmlog(RPMLOG_ERR, _("Wrong number of entries for tag %s: %u found but %u expected.\n"), rpmTagGetName(_tag), rpmtdCount(_td), totalfc); \
 	    goto err; \
 	} \
 	if ((_td)->size < totalfc * sizeof(*(_data))) { \
-	    goto err; \
+	    rpmlog(RPMLOG_ERR, _("Malformed data for tag %s: %u bytes found but %lu expected.\n"), rpmTagGetName(_tag), (_td)->size, totalfc * sizeof(*(_data))); \
+	    goto err;				\
 	} \
 	_data = ((_td)->data); \
     }
