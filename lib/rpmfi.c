@@ -1457,8 +1457,11 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
     if (!(flags & RPMFI_NOFILESTATES))
 	_hgfi(h, RPMTAG_FILESTATES, &td, defFlags, fi->fstates);
 
-    if (!(flags & RPMFI_NOFILECAPS))
-	_hgfi(h, RPMTAG_FILECAPS, &td, defFlags, fi->fcaps);
+    if (!(flags & RPMFI_NOFILECAPS)) {
+	_hgfinc(h, RPMTAG_FILECAPS, &td, defFlags, fi->fcaps);
+	if (td.count && td.count != totalfc)
+	    goto err;
+    }
 
     if (!(flags & RPMFI_NOFILELINKTOS))
 	fi->flinks = tag2pool(fi->pool, h, RPMTAG_FILELINKTOS, totalfc);
