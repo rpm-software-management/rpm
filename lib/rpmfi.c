@@ -1300,7 +1300,8 @@ static int indexSane(rpmtd xd, rpmtd yd, rpmtd zd)
 	    rpmlog(RPMLOG_ERR, _("Wrong number of entries for tag %s: %u found but %u expected.\n"), rpmTagGetName(_tag), rpmtdCount(_td), totalfc); \
 	    goto err; \
 	} \
-	if ((_td)->size < totalfc * sizeof(*(_data))) { \
+	if (rpmTagGetTagType(_tag) != RPM_STRING_ARRAY_TYPE && rpmTagGetTagType(_tag) != RPM_I18NSTRING_TYPE && \
+	    (_td)->size < totalfc * sizeof(*(_data))) {		\
 	    rpmlog(RPMLOG_ERR, _("Malformed data for tag %s: %u bytes found but %lu expected.\n"), rpmTagGetName(_tag), (_td)->size, totalfc * sizeof(*(_data))); \
 	    goto err;				\
 	} \
