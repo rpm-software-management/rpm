@@ -424,9 +424,9 @@ msgid "Failed to open tar pipe: %m\n"
 msgstr ""
 
 #: rpmbuild.c:379
-#, fuzzy, c-format
+#, c-format
 msgid "Found more than one spec file in %s\n"
-msgstr "Muioc'h evit ur restr war ul linenn : %s\n"
+msgstr "Muioc'h evit ur restr spec e %s\n"
 
 #: rpmbuild.c:390
 #, c-format
@@ -919,9 +919,9 @@ msgid "Could not seek in file %s: %s\n"
 msgstr "N'hell ket bet digoret ar restr %s : %s\n"
 
 #: build/pack.c:565
-#, fuzzy, c-format
+#, c-format
 msgid "Fread failed in file %s: %s\n"
-msgstr "%s : sac'het eo bet Fread : %s\n"
+msgstr "sac'het eo bet Fread er restr %s : %s\n"
 
 #: build/pack.c:599
 #, c-format
@@ -1131,14 +1131,14 @@ msgid "Illegal sequence \"..\""
 msgstr ""
 
 #: build/parsePreamble.c:625
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: %s in: %s\n"
-msgstr "linenn %d : %s : %s\n"
+msgstr "linenn %d : %s e : %s\n"
 
 #: build/parsePreamble.c:628
-#, fuzzy, c-format
+#, c-format
 msgid "%s in: %s\n"
-msgstr "%s : linenn : %s\n"
+msgstr "%s e : %s\n"
 
 #: build/parsePreamble.c:713
 #, c-format
@@ -2551,9 +2551,8 @@ msgid "Unknown rich dependency op '%.*s'"
 msgstr ""
 
 #: lib/rpmds.c:1422
-#, fuzzy
 msgid "Name required"
-msgstr "Ret eo e vede ur stumm"
+msgstr "Un anv a zo red"
 
 #: lib/rpmds.c:1459
 msgid "Rich dependency does not start with '('"
@@ -2959,9 +2958,9 @@ msgid "Unable to reset I/O priority: %s"
 msgstr ""
 
 #: lib/rpmscript.c:382
-#, fuzzy, c-format
+#, c-format
 msgid "Fwrite failed: %s"
-msgstr "%s : sac'het eo bet Fwrite : %s\n"
+msgstr "Sac'het eo bet Fwrite : %s"
 
 #: lib/rpmscript.c:400
 #, c-format
@@ -3499,7 +3498,7 @@ msgstr "fazi :"
 
 #: rpmio/rpmlog.c:226
 msgid "warning: "
-msgstr "ho evezh : "
+msgstr "hoc'h evezh : "
 
 #: rpmio/rpmmalloc.c:25
 #, c-format
@@ -3565,9 +3564,8 @@ msgid "Could not exec %s: %s\n"
 msgstr "N'hell ket bet sevenet %s : %s\n"
 
 #: sign/rpmgensig.c:289
-#, fuzzy
 msgid "Fopen failed\n"
-msgstr "%s : sac'het eo bet digeriñ : %s\n"
+msgstr "Sac'het eo bet Fopen\n"
 
 #: sign/rpmgensig.c:304
 #, fuzzy
@@ -3575,9 +3573,9 @@ msgid "Could not write to pipe\n"
 msgstr "N'hell ket bet digoret ar restr %s : %s\n"
 
 #: sign/rpmgensig.c:311
-#, fuzzy, c-format
+#, c-format
 msgid "Could not read from file %s: %s\n"
-msgstr "N'hell ket bet digoret ar restr %s : %s\n"
+msgstr "N'hell ket bet lennet ar restr %s : %s\n"
 
 #: sign/rpmgensig.c:321
 #, c-format
