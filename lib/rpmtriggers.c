@@ -610,6 +610,7 @@ rpmRC runImmedFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
 					    triggers->triggerInfo[i].tix);
     }
     rpmtriggersFree(triggers);
+    headerFree(trigH);
 
     return (nerrors == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
