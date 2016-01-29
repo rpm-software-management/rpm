@@ -14,6 +14,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/mman.h>
+#include <errno.h>
 
 #include <endian.h>
 
@@ -690,7 +691,9 @@ static int rpmidxRebuildInternal(rpmidxdb idxdb)
 	if (nidxdb->xdb) {
 	    rpmxdbResizeBlob(nidxdb->xdb, nidxdb->xdbid, xfile_size);
 	} else {
-	    ftruncate(nidxdb->fd, xfile_size);
+	    if (ftruncate(nidxdb->fd, xfile_size)) {
+		rpmlog(RPMLOG_WARNING, _("truncate failed: %s\n"), strerror(errno));
+	    }
 	}
     }
 
