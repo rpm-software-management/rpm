@@ -142,8 +142,7 @@ char * rpmProblemString(rpmProblem prob)
 	break;
     case RPMPROB_DISKSPACE:
 	rasprintf(&buf,
-	    _("installing package %s needs %" PRIu64 "%cB of free writable "
-	    "space on the %s filesystem"),
+	    _("installing package %s needs %" PRIu64 "%cB on the %s filesystem"),
 		pkgNEVR,
 		prob->num1 > (1024*1024)
 		    ? (prob->num1 + 1024 * 1024 - 1) / (1024 * 1024)
