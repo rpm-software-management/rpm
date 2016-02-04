@@ -238,7 +238,7 @@ exit:
 }
 
 static int fsmMkfile(rpmfi fi, const char *dest, rpmfiles files,
-		     rpmpsm psm, int nodigest, int *setmeta,
+		     rpmpsm psm, int nodigest,
 		     int * firsthardlink)
 {
     int rc = 0;
@@ -268,8 +268,6 @@ static int fsmMkfile(rpmfi fi, const char *dest, rpmfiles files,
 	if (!rc)
 	    rc = expandRegular(fi, dest, psm, nodigest, 0);
 	*firsthardlink = -1;
-    } else {
-	*setmeta = 0;
     }
 
     return rc;
@@ -875,8 +873,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	}
 
         if (!skip) {
-	    int setmeta = 1;
-
 	    /* Directories replacing something need early backup */
 	    if (!suffix) {
 		rc = fsmBackup(fi, action);
@@ -891,7 +887,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
             if (S_ISREG(sb.st_mode)) {
 		if (rc == RPMERR_ENOENT) {
 		    rc = fsmMkfile(fi, fpath, files, psm, nodigest,
-				   &setmeta, &firsthardlink);
+				   &firsthardlink);
 		}
             } else if (S_ISDIR(sb.st_mode)) {
                 if (rc == RPMERR_ENOENT) {
@@ -922,7 +918,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
                     rc = RPMERR_UNKNOWN_FILETYPE;
             }
 	    /* Set permissions, timestamps etc for non-hardlink entries */
-	    if (!rc && setmeta) {
+	    if (!rc) {
 		rc = fsmSetmeta(fpath, fi, plugins, action, &sb);
 	    }
         } else if (firsthardlink >= 0 && rpmfiArchiveHasContent(fi)) {
