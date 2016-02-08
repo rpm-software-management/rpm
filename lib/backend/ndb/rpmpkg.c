@@ -453,8 +453,11 @@ static int rpmpkgValidateZero(rpmpkgdb pkgdb, unsigned int blkoff, unsigned int 
         if (pread(pkgdb->fd, (void *)buf, 65536, fileoff) != 65536)
 	    return RPMRC_FAIL;		/* read error */
 	for (i = 0; i < 65536 / sizeof(unsigned long long); i++)
-	    if (buf[i])
-		return RPMRC_FAIL;	/* not empty */
+	    if (buf[i]) {
+		/* Just warn for non-empty blob otherwise transaction can be blocked */
+		rpmlog(RPMLOG_WARNING, _("rpmpkg: rewriting non-zeroed blob\n"));
+		return RPMRC_OK;	/* not empty */
+	    }
 	fileoff += 65536;
 	tocheck -= 65536;
     }
@@ -464,8 +467,11 @@ static int rpmpkgValidateZero(rpmpkgdb pkgdb, unsigned int blkoff, unsigned int 
         if (pread(pkgdb->fd, (void *)buf, tocheck, fileoff) != tocheck)
 	    return RPMRC_FAIL;		/* read error */
 	for (i = 0; i < cnt; i++)
-	    if (buf[i])
-		return RPMRC_FAIL;	/* not empty */
+	    if (buf[i]) {
+		/* Just warn for non-empty blob otherwise transaction can be blocked */
+		rpmlog(RPMLOG_WARNING, _("rpmpkg: rewriting non-zeroed blob\n"));
+		return RPMRC_OK;	/* not empty */
+	    }
     }
     return RPMRC_OK;
 }
