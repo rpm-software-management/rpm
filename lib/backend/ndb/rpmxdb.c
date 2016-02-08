@@ -1129,7 +1129,7 @@ int rpmxdbSetUserGeneration(rpmxdb xdb, unsigned int usergeneration)
     if (rpmxdbLockReadHeader(xdb, 1))
         return RPMRC_FAIL;
     /* sync before the update */
-    if (xdb->dofsync && fdatasync(xdb->fd)) {
+    if (xdb->dofsync && fsync(xdb->fd)) {
 	rpmxdbUnlock(xdb, 1);
 	return RPMRC_FAIL;
     }

@@ -166,7 +166,7 @@ static int rpmpkgWriteHeader(rpmpkgdb pkgdb)
     if (pwrite(pkgdb->fd, header, sizeof(header), 0) != sizeof(header)) {
 	return RPMRC_FAIL;
     }
-    if (pkgdb->dofsync && fdatasync(pkgdb->fd))
+    if (pkgdb->dofsync && fsync(pkgdb->fd))
 	return RPMRC_FAIL;	/* write error */
     return RPMRC_OK;
 }
@@ -408,7 +408,7 @@ static int rpmpkgWriteEmptySlotpage(rpmpkgdb pkgdb, int pageno)
     if (pwrite(pkgdb->fd, page, PAGE_SIZE - off, pageno * PAGE_SIZE + off) != PAGE_SIZE - off) {
 	return RPMRC_FAIL;
     }
-    if (pkgdb->dofsync && fdatasync(pkgdb->fd)) {
+    if (pkgdb->dofsync && fsync(pkgdb->fd)) {
 	return RPMRC_FAIL;	/* write error */
     }
     return RPMRC_OK;
@@ -613,7 +613,7 @@ static int rpmpkgWriteBlob(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned int blk
     /* update file length */
     if (blkoff + blkcnt > pkgdb->fileblks)
 	pkgdb->fileblks = blkoff + blkcnt;
-    if (pkgdb->dofsync && fdatasync(pkgdb->fd)) {
+    if (pkgdb->dofsync && fsync(pkgdb->fd)) {
 	return RPMRC_FAIL;	/* write error */
     }
     return RPMRC_OK;
@@ -625,7 +625,7 @@ static int rpmpkgDelBlob(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned int blkof
 	return RPMRC_FAIL;
     if (rpmpkgZeroBlks(pkgdb, blkoff, blkcnt))
 	return RPMRC_FAIL;
-    if (pkgdb->dofsync && fdatasync(pkgdb->fd))
+    if (pkgdb->dofsync && fsync(pkgdb->fd))
 	return RPMRC_FAIL;	/* write error */
     return RPMRC_OK;
 }
@@ -1149,7 +1149,7 @@ int rpmpkgNextPkgIdx(rpmpkgdb pkgdb, unsigned int *pkgidxp)
 	rpmpkgUnlock(pkgdb, 1);
 	return RPMRC_FAIL;
     }
-    /* no fdatasync needed. also no need to increase the generation count,
+    /* no fsync needed. also no need to increase the generation count,
      * as the header is always read in */
     rpmpkgUnlock(pkgdb, 1);
     return RPMRC_OK;
