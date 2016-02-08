@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <sys/mman.h>
 #include <endian.h>
+#include <libgen.h>
 
 #include "rpmxdb.h"
 
@@ -511,6 +512,36 @@ int rpmxdbOpen(rpmxdb *xdbp, rpmpkgdb pkgdb, const char *filename, int flags, in
 	free(xdb->filename);
 	free(xdb);
 	return RPMRC_FAIL;
+    }
+    if (flags & O_CREAT) {
+	char *filenameCopy;
+	DIR *pdir;
+
+	if((filenameCopy = strdup(xdb->filename)) == NULL) {
+	    close(xdb->fd);
+	    free(xdb->filename);
+	    free(xdb);
+	    return RPMRC_FAIL;
+	}
+
+	if ((pdir = opendir(dirname(filenameCopy))) == NULL) {
+	    free(filenameCopy);
+	    close(xdb->fd);
+	    free(xdb->filename);
+	    free(xdb);
+	    return RPMRC_FAIL;
+	}
+
+	if (fsync(dirfd(pdir)) == -1) {
+	    closedir(pdir);
+	    free(filenameCopy);
+	    close(xdb->fd);
+	    free(xdb->filename);
+	    free(xdb);
+	    return RPMRC_FAIL;
+	}
+	closedir(pdir);
+	free(filenameCopy);
     }
     if (fstat(xdb->fd, &stb)) {
 	close(xdb->fd);

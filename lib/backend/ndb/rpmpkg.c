@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include <libgen.h>
 
 #include "rpmpkg.h"
 
@@ -843,6 +844,37 @@ int rpmpkgOpen(rpmpkgdb *pkgdbp, const char *filename, int flags, int mode)
 	free(pkgdb->filename);
 	free(pkgdb);
         return RPMRC_FAIL;
+    }
+    if (flags & O_CREAT) {
+	char *filenameCopy;
+	DIR *pdir;
+
+	if ((filenameCopy = strdup(pkgdb->filename)) == NULL) {
+	    close(pkgdb->fd);
+	    free(pkgdb->filename);
+	    free(pkgdb);
+	    return RPMRC_FAIL;
+	}
+
+	if ((pdir = opendir(dirname(filenameCopy))) == NULL) {
+	    free(filenameCopy);
+	    close(pkgdb->fd);
+	    free(pkgdb->filename);
+	    free(pkgdb);
+	    return RPMRC_FAIL;
+	}
+
+	if (fsync(dirfd(pdir)) == -1) {
+	    closedir(pdir);
+	    free(filenameCopy);
+	    close(pkgdb->fd);
+	    free(pkgdb->filename);
+	    free(pkgdb);
+	    return RPMRC_FAIL;
+	}
+	closedir(pdir);
+	free(filenameCopy);
+
     }
     if (fstat(pkgdb->fd, &stb)) {
 	close(pkgdb->fd);
