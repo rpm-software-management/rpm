@@ -38,9 +38,9 @@ for o, a in opts:
         print('-r, --recommends\tPrint Recommends')
         print('-C, --conflicts\tPrint Conflicts')
         print('-E, --extras\tPrint Extras ')
-        print('-M, --majorver-provides\tPrint extra Provides with Python major version only')
-        print('-m, --majorver-prov-with-legacy\tPrint extra Provides with Python major version only and extra legacy Provides')
-        print('-l, --legacy\tPrint extra legacy pythonegg Provides/Requires instead (also enables --majorver-provides)')
+        print('-m, --majorver-provides\tPrint extra Provides with Python major version only')
+        print('-L, --legacy-provides\tPrint extra legacy pythonegg Provides')
+        print('-l, --legacy\tPrint legacy pythonegg Provides/Requires instead')
         exit(1)
     elif o in ('-P', '--provides'):
         Provides = True
@@ -52,14 +52,12 @@ for o, a in opts:
         Conflicts = True
     elif o in ('-E', '--extras'):
         Extras = True
-    elif o in ('-M', '--majorver-provides'):
+    elif o in ('-m', '--majorver-provides'):
         Provides_PyMajorVer_Variant = True
-    elif o in ('-m', '--majorver-prov-with-legacy'):
-        Provides_PyMajorVer_Variant = True
+    elif o in ('-L', '--legacy-provides'):
         legacy_Provides = True
     elif o in ('-l', '--legacy'):
         legacy = True
-        Provides_PyMajorVer_Variant = True
 
 if Requires:
     py_abi = True
@@ -120,9 +118,10 @@ for f in files:
                 if name not in py_deps:
                     py_deps[name] = []
                 py_deps[name].append(('==', dist.py_version))
-            name = 'python{}dist({})'.format(dist.py_version, dist.key)
-            if name not in py_deps:
-                py_deps[name] = []
+            if not legacy:
+                name = 'python{}dist({})'.format(dist.py_version, dist.key)
+                if name not in py_deps:
+                    py_deps[name] = []
             if Provides_PyMajorVer_Variant:
                 pymajor_name = 'python{}dist({})'.format(pyver_major, dist.key)
                 if pymajor_name not in py_deps:
@@ -134,7 +133,8 @@ for f in files:
             if dist.version:
                 spec = ('==', dist.version)
                 if spec not in py_deps[name]:
-                    py_deps[name].append(spec)
+                    if not legacy:
+                        py_deps[name].append(spec)
                     if Provides_PyMajorVer_Variant:
                         py_deps[pymajor_name].append(spec)
                     if legacy or legacy_Provides:
