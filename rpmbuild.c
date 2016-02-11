@@ -1,5 +1,4 @@
 #include "system.h"
-const char *__progname;
 
 #include <errno.h>
 #include <libgen.h>

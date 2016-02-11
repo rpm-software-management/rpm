@@ -1,5 +1,4 @@
 #include "system.h"
-const char *__progname;
 
 #include <rpm/rpmcli.h>
 #include <rpm/rpmbuild.h>
