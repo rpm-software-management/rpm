@@ -18,7 +18,7 @@ char *_rpmxgetprogname(void)
   else
     return empty;
 }
- 
+
 void _rpmxsetprogname(const char *pn)
 {
   if (pn != NULL && _rpmxprogname == NULL /* set the value only once */) {

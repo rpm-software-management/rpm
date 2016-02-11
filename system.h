@@ -104,7 +104,7 @@ extern int fdatasync(int fildes);
    in main(). In some systems (like NetBSD) it can be set only once and it is
    done before an execution of main() -- therefore calling it again has no
    effect.
-   
+
    Getprogname and setprogname function calls appeared in NetBSD 1.6
    (released in 2002). So nothing to (re)implement for this platform. */
 # include <stdlib.h> /* Make sure this header is included */
