@@ -18,8 +18,8 @@ from distutils.sysconfig import get_python_lib
 
 
 opts, args = getopt(
-    argv[1:], 'hPRrCOEMml:',
-    ['help', 'provides', 'requires', 'recommends', 'conflicts', 'extras', 'majorver-provides', 'majorver-prov-with-legacy' , 'legacy'])
+    argv[1:], 'hPRrCOEMLl:',
+    ['help', 'provides', 'requires', 'recommends', 'conflicts', 'extras', 'majorver-provides', 'legacy-provides' , 'legacy'])
 
 Provides = False
 Requires = False
@@ -38,7 +38,7 @@ for o, a in opts:
         print('-r, --recommends\tPrint Recommends')
         print('-C, --conflicts\tPrint Conflicts')
         print('-E, --extras\tPrint Extras ')
-        print('-m, --majorver-provides\tPrint extra Provides with Python major version only')
+        print('-M, --majorver-provides\tPrint extra Provides with Python major version only')
         print('-L, --legacy-provides\tPrint extra legacy pythonegg Provides')
         print('-l, --legacy\tPrint legacy pythonegg Provides/Requires instead')
         exit(1)
@@ -52,7 +52,7 @@ for o, a in opts:
         Conflicts = True
     elif o in ('-E', '--extras'):
         Extras = True
-    elif o in ('-m', '--majorver-provides'):
+    elif o in ('-M', '--majorver-provides'):
         Provides_PyMajorVer_Variant = True
     elif o in ('-L', '--legacy-provides'):
         legacy_Provides = True
@@ -108,7 +108,7 @@ for f in files:
             path_item = f
             metadata = FileMetadata(f)
         dist = Distribution.from_location(path_item, dist_name, metadata)
-        if Provides_PyMajorVer_Variant and Provides:
+        if (Provides_PyMajorVer_Variant or legacy_Provides or legacy) and Provides:
             # Get the Python major version
             pyver_major = dist.py_version.split('.')[0]
         if Provides:
