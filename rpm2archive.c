@@ -178,7 +178,7 @@ int main(int argc, char *argv[])
 {
     int rc;
     
-    setprogname(argv[0]);	/* Retrofit glibc __progname */
+    xsetprogname(argv[0]);	/* Portability call -- see system.h */
     rpmReadConfigFiles(NULL, NULL);
     char * filename;
     if (argc == 1)
