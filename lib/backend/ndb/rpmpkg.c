@@ -24,6 +24,7 @@ static int rpmpkgLZOCompress(unsigned char **blobp, unsigned int *bloblp);
 static int rpmpkgLZODecompress(unsigned char **blobp, unsigned int *bloblp);
 #endif
 
+static int rpmpkgVerifyblob(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned int blkoff, unsigned int blkcnt);
 
 typedef struct pkgslot_s {
     unsigned int pkgidx;
@@ -377,6 +378,41 @@ static int rpmpkgFindEmptyOffset(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned i
     return RPMRC_OK;
 }
 
+static int rpmpkgNeighbourCheck(rpmpkgdb pkgdb, unsigned int blkoff, unsigned int blkcnt, unsigned int *newblkcnt)
+{
+    unsigned int i, nslots = pkgdb->nslots;
+    unsigned int lastblkend = pkgdb->slotnpages * (PAGE_SIZE / BLK_SIZE);
+    pkgslot *slot, *left = 0, *right = 0;
+
+    if (pkgdb->slotorder != SLOTORDER_BLKOFF)
+	rpmpkgOrderSlots(pkgdb, SLOTORDER_BLKOFF);
+    if (blkoff < lastblkend)
+	return RPMRC_FAIL;
+    for (i = 0, slot = pkgdb->slots; i < nslots; i++, slot++) {
+	if (slot->blkoff < lastblkend)
+	    return RPMRC_FAIL;		/* eek, slots overlap! */
+	if (slot->blkoff < blkoff)
+	    left = slot;
+	if (!right && slot->blkoff >= blkoff)
+	    right = slot;
+	lastblkend = slot->blkoff + slot->blkcnt;
+    }
+    if (left && left->blkoff + left->blkcnt != blkoff)
+	return RPMRC_FAIL;	/* must always start right after the block */
+    if (!left && blkoff != pkgdb->slotnpages * (PAGE_SIZE / BLK_SIZE))
+	return RPMRC_FAIL;
+    if (right && right->blkoff < blkoff + blkcnt)
+	return RPMRC_FAIL;
+    /* check if neighbour blobs are in good shape */
+    if (left && rpmpkgVerifyblob(pkgdb, left->pkgidx, left->blkoff, left->blkcnt) != RPMRC_OK)
+	return RPMRC_FAIL;
+    if (right && rpmpkgVerifyblob(pkgdb, right->pkgidx, right->blkoff, right->blkcnt) != RPMRC_OK)
+	return RPMRC_FAIL;
+    *newblkcnt = right ? right->blkoff - blkoff : blkcnt;
+    /* bounds are intect. free area. */
+    return RPMRC_OK;
+}
+
 static int rpmpkgWriteslot(rpmpkgdb pkgdb, unsigned int slotno, unsigned int pkgidx, unsigned int blkoff, unsigned int blkcnt)
 {
     unsigned char buf[SLOT_SIZE];
@@ -438,7 +474,7 @@ static int rpmpkgZeroBlks(rpmpkgdb pkgdb, unsigned int blkoff, unsigned int blkc
     return RPMRC_OK;
 }
 
-static int rpmpkgValidateZero(rpmpkgdb pkgdb, unsigned int blkoff, unsigned int blkcnt)
+static int rpmpkgValidateZeroCheck(rpmpkgdb pkgdb, unsigned int blkoff, unsigned int blkcnt)
 {
     unsigned long long buf[(65536 / sizeof(unsigned long long)) + 1];
     off_t fileoff;
@@ -454,11 +490,8 @@ static int rpmpkgValidateZero(rpmpkgdb pkgdb, unsigned int blkoff, unsigned int 
         if (pread(pkgdb->fd, (void *)buf, 65536, fileoff) != 65536)
 	    return RPMRC_FAIL;		/* read error */
 	for (i = 0; i < 65536 / sizeof(unsigned long long); i++)
-	    if (buf[i]) {
-		/* Just warn for non-empty blob otherwise transaction can be blocked */
-		rpmlog(RPMLOG_WARNING, _("rpmpkg: rewriting non-zeroed blob\n"));
-		return RPMRC_OK;	/* not empty */
-	    }
+	    if (buf[i])
+		return RPMRC_FAIL;	/* not empty */
 	fileoff += 65536;
 	tocheck -= 65536;
     }
@@ -468,15 +501,24 @@ static int rpmpkgValidateZero(rpmpkgdb pkgdb, unsigned int blkoff, unsigned int 
         if (pread(pkgdb->fd, (void *)buf, tocheck, fileoff) != tocheck)
 	    return RPMRC_FAIL;		/* read error */
 	for (i = 0; i < cnt; i++)
-	    if (buf[i]) {
-		/* Just warn for non-empty blob otherwise transaction can be blocked */
-		rpmlog(RPMLOG_WARNING, _("rpmpkg: rewriting non-zeroed blob\n"));
-		return RPMRC_OK;	/* not empty */
-	    }
+	    if (buf[i])
+		return RPMRC_FAIL;	/* not empty */
     }
     return RPMRC_OK;
 }
 
+static int rpmpkgValidateZero(rpmpkgdb pkgdb, unsigned int blkoff, unsigned int blkcnt)
+{
+    if (rpmpkgValidateZeroCheck(pkgdb, blkoff, blkcnt) == RPMRC_OK)
+	return RPMRC_OK;
+    rpmlog(RPMLOG_WARNING, _("rpmpkg: detected non-zero blob, trying auto repair\n"));
+    /* auto-repair interrupted transactions */
+    if (rpmpkgNeighbourCheck(pkgdb, blkoff, blkcnt, &blkcnt) != RPMRC_OK)
+	return RPMRC_FAIL;
+    if (rpmpkgZeroBlks(pkgdb, blkoff, blkcnt) != RPMRC_OK)
+	return RPMRC_FAIL;
+    return RPMRC_OK;
+}
 
 
 /*** Blob primitives ***/
