@@ -98,7 +98,7 @@ extern int fdatasync(int fildes);
 
    setprogname(*pn) must be the first call in main() in order to set the name
    as soon as possible. */
-#if defined(__NetBSD__)
+#if defined(__NetBSD__) || defined(__APPLE__)
 /* `man setprogname' v. May 21, 2011 (NetBSD 6.1) says:
    Portable programs that wish to use getprogname() should call setprogname()
    in main(). In some systems (like NetBSD) it can be set only once and it is

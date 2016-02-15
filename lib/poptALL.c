@@ -142,7 +142,7 @@ static void rpmcliAllArgCallback( poptContext con,
 	if (rpmcliPipeOutput) {
 	    fprintf(stderr,
 		    _("%s: error: more than one --pipe specified "
-		      "(incompatible popt aliases?)\n"), __progname);
+		      "(incompatible popt aliases?)\n"), xgetprogname());
 	    exit(EXIT_FAILURE);
 	}
 	rpmcliPipeOutput = xstrdup(arg);
