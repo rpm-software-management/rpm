@@ -103,6 +103,7 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 	rc = rpmpkgOpen(&pkgdb, path, oflags, 0666);
  	if (rc && errno == ENOENT) {
 	    oflags = O_RDWR|O_CREAT;
+	    dbi->dbi_flags |= DBI_CREATED;
 	    rc = rpmpkgOpen(&pkgdb, path, oflags, 0666);
 	}
 	if (rc) {
@@ -114,13 +115,14 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 	free(path);
 	dbi->dbi_db = ndbenv->pkgdb = pkgdb;
     } else {
+	char *path = rstrscat(NULL, dbhome, "/Index.db", NULL);
+	unsigned int id;
 	rpmidxdb idxdb = 0;
 	if (!ndbenv->pkgdb) {
 	    ndb_Close(dbi, 0);
 	    return 1;	/* please open primary first */
 	}
 	if (!ndbenv->xdb) {
-	    char *path = rstrscat(NULL, dbhome, "/Index.db", NULL);
 	    rpmlog(RPMLOG_DEBUG, "opening  db index       %s mode=0x%x\n", path, rdb->db_mode);
 	    rc = rpmxdbOpen(&ndbenv->xdb, rdb->db_pkgs->dbi_db, path, oflags, 0666);
 	    if (rc && errno == ENOENT) {
@@ -133,8 +135,22 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 		ndb_Close(dbi, 0);
 		return 1;
 	    }
-	    free(path);
 	}
+	if (rpmxdbLookupBlob(ndbenv->xdb, &id, rpmtag, 0, 0) == RPMRC_NOTFOUND) {
+	    if (rpmxdbIsRdonly(ndbenv->xdb)) {
+		rpmxdbClose(ndbenv->xdb);
+		oflags = O_RDWR;
+		rc = rpmxdbOpen(&ndbenv->xdb, rdb->db_pkgs->dbi_db, path, oflags, 0666);
+		if (rc) {
+		    perror("rpmxdbOpen");
+		    free(path);
+		    ndb_Close(dbi, 0);
+		    return 1;
+		}
+	    }
+	    dbi->dbi_flags |= DBI_CREATED;
+	}
+	free(path);
 	rpmlog(RPMLOG_DEBUG, "opening  db index       %s tag=%d\n", dbiName(dbi), rpmtag);
 	if (rpmidxOpenXdb(&idxdb, rdb->db_pkgs->dbi_db, ndbenv->xdb, rpmtag)) {
 	    perror("rpmidxOpenXdb");
@@ -144,9 +160,6 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 	dbi->dbi_db = idxdb;
     }
 
-    dbi->dbi_flags = 0;
-    if (oflags & O_CREAT)
-	dbi->dbi_flags |= DBI_CREATED;
     if ((oflags & (O_RDWR | O_RDONLY)) == O_RDONLY)
 	dbi->dbi_flags |= DBI_RDONLY;
 
