@@ -94,6 +94,8 @@ pkginclude_HEADERS += build/rpmspec.h
 rpmbindir = `echo $(bindir) | $(SED) -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm
 
+rpm_symlink_prefix = `case "$(bindir)" in *usr/bin*) echo '../../bin/';; *) echo '';; esac`
+
 bin_PROGRAMS =		rpm2cpio rpmbuild rpmdb rpmkeys rpmsign rpmspec
 if WITH_ARCHIVE
 bin_PROGRAMS += 	rpm2archive 
@@ -230,9 +232,9 @@ rpmvar_DATA =
 
 install-exec-hook:
 	@rm -f $(DESTDIR)$(bindir)/rpmquery
-	@LN_S@ ../../bin/rpm $(DESTDIR)$(bindir)/rpmquery
+	@LN_S@ $(rpm_symlink_prefix)rpm $(DESTDIR)$(bindir)/rpmquery
 	@rm -f $(DESTDIR)$(bindir)/rpmverify
-	@LN_S@ ../../bin/rpm $(DESTDIR)$(bindir)/rpmverify
+	@LN_S@  $(rpm_symlink_prefix)rpm $(DESTDIR)$(bindir)/rpmverify
 
 install-data-local:
 	DESTDIR="$(DESTDIR)" pkglibdir="$(rpmconfigdir)" \
