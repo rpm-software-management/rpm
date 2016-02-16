@@ -787,8 +787,6 @@ static int rpmpkgGetLock(rpmpkgdb pkgdb, int type)
 int rpmpkgLock(rpmpkgdb pkgdb, int excl)
 {
     unsigned int *lockcntp = excl ? &pkgdb->locked_excl : &pkgdb->locked_shared;
-    if (excl && pkgdb->rdonly)
-	return RPMRC_FAIL;
     if (*lockcntp > 0 || (!excl && pkgdb->locked_excl)) {
 	(*lockcntp)++;
 	return RPMRC_OK;
@@ -799,6 +797,14 @@ int rpmpkgLock(rpmpkgdb pkgdb, int excl)
     }
     (*lockcntp)++;
     return RPMRC_OK;
+}
+
+static int rpmpkgLockInternal(rpmpkgdb pkgdb, int excl)
+{
+    if (excl && pkgdb->rdonly)
+	return RPMRC_FAIL;
+
+    return  rpmpkgLock(pkgdb, excl);
 }
 
 int rpmpkgUnlock(rpmpkgdb pkgdb, int excl)
@@ -827,7 +833,7 @@ int rpmpkgUnlock(rpmpkgdb pkgdb, int excl)
 
 static int rpmpkgLockReadHeader(rpmpkgdb pkgdb, int excl)
 {
-    if (rpmpkgLock(pkgdb, excl))
+    if (rpmpkgLockInternal(pkgdb, excl))
 	return RPMRC_FAIL;
     if (rpmpkgReadHeader(pkgdb)) {
 	rpmpkgUnlock(pkgdb, excl);
@@ -861,7 +867,7 @@ static int rpmpkgInit(rpmpkgdb pkgdb)
 {
     int rc;
     
-    if (rpmpkgLock(pkgdb, 1))
+    if (rpmpkgLockInternal(pkgdb, 1))
 	return RPMRC_FAIL;
     rc = rpmpkgInitInternal(pkgdb);
     rpmpkgUnlock(pkgdb, 1);
