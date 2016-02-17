@@ -361,6 +361,7 @@ static int rpmxdbWriteHeader(rpmxdb xdb)
     h2lea(xdb->generation, xdb->mapped + XDB_OFFSET_GENERATION);
     h2lea(xdb->slotnpages, xdb->mapped + XDB_OFFSET_SLOTNPAGES);
     h2lea(xdb->pagesize, xdb->mapped + XDB_OFFSET_PAGESIZE);
+    h2lea(xdb->usergeneration, xdb->mapped + XDB_OFFSET_USERGENERATION);
     return RPMRC_OK;
 }
 
