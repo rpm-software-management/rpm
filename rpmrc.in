@@ -62,6 +62,11 @@ optflags: mipsel -O2 -g
 optflags: mips64 -O2 -g
 optflags: mips64el -O2 -g
 
+optflags: mipsr6 -O2 -g
+optflags: mipsr6el -O2 -g
+optflags: mips64r6 -O2 -g
+optflags: mips64r6el -O2 -g
+
 optflags: armv3l -O2 -g -march=armv3
 optflags: armv4b -O2 -g -march=armv4
 optflags: armv4l -O2 -g -march=armv4
@@ -120,6 +125,11 @@ archcolor: mips 1
 archcolor: mipsel 1
 archcolor: mips64 2
 archcolor: mips64el 2
+
+archcolor: mipsr6 1
+archcolor: mipsr6el 1
+archcolor: mips64r6 2
+archcolor: mips64r6el 2
 
 archcolor: m68k 1
 
@@ -228,6 +238,11 @@ arch_canon:	sh4a: sh4a	17
 arch_canon:	xtensa: xtensa	18
 arch_canon:	aarch64: aarch64 19
 
+arch_canon:	mipsr6: mipsr6	20
+arch_canon:	mipsr6el: mipsr6el	20
+arch_canon:	mips64r6: mips64r6	21
+arch_canon:	mips64r6el: mips64r6el	21
+
 #############################################################
 # Canonical OS names and numbers
 
@@ -323,6 +338,11 @@ buildarchtranslate: mipsel: mipsel
 buildarchtranslate: mips64: mips64
 buildarchtranslate: mips64el: mips64el
 
+buildarchtranslate: mipsr6: mipsr6
+buildarchtranslate: mipsr6el: mipsr6el
+buildarchtranslate: mips64r6: mips64r6
+buildarchtranslate: mips64r6el: mips64r6el
+
 buildarchtranslate: m68k: m68k
 
 buildarchtranslate: atarist: m68kmint
@@ -403,6 +423,11 @@ arch_compat: mips: noarch
 arch_compat: mipsel: noarch
 arch_compat: mips64: mips
 arch_compat: mips64el: mipsel
+
+arch_compat: mipsr6: noarch
+arch_compat: mipsr6el: noarch
+arch_compat: mips64r6: mipsr6
+arch_compat: mips64r6el: mipsr6el
 
 arch_compat: hppa2.0: hppa1.2
 arch_compat: hppa1.2: hppa1.1
@@ -526,6 +551,11 @@ buildarch_compat: mips: noarch
 buildarch_compat: mipsel: noarch
 buildarch_compat: mips64: noarch
 buildarch_compat: mips64el: noarch
+
+buildarch_compat: mipsr6: noarch
+buildarch_compat: mipsr6el: noarch
+buildarch_compat: mips64r6: noarch
+buildarch_compat: mips64r6el: noarch
 
 buildarch_compat: armv4b: noarch
 buildarch_compat: armv7l: armv6l

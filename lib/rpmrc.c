@@ -1057,21 +1057,45 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 
 #	if defined(__MIPSEL__) || defined(__MIPSEL) || defined(_MIPSEL)
 	    /* little endian */
-#		if defined(__LP64__) || defined(_LP64)
+#		if defined(__mips64)
 		    /* 64-bit */
-		    strcpy(un.machine, "mips64el");
+#			if !defined(__mips_isa_rev) || __mips_isa_rev < 6
+			    /* r1-r5 */
+			    strcpy(un.machine, "mips64el");
+#			else
+			    /* r6 */
+			    strcpy(un.machine, "mips64r6el");
+#			endif
 #		else
 		    /* 32-bit */
-		    strcpy(un.machine, "mipsel");
+#			if !defined(__mips_isa_rev) || __mips_isa_rev < 6
+			    /* r1-r5 */
+			    strcpy(un.machine, "mipsel");
+#			else
+			    /* r6 */
+			    strcpy(un.machine, "mipsr6el");
+#			endif
 #		endif
 #	elif defined(__MIPSEB__) || defined(__MIPSEB) || defined(_MIPSEB)
 	   /* big endian */
-#		if defined(__LP64__) || defined(_LP64)
+#		if defined(__mips64)
 		    /* 64-bit */
-		    strcpy(un.machine, "mips64");
+#			if !defined(__mips_isa_rev) || __mips_isa_rev < 6
+			    /* r1-r5 */
+			    strcpy(un.machine, "mips64");
+#			else
+			    /* r6 */
+			    strcpy(un.machine, "mips64r6");
+#			endif
 #		else
 		    /* 32-bit */
-		    strcpy(un.machine, "mips");
+#			if !defined(__mips_isa_rev) || __mips_isa_rev < 6
+			    /* r1-r5 */
+			    strcpy(un.machine, "mips");
+#			else
+			    /* r6 */
+			    strcpy(un.machine, "mipsr6");
+#			endif
 #		endif
 #	endif
 
