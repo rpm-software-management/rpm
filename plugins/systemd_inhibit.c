@@ -27,7 +27,7 @@ static int inhibit(void)
     }
 
     if (msg) {
-	const char *what = "shutdown";
+	const char *what = "idle:sleep:shutdown";
 	const char *mode = "block";
 	const char *who = "RPM";
 	const char *reason = "Transaction running";
