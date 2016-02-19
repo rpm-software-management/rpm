@@ -1014,8 +1014,24 @@ done \
 %arm	armv3l armv4b armv4l armv4tl armv5tel armv5tejl armv6l armv6hl armv7l armv7hl armv7hnl
 
 #------------------------------------------------------------------------------
+# arch macro for 32-bit MIPS processors
+%mips32	mips mipsel mipsr6 mipsr6el
+
+#------------------------------------------------------------------------------
+# arch macro for 64-bit MIPS processors
+%mips64	mips64 mips64el mips64r6 mips64r6el
+
+#------------------------------------------------------------------------------
+# arch macro for big endian MIPS processors
+%mipseb	mips mipsr6 mips64 mips64r6
+
+#------------------------------------------------------------------------------
+# arch macro for little endian MIPS processors
+%mipsel	mipsel mipsr6el mips64el mips64r6el
+
+#------------------------------------------------------------------------------
 # arch macro for all supported MIPS processors
-%mips	mips mipsel mips64 mips64el
+%mips	%{mips32} %{mips64}
 
 #------------------------------------------------------------------------------
 # arch macro for all supported Sparc processors
