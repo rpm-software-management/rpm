@@ -198,7 +198,7 @@ struct poptOption rpmQueryPoptTable[] = {
 	N_("list files in package"), NULL },
 
  /* Duplicate file attr flags from packages into command line options. */
- { "noghost", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN,
+ { "noghost", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_fflags, RPMFILE_GHOST,
         N_("skip %%ghost files"), NULL },
 

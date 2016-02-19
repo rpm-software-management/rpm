@@ -71,7 +71,7 @@ rpm \- RPM Package Manager
  [\fB--provides\fR] [\fB--qf,--queryformat \fIQUERYFMT\fB\fR]
  [\fB--recommends\fR] [\fB-R,--requires\fR] [\fB--suggests\fR]
  [\fB--supplements\fR] [\fB--scripts\fR] [\fB-s,--state\fR]
- [\fB--triggers,--triggerscripts\fR]
+ [\fB--triggers,--triggerscripts\fR] [\fB--noghost\fR]
 
 .SS "verify-options"
 .PP
@@ -682,6 +682,10 @@ Display the \fIstates\fR of files in the package
 \fB--triggers, --triggerscripts\fR
 Display the trigger scripts, if any, which are contained in
 the package.
+.TP
+\fB--noghost\fR
+Don't display ghost files. Useful in combination with option --list.
+
 .SS "VERIFY OPTIONS"
 .PP
 The general form of an rpm verify command is 
