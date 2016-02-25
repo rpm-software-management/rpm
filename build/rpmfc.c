@@ -1267,7 +1267,6 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 {
     rpmfi fi = rpmfilesIter(pkg->cpioList, RPMFI_ITER_FWD);
     rpmfc fc = NULL;
-    ARGV_t av = NULL;
     rpm_mode_t * fmode = NULL;
     int ac = rpmfiFC(fi);
     int genConfigDeps = 0;
@@ -1280,18 +1279,14 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 	goto exit;
 
     /* Extract absolute file paths in argv format. */
-    av = xcalloc(ac+1, sizeof(*av));
     fmode = xcalloc(ac+1, sizeof(*fmode));
 
     fi = rpmfiInit(fi, 0);
     while ((idx = rpmfiNext(fi)) >= 0) {
 	/* Does package have any %config files? */
 	genConfigDeps |= (rpmfiFFlags(fi) & RPMFILE_CONFIG);
-
-	av[idx] = rstrscat(NULL, spec->buildRoot, rpmfiFN(fi), NULL);
 	fmode[idx] = rpmfiFMode(fi);
     }
-    av[ac] = NULL;
 
     fc = rpmfcCreate(spec->buildRoot, 0);
     free(fc->pkg);
@@ -1316,7 +1311,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     }
 
     /* Build file class dictionary. */
-    rc = rpmfcClassify(fc, av, fmode);
+    rc = rpmfcClassify(fc, pkg->dpaths, fmode);
     if ( rc != RPMRC_OK )
 	goto exit;
 
@@ -1371,7 +1366,6 @@ exit:
 	fc->pkg = NULL;
     free(fmode);
     rpmfcFree(fc);
-    argvFree(av);
     rpmfiFree(fi);
 
     return rc;
