@@ -428,6 +428,11 @@ static rpmRC checkForValidArchitectures(rpmSpec spec)
     char *arch = rpmExpand("%{_target_cpu}", NULL);
     char *os = rpmExpand("%{_target_os}", NULL);
     rpmRC rc = RPMRC_FAIL; /* assume failure */
+
+    if (!strcmp(arch, "noarch")) {
+	free(arch);
+	arch = rpmExpand("%{_build_cpu}", NULL);
+    }
     
     if (isMemberInEntry(spec->buildRestrictions,
 			arch, RPMTAG_EXCLUDEARCH) == 1) {
