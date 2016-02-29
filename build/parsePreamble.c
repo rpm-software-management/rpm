@@ -1099,6 +1099,14 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	    SKIPSPACE(linep);
 	    if (*linep != '\0') {
 		if (findPreambleTag(spec, &tag, &macro, lang)) {
+		    if (spec->lineNum == 1 &&
+			(unsigned char)(spec->line[0]) == 0xed &&
+			(unsigned char)(spec->line[1]) == 0xab &&
+			(unsigned char)(spec->line[2]) == 0xee &&
+			(unsigned char)(spec->line[3]) == 0xdb) {
+			rpmlog(RPMLOG_ERR, _("Binary rpm package found. Expected spec file!\n"));
+			goto exit;
+		    }
 		    rpmlog(RPMLOG_ERR, _("line %d: Unknown tag: %s\n"),
 				spec->lineNum, spec->line);
 		    goto exit;
