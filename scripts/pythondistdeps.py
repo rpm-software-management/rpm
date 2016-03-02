@@ -18,7 +18,7 @@ from distutils.sysconfig import get_python_lib
 
 
 opts, args = getopt(
-    argv[1:], 'hPRrCOEMLl:',
+    argv[1:], 'hPRrCEMLl:',
     ['help', 'provides', 'requires', 'recommends', 'conflicts', 'extras', 'majorver-provides', 'legacy-provides' , 'legacy'])
 
 Provides = False
