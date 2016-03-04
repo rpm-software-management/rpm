@@ -819,6 +819,25 @@ static int Pmkstemp(lua_State *L)
 	return 2;
 }
 
+static int Predirect2null(lua_State *L)
+{
+    int target_fd, fd, r, e;
+
+    if (!have_forked)
+	return luaL_error(L, "silence_file_descriptor not permitted in this context");
+
+    target_fd = luaL_checkinteger(L, 1);
+
+    r = fd = open("/dev/null", O_WRONLY);
+    if (fd >= 0 && fd != target_fd) {
+	r = dup2(fd, target_fd);
+	e = errno;
+	(void) close(fd);
+	errno = e;
+    }
+    return pushresult(L, r, NULL);
+}
+
 static const luaL_Reg R[] =
 {
 	{"access",		Paccess},
@@ -861,6 +880,7 @@ static const luaL_Reg R[] =
 	{"wait",		Pwait},
 	{"setenv",		Psetenv},
 	{"unsetenv",		Punsetenv},
+	{"redirect2null",       Predirect2null},
 	{NULL,			NULL}
 };
 
