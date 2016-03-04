@@ -48,6 +48,9 @@ static rpmRC sehandle_init(int open_status)
 
     sehandle = selabel_open(SELABEL_CTX_FILE, opts, 1);
 
+    rpmlog(RPMLOG_DEBUG, "selabel_open: (%s) %s\n",
+	   path, (sehandle == NULL ? strerror(errno) : ""));
+
     return (sehandle != NULL) ? RPMRC_OK : RPMRC_FAIL;
 }
 
