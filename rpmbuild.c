@@ -627,6 +627,7 @@ int main(int argc, char *argv[])
 	
     ts = rpmtsCreate();
     (void) rpmtsSetRootDir(ts, rpmcliRootDir);
+    rpmtsSetFlags(ts, rpmtsFlags(ts) | RPMTRANS_FLAG_NOPLUGINS);
 
     switch (buildChar) {
     case 'a':
