@@ -312,6 +312,8 @@ int main(int argc, char *argv[])
 	verifyFlags &= ~qva->qva_flags;
 	qva->qva_flags = (rpmQueryFlags) verifyFlags;
 
+	rpmtsSetFlags(ts, rpmtsFlags(ts) | (ia->transFlags & RPMTRANS_FLAG_NOPLUGINS));
+
 	if (!poptPeekArg(optCon) && !(qva->qva_source == RPMQV_ALL))
 	    argerror(_("no arguments given for verify"));
 	ec = rpmcliVerify(ts, qva, (ARGV_const_t) poptGetArgs(optCon));
