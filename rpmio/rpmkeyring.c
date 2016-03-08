@@ -177,6 +177,7 @@ rpmPubkey *rpmGetSubkeys(rpmPubkey mainkey, int *count)
 	    subkey->nrefs = 1;
 	    pthread_rwlock_init(&subkey->lock, NULL);
 	}
+	free(pgpsubkeys);
     }
     *count = pgpsubkeysCount;
 
