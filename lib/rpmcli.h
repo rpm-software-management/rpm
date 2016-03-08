@@ -97,6 +97,7 @@ enum rpmQVSources_e {
     RPMQV_WHATSUGGESTS,		/*!< ... from suggests db search. */
     RPMQV_WHATSUPPLEMENTS,	/*!< ... from supplements db search. */
     RPMQV_WHATENHANCES,		/*!< ... from enhances db search. */
+    RPMQV_SPECBUILTRPMS,	/*!< ... from pkgs which would be built from spec */
 };
 
 typedef rpmFlags rpmQVSources;

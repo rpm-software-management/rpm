@@ -39,9 +39,11 @@ See \fBrpm(8)\fR for details.
 .SS "SELECT OPTIONS"
 .PP
  \fB--rpms\fR
-Operate on the binary package header(s).
+Operate on the all binary package headers generated from spec.
+ \fB--builtrpms\fR
+Operate only on the binary package headers of packages which would be built from spec. That means ignoring package headers of packages that won't be built from spec i. e. ignoring package headers of packages without file section.
  \fB--srpm\fR
-Operate on the source package header(s).
+Operate on the source package header(s) generated from spec.
 
 .SH "SEE ALSO"
 .nf
