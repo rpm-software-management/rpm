@@ -31,7 +31,8 @@ typedef struct OpenFileInfo {
     char * fileName;
     FILE *fp;
     int lineNum;
-    char readBuf[BUFSIZ];
+    char *readBuf;
+    int readBufLen;
     const char * readPtr;
     struct OpenFileInfo * next;
 } OFI_t;
@@ -132,6 +133,8 @@ static OFI_t * pushOFI(rpmSpec spec, const char *fn)
     ofi->fp = NULL;
     ofi->fileName = xstrdup(fn);
     ofi->lineNum = 0;
+    ofi->readBufLen = BUFSIZ;
+    ofi->readBuf = xmalloc(ofi->readBufLen);
     ofi->readBuf[0] = '\0';
     ofi->readPtr = NULL;
     ofi->next = spec->fileStack;
@@ -150,6 +153,7 @@ static OFI_t * popOFI(rpmSpec spec)
 	if (ofi->fp)
 	    fclose(ofi->fp);
 	free(ofi->fileName);
+	free(ofi->readBuf);
 	free(ofi);
     }
     return spec->fileStack;
@@ -318,7 +322,22 @@ retry:
 
     /* Make sure we have something in the read buffer */
     if (!(ofi->readPtr && *(ofi->readPtr))) {
-	if (!fgets(ofi->readBuf, BUFSIZ, ofi->fp)) {
+	char c;
+	int i = 0;
+
+	while((c = fgetc(ofi->fp)) != EOF) {
+	    if (i >= ofi->readBufLen - 1) {
+		ofi->readBufLen += BUFSIZ;
+		ofi->readBuf = xrealloc(ofi->readBuf, ofi->readBufLen);
+	    }
+	    ofi->readBuf[i++] = c;
+	    if (c == '\n') {
+		ofi->readBuf[i] = '\0';
+		break;
+	    }
+	}
+
+	if (!i) {
 	    /* EOF, remove this file from the stack */
 	    ofi = popOFI(spec);
 
