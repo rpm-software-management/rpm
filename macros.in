@@ -214,6 +214,11 @@ package or when debugging this package.\
 #	to the timestamp of the topmost changelog entry
 %source_date_epoch_from_changelog 0
 
+#	If true, make sure that timestamps in built rpms
+#	are not later than the value of SOURCE_DATE_EPOCH.
+#	Is ignored when SOURCE_DATE_EPOCH is not set.
+%clamp_mtime_to_source_date_epoch 0
+
 #	The directory where newly built binary packages will be written.
 %_rpmdir		%{_topdir}/RPMS
 
