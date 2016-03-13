@@ -1087,7 +1087,7 @@ done \
 # Plain patch (-m is unused)
 %__scm_setup_patch(q) %{nil}
 %__scm_apply_patch(qp:m:)\
-%{__patch} %{-p:-p%{-p*}} %{-q:-s}
+%{__patch} %{-p:-p%{-p*}} %{-q:-s} --fuzz=%{_default_patch_fuzz}
 
 # Mercurial (aka hg)
 %__scm_setup_hg(q)\
