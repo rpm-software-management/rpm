@@ -9,6 +9,7 @@
 #define	MYALLPERMS	07777
 
 #include <errno.h>
+#include <stdlib.h>
 #include <regex.h>
 #if WITH_CAP
 #include <sys/capability.h>
@@ -944,6 +945,24 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
     uint32_t defaultalgo = PGPHASHALGO_MD5, digestalgo;
     rpm_loff_t totalFileSize = 0;
     Header h = pkg->header; /* just a shortcut */
+    int override_date = 0;
+    time_t source_date_epoch;
+    char *srcdate = getenv("SOURCE_DATE_EPOCH");
+
+    /* Limit the maximum date to SOURCE_DATE_EPOCH if defined
+     * similar to the tar --clamp-mtime option
+     * https://reproducible-builds.org/specs/source-date-epoch/
+     */
+    if (srcdate && rpmExpandNumeric("%{?clamp_mtime_to_source_date_epoch}")) {
+	char *endptr;
+	errno = 0;
+	source_date_epoch = strtol(srcdate, &endptr, 10);
+	if (srcdate == endptr || *endptr || errno != 0) {
+	    rpmlog(RPMLOG_ERR, _("unable to parse %s=%s\n"), "SOURCE_DATE_EPOCH", srcdate);
+	    exit(28);
+	}
+	override_date = 1;
+    }
 
     /*
      * See if non-md5 file digest algorithm is requested. If not
@@ -1068,6 +1087,9 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	    }
 	}
 	
+	if (override_date && flp->fl_mtime > source_date_epoch) {
+	    flp->fl_mtime = source_date_epoch;
+	}
 	/*
  	 * For items whose size varies between systems, always explicitly 
  	 * cast to the header type before inserting.
