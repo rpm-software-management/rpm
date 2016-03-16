@@ -103,14 +103,6 @@ typedef struct AttrRec_s {
 /* list of files */
 static StringBuf check_fileList = NULL;
 
-typedef struct specialDir_s {
-    char * dirname;
-    ARGV_t files;
-    struct AttrRec_s ar;
-    struct AttrRec_s def_ar;
-    rpmFlags sdtype;
-} * specialDir;
-
 typedef struct FileEntry_s {
     rpmfileAttrs attrFlags;
     specfFlags specdFlags;
@@ -126,6 +118,23 @@ typedef struct FileEntry_s {
     int devminor;
     int isDir;
 } * FileEntry;
+
+typedef struct specialDir_s {
+    char * dirname;
+    ARGV_t files;
+    struct AttrRec_s ar;
+    struct AttrRec_s def_ar;
+    rpmFlags sdtype;
+
+    int entriesCount;
+    int entriesAlloced;
+
+    struct {
+	struct FileEntry_s defEntry;
+	struct FileEntry_s curEntry;
+    } *entries;
+
+} * specialDir;
 
 typedef struct FileRecords_s {
     FileListRec recs;
@@ -167,6 +176,22 @@ static void dupAttrRec(const AttrRec oar, AttrRec nar)
     if (oar == nar)
 	return;
     *nar = *oar; /* struct assignment */
+}
+
+static void copyFileEntry(FileEntry src, FileEntry dest)
+{
+    /* Copying struct makes just shallow copy */
+    *dest = *src;
+
+    /* Do also deep copying */
+    if (src->langs != NULL) {
+	dest->langs = argvNew();
+	argvAppend(&dest->langs, src->langs);
+    }
+
+    if (src->caps != NULL) {
+	dest->caps = xstrdup(src->caps);
+    }
 }
 
 static void FileEntryFree(FileEntry entry)
@@ -1683,22 +1708,47 @@ static char * getSpecialDocDir(Header h, rpmFlags sdtype)
     return res;
 }
 
-static specialDir specialDirNew(Header h, rpmFlags sdtype,
-				AttrRec ar, AttrRec def_ar)
+static specialDir specialDirNew(Header h, rpmFlags sdtype)
 {
     specialDir sd = xcalloc(1, sizeof(*sd));
-    dupAttrRec(ar, &(sd->ar));
-    dupAttrRec(def_ar, &(sd->def_ar));
+
+    sd->entriesCount = 0;
+    sd->entriesAlloced = 10;
+    sd->entries = xcalloc(sd->entriesAlloced, sizeof(sd->entries[0]));
+
     sd->dirname = getSpecialDocDir(h, sdtype);
     sd->sdtype = sdtype;
     return sd;
 }
 
+static void addSpecialFile(specialDir sd, const char *path, FileEntry cur,
+    FileEntry def)
+{
+    argvAdd(&sd->files, path);
+
+    if (sd->entriesCount >= sd->entriesAlloced) {
+	sd->entriesAlloced <<= 1;
+	sd->entries = xrealloc(sd->entries, sd->entriesAlloced *
+	    sizeof(sd->entries[0]));
+    }
+
+    copyFileEntry(cur, &sd->entries[sd->entriesCount].curEntry);
+    copyFileEntry(def, &sd->entries[sd->entriesCount].defEntry);
+    sd->entriesCount++;
+}
+
 static specialDir specialDirFree(specialDir sd)
 {
+    int i = 0;
+
     if (sd) {
 	argvFree(sd->files);
 	free(sd->dirname);
+	for (i = 0; i < sd->entriesCount; i++) {
+	    FileEntryFree(&sd->entries[i].curEntry);
+	    FileEntryFree(&sd->entries[i].defEntry);
+	}
+	free(sd->entries);
 	free(sd);
     }
     return NULL;
@@ -1712,6 +1762,7 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     char *mkdocdir = rpmExpand("%{__mkdir_p} $", sdenv, NULL);
     StringBuf docScript = newStringBuf();
     char *basepath, **files;
+    int fi;
 
     appendStringBuf(docScript, sdenv);
     appendStringBuf(docScript, "=$RPM_BUILD_ROOT");
@@ -1739,22 +1790,21 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
 	    fl->processingFailed = 1;
     }
 
-    /* Reset for %doc */
-    FileEntryFree(&fl->cur);
-
-    fl->cur.attrFlags |= sd->sdtype;
-    fl->cur.verifyFlags = fl->def.verifyFlags;
-    dupAttrRec(&(sd->ar), &(fl->cur.ar));
-    dupAttrRec(&(sd->def_ar), &(fl->def.ar));
-
     basepath = rpmGenPath(spec->rootDir, "%{_builddir}", spec->buildSubdir);
     files = sd->files;
+    fi = 0;
     while (*files != NULL) {
 	char *origfile = rpmGenPath(basepath, *files, NULL);
 	char *eorigfile = rpmEscapeSpaces(origfile);
 	ARGV_t globFiles;
 	int globFilesCount, i;
 	char *newfile;
+
+	FileEntryFree(&fl->cur);
+	FileEntryFree(&fl->def);
+	copyFileEntry(&sd->entries[fi].curEntry, &fl->cur);
+	copyFileEntry(&sd->entries[fi].defEntry, &fl->def);
+	fi++;
 
 	if (rpmGlob(eorigfile, &globFilesCount, &globFiles) == 0) {
 	    for (i = 0; i < globFilesCount; i++) {
@@ -1773,6 +1823,10 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     }
     free(basepath);
 
+    FileEntryFree(&fl->cur);
+    FileEntryFree(&fl->def);
+    copyFileEntry(&sd->entries[0].defEntry, &fl->def);
+    copyFileEntry(&sd->entries[0].defEntry, &fl->cur);
     fl->cur.isDir = 1;
     (void) processBinaryFile(pkg, fl, sd->dirname);
 
@@ -1867,10 +1921,9 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 
 		/* save attributes on first special doc/license for later use */
 		if (*sdp == NULL) {
-		    *sdp = specialDirNew(pkg->header, oattrs,
-					 &fl.cur.ar, &fl.def.ar);
+		    *sdp = specialDirNew(pkg->header, oattrs);
 		}
-		argvAdd(&(*sdp)->files, *fn);
+		addSpecialFile(*sdp, *fn, &fl.cur, &fl.def);
 		continue;
 	    }
 
