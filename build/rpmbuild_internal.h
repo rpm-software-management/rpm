@@ -163,7 +163,8 @@ typedef enum rpmParseState_e {
     PART_TRANSFILETRIGGERIN	= 36+PART_BASE, /*!< */
     PART_TRANSFILETRIGGERUN	= 37+PART_BASE, /*!< */
     PART_TRANSFILETRIGGERPOSTUN	= 38+PART_BASE, /*!< */
-    PART_LAST			= 39+PART_BASE  /*!< */
+    PART_EMPTY			= 39+PART_BASE, /*!< */
+    PART_LAST			= 40+PART_BASE  /*!< */
 } rpmParseState; 
 
 

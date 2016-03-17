@@ -73,6 +73,7 @@ static const struct PartRec {
     { PART_TRANSFILETRIGGERUN,	    LEN_AND_STR("%transfiletriggerun")},
     { PART_TRANSFILETRIGGERUN,	    LEN_AND_STR("%transfiletriggerun")},
     { PART_TRANSFILETRIGGERPOSTUN,  LEN_AND_STR("%transfiletriggerpostun")},
+    { PART_EMPTY,		    LEN_AND_STR("%end")},
     {0, 0, 0}
 };
 
@@ -708,10 +709,64 @@ exit:
     return rc;
 }
 
+static int parseEmpty(rpmSpec spec, int prevParsePart)
+{
+    int res = PART_ERROR;
+    int nextPart, rc;
+    char *line;
+
+    line = spec->line + sizeof("%end") - 1;
+    SKIPSPACE(line);
+    if (line[0] != '\0') {
+	rpmlog(RPMLOG_ERR,
+	    _("line %d: %%end doesn't take any arguments: %s\n"),
+	    spec->lineNum, spec->line);
+	goto exit;
+    }
+
+    if (prevParsePart == PART_EMPTY) {
+	rpmlog(RPMLOG_ERR,
+	    _("line %d: %%end not expected here, no section to close: %s\n"),
+	    spec->lineNum, spec->line);
+	goto exit;
+    }
+
+    if ((rc = readLine(spec, STRIP_TRAILINGSPACE|STRIP_COMMENTS)) > 0) {
+	nextPart = PART_NONE;
+    } else if (rc < 0) {
+	goto exit;
+    } else {
+	while (! (nextPart = isPart(spec->line))) {
+	    line = spec->line;
+	    SKIPSPACE(line);
+
+	    if (line[0] != '\0') {
+		rpmlog(RPMLOG_ERR,
+		    _("line %d doesn't belong to any section: %s\n"),
+		    spec->lineNum, spec->line);
+		goto exit;
+	    }
+	    if ((rc = readLine(spec, STRIP_TRAILINGSPACE|STRIP_COMMENTS)) > 0) {
+		nextPart = PART_NONE;
+		break;
+	    } else if (rc < 0) {
+		goto exit;
+	    }
+	}
+    }
+
+    res = nextPart;
+
+exit:
+    return res;
+}
+
 static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 			 const char *buildRoot, int recursing)
 {
     int parsePart = PART_PREAMBLE;
+    int prevParsePart = PART_EMPTY;
+    int storedParsePart;
     int initialPackage = 1;
     rpmSpec spec;
     
@@ -737,10 +792,14 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
     
     while (parsePart != PART_NONE) {
 	int goterror = 0;
+	storedParsePart = parsePart;
 	switch (parsePart) {
 	case PART_ERROR: /* fallthrough */
 	default:
 	    goterror = 1;
+	    break;
+	case PART_EMPTY:
+	    parsePart = parseEmpty(spec, prevParsePart);
 	    break;
 	case PART_PREAMBLE:
 	    parsePart = parsePreamble(spec, initialPackage);
@@ -795,6 +854,7 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 	case PART_BUILDARCHITECTURES:
 	    break;
 	}
+	prevParsePart = storedParsePart;
 
 	if (goterror || parsePart >= PART_LAST) {
 	    goto errxit;
