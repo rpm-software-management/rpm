@@ -281,6 +281,13 @@ AC_SUBST(WITH_BEECRYPT_INCLUDE)
 WITH_NSS_INCLUDE=
 WITH_NSS_LIB=
 if test "$with_beecrypt" != yes ; then
+# If we have pkgconfig make sure CPPFLAGS are setup correctly for the nss
+# -I include path. Otherwise the below checks will fail because nspr.h
+# cannot be found.
+AC_PATH_TOOL([PKGCONFIG], [pkg-config], [no], [$PATH:/usr/bin:/usr/local/bin])
+if test "x$PKGCONFIG" != "xno"; then
+  CPPFLAGS="$CPPFLAGS $($PKGCONFIG --cflags nss)"
+fi
 AC_CHECK_HEADERS([nspr.h nss.h sechash.h], [], [
   AC_MSG_ERROR([missing required NSPR / NSS header])
 ])
