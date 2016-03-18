@@ -374,7 +374,7 @@ AC_ARG_WITH(external_db, [AS_HELP_STRING([--with-external-db],[build against an 
 yes|no) ;;
 *) AC_MSG_ERROR([invalid argument to --with-external-db]) ;;
 esac],
-[with_external_db=no])
+[with_external_db=maybe])
 
 case "$with_external_db" in
 yes )
@@ -393,11 +393,33 @@ yes )
     AC_MSG_ERROR([missing required header db.h])
   ])
   ;;
-* ) # Fall back to internal db if available
+no|maybe )
+  # Try internal database first, then fall back to external
+  # unless --without-external-db (no) was explicitly given.
   if [ test -x db/dist/configure ]; then
     AC_DEFINE(HAVE_DB_H, 1, [Define if you have the <db3/db.h> header file])
   else
-    AC_MSG_ERROR([internal Berkeley DB directory not present, see INSTALL])
+    case "$with_external_db" in
+    maybe)
+      AC_CHECK_HEADERS([db.h],[
+        AC_PREPROC_IFELSE([
+          AC_LANG_SOURCE([
+	    #include <db.h>
+	    #if ((DB_VERSION_MAJOR < 4) || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR < 5))
+	    #error Berkeley DB too old
+	    #endif
+          ])
+        ],[ WITH_DB_LIB=-ldb ],
+          [ AC_MSG_ERROR([Berkeley DB version >= 4.5 required])
+        ])
+      ],[
+        AC_MSG_ERROR([missing required header db.h])
+      ])
+    ;;
+    no)
+      AC_MSG_ERROR([internal Berkeley DB directory not present, see INSTALL])
+    ;;
+    esac
   fi
   ;;
 esac
