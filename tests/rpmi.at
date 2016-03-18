@@ -332,18 +332,21 @@ runroot rpmbuild --quiet -bb /data/SPECS/testdoc.spec
 runroot rpm -i --excludedocs \
   "${TOPDIR}"/RPMS/noarch/testdoc-1.0-1.noarch.rpm
 
-test ! -e ${RPMTEST}/usr/share/doc/testdoc || exit 1
-test -e ${RPMTEST}/usr/share/testdoc/nodoc || exit 1
+RPM_DOCDIR=$(runroot rpm --eval '%_defaultdocdir')
+RPM_DATADIR=$(runroot rpm --eval '%_datadir')
+
+test ! -e ${RPMTEST}${RPM_DOCDIR}/testdoc || exit 1
+test -e ${RPMTEST}${RPM_DATADIR}/testdoc/nodoc || exit 1
 
 runroot rpm -e testdoc
 
 runroot rpm -i \
   "${TOPDIR}"/RPMS/noarch/testdoc-1.0-1.noarch.rpm
-test -e ${RPMTEST}/usr/share/doc/testdoc/documentation1 || exit 1
-test -e ${RPMTEST}/usr/share/doc/testdoc/documentation2 || exit 1
-test -e ${RPMTEST}/usr/share/doc/testdoc/examples/example1 || exit 1
-test -e ${RPMTEST}/usr/share/doc/testdoc/examples/example2 || exit 1
-test -e ${RPMTEST}/usr/share/testdoc/nodoc || exit 1
+test -e ${RPMTEST}${RPM_DOCDIR}/testdoc/documentation1 || exit 1
+test -e ${RPMTEST}${RPM_DOCDIR}/testdoc/documentation2 || exit 1
+test -e ${RPMTEST}${RPM_DOCDIR}/testdoc/examples/example1 || exit 1
+test -e ${RPMTEST}${RPM_DOCDIR}/testdoc/examples/example2 || exit 1
+test -e ${RPMTEST}${RPM_DATADIR}/testdoc/nodoc || exit 1
 
 runroot rpm -e testdoc
 ],
