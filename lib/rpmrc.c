@@ -1026,10 +1026,14 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 	    sprintf(un.sysname,"aix%s.%s", un.version, un.release);
 	}
 	else if(rstreq(un.sysname, "Darwin")) { 
-#ifdef __ppc__
+#if defined(__ppc__)
 	    strcpy(un.machine, "ppc");
-#else ifdef __i386__
+#elif defined(__i386__)
 	    strcpy(un.machine, "i386");
+#elif defined(__x86_64__)
+	    strcpy(un.machine, "x86_64");
+#else
+	    #warning "No architecture defined! Automatic detection may not work!"
 #endif 
 	}
 	else if (rstreq(un.sysname, "SunOS")) {
