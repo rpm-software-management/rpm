@@ -323,8 +323,10 @@ static int tryReadManifest(struct rpmEIU * eiu)
     Fclose(fd);
     fd = NULL;
 
-    if (rc != RPMRC_OK)
-        eiu->numFailed++; *eiu->fnp = NULL;
+    if (rc != RPMRC_OK) {
+        eiu->numFailed++;
+        *eiu->fnp = NULL;
+    }
 
     return rc;
 }
