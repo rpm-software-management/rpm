@@ -127,9 +127,10 @@ static int stashKeyid(unsigned int keyid)
 
     if (keyids != NULL)
     for (i = 0; i < nkeyids; i++) {
-	if (keyid == keyids[i])
+	if (keyid == keyids[i]) {
 	    seen = 1;
 	    goto exit;
+        }
     }
 
     if (nkeyids < nkeyids_max) {
