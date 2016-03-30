@@ -311,7 +311,8 @@ static int tryReadManifest(struct rpmEIU * eiu)
 	    Fclose(fd);
 	    fd = NULL;
 	}
-	eiu->numFailed++; *eiu->fnp = NULL;
+	eiu->numFailed++;
+	*eiu->fnp = NULL;
 	return RPMRC_FAIL;
     }
 
@@ -342,7 +343,8 @@ static int tryReadHeader(rpmts ts, struct rpmEIU * eiu, Header * hdrp)
            Fclose(fd);
 	   fd = NULL;
        }
-       eiu->numFailed++; *eiu->fnp = NULL;
+       eiu->numFailed++;
+       *eiu->fnp = NULL;
        return RPMRC_FAIL;
    }
 
@@ -357,7 +359,8 @@ static int tryReadHeader(rpmts ts, struct rpmEIU * eiu, Header * hdrp)
 
    if(eiu->rpmrc == RPMRC_FAIL) {
        rpmlog(RPMLOG_ERR, _("%s cannot be installed\n"), *eiu->fnp);
-       eiu->numFailed++; *eiu->fnp = NULL;
+       eiu->numFailed++;
+       *eiu->fnp = NULL;
    }
 
    return RPMRC_OK;
