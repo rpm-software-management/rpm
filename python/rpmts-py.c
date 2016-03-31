@@ -103,16 +103,19 @@
  *	- rpm.RPMTRANS_FLAG_BUILD_PROBS - only build a list of
  *		problems encountered when attempting to run this transaction
  *		set
- *	- rpm.RPMTRANS_FLAG_NOSCRIPTS - do not execute package scripts
  *	- rpm.RPMTRANS_FLAG_JUSTDB - only make changes to the rpm
  *		database, do not modify files.
+ *	- rpm.RPMTRANS_FLAG_NOSCRIPTS - do not execute package scripts
  *	- rpm.RPMTRANS_FLAG_NOTRIGGERS - do not run trigger scripts
+ *	- rpm.RPMTRANS_FLAG_NO* - disable specific scripts and triggers
  *	- rpm.RPMTRANS_FLAG_NODOCS - do not install files marked as %doc
+ *	- rpm.RPMTRANS_FLAG_NOPLUGINS - do not run plugins
+ *	- rpm.RPMTRANS_FLAG_NOFILEDIGEST - disable checking checksums
  *	- rpm.RPMTRANS_FLAG_ALLFILES - create all files, even if a
  *		file is marked %config(missingok) and an upgrade is
  *		being performed.
- *	- rpm.RPMTRANS_FLAG_KEEPOBSOLETE - do not remove obsoleted
- *		packages.
+ *	- rpm.RPMTRANS_FLAG_NOCONFIGS - skip config files
+ *	- rpm.RPMTRANS_FLAG_DEPLOOPS - enable debugging for dependency loops
  * @return	previous transFlags
  *
  * - ts.setProbFilter(ignoreSet) Set transaction set problem filter.
