@@ -550,7 +550,8 @@ static int fsmRename(const char *opath, const char *path)
     if (_fsm_debug)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", __func__,
 	       opath, path, (rc < 0 ? strerror(errno) : ""));
-    if (rc < 0)	rc = RPMERR_RENAME_FAILED;
+    if (rc < 0)
+	rc = (errno == EISDIR ? RPMERR_EXIST_AS_DIR : RPMERR_RENAME_FAILED);
     return rc;
 }
 

@@ -2309,11 +2309,14 @@ char * rpmfileStrerror(int rc)
     case RPMERR_UNMAPPED_FILE:	s = _("Archive file not in header"); break;
     case RPMERR_ENOENT:	s = strerror(ENOENT); break;
     case RPMERR_ENOTEMPTY:	s = strerror(ENOTEMPTY); break;
+    case RPMERR_EXIST_AS_DIR:
+	s = _("File from package already exists as a directory in system");
+	break;
     }
 
     if (s != NULL) {
 	rasprintf(&msg, "%s: %s", prefix, s);
-	if (myerrno <= RPMERR_CHECK_ERRNO) {
+	if ((rc <= RPMERR_CHECK_ERRNO) && myerrno) {
 	    rstrscat(&msg, _(" failed - "), strerror(myerrno), NULL);
 	}
     } else {
