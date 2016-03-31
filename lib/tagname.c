@@ -25,10 +25,11 @@ struct headerTagTableEntry_s {
 
 #include "lib/tagtbl.C"
 
-static const int rpmTagTableSize = sizeof(rpmTagTable) / sizeof(rpmTagTable[0]) - 1;
+#define TABLESIZE (sizeof(rpmTagTable) / sizeof(rpmTagTable[0]) - 1)
+static const int rpmTagTableSize = TABLESIZE;
 
-static headerTagTableEntry * tagsByName = NULL; /*!< tags sorted by name. */
-static headerTagTableEntry * tagsByValue = NULL; /*!< tags sorted by value. */
+static headerTagTableEntry tagsByName[TABLESIZE]; /*!< tags sorted by name. */
+static headerTagTableEntry tagsByValue[TABLESIZE]; /*!< tags sorted by value. */
 
 /**
  * Compare tag table entries by name.
@@ -65,9 +66,6 @@ static pthread_once_t tagsLoaded = PTHREAD_ONCE_INIT;
 /* Initialize tag by-value and by-name lookup tables */
 static void loadTags(void)
 {
-    tagsByValue = xcalloc(rpmTagTableSize, sizeof(*tagsByValue));
-    tagsByName = xcalloc(rpmTagTableSize, sizeof(*tagsByName));
-
     for (int i = 0; i < rpmTagTableSize; i++) {
 	tagsByValue[i] = &rpmTagTable[i];
 	tagsByName[i] = &rpmTagTable[i];
