@@ -79,7 +79,12 @@ static void compressFilelist(Header h)
 
 	if (filename == NULL)	/* XXX can't happen */
 	    continue;
-	baseName = strrchr(filename, '/') + 1;
+	baseName = strrchr(filename, '/');
+	if (baseName == NULL) {
+	    baseName = filename;
+	} else {
+	    baseName += 1;
+	}
 	len = baseName - filename;
 	needle = dirNames;
 	savechar = *baseName;
