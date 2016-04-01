@@ -1913,7 +1913,7 @@ static int rpmfiArchiveWriteHeader(rpmfi fi)
 	return rpmcpioStrippedHeaderWrite(fi->archive, rpmfiFX(fi), st.st_size);
     } else {
 	const char * dn = rpmfiDN(fi);
-	char * path = rstrscat(NULL, (dn[0] == '/') ? "." : "",
+	char * path = rstrscat(NULL, (dn[0] == '/' && !rpmExpandNumeric("%{_noPayloadPrefix}")) ? "." : "",
 			       dn, rpmfiBN(fi), NULL);
 	rc = rpmcpioHeaderWrite(fi->archive, path, &st);
 	free(path);
