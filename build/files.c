@@ -1161,7 +1161,7 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	rpmlibNeedsFeature(pkg, "FileCaps", "4.6.1-1");
     }
 
-    if (!isSrc || !rpmExpandNumeric("%{_noPayloadPrefix}"))
+    if (!isSrc && !rpmExpandNumeric("%{_noPayloadPrefix}"))
 	(void) rpmlibNeedsFeature(pkg, "PayloadFilesHavePrefix", "4.0-1");
 
     /* rpmfiNew() only groks compressed filelists */
