@@ -482,7 +482,9 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
 	}
 	mi = rpmdbFreeIterator(mi);
 	if (! matches) {
-	    rpmlog(RPMLOG_NOTICE, _("package %s is not installed\n"), arg);
+	    size_t l = strlen(arg);
+	    if (!(l > 4 && !strcmp(arg + l - 4, ".rpm")))
+		rpmlog(RPMLOG_NOTICE, _("package %s is not installed\n"), arg);
 	} else {
 	    mi = rpmtsInitIterator(ts, RPMDBI_LABEL, arg, 0);
 	}
@@ -558,6 +560,14 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	for (ARGV_const_t arg = argv; arg && *arg; arg++) {
 	    rpmdbMatchIterator mi = initQueryIterator(qva, ts, *arg);
 	    ec += rpmcliShowMatches(qva, ts, mi);
+	    if (mi == NULL && qva->qva_source == RPMQV_PACKAGE) {
+		size_t l = strlen(*arg);
+		if (l > 4 && !strcmp(*arg + l - 4, ".rpm")) {
+		    rpmgi gi = rpmgiNew(ts, giFlags, argv);
+		    ec += rpmgiShowMatches(qva, ts, gi);
+		    rpmgiFree(gi);
+		}
+	    }
 	    rpmdbFreeIterator(mi);
 	}
 	break;
