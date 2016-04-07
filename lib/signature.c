@@ -411,7 +411,7 @@ static rpmRC verifyDigest(rpmtd sigtd, DIGEST_CTX digctx, const char *title,
 	goto exit;
     }
 
-    if (strcmp(pkgdig, dig) == 0) {
+    if (strcasecmp(pkgdig, dig) == 0) {
 	res = RPMRC_OK;
 	rasprintf(msg, "%s %s (%s)", title, rpmSigString(res), pkgdig);
     } else {
