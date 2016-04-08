@@ -7,7 +7,7 @@ man_man1_DATA = gendiff.1
 EXTRA_DIST += $(man_man1_DATA)
 
 man_man8dir = $(mandir)/man8
-man_man8_DATA = rpm.8 rpmbuild.8 rpmdeps.8 rpmgraph.8 rpm2cpio.8
+man_man8_DATA = rpm.8 rpm-misc.8 rpmbuild.8 rpmdeps.8 rpmgraph.8 rpm2cpio.8
 man_man8_DATA += rpmdb.8 rpmkeys.8 rpmsign.8 rpmspec.8
 EXTRA_DIST += $(man_man8_DATA)
 
