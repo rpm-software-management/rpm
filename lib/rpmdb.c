@@ -2178,12 +2178,22 @@ struct updateRichDepData {
     ARGV_t argv;
     int nargv;
     int neg;
+    int level;
+    int *nargv_level;
 };
 
 static rpmRC updateRichDepCB(void *cbdata, rpmrichParseType type,
 		const char *n, int nl, const char *e, int el, rpmsenseFlags sense,
 		rpmrichOp op, char **emsg) {
     struct updateRichDepData *data = cbdata;
+    if (type == RPMRICH_PARSE_ENTER) {
+	data->level++;
+	data->nargv_level = xrealloc(data->nargv_level, data->level * (sizeof(int)));
+	data->nargv_level[data->level - 1] = data->nargv;
+    }
+    if (type == RPMRICH_PARSE_LEAVE) {
+	data->level--;
+    }
     if (type == RPMRICH_PARSE_SIMPLE && nl && !(nl > 7 && !strncmp(n, "rpmlib(", 7))) {
 	char *name = xmalloc(nl + 2);
 	*name = data->neg ? '!' : ' ';
@@ -2192,7 +2202,25 @@ static rpmRC updateRichDepCB(void *cbdata, rpmrichParseType type,
 	argvAdd(&data->argv, name);
 	data->nargv++;
 	_free(name);
-    } else if ((type == RPMRICH_PARSE_OP || RPMRICH_PARSE_LEAVE) && (op == RPMRICHOP_IF || op == RPMRICHOP_ELSE)) {
+    }
+    if (type == RPMRICH_PARSE_OP && op == RPMRICHOP_IF) {
+	/* save nargv in case of ELSE */
+	data->nargv_level[data->level - 1] = data->nargv;
+	data->neg ^= 1;
+    }
+    if (type == RPMRICH_PARSE_OP && op == RPMRICHOP_ELSE) {
+	int i, nargv = data->nargv;
+	/* copy and invert condition block */
+	for (i = data->nargv_level[data->level - 1]; i < nargv; i++) {
+	    char *name = data->argv[i];
+	    *name ^= ' ' ^ '!';
+	    argvAdd(&data->argv, name);
+	    *name ^= ' ' ^ '!';
+	    data->nargv++;
+	}
+	data->neg ^= 1;
+    }
+    if (type == RPMRICH_PARSE_LEAVE && op == RPMRICHOP_IF) {
 	data->neg ^= 1;
     }
     return RPMRC_OK;
@@ -2208,6 +2236,8 @@ static rpmRC updateRichDep(dbiIndex dbi, dbiCursor dbc, const char *str,
     data.argv = argvNew();
     data.neg = 0;
     data.nargv = 0;
+    data.level = 0;
+    data.nargv_level = xcalloc(1, sizeof(int));
     if (rpmrichParse(&str, NULL, updateRichDepCB, &data) == RPMRC_OK) {
 	n = argvCount(data.argv);
 	if (n) {
@@ -2222,6 +2252,7 @@ static rpmRC updateRichDep(dbiIndex dbi, dbiCursor dbc, const char *str,
 	    }
 	}
     }
+    _free(data.nargv_level);
     argvFree(data.argv);
     return rc;
 }
