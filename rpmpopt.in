@@ -140,10 +140,6 @@ rpm	alias --fileclass --qf '[%{FILENAMES}\t%{FILECLASS}\n]' \
 rpm	alias --filecolor --qf '[%{FILENAMES}\t%{FILECOLORS}\n]' \
 	--POPTdesc=$"list file names with colors"
 
-rpm     alias --fscontext --qf '[%{FILENAMES}\n]' \
-        --pipe "xargs ls --scontext | awk '{printf(\"%s %s\n\", $2, $1)}'" \
-        --POPTdesc=$"list file names with security context from file system"
-
 rpm	alias --fileprovide --qf '[%{FILENAMES}\t%{FILEPROVIDE}\n]' \
 	--POPTdesc=$"list file names with provides"
 
