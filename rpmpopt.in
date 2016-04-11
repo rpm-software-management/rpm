@@ -135,19 +135,19 @@ rpm	alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]' \
 	--POPTdesc=$"list all files from each package"
 
 rpm	alias --fileclass --qf '[%{FILENAMES}\t%{FILECLASS}\n]' \
-	--POPTdesc=$"list file names with classes"
+	--POPTdesc=$"list file names with their classes"
 
 rpm	alias --filecolor --qf '[%{FILENAMES}\t%{FILECOLORS}\n]' \
-	--POPTdesc=$"list file names with colors"
+	--POPTdesc=$"list file names with their colors"
 
 rpm	alias --fileprovide --qf '[%{FILENAMES}\t%{FILEPROVIDE}\n]' \
-	--POPTdesc=$"list file names with provides"
+	--POPTdesc=$"list file names with their provides"
 
 rpm	alias --filerequire --qf '[%{FILENAMES}\t%{FILEREQUIRE}\n]' \
 	--POPTdesc=$"list file names with requires"
 
 rpm	alias --filecaps --qf '[%{FILENAMES}\t%|FILECAPS?{%{FILECAPS}}|\n]' \
-	--POPTdesc=$"list file names with POSIX1.e capabilities"
+	--POPTdesc=$"list file names with their POSIX1.e capabilities"
 
 # colon separated i18n domains to use as PO catalogue lookaside for
 # retrieving header group/description/summary.
