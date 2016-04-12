@@ -52,7 +52,6 @@ rpm \- RPM Package Manager
 .SS "select-options"
 .PP
 
-
  [\fB\fIPACKAGE_NAME\fB\fR] [\fB-a,--all\fR] [\fB-f,--file \fIFILE\fB\fR]
  [\fB-g,--group \fIGROUP\fB\fR] {\fB-p,--package \fIPACKAGE_FILE\fB\fR]
  [\fB--hdrid \fISHA1\fB\fR] [\fB--pkgid \fIMD5\fB\fR] [\fB--tid \fITID\fB\fR]
@@ -63,15 +62,21 @@ rpm \- RPM Package Manager
 
 .SS "query-options"
 .PP
-
-
- [\fB--changelog\fR] [\fB-c,--configfiles\fR] [\fB--conflicts\fR]
- [\fB-d,--docfiles\fR] [\fB--dump\fR] [\fB--enhances\fR] [\fB--filesbypkg\fR]
- [\fB-i,--info\fR] [\fB--last\fR] [\fB-l,--list\fR] [\fB--obsoletes\fR]
- [\fB--provides\fR] [\fB--qf,--queryformat \fIQUERYFMT\fB\fR]
- [\fB--recommends\fR] [\fB-R,--requires\fR] [\fB--suggests\fR]
- [\fB--supplements\fR] [\fB--scripts\fR] [\fB-s,--state\fR]
- [\fB--triggers,--triggerscripts\fR] [\fB--noghost\fR]
+General:
+ [\fB--changelog\fR]  [\fB--dupes\fR] [\fB-i,--info\fR]
+ [\fB--last\fR] [\fB--qf,--queryformat \fIQUERYFMT\fB\fR] [\fB--xml\fR]
+.PP
+Dependencies:
+ [\fB--conflicts\fR] [\fB--enhances\fR] [\fB--obsoletes\fR] [\fB--provides\fR]
+ [\fB--recommends\fR] [\fB-R,--requires\fR] [\fB--suggests\fR] [\fB--supplements\fR]
+.PP
+Files:
+ [\fB-c,--configfiles\fR] [\fB-d,--docfiles\fR] [\fB--dump\fR] [\fB--fileclass\fR]
+ [\fB--filecolor\fR] [\fB--fileprovide\fR][\fB--filerequire\fR] [\fB--filecaps\fR]
+ [\fB--filesbypkg\fR] [\fB-l,--list\fR] [\fB-s,--state\fR] [\fB--noghost\fR]
+.PP
+Scripts and triggers:
+ [\fB--filetriggers\fR] [\fB--scripts\fR] [\fB--triggers,--triggerscripts\fR]
 
 .SS "verify-options"
 .PP
@@ -91,8 +96,8 @@ rpm \- RPM Package Manager
  [\fB--excludedocs\fR] [\fB--force\fR] [\fB-h,--hash\fR]
  [\fB--ignoresize\fR] [\fB--ignorearch\fR] [\fB--ignoreos\fR]
  [\fB--includedocs\fR] [\fB--justdb\fR]
- [\fB--nodeps\fR] [\fB--nodigest\fR] [\fB--nosignature\fR]
- [\fB--noorder\fR] [\fB--noscripts\fR] [\fB--notriggers\fR] 
+ [\fB--nodeps\fR] [\fB--nodigest\fR] [\fB--noplugins\fR] [\fB--noorder\fR]
+ [\fB--nosignature\fR] [\fB--noscripts\fR] [\fB--notriggers\fR]
  [\fB--oldpackage\fR] [\fB--percent\fR] [\fB--prefix \fINEWPATH\fB\fR]
  [\fB--relocate \fIOLDPATH\fB=\fINEWPATH\fB\fR]
  [\fB--replacefiles\fR] [\fB--replacepkgs\fR]
@@ -150,7 +155,17 @@ information.
 Only the first file in the list must exist, and tildes will be
 expanded to the value of \fB$HOME\fR.
 The default \fIFILELIST\fR is
-\fI/usr/lib/rpm/rpmrc\fR:\fI/usr/lib/rpm/redhat/rpmrc\fR:\fI/etc/rpmrc\fR:\fI~/.rpmrc\fR.
+\fI/usr/\:lib/\:rpm/\:rpmrc\fR:\:\fI/usr/\:lib/\:rpm/\:redhat/\:rpmrc\fR:\:\fI/etc/\:rpmrc\fR:\:\fI~/.rpmrc\fR.
+.TP
+\fB--macros \fIFILELIST\fB\fR
+Each of the files in the colon separated
+\fIFILELIST\fR
+is read sequentially by \fBrpm\fR for macro definitions.
+Only the first file in the list must exist, and tildes will be
+expanded to the value of \fB$HOME\fR.
+The default \fIFILELIST\fR is
+\fI/usr/\:lib/\:rpm/\:macros\fR:\:\fI/usr/\:lib/\:rpm/\:macros.d/\:macros.*\fR:\:\fI/usr/\:lib/\:rpm/\:platform/\:%{_target}/\:macros\fR:\:\fI/usr/\:lib/\:rpm/\:fileattrs/\:*.attr\fR:\:\fI/usr/\:lib/\:rpm/\:redhat/\:macros\fR:\:\fI/etc/\:rpm/\:macros.*\fR:\:\fI/etc/\:rpm/\:macros\fR:\:\fI/etc/\:rpm/\:%{_target}/\:macros\fR:\:\fI~/.rpmmacros
+
 .TP
 \fB--pipe \fICMD\fB\fR
 Pipes the output of \fBrpm\fR to the command \fICMD\fR.
@@ -177,6 +192,7 @@ Undefines \fIMACRO\fR.
 .TP
 \fB-E, --eval='\fIEXPR\fB'\fR
 Prints macro expansion of \fIEXPR\fR.
+
 .PP
 More - less often needed - options can be found on the \fBrpm-misc(8)\fR man page.
 .SS "INSTALL AND UPGRADE OPTIONS"
@@ -283,19 +299,10 @@ a package.
 Don't reorder the packages for an install. The list of
 packages would normally be reordered to satisfy dependencies.
 .TP
-\fB--noscripts\fR
+\fB--noplugins\fR
+Do not load and execute plugins.
 .TP
-\fB--nopre\fR
-.TP
-\fB--nopost\fR
-.TP
-\fB--nopreun\fR
-.TP
-\fB--nopostun\fR
-.TP
-\fB--nopretrans\fR
-.TP
-\fB--noposttrans\fR
+\fB--noscripts\fR, \fB--nopre\fR, \fB--nopost\fR, \fB--nopreun\fR, \fB--nopostun\fR, \fB--nopretrans\fR, \fB--noposttrans\fR
 Don't execute the scriptlet of the same name.
 The \fB--noscripts\fR option is equivalent to
 
@@ -314,16 +321,9 @@ and turns off the execution of the corresponding
 \fB%pretrans\fR, and
 \fB%posttrans\fR
 scriptlet(s).
+
 .TP
-\fB--notriggers\fR
-.TP
-\fB--notriggerin\fR
-.TP
-\fB--notriggerun\fR
-.TP
-\fB--notriggerprein\fR
-.TP
-\fB--notriggerpostun\fR
+\fB--notriggers\fR, \fB--notriggerin\fR, \fB--notriggerun\fR, \fB--notriggerprein\fR, \fB--notriggerpostun\fR
 Don't execute any trigger scriptlet of the named type.
 The \fB--notriggers\fR option is equivalent to
 
@@ -390,11 +390,7 @@ matches multiple packages.
 \fB--nodeps\fR
 Don't check dependencies before uninstalling the packages.
 .TP
-\fB--noscripts\fR
-.TP
-\fB--nopreun\fR
-.TP
-\fB--nopostun\fR
+\fB--noscripts\fR, \fB--nopreun\fR, \fB--nopostun\fR
 Don't execute the scriptlet of the same name.
 The \fB--noscripts\fR option during package erase is
 equivalent to
@@ -407,11 +403,7 @@ and turns off the execution of the corresponding
 \fB%postun\fR
 scriptlet(s).
 .TP
-\fB--notriggers\fR
-.TP
-\fB--notriggerun\fR
-.TP
-\fB--notriggerpostun\fR
+\fB--notriggers\fR, \fB--notriggerun\fR, \fB--notriggerpostun\fR
 Don't execute any trigger scriptlet of the named type.
 The \fB--notriggers\fR option is equivalent to
 
@@ -534,8 +526,26 @@ both separated by a dash or an architecture name separated by a dot. See the out
 \fB-a, --all\fR
 Query all installed packages.
 .TP
+\fB--dupes\fB
+List duplicated packages.
+.TP
 \fB-f, --file \fIFILE\fB\fR
 Query package owning \fIFILE\fR.
+.TP
+\fB--filecaps\fR
+List file names with POSIX1.e capabilities.
+.TP
+\fB--fileclass\fR
+List file names with their classes (libmagic classification).
+.TP
+\fB--filecolor\fR
+List file names with their colors (0 for noarch, 1 for 32bit, 2 for 64 bit).
+.TP
+\fB--fileprovide\fR
+List file names with their provides.
+.TP
+\fB--filerequire\fR
+List file names with their requires.
 .TP
 \fB-g, --group \fIGROUP\fB\fR
 Query packages with the group of \fIGROUP\fR.
@@ -638,6 +648,9 @@ List capabilities enhanced by package(s)
 \fB--filesbypkg\fR
 List all the files in each selected package.
 .TP
+\fB--filetriggers\fR
+List filetrigger scriptlets from package(s).
+.TP
 \fB-i, --info\fR
 Display package information, including name, version, and description.
 This uses the \fB--queryformat\fR if one was specified.
@@ -687,6 +700,9 @@ the package.
 .TP
 \fB--noghost\fR
 Don't display ghost files. Useful in combination with option --list.
+.TP
+\fB--xml\B
+Format package headers as XML.
 
 .SS "VERIFY OPTIONS"
 .PP
