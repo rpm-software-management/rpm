@@ -22,3 +22,4 @@ find "$RPM_BUILD_ROOT" -type f -name "*.pyc" -not -name "*.opt-[12].pyc" | while
 	o2pyc="${pyc%pyc}opt-2.pyc"
 	hardlink_if_same "$pyc" "$o2pyc" || hardlink_if_same "$o1pyc" "$o2pyc"
 done
+exit 0
