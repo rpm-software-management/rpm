@@ -2349,6 +2349,7 @@ static rpmRC tag2index(dbiIndex dbi, rpmTagVal rpmtag,
 	    case RPMTAG_SUGGESTNAME:
 	    case RPMTAG_SUPPLEMENTNAME:
 	    case RPMTAG_RECOMMENDNAME:
+	    case RPMTAG_ENHANCENAME:
 		if (rpmtdType(&tagdata) == RPM_STRING_ARRAY_TYPE) {
 		    rc += updateRichDep(dbi, dbc, rpmtdGetString(&tagdata),
 			&rec, idxupdate);
