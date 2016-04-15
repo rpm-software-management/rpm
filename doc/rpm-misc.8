@@ -8,6 +8,9 @@ Defines \fIMACRO\fR with value \fIEXPR\fR. before loading macro files.
 
 .SH Switching off features
 .TP
+\fB\-\-nocontexts\fR
+Disable the SELinux plugin if available. This stops the plugin from setting SELinux contexts for files and scriptlets.
+.TP
 \fB\-\-noglob\fR
 Do not glob arguments when installing package files.
 .TP
@@ -49,9 +52,6 @@ See and use rpmkeys(8).
 \fB\-\-nodocs\fR
 Do not install documentation.
 Use \fB\-\-excludedocs\fR instead.
-.TP
-\fB\-\-nocontexts\fR
-OBSOLETE! Used to not set/verify SELinux contexts of files.
 .TP
 \fB\-\-promoteepoch\fR
 Enable obsolete epoch handling used in rpm 3.x time frame.
