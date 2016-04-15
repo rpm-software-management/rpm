@@ -148,7 +148,7 @@ displayed.
 Print lots of ugly debugging information.
 .TP
 \fB--rcfile \fIFILELIST\fB\fR
-Each of the files in the colon separated
+Replace the list of configuration files to be read. Each of the files in the colon separated
 \fIFILELIST\fR
 is read sequentially by \fBrpm\fR for configuration
 information.
@@ -156,9 +156,10 @@ Only the first file in the list must exist, and tildes will be
 expanded to the value of \fB$HOME\fR.
 The default \fIFILELIST\fR is
 \fI/usr/\:lib/\:rpm/\:rpmrc\fR:\:\fI/usr/\:lib/\:rpm/\:redhat/\:rpmrc\fR:\:\fI/etc/\:rpmrc\fR:\:\fI~/.rpmrc\fR.
+
 .TP
 \fB--macros \fIFILELIST\fB\fR
-Each of the files in the colon separated
+Replace the list of macro files to be loaded. Each of the files in the colon separated
 \fIFILELIST\fR
 is read sequentially by \fBrpm\fR for macro definitions.
 Only the first file in the list must exist, and tildes will be
