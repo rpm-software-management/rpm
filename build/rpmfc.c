@@ -1255,6 +1255,8 @@ rpmRC rpmfcApply(rpmfc fc)
     /* If new-fangled dependency generation is disabled ... */
     if (!rpmExpandNumeric("%{?_use_internal_dependency_generator}")) {
 	/* ... then generate dependencies using %{__find_requires} et al. */
+	rpmlog(RPMLOG_WARNING,
+	    _("Deprecated external dependency generator is used!\n"));
 	rc = rpmfcApplyExternal(fc);
     } else {
 	/* ... otherwise generate per-file dependencies */
