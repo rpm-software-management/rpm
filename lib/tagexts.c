@@ -752,7 +752,7 @@ typedef rpmFlags nevraFlags;
 static int getNEVRA(Header h, rpmtd td, nevraFlags flags)
 {
     const char *val = NULL;
-    char *res = NULL;
+    char *res = xstrdup("");
 
     if ((flags & NEVRA_NAME)) {
 	val = headerGetString(h, RPMTAG_NAME);
