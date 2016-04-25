@@ -44,9 +44,12 @@ static char * stringFormat(rpmtd td)
 	case RPM_NUMERIC_CLASS:
 	    rasprintf(&val, "%" PRIu64, rpmtdGetNumber(td));
 	    break;
-	case RPM_STRING_CLASS:
-	    val = xstrdup(rpmtdGetString(td));
+	case RPM_STRING_CLASS: {
+	    const char *str = rpmtdGetString(td);
+	    if (str)
+		val = xstrdup(str);
 	    break;
+	}
 	case RPM_BINARY_CLASS:
 	    val = pgpHexStr(td->data, td->count);
 	    break;
