@@ -576,8 +576,10 @@ static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
     key = rpmExpand("%{?_file_signing_key}", NULL);
 
     keypass = rpmExpand("%{_file_signing_key_password}", NULL);
-    if (rstreq(keypass, ""))
+    if (rstreq(keypass, "")) {
+	free(keypass);
 	keypass = NULL;
+    }
 
     rc = rpmSignFiles(*hdrp, key, keypass);
     if (rc != RPMRC_OK) {
@@ -641,11 +643,15 @@ static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
     sigTargetSize = Ftell(fd) - headerStart;
     fdFiniDigest(fd, PGPHASHALGO_MD5, (void **)&MD5, &md5len, 0);
 
-    if (headerGet(*sigp, RPMSIGTAG_MD5, &osigtd, HEADERGET_DEFAULT))
+    if (headerGet(*sigp, RPMSIGTAG_MD5, &osigtd, HEADERGET_DEFAULT)) {
 	memcpy(o_md5, osigtd.data, 16);
+	rpmtdFreeData(&osigtd);
+    }
 
-    if (headerGet(*sigp, RPMSIGTAG_SHA1, &osigtd, HEADERGET_DEFAULT))
+    if (headerGet(*sigp, RPMSIGTAG_SHA1, &osigtd, HEADERGET_DEFAULT)) {
 	o_sha1 = xstrdup(osigtd.data);
+	rpmtdFreeData(&osigtd);
+    }
 
     if (memcmp(MD5, o_md5, md5len) == 0 && strcmp(SHA1, o_sha1) == 0)
 	rpmlog(RPMLOG_WARNING,
@@ -655,6 +661,12 @@ static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
 	replaceSigDigests(fd, rpm, sigp, sigStart, sigTargetSize, SHA1, MD5);
 
 exit:
+    free(trpm);
+    free(MD5);
+    free(SHA1);
+    free(o_sha1);
+    free(keypass);
+    free(key);
     if (ofd)
 	(void) closeFile(&ofd);
     return rc;
@@ -675,7 +687,7 @@ static int rpmSign(const char *rpm, int deleting, int signfiles)
     char *trpm = NULL;
     Header sigh = NULL;
     Header h = NULL;
-    char * msg = NULL;
+    char *msg = NULL;
     int res = -1; /* assume failure */
     rpmRC rc;
     struct rpmtd_s utd;
@@ -693,7 +705,6 @@ static int rpmSign(const char *rpm, int deleting, int signfiles)
 
     if ((rc = rpmLeadRead(fd, &lead, NULL, &msg)) != RPMRC_OK) {
 	rpmlog(RPMLOG_ERR, "%s: %s\n", rpm, msg);
-	free(msg);
 	goto exit;
     }
 
@@ -702,14 +713,12 @@ static int rpmSign(const char *rpm, int deleting, int signfiles)
     if (rc != RPMRC_OK) {
 	rpmlog(RPMLOG_ERR, _("%s: rpmReadSignature failed: %s"), rpm,
 		    (msg && *msg ? msg : "\n"));
-	msg = _free(msg);
 	goto exit;
     }
 
     headerStart = Ftell(fd);
     if (rpmReadHeader(NULL, fd, &h, &msg) != RPMRC_OK) {
 	rpmlog(RPMLOG_ERR, _("%s: headerRead failed: %s\n"), rpm, msg);
-	msg = _free(msg);
 	goto exit;
     }
 
@@ -845,6 +854,7 @@ exit:
     rpmFreeSignature(sigh);
     headerFree(h);
     rpmLeadFree(lead);
+    free(msg);
 
     /* Clean up intermediate target */
     if (trpm) {

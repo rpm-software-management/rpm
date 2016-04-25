@@ -152,10 +152,12 @@ rpmRC rpmSignFiles(Header h, const char *key, char *keypass)
 	    goto exit;
 	}
 	if (!headerPutString(h, RPMTAG_FILESIGNATURES, signature)) {
+	    free(signature);
 	    rpmlog(RPMLOG_ERR, _("headerPutString failed\n"));
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
+	free(signature);
     }
 
 exit:

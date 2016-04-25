@@ -60,6 +60,7 @@ static int doSign(poptContext optCon)
     char * passPhrase = NULL;
     char * name = rpmExpand("%{?_gpg_name}", NULL);
     struct rpmSignArgs sig = {NULL, 0, 0};
+    char *key = NULL;
 
     if (rstreq(name, "")) {
 	fprintf(stderr, _("You must set \"%%_gpg_name\" in your macro file\n"));
@@ -71,7 +72,7 @@ static int doSign(poptContext optCon)
     }
 
     if (signfiles) {
-	const char *key = rpmExpand("%{?_file_signing_key}", NULL);
+	key = rpmExpand("%{?_file_signing_key}", NULL);
 	if (rstreq(key, "")) {
 	    fprintf(stderr, _("You must set \"$$_file_signing_key\" in your macro file or on the command line with --fskpath\n"));
 	    goto exit;
@@ -102,6 +103,7 @@ static int doSign(poptContext optCon)
     }
 
 exit:
+    free(key);
     free(passPhrase);
     free(name);
     return rc;
