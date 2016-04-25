@@ -32,6 +32,8 @@ static const char *hash_algo_name[] = {
     [PGPHASHALGO_SHA224]       = "sha224",
 };
 
+#define ARRAY_SIZE(a)  (sizeof(a) / sizeof(a[0]))
+
 char *get_fskpass(void)
 {
     struct termios flags, tmp_flags;
@@ -128,6 +130,10 @@ rpmRC rpmSignFiles(Header h, const char *key, char *keypass)
     algo = headerGetNumber(h, RPMTAG_FILEDIGESTALGO);
     if (!algo) {
 	rpmlog(RPMLOG_ERR, _("missing RPMTAG_FILEDIGESTALGO\n"));
+	return RPMRC_FAIL;
+    }
+    if (algo < 0 || algo >= ARRAY_SIZE(hash_algo_name)) {
+	rpmlog(RPMLOG_ERR, _("File digest algorithm id is invalid"));
 	return RPMRC_FAIL;
     }
 
