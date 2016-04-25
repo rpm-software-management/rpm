@@ -138,13 +138,13 @@ rpmRC rpmSignFiles(Header h, const char *key, char *keypass)
 	return RPMRC_FAIL;
     }
 
-	headerDel(h, RPMTAG_FILESIGNATURELENGTH);
-	headerDel(h, RPMTAG_FILESIGNATURES);
-	siglen = signatureLength(algoname, diglen, key, keypass);
-	headerPutUint32(h, RPMTAG_FILESIGNATURELENGTH, &siglen, 1);
+    headerDel(h, RPMTAG_FILESIGNATURELENGTH);
+    headerDel(h, RPMTAG_FILESIGNATURES);
+    siglen = signatureLength(algoname, diglen, key, keypass);
+    headerPutUint32(h, RPMTAG_FILESIGNATURELENGTH, &siglen, 1);
 
-	headerGet(h, RPMTAG_FILEDIGESTS, &digests, HEADERGET_MINMEM);
-	while ((digest = rpmtdNextString(&digests))) {
+    headerGet(h, RPMTAG_FILEDIGESTS, &digests, HEADERGET_MINMEM);
+    while ((digest = rpmtdNextString(&digests))) {
 	signature = signFile(algoname, digest, diglen, key, keypass);
 	if (!signature) {
 	    rpmlog(RPMLOG_ERR, _("signFile failed\n"));

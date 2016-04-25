@@ -655,7 +655,8 @@ static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
 	replaceSigDigests(fd, rpm, sigp, sigStart, sigTargetSize, SHA1, MD5);
 
 exit:
-if (ofd)    (void) closeFile(&ofd);
+    if (ofd)
+	(void) closeFile(&ofd);
     return rc;
 }
 
