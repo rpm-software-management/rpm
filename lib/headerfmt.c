@@ -620,7 +620,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     char * t, * te;
     rpmtd td;
 
-    if ((td = getData(hsa, tag->tag))) {
+    if ((td = getData(hsa, tag->tag)) && td->count > element) {
 	td->ix = element; /* Ick, use iterators instead */
 	val = tag->fmt(td);
     } else {
