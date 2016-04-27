@@ -555,7 +555,7 @@ static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
 {
     FD_t ofd = NULL;
     char *trpm = NULL;
-    const char *key;
+    char *key;
     char *keypass;
     char *SHA1 = NULL;
     uint8_t *MD5 = NULL;
