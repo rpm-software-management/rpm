@@ -82,6 +82,10 @@ const char *key, char *keypass)
 
     /* convert file digest hex to binary */
     memset(digest, 0, diglen);
+    /* some entries don't have a digest - we return an empty signature */
+    if (strlen(fdigest) != diglen * 2)
+        return strdup("");
+
     for (int i = 0; i < diglen; ++i, fdigest += 2)
 	digest[i] = (rnibble(fdigest[0]) << 4) | rnibble(fdigest[1]);
 
