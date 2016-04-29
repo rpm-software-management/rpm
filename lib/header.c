@@ -99,7 +99,7 @@ struct headerToken_s {
 /** \ingroup header
  * Maximum no. of bytes permitted in a header.
  */
-static const size_t headerMaxbytes = (32*1024*1024);
+static const size_t headerMaxbytes = (256*1024*1024);
 
 #define	INDEX_MALLOC_SIZE	8
 
