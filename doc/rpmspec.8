@@ -7,6 +7,10 @@ rpmspec \- RPM Spec Tool
 
 \fBrpmspec\fR {\fB-q|--query\fR} [\fBselect-options\fR] [\fBquery-options\fR] \fB\fISPEC_FILE\fB\fR\fI ...\fR
 
+.SH DESCRIPTION
+.PP
+\fBrpmspec\fR is a tool for querying a spec file. More specifically for querying hypothetical packages which would be created from the given spec file. So querying a spec file with \fBrpmspec\fR is similar to querying a package built from that spec file. But is is not identical. With \fBrpmspec\fR you can't query all fields which you can query from a built package. E. g. you can't query BUILDTIME with \fBrpmspec\fR for obvious reasons. You also cannot query other fields automatically generated during a build of a package like auto generated dependencies.
+
 .SS "select-options"
 .PP
 
@@ -45,6 +49,37 @@ Operate only on the binary package headers of packages which would be built from
  \fB--srpm\fR
 Operate on the source package header(s) generated from spec.
 
+.SH EXAMPLES
+.PP
+Get list of binary packages wich would be generated from the rpm spec file:
+.PP
+.RS 4
+.nf
+ $ rpmspec -q rpm.spec
+ rpm-4.11.3-3.fc20.x86_64
+ rpm-libs-4.11.3-3.fc20.x86_64
+ rpm-build-libs-4.11.3-3.fc20.x86_64
+ ...
+.RE
+.PP
+Get summary infos for single binary packages generated from the rpm spec file:
+.PP
+.RS 4
+.nf
+ $ rpmspec -q --qf "%{name}: %{summary}\\n" rpm.spec
+ rpm: The RPM package management system
+ rpm-libs: Libraries for manipulating RPM packages
+ rpm-build-libs: Libraries for building and signing RPM packages
+ ...
+.RE
+.PP
+Get the source package which would be generated from the rpm spec file:
+.PP
+.RS 4
+.nf
+ $ rpmspec -q --srpm rpm.spec
+ rpm-4.11.3-3.fc20.x86_64
+.RE
 .SH "SEE ALSO"
 .nf
 \fBpopt\fR(3),
