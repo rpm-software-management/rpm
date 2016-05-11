@@ -869,7 +869,7 @@ int rpmPkgSign(const char *path, const struct rpmSignArgs * args)
 	}
     }
 
-    rc = rpmSign(path, 0, args->signfiles);
+    rc = rpmSign(path, 0, args ? args->signfiles : 0);
 
     if (args) {
 	if (args->hashalgo) {
