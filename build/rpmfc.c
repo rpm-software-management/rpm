@@ -33,6 +33,17 @@ typedef struct rpmfcAttr_s {
     struct matchRule excl;
 } * rpmfcAttr;
 
+typedef struct {
+    int fileIx;
+    rpmds dep;
+} rpmfcFileDep;
+
+typedef struct {
+    rpmfcFileDep *data;
+    int size;
+    int alloced;
+} rpmfcFileDeps;
+
 /**
  */
 struct rpmfc_s {
@@ -55,7 +66,7 @@ struct rpmfc_s {
     ARGI_t fddictn;	/*!< (no. files) file depends dictionary no. entries */
     ARGI_t ddictx;	/*!< (no. dependencies) file->dependency mapping */
     rpmstrPool cdict;	/*!< file class dictionary */
-    rpmstrPool ddict;	/*!< file depends dictionary */
+    rpmfcFileDeps fileDeps; /*!< file dependency mapping */
 
     rpmstrPool pool;	/*!< general purpose string storage */
 };
@@ -397,15 +408,15 @@ static void argvAddUniq(ARGV_t * argvp, const char * key)
 
 #define hasAttr(_a, _n) (argvSearch((_a), (_n), NULL) != NULL)
 
-static void rpmfcAddFileDep(rpmstrPool ddict, int ix, rpmds ds, char deptype)
+static void rpmfcAddFileDep(rpmfcFileDeps *fileDeps, rpmds ds, int ix)
 {
-    if (ds) {
-	char *key = NULL;
-	rasprintf(&key, "%08d%c %s %s 0x%08x", ix, deptype,
-		  rpmdsN(ds), rpmdsEVR(ds), rpmdsFlags(ds));
-	rpmstrPoolId(ddict, key, 1);
-	free(key);
+    if (fileDeps->size == fileDeps->alloced) {
+	fileDeps->alloced <<= 2;
+	fileDeps->data  = xrealloc(fileDeps->data,
+	    fileDeps->alloced * sizeof(fileDeps->data[0]));
     }
+    fileDeps->data[fileDeps->size].fileIx = ix;
+    fileDeps->data[fileDeps->size++].dep = ds;
 }
 
 static ARGV_t runCmd(const char *nsdep, const char *depname,
@@ -530,11 +541,9 @@ static int rpmfcHelper(rpmfc fc, int ix,
 
 	    /* Add to package and file dependencies unless filtered */
 	    if (regMatch(exclude, rpmdsDNEVR(ds)+2) == 0) {
-		(void) rpmdsMerge(packageDependencies(fc->pkg, tagN), ds);
-		rpmfcAddFileDep(fc->ddict, ix, ds,
-				tagN == RPMTAG_PROVIDENAME ? 'P' : 'R');
+		//rpmdsMerge(packageDependencies(fc->pkg, tagN), ds);
+		rpmfcAddFileDep(&fc->fileDeps, ds, ix);
 	    }
-	    rpmdsFree(ds);
 	} else {
 	    rpmlog(RPMLOG_ERR, _("invalid dependency (%s): %s\n"),
 		   err, pav[i]);
@@ -744,7 +753,11 @@ rpmfc rpmfcFree(rpmfc fc)
 	argiFree(fc->fddictn);
 	argiFree(fc->ddictx);
 
-	rpmstrPoolFree(fc->ddict);
+	for (int i = 0; i < fc->fileDeps.size; i++) {
+	    rpmdsFree(fc->fileDeps.data[i].dep);
+	}
+	free(fc->fileDeps.data);
+
 	rpmstrPoolFree(fc->cdict);
 
 	rpmstrPoolFree(fc->pool);
@@ -763,6 +776,9 @@ rpmfc rpmfcCreate(const char *buildRoot, rpmFlags flags)
     }
     fc->pool = rpmstrPoolCreate();
     fc->pkg = xcalloc(1, sizeof(*fc->pkg));
+    fc->fileDeps.alloced = 10;
+    fc->fileDeps.data = xmalloc(fc->fileDeps.alloced *
+	sizeof(fc->fileDeps.data[0]));
     return fc;
 }
 
@@ -819,17 +835,82 @@ rpmds rpmfcObsoletes(rpmfc fc)
     return rpmfcDependencies(fc, RPMTAG_OBSOLETENAME);
 }
 
+
+/* Versioned deps are less than unversioned deps */
+static int cmpVerDeps(const void *a, const void *b)
+{
+    rpmfcFileDep *fDepA = (rpmfcFileDep *) a;
+    rpmfcFileDep *fDepB = (rpmfcFileDep *) b;
+
+    int aIsVersioned = rpmdsFlags(fDepA->dep) & RPMSENSE_SENSEMASK ? 1 : 0;
+    int bIsVersioned = rpmdsFlags(fDepB->dep) & RPMSENSE_SENSEMASK ? 1 : 0;
+
+    return bIsVersioned - aIsVersioned;
+}
+
+/* Sort by index */
+static int cmpIndexDeps(const void *a, const void *b)
+{
+    rpmfcFileDep *fDepA = (rpmfcFileDep *) a;
+    rpmfcFileDep *fDepB = (rpmfcFileDep *) b;
+
+    return fDepA->fileIx - fDepB->fileIx;
+}
+
+/*
+ * Remove unversioned deps if corresponding versioned deps exist but only
+ * if the versioned dependency has the same type and the same color as the versioned.
+ */
+static void rpmfcNormalizeFDeps(rpmfc fc)
+{
+    rpmstrPool versionedDeps = rpmstrPoolCreate();
+    rpmfcFileDep *normalizedFDeps = xmalloc(fc->fileDeps.size *
+	sizeof(normalizedFDeps[0]));
+    int ix = 0;
+    char *depStr;
+
+    /* Sort. Versioned dependencies first */
+    qsort(fc->fileDeps.data, fc->fileDeps.size, sizeof(fc->fileDeps.data[0]),
+	cmpVerDeps);
+
+    for (int i = 0; i < fc->fileDeps.size; i++) {
+	switch (rpmdsTagN(fc->fileDeps.data[i].dep)) {
+	case RPMTAG_REQUIRENAME:
+	case RPMTAG_RECOMMENDNAME:
+	case RPMTAG_SUGGESTNAME:
+	    rasprintf(&depStr, "%08x_%c_%s",
+		fc->fcolor[fc->fileDeps.data[i].fileIx],
+		rpmdsD(fc->fileDeps.data[i].dep),
+		rpmdsN(fc->fileDeps.data[i].dep));
+
+	    if (rpmdsFlags(fc->fileDeps.data[i].dep) & RPMSENSE_SENSEMASK) {
+		/* preserve versioned require dependency */
+		normalizedFDeps[ix++] = fc->fileDeps.data[i];
+		rpmstrPoolId(versionedDeps, depStr, 1);
+	    } else if (!rpmstrPoolId(versionedDeps, depStr, 0)) {
+		/* preserve unversioned require dep only if versioned dep doesn't exist */
+		    normalizedFDeps[ix++] =fc-> fileDeps.data[i];
+	    } else {
+		rpmdsFree(fc->fileDeps.data[i].dep);
+	    }
+	    free(depStr);
+	    break;
+	default:
+	    /* Preserve all non-require dependencies */
+	    normalizedFDeps[ix++] = fc->fileDeps.data[i];
+	    break;
+	}
+    }
+    rpmstrPoolFree(versionedDeps);
+
+    free(fc->fileDeps.data);
+    fc->fileDeps.data = normalizedFDeps;
+    fc->fileDeps.size = ix;
+}
+
 static rpmRC rpmfcApplyInternal(rpmfc fc)
 {
-    const char * s;
-    char * se;
     rpmds ds, * dsp;
-    rpmTagVal tagN;
-    const char * N;
-    const char * EVR;
-    rpmsenseFlags Flags;
-    unsigned char deptype;
-    int nddict;
     int previx;
     unsigned int val;
     int dix;
@@ -861,45 +942,28 @@ static rpmRC rpmfcApplyInternal(rpmfc fc)
 	}
     }
     /* No more additions after this, freeze pool to minimize memory use */
-    rpmstrPoolFreeze(fc->ddict, 0);
+
+    rpmfcNormalizeFDeps(fc);
+    for (int i = 0; i < fc->fileDeps.size; i++) {
+	ds = fc->fileDeps.data[i].dep;
+	rpmdsMerge(packageDependencies(fc->pkg, rpmdsTagN(ds)), ds);
+    }
+
+    /* Sort by index */
+    qsort(fc->fileDeps.data, fc->fileDeps.size,
+	sizeof(fc->fileDeps.data[0]), cmpIndexDeps);
 
     /* Generate per-file indices into package dependencies. */
-    nddict = rpmstrPoolNumStr(fc->ddict);
     previx = -1;
-    for (rpmsid id = 1; id <= nddict; id++) {
-	s = rpmstrPoolStr(fc->ddict, id);
-
-	/* Parse out (file#,deptype,N,EVR,Flags) */
-	ix = strtol(s, &se, 10);
-	if ( se == NULL ) {
-		rpmlog(RPMLOG_ERR, _("Conversion of %s to long integer failed.\n"), s);
-		return RPMRC_FAIL;
-	}
-	
-	deptype = *se++;
-	se++;
-	N = se;
-	while (*se && *se != ' ')
-	    se++;
-	*se++ = '\0';
-	EVR = se;
-	while (*se && *se != ' ')
-	    se++;
-	*se++ = '\0';
-	Flags = strtol(se, NULL, 16);
-
-	dix = -1;
-
-	tagN = rpmdsDToTagN(deptype);
-	dsp = packageDependencies(fc->pkg, tagN);
-	ds = rpmdsSinglePool(fc->pool, tagN, N, EVR, Flags);
+    for (int i = 0; i < fc->fileDeps.size; i++) {
+	ds = fc->fileDeps.data[i].dep;
+	ix = fc->fileDeps.data[i].fileIx;
+	dsp = packageDependencies(fc->pkg, rpmdsTagN(ds));
 	dix = rpmdsFind(*dsp, ds);
-	rpmdsFree(ds);
-
 	if (dix < 0)
 	    continue;
 
-	val = (deptype << 24) | (dix & 0x00ffffff);
+	val = (rpmdsD(ds) << 24) | (dix & 0x00ffffff);
 	argiAdd(&fc->ddictx, -1, val);
 
 	if (previx != ix) {
@@ -908,8 +972,8 @@ static rpmRC rpmfcApplyInternal(rpmfc fc)
 	}
 	if (fc->fddictn && fc->fddictn->vals)
 	    fc->fddictn->vals[ix]++;
-    }
 
+    }
     return RPMRC_OK;
 }
 
@@ -967,7 +1031,6 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 
     /* Build (sorted) file class dictionary. */
     fc->cdict = rpmstrPoolCreate();
-    fc->ddict = rpmstrPoolCreate();
 
     ms = magic_open(msflags);
     if (ms == NULL) {
