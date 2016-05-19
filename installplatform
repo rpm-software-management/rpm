@@ -96,6 +96,12 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
 	CANONARCH=${ARCH}
 	CANONCOLOR=0
 	;;
+    armv7h*)
+	ISANAME=armv7hl
+	ISABITS=32
+	CANONARCH=arm
+	CANONCOLOR=0
+	;;
     arm*)
 	ISANAME=`echo ${ARCH} | sed "s/^\([^-]*\)-.*/\1/"`
 	ISABITS=32
