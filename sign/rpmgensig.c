@@ -267,7 +267,6 @@ static int runGPG(sigTarget sigt, const char *sigfile)
 
 	if (gpg_path && *gpg_path != '\0')
 	    (void) setenv("GNUPGHOME", gpg_path, 1);
-	(void) setenv("LC_ALL", "C", 1);
 
 	unsetenv("MALLOC_CHECK_");
 	cmd = rpmExpand("%{?__gpg_sign_cmd}", NULL);
