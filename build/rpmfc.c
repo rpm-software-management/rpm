@@ -98,22 +98,62 @@ static void ruleFree(struct matchRule *rule)
     argvFree(rule->flags);
 }
 
-static char *rpmfcAttrMacro(const char *name,
-			    const char *attr_prefix, const char *attr)
+static char *rpmfcAttrMacroV(const char *arg, va_list args)
 {
-    char *ret;
-    if (attr_prefix && attr_prefix[0] != '\0')
-	ret = rpmExpand("%{?__", name, "_", attr_prefix, "_", attr, "}", NULL);
-    else
-	ret = rpmExpand("%{?__", name, "_", attr, "}", NULL);
-    return rstreq(ret, "") ? _free(ret) : ret;
+    const char *s;
+    int blen;
+    char *buf = NULL, *obuf;
+    char *pe;
+    va_list args2;
+
+    if (arg == NULL || rstreq(arg, ""))
+	return NULL;
+
+    va_copy(args2, args);
+    blen = sizeof("%{?_") - 1;
+    for (s = arg; s != NULL; s = va_arg(args, const char *)) {
+	blen += sizeof("_") - 1 + strlen(s);
+    }
+    blen += sizeof("}") - 1;
+
+    buf = xmalloc(blen + 1);
+
+    pe = buf;
+    pe = stpcpy(pe, "%{?_");
+    for (s = arg; s != NULL; s = va_arg(args2, const char *)) {
+	*pe++ = '_';
+	pe = stpcpy(pe, s);
+    }
+    va_end(args2);
+    *pe++ = '}';
+    *pe = '\0';
+
+    obuf = rpmExpand(buf, NULL);
+    free(buf);
+
+    return rstreq(obuf, "") ? _free(obuf) : obuf;
 }
 
-static regex_t *rpmfcAttrReg(const char *name,
-			     const char *attr_prefix, const char *attr)
+static char *rpmfcAttrMacro(const char *arg, ...)
+{
+    va_list args;
+    char *s;
+
+    va_start(args, arg);
+    s = rpmfcAttrMacroV(arg, args);
+    va_end(args);
+    return s;
+}
+
+static regex_t *rpmfcAttrReg(const char *arg, ...)
 {
     regex_t *reg = NULL;
-    char *pattern = rpmfcAttrMacro(name, attr_prefix, attr);
+    char *pattern;
+    va_list args;
+
+    va_start(args, arg);
+    pattern = rpmfcAttrMacroV(arg, args);
+    va_end(args);
     if (pattern) {
 	reg = xcalloc(1, sizeof(*reg));
 	if (regcomp(reg, pattern, REG_EXTENDED) != 0) { 
@@ -133,10 +173,19 @@ static rpmfcAttr rpmfcAttrNew(const char *name)
     attr->name = xstrdup(name);
     for (struct matchRule **rule = rules; rule && *rule; rule++) {
 	const char *prefix = (*rule == &attr->incl) ? NULL : "exclude";
-	char *flags = rpmfcAttrMacro(name, prefix, "flags");
+	char *flags;
 
-	(*rule)->path = rpmfcAttrReg(name, prefix, "path");
-	(*rule)->magic = rpmfcAttrReg(name, prefix, "magic");
+	if (prefix) {
+	    flags = rpmfcAttrMacro(name, prefix, "flags", NULL);
+
+	    (*rule)->path = rpmfcAttrReg(name, prefix, "path", NULL);
+	    (*rule)->magic = rpmfcAttrReg(name, prefix, "magic", NULL);
+	} else {
+	    flags = rpmfcAttrMacro(name, "flags", NULL);
+
+	    (*rule)->path = rpmfcAttrReg(name, "path", NULL);
+	    (*rule)->magic = rpmfcAttrReg(name, "magic", NULL);
+	}
 	(*rule)->flags = argvSplitString(flags, ",", ARGV_SKIPEMPTY);
 	argvSort((*rule)->flags, NULL);
 
@@ -511,7 +560,7 @@ static int rpmfcHelper(rpmfc fc, int ix,
     regex_t *exclude_from = NULL;
 
     /* If the entire path is filtered out, there's nothing more to do */
-    exclude_from = rpmfcAttrReg(depname, "exclude", "from");
+    exclude_from = rpmfcAttrReg(depname, "exclude", "from", NULL);
     if (regMatch(exclude_from, fn+fc->brlen))
 	goto exit;
 
@@ -520,8 +569,8 @@ static int rpmfcHelper(rpmfc fc, int ix,
 	goto exit;
 
     pac = argvCount(pav);
-    namespace = rpmfcAttrMacro(nsdep, NULL, "namespace");
-    exclude = rpmfcAttrReg(depname, NULL, "exclude");
+    namespace = rpmfcAttrMacro(nsdep, "namespace", NULL);
+    exclude = rpmfcAttrReg(depname, "exclude", NULL);
 
     for (int i = 0; i < pac; i++) {
 	char ** depav = NULL;
