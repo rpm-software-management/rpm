@@ -201,6 +201,13 @@ package or when debugging this package.\
 %_defaultdocdir		%{_datadir}/doc
 %_defaultlicensedir	%{_datadir}/licenses
 
+# Following macros for filtering auto deps must not be used in spec files.
+# Their purpouse is to set up global filtering for all packages. If you need
+# to set up specific filtering for your package use %__requires_exclude_from
+# and %__provides_exclude_from instead.
+%__global_requires_exclude_from		%{_docdir}
+%__global_provides_exclude_from		%{_docdir}
+
 #	The path to the gzip executable (legacy, use %{__gzip} instead).
 %_gzipbin		%{__gzip}
 

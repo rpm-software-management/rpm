@@ -558,10 +558,15 @@ static int rpmfcHelper(rpmfc fc, int ix,
     int rc = 0;
     regex_t *exclude = NULL;
     regex_t *exclude_from = NULL;
+    regex_t *global_exclude_from = NULL;
 
     /* If the entire path is filtered out, there's nothing more to do */
     exclude_from = rpmfcAttrReg(depname, "exclude", "from", NULL);
     if (regMatch(exclude_from, fn+fc->brlen))
+	goto exit;
+
+    global_exclude_from = rpmfcAttrReg("global", depname, "exclude", "from", NULL);
+    if (regMatch(global_exclude_from, fn+fc->brlen))
 	goto exit;
 
     pav = runCmd(nsdep, depname, fc->buildRoot, fn);
@@ -609,6 +614,7 @@ static int rpmfcHelper(rpmfc fc, int ix,
 
 exit:
     regFree(exclude_from);
+    regFree(global_exclude_from);
     return rc;
 }
 
