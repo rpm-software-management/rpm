@@ -549,7 +549,7 @@ static rpmdb newRpmdb(const char * root, const char * home,
     return rpmdbLink(db);
 }
 
-static int openDatabase(const char * prefix,
+int openDatabase(const char * prefix,
 		const char * dbpath, rpmdb *dbp,
 		int mode, int perms, int flags)
 {
@@ -609,6 +609,11 @@ rpmdb rpmdbLink(rpmdb db)
 int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, int perms)
 {
     return openDatabase(prefix, NULL, dbp, mode, perms, 0);
+}
+
+int rpmdbOpenAppStore(const char * prefix, rpmdb *dbp, int mode, int perms) 
+{
+    return openDatabase(prefix, "/var/lib/appstore", dbp, mode, perms, 0);
 }
 
 int rpmdbInit (const char * prefix, int perms)
@@ -794,6 +799,27 @@ int rpmdbCountPackages(rpmdb db, const char * name)
 	    count = (rc == RPMRC_NOTFOUND) ? 0 : -1;
 	}
 	dbiIndexSetFree(matches);
+    }
+
+    return count;
+}
+
+int rpmdbCountProvides(rpmdb db, const char * name)
+{
+    int count = -1;
+    dbiIndex dbi = NULL;
+
+    if (name != NULL && indexOpen(db, RPMDBI_PROVIDENAME, 0, &dbi) == 0) {
+	    dbiIndexSet matches = NULL;
+
+	    rpmRC rc = indexGet(dbi, name, strlen(name), &matches);
+
+	    if (rc == RPMRC_OK) {
+	        count = dbiIndexSetCount(matches);
+	    } else {
+	        count = (rc == RPMRC_NOTFOUND) ? 0 : -1;
+	    }
+	    dbiIndexSetFree(matches);
     }
 
     return count;
@@ -1617,6 +1643,115 @@ top:
     mi->mi_modified = 0;
 
     return mi->mi_h;
+}
+
+Header rpmdbNextIteratorAppStore(rpmdbMatchIterator mi, const char *dbpath)
+{
+    dbiIndex dbi = NULL;
+    unsigned char * uh;
+    unsigned int uhlen;
+    int rc;
+    headerImportFlags importFlags = HEADERIMPORT_FAST;
+    rpmdb osdb = NULL;  /* db for default /var/lib/rpm */
+
+    if (mi == NULL) {
+#ifdef RPM_DEBUG
+        printf("DEBUG: %s, %s, line %d: mi is NULL\n", __FILE__, __func__, __LINE__);
+#endif
+	    goto exit;
+    }
+
+    openDatabase("/", dbpath ? dbpath : "/var/lib/rpm", &osdb, O_RDONLY, 0644, 0);
+    /* TODO: open osdb instead of mi->mi_db */
+    if (pkgdbOpen(osdb, 0, &dbi)) {
+	    printf("ERROR: %s, line %d, %s: fail to open pkgdb %s\n", 
+               __FILE__, __LINE__, __func__, dbpath ? dbpath : "/var/lib/rpm");
+        goto exit;
+    }
+
+#if defined(_USE_COPY_LOAD)
+    importFlags |= HEADERIMPORT_COPY;
+#endif
+    /*
+     * Cursors are per-iterator, not per-dbi, so get a cursor for the
+     * iterator on 1st call. If the iteration is to rewrite headers,
+     * then the cursor needs to marked with DBC_WRITE as well.
+     */
+    if (mi->mi_dbc == NULL)
+	    mi->mi_dbc = dbiCursorInit(dbi, mi->mi_cflags);
+
+top:
+    uh = NULL;
+    uhlen = 0;
+
+    do {
+	    if (mi->mi_set) {
+	        if (!(mi->mi_setx < mi->mi_set->count))
+		        goto exit;
+	        mi->mi_offset = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
+	        mi->mi_filenum = dbiIndexRecordFileNumber(mi->mi_set, mi->mi_setx);
+	    } else {
+	        rc = pkgdbGet(dbi, mi->mi_dbc, 0, &uh, &uhlen);
+	        if (rc == 0)
+		        mi->mi_offset = pkgdbKey(dbi, mi->mi_dbc);
+
+	        /* Terminate on error or end of keys */
+	        if (rc || (mi->mi_setx && mi->mi_offset == 0))
+		        goto exit;
+	    }
+	    mi->mi_setx++;
+    } while (mi->mi_offset == 0);
+
+    /* If next header is identical, return it now. */
+    if (mi->mi_prevoffset && mi->mi_offset == mi->mi_prevoffset)
+	    return mi->mi_h;
+
+    /* Retrieve next header blob for index iterator. */
+    if (uh == NULL) {
+	    rc = pkgdbGet(dbi, mi->mi_dbc, mi->mi_offset, &uh, &uhlen);
+	    if (rc)
+	        goto exit;
+    }
+
+    /* Rewrite current header (if necessary) and unlink. */
+    miFreeHeader(mi, dbi);
+
+    /* Is this the end of the iteration? */
+    if (uh == NULL)
+	    goto exit;
+
+    /* Verify header if enabled, skip damaged and inconsistent headers */
+    if (miVerifyHeader(mi, uh, uhlen) == RPMRC_FAIL)
+	    goto top;
+
+    /* Did the header blob load correctly? */
+    mi->mi_h = headerImport(uh, uhlen, importFlags);
+    if (mi->mi_h == NULL || !headerIsEntry(mi->mi_h, RPMTAG_NAME)) {
+	    rpmlog(RPMLOG_ERR,
+		       _("rpmdb: damaged header #%u retrieved -- skipping.\n"),
+		       mi->mi_offset);
+	    goto top;
+    }
+
+    /*
+     * Skip this header if iterator selector (if any) doesn't match.
+     */
+    if (mireSkip(mi)) {
+	    goto top;
+    }
+    headerSetInstance(mi->mi_h, mi->mi_offset);
+
+    mi->mi_prevoffset = mi->mi_offset;
+    mi->mi_modified = 0;
+
+    return mi->mi_h;
+
+exit:
+    if (osdb) {
+        rpmdbClose(osdb);
+        osdb = NULL;
+    }
+    return NULL;
 }
 
 /** \ingroup rpmdb

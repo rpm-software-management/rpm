@@ -170,3 +170,28 @@ void rpmpsPrint(FILE *fp, rpmps ps)
     rpmpsFreeIterator(psi);
 }
 
+void rpmpsToChunk(void *ptr, rpmps ps)
+{
+    rpmProblem p;
+
+    if (ptr == NULL)
+        return;
+
+    rpmpsi psi = rpmpsInitIterator(ps);
+    chunk_t *mem = (chunk_t *)ptr;
+
+    while ((p = rpmpsiNext(psi))) {
+        char *msg = rpmProblemString(p);
+        size_t realsize = strlen(msg);
+        mem->memory = realloc(mem->memory, mem->size + realsize + 1);
+        if (mem->memory == NULL)
+            return;
+
+        memcpy(&(mem->memory[mem->size]), msg, realsize);
+        mem->size += realsize;
+        mem->memory[mem->size] = 0;
+    }
+
+    rpmpsFreeIterator(psi);
+}
+

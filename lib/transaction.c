@@ -1129,13 +1129,14 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
  * - verify package arch/os.
  * - verify package epoch:version-release is newer.
  */
-static rpmps checkProblems(rpmts ts)
+static rpmps checkProblems(rpmts ts, int appStore)
 {
     rpm_color_t tscolor = rpmtsColor(ts);
     rpmprobFilterFlags probFilter = rpmtsFilterFlags(ts);
     rpmstrPool tspool = rpmtsPool(ts);
     rpmtsi pi = rpmtsiInit(ts);
     rpmte p;
+    rpmdb db = NULL;
 
     /* The ordering doesn't matter here */
     /* XXX Only added packages need be checked. */
@@ -1169,10 +1170,28 @@ static rpmps checkProblems(rpmts ts)
 		rpmdbSetIteratorRE(mi, RPMTAG_OS, RPMMIRE_STRCMP, rpmteO(p));
 	    }
 
-	    if ((h = rpmdbNextIterator(mi)) != NULL) {
-		rpmteAddProblem(p, RPMPROB_PKG_INSTALLED, NULL, NULL,
-				headerGetInstance(h));
-	    }
+	    if ((h = rpmdbNextIterator(mi)) == NULL) {
+            openDatabase(ts->rootDir, 
+                    appStore ? "/var/lib/rpm" : "/var/lib/appstore", 
+                    &db, O_RDONLY, 0644, 0);
+            if (db) {
+                if (rpmdbCountPackages(db, rpmteN(p))) {
+#ifdef RPM_DEBUG
+                    printf("DEBUG: %s, %s, line %d: installed!\n", __FILE__, __func__, __LINE__);
+#endif
+                    rpmteAddProblem(p, RPMPROB_PKG_INSTALLED, NULL, NULL, 
+                            headerGetInstance(h));
+                }
+                rpmdbClose(db);
+                db = NULL;
+            }
+        } else {
+#ifdef RPM_DEBUG
+            printf("DEBUG: %s, %s, line %d: installed!\n", __FILE__, __func__, __LINE__);
+#endif
+            rpmteAddProblem(p, RPMPROB_PKG_INSTALLED, NULL, NULL, 
+                    headerGetInstance(h));
+        }
 	    rpmdbFreeIterator(mi);
 	}
 
@@ -1462,7 +1481,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     rpmtxn txn = NULL;
     rpmps tsprobs = NULL;
     int TsmPreDone = 0; /* TsmPre hook hasn't been called */
-    
+
     /* Force default 022 umask during transaction for consistent results */
     mode_t oldmask = umask(022);
 
@@ -1485,7 +1504,103 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     }
 
     /* Check package set for problems */
-    tsprobs = checkProblems(ts);
+    tsprobs = checkProblems(ts, 0);
+
+    /* Run pre transaction hook for all plugins */
+    TsmPreDone = 1;
+    if (rpmpluginsCallTsmPre(rpmtsPlugins(ts), ts) == RPMRC_FAIL) {
+	goto exit;
+    }
+
+    /* Run pre-transaction scripts, but only if there are no known
+     * problems up to this point and not disabled otherwise. */
+    if (!((rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_NOPRETRANS))
+     	  || (rpmpsNumProblems(tsprobs)))) {
+	rpmlog(RPMLOG_DEBUG, "running pre-transaction scripts\n");
+	runTransScripts(ts, PKG_PRETRANS);
+    }
+    tsprobs = rpmpsFree(tsprobs);
+
+    /* Compute file disposition for each package in transaction set. */
+    if (rpmtsPrepare(ts)) {
+	goto exit;
+    }
+    /* Check again for problems (now including file conflicts,  duh */
+    tsprobs = rpmtsProblems(ts);
+
+     /* If unfiltered problems exist, free memory and return. */
+    if ((rpmtsFlags(ts) & RPMTRANS_FLAG_BUILD_PROBS) || (rpmpsNumProblems(tsprobs))) {
+	rc = tsmem->orderCount;
+	goto exit;
+    }
+
+    /* Free up memory taken by problem sets */
+    tsprobs = rpmpsFree(tsprobs);
+    rpmtsCleanProblems(ts);
+
+    /*
+     * Free up the global string pool unless we expect it to be needed
+     * again. During the transaction, private pools will be used for
+     * rpmfi's etc.
+     */
+    if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_BUILD_PROBS)))
+	tsmem->pool = rpmstrPoolFree(tsmem->pool);
+
+    /* Actually install and remove packages, get final exit code */
+    rc = rpmtsProcess(ts) ? -1 : 0;
+
+    /* Run post-transaction scripts unless disabled */
+    if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_NOPOSTTRANS))) {
+	rpmlog(RPMLOG_DEBUG, "running post-transaction scripts\n");
+	runTransScripts(ts, PKG_POSTTRANS);
+    }
+
+exit:
+    /* Run post transaction hook for all plugins */
+    if (TsmPreDone) /* If TsmPre hook has been called, call the TsmPost hook */
+	rpmpluginsCallTsmPost(rpmtsPlugins(ts), ts, rc);
+
+    /* Finish up... */
+    (void) umask(oldmask);
+    (void) rpmtsFinish(ts);
+    rpmpsFree(tsprobs);
+    rpmtxnEnd(txn);
+    return rc;
+}
+
+int rpmtsRunAppStore(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
+{
+    int rc = -1; /* assume failure */
+    tsMembers tsmem = rpmtsMembers(ts);
+    rpmtxn txn = NULL;
+    rpmps tsprobs = NULL;
+    int TsmPreDone = 0; /* TsmPre hook hasn't been called */
+   
+    addMacro(NULL, "_dbpath", NULL, "/var/lib/appstore", RMIL_GLOBAL);
+
+    /* Force default 022 umask during transaction for consistent results */
+    mode_t oldmask = umask(022);
+
+    /* Empty transaction, nothing to do */
+    if (rpmtsNElements(ts) <= 0) {
+	rc = 0;
+	goto exit;
+    }
+
+    /* If we are in test mode, then there's no need for transaction lock. */
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
+	if (!(txn = rpmtxnBegin(ts, RPMTXN_WRITE))) {
+	    goto exit;
+	}
+    }
+
+    /* Setup flags and such, open the DB */
+    if (rpmtsSetup(ts, ignoreSet)) {
+	goto exit;
+    }
+
+    /* Check package set for problems */
+    tsprobs = checkProblems(ts, 1);
 
     /* Run pre transaction hook for all plugins */
     TsmPreDone = 1;

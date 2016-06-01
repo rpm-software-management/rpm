@@ -832,6 +832,15 @@ host_os_major=`echo "${host_os}" | sed 's/\..*$//'`
 host_os_noversion=`echo "${host_os}" | sed 's/[0-9]*\..*$//'`
 changequote([, ])
 
+AC_ARG_ENABLE(debug,
+              [AS_HELP_STRING([--enable-debug=@<:@no/yes@:>@],
+                              [turn on debugging [default=no]])],,
+              [enable_debug=no])
+
+if test "x$enable_debug" = "xyes"; then
+  test "$cflags_set" = set || CFLAGS="$CFLAGS -g -DRPM_DEBUG"
+fi
+
 dnl permit overriding build_vendor for "canonical rpm vendor"
 RPMCANONVENDOR="$build_vendor"
 AC_ARG_WITH([vendor], 

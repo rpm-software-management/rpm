@@ -54,12 +54,20 @@ rpmop rpmdbOp(rpmdb db, rpmdbOpX opx);
 int rpmdbOpenAll (rpmdb db);
 
 /** \ingroup rpmdb
- * Return number of instances of package in rpm database.
- * @param db		rpm database
- * @param name		rpm package name
+ * Return number of instances of package in rpm or appstore database.
+ * @param db		rpm or appstore database
+ * @param name		rpm or appstore package name
  * @return		number of instances
  */
 int rpmdbCountPackages(rpmdb db, const char * name);
+
+/** \ingroupd rpmdb
+ * Return number of instances of provides in rpm or appstore database.
+ * @param db        rpm or appstore database
+ * @param name      rpm or appstore provide name
+ * @return      number of instances
+ */
+int rpmdbCountProvides(rpmdb db, const char *name);
 
 /** \ingroup rpmdb
  * Return header join key for current position of rpm database iterator.
@@ -144,6 +152,14 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
  * @return		NULL on end of iteration.
  */
 Header rpmdbNextIterator(rpmdbMatchIterator mi);
+
+/** \ingroup rpmdb
+ * Return next package header from iteration for AppStore.
+ * @param mi		rpm database iterator
+ * @param dbpath    database path
+ * @return		NULL on end of iteration.
+ */
+Header rpmdbNextIteratorAppStore(rpmdbMatchIterator mi, const char *dbpath);
 
 /** \ingroup rpmdb
  * Check for and exit on termination signals.
@@ -232,6 +248,26 @@ rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii);
  * @return 		0 on success; != 0 on error
  */
 int rpmdbCtrl(rpmdb db, rpmdbCtrlOp ctrl);
+
+/** \ingroup rpmdb
+ * open database directly
+ * @param prefix it is often /
+ * @param dbpath /var/lib/rpm or /var/lib/appstore
+ * @param dbp reference pointer
+ * @param mode it is often O_RDONLY
+ * @param perms it is often 0644
+ * @param flags it is often 0
+ */
+int openDatabase(const char * prefix,
+        const char * dbpath, rpmdb *dbp,
+        int mode, int perms, int flags);
+
+/** \ingroup rpmdb
+ * Close all database indices and free rpmdb.
+ * @param db		rpm database
+ * @return		0 on success
+ */
+int rpmdbClose(rpmdb db);
 
 #ifdef __cplusplus
 }
