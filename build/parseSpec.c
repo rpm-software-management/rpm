@@ -769,6 +769,7 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
     int storedParsePart;
     int initialPackage = 1;
     rpmSpec spec;
+    char *changelogFile = NULL;
     
     /* Set up a new Spec structure with no packages. */
     spec = newSpec();
@@ -910,6 +911,15 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 	    goto exit;
 	}
     }
+
+    changelogFile = rpmGetPath("%{?_changelog_file:%{_changelog_file}}", NULL);
+
+    if (changelogFile && *changelogFile) {
+	OFI_t *ofi = pushOFI(spec, changelogFile);
+	if(ofi)
+	    parsePart = parseChangelog(spec);
+    }
+    free(changelogFile);
 
     if (spec->clean == NULL) {
 	char *body = rpmExpand("%{?buildroot: %{__rm} -rf %{buildroot}}", NULL);
