@@ -769,12 +769,36 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
     int storedParsePart;
     int initialPackage = 1;
     rpmSpec spec;
+    struct stat st;
     char *changelogFile = NULL;
     
     /* Set up a new Spec structure with no packages. */
     spec = newSpec();
 
-    spec->specFile = rpmGetPath(specFile, NULL);
+    changelogFile = rpmGetPath("%{?_changelog_file:%{_changelog_file}}", NULL);
+    if (*changelogFile && !stat(changelogFile, &st)) {
+	int rc;
+	const char chlogTag[] = "\n%changelog\n";
+	FD_t origspecFD = Fopen(specFile, "r.ufdio");
+	FD_t changelogFD = Fopen(changelogFile, "r.ufdio");
+	char *newDir = rpmGetPath("%{_tmppath}", "/SPECSCOPY.XXXXXX", NULL);
+	newDir = mkdtemp(newDir);
+	char *newFile = rpmGetPath(newDir, "/", basename(specFile), NULL);
+	free(newDir);
+	FD_t newspecFD = Fopen(newFile, "w.ufdio");
+	rc = ufdCopy(origspecFD, newspecFD);
+	Fclose(origspecFD);
+	rc = Fwrite(chlogTag, 1, sizeof(chlogTag)-1, newspecFD);
+	rc = ufdCopy(changelogFD, newspecFD);
+	Fclose(changelogFD);
+	Fclose(newspecFD);
+	spec->specFile = newFile;
+	specFile = newFile;
+    } else
+	spec->specFile = rpmGetPath(specFile, NULL);
+    free(changelogFile);
+
+
     pushOFI(spec, spec->specFile);
     /* If buildRoot not specified, use default %{buildroot} */
     if (buildRoot) {
@@ -911,15 +935,6 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 	    goto exit;
 	}
     }
-
-    changelogFile = rpmGetPath("%{?_changelog_file:%{_changelog_file}}", NULL);
-
-    if (changelogFile && *changelogFile) {
-	OFI_t *ofi = pushOFI(spec, changelogFile);
-	if(ofi)
-	    parsePart = parseChangelog(spec);
-    }
-    free(changelogFile);
 
     if (spec->clean == NULL) {
 	char *body = rpmExpand("%{?buildroot: %{__rm} -rf %{buildroot}}", NULL);

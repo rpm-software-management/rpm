@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <errno.h>
+#include <libgen.h>
 #include <sys/wait.h>
 
 #include <rpm/rpmlog.h>
@@ -283,6 +284,14 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 
     if (what & RPMBUILD_RMSPEC)
 	(void) unlink(spec->specFile);
+
+    /* new spec file created with external %changelog applied */
+    if (strstr(spec->specFile, "SPECSCOPY")) {
+	(void) unlink(spec->specFile);
+	(void) rmdir(dirname(spec->specFile));
+	free(spec->specFile);
+	spec->specFile = NULL;
+    }
 
 exit:
     free(cookie);
