@@ -123,6 +123,6 @@ def dsSingle(TagN, N, EVR="", Flags=RPMSENSE_ANY):
     """
     Creates a single entry dependency set (ds)
 
-    dsSingle(RPMTAG_CONFLICTNAME, "rpm") correspons to "Conflicts: rpm"
+    dsSingle(RPMTAG_CONFLICTNAME, "rpm") corresponds to "Conflicts: rpm"
     """
     return ds((N, Flags, EVR), TagN)

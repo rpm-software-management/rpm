@@ -168,7 +168,7 @@ int runPostUnTransFileTrigs(rpmts ts)
 	trigH = rpmdbGetHeaderAt(rpmtsGetRdb(ts),
 				trigs->triggerInfo[i].hdrNum);
 
-	/* Maybe package whith this trigger is already uninstalled */
+	/* Maybe package with this trigger is already uninstalled */
 	if (trigH == NULL)
 	    continue;
 

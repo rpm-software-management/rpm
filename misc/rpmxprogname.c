@@ -22,7 +22,7 @@ char *_rpmxgetprogname(void)
 void _rpmxsetprogname(const char *pn)
 {
   if (pn != NULL && _rpmxprogname == NULL /* set the value only once */) {
-    char *p = strrchr(pn, '/'); /* locate the last occurence of '/' */
+    char *p = strrchr(pn, '/'); /* locate the last occurrence of '/' */
     if (p != NULL)
       _rpmxprogname = p + 1 /* strip beginning '/' */;
     else

@@ -2157,7 +2157,7 @@ static int iterReadArchiveNextContentFirst(rpmfi fi)
 		    return fx;
 		}
 	    }
-	    /* should never happend */
+	    /* should never happen */
 	    return -1;
 	}
     } else {
