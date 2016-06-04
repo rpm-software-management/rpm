@@ -6,6 +6,7 @@ if sys.version_info[0] == 3:
     _string_types = str,
 else:
     _string_types = basestring,
+    from __future__ import with_statement
 
 
 # TODO: migrate relevant documentation from C-side
@@ -51,9 +52,8 @@ class TransactionSet(TransactionSetCore):
 
     def _f2hdr(self, item):
         if isinstance(item, _string_types):
-            f = open(item)
-            header = self.hdrFromFdno(f)
-            f.close()
+            with open(item) as f:
+                header = self.hdrFromFdno(f)
         elif isinstance(item, rpm.hdr):
             header = item
         else:
