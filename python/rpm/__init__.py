@@ -110,7 +110,7 @@ def readHeaderFromFD(file_desc):
 
 
 def signalsCaught(siglist):
-    """Returns True if any of the signals was caught."""
+    """Returns list of signals that were caught."""
     caught = []
     for sig in siglist:
         if signalCaught(sig):
