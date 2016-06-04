@@ -139,11 +139,11 @@ class TransactionSet(TransactionSetCore):
             needflags = rpm.RPMSENSE_ANY
             if len(needs) == 3:
                 needop = needs[1]
-                if needop.find('<') >= 0:
+                if '<' in needop:
                     needflags |= rpm.RPMSENSE_LESS
-                if needop.find('=') >= 0:
+                if '=' in needop:
                     needflags |= rpm.RPMSENSE_EQUAL
-                if needop.find('>') >= 0:
+                if '>' in needop:
                     needflags |= rpm.RPMSENSE_GREATER
                 needver = needs[2]
             else:
