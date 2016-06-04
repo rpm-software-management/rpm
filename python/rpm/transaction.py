@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import sys
 import rpm
 from rpm._rpm import ts as TransactionSetCore
