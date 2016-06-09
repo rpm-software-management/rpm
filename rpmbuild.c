@@ -25,7 +25,6 @@ static struct rpmBuildArguments_s rpmBTArgs;
 #define	POPT_BUILDROOT		-1015
 #define	POPT_TARGETPLATFORM	-1016
 #define	POPT_NOBUILD		-1017
-#define	POPT_CHANGELOG		-1018
 #define	POPT_RMSPEC		-1019
 #define POPT_NODIRTOKENS	-1020
 #define POPT_BUILDINPLACE	-1021
@@ -129,9 +128,6 @@ static void buildArgCallback( poptContext con,
 	rpmDefineMacro(NULL, "_build_in_place 1", 0);
 	buildInPlace = 1;
 	break;
-    case POPT_CHANGELOG:
-	addMacro(NULL, "_changelog_file", NULL, arg, RMIL_SPEC);
-	break;
     }
 }
 
@@ -216,8 +212,6 @@ static struct poptOption rpmBuildPoptTable[] = {
 	N_("override build root"), "DIRECTORY" },
  { "build-in-place", '\0', 0, 0, POPT_BUILDINPLACE,
 	N_("run build in current directory"), NULL },
- { "changelog", '\0', POPT_ARG_STRING, 0,  POPT_CHANGELOG,
-	N_("use changelog from separate file"), "FILE" },
  { "clean", '\0', 0, 0, POPT_RMBUILD,
 	N_("remove build tree when done"), NULL},
  { "force", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_FORCE,

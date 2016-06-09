@@ -179,7 +179,7 @@ static int parseNoSource(rpmSpec spec, const char * field, rpmTagVal tag)
     return 0;
 }
 
-static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag)
+int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag)
 {
     struct Source *p;
     int flag = 0;
@@ -204,13 +204,17 @@ static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag
 	flag = RPMBUILD_ISICON;
 	fieldp = NULL;
 	break;
+      case RPMTAG_CHANGELOG:
+	flag = RPMBUILD_ISCHANGELOG;
+	fieldp = NULL;
+	break;
       default:
 	return -1;
 	break;
     }
 
     /* Get the number */
-    if (tag != RPMTAG_ICON) {
+    if (tag != RPMTAG_ICON && tag != RPMTAG_CHANGELOG) {
 	/* We already know that a ':' exists, and that there */
 	/* are no spaces before it.                          */
 	/* This also now allows for spaces and tabs between  */
@@ -272,7 +276,7 @@ static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag
 
     spec->numSources++;
 
-    if (tag != RPMTAG_ICON) {
+    if (tag != RPMTAG_ICON && tag != RPMTAG_CHANGELOG) {
 	char *body = rpmGetPath("%{_sourcedir}/", p->source, NULL);
 	struct stat st;
 	int nofetch = (spec->flags & RPMSPEC_FORCE) ||
