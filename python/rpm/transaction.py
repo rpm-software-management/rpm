@@ -1,3 +1,5 @@
+from __future__ import with_statement
+
 import sys
 import rpm
 from rpm._rpm import ts as TransactionSetCore
@@ -6,7 +8,6 @@ if sys.version_info[0] == 3:
     _string_types = str,
 else:
     _string_types = basestring,
-    from __future__ import with_statement
 
 
 # TODO: migrate relevant documentation from C-side
