@@ -167,6 +167,10 @@ rpmlibexec_PROGRAMS +=	elfdeps
 elfdeps_SOURCES =	tools/elfdeps.c
 elfdeps_LDADD =		rpmio/librpmio.la
 elfdeps_LDADD +=	@WITH_LIBELF_LIB@ @WITH_POPT_LIB@
+
+rpmlibexec_PROGRAMS +=	sepdebugcrcfix
+sepdebugcrcfix_SOURCES = tools/sepdebugcrcfix.c
+sepdebugcrcfix_LDADD =	@WITH_LIBELF_LIB@
 endif
 endif
 
