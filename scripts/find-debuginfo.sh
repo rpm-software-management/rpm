@@ -4,6 +4,8 @@
 #
 # Usage: find-debuginfo.sh [--strict-build-id] [-g] [-r] [-m]
 #	 		   [-o debugfiles.list]
+#			   [--run-dwz] [--dwz-low-mem-die-limit N]
+#			   [--dwz-max-die-limit N]
 #			   [[-l filelist]... [-p 'pattern'] -o debuginfo.list]
 #			   [builddir]
 #
@@ -20,6 +22,10 @@
 # The -p argument is an grep -E -style regexp matching the a file name,
 # and must not use anchors (^ or $).
 #
+# The --run-dwz flag instructs find-debuginfo.sh to run the dwz utility
+# if available, and --dwz-low-mem-die-limit and --dwz-max-die-limit
+# provide detailed limits.  See dwz(1) -l and -L option for details.
+#
 # All file names in switches are relative to builddir (. if not given).
 #
 
@@ -35,6 +41,11 @@ include_minidebug=false
 # Barf on missing build IDs.
 strict=false
 
+# DWZ parameters.
+run_dwz=false
+dwz_low_mem_die_limit=
+dwz_max_die_limit=
+
 BUILDDIR=.
 out=debugfiles.list
 nout=0
@@ -42,6 +53,17 @@ while [ $# -gt 0 ]; do
   case "$1" in
   --strict-build-id)
     strict=true
+    ;;
+  --run-dwz)
+    run_dwz=true
+    ;;
+  --dwz-low-mem-die-limit)
+    dwz_low_mem_die_limit=$2
+    shift
+    ;;
+  --dwz-max-die-limit)
+    dwz_max_die_limit=$2
+    shift
     ;;
   -g)
     strip_g=true
@@ -301,6 +323,37 @@ while read nlinks inum f; do
     make_id_link "$id" "/usr/lib/debug$dn/$bn" .debug
   fi
 done || exit
+
+# Invoke the DWARF Compressor utility.
+if $run_dwz && type dwz >/dev/null 2>&1 \
+   && [ -d "${RPM_BUILD_ROOT}/usr/lib/debug" ]; then
+  dwz_files="`cd "${RPM_BUILD_ROOT}/usr/lib/debug"; find -type f -name \*.debug`"
+  if [ -n "${dwz_files}" ]; then
+    dwz_multifile_name="${RPM_PACKAGE_NAME}-${RPM_PACKAGE_VERSION}-${RPM_PACKAGE_RELEASE}.${RPM_ARCH}"
+    dwz_multifile_suffix=
+    dwz_multifile_idx=0
+    while [ -f "${RPM_BUILD_ROOT}/usr/lib/debug/.dwz/${dwz_multifile_name}${dwz_multifile_suffix}" ]; do
+      let ++dwz_multifile_idx
+      dwz_multifile_suffix=".${dwz_multifile_idx}"
+    done
+    dwz_multfile_name="${dwz_multifile_name}${dwz_multifile_suffix}"
+    dwz_opts="-h -q -r -m .dwz/${dwz_multifile_name}"
+    mkdir -p "${RPM_BUILD_ROOT}/usr/lib/debug/.dwz"
+    [ -n "${dwz_low_mem_die_limit}" ] \
+      && dwz_opts="${dwz_opts} -l ${dwz_low_mem_die_limit}"
+    [ -n "${dwz_max_die_limit}" ] \
+      && dwz_opts="${dwz_opts} -L ${dwz_max_die_limit}"
+    ( cd "${RPM_BUILD_ROOT}/usr/lib/debug" && dwz $dwz_opts $dwz_files )
+    # Remove .dwz directory if empty
+    rmdir "${RPM_BUILD_ROOT}/usr/lib/debug/.dwz" 2>/dev/null
+    if [ -f "${RPM_BUILD_ROOT}/usr/lib/debug/.dwz/${dwz_multifile_name}" ]; then
+      id="`readelf -Wn "${RPM_BUILD_ROOT}/usr/lib/debug/.dwz/${dwz_multifile_name}" \
+	     2>/dev/null | sed -n 's/^    Build ID: \([0-9a-f]\+\)/\1/p'`"
+      [ -n "$id" ] \
+	&& make_id_link "$id" "/usr/lib/debug/.dwz/${dwz_multifile_name}" .debug
+    fi
+  fi
+fi
 
 # For each symlink whose target has a .debug file,
 # make a .debug symlink to that file.

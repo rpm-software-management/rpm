@@ -28,3 +28,16 @@
 
 # Should missing buildids terminate a build?
 %_missing_build_ids_terminate_build    1
+
+# Number of debugging information entries (DIEs) above which
+# dwz will stop considering file for multifile optimizations
+# and enter a low memory mode, in which it will optimize
+# in about half the memory needed otherwise.
+%_dwz_low_mem_die_limit		 10000000
+# Number of DIEs above which dwz will stop processing
+# a file altogether.
+%_dwz_max_die_limit     	 50000000
+
+%_find_debuginfo_dwz_opts --run-dwz\\\
+   --dwz-low-mem-die-limit %{_dwz_low_mem_die_limit}\\\
+   --dwz-max-die-limit %{_dwz_max_die_limit}
