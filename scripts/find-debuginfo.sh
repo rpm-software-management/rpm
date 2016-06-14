@@ -2,7 +2,7 @@
 #find-debuginfo.sh - automagically generate debug info and file list
 #for inclusion in an rpm spec file.
 #
-# Usage: find-debuginfo.sh [--strict-build-id] [-g] [-r]
+# Usage: find-debuginfo.sh [--strict-build-id] [-g] [-r] [-m]
 #	 		   [-o debugfiles.list]
 #			   [[-l filelist]... [-p 'pattern'] -o debuginfo.list]
 #			   [builddir]
@@ -29,6 +29,9 @@ strip_g=false
 # with -r arg, pass --reloc-debug-sections to eu-strip.
 strip_r=false
 
+# with -m arg, add minimal debuginfo to binary.
+include_minidebug=false
+
 # Barf on missing build IDs.
 strict=false
 
@@ -42,6 +45,9 @@ while [ $# -gt 0 ]; do
     ;;
   -g)
     strip_g=true
+    ;;
+  -m)
+    include_minidebug=true
     ;;
   -o)
     if [ -z "${lists[$nout]}" -a -z "${ptns[$nout]}" ]; then
@@ -104,6 +110,32 @@ strip_to_debug()
   esac
   eu-strip --remove-comment $r $g -f "$1" "$2" || exit
   chmod 444 "$1" || exit
+}
+
+add_minidebug()
+{
+  local debuginfo="$1"
+  local binary="$2"
+
+  local dynsyms=`mktemp`
+  local funcsyms=`mktemp`
+  local keep_symbols=`mktemp`
+  local mini_debuginfo=`mktemp`
+
+  # Extract the dynamic symbols from the main binary, there is no need to also have these
+  # in the normal symbol table
+  nm -D "$binary" --format=posix --defined-only | awk '{ print $1 }' | sort > "$dynsyms"
+  # Extract all the text (i.e. function) symbols from the debuginfo
+  nm "$debuginfo" --format=posix --defined-only | awk '{ if ($2 == "T" || $2 == "t") print $1 }' | sort > "$funcsyms"
+  # Keep all the function symbols not already in the dynamic symbol table
+  comm -13 "$dynsyms" "$funcsyms" > "$keep_symbols"
+  # Copy the full debuginfo, keeping only a minumal set of symbols and removing some unnecessary sections
+  objcopy -S --remove-section .gdb_index --remove-section .comment --keep-symbols="$keep_symbols" "$debuginfo" "$mini_debuginfo" &> /dev/null
+  #Inject the compressed data into the .gnu_debugdata section of the original binary
+  xz "$mini_debuginfo"
+  mini_debuginfo="${mini_debuginfo}.xz"
+  objcopy --add-section .gnu_debugdata="$mini_debuginfo" "$binary"
+  rm -f "$dynsyms" "$funcsyms" "$keep_symbols" "$mini_debuginfo"
 }
 
 # Make a relative symlink to $1 called $3$2
@@ -260,6 +292,9 @@ while read nlinks inum f; do
     strip_to_debug "${debugfn}" "$f"
     chmod u-w "$f"
   fi
+
+  # strip -g implies we have full symtab, don't add mini symtab in that case.
+  $strip_g || ($include_minidebug && add_minidebug "${debugfn}" "$f")
 
   if [ -n "$id" ]; then
     make_id_link "$id" "$dn/$(basename $f)"

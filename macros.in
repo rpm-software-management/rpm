@@ -178,7 +178,7 @@
 #	the script.  See the script for details.
 #
 %__debug_install_post   \
-   %{_rpmconfigdir}/find-debuginfo.sh %{?_missing_build_ids_terminate_build:--strict-build-id} %{?_find_debuginfo_opts} "%{_builddir}/%{?buildsubdir}"\
+   %{_rpmconfigdir}/find-debuginfo.sh %{?_missing_build_ids_terminate_build:--strict-build-id} %{?_include_minidebuginfo:-m} %{?_find_debuginfo_opts} "%{_builddir}/%{?buildsubdir}"\
 %{nil}
 
 #	Template for debug information sub-package.
@@ -446,6 +446,12 @@ package or when debugging this package.\
 # enable.
 #
 #%_missing_build_ids_terminate_build	1
+
+#
+# Include minimal debug information in build binaries.
+# Requires _enable_debug_packages.
+#
+#%_include_minidebuginfo	1
 
 #
 # Use internal dependency generator rather than external helpers?
