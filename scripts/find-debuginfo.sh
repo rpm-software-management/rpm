@@ -29,6 +29,9 @@
 # All file names in switches are relative to builddir (. if not given).
 #
 
+# Figure out where we are installed so we can call other helper scripts.
+lib_rpm_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 # With -g arg, pass it to strip on libraries or executables.
 strip_g=false
 
@@ -286,7 +289,7 @@ while read nlinks inum f; do
   fi
 
   echo "extracting debug info from $f"
-  id=$(/usr/lib/rpm/debugedit -b "$RPM_BUILD_DIR" -d /usr/src/debug \
+  id=$(${lib_rpm_dir}/debugedit -b "$RPM_BUILD_DIR" -d /usr/src/debug \
 			      -i -l "$SOURCEFILE" "$f") || exit
   if [ $nlinks -gt 1 ]; then
     eval linkedid_$inum=\$id
@@ -296,7 +299,7 @@ while read nlinks inum f; do
     $strict && exit 2
   fi
 
-  [ -x /usr/bin/gdb-add-index ] && /usr/bin/gdb-add-index "$f" > /dev/null 2>&1
+  [ type gdb-add-index >/dev/null 2>&1 && gdb-add-index "$f" > /dev/null 2>&1
 
   # A binary already copied into /usr/lib/debug doesn't get stripped,
   # just has its file names collected and adjusted.
