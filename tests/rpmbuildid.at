@@ -759,3 +759,97 @@ debug dup id in debug package
 ],
 [])
 AT_CLEANUP
+
+# ------------------------------
+# Check build-ids are unique between versions/releases
+# with _unique_build_ids defined.
+AT_SETUP([rpmbuild buildid unique r1 r2])
+AT_KEYWORDS([build] [debuginfo] [buildid])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
+
+# No warnings for hard links
+run rpmbuild --quiet \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --define="_unique_build_ids 1" \
+  -ba "${abs_srcdir}"/data/SPECS/hello.spec
+
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-1.*.rpm \
+  | cpio -diu --quiet
+
+hello_file=./usr/local/bin/hello
+
+# Extract the build-id from the main file
+id1=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+
+# Build the "next" release, which has no changes except for the release update.
+run rpmbuild --quiet \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --define="_unique_build_ids 1" \
+  -ba "${abs_srcdir}"/data/SPECS/hello-r2.spec
+
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-2.*.rpm \
+  | cpio -diu --quiet
+
+# Extract the build-id from the main file
+id2=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+
+if test "$id1" == "$id2"; then echo "equal $id1"; else echo "unequal"; fi
+],
+[0],
+[unequal
+],
+[ignore])
+AT_CLEANUP
+
+# ------------------------------
+# Check build-ids are non-unique between versions/releases
+# with _unique_build_ids undefined (and exact same sources).
+AT_SETUP([rpmbuild buildid non-unique r1 r2])
+AT_KEYWORDS([build] [debuginfo] [buildid])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
+
+# No warnings for hard links
+run rpmbuild --quiet \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --undefine="_unique_build_ids" \
+  -ba "${abs_srcdir}"/data/SPECS/hello.spec
+
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-1.*.rpm \
+  | cpio -diu --quiet
+
+hello_file=./usr/local/bin/hello
+
+# Extract the build-id from the main file
+id1=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+
+# Build the "next" release, which has no changes except for the release update.
+run rpmbuild --quiet \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --undefine="_unique_build_ids" \
+  -ba "${abs_srcdir}"/data/SPECS/hello-r2.spec
+
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-2.*.rpm \
+  | cpio -diu --quiet
+
+# Extract the build-id from the main file
+id2=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+
+if test "$id1" == "$id2"; then echo "equal"; else echo "unequal $id1 $id2"; fi
+],
+[0],
+[equal
+],
+[ignore])
+AT_CLEANUP

@@ -1,4 +1,4 @@
-/* Copyright (C) 2001, 2002, 2003, 2005, 2007, 2009, 2010, 2011 Red Hat, Inc.
+/* Copyright (C) 2001-2003, 2005, 2007, 2009-2011, 2016 Red Hat, Inc.
    Written by Alexander Larsson <alexl@redhat.com>, 2002
    Based on code by Jakub Jelinek <jakub@redhat.com>, 2001.
 
@@ -54,6 +54,7 @@ char *dest_dir = NULL;
 char *list_file = NULL;
 int list_file_fd = -1;
 int do_build_id = 0;
+char *build_id_seed = NULL;
 
 typedef struct
 {
@@ -1296,6 +1297,8 @@ static struct poptOption optionsTable[] = {
       "file where to put list of source and header file names", NULL },
     { "build-id",  'i', POPT_ARG_NONE, &do_build_id, 0,
       "recompute build ID note and print ID on stdout", NULL },
+    { "build-id-seed", 's', POPT_ARG_STRING, &build_id_seed, 0,
+      "if recomputing the build ID note use this string as hash seed", NULL },
       POPT_AUTOHELP
     { NULL, 0, 0, NULL, 0, NULL, NULL }
 };
@@ -1400,7 +1403,7 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
       exit (1);
     }
 
-  if (!dirty_elf)
+  if (!dirty_elf && build_id_seed == NULL)
     goto print;
 
   if (elf_update (dso->elf, ELF_C_NULL) < 0)
@@ -1414,6 +1417,10 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
   memset ((char *) build_id->d_buf + build_id_offset, 0, build_id_size);
 
   ctx = rpmDigestInit(algorithm, 0);
+
+  /* If a seed string was given use it to prime the hash.  */
+  if (build_id_seed != NULL)
+    rpmDigestUpdate(ctx, build_id_seed, strlen (build_id_seed));
 
   /* Slurp the relevant header bits and section contents and feed them
      into the hash function.  The only bits we ignore are the offset
@@ -1539,6 +1546,19 @@ main (int argc, char *argv[])
 	  fprintf (stderr, "Dest dir longer than base dir is not supported\n");
 	  exit (1);
 	}
+    }
+
+  if (build_id_seed != NULL && do_build_id == 0)
+    {
+      fprintf (stderr, "--build-id-seed (-s) needs --build-id (-i)\n");
+      exit (1);
+    }
+
+  if (build_id_seed != NULL && strlen (build_id_seed) < 1)
+    {
+      fprintf (stderr,
+	       "--build-id-seed (-s) string should be at least 1 char\n");
+      exit (1);
     }
 
   /* Ensure clean paths, users can muck with these */

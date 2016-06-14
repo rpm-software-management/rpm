@@ -178,7 +178,7 @@
 #	the script.  See the script for details.
 #
 %__debug_install_post   \
-   %{_rpmconfigdir}/find-debuginfo.sh %{?_missing_build_ids_terminate_build:--strict-build-id} %{?_include_minidebuginfo:-m} %{?_find_debuginfo_dwz_opts} %{?_find_debuginfo_opts} "%{_builddir}/%{?buildsubdir}"\
+   %{_rpmconfigdir}/find-debuginfo.sh %{?_missing_build_ids_terminate_build:--strict-build-id} %{?_include_minidebuginfo:-m} %{?_unique_build_ids:--ver-rel "%{version}-%{release}"} %{?_find_debuginfo_dwz_opts} %{?_find_debuginfo_opts} "%{_builddir}/%{?buildsubdir}"\
 %{nil}
 
 #	Template for debug information sub-package.
@@ -480,6 +480,12 @@ package or when debugging this package.\
 #   the -debuginfo package will have a compatibility link for the main
 #   ELF /usr/lib/debug/.build-id/xx/yyy -> /usr/lib/.build-id/xx/yyy
 %_build_id_links compat
+
+# Whether build-ids should be made unique between package version/releases
+# when generating debuginfo packages. If set to 1 this will pass
+# --ver-rel "%{version}-%{release}" to find-debuginfo.sh which will pass it
+# onto debugedit --build-id-seed to be used to prime the build-id note hash.
+%_unique_build_ids	1
 
 #
 # Use internal dependency generator rather than external helpers?

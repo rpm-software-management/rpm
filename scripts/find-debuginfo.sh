@@ -6,6 +6,7 @@
 #	 		   [-o debugfiles.list]
 #			   [--run-dwz] [--dwz-low-mem-die-limit N]
 #			   [--dwz-max-die-limit N]
+#			   [--ver-rel VERSION-RELEASE]
 #			   [[-l filelist]... [-p 'pattern'] -o debuginfo.list]
 #			   [builddir]
 #
@@ -25,6 +26,12 @@
 # The --run-dwz flag instructs find-debuginfo.sh to run the dwz utility
 # if available, and --dwz-low-mem-die-limit and --dwz-max-die-limit
 # provide detailed limits.  See dwz(1) -l and -L option for details.
+#
+# If --ver-rel VERSION-RELEASE is given then debugedit is called to
+# update the build-ids it finds adding the VERSION-RELEASE string as
+# seed to recalculate the build-id hash.  This makes sure the
+# build-ids in the ELF files are unique between versions and releases
+# of the same package.
 #
 # All file names in switches are relative to builddir (. if not given).
 #
@@ -49,6 +56,9 @@ run_dwz=false
 dwz_low_mem_die_limit=
 dwz_max_die_limit=
 
+# Version and release of the spec. Given by --ver-rel
+ver_rel=
+
 BUILDDIR=.
 out=debugfiles.list
 nout=0
@@ -66,6 +76,10 @@ while [ $# -gt 0 ]; do
     ;;
   --dwz-max-die-limit)
     dwz_max_die_limit=$2
+    shift
+    ;;
+  --ver-rel)
+    ver_rel=$2
     shift
     ;;
   -g)
@@ -238,8 +252,12 @@ while read nlinks inum f; do
   fi
 
   echo "extracting debug info from $f"
+  build_id_seed=
+  if [ ! -z "$ver_rel" ]; then
+    build_id_seed="--build-id-seed=$ver_rel"
+  fi
   id=$(${lib_rpm_dir}/debugedit -b "$RPM_BUILD_DIR" -d /usr/src/debug \
-			      -i -l "$SOURCEFILE" "$f") || exit
+			      -i $build_id_seed -l "$SOURCEFILE" "$f") || exit
   if [ $nlinks -gt 1 ]; then
     eval linkedid_$inum=\$id
   fi
