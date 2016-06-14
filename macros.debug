@@ -1,0 +1,30 @@
+# macros to include to generate debuginfo
+
+%_enable_debug_packages 1
+%_include_minidebuginfo 1
+
+# Expanded at end of %install scriptlet
+
+%__arch_install_post %{nil}
+
+%__os_install_post \
+    %{_rpmconfigdir}/brp-compress \
+    %{!?__debug_package:\
+    %{_rpmconfigdir}/brp-strip %{__strip} \
+    %{_rpmconfigdir}/brp-strip-comment-note %{__strip} %{__objdump} \
+    } \
+    %{_rpmconfigdir}/brp-strip-static-archive %{__strip} \
+%{nil}
+
+%__spec_install_post\
+    %{?__debug_package:%{__debug_install_post}}\
+    %{__arch_install_post}\
+    %{__os_install_post}\
+%{nil}
+
+%install %{?_enable_debug_packages:%{?buildsubdir:%{debug_package}}}\
+%%install\
+%{nil}
+
+# Should missing buildids terminate a build?
+%_missing_build_ids_terminate_build    1

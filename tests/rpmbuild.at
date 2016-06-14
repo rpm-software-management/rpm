@@ -304,3 +304,80 @@ runroot rpm2cpio \
 [],
 [])
 AT_CLEANUP
+
+# ------------------------------
+# Check if rpmbuild creates the minisymtab section in the main hello binary
+AT_SETUP([rpmbuild debuginfo minisymtab])
+AT_KEYWORDS([build] [debuginfo])
+AT_CHECK([
+rm -rf ${TOPDIR}
+
+# Use macros.debug to generate a debuginfo package.
+export CFLAGS="-g"
+run rpmbuild --quiet \
+  --macros=${abs_top_builddir}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --rebuild "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
+
+# Extract the main package and inspect the hello binary
+# It should contain .gnu_debugdata, but not the full .symtab
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-1.*.rpm | cpio -diu
+test -f ./usr/local/bin/hello || exit 1
+readelf -S ./usr/local/bin/hello |\
+   grep -q .gnu_debugdata; test $? == 0 || exit 1
+readelf -S ./usr/local/bin/hello \
+  | grep -q .symtab; test $? == 1 || exit 1
+
+# And the opposite for the debuginfo package
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
+  | cpio -diu
+test -f ./usr/lib/debug/usr/local/bin/hello*.debug || exit 1
+readelf -S ./usr/lib/debug/usr/local/bin/hello*.debug \
+  | grep -q .gnu_debugdata; test $? == 1 || exit 1
+readelf -S ./usr/lib/debug/usr/local/bin/hello*.debug \
+  | grep -q .symtab; test $? == 0 || exit 1
+],
+[0],
+[],
+[ignore])
+AT_CLEANUP
+
+# ------------------------------
+# Check if rpmbuild doesn't create the minisymtab section if we keep symtab
+# Some package might want to use strip -g to keep the symbol table and only
+# but the debug symbols/info in the debuginfo package.
+AT_SETUP([rpmbuild debuginfo minisymtab strip -g])
+AT_KEYWORDS([build] [debuginfo])
+AT_CHECK([
+rm -rf ${TOPDIR}
+
+# Use macros.debug to generate a debuginfo package.
+export CFLAGS="-g"
+run rpmbuild --quiet \
+  --macros=${abs_top_builddir}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --define="_find_debuginfo_opts -g" \
+  --rebuild "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
+
+# Extract the main package and inspect the hello binary
+# It should contain .symtab (because of strip -g), so doesn't .gnu_debugdata.
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-1.*.rpm | cpio -diu
+test -f ./usr/local/bin/hello || exit 1
+readelf -S ./usr/local/bin/hello \
+  | grep -q .gnu_debugdata; test $? == 1 || exit 1
+readelf -S ./usr/local/bin/hello \
+  | grep -q .symtab; test $? == 0 || exit 1
+
+# The debuginfo package should contain neither. The .symtab is NOBITS.
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
+  | cpio -diu
+test -f ./usr/lib/debug/usr/local/bin/hello*.debug || exit 1
+readelf -S ./usr/lib/debug/usr/local/bin/hello*.debug \
+  | grep -q .gnu_debugdata; test $? == 1 || exit 1
+readelf -S ./usr/lib/debug/usr/local/bin/hello*.debug \
+  | grep .symtab | grep -q NOBITS; test $? == 0 || exit 1
+],
+[0],
+[],
+[ignore])
+AT_CLEANUP
