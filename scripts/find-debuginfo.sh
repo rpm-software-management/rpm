@@ -196,57 +196,6 @@ debug_link()
   link_relative "$t" "$l" "$RPM_BUILD_ROOT"
 }
 
-# Provide .2, .3, ... symlinks to all filename instances of this build-id.
-make_id_dup_link()
-{
-  local id="$1" file="$2" idfile
-
-  local n=1
-  while true; do
-    idfile=".build-id/${id:0:2}/${id:2}.$n"
-    [ $# -eq 3 ] && idfile="${idfile}$3"
-    if [ ! -L "$RPM_BUILD_ROOT/usr/lib/debug/$idfile" ]; then
-      break
-    fi
-    n=$[$n+1]
-  done
-  debug_link "$file" "/$idfile"
-}
-
-# Make a build-id symlink for id $1 with suffix $3 to file $2.
-make_id_link()
-{
-  local id="$1" file="$2"
-  local idfile=".build-id/${id:0:2}/${id:2}"
-  [ $# -eq 3 ] && idfile="${idfile}$3"
-  local root_idfile="$RPM_BUILD_ROOT/usr/lib/debug/$idfile"
-
-  if [ ! -L "$root_idfile" ]; then
-    debug_link "$file" "/$idfile"
-    return
-  fi
-
-  make_id_dup_link "$@"
-
-  [ $# -eq 3 ] && return 0
-
-  local other=$(readlink -m "$root_idfile")
-  other=${other#$RPM_BUILD_ROOT}
-  if cmp -s "$root_idfile" "$RPM_BUILD_ROOT$file" ||
-     eu-elfcmp -q "$root_idfile" "$RPM_BUILD_ROOT$file" 2> /dev/null; then
-    # Two copies.  Maybe one has to be setuid or something.
-    echo >&2 "*** WARNING: identical binaries are copied, not linked:"
-    echo >&2 "        $file"
-    echo >&2 "   and  $other"
-  else
-    # This is pathological, break the build.
-    echo >&2 "*** ERROR: same build ID in nonidentical files!"
-    echo >&2 "        $file"
-    echo >&2 "   and  $other"
-    exit 2
-  fi
-}
-
 get_debugfn()
 {
   dn=$(dirname "${1#$RPM_BUILD_ROOT}")
@@ -277,8 +226,6 @@ while read nlinks inum f; do
     eval linked=\$linked_$inum
     if [ -n "$linked" ]; then
       eval id=\$linkedid_$inum
-      make_id_dup_link "$id" "$dn/$(basename $f)"
-      make_id_dup_link "$id" "/usr/lib/debug$dn/$bn" .debug
       link=$debugfn
       get_debugfn "$linked"
       echo "hard linked $link to $debugfn"
@@ -307,7 +254,6 @@ while read nlinks inum f; do
   # just has its file names collected and adjusted.
   case "$dn" in
   /usr/lib/debug/*)
-    [ -z "$id" ] || make_id_link "$id" "$dn/$(basename $f)"
     continue ;;
   esac
 
@@ -325,10 +271,6 @@ while read nlinks inum f; do
 
   echo "./${f#$RPM_BUILD_ROOT}" >> "$ELFBINSFILE"
 
-  if [ -n "$id" ]; then
-    make_id_link "$id" "$dn/$(basename $f)"
-    make_id_link "$id" "/usr/lib/debug$dn/$bn" .debug
-  fi
 done || exit
 
 # Invoke the DWARF Compressor utility.
@@ -356,8 +298,6 @@ if $run_dwz && type dwz >/dev/null 2>&1 \
     if [ -f "${RPM_BUILD_ROOT}/usr/lib/debug/.dwz/${dwz_multifile_name}" ]; then
       id="`readelf -Wn "${RPM_BUILD_ROOT}/usr/lib/debug/.dwz/${dwz_multifile_name}" \
 	     2>/dev/null | sed -n 's/^    Build ID: \([0-9a-f]\+\)/\1/p'`"
-      [ -n "$id" ] \
-	&& make_id_link "$id" "/usr/lib/debug/.dwz/${dwz_multifile_name}" .debug
     fi
 
     # dwz invalidates .gnu_debuglink CRC32 in the main files.

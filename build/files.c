@@ -14,6 +14,11 @@
 #include <sys/capability.h>
 #endif
 
+#if HAVE_LIBDW
+#include <libelf.h>
+#include <elfutils/libdwelf.h>
+#endif
+
 #include <rpm/rpmpgp.h>
 #include <rpm/argv.h>
 #include <rpm/rpmfc.h>
@@ -1544,6 +1549,368 @@ exit:
     return rc;
 }
 
+#if HAVE_LIBDW
+/* How build id links are generated.  See macros.in for description.  */
+#define BUILD_IDS_NONE     0
+#define BUILD_IDS_ALLDEBUG 1
+#define BUILD_IDS_SEPARATE 2
+#define BUILD_IDS_COMPAT   3
+
+static int addNewIDSymlink(FileList fl,
+			   char *targetpath, char *idlinkpath,
+			   int isDbg, int isCompat)
+{
+    const char *linkerr = _("failed symlink");
+    int rc = 0;
+    int nr = 0;
+    char *origpath, *linkpath;
+
+    if (isDbg)
+	rasprintf(&linkpath, "%s.debug", idlinkpath);
+    else
+	linkpath = idlinkpath;
+    origpath = linkpath;
+
+    while (faccessat(AT_FDCWD, linkpath, F_OK, AT_SYMLINK_NOFOLLOW) == 0) {
+	if (nr > 0)
+	    free(linkpath);
+	nr++;
+	rasprintf(&linkpath, "%s.%d%s", idlinkpath, nr,
+		  isDbg ? ".debug" : "");
+    }
+
+    char *symtarget = targetpath;
+    if (nr > 0 && isCompat)
+	rasprintf (&symtarget, "%s.%d", targetpath, nr);
+
+    if (symlink(symtarget, linkpath) < 0) {
+	rc = 1;
+	rpmlog(RPMLOG_ERR, "%s: %s -> %s: %m\n",
+	       linkerr, linkpath, symtarget);
+    } else {
+	fl->cur.isDir = 0;
+	rc = addFile(fl, linkpath, NULL);
+    }
+
+    /* Don't warn (again) if this is a compat id-link, we retarget it. */
+    if (nr > 0 && !isCompat) {
+	/* Lets see why there are multiple build-ids. If the original
+	   targets are hard linked, then it is OK, otherwise warn
+	   something fishy is going on. Would be nice to call
+	   something like eu-elfcmp to see if they are really the same
+	   ELF file or not. */
+	struct stat st1, st2;
+	if (stat (origpath, &st1) != 0) {
+	    rpmlog(RPMLOG_WARNING, _("Duplicate build-id, stat %s: %m\n"),
+		   origpath);
+	} else if (stat (linkpath, &st2) != 0) {
+	    rpmlog(RPMLOG_WARNING, _("Duplicate build-id, stat %s: %m\n"),
+		   linkpath);
+	} else if (!(S_ISREG(st1.st_mode) && S_ISREG(st2.st_mode)
+		  && st1.st_nlink > 1 && st2.st_nlink == st1.st_nlink
+		  && st1.st_ino == st2.st_ino && st1.st_dev == st2.st_dev)) {
+	    char *rpath1 = realpath(origpath, NULL);
+	    char *rpath2 = realpath(linkpath, NULL);
+	    rpmlog(RPMLOG_WARNING, _("Duplicate build-ids %s and %s\n"),
+		   rpath1, rpath2);
+	    free(rpath1);
+	    free(rpath2);
+	}
+    }
+
+    if (isDbg)
+	free(origpath);
+    if (nr > 0)
+	free(linkpath);
+    if (nr > 0 && isCompat)
+	free(symtarget);
+
+    return rc;
+}
+
+static int generateBuildIDs(FileList fl)
+{
+    int rc = 0;
+    int i;
+    FileListRec flp;
+    char **ids = NULL;
+    char **paths = NULL;
+    size_t nr_ids, allocated;
+    nr_ids = allocated = 0;
+
+    /* How are we supposed to create the build-id links?  */
+    char *build_id_links_macro = rpmExpand("%{?_build_id_links}", NULL);
+    int build_id_links;
+    if (build_id_links_macro == NULL) {
+	rpmlog(RPMLOG_WARNING,
+	       _("_build_id_links macro not set, assuming 'compat'\n"));
+	build_id_links = BUILD_IDS_COMPAT;
+    } else if (strcmp(build_id_links_macro, "none") == 0) {
+	build_id_links = BUILD_IDS_NONE;
+    } else if (strcmp(build_id_links_macro, "alldebug") == 0) {
+	build_id_links = BUILD_IDS_ALLDEBUG;
+    } else if (strcmp(build_id_links_macro, "separate") == 0) {
+	build_id_links = BUILD_IDS_SEPARATE;
+    } else if (strcmp(build_id_links_macro, "compat") == 0) {
+	build_id_links = BUILD_IDS_COMPAT;
+    } else {
+	rc = 1;
+	rpmlog(RPMLOG_ERR,
+	       _("_build_id_links macro set to unknown value '%s'\n"),
+	       build_id_links_macro);
+	build_id_links = BUILD_IDS_NONE;
+    }
+    free(build_id_links_macro);
+
+    if (build_id_links == BUILD_IDS_NONE || rc != 0)
+	return rc;
+
+    int terminate = rpmExpandNumeric("%{?_missing_build_ids_terminate_build}");
+
+    /* Collect and check all build-ids for ELF files in this package.  */
+    int needMain = 0;
+    int needDbg = 0;
+    for (i = 0, flp = fl->files.recs; i < fl->files.used; i++, flp++) {
+	int fd;
+	fd = open (flp->diskPath, O_RDONLY);
+	if (fd >= 0) {
+	    struct stat sbuf;
+	    if (fstat (fd, &sbuf) == 0 && S_ISREG (sbuf.st_mode)) {
+		Elf *elf = elf_begin (fd, ELF_C_READ, NULL);
+		if (elf != NULL && elf_kind(elf) == ELF_K_ELF) {
+		    const void *build_id;
+		    ssize_t len = dwelf_elf_gnu_build_id (elf, &build_id);
+		    /* len == -1 means error. Zero means no
+		       build-id. We want at least a length of 2 so we
+		       have at least a xx/yy (hex) dir/file. But
+		       reasonable build-ids are between 16 bytes (md5
+		       is 128 bits) and 64 bytes (largest sha3 is 512
+		       bits), common is 20 bytes (sha1 is 160 bits). */
+		    if (len >= 16 && len <= 64) {
+			/* We determine whether this is a main or
+			   debug ELF based on path.  */
+			#define DEBUGPATH "/usr/lib/debug/"
+			int addid = 0;
+			if (strncmp (flp->cpioPath,
+				     DEBUGPATH, strlen (DEBUGPATH)) == 0) {
+			    needDbg = 1;
+			    addid = 1;
+			}
+			else if (build_id_links != BUILD_IDS_ALLDEBUG) {
+			    needMain = 1;
+			    addid = 1;
+			}
+			if (addid) {
+			    const unsigned char *p = build_id;
+			    const unsigned char *end = p + len;
+			    char *id_str;
+			    if (allocated <= nr_ids) {
+				allocated += 16;
+				paths = xrealloc (paths,
+						  allocated * sizeof(char *));
+				ids = xrealloc (ids,
+						allocated * sizeof(char *));
+			    }
+
+			    paths[nr_ids] = xstrdup(flp->cpioPath);
+			    id_str = ids[nr_ids] = xmalloc(2 * len + 1);
+			    while (p < end)
+				id_str += sprintf(id_str, "%02x",
+						  (unsigned)*p++);
+			    *id_str = '\0';
+			    nr_ids++;
+			}
+		    } else {
+			if (len < 0) {
+			    rpmlog(terminate ? RPMLOG_ERR : RPMLOG_WARNING,
+				   _("error reading build-id in %s: %s\n"),
+				   flp->diskPath, elf_errmsg (-1));
+			} else if (len == 0) {
+			    rpmlog(terminate ? RPMLOG_ERR : RPMLOG_WARNING,
+				   _("Missing build-id in %s\n"),
+				   flp->diskPath);
+			} else {
+			    rpmlog(terminate ? RPMLOG_ERR : RPMLOG_WARNING,
+				   (len < 16
+				    ? _("build-id found in %s too small\n")
+				    : _("build-id found in %s too large\n")),
+				   flp->diskPath);
+			}
+			if (terminate)
+			    rc = 1;
+		    }
+		    elf_end (elf);
+		}
+	    }
+	    close (fd);
+	}
+    }
+
+    /* Process and clean up all build-ids.  */
+    if (nr_ids > 0) {
+	const char *errdir = _("failed to create directory");
+	char *mainiddir = NULL;
+	char *debugiddir = NULL;
+	if (rc == 0) {
+	    /* Add .build-id directories to hold the subdirs/symlinks.  */
+            #define BUILD_ID_DIR "/usr/lib/.build-id"
+            #define DEBUG_ID_DIR "/usr/lib/debug/.build-id"
+
+	    mainiddir = rpmGetPath(fl->buildRoot, BUILD_ID_DIR, NULL);
+	    debugiddir = rpmGetPath(fl->buildRoot, DEBUG_ID_DIR, NULL);
+
+	    /* Supported, but questionable.  */
+	    if (needMain && needDbg)
+		rpmlog(RPMLOG_WARNING,
+		       _("Mixing main ELF and debug files in package"));
+
+	    if (needMain) {
+		if ((rc = rpmioMkpath(mainiddir, 0755, -1, -1)) != 0) {
+		    rpmlog(RPMLOG_ERR, "%s %s: %m\n", errdir, mainiddir);
+		} else {
+		    fl->cur.isDir = 1;
+		    rc = addFile(fl, mainiddir, NULL);
+		}
+	    }
+
+	    if (rc == 0 && needDbg) {
+		if ((rc = rpmioMkpath(debugiddir, 0755, -1, -1)) != 0) {
+		    rpmlog(RPMLOG_ERR, "%s %s: %m\n", errdir, debugiddir);
+		} else {
+		    fl->cur.isDir = 1;
+		    rc = addFile(fl, debugiddir, NULL);
+		}
+	    }
+	}
+
+	/* Now add a subdir and symlink for each buildid found.  */
+	for (i = 0; i < nr_ids; i++) {
+	    /* Don't add anything more when an error occured. But do
+	       cleanup.  */
+	    if (rc == 0) {
+		int isDbg = strncmp (paths[i], DEBUGPATH,
+				     strlen (DEBUGPATH)) == 0;
+
+		char *buildidsubdir;
+		char subdir[4];
+		subdir[0] = '/';
+		subdir[1] = ids[i][0];
+		subdir[2] = ids[i][1];
+		subdir[3] = '\0';
+		if (isDbg)
+		    buildidsubdir = rpmGetPath(debugiddir, subdir, NULL);
+		else
+		    buildidsubdir = rpmGetPath(mainiddir, subdir, NULL);
+		/* We only need to create and add the subdir once. */
+		int addsubdir = access (buildidsubdir, F_OK) == -1;
+		if (addsubdir
+		    && (rc = rpmioMkpath(buildidsubdir, 0755, -1, -1)) != 0) {
+		    rpmlog(RPMLOG_ERR, "%s %s: %m\n", errdir, buildidsubdir);
+		} else {
+		    fl->cur.isDir = 1;
+		    if (!addsubdir
+			|| (rc = addFile(fl, buildidsubdir, NULL)) == 0) {
+			char *linkpattern, *targetpattern;
+			char *linkpath, *targetpath;
+			if (isDbg) {
+			    linkpattern = "%s/%s";
+			    targetpattern = "../../../../..%s";
+			} else {
+			    linkpattern = "%s/%s";
+			    targetpattern = "../../../..%s";
+			}
+			rasprintf(&linkpath, linkpattern,
+				  buildidsubdir, &ids[i][2]);
+			rasprintf(&targetpath, targetpattern, paths[i]);
+			rc = addNewIDSymlink(fl, targetpath, linkpath,
+					     isDbg, 0);
+
+			/* We might want to have a link from the debug
+			   build_ids dir to the main one. We create it
+			   when we are creating compat links or doing
+			   an old style alldebug build-ids package. In
+			   the first case things are simple since we
+			   just link to the main build-id symlink. The
+			   second case is a bit tricky, since we
+			   cannot be 100% sure the file names in the
+			   main and debug package match. Currently
+			   they do, but when creating parallel
+			   installable debuginfo packages they might
+			   not (in that case we might have to also
+			   strip the nvr from the debug name).
+
+			   In general either method is discouraged
+                           since it might create dangling symlinks if
+                           the package versions get out of sync.  */
+			if (rc == 0 && isDbg
+			    && build_id_links == BUILD_IDS_COMPAT) {
+			    /* buildidsubdir already points to the
+			       debug buildid. We just need to setup
+			       the symlink to the main one.  */
+			    free(linkpath);
+			    free(targetpath);
+			    rasprintf(&linkpath, "%s/%s",
+				      buildidsubdir, &ids[i][2]);
+			    rasprintf(&targetpath,
+				      "../../../.build-id%s/%s",
+				      subdir, &ids[i][2]);
+			    rc = addNewIDSymlink(fl, targetpath, linkpath,
+						 0, 1);
+			}
+
+			if (rc == 0 && isDbg
+			    && build_id_links == BUILD_IDS_ALLDEBUG) {
+			    /* buildidsubdir already points to the
+			       debug buildid. We do have to figure out
+			       the main ELF file though (which is most
+			       likely not in this package). Guess we
+			       can find it by stripping the
+			       /usr/lib/debug path and .debug
+			       prefix. Which might not really be
+			       correct if there was a more involved
+			       transformation (for example for
+			       parallel installable debuginfo
+			       packages), but then we shouldn't be
+			       using ALLDEBUG in the first place.
+			       Also ignore things like .dwz multifiles
+			       which don't end in ".debug". */
+			    int pathlen = strlen(paths[i]);
+			    int debuglen = strlen(".debug");
+			    int prefixlen = strlen("/usr/lib/debug");
+			    if (pathlen > prefixlen
+				&& strcmp (paths[i] + pathlen - debuglen,
+					   ".debug") == 0) {
+				free(linkpath);
+				free(targetpath);
+				char *targetstr = xstrdup (paths[i]
+							   + prefixlen);
+				int targetlen = pathlen - prefixlen;
+				targetstr[targetlen - debuglen] = '\0';
+				rasprintf(&linkpath, "%s/%s",
+					  buildidsubdir, &ids[i][2]);
+				rasprintf(&targetpath, "../../../../..%s",
+					  targetstr);
+				rc = addNewIDSymlink(fl, targetpath,
+						     linkpath, 0, 0);
+				free(targetstr);
+			    }
+			}
+			free(linkpath);
+			free(targetpath);
+		    }
+		}
+		free(buildidsubdir);
+	    }
+	    free(paths[i]);
+	    free(ids[i]);
+	}
+	free(paths);
+	free(ids);
+    }
+    return rc;
+}
+#endif
+
 /**
  * Add a file to a binary package.
  * @param pkg
@@ -1958,6 +2325,11 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     if (fl.processingFailed)
 	goto exit;
 
+#if HAVE_LIBDW
+    if (generateBuildIDs (&fl) != 0)
+	goto exit;
+#endif
+
     /* Verify that file attributes scope over hardlinks correctly. */
     if (checkHardLinks(&fl.files))
 	(void) rpmlibNeedsFeature(pkg, "PartialHardlinkSets", "4.0.4-1");
@@ -2156,6 +2528,9 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     Package pkg;
     rpmRC rc = RPMRC_OK;
     
+#if HAVE_LIBDW
+    elf_version (EV_CURRENT);
+#endif
     check_fileList = newStringBuf();
     genSourceRpmName(spec);
     

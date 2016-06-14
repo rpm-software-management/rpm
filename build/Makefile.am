@@ -27,3 +27,7 @@ librpmbuild_la_LIBADD = \
 	@LTLIBICONV@ \
 	@WITH_POPT_LIB@ \
 	@WITH_MAGIC_LIB@
+
+if LIBDW
+librpmbuild_la_LIBADD += @WITH_LIBELF_LIB@ @WITH_LIBDW_LIB@
+endif

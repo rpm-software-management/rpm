@@ -19,6 +19,7 @@ TESTSUITE_AT += rpmquery.at
 TESTSUITE_AT += rpmverify.at
 TESTSUITE_AT += rpmdb.at
 TESTSUITE_AT += rpmbuild.at
+TESTSUITE_AT += rpmbuildid.at
 TESTSUITE_AT += rpmi.at
 TESTSUITE_AT += rpmvercmp.at
 TESTSUITE_AT += rpmdeps.at

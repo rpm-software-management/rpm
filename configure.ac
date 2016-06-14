@@ -368,6 +368,21 @@ AC_SUBST(WITH_ARCHIVE_LIB)
 AM_CONDITIONAL(WITH_ARCHIVE,[test "$with_archive" = yes])
 
 #=================
+# Check for elfutils libdw library with dwelf_elf_gnu_build_id.
+AS_IF([test "$WITH_LIBELF" = yes],[
+  AC_CHECK_HEADERS([elfutils/libdwelf.h],[
+    AC_CHECK_LIB(dw, dwelf_elf_gnu_build_id, [
+      AC_DEFINE(HAVE_LIBDW, 1,
+                [Define to 1 if you have elfutils libdw library])
+      WITH_LIBDW_LIB="-ldw"
+      WITH_LIBDW=yes
+    ])
+  ])
+  AC_SUBST(WITH_LIBDW_LIB)
+  AM_CONDITIONAL(LIBDW,[test "$WITH_LIBDW" = yes])
+])
+
+#=================
 # Process --with/without-external-db
 AC_ARG_WITH(external_db, [AS_HELP_STRING([--with-external-db],[build against an external Berkeley db])],
 [case "$with_external_db" in
