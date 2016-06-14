@@ -117,10 +117,12 @@ done
 LISTFILE="$BUILDDIR/$out"
 SOURCEFILE="$BUILDDIR/debugsources.list"
 LINKSFILE="$BUILDDIR/debuglinks.list"
+ELFBINSFILE="$BUILDDIR/elfbins.list"
 
 > "$SOURCEFILE"
 > "$LISTFILE"
 > "$LINKSFILE"
+> "$ELFBINSFILE"
 
 debugdir="${RPM_BUILD_ROOT}/usr/lib/debug"
 
@@ -321,6 +323,8 @@ while read nlinks inum f; do
   # strip -g implies we have full symtab, don't add mini symtab in that case.
   $strip_g || ($include_minidebug && add_minidebug "${debugfn}" "$f")
 
+  echo "./${f#$RPM_BUILD_ROOT}" >> "$ELFBINSFILE"
+
   if [ -n "$id" ]; then
     make_id_link "$id" "$dn/$(basename $f)"
     make_id_link "$id" "/usr/lib/debug$dn/$bn" .debug
@@ -355,6 +359,11 @@ if $run_dwz && type dwz >/dev/null 2>&1 \
       [ -n "$id" ] \
 	&& make_id_link "$id" "/usr/lib/debug/.dwz/${dwz_multifile_name}" .debug
     fi
+
+    # dwz invalidates .gnu_debuglink CRC32 in the main files.
+    cat "$ELFBINSFILE" |
+    (cd "$RPM_BUILD_ROOT"; \
+     xargs -d '\n' ${lib_rpm_dir}/sepdebugcrcfix usr/lib/debug)
   fi
 fi
 

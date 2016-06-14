@@ -459,3 +459,76 @@ test "$canonmultiref" = "$canonmultifile" || exit 1
 [],
 [ignore])
 AT_CLEANUP
+
+# ------------------------------
+# Check that old style gnu_debuglink CRC checksums are correct even after
+# using dwz to compress the debuginfo files.
+AT_SETUP([rpmbuild debuginfo dwz gnu_debuglink crc])
+AT_KEYWORDS([build] [debuginfo])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+# Build a package that
+cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
+
+run rpmbuild --quiet \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  -ba "${abs_srcdir}"/data/SPECS/hello2.spec
+
+# Unpack the main and debuginfo rpms so we can check binaries and .debug files.
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
+  | cpio -diu
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-1.0-1.*.rpm \
+  | cpio -diu
+
+# Check that dwz has ran and a multi file has been produced
+test -f ./usr/lib/debug/.dwz/hello2-1.0-1.* || exit 1
+
+# Run sepdbugcrcfix on the binaries, both should have correct CRC already.
+${abs_top_builddir}/sepdebugcrcfix ./usr/lib/debug \
+  ./usr/local/bin/hello ./usr/local/bin/hello2 | grep CRC32 | cut -f2 -d:
+],
+[0],
+[ Updated 0 CRC32s, 2 CRC32s did match.
+],
+[ignore])
+AT_CLEANUP
+
+# ------------------------------
+# Check that an implicit suid binary get included with the suid bit set.
+# We explicitly build with all debug.macros to test those helpers.
+AT_SETUP([rpmbuild implicit suid binary])
+AT_KEYWORDS([build] [debuginfo] [dwz] [suid])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+# Build a package that has some debuginfo
+cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
+
+run rpmbuild --quiet \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  -ba "${abs_srcdir}"/data/SPECS/hello2-suid.spec
+
+# Unpack rpm so we can check the included binaries.
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-1.0-1.*.rpm \
+  | cpio -diu --quiet
+
+# List all binaries with suid bit set (should be one, hello).
+echo "suid:"
+find usr -executable -type f -perm /4000
+# List all binaries without suid bit set (should also be one, hello2).
+echo "no-suid:"
+find usr -executable -type f \! -perm /4000
+],
+[0],
+[suid:
+usr/local/bin/hello
+no-suid:
+usr/local/bin/hello2
+],
+[ignore])
+AT_CLEANUP
