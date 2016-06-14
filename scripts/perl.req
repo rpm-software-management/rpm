@@ -160,11 +160,12 @@ sub process_file {
 
     #
     # The (require|use) match further down in this subroutine will match lines
-    # within a multi-line print statement.  So, let's skip over such print
+    # within a multi-line print or return statements.  So, let's skip over such
     # statements whose content should not be loading modules anyway. -BEF-
     #
     if (m/print(?:\s+|\s+\S+\s+)\<\<\s*(["'`])(.+?)\1/ ||
-        m/print(\s+|\s+\S+\s+)\<\<(\w+)/) {
+        m/print(\s+|\s+\S+\s+)\<\<(\w+)/ ||
+	m/return(\s+)\<\<(\w+)/ ) {
 
         my $tag = $2;
         while (<FILE>) {
