@@ -2,6 +2,7 @@
 
 %_enable_debug_packages 1
 %_include_minidebuginfo 1
+%_include_gdb_index    	1
 
 # Expanded at end of %install scriptlet
 

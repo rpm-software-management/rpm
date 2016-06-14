@@ -2,7 +2,7 @@
 #find-debuginfo.sh - automagically generate debug info and file list
 #for inclusion in an rpm spec file.
 #
-# Usage: find-debuginfo.sh [--strict-build-id] [-g] [-r] [-m]
+# Usage: find-debuginfo.sh [--strict-build-id] [-g] [-r] [-m] [-i]
 #	 		   [-o debugfiles.list]
 #			   [--run-dwz] [--dwz-low-mem-die-limit N]
 #			   [--dwz-max-die-limit N]
@@ -14,6 +14,8 @@
 # The --strict-build-id flag says to exit with failure status if
 # any ELF binary processed fails to contain a build-id note.
 # The -r flag says to use eu-strip --reloc-debug-sections.
+# The -m flag says to include a .gnu_debugdata section in the main binary.
+# The -i flag says to include a .gdb_index section in the .debug file.
 #
 # A single -o switch before any -l or -p switches simply renames
 # the primary output file from debugfiles.list to something else.
@@ -47,6 +49,9 @@ strip_r=false
 
 # with -m arg, add minimal debuginfo to binary.
 include_minidebug=false
+
+# with -i arg, add GDB index to .debug file.
+include_gdb_index=false
 
 # Barf on missing build IDs.
 strict=false
@@ -87,6 +92,9 @@ while [ $# -gt 0 ]; do
     ;;
   -m)
     include_minidebug=true
+    ;;
+  -i)
+    include_gdb_index=true
     ;;
   -o)
     if [ -z "${lists[$nout]}" -a -z "${ptns[$nout]}" ]; then
@@ -266,7 +274,15 @@ while read nlinks inum f; do
     $strict && exit 2
   fi
 
-  [ type gdb-add-index >/dev/null 2>&1 && gdb-add-index "$f" > /dev/null 2>&1
+  # Add .gdb_index if requested.
+  if $include_gdb_index; then
+    if type gdb-add-index >/dev/null 2>&1; then
+      gdb-add-index "$f"
+    else
+      echo >&2 "*** ERROR: GDB index requested, but no gdb-add-index installed"
+      exit 2
+    fi
+  fi
 
   # A binary already copied into /usr/lib/debug doesn't get stripped,
   # just has its file names collected and adjusted.
@@ -292,7 +308,7 @@ while read nlinks inum f; do
 done || exit
 
 # Invoke the DWARF Compressor utility.
-if $run_dwz && type dwz >/dev/null 2>&1 \
+if $run_dwz \
    && [ -d "${RPM_BUILD_ROOT}/usr/lib/debug" ]; then
   dwz_files="`cd "${RPM_BUILD_ROOT}/usr/lib/debug"; find -type f -name \*.debug`"
   if [ -n "${dwz_files}" ]; then
@@ -310,7 +326,12 @@ if $run_dwz && type dwz >/dev/null 2>&1 \
       && dwz_opts="${dwz_opts} -l ${dwz_low_mem_die_limit}"
     [ -n "${dwz_max_die_limit}" ] \
       && dwz_opts="${dwz_opts} -L ${dwz_max_die_limit}"
-    ( cd "${RPM_BUILD_ROOT}/usr/lib/debug" && dwz $dwz_opts $dwz_files )
+    if type dwz >/dev/null 2>&1; then
+      ( cd "${RPM_BUILD_ROOT}/usr/lib/debug" && dwz $dwz_opts $dwz_files )
+    else
+      echo >&2 "*** ERROR: DWARF compression requested, but no dwz installed"
+      exit 2
+    fi
     # Remove .dwz directory if empty
     rmdir "${RPM_BUILD_ROOT}/usr/lib/debug/.dwz" 2>/dev/null
     if [ -f "${RPM_BUILD_ROOT}/usr/lib/debug/.dwz/${dwz_multifile_name}" ]; then
