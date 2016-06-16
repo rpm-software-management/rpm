@@ -386,8 +386,9 @@ AT_CLEANUP
 # Check if rpmbuild runs dwz and generates a multi file that with shared
 # debuginfo. This is simply the hello example with one binary build twice
 # so dwz has enough slightly similar debug data.
+# Test the case without unique debug file names.
 AT_SETUP([rpmbuild debuginfo dwz])
-AT_KEYWORDS([build] [debuginfo])
+AT_KEYWORDS([build] [debuginfo] [dwz])
 AT_CHECK([
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
@@ -397,63 +398,170 @@ cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/he
 run rpmbuild --quiet \
   --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
   --rcfile=${abs_top_builddir}/rpmrc \
+  --undefine "_unique_debug_names" \
   -ba "${abs_srcdir}"/data/SPECS/hello2.spec
 
 # The debuginfo package should contain a .debug file for each binary
 # and a dwz multi file that contains the shared debuginfo between them.
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
   | cpio -diu
-test -f ./usr/lib/debug/usr/local/bin/hello.debug || exit 1
-test -f ./usr/lib/debug/usr/local/bin/hello2.debug || exit 1
-test -f ./usr/lib/debug/.dwz/hello2-1.0-1.* || exit 1
+
+hello_file_debug=./usr/lib/debug/usr/local/bin/hello.debug
+hello2_file_debug=./usr/lib/debug/usr/local/bin/hello2.debug
+hello_multi_file=./usr/lib/debug/.dwz/hello2-1.0-1.*
+test -f $hello_file_debug || echo "no hello debug file: $hello_file_debug"
+test -f $hello2_file_debug || echo "no hello2 debug file: $hello2_file_debug"
+test -f $hello_multi_file || echo "no dwz multi file: $hello_multi_file"
 
 # Make sure the main package binaries contain the correct build-ids
 # linking them to the debug packages.
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-1.0-1.*.rpm \
   | cpio -diu
-id1=$(file ./usr/local/bin/hello | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
-id2=$(file ./usr/local/bin/hello2 | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
-id1debug=$(file ./usr/lib/debug/usr/local/bin/hello.debug \
-  | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
-id2debug=$(file ./usr/lib/debug/usr/local/bin/hello2.debug \
-  | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
-idmulti=$(file ./usr/lib/debug/.dwz/hello2-1.0-1.* \
-  | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+hello_file=./usr/local/bin/hello
+hello2_file=./usr/local/bin/hello2
+test -f $hello_file || echo "no hello file: $hello_file"
+test -f $hello2_file || echo "no hello2 file: $hello2_file"
 
-test "$id1" = "$id1debug" || exit 1
-test "$id2" = "$id2debug" || exit 1
+id1=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id2=$(file $hello2_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id1debug=$(file $hello_file_debug | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id2debug=$(file $hello2_file_debug | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+idmulti=$(file $hello_multi_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+
+test "$id1" = "$id1debug" || echo "id1: $id1 != id1debug: $id1debug"
+test "$id2" = "$id2debug" || echo "id2: $id2 != id2debug: $id2debug"
 
 # The build-id files should link to the .debug files.
 id1file="./usr/lib/debug/.build-id/${id1:0:2}/${id1:2}"
 canonid1file=$(readlink -f ${id1file})
-canonfile1=$(readlink -f ./usr/local/bin/hello)
+canonfile1=$(readlink -f $hello_file)
 canonid1debug=$(readlink -f ${id1file}.debug)
-canondebug1=$(readlink -f ./usr/lib/debug/usr/local/bin/hello.debug)
+canondebug1=$(readlink -f $hello_file_debug)
 
-test "$canonid1file" = "$canonfile1" || exit 1
-test "$canonid1debug" = "$canondebug1" || exit 1
+test "$canonid1file" = "$canonfile1" \
+  || echo "canonid1file: $canonid1file != $canonfile1"
+test "$canonid1debug" = "$canondebug1" \
+  || echo "canonid1debug: $canonid1debug != $canondebug1"
 
 id2file="./usr/lib/debug/.build-id/${id2:0:2}/${id2:2}"
-canonid2file=$(readlink -f ${id1file})
-canonfile2=$(readlink -f ./usr/local/bin/hello)
-canonid2debug=$(readlink -f ${id1file}.debug)
-canondebug2=$(readlink -f ./usr/lib/debug/usr/local/bin/hello.debug)
+canonid2file=$(readlink -f ${id2file})
+canonfile2=$(readlink -f $hello2_file)
+canonid2debug=$(readlink -f ${id2file}.debug)
+canondebug2=$(readlink -f $hello2_file_debug)
 
-test "$canonid2file" = "$canonfile2" || exit 1
-test "$canonid2debug" = "$canondebug2" || exit 1
+test "$canonid2file" = "$canonfile2" \
+  || echo "canonid2: $canonid2file != $canonfile2"
+test "$canonid2debug" = "$canondebug2" \
+  || echo "canonid2debug: $canonid2debug" != "$canondebug2"
 
 # Both .debug files should point to the dwz multi file.
 # It would be nice to also test that they contain the correct dwz build-id
 # but that is a bit hard to grep out of the section data.
-multiref1=$(readelf --string-dump=.gnu_debugaltlink ./usr/lib/debug/usr/local/bin/hello.debug | grep '[     0]' | cut -c13-)
-multiref2=$(readelf --string-dump=.gnu_debugaltlink ./usr/lib/debug/usr/local/bin/hello2.debug | grep '[     0]' | cut -c13-)
+multiref1=$(readelf --string-dump=.gnu_debugaltlink $hello_file_debug \
+  | grep '[     0]' | cut -c13-)
+multiref2=$(readelf --string-dump=.gnu_debugaltlink $hello2_file_debug \
+  | grep '[     0]' | cut -c13-)
 
-test "$multiref1" = "$multiref2" || exit 1
+test "$multiref1" = "$multiref2" || echo "multiref: $multiref1 != $multiref2"
 
 canonmultiref=$(readlink -f $(dirname $canondebug1)/$multiref1)
-canonmultifile=$(readlink -f ./usr/lib/debug/.dwz/hello2-1.0-1.*)
+canonmultifile=$(readlink -f $hello_multi_file)
 
-test "$canonmultiref" = "$canonmultifile" || exit 1
+test "$canonmultiref" = "$canonmultifile" \
+  || echo "canonmultiref: $canonmultiref" != "$canonmultifile"
+],
+[0],
+[],
+[ignore])
+AT_CLEANUP
+
+# ------------------------------
+# Check if rpmbuild runs dwz and generates a multi file that with shared
+# debuginfo. This is simply the hello example with one binary build twice
+# so dwz has enough slightly similar debug data.
+# Test with unique debug file names.
+AT_SETUP([rpmbuild debuginfo dwz unique debug names])
+AT_KEYWORDS([build] [debuginfo] [dwz])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
+
+run rpmbuild --quiet \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --define "_unique_debug_names 1" \
+  -ba "${abs_srcdir}"/data/SPECS/hello2.spec
+
+# The debuginfo package should contain a .debug file for each binary
+# and a dwz multi file that contains the shared debuginfo between them.
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
+  | cpio -diu
+
+hello_file_debug=./usr/lib/debug/usr/local/bin/hello-*.debug
+hello2_file_debug=./usr/lib/debug/usr/local/bin/hello2-*.debug
+hello_multi_file=./usr/lib/debug/.dwz/hello2-1.0-1.*
+test -f $hello_file_debug || echo "no hello debug file: $hello_file_debug"
+test -f $hello2_file_debug || echo "no hello2 debug file: $hello2_file_debug"
+test -f $hello_multi_file || echo "no dwz multi file: $hello_multi_file"
+
+# Make sure the main package binaries contain the correct build-ids
+# linking them to the debug packages.
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-1.0-1.*.rpm \
+  | cpio -diu
+hello_file=./usr/local/bin/hello
+hello2_file=./usr/local/bin/hello2
+test -f $hello_file || echo "no hello file: $hello_file"
+test -f $hello2_file || echo "no hello2 file: $hello2_file"
+
+id1=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id2=$(file $hello2_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id1debug=$(file $hello_file_debug | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id2debug=$(file $hello2_file_debug | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+idmulti=$(file $hello_multi_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+
+test "$id1" = "$id1debug" || echo "id1: $id1 != id1debug: $id1debug"
+test "$id2" = "$id2debug" || echo "id2: $id2 != id2debug: $id2debug"
+
+# The build-id files should link to the .debug files.
+id1file="./usr/lib/debug/.build-id/${id1:0:2}/${id1:2}"
+canonid1file=$(readlink -f ${id1file})
+canonfile1=$(readlink -f $hello_file)
+canonid1debug=$(readlink -f ${id1file}.debug)
+canondebug1=$(readlink -f $hello_file_debug)
+
+test "$canonid1file" = "$canonfile1" \
+  || echo "canonid1file: $canonid1file != $canonfile1"
+test "$canonid1debug" = "$canondebug1" \
+  || echo "canonid1debug: $canonid1debug != $canondebug1"
+
+id2file="./usr/lib/debug/.build-id/${id2:0:2}/${id2:2}"
+canonid2file=$(readlink -f ${id2file})
+canonfile2=$(readlink -f $hello2_file)
+canonid2debug=$(readlink -f ${id2file}.debug)
+canondebug2=$(readlink -f $hello2_file_debug)
+
+test "$canonid2file" = "$canonfile2" \
+  || echo "canonid2: $canonid2file != $canonfile2"
+test "$canonid2debug" = "$canondebug2" \
+  || echo "canonid2debug: $canonid2debug" != "$canondebug2"
+
+# Both .debug files should point to the dwz multi file.
+# It would be nice to also test that they contain the correct dwz build-id
+# but that is a bit hard to grep out of the section data.
+multiref1=$(readelf --string-dump=.gnu_debugaltlink $hello_file_debug \
+  | grep '[     0]' | cut -c13-)
+multiref2=$(readelf --string-dump=.gnu_debugaltlink $hello2_file_debug \
+  | grep '[     0]' | cut -c13-)
+
+test "$multiref1" = "$multiref2" || echo "multiref: $multiref1 != $multiref2"
+
+canonmultiref=$(readlink -f $(dirname $canondebug1)/$multiref1)
+canonmultifile=$(readlink -f $hello_multi_file)
+
+test "$canonmultiref" = "$canonmultifile" \
+  || echo "canonmultiref: $canonmultiref" != "$canonmultifile"
 ],
 [0],
 [],

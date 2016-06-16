@@ -178,7 +178,7 @@
 #	the script.  See the script for details.
 #
 %__debug_install_post   \
-   %{_rpmconfigdir}/find-debuginfo.sh %{?_missing_build_ids_terminate_build:--strict-build-id} %{?_include_minidebuginfo:-m} %{?_include_gdb_index:-i} %{?_unique_build_ids:--ver-rel "%{version}-%{release}"} %{?_find_debuginfo_dwz_opts} %{?_find_debuginfo_opts} "%{_builddir}/%{?buildsubdir}"\
+   %{_rpmconfigdir}/find-debuginfo.sh %{?_missing_build_ids_terminate_build:--strict-build-id} %{?_include_minidebuginfo:-m} %{?_include_gdb_index:-i} %{?_unique_build_ids:--ver-rel "%{version}-%{release}"} %{?_unique_debug_names:--unique-debug-arch "%{_arch}"} %{?_find_debuginfo_dwz_opts} %{?_find_debuginfo_opts} "%{_builddir}/%{?buildsubdir}"\
 %{nil}
 
 #	Template for debug information sub-package.
@@ -492,6 +492,13 @@ package or when debugging this package.\
 # --ver-rel "%{version}-%{release}" to find-debuginfo.sh which will pass it
 # onto debugedit --build-id-seed to be used to prime the build-id note hash.
 %_unique_build_ids	1
+
+# Whether .debug files should be made unique between package version,
+# release and architecture. If set to 1 this will pass
+# --unique-debug-arch "%{_arch}" to find-debuginfo.sh to create
+# debuginfo files which end in -<ver>-<rel>.<arch>.debug
+# Requires _unique_build_ids.
+%_unique_debug_names	1
 
 #
 # Use internal dependency generator rather than external helpers?

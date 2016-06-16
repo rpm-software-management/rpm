@@ -1783,6 +1783,16 @@ static int generateBuildIDs(FileList fl)
 	    }
 	}
 
+	/* In case we need ALLDEBUG links we might need the vra as
+	   tagged onto the .debug file name. */
+	char *vra = NULL;
+	if (rc == 0 && needDbg && build_id_links == BUILD_IDS_ALLDEBUG) {
+	    int unique_debug_names =
+		rpmExpandNumeric("%{?_unique_debug_names}");
+	    if (unique_debug_names == 1)
+		vra = rpmExpand("-%{version}-%{release}.%{_arch}", NULL);
+	}
+
 	/* Now add a subdir and symlink for each buildid found.  */
 	for (i = 0; i < nr_ids; i++) {
 	    /* Don't add anything more when an error occured. But do
@@ -1877,15 +1887,17 @@ static int generateBuildIDs(FileList fl)
 			    int pathlen = strlen(paths[i]);
 			    int debuglen = strlen(".debug");
 			    int prefixlen = strlen("/usr/lib/debug");
-			    if (pathlen > prefixlen
-				&& strcmp (paths[i] + pathlen - debuglen,
+			    int vralen = vra == NULL ? 0 : strlen(vra);
+			    if (pathlen > prefixlen + debuglen + vralen
+				&& strcmp ((paths[i] + pathlen - debuglen),
 					   ".debug") == 0) {
 				free(linkpath);
 				free(targetpath);
 				char *targetstr = xstrdup (paths[i]
 							   + prefixlen);
 				int targetlen = pathlen - prefixlen;
-				targetstr[targetlen - debuglen] = '\0';
+				int targetend = targetlen - debuglen - vralen;
+				targetstr[targetend] = '\0';
 				rasprintf(&linkpath, "%s/%s",
 					  buildidsubdir, &ids[i][2]);
 				rasprintf(&targetpath, "../../../../..%s",
@@ -1904,6 +1916,7 @@ static int generateBuildIDs(FileList fl)
 	    free(paths[i]);
 	    free(ids[i]);
 	}
+	free(vra);
 	free(paths);
 	free(ids);
     }

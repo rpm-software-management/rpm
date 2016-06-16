@@ -64,6 +64,9 @@ dwz_max_die_limit=
 # Version and release of the spec. Given by --ver-rel
 ver_rel=
 
+# Arch given by --unique-debug-arch
+unique_debug_arch=
+
 BUILDDIR=.
 out=debugfiles.list
 nout=0
@@ -85,6 +88,10 @@ while [ $# -gt 0 ]; do
     ;;
   --ver-rel)
     ver_rel=$2
+    shift
+    ;;
+  --unique-debug-arch)
+    unique_debug_arch=$2
     shift
     ;;
   -g)
@@ -124,6 +131,11 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
+
+if test -z "$ver_rel" -a -n "$unique_debug_arch"; then
+  echo >&2 "*** ERROR: --unique-debug-arch (${unique_debug_arch}) needs --ver-rel (${ver_rel})"
+  exit 2
+fi
 
 i=0
 while ((i < nout)); do
@@ -221,7 +233,11 @@ debug_link()
 get_debugfn()
 {
   dn=$(dirname "${1#$RPM_BUILD_ROOT}")
-  bn=$(basename "$1" .debug).debug
+  if test -n "${unique_debug_arch}"; then
+    bn=$(basename "$1" .debug)-${ver_rel}.${unique_debug_arch}.debug
+  else
+    bn=$(basename "$1" .debug).debug
+  fi
 
   debugdn=${debugdir}${dn}
   debugfn=${debugdn}/${bn}

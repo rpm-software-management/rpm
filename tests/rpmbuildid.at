@@ -54,7 +54,8 @@ hello debuginfo build-id files: 0
 AT_CLEANUP
 
 # ------------------------------
-# Check if rpmbuild "alldebug" generates debuginfo buildid symlinks
+# Check if rpmbuild "alldebug" generates debuginfo buildid symlinks.
+# Without unique debug file names.
 AT_SETUP([rpmbuild buildid alldebug])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
@@ -69,6 +70,7 @@ run rpmbuild \
   --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
   --rcfile=${abs_top_builddir}/rpmrc \
   --define="_build_id_links alldebug" \
+  --undefine "_unique_debug_names" \
   --quiet -ba "${abs_srcdir}"/data/SPECS/hello.spec
 
 # There should be zero build-id files in the main package
@@ -114,7 +116,100 @@ test "$canon_main_file" = "$canon_main_id_file" \
 
 # And check the same for the debug file.
 debug_file=./usr/lib/debug/usr/local/bin/hello.debug
-test -f "${debug_file}" || echo "No debug file ${debug_file}"
+test -f ${debug_file} || echo "No debug file ${debug_file}"
+
+# Extract the build-id from the .debug file
+id_debug=$(file $debug_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+
+test ${id_main} = ${id_debug} || echo "unequal main and debug id"
+
+id_debug_file="./usr/lib/debug/.build-id/${id_debug:0:2}/${id_debug:2}.debug"
+test -L "$id_debug_file" || echo "No build-id file $id_debug_file"
+
+canon_debug_file=$(readlink -f ${debug_file})
+
+test -f "$canon_debug_file" \
+  || echo "Cannot resolve debug file ${debug_file} -> ${canon_debug_file}"
+
+canon_debug_id_file=$(readlink -f ${id_debug_file})
+
+test -f "$canon_debug_id_file" \
+  || echo "Cannot resolve debug build-id file ${id_debug_file} -> ${canon_debug_id_file}"
+
+test "$canon_debug_file" = "$canon_debug_id_file" \
+  || echo "debug and build-id not linked"
+],
+[0],
+[hello build-id files: 0
+hello debuginfo build-id files: 3
+],
+[ignore])
+AT_CLEANUP
+
+# ------------------------------
+# Check if rpmbuild "alldebug" generates debuginfo buildid symlinks.
+# With unique debug file names.
+AT_SETUP([rpmbuild buildid alldebug unique debug names])
+AT_KEYWORDS([build] [debuginfo] [buildid])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+# Setup sources
+cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
+
+# Build, contains one ELF which should have a buildid.
+run rpmbuild \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --define="_build_id_links alldebug" \
+  --define="_unique_debug_names 1" \
+  --quiet -ba "${abs_srcdir}"/data/SPECS/hello.spec
+
+# There should be zero build-id files in the main package
+# Main and debug should be in the debuginfo package,
+# plus the .build-id/xx subdir, 3 in total.
+echo -n "hello build-id files: "
+run rpm -ql -p "${TOPDIR}"/RPMS/*/hello-1.0-1.*.rpm \
+  | grep /.build-id/ | wc --lines
+
+echo -n "hello debuginfo build-id files: "
+run rpm -ql -p "${TOPDIR}"/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
+  | grep /.build-id/ | wc --lines
+
+# Extract the both packages to check the build-id files link to the
+# main and .debug files.
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-1.*.rpm \
+  | cpio -diu
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
+  | cpio -diu
+
+# Check there is a build-id symlink for the main file.
+main_file=./usr/local/bin/hello
+test -f "${main_file}" || echo "No main file ${main_file}"
+
+# Extract the build-id from the main file
+id_main=$(file $main_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+
+id_main_file="./usr/lib/debug/.build-id/${id_main:0:2}/${id_main:2}"
+test -L "$id_main_file" || echo "No build-id file $id_main_file"
+
+canon_main_file=$(readlink -f ${main_file})
+
+test -f "$canon_main_file" \
+  || echo "Cannot resolve main file ${main_file} -> ${canon_main_file}"
+
+canon_main_id_file=$(readlink -f ${id_main_file})
+
+test -f "$canon_main_id_file" \
+  || echo "Cannot resolve main build-id file ${id_main_file} -> ${canon_main_id_file}"
+
+test "$canon_main_file" = "$canon_main_id_file" \
+  || echo "main and build-id file not linked"
+
+# And check the same for the debug file.
+debug_file=./usr/lib/debug/usr/local/bin/hello-*.debug
+test -f ${debug_file} || echo "No debug file ${debug_file}"
 
 # Extract the build-id from the .debug file
 id_debug=$(file $debug_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
@@ -146,6 +241,7 @@ AT_CLEANUP
 
 # ------------------------------
 # Check if rpmbuild "separate" generates main and debuginfo buildid symlinks
+# Without unique debug file names
 AT_SETUP([rpmbuild buildid separate])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
@@ -160,6 +256,7 @@ run rpmbuild \
   --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
   --rcfile=${abs_top_builddir}/rpmrc \
   --define="_build_id_links separate" \
+  --undefine "_unique_debug_names" \
   --quiet -ba "${abs_srcdir}"/data/SPECS/hello.spec
 
 # There should be one build-id files in the main and debuginfo package
@@ -204,7 +301,99 @@ test "$canon_main_file" = "$canon_main_id_file" \
 
 # And check the same for the debug file.
 debug_file=./usr/lib/debug/usr/local/bin/hello.debug
-test -f "${debug_file}" || echo "No debug file ${debug_file}"
+test -f ${debug_file} || echo "No debug file ${debug_file}"
+
+# Extract the build-id from the .debug file
+id_debug=$(file $debug_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+
+test ${id_main} = ${id_debug} || echo "unequal main and debug id"
+
+id_debug_file="./usr/lib/debug/.build-id/${id_debug:0:2}/${id_debug:2}.debug"
+test -L "$id_debug_file" || echo "No build-id file $id_debug_file"
+
+canon_debug_file=$(readlink -f ${debug_file})
+
+test -f "$canon_debug_file" \
+  || echo "Cannot resolve debug file ${debug_file} -> ${canon_debug_file}"
+
+canon_debug_id_file=$(readlink -f ${id_debug_file})
+
+test -f "$canon_debug_id_file" \
+  || echo "Cannot resolve debug build-id file ${id_debug_file} -> ${canon_debug_id_file}"
+
+test "$canon_debug_file" = "$canon_debug_id_file" \
+  || echo "debug and build-id not linked"
+],
+[0],
+[hello build-id files: 2
+hello debuginfo build-id files: 2
+],
+[ignore])
+AT_CLEANUP
+
+# ------------------------------
+# Check if rpmbuild "separate" generates main and debuginfo buildid symlinks
+# With unique debug file names
+AT_SETUP([rpmbuild buildid separate unique debug names])
+AT_KEYWORDS([build] [debuginfo] [buildid])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+# Setup sources
+cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
+
+# Build, contains one ELF which should have a buildid.
+run rpmbuild \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --define="_build_id_links separate" \
+  --define="_unique_debug_names 1" \
+  --quiet -ba "${abs_srcdir}"/data/SPECS/hello.spec
+
+# There should be one build-id files in the main and debuginfo package
+# plus the .build-id/xx subdir, 2 in total.
+echo -n "hello build-id files: "
+run rpm -ql -p "${TOPDIR}"/RPMS/*/hello-1.0-1.*.rpm \
+  | grep /.build-id/ | wc --lines
+
+echo -n "hello debuginfo build-id files: "
+run rpm -ql -p "${TOPDIR}"/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
+  | grep /.build-id/ | wc --lines
+
+# Extract the both packages to check the build-id files link to the
+# main and .debug files.
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-1.*.rpm \
+  | cpio -diu
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
+  | cpio -diu
+
+# Check there is a build-id symlink for the main file.
+main_file=./usr/local/bin/hello
+test -f "${main_file}" || echo "No main file ${main_file}"
+
+# Extract the build-id from the main file
+id_main=$(file $main_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+
+id_main_file="./usr/lib/.build-id/${id_main:0:2}/${id_main:2}"
+test -L "$id_main_file" || echo "No build-id file $id_main_file"
+
+canon_main_file=$(readlink -f ${main_file})
+
+test -f "$canon_main_file" \
+  || echo "Cannot resolve main file ${main_file} -> ${canon_main_file}"
+
+canon_main_id_file=$(readlink -f ${id_main_file})
+
+test -f "$canon_main_id_file" \
+  || echo "Cannot resolve main build-id file ${id_main_file} -> ${canon_main_id_file}"
+
+test "$canon_main_file" = "$canon_main_id_file" \
+  || echo "main and build-id file not linked"
+
+# And check the same for the debug file.
+debug_file=./usr/lib/debug/usr/local/bin/hello-*.debug
+test -f ${debug_file} || echo "No debug file ${debug_file}"
 
 # Extract the build-id from the .debug file
 id_debug=$(file $debug_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
@@ -236,6 +425,7 @@ AT_CLEANUP
 
 # ------------------------------
 # Check if rpmbuild "compat" generates main and debuginfo buildid symlinks
+# Without unique debug file names
 AT_SETUP([rpmbuild buildid compat])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
@@ -250,6 +440,7 @@ run rpmbuild \
   --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
   --rcfile=${abs_top_builddir}/rpmrc \
   --define="_build_id_links compat" \
+  --undefine "_unique_debug_names" \
   --quiet -ba "${abs_srcdir}"/data/SPECS/hello.spec
 
 # There should be one build-id files in the main and debuginfo package.
@@ -295,7 +486,112 @@ test "$canon_main_file" = "$canon_main_id_file" \
 
 # And check the same for the debug file.
 debug_file=./usr/lib/debug/usr/local/bin/hello.debug
-test -f "${debug_file}" || echo "No debug file ${debug_file}"
+test -f ${debug_file} || echo "No debug file ${debug_file}"
+
+# Extract the build-id from the .debug file
+id_debug=$(file $debug_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+
+test ${id_main} = ${id_debug} || echo "unequal main and debug id"
+
+id_debug_file="./usr/lib/debug/.build-id/${id_debug:0:2}/${id_debug:2}.debug"
+test -L "$id_debug_file" || echo "No build-id file $id_debug_file"
+
+canon_debug_file=$(readlink -f ${debug_file})
+
+test -f "$canon_debug_file" \
+  || echo "Cannot resolve debug file ${debug_file} -> ${canon_debug_file}"
+
+canon_debug_id_file=$(readlink -f ${id_debug_file})
+
+test -f "$canon_debug_id_file" \
+  || echo "Cannot resolve debug build-id file ${id_debug_file} -> ${canon_debug_id_file}"
+
+test "$canon_debug_file" = "$canon_debug_id_file" \
+  || echo "debug and build-id not linked"
+
+# The compat link should also point to the same (indirectly).
+id_compat_file="./usr/lib/debug/.build-id/${id_main:0:2}/${id_main:2}"
+test -L "$id_compat_file" || echo "No build-id compat file $id_compat_file"
+
+canon_compat_file=$(readlink -f ${id_compat_file})
+
+test -f "$canon_compat_file" \
+  || echo "Cannot resolve compat file ${id_compat_file} -> ${canon_compat_file}"
+
+test "$canon_compat_file" = "$canon_main_file" \
+  || echo "compat and build-id not linked"
+],
+[0],
+[hello build-id files: 2
+hello debuginfo build-id files: 3
+],
+[ignore])
+AT_CLEANUP
+
+# ------------------------------
+# Check if rpmbuild "compat" generates main and debuginfo buildid symlinks
+# With unique debug file names
+AT_SETUP([rpmbuild buildid compat unique debug names])
+AT_KEYWORDS([build] [debuginfo] [buildid])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+# Setup sources
+cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
+
+# Build, contains one ELF which should have a buildid.
+run rpmbuild \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --define="_build_id_links compat" \
+  --define="_unique_debug_names 1" \
+  --quiet -ba "${abs_srcdir}"/data/SPECS/hello.spec
+
+# There should be one build-id files in the main and debuginfo package.
+# the debuginfo package has one extra main build-id compat symlink
+# plus the .build-id/xx subdir, 2 in total in main, 3 in total in debug
+echo -n "hello build-id files: "
+run rpm -ql -p "${TOPDIR}"/RPMS/*/hello-1.0-1.*.rpm \
+  | grep /.build-id/ | wc --lines
+
+echo -n "hello debuginfo build-id files: "
+run rpm -ql -p "${TOPDIR}"/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
+  | grep /.build-id/ | wc --lines
+
+# Extract the both packages to check the build-id files link to the
+# main and .debug files.
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-1.*.rpm \
+  | cpio -diu
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
+  | cpio -diu
+
+# Check there is a build-id symlink for the main file.
+main_file=./usr/local/bin/hello
+test -f "${main_file}" || echo "No main file ${main_file}"
+
+# Extract the build-id from the main file
+id_main=$(file $main_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+
+id_main_file="./usr/lib/.build-id/${id_main:0:2}/${id_main:2}"
+test -L "$id_main_file" || echo "No build-id file $id_main_file"
+
+canon_main_file=$(readlink -f ${main_file})
+
+test -f "$canon_main_file" \
+  || echo "Cannot resolve main file ${main_file} -> ${canon_main_file}"
+
+canon_main_id_file=$(readlink -f ${id_main_file})
+
+test -f "$canon_main_id_file" \
+  || echo "Cannot resolve main build-id file ${id_main_file} -> ${canon_main_id_file}"
+
+test "$canon_main_file" = "$canon_main_id_file" \
+  || echo "main and build-id file not linked"
+
+# And check the same for the debug file.
+debug_file=./usr/lib/debug/usr/local/bin/hello-*debug
+test -f ${debug_file} || echo "No debug file ${debug_file}"
 
 # Extract the build-id from the .debug file
 id_debug=$(file $debug_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
@@ -784,7 +1080,11 @@ rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-1.*.rpm \
 hello_file=./usr/local/bin/hello
 
 # Extract the build-id from the main file
+test -f $hello_file || echo "No $hello_file"
 id1=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+
+# Make sure we generate a new one
+rm $hello_file
 
 # Build the "next" release, which has no changes except for the release update.
 run rpmbuild --quiet \
@@ -797,6 +1097,7 @@ rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-2.*.rpm \
   | cpio -diu --quiet
 
 # Extract the build-id from the main file
+test -f $hello_file || echo "No $hello_file"
 id2=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
 
 if test "$id1" == "$id2"; then echo "equal $id1"; else echo "unequal"; fi
@@ -823,6 +1124,7 @@ run rpmbuild --quiet \
   --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
   --rcfile=${abs_top_builddir}/rpmrc \
   --undefine="_unique_build_ids" \
+  --undefine="_unique_debug_names" \
   -ba "${abs_srcdir}"/data/SPECS/hello.spec
 
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-1.*.rpm \
@@ -831,19 +1133,25 @@ rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-1.*.rpm \
 hello_file=./usr/local/bin/hello
 
 # Extract the build-id from the main file
+test -f $hello_file || echo "No $hello_file"
 id1=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+
+# Make sure we generate a new one
+rm $hello_file
 
 # Build the "next" release, which has no changes except for the release update.
 run rpmbuild --quiet \
   --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
   --rcfile=${abs_top_builddir}/rpmrc \
   --undefine="_unique_build_ids" \
+  --undefine="_unique_debug_names" \
   -ba "${abs_srcdir}"/data/SPECS/hello-r2.spec
 
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-2.*.rpm \
   | cpio -diu --quiet
 
 # Extract the build-id from the main file
+test -f $hello_file || echo "No $hello_file"
 id2=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
 
 if test "$id1" == "$id2"; then echo "equal"; else echo "unequal $id1 $id2"; fi
