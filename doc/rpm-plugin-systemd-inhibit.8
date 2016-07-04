@@ -1,0 +1,36 @@
+.TH "RPM-SYSTEMD-INHIBIT" "8" "14 Apr 2016" "Red Hat, Inc."
+.SH NAME
+rpm-plugin-systemd-inhibit \- Plugin for the RPM Package Manager
+
+.SH Description
+
+This plugin for RPM prevents the system to enter shutdown, sleep or idle
+mode while there is a rpm transaction running to prevent system corruption
+that can occur if the transaction is interrupted by a reboot.
+
+This is achieved by using the inhibit DBUS interface of systemd. The call is
+roughly equivalent to executing
+
+\fBsystemd-inhibit --mode=block --what=idle:sleep:shutdown --who=RPM --why="Transaction running"\fR
+
+See \fBsystemd-inhibit(1)\fR for the details of this mechanism.
+
+It is strongly advised to have the plugin installed on all systemd
+based systems.
+
+.SH Prerequisites
+
+For the plugin to work systemd has to be used as init system and
+though the DBUS system bus must be available. If the plugin cannot access the
+interface it gives a warning but does not stop the transaction.
+
+.SH Configuration
+
+The plugin currently does not have any configuration option other than
+turning it on and off. It can be disabled by commenting out the
+\fI%__transaction_systemd_inhibit\fR macro in main macros file
+(typically located at \fI/usr/lib/rpm/macros\fR) or otherwise change
+the value of the macro.
+
+Another option is to remove the plugin from the system if it is
+packaged in its own sub package.
