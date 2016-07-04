@@ -214,7 +214,6 @@ rpmgi rpmgiNew(rpmts ts, rpmgiFlags flags, ARGV_const_t argv)
     gi->i = -1;
     gi->errors = 0;
 
-    gi->flags = flags;
     gi->argv = argvNew();
     gi->argc = 0;
     rpmgiGlobArgv(gi, argv);

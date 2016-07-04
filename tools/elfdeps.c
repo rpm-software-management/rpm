@@ -279,7 +279,7 @@ static void processProgHeaders(elfInfo *ei, GElf_Ehdr *ehdr)
 static int processFile(const char *fn, int dtype)
 {
     int rc = 1;
-    int fdno = -1;
+    int fdno;
     struct stat st;
     GElf_Ehdr *ehdr, ehdr_mem;
     elfInfo *ei = rcalloc(1, sizeof(*ei));

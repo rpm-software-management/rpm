@@ -645,7 +645,7 @@ rpmRC checkForEncoding(Header h, int addtag)
 #if HAVE_ICONV
     const char *encoding = "utf-8";
     rpmTagVal tag;
-    iconv_t ic = (iconv_t) -1;
+    iconv_t ic;
     char *dest = NULL;
     size_t destlen = 0;
     int strict = rpmExpandNumeric("%{_invalid_encoding_terminates_build}");
