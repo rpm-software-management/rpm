@@ -757,8 +757,10 @@ static rpmRC rpmPackageErase(rpmts ts, rpmpsm psm)
 	    if (rc) break;
 	}
 
-	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPREUN))
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPREUN)) {
 	    rc = runInstScript(psm, RPMTAG_PREUN);
+	    if (rc) break;
+	}
 
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERUN)) {
 	    /* Run file triggers in this package other package(s) set off. */
