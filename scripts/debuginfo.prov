@@ -1,0 +1,14 @@
+#!/bin/sh
+
+while read instfile; do
+  case "$instfile" in
+    */usr/lib/debug/.build-id/*.debug)
+      if [ -f "$instfile" ]; then
+        BUILDID=$(echo "$instfile" | sed -ne 's|.*/usr/lib/debug/.build-id/\([0-9a-f]\+\)/\([0-9a-f]\+\)\.debug|\1\2|p')
+        if [ -n "$BUILDID" ]; then
+          echo "debuginfo(build-id) = $BUILDID"
+        fi
+      fi
+      ;;
+  esac
+done

@@ -188,7 +188,8 @@
 %package debuginfo\
 Summary: Debug information for package %{name}\
 Group: Development/Debug\
-AutoReqProv: 0\
+AutoReq: 0\
+AutoProv: 1\
 %description debuginfo\
 This package provides debug information for package %{name}.\
 Debug information is useful when developing applications that use this\

@@ -10,6 +10,7 @@ EXTRA_DIST = \
 	brp-strip-shared brp-strip-static-archive \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
+	debuginfo.prov \
 	find-debuginfo.sh find-lang.sh \
 	perl.prov perl.req pythondeps.sh pythondistdeps.py \
 	rpmdb_loadcvt rpm.daily rpm.log rpm.supp rpm2cpio.sh \
@@ -29,6 +30,7 @@ rpmconfig_SCRIPTS = \
 	brp-strip-shared brp-strip-static-archive \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
+	debuginfo.prov \
 	find-lang.sh find-requires find-provides \
 	perl.prov perl.req pythondeps.sh pythondistdeps.py \
 	mono-find-requires mono-find-provides \
