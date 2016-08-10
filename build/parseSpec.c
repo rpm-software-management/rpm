@@ -323,7 +323,7 @@ retry:
 
     /* Make sure we have something in the read buffer */
     if (!(ofi->readPtr && *(ofi->readPtr))) {
-	char c;
+	int c;
 	int i = 0;
 
 	while((c = fgetc(ofi->fp)) != EOF) {
