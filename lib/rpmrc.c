@@ -1212,6 +1212,17 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 	}
 #	endif	/* arm*-linux */
 
+#	if defined(__linux__) && defined(__riscv__)
+	if (rstreq(un.machine, "riscv")) {
+		if (sizeof(long) == 4)
+			strcpy(un.machine, "riscv32");
+		else if (sizeof(long) == 8)
+			strcpy(un.machine, "riscv64");
+		else if (sizeof(long) == 16)
+			strcpy(un.machine, "riscv128");
+	}
+#	endif	/* riscv */
+
 #	if defined(__GNUC__) && defined(__alpha__)
 	{
 	    unsigned long amask, implver;
