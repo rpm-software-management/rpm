@@ -19,7 +19,7 @@ runroot rpmbuild --quiet -bb \
           /data/SPECS/configtest.spec
 
 ln -s "otherstuff" "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
 runroot rpm -e configtest
 readlink "${cf}.rpmorig"
@@ -50,7 +50,7 @@ runroot rpmbuild --quiet -bb \
 
 ln -s "foo" "${cf}"
 readlink "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
 runroot rpm -e configtest
 test ! -L "${cf}"
@@ -78,7 +78,7 @@ runroot rpmbuild --quiet -bb \
 	--define "filetype link" \
           /data/SPECS/configtest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
 runroot rpm -e configtest
 test ! -L "${cf}"
@@ -105,7 +105,7 @@ runroot rpmbuild --quiet -bb \
 	--define "filetype link" \
           /data/SPECS/configtest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
 ln -sf "otherstuff" "${cf}"
 runroot rpm -e configtest
@@ -138,9 +138,9 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 readlink "${cf}"
 ],
 [0],
@@ -170,11 +170,11 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
 ln -sf "otherstuff" "${cf}"
 readlink "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 readlink "${cf}"
 ],
 [0],
@@ -204,9 +204,9 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 readlink "${cf}"
 ],
 [0],
@@ -235,11 +235,11 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
 ln -sf "otherstuff" "${cf}"
 readlink "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 readlink "${cf}"
 readlink "${cf}.rpmsave"
 ],
@@ -272,11 +272,11 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
 ln -sf "foo-2.0" "${cf}"
 readlink "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 readlink "${cf}"
 ],
 [0],
@@ -309,9 +309,9 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 readlink "${cf}"
 ],
 [0],
@@ -342,11 +342,11 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
 ln -sf "otherstuff" "${cf}"
 readlink "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 readlink "${cf}"
 ],
 [0],
@@ -377,9 +377,9 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 readlink "${cf}"
 ],
 [0],
@@ -409,11 +409,11 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
 ln -sf "otherstuff" "${cf}"
 readlink "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 readlink "${cf}"
 readlink "${cf}.rpmnew"
 ],
@@ -447,11 +447,11 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
 ln -sf "foo-2.0" "${cf}"
 readlink "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 readlink "${cf}"
 test ! -L "${cf}.rpmnew"
 ],

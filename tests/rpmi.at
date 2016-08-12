@@ -111,8 +111,8 @@ for v in "1.0" "2.0"; do
           /data/SPECS/versiontest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/versiontest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/versiontest-2.0-1.noarch.rpm
 runroot rpm -q versiontest
 ],
 [0],
@@ -127,8 +127,8 @@ AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/versiontest-2.0-1.noarch.rpm
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/versiontest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm
 ],
 [2],
 [],
@@ -142,8 +142,8 @@ AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/versiontest-2.0-1.noarch.rpm
-runroot rpm -U --oldpackage "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/versiontest-2.0-1.noarch.rpm
+runroot rpm -U --oldpackage /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm
 runroot rpm -q versiontest
 ],
 [0],
@@ -159,8 +159,8 @@ RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -Uv \
-  "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm \
-  "${TOPDIR}"/RPMS/noarch/versiontest-2.0-1.noarch.rpm
+  /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm \
+  /build/RPMS/noarch/versiontest-2.0-1.noarch.rpm
 runroot rpm -q versiontest
 ],
 [0],
@@ -179,8 +179,8 @@ RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -Uv \
-  "${TOPDIR}"/RPMS/noarch/versiontest-2.0-1.noarch.rpm \
-  "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm
+  /build/RPMS/noarch/versiontest-2.0-1.noarch.rpm \
+  /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm
 runroot rpm -q versiontest
 ],
 [0],
@@ -208,8 +208,8 @@ runroot rpmbuild --quiet -bb \
 
 
 runroot rpm -Uv \
-  "${TOPDIR}"/RPMS/noarch/deptest-two-1.0-1.noarch.rpm \
-  "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
+  /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm \
+  /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 runroot rpm -q deptest-one
 ],
 [0],
@@ -237,8 +237,8 @@ runroot rpmbuild --quiet -bb \
 
 
 runroot rpm -Uv \
-  "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm \
-  "${TOPDIR}"/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+  /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm \
+  /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 runroot rpm -q deptest-one
 ],
 [0],
@@ -257,8 +257,8 @@ RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -i \
-  "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm \
-  "${TOPDIR}"/RPMS/noarch/versiontest-2.0-1.noarch.rpm
+  /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm \
+  /build/RPMS/noarch/versiontest-2.0-1.noarch.rpm
 runroot rpm -q versiontest
 ],
 [0],
@@ -276,8 +276,8 @@ RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -i \
-  "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm \
-  "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm
+  /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm \
+  /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm
 runroot rpm -q versiontest
 ],
 [0],
@@ -297,7 +297,7 @@ RPMDB_INIT
 runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
 
 runroot rpm -U --test --ignoreos --relocate /usr=/opt \
-  "${TOPDIR}"/RPMS/noarch/hello-script-1.0-1.noarch.rpm
+  /build/RPMS/noarch/hello-script-1.0-1.noarch.rpm
 ],
 [1],
 [],
@@ -314,7 +314,7 @@ RPMDB_INIT
 runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
 
 runroot rpm -U --test --ignoreos --badreloc --relocate /usr=/opt \
-  "${TOPDIR}"/RPMS/noarch/hello-script-1.0-1.noarch.rpm
+  /build/RPMS/noarch/hello-script-1.0-1.noarch.rpm
 ],
 [0],
 [],
