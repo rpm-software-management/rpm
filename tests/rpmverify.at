@@ -16,7 +16,7 @@ runroot rpmbuild --quiet -bb \
 	--define "reqs deptest-two" \
 	  /data/SPECS/deptest.spec
 
-runroot rpm -U --nodeps "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
+runroot rpm -U --nodeps /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 runroot rpm -Va --nofiles
 ],
 [1],
@@ -139,7 +139,7 @@ RPMDB_INIT
 
 rm -rf "${TOPDIR}"
 runroot rpmbuild --quiet -bb /data/SPECS/verifyscript.spec
-runroot rpm -U --nodeps "${TOPDIR}"/RPMS/noarch/verifyscript-1.0-1.noarch.rpm
+runroot rpm -U --nodeps /build/RPMS/noarch/verifyscript-1.0-1.noarch.rpm
 rm -f "${RPMTEST}"/var/checkme
 runroot rpm -V --nodeps verifyscript
 ],
@@ -156,7 +156,7 @@ RPMDB_INIT
 
 rm -rf "${TOPDIR}"
 runroot rpmbuild --quiet -bb /data/SPECS/verifyscript.spec
-runroot rpm -U --nodeps "${TOPDIR}"/RPMS/noarch/verifyscript-1.0-1.noarch.rpm
+runroot rpm -U --nodeps /build/RPMS/noarch/verifyscript-1.0-1.noarch.rpm
 touch "${RPMTEST}"/var/checkme
 runroot rpm -V --nodeps verifyscript
 ],
@@ -185,7 +185,7 @@ done
 
 # first instance of a shared file is the one that actually gets created,
 # force the order so we know what to expect as these dont depend on each other
-runroot rpm -U --noorder "${TOPDIR}"/RPMS/noarch/conflictone-1.0-1.noarch.rpm "${TOPDIR}"/RPMS/noarch/conflicttwo-1.0-1.noarch.rpm
+runroot rpm -U --noorder /build/RPMS/noarch/conflictone-1.0-1.noarch.rpm /build/RPMS/noarch/conflicttwo-1.0-1.noarch.rpm
 runroot rpm -e conflicttwo
 runroot rpm -Va --nouser --nogroup
 ],

@@ -25,11 +25,11 @@ runroot rpmbuild --quiet -bb \
 	--define "noconfig 1" \
           /data/SPECS/configtest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 cat "${cf}"
-runroot rpm -U --oldpackage "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U --oldpackage /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 ],
 [0],
@@ -63,14 +63,14 @@ runroot rpmbuild --quiet -bb \
 	--define "noconfig 1" \
           /data/SPECS/configtest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 echo "otherstuff" > "${cf}"
 cat "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 cat "${cf}"
 cat "${cf}.rpmsave"
-runroot rpm -U --oldpackage "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U --oldpackage /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 ],
 [0],
@@ -107,13 +107,13 @@ runroot rpmbuild --quiet -bb \
 	--define "noconfig 1" \
           /data/SPECS/configtest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 echo "bar" > "${cf}"
 cat "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 cat "${cf}"
-runroot rpm -U --oldpackage "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U --oldpackage /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 ],
 [0],
@@ -147,11 +147,11 @@ runroot rpmbuild --quiet -bb \
 	--define "filedata bar" \
           /data/SPECS/configtest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 readlink "${cf}"
-runroot rpm -U --oldpackage "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U --oldpackage /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 ],
 [0],
@@ -184,11 +184,11 @@ runroot rpmbuild --quiet -bb \
 	--define "filedata bar" \
           /data/SPECS/configtest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 echo "otherstuff" > "${cf}"
 cat "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 readlink "${cf}"
 cat "${cf}.rpmsave"
 ],
@@ -224,11 +224,11 @@ runroot rpmbuild --quiet -bb \
 	--define "filedata bar" \
           /data/SPECS/configtest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
 ln -sf "otherstuff" "${cf}"
 readlink "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 cat "${cf}"
 readlink "${cf}.rpmsave"
 ],
@@ -263,9 +263,9 @@ runroot rpmbuild --quiet -bb \
 	--define "filetype dir" \
           /data/SPECS/configtest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 test -d "${cf}"
 ],
 [0],
@@ -295,11 +295,11 @@ runroot rpmbuild --quiet -bb \
 	--define "filetype dir" \
           /data/SPECS/configtest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 echo "otherstuff" > "${cf}"
 cat "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 test -d "${cf}"
 cat "${cf}.rpmsave"
 ],

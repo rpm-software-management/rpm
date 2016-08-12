@@ -95,7 +95,7 @@ runroot rpmbuild \
 
 runroot rpm -qp --qf \
   "\n[%{filemodes:perms} %-8{fileusername} %-8{filegroupname} %{filenames}\n]"\
-  "${TOPDIR}"/RPMS/noarch/attrtest-1.0-1.noarch.rpm
+  /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm
 ]],
 [0],
 [
@@ -135,7 +135,7 @@ rm -rf ${TOPDIR}
 runroot rpmbuild \
   -bb --quiet /data/SPECS/hlinktest.spec
 
-runroot rpm -i "${TOPDIR}"/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+runroot rpm -i /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
 
 runroot rpm -q --qf "[[%{filenlinks} %{filenames}\n]]%{longsize}\n" hlinktest
 runroot rpm -V --nouser --nogroup hlinktest
@@ -166,7 +166,7 @@ rm -rf ${TOPDIR}
 runroot rpmbuild -bb --quiet /data/SPECS/globtest.spec
 runroot rpm -qp \
 	--qf "[[%{filemodes:perms} %{filenames}\n]]" \
-	"${TOPDIR}"/RPMS/noarch/globtest-1.0-1.noarch.rpm
+	/build/RPMS/noarch/globtest-1.0-1.noarch.rpm
 ],
 [0],
 [-rw-r--r-- /opt/globtest/baf
@@ -199,7 +199,7 @@ runroot rpmbuild -bb --quiet \
 	/data/SPECS/prefixtest.spec
 runroot rpm -qp \
 	--qf "[[%{filemodes:perms} %{filenames}\n]]" \
-	"${TOPDIR}"/RPMS/noarch/prefixtest-1.0-1.noarch.rpm
+	/build/RPMS/noarch/prefixtest-1.0-1.noarch.rpm
 ],
 [0],
 [-rw-r--r-- /opt/prefixtest/ba
@@ -298,7 +298,7 @@ runroot rpmbuild \
   -bb --quiet /data/SPECS/attrtest.spec
 
 runroot rpm2cpio \
-  "${TOPDIR}"/RPMS/noarch/attrtest-1.0-1.noarch.rpm > /tmp/attrtest.cpio
+  /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm > /tmp/attrtest.cpio
 ],
 [0],
 [],

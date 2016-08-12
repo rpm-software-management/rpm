@@ -18,7 +18,7 @@ runroot rpmbuild --quiet -bb \
           /data/SPECS/configtest.spec
 
 echo "otherstuff" > "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 runroot rpm -e configtest
 cat "${cf}.rpmorig"
@@ -47,7 +47,7 @@ runroot rpmbuild --quiet -bb \
           /data/SPECS/configtest.spec
 
 echo "otherstuff" > "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 runroot rpm -e configtest
 cat "${cf}.rpmorig"
@@ -76,7 +76,7 @@ runroot rpmbuild --quiet -bb \
           /data/SPECS/configtest.spec
 
 echo "foo" > "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 runroot rpm -e configtest
 test ! -f "${cf}"
@@ -102,7 +102,7 @@ runroot rpmbuild --quiet -bb \
 	--define "filedata foo" \
           /data/SPECS/configtest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 runroot rpm -e configtest
 test ! -f "${cf}"
@@ -128,7 +128,7 @@ runroot rpmbuild --quiet -bb \
 	--define "filedata foo" \
           /data/SPECS/configtest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 echo "otherstuff" > "${cf}"
 runroot rpm -e configtest
@@ -159,7 +159,7 @@ runroot rpmbuild --quiet -bb \
 	--define "noreplace 1" \
           /data/SPECS/configtest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 echo "otherstuff" > "${cf}"
 runroot rpm -e configtest
@@ -192,9 +192,9 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 cat "${cf}"
 ],
 [0],
@@ -222,11 +222,11 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 echo "otherstuff" > "${cf}"
 cat "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 cat "${cf}"
 ],
 [0],
@@ -255,9 +255,9 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 cat "${cf}"
 ],
 [0],
@@ -285,11 +285,11 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 echo "otherstuff" > "${RPMTEST}"/etc/my.conf
 cat "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 cat "${cf}"
 cat "${cf}.rpmsave"
 ],
@@ -321,11 +321,11 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 echo "foo-2.0" > "${RPMTEST}"/etc/my.conf
 cat "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 cat "${cf}"
 ],
 [0],
@@ -357,9 +357,9 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 cat "${cf}"
 ],
 [0],
@@ -389,11 +389,11 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 echo "otherstuff" > "${cf}"
 cat "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 cat "${cf}"
 ],
 [0],
@@ -423,9 +423,9 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 cat "${cf}"
 ],
 [0],
@@ -454,11 +454,11 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 echo "otherstuff" > "${RPMTEST}"/etc/my.conf
 cat "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 cat "${cf}"
 cat "${cf}.rpmnew"
 ],
@@ -491,11 +491,11 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 echo "foo-2.0" > "${RPMTEST}"/etc/my.conf
 cat "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 cat "${cf}"
 ],
 [0],
@@ -815,18 +815,18 @@ done
 test ! -f "${cf}" && echo OK1
 echo "keaton" > "${cf}"
 cat "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 runroot rpm -e configtest
 cat "${cf}"
 rm -f "${cf}"
 
 # post-install config, upgrade, erase
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 test ! -f "${cf}" && echo OK2
 echo "buster" > "${cf}"
 cat "${cf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
 cat "${cf}"
 runroot rpm -e configtest
 cat "${cf}"
