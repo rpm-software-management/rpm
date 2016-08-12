@@ -243,7 +243,7 @@ runroot rpmbuild --quiet -bb \
 	--define "filedata same_stuff" \
           /data/SPECS/conflicttest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/conflictstatus-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/conflictstatus-1.0-1.noarch.rpm
 runroot rpm -qls conflictstatus
 ],
 [0],
@@ -264,7 +264,7 @@ rm -rf "${TOPDIR}"
 runroot rpmbuild --quiet -bb \
           /data/SPECS/flangtest.spec
 
-runroot rpm -U --define "_install_langs de:fi" "${TOPDIR}"/RPMS/noarch/flangtest-1.0-1.noarch.rpm
+runroot rpm -U --define "_install_langs de:fi" /build/RPMS/noarch/flangtest-1.0-1.noarch.rpm
 runroot rpm -qls flangtest
 ],
 [0],
@@ -289,7 +289,7 @@ rm -rf "${TOPDIR}"
 rm -rf "${RPMTEST}"/opt/*
 
 runroot rpmbuild --quiet -bb /data/SPECS/selfconflict.spec
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/selfconflict-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/selfconflict-1.0-1.noarch.rpm
 find "${RPMTEST}"/opt | wc -l
 ],
 [0],
@@ -310,7 +310,7 @@ rm -rf "${TOPDIR}"
 rm -rf "${RPMTEST}"/opt/*
 
 runroot rpmbuild --quiet -bb /data/SPECS/selfconflict.spec
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/selfconflict-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/selfconflict-1.0-1.noarch.rpm
 runroot rpm -e selfconflict
 find "${RPMTEST}"/opt | wc -l
 ],

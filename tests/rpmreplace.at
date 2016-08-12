@@ -22,11 +22,11 @@ runroot rpmbuild --quiet -bb \
 	--define "filedata bar" \
           /data/SPECS/replacetest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 cat "${tf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 cat "${tf}"
-runroot rpm -U --oldpackage "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+runroot rpm -U --oldpackage /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 cat "${tf}"
 ],
 [0],
@@ -58,11 +58,11 @@ runroot rpmbuild --quiet -bb \
 	--define "filedata stuff" \
           /data/SPECS/replacetest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 cat "${tf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 readlink "${tf}"
-runroot rpm -U --oldpackage "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+runroot rpm -U --oldpackage /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 cat "${tf}"
 ],
 [0],
@@ -94,11 +94,11 @@ runroot rpmbuild --quiet -bb \
 	--define "filedata goo" \
           /data/SPECS/replacetest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 cat "${tf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 readlink "${tf}"
-runroot rpm -U --oldpackage "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+runroot rpm -U --oldpackage /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 cat "${tf}"
 ],
 [0],
@@ -130,9 +130,9 @@ runroot rpmbuild --quiet -bb \
 	--define "filedata stuff" \
           /data/SPECS/replacetest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 readlink "${tf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 readlink "${tf}"
 ],
 [0],
@@ -163,9 +163,9 @@ runroot rpmbuild --quiet -bb \
 	--define "filedata goo" \
           /data/SPECS/replacetest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 readlink "${tf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 readlink "${tf}"
 ],
 [0],
@@ -196,9 +196,9 @@ runroot rpmbuild --quiet -bb \
 	--define "filedata zoo" \
           /data/SPECS/replacetest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 readlink "${tf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 readlink "${tf}"
 ],
 [0],
@@ -228,9 +228,9 @@ runroot rpmbuild --quiet -bb \
 	--define "filetype dir" \
           /data/SPECS/replacetest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 cat "${tf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 test -d "${tf}"
 ],
 [0],
@@ -259,9 +259,9 @@ runroot rpmbuild --quiet -bb \
 	--define "filetype dir" \
           /data/SPECS/replacetest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 readlink "${tf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 test -d "${tf}"
 ],
 [0],
@@ -290,9 +290,9 @@ runroot rpmbuild --quiet -bb \
 	--define "filetype dir" \
           /data/SPECS/replacetest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 readlink "${tf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 test -d "${tf}"
 ],
 [0],
@@ -321,9 +321,9 @@ runroot rpmbuild --quiet -bb \
 	--define "filetype dir" \
           /data/SPECS/replacetest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 readlink "${tf}"
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 ],
 [2],
 [zoo
@@ -351,8 +351,8 @@ runroot rpmbuild --quiet -bb \
 	--define "filetype dir" \
           /data/SPECS/replacetest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
-test -d "${tf}" && runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+test -d "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 test -d "${tf}"
 ],
 [0],
@@ -380,8 +380,8 @@ runroot rpmbuild --quiet -bb \
 	--define "filedata woot" \
           /data/SPECS/replacetest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
-test -d "${tf}" && runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+test -d "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 ],
 [2],
 [],
@@ -412,8 +412,8 @@ runroot rpmbuild --quiet -bb \
 
 mkdir "${RPMTEST}"/opt/f00f
 ln -s f00f "${RPMTEST}"/opt/foo
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
-test -L "${tf}" && test -d "${tf}" && runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+test -L "${tf}" && test -d "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 test -L "${tf}" && test -d "${tf}"
 ],
 [0],
@@ -441,8 +441,8 @@ runroot rpmbuild --quiet -bb \
 	--define "filedata woot" \
           /data/SPECS/replacetest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
-test -d "${tf}" && runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+test -d "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 ],
 [2],
 [],
@@ -470,8 +470,8 @@ runroot rpmbuild --quiet -bb \
 	--define "filedata woot" \
           /data/SPECS/replacetest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
-test -d "${tf}" && runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+test -d "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 ],
 [2],
 [],
@@ -499,8 +499,8 @@ runroot rpmbuild --quiet -bb \
 	--define "filedata goo" \
           /data/SPECS/replacetest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
-test -d "${tf}" && rmdir "${tf}" && runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+test -d "${tf}" && rmdir "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 readlink "${tf}"
 ],
 [0],
@@ -529,8 +529,8 @@ runroot rpmbuild --quiet -bb \
 	--define "filedata goo" \
           /data/SPECS/replacetest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
-test -d "${tf}" && rmdir "${tf}" && ln -sf goo "${tf}" && runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+test -d "${tf}" && rmdir "${tf}" && ln -sf goo "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 readlink "${tf}"
 ],
 [0],
@@ -560,8 +560,8 @@ runroot rpmbuild --quiet -bb \
 	--define "fixit posix.rmdir('/opt/foo')" \
           /data/SPECS/replacetest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
-test -d "${tf}" && runroot rpm -U --test "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm && runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+test -d "${tf}" && runroot rpm -U --test "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 readlink "${tf}"
 ],
 [0],
