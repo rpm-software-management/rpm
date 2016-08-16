@@ -99,6 +99,8 @@ optflags: sh4a -O2 -g -mieee
 
 optflags: aarch64 -O2 -g
 
+optflags: riscv64 -O2 -g
+
 #############################################################
 # Architecture colors
 
@@ -146,6 +148,8 @@ archcolor: sh3 1
 archcolor: sh4 1
 
 archcolor: aarch64 2
+
+archcolor: riscv64 2
 
 #############################################################
 # Canonical arch names and numbers
@@ -242,6 +246,8 @@ arch_canon:	mipsr6: mipsr6	20
 arch_canon:	mipsr6el: mipsr6el	20
 arch_canon:	mips64r6: mips64r6	21
 arch_canon:	mips64r6el: mips64r6el	21
+
+arch_canon:	riscv: riscv64	22
 
 #############################################################
 # Canonical OS names and numbers
@@ -368,6 +374,9 @@ buildarchtranslate: sh4a: sh4
 
 buildarchtranslate: aarch64: aarch64
 
+buildarchtranslate: riscv: riscv64
+buildarchtranslate: riscv64: riscv64
+
 #############################################################
 # Architecture compatibility
 
@@ -473,6 +482,9 @@ arch_compat: sh4a: sh4
 
 arch_compat: aarch64: noarch
 
+arch_compat: riscv: noarch
+arch_compat: riscv64: noarch
+
 os_compat:   IRIX64: IRIX
 os_compat: solaris2.7: solaris2.3 solaris2.4 solaris2.5 solaris2.6
 os_compat: solaris2.6: solaris2.3 solaris2.4 solaris2.5
@@ -505,6 +517,9 @@ os_compat: Darwin: MacOSX
 buildarch_compat: ia64: noarch
 
 buildarch_compat: aarch64: noarch
+
+buildarch_compat: riscv: noarch
+buildarch_compat: riscv64: noarch
 
 buildarch_compat: athlon: i686
 buildarch_compat: geode: i586
