@@ -110,6 +110,7 @@ for f in files:
         dist = Distribution.from_location(path_item, dist_name, metadata)
         # Check if py_version is defined in the file
         if not dist.py_version:
+            warnings.warn("Version for {!r} has not been found".format(dist), RuntimeWarning)
             continue
         if (Provides_PyMajorVer_Variant or legacy_Provides or legacy) and Provides:
             # Get the Python major version
