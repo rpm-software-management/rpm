@@ -89,14 +89,12 @@ for f in files:
     lower_dir = dirname(lower)
     if lower_dir.endswith('.egg') or \
             lower_dir.endswith('.egg-info') or \
-            lower_dir.endswith('.egg-link') or \
             lower_dir.endswith('.dist-info'):
         lower = lower_dir
         f = dirname(f)
     # Determine provide, requires, conflicts & recommends based on egg/dist metadata
     if lower.endswith('.egg') or \
             lower.endswith('.egg-info') or \
-            lower.endswith('.egg-link') or \
             lower.endswith('.dist-info'):
         # This import is very slow, so only do it if needed
         from pkg_resources import Distribution, FileMetadata, PathMetadata
