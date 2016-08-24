@@ -370,7 +370,7 @@ AM_CONDITIONAL(WITH_ARCHIVE,[test "$with_archive" = yes])
 #=================
 # Check for elfutils libdw library with dwelf_elf_gnu_build_id.
 WITH_LIBDW_LIB=
-AS_IF([test "$WITH_LIBELF" != yes],[
+AS_IF([test "$WITH_LIBELF" = yes],[
   AC_CHECK_HEADERS([elfutils/libdwelf.h],[
     AC_CHECK_LIB(dw, dwelf_elf_gnu_build_id, [
       AC_DEFINE(HAVE_LIBDW, 1,
