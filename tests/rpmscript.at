@@ -115,7 +115,7 @@ runroot rpm -U /build/RPMS/noarch/fakeshell-1.0-1.noarch.rpm
 runroot rpm -U /build/RPMS/noarch/filetriggers-1.0-1.noarch.rpm
 echo INSTALLATION
 runroot rpm -U /build/RPMS/noarch/hello-script-1.0-1.noarch.rpm \
-"${TOPDIR}"/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+/build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
 echo ERASE
 runroot rpm -e hello-script hlinktest
 ],

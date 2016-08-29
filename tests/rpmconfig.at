@@ -529,12 +529,12 @@ for s in "A" "B"; do
 done
 
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
 cat "${cf}"
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
 cat "${cf}"
 ],
 [0],
@@ -567,14 +567,14 @@ for s in "A" "B"; do
 done
 
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
 cat "${cf}"
 echo "otherstuff" > "${cf}"
 cat "${cf}"
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
 cat "${cf}"
 ],
 [0],
@@ -607,12 +607,12 @@ for s in "A" "B"; do
 done
 
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
 cat "${cf}"
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
 cat "${cf}"
 ],
 [0],
@@ -644,14 +644,14 @@ for s in "A" "B"; do
 done
 
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
 cat "${cf}"
 echo "otherstuff" > "${RPMTEST}"/etc/my.conf
 cat "${cf}"
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
 cat "${cf}"
 cat "${cf}.rpmsave"
 ],
@@ -687,14 +687,14 @@ for s in "A" "B"; do
 done
 
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
 cat "${cf}"
 echo "foo-2.0" > "${RPMTEST}"/etc/my.conf
 cat "${cf}"
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
 cat "${cf}"
 ],
 [0],
@@ -729,14 +729,14 @@ for s in "A" "B"; do
 done
 
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
 cat "${cf}"
 echo "otherstuff" > "${RPMTEST}"/etc/my.conf
 cat "${cf}"
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
 cat "${cf}"
 cat "${cf}.rpmnew"
 ],
@@ -773,14 +773,14 @@ for s in "A" "B"; do
 done
 
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
 cat "${cf}"
 echo "foo-2.0" > "${RPMTEST}"/etc/my.conf
 cat "${cf}"
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
 cat "${cf}"
 ],
 [0],

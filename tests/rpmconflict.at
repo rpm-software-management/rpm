@@ -35,8 +35,8 @@ RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U \
-  "${TOPDIR}"/RPMS/noarch/conflictone-1.0-1.noarch.rpm \
-  "${TOPDIR}"/RPMS/noarch/conflicttwo-1.0-1.noarch.rpm
+  /build/RPMS/noarch/conflictone-1.0-1.noarch.rpm \
+  /build/RPMS/noarch/conflicttwo-1.0-1.noarch.rpm
 ],
 [2],
 [ignore],
@@ -76,8 +76,8 @@ RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U \
-  "${TOPDIR}"/RPMS/noarch/conflictone-1.0-1.noarch.rpm \
-  "${TOPDIR}"/RPMS/noarch/conflicttwo-1.0-1.noarch.rpm
+  /build/RPMS/noarch/conflictone-1.0-1.noarch.rpm \
+  /build/RPMS/noarch/conflicttwo-1.0-1.noarch.rpm
 ],
 [0],
 [ignore],
@@ -288,7 +288,7 @@ runroot rpm -U --ignoreos --ignorearch --nodeps \
   --define "_transaction_color 3" \
   --define "_prefer_color 2" \
   /data/RPMS/hello-2.0-1.x86_64.rpm \
-  "${TOPDIR}"/RPMS/noarch/hello-script-1.0-1.noarch.rpm
+  /build/RPMS/noarch/hello-script-1.0-1.noarch.rpm
 ],
 [2],
 [],
@@ -313,7 +313,7 @@ runroot rpm -U --ignoreos --ignorearch --nodeps \
 runroot rpm -U --ignoreos --ignorearch --nodeps \
   --define "_transaction_color 3" \
   --define "_prefer_color 2" \
-  "${TOPDIR}"/RPMS/noarch/hello-script-1.0-1.noarch.rpm
+  /build/RPMS/noarch/hello-script-1.0-1.noarch.rpm
 ],
 [1],
 [],
@@ -333,7 +333,7 @@ runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
 runroot rpm -U --ignoreos --ignorearch --nodeps \
   --define "_transaction_color 3" \
   --define "_prefer_color 2" \
-  "${TOPDIR}"/RPMS/noarch/hello-script-1.0-1.noarch.rpm
+  /build/RPMS/noarch/hello-script-1.0-1.noarch.rpm
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
   --define "_transaction_color 3" \
@@ -414,8 +414,8 @@ runroot rpmbuild --quiet -bb \
 
 test ! -f "${fn}" && echo OK
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/conflictone-1.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/conflicttwo-1.0-1.noarch.rpm
+    /build/RPMS/noarch/conflictone-1.0-1.noarch.rpm \
+    /build/RPMS/noarch/conflicttwo-1.0-1.noarch.rpm
 cat "${fn}"
 runroot rpm -e conflicttwo
 cat "${fn}"
