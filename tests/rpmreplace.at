@@ -561,7 +561,7 @@ runroot rpmbuild --quiet -bb \
           /data/SPECS/replacetest.spec
 
 runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
-test -d "${tf}" && runroot rpm -U --test "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+test -d "${tf}" && runroot rpm -U --test /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 readlink "${tf}"
 ],
 [0],
