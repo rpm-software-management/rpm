@@ -44,7 +44,7 @@ runroot rpmbuild --quiet -bb \
 	--define "reqs deptest-one" \
 	  /data/SPECS/deptest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 ],
 [0],
 [],
@@ -70,7 +70,7 @@ runroot rpmbuild --quiet -bb \
 	--define "provs deptest-foo = 1.0" \
 	  /data/SPECS/deptest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 ],
 [2],
 [],
@@ -98,7 +98,7 @@ runroot rpmbuild --quiet -bb \
 	--define "provs deptest-foo = 2.0" \
 	  /data/SPECS/deptest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 ],
 [0],
 [],
@@ -123,7 +123,7 @@ runroot rpmbuild --quiet -bb \
 	--define "pkg two" \
 	  /data/SPECS/deptest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 ],
 [2],
 [],
@@ -199,8 +199,8 @@ runroot rpmbuild --quiet -bb \
 	  /data/SPECS/deptest.spec
 
 runroot rpm -U --test \
-	"${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm \
-	"${TOPDIR}"/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+	/build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm \
+	/build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 runroot rpm -e deptest-one
@@ -238,7 +238,7 @@ runroot rpmbuild --quiet -bb \
 	--define "provs deptest-foo = 2.0" \
 	  /data/SPECS/deptest.spec
 
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 runroot rpm -e deptest-two
 ],
 [1],
@@ -266,7 +266,7 @@ runroot rpm -U --ignoreos --ignorearch --nodeps \
 	--define "_prefer_color 2" \
 	/data/RPMS/hello-2.0-1.i686.rpm \
 	/data/RPMS/hello-2.0-1.x86_64.rpm \
-	"${TOPDIR}"/RPMS/noarch/deptest-hello-1.0-1.noarch.rpm
+	/build/RPMS/noarch/deptest-hello-1.0-1.noarch.rpm
 
 runroot rpm -e hello.x86_64
 ],
@@ -295,7 +295,7 @@ runroot rpm -U --ignoreos --ignorearch --nodeps \
 	--define "_prefer_color 2" \
 	/data/RPMS/hello-2.0-1.i686.rpm \
 	/data/RPMS/hello-2.0-1.x86_64.rpm \
-	"${TOPDIR}"/RPMS/noarch/deptest-hello-1.0-1.noarch.rpm
+	/build/RPMS/noarch/deptest-hello-1.0-1.noarch.rpm
 
 runroot rpm -e hello.i686
 ],

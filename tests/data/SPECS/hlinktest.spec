@@ -5,6 +5,7 @@ Release:          1
 License:          Testing
 Group:            Testing
 BuildArch:	  noarch
+Provides: /bin/sh
 %description
   
 %install

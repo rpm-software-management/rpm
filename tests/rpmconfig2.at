@@ -487,12 +487,12 @@ for s in "A" "B"; do
 done
 
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
 readlink "${cf}"
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
 readlink "${cf}"
 ],
 [0],
@@ -526,14 +526,14 @@ for s in "A" "B"; do
 done
 
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
 readlink "${cf}"
 ln -sf "otherstuff" "${cf}"
 readlink "${cf}"
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
 readlink "${cf}"
 ],
 [0],
@@ -567,12 +567,12 @@ for s in "A" "B"; do
 done
 
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
 readlink "${cf}"
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
 readlink "${cf}"
 ],
 [0],
@@ -605,14 +605,14 @@ for s in "A" "B"; do
 done
 
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
 readlink "${cf}"
 ln -sf "otherstuff" "${cf}"
 readlink "${cf}"
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
 readlink "${cf}"
 readlink "${cf}.rpmsave"
 ],
@@ -649,14 +649,14 @@ for s in "A" "B"; do
 done
 
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
 readlink "${cf}"
 ln -sf "foo-2.0" "${cf}"
 readlink "${cf}"
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
 readlink "${cf}"
 ],
 [0],
@@ -692,14 +692,14 @@ for s in "A" "B"; do
 done
 
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
 readlink "${cf}"
 ln -sf "otherstuff" "${cf}"
 readlink "${cf}"
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
 readlink "${cf}"
 readlink "${cf}.rpmnew"
 ],
@@ -737,14 +737,14 @@ for s in "A" "B"; do
 done
 
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
 readlink "${cf}"
 ln -sf "foo-2.0" "${cf}"
 readlink "${cf}"
 runroot rpm -U \
-    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
-    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+    /build/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    /build/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
 readlink "${cf}"
 test ! -L "${cf}.rpmnew"
 ],
