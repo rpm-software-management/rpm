@@ -606,6 +606,7 @@ package or when debugging this package.\
 	gpg --no-verbose --no-armor \
 	%{?_gpg_digest_algo:--digest-algo %{_gpg_digest_algo}} \
 	--no-secmem-warning \
+	%{?_gpg_sign_cmd_extra_args:%{_gpg_sign_cmd_extra_args}} \
 	-u "%{_gpg_name}" -sbo %{__signature_filename} %{__plaintext_filename}
 
 # XXX rpm >= 4.1 verifies signatures internally
