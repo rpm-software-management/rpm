@@ -939,8 +939,13 @@ package or when debugging this package.\
 	--infodir=%{_infodir}
 
 #------------------------------------------------------------------------------
+# Tested features of make
+# Output syncronization for parallel make:
+%_make_output_sync %(! %{__make} --version -O >/dev/null 2>&1 || echo -O)
+
+#------------------------------------------------------------------------------
 # The "make" analogue, hiding the _smp_mflags magic from specs
-%make_build %{__make} -O %{?_smp_mflags}
+%make_build %{__make} %{_make_output_sync} %{?_smp_mflags}
 
 #------------------------------------------------------------------------------
 # The make install analogue of %configure for modern autotools:
