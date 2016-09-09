@@ -45,6 +45,15 @@ int rpmvercmp(const char * a, const char * b)
 	    continue;
 	}
 
+	/* handle the caret separator, it sorts before everything else */
+	if (*one == '^' || *two == '^') {
+	    if (*one != '^') return -1;
+	    if (*two != '^') return 1;
+	    one++;
+	    two++;
+	    continue;
+	}
+
 	/* If we ran to the end of either, we are finished with the loop */
 	if (!(*one && *two)) break;
 

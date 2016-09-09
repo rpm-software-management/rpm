@@ -1278,6 +1278,9 @@ static const struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(RichDependencies)",    "4.12.0-1",
 	(		RPMSENSE_EQUAL),
     N_("support for rich dependencies.") },
+    { "rpmlib(CaretInVersions)",    "4.14.0-1",
+	(		RPMSENSE_EQUAL),
+    N_("dependency comparison supports versions with caret.") },
     { NULL,				NULL, 0,	NULL }
 };
 
