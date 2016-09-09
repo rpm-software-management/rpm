@@ -91,6 +91,9 @@ RPMVERCMP(+, _, 0)
 RPMVERCMP(_, +, 0)
 
 dnl Basic testcases for tilde sorting
+RPMVERCMP(1.0~, 1.0~, 0)
+RPMVERCMP(1.0~, 1.0, -1)
+RPMVERCMP(1.0, 1.0~, 1)
 RPMVERCMP(1.0~rc1, 1.0~rc1, 0)
 RPMVERCMP(1.0~rc1, 1.0, -1)
 RPMVERCMP(1.0, 1.0~rc1, 1)
