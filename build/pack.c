@@ -402,6 +402,10 @@ static void finalizeDeps(Package pkg)
     if (haveCharInDep(pkg, '~'))
 	(void) rpmlibNeedsFeature(pkg, "TildeInVersions", "4.10.0-1");
 
+    /* check if the package has a dependency with a '^' */
+    if (haveCharInDep(pkg, '^'))
+	(void) rpmlibNeedsFeature(pkg, "CaretInVersions", "4.15.0-1");
+
     /* check if the package has a rich dependency */
     if (haveRichDep(pkg))
 	(void) rpmlibNeedsFeature(pkg, "RichDependencies", "4.12.0-1");
