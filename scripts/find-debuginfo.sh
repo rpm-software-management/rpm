@@ -67,6 +67,9 @@ ver_rel=
 # Arch given by --unique-debug-arch
 unique_debug_arch=
 
+# Number of parallel jobs to spawn
+n_jobs=1
+
 BUILDDIR=.
 out=debugfiles.list
 nout=0
@@ -122,6 +125,13 @@ while [ $# -gt 0 ]; do
     ;;
   -r)
     strip_r=true
+    ;;
+  -j)
+    n_jobs=$2
+    shift
+    ;;
+  -j*)
+    n_jobs=${1#-j}
     ;;
   *)
     BUILDDIR=$1
@@ -334,9 +344,56 @@ do_file()
   fi
 }
 
-while read nlinks inum f; do
-  do_file "$nlinks" "$inum" "$f"
-done <"$temp/primary"
+# 16^6 - 1 or about 16 milion files
+FILENUM_DIGITS=6
+run_job()
+{
+  local jobid=$1 filenum
+  local SOURCEFILE=$temp/debugsources.$jobid ELFBINSFILE=$temp/elfbins.$jobid
+
+  >"$SOURCEFILE"
+  >"$ELFBINSFILE"
+  # can't use read -n <n>, because it reads bytes one by one, allowing for
+  # races
+  while :; do
+    filenum=$(dd bs=$(( FILENUM_DIGITS + 1 )) count=1 status=none)
+    if test -z "$filenum"; then
+      break
+    fi
+    do_file $(sed -n "$(( 0x$filenum )) p" "$temp/primary")
+  done
+  echo 0 >"$temp/res.$jobid"
+}
+
+n_files=$(wc -l <"$temp/primary")
+if [ $n_jobs -gt $n_files ]; then
+  n_jobs=$n_files
+fi
+if [ $n_jobs -le 1 ]; then
+  while read nlinks inum f; do
+    do_file "$nlinks" "$inum" "$f"
+  done <"$temp/primary"
+else
+  for ((i = 1; i <= n_files; i++)); do
+    printf "%0${FILENUM_DIGITS}x\\n" $i
+  done | (
+    exec 3<&0
+    for ((i = 0; i < n_jobs; i++)); do
+      # The shell redirects stdin to /dev/null for background jobs. Work
+      # around this by duplicating fd 0
+      run_job $i <&3 &
+    done
+    wait
+  )
+  for f in "$temp"/res.*; do
+    res=$(< "$f")
+    if [ "$res" !=  "0" ]; then
+      exit 1
+    fi
+  done
+  cat "$temp"/debugsources.* >"$SOURCEFILE"
+  cat "$temp"/elfbins.* >"$ELFBINSFILE"
+fi
 
 # Invoke the DWARF Compressor utility.
 if $run_dwz \
