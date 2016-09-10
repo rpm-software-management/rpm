@@ -248,32 +248,36 @@ set -o pipefail
 strict_error=ERROR
 $strict || strict_error=WARNING
 
-# Strip ELF binaries
+temp=$(mktemp -d ${TMPDIR:-/tmp}/find-debuginfo.XXXXXX)
+trap 'rm -rf "$temp"' EXIT
+
+# Build a list of unstripped ELF files and their hardlinks
+touch "$temp/primary"
 find "$RPM_BUILD_ROOT" ! -path "${debugdir}/*.debug" -type f \
      		     \( -perm -0100 -or -perm -0010 -or -perm -0001 \) \
 		     -print |
 file -N -f - | sed -n -e 's/^\(.*\):[ 	]*.*ELF.*, not stripped.*/\1/p' |
 xargs --no-run-if-empty stat -c '%h %D_%i %n' |
 while read nlinks inum f; do
-  get_debugfn "$f"
-  [ -f "${debugfn}" ] && continue
-
-  # If this file has multiple links, keep track and make
-  # the corresponding .debug files all links to one file too.
   if [ $nlinks -gt 1 ]; then
-    eval linked=\$linked_$inum
-    if [ -n "$linked" ]; then
-      eval id=\$linkedid_$inum
-      link=$debugfn
-      get_debugfn "$linked"
-      echo "hard linked $link to $debugfn"
-      mkdir -p "$(dirname "$link")" && ln -nf "$debugfn" "$link"
+    var=seen_$inum
+    if test -n "${!var}"; then
+      echo "$inum $f" >>"$temp/linked"
       continue
     else
-      eval linked_$inum=\$f
-      echo "file $f has $[$nlinks - 1] other hard links"
+      read "$var" < <(echo 1)
     fi
   fi
+  echo "$nlinks $inum $f" >>"$temp/primary"
+done
+
+# Strip ELF binaries
+do_file()
+{
+  local nlinks=$1 inum=$2 f=$3 id link linked
+
+  get_debugfn "$f"
+  [ -f "${debugfn}" ] && return
 
   echo "extracting debug info from $f"
   build_id_seed=
@@ -282,9 +286,6 @@ while read nlinks inum f; do
   fi
   id=$(${lib_rpm_dir}/debugedit -b "$RPM_BUILD_DIR" -d /usr/src/debug \
 			      -i $build_id_seed -l "$SOURCEFILE" "$f") || exit
-  if [ $nlinks -gt 1 ]; then
-    eval linkedid_$inum=\$id
-  fi
   if [ -z "$id" ]; then
     echo >&2 "*** ${strict_error}: No build ID note found in $f"
     $strict && exit 2
@@ -321,7 +322,21 @@ while read nlinks inum f; do
 
   echo "./${f#$RPM_BUILD_ROOT}" >> "$ELFBINSFILE"
 
-done || exit
+  # If this file has multiple links, make the corresponding .debug files
+  # all links to one file too.
+  if [ $nlinks -gt 1 ]; then
+    grep "^$inum " "$temp/linked" | while read inum linked; do
+      link=$debugfn
+      get_debugfn "$linked"
+      echo "hard linked $link to $debugfn"
+      mkdir -p "$(dirname "$debugfn")" && ln -nf "$link" "$debugfn"
+    done
+  fi
+}
+
+while read nlinks inum f; do
+  do_file "$nlinks" "$inum" "$f"
+done <"$temp/primary"
 
 # Invoke the DWARF Compressor utility.
 if $run_dwz \
