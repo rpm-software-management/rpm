@@ -280,12 +280,12 @@ exit:
     return rc;
 }
 
-static int haveTildeDep(Package pkg)
+static int haveCharInDep(Package pkg, char c)
 {
     for (int i = 0; i < PACKAGE_NUM_DEPS; i++) {
 	rpmds ds = rpmdsInit(pkg->dependencies[i]);
 	while (rpmdsNext(ds) >= 0) {
-	    if (strchr(rpmdsEVR(ds), '~'))
+	    if (strchr(rpmdsEVR(ds), c))
 		return 1;
 	}
     }
@@ -392,8 +392,12 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     }
 
     /* check if the package has a dependency with a '~' */
-    if (haveTildeDep(pkg))
+    if (haveCharInDep(pkg, '~'))
 	(void) rpmlibNeedsFeature(pkg, "TildeInVersions", "4.10.0-1");
+
+    /* check if the package has a dependency with a '^' */
+    if (haveCharInDep(pkg, '^'))
+	(void) rpmlibNeedsFeature(pkg, "CaretInVersions", "4.14.0-1");
 
     /* check if the package has a rich dependency */
     if (haveRichDep(pkg))
