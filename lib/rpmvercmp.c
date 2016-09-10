@@ -33,13 +33,28 @@ int rpmvercmp(const char * a, const char * b)
 
     /* loop through each version segment of str1 and str2 and compare them */
     while (*one || *two) {
-	while (*one && !risalnum(*one) && *one != '~') one++;
-	while (*two && !risalnum(*two) && *two != '~') two++;
+	while (*one && !risalnum(*one) && *one != '~' && *one != '^') one++;
+	while (*two && !risalnum(*two) && *two != '~' && *two != '^') two++;
 
 	/* handle the tilde separator, it sorts before everything else */
 	if (*one == '~' || *two == '~') {
 	    if (*one != '~') return 1;
 	    if (*two != '~') return -1;
+	    one++;
+	    two++;
+	    continue;
+	}
+
+	/*
+	 * Handle caret separator. Concept is the same as tilde,
+	 * except that if one of the strings ends (base version),
+	 * the other is considered as higher version.
+	 */
+	if (*one == '^' || *two == '^') {
+	    if (!*one) return -1;
+	    if (!*two) return 1;
+	    if (*one != '^') return 1;
+	    if (*two != '^') return -1;
 	    one++;
 	    two++;
 	    continue;
