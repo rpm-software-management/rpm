@@ -73,9 +73,9 @@ int parseFiles(rpmSpec spec)
      * Warn but preserve behavior, except for leaking memory.
      */
     if (pkg->fileList != NULL) {
-	rpmlog(RPMLOG_WARNING, _("line %d: second %%files\n"), spec->lineNum);
+	rpmlog(RPMLOG_WARNING, _("line %d: multiple %%files for package '%s'\n"),
+	       spec->lineNum, rpmstrPoolStr(pkg->pool, pkg->name));
 	pkg->fileList = argvFree(pkg->fileList);
-	
     }
 
     for (arg=1; arg<argc; arg++) {
