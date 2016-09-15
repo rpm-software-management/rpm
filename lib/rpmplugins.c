@@ -214,10 +214,11 @@ static rpmRC rpmpluginsCallInit(rpmPlugin plugin, rpmts ts)
     rpmRC rc = RPMRC_OK;
     plugin_init_func hookFunc;
     RPMPLUGINS_SET_HOOK_FUNC(init);
-    if (hookFunc)
+    if (hookFunc) {
         rc = hookFunc(plugin, ts);
         if (rc != RPMRC_OK && rc != RPMRC_NOTFOUND)
             rpmlog(RPMLOG_ERR, "Plugin %s: hook init failed\n", plugin->name);
+    }
     return rc;
 }
 
