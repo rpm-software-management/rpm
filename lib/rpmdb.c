@@ -454,6 +454,12 @@ int rpmdbClose(rpmdb db)
     if (db == NULL)
 	goto exit;
 
+    prev = &rpmdbRock;
+    while ((next = *prev) != NULL && next != db)
+	prev = &next->db_next;
+    if (!next)
+	goto exit;
+
     (void) rpmdbUnlink(db);
 
     if (db->nrefs > 0)
@@ -474,9 +480,6 @@ int rpmdbClose(rpmdb db)
     db->db_indexes = _free(db->db_indexes);
     db->db_descr = _free(db->db_descr);
 
-    prev = &rpmdbRock;
-    while ((next = *prev) != NULL && next != db)
-	prev = &next->db_next;
     if (next) {
         *prev = next->db_next;
 	next->db_next = NULL;
@@ -1085,7 +1088,8 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
     if (next) {
 	*prev = next->mi_next;
 	next->mi_next = NULL;
-    }
+    } else
+	return NULL;
 
     pkgdbOpen(mi->mi_db, 0, &dbi);
 
@@ -2085,7 +2089,8 @@ rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii)
     if (next) {
         *prev = next->ii_next;
         next->ii_next = NULL;
-    }
+    } else
+	return NULL;
 
     ii->ii_dbc = dbiCursorFree(ii->ii_dbi, ii->ii_dbc);
     ii->ii_dbi = NULL;
