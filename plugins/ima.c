@@ -49,13 +49,18 @@ static rpmRC ima_psm_post(rpmPlugin plugin, rpmte te, int res)
 	}
 
 	while (rpmfiNext(fi) >= 0) {
-	    /* Don't install signatures for (mutable) config files */
-	    if (!(rpmfiFFlags(fi) & RPMFILE_CONFIG)) {
-		fpath = rpmfiFN(fi);
-		fsig = rpmfiFSignature(fi, &len);
-		if (fsig && (check_zero_hdr(fsig, len) == 0)) {
-		    lsetxattr(fpath, XATTR_NAME_IMA, fsig, len, 0);
-		}
+	    /* Don't install signatures for (mutable) files marked
+	     * as config files unless they are also executable.
+	     */
+	    if (rpmfiFFlags(fi) & RPMFILE_CONFIG) {
+	        if (!(rpmfiFMode(fi) & (S_IXUSR|S_IXGRP|S_IXOTH)))
+	            continue;
+	    }
+
+	    fsig = rpmfiFSignature(fi, &len);
+	    if (fsig && (check_zero_hdr(fsig, len) == 0)) {
+	        fpath = rpmfiFN(fi);
+	        lsetxattr(fpath, XATTR_NAME_IMA, fsig, len, 0);
 	    }
 	}
 exit:
