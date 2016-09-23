@@ -1,9 +1,11 @@
+#include <errno.h>
 #include <sys/xattr.h>
 
 #include <rpm/rpmfi.h>
 #include <rpm/rpmte.h>
 #include <rpm/rpmfiles.h>
 #include <rpm/rpmtypes.h>
+#include <rpm/rpmlog.h>
 #include <rpmio/rpmstring.h>
 
 #include "lib/rpmfs.h"
@@ -35,38 +37,42 @@ static int check_zero_hdr(const unsigned char *fsig, size_t siglen)
 	return (memcmp(fsig, &zero_hdr, sizeof(zero_hdr)) == 0);
 }
 
-static rpmRC ima_psm_post(rpmPlugin plugin, rpmte te, int res)
+static rpmRC ima_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
+                                  const char *path,
+                                  const char *dest,
+                                  mode_t file_mode, rpmFsmOp op)
 {
-	rpmfi fi = rpmteFI(te);
-	const char *fpath;
 	const unsigned char * fsig = NULL;
 	size_t len;
-	int rc = 0;
+	int rc = RPMRC_OK;
+	rpmFileAction action = XFO_ACTION(op);
 
-	if (fi == NULL) {
-	    rc = RPMERR_BAD_MAGIC;
+	/* Ignore skipped files and unowned directories */
+	if (XFA_SKIPPING(action) || (op & FAF_UNOWNED))
 	    goto exit;
+
+	/* Don't install signatures for (mutable) files marked
+	 * as config files unless they are also executable.
+	 */
+	if (rpmfiFFlags(fi) & RPMFILE_CONFIG) {
+	    if (!(rpmfiFMode(fi) & (S_IXUSR|S_IXGRP|S_IXOTH)))
+	        goto exit;
 	}
 
-	while (rpmfiNext(fi) >= 0) {
-	    /* Don't install signatures for (mutable) files marked
-	     * as config files unless they are also executable.
-	     */
-	    if (rpmfiFFlags(fi) & RPMFILE_CONFIG) {
-	        if (!(rpmfiFMode(fi) & (S_IXUSR|S_IXGRP|S_IXOTH)))
-	            continue;
-	    }
-
-	    fsig = rpmfiFSignature(fi, &len);
-	    if (fsig && (check_zero_hdr(fsig, len) == 0)) {
-	        fpath = rpmfiFN(fi);
-	        lsetxattr(fpath, XATTR_NAME_IMA, fsig, len, 0);
+	fsig = rpmfiFSignature(fi, &len);
+	if (fsig && (check_zero_hdr(fsig, len) == 0)) {
+	    if (lsetxattr(path, XATTR_NAME_IMA, fsig, len, 0) < 0) {
+	        rpmlog(RPMLOG_ERR,
+			"ima: could not apply signature on '%s': %s\n",
+			path, strerror(errno));
+	        rc = RPMRC_FAIL;
 	    }
 	}
+
 exit:
 	return rc;
 }
 
 struct rpmPluginHooks_s ima_hooks = {
-	.psm_post = ima_psm_post,
+	.fsm_file_prepare = ima_fsm_file_prepare,
 };
