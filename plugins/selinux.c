@@ -2,7 +2,6 @@
 
 #include <selinux/selinux.h>
 #include <selinux/context.h>
-#include <selinux/flask.h>
 #include <selinux/label.h>
 #include <selinux/avc.h>
 #include <rpm/rpmlog.h>
