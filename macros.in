@@ -950,7 +950,7 @@ package or when debugging this package.\
 
 #------------------------------------------------------------------------------
 # The make install analogue of %configure for modern autotools:
-%make_install %{__make} install DESTDIR=%{?buildroot}
+%make_install %{__make} install DESTDIR=%{?buildroot} INSTALL="%{__install} -p"
 
 #------------------------------------------------------------------------------
 # Former make install analogue, kept for compatibility and for old/broken
