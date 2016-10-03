@@ -1641,7 +1641,7 @@ static int generateBuildIDs(FileList fl)
     /* How are we supposed to create the build-id links?  */
     char *build_id_links_macro = rpmExpand("%{?_build_id_links}", NULL);
     int build_id_links;
-    if (build_id_links_macro == NULL) {
+    if (*build_id_links_macro == '\0') {
 	rpmlog(RPMLOG_WARNING,
 	       _("_build_id_links macro not set, assuming 'compat'\n"));
 	build_id_links = BUILD_IDS_COMPAT;
