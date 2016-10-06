@@ -32,17 +32,20 @@ static int sameDate(const struct tm *ot, const struct tm *nt)
 
 /**
  * Parse date string to seconds.
+ * accepted date formats are "Mon Jun 6 2016" (original one)
+ * and "Thu Oct  6 06:48:39 CEST 2016" (extended one)
  * @param datestr	date string (e.g. 'Wed Jan 1 1997')
  * @retval secs		secs since the unix epoch
  * @return 		0 on success, -1 on error
  */
-static int dateToTimet(const char * datestr, time_t * secs)
+static int dateToTimet(const char * datestr, time_t * secs, int * date_words)
 {
     int rc = -1; /* assume failure */
     struct tm time, ntime;
     const char * const * idx;
     char *p, *pe, *q, *date, *tz;
-    
+    char tz_name[10];               /* name of timezone (if extended format is used) */
+
     static const char * const days[] =
 	{ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", NULL };
     static const char * const months[] =
@@ -80,26 +83,93 @@ static int dateToTimet(const char * datestr, time_t * secs)
     if (*p == '\0') goto exit;
     pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
 
-    /* make this noon so the day is always right (as we make this UTC) */
-    time.tm_hour = 12;
-
     time.tm_mday = strtol(p, &q, 10);
     if (!(q && *q == '\0')) goto exit;
     if (time.tm_mday < 0 || time.tm_mday > lengths[time.tm_mon]) goto exit;
 
-    /* year */
-    p = pe; SKIPSPACE(p);
-    if (*p == '\0') goto exit;
-    pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe = '\0';
+    /* first part of year entry (original format) / time entry (extended format)*/
+    p = pe;
+    SKIPSPACE(p);
+    if (*p == '\0')
+	goto exit;
+
+    /* in the original format here is year record (e.g. 1999),
+     * in the extended one here is time stamp (e.g. 10:22:30).
+     * Choose the format
+     */
+    if ((p[1]==':') || ((p[1]!='\0') && ((p[2]==':')))) {
+	/* it can be extended format */
+	*date_words = 6;
+
+	/* second part of time entry */
+	/* hours */
+	time.tm_hour = strtol(p, &q, 10);
+	if ( (time.tm_hour < 0) || (time.tm_hour > 23) )
+	   goto exit;
+	if (*q!=':')
+	   goto exit;
+	p = ++q;
+	/* minutes */
+	time.tm_min = strtol(p, &q, 10);
+	if ( (time.tm_min < 0) || (time.tm_min > 59) )
+	   goto exit;
+	if (*q != ':')
+	   goto exit;
+	p = ++q;
+	/* time - seconds */
+	time.tm_sec = strtol(p, &q, 10);
+	if ( (time.tm_sec < 0) || (time.tm_sec > 59) )
+	   goto exit;
+	p = q;
+
+	/* time zone name */
+	SKIPSPACE(p);
+	if (*p == '\0')
+	   goto exit;
+	pe = p;
+	SKIPNONSPACE(pe);
+	if (*pe != '\0')
+	   *pe++ = '\0';
+	if (((int)(pe-p) + 1) > 9 )
+	   goto exit;
+	strncpy(tz_name, p, (int)(pe-p));
+	tz_name[(int)(pe-p)] = '\0';
+
+	/* first part of year entry */
+	p = pe;
+	SKIPSPACE(p);
+	if (*p == '\0')
+	   goto exit;
+    } else {
+	*date_words = 4;
+	/* the original format */
+	/* make this noon so the day is always right (as we make this UTC) */
+	time.tm_hour = 12;
+   }
+
+    /* year - second part */
+    pe = p;
+    SKIPNONSPACE(pe);
+    if (*pe != '\0')
+	*pe = '\0';
     time.tm_year = strtol(p, &q, 10);
     if (!(q && *q == '\0')) goto exit;
     if (time.tm_year < 1990 || time.tm_year >= 3000) goto exit;
     time.tm_year -= 1900;
 
-    /* chnagelog date is always in UTC */
+    /* change time zone and compute calendar time representation */
     tz = getenv("TZ");
-    if (tz) tz = xstrdup(tz);
-    setenv("TZ", "UTC", 1);
+    if (tz)
+	tz = xstrdup(tz);
+    if (*date_words == 6) {
+	/* changelog date is in read time zone */
+	tz = getenv("TZ");
+	if (tz) tz = xstrdup(tz);
+	setenv("TZ", tz_name, 1);
+    } else {
+	/* changelog date is always in UTC */
+	setenv("TZ", "UTC", 1);
+    }
     ntime = time; /* struct assignment */
     *secs = mktime(&ntime);
     unsetenv("TZ");
@@ -107,6 +177,7 @@ static int dateToTimet(const char * datestr, time_t * secs)
 	setenv("TZ", tz, 1);
 	free(tz);
     }
+
     if (*secs == -1) goto exit;
 
     /* XXX Turn this into a hard error in a release or two */
@@ -135,6 +206,7 @@ static rpmRC addChangelog(Header h, ARGV_const_t sb)
     time_t lastTime = 0;
     time_t trimtime = rpmExpandNumeric("%{?_changelog_trimtime}");
     char *date, *name, *text, *next;
+    int date_words;      /* number of words in date string */
 
     s = sp = argvJoin(sb, "");
 
@@ -160,12 +232,8 @@ static rpmRC addChangelog(Header h, ARGV_const_t sb)
 	/* 4 fields of date */
 	date++;
 	s = date;
-	for (i = 0; i < 4; i++) {
-	    SKIPSPACE(s);
-	    SKIPNONSPACE(s);
-	}
 	SKIPSPACE(date);
-	if (dateToTimet(date, &time)) {
+	if (dateToTimet(date, &time, &date_words)) {
 	    rpmlog(RPMLOG_ERR, _("bad date in %%changelog: %s\n"), date);
 	    goto exit;
 	}
@@ -173,6 +241,10 @@ static rpmRC addChangelog(Header h, ARGV_const_t sb)
 	    rpmlog(RPMLOG_ERR,
 		     _("%%changelog not in descending chronological order\n"));
 	    goto exit;
+	}
+	for (i = 0; i < date_words; i++) {
+	    SKIPSPACE(s);
+	    SKIPNONSPACE(s);
 	}
 	lastTime = time;
 
