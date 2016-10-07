@@ -193,6 +193,14 @@ add_minidebug()
   local keep_symbols=`mktemp`
   local mini_debuginfo=`mktemp`
 
+  # In the minisymtab we don't need the .debug_ sections (already removed
+  # by -S) but also not any other non-allocated PROGBITS or NOTE sections.
+  # List and remove them explicitly. We do want to keep the allocated,
+  # symbol and NOBITS sections so cannot use --keep-only because that is
+  # too agressive. Field $2 is the section name, $3 is the section type
+  # and $8 are the section flags.
+  local remove_sections=`readelf -W -S "$debuginfo" | awk '{ if (index($2,".debug_") != 1 && ($3 == "PROGBITS" || $3 == "NOTE") && index($8,"A") == 0) printf "--remove-section "$2" " }'`
+
   # Extract the dynamic symbols from the main binary, there is no need to also have these
   # in the normal symbol table
   nm -D "$binary" --format=posix --defined-only | awk '{ print $1 }' | sort > "$dynsyms"
@@ -201,7 +209,7 @@ add_minidebug()
   # Keep all the function symbols not already in the dynamic symbol table
   comm -13 "$dynsyms" "$funcsyms" > "$keep_symbols"
   # Copy the full debuginfo, keeping only a minumal set of symbols and removing some unnecessary sections
-  objcopy -S --remove-section .gdb_index --remove-section .comment --keep-symbols="$keep_symbols" "$debuginfo" "$mini_debuginfo" &> /dev/null
+  objcopy -S $remove_sections --keep-symbols="$keep_symbols" "$debuginfo" "$mini_debuginfo" &> /dev/null
   #Inject the compressed data into the .gnu_debugdata section of the original binary
   xz "$mini_debuginfo"
   mini_debuginfo="${mini_debuginfo}.xz"
