@@ -205,7 +205,10 @@ add_minidebug()
   # in the normal symbol table
   nm -D "$binary" --format=posix --defined-only | awk '{ print $1 }' | sort > "$dynsyms"
   # Extract all the text (i.e. function) symbols from the debuginfo
-  nm "$debuginfo" --format=posix --defined-only | awk '{ if ($2 == "T" || $2 == "t") print $1 }' | sort > "$funcsyms"
+  # Use format sysv to make sure we can match against the actual ELF FUNC
+  # symbol type. The binutils nm posix format symbol type chars are
+  # ambigous for architectures that might use function descriptors.
+  nm "$debuginfo" --format=sysv --defined-only | awk -F \| '{ if ($4 ~ "FUNC") print $1 }' | sort > "$funcsyms"
   # Keep all the function symbols not already in the dynamic symbol table
   comm -13 "$dynsyms" "$funcsyms" > "$keep_symbols"
   # Copy the full debuginfo, keeping only a minumal set of symbols and removing some unnecessary sections
