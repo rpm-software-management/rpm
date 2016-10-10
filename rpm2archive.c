@@ -161,6 +161,11 @@ static int process_package(rpmts ts, char * filename)
 	    write_file_content(a, buf, fi);
 	}
     }
+    /* End of iteration is not an error */
+    if (rc == RPMERR_ITER_END) {
+	rc = 0;
+    }
+
     _free(hardlink);
 
     Fclose(gzdi);	/* XXX gzdi == fdi */
