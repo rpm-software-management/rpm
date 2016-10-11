@@ -215,9 +215,9 @@ static int expandRegular(rpmfi fi, const char *dest, rpmpsm psm, int nodigest, i
     FD_t wfd = NULL;
     int rc = 0;
 
-    /* Create the file with 000 permissions. */
+    /* Create the file with 0200 permissions (write by owner). */
     {
-	mode_t old_umask = umask(0777);
+	mode_t old_umask = umask(0577);
 	wfd = Fopen(dest, "w.ufdio");
 	umask(old_umask);
     }
