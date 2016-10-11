@@ -781,6 +781,7 @@ static void skipInstallFiles(const rpmts ts, rpmfiles files, rpmfs fs)
 	drc[ix]++;
 
 	/* Don't bother with skipped files */
+	/* XXX FIXME: --excludepath on %license should not be permitted */
 	if (XFA_SKIPPING(rpmfsGetAction(fs, i))) {
 	    drc[ix]--; dff[ix] = 1;
 	    continue;
@@ -807,6 +808,14 @@ static void skipInstallFiles(const rpmts ts, rpmfiles files, rpmfs fs)
 		continue;
 	    }
 	}
+
+	/*
+	 * In general, excluding license files is not permitted. In case
+	 * of SKIPNETSHARED and SKIPCOLOR the file is expected to be
+	 * there via other means however so that is ok.
+	 */
+	if (rpmfiFFlags(fi) & RPMFILE_LICENSE)
+	    continue;
 
 	/*
 	 * Skip i18n language specific files.
