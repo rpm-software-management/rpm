@@ -680,9 +680,9 @@ static void ensureOlder(rpmstrPool tspool, const rpmte p, const Header h)
  * netshardpath and though should be excluded.
  * @param ts            transaction set
  * @param fi            file info set
- * @returns pointer to matching path or NULL
+ * @returns 1 if path is net shared path, otherwise 0
  */
-static char ** matchNetsharedpath(const rpmts ts, rpmfi fi)
+static int matchNetsharedpath(const rpmts ts, rpmfi fi)
 {
     char ** nsp;
     const char * dn, * bn;
@@ -720,13 +720,12 @@ static char ** matchNetsharedpath(const rpmts ts, rpmfi fi)
 
 	break;
     }
-    return nsp;
+    return (nsp != NULL && nsp != '\0');
 }
 
 static void skipEraseFiles(const rpmts ts, rpmfiles files, rpmfs fs)
 {
     int i;
-    char ** nsp;
     /*
      * Skip net shared paths.
      * Net shared paths are not relative to the current root (though
@@ -736,10 +735,8 @@ static void skipEraseFiles(const rpmts ts, rpmfiles files, rpmfs fs)
 	rpmfi fi = rpmfilesIter(files, RPMFI_ITER_FWD);
 	while ((i = rpmfiNext(fi)) >= 0)
 	{
-	    nsp = matchNetsharedpath(ts, fi);
-	    if (nsp && *nsp) {
+	    if (matchNetsharedpath(ts, fi))
 		rpmfsSetAction(fs, i, FA_SKIPNETSHARED);
-	    }
 	}
 	rpmfiFree(fi);
     }
@@ -774,7 +771,6 @@ static void skipInstallFiles(const rpmts ts, rpmfiles files, rpmfs fs)
 
     fi = rpmfiInit(fi, 0);
     while ((i = rpmfiNext(fi)) >= 0) {
-	char ** nsp;
 	const char *flangs;
 
 	ix = rpmfiDX(fi);
@@ -801,8 +797,7 @@ static void skipInstallFiles(const rpmts ts, rpmfiles files, rpmfs fs)
 	 * they do need to take package relocations into account).
 	 */
 	if (ts->netsharedPaths) {
-	    nsp = matchNetsharedpath(ts, fi);
-	    if (nsp && *nsp) {
+	    if (matchNetsharedpath(ts, fi)) {
 		drc[ix]--;	dff[ix] = 1;
 		rpmfsSetAction(fs, i, FA_SKIPNETSHARED);
 		continue;
