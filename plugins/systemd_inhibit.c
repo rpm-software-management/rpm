@@ -50,8 +50,13 @@ static int inhibit(void)
 	dbus_message_unref(reply);
     }
     
-    if (dbus_error_is_set(&err))
+    if (dbus_error_is_set(&err)) {
+	rpmlog(RPMLOG_WARNING,
+	       "Unable to get systemd shutdown inhibition lock: %s\n",
+		err.message);
 	dbus_error_free(&err);
+    }
+
     if (bus)
 	dbus_connection_close(bus);
 
@@ -78,10 +83,7 @@ static rpmRC systemd_inhibit_tsm_pre(rpmPlugin plugin, rpmts ts)
 
     lock_fd = inhibit();
 
-    if (lock_fd < 0) {
-	rpmlog(RPMLOG_WARNING,
-	       "Unable to get systemd shutdown inhibition lock\n");
-    } else {
+    if (lock_fd >= 0) {
 	rpmlog(RPMLOG_DEBUG, "System shutdown blocked (fd %d)\n", lock_fd);
     }
 
