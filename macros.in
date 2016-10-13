@@ -123,6 +123,9 @@
 # %if ! %{with static}
 # ...
 # %endif
+# %if %{with static}
+# ...
+# %endif
 # %{?with_static: ... }
 # %{!?with_static: ... }
 # %{?with_extra_fonts: ... }
