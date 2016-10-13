@@ -42,33 +42,6 @@ typedef enum rpmlogLvl_e {
 #define	RPMLOG_PRI(p)	((p) & RPMLOG_PRIMASK)
 #define	RPMLOG_MAKEPRI(fac, pri)	((((unsigned)(fac)) << 3) | (pri))
 
-#ifdef RPMLOG_NAMES
-#define	_RPMLOG_NOPRI	0x10	/* the "no priority" priority */
-				/* mark "facility" */
-#define	_RPMLOG_MARK	RPMLOG_MAKEPRI(RPMLOG_NFACILITIES, 0)
-typedef struct _rpmcode {
-	const char	*c_name;
-	int		c_val;
-} RPMCODE;
-
-RPMCODE rpmprioritynames[] =
-  {
-    { "alert",	RPMLOG_ALERT },
-    { "crit",	RPMLOG_CRIT },
-    { "debug",	RPMLOG_DEBUG },
-    { "emerg",	RPMLOG_EMERG },
-    { "err",	RPMLOG_ERR },
-    { "error",	RPMLOG_ERR },		/* DEPRECATED */
-    { "info",	RPMLOG_INFO },
-    { "none",	_RPMLOG_NOPRI },	/* INTERNAL */
-    { "notice",	RPMLOG_NOTICE },
-    { "panic",	RPMLOG_EMERG },		/* DEPRECATED */
-    { "warn",	RPMLOG_WARNING },	/* DEPRECATED */
-    { "warning",RPMLOG_WARNING },
-    { NULL, -1 }
-  };
-#endif
-
 /** \ingroup rpmlog
  * facility codes
  */
@@ -103,35 +76,6 @@ typedef	enum rpmlogFac_e {
 #define	RPMLOG_FACMASK	0x03f8	/*!< mask to extract facility part */
 #define	RPMLOG_FAC(p)	(((p) & RPMLOG_FACMASK) >> 3)
 
-
-#ifdef RPMLOG_NAMES
-RPMCODE facilitynames[] =
-  {
-    { "auth",	RPMLOG_AUTH },
-    { "authpriv",RPMLOG_AUTHPRIV },
-    { "cron",	RPMLOG_CRON },
-    { "daemon",	RPMLOG_DAEMON },
-    { "ftp",	RPMLOG_FTP },
-    { "kern",	RPMLOG_KERN },
-    { "lpr",	RPMLOG_LPR },
-    { "mail",	RPMLOG_MAIL },
-    { "mark",	_RPMLOG_MARK },		/* INTERNAL */
-    { "news",	RPMLOG_NEWS },
-    { "security",RPMLOG_AUTH },		/* DEPRECATED */
-    { "syslog",	RPMLOG_SYSLOG },
-    { "user",	RPMLOG_USER },
-    { "uucp",	RPMLOG_UUCP },
-    { "local0",	RPMLOG_LOCAL0 },
-    { "local1",	RPMLOG_LOCAL1 },
-    { "local2",	RPMLOG_LOCAL2 },
-    { "local3",	RPMLOG_LOCAL3 },
-    { "local4",	RPMLOG_LOCAL4 },
-    { "local5",	RPMLOG_LOCAL5 },
-    { "local6",	RPMLOG_LOCAL6 },
-    { "local7",	RPMLOG_LOCAL7 },
-    { NULL, -1 }
-  };
-#endif
 
 /*
  * arguments to setlogmask.
