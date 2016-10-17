@@ -1,6 +1,7 @@
 .*
 !.tx
 !.gitignore
+!.mailmap
 /config*
 !configure.ac
 /db3
