@@ -1,39 +1,148 @@
-Work on RPM was done primarily by:
+Initial work on RPM was done primarily by:
 
-	Erik Troan
 	Marc Ewing
+	Erik Troan
 
-Significant code, ideas, or porting help have been contributed by:
+Over the years, code, documentation, ideas, porting help, tests etc 
+have been contributed by:
 
+	Tero Aho
 	Stuart Anderson
 	Ed Bailey
 	Donnie Barnes
+	Stefan Berger
+	Eric W. Biederman
+	Anders F Bjorklund
+	Frederic Bonnard
 	Nikita Borisov
+	Pádraig Brady
+	Tony Breeds
 	Till Bubeck
+	Héctor Daniel Cabrera
+	Yuri Chornoivan
+	Michal Čihař
+	Archie Cobbs
+	Ralf Corsépius
 	Kit Cosper
+	Jean Delvare
 	Kristof Depraetere
         Alex deVries
+	Johannes Dewender
+	Michal Domonkos
+	Piotr Drąg
+	Boris Egorov
 	Karl Eichwalder
+	Peter Eisentraut
+	Giulio Eulisse
+	Christophe Fergeau
+	Florian Festi
+	Jakub Filak
+	Brian Elliott Finley
 	Fred Fish
+	Nikola Forró
+	Gleb Fotengauer-Malinovskiy
 	David Fox
-	Joseph L. Hartmann, Jr
+	Rafael Garcia-Suarez
+	Alexey Gladkov
+	Igor Gnatenko
+	Neal Gompa
+	Guido Grazioli
+	David Greaves
+	Aron Griffis
+	Fionnuala Gunter
+	Anssi Hannula
+	Richard Hughes
+	Tom Hughes
+	Thomas Jarosch
+	Zbigniew Jędrzejewski-Szmek
+	Jakub Jelinek
 	Jeff Johnson
 	Michael K. Johnson
+	Tadashi Jokagi
+	Peter Jones
+	Richard W.M. Jones
+	Guillem Jover
+	Joseph L. Hartmann, Jr
+	Juha Kallioinen
+	Alexandr D. Kanevskiy
 	Eugene Kanter
+	Lubos Kardos
+	Per Øyvind Karlsen
+	Jiri Kastner
+	Phil Knirsch
+	Ales Kozumplik
+	Jan Kratochvil
 	Toshio Kuratomi
+	Tim Landscheidt
 	Hermann Lauer
+	Steve Lawrence
+	Alec Leamas
+	Dimitri John Ledkov
 	Elliot Lee
+	Dominique Leuenberger
 	Benedict Lofstedt
+	Till Maas
+	David Malcolm
+	Michal Marek
+	Panu Matilainen
 	Jared Mauch
+	Roland McGrath
+	Kyle McMartin
+	Joshua Megerman
 	Nigel Metheringham
+	Tomas Mlcoch
 	Horacio Rodriguez Montero
 	Tim Mooney
+	David Martínez Moreno
 	Eric Mumpower
+	Paul Nasrat
+	Gustavo Niemeyer
+	Jindrich Novy
 	Michael Nyquisk
+	Stanislav Ochotnicky
+	Denis Ollier
+	Vít Ondruch
+	Rakesh Pandit
+	Thomas Petazzoni
+	Trần Ngọc Quân
+	Jerome Quelin
+	Pavel Raiskup
+	Elena Reshetova
+	Lubomir Rintel
+	Pavol Rusnak
+	Kamil Rytarowski
+	Mark Salter
 	Steve Sanbeg
 	Tyson Sawyer
+	Andreas Scherer
+	Michal Schmidt
+	Michael Schroeder
+	Andreas Schwab
 	Christopher Seawood
+	Misha Shnurapet
+	Kirill A. Shutemov
+	Jan Silhan
+	Taylon Silmer
+	Mukund Sivaraman
+	Ville Skyttä
+	Jeff Smith
 	Johnie Stafford
-	Gary Thomas
+	Hajime Taira
 	Bob Tanner
+	Pascal Terjan
+	Gary Thomas
+	Jeff Tickle
+	Michal Toman
+	Alexey Tourbin
+	Tom Tromey
+	Chip Turner
+	Vincent Untz
+	Pavlina Varekova
+	Nicolas Vigier
+	Thierry Vignaud
+	Jonathan Wakely
+	Colin Walters
+	Florian Weimer
 	Karsten Weiss
+	Mark Wielaard
+	Mimi Zohar
