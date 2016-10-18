@@ -885,6 +885,13 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	    goto exit;
 	}
 	if (spec->packages == pkg) {
+	    if (spec->BANames) {
+		rpmlog(RPMLOG_ERR,
+		       _("line %d: Duplicate BuildArch entry: %s\n"),
+		       spec->lineNum, spec->line);
+		BANames = _free(BANames);
+		goto exit;
+	    }
 	    spec->BACount = BACount;
 	    spec->BANames = BANames;
 	} else {
