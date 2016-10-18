@@ -720,7 +720,7 @@ static int matchNetsharedpath(const rpmts ts, rpmfi fi)
 
 	break;
     }
-    return (nsp != NULL && nsp != '\0');
+    return (nsp != NULL && *nsp != NULL);
 }
 
 static void skipEraseFiles(const rpmts ts, rpmfiles files, rpmfs fs)
