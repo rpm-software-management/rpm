@@ -194,7 +194,8 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
 {
     entryInfo pe = (entryInfo) pev;
     entryInfo info = iv;
-    int i;
+    int i, tsize;
+    int32_t end = 0;
 
     for (i = 0; i < il; i++) {
 	info->tag = ntohl(pe[i].tag);
@@ -204,16 +205,26 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
 	    info->offset = -info->offset;
 	info->count = ntohl(pe[i].count);
 
+	/* Previous data must not overlap */
+	if (end > info->offset)
+	    return i;
+
 	if (hdrchkType(info->type))
 	    return i;
 	if (hdrchkAlign(info->type, info->offset))
 	    return i;
-	if (hdrchkRange(dl, info->offset))
-	    return i;
-	if (hdrchkData(info->count))
-	    return i;
 
+	/* For string types we can only check the array size is sane */
+	tsize = typeSizes[info->type];
+	if (tsize < 1)
+	    tsize = 1;
+
+	/* Verify the data actually fits */
+	end = info->offset + (info->count * tsize);
+	if (hdrchkRange(dl, end))
+	    return i;
     }
+
     return -1;
 }
 
