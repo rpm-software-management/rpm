@@ -180,10 +180,11 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 	switch (einfo.tag) {
 	case RPMTAG_SHA1HEADER: {
 	    size_t blen = 0;
-	    unsigned const char * b;
+	    unsigned const char * b = dataStart + einfo.offset;
+	    unsigned const char * e = dataStart + dl;
 	    if (vsflags & RPMVSF_NOSHA1HEADER)
 		break;
-	    for (b = dataStart + einfo.offset; *b != '\0'; b++) {
+	    for (; b < e && *b != '\0'; b++) {
 		if (strchr("0123456789abcdefABCDEF", *b) == NULL)
 		    break;
 		blen++;
