@@ -318,7 +318,7 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
     regionEnd += REGION_TAG_COUNT;
     rdl = regionEnd - dataStart;
 
-    if (headerVerifyInfo(1, il * sizeof(*pe), &info, &entry->info, 1) != -1 ||
+    if (headerVerifyInfo(1, il * sizeof(*pe) + REGION_TAG_COUNT, &info, &entry->info, 1) != -1 ||
 	!(entry->info.tag == regionTag
        && entry->info.type == REGION_TAG_TYPE
        && entry->info.count == REGION_TAG_COUNT))
