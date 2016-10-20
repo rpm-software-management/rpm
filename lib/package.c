@@ -375,6 +375,18 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 			    &entry, il, dl, pe, dataStart,
 			    &ril, &rdl, &buf);
 
+    /* Sanity check the rest of the header structure. */
+    if (rc != RPMRC_FAIL) {
+	int xx = headerVerifyInfo(ril-1, dl, pe+1, &entry.info, 0);
+	if (xx != -1) {
+	    rasprintf(&buf,
+		    _("tag[%d]: BAD, tag %d type %d offset %d count %d"),
+		    xx+1, entry.info.tag, entry.info.type,
+		    entry.info.offset, entry.info.count);
+	    rc = RPMRC_FAIL;
+	}
+    }
+
     /* Verify header-only digest/signature if there is one we can use. */
     if (rc == RPMRC_OK) {
 	rc = headerSigVerify(keyring, vsflags,
@@ -382,22 +394,12 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 			     pe, dataStart, &buf);
     }
 
-exit:
-    /* If no header-only digest/signature, then do simple sanity check. */
-    if (rc == RPMRC_NOTFOUND) {
-	int xx = headerVerifyInfo(ril-1, dl, pe+1, &entry.info, 0);
-	if (xx != -1) {
-	    rasprintf(&buf,
-		_("tag[%d]: BAD, tag %d type %d offset %d count %d"),
-		xx+1, entry.info.tag, entry.info.type,
-		entry.info.offset, entry.info.count);
-	    rc = RPMRC_FAIL;
-	} else {
-	    rasprintf(&buf, "Header sanity check: OK");
-	    rc = RPMRC_OK;
-	}
+    if (rc == RPMRC_NOTFOUND && buf == NULL) {
+	rasprintf(&buf, "Header sanity check: OK");
+	rc = RPMRC_OK;
     }
 
+exit:
     if (msg) 
 	*msg = buf;
     else
