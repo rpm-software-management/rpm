@@ -583,14 +583,7 @@ int rpmcliQuery(rpmts ts, QVA_t qva, char * const * argv)
 	qva->qva_queryFormat = fmt;
     }
 
-    if (!(qva->qva_source & RPMQV_RPM) &&
-	rpmExpandNumeric("%{?_vsflags_query_rpmdb:1}")) {
-
-	vsflags = rpmExpandNumeric("%{?_vsflags_query_rpmdb}");
-    } else {
-	vsflags = rpmExpandNumeric("%{?_vsflags_query}");
-    }
-
+    vsflags = rpmExpandNumeric("%{?_vsflags_query}");
     if (rpmcliQueryFlags & VERIFY_DIGEST)
 	vsflags |= _RPMVSF_NODIGESTS;
     if (rpmcliQueryFlags & VERIFY_SIGNATURE)
