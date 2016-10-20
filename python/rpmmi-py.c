@@ -1,6 +1,7 @@
 #include "rpmsystem-py.h"
 
 #include <rpm/rpmdb.h>
+#include <rpm/header.h>
 
 #include "rpmmi-py.h"
 #include "header-py.h"
@@ -74,6 +75,7 @@ rpmmi_iternext(rpmmiObject * s)
 	s->mi = rpmdbFreeIterator(s->mi);
 	return NULL;
     }
+    headerLink(h);
     return hdr_Wrap(&hdr_Type, h);
 }
 
