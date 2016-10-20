@@ -6,6 +6,7 @@
  */
 
 #include <rpm/header.h>
+#include <netinet/in.h>
 
 /** \ingroup header
  * Description of tag data.
@@ -64,6 +65,15 @@ struct indexEntry_s {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/* convert entry info to host endianess */
+static inline void ei2h(entryInfo pe, entryInfo info)
+{
+    info->tag = ntohl(pe->tag);
+    info->type = ntohl(pe->type);
+    info->offset = ntohl(pe->offset);
+    info->count = ntohl(pe->count);
+}
 
 rpmRC headerVerifyRegion(rpmTagVal regionTag,
                         struct indexEntry_s *entry, int il, int dl,

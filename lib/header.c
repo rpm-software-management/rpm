@@ -200,12 +200,9 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
     int32_t end = 0;
 
     for (i = 0; i < il; i++) {
-	info->tag = ntohl(pe[i].tag);
-	info->type = ntohl(pe[i].type);
-	info->offset = ntohl(pe[i].offset);
+	ei2h(&pe[i], info);
 	if (negate)
 	    info->offset = -info->offset;
-	info->count = ntohl(pe[i].count);
 
 	/* Previous data must not overlap */
 	if (end > info->offset)
@@ -427,10 +424,7 @@ static int regionSwab(indexEntry entry, int il, int dl,
     for (; il > 0; il--, pe++) {
 	struct indexEntry_s ie;
 
-	ie.info.tag = ntohl(pe->tag);
-	ie.info.type = ntohl(pe->type);
-	ie.info.count = ntohl(pe->count);
-	ie.info.offset = ntohl(pe->offset);
+	ei2h(pe, &ie.info);
 
 	if (hdrchkType(ie.info.type))
 	    return -1;
