@@ -324,10 +324,12 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
 	goto exit;
     }
 
-    /* Is the no. of tags in the region less than the total no. of tags? */
+    /* Does the region actually fit within the header? */
     ril = einfo.offset/sizeof(*pe);
-    if ((einfo.offset % sizeof(*pe)) || ril < 0 || ril > il) {
-	rasprintf(buf, _("region size: BAD, ril(%d) > il(%d)"), ril, il);
+    if ((einfo.offset % sizeof(*pe)) || hdrchkRange(il, ril) ||
+					hdrchkRange(dl, rdl)) {
+	rasprintf(buf, _("region %d size: BAD, ril %d il %d rdl %d dl %d"),
+			regionTag, ril, il, rdl, dl);
 	goto exit;
     }
 
