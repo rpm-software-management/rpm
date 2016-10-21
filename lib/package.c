@@ -390,7 +390,7 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     }
 
     /* Verify header-only digest/signature if there is one we can use. */
-    if (rc == RPMRC_OK) {
+    if (rc == RPMRC_OK && il > ril) {
 	rc = headerSigVerify(keyring, vsflags,
 			     il, dl, ril, rdl,
 			     pe, dataStart, &buf);
