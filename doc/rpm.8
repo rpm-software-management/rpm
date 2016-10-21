@@ -63,7 +63,7 @@ rpm \- RPM Package Manager
 .SS "query-options"
 .PP
 General:
- [\fB--changelog\fR]  [\fB--dupes\fR] [\fB-i,--info\fR]
+ [\fB--changelog\fR] [\fB--changes\fR]  [\fB--dupes\fR] [\fB-i,--info\fR]
  [\fB--last\fR] [\fB--qf,--queryformat \fIQUERYFMT\fB\fR] [\fB--xml\fR]
 .PP
 Dependencies:
@@ -625,6 +625,9 @@ Query all packages that enhance \fICAPABILITY\fR.
 .TP
 \fB--changelog\fR
 Display change information for the package.
+.TP
+\fB--changes\fR
+Display change information for the package with full time stamps.
 .TP
 \fB-c, --configfiles\fR
 List only configuration files (implies \fB-l\fR).
