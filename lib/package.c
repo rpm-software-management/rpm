@@ -316,10 +316,12 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
     regionEnd += REGION_TAG_COUNT;
     rdl = regionEnd - dataStart;
 
-    if (headerVerifyInfo(1, il * sizeof(*pe) + REGION_TAG_COUNT, &trailer, &einfo, 1) != -1 ||
-	!(einfo.tag == regionTag
-       && einfo.type == REGION_TAG_TYPE
-       && einfo.count == REGION_TAG_COUNT))
+    ei2h(&trailer, &einfo);
+    /* Trailer offset is negative and has a special meaning */
+    einfo.offset = -einfo.offset;
+    if (!(einfo.tag == regionTag &&
+	  einfo.type == REGION_TAG_TYPE &&
+	  einfo.count == REGION_TAG_COUNT))
     {
 	rasprintf(buf, 
 		_("region trailer: BAD, tag %d type %d offset %d count %d"),
@@ -330,7 +332,7 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
 
     /* Is the no. of tags in the region less than the total no. of tags? */
     ril = einfo.offset/sizeof(*pe);
-    if ((einfo.offset % sizeof(*pe)) || ril > il) {
+    if ((einfo.offset % sizeof(*pe)) || ril < 0 || ril > il) {
 	rasprintf(buf, _("region size: BAD, ril(%d) > il(%d)"), ril, il);
 	goto exit;
     }
