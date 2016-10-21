@@ -261,12 +261,12 @@ exit:
 }
 
 rpmRC headerVerifyRegion(rpmTagVal regionTag,
-			struct indexEntry_s *entry, int il, int dl,
-			entryInfo pe, unsigned char *dataStart,
+			int il, int dl, entryInfo pe, unsigned char *dataStart,
 			int *rilp, int *rdlp, char **buf)
 {
     rpmRC rc = RPMRC_FAIL;
     struct entryInfo_s trailer;
+    struct indexEntry_s entry_s, *entry = &entry_s;
     unsigned char * regionEnd = NULL;
     int32_t ril = 0;
     int32_t rdl = 0;
@@ -358,7 +358,6 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     entryInfo pe = (entryInfo) &ei[2];
     int32_t pvlen = sizeof(il) + sizeof(dl) + (il * sizeof(*pe)) + dl;
     unsigned char * dataStart = (unsigned char *) (pe + il);
-    struct indexEntry_s entry;
     int32_t ril = 0;
     int32_t rdl = 0;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
@@ -371,8 +370,7 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     }
 
     /* Verify header immutable region if there is one */
-    rc = headerVerifyRegion(RPMTAG_HEADERIMMUTABLE,
-			    &entry, il, dl, pe, dataStart,
+    rc = headerVerifyRegion(RPMTAG_HEADERIMMUTABLE, il, dl, pe, dataStart,
 			    &ril, &rdl, &buf);
 
     /* Sanity check the rest of the header structure. */

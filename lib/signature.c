@@ -142,7 +142,6 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     int32_t * ei = NULL;
     entryInfo pe;
     unsigned int nb, uc;
-    struct indexEntry_s entry;
     unsigned char * dataStart;
     Header sigh = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
@@ -178,8 +177,6 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	goto exit;
     }
 
-    memset(&entry, 0, sizeof(entry));
-
     nb = (il * sizeof(struct entryInfo_s)) + dl;
     uc = sizeof(il) + sizeof(dl) + nb;
     ei = xmalloc(uc);
@@ -194,8 +191,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     }
     
     /* Verify header immutable region if there is one */
-    xx = headerVerifyRegion(RPMTAG_HEADERSIGNATURES,
-			    &entry, il, dl, pe, dataStart,
+    xx = headerVerifyRegion(RPMTAG_HEADERSIGNATURES, il, dl, pe, dataStart,
 			    NULL, NULL, &buf);
     /* Not found means a legacy V3 package with no immutable region */
     if (xx != RPMRC_OK && xx != RPMRC_NOTFOUND)

@@ -76,8 +76,7 @@ static inline void ei2h(entryInfo pe, entryInfo info)
 }
 
 rpmRC headerVerifyRegion(rpmTagVal regionTag,
-                        struct indexEntry_s *entry, int il, int dl,
-                        entryInfo pe, unsigned char *dataStart,
+                        int il, int dl, entryInfo pe, unsigned char *dataStart,
                         int *ril, int *rdl, char **buf);
 
 
