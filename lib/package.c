@@ -265,8 +265,7 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
 			int *rilp, int *rdlp, char **buf)
 {
     rpmRC rc = RPMRC_FAIL;
-    struct entryInfo_s trailer;
-    struct indexEntry_s entry_s, *entry = &entry_s;
+    struct entryInfo_s trailer, einfo;
     unsigned char * regionEnd = NULL;
     int32_t ril = 0;
     int32_t rdl = 0;
@@ -277,63 +276,61 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
 	goto exit;
     }
 
-    memset(entry, 0, sizeof(*entry));
-
     /* Check (and convert) the 1st tag element. */
-    if (headerVerifyInfo(1, dl, pe, &entry->info, 0) != -1) {
+    if (headerVerifyInfo(1, dl, pe, &einfo, 0) != -1) {
 	rasprintf(buf, _("tag[%d]: BAD, tag %d type %d offset %d count %d"),
-		0, entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		0, einfo.tag, einfo.type,
+		einfo.offset, einfo.count);
 	goto exit;
     }
 
     /* Is there an immutable header region tag? */
-    if (!(entry->info.tag == regionTag)) {
+    if (!(einfo.tag == regionTag)) {
 	rc = RPMRC_NOTFOUND;
 	goto exit;
     }
 
     /* Is the region tag sane? */
-    if (!(entry->info.type == REGION_TAG_TYPE &&
-	  entry->info.count == REGION_TAG_COUNT)) {
+    if (!(einfo.type == REGION_TAG_TYPE &&
+	  einfo.count == REGION_TAG_COUNT)) {
 	rasprintf(buf,
 		_("region tag: BAD, tag %d type %d offset %d count %d"),
-		entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		einfo.tag, einfo.type,
+		einfo.offset, einfo.count);
 	goto exit;
     }
 
     /* Is the trailer within the data area? */
-    if (entry->info.offset + REGION_TAG_COUNT > dl) {
+    if (einfo.offset + REGION_TAG_COUNT > dl) {
 	rasprintf(buf, 
 		_("region offset: BAD, tag %d type %d offset %d count %d"),
-		entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		einfo.tag, einfo.type,
+		einfo.offset, einfo.count);
 	goto exit;
     }
 
     /* Is there an immutable header region tag trailer? */
     memset(&trailer, 0, sizeof(trailer));
-    regionEnd = dataStart + entry->info.offset;
+    regionEnd = dataStart + einfo.offset;
     (void) memcpy(&trailer, regionEnd, REGION_TAG_COUNT);
     regionEnd += REGION_TAG_COUNT;
     rdl = regionEnd - dataStart;
 
-    if (headerVerifyInfo(1, il * sizeof(*pe) + REGION_TAG_COUNT, &trailer, &entry->info, 1) != -1 ||
-	!(entry->info.tag == regionTag
-       && entry->info.type == REGION_TAG_TYPE
-       && entry->info.count == REGION_TAG_COUNT))
+    if (headerVerifyInfo(1, il * sizeof(*pe) + REGION_TAG_COUNT, &trailer, &einfo, 1) != -1 ||
+	!(einfo.tag == regionTag
+       && einfo.type == REGION_TAG_TYPE
+       && einfo.count == REGION_TAG_COUNT))
     {
 	rasprintf(buf, 
 		_("region trailer: BAD, tag %d type %d offset %d count %d"),
-		entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		einfo.tag, einfo.type,
+		einfo.offset, einfo.count);
 	goto exit;
     }
 
     /* Is the no. of tags in the region less than the total no. of tags? */
-    ril = entry->info.offset/sizeof(*pe);
-    if ((entry->info.offset % sizeof(*pe)) || ril > il) {
+    ril = einfo.offset/sizeof(*pe);
+    if ((einfo.offset % sizeof(*pe)) || ril > il) {
 	rasprintf(buf, _("region size: BAD, ril(%d) > il(%d)"), ril, il);
 	goto exit;
     }
