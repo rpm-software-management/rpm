@@ -66,7 +66,7 @@ static inline void ei2h(entryInfo pe, entryInfo info)
 
 rpmRC headerVerifyRegion(rpmTagVal regionTag,
                         int il, int dl, entryInfo pe, unsigned char *dataStart,
-                        int *ril, int *rdl, char **buf);
+                        int exact_size, int *ril, int *rdl, char **buf);
 
 
 

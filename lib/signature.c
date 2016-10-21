@@ -192,7 +192,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     
     /* Verify header immutable region if there is one */
     xx = headerVerifyRegion(RPMTAG_HEADERSIGNATURES, il, dl, pe, dataStart,
-			    NULL, NULL, &buf);
+			    1, NULL, NULL, &buf);
     /* Not found means a legacy V3 package with no immutable region */
     if (xx != RPMRC_OK && xx != RPMRC_NOTFOUND)
 	goto exit;

@@ -262,7 +262,7 @@ exit:
 
 rpmRC headerVerifyRegion(rpmTagVal regionTag,
 			int il, int dl, entryInfo pe, unsigned char *dataStart,
-			int *rilp, int *rdlp, char **buf)
+			int exact_size, int *rilp, int *rdlp, char **buf)
 {
     rpmRC rc = RPMRC_FAIL;
     struct entryInfo_s trailer, einfo;
@@ -333,6 +333,14 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
 	goto exit;
     }
 
+    /* In package files region size is expected to match header size. */
+    if (exact_size && !(il == ril && dl == rdl)) {
+	rasprintf(buf,
+		_("region %d: tag number mismatch %d ril %d dl %d rdl %d\n"),
+		regionTag, il, ril, dl, rdl);
+	goto exit;
+    }
+
     rc = RPMRC_OK;
     if (rilp)
 	*rilp = ril;
@@ -344,7 +352,8 @@ exit:
 }
 
 static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
-			  const void * uh, size_t uc, char ** msg)
+			  const void * uh, size_t uc, int exact_size,
+			  char ** msg)
 {
     char *buf = NULL;
     int32_t * ei = (int32_t *) uh;
@@ -366,7 +375,7 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 
     /* Verify header immutable region if there is one */
     rc = headerVerifyRegion(RPMTAG_HEADERIMMUTABLE, il, dl, pe, dataStart,
-			    &ril, &rdl, &buf);
+			    exact_size, &ril, &rdl, &buf);
 
     /* Sanity check the rest of the header structure. */
     if (rc != RPMRC_FAIL) {
@@ -408,7 +417,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
 
     rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-    rc = headerVerify(keyring, vsflags, uh, uc, msg);
+    rc = headerVerify(keyring, vsflags, uh, uc, 0, msg);
     rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), uc);
     rpmKeyringFree(keyring);
 
@@ -467,7 +476,7 @@ static rpmRC rpmpkgReadHeader(rpmKeyring keyring, rpmVSFlags vsflags,
     }
 
     /* Sanity check header tags */
-    rc = headerVerify(keyring, vsflags, ei, uc, &buf);
+    rc = headerVerify(keyring, vsflags, ei, uc, 1, &buf);
     if (rc != RPMRC_OK)
 	goto exit;
 
