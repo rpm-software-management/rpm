@@ -279,8 +279,7 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
     /* Check (and convert) the 1st tag element. */
     if (headerVerifyInfo(1, dl, pe, &einfo, 0) != -1) {
 	rasprintf(buf, _("tag[%d]: BAD, tag %d type %d offset %d count %d"),
-		0, einfo.tag, einfo.type,
-		einfo.offset, einfo.count);
+		0, einfo.tag, einfo.type, einfo.offset, einfo.count);
 	goto exit;
     }
 
@@ -291,12 +290,10 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
     }
 
     /* Is the region tag sane? */
-    if (!(einfo.type == REGION_TAG_TYPE &&
-	  einfo.count == REGION_TAG_COUNT)) {
+    if (!(einfo.type == REGION_TAG_TYPE && einfo.count == REGION_TAG_COUNT)) {
 	rasprintf(buf,
 		_("region tag: BAD, tag %d type %d offset %d count %d"),
-		einfo.tag, einfo.type,
-		einfo.offset, einfo.count);
+		einfo.tag, einfo.type, einfo.offset, einfo.count);
 	goto exit;
     }
 
@@ -304,8 +301,7 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
     if (einfo.offset + REGION_TAG_COUNT > dl) {
 	rasprintf(buf, 
 		_("region offset: BAD, tag %d type %d offset %d count %d"),
-		einfo.tag, einfo.type,
-		einfo.offset, einfo.count);
+		einfo.tag, einfo.type, einfo.offset, einfo.count);
 	goto exit;
     }
 
@@ -320,13 +316,11 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
     /* Trailer offset is negative and has a special meaning */
     einfo.offset = -einfo.offset;
     if (!(einfo.tag == regionTag &&
-	  einfo.type == REGION_TAG_TYPE &&
-	  einfo.count == REGION_TAG_COUNT))
+	  einfo.type == REGION_TAG_TYPE && einfo.count == REGION_TAG_COUNT))
     {
 	rasprintf(buf, 
 		_("region trailer: BAD, tag %d type %d offset %d count %d"),
-		einfo.tag, einfo.type,
-		einfo.offset, einfo.count);
+		einfo.tag, einfo.type, einfo.offset, einfo.count);
 	goto exit;
     }
 
