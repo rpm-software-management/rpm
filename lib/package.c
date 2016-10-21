@@ -266,7 +266,7 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
 			int *rilp, int *rdlp, char **buf)
 {
     rpmRC rc = RPMRC_FAIL;
-    struct entryInfo_s info;
+    struct entryInfo_s trailer;
     unsigned char * regionEnd = NULL;
     int32_t ril = 0;
     int32_t rdl = 0;
@@ -313,13 +313,13 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
     }
 
     /* Is there an immutable header region tag trailer? */
-    memset(&info, 0, sizeof(info));
+    memset(&trailer, 0, sizeof(trailer));
     regionEnd = dataStart + entry->info.offset;
-    (void) memcpy(&info, regionEnd, REGION_TAG_COUNT);
+    (void) memcpy(&trailer, regionEnd, REGION_TAG_COUNT);
     regionEnd += REGION_TAG_COUNT;
     rdl = regionEnd - dataStart;
 
-    if (headerVerifyInfo(1, il * sizeof(*pe) + REGION_TAG_COUNT, &info, &entry->info, 1) != -1 ||
+    if (headerVerifyInfo(1, il * sizeof(*pe) + REGION_TAG_COUNT, &trailer, &entry->info, 1) != -1 ||
 	!(entry->info.tag == regionTag
        && entry->info.type == REGION_TAG_TYPE
        && entry->info.count == REGION_TAG_COUNT))
