@@ -22,17 +22,6 @@ struct entryInfo_s {
 #define	REGION_TAG_TYPE		RPM_BIN_TYPE
 #define	REGION_TAG_COUNT	sizeof(struct entryInfo_s)
 
-/** \ingroup header
- * A single tag from a Header.
- */
-typedef struct indexEntry_s * indexEntry;
-struct indexEntry_s {
-    struct entryInfo_s info;	/*!< Description of tag data. */
-    rpm_data_t data; 		/*!< Location of tag data. */
-    int length;			/*!< No. bytes of data. */
-    int rdlen;			/*!< No. bytes of data in region. */
-};
-
 /**
  * Sanity check on no. of tags.
  * This check imposes a limit of 65K tags, more than enough.

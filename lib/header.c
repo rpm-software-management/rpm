@@ -83,6 +83,17 @@ enum headerFlags_e {
 typedef rpmFlags headerFlags;
 
 /** \ingroup header
+ * A single tag from a Header.
+ */
+typedef struct indexEntry_s * indexEntry;
+struct indexEntry_s {
+    struct entryInfo_s info;	/*!< Description of tag data. */
+    rpm_data_t data; 		/*!< Location of tag data. */
+    int length;			/*!< No. bytes of data. */
+    int rdlen;			/*!< No. bytes of data in region. */
+};
+
+/** \ingroup header
  * The Header data structure.
  */
 struct headerToken_s {
