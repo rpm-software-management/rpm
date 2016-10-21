@@ -377,12 +377,12 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 
     /* Sanity check the rest of the header structure. */
     if (rc != RPMRC_FAIL) {
-	int xx = headerVerifyInfo(ril-1, dl, pe+1, &entry.info, 0);
+	struct entryInfo_s info;
+	int xx = headerVerifyInfo(ril-1, dl, pe+1, &info, 0);
 	if (xx != -1) {
 	    rasprintf(&buf,
 		    _("tag[%d]: BAD, tag %d type %d offset %d count %d"),
-		    xx+1, entry.info.tag, entry.info.type,
-		    entry.info.offset, entry.info.count);
+		    xx+1, info.tag, info.type, info.offset, info.count);
 	    rc = RPMRC_FAIL;
 	}
     }
