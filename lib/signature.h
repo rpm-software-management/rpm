@@ -26,12 +26,6 @@ extern "C" {
 #endif
 
 /** \ingroup signature
- * Return new, empty (signature) header instance.
- * @return		signature header
- */
-Header rpmNewSignature(void);
-
-/** \ingroup signature
  * Read (and verify header+payload size) signature header.
  * If an old-style signature is found, we emulate a new style one.
  * @param fd		file handle
@@ -62,13 +56,6 @@ int rpmWriteSignature(FD_t fd, Header h);
  */
 rpmRC rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDigParams sig,
 			 DIGEST_CTX ctx, char ** result);
-
-/** \ingroup signature
- * Destroy signature header from package.
- * @param h		signature header
- * @return		NULL always
- */
-Header rpmFreeSignature(Header h);
 
 /** \ingroup signature
  * Generate signature and write to file

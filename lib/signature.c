@@ -279,17 +279,6 @@ int rpmWriteSignature(FD_t fd, Header sigh)
     return rc;
 }
 
-Header rpmNewSignature(void)
-{
-    Header sigh = headerNew();
-    return sigh;
-}
-
-Header rpmFreeSignature(Header sigh)
-{
-    return headerFree(sigh);
-}
-
 rpmRC rpmGenerateSignature(char *SHA1, uint8_t *MD5, rpm_loff_t size,
 				rpm_loff_t payloadSize, FD_t fd)
 {
