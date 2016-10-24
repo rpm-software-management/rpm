@@ -74,6 +74,7 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
  *			0 to run all triggers
  * @param tm		trigger mode, (filetrigger/transfiletrigger)
  */
+RPM_GNUC_INTERNAL
 rpmRC runImmedFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
 			    rpmscriptTriggerModes tm, int upper);
 #ifdef __cplusplus
