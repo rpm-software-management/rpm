@@ -244,7 +244,7 @@ static int indexCmp(const void * avp, const void * bvp)
     return (ap->info.tag - bp->info.tag);
 }
 
-void headerSort(Header h)
+static void headerSort(Header h)
 {
     if (h->sorted != HEADERSORT_INDEX) {
 	qsort(h->index, h->indexUsed, sizeof(*h->index), indexCmp);
@@ -267,7 +267,7 @@ static int offsetCmp(const void * avp, const void * bvp)
     return rc;
 }
 
-void headerUnsort(Header h)
+static void headerUnsort(Header h)
 {
     if (h->sorted != HEADERSORT_OFFSET) {
 	qsort(h->index, h->indexUsed, sizeof(*h->index), offsetCmp);

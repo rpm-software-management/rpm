@@ -55,18 +55,6 @@ Header headerFree( Header h);
 Header headerLink(Header h);
 
 /** \ingroup header
- * Sort tags in header.
- * @param h		header
- */
-void headerSort(Header h);
-
-/** \ingroup header
- * Restore tags in header to original ordering.
- * @param h		header
- */
-void headerUnsort(Header h);
-
-/** \ingroup header
  * Return size of on-disk header representation in bytes.
  * @param h		header
  * @param magicp	include size of 8 bytes for (magic, 0)?
