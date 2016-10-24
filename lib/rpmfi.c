@@ -1595,7 +1595,7 @@ static int iterReadArchiveNext(rpmfi fi);
 static int iterReadArchiveNextContentFirst(rpmfi fi);
 static int iterReadArchiveNextOmitHardlinks(rpmfi fi);
 
-int (*nextfuncs[])(rpmfi fi) = {
+static int (*nextfuncs[])(rpmfi fi) = {
     iterFwd,
     iterBack,
     iterWriteArchiveNext,
