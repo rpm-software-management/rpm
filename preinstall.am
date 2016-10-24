@@ -86,10 +86,6 @@ include/rpm/rpmfiles.h: lib/rpmfiles.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/lib/rpmfiles.h include/rpm/rpmfiles.h
 BUILT_SOURCES += include/rpm/rpmfiles.h
 CLEANFILES += include/rpm/rpmfiles.h
-include/rpm/rpmlegacy.h: lib/rpmlegacy.h include/rpm/$(dirstamp)
-	$(INSTALL_DATA) $(top_srcdir)/lib/rpmlegacy.h include/rpm/rpmlegacy.h
-BUILT_SOURCES += include/rpm/rpmlegacy.h
-CLEANFILES += include/rpm/rpmlegacy.h
 include/rpm/rpmpol.h: lib/rpmpol.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/lib/rpmpol.h include/rpm/rpmpol.h
 BUILT_SOURCES += include/rpm/rpmpol.h
