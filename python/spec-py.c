@@ -19,7 +19,7 @@
  *  For example
  * \code
  *  import rpm
- *  rpm.addMacro("_topdir","/path/to/topdir")
+ *  rpm.rpmPushMacro("_topdir","/path/to/topdir")
  *  s=rpm.spec("foo.spec")
  *  print s.prep()
  * \endcode

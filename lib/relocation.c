@@ -383,10 +383,10 @@ static void rpmInstallLoadMacros(Header h, int define)
 	default:
 	    if (define) {
 		body = rpmtdFormat(&td, RPMTD_FORMAT_STRING, NULL);
-		addMacro(NULL, tagm->macroname, NULL, body, -1);
+		rpmPushMacro(NULL, tagm->macroname, NULL, body, -1);
 		free(body);
 	    } else {
-		delMacro(NULL, tagm->macroname);
+		rpmPopMacro(NULL, tagm->macroname);
 	    }
 	    break;
 	case RPM_NULL_TYPE:

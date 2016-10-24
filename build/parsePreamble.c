@@ -301,11 +301,11 @@ static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag
 
 	rasprintf(&buf, "%s%d",
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
-	addMacro(spec->macros, buf, NULL, body, RMIL_SPEC);
+	rpmPushMacro(spec->macros, buf, NULL, body, RMIL_SPEC);
 	free(buf);
 	rasprintf(&buf, "%sURL%d",
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
-	addMacro(spec->macros, buf, NULL, p->fullSource, RMIL_SPEC);
+	rpmPushMacro(spec->macros, buf, NULL, p->fullSource, RMIL_SPEC);
 	free(buf);
 #ifdef WITH_LUA
 	{
@@ -801,8 +801,8 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	    goto exit;
 	}
 	macro = NULL;
-	delMacro(NULL, "_docdir");
-	addMacro(NULL, "_docdir", NULL, field, RMIL_SPEC);
+	rpmPopMacro(NULL, "_docdir");
+	rpmPushMacro(NULL, "_docdir", NULL, field, RMIL_SPEC);
 	break;
     case RPMTAG_EPOCH: {
 	SINGLE_TOKEN_ONLY;
@@ -917,7 +917,7 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     }
 
     if (macro)
-	addMacro(spec->macros, macro, NULL, field, RMIL_SPEC);
+	rpmPushMacro(spec->macros, macro, NULL, field, RMIL_SPEC);
     rc = RPMRC_OK;
 exit:
     return rc;	
@@ -1155,7 +1155,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	}
 	free(spec->buildRoot);
 	spec->buildRoot = buildRoot;
-	addMacro(spec->macros, "buildroot", NULL, spec->buildRoot, RMIL_SPEC);
+	rpmPushMacro(spec->macros, "buildroot", NULL, spec->buildRoot, RMIL_SPEC);
     }
 
     /* XXX Skip valid arch check if not building binary package */

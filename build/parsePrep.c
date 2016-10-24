@@ -339,7 +339,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 	buildInPlace = 1;
 	spec->buildSubdir = NULL;
     }
-    addMacro(spec->macros, "buildsubdir", NULL, spec->buildSubdir, RMIL_SPEC);
+    rpmPushMacro(spec->macros, "buildsubdir", NULL, spec->buildSubdir, RMIL_SPEC);
     if (buildInPlace) {
 	rc = RPMRC_OK;
 	goto exit;

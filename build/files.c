@@ -2026,7 +2026,7 @@ static rpmRC readFilesManifest(rpmSpec spec, Package pkg, const char *path)
     }
 
     /* XXX unmask %license while parsing files manifest*/
-    addMacro(spec->macros, "license", NULL, "%%license", RMIL_SPEC);
+    rpmPushMacro(spec->macros, "license", NULL, "%%license", RMIL_SPEC);
 
     while (fgets(buf, sizeof(buf), fd)) {
 	if (handleComments(buf))
@@ -2055,7 +2055,7 @@ static rpmRC readFilesManifest(rpmSpec spec, Package pkg, const char *path)
 	rc = RPMRC_OK;
 
 exit:
-    delMacro(NULL, "license");
+    rpmPopMacro(NULL, "license");
     if (fd) fclose(fd);
     free(fn);
     return rc;

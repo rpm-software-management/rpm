@@ -1498,7 +1498,7 @@ rpmDumpMacroTable(rpmMacroContext mc, FILE * fp)
     rpmmctxRelease(mc);
 }
 
-void addMacro(rpmMacroContext mc,
+void rpmPushMacro(rpmMacroContext mc,
 	      const char * n, const char * o, const char * b, int level)
 {
     mc = rpmmctxAcquire(mc);
@@ -1506,7 +1506,7 @@ void addMacro(rpmMacroContext mc,
     rpmmctxRelease(mc);
 }
 
-void delMacro(rpmMacroContext mc, const char * n)
+void rpmPopMacro(rpmMacroContext mc, const char * n)
 {
     mc = rpmmctxAcquire(mc);
     popMacro(mc, n);

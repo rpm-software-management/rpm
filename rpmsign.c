@@ -68,7 +68,7 @@ static int doSign(poptContext optCon)
     }
 
     if (fileSigningKey) {
-	addMacro(NULL, "_file_signing_key", NULL, fileSigningKey, RMIL_GLOBAL);
+	rpmPushMacro(NULL, "_file_signing_key", NULL, fileSigningKey, RMIL_GLOBAL);
     }
 
     if (signfiles) {
@@ -86,7 +86,7 @@ static int doSign(poptContext optCon)
 #endif
 	}
 
-	addMacro(NULL, "_file_signing_key_password", NULL,
+	rpmPushMacro(NULL, "_file_signing_key_password", NULL,
 	    fileSigningKeyPassword, RMIL_CMDLINE);
 	if (fileSigningKeyPassword) {
 	    memset(fileSigningKeyPassword, 0, strlen(fileSigningKeyPassword));

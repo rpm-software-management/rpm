@@ -585,7 +585,7 @@ static rpmRC doReadRC(rpmrcCtx ctx, const char * urlfn)
 		if (option->localize)
 		    *n++ = '_';
 		strcpy(n, option->name);
-		addMacro(NULL, name, NULL, val, RMIL_RPMRC);
+		rpmPushMacro(NULL, name, NULL, val, RMIL_RPMRC);
 		free(name);
 	    }
 	    rpmSetVarArch(ctx, option->var, val, arch);
@@ -716,9 +716,9 @@ static rpmRC rpmPlatform(rpmrcCtx ctx, const char * platform)
 	    if (*p != '\0') *p = '\0';
 	}
 
-	addMacro(NULL, "_host_cpu", NULL, cpu, -1);
-	addMacro(NULL, "_host_vendor", NULL, vendor, -1);
-	addMacro(NULL, "_host_os", NULL, os, -1);
+	rpmPushMacro(NULL, "_host_cpu", NULL, cpu, -1);
+	rpmPushMacro(NULL, "_host_vendor", NULL, vendor, -1);
+	rpmPushMacro(NULL, "_host_os", NULL, os, -1);
 
 	char *plat = rpmExpand("%{_host_cpu}-%{_host_vendor}-%{_host_os}",
 				(gnu && *gnu ? "-" : NULL), gnu, NULL);
@@ -1527,19 +1527,19 @@ static void rpmRebuildTargetVars(rpmrcCtx ctx,
  * XXX All this macro pokery/jiggery could be achieved by doing a delayed
  *	rpmInitMacros(NULL, PER-PLATFORM-MACRO-FILE-NAMES);
  */
-    delMacro(NULL, "_target");
-    addMacro(NULL, "_target", NULL, ct, RMIL_RPMRC);
-    delMacro(NULL, "_target_cpu");
-    addMacro(NULL, "_target_cpu", NULL, ca, RMIL_RPMRC);
-    delMacro(NULL, "_target_os");
-    addMacro(NULL, "_target_os", NULL, co, RMIL_RPMRC);
+    rpmPopMacro(NULL, "_target");
+    rpmPushMacro(NULL, "_target", NULL, ct, RMIL_RPMRC);
+    rpmPopMacro(NULL, "_target_cpu");
+    rpmPushMacro(NULL, "_target_cpu", NULL, ca, RMIL_RPMRC);
+    rpmPopMacro(NULL, "_target_os");
+    rpmPushMacro(NULL, "_target_os", NULL, co, RMIL_RPMRC);
 /*
  * XXX Make sure that per-arch optflags is initialized correctly.
  */
   { const char *optflags = rpmGetVarArch(ctx, RPMVAR_OPTFLAGS, ca);
     if (optflags != NULL) {
-	delMacro(NULL, "optflags");
-	addMacro(NULL, "optflags", NULL, optflags, RMIL_RPMRC);
+	rpmPopMacro(NULL, "optflags");
+	rpmPushMacro(NULL, "optflags", NULL, optflags, RMIL_RPMRC);
     }
   }
 

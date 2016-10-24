@@ -112,7 +112,7 @@ static void rpmcliAllArgCallback( poptContext con,
 	rpmcliConfigured();
 	if (*arg == '%')
 	    arg++;
-	delMacro(NULL, arg);
+	rpmPopMacro(NULL, arg);
 	break;
     case 'E':
 	rpmcliConfigured();
@@ -123,7 +123,7 @@ static void rpmcliAllArgCallback( poptContext con,
 	break;
     case POPT_DBPATH:
 	rpmcliConfigured();
-	addMacro(NULL, "_dbpath", NULL, arg, RMIL_CMDLINE);
+	rpmPushMacro(NULL, "_dbpath", NULL, arg, RMIL_CMDLINE);
 	break;
     case POPT_SHOWVERSION:
 	printVersion(stdout);

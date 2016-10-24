@@ -781,8 +781,8 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
     } else {
 	spec->buildRoot = rpmGetPath("%{?buildroot:%{buildroot}}", NULL);
     }
-    addMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
-    addMacro(NULL, "_licensedir", NULL, "%{_defaultlicensedir}", RMIL_SPEC);
+    rpmPushMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
+    rpmPushMacro(NULL, "_licensedir", NULL, "%{_defaultlicensedir}", RMIL_SPEC);
     spec->recursing = recursing;
     spec->flags = flags;
 
@@ -874,13 +874,13 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 		/* Skip if not arch is not compatible. */
 		if (!rpmMachineScore(RPM_MACHTABLE_BUILDARCH, spec->BANames[x]))
 		    continue;
-		addMacro(NULL, "_target_cpu", NULL, spec->BANames[x], RMIL_RPMRC);
+		rpmPushMacro(NULL, "_target_cpu", NULL, spec->BANames[x], RMIL_RPMRC);
 		spec->BASpecs[index] = parseSpec(specFile, flags, buildRoot, 1);
 		if (spec->BASpecs[index] == NULL) {
 			spec->BACount = index;
 			goto errxit;
 		}
-		delMacro(NULL, "_target_cpu");
+		rpmPopMacro(NULL, "_target_cpu");
 		index++;
 	    }
 

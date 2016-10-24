@@ -257,8 +257,8 @@ static int runGPG(sigTarget sigt, const char *sigfile)
 
     namedPipeName = mkTempFifo();
 
-    addMacro(NULL, "__plaintext_filename", NULL, namedPipeName, -1);
-    addMacro(NULL, "__signature_filename", NULL, sigfile, -1);
+    rpmPushMacro(NULL, "__plaintext_filename", NULL, namedPipeName, -1);
+    rpmPushMacro(NULL, "__signature_filename", NULL, sigfile, -1);
 
     if (!(pid = fork())) {
 	char *const *av;
@@ -279,8 +279,8 @@ static int runGPG(sigTarget sigt, const char *sigfile)
 	_exit(EXIT_FAILURE);
     }
 
-    delMacro(NULL, "__plaintext_filename");
-    delMacro(NULL, "__signature_filename");
+    rpmPopMacro(NULL, "__plaintext_filename");
+    rpmPopMacro(NULL, "__signature_filename");
 
     fnamedPipe = Fopen(namedPipeName, "w");
     if (!fnamedPipe) {
@@ -521,7 +521,7 @@ static rpmRC replaceSigDigests(FD_t fd, const char *rpm, Header *sigp,
     }
 
     /* Set reserved space to 0 */
-    addMacro(NULL, "__gpg_reserved_space", NULL, 0, RMIL_GLOBAL);
+    rpmPushMacro(NULL, "__gpg_reserved_space", NULL, 0, RMIL_GLOBAL);
 
     /* Replace old digests in sigh */
     rc = rpmGenerateSignature(SHA1, MD5, sigTargetSize, archiveSize, fd);
@@ -872,11 +872,11 @@ int rpmPkgSign(const char *path, const struct rpmSignArgs * args)
 	if (args->hashalgo) {
 	    char *algo = NULL;
 	    rasprintf(&algo, "%d", args->hashalgo);
-	    addMacro(NULL, "_gpg_digest_algo", NULL, algo, RMIL_GLOBAL);
+	    rpmPushMacro(NULL, "_gpg_digest_algo", NULL, algo, RMIL_GLOBAL);
 	    free(algo);
 	}
 	if (args->keyid) {
-	    addMacro(NULL, "_gpg_name", NULL, args->keyid, RMIL_GLOBAL);
+	    rpmPushMacro(NULL, "_gpg_name", NULL, args->keyid, RMIL_GLOBAL);
 	}
     }
 
@@ -884,10 +884,10 @@ int rpmPkgSign(const char *path, const struct rpmSignArgs * args)
 
     if (args) {
 	if (args->hashalgo) {
-	    delMacro(NULL, "_gpg_digest_algo");
+	    rpmPopMacro(NULL, "_gpg_digest_algo");
 	}
 	if (args->keyid) {
-	    delMacro(NULL, "_gpg_name");
+	    rpmPopMacro(NULL, "_gpg_name");
 	}
     }
 

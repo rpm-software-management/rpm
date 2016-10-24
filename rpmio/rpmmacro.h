@@ -45,6 +45,10 @@ extern const char * macrofiles;
 #define	RMIL_OLDSPEC	-1
 #define	RMIL_GLOBAL	0
 
+/* Deprecated compatibility wrappers */
+#define addMacro(_mc, _n, _o, _b, _l) rpmPushMacro(_mc, _n, _o, _b, _l)
+#define delMacro(_mc, _n) rpmPopMacro(_mc, _n)
+
 /** \ingroup rpmmacro
  * Print macros to file stream.
  * @param mc		macro context (NULL uses global context).
@@ -65,24 +69,23 @@ int	rpmExpandMacros	(rpmMacroContext mc, const char * sbuf,
 				char ** obuf, int flags);
 
 /** \ingroup rpmmacro
- * Add macro to context.
- * @deprecated Use rpmDefineMacro().
+ * Push macro to context.
  * @param mc		macro context (NULL uses global context).
  * @param n		macro name
  * @param o		macro paramaters
  * @param b		macro body
  * @param level		macro recursion level (0 is entry API)
  */
-void	addMacro	(rpmMacroContext mc, const char * n,
+void	rpmPushMacro	(rpmMacroContext mc, const char * n,
 				const char * o,
 				const char * b, int level);
 
 /** \ingroup rpmmacro
- * Delete macro from context.
+ * Pop macro from context.
  * @param mc		macro context (NULL uses global context).
  * @param n		macro name
  */
-void	delMacro	(rpmMacroContext mc, const char * n);
+void	rpmPopMacro	(rpmMacroContext mc, const char * n);
 
 /** \ingroup rpmmacro
  * Define macro in context.

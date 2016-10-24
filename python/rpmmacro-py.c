@@ -14,7 +14,7 @@ rpmmacro_AddMacro(PyObject * self, PyObject * args, PyObject * kwds)
 	    &name, &val))
 	return NULL;
 
-    addMacro(NULL, name, NULL, val, -1);
+    rpmPushMacro(NULL, name, NULL, val, -1);
 
     Py_RETURN_NONE;
 }
@@ -28,7 +28,7 @@ rpmmacro_DelMacro(PyObject * self, PyObject * args, PyObject * kwds)
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "s:DelMacro", kwlist, &name))
 	return NULL;
 
-    delMacro(NULL, name);
+    rpmPopMacro(NULL, name);
 
     Py_RETURN_NONE;
 }

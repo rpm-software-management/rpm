@@ -429,7 +429,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     /* Override default BUILD value for _builddir */
     if (buildInPlace) {
 	char *cwd = rpmGetCwd();
-	addMacro(NULL, "_builddir", NULL, cwd, 0);
+	rpmPushMacro(NULL, "_builddir", NULL, cwd, 0);
 	free(cwd);
     }
 
@@ -459,7 +459,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	    dir = xstrdup(arg);
 	}
 	srcdir = dirname(dir);
-	addMacro(NULL, "_sourcedir", NULL, srcdir, RMIL_TARBALL);
+	rpmPushMacro(NULL, "_sourcedir", NULL, srcdir, RMIL_TARBALL);
 	free(dir);
     } else {
 	specFile = xstrdup(arg);

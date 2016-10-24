@@ -150,10 +150,10 @@ static PyObject * setInterruptSafety(PyObject * self, PyObject * args, PyObject 
 
 static PyMethodDef rpmModuleMethods[] = {
     { "addMacro", (PyCFunction) rpmmacro_AddMacro, METH_VARARGS|METH_KEYWORDS,
-      "addMacro(macro, value)\n"
+      "rpmPushMacro(macro, value)\n"
     },
     { "delMacro", (PyCFunction) rpmmacro_DelMacro, METH_VARARGS|METH_KEYWORDS,
-      "delMacro(macro)\n"
+      "rpmPopMacro(macro)\n"
     },
     { "expandMacro", (PyCFunction) rpmmacro_ExpandMacro, METH_VARARGS|METH_KEYWORDS,
       "expandMacro(string, numeric=False) -- expands a string containing macros\n\n"
