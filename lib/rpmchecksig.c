@@ -352,7 +352,7 @@ exit:
     rpmDigestBundleFree(hdrbundle);
     rpmDigestBundleFree(plbundle);
     fdSetBundle(fd, NULL); /* XXX avoid double-free from fd close */
-    sigh = rpmFreeSignature(sigh);
+    sigh = headerFree(sigh);
     hi = headerFreeIterator(hi);
     pgpDigParamsFree(sig);
     return res;

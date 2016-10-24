@@ -850,7 +850,7 @@ exit:
     if (fd)	(void) closeFile(&fd);
     if (ofd)	(void) closeFile(&ofd);
 
-    rpmFreeSignature(sigh);
+    headerFree(sigh);
     headerFree(h);
     rpmLeadFree(lead);
     free(msg);

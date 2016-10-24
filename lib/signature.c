@@ -293,15 +293,13 @@ Header rpmFreeSignature(Header sigh)
 rpmRC rpmGenerateSignature(char *SHA1, uint8_t *MD5, rpm_loff_t size,
 				rpm_loff_t payloadSize, FD_t fd)
 {
-    Header sig = NULL;
+    Header sig = headerNew();
     struct rpmtd_s td;
     rpmRC rc = RPMRC_OK;
     char *reservedSpace;
     int spaceSize = 0;
 
     /* Prepare signature */
-    sig = rpmNewSignature();
-
     rpmtdReset(&td);
     td.tag = RPMSIGTAG_SHA1;
     td.count = 1;
@@ -371,7 +369,7 @@ rpmRC rpmGenerateSignature(char *SHA1, uint8_t *MD5, rpm_loff_t size,
     }
 
 exit:
-    rpmFreeSignature(sig);
+    headerFree(sig);
     return rc;
 }
 

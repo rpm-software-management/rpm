@@ -647,7 +647,7 @@ exit:
     rpmtdFreeData(&sigtd);
     h = headerFree(h);
     pgpDigParamsFree(sig);
-    sigh = rpmFreeSignature(sigh);
+    sigh = headerFree(sigh);
     return rc;
 }
 
