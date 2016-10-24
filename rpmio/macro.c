@@ -1457,20 +1457,6 @@ static void copyMacros(rpmMacroContext src, rpmMacroContext dst, int level)
 
 /* External interfaces */
 
-int expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
-{
-    char *target = NULL;
-    int rc;
-
-    mc = rpmmctxAcquire(mc);
-    rc = doExpandMacros(mc, sbuf, &target);
-    rpmmctxRelease(mc);
-
-    rstrlcpy(sbuf, target, slen);
-    free(target);
-    return rc;
-}
-
 int rpmExpandMacros(rpmMacroContext mc, const char * sbuf, char ** obuf, int flags)
 {
     char *target = NULL;

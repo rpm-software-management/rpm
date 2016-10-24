@@ -55,20 +55,6 @@ void	rpmDumpMacroTable	(rpmMacroContext mc,
 
 /** \ingroup rpmmacro
  * Expand macro into buffer.
- * @deprecated Use rpmExpand().
- * @todo Eliminate from API.
- * @param spec		cookie (unused)
- * @param mc		macro context (NULL uses global context).
- * @retval sbuf		input macro to expand, output expansion
- * @param slen		size of buffer
- * @return		0 on success
- */
-int	expandMacros	(void * spec, rpmMacroContext mc,
-				char * sbuf,
-				size_t slen);
-
-/** \ingroup rpmmacro
- * Expand macro into buffer.
  * @param mc		macro context (NULL uses global context).
  * @param sbuf		input macro to expand
  * @param obuf		macro expansion (malloc'ed)
