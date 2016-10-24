@@ -530,15 +530,6 @@ rpmfileState rpmfilesFState(rpmfiles fi, int ix)
     return fstate;
 }
 
-const unsigned char * rpmfiMD5(rpmfi fi)
-{
-    const unsigned char *digest;
-    int algo = 0;
-
-    digest = rpmfiFDigest(fi, &algo, NULL);
-    return (algo == PGPHASHALGO_MD5) ? digest : NULL;
-}
-
 int rpmfiDigestAlgo(rpmfi fi)
 {
     return fi ? rpmfilesDigestAlgo(fi->files) : 0;
@@ -1826,18 +1817,6 @@ int rpmfiStat(rpmfi fi, int flags, struct stat *sb)
 int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
 {
     return rpmfilesCompare(afi->files, afi ? afi->i : -1, bfi->files, bfi ? bfi->i : -1);
-}
-
-rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
-{
-    return rpmfilesDecideFate(ofi->files, ofi ? ofi->i : -1,
-				nfi->files, nfi ? nfi->i : -1,
-				skipMissing);
-}
-
-int rpmfiConfigConflict(const rpmfi fi)
-{
-    return rpmfilesConfigConflict(fi->files, fi ? fi->i : -1);
 }
 
 rpmstrPool rpmfilesPool(rpmfiles fi)
