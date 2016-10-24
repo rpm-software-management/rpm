@@ -538,7 +538,7 @@ static rpmRC replaceSigDigests(FD_t fd, const char *rpm, Header *sigp,
     }
 
     headerFree(*sigp);
-    rc = rpmReadSignature(fd, sigp, RPMSIGTYPE_HEADERSIG, NULL);
+    rc = rpmReadSignature(fd, sigp, NULL);
     if (rc != RPMRC_OK) {
 	rpmlog(RPMLOG_ERR, _("rpmReadSignature failed\n"));
 	goto exit;
@@ -708,7 +708,7 @@ static int rpmSign(const char *rpm, int deleting, int signfiles)
     }
 
     sigStart = Ftell(fd);
-    rc = rpmReadSignature(fd, &sigh, RPMSIGTYPE_HEADERSIG, &msg);
+    rc = rpmReadSignature(fd, &sigh, &msg);
     if (rc != RPMRC_OK) {
 	rpmlog(RPMLOG_ERR, _("%s: rpmReadSignature failed: %s"), rpm,
 		    (msg && *msg ? msg : "\n"));

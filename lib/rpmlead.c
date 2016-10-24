@@ -17,6 +17,9 @@
 
 #include "debug.h"
 
+/* A long time ago in a galaxy far far away, signatures were not in a header */
+#define RPMSIGTYPE_HEADERSIG 5
+
 static unsigned char const lead_magic[] = {
     RPMLEAD_MAGIC0, RPMLEAD_MAGIC1, RPMLEAD_MAGIC2, RPMLEAD_MAGIC3
 };

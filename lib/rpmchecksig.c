@@ -258,7 +258,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 	goto exit;
     }
 
-    rc = rpmReadSignature(fd, &sigh, RPMSIGTYPE_HEADERSIG, &msg);
+    rc = rpmReadSignature(fd, &sigh, &msg);
 
     if (rc != RPMRC_OK) {
 	goto exit;

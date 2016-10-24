@@ -544,7 +544,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     }
 
     /* Read the signature header. */
-    rc = rpmReadSignature(fd, &sigh, RPMSIGTYPE_HEADERSIG, msg);
+    rc = rpmReadSignature(fd, &sigh, msg);
 
     if (rc != RPMRC_OK) {
 	goto exit;

@@ -133,7 +133,7 @@ static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, rpm_loff_t dat
     return RPMRC_OK;
 }
 
-rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
+rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
 {
     char *buf = NULL;
     int32_t block[4];
@@ -150,9 +150,6 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 
     if (sighp)
 	*sighp = NULL;
-
-    if (sig_type != RPMSIGTYPE_HEADERSIG)
-	goto exit;
 
     memset(block, 0, sizeof(block));
     if ((xx = Freadall(fd, block, sizeof(block))) != sizeof(block)) {

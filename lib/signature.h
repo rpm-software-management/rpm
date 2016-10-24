@@ -8,13 +8,6 @@
 
 #include <rpm/header.h>
 
-/** \ingroup signature
- * Signature types stored in rpm lead.
- */
-typedef	enum sigType_e {
-    RPMSIGTYPE_HEADERSIG= 5	/*!< Header style signature */
-} sigType;
-
 enum {
     RPMSIG_UNKNOWN_TYPE		= 0,
     RPMSIG_DIGEST_TYPE		= 1,
@@ -43,11 +36,10 @@ Header rpmNewSignature(void);
  * If an old-style signature is found, we emulate a new style one.
  * @param fd		file handle
  * @retval sighp	address of (signature) header (or NULL)
- * @param sig_type	type of signature header to read (from lead)
  * @retval msg		failure msg
  * @return		rpmRC return code
  */
-rpmRC rpmReadSignature(FD_t fd, Header *sighp, sigType sig_type, char ** msg);
+rpmRC rpmReadSignature(FD_t fd, Header *sighp, char ** msg);
 
 /** \ingroup signature
  * Write signature header.
