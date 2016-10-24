@@ -325,65 +325,6 @@ int headerNext(HeaderIterator hi, rpmtd td);
 rpmTagVal headerNextTag(HeaderIterator hi);
 
 /** \ingroup header
- * Return name, version, release strings from header.
- * @param h		header
- * @retval *np		name pointer (or NULL)
- * @retval *vp		version pointer (or NULL)
- * @retval *rp		release pointer (or NULL)
- * @return		0 always
- */
-RPM_GNUC_DEPRECATED
-int headerNVR(Header h,
-		const char ** np,
-		const char ** vp,
-		const char ** rp);
-
-/** \ingroup header
- * Return name, epoch, version, release, arch strings from header.
- * @param h		header
- * @retval *np		name pointer (or NULL)
- * @retval *ep		epoch pointer (or NULL)
- * @retval *vp		version pointer (or NULL)
- * @retval *rp		release pointer (or NULL)
- * @retval *ap		arch pointer (or NULL)
- * @return		0 always
- */
-RPM_GNUC_DEPRECATED
-int headerNEVRA(Header h,
-		const char ** np,
-		uint32_t ** ep,
-		const char ** vp,
-		const char ** rp,
-		const char ** ap);
-
-/** \ingroup header
- * Return (malloc'd) header name-version-release string.
- * @param h		header
- * @retval np		name tag value
- * @return		name-version-release string
- */
-RPM_GNUC_DEPRECATED
-char * headerGetNEVR(Header h, const char ** np );
-
-/** \ingroup header
- * Return (malloc'd) header name-version-release.arch string.
- * @param h		header
- * @retval np		name tag value
- * @return		name-version-release string
- */
-RPM_GNUC_DEPRECATED
-char * headerGetNEVRA(Header h, const char ** np );
-
-/* \ingroup header
- * Return (malloc'd) header (epoch:)version-release string.
- * @param h		header
- * @retval np		name tag value (or NULL)
- * @return             (epoch:)version-release string
- */
-RPM_GNUC_DEPRECATED
-char * headerGetEVR(Header h, const char **np);
-
-/** \ingroup header
  * Return any non-array tag from header, converted to string
  * @param h		header
  * @param tag		tag to retrieve
@@ -406,14 +347,6 @@ const char * headerGetString(Header h, rpmTagVal tag);
  * @return		numeric tag value or 0 on failure
  */
 uint64_t headerGetNumber(Header h, rpmTagVal tag);
-
-/** \ingroup header
- * Return header color.
- * @param h		header
- * @return		header color
- */
-RPM_GNUC_DEPRECATED
-rpm_color_t headerGetColor(Header h);
 
 /** \ingroup header
  * Check if header is a source or binary package header
