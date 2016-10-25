@@ -23,29 +23,31 @@ static rpmRC (*rpmpythonRunFile_p) (rpmpython python, const char * fn, char ** r
 static rpmRC (*rpmpythonRun_p) (rpmpython python, const char * str, char ** resultp);
 
 static void loadModule(void) {
-    char *rpmpython = rpmExpand("%{?rpmpython_modpath}%{?!rpmpython_modpath:%{python_sitearch}/rpm}/_rpm.so", NULL);
+    char *librpmpython = rpmExpand("%{?rpmpython_modpath}%{?!rpmpython_modpath:%{python_sitearch}/rpm}/_rpm.so", NULL);
     void *h;
 
-    h = dlopen (rpmpython, RTLD_NOW|RTLD_GLOBAL);
+    h = dlopen (librpmpython, RTLD_NOW|RTLD_GLOBAL|RTLD_DEEPBIND);
     if (!h)
     {
 	rpmlog(RPMLOG_WARNING, "Unable to open \"%s\" (%s), "
 		    "embedded python will not be available\n",
-		rpmpython, dlerror());
+		librpmpython, dlerror());
     }
+
     else if(!((rpmpythonNew_p = dlsym(h, "rpmpythonNew"))
 		&& (rpmpythonFree_p = dlsym(h, "rpmpythonFree"))
 		&& (rpmpythonRunFile_p = dlsym(h, "rpmpythonRunFile"))
 		&& (rpmpythonRun_p = dlsym(h, "rpmpythonRun")))) {
 	rpmlog(RPMLOG_WARNING, "Opened library \"%s\" is incompatible (%s), "
 		    "embedded python will not be available\n",
-		rpmpython, dlerror());
+		librpmpython, dlerror());
 	if (dlclose (h))
-	    rpmlog(RPMLOG_WARNING, "Error closing library \"%s\": %s", rpmpython,
+	    rpmlog(RPMLOG_WARNING, "Error closing library \"%s\": %s", librpmpython,
 		    dlerror());
     } else
 	_dlopened = 1;
-    free(rpmpython);
+
+    free(librpmpython);
 }
 
 rpmpython rpmpythonFree(rpmpython python)
