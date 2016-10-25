@@ -23,7 +23,7 @@
 
 #define RPM_ANY_CLASS 255
 
-typedef char * (*headerTagFormatFunction) (rpmtd td);
+typedef char * (*headerTagFormatFunction) (rpmtd td, char **emsg);
 
 /** \ingroup header
  * Define header tag output formats.
@@ -48,7 +48,7 @@ static const char *classEr(rpmTagClass class)
 }
 
 /* barebones string representation with no extra formatting */
-static char * stringFormat(rpmtd td)
+static char * stringFormat(rpmtd td, char **emsg)
 {
     char *val = NULL;
 
@@ -66,7 +66,7 @@ static char * stringFormat(rpmtd td)
 	    val = pgpHexStr(td->data, td->count);
 	    break;
 	default:
-	    val = xstrdup("(unknown type)");
+	    *emsg = xstrdup("(unknown type)");
 	    break;
     }
     return val;
@@ -81,13 +81,13 @@ static char * numFormat(rpmtd td, const char *format)
 }
 
 /* octal number formatting */
-static char * octalFormat(rpmtd td)
+static char * octalFormat(rpmtd td, char **emsg)
 {
     return numFormat(td, "%o");
 }
 
 /* hexadecimal format */
-static char * hexFormat(rpmtd td)
+static char * hexFormat(rpmtd td, char **emsg)
 {
     return numFormat(td, "%x");
 }
@@ -111,19 +111,19 @@ static char * realDateFormat(rpmtd td, const char * strftimeFormat)
 }
 
 /* date formatting */
-static char * dateFormat(rpmtd td)
+static char * dateFormat(rpmtd td, char **emsg)
 {
     return realDateFormat(td, _("%c"));
 }
 
 /* day formatting */
-static char * dayFormat(rpmtd td)
+static char * dayFormat(rpmtd td, char **emsg)
 {
     return realDateFormat(td, _("%a %b %d %Y"));
 }
 
 /* shell escape formatting */
-static char * shescapeFormat(rpmtd td)
+static char * shescapeFormat(rpmtd td, char **emsg)
 {
     char * result = NULL, * dst, * src;
 
@@ -148,7 +148,7 @@ static char * shescapeFormat(rpmtd td)
 	*dst = '\0';
 	free(buf);
     } else {
-	result = xstrdup(_("(invalid type)"));
+	*emsg = xstrdup(_("(invalid type)"));
     }
 
     return result;
@@ -156,7 +156,7 @@ static char * shescapeFormat(rpmtd td)
 
 
 /* trigger type formatting (from rpmsense flags) */
-static char * triggertypeFormat(rpmtd td)
+static char * triggertypeFormat(rpmtd td, char **emsg)
 {
     char * val;
     uint64_t item = rpmtdGetNumber(td);
@@ -174,7 +174,7 @@ static char * triggertypeFormat(rpmtd td)
 }
 
 /* dependency type formatting (from rpmsense flags) */
-static char * deptypeFormat(rpmtd td)
+static char * deptypeFormat(rpmtd td, char **emsg)
 {
     char *val = NULL;
     ARGV_t sdeps = NULL;
@@ -218,24 +218,24 @@ static char * deptypeFormat(rpmtd td)
 }
 
 /* file permissions formatting */
-static char * permsFormat(rpmtd td)
+static char * permsFormat(rpmtd td, char **emsg)
 {
     return rpmPermsString(rpmtdGetNumber(td));
 }
 
 /* file flags formatting */
-static char * fflagsFormat(rpmtd td)
+static char * fflagsFormat(rpmtd td, char **emsg)
 {
     return rpmFFlagsString(rpmtdGetNumber(td), "");
 }
 
 /* pubkey ascii armor formatting */
-static char * armorFormat(rpmtd td)
+static char * armorFormat(rpmtd td, char **emsg)
 {
     const char * enc;
     const unsigned char * s;
     unsigned char * bs = NULL;
-    char *val;
+    char *val = NULL;
     size_t ns;
     int atype;
 
@@ -249,8 +249,10 @@ static char * armorFormat(rpmtd td)
     case RPM_STRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
 	enc = rpmtdGetString(td);
-	if (rpmBase64Decode(enc, (void **)&bs, &ns))
-	    return xstrdup(_("(not base64)"));
+	if (rpmBase64Decode(enc, (void **)&bs, &ns)) {
+	    *emsg = xstrdup(_("(not base64)"));
+	    goto exit;
+	}
 	s = bs;
 	atype = PGPARMOR_PUBKEY;	/* XXX check pkt for pubkey */
 	break;
@@ -262,7 +264,8 @@ static char * armorFormat(rpmtd td)
     case RPM_INT64_TYPE:
     case RPM_I18NSTRING_TYPE:
     default:
-	return xstrdup(_("(invalid type)"));
+	*emsg = xstrdup(_("(invalid type)"));
+	goto exit;
 	break;
     }
 
@@ -271,11 +274,13 @@ static char * armorFormat(rpmtd td)
     if (atype == PGPARMOR_PUBKEY) {
     	free(bs);
     }
+
+exit:
     return val;
 }
 
 /* base64 encoding formatting */
-static char * base64Format(rpmtd td)
+static char * base64Format(rpmtd td, char **emsg)
 {
     char * val = rpmBase64Encode(td->data, td->count, -1);
     if (val == NULL)
@@ -285,7 +290,7 @@ static char * base64Format(rpmtd td)
 }
 
 /* xml formatting */
-static char * xmlFormat(rpmtd td)
+static char * xmlFormat(rpmtd td, char **emsg)
 {
     const char *xtag = NULL;
     char *val = NULL;
@@ -305,7 +310,8 @@ static char * xmlFormat(rpmtd td)
 	break;
     case RPM_NULL_TYPE:
     default:
-	return xstrdup(_("(invalid xml type)"));
+	*emsg = xstrdup(_("(invalid xml type)"));
+	goto exit;
 	break;
     }
 
@@ -337,17 +343,18 @@ static char * xmlFormat(rpmtd td)
     }
     free(s);
 
+exit:
     return val;
 }
 
 /* signature fingerprint and time formatting */
-static char * pgpsigFormat(rpmtd td)
+static char * pgpsigFormat(rpmtd td, char **emsg)
 {
     char * val = NULL;
     pgpDigParams sigp = NULL;
 
     if (pgpPrtParams(td->data, td->count, PGPTAG_SIGNATURE, &sigp)) {
-	val = xstrdup(_("(not an OpenPGP signature)"));
+	*emsg = xstrdup(_("(not an OpenPGP signature)"));
     } else {
 	char dbuf[BUFSIZ];
 	char *keyid = pgpHexStr(sigp->signid, sizeof(sigp->signid));
@@ -358,15 +365,13 @@ static char * pgpsigFormat(rpmtd td)
 	unsigned int hash_algo = pgpDigParamsAlgo(sigp, PGPVAL_HASHALGO);
 
 	if (!(tms && strftime(dbuf, sizeof(dbuf), "%c", tms) > 0)) {
-	    snprintf(dbuf, sizeof(dbuf),
-		     _("Invalid date %u"), dateint);
-	    dbuf[sizeof(dbuf)-1] = '\0';
-	}
-
-	rasprintf(&val, "%s/%s, %s, Key ID %s",
+	    rasprintf(emsg, _("Invalid date %u"), dateint);
+	} else {
+	    rasprintf(&val, "%s/%s, %s, Key ID %s",
 		    pgpValString(PGPVAL_PUBKEYALGO, key_algo),
 		    pgpValString(PGPVAL_HASHALGO, hash_algo),
 		    dbuf, keyid);
+	}
 
 	free(keyid);
 	pgpDigParamsFree(sigp);
@@ -376,7 +381,7 @@ static char * pgpsigFormat(rpmtd td)
 }
 
 /* dependency flags formatting */
-static char * depflagsFormat(rpmtd td)
+static char * depflagsFormat(rpmtd td, char **emsg)
 {
     char * val = NULL;
     uint64_t anint = rpmtdGetNumber(td);
@@ -393,7 +398,7 @@ static char * depflagsFormat(rpmtd td)
 }
 
 /* tag container array size */
-static char * arraysizeFormat(rpmtd td)
+static char * arraysizeFormat(rpmtd td, char **emsg)
 {
     char *val = NULL;
     rasprintf(&val, "%u", rpmtdCount(td));
@@ -401,7 +406,7 @@ static char * arraysizeFormat(rpmtd td)
 }
 
 /* file state formatting */
-static char * fstateFormat(rpmtd td)
+static char * fstateFormat(rpmtd td, char **emsg)
 {
     char * val = NULL;
     const char * str;
@@ -440,18 +445,18 @@ static char * verifyFlags(rpmtd td, const char *pad)
     return rpmVerifyString(rpmtdGetNumber(td), pad);
 }
 
-static char * vflagsFormat(rpmtd td)
+static char * vflagsFormat(rpmtd td, char **emsg)
 {
     return verifyFlags(td, "");
 }
 
-static char * fstatusFormat(rpmtd td)
+static char * fstatusFormat(rpmtd td, char **emsg)
 {
     return verifyFlags(td, ".");
 }
 
 /* macro expansion formatting */
-static char * expandFormat(rpmtd td)
+static char * expandFormat(rpmtd td, char **emsg)
 {
     return rpmExpand(rpmtdGetString(td), NULL);
 }
@@ -527,10 +532,16 @@ headerFmt rpmHeaderFormatByValue(rpmtdFormats fmt)
 char *rpmHeaderFormatCall(headerFmt fmt, rpmtd td)
 {
     char *ret = NULL;
-    if (fmt->class != RPM_ANY_CLASS && rpmtdClass(td) != fmt->class) {
-	ret = xstrdup(classEr(fmt->class));
-    } else {
-	ret = fmt->func(td);
+    char *err = NULL;
+
+    if (fmt->class != RPM_ANY_CLASS && rpmtdClass(td) != fmt->class)
+	err = xstrdup(classEr(fmt->class));
+    else
+	ret = fmt->func(td, &err);
+
+    if (err) {
+	free(ret);
+	ret = err;
     }
     return ret;
 }
