@@ -76,13 +76,7 @@ static char * stringFormat(rpmtd td)
 static char * numFormat(rpmtd td, const char *format)
 {
     char * val = NULL;
-
-    if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
-	val = xstrdup(_("(not a number)"));
-    } else {
-	rasprintf(&val, format, rpmtdGetNumber(td));
-    }
-
+    rasprintf(&val, format, rpmtdGetNumber(td));
     return val;
 }
 
@@ -102,21 +96,16 @@ static char * hexFormat(rpmtd td)
 static char * realDateFormat(rpmtd td, const char * strftimeFormat)
 {
     char * val = NULL;
+    struct tm * tstruct;
+    char buf[50];
+    time_t dateint = rpmtdGetNumber(td);
+    tstruct = localtime(&dateint);
 
-    if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
-	val = xstrdup(_("(not a number)"));
-    } else {
-	struct tm * tstruct;
-	char buf[50];
-	time_t dateint = rpmtdGetNumber(td);
-	tstruct = localtime(&dateint);
-
-	/* XXX TODO: deal with non-fitting date string correctly */
-	buf[0] = '\0';
-	if (tstruct)
-	    (void) strftime(buf, sizeof(buf) - 1, strftimeFormat, tstruct);
-	val = xstrdup(buf);
-    }
+    /* XXX TODO: deal with non-fitting date string correctly */
+    buf[0] = '\0';
+    if (tstruct)
+	(void) strftime(buf, sizeof(buf) - 1, strftimeFormat, tstruct);
+    val = xstrdup(buf);
 
     return val;
 }
@@ -170,22 +159,17 @@ static char * shescapeFormat(rpmtd td)
 static char * triggertypeFormat(rpmtd td)
 {
     char * val;
-
-    if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
-	val = xstrdup(_("(not a number)"));
-    } else {
-	uint64_t item = rpmtdGetNumber(td);
-	if (item & RPMSENSE_TRIGGERPREIN)
-	    val = xstrdup("prein");
-	else if (item & RPMSENSE_TRIGGERIN)
-	    val = xstrdup("in");
-	else if (item & RPMSENSE_TRIGGERUN)
-	    val = xstrdup("un");
-	else if (item & RPMSENSE_TRIGGERPOSTUN)
-	    val = xstrdup("postun");
-	else
-	    val = xstrdup("");
-    }
+    uint64_t item = rpmtdGetNumber(td);
+    if (item & RPMSENSE_TRIGGERPREIN)
+	val = xstrdup("prein");
+    else if (item & RPMSENSE_TRIGGERIN)
+	val = xstrdup("in");
+    else if (item & RPMSENSE_TRIGGERUN)
+	val = xstrdup("un");
+    else if (item & RPMSENSE_TRIGGERPOSTUN)
+	val = xstrdup("postun");
+    else
+	val = xstrdup("");
     return val;
 }
 
@@ -193,76 +177,56 @@ static char * triggertypeFormat(rpmtd td)
 static char * deptypeFormat(rpmtd td)
 {
     char *val = NULL;
-    if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
-	val = xstrdup(_("(not a number)"));
+    ARGV_t sdeps = NULL;
+    uint64_t item = rpmtdGetNumber(td);
+
+    if (item & RPMSENSE_SCRIPT_PRE)
+	argvAdd(&sdeps, "pre");
+    if (item & RPMSENSE_SCRIPT_POST)
+	argvAdd(&sdeps, "post");
+    if (item & RPMSENSE_SCRIPT_PREUN)
+	argvAdd(&sdeps, "preun");
+    if (item & RPMSENSE_SCRIPT_POSTUN)
+	argvAdd(&sdeps, "postun");
+    if (item & RPMSENSE_SCRIPT_VERIFY)
+	argvAdd(&sdeps, "verify");
+    if (item & RPMSENSE_INTERP)
+	argvAdd(&sdeps, "interp");
+    if (item & RPMSENSE_RPMLIB)
+	argvAdd(&sdeps, "rpmlib");
+    if ((item & RPMSENSE_FIND_REQUIRES) || (item & RPMSENSE_FIND_PROVIDES))
+	argvAdd(&sdeps, "auto");
+    if (item & RPMSENSE_PREREQ)
+	argvAdd(&sdeps, "prereq");
+    if (item & RPMSENSE_PRETRANS)
+	argvAdd(&sdeps, "pretrans");
+    if (item & RPMSENSE_POSTTRANS)
+	argvAdd(&sdeps, "posttrans");
+    if (item & RPMSENSE_CONFIG)
+	argvAdd(&sdeps, "config");
+    if (item & RPMSENSE_MISSINGOK)
+	argvAdd(&sdeps, "missingok");
+
+    if (sdeps) {
+	val = argvJoin(sdeps, ",");
     } else {
-	ARGV_t sdeps = NULL;
-	uint64_t item = rpmtdGetNumber(td);
-
-	if (item & RPMSENSE_SCRIPT_PRE)
-	    argvAdd(&sdeps, "pre");
-	if (item & RPMSENSE_SCRIPT_POST)
-	    argvAdd(&sdeps, "post");
-	if (item & RPMSENSE_SCRIPT_PREUN)
-	    argvAdd(&sdeps, "preun");
-	if (item & RPMSENSE_SCRIPT_POSTUN)
-	    argvAdd(&sdeps, "postun");
-	if (item & RPMSENSE_SCRIPT_VERIFY)
-	    argvAdd(&sdeps, "verify");
-	if (item & RPMSENSE_INTERP)
-	    argvAdd(&sdeps, "interp");
-	if (item & RPMSENSE_RPMLIB)
-	    argvAdd(&sdeps, "rpmlib");
-	if ((item & RPMSENSE_FIND_REQUIRES) || (item & RPMSENSE_FIND_PROVIDES))
-	    argvAdd(&sdeps, "auto");
-	if (item & RPMSENSE_PREREQ)
-	    argvAdd(&sdeps, "prereq");
-	if (item & RPMSENSE_PRETRANS)
-	    argvAdd(&sdeps, "pretrans");
-	if (item & RPMSENSE_POSTTRANS)
-	    argvAdd(&sdeps, "posttrans");
-	if (item & RPMSENSE_CONFIG)
-	    argvAdd(&sdeps, "config");
-	if (item & RPMSENSE_MISSINGOK)
-	    argvAdd(&sdeps, "missingok");
-
-	if (sdeps) {
-	    val = argvJoin(sdeps, ",");
-	} else {
-	    val = xstrdup("manual");
-	}
-
-	argvFree(sdeps);
+	val = xstrdup("manual");
     }
+
+    argvFree(sdeps);
     return val;
 }
 
 /* file permissions formatting */
 static char * permsFormat(rpmtd td)
 {
-    char * val = NULL;
-
-    if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
-	val = xstrdup(_("(not a number)"));
-    } else {
-	val = rpmPermsString(rpmtdGetNumber(td));
-    }
-
-    return val;
+    return rpmPermsString(rpmtdGetNumber(td));
 }
 
 /* file flags formatting */
 static char * fflagsFormat(rpmtd td)
 {
-    char * val = NULL;
-
-    if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
-	val = xstrdup(_("(not a number)"));
-    } else {
-	val = rpmFFlagsString(rpmtdGetNumber(td), "");
-    }
-
-    return val;
+    return rpmFFlagsString(rpmtdGetNumber(td), "");
 }
 
 /* pubkey ascii armor formatting */
@@ -313,15 +277,9 @@ static char * armorFormat(rpmtd td)
 /* base64 encoding formatting */
 static char * base64Format(rpmtd td)
 {
-    char * val = NULL;
-
-    if (rpmtdType(td) != RPM_BIN_TYPE) {
-	val = xstrdup(_("(not a blob)"));
-    } else {
-	val = rpmBase64Encode(td->data, td->count, -1);
-	if (val == NULL)
-	    val = xstrdup("");
-    }
+    char * val = rpmBase64Encode(td->data, td->count, -1);
+    if (val == NULL)
+	val = xstrdup("");
 
     return val;
 }
@@ -386,37 +344,32 @@ static char * xmlFormat(rpmtd td)
 static char * pgpsigFormat(rpmtd td)
 {
     char * val = NULL;
+    pgpDigParams sigp = NULL;
 
-    if (rpmtdType(td) != RPM_BIN_TYPE) {
-	val = xstrdup(_("(not a blob)"));
+    if (pgpPrtParams(td->data, td->count, PGPTAG_SIGNATURE, &sigp)) {
+	val = xstrdup(_("(not an OpenPGP signature)"));
     } else {
-	pgpDigParams sigp = NULL;
+	char dbuf[BUFSIZ];
+	char *keyid = pgpHexStr(sigp->signid, sizeof(sigp->signid));
+	unsigned int dateint = pgpGrab(sigp->time, sizeof(sigp->time));
+	time_t date = dateint;
+	struct tm * tms = localtime(&date);
+	unsigned int key_algo = pgpDigParamsAlgo(sigp, PGPVAL_PUBKEYALGO);
+	unsigned int hash_algo = pgpDigParamsAlgo(sigp, PGPVAL_HASHALGO);
 
-	if (pgpPrtParams(td->data, td->count, PGPTAG_SIGNATURE, &sigp)) {
-	    val = xstrdup(_("(not an OpenPGP signature)"));
-	} else {
-	    char dbuf[BUFSIZ];
-	    char *keyid = pgpHexStr(sigp->signid, sizeof(sigp->signid));
-	    unsigned int dateint = pgpGrab(sigp->time, sizeof(sigp->time));
-	    time_t date = dateint;
-	    struct tm * tms = localtime(&date);
-	    unsigned int key_algo = pgpDigParamsAlgo(sigp, PGPVAL_PUBKEYALGO);
-	    unsigned int hash_algo = pgpDigParamsAlgo(sigp, PGPVAL_HASHALGO);
-
-	    if (!(tms && strftime(dbuf, sizeof(dbuf), "%c", tms) > 0)) {
-		snprintf(dbuf, sizeof(dbuf),
-			 _("Invalid date %u"), dateint);
-		dbuf[sizeof(dbuf)-1] = '\0';
-	    }
-
-	    rasprintf(&val, "%s/%s, %s, Key ID %s",
-			pgpValString(PGPVAL_PUBKEYALGO, key_algo),
-			pgpValString(PGPVAL_HASHALGO, hash_algo),
-			dbuf, keyid);
-
-	    free(keyid);
-	    pgpDigParamsFree(sigp);
+	if (!(tms && strftime(dbuf, sizeof(dbuf), "%c", tms) > 0)) {
+	    snprintf(dbuf, sizeof(dbuf),
+		     _("Invalid date %u"), dateint);
+	    dbuf[sizeof(dbuf)-1] = '\0';
 	}
+
+	rasprintf(&val, "%s/%s, %s, Key ID %s",
+		    pgpValString(PGPVAL_PUBKEYALGO, key_algo),
+		    pgpValString(PGPVAL_HASHALGO, hash_algo),
+		    dbuf, keyid);
+
+	free(keyid);
+	pgpDigParamsFree(sigp);
     }
 
     return val;
@@ -426,20 +379,15 @@ static char * pgpsigFormat(rpmtd td)
 static char * depflagsFormat(rpmtd td)
 {
     char * val = NULL;
+    uint64_t anint = rpmtdGetNumber(td);
+    val = xcalloc(4, 1);
 
-    if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
-	val = xstrdup(_("(not a number)"));
-    } else {
-	uint64_t anint = rpmtdGetNumber(td);
-	val = xcalloc(4, 1);
-
-	if (anint & RPMSENSE_LESS) 
-	    strcat(val, "<");
-	if (anint & RPMSENSE_GREATER)
-	    strcat(val, ">");
-	if (anint & RPMSENSE_EQUAL)
-	    strcat(val, "=");
-    }
+    if (anint & RPMSENSE_LESS)
+	strcat(val, "<");
+    if (anint & RPMSENSE_GREATER)
+	strcat(val, ">");
+    if (anint & RPMSENSE_EQUAL)
+	strcat(val, "=");
 
     return val;
 }
@@ -456,52 +404,40 @@ static char * arraysizeFormat(rpmtd td)
 static char * fstateFormat(rpmtd td)
 {
     char * val = NULL;
-
-    if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
-	val = xstrdup(_("(not a number)"));
-    } else {
-	const char * str;
-	rpmfileState fstate = rpmtdGetNumber(td);
-	switch (fstate) {
-	case RPMFILE_STATE_NORMAL:
-	    str = _("normal");
-	    break;
-	case RPMFILE_STATE_REPLACED:
-	    str = _("replaced");
-	    break;
-	case RPMFILE_STATE_NOTINSTALLED:
-	    str = _("not installed");
-	    break;
-	case RPMFILE_STATE_NETSHARED:
-	    str = _("net shared");
-	    break;
-	case RPMFILE_STATE_WRONGCOLOR:
-	    str = _("wrong color");
-	    break;
-	case RPMFILE_STATE_MISSING:
-	    str = _("missing");
-	    break;
-	default:
-	    str = _("(unknown)");
-	    break;
-	}
-	
-	val = xstrdup(str);
+    const char * str;
+    rpmfileState fstate = rpmtdGetNumber(td);
+    switch (fstate) {
+    case RPMFILE_STATE_NORMAL:
+	str = _("normal");
+	break;
+    case RPMFILE_STATE_REPLACED:
+	str = _("replaced");
+	break;
+    case RPMFILE_STATE_NOTINSTALLED:
+	str = _("not installed");
+	break;
+    case RPMFILE_STATE_NETSHARED:
+	str = _("net shared");
+	break;
+    case RPMFILE_STATE_WRONGCOLOR:
+	str = _("wrong color");
+	break;
+    case RPMFILE_STATE_MISSING:
+	str = _("missing");
+	break;
+    default:
+	str = _("(unknown)");
+	break;
     }
+
+    val = xstrdup(str);
     return val;
 }
 
 /* file verification flags formatting with optional padding */
 static char * verifyFlags(rpmtd td, const char *pad)
 {
-    char * val = NULL;
-
-    if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
-	val = xstrdup(_("(not a number)"));
-    } else {
-	val = rpmVerifyString(rpmtdGetNumber(td), pad);
-    }
-    return val;
+    return rpmVerifyString(rpmtdGetNumber(td), pad);
 }
 
 static char * vflagsFormat(rpmtd td)
@@ -517,13 +453,7 @@ static char * fstatusFormat(rpmtd td)
 /* macro expansion formatting */
 static char * expandFormat(rpmtd td)
 {
-    char *val = NULL;
-    if (rpmtdClass(td) != RPM_STRING_CLASS) {
-	val = xstrdup(_("(not a string)"));
-    } else {
-	val = rpmExpand(rpmtdGetString(td), NULL);
-    }
-    return val;
+    return rpmExpand(rpmtdGetString(td), NULL);
 }
 
 static const struct headerFmt_s rpmHeaderFormats[] = {
