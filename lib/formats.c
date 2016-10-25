@@ -21,6 +21,8 @@
 
 #include "debug.h"
 
+#define RPM_ANY_CLASS 255
+
 typedef char * (*headerTagFormatFunction) (rpmtd td);
 
 /** \ingroup header
@@ -30,8 +32,20 @@ typedef char * (*headerTagFormatFunction) (rpmtd td);
 struct headerFmt_s {
     rpmtdFormats fmt;	/*!< Value of extension */
     const char *name;	/*!< Name of extension. */
+    rpmTagClass class;	/*!< Class of source data (RPM_ANY_CLASS for any) */
     headerTagFormatFunction func;	/*!< Pointer to formatter function. */	
 };
+
+static const char *classEr(rpmTagClass class)
+{
+    switch (class) {
+    case RPM_BINARY_CLASS:	 return _("(not a blob)");
+    case RPM_NUMERIC_CLASS:	 return _("(not a number)");
+    case RPM_STRING_CLASS:	 return _("(not a string)");
+    default:			 break;
+    }
+    return _("(invalid type)");
+}
 
 /* barebones string representation with no extra formatting */
 static char * stringFormat(rpmtd td)
@@ -511,28 +525,49 @@ static char * expandFormat(rpmtd td)
 }
 
 static const struct headerFmt_s rpmHeaderFormats[] = {
-    { RPMTD_FORMAT_STRING,	"string",	stringFormat },
-    { RPMTD_FORMAT_ARMOR,	"armor",	armorFormat },
-    { RPMTD_FORMAT_BASE64,	"base64",	base64Format },
-    { RPMTD_FORMAT_PGPSIG,	"pgpsig",	pgpsigFormat },
-    { RPMTD_FORMAT_DEPFLAGS,	"depflags",	depflagsFormat },
-    { RPMTD_FORMAT_DEPTYPE,	"deptype",	deptypeFormat },
-    { RPMTD_FORMAT_FFLAGS,	"fflags",	fflagsFormat },
-    { RPMTD_FORMAT_PERMS,	"perms",	permsFormat },
-    { RPMTD_FORMAT_PERMS,	"permissions",	permsFormat },
-    { RPMTD_FORMAT_TRIGGERTYPE,	"triggertype",	triggertypeFormat },
-    { RPMTD_FORMAT_XML,		"xml",		xmlFormat },
-    { RPMTD_FORMAT_OCTAL,	"octal", 	octalFormat },
-    { RPMTD_FORMAT_HEX,		"hex", 		hexFormat },
-    { RPMTD_FORMAT_DATE,	"date", 	dateFormat },
-    { RPMTD_FORMAT_DAY,		"day", 		dayFormat },
-    { RPMTD_FORMAT_SHESCAPE,	"shescape", 	shescapeFormat },
-    { RPMTD_FORMAT_ARRAYSIZE,	"arraysize", 	arraysizeFormat },
-    { RPMTD_FORMAT_FSTATE,	"fstate",	fstateFormat },
-    { RPMTD_FORMAT_VFLAGS,	"vflags",	vflagsFormat },
-    { RPMTD_FORMAT_EXPAND,	"expand",	expandFormat },
-    { RPMTD_FORMAT_FSTATUS,	"fstatus",	fstatusFormat },
-    { -1,			NULL, 		NULL }
+    { RPMTD_FORMAT_STRING,	"string",
+	RPM_ANY_CLASS,		stringFormat },
+    { RPMTD_FORMAT_ARMOR,	"armor",
+	RPM_ANY_CLASS,		armorFormat },
+    { RPMTD_FORMAT_BASE64,	"base64",
+	RPM_BINARY_CLASS,	base64Format },
+    { RPMTD_FORMAT_PGPSIG,	"pgpsig",
+	RPM_BINARY_CLASS,	pgpsigFormat },
+    { RPMTD_FORMAT_DEPFLAGS,	"depflags",
+	RPM_NUMERIC_CLASS, depflagsFormat },
+    { RPMTD_FORMAT_DEPTYPE,	"deptype",
+	RPM_NUMERIC_CLASS,	deptypeFormat },
+    { RPMTD_FORMAT_FFLAGS,	"fflags",
+	RPM_NUMERIC_CLASS,	fflagsFormat },
+    { RPMTD_FORMAT_PERMS,	"perms",
+	RPM_NUMERIC_CLASS,	permsFormat },
+    { RPMTD_FORMAT_PERMS,	"permissions",
+	RPM_NUMERIC_CLASS,	permsFormat },
+    { RPMTD_FORMAT_TRIGGERTYPE,	"triggertype",
+	RPM_NUMERIC_CLASS,	triggertypeFormat },
+    { RPMTD_FORMAT_XML,		"xml",
+	RPM_ANY_CLASS,		xmlFormat },
+    { RPMTD_FORMAT_OCTAL,	"octal",
+	RPM_NUMERIC_CLASS,	octalFormat },
+    { RPMTD_FORMAT_HEX,		"hex",
+	RPM_NUMERIC_CLASS,	hexFormat },
+    { RPMTD_FORMAT_DATE,	"date",
+	RPM_NUMERIC_CLASS,	dateFormat },
+    { RPMTD_FORMAT_DAY,		"day",
+	RPM_NUMERIC_CLASS,	dayFormat },
+    { RPMTD_FORMAT_SHESCAPE,	"shescape",
+	RPM_ANY_CLASS,		shescapeFormat },
+    { RPMTD_FORMAT_ARRAYSIZE,	"arraysize",
+	RPM_ANY_CLASS,		arraysizeFormat },
+    { RPMTD_FORMAT_FSTATE,	"fstate",
+	RPM_NUMERIC_CLASS,	fstateFormat },
+    { RPMTD_FORMAT_VFLAGS,	"vflags",
+	RPM_NUMERIC_CLASS,	vflagsFormat },
+    { RPMTD_FORMAT_EXPAND,	"expand",
+	RPM_STRING_CLASS,	expandFormat },
+    { RPMTD_FORMAT_FSTATUS,	"fstatus",
+	RPM_NUMERIC_CLASS,	fstatusFormat },
+    { -1,			NULL, 		0,	NULL }
 };
 
 headerFmt rpmHeaderFormatByName(const char *fmt)
@@ -559,5 +594,11 @@ headerFmt rpmHeaderFormatByValue(rpmtdFormats fmt)
 
 char *rpmHeaderFormatCall(headerFmt fmt, rpmtd td)
 {
-    return (fmt != NULL) ? fmt->func(td) : NULL;
+    char *ret = NULL;
+    if (fmt->class != RPM_ANY_CLASS && rpmtdClass(td) != fmt->class) {
+	ret = xstrdup(classEr(fmt->class));
+    } else {
+	ret = fmt->func(td);
+    }
+    return ret;
 }
