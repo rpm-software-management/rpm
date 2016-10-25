@@ -31,11 +31,7 @@ struct headerFormatFunc_s {
     headerTagFormatFunction func;	/*!< Pointer to formatter function. */	
 };
 
-/**
- * barebones string representation with no extra formatting
- * @param td		tag data container
- * @return		formatted string
- */
+/* barebones string representation with no extra formatting */
 static char * stringFormat(rpmtd td)
 {
     char *val = NULL;
@@ -60,6 +56,7 @@ static char * stringFormat(rpmtd td)
     return val;
 }
 
+/* arbitrary number format as per format arg */
 static char * numFormat(rpmtd td, const char *format)
 {
     char * val = NULL;
@@ -72,31 +69,20 @@ static char * numFormat(rpmtd td, const char *format)
 
     return val;
 }
-/**
- * octalFormat.
- * @param td		tag data container
- * @return		formatted string
- */
+
+/* octal number formatting */
 static char * octalFormat(rpmtd td)
 {
     return numFormat(td, "%o");
 }
 
-/**
- * hexFormat.
- * @param td		tag data container
- * @return		formatted string
- */
+/* hexadecimal format */
 static char * hexFormat(rpmtd td)
 {
     return numFormat(td, "%x");
 }
 
-/**
- * @param td			tag data container
- * @param strftimeFormat	format string
- * @return		formatted string
- */
+/* arbitrary date formatting as per strftimeFormat arg */
 static char * realDateFormat(rpmtd td, const char * strftimeFormat)
 {
     char * val = NULL;
@@ -119,31 +105,19 @@ static char * realDateFormat(rpmtd td, const char * strftimeFormat)
     return val;
 }
 
-/**
- * Format a date.
- * @param td		tag data container
- * @return		formatted string
- */
+/* date formatting */
 static char * dateFormat(rpmtd td)
 {
     return realDateFormat(td, _("%c"));
 }
 
-/**
- * Format a day.
- * @param td		tag data container
- * @return		formatted string
- */
+/* day formatting */
 static char * dayFormat(rpmtd td)
 {
     return realDateFormat(td, _("%a %b %d %Y"));
 }
 
-/**
- * Return shell escape formatted data.
- * @param td		tag data container
- * @return		formatted string
- */
+/* shell escape formatting */
 static char * shescapeFormat(rpmtd td)
 {
     char * result = NULL, * dst, * src;
@@ -174,11 +148,7 @@ static char * shescapeFormat(rpmtd td)
 }
 
 
-/**
- * Identify type of trigger.
- * @param td		tag data container
- * @return		formatted string
- */
+/* trigger type formatting (from rpmsense flags) */
 static char * triggertypeFormat(rpmtd td)
 {
     char * val;
@@ -201,11 +171,7 @@ static char * triggertypeFormat(rpmtd td)
     return val;
 }
 
-/**
- * Identify type of dependency.
- * @param td		tag data container
- * @return		formatted string
- */
+/* dependency type formatting (from rpmsense flags) */
 static char * deptypeFormat(rpmtd td)
 {
     char *val = NULL;
@@ -253,11 +219,7 @@ static char * deptypeFormat(rpmtd td)
     return val;
 }
 
-/**
- * Format file permissions for display.
- * @param td		tag data container
- * @return		formatted string
- */
+/* file permissions formatting */
 static char * permsFormat(rpmtd td)
 {
     char * val = NULL;
@@ -271,11 +233,7 @@ static char * permsFormat(rpmtd td)
     return val;
 }
 
-/**
- * Format file flags for display.
- * @param td		tag data container
- * @return		formatted string
- */
+/* file flags formatting */
 static char * fflagsFormat(rpmtd td)
 {
     char * val = NULL;
@@ -289,12 +247,7 @@ static char * fflagsFormat(rpmtd td)
     return val;
 }
 
-/**
- * Wrap a pubkey in ascii armor for display.
- * @todo Permit selectable display formats (i.e. binary).
- * @param td		tag data container
- * @return		formatted string
- */
+/* pubkey ascii armor formatting */
 static char * armorFormat(rpmtd td)
 {
     const char * enc;
@@ -339,12 +292,7 @@ static char * armorFormat(rpmtd td)
     return val;
 }
 
-/**
- * Encode binary data in base64 for display.
- * @todo Permit selectable display formats (i.e. binary).
- * @param td		tag data container
- * @return		formatted string
- */
+/* base64 encoding formatting */
 static char * base64Format(rpmtd td)
 {
     char * val = NULL;
@@ -360,11 +308,7 @@ static char * base64Format(rpmtd td)
     return val;
 }
 
-/**
- * Wrap tag data in simple header xml markup.
- * @param td		tag data container
- * @return		formatted string
- */
+/* xml formatting */
 static char * xmlFormat(rpmtd td)
 {
     const char *xtag = NULL;
@@ -420,11 +364,7 @@ static char * xmlFormat(rpmtd td)
     return val;
 }
 
-/**
- * Display signature fingerprint and time.
- * @param td		tag data container
- * @return		formatted string
- */
+/* signature fingerprint and time formatting */
 static char * pgpsigFormat(rpmtd td)
 {
     char * val = NULL;
@@ -464,11 +404,7 @@ static char * pgpsigFormat(rpmtd td)
     return val;
 }
 
-/**
- * Format dependency flags for display.
- * @param td		tag data container
- * @return		formatted string
- */
+/* dependency flags formatting */
 static char * depflagsFormat(rpmtd td)
 {
     char * val = NULL;
@@ -490,11 +426,7 @@ static char * depflagsFormat(rpmtd td)
     return val;
 }
 
-/**
- * Return tag container array size.
- * @param td		tag data container
- * @return		formatted string
- */
+/* tag container array size */
 static char * arraysizeFormat(rpmtd td)
 {
     char *val = NULL;
@@ -502,6 +434,7 @@ static char * arraysizeFormat(rpmtd td)
     return val;
 }
 
+/* file state formatting */
 static char * fstateFormat(rpmtd td)
 {
     char * val = NULL;
@@ -540,6 +473,7 @@ static char * fstateFormat(rpmtd td)
     return val;
 }
 
+/* file verification flags formatting with optional padding */
 static char * verifyFlags(rpmtd td, const char *pad)
 {
     char * val = NULL;
@@ -562,6 +496,7 @@ static char * fstatusFormat(rpmtd td)
     return verifyFlags(td, ".");
 }
 
+/* macro expansion formatting */
 static char * expandFormat(rpmtd td)
 {
     char *val = NULL;
