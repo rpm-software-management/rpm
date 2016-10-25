@@ -568,7 +568,7 @@ static char * expandFormat(rpmtd td)
     if (rpmtdClass(td) != RPM_STRING_CLASS) {
 	val = xstrdup(_("(not a string)"));
     } else {
-	val = rpmExpand(td->data, NULL);
+	val = rpmExpand(rpmtdGetString(td), NULL);
     }
     return val;
 }
