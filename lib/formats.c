@@ -140,7 +140,7 @@ static char * shescapeFormat(rpmtd td)
 
     if (rpmtdClass(td) == RPM_NUMERIC_CLASS) {
 	rasprintf(&result, "%" PRIu64, rpmtdGetNumber(td));
-    } else {
+    } else if (rpmtdClass(td) == RPM_STRING_CLASS) {
 	char *buf = xstrdup(rpmtdGetString(td));;
 
 	result = dst = xmalloc(strlen(buf) * 4 + 3);
@@ -158,6 +158,8 @@ static char * shescapeFormat(rpmtd td)
 	*dst++ = '\'';
 	*dst = '\0';
 	free(buf);
+    } else {
+	result = xstrdup(_("(invalid type)"));
     }
 
     return result;
