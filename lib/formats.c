@@ -21,11 +21,13 @@
 
 #include "debug.h"
 
+typedef char * (*headerTagFormatFunction) (rpmtd td);
+
 /** \ingroup header
  * Define header tag output formats.
  */
 
-struct headerFormatFunc_s {
+struct headerFmt_s {
     rpmtdFormats fmt;	/*!< Value of extension */
     const char *name;	/*!< Name of extension. */
     headerTagFormatFunction func;	/*!< Pointer to formatter function. */	
@@ -508,7 +510,7 @@ static char * expandFormat(rpmtd td)
     return val;
 }
 
-static const struct headerFormatFunc_s rpmHeaderFormats[] = {
+static const struct headerFmt_s rpmHeaderFormats[] = {
     { RPMTD_FORMAT_STRING,	"string",	stringFormat },
     { RPMTD_FORMAT_ARMOR,	"armor",	armorFormat },
     { RPMTD_FORMAT_BASE64,	"base64",	base64Format },
@@ -533,31 +535,29 @@ static const struct headerFormatFunc_s rpmHeaderFormats[] = {
     { -1,			NULL, 		NULL }
 };
 
-headerTagFormatFunction rpmHeaderFormatFuncByName(const char *fmt)
+headerFmt rpmHeaderFormatByName(const char *fmt)
 {
-    const struct headerFormatFunc_s * ext;
-    headerTagFormatFunction func = NULL;
+    const struct headerFmt_s * ext;
 
     for (ext = rpmHeaderFormats; ext->name != NULL; ext++) {
-	if (rstreq(ext->name, fmt)) {
-	    func = ext->func;
-	    break;
-	}
+	if (rstreq(ext->name, fmt))
+	    return ext;
     }
-    return func;
+    return NULL;
 }
 
-headerTagFormatFunction rpmHeaderFormatFuncByValue(rpmtdFormats fmt)
+headerFmt rpmHeaderFormatByValue(rpmtdFormats fmt)
 {
-    const struct headerFormatFunc_s * ext;
-    headerTagFormatFunction func = NULL;
+    const struct headerFmt_s * ext;
 
     for (ext = rpmHeaderFormats; ext->name != NULL; ext++) {
-	if (fmt == ext->fmt) {
-	    func = ext->func;
-	    break;
-	}
+	if (fmt == ext->fmt)
+	    return ext;
     }
-    return func;
+    return NULL;
 }
 
+char *rpmHeaderFormatCall(headerFmt fmt, rpmtd td)
+{
+    return (fmt != NULL) ? fmt->func(td) : NULL;
+}

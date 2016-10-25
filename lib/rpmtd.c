@@ -253,12 +253,12 @@ uint64_t rpmtdGetNumber(rpmtd td)
 
 char *rpmtdFormat(rpmtd td, rpmtdFormats fmt, const char *errmsg)
 {
-    headerTagFormatFunction func = rpmHeaderFormatFuncByValue(fmt);
+    headerFmt ext = rpmHeaderFormatByValue(fmt);
     const char *err = NULL;
     char *str = NULL;
 
-    if (func) {
-	str = func(td);
+    if (ext) {
+	str = rpmHeaderFormatCall(ext, td);
     } else {
 	err = _("Unknown format");
     }

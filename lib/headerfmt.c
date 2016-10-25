@@ -20,7 +20,7 @@
  */
 typedef struct sprintfTag_s * sprintfTag;
 struct sprintfTag_s {
-    headerTagFormatFunction fmt;
+    headerFmt fmt;
     rpmTagVal tag;
     int justOne;
     char * format;
@@ -246,7 +246,7 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
 
     /* Search extensions for specific format. */
     if (stag->type != NULL)
-	stag->fmt = rpmHeaderFormatFuncByName(stag->type);
+	stag->fmt = rpmHeaderFormatByName(stag->type);
 
     return stag->fmt ? 0 : 1;
 }
@@ -625,7 +625,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 
     if ((td = getData(hsa, tag->tag)) && td->count > element) {
 	td->ix = element; /* Ick, use iterators instead */
-	val = tag->fmt(td);
+	val = rpmHeaderFormatCall(tag->fmt, td);
     } else {
 	val = xstrdup("(none)");
     }
