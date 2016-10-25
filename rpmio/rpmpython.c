@@ -1,5 +1,7 @@
 #include "system.h"
 
+#ifdef WITH_PYTHONEMBED
+
 #include <dlfcn.h>
 #include <rpm/rpmlog.h>
 
@@ -74,4 +76,4 @@ rpmRC rpmpythonRun(rpmpython python, const char * str, char **resultp)
     if (_dlopened) return rpmpythonRun_p(python, str, resultp);
     return rc;
 }
-
+#endif
