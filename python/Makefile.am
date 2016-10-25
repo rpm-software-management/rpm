@@ -2,7 +2,7 @@
 
 EXTRA_DIST = rpm/__init__.py rpm/transaction.py
 
-AM_CPPFLAGS = -I$(top_builddir)/include/
+AM_CPPFLAGS = -I$(top_builddir)/include/ -I$(top_builddir)/rpmio/
 AM_CPPFLAGS += -I$(top_srcdir)/python
 AM_CPPFLAGS += -I@WITH_PYTHON_INCLUDE@
 
@@ -30,7 +30,8 @@ _rpm_la_SOURCES = rpmmodule.c rpmsystem-py.h \
 	rpmstrpool-py.c rpmstrpool-py.h \
 	rpmtd-py.c rpmtd-py.h \
 	rpmte-py.c rpmte-py.h \
-	rpmts-py.c rpmts-py.h
+	rpmts-py.c rpmts-py.h \
+	rpmpython.c
 
 _rpmb_la_LDFLAGS = -module -avoid-version -shared
 _rpmb_la_LIBADD = \
