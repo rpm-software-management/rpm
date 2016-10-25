@@ -2,7 +2,7 @@
 
 EXTRA_DIST = rpm/__init__.py rpm/transaction.py
 
-AM_CPPFLAGS = -I$(top_builddir)/include/ -I$(top_builddir)/rpmio/
+AM_CPPFLAGS = -I$(top_builddir)/include/
 AM_CPPFLAGS += -I$(top_srcdir)/python
 AM_CPPFLAGS += -I@WITH_PYTHON_INCLUDE@
 

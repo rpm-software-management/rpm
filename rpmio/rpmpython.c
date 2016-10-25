@@ -8,7 +8,7 @@
 
 #include "debug.h"
 
-#include "rpmpython.h"
+#include "python/rpmpython.h"
 
 int _rpmpython_debug = 0;
 
@@ -74,3 +74,4 @@ rpmRC rpmpythonRun(rpmpython python, const char * str, char **resultp)
     if (_dlopened) return rpmpythonRun_p(python, str, resultp);
     return rc;
 }
+

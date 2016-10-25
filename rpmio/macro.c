@@ -35,7 +35,7 @@ extern int optind;
 #endif
 
 #ifdef WITH_PYTHONEMBED
-#include "rpmio/rpmpython.h"
+#include "python/rpmpython.h"
 #endif
 
 #include "debug.h"
