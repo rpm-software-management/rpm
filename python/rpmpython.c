@@ -1,14 +1,12 @@
+#ifdef WITH_PYTHONEMBED
 #include <Python.h>
 #if PY_VERSION_HEX < 0x03050000 && PY_VERSION_HEX >= 0x03000000
 #include <fileutils.h>
 #define Py_DecodeLocale _Py_char2wchar
 #endif
 
-
-#include <rpm/rpmsw.h>
 #include <rpm/rpmio.h>
 #include <rpm/rpmmacro.h>
-
 
 #include "rpmpython.h"
 
@@ -159,3 +157,4 @@ fprintf(stderr, "==> %s(%p,%s,%p)\n", __FUNCTION__, python, str, resultp);
     }
     return rc;
 }
+#endif

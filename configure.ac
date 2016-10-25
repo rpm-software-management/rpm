@@ -809,6 +809,8 @@ AS_IF([test "$with_pythonembed" = yes],[
 AC_DEFINE(WITH_PYTHONEMBED, 1, [Extend build time macro interpreter with embedded python support?])
 ])
 AM_CONDITIONAL(WITH_PYTHONEMBED,[test "$with_pythonembed" = yes])
+WITH_PYTHONEMBED=-DWITH_PYTHONEMBED=1
+AC_SUBST(WITH_PYTHONEMBED)
 
 
 AC_ARG_ENABLE(plugins, [AS_HELP_STRING([--disable-plugins],[build without plugin support])],,[enable_plugins=yes])
