@@ -61,8 +61,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     rpmVerifyAttrs flags = rpmfiVFlags(fi);
     const char * fn = rpmfiFN(fi);
     struct stat sb;
-
-    *res = RPMVERIFY_NONE;
+    rpmVerifyAttrs vfy = RPMVERIFY_NONE;
 
     /*
      * Check to see if the file was installed - if not pretend all is OK.
@@ -70,7 +69,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     switch (rpmfiFState(fi)) {
     case RPMFILE_STATE_NETSHARED:
     case RPMFILE_STATE_NOTINSTALLED:
-	return 0;
+	goto exit;
 	break;
     case RPMFILE_STATE_REPLACED:
 	/* For replaced files we can only verify if it exists at all */
@@ -91,14 +90,14 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     }
 
     if (fn == NULL || lstat(fn, &sb) != 0) {
-	*res |= RPMVERIFY_LSTATFAIL;
-	return 1;
+	vfy |= RPMVERIFY_LSTATFAIL;
+	goto exit;
     }
 
     /* If we expected a directory but got a symlink to one, follow the link */
     if (S_ISDIR(fmode) && S_ISLNK(sb.st_mode) && stat(fn, &sb) != 0) {
-	*res |= RPMVERIFY_LSTATFAIL;
-	return 1;
+	vfy |= RPMVERIFY_LSTATFAIL;
+	goto exit;
     }
 
     /* Links have no mode, other types have no linkto */
@@ -132,14 +131,14 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	    rpm_loff_t fsize;
 
 	    if (rpmDoDigest(algo, fn, 0, fdigest, &fsize)) {
-		*res |= (RPMVERIFY_READFAIL|RPMVERIFY_FILEDIGEST);
+		vfy |= (RPMVERIFY_READFAIL|RPMVERIFY_FILEDIGEST);
 	    } else {
 		sb.st_size = fsize;
 		if (memcmp(fdigest, digest, diglen))
-		    *res |= RPMVERIFY_FILEDIGEST;
+		    vfy |= RPMVERIFY_FILEDIGEST;
 	    }
 	} else {
-	    *res |= RPMVERIFY_FILEDIGEST;
+	    vfy |= RPMVERIFY_FILEDIGEST;
 	} 
     } 
 
@@ -148,18 +147,18 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	int size = 0;
 
 	if ((size = readlink(fn, linkto, sizeof(linkto)-1)) == -1)
-	    *res |= (RPMVERIFY_READLINKFAIL|RPMVERIFY_LINKTO);
+	    vfy |= (RPMVERIFY_READLINKFAIL|RPMVERIFY_LINKTO);
 	else {
 	    const char * flink = rpmfiFLink(fi);
 	    linkto[size] = '\0';
 	    if (flink == NULL || !rstreq(linkto, flink))
-		*res |= RPMVERIFY_LINKTO;
+		vfy |= RPMVERIFY_LINKTO;
 	}
     } 
 
     if (flags & RPMVERIFY_FILESIZE) {
 	if (sb.st_size != rpmfiFSize(fi))
-	    *res |= RPMVERIFY_FILESIZE;
+	    vfy |= RPMVERIFY_FILESIZE;
     } 
 
     if (flags & RPMVERIFY_MODE) {
@@ -181,7 +180,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	}
 
 	if (metamode != filemode)
-	    *res |= RPMVERIFY_MODE;
+	    vfy |= RPMVERIFY_MODE;
 
 #if WITH_ACL
 	/*
@@ -191,7 +190,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	acl_t facl = acl_get_file(fn, ACL_TYPE_ACCESS);
 	if (facl) {
 	    if (acl_equiv_mode(facl, NULL) == 1) {
-		*res |= RPMVERIFY_MODE;
+		vfy |= RPMVERIFY_MODE;
 	    }
 	    acl_free(facl);
 	}
@@ -202,12 +201,12 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	if (S_ISCHR(fmode) != S_ISCHR(sb.st_mode)
 	 || S_ISBLK(fmode) != S_ISBLK(sb.st_mode))
 	{
-	    *res |= RPMVERIFY_RDEV;
+	    vfy |= RPMVERIFY_RDEV;
 	} else if (S_ISDEV(fmode) && S_ISDEV(sb.st_mode)) {
 	    rpm_rdev_t st_rdev = (sb.st_rdev & 0xffff);
 	    rpm_rdev_t frdev = (rpmfiFRdev(fi) & 0xffff);
 	    if (st_rdev != frdev)
-		*res |= RPMVERIFY_RDEV;
+		vfy |= RPMVERIFY_RDEV;
 	} 
     }
 
@@ -228,7 +227,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	}
 	
 	if (cap_compare(cap, fcap) != 0)
-	    *res |= RPMVERIFY_CAPS;
+	    vfy |= RPMVERIFY_CAPS;
 
 	cap_free(fcap);
 	cap_free(cap);
@@ -236,7 +235,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 #endif
 
     if ((flags & RPMVERIFY_MTIME) && (sb.st_mtime != rpmfiFMtime(fi))) {
-	*res |= RPMVERIFY_MTIME;
+	vfy |= RPMVERIFY_MTIME;
     }
 
     if (flags & RPMVERIFY_USER) {
@@ -257,7 +256,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	}
 
 	if (!(namematch || idmatch))
-	    *res |= RPMVERIFY_USER;
+	    vfy |= RPMVERIFY_USER;
     }
 
     if (flags & RPMVERIFY_GROUP) {
@@ -278,10 +277,14 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	}
 
 	if (!(namematch || idmatch))
-	    *res |= RPMVERIFY_GROUP;
+	    vfy |= RPMVERIFY_GROUP;
     }
 
-    return 0;
+exit:
+    if (res)
+	*res = vfy;
+
+    return (vfy & RPMVERIFY_LSTATFAIL) ? 1 : 0;
 }
 
 /**
