@@ -61,7 +61,6 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     rpmVerifyAttrs flags = rpmfiVFlags(fi);
     const char * fn = rpmfiFN(fi);
     struct stat sb;
-    int rc;
 
     *res = RPMVERIFY_NONE;
 
@@ -132,12 +131,12 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	    unsigned char fdigest[diglen];
 	    rpm_loff_t fsize;
 
-	    rc = rpmDoDigest(algo, fn, 0, fdigest, &fsize);
-	    sb.st_size = fsize;
-	    if (rc) {
+	    if (rpmDoDigest(algo, fn, 0, fdigest, &fsize)) {
 		*res |= (RPMVERIFY_READFAIL|RPMVERIFY_FILEDIGEST);
-	    } else if (memcmp(fdigest, digest, diglen)) {
-		*res |= RPMVERIFY_FILEDIGEST;
+	    } else {
+		sb.st_size = fsize;
+		if (memcmp(fdigest, digest, diglen))
+		    *res |= RPMVERIFY_FILEDIGEST;
 	    }
 	} else {
 	    *res |= RPMVERIFY_FILEDIGEST;
