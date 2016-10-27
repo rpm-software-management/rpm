@@ -197,7 +197,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
     /* Sanity check signature tags */
     for (i = 1; i < il; i++) {
 	struct entryInfo_s info;
-	xx = headerVerifyInfo(1, dl, pe+i, &info, 0);
+	xx = headerVerifyInfo(1, dl, pe+i, &info);
 	if (xx != -1) {
 	    rasprintf(&buf, 
 		_("sigh tag[%d]: BAD, tag %d type %d offset %d count %d"),

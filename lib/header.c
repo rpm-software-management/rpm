@@ -203,7 +203,7 @@ Header headerNew(void)
     return headerCreate(NULL, 0, 0);
 }
 
-int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
+int headerVerifyInfo(int il, int dl, const void * pev, void * iv)
 {
     entryInfo pe = (entryInfo) pev;
     entryInfo info = iv;
@@ -212,8 +212,6 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
 
     for (i = 0; i < il; i++) {
 	ei2h(&pe[i], info);
-	if (negate)
-	    info->offset = -info->offset;
 
 	/* Previous data must not overlap */
 	if (end > info->offset)

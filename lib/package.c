@@ -169,7 +169,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 
     /* Find a header-only digest/signature tag. */
     for (int i = ril; i < il; i++) {
-	if (headerVerifyInfo(1, dl, pe+i, &einfo, 0) != -1) {
+	if (headerVerifyInfo(1, dl, pe+i, &einfo) != -1) {
 	    rasprintf(buf,
 		_("tag[%d]: BAD, tag %d type %d offset %d count %d"),
 		i, einfo.tag, einfo.type,
@@ -277,7 +277,7 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
     }
 
     /* Check (and convert) the 1st tag element. */
-    if (headerVerifyInfo(1, dl, pe, &einfo, 0) != -1) {
+    if (headerVerifyInfo(1, dl, pe, &einfo) != -1) {
 	rasprintf(buf, _("tag[%d]: BAD, tag %d type %d offset %d count %d"),
 		0, einfo.tag, einfo.type, einfo.offset, einfo.count);
 	goto exit;
@@ -380,7 +380,7 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     /* Sanity check the rest of the header structure. */
     if (rc != RPMRC_FAIL) {
 	struct entryInfo_s info;
-	int xx = headerVerifyInfo(ril-1, dl, pe+1, &info, 0);
+	int xx = headerVerifyInfo(ril-1, dl, pe+1, &info);
 	if (xx != -1) {
 	    rasprintf(&buf,
 		    _("tag[%d]: BAD, tag %d type %d offset %d count %d"),

@@ -76,11 +76,10 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
  * @param dl		no. of bytes in header data.
  * @param pev		1st element in tag array, big-endian
  * @param iv		failing (or last) tag element, host-endian
- * @param negate	negative offset expected?
  * @return		-1 on success, otherwise failing tag element index
  */
 RPM_GNUC_INTERNAL
-int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate);
+int headerVerifyInfo(int il, int dl, const void * pev, void * iv);
 
 
 /** \ingroup header
