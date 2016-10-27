@@ -56,7 +56,7 @@ extern "C" {
 #endif
 
 /* convert entry info to host endianess */
-static inline void ei2h(entryInfo pe, entryInfo info)
+static inline void ei2h(const struct entryInfo_s *pe, struct entryInfo_s *info)
 {
     info->tag = ntohl(pe->tag);
     info->type = ntohl(pe->type);
@@ -74,12 +74,13 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
  * Perform simple sanity and range checks on header tag(s).
  * @param il		no. of tags in header
  * @param dl		no. of bytes in header data.
- * @param pev		1st element in tag array, big-endian
- * @param iv		failing (or last) tag element, host-endian
+ * @param pe		1st element in tag array, big-endian
+ * @retval info		failing (or last) tag element, host-endian
  * @return		-1 on success, otherwise failing tag element index
  */
 RPM_GNUC_INTERNAL
-int headerVerifyInfo(int il, int dl, const void * pev, void * iv);
+int headerVerifyInfo(int il, int dl, const struct entryInfo_s * pe,
+		     struct entryInfo_s * info);
 
 
 /** \ingroup header

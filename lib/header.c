@@ -203,10 +203,9 @@ Header headerNew(void)
     return headerCreate(NULL, 0, 0);
 }
 
-int headerVerifyInfo(int il, int dl, const void * pev, void * iv)
+int headerVerifyInfo(int il, int dl, const struct entryInfo_s * pe,
+		     struct entryInfo_s * info)
 {
-    entryInfo pe = (entryInfo) pev;
-    entryInfo info = iv;
     int i, tsize;
     int32_t end = 0;
 
