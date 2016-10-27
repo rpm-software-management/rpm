@@ -53,20 +53,19 @@ static int cap_compare(cap_t acap, cap_t bcap)
 }
 #endif
 	
-int rpmVerifyFile(const rpmts ts, const rpmfi fi,
-		rpmVerifyAttrs * res, rpmVerifyAttrs omitMask)
+rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
 {
-    rpm_mode_t fmode = rpmfiFMode(fi);
-    rpmfileAttrs fileAttrs = rpmfiFFlags(fi);
-    rpmVerifyAttrs flags = rpmfiVFlags(fi);
-    const char * fn = rpmfiFN(fi);
+    rpm_mode_t fmode = rpmfilesFMode(fi, ix);
+    rpmfileAttrs fileAttrs = rpmfilesFFlags(fi, ix);
+    rpmVerifyAttrs flags = rpmfilesVFlags(fi, ix);
+    const char * fn = rpmfilesFN(fi, ix);
     struct stat sb;
     rpmVerifyAttrs vfy = RPMVERIFY_NONE;
 
     /*
      * Check to see if the file was installed - if not pretend all is OK.
      */
-    switch (rpmfiFState(fi)) {
+    switch (rpmfilesFState(fi, ix)) {
     case RPMFILE_STATE_NETSHARED:
     case RPMFILE_STATE_NOTINSTALLED:
 	goto exit;
@@ -126,7 +125,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	size_t diglen;
 
 	/* XXX If --nomd5, then prelinked library sizes are not corrected. */
-	if ((digest = rpmfiFDigest(fi, &algo, &diglen))) {
+	if ((digest = rpmfilesFDigest(fi, ix, &algo, &diglen))) {
 	    unsigned char fdigest[diglen];
 	    rpm_loff_t fsize;
 
@@ -149,7 +148,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	if ((size = readlink(fn, linkto, sizeof(linkto)-1)) == -1)
 	    vfy |= (RPMVERIFY_READLINKFAIL|RPMVERIFY_LINKTO);
 	else {
-	    const char * flink = rpmfiFLink(fi);
+	    const char * flink = rpmfilesFLink(fi, ix);
 	    linkto[size] = '\0';
 	    if (flink == NULL || !rstreq(linkto, flink))
 		vfy |= RPMVERIFY_LINKTO;
@@ -157,7 +156,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     } 
 
     if (flags & RPMVERIFY_FILESIZE) {
-	if (sb.st_size != rpmfiFSize(fi))
+	if (sb.st_size != rpmfilesFSize(fi, ix))
 	    vfy |= RPMVERIFY_FILESIZE;
     } 
 
@@ -204,7 +203,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	    vfy |= RPMVERIFY_RDEV;
 	} else if (S_ISDEV(fmode) && S_ISDEV(sb.st_mode)) {
 	    rpm_rdev_t st_rdev = (sb.st_rdev & 0xffff);
-	    rpm_rdev_t frdev = (rpmfiFRdev(fi) & 0xffff);
+	    rpm_rdev_t frdev = (rpmfilesFRdev(fi, ix) & 0xffff);
 	    if (st_rdev != frdev)
 		vfy |= RPMVERIFY_RDEV;
 	} 
@@ -217,7 +216,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
  	 * capabilities at all but suffices for now... 
  	 */
 	cap_t cap, fcap;
-	cap = cap_from_text(rpmfiFCaps(fi));
+	cap = cap_from_text(rpmfilesFCaps(fi, ix));
 	if (!cap) {
 	    cap = cap_from_text("=");
 	}
@@ -234,13 +233,13 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     }
 #endif
 
-    if ((flags & RPMVERIFY_MTIME) && (sb.st_mtime != rpmfiFMtime(fi))) {
+    if ((flags & RPMVERIFY_MTIME) && (sb.st_mtime != rpmfilesFMtime(fi, ix))) {
 	vfy |= RPMVERIFY_MTIME;
     }
 
     if (flags & RPMVERIFY_USER) {
 	const char * name = rpmugUname(sb.st_uid);
-	const char * fuser = rpmfiFUser(fi);
+	const char * fuser = rpmfilesFUser(fi, ix);
 	uid_t uid;
 	int namematch = 0;
 	int idmatch = 0;
@@ -261,7 +260,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 
     if (flags & RPMVERIFY_GROUP) {
 	const char * name = rpmugGname(sb.st_gid);
-	const char * fgroup = rpmfiFGroup(fi);
+	const char * fgroup = rpmfilesFGroup(fi, ix);
 	gid_t gid;
 	int namematch = 0;
 	int idmatch = 0;
@@ -281,6 +280,13 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     }
 
 exit:
+    return vfy;
+}
+
+int rpmVerifyFile(const rpmts ts, const rpmfi fi,
+		rpmVerifyAttrs * res, rpmVerifyAttrs omitMask)
+{
+    rpmVerifyAttrs vfy = rpmfiVerify(fi, omitMask);
     if (res)
 	*res = vfy;
 

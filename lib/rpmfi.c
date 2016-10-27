@@ -1819,6 +1819,11 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
     return rpmfilesCompare(afi->files, afi ? afi->i : -1, bfi->files, bfi ? bfi->i : -1);
 }
 
+rpmVerifyAttrs rpmfiVerify(rpmfi fi, rpmVerifyAttrs omitMask)
+{
+    return rpmfilesVerify(fi->files, fi->i, omitMask);
+}
+
 rpmstrPool rpmfilesPool(rpmfiles fi)
 {
     return (fi != NULL) ? fi->pool : NULL;

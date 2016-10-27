@@ -3,11 +3,11 @@
 
 /** \ingroup rpmvf
  * \file lib/rpmvf.h
- * @todo Add a more complete API...
  *
  * \brief Verify a package. The constants that enable/disable some sanity checks (mainly used at post (un)install)
  */
 #include <rpm/rpmtypes.h>
+#include <rpm/rpmutil.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -87,13 +87,14 @@ typedef rpmFlags rpmVerifyFlags;
 
 /** \ingroup rpmvf
  * Verify file attributes (including digest).
- * @todo gnorpm and python bindings prevent this from being static.
+ * @deprecated		use rpmfiVerify() / rpmfilesVerify() instead
  * @param ts		transaction set
  * @param fi		file info (with linked header and current file index)
  * @retval *res		bit(s) returned to indicate failure
  * @param omitMask	bit(s) to disable verify checks
  * @return		0 on success (or not installed), 1 on error
  */
+RPM_GNUC_DEPRECATED
 int rpmVerifyFile(const rpmts ts, rpmfi fi,
 		rpmVerifyAttrs * res, rpmVerifyAttrs omitMask);
 
