@@ -20,8 +20,6 @@
 /* A long time ago in a galaxy far far away, signatures were not in a header */
 #define RPMSIGTYPE_HEADERSIG 5
 
-typedef struct rpmlead_s * rpmlead;
-
 static unsigned char const lead_magic[] = {
     RPMLEAD_MAGIC0, RPMLEAD_MAGIC1, RPMLEAD_MAGIC2, RPMLEAD_MAGIC3
 };
@@ -44,10 +42,8 @@ struct rpmlead_s {
     char reserved[16];      /*!< Pad to 96 bytes -- 8 byte aligned! */
 };
 
-rpmlead rpmLeadFromHeader(Header h)
+static int rpmLeadFromHeader(Header h, struct rpmlead_s *l)
 {
-    rpmlead l = NULL;
-
     if (h != NULL) {
 	int archnum, osnum;
 	char * nevr = headerGetAsString(h, RPMTAG_NEVR);
@@ -56,7 +52,6 @@ rpmlead rpmLeadFromHeader(Header h)
 	rpmGetArchInfo(NULL, &archnum);
 	rpmGetOsInfo(NULL, &osnum);
 
-	l = xcalloc(1, sizeof(*l));
 	l->major = 3;
 	l->minor = 0;
 	l->archnum = archnum;
@@ -70,41 +65,30 @@ rpmlead rpmLeadFromHeader(Header h)
 	free(nevr);
     }
 
-    return l;
-}
-
-rpmlead rpmLeadFree(rpmlead lead)
-{
-    free(lead);
-    return NULL;
+    return (h != NULL);
 }
 
 /* The lead needs to be 8 byte aligned */
 rpmRC rpmLeadWrite(FD_t fd, Header h)
 {
     rpmRC rc = RPMRC_FAIL;
+    struct rpmlead_s l;
 
-    rpmlead lead = rpmLeadFromHeader(h);
-
-    if (lead != NULL) {
-	struct rpmlead_s l;
-	memcpy(&l, lead, sizeof(l));
+    if (rpmLeadFromHeader(h, &l)) {
 	
-	l.type = htons(lead->type);
-	l.archnum = htons(lead->archnum);
-	l.osnum = htons(lead->osnum);
-	l.signature_type = htons(lead->signature_type);
+	l.type = htons(l.type);
+	l.archnum = htons(l.archnum);
+	l.osnum = htons(l.osnum);
+	l.signature_type = htons(l.signature_type);
 	    
 	if (Fwrite(&l, 1, sizeof(l), fd) == sizeof(l))
 	    rc = RPMRC_OK;
-
-	rpmLeadFree(lead);
     }
 
     return rc;
 }
 
-static rpmRC rpmLeadCheck(rpmlead lead, char **msg)
+static rpmRC rpmLeadCheck(struct rpmlead_s *lead, char **msg)
 {
     if (memcmp(lead->magic, lead_magic, sizeof(lead_magic))) {
 	*msg = xstrdup(_("not an rpm package"));

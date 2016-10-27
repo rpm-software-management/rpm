@@ -19,22 +19,6 @@ extern "C" {
 
 #define RPMLEAD_SIZE 96         /*!< Don't rely on sizeof(struct) */
 
-typedef struct rpmlead_s * rpmlead;
-
-/** \ingroup lead
- * Initialize a lead structure from header
- * param h		Header
- * @return		Pointer to populated lead structure (malloced)
- */
-rpmlead rpmLeadFromHeader(Header h);
-
-/** \ingroup lead
- * Free a lead structure
- * @param lead		Pointer to lead structure
- * @return		NULL always
- */
-rpmlead rpmLeadFree(rpmlead lead);
-
 /** \ingroup lead
  * Write lead to file handle.
  * @param fd		file handle
