@@ -20,6 +20,8 @@
 /* A long time ago in a galaxy far far away, signatures were not in a header */
 #define RPMSIGTYPE_HEADERSIG 5
 
+typedef struct rpmlead_s * rpmlead;
+
 static unsigned char const lead_magic[] = {
     RPMLEAD_MAGIC0, RPMLEAD_MAGIC1, RPMLEAD_MAGIC2, RPMLEAD_MAGIC3
 };
@@ -119,7 +121,7 @@ static rpmRC rpmLeadCheck(rpmlead lead, char **msg)
     return RPMRC_OK;
 }
 
-rpmRC rpmLeadRead(FD_t fd, rpmlead *lead, int *type, char **emsg)
+rpmRC rpmLeadRead(FD_t fd, int *type, char **emsg)
 {
     rpmRC rc = RPMRC_OK;
     struct rpmlead_s l;
@@ -143,10 +145,6 @@ rpmRC rpmLeadRead(FD_t fd, rpmlead *lead, int *type, char **emsg)
     }
 
     if (rc == RPMRC_OK) {
-	if (lead != NULL) {
-	    *lead = xmalloc(sizeof(l));
-	    memcpy(*lead, &l, sizeof(l));
-	}
 	if (type != NULL)
 	    *type = l.type;
     } else {

@@ -46,12 +46,11 @@ rpmRC rpmLeadWrite(FD_t fd, Header h);
 /** \ingroup lead
  * Read lead from file handle.
  * @param fd		file handle
- * @retval lead		pointer to package lead (malloced)
  * @retval type		RPMLEAD_BINARY or RPMLEAD_SOURCE on success
  * @retval emsg		failure message on error (malloced)
  * @return		RPMRC_OK on success, RPMRC_FAIL/RPMRC_NOTFOUND on error
  */
-rpmRC rpmLeadRead(FD_t fd, rpmlead *lead, int *type, char **emsg);
+rpmRC rpmLeadRead(FD_t fd, int *type, char **emsg);
 
 #ifdef __cplusplus
 }

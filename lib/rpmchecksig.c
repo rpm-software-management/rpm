@@ -254,7 +254,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     rpmDigestBundle plbundle = rpmDigestBundleNew();
     rpmDigestBundle hdrbundle = rpmDigestBundleNew();
 
-    if ((rc = rpmLeadRead(fd, NULL, NULL, &msg)) != RPMRC_OK) {
+    if ((rc = rpmLeadRead(fd, NULL, &msg)) != RPMRC_OK) {
 	goto exit;
     }
 

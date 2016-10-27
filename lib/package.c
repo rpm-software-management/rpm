@@ -535,7 +535,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 
     rpmtdReset(&sigtd);
 
-    if ((rc = rpmLeadRead(fd, NULL, &leadtype, msg)) != RPMRC_OK) {
+    if ((rc = rpmLeadRead(fd, &leadtype, msg)) != RPMRC_OK) {
 	/* Avoid message spew on manifests */
 	if (rc == RPMRC_NOTFOUND) {
 	    *msg = _free(*msg);
