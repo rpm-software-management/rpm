@@ -398,7 +398,7 @@ static const char * stateStr(rpmfileState fstate)
 static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask, int ghosts)
 {
     rpmVerifyAttrs verifyResult = 0;
-    int ec = 0;		/* assume no problems */
+    rpmVerifyAttrs verifyAll = 0; /* assume no problems */
     rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_FLAGS_VERIFY);
 
     if (fi == NULL)
@@ -410,16 +410,15 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask, int ghosts)
 	char *buf = NULL, *attrFormat;
 	const char *fstate = NULL;
 	char ac;
-	int rc;
 
 	/* If not verifying %ghost, skip ghost files. */
 	if ((fileAttrs & RPMFILE_GHOST) && !ghosts)
 	    continue;
 
-	rc = rpmVerifyFile(ts, fi, &verifyResult, omitMask);
+	verifyResult = rpmfiVerify(fi, omitMask);
 
 	/* Filter out timestamp differences of shared files */
-	if (rc == 0 && (verifyResult & RPMVERIFY_MTIME)) {
+	if (verifyResult & RPMVERIFY_MTIME) {
 	    rpmdbMatchIterator mi;
 	    mi = rpmtsInitIterator(ts, RPMDBI_BASENAMES, rpmfiFN(fi), 0);
 	    if (rpmdbGetIteratorCount(mi) > 1) 
@@ -433,7 +432,7 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask, int ghosts)
 
 	attrFormat = rpmFFlagsString(fileAttrs, "");
 	ac = rstreq(attrFormat, "") ? ' ' : attrFormat[0];
-	if (rc) {
+	if (verifyResult & RPMVERIFY_LSTATFAIL) {
 	    if (!(fileAttrs & (RPMFILE_MISSINGOK|RPMFILE_GHOST)) || rpmIsVerbose()) {
 		rasprintf(&buf, _("missing   %c %s"), ac, rpmfiFN(fi));
 		if ((verifyResult & RPMVERIFY_LSTATFAIL) != 0 &&
@@ -443,14 +442,11 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask, int ghosts)
 		    rstrcat(&buf, app);
 		    free(app);
 		}
-		ec = rc;
 	    }
 	} else if (verifyResult || fstate || rpmIsVerbose()) {
 	    char *verifyFormat = rpmVerifyString(verifyResult, ".");
 	    rasprintf(&buf, "%s  %c %s", verifyFormat, ac, rpmfiFN(fi));
 	    free(verifyFormat);
-
-	    if (verifyResult) ec = 1;
 	}
 	free(attrFormat);
 
@@ -460,10 +456,11 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask, int ghosts)
 	    rpmlog(RPMLOG_NOTICE, "%s\n", buf);
 	    buf = _free(buf);
 	}
+	verifyAll |= verifyResult;
     }
     rpmfiFree(fi);
 	
-    return ec;
+    return (verifyAll != 0) ? 1 : 0;
 }
 
 /**
