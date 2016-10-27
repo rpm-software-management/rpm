@@ -216,6 +216,17 @@ static PyObject *rpmfile_matches(rpmfileObject *s, PyObject *o)
     return result;
 }
 
+static PyObject *rpmfile_verify(rpmfileObject *s, PyObject *args, PyObject *kwds)
+{
+    static char *kwlist[] = { "omitMask", NULL };
+    rpmVerifyAttrs omitMask = 0;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist, &omitMask))
+	return NULL;
+
+    return Py_BuildValue("i", rpmfilesVerify(s->files, s->ix, omitMask));
+}
+
 static PyGetSetDef rpmfile_getseters[] = {
     { "fx",		(getter) rpmfile_fx,		NULL,
       "index in header and rpm.files object" },
@@ -272,6 +283,8 @@ static PyGetSetDef rpmfile_getseters[] = {
 
 static struct PyMethodDef rpmfile_methods[] = {
     { "matches", (PyCFunction) rpmfile_matches,		METH_O,
+	NULL },
+    { "verify",	(PyCFunction) rpmfile_verify,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
     { NULL, NULL, 0, NULL }
 };
