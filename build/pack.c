@@ -440,16 +440,12 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     }
 
     /* Write the lead section into the package. */
-    {	
-	rpmlead lead = rpmLeadFromHeader(pkg->header);
-	rc = rpmLeadWrite(fd, lead);
-	rpmLeadFree(lead);
-	if (rc != RPMRC_OK) {
-	    rc = RPMRC_FAIL;
-	    rpmlog(RPMLOG_ERR, _("Unable to write package: %s\n"),
-		 Fstrerror(fd));
-	    goto exit;
-	}
+    rc = rpmLeadWrite(fd, pkg->header);
+    if (rc != RPMRC_OK) {
+	rc = RPMRC_FAIL;
+	rpmlog(RPMLOG_ERR, _("Unable to write package: %s\n"),
+	     Fstrerror(fd));
+	goto exit;
     }
 
     /* Estimate cpio archive size to decide if use 32 bits or 64 bit tags. */

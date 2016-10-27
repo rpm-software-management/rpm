@@ -78,9 +78,11 @@ rpmlead rpmLeadFree(rpmlead lead)
 }
 
 /* The lead needs to be 8 byte aligned */
-rpmRC rpmLeadWrite(FD_t fd, rpmlead lead)
+rpmRC rpmLeadWrite(FD_t fd, Header h)
 {
     rpmRC rc = RPMRC_FAIL;
+
+    rpmlead lead = rpmLeadFromHeader(h);
 
     if (lead != NULL) {
 	struct rpmlead_s l;
@@ -93,7 +95,10 @@ rpmRC rpmLeadWrite(FD_t fd, rpmlead lead)
 	    
 	if (Fwrite(&l, 1, sizeof(l), fd) == sizeof(l))
 	    rc = RPMRC_OK;
+
+	rpmLeadFree(lead);
     }
+
     return rc;
 }
 

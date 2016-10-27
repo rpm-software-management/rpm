@@ -38,10 +38,10 @@ rpmlead rpmLeadFree(rpmlead lead);
 /** \ingroup lead
  * Write lead to file handle.
  * @param fd		file handle
- * @param lead		package lead
+ * @param h		package header
  * @return		RPMRC_OK on success, RPMRC_FAIL on error
  */
-rpmRC rpmLeadWrite(FD_t fd, rpmlead lead);
+rpmRC rpmLeadWrite(FD_t fd, Header h);
 
 /** \ingroup lead
  * Read lead from file handle.
