@@ -7,7 +7,7 @@ DISTCHECK_CONFIGURE_FLAGS = --with-external-db
 include $(top_srcdir)/rpm.am
 
 CLEANFILES =
-EXTRA_DIST = CHANGES ChangeLog CREDITS INSTALL \
+EXTRA_DIST = ChangeLog CREDITS INSTALL \
 	autogen.sh db3/configure installplatform platform.in
 BUILT_SOURCES =
 
