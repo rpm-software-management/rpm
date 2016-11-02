@@ -3,7 +3,7 @@
 
 /** \ingroup rpmdb dbi
  * \file lib/rpmdb.h
- * Access RPM indices using Berkeley DB interface(s).
+ * RPM database API.
  */
 
 #include <rpm/rpmtypes.h>
