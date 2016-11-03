@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2014-09-18 14:01+0300\n"
+"POT-Creation-Date: 2016-11-03 10:01+0200\n"
 "PO-Revision-Date: 2014-05-15 07:49+0700\n"
 "Last-Translator: Trần Ngọc Quân <vnwildman@gmail.com>\n"
 "Language-Team: Vietnamese <translation-team-vi@lists.sourceforge.net>\n"
@@ -817,7 +817,7 @@ msgstr "không cho phép %%dev glob: %s\n"
 msgid "Directory not found by glob: %s\n"
 msgstr "Glob (chức năng mở rộng mẫu khi tìm kiếm) không tìm thấy thư mục: %s\n"
 
-#: build/files.c:1566 lib/rpminstall.c:426
+#: build/files.c:1566 lib/rpminstall.c:428
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Glob (chức năng mở rộng mẫu khi tìm kiếm) không tìm thấy tập tin: %s\n"
@@ -920,74 +920,74 @@ msgstr "%s: dòng: %s\n"
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Không thể làm hợp quy tắc tên máy: %s\n"
 
-#: build/pack.c:350
+#: build/pack.c:351
 msgid "Unable to reload signature header.\n"
 msgstr "Không thể nạp lại phần đầu chữ ký.\n"
 
-#: build/pack.c:423
+#: build/pack.c:424
 #, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "Không thể nén phần trọng tải: %s\n"
 
-#: build/pack.c:462
+#: build/pack.c:463
 msgid "Unable to create immutable header region.\n"
 msgstr "Không thể tạo vùng đầu không thể thay đổi được.\n"
 
-#: build/pack.c:470
+#: build/pack.c:471
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Không thể mở %s: %s\n"
 
-#: build/pack.c:482
+#: build/pack.c:483
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Không thể ghi gói: %s\n"
 
-#: build/pack.c:506
+#: build/pack.c:507
 msgid "Unable to write temp header\n"
 msgstr "Không thể ghi phần đầu tạm\n"
 
-#: build/pack.c:515
+#: build/pack.c:516
 msgid "Bad CSA data\n"
 msgstr "Dữ liệu CSA sai\n"
 
-#: build/pack.c:526 build/pack.c:545 sign/rpmgensig.c:268 sign/rpmgensig.c:599
+#: build/pack.c:527 build/pack.c:546 sign/rpmgensig.c:268 sign/rpmgensig.c:599
 #: sign/rpmgensig.c:634
 #, fuzzy, c-format
 msgid "Could not seek in file %s: %s\n"
 msgstr "Không thể mở tập tin %s: %s\n"
 
-#: build/pack.c:537
+#: build/pack.c:538
 #, fuzzy, c-format
 msgid "Fread failed in file %s: %s\n"
 msgstr "%s bị lỗi ở tập tin %s: %s\n"
 
-#: build/pack.c:571
+#: build/pack.c:572
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Đã ghi: %s\n"
 
-#: build/pack.c:590
+#: build/pack.c:591
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr "Thực hiện %s:\n"
 
-#: build/pack.c:593
+#: build/pack.c:594
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "Việc thực hiện %s bị lỗi\n"
 
-#: build/pack.c:597
+#: build/pack.c:598
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "Gặp lỗi khi kiểm tra “%s”.\n"
 
-#: build/pack.c:644
+#: build/pack.c:645
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Không thể tạo tên tập tin kết xuất cho gói %s: %s\n"
 
-#: build/pack.c:661
+#: build/pack.c:662
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "không thể tạo %s: %s\n"
@@ -1593,182 +1593,182 @@ msgstr "gói %s đã được thêm vào nên bỏ qua %s\n"
 msgid "package %s was already added, replacing with %s\n"
 msgstr "gói %s đã được thêm vào nên thay thế bằng %s\n"
 
-#: lib/formats.c:65 lib/formats.c:101 lib/formats.c:183 lib/formats.c:209
-#: lib/formats.c:262 lib/formats.c:280 lib/formats.c:473 lib/formats.c:506
-#: lib/formats.c:544
+#: lib/formats.c:68 lib/formats.c:104 lib/formats.c:186 lib/formats.c:212
+#: lib/formats.c:265 lib/formats.c:283 lib/formats.c:476 lib/formats.c:509
+#: lib/formats.c:547
 msgid "(not a number)"
 msgstr "(không phải con số)"
 
-#: lib/formats.c:125
+#: lib/formats.c:128
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: lib/formats.c:135
+#: lib/formats.c:138
 msgid "%a %b %d %Y"
 msgstr "%a %d %b %Y"
 
-#: lib/formats.c:314
+#: lib/formats.c:317
 msgid "(not base64)"
 msgstr "(không phải base64)"
 
-#: lib/formats.c:326
+#: lib/formats.c:329
 msgid "(invalid type)"
 msgstr "(kiểu không hợp lệ)"
 
-#: lib/formats.c:349 lib/formats.c:429
+#: lib/formats.c:352 lib/formats.c:432
 msgid "(not a blob)"
 msgstr "(không phải blob)"
 
-#: lib/formats.c:384
+#: lib/formats.c:387
 msgid "(invalid xml type)"
 msgstr "(kiểu XML không hợp lệ)"
 
-#: lib/formats.c:434
+#: lib/formats.c:437
 msgid "(not an OpenPGP signature)"
 msgstr "(không phải chữ ký OpenPGP)"
 
-#: lib/formats.c:446
+#: lib/formats.c:449
 #, c-format
 msgid "Invalid date %u"
 msgstr "Ngày không hợp lệ %u"
 
-#: lib/formats.c:512
+#: lib/formats.c:515
 msgid "normal"
 msgstr "thông thường"
 
-#: lib/formats.c:515 lib/verify.c:369
+#: lib/formats.c:518 lib/verify.c:369
 msgid "replaced"
 msgstr "đã thay thế"
 
-#: lib/formats.c:518 lib/verify.c:363
+#: lib/formats.c:521 lib/verify.c:363
 msgid "not installed"
 msgstr "chưa cài đặt"
 
-#: lib/formats.c:521 lib/verify.c:365
+#: lib/formats.c:524 lib/verify.c:365
 msgid "net shared"
 msgstr "chia sẻ qua mạng"
 
-#: lib/formats.c:524 lib/verify.c:367
+#: lib/formats.c:527 lib/verify.c:367
 msgid "wrong color"
 msgstr "màu sai"
 
-#: lib/formats.c:527
+#: lib/formats.c:530
 msgid "missing"
 msgstr "thiếu"
 
-#: lib/formats.c:530
+#: lib/formats.c:533
 msgid "(unknown)"
 msgstr "(không hiểu)"
 
-#: lib/formats.c:565
+#: lib/formats.c:568
 msgid "(not a string)"
 msgstr "(không phải chuỗi)"
 
-#: lib/fsm.c:704
+#: lib/fsm.c:709
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s được lưu dạng %s\n"
 
-#: lib/fsm.c:756
+#: lib/fsm.c:761
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s được tạo dạng %s\n"
 
-#: lib/fsm.c:1029
+#: lib/fsm.c:1034
 #, c-format
 msgid "%s %s: remove failed: %s\n"
 msgstr "%s %s: gặp lỗi khi gỡ bỏ: %s\n"
 
-#: lib/fsm.c:1030
+#: lib/fsm.c:1035
 msgid "directory"
 msgstr "thư mục"
 
-#: lib/fsm.c:1030
+#: lib/fsm.c:1035
 msgid "file"
 msgstr "tập tin"
 
-#: lib/package.c:155
+#: lib/package.c:156
 #, fuzzy, c-format
 msgid "%s has unverifiable signature"
 msgstr "đang bỏ qua %s với chữ ký không thể thầm tra được\n"
 
-#: lib/package.c:183 lib/package.c:297 lib/package.c:404
+#: lib/package.c:184 lib/package.c:299 lib/package.c:406
 #, fuzzy, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d"
 msgstr "thẻ [%d]: SAI, thẻ %d kiểu %d bù %d số lượng %d\n"
 
-#: lib/package.c:202
+#: lib/package.c:204
 #, fuzzy
 msgid "hdr SHA1: BAD, not hex"
 msgstr "hdr SHA1: SAI, không phải thập lục\n"
 
-#: lib/package.c:214
+#: lib/package.c:216
 #, fuzzy
 msgid "hdr RSA: BAD, not binary"
 msgstr "hdr RSA: SAI, không phải nhị phân\n"
 
-#: lib/package.c:224
+#: lib/package.c:226
 #, fuzzy
 msgid "hdr DSA: BAD, not binary"
 msgstr "hdr DSA: SAI, không phải nhị phân\n"
 
-#: lib/package.c:313
+#: lib/package.c:315
 #, fuzzy, c-format
 msgid "region tag: BAD, tag %d type %d offset %d count %d"
 msgstr "thẻ vùng: SAI, thẻ %d kiểu %d bù %d số lượng %d\n"
 
-#: lib/package.c:322
+#: lib/package.c:324
 #, fuzzy, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d"
 msgstr "bù vùng: SAI, thẻ %d kiểu %d bù %d số lượng %d\n"
 
-#: lib/package.c:341
+#: lib/package.c:343
 #, fuzzy, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d"
 msgstr "vùng theo đuôi: SAI, thẻ %d kiểu %d bù %d số lượng %d\n"
 
-#: lib/package.c:350
+#: lib/package.c:352
 #, fuzzy, c-format
 msgid "region size: BAD, ril(%d) > il(%d)"
 msgstr "kích cỡ vùng: SAI, ril(%d) > il(%d)\n"
 
-#: lib/package.c:381
+#: lib/package.c:383
 #, fuzzy, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
 msgstr "kích cỡ blob (%d): SAI, 8 + 16 * il(%d) + dl(%d)\n"
 
-#: lib/package.c:458
+#: lib/package.c:460
 #, fuzzy, c-format
 msgid "hdr size(%d): BAD, read returned %d"
 msgstr "kích cỡ hdr (%d): SAI, hàm đọc đã trả về %d\n"
 
-#: lib/package.c:462
+#: lib/package.c:464
 #, fuzzy
 msgid "hdr magic: BAD"
 msgstr "ma thuật hdr: SAI\n"
 
-#: lib/package.c:467
+#: lib/package.c:469
 #, fuzzy, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range"
 msgstr "thẻ hdr: SAI, tổng số thẻ (%d) ở ngoài phạm vi\n"
 
-#: lib/package.c:473
+#: lib/package.c:475
 #, fuzzy, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range"
 msgstr "dữ liệu hdr: SAI, tổng số byte (%d) ở ngoài phạm vi\n"
 
-#: lib/package.c:483
+#: lib/package.c:485
 #, fuzzy, c-format
 msgid "hdr blob(%zd): BAD, read returned %d"
 msgstr "hdr blob(%zd): SAI, việc đọc trả về %d\n"
 
-#: lib/package.c:496
+#: lib/package.c:498
 #, fuzzy
 msgid "hdr load: BAD"
 msgstr "nạp hdr: SAI\n"
 
-#: lib/package.c:648
+#: lib/package.c:650
 #, fuzzy, c-format
 msgid "Fread failed: %s"
 msgstr "%s: Fread bị lỗi: %s\n"
@@ -2373,7 +2373,7 @@ msgstr "số thứ tự gói không hợp lệ: %s\n"
 msgid "record %u could not be read\n"
 msgstr "không thể đọc mục ghi %u\n"
 
-#: lib/query.c:457 lib/rpminstall.c:660
+#: lib/query.c:457 lib/rpminstall.c:662
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "chưa cài đặt gói %s\n"
@@ -2554,54 +2554,54 @@ msgstr "người dùng %s không tồn tại nên dùng người chủ (root)\n"
 msgid "group %s does not exist - using root\n"
 msgstr "nhóm %s không tồn tại nên dùng người chủ (root)\n"
 
-#: lib/rpmfi.c:2121
+#: lib/rpmfi.c:2128
 msgid "Bad magic"
 msgstr "Ma thuật sai"
 
-#: lib/rpmfi.c:2122
+#: lib/rpmfi.c:2129
 msgid "Bad/unreadable  header"
 msgstr "Phần đầu sai hoặc không đọc được"
 
-#: lib/rpmfi.c:2145
+#: lib/rpmfi.c:2152
 msgid "Header size too big"
 msgstr "Kích cỡ phần đầu quá lớn "
 
-#: lib/rpmfi.c:2146
+#: lib/rpmfi.c:2153
 msgid "File too large for archive"
 msgstr "Tập tin quá lớn để nén"
 
-#: lib/rpmfi.c:2147
+#: lib/rpmfi.c:2154
 msgid "Unknown file type"
 msgstr "Không rõ kiểu tập tin"
 
-#: lib/rpmfi.c:2148
+#: lib/rpmfi.c:2155
 #, fuzzy
 msgid "Missing file(s)"
 msgstr "Thiếu liên kết cứng"
 
-#: lib/rpmfi.c:2149
+#: lib/rpmfi.c:2156
 msgid "Digest mismatch"
 msgstr "Mã băm tập tin không khớp"
 
-#: lib/rpmfi.c:2150
+#: lib/rpmfi.c:2157
 msgid "Internal error"
 msgstr "Lỗi nội bộ"
 
-#: lib/rpmfi.c:2151
+#: lib/rpmfi.c:2158
 msgid "Archive file not in header"
 msgstr "Tập tin kho lưu không phải trong phần đầu"
 
-#: lib/rpmfi.c:2159
+#: lib/rpmfi.c:2166
 msgid " failed - "
 msgstr " bị lỗi — "
 
-#: lib/rpmfi.c:2162
+#: lib/rpmfi.c:2169
 #, fuzzy, c-format
 msgid "%s: (error 0x%x)"
 msgstr "(lỗi 0x%x)"
 
 #: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:308
-#: lib/rpminstall.c:337 tools/rpmgraph.c:92 tools/rpmgraph.c:129
+#: lib/rpminstall.c:339 tools/rpmgraph.c:92 tools/rpmgraph.c:129
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "lỗi mở %s: %s\n"
@@ -2638,42 +2638,42 @@ msgstr "Quan hệ phụ thuộc bị lỗi:\n"
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: không phải là gói rpm (hoặc manifest gói): %s\n"
 
-#: lib/rpminstall.c:357 lib/rpminstall.c:722 tools/rpmgraph.c:112
+#: lib/rpminstall.c:359 lib/rpminstall.c:724 tools/rpmgraph.c:112
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s không thể được cài đặt\n"
 
-#: lib/rpminstall.c:464
+#: lib/rpminstall.c:466
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Đang lấy %s\n"
 
-#: lib/rpminstall.c:476
+#: lib/rpminstall.c:478
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "bỏ qua %s - bộ truyền gặp lỗi\n"
 
-#: lib/rpminstall.c:542
+#: lib/rpminstall.c:544
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "không thể định vị lại gói %s\n"
 
-#: lib/rpminstall.c:573
+#: lib/rpminstall.c:575
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "gặp lỗi khi đọc từ tập tin %s\n"
 
-#: lib/rpminstall.c:667
+#: lib/rpminstall.c:669
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "“%s” chỉ định nhiều gói:\n"
 
-#: lib/rpminstall.c:706
+#: lib/rpminstall.c:708
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "không thể mở %s: %s\n"
 
-#: lib/rpminstall.c:712
+#: lib/rpminstall.c:714
 #, c-format
 msgid "Installing %s\n"
 msgstr "Đang cài đặt %s\n"

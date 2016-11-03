@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2014-09-18 14:01+0300\n"
+"POT-Creation-Date: 2016-11-03 10:01+0200\n"
 "PO-Revision-Date: 2014-04-07 10:19+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Serbian (http://www.transifex.com/projects/p/rpm/language/"
@@ -775,7 +775,7 @@ msgstr ""
 msgid "Directory not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1566 lib/rpminstall.c:426
+#: build/files.c:1566 lib/rpminstall.c:428
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Датотека није пронађена поклапањем: %s\n"
@@ -878,74 +878,74 @@ msgstr "%s: ред: %s\n"
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Није могуће утврдити назив домаћина: %s\n"
 
-#: build/pack.c:350
+#: build/pack.c:351
 msgid "Unable to reload signature header.\n"
 msgstr "Не могу да поново учитам заглавље потписа.\n"
 
-#: build/pack.c:423
+#: build/pack.c:424
 #, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "Непозната компресија товара: %s\n"
 
-#: build/pack.c:462
+#: build/pack.c:463
 msgid "Unable to create immutable header region.\n"
 msgstr "Не могу да направим непроменљиву област заглавља.\n"
 
-#: build/pack.c:470
+#: build/pack.c:471
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Не могу да отворим %s: %s\n"
 
-#: build/pack.c:482
+#: build/pack.c:483
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Не могу да запишем пакет: %s\n"
 
-#: build/pack.c:506
+#: build/pack.c:507
 msgid "Unable to write temp header\n"
 msgstr "Не могу да упишем привремено заглавље\n"
 
-#: build/pack.c:515
+#: build/pack.c:516
 msgid "Bad CSA data\n"
 msgstr "Лоши CSA подаци\n"
 
-#: build/pack.c:526 build/pack.c:545 sign/rpmgensig.c:268 sign/rpmgensig.c:599
+#: build/pack.c:527 build/pack.c:546 sign/rpmgensig.c:268 sign/rpmgensig.c:599
 #: sign/rpmgensig.c:634
 #, fuzzy, c-format
 msgid "Could not seek in file %s: %s\n"
 msgstr "Не могу да отворим %%files датотеку %s: %m\n"
 
-#: build/pack.c:537
+#: build/pack.c:538
 #, fuzzy, c-format
 msgid "Fread failed in file %s: %s\n"
 msgstr "%s: Fread није успело: %s\n"
 
-#: build/pack.c:571
+#: build/pack.c:572
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записано: %s\n"
 
-#: build/pack.c:590
+#: build/pack.c:591
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr "Извршавам „%s“:\n"
 
-#: build/pack.c:593
+#: build/pack.c:594
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "Извршавање „%s“ није успело.\n"
 
-#: build/pack.c:597
+#: build/pack.c:598
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "Неуспела провера пакета „%s“.\n"
 
-#: build/pack.c:644
+#: build/pack.c:645
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Не могу да направим име излазне датотеке за пакет %s: %s\n"
 
-#: build/pack.c:661
+#: build/pack.c:662
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "не могу да направим %s: %s\n"
@@ -1544,177 +1544,177 @@ msgstr "пакет %s је већ додат, прескачем %s\n"
 msgid "package %s was already added, replacing with %s\n"
 msgstr "пакет %s је већ додат, замењујем са %s\n"
 
-#: lib/formats.c:65 lib/formats.c:101 lib/formats.c:183 lib/formats.c:209
-#: lib/formats.c:262 lib/formats.c:280 lib/formats.c:473 lib/formats.c:506
-#: lib/formats.c:544
+#: lib/formats.c:68 lib/formats.c:104 lib/formats.c:186 lib/formats.c:212
+#: lib/formats.c:265 lib/formats.c:283 lib/formats.c:476 lib/formats.c:509
+#: lib/formats.c:547
 msgid "(not a number)"
 msgstr "(није број)"
 
-#: lib/formats.c:125
+#: lib/formats.c:128
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: lib/formats.c:135
+#: lib/formats.c:138
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 
-#: lib/formats.c:314
+#: lib/formats.c:317
 msgid "(not base64)"
 msgstr "(није base64)"
 
-#: lib/formats.c:326
+#: lib/formats.c:329
 msgid "(invalid type)"
 msgstr "(неисправна врста)"
 
-#: lib/formats.c:349 lib/formats.c:429
+#: lib/formats.c:352 lib/formats.c:432
 msgid "(not a blob)"
 msgstr "(није blob)"
 
-#: lib/formats.c:384
+#: lib/formats.c:387
 msgid "(invalid xml type)"
 msgstr "(неисправна xml врста)"
 
-#: lib/formats.c:434
+#: lib/formats.c:437
 msgid "(not an OpenPGP signature)"
 msgstr "(није OpenPGP потпис)"
 
-#: lib/formats.c:446
+#: lib/formats.c:449
 #, c-format
 msgid "Invalid date %u"
 msgstr ""
 
-#: lib/formats.c:512
+#: lib/formats.c:515
 msgid "normal"
 msgstr ""
 
-#: lib/formats.c:515 lib/verify.c:369
+#: lib/formats.c:518 lib/verify.c:369
 msgid "replaced"
 msgstr ""
 
-#: lib/formats.c:518 lib/verify.c:363
+#: lib/formats.c:521 lib/verify.c:363
 msgid "not installed"
 msgstr ""
 
-#: lib/formats.c:521 lib/verify.c:365
+#: lib/formats.c:524 lib/verify.c:365
 msgid "net shared"
 msgstr ""
 
-#: lib/formats.c:524 lib/verify.c:367
+#: lib/formats.c:527 lib/verify.c:367
 msgid "wrong color"
 msgstr ""
 
-#: lib/formats.c:527
+#: lib/formats.c:530
 msgid "missing"
 msgstr ""
 
-#: lib/formats.c:530
+#: lib/formats.c:533
 msgid "(unknown)"
 msgstr ""
 
-#: lib/formats.c:565
+#: lib/formats.c:568
 msgid "(not a string)"
 msgstr ""
 
-#: lib/fsm.c:704
+#: lib/fsm.c:709
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s сачувано као %s\n"
 
-#: lib/fsm.c:756
+#: lib/fsm.c:761
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s направљено као %s\n"
 
-#: lib/fsm.c:1029
+#: lib/fsm.c:1034
 #, c-format
 msgid "%s %s: remove failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1030
+#: lib/fsm.c:1035
 msgid "directory"
 msgstr ""
 
-#: lib/fsm.c:1030
+#: lib/fsm.c:1035
 msgid "file"
 msgstr ""
 
-#: lib/package.c:155
+#: lib/package.c:156
 #, c-format
 msgid "%s has unverifiable signature"
 msgstr ""
 
-#: lib/package.c:183 lib/package.c:297 lib/package.c:404
+#: lib/package.c:184 lib/package.c:299 lib/package.c:406
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d"
 msgstr ""
 
-#: lib/package.c:202
+#: lib/package.c:204
 msgid "hdr SHA1: BAD, not hex"
 msgstr ""
 
-#: lib/package.c:214
+#: lib/package.c:216
 msgid "hdr RSA: BAD, not binary"
 msgstr ""
 
-#: lib/package.c:224
+#: lib/package.c:226
 msgid "hdr DSA: BAD, not binary"
 msgstr ""
 
-#: lib/package.c:313
+#: lib/package.c:315
 #, c-format
 msgid "region tag: BAD, tag %d type %d offset %d count %d"
 msgstr ""
 
-#: lib/package.c:322
+#: lib/package.c:324
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d"
 msgstr ""
 
-#: lib/package.c:341
+#: lib/package.c:343
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d"
 msgstr ""
 
-#: lib/package.c:350
+#: lib/package.c:352
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)"
 msgstr ""
 
-#: lib/package.c:381
+#: lib/package.c:383
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
 msgstr ""
 
-#: lib/package.c:458
+#: lib/package.c:460
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d"
 msgstr ""
 
-#: lib/package.c:462
+#: lib/package.c:464
 msgid "hdr magic: BAD"
 msgstr ""
 
-#: lib/package.c:467
+#: lib/package.c:469
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range"
 msgstr ""
 
-#: lib/package.c:473
+#: lib/package.c:475
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range"
 msgstr ""
 
-#: lib/package.c:483
+#: lib/package.c:485
 #, c-format
 msgid "hdr blob(%zd): BAD, read returned %d"
 msgstr ""
 
-#: lib/package.c:496
+#: lib/package.c:498
 msgid "hdr load: BAD"
 msgstr ""
 
-#: lib/package.c:648
+#: lib/package.c:650
 #, c-format
 msgid "Fread failed: %s"
 msgstr ""
@@ -2316,7 +2316,7 @@ msgstr "неисправан број пакета: %s\n"
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:457 lib/rpminstall.c:660
+#: lib/query.c:457 lib/rpminstall.c:662
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s није инсталиран\n"
@@ -2493,53 +2493,53 @@ msgstr "корисник %s не постоји - користим root\n"
 msgid "group %s does not exist - using root\n"
 msgstr "група %s не постоји - користим root\n"
 
-#: lib/rpmfi.c:2121
+#: lib/rpmfi.c:2128
 msgid "Bad magic"
 msgstr "Лош magic"
 
-#: lib/rpmfi.c:2122
+#: lib/rpmfi.c:2129
 msgid "Bad/unreadable  header"
 msgstr "Лоше/нечитљиво  заглавље"
 
-#: lib/rpmfi.c:2145
+#: lib/rpmfi.c:2152
 msgid "Header size too big"
 msgstr "Превелика величина заглавља"
 
-#: lib/rpmfi.c:2146
+#: lib/rpmfi.c:2153
 msgid "File too large for archive"
 msgstr ""
 
-#: lib/rpmfi.c:2147
+#: lib/rpmfi.c:2154
 msgid "Unknown file type"
 msgstr "Непозната врста датотеке"
 
-#: lib/rpmfi.c:2148
+#: lib/rpmfi.c:2155
 msgid "Missing file(s)"
 msgstr ""
 
-#: lib/rpmfi.c:2149
+#: lib/rpmfi.c:2156
 msgid "Digest mismatch"
 msgstr ""
 
-#: lib/rpmfi.c:2150
+#: lib/rpmfi.c:2157
 msgid "Internal error"
 msgstr "Интерна грешка"
 
-#: lib/rpmfi.c:2151
+#: lib/rpmfi.c:2158
 msgid "Archive file not in header"
 msgstr "Датотека архиве није у заглављу"
 
-#: lib/rpmfi.c:2159
+#: lib/rpmfi.c:2166
 msgid " failed - "
 msgstr " неуспело - "
 
-#: lib/rpmfi.c:2162
+#: lib/rpmfi.c:2169
 #, c-format
 msgid "%s: (error 0x%x)"
 msgstr ""
 
 #: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:308
-#: lib/rpminstall.c:337 tools/rpmgraph.c:92 tools/rpmgraph.c:129
+#: lib/rpminstall.c:339 tools/rpmgraph.c:92 tools/rpmgraph.c:129
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "отварање %s није успело: %s\n"
@@ -2576,42 +2576,42 @@ msgstr "Неуспеле зависности:\n"
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: није rpm пакет (или манифест пакета): %s\n"
 
-#: lib/rpminstall.c:357 lib/rpminstall.c:722 tools/rpmgraph.c:112
+#: lib/rpminstall.c:359 lib/rpminstall.c:724 tools/rpmgraph.c:112
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s се не може инсталирати\n"
 
-#: lib/rpminstall.c:464
+#: lib/rpminstall.c:466
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Прибављам %s\n"
 
-#: lib/rpminstall.c:476
+#: lib/rpminstall.c:478
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "прескачем %s - неуспео пренос\n"
 
-#: lib/rpminstall.c:542
+#: lib/rpminstall.c:544
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "пакет %s се не може премештати\n"
 
-#: lib/rpminstall.c:573
+#: lib/rpminstall.c:575
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "грешка при читању из датотеке %s\n"
 
-#: lib/rpminstall.c:667
+#: lib/rpminstall.c:669
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "„%s“ одређује више пакета:\n"
 
-#: lib/rpminstall.c:706
+#: lib/rpminstall.c:708
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "не могу да отворим %s: %s\n"
 
-#: lib/rpminstall.c:712
+#: lib/rpminstall.c:714
 #, c-format
 msgid "Installing %s\n"
 msgstr "Инсталирам %s\n"
