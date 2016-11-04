@@ -5,9 +5,6 @@ include $(top_srcdir)/rpm.am
 EXTRA_DIST =
 CLEANFILES =
 
-# HACK: This should not be here.
-rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`
-
 ##
 TESTSUITE = $(srcdir)/rpmtests
 EXTRA_DIST += local.at $(TESTSUITE)
@@ -93,7 +90,6 @@ CLEANFILES += atconfig
 
 atlocal:	atlocal.in Makefile
 	@sed \
-	  -e "s,[@]rpmbindir[@],$(rpmbindir)," \
 	  -e "s,[@]usrbindir[@],$(bindir)," \
 	  -e "s,[@]usrlibdir[@],$(libdir)," \
 	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir)," \

@@ -91,12 +91,7 @@ pkginclude_HEADERS += build/rpmfc.h
 pkginclude_HEADERS += build/rpmspec.h
 
 
-rpmbindir = `echo $(bindir) | $(SED) -e s,usr/bin,bin,`
-rpmbin_PROGRAMS = rpm
-
-rpm_symlink_prefix = `case "$(bindir)" in *usr/bin*) echo '../../bin/';; *) echo '';; esac`
-
-bin_PROGRAMS =		rpm2cpio rpmbuild rpmdb rpmkeys rpmsign rpmspec
+bin_PROGRAMS =		rpm rpm2cpio rpmbuild rpmdb rpmkeys rpmsign rpmspec
 if WITH_ARCHIVE
 bin_PROGRAMS += 	rpm2archive 
 endif
