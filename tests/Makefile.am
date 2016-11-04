@@ -102,6 +102,7 @@ DISTCLEANFILES = atlocal
 EXTRA_DIST += atlocal.in
 
 # Hack: Abusing testing$(bindir)/rpmbuild as stamp file
+# The chmod is needed when copying from read-only sources (eg in distcheck)
 testing$(bindir)/rpmbuild: ../rpmbuild
 	rm -rf testing
 	mkdir -p testing/$(bindir)
@@ -109,6 +110,7 @@ testing$(bindir)/rpmbuild: ../rpmbuild
 	(cd ${top_builddir} && \
 	          $(MAKE) DESTDIR=`pwd`/${subdir}/testing install)
 	cp -r ${srcdir}/data/ testing/
+	chmod -R u+w testing/data/
 	for d in dev etc magic tmp var; do if [ ! -d testing/$${d} ]; then mkdir testing/$${d}; fi; done
 	for node in stdin stderr stdout null; do ln -s /dev/$${node} testing/dev/$${node}; done
 	for cf in hosts resolv.conf passwd shadow group gshadow mtab fstab; do [ -f /etc/$${cf} ] && ln -s /etc/$${cf} testing/etc/$${cf}; done
