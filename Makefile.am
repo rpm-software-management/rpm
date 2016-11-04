@@ -302,6 +302,12 @@ BUILT_SOURCES += db.h
 endif
 DISTCLEANFILES = db.h
 
+ChangeLog:
+	touch ChangeLog
+
+dist-hook:
+	if [ -d .git ] && [ -x $(command -v git) ]; then git log --no-merges > $(distdir)/ChangeLog; fi
+
 clean-local:
 	rm -rf doc/hacking/html
 	rm -rf include
