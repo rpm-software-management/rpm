@@ -313,11 +313,9 @@ clean-local:
 	rm -rf include
 
 distclean-local:
+	rm -rf doc/librpm.doxy doc/librpm/html
 	rm -rf Doxytags
 	rm -f stamp-h.in db3/*.orig db3/db3lobjs
-
-maintainer-clean-local:
-	rm -rf doc/librpm/html
 
 $(top_srcdir)/preinstall.am: Makefile.am
 	rm -f $(top_srcdir)/preinstall.am
