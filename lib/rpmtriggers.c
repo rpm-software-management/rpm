@@ -114,8 +114,11 @@ void rpmtriggersPrepPostUnTransFileTrigs(rpmts ts, rpmte te)
 
     /* Iterate over file triggers in rpmdb */
     while ((rpmdbIndexIteratorNext(ii, &key, &keylen)) == 0) {
+	char pfx[keylen + 1];
+	memcpy(pfx, key, keylen);
+	pfx[keylen] = '\0';
 	/* Check if file trigger matches any file in this te */
-	rpmfi fi = rpmfilesFindPrefix(files, key);
+	rpmfi fi = rpmfilesFindPrefix(files, pfx);
 	if (rpmfiFC(fi) > 0) {
 	    /* If yes then store it */
 	    rpmdbAppendIterator(mi, rpmdbIndexIteratorPkgOffsets(ii),
