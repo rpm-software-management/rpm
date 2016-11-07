@@ -2158,7 +2158,8 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
 	appendStringBuf(docScript, "cp -pr ");
 	appendStringBuf(docScript, efn);
 	appendStringBuf(docScript, " $");
-	appendLineStringBuf(docScript, sdenv);
+	appendStringBuf(docScript, sdenv);
+	appendLineStringBuf(docScript, " ||:");
 	free(efn);
     }
 
