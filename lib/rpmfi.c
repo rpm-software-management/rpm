@@ -444,7 +444,7 @@ static int rpmfnFindFN(rpmstrPool pool, rpmfn files, const char * fn)
 
     /* not found: try linear search */
     for (int i=0; i < fc; i++) {
-	if (cmpPoolFn(pool, files, mid, fn) == 0)
+	if (cmpPoolFn(pool, files, i, fn) == 0)
 	    return i;
     }
     return -1;
