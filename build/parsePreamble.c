@@ -916,8 +916,17 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	goto exit;
     }
 
-    if (macro)
+    if (macro) {
 	rpmPushMacro(spec->macros, macro, NULL, field, RMIL_SPEC);
+	/* Add a separate uppercase macro for tags from the main package */
+	if (pkg == spec->packages) {
+	    char *m = xstrdup(macro);
+	    for (char *p = m; *p; ++p)
+		*p = rtoupper(*p);
+	    rpmPushMacro(spec->macros, m, NULL, field, RMIL_SPEC);
+	    free(m);
+	}
+    }
     rc = RPMRC_OK;
 exit:
     return rc;	

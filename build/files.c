@@ -1790,7 +1790,7 @@ static int generateBuildIDs(FileList fl)
 	    int unique_debug_names =
 		rpmExpandNumeric("%{?_unique_debug_names}");
 	    if (unique_debug_names == 1)
-		vra = rpmExpand("-%{version}-%{release}.%{_arch}", NULL);
+		vra = rpmExpand("-%{VERSION}-%{RELEASE}.%{_arch}", NULL);
 	}
 
 	/* Now add a subdir and symlink for each buildid found.  */
