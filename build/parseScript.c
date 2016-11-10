@@ -251,15 +251,21 @@ int parseScript(rpmSpec spec, int parsePart)
     if (tag == RPMTAG_TRIGGERSCRIPTS || tag == RPMTAG_FILETRIGGERSCRIPTS ||
 	tag == RPMTAG_TRANSFILETRIGGERSCRIPTS) {
 	/* break line into two */
-	char *s = strstr(spec->line, "--");
-	if (!s) {
+	char *s = spec->line;
+	while ((s = strstr(s, "--")) != NULL) {
+	    if (risblank(*(s-1)) && risblank(*(s+2))) {
+		reqargs = xstrdup(s + 2);
+		break;
+	    }
+	    s++;
+	}
+
+	if (!reqargs) {
 	    rpmlog(RPMLOG_ERR, _("line %d: triggers must have --: %s\n"),
 		     spec->lineNum, spec->line);
 	    return PART_ERROR;
 	}
-
 	*s = '\0';
-	reqargs = xstrdup(s + 2);
     }
     
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
