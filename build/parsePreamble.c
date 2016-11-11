@@ -1092,7 +1092,6 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	    goto exit;
 	
 	if (!lookupPackage(spec, name, flag, NULL)) {
-	    rpmlog(RPMLOG_ERR, _("Package already exists: %s\n"), spec->line);
 	    free(name);
 	    goto exit;
 	}

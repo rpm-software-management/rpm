@@ -336,11 +336,8 @@ int parseScript(rpmSpec spec, int parsePart)
 	}
     }
     
-    if (lookupPackage(spec, name, flag, &pkg)) {
-	rpmlog(RPMLOG_ERR, _("line %d: Package does not exist: %s\n"),
-		 spec->lineNum, spec->line);
+    if (lookupPackage(spec, name, flag, &pkg))
 	goto exit;
-    }
 
     if (tag != RPMTAG_TRIGGERSCRIPTS) {
 	if (headerIsEntry(pkg->header, progtag)) {

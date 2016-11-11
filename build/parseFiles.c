@@ -61,11 +61,8 @@ int parseFiles(rpmSpec spec)
 	}
     }
 
-    if (lookupPackage(spec, name, flag, &pkg)) {
-	rpmlog(RPMLOG_ERR, _("line %d: Package does not exist: %s\n"),
-		 spec->lineNum, spec->line);
+    if (lookupPackage(spec, name, flag, &pkg))
 	goto exit;
-    }
 
     /*
      * This should be an error, but its surprisingly commonly abused for the
