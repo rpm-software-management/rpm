@@ -15,6 +15,7 @@
 
 #include "debug.h"
 
+#define SKIPSPACE(s) { while (*(s) && risspace(*(s))) (s)++; }
 
 /**
  */
@@ -251,7 +252,7 @@ int parseScript(rpmSpec spec, int parsePart)
     if (tag == RPMTAG_TRIGGERSCRIPTS || tag == RPMTAG_FILETRIGGERSCRIPTS ||
 	tag == RPMTAG_TRANSFILETRIGGERSCRIPTS) {
 	/* break line into two at the -- separator */
-	char *s = spec->line;
+	char *sep, *s = spec->line;
 	while ((s = strstr(s, "--")) != NULL) {
 	    s += 2;
 	    if (risblank(*(s-3)) && risblank(*s))
@@ -264,7 +265,15 @@ int parseScript(rpmSpec spec, int parsePart)
 	    goto exit;
 	}
 
-	*(s-3) = '\0';
+	sep = s;
+	SKIPSPACE(s);
+	if (*s == '\0') {
+	    rpmlog(RPMLOG_ERR, _("line %d: missing trigger condition: %s\n"),
+				spec->lineNum, spec->line);
+	    goto exit;
+	}
+
+	*sep = '\0';
 	reqargs = xstrdup(s);
     }
     
