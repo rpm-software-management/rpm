@@ -204,7 +204,7 @@ Header headerNew(void)
 }
 
 int headerVerifyInfo(int il, int dl, const struct entryInfo_s * pe,
-		     struct entryInfo_s * info)
+		     struct entryInfo_s * info, char **emsg)
 {
     int i, tsize;
     int32_t end = 0;
@@ -234,6 +234,11 @@ int headerVerifyInfo(int il, int dl, const struct entryInfo_s * pe,
     i = -1; /* Everything ok */
 
 err:
+    if (i >= 0 && emsg) {
+	rasprintf(emsg, _("tag[%d]: BAD, tag %d type %d offset %d count %d"),
+			i, info->tag, info->type, info->offset, info->count);
+    }
+
     return i;
 }
 

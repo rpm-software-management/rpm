@@ -179,13 +179,8 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 
     /* Find a header-only digest/signature tag. */
     for (int i = ril; i < il; i++) {
-	if (headerVerifyInfo(1, dl, pe+i, &einfo) != -1) {
-	    rasprintf(buf,
-		_("tag[%d]: BAD, tag %d type %d offset %d count %d"),
-		i, einfo.tag, einfo.type,
-		einfo.offset, einfo.count);
+	if (headerVerifyInfo(1, dl, pe+i, &einfo, buf) != -1)
 	    goto exit;
-	}
 
 	switch (einfo.tag) {
 	case RPMTAG_SHA1HEADER: {
@@ -277,11 +272,8 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
     }
 
     /* Check (and convert) the 1st tag element. */
-    if (headerVerifyInfo(1, dl, pe, &einfo) != -1) {
-	rasprintf(buf, _("tag[%d]: BAD, tag %d type %d offset %d count %d"),
-		0, einfo.tag, einfo.type, einfo.offset, einfo.count);
+    if (headerVerifyInfo(1, dl, pe, &einfo, buf) != -1)
 	goto exit;
-    }
 
     /* Is there an immutable header region tag? */
     if (!(einfo.tag == regionTag)) {
@@ -380,13 +372,8 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     /* Sanity check the rest of the header structure. */
     if (rc != RPMRC_FAIL) {
 	struct entryInfo_s info;
-	int xx = headerVerifyInfo(ril-1, dl, pe+1, &info);
-	if (xx != -1) {
-	    rasprintf(&buf,
-		    _("tag[%d]: BAD, tag %d type %d offset %d count %d"),
-		    xx+1, info.tag, info.type, info.offset, info.count);
+	if (headerVerifyInfo(ril-1, dl, pe+1, &info, &buf) != -1)
 	    rc = RPMRC_FAIL;
-	}
     }
 
     /* Verify header-only digest/signature if there is one we can use. */
