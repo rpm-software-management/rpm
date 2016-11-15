@@ -214,10 +214,10 @@ int headerVerifyInfo(int il, int dl, const struct entryInfo_s * pe,
 
 	/* Previous data must not overlap */
 	if (end > info->offset)
-	    return i;
+	    goto err;
 
 	if (hdrchkType(info->type))
-	    return i;
+	    goto err;
 	if (hdrchkAlign(info->type, info->offset))
 	    return i;
 
@@ -229,10 +229,12 @@ int headerVerifyInfo(int il, int dl, const struct entryInfo_s * pe,
 	/* Verify the data actually fits */
 	end = info->offset + (info->count * tsize);
 	if (hdrchkRange(dl, end))
-	    return i;
+	    goto err;
     }
+    i = -1; /* Everything ok */
 
-    return -1;
+err:
+    return i;
 }
 
 static int indexCmp(const void * avp, const void * bvp)
