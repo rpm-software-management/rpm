@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+# Transform appdata/metainfo xml file into RPM metainfo(filename) provides
+#
+# Author: Michael Schroeder <mls@suse.de>
+# Modified by Neal Gompa <ngompa13@gmail.com> to generate metainfo instead of appdata
+# Based on other provides scripts from RPM
+
+OLD_IFS="$IFS"
+while read instfile ; do
+	case "$instfile" in
+	*.appdata.xml)
+		echo "metainfo()"
+		echo "metainfo(${instfile##*/appdata/})"
+		;;
+	*.metainfo.xml)
+		echo "metainfo()"
+		echo "metainfo(${instfile##*/metainfo/})"
+		;;
+	esac
+done
+IFS=$OLD_IFS
+
