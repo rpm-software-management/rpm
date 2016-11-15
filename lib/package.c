@@ -147,6 +147,18 @@ exit:
     return seen;
 }
 
+static void ei2td(const struct entryInfo_s *info,
+		  unsigned char * dataStart, size_t siglen,
+		  struct rpmtd_s *td)
+{
+    td->tag = info->tag;
+    td->type = info->type;
+    td->count = info->count;
+    td->size = siglen;
+    td->data = dataStart + info->offset;
+    td->flags = RPMTD_IMMUTABLE;
+}
+
 /*
  * Argument monster to verify header-only signature/digest if there is
  * one, otherwisereturn RPMRC_NOTFOUND to signal for plain sanity check.
@@ -156,15 +168,13 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 			     entryInfo pe, unsigned char * dataStart,
 			     char **buf)
 {
-    size_t siglen = 0;
     rpmRC rc = RPMRC_FAIL;
     pgpDigParams sig = NULL;
     struct rpmtd_s sigtd;
-    struct entryInfo_s info, einfo;
+    struct entryInfo_s einfo;
     struct sigtInfo_s sinfo;
 
     rpmtdReset(&sigtd);
-    memset(&info, 0, sizeof(info));
     memset(&einfo, 0, sizeof(einfo));
 
     /* Find a header-only digest/signature tag. */
@@ -194,10 +204,8 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 		rasprintf(buf, _("hdr SHA1: BAD, not hex"));
 		goto exit;
 	    }
-	    if (info.tag == 0) {
-		info = einfo;	/* structure assignment */
-		siglen = blen + 1;
-	    }
+	    if (sigtd.tag == 0)
+		ei2td(&einfo, dataStart, blen + 1, &sigtd);
 	    } break;
 	case RPMTAG_RSAHEADER:
 	    if (vsflags & RPMVSF_NORSAHEADER)
@@ -206,8 +214,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 		rasprintf(buf, _("hdr RSA: BAD, not binary"));
 		goto exit;
 	    }
-	    info = einfo;	/* structure assignment */
-	    siglen = info.count;
+	    ei2td(&einfo, dataStart, einfo.count, &sigtd);
 	    break;
 	case RPMTAG_DSAHEADER:
 	    if (vsflags & RPMVSF_NODSAHEADER)
@@ -216,8 +223,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 		rasprintf(buf, _("hdr DSA: BAD, not binary"));
 		goto exit;
 	    }
-	    info = einfo;	/* structure assignment */
-	    siglen = info.count;
+	    ei2td(&einfo, dataStart, einfo.count, &sigtd);
 	    break;
 	default:
 	    break;
@@ -225,17 +231,10 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     }
 
     /* No header-only digest/signature found, get outta here */
-    if (info.tag == 0) {
+    if (sigtd.tag == 0) {
 	rc = RPMRC_NOTFOUND;
 	goto exit;
     }
-
-    sigtd.tag = info.tag;
-    sigtd.type = info.type;
-    sigtd.count = info.count;
-    sigtd.size = siglen;
-    sigtd.data = dataStart + info.offset;
-    sigtd.flags = RPMTD_IMMUTABLE;
 
     if (rpmSigInfoParse(&sigtd, "header", &sinfo, &sig, buf))
 	goto exit;
