@@ -233,8 +233,9 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     sigtd.tag = info.tag;
     sigtd.type = info.type;
     sigtd.count = info.count;
-    sigtd.data = memcpy(xmalloc(siglen), dataStart + info.offset, siglen);
-    sigtd.flags = RPMTD_ALLOCED;
+    sigtd.size = siglen;
+    sigtd.data = dataStart + info.offset;
+    sigtd.flags = RPMTD_IMMUTABLE;
 
     if (rpmSigInfoParse(&sigtd, "header", &sinfo, &sig, buf))
 	goto exit;
