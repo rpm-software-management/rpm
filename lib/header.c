@@ -118,6 +118,9 @@ static const size_t headerMaxbytes = (256*1024*1024);
 	(((_e)->info.tag >= RPMTAG_HEADERIMAGE) && ((_e)->info.tag < RPMTAG_HEADERREGIONS))
 #define	ENTRY_IN_REGION(_e)	((_e)->info.offset < 0)
 
+static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
+			 int onDisk, rpm_constdata_t pend);
+
 #ifndef htonll
 /* Convert a 64bit value to network byte order. */
 RPM_GNUC_CONST
@@ -203,11 +206,13 @@ Header headerNew(void)
     return headerCreate(NULL, 0, 0);
 }
 
-int headerVerifyInfo(int il, int dl, const struct entryInfo_s * pe,
+int headerVerifyInfo(int il, int dl,
+		     const struct entryInfo_s * pe, const void *dataStart,
 		     struct entryInfo_s * info, char **emsg)
 {
-    int i, tsize;
+    int i, len = 0;
     int32_t end = 0;
+    const char *ds = dataStart;
 
     for (i = 0; i < il; i++) {
 	ei2h(&pe[i], info);
@@ -221,22 +226,20 @@ int headerVerifyInfo(int il, int dl, const struct entryInfo_s * pe,
 	if (hdrchkAlign(info->type, info->offset))
 	    return i;
 
-	/* For string types we can only check the array size is sane */
-	tsize = typeSizes[info->type];
-	if (tsize < 1)
-	    tsize = 1;
-
 	/* Verify the data actually fits */
-	end = info->offset + (info->count * tsize);
-	if (hdrchkRange(dl, end))
+	len = dataLength(info->type, ds + info->offset,
+			 info->count, 1, ds + dl);
+	end = info->offset + len;
+	if (hdrchkRange(dl, end) || len <= 0)
 	    goto err;
     }
     i = -1; /* Everything ok */
 
 err:
     if (i >= 0 && emsg) {
-	rasprintf(emsg, _("tag[%d]: BAD, tag %d type %d offset %d count %d"),
-			i, info->tag, info->type, info->offset, info->count);
+	rasprintf(emsg,
+		  _("tag[%d]: BAD, tag %d type %d offset %d count %d len %d"),
+		    i, info->tag, info->type, info->offset, info->count, len);
     }
 
     return i;

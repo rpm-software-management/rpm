@@ -197,7 +197,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
     /* Sanity check signature tags */
     for (i = 1; i < il; i++) {
 	struct entryInfo_s info;
-	if (headerVerifyInfo(1, dl, pe+i, &info, &buf) != -1)
+	if (headerVerifyInfo(1, dl, pe+i, dataStart, &info, &buf) != -1)
 	    goto exit;
     }
 

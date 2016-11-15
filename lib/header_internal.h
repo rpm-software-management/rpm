@@ -75,12 +75,14 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
  * @param il		no. of tags in header
  * @param dl		no. of bytes in header data.
  * @param pe		1st element in tag array, big-endian
+ * @param dataStart	start of data area
  * @retval info		failing (or last) tag element, host-endian
  * @retvar emsg		possible error message (malloced) or NULL to disable
  * @return		-1 on success, otherwise failing tag element index
  */
 RPM_GNUC_INTERNAL
-int headerVerifyInfo(int il, int dl, const struct entryInfo_s * pe,
+int headerVerifyInfo(int il, int dl,
+		     const struct entryInfo_s * pe, const void *dataStart,
 		     struct entryInfo_s * info, char **emsg);
 
 
