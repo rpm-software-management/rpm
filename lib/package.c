@@ -289,7 +289,7 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
     }
 
     /* Is the trailer within the data area? */
-    if (einfo.offset + REGION_TAG_COUNT > dl) {
+    if (hdrchkRange(dl, einfo.offset + REGION_TAG_COUNT)) {
 	rasprintf(buf, 
 		_("region offset: BAD, tag %d type %d offset %d count %d"),
 		einfo.tag, einfo.type, einfo.offset, einfo.count);
