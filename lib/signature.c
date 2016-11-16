@@ -146,7 +146,6 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
     Header sigh = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
-    int i;
 
     if (sighp)
 	*sighp = NULL;
@@ -195,10 +194,8 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
 	goto exit;
 
     /* Sanity check signature tags */
-    for (i = 1; i < il; i++) {
-	if (headerVerifyInfo(1, dl, pe+i, dataStart, NULL, &buf) != -1)
-	    goto exit;
-    }
+    if (headerVerifyInfo(il-1, dl, pe+1, dataStart, NULL, &buf) != -1)
+	goto exit;
 
     /* OK, blob looks sane, load the header. */
     sigh = headerImport(ei, uc, 0);
