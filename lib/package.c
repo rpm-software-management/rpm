@@ -179,8 +179,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 
     /* Find a header-only digest/signature tag. */
     for (int i = ril; i < il; i++) {
-	if (headerVerifyInfo(1, dl, pe+i, dataStart, &einfo, buf))
-	    goto exit;
+	ei2h(pe+i, &einfo);
 
 	switch (einfo.tag) {
 	case RPMTAG_SHA1HEADER: {
