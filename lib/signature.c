@@ -194,7 +194,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
 	goto exit;
 
     /* Sanity check signature tags */
-    if (headerVerifyInfo(il-1, dl, pe+1, dataStart, NULL, &buf) != -1)
+    if (headerVerifyInfo(il-1, dl, pe+1, dataStart, NULL, &buf))
 	goto exit;
 
     /* OK, blob looks sane, load the header. */

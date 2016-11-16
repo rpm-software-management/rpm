@@ -179,7 +179,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 
     /* Find a header-only digest/signature tag. */
     for (int i = ril; i < il; i++) {
-	if (headerVerifyInfo(1, dl, pe+i, dataStart, &einfo, buf) != -1)
+	if (headerVerifyInfo(1, dl, pe+i, dataStart, &einfo, buf))
 	    goto exit;
 
 	switch (einfo.tag) {
@@ -272,7 +272,7 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
     }
 
     /* Check (and convert) the 1st tag element. */
-    if (headerVerifyInfo(1, dl, pe, dataStart, &einfo, buf) != -1)
+    if (headerVerifyInfo(1, dl, pe, dataStart, &einfo, buf))
 	goto exit;
 
     /* Is there an immutable header region tag? */
@@ -371,7 +371,7 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 
     /* Sanity check the rest of the header structure. */
     if (rc != RPMRC_FAIL) {
-	if (headerVerifyInfo(ril-1, dl, pe+1, dataStart, NULL, &buf) != -1)
+	if (headerVerifyInfo(ril-1, dl, pe+1, dataStart, NULL, &buf))
 	    rc = RPMRC_FAIL;
     }
 

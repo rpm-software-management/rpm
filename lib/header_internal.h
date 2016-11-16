@@ -78,7 +78,7 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
  * @param dataStart	start of data area
  * @retval info		failing (or last) tag element, host-endian
  * @retvar emsg		possible error message (malloced) or NULL to disable
- * @return		-1 on success, otherwise failing tag element index
+ * @return		0 on success, otherwise ordinal of failed tag
  */
 RPM_GNUC_INTERNAL
 int headerVerifyInfo(int il, int dl,

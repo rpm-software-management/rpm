@@ -237,16 +237,15 @@ int headerVerifyInfo(int il, int dl,
 	if (hdrchkRange(dl, end) || len <= 0)
 	    goto err;
     }
-    i = -1; /* Everything ok */
+    return 0; /* Everything ok */
 
 err:
-    if (i >= 0 && emsg) {
+    if (emsg) {
 	rasprintf(emsg,
 		  _("tag[%d]: BAD, tag %d type %d offset %d count %d len %d"),
 		    i, info->tag, info->type, info->offset, info->count, len);
     }
-
-    return i;
+    return i + 1;
 }
 
 static int indexCmp(const void * avp, const void * bvp)
