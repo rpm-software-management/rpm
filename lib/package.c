@@ -371,8 +371,7 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 
     /* Sanity check the rest of the header structure. */
     if (rc != RPMRC_FAIL) {
-	struct entryInfo_s info;
-	if (headerVerifyInfo(ril-1, dl, pe+1, dataStart, &info, &buf) != -1)
+	if (headerVerifyInfo(ril-1, dl, pe+1, dataStart, NULL, &buf) != -1)
 	    rc = RPMRC_FAIL;
     }
 
