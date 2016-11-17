@@ -229,6 +229,8 @@ int headerVerifyInfo(int il, int dl,
 	    goto err;
 	if (hdrchkAlign(info->type, info->offset))
 	    goto err;
+	if (hdrchkRange(dl, info->offset))
+	    goto err;
 
 	/* Verify the data actually fits */
 	len = dataLength(info->type, ds + info->offset,
