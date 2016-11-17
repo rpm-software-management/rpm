@@ -27,6 +27,7 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
     rpm_tagtype_t tagtype = 0;
     rpm_count_t tagsize = 0;
     pgpDigParams sig = NULL;
+    int hexstring = 0;
 
     memset(sinfo, 0, sizeof(*sinfo));
     switch (td->tag) {
@@ -43,6 +44,7 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
     case RPMSIGTAG_SHA1:
 	tagsize = 41; /* includes trailing \0 */
 	tagtype = RPM_STRING_TYPE;
+	hexstring = 1;
 	sinfo->hashalgo = PGPHASHALGO_SHA1;
 	sinfo->type = RPMSIG_DIGEST_TYPE;
 	break;
@@ -87,6 +89,15 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
 	rasprintf(msg, _("%s tag %u: BAD, invalid size %u"),
 			origin, td->tag, td->size);
 	goto exit;
+    }
+
+    if (hexstring) {
+	for (const char * b = td->data; *b != '\0'; b++) {
+	    if (strchr("0123456789abcdefABCDEF", *b) == NULL) {
+		rasprintf(msg, _("%s: tag %u: BAD, not hex"), origin, td->tag);
+		goto exit;
+	    }
+	}
     }
 
     if (sinfo->type == RPMSIG_SIGNATURE_TYPE) {
