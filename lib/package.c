@@ -182,41 +182,20 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 	ei2h(pe+i, &einfo);
 
 	switch (einfo.tag) {
-	case RPMTAG_SHA1HEADER: {
-	    size_t blen = 0;
-	    unsigned const char * b = dataStart + einfo.offset;
-	    unsigned const char * e = dataStart + dl;
+	case RPMTAG_SHA1HEADER:
 	    if (vsflags & RPMVSF_NOSHA1HEADER)
 		break;
-	    for (; b < e && *b != '\0'; b++) {
-		if (strchr("0123456789abcdefABCDEF", *b) == NULL)
-		    break;
-		blen++;
-	    }
-	    if (einfo.type != RPM_STRING_TYPE || *b != '\0' || blen != 40)
-	    {
-		rasprintf(buf, _("hdr SHA1: BAD, not hex"));
-		goto exit;
-	    }
 	    if (sigtd.tag == 0)
-		ei2td(&einfo, dataStart, blen + 1, &sigtd);
-	    } break;
+		ei2td(&einfo, dataStart, 0, &sigtd);
+	    break;
 	case RPMTAG_RSAHEADER:
 	    if (vsflags & RPMVSF_NORSAHEADER)
 		break;
-	    if (einfo.type != RPM_BIN_TYPE) {
-		rasprintf(buf, _("hdr RSA: BAD, not binary"));
-		goto exit;
-	    }
 	    ei2td(&einfo, dataStart, einfo.count, &sigtd);
 	    break;
 	case RPMTAG_DSAHEADER:
 	    if (vsflags & RPMVSF_NODSAHEADER)
 		break;
-	    if (einfo.type != RPM_BIN_TYPE) {
-		rasprintf(buf, _("hdr DSA: BAD, not binary"));
-		goto exit;
-	    }
 	    ei2td(&einfo, dataStart, einfo.count, &sigtd);
 	    break;
 	default:
