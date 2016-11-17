@@ -370,7 +370,8 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 
     /* Sanity check the rest of the header structure. */
     if (rc != RPMRC_FAIL) {
-	if (headerVerifyInfo(il-1, dl, pe+1, dataStart, NULL, &buf))
+	int region = (rc == RPMRC_OK) ? 1 : 0;
+	if (headerVerifyInfo(il-region, dl, pe+region, dataStart, NULL, &buf))
 	    rc = RPMRC_FAIL;
     }
 

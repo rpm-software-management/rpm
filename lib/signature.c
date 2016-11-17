@@ -189,12 +189,15 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
     /* Verify header immutable region if there is one */
     xx = headerVerifyRegion(RPMTAG_HEADERSIGNATURES, il, dl, pe, dataStart,
 			    1, NULL, NULL, &buf);
+    /* Sanity check signature tags */
+    if (xx != RPMRC_FAIL) {
+	int region = (xx == RPMRC_OK) ? 1 : 0;
+	if (headerVerifyInfo(il-region, dl, pe+region, dataStart, NULL, &buf))
+	    xx = RPMRC_FAIL;
+    }
+
     /* Not found means a legacy V3 package with no immutable region */
     if (xx != RPMRC_OK && xx != RPMRC_NOTFOUND)
-	goto exit;
-
-    /* Sanity check signature tags */
-    if (headerVerifyInfo(il-1, dl, pe+1, dataStart, NULL, &buf))
 	goto exit;
 
     /* OK, blob looks sane, load the header. */
