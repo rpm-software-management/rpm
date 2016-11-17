@@ -270,9 +270,8 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
 	goto exit;
     }
 
-    /* Check (and convert) the 1st tag element. */
-    if (headerVerifyInfo(1, dl, pe, dataStart, &einfo, buf))
-	goto exit;
+    /* Convert the 1st tag element. */
+    ei2h(pe, &einfo);
 
     /* Is there an immutable header region tag? */
     if (!(einfo.tag == regionTag)) {
