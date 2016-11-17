@@ -74,15 +74,18 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
 	break;
     }
 
-    if (tagsize && (td->flags & RPMTD_IMMUTABLE) && tagsize != td->size) {
-	rasprintf(msg, _("%s tag %u: BAD, invalid size %u"),
-			origin, td->tag, td->size);
-	goto exit;
-    }
-
     if (tagtype && tagtype != td->type) {
 	rasprintf(msg, _("%s tag %u: BAD, invalid type %u"),
 			origin, td->tag, td->type);
+	goto exit;
+    }
+
+    if (td->type == RPM_STRING_TYPE && td->size == 0)
+	td->size = strlen(td->data) + 1;
+
+    if (tagsize && (td->flags & RPMTD_IMMUTABLE) && tagsize != td->size) {
+	rasprintf(msg, _("%s tag %u: BAD, invalid size %u"),
+			origin, td->tag, td->size);
 	goto exit;
     }
 
