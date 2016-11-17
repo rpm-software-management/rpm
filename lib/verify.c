@@ -505,7 +505,7 @@ static int verifyDependencies(rpmts ts, Header h)
 int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 {
     rpmVerifyAttrs omitMask = ((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
-    int ghosts = 0;
+    int ghosts = !(qva->qva_fflags & RPMFILE_GHOST);
     int ec = 0;
     int rc;
 
