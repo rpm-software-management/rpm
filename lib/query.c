@@ -146,8 +146,8 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	if ((qva->qva_flags & QUERY_FOR_LICENSE) && !(fflags & RPMFILE_LICENSE))
 	    continue;
 
-	/* If not querying %ghost, skip ghost files. */
-	if ((qva->qva_fflags & RPMFILE_GHOST) && (fflags & RPMFILE_GHOST))
+	/* Skip on attributes (eg from --noghost) */
+	if (fflags & qva->qva_fflags)
 	    continue;
 
 	if (qva->qva_flags & QUERY_FOR_STATE) {
