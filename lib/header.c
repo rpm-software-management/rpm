@@ -210,29 +210,29 @@ int headerVerifyInfo(int il, int dl,
 		     const struct entryInfo_s * pe, const void *dataStart,
 		     char **emsg)
 {
-    struct entryInfo_s _info, *info = &_info;
+    struct entryInfo_s info;
     int i, len = 0;
     int32_t end = 0;
     const char *ds = dataStart;
 
     for (i = 0; i < il; i++) {
-	ei2h(&pe[i], info);
+	ei2h(&pe[i], &info);
 
 	/* Previous data must not overlap */
-	if (end > info->offset)
+	if (end > info.offset)
 	    goto err;
 
-	if (hdrchkType(info->type))
+	if (hdrchkType(info.type))
 	    goto err;
-	if (hdrchkAlign(info->type, info->offset))
+	if (hdrchkAlign(info.type, info.offset))
 	    goto err;
-	if (hdrchkRange(dl, info->offset))
+	if (hdrchkRange(dl, info.offset))
 	    goto err;
 
 	/* Verify the data actually fits */
-	len = dataLength(info->type, ds + info->offset,
-			 info->count, 1, ds + dl);
-	end = info->offset + len;
+	len = dataLength(info.type, ds + info.offset,
+			 info.count, 1, ds + dl);
+	end = info.offset + len;
 	if (hdrchkRange(dl, end) || len <= 0)
 	    goto err;
     }
@@ -242,7 +242,7 @@ err:
     if (emsg) {
 	rasprintf(emsg,
 		  _("tag[%d]: BAD, tag %d type %d offset %d count %d len %d"),
-		    i, info->tag, info->type, info->offset, info->count, len);
+		    i, info.tag, info.type, info.offset, info.count, len);
     }
     return i + 1;
 }
