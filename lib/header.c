@@ -208,15 +208,12 @@ Header headerNew(void)
 
 int headerVerifyInfo(int il, int dl,
 		     const struct entryInfo_s * pe, const void *dataStart,
-		     struct entryInfo_s * info, char **emsg)
+		     char **emsg)
 {
-    struct entryInfo_s _info;
+    struct entryInfo_s _info, *info = &_info;
     int i, len = 0;
     int32_t end = 0;
     const char *ds = dataStart;
-
-    if (info == NULL)
-	info = &_info;
 
     for (i = 0; i < il; i++) {
 	ei2h(&pe[i], info);

@@ -192,7 +192,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
     /* Sanity check signature tags */
     if (xx != RPMRC_FAIL) {
 	int region = (xx == RPMRC_OK) ? 1 : 0;
-	if (headerVerifyInfo(il-region, dl, pe+region, dataStart, NULL, &buf))
+	if (headerVerifyInfo(il-region, dl, pe+region, dataStart, &buf))
 	    xx = RPMRC_FAIL;
     }
 
