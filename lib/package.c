@@ -327,20 +327,15 @@ static rpmRC rpmpkgReadHeader(rpmKeyring keyring, rpmVSFlags vsflags,
     if (hdrblobInit(ei, uc, RPMTAG_HEADERIMMUTABLE, 1, &blob, &buf) != RPMRC_OK)
 	goto exit;
 
-    /* Sanity check header tags */
-    rc = headerVerify(keyring, vsflags, &blob, &buf);
-    if (rc != RPMRC_OK)
-	goto exit;
-
     /* OK, blob looks sane, load the header. */
     h = headerImport(blob.ei, blob.uc, 0);
     if (h == NULL) {
 	free(buf);
 	rasprintf(&buf, _("hdr load: BAD"));
-	rc = RPMRC_FAIL;
         goto exit;
     }
     ei = NULL;	/* XXX will be freed with header */
+    rc = RPMRC_OK;
     
 exit:
     if (hdrp && h && rc == RPMRC_OK)
