@@ -200,10 +200,6 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
     if (hdrblobInit(ei, uc, RPMTAG_HEADERSIGNATURES, 1, &blob, &buf) != RPMRC_OK)
 	goto exit;
     
-    /* Sanity check signature tags */
-    if (headerVerifyInfo(&blob, &buf))
-	goto exit;
-
     /* OK, blob looks sane, load the header. */
     sigh = headerImport(blob.ei, blob.uc, 0);
     if (sigh == NULL) {

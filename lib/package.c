@@ -237,13 +237,10 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 			  hdrblob blob, char ** msg)
 {
     char *buf = NULL;
-    rpmRC rc = RPMRC_FAIL;	/* assume failure */
-
-    /* Sanity check the rest of the header structure. */
-    rc = headerVerifyInfo(blob, &buf);
+    rpmRC rc = RPMRC_NOTFOUND;	/* assume not found */
 
     /* Verify header-only digest/signature if there is one we can use. */
-    if (rc == RPMRC_OK && blob->il > blob->ril) {
+    if (blob->il > blob->ril) {
 	rc = headerSigVerify(keyring, vsflags,
 			     blob->il, blob->dl, blob->ril, blob->rdl,
 			     blob->pe, blob->dataStart, &buf);

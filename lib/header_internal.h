@@ -86,15 +86,6 @@ rpmRC hdrblobInit(const void *uh, size_t uc,
 		struct hdrblob_s *blob, char **emsg);
 
 /** \ingroup header
- * Perform simple sanity and range checks on header tag(s).
- * @param blob		header blob
- * @retvar emsg		possible error message (malloced) or NULL to disable
- * @return		0 on success, otherwise ordinal of failed tag
- */
-RPM_GNUC_INTERNAL
-int headerVerifyInfo(hdrblob blob, char **emsg);
-
-/** \ingroup header
  * Set header instance (rpmdb record number)
  * @param h		header
  * @param instance	record number
