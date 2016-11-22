@@ -252,8 +252,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     return rc;
 }
 
-static rpmRC rpmpkgReadHeader(rpmKeyring keyring, rpmVSFlags vsflags, 
-		       FD_t fd, Header *hdrp, char ** msg)
+static rpmRC rpmpkgReadHeader(FD_t fd, Header *hdrp, char ** msg)
 {
     char *buf = NULL;
     struct hdrblob_s blob;
@@ -294,14 +293,7 @@ exit:
 
 rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
 {
-    rpmRC rc;
-    rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
-    rpmVSFlags vsflags = rpmtsVSFlags(ts);
-
-    rc = rpmpkgReadHeader(keyring, vsflags, fd, hdrp, msg);
-
-    rpmKeyringFree(keyring);
-    return rc;
+    return rpmpkgReadHeader(fd, hdrp, msg);
 }
 
 static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags, 
@@ -357,7 +349,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     /* Read the metadata, computing digest(s) on the fly. */
     h = NULL;
 
-    rc = rpmpkgReadHeader(keyring, vsflags, fd, &h, msg);
+    rc = rpmpkgReadHeader(fd, &h, msg);
 
     if (rc != RPMRC_OK || h == NULL) {
 	goto exit;
