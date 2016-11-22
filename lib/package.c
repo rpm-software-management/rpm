@@ -321,43 +321,35 @@ exit:
 }
 
 static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
-			  const void * uh, size_t uc, int exact_size,
+			  hdrblob blob, int exact_size,
 			  char ** msg)
 {
     char *buf = NULL;
-    int32_t * ei = (int32_t *) uh;
-    int32_t il = ntohl(ei[0]);
-    int32_t dl = ntohl(ei[1]);
-    entryInfo pe = (entryInfo) &ei[2];
-    int32_t pvlen = sizeof(il) + sizeof(dl) + (il * sizeof(*pe)) + dl;
-    unsigned char * dataStart = (unsigned char *) (pe + il);
-    int32_t ril = 0;
-    int32_t rdl = 0;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
 
     /* Is the blob the right size? */
-    if (uc > 0 && pvlen != uc) {
+    if (blob->uc > 0 && blob->pvlen != blob->uc) {
 	rasprintf(&buf, _("blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"),
-		(int)uc, (int)il, (int)dl);
+		(int)blob->uc, (int)blob->il, (int)blob->dl);
 	goto exit;
     }
 
     /* Verify header immutable region if there is one */
-    rc = headerVerifyRegion(RPMTAG_HEADERIMMUTABLE, il, dl, pe, dataStart,
-			    exact_size, &ril, &rdl, &buf);
+    rc = headerVerifyRegion(RPMTAG_HEADERIMMUTABLE, blob->il, blob->dl, blob->pe, blob->dataStart,
+			    exact_size, &blob->ril, &blob->rdl, &buf);
 
     /* Sanity check the rest of the header structure. */
     if (rc != RPMRC_FAIL) {
 	int region = (rc == RPMRC_OK) ? 1 : 0;
-	if (headerVerifyInfo(il-region, dl, pe+region, dataStart, &buf))
+	if (headerVerifyInfo(blob->il-region, blob->dl, blob->pe+region, blob->dataStart, &buf))
 	    rc = RPMRC_FAIL;
     }
 
     /* Verify header-only digest/signature if there is one we can use. */
-    if (rc == RPMRC_OK && il > ril) {
+    if (rc == RPMRC_OK && blob->il > blob->ril) {
 	rc = headerSigVerify(keyring, vsflags,
-			     il, dl, ril, rdl,
-			     pe, dataStart, &buf);
+			     blob->il, blob->dl, blob->ril, blob->rdl,
+			     blob->pe, blob->dataStart, &buf);
     }
 
     if (rc == RPMRC_NOTFOUND && buf == NULL) {
@@ -376,13 +368,17 @@ exit:
 
 rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 {
-    rpmRC rc;
+    rpmRC rc = RPMRC_FAIL;
     rpmVSFlags vsflags = rpmtsVSFlags(ts);
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+    struct hdrblob_s blob;
 
-    rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-    rc = headerVerify(keyring, vsflags, uh, uc, 0, msg);
-    rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), uc);
+    if (hdrblobInit(uh, uc, &blob) == RPMRC_OK) {
+	rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
+	rc = headerVerify(keyring, vsflags, &blob, 0, msg);
+	rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), uc);
+    }
+
     rpmKeyringFree(keyring);
 
     return rc;
@@ -444,7 +440,7 @@ static rpmRC rpmpkgReadHeader(rpmKeyring keyring, rpmVSFlags vsflags,
 	goto exit;
 
     /* Sanity check header tags */
-    rc = headerVerify(keyring, vsflags, blob.ei, blob.uc, 1, &buf);
+    rc = headerVerify(keyring, vsflags, &blob, 1, &buf);
     if (rc != RPMRC_OK)
 	goto exit;
 
