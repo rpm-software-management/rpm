@@ -206,14 +206,14 @@ Header headerNew(void)
     return headerCreate(NULL, 0, 0);
 }
 
-int headerVerifyInfo(int il, int dl,
-		     const struct entryInfo_s * pe, const void *dataStart,
-		     char **emsg)
+int headerVerifyInfo(hdrblob blob, char **emsg)
 {
     struct entryInfo_s info;
     int i, len = 0;
     int32_t end = 0;
-    const char *ds = dataStart;
+    const char *ds = (const char *) blob->dataStart;
+    int32_t il = (blob->regionTag) ? blob->il-1 : blob->il;
+    entryInfo pe = (blob->regionTag) ? blob->pe+1 : blob->pe;
 
     for (i = 0; i < il; i++) {
 	ei2h(&pe[i], &info);
@@ -226,14 +226,14 @@ int headerVerifyInfo(int il, int dl,
 	    goto err;
 	if (hdrchkAlign(info.type, info.offset))
 	    goto err;
-	if (hdrchkRange(dl, info.offset))
+	if (hdrchkRange(blob->dl, info.offset))
 	    goto err;
 
 	/* Verify the data actually fits */
 	len = dataLength(info.type, ds + info.offset,
-			 info.count, 1, ds + dl);
+			 info.count, 1, ds + blob->dl);
 	end = info.offset + len;
-	if (hdrchkRange(dl, end) || len <= 0)
+	if (hdrchkRange(blob->dl, end) || len <= 0)
 	    goto err;
     }
     return 0; /* Everything ok */

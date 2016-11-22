@@ -90,18 +90,12 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag, int exact_size,
 
 /** \ingroup header
  * Perform simple sanity and range checks on header tag(s).
- * @param il		no. of tags in header
- * @param dl		no. of bytes in header data.
- * @param pe		1st element in tag array, big-endian
- * @param dataStart	start of data area
+ * @param blob		header blob
  * @retvar emsg		possible error message (malloced) or NULL to disable
  * @return		0 on success, otherwise ordinal of failed tag
  */
 RPM_GNUC_INTERNAL
-int headerVerifyInfo(int il, int dl,
-		     const struct entryInfo_s * pe, const void *dataStart,
-		     char **emsg);
-
+int headerVerifyInfo(hdrblob blob, char **emsg);
 
 /** \ingroup header
  * Set header instance (rpmdb record number)

@@ -333,8 +333,7 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 
     /* Sanity check the rest of the header structure. */
     if (rc != RPMRC_FAIL) {
-	int region = (rc == RPMRC_OK) ? 1 : 0;
-	if (headerVerifyInfo(blob->il-region, blob->dl, blob->pe+region, blob->dataStart, &buf))
+	if (headerVerifyInfo(blob, &buf))
 	    rc = RPMRC_FAIL;
     }
 
