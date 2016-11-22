@@ -1199,11 +1199,12 @@ static int runTransScripts(rpmts ts, pkgGoal goal)
     rpmte p;
     rpmtsi pi = rpmtsiInit(ts);
     rpmElementTypes types = TR_ADDED;
+    int i = 0;
     if (goal == PKG_TRANSFILETRIGGERUN)
 	types = TR_REMOVED;
 
     while ((p = rpmtsiNext(pi, types)) != NULL) {
-	rc += rpmteProcess(p, goal);
+	rc += rpmteProcess(p, goal, i++);
     }
     rpmtsiFree(pi);
     return rc;
@@ -1350,7 +1351,6 @@ exit:
 static int rpmtsProcess(rpmts ts)
 {
     rpmtsi pi;	rpmte p;
-    tsMembers tsmem = rpmtsMembers(ts);
     int rc = 0;
     int i = 0;
 
@@ -1358,12 +1358,10 @@ static int rpmtsProcess(rpmts ts)
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	int failed;
 
-	rpmtsNotify(ts, NULL, RPMCALLBACK_ELEM_PROGRESS, i++,
-		tsmem->orderCount);
 	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
-	failed = rpmteProcess(p, rpmteType(p));
+	failed = rpmteProcess(p, rpmteType(p), i++);
 	if (failed) {
 	    rpmlog(RPMLOG_ERR, "%s: %s %s\n", rpmteNEVRA(p),
 		   rpmteTypeString(p), failed > 1 ? _("skipped") : _("failed"));
