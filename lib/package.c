@@ -315,8 +315,7 @@ exit:
 }
 
 static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
-			  hdrblob blob, int exact_size,
-			  char ** msg)
+			  hdrblob blob, char ** msg)
 {
     char *buf = NULL;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
@@ -328,14 +327,8 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 	goto exit;
     }
 
-    /* Verify header immutable region if there is one */
-    rc = headerVerifyRegion(RPMTAG_HEADERIMMUTABLE, exact_size, blob, &buf);
-
     /* Sanity check the rest of the header structure. */
-    if (rc != RPMRC_FAIL) {
-	if (headerVerifyInfo(blob, &buf))
-	    rc = RPMRC_FAIL;
-    }
+    rc = headerVerifyInfo(blob, &buf);
 
     /* Verify header-only digest/signature if there is one we can use. */
     if (rc == RPMRC_OK && blob->il > blob->ril) {
@@ -365,9 +358,9 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
     struct hdrblob_s blob;
 
-    if (hdrblobInit(uh, uc, &blob) == RPMRC_OK) {
+    if (hdrblobInit(uh, uc, RPMTAG_HEADERIMMUTABLE, 0, &blob, msg) == RPMRC_OK) {
 	rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-	rc = headerVerify(keyring, vsflags, &blob, 0, msg);
+	rc = headerVerify(keyring, vsflags, &blob, msg);
 	rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), uc);
     }
 
@@ -428,11 +421,11 @@ static rpmRC rpmpkgReadHeader(rpmKeyring keyring, rpmVSFlags vsflags,
 	goto exit;
     }
 
-    if (hdrblobInit(ei, uc, &blob) != RPMRC_OK)
+    if (hdrblobInit(ei, uc, RPMTAG_HEADERIMMUTABLE, 1, &blob, &buf) != RPMRC_OK)
 	goto exit;
 
     /* Sanity check header tags */
-    rc = headerVerify(keyring, vsflags, &blob, 1, &buf);
+    rc = headerVerify(keyring, vsflags, &blob, &buf);
     if (rc != RPMRC_OK)
 	goto exit;
 

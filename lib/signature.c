@@ -197,19 +197,11 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
 	goto exit;
     }
 
-    if (hdrblobInit(ei, uc, &blob) != RPMRC_OK)
+    if (hdrblobInit(ei, uc, RPMTAG_HEADERSIGNATURES, 1, &blob, &buf) != RPMRC_OK)
 	goto exit;
     
-    /* Verify header immutable region if there is one */
-    xx = headerVerifyRegion(RPMTAG_HEADERSIGNATURES, 1, &blob, &buf);
     /* Sanity check signature tags */
-    if (xx != RPMRC_FAIL) {
-	if (headerVerifyInfo(&blob, &buf))
-	    xx = RPMRC_FAIL;
-    }
-
-    /* Not found means a legacy V3 package with no immutable region */
-    if (xx != RPMRC_OK && xx != RPMRC_NOTFOUND)
+    if (headerVerifyInfo(&blob, &buf))
 	goto exit;
 
     /* OK, blob looks sane, load the header. */

@@ -81,7 +81,9 @@ static inline void ei2h(const struct entryInfo_s *pe, struct entryInfo_s *info)
 }
 
 RPM_GNUC_INTERNAL
-rpmRC hdrblobInit(const void *uh, size_t uc, struct hdrblob_s *blob);
+rpmRC hdrblobInit(const void *uh, size_t uc,
+		rpmTagVal regionTag, int exact_size,
+		struct hdrblob_s *blob, char **emsg);
 
 RPM_GNUC_INTERNAL
 rpmRC headerVerifyRegion(rpmTagVal regionTag, int exact_size,
