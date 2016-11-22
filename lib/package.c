@@ -164,9 +164,7 @@ static void ei2td(const struct entryInfo_s *info,
  * one, otherwisereturn RPMRC_NOTFOUND to signal for plain sanity check.
  */
 static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
-			     int il, int dl, int ril, int rdl,
-			     entryInfo pe, unsigned char * dataStart,
-			     char **buf)
+			     hdrblob blob, char **buf)
 {
     rpmRC rc = RPMRC_FAIL;
     pgpDigParams sig = NULL;
@@ -178,25 +176,25 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     memset(&einfo, 0, sizeof(einfo));
 
     /* Find a header-only digest/signature tag. */
-    for (int i = ril; i < il; i++) {
-	ei2h(pe+i, &einfo);
+    for (int i = blob->ril; i < blob->il; i++) {
+	ei2h(blob->pe+i, &einfo);
 
 	switch (einfo.tag) {
 	case RPMTAG_SHA1HEADER:
 	    if (vsflags & RPMVSF_NOSHA1HEADER)
 		break;
 	    if (sigtd.tag == 0)
-		ei2td(&einfo, dataStart, 0, &sigtd);
+		ei2td(&einfo, blob->dataStart, 0, &sigtd);
 	    break;
 	case RPMTAG_RSAHEADER:
 	    if (vsflags & RPMVSF_NORSAHEADER)
 		break;
-	    ei2td(&einfo, dataStart, einfo.count, &sigtd);
+	    ei2td(&einfo, blob->dataStart, einfo.count, &sigtd);
 	    break;
 	case RPMTAG_DSAHEADER:
 	    if (vsflags & RPMVSF_NODSAHEADER)
 		break;
-	    ei2td(&einfo, dataStart, einfo.count, &sigtd);
+	    ei2td(&einfo, blob->dataStart, einfo.count, &sigtd);
 	    break;
 	default:
 	    break;
@@ -214,12 +212,12 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 
     if (sinfo.hashalgo) {
 	DIGEST_CTX ctx = rpmDigestInit(sinfo.hashalgo, RPMDIGEST_NONE);
-	int32_t ildl[2] = { htonl(ril), htonl(rdl) };
+	int32_t ildl[2] = { htonl(blob->ril), htonl(blob->rdl) };
 
 	rpmDigestUpdate(ctx, rpm_header_magic, sizeof(rpm_header_magic));
 	rpmDigestUpdate(ctx, ildl, sizeof(ildl));
-	rpmDigestUpdate(ctx, pe, (ril * sizeof(*pe)));
-	rpmDigestUpdate(ctx, dataStart, rdl);
+	rpmDigestUpdate(ctx, blob->pe, (blob->ril * sizeof(*blob->pe)));
+	rpmDigestUpdate(ctx, blob->dataStart, blob->rdl);
 
 	rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, buf);
 
@@ -240,11 +238,8 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     rpmRC rc = RPMRC_NOTFOUND;	/* assume not found */
 
     /* Verify header-only digest/signature if there is one we can use. */
-    if (blob->il > blob->ril) {
-	rc = headerSigVerify(keyring, vsflags,
-			     blob->il, blob->dl, blob->ril, blob->rdl,
-			     blob->pe, blob->dataStart, &buf);
-    }
+    if (blob->il > blob->ril)
+	rc = headerSigVerify(keyring, vsflags, blob, &buf);
 
     if (rc == RPMRC_NOTFOUND && buf == NULL) {
 	rasprintf(&buf, "Header sanity check: OK");
