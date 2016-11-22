@@ -1811,3 +1811,20 @@ ssize_t Freadall(FD_t fd, void * buf, ssize_t size)
     return total;
 }
 
+rpmRC hdrblobInit(const void *uh, size_t uc, struct hdrblob_s *blob)
+{
+    memset(blob, 0, sizeof(*blob));
+
+    blob->ei = (int32_t *) uh; /* discards const */
+    blob->uc = uc;
+    blob->il = ntohl(blob->ei[0]);
+    blob->dl = ntohl(blob->ei[1]);
+    blob->pe = (entryInfo) &(blob->ei[2]);
+    blob->pvlen = sizeof(blob->il) + sizeof(blob->dl) +
+		  (blob->il * sizeof(*blob->pe)) + blob->dl;
+    blob->dataStart = (uint8_t *) (blob->pe + blob->il);
+    blob->dataEnd = blob->dataStart + blob->dl;
+
+    return RPMRC_OK;
+}
+

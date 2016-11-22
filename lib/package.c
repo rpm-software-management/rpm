@@ -398,6 +398,7 @@ static rpmRC rpmpkgReadHeader(rpmKeyring keyring, rpmVSFlags vsflags,
     int32_t * ei = NULL;
     size_t uc;
     size_t nb;
+    struct hdrblob_s blob;
     Header h = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
@@ -439,13 +440,16 @@ static rpmRC rpmpkgReadHeader(rpmKeyring keyring, rpmVSFlags vsflags,
 	goto exit;
     }
 
+    if (hdrblobInit(ei, uc, &blob) != RPMRC_OK)
+	goto exit;
+
     /* Sanity check header tags */
-    rc = headerVerify(keyring, vsflags, ei, uc, 1, &buf);
+    rc = headerVerify(keyring, vsflags, blob.ei, blob.uc, 1, &buf);
     if (rc != RPMRC_OK)
 	goto exit;
 
     /* OK, blob looks sane, load the header. */
-    h = headerImport(ei, uc, 0);
+    h = headerImport(blob.ei, blob.uc, 0);
     if (h == NULL) {
 	free(buf);
 	rasprintf(&buf, _("hdr load: BAD"));

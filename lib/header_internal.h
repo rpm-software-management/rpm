@@ -19,6 +19,22 @@ struct entryInfo_s {
     rpm_count_t count;		/*!< Number of tag elements. */
 };
 
+typedef struct hdrblob_s * hdrblob;
+struct hdrblob_s {
+    int32_t *ei;
+    size_t uc;
+    int32_t il;
+    int32_t dl;
+    entryInfo pe;
+    int32_t pvlen;
+    uint8_t *dataStart;
+    uint8_t *dataEnd;
+
+    rpmTagVal regionTag;
+    int32_t ril;
+    int32_t rdl;
+};
+
 #define	REGION_TAG_TYPE		RPM_BIN_TYPE
 #define	REGION_TAG_COUNT	sizeof(struct entryInfo_s)
 
@@ -63,6 +79,9 @@ static inline void ei2h(const struct entryInfo_s *pe, struct entryInfo_s *info)
     info->offset = ntohl(pe->offset);
     info->count = ntohl(pe->count);
 }
+
+RPM_GNUC_INTERNAL
+rpmRC hdrblobInit(const void *uh, size_t uc, struct hdrblob_s *blob);
 
 RPM_GNUC_INTERNAL
 rpmRC headerVerifyRegion(rpmTagVal regionTag,

@@ -154,9 +154,8 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
     int32_t il;
     int32_t dl;
     int32_t * ei = NULL;
-    entryInfo pe;
     unsigned int nb, uc;
-    unsigned char * dataStart;
+    struct hdrblob_s blob;
     Header sigh = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
@@ -192,21 +191,22 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
     ei = xmalloc(uc);
     ei[0] = block[2];
     ei[1] = block[3];
-    pe = (entryInfo) &ei[2];
-    dataStart = (unsigned char *) (pe + il);
-    if ((xx = Freadall(fd, pe, nb)) != nb) {
+    if ((xx = Freadall(fd, &ei[2], nb)) != nb) {
 	rasprintf(&buf,
 		  _("sigh blob(%d): BAD, read returned %d"), (int)nb, xx);
 	goto exit;
     }
+
+    if (hdrblobInit(ei, uc, &blob) != RPMRC_OK)
+	goto exit;
     
     /* Verify header immutable region if there is one */
-    xx = headerVerifyRegion(RPMTAG_HEADERSIGNATURES, il, dl, pe, dataStart,
+    xx = headerVerifyRegion(RPMTAG_HEADERSIGNATURES, blob.il, blob.dl, blob.pe, blob.dataStart,
 			    1, NULL, NULL, &buf);
     /* Sanity check signature tags */
     if (xx != RPMRC_FAIL) {
 	int region = (xx == RPMRC_OK) ? 1 : 0;
-	if (headerVerifyInfo(il-region, dl, pe+region, dataStart, &buf))
+	if (headerVerifyInfo(blob.il-region, blob.dl, blob.pe+region, blob.dataStart, &buf))
 	    xx = RPMRC_FAIL;
     }
 
@@ -215,7 +215,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
 	goto exit;
 
     /* OK, blob looks sane, load the header. */
-    sigh = headerImport(ei, uc, 0);
+    sigh = headerImport(blob.ei, blob.uc, 0);
     if (sigh == NULL) {
 	rasprintf(&buf, _("sigh load: BAD"));
 	goto exit;
