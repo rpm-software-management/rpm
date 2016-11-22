@@ -20,6 +20,7 @@
 #include "rpmio/rpmio_internal.h" 	/* fdSetBundle() */
 #include "lib/rpmlead.h"
 #include "lib/signature.h"
+#include "lib/header_internal.h"
 
 #include "debug.h"
 
@@ -127,27 +128,19 @@ static int readFile(FD_t fd, const char * fn, rpmDigestBundle hdrbundle)
     unsigned char buf[4*BUFSIZ];
     ssize_t count;
     int rc = 1;
-    Header h = NULL;
+    struct hdrblob_s blob;
     char *msg = NULL;
 
     /* Read the header from the package. */
-    if (rpmReadHeader(NULL, fd, &h, &msg) != RPMRC_OK) {
+    if (hdrblobRead(fd, RPMTAG_HEADERIMMUTABLE, &blob, &msg) != RPMRC_OK) {
 	rpmlog(RPMLOG_ERR, _("%s: headerRead failed: %s\n"), fn, msg);
 	goto exit;
     }
 
-    if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
-	struct rpmtd_s utd;
-    
-	if (!headerGet(h, RPMTAG_HEADERIMMUTABLE, &utd, HEADERGET_DEFAULT)){
-	    rpmlog(RPMLOG_ERR, 
-		    _("%s: Immutable header region could not be read. "
-		    "Corrupted package?\n"), fn);
-	    goto exit;
-	}
-	rpmDigestBundleUpdate(hdrbundle, rpm_header_magic, sizeof(rpm_header_magic));
-	rpmDigestBundleUpdate(hdrbundle, utd.data, utd.count);
-	rpmtdFreeData(&utd);
+    if (blob.regionTag == RPMTAG_HEADERIMMUTABLE) {
+	rpmDigestBundleUpdate(hdrbundle,
+				rpm_header_magic, sizeof(rpm_header_magic));
+	rpmDigestBundleUpdate(hdrbundle, blob.ei, blob.uc);
     }
 
     /* Read the payload from the package. */
@@ -161,7 +154,7 @@ static int readFile(FD_t fd, const char * fn, rpmDigestBundle hdrbundle)
 
 exit:
     free(msg);
-    headerFree(h);
+    free(blob.ei);
     return rc;
 }
 
