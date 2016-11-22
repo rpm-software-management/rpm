@@ -122,8 +122,7 @@ int rpmcliImportPubkeys(rpmts ts, ARGV_const_t argv)
 /**
  * @todo If the GPG key was known available, the md5 digest could be skipped.
  */
-static int readFile(FD_t fd, const char * fn,
-		    rpmDigestBundle plbundle, rpmDigestBundle hdrbundle)
+static int readFile(FD_t fd, const char * fn, rpmDigestBundle hdrbundle)
 {
     unsigned char buf[4*BUFSIZ];
     ssize_t count;
@@ -282,7 +281,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 
     /* Read the file, generating digest(s) on the fly. */
     fdSetBundle(fd, plbundle);
-    if (readFile(fd, fn, plbundle, hdrbundle)) {
+    if (readFile(fd, fn, hdrbundle)) {
 	goto exit;
     }
 
