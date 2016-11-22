@@ -1941,6 +1941,16 @@ rpmRC hdrblobRead(FD_t fd, rpmTagVal regionTag, hdrblob blob, char **emsg)
 	goto exit;
     }
 
+    if (regionTag == RPMTAG_HEADERSIGNATURES) {
+	size_t sigSize = uc + sizeof(rpm_header_magic);
+	size_t pad = (8 - (sigSize % 8)) % 8;
+	size_t trc;
+	if (pad && (trc = Freadall(fd, block, pad)) != pad) {
+	    rasprintf(emsg, _("sigh pad(%zd): BAD, read %zd bytes"), pad, trc);
+	    goto exit;
+	}
+    }
+
     rc = hdrblobInit(ei, uc, regionTag, 1, blob, emsg);
 
 exit:

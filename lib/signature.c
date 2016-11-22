@@ -150,7 +150,6 @@ static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, rpm_loff_t dat
 rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
 {
     char *buf = NULL;
-    int32_t block[4];
     struct hdrblob_s blob;
     Header sigh = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
@@ -169,18 +168,11 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
 	goto exit;
     }
 
+    /* XXX the padding calculation here is only for debug printing */
     {	size_t sigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
 	size_t pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
-	ssize_t trc;
 	struct rpmtd_s sizetag;
 	rpm_loff_t archSize = 0;
-
-	/* Position at beginning of header. */
-	if (pad && (trc = Freadall(fd, block, pad)) != pad) {
-	    rasprintf(&buf,
-		      _("sigh pad(%zd): BAD, read %zd bytes"), pad, trc);
-	    goto exit;
-	}
 
 	/* Print package component sizes. */
 	if (headerGet(sigh, RPMSIGTAG_LONGSIZE, &sizetag, HEADERGET_DEFAULT)) {
@@ -198,6 +190,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
 	    goto exit;
 	}
     }
+    rc = RPMRC_OK;
 
 exit:
     if (sighp && sigh && rc == RPMRC_OK)
