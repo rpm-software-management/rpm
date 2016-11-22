@@ -85,11 +85,6 @@ rpmRC hdrblobInit(const void *uh, size_t uc,
 		rpmTagVal regionTag, int exact_size,
 		struct hdrblob_s *blob, char **emsg);
 
-RPM_GNUC_INTERNAL
-rpmRC headerVerifyRegion(rpmTagVal regionTag, int exact_size,
-                         hdrblob blob, char **buf);
-
-
 /** \ingroup header
  * Perform simple sanity and range checks on header tag(s).
  * @param blob		header blob
