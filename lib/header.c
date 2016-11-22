@@ -1909,6 +1909,13 @@ rpmRC hdrblobInit(const void *uh, size_t uc,
     blob->dataStart = (uint8_t *) (blob->pe + blob->il);
     blob->dataEnd = blob->dataStart + blob->dl;
 
+    /* Is the blob the right size? */
+    if (blob->uc > 0 && blob->pvlen != blob->uc) {
+	rasprintf(emsg, _("blob size(%zd): BAD, 8 + 16 * il(%d) + dl(%d)"),
+			blob->uc, blob->il, blob->dl);
+	goto exit;
+    }
+
     if (hdrblobVerifyRegion(regionTag, exact_size, blob, emsg) == RPMRC_FAIL)
 	goto exit;
 

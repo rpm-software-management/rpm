@@ -239,13 +239,6 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     char *buf = NULL;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
 
-    /* Is the blob the right size? */
-    if (blob->uc > 0 && blob->pvlen != blob->uc) {
-	rasprintf(&buf, _("blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"),
-		(int)blob->uc, (int)blob->il, (int)blob->dl);
-	goto exit;
-    }
-
     /* Sanity check the rest of the header structure. */
     rc = headerVerifyInfo(blob, &buf);
 
@@ -261,7 +254,6 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 	rc = RPMRC_OK;
     }
 
-exit:
     if (msg) 
 	*msg = buf;
     else
