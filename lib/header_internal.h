@@ -84,9 +84,8 @@ RPM_GNUC_INTERNAL
 rpmRC hdrblobInit(const void *uh, size_t uc, struct hdrblob_s *blob);
 
 RPM_GNUC_INTERNAL
-rpmRC headerVerifyRegion(rpmTagVal regionTag,
-                        int il, int dl, entryInfo pe, unsigned char *dataStart,
-                        int exact_size, int *ril, int *rdl, char **buf);
+rpmRC headerVerifyRegion(rpmTagVal regionTag, int exact_size,
+                         hdrblob blob, char **buf);
 
 
 /** \ingroup header

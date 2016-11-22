@@ -233,24 +233,21 @@ exit:
     return rc;
 }
 
-rpmRC headerVerifyRegion(rpmTagVal regionTag,
-			int il, int dl, entryInfo pe, unsigned char *dataStart,
-			int exact_size, int *rilp, int *rdlp, char **buf)
+rpmRC headerVerifyRegion(rpmTagVal regionTag, int exact_size,
+			hdrblob blob, char **buf)
 {
     rpmRC rc = RPMRC_FAIL;
     struct entryInfo_s trailer, einfo;
     unsigned char * regionEnd = NULL;
-    int32_t ril = 0;
-    int32_t rdl = 0;
 
     /* Check that we have at least on tag */
-    if (il < 1) {
+    if (blob->il < 1) {
 	rasprintf(buf, _("region: no tags"));
 	goto exit;
     }
 
     /* Convert the 1st tag element. */
-    ei2h(pe, &einfo);
+    ei2h(blob->pe, &einfo);
 
     /* Is there an immutable header region tag? */
     if (!(einfo.tag == regionTag)) {
@@ -267,7 +264,7 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
     }
 
     /* Is the trailer within the data area? */
-    if (hdrchkRange(dl, einfo.offset + REGION_TAG_COUNT)) {
+    if (hdrchkRange(blob->dl, einfo.offset + REGION_TAG_COUNT)) {
 	rasprintf(buf, 
 		_("region offset: BAD, tag %d type %d offset %d count %d"),
 		einfo.tag, einfo.type, einfo.offset, einfo.count);
@@ -276,10 +273,10 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
 
     /* Is there an immutable header region tag trailer? */
     memset(&trailer, 0, sizeof(trailer));
-    regionEnd = dataStart + einfo.offset;
+    regionEnd = blob->dataStart + einfo.offset;
     (void) memcpy(&trailer, regionEnd, REGION_TAG_COUNT);
     regionEnd += REGION_TAG_COUNT;
-    rdl = regionEnd - dataStart;
+    blob->rdl = regionEnd - blob->dataStart;
 
     ei2h(&trailer, &einfo);
     /* Trailer offset is negative and has a special meaning */
@@ -294,27 +291,24 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
     }
 
     /* Does the region actually fit within the header? */
-    ril = einfo.offset/sizeof(*pe);
-    if ((einfo.offset % sizeof(*pe)) || hdrchkRange(il, ril) ||
-					hdrchkRange(dl, rdl)) {
+    blob->ril = einfo.offset/sizeof(*blob->pe);
+    if ((einfo.offset % sizeof(*blob->pe)) || hdrchkRange(blob->il, blob->ril) ||
+					hdrchkRange(blob->dl, blob->rdl)) {
 	rasprintf(buf, _("region %d size: BAD, ril %d il %d rdl %d dl %d"),
-			regionTag, ril, il, rdl, dl);
+			regionTag, blob->ril, blob->il, blob->rdl, blob->dl);
 	goto exit;
     }
 
     /* In package files region size is expected to match header size. */
-    if (exact_size && !(il == ril && dl == rdl)) {
+    if (exact_size && !(blob->il == blob->ril && blob->dl == blob->rdl)) {
 	rasprintf(buf,
 		_("region %d: tag number mismatch %d ril %d dl %d rdl %d\n"),
-		regionTag, il, ril, dl, rdl);
+		regionTag, blob->il, blob->ril, blob->dl, blob->rdl);
 	goto exit;
     }
 
+    blob->regionTag = regionTag;
     rc = RPMRC_OK;
-    if (rilp)
-	*rilp = ril;
-    if (rdlp)
-	*rdlp = rdl;
 
 exit:
     return rc;
@@ -335,8 +329,7 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     }
 
     /* Verify header immutable region if there is one */
-    rc = headerVerifyRegion(RPMTAG_HEADERIMMUTABLE, blob->il, blob->dl, blob->pe, blob->dataStart,
-			    exact_size, &blob->ril, &blob->rdl, &buf);
+    rc = headerVerifyRegion(RPMTAG_HEADERIMMUTABLE, exact_size, blob, &buf);
 
     /* Sanity check the rest of the header structure. */
     if (rc != RPMRC_FAIL) {

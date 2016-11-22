@@ -201,8 +201,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
 	goto exit;
     
     /* Verify header immutable region if there is one */
-    xx = headerVerifyRegion(RPMTAG_HEADERSIGNATURES, blob.il, blob.dl, blob.pe, blob.dataStart,
-			    1, NULL, NULL, &buf);
+    xx = headerVerifyRegion(RPMTAG_HEADERSIGNATURES, 1, &blob, &buf);
     /* Sanity check signature tags */
     if (xx != RPMRC_FAIL) {
 	int region = (xx == RPMRC_OK) ? 1 : 0;
