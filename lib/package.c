@@ -231,29 +231,6 @@ exit:
     return rc;
 }
 
-static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
-			  hdrblob blob, char ** msg)
-{
-    char *buf = NULL;
-    rpmRC rc = RPMRC_NOTFOUND;	/* assume not found */
-
-    /* Verify header-only digest/signature if there is one we can use. */
-    if (blob->il > blob->ril)
-	rc = headerSigVerify(keyring, vsflags, blob, &buf);
-
-    if (rc == RPMRC_NOTFOUND && buf == NULL) {
-	rasprintf(&buf, "Header sanity check: OK");
-	rc = RPMRC_OK;
-    }
-
-    if (msg) 
-	*msg = buf;
-    else
-	free(buf);
-
-    return rc;
-}
-
 rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 {
     rpmRC rc = RPMRC_FAIL;
@@ -263,8 +240,11 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 
     if (hdrblobInit(uh, uc, RPMTAG_HEADERIMMUTABLE, 0, &blob, msg) == RPMRC_OK) {
 	rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-	rc = headerVerify(keyring, vsflags, &blob, msg);
+	rc = headerSigVerify(keyring, vsflags, &blob, msg);
 	rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), uc);
+
+	if (rc == RPMRC_NOTFOUND && msg != NULL && *msg == NULL)
+	    rasprintf(msg, "Header sanity check: OK");
     }
 
     rpmKeyringFree(keyring);
