@@ -151,62 +151,23 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
 {
     char *buf = NULL;
     int32_t block[4];
-    int32_t il;
-    int32_t dl;
-    int32_t * ei = NULL;
-    unsigned int nb, uc;
     struct hdrblob_s blob;
     Header sigh = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
-    int xx;
 
     if (sighp)
 	*sighp = NULL;
 
-    memset(block, 0, sizeof(block));
-    if ((xx = Freadall(fd, block, sizeof(block))) != sizeof(block)) {
-	rasprintf(&buf, _("sigh size(%d): BAD, read returned %d"), 
-		  (int)sizeof(block), xx);
-	goto exit;
-    }
-    if (memcmp(block, rpm_header_magic, sizeof(rpm_header_magic))) {
-	rasprintf(&buf, _("sigh magic: BAD"));
-	goto exit;
-    }
-    il = ntohl(block[2]);
-    if (il < 0 || il > 32) {
-	rasprintf(&buf, 
-		  _("sigh tags: BAD, no. of tags(%d) out of range"), il);
-	goto exit;
-    }
-    dl = ntohl(block[3]);
-    if (dl < 0 || dl > 8192) {
-	rasprintf(&buf, 
-		  _("sigh data: BAD, no. of  bytes(%d) out of range"), dl);
-	goto exit;
-    }
-
-    nb = (il * sizeof(struct entryInfo_s)) + dl;
-    uc = sizeof(il) + sizeof(dl) + nb;
-    ei = xmalloc(uc);
-    ei[0] = block[2];
-    ei[1] = block[3];
-    if ((xx = Freadall(fd, &ei[2], nb)) != nb) {
-	rasprintf(&buf,
-		  _("sigh blob(%d): BAD, read returned %d"), (int)nb, xx);
-	goto exit;
-    }
-
-    if (hdrblobInit(ei, uc, RPMTAG_HEADERSIGNATURES, 1, &blob, &buf) != RPMRC_OK)
+    if (hdrblobRead(fd, RPMTAG_HEADERSIGNATURES, &blob, &buf) != RPMRC_OK)
 	goto exit;
     
     /* OK, blob looks sane, load the header. */
     sigh = headerImport(blob.ei, blob.uc, 0);
     if (sigh == NULL) {
 	rasprintf(&buf, _("sigh load: BAD"));
+	free(blob.ei);
 	goto exit;
     }
-    ei = NULL; /* XXX will be freed with header */
 
     {	size_t sigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
 	size_t pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
@@ -242,7 +203,6 @@ exit:
     if (sighp && sigh && rc == RPMRC_OK)
 	*sighp = headerLink(sigh);
     headerFree(sigh);
-    free(ei);
 
     if (msg != NULL) {
 	*msg = buf;

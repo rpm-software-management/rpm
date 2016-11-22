@@ -1892,6 +1892,71 @@ exit:
     return rc;
 }
 
+rpmRC hdrblobRead(FD_t fd, rpmTagVal regionTag, hdrblob blob, char **emsg)
+{
+    int32_t block[4];
+    int32_t il;
+    int32_t dl;
+    int32_t * ei = NULL;
+    size_t uc;
+    size_t nb;
+    rpmRC rc = RPMRC_FAIL;		/* assume failure */
+    int xx;
+    int32_t il_max = HEADER_TAGS_MAX;
+    int32_t dl_max = HEADER_DATA_MAX;
+
+    if (regionTag == RPMTAG_HEADERSIGNATURES) {
+	il_max = 32;
+	dl_max = 8192;
+    }
+
+    memset(block, 0, sizeof(block));
+    if ((xx = Freadall(fd, block, sizeof(block))) != sizeof(block)) {
+	rasprintf(emsg,
+		_("hdr size(%d): BAD, read returned %d"), (int)sizeof(block), xx);
+	goto exit;
+    }
+    if (memcmp(block, rpm_header_magic, sizeof(rpm_header_magic))) {
+	rasprintf(emsg, _("hdr magic: BAD"));
+	goto exit;
+    }
+    il = ntohl(block[2]);
+    if (hdrchkRange(il_max, il)) {
+	rasprintf(emsg, _("hdr tags: BAD, no. of tags(%d) out of range"), il);
+	goto exit;
+    }
+    dl = ntohl(block[3]);
+    if (hdrchkRange(dl_max, dl)) {
+	rasprintf(emsg, _("hdr data: BAD, no. of bytes(%d) out of range"), dl);
+	goto exit;
+    }
+
+    nb = (il * sizeof(struct entryInfo_s)) + dl;
+    uc = sizeof(il) + sizeof(dl) + nb;
+    ei = xmalloc(uc);
+    ei[0] = block[2];
+    ei[1] = block[3];
+    if ((xx = Freadall(fd, (char *)&ei[2], nb)) != nb) {
+	rasprintf(emsg, _("hdr blob(%zd): BAD, read returned %d"), nb, xx);
+	goto exit;
+    }
+
+    rc = hdrblobInit(ei, uc, regionTag, 1, blob, emsg);
+
+exit:
+    if (rc != RPMRC_OK) {
+	free(ei);
+	if (emsg && *emsg && regionTag == RPMTAG_HEADERSIGNATURES) {
+	    /* rstrscat() cannot handle overlap even if it claims so */
+	    char *tmp = rstrscat(NULL, _("signature "), *emsg, NULL);
+	    free(*emsg);
+	    *emsg = tmp;
+	}
+    }
+
+    return rc;
+}
+
 rpmRC hdrblobInit(const void *uh, size_t uc,
 		rpmTagVal regionTag, int exact_size,
 		struct hdrblob_s *blob, char **emsg)

@@ -42,7 +42,8 @@ struct hdrblob_s {
  * Sanity check on no. of tags.
  * This check imposes a limit of 65K tags, more than enough.
  */
-#define hdrchkTags(_ntags)      ((_ntags) & 0xffff0000)
+#define HEADER_TAGS_MAX 0x0000ffff
+#define hdrchkTags(_ntags)      ((_ntags) & (~HEADER_TAGS_MAX))
 
 /**
  * Sanity check on type values.
@@ -84,6 +85,9 @@ RPM_GNUC_INTERNAL
 rpmRC hdrblobInit(const void *uh, size_t uc,
 		rpmTagVal regionTag, int exact_size,
 		struct hdrblob_s *blob, char **emsg);
+
+RPM_GNUC_INTERNAL
+rpmRC hdrblobRead(FD_t fd, rpmTagVal regionTag, hdrblob blob, char **emsg);
 
 /** \ingroup header
  * Set header instance (rpmdb record number)
