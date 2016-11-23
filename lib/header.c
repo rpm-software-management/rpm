@@ -1860,6 +1860,11 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
     /* Convert the 1st tag element. */
     ei2h(blob->pe, &einfo);
 
+    if (!regionTag && (einfo.tag == RPMTAG_HEADERSIGNATURES ||
+		       einfo.tag ==RPMTAG_HEADERIMMUTABLE)) {
+	regionTag = einfo.tag;
+    }
+
     /* Is there an immutable header region tag? */
     if (!(einfo.tag == regionTag)) {
 	rc = RPMRC_NOTFOUND;
