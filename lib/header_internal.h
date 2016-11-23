@@ -35,39 +35,6 @@ struct hdrblob_s {
     int32_t rdl;
 };
 
-#define	REGION_TAG_TYPE		RPM_BIN_TYPE
-#define	REGION_TAG_COUNT	sizeof(struct entryInfo_s)
-
-/**
- * Sanity check on no. of tags.
- * This check imposes a limit of 65K tags, more than enough.
- */
-#define HEADER_TAGS_MAX 0x0000ffff
-#define hdrchkTags(_ntags)      ((_ntags) & (~HEADER_TAGS_MAX))
-
-/**
- * Sanity check on type values.
- */
-#define hdrchkType(_type) ((_type) < RPM_MIN_TYPE || (_type) > RPM_MAX_TYPE)
-
-/**
- * Sanity check on data size and/or offset and/or count.
- * This check imposes a limit of 256 MB -- file signatures
- * may require a lot of space in the header.
- */
-#define HEADER_DATA_MAX 0x0fffffff
-#define hdrchkData(_nbytes) ((_nbytes) & (~HEADER_DATA_MAX))
-
-/**
- * Sanity check on data alignment for data type.
- */
-#define hdrchkAlign(_type, _off)	((_off) & (typeAlign[_type]-1))
-
-/**
- * Sanity check on range of data offset.
- */
-#define hdrchkRange(_dl, _off)		((_off) < 0 || (_off) > (_dl))
-
 #ifdef __cplusplus
 extern "C" {
 #endif
