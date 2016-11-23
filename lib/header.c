@@ -1930,9 +1930,11 @@ exit:
     return rc;
 }
 
-rpmRC hdrblobRead(FD_t fd, rpmTagVal regionTag, hdrblob blob, char **emsg)
+rpmRC hdrblobRead(FD_t fd, int magic, rpmTagVal regionTag, hdrblob blob, char **emsg)
 {
     int32_t block[4];
+    int32_t *bs = (magic != 0) ? &block[0] : &block[2];
+    int blen = (magic != 0) ? sizeof(block) : sizeof(block) / 2;
     int32_t il;
     int32_t dl;
     int32_t * ei = NULL;
@@ -1949,12 +1951,12 @@ rpmRC hdrblobRead(FD_t fd, rpmTagVal regionTag, hdrblob blob, char **emsg)
     }
 
     memset(block, 0, sizeof(block));
-    if ((xx = Freadall(fd, block, sizeof(block))) != sizeof(block)) {
+    if ((xx = Freadall(fd, bs, blen)) != blen) {
 	rasprintf(emsg,
-		_("hdr size(%d): BAD, read returned %d"), (int)sizeof(block), xx);
+		_("hdr size(%d): BAD, read returned %d"), blen, xx);
 	goto exit;
     }
-    if (memcmp(block, rpm_header_magic, sizeof(rpm_header_magic))) {
+    if (magic && memcmp(block, rpm_header_magic, sizeof(rpm_header_magic))) {
 	rasprintf(emsg, _("hdr magic: BAD"));
 	goto exit;
     }

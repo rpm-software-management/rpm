@@ -54,7 +54,7 @@ rpmRC hdrblobInit(const void *uh, size_t uc,
 		struct hdrblob_s *blob, char **emsg);
 
 RPM_GNUC_INTERNAL
-rpmRC hdrblobRead(FD_t fd, rpmTagVal regionTag, hdrblob blob, char **emsg);
+rpmRC hdrblobRead(FD_t fd, int magic, rpmTagVal regionTag, hdrblob blob, char **emsg);
 
 /** \ingroup header
  * Set header instance (rpmdb record number)

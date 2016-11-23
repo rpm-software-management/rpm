@@ -259,7 +259,7 @@ static rpmRC rpmpkgReadHeader(FD_t fd, Header *hdrp, char ** msg)
     if (msg)
 	*msg = NULL;
 
-    if (hdrblobRead(fd, RPMTAG_HEADERIMMUTABLE, &blob, &buf) != RPMRC_OK)
+    if (hdrblobRead(fd, 1, RPMTAG_HEADERIMMUTABLE, &blob, &buf) != RPMRC_OK)
 	goto exit;
 
     /* OK, blob looks sane, load the header. */
