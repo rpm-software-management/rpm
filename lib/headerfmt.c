@@ -414,6 +414,12 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 		goto errxit;
 	    }
 
+	    /* Set justOne = 1 for non ARRAY tags */
+	    if (!(rpmTagGetReturnType(token->u.tag.tag) &
+		  RPM_ARRAY_RETURN_TYPE)) {
+		token->u.tag.justOne = 1;
+	    }
+
 	    start = next;
 	    break;
 
