@@ -62,12 +62,7 @@ static void headerMergeLegacySigs(Header h, Header sigh)
 		continue;
 	    break;
 	}
-	if (td.data == NULL) continue;	/* XXX can't happen */
 	if (!headerIsEntry(h, td.tag)) {
-	    if (hdrchkType(td.type))
-		continue;
-	    if (td.count < 0 || hdrchkData(td.count))
-		continue;
 	    switch(td.type) {
 	    case RPM_NULL_TYPE:
 		continue;
