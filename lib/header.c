@@ -1027,54 +1027,14 @@ Header headerCopyLoad(const void * uh)
 
 Header headerRead(FD_t fd, int magicp)
 {
-    int32_t block[4];
-    int32_t * ei = NULL;
-    int32_t il;
-    int32_t dl;
     Header h = NULL;
-    unsigned int len, blen;
+    struct hdrblob_s blob;
+    char *buf = NULL;
 
-    if (magicp == HEADER_MAGIC_YES) {
-	int32_t magic;
+    if (hdrblobRead(fd, magicp, 0, 0, &blob, &buf) == RPMRC_OK)
+	hdrblobImport(&blob, 0, &h, &buf);
 
-	if (Freadall(fd, block, 4*sizeof(*block)) != 4*sizeof(*block))
-	    goto exit;
-
-	magic = block[0];
-
-	if (memcmp(&magic, rpm_header_magic, sizeof(magic)))
-	    goto exit;
-
-	il = ntohl(block[2]);
-	dl = ntohl(block[3]);
-    } else {
-	if (Freadall(fd, block, 2*sizeof(*block)) != 2*sizeof(*block))
-	    goto exit;
-
-	il = ntohl(block[0]);
-	dl = ntohl(block[1]);
-    }
-
-    blen = (il * sizeof(struct entryInfo_s)) + dl;
-    len = sizeof(il) + sizeof(dl) + blen;
-
-    /* Sanity checks on header intro. */
-    if (hdrchkTags(il) || hdrchkData(dl) || len > headerMaxbytes)
-	goto exit;
-
-    ei = xmalloc(len);
-    ei[0] = htonl(il);
-    ei[1] = htonl(dl);
-
-    if (Freadall(fd, (char *)&ei[2], blen) != blen)
-	goto exit;
-    
-    h = headerImport(ei, len, 0);
-
-exit:
-    if (h == NULL && ei != NULL) {
-	free(ei);
-    }
+    free(buf);
     return h;
 }
 
