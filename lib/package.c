@@ -263,14 +263,7 @@ static rpmRC rpmpkgReadHeader(FD_t fd, Header *hdrp, char ** msg)
 	goto exit;
 
     /* OK, blob looks sane, load the header. */
-    h = headerImport(blob.ei, blob.uc, 0);
-    if (h == NULL) {
-	free(blob.ei);
-	free(buf);
-	rasprintf(&buf, _("hdr load: BAD"));
-        goto exit;
-    }
-    rc = RPMRC_OK;
+    rc = hdrblobImport(&blob, 0, &h, &buf);
     
 exit:
     if (hdrp && h && rc == RPMRC_OK)

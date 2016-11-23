@@ -161,12 +161,8 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
 	goto exit;
     
     /* OK, blob looks sane, load the header. */
-    sigh = headerImport(blob.ei, blob.uc, 0);
-    if (sigh == NULL) {
-	rasprintf(&buf, _("sigh load: BAD"));
-	free(blob.ei);
+    if (hdrblobImport(&blob, 0, &sigh, &buf) != RPMRC_OK)
 	goto exit;
-    }
 
     /* XXX the padding calculation here is only for debug printing */
     {	size_t sigSize = headerSizeof(sigh, HEADER_MAGIC_YES);

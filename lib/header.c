@@ -2044,3 +2044,18 @@ exit:
     return rc;
 }
 
+rpmRC hdrblobImport(hdrblob blob, headerImportFlags flags,
+		    Header *hdrp, char **emsg)
+{
+    Header h = headerImport(blob->ei, blob->uc, flags);
+
+    if (h == NULL) {
+	free(blob->ei);
+	rasprintf(emsg, _("hdr load: BAD"));
+    } else {
+	*hdrp = h;
+    }
+    blob->ei = NULL;
+
+    return (h != NULL) ? RPMRC_OK : RPMRC_FAIL;
+}
