@@ -1930,7 +1930,7 @@ exit:
     return rc;
 }
 
-rpmRC hdrblobRead(FD_t fd, int magic, rpmTagVal regionTag, hdrblob blob, char **emsg)
+rpmRC hdrblobRead(FD_t fd, int magic, int exact_size, rpmTagVal regionTag, hdrblob blob, char **emsg)
 {
     int32_t block[4];
     int32_t *bs = (magic != 0) ? &block[0] : &block[2];
@@ -1991,7 +1991,7 @@ rpmRC hdrblobRead(FD_t fd, int magic, rpmTagVal regionTag, hdrblob blob, char **
 	}
     }
 
-    rc = hdrblobInit(ei, uc, regionTag, 1, blob, emsg);
+    rc = hdrblobInit(ei, uc, regionTag, exact_size, blob, emsg);
 
 exit:
     if (rc != RPMRC_OK) {

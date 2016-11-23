@@ -132,7 +132,7 @@ static int readFile(FD_t fd, const char * fn, rpmDigestBundle hdrbundle)
     char *msg = NULL;
 
     /* Read the header from the package. */
-    if (hdrblobRead(fd, 1, RPMTAG_HEADERIMMUTABLE, &blob, &msg) != RPMRC_OK) {
+    if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERIMMUTABLE, &blob, &msg) != RPMRC_OK) {
 	rpmlog(RPMLOG_ERR, _("%s: headerRead failed: %s\n"), fn, msg);
 	goto exit;
     }
