@@ -848,93 +848,46 @@ int headerDel(Header h, rpmTagVal tag)
     return 0;
 }
 
-Header headerImport(void * blob, unsigned int bsize, headerImportFlags flags)
+rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg)
 {
-    const int32_t * ei = (int32_t *) blob;
-    int32_t il = ntohl(ei[0]);		/* index length */
-    int32_t dl = ntohl(ei[1]);		/* data length */
-    unsigned int pvlen = sizeof(il) + sizeof(dl) +
-		    (il * sizeof(struct entryInfo_s)) + dl;;
     Header h = NULL;
-    entryInfo pe;
-    unsigned char * dataStart;
-    unsigned char * dataEnd;
     indexEntry entry; 
     int rdlen;
-    int fast = (flags & HEADERIMPORT_FAST);
 
-    /* Sanity checks on header intro. */
-    if (bsize && bsize != pvlen)
-	goto errxit;
-    if (hdrchkTags(il) || hdrchkData(dl) || pvlen >= headerMaxbytes)
-	goto errxit;
-
-    if (flags & HEADERIMPORT_COPY && bsize)
-	ei = blob = memcpy(xmalloc(bsize), ei, bsize);
-    h = headerCreate(blob, il);
-
-    pe = (entryInfo) &ei[2];
-    dataStart = (unsigned char *) (pe + il);
-    dataEnd = dataStart + dl;
+    h = headerCreate(blob->ei, blob->il);
 
     entry = h->index;
-    if (!(htonl(pe->tag) < RPMTAG_HEADERI18NTABLE)) {
+    if (!(htonl(blob->pe->tag) < RPMTAG_HEADERI18NTABLE)) {
+	/* An original v3 header, create a legacy region entry for it */
 	h->flags |= HEADERFLAG_LEGACY;
 	entry->info.type = REGION_TAG_TYPE;
 	entry->info.tag = RPMTAG_HEADERIMAGE;
 	entry->info.count = REGION_TAG_COUNT;
-	entry->info.offset = ((unsigned char *)pe - dataStart); /* negative offset */
+	entry->info.offset = ((unsigned char *)blob->pe - blob->dataStart); /* negative offset */
 
-	entry->data = pe;
-	entry->length = pvlen - sizeof(il) - sizeof(dl);
-	rdlen = regionSwab(entry+1, il, 0, pe,
-			   dataStart, dataEnd, entry->info.offset, fast);
-	if (rdlen != dl)
+	entry->data = blob->pe;
+	entry->length = blob->pvlen - sizeof(blob->il) - sizeof(blob->dl);
+	rdlen = regionSwab(entry+1, blob->il, 0, blob->pe,
+			   blob->dataStart, blob->dataEnd,
+			   entry->info.offset, fast);
+	if (rdlen != blob->dl)
 	    goto errxit;
 	entry->rdlen = rdlen;
 	h->indexUsed++;
     } else {
-	int32_t rdl;
+	/* Either a v4 header or an "upgraded" v3 header with a legacy region */
 	int32_t ril;
 
 	h->flags &= ~HEADERFLAG_LEGACY;
+	ei2h(blob->pe, &entry->info);
+	ril = (entry->info.offset != 0) ? blob->ril : blob->il;
 
-	entry->info.type = htonl(pe->type);
-	entry->info.count = htonl(pe->count);
-	entry->info.tag = htonl(pe->tag);
-
-	if (!ENTRY_IS_REGION(entry))
-	    goto errxit;
-	if (entry->info.type != REGION_TAG_TYPE)
-	    goto errxit;
-	if (entry->info.count != REGION_TAG_COUNT)
-	    goto errxit;
-
-	{   int off = ntohl(pe->offset);
-
-	    if (off) {
-		size_t nb = REGION_TAG_COUNT;
-		int32_t stei[nb];
-		if (hdrchkRange(dl, (off + nb)))
-		    goto errxit;
-		/* XXX Hmm, why the copy? */
-		memcpy(&stei, dataStart + off, nb);
-		rdl = -ntohl(stei[2]);	/* negative offset */
-		ril = rdl/sizeof(*pe);
-		if (hdrchkTags(ril) || hdrchkData(rdl))
-		    goto errxit;
-	    } else {
-		ril = il;
-		rdl = (ril * sizeof(struct entryInfo_s));
-		entry->info.tag = RPMTAG_HEADERIMAGE;
-	    }
-	}
-	entry->info.offset = -rdl;	/* negative offset */
-
-	entry->data = pe;
-	entry->length = pvlen - sizeof(il) - sizeof(dl);
-	rdlen = regionSwab(entry+1, ril-1, 0, pe+1,
-			   dataStart, dataEnd, entry->info.offset, fast);
+	entry->info.offset = -(ril * sizeof(*blob->pe)); /* negative offset */
+	entry->data = blob->pe;
+	entry->length = blob->pvlen - sizeof(blob->il) - sizeof(blob->dl);
+	rdlen = regionSwab(entry+1, ril-1, 0, blob->pe+1,
+			   blob->dataStart, blob->dataEnd,
+			   entry->info.offset, fast);
 	if (rdlen < 0)
 	    goto errxit;
 	entry->rdlen = rdlen;
@@ -945,8 +898,8 @@ Header headerImport(void * blob, unsigned int bsize, headerImportFlags flags)
 	    int rid = entry->info.offset+1;
 
 	    /* Load dribble entries from region. */
-	    rdlen = regionSwab(newEntry, ne, rdlen, pe+ril,
-				dataStart, dataEnd, rid, fast);
+	    rdlen = regionSwab(newEntry, ne, rdlen, blob->pe+ril,
+				blob->dataStart, blob->dataEnd, rid, fast);
 	    if (rdlen < 0)
 		goto errxit;
 
@@ -973,7 +926,7 @@ Header headerImport(void * blob, unsigned int bsize, headerImportFlags flags)
 
 	rdlen += REGION_TAG_COUNT;
 
-	if (rdlen != dl)
+	if (rdlen != blob->dl)
 	    goto errxit;
     }
 
@@ -981,17 +934,18 @@ Header headerImport(void * blob, unsigned int bsize, headerImportFlags flags)
     h->sorted = HEADERSORT_NONE;
     headerSort(h);
     h->flags |= HEADERFLAG_ALLOCATED;
+    if (hdrp)
+	*hdrp = h;
 
-    return h;
+    return RPMRC_OK;
 
 errxit:
     if (h) {
-	if (flags & HEADERIMPORT_COPY)
-	    free(h->blob);
 	free(h->index);
 	free(h);
+	rasprintf(emsg, _("hdr load: BAD"));
     }
-    return NULL;
+    return RPMRC_FAIL;
 }
 
 Header headerReload(Header h, rpmTagVal tag)
@@ -1982,7 +1936,7 @@ rpmRC hdrblobInit(const void *uh, size_t uc,
     blob->dataEnd = blob->dataStart + blob->dl;
 
     /* Is the blob the right size? */
-    if (blob->uc > 0 && blob->pvlen != blob->uc) {
+    if (blob->pvlen >= headerMaxbytes || blob->pvlen != blob->uc) {
 	rasprintf(emsg, _("blob size(%zd): BAD, 8 + 16 * il(%d) + dl(%d)"),
 			blob->uc, blob->il, blob->dl);
 	goto exit;
@@ -2001,18 +1955,23 @@ exit:
     return rc;
 }
 
-rpmRC hdrblobImport(hdrblob blob, headerImportFlags flags,
-		    Header *hdrp, char **emsg)
+Header headerImport(void * blob, unsigned int bsize, headerImportFlags flags)
 {
-    Header h = headerImport(blob->ei, blob->uc, flags);
+    Header h = NULL;
+    struct hdrblob_s hblob;
+    char *buf = NULL;
+    void * b = blob;
 
-    if (h == NULL) {
-	free(blob->ei);
-	rasprintf(emsg, _("hdr load: BAD"));
-    } else {
-	*hdrp = h;
-    }
-    blob->ei = NULL;
+    if (flags & HEADERIMPORT_COPY && bsize)
+	b = memcpy(xmalloc(bsize), b, bsize);
 
-    return (h != NULL) ? RPMRC_OK : RPMRC_FAIL;
+    /* Sanity checks on header intro. */
+    if (hdrblobInit(b, bsize, 0, 0, &hblob, &buf) == RPMRC_OK)
+	hdrblobImport(&hblob, (flags & HEADERIMPORT_FAST), &h, &buf);
+
+    if (h == NULL && b != blob)
+	free(b);
+    free(buf);
+
+    return h;
 }

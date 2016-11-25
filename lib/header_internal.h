@@ -57,8 +57,7 @@ RPM_GNUC_INTERNAL
 rpmRC hdrblobRead(FD_t fd, int magic, int exact_size, rpmTagVal regionTag, hdrblob blob, char **emsg);
 
 RPM_GNUC_INTERNAL
-rpmRC hdrblobImport(hdrblob blob, headerImportFlags flags,
-		    Header *hdrp, char **emsg);
+rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg);
 
 /** \ingroup header
  * Set header instance (rpmdb record number)
