@@ -354,7 +354,7 @@ unsigned headerSizeof(Header h, int magicp)
 	/* Regions go in as is ... */
         if (ENTRY_IS_REGION(entry)) {
 	    size += entry->length;
-	    /* XXX Legacy regions do not include the region tag and data. */
+	    /* Reserve space for legacy region tag + data */
 	    if (i == 0 && (h->flags & HEADERFLAG_LEGACY))
 		size += sizeof(struct entryInfo_s) + entry->info.count;
 	    continue;
@@ -576,7 +576,7 @@ void * headerExport(Header h, unsigned int *bsize)
 
 	    il += ril;
 	    dl += entry->rdlen + entry->info.count;
-	    /* XXX Legacy regions do not include the region tag and data. */
+	    /* Reserve space for legacy region tag */
 	    if (i == 0 && (h->flags & HEADERFLAG_LEGACY))
 		il += 1;
 
@@ -649,7 +649,7 @@ void * headerExport(Header h, unsigned int *bsize)
 	    src = (char *)entry->data;
 	    rdlen = entry->rdlen;
 
-	    /* XXX Legacy regions do not include the region tag and data. */
+	    /* Legacy headers don't have regions originally, create one */
 	    if (i == 0 && (h->flags & HEADERFLAG_LEGACY)) {
 		int32_t stei[4];
 
