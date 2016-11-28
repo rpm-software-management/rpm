@@ -1772,7 +1772,8 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
     ei2h(blob->pe, &einfo);
 
     if (!regionTag && (einfo.tag == RPMTAG_HEADERSIGNATURES ||
-		       einfo.tag ==RPMTAG_HEADERIMMUTABLE)) {
+		       einfo.tag == RPMTAG_HEADERIMMUTABLE ||
+		       einfo.tag == RPMTAG_HEADERIMAGE)) {
 	regionTag = einfo.tag;
     }
 

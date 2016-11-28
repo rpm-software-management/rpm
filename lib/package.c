@@ -233,7 +233,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
     struct hdrblob_s blob;
 
-    if (hdrblobInit(uh, uc, RPMTAG_HEADERIMMUTABLE, 0, &blob, msg) == RPMRC_OK) {
+    if (hdrblobInit(uh, uc, 0, 0, &blob, msg) == RPMRC_OK) {
 	rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 	rc = headerSigVerify(keyring, vsflags, &blob, msg);
 	rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), uc);
