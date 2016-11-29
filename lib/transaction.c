@@ -67,6 +67,45 @@ struct diskspaceInfo_s {
 #define	adj_fs_blocks(_nb)	(((_nb) * 21) / 20)
 #define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
 
+static char *getMntPoint(const char *dirName, dev_t dev)
+{
+    char mntPoint[PATH_MAX];
+    char *resolved_path = realpath(dirName, mntPoint);
+    char *end = NULL;
+    struct stat sb;
+    char *res = NULL;
+
+    if (!resolved_path) {
+	strncpy(mntPoint, dirName, PATH_MAX);
+	mntPoint[PATH_MAX-1] = '\0';
+    }
+
+    while (end != mntPoint) {
+	end = strrchr(mntPoint, '/');
+	if (end == mntPoint) { /* reached "/" */
+	    stat("/", &sb);
+	    if (dev != sb.st_dev) {
+		res = xstrdup(mntPoint);
+	    } else {
+		res = xstrdup("/");
+	    }
+	    break;
+	} else if (end) {
+	    *end = '\0';
+	} else { /* dirName doesn't start with / - should not happen */
+	    res = xstrdup(dirName);
+	    break;
+	}
+	stat(mntPoint, &sb);
+	if (dev != sb.st_dev) {
+	    *end = '/';
+	    res = xstrdup(mntPoint);
+	    break;
+	}
+    }
+    return res;
+}
+
 static int rpmtsInitDSI(const rpmts ts)
 {
     if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_DISKSPACE)
@@ -81,8 +120,6 @@ static rpmDiskSpaceInfo rpmtsCreateDSI(const rpmts ts, dev_t dev,
 {
     rpmDiskSpaceInfo dsi;
     struct stat sb;
-    char * resolved_path;
-    char mntPoint[PATH_MAX];
     int rc;
 
 #if STATFS_IN_SYS_STATVFS
@@ -144,35 +181,7 @@ static rpmDiskSpaceInfo rpmtsCreateDSI(const rpmts ts, dev_t dev,
     }
 
     /* Find mount point belonging to this device number */
-    resolved_path = realpath(dirName, mntPoint);
-    if (!resolved_path) {
-	strncpy(mntPoint, dirName, PATH_MAX);
-	mntPoint[PATH_MAX-1] = '\0';
-    }
-    char * end = NULL;
-    while (end != mntPoint) {
-	end = strrchr(mntPoint, '/');
-	if (end == mntPoint) { /* reached "/" */
-	    stat("/", &sb);
-	    if (dsi->dev != sb.st_dev) {
-		dsi->mntPoint = xstrdup(mntPoint);
-	    } else {
-		dsi->mntPoint = xstrdup("/");
-	    }
-	    break;
-	} else if (end) {
-	    *end = '\0';
-	} else { /* dirName doesn't start with / - should not happen */
-	    dsi->mntPoint = xstrdup(dirName);
-	    break;
-	}
-	stat(mntPoint, &sb);
-	if (dsi->dev != sb.st_dev) {
-	    *end = '/';
-	    dsi->mntPoint = xstrdup(mntPoint);
-	    break;
-	}
-    }
+    dsi->mntPoint = getMntPoint(dirName, dsi->dev);
 
     rpmlog(RPMLOG_DEBUG,
 	   "0x%08x %8" PRId64 " %12" PRId64 " %12" PRId64" %s\n",
