@@ -136,6 +136,13 @@ static rpmDiskSpaceInfo rpmtsCreateDSI(const rpmts ts, dev_t dev,
     dsi->iavail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
 	? sfb.f_ffree : -1;
 
+    /* normalize block size to 4096 bytes if it is too big. */
+    if (dsi->bsize > 4096) {
+	uint64_t old_size = dsi->bavail * dsi->bsize;
+	dsi->bsize = 4096; /* Assume 4k block size */
+	dsi->bavail = old_size / dsi->bsize;
+    }
+
     /* Find mount point belonging to this device number */
     resolved_path = realpath(dirName, mntPoint);
     if (!resolved_path) {
