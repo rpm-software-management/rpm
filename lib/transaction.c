@@ -173,15 +173,18 @@ static rpmDiskSpaceInfo rpmtsCreateDSI(const rpmts ts, dev_t dev,
     dsi->iavail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
 	? sfb.f_ffree : -1;
 
+    /* Find mount point belonging to this device number */
+    dsi->mntPoint = getMntPoint(dirName, dsi->dev);
+
     /* normalize block size to 4096 bytes if it is too big. */
     if (dsi->bsize > 4096) {
 	uint64_t old_size = dsi->bavail * dsi->bsize;
+	rpmlog(RPMLOG_DEBUG,
+		"dubious blocksize % " PRId64 " on %s, normalizing to 4096\n",
+		dsi->bsize, dsi->mntPoint);
 	dsi->bsize = 4096; /* Assume 4k block size */
 	dsi->bavail = old_size / dsi->bsize;
     }
-
-    /* Find mount point belonging to this device number */
-    dsi->mntPoint = getMntPoint(dirName, dsi->dev);
 
     rpmlog(RPMLOG_DEBUG,
 	   "0x%08x %8" PRId64 " %12" PRId64 " %12" PRId64" %s\n",
