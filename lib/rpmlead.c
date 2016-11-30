@@ -52,6 +52,7 @@ static int rpmLeadFromHeader(Header h, struct rpmlead_s *l)
 	rpmGetArchInfo(NULL, &archnum);
 	rpmGetOsInfo(NULL, &osnum);
 
+	memset(l, 0, sizeof(*l));
 	l->major = 3;
 	l->minor = 0;
 	l->archnum = archnum;
