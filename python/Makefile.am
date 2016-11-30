@@ -1,6 +1,6 @@
 # Makefile for rpm library.
 
-EXTRA_DIST = rpm/__init__.py rpm/transaction.py
+EXTRA_DIST = rpm/__init__.py rpm/transaction.py rpm/generate.py
 
 AM_CPPFLAGS = -I$(top_builddir)/include/
 AM_CPPFLAGS += -I$(top_srcdir)/python
@@ -8,7 +8,7 @@ AM_CPPFLAGS += -I@WITH_PYTHON_INCLUDE@
 AM_CPPFLAGS += @WITH_PYTHONEMBED@
 
 pkgpyexec_LTLIBRARIES = _rpm.la _rpmb.la _rpms.la
-pkgpyexec_DATA = rpm/__init__.py rpm/transaction.py
+pkgpyexec_DATA = rpm/__init__.py rpm/transaction.py rpm/generate.py
 
 _rpm_la_LDFLAGS = -module -avoid-version -shared
 _rpm_la_LIBADD = \
