@@ -340,13 +340,8 @@ unsigned headerSizeof(Header h, int magicp)
 
     headerSort(h);
 
-    switch (magicp) {
-    case HEADER_MAGIC_YES:
+    if (magicp == HEADER_MAGIC_YES)
 	size += sizeof(rpm_header_magic);
-	break;
-    case HEADER_MAGIC_NO:
-	break;
-    }
 
     size += 2 * sizeof(int32_t);	/* count of index entries */
 
