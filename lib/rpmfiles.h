@@ -501,7 +501,7 @@ int rpmfilesStat(rpmfiles fi, int ix, int flags, struct stat *sb);
  * Verify file attributes (including digest).
  * @param fi		file info set
  * @param ix		file index
- * @omitMask		bit(s) to disable verify checks
+ * @param omitMask	bit(s) to disable verify checks
  * @return		bit(s) to indicate failure (ie 0 for passed verify)
  */
 rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask);

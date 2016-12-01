@@ -385,7 +385,7 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi);
 /** \ingroup rpmfi
  * Verify file attributes (including digest).
  * @param fi		file info iterator
- * @omitMask		bit(s) to disable verify checks
+ * @param omitMask	bit(s) to disable verify checks
  * @return		bit(s) to indicate failure (ie 0 for passed verify)
  */
 rpmVerifyAttrs rpmfiVerify(rpmfi fi, rpmVerifyAttrs omitMask);
