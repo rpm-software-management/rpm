@@ -541,7 +541,6 @@ int rpmtsOrder(rpmts ts)
     scc SCCs;
     int nelem = rpmtsNElements(ts);
     tsortInfo sortInfo = xcalloc(nelem, sizeof(struct tsortInfo_s));
-    ARGV_t seenColls = NULL;
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
@@ -573,7 +572,6 @@ int rpmtsOrder(rpmts ts)
 	}
     }
 
-    seenColls = argvFree(seenColls);
     rpmtsiFree(pi);
 
     newOrder = xcalloc(tsmem->orderCount, sizeof(*newOrder));
