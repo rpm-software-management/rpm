@@ -12,7 +12,7 @@ def pkgconfig(what):
         out.append(token[2:])
     return out
 
-cflags = ['-std=c99']
+cflags = ['-std=c99', '-Wno-strict-aliasing']
 additional_link_args = []
 
 # See if we're building in-tree
