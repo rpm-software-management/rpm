@@ -1117,7 +1117,8 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 		    break;
 		case TR_REMOVED:
 		    if (!beingRemoved) {
-			if (*rpmtdGetChar(&ostates) == RPMFILE_STATE_NORMAL)
+			char *rfs = rpmtdGetChar(&ostates);
+			if (rfs && (*rfs == RPMFILE_STATE_NORMAL))
 			    rpmfsSetAction(fs, recs[j].fileno, FA_SKIP);
 		    }
 		    break;
