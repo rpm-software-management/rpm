@@ -1017,7 +1017,7 @@ static struct PreambleRec_s const preambleList[] = {
     {RPMTAG_BUGURL,		0, 0, LEN_AND_STR("bugurl")},
     {RPMTAG_ORDERFLAGS,		2, 0, LEN_AND_STR("orderwithrequires")},
     {RPMTAG_REMOVEPATHPOSTFIXES,0, 0, LEN_AND_STR("removepathpostfixes")},
-    {RPMTAG_METATAGS,		2, 0, LEN_AND_STR("metatags")},
+    {RPMTAG_METATAGS,		1, 0, LEN_AND_STR("metatags")},
     {0, 0, 0, 0}
 };
 
