@@ -1120,6 +1120,9 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 			char *rfs = rpmtdGetChar(&ostates);
 			if (rfs && (*rfs == RPMFILE_STATE_NORMAL))
 			    rpmfsSetAction(fs, recs[j].fileno, FA_SKIP);
+			else
+			    rpmlog(RPMLOG_ERR, "Error reading tag container. File action for %s skipped\n",
+				    rpmfilesFN(fi, 0));
 		    }
 		    break;
 		}
