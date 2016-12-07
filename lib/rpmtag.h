@@ -267,6 +267,7 @@ typedef enum rpmTag_e {
     RPMTAG_BUILDOBSOLETES	= 1194, /* internal (unimplemented) */
     RPMTAG_DBINSTANCE		= 1195, /* i extension */
     RPMTAG_NVRA			= 1196, /* s extension */
+    RPMTAG_METATAGS		= 1197, /* s[] */
 
     /* tags 1997-4999 reserved */
     RPMTAG_FILENAMES		= 5000, /* s[] extension */
