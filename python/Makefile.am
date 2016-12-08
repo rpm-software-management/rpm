@@ -1,5 +1,7 @@
 # Makefile for rpm library.
 
+include $(top_srcdir)/rpm.am
+
 EXTRA_DIST = rpm/__init__.py rpm/transaction.py
 
 AM_CPPFLAGS = -I$(top_builddir)/include/
