@@ -28,6 +28,8 @@
 #include <error.h>
 #include <libelf.h>
 #include <gelf.h>
+/* Needed to please <bfd.h> */
+#define PACKAGE "rpm"
 #include <bfd.h>
 
 #define _(x) x
