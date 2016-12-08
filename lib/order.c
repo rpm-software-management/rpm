@@ -618,12 +618,12 @@ int rpmtsOrder(rpmts ts)
 
 	while (rpmdsNext(supplements) >= 0) {
 	    /* Record next "p -> q" relation (i.e. "q" supplemented by "p"). */
-	    (void) addRelation(ts, al, p, suggests, 1);
+	    (void) addRelation(ts, al, p, supplements, 1);
 	}
 
 	while (rpmdsNext(enhances) >= 0) {
 	    /* Record next "p <- q" relation (i.e. "q" is enhanced by  "p"). */
-	    (void) addRelation(ts, al, p, suggests, 1);
+	    (void) addRelation(ts, al, p, enhances, 1);
 	}
     }
 
