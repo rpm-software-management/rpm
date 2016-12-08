@@ -136,10 +136,9 @@ static inline int addSingleRelation(rpmte p,
     }
 
     /* Record next "q <- p" relation (i.e. "p" requires "q"). */
-    if (p != q) {
-	/* bump p predecessor count */
-	tsi_p->tsi_count++;
-    }
+
+    /* bump p predecessor count */
+    tsi_p->tsi_count++;
 
     rel = xcalloc(1, sizeof(*rel));
     rel->rel_suc = tsi_p;
@@ -147,10 +146,10 @@ static inline int addSingleRelation(rpmte p,
 
     rel->rel_next = tsi_q->tsi_relations;
     tsi_q->tsi_relations = rel;
-    if (p != q) {
-	/* bump q successor count */
-	tsi_q->tsi_qcnt++;
-    }
+
+    
+    /* bump q successor count */
+    tsi_q->tsi_qcnt++;
 
     rel = xcalloc(1, sizeof(*rel));
     rel->rel_suc = tsi_q;
