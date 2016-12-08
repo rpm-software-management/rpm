@@ -244,6 +244,9 @@ AC_CHECK_HEADERS([dwarf.h], [
 ])
 AM_CONDITIONAL(LIBDWARF,[test "$WITH_LIBDWARF" = yes])
 
+AC_CHECK_HEADERS([bfd.h])
+AM_CONDITIONAL(HAS_BFD_H, [test "${ac_cv_header_bfd_h}" = "yes"])
+
 #=================
 # Check for beecrypt library if requested.
 AC_ARG_WITH(beecrypt, [  --with-beecrypt         build with beecrypt support ],,[with_beecrypt=no])
