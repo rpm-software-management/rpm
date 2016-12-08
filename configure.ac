@@ -50,9 +50,9 @@ if test "$GCC" = yes; then
         ],[])
         CFLAGS=$old_cflags
     done
-    CFLAGS="$CFLAGS -fPIC -DPIC -D_REENTRANT -Wall -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes $RPMCFLAGS"
+    RPMCFLAGS="-fPIC -DPIC -D_REENTRANT -Wall -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes $RPMCFLAGS"
 fi
-export CFLAGS
+AC_SUBST(RPMCFLAGS)
 
 AC_SYS_LARGEFILE
 
@@ -892,7 +892,7 @@ AC_PATH_PROG(AUTOM4TE,autom4te,:)
 
 AC_SUBST([dirstamp],[\${am__leading_dot}dirstamp])
 
-AC_CONFIG_FILES([Makefile
+AC_CONFIG_FILES([Makefile rpm.am
 	rpmio/Makefile lib/Makefile build/Makefile sign/Makefile
 	po/Makefile.in scripts/Makefile fileattrs/Makefile
 	misc/Makefile 

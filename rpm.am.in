@@ -8,3 +8,5 @@ rpmconfigdir = $(prefix)/lib/rpm
 
 # Libtool version (current-revision-age) for all our libraries
 rpm_version_info = 7:0:0
+
+AM_CFLAGS = @RPMCFLAGS@
