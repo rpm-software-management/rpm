@@ -43,7 +43,8 @@ if test "$GCC" = yes; then
     echo
     for flag in $cflags_to_try; do
         CFLAGS="$CFLAGS $flag -Werror"
-        AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[alloca(100);]])],[
+        AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[#include <alloca.h>
+						alloca(100);]])],[
                 echo "   $flag"
                 RPMCFLAGS="$RPMCFLAGS $flag"
         ],[])
