@@ -1,6 +1,7 @@
 ## Process this file with automake to produce Makefile.in.
 
 include $(top_srcdir)/rpm.am
+AM_CFLAGS = @RPMCFLAGS@
 
 EXTRA_DIST =
 CLEANFILES =

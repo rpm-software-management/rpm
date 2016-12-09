@@ -1,6 +1,7 @@
 # Makefile for rpm scripts.
 
 include $(top_srcdir)/rpm.am
+AM_CFLAGS = @RPMCFLAGS@
 
 CLEANFILES =
 

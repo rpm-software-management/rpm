@@ -5,6 +5,7 @@ ACLOCAL_AMFLAGS = -I m4
 DISTCHECK_CONFIGURE_FLAGS = --with-external-db
 
 include $(top_srcdir)/rpm.am
+AM_CFLAGS = @RPMCFLAGS@
 
 CLEANFILES =
 EXTRA_DIST = ChangeLog CREDITS INSTALL \

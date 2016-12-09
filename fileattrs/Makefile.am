@@ -1,6 +1,7 @@
 # Makefile for rpm file attributes
 
 include $(top_srcdir)/rpm.am
+AM_CFLAGS = @RPMCFLAGS@
 
 fattrsdir = $(rpmconfigdir)/fileattrs
 
