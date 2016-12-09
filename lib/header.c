@@ -1288,18 +1288,10 @@ static int intGetTdEntry(Header h, rpmtd td, headerGetFlags flags)
 	return 0;
     }
 
-    if (flags & HEADERGET_RAW) {
+    if (entry->info.type == RPM_I18NSTRING_TYPE && !(flags & HEADERGET_RAW))
+	rc = copyI18NEntry(h, entry, td, flags);
+    else
 	rc = copyTdEntry(entry, td, flags);
-    } else {
-	switch (entry->info.type) {
-	case RPM_I18NSTRING_TYPE:
-	    rc = copyI18NEntry(h, entry, td, flags);
-	    break;
-	default:
-	    rc = copyTdEntry(entry, td, flags);
-	    break;
-	}
-    }
 
     if (rc == 0)
 	td->flags |= RPMTD_INVALID;
