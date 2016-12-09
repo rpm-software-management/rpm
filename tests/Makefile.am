@@ -104,6 +104,8 @@ testing$(bindir)/rpmbuild: ../rpmbuild
 	rm -rf testing
 	mkdir -p testing/$(bindir)
 	ln -s ./$(bindir) testing/bin
+	mkdir -p testing/usr
+	ln -s ../bin testing/usr/bin
 	(cd ${top_builddir} && \
 	          $(MAKE) DESTDIR=`pwd`/${subdir}/testing install)
 	cp -r ${srcdir}/data/ testing/
