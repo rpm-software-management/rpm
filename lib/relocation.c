@@ -379,18 +379,12 @@ static void rpmInstallLoadMacros(Header h, int define)
 	 * Undefine doesn't need the actual data for anything, but
 	 * this way ensures we only undefine what was defined earlier.
 	 */
-	switch (rpmtdType(&td)) {
-	default:
-	    if (define) {
-		body = rpmtdFormat(&td, RPMTD_FORMAT_STRING, NULL);
-		rpmPushMacro(NULL, tagm->macroname, NULL, body, -1);
-		free(body);
-	    } else {
-		rpmPopMacro(NULL, tagm->macroname);
-	    }
-	    break;
-	case RPM_NULL_TYPE:
-	    break;
+	if (define) {
+	    body = rpmtdFormat(&td, RPMTD_FORMAT_STRING, NULL);
+	    rpmPushMacro(NULL, tagm->macroname, NULL, body, -1);
+	    free(body);
+	} else {
+	    rpmPopMacro(NULL, tagm->macroname);
 	}
 	rpmtdFreeData(&td);
     }
