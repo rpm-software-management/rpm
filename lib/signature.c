@@ -120,31 +120,39 @@ exit:
 }
 
 /**
- * Print package size.
- * @todo rpmio: use fdSize rather than fstat(2) to get file size.
+ * Print package size (debug purposes only)
  * @param fd			package file handle
- * @param siglen		signature header size
- * @param pad			signature padding
- * @param datalen		length of header+payload
- * @return 			rpmRC return code
+ * @param sigh			signature header
  */
-static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, rpm_loff_t datalen)
+static void printSize(FD_t fd, Header sigh)
 {
     struct stat st;
     int fdno = Fileno(fd);
+    size_t siglen = headerSizeof(sigh, HEADER_MAGIC_YES);
+    size_t pad = (8 - (siglen % 8)) % 8; /* 8-byte pad */
+    struct rpmtd_s sizetag;
+    rpm_loff_t datalen = 0;
 
-    if (fstat(fdno, &st) < 0)
-	return RPMRC_FAIL;
+    /* Print package component sizes. */
+    if (headerGet(sigh, RPMSIGTAG_LONGSIZE, &sizetag, HEADERGET_DEFAULT)) {
+	rpm_loff_t *tsize = rpmtdGetUint64(&sizetag);
+	datalen = (tsize) ? *tsize : 0;
+    } else if (headerGet(sigh, RPMSIGTAG_SIZE, &sizetag, HEADERGET_DEFAULT)) {
+	rpm_off_t *tsize = rpmtdGetUint32(&sizetag);
+	datalen = (tsize) ? *tsize : 0;
+    }
+    rpmtdFreeData(&sizetag);
 
     rpmlog(RPMLOG_DEBUG,
 		"Expected size: %12" PRIu64 \
 		" = lead(%d)+sigs(%zd)+pad(%zd)+data(%" PRIu64 ")\n",
 		RPMLEAD_SIZE+siglen+pad+datalen,
 		RPMLEAD_SIZE, siglen, pad, datalen);
-    rpmlog(RPMLOG_DEBUG,
-		"  Actual size: %12" PRIu64 "\n", (rpm_loff_t) st.st_size);
 
-    return RPMRC_OK;
+    if (fstat(fdno, &st) == 0) {
+	rpmlog(RPMLOG_DEBUG,
+		"  Actual size: %12" PRIu64 "\n", (rpm_loff_t) st.st_size);
+    }
 }
 
 rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
@@ -164,28 +172,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
     if (hdrblobImport(&blob, 0, &sigh, &buf) != RPMRC_OK)
 	goto exit;
 
-    /* XXX the padding calculation here is only for debug printing */
-    {	size_t sigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
-	size_t pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
-	struct rpmtd_s sizetag;
-	rpm_loff_t archSize = 0;
-
-	/* Print package component sizes. */
-	if (headerGet(sigh, RPMSIGTAG_LONGSIZE, &sizetag, HEADERGET_DEFAULT)) {
-	    rpm_loff_t *tsize = rpmtdGetUint64(&sizetag);
-	    archSize = (tsize) ? *tsize : 0;
-	} else if (headerGet(sigh, RPMSIGTAG_SIZE, &sizetag, HEADERGET_DEFAULT)) {
-	    rpm_off_t *tsize = rpmtdGetUint32(&sizetag);
-	    archSize = (tsize) ? *tsize : 0;
-	}
-	rpmtdFreeData(&sizetag);
-	rc = printSize(fd, sigSize, pad, archSize);
-	if (rc != RPMRC_OK) {
-	    rasprintf(&buf,
-		   _("sigh sigSize(%zd): BAD, fstat(2) failed"), sigSize);
-	    goto exit;
-	}
-    }
+    printSize(fd, sigh);
     rc = RPMRC_OK;
 
 exit:
