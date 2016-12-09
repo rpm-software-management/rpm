@@ -1086,8 +1086,8 @@ package or when debugging this package.\
 
 # Plain patch (-m is unused)
 %__scm_setup_patch(q) %{nil}
-%__scm_apply_patch(qp:m:)\
-%{__patch} %{-p:-p%{-p*}} %{-q:-s} --fuzz=%{_default_patch_fuzz} %{_default_patch_flags}
+%__scm_apply_patch(qp:m:b:)\
+%{__patch} %{-p:-p%{-p*}} %{-q:-s} --fuzz=%{_default_patch_fuzz} %{_default_patch_flags} %{-b:-b --suffix=%{-b*}}
 
 # Mercurial (aka hg)
 %__scm_setup_hg(q)\
@@ -1136,11 +1136,11 @@ package or when debugging this package.\
 %{__bzr} commit %{-q} -m %{-m*}
 
 # Single patch application
-%apply_patch(qp:m:)\
+%apply_patch(qp:m:b:)\
 %{lua:\
 local file = rpm.expand("%{1}")\
 if posix.access(file, "r") then\
-    local options = rpm.expand("%{-q} %{-p:-p%{-p*}} %{-m:-m%{-m*}}")\
+    local options = rpm.expand("%{-q} %{-p:-p%{-p*}} %{-b:%{-b*}} %{-m:-m%{-m*}}")\
     local scm_apply = rpm.expand("%__scm_apply_%{__scm}")\
     print(rpm.expand("%{uncompress:"..file.."} | "..scm_apply.." "..options.."\\n"))\
 else\
@@ -1148,11 +1148,11 @@ else\
 end}
 
 # Automatically apply all patches
-%autopatch(vp:)\
+%autopatch(vp:B)\
 %{lua:\
 local options = rpm.expand("%{!-v:-q} %{-p:-p%{-p*}} ")\
 for i, p in ipairs(patches) do\
-    print(rpm.expand("%apply_patch -m %{basename:"..p.."}  "..options..p.."\\n"))\
+    print(rpm.expand("%apply_patch -m %{basename:"..p.."}  "..options..rpm.expand("%{-B:-b"..string.format(".%04d", patches_num[p]).."~}").." "..p.. "\\n"))\
 end}
 
 # One macro to (optionally) do it all.
