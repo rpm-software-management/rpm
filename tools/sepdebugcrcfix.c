@@ -20,6 +20,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <sys/mman.h>
 #include <endian.h>
@@ -28,7 +29,6 @@
 #include <error.h>
 #include <libelf.h>
 #include <gelf.h>
-#include <bfd.h>
 
 #define _(x) x
 #define static_assert(expr) \
@@ -46,7 +46,7 @@ static const bool false = 0, true = 1;
 static unsigned long
     calc_gnu_debuglink_crc32 (unsigned long crc,
 			      const unsigned char *buf,
-			      bfd_size_type len)
+			      size_t len)
 {
   static const unsigned long crc32_table[256] =
     {
