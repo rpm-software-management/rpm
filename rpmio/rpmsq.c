@@ -28,15 +28,10 @@ static struct rpmsig_s {
     struct sigaction oact;
 } rpmsigTbl[] = {
     { SIGINT,	rpmsqAction },
-#define	rpmsigTbl_sigint	(&rpmsigTbl[0])
     { SIGQUIT,	rpmsqAction },
-#define	rpmsigTbl_sigquit	(&rpmsigTbl[1])
     { SIGHUP,	rpmsqAction },
-#define	rpmsigTbl_sighup	(&rpmsigTbl[3])
     { SIGTERM,	rpmsqAction },
-#define	rpmsigTbl_sigterm	(&rpmsigTbl[4])
     { SIGPIPE,	rpmsqAction },
-#define	rpmsigTbl_sigpipe	(&rpmsigTbl[5])
     { -1,	NULL },
 };
 
