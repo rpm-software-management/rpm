@@ -333,23 +333,14 @@ int rpmdbCheckTerminate(int terminate)
 	rpmdbMatchIterator mi;
 	rpmdbIndexIterator ii;
 
-	while ((mi = rpmmiRock) != NULL) {
-	    rpmmiRock = mi->mi_next;
-	    mi->mi_next = NULL;
+	while ((mi = rpmmiRock) != NULL)
 	    rpmdbFreeIterator(mi);
-	}
 
-	while ((ii = rpmiiRock) != NULL) {
-	    rpmiiRock = ii->ii_next;
-	    ii->ii_next = NULL;
+	while ((ii = rpmiiRock) != NULL)
 	    rpmdbIndexIteratorFree(ii);
-	}
 
-	while ((db = rpmdbRock) != NULL) {
-	    rpmdbRock = db->db_next;
-	    db->db_next = NULL;
+	while ((db = rpmdbRock) != NULL)
 	    (void) rpmdbClose(db);
-	}
     }
     sigprocmask(SIG_SETMASK, &oldMask, NULL);
     return terminating;
