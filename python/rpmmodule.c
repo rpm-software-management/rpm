@@ -208,14 +208,6 @@ static PyMethodDef rpmModuleMethods[] = {
     { NULL }
 } ;
 
-/*
-* Force clean up of open iterators and dbs on exit.
-*/
-static void rpm_exithook(void)
-{
-   rpmdbCheckTerminate(1);
-}
-
 static char rpm__doc__[] = "";
 
 /*
@@ -326,13 +318,6 @@ void init_rpm(void)
 static int initModule(PyObject *m)
 {
     PyObject * d;
-
-    /* 
-     * treat error to register rpm cleanup hook as fatal, tracebacks
-     * can and will leave stale locks around if we can't clean up
-     */
-    if (Py_AtExit(rpm_exithook) == -1)
-        return 0;
 
     /* failure to initialize rpm (crypto and all) is rather fatal too... */
     if (rpmReadConfigFiles(NULL, NULL) == -1)

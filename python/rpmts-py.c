@@ -167,7 +167,6 @@ static void die(PyObject *cb)
     }
     fprintf(stderr, "FATAL ERROR: python callback %s failed, aborting!\n", 
 	    	      pyfn ? pyfn : "???");
-    rpmdbCheckTerminate(1);
     exit(EXIT_FAILURE);
 }
 
