@@ -49,8 +49,7 @@ static PyObject * signalCaught(PyObject *self, PyObject *o)
 
 static PyObject * checkSignals(PyObject * self)
 {
-    rpmsqPoll();
-    Py_RETURN_NONE;
+    return Py_BuildValue("i", rpmsqPoll());
 }
 
 static PyObject * setLogFile (PyObject * self, PyObject *arg)
