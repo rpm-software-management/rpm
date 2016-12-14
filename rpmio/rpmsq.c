@@ -8,6 +8,7 @@
 #include <sys/signal.h>
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define	ADD_REF(__tbl)	(__tbl)->active++
 #define	SUB_REF(__tbl)	--(__tbl)->active
@@ -61,7 +62,7 @@ void rpmsqAction(int signum)
 
 int rpmsqEnable(int signum, rpmsqAction_t handler)
 {
-    int tblsignum = (signum >= 0 ? signum : -signum);
+    int tblsignum = abs(signum);
     struct sigaction sa;
     rpmsig tbl;
     int ret = -1;
