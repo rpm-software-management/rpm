@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <rpm/rpmsq.h>
 #include <rpm/rpmlog.h>
@@ -31,6 +32,7 @@ static struct rpmsig_s {
     int signum;
     rpmsqAction_t defhandler;
     rpmsqAction_t handler;
+    siginfo_t siginfo;
     struct sigaction oact;
 } rpmsigTbl[] = {
     { SIGINT,	rpmsqTerm,	NULL },
@@ -50,8 +52,15 @@ static void rpmsqAction(int signum, siginfo_t * info, void * context)
 {
     int save = errno;
 
-    if (sigismember(&rpmsqActive, signum))
+    if (sigismember(&rpmsqActive, signum)) {
 	(void) sigaddset(&rpmsqCaught, signum);
+	for (rpmsig tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
+	    if (tbl->signum == signum) {
+		memcpy(&tbl->siginfo, info, sizeof(*info));
+		break;
+	    }
+	}
+    }
 
     errno = save;
 }
@@ -115,8 +124,10 @@ int rpmsqPoll(void)
 	    n++;
 	    /* delete signal before running handler to prevent recursing */
 	    sigdelset(&rpmsqCaught, tbl->signum);
-	    if (tbl->handler)
-		tbl->handler(tbl->signum, NULL, NULL);
+	    if (tbl->handler) {
+		tbl->handler(tbl->signum, &tbl->siginfo, NULL);
+		memset(&tbl->siginfo, 0, sizeof(tbl->siginfo));
+	    }
 	}
     }
     sigprocmask(SIG_SETMASK, &oldMask, NULL);
