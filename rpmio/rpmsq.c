@@ -24,7 +24,13 @@ typedef struct rpmsig_s * rpmsig;
 
 static void rpmsqTerm(int signum, siginfo_t *info, void *context)
 {
-    rpmlog(RPMLOG_DEBUG, "exiting on signal...\n");
+    if (info->si_pid == 0) {
+	rpmlog(RPMLOG_DEBUG,
+		"exiting on signal %d (killed by death, eh?)\n", signum);
+    } else {
+	rpmlog(RPMLOG_WARNING,
+		_("exiting on signal %d from pid %d\n"), signum, info->si_pid);
+    }
     exit(EXIT_FAILURE);
 }
 
