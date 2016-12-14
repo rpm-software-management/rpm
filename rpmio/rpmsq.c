@@ -10,22 +10,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define	ADD_REF(__tbl)	(__tbl)->active++
-#define	SUB_REF(__tbl)	--(__tbl)->active
-
 #include <rpm/rpmsq.h>
 
 #include "debug.h"
 
 static int disableInterruptSafety;
 static sigset_t rpmsqCaught;
+static sigset_t rpmsqActive;
 
 typedef struct rpmsig_s * rpmsig;
 
 static struct rpmsig_s {
     int signum;
     rpmsqAction_t handler;
-    int active;
     struct sigaction oact;
 } rpmsigTbl[] = {
     { SIGINT,	rpmsqAction },
@@ -48,15 +45,10 @@ void rpmsqAction(int signum)
 #endif
 {
     int save = errno;
-    rpmsig tbl;
 
-    for (tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
-	if (tbl->signum != signum)
-	    continue;
-
+    if (sigismember(&rpmsqActive, signum))
 	(void) sigaddset(&rpmsqCaught, signum);
-	break;
-    }
+
     errno = save;
 }
 
@@ -75,7 +67,7 @@ int rpmsqEnable(int signum, rpmsqAction_t handler)
 	    continue;
 
 	if (signum >= 0) {			/* Enable. */
-	    if (ADD_REF(tbl) <= 0) {
+	    if (!sigismember(&rpmsqActive, tblsignum)) {
 		(void) sigdelset(&rpmsqCaught, tbl->signum);
 
 		/* XXX Don't set a signal handler if already SIG_IGN */
@@ -90,23 +82,21 @@ int rpmsqEnable(int signum, rpmsqAction_t handler)
 		sa.sa_flags = 0;
 #endif
 		sa.sa_sigaction = (handler != NULL ? handler : tbl->handler);
-		if (sigaction(tbl->signum, &sa, &tbl->oact) < 0) {
-		    SUB_REF(tbl);
+		if (sigaction(tbl->signum, &sa, &tbl->oact) < 0)
 		    break;
-		}
-		tbl->active = 1;		/* XXX just in case */
+		sigaddset(&rpmsqActive, tblsignum);
 		if (handler != NULL)
 		    tbl->handler = handler;
 	    }
 	} else {				/* Disable. */
-	    if (SUB_REF(tbl) <= 0) {
+	    if (sigismember(&rpmsqActive, tblsignum)) {
 		if (sigaction(tbl->signum, &tbl->oact, NULL) < 0)
 		    break;
-		tbl->active = 0;		/* XXX just in case */
+		sigdelset(&rpmsqActive, tblsignum);
 		tbl->handler = (handler != NULL ? handler : rpmsqAction);
 	    }
 	}
-	ret = tbl->active;
+	ret = sigismember(&rpmsqActive, tblsignum);
 	break;
     }
     return ret;
