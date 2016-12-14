@@ -19,11 +19,7 @@ extern "C" {
  * @param info		(siginfo_t) signal info
  * @param context	signal context
  */
-#ifdef SA_SIGINFO
 typedef void (*rpmsqAction_t) (int signum, siginfo_t * info, void * context);
-#else
-typedef void (*rpmsqAction_t) (int signum);
-#endif
 
 /** \ingroup rpmsq
  * Test if given signal has been caught (while signals blocked).
@@ -39,11 +35,7 @@ int rpmsqIsCaught(int signum);
  * @param info		(siginfo_t) signal info
  * @param context	signal context
  */
-#ifdef SA_SIGINFO
 void rpmsqAction(int signum, siginfo_t * info, void * context);
-#else
-void rpmsqAction(int signum);
-#endif
 
 /** \ingroup rpmsq
  * Enable or disable a signal handler.

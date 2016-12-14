@@ -38,11 +38,7 @@ int rpmsqIsCaught(int signum)
     return sigismember(&rpmsqCaught, signum);
 }
 
-#ifdef SA_SIGINFO
 void rpmsqAction(int signum, siginfo_t * info, void * context)
-#else
-void rpmsqAction(int signum)
-#endif
 {
     int save = errno;
 
@@ -76,11 +72,7 @@ int rpmsqEnable(int signum, rpmsqAction_t handler)
 		    continue;
 
 		(void) sigemptyset (&sa.sa_mask);
-#ifdef SA_SIGINFO
 		sa.sa_flags = SA_SIGINFO;
-#else
-		sa.sa_flags = 0;
-#endif
 		sa.sa_sigaction = (handler != NULL ? handler : tbl->handler);
 		if (sigaction(tbl->signum, &sa, &tbl->oact) < 0)
 		    break;
