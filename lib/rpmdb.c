@@ -327,34 +327,9 @@ void rpmAtExit(void)
 	(void) rpmdbClose(db);
 }
 
-static int rpmdbCheckTerminate(void)
-{
-    sigset_t newMask, oldMask;
-    int terminating = 0;
-
-    (void) sigfillset(&newMask);		/* block all signals */
-    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
-
-    if (rpmsqIsCaught(SIGINT) > 0
-     || rpmsqIsCaught(SIGQUIT) > 0
-     || rpmsqIsCaught(SIGHUP) > 0
-     || rpmsqIsCaught(SIGTERM) > 0
-     || rpmsqIsCaught(SIGPIPE) > 0)
-	terminating = 1;
-
-    sigprocmask(SIG_SETMASK, &oldMask, NULL);
-    return terminating;
-}
-
 int rpmdbCheckSignals(void)
 {
-    static int terminating = 0;
-    if (!terminating && rpmdbCheckTerminate()) {
-	terminating = 1;
-	rpmlog(RPMLOG_DEBUG, "Exiting on signal...\n");
-	exit(EXIT_FAILURE);
-    }
-    return 0;
+    return rpmsqPoll();
 }
 
 /**

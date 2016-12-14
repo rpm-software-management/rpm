@@ -11,6 +11,7 @@
 #include <stdlib.h>
 
 #include <rpm/rpmsq.h>
+#include <rpm/rpmlog.h>
 
 #include "debug.h"
 
@@ -20,17 +21,24 @@ static sigset_t rpmsqActive;
 
 typedef struct rpmsig_s * rpmsig;
 
+static void rpmsqTerm(int signum, siginfo_t *info, void *context)
+{
+    rpmlog(RPMLOG_DEBUG, "exiting on signal...\n");
+    exit(EXIT_FAILURE);
+}
+
 static struct rpmsig_s {
     int signum;
+    rpmsqAction_t defhandler;
     rpmsqAction_t handler;
     struct sigaction oact;
 } rpmsigTbl[] = {
-    { SIGINT,	rpmsqAction },
-    { SIGQUIT,	rpmsqAction },
-    { SIGHUP,	rpmsqAction },
-    { SIGTERM,	rpmsqAction },
-    { SIGPIPE,	rpmsqAction },
-    { -1,	NULL },
+    { SIGINT,	rpmsqTerm,	NULL },
+    { SIGQUIT,	rpmsqTerm,	NULL },
+    { SIGHUP,	rpmsqTerm,	NULL },
+    { SIGTERM,	rpmsqTerm,	NULL },
+    { SIGPIPE,	rpmsqTerm,	NULL },
+    { -1,	NULL,		NULL },
 };
 
 int rpmsqIsCaught(int signum)
@@ -38,7 +46,7 @@ int rpmsqIsCaught(int signum)
     return sigismember(&rpmsqCaught, signum);
 }
 
-void rpmsqAction(int signum, siginfo_t * info, void * context)
+static void rpmsqAction(int signum, siginfo_t * info, void * context)
 {
     int save = errno;
 
@@ -73,19 +81,18 @@ int rpmsqEnable(int signum, rpmsqAction_t handler)
 
 		(void) sigemptyset (&sa.sa_mask);
 		sa.sa_flags = SA_SIGINFO;
-		sa.sa_sigaction = (handler != NULL ? handler : tbl->handler);
+		sa.sa_sigaction = rpmsqAction;
 		if (sigaction(tbl->signum, &sa, &tbl->oact) < 0)
 		    break;
 		sigaddset(&rpmsqActive, tblsignum);
-		if (handler != NULL)
-		    tbl->handler = handler;
+		tbl->handler = (handler != NULL) ? handler : tbl->defhandler;
 	    }
 	} else {				/* Disable. */
 	    if (sigismember(&rpmsqActive, tblsignum)) {
 		if (sigaction(tbl->signum, &tbl->oact, NULL) < 0)
 		    break;
 		sigdelset(&rpmsqActive, tblsignum);
-		tbl->handler = (handler != NULL ? handler : rpmsqAction);
+		tbl->handler = NULL;
 	    }
 	}
 	ret = sigismember(&rpmsqActive, tblsignum);
@@ -94,6 +101,27 @@ int rpmsqEnable(int signum, rpmsqAction_t handler)
     return ret;
 }
 
+int rpmsqPoll(void)
+{
+    sigset_t newMask, oldMask;
+    int n = 0;
+
+    /* block all signals while processing the queue */
+    (void) sigfillset(&newMask);
+    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
+
+    for (rpmsig tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
+	if (sigismember(&rpmsqCaught, tbl->signum)) {
+	    n++;
+	    /* delete signal before running handler to prevent recursing */
+	    sigdelset(&rpmsqCaught, tbl->signum);
+	    if (tbl->handler)
+		tbl->handler(tbl->signum, NULL, NULL);
+	}
+    }
+    sigprocmask(SIG_SETMASK, &oldMask, NULL);
+    return n;
+}
 
 /** \ingroup rpmio
  * 

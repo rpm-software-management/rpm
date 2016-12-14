@@ -30,20 +30,18 @@ typedef void (*rpmsqAction_t) (int signum, siginfo_t * info, void * context);
 int rpmsqIsCaught(int signum);
 
 /** \ingroup rpmsq
- * Default signal handler.
- * @param signum	signal number
- * @param info		(siginfo_t) signal info
- * @param context	signal context
- */
-void rpmsqAction(int signum, siginfo_t * info, void * context);
-
-/** \ingroup rpmsq
  * Enable or disable a signal handler.
  * @param signum	signal to enable (or disable if negative)
- * @param handler	sa_sigaction handler (or NULL to use rpmsqHandler())
+ * @param handler	signal handler (or NULL to use default)
  * @return		no. of refs, -1 on error
  */
 int rpmsqEnable(int signum, rpmsqAction_t handler);
+
+/** \ingroup rpmsq
+ * Poll for caught signals, executing their handlers.
+ * @return		no. active signals found
+ */
+int rpmsqPoll(void);
 
 void rpmsqSetInterruptSafety(int on);
 
