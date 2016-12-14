@@ -14,6 +14,7 @@
 #include <rpm/rpmdb.h>
 #include <rpm/rpmfi.h>
 #include <rpm/rpmts.h>
+#include <rpm/rpmsq.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>	/* rpmCleanPath */
 
@@ -273,7 +274,7 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts, rpmgi gi)
     while ((h = rpmgiNext(gi)) != NULL) {
 	int rc;
 
-	rpmdbCheckSignals();
+	rpmsqPoll();
 	if ((rc = qva->qva_showPackage(qva, ts, h)) != 0)
 	    ec = rc;
 	headerFree(h);
@@ -291,7 +292,7 @@ static int rpmcliShowMatches(QVA_t qva, rpmts ts, rpmdbMatchIterator mi)
 
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	int rc;
-	rpmdbCheckSignals();
+	rpmsqPoll();
 	if ((rc = qva->qva_showPackage(qva, ts, h)) != 0)
 	    ec = rc;
     }
@@ -304,7 +305,7 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
     int i;
     rpmdbMatchIterator mi = NULL;
 
-    (void) rpmdbCheckSignals();
+    (void) rpmsqPoll();
 
     if (qva->qva_showPackage == NULL)
 	goto exit;

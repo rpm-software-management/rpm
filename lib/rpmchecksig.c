@@ -11,7 +11,7 @@
 #include <rpm/rpmpgp.h>
 #include <rpm/rpmcli.h>
 #include <rpm/rpmfileutil.h>	/* rpmMkTemp() */
-#include <rpm/rpmdb.h>
+#include <rpm/rpmsq.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
@@ -382,7 +382,7 @@ int rpmcliVerifySignatures(rpmts ts, ARGV_const_t argv)
 	}
 
 	Fclose(fd);
-	rpmdbCheckSignals();
+	rpmsqPoll();
     }
     rpmKeyringFree(keyring);
     return res;

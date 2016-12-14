@@ -146,11 +146,6 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
 Header rpmdbNextIterator(rpmdbMatchIterator mi);
 
 /** \ingroup rpmdb
- * Check for and exit on termination signals.
- */
-int rpmdbCheckSignals(void);
-
-/** \ingroup rpmdb
  * Destroy rpm database iterator.
  * @param mi		rpm database iterator
  * @return		NULL always

@@ -49,7 +49,7 @@ static PyObject * signalCaught(PyObject *self, PyObject *o)
 
 static PyObject * checkSignals(PyObject * self)
 {
-    rpmdbCheckSignals();
+    rpmsqPoll();
     Py_RETURN_NONE;
 }
 

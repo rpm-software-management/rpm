@@ -10,6 +10,7 @@
 #include <rpm/rpmdb.h>
 #include <rpm/rpmds.h>
 #include <rpm/rpmts.h>
+#include <rpm/rpmsq.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
 
@@ -626,7 +627,7 @@ restart:
 	rpmcliProgressTotal = 0;
 	rpmcliProgressCurrent = 0;
 	for (i = 0; i < eiu->numSRPMS; i++) {
-	    rpmdbCheckSignals();
+	    rpmsqPoll();
 	    if (eiu->sourceURL[i] != NULL) {
 	        rc = RPMRC_OK;
 		if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST))
