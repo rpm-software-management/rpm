@@ -327,22 +327,6 @@ void rpmAtExit(void)
 	(void) rpmdbClose(db);
 }
 
-/**
- * Block all signals, returning previous signal mask.
- */
-static int blockSignals(sigset_t * oldMask)
-{
-    return rpmsqBlock(SIG_BLOCK);
-}
-
-/**
- * Restore signal mask.
- */
-static int unblockSignals(sigset_t * oldMask)
-{
-    return rpmsqBlock(SIG_UNBLOCK);
-}
-
 rpmop rpmdbOp(rpmdb rpmdb, rpmdbOpX opx)
 {
     rpmop op = NULL;
@@ -994,15 +978,13 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	}
 
 	if (hdrBlob != NULL && rpmrc != RPMRC_FAIL) {
-	    sigset_t signalMask;
-
-	    blockSignals(&signalMask);
+	    rpmsqBlock(SIG_BLOCK);
 	    dbCtrl(mi->mi_db, DB_CTRL_LOCK_RW);
 	    rc = pkgdbPut(dbi, mi->mi_dbc, mi->mi_prevoffset,
 			  hdrBlob, hdrLen);
 	    dbCtrl(mi->mi_db, DB_CTRL_INDEXSYNC);
 	    dbCtrl(mi->mi_db, DB_CTRL_UNLOCK_RW);
-	    unblockSignals(&signalMask);
+	    rpmsqBlock(SIG_UNBLOCK);
 
 	    if (rc) {
 		rpmlog(RPMLOG_ERR,
@@ -2073,7 +2055,6 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
     dbiIndex dbi = NULL;
     dbiCursor dbc = NULL;
     Header h;
-    sigset_t signalMask;
     int ret = 0;
 
     if (db == NULL)
@@ -2094,7 +2075,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
     if (pkgdbOpen(db, 0, &dbi))
 	return 1;
 
-    (void) blockSignals(&signalMask);
+    rpmsqBlock(SIG_BLOCK);
     dbCtrl(db, DB_CTRL_LOCK_RW);
 
     /* Remove header from primary index */
@@ -2116,7 +2097,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 
     dbCtrl(db, DB_CTRL_INDEXSYNC);
     dbCtrl(db, DB_CTRL_UNLOCK_RW);
-    (void) unblockSignals(&signalMask);
+    rpmsqBlock(SIG_UNBLOCK);
 
     headerFree(h);
 
@@ -2324,7 +2305,6 @@ static rpmRC indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Heade
 
 int rpmdbAdd(rpmdb db, Header h)
 {
-    sigset_t signalMask;
     dbiIndex dbi = NULL;
     dbiCursor dbc = NULL;
     unsigned int hdrNum = 0;
@@ -2345,7 +2325,7 @@ int rpmdbAdd(rpmdb db, Header h)
     if (ret)
 	goto exit;
 	
-    (void) blockSignals(&signalMask);
+    rpmsqBlock(SIG_BLOCK);
     dbCtrl(db, DB_CTRL_LOCK_RW);
 
     /* Add header to primary index */
@@ -2369,7 +2349,7 @@ int rpmdbAdd(rpmdb db, Header h)
 
     dbCtrl(db, DB_CTRL_INDEXSYNC);
     dbCtrl(db, DB_CTRL_UNLOCK_RW);
-    (void) unblockSignals(&signalMask);
+    rpmsqBlock(SIG_UNBLOCK);
 
     /* If everything ok, mark header as installed now */
     if (ret == 0) {
@@ -2478,11 +2458,10 @@ static int rpmdbMoveDatabase(const char * prefix,
 			     const char * olddbpath, const char * newdbpath)
 {
     int rc = 0;
-    sigset_t sigMask;
     /* create a handle but dont actually open */
     rpmdb db = newRpmdb(prefix, newdbpath, O_RDONLY, 0644, RPMDB_FLAG_REBUILD);
 
-    blockSignals(&sigMask);
+    rpmsqBlock(SIG_BLOCK);
     rc = renameTag(prefix, olddbpath, newdbpath, rpmTagGetName(RPMDBI_PACKAGES));
     for (int i = 0; i < db->db_ndbi; i++) {
 	rc += renameTag(prefix, olddbpath, newdbpath, rpmTagGetName(db->db_tags[i]));
@@ -2496,7 +2475,7 @@ static int rpmdbMoveDatabase(const char * prefix,
     cleanDbenv(prefix, newdbpath);
     rpmdbClose(db);
 
-    unblockSignals(&sigMask);
+    rpmsqBlock(SIG_UNBLOCK);
 
     return rc;
 }
