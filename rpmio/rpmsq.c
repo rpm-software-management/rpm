@@ -101,7 +101,7 @@ int rpmsqActivate(int state)
       return 0;
 
     (void) sigfillset(&newMask);
-    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
+    (void) pthread_sigmask(SIG_BLOCK, &newMask, &oldMask);
 
     if (state) {
 	struct sigaction sa;
@@ -131,7 +131,7 @@ int rpmsqActivate(int state)
 	    }
 	}
     }
-    sigprocmask(SIG_SETMASK, &oldMask, NULL);
+    pthread_sigmask(SIG_SETMASK, &oldMask, NULL);
     return 0;
 }
 
@@ -142,7 +142,7 @@ int rpmsqPoll(void)
 
     /* block all signals while processing the queue */
     (void) sigfillset(&newMask);
-    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
+    (void) pthread_sigmask(SIG_BLOCK, &newMask, &oldMask);
 
     for (rpmsig tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
 	/* honor blocked signals in polling too */
@@ -158,7 +158,7 @@ int rpmsqPoll(void)
 	    n++;
 	}
     }
-    sigprocmask(SIG_SETMASK, &oldMask, NULL);
+    pthread_sigmask(SIG_SETMASK, &oldMask, NULL);
     return n;
 }
 
@@ -173,12 +173,12 @@ int rpmsqBlock(int op)
 	blocked++;
 	if (blocked == 1) {
 	    sigfillset(&newMask);
-	    ret = sigprocmask(SIG_BLOCK, &newMask, &oldMask);
+	    ret = pthread_sigmask(SIG_BLOCK, &newMask, &oldMask);
 	}
     } else if (op == SIG_UNBLOCK) {
 	blocked--;
 	if (blocked == 0) {
-	    ret = sigprocmask(SIG_SETMASK, &oldMask, NULL);
+	    ret = pthread_sigmask(SIG_SETMASK, &oldMask, NULL);
 	    rpmsqPoll();
 	} else if (blocked < 0) {
 	    blocked = 0;
