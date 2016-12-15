@@ -143,6 +143,9 @@ int rpmsqPoll(void)
     (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
 
     for (rpmsig tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
+	/* honor blocked signals in polling too */
+	if (sigismember(&oldMask, tbl->signum))
+	    continue;
 	if (sigismember(&rpmsqCaught, tbl->signum)) {
 	    rpmsqAction_t handler = (tbl->handler != NULL) ? tbl->handler :
 							     tbl->defhandler;
