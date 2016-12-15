@@ -79,49 +79,58 @@ static void rpmsqHandler(int signum, siginfo_t * info, void * context)
     errno = save;
 }
 
-int rpmsqEnable(int signum, rpmsqAction_t handler)
+rpmsqAction_t rpmsqSetAction(int signum, rpmsqAction_t handler)
 {
-    int tblsignum = abs(signum);
-    struct sigaction sa;
-    rpmsig tbl;
-    int ret = -1;
+    rpmsig sig = NULL;
+    rpmsqAction_t oh = NULL;
+
+    if (rpmsigGet(signum, &sig)) {
+	oh = sig->handler;
+	sig->handler = handler;
+    }
+    return oh;
+}
+
+int rpmsqActivate(int state)
+{
+    sigset_t newMask, oldMask;
 
     if (disableInterruptSafety)
       return 0;
 
-    for (tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
-	if (tblsignum != tbl->signum)
-	    continue;
+    (void) sigfillset(&newMask);
+    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
 
-	if (signum >= 0) {			/* Enable. */
-	    if (!sigismember(&rpmsqActive, tblsignum)) {
-		(void) sigdelset(&rpmsqCaught, tbl->signum);
+    if (state) {
+	struct sigaction sa;
+	for (rpmsig tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
+	    sigdelset(&rpmsqCaught, tbl->signum);
+	    memset(&tbl->siginfo, 0, sizeof(tbl->siginfo));
 
-		/* XXX Don't set a signal handler if already SIG_IGN */
-		(void) sigaction(tbl->signum, NULL, &tbl->oact);
-		if (tbl->oact.sa_handler == SIG_IGN)
-		    continue;
+	    /* XXX Don't set a signal handler if already SIG_IGN */
+	    sigaction(tbl->signum, NULL, &tbl->oact);
+	    if (tbl->oact.sa_handler == SIG_IGN)
+		continue;
 
-		(void) sigemptyset (&sa.sa_mask);
-		sa.sa_flags = SA_SIGINFO;
-		sa.sa_sigaction = rpmsqHandler;
-		if (sigaction(tbl->signum, &sa, &tbl->oact) < 0)
-		    break;
-		sigaddset(&rpmsqActive, tblsignum);
-		tbl->handler = (handler != NULL) ? handler : tbl->defhandler;
-	    }
-	} else {				/* Disable. */
-	    if (sigismember(&rpmsqActive, tblsignum)) {
-		if (sigaction(tbl->signum, &tbl->oact, NULL) < 0)
-		    break;
-		sigdelset(&rpmsqActive, tblsignum);
-		tbl->handler = NULL;
+	    sigemptyset (&sa.sa_mask);
+	    sa.sa_flags = SA_SIGINFO;
+	    sa.sa_sigaction = rpmsqHandler;
+	    if (sigaction(tbl->signum, &sa, &tbl->oact) == 0)
+		sigaddset(&rpmsqActive, tbl->signum);
+	}
+    } else {
+	for (rpmsig tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
+	    if (!sigismember(&rpmsqActive, tbl->signum))
+		continue;
+	    if (sigaction(tbl->signum, &tbl->oact, NULL) == 0) {
+		sigdelset(&rpmsqActive, tbl->signum);
+		sigdelset(&rpmsqCaught, tbl->signum);
+		memset(&tbl->siginfo, 0, sizeof(tbl->siginfo));
 	    }
 	}
-	ret = sigismember(&rpmsqActive, tblsignum);
-	break;
     }
-    return ret;
+    sigprocmask(SIG_SETMASK, &oldMask, NULL);
+    return 0;
 }
 
 int rpmsqPoll(void)
@@ -135,13 +144,13 @@ int rpmsqPoll(void)
 
     for (rpmsig tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
 	if (sigismember(&rpmsqCaught, tbl->signum)) {
-	    n++;
+	    rpmsqAction_t handler = (tbl->handler != NULL) ? tbl->handler :
+							     tbl->defhandler;
 	    /* delete signal before running handler to prevent recursing */
 	    sigdelset(&rpmsqCaught, tbl->signum);
-	    if (tbl->handler) {
-		tbl->handler(tbl->signum, &tbl->siginfo, NULL);
-		memset(&tbl->siginfo, 0, sizeof(tbl->siginfo));
-	    }
+	    handler(tbl->signum, &tbl->siginfo, NULL);
+	    memset(&tbl->siginfo, 0, sizeof(tbl->siginfo));
+	    n++;
 	}
     }
     sigprocmask(SIG_SETMASK, &oldMask, NULL);

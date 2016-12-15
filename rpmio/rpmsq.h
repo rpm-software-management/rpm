@@ -30,12 +30,19 @@ typedef void (*rpmsqAction_t) (int signum, siginfo_t * info, void * context);
 int rpmsqIsCaught(int signum);
 
 /** \ingroup rpmsq
- * Enable or disable a signal handler.
- * @param signum	signal to enable (or disable if negative)
- * @param handler	signal handler (or NULL to use default)
- * @return		no. of refs, -1 on error
+ * Activate (or disable) the signal queue.
+ * @param state		1 to enable, 0 to disable
+ * @return		0 on success, negative on error
  */
-int rpmsqEnable(int signum, rpmsqAction_t handler);
+int rpmsqActivate(int state);
+
+/** \ingroup rpmsq
+ * Set or delete a signal handler for a signal.
+ * @param signum	signal number
+ * @param handler	signal handler or NULL to delete
+ * @return		previous non-default handler (possibly NULL)
+ */
+rpmsqAction_t rpmsqSetAction(int signum, rpmsqAction_t handler);
 
 /** \ingroup rpmsq
  * Poll for caught signals, executing their handlers.

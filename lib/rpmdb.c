@@ -451,11 +451,7 @@ int rpmdbClose(rpmdb db)
     db = _free(db);
 
     if (rpmdbRock == NULL) {
-	(void) rpmsqEnable(-SIGHUP, NULL);
-	(void) rpmsqEnable(-SIGINT, NULL);
-	(void) rpmsqEnable(-SIGTERM, NULL);
-	(void) rpmsqEnable(-SIGQUIT, NULL);
-	(void) rpmsqEnable(-SIGPIPE, NULL);
+	rpmsqActivate(0);
     }
 exit:
     return rc;
@@ -536,11 +532,7 @@ static int openDatabase(const char * prefix,
     rc = rpmioMkpath(rpmdbHome(db), 0755, getuid(), getgid());
     if (rc == 0) {
 	if (rpmdbRock == NULL) {
-	    (void) rpmsqEnable(SIGHUP, NULL);
-	    (void) rpmsqEnable(SIGINT, NULL);
-	    (void) rpmsqEnable(SIGTERM, NULL);
-	    (void) rpmsqEnable(SIGQUIT, NULL);
-	    (void) rpmsqEnable(SIGPIPE, NULL);
+	    rpmsqActivate(1);
 	}
 
 	/* Just the primary Packages database opened here */
