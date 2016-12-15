@@ -162,6 +162,33 @@ int rpmsqPoll(void)
     return n;
 }
 
+int rpmsqBlock(int op)
+{
+    static sigset_t oldMask;
+    static int blocked = 0;
+    sigset_t newMask;
+    int ret = 0;
+
+    if (op == SIG_BLOCK) {
+	blocked++;
+	if (blocked == 1) {
+	    sigfillset(&newMask);
+	    ret = sigprocmask(SIG_BLOCK, &newMask, &oldMask);
+	}
+    } else if (op == SIG_UNBLOCK) {
+	blocked--;
+	if (blocked == 0) {
+	    ret = sigprocmask(SIG_SETMASK, &oldMask, NULL);
+	    rpmsqPoll();
+	} else if (blocked < 0) {
+	    blocked = 0;
+	    ret = -1;
+	}
+    }
+
+    return ret;
+}
+
 /** \ingroup rpmio
  * 
  * By default, librpm will trap various unix signals such as SIGINT and SIGTERM,

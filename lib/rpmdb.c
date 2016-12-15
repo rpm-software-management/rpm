@@ -332,16 +332,7 @@ void rpmAtExit(void)
  */
 static int blockSignals(sigset_t * oldMask)
 {
-    sigset_t newMask;
-
-    (void) sigfillset(&newMask);		/* block all signals */
-    (void) sigprocmask(SIG_BLOCK, &newMask, oldMask);
-    (void) sigdelset(&newMask, SIGINT);
-    (void) sigdelset(&newMask, SIGQUIT);
-    (void) sigdelset(&newMask, SIGHUP);
-    (void) sigdelset(&newMask, SIGTERM);
-    (void) sigdelset(&newMask, SIGPIPE);
-    return sigprocmask(SIG_BLOCK, &newMask, NULL);
+    return rpmsqBlock(SIG_BLOCK);
 }
 
 /**
@@ -349,8 +340,7 @@ static int blockSignals(sigset_t * oldMask)
  */
 static int unblockSignals(sigset_t * oldMask)
 {
-    (void) rpmsqPoll();
-    return sigprocmask(SIG_SETMASK, oldMask, NULL);
+    return rpmsqBlock(SIG_UNBLOCK);
 }
 
 rpmop rpmdbOp(rpmdb rpmdb, rpmdbOpX opx)
