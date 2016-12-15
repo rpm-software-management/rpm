@@ -49,6 +49,17 @@ static struct rpmsig_s {
     { -1,	NULL,		NULL },
 };
 
+static int rpmsigGet(int signum, struct rpmsig_s **sig)
+{
+    for (rpmsig tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
+	if (tbl->signum == signum) {
+	    *sig = tbl;
+	    return 1;
+	}
+    }
+    return 0;
+}
+
 int rpmsqIsCaught(int signum)
 {
     return sigismember(&rpmsqCaught, signum);
@@ -59,13 +70,10 @@ static void rpmsqAction(int signum, siginfo_t * info, void * context)
     int save = errno;
 
     if (sigismember(&rpmsqActive, signum)) {
+	rpmsig sig = NULL;
 	(void) sigaddset(&rpmsqCaught, signum);
-	for (rpmsig tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
-	    if (tbl->signum == signum) {
-		memcpy(&tbl->siginfo, info, sizeof(*info));
-		break;
-	    }
-	}
+	if (rpmsigGet(signum, &sig))
+	    memcpy(&sig->siginfo, info, sizeof(*info));
     }
 
     errno = save;
