@@ -70,10 +70,12 @@ static void rpmsqHandler(int signum, siginfo_t * info, void * context)
     int save = errno;
 
     if (sigismember(&rpmsqActive, signum)) {
-	rpmsig sig = NULL;
-	(void) sigaddset(&rpmsqCaught, signum);
-	if (rpmsigGet(signum, &sig))
-	    memcpy(&sig->siginfo, info, sizeof(*info));
+	if (!sigismember(&rpmsqCaught, signum)) {
+	    rpmsig sig = NULL;
+	    (void) sigaddset(&rpmsqCaught, signum);
+	    if (rpmsigGet(signum, &sig))
+		memcpy(&sig->siginfo, info, sizeof(*info));
+	}
     }
 
     errno = save;
