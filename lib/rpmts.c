@@ -19,6 +19,7 @@
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmsq.h>
 #include <rpm/rpmte.h>
 
 #include "rpmio/digest.h"
@@ -1143,6 +1144,8 @@ rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags)
 	txn->lock = ts->lock;
 	txn->flags = flags;
 	txn->ts = rpmtsLink(ts);
+	if (txn->flags & RPMTXN_WRITE)
+	    rpmsqBlock(SIG_BLOCK);
     }
     
     return txn;
@@ -1152,6 +1155,8 @@ rpmtxn rpmtxnEnd(rpmtxn txn)
 {
     if (txn) {
 	rpmlockRelease(txn->lock);
+	if (txn->flags & RPMTXN_WRITE)
+	    rpmsqBlock(SIG_UNBLOCK);
 	rpmtsFree(txn->ts);
 	free(txn);
     }
