@@ -65,7 +65,7 @@ int rpmsqIsCaught(int signum)
     return sigismember(&rpmsqCaught, signum);
 }
 
-static void rpmsqAction(int signum, siginfo_t * info, void * context)
+static void rpmsqHandler(int signum, siginfo_t * info, void * context)
 {
     int save = errno;
 
@@ -104,7 +104,7 @@ int rpmsqEnable(int signum, rpmsqAction_t handler)
 
 		(void) sigemptyset (&sa.sa_mask);
 		sa.sa_flags = SA_SIGINFO;
-		sa.sa_sigaction = rpmsqAction;
+		sa.sa_sigaction = rpmsqHandler;
 		if (sigaction(tbl->signum, &sa, &tbl->oact) < 0)
 		    break;
 		sigaddset(&rpmsqActive, tblsignum);
