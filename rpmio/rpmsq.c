@@ -173,6 +173,12 @@ int rpmsqBlock(int op)
 	blocked++;
 	if (blocked == 1) {
 	    sigfillset(&newMask);
+	    sigdelset(&newMask, SIGABRT);
+	    sigdelset(&newMask, SIGBUS);
+	    sigdelset(&newMask, SIGFPE);
+	    sigdelset(&newMask, SIGILL);
+	    sigdelset(&newMask, SIGSEGV);
+	    sigdelset(&newMask, SIGTSTP);
 	    ret = pthread_sigmask(SIG_BLOCK, &newMask, &oldMask);
 	}
     } else if (op == SIG_UNBLOCK) {

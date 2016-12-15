@@ -45,7 +45,7 @@ int rpmsqActivate(int state);
 rpmsqAction_t rpmsqSetAction(int signum, rpmsqAction_t handler);
 
 /** \ingroup rpmsq
- * Block or unblock (all) signals.
+ * Block or unblock (almost) all signals.
  * The operation is "reference counted" so the calls can be nested,
  * and signals are only unblocked when the reference count falls to zero.
  * @param op		SIG_BLOCK/SIG_UNBLOCK
