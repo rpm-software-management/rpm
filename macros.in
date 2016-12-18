@@ -1159,12 +1159,13 @@ end}
 # -S<scm name>	Sets the used patch application style, eg '-S git' enables
 #           	usage of git repository and per-patch commits.
 # -N		Disable automatic patch application
-# -p<num>	Use -p<num> for patch application	
-%autosetup(a:b:cDn:TvNS:p:)\
+# -p<num>	Use -p<num> for patch application
+# -B		Enable patch backup with automatically generated suffixes
+%autosetup(a:b:cDn:TvNS:p:B)\
 %setup %{-a} %{-b} %{-c} %{-D} %{-n} %{-T} %{!-v:-q}\
 %{-S:%global __scm %{-S*}}\
 %{expand:%__scm_setup_%{__scm} %{!-v:-q}}\
-%{!-N:%autopatch %{-v} %{-p:-p%{-p*}}}
+%{!-N:%autopatch %{-v} %{-p:-p%{-p*}} %{-B}}
 
 # \endverbatim
 #*/
