@@ -57,7 +57,6 @@ static struct poptOption optionsTable[] = {
 static int doSign(poptContext optCon)
 {
     int rc = EXIT_FAILURE;
-    char * passPhrase = NULL;
     char * name = rpmExpand("%{?_gpg_name}", NULL);
     struct rpmSignArgs sig = {NULL, 0, 0};
     char *key = NULL;
@@ -104,7 +103,6 @@ static int doSign(poptContext optCon)
 
 exit:
     free(key);
-    free(passPhrase);
     free(name);
     return rc;
 }
