@@ -209,6 +209,19 @@ s:%lang(C) ::
 /^$/d' >> $MO_NAME
 fi
 
+KF5_HTML=`kf5-config --expandvars --install html 2>/dev/null`
+if [ x"$KF5_HTML" != x -a -d "$TOP_DIR$KF5_HTML" ]; then
+find "$TOP_DIR$KF5_HTML" -type d|sed '
+s:'"$TOP_DIR"'::
+'"$NO_ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'/\)::
+'"$NO_ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'\)$:%lang(\2) \1\2\3:
+'"$ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/[a-zA-Z0-9.\_\-]\+/\)::
+'"$ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/[a-zA-Z0-9.\_\-]\+$\):%lang(\2) \1\2\3:
+s:^\([^%].*\)::
+s:%lang(C) ::
+/^$/d' >> $MO_NAME
+fi
+
 find "$TOP_DIR" -type d|sed '
 s:'"$TOP_DIR"'::
 '"$NO_ALL_NAME$HTML"'s:\(.*/doc/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'/\)::
