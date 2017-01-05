@@ -1592,11 +1592,12 @@ exit:
 
 static int addNewIDSymlink(FileList fl,
 			   char *targetpath, char *idlinkpath,
-			   int isDbg, int isCompat)
+			   int isDbg, int *dups)
 {
     const char *linkerr = _("failed symlink");
     int rc = 0;
     int nr = 0;
+    int exists = 0;
     char *origpath, *linkpath;
 
     if (isDbg)
@@ -1606,6 +1607,26 @@ static int addNewIDSymlink(FileList fl,
     origpath = linkpath;
 
     while (faccessat(AT_FDCWD, linkpath, F_OK, AT_SYMLINK_NOFOLLOW) == 0) {
+        /* We don't care about finding dups for compat links, they are
+	   OK as is.  Otherwise we will need to double check if
+	   existing link points to the correct target. */
+	if (dups == NULL)
+	  {
+	    exists = 1;
+	    break;
+	  }
+
+	char ltarget[PATH_MAX];
+	ssize_t llen;
+	/* In short-circuited builds the link might already exist  */
+	if ((llen = readlink(linkpath, ltarget, sizeof(ltarget)-1)) != -1) {
+	    ltarget[llen] = '\0';
+	    if (rstreq(ltarget, targetpath)) {
+		exists = 1;
+		break;
+	    }
+	}
+
 	if (nr > 0)
 	    free(linkpath);
 	nr++;
@@ -1613,21 +1634,16 @@ static int addNewIDSymlink(FileList fl,
 		  isDbg ? ".debug" : "");
     }
 
-    char *symtarget = targetpath;
-    if (nr > 0 && isCompat)
-	rasprintf (&symtarget, "%s.%d", targetpath, nr);
-
-    if (symlink(symtarget, linkpath) < 0) {
+    if (!exists && symlink(targetpath, linkpath) < 0) {
 	rc = 1;
 	rpmlog(RPMLOG_ERR, "%s: %s -> %s: %m\n",
-	       linkerr, linkpath, symtarget);
+	       linkerr, linkpath, targetpath);
     } else {
 	fl->cur.isDir = 0;
 	rc = addFile(fl, linkpath, NULL);
     }
 
-    /* Don't warn (again) if this is a compat id-link, we retarget it. */
-    if (nr > 0 && !isCompat) {
+    if (nr > 0) {
 	/* Lets see why there are multiple build-ids. If the original
 	   targets are hard linked, then it is OK, otherwise warn
 	   something fishy is going on. Would be nice to call
@@ -1656,8 +1672,8 @@ static int addNewIDSymlink(FileList fl,
 	free(origpath);
     if (nr > 0)
 	free(linkpath);
-    if (nr > 0 && isCompat)
-	free(symtarget);
+    if (dups != NULL)
+      *dups = nr;
 
     return rc;
 }
@@ -1897,6 +1913,7 @@ static int generateBuildIDs(FileList fl)
 			|| (rc = addFile(fl, buildidsubdir, NULL)) == 0) {
 			char *linkpattern, *targetpattern;
 			char *linkpath, *targetpath;
+			int dups = 0;
 			if (isDbg) {
 			    linkpattern = "%s/%s";
 			    targetpattern = "../../../../..%s";
@@ -1908,7 +1925,7 @@ static int generateBuildIDs(FileList fl)
 				  buildidsubdir, &ids[i][2]);
 			rasprintf(&targetpath, targetpattern, paths[i]);
 			rc = addNewIDSymlink(fl, targetpath, linkpath,
-					     isDbg, 0);
+					     isDbg, &dups);
 
 			/* We might want to have a link from the debug
 			   build_ids dir to the main one. We create it
@@ -1931,16 +1948,30 @@ static int generateBuildIDs(FileList fl)
 			    && build_id_links == BUILD_IDS_COMPAT) {
 			    /* buildidsubdir already points to the
 			       debug buildid. We just need to setup
-			       the symlink to the main one.  */
+			       the symlink to the main one. There
+			       might be duplicate IDs, those are found
+			       by the addNewIDSymlink above. Target
+			       the last found duplicate, if any. */
 			    free(linkpath);
 			    free(targetpath);
-			    rasprintf(&linkpath, "%s/%s",
-				      buildidsubdir, &ids[i][2]);
-			    rasprintf(&targetpath,
-				      "../../../.build-id%s/%s",
-				      subdir, &ids[i][2]);
+			    if (dups == 0)
+			      {
+				rasprintf(&linkpath, "%s/%s",
+					  buildidsubdir, &ids[i][2]);
+				rasprintf(&targetpath,
+					  "../../../.build-id%s/%s",
+					  subdir, &ids[i][2]);
+			      }
+			    else
+			      {
+				rasprintf(&linkpath, "%s/%s.%d",
+					  buildidsubdir, &ids[i][2], dups);
+				rasprintf(&targetpath,
+					  "../../../.build-id%s/%s.%d",
+					  subdir, &ids[i][2], dups);
+			      }
 			    rc = addNewIDSymlink(fl, targetpath, linkpath,
-						 0, 1);
+						 0, NULL);
 			}
 
 			if (rc == 0 && isDbg
@@ -1978,7 +2009,7 @@ static int generateBuildIDs(FileList fl)
 				rasprintf(&targetpath, "../../../../..%s",
 					  targetstr);
 				rc = addNewIDSymlink(fl, targetpath,
-						     linkpath, 0, 0);
+						     linkpath, 0, &dups);
 				free(targetstr);
 			    }
 			}
