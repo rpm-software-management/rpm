@@ -1671,11 +1671,10 @@ static int generateBuildIDs(FileList fl)
     int needMain = 0;
     int needDbg = 0;
     for (i = 0, flp = fl->files.recs; i < fl->files.used; i++, flp++) {
-	int fd;
-	fd = open (flp->diskPath, O_RDONLY);
-	if (fd >= 0) {
-	    struct stat sbuf;
-	    if (fstat (fd, &sbuf) == 0 && S_ISREG (sbuf.st_mode)) {
+	struct stat sbuf;
+	if (lstat(flp->diskPath, &sbuf) == 0 && S_ISREG (sbuf.st_mode)) {
+	    int fd = open (flp->diskPath, O_RDONLY);
+	    if (fd >= 0) {
 		Elf *elf = elf_begin (fd, ELF_C_READ, NULL);
 		if (elf != NULL && elf_kind(elf) == ELF_K_ELF) {
 		    const void *build_id;
@@ -1741,8 +1740,8 @@ static int generateBuildIDs(FileList fl)
 		    }
 		    elf_end (elf);
 		}
+		close (fd);
 	    }
-	    close (fd);
 	}
     }
 
