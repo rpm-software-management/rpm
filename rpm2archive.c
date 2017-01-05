@@ -12,6 +12,7 @@
 
 #include <archive.h>
 #include <archive_entry.h>
+#include <unistd.h>
 
 #include "debug.h"
 
@@ -120,7 +121,11 @@ static int process_package(rpmts ts, char * filename)
     archive_write_set_format_pax_restricted(a);
 
     if (!strcmp(filename, "-")) {
-	archive_write_open_fd(a, 1);
+	if (isatty(STDOUT_FILENO)) {
+	    fprintf(stderr, "Error: refusing to output archive data to a terminal.\n");
+	    exit(EXIT_FAILURE);
+	}
+	archive_write_open_fd(a, STDOUT_FILENO);
     } else {
 	char * outname = rstrscat(NULL, filename, ".tgz", NULL);
 	archive_write_open_filename(a, outname);

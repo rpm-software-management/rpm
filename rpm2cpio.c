@@ -8,6 +8,7 @@
 #include <rpm/rpmpgp.h>
 
 #include <rpm/rpmts.h>
+#include <unistd.h>
 
 #include "debug.h"
 
@@ -36,6 +37,10 @@ int main(int argc, char *argv[])
     if (Ferror(fdi)) {
 	fprintf(stderr, "%s: %s: %s\n", argv[0],
 		(argc == 1 ? "<stdin>" : argv[1]), Fstrerror(fdi));
+	exit(EXIT_FAILURE);
+    }
+    if (isatty(STDOUT_FILENO)) {
+	fprintf(stderr, "Error: refusing to output cpio data to a terminal.\n");
 	exit(EXIT_FAILURE);
     }
     fdo = fdDup(STDOUT_FILENO);
