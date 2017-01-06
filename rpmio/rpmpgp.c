@@ -82,6 +82,7 @@ static struct pgpValTbl_s const pgpCompressionTbl[] = {
     { PGPCOMPRESSALGO_ZIP,	"ZIP" },
     { PGPCOMPRESSALGO_ZLIB, 	"ZLIB" },
     { PGPCOMPRESSALGO_BZIP2, 	"BZIP2" },
+    { PGPCOMPRESSALGO_PBZIP2, 	"PBZIP2" },
     { -1,			"Unknown compression algorithm" },
 };
 

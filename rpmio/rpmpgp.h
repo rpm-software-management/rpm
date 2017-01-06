@@ -229,7 +229,8 @@ typedef enum pgpCompressAlgo_e {
     PGPCOMPRESSALGO_NONE	=  0,	/*!< Uncompressed */
     PGPCOMPRESSALGO_ZIP		=  1,	/*!< ZIP */
     PGPCOMPRESSALGO_ZLIB	=  2,	/*!< ZLIB */
-    PGPCOMPRESSALGO_BZIP2	=  3	/*!< BZIP2 */
+    PGPCOMPRESSALGO_BZIP2	=  3,	/*!< BZIP2 */
+    PGPCOMPRESSALGO_PBZIP2	=  4	/*!< PBZIP2 */
 } pgpCompressAlgo;
 
 /** \ingroup rpmpgp

@@ -189,6 +189,9 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	case COMPRESSED_BZIP2:
 	    t = "%{__bzip2} -dc";
 	    break;
+	case COMPRESSED_PBZIP2:
+	    t = "%{__pbzip2} -dc";
+	    break;
 	case COMPRESSED_ZIP:
 	    if (rpmIsVerbose() && !quietly)
 		t = "%{__unzip}";

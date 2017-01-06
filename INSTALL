@@ -74,7 +74,7 @@ to configure and libselinux development environment installed. SELinux
 is available from
     http://www.nsa.gov/selinux/
 
-It may be desired to install bzip2, gzip, and xz/lzma so that RPM can use these
+It may be desired to install bzip2, pbzip2, gzip, and xz/lzma so that RPM can use these
 formats.  Gzip is necessary to build packages that contain compressed
 tar balls, these are quite common on the Internet.
 These are available from
