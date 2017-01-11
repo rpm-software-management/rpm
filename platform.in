@@ -78,6 +78,7 @@
     %{?!dont_remove_rpath:		[ -n "$DONT_REMOVE_RPATH" ]	|| %{_rpmconfigdir}/brp-remove-rpath} \
     %{?!dont_fix_file_permissions: 	[ -n "$DONT_FIX_FILE_PERMISSIONS" ] || %{_rpmconfigdir}/brp-fix_file_permissions} \
     %{?!dont_fix_desktop_files:		[ -n "$DONT_FIX_DESKTOP_FILES" ]    || %{_rpmconfigdir}/brp-fix-desktop-files} \
+    %{?!dont_fix_pkgconfig:		[ -n "$DONT_FIX_PKGCONFIG" ]	|| %{_rpmconfigdir}/brp-fix-pkgconfig} \
 %{nil}
 
 %__spec_install_post\

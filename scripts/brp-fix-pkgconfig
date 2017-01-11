@@ -1,0 +1,27 @@
+#!/bin/sh
+#
+# fix pkgconfig files to trim slashes, as ie. libdir=/usr/lib64/ rather than
+# libdir=/usr/lib64 will make pkg-config --libs return -L/usr/lib64
+#
+# (c) Per Øyvind Karlsen <proyvind@moondrake.org> 2015
+# (c) Andrey Bondrov <andrey.bondrov@rosalab.ru> 2016
+
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+    exit 0
+fi
+
+for pc in $(find "$RPM_BUILD_ROOT" -name \*.pc); do
+    export PKG_CONFIG_PATH="$(dirname $pc)"
+    pcfile="$(basename $pc)"
+    pcmodule="$(echo $pcfile|cut -d. -f1)"
+    for variable in $(pkg-config --print-variables "$pcmodule"); do
+	dir=$(pkg-config --variable="$variable" "$pcmodule")
+	if [[ -n "$dir" && "$dir" != "`realpath $dir`" ]]; then
+	    parentdir=$(dirname ${dir})
+	    subdir=$(basename ${dir})
+	    regexp="-e s|\(${variable}=.*/${subdir}\)/.*\$|\1|g -e s|\/\$||g -e s|\/\/|/|g"
+	    sed $regexp -i $pc
+	fi
+    done
+done

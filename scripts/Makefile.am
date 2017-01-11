@@ -10,7 +10,7 @@ EXTRA_DIST = \
 	brp-strip-shared brp-strip-static-archive \
 	brp-clean-files brp-remove-info-dir brp-relink-symlinks \
 	brp-remove-libtool-files brp-fix-eol brp-remove-rpath \
-	brp-fix-file-permissions brp-fix-desktop-files \
+	brp-fix-file-permissions brp-fix-desktop-files brp-fix-pkgconfig \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-debuginfo.sh find-lang.sh \
@@ -32,7 +32,7 @@ rpmconfig_SCRIPTS = \
 	brp-strip-shared brp-strip-static-archive \
 	brp-clean-files brp-remove-info-dir brp-relink-symlinks \
 	brp-remove-libtool-files brp-fix-eol brp-remove-rpath \
-	brp-fix-file-permissions brp-fix-desktop-files \
+	brp-fix-file-permissions brp-fix-desktop-files brp-fix-pkgconfig \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-lang.sh find-requires find-provides \
