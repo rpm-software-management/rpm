@@ -9,7 +9,7 @@ EXTRA_DIST = \
 	brp-strip brp-strip-comment-note brp-python-hardlink \
 	brp-strip-shared brp-strip-static-archive \
 	brp-clean-files brp-remove-info-dir brp-relink-symlinks \
-	brp-remove-libtool-files \
+	brp-remove-libtool-files brp-fix-eol \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-debuginfo.sh find-lang.sh \
@@ -30,7 +30,7 @@ rpmconfig_SCRIPTS = \
 	brp-strip brp-strip-comment-note brp-python-hardlink \
 	brp-strip-shared brp-strip-static-archive \
 	brp-clean-files brp-remove-info-dir brp-relink-symlinks \
-	brp-remove-libtool-files \
+	brp-remove-libtool-files brp-fix-eol \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-lang.sh find-requires find-provides \

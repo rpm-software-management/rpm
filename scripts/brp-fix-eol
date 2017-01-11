@@ -1,0 +1,16 @@
+#!/bin/sh
+# convert end of line patterns from DOS to UNIX
+
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+	exit 0
+fi
+
+find "$RPM_BUILD_ROOT" -type f | while read f; do
+    if [ -n "$EXCLUDE_FROM_EOL_CONVERSION" ]; then
+	basename "$f" | grep -q -P "$EXCLUDE_FROM_EOL_CONVERSION" && continue
+    fi
+    grep -q -Ilsr $'\r$' "$f" && sed -e 's/\r$//' -i "$f"
+done
+
+exit 0
