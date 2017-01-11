@@ -1,0 +1,37 @@
+#!/bin/sh
+# remove backup files
+
+if [ -z "$RPM_BUILD_ROOT" ]; then
+    echo "No build root defined" >&2
+    exit 1
+fi
+
+if [ ! -d "$RPM_BUILD_ROOT" ]; then
+    echo "Invalid build root" >&2
+    exit 1
+fi
+
+if [ -n "$1" ]; then
+    DIRECTORY=$(echo $1 | sed -e "s#^$RPM_BUILD_ROOT##g")
+    if [ ! -d "$RPM_BUILD_ROOT$DIRECTORY" ]; then
+	exit 0
+    fi
+fi
+
+find "$RPM_BUILD_ROOT$DIRECTORY" \( -type f -o -type l \) \( \
+	-name '#*#' -o \
+	-name \*.orig -o \
+	-name \*~ -o \
+	-name DEADJOE -o \
+	-name .cvsignore -o \
+	-name \*.orig -o \
+	-name \*.rej -o \
+	-name \*.bak -o \
+	-name \*.SUMS -o \
+	-name TAGS -o \
+	-name .deps -o \
+	-name .P -o \
+	-name core \) \
+	-delete
+
+find "$RPM_BUILD_ROOT$DIRECTORY" -type d -name CVS | xargs rm -rf
