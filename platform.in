@@ -72,6 +72,7 @@
     %{_rpmconfigdir}/brp-strip-comment-note %{__strip} %{__objdump} \
     %{?!dont_clean_files:		[ -n "$DONT_CLEAN_FILES" ]	|| %{_rpmconfigdir}/brp-clean-files} \
     %{?!dont_remove_info_dir:		[ -n "$DONT_REMOVE_INFO_DIR" ]	|| %{_rpmconfigdir}/brp-remove-info-dir} \
+    %{?!dont_relink_symlinks:		[ -n "$DONT_RELINK_SYMLINKS" ]	|| %{_rpmconfigdir}/brp-relink-symlinks} \
 %{nil}
 
 %__spec_install_post\
