@@ -140,7 +140,7 @@ static int readFile(FD_t fd, const char * fn, rpmDigestBundle hdrbundle)
     if (blob.regionTag == RPMTAG_HEADERIMMUTABLE) {
 	rpmDigestBundleUpdate(hdrbundle,
 				rpm_header_magic, sizeof(rpm_header_magic));
-	rpmDigestBundleUpdate(hdrbundle, blob.ei, blob.uc);
+	rpmDigestBundleUpdate(hdrbundle, blob.ei, blob.pvlen);
     }
 
     /* Read the payload from the package. */

@@ -22,7 +22,6 @@ struct entryInfo_s {
 typedef struct hdrblob_s * hdrblob;
 struct hdrblob_s {
     int32_t *ei;
-    size_t uc;
     int32_t il;
     int32_t dl;
     entryInfo pe;

@@ -1914,7 +1914,6 @@ rpmRC hdrblobInit(const void *uh, size_t uc,
 
     memset(blob, 0, sizeof(*blob));
     blob->ei = (int32_t *) uh; /* discards const */
-    blob->uc = uc;
     blob->il = ntohl(blob->ei[0]);
     blob->dl = ntohl(blob->ei[1]);
     blob->pe = (entryInfo) &(blob->ei[2]);
@@ -1924,9 +1923,9 @@ rpmRC hdrblobInit(const void *uh, size_t uc,
     blob->dataEnd = blob->dataStart + blob->dl;
 
     /* Is the blob the right size? */
-    if (blob->pvlen >= headerMaxbytes || blob->pvlen != blob->uc) {
-	rasprintf(emsg, _("blob size(%zd): BAD, 8 + 16 * il(%d) + dl(%d)"),
-			blob->uc, blob->il, blob->dl);
+    if (blob->pvlen >= headerMaxbytes || (uc && blob->pvlen != uc)) {
+	rasprintf(emsg, _("blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"),
+			blob->pvlen, blob->il, blob->dl);
 	goto exit;
     }
 
