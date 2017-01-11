@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+	exit 0
+fi
+
+find "$RPM_BUILD_ROOT" \( -type f -o -type l \) -name \*.la  -print0 |
+xargs  --no-run-if-empty -0 file -N -L |
+grep "libtool library file" |
+sed -e 's#: libtool library file.*##g' |
+while read path; do
+    rm -f "$path"
+done

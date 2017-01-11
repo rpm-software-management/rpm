@@ -73,7 +73,7 @@
     %{?!dont_clean_files:		[ -n "$DONT_CLEANUP" ]       	|| %{_rpmconfigdir}/brp-clean-files} \
     %{?!dont_remove_info_dir:		[ -n "$DONT_REMOVE_INFO_DIR" ]	|| %{_rpmconfigdir}/brp-remove-info-dir} \
     %{?!dont_relink:			[ -n "$DONT_RELINK" ]        	|| %{_rpmconfigdir}/brp-relink-symlinks} \
-
+    %{?!dont_remove_libtool_files:	[ -n "$DONT_REMOVE_LIBTOOL_FILES" ] || %{_rpmconfigdir}/brp-remove-libtool-files} \
 %{nil}
 
 %__spec_install_post\
