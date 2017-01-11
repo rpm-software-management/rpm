@@ -75,6 +75,7 @@
     %{?!dont_relink_symlinks:		[ -n "$DONT_RELINK_SYMLINKS" ]	|| %{_rpmconfigdir}/brp-relink-symlinks} \
     %{?!dont_remove_libtool_files:	[ -n "$DONT_REMOVE_LIBTOOL_FILES" ] || %{_rpmconfigdir}/brp-remove-libtool-files} \
     %{?!dont_fix_eol:			[ -n "$DONT_FIX_EOL" ]		|| %{_rpmconfigdir}/brp-fix-eol} \
+    %{?!dont_remove_rpath:		[ -n "$DONT_REMOVE_RPATH" ]	|| %{_rpmconfigdir}/brp-remove-rpath} \
 %{nil}
 
 %__spec_install_post\

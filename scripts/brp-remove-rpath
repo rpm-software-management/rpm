@@ -1,0 +1,49 @@
+#!/bin/sh
+
+# This script makes sure to remove any standard library search paths from rpath
+# or runpath tags as they're not only redundant, but will break overriding
+# search paths. Search paths of the tag that's not standard will be kept intact.
+
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+	exit 0
+fi
+
+# make sure we have chrpath in our search path, otherwise wuzz out
+type chrpath || exit 0
+
+find "$RPM_BUILD_ROOT" \
+    ! -path "${RPM_BUILD_ROOT}/usr/lib/debug/*" \
+    ! -path "${RPM_BUILD_ROOT}/usr/doc/*" \
+    ! -path "${RPM_BUILD_ROOT}/usr/share/doc/*" \
+    -type f  -print0 |
+xargs  --no-run-if-empty -0 file -N -F ' //magic:' |
+grep -e "ELF" |
+sed -e 's# //magic:.*##g' |
+while read path; do
+    RPATH=$(chrpath -l "$path" 2>/dev/null| grep -e RUNPATH -e RPATH|sed -e 's#.*RPATH=##g' -e 's#.*RUNPATH=##g')
+    [ -z "$RPATH" ] && continue
+    NEWRPATH=
+    for RDIR in $(echo $RPATH|cut -d: --output-delimiter=" " -f1-); do
+	    case $RDIR in
+		/lib|/lib32|/libx32|/lib64) 			echo removing $RDIR from rpath;;
+		/usr/lib|/usr/lib32|/usr/libx32|/usr/lib64)	echo removing $RDIR from rpath;;
+    *)      if [ -z "$NEWRPATH" ]; then
+		NEWRPATH="$RDIR"
+	    else
+		NEWRPATH="$NEWRPATH:$RDIR"
+	    fi
+	    ;;
+	esac
+    done
+
+    if [ "$NEWRPATH" = "$RPATH" ]; then
+	    continue
+    elif [ -z "$NEWRPATH" ]; then
+        chrpath -d "$path"
+        echo "Removing rpath ($RPATH) from $path"
+    else
+        chrpath -r "$NEWRPATH" "$path"
+        echo "Removed parts of rpath ($RPATH) from $path, new rpath is $NEWRPATH"
+    fi
+done
