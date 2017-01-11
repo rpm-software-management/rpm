@@ -71,6 +71,7 @@
     %{_rpmconfigdir}/brp-strip-static-archive %{__strip} \
     %{_rpmconfigdir}/brp-strip-comment-note %{__strip} %{__objdump} \
     %{?!dont_clean_files:		[ -n "$DONT_CLEANUP" ]       	|| %{_rpmconfigdir}/brp-clean-files} \
+    %{?!dont_remove_info_dir:		[ -n "$DONT_REMOVE_INFO_DIR" ]	|| %{_rpmconfigdir}/brp-remove-info-dir} \
 %{nil}
 
 %__spec_install_post\

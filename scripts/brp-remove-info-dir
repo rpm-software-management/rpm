@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+	exit 0
+fi
+
+INFODIR=`rpm --eval %{_infodir}/dir`
+
+dir="$RPM_BUILD_ROOT/$INFODIR"
+
+if [ -f $dir -a ! -f "$RPM_BUILD_ROOT/sbin/install-info" -a ! -f "$RPM_BUILD_ROOT/usr/sbin/install-info" ]; then
+    rm -f $dir
+fi
+
