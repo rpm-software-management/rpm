@@ -11,7 +11,7 @@ EXTRA_DIST = \
 	brp-strip-shared brp-strip-static-archive \
 	brp-clean-files brp-remove-info-dir brp-relink-symlinks \
 	brp-remove-libtool-files brp-fix-eol brp-remove-rpath \
-	brp-fix-file-permissions \
+	brp-fix-file-permissions brp-fix-desktop-files \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
 	debuginfo.prov \
@@ -33,7 +33,7 @@ rpmconfig_SCRIPTS = \
 	brp-strip-shared brp-strip-static-archive \
 	brp-clean-files brp-remove-info-dir brp-relink-symlinks \
 	brp-remove-libtool-files brp-fix-eol brp-remove-rpath \
-	brp-fix-file-permissions \
+	brp-fix-file-permissions brp-fix-desktop-files \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
 	debuginfo.prov \
