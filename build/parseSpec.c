@@ -207,10 +207,23 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
 	    bufB++;
 	}
 
-	if (*bufA != '\0' || *bufB != '\0')
+	if (*bufA != '\0' || *bufB != '\0') {
+            char *s = lbuf;
+            /* If expanded macro, lbuf, is multiline, it is error. */
+            while (*s) {
+                if (*s == '\n') {
+                    rpmlog(RPMLOG_ERR,
+                        _("Macro expanded to multiple lines in comment on line %d: %s\n"),
+                        spec->lineNum, bufA);
+                    return 1;
+                }
+                s++;
+            }
+
 	    rpmlog(RPMLOG_WARNING,
 		_("Macro expanded in comment on line %d: %s\n"),
 		spec->lineNum, bufA);
+        }
     }
 
     free(spec->lbuf);
