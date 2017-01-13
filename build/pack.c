@@ -293,20 +293,6 @@ static int haveRichDep(Package pkg)
     return 0;
 }
 
-static rpm_loff_t estimateCpioSize(Package pkg)
-{
-    rpmfi fi;
-    rpm_loff_t size = 0;
-
-    fi = rpmfilesIter(pkg->cpioList, RPMFI_ITER_FWD);
-    while (rpmfiNext(fi) >= 0) {
-	size += strlen(rpmfiDN(fi)) + strlen(rpmfiBN(fi));
-	size += rpmfiFSize(fi);
-	size += 300;
-    }
-    return size;
-}
-
 static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 		      const char *fileName, char **cookie)
 {
@@ -316,7 +302,6 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     uint8_t * MD5 = NULL;
     const char *s;
     rpmRC rc = RPMRC_OK;
-    rpm_loff_t estimatedCpioSize;
     unsigned char buf[32*BUFSIZ];
     uint8_t zeros[] =  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     char *zerosS = "0000000000000000000000000000000000000000";
@@ -438,14 +423,11 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	}
     }
 
-    /* Estimate cpio archive size to decide if use 32 bits or 64 bit tags. */
-    estimatedCpioSize = estimateCpioSize(pkg);
-
     /* Save the position of signature section */
     sigStart = Ftell(fd);
 
     /* Generate and write a placeholder signature header */
-    rc = rpmGenerateSignature(zerosS, zeros, 0, estimatedCpioSize, fd);
+    rc = rpmGenerateSignature(zerosS, zeros, 0, 0, fd);
     if (rc != RPMRC_OK) {
 	rc = RPMRC_FAIL;
 	goto exit;
