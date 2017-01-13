@@ -304,7 +304,8 @@ rpmRC rpmGenerateSignature(char *SHA1, uint8_t *MD5, rpm_loff_t size,
     struct rpmtd_s td;
     rpmRC rc = RPMRC_OK;
     char *reservedSpace;
-    int spaceSize = 0;
+    int spaceSize = 32; /* always reserve a bit of space */
+    int gpgSize = rpmExpandNumeric("%{__gpg_reserved_space}");
 
     /* Prepare signature */
     sig = rpmNewSignature();
@@ -349,9 +350,14 @@ rpmRC rpmGenerateSignature(char *SHA1, uint8_t *MD5, rpm_loff_t size,
 	td.tag = RPMSIGTAG_LONGSIZE;
 	td.data = &s;
 	headerPut(sig, &td, HEADERPUT_DEFAULT);
+
+	/* adjust for the size difference between 64- and 32bit tags */
+	spaceSize -= 8;
     }
 
-    spaceSize = rpmExpandNumeric("%{__gpg_reserved_space}");
+    if (gpgSize > 0)
+	spaceSize += gpgSize;
+
     if(spaceSize > 0) {
 	reservedSpace = xcalloc(spaceSize, sizeof(char));
 	rpmtdReset(&td);
