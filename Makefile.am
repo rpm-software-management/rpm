@@ -43,6 +43,7 @@ AM_CPPFLAGS += -I$(top_srcdir)/lib
 AM_CPPFLAGS += -I$(top_srcdir)/rpmio
 AM_CPPFLAGS += @WITH_BEECRYPT_INCLUDE@
 AM_CPPFLAGS += @WITH_NSS_INCLUDE@
+AM_CPPFLAGS += @WITH_OPENSSL_INCLUDE@
 AM_CPPFLAGS += @WITH_POPT_INCLUDE@
 AM_CPPFLAGS += -I$(top_srcdir)/misc
 AM_CPPFLAGS += -DLOCALEDIR="\"$(localedir)\""
@@ -111,45 +112,45 @@ rpm_SOURCES =		rpmqv.c debug.h system.h
 rpm_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMEIU -DIAM_RPMQ -DIAM_RPMV
 rpm_LDADD =		libcliutils.la
 rpm_LDADD +=		lib/librpm.la rpmio/librpmio.la
-rpm_LDADD +=		@WITH_BEECRYPT_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+rpm_LDADD +=		@WITH_BEECRYPT_LIB@ @WITH_NSS_LIB@ @WITH_OPENSSL_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmdb_SOURCES =		rpmdb.c debug.h system.h
 rpmdb_CPPFLAGS =	$(AM_CPPFLAGS)
 rpmdb_LDADD =		libcliutils.la
 rpmdb_LDADD +=		lib/librpm.la rpmio/librpmio.la
-rpmdb_LDADD +=		@WITH_BEECRYPT_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+rpmdb_LDADD +=		@WITH_BEECRYPT_LIB@ @WITH_NSS_LIB@ @WITH_OPENSSL_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmkeys_SOURCES =	rpmkeys.c debug.h system.h
 rpmkeys_CPPFLAGS =	$(AM_CPPFLAGS)
 rpmkeys_LDADD =		libcliutils.la
 rpmkeys_LDADD +=	lib/librpm.la rpmio/librpmio.la
-rpmkeys_LDADD +=	@WITH_BEECRYPT_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+rpmkeys_LDADD +=	@WITH_BEECRYPT_LIB@ @WITH_NSS_LIB@ @WITH_OPENSSL_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmsign_SOURCES =	rpmsign.c debug.h system.h
 rpmsign_CPPFLAGS =	$(AM_CPPFLAGS)
 rpmsign_LDADD =		libcliutils.la
 rpmsign_LDADD +=	sign/librpmsign.la lib/librpm.la rpmio/librpmio.la
-rpmsign_LDADD +=	@WITH_BEECRYPT_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+rpmsign_LDADD +=	@WITH_BEECRYPT_LIB@ @WITH_NSS_LIB@ @WITH_OPENSSL_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmbuild_SOURCES =	rpmbuild.c debug.h system.h
 rpmbuild_CPPFLAGS =	$(AM_CPPFLAGS)
 rpmbuild_LDADD =	libcliutils.la
 rpmbuild_LDADD +=	build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
-rpmbuild_LDADD += 	@WITH_BEECRYPT_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+rpmbuild_LDADD += 	@WITH_BEECRYPT_LIB@ @WITH_NSS_LIB@ @WITH_OPENSSL_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmspec_SOURCES =	rpmspec.c debug.h system.h
 rpmspec_CPPFLAGS =	$(AM_CPPFLAGS)
 rpmspec_LDADD =		libcliutils.la
 rpmspec_LDADD +=	build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
-rpmspec_LDADD +=	@WITH_BEECRYPT_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+rpmspec_LDADD +=	@WITH_BEECRYPT_LIB@ @WITH_NSS_LIB@ @WITH_OPENSSL_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpm2cpio_SOURCES =	rpm2cpio.c debug.h system.h
 rpm2cpio_LDADD =	lib/librpm.la rpmio/librpmio.la
-rpm2cpio_LDADD +=	@WITH_BEECRYPT_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+rpm2cpio_LDADD +=	@WITH_BEECRYPT_LIB@ @WITH_NSS_LIB@ @WITH_OPENSSL_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpm2archive_SOURCES =	rpm2archive.c debug.h system.h
 rpm2archive_LDADD =	lib/librpm.la rpmio/librpmio.la
-rpm2archive_LDADD +=	@WITH_BEECRYPT_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@ @WITH_ARCHIVE_LIB@
+rpm2archive_LDADD +=	@WITH_BEECRYPT_LIB@ @WITH_NSS_LIB@ @WITH_OPENSSL_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@ @WITH_ARCHIVE_LIB@
 
 
 if LIBELF

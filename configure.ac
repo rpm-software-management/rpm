@@ -245,18 +245,30 @@ AC_CHECK_HEADERS([dwarf.h], [
 AM_CONDITIONAL(LIBDWARF,[test "$WITH_LIBDWARF" = yes])
 
 #=================
+# Select crypto library
+AC_ARG_WITH(crypto,
+            [AC_HELP_STRING([--with-crypto=CRYPTO_LIB],
+                            [The cryptographic library to use (nss|beecrypt|openssl). The default is nss.])
+                            ],[],
+                            [with_crypto=nss])
+
+# Refuse to proceed if someone specified --with-beecrypt (removed)
+AC_ARG_WITH(beecrypt,
+    [AC_HELP_STRING([--with-beecrypt (OBSOLETE)], [Obsolete argument. Use --with-crypto=beecrypt])
+    ],[AC_MSG_ERROR([--with-beecrypt no longer supported. Use --with-crypto=beecrypt])],
+    [])
+
 # Check for beecrypt library if requested.
-AC_ARG_WITH(beecrypt, [  --with-beecrypt         build with beecrypt support ],,[with_beecrypt=no])
 AC_ARG_WITH(internal_beecrypt, [  --with-internal-beecrypt build with internal beecrypt library ],,[with_internal_beecrypt=no])
 AM_CONDITIONAL([WITH_INTERNAL_BEECRYPT],[test "$with_internal_beecrypt" = yes])
 if test "$with_internal_beecrypt" = yes ; then
-  with_beecrypt=yes
+  with_crypto=beecrypt
 fi
-AM_CONDITIONAL([WITH_BEECRYPT],[test "$with_beecrypt" = yes])
+AM_CONDITIONAL([WITH_BEECRYPT],[test "$with_crypto" = beecrypt])
 
 WITH_BEECRYPT_INCLUDE=
 WITH_BEECRYPT_LIB=
-if test "$with_beecrypt" = yes ; then
+if test "$with_crypto" = beecrypt ; then
   AC_DEFINE(WITH_BEECRYPT, 1, [Build with beecrypt instead of nss3 support?])
   if test "$with_internal_beecrypt" = yes ; then
     WITH_BEECRYPT_INCLUDE="-I\$(top_srcdir)/beecrypt"
@@ -265,7 +277,7 @@ if test "$with_beecrypt" = yes ; then
     AC_CHECK_LIB(beecrypt, mpfprintln, [
       WITH_BEECRYPT_LIB="-lbeecrypt"
     ],[
-      AC_MSG_ERROR([missing required library 'beecrypt']) 
+      AC_MSG_ERROR([missing required library 'beecrypt'])
     ])
     AC_CHECK_HEADER([beecrypt/api.h], [AC_DEFINE(HAVE_BEECRYPT_API_H, 1, [Define to 1 if you have the <beecrypt/api.h> header file.])
     ])
@@ -275,13 +287,93 @@ AC_SUBST(WITH_BEECRYPT_LIB)
 AC_SUBST(WITH_BEECRYPT_INCLUDE)
 
 #=================
+# Check for OpenSSL library.
+# We need evp.h from OpenSSL.
+
+WITH_OPENSSL_INCLUDE=
+WITH_OPENSSL_LIB=
+if test "$with_crypto" = openssl; then
+# If we have pkgconfig make sure CPPFLAGS are setup correctly for the OpenSSL
+# -I include path.
+AC_PATH_TOOL([PKGCONFIG], [pkg-config], [no], [$PATH:/usr/bin:/usr/local/bin])
+if test "x$PKGCONFIG" != "xno"; then
+  CPPFLAGS="$CPPFLAGS $($PKGCONFIG --cflags libcrypto)"
+  WITH_OPENSSL_LIB=$($PKGCONFIG --libs libcrypto)
+else
+  WITH_OPENSSL_LIB=-lcrypto
+fi
+
+AC_CHECK_HEADERS([openssl/evp.h], [], [
+  AC_MSG_ERROR([missing required OpenSSL header])
+])
+AC_CHECK_HEADERS([openssl/rsa.h], [], [
+  AC_MSG_ERROR([missing required OpenSSL header])
+])
+AC_CHECK_HEADERS([openssl/dsa.h], [], [
+  AC_MSG_ERROR([missing required OpenSSL header])
+])
+
+AC_CHECK_LIB(crypto, EVP_DigestInit_ex, [], [
+  AC_MSG_ERROR([required OpenSSL library 'libcrypto' missing or too old])
+])
+
+AC_CHECK_LIB(crypto, EVP_MD_CTX_new, [
+    AC_DEFINE(HAVE_EVP_MD_CTX_NEW, 1, [Define to 1 if OpenSSL has EVP_MD_CTX_new])
+    AC_SUBST(HAVE_EVP_MD_CTX_NEW, [1])
+  ], [
+  AC_CHECK_LIB(crypt, EVP_MD_CTX_create, [], [
+      AC_MSG_ERROR([required OpenSSL library 'libcrypto' missing or too old])
+  ])
+])
+
+AC_CHECK_LIB(crypto, EVP_PKEY_CTX_new, [], [
+  AC_MSG_ERROR([required OpenSSL library 'libcrypto' missing or too old])
+])
+
+AC_CHECK_LIB(crypto, DSA_set0_key, [
+    AC_DEFINE(HAVE_DSA_SET0_KEY, 1, [Define to 1 if OpenSSL has DSA_set0_key])
+    AC_SUBST(HAVE_DSA_SET0_KEY, [1])
+    ], []
+)
+
+AC_CHECK_LIB(crypto, DSA_set0_pqg, [
+    AC_DEFINE(HAVE_DSA_SET0_PQG, 1, [Define to 1 if OpenSSL has DSA_set0_pqg])
+    AC_SUBST(HAVE_DSA_SET0_PQG, [1])
+    ], []
+)
+
+AC_CHECK_LIB(crypto, DSA_SIG_set0, [
+    AC_DEFINE(HAVE_DSA_SIG_SET0, 1, [Define to 1 if OpenSSL has DSA_SIG_set0])
+    AC_SUBST(HAVE_DSA_SIG_SET0, [1])
+    ], []
+)
+
+AC_CHECK_LIB(crypto, RSA_set0_key, [
+    AC_DEFINE(HAVE_RSA_SET0_KEY, 1, [Define to 1 if OpenSSL has RSA_set0_key])
+    AC_SUBST(HAVE_RSA_SET0_KEY, [1])
+    ], []
+)
+
+AC_CHECK_LIB(crypto, BN_bn2binpad, [
+    AC_DEFINE(HAVE_BN2BINPAD, 1, [Define to 1 if OpenSSL has BN_bn2binpad])
+    AC_SUBST(HAVE_BN2BINPAD, [1])
+    ], []
+)
+
+fi
+
+AM_CONDITIONAL([WITH_OPENSSL],[test "$with_crypto" = openssl])
+AC_SUBST(WITH_OPENSSL_INCLUDE)
+AC_SUBST(WITH_OPENSSL_LIB)
+
+#=================
 # Check for NSS library.
-# We need nss.h from NSS which needs nspr.h. Unfortunately both glibc and NSS 
-# have a header named nss.h... so make extra check for NSS's sechash.h 
+# We need nss.h from NSS which needs nspr.h. Unfortunately both glibc and NSS
+# have a header named nss.h... so make extra check for NSS's sechash.h
 # which we use too and hopefully is slightly more unique to NSS.
 WITH_NSS_INCLUDE=
 WITH_NSS_LIB=
-if test "$with_beecrypt" != yes ; then
+if test "$with_crypto" = nss; then
 # If we have pkgconfig make sure CPPFLAGS are setup correctly for the nss
 # -I include path. Otherwise the below checks will fail because nspr.h
 # cannot be found.

@@ -9,16 +9,33 @@ The libmagic (aka file) library for file type detection (used by rpmbuild).
 The source for the file utility + library is available from
     ftp://ftp.astron.com/pub/file/
 
-The NSS >= 3.12 library for encryption, and NSPR library which NSS uses. 
-Both NSPR and NSS libraries and headers need to be installed during RPM
-compilation. As NSPR and NSS typically install their headers outside
-the regular include search path, you need to tell configure about this,
-eg something like:
+You will need a cryptographic library to support digests and signatures.
+This library may be Mozilla NSS, OpenSSL or beecrypt. Which library to use
+must be specified with the --with-crypto=[beecrypt|nss|openssl] argument
+to configure.
+
+If using the Mozilla NSS library for encyption (and NSPR library which
+NSS uses) it must be version 3.12 or later. Both NSPR and NSS libraries and
+headers need to be installed during RPM compilation. As NSPR and NSS
+typically install their headers outside the regular include search path,
+you need to tell configure about this, eg something like:
     ./configure <......> CPPFLAGS="-I/usr/include/nspr -I/usr/include/nss"
 
 The NSPR and NSS libraries are available from 
     http://www.mozilla.org/projects/security/pki/nss/
     http://www.mozilla.org/projects/nspr/
+
+If using the OpenSSL library for encryption, it must be version 1.0.2 or
+later. Note: when compiling against OpenSSL, there is a possible license
+incompatibility. For more details on this, see
+https://people.gnome.org/~markmc/openssl-and-the-gpl.html
+Some Linux distributions have different legal interpretations of this
+possible incompatibility. It is recommended to consult with a lawyer before
+building RPM against OpenSSL.
+Fedora: https://fedoraproject.org/wiki/Licensing:FAQ#What.27s_the_deal_with_the_OpenSSL_license.3F
+Debian: https://lists.debian.org/debian-legal/2002/10/msg00113.html
+
+The OpenSSL crypto library is available from https://www.openssl.org/
 
 The Berkeley DB >= 4.3.x (4.5.x or newer recommended) is required for the
 default database backend. BDB can be downloaded from
