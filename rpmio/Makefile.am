@@ -6,6 +6,7 @@ AM_CFLAGS = @RPMCFLAGS@
 AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/
 AM_CPPFLAGS += @WITH_NSS_INCLUDE@
 AM_CPPFLAGS += @WITH_BEECRYPT_INCLUDE@
+AM_CPPFLAGS += @WITH_OPENSSL_INCLUDE@
 AM_CPPFLAGS += @WITH_POPT_INCLUDE@
 AM_CPPFLAGS += -I$(top_srcdir)/misc
 AM_CPPFLAGS += -DRPMCONFIGDIR="\"@RPMCONFIGDIR@\""
@@ -24,7 +25,11 @@ librpmio_la_SOURCES = \
 if WITH_BEECRYPT
 librpmio_la_SOURCES += digest_beecrypt.c
 else
+if WITH_OPENSSL
+librpmio_la_SOURCES += digest_openssl.c
+else
 librpmio_la_SOURCES += digest_nss.c
+endif
 endif
 
 
@@ -33,6 +38,7 @@ librpmio_la_LIBADD = \
 	../misc/libmisc.la \
 	@WITH_NSS_LIB@ \
 	@WITH_BEECRYPT_LIB@ \
+	@WITH_OPENSSL_LIB@ \
 	@WITH_BZ2_LIB@ \
 	@WITH_ZLIB_LIB@ \
 	@WITH_LIBELF_LIB@ \
