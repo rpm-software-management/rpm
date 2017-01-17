@@ -62,6 +62,8 @@ RPM_GNUC_INTERNAL
 void rpmRelocationBuild(Header h, rpmRelocation *rawrelocs,
 		int *rnrelocs, rpmRelocation **rrelocs, uint8_t **rbadrelocs);
 
+RPM_GNUC_INTERNAL
+void rpmAtExit(void);
 #ifdef __cplusplus
 }
 #endif

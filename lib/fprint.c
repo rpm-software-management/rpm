@@ -6,7 +6,7 @@
 
 #include <rpm/rpmfileutil.h>	/* for rpmCleanPath */
 #include <rpm/rpmts.h>
-#include <rpm/rpmdb.h>
+#include <rpm/rpmsq.h>
 
 #include "lib/rpmdb_internal.h"
 #include "lib/rpmfi_internal.h"
@@ -485,7 +485,7 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	fingerPrint *fpList;
-	(void) rpmdbCheckSignals();
+	(void) rpmsqPoll();
 
 	if ((fi = rpmteFiles(p)) == NULL)
 	    continue;	/* XXX can't happen */
@@ -520,7 +520,7 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	(void) rpmdbCheckSignals();
+	(void) rpmsqPoll();
 
 	fs = rpmteGetFileStates(p);
 	fc = rpmfsFC(fs);

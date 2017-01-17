@@ -8,114 +8,192 @@
 #include <sys/signal.h>
 #include <errno.h>
 #include <stdio.h>
-
-#define	ADD_REF(__tbl)	(__tbl)->active++
-#define	SUB_REF(__tbl)	--(__tbl)->active
+#include <stdlib.h>
+#include <string.h>
 
 #include <rpm/rpmsq.h>
+#include <rpm/rpmlog.h>
 
 #include "debug.h"
 
-static int disableInterruptSafety;
-static sigset_t rpmsqCaught;
+static __thread int disableInterruptSafety;
+static __thread sigset_t rpmsqCaught;
+static __thread sigset_t rpmsqActive;
 
 typedef struct rpmsig_s * rpmsig;
 
+static void rpmsqTerm(int signum, siginfo_t *info, void *context)
+{
+    if (info->si_pid == 0) {
+	rpmlog(RPMLOG_DEBUG,
+		"exiting on signal %d (killed by death, eh?)\n", signum);
+    } else {
+	rpmlog(RPMLOG_WARNING,
+		_("exiting on signal %d from pid %d\n"), signum, info->si_pid);
+    }
+    exit(EXIT_FAILURE);
+}
+
 static struct rpmsig_s {
     int signum;
+    rpmsqAction_t defhandler;
     rpmsqAction_t handler;
-    int active;
+    siginfo_t siginfo;
     struct sigaction oact;
 } rpmsigTbl[] = {
-    { SIGINT,	rpmsqAction },
-#define	rpmsigTbl_sigint	(&rpmsigTbl[0])
-    { SIGQUIT,	rpmsqAction },
-#define	rpmsigTbl_sigquit	(&rpmsigTbl[1])
-    { SIGHUP,	rpmsqAction },
-#define	rpmsigTbl_sighup	(&rpmsigTbl[3])
-    { SIGTERM,	rpmsqAction },
-#define	rpmsigTbl_sigterm	(&rpmsigTbl[4])
-    { SIGPIPE,	rpmsqAction },
-#define	rpmsigTbl_sigpipe	(&rpmsigTbl[5])
-    { -1,	NULL },
+    { SIGINT,	rpmsqTerm,	NULL },
+    { SIGQUIT,	rpmsqTerm,	NULL },
+    { SIGHUP,	rpmsqTerm,	NULL },
+    { SIGTERM,	rpmsqTerm,	NULL },
+    { SIGPIPE,	rpmsqTerm,	NULL },
+    { -1,	NULL,		NULL },
 };
+
+static int rpmsigGet(int signum, struct rpmsig_s **sig)
+{
+    for (rpmsig tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
+	if (tbl->signum == signum) {
+	    *sig = tbl;
+	    return 1;
+	}
+    }
+    return 0;
+}
 
 int rpmsqIsCaught(int signum)
 {
     return sigismember(&rpmsqCaught, signum);
 }
 
-#ifdef SA_SIGINFO
-void rpmsqAction(int signum, siginfo_t * info, void * context)
-#else
-void rpmsqAction(int signum)
-#endif
+static void rpmsqHandler(int signum, siginfo_t * info, void * context)
 {
     int save = errno;
-    rpmsig tbl;
 
-    for (tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
-	if (tbl->signum != signum)
-	    continue;
-
-	(void) sigaddset(&rpmsqCaught, signum);
-	break;
+    if (sigismember(&rpmsqActive, signum)) {
+	if (!sigismember(&rpmsqCaught, signum)) {
+	    rpmsig sig = NULL;
+	    (void) sigaddset(&rpmsqCaught, signum);
+	    if (rpmsigGet(signum, &sig))
+		memcpy(&sig->siginfo, info, sizeof(*info));
+	}
     }
+
     errno = save;
 }
 
-int rpmsqEnable(int signum, rpmsqAction_t handler)
+rpmsqAction_t rpmsqSetAction(int signum, rpmsqAction_t handler)
 {
-    int tblsignum = (signum >= 0 ? signum : -signum);
-    struct sigaction sa;
-    rpmsig tbl;
-    int ret = -1;
+    rpmsig sig = NULL;
+    rpmsqAction_t oh = NULL;
+
+    if (rpmsigGet(signum, &sig)) {
+	oh = sig->handler;
+	sig->handler = handler;
+    }
+    return oh;
+}
+
+int rpmsqActivate(int state)
+{
+    sigset_t newMask, oldMask;
 
     if (disableInterruptSafety)
       return 0;
 
-    for (tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
-	if (tblsignum != tbl->signum)
-	    continue;
+    (void) sigfillset(&newMask);
+    (void) pthread_sigmask(SIG_BLOCK, &newMask, &oldMask);
 
-	if (signum >= 0) {			/* Enable. */
-	    if (ADD_REF(tbl) <= 0) {
-		(void) sigdelset(&rpmsqCaught, tbl->signum);
+    if (state) {
+	struct sigaction sa;
+	for (rpmsig tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
+	    sigdelset(&rpmsqCaught, tbl->signum);
+	    memset(&tbl->siginfo, 0, sizeof(tbl->siginfo));
 
-		/* XXX Don't set a signal handler if already SIG_IGN */
-		(void) sigaction(tbl->signum, NULL, &tbl->oact);
-		if (tbl->oact.sa_handler == SIG_IGN)
-		    continue;
+	    /* XXX Don't set a signal handler if already SIG_IGN */
+	    sigaction(tbl->signum, NULL, &tbl->oact);
+	    if (tbl->oact.sa_handler == SIG_IGN)
+		continue;
 
-		(void) sigemptyset (&sa.sa_mask);
-#ifdef SA_SIGINFO
-		sa.sa_flags = SA_SIGINFO;
-#else
-		sa.sa_flags = 0;
-#endif
-		sa.sa_sigaction = (handler != NULL ? handler : tbl->handler);
-		if (sigaction(tbl->signum, &sa, &tbl->oact) < 0) {
-		    SUB_REF(tbl);
-		    break;
-		}
-		tbl->active = 1;		/* XXX just in case */
-		if (handler != NULL)
-		    tbl->handler = handler;
-	    }
-	} else {				/* Disable. */
-	    if (SUB_REF(tbl) <= 0) {
-		if (sigaction(tbl->signum, &tbl->oact, NULL) < 0)
-		    break;
-		tbl->active = 0;		/* XXX just in case */
-		tbl->handler = (handler != NULL ? handler : rpmsqAction);
+	    sigemptyset (&sa.sa_mask);
+	    sa.sa_flags = SA_SIGINFO;
+	    sa.sa_sigaction = rpmsqHandler;
+	    if (sigaction(tbl->signum, &sa, &tbl->oact) == 0)
+		sigaddset(&rpmsqActive, tbl->signum);
+	}
+    } else {
+	for (rpmsig tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
+	    if (!sigismember(&rpmsqActive, tbl->signum))
+		continue;
+	    if (sigaction(tbl->signum, &tbl->oact, NULL) == 0) {
+		sigdelset(&rpmsqActive, tbl->signum);
+		sigdelset(&rpmsqCaught, tbl->signum);
+		memset(&tbl->siginfo, 0, sizeof(tbl->siginfo));
 	    }
 	}
-	ret = tbl->active;
-	break;
     }
-    return ret;
+    pthread_sigmask(SIG_SETMASK, &oldMask, NULL);
+    return 0;
 }
 
+int rpmsqPoll(void)
+{
+    sigset_t newMask, oldMask;
+    int n = 0;
+
+    /* block all signals while processing the queue */
+    (void) sigfillset(&newMask);
+    (void) pthread_sigmask(SIG_BLOCK, &newMask, &oldMask);
+
+    for (rpmsig tbl = rpmsigTbl; tbl->signum >= 0; tbl++) {
+	/* honor blocked signals in polling too */
+	if (sigismember(&oldMask, tbl->signum))
+	    continue;
+	if (sigismember(&rpmsqCaught, tbl->signum)) {
+	    rpmsqAction_t handler = (tbl->handler != NULL) ? tbl->handler :
+							     tbl->defhandler;
+	    /* delete signal before running handler to prevent recursing */
+	    sigdelset(&rpmsqCaught, tbl->signum);
+	    handler(tbl->signum, &tbl->siginfo, NULL);
+	    memset(&tbl->siginfo, 0, sizeof(tbl->siginfo));
+	    n++;
+	}
+    }
+    pthread_sigmask(SIG_SETMASK, &oldMask, NULL);
+    return n;
+}
+
+int rpmsqBlock(int op)
+{
+    static __thread sigset_t oldMask;
+    static __thread int blocked = 0;
+    sigset_t newMask;
+    int ret = 0;
+
+    if (op == SIG_BLOCK) {
+	blocked++;
+	if (blocked == 1) {
+	    sigfillset(&newMask);
+	    sigdelset(&newMask, SIGABRT);
+	    sigdelset(&newMask, SIGBUS);
+	    sigdelset(&newMask, SIGFPE);
+	    sigdelset(&newMask, SIGILL);
+	    sigdelset(&newMask, SIGSEGV);
+	    sigdelset(&newMask, SIGTSTP);
+	    ret = pthread_sigmask(SIG_BLOCK, &newMask, &oldMask);
+	}
+    } else if (op == SIG_UNBLOCK) {
+	blocked--;
+	if (blocked == 0) {
+	    ret = pthread_sigmask(SIG_SETMASK, &oldMask, NULL);
+	    rpmsqPoll();
+	} else if (blocked < 0) {
+	    blocked = 0;
+	    ret = -1;
+	}
+    }
+
+    return ret;
+}
 
 /** \ingroup rpmio
  * 

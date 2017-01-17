@@ -172,7 +172,7 @@
 #	the script.  See the script for details.
 #
 %__debug_install_post   \
-   %{_rpmconfigdir}/find-debuginfo.sh %{?_smp_mflags} %{?_missing_build_ids_terminate_build:--strict-build-id} %{?_include_minidebuginfo:-m} %{?_include_gdb_index:-i} %{?_unique_build_ids:--ver-rel "%{version}-%{release}"} %{?_unique_debug_names:--unique-debug-arch "%{_arch}"} %{?_find_debuginfo_dwz_opts} %{?_find_debuginfo_opts} "%{_builddir}/%{?buildsubdir}"\
+   %{_rpmconfigdir}/find-debuginfo.sh %{?_smp_mflags} %{?_missing_build_ids_terminate_build:--strict-build-id} %{?_include_minidebuginfo:-m} %{?_include_gdb_index:-i} %{?_unique_build_ids:--ver-rel "%{VERSION}-%{RELEASE}"} %{?_unique_debug_names:--unique-debug-arch "%{_arch}"} %{?_find_debuginfo_dwz_opts} %{?_find_debuginfo_opts} "%{_builddir}/%{?buildsubdir}"\
 %{nil}
 
 #	Template for debug information sub-package.
@@ -232,7 +232,7 @@ package or when debugging this package.\
 %_buildrootdir		%{_topdir}/BUILDROOT
 
 #	Build root path, where %install installs the package during build.
-%buildroot		%{_buildrootdir}/%{name}-%{version}-%{release}.%{_arch}
+%buildroot		%{_buildrootdir}/%{NAME}-%{VERSION}-%{RELEASE}.%{_arch}
 
 #	Directory where temporaray files can be created.
 %_tmppath		%{_var}/tmp
@@ -484,7 +484,7 @@ package or when debugging this package.\
 
 # Whether build-ids should be made unique between package version/releases
 # when generating debuginfo packages. If set to 1 this will pass
-# --ver-rel "%{version}-%{release}" to find-debuginfo.sh which will pass it
+# --ver-rel "%{VERSION}-%{RELEASE}" to find-debuginfo.sh which will pass it
 # onto debugedit --build-id-seed to be used to prime the build-id note hash.
 %_unique_build_ids	1
 
@@ -706,9 +706,9 @@ package or when debugging this package.\
   export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS\
   RPM_DOC_DIR=\"%{_docdir}\"\
   export RPM_DOC_DIR\
-  RPM_PACKAGE_NAME=\"%{name}\"\
-  RPM_PACKAGE_VERSION=\"%{version}\"\
-  RPM_PACKAGE_RELEASE=\"%{release}\"\
+  RPM_PACKAGE_NAME=\"%{NAME}\"\
+  RPM_PACKAGE_VERSION=\"%{VERSION}\"\
+  RPM_PACKAGE_RELEASE=\"%{RELEASE}\"\
   export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\
   LANG=C\
   export LANG\
@@ -1093,7 +1093,7 @@ package or when debugging this package.\
 %__scm_setup_hg(q)\
 %{__hg} init %{-q} .\
 %{__hg} add %{-q} .\
-%{__hg} commit %{-q} --user "%{__scm_author}" -m "%{name}-%{version} base"
+%{__hg} commit %{-q} --user "%{__scm_author}" -m "%{NAME}-%{VERSION} base"
 
 %__scm_apply_hg(qp:m:)\
 %{__hg} import - %{-p:-p%{-p*}} %{-q} -m %{-m*} --user "%{__scm_author}"
@@ -1105,7 +1105,7 @@ package or when debugging this package.\
 %{__git} config user.email "%{__scm_usermail}"\
 %{__git} add .\
 %{__git} commit %{-q} -a\\\
-	--author "%{__scm_author}" -m "%{name}-%{version} base"
+	--author "%{__scm_author}" -m "%{NAME}-%{VERSION} base"
 
 %__scm_apply_git(qp:m:)\
 %{__git} apply --index %{-p:-p%{-p*}} -\
@@ -1128,7 +1128,7 @@ package or when debugging this package.\
 %{__bzr} init %{-q}\
 %{__bzr} whoami --branch "%{__scm_author}"\
 %{__bzr} add .\
-%{__bzr} commit %{-q} -m "%{name}-%{version} base"
+%{__bzr} commit %{-q} -m "%{NAME}-%{VERSION} base"
 
 # bzr doesn't seem to have its own command to apply patches?
 %__scm_apply_bzr(qp:m:)\

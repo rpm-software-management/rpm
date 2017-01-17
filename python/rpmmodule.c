@@ -49,8 +49,7 @@ static PyObject * signalCaught(PyObject *self, PyObject *o)
 
 static PyObject * checkSignals(PyObject * self)
 {
-    rpmdbCheckSignals();
-    Py_RETURN_NONE;
+    return Py_BuildValue("i", rpmsqPoll());
 }
 
 static PyObject * setLogFile (PyObject * self, PyObject *arg)
@@ -208,14 +207,6 @@ static PyMethodDef rpmModuleMethods[] = {
     { NULL }
 } ;
 
-/*
-* Force clean up of open iterators and dbs on exit.
-*/
-static void rpm_exithook(void)
-{
-   rpmdbCheckTerminate(1);
-}
-
 static char rpm__doc__[] = "";
 
 /*
@@ -326,13 +317,6 @@ void init_rpm(void)
 static int initModule(PyObject *m)
 {
     PyObject * d;
-
-    /* 
-     * treat error to register rpm cleanup hook as fatal, tracebacks
-     * can and will leave stale locks around if we can't clean up
-     */
-    if (Py_AtExit(rpm_exithook) == -1)
-        return 0;
 
     /* failure to initialize rpm (crypto and all) is rather fatal too... */
     if (rpmReadConfigFiles(NULL, NULL) == -1)
@@ -453,6 +437,7 @@ static int initModule(PyObject *m)
     REGISTER_ENUM(RPMSENSE_TRIGGERPREIN);
     REGISTER_ENUM(RPMSENSE_KEYRING);
     REGISTER_ENUM(RPMSENSE_CONFIG);
+    REGISTER_ENUM(RPMSENSE_MISSINGOK);
 
     REGISTER_ENUM(RPMTRANS_FLAG_TEST);
     REGISTER_ENUM(RPMTRANS_FLAG_BUILD_PROBS);
@@ -583,6 +568,20 @@ static int initModule(PyObject *m)
     REGISTER_ENUM(HEADERCONV_EXPANDFILELIST);
     REGISTER_ENUM(HEADERCONV_COMPRESSFILELIST);
     REGISTER_ENUM(HEADERCONV_RETROFIT_V3);
+
+    REGISTER_ENUM(RPMVERIFY_NONE);
+    REGISTER_ENUM(RPMVERIFY_FILEDIGEST);
+    REGISTER_ENUM(RPMVERIFY_FILESIZE);
+    REGISTER_ENUM(RPMVERIFY_LINKTO);
+    REGISTER_ENUM(RPMVERIFY_USER);
+    REGISTER_ENUM(RPMVERIFY_GROUP);
+    REGISTER_ENUM(RPMVERIFY_MTIME);
+    REGISTER_ENUM(RPMVERIFY_MODE);
+    REGISTER_ENUM(RPMVERIFY_RDEV);
+    REGISTER_ENUM(RPMVERIFY_CAPS);
+    REGISTER_ENUM(RPMVERIFY_READLINKFAIL);
+    REGISTER_ENUM(RPMVERIFY_READFAIL);
+    REGISTER_ENUM(RPMVERIFY_LSTATFAIL);
 
     return 1;
 }

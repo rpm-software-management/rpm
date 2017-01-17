@@ -58,7 +58,7 @@ RPM_GNUC_INTERNAL
 FD_t rpmtePayload(rpmte te);
 
 RPM_GNUC_INTERNAL
-int rpmteProcess(rpmte te, pkgGoal goal);
+int rpmteProcess(rpmte te, pkgGoal goal, int num);
 
 RPM_GNUC_INTERNAL
 void rpmteAddProblem(rpmte te, rpmProblemType type,

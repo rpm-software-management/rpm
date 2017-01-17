@@ -36,7 +36,6 @@ lib/fprint.c
 lib/fsm.c
 lib/header.c
 lib/headerfmt.c
-lib/legacy.c
 lib/manifest.c
 lib/order.c
 lib/package.c

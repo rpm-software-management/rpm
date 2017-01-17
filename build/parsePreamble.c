@@ -603,6 +603,15 @@ if (multiToken) { \
     return RPMRC_FAIL; \
 }
 
+static void specLog(rpmSpec spec, int lvl, const char *line, const char *msg)
+{
+    if (spec) {
+	rpmlog(lvl, _("line %d: %s in: %s\n"), spec->lineNum, msg, spec->line);
+    } else {
+	rpmlog(lvl, _("%s in: %s\n"), msg, line);
+    }
+}
+
 /**
  * Check for inappropriate characters. All alphanums are considered sane.
  * @param spec		spec (or NULL)
@@ -621,17 +630,20 @@ rpmRC rpmCharCheck(rpmSpec spec, const char *field, const char *whitelist)
 	rasprintf(&err, _("Illegal char '%c' (0x%x)"),
 		  isprint(*ch) ? *ch : '?', *ch);
     }
+    for (ch=field; *ch; ch++) {
+	if (strchr("%{}", *ch)) {
+	    specLog(spec, RPMLOG_WARNING, field,
+		    _("Possible unexpanded macro"));
+	    break;
+	}
+    }
+
     if (err == NULL && strstr(field, "..") != NULL) {
 	rasprintf(&err, _("Illegal sequence \"..\""));
     }
 
     if (err) {
-	if (spec) {
-	    rpmlog(RPMLOG_ERR, _("line %d: %s in: %s\n"),
-		   spec->lineNum, err, spec->line);
-	} else {
-	    rpmlog(RPMLOG_ERR, _("%s in: %s\n"), err, field);
-	}
+	specLog(spec, RPMLOG_ERR, field, err);
 	free(err);
 	rc = RPMRC_FAIL;
     }
@@ -916,8 +928,17 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	goto exit;
     }
 
-    if (macro)
+    if (macro) {
 	rpmPushMacro(spec->macros, macro, NULL, field, RMIL_SPEC);
+	/* Add a separate uppercase macro for tags from the main package */
+	if (pkg == spec->packages) {
+	    char *m = xstrdup(macro);
+	    for (char *p = m; *p; ++p)
+		*p = rtoupper(*p);
+	    rpmPushMacro(spec->macros, m, NULL, field, RMIL_SPEC);
+	    free(m);
+	}
+    }
     rc = RPMRC_OK;
 exit:
     return rc;	
@@ -1071,7 +1092,6 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	    goto exit;
 	
 	if (!lookupPackage(spec, name, flag, NULL)) {
-	    rpmlog(RPMLOG_ERR, _("Package already exists: %s\n"), spec->line);
 	    free(name);
 	    goto exit;
 	}

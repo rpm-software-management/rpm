@@ -27,6 +27,7 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
     rpm_tagtype_t tagtype = 0;
     rpm_count_t tagsize = 0;
     pgpDigParams sig = NULL;
+    int hexstring = 0;
 
     memset(sinfo, 0, sizeof(*sinfo));
     switch (td->tag) {
@@ -43,6 +44,7 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
     case RPMSIGTAG_SHA1:
 	tagsize = 41; /* includes trailing \0 */
 	tagtype = RPM_STRING_TYPE;
+	hexstring = 1;
 	sinfo->hashalgo = PGPHASHALGO_SHA1;
 	sinfo->type = RPMSIG_DIGEST_TYPE;
 	break;
@@ -74,16 +76,28 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
 	break;
     }
 
+    if (tagtype && tagtype != td->type) {
+	rasprintf(msg, _("%s tag %u: BAD, invalid type %u"),
+			origin, td->tag, td->type);
+	goto exit;
+    }
+
+    if (td->type == RPM_STRING_TYPE && td->size == 0)
+	td->size = strlen(td->data) + 1;
+
     if (tagsize && (td->flags & RPMTD_IMMUTABLE) && tagsize != td->size) {
 	rasprintf(msg, _("%s tag %u: BAD, invalid size %u"),
 			origin, td->tag, td->size);
 	goto exit;
     }
 
-    if (tagtype && tagtype != td->type) {
-	rasprintf(msg, _("%s tag %u: BAD, invalid type %u"),
-			origin, td->tag, td->type);
-	goto exit;
+    if (hexstring) {
+	for (const char * b = td->data; *b != '\0'; b++) {
+	    if (strchr("0123456789abcdefABCDEF", *b) == NULL) {
+		rasprintf(msg, _("%s: tag %u: BAD, not hex"), origin, td->tag);
+		goto exit;
+	    }
+	}
     }
 
     if (sinfo->type == RPMSIG_SIGNATURE_TYPE) {
@@ -106,149 +120,65 @@ exit:
 }
 
 /**
- * Print package size.
- * @todo rpmio: use fdSize rather than fstat(2) to get file size.
+ * Print package size (debug purposes only)
  * @param fd			package file handle
- * @param siglen		signature header size
- * @param pad			signature padding
- * @param datalen		length of header+payload
- * @return 			rpmRC return code
+ * @param sigh			signature header
  */
-static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, rpm_loff_t datalen)
+static void printSize(FD_t fd, Header sigh)
 {
     struct stat st;
     int fdno = Fileno(fd);
+    size_t siglen = headerSizeof(sigh, HEADER_MAGIC_YES);
+    size_t pad = (8 - (siglen % 8)) % 8; /* 8-byte pad */
+    struct rpmtd_s sizetag;
+    rpm_loff_t datalen = 0;
 
-    if (fstat(fdno, &st) < 0)
-	return RPMRC_FAIL;
+    /* Print package component sizes. */
+    if (headerGet(sigh, RPMSIGTAG_LONGSIZE, &sizetag, HEADERGET_DEFAULT)) {
+	rpm_loff_t *tsize = rpmtdGetUint64(&sizetag);
+	datalen = (tsize) ? *tsize : 0;
+    } else if (headerGet(sigh, RPMSIGTAG_SIZE, &sizetag, HEADERGET_DEFAULT)) {
+	rpm_off_t *tsize = rpmtdGetUint32(&sizetag);
+	datalen = (tsize) ? *tsize : 0;
+    }
+    rpmtdFreeData(&sizetag);
 
     rpmlog(RPMLOG_DEBUG,
 		"Expected size: %12" PRIu64 \
 		" = lead(%d)+sigs(%zd)+pad(%zd)+data(%" PRIu64 ")\n",
 		RPMLEAD_SIZE+siglen+pad+datalen,
 		RPMLEAD_SIZE, siglen, pad, datalen);
-    rpmlog(RPMLOG_DEBUG,
-		"  Actual size: %12" PRIu64 "\n", (rpm_loff_t) st.st_size);
 
-    return RPMRC_OK;
+    if (fstat(fdno, &st) == 0) {
+	rpmlog(RPMLOG_DEBUG,
+		"  Actual size: %12" PRIu64 "\n", (rpm_loff_t) st.st_size);
+    }
 }
 
 rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
 {
     char *buf = NULL;
-    int32_t block[4];
-    int32_t il;
-    int32_t dl;
-    int32_t * ei = NULL;
-    entryInfo pe;
-    unsigned int nb, uc;
-    unsigned char * dataStart;
+    struct hdrblob_s blob;
     Header sigh = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
-    int xx;
-    int i;
 
     if (sighp)
 	*sighp = NULL;
 
-    memset(block, 0, sizeof(block));
-    if ((xx = Freadall(fd, block, sizeof(block))) != sizeof(block)) {
-	rasprintf(&buf, _("sigh size(%d): BAD, read returned %d"), 
-		  (int)sizeof(block), xx);
+    if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERSIGNATURES, &blob, &buf) != RPMRC_OK)
 	goto exit;
-    }
-    if (memcmp(block, rpm_header_magic, sizeof(rpm_header_magic))) {
-	rasprintf(&buf, _("sigh magic: BAD"));
-	goto exit;
-    }
-    il = ntohl(block[2]);
-    if (il < 0 || il > 32) {
-	rasprintf(&buf, 
-		  _("sigh tags: BAD, no. of tags(%d) out of range"), il);
-	goto exit;
-    }
-    dl = ntohl(block[3]);
-    if (dl < 0 || dl > 8192) {
-	rasprintf(&buf, 
-		  _("sigh data: BAD, no. of  bytes(%d) out of range"), dl);
-	goto exit;
-    }
-
-    nb = (il * sizeof(struct entryInfo_s)) + dl;
-    uc = sizeof(il) + sizeof(dl) + nb;
-    ei = xmalloc(uc);
-    ei[0] = block[2];
-    ei[1] = block[3];
-    pe = (entryInfo) &ei[2];
-    dataStart = (unsigned char *) (pe + il);
-    if ((xx = Freadall(fd, pe, nb)) != nb) {
-	rasprintf(&buf,
-		  _("sigh blob(%d): BAD, read returned %d"), (int)nb, xx);
-	goto exit;
-    }
     
-    /* Verify header immutable region if there is one */
-    xx = headerVerifyRegion(RPMTAG_HEADERSIGNATURES, il, dl, pe, dataStart,
-			    1, NULL, NULL, &buf);
-    /* Not found means a legacy V3 package with no immutable region */
-    if (xx != RPMRC_OK && xx != RPMRC_NOTFOUND)
-	goto exit;
-
-    /* Sanity check signature tags */
-    for (i = 1; i < il; i++) {
-	struct entryInfo_s info;
-	xx = headerVerifyInfo(1, dl, pe+i, &info, 0);
-	if (xx != -1) {
-	    rasprintf(&buf, 
-		_("sigh tag[%d]: BAD, tag %d type %d offset %d count %d"),
-		i, info.tag, info.type, info.offset, info.count);
-	    goto exit;
-	}
-    }
-
     /* OK, blob looks sane, load the header. */
-    sigh = headerImport(ei, uc, 0);
-    if (sigh == NULL) {
-	rasprintf(&buf, _("sigh load: BAD"));
+    if (hdrblobImport(&blob, 0, &sigh, &buf) != RPMRC_OK)
 	goto exit;
-    }
-    ei = NULL; /* XXX will be freed with header */
 
-    {	size_t sigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
-	size_t pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
-	ssize_t trc;
-	struct rpmtd_s sizetag;
-	rpm_loff_t archSize = 0;
-
-	/* Position at beginning of header. */
-	if (pad && (trc = Freadall(fd, block, pad)) != pad) {
-	    rasprintf(&buf,
-		      _("sigh pad(%zd): BAD, read %zd bytes"), pad, trc);
-	    goto exit;
-	}
-
-	/* Print package component sizes. */
-	if (headerGet(sigh, RPMSIGTAG_LONGSIZE, &sizetag, HEADERGET_DEFAULT)) {
-	    rpm_loff_t *tsize = rpmtdGetUint64(&sizetag);
-	    archSize = (tsize) ? *tsize : 0;
-	} else if (headerGet(sigh, RPMSIGTAG_SIZE, &sizetag, HEADERGET_DEFAULT)) {
-	    rpm_off_t *tsize = rpmtdGetUint32(&sizetag);
-	    archSize = (tsize) ? *tsize : 0;
-	}
-	rpmtdFreeData(&sizetag);
-	rc = printSize(fd, sigSize, pad, archSize);
-	if (rc != RPMRC_OK) {
-	    rasprintf(&buf,
-		   _("sigh sigSize(%zd): BAD, fstat(2) failed"), sigSize);
-	    goto exit;
-	}
-    }
+    printSize(fd, sigh);
+    rc = RPMRC_OK;
 
 exit:
     if (sighp && sigh && rc == RPMRC_OK)
 	*sighp = headerLink(sigh);
     headerFree(sigh);
-    free(ei);
 
     if (msg != NULL) {
 	*msg = buf;
@@ -286,7 +216,8 @@ rpmRC rpmGenerateSignature(char *SHA1, uint8_t *MD5, rpm_loff_t size,
     struct rpmtd_s td;
     rpmRC rc = RPMRC_OK;
     char *reservedSpace;
-    int spaceSize = 0;
+    int spaceSize = 32; /* always reserve a bit of space */
+    int gpgSize = rpmExpandNumeric("%{__gpg_reserved_space}");
 
     /* Prepare signature */
     rpmtdReset(&td);
@@ -329,9 +260,14 @@ rpmRC rpmGenerateSignature(char *SHA1, uint8_t *MD5, rpm_loff_t size,
 	td.tag = RPMSIGTAG_LONGSIZE;
 	td.data = &s;
 	headerPut(sig, &td, HEADERPUT_DEFAULT);
+
+	/* adjust for the size difference between 64- and 32bit tags */
+	spaceSize -= 8;
     }
 
-    spaceSize = rpmExpandNumeric("%{__gpg_reserved_space}");
+    if (gpgSize > 0)
+	spaceSize += gpgSize;
+
     if(spaceSize > 0) {
 	reservedSpace = xcalloc(spaceSize, sizeof(char));
 	rpmtdReset(&td);

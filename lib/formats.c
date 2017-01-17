@@ -295,14 +295,14 @@ static char * xmlFormat(rpmtd td, char **emsg)
     const char *xtag = NULL;
     char *val = NULL;
     char *s = NULL;
-    rpmtdFormats fmt = RPMTD_FORMAT_STRING;
+    headerTagFormatFunction fmt = stringFormat;
 
     switch (rpmtdClass(td)) {
     case RPM_STRING_CLASS:
 	xtag = "string";
 	break;
     case RPM_BINARY_CLASS:
-	fmt = RPMTD_FORMAT_BASE64;
+	fmt = base64Format;
 	xtag = "base64";
 	break;
     case RPM_NUMERIC_CLASS:
@@ -315,8 +315,9 @@ static char * xmlFormat(rpmtd td, char **emsg)
 	break;
     }
 
-    /* XXX TODO: handle errors */
-    s = rpmtdFormat(td, fmt, NULL);
+    s = fmt(td, emsg);
+    if (s == NULL)
+	goto exit;
 
     if (s[0] == '\0') {
 	val = rstrscat(NULL, "\t<", xtag, "/>", NULL);

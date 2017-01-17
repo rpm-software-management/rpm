@@ -134,7 +134,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg);
 
 /**  \ingroup header
  * Return checked and loaded header.
- * @param ts		transaction set
+ * @param ts		unused
  * @param fd		file handle
  * @retval hdrp		address of header (or NULL)
  * @retval *msg		verification error message (or NULL)

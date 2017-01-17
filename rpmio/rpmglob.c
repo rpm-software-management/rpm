@@ -337,7 +337,7 @@ glob(const char *pattern, int flags,
 		user_name = dirname + 1;
 	    else {
 		char *newp;
-		newp = (char *) alloca(end_name - dirname);
+		newp = (char *) alloca(end_name - dirname + 1);
 		*((char *) mempcpy(newp, dirname + 1, end_name - dirname))
 		    = '\0';
 		user_name = newp;

@@ -86,6 +86,15 @@ rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
 	    break;
 	}
     }
+
+    if (p == NULL && pkg != NULL) {
+	rpmlog(RPMLOG_ERR, _("line %d: %s: package %s does not exist\n"),
+				spec->lineNum, spec->line, name);
+    } else if (p != NULL && pkg == NULL) {
+	rpmlog(RPMLOG_ERR, _("line %d: %s: package %s already exists\n"),
+				spec->lineNum, spec->line, name);
+    }
+
     if (fullName == name)
 	free(fullName);
 

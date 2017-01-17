@@ -3,7 +3,7 @@
 
 /** \ingroup rpmdb dbi
  * \file lib/rpmdb.h
- * Access RPM indices using Berkeley DB interface(s).
+ * RPM database API.
  */
 
 #include <rpm/rpmtypes.h>
@@ -144,21 +144,6 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
  * @return		NULL on end of iteration.
  */
 Header rpmdbNextIterator(rpmdbMatchIterator mi);
-
-/** \ingroup rpmdb
- * Check for and exit on termination signals.
- */
-int rpmdbCheckSignals(void);
-
-/** \ingroup rpmdb
- * Check rpmdb signal handler for trapped signal and/or requested exit,
- * clean up any open iterators and databases on termination condition.
- * On non-zero exit any open references to rpmdb are invalid and cannot
- * be accessed anymore, calling process should terminate immediately.
- * @param terminate	0 to only check for signals, 1 to terminate anyway
- * @return 		0 to continue, 1 if termination cleanup was done.
- */
-int rpmdbCheckTerminate(int terminate);
 
 /** \ingroup rpmdb
  * Destroy rpm database iterator.

@@ -33,6 +33,7 @@
 #include "lib/fprint.h"
 #include "lib/header_internal.h"	/* XXX for headerSetInstance() */
 #include "lib/backend/dbiset.h"
+#include "lib/misc.h"
 #include "debug.h"
 
 #undef HASHTYPE
@@ -310,84 +311,20 @@ static rpmdb rpmdbRock;
 static rpmdbMatchIterator rpmmiRock;
 static rpmdbIndexIterator rpmiiRock;
 
-int rpmdbCheckTerminate(int terminate)
+void rpmAtExit(void)
 {
-    sigset_t newMask, oldMask;
-    static int terminating = 0;
+    rpmdb db;
+    rpmdbMatchIterator mi;
+    rpmdbIndexIterator ii;
 
-    if (terminating) return terminating;
+    while ((mi = rpmmiRock) != NULL)
+	rpmdbFreeIterator(mi);
 
-    (void) sigfillset(&newMask);		/* block all signals */
-    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
+    while ((ii = rpmiiRock) != NULL)
+	rpmdbIndexIteratorFree(ii);
 
-    if (rpmsqIsCaught(SIGINT) > 0
-     || rpmsqIsCaught(SIGQUIT) > 0
-     || rpmsqIsCaught(SIGHUP) > 0
-     || rpmsqIsCaught(SIGTERM) > 0
-     || rpmsqIsCaught(SIGPIPE) > 0
-     || terminate)
-	terminating = 1;
-
-    if (terminating) {
-	rpmdb db;
-	rpmdbMatchIterator mi;
-	rpmdbIndexIterator ii;
-
-	while ((mi = rpmmiRock) != NULL) {
-	    rpmmiRock = mi->mi_next;
-	    mi->mi_next = NULL;
-	    rpmdbFreeIterator(mi);
-	}
-
-	while ((ii = rpmiiRock) != NULL) {
-	    rpmiiRock = ii->ii_next;
-	    ii->ii_next = NULL;
-	    rpmdbIndexIteratorFree(ii);
-	}
-
-	while ((db = rpmdbRock) != NULL) {
-	    rpmdbRock = db->db_next;
-	    db->db_next = NULL;
-	    (void) rpmdbClose(db);
-	}
-    }
-    sigprocmask(SIG_SETMASK, &oldMask, NULL);
-    return terminating;
-}
-
-int rpmdbCheckSignals(void)
-{
-    if (rpmdbCheckTerminate(0)) {
-	rpmlog(RPMLOG_DEBUG, "Exiting on signal...\n");
-	exit(EXIT_FAILURE);
-    }
-    return 0;
-}
-
-/**
- * Block all signals, returning previous signal mask.
- */
-static int blockSignals(sigset_t * oldMask)
-{
-    sigset_t newMask;
-
-    (void) sigfillset(&newMask);		/* block all signals */
-    (void) sigprocmask(SIG_BLOCK, &newMask, oldMask);
-    (void) sigdelset(&newMask, SIGINT);
-    (void) sigdelset(&newMask, SIGQUIT);
-    (void) sigdelset(&newMask, SIGHUP);
-    (void) sigdelset(&newMask, SIGTERM);
-    (void) sigdelset(&newMask, SIGPIPE);
-    return sigprocmask(SIG_BLOCK, &newMask, NULL);
-}
-
-/**
- * Restore signal mask.
- */
-static int unblockSignals(sigset_t * oldMask)
-{
-    (void) rpmdbCheckSignals();
-    return sigprocmask(SIG_SETMASK, oldMask, NULL);
+    while ((db = rpmdbRock) != NULL)
+	(void) rpmdbClose(db);
 }
 
 rpmop rpmdbOp(rpmdb rpmdb, rpmdbOpX opx)
@@ -488,11 +425,7 @@ int rpmdbClose(rpmdb db)
     db = _free(db);
 
     if (rpmdbRock == NULL) {
-	(void) rpmsqEnable(-SIGHUP, NULL);
-	(void) rpmsqEnable(-SIGINT, NULL);
-	(void) rpmsqEnable(-SIGTERM, NULL);
-	(void) rpmsqEnable(-SIGQUIT, NULL);
-	(void) rpmsqEnable(-SIGPIPE, NULL);
+	rpmsqActivate(0);
     }
 exit:
     return rc;
@@ -573,11 +506,7 @@ static int openDatabase(const char * prefix,
     rc = rpmioMkpath(rpmdbHome(db), 0755, getuid(), getgid());
     if (rc == 0) {
 	if (rpmdbRock == NULL) {
-	    (void) rpmsqEnable(SIGHUP, NULL);
-	    (void) rpmsqEnable(SIGINT, NULL);
-	    (void) rpmsqEnable(SIGTERM, NULL);
-	    (void) rpmsqEnable(SIGQUIT, NULL);
-	    (void) rpmsqEnable(SIGPIPE, NULL);
+	    rpmsqActivate(1);
 	}
 
 	/* Just the primary Packages database opened here */
@@ -1049,15 +978,13 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	}
 
 	if (hdrBlob != NULL && rpmrc != RPMRC_FAIL) {
-	    sigset_t signalMask;
-
-	    blockSignals(&signalMask);
+	    rpmsqBlock(SIG_BLOCK);
 	    dbCtrl(mi->mi_db, DB_CTRL_LOCK_RW);
 	    rc = pkgdbPut(dbi, mi->mi_dbc, mi->mi_prevoffset,
 			  hdrBlob, hdrLen);
 	    dbCtrl(mi->mi_db, DB_CTRL_INDEXSYNC);
 	    dbCtrl(mi->mi_db, DB_CTRL_UNLOCK_RW);
-	    unblockSignals(&signalMask);
+	    rpmsqBlock(SIG_UNBLOCK);
 
 	    if (rc) {
 		rpmlog(RPMLOG_ERR,
@@ -1114,7 +1041,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 
     mi = _free(mi);
 
-    (void) rpmdbCheckSignals();
+    (void) rpmsqPoll();
 
     return NULL;
 }
@@ -1840,7 +1767,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
     rpmdbMatchIterator mi = NULL;
 
     if (db != NULL) {
-	(void) rpmdbCheckSignals();
+	(void) rpmsqPoll();
 
 	if (rpmtag == RPMDBI_PACKAGES)
 	    mi = pkgdbIterInit(db, keyp, keylen);
@@ -1863,7 +1790,7 @@ rpmdbMatchIterator rpmdbInitPrefixIterator(rpmdb db, rpmDbiTagVal rpmtag,
 	return NULL;
 
     if (db != NULL && rpmtag != RPMDBI_PACKAGES) {
-	(void) rpmdbCheckSignals();
+	(void) rpmsqPoll();
 
 
 	if (indexOpen(db, dbtag, 0, &dbi) == 0) {
@@ -1949,7 +1876,7 @@ rpmdbIndexIterator rpmdbIndexIteratorInit(rpmdb db, rpmDbiTag rpmtag)
     if (db == NULL)
 	return NULL;
 
-    (void) rpmdbCheckSignals();
+    (void) rpmsqPoll();
 
     if (indexOpen(db, rpmtag, 0, &dbi))
 	return NULL;
@@ -2128,7 +2055,6 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
     dbiIndex dbi = NULL;
     dbiCursor dbc = NULL;
     Header h;
-    sigset_t signalMask;
     int ret = 0;
 
     if (db == NULL)
@@ -2149,7 +2075,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
     if (pkgdbOpen(db, 0, &dbi))
 	return 1;
 
-    (void) blockSignals(&signalMask);
+    rpmsqBlock(SIG_BLOCK);
     dbCtrl(db, DB_CTRL_LOCK_RW);
 
     /* Remove header from primary index */
@@ -2171,7 +2097,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 
     dbCtrl(db, DB_CTRL_INDEXSYNC);
     dbCtrl(db, DB_CTRL_UNLOCK_RW);
-    (void) unblockSignals(&signalMask);
+    rpmsqBlock(SIG_UNBLOCK);
 
     headerFree(h);
 
@@ -2379,7 +2305,6 @@ static rpmRC indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Heade
 
 int rpmdbAdd(rpmdb db, Header h)
 {
-    sigset_t signalMask;
     dbiIndex dbi = NULL;
     dbiCursor dbc = NULL;
     unsigned int hdrNum = 0;
@@ -2400,7 +2325,7 @@ int rpmdbAdd(rpmdb db, Header h)
     if (ret)
 	goto exit;
 	
-    (void) blockSignals(&signalMask);
+    rpmsqBlock(SIG_BLOCK);
     dbCtrl(db, DB_CTRL_LOCK_RW);
 
     /* Add header to primary index */
@@ -2424,7 +2349,7 @@ int rpmdbAdd(rpmdb db, Header h)
 
     dbCtrl(db, DB_CTRL_INDEXSYNC);
     dbCtrl(db, DB_CTRL_UNLOCK_RW);
-    (void) unblockSignals(&signalMask);
+    rpmsqBlock(SIG_UNBLOCK);
 
     /* If everything ok, mark header as installed now */
     if (ret == 0) {
@@ -2533,11 +2458,10 @@ static int rpmdbMoveDatabase(const char * prefix,
 			     const char * olddbpath, const char * newdbpath)
 {
     int rc = 0;
-    sigset_t sigMask;
     /* create a handle but dont actually open */
     rpmdb db = newRpmdb(prefix, newdbpath, O_RDONLY, 0644, RPMDB_FLAG_REBUILD);
 
-    blockSignals(&sigMask);
+    rpmsqBlock(SIG_BLOCK);
     rc = renameTag(prefix, olddbpath, newdbpath, rpmTagGetName(RPMDBI_PACKAGES));
     for (int i = 0; i < db->db_ndbi; i++) {
 	rc += renameTag(prefix, olddbpath, newdbpath, rpmTagGetName(db->db_tags[i]));
@@ -2551,7 +2475,7 @@ static int rpmdbMoveDatabase(const char * prefix,
     cleanDbenv(prefix, newdbpath);
     rpmdbClose(db);
 
-    unblockSignals(&sigMask);
+    rpmsqBlock(SIG_UNBLOCK);
 
     return rc;
 }

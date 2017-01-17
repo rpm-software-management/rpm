@@ -388,7 +388,7 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 			 pgpDigParams _digp)
 {
     const uint8_t *p = h;
-    size_t plen, i;
+    size_t plen = 0, i;
 
     while (hlen > 0) {
 	i = pgpLen(p, hlen, &plen);

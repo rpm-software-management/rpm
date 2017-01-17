@@ -53,25 +53,22 @@ static int cap_compare(cap_t acap, cap_t bcap)
 }
 #endif
 	
-int rpmVerifyFile(const rpmts ts, const rpmfi fi,
-		rpmVerifyAttrs * res, rpmVerifyAttrs omitMask)
+rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
 {
-    rpm_mode_t fmode = rpmfiFMode(fi);
-    rpmfileAttrs fileAttrs = rpmfiFFlags(fi);
-    rpmVerifyAttrs flags = rpmfiVFlags(fi);
-    const char * fn = rpmfiFN(fi);
+    rpm_mode_t fmode = rpmfilesFMode(fi, ix);
+    rpmfileAttrs fileAttrs = rpmfilesFFlags(fi, ix);
+    rpmVerifyAttrs flags = rpmfilesVFlags(fi, ix);
+    const char * fn = rpmfilesFN(fi, ix);
     struct stat sb;
-    int rc;
-
-    *res = RPMVERIFY_NONE;
+    rpmVerifyAttrs vfy = RPMVERIFY_NONE;
 
     /*
      * Check to see if the file was installed - if not pretend all is OK.
      */
-    switch (rpmfiFState(fi)) {
+    switch (rpmfilesFState(fi, ix)) {
     case RPMFILE_STATE_NETSHARED:
     case RPMFILE_STATE_NOTINSTALLED:
-	return 0;
+	goto exit;
 	break;
     case RPMFILE_STATE_REPLACED:
 	/* For replaced files we can only verify if it exists at all */
@@ -92,14 +89,14 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     }
 
     if (fn == NULL || lstat(fn, &sb) != 0) {
-	*res |= RPMVERIFY_LSTATFAIL;
-	return 1;
+	vfy |= RPMVERIFY_LSTATFAIL;
+	goto exit;
     }
 
     /* If we expected a directory but got a symlink to one, follow the link */
     if (S_ISDIR(fmode) && S_ISLNK(sb.st_mode) && stat(fn, &sb) != 0) {
-	*res |= RPMVERIFY_LSTATFAIL;
-	return 1;
+	vfy |= RPMVERIFY_LSTATFAIL;
+	goto exit;
     }
 
     /* Links have no mode, other types have no linkto */
@@ -128,19 +125,19 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	size_t diglen;
 
 	/* XXX If --nomd5, then prelinked library sizes are not corrected. */
-	if ((digest = rpmfiFDigest(fi, &algo, &diglen))) {
+	if ((digest = rpmfilesFDigest(fi, ix, &algo, &diglen))) {
 	    unsigned char fdigest[diglen];
 	    rpm_loff_t fsize;
 
-	    rc = rpmDoDigest(algo, fn, 0, fdigest, &fsize);
-	    sb.st_size = fsize;
-	    if (rc) {
-		*res |= (RPMVERIFY_READFAIL|RPMVERIFY_FILEDIGEST);
-	    } else if (memcmp(fdigest, digest, diglen)) {
-		*res |= RPMVERIFY_FILEDIGEST;
+	    if (rpmDoDigest(algo, fn, 0, fdigest, &fsize)) {
+		vfy |= (RPMVERIFY_READFAIL|RPMVERIFY_FILEDIGEST);
+	    } else {
+		sb.st_size = fsize;
+		if (memcmp(fdigest, digest, diglen))
+		    vfy |= RPMVERIFY_FILEDIGEST;
 	    }
 	} else {
-	    *res |= RPMVERIFY_FILEDIGEST;
+	    vfy |= RPMVERIFY_FILEDIGEST;
 	} 
     } 
 
@@ -149,18 +146,18 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	int size = 0;
 
 	if ((size = readlink(fn, linkto, sizeof(linkto)-1)) == -1)
-	    *res |= (RPMVERIFY_READLINKFAIL|RPMVERIFY_LINKTO);
+	    vfy |= (RPMVERIFY_READLINKFAIL|RPMVERIFY_LINKTO);
 	else {
-	    const char * flink = rpmfiFLink(fi);
+	    const char * flink = rpmfilesFLink(fi, ix);
 	    linkto[size] = '\0';
 	    if (flink == NULL || !rstreq(linkto, flink))
-		*res |= RPMVERIFY_LINKTO;
+		vfy |= RPMVERIFY_LINKTO;
 	}
     } 
 
     if (flags & RPMVERIFY_FILESIZE) {
-	if (sb.st_size != rpmfiFSize(fi))
-	    *res |= RPMVERIFY_FILESIZE;
+	if (sb.st_size != rpmfilesFSize(fi, ix))
+	    vfy |= RPMVERIFY_FILESIZE;
     } 
 
     if (flags & RPMVERIFY_MODE) {
@@ -182,7 +179,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	}
 
 	if (metamode != filemode)
-	    *res |= RPMVERIFY_MODE;
+	    vfy |= RPMVERIFY_MODE;
 
 #if WITH_ACL
 	/*
@@ -192,7 +189,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	acl_t facl = acl_get_file(fn, ACL_TYPE_ACCESS);
 	if (facl) {
 	    if (acl_equiv_mode(facl, NULL) == 1) {
-		*res |= RPMVERIFY_MODE;
+		vfy |= RPMVERIFY_MODE;
 	    }
 	    acl_free(facl);
 	}
@@ -203,12 +200,12 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	if (S_ISCHR(fmode) != S_ISCHR(sb.st_mode)
 	 || S_ISBLK(fmode) != S_ISBLK(sb.st_mode))
 	{
-	    *res |= RPMVERIFY_RDEV;
+	    vfy |= RPMVERIFY_RDEV;
 	} else if (S_ISDEV(fmode) && S_ISDEV(sb.st_mode)) {
 	    rpm_rdev_t st_rdev = (sb.st_rdev & 0xffff);
-	    rpm_rdev_t frdev = (rpmfiFRdev(fi) & 0xffff);
+	    rpm_rdev_t frdev = (rpmfilesFRdev(fi, ix) & 0xffff);
 	    if (st_rdev != frdev)
-		*res |= RPMVERIFY_RDEV;
+		vfy |= RPMVERIFY_RDEV;
 	} 
     }
 
@@ -219,7 +216,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
  	 * capabilities at all but suffices for now... 
  	 */
 	cap_t cap, fcap;
-	cap = cap_from_text(rpmfiFCaps(fi));
+	cap = cap_from_text(rpmfilesFCaps(fi, ix));
 	if (!cap) {
 	    cap = cap_from_text("=");
 	}
@@ -229,20 +226,20 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	}
 	
 	if (cap_compare(cap, fcap) != 0)
-	    *res |= RPMVERIFY_CAPS;
+	    vfy |= RPMVERIFY_CAPS;
 
 	cap_free(fcap);
 	cap_free(cap);
     }
 #endif
 
-    if ((flags & RPMVERIFY_MTIME) && (sb.st_mtime != rpmfiFMtime(fi))) {
-	*res |= RPMVERIFY_MTIME;
+    if ((flags & RPMVERIFY_MTIME) && (sb.st_mtime != rpmfilesFMtime(fi, ix))) {
+	vfy |= RPMVERIFY_MTIME;
     }
 
     if (flags & RPMVERIFY_USER) {
 	const char * name = rpmugUname(sb.st_uid);
-	const char * fuser = rpmfiFUser(fi);
+	const char * fuser = rpmfilesFUser(fi, ix);
 	uid_t uid;
 	int namematch = 0;
 	int idmatch = 0;
@@ -258,12 +255,12 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	}
 
 	if (!(namematch || idmatch))
-	    *res |= RPMVERIFY_USER;
+	    vfy |= RPMVERIFY_USER;
     }
 
     if (flags & RPMVERIFY_GROUP) {
 	const char * name = rpmugGname(sb.st_gid);
-	const char * fgroup = rpmfiFGroup(fi);
+	const char * fgroup = rpmfilesFGroup(fi, ix);
 	gid_t gid;
 	int namematch = 0;
 	int idmatch = 0;
@@ -279,10 +276,21 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	}
 
 	if (!(namematch || idmatch))
-	    *res |= RPMVERIFY_GROUP;
+	    vfy |= RPMVERIFY_GROUP;
     }
 
-    return 0;
+exit:
+    return vfy;
+}
+
+int rpmVerifyFile(const rpmts ts, const rpmfi fi,
+		rpmVerifyAttrs * res, rpmVerifyAttrs omitMask)
+{
+    rpmVerifyAttrs vfy = rpmfiVerify(fi, omitMask);
+    if (res)
+	*res = vfy;
+
+    return (vfy & RPMVERIFY_LSTATFAIL) ? 1 : 0;
 }
 
 /**
@@ -384,13 +392,14 @@ static const char * stateStr(rpmfileState fstate)
  * @param ts		transaction set
  * @param h		header to verify
  * @param omitMask	bits to disable verify checks
- * @param ghosts	should ghosts be verified?
+ * @param skipAttr	skip files with these attrs (eg %ghost)
  * @return		0 no problems, 1 problems found
  */
-static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask, int ghosts)
+static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask,
+			rpmfileAttrs skipAttrs)
 {
     rpmVerifyAttrs verifyResult = 0;
-    int ec = 0;		/* assume no problems */
+    rpmVerifyAttrs verifyAll = 0; /* assume no problems */
     rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_FLAGS_VERIFY);
 
     if (fi == NULL)
@@ -402,16 +411,15 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask, int ghosts)
 	char *buf = NULL, *attrFormat;
 	const char *fstate = NULL;
 	char ac;
-	int rc;
 
-	/* If not verifying %ghost, skip ghost files. */
-	if ((fileAttrs & RPMFILE_GHOST) && !ghosts)
+	/* Skip on attributes (eg from --noghost) */
+	if (skipAttrs & fileAttrs)
 	    continue;
 
-	rc = rpmVerifyFile(ts, fi, &verifyResult, omitMask);
+	verifyResult = rpmfiVerify(fi, omitMask);
 
 	/* Filter out timestamp differences of shared files */
-	if (rc == 0 && (verifyResult & RPMVERIFY_MTIME)) {
+	if (verifyResult & RPMVERIFY_MTIME) {
 	    rpmdbMatchIterator mi;
 	    mi = rpmtsInitIterator(ts, RPMDBI_BASENAMES, rpmfiFN(fi), 0);
 	    if (rpmdbGetIteratorCount(mi) > 1) 
@@ -425,7 +433,7 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask, int ghosts)
 
 	attrFormat = rpmFFlagsString(fileAttrs, "");
 	ac = rstreq(attrFormat, "") ? ' ' : attrFormat[0];
-	if (rc) {
+	if (verifyResult & RPMVERIFY_LSTATFAIL) {
 	    if (!(fileAttrs & (RPMFILE_MISSINGOK|RPMFILE_GHOST)) || rpmIsVerbose()) {
 		rasprintf(&buf, _("missing   %c %s"), ac, rpmfiFN(fi));
 		if ((verifyResult & RPMVERIFY_LSTATFAIL) != 0 &&
@@ -435,14 +443,11 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask, int ghosts)
 		    rstrcat(&buf, app);
 		    free(app);
 		}
-		ec = rc;
 	    }
 	} else if (verifyResult || fstate || rpmIsVerbose()) {
 	    char *verifyFormat = rpmVerifyString(verifyResult, ".");
 	    rasprintf(&buf, "%s  %c %s", verifyFormat, ac, rpmfiFN(fi));
 	    free(verifyFormat);
-
-	    if (verifyResult) ec = 1;
 	}
 	free(attrFormat);
 
@@ -452,10 +457,11 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask, int ghosts)
 	    rpmlog(RPMLOG_NOTICE, "%s\n", buf);
 	    buf = _free(buf);
 	}
+	verifyAll |= verifyResult;
     }
     rpmfiFree(fi);
 	
-    return ec;
+    return (verifyAll != 0) ? 1 : 0;
 }
 
 /**
@@ -500,7 +506,6 @@ static int verifyDependencies(rpmts ts, Header h)
 int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 {
     rpmVerifyAttrs omitMask = ((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
-    int ghosts = 0;
     int ec = 0;
     int rc;
 
@@ -509,7 +514,7 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 	    ec = rc;
     }
     if (qva->qva_flags & VERIFY_FILES) {
-	if ((rc = verifyHeader(ts, h, omitMask, ghosts)) != 0)
+	if ((rc = verifyHeader(ts, h, omitMask, qva->qva_fflags)) != 0)
 	    ec = rc;
     }
     if (qva->qva_flags & VERIFY_SCRIPT) {

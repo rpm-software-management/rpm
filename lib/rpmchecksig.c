@@ -11,7 +11,7 @@
 #include <rpm/rpmpgp.h>
 #include <rpm/rpmcli.h>
 #include <rpm/rpmfileutil.h>	/* rpmMkTemp() */
-#include <rpm/rpmdb.h>
+#include <rpm/rpmsq.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
@@ -20,6 +20,7 @@
 #include "rpmio/rpmio_internal.h" 	/* fdSetBundle() */
 #include "lib/rpmlead.h"
 #include "lib/signature.h"
+#include "lib/header_internal.h"
 
 #include "debug.h"
 
@@ -122,33 +123,24 @@ int rpmcliImportPubkeys(rpmts ts, ARGV_const_t argv)
 /**
  * @todo If the GPG key was known available, the md5 digest could be skipped.
  */
-static int readFile(FD_t fd, const char * fn,
-		    rpmDigestBundle plbundle, rpmDigestBundle hdrbundle)
+static int readFile(FD_t fd, const char * fn, rpmDigestBundle hdrbundle)
 {
     unsigned char buf[4*BUFSIZ];
     ssize_t count;
     int rc = 1;
-    Header h = NULL;
+    struct hdrblob_s blob;
     char *msg = NULL;
 
     /* Read the header from the package. */
-    if (rpmReadHeader(NULL, fd, &h, &msg) != RPMRC_OK) {
+    if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERIMMUTABLE, &blob, &msg) != RPMRC_OK) {
 	rpmlog(RPMLOG_ERR, _("%s: headerRead failed: %s\n"), fn, msg);
 	goto exit;
     }
 
-    if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
-	struct rpmtd_s utd;
-    
-	if (!headerGet(h, RPMTAG_HEADERIMMUTABLE, &utd, HEADERGET_DEFAULT)){
-	    rpmlog(RPMLOG_ERR, 
-		    _("%s: Immutable header region could not be read. "
-		    "Corrupted package?\n"), fn);
-	    goto exit;
-	}
-	rpmDigestBundleUpdate(hdrbundle, rpm_header_magic, sizeof(rpm_header_magic));
-	rpmDigestBundleUpdate(hdrbundle, utd.data, utd.count);
-	rpmtdFreeData(&utd);
+    if (blob.regionTag == RPMTAG_HEADERIMMUTABLE) {
+	rpmDigestBundleUpdate(hdrbundle,
+				rpm_header_magic, sizeof(rpm_header_magic));
+	rpmDigestBundleUpdate(hdrbundle, blob.ei, blob.pvlen);
     }
 
     /* Read the payload from the package. */
@@ -162,7 +154,7 @@ static int readFile(FD_t fd, const char * fn,
 
 exit:
     free(msg);
-    headerFree(h);
+    free(blob.ei);
     return rc;
 }
 
@@ -254,7 +246,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     rpmDigestBundle plbundle = rpmDigestBundleNew();
     rpmDigestBundle hdrbundle = rpmDigestBundleNew();
 
-    if ((rc = rpmLeadRead(fd, NULL, NULL, &msg)) != RPMRC_OK) {
+    if ((rc = rpmLeadRead(fd, NULL, &msg)) != RPMRC_OK) {
 	goto exit;
     }
 
@@ -282,7 +274,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 
     /* Read the file, generating digest(s) on the fly. */
     fdSetBundle(fd, plbundle);
-    if (readFile(fd, fn, plbundle, hdrbundle)) {
+    if (readFile(fd, fn, hdrbundle)) {
 	goto exit;
     }
 
@@ -390,7 +382,7 @@ int rpmcliVerifySignatures(rpmts ts, ARGV_const_t argv)
 	}
 
 	Fclose(fd);
-	rpmdbCheckSignals();
+	rpmsqPoll();
     }
     rpmKeyringFree(keyring);
     return res;

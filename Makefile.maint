@@ -1,9 +1,4 @@
 include Makefile
 
-snapshot: ChangeLog
+snapshot:
 	@$(MAKE) dist VERSION=$(VERSION)-git`git rev-list --count HEAD`
-
-release: ChangeLog dist
-
-ChangeLog: .git
-	@git log --no-merges > ChangeLog

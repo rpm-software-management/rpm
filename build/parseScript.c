@@ -15,6 +15,7 @@
 
 #include "debug.h"
 
+#define SKIPSPACE(s) { while (*(s) && risspace(*(s))) (s)++; }
 
 /**
  */
@@ -250,16 +251,30 @@ int parseScript(rpmSpec spec, int parsePart)
 
     if (tag == RPMTAG_TRIGGERSCRIPTS || tag == RPMTAG_FILETRIGGERSCRIPTS ||
 	tag == RPMTAG_TRANSFILETRIGGERSCRIPTS) {
-	/* break line into two */
-	char *s = strstr(spec->line, "--");
-	if (!s) {
-	    rpmlog(RPMLOG_ERR, _("line %d: triggers must have --: %s\n"),
-		     spec->lineNum, spec->line);
-	    return PART_ERROR;
+	/* break line into two at the -- separator */
+	char *sep, *s = spec->line;
+	while ((s = strstr(s, "--")) != NULL) {
+	    s += 2;
+	    if (risblank(*(s-3)) && risblank(*s))
+		break;
 	}
 
-	*s = '\0';
-	reqargs = xstrdup(s + 2);
+	if (s == NULL) {
+	    rpmlog(RPMLOG_ERR, _("line %d: triggers must have --: %s\n"),
+		     spec->lineNum, spec->line);
+	    goto exit;
+	}
+
+	sep = s;
+	SKIPSPACE(s);
+	if (*s == '\0') {
+	    rpmlog(RPMLOG_ERR, _("line %d: missing trigger condition: %s\n"),
+				spec->lineNum, spec->line);
+	    goto exit;
+	}
+
+	*sep = '\0';
+	reqargs = xstrdup(s);
     }
     
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
@@ -321,11 +336,8 @@ int parseScript(rpmSpec spec, int parsePart)
 	}
     }
     
-    if (lookupPackage(spec, name, flag, &pkg)) {
-	rpmlog(RPMLOG_ERR, _("line %d: Package does not exist: %s\n"),
-		 spec->lineNum, spec->line);
+    if (lookupPackage(spec, name, flag, &pkg))
 	goto exit;
-    }
 
     if (tag != RPMTAG_TRIGGERSCRIPTS) {
 	if (headerIsEntry(pkg->header, progtag)) {
@@ -387,6 +399,12 @@ int parseScript(rpmSpec spec, int parsePart)
     /* get the index right.                                   */
     if (tag == RPMTAG_TRIGGERSCRIPTS || tag == RPMTAG_FILETRIGGERSCRIPTS ||
 	tag == RPMTAG_TRANSFILETRIGGERSCRIPTS) {
+	if (tag != RPMTAG_TRIGGERSCRIPTS && *reqargs != '/') {
+	    rpmlog(RPMLOG_ERR,
+	       _("line %d: file trigger condition must begin with '/': %s"),
+		spec->lineNum, reqargs);
+	    goto exit;
+	}
 	if (progArgc > 1) {
 	    rpmlog(RPMLOG_ERR,
 	      _("line %d: interpreter arguments not allowed in triggers: %s\n"),

@@ -496,6 +496,16 @@ const char * rpmfilesFCaps(rpmfiles fi, int ix);
  * @return		0 on success
  */
 int rpmfilesStat(rpmfiles fi, int ix, int flags, struct stat *sb);
+
+/** \ingroup rpmfiles
+ * Verify file attributes (including digest).
+ * @param fi		file info set
+ * @param ix		file index
+ * @param omitMask	bit(s) to disable verify checks
+ * @return		bit(s) to indicate failure (ie 0 for passed verify)
+ */
+rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask);
+
 #ifdef __cplusplus
 }
 #endif

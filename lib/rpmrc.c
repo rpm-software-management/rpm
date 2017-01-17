@@ -1602,12 +1602,21 @@ exit:
     return rc;
 }
 
+static void register_atexit(void)
+{
+    if (atexit(rpmAtExit) != 0)
+	rpmlog(RPMLOG_WARNING, _("failed to register exit handler"));
+}
+
 /* External interfaces */
 
 int rpmReadConfigFiles(const char * file, const char * target)
 {
+    static pthread_once_t atexit_registered = PTHREAD_ONCE_INIT;
     int rc = -1; /* assume failure */
     rpmrcCtx ctx = rpmrcCtxAcquire(1);
+
+    pthread_once(&atexit_registered, register_atexit);
 
     /* Force preloading of dlopen()'ed libraries in case we go chrooting */
     if (rpmugInit())

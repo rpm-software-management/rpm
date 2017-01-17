@@ -5,9 +5,10 @@ ACLOCAL_AMFLAGS = -I m4
 DISTCHECK_CONFIGURE_FLAGS = --with-external-db
 
 include $(top_srcdir)/rpm.am
+AM_CFLAGS = @RPMCFLAGS@
 
 CLEANFILES =
-EXTRA_DIST = CHANGES ChangeLog CREDITS INSTALL \
+EXTRA_DIST = ChangeLog CREDITS INSTALL \
 	autogen.sh db3/configure installplatform platform.in
 BUILT_SOURCES =
 
@@ -91,12 +92,7 @@ pkginclude_HEADERS += build/rpmfc.h
 pkginclude_HEADERS += build/rpmspec.h
 
 
-rpmbindir = `echo $(bindir) | $(SED) -e s,usr/bin,bin,`
-rpmbin_PROGRAMS = rpm
-
-rpm_symlink_prefix = `case "$(bindir)" in *usr/bin*) echo '../../bin/';; *) echo '';; esac`
-
-bin_PROGRAMS =		rpm2cpio rpmbuild rpmdb rpmkeys rpmsign rpmspec
+bin_PROGRAMS =		rpm rpm2cpio rpmbuild rpmdb rpmkeys rpmsign rpmspec
 if WITH_ARCHIVE
 bin_PROGRAMS += 	rpm2archive 
 endif
@@ -280,7 +276,7 @@ EXTRA_DIST += doc/hacking.doxy.in doc/hacking/Doxyheader
 # Always build librpm docs
 if DOXYGEN
 doc/librpm.doxy: doc/librpm.doxy.in doc/librpm/Doxyheader Makefile.am configure.ac $(pkginclude_HEADERS)
-	files=`echo " $(HEADERS)" | $(SED) -e "s, , \@top_srcdir\@/,g"`; \
+	files=`echo " $(pkginclude_HEADERS)" | $(SED) -e "s, , \@top_srcdir\@/,g"`; \
 	$(SED) -e "s,[@]pkginclude_HEADERS[@],$$files," \
 	  -e "s,\@top_srcdir\@/,$(top_srcdir)/,g" \
 	  -e "s,[@]HAVE_DOT[@],$(HAVE_DOT)," \
@@ -302,16 +298,20 @@ BUILT_SOURCES += db.h
 endif
 DISTCLEANFILES = db.h
 
+ChangeLog:
+	touch ChangeLog
+
+dist-hook:
+	if [ -d .git ] && [ -x $(command -v git) ]; then git log --no-merges > $(distdir)/ChangeLog; fi
+
 clean-local:
 	rm -rf doc/hacking/html
 	rm -rf include
 
 distclean-local:
+	rm -rf doc/librpm.doxy doc/librpm/html
 	rm -rf Doxytags
 	rm -f stamp-h.in db3/*.orig db3/db3lobjs
-
-maintainer-clean-local:
-	rm -rf doc/librpm/html
 
 $(top_srcdir)/preinstall.am: Makefile.am
 	rm -f $(top_srcdir)/preinstall.am

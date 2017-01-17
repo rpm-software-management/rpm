@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include <stdarg.h>
 #include <rpm/header.h>
 #include <rpm/rpmtag.h>
 #include <rpm/rpmstring.h>
@@ -217,6 +218,25 @@ static char * hsaReserve(headerSprintfArgs hsa, size_t need)
     return hsa->val + hsa->vallen;
 }
 
+RPM_GNUC_PRINTF(2, 3)
+static void hsaError(headerSprintfArgs hsa, const char *fmt, ...)
+{
+    /* Use thread local static buffer as headerFormat() errmsg arg is const */
+    static __thread char errbuf[BUFSIZ];
+
+    if (fmt == NULL) {
+	hsa->errmsg = NULL;
+    } else {
+	va_list ap;
+
+	va_start(ap, fmt);
+	vsnprintf(errbuf, sizeof(errbuf), fmt, ap);
+	va_end(ap);
+
+	hsa->errmsg = errbuf;
+    }
+}
+
 /**
  * Search tags for a name.
  * @param hsa		headerSprintf args
@@ -333,13 +353,13 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 	    chptr = start;
 	    while (*chptr && *chptr != '{' && *chptr != '%') {
 		if (!risdigit(*chptr) && *chptr != '-') {
-		    hsa->errmsg = _("invalid field width");
+		    hsaError(hsa, _("invalid field width"));
 		    goto errxit;
 		}
 		chptr++;
 	    }
 	    if (!*chptr || *chptr == '%') {
-		hsa->errmsg = _("missing { after %");
+		hsaError(hsa, _("missing { after %%"));
 		goto errxit;
 	    }
 
@@ -361,7 +381,7 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 	    dst = next = start;
 	    while (*next && *next != '}') next++;
 	    if (!*next) {
-		hsa->errmsg = _("missing } after %{");
+		hsaError(hsa, _("missing } after %%{"));
 		goto errxit;
 	    }
 	    *next++ = '\0';
@@ -372,7 +392,7 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 	    if (*chptr != '\0') {
 		*chptr++ = '\0';
 		if (!*chptr) {
-		    hsa->errmsg = _("empty tag format");
+		    hsaError(hsa, _("empty tag format"));
 		    goto errxit;
 		}
 		token->u.tag.type = chptr;
@@ -383,18 +403,22 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 	    }
 	    
 	    if (!*start) {
-		hsa->errmsg = _("empty tag name");
+		hsaError(hsa, _("empty tag name"));
 		goto errxit;
 	    }
 
 	    token->type = PTOK_TAG;
 
 	    if (findTag(hsa, token, start)) {
-		/* Use static buffer as hsa->errmsg is const char * */
-		static __thread char errmsg[1024];
-		snprintf(errmsg, 1024, _("unknown tag: \"%s\""), start);
-		hsa->errmsg = (const char *)(&errmsg);
+		hsaError(hsa, _("unknown tag: \"%s\""), start);
 		goto errxit;
+	    }
+
+	    /* Set justOne = 1 for non ARRAY tags */
+	    if (token->type == PTOK_TAG &&
+		!(rpmTagGetReturnType(token->u.tag.tag) &
+		  RPM_ARRAY_RETURN_TYPE)) {
+		token->u.tag.justOne = 1;
 	    }
 
 	    start = next;
@@ -413,7 +437,7 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 	    }
 
 	    if (!start) {
-		hsa->errmsg = _("] expected at end of array");
+		hsaError(hsa, _("] expected at end of array"));
 		goto errxit;
 	    }
 
@@ -425,7 +449,7 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 
 	case ']':
 	    if (state != PARSER_IN_ARRAY) {
-		hsa->errmsg = _("unexpected ]");
+		hsaError(hsa, _("unexpected ]"));
 		goto errxit;
 	    }
 	    *start++ = '\0';
@@ -435,7 +459,7 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 
 	case '}':
 	    if (state != PARSER_IN_EXPR) {
-		hsa->errmsg = _("unexpected }");
+		hsaError(hsa, _("unexpected }"));
 		goto errxit;
 	    }
 	    *start++ = '\0';
@@ -486,19 +510,19 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
     char * chptr;
     char * end;
 
-    hsa->errmsg = NULL;
+    hsaError(hsa, NULL);
     chptr = str;
     while (*chptr && *chptr != '?') chptr++;
 
     if (*chptr != '?') {
-	hsa->errmsg = _("? expected in expression");
+	hsaError(hsa, _("? expected in expression"));
 	return 1;
     }
 
     *chptr++ = '\0';;
 
     if (*chptr != '{') {
-	hsa->errmsg = _("{ expected after ? in expression");
+	hsaError(hsa, _("{ expected after ? in expression"));
 	return 1;
     }
 
@@ -510,7 +534,7 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
 
     /* XXX fix segfault on "rpm -q rpm --qf='%|NAME?{%}:{NAME}|\n'"*/
     if (!(end && *end)) {
-	hsa->errmsg = _("} expected in expression");
+	hsaError(hsa, _("} expected in expression"));
 	token->u.cond.ifFormat =
 		freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	return 1;
@@ -518,7 +542,7 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
 
     chptr = end;
     if (*chptr != ':' && *chptr != '|') {
-	hsa->errmsg = _(": expected following ? subexpression");
+	hsaError(hsa, _(": expected following ? subexpression"));
 	token->u.cond.ifFormat =
 		freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	return 1;
@@ -536,7 +560,7 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
 	chptr++;
 
 	if (*chptr != '{') {
-	    hsa->errmsg = _("{ expected after : in expression");
+	    hsaError(hsa, _("{ expected after : in expression"));
 	    token->u.cond.ifFormat =
 		freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	    return 1;
@@ -550,7 +574,7 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
 
 	/* XXX fix segfault on "rpm -q rpm --qf='%|NAME?{a}:{%}|{NAME}\n'" */
 	if (!(end && *end)) {
-	    hsa->errmsg = _("} expected in expression");
+	    hsaError(hsa, _("} expected in expression"));
 	    token->u.cond.ifFormat =
 		freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	    return 1;
@@ -558,7 +582,7 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
 
 	chptr = end;
 	if (*chptr != '|') {
-	    hsa->errmsg = _("| expected at end of expression");
+	    hsaError(hsa, _("| expected at end of expression"));
 	    token->u.cond.ifFormat =
 		freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	    token->u.cond.elseFormat =
@@ -665,8 +689,8 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		int element)
 {
     char * t, * te;
-    int i, j, found;
-    rpm_count_t count, numElements;
+    int i, j, found, singleItem;
+    int count, numElements;
     sprintfToken spft;
     int condNumFormats;
     size_t need;
@@ -715,27 +739,36 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	break;
 
     case PTOK_ARRAY:
-	numElements = 0;
+	numElements = -1;
+	singleItem = 0;
 	found = 0;
 	spft = token->u.array.format;
+	/* get number of array items */
 	for (i = 0; i < token->u.array.numTokens; i++, spft++)
 	{
 	    rpmtd td = NULL;
-	    if (spft->type != PTOK_TAG ||
-		spft->u.tag.justOne) continue;
+	    if (spft->type != PTOK_TAG) continue;
 
 	    if (!(td = getData(hsa, spft->u.tag.tag))) {
 		continue;
 	    }
 
-	    found = 1;
 	    count = rpmtdCount(td);
+	    found = 1;
 
-	    if (numElements > 1 && count != numElements)
+	    if (spft->u.tag.justOne) {
+		if (count) {
+		    singleItem = 1;
+		}
+		continue;
+	    }
+	    
+
+	    if (numElements > 0 && count != numElements)
 	    switch (td->type) {
 	    default:
-		hsa->errmsg =
-			_("array iterator used with different sized arrays");
+		hsaError(hsa,
+			_("array iterator used with different sized arrays"));
 		return NULL;
 		break;
 	    case RPM_BIN_TYPE:
@@ -744,6 +777,14 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    }
 	    if (count > numElements)
 		numElements = count;
+	}
+
+	if (numElements == -1 && singleItem) {
+	    /* only justOne elements */
+	    numElements = 1;
+	} else if (numElements == -1) {
+	    /* nothing at all */
+	    numElements = 0;
 	}
 
 	if (found) {

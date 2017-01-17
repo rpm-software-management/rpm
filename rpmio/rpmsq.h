@@ -19,11 +19,7 @@ extern "C" {
  * @param info		(siginfo_t) signal info
  * @param context	signal context
  */
-#ifdef SA_SIGINFO
 typedef void (*rpmsqAction_t) (int signum, siginfo_t * info, void * context);
-#else
-typedef void (*rpmsqAction_t) (int signum);
-#endif
 
 /** \ingroup rpmsq
  * Test if given signal has been caught (while signals blocked).
@@ -34,24 +30,34 @@ typedef void (*rpmsqAction_t) (int signum);
 int rpmsqIsCaught(int signum);
 
 /** \ingroup rpmsq
- * Default signal handler.
- * @param signum	signal number
- * @param info		(siginfo_t) signal info
- * @param context	signal context
+ * Activate (or disable) the signal queue.
+ * @param state		1 to enable, 0 to disable
+ * @return		0 on success, negative on error
  */
-#ifdef SA_SIGINFO
-void rpmsqAction(int signum, siginfo_t * info, void * context);
-#else
-void rpmsqAction(int signum);
-#endif
+int rpmsqActivate(int state);
 
 /** \ingroup rpmsq
- * Enable or disable a signal handler.
- * @param signum	signal to enable (or disable if negative)
- * @param handler	sa_sigaction handler (or NULL to use rpmsqHandler())
- * @return		no. of refs, -1 on error
+ * Set or delete a signal handler for a signal.
+ * @param signum	signal number
+ * @param handler	signal handler or NULL to delete
+ * @return		previous non-default handler (possibly NULL)
  */
-int rpmsqEnable(int signum, rpmsqAction_t handler);
+rpmsqAction_t rpmsqSetAction(int signum, rpmsqAction_t handler);
+
+/** \ingroup rpmsq
+ * Block or unblock (almost) all signals.
+ * The operation is "reference counted" so the calls can be nested,
+ * and signals are only unblocked when the reference count falls to zero.
+ * @param op		SIG_BLOCK/SIG_UNBLOCK
+ * @return		0 on success, -1 on error
+ */
+int rpmsqBlock(int op);
+
+/** \ingroup rpmsq
+ * Poll for caught signals, executing their handlers.
+ * @return		no. active signals found
+ */
+int rpmsqPoll(void);
 
 void rpmsqSetInterruptSafety(int on);
 

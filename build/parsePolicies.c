@@ -58,11 +58,8 @@ int parsePolicies(rpmSpec spec)
 	}
     }
 
-    if (lookupPackage(spec, name, flag, &pkg)) {
-	rpmlog(RPMLOG_ERR, _("line %d: Package does not exist: %s\n"),
-	       spec->lineNum, spec->line);
+    if (lookupPackage(spec, name, flag, &pkg))
 	goto exit;
-    }
 
     if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
 	nextPart = PART_NONE;

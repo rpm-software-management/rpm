@@ -19,39 +19,22 @@ extern "C" {
 
 #define RPMLEAD_SIZE 96         /*!< Don't rely on sizeof(struct) */
 
-typedef struct rpmlead_s * rpmlead;
-
-/** \ingroup lead
- * Initialize a lead structure from header
- * param h		Header
- * @return		Pointer to populated lead structure (malloced)
- */
-rpmlead rpmLeadFromHeader(Header h);
-
-/** \ingroup lead
- * Free a lead structure
- * @param lead		Pointer to lead structure
- * @return		NULL always
- */
-rpmlead rpmLeadFree(rpmlead lead);
-
 /** \ingroup lead
  * Write lead to file handle.
  * @param fd		file handle
- * @param lead		package lead
+ * @param h		package header
  * @return		RPMRC_OK on success, RPMRC_FAIL on error
  */
-rpmRC rpmLeadWrite(FD_t fd, rpmlead lead);
+rpmRC rpmLeadWrite(FD_t fd, Header h);
 
 /** \ingroup lead
  * Read lead from file handle.
  * @param fd		file handle
- * @retval lead		pointer to package lead (malloced)
  * @retval type		RPMLEAD_BINARY or RPMLEAD_SOURCE on success
  * @retval emsg		failure message on error (malloced)
  * @return		RPMRC_OK on success, RPMRC_FAIL/RPMRC_NOTFOUND on error
  */
-rpmRC rpmLeadRead(FD_t fd, rpmlead *lead, int *type, char **emsg);
+rpmRC rpmLeadRead(FD_t fd, int *type, char **emsg);
 
 #ifdef __cplusplus
 }

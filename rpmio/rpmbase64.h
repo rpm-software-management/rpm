@@ -1,6 +1,12 @@
 /* base64 encoder/decoder based on public domain implementation
  * by Chris Venter */
 
+/** \ingroup rpmio
+ * \file rpmio/rpmbase64.h
+ *
+ * Base64 encoding and decoding API
+ */
+
 #include <sys/types.h>
 
 #ifdef __cplusplus

@@ -444,7 +444,7 @@ static int rpmfnFindFN(rpmstrPool pool, rpmfn files, const char * fn)
 
     /* not found: try linear search */
     for (int i=0; i < fc; i++) {
-	if (cmpPoolFn(pool, files, mid, fn) == 0)
+	if (cmpPoolFn(pool, files, i, fn) == 0)
 	    return i;
     }
     return -1;
@@ -1817,6 +1817,11 @@ int rpmfiStat(rpmfi fi, int flags, struct stat *sb)
 int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
 {
     return rpmfilesCompare(afi->files, afi ? afi->i : -1, bfi->files, bfi ? bfi->i : -1);
+}
+
+rpmVerifyAttrs rpmfiVerify(rpmfi fi, rpmVerifyAttrs omitMask)
+{
+    return rpmfilesVerify(fi->files, fi->i, omitMask);
 }
 
 rpmstrPool rpmfilesPool(rpmfiles fi)

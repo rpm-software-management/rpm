@@ -1,6 +1,7 @@
 # Makefile for rpm scripts.
 
 include $(top_srcdir)/rpm.am
+AM_CFLAGS = @RPMCFLAGS@
 
 CLEANFILES =
 
@@ -19,12 +20,11 @@ EXTRA_DIST = \
 	find-requires.php find-provides.php \
 	mono-find-requires mono-find-provides \
 	ocaml-find-requires.sh ocaml-find-provides.sh \
-	pkgconfigdeps.sh libtooldeps.sh appdata.prov \
+	pkgconfigdeps.sh libtooldeps.sh metainfo.prov \
 	fontconfig.prov desktop-file.prov script.req \
 	macros.perl macros.php macros.python
 
 rpmconfig_SCRIPTS = \
-	appdata.prov \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-python-hardlink \
 	brp-strip-shared brp-strip-static-archive \
@@ -33,6 +33,7 @@ rpmconfig_SCRIPTS = \
 	debuginfo.prov \
 	find-lang.sh find-requires find-provides \
 	perl.prov perl.req pythondeps.sh pythondistdeps.py \
+	metainfo.prov \
 	mono-find-requires mono-find-provides \
 	pkgconfigdeps.sh libtooldeps.sh \
 	ocaml-find-requires.sh ocaml-find-provides.sh \

@@ -43,15 +43,16 @@ if test "$GCC" = yes; then
     echo
     for flag in $cflags_to_try; do
         CFLAGS="$CFLAGS $flag -Werror"
-        AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[return 0;]])],[
+        AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[#include <alloca.h>
+						alloca(100);]])],[
                 echo "   $flag"
                 RPMCFLAGS="$RPMCFLAGS $flag"
         ],[])
         CFLAGS=$old_cflags
     done
-    CFLAGS="$CFLAGS -fPIC -DPIC -D_REENTRANT -Wall -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes $RPMCFLAGS"
+    RPMCFLAGS="-fPIC -DPIC -D_REENTRANT -Wall -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes $RPMCFLAGS"
 fi
-export CFLAGS
+AC_SUBST(RPMCFLAGS)
 
 AC_SYS_LARGEFILE
 
@@ -100,7 +101,7 @@ AC_PATH_PROG(__CP, cp, /bin/cp, $MYPATH)
 AC_PATH_PROG(__CPIO, cpio, /bin/cpio, $MYPATH)
 AC_PATH_PROG(__CURL, curl, /usr/bin/curl, $MYPATH)
 AC_PATH_PROG(__FILE, file, /usr/bin/file, $MYPATH)
-AC_PATH_PROG(__GPG, gpg, /usr/bin/gpg, $MYPATH)
+AC_PATH_PROGS(__GPG, gpg2 gpg, /usr/bin/gpg2, $MYPATH)
 AC_PATH_PROG(__GREP, grep, /bin/grep, $MYPATH)
 AC_PATH_PROG(__GZIP, gzip, /bin/gzip, $MYPATH)
 AC_PATH_PROG(__UNZIP, unzip, /usr/bin/unzip, $MYPATH)

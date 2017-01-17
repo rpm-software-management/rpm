@@ -14,6 +14,7 @@
 #include <rpm/rpmds.h>
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmstring.h>
+#include <rpm/rpmsq.h>
 
 #include "lib/fprint.h"
 #include "lib/misc.h"
@@ -67,6 +68,45 @@ struct diskspaceInfo_s {
 #define	adj_fs_blocks(_nb)	(((_nb) * 21) / 20)
 #define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
 
+static char *getMntPoint(const char *dirName, dev_t dev)
+{
+    char mntPoint[PATH_MAX];
+    char *resolved_path = realpath(dirName, mntPoint);
+    char *end = NULL;
+    struct stat sb;
+    char *res = NULL;
+
+    if (!resolved_path) {
+	strncpy(mntPoint, dirName, PATH_MAX);
+	mntPoint[PATH_MAX-1] = '\0';
+    }
+
+    while (end != mntPoint) {
+	end = strrchr(mntPoint, '/');
+	if (end == mntPoint) { /* reached "/" */
+	    stat("/", &sb);
+	    if (dev != sb.st_dev) {
+		res = xstrdup(mntPoint);
+	    } else {
+		res = xstrdup("/");
+	    }
+	    break;
+	} else if (end) {
+	    *end = '\0';
+	} else { /* dirName doesn't start with / - should not happen */
+	    res = xstrdup(dirName);
+	    break;
+	}
+	stat(mntPoint, &sb);
+	if (dev != sb.st_dev) {
+	    *end = '/';
+	    res = xstrdup(mntPoint);
+	    break;
+	}
+    }
+    return res;
+}
+
 static int rpmtsInitDSI(const rpmts ts)
 {
     if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_DISKSPACE)
@@ -81,8 +121,6 @@ static rpmDiskSpaceInfo rpmtsCreateDSI(const rpmts ts, dev_t dev,
 {
     rpmDiskSpaceInfo dsi;
     struct stat sb;
-    char * resolved_path;
-    char mntPoint[PATH_MAX];
     int rc;
 
 #if STATFS_IN_SYS_STATVFS
@@ -137,34 +175,16 @@ static rpmDiskSpaceInfo rpmtsCreateDSI(const rpmts ts, dev_t dev,
 	? sfb.f_ffree : -1;
 
     /* Find mount point belonging to this device number */
-    resolved_path = realpath(dirName, mntPoint);
-    if (!resolved_path) {
-	strncpy(mntPoint, dirName, PATH_MAX);
-	mntPoint[PATH_MAX-1] = '\0';
-    }
-    char * end = NULL;
-    while (end != mntPoint) {
-	end = strrchr(mntPoint, '/');
-	if (end == mntPoint) { /* reached "/" */
-	    stat("/", &sb);
-	    if (dsi->dev != sb.st_dev) {
-		dsi->mntPoint = xstrdup(mntPoint);
-	    } else {
-		dsi->mntPoint = xstrdup("/");
-	    }
-	    break;
-	} else if (end) {
-	    *end = '\0';
-	} else { /* dirName doesn't start with / - should not happen */
-	    dsi->mntPoint = xstrdup(dirName);
-	    break;
-	}
-	stat(mntPoint, &sb);
-	if (dsi->dev != sb.st_dev) {
-	    *end = '/';
-	    dsi->mntPoint = xstrdup(mntPoint);
-	    break;
-	}
+    dsi->mntPoint = getMntPoint(dirName, dsi->dev);
+
+    /* normalize block size to 4096 bytes if it is too big. */
+    if (dsi->bsize > 4096) {
+	uint64_t old_size = dsi->bavail * dsi->bsize;
+	rpmlog(RPMLOG_DEBUG,
+		"dubious blocksize % " PRId64 " on %s, normalizing to 4096\n",
+		dsi->bsize, dsi->mntPoint);
+	dsi->bsize = 4096; /* Assume 4k block size */
+	dsi->bavail = old_size / dsi->bsize;
     }
 
     rpmlog(RPMLOG_DEBUG,
@@ -959,7 +979,7 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	(void) rpmdbCheckSignals();
+	(void) rpmsqPoll();
 
 	rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_PROGRESS, oc++, tsmem->orderCount);
 
@@ -1199,11 +1219,12 @@ static int runTransScripts(rpmts ts, pkgGoal goal)
     rpmte p;
     rpmtsi pi = rpmtsiInit(ts);
     rpmElementTypes types = TR_ADDED;
+    int i = 0;
     if (goal == PKG_TRANSFILETRIGGERUN)
 	types = TR_REMOVED;
 
     while ((p = rpmtsiNext(pi, types)) != NULL) {
-	rc += rpmteProcess(p, goal);
+	rc += rpmteProcess(p, goal, i++);
     }
     rpmtsiFree(pi);
     return rc;
@@ -1350,7 +1371,6 @@ exit:
 static int rpmtsProcess(rpmts ts)
 {
     rpmtsi pi;	rpmte p;
-    tsMembers tsmem = rpmtsMembers(ts);
     int rc = 0;
     int i = 0;
 
@@ -1358,12 +1378,10 @@ static int rpmtsProcess(rpmts ts)
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	int failed;
 
-	rpmtsNotify(ts, NULL, RPMCALLBACK_ELEM_PROGRESS, i++,
-		tsmem->orderCount);
 	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
-	failed = rpmteProcess(p, rpmteType(p));
+	failed = rpmteProcess(p, rpmteType(p), i++);
 	if (failed) {
 	    rpmlog(RPMLOG_ERR, "%s: %s %s\n", rpmteNEVRA(p),
 		   rpmteTypeString(p), failed > 1 ? _("skipped") : _("failed"));

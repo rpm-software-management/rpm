@@ -3,6 +3,7 @@
 
 /** \ingroup payload
  * \file lib/rpmarchive.h
+ * File archive (aka payload) API.
  */
 
 #define RPMERR_CHECK_ERRNO    -32768

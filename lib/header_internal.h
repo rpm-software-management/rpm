@@ -19,44 +19,27 @@ struct entryInfo_s {
     rpm_count_t count;		/*!< Number of tag elements. */
 };
 
-#define	REGION_TAG_TYPE		RPM_BIN_TYPE
-#define	REGION_TAG_COUNT	sizeof(struct entryInfo_s)
+typedef struct hdrblob_s * hdrblob;
+struct hdrblob_s {
+    int32_t *ei;
+    int32_t il;
+    int32_t dl;
+    entryInfo pe;
+    int32_t pvlen;
+    uint8_t *dataStart;
+    uint8_t *dataEnd;
 
-/**
- * Sanity check on no. of tags.
- * This check imposes a limit of 65K tags, more than enough.
- */
-#define hdrchkTags(_ntags)      ((_ntags) & 0xffff0000)
-
-/**
- * Sanity check on type values.
- */
-#define hdrchkType(_type) ((_type) < RPM_MIN_TYPE || (_type) > RPM_MAX_TYPE)
-
-/**
- * Sanity check on data size and/or offset and/or count.
- * This check imposes a limit of 256 MB -- file signatures
- * may require a lot of space in the header.
- */
-#define HEADER_DATA_MAX 0x0fffffff
-#define hdrchkData(_nbytes) ((_nbytes) & (~HEADER_DATA_MAX))
-
-/**
- * Sanity check on data alignment for data type.
- */
-#define hdrchkAlign(_type, _off)	((_off) & (typeAlign[_type]-1))
-
-/**
- * Sanity check on range of data offset.
- */
-#define hdrchkRange(_dl, _off)		((_off) < 0 || (_off) > (_dl))
+    rpmTagVal regionTag;
+    int32_t ril;
+    int32_t rdl;
+};
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /* convert entry info to host endianess */
-static inline void ei2h(entryInfo pe, entryInfo info)
+static inline void ei2h(const struct entryInfo_s *pe, struct entryInfo_s *info)
 {
     info->tag = ntohl(pe->tag);
     info->type = ntohl(pe->type);
@@ -65,23 +48,15 @@ static inline void ei2h(entryInfo pe, entryInfo info)
 }
 
 RPM_GNUC_INTERNAL
-rpmRC headerVerifyRegion(rpmTagVal regionTag,
-                        int il, int dl, entryInfo pe, unsigned char *dataStart,
-                        int exact_size, int *ril, int *rdl, char **buf);
+rpmRC hdrblobInit(const void *uh, size_t uc,
+		rpmTagVal regionTag, int exact_size,
+		struct hdrblob_s *blob, char **emsg);
 
-
-/** \ingroup header
- * Perform simple sanity and range checks on header tag(s).
- * @param il		no. of tags in header
- * @param dl		no. of bytes in header data.
- * @param pev		1st element in tag array, big-endian
- * @param iv		failing (or last) tag element, host-endian
- * @param negate	negative offset expected?
- * @return		-1 on success, otherwise failing tag element index
- */
 RPM_GNUC_INTERNAL
-int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate);
+rpmRC hdrblobRead(FD_t fd, int magic, int exact_size, rpmTagVal regionTag, hdrblob blob, char **emsg);
 
+RPM_GNUC_INTERNAL
+rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg);
 
 /** \ingroup header
  * Set header instance (rpmdb record number)

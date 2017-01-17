@@ -67,7 +67,8 @@ static void rpmTSIFree(tsortInfo tsi)
 
 static inline int addSingleRelation(rpmte p,
 				    rpmte q,
-				    rpmsenseFlags dsflags)
+				    rpmsenseFlags dsflags,
+				    int reversed)
 {
     struct tsortInfo_s *tsi_p, *tsi_q;
     relation rel;
@@ -80,9 +81,7 @@ static inline int addSingleRelation(rpmte p,
 
     /* Erasures are reversed installs. */
     if (teType == TR_REMOVED) {
-	rpmte r = p;
-	p = q;
-	q = r;
+	reversed = ! reversed;
 	flags = isErasePreReq(dsflags);
     } else {
 	flags = isInstallPreReq(dsflags);
@@ -94,21 +93,52 @@ static inline int addSingleRelation(rpmte p,
 	    RPMSENSE_SCRIPT_PRE : RPMSENSE_SCRIPT_PREUN;
     }
 
+
     tsi_p = rpmteTSI(p);
     tsi_q = rpmteTSI(q);
 
     /* if relation got already added just update the flags */
-    if (tsi_q->tsi_relations && tsi_q->tsi_relations->rel_suc == tsi_p) {
+    if (!reversed &&
+	tsi_q->tsi_relations && tsi_q->tsi_relations->rel_suc == tsi_p) {
+	/* must be latest one added to q as we add all rels to p at once */
 	tsi_q->tsi_relations->rel_flags |= flags;
-	tsi_p->tsi_forward_relations->rel_flags |= flags;
-	return 0;
+	/* search entry in p */
+	for (struct relation_s * tsi = tsi_p->tsi_forward_relations;
+	     tsi; tsi = tsi->rel_next) {
+	    if (tsi->rel_suc == tsi_q) {
+		tsi->rel_flags |= flags;
+		return 0;
+	    }
+	}
+	assert(0);
+    }
+
+    /* if relation got already added just update the flags */
+    if (reversed && tsi_q->tsi_forward_relations &&
+	tsi_q->tsi_forward_relations->rel_suc == tsi_p) {
+	/* must be latest one added to q as we add all rels to p at once */
+	tsi_q->tsi_forward_relations->rel_flags |= flags;
+	/* search entry in p */
+	for (struct relation_s * tsi = tsi_p->tsi_relations;
+	     tsi; tsi = tsi->rel_next) {
+	    if (tsi->rel_suc == tsi_q) {
+		tsi->rel_flags |= flags;
+		return 0;
+	    }
+	}
+	assert(0);
+    }
+
+    if (reversed) {
+	rpmte r = p;
+	p = q;
+	q = r;
     }
 
     /* Record next "q <- p" relation (i.e. "p" requires "q"). */
-    if (p != q) {
-	/* bump p predecessor count */
-	tsi_p->tsi_count++;
-    }
+
+    /* bump p predecessor count */
+    tsi_p->tsi_count++;
 
     rel = xcalloc(1, sizeof(*rel));
     rel->rel_suc = tsi_p;
@@ -116,10 +146,10 @@ static inline int addSingleRelation(rpmte p,
 
     rel->rel_next = tsi_q->tsi_relations;
     tsi_q->tsi_relations = rel;
-    if (p != q) {
-	/* bump q successor count */
-	tsi_q->tsi_qcnt++;
-    }
+
+    
+    /* bump q successor count */
+    tsi_q->tsi_qcnt++;
 
     rel = xcalloc(1, sizeof(*rel));
     rel->rel_suc = tsi_q;
@@ -142,7 +172,8 @@ static inline int addSingleRelation(rpmte p,
 static inline int addRelation(rpmts ts,
 			      rpmal al,
 			      rpmte p,
-			      rpmds requires)
+			      rpmds requires,
+			      int reversed)
 {
     rpmte q;
     rpmsenseFlags dsflags;
@@ -158,18 +189,18 @@ static inline int addRelation(rpmts ts,
 	rpmrichOp op;
 	if (rpmdsParseRichDep(requires, &ds1, &ds2, &op, NULL) == RPMRC_OK) {
 	    if (op != RPMRICHOP_ELSE)
-		addRelation(ts, al, p, ds1);
+		addRelation(ts, al, p, ds1, reversed);
 	    if (op == RPMRICHOP_IF) {
 	      rpmds ds21, ds22;
 	      rpmrichOp op2;
 	      if (rpmdsParseRichDep(requires, &ds21, &ds22, &op2, NULL) == RPMRC_OK && op2 == RPMRICHOP_ELSE) {
-		addRelation(ts, al, p, ds22);
+		  addRelation(ts, al, p, ds22, reversed);
 	      }
 	      ds21 = rpmdsFree(ds21);
 	      ds22 = rpmdsFree(ds22);
 	    }
 	    if (op == RPMRICHOP_AND || op == RPMRICHOP_OR)
-		addRelation(ts, al, p, ds2);
+		addRelation(ts, al, p, ds2, reversed);
 	    ds1 = rpmdsFree(ds1);
 	    ds2 = rpmdsFree(ds2);
 	}
@@ -181,7 +212,7 @@ static inline int addRelation(rpmts ts,
     if (q == NULL || q == p)
 	return 0;
 
-    addSingleRelation(p, q, dsflags);
+    addSingleRelation(p, q, dsflags, reversed);
 
     return 0;
 }
@@ -541,7 +572,6 @@ int rpmtsOrder(rpmts ts)
     scc SCCs;
     int nelem = rpmtsNElements(ts);
     tsortInfo sortInfo = xcalloc(nelem, sizeof(struct tsortInfo_s));
-    ARGV_t seenColls = NULL;
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
@@ -560,20 +590,43 @@ int rpmtsOrder(rpmts ts)
 	rpmal al = (rpmteType(p) == TR_REMOVED) ? 
 		   erasedPackages : tsmem->addedPackages;
 	rpmds requires = rpmdsInit(rpmteDS(p, RPMTAG_REQUIRENAME));
+	rpmds recommends = rpmdsInit(rpmteDS(p, RPMTAG_RECOMMENDNAME));
+	rpmds suggests = rpmdsInit(rpmteDS(p, RPMTAG_SUGGESTNAME));
+	rpmds supplements = rpmdsInit(rpmteDS(p, RPMTAG_SUPPLEMENTNAME));
+	rpmds enhances = rpmdsInit(rpmteDS(p, RPMTAG_ENHANCENAME));
 	rpmds order = rpmdsInit(rpmteDS(p, RPMTAG_ORDERNAME));
 
 	while (rpmdsNext(requires) >= 0) {
 	    /* Record next "q <- p" relation (i.e. "p" requires "q"). */
-	    (void) addRelation(ts, al, p, requires);
+	    (void) addRelation(ts, al, p, requires, 0);
+	}
+
+	while (rpmdsNext(recommends) >= 0) {
+	    /* Record next "q <- p" relation (i.e. "p" recommends "q"). */
+	    (void) addRelation(ts, al, p, recommends, 0);
+	}
+
+	while (rpmdsNext(suggests) >= 0) {
+	    /* Record next "q <- p" relation (i.e. "p" suggests "q"). */
+	    (void) addRelation(ts, al, p, suggests, 0);
 	}
 
 	while (rpmdsNext(order) >= 0) {
 	    /* Record next "q <- p" ordering request */
-	    (void) addRelation(ts, al, p, order);
+	    (void) addRelation(ts, al, p, order, 0);
+	}
+
+	while (rpmdsNext(supplements) >= 0) {
+	    /* Record next "p -> q" relation (i.e. "q" supplemented by "p"). */
+	    (void) addRelation(ts, al, p, supplements, 1);
+	}
+
+	while (rpmdsNext(enhances) >= 0) {
+	    /* Record next "p <- q" relation (i.e. "q" is enhanced by  "p"). */
+	    (void) addRelation(ts, al, p, enhances, 1);
 	}
     }
 
-    seenColls = argvFree(seenColls);
     rpmtsiFree(pi);
 
     newOrder = xcalloc(tsmem->orderCount, sizeof(*newOrder));
