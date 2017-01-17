@@ -23,11 +23,24 @@ static rpmRC (*rpmpythonRunFile_p) (rpmpython python, const char * fn, char ** r
 static rpmRC (*rpmpythonRun_p) (rpmpython python, const char * str, char ** resultp);
 
 static void loadModule(void) {
-    char *librpmpython = rpmExpand("%{?rpmpython_modpath}%{?!rpmpython_modpath:%{python_sitearch}/rpm}/_rpm.so", NULL);
+    char *pattern = rpmExpand("%{?rpmpython_modpath}%{?!rpmpython_modpath:%{python_sitearch}/rpm}/_rpm*.so", NULL);
+    const char *librpmpython = pattern;
     void *h = NULL;
     Dl_info info;
+    ARGV_t files = NULL;
 
-    if (!(h = dlopen(librpmpython, RTLD_NOW|RTLD_GLOBAL|RTLD_DEEPBIND))) {
+    if (_rpmpython_debug)
+        rpmlog(RPMLOG_DEBUG, " %8s (pattern) %s\n", __func__, pattern);
+
+
+    /* Python 3 has additional suffix in front of just .so for extensions
+     * if built with distutils (setup.py), while using .so if built with
+     * make, so need to support both */
+    if (rpmGlob(librpmpython, NULL, &files) != 0) {
+	rpmlog(RPMLOG_WARNING, "\"%s\" does not exist, "
+		    "embedded python will not be available\n",
+		librpmpython);
+    } else if (!(h = dlopen((librpmpython = *files), RTLD_NOW|RTLD_GLOBAL|RTLD_DEEPBIND))) {
 	rpmlog(RPMLOG_WARNING, "Unable to open \"%s\" (%s), "
 		    "embedded python will not be available\n",
 		librpmpython, dlerror());
@@ -45,11 +58,15 @@ static void loadModule(void) {
     } else
 	_dlopened = 1;
 
+    if (_rpmpython_debug)
+        rpmlog(RPMLOG_DEBUG, " %8s (librpmpython, %d) %s\n", __func__, _dlopened, librpmpython);
+
     if (h && !_dlopened && dlclose (h))
 	    rpmlog(RPMLOG_WARNING, "Error closing library \"%s\": %s", librpmpython,
 		    dlerror());
 
-    free(librpmpython);
+    argvFree(files);
+    free(pattern);
 }
 
 rpmpython rpmpythonFree(rpmpython python)
