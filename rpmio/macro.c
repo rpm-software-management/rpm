@@ -1185,21 +1185,24 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 #ifdef	ENABLE_PYTHON
 	if (STREQ("python", f, fn)) {
 		rpmpython python = NULL;
-		char *scriptbuf = xmalloc(gn + 1);
+		char *scriptbuf;
 		char *printbuf = NULL;
-		if (g != NULL && gn > 0)
-		    memcpy(scriptbuf, g, gn);
-		scriptbuf[gn] = '\0';
-		python = rpmpythonNew(NULL, 0);
-		if (rpmpythonRun(python, scriptbuf, &printbuf) != RPMRC_OK)
+
+		if (!(python = rpmpythonNew(NULL, 0)))
 		    rc = 1;
 		else {
-		  if (printbuf != NULL && *printbuf != '\0') {
-		      mbAppendStr(mb, printbuf);
-		      free(printbuf);
-		  }
+		    scriptbuf = xmalloc(gn + 1);
+		    if (g != NULL && gn > 0)
+			memcpy(scriptbuf, g, gn);
+		    scriptbuf[gn] = '\0';
+		    if (rpmpythonRun(python, scriptbuf, &printbuf) != RPMRC_OK)
+			rc = 1;
+		    else if (printbuf != NULL && *printbuf != '\0') {
+			mbAppendStr(mb, printbuf);
+			free(printbuf);
+		    }
+		    free(scriptbuf);
 		}
-		free(scriptbuf);
 		s = se;
 		continue;
 	}
