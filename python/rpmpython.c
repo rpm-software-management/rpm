@@ -1,4 +1,3 @@
-#ifdef ENABLE_PYTHON
 #include <Python.h>
 #if PY_VERSION_HEX < 0x03050000 && PY_VERSION_HEX >= 0x03000000
 #include <fileutils.h>
@@ -157,4 +156,3 @@ fprintf(stderr, "==> %s(%p,%s,%p)\n", __FUNCTION__, python, str, resultp);
     }
     return rc;
 }
-#endif
