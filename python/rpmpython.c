@@ -1,4 +1,4 @@
-#ifdef WITH_PYTHONEMBED
+#ifdef ENABLE_PYTHON
 #include <Python.h>
 #if PY_VERSION_HEX < 0x03050000 && PY_VERSION_HEX >= 0x03000000
 #include <fileutils.h>

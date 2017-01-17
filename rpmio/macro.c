@@ -34,7 +34,7 @@ extern int optind;
 #include "rpmio/rpmlua.h"
 #endif
 
-#ifdef WITH_PYTHONEMBED
+#ifdef ENABLE_PYTHON
 #include "python/rpmpython.h"
 #endif
 
@@ -1182,7 +1182,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	}
 #endif
 
-#ifdef	WITH_PYTHONEMBED
+#ifdef	ENABLE_PYTHON
 	if (STREQ("python", f, fn)) {
 		rpmpython python = NULL;
 		char *scriptbuf = xmalloc(gn + 1);

@@ -1,6 +1,6 @@
 #include "system.h"
 
-#ifdef WITH_PYTHONEMBED
+#ifdef ENABLE_PYTHON
 
 #include <dlfcn.h>
 #include <rpm/rpmlog.h>

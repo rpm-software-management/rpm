@@ -633,6 +633,7 @@ AS_IF([test "$enable_python" = yes],[
   AM_PATH_PYTHON([2.6],[
     WITH_PYTHON_INCLUDE=`${PYTHON} -c 'from distutils.sysconfig import *; import sys; sys.stdout.write(get_python_inc())'`
     WITH_PYTHON_SUBPACKAGE=1
+    AC_DEFINE(ENABLE_PYTHON, 1, [build rpm python bindings])
     save_CPPFLAGS="$CPPFLAGS"
     CPPFLAGS="$CPPFLAGS -I$WITH_PYTHON_INCLUDE"
     AC_CHECK_HEADER([Python.h],[],
@@ -802,16 +803,6 @@ AS_IF([test "$with_lua" != no],[
   AC_SUBST(LUA_LIBS)
 ])
 AM_CONDITIONAL(WITH_LUA,[test "$with_lua" = yes])
-
-dnl # Python embedding
-AC_ARG_ENABLE([pythonembed], [AS_HELP_STRING([--with-python-embedding], [extend build time macro interpreter with embedded python support])],,[with_pythonembed=yes])
-AS_IF([test "$with_pythonembed" = yes],[
-AC_DEFINE(WITH_PYTHONEMBED, 1, [Extend build time macro interpreter with embedded python support?])
-])
-AM_CONDITIONAL(WITH_PYTHONEMBED,[test "$with_pythonembed" = yes])
-WITH_PYTHONEMBED=-DWITH_PYTHONEMBED=1
-AC_SUBST(WITH_PYTHONEMBED)
-
 
 AC_ARG_ENABLE(plugins, [AS_HELP_STRING([--disable-plugins],[build without plugin support])],,[enable_plugins=yes])
 AS_IF([test "$enable_plugins" = yes],[
