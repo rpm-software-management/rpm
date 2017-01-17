@@ -26,7 +26,7 @@ static void loadModule(void) {
     char *librpmpython = rpmExpand("%{?rpmpython_modpath}%{?!rpmpython_modpath:%{python_sitearch}/rpm}/_rpm.so", NULL);
     void *h;
 
-    h = dlopen (librpmpython, RTLD_NOW|RTLD_GLOBAL|RTLD_DEEPBIND);
+    h = dlmopen(LM_ID_NEWLM, librpmpython, RTLD_LAZY);
     if (!h)
     {
 	rpmlog(RPMLOG_WARNING, "Unable to open \"%s\" (%s), "
