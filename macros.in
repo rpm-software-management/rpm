@@ -1139,10 +1139,11 @@ package or when debugging this package.\
 %apply_patch(qp:m:)\
 %{lua:\
 local file = rpm.expand("%{1}")\
+local num = rpm.expand("%{2}")\
 if posix.access(file, "r") then\
     local options = rpm.expand("%{-q} %{-p:-p%{-p*}} %{-m:-m%{-m*}}")\
     local scm_apply = rpm.expand("%__scm_apply_%{__scm}")\
-    print(rpm.expand("%{uncompress:"..file.."} | "..scm_apply.." "..options.."\\n"))\
+    print(rpm.expand("%{uncompress:"..file.."} | "..scm_apply.." "..options.."  "..file.." "..num.."\\n"))\
 else\
     print("echo 'Cannot read "..file.."'; exit 1;".."\\n")\
 end}
@@ -1152,7 +1153,7 @@ end}
 %{lua:\
 local options = rpm.expand("%{!-v:-q} %{-p:-p%{-p*}} ")\
 for i, p in ipairs(patches) do\
-    print(rpm.expand("%apply_patch -m %{basename:"..p.."}  "..options..p.."\\n"))\
+    print(rpm.expand("%apply_patch -m %{basename:"..p.."}  "..options..p.." "..i.."\\n"))\
 end}
 
 # One macro to (optionally) do it all.
