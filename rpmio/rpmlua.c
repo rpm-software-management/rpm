@@ -667,7 +667,9 @@ static int rpm_b64decode(lua_State *L)
 static int rpm_expand(lua_State *L)
 {
     const char *str = luaL_checkstring(L, 1);
-    char *val = rpmExpand(str, NULL);
+    char *val = NULL;
+    if (rpmExpandMacros(NULL, str, &val, 0) < 0)
+	return luaL_error(L, "error expanding macro");
     lua_pushstring(L, val);
     free(val);
     return 1;
@@ -676,7 +678,8 @@ static int rpm_expand(lua_State *L)
 static int rpm_define(lua_State *L)
 {
     const char *str = luaL_checkstring(L, 1);
-    (void) rpmDefineMacro(NULL, str, 0);
+    if (rpmDefineMacro(NULL, str, 0))
+	return luaL_error(L, "error defining macro");
     return 0;
 }
 
