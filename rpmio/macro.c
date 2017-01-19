@@ -591,13 +591,13 @@ exit:
 
 /**
  * Parse (and execute) macro undefinition.
- * @param mc		macro context
+ * @param mb		macro expansion state
  * @param se		macro name to undefine
  * @param slen		length of se argument
  * @return		address to continue parsing
  */
 static const char *
-doUndefine(rpmMacroContext mc, const char * se, size_t slen)
+doUndefine(MacroBuf mb, const char * se, size_t slen)
 {
     const char *s = se;
     char *buf = xmalloc(slen + 1);
@@ -618,7 +618,7 @@ doUndefine(rpmMacroContext mc, const char * se, size_t slen)
 	goto exit;
     }
 
-    popMacro(mc, n);
+    popMacro(mb->mc, n);
 
 exit:
     _free(buf);
@@ -1141,7 +1141,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    continue;
 	}
 	if (STREQ("undefine", f, fn)) {
-	    s = doUndefine(mb->mc, se, slen - (se - s));
+	    s = doUndefine(mb, se, slen - (se - s));
 	    continue;
 	}
 
