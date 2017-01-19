@@ -478,6 +478,7 @@ doDefine(MacroBuf mb, const char * se, size_t slen, int level, int expandbody)
     int c;
     int oc = ')';
     const char *sbody; /* as-is body start */
+    int rc = 1; /* assume failure */
 
     /* Copy name */
     COPYNAME(ne, s, c);
@@ -582,8 +583,11 @@ doDefine(MacroBuf mb, const char * se, size_t slen, int level, int expandbody)
     }
 
     pushMacro(mb->mc, n, o, b, (level - 1), ME_NONE);
+    rc = 0;
 
 exit:
+    if (rc)
+	mb->error = 1;
     _free(buf);
     _free(ebody);
     return se;
@@ -613,8 +617,8 @@ doUndefine(MacroBuf mb, const char * se, size_t slen)
 
     /* Names must start with alphabetic or _ and be at least 3 chars */
     if (!((c = *n) && (risalpha(c) || c == '_') && (ne - n) > 2)) {
-	rpmlog(RPMLOG_ERR,
-		_("Macro %%%s has illegal name (%%undefine)\n"), n);
+	rpmlog(RPMLOG_ERR, _("Macro %%%s has illegal name (%%undefine)\n"), n);
+	mb->error = 1;
 	goto exit;
     }
 
