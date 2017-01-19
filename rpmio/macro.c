@@ -797,6 +797,33 @@ doOutput(MacroBuf mb, int waserror, const char * msg, size_t msglen)
     _free(buf);
 }
 
+static int doLua(MacroBuf mb, const char * f, size_t fn, const char * g, size_t gn)
+{
+#ifdef WITH_LUA
+    rpmlua lua = NULL; /* Global state. */
+    char *scriptbuf = xmalloc(gn + 1);
+    char *printbuf;
+    int rc = 0;
+
+    if (g != NULL && gn > 0)
+	memcpy(scriptbuf, g, gn);
+    scriptbuf[gn] = '\0';
+    rpmluaPushPrintBuffer(lua);
+    if (rpmluaRunScript(lua, scriptbuf, NULL) == -1)
+	rc = 1;
+    printbuf = rpmluaPopPrintBuffer(lua);
+    if (printbuf) {
+	mbAppendStr(mb, printbuf);
+	free(printbuf);
+    }
+    free(scriptbuf);
+    return rc;
+#else
+    rpmlog(RPMLOG_ERR, _("<lua> scriptlet support not built in\n"));
+    return 1;
+#endif
+}
+
 /**
  * Execute macro primitives.
  * @param mb		macro expansion state
@@ -1153,27 +1180,11 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    continue;
 	}
 
-#ifdef	WITH_LUA
 	if (STREQ("lua", f, fn)) {
-	    rpmlua lua = NULL; /* Global state. */
-	    char *scriptbuf = xmalloc(gn + 1);
-	    char *printbuf;
-	    if (g != NULL && gn > 0) 
-		memcpy(scriptbuf, g, gn);
-	    scriptbuf[gn] = '\0';
-	    rpmluaPushPrintBuffer(lua);
-	    if (rpmluaRunScript(lua, scriptbuf, NULL) == -1)
-		rc = 1;
-	    printbuf = rpmluaPopPrintBuffer(lua);
-	    if (printbuf) {
-		mbAppendStr(mb, printbuf);
-		free(printbuf);
-	    }
-	    free(scriptbuf);
+	    rc = doLua(mb, f, fn, g, gn);
 	    s = se;
 	    continue;
 	}
-#endif
 
 	/* XXX necessary but clunky */
 	if (STREQ("basename", f, fn) ||
