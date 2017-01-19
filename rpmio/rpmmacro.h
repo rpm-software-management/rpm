@@ -75,8 +75,9 @@ int	rpmExpandMacros	(rpmMacroContext mc, const char * sbuf,
  * @param o		macro paramaters
  * @param b		macro body
  * @param level		macro recursion level (0 is entry API)
+ * @return		0 on success
  */
-void	rpmPushMacro	(rpmMacroContext mc, const char * n,
+int	rpmPushMacro	(rpmMacroContext mc, const char * n,
 				const char * o,
 				const char * b, int level);
 
@@ -84,8 +85,9 @@ void	rpmPushMacro	(rpmMacroContext mc, const char * n,
  * Pop macro from context.
  * @param mc		macro context (NULL uses global context).
  * @param n		macro name
+ * @return		0 on success
  */
-void	rpmPopMacro	(rpmMacroContext mc, const char * n);
+int	rpmPopMacro	(rpmMacroContext mc, const char * n);
 
 /** \ingroup rpmmacro
  * Define macro in context.

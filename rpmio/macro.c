@@ -1513,19 +1513,21 @@ rpmDumpMacroTable(rpmMacroContext mc, FILE * fp)
     rpmmctxRelease(mc);
 }
 
-void rpmPushMacro(rpmMacroContext mc,
+int rpmPushMacro(rpmMacroContext mc,
 	      const char * n, const char * o, const char * b, int level)
 {
     mc = rpmmctxAcquire(mc);
     pushMacro(mc, n, o, b, level, ME_NONE);
     rpmmctxRelease(mc);
+    return 0;
 }
 
-void rpmPopMacro(rpmMacroContext mc, const char * n)
+int rpmPopMacro(rpmMacroContext mc, const char * n)
 {
     mc = rpmmctxAcquire(mc);
     popMacro(mc, n);
     rpmmctxRelease(mc);
+    return 0;
 }
 
 int
