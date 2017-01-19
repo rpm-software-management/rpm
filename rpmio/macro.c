@@ -733,6 +733,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 	if (c == '?' || strchr(opts, c) == NULL) {
 	    rpmlog(RPMLOG_ERR, _("Unknown option %c in %s(%s)\n"),
 			(char)optopt, me->name, opts);
+	    mb->error = 1;
 	    goto exit;
 	}
 
