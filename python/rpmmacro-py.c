@@ -2,6 +2,7 @@
 
 #include <rpm/rpmmacro.h>
 
+#include "header-py.h"	/* XXX for pyrpmError, doh */
 #include "rpmmacro-py.h"
 
 PyObject *
@@ -37,7 +38,7 @@ PyObject *
 rpmmacro_ExpandMacro(PyObject * self, PyObject * args, PyObject * kwds)
 {
     const char *macro;
-    PyObject *res;
+    PyObject *res = NULL;
     int num = 0;
     char * kwlist[] = {"macro", "numeric", NULL};
 
@@ -47,8 +48,11 @@ rpmmacro_ExpandMacro(PyObject * self, PyObject * args, PyObject * kwds)
     if (num) {
 	res = Py_BuildValue("i", rpmExpandNumeric(macro));
     } else {
-	char *str = rpmExpand(macro, NULL);
-	res = Py_BuildValue("s", str);
+	char *str = NULL;
+	if (rpmExpandMacros(NULL, macro, &str, 0) < 0)
+	    PyErr_SetString(pyrpmError, "error expanding macro");
+	else
+	    res = Py_BuildValue("s", str);
 	free(str);
     }
     return res;
