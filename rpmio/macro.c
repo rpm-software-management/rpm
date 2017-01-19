@@ -990,8 +990,8 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 		_("Too many levels of recursion in macro expansion. It is likely caused by recursive macro declaration.\n"));
 	mb->depth--;
 	mb->expand_trace = 1;
-	_free(source);
-	return 1;
+	rc = 1;
+	goto exit;
     }
 
     while (rc == 0 && (c = *s) != '\0') {
@@ -1288,6 +1288,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     mb->depth--;
     if (rc != 0 || mb->expand_trace)
 	printExpansion(mb, mb->buf+tpos, mb->buf+mb->tpos);
+exit:
     _free(source);
     return rc;
 }
