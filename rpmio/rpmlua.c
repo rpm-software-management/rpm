@@ -683,6 +683,13 @@ static int rpm_define(lua_State *L)
     return 0;
 }
 
+static int rpm_undefine(lua_State *L)
+{
+    const char *str = luaL_checkstring(L, 1);
+    rpmPopMacro(NULL, str);
+    return 0;
+}
+
 static int rpm_load(lua_State *L)
 {
     const char *str = luaL_checkstring(L, 1);
@@ -893,6 +900,7 @@ static const luaL_Reg rpmlib[] = {
     {"b64decode", rpm_b64decode},
     {"expand", rpm_expand},
     {"define", rpm_define},
+    {"undefine", rpm_undefine},
     {"load", rpm_load},
     {"register", rpm_register},
     {"unregister", rpm_unregister},
