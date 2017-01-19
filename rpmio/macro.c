@@ -1418,12 +1418,14 @@ static void popMacro(rpmMacroContext mc, const char * n)
 static int defineMacro(rpmMacroContext mc, const char * macro, int level)
 {
     MacroBuf mb = xcalloc(1, sizeof(*mb));
+    int rc;
 
     /* XXX just enough to get by */
     mb->mc = mc;
     (void) doDefine(mb, macro, strlen(macro), level, 0);
+    rc = mb->error;
     _free(mb);
-    return 0;
+    return rc;
 }
 
 static int loadMacroFile(rpmMacroContext mc, const char * fn)
@@ -1529,10 +1531,11 @@ void rpmPopMacro(rpmMacroContext mc, const char * n)
 int
 rpmDefineMacro(rpmMacroContext mc, const char * macro, int level)
 {
+    int rc;
     mc = rpmmctxAcquire(mc);
-    (void) defineMacro(mc, macro, level);
+    rc = defineMacro(mc, macro, level);
     rpmmctxRelease(mc);
-    return 0;
+    return rc;
 }
 
 void
