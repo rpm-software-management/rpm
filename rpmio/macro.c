@@ -100,6 +100,7 @@ typedef struct MacroBuf_s {
     size_t tpos;		/*!< Current position in expansion buffer */
     size_t nb;			/*!< No. bytes remaining in expansion buffer. */
     int depth;			/*!< Current expansion depth. */
+    int error;			/*!< Errors encountered during expansion? */
     int macro_trace;		/*!< Pre-print macro to expand? */
     int expand_trace;		/*!< Post-print macro expansion? */
     rpmMacroContext mc;
@@ -384,15 +385,18 @@ static int
 expandThis(MacroBuf mb, const char * src, size_t slen, char **target)
 {
     struct MacroBuf_s umb;
-    int rc;
 
     /* Copy other state from "parent", but we want a buffer of our own */
     umb = *mb;
     umb.buf = NULL;
-    rc = expandMacro(&umb, src, slen);
+    umb.error = 0;
+    /* In case of error, flag it in the "parent"... */
+    if (expandMacro(&umb, src, slen))
+	mb->error = 1;
     *target = umb.buf;
 
-    return rc;
+    /* ...but return code for this operation specifically */
+    return umb.error;
 }
 
 static void mbAppend(MacroBuf mb, char c)
@@ -422,22 +426,19 @@ static void mbAppendStr(MacroBuf mb, const char *str)
  * @param mb		macro expansion state
  * @param cmd		shell command
  * @param clen		no. bytes in shell command
- * @return		result of expansion
  */
-static int
+static void
 doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
 {
     char *buf = NULL;
     FILE *shf;
-    int rc = 0;
     int c;
 
-    rc = expandThis(mb, cmd, clen, &buf);
-    if (rc)
+    if (expandThis(mb, cmd, clen, &buf))
 	goto exit;
 
     if ((shf = popen(buf, "r")) == NULL) {
-	rc = 1;
+	mb->error = 1;
 	goto exit;
     }
 
@@ -455,7 +456,6 @@ doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
 
 exit:
     _free(buf);
-    return rc;
 }
 
 /**
@@ -797,30 +797,28 @@ doOutput(MacroBuf mb, int waserror, const char * msg, size_t msglen)
     _free(buf);
 }
 
-static int doLua(MacroBuf mb, const char * f, size_t fn, const char * g, size_t gn)
+static void doLua(MacroBuf mb, const char * f, size_t fn, const char * g, size_t gn)
 {
 #ifdef WITH_LUA
     rpmlua lua = NULL; /* Global state. */
     char *scriptbuf = xmalloc(gn + 1);
     char *printbuf;
-    int rc = 0;
 
     if (g != NULL && gn > 0)
 	memcpy(scriptbuf, g, gn);
     scriptbuf[gn] = '\0';
     rpmluaPushPrintBuffer(lua);
     if (rpmluaRunScript(lua, scriptbuf, NULL) == -1)
-	rc = 1;
+	mb->error = 1;
     printbuf = rpmluaPopPrintBuffer(lua);
     if (printbuf) {
 	mbAppendStr(mb, printbuf);
 	free(printbuf);
     }
     free(scriptbuf);
-    return rc;
 #else
     rpmlog(RPMLOG_ERR, _("<lua> scriptlet support not built in\n"));
-    return 1;
+    mb->error = 1;
 #endif
 }
 
@@ -956,7 +954,6 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     const char *g, *ge;
     size_t fn, gn, tpos;
     int c;
-    int rc = 0;
     int negate;
     const char * lastc;
     int chkexist;
@@ -990,11 +987,11 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 		_("Too many levels of recursion in macro expansion. It is likely caused by recursive macro declaration.\n"));
 	mb->depth--;
 	mb->expand_trace = 1;
-	rc = 1;
+	mb->error = 1;
 	goto exit;
     }
 
-    while (rc == 0 && (c = *s) != '\0') {
+    while (mb->error == 0 && (c = *s) != '\0') {
 	s++;
 	/* Copy text until next macro */
 	switch(c) {
@@ -1056,14 +1053,14 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	case '(':		/* %(...) shell escape */
 	    if ((se = matchchar(s, c, ')')) == NULL) {
 		rpmlog(RPMLOG_ERR, _("Unterminated %c: %s\n"), (char)c, s);
-		rc = 1;
+		mb->error = 1;
 		continue;
 	    }
 	    if (mb->macro_trace)
 		printMacro(mb, s, se+1);
 
 	    s++;	/* skip ( */
-	    rc = doShellEscape(mb, s, (se - s));
+	    doShellEscape(mb, s, (se - s));
 	    se++;	/* skip ) */
 
 	    s = se;
@@ -1072,7 +1069,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	case '{':		/* %{...}/%{...:...} substitution */
 	    if ((se = matchchar(s, c, '}')) == NULL) {
 		rpmlog(RPMLOG_ERR, _("Unterminated %c: %s\n"), (char)c, s);
-		rc = 1;
+		mb->error = 1;
 		continue;
 	    }
 	    f = s+1;/* skip { */
@@ -1128,6 +1125,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 		/* Print failure iff %{load:...} or %{!?load:...} */
 		if (loadMacroFile(mb->mc, arg) && chkexist == negate) {
 		    rpmlog(RPMLOG_ERR, _("failed to load macro file %s"), arg);
+		    mb->error = 1;
 		}
 	    }
 	    free(arg);
@@ -1181,7 +1179,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	}
 
 	if (STREQ("lua", f, fn)) {
-	    rc = doLua(mb, f, fn, g, gn);
+	    doLua(mb, f, fn, g, gn);
 	    s = se;
 	    continue;
 	}
@@ -1224,10 +1222,10 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    }
 
 	    if (g && g < ge) {		/* Expand X in %{-f:X} */
-		rc = expandMacro(mb, g, gn);
+		expandMacro(mb, g, gn);
 	    } else
 		if (me && me->body && *me->body) {/* Expand %{-f}/%{-f*} */
-		    rc = expandMacro(mb, me->body, 0);
+		    expandMacro(mb, me->body, 0);
 		}
 	    s = se;
 	    continue;
@@ -1241,10 +1239,10 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 		continue;
 	    }
 	    if (g && g < ge) {		/* Expand X in %{?f:X} */
-		rc = expandMacro(mb, g, gn);
+		expandMacro(mb, g, gn);
 	    } else
 		if (me && me->body && *me->body) { /* Expand %{?f}/%{?f*} */
-		    rc = expandMacro(mb, me->body, 0);
+		    expandMacro(mb, me->body, 0);
 		}
 	    s = se;
 	    continue;
@@ -1271,7 +1269,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 
 	/* Recursively expand body of macro */
 	if (me->body && *me->body) {
-	    rc = expandMacro(mb, me->body, 0);
+	    expandMacro(mb, me->body, 0);
 	}
 
 	/* Free args for "%name " macros with opts */
@@ -1286,11 +1284,11 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     if (prevcnt != mc->defcnt)
 	freeArgs(mb, 0);
     mb->depth--;
-    if (rc != 0 || mb->expand_trace)
+    if (mb->error != 0 || mb->expand_trace)
 	printExpansion(mb, mb->buf+tpos, mb->buf+mb->tpos);
 exit:
     _free(source);
-    return rc;
+    return mb->error;
 }
 
 
