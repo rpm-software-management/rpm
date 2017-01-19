@@ -972,15 +972,15 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	/* Copy text until next macro */
 	switch(c) {
 	case '%':
-		if (*s) {	/* Ensure not end-of-string. */
-		    if (*s != '%')
-			break;
-		    s++;	/* skip first % in %% */
-		}
+	    if (*s) {	/* Ensure not end-of-string. */
+		if (*s != '%')
+		    break;
+		s++;	/* skip first % in %% */
+	    }
 	default:
-		mbAppend(mb, c);
-		continue;
-		break;
+	    mbAppend(mb, c);
+	    continue;
+	    break;
 	}
 
 	/* Expand next macro */
@@ -993,188 +993,185 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	chkexist = 0;
 	switch ((c = *s)) {
 	default:		/* %name substitution */
-		while (*s != '\0' && strchr("!?", *s) != NULL) {
-			switch(*s++) {
-			case '!':
-				negate = ((negate + 1) % 2);
-				break;
-			case '?':
-				chkexist++;
-				break;
-			}
-		}
-		f = se = s;
-		if (*se == '-')
-			se++;
-		while((c = *se) && (risalnum(c) || c == '_'))
-			se++;
-		/* Recognize non-alnum macros too */
-		switch (*se) {
-		case '*':
-			se++;
-			if (*se == '*') se++;
+	    while (*s != '\0' && strchr("!?", *s) != NULL) {
+		switch(*s++) {
+		    case '!':
+			negate = ((negate + 1) % 2);
 			break;
-		case '#':
-			se++;
-			break;
-		default:
+		    case '?':
+			chkexist++;
 			break;
 		}
-		fe = se;
-		/* For "%name " macros ... */
-		if ((c = *fe) && isblank(c))
-			if ((lastc = strchr(fe,'\n')) == NULL)
-                lastc = strchr(fe, '\0');
+	    }
+	    f = se = s;
+	    if (*se == '-')
+		se++;
+	    while((c = *se) && (risalnum(c) || c == '_'))
+		se++;
+	    /* Recognize non-alnum macros too */
+	    switch (*se) {
+	    case '*':
+		se++;
+		if (*se == '*') se++;
 		break;
+	    case '#':
+		se++;
+		break;
+	    default:
+		break;
+	    }
+	    fe = se;
+	    /* For "%name " macros ... */
+	    if ((c = *fe) && isblank(c))
+		if ((lastc = strchr(fe,'\n')) == NULL)
+		    lastc = strchr(fe, '\0');
+	    break;
 	case '(':		/* %(...) shell escape */
-		if ((se = matchchar(s, c, ')')) == NULL) {
-			rpmlog(RPMLOG_ERR,
-				_("Unterminated %c: %s\n"), (char)c, s);
-			rc = 1;
-			continue;
-		}
-		if (mb->macro_trace)
-			printMacro(mb, s, se+1);
-
-		s++;	/* skip ( */
-		rc = doShellEscape(mb, s, (se - s));
-		se++;	/* skip ) */
-
-		s = se;
+	    if ((se = matchchar(s, c, ')')) == NULL) {
+		rpmlog(RPMLOG_ERR, _("Unterminated %c: %s\n"), (char)c, s);
+		rc = 1;
 		continue;
-		break;
+	    }
+	    if (mb->macro_trace)
+		printMacro(mb, s, se+1);
+
+	    s++;	/* skip ( */
+	    rc = doShellEscape(mb, s, (se - s));
+	    se++;	/* skip ) */
+
+	    s = se;
+	    continue;
+	    break;
 	case '{':		/* %{...}/%{...:...} substitution */
-		if ((se = matchchar(s, c, '}')) == NULL) {
-			rpmlog(RPMLOG_ERR,
-				_("Unterminated %c: %s\n"), (char)c, s);
-			rc = 1;
-			continue;
+	    if ((se = matchchar(s, c, '}')) == NULL) {
+		rpmlog(RPMLOG_ERR, _("Unterminated %c: %s\n"), (char)c, s);
+		rc = 1;
+		continue;
+	    }
+	    f = s+1;/* skip { */
+	    se++;	/* skip } */
+	    while (strchr("!?", *f) != NULL) {
+		switch(*f++) {
+		case '!':
+		    negate = ((negate + 1) % 2);
+		    break;
+		case '?':
+		    chkexist++;
+		    break;
 		}
-		f = s+1;/* skip { */
-		se++;	/* skip } */
-		while (strchr("!?", *f) != NULL) {
-			switch(*f++) {
-			case '!':
-				negate = ((negate + 1) % 2);
-				break;
-			case '?':
-				chkexist++;
-				break;
-			}
-		}
-		for (fe = f; (c = *fe) && !strchr(" :}", c);)
-			fe++;
-		switch (c) {
-		case ':':
-			g = fe + 1;
-			ge = se - 1;
-			break;
-		case ' ':
-			lastc = se-1;
-			break;
-		default:
-			break;
-		}
+	    }
+	    for (fe = f; (c = *fe) && !strchr(" :}", c);)
+		fe++;
+	    switch (c) {
+	    case ':':
+		g = fe + 1;
+		ge = se - 1;
 		break;
+	    case ' ':
+		lastc = se-1;
+		break;
+	    default:
+		break;
+	    }
+	    break;
 	}
 
 	/* XXX Everything below expects fe > f */
 	fn = (fe - f);
 	gn = (ge - g);
 	if ((fe - f) <= 0) {
-/* XXX Process % in unknown context */
-		c = '%';	/* XXX only need to save % */
-		mbAppend(mb, c);
+	    /* XXX Process % in unknown context */
+	    c = '%';	/* XXX only need to save % */
+	    mbAppend(mb, c);
 #if 0
-		rpmlog(RPMLOG_ERR,
-			_("A %% is followed by an unparseable macro\n"));
+	    rpmlog(RPMLOG_ERR,
+		    _("A %% is followed by an unparseable macro\n"));
 #endif
-		s = se;
-		continue;
+	    s = se;
+	    continue;
 	}
 
 	if (mb->macro_trace)
-		printMacro(mb, s, se);
+	    printMacro(mb, s, se);
 
 	/* Expand builtin macros */
 	if (STREQ("load", f, fn)) {
-		char *arg = NULL;
-		if (g && gn > 0 && expandThis(mb, g, gn, &arg) == 0) {
-			/* Print failure iff %{load:...} or %{!?load:...} */
-			if (loadMacroFile(mb->mc, arg) && chkexist == negate) {
-				rpmlog(RPMLOG_ERR,
-				       _("failed to load macro file %s"), arg);
-			}
+	    char *arg = NULL;
+	    if (g && gn > 0 && expandThis(mb, g, gn, &arg) == 0) {
+		/* Print failure iff %{load:...} or %{!?load:...} */
+		if (loadMacroFile(mb->mc, arg) && chkexist == negate) {
+		    rpmlog(RPMLOG_ERR, _("failed to load macro file %s"), arg);
 		}
-		free(arg);
-		s = se;
-		continue;
+	    }
+	    free(arg);
+	    s = se;
+	    continue;
 	}
 	if (STREQ("global", f, fn)) {
-		s = doDefine(mb, se, slen - (se - s), RMIL_GLOBAL, 1);
-		continue;
+	    s = doDefine(mb, se, slen - (se - s), RMIL_GLOBAL, 1);
+	    continue;
 	}
 	if (STREQ("define", f, fn)) {
-		s = doDefine(mb, se, slen - (se - s), mb->depth, 0);
-		continue;
+	    s = doDefine(mb, se, slen - (se - s), mb->depth, 0);
+	    continue;
 	}
 	if (STREQ("undefine", f, fn)) {
-		s = doUndefine(mb->mc, se, slen - (se - s));
-		continue;
+	    s = doUndefine(mb->mc, se, slen - (se - s));
+	    continue;
 	}
 
 	if (STREQ("echo", f, fn) ||
-	    STREQ("warn", f, fn) ||
-	    STREQ("error", f, fn)) {
-		int waserror = 0;
-		if (STREQ("error", f, fn))
-			waserror = 1;
-		if (g != NULL && g < ge)
-			doOutput(mb, waserror, g, gn);
-		else
-			doOutput(mb, waserror, f, fn);
-		s = se;
-		continue;
+		STREQ("warn", f, fn) ||
+		STREQ("error", f, fn)) {
+	    int waserror = 0;
+	    if (STREQ("error", f, fn))
+		waserror = 1;
+	    if (g != NULL && g < ge)
+		doOutput(mb, waserror, g, gn);
+	    else
+		doOutput(mb, waserror, f, fn);
+	    s = se;
+	    continue;
 	}
 
 	if (STREQ("trace", f, fn)) {
-		/* XXX TODO restore expand_trace/macro_trace to 0 on return */
-		mb->expand_trace = mb->macro_trace = (negate ? 0 : mb->depth);
-		if (mb->depth == 1) {
-			print_macro_trace = mb->macro_trace;
-			print_expand_trace = mb->expand_trace;
-		}
-		s = se;
-		continue;
+	    /* XXX TODO restore expand_trace/macro_trace to 0 on return */
+	    mb->expand_trace = mb->macro_trace = (negate ? 0 : mb->depth);
+	    if (mb->depth == 1) {
+		print_macro_trace = mb->macro_trace;
+		print_expand_trace = mb->expand_trace;
+	    }
+	    s = se;
+	    continue;
 	}
 
 	if (STREQ("dump", f, fn)) {
-		rpmDumpMacroTable(mb->mc, NULL);
-		while (iseol(*se))
-			se++;
-		s = se;
-		continue;
+	    rpmDumpMacroTable(mb->mc, NULL);
+	    while (iseol(*se))
+		se++;
+	    s = se;
+	    continue;
 	}
 
 #ifdef	WITH_LUA
 	if (STREQ("lua", f, fn)) {
-		rpmlua lua = NULL; /* Global state. */
-		char *scriptbuf = xmalloc(gn + 1);
-		char *printbuf;
-		if (g != NULL && gn > 0) 
-		    memcpy(scriptbuf, g, gn);
-		scriptbuf[gn] = '\0';
-		rpmluaPushPrintBuffer(lua);
-		if (rpmluaRunScript(lua, scriptbuf, NULL) == -1)
-		    rc = 1;
-		printbuf = rpmluaPopPrintBuffer(lua);
-		if (printbuf) {
-		    mbAppendStr(mb, printbuf);
-		    free(printbuf);
-		}
-		free(scriptbuf);
-		s = se;
-		continue;
+	    rpmlua lua = NULL; /* Global state. */
+	    char *scriptbuf = xmalloc(gn + 1);
+	    char *printbuf;
+	    if (g != NULL && gn > 0) 
+		memcpy(scriptbuf, g, gn);
+	    scriptbuf[gn] = '\0';
+	    rpmluaPushPrintBuffer(lua);
+	    if (rpmluaRunScript(lua, scriptbuf, NULL) == -1)
+		rc = 1;
+	    printbuf = rpmluaPopPrintBuffer(lua);
+	    if (printbuf) {
+		mbAppendStr(mb, printbuf);
+		free(printbuf);
+	    }
+	    free(scriptbuf);
+	    s = se;
+	    continue;
 	}
 #endif
 
@@ -1191,11 +1188,12 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    STREQ("getconfdir", f, fn) ||
 	    STREQ("S", f, fn) ||
 	    STREQ("P", f, fn) ||
-	    STREQ("F", f, fn)) {
-		/* FIX: verbose may be set */
-		doFoo(mb, negate, f, fn, g, gn);
-		s = se;
-		continue;
+	    STREQ("F", f, fn))
+	{
+	    /* FIX: verbose may be set */
+	    doFoo(mb, negate, f, fn, g, gn);
+	    s = se;
+	    continue;
 	}
 
 	/* Expand defined macros */
@@ -1208,66 +1206,66 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 
 	/* XXX Special processing for flags */
 	if (*f == '-') {
-		if ((me == NULL && !negate) ||	/* Without -f, skip %{-f...} */
+	    if ((me == NULL && !negate) ||	/* Without -f, skip %{-f...} */
 		    (me != NULL && negate)) {	/* With -f, skip %{!-f...} */
-			s = se;
-			continue;
-		}
-
-		if (g && g < ge) {		/* Expand X in %{-f:X} */
-			rc = expandMacro(mb, g, gn);
-		} else
-		if (me && me->body && *me->body) {/* Expand %{-f}/%{-f*} */
-			rc = expandMacro(mb, me->body, 0);
-		}
 		s = se;
 		continue;
+	    }
+
+	    if (g && g < ge) {		/* Expand X in %{-f:X} */
+		rc = expandMacro(mb, g, gn);
+	    } else
+		if (me && me->body && *me->body) {/* Expand %{-f}/%{-f*} */
+		    rc = expandMacro(mb, me->body, 0);
+		}
+	    s = se;
+	    continue;
 	}
 
 	/* XXX Special processing for macro existence */
 	if (chkexist) {
-		if ((me == NULL && !negate) ||	/* Without -f, skip %{?f...} */
+	    if ((me == NULL && !negate) ||	/* Without -f, skip %{?f...} */
 		    (me != NULL && negate)) {	/* With -f, skip %{!?f...} */
-			s = se;
-			continue;
-		}
-		if (g && g < ge) {		/* Expand X in %{?f:X} */
-			rc = expandMacro(mb, g, gn);
-		} else
-		if (me && me->body && *me->body) { /* Expand %{?f}/%{?f*} */
-			rc = expandMacro(mb, me->body, 0);
-		}
 		s = se;
 		continue;
+	    }
+	    if (g && g < ge) {		/* Expand X in %{?f:X} */
+		rc = expandMacro(mb, g, gn);
+	    } else
+		if (me && me->body && *me->body) { /* Expand %{?f}/%{?f*} */
+		    rc = expandMacro(mb, me->body, 0);
+		}
+	    s = se;
+	    continue;
 	}
 	
 	if (me == NULL) {	/* leave unknown %... as is */
-		/* XXX hack to permit non-overloaded %foo to be passed */
-		c = '%';	/* XXX only need to save % */
-		mbAppend(mb, c);
-		continue;
+	    /* XXX hack to permit non-overloaded %foo to be passed */
+	    c = '%';	/* XXX only need to save % */
+	    mbAppend(mb, c);
+	    continue;
 	}
 
 	/* Setup args for "%name " macros with opts */
 	if (me && me->opts != NULL) {
-		if (lastc != NULL) {
-			se = grabArgs(mb, me, fe, lastc);
-		} else {
-			pushMacro(mb->mc, "**", NULL, "", mb->depth, ME_AUTO);
-			pushMacro(mb->mc, "*", NULL, "", mb->depth, ME_AUTO);
-			pushMacro(mb->mc, "#", NULL, "0", mb->depth, ME_AUTO);
-			pushMacro(mb->mc, "0", NULL, me->name, mb->depth, ME_AUTO);
-		}
+	    if (lastc != NULL) {
+		se = grabArgs(mb, me, fe, lastc);
+	    } else {
+		pushMacro(mb->mc, "**", NULL, "", mb->depth, ME_AUTO);
+		pushMacro(mb->mc, "*", NULL, "", mb->depth, ME_AUTO);
+		pushMacro(mb->mc, "#", NULL, "0", mb->depth, ME_AUTO);
+		pushMacro(mb->mc, "0", NULL, me->name, mb->depth, ME_AUTO);
+	    }
 	}
 
 	/* Recursively expand body of macro */
 	if (me->body && *me->body) {
-		rc = expandMacro(mb, me->body, 0);
+	    rc = expandMacro(mb, me->body, 0);
 	}
 
 	/* Free args for "%name " macros with opts */
 	if (me->opts != NULL)
-		freeArgs(mb, 1);
+	    freeArgs(mb, 1);
 
 	s = se;
     }
