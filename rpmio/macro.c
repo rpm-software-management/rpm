@@ -58,6 +58,7 @@ struct rpmMacroContext_s {
     rpmMacroEntry *tab;  /*!< Macro entry table (array of pointers). */
     int n;      /*!< No. of macros. */
     unsigned int defcnt; /*!< Non-global define tracking */
+    int depth;		 /*!< Depth tracking when recursing from Lua  */
     pthread_mutex_t lock;
     pthread_mutexattr_t lockattr;
 };
@@ -808,13 +809,17 @@ static void doLua(MacroBuf mb, const char * f, size_t fn, const char * g, size_t
     rpmlua lua = NULL; /* Global state. */
     char *scriptbuf = xmalloc(gn + 1);
     char *printbuf;
+    rpmMacroContext mc = mb->mc;
+    int odepth = mc->depth;
 
     if (g != NULL && gn > 0)
 	memcpy(scriptbuf, g, gn);
     scriptbuf[gn] = '\0';
     rpmluaPushPrintBuffer(lua);
+    mc->depth = mb->depth;
     if (rpmluaRunScript(lua, scriptbuf, NULL) == -1)
 	mb->error = 1;
+    mc->depth = odepth;
     printbuf = rpmluaPopPrintBuffer(lua);
     if (printbuf) {
 	mbAppendStr(mb, printbuf);
@@ -1305,7 +1310,7 @@ static int doExpandMacros(rpmMacroContext mc, const char *src, char **target)
     int rc = 0;
 
     mb->buf = NULL;
-    mb->depth = 0;
+    mb->depth = mc->depth;
     mb->macro_trace = print_macro_trace;
     mb->expand_trace = print_expand_trace;
     mb->mc = mc;
