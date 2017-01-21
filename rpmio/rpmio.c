@@ -808,8 +808,7 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 		     * Therefore the memory limit should be higher if running on a 64 bit
 		     * kernel, so we increase it to 3,5GiB.
 		     */
-		    uname(&u);
-		    if (strstr(u.machine, "64") || strstr(u.machine, "s390x")
+		    if (uname(&u) >= 0 && (strstr(u.machine, "64") || strstr(u.machine, "s390x"))
 #if defined(__linux__)
 				    || ((personality(0xffffffff) & PER_MASK) == PER_LINUX32)
 #endif
