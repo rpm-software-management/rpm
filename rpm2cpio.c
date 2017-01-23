@@ -38,6 +38,10 @@ int main(int argc, char *argv[])
 		(argc == 1 ? "<stdin>" : argv[1]), Fstrerror(fdi));
 	exit(EXIT_FAILURE);
     }
+    if (isatty(STDOUT_FILENO)) {
+	fprintf(stderr, "%s: refusing to output cpio data to a terminal.\n");
+	exit(EXIT_FAILURE);
+    }
     fdo = fdDup(STDOUT_FILENO);
 
     {	rpmts ts = rpmtsCreate();
