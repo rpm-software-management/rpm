@@ -201,6 +201,9 @@ struct poptOption rpmQueryPoptTable[] = {
  { "noghost", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_fflags, RPMFILE_GHOST,
         N_("skip %%ghost files"), NULL },
+ { "noconfig", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.qva_fflags, RPMFILE_CONFIG,
+        N_("skip %%config files"), NULL },
 
  { "qf", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, 0, 
 	POPT_QUERYFORMAT, NULL, NULL },

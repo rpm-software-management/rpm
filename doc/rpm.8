@@ -73,7 +73,8 @@ Dependencies:
 Files:
  [\fB-c,--configfiles\fR] [\fB-d,--docfiles\fR] [\fB--dump\fR] [\fB--fileclass\fR]
  [\fB--filecolor\fR] [\fB--fileprovide\fR][\fB--filerequire\fR] [\fB--filecaps\fR]
- [\fB--filesbypkg\fR] [\fB-l,--list\fR] [\fB-s,--state\fR] [\fB--noghost\fR]
+ [\fB--filesbypkg\fR] [\fB-l,--list\fR] [\fB-s,--state\fR]
+ [\fB--noghost\fR] [\fB--noconfig\fR]
 .PP
 Scripts and triggers:
  [\fB--filetriggers\fR] [\fB--scripts\fR] [\fB--triggers,--triggerscripts\fR]
@@ -707,6 +708,8 @@ the package.
 .TP
 \fB--noghost\fR
 Don't display ghost files. Useful in combination with option --list.
+\fB--noconfig\fR
+Don't display config files.
 .TP
 \fB--xml\fR
 Format package headers as XML.
@@ -744,6 +747,9 @@ Don't verify any attributes of package files.
 .TP
 \fB--noghost\fR
 Don't verify ghost files.
+.TP
+\fB--noconfig\fR
+Don't verify config files.
 .TP
 \fB--noscripts\fR
 Don't execute the \fB%verifyscript\fR scriptlet (if any).
