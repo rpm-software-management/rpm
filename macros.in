@@ -210,6 +210,10 @@ package or when debugging this package.\
 #	Any older entry is not packaged in binary packages.
 %_changelog_trimtime	0
 
+#	If true, set the SOURCE_DATE_EPOCH environment variable
+#	to the timestamp of the topmost changelog entry
+%source_date_epoch_from_changelog 0
+
 #	The directory where newly built binary packages will be written.
 %_rpmdir		%{_topdir}/RPMS
 

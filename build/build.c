@@ -209,6 +209,21 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
     int test = (what & RPMBUILD_NOBUILD);
     char *cookie = buildArgs->cookie ? xstrdup(buildArgs->cookie) : NULL;
 
+    if (rpmExpandNumeric("%{?source_date_epoch_from_changelog}") &&
+	getenv("SOURCE_DATE_EPOCH") == NULL) {
+	/* Use date of first (== latest) changelog entry */
+	Header h = spec->packages->header;
+	struct rpmtd_s td;
+	if (headerGet(h, RPMTAG_CHANGELOGTIME, &td, (HEADERGET_MINMEM|HEADERGET_RAW))) {
+	    char sdestr[22];
+	    snprintf(sdestr, sizeof(sdestr), "%lli",
+		     (long long) rpmtdGetNumber(&td));
+	    rpmlog(RPMLOG_NOTICE, _("setting %s=%s\n"), "SOURCE_DATE_EPOCH", sdestr);
+	    setenv("SOURCE_DATE_EPOCH", sdestr, 0);
+	    rpmtdFreeData(&td);
+	}
+    }
+
     /* XXX TODO: rootDir is only relevant during build, eliminate from spec */
     spec->rootDir = buildArgs->rootdir;
     if (!spec->recursing && spec->BACount) {
