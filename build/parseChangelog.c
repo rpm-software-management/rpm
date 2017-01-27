@@ -207,6 +207,7 @@ static rpmRC addChangelog(Header h, ARGV_const_t sb)
     time_t trimtime = rpmExpandNumeric("%{?_changelog_trimtime}");
     char *date, *name, *text, *next;
     int date_words;      /* number of words in date string */
+    int want_sde = rpmExpandNumeric("%{?source_date_epoch_from_changelog}");
 
     s = sp = argvJoin(sb, "");
 
@@ -286,6 +287,13 @@ static rpmRC addChangelog(Header h, ARGV_const_t sb)
 	    *s-- = '\0';
 	}
 	
+	if (want_sde && getenv("SOURCE_DATE_EPOCH") == NULL) {
+	    char sdestr[22];
+	    snprintf(sdestr, sizeof(sdestr), "%lli", (long long)time);
+	    //rpmlog(RPMLOG_NOTICE, _("setting %s=%s\n"), "SOURCE_DATE_EPOCH", sdestr); FIXME: this message broke rpmspec tests 008 and 295
+	    setenv("SOURCE_DATE_EPOCH", sdestr, 0);
+	    want_sde = 0;
+	}
 	if ( !trimtime || time >= trimtime ) {
 	    addChangelogEntry(h, time, name, text);
 	} else break;
