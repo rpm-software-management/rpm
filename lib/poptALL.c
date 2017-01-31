@@ -159,6 +159,10 @@ static void rpmcliAllArgCallback( poptContext con,
     case RPMCLI_POPT_NOHDRCHK:
 	rpmcliQueryFlags |= VERIFY_HDRCHK;
 	break;
+
+    case RPMCLI_POPT_TARGETPLATFORM:
+	rpmcliInitialized = rpmReadConfigFiles(rpmcliRcfile, arg);
+	break;
     }
 }
 
@@ -182,6 +186,8 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "eval", 'E', POPT_ARG_STRING, 0, 'E',
 	N_("print macro expansion of EXPR"),
 	N_("'EXPR'") },
+ { "target", '\0', POPT_ARG_STRING, NULL,  RPMCLI_POPT_TARGETPLATFORM,
+        N_("Specify target platform"), N_("CPU-VENDOR-OS") },
  { "macros", '\0', POPT_ARG_STRING, &macrofiles, 0,
 	N_("read <FILE:...> instead of default file(s)"),
 	N_("<FILE:...>") },
