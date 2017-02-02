@@ -106,7 +106,7 @@ static rpmRC selinux_scriptlet_fork_post(rpmPlugin plugin,
 	goto exit;
     if (getfilecon(path, &fcon) < 0)
 	goto exit;
-    if (security_compute_create(mycon, fcon, SECCLASS_PROCESS, &newcon) < 0)
+    if (security_compute_create(mycon, fcon, string_to_security_class("process"), &newcon) < 0)
 	goto exit;
 
     if (rstreq(mycon, newcon)) {
