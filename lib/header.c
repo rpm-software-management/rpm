@@ -209,6 +209,8 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
 	if (end > info->offset)
 	    return i;
 
+	if (info->tag < HEADER_IMAGE)
+	    return i;
 	if (hdrchkType(info->type))
 	    return i;
 	if (hdrchkAlign(info->type, info->offset))
@@ -430,6 +432,9 @@ static int regionSwab(indexEntry entry, int il, int dl,
 	ie.info.count = ntohl(pe->count);
 	ie.info.offset = ntohl(pe->offset);
 
+	if (regionid != 0 && (ie.info.tag >= RPMTAG_HEADERIMAGE &&
+			      ie.info.tag < RPMTAG_HEADERREGIONS))
+	    return -1;
 	if (hdrchkType(ie.info.type))
 	    return -1;
 	if (hdrchkData(ie.info.count))
