@@ -237,6 +237,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     Header sigh = NULL;
     HeaderIterator hi = NULL;
     char * msg = NULL;
+    char *result = NULL;
     int res = 1; /* assume failure */
     rpmRC rc;
     int failed = 0;
@@ -282,13 +283,13 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 
     hi = headerInitIterator(sigh);
     for (; headerNext(hi, &sigtd) != 0; rpmtdFreeData(&sigtd)) {
-	char *result = NULL;
 	DIGEST_CTX ctx = NULL;
 	if (sigtd.data == NULL) /* XXX can't happen */
 	    continue;
 
 	/* Clean up parameters from previous sigtag. */
 	sig = pgpDigParamsFree(sig);
+	result = _free(result);
 
 	/* Note: we permit failures to be ignored via disablers */
 	rc = rpmSigInfoParse(&sigtd, "package", &sinfo, &sig, &result);
@@ -311,7 +312,6 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 	    formatResult(sigtd.tag, rc, result,
 		     (rc == RPMRC_NOKEY ? &missingKeys : &untrustedKeys),
 		     &buf);
-	    free(result);
 	}
 
 	if (rc != RPMRC_OK) {
@@ -340,6 +340,7 @@ exit:
     if (res && msg != NULL)
 	rpmlog(RPMLOG_ERR, "%s: %s\n", fn, msg);
     free(msg);
+    free(result);
     free(buf);
     rpmDigestBundleFree(hdrbundle);
     rpmDigestBundleFree(plbundle);
