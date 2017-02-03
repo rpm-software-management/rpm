@@ -297,10 +297,10 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 	    continue;
 	if (nodigests &&  sinfo.type == RPMSIG_DIGEST_TYPE)
 	    continue;
-	if (sinfo.type == RPMSIG_OTHER_TYPE)
+	if (sinfo.type == RPMSIG_UNKNOWN_TYPE)
 	    continue;
 
-	if (rc == RPMRC_OK) {
+	if (sinfo.type != RPMSIG_OTHER_TYPE && rc == RPMRC_OK) {
 	    ctx = rpmDigestBundleDupCtx(sinfo.payload ? plbundle : hdrbundle,
 					sinfo.hashalgo);
 	    rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, &result);
