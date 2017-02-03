@@ -129,6 +129,12 @@ static const size_t headerMaxbytes = (256*1024*1024);
 #define hdrchkTags(_ntags)      ((_ntags) & (~HEADER_TAGS_MAX))
 
 /**
+ * Sanity check on tag values.
+ * Catches out nasties like negative values and multiple regions.
+ **/
+#define hdrchkTag(_tag) ((_tag) < HEADER_I18NTABLE)
+
+/**
  * Sanity check on type values.
  */
 #define hdrchkType(_type) ((_type) < RPM_MIN_TYPE || (_type) > RPM_MAX_TYPE)
@@ -255,6 +261,8 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
 	if (end > info.offset)
 	    goto err;
 
+	if (hdrchkTag(info.tag))
+	    goto err;
 	if (hdrchkType(info.type))
 	    goto err;
 	if (hdrchkAlign(info.type, info.offset))
