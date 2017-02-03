@@ -1895,6 +1895,7 @@ rpmRC hdrblobRead(FD_t fd, int magic, int exact_size, rpmTagVal regionTag, hdrbl
 exit:
     if (rc != RPMRC_OK) {
 	free(ei);
+	blob->ei = NULL;
 	if (emsg && *emsg && regionTag == RPMTAG_HEADERSIGNATURES) {
 	    /* rstrscat() cannot handle overlap even if it claims so */
 	    char *tmp = rstrscat(NULL, _("signature "), *emsg, NULL);
