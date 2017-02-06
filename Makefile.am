@@ -260,7 +260,7 @@ MAINTAINERCLEANFILES = ChangeLog
 # Build hacking docs only on request
 if HACKINGDOCS
 if DOXYGEN
-doc/hacking.doxy: doc/hacking.doxy.in doc/hacking/Doxyheader Makefile.am
+doc/hacking.doxy: doc/hacking.doxy.in doc/hacking/Doxyheader.h Makefile.am
 	$(SED) \
 	  -e "s,\@top_srcdir\@/,$(top_srcdir)/,g" \
 	  -e "s,[@]HAVE_DOT[@],$(HAVE_DOT)," \
@@ -273,12 +273,12 @@ doc/hacking/html/index.html: doc/hacking.doxy rpmpopt-@VERSION@
 noinst_DATA += doc/hacking/html/index.html
 endif
 endif
-EXTRA_DIST += doc/hacking.doxy.in doc/hacking/Doxyheader
+EXTRA_DIST += doc/hacking.doxy.in doc/hacking/Doxyheader.h
 
 # Always build librpm docs
 if DOXYGEN
-doc/librpm.doxy: doc/librpm.doxy.in doc/librpm/Doxyheader Makefile.am configure.ac $(pkginclude_HEADERS)
-	files=`echo " $(HEADERS)" | $(SED) -e "s, , \@top_srcdir\@/,g"`; \
+doc/librpm.doxy: doc/librpm.doxy.in doc/librpm/Doxyheader.h Makefile.am configure.ac $(pkginclude_HEADERS)
+	files=`echo " $(pkginclude_HEADERS)" | $(SED) -e "s, , \@top_srcdir\@/,g"`; \
 	$(SED) -e "s,[@]pkginclude_HEADERS[@],$$files," \
 	  -e "s,\@top_srcdir\@/,$(top_srcdir)/,g" \
 	  -e "s,[@]HAVE_DOT[@],$(HAVE_DOT)," \
@@ -290,7 +290,7 @@ doc/librpm/html/index.html: doc/librpm.doxy
 	@DOXYGEN@ doc/librpm.doxy
 noinst_DATA += doc/librpm/html/index.html
 endif
-EXTRA_DIST += doc/librpm.doxy.in doc/librpm/Doxyheader
+EXTRA_DIST += doc/librpm.doxy.in doc/librpm/Doxyheader.h
 EXTRA_DIST += doc/librpm/html
 
 if WITH_INTERNAL_DB
