@@ -753,7 +753,7 @@ WARN_LOGFILE           =
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = @top_srcdir@/doc/hacking/Doxyheader \
+INPUT                  = @top_srcdir@/doc/hacking/Doxyheader.h \
                          @top_srcdir@/config.h \
                          @top_srcdir@/debug.h \
                          @top_srcdir@/macros \
