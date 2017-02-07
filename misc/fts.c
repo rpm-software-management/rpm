@@ -31,6 +31,11 @@
 static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #endif /* LIBC_SCCS and not lint */
 
+/* This file is expected to exist for any Linux libc */
+#if defined(linux)
+#include <features.h>
+#endif
+
 /* Conditional to set up proper fstat64 implementation */
 #if defined(hpux) || defined(sun)
 #   define FTS_FSTAT64(_fd, _sbp)   fstat((_fd), (_sbp))
