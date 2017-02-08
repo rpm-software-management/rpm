@@ -753,7 +753,7 @@ static inline int is_correct_db(rpmpkgdb pkgdb)
 	return 0;
     if (fstat(pkgdb->fd, &stb2))
 	return 0;
-    return stb1.st_dev == stb2.st_dev && stb1.st_ino == stb1.st_ino;
+    return stb1.st_dev == stb2.st_dev && stb1.st_ino == stb2.st_ino;
 }
 
 static inline int reopen_db(rpmpkgdb pkgdb)
