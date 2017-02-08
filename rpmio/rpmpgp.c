@@ -852,12 +852,14 @@ static int pgpPrtPkt(struct pgpPkt *p, pgpDigParams _digp)
     case PGPTAG_USER_ID:
 	rc = pgpPrtUserID(p->tag, p->body, p->blen, _digp);
 	break;
+    case PGPTAG_RESERVED:
+	rc = -1;
+	break;
     case PGPTAG_COMMENT:
     case PGPTAG_COMMENT_OLD:
     case PGPTAG_PUBLIC_SUBKEY:
     case PGPTAG_SECRET_KEY:
     case PGPTAG_SECRET_SUBKEY:
-    case PGPTAG_RESERVED:
     case PGPTAG_PUBLIC_SESSION_KEY:
     case PGPTAG_SYMMETRIC_SESSION_KEY:
     case PGPTAG_COMPRESSED_DATA:
