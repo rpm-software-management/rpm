@@ -69,7 +69,7 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
     pid_t pid;
     pid_t child;
     int status;
-    rpmRC rc;
+    rpmRC rc = RPMRC_FAIL; /* assume failure */
     
     switch (what) {
     case RPMBUILD_PREP:
@@ -118,13 +118,11 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
     fd = rpmMkTempFile(spec->rootDir, &scriptName);
     if (Ferror(fd)) {
 	rpmlog(RPMLOG_ERR, _("Unable to open temp file: %s\n"), Fstrerror(fd));
-	rc = RPMRC_FAIL;
 	goto exit;
     }
 
     if ((fp = fdopen(Fileno(fd), "w")) == NULL) {
 	rpmlog(RPMLOG_ERR, _("Unable to open stream: %s\n"), strerror(errno));
-	rc = RPMRC_FAIL;
 	goto exit;
     }
     
@@ -151,7 +149,6 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
     }
     
     if (buildDir && buildDir[0] != '/') {
-	rc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -176,14 +173,12 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
     if (pid == -1) {
 	rpmlog(RPMLOG_ERR, _("Error executing scriptlet %s (%s)\n"),
 		 scriptName, name);
-	rc = RPMRC_FAIL;
 	goto exit;
     }
 
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmlog(RPMLOG_ERR, _("Bad exit status from %s (%s)\n"),
 		 scriptName, name);
-	rc = RPMRC_FAIL;
     } else
 	rc = RPMRC_OK;
     
