@@ -384,6 +384,15 @@ unsigned int pgpCRC(const uint8_t *octets, size_t len)
     return crc & 0xffffff;
 }
 
+static int pgpVersion(const uint8_t *h, size_t hlen, uint8_t *version)
+{
+    if (hlen < 1)
+	return -1;
+
+    *version = h[0];
+    return 0;
+}
+
 static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype, 
 			 pgpDigParams _digp)
 {
@@ -530,10 +539,13 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
 static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 		     pgpDigParams _digp)
 {
-    uint8_t version = h[0];
+    uint8_t version = 0;
     uint8_t * p;
     size_t plen;
-    int rc;
+    int rc = 1;
+
+    if (pgpVersion(h, hlen, &version))
+	return rc;
 
     switch (version) {
     case 3:
@@ -628,7 +640,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	rc = pgpPrtSigParams(tag, v->pubkey_algo, v->sigtype, p, h, hlen, _digp);
     }	break;
     default:
-	rpmlog(RPMLOG_WARNING, _("Unsupported version of key: V%d\n"), h[0]);
+	rpmlog(RPMLOG_WARNING, _("Unsupported version of key: V%d\n"), version);
 	rc = 1;
 	break;
     }
@@ -686,10 +698,13 @@ static int pgpPrtPubkeyParams(uint8_t pubkey_algo,
 static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
 		     pgpDigParams _digp)
 {
-    uint8_t version = *h;
+    uint8_t version = 0;
     const uint8_t * p = NULL;
     time_t t;
     int rc = 1;
+
+    if (pgpVersion(h, hlen, &version))
+	return rc;
 
     /* We only permit V4 keys, V3 keys are long long since deprecated */
     switch (version) {
@@ -739,9 +754,13 @@ static int getFingerprint(const uint8_t *h, size_t hlen, pgpKeyID_t keyid)
     int rc = -1; /* assume failure */
     const uint8_t *se;
     const uint8_t *pend = h + hlen;
+    uint8_t version = 0;
+
+    if (pgpVersion(h, hlen, &version))
+	return rc;
 
     /* We only permit V4 keys, V3 keys are long long since deprecated */
-    switch (h[0]) {
+    switch (version) {
     case 4:
       {	pgpPktKeyV4 v = (pgpPktKeyV4) (h);
 	int mpis = -1;
@@ -783,7 +802,7 @@ static int getFingerprint(const uint8_t *h, size_t hlen, pgpKeyID_t keyid)
 
       }	break;
     default:
-	rpmlog(RPMLOG_WARNING, _("Unsupported version of key: V%d\n"), h[0]);
+	rpmlog(RPMLOG_WARNING, _("Unsupported version of key: V%d\n"), version);
     }
     return rc;
 }
