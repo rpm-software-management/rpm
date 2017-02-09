@@ -401,7 +401,7 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 
     while (hlen > 0) {
 	i = pgpLen(p, hlen, &plen);
-	if (i == 0 || i + plen > hlen)
+	if (i == 0 || plen < 1 || i + plen > hlen)
 	    break;
 
 	p += i;
