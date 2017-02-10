@@ -32,7 +32,7 @@ otherstuff
 AT_CLEANUP
 
 # Install over existing config file
-AT_SETUP([install config(noreplace) on existiting file])
+AT_SETUP([install config(noreplace) on existing file])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
@@ -44,19 +44,25 @@ rm -rf "${TOPDIR}"
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
 	--define "filedata foo" \
+	--define "noreplace 1" \
           /data/SPECS/configtest.spec
 
 echo "otherstuff" > "${cf}"
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
+cat "${cf}.rpmnew"
 runroot rpm -e configtest
-cat "${cf}.rpmorig"
+cat "${cf}.rpmsave"
+cat "${cf}.rpmnew"
 ],
 [0],
-[foo
+[otherstuff
+foo
 otherstuff
+foo
 ],
-[warning: /etc/my.conf saved as /etc/my.conf.rpmorig]
+[warning: /etc/my.conf created as /etc/my.conf.rpmnew
+warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
 )
 AT_CLEANUP
 
