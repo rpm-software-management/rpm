@@ -469,6 +469,7 @@ static rpmRC parseForAttr(rpmstrPool pool, char * buf, int def, FileEntry entry)
 {
     const char *name = def ? "%defattr" : "%attr";
     char *p, *pe, *q = NULL;
+    char *attr_parameters = NULL;
     int x;
     struct AttrRec_s arbuf;
     AttrRec ar = &arbuf;
@@ -506,6 +507,10 @@ static rpmRC parseForAttr(rpmstrPool pool, char * buf, int def, FileEntry entry)
     /* Localize. Erase parsed string */
     q = xmalloc((pe-p) + 1);
     rstrlcpy(q, p, (pe-p) + 1);
+
+    attr_parameters = xmalloc((pe-p) + 1);
+    rstrlcpy(attr_parameters, p, (pe-p) + 1);
+
     while (p <= pe)
 	*p++ = ' ';
 
@@ -534,7 +539,7 @@ static rpmRC parseForAttr(rpmstrPool pool, char * buf, int def, FileEntry entry)
     }
 
     if (!(ar->ar_fmodestr && ar->ar_user && ar->ar_group) || *p != '\0') {
-	rpmlog(RPMLOG_ERR, _("Bad syntax: %s(%s)\n"), name, q);
+	rpmlog(RPMLOG_ERR, _("Bad syntax: %s(%s)\n"), name, attr_parameters);
 	goto exit;
     }
 
@@ -543,7 +548,7 @@ static rpmRC parseForAttr(rpmstrPool pool, char * buf, int def, FileEntry entry)
 	unsigned int ui;
 	x = sscanf(rpmstrPoolStr(pool, ar->ar_fmodestr), "%o", &ui);
 	if ((x == 0) || (ar->ar_fmode & ~MYALLPERMS)) {
-	    rpmlog(RPMLOG_ERR, _("Bad mode spec: %s(%s)\n"), name, q);
+	    rpmlog(RPMLOG_ERR, _("Bad mode spec: %s(%s)\n"), name, attr_parameters);
 	    goto exit;
 	}
 	ar->ar_fmode = ui;
@@ -555,7 +560,7 @@ static rpmRC parseForAttr(rpmstrPool pool, char * buf, int def, FileEntry entry)
 	unsigned int ui;
 	x = sscanf(rpmstrPoolStr(pool, ar->ar_dmodestr), "%o", &ui);
 	if ((x == 0) || (ar->ar_dmode & ~MYALLPERMS)) {
-	    rpmlog(RPMLOG_ERR, _("Bad dirmode spec: %s(%s)\n"), name, q);
+	    rpmlog(RPMLOG_ERR, _("Bad dirmode spec: %s(%s)\n"), name, attr_parameters);
 	    goto exit;
 	}
 	ar->ar_dmode = ui;
@@ -579,6 +584,7 @@ static rpmRC parseForAttr(rpmstrPool pool, char * buf, int def, FileEntry entry)
 
 exit:
     free(q);
+    free(attr_parameters);
     
     return rc;
 }
