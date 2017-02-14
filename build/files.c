@@ -377,6 +377,7 @@ static rpmRC parseForDev(char * buf, FileEntry cur)
     const char * errstr = NULL;
     char *p, *pe, *q = NULL;
     rpmRC rc = RPMRC_FAIL;	/* assume error */
+    char *attr_parameters = NULL;
 
     if ((p = strstr(buf, (name = "%dev"))) == NULL)
 	return RPMRC_OK;
@@ -402,6 +403,10 @@ static rpmRC parseForDev(char * buf, FileEntry cur)
     /* Localize. Erase parsed string */
     q = xmalloc((pe-p) + 1);
     rstrlcpy(q, p, (pe-p) + 1);
+
+    attr_parameters = xmalloc((pe-p) + 1);
+    rstrlcpy(attr_parameters, p, (pe-p) + 1);
+
     while (p <= pe)
 	*p++ = ' ';
 
@@ -451,8 +456,9 @@ static rpmRC parseForDev(char * buf, FileEntry cur)
 
 exit:
     if (rc) {
-	rpmlog(RPMLOG_ERR, _("Missing %s in %s %s\n"), errstr, name, p);
+	rpmlog(RPMLOG_ERR, _("Missing %s in %s(%s)\n"), errstr, name, attr_parameters);
     }
+    free(attr_parameters);
     free(q);
     return rc;
 }
