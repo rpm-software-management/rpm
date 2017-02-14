@@ -111,10 +111,17 @@ for f in files:
             path_item = f
             metadata = FileMetadata(f)
         dist = Distribution.from_location(path_item, dist_name, metadata)
-        # Check if py_version is defined in the file
+        # Check if py_version is defined in the metadata file/directory name
         if not dist.py_version:
-            warn("Version for {!r} has not been found".format(dist), RuntimeWarning)
-            continue
+            # Try to parse the Python version from the path the metadata
+            # resides at (e.g. /usr/lib/pythonX.Y/site-packages/...)
+            import re
+            res = re.search(r"/python(?P<pyver>\d+\.\d)/", path_item)
+            if res:
+                dist.py_version = res.group('pyver')
+            else:
+                warn("Version for {!r} has not been found".format(dist), RuntimeWarning)
+                continue
         if Provides_PyMajorVer_Variant or PyMajorVer_Deps or legacy_Provides or legacy:
             # Get the Python major version
             pyver_major = dist.py_version.split('.')[0]
