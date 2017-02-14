@@ -6,12 +6,6 @@ if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
 	exit 0
 fi
 
-# If we don't have a python interpreter, avoid changing anything.
-default_python=${1:-/usr/bin/python}
-if [ ! -x "$default_python" ]; then
-	exit 0
-fi
-
 # Figure out how deep we need to descend.  We could pick an insanely high
 # number and hope it's enough, but somewhere, somebody's sure to run into it.
 depth=`(find "$RPM_BUILD_ROOT" -type f -name "*.py" -print0 ; echo /) | \
@@ -86,7 +80,12 @@ done
 
 
 # Handle other locations in the filesystem using the default python
-# implementation:
+# implementation - if we  have a default python interpreter
+
+default_python=${1:-/usr/bin/python}
+if [ ! -x "$default_python" ]; then
+	exit 0
+fi
 
 # Generate normal (.pyc) byte-compiled files.
 python_bytecompile "" $default_python "/bin/|/sbin/|/usr/lib(64)?/python[0-9]\.[0-9]|/usr/share/doc" "$RPM_BUILD_ROOT" "$depth" "/"
