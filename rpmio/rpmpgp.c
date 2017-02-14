@@ -536,12 +536,25 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
     return rc;
 }
 
+static int pgpGet(const uint8_t *s, size_t nbytes, const uint8_t *send,
+		  unsigned int *valp)
+{
+    int rc = -1;
+
+    if (s + nbytes <= send) {
+	*valp = pgpGrab(s, nbytes);
+	rc = 0;
+    }
+
+    return rc;
+}
+
 static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 		     pgpDigParams _digp)
 {
     uint8_t version = 0;
     uint8_t * p;
-    size_t plen;
+    unsigned int plen;
     int rc = 1;
 
     if (pgpVersion(h, hlen, &version))
@@ -597,7 +610,8 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	pgpPrtNL();
 
 	p = &v->hashlen[0];
-	plen = pgpGrab(v->hashlen, sizeof(v->hashlen));
+	if (pgpGet(v->hashlen, sizeof(v->hashlen), h + hlen, &plen))
+	    return 1;
 	p += sizeof(v->hashlen);
 
 	if ((p + plen) > (h + hlen))
@@ -611,7 +625,8 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	    return 1;
 	p += plen;
 
-	plen = pgpGrab(p,2);
+	if (pgpGet(p, 2, h + hlen, &plen))
+	    return 1;
 	p += 2;
 
 	if ((p + plen) > (h + hlen))
@@ -621,7 +636,8 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	    return 1;
 	p += plen;
 
-	plen = pgpGrab(p,2);
+	if (pgpGet(p, 2, h + hlen, &plen))
+	    return 1;
 	pgpPrtHex(" signhash16", p, 2);
 	pgpPrtNL();
 
