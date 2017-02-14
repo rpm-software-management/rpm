@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmstring.h>
+#include <rpm/rpmmacro.h>
 #include "lib/rpmdb_internal.h"
 #include "debug.h"
 
@@ -35,10 +36,21 @@ dbDetectBackend(rpmdb rdb)
 {
 #ifdef ENABLE_NDB
     const char *dbhome = rpmdbHome(rdb);
+    char *db_backend = rpmExpand("%{?_db_backend}");
+    if (!strcmp(db_backend, "ndb")) {
+	rdb->db_ops = &ndb_dbops;
+    } else {
+	rdb->db_ops = &db3_dbops;
+    }
+    free(db_backend);
+
     char *path = rstrscat(NULL, dbhome, "/Packages", NULL);
-    rdb->db_ops = &ndb_dbops;
     if (access(path, F_OK) == 0)
 	rdb->db_ops = &db3_dbops;
+    free(path);
+    path = rstrscat(NULL, dbhome, "/Packages.db", NULL);
+    if (access(path, F_OK) == 0)
+	rdb->db_ops = &ndb_dbops;
     free(path);
 #else
     rdb->db_ops = &db3_dbops;

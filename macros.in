@@ -602,6 +602,14 @@ package or when debugging this package.\
 
 #==============================================================================
 # ---- Database configuration macros.
+#
+# Select backend database. The following values are supported:
+# bdb Berkeley DB
+# ndb new data base format
+#
+%_db_backend	      bdb
+
+#
 #	Macros used to configure Berkley db parameters.
 #
 # rpmdb macro configuration values are a colon (or white space) separated
