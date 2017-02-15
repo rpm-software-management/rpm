@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2016-10-20 15:22+0300\n"
+"POT-Creation-Date: 2017-02-16 11:54+0200\n"
 "PO-Revision-Date: 2014-06-25 10:40+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Japanese (http://www.transifex.com/rpm-team/rpm/language/"
@@ -878,27 +878,27 @@ msgstr "不正な _docdir_fmt %s: %s\n"
 msgid "File not found by glob: %s\n"
 msgstr "ファイルが見つかりません (by glob): %s\n"
 
-#: build/files.c:1922
+#: build/files.c:1921
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr "他の形式で特別な %s を混ぜることはできません: %s\n"
 
-#: build/files.c:1938
+#: build/files.c:1937
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr "１ 行に複数のファイル: %s\n"
 
-#: build/files.c:2068
+#: build/files.c:2067
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "不正なファイル: %s: %s\n"
 
-#: build/files.c:2136
+#: build/files.c:2135
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "パッケージに含まれないファイルの検査中: %s\n"
 
-#: build/files.c:2149
+#: build/files.c:2148
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -907,19 +907,19 @@ msgstr ""
 "インストール済み(ただしパッケージに含まれない)ファイルが見つかりました:\n"
 "%s"
 
-#: build/files.c:2180
+#: build/files.c:2179
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "ファイルの処理中: %s\n"
 
-#: build/files.c:2194
+#: build/files.c:2193
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 "バイナリのアーキテクチャー (%d) がパッケージのアーキテクチャー (%d) と一致し"
 "ません。\n"
 
-#: build/files.c:2200
+#: build/files.c:2199
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "noarch パッケージ内にアーキテクチャ依存のバイナリー\n"
 
@@ -952,71 +952,71 @@ msgstr ""
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "ホスト名を正式なものにできません: %s\n"
 
-#: build/pack.c:366
+#: build/pack.c:351
 #, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "不明なペイロード圧縮: %s\n"
 
-#: build/pack.c:415
+#: build/pack.c:400
 msgid "Unable to create immutable header region.\n"
 msgstr "不変ヘッダー領域を作成できません。\n"
 
-#: build/pack.c:423
+#: build/pack.c:408
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: build/pack.c:435
+#: build/pack.c:420
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗: %s\n"
 
-#: build/pack.c:459
+#: build/pack.c:441
 msgid "Unable to write temp header\n"
 msgstr "一時ヘッダーの書き込みができません。\n"
 
-#: build/pack.c:468
+#: build/pack.c:450
 msgid "Bad CSA data\n"
 msgstr "不正な CSA データ\n"
 
-#: build/pack.c:479 build/pack.c:498 sign/rpmgensig.c:292 sign/rpmgensig.c:512
+#: build/pack.c:461 build/pack.c:480 sign/rpmgensig.c:292 sign/rpmgensig.c:512
 #: sign/rpmgensig.c:535 sign/rpmgensig.c:609 sign/rpmgensig.c:629
 #: sign/rpmgensig.c:785 sign/rpmgensig.c:820
 #, c-format
 msgid "Could not seek in file %s: %s\n"
 msgstr ""
 
-#: build/pack.c:490
+#: build/pack.c:472
 #, c-format
 msgid "Fread failed in file %s: %s\n"
 msgstr ""
 
-#: build/pack.c:524
+#: build/pack.c:506
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み完了: %s\n"
 
-#: build/pack.c:543
+#: build/pack.c:525
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr "「%s」を実行しています:\n"
 
-#: build/pack.c:546
+#: build/pack.c:528
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "「%s」の実行に失敗しました。\n"
 
-#: build/pack.c:550
+#: build/pack.c:532
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "パッケージ \"%s\" のチェックに失敗しました。\n"
 
-#: build/pack.c:597
+#: build/pack.c:579
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:614
+#: build/pack.c:596
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
@@ -3175,23 +3175,23 @@ msgstr ""
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed"
 msgstr ""
 
-#: lib/signature.c:369
+#: lib/signature.c:375
 msgid "Unable to reload signature header.\n"
 msgstr "署名ヘッダーの再読み込みができません。\n"
 
-#: lib/signature.c:445
+#: lib/signature.c:451
 msgid "Header "
 msgstr "ヘッダー "
 
-#: lib/signature.c:464
+#: lib/signature.c:470
 msgid "MD5 digest:"
 msgstr "MD5 ダイジェスト:"
 
-#: lib/signature.c:467
+#: lib/signature.c:473
 msgid "Header SHA1 digest:"
 msgstr "ヘッダー SHA1 ダイジェスト:"
 
-#: lib/signature.c:486
+#: lib/signature.c:492
 #, c-format
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)"
 msgstr ""
@@ -3306,77 +3306,77 @@ msgstr "失われたインデックス %d を生成しています、お待ち�
 msgid "cannot open %s index using %s - %s (%d)\n"
 msgstr ""
 
-#: lib/rpmdb.c:529
+#: lib/rpmdb.c:520
 msgid "no dbpath has been set\n"
 msgstr "dbpath が設定されていません\n"
 
-#: lib/rpmdb.c:1046
+#: lib/rpmdb.c:1037
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: スキップします。"
 
-#: lib/rpmdb.c:1064
+#: lib/rpmdb.c:1055
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "エラー(%d) - レコード #%d を %s に格納時\n"
 
-#: lib/rpmdb.c:1176
+#: lib/rpmdb.c:1167
 #, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s: 正規表現に失敗しました: %s\n"
 
-#: lib/rpmdb.c:1357
+#: lib/rpmdb.c:1348
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: regcomp に失敗しました: %s\n"
 
-#: lib/rpmdb.c:1520
+#: lib/rpmdb.c:1511
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: スキップします。"
 
-#: lib/rpmdb.c:1607
+#: lib/rpmdb.c:1598
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 "rpmdb: 破損したヘッダーインスタンス #%u を取得しました。スキップします。\n"
 
-#: lib/rpmdb.c:2140
+#: lib/rpmdb.c:2131
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ヘッダーを読むことができません (0x%x)\n"
 
-#: lib/rpmdb.c:2575
+#: lib/rpmdb.c:2566
 msgid "no dbpath has been set"
 msgstr "dbpath が設定されていません。"
 
-#: lib/rpmdb.c:2593
+#: lib/rpmdb.c:2584
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "ディレクトリー %s の作成に失敗しました: %s\n"
 
-#: lib/rpmdb.c:2627
+#: lib/rpmdb.c:2618
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "データベース中のヘッダー #%u は不正です -- スキップします。\n"
 
-#: lib/rpmdb.c:2640
+#: lib/rpmdb.c:2631
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "元々 %u にあったレコードを追加できません。\n"
 
-#: lib/rpmdb.c:2656
+#: lib/rpmdb.c:2647
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "データベースの再構築に失敗: オリジナルのデータベースは残っています。\n"
 
-#: lib/rpmdb.c:2664
+#: lib/rpmdb.c:2655
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースで置き換えるのに失敗!\n"
 
-#: lib/rpmdb.c:2666
+#: lib/rpmdb.c:2657
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "復元するには %s 内のファイルを %s 内のファイルで置き換えて下さい"
 
-#: lib/rpmdb.c:2677
+#: lib/rpmdb.c:2668
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリー %s の削除に失敗しました: %s\n"
@@ -3611,17 +3611,17 @@ msgstr "警告: "
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "メモリ割り当て (%u バイト) が NULL を返しました。\n"
 
-#: rpmio/rpmpgp.c:627 rpmio/rpmpgp.c:715 rpmio/rpmpgp.c:782
+#: rpmio/rpmpgp.c:659 rpmio/rpmpgp.c:750 rpmio/rpmpgp.c:821
 #, c-format
 msgid "Unsupported version of key: V%d\n"
 msgstr ""
 
-#: rpmio/rpmpgp.c:1081
+#: rpmio/rpmpgp.c:1122
 #, c-format
 msgid "V%d %s/%s %s, key ID %s"
 msgstr "V%d %s/%s %s、鍵 ID %s"
 
-#: rpmio/rpmpgp.c:1089
+#: rpmio/rpmpgp.c:1130
 msgid "(none)"
 msgstr "(なし)"
 

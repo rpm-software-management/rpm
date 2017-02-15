@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2016-10-20 15:22+0300\n"
+"POT-Creation-Date: 2017-02-16 11:54+0200\n"
 "PO-Revision-Date: 2014-06-25 10:40+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/rpm-team/rpm/"
@@ -899,27 +899,27 @@ msgstr ""
 msgid "File not found by glob: %s\n"
 msgstr "O arquivo não foi encontrado pelo glob: %s\n"
 
-#: build/files.c:1922
+#: build/files.c:1921
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:1938
+#: build/files.c:1937
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr ""
 
-#: build/files.c:2068
+#: build/files.c:2067
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Arquivo inválido: %s: %s\n"
 
-#: build/files.c:2136
+#: build/files.c:2135
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Procurando por arquivos desempacotados: %s\n"
 
-#: build/files.c:2149
+#: build/files.c:2148
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -928,17 +928,17 @@ msgstr ""
 "Arquivo(s) instalado(s) (mas não empacotado(s)) encontrado(s):\n"
 "%s"
 
-#: build/files.c:2180
+#: build/files.c:2179
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Processando arquivos: %s\n"
 
-#: build/files.c:2194
+#: build/files.c:2193
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 
-#: build/files.c:2200
+#: build/files.c:2199
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Binários dependentes de arquitetura no pacote noarch\n"
 
@@ -971,72 +971,72 @@ msgstr ""
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Não foi possível canonizar o nome de máquina: %s\n"
 
-#: build/pack.c:366
+#: build/pack.c:351
 #, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "Compactação de carga útil desconhecida: %s\n"
 
-#: build/pack.c:415
+#: build/pack.c:400
 msgid "Unable to create immutable header region.\n"
 msgstr "Não foi possível criar uma região de cabeçalho imutável.\n"
 
-#: build/pack.c:423
+#: build/pack.c:408
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Não foi possível abrir %s: %s\n"
 
-#: build/pack.c:435
+#: build/pack.c:420
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Não foi possível gravar o pacote: %s\n"
 
-#: build/pack.c:459
+#: build/pack.c:441
 msgid "Unable to write temp header\n"
 msgstr "Não foi possível gravar o cabeçalho temporário\n"
 
-#: build/pack.c:468
+#: build/pack.c:450
 msgid "Bad CSA data\n"
 msgstr "Dados CSA inválidos\n"
 
-#: build/pack.c:479 build/pack.c:498 sign/rpmgensig.c:292 sign/rpmgensig.c:512
+#: build/pack.c:461 build/pack.c:480 sign/rpmgensig.c:292 sign/rpmgensig.c:512
 #: sign/rpmgensig.c:535 sign/rpmgensig.c:609 sign/rpmgensig.c:629
 #: sign/rpmgensig.c:785 sign/rpmgensig.c:820
 #, c-format
 msgid "Could not seek in file %s: %s\n"
 msgstr ""
 
-#: build/pack.c:490
+#: build/pack.c:472
 #, c-format
 msgid "Fread failed in file %s: %s\n"
 msgstr ""
 
-#: build/pack.c:524
+#: build/pack.c:506
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Gravou: %s\n"
 
-#: build/pack.c:543
+#: build/pack.c:525
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr "Executando \"%s\":\n"
 
-#: build/pack.c:546
+#: build/pack.c:528
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "A execução de \"%s\" falhou.\n"
 
-#: build/pack.c:550
+#: build/pack.c:532
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "Falha na verificação \"%s\" do pacote.\n"
 
-#: build/pack.c:597
+#: build/pack.c:579
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 "Não foi possível gerar o nome de arquivo de saída para o pacote %s: %s\n"
 
-#: build/pack.c:614
+#: build/pack.c:596
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "Não foi possível criar %s: %s\n"
@@ -3186,23 +3186,23 @@ msgstr ""
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed"
 msgstr ""
 
-#: lib/signature.c:369
+#: lib/signature.c:375
 msgid "Unable to reload signature header.\n"
 msgstr "Não foi possível recarregar o cabeçalho da assinatura.\n"
 
-#: lib/signature.c:445
+#: lib/signature.c:451
 msgid "Header "
 msgstr "Cabeçalho "
 
-#: lib/signature.c:464
+#: lib/signature.c:470
 msgid "MD5 digest:"
 msgstr "Digest MD5:"
 
-#: lib/signature.c:467
+#: lib/signature.c:473
 msgid "Header SHA1 digest:"
 msgstr "Digest do cabeçalho SHA1:"
 
-#: lib/signature.c:486
+#: lib/signature.c:492
 #, c-format
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)"
 msgstr ""
@@ -3317,78 +3317,78 @@ msgstr ""
 msgid "cannot open %s index using %s - %s (%d)\n"
 msgstr ""
 
-#: lib/rpmdb.c:529
+#: lib/rpmdb.c:520
 msgid "no dbpath has been set\n"
 msgstr "nenhum dbpath foi definido\n"
 
-#: lib/rpmdb.c:1046
+#: lib/rpmdb.c:1037
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: ignorando"
 
-#: lib/rpmdb.c:1064
+#: lib/rpmdb.c:1055
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "erro (%d) ao armazenar o registro #%d em %s\n"
 
-#: lib/rpmdb.c:1176
+#: lib/rpmdb.c:1167
 #, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s: o regexec falhou: %s\n"
 
-#: lib/rpmdb.c:1357
+#: lib/rpmdb.c:1348
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: o regcomp falhou: %s\n"
 
-#: lib/rpmdb.c:1520
+#: lib/rpmdb.c:1511
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: ignorando"
 
-#: lib/rpmdb.c:1607
+#: lib/rpmdb.c:1598
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: cabeçalho danificado #%u recuperado -- ignorando.\n"
 
-#: lib/rpmdb.c:2140
+#: lib/rpmdb.c:2131
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: não foi possível ler o cabeçalho em 0x%x\n"
 
-#: lib/rpmdb.c:2575
+#: lib/rpmdb.c:2566
 msgid "no dbpath has been set"
 msgstr "nenhum dbpath foi definido"
 
-#: lib/rpmdb.c:2593
+#: lib/rpmdb.c:2584
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "falha ao criar o diretório %s: %s\n"
 
-#: lib/rpmdb.c:2627
+#: lib/rpmdb.c:2618
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "o cabeçalho #%u do banco de dados é inválido -- ignorando.\n"
 
-#: lib/rpmdb.c:2640
+#: lib/rpmdb.c:2631
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "não é possível adicionar o registro originalmente em %u\n"
 
-#: lib/rpmdb.c:2656
+#: lib/rpmdb.c:2647
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "falha ao reconstruir o banco de dados: o banco de dados original permanece "
 "no lugar\n"
 
-#: lib/rpmdb.c:2664
+#: lib/rpmdb.c:2655
 msgid "failed to replace old database with new database!\n"
 msgstr "falha ao substituir o banco de dados velho pela novo!\n"
 
-#: lib/rpmdb.c:2666
+#: lib/rpmdb.c:2657
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "substituir arquivos em %s com arquivos de %s para recuperação"
 
-#: lib/rpmdb.c:2677
+#: lib/rpmdb.c:2668
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "falha ao remover o diretório %s: %s\n"
@@ -3621,17 +3621,17 @@ msgstr "aviso: "
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "a alocação de memória (%u bytes) retornou NULL.\n"
 
-#: rpmio/rpmpgp.c:627 rpmio/rpmpgp.c:715 rpmio/rpmpgp.c:782
+#: rpmio/rpmpgp.c:659 rpmio/rpmpgp.c:750 rpmio/rpmpgp.c:821
 #, c-format
 msgid "Unsupported version of key: V%d\n"
 msgstr ""
 
-#: rpmio/rpmpgp.c:1081
+#: rpmio/rpmpgp.c:1122
 #, c-format
 msgid "V%d %s/%s %s, key ID %s"
 msgstr "V%d %s/%s %s, ID da chave %s"
 
-#: rpmio/rpmpgp.c:1089
+#: rpmio/rpmpgp.c:1130
 msgid "(none)"
 msgstr "(nada)"
 

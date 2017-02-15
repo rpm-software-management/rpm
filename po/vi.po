@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2016-10-20 15:22+0300\n"
+"POT-Creation-Date: 2017-02-16 11:54+0200\n"
 "PO-Revision-Date: 2015-08-21 08:30+0000\n"
 "Last-Translator: Trần Ngọc Quân <vnwildman@gmail.com>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/rpm-team/rpm/language/"
@@ -917,27 +917,27 @@ msgstr "_docdir_fmt không hợp lệ %s: %s\n"
 msgid "File not found by glob: %s\n"
 msgstr "Glob (chức năng mở rộng mẫu khi tìm kiếm) không tìm thấy tập tin: %s\n"
 
-#: build/files.c:1922
+#: build/files.c:1921
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr "Không thể trộn lẫn %s đặc biệt với dạng khác: %s\n"
 
-#: build/files.c:1938
+#: build/files.c:1937
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr "Nhiều hơn một tập tin mỗi dòng: %s\n"
 
-#: build/files.c:2068
+#: build/files.c:2067
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Tập tin sai: %s: %s\n"
 
-#: build/files.c:2136
+#: build/files.c:2135
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Đang kiểm tra có tập tin chưa đóng gói: %s\n"
 
-#: build/files.c:2149
+#: build/files.c:2148
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -946,17 +946,17 @@ msgstr ""
 "Tìm thấy tập tin đã cài đặt (nhưng chưa đóng gói):\n"
 "%s"
 
-#: build/files.c:2180
+#: build/files.c:2179
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Đang xử lý tập tin: %s\n"
 
-#: build/files.c:2194
+#: build/files.c:2193
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr "Kiến trúc nhị phân (%d) không khớp với kiến trúc gói (%d).\n"
 
-#: build/files.c:2200
+#: build/files.c:2199
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Nhị phân phụ thuộc kiến trúc trong gói không phụ thuộc kiến trúc\n"
 
@@ -989,71 +989,71 @@ msgstr ""
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Không thể làm hợp quy tắc tên máy: %s\n"
 
-#: build/pack.c:366
+#: build/pack.c:351
 #, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "Không thể nén phần trọng tải: %s\n"
 
-#: build/pack.c:415
+#: build/pack.c:400
 msgid "Unable to create immutable header region.\n"
 msgstr "Không thể tạo vùng đầu không thể thay đổi được.\n"
 
-#: build/pack.c:423
+#: build/pack.c:408
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Không thể mở %s: %s\n"
 
-#: build/pack.c:435
+#: build/pack.c:420
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Không thể ghi gói: %s\n"
 
-#: build/pack.c:459
+#: build/pack.c:441
 msgid "Unable to write temp header\n"
 msgstr "Không thể ghi phần đầu tạm\n"
 
-#: build/pack.c:468
+#: build/pack.c:450
 msgid "Bad CSA data\n"
 msgstr "Dữ liệu CSA sai\n"
 
-#: build/pack.c:479 build/pack.c:498 sign/rpmgensig.c:292 sign/rpmgensig.c:512
+#: build/pack.c:461 build/pack.c:480 sign/rpmgensig.c:292 sign/rpmgensig.c:512
 #: sign/rpmgensig.c:535 sign/rpmgensig.c:609 sign/rpmgensig.c:629
 #: sign/rpmgensig.c:785 sign/rpmgensig.c:820
 #, c-format
 msgid "Could not seek in file %s: %s\n"
 msgstr "Không thể di chuyển vị trí đọc trong tập tin %s: %s\n"
 
-#: build/pack.c:490
+#: build/pack.c:472
 #, c-format
 msgid "Fread failed in file %s: %s\n"
 msgstr "gặp lỗi khi fread ở tập tin %s: %s\n"
 
-#: build/pack.c:524
+#: build/pack.c:506
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Đã ghi: %s\n"
 
-#: build/pack.c:543
+#: build/pack.c:525
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr "Thực hiện %s:\n"
 
-#: build/pack.c:546
+#: build/pack.c:528
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "Việc thực hiện %s bị lỗi\n"
 
-#: build/pack.c:550
+#: build/pack.c:532
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "Gặp lỗi khi kiểm tra “%s”.\n"
 
-#: build/pack.c:597
+#: build/pack.c:579
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Không thể tạo tên tập tin kết xuất cho gói %s: %s\n"
 
-#: build/pack.c:614
+#: build/pack.c:596
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "không thể tạo %s: %s\n"
@@ -3209,23 +3209,23 @@ msgstr "đệm sigh(%zd): SAI, đọc %zd byte"
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed"
 msgstr "sigh sigSize(%zd): SAI, hàm fstat(2) gặp lỗi"
 
-#: lib/signature.c:369
+#: lib/signature.c:375
 msgid "Unable to reload signature header.\n"
 msgstr "Không thể nạp lại phần đầu chữ ký.\n"
 
-#: lib/signature.c:445
+#: lib/signature.c:451
 msgid "Header "
 msgstr "Phần đầu"
 
-#: lib/signature.c:464
+#: lib/signature.c:470
 msgid "MD5 digest:"
 msgstr "Mã băm MD5:"
 
-#: lib/signature.c:467
+#: lib/signature.c:473
 msgid "Header SHA1 digest:"
 msgstr "Mã băm SHA1 phần đầu:"
 
-#: lib/signature.c:486
+#: lib/signature.c:492
 #, c-format
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)"
 msgstr "Xác minh chữ ký: CÁC ĐỐI SỐ SAI (%d %p %d %p %p)"
@@ -3340,78 +3340,78 @@ msgstr "Đang tạo %d thiếu mục lục, vui lòng chờ…\n"
 msgid "cannot open %s index using %s - %s (%d)\n"
 msgstr "không thể mở bảng mục lục %s dùng %s - %s (%d)\n"
 
-#: lib/rpmdb.c:529
+#: lib/rpmdb.c:520
 msgid "no dbpath has been set\n"
 msgstr "chưa đặt đường dẫn cơ sở dữ liệu (dbpath)\n"
 
-#: lib/rpmdb.c:1046
+#: lib/rpmdb.c:1037
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: bỏ qua"
 
-#: lib/rpmdb.c:1064
+#: lib/rpmdb.c:1055
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "gặp lỗi (%d) khi lưu bản ghi #%d vào %s\n"
 
-#: lib/rpmdb.c:1176
+#: lib/rpmdb.c:1167
 #, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s: regexec (thực hiện biểu thức chính quy) bị lỗi: %s\n"
 
-#: lib/rpmdb.c:1357
+#: lib/rpmdb.c:1348
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: regcomp bị lỗi: %s\n"
 
-#: lib/rpmdb.c:1520
+#: lib/rpmdb.c:1511
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: bỏ qua"
 
-#: lib/rpmdb.c:1607
+#: lib/rpmdb.c:1598
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: nhận được phần đầu bị hỏng #%u -- bỏ qua.\n"
 
-#: lib/rpmdb.c:2140
+#: lib/rpmdb.c:2131
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: không thể đọc phần đầu ở 0x%x\n"
 
-#: lib/rpmdb.c:2575
+#: lib/rpmdb.c:2566
 msgid "no dbpath has been set"
 msgstr "chưa đặt đường dẫn cơ sở dữ liệu (dbpath)"
 
-#: lib/rpmdb.c:2593
+#: lib/rpmdb.c:2584
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "gặp lỗi khi tạo thư mục %s: %s\n"
 
-#: lib/rpmdb.c:2627
+#: lib/rpmdb.c:2618
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "phần đầu #%u trong cơ sở dữ liệu là sai -- bỏ qua.\n"
 
-#: lib/rpmdb.c:2640
+#: lib/rpmdb.c:2631
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "không thể thêm bản ghi nguyên gốc tại %u\n"
 
-#: lib/rpmdb.c:2656
+#: lib/rpmdb.c:2647
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "gặp lỗi khi xây dựng lại cơ sở dữ liệu: cơ sỏ dữ liệu nguyên gốc được giữ "
 "lại để thay thế\n"
 
-#: lib/rpmdb.c:2664
+#: lib/rpmdb.c:2655
 msgid "failed to replace old database with new database!\n"
 msgstr "gặp lỗi khi thay thế cơ sở dữ liệu cũ bằng cái mới!\n"
 
-#: lib/rpmdb.c:2666
+#: lib/rpmdb.c:2657
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "thay thế các tập tin trong %s bằng các tập tin từ %s để phục hồi"
 
-#: lib/rpmdb.c:2677
+#: lib/rpmdb.c:2668
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "gặp lỗi khi xóa thư mục %s: %s\n"
@@ -3647,17 +3647,17 @@ msgstr "cảnh báo: "
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "cấp phát bộ nhớ (%u byte) trở về VÔ GIÁ TRỊ.\n"
 
-#: rpmio/rpmpgp.c:627 rpmio/rpmpgp.c:715 rpmio/rpmpgp.c:782
+#: rpmio/rpmpgp.c:659 rpmio/rpmpgp.c:750 rpmio/rpmpgp.c:821
 #, c-format
 msgid "Unsupported version of key: V%d\n"
 msgstr ""
 
-#: rpmio/rpmpgp.c:1081
+#: rpmio/rpmpgp.c:1122
 #, c-format
 msgid "V%d %s/%s %s, key ID %s"
 msgstr "V%d %s/%s %s, Mã số khóa %s"
 
-#: rpmio/rpmpgp.c:1089
+#: rpmio/rpmpgp.c:1130
 msgid "(none)"
 msgstr "(không có)"
 
