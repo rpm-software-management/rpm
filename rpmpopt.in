@@ -165,6 +165,8 @@ rpm	alias --ftpproxy	--define '_httpproxy !#:+'
 rpm	alias --httpport	--define '_httpport !#:+'
 #	[--httpproxy <host>]	"hostname or IP of http proxy"
 rpm	alias --httpproxy	--define '_httpproxy !#:+'
+#	[--trace]		"trace macro expansion"
+rpm	alias --trace		--eval '%trace'
 
 # Minimally preserve commonly used switches from cli split-up
 rpm	exec --addsign		rpmsign --addsign
@@ -198,6 +200,8 @@ rpmbuild alias --buildpolicy --define '__os_install_post %{_rpmconfigdir}/brp-!#
 rpmbuild alias --sign \
 	--pipe 'rpm --addsign `grep ".*: .*\.rpm$"|cut -d: -f2` < "/dev/"`ps -p $$ -o tty | tail -n 1`' \
 	--POPTdesc=$"generate GPG signature (deprecated, use command rpmsign instead)"
+#	[--trace]		"trace macro expansion"
+rpmbuild alias --trace		--eval '%trace'
 
 rpmsign alias --key-id  --define '_gpg_name !#:+' \
 	--POPTdesc=$"key id/name to sign with" \
@@ -222,5 +226,7 @@ rpmspec	alias --buildconflicts	--srpm --conflicts \
 	--POPTdesc=$"list capabilities conflicting with build of this package"
 rpmspec	alias --buildrequires	--srpm --requires \
 	--POPTdesc=$"list capabilities required to build this package"
+#	[--trace]		"trace macro expansion"
+rpmspec alias --trace		--eval '%trace'
 # \endverbatim
 #*/
