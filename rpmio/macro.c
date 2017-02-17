@@ -278,8 +278,6 @@ static void
 printMacro(MacroBuf mb, const char * s, const char * se)
 {
     const char *senl;
-    const char *ellipsis;
-    int choplen;
 
     if (s >= se) {	/* XXX just in case */
 	fprintf(stderr, _("%3d>%*s(empty)"), mb->depth,
@@ -294,19 +292,11 @@ printMacro(MacroBuf mb, const char * s, const char * se)
     for (senl = se; *senl && !iseol(*senl); senl++)
 	{};
 
-    /* Limit trailing non-trace output */
-    choplen = 61 - (2 * mb->depth);
-    if ((senl - s) > choplen) {
-	senl = s + choplen;
-	ellipsis = "...";
-    } else
-	ellipsis = "";
-
     /* Substitute caret at end-of-macro position */
     fprintf(stderr, "%3d>%*s%%%.*s^", mb->depth,
 	(2 * mb->depth + 1), "", (int)(se - s), s);
     if (se[0] != '\0' && se[1] != '\0' && (senl - (se+1)) > 0)
-	fprintf(stderr, "%-.*s%s", (int)(senl - (se+1)), se+1, ellipsis);
+	fprintf(stderr, "%-.*s", (int)(senl - (se+1)), se+1);
     fprintf(stderr, "\n");
 }
 
@@ -319,9 +309,6 @@ printMacro(MacroBuf mb, const char * s, const char * se)
 static void
 printExpansion(MacroBuf mb, const char * t, const char * te)
 {
-    const char *ellipsis;
-    int choplen;
-
     if (!(te > t)) {
 	rpmlog(RPMLOG_DEBUG, _("%3d<%*s(empty)\n"), mb->depth, (2 * mb->depth + 1), "");
 	return;
@@ -330,7 +317,6 @@ printExpansion(MacroBuf mb, const char * t, const char * te)
     /* Shorten output which contains newlines */
     while (te > t && iseol(te[-1]))
 	te--;
-    ellipsis = "";
     if (mb->depth > 0) {
 	const char *tenl;
 
@@ -338,17 +324,11 @@ printExpansion(MacroBuf mb, const char * t, const char * te)
 	while ((tenl = strchr(t, '\n')) && tenl < te)
 	    t = ++tenl;
 
-	/* Limit expand output */
-	choplen = 61 - (2 * mb->depth);
-	if ((te - t) > choplen) {
-	    te = t + choplen;
-	    ellipsis = "...";
-	}
     }
 
     rpmlog(RPMLOG_DEBUG,"%3d<%*s", mb->depth, (2 * mb->depth + 1), "");
     if (te > t)
-	rpmlog(RPMLOG_DEBUG, "%.*s%s", (int)(te - t), t, ellipsis);
+	rpmlog(RPMLOG_DEBUG, "%.*s", (int)(te - t), t);
     rpmlog(RPMLOG_DEBUG, "\n");
 }
 
