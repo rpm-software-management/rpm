@@ -294,6 +294,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     struct rpmtd_s sigtd;
     struct sigtInfo_s sinfo;
     Header h = NULL;
+    rpmRC xx = 0;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int leadtype = -1;
     headerGetFlags hgeflags = HEADERGET_DEFAULT;
@@ -302,20 +303,17 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 
     rpmtdReset(&sigtd);
 
-    if ((rc = rpmLeadRead(fd, &leadtype, msg)) != RPMRC_OK) {
+    if ((xx = rpmLeadRead(fd, &leadtype, msg)) != RPMRC_OK) {
 	/* Avoid message spew on manifests */
-	if (rc == RPMRC_NOTFOUND) {
+	if (xx == RPMRC_NOTFOUND) {
 	    *msg = _free(*msg);
 	}
 	goto exit;
     }
 
     /* Read the signature header. */
-    rc = rpmReadSignature(fd, &sigh, msg);
-
-    if (rc != RPMRC_OK) {
+    if (rpmReadSignature(fd, &sigh, msg) != RPMRC_OK)
 	goto exit;
-    }
 
 #define	_chk(_mask, _tag) \
 	(sigtag == 0 && !(vsflags & (_mask)) && headerIsEntry(sigh, (_tag)))
@@ -335,13 +333,8 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     }
 
     /* Read the metadata, computing digest(s) on the fly. */
-    h = NULL;
-
-    rc = rpmpkgReadHeader(fd, &h, msg);
-
-    if (rc != RPMRC_OK || h == NULL) {
+    if (rpmpkgReadHeader(fd, &h, msg) != RPMRC_OK)
 	goto exit;
-    }
 
     /* Any digests or signatures to check? */
     if (sigtag == 0) {
@@ -353,14 +346,13 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     *msg = _free(*msg);
 
     /* Retrieve the tag parameters from the signature header. */
-    if (!headerGet(sigh, sigtag, &sigtd, hgeflags)) {
-	rc = RPMRC_FAIL;
+    if (!headerGet(sigh, sigtag, &sigtd, hgeflags))
 	goto exit;
-    }
 
     if (rpmSigInfoParse(&sigtd, "package", &sinfo, &sig, msg) == RPMRC_OK) {
 	struct rpmtd_s utd;
 	DIGEST_CTX ctx = rpmDigestInit(sinfo.hashalgo, RPMDIGEST_NONE);
+
 
 	if (headerGet(h, RPMTAG_HEADERIMMUTABLE, &utd, hgeflags)) {
 	    rpmDigestUpdate(ctx, rpm_header_magic, sizeof(rpm_header_magic));
@@ -371,11 +363,12 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 	rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, msg);
 
 	rpmDigestFinal(ctx, NULL, NULL, 0);
-    } else {
-	rc = RPMRC_FAIL;
     }
 
 exit:
+    if (xx)
+	rc = xx;
+
     if (rc != RPMRC_FAIL && h != NULL && hdrp != NULL) {
 	/* Retrofit RPMTAG_SOURCEPACKAGE to srpms for compatibility */
 	if (leadtype == RPMLEAD_SOURCE && headerIsSource(h)) {
