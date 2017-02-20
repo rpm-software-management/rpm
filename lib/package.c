@@ -159,7 +159,8 @@ static void ei2td(const struct entryInfo_s *info,
  * one, otherwisereturn RPMRC_NOTFOUND to signal for plain sanity check.
  */
 static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
-			     hdrblob blob, hdrblob dstblob, char **buf)
+			     hdrblob blob, hdrblob dstblob,
+			     unsigned int *keyidp, char **buf)
 {
     rpmRC rc = RPMRC_FAIL;
     pgpDigParams sig = NULL;
@@ -216,6 +217,9 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 
 	rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, buf);
 
+	if (keyidp && sinfo.type == RPMSIG_SIGNATURE_TYPE)
+	    *keyidp = getKeyid(sig);
+
     	rpmDigestFinal(ctx, NULL, NULL, 0);
     }
 
@@ -235,7 +239,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 
     if (hdrblobInit(uh, uc, 0, 0, &blob, msg) == RPMRC_OK) {
 	rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-	rc = headerSigVerify(keyring, vsflags, &blob, &blob, msg);
+	rc = headerSigVerify(keyring, vsflags, &blob, &blob, NULL, msg);
 	rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), uc);
 
 	if (rc == RPMRC_NOTFOUND && msg != NULL && *msg == NULL)
