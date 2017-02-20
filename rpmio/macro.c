@@ -305,7 +305,7 @@ printMacro(MacroBuf mb, const char * s, const char * se)
     /* Substitute caret at end-of-macro position */
     fprintf(stderr, "%3d>%*s%%%.*s^", mb->depth,
 	(2 * mb->depth + 1), "", (int)(se - s), s);
-    if (se[1] != '\0' && (senl - (se+1)) > 0)
+    if (se[0] != '\0' && se[1] != '\0' && (senl - (se+1)) > 0)
 	fprintf(stderr, "%-.*s%s", (int)(senl - (se+1)), se+1, ellipsis);
     fprintf(stderr, "\n");
 }
