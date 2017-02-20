@@ -159,7 +159,7 @@ static void ei2td(const struct entryInfo_s *info,
  * one, otherwisereturn RPMRC_NOTFOUND to signal for plain sanity check.
  */
 static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
-			     hdrblob blob, char **buf)
+			     hdrblob blob, hdrblob dstblob, char **buf)
 {
     rpmRC rc = RPMRC_FAIL;
     pgpDigParams sig = NULL;
@@ -171,7 +171,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     memset(&einfo, 0, sizeof(einfo));
 
     /* Find a header-only digest/signature tag. */
-    for (int i = blob->ril; i < blob->il; i++) {
+    for (int i = (blob == dstblob) ? blob->ril : 1; i < blob->il; i++) {
 	ei2h(blob->pe+i, &einfo);
 
 	switch (einfo.tag) {
@@ -207,12 +207,12 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 
     if (sinfo.hashalgo) {
 	DIGEST_CTX ctx = rpmDigestInit(sinfo.hashalgo, RPMDIGEST_NONE);
-	int32_t ildl[2] = { htonl(blob->ril), htonl(blob->rdl) };
+	int32_t ildl[2] = { htonl(dstblob->ril), htonl(dstblob->rdl) };
 
 	rpmDigestUpdate(ctx, rpm_header_magic, sizeof(rpm_header_magic));
 	rpmDigestUpdate(ctx, ildl, sizeof(ildl));
-	rpmDigestUpdate(ctx, blob->pe, (blob->ril * sizeof(*blob->pe)));
-	rpmDigestUpdate(ctx, blob->dataStart, blob->rdl);
+	rpmDigestUpdate(ctx, dstblob->pe, (dstblob->ril * sizeof(*dstblob->pe)));
+	rpmDigestUpdate(ctx, dstblob->dataStart, dstblob->rdl);
 
 	rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, buf);
 
@@ -235,7 +235,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 
     if (hdrblobInit(uh, uc, 0, 0, &blob, msg) == RPMRC_OK) {
 	rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-	rc = headerSigVerify(keyring, vsflags, &blob, msg);
+	rc = headerSigVerify(keyring, vsflags, &blob, &blob, msg);
 	rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), uc);
 
 	if (rc == RPMRC_NOTFOUND && msg != NULL && *msg == NULL)
