@@ -940,6 +940,9 @@ rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg)
     if (hdrp)
 	*hdrp = h;
 
+    /* We own the memory now, avoid double-frees */
+    blob->ei = NULL;
+
     return RPMRC_OK;
 
 errxit:
