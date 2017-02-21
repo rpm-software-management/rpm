@@ -288,6 +288,34 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
     return rpmpkgReadHeader(fd, hdrp, msg);
 }
 
+static void applyRetrofits(Header h, int leadtype)
+{
+    /* Retrofit RPMTAG_SOURCEPACKAGE to srpms for compatibility */
+    if (leadtype == RPMLEAD_SOURCE && headerIsSource(h)) {
+	if (!headerIsEntry(h, RPMTAG_SOURCEPACKAGE)) {
+	    uint32_t one = 1;
+	    headerPutUint32(h, RPMTAG_SOURCEPACKAGE, &one, 1);
+	}
+    }
+    /*
+     * Try to make sure binary rpms have RPMTAG_SOURCERPM set as that's
+     * what we use for differentiating binary vs source elsewhere.
+     */
+    if (!headerIsEntry(h, RPMTAG_SOURCEPACKAGE) && headerIsSource(h)) {
+	headerPutString(h, RPMTAG_SOURCERPM, "(none)");
+    }
+    /*
+     * Convert legacy headers on the fly. Not having immutable region
+     * equals a truly ancient package, do full retrofit. OTOH newer
+     * packages might have been built with --nodirtokens, test and handle
+     * the non-compressed filelist case separately.
+     */
+    if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE))
+	headerConvert(h, HEADERCONV_RETROFIT_V3);
+    else if (headerIsEntry(h, RPMTAG_OLDFILENAMES))
+	headerConvert(h, HEADERCONV_COMPRESSFILELIST);
+}
+
 static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags, 
 			FD_t fd,
 			Header * hdrp, unsigned int *keyidp, char **msg)
@@ -374,31 +402,8 @@ exit:
 	rc = xx;
 
     if (rc != RPMRC_FAIL && h != NULL && hdrp != NULL) {
-	/* Retrofit RPMTAG_SOURCEPACKAGE to srpms for compatibility */
-	if (leadtype == RPMLEAD_SOURCE && headerIsSource(h)) {
-	    if (!headerIsEntry(h, RPMTAG_SOURCEPACKAGE)) {
-		uint32_t one = 1;
-		headerPutUint32(h, RPMTAG_SOURCEPACKAGE, &one, 1);
-	    }
-	}
-	/*
- 	 * Try to make sure binary rpms have RPMTAG_SOURCERPM set as that's
- 	 * what we use for differentiating binary vs source elsewhere.
- 	 */
-	if (!headerIsEntry(h, RPMTAG_SOURCEPACKAGE) && headerIsSource(h)) {
-	    headerPutString(h, RPMTAG_SOURCERPM, "(none)");
-	}
-	/* 
-         * Convert legacy headers on the fly. Not having immutable region
-         * equals a truly ancient package, do full retrofit. OTOH newer
-         * packages might have been built with --nodirtokens, test and handle
-         * the non-compressed filelist case separately.
-         */
-	if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE))
-	    headerConvert(h, HEADERCONV_RETROFIT_V3);
-	else if (headerIsEntry(h, RPMTAG_OLDFILENAMES))
-	    headerConvert(h, HEADERCONV_COMPRESSFILELIST);
-	
+	applyRetrofits(h, leadtype);
+
 	/* Append (and remap) signature tags to the metadata. */
 	headerMergeLegacySigs(h, sigh);
 
