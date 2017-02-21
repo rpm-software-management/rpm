@@ -45,7 +45,13 @@ struct specPkgObject_s {
     PyObject_HEAD
     /*type specific fields */
     rpmSpecPkg pkg;
+    specObject *source_spec;
 };
+
+static void specPkg_dealloc(specPkgObject * s)
+{
+    Py_DECREF(s->source_spec);
+}
 
 static PyObject *pkgGetSection(rpmSpecPkg pkg, int section)
 {
@@ -95,7 +101,7 @@ PyTypeObject specPkg_Type = {
 	"rpm.specpkg",			/* tp_name */
 	sizeof(specPkgObject),		/* tp_size */
 	0,				/* tp_itemsize */
-	0, 				/* tp_dealloc */
+	(destructor) specPkg_dealloc, 	/* tp_dealloc */
 	0,				/* tp_print */
 	0, 				/* tp_getattr */
 	0,				/* tp_setattr */
@@ -227,7 +233,7 @@ static PyObject * spec_get_packages(specObject *s, void *closure)
     iter = rpmSpecPkgIterInit(s->spec);
 
     while ((pkg = rpmSpecPkgIterNext(iter)) != NULL) {
-	PyObject *po = specPkg_Wrap(&specPkg_Type, pkg);
+	PyObject *po = specPkg_Wrap(&specPkg_Type, pkg, s);
         if (!po) {
             rpmSpecPkgIterFree(iter);
             Py_DECREF(pkgList);
@@ -350,12 +356,14 @@ spec_Wrap(PyTypeObject *subtype, rpmSpec spec)
     return (PyObject *) s;
 }
 
-PyObject * specPkg_Wrap(PyTypeObject *subtype, rpmSpecPkg pkg) 
+PyObject * specPkg_Wrap(PyTypeObject *subtype, rpmSpecPkg pkg, specObject *source)
 {
     specPkgObject * s = (specPkgObject *)subtype->tp_alloc(subtype, 0);
     if (s == NULL) return NULL;
 
     s->pkg = pkg;
+    s->source_spec = source;
+    Py_INCREF(s->source_spec);
     return (PyObject *) s;
 }
 
