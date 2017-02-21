@@ -1450,11 +1450,16 @@ exit:
 
 void fdInitDigest(FD_t fd, int hashalgo, rpmDigestFlags flags)
 {
+    return fdInitDigestID(fd, hashalgo, hashalgo, flags);
+}
+
+void fdInitDigestID(FD_t fd, int hashalgo, int id, rpmDigestFlags flags)
+{
     if (fd->digests == NULL) {
 	fd->digests = rpmDigestBundleNew();
     }
     fdstat_enter(fd, FDSTAT_DIGEST);
-    rpmDigestBundleAdd(fd->digests, hashalgo, flags);
+    rpmDigestBundleAddID(fd->digests, hashalgo, id, flags);
     fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) 0);
 }
 
@@ -1467,12 +1472,12 @@ static void fdUpdateDigests(FD_t fd, const void * buf, size_t buflen)
     }
 }
 
-void fdFiniDigest(FD_t fd, int hashalgo,
+void fdFiniDigest(FD_t fd, int id,
 		void ** datap, size_t * lenp, int asAscii)
 {
     if (fd && fd->digests) {
 	fdstat_enter(fd, FDSTAT_DIGEST);
-	rpmDigestBundleFinal(fd->digests, hashalgo, datap, lenp, asAscii);
+	rpmDigestBundleFinal(fd->digests, id, datap, lenp, asAscii);
 	fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) 0);
     }
 }

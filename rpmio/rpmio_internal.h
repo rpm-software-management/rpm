@@ -20,9 +20,11 @@ rpmDigestBundle fdGetBundle(FD_t fd);
  */
 void fdInitDigest(FD_t fd, int hashalgo, rpmDigestFlags flags);
 
+void fdInitDigestID(FD_t fd, int id, int hashalgo, rpmDigestFlags flags);
+
 /** \ingroup rpmio
  */
-void fdFiniDigest(FD_t fd, int hashalgo,
+void fdFiniDigest(FD_t fd, int id,
 		void ** datap,
 		size_t * lenp,
 		int asAscii);
