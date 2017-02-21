@@ -1213,7 +1213,8 @@ rpmDigestBundle rpmDigestBundleNew(void);
 rpmDigestBundle rpmDigestBundleFree(rpmDigestBundle bundle);
 
 /** \ingroup rpmpgp
- * Add a new type of digest to a bundle.
+ * Add a new type of digest to a bundle. Same as calling
+ * rpmDigestBundleAddID() with algo == id value.
  * @param bundle	digest bundle
  * @param algo		type of digest
  * @param flags		bit(s) to control digest operation
@@ -1221,6 +1222,17 @@ rpmDigestBundle rpmDigestBundleFree(rpmDigestBundle bundle);
  */
 int rpmDigestBundleAdd(rpmDigestBundle bundle, int algo,
 			rpmDigestFlags flags);
+
+/** \ingroup rpmpgp
+ * Add a new type of digest to a bundle.
+ * @param bundle	digest bundle
+ * @param algo		type of digest
+ * @param id		id of digest (arbitrary, must be > 0)
+ * @param flags		bit(s) to control digest operation
+ * @return		0 on success
+ */
+int rpmDigestBundleAddID(rpmDigestBundle bundle, int algo, int id,
+			 rpmDigestFlags flags);
 
 /** \ingroup rpmpgp
  * Update contexts within bundle with next plain text buffer.
@@ -1235,22 +1247,22 @@ int rpmDigestBundleUpdate(rpmDigestBundle bundle, const void *data, size_t len);
  * Return digest from a bundle and destroy context, see rpmDigestFinal().
  *
  * @param bundle	digest bundle
- * @param algo		type of digest to return
+ * @param id		id of digest to return
  * @retval datap	address of returned digest
  * @retval lenp		address of digest length
  * @param asAscii	return digest as ascii string?
  * @return		0 on success
  */
-int rpmDigestBundleFinal(rpmDigestBundle bundle,
-	 int algo, void ** datap, size_t * lenp, int asAscii);
+int rpmDigestBundleFinal(rpmDigestBundle bundle, int id,
+			 void ** datap, size_t * lenp, int asAscii);
 
 /** \ingroup rpmpgp
  * Duplicate a digest context from a bundle.
  * @param bundle	digest bundle
- * @param algo		type of digest to dup
+ * @param id		id of digest to dup
  * @return		duplicated digest context
  */
-DIGEST_CTX rpmDigestBundleDupCtx(rpmDigestBundle bundle, int algo);
+DIGEST_CTX rpmDigestBundleDupCtx(rpmDigestBundle bundle, int id);
 
 #ifdef __cplusplus
 }
