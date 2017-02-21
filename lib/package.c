@@ -251,7 +251,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     return rc;
 }
 
-static rpmRC rpmpkgReadHeader(FD_t fd, Header *hdrp, char ** msg)
+rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
 {
     char *buf = NULL;
     struct hdrblob_s blob;
@@ -281,11 +281,6 @@ exit:
     }
 
     return rc;
-}
-
-rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
-{
-    return rpmpkgReadHeader(fd, hdrp, msg);
 }
 
 static void applyRetrofits(Header h, int leadtype)
