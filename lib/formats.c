@@ -93,7 +93,7 @@ static char * hexFormat(rpmtd td, char **emsg)
 }
 
 /* arbitrary date formatting as per strftimeFormat arg */
-static char * realDateFormat(rpmtd td, const char * strftimeFormat)
+static char * realDateFormat(rpmtd td, const char * strftimeFormat, char **emsg)
 {
     char * val = NULL;
     struct tm * tstruct;
@@ -101,10 +101,10 @@ static char * realDateFormat(rpmtd td, const char * strftimeFormat)
     time_t dateint = rpmtdGetNumber(td);
     tstruct = localtime(&dateint);
 
-    /* XXX TODO: deal with non-fitting date string correctly */
     buf[0] = '\0';
     if (tstruct)
-	(void) strftime(buf, sizeof(buf) - 1, strftimeFormat, tstruct);
+	if (strftime(buf, sizeof(buf) - 1, strftimeFormat, tstruct) == 0)
+	    *emsg = xstrdup("date output too long");
     val = xstrdup(buf);
 
     return val;
@@ -113,13 +113,13 @@ static char * realDateFormat(rpmtd td, const char * strftimeFormat)
 /* date formatting */
 static char * dateFormat(rpmtd td, char **emsg)
 {
-    return realDateFormat(td, _("%c"));
+    return realDateFormat(td, _("%c"), emsg);
 }
 
 /* day formatting */
 static char * dayFormat(rpmtd td, char **emsg)
 {
-    return realDateFormat(td, _("%a %b %d %Y"));
+    return realDateFormat(td, _("%a %b %d %Y"), emsg);
 }
 
 /* shell escape formatting */
