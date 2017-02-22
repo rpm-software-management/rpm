@@ -97,7 +97,7 @@ static char * realDateFormat(rpmtd td, const char * strftimeFormat, char **emsg)
 {
     char * val = NULL;
     struct tm * tstruct;
-    char buf[50];
+    char buf[1024];
     time_t dateint = rpmtdGetNumber(td);
     tstruct = localtime(&dateint);
 
