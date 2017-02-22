@@ -468,7 +468,8 @@ typedef enum rpmrichOp_e {
     RPMRICHOP_AND    = 2,
     RPMRICHOP_OR     = 3,
     RPMRICHOP_IF     = 4,
-    RPMRICHOP_ELSE   = 5
+    RPMRICHOP_ELSE   = 5,
+    RPMRICHOP_WITH   = 6
 } rpmrichOp;
 
 typedef enum rpmrichParseType_e {

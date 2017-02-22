@@ -1376,6 +1376,7 @@ static struct RichOpComp {
     { "or",	RPMRICHOP_OR},
     { "if",	RPMRICHOP_IF},
     { "else",	RPMRICHOP_ELSE},
+    { "with",	RPMRICHOP_WITH},
     { NULL, 0 },
 };
 
@@ -1415,6 +1416,8 @@ const char *rpmrichOpStr(rpmrichOp op)
 	return "if";
     if (op == RPMRICHOP_ELSE)
 	return "else";
+    if (op == RPMRICHOP_WITH)
+	return "with";
     return NULL;
 }
 
@@ -1462,10 +1465,13 @@ static rpmRC parseSimpleDep(const char **dstrp, char **emsg, rpmrichParseFunctio
     return RPMRC_OK;
 }
 
-rpmRC rpmrichParse(const char **dstrp, char **emsg, rpmrichParseFunction cb, void *cbdata)
+#define RPMRC_AND 128
+
+static rpmRC richParse(const char **dstrp, char **emsg, rpmrichParseFunction cb, void *cbdata)
 {
     const char *p = *dstrp, *pe;
     rpmrichOp op = RPMRICHOP_SINGLE, chainop = 0;
+    rpmRC rc = RPMRC_OK, rc2 = RPMRC_OK;
 
     if (cb(cbdata, RPMRICH_PARSE_ENTER, p, 0, 0, 0, 0, op, emsg) != RPMRC_OK)
         return RPMRC_FAIL;
@@ -1486,8 +1492,13 @@ rpmRC rpmrichParse(const char **dstrp, char **emsg, rpmrichParseFunction cb, voi
             return RPMRC_FAIL;
         }
         if (*p == '(') {
-            if (rpmrichParse(&p, emsg, cb, cbdata) != RPMRC_OK)
+	    rc = richParse(&p, emsg, cb, cbdata);
+            if (rc != RPMRC_OK && rc != RPMRC_AND) {
                 return RPMRC_FAIL;
+	    }
+	    if (rc == RPMRC_AND) {
+		rc2 = RPMRC_AND;
+	    }
         } else {
             if (parseSimpleDep(&p, emsg, cb, cbdata) != RPMRC_OK)
                 return RPMRC_FAIL;
@@ -1510,9 +1521,10 @@ rpmRC rpmrichParse(const char **dstrp, char **emsg, rpmrichParseFunction cb, voi
                 rasprintf(emsg, _("Cannot chain different ops"));
             return RPMRC_FAIL;
         }
-        if (chainop && op != RPMRICHOP_AND && op != RPMRICHOP_OR) {
+        if (chainop && op != RPMRICHOP_AND && op != RPMRICHOP_OR &&
+	    op != RPMRICHOP_WITH) {
             if (emsg)
-                rasprintf(emsg, _("Can only chain AND and OR ops"));
+                rasprintf(emsg, _("Can only chain AND, WITH and OR ops"));
             return RPMRC_FAIL;
 	}
         if (cb(cbdata, RPMRICH_PARSE_OP, p, pe - p, 0, 0, 0, op, emsg) != RPMRC_OK)
@@ -1520,13 +1532,26 @@ rpmRC rpmrichParse(const char **dstrp, char **emsg, rpmrichParseFunction cb, voi
         chainop = op;
         p = pe;
     }
+    if (op == RPMRICHOP_WITH && rc2 == RPMRC_AND) {
+	rasprintf(emsg, _("Cannot nest and in with clauses"));
+	return RPMRC_FAIL;
+    }
+    if (op == RPMRICHOP_AND) {
+	rc2 = RPMRC_AND;
+    }
     p++;
     if (cb(cbdata, RPMRICH_PARSE_LEAVE, *dstrp, p - *dstrp , 0, 0, 0, op, emsg) != RPMRC_OK)
         return RPMRC_FAIL;
     *dstrp = p;
-    return RPMRC_OK;
+    return rc2;
 }
 
+rpmRC rpmrichParse(const char **dstrp, char **emsg, rpmrichParseFunction cb, void *cbdata)
+{
+    rpmRC rc = richParse(dstrp, emsg, cb, cbdata);
+    if (rc == RPMRC_AND) rc = RPMRC_OK;
+    return rc;
+}
 
 struct rpmdsParseRichDepData {
     rpmds dep;
