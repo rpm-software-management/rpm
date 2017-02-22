@@ -267,7 +267,8 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 	if (nodigests && sinfo.type == RPMSIG_DIGEST_TYPE)
 	    continue;
 	if (rc == RPMRC_OK && sinfo.hashalgo) {
-	    rpmDigestBundleAdd(sinfo.payload ? plbundle : hdrbundle,
+	    rpmDigestBundleAdd((sinfo.range & RPMSIG_PAYLOAD) ?
+				plbundle : hdrbundle,
 			       sinfo.hashalgo, RPMDIGEST_NONE);
 	}
     }
@@ -302,7 +303,8 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 	    continue;
 
 	if (sinfo.type != RPMSIG_OTHER_TYPE && rc == RPMRC_OK) {
-	    ctx = rpmDigestBundleDupCtx(sinfo.payload ? plbundle : hdrbundle,
+	    ctx = rpmDigestBundleDupCtx((sinfo.range & RPMSIG_PAYLOAD) ?
+					plbundle : hdrbundle,
 					sinfo.hashalgo);
 	    rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, &result);
 	    rpmDigestFinal(ctx, NULL, NULL, 0);

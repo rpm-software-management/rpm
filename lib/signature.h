@@ -15,9 +15,15 @@ enum {
     RPMSIG_OTHER_TYPE		= 3,
 };
 
+/* siginfo range bits */
+enum {
+    RPMSIG_HEADER	= (1 << 0),
+    RPMSIG_PAYLOAD	= (1 << 1),
+};
+
 struct sigtInfo_s {
     int hashalgo;
-    int payload;
+    int range;
     int type;
 };
 

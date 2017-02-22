@@ -34,12 +34,14 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
     case RPMSIGTAG_GPG:
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	sinfo->payload = 1;
+	sinfo->range = RPMSIG_PAYLOAD;
 	/* fallthrough */
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_DSA:
 	tagtype = RPM_BIN_TYPE;
 	sinfo->type = RPMSIG_SIGNATURE_TYPE;
+	/* GPG/PGP are hdr+payload, RSA/DSA are hdr-only */
+	sinfo->range |= RPMSIG_HEADER;
 	break;
     case RPMSIGTAG_SHA1:
 	tagsize = 41; /* includes trailing \0 */
@@ -47,25 +49,28 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
 	hexstring = 1;
 	sinfo->hashalgo = PGPHASHALGO_SHA1;
 	sinfo->type = RPMSIG_DIGEST_TYPE;
+	sinfo->range = RPMSIG_HEADER;
 	break;
     case RPMSIGTAG_MD5:
 	tagtype = RPM_BIN_TYPE;
 	tagsize = 16;
 	sinfo->hashalgo = PGPHASHALGO_MD5;
 	sinfo->type = RPMSIG_DIGEST_TYPE;
-	sinfo->payload = 1;
+	sinfo->range = (RPMSIG_HEADER|RPMSIG_PAYLOAD);
 	break;
     case RPMSIGTAG_SIZE:
     case RPMSIGTAG_PAYLOADSIZE:
 	tagsize = 4;
 	tagtype = RPM_INT32_TYPE;
 	sinfo->type = RPMSIG_OTHER_TYPE;
+	sinfo->range = RPMSIG_PAYLOAD;
 	break;
     case RPMSIGTAG_LONGSIZE:
     case RPMSIGTAG_LONGARCHIVESIZE:
 	tagsize = 8;
 	tagtype = RPM_INT64_TYPE;
 	sinfo->type = RPMSIG_OTHER_TYPE;
+	sinfo->range = RPMSIG_PAYLOAD;
 	break;
     case RPMSIGTAG_RESERVEDSPACE:
 	tagtype = RPM_BIN_TYPE;
