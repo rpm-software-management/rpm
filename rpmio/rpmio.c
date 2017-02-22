@@ -1482,4 +1482,12 @@ void fdFiniDigest(FD_t fd, int id,
     }
 }
 
+DIGEST_CTX fdDupDigest(FD_t fd, int id)
+{
+    DIGEST_CTX ctx = NULL;
 
+    if (fd && fd->digests)
+	ctx = rpmDigestBundleDupCtx(fd->digests, id);
+
+    return ctx;
+}

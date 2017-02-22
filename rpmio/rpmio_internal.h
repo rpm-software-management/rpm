@@ -29,6 +29,8 @@ void fdFiniDigest(FD_t fd, int id,
 		size_t * lenp,
 		int asAscii);
 
+DIGEST_CTX fdDupDigest(FD_t fd, int id);
+
 /**
  * Read an entire file into a buffer.
  * @param fn		file name to read
