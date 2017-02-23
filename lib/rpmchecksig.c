@@ -225,6 +225,30 @@ static void formatResult(rpmTagVal sigtag, rpmRC sigres, const char *result,
     free(msg);
 }
 
+static void initDigests(FD_t fd, Header sigh, int range, rpmQueryFlags flags,
+			rpmDigestBundle hdrbundle, rpmDigestBundle plbundle)
+{
+    struct sigtInfo_s sinfo;
+    struct rpmtd_s sigtd;
+    HeaderIterator hi = headerInitIterator(sigh);
+
+    for (; headerNext(hi, &sigtd) != 0; rpmtdFreeData(&sigtd)) {
+	if (rpmSigInfoParse(&sigtd, "package", &sinfo, NULL, NULL))
+	    continue;
+	if (!(flags & VERIFY_SIGNATURE) && sinfo.type == RPMSIG_SIGNATURE_TYPE)
+	    continue;
+	if (!(flags & VERIFY_DIGEST) && sinfo.type == RPMSIG_DIGEST_TYPE)
+	    continue;
+
+	if (sinfo.hashalgo && (sinfo.range & range)) {
+	    rpmDigestBundleAddID((sinfo.range & RPMSIG_PAYLOAD) ?
+				plbundle : hdrbundle,
+			        sinfo.hashalgo, sigtd.tag, RPMDIGEST_NONE);
+	}
+    }
+    headerFreeIterator(hi);
+}
+
 static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 			   FD_t fd, const char *fn)
 {
@@ -258,21 +282,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     }
 
     /* Initialize all digests we'll be needing */
-    hi = headerInitIterator(sigh);
-    for (; headerNext(hi, &sigtd) != 0; rpmtdFreeData(&sigtd)) {
-	rc = rpmSigInfoParse(&sigtd, "package", &sinfo, NULL, NULL);
-
-	if (nosignatures && sinfo.type == RPMSIG_SIGNATURE_TYPE)
-	    continue;
-	if (nodigests && sinfo.type == RPMSIG_DIGEST_TYPE)
-	    continue;
-	if (rc == RPMRC_OK && sinfo.hashalgo) {
-	    rpmDigestBundleAddID((sinfo.range & RPMSIG_PAYLOAD) ?
-				plbundle : hdrbundle,
-			        sinfo.hashalgo, sigtd.tag, RPMDIGEST_NONE);
-	}
-    }
-    hi = headerFreeIterator(hi);
+    initDigests(fd, sigh, RPMSIG_HEADER, flags, hdrbundle, plbundle);
 
     /* Read the file, generating digest(s) on the fly. */
     fdSetBundle(fd, plbundle);
