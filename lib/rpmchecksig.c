@@ -123,25 +123,12 @@ int rpmcliImportPubkeys(rpmts ts, ARGV_const_t argv)
 /**
  * @todo If the GPG key was known available, the md5 digest could be skipped.
  */
-static int readFile(FD_t fd, const char * fn, rpmDigestBundle hdrbundle)
+static int readFile(FD_t fd, const char * fn)
 {
     unsigned char buf[4*BUFSIZ];
     ssize_t count;
     int rc = 1;
-    struct hdrblob_s blob;
     char *msg = NULL;
-
-    /* Read the header from the package. */
-    if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERIMMUTABLE, &blob, &msg) != RPMRC_OK) {
-	rpmlog(RPMLOG_ERR, _("%s: headerRead failed: %s\n"), fn, msg);
-	goto exit;
-    }
-
-    if (blob.regionTag == RPMTAG_HEADERIMMUTABLE) {
-	rpmDigestBundleUpdate(hdrbundle,
-				rpm_header_magic, sizeof(rpm_header_magic));
-	rpmDigestBundleUpdate(hdrbundle, blob.ei, blob.pvlen);
-    }
 
     /* Read the payload from the package. */
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0) {}
@@ -154,7 +141,6 @@ static int readFile(FD_t fd, const char * fn, rpmDigestBundle hdrbundle)
 
 exit:
     free(msg);
-    free(blob.ei);
     return rc;
 }
 
@@ -311,6 +297,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     char * msg = NULL;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     int failed = 0;
+    struct hdrblob_s blob;
     rpmDigestBundle plbundle = rpmDigestBundleNew();
     rpmDigestBundle hdrbundle = rpmDigestBundleNew();
 
@@ -322,10 +309,21 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 
     /* Initialize all digests we'll be needing */
     initDigests(fd, sigh, RPMSIG_HEADER, flags, hdrbundle, plbundle);
+    fdSetBundle(fd, plbundle);
+
+    /* Read the header from the package. */
+    if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERIMMUTABLE, &blob, &msg))
+	goto exit;
+
+    if (blob.regionTag == RPMTAG_HEADERIMMUTABLE) {
+	rpmDigestBundleUpdate(hdrbundle,
+				rpm_header_magic, sizeof(rpm_header_magic));
+	rpmDigestBundleUpdate(hdrbundle, blob.ei, blob.pvlen);
+    }
+    blob.ei = _free(blob.ei);
 
     /* Read the file, generating digest(s) on the fly. */
-    fdSetBundle(fd, plbundle);
-    if (readFile(fd, fn, hdrbundle))
+    if (readFile(fd, fn))
 	goto exit;
 
     rasprintf(&buf, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
