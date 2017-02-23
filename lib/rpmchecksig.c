@@ -249,6 +249,57 @@ static void initDigests(FD_t fd, Header sigh, int range, rpmQueryFlags flags,
     headerFreeIterator(hi);
 }
 
+static int verifyItems(FD_t fd, Header sigh, rpmQueryFlags flags,
+		       rpmKeyring keyring,
+		       rpmDigestBundle hdrbundle, rpmDigestBundle plbundle,
+		       char **missingKeys, char **untrustedKeys, char **buf)
+{
+    int failed = 0;
+    struct sigtInfo_s sinfo;
+    struct rpmtd_s sigtd;
+    pgpDigParams sig = NULL;
+    char *result = NULL;
+    HeaderIterator hi = headerInitIterator(sigh);
+
+    for (; headerNext(hi, &sigtd) != 0; rpmtdFreeData(&sigtd)) {
+	/* Clean up parameters from previous sigtag. */
+	sig = pgpDigParamsFree(sig);
+	result = _free(result);
+
+	/* Note: we permit failures to be ignored via disablers */
+	rpmRC rc = rpmSigInfoParse(&sigtd, "package", &sinfo, &sig, &result);
+
+	if (!(flags & VERIFY_SIGNATURE) && sinfo.type == RPMSIG_SIGNATURE_TYPE)
+	    continue;
+	if (!(flags & VERIFY_DIGEST) && sinfo.type == RPMSIG_DIGEST_TYPE)
+	    continue;
+	if (sinfo.type == RPMSIG_UNKNOWN_TYPE)
+	    continue;
+
+	if (sinfo.hashalgo && rc ==  RPMRC_OK) {
+	    DIGEST_CTX ctx;
+	    ctx = rpmDigestBundleDupCtx((sinfo.range & RPMSIG_PAYLOAD) ?
+					plbundle : hdrbundle,
+					sigtd.tag);
+	    rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, &result);
+	    rpmDigestFinal(ctx, NULL, NULL, 0);
+	}
+
+	if (result) {
+	    formatResult(sigtd.tag, rc, result,
+		     (rc == RPMRC_NOKEY ? missingKeys : untrustedKeys), buf);
+	}
+
+	if (rc != RPMRC_OK)
+	    failed = 1;
+    }
+    pgpDigParamsFree(sig);
+    headerFreeIterator(hi);
+    free(result);
+
+    return failed;
+}
+
 static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 			   FD_t fd, const char *fn)
 {
@@ -256,18 +307,11 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     char *buf = NULL;
     char *missingKeys = NULL; 
     char *untrustedKeys = NULL;
-    struct rpmtd_s sigtd;
-    pgpDigParams sig = NULL;
     Header sigh = NULL;
-    HeaderIterator hi = NULL;
     char * msg = NULL;
-    char *result = NULL;
     int res = 1; /* assume failure */
     rpmRC rc;
     int failed = 0;
-    int nodigests = !(flags & VERIFY_DIGEST);
-    int nosignatures = !(flags & VERIFY_SIGNATURE);
-    struct sigtInfo_s sinfo;
     rpmDigestBundle plbundle = rpmDigestBundleNew();
     rpmDigestBundle hdrbundle = rpmDigestBundleNew();
 
@@ -292,45 +336,9 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 
     rasprintf(&buf, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
 
-    hi = headerInitIterator(sigh);
-    for (; headerNext(hi, &sigtd) != 0; rpmtdFreeData(&sigtd)) {
-	DIGEST_CTX ctx = NULL;
-	if (sigtd.data == NULL) /* XXX can't happen */
-	    continue;
+    failed += verifyItems(fd, sigh, flags, keyring, hdrbundle, plbundle,
+			&missingKeys, &untrustedKeys, &buf);
 
-	/* Clean up parameters from previous sigtag. */
-	sig = pgpDigParamsFree(sig);
-	result = _free(result);
-
-	/* Note: we permit failures to be ignored via disablers */
-	rc = rpmSigInfoParse(&sigtd, "package", &sinfo, &sig, &result);
-
-	if (nosignatures && sinfo.type == RPMSIG_SIGNATURE_TYPE)
-	    continue;
-	if (nodigests &&  sinfo.type == RPMSIG_DIGEST_TYPE)
-	    continue;
-	if (sinfo.type == RPMSIG_UNKNOWN_TYPE)
-	    continue;
-
-	if (sinfo.type != RPMSIG_OTHER_TYPE && rc == RPMRC_OK) {
-	    ctx = rpmDigestBundleDupCtx((sinfo.range & RPMSIG_PAYLOAD) ?
-					plbundle : hdrbundle,
-					sigtd.tag);
-	    rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, &result);
-	    rpmDigestFinal(ctx, NULL, NULL, 0);
-	}
-
-	if (result) {
-	    formatResult(sigtd.tag, rc, result,
-		     (rc == RPMRC_NOKEY ? &missingKeys : &untrustedKeys),
-		     &buf);
-	}
-
-	if (rc != RPMRC_OK) {
-	    failed = 1;
-	}
-
-    }
     res = failed;
 
     if (rpmIsVerbose()) {
@@ -352,14 +360,11 @@ exit:
     if (res && msg != NULL)
 	rpmlog(RPMLOG_ERR, "%s: %s\n", fn, msg);
     free(msg);
-    free(result);
     free(buf);
     rpmDigestBundleFree(hdrbundle);
     rpmDigestBundleFree(plbundle);
     fdSetBundle(fd, NULL); /* XXX avoid double-free from fd close */
     sigh = headerFree(sigh);
-    hi = headerFreeIterator(hi);
-    pgpDigParamsFree(sig);
     return res;
 }
 
