@@ -211,8 +211,7 @@ static void formatResult(rpmTagVal sigtag, rpmRC sigres, const char *result,
     free(msg);
 }
 
-static void initDigests(FD_t fd, Header sigh, int range, rpmQueryFlags flags,
-			rpmDigestBundle plbundle)
+static void initDigests(FD_t fd, Header sigh, int range, rpmQueryFlags flags)
 {
     struct sigtInfo_s sinfo;
     struct rpmtd_s sigtd;
@@ -227,13 +226,13 @@ static void initDigests(FD_t fd, Header sigh, int range, rpmQueryFlags flags,
 	    continue;
 
 	if (sinfo.hashalgo && (sinfo.range & range))
-	    rpmDigestBundleAddID(plbundle, sinfo.hashalgo, sigtd.tag, 0);
+	    fdInitDigestID(fd, sinfo.hashalgo, sigtd.tag, 0);
     }
     headerFreeIterator(hi);
 }
 
 static int verifyItems(FD_t fd, Header sigh, int range, rpmQueryFlags flags,
-		       rpmKeyring keyring, rpmDigestBundle plbundle,
+		       rpmKeyring keyring,
 		       char **missingKeys, char **untrustedKeys, char **buf)
 {
     int failed = 0;
@@ -259,7 +258,7 @@ static int verifyItems(FD_t fd, Header sigh, int range, rpmQueryFlags flags,
 	    continue;
 
 	if (sinfo.hashalgo && sinfo.range == range && rc ==  RPMRC_OK) {
-	    DIGEST_CTX ctx = rpmDigestBundleDupCtx(plbundle, sigtd.tag);
+	    DIGEST_CTX ctx = fdDupDigest(fd, sigtd.tag);
 	    rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, &result);
 	    rpmDigestFinal(ctx, NULL, NULL, 0);
 	}
@@ -291,7 +290,6 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     int failed = 0;
     struct hdrblob_s blob;
-    rpmDigestBundle plbundle = rpmDigestBundleNew();
 
     if (rpmLeadRead(fd, NULL, &msg))
 	goto exit;
@@ -300,8 +298,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 	goto exit;
 
     /* Initialize all digests we'll be needing */
-    initDigests(fd, sigh, RPMSIG_HEADER, flags, plbundle);
-    fdSetBundle(fd, plbundle);
+    initDigests(fd, sigh, RPMSIG_HEADER, flags);
 
     /* Read the header from the package. */
     if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERIMMUTABLE, &blob, &msg))
@@ -311,8 +308,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     rasprintf(&buf, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
 
     /* Verify header signatures and digests */
-    failed += verifyItems(fd, sigh, (RPMSIG_HEADER), flags,
-			keyring, plbundle,
+    failed += verifyItems(fd, sigh, (RPMSIG_HEADER), flags, keyring,
 			&missingKeys, &untrustedKeys, &buf);
 
     /* Read the file, generating digest(s) on the fly. */
@@ -321,8 +317,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 
     /* Verify header+payload signatures and digests */
     failed += verifyItems(fd, sigh, (RPMSIG_HEADER|RPMSIG_PAYLOAD), flags,
-			keyring, plbundle,
-			&missingKeys, &untrustedKeys, &buf);
+			keyring, &missingKeys, &untrustedKeys, &buf);
 
     if (failed == 0)
 	rc = RPMRC_OK;
@@ -347,8 +342,6 @@ exit:
     free(buf);
     free(missingKeys);
     free(untrustedKeys);
-    rpmDigestBundleFree(plbundle);
-    fdSetBundle(fd, NULL); /* XXX avoid double-free from fd close */
     sigh = headerFree(sigh);
     return rc;
 }
