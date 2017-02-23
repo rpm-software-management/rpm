@@ -309,37 +309,32 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     char *untrustedKeys = NULL;
     Header sigh = NULL;
     char * msg = NULL;
-    int res = 1; /* assume failure */
-    rpmRC rc;
+    rpmRC rc = RPMRC_FAIL; /* assume failure */
     int failed = 0;
     rpmDigestBundle plbundle = rpmDigestBundleNew();
     rpmDigestBundle hdrbundle = rpmDigestBundleNew();
 
-    if ((rc = rpmLeadRead(fd, NULL, &msg)) != RPMRC_OK) {
+    if (rpmLeadRead(fd, NULL, &msg))
 	goto exit;
-    }
 
-    rc = rpmReadSignature(fd, &sigh, &msg);
-
-    if (rc != RPMRC_OK) {
+    if (rpmReadSignature(fd, &sigh, &msg))
 	goto exit;
-    }
 
     /* Initialize all digests we'll be needing */
     initDigests(fd, sigh, RPMSIG_HEADER, flags, hdrbundle, plbundle);
 
     /* Read the file, generating digest(s) on the fly. */
     fdSetBundle(fd, plbundle);
-    if (readFile(fd, fn, hdrbundle)) {
+    if (readFile(fd, fn, hdrbundle))
 	goto exit;
-    }
 
     rasprintf(&buf, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
 
     failed += verifyItems(fd, sigh, flags, keyring, hdrbundle, plbundle,
 			&missingKeys, &untrustedKeys, &buf);
 
-    res = failed;
+    if (failed == 0)
+	rc = RPMRC_OK;
 
     if (rpmIsVerbose()) {
 	rpmlog(RPMLOG_NOTICE, "%s", buf);
@@ -357,7 +352,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     free(untrustedKeys);
 
 exit:
-    if (res && msg != NULL)
+    if (rc && msg != NULL)
 	rpmlog(RPMLOG_ERR, "%s: %s\n", fn, msg);
     free(msg);
     free(buf);
@@ -365,7 +360,7 @@ exit:
     rpmDigestBundleFree(plbundle);
     fdSetBundle(fd, NULL); /* XXX avoid double-free from fd close */
     sigh = headerFree(sigh);
-    return res;
+    return rc;
 }
 
 /* Wrapper around rpmkVerifySigs to preserve API */
