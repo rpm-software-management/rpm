@@ -212,7 +212,7 @@ static void formatResult(rpmTagVal sigtag, rpmRC sigres, const char *result,
 }
 
 static void initDigests(FD_t fd, Header sigh, int range, rpmQueryFlags flags,
-			rpmDigestBundle hdrbundle, rpmDigestBundle plbundle)
+			rpmDigestBundle plbundle)
 {
     struct sigtInfo_s sinfo;
     struct rpmtd_s sigtd;
@@ -226,18 +226,14 @@ static void initDigests(FD_t fd, Header sigh, int range, rpmQueryFlags flags,
 	if (!(flags & VERIFY_DIGEST) && sinfo.type == RPMSIG_DIGEST_TYPE)
 	    continue;
 
-	if (sinfo.hashalgo && (sinfo.range & range)) {
-	    rpmDigestBundleAddID((sinfo.range & RPMSIG_PAYLOAD) ?
-				plbundle : hdrbundle,
-			        sinfo.hashalgo, sigtd.tag, RPMDIGEST_NONE);
-	}
+	if (sinfo.hashalgo && (sinfo.range & range))
+	    rpmDigestBundleAddID(plbundle, sinfo.hashalgo, sigtd.tag, 0);
     }
     headerFreeIterator(hi);
 }
 
-static int verifyItems(FD_t fd, Header sigh, rpmQueryFlags flags,
-		       rpmKeyring keyring,
-		       rpmDigestBundle hdrbundle, rpmDigestBundle plbundle,
+static int verifyItems(FD_t fd, Header sigh, int range, rpmQueryFlags flags,
+		       rpmKeyring keyring, rpmDigestBundle plbundle,
 		       char **missingKeys, char **untrustedKeys, char **buf)
 {
     int failed = 0;
@@ -262,11 +258,8 @@ static int verifyItems(FD_t fd, Header sigh, rpmQueryFlags flags,
 	if (sinfo.type == RPMSIG_UNKNOWN_TYPE)
 	    continue;
 
-	if (sinfo.hashalgo && rc ==  RPMRC_OK) {
-	    DIGEST_CTX ctx;
-	    ctx = rpmDigestBundleDupCtx((sinfo.range & RPMSIG_PAYLOAD) ?
-					plbundle : hdrbundle,
-					sigtd.tag);
+	if (sinfo.hashalgo && sinfo.range == range && rc ==  RPMRC_OK) {
+	    DIGEST_CTX ctx = rpmDigestBundleDupCtx(plbundle, sigtd.tag);
 	    rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, &result);
 	    rpmDigestFinal(ctx, NULL, NULL, 0);
 	}
@@ -299,7 +292,6 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     int failed = 0;
     struct hdrblob_s blob;
     rpmDigestBundle plbundle = rpmDigestBundleNew();
-    rpmDigestBundle hdrbundle = rpmDigestBundleNew();
 
     if (rpmLeadRead(fd, NULL, &msg))
 	goto exit;
@@ -308,27 +300,28 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 	goto exit;
 
     /* Initialize all digests we'll be needing */
-    initDigests(fd, sigh, RPMSIG_HEADER, flags, hdrbundle, plbundle);
+    initDigests(fd, sigh, RPMSIG_HEADER, flags, plbundle);
     fdSetBundle(fd, plbundle);
 
     /* Read the header from the package. */
     if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERIMMUTABLE, &blob, &msg))
 	goto exit;
-
-    if (blob.regionTag == RPMTAG_HEADERIMMUTABLE) {
-	rpmDigestBundleUpdate(hdrbundle,
-				rpm_header_magic, sizeof(rpm_header_magic));
-	rpmDigestBundleUpdate(hdrbundle, blob.ei, blob.pvlen);
-    }
     blob.ei = _free(blob.ei);
+
+    rasprintf(&buf, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
+
+    /* Verify header signatures and digests */
+    failed += verifyItems(fd, sigh, (RPMSIG_HEADER), flags,
+			keyring, plbundle,
+			&missingKeys, &untrustedKeys, &buf);
 
     /* Read the file, generating digest(s) on the fly. */
     if (readFile(fd, fn))
 	goto exit;
 
-    rasprintf(&buf, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
-
-    failed += verifyItems(fd, sigh, flags, keyring, hdrbundle, plbundle,
+    /* Verify header+payload signatures and digests */
+    failed += verifyItems(fd, sigh, (RPMSIG_HEADER|RPMSIG_PAYLOAD), flags,
+			keyring, plbundle,
 			&missingKeys, &untrustedKeys, &buf);
 
     if (failed == 0)
@@ -346,15 +339,14 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 	       untrustedKeys ? untrustedKeys : "",
 	       untrustedKeys ? _(")") : "");
     }
-    free(missingKeys);
-    free(untrustedKeys);
 
 exit:
     if (rc && msg != NULL)
 	rpmlog(RPMLOG_ERR, "%s: %s\n", fn, msg);
     free(msg);
     free(buf);
-    rpmDigestBundleFree(hdrbundle);
+    free(missingKeys);
+    free(untrustedKeys);
     rpmDigestBundleFree(plbundle);
     fdSetBundle(fd, NULL); /* XXX avoid double-free from fd close */
     sigh = headerFree(sigh);
