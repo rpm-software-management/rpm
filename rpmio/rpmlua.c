@@ -92,10 +92,7 @@ rpmlua rpmluaNew()
     lua->L = L;
 
     for (lib = extlibs; lib->name; lib++) {
-	lua_pushcfunction(L, lib->func);
-	lua_pushstring(L, lib->name);
-	lua_call(L, 1, 0);
-	lua_settop(L, 0);
+        luaL_requiref(L, lib->name, lib->func, 1);
     }
 #ifndef LUA_GLOBALSINDEX
     lua_pushglobaltable(L);
