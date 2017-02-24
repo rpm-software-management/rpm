@@ -898,7 +898,7 @@ static const luaL_Reg R[] =
 
 LUALIB_API int luaopen_posix (lua_State *L)
 {
-	luaL_openlib(L, MYNAME, R, 0);
+	luaL_newlib(L, R);
 	lua_pushliteral(L,"version");		/** version */
 	lua_pushliteral(L,MYVERSION);
 	lua_settable(L,-3);
@@ -921,14 +921,10 @@ static const luaL_Reg os_overrides[] =
     {NULL,      NULL}
 };
 
-#ifndef lua_pushglobaltable
-#define lua_pushglobaltable(L) lua_pushvalue(L, LUA_GLOBALSINDEX)
-#endif
-
 int luaopen_rpm_os(lua_State *L)
 {
-    lua_pushglobaltable(L);
-    luaL_openlib(L, "os", os_overrides, 0);
-    return 0;
+    lua_getglobal(L, "os");
+    luaL_setfuncs(L, os_overrides, 0);
+    return 1;
 }
 
