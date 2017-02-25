@@ -871,13 +871,13 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     case RPMTAG_CONFLICTNAME:
     case RPMTAG_OBSOLETENAME:
     case RPMTAG_PROVIDENAME:
-	if (parseRCPOT(spec, pkg, field, tag, 0, tagflags))
+	if (parseRCPOT(spec, pkg, field, tag, 0, tagflags, addReqProvPkg, NULL))
 	    goto exit;
 	break;
     case RPMTAG_BUILDPREREQ:
     case RPMTAG_BUILDREQUIRES:
     case RPMTAG_BUILDCONFLICTS:
-	if (parseRCPOT(spec, spec->sourcePackage, field, tag, 0, tagflags))
+	if (parseRCPOT(spec, spec->sourcePackage, field, tag, 0, tagflags, addReqProvPkg, NULL))
 	    goto exit;
 	break;
     case RPMTAG_EXCLUDEARCH:

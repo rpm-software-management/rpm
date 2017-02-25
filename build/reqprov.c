@@ -34,6 +34,14 @@ int addReqProv(Package pkg, rpmTagVal tagN,
     return 0;
 }
 
+rpmRC addReqProvPkg(void *cbdata, rpmTagVal tagN,
+		    const char * N, const char *EVR, rpmsenseFlags Flags,
+		    int index)
+{
+    Package pkg = cbdata;
+    return addReqProv(pkg, tagN, N, EVR, Flags, index) ? RPMRC_FAIL : RPMRC_OK;
+}
+
 int rpmlibNeedsFeature(Package pkg, const char * feature, const char * featureEVR)
 {
     char *reqname = NULL;

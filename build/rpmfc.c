@@ -497,44 +497,27 @@ static ARGV_t runCmd(const char *nsdep, const char *depname,
     return output;
 }
 
-static const char *parseDep(char **depav, int depac,
-		    const char **N, const char **EVR, rpmsenseFlags *Flags)
+struct addReqProvDataFc {
+    rpmfc fc;
+    const char *namespace;
+    regex_t *exclude;
+};
+
+static rpmRC addReqProvFc(void *cbdata, rpmTagVal tagN,
+			  const char * N, const char * EVR, rpmsenseFlags Flags,
+			  int index)
 {
-    const char *err = NULL;
+    struct addReqProvDataFc *data = cbdata;
+    rpmfc fc = data->fc;
+    const char *namespace = data->namespace;
+    regex_t *exclude = data->exclude;
 
-    switch (depac) {
-    case 1: /* only a name */
-	*N = depav[0];
-	*EVR = "";
-	break;
-    case 3: /* name, range and version */
-	for (const char *s = depav[1]; *s; s++) {
-	    switch (*s) {
-	    default:
-		err = _("bad operator");
-		break;
-	    case '=':
-		*Flags |= RPMSENSE_EQUAL;
-		break;
-	    case '<':
-		*Flags |= RPMSENSE_LESS;
-		break;
-	    case '>':
-		*Flags |= RPMSENSE_GREATER;
-		break;
-	    }
-	}
-	if (!err) {
-	    *N = depav[0];
-	    *EVR = depav[2];
-	}
-	break;
-    default:
-	err = _("bad format");
-	break;
-    }
+    rpmds ds = rpmdsSingleNS(fc->pool, tagN, namespace, N, EVR, Flags);
+    /* Add to package and file dependencies unless filtered */
+    if (regMatch(exclude, rpmdsDNEVR(ds)+2) == 0)
+	rpmfcAddFileDep(&fc->fileDeps, ds, index);
 
-    return err;
+    return RPMRC_OK;
 }
 
 /**
@@ -577,35 +560,14 @@ static int rpmfcHelper(rpmfc fc, int ix,
     namespace = rpmfcAttrMacro(nsdep, "namespace", NULL);
     exclude = rpmfcAttrReg(depname, "exclude", NULL);
 
+    struct addReqProvDataFc data;
+    data.fc = fc;
+    data.namespace = namespace;
+    data.exclude = exclude;
+
     for (int i = 0; i < pac; i++) {
-	char ** depav = NULL;
-	int xx, depac = 0;
-	const char *N = NULL;
-	const char *EVR = NULL;
-	const char *err = NULL;
-	rpmsenseFlags Flags = dsContext;
-
-	if ((xx = poptParseArgvString(pav[i], &depac, (const char ***)&depav)))
-	    err = poptStrerror(xx);
-
-	if (!err)
-	    err = parseDep(depav, depac, &N, &EVR, &Flags);
-
-	if (!err) {
-	    rpmds ds = rpmdsSingleNS(fc->pool, tagN, namespace, N, EVR, Flags);
-
-	    /* Add to package and file dependencies unless filtered */
-	    if (regMatch(exclude, rpmdsDNEVR(ds)+2) == 0) {
-		//rpmdsMerge(packageDependencies(fc->pkg, tagN), ds);
-		rpmfcAddFileDep(&fc->fileDeps, ds, ix);
-	    }
-	} else {
-	    rpmlog(RPMLOG_ERR, _("invalid dependency (%s): %s\n"),
-		   err, pav[i]);
+	if (parseRCPOT(NULL, fc->pkg, pav[i], tagN, 0, dsContext, addReqProvFc, &data))
 	    rc++;
-	}
-
-	free(depav);
     }
 
     argvFree(pav);
@@ -1353,7 +1315,7 @@ static rpmRC rpmfcApplyExternal(rpmfc fc)
 	}
 
 	/* Parse dependencies into header */
-	rc = parseRCPOT(NULL, fc->pkg, getStringBuf(sb_stdout), dm->ntag ? dm->ntag != -1 : RPMTAG_REQUIRENAME, 0, tagflags);
+	rc = parseRCPOT(NULL, fc->pkg, getStringBuf(sb_stdout), dm->ntag ? dm->ntag != -1 : RPMTAG_REQUIRENAME, 0, tagflags, addReqProvPkg, NULL);
 	freeStringBuf(sb_stdout);
 
 	if (rc) {

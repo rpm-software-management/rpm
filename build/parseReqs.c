@@ -121,7 +121,7 @@ static rpmRC parseRCPOTRichCB(void *cbdata, rpmrichParseType type,
 }
 
 rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
-	       int index, rpmsenseFlags tagflags)
+	       int index, rpmsenseFlags tagflags, addReqProvFunction cb, void *cbdata)
 {
     const char *r, *re, *v, *ve;
     char *emsg = NULL;
@@ -129,6 +129,9 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
     rpmTagVal nametag = RPMTAG_NOT_FOUND;
     rpmsenseFlags Flags;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
+
+    if (!cbdata)
+	cbdata = pkg;
 
     switch (tagN) {
     default:
@@ -221,7 +224,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 		freeStringBuf(data.sb);
 		goto exit;
 	    }
-	    if (addReqProv(pkg, nametag, getStringBuf(data.sb), NULL, Flags, index)) {
+	    if (cb && cb(cbdata, nametag, getStringBuf(data.sb), NULL, Flags, index) != RPMRC_OK) {
 		rasprintf(&emsg, _("invalid dependency"));
 		freeStringBuf(data.sb);
 		goto exit;
@@ -296,7 +299,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 		goto exit;
 	}
 
-	if (addReqProv(pkg, nametag, N, EVR, Flags, index)) {
+	if (cb && cb(cbdata, nametag, N, EVR, Flags, index) != RPMRC_OK) {
 	    rasprintf(&emsg, _("invalid dependency"));
 	    goto exit;
 	}

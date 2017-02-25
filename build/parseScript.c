@@ -416,7 +416,7 @@ int parseScript(rpmSpec spec, int parsePart)
 				priority);
 
 	/* Generate the trigger tags */
-	if (parseRCPOT(spec, pkg, reqargs, reqtag, index, tagflags))
+	if (parseRCPOT(spec, pkg, reqargs, reqtag, index, tagflags, addReqProvPkg, NULL))
 	    goto exit;
     } else {
 	struct rpmtd_s td;
