@@ -1005,7 +1005,7 @@ else
     usrprefix=$prefix
 fi
 
-RPMCONFIGDIR="`echo ${usrprefix}/lib/rpm`"
+RPMCONFIGDIR="`echo ${datadir}/rpm`"
 AC_SUBST(RPMCONFIGDIR)
 
 AC_SUBST(OBJDUMP)
