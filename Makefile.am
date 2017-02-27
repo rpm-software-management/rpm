@@ -155,13 +155,18 @@ rpm2archive_LDADD +=	@WITH_BEECRYPT_LIB@ @WITH_NSS_LIB@ @WITH_OPENSSL_LIB@ @WITH
 
 if LIBELF
 if LIBDWARF
+if LIBDW
 rpmconfig_SCRIPTS += scripts/find-debuginfo.sh
 
 rpmlibexec_PROGRAMS +=	debugedit
 debugedit_SOURCES =	tools/debugedit.c tools/hashtab.c tools/hashtab.h
 debugedit_LDADD =	rpmio/librpmio.la
 debugedit_LDADD +=	@WITH_LIBELF_LIB@ @WITH_POPT_LIB@
-
+if HAVE_LIBDW_STRTAB
+debugedit_LDADD +=	@WITH_LIBDW_LIB@
+else
+debugedit_LDADD +=	@WITH_LIBDW_LIB@ -lebl
+endif
 rpmlibexec_PROGRAMS +=	elfdeps
 elfdeps_SOURCES =	tools/elfdeps.c
 elfdeps_LDADD =		rpmio/librpmio.la
@@ -170,6 +175,7 @@ elfdeps_LDADD +=	@WITH_LIBELF_LIB@ @WITH_POPT_LIB@
 rpmlibexec_PROGRAMS +=	sepdebugcrcfix
 sepdebugcrcfix_SOURCES = tools/sepdebugcrcfix.c
 sepdebugcrcfix_LDADD =	@WITH_LIBELF_LIB@
+endif
 endif
 endif
 

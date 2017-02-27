@@ -463,18 +463,24 @@ AM_CONDITIONAL(WITH_ARCHIVE,[test "$with_archive" = yes])
 #=================
 # Check for elfutils libdw library with dwelf_elf_gnu_build_id.
 WITH_LIBDW_LIB=
+HAVE_LIBDW_STRTAB=
 AS_IF([test "$WITH_LIBELF" = yes],[
   AC_CHECK_HEADERS([elfutils/libdwelf.h],[
+    # dwelf_elf_gnu_build_id was introduced in elfutils 0.159
     AC_CHECK_LIB(dw, dwelf_elf_gnu_build_id, [
       AC_DEFINE(HAVE_LIBDW, 1,
                 [Define to 1 if you have elfutils libdw library])
       WITH_LIBDW_LIB="-ldw"
       WITH_LIBDW=yes
+      # If possible we also want the strtab functions from elfutils 0.167.
+      # But we can fall back on the (unsupported) ebl alternatives if not.
+      AC_CHECK_LIB(dw, dwelf_strtab_init, [HAVE_LIBDW_STRTAB=yes])
     ])
   ])
 ])
 AC_SUBST(WITH_LIBDW_LIB)
 AM_CONDITIONAL(LIBDW,[test "$WITH_LIBDW" = yes])
+AM_CONDITIONAL(HAVE_LIBDW_STRTAB,[test "$HAVE_LIBDW_STRTAB" = yes])
 
 #=================
 # Process --with/without-external-db
