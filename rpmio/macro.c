@@ -342,14 +342,14 @@ printExpansion(MacroBuf mb, const char * t, const char * te)
 
 #define	COPYNAME(_ne, _s, _c)	\
     {	SKIPBLANK(_s,_c);	\
-	while(((_c) = *(_s)) && (risalnum(_c) || (_c) == '_')) \
+	while (((_c) = *(_s)) && (risalnum(_c) || (_c) == '_')) \
 		*(_ne)++ = *(_s)++; \
 	*(_ne) = '\0';		\
     }
 
 #define	COPYOPTS(_oe, _s, _c)	\
     { \
-	while(((_c) = *(_s)) && (_c) != ')') \
+	while (((_c) = *(_s)) && (_c) != ')') \
 		*(_oe)++ = *(_s)++; \
 	*(_oe) = '\0';		\
     }
@@ -424,7 +424,7 @@ doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
     }
 
     size_t tpos = mb->tpos;
-    while((c = fgetc(shf)) != EOF) {
+    while ((c = fgetc(shf)) != EOF) {
 	mbAppend(mb, c);
     }
     (void) pclose(shf);
@@ -708,7 +708,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
     argc = argvCount(argv);
 
     /* Define option macros. */
-    while((c = getopt(argc, argv, opts)) != -1)
+    while ((c = getopt(argc, argv, opts)) != -1)
     {
 	char *name = NULL, *body = NULL;
 	if (c == '?' || strchr(opts, c) == NULL) {
@@ -865,7 +865,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	    be++;
 	*be++ = '\0';
 	(void) rpmFileIsCompressed(b, &compressed);
-	switch(compressed) {
+	switch (compressed) {
 	default:
 	case COMPRESSED_NOT:
 	    sprintf(be, "%%__cat %s", b);
@@ -984,7 +984,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     while (mb->error == 0 && (c = *s) != '\0') {
 	s++;
 	/* Copy text until next macro */
-	switch(c) {
+	switch (c) {
 	case '%':
 	    if (*s) {	/* Ensure not end-of-string. */
 		if (*s != '%')
@@ -1008,7 +1008,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	switch ((c = *s)) {
 	default:		/* %name substitution */
 	    while (*s != '\0' && strchr("!?", *s) != NULL) {
-		switch(*s++) {
+		switch (*s++) {
 		    case '!':
 			negate = ((negate + 1) % 2);
 			break;
@@ -1020,7 +1020,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    f = se = s;
 	    if (*se == '-')
 		se++;
-	    while((c = *se) && (risalnum(c) || c == '_'))
+	    while ((c = *se) && (risalnum(c) || c == '_'))
 		se++;
 	    /* Recognize non-alnum macros too */
 	    switch (*se) {
@@ -1065,7 +1065,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    f = s+1;/* skip { */
 	    se++;	/* skip } */
 	    while (strchr("!?", *f) != NULL) {
-		switch(*f++) {
+		switch (*f++) {
 		case '!':
 		    negate = ((negate + 1) % 2);
 		    break;
@@ -1427,7 +1427,7 @@ static int loadMacroFile(rpmMacroContext mc, const char * fn)
     max_macro_depth = 16;
 
     buf[0] = '\0';
-    while(rdcl(buf, blen, fd) != NULL) {
+    while (rdcl(buf, blen, fd) != NULL) {
 	char c, *n;
 
 	n = buf;

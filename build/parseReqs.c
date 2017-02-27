@@ -13,8 +13,8 @@
 #include "debug.h"
 
 
-#define	SKIPWHITE(_x)	{while(*(_x) && (risspace(*_x) || *(_x) == ',')) (_x)++;}
-#define	SKIPNONWHITE(_x){while(*(_x) &&!(risspace(*_x) || *(_x) == ',')) (_x)++;}
+#define	SKIPWHITE(_x)	{while (*(_x) && (risspace(*_x) || *(_x) == ',')) (_x)++;}
+#define	SKIPNONWHITE(_x){while (*(_x) &&!(risspace(*_x) || *(_x) == ',')) (_x)++;}
 
 static rpmRC checkSep(const char *s, char c, char **emsg)
 {

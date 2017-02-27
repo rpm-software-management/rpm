@@ -358,7 +358,7 @@ static int tryReadHeader(rpmts ts, struct rpmEIU * eiu, Header * hdrp)
    if (eiu->rpmrc == RPMRC_NOTFOUND && (giFlags & RPMGI_NOMANIFEST))
        eiu->rpmrc = RPMRC_FAIL;
 
-   if(eiu->rpmrc == RPMRC_FAIL) {
+   if (eiu->rpmrc == RPMRC_FAIL) {
        rpmlog(RPMLOG_ERR, _("%s cannot be installed\n"), *eiu->fnp);
        eiu->numFailed++;
        *eiu->fnp = NULL;
@@ -589,7 +589,7 @@ restart:
 	if (eiu->relocations)
 	    eiu->relocations->oldPath = _free(eiu->relocations->oldPath);
 
-	switch(rc) {
+	switch (rc) {
 	case 0:
 	    rpmlog(RPMLOG_DEBUG, "\tadded binary package [%d]\n",
 			eiu->numRPMS);

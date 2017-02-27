@@ -186,7 +186,7 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
 	isComment = 1;
 
 
-    if(rpmExpandMacros(spec->macros, spec->lbuf, &lbuf, 0) < 0) {
+    if (rpmExpandMacros(spec->macros, spec->lbuf, &lbuf, 0) < 0) {
 	rpmlog(RPMLOG_ERR, _("line %d: %s\n"),
 		spec->lineNum, spec->lbuf);
 	return 1;
@@ -326,7 +326,7 @@ retry:
 	int c;
 	int i = 0;
 
-	while((c = fgetc(ofi->fp)) != EOF) {
+	while ((c = fgetc(ofi->fp)) != EOF) {
 	    if (i >= ofi->readBufLen - 1) {
 		ofi->readBufLen += BUFSIZ;
 		ofi->readBuf = xrealloc(ofi->readBuf, ofi->readBufLen);
@@ -360,8 +360,8 @@ retry:
 do { \
     char *os = s; \
     char *exp = rpmExpand(token, NULL); \
-    while(*s && !risblank(*s)) s++; \
-    while(*s && risblank(*s)) s++; \
+    while (*s && !risblank(*s)) s++; \
+    while (*s && risblank(*s)) s++; \
     if (!*s) { \
 	rpmlog(RPMLOG_ERR, _("%s:%d: Argument expected for %s\n"), ofi->fileName, ofi->lineNum, os); \
 	free(exp); \

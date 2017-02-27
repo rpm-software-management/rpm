@@ -518,7 +518,7 @@ int rpmxdbOpen(rpmxdb *xdbp, rpmpkgdb pkgdb, const char *filename, int flags, in
 	char *filenameCopy;
 	DIR *pdir;
 
-	if((filenameCopy = strdup(xdb->filename)) == NULL) {
+	if ((filenameCopy = strdup(xdb->filename)) == NULL) {
 	    close(xdb->fd);
 	    free(xdb->filename);
 	    free(xdb);

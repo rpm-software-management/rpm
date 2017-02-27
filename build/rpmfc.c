@@ -509,7 +509,7 @@ static const char *parseDep(char **depav, int depac,
 	break;
     case 3: /* name, range and version */
 	for (const char *s = depav[1]; *s; s++) {
-	    switch(*s) {
+	    switch (*s) {
 	    default:
 		err = _("bad operator");
 		break;
@@ -1316,7 +1316,7 @@ static rpmRC rpmfcApplyExternal(rpmfc fc)
 	StringBuf sb_stdout = NULL;
 	int failnonzero = (tag == RPMTAG_PROVIDEFLAGS);
 
-	switch(tag) {
+	switch (tag) {
 	case RPMTAG_PROVIDEFLAGS:
 	    if (fc->skipProv)
 		continue;

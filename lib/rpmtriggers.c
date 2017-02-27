@@ -130,7 +130,7 @@ void rpmtriggersPrepPostUnTransFileTrigs(rpmts ts, rpmte te)
 
     if (rpmdbGetIteratorCount(mi)) {
 	/* Filter triggers and save only trans postun triggers into ts */
-	while((trigH = rpmdbNextIterator(mi)) != NULL) {
+	while ((trigH = rpmdbNextIterator(mi)) != NULL) {
 	    rpmdsTriggers = rpmdsNew(trigH, RPMTAG_TRANSFILETRIGGERNAME, 0);
 	    while ((rpmdsTrigger = rpmdsFilterTi(rpmdsTriggers, tix))) {
 		if ((rpmdsNext(rpmdsTrigger) >= 0) &&

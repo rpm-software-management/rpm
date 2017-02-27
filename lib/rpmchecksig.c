@@ -46,7 +46,7 @@ static int doImport(rpmts ts, const char *fn, char *buf, ssize_t blen)
 
 	    /* Iterate over certificates in pkt */
 	    while (pktlen > 0) {
-		if(pgpPubKeyCertLen(pkti, pktlen, &certlen)) {
+		if (pgpPubKeyCertLen(pkti, pktlen, &certlen)) {
 		    rpmlog(RPMLOG_ERR, _("%s: key %d import failed.\n"), fn,
 			    keyno);
 		    res++;

@@ -177,7 +177,7 @@ static int addSelfErasures(rpmts ts, rpm_color_t tscolor, int op,
     int rc = 0;
     int cmp;
 
-    while((oh = rpmdbNextIterator(mi)) != NULL) {
+    while ((oh = rpmdbNextIterator(mi)) != NULL) {
 	/* Ignore colored packages not in our rainbow. */
 	if (skipColor(tscolor, hcolor, headerGetNumber(oh, RPMTAG_HEADERCOLOR)))
 	    continue;
@@ -218,7 +218,7 @@ static int addObsoleteErasures(rpmts ts, rpm_color_t tscolor, rpmte p)
 
 	mi = rpmtsPrunedIterator(ts, RPMDBI_NAME, Name, 1);
 
-	while((oh = rpmdbNextIterator(mi)) != NULL) {
+	while ((oh = rpmdbNextIterator(mi)) != NULL) {
 	    const char *oarch = headerGetString(oh, RPMTAG_ARCH);
 	    int match;
 

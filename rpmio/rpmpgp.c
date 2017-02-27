@@ -1063,12 +1063,12 @@ int pgpPrtParamsSubkeys(const uint8_t *pkts, size_t pktlen,
 	    /* Copy UID from main key to subkey */
 	    digps[count]->userid = xstrdup(mainkey->userid);
 
-	    if(getFingerprint(pkt.body, pkt.blen, digps[count]->signid)) {
+	    if (getFingerprint(pkt.body, pkt.blen, digps[count]->signid)) {
 		pgpDigParamsFree(digps[count]);
 		continue;
 	    }
 
-	    if(pgpPrtKey(pkt.tag, pkt.body, pkt.blen, digps[count])) {
+	    if (pgpPrtKey(pkt.tag, pkt.body, pkt.blen, digps[count])) {
 		pgpDigParamsFree(digps[count]);
 		continue;
 	    }

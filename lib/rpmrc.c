@@ -819,7 +819,7 @@ static inline int RPMClass(void)
 
 #define USER686 ((1<<4) | (1<<8) | (1<<15))
 	/* Transmeta Crusoe CPUs say that their CPU family is "5" but they have enough features for i686. */
-	if(cpu == 5 && (cap & USER686) == USER686)
+	if (cpu == 5 && (cap & USER686) == USER686)
 		return 6;
 
 	if (cpu < 6)
@@ -1025,7 +1025,7 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 	    strcpy(un.machine, __power_pc() ? "ppc" : "rs6000");
 	    sprintf(un.sysname,"aix%s.%s", un.version, un.release);
 	}
-	else if(rstreq(un.sysname, "Darwin")) { 
+	else if (rstreq(un.sysname, "Darwin")) { 
 #if defined(__ppc__)
 	    strcpy(un.machine, "ppc");
 #elif defined(__i386__)

@@ -602,7 +602,7 @@ rpmScript rpmScriptFromTriggerTag(Header h, rpmTagVal triggerTag,
     struct rpmtd_s tscripts, tprogs, tflags;
     headerGetFlags hgflags = HEADERGET_MINMEM;
 
-    switch(tm) {
+    switch (tm) {
 	case RPMSCRIPT_NORMALTRIGGER:
 	    headerGet(h, RPMTAG_TRIGGERSCRIPTS, &tscripts, hgflags);
 	    headerGet(h, RPMTAG_TRIGGERSCRIPTPROG, &tprogs, hgflags);

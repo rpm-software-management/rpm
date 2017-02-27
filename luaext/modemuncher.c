@@ -50,7 +50,7 @@ static int rwxrwxrwx(mode_t *mode, const char *p)
 	{
 		if (*p == modesel[count].rwx) tmp_mode |= modesel[count].bits;	/* set a bit */
 		else if (*p == '-') tmp_mode &= ~modesel[count].bits;			/* clear a bit */
-		else if (*p=='s') switch(count)
+		else if (*p=='s') switch (count)
 		{
 			case 2: /* turn on suid flag */
 			tmp_mode |= S_ISUID | S_IXUSR;

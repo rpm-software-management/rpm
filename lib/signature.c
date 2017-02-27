@@ -273,7 +273,7 @@ rpmRC rpmGenerateSignature(char *SHA1, uint8_t *MD5, rpm_loff_t size,
     if (gpgSize > 0)
 	spaceSize += gpgSize;
 
-    if(spaceSize > 0) {
+    if (spaceSize > 0) {
 	reservedSpace = xcalloc(spaceSize, sizeof(char));
 	rpmtdReset(&td);
 	td.tag = RPMSIGTAG_RESERVEDSPACE;

@@ -63,7 +63,7 @@ static void headerMergeLegacySigs(Header h, Header sigh)
 	    break;
 	}
 	if (!headerIsEntry(h, td.tag)) {
-	    switch(td.type) {
+	    switch (td.type) {
 	    case RPM_NULL_TYPE:
 		continue;
 		break;

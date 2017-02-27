@@ -953,7 +953,7 @@ exit:
 
 int rpmIsGlob(const char * pattern, int quote)
 {
-    if(!__glob_pattern_p(pattern, quote)) {
+    if (!__glob_pattern_p(pattern, quote)) {
 
 	const char *begin;
 	const char *next;

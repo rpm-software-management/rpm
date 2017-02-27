@@ -38,8 +38,8 @@
 #include <libgen.h>
 
 #define SKIPSPACE(s) { while (*(s) && risspace(*(s))) (s)++; }
-#define	SKIPWHITE(_x)	{while(*(_x) && (risspace(*_x) || *(_x) == ',')) (_x)++;}
-#define	SKIPNONWHITE(_x){while(*(_x) &&!(risspace(*_x) || *(_x) == ',')) (_x)++;}
+#define	SKIPWHITE(_x)	{while (*(_x) && (risspace(*_x) || *(_x) == ',')) (_x)++;}
+#define	SKIPNONWHITE(_x){while (*(_x) &&!(risspace(*_x) || *(_x) == ',')) (_x)++;}
 
 /**
  */
@@ -2064,7 +2064,7 @@ static rpmRC readFilesManifest(rpmSpec spec, Package pkg, const char *path)
     while (fgets(buf, sizeof(buf), fd)) {
 	if (handleComments(buf))
 	    continue;
-	if(rpmExpandMacros(spec->macros, buf, &expanded, 0) < 0) {
+	if (rpmExpandMacros(spec->macros, buf, &expanded, 0) < 0) {
 	    rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
 	    goto exit;
 	}

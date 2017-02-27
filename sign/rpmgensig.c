@@ -121,7 +121,7 @@ static int manageFile(FD_t *fdp, const char *fn, int flags)
 
     /* open a file and set *fdp */
     if (*fdp == NULL && fn != NULL) {
-	switch(flags & O_ACCMODE) {
+	switch (flags & O_ACCMODE) {
 	    case O_WRONLY:
 		fmode = "w.ufdio";
 		break;

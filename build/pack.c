@@ -133,7 +133,7 @@ static rpmRC addFileToTag(rpmSpec spec, const char * file,
 
     while (fgets(buf, sizeof(buf), f)) {
 	char *expanded;
-	if(rpmExpandMacros(spec->macros, buf, &expanded, 0) < 0) {
+	if (rpmExpandMacros(spec->macros, buf, &expanded, 0) < 0) {
 	    rpmlog(RPMLOG_ERR, _("%s: line: %s\n"), fn, buf);
 	    goto exit;
 	}
@@ -460,7 +460,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 
     sigTargetSize = Ftell(fd) - sigTargetStart;
 
-    if(Fseek(fd, sigTargetStart, SEEK_SET) < 0) {
+    if (Fseek(fd, sigTargetStart, SEEK_SET) < 0) {
 	rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
 		fileName, Fstrerror(fd));
 	goto exit;
@@ -477,7 +477,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     }
     fdFiniDigest(fd, RPMTAG_SIGMD5, (void **)&MD5, NULL, 0);
 
-    if(Fseek(fd, sigStart, SEEK_SET) < 0) {
+    if (Fseek(fd, sigStart, SEEK_SET) < 0) {
 	rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
 		fileName, Fstrerror(fd));
 	goto exit;
@@ -588,7 +588,7 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 		*binDir = '\0';
 		dn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
 		if (stat(dn, &st) < 0) {
-		    switch(errno) {
+		    switch (errno) {
 		    case  ENOENT:
 			if (mkdir(dn, 0755) == 0)
 			    break;

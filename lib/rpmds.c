@@ -1419,8 +1419,8 @@ const char *rpmrichOpStr(rpmrichOp op)
 }
 
 
-#define SKIPWHITE(_x)   {while(*(_x) && (risspace(*_x) || *(_x) == ',')) (_x)++;}
-#define SKIPNONWHITEX(_x){int bl = 0; while(*(_x) &&!(risspace(*_x) || *(_x) == ',' || (*(_x) == ')' && bl-- <= 0))) if (*(_x)++ == '(') bl++;}
+#define SKIPWHITE(_x)   {while (*(_x) && (risspace(*_x) || *(_x) == ',')) (_x)++;}
+#define SKIPNONWHITEX(_x){int bl = 0; while (*(_x) &&!(risspace(*_x) || *(_x) == ',' || (*(_x) == ')' && bl-- <= 0))) if (*(_x)++ == '(') bl++;}
 
 static rpmRC parseSimpleDep(const char **dstrp, char **emsg, rpmrichParseFunction cb, void *cbdata)
 {

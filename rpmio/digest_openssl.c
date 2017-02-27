@@ -341,11 +341,11 @@ static int pgpSetKeyMpiRSA(pgpDigAlg pgpkey, int num, const uint8_t *p)
     size_t mlen = pgpMpiLen(p) - 2;
     struct pgpDigKeyRSA_s *key = pgpkey->data;
 
-    if(!key) {
+    if (!key) {
         key = pgpkey->data = xcalloc(1, sizeof(*key));
     }
 
-    switch(num) {
+    switch (num) {
     case 0:
         /* Modulus */
         if (key->n) {
@@ -464,7 +464,7 @@ static int pgpVerifySigRSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig,
 
     struct pgpDigKeyRSA_s *key = pgpkey->data;
 
-    if(!constructRSASigningKey(key)) {
+    if (!constructRSASigningKey(key)) {
         rc = 1;
         goto done;
     }
@@ -569,7 +569,7 @@ static int pgpSetKeyMpiDSA(pgpDigAlg pgpkey, int num, const uint8_t *p)
     size_t mlen = pgpMpiLen(p) - 2;
     struct pgpDigKeyDSA_s *key = pgpkey->data;
 
-    if(!key) {
+    if (!key) {
         key = pgpkey->data = xcalloc(1, sizeof(*key));
     }
 
@@ -580,7 +580,7 @@ static int pgpSetKeyMpiDSA(pgpDigAlg pgpkey, int num, const uint8_t *p)
     bn = BN_bin2bn(p+2, mlen, NULL);
     if (!bn) return 1;
 
-    switch(num) {
+    switch (num) {
     case 0:
         /* Prime */
         if (key->p) {
@@ -745,7 +745,7 @@ static int pgpVerifySigDSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig,
 
     struct pgpDigKeyDSA_s *key = pgpkey->data;
 
-    if(!constructDSASigningKey(key)) {
+    if (!constructDSASigningKey(key)) {
         rc = 1;
         goto done;
     }

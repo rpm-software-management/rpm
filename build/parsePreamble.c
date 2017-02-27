@@ -19,8 +19,8 @@
 
 #define SKIPSPACE(s) { while (*(s) && risspace(*(s))) (s)++; }
 #define SKIPNONSPACE(s) { while (*(s) && !risspace(*(s))) (s)++; }
-#define SKIPWHITE(_x)	{while(*(_x) && (risspace(*_x) || *(_x) == ',')) (_x)++;}
-#define SKIPNONWHITE(_x){while(*(_x) &&!(risspace(*_x) || *(_x) == ',')) (_x)++;}
+#define SKIPWHITE(_x)	{while (*(_x) && (risspace(*_x) || *(_x) == ',')) (_x)++;}
+#define SKIPNONWHITE(_x){while (*(_x) &&!(risspace(*_x) || *(_x) == ',')) (_x)++;}
 
 #define WHITELIST_NAME ".-_+%{}"
 

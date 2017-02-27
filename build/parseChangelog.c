@@ -221,7 +221,7 @@ static rpmRC addChangelog(Header h, ARGV_const_t sb)
 
 	/* find end of line */
 	date = s;
-	while(*s && *s != '\n') s++;
+	while (*s && *s != '\n') s++;
 	if (! *s) {
 	    rpmlog(RPMLOG_ERR, _("incomplete %%changelog entry\n"));
 	    goto exit;

@@ -757,7 +757,7 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 		/* skip past rest of digits in string that atoi()
 		 * should've processed
 		 * */
-		while(isdigit(*++mode));
+		while (isdigit(*++mode));
 	    }
 #ifdef HAVE_LZMA_MT
 	    else

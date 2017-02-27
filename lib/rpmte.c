@@ -725,7 +725,7 @@ void rpmteAddRelocProblems(rpmte te)
 
 const char * rpmteTypeString(rpmte te)
 {
-    switch(rpmteType(te)) {
+    switch (rpmteType(te)) {
     case TR_ADDED:	return _("install");
     case TR_REMOVED:	return _("erase");
     default:		return "???";

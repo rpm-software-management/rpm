@@ -162,7 +162,7 @@ int rpmDoDigest(int algo, const char * fn,int asAscii,
 	goto exit;
     }
 
-    switch(ut) {
+    switch (ut) {
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
     case URL_IS_HTTPS:
@@ -391,7 +391,7 @@ char *rpmCleanPath(char * path)
     s = t = te = path;
     while (*s != '\0') {
 /*fprintf(stderr, "*** got \"%.*s\"\trest \"%s\"\n", (t-path), path, s); */
-	switch(*s) {
+	switch (*s) {
 	case ':':			/* handle url's */
 	    if (s[1] == '/' && s[2] == '/') {
 		*t++ = *s++;

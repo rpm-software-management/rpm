@@ -360,7 +360,7 @@ static rpmRC runTriggers(rpmpsm psm, rpmsenseFlags sense)
 	rpmdbMatchIterator mi;
 
 	mi = rpmtsInitIterator(ts, RPMDBI_TRIGGERNAME, N, 0);
-	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
+	while ((triggeredH = rpmdbNextIterator(mi)) != NULL) {
 	    nerrors += handleOneTrigger(ts, psm->te, sense, h, triggeredH,
 					0, numPackage, NULL);
 	}
@@ -403,7 +403,7 @@ static rpmRC runImmedTriggers(rpmpsm psm, rpmsenseFlags sense)
 	
 	    mi = rpmtsInitIterator(ts, RPMDBI_NAME, trigName, 0);
 
-	    while((sourceH = rpmdbNextIterator(mi)) != NULL) {
+	    while ((sourceH = rpmdbNextIterator(mi)) != NULL) {
 		nerrors += handleOneTrigger(psm->ts, psm->te,
 				sense, sourceH, h,
 				psm->countCorrection,
@@ -814,7 +814,7 @@ static rpmRC rpmPackageErase(rpmts ts, rpmpsm psm)
 
 static const char * pkgGoalString(pkgGoal goal)
 {
-    switch(goal) {
+    switch (goal) {
     case PKG_INSTALL:	return "  install";
     case PKG_ERASE:	return "    erase";
     case PKG_VERIFY:	return "   verify";
