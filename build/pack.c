@@ -315,7 +315,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     char * SHA1 = NULL;
     uint8_t * MD5 = NULL;
     const char *s;
-    rpmRC rc = RPMRC_OK;
+    rpmRC rc = RPMRC_FAIL; /* assume failure */
     unsigned char buf[32*BUFSIZ];
     uint8_t zeros[] =  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     char *zerosS = "0000000000000000000000000000000000000000";
@@ -364,7 +364,6 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	} else {
 	    rpmlog(RPMLOG_ERR, _("Unknown payload compression: %s\n"),
 		   rpmio_flags);
-	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
 
@@ -402,15 +401,12 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     }
     
     /* Check for UTF-8 encoding of string tags, add encoding tag if all good */
-    if (checkForEncoding(pkg->header, 1)) {
+    if (checkForEncoding(pkg->header, 1))
 	rc = RPMRC_FAIL;
-	goto exit;
-    }
 
     /* Reallocate the header into one contiguous region. */
     pkg->header = headerReload(pkg->header, RPMTAG_HEADERIMMUTABLE);
     if (pkg->header == NULL) {
-	rc = RPMRC_FAIL;
 	rpmlog(RPMLOG_ERR, _("Unable to create immutable header region.\n"));
 	goto exit;
     }
@@ -418,18 +414,14 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     /* Open the output file */
     fd = Fopen(fileName, "w+.ufdio");
     if (fd == NULL || Ferror(fd)) {
-	rc = RPMRC_FAIL;
 	rpmlog(RPMLOG_ERR, _("Could not open %s: %s\n"),
 		fileName, Fstrerror(fd));
 	goto exit;
     }
 
     /* Write the lead section into the package. */
-    rc = rpmLeadWrite(fd, pkg->header);
-    if (rc != RPMRC_OK) {
-	rc = RPMRC_FAIL;
-	rpmlog(RPMLOG_ERR, _("Unable to write package: %s\n"),
-	     Fstrerror(fd));
+    if (rpmLeadWrite(fd, pkg->header)) {
+	rpmlog(RPMLOG_ERR, _("Unable to write package: %s\n"), Fstrerror(fd));
 	goto exit;
     }
 
@@ -437,17 +429,13 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     sigStart = Ftell(fd);
 
     /* Generate and write a placeholder signature header */
-    rc = rpmGenerateSignature(zerosS, zeros, 0, 0, fd);
-    if (rc != RPMRC_OK) {
-	rc = RPMRC_FAIL;
+    if (rpmGenerateSignature(zerosS, zeros, 0, 0, fd))
 	goto exit;
-    }
 
     /* Write the header and archive section. Calculate SHA1 from them. */
     sigTargetStart = Ftell(fd);
     fdInitDigestID(fd, PGPHASHALGO_SHA1, RPMTAG_SHA1HEADER, 0);
     if (headerWrite(fd, pkg->header, HEADER_MAGIC_YES)) {
-	rc = RPMRC_FAIL;
 	rpmlog(RPMLOG_ERR, _("Unable to write temp header\n"));
 	goto exit;
     }
@@ -455,19 +443,12 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     fdFiniDigest(fd, RPMTAG_SHA1HEADER, (void **)&SHA1, NULL, 1);
 
     /* Write payload section (cpio archive) */
-    if (pkg->cpioList == NULL) {
-	rc = RPMRC_FAIL;
-	rpmlog(RPMLOG_ERR, _("Bad CSA data\n"));
-	goto exit;
-    }
-    rc = cpio_doio(fd, pkg, rpmio_flags);
-    if (rc != RPMRC_OK)
+    if (cpio_doio(fd, pkg, rpmio_flags))
 	goto exit;
 
     sigTargetSize = Ftell(fd) - sigTargetStart;
 
     if(Fseek(fd, sigTargetStart, SEEK_SET) < 0) {
-	rc = RPMRC_FAIL;
 	rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
 		fileName, Fstrerror(fd));
 	goto exit;
@@ -478,7 +459,6 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     while (Fread(buf, sizeof(buf[0]), sizeof(buf), fd) > 0)
 	;
     if (Ferror(fd)) {
-	rc = RPMRC_FAIL;
 	rpmlog(RPMLOG_ERR, _("Fread failed in file %s: %s\n"),
 		fileName, Fstrerror(fd));
 	goto exit;
@@ -486,18 +466,16 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     fdFiniDigest(fd, RPMTAG_SIGMD5, (void **)&MD5, NULL, 0);
 
     if(Fseek(fd, sigStart, SEEK_SET) < 0) {
-	rc = RPMRC_FAIL;
 	rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
 		fileName, Fstrerror(fd));
 	goto exit;
     }
 
     /* Generate the signature. Now with right values */
-    rc = rpmGenerateSignature(SHA1, MD5, sigTargetSize, pkg->cpioArchiveSize, fd);
-    if (rc != RPMRC_OK) {
-	rc = RPMRC_FAIL;
+    if (rpmGenerateSignature(SHA1, MD5, sigTargetSize, pkg->cpioArchiveSize, fd))
 	goto exit;
-    }
+
+    rc = RPMRC_OK;
 
 exit:
     free(rpmio_flags);
