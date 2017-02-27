@@ -445,14 +445,14 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 
     /* Write the header and archive section. Calculate SHA1 from them. */
     sigTargetStart = Ftell(fd);
-    fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
+    fdInitDigestID(fd, PGPHASHALGO_SHA1, RPMTAG_SHA1HEADER, 0);
     if (headerWrite(fd, pkg->header, HEADER_MAGIC_YES)) {
 	rc = RPMRC_FAIL;
 	rpmlog(RPMLOG_ERR, _("Unable to write temp header\n"));
 	goto exit;
     }
     (void) Fflush(fd);
-    fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&SHA1, NULL, 1);
+    fdFiniDigest(fd, RPMTAG_SHA1HEADER, (void **)&SHA1, NULL, 1);
 
     /* Write payload section (cpio archive) */
     if (pkg->cpioList == NULL) {
@@ -474,7 +474,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     }
 
     /* Calculate MD5 checksum from header and archive section. */
-    fdInitDigest(fd, PGPHASHALGO_MD5, 0);
+    fdInitDigestID(fd, PGPHASHALGO_MD5, RPMTAG_SIGMD5, 0);
     while (Fread(buf, sizeof(buf[0]), sizeof(buf), fd) > 0)
 	;
     if (Ferror(fd)) {
@@ -483,7 +483,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 		fileName, Fstrerror(fd));
 	goto exit;
     }
-    fdFiniDigest(fd, PGPHASHALGO_MD5, (void **)&MD5, NULL, 0);
+    fdFiniDigest(fd, RPMTAG_SIGMD5, (void **)&MD5, NULL, 0);
 
     if(Fseek(fd, sigStart, SEEK_SET) < 0) {
 	rc = RPMRC_FAIL;
