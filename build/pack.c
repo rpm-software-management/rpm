@@ -307,24 +307,10 @@ static int haveRichDep(Package pkg)
     return 0;
 }
 
-static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
-		      const char *fileName, char **cookie)
+static char *getIOFlags(Package pkg)
 {
-    FD_t fd = NULL;
-    char * rpmio_flags = NULL;
-    char * SHA1 = NULL;
-    uint8_t * MD5 = NULL;
+    char *rpmio_flags;
     const char *s;
-    rpmRC rc = RPMRC_FAIL; /* assume failure */
-    unsigned char buf[32*BUFSIZ];
-    uint8_t zeros[] =  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    char *zerosS = "0000000000000000000000000000000000000000";
-    off_t sigStart;
-    off_t sigTargetStart;
-    off_t sigTargetSize;
-
-    if (pkgidp)
-	*pkgidp = NULL;
 
     /* Save payload information */
     if (headerIsSource(pkg->header))
@@ -364,6 +350,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	} else {
 	    rpmlog(RPMLOG_ERR, _("Unknown payload compression: %s\n"),
 		   rpmio_flags);
+	    rpmio_flags = _free(rpmio_flags);
 	    goto exit;
 	}
 
@@ -374,6 +361,31 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	headerPutString(pkg->header, RPMTAG_PAYLOADFLAGS, buf+1);
 	free(buf);
     }
+exit:
+    return rpmio_flags;
+}
+
+static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
+		      const char *fileName, char **cookie)
+{
+    FD_t fd = NULL;
+    char * rpmio_flags = NULL;
+    char * SHA1 = NULL;
+    uint8_t * MD5 = NULL;
+    rpmRC rc = RPMRC_FAIL; /* assume failure */
+    unsigned char buf[32*BUFSIZ];
+    uint8_t zeros[] =  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    char *zerosS = "0000000000000000000000000000000000000000";
+    off_t sigStart;
+    off_t sigTargetStart;
+    off_t sigTargetSize;
+
+    if (pkgidp)
+	*pkgidp = NULL;
+
+    rpmio_flags = getIOFlags(pkg);
+    if (!rpmio_flags)
+	goto exit;
 
     /* check if the package has a dependency with a '~' */
     if (haveTildeDep(pkg))
