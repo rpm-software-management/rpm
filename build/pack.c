@@ -414,7 +414,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     
     /* Check for UTF-8 encoding of string tags, add encoding tag if all good */
     if (checkForEncoding(pkg->header, 1))
-	rc = RPMRC_FAIL;
+	goto exit;
 
     /* Reallocate the header into one contiguous region. */
     pkg->header = headerReload(pkg->header, RPMTAG_HEADERIMMUTABLE);
