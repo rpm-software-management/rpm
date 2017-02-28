@@ -365,6 +365,28 @@ exit:
     return rpmio_flags;
 }
 
+static void finalizeDeps(Package pkg)
+{
+    /* check if the package has a dependency with a '~' */
+    if (haveTildeDep(pkg))
+	(void) rpmlibNeedsFeature(pkg, "TildeInVersions", "4.10.0-1");
+
+    /* check if the package has a rich dependency */
+    if (haveRichDep(pkg))
+	(void) rpmlibNeedsFeature(pkg, "RichDependencies", "4.12.0-1");
+
+    /* All dependencies added finally, write them into the header */
+    for (int i = 0; i < PACKAGE_NUM_DEPS; i++) {
+	/* Nuke any previously added dependencies from the header */
+	headerDel(pkg->header, rpmdsTagN(pkg->dependencies[i]));
+	headerDel(pkg->header, rpmdsTagEVR(pkg->dependencies[i]));
+	headerDel(pkg->header, rpmdsTagF(pkg->dependencies[i]));
+	headerDel(pkg->header, rpmdsTagTi(pkg->dependencies[i]));
+	/* ...and add again, now with automatic dependencies included */
+	rpmdsPutToHeader(pkg->dependencies[i], pkg->header);
+    }
+}
+
 static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 		      const char *fileName, char **cookie)
 {
@@ -387,24 +409,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     if (!rpmio_flags)
 	goto exit;
 
-    /* check if the package has a dependency with a '~' */
-    if (haveTildeDep(pkg))
-	(void) rpmlibNeedsFeature(pkg, "TildeInVersions", "4.10.0-1");
-
-    /* check if the package has a rich dependency */
-    if (haveRichDep(pkg))
-	(void) rpmlibNeedsFeature(pkg, "RichDependencies", "4.12.0-1");
-
-    /* All dependencies added finally, write them into the header */
-    for (int i = 0; i < PACKAGE_NUM_DEPS; i++) {
-	/* Nuke any previously added dependencies from the header */
-	headerDel(pkg->header, rpmdsTagN(pkg->dependencies[i]));
-	headerDel(pkg->header, rpmdsTagEVR(pkg->dependencies[i]));
-	headerDel(pkg->header, rpmdsTagF(pkg->dependencies[i]));
-	headerDel(pkg->header, rpmdsTagTi(pkg->dependencies[i]));
-	/* ...and add again, now with automatic dependencies included */
-	rpmdsPutToHeader(pkg->dependencies[i], pkg->header);
-    }
+    finalizeDeps(pkg);
 
     /* Create and add the cookie */
     if (cookie) {
