@@ -855,8 +855,8 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	if (parseNoSource(spec, field, tag))
 	    goto exit;
 	break;
-    case RPMTAG_ORDERFLAGS:
-    case RPMTAG_REQUIREFLAGS:
+    case RPMTAG_ORDERNAME:
+    case RPMTAG_REQUIRENAME:
 	if (parseBits(lang, installScriptBits, &tagflags)) {
 	    rpmlog(RPMLOG_ERR, _("line %d: Bad %s: qualifiers: %s\n"),
 		     spec->lineNum, rpmTagGetName(tag), spec->line);
@@ -864,13 +864,13 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	}
 	/* fallthrough */
     case RPMTAG_PREREQ:
-    case RPMTAG_RECOMMENDFLAGS:
-    case RPMTAG_SUGGESTFLAGS:
-    case RPMTAG_SUPPLEMENTFLAGS:
-    case RPMTAG_ENHANCEFLAGS:
-    case RPMTAG_CONFLICTFLAGS:
-    case RPMTAG_OBSOLETEFLAGS:
-    case RPMTAG_PROVIDEFLAGS:
+    case RPMTAG_RECOMMENDNAME:
+    case RPMTAG_SUGGESTNAME:
+    case RPMTAG_SUPPLEMENTNAME:
+    case RPMTAG_ENHANCENAME:
+    case RPMTAG_CONFLICTNAME:
+    case RPMTAG_OBSOLETENAME:
+    case RPMTAG_PROVIDENAME:
 	if (parseRCPOT(spec, pkg, field, tag, 0, tagflags))
 	    goto exit;
 	break;
@@ -982,15 +982,15 @@ static struct PreambleRec_s const preambleList[] = {
     {RPMTAG_EXCLUDEOS,		0, 0, LEN_AND_STR("excludeos")},
     {RPMTAG_EXCLUSIVEOS,	0, 0, LEN_AND_STR("exclusiveos")},
     {RPMTAG_ICON,		0, 0, LEN_AND_STR("icon")},
-    {RPMTAG_PROVIDEFLAGS,	0, 0, LEN_AND_STR("provides")},
-    {RPMTAG_REQUIREFLAGS,	2, 0, LEN_AND_STR("requires")},
-    {RPMTAG_RECOMMENDFLAGS,	0, 0, LEN_AND_STR("recommends")},
-    {RPMTAG_SUGGESTFLAGS,	0, 0, LEN_AND_STR("suggests")},
-    {RPMTAG_SUPPLEMENTFLAGS,	0, 0, LEN_AND_STR("supplements")},
-    {RPMTAG_ENHANCEFLAGS,	0, 0, LEN_AND_STR("enhances")},
+    {RPMTAG_PROVIDENAME,	0, 0, LEN_AND_STR("provides")},
+    {RPMTAG_REQUIRENAME,	2, 0, LEN_AND_STR("requires")},
+    {RPMTAG_RECOMMENDNAME,	0, 0, LEN_AND_STR("recommends")},
+    {RPMTAG_SUGGESTNAME,	0, 0, LEN_AND_STR("suggests")},
+    {RPMTAG_SUPPLEMENTNAME,	0, 0, LEN_AND_STR("supplements")},
+    {RPMTAG_ENHANCENAME,	0, 0, LEN_AND_STR("enhances")},
     {RPMTAG_PREREQ,		2, 1, LEN_AND_STR("prereq")},
-    {RPMTAG_CONFLICTFLAGS,	0, 0, LEN_AND_STR("conflicts")},
-    {RPMTAG_OBSOLETEFLAGS,	0, 0, LEN_AND_STR("obsoletes")},
+    {RPMTAG_CONFLICTNAME,	0, 0, LEN_AND_STR("conflicts")},
+    {RPMTAG_OBSOLETENAME,	0, 0, LEN_AND_STR("obsoletes")},
     {RPMTAG_PREFIXES,		0, 0, LEN_AND_STR("prefixes")},
     {RPMTAG_PREFIXES,		0, 0, LEN_AND_STR("prefix")},
     {RPMTAG_BUILDROOT,		0, 0, LEN_AND_STR("buildroot")},
@@ -1005,7 +1005,7 @@ static struct PreambleRec_s const preambleList[] = {
     {RPMTAG_DOCDIR,		0, 0, LEN_AND_STR("docdir")},
     {RPMTAG_DISTTAG,		0, 0, LEN_AND_STR("disttag")},
     {RPMTAG_BUGURL,		0, 0, LEN_AND_STR("bugurl")},
-    {RPMTAG_ORDERFLAGS,		2, 0, LEN_AND_STR("orderwithrequires")},
+    {RPMTAG_ORDERNAME,		2, 0, LEN_AND_STR("orderwithrequires")},
     {RPMTAG_REMOVEPATHPOSTFIXES,0, 0, LEN_AND_STR("removepathpostfixes")},
     {0, 0, 0, 0}
 };

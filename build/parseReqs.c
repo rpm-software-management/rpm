@@ -132,33 +132,18 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 
     switch (tagN) {
     default:
-    case RPMTAG_REQUIREFLAGS:
-	nametag = RPMTAG_REQUIRENAME;
+    case RPMTAG_REQUIRENAME:
 	tagflags |= RPMSENSE_ANY;
-	break;
-    case RPMTAG_RECOMMENDFLAGS:
-	nametag = RPMTAG_RECOMMENDNAME;
-	break;
-    case RPMTAG_SUGGESTFLAGS:
-	nametag = RPMTAG_SUGGESTNAME;
-	break;
-    case RPMTAG_SUPPLEMENTFLAGS:
-	nametag = RPMTAG_SUPPLEMENTNAME;
-	break;
-    case RPMTAG_ENHANCEFLAGS:
-	nametag = RPMTAG_ENHANCENAME;
-	break;
-    case RPMTAG_PROVIDEFLAGS:
-	nametag = RPMTAG_PROVIDENAME;
-	break;
-    case RPMTAG_OBSOLETEFLAGS:
-	nametag = RPMTAG_OBSOLETENAME;
-	break;
-    case RPMTAG_CONFLICTFLAGS:
-	nametag = RPMTAG_CONFLICTNAME;
-	break;
-    case RPMTAG_ORDERFLAGS:
-	nametag = RPMTAG_ORDERNAME;
+	/* fall through */
+    case RPMTAG_RECOMMENDNAME:
+    case RPMTAG_SUGGESTNAME:
+    case RPMTAG_SUPPLEMENTNAME:
+    case RPMTAG_ENHANCENAME:
+    case RPMTAG_PROVIDENAME:
+    case RPMTAG_OBSOLETENAME:
+    case RPMTAG_CONFLICTNAME:
+    case RPMTAG_ORDERNAME:
+	nametag = tagN;
 	break;
     case RPMTAG_PREREQ:
 	/* XXX map legacy PreReq into Requires(pre,preun) */
