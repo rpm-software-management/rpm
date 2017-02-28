@@ -67,6 +67,9 @@ ver_rel=
 # Arch given by --unique-debug-arch
 unique_debug_arch=
 
+# Base given by --unique-debug-src-base
+unique_debug_src_base=
+
 # Number of parallel jobs to spawn
 n_jobs=1
 
@@ -95,6 +98,10 @@ while [ $# -gt 0 ]; do
     ;;
   --unique-debug-arch)
     unique_debug_arch=$2
+    shift
+    ;;
+  --unique-debug-src-base)
+    unique_debug_src_base=$2
     shift
     ;;
   -g)
@@ -144,6 +151,11 @@ done
 
 if test -z "$ver_rel" -a -n "$unique_debug_arch"; then
   echo >&2 "*** ERROR: --unique-debug-arch (${unique_debug_arch}) needs --ver-rel (${ver_rel})"
+  exit 2
+fi
+
+if test -z "$unique_debug_arch" -a -n "$unique_debug_src_base"; then
+  echo >&2 "*** ERROR: --unique-debug-src-base (${unique_debug_src_base}) needs --unique-debug-arch (${unique_debug_arch})"
   exit 2
 fi
 
@@ -305,7 +317,14 @@ do_file()
   if [ ! -z "$ver_rel" ]; then
     build_id_seed="--build-id-seed=$ver_rel"
   fi
-  id=$(${lib_rpm_dir}/debugedit -b "$RPM_BUILD_DIR" -d /usr/src/debug \
+  # See also cpio SOURCEFILE copy. Directories must match up.
+  debug_base_name="$RPM_BUILD_DIR"
+  debug_dest_name="/usr/src/debug"
+  if [ ! -z "$unique_debug_src_base" ]; then
+    debug_base_name="$BUILDDIR"
+    debug_dest_name="/usr/src/debug/${unique_debug_src_base}-${ver_rel}.${unique_debug_arch}"
+  fi
+  id=$(${lib_rpm_dir}/debugedit -b $debug_base_name -d $debug_dest_name \
 			      -i $build_id_seed -l "$SOURCEFILE" "$f") || exit
   if [ -z "$id" ]; then
     echo >&2 "*** ${strict_error}: No build ID note found in $f"
@@ -460,11 +479,19 @@ do
 done
 
 if [ -s "$SOURCEFILE" ]; then
-  mkdir -p "${RPM_BUILD_ROOT}/usr/src/debug"
+  # See also debugedit invocation. Directories must match up.
+  debug_base_name="$RPM_BUILD_DIR"
+  debug_dest_name="/usr/src/debug"
+  if [ ! -z "$unique_debug_src_base" ]; then
+    debug_base_name="$BUILDDIR"
+    debug_dest_name="/usr/src/debug/${unique_debug_src_base}-${ver_rel}.${unique_debug_arch}"
+  fi
+
+  mkdir -p "${RPM_BUILD_ROOT}${debug_dest_name}"
   LC_ALL=C sort -z -u "$SOURCEFILE" | grep -E -v -z '(<internal>|<built-in>)$' |
-  (cd "$RPM_BUILD_DIR"; cpio -pd0mL "${RPM_BUILD_ROOT}/usr/src/debug")
+  (cd "${debug_base_name}"; cpio -pd0mL "${RPM_BUILD_ROOT}${debug_dest_name}")
   # stupid cpio creates new directories in mode 0700, fixup
-  find "${RPM_BUILD_ROOT}/usr/src/debug" -type d -print0 |
+  find "${RPM_BUILD_ROOT}${debug_dest_name}" -type d -print0 |
   xargs --no-run-if-empty -0 chmod a+rx
 fi
 

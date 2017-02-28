@@ -399,6 +399,7 @@ run rpmbuild --quiet \
   --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
   --rcfile=${abs_top_builddir}/rpmrc \
   --undefine "_unique_debug_names" \
+  --undefine "_unique_debug_srcs" \
   -ba "${abs_srcdir}"/data/SPECS/hello2.spec
 
 # The debuginfo package should contain a .debug file for each binary
@@ -699,5 +700,84 @@ readelf -S ./usr/lib/debug/usr/local/bin/hello2*.debug \
 ],
 [0],
 [],
+[ignore])
+AT_CLEANUP
+
+# ------------------------------
+# Check that a debug source is in a "unique" directory when requested.
+AT_SETUP([rpmbuild debuginfo unique debug src dir])
+AT_KEYWORDS([build] [debuginfo])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+# Build a package that has some debuginfo
+cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
+
+# Note that the spec defines hello2 as name, but the source is hello-1.0.
+# Disable dwz to make debuginfo path rewrite checking easier.
+run rpmbuild --quiet \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --undefine "_find_debuginfo_dwz_opts" \
+  --define "_unique_debug_srcs 1" \
+  -ba "${abs_srcdir}"/data/SPECS/hello2.spec
+
+# Unpack the debuginfo rpms so we can check the .debug files.
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
+  | cpio -diu --quiet
+
+# Check that the source path is "unique"
+# Drop the final arch prefix to make the test arch-independent.
+ls ./usr/src/debug/ | cut -f1,2 -d\.
+
+# Check that the source path has been rewritten in the .debug file.
+# Drop the final arch prefix to make the test arch-independent.
+readelf --debug-dump=info ./usr/lib/debug/usr/local/bin/hello2*.debug \
+  | grep comp_dir | cut -f5- -d/ | cut -f1,2 -d\.
+],
+[0],
+[hello2-1.0-1
+hello2-1.0-1
+],
+[ignore])
+AT_CLEANUP
+
+# ------------------------------
+# Check that a debug source is NOT in a "unique" directory when not requested.
+# It will be in the "build directory" name under /usr/src/debug.
+AT_SETUP([rpmbuild debuginfo no unique debug src dir])
+AT_KEYWORDS([build] [debuginfo])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+# Build a package that has some debuginfo
+cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
+
+# Note that the spec defines hello2 as name, but the source is hello-1.0.
+# Disable dwz to make debuginfo path rewrite checking easier.
+run rpmbuild --quiet \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --undefine "_find_debuginfo_dwz_opts" \
+  --undefine "_unique_debug_srcs" \
+  -ba "${abs_srcdir}"/data/SPECS/hello2.spec
+
+# Unpack the debuginfo rpms so we can check the .debug files.
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
+  | cpio -diu --quiet
+
+# Check that the source path is "unique"
+ls ./usr/src/debug/
+
+# Check that the source path has been rewritten in the .debug file.
+readelf --debug-dump=info ./usr/lib/debug/usr/local/bin/hello2*.debug \
+  | grep comp_dir | cut -f5- -d/
+],
+[0],
+[hello-1.0
+hello-1.0
+],
 [ignore])
 AT_CLEANUP

@@ -71,6 +71,7 @@ run rpmbuild \
   --rcfile=${abs_top_builddir}/rpmrc \
   --define="_build_id_links alldebug" \
   --undefine "_unique_debug_names" \
+  --undefine "_unique_debug_srcs" \
   --quiet -ba "${abs_srcdir}"/data/SPECS/hello.spec
 
 # There should be zero build-id files in the main package
@@ -257,6 +258,7 @@ run rpmbuild \
   --rcfile=${abs_top_builddir}/rpmrc \
   --define="_build_id_links separate" \
   --undefine "_unique_debug_names" \
+  --undefine "_unique_debug_srcs" \
   --quiet -ba "${abs_srcdir}"/data/SPECS/hello.spec
 
 # There should be one build-id files in the main and debuginfo package
@@ -441,6 +443,7 @@ run rpmbuild \
   --rcfile=${abs_top_builddir}/rpmrc \
   --define="_build_id_links compat" \
   --undefine "_unique_debug_names" \
+  --undefine "_unique_debug_srcs" \
   --quiet -ba "${abs_srcdir}"/data/SPECS/hello.spec
 
 # There should be one build-id files in the main and debuginfo package.
@@ -1125,6 +1128,7 @@ run rpmbuild --quiet \
   --rcfile=${abs_top_builddir}/rpmrc \
   --undefine="_unique_build_ids" \
   --undefine="_unique_debug_names" \
+  --undefine="_unique_debug_srcs" \
   -ba "${abs_srcdir}"/data/SPECS/hello.spec
 
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-1.*.rpm \
@@ -1145,6 +1149,7 @@ run rpmbuild --quiet \
   --rcfile=${abs_top_builddir}/rpmrc \
   --undefine="_unique_build_ids" \
   --undefine="_unique_debug_names" \
+  --undefine="_unique_debug_srcs" \
   -ba "${abs_srcdir}"/data/SPECS/hello-r2.spec
 
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-2.*.rpm \
