@@ -398,9 +398,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     unsigned char buf[32*BUFSIZ];
     uint8_t zeros[] =  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     char *zerosS = "0000000000000000000000000000000000000000";
-    off_t sigStart;
-    off_t sigTargetStart;
-    off_t sigTargetSize;
+    off_t sigStart, hdrStart, payloadEnd;
 
     if (pkgidp)
 	*pkgidp = NULL;
@@ -450,7 +448,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	goto exit;
 
     /* Write the header and archive section. Calculate SHA1 from them. */
-    sigTargetStart = Ftell(fd);
+    hdrStart = Ftell(fd);
     fdInitDigestID(fd, PGPHASHALGO_SHA1, RPMTAG_SHA1HEADER, 0);
     if (headerWrite(fd, pkg->header, HEADER_MAGIC_YES)) {
 	rpmlog(RPMLOG_ERR, _("Unable to write temp header\n"));
@@ -463,9 +461,9 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     if (cpio_doio(fd, pkg, rpmio_flags))
 	goto exit;
 
-    sigTargetSize = Ftell(fd) - sigTargetStart;
+    payloadEnd = Ftell(fd);
 
-    if (Fseek(fd, sigTargetStart, SEEK_SET) < 0) {
+    if (Fseek(fd, hdrStart, SEEK_SET) < 0) {
 	rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
 		fileName, Fstrerror(fd));
 	goto exit;
@@ -489,7 +487,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     }
 
     /* Generate the signature. Now with right values */
-    if (rpmGenerateSignature(SHA1, MD5, sigTargetSize, pkg->cpioArchiveSize, fd))
+    if (rpmGenerateSignature(SHA1, MD5, payloadEnd - hdrStart, pkg->cpioArchiveSize, fd))
 	goto exit;
 
     rc = RPMRC_OK;
