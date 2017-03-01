@@ -157,20 +157,11 @@ static PyObject * hdrKeyList(hdrObject * s)
     return keys;
 }
 
-static PyObject * hdrAsBytes(hdrObject * s, int legacy)
+static PyObject * hdrAsBytes(hdrObject * s)
 {
     PyObject *res = NULL;
-    char *buf = NULL;
-    unsigned int len;
-    Header h = headerLink(s->h);
-   
-    /* XXX this legacy switch is a hack, needs to be removed. */
-    if (legacy) {
-	h = headerCopy(s->h);	/* XXX strip region tags, etc */
-	headerFree(s->h);
-    }
-    buf = headerExport(h, &len);
-    h = headerFree(h);
+    unsigned int len = 0;
+    char *buf = headerExport(s->h, &len);
 
     if (buf == NULL || len == 0) {
 	PyErr_SetString(pyrpmError, "can't unload bad header\n");
@@ -181,15 +172,9 @@ static PyObject * hdrAsBytes(hdrObject * s, int legacy)
     return res;
 }
 
-static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
+static PyObject * hdrUnload(hdrObject * s)
 {
-    int legacy = 0;
-    static char *kwlist[] = { "legacyHeader", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, keywords, "|i", kwlist, &legacy))
-	return NULL;
-
-    return hdrAsBytes(s, legacy);
+    return hdrAsBytes(s);
 }
 
 static PyObject * hdrExpandFilelist(hdrObject * s)
@@ -337,7 +322,7 @@ static long hdr_hash(PyObject * h)
 static PyObject * hdr_reduce(hdrObject *s)
 {
     PyObject *res = NULL;
-    PyObject *blob = hdrAsBytes(s, 0);
+    PyObject *blob = hdrAsBytes(s);
     if (blob) {
 	res = Py_BuildValue("O(O)", Py_TYPE(s), blob);
 	Py_DECREF(blob);
@@ -348,8 +333,8 @@ static PyObject * hdr_reduce(hdrObject *s)
 static struct PyMethodDef hdr_methods[] = {
     {"keys",		(PyCFunction) hdrKeyList,	METH_NOARGS,
      "hdr.keys() -- Return a list of the header's rpm tags (int RPMTAG_*)." },
-    {"unload",		(PyCFunction) hdrUnload,	METH_VARARGS|METH_KEYWORDS,
-     "hdr.unload(legacyHeader=False) -- Return binary representation\nof the header." },
+    {"unload",		(PyCFunction) hdrUnload,	METH_NOARGS,
+     "hdr.unload() -- Return binary representation\nof the header." },
     {"expandFilelist",	(PyCFunction) hdrExpandFilelist,METH_NOARGS,
      "DEPRECATED -- Use hdr.convert() instead." },
     {"compressFilelist",(PyCFunction) hdrCompressFilelist,METH_NOARGS,
