@@ -405,6 +405,32 @@ static rpmRC fdJump(FD_t fd, off_t offset)
     return RPMRC_OK;
 }
 
+static rpmRC fdConsume(FD_t fd, off_t start, off_t nbytes)
+{
+    size_t bufsiz = 32*BUFSIZ;
+    unsigned char buf[bufsiz];
+    off_t left = nbytes;
+    ssize_t nb;
+
+    if (start && fdJump(fd, start))
+	return RPMRC_FAIL;
+
+    while (left > 0) {
+	nb = Fread(buf, 1, (left < bufsiz) ? left : bufsiz, fd);
+	if (nb > 0)
+	    left -= nb;
+	else
+	    break;
+    };
+
+    if (left) {
+	rpmlog(RPMLOG_ERR, _("Failed to read %ld bytes in file %s: %s\n"),
+		nbytes, Fdescr(fd), Fstrerror(fd));
+    }
+
+    return (left == 0) ? RPMRC_OK : RPMRC_FAIL;
+}
+
 static rpmRC writeHdr(FD_t fd, Header pkgh)
 {
     /* Reallocate the header into one contiguous region for writing. */
@@ -437,8 +463,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     char * SHA1 = NULL;
     uint8_t * MD5 = NULL;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
-    unsigned char buf[32*BUFSIZ];
-    off_t sigStart, hdrStart, payloadEnd;
+    off_t sigStart, hdrStart, payloadStart, payloadEnd;
 
     if (pkgidp)
 	*pkgidp = NULL;
@@ -484,31 +509,26 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     SHA1 = _free(SHA1);
     MD5 = _free(MD5);
 
-    /* Write the header and archive section. Calculate SHA1 from them. */
+    /* Write the header. */
     hdrStart = Ftell(fd);
-    fdInitDigestID(fd, PGPHASHALGO_SHA1, RPMTAG_SHA1HEADER, 0);
     if (writeHdr(fd, pkg->header))
+	goto exit;
+
+    /* Write payload section (cpio archive) */
+    payloadStart = Ftell(fd);
+    if (cpio_doio(fd, pkg, rpmio_flags))
+	goto exit;
+    payloadEnd = Ftell(fd);
+
+    /* Calculate digests: SHA on header, legacy MD5 on header + payload */
+    fdInitDigestID(fd, PGPHASHALGO_MD5, RPMTAG_SIGMD5, 0);
+    fdInitDigestID(fd, PGPHASHALGO_SHA1, RPMTAG_SHA1HEADER, 0);
+    if (fdConsume(fd, hdrStart, payloadStart - hdrStart))
 	goto exit;
     fdFiniDigest(fd, RPMTAG_SHA1HEADER, (void **)&SHA1, NULL, 1);
 
-    /* Write payload section (cpio archive) */
-    if (cpio_doio(fd, pkg, rpmio_flags))
+    if (fdConsume(fd, 0, payloadEnd - payloadStart))
 	goto exit;
-
-    payloadEnd = Ftell(fd);
-
-    if (fdJump(fd, hdrStart))
-	goto exit;
-
-    /* Calculate MD5 checksum from header and archive section. */
-    fdInitDigestID(fd, PGPHASHALGO_MD5, RPMTAG_SIGMD5, 0);
-    while (Fread(buf, sizeof(buf[0]), sizeof(buf), fd) > 0)
-	;
-    if (Ferror(fd)) {
-	rpmlog(RPMLOG_ERR, _("Fread failed in file %s: %s\n"),
-		fileName, Fstrerror(fd));
-	goto exit;
-    }
     fdFiniDigest(fd, RPMTAG_SIGMD5, (void **)&MD5, NULL, 0);
 
     if (fdJump(fd, sigStart))
