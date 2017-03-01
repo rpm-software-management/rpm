@@ -35,8 +35,11 @@ EXTRA_DIST += $(TESTSUITE_AT)
 ## testsuite data
 EXTRA_DIST += data/SPECS/attrtest.spec
 EXTRA_DIST += data/SPECS/hello.spec
+EXTRA_DIST += data/SPECS/hello-r2.spec
 EXTRA_DIST += data/SPECS/hello-script.spec
 EXTRA_DIST += data/SPECS/hello2.spec
+EXTRA_DIST += data/SPECS/hello2cp.spec
+EXTRA_DIST += data/SPECS/hello2ln.spec
 EXTRA_DIST += data/SPECS/hello2-suid.spec
 EXTRA_DIST += data/SPECS/foo.spec
 EXTRA_DIST += data/SPECS/globtest.spec
