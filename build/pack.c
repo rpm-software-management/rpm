@@ -455,6 +455,19 @@ exit:
     return rc;
 }
 
+/*
+ * This is more than just a little insane:
+ * In order to write the signature, we need to know the size and
+ * the size and digests of the header and payload, which are located
+ * after the signature on disk. We also need a digest of the compressed
+ * payload for the main header, and of course the payload is after the
+ * header on disk. So we need to create placeholders for both the
+ * signature and main header that exactly match the final sizes, calculate
+ * the payload digest, then generate and write the real main header to
+ * be able to FINALLY calculate the digests we need for the signature
+ * header. In other words, we need to write things in the exact opposite
+ * order to how the RPM format is laid on disk.
+ */
 static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 		      const char *fileName, char **cookie)
 {
@@ -462,6 +475,8 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     char * rpmio_flags = NULL;
     char * SHA1 = NULL;
     uint8_t * MD5 = NULL;
+    char * pld = NULL;
+    uint32_t pld_algo = PGPHASHALGO_SHA256; /* TODO: macro configuration */
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     off_t sigStart, hdrStart, payloadStart, payloadEnd;
 
@@ -479,6 +494,12 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	rasprintf(cookie, "%s %d", buildHost(), (int) (*getBuildTime()));
 	headerPutString(pkg->header, RPMTAG_COOKIE, *cookie);
     }
+
+    /* Create a dummy payload digest to get the header size right */
+    pld = nullDigest(pld_algo, 1);
+    headerPutUint32(pkg->header, RPMTAG_PAYLOADDIGESTALGO, &pld_algo, 1);
+    headerPutString(pkg->header, RPMTAG_PAYLOADDIGEST, pld);
+    pld = _free(pld);
     
     /* Check for UTF-8 encoding of string tags, add encoding tag if all good */
     if (checkForEncoding(pkg->header, 1))
@@ -509,7 +530,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     SHA1 = _free(SHA1);
     MD5 = _free(MD5);
 
-    /* Write the header. */
+    /* Write a placeholder header. */
     hdrStart = Ftell(fd);
     if (writeHdr(fd, pkg->header))
 	goto exit;
@@ -519,6 +540,23 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     if (cpio_doio(fd, pkg, rpmio_flags))
 	goto exit;
     payloadEnd = Ftell(fd);
+
+    /* Re-read payload to calculate compressed digest */
+    fdInitDigestID(fd, pld_algo, RPMTAG_PAYLOADDIGEST, 0);
+    if (fdConsume(fd, payloadStart, payloadEnd - payloadStart))
+	goto exit;
+    fdFiniDigest(fd, RPMTAG_PAYLOADDIGEST, (void **)&pld, NULL, 1);
+
+    /* Insert the payload digest in main header */
+    headerDel(pkg->header, RPMTAG_PAYLOADDIGEST);
+    headerPutString(pkg->header, RPMTAG_PAYLOADDIGEST, pld);
+    pld = _free(pld);
+
+    /* Write the final header */
+    if (fdJump(fd, hdrStart))
+	goto exit;
+    if (writeHdr(fd, pkg->header))
+	goto exit;
 
     /* Calculate digests: SHA on header, legacy MD5 on header + payload */
     fdInitDigestID(fd, PGPHASHALGO_MD5, RPMTAG_SIGMD5, 0);
