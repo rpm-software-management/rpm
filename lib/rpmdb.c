@@ -2554,10 +2554,12 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	    }
 
 	    /* Deleted entries are eliminated in legacy headers by copy. */
-	    {	Header nh = (headerIsEntry(h, RPMTAG_HEADERIMAGE)
-				? headerCopy(h) : NULL);
-		rc = rpmdbAdd(newdb, (nh ? nh : h));
+	    if (headerIsEntry(h, RPMTAG_HEADERIMAGE)) {
+		Header nh = headerCopy(h);
+		rc = rpmdbAdd(newdb, nh);
 		headerFree(nh);
+	    } else {
+		rc = rpmdbAdd(newdb, h);
 	    }
 
 	    if (rc) {
