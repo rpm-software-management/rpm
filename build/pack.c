@@ -405,6 +405,30 @@ static rpmRC fdJump(FD_t fd, off_t offset)
     return RPMRC_OK;
 }
 
+static rpmRC writeHdr(FD_t fd, Header pkgh)
+{
+    /* Reallocate the header into one contiguous region for writing. */
+    Header h = headerReload(headerCopy(pkgh), RPMTAG_HEADERIMMUTABLE);
+    rpmRC rc = RPMRC_FAIL;
+
+    if (h == NULL) {
+	rpmlog(RPMLOG_ERR,_("Unable to create immutable header region\n"));
+	goto exit;
+    }
+
+    if (headerWrite(fd, h, HEADER_MAGIC_YES)) {
+	rpmlog(RPMLOG_ERR, _("Unable to write header to %s: %s\n"),
+		Fdescr(fd), Fstrerror(fd));
+	goto exit;
+    }
+    (void) Fflush(fd);
+    rc = RPMRC_OK;
+
+exit:
+    headerFree(h);
+    return rc;
+}
+
 static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 		      const char *fileName, char **cookie)
 {
@@ -435,13 +459,6 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     if (checkForEncoding(pkg->header, 1))
 	goto exit;
 
-    /* Reallocate the header into one contiguous region. */
-    pkg->header = headerReload(pkg->header, RPMTAG_HEADERIMMUTABLE);
-    if (pkg->header == NULL) {
-	rpmlog(RPMLOG_ERR, _("Unable to create immutable header region.\n"));
-	goto exit;
-    }
-
     /* Open the output file */
     fd = Fopen(fileName, "w+.ufdio");
     if (fd == NULL || Ferror(fd)) {
@@ -470,11 +487,8 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     /* Write the header and archive section. Calculate SHA1 from them. */
     hdrStart = Ftell(fd);
     fdInitDigestID(fd, PGPHASHALGO_SHA1, RPMTAG_SHA1HEADER, 0);
-    if (headerWrite(fd, pkg->header, HEADER_MAGIC_YES)) {
-	rpmlog(RPMLOG_ERR, _("Unable to write temp header\n"));
+    if (writeHdr(fd, pkg->header))
 	goto exit;
-    }
-    (void) Fflush(fd);
     fdFiniDigest(fd, RPMTAG_SHA1HEADER, (void **)&SHA1, NULL, 1);
 
     /* Write payload section (cpio archive) */
