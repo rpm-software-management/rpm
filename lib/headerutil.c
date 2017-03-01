@@ -31,7 +31,7 @@ Header headerCopy(Header h)
     }
     headerFreeIterator(hi);
 
-    return headerReload(nh, RPMTAG_HEADERIMAGE);
+    return nh;
 }
 
 void headerCopyTags(Header headerFrom, Header headerTo, 
