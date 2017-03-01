@@ -604,16 +604,16 @@ static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
     }
 
     /* Start MD5 calculation */
-    fdInitDigest(fd, PGPHASHALGO_MD5, 0);
+    fdInitDigestID(fd, PGPHASHALGO_MD5, RPMSIGTAG_MD5, 0);
 
     /* Write header to rpm and recalculate SHA1 */
-    fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
+    fdInitDigestID(fd, PGPHASHALGO_SHA1, RPMSIGTAG_SHA1, 0);
     rc = headerWrite(fd, *hdrp, HEADER_MAGIC_YES);
     if (rc != RPMRC_OK) {
 	rpmlog(RPMLOG_ERR, _("headerWrite failed\n"));
 	goto exit;
     }
-    fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&SHA1, &sha1len, 1);
+    fdFiniDigest(fd, RPMSIGTAG_SHA1, (void **)&SHA1, &sha1len, 1);
 
     /* Copy archive from temp file */
     if (Fseek(ofd, 0, SEEK_SET) < 0) {
@@ -630,7 +630,7 @@ static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
     unlink(trpm);
 
     sigTargetSize = Ftell(fd) - headerStart;
-    fdFiniDigest(fd, PGPHASHALGO_MD5, (void **)&MD5, &md5len, 0);
+    fdFiniDigest(fd, RPMSIGTAG_MD5, (void **)&MD5, &md5len, 0);
 
     if (headerGet(*sigp, RPMSIGTAG_MD5, &osigtd, HEADERGET_DEFAULT)) {
 	memcpy(o_md5, osigtd.data, 16);
