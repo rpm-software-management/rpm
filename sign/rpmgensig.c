@@ -548,13 +548,10 @@ static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
     char *keypass;
     char *SHA1 = NULL;
     uint8_t *MD5 = NULL;
-    size_t sha1len;
-    size_t md5len;
     off_t sigTargetSize;
     rpmRC rc = RPMRC_OK;
     struct rpmtd_s osigtd;
     char *o_sha1 = NULL;
-    uint8_t o_md5[16];
 
 #ifndef WITH_IMAEVM
     rpmlog(RPMLOG_ERR, _("missing libimaevm\n"));
@@ -613,7 +610,7 @@ static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
 	rpmlog(RPMLOG_ERR, _("headerWrite failed\n"));
 	goto exit;
     }
-    fdFiniDigest(fd, RPMSIGTAG_SHA1, (void **)&SHA1, &sha1len, 1);
+    fdFiniDigest(fd, RPMSIGTAG_SHA1, (void **)&SHA1, NULL, 1);
 
     /* Copy archive from temp file */
     if (Fseek(ofd, 0, SEEK_SET) < 0) {
@@ -630,19 +627,14 @@ static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
     unlink(trpm);
 
     sigTargetSize = Ftell(fd) - headerStart;
-    fdFiniDigest(fd, RPMSIGTAG_MD5, (void **)&MD5, &md5len, 0);
-
-    if (headerGet(*sigp, RPMSIGTAG_MD5, &osigtd, HEADERGET_DEFAULT)) {
-	memcpy(o_md5, osigtd.data, 16);
-	rpmtdFreeData(&osigtd);
-    }
+    fdFiniDigest(fd, RPMSIGTAG_MD5, (void **)&MD5, NULL, 0);
 
     if (headerGet(*sigp, RPMSIGTAG_SHA1, &osigtd, HEADERGET_DEFAULT)) {
 	o_sha1 = xstrdup(osigtd.data);
 	rpmtdFreeData(&osigtd);
     }
 
-    if (memcmp(MD5, o_md5, md5len) == 0 && strcmp(SHA1, o_sha1) == 0)
+    if (strcmp(SHA1, o_sha1) == 0)
 	rpmlog(RPMLOG_WARNING,
 	       _("%s already contains identical file signatures\n"),
 	       rpm);
