@@ -395,6 +395,16 @@ static void *nullDigest(int algo, int ascii)
     return d;
 }
 
+static rpmRC fdJump(FD_t fd, off_t offset)
+{
+    if (Fseek(fd, offset, SEEK_SET) < 0) {
+	rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
+		Fdescr(fd), Fstrerror(fd));
+	return RPMRC_FAIL;
+    }
+    return RPMRC_OK;
+}
+
 static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 		      const char *fileName, char **cookie)
 {
@@ -473,11 +483,8 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 
     payloadEnd = Ftell(fd);
 
-    if (Fseek(fd, hdrStart, SEEK_SET) < 0) {
-	rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
-		fileName, Fstrerror(fd));
+    if (fdJump(fd, hdrStart))
 	goto exit;
-    }
 
     /* Calculate MD5 checksum from header and archive section. */
     fdInitDigestID(fd, PGPHASHALGO_MD5, RPMTAG_SIGMD5, 0);
@@ -490,11 +497,8 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     }
     fdFiniDigest(fd, RPMTAG_SIGMD5, (void **)&MD5, NULL, 0);
 
-    if (Fseek(fd, sigStart, SEEK_SET) < 0) {
-	rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
-		fileName, Fstrerror(fd));
+    if (fdJump(fd, sigStart))
 	goto exit;
-    }
 
     /* Generate the signature. Now with right values */
     if (rpmGenerateSignature(SHA1, MD5, payloadEnd - hdrStart, pkg->cpioArchiveSize, fd))
