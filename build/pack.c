@@ -387,6 +387,14 @@ static void finalizeDeps(Package pkg)
     }
 }
 
+static void *nullDigest(int algo, int ascii)
+{
+    void *d = NULL;
+    DIGEST_CTX ctx = rpmDigestInit(algo, 0);
+    rpmDigestFinal(ctx, &d, NULL, ascii);
+    return d;
+}
+
 static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 		      const char *fileName, char **cookie)
 {
@@ -396,8 +404,6 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     uint8_t * MD5 = NULL;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     unsigned char buf[32*BUFSIZ];
-    uint8_t zeros[] =  {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    char *zerosS = "0000000000000000000000000000000000000000";
     off_t sigStart, hdrStart, payloadEnd;
 
     if (pkgidp)
@@ -444,8 +450,12 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     sigStart = Ftell(fd);
 
     /* Generate and write a placeholder signature header */
-    if (rpmGenerateSignature(zerosS, zeros, 0, 0, fd))
+    SHA1 = nullDigest(PGPHASHALGO_SHA1, 1);
+    MD5 = nullDigest(PGPHASHALGO_MD5, 0);
+    if (rpmGenerateSignature(SHA1, MD5, 0, 0, fd))
 	goto exit;
+    SHA1 = _free(SHA1);
+    MD5 = _free(MD5);
 
     /* Write the header and archive section. Calculate SHA1 from them. */
     hdrStart = Ftell(fd);
