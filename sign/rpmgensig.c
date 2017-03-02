@@ -474,24 +474,14 @@ static int replaceSignature(Header sigh, sigTarget sigt1, sigTarget sigt2)
 
 static void unloadImmutableRegion(Header *hdrp, rpmTagVal tag)
 {
-    struct rpmtd_s copytd, td;
+    struct rpmtd_s td;
     rpmtd utd = &td;
     Header nh;
     Header oh;
-    HeaderIterator hi;
 
     if (headerGet(*hdrp, tag, utd, HEADERGET_DEFAULT)) {
-	nh = headerNew();
 	oh = headerCopyLoad(utd->data);
-	hi = headerInitIterator(oh);
-
-	while (headerNext(hi, &copytd)) {
-	    if (copytd.data)
-		headerPut(nh, &copytd, HEADERPUT_DEFAULT);
-	    rpmtdFreeData(&copytd);
-	}
-
-	headerFreeIterator(hi);
+	nh = headerCopy(oh);
 	headerFree(oh);
 	rpmtdFreeData(utd);
 	headerFree(*hdrp);
