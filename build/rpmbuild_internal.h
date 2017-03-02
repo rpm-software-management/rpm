@@ -96,7 +96,6 @@ struct Package_s {
     rpmds ds;			/*!< Requires: N = EVR */
     rpmds dependencies[PACKAGE_NUM_DEPS];
     rpmfiles cpioList;
-    rpm_loff_t  cpioArchiveSize;
     ARGV_t dpaths;
 
     struct Source * icon;

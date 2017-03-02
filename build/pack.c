@@ -69,7 +69,8 @@ static int rpmPackageFilesArchive(rpmfiles fi, int isSrc,
 /**
  * @todo Create transaction set *much* earlier.
  */
-static rpmRC cpio_doio(FD_t fdo, Package pkg, const char * fmodeMacro)
+static rpmRC cpio_doio(FD_t fdo, Package pkg, const char * fmodeMacro,
+			rpm_loff_t *archiveSize)
 {
     char *failedFile = NULL;
     FD_t cfd;
@@ -82,7 +83,7 @@ static rpmRC cpio_doio(FD_t fdo, Package pkg, const char * fmodeMacro)
 
     fsmrc = rpmPackageFilesArchive(pkg->cpioList, headerIsSource(pkg->header),
 				   cfd, pkg->dpaths,
-				   &pkg->cpioArchiveSize, &failedFile);
+				   archiveSize, &failedFile);
 
     if (fsmrc) {
 	char *emsg = rpmfileStrerror(fsmrc);
@@ -478,6 +479,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     char * pld = NULL;
     uint32_t pld_algo = PGPHASHALGO_SHA256; /* TODO: macro configuration */
     rpmRC rc = RPMRC_FAIL; /* assume failure */
+    rpm_loff_t archiveSize = 0;
     off_t sigStart, hdrStart, payloadStart, payloadEnd;
 
     if (pkgidp)
@@ -537,7 +539,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 
     /* Write payload section (cpio archive) */
     payloadStart = Ftell(fd);
-    if (cpio_doio(fd, pkg, rpmio_flags))
+    if (cpio_doio(fd, pkg, rpmio_flags, &archiveSize))
 	goto exit;
     payloadEnd = Ftell(fd);
 
@@ -573,7 +575,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	goto exit;
 
     /* Generate the signature. Now with right values */
-    if (rpmGenerateSignature(SHA1, MD5, payloadEnd - hdrStart, pkg->cpioArchiveSize, fd))
+    if (rpmGenerateSignature(SHA1, MD5, payloadEnd - hdrStart, archiveSize, fd))
 	goto exit;
 
     rc = RPMRC_OK;
