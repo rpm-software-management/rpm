@@ -423,11 +423,11 @@ hello2_file=./usr/local/bin/hello2
 test -f $hello_file || echo "no hello file: $hello_file"
 test -f $hello2_file || echo "no hello2 file: $hello2_file"
 
-id1=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
-id2=$(file $hello2_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
-id1debug=$(file $hello_file_debug | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
-id2debug=$(file $hello2_file_debug | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
-idmulti=$(file $hello_multi_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id1=$(file $hello_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
+id2=$(file $hello2_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
+id1debug=$(file $hello_file_debug | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
+id2debug=$(file $hello2_file_debug | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
+idmulti=$(file $hello_multi_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 test "$id1" = "$id1debug" || echo "id1: $id1 != id1debug: $id1debug"
 test "$id2" = "$id2debug" || echo "id2: $id2 != id2debug: $id2debug"
@@ -516,11 +516,11 @@ hello2_file=./usr/local/bin/hello2
 test -f $hello_file || echo "no hello file: $hello_file"
 test -f $hello2_file || echo "no hello2 file: $hello2_file"
 
-id1=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
-id2=$(file $hello2_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
-id1debug=$(file $hello_file_debug | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
-id2debug=$(file $hello2_file_debug | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
-idmulti=$(file $hello_multi_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id1=$(file $hello_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
+id2=$(file $hello2_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
+id1debug=$(file $hello_file_debug | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
+id2debug=$(file $hello2_file_debug | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
+idmulti=$(file $hello_multi_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 test "$id1" = "$id1debug" || echo "id1: $id1 != id1debug: $id1debug"
 test "$id2" = "$id2debug" || echo "id2: $id2 != id2debug: $id2debug"
