@@ -411,14 +411,14 @@ test -f ./usr/lib/debug/.dwz/hello2-1.0-1.* || exit 1
 # linking them to the debug packages.
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-1.0-1.*.rpm \
   | cpio -diu
-id1=$(file ./usr/local/bin/hello | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
-id2=$(file ./usr/local/bin/hello2 | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id1=$(file ./usr/local/bin/hello | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
+id2=$(file ./usr/local/bin/hello2 | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 id1debug=$(file ./usr/lib/debug/usr/local/bin/hello.debug \
-  | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+  | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 id2debug=$(file ./usr/lib/debug/usr/local/bin/hello2.debug \
-  | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+  | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 idmulti=$(file ./usr/lib/debug/.dwz/hello2-1.0-1.* \
-  | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+  | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 test "$id1" = "$id1debug" || exit 1
 test "$id2" = "$id2debug" || exit 1
