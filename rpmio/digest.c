@@ -61,7 +61,7 @@ int rpmDigestBundleAddID(rpmDigestBundle bundle, int algo, int id,
 			rpmDigestFlags flags)
 {
     DIGEST_CTX ctx = NULL;
-    if (id > 0) {
+    if (id > 0 && findID(bundle, id) < 0) {
 	int ix = findID(bundle, 0); /* Find first free slot */
 	if (ix >= 0) {
 	    bundle->digests[ix] = rpmDigestInit(algo, flags);
