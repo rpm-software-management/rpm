@@ -9,31 +9,6 @@
     - or \link rpmts	(un)installing \endlink RPM packages.
 
  */
-/** \defgroup internalargv Internal APIs:
- *
- * @{
- */
-/** \defgroup internalargv CLI Arguments:
- *
- * @{
- */
-/** \defgroup	rpmargv	Argument Manipulation API.
-    \brief Argument Manipulation API (internal).
- */
-/** \defgroup	rpmcli	Command Line API.
-    \brief Parsing RPM command line arguments (internal).
- */
-/** @} */
-/** \defgroup	rpmsq	Signal Queue API.
-    \brief Signal Queue API (internal).
- */
-/** \defgroup	rpmsw	Statistics API.
-    \brief Statistics API (internal).
- */
-/** \defgroup	rpmrc	RPMRC.
-    \brief Reading config files and getting some important configuration values.
- */
-/** @} */
 /** \defgroup buildsign Building & signing packages:
  *
  * @{
@@ -141,5 +116,21 @@
  */
 /** \defgroup	rpmurl	URL Manipulation API.
     \brief A couple utils for URL Manipulation.
+ */
+/** \defgroup	rpmargv	Argument Manipulation API.
+    \brief Argument Manipulation API.
+ */
+/** \defgroup	rpmcli	Command Line API.
+    \brief Parsing RPM command line arguments.
+ */
+/** @} */
+/** \defgroup	rpmsq	Signal Queue API.
+    \brief Signal Queue API.
+ */
+/** \defgroup	rpmsw	Statistics API.
+    \brief Statistics API.
+ */
+/** \defgroup	rpmrc	RPMRC.
+    \brief Reading config files and getting some important configuration values.
  */
 /** @} */
