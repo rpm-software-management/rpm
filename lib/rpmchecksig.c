@@ -171,6 +171,9 @@ static const char *sigtagname(rpmTagVal sigtag, int upper)
     case RPMSIGTAG_GPG:
 	n = (upper ? "GPG" : "gpg");
 	break;
+    case RPMTAG_PAYLOADDIGEST:
+	n = (upper ? "PAYLOAD" : "payload");
+	break;
     default:
 	n = (upper ? "?UnknownSigatureType?" : "???");
 	break;
@@ -287,10 +290,14 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     char *missingKeys = NULL; 
     char *untrustedKeys = NULL;
     Header sigh = NULL;
+    Header h = NULL;
     char * msg = NULL;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     int failed = 0;
     struct hdrblob_s blob;
+    rpmTagVal copyTags[] = { RPMTAG_PAYLOADDIGEST, 0 };
+
+    memset(&blob, 0, sizeof(blob));
 
     if (rpmLeadRead(fd, NULL, &msg))
 	goto exit;
@@ -298,13 +305,12 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     if (rpmReadSignature(fd, &sigh, &msg))
 	goto exit;
 
-    /* Initialize all digests we'll be needing */
+    /* Initialize digests ranging over the header */
     initDigests(fd, sigh, RPMSIG_HEADER, flags);
 
     /* Read the header from the package. */
     if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERIMMUTABLE, &blob, &msg))
 	goto exit;
-    blob.ei = _free(blob.ei);
 
     rasprintf(&buf, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
 
@@ -312,11 +318,21 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     failed += verifyItems(fd, sigh, (RPMSIG_HEADER), flags, keyring,
 			&missingKeys, &untrustedKeys, &buf);
 
+    /* Fish interesting tags from the main header */
+    if (hdrblobImport(&blob, 0, &h, &msg))
+	goto exit;
+    headerCopyTags(h, sigh, copyTags);
+
+    /* Initialize digests ranging over the payload only */
+    initDigests(fd, sigh, RPMSIG_PAYLOAD, flags);
+
     /* Read the file, generating digest(s) on the fly. */
     if (readFile(fd, fn))
 	goto exit;
 
-    /* Verify header+payload signatures and digests */
+    /* Verify signatures and digests ranging over the payload */
+    failed += verifyItems(fd, sigh, (RPMSIG_PAYLOAD), flags,
+			keyring, &missingKeys, &untrustedKeys, &buf);
     failed += verifyItems(fd, sigh, (RPMSIG_HEADER|RPMSIG_PAYLOAD), flags,
 			keyring, &missingKeys, &untrustedKeys, &buf);
 
@@ -341,9 +357,11 @@ exit:
 	rpmlog(RPMLOG_ERR, "%s: %s\n", fn, msg);
     free(msg);
     free(buf);
+    free(blob.ei);
     free(missingKeys);
     free(untrustedKeys);
     sigh = headerFree(sigh);
+    h = headerFree(h);
     return rc;
 }
 

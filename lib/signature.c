@@ -76,6 +76,13 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
 	tagtype = RPM_BIN_TYPE;
 	sinfo->type = RPMSIG_OTHER_TYPE;
 	break;
+    case RPMTAG_PAYLOADDIGEST:
+	tagtype = RPM_STRING_ARRAY_TYPE;
+	/* XXX: the hash algo is supposed to come from another tag */
+	sinfo->hashalgo = PGPHASHALGO_SHA256;
+	sinfo->type = RPMSIG_DIGEST_TYPE;
+	sinfo->range = RPMSIG_PAYLOAD;
+	break;
     default:
 	/* anything unknown just falls through for now */
 	break;
@@ -396,6 +403,10 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDigParams sig,
     case RPMSIGTAG_GPG:
 	if (sig != NULL)
 	    res = verifySignature(keyring, sig, ctx, hdrsig, &msg);
+	break;
+    case RPMTAG_PAYLOADDIGEST:
+	if (rpmtdSetIndex(sigtd, rpmtdCount(sigtd)-1) != -1)
+	    res = verifyDigest(sigtd, ctx,  _("Payload digest:"), &msg);
 	break;
     default:
 	break;
