@@ -261,6 +261,7 @@ static int verifyItems(FD_t fd, Header sigh, int range, rpmQueryFlags flags,
 	    DIGEST_CTX ctx = fdDupDigest(fd, sigtd.tag);
 	    rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, &result);
 	    rpmDigestFinal(ctx, NULL, NULL, 0);
+	    fdFiniDigest(fd, sigtd.tag, NULL, NULL, 0);
 	}
 
 	if (result) {
