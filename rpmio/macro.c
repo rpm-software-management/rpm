@@ -675,9 +675,10 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
     argvAdd(&argv, me->name);
     if (lastc) {
 	ARGV_t av = NULL;
-	char *s = xcalloc((lastc-se)+1, sizeof(*s));
-	memcpy(s, se, (lastc-se));
+	char *s = NULL;
 
+	/* Expand possible macros in arguments */
+	expandThis(mb, se, lastc-se, &s);
 	argvSplit(&av, s, " \t");
 	argvAppend(&argv, av);
 
