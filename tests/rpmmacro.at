@@ -79,6 +79,19 @@ foo 5
 [])
 AT_CLEANUP
 
+AT_SETUP([parametrized macro 2])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm \
+    --define '%bar() "Bar %#: %{?1} %{?2}"' \
+    --define '%foo() "Foo %#: %{?1} %{?2}" %bar a' \
+    --eval '%foo 1 2'
+],
+[0],
+["Foo 2: 1 2" "Bar 1: a "
+])
+AT_CLEANUP
+
 AT_SETUP([uncompress macro])
 AT_KEYWORDS([macros])
 AT_CHECK([

@@ -1211,9 +1211,15 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	mep = findEntry(mb->mc, f, fn, NULL);
 	me = (mep ? *mep : NULL);
 
-	/* If we looked up a macro, consider it used */
-	if (me)
-	    me->flags |= ME_USED;
+	if (me) {
+	    if ((me->flags & ME_AUTO) && mb->level > me->level) {
+		/* Ignore out-of-scope automatic macros */
+		me = NULL;
+	    } else {
+		/* If we looked up a macro, consider it used */
+		me->flags |= ME_USED;
+	    }
+	}
 
 	/* XXX Special processing for flags */
 	if (*f == '-') {
