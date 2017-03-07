@@ -657,21 +657,21 @@ static const char *
 grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 		const char * lastc)
 {
+    const char *cont = NULL;
     const char *opts;
     char *args = NULL;
     ARGV_t argv = NULL;
     int argc = 0;
     int c;
 
-    /* Copy macro name as argv[0] */
-    argvAdd(&argv, me->name);
-    pushMacro(mb->mc, "0", NULL, me->name, mb->depth, ME_AUTO);
-    
     /* 
+     * Prepare list of call arguments, starting with macro name as argv[0].
      * Make a copy of se up to lastc string that we can pass to argvSplit().
      * Append the results to main argv. 
      */
-    {	ARGV_t av = NULL;
+    argvAdd(&argv, me->name);
+    if (lastc) {
+	ARGV_t av = NULL;
 	char *s = xcalloc((lastc-se)+1, sizeof(*s));
 	memcpy(s, se, (lastc-se));
 
@@ -680,7 +680,13 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 
 	argvFree(av);
 	free(s);
+
+	cont = ((*lastc == '\0' || *lastc == '\n') && *(lastc-1) != '\\') ?
+	       lastc : lastc + 1;
     }
+
+    /* Setup macro name as %0 */
+    pushMacro(mb->mc, "0", NULL, me->name, mb->depth, ME_AUTO);
 
     /*
      * The macro %* analoguous to the shell's $* means "Pass all non-macro
@@ -759,8 +765,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 
 exit:
     argvFree(argv);
-    return ((*lastc == '\0' || *lastc == '\n') && *(lastc-1) != '\\') ?
-	   lastc : lastc + 1;
+    return cont;
 }
 
 /**
@@ -1247,14 +1252,9 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 
 	/* Setup args for "%name " macros with opts */
 	if (me && me->opts != NULL) {
-	    if (lastc != NULL) {
-		se = grabArgs(mb, me, fe, lastc);
-	    } else {
-		pushMacro(mb->mc, "**", NULL, "", mb->depth, ME_AUTO);
-		pushMacro(mb->mc, "*", NULL, "", mb->depth, ME_AUTO);
-		pushMacro(mb->mc, "#", NULL, "0", mb->depth, ME_AUTO);
-		pushMacro(mb->mc, "0", NULL, me->name, mb->depth, ME_AUTO);
-	    }
+	    const char *xe = grabArgs(mb, me, fe, lastc);
+	    if (xe != NULL)
+		se = xe;
 	}
 
 	/* Recursively expand body of macro */
