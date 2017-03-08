@@ -492,7 +492,7 @@ static void unloadImmutableRegion(Header *hdrp, rpmTagVal tag)
 
 static rpmRC replaceSigDigests(FD_t fd, const char *rpm, Header *sigp,
 			       off_t sigStart, off_t sigTargetSize,
-			       char *SHA1, uint8_t *MD5)
+			       char *SHA256, char *SHA1, uint8_t *MD5)
 {
     off_t archiveSize;
     rpmRC rc = RPMRC_OK;
@@ -514,7 +514,7 @@ static rpmRC replaceSigDigests(FD_t fd, const char *rpm, Header *sigp,
     rpmPushMacro(NULL, "__gpg_reserved_space", NULL, 0, RMIL_GLOBAL);
 
     /* Replace old digests in sigh */
-    rc = rpmGenerateSignature(SHA1, MD5, sigTargetSize, archiveSize, fd);
+    rc = rpmGenerateSignature(SHA256, SHA1, MD5, sigTargetSize, archiveSize, fd);
     if (rc != RPMRC_OK) {
 	rpmlog(RPMLOG_ERR, _("generateSignature failed\n"));
 	goto exit;
@@ -547,6 +547,7 @@ static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
     char *key;
     char *keypass;
     char *SHA1 = NULL;
+    char *SHA256 = NULL;
     uint8_t *MD5 = NULL;
     off_t sigTargetSize;
     rpmRC rc = RPMRC_OK;
@@ -603,14 +604,18 @@ static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
     /* Start MD5 calculation */
     fdInitDigestID(fd, PGPHASHALGO_MD5, RPMSIGTAG_MD5, 0);
 
-    /* Write header to rpm and recalculate SHA1 */
+    /* Write header to rpm and recalculate digests */
     fdInitDigestID(fd, PGPHASHALGO_SHA1, RPMSIGTAG_SHA1, 0);
+    fdInitDigestID(fd, PGPHASHALGO_SHA256, RPMSIGTAG_SHA256, 0);
     rc = headerWrite(fd, *hdrp, HEADER_MAGIC_YES);
     if (rc != RPMRC_OK) {
 	rpmlog(RPMLOG_ERR, _("headerWrite failed\n"));
 	goto exit;
     }
     fdFiniDigest(fd, RPMSIGTAG_SHA1, (void **)&SHA1, NULL, 1);
+    /* Only add SHA256 if it was there to begin with */
+    if (headerIsEntry(*sigp, RPMSIGTAG_SHA256))
+	fdFiniDigest(fd, RPMSIGTAG_SHA256, (void **)&SHA256, NULL, 1);
 
     /* Copy archive from temp file */
     if (Fseek(ofd, 0, SEEK_SET) < 0) {
@@ -639,12 +644,13 @@ static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
 	       _("%s already contains identical file signatures\n"),
 	       rpm);
     else
-	replaceSigDigests(fd, rpm, sigp, sigStart, sigTargetSize, SHA1, MD5);
+	replaceSigDigests(fd, rpm, sigp, sigStart, sigTargetSize, SHA256, SHA1, MD5);
 
 exit:
     free(trpm);
     free(MD5);
     free(SHA1);
+    free(SHA256);
     free(o_sha1);
     free(keypass);
     free(key);

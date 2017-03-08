@@ -65,14 +65,15 @@ rpmRC rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDigParams sig,
 
 /** \ingroup signature
  * Generate signature and write to file
+ * @param SHA256	SHA256 digest
  * @param SHA1		SHA1 digest
  * @param MD5		MD5 digest
  * @param size		size of header
  * @param payloadSize	size of archive
  * @param fd		output file
  */
-rpmRC rpmGenerateSignature(char *SHA1, uint8_t *MD5, rpm_loff_t size,
-				rpm_loff_t payloadSize, FD_t fd);
+rpmRC rpmGenerateSignature(char *SHA256, char *SHA1, uint8_t *MD5,
+			rpm_loff_t size, rpm_loff_t payloadSize, FD_t fd);
 
 RPM_GNUC_INTERNAL
 rpmRC rpmSigInfoParse(rpmtd td, const char *origin,

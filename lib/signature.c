@@ -43,6 +43,14 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
 	/* GPG/PGP are hdr+payload, RSA/DSA are hdr-only */
 	sinfo->range |= RPMSIG_HEADER;
 	break;
+    case RPMSIGTAG_SHA256:
+	tagsize = 65; /* includes trailing \0 */
+	tagtype = RPM_STRING_TYPE;
+	hexstring = 1;
+	sinfo->hashalgo = PGPHASHALGO_SHA256;
+	sinfo->type = RPMSIG_DIGEST_TYPE;
+	sinfo->range = RPMSIG_HEADER;
+	break;
     case RPMSIGTAG_SHA1:
 	tagsize = 41; /* includes trailing \0 */
 	tagtype = RPM_STRING_TYPE;
@@ -221,8 +229,8 @@ int rpmWriteSignature(FD_t fd, Header sigh)
     return rc;
 }
 
-rpmRC rpmGenerateSignature(char *SHA1, uint8_t *MD5, rpm_loff_t size,
-				rpm_loff_t payloadSize, FD_t fd)
+rpmRC rpmGenerateSignature(char *SHA256, char *SHA1, uint8_t *MD5,
+			rpm_loff_t size, rpm_loff_t payloadSize, FD_t fd)
 {
     Header sig = headerNew();
     struct rpmtd_s td;
@@ -232,6 +240,15 @@ rpmRC rpmGenerateSignature(char *SHA1, uint8_t *MD5, rpm_loff_t size,
     int gpgSize = rpmExpandNumeric("%{__gpg_reserved_space}");
 
     /* Prepare signature */
+    if (SHA256) {
+	rpmtdReset(&td);
+	td.tag = RPMSIGTAG_SHA256;
+	td.count = 1;
+	td.type = RPM_STRING_TYPE;
+	td.data = SHA256;
+	headerPut(sig, &td, HEADERPUT_DEFAULT);
+    }
+
     if (SHA1) {
 	rpmtdReset(&td);
 	td.tag = RPMSIGTAG_SHA1;
@@ -397,6 +414,9 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDigParams sig,
 	break;
     case RPMSIGTAG_SHA1:
 	res = verifyDigest(sigtd, ctx,  _("Header SHA1 digest:"), &msg);
+	break;
+    case RPMSIGTAG_SHA256:
+	res = verifyDigest(sigtd, ctx,  _("Header SHA256 digest:"), &msg);
 	break;
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_DSA:

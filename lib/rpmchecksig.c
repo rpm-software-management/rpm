@@ -155,6 +155,9 @@ static const char *sigtagname(rpmTagVal sigtag, int upper)
     case RPMSIGTAG_SHA1:
 	n = (upper ? "SHA1" : "sha1");
 	break;
+    case RPMSIGTAG_SHA256:
+	n = (upper ? "SHA256" : "sha256");
+	break;
     case RPMSIGTAG_MD5:
 	n = (upper ? "MD5" : "md5");
 	break;

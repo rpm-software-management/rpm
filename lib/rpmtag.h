@@ -63,6 +63,8 @@ typedef enum rpmTag_e {
 #define	RPMTAG_HDRID	RPMTAG_SHA1HEADER	/* s */
     RPMTAG_LONGSIGSIZE		= RPMTAG_SIG_BASE+14,	/* l */
     RPMTAG_LONGARCHIVESIZE	= RPMTAG_SIG_BASE+15,	/* l */
+    /* RPMTAG_SIG_BASE+16 reserved */
+    RPMTAG_SHA256HEADER		= RPMTAG_SIG_BASE+17,	/* s */
 
     RPMTAG_NAME  		= 1000,	/* s */
 #define	RPMTAG_N	RPMTAG_NAME	/* s */
@@ -419,6 +421,7 @@ typedef enum rpmSigTag_e {
     RPMSIGTAG_RSA	= RPMTAG_RSAHEADER,	/*!< internal RSA header signature. */
     RPMSIGTAG_LONGSIZE	= RPMTAG_LONGSIGSIZE,	/*!< internal Header+Payload size (64bit) in bytes. */
     RPMSIGTAG_LONGARCHIVESIZE = RPMTAG_LONGARCHIVESIZE, /*!< internal uncompressed payload size (64bit) in bytes. */
+    RPMSIGTAG_SHA256	= RPMTAG_SHA256HEADER,
 } rpmSigTag;
 
 

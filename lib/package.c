@@ -55,6 +55,7 @@ static void headerMergeLegacySigs(Header h, Header sigh)
 	    td.tag = RPMTAG_ARCHIVESIZE;
 	    break;
 	case RPMSIGTAG_SHA1:
+	case RPMSIGTAG_SHA256:
 	case RPMSIGTAG_DSA:
 	case RPMSIGTAG_RSA:
 	default:
@@ -176,6 +177,13 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 	ei2h(blob->pe+i, &einfo);
 
 	switch (einfo.tag) {
+	case RPMTAG_SHA256HEADER:
+	    if (vsflags & RPMVSF_NOSHA256HEADER)
+		break;
+	    /* Prefer SHA256 over SHA1 if both are present */
+	    if (sigtd.tag == 0 || sigtd.tag == RPMTAG_SHA1HEADER)
+		ei2td(&einfo, blob->dataStart, 0, &sigtd);
+	    break;
 	case RPMTAG_SHA1HEADER:
 	    if (vsflags & RPMVSF_NOSHA1HEADER)
 		break;
