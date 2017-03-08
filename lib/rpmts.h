@@ -99,7 +99,8 @@ enum rpmVSFlags_e {
     RPMVSF_NOSHA256HEADER = (1 <<  9),
     RPMVSF_NODSAHEADER	= (1 << 10),
     RPMVSF_NORSAHEADER	= (1 << 11),
-    /* bit(s) 12-16 unused */
+    /* bit(s) 12-15 unused */
+    RPMVSF_NOPAYLOAD	= (1 << 16),
     RPMVSF_NOMD5	= (1 << 17),
     RPMVSF_NODSA	= (1 << 18),
     RPMVSF_NORSA	= (1 << 19)
@@ -111,6 +112,7 @@ typedef rpmFlags rpmVSFlags;
 #define	_RPMVSF_NODIGESTS	\
   ( RPMVSF_NOSHA1HEADER |	\
     RPMVSF_NOSHA256HEADER |	\
+    RPMVSF_NOPAYLOAD |	\
     RPMVSF_NOMD5 )
 
 #define	_RPMVSF_NOSIGNATURES	\
@@ -127,6 +129,7 @@ typedef rpmFlags rpmVSFlags;
 
 #define	_RPMVSF_NOPAYLOAD	\
   ( RPMVSF_NOMD5 |		\
+    RPMVSF_NOPAYLOAD |		\
     RPMVSF_NODSA |		\
     RPMVSF_NORSA )
 
