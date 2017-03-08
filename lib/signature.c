@@ -232,19 +232,23 @@ rpmRC rpmGenerateSignature(char *SHA1, uint8_t *MD5, rpm_loff_t size,
     int gpgSize = rpmExpandNumeric("%{__gpg_reserved_space}");
 
     /* Prepare signature */
-    rpmtdReset(&td);
-    td.tag = RPMSIGTAG_SHA1;
-    td.count = 1;
-    td.type = RPM_STRING_TYPE;
-    td.data = SHA1;
-    headerPut(sig, &td, HEADERPUT_DEFAULT);
+    if (SHA1) {
+	rpmtdReset(&td);
+	td.tag = RPMSIGTAG_SHA1;
+	td.count = 1;
+	td.type = RPM_STRING_TYPE;
+	td.data = SHA1;
+	headerPut(sig, &td, HEADERPUT_DEFAULT);
+    }
 
-    rpmtdReset(&td);
-    td.tag = RPMSIGTAG_MD5;
-    td.count = 16;
-    td.type = RPM_BIN_TYPE;
-    td.data = MD5;
-    headerPut(sig, &td, HEADERPUT_DEFAULT);
+    if (MD5) {
+	rpmtdReset(&td);
+	td.tag = RPMSIGTAG_MD5;
+	td.count = 16;
+	td.type = RPM_BIN_TYPE;
+	td.data = MD5;
+	headerPut(sig, &td, HEADERPUT_DEFAULT);
+    }
 
     rpmtdReset(&td);
     td.count = 1;
