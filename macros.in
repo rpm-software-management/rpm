@@ -355,17 +355,17 @@ package or when debugging this package.\
 
 #	Algorithm to use for generating file checksum digests on build.
 #	If not specified or 0, MD5 is used.
-#	WARNING: non-MD5 is backwards incompatible, don't enable lightly!
-#	The supported algorithms may depend on NSS version, as of NSS
-#	3.11.99.5 the following are supported:
+#	WARNING: non-MD5 is backwards incompatible with rpm < 4.6!
+#	The supported algorithms may depend on the underlying crypto
+#	implementation but generally at least the following are supported:
 #	1	MD5 (default)
 #	2	SHA1
 #	8	SHA256
 #	9	SHA384
 #	10	SHA512
 #
-#%_source_filedigest_algorithm	1
-#%_binary_filedigest_algorithm	1
+%_source_filedigest_algorithm	8
+%_binary_filedigest_algorithm	8
 
 #	Configurable vendor information, same as Vendor: in a specfile.
 #
