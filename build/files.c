@@ -1709,8 +1709,10 @@ static int generateBuildIDs(FileList fl)
 	if (lstat(flp->diskPath, &sbuf) == 0 && S_ISREG (sbuf.st_mode)) {
 	    int fd = open (flp->diskPath, O_RDONLY);
 	    if (fd >= 0) {
+		GElf_Ehdr ehdr;
 		Elf *elf = elf_begin (fd, ELF_C_READ, NULL);
-		if (elf != NULL && elf_kind(elf) == ELF_K_ELF) {
+		if (elf != NULL && elf_kind(elf) == ELF_K_ELF
+		    && gelf_getehdr(elf, &ehdr) != NULL) {
 		    const void *build_id;
 		    ssize_t len = dwelf_elf_gnu_build_id (elf, &build_id);
 		    /* len == -1 means error. Zero means no
@@ -1759,9 +1761,14 @@ static int generateBuildIDs(FileList fl)
 				   _("error reading build-id in %s: %s\n"),
 				   flp->diskPath, elf_errmsg (-1));
 			} else if (len == 0) {
-			    rpmlog(terminate ? RPMLOG_ERR : RPMLOG_WARNING,
-				   _("Missing build-id in %s\n"),
-				   flp->diskPath);
+			    /* Only ET_EXEC, ET_DYN or kernel modules
+			       have build-ids. */
+			    if (ehdr.e_type == ET_EXEC || ehdr.e_type == ET_DYN
+				|| (ehdr.e_type == ET_REL
+				    && rpmFileHasSuffix (flp->diskPath, ".ko")))
+			      rpmlog(terminate ? RPMLOG_ERR : RPMLOG_WARNING,
+				     _("Missing build-id in %s\n"),
+				     flp->diskPath);
 			} else {
 			    rpmlog(terminate ? RPMLOG_ERR : RPMLOG_WARNING,
 				   (len < 16
