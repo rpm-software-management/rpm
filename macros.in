@@ -358,9 +358,9 @@ package or when debugging this package.\
 #	WARNING: non-MD5 is backwards incompatible with rpm < 4.6!
 #	The supported algorithms may depend on the underlying crypto
 #	implementation but generally at least the following are supported:
-#	1	MD5 (default)
+#	1	MD5
 #	2	SHA1
-#	8	SHA256
+#	8	SHA256 (default)
 #	9	SHA384
 #	10	SHA512
 #
