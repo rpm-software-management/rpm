@@ -129,6 +129,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
     rpmTagVal nametag = RPMTAG_NOT_FOUND;
     rpmsenseFlags Flags;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
+    int allow_richdeps = 0;
 
     if (!cbdata)
 	cbdata = pkg;
@@ -142,9 +143,11 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
     case RPMTAG_SUGGESTNAME:
     case RPMTAG_SUPPLEMENTNAME:
     case RPMTAG_ENHANCENAME:
+    case RPMTAG_CONFLICTNAME:
+	allow_richdeps = 1;
+	/* fall through */
     case RPMTAG_PROVIDENAME:
     case RPMTAG_OBSOLETENAME:
-    case RPMTAG_CONFLICTNAME:
     case RPMTAG_ORDERNAME:
 	nametag = tagN;
 	break;
@@ -152,6 +155,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	/* XXX map legacy PreReq into Requires(pre,preun) */
 	nametag = RPMTAG_REQUIRENAME;
 	tagflags |= (RPMSENSE_SCRIPT_PRE|RPMSENSE_SCRIPT_PREUN);
+	allow_richdeps = 1;
 	break;
     case RPMTAG_TRIGGERPREIN:
 	nametag = RPMTAG_TRIGGERNAME;
@@ -212,9 +216,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 
 	if (r[0] == '(') {
 	    struct parseRCPOTRichData data;
-	    if (nametag != RPMTAG_REQUIRENAME && nametag != RPMTAG_CONFLICTNAME &&
-			nametag != RPMTAG_RECOMMENDNAME && nametag != RPMTAG_SUPPLEMENTNAME &&
-			nametag != RPMTAG_SUGGESTNAME && nametag != RPMTAG_ENHANCENAME) {
+	    if (!allow_richdeps) {
 		rasprintf(&emsg, _("No rich dependencies allowed for this type"));
 		goto exit;
 	    }
