@@ -1699,7 +1699,11 @@ static int generateBuildIDs(FileList fl)
     if (build_id_links == BUILD_IDS_NONE || rc != 0)
 	return rc;
 
-    int terminate = rpmExpandNumeric("%{?_missing_build_ids_terminate_build}");
+    /* Historically we have only checked build_ids when __debug_package
+       was defined. So don't terminate the build if __debug_package is
+       unset, even when _missing_build_ids_terminate_build is. */
+    int terminate = (rpmExpandNumeric("%{?_missing_build_ids_terminate_build}")
+		     && rpmExpandNumeric("%{?__debug_package}"));
 
     /* Collect and check all build-ids for ELF files in this package.  */
     int needMain = 0;
