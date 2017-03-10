@@ -337,32 +337,6 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	fclose(in);
 	dup2(inpipe[0], STDIN_FILENO);
 
-        /* If RPM was invoked with nice and/or ionice, the scripts that we run
-         * will be also nice'd/ionice'd.  This is terrible if you restart any
-         * daemon (e.g. mysqld), so let's reset this to default values before
-         * taking any actions.
-         */
-
-        /* Call for resetting nice priority. */
-        int ret;
-        ret = setpriority(PRIO_PROCESS, 0, 0);
-        if (ret == -1) {
-            rpmlog(RPMLOG_WARNING, _("Unable to reset nice value: %s"),
-                strerror(errno));
-        }
-
-        /* Call for resetting IO priority. */
-        #if defined(__linux__)
-        /* Defined at include/linux/ioprio.h */
-        const int _IOPRIO_WHO_PROCESS = 1;
-        const int _IOPRIO_CLASS_NONE = 0;
-        ret = syscall(SYS_ioprio_set, _IOPRIO_WHO_PROCESS, 0, _IOPRIO_CLASS_NONE);
-        if (ret == -1) {
-            rpmlog(RPMLOG_WARNING, _("Unable to reset I/O priority: %s"),
-                strerror(errno));
-        }
-        #endif
-
 	/* Run scriptlet post fork hook for all plugins */
 	if (rpmpluginsCallScriptletForkPost(plugins, *argvp[0], RPMSCRIPTLET_FORK | RPMSCRIPTLET_EXEC) != RPMRC_FAIL) {
 	    doScriptExec(*argvp, prefixes, scriptFd, out);

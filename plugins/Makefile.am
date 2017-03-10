@@ -29,6 +29,10 @@ systemd_inhibit_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/
 plugins_LTLIBRARIES += systemd_inhibit.la
 endif
 
+prioreset_la_SOURCES = prioreset.c
+prioreset_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la
+plugins_LTLIBRARIES += prioreset.la
+
 syslog_la_SOURCES = syslog.c
 syslog_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la
 plugins_LTLIBRARIES += syslog.la

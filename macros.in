@@ -1089,6 +1089,7 @@ package or when debugging this package.\
 %__transaction_selinux		%{__plugindir}/selinux.so
 %__transaction_syslog		%{__plugindir}/syslog.so
 %__transaction_ima		%{__plugindir}/ima.so
+%__transaction_prioreset	%{__plugindir}/prioreset.so
 
 #------------------------------------------------------------------------------
 # Macros for further automated spec %setup and patch application
