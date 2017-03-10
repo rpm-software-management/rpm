@@ -4,10 +4,6 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include <unistd.h>
-#include <sys/resource.h>
-#if defined(__linux__)
-#include <sys/syscall.h>        /* For ionice */
-#endif
 
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmmacro.h>
