@@ -82,6 +82,7 @@ typedef enum rpmFileAction_e {
     FA_SKIPNSTATE	= 9,	/*!< ... untouched, state "not installed". */
     FA_SKIPNETSHARED	= 10,	/*!< ... untouched, state "netshared". */
     FA_SKIPCOLOR	= 11,	/*!< ... untouched, state "wrong color". */
+    FA_TOUCH		= 12,	/*!< ... change metadata only. */
     /* bits 16-31 reserved */
 } rpmFileAction;
 

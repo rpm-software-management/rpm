@@ -790,6 +790,7 @@ static const char * fileActionString(rpmFileAction a)
     case FA_SKIPNSTATE: return "skipnstate";
     case FA_SKIPNETSHARED: return "skipnetshared";
     case FA_SKIPCOLOR:	return "skipcolor";
+    case FA_TOUCH:     return "touch";
     default:		return "???";
     }
 }
@@ -806,6 +807,9 @@ static void setFileState(rpmfs fs, int i)
 	break;
     case FA_SKIPCOLOR:
 	rpmfsSetState(fs, i, RPMFILE_STATE_WRONGCOLOR);
+	break;
+    case FA_TOUCH:
+	rpmfsSetState(fs, i, RPMFILE_STATE_NORMAL);
 	break;
     default:
 	break;
@@ -854,7 +858,11 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	action = rpmfsGetAction(fs, rpmfiFX(fi));
 	skip = XFA_SKIPPING(action);
 	suffix = S_ISDIR(rpmfiFMode(fi)) ? NULL : tid;
-	fpath = fsmFsPath(fi, suffix);
+	if (action != FA_TOUCH) {
+	    fpath = fsmFsPath(fi, suffix);
+	} else {
+	    fpath = fsmFsPath(fi, "");
+	}
 
 	/* Remap file perms, owner, and group. */
 	rc = rpmfiStat(fi, 1, &sb);
@@ -885,7 +893,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	    if (!suffix) {
 		rc = fsmVerify(fpath, fi);
 	    } else {
-		rc = RPMERR_ENOENT;
+		rc = (action == FA_TOUCH) ? 0 : RPMERR_ENOENT;
 	    }
 
             if (S_ISREG(sb.st_mode)) {
@@ -937,7 +945,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
         if (rc) {
             if (!skip) {
                 /* XXX only erase if temp fn w suffix is in use */
-                if (suffix) {
+                if (suffix && (action != FA_TOUCH)) {
 		    (void) fsmRemove(fpath, sb.st_mode);
                 }
                 errno = saveerrno;
