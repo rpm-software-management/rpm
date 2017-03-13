@@ -100,6 +100,27 @@
 %with()		%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 %without()	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
 
+# Generate --enable-/--disable-/--with-/--without- arguments for
+# configure scripts. Like the above these macros require %bcond_with
+# to be used before.
+#
+# |                        |         output for %{with_foo}      |
+# |------------------------+-------------------------------------|
+# | usage                  |     defined      |     undefined    |
+# |------------------------+------------------+------------------|
+# | %{cfg_enable  foo}     | --enable-foo     | --disable-foo    |
+# | %{cfg_disable foo}     | --disable-foo    | --enable-foo     |
+# | %{cfg_with    foo}     | --with-foo       | --without-foo    |
+# | %{cfg_without foo}     | --without-foo    | --with-foo       |
+# | %{cfg_with    foo bar} | --with-foo=bar   | --without-foo    |
+# | %{cfg_without foo bar} | --without-foo    | --with-foo=bar   |
+
+%cfg_enable()  %{expand:%%{?with_%{1}:--enable-%{1}}%%{!?with_%{1}:--disable-%{1}}}
+%cfg_disable() %{expand:%%{!?with_%{1}:--enable-%{1}}%%{?with_%{1}:--disable-%{1}}}
+
+%cfg_with()    %{expand:%%{?with_%{1}:--with-%{1}%{?2:=%{2}}}%%{!?with_%{1}:--without-%{1}}}
+%cfg_without() %{expand:%%{!?with_%{1}:--with-%{1}%{?2:=%{2}}}%%{?with_%{1}:--without-%{1}}}
+
 # Handle conditional builds. %bcond_with is for case when feature is
 # default off and needs to be activated with --with ... command line
 # switch. %bcond_without is for the dual case.
