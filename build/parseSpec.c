@@ -32,7 +32,7 @@ typedef struct OpenFileInfo {
     FILE *fp;
     int lineNum;
     char *readBuf;
-    int readBufLen;
+    size_t readBufLen;
     const char * readPtr;
     struct OpenFileInfo * next;
 } OFI_t;
@@ -323,22 +323,7 @@ retry:
 
     /* Make sure we have something in the read buffer */
     if (!(ofi->readPtr && *(ofi->readPtr))) {
-	int c;
-	int i = 0;
-
-	while ((c = fgetc(ofi->fp)) != EOF) {
-	    if (i >= ofi->readBufLen - 1) {
-		ofi->readBufLen += BUFSIZ;
-		ofi->readBuf = xrealloc(ofi->readBuf, ofi->readBufLen);
-	    }
-	    ofi->readBuf[i++] = c;
-	    if (c == '\n') {
-		ofi->readBuf[i] = '\0';
-		break;
-	    }
-	}
-
-	if (!i) {
+	if (getline(&ofi->readBuf, &ofi->readBufLen, ofi->fp) <= 0) {
 	    /* EOF, remove this file from the stack */
 	    ofi = popOFI(spec);
 
