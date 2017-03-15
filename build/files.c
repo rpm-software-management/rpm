@@ -1806,12 +1806,25 @@ static int generateBuildIDs(FileList fl)
 	char *mainiddir = NULL;
 	char *debugiddir = NULL;
 	if (rc == 0) {
+	    char *attrstr;
 	    /* Add .build-id directories to hold the subdirs/symlinks.  */
             #define BUILD_ID_DIR "/usr/lib/.build-id"
             #define DEBUG_ID_DIR "/usr/lib/debug/.build-id"
 
 	    mainiddir = rpmGetPath(fl->buildRoot, BUILD_ID_DIR, NULL);
 	    debugiddir = rpmGetPath(fl->buildRoot, DEBUG_ID_DIR, NULL);
+
+	    /* Make sure to reset all file flags to defaults.
+	       Uses parseForAttr to reset ar, arFlags, and specdFlags.
+	       Note that parseForAttr pokes at the attrstr, so we cannot
+	       just pass a static string. */
+	    fl->def.verifyFlags = RPMVERIFY_ALL;
+	    fl->cur.verifyFlags = RPMVERIFY_ALL;
+	    fl->def.specdFlags |= SPECD_VERIFY;
+	    fl->cur.specdFlags |= SPECD_VERIFY;
+	    attrstr = xstrdup ("%defattr(-,root,root)");
+	    parseForAttr(fl->pool, attrstr, 1, &fl->def);
+	    free (attrstr);
 
 	    /* Supported, but questionable.  */
 	    if (needMain && needDbg)
@@ -1822,8 +1835,12 @@ static int generateBuildIDs(FileList fl)
 		if ((rc = rpmioMkpath(mainiddir, 0755, -1, -1)) != 0) {
 		    rpmlog(RPMLOG_ERR, "%s %s: %m\n", errdir, mainiddir);
 		} else {
+		    rasprintf (&attrstr, "%s %s", "%attr(-,root,root) ",
+			       mainiddir);
+		    parseForAttr(fl->pool, attrstr, 0, &fl->cur);
 		    fl->cur.isDir = 1;
 		    rc = addFile(fl, mainiddir, NULL);
+		    free (attrstr);
 		}
 	    }
 
@@ -1831,8 +1848,12 @@ static int generateBuildIDs(FileList fl)
 		if ((rc = rpmioMkpath(debugiddir, 0755, -1, -1)) != 0) {
 		    rpmlog(RPMLOG_ERR, "%s %s: %m\n", errdir, debugiddir);
 		} else {
+		    rasprintf (&attrstr, "%s %s", "%attr(-,root,root) ",
+			       debugiddir);
+		    parseForAttr(fl->pool, attrstr, 0, &fl->cur);
 		    fl->cur.isDir = 1;
 		    rc = addFile(fl, debugiddir, NULL);
+		    free (attrstr);
 		}
 	    }
 	}

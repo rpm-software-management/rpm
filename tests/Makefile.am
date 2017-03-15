@@ -69,6 +69,8 @@ EXTRA_DIST += data/RPMS/hello-2.0-1.i686.rpm
 EXTRA_DIST += data/RPMS/hello-2.0-1.x86_64.rpm
 EXTRA_DIST += data/SRPMS/foo-1.0-1.src.rpm
 EXTRA_DIST += data/SRPMS/hello-1.0-1.src.rpm
+EXTRA_DIST += data/SOURCES/hello.c
+EXTRA_DIST += data/SPECS/hello-attr-buildid.spec
 
 # testsuite voodoo
 AUTOTEST = $(AUTOM4TE) --language=autotest

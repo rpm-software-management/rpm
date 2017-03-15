@@ -1166,3 +1166,39 @@ if test "$id1" == "$id2"; then echo "equal"; else echo "unequal $id1 $id2"; fi
 ],
 [ignore])
 AT_CLEANUP
+
+# ------------------------------
+# Check that build-id directories are created with the right permissions
+# even if the spec file sets attrs explicitly.
+AT_SETUP([rpmbuild buildid attrs])
+AT_KEYWORDS([build] [debuginfo] [buildid])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+# Setup sources
+cp "${abs_srcdir}"/data/SOURCES/hello.c ${TOPDIR}/SOURCES
+
+# Build, contains one ELF which should have a buildid.
+run rpmbuild \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --define="_build_id_links compat" \
+  --define "_unique_debug_names 1" \
+  --define "_unique_debug_srcs 1" \
+  --quiet -ba "${abs_srcdir}"/data/SPECS/hello-attr-buildid.spec
+
+run rpm -qp --qf "[[%{filenames} %{filemodes:perms}\n]]" \
+        ${abs_builddir}/testing/build/RPMS/*/test-1.0-1*rpm \
+	| grep "build-id d"
+
+run rpm -qp --qf "[[%{filenames} %{filemodes:perms}\n]]" \
+        ${abs_builddir}/testing/build/RPMS/*/test-debuginfo-1.0-1*rpm \
+	| grep "build-id d"
+],
+[0],
+[/usr/lib/.build-id drwxr-xr-x
+/usr/lib/debug/.build-id drwxr-xr-x
+],
+[ignore])
+AT_CLEANUP
