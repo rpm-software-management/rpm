@@ -160,6 +160,10 @@ static void queryArgCallback(poptContext con,
 	qva->qva_flags |= VERIFY_CONTEXTS;
 	break;
 
+    case RPMCLI_POPT_NOCAPS:
+	qva->qva_flags |= VERIFY_CAPS;
+	break;
+
 #ifdef	NOTYET
     case RPMCLI_POPT_FORCE:
 	ia->probFilter |=
@@ -247,12 +251,11 @@ struct poptOption rpmVerifyPoptTable[] = {
  { "nordev", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_flags, VERIFY_RDEV,
         N_("don't verify mode of files"), NULL },
- { "nocaps", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_flags, VERIFY_CAPS,
-	N_("don't verify capabilities of files"), NULL },
 
  { "nocontexts", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOCONTEXTS,
 	N_("don't verify file security contexts"), NULL },
+ { "nocaps", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOCAPS,
+	N_("don't verify capabilities of files"), NULL },
  { "nofiles", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_FILES,
 	N_("don't verify files in package"), NULL},
  { "nodeps", '\0', 0, NULL, RPMCLI_POPT_NODEPS,

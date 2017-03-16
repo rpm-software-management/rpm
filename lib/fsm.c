@@ -717,7 +717,8 @@ static int fsmBackup(rpmfi fi, rpmFileAction action)
 }
 
 static int fsmSetmeta(const char *path, rpmfi fi, rpmPlugins plugins,
-		      rpmFileAction action, const struct stat * st)
+		      rpmFileAction action, const struct stat * st,
+		      int nofcaps)
 {
     int rc = 0;
     const char *dest = rpmfiFN(fi);
@@ -729,7 +730,7 @@ static int fsmSetmeta(const char *path, rpmfi fi, rpmPlugins plugins,
 	rc = fsmChmod(path, st->st_mode);
     }
     /* Set file capabilities (if enabled) */
-    if (!rc && S_ISREG(st->st_mode) && !getuid()) {
+    if (!rc && !nofcaps && S_ISREG(st->st_mode) && !getuid()) {
 	rc = fsmSetFCaps(path, rpmfiFCaps(fi));
     }
     if (!rc) {
@@ -823,6 +824,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     int saveerrno = errno;
     int rc = 0;
     int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST) ? 1 : 0;
+    int nofcaps = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCAPS) ? 1 : 0;
     int firsthardlink = -1;
     int skip;
     rpmFileAction action;
@@ -923,7 +925,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
             }
 	    /* Set permissions, timestamps etc for non-hardlink entries */
 	    if (!rc && setmeta) {
-		rc = fsmSetmeta(fpath, fi, plugins, action, &sb);
+		rc = fsmSetmeta(fpath, fi, plugins, action, &sb, nofcaps);
 	    }
         } else if (firsthardlink >= 0 && rpmfiArchiveHasContent(fi)) {
 	    /* we skip the hard linked file containing the content */

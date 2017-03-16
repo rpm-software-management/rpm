@@ -87,6 +87,10 @@ static void installArgCallback( poptContext con,
 	ia->transFlags |= RPMTRANS_FLAG_NOCONTEXTS;
 	break;
 
+    case RPMCLI_POPT_NOCAPS:
+	ia->transFlags |= RPMTRANS_FLAG_NOCAPS;
+	break;
+
     case RPMCLI_POPT_FORCE:
 	ia->probFilter |=
 		( RPMPROB_FILTER_REPLACEPKG
@@ -181,6 +185,8 @@ struct poptOption rpmInstallPoptTable[] = {
 	N_("don't verify digest of files (obsolete)"), NULL },
  { "nocontexts", '\0',0,  NULL, RPMCLI_POPT_NOCONTEXTS,
 	N_("don't install file security contexts"), NULL},
+ { "nocaps", '\0',0,  NULL, RPMCLI_POPT_NOCAPS,
+	N_("don't install file capabilities"), NULL},
 
  { "noorder", '\0', POPT_BIT_SET,
 	&rpmIArgs.installInterfaceFlags, INSTALL_NOORDER,
