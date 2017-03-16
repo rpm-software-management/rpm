@@ -1185,7 +1185,7 @@ edit_dwarf2_line (DSO *dso)
 	    {
 	      const char *file = (const char *) optr;
 	      const char *file_path = NULL;
-	      if (t->replace_dirs)
+	      if (t->replace_files)
 		{
 		  file_path = skip_dir_prefix (file, base_dir);
 		  if (file_path != NULL)
