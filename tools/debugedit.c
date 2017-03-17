@@ -2581,46 +2581,45 @@ main (int argc, char *argv[])
 	  break;
 	case SHT_NOTE:
 	  if (do_build_id
-	      && build_id == NULL && (dso->shdr[i].sh_flags & SHF_ALLOC))
+	      && build_id == 0 && (dso->shdr[i].sh_flags & SHF_ALLOC))
 	    {
 	      /* Look for a build-ID note here.  */
+	      size_t off = 0;
+	      GElf_Nhdr nhdr;
+	      size_t name_off;
+	      size_t desc_off;
 	      Elf_Data *data = elf_getdata (elf_getscn (dso->elf, i), NULL);
-	      Elf32_Nhdr nh;
-	      Elf_Data dst =
-		{
-		  .d_version = EV_CURRENT, .d_type = ELF_T_NHDR,
-		  .d_buf = &nh, .d_size = sizeof nh
-		};
-	      Elf_Data src = dst;
-	      src.d_buf = data->d_buf;
-	      assert (sizeof (Elf32_Nhdr) == sizeof (Elf64_Nhdr));
-	      while ((char *) data->d_buf + data->d_size -
-		     (char *) src.d_buf > (int) sizeof nh
-		     && elf32_xlatetom (&dst, &src, dso->ehdr.e_ident[EI_DATA]))
-		{
-		  Elf32_Word len = sizeof nh + nh.n_namesz;
-		  len = (len + 3) & ~3;
-
-		  if (nh.n_namesz == sizeof "GNU" && nh.n_type == 3
-		      && !memcmp ((char *) src.d_buf + sizeof nh, "GNU", sizeof "GNU"))
-		    {
-		      build_id = data;
-		      build_id_offset = (char *) src.d_buf + len -
-					(char *) data->d_buf;
-		      build_id_size = nh.n_descsz;
-		      break;
-		    }
-
-		  len += nh.n_descsz;
-		  len = (len + 3) & ~3;
-		  src.d_buf = (char *) src.d_buf + len;
-		}
+	      while ((off = gelf_getnote (data, off,
+					  &nhdr, &name_off, &desc_off)) > 0)
+		if (nhdr.n_type == NT_GNU_BUILD_ID
+		    && nhdr.n_namesz == sizeof "GNU"
+		    && (memcmp ((char *)data->d_buf + name_off, "GNU",
+				sizeof "GNU") == 0))
+		  {
+		    build_id = data;
+		    build_id_offset = desc_off;
+		    build_id_size = nhdr.n_descsz;
+		  }
 	    }
 	  break;
 	default:
 	  break;
 	}
     }
+
+  /* Normally we only need to explicitly update the section headers
+     and data when any section data changed size. But because of a bug
+     in elfutils before 0.169 we will have to update and write out all
+     section data if any data has changed (when ELF_F_LAYOUT was
+     set). https://sourceware.org/bugzilla/show_bug.cgi?id=21199 */
+  bool need_update = need_strp_update || need_stmt_update;
+
+#if !_ELFUTILS_PREREQ (0, 169)
+  /* string replacements or build_id updates don't change section size. */
+  need_update = (need_update
+		 || need_string_replacement
+		 || (do_build_id && build_id != NULL));
+#endif
 
   /* We might have changed the size of some debug sections. If so make
      sure the section headers are updated and the data offsets are
@@ -2631,7 +2630,7 @@ main (int argc, char *argv[])
      anything for the phdrs allocated sections. Keep the offset of
      allocated sections so they are at the same place in the file. Add
      unallocated ones after the allocated ones. */
-  if (dso->phnum != 0 && (need_strp_update || need_stmt_update))
+  if (dso->phnum != 0 && need_update)
     {
       Elf *elf = dso->elf;
       GElf_Off last_offset;
