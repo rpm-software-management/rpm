@@ -2393,10 +2393,14 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	goto exit;
 
 #if HAVE_LIBDW
-    if (generateBuildIDs (&fl) != 0) {
-	rpmlog(RPMLOG_ERR, _("Generating build-id links failed\n"));
-	fl.processingFailed = 1;
-	goto exit;
+    /* Check build-ids and add build-ids links for files to package list. */
+    const char *arch = headerGetString(pkg->header, RPMTAG_ARCH);
+    if (!rstreq(arch, "noarch")) {
+	if (generateBuildIDs (&fl) != 0) {
+	    rpmlog(RPMLOG_ERR, _("Generating build-id links failed\n"));
+	    fl.processingFailed = 1;
+	    goto exit;
+	}
     }
 #endif
 
