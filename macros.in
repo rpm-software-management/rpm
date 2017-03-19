@@ -1029,7 +1029,7 @@ package or when debugging this package.\
 
 #------------------------------------------------------------------------------
 # arch macro for all supported ARM processors
-%arm	armv3l armv4b armv4l armv4tl armv5tel armv5tejl armv6l armv6hl armv7l armv7hl armv7hnl
+%arm	armv3l armv4b armv4l armv4tl armv5tl armv5tel armv5tejl armv6l armv6hl armv7l armv7hl armv7hnl
 
 #------------------------------------------------------------------------------
 # arch macro for 32-bit MIPS processors
