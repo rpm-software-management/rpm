@@ -71,6 +71,7 @@ optflags: armv3l -O2 -g -march=armv3
 optflags: armv4b -O2 -g -march=armv4
 optflags: armv4l -O2 -g -march=armv4
 optflags: armv4tl -O2 -g -march=armv4t
+optflags: armv5tl -O2 -g -march=armv5t
 optflags: armv5tel -O2 -g -march=armv5te
 optflags: armv5tejl -O2 -g -march=armv5te
 optflags: armv6l -O2 -g -march=armv6
@@ -208,6 +209,7 @@ arch_canon:	mips64el:	mips64el	11
 arch_canon:	armv3l: armv3l	12
 arch_canon:     armv4b:	armv4b 	12
 arch_canon:     armv4l:	armv4l 	12
+arch_canon:     armv5tl: armv5tl 	12
 arch_canon:     armv5tel: armv5tel 	12
 arch_canon:     armv5tejl: armv5tejl 	12
 arch_canon:     armv6l: armv6l 	12
@@ -332,6 +334,7 @@ buildarchtranslate: armv3l: armv3l
 buildarchtranslate: armv4b: armv4b
 buildarchtranslate: armv4l: armv4l
 buildarchtranslate: armv4tl: armv4tl
+buildarchtranslate: armv5tl: armv5tl
 buildarchtranslate: armv5tel: armv5tel
 buildarchtranslate: armv5tejl: armv5tejl
 buildarchtranslate: armv6l: armv6l
@@ -448,8 +451,9 @@ arch_compat: parisc: noarch
 arch_compat: armv4b: noarch
 arch_compat: armv7l: armv6l
 arch_compat: armv6l: armv5tejl
-arch_compat: armv5tejl: armv5tel
-arch_compat: armv5tel: armv4tl
+arch_compat: armv5tejl: armv5tel armv5tl
+arch_compat: armv5tel: armv4tl armv5tl
+arch_compat: armv5tl: armv4tl
 arch_compat: armv4tl: armv4l
 arch_compat: armv4l: armv3l
 arch_compat: armv3l: noarch
@@ -576,8 +580,9 @@ buildarch_compat: mips64r6el: noarch
 buildarch_compat: armv4b: noarch
 buildarch_compat: armv7l: armv6l
 buildarch_compat: armv6l: armv5tejl
-buildarch_compat: armv5tejl: armv5tel
-buildarch_compat: armv5tel: armv4tl
+buildarch_compat: armv5tejl: armv5tel armv5tl
+buildarch_compat: armv5tel: armv4tl armv5tl
+buildarch_compat: armv5tl: armv4tl
 buildarch_compat: armv4tl: armv4l
 buildarch_compat: armv4l: armv3l
 buildarch_compat: armv3l: noarch
