@@ -97,7 +97,7 @@ main_file=./usr/local/bin/hello
 test -f "${main_file}" || echo "No main file ${main_file}"
 
 # Extract the build-id from the main file
-id_main=$(file $main_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id_main=$(file $main_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 id_main_file="./usr/lib/debug/.build-id/${id_main:0:2}/${id_main:2}"
 test -L "$id_main_file" || echo "No build-id file $id_main_file"
@@ -120,7 +120,7 @@ debug_file=./usr/lib/debug/usr/local/bin/hello.debug
 test -f ${debug_file} || echo "No debug file ${debug_file}"
 
 # Extract the build-id from the .debug file
-id_debug=$(file $debug_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id_debug=$(file $debug_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 test ${id_main} = ${id_debug} || echo "unequal main and debug id"
 
@@ -190,7 +190,7 @@ main_file=./usr/local/bin/hello
 test -f "${main_file}" || echo "No main file ${main_file}"
 
 # Extract the build-id from the main file
-id_main=$(file $main_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id_main=$(file $main_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 id_main_file="./usr/lib/debug/.build-id/${id_main:0:2}/${id_main:2}"
 test -L "$id_main_file" || echo "No build-id file $id_main_file"
@@ -213,7 +213,7 @@ debug_file=./usr/lib/debug/usr/local/bin/hello-*.debug
 test -f ${debug_file} || echo "No debug file ${debug_file}"
 
 # Extract the build-id from the .debug file
-id_debug=$(file $debug_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id_debug=$(file $debug_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 test ${id_main} = ${id_debug} || echo "unequal main and debug id"
 
@@ -283,7 +283,7 @@ main_file=./usr/local/bin/hello
 test -f "${main_file}" || echo "No main file ${main_file}"
 
 # Extract the build-id from the main file
-id_main=$(file $main_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id_main=$(file $main_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 id_main_file="./usr/lib/.build-id/${id_main:0:2}/${id_main:2}"
 test -L "$id_main_file" || echo "No build-id file $id_main_file"
@@ -306,7 +306,7 @@ debug_file=./usr/lib/debug/usr/local/bin/hello.debug
 test -f ${debug_file} || echo "No debug file ${debug_file}"
 
 # Extract the build-id from the .debug file
-id_debug=$(file $debug_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id_debug=$(file $debug_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 test ${id_main} = ${id_debug} || echo "unequal main and debug id"
 
@@ -375,7 +375,7 @@ main_file=./usr/local/bin/hello
 test -f "${main_file}" || echo "No main file ${main_file}"
 
 # Extract the build-id from the main file
-id_main=$(file $main_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id_main=$(file $main_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 id_main_file="./usr/lib/.build-id/${id_main:0:2}/${id_main:2}"
 test -L "$id_main_file" || echo "No build-id file $id_main_file"
@@ -398,7 +398,7 @@ debug_file=./usr/lib/debug/usr/local/bin/hello-*.debug
 test -f ${debug_file} || echo "No debug file ${debug_file}"
 
 # Extract the build-id from the .debug file
-id_debug=$(file $debug_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id_debug=$(file $debug_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 test ${id_main} = ${id_debug} || echo "unequal main and debug id"
 
@@ -469,7 +469,7 @@ main_file=./usr/local/bin/hello
 test -f "${main_file}" || echo "No main file ${main_file}"
 
 # Extract the build-id from the main file
-id_main=$(file $main_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id_main=$(file $main_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 id_main_file="./usr/lib/.build-id/${id_main:0:2}/${id_main:2}"
 test -L "$id_main_file" || echo "No build-id file $id_main_file"
@@ -492,7 +492,7 @@ debug_file=./usr/lib/debug/usr/local/bin/hello.debug
 test -f ${debug_file} || echo "No debug file ${debug_file}"
 
 # Extract the build-id from the .debug file
-id_debug=$(file $debug_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id_debug=$(file $debug_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 test ${id_main} = ${id_debug} || echo "unequal main and debug id"
 
@@ -574,7 +574,7 @@ main_file=./usr/local/bin/hello
 test -f "${main_file}" || echo "No main file ${main_file}"
 
 # Extract the build-id from the main file
-id_main=$(file $main_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id_main=$(file $main_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 id_main_file="./usr/lib/.build-id/${id_main:0:2}/${id_main:2}"
 test -L "$id_main_file" || echo "No build-id file $id_main_file"
@@ -597,7 +597,7 @@ debug_file=./usr/lib/debug/usr/local/bin/hello-*debug
 test -f ${debug_file} || echo "No debug file ${debug_file}"
 
 # Extract the build-id from the .debug file
-id_debug=$(file $debug_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id_debug=$(file $debug_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 test ${id_main} = ${id_debug} || echo "unequal main and debug id"
 
@@ -662,7 +662,7 @@ rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-1.0-1.*.rpm \
 hello_file=./usr/local/bin/hello
 
 # Extract the build-id from the main file
-id=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id=$(file $hello_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 # alldebug not here...
 id_file="./usr/lib/debug/.build-id/${id:0:2}/${id:2}"
@@ -732,7 +732,7 @@ rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-1.0-1.*.rpm \
 hello_file=./usr/local/bin/hello
 
 # Extract the build-id from the main file
-id=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id=$(file $hello_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 # alldebug not here...
 id_file="./usr/lib/debug/.build-id/${id:0:2}/${id:2}"
@@ -799,7 +799,7 @@ rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-1.0-1.*.rpm \
 hello_file=./usr/local/bin/hello
 
 # Extract the build-id from the main file
-id=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id=$(file $hello_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 # separate build-ids split...
 id_file="./usr/lib/.build-id/${id:0:2}/${id:2}"
@@ -866,7 +866,7 @@ rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-1.0-1.*.rpm \
 hello_file=./usr/local/bin/hello
 
 # Extract the build-id from the main file
-id=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id=$(file $hello_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 # separate build-ids split...
 id_file="./usr/lib/.build-id/${id:0:2}/${id:2}"
@@ -930,7 +930,7 @@ rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-1.0-1.*.rpm \
 hello_file=./usr/local/bin/hello
 
 # Extract the build-id from the main file
-id=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id=$(file $hello_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 # compat build-ids split...
 id_file="./usr/lib/.build-id/${id:0:2}/${id:2}"
@@ -1009,7 +1009,7 @@ rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-1.0-1.*.rpm \
 hello_file=./usr/local/bin/hello
 
 # Extract the build-id from the main file
-id=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id=$(file $hello_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 # compat build-ids split...
 id_file="./usr/lib/.build-id/${id:0:2}/${id:2}"
@@ -1084,7 +1084,7 @@ hello_file=./usr/local/bin/hello
 
 # Extract the build-id from the main file
 test -f $hello_file || echo "No $hello_file"
-id1=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id1=$(file $hello_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 # Make sure we generate a new one
 rm $hello_file
@@ -1101,7 +1101,7 @@ rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-2.*.rpm \
 
 # Extract the build-id from the main file
 test -f $hello_file || echo "No $hello_file"
-id2=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id2=$(file $hello_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 if test "$id1" == "$id2"; then echo "equal $id1"; else echo "unequal"; fi
 ],
@@ -1138,7 +1138,7 @@ hello_file=./usr/local/bin/hello
 
 # Extract the build-id from the main file
 test -f $hello_file || echo "No $hello_file"
-id1=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id1=$(file $hello_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 # Make sure we generate a new one
 rm $hello_file
@@ -1157,7 +1157,7 @@ rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-2.*.rpm \
 
 # Extract the build-id from the main file
 test -f $hello_file || echo "No $hello_file"
-id2=$(file $hello_file | sed 's/.*, BuildID[.*]=\(.*\),.*/\1/')
+id2=$(file $hello_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 
 if test "$id1" == "$id2"; then echo "equal"; else echo "unequal $id1 $id2"; fi
 ],
