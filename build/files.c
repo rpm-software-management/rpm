@@ -1711,6 +1711,19 @@ static int generateBuildIDs(FileList fl)
     for (i = 0, flp = fl->files.recs; i < fl->files.used; i++, flp++) {
 	struct stat sbuf;
 	if (lstat(flp->diskPath, &sbuf) == 0 && S_ISREG (sbuf.st_mode)) {
+	    /* We determine whether this is a main or
+	       debug ELF based on path.  */
+	    #define DEBUGPATH "/usr/lib/debug/"
+	    int isDbg = strncmp (flp->cpioPath,
+				 DEBUGPATH, strlen (DEBUGPATH)) == 0;
+
+	    /* For the main package files mimic what find-debuginfo.sh does.
+	       Only check build-ids for executable files. Debug files are
+	       always non-executable. */
+	    if (!isDbg
+		&& (sbuf.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH)) == 0)
+	      continue;
+
 	    int fd = open (flp->diskPath, O_RDONLY);
 	    if (fd >= 0) {
 		/* Only real ELF files, that are ET_EXEC, ET_DYN or
@@ -1732,12 +1745,8 @@ static int generateBuildIDs(FileList fl)
 		       is 128 bits) and 64 bytes (largest sha3 is 512
 		       bits), common is 20 bytes (sha1 is 160 bits). */
 		    if (len >= 16 && len <= 64) {
-			/* We determine whether this is a main or
-			   debug ELF based on path.  */
-			#define DEBUGPATH "/usr/lib/debug/"
 			int addid = 0;
-			if (strncmp (flp->cpioPath,
-				     DEBUGPATH, strlen (DEBUGPATH)) == 0) {
+			if (isDbg) {
 			    needDbg = 1;
 			    addid = 1;
 			}
