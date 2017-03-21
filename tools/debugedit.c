@@ -1507,12 +1507,16 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 				     comp_dir, base_dir, dest_dir);
 			  else
 			    {
-			      /* Add one or more slashes in between to
-				 fill up all space (replacement must be
-				 of the same length). */
+			      /* Add zero (if no file part), one or more
+				 slashes in between the new dest_dir and the
+				 file name to fill up all space (replacement
+				 DW_FORM_string must be of the same length).
+				 We don't need to copy the old file name (if
+				 any) or the zero terminator, because those
+				 are already at the end of the string.  */
 			      memcpy (ptr, dest_dir, dest_len);
 			      memset (ptr + dest_len, '/',
-				      orig_len - new_len + 1);
+				      orig_len - new_len);
 			    }
 			}
 		    }
