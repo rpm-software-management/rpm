@@ -1028,8 +1028,16 @@ package or when debugging this package.\
 %ix86   i386 i486 i586 i686 pentium3 pentium4 athlon geode
 
 #------------------------------------------------------------------------------
+# arch macro for all 32-bit ARM processors
+%arm32  armv3l armv4b armv4l armv4tl armv5tel armv5tejl armv6l armv6hl armv7l armv7hl armv7hnl
+
+#------------------------------------------------------------------------------
+# arch macro for all 64-bit ARM processors
+%arm64  aarch64
+
+#------------------------------------------------------------------------------
 # arch macro for all supported ARM processors
-%arm	armv3l armv4b armv4l armv4tl armv5tel armv5tejl armv6l armv6hl armv7l armv7hl armv7hnl
+%arm    %{arm32} %{arm64}
 
 #------------------------------------------------------------------------------
 # arch macro for 32-bit MIPS processors
