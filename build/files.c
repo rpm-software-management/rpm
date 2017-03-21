@@ -2261,7 +2261,7 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
 				
 
 static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
-				 Package pkg, int installSpecialDoc, int test)
+				 Package pkg, int didInstall, int test)
 {
     struct AttrRec_s root_ar = { 0, 0, 0, 0, 0, 0 };
     struct FileList_s fl;
@@ -2376,9 +2376,9 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 
     /* Now process special docs and licenses if present */
     if (specialDoc)
-	processSpecialDir(spec, pkg, &fl, specialDoc, installSpecialDoc, test);
+	processSpecialDir(spec, pkg, &fl, specialDoc, didInstall, test);
     if (specialLic)
-	processSpecialDir(spec, pkg, &fl, specialLic, installSpecialDoc, test);
+	processSpecialDir(spec, pkg, &fl, specialLic, didInstall, test);
     
     if (fl.processingFailed)
 	goto exit;
@@ -2584,7 +2584,7 @@ exit:
 }
 
 rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
-			int installSpecialDoc, int test)
+			int didInstall, int test)
 {
     Package pkg;
     rpmRC rc = RPMRC_OK;
@@ -2610,7 +2610,7 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	rpmlog(RPMLOG_NOTICE, _("Processing files: %s\n"), nvr);
 	free(nvr);
 		   
-	if ((rc = processPackageFiles(spec, pkgFlags, pkg, installSpecialDoc, test)) != RPMRC_OK ||
+	if ((rc = processPackageFiles(spec, pkgFlags, pkg, didInstall, test)) != RPMRC_OK ||
 	    (rc = rpmfcGenerateDepends(spec, pkg)) != RPMRC_OK)
 	    goto exit;
 

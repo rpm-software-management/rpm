@@ -361,13 +361,13 @@ rpmds * packageDependencies(Package pkg, rpmTagVal tag);
  * Post-build processing for binary package(s).
  * @param spec		spec file control structure
  * @param pkgFlags	bit(s) to control package generation
- * @param installSpecialDoc
+ * @param didInstall	was %install executed?
  * @param test		don't execute scripts or package if testing
  * @return		0 on success
  */
 RPM_GNUC_INTERNAL
 rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
-			int installSpecialDoc, int test);
+			int didInstall, int test);
 
 /** \ingroup rpmfc
  * Generate package dependencies.
