@@ -1,3 +1,5 @@
+#include "system.h"
+
 #include <dbus/dbus.h>
 #include <sys/types.h>
 #include <sys/stat.h>
