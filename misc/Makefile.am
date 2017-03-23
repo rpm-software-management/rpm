@@ -5,7 +5,6 @@ AM_CPPFLAGS += -I$(top_srcdir)/misc
 
 EXTRA_DIST = \
 	fnmatch.c	fnmatch.h \
-	rpmxprogname.c	rpmxprogname.h \
 	stpcpy.c	stpncpy.c
 
 noinst_LTLIBRARIES = libmisc.la

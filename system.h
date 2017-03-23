@@ -114,10 +114,8 @@ extern int fdatasync(int fildes);
 # define xsetprogname(pn) /* No need to implement it in GNU LIBC. */
   extern const char *__progname;
 # define xgetprogname(pn) __progname
-#else /* Reimplement setprogname and getprogname */
-# include "misc/rpmxprogname.h"
-# define xsetprogname(pn) _rpmxsetprogname(pn)
-# define xgetprogname() _rpmxgetprogname()
+#else
+# error "Did not find any sutable implementation of xsetprogname/xgetprogname"
 #endif
 
 /* Take care of NLS matters.  */
