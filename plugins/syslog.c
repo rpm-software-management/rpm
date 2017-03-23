@@ -1,3 +1,5 @@
+#include "system.h"
+
 #include <syslog.h>
 
 #include <rpm/rpmts.h>

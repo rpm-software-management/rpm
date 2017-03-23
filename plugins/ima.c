@@ -1,3 +1,5 @@
+#include "system.h"
+
 #include <errno.h>
 #include <sys/xattr.h>
 
