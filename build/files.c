@@ -2022,6 +2022,8 @@ static int generateBuildIDs(FileList fl)
 	    free(paths[i]);
 	    free(ids[i]);
 	}
+	free(mainiddir);
+	free(debugiddir);
 	free(vra);
 	free(paths);
 	free(ids);
