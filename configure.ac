@@ -710,6 +710,13 @@ AC_CHECK_FUNCS(mergesort)
 AC_CHECK_FUNCS(getauxval)
 AC_CHECK_FUNCS(setprogname, [], [], [#include <stdlib.h>])
 
+AC_MSG_CHECKING([whether __progname is defined])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([extern const char *__progname;],
+	   [if (*__progname == 0) return 0;])],
+	   AC_DEFINE([HAVE___PROGNAME], [1], [Define if __progname is defined])
+	   AC_MSG_RESULT([yes]),
+	   AC_MSG_RESULT([no]))
+
 AC_REPLACE_FUNCS(stpcpy stpncpy)
 
 AC_CHECK_FUNCS([secure_getenv __secure_getenv])

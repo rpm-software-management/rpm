@@ -98,12 +98,12 @@ extern int fdatasync(int fildes);
 
    setprogname(*pn) must be the first call in main() in order to set the name
    as soon as possible. */
-#if defined(HAVE_SETPROGNAME)
+#if defined(HAVE_SETPROGNAME) /* BSD'ish systems */
 # include <stdlib.h> /* Make sure this header is included */
 # define xsetprogname(pn) setprogname(pn)
 # define xgetprogname(pn) getprogname(pn)
-#elif defined(__GLIBC__) /* GNU LIBC ships with (const *char *) __progname */
-# define xsetprogname(pn) /* No need to implement it in GNU LIBC. */
+#elif defined(HAVE___PROGNAME) /* glibc and others */
+# define xsetprogname(pn)
   extern const char *__progname;
 # define xgetprogname(pn) __progname
 #else
