@@ -708,6 +708,7 @@ AC_CHECK_DECLS(fdatasync, [], [], [#include <unistd.h>])
 AC_CHECK_FUNCS(lutimes)
 AC_CHECK_FUNCS(mergesort)
 AC_CHECK_FUNCS(getauxval)
+AC_CHECK_FUNCS(setprogname, [], [], [#include <stdlib.h>])
 
 AC_REPLACE_FUNCS(stpcpy stpncpy)
 
