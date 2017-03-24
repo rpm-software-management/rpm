@@ -544,6 +544,13 @@ static void fillOutMainPackage(Header h)
 
 /**
  */
+void copyInheritedTags(Header h, Header fromh)
+{
+    headerCopyTags(fromh, h, (rpmTagVal *)copyTagsDuringParse);
+}
+
+/**
+ */
 static rpmRC readIcon(Header h, const char * file)
 {
     char *fn = NULL;
@@ -1197,8 +1204,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
     }
 
     if (pkg != spec->packages) {
-	headerCopyTags(spec->packages->header, pkg->header,
-			(rpmTagVal *)copyTagsDuringParse);
+	copyInheritedTags(pkg->header, spec->packages->header);
     }
 
     if (checkForRequired(pkg->header, NVR)) {

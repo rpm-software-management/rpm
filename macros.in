@@ -549,6 +549,9 @@ package or when debugging this package.\
 # Whether rpm should put debug source files into its own subpackage
 #%_debugsource_packages	1
 
+# Whether rpm should create extra debuginfo packages for each subpackage
+#%_debuginfo_subpackages 1
+
 #
 # Use internal dependency generator rather than external helpers?
 %_use_internal_dependency_generator	1

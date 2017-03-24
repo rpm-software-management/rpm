@@ -50,6 +50,16 @@
 #define	SKIPWHITE(_x)	{while (*(_x) && (risspace(*_x) || *(_x) == ',')) (_x)++;}
 #define	SKIPNONWHITE(_x){while (*(_x) &&!(risspace(*_x) || *(_x) == ',')) (_x)++;}
 
+/* the following defines must be in sync with the equally hardcoded paths from
+ * scripts/find-debuginfo.sh
+ */
+#define BUILD_ID_DIR		"/usr/lib/.build-id"
+#define DEBUG_SRC_DIR		"/usr/src/debug"
+#define DEBUG_LIB_DIR		"/usr/lib/debug"
+#define DEBUG_LIB_PREFIX	"/usr/lib/debug/"
+#define DEBUG_ID_DIR		"/usr/lib/debug/.build-id"
+#define DEBUG_DWZ_DIR 		"/usr/lib/debug/.dwz"
+
 /**
  */
 enum specfFlags_e {
@@ -1738,9 +1748,8 @@ static int generateBuildIDs(FileList fl)
 	if (lstat(flp->diskPath, &sbuf) == 0 && S_ISREG (sbuf.st_mode)) {
 	    /* We determine whether this is a main or
 	       debug ELF based on path.  */
-	    #define DEBUGPATH "/usr/lib/debug/"
 	    int isDbg = strncmp (flp->cpioPath,
-				 DEBUGPATH, strlen (DEBUGPATH)) == 0;
+				 DEBUG_LIB_PREFIX, strlen (DEBUG_LIB_PREFIX)) == 0;
 
 	    /* For the main package files mimic what find-debuginfo.sh does.
 	       Only check build-ids for executable files. Debug files are
@@ -1833,8 +1842,6 @@ static int generateBuildIDs(FileList fl)
 	if (rc == 0) {
 	    char *attrstr;
 	    /* Add .build-id directories to hold the subdirs/symlinks.  */
-            #define BUILD_ID_DIR "/usr/lib/.build-id"
-            #define DEBUG_ID_DIR "/usr/lib/debug/.build-id"
 
 	    mainiddir = rpmGetPath(fl->buildRoot, BUILD_ID_DIR, NULL);
 	    debugiddir = rpmGetPath(fl->buildRoot, DEBUG_ID_DIR, NULL);
@@ -1898,8 +1905,8 @@ static int generateBuildIDs(FileList fl)
 	    /* Don't add anything more when an error occured. But do
 	       cleanup.  */
 	    if (rc == 0) {
-		int isDbg = strncmp (paths[i], DEBUGPATH,
-				     strlen (DEBUGPATH)) == 0;
+		int isDbg = strncmp (paths[i], DEBUG_LIB_PREFIX,
+				     strlen (DEBUG_LIB_PREFIX)) == 0;
 
 		char *buildidsubdir;
 		char subdir[4];
@@ -2001,7 +2008,7 @@ static int generateBuildIDs(FileList fl)
 			       which don't end in ".debug". */
 			    int pathlen = strlen(paths[i]);
 			    int debuglen = strlen(".debug");
-			    int prefixlen = strlen("/usr/lib/debug");
+			    int prefixlen = strlen(DEBUG_LIB_DIR);
 			    int vralen = vra == NULL ? 0 : strlen(vra);
 			    if (pathlen > prefixlen + debuglen + vralen
 				&& strcmp ((paths[i] + pathlen - debuglen),
@@ -2659,23 +2666,272 @@ exit:
     return rc;
 }
 
+static rpmTag copyTagsFromMainDebug[] = {
+    RPMTAG_ARCH,
+    RPMTAG_SUMMARY,
+    RPMTAG_DESCRIPTION,
+    RPMTAG_GROUP,
+    /* see addTargets */
+    RPMTAG_OS,
+    RPMTAG_PLATFORM,
+    RPMTAG_OPTFLAGS,
+};
+
+/* this is a hack: patch the summary and the description to include
+ * the correct package name */
+static void patchDebugPackageString(Package dbg, rpmTag tag, Package pkg, Package mainpkg)
+{
+    const char *oldname, *newname, *old;
+    char *oldsubst = NULL, *newsubst = NULL, *p;
+    oldname = headerGetString(mainpkg->header, RPMTAG_NAME);
+    newname = headerGetString(pkg->header, RPMTAG_NAME);
+    rasprintf(&oldsubst, "package %s", oldname);
+    rasprintf(&newsubst, "package %s", newname);
+    old = headerGetString(dbg->header, tag);
+    p = old ? strstr(old, oldsubst) : NULL;
+    if (p) {
+	char *new = NULL;
+	rasprintf(&new, "%.*s%s%s", (int)(p - old), old, newsubst, p + strlen(oldsubst));
+	headerDel(dbg->header, tag);
+	headerPutString(dbg->header, tag, new);
+	_free(new);
+    }
+    _free(oldsubst);
+    _free(newsubst);
+}
+
+/* create a new debuginfo subpackage for package pkg from the
+ * main debuginfo package */
+static Package cloneDebuginfoPackage(rpmSpec spec, Package pkg, Package maindbg)
+{
+    const char *name = headerGetString(pkg->header, RPMTAG_NAME);
+    char *dbgname = NULL;
+    Package dbg;
+
+    rasprintf(&dbgname, "%s-%s", name, "debuginfo");
+    dbg = newPackage(dbgname, spec->pool, &spec->packages);
+    headerPutString(dbg->header, RPMTAG_NAME, dbgname);
+    copyInheritedTags(dbg->header, pkg->header);
+    headerDel(dbg->header, RPMTAG_GROUP);
+    headerCopyTags(maindbg->header, dbg->header, copyTagsFromMainDebug);
+    dbg->autoReq = maindbg->autoReq;
+    dbg->autoProv = maindbg->autoProv;
+
+    /* patch summary and description strings */
+    patchDebugPackageString(dbg, RPMTAG_SUMMARY, pkg, spec->packages);
+    patchDebugPackageString(dbg, RPMTAG_DESCRIPTION, pkg, spec->packages);
+
+    /* Add self-provides (normally done by addTargets) */
+    addPackageProvides(dbg);
+    dbg->ds = rpmdsThis(dbg->header, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
+
+    _free(dbgname);
+    return dbg;
+}
+
+/* add a directory to the file list */
+static void argvAddDir(ARGV_t *filesp, const char *dir)
+{
+    char *line = NULL;
+    rasprintf(&line, "%%dir %s", dir);
+    argvAdd(filesp, line);
+    _free(line);
+}
+
+/* collect the debug files for package pkg and put them into
+ * a (possibly new) debuginfo subpackage */
+static void filterDebuginfoPackage(rpmSpec spec, Package pkg,
+		Package maindbg, char *buildroot, char *uniquearch)
+{
+    rpmfi fi;
+    ARGV_t files = NULL;
+    Package dbg = NULL;
+    char *path = NULL;
+    size_t buildrootlen = strlen(buildroot);
+
+    /* ignore noarch subpackages */
+    if (rstreq(headerGetString(pkg->header, RPMTAG_ARCH), "noarch"))
+	return;
+
+    if (!uniquearch)
+	uniquearch = "";
+
+    fi = rpmfilesIter(pkg->cpioList, RPMFI_ITER_FWD);
+    /* Check if the current package has files with debug info
+       and add them to the file list */
+    fi = rpmfiInit(fi, 0);
+    while (rpmfiNext(fi) >= 0) {
+	const char *name = rpmfiFN(fi);
+	int namel = strlen(name);
+
+	/* strip trailing .debug like in find-debuginfo.sh */
+	namel = strlen(name);
+	if (namel > 6 && !strcmp(name + namel - 6, ".debug"))
+	    namel -= 6;
+	
+	/* generate path */
+	rasprintf(&path, "%s%s%.*s%s.debug", buildroot, DEBUG_LIB_DIR, namel, name, uniquearch);
+
+	/* If that file exists we have debug information for it */
+	if (access(path, F_OK) == 0) {
+	    /* Append the file list preamble */
+	    if (!files) {
+		argvAdd(&files, "%defattr(-,root,root)");
+		argvAddDir(&files, DEBUG_LIB_DIR);
+	    }
+	    /* Add the files main debug-info file */
+	    argvAdd(&files, path + buildrootlen);
+	}
+	path = _free(path);
+    }
+
+    if (files) {
+	/* we have collected some files. Now put them in a debuginfo
+         * package. If this is not the main package, clone the main
+         * debuginfo package */
+	if (pkg == spec->packages)
+	    maindbg->fileList = files;
+	else {
+	    Package dbg = cloneDebuginfoPackage(spec, pkg, maindbg);
+	    dbg->fileList = files;
+	}
+    }
+}
+
+/* add the debug dwz files to package pkg.
+ * return 1 if something was added, 0 otherwise. */
+static int addDebugDwz(Package pkg, char *buildroot)
+{
+    int ret = 0;
+    char *path = NULL;
+    struct stat sbuf;
+
+    rasprintf(&path, "%s%s", buildroot, DEBUG_DWZ_DIR);
+    if (lstat(path, &sbuf) == 0 && S_ISDIR(sbuf.st_mode)) {
+	if (!pkg->fileList) {
+	    argvAdd(&pkg->fileList, "%defattr(-,root,root)");
+	    argvAddDir(&pkg->fileList, DEBUG_LIB_DIR);
+	}
+	argvAdd(&pkg->fileList, DEBUG_DWZ_DIR);
+	ret = 1;
+    }
+    path = _free(path);
+    return ret;
+}
+
+/* add the debug source files to package pkg.
+ * return 1 if something was added, 0 otherwise. */
+static int addDebugSrc(Package pkg, char *buildroot)
+{
+    int ret = 0;
+    char *path = NULL;
+    DIR *d;
+    struct dirent *de;
+
+    /* not needed if we have an extra debugsource subpackage */
+    if (rpmExpandNumeric("%{?_debugsource_packages}"))
+	return 0;
+
+    rasprintf(&path, "%s%s", buildroot, DEBUG_SRC_DIR);
+    d = opendir(path);
+    path = _free(path);
+    if (d) {
+	while ((de = readdir(d)) != NULL) {
+	    if (!strcmp(de->d_name, ".") || !strcmp(de->d_name, ".."))
+		continue;
+	    rasprintf(&path, "%s/%s", DEBUG_SRC_DIR, de->d_name);
+	    if (!pkg->fileList)
+		argvAdd(&pkg->fileList, "%defattr(-,root,root)");
+	    argvAdd(&pkg->fileList, path);
+	    path = _free(path);
+	    ret = 1;
+	}
+	closedir(d);
+    }
+    return ret;
+}
+
+/* find the main debuginfo package. We do this simply by
+ * searching for a package with the right name. */
+static Package findDebuginfoPackage(rpmSpec spec)
+{
+    Package pkg = NULL;
+    if (lookupPackage(spec, "debuginfo", PART_SUBNAME, &pkg))
+	return NULL;
+    return pkg && pkg->fileList ? pkg : NULL;
+}
+
+/* add a requires for package "to" into package "from". */
+static void addPackageRequires(Package from, Package to)
+{
+    const char *name;
+    char *evr, *isaprov;
+    name = headerGetString(to->header, RPMTAG_NAME);
+    evr = headerGetAsString(to->header, RPMTAG_EVR);
+    isaprov = rpmExpand(name, "%{?_isa}", NULL);
+    addReqProv(from, RPMTAG_REQUIRENAME, isaprov, evr, RPMSENSE_EQUAL, 0);
+    free(isaprov);
+    free(evr);
+}
+
 rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 			int didInstall, int test)
 {
     Package pkg;
     rpmRC rc = RPMRC_OK;
+    char *buildroot;
+    char *uniquearch = NULL;
+    Package maindbg = NULL;		/* the (existing) main debuginfo package */
+    Package deplink = NULL;		/* create requires to this package */
     
 #if HAVE_LIBDW
     elf_version (EV_CURRENT);
 #endif
     check_fileList = newStringBuf();
     genSourceRpmName(spec);
+    buildroot = rpmGenPath(spec->rootDir, spec->buildRoot, NULL);
     
+    if (rpmExpandNumeric("%{?_debuginfo_subpackages}")) {
+	maindbg = findDebuginfoPackage(spec);
+	if (maindbg) {
+	    /* move debuginfo package to back */
+	    if (maindbg->next) {
+		Package *pp;
+		/* dequeue */
+		for (pp = &spec->packages; *pp != maindbg; pp = &(*pp)->next)
+		    ;
+		*pp = maindbg->next;
+		maindbg->next = 0;
+		/* enqueue at tail */
+		for (; *pp; pp = &(*pp)->next)
+		    ;
+		*pp = maindbg;
+	    }
+	    /* delete unsplit file list, we will re-add files back later */
+	    maindbg->fileFile = argvFree(maindbg->fileFile);
+	    maindbg->fileList = argvFree(maindbg->fileList);
+	    if (rpmExpandNumeric("%{?_unique_debug_names}"))
+		uniquearch = rpmExpand("-%{VERSION}-%{RELEASE}.%{_arch}", NULL);
+	}
+    }
+
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	char *nvr;
 	const char *a;
 	int header_color;
 	int arch_color;
+
+	if (pkg == maindbg) {
+	    /* if there is just one debuginfo package, we put our extra stuff
+	     * in it. Otherwise we put it in the main debug package */
+	    Package extradbg = !maindbg->fileList && maindbg->next && !maindbg->next->next ?
+		 maindbg->next : maindbg;
+	    if (addDebugDwz(extradbg, buildroot))
+		deplink = extradbg;
+	    if (addDebugSrc(extradbg, buildroot))
+		deplink = extradbg;
+	    maindbg = NULL;	/* all normal packages processed */
+	}
 
 	if (pkg->fileList == NULL)
 	    continue;
@@ -2685,9 +2941,16 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	nvr = headerGetAsString(pkg->header, RPMTAG_NVRA);
 	rpmlog(RPMLOG_NOTICE, _("Processing files: %s\n"), nvr);
 	free(nvr);
-		   
-	if ((rc = processPackageFiles(spec, pkgFlags, pkg, didInstall, test)) != RPMRC_OK ||
-	    (rc = rpmfcGenerateDepends(spec, pkg)) != RPMRC_OK)
+
+	if ((rc = processPackageFiles(spec, pkgFlags, pkg, didInstall, test)) != RPMRC_OK)
+	    goto exit;
+
+	if (maindbg)
+	    filterDebuginfoPackage(spec, pkg, maindbg, buildroot, uniquearch);
+	else if (deplink && pkg != deplink)
+	    addPackageRequires(pkg, deplink);
+
+        if ((rc = rpmfcGenerateDepends(spec, pkg)) != RPMRC_OK)
 	    goto exit;
 
 	a = headerGetString(pkg->header, RPMTAG_ARCH);
@@ -2722,6 +2985,8 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     }
 exit:
     check_fileList = freeStringBuf(check_fileList);
+    _free(buildroot);
+    _free(uniquearch);
     
     return rc;
 }
