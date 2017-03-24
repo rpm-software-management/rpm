@@ -452,6 +452,13 @@ rpmRC addReqProvPkg(void *cbdata, rpmTagVal tagN,
 		    int index);
 
 /** \ingroup rpmbuild
+ * Add self-provides to package.
+ * @param pkg		package
+ */
+RPM_GNUC_INTERNAL
+void addPackageProvides(Package pkg);
+
+/** \ingroup rpmbuild
  * Add rpmlib feature dependency.
  * @param pkg		package
  * @param feature	rpm feature name (i.e. "rpmlib(Foo)" for feature Foo)
@@ -463,6 +470,16 @@ int rpmlibNeedsFeature(Package pkg, const char * feature, const char * featureEV
 
 RPM_GNUC_INTERNAL
 rpmRC checkForEncoding(Header h, int addtag);
+
+
+/** \ingroup rpmbuild
+ * Copy tags inherited by subpackages from the source header to the target header
+ * @param h		target header
+ * @param fromh		source header
+ */
+RPM_GNUC_INTERNAL
+void copyInheritedTags(Header h, Header fromh);
+
 #ifdef __cplusplus
 }
 #endif

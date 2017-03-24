@@ -572,7 +572,7 @@ static void initSourceHeader(rpmSpec spec)
 }
 
 /* Add extra provides to package.  */
-static void addPackageProvides(Package pkg)
+void addPackageProvides(Package pkg)
 {
     const char *arch, *name;
     char *evr, *isaprov;
