@@ -314,15 +314,6 @@ rpm_color_t rpmdsColor(const rpmds ds);
 rpm_color_t rpmdsSetColor(const rpmds ds, rpm_color_t color);
 
 /** \ingroup rpmds
- * Notify of results of dependency match.
- * @param ds		dependency set
- * @param where		where dependency was resolved (or NULL)
- * @param rc		0 == YES, otherwise NO
- */
-/* FIX: rpmMessage annotation is a lie */
-void rpmdsNotify(rpmds ds, const char * where, int rc);
-
-/** \ingroup rpmds
  * Return next dependency set iterator index.
  * @param ds		dependency set
  * @return		dependency set iterator index, -1 on termination

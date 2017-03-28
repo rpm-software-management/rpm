@@ -97,21 +97,6 @@ rpmds_SetNoPromote(rpmdsObject * s, PyObject * args, PyObject * kwds)
     return Py_BuildValue("i", rpmdsSetNoPromote(s->ds, nopromote));
 }
 
-static PyObject *
-rpmds_Notify(rpmdsObject * s, PyObject * args, PyObject * kwds)
-{
-    const char * where;
-    int rc;
-    char * kwlist[] = {"location", "returnCode", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "si:Notify", kwlist,
-	    &where, &rc))
-	return NULL;
-
-    rpmdsNotify(s->ds, where, rc);
-    Py_RETURN_NONE;
-}
-
 /* XXX rpmdsFind uses bsearch on s->ds, so a sort is needed. */
 static PyObject *
 rpmds_Sort(rpmdsObject * s)
@@ -207,8 +192,6 @@ static struct PyMethodDef rpmds_methods[] = {
  {"SetNoPromote",(PyCFunction)rpmds_SetNoPromote, METH_VARARGS|METH_KEYWORDS,
   "ds.SetNoPromote(noPromote) -- Set noPromote for this instance.\n\n"
   "If True non existing epochs are no longer equal to an epoch of 0."},
- {"Notify",	(PyCFunction)rpmds_Notify,	METH_VARARGS|METH_KEYWORDS,
-  "ds.Notify(location, returnCode) -- Print debug info message\n\n if debugging is enabled."},
  {"Sort",	(PyCFunction)rpmds_Sort,	METH_NOARGS,
 	NULL},
  {"Find",	(PyCFunction)rpmds_Find,	METH_O,

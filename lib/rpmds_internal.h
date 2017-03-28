@@ -22,6 +22,15 @@ int rpmdsMatches(rpmstrPool pool, Header h, int prix,
 		 rpmds req, int selfevr, int nopromote);
 
 /** \ingroup rpmds
+ * Notify of results of dependency match.
+ * @param ds		dependency set
+ * @param where		where dependency was resolved (or NULL)
+ * @param rc		0 == YES, otherwise NO
+ */
+RPM_GNUC_INTERNAL
+void rpmdsNotify(rpmds ds, const char * where, int rc);
+
+/** \ingroup rpmds
  * Return current dependency name pool id.
  * @param ds            dependency set
  * @return              current dependency name id, 0 on invalid
