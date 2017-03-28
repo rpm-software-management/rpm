@@ -183,13 +183,12 @@
     %{?_unique_debug_srcs:--unique-debug-src-base "%{name}-%{VERSION}-%{RELEASE}.%{_arch}"} \\\
     %{?_find_debuginfo_dwz_opts} \\\
     %{?_find_debuginfo_opts} \\\
+    %{?_debugsource_packages:-S debugsourcefiles.list} \\\
     "%{_builddir}/%{?buildsubdir}"\
 %{nil}
 
 #	Template for debug information sub-package.
-%debug_package \
-%ifnarch noarch\
-%global __debug_package 1\
+%_debuginfo_template \
 %package debuginfo\
 Summary: Debug information for package %{name}\
 Group: Development/Debug\
@@ -201,6 +200,26 @@ Debug information is useful when developing applications that use this\
 package or when debugging this package.\
 %files debuginfo -f debugfiles.list\
 %defattr(-,root,root)\
+%{nil}
+
+%_debugsource_template \
+%package debugsource\
+Summary: Debug sources for package %{name}\
+Group: Development/Debug\
+AutoReqProv: 0\
+%description debugsource\
+This package provides debug sources for package %{name}.\
+Debug sources are useful when developing applications that use this\
+package or when debugging this package.\
+%files debugsource -f debugsourcefiles.list\
+%defattr(-,root,root)\
+%{nil}
+
+%debug_package \
+%ifnarch noarch\
+%global __debug_package 1\
+%_debuginfo_template\
+%{?_debugsource_packages:%_debugsource_template}\
 %endif\
 %{nil}
 
@@ -526,6 +545,9 @@ package or when debugging this package.\
 # --unique-debug-src-base "%{name}" to find-debuginfo.sh to name the
 # directory under /usr/debug/src as <name>-<ver>-<rel>.<arch>
 %_unique_debug_srcs	1
+
+# Whether rpm should put debug source files into its own subpackage
+#%_debugsource_packages	1
 
 #
 # Use internal dependency generator rather than external helpers?

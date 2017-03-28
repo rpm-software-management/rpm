@@ -4,6 +4,7 @@
 #
 # Usage: find-debuginfo.sh [--strict-build-id] [-g] [-r] [-m] [-i] [-n]
 #	 		   [-o debugfiles.list]
+#	 		   [-S debugsourcefiles.list]
 #			   [--run-dwz] [--dwz-low-mem-die-limit N]
 #			   [--dwz-max-die-limit N]
 #			   [--build-id-seed VERSION-RELEASE]
@@ -79,6 +80,7 @@ n_jobs=1
 
 BUILDDIR=.
 out=debugfiles.list
+srcout=
 nout=0
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -146,6 +148,10 @@ while [ $# -gt 0 ]; do
     ;;
   -j*)
     n_jobs=${1#-j}
+    ;;
+  -S)
+    srcout=$2
+    shift
     ;;
   *)
     BUILDDIR=$1
@@ -512,8 +518,17 @@ if [ -d "${RPM_BUILD_ROOT}/usr/lib" -o -d "${RPM_BUILD_ROOT}/usr/src" ]; then
 
   (cd "${RPM_BUILD_ROOT}/usr"
    test ! -d lib/debug || find lib/debug ! -type d
-   test ! -d src/debug || find src/debug -mindepth 1 -maxdepth 1
+   test ! -d src/debug -o -n "$srcout" || find src/debug -mindepth 1 -maxdepth 1
   ) | sed 's,^,/usr/,' >> "$LISTFILE"
+fi
+
+if [ -n "$srcout" ]; then
+  > "$srcout"
+  if [ -d "${RPM_BUILD_ROOT}/usr/src/debug" ]; then
+    (cd "${RPM_BUILD_ROOT}/usr"
+     find src/debug -mindepth 1 -maxdepth 1
+    ) | sed 's,^,/usr/,' >> "$srcout"
+  fi
 fi
 
 # Append to $1 only the lines from stdin not already in the file.
