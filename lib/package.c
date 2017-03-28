@@ -15,7 +15,6 @@
 
 #include "lib/rpmlead.h"
 #include "lib/signature.h"
-#include "rpmio/digest.h"
 #include "rpmio/rpmio_internal.h"	/* fd digest bits */
 #include "lib/header_internal.h"	/* XXX headerCheck */
 
@@ -90,11 +89,6 @@ static void headerMergeLegacySigs(Header h, Header sigh)
 	}
     }
     headerFreeIterator(hi);
-}
-
-static unsigned int getKeyid(pgpDigParams sigp)
-{
-    return (sigp != NULL) ? pgpGrab(sigp->signid+4, 4) : 0;
 }
 
 /**
@@ -226,7 +220,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 	rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, buf);
 
 	if (keyidp && sinfo.type == RPMSIG_SIGNATURE_TYPE)
-	    *keyidp = getKeyid(sig);
+	    *keyidp = sinfo.keyid;
 
     	rpmDigestFinal(ctx, NULL, NULL, 0);
     }

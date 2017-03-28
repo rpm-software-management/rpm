@@ -14,6 +14,7 @@
 #include <rpm/rpmkeyring.h>
 #include <rpm/rpmmacro.h>
 
+#include "rpmio/digest.h"
 #include "lib/rpmlead.h"
 #include "lib/signature.h"
 #include "lib/header_internal.h"
@@ -127,6 +128,7 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
 	    goto exit;
 	}
 	sinfo->hashalgo = pgpDigParamsAlgo(sig, PGPVAL_HASHALGO);
+	sinfo->keyid = pgpGrab(sig->signid+4, 4);
     }
 
     rc = RPMRC_OK;

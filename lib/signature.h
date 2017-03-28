@@ -25,6 +25,7 @@ struct sigtInfo_s {
     int hashalgo;
     int range;
     int type;
+    unsigned int keyid;
 };
 
 #ifdef __cplusplus
