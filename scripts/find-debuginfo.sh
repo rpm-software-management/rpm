@@ -6,7 +6,7 @@
 #	 		   [-o debugfiles.list]
 #			   [--run-dwz] [--dwz-low-mem-die-limit N]
 #			   [--dwz-max-die-limit N]
-#			   [--ver-rel VERSION-RELEASE]
+#			   [--build-id-seed VERSION-RELEASE]
 #			   [[-l filelist]... [-p 'pattern'] -o debuginfo.list]
 #			   [builddir]
 #
@@ -30,7 +30,7 @@
 # if available, and --dwz-low-mem-die-limit and --dwz-max-die-limit
 # provide detailed limits.  See dwz(1) -l and -L option for details.
 #
-# If --ver-rel VERSION-RELEASE is given then debugedit is called to
+# If --build-id-seed VERSION-RELEASE is given then debugedit is called to
 # update the build-ids it finds adding the VERSION-RELEASE string as
 # seed to recalculate the build-id hash.  This makes sure the
 # build-ids in the ELF files are unique between versions and releases
@@ -65,11 +65,11 @@ run_dwz=false
 dwz_low_mem_die_limit=
 dwz_max_die_limit=
 
-# Version and release of the spec. Given by --ver-rel
-ver_rel=
+# build id seed given by the --build-id-seed option
+build_id_seed=
 
 # Arch given by --unique-debug-arch
-unique_debug_arch=
+unique_debug_suffix=
 
 # Base given by --unique-debug-src-base
 unique_debug_src_base=
@@ -96,12 +96,12 @@ while [ $# -gt 0 ]; do
     dwz_max_die_limit=$2
     shift
     ;;
-  --ver-rel)
-    ver_rel=$2
+  --build-id-seed)
+    build_id_seed=$2
     shift
     ;;
-  --unique-debug-arch)
-    unique_debug_arch=$2
+  --unique-debug-suffix)
+    unique_debug_suffix=$2
     shift
     ;;
   --unique-debug-src-base)
@@ -156,18 +156,8 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-if test -z "$ver_rel" -a -n "$unique_debug_arch"; then
-  echo >&2 "*** ERROR: --unique-debug-arch (${unique_debug_arch}) needs --ver-rel (${ver_rel})"
-  exit 2
-fi
-
-if test -z "$unique_debug_arch" -a -n "$unique_debug_src_base"; then
-  echo >&2 "*** ERROR: --unique-debug-src-base (${unique_debug_src_base}) needs --unique-debug-arch (${unique_debug_arch})"
-  exit 2
-fi
-
-if test -n "$ver_rel" -a "$no_recompute_build_id" = "true"; then
-  echo >&2 "*** ERROR: --ver-rel (unique build-ids) and -n (do not recompute build-id cannot be used together"
+if test -n "$build_id_seed" -a "$no_recompute_build_id" = "true"; then
+  echo >&2 "*** ERROR: --build-id-seed (unique build-ids) and -n (do not recompute build-id) cannot be used together"
   exit 2
 fi
 
@@ -278,12 +268,7 @@ debug_link()
 get_debugfn()
 {
   dn=$(dirname "${1#$RPM_BUILD_ROOT}")
-  if test -n "${unique_debug_arch}"; then
-    bn=$(basename "$1" .debug)-${ver_rel}.${unique_debug_arch}.debug
-  else
-    bn=$(basename "$1" .debug).debug
-  fi
-
+  bn=$(basename "$1" .debug)${unique_debug_suffix}.debug
   debugdn=${debugdir}${dn}
   debugfn=${debugdn}/${bn}
 }
@@ -325,23 +310,21 @@ do_file()
   [ -f "${debugfn}" ] && return
 
   echo "extracting debug info from $f"
-  build_id_seed=
-  if [ ! -z "$ver_rel" ]; then
-    build_id_seed="--build-id-seed=$ver_rel"
-  fi
   # See also cpio SOURCEFILE copy. Directories must match up.
   debug_base_name="$RPM_BUILD_DIR"
   debug_dest_name="/usr/src/debug"
   if [ ! -z "$unique_debug_src_base" ]; then
     debug_base_name="$BUILDDIR"
-    debug_dest_name="/usr/src/debug/${unique_debug_src_base}-${ver_rel}.${unique_debug_arch}"
+    debug_dest_name="/usr/src/debug/${unique_debug_src_base}"
   fi
   no_recompute=
   if [ "$no_recompute_build_id" = "true" ]; then
     no_recompute="-n"
   fi
-  id=$(${lib_rpm_dir}/debugedit -b $debug_base_name -d $debug_dest_name \
-		$no_recompute -i $build_id_seed -l "$SOURCEFILE" "$f") || exit
+  id=$(${lib_rpm_dir}/debugedit -b "$debug_base_name" -d "$debug_dest_name" \
+			      $no_recompute -i \
+			      ${build_id_seed:+--build-id-seed="$build_id_seed"} \
+			      -l "$SOURCEFILE" "$f") || exit
   if [ -z "$id" ]; then
     echo >&2 "*** ${strict_error}: No build ID note found in $f"
     $strict && exit 2
@@ -509,7 +492,7 @@ if [ -s "$SOURCEFILE" ]; then
   debug_dest_name="/usr/src/debug"
   if [ ! -z "$unique_debug_src_base" ]; then
     debug_base_name="$BUILDDIR"
-    debug_dest_name="/usr/src/debug/${unique_debug_src_base}-${ver_rel}.${unique_debug_arch}"
+    debug_dest_name="/usr/src/debug/${unique_debug_src_base}"
   fi
 
   mkdir -p "${RPM_BUILD_ROOT}${debug_dest_name}"
