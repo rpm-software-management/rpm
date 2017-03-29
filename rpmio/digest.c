@@ -60,17 +60,20 @@ int rpmDigestBundleAdd(rpmDigestBundle bundle, int algo,
 int rpmDigestBundleAddID(rpmDigestBundle bundle, int algo, int id,
 			rpmDigestFlags flags)
 {
-    DIGEST_CTX ctx = NULL;
+    int rc = -1;
     if (id > 0 && findID(bundle, id) < 0) {
 	int ix = findID(bundle, 0); /* Find first free slot */
 	if (ix >= 0) {
 	    bundle->digests[ix] = rpmDigestInit(algo, flags);
-	    bundle->ids[ix]= id;
-	    if (ix > bundle->index_max)
-		bundle->index_max = ix;
+	    if (bundle->digests[ix]) {
+		bundle->ids[ix]= id;
+		if (ix > bundle->index_max)
+		    bundle->index_max = ix;
+		rc = 0;
+	    }
 	}
     }
-    return (ctx != NULL);
+    return rc;
 }
 int rpmDigestBundleUpdate(rpmDigestBundle bundle, const void *data, size_t len)
 {
