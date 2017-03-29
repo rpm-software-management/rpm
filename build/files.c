@@ -2745,8 +2745,9 @@ static void filterDebuginfoPackage(rpmSpec spec, Package pkg,
 {
     rpmfi fi;
     ARGV_t files = NULL;
-    Package dbg = NULL;
-    char *path = NULL;
+    ARGV_t dirs = NULL;
+    int lastdiridx = -1, dirsadded;
+    char *path = NULL, *p, *pmin;
     size_t buildrootlen = strlen(buildroot);
 
     /* ignore noarch subpackages */
@@ -2779,10 +2780,35 @@ static void filterDebuginfoPackage(rpmSpec spec, Package pkg,
 		argvAdd(&files, "%defattr(-,root,root)");
 		argvAddDir(&files, DEBUG_LIB_DIR);
 	    }
+
 	    /* Add the files main debug-info file */
 	    argvAdd(&files, path + buildrootlen);
+
+	    /* Add the dir(s) */
+	    dirsadded = 0;
+	    pmin = path + buildrootlen + strlen(DEBUG_LIB_DIR);
+	    while ((p = strrchr(path + buildrootlen, '/')) != NULL && p > pmin) {
+		*p = 0;
+		if (lastdiridx >= 0 && !strcmp(dirs[lastdiridx], path + buildrootlen))
+		    break;		/* already added this one */
+		argvAdd(&dirs, path + buildrootlen);
+		dirsadded++;
+	    }
+	    if (dirsadded)
+		lastdiridx = argvCount(dirs) - dirsadded;	/* remember longest dir */
 	}
 	path = _free(path);
+    }
+
+    /* add collected directories to file list */
+    if (dirs) {
+	int i;
+	argvSort(dirs, NULL);
+	for (i = 0; dirs[i]; i++) {
+	    if (!i || strcmp(dirs[i], dirs[i - 1]) != 0)
+		argvAddDir(&files, dirs[i]);
+	}
+	dirs = argvFree(dirs);
     }
 
     if (files) {
