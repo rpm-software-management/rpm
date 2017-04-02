@@ -899,6 +899,20 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 	}
     }
 
+    if (!headerIsEntry(spec->packages->header, RPMTAG_CHANGELOGTIME)) {
+	struct stat st;
+	char *changelogFile = rpmGetPath("%{_sourcedir}/%{name}.rpm.changelog", NULL);
+
+	if (!stat(changelogFile, &st)) {
+	    if (!addSource(spec, spec->sourcePackage, changelogFile, RPMTAG_CHANGELOG)) {
+		OFI_t *ofi = pushOFI(spec, changelogFile);
+		if(ofi)
+		    parsePart = parseChangelog(spec);
+	    }
+	}
+	free(changelogFile);
+    }
+
     if (spec->clean == NULL) {
 	char *body = rpmExpand("%{?buildroot: %{__rm} -rf %{buildroot}}", NULL);
 	spec->clean = newStringBuf();

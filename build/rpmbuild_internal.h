@@ -463,6 +463,10 @@ int rpmlibNeedsFeature(Package pkg, const char * feature, const char * featureEV
 
 RPM_GNUC_INTERNAL
 rpmRC checkForEncoding(Header h, int addtag);
+
+RPM_GNUC_INTERNAL
+int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag);
+
 #ifdef __cplusplus
 }
 #endif

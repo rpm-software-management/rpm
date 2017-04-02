@@ -21,10 +21,11 @@ typedef struct rpmSpecIter_s * rpmSpecPkgIter;
 typedef struct rpmSpecIter_s * rpmSpecSrcIter;
 
 enum rpmSourceFlags_e {
-    RPMBUILD_ISSOURCE	= (1 << 0),
-    RPMBUILD_ISPATCH	= (1 << 1),
-    RPMBUILD_ISICON	= (1 << 2),
-    RPMBUILD_ISNO	= (1 << 3),
+    RPMBUILD_ISSOURCE		= (1 << 0),
+    RPMBUILD_ISPATCH		= (1 << 1),
+    RPMBUILD_ISICON		= (1 << 2),
+    RPMBUILD_ISNO		= (1 << 3),
+    RPMBUILD_ISCHANGELOG	= (1 << 4),
 };
 
 typedef rpmFlags rpmSourceFlags;
