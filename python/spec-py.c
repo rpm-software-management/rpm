@@ -163,6 +163,12 @@ static PyObject * getSection(rpmSpec spec, int section)
     Py_RETURN_NONE;
 }
 
+static PyObject *
+spec_get_parsed(specObject * s, void *closure)
+{
+    return getSection(s->spec, RPMBUILD_NONE);
+}
+
 static PyObject * 
 spec_get_prep(specObject * s, void *closure) 
 {
@@ -255,6 +261,7 @@ static char spec_doc[] = "RPM Spec file object";
 
 static PyGetSetDef spec_getseters[] = {
     {"sources",   (getter) spec_get_sources, NULL, NULL },
+    {"parsed",    (getter) spec_get_parsed, NULL, NULL},
     {"prep",   (getter) spec_get_prep, NULL, NULL },
     {"build",   (getter) spec_get_build, NULL, NULL },
     {"install",   (getter) spec_get_install, NULL, NULL },
