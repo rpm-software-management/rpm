@@ -145,8 +145,8 @@ struct specObject_s {
     rpmSpec spec;
 };
 
-static void 
-spec_dealloc(specObject * s) 
+static void
+spec_dealloc(specObject * s)
 {
     if (s->spec) {
 	s->spec=rpmSpecFree(s->spec);
@@ -169,19 +169,19 @@ spec_get_parsed(specObject * s, void *closure)
     return getSection(s->spec, RPMBUILD_NONE);
 }
 
-static PyObject * 
-spec_get_prep(specObject * s, void *closure) 
+static PyObject *
+spec_get_prep(specObject * s, void *closure)
 {
     return getSection(s->spec, RPMBUILD_PREP);
 }
 
-static PyObject * 
-spec_get_build(specObject * s, void *closure) 
+static PyObject *
+spec_get_build(specObject * s, void *closure)
 {
     return getSection(s->spec, RPMBUILD_BUILD);
 }
 
-static PyObject * spec_get_install(specObject * s, void *closure) 
+static PyObject * spec_get_install(specObject * s, void *closure)
 {
     return getSection(s->spec, RPMBUILD_INSTALL);
 }
@@ -191,7 +191,7 @@ static PyObject * spec_get_check(specObject * s, void *closure)
     return getSection(s->spec, RPMBUILD_CHECK);
 }
 
-static PyObject * spec_get_clean(specObject * s, void *closure) 
+static PyObject * spec_get_clean(specObject * s, void *closure)
 {
     return getSection(s->spec, RPMBUILD_CLEAN);
 }
@@ -211,7 +211,7 @@ static PyObject * spec_get_sources(specObject *s, void *closure)
 	PyObject *srcUrl = Py_BuildValue("(sii)",
 				rpmSpecSrcFilename(source, 1),
 				rpmSpecSrcNum(source),
-				rpmSpecSrcFlags(source)); 
+				rpmSpecSrcFlags(source));
         if (!srcUrl) {
             Py_DECREF(sourceList);
             return NULL;
@@ -222,7 +222,6 @@ static PyObject * spec_get_sources(specObject *s, void *closure)
     rpmSpecSrcIterFree(iter);
 
     return sourceList;
-
 }
 
 static PyObject * spec_get_packages(specObject *s, void *closure)
@@ -260,14 +259,14 @@ static PyObject * spec_get_source_header(specObject *s, void *closure)
 static char spec_doc[] = "RPM Spec file object";
 
 static PyGetSetDef spec_getseters[] = {
-    {"sources",   (getter) spec_get_sources, NULL, NULL },
-    {"parsed",    (getter) spec_get_parsed, NULL, NULL},
-    {"prep",   (getter) spec_get_prep, NULL, NULL },
-    {"build",   (getter) spec_get_build, NULL, NULL },
-    {"install",   (getter) spec_get_install, NULL, NULL },
-    {"check",	(getter) spec_get_check, NULL, NULL },
-    {"clean",   (getter) spec_get_clean, NULL, NULL },
-    {"packages", (getter) spec_get_packages, NULL, NULL },
+    {"sources",      (getter) spec_get_sources,       NULL, NULL },
+    {"parsed",       (getter) spec_get_parsed,        NULL, NULL },
+    {"prep",         (getter) spec_get_prep,          NULL, NULL },
+    {"build",        (getter) spec_get_build,         NULL, NULL },
+    {"install",      (getter) spec_get_install,       NULL, NULL },
+    {"check",        (getter) spec_get_check,         NULL, NULL },
+    {"clean",        (getter) spec_get_clean,         NULL, NULL },
+    {"packages",     (getter) spec_get_packages,      NULL, NULL },
     {"sourceHeader", (getter) spec_get_source_header, NULL, NULL },
     {NULL}  /* Sentinel */
 };
