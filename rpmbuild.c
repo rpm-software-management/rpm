@@ -241,8 +241,6 @@ static struct poptOption rpmBuildPoptTable[] = {
 	N_("remove specfile when done"), NULL},
  { "short-circuit", '\0', POPT_ARG_VAL, &shortCircuit,  1,
 	N_("skip straight to specified stage (only for c,i)"), NULL },
- { "target", '\0', POPT_ARG_STRING, 0,  POPT_TARGETPLATFORM,
-	N_("override target platform"), "CPU-VENDOR-OS" },
    POPT_TABLEEND
 };
 
