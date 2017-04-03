@@ -1116,6 +1116,23 @@ int Fseek(FD_t fd, off_t offset, int whence)
     return rc;
 }
 
+int Fsync(FD_t fd)
+{
+    int rc = 0, ec = 0;
+
+    if (fd == NULL)
+	return -1;
+
+    for (FDSTACK_t fps = fd->fps; fps != NULL; fps = fps->prev) {
+	if (fps->fdno >= 0) {
+            rc = fsync(fps->fdno);
+	    if (ec == 0 && rc)
+		ec = rc;
+	}
+    }
+    return ec;
+}
+
 int Fclose(FD_t fd)
 {
     int rc = 0, ec = 0;

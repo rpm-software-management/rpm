@@ -14,6 +14,7 @@
 #include <rpm/rpmte.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmmacro.h>
 
 #include "rpmio/rpmio_internal.h"	/* fdInit/FiniDigest */
 #include "lib/fsm.h"
@@ -28,6 +29,7 @@ int _fsm_debug = _FSM_DEBUG;
 
 /* XXX Failure to remove is not (yet) cause for failure. */
 static int strict_erasures = 0;
+static int _fsync_on_close = -1;
 
 #define	SUFFIX_RPMORIG	".rpmorig"
 #define	SUFFIX_RPMSAVE	".rpmsave"
@@ -215,6 +217,11 @@ static int expandRegular(rpmfi fi, const char *dest, rpmpsm psm, int nodigest, i
     FD_t wfd = NULL;
     int rc = 0;
 
+    if (_fsync_on_close == -1) {
+        _fsync_on_close =
+            rpmExpandNumeric("%{?_force_fsync_on_close}%{!?_fsync_on_close:0}");
+    }
+
     /* Create the file with 0200 permissions (write by owner). */
     {
 	mode_t old_umask = umask(0577);
@@ -231,6 +238,9 @@ static int expandRegular(rpmfi fi, const char *dest, rpmpsm psm, int nodigest, i
 exit:
     if (wfd) {
 	int myerrno = errno;
+        if (_fsync_on_close) {
+            Fsync(wfd);
+        }
 	Fclose(wfd);
 	errno = myerrno;
     }
