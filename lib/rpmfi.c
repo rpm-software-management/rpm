@@ -1470,8 +1470,6 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 	}
     }
 
-    fi->signaturelength = headerGetNumber(h, RPMTAG_FILESIGNATURELENGTH);
-
     fi->digests = NULL;
     /* grab hex digests from header and store in binary format */
     if (!(flags & RPMFI_NOFILEDIGESTS) &&
@@ -1502,6 +1500,7 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 	if (rpmtdCount(&fsignatures) != totalfc)
 	    goto err;
 	fi->signatures = t = xmalloc(rpmtdCount(&fsignatures) * fi->signaturelength);
+	fi->signaturelength = headerGetNumber(h, RPMTAG_FILESIGNATURELENGTH);
 
 	while ((fsignature = rpmtdNextString(&fsignatures))) {
 	    if (*fsignature == '\0') {
