@@ -1413,12 +1413,37 @@ static void rpmfilesBuildNLink(rpmfiles fi, Header h)
 	return;
 }
 
+/* Convert a tag of hex strings to binary presentation */
+static uint8_t *hex2bin(Header h, rpmTagVal tag, rpm_count_t num, size_t len)
+{
+    struct rpmtd_s td;
+    uint8_t *bin = NULL;
+
+    if (headerGet(h, tag, &td, HEADERGET_MINMEM) && rpmtdCount(&td) == num) {
+	uint8_t *t = bin = xmalloc(num * len);
+	const char *s;
+
+	while ((s = rpmtdNextString(&td))) {
+	    if (*s == '\0') {
+		memset(t, 0, len);
+		t += len;
+		continue;
+	    }
+	    for (int j = 0; j < len; j++, t++, s += 2)
+		*t = (rnibble(s[0]) << 4) | rnibble(s[1]);
+	}
+    }
+    rpmtdFreeData(&td);
+
+    return bin;
+}
+
 static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 {
     headerGetFlags scareFlags = (flags & RPMFI_KEEPHEADER) ? 
 				HEADERGET_MINMEM : HEADERGET_ALLOC;
     headerGetFlags defFlags = HEADERGET_ALLOC;
-    struct rpmtd_s fdigests, fsignatures, digalgo, td;
+    struct rpmtd_s digalgo, td;
     rpm_count_t totalfc = rpmfilesFC(fi);
 
     /* XXX TODO: all these should be sanity checked, ugh... */
@@ -1471,46 +1496,17 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 
     fi->digests = NULL;
     /* grab hex digests from header and store in binary format */
-    if (!(flags & RPMFI_NOFILEDIGESTS) &&
-	headerGet(h, RPMTAG_FILEDIGESTS, &fdigests, HEADERGET_MINMEM)) {
-	const char *fdigest;
-	if (rpmtdCount(&fdigests) != totalfc)
-	    goto err;
+    if (!(flags & RPMFI_NOFILEDIGESTS)) {
 	size_t diglen = rpmDigestLength(fi->digestalgo);
-	uint8_t *t = fi->digests = xmalloc(rpmtdCount(&fdigests) * diglen);
-
-	while ((fdigest = rpmtdNextString(&fdigests))) {
-	    if (*fdigest == '\0') {
-		memset(t, 0, diglen);
-		t += diglen;
-		continue;
-	    }
-	    for (int j = 0; j < diglen; j++, t++, fdigest += 2)
-		*t = (rnibble(fdigest[0]) << 4) | rnibble(fdigest[1]);
-	}
-	rpmtdFreeData(&fdigests);
+	fi->digests = hex2bin(h, RPMTAG_FILEDIGESTS, totalfc, diglen);
     }
 
     fi->signatures = NULL;
     /* grab hex signatures from header and store in binary format */
-    if (! (flags & RPMFI_NOFILESIGNATURES) &&
-	headerGet(h, RPMTAG_FILESIGNATURES, &fsignatures, HEADERGET_MINMEM)) {
-	const char *fsignature;
-	if (rpmtdCount(&fsignatures) != totalfc)
-	    goto err;
-	uint8_t *t = fi->signatures = xmalloc(rpmtdCount(&fsignatures) * fi->signaturelength);
+    if (!(flags & RPMFI_NOFILESIGNATURES)) {
 	fi->signaturelength = headerGetNumber(h, RPMTAG_FILESIGNATURELENGTH);
-
-	while ((fsignature = rpmtdNextString(&fsignatures))) {
-	    if (*fsignature == '\0') {
-		memset(t, 0, fi->signaturelength);
-		t += fi->signaturelength;
-		continue;
-	    }
-	    for (int j = 0; j < fi->signaturelength; j++, t++, fsignature += 2)
-		*t = (rnibble(fsignature[0]) << 4) | rnibble(fsignature[1]);
-	}
-	rpmtdFreeData(&fsignatures);
+	fi->signatures = hex2bin(h, RPMTAG_FILESIGNATURES,
+				 totalfc, fi->signaturelength);
     }
 
     /* XXX TR_REMOVED doesn;t need fmtimes, frdevs, finodes */
