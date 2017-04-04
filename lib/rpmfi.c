@@ -1419,7 +1419,6 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 				HEADERGET_MINMEM : HEADERGET_ALLOC;
     headerGetFlags defFlags = HEADERGET_ALLOC;
     struct rpmtd_s fdigests, fsignatures, digalgo, td;
-    unsigned char * t;
     rpm_count_t totalfc = rpmfilesFC(fi);
 
     /* XXX TODO: all these should be sanity checked, ugh... */
@@ -1478,7 +1477,7 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 	if (rpmtdCount(&fdigests) != totalfc)
 	    goto err;
 	size_t diglen = rpmDigestLength(fi->digestalgo);
-	fi->digests = t = xmalloc(rpmtdCount(&fdigests) * diglen);
+	uint8_t *t = fi->digests = xmalloc(rpmtdCount(&fdigests) * diglen);
 
 	while ((fdigest = rpmtdNextString(&fdigests))) {
 	    if (!(fdigest && *fdigest != '\0')) {
@@ -1499,7 +1498,7 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 	const char *fsignature;
 	if (rpmtdCount(&fsignatures) != totalfc)
 	    goto err;
-	fi->signatures = t = xmalloc(rpmtdCount(&fsignatures) * fi->signaturelength);
+	uint8_t *t = fi->signatures = xmalloc(rpmtdCount(&fsignatures) * fi->signaturelength);
 	fi->signaturelength = headerGetNumber(h, RPMTAG_FILESIGNATURELENGTH);
 
 	while ((fsignature = rpmtdNextString(&fsignatures))) {
