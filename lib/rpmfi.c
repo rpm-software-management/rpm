@@ -2227,6 +2227,14 @@ int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm)
 	    size_t diglen = rpmDigestLength(digestalgo);
 	    if (memcmp(digest, fidigest, diglen)) {
 		rc = RPMERR_DIGEST_MISMATCH;
+
+		/* ...but in old packages, empty files have zeros for digest */
+		if (rpmfiFSize(fi) == 0 && digestalgo == PGPHASHALGO_MD5) {
+		    uint8_t zeros[diglen];
+		    memset(&zeros, 0, diglen);
+		    if (memcmp(zeros, fidigest, diglen) == 0)
+			rc = 0;
+		}
 	    }
 	} else {
 	    rc = RPMERR_DIGEST_MISMATCH;
