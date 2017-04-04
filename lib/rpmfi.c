@@ -1480,7 +1480,7 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 	uint8_t *t = fi->digests = xmalloc(rpmtdCount(&fdigests) * diglen);
 
 	while ((fdigest = rpmtdNextString(&fdigests))) {
-	    if (!(fdigest && *fdigest != '\0')) {
+	    if (*fdigest == '\0') {
 		memset(t, 0, diglen);
 		t += diglen;
 		continue;
