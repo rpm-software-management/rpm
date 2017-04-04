@@ -399,3 +399,302 @@ runroot rpm \
 [error: incorrect format: invalid field width
 ])
 AT_CLEANUP
+
+AT_SETUP([xml format])
+AT_KEYWORDS([query])
+AT_CHECK([
+runroot rpm -qp --xml  data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[0],
+[<rpmHeader>
+  <rpmTag name="Headeri18ntable">
+	<string>C</string>
+  </rpmTag>
+  <rpmTag name="Sigsize">
+	<integer>5411</integer>
+  </rpmTag>
+  <rpmTag name="Sigmd5">
+	<base64>E3yh2LNcygKhhUujAcVDLg==
+</base64>
+  </rpmTag>
+  <rpmTag name="Sha1header">
+	<string>5cd9874c510b67b44483f9e382a1649ef7743bac</string>
+  </rpmTag>
+  <rpmTag name="Sha256header">
+	<string>ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9</string>
+  </rpmTag>
+  <rpmTag name="Name">
+	<string>hello</string>
+  </rpmTag>
+  <rpmTag name="Version">
+	<string>2.0</string>
+  </rpmTag>
+  <rpmTag name="Release">
+	<string>1</string>
+  </rpmTag>
+  <rpmTag name="Summary">
+	<string>hello -- hello, world rpm</string>
+  </rpmTag>
+  <rpmTag name="Description">
+	<string>Simple rpm demonstration.</string>
+  </rpmTag>
+  <rpmTag name="Buildtime">
+	<integer>1227355200</integer>
+  </rpmTag>
+  <rpmTag name="Buildhost">
+	<string>localhost</string>
+  </rpmTag>
+  <rpmTag name="Size">
+	<integer>7243</integer>
+  </rpmTag>
+  <rpmTag name="License">
+	<string>GPL</string>
+  </rpmTag>
+  <rpmTag name="Group">
+	<string>Testing</string>
+  </rpmTag>
+  <rpmTag name="Os">
+	<string>linux</string>
+  </rpmTag>
+  <rpmTag name="Arch">
+	<string>x86_64</string>
+  </rpmTag>
+  <rpmTag name="Filesizes">
+	<integer>7120</integer>
+	<integer>4096</integer>
+	<integer>48</integer>
+	<integer>36</integer>
+	<integer>39</integer>
+  </rpmTag>
+  <rpmTag name="Filemodes">
+	<integer>33257</integer>
+	<integer>16877</integer>
+	<integer>33188</integer>
+	<integer>33188</integer>
+	<integer>33188</integer>
+  </rpmTag>
+  <rpmTag name="Filerdevs">
+	<integer>0</integer>
+	<integer>0</integer>
+	<integer>0</integer>
+	<integer>0</integer>
+	<integer>0</integer>
+  </rpmTag>
+  <rpmTag name="Filemtimes">
+	<integer>1489670606</integer>
+	<integer>1489670606</integer>
+	<integer>908894882</integer>
+	<integer>908895030</integer>
+	<integer>908884468</integer>
+  </rpmTag>
+  <rpmTag name="Filedigests">
+	<string>c89fa87aeb1143969c0b6be9334b21d932f77f74e8f60120b5de316406369cf0</string>
+	<string/>
+	<string>fac3b28492ecdc16da172a6f1a432ceed356ca4d9248157b2a962b395e37b3b0</string>
+	<string>678b87e217a415f05e43460e2c7b668245b412e2b4f18a75aa7399d9774ed0b4</string>
+	<string>d63fdc6c986106f57230f217d36b2395d83ecf491d2b7187af714dc8db9629e9</string>
+  </rpmTag>
+  <rpmTag name="Filelinktos">
+	<string/>
+	<string/>
+	<string/>
+	<string/>
+	<string/>
+  </rpmTag>
+  <rpmTag name="Fileflags">
+	<integer>0</integer>
+	<integer>0</integer>
+	<integer>2</integer>
+	<integer>2</integer>
+	<integer>2</integer>
+  </rpmTag>
+  <rpmTag name="Fileusername">
+	<string>root</string>
+	<string>root</string>
+	<string>root</string>
+	<string>root</string>
+	<string>root</string>
+  </rpmTag>
+  <rpmTag name="Filegroupname">
+	<string>root</string>
+	<string>root</string>
+	<string>root</string>
+	<string>root</string>
+	<string>root</string>
+  </rpmTag>
+  <rpmTag name="Sourcerpm">
+	<string>hello-2.0-1.src.rpm</string>
+  </rpmTag>
+  <rpmTag name="Fileverifyflags">
+	<integer>4294967295</integer>
+	<integer>0</integer>
+	<integer>4294967295</integer>
+	<integer>4294967295</integer>
+	<integer>4294967295</integer>
+  </rpmTag>
+  <rpmTag name="Archivesize">
+	<integer>8060</integer>
+  </rpmTag>
+  <rpmTag name="Providename">
+	<string>hello</string>
+	<string>hello(x86-64)</string>
+  </rpmTag>
+  <rpmTag name="Requireflags">
+	<integer>16384</integer>
+	<integer>16384</integer>
+	<integer>16777226</integer>
+	<integer>16777226</integer>
+	<integer>16777226</integer>
+	<integer>16384</integer>
+  </rpmTag>
+  <rpmTag name="Requirename">
+	<string>libc.so.6()(64bit)</string>
+	<string>libc.so.6(GLIBC_2.2.5)(64bit)</string>
+	<string>rpmlib(CompressedFileNames)</string>
+	<string>rpmlib(FileDigests)</string>
+	<string>rpmlib(PayloadFilesHavePrefix)</string>
+	<string>rtld(GNU_HASH)</string>
+  </rpmTag>
+  <rpmTag name="Requireversion">
+	<string/>
+	<string/>
+	<string>3.0.4-1</string>
+	<string>4.6.0-1</string>
+	<string>4.0-1</string>
+	<string/>
+  </rpmTag>
+  <rpmTag name="Rpmversion">
+	<string>4.13.90</string>
+  </rpmTag>
+  <rpmTag name="Changelogtime">
+	<integer>1227355200</integer>
+	<integer>908884800</integer>
+  </rpmTag>
+  <rpmTag name="Changelogname">
+	<string>Panu Matilainen &lt;pmatilai@redhat.com&gt;</string>
+	<string>Jeff Johnson &lt;jbj@redhat.com&gt;</string>
+  </rpmTag>
+  <rpmTag name="Changelogtext">
+	<string>- updated version</string>
+	<string>- create.</string>
+  </rpmTag>
+  <rpmTag name="Filedevices">
+	<integer>1</integer>
+	<integer>1</integer>
+	<integer>1</integer>
+	<integer>1</integer>
+	<integer>1</integer>
+  </rpmTag>
+  <rpmTag name="Fileinodes">
+	<integer>1</integer>
+	<integer>2</integer>
+	<integer>3</integer>
+	<integer>4</integer>
+	<integer>5</integer>
+  </rpmTag>
+  <rpmTag name="Filelangs">
+	<string/>
+	<string/>
+	<string/>
+	<string/>
+	<string/>
+  </rpmTag>
+  <rpmTag name="Prefixes">
+	<string>/usr</string>
+  </rpmTag>
+  <rpmTag name="Provideflags">
+	<integer>8</integer>
+	<integer>8</integer>
+  </rpmTag>
+  <rpmTag name="Provideversion">
+	<string>2.0-1</string>
+	<string>2.0-1</string>
+  </rpmTag>
+  <rpmTag name="Dirindexes">
+	<integer>0</integer>
+	<integer>1</integer>
+	<integer>2</integer>
+	<integer>2</integer>
+	<integer>2</integer>
+  </rpmTag>
+  <rpmTag name="Basenames">
+	<string>hello</string>
+	<string>hello-2.0</string>
+	<string>COPYING</string>
+	<string>FAQ</string>
+	<string>README</string>
+  </rpmTag>
+  <rpmTag name="Dirnames">
+	<string>/usr/bin/</string>
+	<string>/usr/share/doc/</string>
+	<string>/usr/share/doc/hello-2.0/</string>
+  </rpmTag>
+  <rpmTag name="Optflags">
+	<string>-O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -m64 -mtune=generic</string>
+  </rpmTag>
+  <rpmTag name="Payloadformat">
+	<string>cpio</string>
+  </rpmTag>
+  <rpmTag name="Payloadcompressor">
+	<string>gzip</string>
+  </rpmTag>
+  <rpmTag name="Payloadflags">
+	<string>9</string>
+  </rpmTag>
+  <rpmTag name="Platform">
+	<string>x86_64-redhat-linux-gnu</string>
+  </rpmTag>
+  <rpmTag name="Filecolors">
+	<integer>2</integer>
+	<integer>0</integer>
+	<integer>0</integer>
+	<integer>0</integer>
+	<integer>0</integer>
+  </rpmTag>
+  <rpmTag name="Fileclass">
+	<integer>0</integer>
+	<integer>1</integer>
+	<integer>2</integer>
+	<integer>2</integer>
+	<integer>2</integer>
+  </rpmTag>
+  <rpmTag name="Classdict">
+	<string>ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[[sha1]]=775fdcb927e4300adbe83cfacec3cfeb1f63fe17, stripped</string>
+	<string>directory</string>
+	<string>ASCII text</string>
+  </rpmTag>
+  <rpmTag name="Filedependsx">
+	<integer>0</integer>
+	<integer>0</integer>
+	<integer>0</integer>
+	<integer>0</integer>
+	<integer>0</integer>
+  </rpmTag>
+  <rpmTag name="Filedependsn">
+	<integer>3</integer>
+	<integer>0</integer>
+	<integer>0</integer>
+	<integer>0</integer>
+	<integer>0</integer>
+  </rpmTag>
+  <rpmTag name="Dependsdict">
+	<integer>1375731713</integer>
+	<integer>1375731712</integer>
+	<integer>1375731717</integer>
+  </rpmTag>
+  <rpmTag name="Filedigestalgo">
+	<integer>8</integer>
+  </rpmTag>
+  <rpmTag name="Encoding">
+	<string>utf-8</string>
+  </rpmTag>
+  <rpmTag name="Payloaddigest">
+	<string>84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c</string>
+  </rpmTag>
+  <rpmTag name="Payloaddigestalgo">
+	<integer>8</integer>
+  </rpmTag>
+</rpmHeader>
+],
+[])
+AT_CLEANUP
