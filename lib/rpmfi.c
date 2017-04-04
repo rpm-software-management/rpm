@@ -564,15 +564,15 @@ char * rpmfiFDigestHex(rpmfi fi, int *algo)
 
 const unsigned char * rpmfilesFSignature(rpmfiles fi, int ix, size_t *len)
 {
-	const unsigned char *signature = NULL;
+    const unsigned char *signature = NULL;
 
-	if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
-	     if (fi->signatures != NULL)
-		signature = fi->signatures + (fi->signaturelength * ix);
-	     if (len)
-		*len = fi->signaturelength;
-	}
-	return signature;
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
+	if (fi->signatures != NULL)
+	    signature = fi->signatures + (fi->signaturelength * ix);
+	if (len)
+	    *len = fi->signaturelength;
+    }
+    return signature;
 }
 
 const char * rpmfilesFLink(rpmfiles fi, int ix)
@@ -1323,94 +1323,93 @@ struct fileid_s {
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
-
 static unsigned int fidHashFunc(struct fileid_s a)
 {
-	return  a.id_ino + (a.id_dev<<16) + (a.id_dev>>16);
+    return  a.id_ino + (a.id_dev<<16) + (a.id_dev>>16);
 }
 
 static int fidCmp(struct fileid_s a, struct fileid_s b)
 {
-	return  !((a.id_dev == b.id_dev) && (a.id_ino == b.id_ino));
+    return  !((a.id_dev == b.id_dev) && (a.id_ino == b.id_ino));
 }
 
 static unsigned int intHash(int a)
 {
-	return a < 0 ? UINT_MAX-a : a;
+    return a < 0 ? UINT_MAX-a : a;
 }
 
 static int intCmp(int a, int b)
 {
-	return a != b;
+    return a != b;
 }
 
 static struct hardlinks_s * freeNLinks(struct hardlinks_s * nlinks)
 {
-	nlinks->nlink--;
-	if (!nlinks->nlink) {
-		nlinks = _free(nlinks);
-	}
-	return nlinks;
+    nlinks->nlink--;
+    if (!nlinks->nlink) {
+	nlinks = _free(nlinks);
+    }
+    return nlinks;
 }
 
 static void rpmfilesBuildNLink(rpmfiles fi, Header h)
 {
-	struct fileid_s f_id;
-	fileidHash files;
-	rpm_dev_t * fdevs = NULL;
-	struct rpmtd_s td;
-	int fc = 0;
-	int totalfc = rpmfilesFC(fi);
+    struct fileid_s f_id;
+    fileidHash files;
+    rpm_dev_t * fdevs = NULL;
+    struct rpmtd_s td;
+    int fc = 0;
+    int totalfc = rpmfilesFC(fi);
 
-	if (!fi->finodes)
+    if (!fi->finodes)
 	return;
 
-	_hgfi(h, RPMTAG_FILEDEVICES, &td, HEADERGET_ALLOC, fdevs);
-	if (!fdevs)
+    _hgfi(h, RPMTAG_FILEDEVICES, &td, HEADERGET_ALLOC, fdevs);
+    if (!fdevs)
 	return;
 
-	files = fileidHashCreate(totalfc, fidHashFunc, fidCmp, NULL, NULL);
-	for (int i=0; i < totalfc; i++) {
-		if (!S_ISREG(rpmfilesFMode(fi, i)) ||
-			(rpmfilesFFlags(fi, i) & RPMFILE_GHOST) ||
-			fi->finodes[i] <= 0) {
-			continue;
-		}
-		fc++;
-		f_id.id_dev = fdevs[i];
-		f_id.id_ino = fi->finodes[i];
-		fileidHashAddEntry(files, f_id, i);
+    files = fileidHashCreate(totalfc, fidHashFunc, fidCmp, NULL, NULL);
+    for (int i=0; i < totalfc; i++) {
+	if (!S_ISREG(rpmfilesFMode(fi, i)) ||
+		(rpmfilesFFlags(fi, i) & RPMFILE_GHOST) ||
+		fi->finodes[i] <= 0) {
+	    continue;
 	}
-	if (fileidHashNumKeys(files) != fc) {
+	fc++;
+	f_id.id_dev = fdevs[i];
+	f_id.id_ino = fi->finodes[i];
+	fileidHashAddEntry(files, f_id, i);
+    }
+    if (fileidHashNumKeys(files) != fc) {
 	/* Hard links */
 	fi->nlinks = nlinkHashCreate(2*(totalfc - fileidHashNumKeys(files)),
-					 intHash, intCmp, NULL, freeNLinks);
+		intHash, intCmp, NULL, freeNLinks);
 	for (int i=0; i < totalfc; i++) {
-		int fcnt;
-		int * data;
-		if (!S_ISREG(rpmfilesFMode(fi, i)) ||
-		(rpmfilesFFlags(fi, i) & RPMFILE_GHOST)) {
+	    int fcnt;
+	    int * data;
+	    if (!S_ISREG(rpmfilesFMode(fi, i)) ||
+		    (rpmfilesFFlags(fi, i) & RPMFILE_GHOST)) {
 		continue;
-		}
-		f_id.id_dev = fdevs[i];
-		f_id.id_ino = fi->finodes[i];
-		fileidHashGetEntry(files, f_id, &data, &fcnt, NULL);
-		if (fcnt > 1 && !nlinkHashHasEntry(fi->nlinks, i)) {
+	    }
+	    f_id.id_dev = fdevs[i];
+	    f_id.id_ino = fi->finodes[i];
+	    fileidHashGetEntry(files, f_id, &data, &fcnt, NULL);
+	    if (fcnt > 1 && !nlinkHashHasEntry(fi->nlinks, i)) {
 		struct hardlinks_s * hlinks;
 		hlinks = xmalloc(sizeof(struct hardlinks_s)+
-				 fcnt*sizeof(hlinks->files[0]));
+			fcnt*sizeof(hlinks->files[0]));
 		hlinks->nlink = fcnt;
 		for (int j=0; j<fcnt; j++) {
-			hlinks->files[j] = data[j];
-			nlinkHashAddEntry(fi->nlinks, data[j], hlinks);
+		    hlinks->files[j] = data[j];
+		    nlinkHashAddEntry(fi->nlinks, data[j], hlinks);
 		}
-		}
+	    }
 	}
-	}
-	_free(fdevs);
-	files = fileidHashFree(files);
- err:
-	return;
+    }
+    _free(fdevs);
+    files = fileidHashFree(files);
+err:
+    return;
 }
 
 /* Convert a tag of hex strings to binary presentation */
