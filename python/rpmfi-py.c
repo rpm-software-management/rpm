@@ -171,7 +171,7 @@ rpmfi_FLinks(rpmfiObject * s, PyObject * unused)
     }
 
     result = PyTuple_New(nlinks);
-    for (int i=0; i<nlinks; i++) {
+    for (uint32_t i=0; i<nlinks; i++) {
 	PyTuple_SET_ITEM(result,  i, PyInt_FromLong(files[i]));
     }
     return result;
