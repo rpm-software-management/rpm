@@ -30,6 +30,7 @@ TESTSUITE_AT += rpmmacro.at
 TESTSUITE_AT += rpmpython.at
 TESTSUITE_AT += rpmdepmatch.at
 TESTSUITE_AT += rpmscript.at
+TESTSUITE_AT += rpmsigdig.at
 EXTRA_DIST += $(TESTSUITE_AT)
 
 ## testsuite data
@@ -67,10 +68,13 @@ EXTRA_DIST += data/RPMS/hello-1.0-1.i386.rpm
 EXTRA_DIST += data/RPMS/hello-1.0-1.ppc64.rpm
 EXTRA_DIST += data/RPMS/hello-2.0-1.i686.rpm
 EXTRA_DIST += data/RPMS/hello-2.0-1.x86_64.rpm
+EXTRA_DIST += data/RPMS/hello-2.0-1.x86_64-signed.rpm
 EXTRA_DIST += data/SRPMS/foo-1.0-1.src.rpm
 EXTRA_DIST += data/SRPMS/hello-1.0-1.src.rpm
 EXTRA_DIST += data/SOURCES/hello.c
 EXTRA_DIST += data/SPECS/hello-attr-buildid.spec
+EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.pub
+EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.secret
 
 # testsuite voodoo
 AUTOTEST = $(AUTOM4TE) --language=autotest

@@ -56,3 +56,7 @@ done
 %defattr(640,zoot,zoot,750)
 %attr(777,-,-) /j/dir
 %attr(222,-,-) /j/file
+
+%changelog
+* Tue Jun 28 2011 Panu Matilainen <pmatilai@redhat.com>
+- Initial package
