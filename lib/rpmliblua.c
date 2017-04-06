@@ -2,6 +2,7 @@
 
 #ifdef WITH_LUA
 #include <lua.h>
+#define LUA_COMPAT_MODULE
 #include <lauxlib.h>
 #include <rpm/rpmlib.h>
 

@@ -3,6 +3,7 @@
 #ifdef	WITH_LUA
 #include <lua.h>
 #include <lualib.h>
+#define LUA_COMPAT_MODULE
 #include <lauxlib.h>
 #include <lposix.h>
 #include <lrexlib.h>
