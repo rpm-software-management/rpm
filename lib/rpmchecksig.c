@@ -232,7 +232,7 @@ static void initDigests(FD_t fd, Header sigh, int range, rpmQueryFlags flags)
 	    continue;
 
 	if (sinfo.hashalgo && (sinfo.range & range))
-	    fdInitDigestID(fd, sinfo.hashalgo, sigtd.tag, 0);
+	    fdInitDigestID(fd, sinfo.hashalgo, sinfo.id, 0);
     }
     headerFreeIterator(hi);
 }
@@ -264,10 +264,10 @@ static int verifyItems(FD_t fd, Header sigh, int range, rpmQueryFlags flags,
 	    continue;
 
 	if (sinfo.hashalgo && sinfo.range == range && rc ==  RPMRC_OK) {
-	    DIGEST_CTX ctx = fdDupDigest(fd, sigtd.tag);
+	    DIGEST_CTX ctx = fdDupDigest(fd, sinfo.id);
 	    rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, &result);
 	    rpmDigestFinal(ctx, NULL, NULL, 0);
-	    fdFiniDigest(fd, sigtd.tag, NULL, NULL, 0);
+	    fdFiniDigest(fd, sinfo.id, NULL, NULL, 0);
 	}
 
 	if (result) {

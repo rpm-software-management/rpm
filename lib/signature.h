@@ -22,6 +22,7 @@ enum {
 };
 
 struct sigtInfo_s {
+    int id;
     int hashalgo;
     int range;
     int type;

@@ -131,6 +131,9 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
 	sinfo->keyid = pgpGrab(sig->signid+4, 4);
     }
 
+    if (sinfo->hashalgo)
+	sinfo->id = td->tag;
+
     rc = RPMRC_OK;
     if (sigp)
 	*sigp = sig;
