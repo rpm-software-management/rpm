@@ -33,3 +33,10 @@ function runroot()
      MAGIC="/magic/magic" FAKECHROOT_BASE="${RPMTEST}" fakechroot "$@" --define "_topdir /build" --noplugins
     )
 }
+
+function runroot_other()
+{
+    (unset RPM_CONFIGDIR RPM_POPTEXEC_PATH; cd ${RPMTEST} && \
+     FAKECHROOT_BASE="${RPMTEST}" fakechroot "$@"
+    )
+}

@@ -144,3 +144,82 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed.rpm
 ],
 [])
 AT_CLEANUP
+
+# ------------------------------
+# Test --addsign
+AT_SETUP([rpmsign --addsign <unsigned>])
+AT_KEYWORDS([rpmsign signature])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+cp "${RPMDATA}"/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
+run rpmsign --key-id 1964C5FC --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
+echo PRE-IMPORT
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+echo POST-IMPORT
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+run rpmsign --delsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
+echo POST-DELSIGN
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+],
+[0],
+[PRE-IMPORT
+/tmp/hello-2.0-1.x86_64.rpm:
+    Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+    V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+POST-IMPORT
+/tmp/hello-2.0-1.x86_64.rpm:
+    Header V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
+    V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
+POST-DELSIGN
+/tmp/hello-2.0-1.x86_64.rpm:
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# Test --delsign
+AT_SETUP([rpmsign --delsign <package>])
+AT_KEYWORDS([rpmsign signature])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+cp "${RPMDATA}"/RPMS/hello-2.0-1.x86_64-signed.rpm "${RPMTEST}"/tmp/
+echo PRE-DELSIGN
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64-signed.rpm|grep -v digest
+echo POST-DELSIGN
+run rpmsign --delsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64-signed.rpm > /dev/null
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64-signed.rpm|grep -v digest
+],
+[0],
+[PRE-DELSIGN
+/tmp/hello-2.0-1.x86_64-signed.rpm:
+    Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+    V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+POST-DELSIGN
+/tmp/hello-2.0-1.x86_64-signed.rpm:
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# Test --addsign
+AT_SETUP([rpmsign --addsign <signed>])
+AT_KEYWORDS([rpmsign signature])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+cp "${RPMDATA}"/RPMS/hello-2.0-1.x86_64-signed.rpm "${RPMTEST}"/tmp/
+run rpmsign --key-id 1964C5FC --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64-signed.rpm 2>&1 |grep -q "already contains identical signature, skipping"
+],
+[0],
+[],
+[])
+AT_CLEANUP
