@@ -125,7 +125,6 @@ testing$(bindir)/rpmbuild: ../rpmbuild
 	for prog in gzip cat patch tar sh ln chmod rm mkdir uname grep sed find file ionice mktemp nice cut sort diff touch; do p=`which $${prog}`; ln -s $${p} testing/$(bindir)/; done
 	for d in /proc /sys /selinux /etc/selinux; do if [ -d $${d} ]; then ln -s $${d} testing/$${d}; fi; done
 	(cd testing/magic && file -C)
-	HOME=$(srcdir)/testing gpg2 -q --import data/keys/*.secret || HOME=$(srcdir)/testing gpg -q --import data/keys/*.secret
 
 check_DATA = atconfig atlocal $(TESTSUITE)
 check_DATA += testing$(bindir)/rpmbuild
