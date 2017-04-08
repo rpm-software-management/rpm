@@ -354,5 +354,7 @@ int main(int argc, char *argv[])
 
     rpmcliFini(optCon);
 
+    rpmlog(RPMLOG_DEBUG, "exit code: %d\n", ec);
+
     return RETVAL(ec);
 }
