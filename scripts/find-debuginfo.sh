@@ -396,9 +396,10 @@ if [ -s "$SOURCEFILE" ]; then
   mkdir -p "${RPM_BUILD_ROOT}/usr/src/debug"
   LC_ALL=C sort -z -u "$SOURCEFILE" | grep -E -v -z '(<internal>|<built-in>)$' |
   (cd "$RPM_BUILD_DIR"; cpio -pd0mL "${RPM_BUILD_ROOT}/usr/src/debug")
-  # stupid cpio creates new directories in mode 0700, fixup
+  # stupid cpio creates new directories in mode 0700,
+  # and non-standard modes may be inherented from original directories, fixup
   find "${RPM_BUILD_ROOT}/usr/src/debug" -type d -print0 |
-  xargs --no-run-if-empty -0 chmod a+rx
+  xargs --no-run-if-empty -0 chmod 0755
 fi
 
 if [ -d "${RPM_BUILD_ROOT}/usr/lib" -o -d "${RPM_BUILD_ROOT}/usr/src" ]; then
