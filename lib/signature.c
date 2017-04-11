@@ -435,7 +435,7 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDigParams sig,
 	break;
     case RPMTAG_PAYLOADDIGEST:
 	if (rpmtdSetIndex(sigtd, rpmtdCount(sigtd)-1) != -1)
-	    res = verifyDigest(sigtd, ctx,  _("Payload digest:"), &msg);
+	    res = verifyDigest(sigtd, ctx,  _("Payload SHA256 digest:"), &msg);
 	break;
     default:
 	break;

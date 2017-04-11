@@ -17,7 +17,7 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64.rpm /data/RPMS/hello-1.0-1.i38
 [/data/RPMS/hello-2.0-1.x86_64.rpm:
     Header SHA1 digest: OK (5cd9874c510b67b44483f9e382a1649ef7743bac)
     Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
-    Payload digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
+    Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
     MD5 digest: OK (137ca1d8b35cca02a1854ba301c5432e)
 /data/RPMS/hello-1.0-1.i386.rpm:
     Header SHA1 digest: OK (e90be5a077c965790392fb78364f2354c9bf9884)
@@ -46,7 +46,7 @@ runroot rpmkeys -Kv /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm
 [/build/RPMS/noarch/attrtest-1.0-1.noarch.rpm:
     Header SHA1 digest: OK (19769cb46638f640ee9dbeffc6ded0ce4636dcd2)
     Header SHA256 digest: OK (158ec7c645dd18b0f8f4f96a45972c3defe1cc44eb9c8f94c23e2a364e639ac3)
-    Payload digest: OK (fae7535f760350db5281a33d285891506bf19c33a1776881fd09847558e8482e)
+    Payload SHA256 digest: OK (fae7535f760350db5281a33d285891506bf19c33a1776881fd09847558e8482e)
     MD5 digest: OK (1dfb0cc3350c08fc17c27b5d80cf2f8e)
 ],
 [])
@@ -131,14 +131,14 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed.rpm
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
     Header SHA1 digest: OK (5cd9874c510b67b44483f9e382a1649ef7743bac)
     Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
-    Payload digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
+    Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
     V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
     MD5 digest: OK (137ca1d8b35cca02a1854ba301c5432e)
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
     Header SHA1 digest: OK (5cd9874c510b67b44483f9e382a1649ef7743bac)
     Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
-    Payload digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
+    Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
     V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
     MD5 digest: OK (137ca1d8b35cca02a1854ba301c5432e)
 ],
