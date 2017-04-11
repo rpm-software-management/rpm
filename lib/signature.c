@@ -377,13 +377,26 @@ static const char * rpmSigString(rpmRC res)
     return str;
 }
 
+static const char *rangeName(int range)
+{
+    switch (range) {
+    case RPMSIG_HEADER:				return _("Header ");
+    case RPMSIG_PAYLOAD:			return _("Payload ");
+    }
+    /* trad. output for (RPMSIG_HEADER|RPMSIG_PAYLOAD) range is "" */
+    return "";
+}
+
 static rpmRC verifyDigest(struct rpmsinfo_s *sinfo, DIGEST_CTX digctx,
-			  const char *title, char **msg)
+			  char **msg)
 {
     rpmRC res = RPMRC_FAIL; /* assume failure */
     char * dig = NULL;
     size_t diglen = 0;
     DIGEST_CTX ctx = rpmDigestDup(digctx);
+    char *title = rstrscat(NULL, rangeName(sinfo->range),
+			   pgpValString(PGPVAL_HASHALGO, sinfo->hashalgo),
+			   _(" digest:"), NULL);
 
     if (rpmDigestFinal(ctx, (void **)&dig, &diglen, 1) || diglen == 0) {
 	rasprintf(msg, "%s %s", title, rpmSigString(res));
@@ -400,6 +413,7 @@ static rpmRC verifyDigest(struct rpmsinfo_s *sinfo, DIGEST_CTX digctx,
 
 exit:
     free(dig);
+    free(title);
     return res;
 }
 
@@ -415,11 +429,10 @@ static rpmRC
 verifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
 		DIGEST_CTX hashctx, char **msg)
 {
-    int isHdr = (sinfo->range == RPMSIG_HEADER);
     rpmRC res = rpmKeyringVerifySig(keyring, sinfo->sig, hashctx);
 
     char *sigid = pgpIdentItem(sinfo->sig);
-    rasprintf(msg, "%s%s: %s", isHdr ? _("Header ") : "", sigid, 
+    rasprintf(msg, "%s%s: %s", rangeName(sinfo->range), sigid,
 		rpmSigString(res));
     free(sigid);
     return res;
@@ -437,16 +450,10 @@ rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
 
     switch (sinfo->tag) {
     case RPMSIGTAG_MD5:
-	res = verifyDigest(sinfo, ctx, _("MD5 digest:"), &msg);
-	break;
     case RPMSIGTAG_SHA1:
-	res = verifyDigest(sinfo, ctx,  _("Header SHA1 digest:"), &msg);
-	break;
     case RPMSIGTAG_SHA256:
-	res = verifyDigest(sinfo, ctx,  _("Header SHA256 digest:"), &msg);
-	break;
     case RPMTAG_PAYLOADDIGEST:
-	res = verifyDigest(sinfo, ctx,  _("Payload SHA256 digest:"), &msg);
+	res = verifyDigest(sinfo, ctx, &msg);
 	break;
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_DSA:
