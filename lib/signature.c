@@ -22,13 +22,12 @@
 #include "debug.h"
 
 rpmRC rpmsinfoInit(rpmtd td, const char *origin,
-		      struct rpmsinfo_s *sinfo, pgpDigParams *sigp, char **msg)
+		      struct rpmsinfo_s *sinfo, char **msg)
 {
     rpmRC rc = RPMRC_FAIL;
     rpm_tagtype_t tagtype = 0;
     rpm_count_t tagsize = 0;
     rpm_count_t tagcount = 0;
-    pgpDigParams sig = NULL;
     int hexstring = 0;
 
     memset(sinfo, 0, sizeof(*sinfo));
@@ -136,26 +135,39 @@ rpmRC rpmsinfoInit(rpmtd td, const char *origin,
     }
 
     if (sinfo->type == RPMSIG_SIGNATURE_TYPE) {
-	if (pgpPrtParams(td->data, td->count, PGPTAG_SIGNATURE, &sig)) {
+	if (pgpPrtParams(td->data, td->count, PGPTAG_SIGNATURE, &sinfo->sig)) {
 	    rasprintf(msg, _("%s tag %u: BAD, invalid OpenPGP signature"),
 		    origin, td->tag);
 	    goto exit;
 	}
-	sinfo->hashalgo = pgpDigParamsAlgo(sig, PGPVAL_HASHALGO);
-	sinfo->keyid = pgpGrab(sig->signid+4, 4);
+	sinfo->hashalgo = pgpDigParamsAlgo(sinfo->sig, PGPVAL_HASHALGO);
+	sinfo->keyid = pgpGrab(sinfo->sig->signid+4, 4);
+    } else if (sinfo->type == RPMSIG_DIGEST_TYPE) {
+	if (td->type == RPM_BIN_TYPE)
+	    sinfo->dig = pgpHexStr(td->data, td->count);
+	else
+	    sinfo->dig = xstrdup(rpmtdGetString(td));
     }
 
+    sinfo->tag = td->tag;
     if (sinfo->hashalgo)
 	sinfo->id = td->tag;
 
     rc = RPMRC_OK;
-    if (sigp)
-	*sigp = sig;
-    else
-	pgpDigParamsFree(sig);
 
 exit:
     return rc;
+}
+
+void rpmsinfoFini(struct rpmsinfo_s *sinfo)
+{
+    if (sinfo) {
+	if (sinfo->type == RPMSIG_SIGNATURE_TYPE)
+	    pgpDigParamsFree(sinfo->sig);
+	else if (sinfo->type == RPMSIG_DIGEST_TYPE)
+	    free(sinfo->dig);
+	memset(sinfo, 0, sizeof(*sinfo));
+    }
 }
 
 /**

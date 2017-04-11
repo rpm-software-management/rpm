@@ -222,9 +222,11 @@ static void initDigests(FD_t fd, Header sigh, int range, rpmQueryFlags flags)
     struct rpmsinfo_s sinfo;
     struct rpmtd_s sigtd;
     HeaderIterator hi = headerInitIterator(sigh);
+    memset(&sinfo, 0, sizeof(sinfo));
 
     for (; headerNext(hi, &sigtd) != 0; rpmtdFreeData(&sigtd)) {
-	if (rpmsinfoInit(&sigtd, "package", &sinfo, NULL, NULL))
+	rpmsinfoFini(&sinfo);
+	if (rpmsinfoInit(&sigtd, "package", &sinfo, NULL))
 	    continue;
 	if (!(flags & VERIFY_SIGNATURE) && sinfo.type == RPMSIG_SIGNATURE_TYPE)
 	    continue;
@@ -234,6 +236,7 @@ static void initDigests(FD_t fd, Header sigh, int range, rpmQueryFlags flags)
 	if (sinfo.hashalgo && (sinfo.range & range))
 	    fdInitDigestID(fd, sinfo.hashalgo, sinfo.id, 0);
     }
+    rpmsinfoFini(&sinfo);
     headerFreeIterator(hi);
 }
 
@@ -244,17 +247,17 @@ static int verifyItems(FD_t fd, Header sigh, int range, rpmQueryFlags flags,
     int failed = 0;
     struct rpmsinfo_s sinfo;
     struct rpmtd_s sigtd;
-    pgpDigParams sig = NULL;
     char *result = NULL;
     HeaderIterator hi = headerInitIterator(sigh);
+    memset(&sinfo, 0, sizeof(sinfo));
 
     for (; headerNext(hi, &sigtd) != 0; rpmtdFreeData(&sigtd)) {
 	/* Clean up parameters from previous sigtag. */
-	sig = pgpDigParamsFree(sig);
+	rpmsinfoFini(&sinfo);
 	result = _free(result);
 
 	/* Note: we permit failures to be ignored via disablers */
-	rpmRC rc = rpmsinfoInit(&sigtd, "package", &sinfo, &sig, &result);
+	rpmRC rc = rpmsinfoInit(&sigtd, "package", &sinfo, &result);
 
 	if (!(flags & VERIFY_SIGNATURE) && sinfo.type == RPMSIG_SIGNATURE_TYPE)
 	    continue;
@@ -265,7 +268,7 @@ static int verifyItems(FD_t fd, Header sigh, int range, rpmQueryFlags flags,
 
 	if (sinfo.hashalgo && sinfo.range == range && rc ==  RPMRC_OK) {
 	    DIGEST_CTX ctx = fdDupDigest(fd, sinfo.id);
-	    rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, &result);
+	    rc = rpmVerifySignature(keyring, &sigtd, sinfo.sig, ctx, &result);
 	    rpmDigestFinal(ctx, NULL, NULL, 0);
 	    fdFiniDigest(fd, sinfo.id, NULL, NULL, 0);
 	}
@@ -278,7 +281,7 @@ static int verifyItems(FD_t fd, Header sigh, int range, rpmQueryFlags flags,
 	if (rc != RPMRC_OK)
 	    failed = 1;
     }
-    pgpDigParamsFree(sig);
+    rpmsinfoFini(&sinfo);
     headerFreeIterator(hi);
     free(result);
 

@@ -158,7 +158,6 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 			     unsigned int *keyidp, char **buf)
 {
     rpmRC rc = RPMRC_FAIL;
-    pgpDigParams sig = NULL;
     struct rpmtd_s sigtd;
     struct entryInfo_s einfo;
     struct rpmsinfo_s sinfo;
@@ -205,7 +204,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 	goto exit;
     }
 
-    if (rpmsinfoInit(&sigtd, "header", &sinfo, &sig, buf))
+    if (rpmsinfoInit(&sigtd, "header", &sinfo, buf))
 	goto exit;
 
     if (sinfo.hashalgo) {
@@ -217,17 +216,17 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 	rpmDigestUpdate(ctx, dstblob->pe, (dstblob->ril * sizeof(*dstblob->pe)));
 	rpmDigestUpdate(ctx, dstblob->dataStart, dstblob->rdl);
 
-	rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, buf);
+	rc = rpmVerifySignature(keyring, &sigtd, sinfo.sig, ctx, buf);
 
 	if (keyidp && sinfo.type == RPMSIG_SIGNATURE_TYPE)
 	    *keyidp = sinfo.keyid;
 
     	rpmDigestFinal(ctx, NULL, NULL, 0);
     }
+    rpmsinfoFini(&sinfo);
 
 exit:
     rpmtdFreeData(&sigtd);
-    pgpDigParamsFree(sig);
 
     return rc;
 }

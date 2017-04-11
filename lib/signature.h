@@ -22,11 +22,16 @@ enum {
 };
 
 struct rpmsinfo_s {
+    rpmTagVal tag;
     int id;
     int hashalgo;
     int range;
     int type;
     unsigned int keyid;
+    union {
+	pgpDigParams sig;
+	char *dig;
+    };
 };
 
 #ifdef __cplusplus
@@ -79,8 +84,11 @@ rpmRC rpmGenerateSignature(char *SHA256, char *SHA1, uint8_t *MD5,
 
 RPM_GNUC_INTERNAL
 rpmRC rpmsinfoInit(rpmtd td, const char *origin,
-                     struct rpmsinfo_s *sigt, pgpDigParams *sigp, char **msg);
+                     struct rpmsinfo_s *sigt, char **msg);
 
+
+RPM_GNUC_INTERNAL
+void rpmsinfoFini(struct rpmsinfo_s *sinfo);
 #ifdef __cplusplus
 }
 #endif
