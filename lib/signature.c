@@ -27,6 +27,7 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
     rpmRC rc = RPMRC_FAIL;
     rpm_tagtype_t tagtype = 0;
     rpm_count_t tagsize = 0;
+    rpm_count_t tagcount = 0;
     pgpDigParams sig = NULL;
     int hexstring = 0;
 
@@ -47,6 +48,7 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
     case RPMSIGTAG_SHA256:
 	tagsize = 65; /* includes trailing \0 */
 	tagtype = RPM_STRING_TYPE;
+	tagcount = 1;
 	hexstring = 1;
 	sinfo->hashalgo = PGPHASHALGO_SHA256;
 	sinfo->type = RPMSIG_DIGEST_TYPE;
@@ -55,6 +57,7 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
     case RPMSIGTAG_SHA1:
 	tagsize = 41; /* includes trailing \0 */
 	tagtype = RPM_STRING_TYPE;
+	tagcount = 1;
 	hexstring = 1;
 	sinfo->hashalgo = PGPHASHALGO_SHA1;
 	sinfo->type = RPMSIG_DIGEST_TYPE;
@@ -70,6 +73,7 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
     case RPMSIGTAG_SIZE:
     case RPMSIGTAG_PAYLOADSIZE:
 	tagsize = 4;
+	tagcount = 1;
 	tagtype = RPM_INT32_TYPE;
 	sinfo->type = RPMSIG_OTHER_TYPE;
 	sinfo->range = RPMSIG_PAYLOAD;
@@ -77,6 +81,7 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
     case RPMSIGTAG_LONGSIZE:
     case RPMSIGTAG_LONGARCHIVESIZE:
 	tagsize = 8;
+	tagcount = 1;
 	tagtype = RPM_INT64_TYPE;
 	sinfo->type = RPMSIG_OTHER_TYPE;
 	sinfo->range = RPMSIG_PAYLOAD;
@@ -103,6 +108,12 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
     if (tagtype && tagtype != td->type) {
 	rasprintf(msg, _("%s tag %u: BAD, invalid type %u"),
 			origin, td->tag, td->type);
+	goto exit;
+    }
+
+    if (tagcount && tagcount != td->count) {
+	rasprintf(msg, _("%s: tag %u: BAD, invalid count %u"),
+			origin, td->tag, td->count);
 	goto exit;
     }
 
