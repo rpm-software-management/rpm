@@ -448,23 +448,10 @@ rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
     if (sinfo->sig == NULL || ctx == NULL)
 	goto exit;
 
-    switch (sinfo->tag) {
-    case RPMSIGTAG_MD5:
-    case RPMSIGTAG_SHA1:
-    case RPMSIGTAG_SHA256:
-    case RPMTAG_PAYLOADDIGEST:
+    if (sinfo->type == RPMSIG_DIGEST_TYPE)
 	res = verifyDigest(sinfo, ctx, &msg);
-	break;
-    case RPMSIGTAG_RSA:
-    case RPMSIGTAG_DSA:
-    case RPMSIGTAG_PGP5:	/* XXX legacy */
-    case RPMSIGTAG_PGP:
-    case RPMSIGTAG_GPG:
+    else if (sinfo->type == RPMSIG_SIGNATURE_TYPE)
 	res = verifySignature(keyring, sinfo, ctx, &msg);
-	break;
-    default:
-	break;
-    }
 
 exit:
     if (res == RPMRC_NOTFOUND) {
