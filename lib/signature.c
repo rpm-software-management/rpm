@@ -377,13 +377,12 @@ static const char * rpmSigString(rpmRC res)
     return str;
 }
 
-static rpmRC verifyDigest(rpmtd sigtd, DIGEST_CTX digctx, const char *title,
-			  char **msg)
+static rpmRC verifyDigest(struct rpmsinfo_s *sinfo, DIGEST_CTX digctx,
+			  const char *title, char **msg)
 {
     rpmRC res = RPMRC_FAIL; /* assume failure */
     char * dig = NULL;
     size_t diglen = 0;
-    char *pkgdig = rpmtdFormat(sigtd, RPMTD_FORMAT_STRING, NULL);
     DIGEST_CTX ctx = rpmDigestDup(digctx);
 
     if (rpmDigestFinal(ctx, (void **)&dig, &diglen, 1) || diglen == 0) {
@@ -391,37 +390,35 @@ static rpmRC verifyDigest(rpmtd sigtd, DIGEST_CTX digctx, const char *title,
 	goto exit;
     }
 
-    if (strcasecmp(pkgdig, dig) == 0) {
+    if (strcasecmp(sinfo->dig, dig) == 0) {
 	res = RPMRC_OK;
-	rasprintf(msg, "%s %s (%s)", title, rpmSigString(res), pkgdig);
+	rasprintf(msg, "%s %s (%s)", title, rpmSigString(res), sinfo->dig);
     } else {
 	rasprintf(msg, "%s: %s Expected(%s) != (%s)",
-		  title, rpmSigString(res), pkgdig, dig);
+		  title, rpmSigString(res), sinfo->dig, dig);
     }
 
 exit:
     free(dig);
-    free(pkgdig);
     return res;
 }
 
 /**
  * Verify DSA/RSA signature.
  * @param keyring	pubkey keyring
- * @param sig		OpenPGP signature parameters
+ * @param sinfo		OpenPGP signature parameters
  * @param hashctx	digest context
- * @param isHdr		header-only signature?
  * @retval msg		verbose success/failure text
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifySignature(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX hashctx,
-		int isHdr, char **msg)
+verifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
+		DIGEST_CTX hashctx, char **msg)
 {
+    int isHdr = (sinfo->range == RPMSIG_HEADER);
+    rpmRC res = rpmKeyringVerifySig(keyring, sinfo->sig, hashctx);
 
-    rpmRC res = rpmKeyringVerifySig(keyring, sig, hashctx);
-
-    char *sigid = pgpIdentItem(sig);
+    char *sigid = pgpIdentItem(sinfo->sig);
     rasprintf(msg, "%s%s: %s", isHdr ? _("Header ") : "", sigid, 
 		rpmSigString(res));
     free(sigid);
@@ -429,38 +426,34 @@ verifySignature(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX hashctx,
 }
 
 rpmRC
-rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDigParams sig,
+rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
 		   DIGEST_CTX ctx, char ** result)
 {
     rpmRC res = RPMRC_NOTFOUND;
     char *msg = NULL;
-    int hdrsig = 0;
 
-    if (sigtd->data == NULL || sigtd->count <= 0 || ctx == NULL)
+    if (sinfo->sig == NULL || ctx == NULL)
 	goto exit;
 
-    switch (sigtd->tag) {
+    switch (sinfo->tag) {
     case RPMSIGTAG_MD5:
-	res = verifyDigest(sigtd, ctx, _("MD5 digest:"), &msg);
+	res = verifyDigest(sinfo, ctx, _("MD5 digest:"), &msg);
 	break;
     case RPMSIGTAG_SHA1:
-	res = verifyDigest(sigtd, ctx,  _("Header SHA1 digest:"), &msg);
+	res = verifyDigest(sinfo, ctx,  _("Header SHA1 digest:"), &msg);
 	break;
     case RPMSIGTAG_SHA256:
-	res = verifyDigest(sigtd, ctx,  _("Header SHA256 digest:"), &msg);
+	res = verifyDigest(sinfo, ctx,  _("Header SHA256 digest:"), &msg);
 	break;
     case RPMTAG_PAYLOADDIGEST:
-	res = verifyDigest(sigtd, ctx,  _("Payload SHA256 digest:"), &msg);
+	res = verifyDigest(sinfo, ctx,  _("Payload SHA256 digest:"), &msg);
 	break;
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_DSA:
-	hdrsig = 1;
-	/* fallthrough */
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
     case RPMSIGTAG_GPG:
-	if (sig != NULL)
-	    res = verifySignature(keyring, sig, ctx, hdrsig, &msg);
+	res = verifySignature(keyring, sinfo, ctx, &msg);
 	break;
     default:
 	break;
@@ -469,8 +462,8 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDigParams sig,
 exit:
     if (res == RPMRC_NOTFOUND) {
 	rasprintf(&msg,
-		  _("Verify signature: BAD PARAMETERS (%d %p %d %p %p)"),
-		  sigtd->tag, sigtd->data, sigtd->count, ctx, sig);
+		  _("Verify signature: BAD PARAMETERS (%d %p %d %p)"),
+		  sinfo->tag, sinfo->sig, sinfo->hashalgo, ctx);
 	res = RPMRC_FAIL;
     }
 

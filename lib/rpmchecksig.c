@@ -268,13 +268,13 @@ static int verifyItems(FD_t fd, Header sigh, int range, rpmQueryFlags flags,
 
 	if (sinfo.hashalgo && sinfo.range == range && rc ==  RPMRC_OK) {
 	    DIGEST_CTX ctx = fdDupDigest(fd, sinfo.id);
-	    rc = rpmVerifySignature(keyring, &sigtd, sinfo.sig, ctx, &result);
+	    rc = rpmVerifySignature(keyring, &sinfo, ctx, &result);
 	    rpmDigestFinal(ctx, NULL, NULL, 0);
 	    fdFiniDigest(fd, sinfo.id, NULL, NULL, 0);
 	}
 
 	if (result) {
-	    formatResult(sigtd.tag, rc, result,
+	    formatResult(sinfo.tag, rc, result,
 		     (rc == RPMRC_NOKEY ? missingKeys : untrustedKeys), buf);
 	}
 

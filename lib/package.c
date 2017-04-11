@@ -216,7 +216,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 	rpmDigestUpdate(ctx, dstblob->pe, (dstblob->ril * sizeof(*dstblob->pe)));
 	rpmDigestUpdate(ctx, dstblob->dataStart, dstblob->rdl);
 
-	rc = rpmVerifySignature(keyring, &sigtd, sinfo.sig, ctx, buf);
+	rc = rpmVerifySignature(keyring, &sinfo, ctx, buf);
 
 	if (keyidp && sinfo.type == RPMSIG_SIGNATURE_TYPE)
 	    *keyidp = sinfo.keyid;

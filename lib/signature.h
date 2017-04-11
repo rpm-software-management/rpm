@@ -67,7 +67,7 @@ int rpmWriteSignature(FD_t fd, Header h);
  * 			(malloc'd)
  * @return		result of signature verification
  */
-rpmRC rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDigParams sig,
+rpmRC rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
 			 DIGEST_CTX ctx, char ** result);
 
 /** \ingroup signature
