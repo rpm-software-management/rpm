@@ -161,7 +161,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     pgpDigParams sig = NULL;
     struct rpmtd_s sigtd;
     struct entryInfo_s einfo;
-    struct sigtInfo_s sinfo;
+    struct rpmsinfo_s sinfo;
 
     rpmtdReset(&sigtd);
     memset(&einfo, 0, sizeof(einfo));
@@ -205,7 +205,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 	goto exit;
     }
 
-    if (rpmSigInfoParse(&sigtd, "header", &sinfo, &sig, buf))
+    if (rpmsinfoInit(&sigtd, "header", &sinfo, &sig, buf))
 	goto exit;
 
     if (sinfo.hashalgo) {

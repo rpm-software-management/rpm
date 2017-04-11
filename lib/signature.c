@@ -21,8 +21,8 @@
 
 #include "debug.h"
 
-rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
-		      struct sigtInfo_s *sinfo, pgpDigParams *sigp, char **msg)
+rpmRC rpmsinfoInit(rpmtd td, const char *origin,
+		      struct rpmsinfo_s *sinfo, pgpDigParams *sigp, char **msg)
 {
     rpmRC rc = RPMRC_FAIL;
     rpm_tagtype_t tagtype = 0;

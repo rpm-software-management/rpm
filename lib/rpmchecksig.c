@@ -219,12 +219,12 @@ static void formatResult(rpmTagVal sigtag, rpmRC sigres, const char *result,
 
 static void initDigests(FD_t fd, Header sigh, int range, rpmQueryFlags flags)
 {
-    struct sigtInfo_s sinfo;
+    struct rpmsinfo_s sinfo;
     struct rpmtd_s sigtd;
     HeaderIterator hi = headerInitIterator(sigh);
 
     for (; headerNext(hi, &sigtd) != 0; rpmtdFreeData(&sigtd)) {
-	if (rpmSigInfoParse(&sigtd, "package", &sinfo, NULL, NULL))
+	if (rpmsinfoInit(&sigtd, "package", &sinfo, NULL, NULL))
 	    continue;
 	if (!(flags & VERIFY_SIGNATURE) && sinfo.type == RPMSIG_SIGNATURE_TYPE)
 	    continue;
@@ -242,7 +242,7 @@ static int verifyItems(FD_t fd, Header sigh, int range, rpmQueryFlags flags,
 		       char **missingKeys, char **untrustedKeys, char **buf)
 {
     int failed = 0;
-    struct sigtInfo_s sinfo;
+    struct rpmsinfo_s sinfo;
     struct rpmtd_s sigtd;
     pgpDigParams sig = NULL;
     char *result = NULL;
@@ -254,7 +254,7 @@ static int verifyItems(FD_t fd, Header sigh, int range, rpmQueryFlags flags,
 	result = _free(result);
 
 	/* Note: we permit failures to be ignored via disablers */
-	rpmRC rc = rpmSigInfoParse(&sigtd, "package", &sinfo, &sig, &result);
+	rpmRC rc = rpmsinfoInit(&sigtd, "package", &sinfo, &sig, &result);
 
 	if (!(flags & VERIFY_SIGNATURE) && sinfo.type == RPMSIG_SIGNATURE_TYPE)
 	    continue;

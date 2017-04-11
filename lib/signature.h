@@ -21,7 +21,7 @@ enum {
     RPMSIG_PAYLOAD	= (1 << 1),
 };
 
-struct sigtInfo_s {
+struct rpmsinfo_s {
     int id;
     int hashalgo;
     int range;
@@ -78,8 +78,8 @@ rpmRC rpmGenerateSignature(char *SHA256, char *SHA1, uint8_t *MD5,
 			rpm_loff_t size, rpm_loff_t payloadSize, FD_t fd);
 
 RPM_GNUC_INTERNAL
-rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
-                     struct sigtInfo_s *sigt, pgpDigParams *sigp, char **msg);
+rpmRC rpmsinfoInit(rpmtd td, const char *origin,
+                     struct rpmsinfo_s *sigt, pgpDigParams *sigp, char **msg);
 
 #ifdef __cplusplus
 }
