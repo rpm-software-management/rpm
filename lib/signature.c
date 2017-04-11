@@ -91,6 +91,9 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
 	sinfo->hashalgo = PGPHASHALGO_SHA256;
 	sinfo->type = RPMSIG_DIGEST_TYPE;
 	sinfo->range = RPMSIG_PAYLOAD;
+	/* XXX: get the last element, fail due to tagcount is arbitrary */
+	if (rpmtdSetIndex(td, rpmtdCount(td)-1) == -1)
+	    tagcount = 0;
 	break;
     default:
 	/* anything unknown just falls through for now */
@@ -423,6 +426,9 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDigParams sig,
     case RPMSIGTAG_SHA256:
 	res = verifyDigest(sigtd, ctx,  _("Header SHA256 digest:"), &msg);
 	break;
+    case RPMTAG_PAYLOADDIGEST:
+	res = verifyDigest(sigtd, ctx,  _("Payload SHA256 digest:"), &msg);
+	break;
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_DSA:
 	hdrsig = 1;
@@ -432,10 +438,6 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDigParams sig,
     case RPMSIGTAG_GPG:
 	if (sig != NULL)
 	    res = verifySignature(keyring, sig, ctx, hdrsig, &msg);
-	break;
-    case RPMTAG_PAYLOADDIGEST:
-	if (rpmtdSetIndex(sigtd, rpmtdCount(sigtd)-1) != -1)
-	    res = verifyDigest(sigtd, ctx,  _("Payload SHA256 digest:"), &msg);
 	break;
     default:
 	break;
