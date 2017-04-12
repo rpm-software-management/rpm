@@ -133,7 +133,7 @@ rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
     if (pkt == NULL || pktlen == 0)
 	goto exit;
 
-    if (pgpPubkeyFingerprint(pkt, pktlen, keyid))
+    if (pgpPubkeyKeyID(pkt, pktlen, keyid))
 	goto exit;
 
     if (pgpPrtParams(pkt, pktlen, PGPTAG_PUBLIC_KEY, &pgpkey))

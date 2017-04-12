@@ -765,7 +765,8 @@ static int pgpPrtUserID(pgpTag tag, const uint8_t *h, size_t hlen,
     return 0;
 }
 
-static int getFingerprint(const uint8_t *h, size_t hlen, pgpKeyID_t keyid)
+int pgpPubkeyFingerprint(const uint8_t *h, size_t hlen,
+			  uint8_t **fp, size_t *fplen)
 {
     int rc = -1; /* assume failure */
     const uint8_t *se;
@@ -800,8 +801,8 @@ static int getFingerprint(const uint8_t *h, size_t hlen, pgpKeyID_t keyid)
 	/* Does the size and number of MPI's match our expectations? */
 	if (se == pend && mpis == 0) {
 	    DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	    uint8_t * d = NULL;
-	    size_t dlen;
+	    uint8_t *d = NULL;
+	    size_t dlen = 0;
 	    int i = se - h;
 	    uint8_t in[3] = { 0x99, (i >> 8), i };
 
@@ -809,10 +810,12 @@ static int getFingerprint(const uint8_t *h, size_t hlen, pgpKeyID_t keyid)
 	    (void) rpmDigestUpdate(ctx, h, i);
 	    (void) rpmDigestFinal(ctx, (void **)&d, &dlen, 0);
 
-	    if (d) {
-		memcpy(keyid, (d + (dlen-8)), 8);
-		free(d);
+	    if (dlen == 20) {
 		rc = 0;
+		*fp = d;
+		*fplen = dlen;
+	    } else {
+		free(d);
 	    }
 	}
 
@@ -823,14 +826,26 @@ static int getFingerprint(const uint8_t *h, size_t hlen, pgpKeyID_t keyid)
     return rc;
 }
 
-int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid)
+static int getKeyID(const uint8_t *h, size_t hlen, pgpKeyID_t keyid)
+{
+    uint8_t *fp = NULL;
+    size_t fplen = 0;
+    int rc = pgpPubkeyFingerprint(h, hlen, &fp, &fplen);
+    if (fp && fplen > 8) {
+	memcpy(keyid, (fp + (fplen-8)), 8);
+	free(fp);
+    }
+    return rc;
+}
+
+int pgpPubkeyKeyID(const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid)
 {
     struct pgpPkt p;
 
     if (decodePkt(pkt, pktlen, &p))
 	return -1;
     
-    return getFingerprint(p.body, p.blen, keyid);
+    return getKeyID(p.body, p.blen, keyid);
 }
 
 static int pgpPrtPkt(struct pgpPkt *p, pgpDigParams _digp)
@@ -842,8 +857,8 @@ static int pgpPrtPkt(struct pgpPkt *p, pgpDigParams _digp)
 	rc = pgpPrtSig(p->tag, p->body, p->blen, _digp);
 	break;
     case PGPTAG_PUBLIC_KEY:
-	/* Get the public key fingerprint. */
-	if (!getFingerprint(p->body, p->blen, _digp->signid))
+	/* Get the public key Key ID. */
+	if (!getKeyID(p->body, p->blen, _digp->signid))
 	    _digp->saved |= PGPDIG_SAVED_ID;
 	else
 	    memset(_digp->signid, 0, sizeof(_digp->signid));
@@ -1047,7 +1062,7 @@ int pgpPrtParamsSubkeys(const uint8_t *pkts, size_t pktlen,
 	    /* Copy UID from main key to subkey */
 	    digps[count]->userid = xstrdup(mainkey->userid);
 
-	    if (getFingerprint(pkt.body, pkt.blen, digps[count]->signid)) {
+	    if (getKeyID(pkt.body, pkt.blen, digps[count]->signid)) {
 		pgpDigParamsFree(digps[count]);
 		continue;
 	    }

@@ -971,11 +971,21 @@ char * pgpHexStr(const uint8_t *p, size_t plen);
  * Calculate OpenPGP public key fingerprint.
  * @param pkt		OpenPGP packet (i.e. PGPTAG_PUBLIC_KEY)
  * @param pktlen	OpenPGP packet length (no. of bytes)
- * @retval keyid	public key fingerprint
+ * @retval fp		public key fingerprint
+ * @retval fplen	public key fingerprint length
  * @return		0 on success, else -1
  */
 int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen,
-		pgpKeyID_t keyid);
+			 uint8_t **fp, size_t *fplen);
+
+/** \ingroup rpmpgp
+ * Calculate OpenPGP public key Key ID
+ * @param pkt		OpenPGP packet (i.e. PGPTAG_PUBLIC_KEY)
+ * @param pktlen	OpenPGP packet length (no. of bytes)
+ * @retval keyid	public key Key ID
+ * @return		0 on success, else -1
+ */
+int pgpPubkeyKeyID(const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid);
 
 /** \ingroup rpmpgp
  * Parse a OpenPGP packet(s).
