@@ -29,6 +29,8 @@ rpmRC rpmsinfoInit(rpmtd td, const char *origin,
     rpm_count_t tagsize = 0;
     rpm_count_t tagcount = 0;
     int hexstring = 0;
+    const void *data = NULL;
+    rpm_count_t dlen = 0;
 
     memset(sinfo, 0, sizeof(*sinfo));
     switch (td->tag) {
@@ -116,8 +118,28 @@ rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 	goto exit;
     }
 
+    switch (td->type) {
+    case RPM_STRING_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
+	data = rpmtdGetString(td);
+	if (data)
+	    dlen = strlen(data);
+	break;
+    case RPM_BIN_TYPE:
+	data = td->data;
+	dlen = td->count;
+	break;
+    }
+
+    /* MD5 has data length of 16, everything else is (much) larger */
+    if (sinfo->hashalgo && (data == NULL || dlen < 16)) {
+	rasprintf(msg, _("%s tag %u: BAD, invalid data %p (%u)"),
+			origin, td->tag, data, dlen);
+	goto exit;
+    }
+
     if (td->type == RPM_STRING_TYPE && td->size == 0)
-	td->size = strlen(td->data) + 1;
+	td->size = dlen + 1;
 
     if (tagsize && (td->flags & RPMTD_IMMUTABLE) && tagsize != td->size) {
 	rasprintf(msg, _("%s tag %u: BAD, invalid size %u"),
@@ -126,7 +148,7 @@ rpmRC rpmsinfoInit(rpmtd td, const char *origin,
     }
 
     if (hexstring) {
-	for (const char * b = td->data; *b != '\0'; b++) {
+	for (const char * b = data; *b != '\0'; b++) {
 	    if (strchr("0123456789abcdefABCDEF", *b) == NULL) {
 		rasprintf(msg, _("%s: tag %u: BAD, not hex"), origin, td->tag);
 		goto exit;
@@ -135,7 +157,7 @@ rpmRC rpmsinfoInit(rpmtd td, const char *origin,
     }
 
     if (sinfo->type == RPMSIG_SIGNATURE_TYPE) {
-	if (pgpPrtParams(td->data, td->count, PGPTAG_SIGNATURE, &sinfo->sig)) {
+	if (pgpPrtParams(data, dlen, PGPTAG_SIGNATURE, &sinfo->sig)) {
 	    rasprintf(msg, _("%s tag %u: BAD, invalid OpenPGP signature"),
 		    origin, td->tag);
 	    goto exit;
@@ -144,9 +166,9 @@ rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 	sinfo->keyid = pgpGrab(sinfo->sig->signid+4, 4);
     } else if (sinfo->type == RPMSIG_DIGEST_TYPE) {
 	if (td->type == RPM_BIN_TYPE)
-	    sinfo->dig = pgpHexStr(td->data, td->count);
+	    sinfo->dig = pgpHexStr(data, dlen);
 	else
-	    sinfo->dig = xstrdup(rpmtdGetString(td));
+	    sinfo->dig = xstrdup(data);
     }
 
     sinfo->tag = td->tag;
