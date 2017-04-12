@@ -978,14 +978,6 @@ int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen,
 		pgpKeyID_t keyid);
 
 /** \ingroup rpmpgp
-* Extract OpenPGP public key fingerprint from base64 encoded packet.
-* @param b64pkt       	base64 encoded openpgp packet
-* @retval keyid		public key fingerprint
-* @return             	8 (no. of bytes) on success, < 0 on error
-*/
-int pgpExtractPubkeyFingerprint(const char * b64pkt, pgpKeyID_t keyid);
-
-/** \ingroup rpmpgp
  * Parse a OpenPGP packet(s).
  * @param pkts		OpenPGP packet(s)
  * @param pktlen	OpenPGP packet(s) length (no. of bytes)

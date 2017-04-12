@@ -833,22 +833,6 @@ int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid)
     return getFingerprint(p.body, p.blen, keyid);
 }
 
-int pgpExtractPubkeyFingerprint(const char * b64pkt, pgpKeyID_t keyid)
-{
-    uint8_t * pkt;
-    size_t pktlen;
-    int rc = -1; /* assume failure */
-
-    if (rpmBase64Decode(b64pkt, (void **)&pkt, &pktlen) == 0) {
-	if (pgpPubkeyFingerprint(pkt, pktlen, keyid) == 0) {
-	    /* if there ever was a bizarre return code for success... */
-	    rc = 8;
-	}
-	free(pkt);
-    }
-    return rc;
-}
-
 static int pgpPrtPkt(struct pgpPkt *p, pgpDigParams _digp)
 {
     int rc = 0;
