@@ -110,6 +110,7 @@ EXTRA_DIST += atlocal.in
 # Hack: Abusing testing$(bindir)/rpmbuild as stamp file
 # The chmod is needed when copying from read-only sources (eg in distcheck)
 testing$(bindir)/rpmbuild: ../rpmbuild
+	HOME=$(abs_srcdir)/testing gpg-connect-agent --no-autostart killagent bye ||:
 	rm -rf testing
 	mkdir -p testing/$(bindir)
 	ln -s ./$(bindir) testing/bin
