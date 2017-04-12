@@ -251,7 +251,6 @@ typedef enum pgpCompressAlgo_e {
  *
  * Implementations MUST implement SHA-1. Implementations SHOULD
  * implement MD5.
- * @todo Add SHA256.
  */
 typedef enum pgpHashAlgo_e {
     PGPHASHALGO_MD5		=  1,	/*!< MD5 */
@@ -970,7 +969,6 @@ char * pgpHexStr(const uint8_t *p, size_t plen);
 
 /** \ingroup rpmpgp
  * Calculate OpenPGP public key fingerprint.
- * @todo V3 non-RSA public keys not implemented.
  * @param pkt		OpenPGP packet (i.e. PGPTAG_PUBLIC_KEY)
  * @param pktlen	OpenPGP packet length (no. of bytes)
  * @retval keyid	public key fingerprint
@@ -981,7 +979,6 @@ int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen,
 
 /** \ingroup rpmpgp
 * Extract OpenPGP public key fingerprint from base64 encoded packet.
-* @todo V3 non-RSA public keys not implemented.
 * @param b64pkt       	base64 encoded openpgp packet
 * @retval keyid		public key fingerprint
 * @return             	8 (no. of bytes) on success, < 0 on error
