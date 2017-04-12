@@ -36,6 +36,9 @@ RPMDB_INIT
 rm -rf "${TOPDIR}"
 
 runroot rpmbuild -bb --quiet \
+	--define "%optflags -O2 -g" \
+	--define "%_target_platform noarch-linux" \
+	--define "%_binary_payload w.ufdio" \
 	--define "%_buildhost localhost" \
 	--define "%source_date_epoch_from_changelog 1" \
 	--define "%clamp_mtime_to_source_date_epoch 1" \
@@ -44,10 +47,10 @@ runroot rpmkeys -Kv /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm
 ],
 [0],
 [/build/RPMS/noarch/attrtest-1.0-1.noarch.rpm:
-    Header SHA1 digest: OK (19769cb46638f640ee9dbeffc6ded0ce4636dcd2)
-    Header SHA256 digest: OK (158ec7c645dd18b0f8f4f96a45972c3defe1cc44eb9c8f94c23e2a364e639ac3)
-    Payload SHA256 digest: OK (fae7535f760350db5281a33d285891506bf19c33a1776881fd09847558e8482e)
-    MD5 digest: OK (1dfb0cc3350c08fc17c27b5d80cf2f8e)
+    Header SHA1 digest: OK (2f661f61cfe68ebaaf8590adf8af47d6d5854b19)
+    Header SHA256 digest: OK (f8b3a197a24e130732d130d63f7d994859b07fd884f0a2e308a5425a175a7a0d)
+    Payload SHA256 digest: OK (f965cf3baa25a2be3f95e574abba2e28c230a42f7c3976f990c688814ac6ee18)
+    MD5 digest: OK (fe0d59c5ce15a7a4dca0a110dde384ea)
 ],
 [])
 AT_CLEANUP
