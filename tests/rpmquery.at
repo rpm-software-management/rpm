@@ -242,13 +242,13 @@ AT_SETUP([pgpsig extension query])
 AT_KEYWORDS([query signature])
 AT_CHECK([
 runroot rpm \
-    --nosignature \
     --queryformat="%{rsaheader:pgpsig}" \
     -qp /data/RPMS/hello-2.0-1.x86_64-signed.rpm
 ],
 [0],
 [RSA/SHA256, Thu Apr  6 16:02:33 2017, Key ID 4344591e1964c5fc],
-[])
+[warning: /data/RPMS/hello-2.0-1.x86_64-signed.rpm: Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+])
 AT_CLEANUP
 
 # ------------------------------
