@@ -451,8 +451,8 @@ arch_compat: parisc: noarch
 arch_compat: armv4b: noarch
 arch_compat: armv7l: armv6l
 arch_compat: armv6l: armv5tejl
-arch_compat: armv5tejl: armv5tel armv5tl
-arch_compat: armv5tel: armv4tl armv5tl
+arch_compat: armv5tejl: armv5tel
+arch_compat: armv5tel: armv5tl
 arch_compat: armv5tl: armv4tl
 arch_compat: armv4tl: armv4l
 arch_compat: armv4l: armv3l
