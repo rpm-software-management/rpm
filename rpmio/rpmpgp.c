@@ -248,6 +248,19 @@ static void pgpPrtVal(const char * pre, pgpValTbl vs, uint8_t val)
     fprintf(stderr, "%s(%u)", pgpValStr(vs, val), (unsigned)val);
 }
 
+static void pgpPrtTime(const char * pre, const uint8_t *p, size_t plen)
+{
+    if (!_print) return;
+    if (pre && *pre)
+	fprintf(stderr, "%s", pre);
+    if (plen == 4) {
+	time_t t = pgpGrab(p, plen);
+	fprintf(stderr, " %-24.24s(0x%08x)", ctime(&t), (unsigned)t);
+    } else {
+	pgpPrtHex("", p+1, plen-1);
+    }
+}
+
 /** \ingroup rpmpgp
  * Return hex formatted representation of a multiprecision integer.
  * @param p		bytes
@@ -439,12 +452,7 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 	    }
 	case PGPSUBTYPE_SIG_EXPIRE_TIME:
 	case PGPSUBTYPE_KEY_EXPIRE_TIME:
-	    if ((plen - 1) == 4) {
-		time_t t = pgpGrab(p+1, plen-1);
-		if (_print)
-		   fprintf(stderr, " %-24.24s(0x%08x)", ctime(&t), (unsigned)t);
-	    } else
-		pgpPrtHex("", p+1, plen-1);
+	    pgpPrtTime(" ", p+1, plen-1);
 	    break;
 
 	case PGPSUBTYPE_ISSUER_KEYID:	/* issuer key ID */
@@ -563,7 +571,6 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
     switch (version) {
     case 3:
     {   pgpPktSigV3 v = (pgpPktSigV3)h;
-	time_t t;
 
 	if (hlen <= sizeof(*v) || v->hashlen != 5)
 	    return 1;
@@ -573,9 +580,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	pgpPrtVal(" ", pgpHashTbl, v->hash_algo);
 	pgpPrtVal(" ", pgpSigTypeTbl, v->sigtype);
 	pgpPrtNL();
-	t = pgpGrab(v->time, sizeof(v->time));
-	if (_print)
-	    fprintf(stderr, " %-24.24s(0x%08x)", ctime(&t), (unsigned)t);
+	pgpPrtTime(" ", v->time, sizeof(v->time));
 	pgpPrtNL();
 	pgpPrtHex(" signer keyid", v->signid, sizeof(v->signid));
 	plen = pgpGrab(v->signhash16, sizeof(v->signhash16));
@@ -716,7 +721,6 @@ static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
 {
     uint8_t version = 0;
     const uint8_t * p = NULL;
-    time_t t;
     int rc = 1;
 
     if (pgpVersion(h, hlen, &version))
@@ -730,9 +734,7 @@ static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
 	if (hlen > sizeof(*v)) {
 	    pgpPrtVal("V4 ", pgpTagTbl, tag);
 	    pgpPrtVal(" ", pgpPubkeyTbl, v->pubkey_algo);
-	    t = pgpGrab(v->time, sizeof(v->time));
-	    if (_print)
-		fprintf(stderr, " %-24.24s(0x%08x)", ctime(&t), (unsigned)t);
+	    pgpPrtTime(" ", v->time, sizeof(v->time));
 	    pgpPrtNL();
 
 	    /* If _digp->hash is not NULL then signature is already loaded */
