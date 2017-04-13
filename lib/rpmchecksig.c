@@ -300,15 +300,18 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     char * msg = NULL;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     int failed = 0;
-    struct hdrblob_s blob;
+    struct hdrblob_s sigblob, blob;
     rpmTagVal copyTags[] = { RPMTAG_PAYLOADDIGEST, 0 };
 
     memset(&blob, 0, sizeof(blob));
+    memset(&sigblob, 0, sizeof(sigblob));
 
     if (rpmLeadRead(fd, NULL, &msg))
 	goto exit;
 
-    if (rpmReadSignature(fd, &sigh, &msg))
+    if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERSIGNATURES, &sigblob, &msg))
+	goto exit;
+    if (hdrblobImport(&sigblob, 0, &sigh, &msg))
 	goto exit;
 
     /* Initialize digests ranging over the header */
@@ -363,6 +366,7 @@ exit:
 	rpmlog(RPMLOG_ERR, "%s: %s\n", fn, msg);
     free(msg);
     free(buf);
+    free(sigblob.ei);
     free(blob.ei);
     free(missingKeys);
     free(untrustedKeys);
