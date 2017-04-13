@@ -246,7 +246,7 @@ runroot rpm \
     -qp /data/RPMS/hello-2.0-1.x86_64-signed.rpm
 ],
 [0],
-[RSA/SHA256, Thu Apr  6 16:02:33 2017, Key ID 4344591e1964c5fc],
+[RSA/SHA256, Thu Apr  6 13:02:33 2017, Key ID 4344591e1964c5fc],
 [warning: /data/RPMS/hello-2.0-1.x86_64-signed.rpm: Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
 ])
 AT_CLEANUP
