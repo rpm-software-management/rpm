@@ -435,7 +435,7 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 		if (plen-1 != sizeof(_digp->time))
 		    break;
 		_digp->saved |= PGPDIG_SAVED_TIME;
-		memcpy(_digp->time, p+1, sizeof(_digp->time));
+		_digp->time = pgpGrab(p+1, sizeof(_digp->time));
 	    }
 	case PGPSUBTYPE_SIG_EXPIRE_TIME:
 	case PGPSUBTYPE_KEY_EXPIRE_TIME:
@@ -587,7 +587,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	    _digp->hashlen = v->hashlen;
 	    _digp->sigtype = v->sigtype;
 	    _digp->hash = memcpy(xmalloc(v->hashlen), &v->sigtype, v->hashlen);
-	    memcpy(_digp->time, v->time, sizeof(_digp->time));
+	    _digp->time = pgpGrab(v->time, sizeof(v->time));
 	    memcpy(_digp->signid, v->signid, sizeof(_digp->signid));
 	    _digp->pubkey_algo = v->pubkey_algo;
 	    _digp->hash_algo = v->hash_algo;
@@ -738,7 +738,7 @@ static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
 	    /* If _digp->hash is not NULL then signature is already loaded */
 	    if (_digp->hash == NULL) {
 		_digp->version = v->version;
-		memcpy(_digp->time, v->time, sizeof(_digp->time));
+		_digp->time = pgpGrab(v->time, sizeof(v->time));
 		_digp->pubkey_algo = v->pubkey_algo;
 	    }
 

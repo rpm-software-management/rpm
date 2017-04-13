@@ -359,7 +359,7 @@ static char * pgpsigFormat(rpmtd td, char **emsg)
     } else {
 	char dbuf[BUFSIZ];
 	char *keyid = pgpHexStr(sigp->signid, sizeof(sigp->signid));
-	unsigned int dateint = pgpGrab(sigp->time, sizeof(sigp->time));
+	unsigned int dateint = sigp->time;
 	time_t date = dateint;
 	struct tm * tms = localtime(&date);
 	unsigned int key_algo = pgpDigParamsAlgo(sigp, PGPVAL_PUBKEYALGO);

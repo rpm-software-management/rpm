@@ -416,12 +416,12 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
 
     /* Build header elements. */
     v = pgpHexStr(pubp->signid, sizeof(pubp->signid)); 
-    r = pgpHexStr(pubp->time, sizeof(pubp->time));
     userid = pubp->userid ? pubp->userid : "none";
-    keytime = pgpGrab(pubp->time, sizeof(pubp->time));
+    keytime = pubp->time;
 
     rasprintf(&n, "gpg(%s)", v+8);
     rasprintf(&u, "gpg(%s)", userid);
+    rasprintf(&r, "%x", keytime);
     rasprintf(&evr, "%d:%s-%s", pubp->version, v, r);
 
     headerPutString(h, RPMTAG_PUBKEYS, enc);
@@ -459,9 +459,9 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
 
 	pgpkey = rpmPubkeyPgpDigParams(subkeys[i]);
 	v = pgpHexStr(pgpkey->signid, sizeof(pgpkey->signid));
-	r = pgpHexStr(pgpkey->time, sizeof(pgpkey->time));
 
 	rasprintf(&n, "gpg(%s)", v+8);
+	rasprintf(&r, "%x", pgpkey->time);
 	rasprintf(&evr, "%d:%s-%s", pubp->version, v, r);
 
 	headerPutString(h, RPMTAG_PROVIDENAME, n);
