@@ -110,7 +110,7 @@ EXTRA_DIST += atlocal.in
 # Hack: Abusing testing$(bindir)/rpmbuild as stamp file
 # The chmod is needed when copying from read-only sources (eg in distcheck)
 testing$(bindir)/rpmbuild: ../rpmbuild
-	HOME=$(abs_srcdir)/testing gpg-connect-agent --no-autostart killagent bye ||:
+	HOME=$(abs_builddir)/testing gpg-connect-agent --no-autostart killagent bye ||:
 	rm -rf testing
 	mkdir -p testing/$(bindir)
 	ln -s ./$(bindir) testing/bin
@@ -126,7 +126,7 @@ testing$(bindir)/rpmbuild: ../rpmbuild
 	for prog in gzip cat patch tar sh ln chmod rm mkdir uname grep sed find file ionice mktemp nice cut sort diff touch; do p=`which $${prog}`; ln -s $${p} testing/$(bindir)/; done
 	for d in /proc /sys /selinux /etc/selinux; do if [ -d $${d} ]; then ln -s $${d} testing/$${d}; fi; done
 	(cd testing/magic && file -C)
-	HOME=$(abs_srcdir)/testing gpg2 --import data/keys/*.secret || HOME=$(abs_srcdir)/testing gpg --import data/keys/*.secret
+	HOME=$(abs_builddir)/testing gpg2 --import ${abs_srcdir}/data/keys/*.secret || HOME=$(abs_builddir)/testing gpg --import ${abs_srcdir}/data/keys/*.secret
 
 check_DATA = atconfig atlocal $(TESTSUITE)
 check_DATA += testing$(bindir)/rpmbuild
