@@ -1060,6 +1060,128 @@ debug dup id in debug package
 AT_CLEANUP
 
 # ------------------------------
+# Check build-ids are recomputed with unique_build_ids,
+# but not with _no_recompute_build_ids
+AT_SETUP([rpmbuild buildid recompute])
+AT_KEYWORDS([build] [debuginfo] [buildid])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
+
+# Make sure we get debuginfo
+export CFLAGS="-g"
+
+# Unique 1
+run rpmbuild --quiet \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --define="_unique_build_ids 1" \
+  --undefine="_no_recompute_build_ids" \
+  -ba "${abs_srcdir}"/data/SPECS/hello.spec
+
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-1.*.rpm \
+  | cpio -diu --quiet
+
+hello_file=./usr/local/bin/hello
+
+# Extract the build-id from the main file
+test -f $hello_file || echo "No $hello_file"
+id1=$(file $hello_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
+
+# Make sure we generate a new one
+rm $hello_file
+
+# Unique 2
+# Build the "next" release, which has no changes except for the release update.
+run rpmbuild --quiet \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --define="_unique_build_ids 1" \
+  --undefine="_no_recompute_build_ids" \
+  -ba "${abs_srcdir}"/data/SPECS/hello-r2.spec
+
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-2.*.rpm \
+  | cpio -diu --quiet
+
+# Extract the build-id from the main file
+test -f $hello_file || echo "No $hello_file"
+id2=$(file $hello_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
+
+# Two unique builds should not be equal
+if test "$id1" == "$id2"; then
+  echo "uniques equal";
+else
+  echo "uniques unequal";
+fi
+
+# Make sure we generate a new one
+rm $hello_file
+
+# no-recompute 1
+run rpmbuild --quiet \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --undefine="_unique_build_ids" \
+  --undefine="_unique_debug_names" \
+  --undefine="_unique_debug_srcs" \
+  --define="_no_recompute_build_ids 1" \
+  -ba "${abs_srcdir}"/data/SPECS/hello.spec
+
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-1.*.rpm \
+  | cpio -diu --quiet
+
+hello_file=./usr/local/bin/hello
+
+# Extract the build-id from the main file
+test -f $hello_file || echo "No $hello_file"
+id3=$(file $hello_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
+
+# An unique and no-recompute build should be unequal
+if test "$id2" == "$id3"; then
+  echo "no-recompute unique equal";
+else
+  echo "no-recompute unique unequal";
+fi
+
+# Make sure we generate a new one
+rm $hello_file
+
+# no-recompute 2
+# Build the "next" release, which has no changes except for the release update.
+run rpmbuild --quiet \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --undefine="_unique_build_ids" \
+  --undefine="_unique_debug_names" \
+  --undefine="_unique_debug_srcs" \
+  --define="_no_recompute_build_ids 1" \
+  -ba "${abs_srcdir}"/data/SPECS/hello-r2.spec
+
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-2.*.rpm \
+  | cpio -diu --quiet
+
+# Extract the build-id from the main file
+test -f $hello_file || echo "No $hello_file"
+id4=$(file $hello_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
+
+# Two no-recompute builds should be equal. Even for different "releases".
+if test "$id3" == "$id4"; then
+  echo "no-recomputes equal";
+else
+  echo "no-recomputes unequal";
+fi
+],
+[0],
+[uniques unequal
+no-recompute unique unequal
+no-recomputes equal
+],
+[ignore])
+AT_CLEANUP
+
+# ------------------------------
 # Check build-ids are unique between versions/releases
 # with _unique_build_ids defined.
 AT_SETUP([rpmbuild buildid unique r1 r2])

@@ -172,7 +172,7 @@
 #	the script.  See the script for details.
 #
 %__debug_install_post   \
-   %{_rpmconfigdir}/find-debuginfo.sh %{?_smp_mflags} %{?_missing_build_ids_terminate_build:--strict-build-id} %{?_include_minidebuginfo:-m} %{?_include_gdb_index:-i} %{?_unique_build_ids:--ver-rel "%{VERSION}-%{RELEASE}"} %{?_unique_debug_names:--unique-debug-arch "%{_arch}"} %{?_unique_debug_srcs:--unique-debug-src-base "%{name}"} %{?_find_debuginfo_dwz_opts} %{?_find_debuginfo_opts} "%{_builddir}/%{?buildsubdir}"\
+   %{_rpmconfigdir}/find-debuginfo.sh %{?_smp_mflags} %{?_missing_build_ids_terminate_build:--strict-build-id} %{?_no_recompute_build_ids:-n} %{?_include_minidebuginfo:-m} %{?_include_gdb_index:-i} %{?_unique_build_ids:--ver-rel "%{VERSION}-%{RELEASE}"} %{?_unique_debug_names:--unique-debug-arch "%{_arch}"} %{?_unique_debug_srcs:--unique-debug-src-base "%{name}"} %{?_find_debuginfo_dwz_opts} %{?_find_debuginfo_opts} "%{_builddir}/%{?buildsubdir}"\
 %{nil}
 
 #	Template for debug information sub-package.
@@ -497,6 +497,11 @@ package or when debugging this package.\
 # --ver-rel "%{VERSION}-%{RELEASE}" to find-debuginfo.sh which will pass it
 # onto debugedit --build-id-seed to be used to prime the build-id note hash.
 %_unique_build_ids	1
+
+# Do not recompute build-ids but keep whatever is in the ELF file already.
+# Cannot be used together with _unique_build_ids (which forces recomputation).
+# Defaults to undefined (unset).
+#%_no_recompute_build_ids 1
 
 # Whether .debug files should be made unique between package version,
 # release and architecture. If set to 1 this will pass

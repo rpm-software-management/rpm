@@ -2,7 +2,7 @@
 #find-debuginfo.sh - automagically generate debug info and file list
 #for inclusion in an rpm spec file.
 #
-# Usage: find-debuginfo.sh [--strict-build-id] [-g] [-r] [-m] [-i]
+# Usage: find-debuginfo.sh [--strict-build-id] [-g] [-r] [-m] [-i] [-n]
 #	 		   [-o debugfiles.list]
 #			   [--run-dwz] [--dwz-low-mem-die-limit N]
 #			   [--dwz-max-die-limit N]
@@ -16,6 +16,7 @@
 # The -r flag says to use eu-strip --reloc-debug-sections.
 # The -m flag says to include a .gnu_debugdata section in the main binary.
 # The -i flag says to include a .gdb_index section in the .debug file.
+# The -n flag says to not recompute the build-id.
 #
 # A single -o switch before any -l or -p switches simply renames
 # the primary output file from debugfiles.list to something else.
@@ -55,6 +56,9 @@ include_gdb_index=false
 
 # Barf on missing build IDs.
 strict=false
+
+# Do not recompute build IDs.
+no_recompute_build_id=false
 
 # DWZ parameters.
 run_dwz=false
@@ -110,6 +114,9 @@ while [ $# -gt 0 ]; do
   -m)
     include_minidebug=true
     ;;
+  -n)
+    no_recompute_build_id=true
+    ;;
   -i)
     include_gdb_index=true
     ;;
@@ -156,6 +163,11 @@ fi
 
 if test -z "$unique_debug_arch" -a -n "$unique_debug_src_base"; then
   echo >&2 "*** ERROR: --unique-debug-src-base (${unique_debug_src_base}) needs --unique-debug-arch (${unique_debug_arch})"
+  exit 2
+fi
+
+if test -n "$ver_rel" -a "$no_recompute_build_id" = "true"; then
+  echo >&2 "*** ERROR: --ver-rel (unique build-ids) and -n (do not recompute build-id cannot be used together"
   exit 2
 fi
 
@@ -324,8 +336,12 @@ do_file()
     debug_base_name="$BUILDDIR"
     debug_dest_name="/usr/src/debug/${unique_debug_src_base}-${ver_rel}.${unique_debug_arch}"
   fi
+  no_recompute=
+  if [ "$no_recompute_build_id" = "true" ]; then
+    no_recompute="-n"
+  fi
   id=$(${lib_rpm_dir}/debugedit -b $debug_base_name -d $debug_dest_name \
-			      -i $build_id_seed -l "$SOURCEFILE" "$f") || exit
+		$no_recompute -i $build_id_seed -l "$SOURCEFILE" "$f") || exit
   if [ -z "$id" ]; then
     echo >&2 "*** ${strict_error}: No build ID note found in $f"
     $strict && exit 2

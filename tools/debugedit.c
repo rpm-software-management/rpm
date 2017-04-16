@@ -85,6 +85,7 @@ char *dest_dir = NULL;
 char *list_file = NULL;
 int list_file_fd = -1;
 int do_build_id = 0;
+int no_recompute_build_id = 0;
 char *build_id_seed = NULL;
 
 /* We go over the debug sections in two phases. In phase zero we keep
@@ -2261,6 +2262,8 @@ static struct poptOption optionsTable[] = {
       "recompute build ID note and print ID on stdout", NULL },
     { "build-id-seed", 's', POPT_ARG_STRING, &build_id_seed, 0,
       "if recomputing the build ID note use this string as hash seed", NULL },
+    { "no-recompute-build-id",  'n', POPT_ARG_NONE, &no_recompute_build_id, 0,
+      "do not recompute build ID note even when -i or -s are given", NULL },
       POPT_AUTOHELP
     { NULL, 0, 0, NULL, 0, NULL, NULL }
 };
@@ -2380,7 +2383,8 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
       exit (1);
     }
 
-  if (!dirty_elf && build_id_seed == NULL)
+  if (no_recompute_build_id
+      || (! dirty_elf && build_id_seed == NULL))
     goto print;
 
   /* Clear the old bits so they do not affect the new hash.  */
