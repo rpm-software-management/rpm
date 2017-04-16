@@ -374,7 +374,16 @@ do_file()
   fi
 
   # strip -g implies we have full symtab, don't add mini symtab in that case.
-  $strip_g || ($include_minidebug && add_minidebug "${debugfn}" "$f")
+  # It only makes sense to add a minisymtab for executables and shared
+  # libraries. Other executable ELF files (like kernel modules) don't need it.
+  if [ "$include_minidebug" = "true" -a "$strip_g" = "false" ]; then
+    skip_mini=true
+    case "$(file -bi "$f")" in
+      application/x-sharedlib*) skip_mini=false ;;
+      application/x-executable*) skip_mini=false ;;
+    esac
+    $skip_mini || add_minidebug "${debugfn}" "$f"
+  fi
 
   echo "./${f#$RPM_BUILD_ROOT}" >> "$ELFBINSFILE"
 
