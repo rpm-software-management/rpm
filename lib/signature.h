@@ -27,6 +27,7 @@ struct rpmsinfo_s {
     int hashalgo;
     int range;
     int type;
+    int disabler;
     unsigned int keyid;
     union {
 	pgpDigParams sig;

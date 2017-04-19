@@ -8,6 +8,7 @@
 #include <netinet/in.h>
 
 #include <rpm/rpmtypes.h>
+#include <rpm/rpmts.h>		/* XXX: verify flags */
 #include <rpm/rpmstring.h>
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmlog.h>
@@ -38,22 +39,26 @@ rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 	tagtype = RPM_BIN_TYPE;
 	sinfo->type = RPMSIG_SIGNATURE_TYPE;
 	sinfo->range = (RPMSIG_HEADER|RPMSIG_PAYLOAD);
+	sinfo->disabler = RPMVSF_NODSA;
 	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 	tagtype = RPM_BIN_TYPE;
 	sinfo->type = RPMSIG_SIGNATURE_TYPE;
 	sinfo->range = (RPMSIG_HEADER|RPMSIG_PAYLOAD);
-	break;
-    case RPMSIGTAG_RSA:
-	tagtype = RPM_BIN_TYPE;
-	sinfo->type = RPMSIG_SIGNATURE_TYPE;
-	sinfo->range = RPMSIG_HEADER;
+	sinfo->disabler = RPMVSF_NORSA;
 	break;
     case RPMSIGTAG_DSA:
 	tagtype = RPM_BIN_TYPE;
 	sinfo->type = RPMSIG_SIGNATURE_TYPE;
 	sinfo->range = RPMSIG_HEADER;
+	sinfo->disabler = RPMVSF_NODSAHEADER;
+	break;
+    case RPMSIGTAG_RSA:
+	tagtype = RPM_BIN_TYPE;
+	sinfo->type = RPMSIG_SIGNATURE_TYPE;
+	sinfo->range = RPMSIG_HEADER;
+	sinfo->disabler = RPMVSF_NORSAHEADER;
 	break;
     case RPMSIGTAG_SHA256:
 	tagsize = 65; /* includes trailing \0 */
@@ -63,6 +68,7 @@ rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 	sinfo->hashalgo = PGPHASHALGO_SHA256;
 	sinfo->type = RPMSIG_DIGEST_TYPE;
 	sinfo->range = RPMSIG_HEADER;
+	sinfo->disabler = RPMVSF_NOSHA256HEADER;
 	break;
     case RPMSIGTAG_SHA1:
 	tagsize = 41; /* includes trailing \0 */
@@ -72,6 +78,7 @@ rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 	sinfo->hashalgo = PGPHASHALGO_SHA1;
 	sinfo->type = RPMSIG_DIGEST_TYPE;
 	sinfo->range = RPMSIG_HEADER;
+	sinfo->disabler = RPMVSF_NOSHA1HEADER;
 	break;
     case RPMSIGTAG_MD5:
 	tagtype = RPM_BIN_TYPE;
@@ -79,6 +86,7 @@ rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 	sinfo->hashalgo = PGPHASHALGO_MD5;
 	sinfo->type = RPMSIG_DIGEST_TYPE;
 	sinfo->range = (RPMSIG_HEADER|RPMSIG_PAYLOAD);
+	sinfo->disabler = RPMVSF_NOMD5;
 	break;
     case RPMSIGTAG_SIZE:
     case RPMSIGTAG_PAYLOADSIZE:
@@ -106,6 +114,7 @@ rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 	sinfo->hashalgo = PGPHASHALGO_SHA256;
 	sinfo->type = RPMSIG_DIGEST_TYPE;
 	sinfo->range = RPMSIG_PAYLOAD;
+	sinfo->disabler = RPMVSF_NOPAYLOAD;
 	/* XXX: get the last element, fail due to tagcount is arbitrary */
 	if (rpmtdSetIndex(td, rpmtdCount(td)-1) == -1)
 	    tagcount = 0;
