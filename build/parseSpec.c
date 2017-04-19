@@ -769,6 +769,7 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
     } else {
 	spec->buildRoot = rpmGetPath("%{?buildroot:%{buildroot}}", NULL);
     }
+    rpmPushMacro(NULL, "_specfile", NULL, spec->specFile, RMIL_SPEC);
     rpmPushMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
     rpmPushMacro(NULL, "_licensedir", NULL, "%{_defaultlicensedir}", RMIL_SPEC);
     spec->recursing = recursing;
