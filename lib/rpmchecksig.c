@@ -217,7 +217,7 @@ static void formatResult(rpmTagVal sigtag, rpmRC sigres, const char *result,
     free(msg);
 }
 
-static void initDigests(FD_t fd, Header sigh, int range, rpmQueryFlags flags)
+static void initDigests(FD_t fd, Header sigh, int range, rpmVSFlags flags)
 {
     struct rpmsinfo_s sinfo;
     struct rpmtd_s sigtd;
@@ -228,9 +228,7 @@ static void initDigests(FD_t fd, Header sigh, int range, rpmQueryFlags flags)
 	rpmsinfoFini(&sinfo);
 	if (rpmsinfoInit(&sigtd, "package", &sinfo, NULL))
 	    continue;
-	if (!(flags & VERIFY_SIGNATURE) && sinfo.type == RPMSIG_SIGNATURE_TYPE)
-	    continue;
-	if (!(flags & VERIFY_DIGEST) && sinfo.type == RPMSIG_DIGEST_TYPE)
+	if (flags & sinfo.disabler)
 	    continue;
 
 	if (sinfo.hashalgo && (sinfo.range & range))
@@ -240,7 +238,7 @@ static void initDigests(FD_t fd, Header sigh, int range, rpmQueryFlags flags)
     headerFreeIterator(hi);
 }
 
-static int verifyItems(FD_t fd, Header sigh, int range, rpmQueryFlags flags,
+static int verifyItems(FD_t fd, Header sigh, int range, rpmVSFlags flags,
 		       rpmKeyring keyring,
 		       char **missingKeys, char **untrustedKeys, char **buf)
 {
@@ -259,9 +257,7 @@ static int verifyItems(FD_t fd, Header sigh, int range, rpmQueryFlags flags,
 	/* Note: we permit failures to be ignored via disablers */
 	rpmRC rc = rpmsinfoInit(&sigtd, "package", &sinfo, &result);
 
-	if (!(flags & VERIFY_SIGNATURE) && sinfo.type == RPMSIG_SIGNATURE_TYPE)
-	    continue;
-	if (!(flags & VERIFY_DIGEST) && sinfo.type == RPMSIG_DIGEST_TYPE)
+	if (flags & sinfo.disabler)
 	    continue;
 	if (sinfo.type == RPMSIG_UNKNOWN_TYPE)
 	    continue;
@@ -288,7 +284,7 @@ static int verifyItems(FD_t fd, Header sigh, int range, rpmQueryFlags flags,
     return failed;
 }
 
-static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
+static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
 			   FD_t fd, const char *fn)
 {
 
@@ -392,9 +388,12 @@ int rpmcliVerifySignatures(rpmts ts, ARGV_const_t argv)
     const char * arg;
     int res = 0;
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
-    rpmVerifyFlags verifyFlags = (VERIFY_DIGEST|VERIFY_SIGNATURE);
-    
-    verifyFlags &= ~rpmcliQueryFlags;
+    rpmVSFlags vsflags = 0;
+
+    if (rpmcliQueryFlags & QUERY_DIGEST)
+	vsflags |= _RPMVSF_NODIGESTS;
+    if (rpmcliQueryFlags & QUERY_SIGNATURE)
+	vsflags |= _RPMVSF_NOSIGNATURES;
 
     while ((arg = *argv++) != NULL) {
 	FD_t fd = Fopen(arg, "r.ufdio");
@@ -402,7 +401,7 @@ int rpmcliVerifySignatures(rpmts ts, ARGV_const_t argv)
 	    rpmlog(RPMLOG_ERR, _("%s: open failed: %s\n"), 
 		     arg, Fstrerror(fd));
 	    res++;
-	} else if (rpmpkgVerifySigs(keyring, verifyFlags, fd, arg)) {
+	} else if (rpmpkgVerifySigs(keyring, vsflags, fd, arg)) {
 	    res++;
 	}
 
