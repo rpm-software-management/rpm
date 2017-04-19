@@ -128,6 +128,8 @@ rm -rf "${TOPDIR}"
 runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed.rpm
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
 runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed.rpm
+runroot rpmkeys -Kv --nodigest /data/RPMS/hello-2.0-1.x86_64-signed.rpm
+runroot rpmkeys -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed.rpm
 ],
 [0],
 [/data/RPMS/hello-2.0-1.x86_64-signed.rpm:
@@ -143,6 +145,14 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed.rpm
     Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
     Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
     V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
+    MD5 digest: OK (137ca1d8b35cca02a1854ba301c5432e)
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm:
+    Header V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
+    V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm:
+    Header SHA1 digest: OK (5cd9874c510b67b44483f9e382a1649ef7743bac)
+    Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
+    Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
     MD5 digest: OK (137ca1d8b35cca02a1854ba301c5432e)
 ],
 [])
