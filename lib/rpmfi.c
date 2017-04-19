@@ -1005,7 +1005,6 @@ rpmFileAction rpmfilesDecideFate(rpmfiles ofi, int oix,
      * Only regular files and symlinks might need a backup, everything
      * else falls through here with FA_CREATE.
      */
-    memset(buffer, 0, sizeof(buffer));
     if (dbWhat == REG) {
 	int oalgo, nalgo;
 	size_t odiglen, ndiglen;
