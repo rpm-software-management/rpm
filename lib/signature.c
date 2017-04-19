@@ -35,16 +35,25 @@ rpmRC rpmsinfoInit(rpmtd td, const char *origin,
     memset(sinfo, 0, sizeof(*sinfo));
     switch (td->tag) {
     case RPMSIGTAG_GPG:
+	tagtype = RPM_BIN_TYPE;
+	sinfo->type = RPMSIG_SIGNATURE_TYPE;
+	sinfo->range = (RPMSIG_HEADER|RPMSIG_PAYLOAD);
+	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	sinfo->range = RPMSIG_PAYLOAD;
-	/* fallthrough */
+	tagtype = RPM_BIN_TYPE;
+	sinfo->type = RPMSIG_SIGNATURE_TYPE;
+	sinfo->range = (RPMSIG_HEADER|RPMSIG_PAYLOAD);
+	break;
     case RPMSIGTAG_RSA:
+	tagtype = RPM_BIN_TYPE;
+	sinfo->type = RPMSIG_SIGNATURE_TYPE;
+	sinfo->range = RPMSIG_HEADER;
+	break;
     case RPMSIGTAG_DSA:
 	tagtype = RPM_BIN_TYPE;
 	sinfo->type = RPMSIG_SIGNATURE_TYPE;
-	/* GPG/PGP are hdr+payload, RSA/DSA are hdr-only */
-	sinfo->range |= RPMSIG_HEADER;
+	sinfo->range = RPMSIG_HEADER;
 	break;
     case RPMSIGTAG_SHA256:
 	tagsize = 65; /* includes trailing \0 */
