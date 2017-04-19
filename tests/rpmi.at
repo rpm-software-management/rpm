@@ -354,3 +354,257 @@ runroot rpm -e testdoc
 [],
 [])
 AT_CLEANUP
+
+
+# ------------------------------
+# Test mutable file
+AT_SETUP([mutable file - only works as root!])
+AT_KEYWORDS([mutable policy link])
+AT_CHECK([
+AT_XFAIL_IF([test `whoami` != root ])
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/policy.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for v in 1.0 2.0; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver ${v}" \
+        --define "filetype file" \
+        --define "filedata old_contents" \
+        --define "fileattr %mutable" \
+          /data/SPECS/updpolicy.spec
+done
+
+for v in 3.0 4.0; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver ${v}" \
+        --define "filetype file" \
+        --define "filedata new_contents" \
+        --define "fileattr %mutable" \
+          /data/SPECS/updpolicy.spec
+done
+
+
+#test update mutable file without changes and with changed contents
+
+runroot rpm -U /build/RPMS/noarch/update-policy-test-1.0-1.noarch.rpm
+cat "${cf}"
+
+runroot rpm -U /build/RPMS/noarch/update-policy-test-2.0-1.noarch.rpm
+cat "${cf}"
+
+runroot rpm -U /build/RPMS/noarch/update-policy-test-3.0-1.noarch.rpm
+cat "${cf}"
+echo "CHANGE" > "${cf}"
+
+runroot rpm -U /build/RPMS/noarch/update-policy-test-4.0-1.noarch.rpm
+cat "${cf}"
+
+runroot rpm -e update-policy-test
+test ! -f "${cf}" && echo OK1
+
+
+#test update mutable file with changed mode
+runroot rpm -U /build/RPMS/noarch/update-policy-test-2.0-1.noarch.rpm
+cat "${cf}"
+chmod a+x "${cf}"
+runroot rpm -U /build/RPMS/noarch/update-policy-test-3.0-1.noarch.rpm
+cat "${cf}"
+runroot rpm -e update-policy-test
+test ! -f "${cf}" && echo OK2
+],
+[],
+[old_contents
+old_contents
+new_contents
+CHANGE
+OK1
+old_contents
+old_contents
+OK2
+],
+[])
+AT_CLEANUP
+
+
+# ------------------------------
+# Test mutable link
+AT_SETUP([mutable link])
+AT_KEYWORDS([mutable policy link])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/policy.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for v in 1.0 2.0; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver ${v}" \
+        --define "filetype link" \
+        --define "filedata old_contents" \
+        --define "fileattr %mutable" \
+          /data/SPECS/updpolicy.spec
+done
+
+for v in 3.0 4.0; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver ${v}" \
+        --define "filetype link" \
+        --define "filedata new_contents" \
+        --define "fileattr %mutable" \
+          /data/SPECS/updpolicy.spec
+done
+
+
+#test update mutable link without changes and with changed contents
+
+runroot rpm -U /build/RPMS/noarch/update-policy-test-1.0-1.noarch.rpm
+readlink "${cf}"
+
+runroot rpm -U /build/RPMS/noarch/update-policy-test-2.0-1.noarch.rpm
+readlink "${cf}"
+
+runroot rpm -U /build/RPMS/noarch/update-policy-test-3.0-1.noarch.rpm
+readlink "${cf}"
+ln -sf "CHANGE" "${cf}"
+
+runroot rpm -U /build/RPMS/noarch/update-policy-test-4.0-1.noarch.rpm
+readlink "${cf}"
+
+runroot rpm -e update-policy-test
+test ! -L "${cf}" && echo OK1
+],
+[],
+[old_contents
+old_contents
+new_contents
+CHANGE
+OK1
+],
+[])
+AT_CLEANUP
+
+
+
+
+
+# ------------------------------
+# Test noupdate file
+AT_SETUP([noupdate file])
+AT_KEYWORDS([noupdate policy link])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/policy.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for v in 1.0 2.0; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver ${v}" \
+        --define "filetype file" \
+        --define "filedata old_contents" \
+        --define "fileattr %noupdate" \
+          /data/SPECS/updpolicy.spec
+done
+
+for v in 3.0 4.0; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver ${v}" \
+        --define "filetype file" \
+        --define "filedata new_contents" \
+        --define "fileattr %noupdate" \
+          /data/SPECS/updpolicy.spec
+done
+
+
+#test update mutable file without changes and with changed contents
+
+runroot rpm -U /build/RPMS/noarch/update-policy-test-1.0-1.noarch.rpm
+cat "${cf}"
+
+runroot rpm -U /build/RPMS/noarch/update-policy-test-2.0-1.noarch.rpm
+cat "${cf}"
+
+runroot rpm -U /build/RPMS/noarch/update-policy-test-3.0-1.noarch.rpm
+cat "${cf}"
+echo "CHANGE" > "${cf}"
+
+runroot rpm -U /build/RPMS/noarch/update-policy-test-4.0-1.noarch.rpm
+cat "${cf}"
+
+runroot rpm -e update-policy-test
+test ! -f "${cf}" && echo OK1
+
+],
+[],
+[old_contents
+old_contents
+old_contents
+CHANGE
+OK1
+],
+[])
+AT_CLEANUP
+
+
+# ------------------------------
+# Test noupdate link
+AT_SETUP([noupdate link])
+AT_KEYWORDS([noupdate policy link])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/policy.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for v in 1.0 2.0; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver ${v}" \
+        --define "filetype link" \
+        --define "filedata old_contents" \
+        --define "fileattr %noupdate" \
+          /data/SPECS/updpolicy.spec
+done
+
+for v in 3.0 4.0; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver ${v}" \
+        --define "filetype link" \
+        --define "filedata new_contents" \
+        --define "fileattr %noupdate" \
+          /data/SPECS/updpolicy.spec
+done
+
+
+#test update mutable link without changes and with changed contents
+
+runroot rpm -U /build/RPMS/noarch/update-policy-test-1.0-1.noarch.rpm
+readlink "${cf}"
+
+runroot rpm -U /build/RPMS/noarch/update-policy-test-2.0-1.noarch.rpm
+readlink "${cf}"
+
+runroot rpm -U /build/RPMS/noarch/update-policy-test-3.0-1.noarch.rpm
+readlink "${cf}"
+ln -sf "CHANGE" "${cf}"
+
+runroot rpm -U /build/RPMS/noarch/update-policy-test-4.0-1.noarch.rpm
+readlink "${cf}"
+
+runroot rpm -e update-policy-test
+test ! -L "${cf}" && echo OK1
+],
+[],
+[old_contents
+old_contents
+old_contents
+CHANGE
+OK1
+],
+[])
+AT_CLEANUP

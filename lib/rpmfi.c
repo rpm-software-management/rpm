@@ -1089,6 +1089,142 @@ exit:
     return action;
 }
 
+
+rpmFileAction rpmfilesSetMutableAction(rpmfiles ofi, int oix,
+				   rpmfiles nfi, int nix)
+{
+    char * fn = rpmfilesFN(nfi, nix);
+    rpmFileTypes diskWhat;
+    struct stat sb;
+    int action = FA_UNKNOWN;
+
+    /* The file doesn't exist on the disk. Create it. */
+    if (lstat(fn, &sb)) {
+	action = FA_CREATE;
+	goto exit;
+    }
+
+    diskWhat = rpmfiWhatis((rpm_mode_t)sb.st_mode);
+
+    if ((diskWhat == REG) &&
+	(rpmfiWhatis(rpmfilesFMode(ofi, oix)) == REG) &&
+	(rpmfiWhatis(rpmfilesFMode(nfi, nix)) == REG) ) {
+	char buffer[1024];
+	int oalgo, nalgo;
+	size_t odiglen, ndiglen;
+	const unsigned char * odigest, * ndigest;
+	const char * nfuser, * ofuser;
+	uid_t uid;
+	const char * nfgroup, * ofgroup;
+	gid_t gid;
+
+	/* If the file on disk is identical to the one in new pkg, then touch it */
+	if (rpmfilesFSize(nfi, nix) == sb.st_size) {
+
+	    if (rpmfilesFMode(nfi, nix) == ((rpm_mode_t)sb.st_mode)) {
+
+		nfuser = rpmfilesFUser(nfi, nix);
+		if ((nfuser && rpmugUid(nfuser, &uid) == 0) &&
+		    (uid == sb.st_uid)) {
+
+                    nfgroup = rpmfilesFGroup(nfi, nix);
+                    if ((nfgroup && rpmugGid(nfgroup, &gid) == 0) &&
+	                (gid == sb.st_gid)) {
+
+                        ndigest = rpmfilesFDigest(nfi, nix, &nalgo, &ndiglen);
+			if ((!rpmDoDigest(nalgo, fn, 0, (unsigned char *)buffer, NULL)) &&
+	                    (ndigest && memcmp(ndigest, buffer, ndiglen) == 0)) {
+                            action = FA_TOUCH;
+	                    goto exit;
+			}
+		    }
+		}
+	    }
+	}
+
+	/* If the file on disk is identical to the one in old pkg, then create it */
+	if (rpmfilesFSize(ofi, oix) == sb.st_size) {
+
+            if (rpmfilesFMode(ofi, oix) == ((rpm_mode_t)sb.st_mode)) {
+
+		ofuser = rpmfilesFUser(ofi, oix);
+		if ((ofuser && rpmugUid(ofuser, &uid) == 0) &&
+		    (uid == sb.st_uid)) {
+
+                    ofgroup = rpmfilesFGroup(ofi, oix);
+		    if ((ofgroup && rpmugGid(ofgroup, &gid) == 0) &&
+			(gid == sb.st_gid)) {
+
+			odigest = rpmfilesFDigest(ofi, oix, &oalgo, &odiglen);
+			if ((!rpmDoDigest(oalgo, fn, 0, (unsigned char *)buffer, NULL)) &&
+			    (odigest && memcmp(odigest, buffer, odiglen) == 0)) {
+			    action = FA_CREATE;
+			    goto exit;
+			}
+		    }
+		}
+	    }
+	}
+
+	/* file is changed, let it be */
+	action = FA_SKIP;
+
+    }  else if ((diskWhat == LINK) &&
+	(rpmfiWhatis(rpmfilesFMode(ofi, oix)) == LINK) &&
+	(rpmfiWhatis(rpmfilesFMode(nfi, nix)) == LINK) ) {
+
+	char buffer[1024];
+	const char * oFLink, * nFLink;
+
+	/* if the link on disk is identical to the one in new pkg, then touch it  */
+	nFLink = rpmfilesFLink(nfi, nix);
+
+	ssize_t link_len = readlink(fn, buffer, sizeof(buffer) - 1);
+	if (link_len != -1) {
+	    buffer[link_len] = '\0';
+	    if (nFLink && rstreq(nFLink, buffer)) {
+		action = FA_TOUCH;
+		goto exit;
+	    }
+	}
+
+	/* if the link on disk is identical to the one in old pkg, then create it  */
+	oFLink = rpmfilesFLink(ofi, oix);
+	if ((link_len != -1) && (oFLink && rstreq(oFLink, buffer))) {
+	    action = FA_CREATE;
+	    goto exit;
+	}
+
+	/* link is changed, let it be */
+	action = FA_SKIP;
+    }
+
+exit:
+    free(fn);
+    return action;
+ }
+
+
+rpmFileAction rpmfilesSetNoupdateAction(rpmfiles ofi, int oix,
+				   rpmfiles nfi, int nix)
+{
+    char * fn = rpmfilesFN(nfi, nix);
+    struct stat sb;
+    int action = FA_UNKNOWN;
+
+    if (lstat(fn, &sb)) {
+	/* The file/link/ doesn't exist on the disk. Create it. */
+	action = FA_CREATE;
+    } else {
+	/* The file exists, let it be. */
+	action = FA_SKIP;
+    }
+
+    free(fn);
+    return action;
+ }
+
+
 int rpmfilesConfigConflict(rpmfiles fi, int ix)
 {
     char * fn = NULL;
