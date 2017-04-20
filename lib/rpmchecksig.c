@@ -301,8 +301,6 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
     if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERIMMUTABLE, &blob, &msg))
 	goto exit;
 
-    rasprintf(&buf, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
-
     /* Verify header signatures and digests */
     failed += verifyItems(fd, sigh, (RPMSIG_HEADER), flags, keyring, &buf);
 
@@ -328,10 +326,10 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
 	rc = RPMRC_OK;
 
     if (rpmIsVerbose()) {
-	rpmlog(RPMLOG_NOTICE, "%s", buf);
+	rpmlog(RPMLOG_NOTICE, "%s:\n%s", fn, buf);
     } else {
 	const char *ok = (failed ? _("NOT OK") : _("OK"));
-	rpmlog(RPMLOG_NOTICE, "%s%s\n", buf, ok);
+	rpmlog(RPMLOG_NOTICE, "%s: %s%s\n", fn, buf, ok);
     }
 
 exit:
