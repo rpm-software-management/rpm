@@ -166,10 +166,10 @@ static const char *sigtagname(rpmTagVal sigtag, int upper)
 	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	n = (upper ? "(MD5) PGP" : "(md5) pgp");
+	n = (upper ? "PGP" : "pgp");
 	break;
     case RPMSIGTAG_DSA:
-	n = (upper ? "(SHA1) DSA" : "(sha1) dsa");
+	n = (upper ? "DSA" : "dsa");
 	break;
     case RPMSIGTAG_GPG:
 	n = (upper ? "GPG" : "gpg");
