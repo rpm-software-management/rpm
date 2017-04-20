@@ -185,16 +185,13 @@ static const char *sigtagname(rpmTagVal sigtag, int upper)
 }
 
 /* 
- * Format sigcheck result for output, appending the message spew to buf and
- * bad/missing keyids to keyprob.
- *
+ * Format sigcheck result for output, appending the message spew to buf.
  * In verbose mode, just dump it all. Otherwise ok signatures
- * are dumped lowercase, bad sigs uppercase and for PGP/GPG
- * if missing key it's uppercase in parenthesis
- * and stash the key id as <SIGTYPE>#<keyid>. Pfft.
+ * are dumped lowercase, bad sigs uppercase and in parentheses if
+ * missing key. Pfft.
  */
 static void formatResult(rpmTagVal sigtag, rpmRC sigres, const char *result,
-			 char **keyprob, char **buf)
+			 char **buf)
 {
     char *msg = NULL;
     if (rpmIsVerbose()) {
@@ -202,16 +199,7 @@ static void formatResult(rpmTagVal sigtag, rpmRC sigres, const char *result,
     } else { 
 	/* Check for missing keys in result. */
 	const char *signame = sigtagname(sigtag, (sigres != RPMRC_OK));
-	
-	if (sigres == RPMRC_NOKEY || sigres == RPMRC_NOTTRUSTED) {
-	    const char *tempKey = strstr(result, "ey ID");
-	    if (tempKey) {
-		char keyid[sizeof(pgpKeyID_t) + 1];
-		rstrlcpy(keyid, tempKey + 6, sizeof(keyid));
-		rstrscat(keyprob, " ", signame, "#", keyid, NULL);
-	    }
-	}
-	rasprintf(&msg, ((keyprob && *keyprob) ? "(%s) " : "%s "), signame);
+	rasprintf(&msg, ((sigres == RPMRC_NOKEY) ? "(%s) " : "%s "), signame);
     }
     rstrcat(buf, msg);
     free(msg);
@@ -239,8 +227,7 @@ static void initDigests(FD_t fd, Header sigh, int range, rpmVSFlags flags)
 }
 
 static int verifyItems(FD_t fd, Header sigh, int range, rpmVSFlags flags,
-		       rpmKeyring keyring,
-		       char **missingKeys, char **buf)
+		       rpmKeyring keyring, char **buf)
 {
     int failed = 0;
     struct rpmsinfo_s sinfo;
@@ -270,8 +257,7 @@ static int verifyItems(FD_t fd, Header sigh, int range, rpmVSFlags flags,
 	}
 
 	if (result) {
-	    formatResult(sinfo.tag, rc, result,
-		     (rc == RPMRC_NOKEY ? missingKeys : NULL), buf);
+	    formatResult(sinfo.tag, rc, result, buf);
 	}
 
 	if (rc != RPMRC_OK)
@@ -289,7 +275,6 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
 {
 
     char *buf = NULL;
-    char *missingKeys = NULL; 
     Header sigh = NULL;
     Header h = NULL;
     char * msg = NULL;
@@ -319,8 +304,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
     rasprintf(&buf, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
 
     /* Verify header signatures and digests */
-    failed += verifyItems(fd, sigh, (RPMSIG_HEADER), flags, keyring,
-			&missingKeys, &buf);
+    failed += verifyItems(fd, sigh, (RPMSIG_HEADER), flags, keyring, &buf);
 
     /* Fish interesting tags from the main header */
     if (hdrblobImport(&blob, 0, &h, &msg))
@@ -336,9 +320,9 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
 
     /* Verify signatures and digests ranging over the payload */
     failed += verifyItems(fd, sigh, (RPMSIG_PAYLOAD), flags,
-			keyring, &missingKeys, &buf);
+			keyring, &buf);
     failed += verifyItems(fd, sigh, (RPMSIG_HEADER|RPMSIG_PAYLOAD), flags,
-			keyring, &missingKeys, &buf);
+			keyring, &buf);
 
     if (failed == 0)
 	rc = RPMRC_OK;
@@ -347,10 +331,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
 	rpmlog(RPMLOG_NOTICE, "%s", buf);
     } else {
 	const char *ok = (failed ? _("NOT OK") : _("OK"));
-	rpmlog(RPMLOG_NOTICE, "%s%s%s%s%s\n", buf, ok,
-	       missingKeys ? _(" (MISSING KEYS:") : "",
-	       missingKeys ? missingKeys : "",
-	       missingKeys ? _(")") : "");
+	rpmlog(RPMLOG_NOTICE, "%s%s\n", buf, ok);
     }
 
 exit:
@@ -360,7 +341,6 @@ exit:
     free(buf);
     free(sigblob.ei);
     free(blob.ei);
-    free(missingKeys);
     sigh = headerFree(sigh);
     h = headerFree(h);
     return rc;

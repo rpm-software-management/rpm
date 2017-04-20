@@ -130,7 +130,7 @@ runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
 runroot rpmkeys -K /data/RPMS/hello-2.0-1.x86_64-signed.rpm
 ],
 [0],
-[[/data/RPMS/hello-2.0-1.x86_64-signed.rpm: (RSA) sha1 sha256 payload ((MD5) PGP) md5 NOT OK (MISSING KEYS: RSA#1964c5fc (MD5) PGP#1964c5fc)
+[[/data/RPMS/hello-2.0-1.x86_64-signed.rpm: (RSA) sha1 sha256 payload ((MD5) PGP) md5 NOT OK
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm: rsa sha1 sha256 payload (md5) pgp md5 OK
 ]],
 [])
