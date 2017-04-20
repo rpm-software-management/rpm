@@ -106,6 +106,17 @@ def _pypi_source_url(pkg_name, version=None, suffix=None):
                                                     suffix=suffix)
     return (full_pkg_name, version, pypi_url, md5_digest)
 
+def pypi_url(pkg_name, version=None, suffix=None):
+    """
+    Get download url.
+    If version=None, latest release available from PyPI will be used.
+    If suffix=None, file suffix will be determined automatically, with the
+    preferred format picked if multiple available
+    """
+    (full_pkg_name, version, url, md5_digest) = \
+            _pypi_source_url(pkg_name, version=version, suffix=suffix)
+    sys.stdout.write(url)
+
 class _bdist_rpm(bdist_rpm):
 
     script_options = {

@@ -1259,7 +1259,7 @@ end}
 %_rpminterp_python_modpath %{python_sitearch}/rpm/_rpm*.so
 
 # Embedded python interpreter initialization commands
-%_rpminterp_python_init	import rpm; from rpm.generate import pyspec \
+%_rpminterp_python_init	import rpm; from rpm.generate import pyspec, pypi_url \
 %{nil}
 
 # \endverbatim
