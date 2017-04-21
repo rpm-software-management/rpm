@@ -209,6 +209,8 @@ static int sinfoDisabled(struct rpmsinfo_s *sinfo, rpmVSFlags vsflags)
 {
     if (vsflags & sinfo->disabler)
 	return 1;
+    if ((vsflags & RPMVSF_NEEDPAYLOAD) && (sinfo->range & RPMSIG_PAYLOAD))
+	return 1;
     return 0;
 }
 
