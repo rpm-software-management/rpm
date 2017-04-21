@@ -1056,6 +1056,8 @@ rpmts rpmtsCreate(void)
 
     ts->trigs2run = rpmtriggersCreate(10);
 
+    ts->min_writes = rpmExpandNumeric("%{_minimize_writes}");
+
     return rpmtsLink(ts);
 }
 

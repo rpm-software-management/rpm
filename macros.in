@@ -688,6 +688,11 @@ package or when debugging this package.\
 %_vsflags_rebuilddb	0xc0c00
 %_vsflags_verify	%{__vsflags}
 
+# Set to 1 to minimize writing (at the cost of more reads) to
+# conserve eg SSD disks.
+%_minimize_writes      0
+
+
 #
 # Default output format string for rpm -qa
 #

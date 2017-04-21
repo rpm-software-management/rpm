@@ -475,6 +475,14 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfiles fi, int fx
 	action = rpmfilesDecideFate(otherFi, ofx, fi, fx, skipMissing);
 	rpmfsSetAction(fs, fx, action);
     }
+
+    /* Skip already existing files - if 'minimize_writes' is set. */
+    if ((!isCfgFile) && (rpmfsGetAction(fs, fx) == FA_UNKNOWN)  && ts->min_writes) {
+	if (rpmfileContentsEqual(otherFi, ofx, fi, fx)) {
+	   rpmfsSetAction(fs, fx, FA_TOUCH);
+	}
+    }
+
     rpmfilesSetFReplacedSize(fi, fx, rpmfilesFSize(otherFi, ofx));
 }
 

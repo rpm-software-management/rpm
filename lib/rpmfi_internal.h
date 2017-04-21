@@ -68,6 +68,18 @@ rpmsid rpmfilesODNId(rpmfiles fi, int jx);
 RPM_GNUC_INTERNAL
 struct fingerPrint_s *rpmfilesFps(rpmfiles fi);
 
+/** \ingroup rpmfi
+ * Check if the file in new package, in old package and on the disk have the same contents.
+ * @param 	new file info set
+ * @param 	new file index
+ * @param 	old file info set
+ * @param 	old file index
+ * @return	1 if the condition is satisfied, 0 otherwise
+ */
+RPM_GNUC_INTERNAL
+int rpmfileContentsEqual(rpmfiles ofi, int oix, rpmfiles nfi, int nix);
+
+
 RPM_GNUC_INTERNAL
 rpmFileAction rpmfilesDecideFate(rpmfiles ofi, int oix,
 				   rpmfiles nfi, int nix,

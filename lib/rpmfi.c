@@ -962,6 +962,56 @@ int rpmfilesCompare(rpmfiles afi, int aix, rpmfiles bfi, int bix)
     return 0;
 }
 
+int rpmfileContentsEqual(rpmfiles ofi, int oix, rpmfiles nfi, int nix)
+{
+    char * fn = rpmfilesFN(nfi, nix);
+    rpmFileTypes diskWhat, newWhat, oldWhat;
+    struct stat sb;
+    int equal = 0;
+
+    if (fn == NULL || (lstat(fn, &sb))) {
+	goto exit; /* The file doesn't exist on the disk */
+    }
+
+    if (rpmfilesFSize(nfi, nix) != sb.st_size) {
+	goto exit;
+    }
+
+    diskWhat = rpmfiWhatis((rpm_mode_t)sb.st_mode);
+    newWhat = rpmfiWhatis(rpmfilesFMode(nfi, nix));
+    oldWhat = rpmfiWhatis(rpmfilesFMode(ofi, oix));
+
+    if ((diskWhat == REG) && (newWhat == REG) && (oldWhat == REG)) {
+	int oalgo, nalgo;
+	size_t odiglen, ndiglen;
+	const unsigned char * odigest, * ndigest;
+	char buffer[1024];
+
+	odigest = rpmfilesFDigest(ofi, oix, &oalgo, &odiglen);
+	ndigest = rpmfilesFDigest(nfi, nix, &nalgo, &ndiglen);
+	/* See if the file in old pkg is identical to the one in new pkg */
+	if ((oalgo != nalgo) || (odiglen != ndiglen) || (!ndigest) ||
+	    (memcmp(odigest, ndigest, ndiglen) != 0)) {
+	    goto exit;
+	}
+
+	if (rpmDoDigest(nalgo, fn, 0, (unsigned char *)buffer, NULL) != 0) {
+	     goto exit;		/* assume file has been removed */
+	}
+
+	/* See if the file on disk is identical to the one in new pkg */
+	if (memcmp(ndigest, buffer, ndiglen) == 0) {
+	    equal = 1;
+	    goto exit;
+	}
+    }
+
+exit:
+    free(fn);
+    return equal;
+}
+
+
 rpmFileAction rpmfilesDecideFate(rpmfiles ofi, int oix,
 				   rpmfiles nfi, int nix,
 				   int skipMissing)

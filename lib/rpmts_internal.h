@@ -84,6 +84,8 @@ struct rpmts_s {
     int nrefs;			/*!< Reference count. */
 
     rpmtriggers trigs2run;   /*!< Transaction file triggers */
+
+    int min_writes;             /*!< macro minimize_writes used */
 };
 
 #ifdef __cplusplus

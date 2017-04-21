@@ -193,3 +193,170 @@ runroot rpm -Va --nouser --nogroup
 [],
 [])
 AT_CLEANUP
+
+# ------------------------------
+# Upgraded package verification with min_writes 1
+AT_SETUP([Upgraded package verification with min_writes 1])
+AT_KEYWORDS([upgrade verify min_writes])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${tf}" "${tf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype file" \
+	--define "filedata foo" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype file" \
+	--define "filedata foo" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 3.0" \
+	--define "filetype file" \
+	--define "filedata fox" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 4.0" \
+	--define "filetype file" \
+	--define "filedata fox" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -i /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+cat "${tf}"
+touch -t 201703171717 ${tf}
+
+runroot rpm -U \
+	--define "_minimize_writes 1" \
+	 /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+runroot rpm -Va --nouser --nogroup replacetest
+cat "${tf}"
+
+runroot rpm -U \
+	--define "_minimize_writes 1" \
+	/build/RPMS/noarch/replacetest-3.0-1.noarch.rpm
+runroot rpm -Va  --nouser --nogroup replacetest
+cat "${tf}"
+
+echo "xx" > "${tf}"
+cat "${tf}"
+
+runroot rpm -U \
+	--define "_minimize_writes 1" \
+	/build/RPMS/noarch/replacetest-4.0-1.noarch.rpm
+runroot rpm -Va  --nouser --nogroup replacetest
+cat "${tf}"
+
+touch -t 201703171717 ${tf}
+
+runroot rpm -U --oldpackage \
+	--define "_minimize_writes 1" \
+	/build/RPMS/noarch/replacetest-3.0-1.noarch.rpm
+runroot rpm -Va  --nouser --nogroup replacetest
+cat "${tf}"
+],
+[0],
+[foo
+foo
+fox
+xx
+fox
+fox
+],
+[])
+AT_CLEANUP
+
+
+# ------------------------------
+# Upgraded package verification with min_writes 2
+AT_SETUP([Upgraded package verification with min_writes 2])
+AT_KEYWORDS([upgrade verify min_writes])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${tf}" "${tf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype file" \
+	--define "filedata foo" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype file" \
+	--define "filedata foo" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 3.0" \
+	--define "filetype file" \
+	--define "filedata fox" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 4.0" \
+	--define "filetype file" \
+	--define "filedata fox" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -i /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+cat "${tf}"
+touch -t 201703171717 ${tf}
+
+runroot rpm -Uvv --fsmdebug \
+	--define "_minimize_writes 1" \
+	 /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm > output.txt 2>&1
+runroot rpm -Va --nouser --nogroup replacetest
+grep -c "touch" output.txt
+cat "${tf}"
+
+
+runroot rpm -Uvv --fsmdebug \
+	--define "_minimize_writes 1" \
+	/build/RPMS/noarch/replacetest-3.0-1.noarch.rpm  > output.txt 2>&1
+runroot rpm -Va  --nouser --nogroup replacetest
+grep -c "touch" output.txt
+cat "${tf}"
+echo "xx" > "${tf}"
+cat "${tf}"
+
+runroot rpm -Uvv --fsmdebug \
+	--define "_minimize_writes 1" \
+	/build/RPMS/noarch/replacetest-4.0-1.noarch.rpm  > output.txt 2>&1
+runroot rpm -Va  --nouser --nogroup replacetest
+grep -c "touch" output.txt
+cat "${tf}"
+
+touch -t 201703171717 ${tf}
+
+runroot rpm -U -Uvv --fsmdebug  --oldpackage \
+	--define "_minimize_writes 1" \
+	/build/RPMS/noarch/replacetest-3.0-1.noarch.rpm  > output.txt 2>&1
+runroot rpm -Va  --nouser --nogroup replacetest
+grep -c  "touch" output.txt
+cat "${tf}"
+],
+[0],
+[foo
+2
+foo
+1
+fox
+xx
+1
+fox
+2
+fox
+],
+[])
+AT_CLEANUP
