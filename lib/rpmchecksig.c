@@ -133,14 +133,14 @@ static int readFile(FD_t fd, char **msg)
     return (count != 0);
 }
 
-static rpmRC formatVerbose(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *result)
+static rpmRC formatVerbose(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *result, void *cbdata)
 {
     rpmlog(RPMLOG_NOTICE, "    %s\n", result);
     return sigres;
 }
 
 /* Failures are uppercase, in parenthesis if NOKEY. Otherwise lowercase. */
-static rpmRC formatDefault(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *result)
+static rpmRC formatDefault(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *result, void *cbdata)
 {
     const char *signame;
     int upper = sigres != RPMRC_OK;
@@ -215,7 +215,7 @@ static void initDigests(FD_t fd, Header sigh, int range, rpmVSFlags flags)
 }
 
 static int verifyItems(FD_t fd, Header sigh, int range, rpmVSFlags flags,
-		       rpmKeyring keyring, rpmsinfoCb cb)
+		       rpmKeyring keyring, rpmsinfoCb cb, void *cbdata)
 {
     int failed = 0;
     struct rpmsinfo_s sinfo;
@@ -242,7 +242,7 @@ static int verifyItems(FD_t fd, Header sigh, int range, rpmVSFlags flags,
 	    fdFiniDigest(fd, sinfo.id, NULL, NULL, 0);
 
 	    if (cb)
-		rc = cb(&sinfo, rc, result);
+		rc = cb(&sinfo, rc, result, cbdata);
 	}
 
 	if (rc != RPMRC_OK)
@@ -256,7 +256,7 @@ static int verifyItems(FD_t fd, Header sigh, int range, rpmVSFlags flags,
 }
 
 rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
-			    rpmsinfoCb cb)
+			    rpmsinfoCb cb, void *cbdata)
 {
 
     Header sigh = NULL;
@@ -286,7 +286,7 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
 	goto exit;
 
     /* Verify header signatures and digests */
-    failed += verifyItems(fd, sigh, (RPMSIG_HEADER), flags, keyring, cb);
+    failed += verifyItems(fd, sigh, (RPMSIG_HEADER), flags, keyring, cb, cbdata);
 
     /* Fish interesting tags from the main header */
     if (hdrblobImport(&blob, 0, &h, &msg))
@@ -302,9 +302,9 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
 
     /* Verify signatures and digests ranging over the payload */
     failed += verifyItems(fd, sigh, (RPMSIG_PAYLOAD), flags,
-			keyring, cb);
+			keyring, cb, cbdata);
     failed += verifyItems(fd, sigh, (RPMSIG_HEADER|RPMSIG_PAYLOAD), flags,
-			keyring, cb);
+			keyring, cb, cbdata);
 
     if (failed == 0)
 	rc = RPMRC_OK;
@@ -326,10 +326,10 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
     int rc;
     if (rpmIsVerbose()) {
 	rpmlog(RPMLOG_NOTICE, "%s:\n", fn);
-	rc = rpmpkgVerifySignatures(keyring, flags, fd, formatVerbose);
+	rc = rpmpkgVerifySignatures(keyring, flags, fd, formatVerbose, NULL);
     } else {
 	rpmlog(RPMLOG_NOTICE, "%s: ", fn);
-	rc = rpmpkgVerifySignatures(keyring, flags, fd, formatDefault);
+	rc = rpmpkgVerifySignatures(keyring, flags, fd, formatDefault, NULL);
 	rpmlog(RPMLOG_NOTICE, "%s\n", rc ? _("NOT OK") : _("OK"));
     }
     return rc;

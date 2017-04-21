@@ -36,7 +36,7 @@ struct rpmsinfo_s {
     };
 };
 
-typedef rpmRC (*rpmsinfoCb)(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *result);
+typedef rpmRC (*rpmsinfoCb)(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *result, void *cbdata);
 
 #ifdef __cplusplus
 extern "C" {
@@ -96,7 +96,7 @@ void rpmsinfoFini(struct rpmsinfo_s *sinfo);
 
 RPM_GNUC_INTERNAL
 rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
-			    rpmsinfoCb cb);
+			    rpmsinfoCb cb, void *cbdata);
 #ifdef __cplusplus
 }
 #endif
