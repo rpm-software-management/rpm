@@ -120,28 +120,17 @@ int rpmcliImportPubkeys(rpmts ts, ARGV_const_t argv)
     return res;
 }
 
-/**
- * @todo If the GPG key was known available, the md5 digest could be skipped.
- */
-static int readFile(FD_t fd, const char * fn)
+static int readFile(FD_t fd, char **msg)
 {
     unsigned char buf[4*BUFSIZ];
     ssize_t count;
-    int rc = 1;
-    char *msg = NULL;
 
     /* Read the payload from the package. */
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0) {}
-    if (count < 0) {
-	rpmlog(RPMLOG_ERR, _("%s: Fread failed: %s\n"), fn, Fstrerror(fd));
-	goto exit;
-    }
+    if (count < 0)
+	rasprintf(msg, _("Fread failed: %s"), Fstrerror(fd));
 
-    rc = 0;
-
-exit:
-    free(msg);
-    return rc;
+    return (count != 0);
 }
 
 static const char *sigtagname(rpmTagVal sigtag, int upper)
@@ -322,7 +311,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
     initDigests(fd, sigh, RPMSIG_PAYLOAD, flags);
 
     /* Read the file, generating digest(s) on the fly. */
-    if (readFile(fd, fn))
+    if (readFile(fd, &msg))
 	goto exit;
 
     /* Verify signatures and digests ranging over the payload */
