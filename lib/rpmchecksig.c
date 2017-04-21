@@ -205,6 +205,13 @@ static void formatResult(rpmTagVal sigtag, rpmRC sigres, const char *result,
     free(msg);
 }
 
+static int sinfoDisabled(struct rpmsinfo_s *sinfo, rpmVSFlags vsflags)
+{
+    if (vsflags & sinfo->disabler)
+	return 1;
+    return 0;
+}
+
 static void initDigests(FD_t fd, Header sigh, int range, rpmVSFlags flags)
 {
     struct rpmsinfo_s sinfo;
@@ -216,7 +223,7 @@ static void initDigests(FD_t fd, Header sigh, int range, rpmVSFlags flags)
 	rpmsinfoFini(&sinfo);
 	if (rpmsinfoInit(&sigtd, "package", &sinfo, NULL))
 	    continue;
-	if (flags & sinfo.disabler)
+	if (sinfoDisabled(&sinfo, flags))
 	    continue;
 
 	if (sinfo.hashalgo && (sinfo.range & range))
@@ -244,7 +251,7 @@ static int verifyItems(FD_t fd, Header sigh, int range, rpmVSFlags flags,
 	/* Note: we permit failures to be ignored via disablers */
 	rpmRC rc = rpmsinfoInit(&sigtd, "package", &sinfo, &result);
 
-	if (flags & sinfo.disabler)
+	if (sinfoDisabled(&sinfo, flags))
 	    continue;
 	if (sinfo.type == RPMSIG_UNKNOWN_TYPE)
 	    continue;
