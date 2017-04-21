@@ -73,6 +73,31 @@ rpmFileAction rpmfilesDecideFate(rpmfiles ofi, int oix,
 				   rpmfiles nfi, int nix,
                                    int skipMissing);
 
+
+/** \ingroup rpmfi
+ * Return action which should be done with the %mutable file
+ * @param		new file info set
+ * @param		new file index
+ * @param		old file info set
+ * @param		old file index
+ * @return		action name
+ */
+RPM_GNUC_INTERNAL
+rpmFileAction rpmfilesSetMutableAction(rpmfiles ofi, int oix,
+				   rpmfiles nfi, int nix);
+
+/** \ingroup rpmfi
+ * Return action which should be done with the %noupdate file
+ * @param		new file info set
+ * @param		new file index
+ * @param		old file info set
+ * @param		old file index
+ * @return		action name
+ */
+RPM_GNUC_INTERNAL
+rpmFileAction rpmfilesSetNoupdateAction(rpmfiles ofi, int oix,
+				   rpmfiles nfi, int nix);
+
 RPM_GNUC_INTERNAL
 int rpmfilesConfigConflict(rpmfiles fi, int ix);
 

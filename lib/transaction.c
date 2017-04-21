@@ -414,6 +414,7 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfiles fi, int fx
 {
     rpmfs fs = rpmteGetFileStates(p);
     int isCfgFile = ((rpmfilesFFlags(otherFi, ofx) | rpmfilesFFlags(fi, fx)) & RPMFILE_CONFIG);
+    rpmFileAction action;
 
     if (XFA_SKIPPING(rpmfsGetAction(fs, fx)))
 	return;
@@ -471,10 +472,22 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfiles fi, int fx
     /* Determine config file disposition, skipping missing files (if any). */
     if (isCfgFile) {
 	int skipMissing = ((rpmtsFlags(ts) & RPMTRANS_FLAG_ALLFILES) ? 0 : 1);
-	rpmFileAction action;
 	action = rpmfilesDecideFate(otherFi, ofx, fi, fx, skipMissing);
 	rpmfsSetAction(fs, fx, action);
+
+    } else {
+       if (rpmfilesFFlags(fi, fx) & RPMFILE_MUTABLE) {
+	    action = rpmfilesSetMutableAction(otherFi, ofx, fi, fx);
+	    rpmfsSetAction(fs, fx, action);
+
+	} else {
+	    if (rpmfilesFFlags(fi, fx) & RPMFILE_NOUPDATE) {
+		action = rpmfilesSetNoupdateAction(otherFi, ofx, fi, fx);
+		rpmfsSetAction(fs, fx, action);
+	    }
+	}
     }
+
     rpmfilesSetFReplacedSize(fi, fx, rpmfilesFSize(otherFi, ofx));
 }
 
