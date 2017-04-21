@@ -207,6 +207,8 @@ static void formatResult(rpmTagVal sigtag, rpmRC sigres, const char *result,
 
 static int sinfoDisabled(struct rpmsinfo_s *sinfo, rpmVSFlags vsflags)
 {
+    if (!sinfo->hashalgo)
+	return 1;
     if (vsflags & sinfo->disabler)
 	return 1;
     if ((vsflags & RPMVSF_NEEDPAYLOAD) && (sinfo->range & RPMSIG_PAYLOAD))
@@ -228,7 +230,7 @@ static void initDigests(FD_t fd, Header sigh, int range, rpmVSFlags flags)
 	if (sinfoDisabled(&sinfo, flags))
 	    continue;
 
-	if (sinfo.hashalgo && (sinfo.range & range))
+	if (sinfo.range & range)
 	    fdInitDigestID(fd, sinfo.hashalgo, sinfo.id, 0);
     }
     rpmsinfoFini(&sinfo);
@@ -255,10 +257,8 @@ static int verifyItems(FD_t fd, Header sigh, int range, rpmVSFlags flags,
 
 	if (sinfoDisabled(&sinfo, flags))
 	    continue;
-	if (sinfo.type == RPMSIG_UNKNOWN_TYPE)
-	    continue;
 
-	if (sinfo.hashalgo && sinfo.range == range && rc ==  RPMRC_OK) {
+	if (sinfo.range == range && rc ==  RPMRC_OK) {
 	    DIGEST_CTX ctx = fdDupDigest(fd, sinfo.id);
 	    rc = rpmVerifySignature(keyring, &sinfo, ctx, &result);
 	    rpmDigestFinal(ctx, NULL, NULL, 0);
