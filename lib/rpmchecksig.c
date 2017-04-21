@@ -133,46 +133,6 @@ static int readFile(FD_t fd, char **msg)
     return (count != 0);
 }
 
-static const char *sigtagname(rpmTagVal sigtag, int upper)
-{
-    const char *n = NULL;
-
-    switch (sigtag) {
-    case RPMSIGTAG_SIZE:
-	n = (upper ? "SIZE" : "size");
-	break;
-    case RPMSIGTAG_SHA1:
-	n = (upper ? "SHA1" : "sha1");
-	break;
-    case RPMSIGTAG_SHA256:
-	n = (upper ? "SHA256" : "sha256");
-	break;
-    case RPMSIGTAG_MD5:
-	n = (upper ? "MD5" : "md5");
-	break;
-    case RPMSIGTAG_RSA:
-	n = (upper ? "RSA" : "rsa");
-	break;
-    case RPMSIGTAG_PGP5:	/* XXX legacy */
-    case RPMSIGTAG_PGP:
-	n = (upper ? "PGP" : "pgp");
-	break;
-    case RPMSIGTAG_DSA:
-	n = (upper ? "DSA" : "dsa");
-	break;
-    case RPMSIGTAG_GPG:
-	n = (upper ? "GPG" : "gpg");
-	break;
-    case RPMTAG_PAYLOADDIGEST:
-	n = (upper ? "PAYLOAD" : "payload");
-	break;
-    default:
-	n = (upper ? "?UnknownSigatureType?" : "???");
-	break;
-    }
-    return n;
-}
-
 static rpmRC formatVerbose(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *result)
 {
     rpmlog(RPMLOG_NOTICE, "    %s\n", result);
@@ -182,7 +142,42 @@ static rpmRC formatVerbose(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *r
 /* Failures are uppercase, in parenthesis if NOKEY. Otherwise lowercase. */
 static rpmRC formatDefault(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *result)
 {
-    const char *signame = sigtagname(sinfo->tag, (sigres != RPMRC_OK));
+    const char *signame;
+    int upper = sigres != RPMRC_OK;
+
+    switch (sinfo->tag) {
+    case RPMSIGTAG_SIZE:
+	signame = (upper ? "SIZE" : "size");
+	break;
+    case RPMSIGTAG_SHA1:
+	signame = (upper ? "SHA1" : "sha1");
+	break;
+    case RPMSIGTAG_SHA256:
+	signame = (upper ? "SHA256" : "sha256");
+	break;
+    case RPMSIGTAG_MD5:
+	signame = (upper ? "MD5" : "md5");
+	break;
+    case RPMSIGTAG_RSA:
+	signame = (upper ? "RSA" : "rsa");
+	break;
+    case RPMSIGTAG_PGP5:	/* XXX legacy */
+    case RPMSIGTAG_PGP:
+	signame = (upper ? "PGP" : "pgp");
+	break;
+    case RPMSIGTAG_DSA:
+	signame = (upper ? "DSA" : "dsa");
+	break;
+    case RPMSIGTAG_GPG:
+	signame = (upper ? "GPG" : "gpg");
+	break;
+    case RPMTAG_PAYLOADDIGEST:
+	signame = (upper ? "PAYLOAD" : "payload");
+	break;
+    default:
+	signame = (upper ? "?UnknownSigatureType?" : "???");
+	break;
+    }
     rpmlog(RPMLOG_NOTICE, ((sigres == RPMRC_NOKEY) ? "(%s) " : "%s "), signame);
     return sigres;
 }
