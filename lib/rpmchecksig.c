@@ -268,11 +268,10 @@ static int verifyItems(FD_t fd, Header sigh, int range, rpmVSFlags flags,
     return failed;
 }
 
-static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
-			   FD_t fd, const char *fn)
+static int rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags,
+			   FD_t fd, char **buf)
 {
 
-    char *buf = NULL;
     Header sigh = NULL;
     Header h = NULL;
     char * msg = NULL;
@@ -300,7 +299,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
 	goto exit;
 
     /* Verify header signatures and digests */
-    failed += verifyItems(fd, sigh, (RPMSIG_HEADER), flags, keyring, &buf);
+    failed += verifyItems(fd, sigh, (RPMSIG_HEADER), flags, keyring, buf);
 
     /* Fish interesting tags from the main header */
     if (hdrblobImport(&blob, 0, &h, &msg))
@@ -316,29 +315,37 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
 
     /* Verify signatures and digests ranging over the payload */
     failed += verifyItems(fd, sigh, (RPMSIG_PAYLOAD), flags,
-			keyring, &buf);
+			keyring, buf);
     failed += verifyItems(fd, sigh, (RPMSIG_HEADER|RPMSIG_PAYLOAD), flags,
-			keyring, &buf);
+			keyring, buf);
 
     if (failed == 0)
 	rc = RPMRC_OK;
 
-    if (rpmIsVerbose()) {
-	rpmlog(RPMLOG_NOTICE, "%s:\n%s", fn, buf);
-    } else {
-	const char *ok = (failed ? _("NOT OK") : _("OK"));
-	rpmlog(RPMLOG_NOTICE, "%s: %s%s\n", fn, buf, ok);
-    }
-
 exit:
     if (rc && msg != NULL)
-	rpmlog(RPMLOG_ERR, "%s: %s\n", fn, msg);
+	rpmlog(RPMLOG_ERR, "%s: %s\n", Fdescr(fd), msg);
     free(msg);
-    free(buf);
     free(sigblob.ei);
     free(blob.ei);
     sigh = headerFree(sigh);
     h = headerFree(h);
+    return rc;
+}
+
+static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
+			    FD_t fd, const char *fn)
+{
+    char *buf = NULL;
+    int rc = rpmpkgVerifySignatures(keyring, flags, fd, &buf);
+
+    if (rpmIsVerbose()) {
+	rpmlog(RPMLOG_NOTICE, "%s:\n%s", fn, buf);
+    } else {
+	rpmlog(RPMLOG_NOTICE, "%s: %s%s\n", fn, buf, rc ? _("NOT OK") : _("OK"));
+    }
+
+    free(buf);
     return rc;
 }
 
