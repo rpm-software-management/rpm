@@ -7,6 +7,7 @@
  */
 
 #include <rpm/header.h>
+#include <rpm/rpmts.h> /* FIXME: needed for vsflags */
 
 enum {
     RPMSIG_UNKNOWN_TYPE		= 0,
@@ -34,6 +35,8 @@ struct rpmsinfo_s {
 	char *dig;
     };
 };
+
+typedef rpmRC (*rpmsinfoCb)(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *result);
 
 #ifdef __cplusplus
 extern "C" {
@@ -90,6 +93,10 @@ rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 
 RPM_GNUC_INTERNAL
 void rpmsinfoFini(struct rpmsinfo_s *sinfo);
+
+RPM_GNUC_INTERNAL
+rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
+			    rpmsinfoCb cb);
 #ifdef __cplusplus
 }
 #endif
