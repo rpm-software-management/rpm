@@ -11,10 +11,12 @@
 
 enum {
     RPMSIG_UNKNOWN_TYPE		= 0,
-    RPMSIG_DIGEST_TYPE		= 1,
-    RPMSIG_SIGNATURE_TYPE	= 2,
-    RPMSIG_OTHER_TYPE		= 3,
+    RPMSIG_DIGEST_TYPE		= (1 << 0),
+    RPMSIG_SIGNATURE_TYPE	= (1 << 1),
+    RPMSIG_OTHER_TYPE		= (1 << 2),
 };
+
+#define RPMSIG_VERIFIABLE_TYPE (RPMSIG_DIGEST_TYPE|RPMSIG_SIGNATURE_TYPE)
 
 /* siginfo range bits */
 enum {

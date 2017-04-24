@@ -184,7 +184,7 @@ static rpmRC formatDefault(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *r
 
 static int sinfoDisabled(struct rpmsinfo_s *sinfo, rpmVSFlags vsflags)
 {
-    if (!sinfo->hashalgo)
+    if (!(sinfo->type & RPMSIG_VERIFIABLE_TYPE))
 	return 1;
     if (vsflags & sinfo->disabler)
 	return 1;
