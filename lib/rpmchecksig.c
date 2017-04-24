@@ -235,11 +235,13 @@ static int verifyItems(FD_t fd, Header sigh, int range, rpmVSFlags flags,
 	if (sinfoDisabled(&sinfo, flags))
 	    continue;
 
-	if (sinfo.range == range && rc ==  RPMRC_OK) {
-	    DIGEST_CTX ctx = fdDupDigest(fd, sinfo.id);
-	    rc = rpmVerifySignature(keyring, &sinfo, ctx, &result);
-	    rpmDigestFinal(ctx, NULL, NULL, 0);
-	    fdFiniDigest(fd, sinfo.id, NULL, NULL, 0);
+	if (sinfo.range == range) {
+	    if (rc ==  RPMRC_OK) {
+		DIGEST_CTX ctx = fdDupDigest(fd, sinfo.id);
+		rc = rpmVerifySignature(keyring, &sinfo, ctx, &result);
+		rpmDigestFinal(ctx, NULL, NULL, 0);
+		fdFiniDigest(fd, sinfo.id, NULL, NULL, 0);
+	    }
 
 	    if (cb)
 		rc = cb(&sinfo, rc, result, cbdata);
