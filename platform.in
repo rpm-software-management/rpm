@@ -66,10 +66,10 @@
 %__arch_install_post   @ARCH_INSTALL_POST@
 
 %__os_install_post    \
-    %{_rpmconfigdir}/brp-compress \
-    %{_rpmconfigdir}/brp-strip %{__strip} \
-    %{_rpmconfigdir}/brp-strip-static-archive %{__strip} \
-    %{_rpmconfigdir}/brp-strip-comment-note %{__strip} %{__objdump} \
+    %{?!dont_compress:			[ -n "$DONT_COMPRESS" ]		|| %{_rpmconfigdir}/brp-compress} \
+    %{?!dont_strip:			[ -n "$DONT_STRIP" ]		|| %{_rpmconfigdir}/brp-strip %{__strip}} \
+    %{?!dont_strip_static_archive:	[ -n "$DONT_STRIP_STATIC_ARCHIVE" ] || %{_rpmconfigdir}/brp-strip-static-archive %{__strip}} \
+    %{?!dont_strip_comment_note:	[ -n "$DONT_STRIP_COMMENT_NOTE" ] || %{_rpmconfigdir}/brp-strip-comment-note %{__strip} %{__objdump}} \
     %{?!dont_clean_files:		[ -n "$DONT_CLEAN_FILES" ]	|| %{_rpmconfigdir}/brp-clean-files} \
     %{?!dont_remove_info_dir:		[ -n "$DONT_REMOVE_INFO_DIR" ]	|| %{_rpmconfigdir}/brp-remove-info-dir} \
     %{?!dont_relink_symlinks:		[ -n "$DONT_RELINK_SYMLINKS" ]	|| %{_rpmconfigdir}/brp-relink-symlinks} \
