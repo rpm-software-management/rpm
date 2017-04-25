@@ -184,48 +184,40 @@ static rpmRC formatDefault(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *r
 
 static void initDigests(FD_t fd, Header sigh, int range, rpmVSFlags flags)
 {
-    struct rpmsinfo_s sinfo;
-    struct rpmtd_s sigtd;
-    HeaderIterator hi = headerInitIterator(sigh);
-    memset(&sinfo, 0, sizeof(sinfo));
-
-    for (; headerNext(hi, &sigtd) != 0; rpmtdFreeData(&sigtd)) {
-	rpmsinfoFini(&sinfo);
-	if (rpmsinfoInit(&sigtd, "package", &sinfo, NULL))
+    const struct rpmsinfo_s *si;
+    for (si = &rpmvfyitems[0]; si->tag; si++) {
+	if (rpmsinfoDisabled(si, flags))
 	    continue;
-	if (rpmsinfoDisabled(&sinfo, flags))
-	    continue;
-
-	if (sinfo.range & range)
-	    fdInitDigestID(fd, sinfo.hashalgo, sinfo.id, 0);
+	if (si->range & range) {
+	    struct rpmsinfo_s sinfo;
+	    if (rpmsinfoGet(sigh, si->tag, &sinfo, NULL) == RPMRC_OK) {
+		fdInitDigestID(fd, sinfo.hashalgo, sinfo.id, 0);
+		rpmsinfoFini(&sinfo);
+	    }
+	}
     }
-    rpmsinfoFini(&sinfo);
-    headerFreeIterator(hi);
 }
 
 static int verifyItems(FD_t fd, Header sigh, int range, rpmVSFlags flags,
 		       rpmKeyring keyring, rpmsinfoCb cb, void *cbdata)
 {
     int failed = 0;
-    struct rpmsinfo_s sinfo;
-    struct rpmtd_s sigtd;
-    char *result = NULL;
-    HeaderIterator hi = headerInitIterator(sigh);
-    memset(&sinfo, 0, sizeof(sinfo));
+    const struct rpmsinfo_s *si;
 
-    for (; headerNext(hi, &sigtd) != 0; rpmtdFreeData(&sigtd)) {
-	/* Clean up parameters from previous sigtag. */
-	rpmsinfoFini(&sinfo);
-	result = _free(result);
-
-	/* Note: we permit failures to be ignored via disablers */
-	rpmRC rc = rpmsinfoInit(&sigtd, "package", &sinfo, &result);
-
-	if (rpmsinfoDisabled(&sinfo, flags))
+    for (si = &rpmvfyitems[0]; si->tag; si++) {
+	if (rpmsinfoDisabled(si, flags))
 	    continue;
 
-	if (sinfo.range == range) {
-	    if (rc ==  RPMRC_OK) {
+	if (si->range == range) {
+	    char *result = NULL;
+	    struct rpmsinfo_s sinfo;
+	    rpmRC rc = rpmsinfoGet(sigh, si->tag, &sinfo, &result);
+
+	    /* mimic traditional behavior for now */
+	    if (rc == RPMRC_NOTFOUND)
+		continue;
+
+	    if (rc == RPMRC_OK) {
 		DIGEST_CTX ctx = fdDupDigest(fd, sinfo.id);
 		rc = rpmVerifySignature(keyring, &sinfo, ctx, &result);
 		rpmDigestFinal(ctx, NULL, NULL, 0);
@@ -234,14 +226,14 @@ static int verifyItems(FD_t fd, Header sigh, int range, rpmVSFlags flags,
 
 	    if (cb)
 		rc = cb(&sinfo, rc, result, cbdata);
-	}
 
-	if (rc != RPMRC_OK)
-	    failed = 1;
+	    if (rc != RPMRC_OK)
+		failed++;
+
+	    rpmsinfoFini(&sinfo);
+	    free(result);
+	}
     }
-    rpmsinfoFini(&sinfo);
-    headerFreeIterator(hi);
-    free(result);
 
     return failed;
 }
