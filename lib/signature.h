@@ -97,6 +97,9 @@ RPM_GNUC_INTERNAL
 void rpmsinfoFini(struct rpmsinfo_s *sinfo);
 
 RPM_GNUC_INTERNAL
+int rpmsinfoDisabled(const struct rpmsinfo_s *sinfo, rpmVSFlags vsflags);
+
+RPM_GNUC_INTERNAL
 rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
 			    rpmsinfoCb cb, void *cbdata);
 #ifdef __cplusplus

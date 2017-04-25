@@ -210,6 +210,17 @@ void rpmsinfoFini(struct rpmsinfo_s *sinfo)
     }
 }
 
+int rpmsinfoDisabled(const struct rpmsinfo_s *sinfo, rpmVSFlags vsflags)
+{
+    if (!(sinfo->type & RPMSIG_VERIFIABLE_TYPE))
+	return 1;
+    if (vsflags & sinfo->disabler)
+	return 1;
+    if ((vsflags & RPMVSF_NEEDPAYLOAD) && (sinfo->range & RPMSIG_PAYLOAD))
+	return 1;
+    return 0;
+}
+
 /**
  * Print package size (debug purposes only)
  * @param fd			package file handle
