@@ -25,12 +25,14 @@ enum {
 };
 
 struct rpmsinfo_s {
+    /* static data */
     rpmTagVal tag;
-    int id;
-    int hashalgo;
-    int range;
     int type;
     int disabler;
+    int range;
+    /* parsed data */
+    int hashalgo;
+    int id;
     unsigned int keyid;
     union {
 	pgpDigParams sig;
