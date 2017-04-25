@@ -182,6 +182,19 @@ static rpmRC formatDefault(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *r
     return sigres;
 }
 
+static rpmRC handleResult(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *result, void *cbdata)
+{
+    if (sigres == RPMRC_NOTFOUND) {
+	sigres = RPMRC_OK;
+    } else {
+	if (rpmIsVerbose())
+	    sigres = formatVerbose(sinfo, sigres, result, cbdata);
+	else
+	    sigres = formatDefault(sinfo, sigres, result, cbdata);
+    }
+    return sigres;
+}
+
 static void initDigests(FD_t fd, Header sigh, int range, rpmVSFlags flags)
 {
     const struct rpmsinfo_s *si;
@@ -212,10 +225,6 @@ static int verifyItems(FD_t fd, Header sigh, int range, rpmVSFlags flags,
 	    char *result = NULL;
 	    struct rpmsinfo_s sinfo;
 	    rpmRC rc = rpmsinfoGet(sigh, si->tag, &sinfo, &result);
-
-	    /* mimic traditional behavior for now */
-	    if (rc == RPMRC_NOTFOUND)
-		continue;
 
 	    if (rc == RPMRC_OK) {
 		DIGEST_CTX ctx = fdDupDigest(fd, sinfo.id);
@@ -309,10 +318,10 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
     int rc;
     if (rpmIsVerbose()) {
 	rpmlog(RPMLOG_NOTICE, "%s:\n", fn);
-	rc = rpmpkgVerifySignatures(keyring, flags, fd, formatVerbose, NULL);
+	rc = rpmpkgVerifySignatures(keyring, flags, fd, handleResult, NULL);
     } else {
 	rpmlog(RPMLOG_NOTICE, "%s: ", fn);
-	rc = rpmpkgVerifySignatures(keyring, flags, fd, formatDefault, NULL);
+	rc = rpmpkgVerifySignatures(keyring, flags, fd, handleResult, NULL);
 	rpmlog(RPMLOG_NOTICE, "%s\n", rc ? _("NOT OK") : _("OK"));
     }
     return rc;
