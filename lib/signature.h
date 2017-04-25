@@ -27,6 +27,10 @@ enum {
 struct rpmsinfo_s {
     /* static data */
     rpmTagVal tag;
+    rpmTagType tagtype;
+    rpm_count_t tagcount;
+    rpm_count_t tagsize;
+
     int type;
     int disabler;
     int range;
@@ -41,6 +45,10 @@ struct rpmsinfo_s {
 };
 
 typedef rpmRC (*rpmsinfoCb)(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *result, void *cbdata);
+
+RPM_GNUC_INTERNAL
+extern const struct rpmsinfo_s rpmvfyitems[];
+
 
 #ifdef __cplusplus
 extern "C" {

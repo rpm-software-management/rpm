@@ -22,115 +22,84 @@
 
 #include "debug.h"
 
+const struct rpmsinfo_s rpmvfyitems[] = {
+    {	RPMSIGTAG_SIZE,			RPM_BIN_TYPE,		0,	0,
+	RPMSIG_OTHER_TYPE,		0,
+	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, },
+    {	RPMSIGTAG_PGP,			RPM_BIN_TYPE,		0,	0,
+	RPMSIG_SIGNATURE_TYPE,		RPMVSF_NORSA,
+	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, },
+    {	RPMSIGTAG_MD5,			RPM_BIN_TYPE,		0,	16,
+	RPMSIG_DIGEST_TYPE,		RPMVSF_NOMD5,
+	(RPMSIG_HEADER|RPMSIG_PAYLOAD), PGPHASHALGO_MD5, },
+    {	RPMSIGTAG_GPG,			RPM_BIN_TYPE,		0,	0,
+	RPMSIG_SIGNATURE_TYPE,		RPMVSF_NODSA,
+	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, },
+    { 	RPMSIGTAG_PGP5,			RPM_BIN_TYPE,		0,	0,
+	RPMSIG_SIGNATURE_TYPE,		RPMVSF_NORSA,
+	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, },
+    {	RPMSIGTAG_PAYLOADSIZE,		RPM_INT32_TYPE,		1,	4,
+	RPMSIG_OTHER_TYPE,		0,
+	(RPMSIG_PAYLOAD),		0, },
+    {	RPMSIGTAG_RESERVEDSPACE,	RPM_BIN_TYPE,		0,	0,
+	RPMSIG_OTHER_TYPE,		0,
+	0,				0, },
+    {	RPMTAG_DSAHEADER,		RPM_BIN_TYPE,		0,	0,
+	RPMSIG_SIGNATURE_TYPE,		RPMVSF_NODSAHEADER,
+	(RPMSIG_HEADER),		0, },
+    {	RPMTAG_RSAHEADER,		RPM_BIN_TYPE,		0,	0,
+	RPMSIG_SIGNATURE_TYPE,		RPMVSF_NORSAHEADER,
+	(RPMSIG_HEADER),		0, },
+    {	RPMTAG_SHA1HEADER,		RPM_STRING_TYPE,	1,	41,
+	RPMSIG_DIGEST_TYPE,		RPMVSF_NOSHA1HEADER,
+	(RPMSIG_HEADER),		PGPHASHALGO_SHA1, },
+    {	RPMSIGTAG_LONGSIZE,		RPM_INT64_TYPE,		1,	8,
+	RPMSIG_OTHER_TYPE, 		0,
+	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, },
+    {	RPMSIGTAG_LONGARCHIVESIZE,	RPM_INT64_TYPE,		1,	8,
+	RPMSIG_OTHER_TYPE,		0,
+	(RPMSIG_HEADER|RPMSIG_PAYLOAD),	0, },
+    {	RPMTAG_SHA256HEADER,		RPM_STRING_TYPE,	1,	65,
+	RPMSIG_DIGEST_TYPE,		RPMVSF_NOSHA256HEADER,
+	(RPMSIG_HEADER),		PGPHASHALGO_SHA256, },
+    {	RPMTAG_PAYLOADDIGEST,		RPM_STRING_ARRAY_TYPE,	0,	0,
+	RPMSIG_DIGEST_TYPE,		RPMVSF_NOPAYLOAD,
+	(RPMSIG_PAYLOAD),		PGPHASHALGO_SHA256, },
+    { 0 } /* sentinel */
+};
+
+static int sinfoLookup(rpmTagVal tag, struct rpmsinfo_s *sinfo)
+{
+    const struct rpmsinfo_s *si;
+    for (si = &rpmvfyitems[0]; si->tag; si++) {
+	if (tag == si->tag) {
+	    memcpy(sinfo, si, sizeof(*sinfo));
+	    break;
+	}
+    }
+    return (si->tag != tag);
+}
+
 rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 		      struct rpmsinfo_s *sinfo, char **msg)
 {
     rpmRC rc = RPMRC_FAIL;
-    rpm_tagtype_t tagtype = 0;
-    rpm_count_t tagsize = 0;
-    rpm_count_t tagcount = 0;
-    int hexstring = 0;
     const void *data = NULL;
     rpm_count_t dlen = 0;
 
-    memset(sinfo, 0, sizeof(*sinfo));
-    switch (td->tag) {
-    case RPMSIGTAG_GPG:
-	tagtype = RPM_BIN_TYPE;
-	sinfo->type = RPMSIG_SIGNATURE_TYPE;
-	sinfo->range = (RPMSIG_HEADER|RPMSIG_PAYLOAD);
-	sinfo->disabler = RPMVSF_NODSA;
-	break;
-    case RPMSIGTAG_PGP5:	/* XXX legacy */
-    case RPMSIGTAG_PGP:
-	tagtype = RPM_BIN_TYPE;
-	sinfo->type = RPMSIG_SIGNATURE_TYPE;
-	sinfo->range = (RPMSIG_HEADER|RPMSIG_PAYLOAD);
-	sinfo->disabler = RPMVSF_NORSA;
-	break;
-    case RPMSIGTAG_DSA:
-	tagtype = RPM_BIN_TYPE;
-	sinfo->type = RPMSIG_SIGNATURE_TYPE;
-	sinfo->range = RPMSIG_HEADER;
-	sinfo->disabler = RPMVSF_NODSAHEADER;
-	break;
-    case RPMSIGTAG_RSA:
-	tagtype = RPM_BIN_TYPE;
-	sinfo->type = RPMSIG_SIGNATURE_TYPE;
-	sinfo->range = RPMSIG_HEADER;
-	sinfo->disabler = RPMVSF_NORSAHEADER;
-	break;
-    case RPMSIGTAG_SHA256:
-	tagsize = 65; /* includes trailing \0 */
-	tagtype = RPM_STRING_TYPE;
-	tagcount = 1;
-	hexstring = 1;
-	sinfo->hashalgo = PGPHASHALGO_SHA256;
-	sinfo->type = RPMSIG_DIGEST_TYPE;
-	sinfo->range = RPMSIG_HEADER;
-	sinfo->disabler = RPMVSF_NOSHA256HEADER;
-	break;
-    case RPMSIGTAG_SHA1:
-	tagsize = 41; /* includes trailing \0 */
-	tagtype = RPM_STRING_TYPE;
-	tagcount = 1;
-	hexstring = 1;
-	sinfo->hashalgo = PGPHASHALGO_SHA1;
-	sinfo->type = RPMSIG_DIGEST_TYPE;
-	sinfo->range = RPMSIG_HEADER;
-	sinfo->disabler = RPMVSF_NOSHA1HEADER;
-	break;
-    case RPMSIGTAG_MD5:
-	tagtype = RPM_BIN_TYPE;
-	tagsize = 16;
-	sinfo->hashalgo = PGPHASHALGO_MD5;
-	sinfo->type = RPMSIG_DIGEST_TYPE;
-	sinfo->range = (RPMSIG_HEADER|RPMSIG_PAYLOAD);
-	sinfo->disabler = RPMVSF_NOMD5;
-	break;
-    case RPMSIGTAG_SIZE:
-    case RPMSIGTAG_PAYLOADSIZE:
-	tagsize = 4;
-	tagcount = 1;
-	tagtype = RPM_INT32_TYPE;
-	sinfo->type = RPMSIG_OTHER_TYPE;
-	sinfo->range = RPMSIG_PAYLOAD;
-	break;
-    case RPMSIGTAG_LONGSIZE:
-    case RPMSIGTAG_LONGARCHIVESIZE:
-	tagsize = 8;
-	tagcount = 1;
-	tagtype = RPM_INT64_TYPE;
-	sinfo->type = RPMSIG_OTHER_TYPE;
-	sinfo->range = RPMSIG_PAYLOAD;
-	break;
-    case RPMSIGTAG_RESERVEDSPACE:
-	tagtype = RPM_BIN_TYPE;
-	sinfo->type = RPMSIG_OTHER_TYPE;
-	break;
-    case RPMTAG_PAYLOADDIGEST:
-	tagtype = RPM_STRING_ARRAY_TYPE;
-	/* XXX: the hash algo is supposed to come from another tag */
-	sinfo->hashalgo = PGPHASHALGO_SHA256;
-	sinfo->type = RPMSIG_DIGEST_TYPE;
-	sinfo->range = RPMSIG_PAYLOAD;
-	sinfo->disabler = RPMVSF_NOPAYLOAD;
-	/* XXX: get the last element, fail due to tagcount is arbitrary */
-	if (rpmtdSetIndex(td, rpmtdCount(td)-1) == -1)
-	    tagcount = 0;
-	break;
-    default:
+    if (sinfoLookup(td->tag, sinfo)) {
 	/* anything unknown just falls through for now */
-	break;
+	rc = RPMRC_OK;
+	goto exit;
     }
 
-    if (tagtype && tagtype != td->type) {
+    if (sinfo->tagtype && sinfo->tagtype != td->type) {
 	rasprintf(msg, _("%s tag %u: BAD, invalid type %u"),
 			origin, td->tag, td->type);
 	goto exit;
     }
 
-    if (tagcount && tagcount != td->count) {
+    if (sinfo->tagcount && sinfo->tagcount != td->count) {
 	rasprintf(msg, _("%s: tag %u: BAD, invalid count %u"),
 			origin, td->tag, td->count);
 	goto exit;
@@ -159,13 +128,14 @@ rpmRC rpmsinfoInit(rpmtd td, const char *origin,
     if (td->type == RPM_STRING_TYPE && td->size == 0)
 	td->size = dlen + 1;
 
-    if (tagsize && (td->flags & RPMTD_IMMUTABLE) && tagsize != td->size) {
+    if (sinfo->tagsize && (td->flags & RPMTD_IMMUTABLE) &&
+		sinfo->tagsize != td->size) {
 	rasprintf(msg, _("%s tag %u: BAD, invalid size %u"),
 			origin, td->tag, td->size);
 	goto exit;
     }
 
-    if (hexstring) {
+    if (sinfo->type == RPM_STRING_TYPE || sinfo->type == RPM_STRING_ARRAY_TYPE) {
 	for (const char * b = data; *b != '\0'; b++) {
 	    if (strchr("0123456789abcdefABCDEF", *b) == NULL) {
 		rasprintf(msg, _("%s: tag %u: BAD, not hex"), origin, td->tag);
