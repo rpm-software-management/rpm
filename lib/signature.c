@@ -191,6 +191,19 @@ int rpmsinfoDisabled(const struct rpmsinfo_s *sinfo, rpmVSFlags vsflags)
     return 0;
 }
 
+rpmRC rpmsinfoGet(Header h, rpmTagVal tag,
+		struct rpmsinfo_s *sinfo, char **result)
+{
+    rpmRC rc = RPMRC_NOTFOUND;
+    struct rpmtd_s td;
+    if (headerGet(h, tag, &td, HEADERGET_MINMEM)) {
+	const char *o = headerGetInstance(h) ? _("header") : _("package");
+	rc = rpmsinfoInit(&td, o, sinfo, result);
+	rpmtdFreeData(&td);
+    }
+    return rc;
+}
+
 /**
  * Print package size (debug purposes only)
  * @param fd			package file handle

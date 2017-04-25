@@ -99,6 +99,9 @@ rpmRC rpmGenerateSignature(char *SHA256, char *SHA1, uint8_t *MD5,
 			rpm_loff_t size, rpm_loff_t payloadSize, FD_t fd);
 
 RPM_GNUC_INTERNAL
+rpmRC rpmsinfoGet(Header h, rpmTagVal tag,
+		struct rpmsinfo_s *sinfo, char **result);
+RPM_GNUC_INTERNAL
 rpmRC rpmsinfoInit(rpmtd td, const char *origin,
                      struct rpmsinfo_s *sigt, char **msg);
 
