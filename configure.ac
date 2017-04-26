@@ -153,15 +153,6 @@ AM_CONDITIONAL(HAVE_FAKECHROOT, [test "$__FAKECHROOT" != "no"])
 
 dnl see if we have a mkdir that supports `-p' for rpmbuild's purposes
 AC_PROG_MKDIR_P
-if ! echo $MKDIR_P | grep -q mkdir; then 
-  __MKDIR_P="`echo ${prefix}/lib/rpm/mkinstalldirs`"
-else
-  __MKDIR_P=$MKDIR_P
-fi
-AC_DEFINE_UNQUOTED(__MKDIR_P, "${__MKDIR_P}",
-[A full path to a program, possibly with arguments, that will create a
-   directory and all necessary parent directories, ala 'mkdir -p'])
-AC_SUBST(__MKDIR_P)
 
 #=================
 # Check for zlib library. 
