@@ -191,25 +191,22 @@ int rpmsinfoDisabled(const struct rpmsinfo_s *sinfo, rpmVSFlags vsflags)
     return 0;
 }
 
-rpmRC rpmsinfoGet(hdrblob blob, rpmTagVal tag,
-		struct rpmsinfo_s *sinfo, char **result)
-{
-    struct rpmtd_s td;
-    rpmRC rc = hdrblobGet(blob, tag, &td);
-    if (rc == RPMRC_OK) {
-	const char *o = _("package"); /* XXX not yet used for headers */
-	rc = rpmsinfoInit(&td, o, sinfo, result);
-	rpmtdFreeData(&td);
-    }
-    return rc;
-}
-
 void rpmsisetAppend(struct rpmsiset_s *sis, hdrblob blob, rpmTagVal tag)
 {
-    sis->rcs[sis->nsigs] = rpmsinfoGet(blob, tag,
-					&sis->sigs[sis->nsigs],
-					&sis->results[sis->nsigs]);
-    sis->nsigs++;
+    struct rpmtd_s td;
+    sis->rcs[sis->nsigs] = hdrblobGet(blob, tag, &td);
+    if (sis->rcs[sis->nsigs] == RPMRC_OK) {
+	const char *o = _("package"); /* XXX not yet used for headers */
+	int ix;
+	while ((ix = rpmtdNext(&td)) >= -1) {
+	    sis->rcs[sis->nsigs] = rpmsinfoInit(&td, o,
+						&sis->sigs[sis->nsigs],
+						&sis->results[sis->nsigs]);
+	    sis->nsigs++;
+	    break; /* XXX FIXME: handle realloc to support arrays */
+	}
+	rpmtdFreeData(&td);
+    }
 }
 
 struct rpmsiset_s *rpmsisetInit(hdrblob blob, rpmVSFlags vsflags)
