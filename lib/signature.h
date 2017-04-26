@@ -6,8 +6,8 @@
  * Generate and verify signatures.
  */
 
-#include <rpm/header.h>
 #include <rpm/rpmts.h> /* FIXME: needed for vsflags */
+#include "lib/header_internal.h"
 
 enum {
     RPMSIG_UNKNOWN_TYPE		= 0,
@@ -106,7 +106,7 @@ rpmRC rpmGenerateSignature(char *SHA256, char *SHA1, uint8_t *MD5,
 			rpm_loff_t size, rpm_loff_t payloadSize, FD_t fd);
 
 RPM_GNUC_INTERNAL
-rpmRC rpmsinfoGet(Header h, rpmTagVal tag,
+rpmRC rpmsinfoGet(hdrblob blob, rpmTagVal tag,
 		struct rpmsinfo_s *sinfo, char **result);
 RPM_GNUC_INTERNAL
 rpmRC rpmsinfoInit(rpmtd td, const char *origin,
@@ -123,13 +123,13 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
 			    rpmsinfoCb cb, void *cbdata);
 
 RPM_GNUC_INTERNAL
-struct rpmsiset_s *rpmsisetInit(Header h, rpmVSFlags vsflags);
+struct rpmsiset_s *rpmsisetInit(hdrblob blob, rpmVSFlags vsflags);
 
 RPM_GNUC_INTERNAL
 struct rpmsiset_s *rpmsisetFree(struct rpmsiset_s *sis);
 
 RPM_GNUC_INTERNAL
-void rpmsisetAppend(struct rpmsiset_s *sis, Header h, rpmTagVal tag);
+void rpmsisetAppend(struct rpmsiset_s *sis, hdrblob blob, rpmTagVal tag);
 
 #ifdef __cplusplus
 }

@@ -238,8 +238,6 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
 			    rpmsinfoCb cb, void *cbdata)
 {
 
-    Header sigh = NULL;
-    Header h = NULL;
     char * msg = NULL;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     int failed = 0;
@@ -254,10 +252,8 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
 
     if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERSIGNATURES, &sigblob, &msg))
 	goto exit;
-    if (hdrblobImport(&sigblob, 0, &sigh, &msg))
-	goto exit;
 
-    sigset = rpmsisetInit(sigh, flags);
+    sigset = rpmsisetInit(&sigblob, flags);
 
     /* Initialize digests ranging over the header */
     initDigests(fd, sigset, RPMSIG_HEADER);
@@ -270,10 +266,8 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
     failed += verifyItems(fd, sigset, (RPMSIG_HEADER), keyring, cb, cbdata);
 
     /* Fish interesting tags from the main header. This is a bit hacky... */
-    if (hdrblobImport(&blob, 0, &h, &msg))
-	goto exit;
     if (!(flags & RPMVSF_NOPAYLOAD))
-	rpmsisetAppend(sigset, h, RPMTAG_PAYLOADDIGEST);
+	rpmsisetAppend(sigset, &blob, RPMTAG_PAYLOADDIGEST);
 
     /* Initialize digests ranging over the payload only */
     initDigests(fd, sigset, RPMSIG_PAYLOAD);
@@ -298,8 +292,6 @@ exit:
     free(sigblob.ei);
     free(blob.ei);
     rpmsisetFree(sigset);
-    sigh = headerFree(sigh);
-    h = headerFree(h);
     return rc;
 }
 

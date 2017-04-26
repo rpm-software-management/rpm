@@ -191,28 +191,28 @@ int rpmsinfoDisabled(const struct rpmsinfo_s *sinfo, rpmVSFlags vsflags)
     return 0;
 }
 
-rpmRC rpmsinfoGet(Header h, rpmTagVal tag,
+rpmRC rpmsinfoGet(hdrblob blob, rpmTagVal tag,
 		struct rpmsinfo_s *sinfo, char **result)
 {
-    rpmRC rc = RPMRC_NOTFOUND;
     struct rpmtd_s td;
-    if (headerGet(h, tag, &td, HEADERGET_MINMEM)) {
-	const char *o = headerGetInstance(h) ? _("header") : _("package");
+    rpmRC rc = hdrblobGet(blob, tag, &td);
+    if (rc == RPMRC_OK) {
+	const char *o = _("package"); /* XXX not yet used for headers */
 	rc = rpmsinfoInit(&td, o, sinfo, result);
 	rpmtdFreeData(&td);
     }
     return rc;
 }
 
-void rpmsisetAppend(struct rpmsiset_s *sis, Header h, rpmTagVal tag)
+void rpmsisetAppend(struct rpmsiset_s *sis, hdrblob blob, rpmTagVal tag)
 {
-    sis->rcs[sis->nsigs] = rpmsinfoGet(h, tag,
+    sis->rcs[sis->nsigs] = rpmsinfoGet(blob, tag,
 					&sis->sigs[sis->nsigs],
 					&sis->results[sis->nsigs]);
     sis->nsigs++;
 }
 
-struct rpmsiset_s *rpmsisetInit(Header h, rpmVSFlags vsflags)
+struct rpmsiset_s *rpmsisetInit(hdrblob blob, rpmVSFlags vsflags)
 {
     struct rpmsiset_s *sis = xcalloc(1, sizeof(*sis));
     int nsigs = 1;
@@ -229,7 +229,7 @@ struct rpmsiset_s *rpmsisetInit(Header h, rpmVSFlags vsflags)
     for (const struct rpmsinfo_s *si = &rpmvfyitems[0]; si->tag; si++) {
 	if (rpmsinfoDisabled(si, vsflags))
 	    continue;
-	rpmsisetAppend(sis, h, si->tag);
+	rpmsisetAppend(sis, blob, si->tag);
     }
     return sis;
 }
