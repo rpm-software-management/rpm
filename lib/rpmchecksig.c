@@ -195,52 +195,39 @@ static rpmRC handleResult(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *re
     return sigres;
 }
 
-static void initDigests(FD_t fd, Header sigh, int range, rpmVSFlags flags)
+static void initDigests(FD_t fd, struct rpmsiset_s *sis, int range)
 {
-    const struct rpmsinfo_s *si;
-    for (si = &rpmvfyitems[0]; si->tag; si++) {
-	if (rpmsinfoDisabled(si, flags))
-	    continue;
-	if (si->range & range) {
-	    struct rpmsinfo_s sinfo;
-	    if (rpmsinfoGet(sigh, si->tag, &sinfo, NULL) == RPMRC_OK) {
-		fdInitDigestID(fd, sinfo.hashalgo, sinfo.id, 0);
-		rpmsinfoFini(&sinfo);
-	    }
+    for (int i = 0; i < sis->nsigs; i++) {
+	struct rpmsinfo_s *sinfo = &sis->sigs[i];
+	if (sinfo->range & range) {
+	    if (sis->rcs[i] == RPMRC_OK)
+		fdInitDigestID(fd, sinfo->hashalgo, sinfo->id, 0);
 	}
     }
 }
 
-static int verifyItems(FD_t fd, Header sigh, int range, rpmVSFlags flags,
+static int verifyItems(FD_t fd, struct rpmsiset_s *sis, int range,
 		       rpmKeyring keyring, rpmsinfoCb cb, void *cbdata)
 {
     int failed = 0;
-    const struct rpmsinfo_s *si;
 
-    for (si = &rpmvfyitems[0]; si->tag; si++) {
-	if (rpmsinfoDisabled(si, flags))
-	    continue;
+    for (int i = 0; i < sis->nsigs; i++) {
+	struct rpmsinfo_s *sinfo = &sis->sigs[i];
 
-	if (si->range == range) {
-	    char *result = NULL;
-	    struct rpmsinfo_s sinfo;
-	    rpmRC rc = rpmsinfoGet(sigh, si->tag, &sinfo, &result);
-
-	    if (rc == RPMRC_OK) {
-		DIGEST_CTX ctx = fdDupDigest(fd, sinfo.id);
-		rc = rpmVerifySignature(keyring, &sinfo, ctx, &result);
+	if (sinfo->range == range) {
+	    if (sis->rcs[i] == RPMRC_OK) {
+		DIGEST_CTX ctx = fdDupDigest(fd, sinfo->id);
+		sis->results[i] = _free(sis->results[i]);
+		sis->rcs[i] = rpmVerifySignature(keyring, sinfo, ctx, &sis->results[i]);
 		rpmDigestFinal(ctx, NULL, NULL, 0);
-		fdFiniDigest(fd, sinfo.id, NULL, NULL, 0);
+		fdFiniDigest(fd, sinfo->id, NULL, NULL, 0);
 	    }
 
 	    if (cb)
-		rc = cb(&sinfo, rc, result, cbdata);
+		sis->rcs[i] = cb(sinfo, sis->rcs[i], sis->results[i], cbdata);
 
-	    if (rc != RPMRC_OK)
+	    if (sis->rcs[i] != RPMRC_OK)
 		failed++;
-
-	    rpmsinfoFini(&sinfo);
-	    free(result);
 	}
     }
 
@@ -257,7 +244,7 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     int failed = 0;
     struct hdrblob_s sigblob, blob;
-    rpmTagVal copyTags[] = { RPMTAG_PAYLOADDIGEST, 0 };
+    struct rpmsiset_s *sigset = NULL;
 
     memset(&blob, 0, sizeof(blob));
     memset(&sigblob, 0, sizeof(sigblob));
@@ -270,32 +257,35 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
     if (hdrblobImport(&sigblob, 0, &sigh, &msg))
 	goto exit;
 
+    sigset = rpmsisetInit(sigh, flags);
+
     /* Initialize digests ranging over the header */
-    initDigests(fd, sigh, RPMSIG_HEADER, flags);
+    initDigests(fd, sigset, RPMSIG_HEADER);
 
     /* Read the header from the package. */
     if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERIMMUTABLE, &blob, &msg))
 	goto exit;
 
     /* Verify header signatures and digests */
-    failed += verifyItems(fd, sigh, (RPMSIG_HEADER), flags, keyring, cb, cbdata);
+    failed += verifyItems(fd, sigset, (RPMSIG_HEADER), keyring, cb, cbdata);
 
-    /* Fish interesting tags from the main header */
+    /* Fish interesting tags from the main header. This is a bit hacky... */
     if (hdrblobImport(&blob, 0, &h, &msg))
 	goto exit;
-    headerCopyTags(h, sigh, copyTags);
+    if (!(flags & RPMVSF_NOPAYLOAD))
+	rpmsisetAppend(sigset, h, RPMTAG_PAYLOADDIGEST);
 
     /* Initialize digests ranging over the payload only */
-    initDigests(fd, sigh, RPMSIG_PAYLOAD, flags);
+    initDigests(fd, sigset, RPMSIG_PAYLOAD);
 
     /* Read the file, generating digest(s) on the fly. */
     if (readFile(fd, &msg))
 	goto exit;
 
     /* Verify signatures and digests ranging over the payload */
-    failed += verifyItems(fd, sigh, (RPMSIG_PAYLOAD), flags,
+    failed += verifyItems(fd, sigset, (RPMSIG_PAYLOAD),
 			keyring, cb, cbdata);
-    failed += verifyItems(fd, sigh, (RPMSIG_HEADER|RPMSIG_PAYLOAD), flags,
+    failed += verifyItems(fd, sigset, (RPMSIG_HEADER|RPMSIG_PAYLOAD),
 			keyring, cb, cbdata);
 
     if (failed == 0)
@@ -307,6 +297,7 @@ exit:
     free(msg);
     free(sigblob.ei);
     free(blob.ei);
+    rpmsisetFree(sigset);
     sigh = headerFree(sigh);
     h = headerFree(h);
     return rc;
