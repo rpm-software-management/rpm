@@ -204,6 +204,51 @@ rpmRC rpmsinfoGet(Header h, rpmTagVal tag,
     return rc;
 }
 
+void rpmsisetAppend(struct rpmsiset_s *sis, Header h, rpmTagVal tag)
+{
+    sis->rcs[sis->nsigs] = rpmsinfoGet(h, tag,
+					&sis->sigs[sis->nsigs],
+					&sis->results[sis->nsigs]);
+    sis->nsigs++;
+}
+
+struct rpmsiset_s *rpmsisetInit(Header h, rpmVSFlags vsflags)
+{
+    struct rpmsiset_s *sis = xcalloc(1, sizeof(*sis));
+    int nsigs = 1;
+    for (const struct rpmsinfo_s *si = &rpmvfyitems[0]; si->tag; si++) {
+	if (rpmsinfoDisabled(si, vsflags))
+	    continue;
+	nsigs++;
+    }
+
+    sis->sigs = xcalloc(nsigs, sizeof(*sis->sigs));
+    sis->rcs = xcalloc(nsigs, sizeof(*sis->rcs));
+    sis->results = xcalloc(nsigs, sizeof(*sis->results));
+
+    for (const struct rpmsinfo_s *si = &rpmvfyitems[0]; si->tag; si++) {
+	if (rpmsinfoDisabled(si, vsflags))
+	    continue;
+	rpmsisetAppend(sis, h, si->tag);
+    }
+    return sis;
+}
+
+struct rpmsiset_s *rpmsisetFree(struct rpmsiset_s *sis)
+{
+    if (sis) {
+	free(sis->rcs);
+	for (int i = 0; i < sis->nsigs; i++) {
+	    rpmsinfoFini(&sis->sigs[i]);
+	    free(sis->results[i]);
+	}
+	free(sis->sigs);
+	free(sis->results);
+	free(sis);
+    }
+    return NULL;
+}
+
 /**
  * Print package size (debug purposes only)
  * @param fd			package file handle

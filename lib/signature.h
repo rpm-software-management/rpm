@@ -44,6 +44,13 @@ struct rpmsinfo_s {
     };
 };
 
+struct rpmsiset_s {
+    struct rpmsinfo_s *sigs;
+    rpmRC *rcs;
+    char **results;
+    int nsigs;
+};
+
 typedef rpmRC (*rpmsinfoCb)(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *result, void *cbdata);
 
 RPM_GNUC_INTERNAL
@@ -105,7 +112,6 @@ RPM_GNUC_INTERNAL
 rpmRC rpmsinfoInit(rpmtd td, const char *origin,
                      struct rpmsinfo_s *sigt, char **msg);
 
-
 RPM_GNUC_INTERNAL
 void rpmsinfoFini(struct rpmsinfo_s *sinfo);
 
@@ -115,6 +121,16 @@ int rpmsinfoDisabled(const struct rpmsinfo_s *sinfo, rpmVSFlags vsflags);
 RPM_GNUC_INTERNAL
 rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
 			    rpmsinfoCb cb, void *cbdata);
+
+RPM_GNUC_INTERNAL
+struct rpmsiset_s *rpmsisetInit(Header h, rpmVSFlags vsflags);
+
+RPM_GNUC_INTERNAL
+struct rpmsiset_s *rpmsisetFree(struct rpmsiset_s *sis);
+
+RPM_GNUC_INTERNAL
+void rpmsisetAppend(struct rpmsiset_s *sis, Header h, rpmTagVal tag);
+
 #ifdef __cplusplus
 }
 #endif
