@@ -59,8 +59,10 @@ static int inhibit(void)
 	dbus_error_free(&err);
     }
 
-    if (bus)
+    if (bus) {
 	dbus_connection_close(bus);
+	dbus_connection_unref(bus);
+    }
 
     return fd;
 }
