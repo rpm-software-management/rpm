@@ -137,18 +137,6 @@ exit:
     return seen;
 }
 
-static void ei2td(const struct entryInfo_s *info,
-		  unsigned char * dataStart, size_t siglen,
-		  struct rpmtd_s *td)
-{
-    td->tag = info->tag;
-    td->type = info->type;
-    td->count = info->count;
-    td->size = siglen;
-    td->data = dataStart + info->offset;
-    td->flags = RPMTD_IMMUTABLE;
-}
-
 /*
  * Argument monster to verify header-only signature/digest if there is
  * one, otherwisereturn RPMRC_NOTFOUND to signal for plain sanity check.
