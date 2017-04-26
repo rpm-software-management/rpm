@@ -262,15 +262,15 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
     if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERIMMUTABLE, &blob, &msg))
 	goto exit;
 
-    /* Verify header signatures and digests */
-    failed += verifyItems(fd, sigset, (RPMSIG_HEADER), keyring, cb, cbdata);
-
     /* Fish interesting tags from the main header. This is a bit hacky... */
     if (!(flags & RPMVSF_NOPAYLOAD))
 	rpmsisetAppend(sigset, &blob, RPMTAG_PAYLOADDIGEST);
 
     /* Initialize digests ranging over the payload only */
     initDigests(fd, sigset, RPMSIG_PAYLOAD);
+
+    /* Verify header signatures and digests */
+    failed += verifyItems(fd, sigset, (RPMSIG_HEADER), keyring, cb, cbdata);
 
     /* Read the file, generating digest(s) on the fly. */
     if (readFile(fd, &msg))
