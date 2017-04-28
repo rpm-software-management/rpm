@@ -1060,24 +1060,25 @@ rpmFileAction rpmfilesDecideFate(rpmfiles ofi, int oix,
 	size_t odiglen, ndiglen;
 	const unsigned char * odigest, * ndigest;
 
-	/* See if the file on disk is identical to the one in old pkg */
-	odigest = rpmfilesFDigest(ofi, oix, &oalgo, &odiglen);
-	if (diskWhat == REG) {
-	    if (rpmDoDigest(oalgo, fn, 0, (unsigned char *)buffer, NULL))
-	        goto exit;	/* assume file has been removed */
-	    if (odigest && memcmp(odigest, buffer, odiglen) == 0)
-	        goto exit;	/* unmodified config file, replace. */
-	}
-
 	/* See if the file on disk is identical to the one in new pkg */
 	ndigest = rpmfilesFDigest(nfi, nix, &nalgo, &ndiglen);
 	if (diskWhat == REG && newWhat == REG) {
-	    /* hash algo changed in new, recalculate digest */
-	    if (oalgo != nalgo)
-		if (rpmDoDigest(nalgo, fn, 0, (unsigned char *)buffer, NULL))
-		    goto exit;		/* assume file has been removed */
+	    if (rpmDoDigest(nalgo, fn, 0, (unsigned char *)buffer, NULL))
+		goto exit;		/* assume file has been removed */
 	    if (ndigest && memcmp(ndigest, buffer, ndiglen) == 0)
 	        goto exit;		/* file identical in new, replace. */
+	}
+
+	/* See if the file on disk is identical to the one in old pkg */
+	odigest = rpmfilesFDigest(ofi, oix, &oalgo, &odiglen);
+	if (diskWhat == REG) {
+	    /* hash algo changed or digest was not computed, recalculate it */
+	    if ((oalgo != nalgo) || (newWhat != REG)) {
+		if (rpmDoDigest(oalgo, fn, 0, (unsigned char *)buffer, NULL))
+		    goto exit;	/* assume file has been removed */
+		}
+	    if (odigest && memcmp(odigest, buffer, odiglen) == 0)
+	        goto exit;	/* unmodified config file, replace. */
 	}
 
 	/* if new file is no longer config, backup it and replace it */
