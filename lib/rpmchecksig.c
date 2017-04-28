@@ -19,8 +19,8 @@
 
 #include "rpmio/rpmio_internal.h" 	/* fdSetBundle() */
 #include "lib/rpmlead.h"
-#include "lib/signature.h"
 #include "lib/header_internal.h"
+#include "lib/rpmvs.h"
 
 #include "debug.h"
 
@@ -193,47 +193,6 @@ static rpmRC handleResult(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *re
 	    sigres = formatDefault(sinfo, sigres, result, cbdata);
     }
     return sigres;
-}
-
-static void rpmvsInitDigests(struct rpmvs_s *sis, int range,
-		       rpmDigestBundle bundle)
-{
-    for (int i = 0; i < sis->nsigs; i++) {
-	struct rpmsinfo_s *sinfo = &sis->sigs[i];
-	if (sinfo->range & range) {
-	    if (sis->rcs[i] == RPMRC_OK)
-		rpmDigestBundleAddID(bundle, sinfo->hashalgo, sinfo->id, 0);
-	}
-    }
-}
-
-static int rpmvsVerifyItems(struct rpmvs_s *sis, int range,
-		       rpmDigestBundle bundle,
-		       rpmKeyring keyring, rpmsinfoCb cb, void *cbdata)
-{
-    int failed = 0;
-
-    for (int i = 0; i < sis->nsigs; i++) {
-	struct rpmsinfo_s *sinfo = &sis->sigs[i];
-
-	if (sinfo->range == range) {
-	    if (sis->rcs[i] == RPMRC_OK) {
-		DIGEST_CTX ctx = rpmDigestBundleDupCtx(bundle, sinfo->id);
-		sis->results[i] = _free(sis->results[i]);
-		sis->rcs[i] = rpmVerifySignature(keyring, sinfo, ctx, &sis->results[i]);
-		rpmDigestFinal(ctx, NULL, NULL, 0);
-		rpmDigestBundleFinal(bundle, sinfo->id, NULL, NULL, 0);
-	    }
-
-	    if (cb)
-		sis->rcs[i] = cb(sinfo, sis->rcs[i], sis->results[i], cbdata);
-
-	    if (sis->rcs[i] != RPMRC_OK)
-		failed++;
-	}
-    }
-
-    return failed;
 }
 
 rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,

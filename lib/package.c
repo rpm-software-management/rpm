@@ -14,9 +14,9 @@
 #include <rpm/rpmkeyring.h>
 
 #include "lib/rpmlead.h"
-#include "lib/signature.h"
 #include "rpmio/rpmio_internal.h"	/* fd digest bits */
 #include "lib/header_internal.h"	/* XXX headerCheck */
+#include "lib/rpmvs.h"
 
 #include "debug.h"
 

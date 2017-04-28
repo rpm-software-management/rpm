@@ -41,7 +41,7 @@ librpm_la_SOURCES = \
 	rpmscript.h rpmscript.c \
 	rpmchroot.c rpmchroot.h \
 	rpmplugins.c rpmplugins.h rpmplugin.h rpmug.c rpmug.h \
-	rpmtriggers.h rpmtriggers.c
+	rpmtriggers.h rpmtriggers.c rpmvs.c rpmvs.h
 
 librpm_la_LDFLAGS = -version-info $(rpm_version_info)
 
