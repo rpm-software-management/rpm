@@ -195,18 +195,20 @@ static rpmRC handleResult(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *re
     return sigres;
 }
 
-static void initDigests(FD_t fd, struct rpmsiset_s *sis, int range)
+static void initDigests(struct rpmsiset_s *sis, int range,
+		       rpmDigestBundle bundle)
 {
     for (int i = 0; i < sis->nsigs; i++) {
 	struct rpmsinfo_s *sinfo = &sis->sigs[i];
 	if (sinfo->range & range) {
 	    if (sis->rcs[i] == RPMRC_OK)
-		fdInitDigestID(fd, sinfo->hashalgo, sinfo->id, 0);
+		rpmDigestBundleAddID(bundle, sinfo->hashalgo, sinfo->id, 0);
 	}
     }
 }
 
-static int verifyItems(FD_t fd, struct rpmsiset_s *sis, int range,
+static int verifyItems(struct rpmsiset_s *sis, int range,
+		       rpmDigestBundle bundle,
 		       rpmKeyring keyring, rpmsinfoCb cb, void *cbdata)
 {
     int failed = 0;
@@ -216,11 +218,11 @@ static int verifyItems(FD_t fd, struct rpmsiset_s *sis, int range,
 
 	if (sinfo->range == range) {
 	    if (sis->rcs[i] == RPMRC_OK) {
-		DIGEST_CTX ctx = fdDupDigest(fd, sinfo->id);
+		DIGEST_CTX ctx = rpmDigestBundleDupCtx(bundle, sinfo->id);
 		sis->results[i] = _free(sis->results[i]);
 		sis->rcs[i] = rpmVerifySignature(keyring, sinfo, ctx, &sis->results[i]);
 		rpmDigestFinal(ctx, NULL, NULL, 0);
-		fdFiniDigest(fd, sinfo->id, NULL, NULL, 0);
+		rpmDigestBundleFinal(bundle, sinfo->id, NULL, NULL, 0);
 	    }
 
 	    if (cb)
@@ -243,6 +245,7 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
     int failed = 0;
     struct hdrblob_s sigblob, blob;
     struct rpmsiset_s *sigset = NULL;
+    rpmDigestBundle bundle = fdGetBundle(fd, 1); /* freed with fd */
 
     memset(&blob, 0, sizeof(blob));
     memset(&sigblob, 0, sizeof(sigblob));
@@ -256,7 +259,7 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
     sigset = rpmsisetInit(&sigblob, flags);
 
     /* Initialize digests ranging over the header */
-    initDigests(fd, sigset, RPMSIG_HEADER);
+    initDigests(sigset, RPMSIG_HEADER, bundle);
 
     /* Read the header from the package. */
     if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERIMMUTABLE, &blob, &msg))
@@ -267,19 +270,19 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
 	rpmsisetAppend(sigset, &blob, RPMTAG_PAYLOADDIGEST);
 
     /* Initialize digests ranging over the payload only */
-    initDigests(fd, sigset, RPMSIG_PAYLOAD);
+    initDigests(sigset, RPMSIG_PAYLOAD, bundle);
 
     /* Verify header signatures and digests */
-    failed += verifyItems(fd, sigset, (RPMSIG_HEADER), keyring, cb, cbdata);
+    failed += verifyItems(sigset, (RPMSIG_HEADER), bundle, keyring, cb, cbdata);
 
     /* Read the file, generating digest(s) on the fly. */
     if (readFile(fd, &msg))
 	goto exit;
 
     /* Verify signatures and digests ranging over the payload */
-    failed += verifyItems(fd, sigset, (RPMSIG_PAYLOAD),
+    failed += verifyItems(sigset, (RPMSIG_PAYLOAD), bundle,
 			keyring, cb, cbdata);
-    failed += verifyItems(fd, sigset, (RPMSIG_HEADER|RPMSIG_PAYLOAD),
+    failed += verifyItems(sigset, (RPMSIG_HEADER|RPMSIG_PAYLOAD), bundle,
 			keyring, cb, cbdata);
 
     if (failed == 0)
