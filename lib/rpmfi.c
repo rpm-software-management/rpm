@@ -1099,13 +1099,17 @@ rpmFileAction rpmfilesDecideFate(rpmfiles ofi, int oix,
     } else if (dbWhat == LINK) {
 	const char * oFLink, * nFLink;
 
-	/* See if the link on disk is identical to the one in old pkg */
-	oFLink = rpmfilesFLink(ofi, oix);
 	if (diskWhat == LINK) {
+	    /* Read link from the disk */
 	    ssize_t link_len = readlink(fn, buffer, sizeof(buffer) - 1);
 	    if (link_len == -1)
 		goto exit;		/* assume file has been removed */
 	    buffer[link_len] = '\0';
+	}
+
+	/* See if the link on disk is identical to the one in old pkg */
+	oFLink = rpmfilesFLink(ofi, oix);
+	if (diskWhat == LINK) {
 	    if (oFLink && rstreq(oFLink, buffer))
 		goto exit;		/* unmodified config file, replace. */
 	}
