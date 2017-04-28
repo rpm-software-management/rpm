@@ -44,7 +44,7 @@ struct rpmsinfo_s {
     };
 };
 
-struct rpmsiset_s {
+struct rpmvs_s {
     struct rpmsinfo_s *sigs;
     rpmRC *rcs;
     char **results;
@@ -120,13 +120,13 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
 			    rpmsinfoCb cb, void *cbdata);
 
 RPM_GNUC_INTERNAL
-struct rpmsiset_s *rpmsisetInit(hdrblob blob, rpmVSFlags vsflags);
+struct rpmvs_s *rpmvsCreate(hdrblob blob, rpmVSFlags vsflags);
 
 RPM_GNUC_INTERNAL
-struct rpmsiset_s *rpmsisetFree(struct rpmsiset_s *sis);
+struct rpmvs_s *rpmvsFree(struct rpmvs_s *sis);
 
 RPM_GNUC_INTERNAL
-void rpmsisetAppend(struct rpmsiset_s *sis, hdrblob blob, rpmTagVal tag);
+void rpmvsAppend(struct rpmvs_s *sis, hdrblob blob, rpmTagVal tag);
 
 #ifdef __cplusplus
 }

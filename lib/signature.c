@@ -191,7 +191,7 @@ int rpmsinfoDisabled(const struct rpmsinfo_s *sinfo, rpmVSFlags vsflags)
     return 0;
 }
 
-void rpmsisetAppend(struct rpmsiset_s *sis, hdrblob blob, rpmTagVal tag)
+void rpmvsAppend(struct rpmvs_s *sis, hdrblob blob, rpmTagVal tag)
 {
     struct rpmtd_s td;
     sis->rcs[sis->nsigs] = hdrblobGet(blob, tag, &td);
@@ -209,9 +209,9 @@ void rpmsisetAppend(struct rpmsiset_s *sis, hdrblob blob, rpmTagVal tag)
     }
 }
 
-struct rpmsiset_s *rpmsisetInit(hdrblob blob, rpmVSFlags vsflags)
+struct rpmvs_s *rpmvsCreate(hdrblob blob, rpmVSFlags vsflags)
 {
-    struct rpmsiset_s *sis = xcalloc(1, sizeof(*sis));
+    struct rpmvs_s *sis = xcalloc(1, sizeof(*sis));
     int nsigs = 1;
     for (const struct rpmsinfo_s *si = &rpmvfyitems[0]; si->tag; si++) {
 	if (rpmsinfoDisabled(si, vsflags))
@@ -226,12 +226,12 @@ struct rpmsiset_s *rpmsisetInit(hdrblob blob, rpmVSFlags vsflags)
     for (const struct rpmsinfo_s *si = &rpmvfyitems[0]; si->tag; si++) {
 	if (rpmsinfoDisabled(si, vsflags))
 	    continue;
-	rpmsisetAppend(sis, blob, si->tag);
+	rpmvsAppend(sis, blob, si->tag);
     }
     return sis;
 }
 
-struct rpmsiset_s *rpmsisetFree(struct rpmsiset_s *sis)
+struct rpmvs_s *rpmvsFree(struct rpmvs_s *sis)
 {
     if (sis) {
 	free(sis->rcs);

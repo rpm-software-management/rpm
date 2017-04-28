@@ -195,7 +195,7 @@ static rpmRC handleResult(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *re
     return sigres;
 }
 
-static void initDigests(struct rpmsiset_s *sis, int range,
+static void rpmvsInitDigests(struct rpmvs_s *sis, int range,
 		       rpmDigestBundle bundle)
 {
     for (int i = 0; i < sis->nsigs; i++) {
@@ -207,7 +207,7 @@ static void initDigests(struct rpmsiset_s *sis, int range,
     }
 }
 
-static int verifyItems(struct rpmsiset_s *sis, int range,
+static int rpmvsVerifyItems(struct rpmvs_s *sis, int range,
 		       rpmDigestBundle bundle,
 		       rpmKeyring keyring, rpmsinfoCb cb, void *cbdata)
 {
@@ -244,7 +244,7 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     int failed = 0;
     struct hdrblob_s sigblob, blob;
-    struct rpmsiset_s *sigset = NULL;
+    struct rpmvs_s *sigset = NULL;
     rpmDigestBundle bundle = fdGetBundle(fd, 1); /* freed with fd */
 
     memset(&blob, 0, sizeof(blob));
@@ -256,10 +256,10 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
     if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERSIGNATURES, &sigblob, &msg))
 	goto exit;
 
-    sigset = rpmsisetInit(&sigblob, flags);
+    sigset = rpmvsCreate(&sigblob, flags);
 
     /* Initialize digests ranging over the header */
-    initDigests(sigset, RPMSIG_HEADER, bundle);
+    rpmvsInitDigests(sigset, RPMSIG_HEADER, bundle);
 
     /* Read the header from the package. */
     if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERIMMUTABLE, &blob, &msg))
@@ -267,22 +267,22 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
 
     /* Fish interesting tags from the main header. This is a bit hacky... */
     if (!(flags & RPMVSF_NOPAYLOAD))
-	rpmsisetAppend(sigset, &blob, RPMTAG_PAYLOADDIGEST);
+	rpmvsAppend(sigset, &blob, RPMTAG_PAYLOADDIGEST);
 
     /* Initialize digests ranging over the payload only */
-    initDigests(sigset, RPMSIG_PAYLOAD, bundle);
+    rpmvsInitDigests(sigset, RPMSIG_PAYLOAD, bundle);
 
     /* Verify header signatures and digests */
-    failed += verifyItems(sigset, (RPMSIG_HEADER), bundle, keyring, cb, cbdata);
+    failed += rpmvsVerifyItems(sigset, (RPMSIG_HEADER), bundle, keyring, cb, cbdata);
 
     /* Read the file, generating digest(s) on the fly. */
     if (readFile(fd, &msg))
 	goto exit;
 
     /* Verify signatures and digests ranging over the payload */
-    failed += verifyItems(sigset, (RPMSIG_PAYLOAD), bundle,
+    failed += rpmvsVerifyItems(sigset, (RPMSIG_PAYLOAD), bundle,
 			keyring, cb, cbdata);
-    failed += verifyItems(sigset, (RPMSIG_HEADER|RPMSIG_PAYLOAD), bundle,
+    failed += rpmvsVerifyItems(sigset, (RPMSIG_HEADER|RPMSIG_PAYLOAD), bundle,
 			keyring, cb, cbdata);
 
     if (failed == 0)
@@ -294,7 +294,7 @@ exit:
     free(msg);
     free(sigblob.ei);
     free(blob.ei);
-    rpmsisetFree(sigset);
+    rpmvsFree(sigset);
     return rc;
 }
 
