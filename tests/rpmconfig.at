@@ -209,6 +209,34 @@ foo
 ],
 [])
 AT_CLEANUP
+
+# ------------------------------
+# (Build and) upgrade package with config file, no backup here
+AT_SETUP([upgrade unchanged config - touching test])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for v in "1.0" "2.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
+	--define "filedata foo" \
+          /data/SPECS/configtest.spec
+done
+
+runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -Uvv --fsmdebug /build/RPMS/noarch/configtest-2.0-1.noarch.rpm > output.txt 2>&1
+grep -c  "touch" output.txt
+],
+[0],
+[1
+],
+[])
+AT_CLEANUP
 #
 # ------------------------------
 # Upgrade package with locally modified config file, unchanged in pkg

@@ -1050,7 +1050,7 @@ rpmFileAction rpmfilesDecideFate(rpmfiles ofi, int oix,
     newWhat = rpmfiWhatis(rpmfilesFMode(nfi, nix));
 
     /*
-     * This order matters - we'd prefer to CREATE the file if at all
+     * This order matters - we'd prefer to TOUCH the file if at all
      * possible in case something else (like the timestamp) has changed.
      * Only regular files and symlinks might need a backup, everything
      * else falls through here with FA_CREATE.
@@ -1065,8 +1065,10 @@ rpmFileAction rpmfilesDecideFate(rpmfiles ofi, int oix,
 	if (diskWhat == REG && newWhat == REG) {
 	    if (rpmDoDigest(nalgo, fn, 0, (unsigned char *)buffer, NULL))
 		goto exit;		/* assume file has been removed */
-	    if (ndigest && memcmp(ndigest, buffer, ndiglen) == 0)
-	        goto exit;		/* file identical in new, replace. */
+	    if (ndigest && memcmp(ndigest, buffer, ndiglen) == 0) {
+		action = FA_TOUCH;
+	        goto exit;		/* unmodified config file, touch it. */
+	    }
 	}
 
 	/* See if the file on disk is identical to the one in old pkg */
@@ -1111,8 +1113,10 @@ rpmFileAction rpmfilesDecideFate(rpmfiles ofi, int oix,
 	/* See if the link on disk is identical to the one in new pkg */
 	nFLink = rpmfilesFLink(nfi, nix);
 	if (diskWhat == LINK && newWhat == LINK) {
-	    if (nFLink && rstreq(nFLink, buffer))
-		goto exit;		/* unmodified config file, replace. */
+	    if (nFLink && rstreq(nFLink, buffer)) {
+		action = FA_TOUCH;
+		goto exit;		/* unmodified config file, touch it. */
+	    }
 	}
 
 	/* See if the link on disk is identical to the one in old pkg */
