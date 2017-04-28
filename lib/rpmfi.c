@@ -1107,17 +1107,17 @@ rpmFileAction rpmfilesDecideFate(rpmfiles ofi, int oix,
 	    buffer[link_len] = '\0';
 	}
 
-	/* See if the link on disk is identical to the one in old pkg */
-	oFLink = rpmfilesFLink(ofi, oix);
-	if (diskWhat == LINK) {
-	    if (oFLink && rstreq(oFLink, buffer))
-		goto exit;		/* unmodified config file, replace. */
-	}
-
 	/* See if the link on disk is identical to the one in new pkg */
 	nFLink = rpmfilesFLink(nfi, nix);
 	if (diskWhat == LINK && newWhat == LINK) {
 	    if (nFLink && rstreq(nFLink, buffer))
+		goto exit;		/* unmodified config file, replace. */
+	}
+
+	/* See if the link on disk is identical to the one in old pkg */
+	oFLink = rpmfilesFLink(ofi, oix);
+	if (diskWhat == LINK) {
+	    if (oFLink && rstreq(oFLink, buffer))
 		goto exit;		/* unmodified config file, replace. */
 	}
 
