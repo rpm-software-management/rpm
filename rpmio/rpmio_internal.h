@@ -13,7 +13,7 @@ extern "C" {
 #endif
 
 void fdSetBundle(FD_t fd, rpmDigestBundle bundle);
-rpmDigestBundle fdGetBundle(FD_t fd);
+rpmDigestBundle fdGetBundle(FD_t fd, int create);
 
 /** \ingroup rpmio
  * Attach digest to fd.

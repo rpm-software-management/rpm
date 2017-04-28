@@ -103,9 +103,15 @@ void fdSetBundle(FD_t fd, rpmDigestBundle bundle)
 	fd->digests = bundle;
 }
 
-rpmDigestBundle fdGetBundle(FD_t fd)
+rpmDigestBundle fdGetBundle(FD_t fd, int create)
 {
-    return (fd != NULL) ? fd->digests : NULL;
+    rpmDigestBundle bundle = NULL;
+    if (fd) {
+	if (fd->digests == NULL && create)
+	    fd->digests = rpmDigestBundleNew();
+	bundle = fd->digests;
+    }
+    return bundle;
 }
 
 /** \ingroup rpmio
