@@ -74,7 +74,11 @@ int rpmugGid(const char * thisGname, gid_t * gid)
     if (thisGname == NULL) {
 	lastGnameLen = 0;
 	return -1;
+#if defined(_AIX)
+    } else if (rstreq(thisGname, "system")) {
+#else
     } else if (rstreq(thisGname, "root")) {
+#endif
 	*gid = 0;
 	return 0;
     }
@@ -147,7 +151,11 @@ const char * rpmugGname(gid_t gid)
 	lastGid = (gid_t) -1;
 	return NULL;
     } else if (gid == (gid_t) 0) {
+#if defined(_AIX)
+	return "system";
+#else
 	return "root";
+#endif
     } else if (gid == lastGid) {
 	return lastGname;
     } else {
@@ -172,7 +180,11 @@ static void loadLibs(void)
 {
     (void) getpwnam("root");
     endpwent();
+#if defined(_AIX)
+    (void) getgrnam("system");
+#else
     (void) getgrnam("root");
+#endif
     endgrent();
     (void) gethostbyname("localhost");
 }

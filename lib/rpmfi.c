@@ -807,8 +807,13 @@ int rpmfilesStat(rpmfiles fi, int ix, int flags, struct stat *sb)
 
 	if (group && rpmugGid(group, &sb->st_gid)) {
 	    if (warn)
+#if defined(_AIX)
+		rpmlog(RPMLOG_WARNING,
+			_("group %s does not exist - using system\n"), group);
+#else
 		rpmlog(RPMLOG_WARNING,
 			_("group %s does not exist - using root\n"), group);
+#endif
 	    sb->st_mode &= ~S_ISGID;	/* turn off sgid bit */
 	}
 
