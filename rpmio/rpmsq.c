@@ -72,9 +72,10 @@ static void rpmsqHandler(int signum, siginfo_t * info, void * context)
     if (sigismember(&rpmsqActive, signum)) {
 	if (!sigismember(&rpmsqCaught, signum)) {
 	    rpmsig sig = NULL;
-	    (void) sigaddset(&rpmsqCaught, signum);
-	    if (rpmsigGet(signum, &sig))
+	    if (rpmsigGet(signum, &sig)) {
+		(void) sigaddset(&rpmsqCaught, signum);
 		memcpy(&sig->siginfo, info, sizeof(*info));
+	    }
 	}
     }
 
