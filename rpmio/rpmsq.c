@@ -32,7 +32,8 @@ static void rpmsqTerm(int signum, siginfo_t *info, void *context)
 	rpmlog(lvl,
 		_("exiting on signal %d from pid %d\n"), signum, info->si_pid);
     }
-    exit(EXIT_FAILURE);
+    /* exit 128 + signum for compatibility with bash(1) */
+    exit(128 + signum);
 }
 
 static struct rpmsig_s {
