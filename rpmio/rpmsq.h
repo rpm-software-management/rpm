@@ -22,6 +22,13 @@ extern "C" {
 typedef void (*rpmsqAction_t) (int signum, siginfo_t * info, void * context);
 
 /** \ingroup rpmsq
+ *  SIG_DFL, SIG_IGN and SIG_ERR counterparts
+ */
+#define RPMSQ_DFL	((rpmsqAction_t)0)
+#define RPMSQ_IGN	((rpmsqAction_t)1)
+#define RPMSQ_ERR	((rpmsqAction_t)-1)
+
+/** \ingroup rpmsq
  * Test if given signal has been caught (while signals blocked).
  * Similar to sigismember() but operates on internal signal queue.
  * @param signum	signal to test for
@@ -40,7 +47,7 @@ int rpmsqActivate(int state);
  * Set or delete a signal handler for a signal.
  * @param signum	signal number
  * @param handler	signal handler or NULL to delete
- * @return		previous non-default handler (possibly NULL)
+ * @return		previous handler, RPMSQ_ERR on error
  */
 rpmsqAction_t rpmsqSetAction(int signum, rpmsqAction_t handler);
 

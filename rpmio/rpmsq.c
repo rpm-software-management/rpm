@@ -22,6 +22,10 @@ static __thread sigset_t rpmsqActive;
 
 typedef struct rpmsig_s * rpmsig;
 
+static void rpmsqIgn(int signum, siginfo_t *info, void *context)
+{
+}
+
 static void rpmsqTerm(int signum, siginfo_t *info, void *context)
 {
     if (info->si_pid == 0) {
@@ -87,11 +91,11 @@ static void rpmsqHandler(int signum, siginfo_t * info, void * context)
 rpmsqAction_t rpmsqSetAction(int signum, rpmsqAction_t handler)
 {
     rpmsig sig = NULL;
-    rpmsqAction_t oh = NULL;
+    rpmsqAction_t oh = RPMSQ_ERR;
 
     if (rpmsigGet(signum, &sig)) {
 	oh = sig->handler;
-	sig->handler = handler;
+	sig->handler = (handler == RPMSQ_IGN) ? rpmsqIgn : handler;
     }
     return oh;
 }
