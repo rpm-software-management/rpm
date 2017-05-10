@@ -31,6 +31,7 @@ TESTSUITE_AT += rpmpython.at
 TESTSUITE_AT += rpmdepmatch.at
 TESTSUITE_AT += rpmscript.at
 TESTSUITE_AT += rpmsigdig.at
+TESTSUITE_AT += rpmio.at
 EXTRA_DIST += $(TESTSUITE_AT)
 
 ## testsuite data
@@ -60,6 +61,7 @@ EXTRA_DIST += data/SPECS/triggers.spec
 EXTRA_DIST += data/SPECS/filetriggers.spec
 EXTRA_DIST += data/SPECS/prefixtest.spec
 EXTRA_DIST += data/SPECS/testdoc.spec
+EXTRA_DIST += data/SPECS/sigpipe.spec
 EXTRA_DIST += data/SOURCES/hello-1.0-modernize.patch
 EXTRA_DIST += data/SOURCES/hello-1.0.tar.gz
 EXTRA_DIST += data/SOURCES/hello-2.0.tar.gz
