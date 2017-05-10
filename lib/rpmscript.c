@@ -162,6 +162,7 @@ static void doScriptExec(ARGV_const_t argv, ARGV_const_t prefixes,
     int xx;
     int open_max;
 
+    /* SIGPIPE is ignored in rpm, reset to default for the scriptlet */
     (void) signal(SIGPIPE, SIG_DFL);
 
     /* XXX Force FD_CLOEXEC on all inherited fdno's. */

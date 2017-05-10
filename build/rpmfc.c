@@ -269,8 +269,6 @@ static StringBuf getOutputFrom(ARGV_t argv,
     
     child = fork();
     if (child == 0) {
-	/* NSPR messes with SIGPIPE, reset to default for the kids */
-	signal(SIGPIPE, SIG_DFL);
 	close(toProg[1]);
 	close(fromProg[0]);
 	

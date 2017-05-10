@@ -53,6 +53,9 @@ int rpmInitCrypto(void)
      * a private context if possible.
      */
     if (!_crypto_initialized) {
+	/* NSPR sets SIGPIPE to ignore behind our back, save and restore */
+	struct sigaction oact;
+	sigaction(SIGPIPE, NULL, &oact);
 #if HAVE_NSS_INITCONTEXT
 	PRUint32 flags = (NSS_INIT_READONLY|NSS_INIT_NOCERTDB|
 			  NSS_INIT_NOMODDB|NSS_INIT_FORCEOPEN|
@@ -67,6 +70,7 @@ int rpmInitCrypto(void)
 	} else {
 	    _crypto_initialized = 1;
 	}
+	sigaction(SIGPIPE, &oact, NULL);
     }
 
     /* Register one post-fork handler per process */
