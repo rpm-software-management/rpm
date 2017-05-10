@@ -19,8 +19,6 @@ AT_CLEANUP
 
 AT_SETUP([SIGPIPE from install scriptlet])
 AT_KEYWORDS([signals])
-# This incorrectly exists with code 141 due to SIGPIPE from scriptlet
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
