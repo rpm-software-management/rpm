@@ -109,7 +109,7 @@ testing$(bindir)/rpmbuild: ../rpmbuild
 	          $(MAKE) DESTDIR=`pwd`/${subdir}/testing install)
 	cp -r ${srcdir}/data/ testing/
 	for d in dev etc magic tmp var; do if [ ! -d testing/$${d} ]; then mkdir testing/$${d}; fi; done
-	for node in stdin stderr stdout null; do ln -s /dev/$${node} testing/dev/$${node}; done
+	for node in urandom stdin stderr stdout null; do ln -s /dev/$${node} testing/dev/$${node}; done
 	for cf in hosts resolv.conf passwd shadow group gshadow mtab fstab; do [ -f /etc/$${cf} ] && ln -s /etc/$${cf} testing/etc/$${cf}; done
 	ln -s ../$(bindir) testing/usr/bin
 	for prog in gzip cat patch tar sh ln chmod rm mkdir uname grep sed find file ionice mktemp nice cut sort diff touch; do p=`which $${prog}`; ln -s $${p} testing/$${p}; done
