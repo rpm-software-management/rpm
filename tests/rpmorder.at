@@ -1,0 +1,47 @@
+AT_BANNER([RPM install/erase ordering])
+
+AT_SETUP([basic install/erase order 1])
+# erase part is failing since commit decd7e619ee629b5bee0d2a597679cbf58457977
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+AT_KEYWORDS([install erase order])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "reqs deptest-two" \
+	/data/SPECS/deptest.spec
+runroot rpmbuild --quiet -bb \
+	--define "pkg two" \
+	--define "reqs deptest-three" \
+	/data/SPECS/deptest.spec
+runroot rpmbuild --quiet -bb \
+	--define "pkg three" \
+	/data/SPECS/deptest.spec
+
+echo INSTALL:
+runroot rpm -Uv --justdb \
+	/build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm \
+	/build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm \
+	/build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
+echo ERASE:
+runroot rpm -ev --justdb \
+        deptest-three \
+	deptest-one \
+	deptest-two
+],
+[0],
+[INSTALL:
+Preparing packages...
+deptest-three-1.0-1.noarch
+deptest-two-1.0-1.noarch
+deptest-one-1.0-1.noarch
+ERASE:
+Preparing packages...
+deptest-one-1.0-1.noarch
+deptest-two-1.0-1.noarch
+deptest-three-1.0-1.noarch
+],
+[])
+AT_CLEANUP
