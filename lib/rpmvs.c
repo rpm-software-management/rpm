@@ -59,16 +59,17 @@ static const struct rpmsinfo_s rpmvfyitems[] = {
     { 0 } /* sentinel */
 };
 
-static int sinfoLookup(rpmTagVal tag, struct rpmsinfo_s *sinfo)
+static int sinfoLookup(rpmTagVal tag)
 {
-    const struct rpmsinfo_s *si;
-    for (si = &rpmvfyitems[0]; si->tag; si++) {
+    const struct rpmsinfo_s *start = &rpmvfyitems[0];
+    int ix = -1;
+    for (const struct rpmsinfo_s *si = start; si->tag; si++) {
 	if (tag == si->tag) {
-	    memcpy(sinfo, si, sizeof(*sinfo));
+	    ix = si - start;
 	    break;
 	}
     }
-    return (si->tag != tag);
+    return ix;
 }
 
 rpmRC rpmsinfoInit(rpmtd td, const char *origin,
@@ -77,12 +78,14 @@ rpmRC rpmsinfoInit(rpmtd td, const char *origin,
     rpmRC rc = RPMRC_FAIL;
     const void *data = NULL;
     rpm_count_t dlen = 0;
+    int ix;
 
-    if (sinfoLookup(td->tag, sinfo)) {
+    if ((ix = sinfoLookup(td->tag)) == -1) {
 	/* anything unknown just falls through for now */
 	rc = RPMRC_OK;
 	goto exit;
     }
+    *sinfo = rpmvfyitems[ix]; /* struct assignment */
 
     if (sinfo->tagtype && sinfo->tagtype != td->type) {
 	rasprintf(msg, _("%s tag %u: BAD, invalid type %u"),
