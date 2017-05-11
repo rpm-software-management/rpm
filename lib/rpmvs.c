@@ -129,7 +129,7 @@ rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 	goto exit;
     }
 
-    if (sinfo->type == RPM_STRING_TYPE || sinfo->type == RPM_STRING_ARRAY_TYPE) {
+    if (sinfo->tagtype == RPM_STRING_TYPE || sinfo->tagtype == RPM_STRING_ARRAY_TYPE) {
 	for (const char * b = data; *b != '\0'; b++) {
 	    if (strchr("0123456789abcdefABCDEF", *b) == NULL) {
 		rasprintf(msg, _("%s: tag %u: BAD, not hex"), origin, td->tag);
