@@ -27,6 +27,81 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64.rpm /data/RPMS/hello-1.0-1.i38
 AT_CLEANUP
 
 # ------------------------------
+# Test corrupted package verification (corrupted signature)
+AT_SETUP([rpmkeys -Kv <corrupted unsigned> 1])
+AT_KEYWORDS([rpmkeys digest])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+pkg="hello-2.0-1.x86_64.rpm"
+cp "${RPMDATA}"/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+# conv=notrunc bs=1 seek=261 count=6 2> /dev/null
+dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
+   conv=notrunc bs=1 seek=333 count=4 2> /dev/null
+runroot rpmkeys -Kv /tmp/${pkg}
+],
+[1],
+[/tmp/hello-2.0-1.x86_64.rpm:
+    Header SHA1 digest: OK (5cd9874c510b67b44483f9e382a1649ef7743bac)
+    Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
+    Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
+    MD5 digest: BAD Expected(007ca1d8b35cca02a1854ba301c5432e) != (137ca1d8b35cca02a1854ba301c5432e)
+],
+[])
+AT_CLEANUP
+# ------------------------------
+# Test corrupted package verification (corrupted header)
+AT_SETUP([rpmkeys -Kv <corrupted unsigned> 2])
+AT_KEYWORDS([rpmkeys digest])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+pkg="hello-2.0-1.x86_64.rpm"
+cp "${RPMDATA}"/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
+   conv=notrunc bs=1 seek=5555 count=6 2> /dev/null
+runroot rpmkeys -Kv /tmp/${pkg}
+],
+[1],
+[/tmp/hello-2.0-1.x86_64.rpm:
+    Header SHA1 digest: BAD Expected(5cd9874c510b67b44483f9e382a1649ef7743bac) != (4261b2c1eb861a4152c2239bce20bfbcaa8971ba)
+    Header SHA256 digest: BAD Expected(ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9) != (29fdfe92782fb0470a9a164a6c94af87d3b138c63b39d4c30e0223ca1202ba82)
+    Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
+    MD5 digest: BAD Expected(137ca1d8b35cca02a1854ba301c5432e) != (de65519eeb4ab52eb076ec054d42e34e)
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# Test corrupted package verification (corrupted payload)
+AT_SETUP([rpmkeys -Kv <corrupted unsigned> 3])
+AT_KEYWORDS([rpmkeys digest])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+pkg="hello-2.0-1.x86_64.rpm"
+cp "${RPMDATA}"/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
+   conv=notrunc bs=1 seek=7777 count=6 2> /dev/null
+runroot rpmkeys -Kv /tmp/${pkg}
+],
+[1],
+[/tmp/hello-2.0-1.x86_64.rpm:
+    Header SHA1 digest: OK (5cd9874c510b67b44483f9e382a1649ef7743bac)
+    Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
+    Payload SHA256 digest: BAD Expected(84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c) != (bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
+    MD5 digest: BAD Expected(137ca1d8b35cca02a1854ba301c5432e) != (d662cd0d81601a7107312684ad1ddf38)
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
 # Reproducably build and verify a package
 AT_SETUP([rpmkeys -Kv <unsigned> 2])
 AT_KEYWORDS([rpmkeys digest])
@@ -174,6 +249,116 @@ runroot rpmkeys -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed.rpm
     Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
     Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
     MD5 digest: OK (137ca1d8b35cca02a1854ba301c5432e)
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# Test pre-built corrupted package verification (corrupted signature)
+AT_SETUP([rpmkeys -Kv <corrupted signed> 1])
+AT_KEYWORDS([rpmkeys digest signature])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+pkg="hello-2.0-1.x86_64-signed.rpm"
+cp "${RPMDATA}"/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
+   conv=notrunc bs=1 seek=264 count=6 2> /dev/null
+
+runroot rpmkeys -Kv /tmp/${pkg}
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot rpmkeys -Kv /tmp/${pkg}
+],
+[1],
+[/tmp/hello-2.0-1.x86_64-signed.rpm:
+    package tag 268: BAD, invalid OpenPGP signature
+    Header SHA1 digest: OK (5cd9874c510b67b44483f9e382a1649ef7743bac)
+    Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
+    Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
+    V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+    MD5 digest: OK (137ca1d8b35cca02a1854ba301c5432e)
+/tmp/hello-2.0-1.x86_64-signed.rpm:
+    package tag 268: BAD, invalid OpenPGP signature
+    Header SHA1 digest: OK (5cd9874c510b67b44483f9e382a1649ef7743bac)
+    Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
+    Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
+    V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
+    MD5 digest: OK (137ca1d8b35cca02a1854ba301c5432e)
+],
+[])
+AT_CLEANUP
+# ------------------------------
+# Test pre-built corrupted package verification (corrupted header)
+AT_SETUP([rpmkeys -Kv <corrupted signed> 2])
+AT_KEYWORDS([rpmkeys digest signature])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+pkg="hello-2.0-1.x86_64-signed.rpm"
+cp "${RPMDATA}"/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
+   conv=notrunc bs=1 seek=5555 count=6 2> /dev/null
+
+runroot rpmkeys -Kv /tmp/${pkg}
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot rpmkeys -Kv /tmp/${pkg}
+],
+[1],
+[/tmp/hello-2.0-1.x86_64-signed.rpm:
+    Header V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
+    Header SHA1 digest: BAD Expected(5cd9874c510b67b44483f9e382a1649ef7743bac) != (4261b2c1eb861a4152c2239bce20bfbcaa8971ba)
+    Header SHA256 digest: BAD Expected(ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9) != (29fdfe92782fb0470a9a164a6c94af87d3b138c63b39d4c30e0223ca1202ba82)
+    Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
+    V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
+    MD5 digest: BAD Expected(137ca1d8b35cca02a1854ba301c5432e) != (de65519eeb4ab52eb076ec054d42e34e)
+/tmp/hello-2.0-1.x86_64-signed.rpm:
+    Header V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
+    Header SHA1 digest: BAD Expected(5cd9874c510b67b44483f9e382a1649ef7743bac) != (4261b2c1eb861a4152c2239bce20bfbcaa8971ba)
+    Header SHA256 digest: BAD Expected(ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9) != (29fdfe92782fb0470a9a164a6c94af87d3b138c63b39d4c30e0223ca1202ba82)
+    Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
+    V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
+    MD5 digest: BAD Expected(137ca1d8b35cca02a1854ba301c5432e) != (de65519eeb4ab52eb076ec054d42e34e)
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# Test pre-built corrupted package verification (corrupted payload)
+AT_SETUP([rpmkeys -Kv <corrupted signed> 3])
+AT_KEYWORDS([rpmkeys digest signature])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+pkg="hello-2.0-1.x86_64-signed.rpm"
+cp "${RPMDATA}"/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
+   conv=notrunc bs=1 seek=7777 count=6 2> /dev/null
+
+runroot rpmkeys -Kv /tmp/${pkg}
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot rpmkeys -Kv /tmp/${pkg}
+],
+[1],
+[/tmp/hello-2.0-1.x86_64-signed.rpm:
+    Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+    Header SHA1 digest: OK (5cd9874c510b67b44483f9e382a1649ef7743bac)
+    Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
+    Payload SHA256 digest: BAD Expected(84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c) != (bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
+    V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
+    MD5 digest: BAD Expected(137ca1d8b35cca02a1854ba301c5432e) != (d662cd0d81601a7107312684ad1ddf38)
+/tmp/hello-2.0-1.x86_64-signed.rpm:
+    Header V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
+    Header SHA1 digest: OK (5cd9874c510b67b44483f9e382a1649ef7743bac)
+    Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
+    Payload SHA256 digest: BAD Expected(84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c) != (bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
+    V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
+    MD5 digest: BAD Expected(137ca1d8b35cca02a1854ba301c5432e) != (d662cd0d81601a7107312684ad1ddf38)
 ],
 [])
 AT_CLEANUP
