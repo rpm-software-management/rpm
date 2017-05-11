@@ -153,7 +153,6 @@ rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 	    sinfo->dig = xstrdup(data);
     }
 
-    sinfo->tag = td->tag;
     if (sinfo->hashalgo)
 	sinfo->id = td->tag;
 
