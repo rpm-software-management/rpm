@@ -13,47 +13,72 @@ struct rpmvs_s {
     int nsigs;
 };
 
+struct vfytag_s {
+    rpmTagVal tag;
+    rpmTagType tagtype;
+    rpm_count_t tagcount;
+    rpm_count_t tagsize;
+};
+
+static const struct vfytag_s rpmvfytags[] = {
+    {	RPMSIGTAG_SIZE,			RPM_BIN_TYPE,		0,	0, },
+    {	RPMSIGTAG_PGP,			RPM_BIN_TYPE,		0,	0, },
+    {	RPMSIGTAG_MD5,			RPM_BIN_TYPE,		0,	16, },
+    {	RPMSIGTAG_GPG,			RPM_BIN_TYPE,		0,	0, },
+    { 	RPMSIGTAG_PGP5,			RPM_BIN_TYPE,		0,	0, },
+    {	RPMSIGTAG_PAYLOADSIZE,		RPM_INT32_TYPE,		1,	4, },
+    {	RPMSIGTAG_RESERVEDSPACE,	RPM_BIN_TYPE,		0,	0, },
+    {	RPMTAG_DSAHEADER,		RPM_BIN_TYPE,		0,	0, },
+    {	RPMTAG_RSAHEADER,		RPM_BIN_TYPE,		0,	0, },
+    {	RPMTAG_SHA1HEADER,		RPM_STRING_TYPE,	1,	41, },
+    {	RPMSIGTAG_LONGSIZE,		RPM_INT64_TYPE,		1,	8, },
+    {	RPMSIGTAG_LONGARCHIVESIZE,	RPM_INT64_TYPE,		1,	8, },
+    {	RPMTAG_SHA256HEADER,		RPM_STRING_TYPE,	1,	65, },
+    {	RPMTAG_PAYLOADDIGEST,		RPM_STRING_ARRAY_TYPE,	0,	0, },
+    { 0 } /* sentinel */
+};
+
 static const struct rpmsinfo_s rpmvfyitems[] = {
-    {	RPMSIGTAG_SIZE,			RPM_BIN_TYPE,		0,	0,
+    {	RPMSIGTAG_SIZE,
 	RPMSIG_OTHER_TYPE,		0,
 	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, },
-    {	RPMSIGTAG_PGP,			RPM_BIN_TYPE,		0,	0,
+    {	RPMSIGTAG_PGP,
 	RPMSIG_SIGNATURE_TYPE,		RPMVSF_NORSA,
 	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, },
-    {	RPMSIGTAG_MD5,			RPM_BIN_TYPE,		0,	16,
+    {	RPMSIGTAG_MD5,
 	RPMSIG_DIGEST_TYPE,		RPMVSF_NOMD5,
 	(RPMSIG_HEADER|RPMSIG_PAYLOAD), PGPHASHALGO_MD5, },
-    {	RPMSIGTAG_GPG,			RPM_BIN_TYPE,		0,	0,
+    {	RPMSIGTAG_GPG,
 	RPMSIG_SIGNATURE_TYPE,		RPMVSF_NODSA,
 	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, },
-    { 	RPMSIGTAG_PGP5,			RPM_BIN_TYPE,		0,	0,
+    { 	RPMSIGTAG_PGP5,
 	RPMSIG_SIGNATURE_TYPE,		RPMVSF_NORSA,
 	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, },
-    {	RPMSIGTAG_PAYLOADSIZE,		RPM_INT32_TYPE,		1,	4,
+    {	RPMSIGTAG_PAYLOADSIZE,
 	RPMSIG_OTHER_TYPE,		0,
 	(RPMSIG_PAYLOAD),		0, },
-    {	RPMSIGTAG_RESERVEDSPACE,	RPM_BIN_TYPE,		0,	0,
+    {	RPMSIGTAG_RESERVEDSPACE,
 	RPMSIG_OTHER_TYPE,		0,
 	0,				0, },
-    {	RPMTAG_DSAHEADER,		RPM_BIN_TYPE,		0,	0,
+    {	RPMTAG_DSAHEADER,
 	RPMSIG_SIGNATURE_TYPE,		RPMVSF_NODSAHEADER,
 	(RPMSIG_HEADER),		0, },
-    {	RPMTAG_RSAHEADER,		RPM_BIN_TYPE,		0,	0,
+    {	RPMTAG_RSAHEADER,
 	RPMSIG_SIGNATURE_TYPE,		RPMVSF_NORSAHEADER,
 	(RPMSIG_HEADER),		0, },
-    {	RPMTAG_SHA1HEADER,		RPM_STRING_TYPE,	1,	41,
+    {	RPMTAG_SHA1HEADER,
 	RPMSIG_DIGEST_TYPE,		RPMVSF_NOSHA1HEADER,
 	(RPMSIG_HEADER),		PGPHASHALGO_SHA1, },
-    {	RPMSIGTAG_LONGSIZE,		RPM_INT64_TYPE,		1,	8,
+    {	RPMSIGTAG_LONGSIZE,
 	RPMSIG_OTHER_TYPE, 		0,
 	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, },
-    {	RPMSIGTAG_LONGARCHIVESIZE,	RPM_INT64_TYPE,		1,	8,
+    {	RPMSIGTAG_LONGARCHIVESIZE,
 	RPMSIG_OTHER_TYPE,		0,
 	(RPMSIG_HEADER|RPMSIG_PAYLOAD),	0, },
-    {	RPMTAG_SHA256HEADER,		RPM_STRING_TYPE,	1,	65,
+    {	RPMTAG_SHA256HEADER,
 	RPMSIG_DIGEST_TYPE,		RPMVSF_NOSHA256HEADER,
 	(RPMSIG_HEADER),		PGPHASHALGO_SHA256, },
-    {	RPMTAG_PAYLOADDIGEST,		RPM_STRING_ARRAY_TYPE,	0,	0,
+    {	RPMTAG_PAYLOADDIGEST,
 	RPMSIG_DIGEST_TYPE,		RPMVSF_NOPAYLOAD,
 	(RPMSIG_PAYLOAD),		PGPHASHALGO_SHA256, },
     { 0 } /* sentinel */
@@ -77,6 +102,7 @@ rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 {
     rpmRC rc = RPMRC_FAIL;
     const void *data = NULL;
+    const struct vfytag_s *tinfo;
     rpm_count_t dlen = 0;
     int ix;
 
@@ -86,14 +112,16 @@ rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 	goto exit;
     }
     *sinfo = rpmvfyitems[ix]; /* struct assignment */
+    tinfo = &rpmvfytags[ix];
+    assert(tinfo->tag == sinfo->tag);
 
-    if (sinfo->tagtype && sinfo->tagtype != td->type) {
+    if (tinfo->tagtype && tinfo->tagtype != td->type) {
 	rasprintf(msg, _("%s tag %u: BAD, invalid type %u"),
 			origin, td->tag, td->type);
 	goto exit;
     }
 
-    if (sinfo->tagcount && sinfo->tagcount != td->count) {
+    if (tinfo->tagcount && tinfo->tagcount != td->count) {
 	rasprintf(msg, _("%s: tag %u: BAD, invalid count %u"),
 			origin, td->tag, td->count);
 	goto exit;
@@ -122,14 +150,14 @@ rpmRC rpmsinfoInit(rpmtd td, const char *origin,
     if (td->type == RPM_STRING_TYPE && td->size == 0)
 	td->size = dlen + 1;
 
-    if (sinfo->tagsize && (td->flags & RPMTD_IMMUTABLE) &&
-		sinfo->tagsize != td->size) {
+    if (tinfo->tagsize && (td->flags & RPMTD_IMMUTABLE) &&
+		tinfo->tagsize != td->size) {
 	rasprintf(msg, _("%s tag %u: BAD, invalid size %u"),
 			origin, td->tag, td->size);
 	goto exit;
     }
 
-    if (sinfo->tagtype == RPM_STRING_TYPE || sinfo->tagtype == RPM_STRING_ARRAY_TYPE) {
+    if (tinfo->tagtype == RPM_STRING_TYPE || tinfo->tagtype == RPM_STRING_ARRAY_TYPE) {
 	for (const char * b = data; *b != '\0'; b++) {
 	    if (strchr("0123456789abcdefABCDEF", *b) == NULL) {
 		rasprintf(msg, _("%s: tag %u: BAD, not hex"), origin, td->tag);
