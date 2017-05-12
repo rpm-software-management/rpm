@@ -200,7 +200,7 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
 {
 
     char * msg = NULL;
-    rpmRC rc = RPMRC_FAIL; /* assume failure */
+    rpmRC xx, rc = RPMRC_FAIL; /* assume failure */
     int failed = 0;
     int leadtype = -1;
     struct hdrblob_s sigblob, blob;
@@ -212,8 +212,13 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
     memset(&blob, 0, sizeof(blob));
     memset(&sigblob, 0, sizeof(sigblob));
 
-    if (rpmLeadRead(fd, &leadtype, &msg))
+    if ((xx = rpmLeadRead(fd, &leadtype, &msg)) != RPMRC_OK) {
+	/* Avoid message spew on manifests */
+	if (xx == RPMRC_NOTFOUND)
+	    msg = _free(msg);
+	rc = xx;
 	goto exit;
+    }
 
     if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERSIGNATURES, &sigblob, &msg))
 	goto exit;
