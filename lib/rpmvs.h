@@ -59,33 +59,8 @@ int rpmvsVerifyItems(struct rpmvs_s *sis, int range, rpmDigestBundle bundle,
                        rpmKeyring keyring, rpmsinfoCb cb, void *cbdata);
 
 RPM_GNUC_INTERNAL
-rpmRC rpmsinfoInit(rpmtd td, const char *origin,
-                     struct rpmsinfo_s *sigt, char **msg);
-
-RPM_GNUC_INTERNAL
-void rpmsinfoFini(struct rpmsinfo_s *sinfo);
-
-RPM_GNUC_INTERNAL
-int rpmsinfoDisabled(const struct rpmsinfo_s *sinfo, rpmVSFlags vsflags);
-
-RPM_GNUC_INTERNAL
 rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
 			    rpmsinfoCb cb, void *cbdata, Header *hdrp);
-
-/** \ingroup signature
- * Verify a signature from a package.
- *
- * @param keyring	keyring handle
- * @param sigtd		signature tag data container
- * @param sig		signature/pubkey parameters
- * @param ctx		digest context
- * @retval result	detailed text result of signature verification
- * 			(malloc'd)
- * @return		result of signature verification
- */
-RPM_GNUC_INTERNAL
-rpmRC rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
-			 DIGEST_CTX ctx, char ** result);
 
 #ifdef __cplusplus
 }

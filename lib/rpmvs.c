@@ -84,6 +84,9 @@ static const struct rpmsinfo_s rpmvfyitems[] = {
     { 0 } /* sentinel */
 };
 
+static rpmRC rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
+			       DIGEST_CTX ctx, char ** result);
+
 static int sinfoLookup(rpmTagVal tag)
 {
     const struct rpmsinfo_s *start = &rpmvfyitems[0];
@@ -97,7 +100,7 @@ static int sinfoLookup(rpmTagVal tag)
     return ix;
 }
 
-rpmRC rpmsinfoInit(rpmtd td, const char *origin,
+static rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 		      struct rpmsinfo_s *sinfo, char **msg)
 {
     rpmRC rc = RPMRC_FAIL;
@@ -190,7 +193,7 @@ exit:
     return rc;
 }
 
-void rpmsinfoFini(struct rpmsinfo_s *sinfo)
+static void rpmsinfoFini(struct rpmsinfo_s *sinfo)
 {
     if (sinfo) {
 	if (sinfo->type == RPMSIG_SIGNATURE_TYPE)
@@ -201,7 +204,7 @@ void rpmsinfoFini(struct rpmsinfo_s *sinfo)
     }
 }
 
-int rpmsinfoDisabled(const struct rpmsinfo_s *sinfo, rpmVSFlags vsflags)
+static int rpmsinfoDisabled(const struct rpmsinfo_s *sinfo, rpmVSFlags vsflags)
 {
     if (!(sinfo->type & RPMSIG_VERIFIABLE_TYPE))
 	return 1;
@@ -381,7 +384,7 @@ verifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
     return res;
 }
 
-rpmRC
+static rpmRC
 rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
 		   DIGEST_CTX ctx, char ** result)
 {
