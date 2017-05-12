@@ -225,7 +225,7 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
 	goto exit;
 
     /* Fish interesting tags from the main header. This is a bit hacky... */
-    if (!(flags & RPMVSF_NOPAYLOAD))
+    if (!(flags & (RPMVSF_NOPAYLOAD|RPMVSF_NEEDPAYLOAD)))
 	rpmvsAppend(sigset, &blob, RPMTAG_PAYLOADDIGEST);
 
     /* Initialize digests ranging over the payload only */
@@ -234,9 +234,11 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
     /* Verify header signatures and digests */
     failed += rpmvsVerifyItems(sigset, (RPMSIG_HEADER), bundle, keyring, cb, cbdata);
 
-    /* Read the file, generating digest(s) on the fly. */
-    if (readFile(fd, &msg))
-	goto exit;
+    /* Unless disabled, read the file, generating digest(s) on the fly. */
+    if (!(flags & RPMVSF_NEEDPAYLOAD)) {
+	if (readFile(fd, &msg))
+	    goto exit;
+    }
 
     /* Verify signatures and digests ranging over the payload */
     failed += rpmvsVerifyItems(sigset, (RPMSIG_PAYLOAD), bundle,
