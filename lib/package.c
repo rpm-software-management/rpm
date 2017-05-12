@@ -301,106 +301,51 @@ void applyRetrofits(Header h, int leadtype)
 	headerConvert(h, HEADERCONV_COMPRESSFILELIST);
 }
 
-static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags, 
-			FD_t fd,
-			Header * hdrp, unsigned int *keyidp, char **msg)
+struct pkgdata_s {
+    const char *fn;
+};
+
+static rpmRC handlePkgVS(struct rpmsinfo_s *sinfo, rpmRC rc, const char *msg, void *cbdata)
 {
-    Header sigh = NULL;
-    Header h = NULL;
-    struct hdrblob_s blob, sigblob;
-    rpmRC xx, rc = RPMRC_FAIL;	/* assume failure */
-    int leadtype = -1;
-
-    if (hdrp) *hdrp = NULL;
-
-    memset(&blob, 0, sizeof(blob));
-    memset(&sigblob, 0, sizeof(sigblob));
-
-    if ((xx = rpmLeadRead(fd, &leadtype, msg)) != RPMRC_OK) {
-	/* Avoid message spew on manifests */
-	if (xx == RPMRC_NOTFOUND) {
-	    *msg = _free(*msg);
-	}
-	rc = xx;
-	goto exit;
+    struct pkgdata_s *pkgdata = cbdata;
+    switch (rc) {
+    case RPMRC_OK:		/* Signature is OK. */
+	rpmlog(RPMLOG_DEBUG, "%s: %s\n", pkgdata->fn, msg);
+	break;
+    case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
+    case RPMRC_NOKEY:		/* Public key is unavailable. */
+	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
+    {	int lvl = (stashKeyid(sinfo->keyid) ? RPMLOG_DEBUG : RPMLOG_WARNING);
+	rpmlog(lvl, "%s: %s\n", pkgdata->fn, msg);
+    }	break;
+    case RPMRC_NOTFOUND:	/* Signature/digest not present. */
+	if (msg)
+	    rpmlog(RPMLOG_WARNING, "%s: %s\n", pkgdata->fn, msg);
+	break;
+    default:
+    case RPMRC_FAIL:		/* Signature does not verify. */
+	rpmlog(RPMLOG_ERR, "%s: %s\n", pkgdata->fn, msg);
+	break;
     }
 
-    /* Read the signature and main headers */
-    if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERSIGNATURES, &sigblob, msg))
-	goto exit;
-    if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERIMMUTABLE, &blob, msg))
-	goto exit;
+    /* Preserve traditional behavior for now: only failure prevents install  */
+    if (rc != RPMRC_FAIL)
+	rc = RPMRC_OK;
 
-    /* Check header-only signature/digest */
-    xx = headerSigVerify(keyring, vsflags, &sigblob, &blob, keyidp, msg);
-    if (xx == RPMRC_FAIL)
-	goto exit;
-
-    /* This sums up everything that's wrong with rpm signature handling... */
-    /* TODO: Implement disable/enable/warn/error/anal policy. */
-    if (xx == RPMRC_NOTFOUND)
-	xx = RPMRC_OK;
-
-    /* Finally import the headers and do whatever required retrofits etc */
-    if (hdrblobImport(&sigblob, 0, &sigh, msg))
-	goto exit;
-    if (hdrblobImport(&blob, 0, &h, msg))
-	goto exit;
-
-    /* Append (and remap) signature tags to the metadata. */
-    headerMergeLegacySigs(h, sigh);
-    applyRetrofits(h, leadtype);
-
-    /* Bump reference count for return. */
-    if (hdrp != NULL)
-	*hdrp = headerLink(h);
-
-    /* If we got this far, return the signature check result */
-    rc = xx;
-
-exit:
-    free(sigblob.ei);
-    free(blob.ei);
-    h = headerFree(h);
-    sigh = headerFree(sigh);
     return rc;
 }
 
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 {
-    rpmRC rc;
-    rpmVSFlags vsflags = rpmtsVSFlags(ts);
+    rpmVSFlags vsflags = rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD;
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
-    unsigned int keyid = 0;
-    char *msg = NULL;
+    struct pkgdata_s pkgdata = {
+	.fn = fn ? fn : Fdescr(fd),
+    };
 
-    if (fn == NULL)
-	fn = Fdescr(fd);
+    rpmRC rc = rpmpkgVerifySignatures(keyring, vsflags, fd, handlePkgVS, &pkgdata, hdrp);
 
-    rc = rpmpkgRead(keyring, vsflags, fd, hdrp, &keyid, &msg);
-
-    switch (rc) {
-    case RPMRC_OK:		/* Signature is OK. */
-	rpmlog(RPMLOG_DEBUG, "%s: %s\n", fn, msg);
-	break;
-    case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
-    case RPMRC_NOKEY:		/* Public key is unavailable. */
-	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
-    {	int lvl = (stashKeyid(keyid) ? RPMLOG_DEBUG : RPMLOG_WARNING);
-	rpmlog(lvl, "%s: %s\n", fn, msg);
-    }	break;
-    case RPMRC_NOTFOUND:	/* Signature is unknown type or manifest. */
-	/* msg == NULL is probably a manifest */
-	if (msg)
-	    rpmlog(RPMLOG_WARNING, "%s: %s\n", fn, msg);
-	break;
-    default:
-    case RPMRC_FAIL:		/* Signature does not verify. */
-	rpmlog(RPMLOG_ERR, "%s: %s\n", fn, msg);
-	break;
-    }
     rpmKeyringFree(keyring);
-    free(msg);
 
     return rc;
 }
