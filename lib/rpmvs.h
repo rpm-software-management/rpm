@@ -70,7 +70,7 @@ int rpmsinfoDisabled(const struct rpmsinfo_s *sinfo, rpmVSFlags vsflags);
 
 RPM_GNUC_INTERNAL
 rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
-			    rpmsinfoCb cb, void *cbdata);
+			    rpmsinfoCb cb, void *cbdata, Header *hdrp);
 
 /** \ingroup signature
  * Verify a signature from a package.

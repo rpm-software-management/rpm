@@ -196,20 +196,23 @@ static rpmRC handleResult(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *re
 }
 
 rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
-			    rpmsinfoCb cb, void *cbdata)
+			    rpmsinfoCb cb, void *cbdata, Header *hdrp)
 {
 
     char * msg = NULL;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     int failed = 0;
+    int leadtype = -1;
     struct hdrblob_s sigblob, blob;
     struct rpmvs_s *sigset = NULL;
+    Header h = NULL;
+    Header sigh = NULL;
     rpmDigestBundle bundle = fdGetBundle(fd, 1); /* freed with fd */
 
     memset(&blob, 0, sizeof(blob));
     memset(&sigblob, 0, sizeof(sigblob));
 
-    if (rpmLeadRead(fd, NULL, &msg))
+    if (rpmLeadRead(fd, &leadtype, &msg))
 	goto exit;
 
     if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERSIGNATURES, &sigblob, &msg))
@@ -246,8 +249,23 @@ rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
     failed += rpmvsVerifyItems(sigset, (RPMSIG_HEADER|RPMSIG_PAYLOAD), bundle,
 			keyring, cb, cbdata);
 
-    if (failed == 0)
+    if (failed == 0) {
+	/* Finally import the headers and do whatever required retrofits etc */
+	if (hdrp) {
+	    if (hdrblobImport(&sigblob, 0, &sigh, &msg))
+		goto exit;
+	    if (hdrblobImport(&blob, 0, &h, &msg))
+		goto exit;
+
+	    /* Append (and remap) signature tags to the metadata. */
+	    headerMergeLegacySigs(h, sigh);
+	    applyRetrofits(h, leadtype);
+
+	    /* Bump reference count for return. */
+	    *hdrp = headerLink(h);
+	}
 	rc = RPMRC_OK;
+    }
 
 exit:
     if (rc && msg != NULL)
@@ -255,6 +273,8 @@ exit:
     free(msg);
     free(sigblob.ei);
     free(blob.ei);
+    headerFree(h);
+    headerFree(sigh);
     rpmvsFree(sigset);
     return rc;
 }
@@ -265,10 +285,10 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
     int rc;
     if (rpmIsVerbose()) {
 	rpmlog(RPMLOG_NOTICE, "%s:\n", fn);
-	rc = rpmpkgVerifySignatures(keyring, flags, fd, handleResult, NULL);
+	rc = rpmpkgVerifySignatures(keyring, flags, fd, handleResult, NULL, NULL);
     } else {
 	rpmlog(RPMLOG_NOTICE, "%s: ", fn);
-	rc = rpmpkgVerifySignatures(keyring, flags, fd, handleResult, NULL);
+	rc = rpmpkgVerifySignatures(keyring, flags, fd, handleResult, NULL, NULL);
 	rpmlog(RPMLOG_NOTICE, "%s\n", rc ? _("NOT OK") : _("OK"));
     }
     return rc;

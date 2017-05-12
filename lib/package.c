@@ -25,7 +25,7 @@
  * @param h		header (dest)
  * @param sigh		signature header (src)
  */
-static void headerMergeLegacySigs(Header h, Header sigh)
+void headerMergeLegacySigs(Header h, Header sigh)
 {
     HeaderIterator hi;
     struct rpmtd_s td;
@@ -272,7 +272,7 @@ exit:
     return rc;
 }
 
-static void applyRetrofits(Header h, int leadtype)
+void applyRetrofits(Header h, int leadtype)
 {
     /* Retrofit RPMTAG_SOURCEPACKAGE to srpms for compatibility */
     if (leadtype == RPMLEAD_SOURCE && headerIsSource(h)) {

@@ -85,6 +85,12 @@ void headerSetInstance(Header h, unsigned int instance);
 /* Package IO helper to consolidate partial read and error handling */
 RPM_GNUC_INTERNAL
 ssize_t Freadall(FD_t fd, void * buf, ssize_t size);
+
+/* XXX here only temporarily */
+RPM_GNUC_INTERNAL
+void headerMergeLegacySigs(Header h, Header sigh);
+RPM_GNUC_INTERNAL
+void applyRetrofits(Header h, int leadtype);
 #ifdef __cplusplus
 }   
 #endif
