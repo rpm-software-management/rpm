@@ -69,7 +69,7 @@ RPM_GNUC_INTERNAL
 int rpmsinfoDisabled(const struct rpmsinfo_s *sinfo, rpmVSFlags vsflags);
 
 RPM_GNUC_INTERNAL
-rpmRC rpmpkgVerifySignatures(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
+rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
 			    rpmsinfoCb cb, void *cbdata, Header *hdrp);
 
 /** \ingroup signature
