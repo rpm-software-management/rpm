@@ -18,6 +18,177 @@
 
 AT_BANNER([RPM install tests])
 
+AT_SETUP([rpm -U <manifest>])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+echo /data/RPMS/hello-2.0-1.x86_64.rpm > ${RPMTEST}/tmp/test.mft
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	/tmp/test.mft
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpm -U <manifest notfound 1>])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+echo /data/RPMS/hello-2.0-1.x86_64.rpm > ${RPMTEST}/tmp/test.mft
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	/tmp/test-not-there.mft
+],
+[1],
+[],
+[error: open of /tmp/test-not-there.mft failed: No such file or directory
+])
+AT_CLEANUP
+
+AT_SETUP([rpm -U <manifest notfound 2>])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+echo /data/RPMS/hello-not-there-2.0-1.x86_64.rpm > ${RPMTEST}/tmp/test.mft
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	/tmp/test.mft
+],
+[1],
+[],
+[error: open of /data/RPMS/hello-not-there-2.0-1.x86_64.rpm failed: No such file or directory
+])
+AT_CLEANUP
+
+AT_SETUP([rpm -U <notfound>])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	/data/RPMS/hello-not-there-2.0-1.x86_64.rpm
+],
+[1],
+[],
+[error: open of /data/RPMS/hello-not-there-2.0-1.x86_64.rpm failed: No such file or directory
+])
+AT_CLEANUP
+
+AT_SETUP([rpm -U <unsigned>])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	/data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpm -U <signed nokey>])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	/data/RPMS/hello-2.0-1.x86_64-signed.rpm
+],
+[0],
+[],
+[warning: /data/RPMS/hello-2.0-1.x86_64-signed.rpm: Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+])
+AT_CLEANUP
+
+AT_SETUP([rpm -U <signed>])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	/data/RPMS/hello-2.0-1.x86_64-signed.rpm
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpm -U <corrupted signed 1>])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+pkg="hello-2.0-1.x86_64-signed.rpm"
+cp "${RPMDATA}"/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
+   conv=notrunc bs=1 seek=264 count=2 2> /dev/null
+
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	/tmp/${pkg}
+],
+[1],
+[],
+[error: /tmp/hello-2.0-1.x86_64-signed.rpm: header tag 268: BAD, invalid OpenPGP signature
+error: /tmp/hello-2.0-1.x86_64-signed.rpm cannot be installed
+])
+AT_CLEANUP
+
+AT_SETUP([rpm -U <corrupted signed 2>])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+pkg="hello-2.0-1.x86_64-signed.rpm"
+cp "${RPMDATA}"/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
+   conv=notrunc bs=1 seek=5555 count=6 2> /dev/null
+
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	/tmp/${pkg}
+],
+[1],
+[],
+[error: /tmp/hello-2.0-1.x86_64-signed.rpm: Header V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
+error: /tmp/hello-2.0-1.x86_64-signed.rpm cannot be installed
+])
+AT_CLEANUP
+
+# XXX FIXME: "File exists" error message is bogus for this failure
+AT_SETUP([rpm -U <corrupted signed 3>])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+pkg="hello-2.0-1.x86_64-signed.rpm"
+cp "${RPMDATA}"/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
+   conv=notrunc bs=1 seek=7788 count=6 2> /dev/null
+
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	/tmp/${pkg}
+],
+[1],
+[],
+[warning: /tmp/hello-2.0-1.x86_64-signed.rpm: Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+error: unpacking of archive failed: cpio: read failed - File exists
+error: hello-2.0-1.x86_64: install failed
+])
+AT_CLEANUP
+
 # ------------------------------
 # Check if rpm -U *.src.rpm works
 AT_SETUP([rpm -U *.src.rpm])
@@ -354,3 +525,4 @@ runroot rpm -e testdoc
 [],
 [])
 AT_CLEANUP
+
