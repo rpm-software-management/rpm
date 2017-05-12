@@ -192,7 +192,8 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 	goto exit;
     }
 
-    if (rpmsinfoInit(&sigtd, "header", &sinfo, buf))
+    const char *o = (blob->il > blob->ril) ? _("header") : _("package");
+    if (rpmsinfoInit(&sigtd, o, &sinfo, buf))
 	goto exit;
 
     if (sinfo.hashalgo) {

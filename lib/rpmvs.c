@@ -217,7 +217,7 @@ void rpmvsAppend(struct rpmvs_s *sis, hdrblob blob, rpmTagVal tag)
     struct rpmtd_s td;
     sis->rcs[sis->nsigs] = hdrblobGet(blob, tag, &td);
     if (sis->rcs[sis->nsigs] == RPMRC_OK) {
-	const char *o = _("package"); /* XXX not yet used for headers */
+	const char *o = (blob->il > blob->ril) ? _("header") : _("package");
 	int ix;
 	while ((ix = rpmtdNext(&td)) >= -1) {
 	    sis->rcs[sis->nsigs] = rpmsinfoInit(&td, o,
