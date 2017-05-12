@@ -137,103 +137,52 @@ exit:
     return seen;
 }
 
-/*
- * Argument monster to verify header-only signature/digest if there is
- * one, otherwisereturn RPMRC_NOTFOUND to signal for plain sanity check.
- */
-static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
-			     hdrblob blob, hdrblob dstblob,
-			     unsigned int *keyidp, char **buf)
+static rpmRC handleHdrVS(struct rpmsinfo_s *sinfo, rpmRC rc, const char *msg, void *cbdata)
 {
-    rpmRC rc = RPMRC_FAIL;
-    struct rpmtd_s sigtd;
-    struct entryInfo_s einfo;
-    struct rpmsinfo_s sinfo;
-
-    rpmtdReset(&sigtd);
-    memset(&einfo, 0, sizeof(einfo));
-
-    /* Find a header-only digest/signature tag. */
-    for (int i = (blob == dstblob) ? blob->ril : 1; i < blob->il; i++) {
-	ei2h(blob->pe+i, &einfo);
-
-	switch (einfo.tag) {
-	case RPMTAG_SHA256HEADER:
-	    if (vsflags & RPMVSF_NOSHA256HEADER)
-		break;
-	    /* Prefer SHA256 over SHA1 if both are present */
-	    if (sigtd.tag == 0 || sigtd.tag == RPMTAG_SHA1HEADER)
-		ei2td(&einfo, blob->dataStart, 0, &sigtd);
-	    break;
-	case RPMTAG_SHA1HEADER:
-	    if (vsflags & RPMVSF_NOSHA1HEADER)
-		break;
-	    if (sigtd.tag == 0)
-		ei2td(&einfo, blob->dataStart, 0, &sigtd);
-	    break;
-	case RPMTAG_RSAHEADER:
-	    if (vsflags & RPMVSF_NORSAHEADER)
-		break;
-	    ei2td(&einfo, blob->dataStart, einfo.count, &sigtd);
-	    break;
-	case RPMTAG_DSAHEADER:
-	    if (vsflags & RPMVSF_NODSAHEADER)
-		break;
-	    ei2td(&einfo, blob->dataStart, einfo.count, &sigtd);
-	    break;
-	default:
-	    break;
-	}
+    if (msg) {
+	char **buf  = cbdata;
+	if (buf)
+	    *buf = rstrscat(buf, "\n", msg, NULL);
     }
-
-    /* No header-only digest/signature found, get outta here */
-    if (sigtd.tag == 0) {
-	rc = RPMRC_NOTFOUND;
-	goto exit;
-    }
-
-    const char *o = (blob->il > blob->ril) ? _("header") : _("package");
-    if (rpmsinfoInit(&sigtd, o, &sinfo, buf))
-	goto exit;
-
-    if (sinfo.hashalgo) {
-	DIGEST_CTX ctx = rpmDigestInit(sinfo.hashalgo, RPMDIGEST_NONE);
-	int32_t ildl[2] = { htonl(dstblob->ril), htonl(dstblob->rdl) };
-
-	rpmDigestUpdate(ctx, rpm_header_magic, sizeof(rpm_header_magic));
-	rpmDigestUpdate(ctx, ildl, sizeof(ildl));
-	rpmDigestUpdate(ctx, dstblob->pe, (dstblob->ril * sizeof(*dstblob->pe)));
-	rpmDigestUpdate(ctx, dstblob->dataStart, dstblob->rdl);
-
-	rc = rpmVerifySignature(keyring, &sinfo, ctx, buf);
-
-	if (keyidp && sinfo.type == RPMSIG_SIGNATURE_TYPE)
-	    *keyidp = sinfo.keyid;
-
-    	rpmDigestFinal(ctx, NULL, NULL, 0);
-    }
-    rpmsinfoFini(&sinfo);
-
-exit:
-    rpmtdFreeData(&sigtd);
-
     return rc;
+}
+
+static void updateHdrDigests(rpmDigestBundle bundle, struct hdrblob_s *blob)
+{
+    int32_t ildl[2] = { htonl(blob->ril), htonl(blob->rdl) };
+
+    rpmDigestBundleUpdate(bundle, rpm_header_magic, sizeof(rpm_header_magic));
+    rpmDigestBundleUpdate(bundle, ildl, sizeof(ildl));
+    rpmDigestBundleUpdate(bundle, blob->pe, (blob->ril * sizeof(*blob->pe)));
+    rpmDigestBundleUpdate(bundle, blob->dataStart, blob->rdl);
 }
 
 rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 {
     rpmRC rc = RPMRC_FAIL;
-    rpmVSFlags vsflags = rpmtsVSFlags(ts);
+    rpmVSFlags vsflags = rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD;
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
     struct hdrblob_s blob;
 
     if (hdrblobInit(uh, uc, 0, 0, &blob, msg) == RPMRC_OK) {
+	struct rpmvs_s *vs = rpmvsCreate(&blob, vsflags);
+	rpmDigestBundle bundle = rpmDigestBundleNew();
+
 	rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-	rc = headerSigVerify(keyring, vsflags, &blob, &blob, NULL, msg);
+
+	rpmvsInitDigests(vs, RPMSIG_HEADER, bundle);
+	updateHdrDigests(bundle, &blob);
+
+	rc = rpmvsVerifyItems(vs, RPMSIG_HEADER, bundle, keyring,
+				handleHdrVS, msg);
+
 	rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), uc);
 
-	if (rc == RPMRC_NOTFOUND && msg != NULL && *msg == NULL)
+	if (rc == RPMRC_OK && msg != NULL && *msg == NULL)
 	    rasprintf(msg, "Header sanity check: OK");
+
+	rpmDigestBundleFree(bundle);
+	rpmvsFree(vs);
     }
 
     rpmKeyringFree(keyring);
