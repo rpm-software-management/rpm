@@ -39,49 +39,54 @@ static const struct vfytag_s rpmvfytags[] = {
     { 0 } /* sentinel */
 };
 
-static const struct rpmsinfo_s rpmvfyitems[] = {
+struct vfyinfo_s {
+    rpmTagVal tag;
+    struct rpmsinfo_s vi;
+};
+
+static const struct vfyinfo_s rpmvfyitems[] = {
     {	RPMSIGTAG_SIZE,
-	RPMSIG_OTHER_TYPE,		0,
-	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, },
+	{ RPMSIG_OTHER_TYPE,		0,
+	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, }, },
     {	RPMSIGTAG_PGP,
-	RPMSIG_SIGNATURE_TYPE,		RPMVSF_NORSA,
-	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, },
+	{ RPMSIG_SIGNATURE_TYPE,		RPMVSF_NORSA,
+	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, }, },
     {	RPMSIGTAG_MD5,
-	RPMSIG_DIGEST_TYPE,		RPMVSF_NOMD5,
-	(RPMSIG_HEADER|RPMSIG_PAYLOAD), PGPHASHALGO_MD5, },
+	{ RPMSIG_DIGEST_TYPE,		RPMVSF_NOMD5,
+	(RPMSIG_HEADER|RPMSIG_PAYLOAD), PGPHASHALGO_MD5, }, },
     {	RPMSIGTAG_GPG,
-	RPMSIG_SIGNATURE_TYPE,		RPMVSF_NODSA,
-	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, },
+	{ RPMSIG_SIGNATURE_TYPE,		RPMVSF_NODSA,
+	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, }, },
     { 	RPMSIGTAG_PGP5,
-	RPMSIG_SIGNATURE_TYPE,		RPMVSF_NORSA,
-	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, },
+	{ RPMSIG_SIGNATURE_TYPE,		RPMVSF_NORSA,
+	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, }, },
     {	RPMSIGTAG_PAYLOADSIZE,
-	RPMSIG_OTHER_TYPE,		0,
-	(RPMSIG_PAYLOAD),		0, },
+	{ RPMSIG_OTHER_TYPE,		0,
+	(RPMSIG_PAYLOAD),		0, }, },
     {	RPMSIGTAG_RESERVEDSPACE,
-	RPMSIG_OTHER_TYPE,		0,
-	0,				0, },
+	{ RPMSIG_OTHER_TYPE,		0,
+	0,				0, }, },
     {	RPMTAG_DSAHEADER,
-	RPMSIG_SIGNATURE_TYPE,		RPMVSF_NODSAHEADER,
-	(RPMSIG_HEADER),		0, },
+	{ RPMSIG_SIGNATURE_TYPE,		RPMVSF_NODSAHEADER,
+	(RPMSIG_HEADER),		0, }, },
     {	RPMTAG_RSAHEADER,
-	RPMSIG_SIGNATURE_TYPE,		RPMVSF_NORSAHEADER,
-	(RPMSIG_HEADER),		0, },
+	{ RPMSIG_SIGNATURE_TYPE,		RPMVSF_NORSAHEADER,
+	(RPMSIG_HEADER),		0, }, },
     {	RPMTAG_SHA1HEADER,
-	RPMSIG_DIGEST_TYPE,		RPMVSF_NOSHA1HEADER,
-	(RPMSIG_HEADER),		PGPHASHALGO_SHA1, },
+	{ RPMSIG_DIGEST_TYPE,		RPMVSF_NOSHA1HEADER,
+	(RPMSIG_HEADER),		PGPHASHALGO_SHA1, }, },
     {	RPMSIGTAG_LONGSIZE,
-	RPMSIG_OTHER_TYPE, 		0,
-	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, },
+	{ RPMSIG_OTHER_TYPE, 		0,
+	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, }, },
     {	RPMSIGTAG_LONGARCHIVESIZE,
-	RPMSIG_OTHER_TYPE,		0,
-	(RPMSIG_HEADER|RPMSIG_PAYLOAD),	0, },
+	{ RPMSIG_OTHER_TYPE,		0,
+	(RPMSIG_HEADER|RPMSIG_PAYLOAD),	0, }, },
     {	RPMTAG_SHA256HEADER,
-	RPMSIG_DIGEST_TYPE,		RPMVSF_NOSHA256HEADER,
-	(RPMSIG_HEADER),		PGPHASHALGO_SHA256, },
+	{ RPMSIG_DIGEST_TYPE,		RPMVSF_NOSHA256HEADER,
+	(RPMSIG_HEADER),		PGPHASHALGO_SHA256, }, },
     {	RPMTAG_PAYLOADDIGEST,
-	RPMSIG_DIGEST_TYPE,		RPMVSF_NOPAYLOAD,
-	(RPMSIG_PAYLOAD),		PGPHASHALGO_SHA256, },
+	{ RPMSIG_DIGEST_TYPE,		RPMVSF_NOPAYLOAD,
+	(RPMSIG_PAYLOAD),		PGPHASHALGO_SHA256, }, },
     { 0 } /* sentinel */
 };
 
@@ -90,9 +95,9 @@ static rpmRC rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
 
 static int sinfoLookup(rpmTagVal tag)
 {
-    const struct rpmsinfo_s *start = &rpmvfyitems[0];
+    const struct vfyinfo_s *start = &rpmvfyitems[0];
     int ix = -1;
-    for (const struct rpmsinfo_s *si = start; si->tag; si++) {
+    for (const struct vfyinfo_s *si = start; si->tag; si++) {
 	if (tag == si->tag) {
 	    ix = si - start;
 	    break;
@@ -107,6 +112,7 @@ static rpmRC rpmsinfoInit(rpmtd td, const char *origin,
     rpmRC rc = RPMRC_FAIL;
     const void *data = NULL;
     const struct vfytag_s *tinfo;
+    const struct vfyinfo_s *vinfo;
     rpm_count_t dlen = 0;
     int ix;
 
@@ -115,9 +121,11 @@ static rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 	rc = RPMRC_OK;
 	goto exit;
     }
-    *sinfo = rpmvfyitems[ix]; /* struct assignment */
+    vinfo = &rpmvfyitems[ix];
     tinfo = &rpmvfytags[ix];
-    assert(tinfo->tag == sinfo->tag);
+    assert(tinfo->tag == vinfo->tag);
+
+    *sinfo = rpmvfyitems[ix].vi; /* struct assignment */
 
     if (tinfo->tagtype && tinfo->tagtype != td->type) {
 	rasprintf(msg, _("%s tag %u: BAD, invalid type %u"),
@@ -254,8 +262,8 @@ struct rpmvs_s *rpmvsCreate(hdrblob blob, rpmVSFlags vsflags)
 
     rpmvsReserve(sis, 2); /* XXX bump this up later */
 
-    for (const struct rpmsinfo_s *si = &rpmvfyitems[0]; si->tag; si++) {
-	if (rpmsinfoDisabled(si, vsflags))
+    for (const struct vfyinfo_s *si = &rpmvfyitems[0]; si->tag; si++) {
+	if (rpmsinfoDisabled(&si->vi, vsflags))
 	    continue;
 	rpmvsAppend(sis, blob, si->tag);
     }
@@ -409,8 +417,8 @@ rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
 exit:
     if (res == RPMRC_NOTFOUND) {
 	rasprintf(&msg,
-		  _("Verify signature: BAD PARAMETERS (%d %p %d %p)"),
-		  sinfo->tag, sinfo->sig, sinfo->hashalgo, ctx);
+		  _("Verify signature: BAD PARAMETERS (%x %p %d %p)"),
+		  sinfo->id, sinfo->sig, sinfo->hashalgo, ctx);
 	res = RPMRC_FAIL;
     }
 

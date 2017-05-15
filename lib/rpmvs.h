@@ -22,7 +22,6 @@ enum {
 
 struct rpmsinfo_s {
     /* static data */
-    rpmTagVal tag;
     int type;
     int disabler;
     int range;
