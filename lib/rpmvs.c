@@ -185,7 +185,7 @@ static rpmRC rpmsinfoInit(rpmtd td, const char *origin,
     }
 
     if (sinfo->hashalgo)
-	sinfo->id = td->tag;
+	sinfo->id = (td->tag << 16) | rpmtdGetIndex(td);
 
     rc = RPMRC_OK;
 
