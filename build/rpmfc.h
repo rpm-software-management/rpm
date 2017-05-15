@@ -45,7 +45,6 @@ typedef const struct rpmfcTokens_s * rpmfcToken;
 
 /** \ingroup rpmfc
  * Print results of file classification.
- * @todo Remove debugging routine.
  * @param msg		message prefix (NULL for none)
  * @param fc		file classifier
  * @param fp		output file handle (NULL for stderr)
