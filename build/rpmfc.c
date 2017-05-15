@@ -691,7 +691,6 @@ static rpm_color_t rpmfcColor(const char * fmstr)
 
 void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp)
 {
-    rpm_color_t fcolor;
     int ndx;
     int dx;
     int fx;
@@ -703,21 +702,23 @@ void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp)
 
     if (fc)
     for (fx = 0; fx < fc->nfiles; fx++) {
-	rpmsid cx = fc->fcdictx[fx] + 1; /* id's are one off */
-	fcolor = fc->fcolor[fx];
-	ARGV_t fattrs = fc->fattrs[fx];
-
 	fprintf(fp, "%3d %s", fx, fc->fn[fx]);
-	if (fcolor != RPMFC_BLACK)
+	if (_rpmfc_debug) {
+	    rpmsid cx = fc->fcdictx[fx] + 1; /* id's are one off */
+	    rpm_color_t fcolor = fc->fcolor[fx];
+	    ARGV_t fattrs = fc->fattrs[fx];
+
+	    if (fcolor != RPMFC_BLACK)
 		fprintf(fp, "\t0x%x", fc->fcolor[fx]);
-	else
+	    else
 		fprintf(fp, "\t%s", rpmstrPoolStr(fc->cdict, cx));
-	if (fattrs) {
-	    char *attrs = argvJoin(fattrs, ",");
-	    fprintf(fp, " [%s]", attrs);
-	    free(attrs);
-	} else {
-	    fprintf(fp, " [none]");
+	    if (fattrs) {
+		char *attrs = argvJoin(fattrs, ",");
+		fprintf(fp, " [%s]", attrs);
+		free(attrs);
+	    } else {
+		fprintf(fp, " [none]");
+	    }
 	}
 	fprintf(fp, "\n");
 

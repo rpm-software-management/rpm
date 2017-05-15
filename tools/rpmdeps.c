@@ -23,6 +23,8 @@ static int print_conflicts;
 
 static int print_obsoletes;
 
+static int print_alldeps;
+
 static void rpmdsPrint(const char * msg, rpmds ds, FILE * fp)
 {
     if (fp == NULL) fp = stderr;
@@ -56,6 +58,8 @@ static struct poptOption optionsTable[] = {
  { "conflicts", '\0', POPT_ARG_VAL, &print_conflicts, -1,
         NULL, NULL },
  { "obsoletes", '\0', POPT_ARG_VAL, &print_obsoletes, -1,
+        NULL, NULL },
+ { "alldeps", '\0', POPT_ARG_VAL, &print_alldeps, -1,
         NULL, NULL },
 
    POPT_AUTOALIAS
@@ -100,25 +104,27 @@ main(int argc, char *argv[])
     if (rpmfcClassify(fc, av, NULL) || rpmfcApply(fc))
 	goto exit;
 
-    if (_rpmfc_debug)
-	rpmfcPrint(NULL, fc, NULL);
+    if (print_alldeps || _rpmfc_debug)
+	rpmfcPrint(NULL, fc, print_alldeps ? stdout : NULL);
 
-    if (print_provides)
-	rpmdsPrint(NULL, rpmfcProvides(fc), stdout);
-    if (print_requires)
-	rpmdsPrint(NULL, rpmfcRequires(fc), stdout);
-    if (print_recommends)
-	rpmdsPrint(NULL, rpmfcRecommends(fc), stdout);
-    if (print_suggests)
-	rpmdsPrint(NULL, rpmfcSuggests(fc), stdout);
-    if (print_supplements)
-	rpmdsPrint(NULL, rpmfcSupplements(fc), stdout);
-    if (print_enhances)
-	rpmdsPrint(NULL, rpmfcEnhances(fc), stdout);
-    if (print_conflicts)
-	rpmdsPrint(NULL, rpmfcConflicts(fc), stdout);
-    if (print_obsoletes)
-	rpmdsPrint(NULL, rpmfcObsoletes(fc), stdout);
+    if (!print_alldeps) {
+	if (print_provides)
+	    rpmdsPrint(NULL, rpmfcProvides(fc), stdout);
+	if (print_requires)
+	    rpmdsPrint(NULL, rpmfcRequires(fc), stdout);
+	if (print_recommends)
+	    rpmdsPrint(NULL, rpmfcRecommends(fc), stdout);
+	if (print_suggests)
+	    rpmdsPrint(NULL, rpmfcSuggests(fc), stdout);
+	if (print_supplements)
+	    rpmdsPrint(NULL, rpmfcSupplements(fc), stdout);
+	if (print_enhances)
+	    rpmdsPrint(NULL, rpmfcEnhances(fc), stdout);
+	if (print_conflicts)
+	    rpmdsPrint(NULL, rpmfcConflicts(fc), stdout);
+	if (print_obsoletes)
+	    rpmdsPrint(NULL, rpmfcObsoletes(fc), stdout);
+    }
 
     ec = 0;
 
