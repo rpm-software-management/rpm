@@ -230,8 +230,8 @@ package or when debugging this package.\
 # Their purpouse is to set up global filtering for all packages. If you need
 # to set up specific filtering for your package use %__requires_exclude_from
 # and %__provides_exclude_from instead.
-%__global_requires_exclude_from		%{_docdir}
-%__global_provides_exclude_from		%{_docdir}
+%__global_requires_exclude_from		%{?_docdir:%{_docdir}}
+%__global_provides_exclude_from		%{?_docdir:%{_docdir}}
 
 #	The path to the gzip executable (legacy, use %{__gzip} instead).
 %_gzipbin		%{__gzip}
