@@ -257,25 +257,26 @@ struct pkgdata_s {
 static rpmRC handlePkgVS(struct rpmsinfo_s *sinfo, rpmRC rc, const char *msg, void *cbdata)
 {
     struct pkgdata_s *pkgdata = cbdata;
+    int lvl = RPMLOG_DEBUG;
     switch (rc) {
     case RPMRC_OK:		/* Signature is OK. */
-	rpmlog(RPMLOG_DEBUG, "%s: %s\n", pkgdata->fn, msg);
 	break;
     case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
     case RPMRC_NOKEY:		/* Public key is unavailable. */
 	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
-    {	int lvl = (stashKeyid(sinfo->keyid) ? RPMLOG_DEBUG : RPMLOG_WARNING);
-	rpmlog(lvl, "%s: %s\n", pkgdata->fn, msg);
-    }	break;
+	if (stashKeyid(sinfo->keyid) == 0)
+	    lvl = RPMLOG_WARNING;
+	break;
     case RPMRC_NOTFOUND:	/* Signature/digest not present. */
-	if (msg)
-	    rpmlog(RPMLOG_WARNING, "%s: %s\n", pkgdata->fn, msg);
+	lvl = RPMLOG_WARNING;
 	break;
     default:
     case RPMRC_FAIL:		/* Signature does not verify. */
-	rpmlog(RPMLOG_ERR, "%s: %s\n", pkgdata->fn, msg);
+	lvl = RPMLOG_ERR;
 	break;
     }
+
+    rpmlog(lvl, "%s: %s\n", pkgdata->fn, msg);
 
     /* Preserve traditional behavior for now: only failure prevents install  */
     if (rc != RPMRC_FAIL)
