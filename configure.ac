@@ -1017,4 +1017,8 @@ AC_CONFIG_FILES([Makefile
  	plugins/Makefile
 	python/setup.py
   ])
+user_with_uid0=$(awk -F: '$3==0 {print $1}' /etc/passwd)
+group_with_gid0=$(awk -F: '$3==0 {print $1}' /etc/group)
+AC_DEFINE_UNQUOTED([UID_0_USER],["$username_with_uid0"],[Get the user name having userid 0])
+AC_DEFINE_UNQUOTED([GID_0_GROUP],["$groupname_with_gid0"],[Get the group name having groupid 0])
 AC_OUTPUT
