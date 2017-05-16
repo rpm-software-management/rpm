@@ -801,14 +801,14 @@ int rpmfilesStat(rpmfiles fi, int ix, int flags, struct stat *sb)
 	if (user && rpmugUid(user, &sb->st_uid)) {
 	    if (warn)
 		rpmlog(RPMLOG_WARNING,
-			_("user %s does not exist - using root\n"), user);
+			_("user %s does not exist - using %s\n"), user, UID_0_USER);
 	    sb->st_mode &= ~S_ISUID;	  /* turn off suid bit */
 	}
 
 	if (group && rpmugGid(group, &sb->st_gid)) {
 	    if (warn)
 		rpmlog(RPMLOG_WARNING,
-			_("group %s does not exist - using root\n"), group);
+			_("group %s does not exist - using %s\n"), group, GID_0_GROUP);
 	    sb->st_mode &= ~S_ISGID;	/* turn off sgid bit */
 	}
 

@@ -31,7 +31,7 @@ int rpmugUid(const char * thisUname, uid_t * uid)
     if (!thisUname) {
 	lastUnameLen = 0;
 	return -1;
-    } else if (rstreq(thisUname, "root")) {
+    } else if (rstreq(thisUname, UID_0_USER)) {
 	*uid = 0;
 	return 0;
     }
@@ -74,7 +74,7 @@ int rpmugGid(const char * thisGname, gid_t * gid)
     if (thisGname == NULL) {
 	lastGnameLen = 0;
 	return -1;
-    } else if (rstreq(thisGname, "root")) {
+    } else if (rstreq(thisGname, GID_0_GROUP)) {
 	*gid = 0;
 	return 0;
     }
@@ -116,7 +116,7 @@ const char * rpmugUname(uid_t uid)
 	lastUid = (uid_t) -1;
 	return NULL;
     } else if (uid == (uid_t) 0) {
-	return "root";
+	return UID_0_USER;
     } else if (uid == lastUid) {
 	return lastUname;
     } else {
@@ -147,7 +147,7 @@ const char * rpmugGname(gid_t gid)
 	lastGid = (gid_t) -1;
 	return NULL;
     } else if (gid == (gid_t) 0) {
-	return "root";
+	return GID_0_GROUP;
     } else if (gid == lastGid) {
 	return lastGname;
     } else {
@@ -170,9 +170,9 @@ const char * rpmugGname(gid_t gid)
 
 static void loadLibs(void)
 {
-    (void) getpwnam("root");
+    (void) getpwnam(UID_0_USER);
     endpwent();
-    (void) getgrnam("root");
+    (void) getgrnam(GID_0_GROUP);
     endgrent();
     (void) gethostbyname("localhost");
 }
