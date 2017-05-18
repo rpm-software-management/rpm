@@ -91,6 +91,8 @@ RPM_GNUC_INTERNAL
 void headerMergeLegacySigs(Header h, Header sigh);
 RPM_GNUC_INTERNAL
 void applyRetrofits(Header h, int leadtype);
+RPM_GNUC_INTERNAL
+int headerIsSourceHeuristic(Header h);
 #ifdef __cplusplus
 }   
 #endif

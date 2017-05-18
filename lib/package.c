@@ -225,20 +225,27 @@ exit:
 
 void applyRetrofits(Header h, int leadtype)
 {
-    /* Retrofit RPMTAG_SOURCEPACKAGE to srpms for compatibility */
-    if (leadtype == RPMLEAD_SOURCE && headerIsSource(h)) {
-	if (!headerIsEntry(h, RPMTAG_SOURCEPACKAGE)) {
+    /*
+     * Make sure that either RPMTAG_SOURCERPM or RPMTAG_SOURCEPACKAGE
+     * is set. Use a simple heuristic to find the type if both are unset.
+     */
+    if (!headerIsEntry(h, RPMTAG_SOURCERPM) && !headerIsEntry(h, RPMTAG_SOURCEPACKAGE)) {
+	/* the heuristic needs the compressed file list */
+	if (headerIsEntry(h, RPMTAG_OLDFILENAMES))
+	    headerConvert(h, HEADERCONV_COMPRESSFILELIST);
+	if (headerIsSourceHeuristic(h)) {
+	    /* Retrofit RPMTAG_SOURCEPACKAGE to srpms for compatibility */
 	    uint32_t one = 1;
 	    headerPutUint32(h, RPMTAG_SOURCEPACKAGE, &one, 1);
+	} else {
+	    /*
+	     * Make sure binary rpms have RPMTAG_SOURCERPM set as that's
+	     * what we use for differentiating binary vs source elsewhere.
+	     */
+	    headerPutString(h, RPMTAG_SOURCERPM, "(none)");
 	}
     }
-    /*
-     * Try to make sure binary rpms have RPMTAG_SOURCERPM set as that's
-     * what we use for differentiating binary vs source elsewhere.
-     */
-    if (!headerIsEntry(h, RPMTAG_SOURCEPACKAGE) && headerIsSource(h)) {
-	headerPutString(h, RPMTAG_SOURCERPM, "(none)");
-    }
+
     /*
      * Convert legacy headers on the fly. Not having immutable region
      * equals a truly ancient package, do full retrofit. OTOH newer
