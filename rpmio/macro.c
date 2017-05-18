@@ -105,6 +105,7 @@ typedef struct MacroBuf_s {
     int error;			/*!< Errors encountered during expansion? */
     int macro_trace;		/*!< Pre-print macro to expand? */
     int expand_trace;		/*!< Post-print macro expansion? */
+    int flags;			/*!< Flags to control behavior */
     rpmMacroContext mc;
 } * MacroBuf;
 
@@ -1295,7 +1296,8 @@ exit:
 
 /* =============================================================== */
 
-static int doExpandMacros(rpmMacroContext mc, const char *src, char **target)
+static int doExpandMacros(rpmMacroContext mc, const char *src, int flags,
+			char **target)
 {
     MacroBuf mb = xcalloc(1, sizeof(*mb));
     int rc = 0;
@@ -1306,6 +1308,7 @@ static int doExpandMacros(rpmMacroContext mc, const char *src, char **target)
     mb->macro_trace = print_macro_trace;
     mb->expand_trace = print_expand_trace;
     mb->mc = mc;
+    mb->flags = flags;
 
     rc = expandMacro(mb, src, 0);
 
@@ -1471,7 +1474,7 @@ int rpmExpandMacros(rpmMacroContext mc, const char * sbuf, char ** obuf, int fla
     int rc;
 
     mc = rpmmctxAcquire(mc);
-    rc = doExpandMacros(mc, sbuf, &target);
+    rc = doExpandMacros(mc, sbuf, flags, &target);
     rpmmctxRelease(mc);
 
     if (rc) {
@@ -1643,7 +1646,7 @@ rpmExpand(const char *arg, ...)
     va_end(ap);
 
     mc = rpmmctxAcquire(NULL);
-    (void) doExpandMacros(mc, buf, &ret);
+    (void) doExpandMacros(mc, buf, 0, &ret);
     rpmmctxRelease(mc);
 
     free(buf);
