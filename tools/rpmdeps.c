@@ -101,7 +101,7 @@ main(int argc, char *argv[])
 	goto exit;
 
     if (_rpmfc_debug)
-	rpmfcPrint(buf, fc, NULL);
+	rpmfcPrint(NULL, fc, stdout);
 
     if (print_provides)
 	rpmdsPrint(NULL, rpmfcProvides(fc), stdout);
