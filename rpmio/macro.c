@@ -105,6 +105,7 @@ typedef struct MacroBuf_s {
     int error;			/*!< Errors encountered during expansion? */
     int macro_trace;		/*!< Pre-print macro to expand? */
     int expand_trace;		/*!< Post-print macro expansion? */
+    int escape;			/*!< Preserve '%%' during expansion? */
     int flags;			/*!< Flags to control behavior */
     rpmMacroContext mc;
 } * MacroBuf;
@@ -675,6 +676,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
      */
     argvAdd(&argv, me->name);
     if (lastc) {
+	int oescape = mb->escape;
 	ARGV_t av = NULL;
 	char *args = xmalloc(lastc-se + 1);
 	memcpy(args, se, lastc-se);
@@ -682,12 +684,14 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 	argvSplit(&av, args, " \t");
 
 	/* Expand possible macros in arguments */
+	mb->escape = 1;
 	for (ARGV_const_t arg = av; arg && *arg; arg++) {
 	    char *s = NULL;
 	    expandThis(mb, *arg, 0, &s);
 	    argvAdd(&argv, s);
 	    free(s);
 	}
+	mb->escape = oescape;
 	argvFree(av);
 	free(args);
 
@@ -1009,6 +1013,8 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 		if (*s != '%')
 		    break;
 		s++;	/* skip first % in %% */
+		if (mb->escape)
+		    mbAppend(mb, c);
 	    }
 	default:
 	    mbAppend(mb, c);
