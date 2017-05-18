@@ -1028,6 +1028,16 @@ int headerIsEntry(Header h, rpmTagVal tag)
    	
 }
 
+/* simple heuristic to find out if the header is from * a source rpm
+ * or not: source rpms contain at least the spec file and have all
+ * files in one directory with an empty name.
+ */
+int headerIsSourceHeuristic(Header h)
+{
+    indexEntry entry = findEntry(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE);
+    return entry && entry->info.count == 1 && entry->data && !*(const char *)entry->data;
+}
+
 /** \ingroup header
  * Retrieve data from header entry.
  * Relevant flags (others are ignored), if neither is set allocation
