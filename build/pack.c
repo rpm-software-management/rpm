@@ -735,11 +735,13 @@ rpmRC packageSources(rpmSpec spec, char **cookie)
 {
     Package sourcePkg = spec->sourcePackage;
     rpmRC rc;
+    uint32_t one = 1;
 
     /* Add some cruft */
     headerPutString(sourcePkg->header, RPMTAG_RPMVERSION, VERSION);
     headerPutString(sourcePkg->header, RPMTAG_BUILDHOST, buildHost());
     headerPutUint32(sourcePkg->header, RPMTAG_BUILDTIME, getBuildTime(), 1);
+    headerPutUint32(sourcePkg->header, RPMTAG_SOURCEPACKAGE, &one, 1);
 
     /* XXX this should be %_srpmdir */
     {	char *fn = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);
