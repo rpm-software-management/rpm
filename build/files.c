@@ -203,6 +203,16 @@ static void dupAttrRec(const AttrRec oar, AttrRec nar)
     *nar = *oar; /* struct assignment */
 }
 
+static char *mkattr(const char *fn)
+{
+    char *s = NULL;
+    if (fn)
+	rasprintf(&s, "%s(-,%s,%s) %s", "%attr", "root", "root", fn);
+    else
+	rasprintf(&s, "%s(-,%s,%s)", "%defattr", "root", "root");
+    return s;
+}
+
 static void copyFileEntry(FileEntry src, FileEntry dest)
 {
     /* Copying struct makes just shallow copy */
@@ -1854,7 +1864,7 @@ static int generateBuildIDs(FileList fl)
 	    fl->cur.verifyFlags = RPMVERIFY_ALL;
 	    fl->def.specdFlags |= SPECD_VERIFY;
 	    fl->cur.specdFlags |= SPECD_VERIFY;
-	    attrstr = xstrdup ("%defattr(-,root,root)");
+	    attrstr = mkattr(NULL);
 	    parseForAttr(fl->pool, attrstr, 1, &fl->def);
 	    free (attrstr);
 
@@ -1867,8 +1877,7 @@ static int generateBuildIDs(FileList fl)
 		if ((rc = rpmioMkpath(mainiddir, 0755, -1, -1)) != 0) {
 		    rpmlog(RPMLOG_ERR, "%s %s: %m\n", errdir, mainiddir);
 		} else {
-		    rasprintf (&attrstr, "%s %s", "%attr(-,root,root) ",
-			       mainiddir);
+		    attrstr = mkattr(mainiddir);
 		    parseForAttr(fl->pool, attrstr, 0, &fl->cur);
 		    fl->cur.isDir = 1;
 		    rc = addFile(fl, mainiddir, NULL);
@@ -1880,8 +1889,7 @@ static int generateBuildIDs(FileList fl)
 		if ((rc = rpmioMkpath(debugiddir, 0755, -1, -1)) != 0) {
 		    rpmlog(RPMLOG_ERR, "%s %s: %m\n", errdir, debugiddir);
 		} else {
-		    rasprintf (&attrstr, "%s %s", "%attr(-,root,root) ",
-			       debugiddir);
+		    attrstr = mkattr(debugiddir);
 		    parseForAttr(fl->pool, attrstr, 0, &fl->cur);
 		    fl->cur.isDir = 1;
 		    rc = addFile(fl, debugiddir, NULL);
@@ -2777,8 +2785,10 @@ static void filterDebuginfoPackage(rpmSpec spec, Package pkg,
 	if (access(path, F_OK) == 0) {
 	    /* Append the file list preamble */
 	    if (!files) {
-		argvAdd(&files, "%defattr(-,root,root)");
+		char *attr = mkattr(NULL);
+		argvAdd(&files, attr);
 		argvAddDir(&files, DEBUG_LIB_DIR);
+		free(attr);
 	    }
 
 	    /* Add the files main debug-info file */
@@ -2835,8 +2845,10 @@ static int addDebugDwz(Package pkg, char *buildroot)
     rasprintf(&path, "%s%s", buildroot, DEBUG_DWZ_DIR);
     if (lstat(path, &sbuf) == 0 && S_ISDIR(sbuf.st_mode)) {
 	if (!pkg->fileList) {
-	    argvAdd(&pkg->fileList, "%defattr(-,root,root)");
+	    char *attr = mkattr(NULL);
+	    argvAdd(&pkg->fileList, attr);
 	    argvAddDir(&pkg->fileList, DEBUG_LIB_DIR);
+	    free(attr);
 	}
 	argvAdd(&pkg->fileList, DEBUG_DWZ_DIR);
 	ret = 1;
@@ -2866,8 +2878,11 @@ static int addDebugSrc(Package pkg, char *buildroot)
 	    if (!strcmp(de->d_name, ".") || !strcmp(de->d_name, ".."))
 		continue;
 	    rasprintf(&path, "%s/%s", DEBUG_SRC_DIR, de->d_name);
-	    if (!pkg->fileList)
-		argvAdd(&pkg->fileList, "%defattr(-,root,root)");
+	    if (!pkg->fileList) {
+		char *attr = mkattr(NULL);
+		argvAdd(&pkg->fileList, attr);
+		free(attr);
+	    }
 	    argvAdd(&pkg->fileList, path);
 	    path = _free(path);
 	    ret = 1;
