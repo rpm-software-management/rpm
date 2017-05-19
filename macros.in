@@ -199,7 +199,6 @@ This package provides debug information for package %{name}.\
 Debug information is useful when developing applications that use this\
 package or when debugging this package.\
 %files debuginfo -f debugfiles.list\
-%defattr(-,root,root)\
 %{nil}
 
 %_debugsource_template \
@@ -212,7 +211,6 @@ This package provides debug sources for package %{name}.\
 Debug sources are useful when developing applications that use this\
 package or when debugging this package.\
 %files debugsource -f debugsourcefiles.list\
-%defattr(-,root,root)\
 %{nil}
 
 %debug_package \
