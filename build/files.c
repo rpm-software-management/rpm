@@ -207,9 +207,9 @@ static char *mkattr(const char *fn)
 {
     char *s = NULL;
     if (fn)
-	rasprintf(&s, "%s(-,%s,%s) %s", "%attr", "root", "root", fn);
+	rasprintf(&s, "%s(-,%s,%s) %s", "%attr", UID_0_USER, GID_0_GROUP, fn);
     else
-	rasprintf(&s, "%s(-,%s,%s)", "%defattr", "root", "root");
+	rasprintf(&s, "%s(-,%s,%s)", "%defattr", UID_0_USER, GID_0_GROUP);
     return s;
 }
 
@@ -2370,8 +2370,8 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     fl.buildRoot = rpmGenPath(spec->rootDir, spec->buildRoot, NULL);
     fl.buildRootLen = strlen(fl.buildRoot);
 
-    root_ar.ar_user = rpmstrPoolId(fl.pool, "root", 1);
-    root_ar.ar_group = rpmstrPoolId(fl.pool, "root", 1);
+    root_ar.ar_user = rpmstrPoolId(fl.pool, UID_0_USER, 1);
+    root_ar.ar_group = rpmstrPoolId(fl.pool, GID_0_GROUP, 1);
     dupAttrRec(&root_ar, &fl.def.ar);	/* XXX assume %defattr(-,root,root) */
 
     fl.def.verifyFlags = RPMVERIFY_ALL;
@@ -2605,7 +2605,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	    flp->uname = rpmstrPoolId(fl.pool, rpmugUname(getuid()), 1);
 	}
 	if (! flp->uname) {
-	    flp->uname = rpmstrPoolId(fl.pool, "root", 1);
+	    flp->uname = rpmstrPoolId(fl.pool, UID_0_USER, 1);
 	}
 
 	if (fl.def.ar.ar_group) {
@@ -2617,7 +2617,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	    flp->gname = rpmstrPoolId(fl.pool, rpmugGname(getgid()), 1);
 	}
 	if (! flp->gname) {
-	    flp->gname = rpmstrPoolId(fl.pool, "root", 1);
+	    flp->gname = rpmstrPoolId(fl.pool, GID_0_GROUP, 1);
 	}
 
 	flp->langs = xstrdup("");
