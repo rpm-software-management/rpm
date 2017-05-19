@@ -1860,6 +1860,8 @@ static int generateBuildIDs(FileList fl)
 	       Uses parseForAttr to reset ar, arFlags, and specdFlags.
 	       Note that parseForAttr pokes at the attrstr, so we cannot
 	       just pass a static string. */
+	    fl->cur.attrFlags = 0;
+	    fl->def.attrFlags = 0;
 	    fl->def.verifyFlags = RPMVERIFY_ALL;
 	    fl->cur.verifyFlags = RPMVERIFY_ALL;
 	    fl->def.specdFlags |= SPECD_VERIFY;
