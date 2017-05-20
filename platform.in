@@ -81,6 +81,7 @@
     %{?!dont_fix_pkgconfig:		[ -n "$DONT_FIX_PKGCONFIG" ]	|| %{_rpmconfigdir}/brp-fix-pkgconfig} \
     %{?!dont_symlinks_libs:		[ -n "$DONT_SYMLINK_LIBS" ]	|| %{_rpmconfigdir}/brp-lib-symlinks} \
     %{?!dont_check_elf_files_for_unused_libraries}:	[ -n "$DONT_CHECK_ELF_FILES_FOR_UNUSED_LIBRARIES" ]	|| %{_rpmconfigdir}/brp-check-elf-files-for-unused-libraries} \
+    %{?!dont_check_elf_files_for_undefined_symbols}:	[ -n "$DONT_CHECK_ELF_FILES_FOR_UNDEFINED_SYMBOLS" ]	||  %{_rpmconfigdir}/brp-check-elf-files-for-undefined-symbols} \
 %{nil}
 
 %__spec_install_post\
