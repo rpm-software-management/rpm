@@ -1078,9 +1078,9 @@ package or when debugging this package.\
 #------------------------------------------------------------------------------
 # Useful python macros for determining python version and paths
 #
-%python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib())")
-%python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib(1))")
-%python_version %(%{__python} -c "import sys; sys.stdout.write(sys.version[:3])")
+%python_sitelib %(%{__python} %{_rpmconfigdir}/python-macro-helper sitelib)
+%python_sitearch %(%{__python} %{_rpmconfigdir}/python-macro-helper sitearch)
+%python_version %(%{__python} %{_rpmconfigdir}/python-macro-helper version)
 
 #------------------------------------------------------------------------------
 # arch macro for all Intel i?86 compatible processors
