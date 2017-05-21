@@ -1,6 +1,7 @@
 #!/usr/bin/python -tt
 
 from distutils.sysconfig import get_python_lib
+from platform import python_version_tuple
 import sys
 
 
@@ -11,7 +12,7 @@ if __name__ == "__main__":
         sys.exit(1)
     
     if sys.argv[1] == "version":
-        sys.stdout.write(sys.version[:3])
+        sys.stdout.write(".".join(python_version_tuple()[:2]))
         sys.exit(0)
 
     if sys.argv[1] == "sitelib":
