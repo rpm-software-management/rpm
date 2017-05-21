@@ -1,0 +1,26 @@
+#!/usr/bin/python -tt
+
+from distutils.sysconfig import get_python_lib
+import sys
+
+
+if __name__ == "__main__":
+
+    if len(sys.argv) < 2:
+        sys.stderr.write("Usage: %s <command>\n" % sys.argv[0])
+        sys.exit(1)
+    
+    if sys.argv[1] == "version":
+        sys.stdout.write(sys.version[:3])
+        sys.exit(0)
+
+    if sys.argv[1] == "sitelib":
+        sys.stdout.write(get_python_lib())
+        sys.exit(0)
+
+    if sys.argv[1] == "sitearch":
+        sys.stdout.write(get_python_lib(1))
+        sys.exit(0)
+
+    sys.stderr.write("Unknown command: %s\n" % sys.argv[1])
+    sys.exit(1)
