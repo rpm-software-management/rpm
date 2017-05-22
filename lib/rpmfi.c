@@ -1007,6 +1007,22 @@ int rpmfileContentsEqual(rpmfiles ofi, int oix, rpmfiles nfi, int nix)
 	    equal = 1;
 	    goto exit;
 	}
+    }  else if (diskWhat == LINK) {
+	const char * nFLink;
+	char buffer[1024];
+	ssize_t link_len;
+
+	nFLink = rpmfilesFLink(nfi, nix);
+	link_len = readlink(fn, buffer, sizeof(buffer) - 1);
+	if (link_len == -1) {
+	    goto exit;		/* assume file has been removed */
+	}
+	buffer[link_len] = '\0';
+	/* See if the link on disk is identical to the one in new pkg */
+	if (nFLink && rstreq(nFLink, buffer)) {
+	    equal = 1;
+	    goto exit;
+	}
     }
 
 exit:

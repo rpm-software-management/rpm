@@ -360,3 +360,146 @@ fox
 ],
 [])
 AT_CLEANUP
+
+# ------------------------------
+# Upgraded verification with min_writes 3 (LINKs)
+AT_SETUP([Upgraded verification with min_writes 3 (LINKs)])
+AT_KEYWORDS([upgrade verify min_writes])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${tf}" "${tf}".rpm*
+rm -rf "${TOPDIR}"
+
+for v in "1.0" "2.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
+	--define "filetype link" \
+	--define "filedata foo" \
+          /data/SPECS/replacetest.spec
+done
+
+for v in "3.0" "4.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
+	--define "filetype link" \
+	--define "filedata fox" \
+          /data/SPECS/replacetest.spec
+done
+
+runroot rpm -i /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+readlink "${tf}"
+
+runroot rpm -U \
+	--define "_minimize_writes 1" \
+	 /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+runroot rpm -Va --nouser --nogroup replacetest
+readlink "${tf}"
+
+runroot rpm -U \
+	--define "_minimize_writes 1" \
+	/build/RPMS/noarch/replacetest-3.0-1.noarch.rpm
+runroot rpm -Va  --nouser --nogroup replacetest
+readlink "${tf}"
+
+ln -sf "xx" "${tf}"
+readlink "${tf}"
+
+runroot rpm -U \
+	--define "_minimize_writes 1" \
+	/build/RPMS/noarch/replacetest-4.0-1.noarch.rpm
+runroot rpm -Va  --nouser --nogroup replacetest
+readlink "${tf}"
+
+runroot rpm -U --oldpackage \
+	--define "_minimize_writes 1" \
+	/build/RPMS/noarch/replacetest-3.0-1.noarch.rpm
+runroot rpm -Va  --nouser --nogroup replacetest
+readlink "${tf}"
+],
+[0],
+[foo
+foo
+fox
+xx
+fox
+fox
+],
+[])
+AT_CLEANUP
+# ------------------------------
+# Upgraded verification with min_writes 4 (LINKs)
+AT_SETUP([Upgraded verification with min_writes 4 (LINKs)])
+AT_KEYWORDS([upgrade verify min_writes])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${tf}" "${tf}".rpm*
+rm -rf "${TOPDIR}"
+
+for v in "1.0" "2.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
+	--define "filetype link" \
+	--define "filedata foo" \
+          /data/SPECS/replacetest.spec
+done
+
+for v in "3.0" "4.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
+	--define "filetype link" \
+	--define "filedata fox" \
+          /data/SPECS/replacetest.spec
+done
+
+runroot rpm -i /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+readlink "${tf}"
+
+runroot rpm -Uvv --fsmdebug \
+	--define "_minimize_writes 1" \
+	 /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm > output.txt 2>&1
+runroot rpm -Va --nouser --nogroup replacetest
+grep -c "touch" output.txt
+readlink "${tf}"
+
+
+runroot rpm -Uvv --fsmdebug \
+	--define "_minimize_writes 1" \
+	/build/RPMS/noarch/replacetest-3.0-1.noarch.rpm > output.txt 2>&1
+runroot rpm -Va  --nouser --nogroup replacetest
+grep -c "touch" output.txt
+readlink "${tf}"
+ln -sf "xx" "${tf}"
+readlink "${tf}"
+
+runroot rpm -Uvv --fsmdebug \
+	--define "_minimize_writes 1" \
+	/build/RPMS/noarch/replacetest-4.0-1.noarch.rpm  > output.txt 2>&1
+runroot rpm -Va  --nouser --nogroup replacetest
+grep -c "touch" output.txt
+readlink "${tf}"
+
+runroot rpm -U -Uvv --fsmdebug  --oldpackage \
+	--define "_minimize_writes 1" \
+	/build/RPMS/noarch/replacetest-3.0-1.noarch.rpm  > output.txt 2>&1
+runroot rpm -Va  --nouser --nogroup replacetest
+grep -c  "touch" output.txt
+readlink "${tf}"
+],
+[0],
+[foo
+2
+foo
+1
+fox
+xx
+1
+fox
+2
+fox
+],
+[])
+AT_CLEANUP
