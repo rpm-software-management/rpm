@@ -195,8 +195,8 @@ runroot rpm -Va --nouser --nogroup
 AT_CLEANUP
 
 # ------------------------------
-# Upgraded package verification with min_writes 1
-AT_SETUP([Upgraded package verification with min_writes 1])
+# Upgraded verification with min_writes 1 (files)
+AT_SETUP([Upgraded verification with min_writes 1 (files)])
 AT_KEYWORDS([upgrade verify min_writes])
 AT_CHECK([
 RPMDB_CLEAR
@@ -205,29 +205,21 @@ tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}" "${tf}".rpm*
 rm -rf "${TOPDIR}"
 
-runroot rpmbuild --quiet -bb \
-        --define "ver 1.0" \
+for v in "1.0" "2.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
 	--define "filetype file" \
 	--define "filedata foo" \
           /data/SPECS/replacetest.spec
+done
 
-runroot rpmbuild --quiet -bb \
-        --define "ver 2.0" \
-	--define "filetype file" \
-	--define "filedata foo" \
-          /data/SPECS/replacetest.spec
-
-runroot rpmbuild --quiet -bb \
-        --define "ver 3.0" \
+for v in "3.0" "4.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
 	--define "filetype file" \
 	--define "filedata fox" \
           /data/SPECS/replacetest.spec
-
-runroot rpmbuild --quiet -bb \
-        --define "ver 4.0" \
-	--define "filetype file" \
-	--define "filedata fox" \
-          /data/SPECS/replacetest.spec
+done
 
 runroot rpm -i /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 cat "${tf}"
@@ -275,8 +267,8 @@ AT_CLEANUP
 
 
 # ------------------------------
-# Upgraded package verification with min_writes 2
-AT_SETUP([Upgraded package verification with min_writes 2])
+# Upgraded verification with min_writes 2 (files)
+AT_SETUP([Upgraded verification with min_writes 2 (files)])
 AT_KEYWORDS([upgrade verify min_writes])
 AT_CHECK([
 RPMDB_CLEAR
@@ -285,29 +277,21 @@ tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}" "${tf}".rpm*
 rm -rf "${TOPDIR}"
 
-runroot rpmbuild --quiet -bb \
-        --define "ver 1.0" \
+for v in "1.0" "2.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
 	--define "filetype file" \
 	--define "filedata foo" \
           /data/SPECS/replacetest.spec
+done
 
-runroot rpmbuild --quiet -bb \
-        --define "ver 2.0" \
-	--define "filetype file" \
-	--define "filedata foo" \
-          /data/SPECS/replacetest.spec
-
-runroot rpmbuild --quiet -bb \
-        --define "ver 3.0" \
+for v in "3.0" "4.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
 	--define "filetype file" \
 	--define "filedata fox" \
           /data/SPECS/replacetest.spec
-
-runroot rpmbuild --quiet -bb \
-        --define "ver 4.0" \
-	--define "filetype file" \
-	--define "filedata fox" \
-          /data/SPECS/replacetest.spec
+done
 
 runroot rpm -i /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 cat "${tf}"
