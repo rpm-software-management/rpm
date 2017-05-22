@@ -182,19 +182,6 @@ static rpmRC formatDefault(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *r
     return sigres;
 }
 
-static rpmRC handleResult(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *result, void *cbdata)
-{
-    if (sigres == RPMRC_NOTFOUND) {
-	sigres = RPMRC_OK;
-    } else {
-	if (rpmIsVerbose())
-	    sigres = formatVerbose(sinfo, sigres, result, cbdata);
-	else
-	    sigres = formatDefault(sinfo, sigres, result, cbdata);
-    }
-    return sigres;
-}
-
 rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
 			    rpmsinfoCb cb, void *cbdata, Header *hdrp)
 {
@@ -290,10 +277,10 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
     int rc;
     if (rpmIsVerbose()) {
 	rpmlog(RPMLOG_NOTICE, "%s:\n", fn);
-	rc = rpmpkgRead(keyring, flags, fd, handleResult, NULL, NULL);
+	rc = rpmpkgRead(keyring, flags, fd, formatVerbose, NULL, NULL);
     } else {
 	rpmlog(RPMLOG_NOTICE, "%s: ", fn);
-	rc = rpmpkgRead(keyring, flags, fd, handleResult, NULL, NULL);
+	rc = rpmpkgRead(keyring, flags, fd, formatDefault, NULL, NULL);
 	rpmlog(RPMLOG_NOTICE, "%s\n", rc ? _("NOT OK") : _("OK"));
     }
     return rc;
