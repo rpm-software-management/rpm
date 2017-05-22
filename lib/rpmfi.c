@@ -980,8 +980,11 @@ int rpmfileContentsEqual(rpmfiles ofi, int oix, rpmfiles nfi, int nix)
     diskWhat = rpmfiWhatis((rpm_mode_t)sb.st_mode);
     newWhat = rpmfiWhatis(rpmfilesFMode(nfi, nix));
     oldWhat = rpmfiWhatis(rpmfilesFMode(ofi, oix));
+    if ((diskWhat != newWhat) || (diskWhat != oldWhat)) {
+	goto exit;
+    }
 
-    if ((diskWhat == REG) && (newWhat == REG) && (oldWhat == REG)) {
+    if (diskWhat == REG) {
 	int oalgo, nalgo;
 	size_t odiglen, ndiglen;
 	const unsigned char * odigest, * ndigest;
