@@ -133,6 +133,11 @@ static int readFile(FD_t fd, char **msg)
     return (count != 0);
 }
 
+struct vfydata_s {
+    int seen;
+    int bad;
+};
+
 static rpmRC formatVerbose(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *result, void *cbdata)
 {
     rpmlog(RPMLOG_NOTICE, "    %s\n", result);
@@ -142,43 +147,10 @@ static rpmRC formatVerbose(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *r
 /* Failures are uppercase, in parenthesis if NOKEY. Otherwise lowercase. */
 static rpmRC formatDefault(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *result, void *cbdata)
 {
-    const char *signame;
-    int upper = sigres != RPMRC_OK;
-
-    switch (sinfo->tag) {
-    case RPMSIGTAG_SIZE:
-	signame = (upper ? "SIZE" : "size");
-	break;
-    case RPMSIGTAG_SHA1:
-	signame = (upper ? "SHA1" : "sha1");
-	break;
-    case RPMSIGTAG_SHA256:
-	signame = (upper ? "SHA256" : "sha256");
-	break;
-    case RPMSIGTAG_MD5:
-	signame = (upper ? "MD5" : "md5");
-	break;
-    case RPMSIGTAG_RSA:
-	signame = (upper ? "RSA" : "rsa");
-	break;
-    case RPMSIGTAG_PGP5:	/* XXX legacy */
-    case RPMSIGTAG_PGP:
-	signame = (upper ? "PGP" : "pgp");
-	break;
-    case RPMSIGTAG_DSA:
-	signame = (upper ? "DSA" : "dsa");
-	break;
-    case RPMSIGTAG_GPG:
-	signame = (upper ? "GPG" : "gpg");
-	break;
-    case RPMTAG_PAYLOADDIGEST:
-	signame = (upper ? "PAYLOAD" : "payload");
-	break;
-    default:
-	signame = (upper ? "?UnknownSigatureType?" : "???");
-	break;
-    }
-    rpmlog(RPMLOG_NOTICE, ((sigres == RPMRC_NOKEY) ? "(%s) " : "%s "), signame);
+    struct vfydata_s *vd = cbdata;
+    vd->seen |= sinfo->type;
+    if (sigres != RPMRC_OK)
+	vd->bad |= sinfo->type;
     return sigres;
 }
 
@@ -279,9 +251,18 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
 	rpmlog(RPMLOG_NOTICE, "%s:\n", fn);
 	rc = rpmpkgRead(keyring, flags, fd, formatVerbose, NULL, NULL);
     } else {
-	rpmlog(RPMLOG_NOTICE, "%s: ", fn);
-	rc = rpmpkgRead(keyring, flags, fd, formatDefault, NULL, NULL);
-	rpmlog(RPMLOG_NOTICE, "%s\n", rc ? _("NOT OK") : _("OK"));
+	struct vfydata_s vd = { 0, 0 };
+	rpmlog(RPMLOG_NOTICE, "%s:", fn);
+	rc = rpmpkgRead(keyring, flags, fd, formatDefault, &vd, NULL);
+	if (vd.seen & RPMSIG_DIGEST_TYPE) {
+	    rpmlog(RPMLOG_NOTICE, " %s", (vd.bad & RPMSIG_DIGEST_TYPE) ?
+					_("DIGESTS") : _("digests"));
+	}
+	if (vd.seen & RPMSIG_SIGNATURE_TYPE) {
+	    rpmlog(RPMLOG_NOTICE, " %s", (vd.bad & RPMSIG_SIGNATURE_TYPE) ?
+					_("SIGNATURES") : _("signatures"));
+	}
+	rpmlog(RPMLOG_NOTICE, " %s\n", rc ? _("NOT OK") : _("OK"));
     }
     return rc;
 }
