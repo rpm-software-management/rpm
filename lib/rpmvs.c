@@ -11,6 +11,7 @@ struct rpmvs_s {
     rpmRC *rcs;
     char **results;
     int nsigs;
+    int nalloced;
 };
 
 struct vfytag_s {
@@ -215,19 +216,33 @@ static int rpmsinfoDisabled(const struct rpmsinfo_s *sinfo, rpmVSFlags vsflags)
     return 0;
 }
 
+static void rpmvsReserve(struct rpmvs_s *vs, int n)
+{
+    if (vs->nsigs + n >= vs->nalloced) {
+	vs->nalloced = (vs->nsigs * 2) + n;
+	vs->rcs = xrealloc(vs->rcs, vs->nalloced * sizeof(*vs->rcs));
+	vs->results = xrealloc(vs->results, vs->nalloced * sizeof(*vs->results));
+	vs->sigs = xrealloc(vs->sigs, vs->nalloced * sizeof(*vs->sigs));
+    }
+}
+
 void rpmvsAppend(struct rpmvs_s *sis, hdrblob blob, rpmTagVal tag)
 {
     struct rpmtd_s td;
-    sis->rcs[sis->nsigs] = hdrblobGet(blob, tag, &td);
-    if (sis->rcs[sis->nsigs] == RPMRC_OK) {
+    rpmRC rc = hdrblobGet(blob, tag, &td);
+
+    if (rc == RPMRC_OK) {
 	const char *o = (blob->il > blob->ril) ? _("header") : _("package");
 	int ix;
-	while ((ix = rpmtdNext(&td)) >= -1) {
+
+	rpmvsReserve(sis, rpmtdCount(&td));
+
+	while ((ix = rpmtdNext(&td)) >= 0) {
+	    sis->results[sis->nsigs] = NULL;
 	    sis->rcs[sis->nsigs] = rpmsinfoInit(&td, o,
 						&sis->sigs[sis->nsigs],
 						&sis->results[sis->nsigs]);
 	    sis->nsigs++;
-	    break; /* XXX FIXME: handle realloc to support arrays */
 	}
 	rpmtdFreeData(&td);
     }
@@ -236,16 +251,8 @@ void rpmvsAppend(struct rpmvs_s *sis, hdrblob blob, rpmTagVal tag)
 struct rpmvs_s *rpmvsCreate(hdrblob blob, rpmVSFlags vsflags)
 {
     struct rpmvs_s *sis = xcalloc(1, sizeof(*sis));
-    int nsigs = 1;
-    for (const struct rpmsinfo_s *si = &rpmvfyitems[0]; si->tag; si++) {
-	if (rpmsinfoDisabled(si, vsflags))
-	    continue;
-	nsigs++;
-    }
 
-    sis->sigs = xcalloc(nsigs, sizeof(*sis->sigs));
-    sis->rcs = xcalloc(nsigs, sizeof(*sis->rcs));
-    sis->results = xcalloc(nsigs, sizeof(*sis->results));
+    rpmvsReserve(sis, 2); /* XXX bump this up later */
 
     for (const struct rpmsinfo_s *si = &rpmvfyitems[0]; si->tag; si++) {
 	if (rpmsinfoDisabled(si, vsflags))
