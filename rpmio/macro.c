@@ -678,22 +678,17 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
     if (lastc) {
 	int oescape = mb->escape;
 	ARGV_t av = NULL;
-	char *args = xmalloc(lastc-se + 1);
-	memcpy(args, se, lastc-se);
-	args[lastc-se] = '\0';
-	argvSplit(&av, args, " \t");
+	char *s = NULL;
 
 	/* Expand possible macros in arguments */
 	mb->escape = 1;
-	for (ARGV_const_t arg = av; arg && *arg; arg++) {
-	    char *s = NULL;
-	    expandThis(mb, *arg, 0, &s);
-	    argvAdd(&argv, s);
-	    free(s);
-	}
+	expandThis(mb, se, lastc-se, &s);
 	mb->escape = oescape;
+
+	argvSplit(&av, s, " \t");
+	argvAppend(&argv, av);
 	argvFree(av);
-	free(args);
+	free(s);
 
 	cont = ((*lastc == '\0' || *lastc == '\n') && *(lastc-1) != '\\') ?
 	       lastc : lastc + 1;

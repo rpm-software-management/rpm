@@ -100,7 +100,7 @@ runroot rpm \
     --eval '%foo %nil bar'
 ],
 [0],
-[1: 2:bar
+[1:bar 2:%2
 ])
 AT_CLEANUP
 
