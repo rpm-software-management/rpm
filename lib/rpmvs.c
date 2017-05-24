@@ -380,18 +380,14 @@ static rpmRC verifyDigest(struct rpmsinfo_s *sinfo, DIGEST_CTX digctx,
     size_t diglen = 0;
     DIGEST_CTX ctx = rpmDigestDup(digctx);
 
-    if (rpmDigestFinal(ctx, (void **)&dig, &diglen, 1) || diglen == 0) {
-	rasprintf(msg, "%s: %s", rpmsinfoDescr(sinfo), rpmSigString(res));
+    if (rpmDigestFinal(ctx, (void **)&dig, &diglen, 1) || diglen == 0)
 	goto exit;
-    }
 
     if (strcasecmp(sinfo->dig, dig) == 0) {
 	res = RPMRC_OK;
-	rasprintf(msg, "%s: %s (%s)", rpmsinfoDescr(sinfo), rpmSigString(res),
-		sinfo->dig);
+	rasprintf(msg, "%s", sinfo->dig);
     } else {
-	rasprintf(msg, "%s: %s (Expected %s != %s)",
-		  rpmsinfoDescr(sinfo), rpmSigString(res), sinfo->dig, dig);
+	rasprintf(msg, "Expected %s != %s", sinfo->dig, dig);
     }
 
 exit:
@@ -413,7 +409,6 @@ verifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
 {
     rpmRC res = rpmKeyringVerifySig(keyring, sinfo->sig, hashctx);
 
-    rasprintf(msg, "%s: %s", rpmsinfoDescr(sinfo), rpmSigString(res));
     return res;
 }
 
@@ -421,29 +416,22 @@ static rpmRC
 rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
 		   DIGEST_CTX ctx, char ** result)
 {
-    rpmRC res = RPMRC_NOTFOUND;
+    rpmRC res = RPMRC_FAIL;
     char *msg = NULL;
-
-    if (sinfo->sig == NULL || ctx == NULL)
-	goto exit;
 
     if (sinfo->type == RPMSIG_DIGEST_TYPE)
 	res = verifyDigest(sinfo, ctx, &msg);
     else if (sinfo->type == RPMSIG_SIGNATURE_TYPE)
 	res = verifySignature(keyring, sinfo, ctx, &msg);
 
-exit:
-    if (res == RPMRC_NOTFOUND) {
-	rasprintf(&msg,
-		  _("Verify signature: BAD PARAMETERS (%x %p %d %p)"),
-		  sinfo->id, sinfo->sig, sinfo->hashalgo, ctx);
-	res = RPMRC_FAIL;
-    }
-
-    if (result) {
-	*result = msg;
+    if (msg) {
+	rasprintf(result, "%s: %s (%s)",
+		rpmsinfoDescr(sinfo), rpmSigString(res), msg);
     } else {
-	free(msg);
+	rasprintf(result, "%s: %s",
+		rpmsinfoDescr(sinfo), rpmSigString(res));
     }
+    free(msg);
+
     return res;
 }
