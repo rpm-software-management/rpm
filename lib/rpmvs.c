@@ -385,7 +385,6 @@ static rpmRC verifyDigest(struct rpmsinfo_s *sinfo, DIGEST_CTX digctx,
 
     if (strcasecmp(sinfo->dig, dig) == 0) {
 	res = RPMRC_OK;
-	rasprintf(msg, "%s", sinfo->dig);
     } else {
 	rasprintf(msg, "Expected %s != %s", sinfo->dig, dig);
     }

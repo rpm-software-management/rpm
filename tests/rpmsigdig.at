@@ -15,13 +15,13 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64.rpm /data/RPMS/hello-1.0-1.i38
 ],
 [0],
 [/data/RPMS/hello-2.0-1.x86_64.rpm:
-    Header SHA1 digest: OK (5cd9874c510b67b44483f9e382a1649ef7743bac)
-    Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
-    Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
-    MD5 digest: OK (137ca1d8b35cca02a1854ba301c5432e)
+    Header SHA1 digest: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+    MD5 digest: OK
 /data/RPMS/hello-1.0-1.i386.rpm:
-    Header SHA1 digest: OK (e90be5a077c965790392fb78364f2354c9bf9884)
-    MD5 digest: OK (bc0ee17be6c235a8bee33a2c7a116142)
+    Header SHA1 digest: OK
+    MD5 digest: OK
 ],
 [])
 AT_CLEANUP
@@ -44,9 +44,9 @@ runroot rpmkeys -Kv /tmp/${pkg}
 ],
 [1],
 [/tmp/hello-2.0-1.x86_64.rpm:
-    Header SHA1 digest: OK (5cd9874c510b67b44483f9e382a1649ef7743bac)
-    Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
-    Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
+    Header SHA1 digest: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
     MD5 digest: BAD (Expected 007ca1d8b35cca02a1854ba301c5432e != 137ca1d8b35cca02a1854ba301c5432e)
 ],
 [])
@@ -70,7 +70,7 @@ runroot rpmkeys -Kv /tmp/${pkg}
 [/tmp/hello-2.0-1.x86_64.rpm:
     Header SHA1 digest: BAD (Expected 5cd9874c510b67b44483f9e382a1649ef7743bac != 4261b2c1eb861a4152c2239bce20bfbcaa8971ba)
     Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 29fdfe92782fb0470a9a164a6c94af87d3b138c63b39d4c30e0223ca1202ba82)
-    Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
+    Payload SHA256 digest: OK
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != de65519eeb4ab52eb076ec054d42e34e)
 ],
 [])
@@ -93,8 +93,8 @@ runroot rpmkeys -Kv /tmp/${pkg}
 ],
 [1],
 [/tmp/hello-2.0-1.x86_64.rpm:
-    Header SHA1 digest: OK (5cd9874c510b67b44483f9e382a1649ef7743bac)
-    Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
+    Header SHA1 digest: OK
+    Header SHA256 digest: OK
     Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != d662cd0d81601a7107312684ad1ddf38)
 ],
@@ -122,10 +122,10 @@ runroot rpmkeys -Kv /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm
 ],
 [0],
 [/build/RPMS/noarch/attrtest-1.0-1.noarch.rpm:
-    Header SHA1 digest: OK (2f661f61cfe68ebaaf8590adf8af47d6d5854b19)
-    Header SHA256 digest: OK (f8b3a197a24e130732d130d63f7d994859b07fd884f0a2e308a5425a175a7a0d)
-    Payload SHA256 digest: OK (f965cf3baa25a2be3f95e574abba2e28c230a42f7c3976f990c688814ac6ee18)
-    MD5 digest: OK (fe0d59c5ce15a7a4dca0a110dde384ea)
+    Header SHA1 digest: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+    MD5 digest: OK
 ],
 [])
 AT_CLEANUP
@@ -229,26 +229,26 @@ runroot rpmkeys -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed.rpm
 [0],
 [/data/RPMS/hello-2.0-1.x86_64-signed.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
-    Header SHA1 digest: OK (5cd9874c510b67b44483f9e382a1649ef7743bac)
-    Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
-    Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
+    Header SHA1 digest: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
     V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
-    MD5 digest: OK (137ca1d8b35cca02a1854ba301c5432e)
+    MD5 digest: OK
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
-    Header SHA1 digest: OK (5cd9874c510b67b44483f9e382a1649ef7743bac)
-    Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
-    Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
+    Header SHA1 digest: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
     V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
-    MD5 digest: OK (137ca1d8b35cca02a1854ba301c5432e)
+    MD5 digest: OK
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
     V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
-    Header SHA1 digest: OK (5cd9874c510b67b44483f9e382a1649ef7743bac)
-    Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
-    Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
-    MD5 digest: OK (137ca1d8b35cca02a1854ba301c5432e)
+    Header SHA1 digest: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+    MD5 digest: OK
 ],
 [])
 AT_CLEANUP
@@ -274,18 +274,18 @@ runroot rpmkeys -Kv /tmp/${pkg}
 [1],
 [/tmp/hello-2.0-1.x86_64-signed.rpm:
     package tag 268: BAD, invalid OpenPGP signature
-    Header SHA1 digest: OK (5cd9874c510b67b44483f9e382a1649ef7743bac)
-    Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
-    Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
+    Header SHA1 digest: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
     V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
-    MD5 digest: OK (137ca1d8b35cca02a1854ba301c5432e)
+    MD5 digest: OK
 /tmp/hello-2.0-1.x86_64-signed.rpm:
     package tag 268: BAD, invalid OpenPGP signature
-    Header SHA1 digest: OK (5cd9874c510b67b44483f9e382a1649ef7743bac)
-    Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
-    Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
+    Header SHA1 digest: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
     V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
-    MD5 digest: OK (137ca1d8b35cca02a1854ba301c5432e)
+    MD5 digest: OK
 ],
 [])
 AT_CLEANUP
@@ -312,14 +312,14 @@ runroot rpmkeys -Kv /tmp/${pkg}
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
     Header SHA1 digest: BAD (Expected 5cd9874c510b67b44483f9e382a1649ef7743bac != 4261b2c1eb861a4152c2239bce20bfbcaa8971ba)
     Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 29fdfe92782fb0470a9a164a6c94af87d3b138c63b39d4c30e0223ca1202ba82)
-    Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
+    Payload SHA256 digest: OK
     V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != de65519eeb4ab52eb076ec054d42e34e)
 /tmp/hello-2.0-1.x86_64-signed.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
     Header SHA1 digest: BAD (Expected 5cd9874c510b67b44483f9e382a1649ef7743bac != 4261b2c1eb861a4152c2239bce20bfbcaa8971ba)
     Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 29fdfe92782fb0470a9a164a6c94af87d3b138c63b39d4c30e0223ca1202ba82)
-    Payload SHA256 digest: OK (84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c)
+    Payload SHA256 digest: OK
     V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != de65519eeb4ab52eb076ec054d42e34e)
 ],
@@ -347,15 +347,15 @@ runroot rpmkeys -Kv /tmp/${pkg}
 [1],
 [/tmp/hello-2.0-1.x86_64-signed.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
-    Header SHA1 digest: OK (5cd9874c510b67b44483f9e382a1649ef7743bac)
-    Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
+    Header SHA1 digest: OK
+    Header SHA256 digest: OK
     Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
     V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != d662cd0d81601a7107312684ad1ddf38)
 /tmp/hello-2.0-1.x86_64-signed.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
-    Header SHA1 digest: OK (5cd9874c510b67b44483f9e382a1649ef7743bac)
-    Header SHA256 digest: OK (ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9)
+    Header SHA1 digest: OK
+    Header SHA256 digest: OK
     Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
     V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != d662cd0d81601a7107312684ad1ddf38)
