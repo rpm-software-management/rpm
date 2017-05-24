@@ -192,14 +192,14 @@ exit:
  * Validate generated signature and insert to header if it looks sane.
  * NSS doesn't support everything GPG does. Basic tests to see if the 
  * generated signature is something we can use.
- * Return 0 on success, 1 on failure.
+ * Return generated sigtag number on success, 0 on failure.
  */
-static int putSignature(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
+static rpmTagVal putSignature(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
 {
     pgpDigParams sigp = NULL;
     rpmTagVal sigtag;
     struct rpmtd_s sigtd;
-    int rc = 1; /* assume failure */
+    rpmTagVal rc = 0; /* assume failure */
     unsigned int hash_algo;
     unsigned int pubkey_algo;
 
@@ -236,8 +236,8 @@ static int putSignature(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
     sigtd.type = RPM_BIN_TYPE;
     sigtd.tag = sigtag;
 
-    /* Argh, reversed return codes */
-    rc = (headerPut(sigh, &sigtd, HEADERPUT_DEFAULT) == 0);
+    if (headerPut(sigh, &sigtd, HEADERPUT_DEFAULT))
+	rc = sigtag;
 
 exit:
     pgpDigParamsFree(sigp);
@@ -343,15 +343,15 @@ exit:
  * @param ishdr		header-only signature?
  * @param sigt		signature target
  * @param passPhrase	private key pass phrase
- * @return		0 on success, 1 on failure
+ * @return		generated sigtag on success, 0 on failure
  */
-static int makeGPGSignature(Header sigh, int ishdr, sigTarget sigt)
+static rpmTagVal makeGPGSignature(Header sigh, int ishdr, sigTarget sigt)
 {
     char * sigfile = rstrscat(NULL, sigt->fileName, ".sig", NULL);
     struct stat st;
     uint8_t * pkt = NULL;
     size_t pktlen = 0;
-    int rc = 1; /* assume failure */
+    rpmTagVal rc = 0; /* assume failure */
 
     if (runGPG(sigt, sigfile))
 	goto exit;
@@ -392,16 +392,16 @@ exit:
     return rc;
 }
 
-static int rpmGenSignature(Header sigh, sigTarget sigt_v3, sigTarget sigt_v4)
+static rpmTagVal rpmGenSignature(Header sigh, sigTarget sigt_v3, sigTarget sigt_v4)
 {
-    int ret;
+    rpmTagVal ret;
 
     ret = makeGPGSignature(sigh, 0, sigt_v3);
-    if (ret)
+    if (!ret)
 	goto exit;
 
     ret = makeGPGSignature(sigh, 1, sigt_v4);
-    if (ret)
+    if (!ret)
 	goto exit;
 exit:
     return ret;
@@ -451,6 +451,7 @@ static int replaceSignature(Header sigh, sigTarget sigt1, sigTarget sigt2)
     /* Grab a copy of the header so we can compare the result */
     Header oldsigh = headerCopy(sigh);
     int rc = -1;
+    rpmTagVal sigtag;
     
     /* Nuke all signature tags */
     deleteSigs(sigh);
@@ -459,11 +460,8 @@ static int replaceSignature(Header sigh, sigTarget sigt1, sigTarget sigt2)
      * rpmGenSignature() internals parse the actual signing result and 
      * adds appropriate tags for DSA/RSA.
      */
-    if (rpmGenSignature(sigh, sigt1, sigt2) == 0) {
-	/* Lets see what we got and whether its the same signature as before */
-	rpmTagVal sigtag = headerIsEntry(sigh, RPMSIGTAG_DSA) ?
-					RPMSIGTAG_DSA : RPMSIGTAG_RSA;
-
+    if ((sigtag = rpmGenSignature(sigh, sigt1, sigt2)) != 0) {
+	/* Lets see if we already have that signature */
 	rc = sameSignature(sigtag, sigh, oldsigh);
 
     }
