@@ -90,6 +90,7 @@ static const struct vfyinfo_s rpmvfyitems[] = {
     { 0 } /* sentinel */
 };
 
+static const char *rangeName(int range);
 static rpmRC rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
 			       DIGEST_CTX ctx, char ** result);
 
@@ -209,6 +210,7 @@ static void rpmsinfoFini(struct rpmsinfo_s *sinfo)
 	    pgpDigParamsFree(sinfo->sig);
 	else if (sinfo->type == RPMSIG_DIGEST_TYPE)
 	    free(sinfo->dig);
+	free(sinfo->descr);
 	memset(sinfo, 0, sizeof(*sinfo));
     }
 }
@@ -232,6 +234,28 @@ static void rpmvsReserve(struct rpmvs_s *vs, int n)
 	vs->results = xrealloc(vs->results, vs->nalloced * sizeof(*vs->results));
 	vs->sigs = xrealloc(vs->sigs, vs->nalloced * sizeof(*vs->sigs));
     }
+}
+
+const char *rpmsinfoDescr(struct rpmsinfo_s *sinfo)
+{
+    if (sinfo->descr == NULL) {
+	char *t;
+	switch (sinfo->type) {
+	case RPMSIG_DIGEST_TYPE:
+	    rasprintf(&sinfo->descr, _("%s%s %s"),
+		    rangeName(sinfo->range),
+		    pgpValString(PGPVAL_HASHALGO, sinfo->hashalgo),
+		    _("digest"));
+	    break;
+	case RPMSIG_SIGNATURE_TYPE:
+	    t = sinfo->sig ? pgpIdentItem(sinfo->sig) : NULL;
+	    rasprintf(&sinfo->descr, _("%s%s"),
+		    rangeName(sinfo->range), t ? t : _("signature"));
+	    free(t);
+	    break;
+	}
+    }
+    return sinfo->descr;
 }
 
 void rpmvsAppend(struct rpmvs_s *sis, hdrblob blob, rpmTagVal tag)
@@ -355,26 +379,23 @@ static rpmRC verifyDigest(struct rpmsinfo_s *sinfo, DIGEST_CTX digctx,
     char * dig = NULL;
     size_t diglen = 0;
     DIGEST_CTX ctx = rpmDigestDup(digctx);
-    char *title = rstrscat(NULL, rangeName(sinfo->range),
-			   pgpValString(PGPVAL_HASHALGO, sinfo->hashalgo),
-			   _(" digest:"), NULL);
 
     if (rpmDigestFinal(ctx, (void **)&dig, &diglen, 1) || diglen == 0) {
-	rasprintf(msg, "%s %s", title, rpmSigString(res));
+	rasprintf(msg, "%s: %s", rpmsinfoDescr(sinfo), rpmSigString(res));
 	goto exit;
     }
 
     if (strcasecmp(sinfo->dig, dig) == 0) {
 	res = RPMRC_OK;
-	rasprintf(msg, "%s %s (%s)", title, rpmSigString(res), sinfo->dig);
+	rasprintf(msg, "%s: %s (%s)", rpmsinfoDescr(sinfo), rpmSigString(res),
+		sinfo->dig);
     } else {
-	rasprintf(msg, "%s %s Expected(%s) != (%s)",
-		  title, rpmSigString(res), sinfo->dig, dig);
+	rasprintf(msg, "%s: %s Expected(%s) != (%s)",
+		  rpmsinfoDescr(sinfo), rpmSigString(res), sinfo->dig, dig);
     }
 
 exit:
     free(dig);
-    free(title);
     return res;
 }
 
@@ -392,10 +413,7 @@ verifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
 {
     rpmRC res = rpmKeyringVerifySig(keyring, sinfo->sig, hashctx);
 
-    char *sigid = pgpIdentItem(sinfo->sig);
-    rasprintf(msg, "%s%s: %s", rangeName(sinfo->range), sigid,
-		rpmSigString(res));
-    free(sigid);
+    rasprintf(msg, "%s: %s", rpmsinfoDescr(sinfo), rpmSigString(res));
     return res;
 }
 

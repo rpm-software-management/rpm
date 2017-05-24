@@ -33,6 +33,7 @@ struct rpmsinfo_s {
 	pgpDigParams sig;
 	char *dig;
     };
+    char *descr;
 };
 
 typedef rpmRC (*rpmsinfoCb)(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *result, void *cbdata);
@@ -40,6 +41,9 @@ typedef rpmRC (*rpmsinfoCb)(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+RPM_GNUC_INTERNAL
+const char *rpmsinfoDescr(struct rpmsinfo_s *sinfo);
 
 RPM_GNUC_INTERNAL
 struct rpmvs_s *rpmvsCreate(hdrblob blob, rpmVSFlags vsflags);
