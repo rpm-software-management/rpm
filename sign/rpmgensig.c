@@ -392,15 +392,15 @@ exit:
     return rc;
 }
 
-static int rpmGenSignature(Header sigh, sigTarget sigt1, sigTarget sigt2)
+static int rpmGenSignature(Header sigh, sigTarget sigt_v3, sigTarget sigt_v4)
 {
     int ret;
 
-    ret = makeGPGSignature(sigh, 0, sigt1);
+    ret = makeGPGSignature(sigh, 0, sigt_v3);
     if (ret)
 	goto exit;
 
-    ret = makeGPGSignature(sigh, 1, sigt2);
+    ret = makeGPGSignature(sigh, 1, sigt_v4);
     if (ret)
 	goto exit;
 exit:
@@ -679,8 +679,8 @@ static int rpmSign(const char *rpm, int deleting, int signfiles)
     struct rpmtd_s utd;
     off_t headerStart;
     off_t sigStart;
-    struct sigTarget_s sigt1;
-    struct sigTarget_s sigt2;
+    struct sigTarget_s sigt_v3;
+    struct sigTarget_s sigt_v4;
     unsigned int origSigSize;
     int insSig = 0;
 
@@ -724,16 +724,16 @@ static int rpmSign(const char *rpm, int deleting, int signfiles)
 	deleteSigs(sigh);
     } else {
 	/* Signature target containing header + payload */
-	sigt1.fd = fd;
-	sigt1.start = headerStart;
-	sigt1.fileName = rpm;
-	sigt1.size = fdSize(fd) - headerStart;
+	sigt_v3.fd = fd;
+	sigt_v3.start = headerStart;
+	sigt_v3.fileName = rpm;
+	sigt_v3.size = fdSize(fd) - headerStart;
 
 	/* Signature target containing only header */
-	sigt2 = sigt1;
-	sigt2.size = headerSizeof(h, HEADER_MAGIC_YES);
+	sigt_v4 = sigt_v3;
+	sigt_v4.size = headerSizeof(h, HEADER_MAGIC_YES);
 
-	res = replaceSignature(sigh, &sigt1, &sigt2);
+	res = replaceSignature(sigh, &sigt_v3, &sigt_v4);
 	if (res != 0) {
 	    if (res == 1) {
 		rpmlog(RPMLOG_WARNING,
