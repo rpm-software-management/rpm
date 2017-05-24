@@ -130,13 +130,13 @@ static rpmRC rpmsinfoInit(rpmtd td, const char *origin,
     *sinfo = rpmvfyitems[ix].vi; /* struct assignment */
 
     if (tinfo->tagtype && tinfo->tagtype != td->type) {
-	rasprintf(msg, _("%s tag %u: BAD, invalid type %u"),
+	rasprintf(msg, _("%s tag %u: invalid type %u"),
 			origin, td->tag, td->type);
 	goto exit;
     }
 
     if (tinfo->tagcount && tinfo->tagcount != td->count) {
-	rasprintf(msg, _("%s: tag %u: BAD, invalid count %u"),
+	rasprintf(msg, _("%s: tag %u: invalid count %u"),
 			origin, td->tag, td->count);
 	goto exit;
     }
@@ -156,7 +156,7 @@ static rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 
     /* MD5 has data length of 16, everything else is (much) larger */
     if (sinfo->hashalgo && (data == NULL || dlen < 16)) {
-	rasprintf(msg, _("%s tag %u: BAD, invalid data %p (%u)"),
+	rasprintf(msg, _("%s tag %u: invalid data %p (%u)"),
 			origin, td->tag, data, dlen);
 	goto exit;
     }
@@ -166,7 +166,7 @@ static rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 
     if (tinfo->tagsize && (td->flags & RPMTD_IMMUTABLE) &&
 		tinfo->tagsize != td->size) {
-	rasprintf(msg, _("%s tag %u: BAD, invalid size %u"),
+	rasprintf(msg, _("%s tag %u: invalid size %u"),
 			origin, td->tag, td->size);
 	goto exit;
     }
@@ -174,7 +174,7 @@ static rpmRC rpmsinfoInit(rpmtd td, const char *origin,
     if (tinfo->tagtype == RPM_STRING_TYPE || tinfo->tagtype == RPM_STRING_ARRAY_TYPE) {
 	for (const char * b = data; *b != '\0'; b++) {
 	    if (strchr("0123456789abcdefABCDEF", *b) == NULL) {
-		rasprintf(msg, _("%s: tag %u: BAD, not hex"), origin, td->tag);
+		rasprintf(msg, _("%s: tag %u: invalid hex"), origin, td->tag);
 		goto exit;
 	    }
 	}
@@ -182,7 +182,7 @@ static rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 
     if (sinfo->type == RPMSIG_SIGNATURE_TYPE) {
 	if (pgpPrtParams(data, dlen, PGPTAG_SIGNATURE, &sinfo->sig)) {
-	    rasprintf(msg, _("%s tag %u: BAD, invalid OpenPGP signature"),
+	    rasprintf(msg, _("%s tag %u: invalid OpenPGP signature"),
 		    origin, td->tag);
 	    goto exit;
 	}
