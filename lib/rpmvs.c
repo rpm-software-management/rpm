@@ -91,6 +91,7 @@ static const struct vfyinfo_s rpmvfyitems[] = {
 };
 
 static const char *rangeName(int range);
+static const char * rpmSigString(rpmRC res);
 static rpmRC rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
 			       DIGEST_CTX ctx, char ** result);
 
@@ -258,6 +259,18 @@ const char *rpmsinfoDescr(struct rpmsinfo_s *sinfo)
     return sinfo->descr;
 }
 
+char *rpmsinfoMsg(struct rpmsinfo_s *sinfo, rpmRC rc, const char *emsg)
+{
+    char *msg = NULL;
+    if (emsg) {
+	rasprintf(&msg, "%s: %s (%s)",
+		rpmsinfoDescr(sinfo), rpmSigString(rc), emsg);
+    } else {
+	rasprintf(&msg, "%s: %s", rpmsinfoDescr(sinfo), rpmSigString(rc));
+    }
+    return msg;
+}
+
 void rpmvsAppend(struct rpmvs_s *sis, hdrblob blob, rpmTagVal tag)
 {
     struct rpmtd_s td;
@@ -416,21 +429,11 @@ rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
 		   DIGEST_CTX ctx, char ** result)
 {
     rpmRC res = RPMRC_FAIL;
-    char *msg = NULL;
 
     if (sinfo->type == RPMSIG_DIGEST_TYPE)
-	res = verifyDigest(sinfo, ctx, &msg);
+	res = verifyDigest(sinfo, ctx, result);
     else if (sinfo->type == RPMSIG_SIGNATURE_TYPE)
-	res = verifySignature(keyring, sinfo, ctx, &msg);
-
-    if (msg) {
-	rasprintf(result, "%s: %s (%s)",
-		rpmsinfoDescr(sinfo), rpmSigString(res), msg);
-    } else {
-	rasprintf(result, "%s: %s",
-		rpmsinfoDescr(sinfo), rpmSigString(res));
-    }
-    free(msg);
+	res = verifySignature(keyring, sinfo, ctx, result);
 
     return res;
 }

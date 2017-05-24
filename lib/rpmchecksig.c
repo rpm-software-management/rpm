@@ -140,7 +140,9 @@ struct vfydata_s {
 
 static rpmRC formatVerbose(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *result, void *cbdata)
 {
-    rpmlog(RPMLOG_NOTICE, "    %s\n", result);
+    char *vsmsg = rpmsinfoMsg(sinfo, sigres, result);
+    rpmlog(RPMLOG_NOTICE, "    %s\n", vsmsg);
+    free(vsmsg);
     return sigres;
 }
 

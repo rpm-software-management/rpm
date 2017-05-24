@@ -140,7 +140,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 ],
 [1],
 [],
-[error: /tmp/hello-2.0-1.x86_64-signed.rpm: package tag 268: BAD, invalid OpenPGP signature
+[error: /tmp/hello-2.0-1.x86_64-signed.rpm: Header signature: BAD (package tag 268: BAD, invalid OpenPGP signature)
 error: /tmp/hello-2.0-1.x86_64-signed.rpm cannot be installed
 ])
 AT_CLEANUP

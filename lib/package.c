@@ -139,10 +139,11 @@ exit:
 
 static rpmRC handleHdrVS(struct rpmsinfo_s *sinfo, rpmRC rc, const char *msg, void *cbdata)
 {
-    if (msg) {
-	char **buf  = cbdata;
-	if (buf)
-	    *buf = rstrscat(buf, "\n", msg, NULL);
+    char **buf  = cbdata;
+    if (buf) {
+	char *vsmsg = rpmsinfoMsg(sinfo, rc, msg);
+	*buf = rstrscat(buf, "\n", vsmsg, NULL);
+	free(vsmsg);
     }
     return rc;
 }
@@ -258,6 +259,7 @@ static rpmRC handlePkgVS(struct rpmsinfo_s *sinfo, rpmRC rc, const char *msg, vo
 {
     struct pkgdata_s *pkgdata = cbdata;
     int lvl = RPMLOG_DEBUG;
+    char *vsmsg = rpmsinfoMsg(sinfo, rc, msg);
     switch (rc) {
     case RPMRC_OK:		/* Signature is OK. */
 	break;
@@ -276,12 +278,13 @@ static rpmRC handlePkgVS(struct rpmsinfo_s *sinfo, rpmRC rc, const char *msg, vo
 	break;
     }
 
-    rpmlog(lvl, "%s: %s\n", pkgdata->fn, msg);
+    rpmlog(lvl, "%s: %s\n", pkgdata->fn, vsmsg);
 
     /* Preserve traditional behavior for now: only failure prevents install  */
     if (rc != RPMRC_FAIL)
 	rc = RPMRC_OK;
 
+    free(vsmsg);
     return rc;
 }
 

@@ -46,6 +46,9 @@ RPM_GNUC_INTERNAL
 const char *rpmsinfoDescr(struct rpmsinfo_s *sinfo);
 
 RPM_GNUC_INTERNAL
+char *rpmsinfoMsg(struct rpmsinfo_s *sinfo, rpmRC rc, const char *emsg);
+
+RPM_GNUC_INTERNAL
 struct rpmvs_s *rpmvsCreate(hdrblob blob, rpmVSFlags vsflags);
 
 RPM_GNUC_INTERNAL
