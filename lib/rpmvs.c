@@ -390,7 +390,7 @@ static rpmRC verifyDigest(struct rpmsinfo_s *sinfo, DIGEST_CTX digctx,
 	rasprintf(msg, "%s: %s (%s)", rpmsinfoDescr(sinfo), rpmSigString(res),
 		sinfo->dig);
     } else {
-	rasprintf(msg, "%s: %s Expected(%s) != (%s)",
+	rasprintf(msg, "%s: %s (Expected %s != %s)",
 		  rpmsinfoDescr(sinfo), rpmSigString(res), sinfo->dig, dig);
     }
 
