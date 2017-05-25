@@ -639,18 +639,13 @@ static rpmRC checkPackages(char *pkgcheck)
     return RPMRC_OK;
 }
 
-rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
+static rpmRC packageBinary(rpmSpec spec, Package pkg, const char *cookie, int cheating, char** filename)
 {
-    rpmRC rc;
-    const char *errorString;
-    Package pkg;
-    char *pkglist = NULL;
-
-    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	char *fn;
+	const char *errorString;
+	rpmRC rc = RPMRC_OK;
 
 	if (pkg->fileList == NULL)
-	    continue;
+	    return rc;
 
 	if ((rc = processScriptFiles(spec, pkg)))
 	    return rc;
@@ -684,7 +679,7 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 		     headerGetString(pkg->header, RPMTAG_NAME), errorString);
 		return RPMRC_FAIL;
 	    }
-	    fn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
+	    *filename = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
 	    if ((binDir = strchr(binRpm, '/')) != NULL) {
 		struct stat st;
 		char *dn;
@@ -706,14 +701,28 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 	    free(binRpm);
 	}
 
-	rc = writeRPM(pkg, NULL, fn, NULL);
+	rc = writeRPM(pkg, NULL, *filename, NULL);
 	if (rc == RPMRC_OK) {
 	    /* Do check each written package if enabled */
-	    char *pkgcheck = rpmExpand("%{?_build_pkgcheck} ", fn, NULL);
+	    char *pkgcheck = rpmExpand("%{?_build_pkgcheck} ", *filename, NULL);
 	    if (pkgcheck[0] != ' ') {
 		rc = checkPackages(pkgcheck);
 	    }
 	    free(pkgcheck);
+	}
+	return rc;
+}
+
+rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
+{
+    rpmRC rc;
+    Package pkg;
+    char *pkglist = NULL;
+
+    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+	char *fn = NULL;
+	rc = packageBinary(spec, pkg, cookie, cheating, &fn);
+	if (rc == RPMRC_OK) {
 	    rstrcat(&pkglist, fn);
 	    rstrcat(&pkglist, " ");
 	}
