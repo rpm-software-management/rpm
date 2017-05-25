@@ -713,25 +713,78 @@ static rpmRC packageBinary(rpmSpec spec, Package pkg, const char *cookie, int ch
 	return rc;
 }
 
+struct binaryPackageTaskData
+{
+    Package pkg;
+    char *filename;
+    rpmRC result;
+    struct binaryPackageTaskData *next;
+};
+
+static struct binaryPackageTaskData* runBinaryPackageTasks(rpmSpec spec, const char *cookie, int cheating)
+{
+    struct binaryPackageTaskData *tasks = NULL;
+    struct binaryPackageTaskData *task = NULL;
+    struct binaryPackageTaskData *prev = NULL;
+
+    for (Package pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+        task = rcalloc(1, sizeof(*task));
+        task->pkg = pkg;
+        if (pkg == spec->packages) {
+            // the first package needs to be processed ahead of others, as they copy
+            // changelog data from it, and so otherwise data races would happen
+            task->result = packageBinary(spec, pkg, cookie, cheating, &(task->filename));
+            rpmlog(RPMLOG_NOTICE, _("Finished binary package job, result %d, filename %s\n"), task->result, task->filename);
+            tasks = task;
+        }
+        if (prev != NULL) {
+            prev->next = task;
+        }
+        prev = task;
+    }
+
+    #pragma omp parallel
+    #pragma omp single
+    // re-declaring task variable is necessary, or older gcc versions will produce code that segfaults
+    for (struct binaryPackageTaskData *task = tasks; task != NULL; task = task->next) {
+        if (task != tasks)
+        #pragma omp task
+        {
+            task->result = packageBinary(spec, task->pkg, cookie, cheating, &(task->filename));
+            rpmlog(RPMLOG_NOTICE, _("Finished binary package job, result %d, filename %s\n"), task->result, task->filename);
+        }
+    }
+
+    return tasks;
+}
+
+static void freeBinaryPackageTasks(struct binaryPackageTaskData* tasks)
+{
+    while (tasks != NULL) {
+        struct binaryPackageTaskData* next = tasks->next;
+        rfree(tasks->filename);
+        rfree(tasks);
+        tasks = next;
+    }
+}
+
 rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 {
-    rpmRC rc;
-    Package pkg;
     char *pkglist = NULL;
 
-    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	char *fn = NULL;
-	rc = packageBinary(spec, pkg, cookie, cheating, &fn);
-	if (rc == RPMRC_OK) {
-	    rstrcat(&pkglist, fn);
-	    rstrcat(&pkglist, " ");
-	}
-	free(fn);
-	if (rc != RPMRC_OK) {
-	    pkglist = _free(pkglist);
-	    return rc;
-	}
+    struct binaryPackageTaskData *tasks = runBinaryPackageTasks(spec, cookie, cheating);
+
+    for (struct binaryPackageTaskData *task = tasks; task != NULL; task = task->next) {
+        if (task->result == RPMRC_OK) {
+            rstrcat(&pkglist, task->filename);
+            rstrcat(&pkglist, " ");
+        } else {
+            _free(pkglist);
+            freeBinaryPackageTasks(tasks);
+            return RPMRC_FAIL;
+        }
     }
+    freeBinaryPackageTasks(tasks);
 
     /* Now check the package set if enabled */
     if (pkglist != NULL) {
