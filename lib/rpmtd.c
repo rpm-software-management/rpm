@@ -19,7 +19,7 @@ rpmtd rpmtdFree(rpmtd td)
 {
     /* permit free on NULL td */
     if (td != NULL) {
-	/* XXX should we free data too - a flag maybe? */
+	rpmtdFreeData(td);
 	free(td);
     }
     return NULL;
