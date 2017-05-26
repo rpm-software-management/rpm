@@ -244,8 +244,11 @@ typedef enum pgpCompressAlgo_e {
        4          - Reserved for double-width SHA (experimental)
        5          - MD2                                    "MD2"
        6          - Reserved for TIGER/192                 "TIGER192"
-       7          - Reserved for HAVAL (5 pass, 160-bit)
-       "HAVAL-5-160"
+       7          - Reserved for HAVAL (5 pass, 160-bit)    "HAVAL-5-160"
+       8          - SHA-256                                "SHA256"
+       9          - SHA-384                                "SHA384"
+       10         - SHA-512                                "SHA512"
+       11         - SHA-224                                "SHA224"
        100 to 110 - Private/Experimental algorithm.
 \endverbatim
  *
