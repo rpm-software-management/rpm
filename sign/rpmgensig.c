@@ -389,24 +389,6 @@ exit:
     return sigtd;
 }
 
-/**
- * Retrieve signature from header tag
- * @param sigh		signature header
- * @param sigtag	signature tag
- * @return		parsed pgp dig or NULL
- */
-static pgpDigParams getSig(Header sigh, rpmTagVal sigtag)
-{
-    struct rpmtd_s pkt;
-    pgpDigParams sig = NULL;
-
-    if (headerGet(sigh, sigtag, &pkt, HEADERGET_DEFAULT) && pkt.data != NULL) {
-	pgpPrtParams(pkt.data, pkt.count, PGPTAG_SIGNATURE, &sig);
-	rpmtdFreeData(&pkt);
-    }
-    return sig;
-}
-
 static void deleteSigs(Header sigh)
 {
     headerDel(sigh, RPMSIGTAG_GPG);
@@ -416,39 +398,48 @@ static void deleteSigs(Header sigh)
     headerDel(sigh, RPMSIGTAG_PGP5);
 }
 
-static int sameSignature(rpmTagVal sigtag, Header h1, Header h2)
+static int haveSignature(rpmtd sigtd, Header h)
 {
-    pgpDigParams sig1 = getSig(h1, sigtag);
-    pgpDigParams sig2 = getSig(h2, sigtag);;
+    pgpDigParams sig1 = NULL;
+    pgpDigParams sig2 = NULL;
+    struct rpmtd_s oldtd;
+    int rc = 0; /* assume no */
 
-    int rc = pgpDigParamsCmp(sig1, sig2);
+    if (!headerGet(h, rpmtdTag(sigtd), &oldtd, HEADERGET_DEFAULT))
+	return rc;
 
+    pgpPrtParams(sigtd->data, sigtd->count, PGPTAG_SIGNATURE, &sig1);
+    while (rpmtdNext(&oldtd) >= 0 && rc == 0) {
+	pgpPrtParams(oldtd.data, oldtd.count, PGPTAG_SIGNATURE, &sig2);
+	if (pgpDigParamsCmp(sig1, sig2) == 0)
+	    rc = 1;
+	pgpDigParamsFree(sig2);
+    }
     pgpDigParamsFree(sig1);
-    pgpDigParamsFree(sig2);
-    return (rc == 0);
+    rpmtdFreeData(&oldtd);
+
+    return rc;
 }
 
 static int replaceSignature(Header sigh, sigTarget sigt_v3, sigTarget sigt_v4)
 {
-    /* Grab a copy of the header so we can compare the result */
-    Header oldsigh = headerCopy(sigh);
     int rc = -1;
     rpmtd sigtd = NULL;
     
-    /* Nuke all signature tags */
-    deleteSigs(sigh);
-
     /* Make the cheaper v4 signature first */
     if ((sigtd = makeGPGSignature(sigh, 1, sigt_v4)) == NULL)
 	goto exit;
-    if (headerPut(sigh, sigtd, HEADERPUT_DEFAULT) == 0)
-	goto exit;
 
     /* See if we already have a signature by the same key and parameters */
-    if (sameSignature(sigtd->tag, sigh, oldsigh)) {
+    if (haveSignature(sigtd, sigh)) {
 	rc = 1;
 	goto exit;
     }
+    /* Nuke all signature tags */
+    deleteSigs(sigh);
+
+    if (headerPut(sigh, sigtd, HEADERPUT_DEFAULT) == 0)
+	goto exit;
     rpmtdFree(sigtd);
 
     /* Assume the same signature test holds for v3 signature too */
@@ -461,7 +452,6 @@ static int replaceSignature(Header sigh, sigTarget sigt_v3, sigTarget sigt_v4)
     rc = 0;
 exit:
     rpmtdFree(sigtd);
-    headerFree(oldsigh);
     return rc;
 }
 
