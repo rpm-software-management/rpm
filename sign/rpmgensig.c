@@ -192,14 +192,13 @@ exit:
  * Validate generated signature and insert to header if it looks sane.
  * NSS doesn't support everything GPG does. Basic tests to see if the 
  * generated signature is something we can use.
- * Return generated sigtag number on success, 0 on failure.
+ * Return generated signature tag data on success, NULL on failure.
  */
-static rpmTagVal putSignature(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
+static rpmtd makeSigTag(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
 {
     pgpDigParams sigp = NULL;
     rpmTagVal sigtag;
-    struct rpmtd_s sigtd;
-    rpmTagVal rc = 0; /* assume failure */
+    rpmtd sigtd = NULL;
     unsigned int hash_algo;
     unsigned int pubkey_algo;
 
@@ -229,19 +228,17 @@ static rpmTagVal putSignature(Header sigh, int ishdr, uint8_t *pkt, size_t pktle
 	break;
     }
 
-    /* Looks sane, insert into header */
-    rpmtdReset(&sigtd);
-    sigtd.count = pktlen;
-    sigtd.data = pkt;
-    sigtd.type = RPM_BIN_TYPE;
-    sigtd.tag = sigtag;
-
-    if (headerPut(sigh, &sigtd, HEADERPUT_DEFAULT))
-	rc = sigtag;
+    /* Looks sane, create the tag data */
+    sigtd = rpmtdNew();
+    sigtd->count = pktlen;
+    sigtd->data = memcpy(xmalloc(pktlen), pkt, pktlen);;
+    sigtd->type = RPM_BIN_TYPE;
+    sigtd->tag = sigtag;
+    sigtd->flags |= RPMTD_ALLOCED;
 
 exit:
     pgpDigParamsFree(sigp);
-    return rc;
+    return sigtd;
 }
 
 static int runGPG(sigTarget sigt, const char *sigfile)
@@ -345,13 +342,13 @@ exit:
  * @param passPhrase	private key pass phrase
  * @return		generated sigtag on success, 0 on failure
  */
-static rpmTagVal makeGPGSignature(Header sigh, int ishdr, sigTarget sigt)
+static rpmtd makeGPGSignature(Header sigh, int ishdr, sigTarget sigt)
 {
     char * sigfile = rstrscat(NULL, sigt->fileName, ".sig", NULL);
     struct stat st;
     uint8_t * pkt = NULL;
     size_t pktlen = 0;
-    rpmTagVal rc = 0; /* assume failure */
+    rpmtd sigtd = NULL;
 
     if (runGPG(sigt, sigfile))
 	goto exit;
@@ -368,7 +365,7 @@ static rpmTagVal makeGPGSignature(Header sigh, int ishdr, sigTarget sigt)
 
     {	FD_t fd;
 
-	rc = 0;
+	int rc = 0;
 	fd = Fopen(sigfile, "r.ufdio");
 	if (fd != NULL && !Ferror(fd)) {
 	    rc = Fread(pkt, sizeof(*pkt), pktlen, fd);
@@ -383,13 +380,13 @@ static rpmTagVal makeGPGSignature(Header sigh, int ishdr, sigTarget sigt)
     rpmlog(RPMLOG_DEBUG, "Got %zd bytes of GPG sig\n", pktlen);
 
     /* Parse the signature, change signature tag as appropriate. */
-    rc = putSignature(sigh, ishdr, pkt, pktlen);
+    sigtd = makeSigTag(sigh, ishdr, pkt, pktlen);
 exit:
     (void) unlink(sigfile);
     free(sigfile);
     free(pkt);
 
-    return rc;
+    return sigtd;
 }
 
 /**
@@ -436,27 +433,34 @@ static int replaceSignature(Header sigh, sigTarget sigt_v3, sigTarget sigt_v4)
     /* Grab a copy of the header so we can compare the result */
     Header oldsigh = headerCopy(sigh);
     int rc = -1;
-    rpmTagVal sigtag;
+    rpmtd sigtd = NULL;
     
     /* Nuke all signature tags */
     deleteSigs(sigh);
 
     /* Make the cheaper v4 signature first */
-    if ((sigtag = makeGPGSignature(sigh, 1, sigt_v4)) == 0)
+    if ((sigtd = makeGPGSignature(sigh, 1, sigt_v4)) == NULL)
+	goto exit;
+    if (headerPut(sigh, sigtd, HEADERPUT_DEFAULT) == 0)
 	goto exit;
 
     /* See if we already have a signature by the same key and parameters */
-    if (sameSignature(sigtag, sigh, oldsigh)) {
+    if (sameSignature(sigtd->tag, sigh, oldsigh)) {
 	rc = 1;
 	goto exit;
     }
+    rpmtdFree(sigtd);
 
     /* Assume the same signature test holds for v3 signature too */
-    if ((sigtag = makeGPGSignature(sigh, 0, sigt_v3)) == 0)
+    if ((sigtd = makeGPGSignature(sigh, 0, sigt_v3)) == NULL)
+	goto exit;
+
+    if (headerPut(sigh, sigtd, HEADERPUT_DEFAULT) == 0)
 	goto exit;
 
     rc = 0;
 exit:
+    rpmtdFree(sigtd);
     headerFree(oldsigh);
     return rc;
 }
