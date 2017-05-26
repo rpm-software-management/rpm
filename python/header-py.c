@@ -208,7 +208,6 @@ static PyObject * hdrFullFilelist(hdrObject * s)
     if (headerGet(h, RPMTAG_FILENAMES, fileNames, HEADERGET_EXT)) {
 	rpmtdSetTag(fileNames, RPMTAG_OLDFILENAMES);
 	headerPut(h, fileNames, HEADERPUT_DEFAULT);
-	rpmtdFreeData(fileNames);
     }
     rpmtdFree(fileNames);
 

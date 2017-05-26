@@ -845,13 +845,6 @@ static unsigned int tagId(rpmTagVal tag)
     return tag;
 }
 
-static rpmtd tagFree(rpmtd td)
-{
-    rpmtdFreeData(td);
-    rpmtdFree(td);
-    return NULL;
-}
-
 char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg) 
 {
     struct headerSprintfArgs_s hsa;
@@ -869,7 +862,7 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
     if (parseFormat(&hsa, hsa.fmt, &hsa.format, &hsa.numTokens, NULL, PARSER_BEGIN))
 	goto exit;
 
-    hsa.cache = tagCacheCreate(128, tagId, tagCmp, NULL, tagFree);
+    hsa.cache = tagCacheCreate(128, tagId, tagCmp, NULL, rpmtdFree);
     hsa.val = xstrdup("");
 
     tag =

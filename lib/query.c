@@ -262,7 +262,6 @@ void rpmDisplayQueryTags(FILE * fp)
 	}
 	fprintf(fp, "\n");
     }
-    rpmtdFreeData(names);
     rpmtdFree(names);
 }
 

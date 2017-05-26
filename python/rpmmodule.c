@@ -232,7 +232,6 @@ static void addRpmTags(PyObject *module)
 	Py_DECREF(pyname);
     }
     PyModule_AddObject(module, "tagnames", dict);
-    rpmtdFreeData(names);
     rpmtdFree(names);
 }
 
