@@ -392,21 +392,6 @@ exit:
     return rc;
 }
 
-static rpmTagVal rpmGenSignature(Header sigh, sigTarget sigt_v3, sigTarget sigt_v4)
-{
-    rpmTagVal ret;
-
-    ret = makeGPGSignature(sigh, 0, sigt_v3);
-    if (!ret)
-	goto exit;
-
-    ret = makeGPGSignature(sigh, 1, sigt_v4);
-    if (!ret)
-	goto exit;
-exit:
-    return ret;
-}
-
 /**
  * Retrieve signature from header tag
  * @param sigh		signature header
@@ -446,7 +431,7 @@ static int sameSignature(rpmTagVal sigtag, Header h1, Header h2)
     return (rc == 0);
 }
 
-static int replaceSignature(Header sigh, sigTarget sigt1, sigTarget sigt2)
+static int replaceSignature(Header sigh, sigTarget sigt_v3, sigTarget sigt_v4)
 {
     /* Grab a copy of the header so we can compare the result */
     Header oldsigh = headerCopy(sigh);
@@ -456,16 +441,22 @@ static int replaceSignature(Header sigh, sigTarget sigt1, sigTarget sigt2)
     /* Nuke all signature tags */
     deleteSigs(sigh);
 
-    /*
-     * rpmGenSignature() internals parse the actual signing result and 
-     * adds appropriate tags for DSA/RSA.
-     */
-    if ((sigtag = rpmGenSignature(sigh, sigt1, sigt2)) != 0) {
-	/* Lets see if we already have that signature */
-	rc = sameSignature(sigtag, sigh, oldsigh);
+    /* Make the cheaper v4 signature first */
+    if ((sigtag = makeGPGSignature(sigh, 1, sigt_v4)) == 0)
+	goto exit;
 
+    /* See if we already have a signature by the same key and parameters */
+    if (sameSignature(sigtag, sigh, oldsigh)) {
+	rc = 1;
+	goto exit;
     }
 
+    /* Assume the same signature test holds for v3 signature too */
+    if ((sigtag = makeGPGSignature(sigh, 0, sigt_v3)) == 0)
+	goto exit;
+
+    rc = 0;
+exit:
     headerFree(oldsigh);
     return rc;
 }
