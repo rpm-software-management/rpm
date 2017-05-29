@@ -5,32 +5,36 @@
 static char rpms__doc__[] =
 "";
 
+static int parseSignArgs(PyObject * args, PyObject *kwds,
+			const char **path, struct rpmSignArgs *sargs)
+{
+    char * kwlist[] = { "path", "keyid", "hashalgo", NULL };
+
+    memset(sargs, 0, sizeof(*sargs));
+    return PyArg_ParseTupleAndKeywords(args, kwds, "s|si", kwlist,
+				    path, &sargs->keyid, &sargs->hashalgo);
+}
+
 static PyObject * addSign(PyObject * self, PyObject * args, PyObject *kwds)
 {
     const char *path = NULL;
-    char * kwlist[] = { "path", "keyid", "hashalgo", NULL };
-    struct rpmSignArgs sig, *sigp = NULL;
+    struct rpmSignArgs sargs;
 
-    memset(&sig, 0, sizeof(sig));
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|si", kwlist,
-				&path, &sig.keyid, &sig.hashalgo))
+    if (parseSignArgs(args, kwds, &path, &sargs))
 	return NULL;
 
-    if (sig.keyid || sig.hashalgo)
-	sigp = &sig;
-
-    return PyBool_FromLong(rpmPkgSign(path, sigp) == 0);
+    return PyBool_FromLong(rpmPkgSign(path, &sargs) == 0);
 }
 
 static PyObject * delSign(PyObject * self, PyObject * args, PyObject *kwds)
 {
     const char *path = NULL;
-    char * kwlist[] = { "path", NULL };
+    struct rpmSignArgs sargs;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &path))
+    if (parseSignArgs(args, kwds, &path, &sargs))
 	return NULL;
 
-    return PyBool_FromLong(rpmPkgDelSign(path) == 0);
+    return PyBool_FromLong(rpmPkgDelSign(path, &sargs) == 0);
 }
 
 /*

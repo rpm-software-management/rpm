@@ -25,6 +25,8 @@ static int signfiles = 0, fskpass = 0;
 static char * fileSigningKey = NULL;
 static char * fileSigningKeyPassword = NULL;
 
+static struct rpmSignArgs sargs = {NULL, 0, 0};
+
 static struct poptOption signOptsTable[] = {
     { "addsign", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_ADDSIGN,
 	N_("sign package(s)"), NULL },
@@ -54,11 +56,10 @@ static struct poptOption optionsTable[] = {
 };
 
 /* TODO: permit overriding macro setup on the command line */
-static int doSign(poptContext optCon)
+static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
 {
     int rc = EXIT_FAILURE;
     char * name = rpmExpand("%{?_gpg_name}", NULL);
-    struct rpmSignArgs sig = {NULL, 0, 0};
     char *key = NULL;
 
     if (rstreq(name, "")) {
@@ -92,13 +93,13 @@ static int doSign(poptContext optCon)
 	    free(fileSigningKeyPassword);
 	}
 
-	sig.signfiles = 1;
+	sargs->signfiles = 1;
     }
 
     const char *arg;
     rc = 0;
     while ((arg = poptGetArg(optCon)) != NULL) {
-	rc += rpmPkgSign(arg, &sig);
+	rc += rpmPkgSign(arg, sargs);
     }
 
 exit:
@@ -133,12 +134,12 @@ int main(int argc, char *argv[])
     switch (mode) {
     case MODE_ADDSIGN:
     case MODE_RESIGN:
-	ec = doSign(optCon);
+	ec = doSign(optCon, &sargs);
 	break;
     case MODE_DELSIGN:
 	ec = 0;
 	while ((arg = poptGetArg(optCon)) != NULL) {
-	    ec += rpmPkgDelSign(arg);
+	    ec += rpmPkgDelSign(arg, &sargs);
 	}
 	break;
     default:

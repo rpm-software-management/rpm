@@ -863,7 +863,7 @@ int rpmPkgSign(const char *path, const struct rpmSignArgs * args)
     return rc;
 }
 
-int rpmPkgDelSign(const char *path)
+int rpmPkgDelSign(const char *path, const struct rpmSignArgs * args)
 {
     return rpmSign(path, 1, 0);
 }

@@ -31,9 +31,10 @@ int rpmPkgSign(const char *path, const struct rpmSignArgs * args);
 /** \ingroup rpmsign
  * Delete signature(s) from a package
  * @param path		path to package
+ * @param args		signing parameters (or NULL for defaults)
  * @return		0 on success
  */
-int rpmPkgDelSign(const char *path);
+int rpmPkgDelSign(const char *path, const struct rpmSignArgs * args);
 
 #ifdef __cplusplus
 }
