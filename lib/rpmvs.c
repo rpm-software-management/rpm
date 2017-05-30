@@ -190,13 +190,6 @@ static rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 	goto exit;
     }
 
-    if (tinfo->tagtype == RPM_STRING_TYPE || tinfo->tagtype == RPM_STRING_ARRAY_TYPE) {
-	if (!validHex(data, dlen)) {
-	    rasprintf(msg, _("%s: tag %u: invalid hex"), origin, td->tag);
-	    goto exit;
-	}
-    }
-
     if (sinfo->type == RPMSIG_SIGNATURE_TYPE) {
 	if (pgpPrtParams(data, dlen, PGPTAG_SIGNATURE, &sinfo->sig)) {
 	    rasprintf(msg, _("%s tag %u: invalid OpenPGP signature"),
@@ -206,10 +199,15 @@ static rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 	sinfo->hashalgo = pgpDigParamsAlgo(sinfo->sig, PGPVAL_HASHALGO);
 	sinfo->keyid = pgpGrab(sinfo->sig->signid+4, 4);
     } else if (sinfo->type == RPMSIG_DIGEST_TYPE) {
-	if (td->type == RPM_BIN_TYPE)
+	if (td->type == RPM_BIN_TYPE) {
 	    sinfo->dig = pgpHexStr(data, dlen);
-	else
+	} else {
+	    if (!validHex(data, dlen)) {
+		rasprintf(msg, _("%s: tag %u: invalid hex"), origin, td->tag);
+		goto exit;
+	    }
 	    sinfo->dig = xstrdup(data);
+	}
     }
 
     if (sinfo->hashalgo)
