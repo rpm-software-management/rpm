@@ -108,6 +108,25 @@ static int sinfoLookup(rpmTagVal tag)
     return ix;
 }
 
+static int validHex(const char *str, size_t slen)
+{
+    int valid = 0; /* Assume invalid */
+    const char *b;
+
+    /* Our hex data is always even sized and at least sha-1 long */
+    if (slen % 2 || slen < 40)
+	goto exit;
+
+    for (b = str ; *b != '\0'; b++) {
+	if (strchr("0123456789abcdefABCDEF", *b) == NULL)
+	    goto exit;
+    }
+    valid = 1;
+
+exit:
+    return valid;
+}
+
 static rpmRC rpmsinfoInit(rpmtd td, const char *origin,
 		      struct rpmsinfo_s *sinfo, char **msg)
 {
@@ -172,11 +191,9 @@ static rpmRC rpmsinfoInit(rpmtd td, const char *origin,
     }
 
     if (tinfo->tagtype == RPM_STRING_TYPE || tinfo->tagtype == RPM_STRING_ARRAY_TYPE) {
-	for (const char * b = data; *b != '\0'; b++) {
-	    if (strchr("0123456789abcdefABCDEF", *b) == NULL) {
-		rasprintf(msg, _("%s: tag %u: invalid hex"), origin, td->tag);
-		goto exit;
-	    }
+	if (!validHex(data, dlen)) {
+	    rasprintf(msg, _("%s: tag %u: invalid hex"), origin, td->tag);
+	    goto exit;
 	}
     }
 
