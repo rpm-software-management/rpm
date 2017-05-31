@@ -564,7 +564,7 @@ static int rpmfcHelper(rpmfc fc, int ix,
     data.exclude = exclude;
 
     for (int i = 0; i < pac; i++) {
-	if (parseRCPOT(NULL, fc->pkg, pav[i], tagN, 0, dsContext, addReqProvFc, &data))
+	if (parseRCPOT(NULL, fc->pkg, pav[i], tagN, ix, dsContext, addReqProvFc, &data))
 	    rc++;
     }
 
