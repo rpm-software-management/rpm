@@ -240,6 +240,13 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi, int strip)
 	spec->lbuf[spec->lbufOff] = '\0';
 	ofi->readPtr = from;
 
+	/* Do not expand macros if it is commented */
+	if ((strip & STRIP_COMMENTS) && spec->lbuf[0] == '#') {
+		spec->lbufOff = 0;
+		spec->nextline = spec->lbuf;
+		return 0;
+	}
+
 	/* Check if we need another line before expanding the buffer. */
 	for (const char *p = spec->lbuf; *p; p++) {
 	    switch (*p) {
