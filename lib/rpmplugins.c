@@ -32,10 +32,9 @@ static rpmPlugin rpmpluginsGetPlugin(rpmPlugins plugins, const char *name)
 {
     int i;
     for (i = 0; i < plugins->count; i++) {
-	rpmPlugin plugin = plugins->plugins[i];
-	if (rstreq(plugin->name, name)) {
-	    return plugin;
-	}
+        rpmPlugin plugin = plugins->plugins[i];
+        if (rstreq(plugin->name, name))
+            return plugin;
     }
     return NULL;
 }
@@ -53,7 +52,7 @@ rpmPlugins rpmpluginsNew(rpmts ts)
 }
 
 static rpmPlugin rpmPluginNew(const char *name, const char *path,
-			      const char *opts)
+                              const char *opts)
 {
     rpmPlugin plugin = NULL;
     rpmPluginHooks hooks = NULL;
@@ -62,23 +61,23 @@ static rpmPlugin rpmPluginNew(const char *name, const char *path,
 
     void *handle = dlopen(path, RTLD_LAZY);
     if (!handle) {
-	rpmlog(RPMLOG_ERR, _("Failed to dlopen %s %s\n"), path, dlerror());
-	return NULL;
+        rpmlog(RPMLOG_ERR, _("Failed to dlopen %s %s\n"), path, dlerror());
+        return NULL;
     }
 
     /* make sure the plugin has the supported hooks flag */
     hooks_name = rstrscat(NULL, name, "_hooks", NULL);
     hooks = dlsym(handle, hooks_name);
     if ((error = dlerror()) != NULL) {
-	rpmlog(RPMLOG_ERR, _("Failed to resolve symbol %s: %s\n"),
-	       hooks_name, error);
+        rpmlog(RPMLOG_ERR, _("Failed to resolve symbol %s: %s\n"),
+               hooks_name, error);
     } else {
-	plugin = xcalloc(1, sizeof(*plugin));
-	plugin->name = xstrdup(name);
-	plugin->handle = handle;
-	plugin->hooks = hooks;
-	if (opts)
-	    plugin->opts = xstrdup(opts);
+        plugin = xcalloc(1, sizeof(*plugin));
+        plugin->name = xstrdup(name);
+        plugin->handle = handle;
+        plugin->hooks = hooks;
+        if (opts)
+            plugin->opts = xstrdup(opts);
     }
     free(hooks_name);
 
@@ -88,13 +87,13 @@ static rpmPlugin rpmPluginNew(const char *name, const char *path,
 static rpmPlugin rpmPluginFree(rpmPlugin plugin)
 {
     if (plugin) {
-	rpmPluginHooks hooks = plugin->hooks;
-	if (hooks->cleanup)
-	    hooks->cleanup(plugin);
-	dlclose(plugin->handle);
-	free(plugin->name);
-	free(plugin->opts);
-	free(plugin);
+        rpmPluginHooks hooks = plugin->hooks;
+        if (hooks->cleanup)
+            hooks->cleanup(plugin);
+        dlclose(plugin->handle);
+        free(plugin->name);
+        free(plugin->opts);
+        free(plugin);
     }
     return NULL;
 }
@@ -117,27 +116,27 @@ void * rpmPluginGetData(rpmPlugin plugin)
 void rpmPluginSetData(rpmPlugin plugin, void *data)
 {
     if (plugin)
-	plugin->priv = data;
+        plugin->priv = data;
 }
 
 rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path,
-		    const char *opts)
+                    const char *opts)
 {
     rpmRC rc;
     rpmPlugin plugin = rpmPluginNew(name, path, opts);
 
     if (plugin == NULL)
-	return RPMRC_FAIL;
+        return RPMRC_FAIL;
     
     rc = rpmpluginsCallInit(plugin, plugins->ts);
 
     if (rc == RPMRC_OK) {
-	plugins->plugins = xrealloc(plugins->plugins,
-			    (plugins->count + 1) * sizeof(*plugins->plugins));
-	plugins->plugins[plugins->count] = plugin;
-	plugins->count++;
+        plugins->plugins = xrealloc(plugins->plugins,
+            (plugins->count + 1) * sizeof(*plugins->plugins));
+        plugins->plugins[plugins->count] = plugin;
+        plugins->count++;
     } else {
-	rpmPluginFree(plugin);
+        rpmPluginFree(plugin);
     }
 
     return rc;
@@ -151,10 +150,10 @@ rpmRC rpmpluginsAddPlugin(rpmPlugins plugins, const char *type, const char *name
 
     path = rpmExpand("%{?__", type, "_", name, "}", NULL);
     if (!path || rstreq(path, "")) {
-	rpmlog(RPMLOG_DEBUG, _("Plugin %%__%s_%s not configured\n"),
-	       type, name);
-	rc = RPMRC_NOTFOUND;
-	goto exit;
+        rpmlog(RPMLOG_DEBUG, _("Plugin %%__%s_%s not configured\n"),
+               type, name);
+        rc = RPMRC_NOTFOUND;
+        goto exit;
     }
 
     /* split the options from the path */
@@ -163,12 +162,12 @@ rpmRC rpmpluginsAddPlugin(rpmPlugins plugins, const char *type, const char *name
     options = path;
     SKIPNONSPACE(options);
     if (risspace(*options)) {
-	*options = '\0';
-	options++;
-	SKIPSPACE(options);
+        *options = '\0';
+        options++;
+        SKIPSPACE(options);
     }
     if (*options == '\0') {
-	options = NULL;
+        options = NULL;
     }
 
     rc = rpmpluginsAdd(plugins, name, path, options);
@@ -181,33 +180,33 @@ rpmRC rpmpluginsAddPlugin(rpmPlugins plugins, const char *type, const char *name
 rpmPlugins rpmpluginsFree(rpmPlugins plugins)
 {
     if (plugins) {
-	for (int i = 0; i < plugins->count; i++) {
-	    rpmPlugin plugin = plugins->plugins[i];
-	    rpmPluginFree(plugin);
-	}
-	plugins->plugins = _free(plugins->plugins);
-	plugins->ts = NULL;
-	_free(plugins);
+        for (int i = 0; i < plugins->count; i++) {
+            rpmPlugin plugin = plugins->plugins[i];
+            rpmPluginFree(plugin);
+        }
+        plugins->plugins = _free(plugins->plugins);
+        plugins->ts = NULL;
+        _free(plugins);
     }
 
     return NULL;
 }
 
 #define RPMPLUGINS_GET_PLUGIN(name) \
-	plugin = rpmpluginsGetPlugin(plugins, name); \
-	if (plugin == NULL || plugin->handle == NULL) { \
-		rpmlog(RPMLOG_ERR, _("Plugin %s not loaded\n"), name); \
-		return RPMRC_FAIL; \
-	}
+    plugin = rpmpluginsGetPlugin(plugins, name); \
+    if (plugin == NULL || plugin->handle == NULL) { \
+        rpmlog(RPMLOG_ERR, _("Plugin %s not loaded\n"), name); \
+        return RPMRC_FAIL; \
+    }
 
 /* Common define for all rpmpluginsCall* hook functions */
 #define RPMPLUGINS_SET_HOOK_FUNC(hook) \
-	rpmPluginHooks hooks = (plugin != NULL) ? plugin->hooks : NULL; \
-	hookFunc = (hooks != NULL) ? hooks->hook : NULL; \
-	if (hookFunc) { \
-	    rpmlog(RPMLOG_DEBUG, "Plugin: calling hook %s in %s plugin\n", \
-		   STR(hook), plugin->name); \
-	}
+    rpmPluginHooks hooks = (plugin != NULL) ? plugin->hooks : NULL; \
+    hookFunc = (hooks != NULL) ? hooks->hook : NULL; \
+    if (hookFunc) { \
+        rpmlog(RPMLOG_DEBUG, "Plugin: calling hook %s in %s plugin\n", \
+               STR(hook), plugin->name); \
+    }
 
 static rpmRC rpmpluginsCallInit(rpmPlugin plugin, rpmts ts)
 {
@@ -229,12 +228,12 @@ rpmRC rpmpluginsCallTsmPre(rpmPlugins plugins, rpmts ts)
     rpmRC rc = RPMRC_OK;
 
     for (i = 0; i < plugins->count; i++) {
-	rpmPlugin plugin = plugins->plugins[i];
-	RPMPLUGINS_SET_HOOK_FUNC(tsm_pre);
-	if (hookFunc && hookFunc(plugin, ts) == RPMRC_FAIL) {
-	    rpmlog(RPMLOG_ERR, "Plugin %s: hook tsm_pre failed\n", plugin->name);
-	    rc = RPMRC_FAIL;
-	}
+        rpmPlugin plugin = plugins->plugins[i];
+        RPMPLUGINS_SET_HOOK_FUNC(tsm_pre);
+        if (hookFunc && hookFunc(plugin, ts) == RPMRC_FAIL) {
+            rpmlog(RPMLOG_ERR, "Plugin %s: hook tsm_pre failed\n", plugin->name);
+            rc = RPMRC_FAIL;
+        }
     }
 
     return rc;
@@ -247,11 +246,10 @@ rpmRC rpmpluginsCallTsmPost(rpmPlugins plugins, rpmts ts, int res)
     rpmRC rc = RPMRC_OK;
 
     for (i = 0; i < plugins->count; i++) {
-	rpmPlugin plugin = plugins->plugins[i];
-	RPMPLUGINS_SET_HOOK_FUNC(tsm_post);
-	if (hookFunc && hookFunc(plugin, ts, res) == RPMRC_FAIL) {
-	    rpmlog(RPMLOG_WARNING, "Plugin %s: hook tsm_post failed\n", plugin->name);
-	}
+        rpmPlugin plugin = plugins->plugins[i];
+        RPMPLUGINS_SET_HOOK_FUNC(tsm_post);
+        if (hookFunc && hookFunc(plugin, ts, res) == RPMRC_FAIL)
+            rpmlog(RPMLOG_WARNING, "Plugin %s: hook tsm_post failed\n", plugin->name);
     }
 
     return rc;
@@ -264,12 +262,12 @@ rpmRC rpmpluginsCallPsmPre(rpmPlugins plugins, rpmte te)
     rpmRC rc = RPMRC_OK;
 
     for (i = 0; i < plugins->count; i++) {
-	rpmPlugin plugin = plugins->plugins[i];
-	RPMPLUGINS_SET_HOOK_FUNC(psm_pre);
-	if (hookFunc && hookFunc(plugin, te) == RPMRC_FAIL) {
-	    rpmlog(RPMLOG_ERR, "Plugin %s: hook psm_pre failed\n", plugin->name);
-	    rc = RPMRC_FAIL;
-	}
+        rpmPlugin plugin = plugins->plugins[i];
+        RPMPLUGINS_SET_HOOK_FUNC(psm_pre);
+        if (hookFunc && hookFunc(plugin, te) == RPMRC_FAIL) {
+            rpmlog(RPMLOG_ERR, "Plugin %s: hook psm_pre failed\n", plugin->name);
+            rc = RPMRC_FAIL;
+        }
     }
 
     return rc;
@@ -282,11 +280,10 @@ rpmRC rpmpluginsCallPsmPost(rpmPlugins plugins, rpmte te, int res)
     rpmRC rc = RPMRC_OK;
 
     for (i = 0; i < plugins->count; i++) {
-	rpmPlugin plugin = plugins->plugins[i];
-	RPMPLUGINS_SET_HOOK_FUNC(psm_post);
-	if (hookFunc && hookFunc(plugin, te, res) == RPMRC_FAIL) {
-	    rpmlog(RPMLOG_WARNING, "Plugin %s: hook psm_post failed\n", plugin->name);
-	}
+        rpmPlugin plugin = plugins->plugins[i];
+        RPMPLUGINS_SET_HOOK_FUNC(psm_post);
+        if (hookFunc && hookFunc(plugin, te, res) == RPMRC_FAIL)
+            rpmlog(RPMLOG_WARNING, "Plugin %s: hook psm_post failed\n", plugin->name);
     }
 
     return rc;
@@ -299,12 +296,12 @@ rpmRC rpmpluginsCallScriptletPre(rpmPlugins plugins, const char *s_name, int typ
     rpmRC rc = RPMRC_OK;
 
     for (i = 0; i < plugins->count; i++) {
-	rpmPlugin plugin = plugins->plugins[i];
-	RPMPLUGINS_SET_HOOK_FUNC(scriptlet_pre);
-	if (hookFunc && hookFunc(plugin, s_name, type) == RPMRC_FAIL) {
-	    rpmlog(RPMLOG_ERR, "Plugin %s: hook scriplet_pre failed\n", plugin->name);
-	    rc = RPMRC_FAIL;
-	}
+        rpmPlugin plugin = plugins->plugins[i];
+        RPMPLUGINS_SET_HOOK_FUNC(scriptlet_pre);
+        if (hookFunc && hookFunc(plugin, s_name, type) == RPMRC_FAIL) {
+            rpmlog(RPMLOG_ERR, "Plugin %s: hook scriplet_pre failed\n", plugin->name);
+            rc = RPMRC_FAIL;
+        }
     }
 
     return rc;
@@ -317,12 +314,12 @@ rpmRC rpmpluginsCallScriptletForkPost(rpmPlugins plugins, const char *path, int 
     rpmRC rc = RPMRC_OK;
 
     for (i = 0; i < plugins->count; i++) {
-	rpmPlugin plugin = plugins->plugins[i];
-	RPMPLUGINS_SET_HOOK_FUNC(scriptlet_fork_post);
-	if (hookFunc && hookFunc(plugin, path, type) == RPMRC_FAIL) {
-	    rpmlog(RPMLOG_ERR, "Plugin %s: hook scriplet_fork_post failed\n", plugin->name);
-	    rc = RPMRC_FAIL;
-	}
+        rpmPlugin plugin = plugins->plugins[i];
+        RPMPLUGINS_SET_HOOK_FUNC(scriptlet_fork_post);
+        if (hookFunc && hookFunc(plugin, path, type) == RPMRC_FAIL) {
+            rpmlog(RPMLOG_ERR, "Plugin %s: hook scriplet_fork_post failed\n", plugin->name);
+            rc = RPMRC_FAIL;
+        }
     }
 
     return rc;
@@ -335,30 +332,29 @@ rpmRC rpmpluginsCallScriptletPost(rpmPlugins plugins, const char *s_name, int ty
     rpmRC rc = RPMRC_OK;
 
     for (i = 0; i < plugins->count; i++) {
-	rpmPlugin plugin = plugins->plugins[i];
-	RPMPLUGINS_SET_HOOK_FUNC(scriptlet_post);
-	if (hookFunc && hookFunc(plugin, s_name, type, res) == RPMRC_FAIL) {
-	    rpmlog(RPMLOG_WARNING, "Plugin %s: hook scriplet_post failed\n", plugin->name);
-	}
+        rpmPlugin plugin = plugins->plugins[i];
+        RPMPLUGINS_SET_HOOK_FUNC(scriptlet_post);
+        if (hookFunc && hookFunc(plugin, s_name, type, res) == RPMRC_FAIL)
+            rpmlog(RPMLOG_WARNING, "Plugin %s: hook scriplet_post failed\n", plugin->name);
     }
 
     return rc;
 }
 
 rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, rpmfi fi, const char *path,
-			       mode_t file_mode, rpmFsmOp op)
+                               mode_t file_mode, rpmFsmOp op)
 {
     plugin_fsm_file_pre_func hookFunc;
     int i;
     rpmRC rc = RPMRC_OK;
 
     for (i = 0; i < plugins->count; i++) {
-	rpmPlugin plugin = plugins->plugins[i];
-	RPMPLUGINS_SET_HOOK_FUNC(fsm_file_pre);
-	if (hookFunc && hookFunc(plugin, fi, path, file_mode, op) == RPMRC_FAIL) {
-	    rpmlog(RPMLOG_ERR, "Plugin %s: hook fsm_file_pre failed\n", plugin->name);
-	    rc = RPMRC_FAIL;
-	}
+        rpmPlugin plugin = plugins->plugins[i];
+        RPMPLUGINS_SET_HOOK_FUNC(fsm_file_pre);
+        if (hookFunc && hookFunc(plugin, fi, path, file_mode, op) == RPMRC_FAIL) {
+            rpmlog(RPMLOG_ERR, "Plugin %s: hook fsm_file_pre failed\n", plugin->name);
+            rc = RPMRC_FAIL;
+        }
     }
 
     return rc;
@@ -372,31 +368,31 @@ rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, rpmfi fi, const char *path,
     rpmRC rc = RPMRC_OK;
 
     for (i = 0; i < plugins->count; i++) {
-	rpmPlugin plugin = plugins->plugins[i];
-	RPMPLUGINS_SET_HOOK_FUNC(fsm_file_post);
-	if (hookFunc && hookFunc(plugin, fi, path, file_mode, op, res) == RPMRC_FAIL) {
-	    rpmlog(RPMLOG_WARNING, "Plugin %s: hook fsm_file_post failed\n", plugin->name);
-	}
+        rpmPlugin plugin = plugins->plugins[i];
+        RPMPLUGINS_SET_HOOK_FUNC(fsm_file_post);
+        if (hookFunc && hookFunc(plugin, fi, path, file_mode, op, res) == RPMRC_FAIL) {
+            rpmlog(RPMLOG_WARNING, "Plugin %s: hook fsm_file_post failed\n", plugin->name);
+        }
     }
 
     return rc;
 }
 
 rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins, rpmfi fi,
-				   const char *path, const char *dest,
-				   mode_t file_mode, rpmFsmOp op)
+                                   const char *path, const char *dest,
+                                   mode_t file_mode, rpmFsmOp op)
 {
     plugin_fsm_file_prepare_func hookFunc;
     int i;
     rpmRC rc = RPMRC_OK;
 
     for (i = 0; i < plugins->count; i++) {
-	rpmPlugin plugin = plugins->plugins[i];
-	RPMPLUGINS_SET_HOOK_FUNC(fsm_file_prepare);
-	if (hookFunc && hookFunc(plugin, fi, path, dest, file_mode, op) == RPMRC_FAIL) {
-	    rpmlog(RPMLOG_ERR, "Plugin %s: hook fsm_file_prepare failed\n", plugin->name);
-	    rc = RPMRC_FAIL;
-	}
+        rpmPlugin plugin = plugins->plugins[i];
+        RPMPLUGINS_SET_HOOK_FUNC(fsm_file_prepare);
+        if (hookFunc && hookFunc(plugin, fi, path, dest, file_mode, op) == RPMRC_FAIL) {
+            rpmlog(RPMLOG_ERR, "Plugin %s: hook fsm_file_prepare failed\n", plugin->name);
+            rc = RPMRC_FAIL;
+        }
     }
 
     return rc;
