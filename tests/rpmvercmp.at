@@ -91,6 +91,9 @@ RPMVERCMP(+, _, 0)
 RPMVERCMP(_, +, 0)
 
 dnl Basic testcases for tilde sorting
+RPMVERCMP(1.0~, 1.0~, 0)
+RPMVERCMP(1.0~, 1.0, -1)
+RPMVERCMP(1.0, 1.0~, 1)
 RPMVERCMP(1.0~rc1, 1.0~rc1, 0)
 RPMVERCMP(1.0~rc1, 1.0, -1)
 RPMVERCMP(1.0, 1.0~rc1, 1)
@@ -99,6 +102,28 @@ RPMVERCMP(1.0~rc2, 1.0~rc1, 1)
 RPMVERCMP(1.0~rc1~git123, 1.0~rc1~git123, 0)
 RPMVERCMP(1.0~rc1~git123, 1.0~rc1, -1)
 RPMVERCMP(1.0~rc1, 1.0~rc1~git123, 1)
+
+dnl Basic testcases for caret sorting
+RPMVERCMP(1.0^, 1.0^, 0)
+RPMVERCMP(1.0^, 1.0, 1)
+RPMVERCMP(1.0, 1.0^, -1)
+RPMVERCMP(1.0^git1, 1.0^git1, 0)
+RPMVERCMP(1.0^git1, 1.0, 1)
+RPMVERCMP(1.0, 1.0^git1, -1)
+RPMVERCMP(1.1^1, 1.1.1, -1)
+RPMVERCMP(1.1.1, 1.1^1, 1)
+RPMVERCMP(1.10, 1.1^1, 1)
+RPMVERCMP(1.1^1, 1.10, -1)
+RPMVERCMP(1.0^git1.1, 1.0^git2, -1)
+RPMVERCMP(1.0^git2, 1.0^git1.1, 1)
+RPMVERCMP(1.0^post^git1, 1.0^post^git1, 0)
+RPMVERCMP(1.0^post^git1, 1.0^post, 1)
+RPMVERCMP(1.0^post, 1.0^post^git1, -1)
+
+dnl Basic testcases for tilde and caret sorting
+RPMVERCMP(1.0~rc1^git1, 1.0~rc1^git1, 0)
+RPMVERCMP(1.0~rc1^git1, 1.0~rc1, 1)
+RPMVERCMP(1.0~rc1, 1.0~rc1^git1, -1)
 
 dnl These are included here to document current, arguably buggy behaviors
 dnl for reference purposes and for easy checking against  unintended
