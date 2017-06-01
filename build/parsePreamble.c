@@ -522,6 +522,7 @@ static struct optionalTag {
     { RPMTAG_DISTRIBUTION,	"%{distribution}" },
     { RPMTAG_DISTURL,		"%{disturl}" },
     { RPMTAG_BUGURL,		"%{bugurl}" },
+    { RPMTAG_METATAGS,		"%{metatags}" },
     { -1, NULL }
 };
 
@@ -707,9 +708,17 @@ int addLangTag(rpmSpec spec, Header h, rpmTagVal tag,
     }
 
     if (!*lang) {
-	headerPutString(h, tag, field);
+	if (tag == RPMTAG_METATAGS) {
+	    char *p;
+	    while (*(p = strchrnul(field, ' '))) {
+		*p++ = '\0';
+		headerPutString(h, tag, strdup(field));
+		field = p;
+	    }
+	} else
+	    headerPutString(h, tag, field);
     } else {
-    	skip = ((spec->flags & RPMSPEC_NOLANG) &&
+	skip = ((spec->flags & RPMSPEC_NOLANG) &&
 		!rstreq(lang, RPMBUILD_DEFAULT_LANG));
 	if (skip)
 	    return 0;
@@ -786,6 +795,7 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     case RPMTAG_VENDOR:
     case RPMTAG_LICENSE:
     case RPMTAG_PACKAGER:
+    case RPMTAG_METATAGS:
 	if (addLangTag(spec, pkg->header, tag, field, lang))
 	    goto exit;
 	break;
@@ -1014,6 +1024,7 @@ static struct PreambleRec_s const preambleList[] = {
     {RPMTAG_BUGURL,		0, 0, LEN_AND_STR("bugurl")},
     {RPMTAG_ORDERNAME,		2, 0, LEN_AND_STR("orderwithrequires")},
     {RPMTAG_REMOVEPATHPOSTFIXES,0, 0, LEN_AND_STR("removepathpostfixes")},
+    {RPMTAG_METATAGS,		1, 0, LEN_AND_STR("metatags")},
     {0, 0, 0, 0}
 };
 
