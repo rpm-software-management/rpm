@@ -34,6 +34,10 @@ extern int optind;
 #include "rpmio/rpmlua.h"
 #endif
 
+#ifdef ENABLE_PYTHON
+#include "python/rpmpython.h"
+#endif
+
 #include "debug.h"
 
 enum macroFlags_e {
@@ -1193,6 +1197,32 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    s = se;
 	    continue;
 	}
+
+#ifdef	ENABLE_PYTHON
+	if (STREQ("python", f, fn)) {
+		rpmpython python = NULL;
+		char *scriptbuf;
+		char *printbuf = NULL;
+
+		if (!(python = rpmpythonNew(NULL, 0)))
+		    rc = 1;
+		else {
+		    scriptbuf = xmalloc(gn + 1);
+		    if (g != NULL && gn > 0)
+			memcpy(scriptbuf, g, gn);
+		    scriptbuf[gn] = '\0';
+		    if (rpmpythonRun(python, scriptbuf, &printbuf) != RPMRC_OK)
+			rc = 1;
+		    else if (printbuf != NULL && *printbuf != '\0') {
+			mbAppendStr(mb, printbuf);
+			free(printbuf);
+		    }
+		    free(scriptbuf);
+		}
+		s = se;
+		continue;
+	}
+#endif
 
 	/* XXX necessary but clunky */
 	if (STREQ("basename", f, fn) ||

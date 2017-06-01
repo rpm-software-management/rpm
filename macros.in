@@ -1241,5 +1241,9 @@ end}
 %{expand:%__scm_setup_%{__scm} %{!-v:-q}}\
 %{!-N:%autopatch %{-v} %{-p:-p%{-p*}}}
 
+# Embedded python interpreter initialization commands
+%_pythonI_init	import rpm\
+%{nil}
+
 # \endverbatim
 #*/

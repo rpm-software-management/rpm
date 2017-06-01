@@ -748,6 +748,7 @@ AS_IF([test "$enable_python" = yes],[
   AM_PATH_PYTHON([2.6],[
     WITH_PYTHON_INCLUDE=`${PYTHON} -c 'from distutils.sysconfig import *; import sys; sys.stdout.write(get_python_inc())'`
     WITH_PYTHON_SUBPACKAGE=1
+    AC_DEFINE(ENABLE_PYTHON, 1, [build rpm python bindings])
     save_CPPFLAGS="$CPPFLAGS"
     CPPFLAGS="$CPPFLAGS -I$WITH_PYTHON_INCLUDE"
     AC_CHECK_HEADER([Python.h],[],
