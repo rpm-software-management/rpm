@@ -1160,7 +1160,6 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 	    oldpers = personality(PERS_LINUX_32BIT);
 	    if (oldpers != -1) {
 		if (personality(PERS_LINUX) != -1) {
-		    uname(&un);
 		    if (rstreq(un.machine, "sparc64")) {
 			strcpy(un.machine, "sparcv9");
 			oldpers = PERS_LINUX32;
