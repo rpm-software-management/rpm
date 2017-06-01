@@ -149,6 +149,7 @@ static const FDIO_t fdio;
 static const FDIO_t ufdio;
 static const FDIO_t gzdio;
 static const FDIO_t bzdio;
+static const FDIO_t pbzdio;
 static const FDIO_t xzdio;
 static const FDIO_t lzdio;
 
@@ -709,6 +710,79 @@ static const FDIO_t bzdio = &bzdio_s ;
 #endif	/* HAVE_BZLIB_H */
 
 /* =============================================================== */
+/* Support for PBZIP2 library.  */
+#if HAVE_PBZLIB_H
+
+#include <bzlib.h>
+
+static FD_t pbzdFdopen(FD_t fd, int fdno, const char * fmode)
+{
+    PBZFILE *pbzfile = PBZ2_pbzdopen(fdno, fmode);
+
+    if (pbzfile == NULL)
+	return NULL;
+
+    fdSetFdno(fd, -1);		/* XXX skip the fdio close */
+    fdPush(fd, pbzdio, pbzfile, fdno);		/* Push pbzdio onto stack */
+    return fd;
+}
+
+static int pbzdFlush(FDSTACK_t fps)
+{
+    return PBZ2_pbzflush(fps->fp);
+}
+
+static ssize_t pbzdRead(FDSTACK_t fps, void * buf, size_t count)
+{
+    PBZFILE *pbzfile = fps->fp;
+    ssize_t rc = 0;
+
+    if (pbzfile)
+	rc = PBZ2_pbzread(pbzfile, buf, count);
+    if (rc == -1) {
+	int zerror = 0;
+	if (pbzfile) {
+	    fps->errcookie = PBZ2_pbzerror(pbzfile, &zerror);
+	}
+    }
+    return rc;
+}
+
+static ssize_t pbzdWrite(FDSTACK_t fps, const void * buf, size_t count)
+{
+    PBZFILE *pbzfile = fps->fp;
+    ssize_t rc;
+
+    rc = PBZ2_pbzwrite(pbzfile, (void *)buf, count);
+    if (rc == -1) {
+	int zerror = 0;
+	fps->errcookie = PBZ2_pbzerror(pbzfile, &zerror);
+    }
+    return rc;
+}
+
+static int pbzdClose(FDSTACK_t fps)
+{
+    PBZFILE *pbzfile = fps->fp;
+
+    if (pbzfile == NULL) return -2;
+
+    /* pbzclose() doesn't return errors */
+    PBZ2_pbzclose(pbzfile);
+
+    return 0;
+}
+
+static const struct FDIO_s pbzdio_s = {
+  "pbzdio", "pbzip2",
+  pbzdRead, pbzdWrite, NULL, pbzdClose,
+  NULL, pbzdFdopen, pbzdFlush, NULL, zfdError, zfdStrerr
+};
+static const FDIO_t pbzdio = &pbzdio_s ;
+
+#endif	/* HAVE_PBZLIB_H */
+
+/* =============================================================== */
 /* Support for LZMA library.  */
 
 #ifdef HAVE_LZMA_H
@@ -1238,6 +1312,9 @@ static FDIO_t findIOT(const char *name)
 	&gzdio_s,
 #if HAVE_BZLIB_H
 	&bzdio_s,
+#endif
+#if HAVE_PBZLIB_H
+	&pbzdio_s,
 #endif
 #if HAVE_LZMA_H
 	&xzdio_s,

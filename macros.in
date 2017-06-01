@@ -25,6 +25,7 @@
 %__7zip			@__7ZIP@
 %__awk			@AWK@
 %__bzip2		@__BZIP2@
+%__pbzip2		@__PBZIP2@
 %__cat			@__CAT@
 %__chgrp		@__CHGRP@
 %__chmod		@__CHMOD@

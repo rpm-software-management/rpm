@@ -27,7 +27,8 @@ typedef enum rpmCompressedMagic_e {
     COMPRESSED_LZIP		= 6,	/*!< lzip can handle */
     COMPRESSED_LRZIP		= 7,	/*!< lrzip can handle */
     COMPRESSED_7ZIP		= 8,	/*!< 7zip can handle */
-    COMPRESSED_GEM		= 9	/*!< gem can handle */
+    COMPRESSED_GEM		= 9,	/*!< gem can handle */
+    COMPRESSED_PBZIP2		= 10	/*!< pbzip2 can handle */
 } rpmCompressedMagic;
 
 /** \ingroup rpmfileutil

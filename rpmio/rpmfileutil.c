@@ -342,6 +342,9 @@ int rpmFileIsCompressed(const char * file, rpmCompressedMagic * compressed)
     if ((magic[0] == 'B') && (magic[1] == 'Z') &&
         (magic[2] == 'h')) {
 	*compressed = COMPRESSED_BZIP2;
+    } else if ((magic[0] == 'P') && (magic[1] == 'B') &&
+	       (magic[2] == 'Z')) {			/* pbzip2 */
+	*compressed = COMPRESSED_PBZIP2;
     } else if ((magic[0] == 'P') && (magic[1] == 'K') &&
 	 (((magic[2] == 3) && (magic[3] == 4)) ||
 	  ((magic[2] == '0') && (magic[3] == '0')))) {	/* pkzip */

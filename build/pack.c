@@ -340,6 +340,11 @@ static char *getIOFlags(Package pkg)
 	    /* Add prereq on rpm version that understands bzip2 payloads */
 	    (void) rpmlibNeedsFeature(pkg, "PayloadIsBzip2", "3.0.5-1");
 #endif
+#if HAVE_PBZLIB_H
+	} else if (rstreq(s+1, "pbzdio")) {
+	    compr = "pbzip2";
+	    (void) rpmlibNeedsFeature(pkg, "PayloadIsPBzip2", "4.14.0-1");
+#endif
 #if HAVE_LZMA_H
 	} else if (rstreq(s+1, "xzdio")) {
 	    compr = "xz";
