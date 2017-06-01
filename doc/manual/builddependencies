@@ -72,6 +72,7 @@ Here's what's in yyy (\<packagename\>::\<filename\> format):
 	binutils-2.9.1.0.23-7::/usr/lib/libbfd-2.9.1.0.24.so 
 	binutils-2.9.1.0.23-7::/usr/lib/libopcodes-2.9.1.0.24.so 
 	bzip2-0.9.5c-1::/usr/lib/libbz2.so.0 
+	pbzip2-1.1.9::/usr/lib/libbz2.so.0
 	dev-2.7.10-2::/dev/null 
 	diffutils-2.7-16::/usr/bin/cmp 
 	egcs-1.1.2-25::/usr/bin/gcc 

@@ -79,7 +79,9 @@ to perform useful operations. The current list is
 			compressed.  The expansion is
 				cat <file>		# if not compressed
 				gzip -dc <file>		# if gzip'ed
+				pigz -dc <file>		# if pigz'ed
 				bzip2 -dc <file>	# if bzip'ed
+				pbzip2 -dc <file>	# if pbzip'ed
 	%{expand:...}	like eval, expand ... to <body> and (re-)expand <body>
 
 	%{S:...}	expand ... to <source> file name
