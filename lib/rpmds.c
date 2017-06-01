@@ -1278,6 +1278,11 @@ static const struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(RichDependencies)",    "4.12.0-1",
 	(		RPMSENSE_EQUAL),
     N_("support for rich dependencies.") },
+#if defined(WITH_PYTHONEMBED)
+    { "rpmlib(BuiltinPythonScripts)",	"5.2-1",
+	(		RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("internal embedded python scripts.") },
+#endif
     { NULL,				NULL, 0,	NULL }
 };
 

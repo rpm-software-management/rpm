@@ -918,6 +918,14 @@ AS_IF([test "$with_lua" != no],[
 ])
 AM_CONDITIONAL(WITH_LUA,[test "$with_lua" = yes])
 
+dnl # Python embedding
+AC_ARG_ENABLE([pythonembed], [AS_HELP_STRING([--with-python-embedding], [build with embedded python interpreter support])],,[with_pythonembed=yes])
+AS_IF([test "$with_pythonembed" = yes],[
+AC_DEFINE(WITH_PYTHONEMBED, 1, [Build with embedded python interpreter support?])
+])
+AM_CONDITIONAL(WITH_PYTHONEMBED,[test "$with_pythonembed" = yes])
+
+
 AC_ARG_ENABLE(plugins, [AS_HELP_STRING([--disable-plugins],[build without plugin support])],,[enable_plugins=yes])
 AS_IF([test "$enable_plugins" = yes],[
   AC_DEFINE(ENABLE_PLUGINS, 1, [Build with plugin support?])

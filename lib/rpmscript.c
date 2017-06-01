@@ -13,6 +13,7 @@
 #include <rpm/rpmds.h>
 
 #include "rpmio/rpmlua.h"
+#include "rpmio/rpmpython.h"
 #include "lib/rpmscript.h"
 
 #include "lib/rpmplugins.h"     /* rpm plugins hooks */
@@ -147,6 +148,67 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 
 #else
     rpmlog(lvl, _("<lua> scriptlet support not built in\n"));
+#endif
+
+    return rc;
+}
+
+/**
+ * Run Python script.
+ */
+static rpmRC runPythonScript(rpmPlugins plugins, ARGV_const_t prefixes,
+		   const char *sname, rpmlogLvl lvl, FD_t scriptFd,
+		   ARGV_t * argvp, const char *script, int arg1, int arg2,
+		   scriptNextFileFunc nextFileFunc)
+{
+    rpmRC rc = RPMRC_FAIL;
+#ifdef WITH_PYTHONEMBED
+    rpmpython python = NULL;
+    int cwd = -1;
+
+    rpmlog(RPMLOG_DEBUG, "%s: running <python> scriptlet.\n", sname);
+
+    /* Create arg variable */
+
+    if (arg1 >= 0)
+	argvAddNum(argvp, arg1);
+
+    if (arg2 >= 0)
+	argvAddNum(argvp, arg2);
+
+    python = rpmpythonNew(argvp, RPMPYTHON_NO_IO_REDIR); /* use local subinterpreter*/
+
+    rpmpythonSetNextFileFunc(python, nextFileFunc->func, nextFileFunc->param);
+
+    /* Python scripts can change our cwd and umask, save and restore */
+    /* XXX TODO: use cwd from chroot state to save unnecessary open here */
+    cwd = open(".", O_RDONLY);
+    if (cwd != -1) {
+	mode_t oldmask = umask(0);
+	umask(oldmask);
+	pid_t pid = getpid();
+
+	if (chdir("/") == 0 && rpmpythonRun(python, script, NULL) == 0) {
+	    rc = RPMRC_OK;
+	}
+	if (pid != getpid()) {
+	    /* Terminate child process forked in python scriptlet */
+	    rpmlog(RPMLOG_ERR, _("No exec() called after fork() in python scriptlet\n"));
+	    _exit(EXIT_FAILURE);
+	}
+	/* This failing would be fatal, return something different for it... */
+	if (fchdir(cwd)) {
+	    rpmlog(RPMLOG_ERR, _("Unable to restore current directory: %m"));
+	    rc = RPMRC_NOTFOUND;
+	}
+	close(cwd);
+	umask(oldmask);
+    }
+
+    rpmpythonFree(python);
+
+#else
+    rpmlog(lvl, _("<python> scriptlet support not built in\n"));
 #endif
 
     return rc;
@@ -421,7 +483,10 @@ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
     }
     
     if (rstreq(args[0], "<lua>"))
-	script_type = RPMSCRIPTLET_NONE;
+	script_type = RPMSCRIPTLET_LUA;
+    else if (rstreq(args[0], "<python>"))
+	script_type = RPMSCRIPTLET_PYTHON;
+
 
     /* Run scriptlet pre hook for all plugins */
     rc = rpmpluginsCallScriptletPre(plugins, script->descr, script_type);
@@ -429,9 +494,12 @@ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
     if (rc != RPMRC_FAIL) {
 	if (script_type & RPMSCRIPTLET_EXEC) {
 	    rc = runExtScript(plugins, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2, &script->nextFileFunc);
-	} else {
+	} else if (script_type & RPMSCRIPTLET_LUA) {
 	    rc = runLuaScript(plugins, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2, &script->nextFileFunc);
+	} else if (script_type & RPMSCRIPTLET_PYTHON) {
+	    rc = runPythonScript(plugins, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2, &script->nextFileFunc);
 	}
+
     }
 
     /* Run scriptlet post hook for all plugins */

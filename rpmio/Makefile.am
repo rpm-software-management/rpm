@@ -17,7 +17,7 @@ usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
 	argv.c base64.c digest.h digest.c macro.c \
 	rpmhook.c rpmio.c rpmlog.c rpmmalloc.c \
-	rpmpgp.c rpmsq.c rpmsw.c url.c \
+	rpmpgp.c rpmpython.c rpmsq.c rpmsw.c url.c \
 	rpmio_internal.h rpmhook.h \
 	rpmstring.c rpmfileutil.c rpmglob.c \
 	rpmkeyring.c rpmstrpool.c
@@ -61,6 +61,17 @@ AM_CPPFLAGS += @LUA_CFLAGS@
 librpmio_la_SOURCES += rpmlua.c rpmlua.h
 librpmio_la_LIBADD += @LUA_LIBS@
 librpmio_la_LIBADD += $(top_builddir)/luaext/libluaext.la
+endif
+
+if WITH_PYTHONEMBED
+pluginsdir = $(libdir)/rpm-plugins
+plugins_LTLIBRARIES =
+
+plugins_LTLIBRARIES	+= rpmpython.la
+rpmpython_la_SOURCES	= rpmpython.c
+rpmpython_la_CPPFLAGS	= $(AM_CPP_FLAGS) -I$(top_srcdir) -I$(top_srcdir)/include -I@WITH_PYTHON_INCLUDE@ -DMODULE_EMBED
+rpmpython_la_LDFLAGS	= -module -avoid-version @WITH_PYTHON_LIB@
+rpmpython_la_LIBADD	= $(RPMIO_LDADD_COMMON)
 endif
 
 check_PROGRAMS =

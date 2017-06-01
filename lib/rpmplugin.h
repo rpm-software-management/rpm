@@ -12,7 +12,9 @@
 typedef enum rpmScriptletExecutionFlow_e {
     RPMSCRIPTLET_NONE    = 0,
     RPMSCRIPTLET_FORK    = 1 << 0, 
-    RPMSCRIPTLET_EXEC    = 1 << 1
+    RPMSCRIPTLET_EXEC    = 1 << 1,
+    RPMSCRIPTLET_LUA     = 1 << 2,
+    RPMSCRIPTLET_PYTHON  = 1 << 3
 } rpmScriptletExecutionFlow;
 
 

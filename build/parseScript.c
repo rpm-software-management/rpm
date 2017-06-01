@@ -381,6 +381,18 @@ int parseScript(rpmSpec spec, int parsePart)
 	(void) rpmlibNeedsFeature(pkg, "BuiltinLuaScripts", "4.2.2-1");
     } else
 #endif
+#ifdef WITH_PYTHONEMBED
+    if (rstreq(progArgv[0], "<python>")) {
+	(void) rpmlibNeedsFeature(pkg,
+				  "BuiltinPythonScripts", "5.2-1");
+/*
+ * XXX:
+ * As embedded python interpreter comes as a module to dlopen, one nees to make
+ * sure that it's actually available...
+ * addReqProv(NULL, pkg->header, RPMTAG_REQUIRENAME, "rpmpython.so" SO_EXT, NULL, RPMSENSE_INTERP, 0);
+ */
+    } else
+#endif
     if (progArgv[0][0] == '<') {
 	rpmlog(RPMLOG_ERR,
 		 _("line %d: unsupported internal script: %s\n"),
