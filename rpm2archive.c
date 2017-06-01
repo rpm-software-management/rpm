@@ -214,5 +214,9 @@ int main(int argc, char *argv[])
 
     ts = rpmtsFree(ts);
 
-    return rc;
+    /* On a succesful processing of a package,
+     * it returns RPMERR_ITER_END. Most things
+     * expect EXIT_SUCCESS instead,
+     * so let's return that. */
+    return rc == RPMERR_ITER_END ? EXIT_SUCCESS : rc;
 }
