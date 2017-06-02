@@ -9,7 +9,7 @@ if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
 	exit 0
 fi
 
-# make sure we have chrpath in our search path, otherwise wuzz out
+# make sure we have chrpath in our search path, otherwise quit
 type chrpath || exit 0
 
 find "$RPM_BUILD_ROOT" \
