@@ -1065,13 +1065,6 @@ package or when debugging this package.\
 %perl_privlib	%(eval "`%{__perl} -V:installprivlib`"; echo $installprivlib)
 
 #------------------------------------------------------------------------------
-# Useful python macros for determining python version and paths
-#
-%python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib())")
-%python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib(1))")
-%python_version %(%{__python} -c "import sys; sys.stdout.write(sys.version[:3])")
-
-#------------------------------------------------------------------------------
 # arch macro for all Intel i?86 compatibile processors
 #  (Note: This macro (and it's analogues) will probably be obsoleted when
 #   rpm can use regular expressions against target platforms in macro
