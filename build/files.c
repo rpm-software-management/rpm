@@ -1169,7 +1169,7 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	}
 	
 	buf[0] = '\0';
-	if (S_ISREG(flp->fl_mode))
+	if (S_ISREG(flp->fl_mode) && !(flp->flags & RPMFILE_GHOST))
 	    (void) rpmDoDigest(digestalgo, flp->diskPath, 1, 
 			       (unsigned char *)buf, NULL);
 	headerPutString(h, RPMTAG_FILEDIGESTS, buf);
