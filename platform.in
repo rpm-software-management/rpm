@@ -66,21 +66,21 @@
 %__arch_install_post   @ARCH_INSTALL_POST@
 
 %__os_install_post    \
-    %{?!dont_compress:			[ -n "$DONT_COMPRESS" ]      	|| %{_rpmconfigdir}/brp-compress} \
-    %{?!dont_strip:			[ -n "$DONT_STRIP" ]		|| %{_rpmconfigdir}/brp-strip %{__strip}} \
-    %{?!dont_strip_static_archive:	[ -n "$DONT_STRIP_STATIC_ARCHIVE" ] || %{_rpmconfigdir}/brp-strip-static-archive %{__strip}} \
-    %{?!dont_strip_comment_note:	[ -n "$DONT_STRIP_COMMENT_NOTE" ] || %{_rpmconfigdir}/brp-strip-comment-note %{__strip} %{__objdump}} \
-    %{?!dont_clean_files:		[ -n "$DONT_CLEANUP" ]       	|| %{_rpmconfigdir}/brp-clean-files} \
-    %{?!dont_remove_info_dir:		[ -n "$DONT_REMOVE_INFO_DIR" ]	|| %{_rpmconfigdir}/brp-remove-info-dir} \
-    %{?!dont_relink:			[ -n "$DONT_RELINK" ]        	|| %{_rpmconfigdir}/brp-relink-symlinks} \
-    %{?!dont_remove_libtool_files:	[ -n "$DONT_REMOVE_LIBTOOL_FILES" ] || %{_rpmconfigdir}/brp-remove-libtool-files} \
-    %{?!dont_fix_eol:			[ -n "$DONT_FIX_EOL" ]		|| %{_rpmconfigdir}/brp-fix-eol} \
-    %{?!dont_remove_rpath:		[ -n "$DONT_REMOVE_RPATH" ]	|| %{_rpmconfigdir}/brp-remove-rpath} \
-    %{?!dont_fix_file_permissions: 	[ -n "$DONT_FIX_FILE_PERMISSIONS" ] || %{_rpmconfigdir}/brp-fix-file-permissions} \
-    %{?!dont_fix_desktop_files:		[ -n "$DONT_FIX_DESKTOP_FILES" ]    || %{_rpmconfigdir}/brp-fix-desktop-files} \
-    %{?!dont_symlinks_libs:		[ -n "$DONT_SYMLINK_LIBS" ]  	|| %{_rpmconfigdir}/brp-lib-symlinks} \
-    %{?!dont_check_elf_files_for_unused_libraries}:		[ -n "$DONT_CHECK_ELF_FILES_FOR_UNUSED_LIBRARIES" ]	|| %{_rpmconfigdir}/brp-check-elf-files-for-unused-libraries} \
-    %{?!dont_check_elf_files_for_undefined_symbols}: [ -n "DONT_CHECK_ELF_FILES_FOR_UNDEFINED_SYMBOLS" ] ||  %{_rpmconfigdir}/brp-check-elf-files-for-undefined-symbols \
+    %{?!disable_compress:		[ -n "$DISABLE_COMPRESS" ]		|| %{_rpmconfigdir}/brp-compress} \
+    %{?!disable_strip:			[ -n "$DISABLE_STRIP" ]			|| %{_rpmconfigdir}/brp-strip %{__strip}} \
+    %{?!disable_strip_static_archive:	[ -n "$DISABLE_STRIP_STATIC_ARCHIVE" ]	|| %{_rpmconfigdir}/brp-strip-static-archive %{__strip}} \
+    %{?!disable_strip_comment_note:	[ -n "$DISABLE_STRIP_COMMENT_NOTE" ]	|| %{_rpmconfigdir}/brp-strip-comment-note %{__strip} %{__objdump}} \
+    %{?!disable_clean_files:		[ -n "$DISABLE_CLEANUP" ]		|| %{_rpmconfigdir}/brp-clean-files} \
+    %{?!disable_remove_info_dir:	[ -n "$DISABLE_REMOVE_INFO_DIR" ]	|| %{_rpmconfigdir}/brp-remove-info-dir} \
+    %{?!disable_relink:		[ -n "$DISABLE_RELINK" ]		|| %{_rpmconfigdir}/brp-relink-symlinks} \
+    %{?!disable_remove_libtool_files:	[ -n "$DISABLE_REMOVE_LIBTOOL_FILES" ]	|| %{_rpmconfigdir}/brp-remove-libtool-files} \
+    %{?!disable_fix_eol:		[ -n "$DISABLE_FIX_EOL" ]		|| %{_rpmconfigdir}/brp-fix-eol} \
+    %{?!disable_remove_rpath:		[ -n "$DISABLE_REMOVE_RPATH" ]		|| %{_rpmconfigdir}/brp-remove-rpath} \
+    %{?!disable_fix_file_permissions:	[ -n "$DISABLE_FIX_FILE_PERMISSIONS" ]	|| %{_rpmconfigdir}/brp-fix-file-permissions} \
+    %{?!disable_fix_desktop_files:	[ -n "$DISABLE_FIX_DESKTOP_FILES" ]	|| %{_rpmconfigdir}/brp-fix-desktop-files} \
+    %{?!disable_symlinks_libs:		[ -n "$DISABLE_SYMLINK_LIBS" ]		|| %{_rpmconfigdir}/brp-lib-symlinks} \
+    %{?!disable_check_elf_files_for_unused_libraries}:		[ -n "$DISABLE_CHECK_ELF_FILES_FOR_UNUSED_LIBRARIES" ]	|| %{_rpmconfigdir}/brp-check-elf-files-for-unused-libraries} \
+    %{?!disable_check_elf_files_for_undefined_symbols}: [ -n "DISABLE_CHECK_ELF_FILES_FOR_UNDEFINED_SYMBOLS" ] ||  %{_rpmconfigdir}/brp-check-elf-files-for-undefined-symbols \
 %{nil}
 
 %__spec_install_post\
