@@ -9,10 +9,10 @@ EXTRA_DIST = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-python-hardlink \
 	brp-strip-shared brp-strip-static-archive \
-	check-files check-prereqs \
-	check-buildroot check-rpaths check-rpaths-worker \
+	check-files.in check-prereqs \
+	check-buildroot.in check-rpaths check-rpaths-worker.in \
 	debuginfo.prov \
-	find-debuginfo.sh find-lang.sh \
+	find-debuginfo.sh.in find-lang.sh \
 	perl.prov perl.req pythondeps.sh pythondistdeps.py \
 	rpmdb_loadcvt rpm.daily rpm.log rpm.supp rpm2cpio.sh \
 	tgpg vpkg-provides.sh \

@@ -782,7 +782,7 @@ package or when debugging this package.\
   RPM_PACKAGE_VERSION=\"%{VERSION}\"\
   RPM_PACKAGE_RELEASE=\"%{RELEASE}\"\
   export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\
-  LANG=C\
+  LANG=@C_LOCALE@\
   export LANG\
   unset CDPATH DISPLAY ||:\
   %{?buildroot:RPM_BUILD_ROOT=\"%{u2p:%{buildroot}}\"\
@@ -1060,7 +1060,7 @@ package or when debugging this package.\
 #	%{perl_sitearch}/Image
 #	%dir %{perl_sitearch}/auto/Image
 #
-%requires_eq()	%(LC_ALL="C" echo '%*' | xargs -r rpm -q --qf 'Requires: %%{name} = %%{epoch}:%%{version}\\n' | sed -e 's/ (none):/ /' -e 's/ 0:/ /' | grep -v "is not")
+%requires_eq()	%(LC_ALL="@C_LOCALE@" echo '%*' | xargs -r rpm -q --qf 'Requires: %%{name} = %%{epoch}:%%{version}\\n' | sed -e 's/ (none):/ /' -e 's/ 0:/ /' | grep -v "is not")
 %perl_sitearch	%(eval "`%{__perl} -V:installsitearch`"; echo $installsitearch)
 %perl_sitelib	%(eval "`%{__perl} -V:installsitelib`"; echo $installsitelib)
 %perl_vendorarch %(eval "`%{__perl} -V:installvendorarch`"; echo $installvendorarch)

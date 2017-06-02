@@ -545,7 +545,7 @@ if [ -s "$SOURCEFILE" ]; then
   # e.g. <internal>, <built-in>, <__thread_local_inner macros>.
   # Some compilers generate them as if they are part of the working
   # directory (which is why we match against ^ or /).
-  LC_ALL=C sort -z -u "$SOURCEFILE" | grep -E -v -z '(^|/)<[a-z _-]+>$' |
+  LC_ALL=@C_LOCALE@ sort -z -u "$SOURCEFILE" | grep -E -v -z '(^|/)<[a-z _-]+>$' |
   (cd "${debug_base_name}"; cpio -pd0mL "${RPM_BUILD_ROOT}${debug_dest_name}")
   # stupid cpio creates new directories in mode 0700,
   # and non-standard modes may be inherented from original directories, fixup
@@ -633,7 +633,7 @@ if ((nout > 0)); then
   # Now add the right %dir lines to each output list.
   (cd "${RPM_BUILD_ROOT}"; find usr/lib/debug -type d) |
   sed 's#^.*$#\\@^/&/@{h;s@^.*$@%dir /&@p;g;}#' |
-  LC_ALL=C sort -ur > "${LISTFILE}.dirs.sed"
+  LC_ALL=@C_LOCALE@ sort -ur > "${LISTFILE}.dirs.sed"
   i=0
   while ((i < nout)); do
     sed -n -f "${LISTFILE}.dirs.sed" "${outs[$i]}" | sort -u > "${outs[$i]}.new"

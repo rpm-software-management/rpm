@@ -743,6 +743,21 @@ AM_CONDITIONAL([USE_BUNDLED_FTS_KLUDGE], [test "$ac_cv_header_fts_h" = no])
 
 AC_LIBOBJ(fnmatch)
 
+dnl Check whether the system has support for C.UTF-8 locale.
+AC_PATH_PROG(FALSEPROG, false)
+AC_PATH_PROG(LOCALEPROG, locale, $FALSEPROG)
+AC_PROG_EGREP
+AC_MSG_CHECKING([whether C.UTF-8 locale is present])
+if test `$LOCALEPROG -a | $EGREP '^C\.utf8' > /dev/null; echo \$?` == 0; then
+	echo "yes"
+	AC_DEFINE(C_LOCALE, "C.UTF-8", [C locale to use)])
+	AC_SUBST(C_LOCALE, C.UTF-8)
+else
+	echo "no"
+	AC_DEFINE(C_LOCALE, "C", [C locale to use)])
+	AC_SUBST(C_LOCALE, C)
+fi
+
 dnl check if python is requested
 AC_ARG_ENABLE(python, [AS_HELP_STRING([--enable-python],[build rpm python bindings])],
 [case "$enable_python" in
@@ -1037,6 +1052,10 @@ AC_CONFIG_FILES([Makefile
 	doc/Makefile
 	python/Makefile
  	luaext/Makefile
+	scripts/check-buildroot
+	scripts/check-files
+	scripts/check-rpaths-worker
+	scripts/find-debuginfo.sh
  	tests/Makefile
  	plugins/Makefile
 	python/setup.py
