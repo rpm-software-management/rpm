@@ -74,7 +74,7 @@
     %{?!disable_remove_info_dir:	[ -n "$DISABLE_REMOVE_INFO_DIR" ]	|| %{_rpmconfigdir}/brp-remove-info-dir} \
     %{?!disable_relink:		[ -n "$DISABLE_RELINK" ]		|| %{_rpmconfigdir}/brp-relink-symlinks} \
     %{?!disable_remove_libtool_files:	[ -n "$DISABLE_REMOVE_LIBTOOL_FILES" ]	|| %{_rpmconfigdir}/brp-remove-libtool-files} \
-    %{?!disable_fix_eol:		[ -n "$DISABLE_FIX_EOL" ]		|| %{_rpmconfigdir}/brp-fix-eol} \
+    %{?!disable_fix_line_endings:	[ -n "$DISABLE_FIX_LINE_ENDINGS" ]	|| %{_rpmconfigdir}/brp-fix-line-endings} \
     %{?!disable_remove_rpath:		[ -n "$DISABLE_REMOVE_RPATH" ]		|| %{_rpmconfigdir}/brp-remove-rpath} \
     %{?!disable_fix_file_permissions:	[ -n "$DISABLE_FIX_FILE_PERMISSIONS" ]	|| %{_rpmconfigdir}/brp-fix-file-permissions} \
     %{?!disable_fix_desktop_files:	[ -n "$DISABLE_FIX_DESKTOP_FILES" ]	|| %{_rpmconfigdir}/brp-fix-desktop-files} \

@@ -10,7 +10,7 @@ EXTRA_DIST = \
 	brp-strip brp-strip-comment-note brp-python-hardlink \
 	brp-strip-shared brp-strip-static-archive \
 	brp-clean-files brp-remove-info-dir brp-relink-symlinks \
-	brp-remove-libtool-files brp-fix-eol brp-remove-rpath \
+	brp-remove-libtool-files brp-fix-line-endings brp-remove-rpath \
 	brp-fix-file-permissions brp-fix-desktop-files \
 	brp-lib-symlinks brp-check-elf-files-for-unused-libraries \
 	brp-check-elf-files-for-undefined-symbols \
@@ -34,7 +34,7 @@ rpmconfig_SCRIPTS = \
 	brp-strip brp-strip-comment-note brp-python-hardlink \
 	brp-strip-shared brp-strip-static-archive \
 	brp-clean-files brp-remove-info-dir brp-relink-symlinks \
-	brp-remove-libtool-files brp-fix-eol brp-remove-rpath \
+	brp-remove-libtool-files brp-fix-line-endings brp-remove-rpath \
 	brp-fix-file-permissions brp-fix-desktop-files \
 	brp-lib-symlinks brp-check-elf-files-for-unused-libraries \
 	brp-check-elf-files-for-undefined-symbols \
