@@ -64,6 +64,8 @@
 %__hg			@__HG@
 %__bzr			@__BZR@
 %__quilt		@__QUILT@
+%__svn			@__SVN@
+%__svnadmin		@__SVNADMIN@
 
 #==============================================================================
 # ---- Build system path macros.
@@ -1208,6 +1210,18 @@ package or when debugging this package.\
 %__scm_apply_bzr(qp:m:)\
 %{__patch} %{-p:-p%{-p*}} %{-q:-s}\
 %{__bzr} commit %{-q} -m %{-m*}
+
+# Subversion
+%__scm_setup_svn(q)\
+%{__svnadmin} create .svnrepos\
+%{__svn} mkdir %{-q} -m "Create directory structure." file://`pwd`/.svnrepos/trunk\
+%{__svn} checkout %{-q} file://`pwd`/.svnrepos/trunk ./\
+%{__svn} add %{-q} --force ./\
+%{__svn} commit %{-q} -m "Initial import." && %{__svn} update %{-q}
+
+%__scm_apply_svn(qp:m:)\
+%{__svn} patch %{-p:--strip %{-p*}} %{-q} %{1}\
+%{__svn} commit %{-q} -m %{-m*} && %{__svn} update %{-q}
 
 # Single patch application
 %apply_patch(qp:m:)\
