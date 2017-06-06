@@ -1456,6 +1456,8 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	flp->fl_mode = fileMode;
 	flp->fl_uid = fileUid;
 	flp->fl_gid = fileGid;
+	if (S_ISDIR(fileMode))
+	    flp->fl_size = 0;
 
 	flp->cpioPath = xstrdup(cpioPath);
 	flp->diskPath = xstrdup(diskPath);
