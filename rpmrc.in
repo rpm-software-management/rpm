@@ -458,8 +458,8 @@ arch_compat: armv4tl: armv4l
 arch_compat: armv4l: armv3l
 arch_compat: armv3l: noarch
 arch_compat: armv7hnl: armv7hl
-arch_compat: armv7hl: armv6hl
-arch_compat: armv6hl: noarch
+arch_compat: armv7hl: armv6hl armv7l
+arch_compat: armv6hl: armv6l noarch
 
 arch_compat: m68k: noarch
 
