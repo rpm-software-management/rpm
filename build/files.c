@@ -1112,6 +1112,9 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	headerPutString(h, RPMTAG_FILEGROUPNAME,
 			rpmstrPoolStr(fl->pool, flp->gname));
 
+	if((flp->flags & RPMFILE_GHOST) || S_ISDIR(flp->fl_mode)) {
+	    flp->fl_size = 128*1024; // pessimistic constant to allow reproducible rpms
+	}
 	/* Only use 64bit filesizes tag if required. */
 	if (fl->largeFiles) {
 	    rpm_loff_t rsize64 = (rpm_loff_t)flp->fl_size;
