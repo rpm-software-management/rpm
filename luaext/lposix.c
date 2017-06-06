@@ -32,6 +32,7 @@
 #define MYVERSION	MYNAME " library for " LUA_VERSION " / Nov 2003"
 
 #include "lua.h"
+#define LUA_COMPAT_MODULE
 #include "lauxlib.h"
 #include "lposix.h"
 
