@@ -1,12 +1,12 @@
 #include "system.h"
 #include <errno.h>
 #include <sys/wait.h>
+#include <termios.h>
 
 #include <popt.h>
 #include <rpm/rpmcli.h>
 #include <rpm/rpmsign.h>
 #include "cliutils.h"
-#include "lib/rpmsignfiles.h"
 #include "debug.h"
 
 #if !defined(__GLIBC__) && !defined(__APPLE__)
@@ -55,6 +55,41 @@ static struct poptOption optionsTable[] = {
     POPT_AUTOHELP
     POPT_TABLEEND
 };
+
+#ifdef WITH_IMAEVM
+static char *get_fskpass(void)
+{
+    struct termios flags, tmp_flags;
+    char *password, *pwd;
+    int passlen = 64;
+
+    password = malloc(passlen);
+    if (!password) {
+	perror("malloc");
+	return NULL;
+    }
+
+    tcgetattr(fileno(stdin), &flags);
+    tmp_flags = flags;
+    tmp_flags.c_lflag &= ~ECHO;
+    tmp_flags.c_lflag |= ECHONL;
+
+    if (tcsetattr(fileno(stdin), TCSANOW, &tmp_flags) != 0) {
+	perror("tcsetattr");
+	return NULL;
+    }
+
+    printf("PEM password: ");
+    pwd = fgets(password, passlen, stdin);
+    pwd[strlen(pwd) - 1] = '\0';  /* remove newline */
+
+    if (tcsetattr(fileno(stdin), TCSANOW, &flags) != 0) {
+	perror("tcsetattr");
+	return NULL;
+    }
+    return pwd;
+}
+#endif
 
 /* TODO: permit overriding macro setup on the command line */
 static int doSign(poptContext optCon, struct rpmSignArgs *sargs)

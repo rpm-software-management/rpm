@@ -7,8 +7,6 @@
 #include "system.h"
 #include "imaevm.h"
 
-#include <termios.h>
-
 #include <rpm/rpmlog.h>		/* rpmlog */
 #include <rpm/rpmstring.h>	/* rnibble */
 #include <rpm/rpmpgp.h>		/* rpmDigestLength */
@@ -33,39 +31,6 @@ static const char *hash_algo_name[] = {
 };
 
 #define ARRAY_SIZE(a)  (sizeof(a) / sizeof(a[0]))
-
-char *get_fskpass(void)
-{
-    struct termios flags, tmp_flags;
-    char *password, *pwd;
-    int passlen = 64;
-
-    password = malloc(passlen);
-    if (!password) {
-	perror("malloc");
-	return NULL;
-    }
-
-    tcgetattr(fileno(stdin), &flags);
-    tmp_flags = flags;
-    tmp_flags.c_lflag &= ~ECHO;
-    tmp_flags.c_lflag |= ECHONL;
-
-    if (tcsetattr(fileno(stdin), TCSANOW, &tmp_flags) != 0) {
-	perror("tcsetattr");
-	return NULL;
-    }
-
-    printf("PEM password: ");
-    pwd = fgets(password, passlen, stdin);
-    pwd[strlen(pwd) - 1] = '\0';  /* remove newline */
-
-    if (tcsetattr(fileno(stdin), TCSANOW, &flags) != 0) {
-	perror("tcsetattr");
-	return NULL;
-    }
-    return pwd;
-}
 
 static char *signFile(const char *algo, const char *fdigest, int diglen,
 const char *key, char *keypass)

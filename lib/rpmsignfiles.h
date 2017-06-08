@@ -14,8 +14,6 @@ extern "C" {
  */
 rpmRC rpmSignFiles(Header h, const char *key, char *keypass);
 
-char *get_fskpass(void); /* get file signing key password */
-
 #ifdef _cplusplus
 }
 #endif
