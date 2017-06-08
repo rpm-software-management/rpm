@@ -6,8 +6,6 @@
 #include "system.h"
 
 #include <errno.h>
-#include <netdb.h>
-#include <time.h>
 #include <sys/wait.h>
 
 #include <rpm/rpmlib.h>			/* RPMSIGTAG*, rpmReadPackageFile */
@@ -150,57 +148,6 @@ exit:
     freeStringBuf(sb);
 
     return rc;
-}
-
-static rpm_time_t * getBuildTime(void)
-{
-    static rpm_time_t buildTime[1];
-    char *srcdate;
-    time_t epoch;
-    char *endptr;
-
-    if (buildTime[0] == 0) {
-        srcdate = getenv("SOURCE_DATE_EPOCH");
-        if (srcdate) {
-            errno = 0;
-            epoch = strtol(srcdate, &endptr, 10);
-            if (srcdate == endptr || *endptr || errno != 0)
-                rpmlog(RPMLOG_ERR, _("unable to parse SOURCE_DATE_EPOCH\n"));
-            else
-                buildTime[0] = (int32_t) epoch;
-        } else
-            buildTime[0] = (int32_t) time(NULL);
-    }
-
-    return buildTime;
-}
-
-static const char * buildHost(void)
-{
-    static char hostname[1024];
-    static int oneshot = 0;
-    struct hostent *hbn;
-    char *bhMacro;
-
-    if (! oneshot) {
-        bhMacro = rpmExpand("%{?_buildhost}", NULL);
-        if (strcmp(bhMacro, "") != 0 && strlen(bhMacro) < 1024) {
-            strcpy(hostname, bhMacro);
-        } else {
-            if (strcmp(bhMacro, "") != 0)
-                rpmlog(RPMLOG_WARNING, _("The _buildhost macro is too long\n"));
-            (void) gethostname(hostname, sizeof(hostname));
-            hbn = gethostbyname(hostname);
-            if (hbn)
-                strcpy(hostname, hbn->h_name);
-            else
-                rpmlog(RPMLOG_WARNING,
-                        _("Could not canonicalize hostname: %s\n"), hostname);
-        }
-        free(bhMacro);
-        oneshot = 1;
-    }
-    return(hostname);
 }
 
 static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
@@ -476,7 +423,8 @@ exit:
  * order to how the RPM format is laid on disk.
  */
 static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
-		      const char *fileName, char **cookie)
+		      const char *fileName, char **cookie,
+		      rpm_time_t buildTime, const char* buildHost)
 {
     FD_t fd = NULL;
     char * rpmio_flags = NULL;
@@ -500,7 +448,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 
     /* Create and add the cookie */
     if (cookie) {
-	rasprintf(cookie, "%s %d", buildHost(), (int) (*getBuildTime()));
+	rasprintf(cookie, "%s %d", buildHost, buildTime);
 	headerPutString(pkg->header, RPMTAG_COOKIE, *cookie);
     }
 
@@ -660,8 +608,8 @@ static rpmRC packageBinary(rpmSpec spec, Package pkg, const char *cookie, int ch
 	headerCopyTags(spec->packages->header, pkg->header, copyTags);
 	
 	headerPutString(pkg->header, RPMTAG_RPMVERSION, VERSION);
-	headerPutString(pkg->header, RPMTAG_BUILDHOST, buildHost());
-	headerPutUint32(pkg->header, RPMTAG_BUILDTIME, getBuildTime(), 1);
+	headerPutString(pkg->header, RPMTAG_BUILDHOST, spec->buildHost);
+	headerPutUint32(pkg->header, RPMTAG_BUILDTIME, &(spec->buildTime), 1);
 
 	if (spec->sourcePkgId != NULL) {
 	    headerPutBin(pkg->header, RPMTAG_SOURCEPKGID, spec->sourcePkgId,16);
@@ -703,7 +651,7 @@ static rpmRC packageBinary(rpmSpec spec, Package pkg, const char *cookie, int ch
 	    free(binRpm);
 	}
 
-	rc = writeRPM(pkg, NULL, *filename, NULL);
+	rc = writeRPM(pkg, NULL, *filename, NULL, spec->buildTime, spec->buildHost);
 	if (rc == RPMRC_OK) {
 	    /* Do check each written package if enabled */
 	    char *pkgcheck = rpmExpand("%{?_build_pkgcheck} ", *filename, NULL);
@@ -756,8 +704,8 @@ rpmRC packageSources(rpmSpec spec, char **cookie)
 
     /* Add some cruft */
     headerPutString(sourcePkg->header, RPMTAG_RPMVERSION, VERSION);
-    headerPutString(sourcePkg->header, RPMTAG_BUILDHOST, buildHost());
-    headerPutUint32(sourcePkg->header, RPMTAG_BUILDTIME, getBuildTime(), 1);
+    headerPutString(sourcePkg->header, RPMTAG_BUILDHOST, spec->buildHost);
+    headerPutUint32(sourcePkg->header, RPMTAG_BUILDTIME, &(spec->buildTime), 1);
     headerPutUint32(sourcePkg->header, RPMTAG_SOURCEPACKAGE, &one, 1);
 
     /* XXX this should be %_srpmdir */
@@ -765,7 +713,7 @@ rpmRC packageSources(rpmSpec spec, char **cookie)
 	char *pkgcheck = rpmExpand("%{?_build_pkgcheck_srpm} ", fn, NULL);
 
 	spec->sourcePkgId = NULL;
-	rc = writeRPM(sourcePkg, &spec->sourcePkgId, fn, cookie);
+	rc = writeRPM(sourcePkg, &spec->sourcePkgId, fn, cookie, spec->buildTime, spec->buildHost);
 
 	/* Do check SRPM package if enabled */
 	if (rc == RPMRC_OK && pkgcheck[0] != ' ') {

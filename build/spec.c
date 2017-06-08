@@ -4,6 +4,9 @@
  */
 
 #include "system.h"
+#include <errno.h>
+#include <netdb.h>
+#include <time.h>
 
 #include <rpm/header.h>
 #include <rpm/rpmds.h>
@@ -200,12 +203,59 @@ rpmds * packageDependencies(Package pkg, rpmTagVal tag)
     return NULL;
 }
 
+static rpm_time_t getBuildTime(void)
+{
+    rpm_time_t buildTime = 0;
+    char *srcdate;
+    time_t epoch;
+    char *endptr;
+
+    srcdate = getenv("SOURCE_DATE_EPOCH");
+    if (srcdate) {
+        errno = 0;
+        epoch = strtol(srcdate, &endptr, 10);
+        if (srcdate == endptr || *endptr || errno != 0)
+            rpmlog(RPMLOG_ERR, _("unable to parse SOURCE_DATE_EPOCH\n"));
+        else
+            buildTime = (int32_t) epoch;
+    } else
+        buildTime = (int32_t) time(NULL);
+
+    return buildTime;
+}
+
+static char * buildHost(void)
+{
+    char* hostname;
+    struct hostent *hbn;
+    char *bhMacro;
+
+    bhMacro = rpmExpand("%{?_buildhost}", NULL);
+    if (strcmp(bhMacro, "") != 0) {
+        rasprintf(&hostname, "%s", bhMacro);
+    } else {
+        hostname = rcalloc(1024, sizeof(*hostname));
+        (void) gethostname(hostname, 1024);
+        hbn = gethostbyname(hostname);
+        if (hbn)
+            strcpy(hostname, hbn->h_name);
+        else
+            rpmlog(RPMLOG_WARNING,
+                    _("Could not canonicalize hostname: %s\n"), hostname);
+    }
+    free(bhMacro);
+    return(hostname);
+}
+
 
 rpmSpec newSpec(void)
 {
     rpmSpec spec = xcalloc(1, sizeof(*spec));
     
     spec->specFile = NULL;
+
+    spec->buildHost = buildHost();
+    spec->buildTime = getBuildTime();
 
     spec->fileStack = NULL;
     spec->lbufSize = BUFSIZ * 10;
@@ -319,6 +369,8 @@ rpmSpec rpmSpecFree(rpmSpec spec)
     spec->sources = freeSources(spec->sources);
     spec->packages = freePackages(spec->packages);
     spec->pool = rpmstrPoolFree(spec->pool);
+
+    spec->buildHost = _free(spec->buildHost);
     
     spec = _free(spec);
 
