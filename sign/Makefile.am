@@ -22,4 +22,5 @@ librpmsign_la_LIBADD = \
 
 if WITH_IMAEVM
 librpmsign_la_SOURCES += rpmsignfiles.c rpmsignfiles.h
+librpmsign_la_LIBADD += @WITH_IMAEVM_LIB@
 endif

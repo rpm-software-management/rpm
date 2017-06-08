@@ -841,9 +841,10 @@ with_iamevm=no
 AC_ARG_WITH(imaevm, [AS_HELP_STRING([--with-imaevm],[build with imaevm support])])
 if test "$with_imaevm" = yes ; then
   AC_DEFINE(WITH_IMAEVM, 1, [Build with imaevm support?])
-  LIBS="$LIBS -limaevm"
+  WITH_IMAEVM_LIB="-limaevm"
 fi
 AM_CONDITIONAL(WITH_IMAEVM,[test "$with_imaevm" = yes])
+AC_SUBST(WITH_IMAEVM_LIB)
 
 # libcap
 WITH_CAP_LIB=
