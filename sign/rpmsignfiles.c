@@ -13,7 +13,7 @@
 #include "lib/header.h"		/* HEADERGET_MINMEM */
 #include "lib/rpmtypes.h"	/* rpmRC */
 
-#include "lib/rpmsignfiles.h"
+#include "sign/rpmsignfiles.h"
 
 #define MAX_SIGNATURE_LENGTH 1024
 

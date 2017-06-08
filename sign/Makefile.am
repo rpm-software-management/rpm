@@ -19,3 +19,7 @@ librpmsign_la_LIBADD = \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_POPT_LIB@ \
 	@LIBINTL@
+
+if WITH_IMAEVM
+librpmsign_la_SOURCES += rpmsignfiles.c rpmsignfiles.h
+endif

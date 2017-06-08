@@ -52,10 +52,6 @@ librpm_la_LIBADD = \
 	@WITH_ACL_LIB@ \
 	@LIBINTL@
 
-if WITH_IMAEVM
-librpm_la_SOURCES += rpmsignfiles.c rpmsignfiles.h
-endif
-
 if WITH_LUA
 AM_CPPFLAGS += @LUA_CFLAGS@
 librpm_la_LIBADD += @LUA_LIBS@

@@ -21,7 +21,7 @@
 
 #include "lib/rpmlead.h"
 #include "lib/signature.h"
-#include "lib/rpmsignfiles.h"
+#include "sign/rpmsignfiles.h"
 
 #include "debug.h"
 

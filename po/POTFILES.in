@@ -60,7 +60,6 @@ lib/rpmprob.c
 lib/rpmps.c
 lib/rpmrc.c
 lib/rpmscript.c
-lib/rpmsignfiles.c
 lib/rpmtd.c
 lib/rpmte.c
 lib/rpmts.c
@@ -92,5 +91,6 @@ rpmio/rpmstring.c
 rpmio/rpmsw.c
 rpmio/url.c
 sign/rpmgensig.c
+sign/rpmsignfiles.c
 tools/rpmdeps.c
 tools/rpmgraph.c
