@@ -14,12 +14,13 @@ char ** environ = NULL;
 #endif
 
 enum modes {
+    MODE_NONE    = 0,
     MODE_ADDSIGN = (1 << 0),
     MODE_RESIGN  = (1 << 1),
     MODE_DELSIGN = (1 << 2),
 };
 
-static int mode = 0;
+static int mode = MODE_NONE;
 
 static int signfiles = 0, fskpass = 0;
 static char * fileSigningKey = NULL;
@@ -141,6 +142,9 @@ int main(int argc, char *argv[])
 	while ((arg = poptGetArg(optCon)) != NULL) {
 	    ec += rpmPkgDelSign(arg, &sargs);
 	}
+	break;
+    case MODE_NONE:
+	printUsage(optCon, stderr, 0);
 	break;
     default:
 	argerror(_("only one major mode may be specified"));
