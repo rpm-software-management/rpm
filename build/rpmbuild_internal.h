@@ -49,6 +49,9 @@ typedef struct Package_s * Package;
  * The structure used to store values parsed from a spec file.
  */
 struct rpmSpec_s {
+    char * buildHost;
+    rpm_time_t buildTime;
+
     char * specFile;	/*!< Name of the spec file. */
     char * buildRoot;
     char * buildSubdir;
