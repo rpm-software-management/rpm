@@ -22,9 +22,11 @@ enum modes {
 
 static int mode = MODE_NONE;
 
+#ifdef WITH_IMAEVM
 static int signfiles = 0, fskpass = 0;
 static char * fileSigningKey = NULL;
 static char * fileSigningKeyPassword = NULL;
+#endif
 
 static struct rpmSignArgs sargs = {NULL, 0, 0};
 
@@ -35,6 +37,7 @@ static struct poptOption signOptsTable[] = {
 	N_("sign package(s) (identical to --addsign)"), NULL },
     { "delsign", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_DELSIGN,
 	N_("delete package signatures"), NULL },
+#ifdef WITH_IMAEVM
     { "signfiles", '\0', POPT_ARG_NONE, &signfiles, 0,
 	N_("sign package(s) files"), NULL},
     { "fskpath", '\0', POPT_ARG_STRING, &fileSigningKey, 0,
@@ -42,6 +45,7 @@ static struct poptOption signOptsTable[] = {
 	N_("<key>") },
     { "fskpass", '\0', POPT_ARG_NONE, &fskpass, 0,
 	N_("prompt for file signing key password"), NULL},
+#endif
     POPT_TABLEEND
 };
 
@@ -103,6 +107,7 @@ static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
 	goto exit;
     }
 
+#ifdef WITH_IMAEVM
     if (fileSigningKey) {
 	rpmPushMacro(NULL, "_file_signing_key", NULL, fileSigningKey, RMIL_GLOBAL);
     }
@@ -115,11 +120,7 @@ static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
 	}
 
 	if (fskpass) {
-#ifndef WITH_IMAEVM
-	    argerror(_("--fskpass may only be specified when signing files"));
-#else
 	    fileSigningKeyPassword = get_fskpass();
-#endif
 	}
 
 	rpmPushMacro(NULL, "_file_signing_key_password", NULL,
@@ -131,6 +132,7 @@ static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
 
 	sargs->signfiles = 1;
     }
+#endif
 
     const char *arg;
     rc = 0;
@@ -163,9 +165,11 @@ int main(int argc, char *argv[])
 	argerror(_("no arguments given"));
     }
 
+#ifdef WITH_IMAEVM
     if (fileSigningKey && !signfiles) {
 	argerror(_("--fskpath may only be specified when signing files"));
     }
+#endif
 
     switch (mode) {
     case MODE_ADDSIGN:
