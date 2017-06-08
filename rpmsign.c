@@ -75,7 +75,7 @@ static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
     if (signfiles) {
 	key = rpmExpand("%{?_file_signing_key}", NULL);
 	if (rstreq(key, "")) {
-	    fprintf(stderr, _("You must set \"$$_file_signing_key\" in your macro file or on the command line with --fskpath\n"));
+	    fprintf(stderr, _("You must set \"%%_file_signing_key\" in your macro file or on the command line with --fskpath\n"));
 	    goto exit;
 	}
 
