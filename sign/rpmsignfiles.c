@@ -40,11 +40,6 @@ const char *key, char *keypass)
     unsigned char signature[MAX_SIGNATURE_LENGTH];
     int siglen;
 
-#ifndef WITH_IMAEVM
-    rpmlog(RPMLOG_ERR, _("missing libimaevm\n"));
-    return NULL;
-#endif
-
     /* convert file digest hex to binary */
     memset(digest, 0, diglen);
     /* some entries don't have a digest - we return an empty signature */

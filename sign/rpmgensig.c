@@ -525,6 +525,7 @@ static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
 				   Header *sigp, Header *hdrp,
 				   off_t sigStart, off_t headerStart)
 {
+#ifdef WITH_IMAEVM
     FD_t ofd = NULL;
     char *trpm = NULL;
     char *key;
@@ -537,10 +538,6 @@ static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
     struct rpmtd_s osigtd;
     char *o_sha1 = NULL;
 
-#ifndef WITH_IMAEVM
-    rpmlog(RPMLOG_ERR, _("missing libimaevm\n"));
-    return RPMRC_FAIL;
-#endif
     unloadImmutableRegion(hdrp, RPMTAG_HEADERIMMUTABLE);
 
     key = rpmExpand("%{?_file_signing_key}", NULL);
@@ -640,6 +637,10 @@ exit:
     if (ofd)
 	(void) closeFile(&ofd);
     return rc;
+#else
+    rpmlog(RPMLOG_ERR, _("file signing support not built in\n"));
+    return RPMRC_FAIL;
+#endif
 }
 
 /** \ingroup rpmcli
