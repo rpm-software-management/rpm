@@ -119,9 +119,9 @@ static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
 	    fileSigningKeyPassword = get_fskpass();
 	}
 
-	rpmPushMacro(NULL, "_file_signing_key_password", NULL,
-	    fileSigningKeyPassword, RMIL_CMDLINE);
 	if (fileSigningKeyPassword) {
+	    rpmPushMacro(NULL, "_file_signing_key_password", NULL,
+			fileSigningKeyPassword, RMIL_CMDLINE);
 	    memset(fileSigningKeyPassword, 0, strlen(fileSigningKeyPassword));
 	    free(fileSigningKeyPassword);
 	}

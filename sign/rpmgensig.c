@@ -538,7 +538,7 @@ static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
 
     key = rpmExpand("%{?_file_signing_key}", NULL);
 
-    keypass = rpmExpand("%{_file_signing_key_password}", NULL);
+    keypass = rpmExpand("%{?_file_signing_key_password}", NULL);
     if (rstreq(keypass, "")) {
 	free(keypass);
 	keypass = NULL;
