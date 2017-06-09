@@ -840,8 +840,18 @@ AM_CONDITIONAL(SELINUX,[test "$with_selinux" = yes])
 with_iamevm=no
 AC_ARG_WITH(imaevm, [AS_HELP_STRING([--with-imaevm],[build with imaevm support])])
 if test "$with_imaevm" = yes ; then
-  AC_DEFINE(WITH_IMAEVM, 1, [Build with imaevm support?])
-  WITH_IMAEVM_LIB="-limaevm"
+  AC_MSG_CHECKING([libimaevm >= 1.0])
+  AC_COMPILE_IFELSE(
+    [AC_LANG_PROGRAM(
+      [[#include <imaevm.h>]],
+      [[return sign_hash(NULL, NULL, 0, NULL, NULL, NULL);]]
+    )],
+    [AC_MSG_RESULT(yes)
+     AC_DEFINE(WITH_IMAEVM, 1, [Build with imaevm support?])
+     WITH_IMAEVM_LIB="-limaevm"
+    ],
+    [AC_MSG_ERROR([libimaevm not present or too old (< 1.0)])]
+  )
 fi
 AM_CONDITIONAL(WITH_IMAEVM,[test "$with_imaevm" = yes])
 AC_SUBST(WITH_IMAEVM_LIB)
