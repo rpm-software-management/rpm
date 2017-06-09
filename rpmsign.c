@@ -21,7 +21,6 @@ static int mode = MODE_NONE;
 #ifdef WITH_IMAEVM
 static int signfiles = 0, fskpass = 0;
 static char * fileSigningKey = NULL;
-static char * fileSigningKeyPassword = NULL;
 #endif
 
 static struct rpmSignArgs sargs = {NULL, 0, 0};
@@ -96,7 +95,6 @@ static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
 {
     int rc = EXIT_FAILURE;
     char * name = rpmExpand("%{?_gpg_name}", NULL);
-    char *key = NULL;
 
     if (rstreq(name, "")) {
 	fprintf(stderr, _("You must set \"%%_gpg_name\" in your macro file\n"));
@@ -109,7 +107,8 @@ static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
     }
 
     if (signfiles) {
-	key = rpmExpand("%{?_file_signing_key}", NULL);
+	char *fileSigningKeyPassword = NULL;
+	char *key = rpmExpand("%{?_file_signing_key}", NULL);
 	if (rstreq(key, "")) {
 	    fprintf(stderr, _("You must set \"%%_file_signing_key\" in your macro file or on the command line with --fskpath\n"));
 	    goto exit;
@@ -127,6 +126,7 @@ static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
 	}
 
 	sargs->signfiles = 1;
+	free(key);
     }
 #endif
 
@@ -137,7 +137,6 @@ static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
     }
 
 exit:
-    free(key);
     free(name);
     return rc;
 }
