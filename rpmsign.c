@@ -59,14 +59,9 @@ static struct poptOption optionsTable[] = {
 static char *get_fskpass(void)
 {
     struct termios flags, tmp_flags;
-    char *password, *pwd;
     int passlen = 64;
-
-    password = malloc(passlen);
-    if (!password) {
-	perror("malloc");
-	return NULL;
-    }
+    char *password = xmalloc(passlen);
+    char *pwd;
 
     tcgetattr(fileno(stdin), &flags);
     tmp_flags = flags;
