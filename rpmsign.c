@@ -61,7 +61,7 @@ static char *get_fskpass(void)
     struct termios flags, tmp_flags;
     int passlen = 64;
     char *password = xmalloc(passlen);
-    char *pwd;
+    char *pwd = NULL;
 
     tcgetattr(fileno(stdin), &flags);
     tmp_flags = flags;
@@ -70,17 +70,23 @@ static char *get_fskpass(void)
 
     if (tcsetattr(fileno(stdin), TCSANOW, &tmp_flags) != 0) {
 	perror("tcsetattr");
-	return NULL;
+	goto exit;
     }
 
     printf("PEM password: ");
     pwd = fgets(password, passlen, stdin);
-    pwd[strlen(pwd) - 1] = '\0';  /* remove newline */
 
     if (tcsetattr(fileno(stdin), TCSANOW, &flags) != 0) {
 	perror("tcsetattr");
-	return NULL;
+	pwd = NULL;
+	goto exit;
     }
+
+exit:
+    if (pwd)
+	pwd[strlen(pwd) - 1] = '\0';  /* remove newline */
+    else
+	free(password);
     return pwd;
 }
 #endif
