@@ -1,0 +1,17 @@
+#!/bin/sh
+# Fix .desktop files to be compliant with XDG specification
+
+
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+	exit 0
+fi
+
+# Find .desktop files
+find "$RPM_BUILD_ROOT" -name "*.desktop" -a ! -type d -print | while read f
+do
+    # Add trailing semicolons to lines starting with 'Actions=' or 'MimeType='
+    # if these lines do not end with '='
+    sed -e 's/^\(Actions=.*\|MimeType=.*\|OnlyShowIn=.*\|Categories=.*\)\([[:alnum:]]\)[[:space:]]*$/\1\2;/' -i "$f"
+done
+

@@ -1,0 +1,33 @@
+#!/bin/sh
+
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+	exit 0
+fi
+
+find "$RPM_BUILD_ROOT" \
+    ! -path "${RPM_BUILD_ROOT}/usr/lib/debug/*" \
+    ! -path "${RPM_BUILD_ROOT}/usr/doc/*" \
+    ! -path "${RPM_BUILD_ROOT}/usr/share/doc/*" \
+    -type f \( -name \*.exe -o -name \*.dll -o -name \*.so\* \) -print0 |
+xargs  --no-run-if-empty -0 file -N -F ' //magic:' |
+grep -e "Mono/.Net assembly" -e "ELF.*shared object" |
+sed -e 's# //magic:.*##g' |
+while read path; do
+    PERMS=$(stat -c '%a' "$path")
+    if [ $PERMS -lt 755 ]; then
+	chmod 755 "$path"
+    fi
+done
+
+if [ -d "${RPM_BUILD_ROOT}/usr/share/info/" ]; then
+    find "${RPM_BUILD_ROOT}/usr/share/info/" \
+	-type f -print0 |
+    xargs  --no-run-if-empty -0 chmod 644
+fi
+
+if [ -d "${RPM_BUILD_ROOT}/usr/share/man/" ]; then
+    find "${RPM_BUILD_ROOT}/usr/share/man/" \
+	-type f -print0 |
+    xargs  --no-run-if-empty -0 chmod 644
+fi

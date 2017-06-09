@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+	exit 0
+fi
+
+find "$RPM_BUILD_ROOT" \
+    -type l -print0 | xargs --no-run-if-empty -0 ls 2>/dev/null |
+while read symlink; do
+    path="`readlink -f \"$symlink\"`"
+
+    echo $path | grep -q -E '^(/dev|/sys|/proc)' && continue
+    # absolute path needs to be made into an absolute path relative to buildroot
+    echo $path | grep -q -E '^/' && path="$RPM_BUILD_ROOT$path"
+
+    if stat "$path" &> /dev/null; then
+	rm "$symlink"
+	# ln will try follow symlink if source exists as symlink, so let's move
+	# it out of the way first, then back afterwards
+	stat "$path" &> /dev/null && mv "$path" "$path.origlink"
+	output="`ln -svr \"$path\" \"$symlink\" 2>&1`"
+	stat "$path.origlink" &> /dev/null && mv "$path.origlink" "$path"
+	if ! stat "$symlink" &> /dev/null; then
+	    echo "symlink relativization failed:" >&2
+	    echo "$output" >&2
+	    ls --color -l "$symlink" >&2
+	fi
+    fi
+done
