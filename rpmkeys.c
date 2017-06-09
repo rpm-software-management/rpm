@@ -5,10 +5,6 @@
 #include "cliutils.h"
 #include "debug.h"
 
-#if !defined(__GLIBC__) && !defined(__APPLE__)
-char ** environ = NULL;
-#endif
-
 enum modes {
     MODE_CHECKSIG	= (1 << 0),
     MODE_IMPORTKEY	= (1 << 1),

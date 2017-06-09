@@ -25,10 +25,6 @@
 
 #include "debug.h"
 
-#if !defined(__GLIBC__) && !defined(__APPLE__)
-char ** environ = NULL;
-#endif
-
 typedef struct sigTarget_s {
     FD_t fd;
     const char *fileName;
