@@ -1,14 +1,19 @@
 #!/bin/sh
-# remove backup files
+#---------------------------------------------------------------
+# Origin	: Mandriva Linux
+# Author	: Per Øyvind Karlsen <proyvind@moondrake.org>
+#		: Chmouel Boudjnah (original perl implementation, 2000)
+# Created On	: Wed Dec 19 06:34:17 2012
+# Description	: Remove backup files and other files undesirable to package.
+#
+# Copyright (C) 2012 by Per Øyvind Karlsen <proyvind@mandriva.org>
+# Redistribution of this file is permitted under the terms of the GNU
+# Public License (GPL) version 2 or later.
+#---------------------------------------------------------------
 
-if [ -z "$RPM_BUILD_ROOT" ]; then
-    echo "No build root defined" >&2
-    exit 1
-fi
-
-if [ ! -d "$RPM_BUILD_ROOT" ]; then
-    echo "Invalid build root" >&2
-    exit 1
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+    exit 0
 fi
 
 if [ -n "$1" ]; then

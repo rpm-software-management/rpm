@@ -1,4 +1,14 @@
 #!/bin/sh
+#---------------------------------------------------------------
+# Origin	: Mandriva Linux
+# Author	: Per Øyvind Karlsen <proyvind@moondrake.org>
+# Created On	: Tue Dec 6 06:56:49 2011
+# Description	: Automatically remove /usr/share/dir if created during install
+#
+# Copyright (C) 2011 by Per Øyvind <peroyvind@mandrake.org>
+# Redistribution of this file is permitted under the terms of the GNU
+# Public License (GPL).
+#---------------------------------------------------------------
 
 # If using normal root, avoid changing anything.
 if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then

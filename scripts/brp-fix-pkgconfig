@@ -1,10 +1,15 @@
 #!/bin/sh
-#
-# fix pkgconfig files to trim slashes, as ie. libdir=/usr/lib64/ rather than
-# libdir=/usr/lib64 will make pkg-config --libs return -L/usr/lib64
-#
-# (c) Per Øyvind Karlsen <proyvind@moondrake.org> 2015
-# (c) Andrey Bondrov <andrey.bondrov@rosalab.ru> 2016
+#---------------------------------------------------------------
+# Origin	: Mandriva Linux
+# Author	: Per Øyvind Karlsen <proyvind@moondrake.org>
+# Created On	: Tue Oct 27 20:11:52 2015
+# Description	: Fix pkgconfig files to have extra slashes trimmed.
+
+# Copyright (C) 2015 by Per Øyvind Karlsen <peroyvind@mandriva.org>,
+# (C) 2016 Andrey Bondrov <andrey.bondrov@rosalab.ru>
+# Redistribution of this file is permitted under the terms of the GNU
+# Public License (GPL) version 2 or later.
+#---------------------------------------------------------------
 
 # If using normal root, avoid changing anything.
 if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then

@@ -1,14 +1,20 @@
 #!/bin/sh
-# Check elf files for undefined symbols
+#---------------------------------------------------------------
+# Origin	: Mandriva Linux
+# Author	: Per Øyvind Karlsen <proyvind@moondrake.org>
+# Created On	: Wed Dec 19 13:22:11 2012
+#		: Pascal "Pixel" Rigaux <pixel@mandriva.com>
+#		: (original perl implementation, 2008)
+# Description	: Check ELF files and report any undefined symbols found.
+#
+# Copyright (C) 2012 by Per Øyvind Karlsen <peroyvind@mandriva.org>
+# Redistribution of this file is permitted under the terms of the GNU
+# Public License (GPL) version 2 or later.
+#---------------------------------------------------------------
 
-if [ -z "$RPM_BUILD_ROOT" ]; then
-    echo "No build root defined" >&2
-    exit 1
-fi
-
-if [ ! -d "$RPM_BUILD_ROOT" ]; then
-    echo "Invalid build root" >&2
-    exit 1
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+    exit 0
 fi
 
 LIB="`rpm --eval %{_lib}`"

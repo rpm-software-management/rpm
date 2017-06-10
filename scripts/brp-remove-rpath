@@ -1,8 +1,17 @@
 #!/bin/sh
-
-# This script makes sure to remove any standard library search paths from rpath
-# or runpath tags as they're not only redundant, but will break overriding
-# search paths. Search paths of the tag that's not standard will be kept intact.
+#---------------------------------------------------------------
+# Origin	: Mandriva Linux
+# Author	: Per Øyvind Karlsen <proyvind@moondrake.org>
+# Created On	: Thu Feb 21 02:44:18 2013
+# Description	: Make sure to remove any standard library search paths from
+#		: rpath/runpath tags as they're not only redundant, but will
+#		: break overriding search paths.
+#		: Search paths of the tag that's not standard will be kept intact.
+#
+# Copyright (C) 2013 by Per Øyvind <peroyvind@mandrake.org>
+# Redistribution of this file is permitted under the terms of the GNU
+# Public License (GPL).
+#---------------------------------------------------------------
 
 # If using normal root, avoid changing anything.
 if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then

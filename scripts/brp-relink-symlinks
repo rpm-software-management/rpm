@@ -1,4 +1,16 @@
 #!/bin/sh
+#---------------------------------------------------------------
+# Origin	: Linux-Mandrake
+# Author	: Per Øyvind Karlsen <proyvind@moondrake.org>
+#		: Frederic Lepied <flepied@mandrakesoft.com>
+#		: (original implementation, Mon Nov 13 07:17:42 2000)
+# Created On	: Tue Sep 25 01:53:16 2012
+# Description	: Automatically relativize symlinks
+#
+# Copyright (C) 2012 by Per Øyvind Karlsen <proyvind@mandriva.org>
+# Redistribution of this file is permitted under the terms of the GNU
+# Public License (GPL).
+#---------------------------------------------------------------
 
 # If using normal root, avoid changing anything.
 if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then

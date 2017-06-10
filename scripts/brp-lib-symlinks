@@ -1,15 +1,13 @@
 #!/bin/sh
 #---------------------------------------------------------------
-# Project         : Linux-Mandrake
-# Module          : spec-helper
-# File            : lib_symlinks
-# Author          : Frederic Lepied
-# Created On      : Tue Nov  7 08:33:05 2000
-# Description	  : Run ldconfig to create symlinks to libraries.
+# Origin	: Linux-Mandrake
+# Author	: Frederic Lepied
+# Created On	: Tue Nov  7 08:33:05 2000
+# Description	: Run ldconfig to create symlinks to libraries.
 #
 # Copyright (C) 2000 by Frederic Lepied <flepied@mandrakesoft.com>
 # Redistribution of this file is permitted under the terms of the GNU
-# Public License (GPL)
+# Public License (GPL).
 #---------------------------------------------------------------
 
 # If using normal root, avoid changing anything.

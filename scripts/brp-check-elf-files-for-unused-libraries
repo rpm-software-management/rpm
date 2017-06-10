@@ -1,5 +1,16 @@
 #!/bin/sh
-# Check elf files for unused libraries linked (underlinking)
+#---------------------------------------------------------------
+# Origin	: Mandriva Linux
+# Author	: Per Øyvind Karlsen <proyvind@moondrake.org>
+#		: Pascal "Pixel" Rigaux <pixel@mandriva.com>
+#		: (original perl implementation, 2008)
+# Created On	: Wed Dec 19 13:22:11 2012
+# Description	: Check elf files for unused libraries linked (overlinking).
+#
+# Copyright (C) 2012 by Per Øyvind Karlsen <peroyvind@mandriva.org>
+# Redistribution of this file is permitted under the terms of the GNU
+# Public License (GPL) version 2 or later.
+#---------------------------------------------------------------
 
 if [ -z "$RPM_BUILD_ROOT" ]; then
     echo "No build root defined" >&2

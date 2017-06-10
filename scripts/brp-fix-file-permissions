@@ -1,4 +1,14 @@
 #!/bin/sh
+#---------------------------------------------------------------
+# Origin	: Mandriva Linux
+# Author	: Per Øyvind Karlsen <proyvind@moondrake.org>
+# Created On	: Sat Mar 10 21:17:48 2012
+# Description	: Ensure DSOs and mono lib/executables have right permissions.
+
+# Copyright (C) 2012 by Per Øyvind Karlsen <peroyvind@mandriva.org>
+# Redistribution of this file is permitted under the terms of the GNU
+# Public License (GPL) version 2 or later.
+#---------------------------------------------------------------
 
 # If using normal root, avoid changing anything.
 if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
