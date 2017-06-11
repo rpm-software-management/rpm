@@ -19,7 +19,7 @@ fi
 for pc in $(find "$RPM_BUILD_ROOT" -name \*.pc); do
     export PKG_CONFIG_PATH="$(dirname $pc)"
     pcfile="$(basename $pc)"
-    pcmodule="$(echo $pcfile|cut -d. -f1)"
+    pcmodule="$(echo $pcfile|sed -e 's#.pc$##g')"
     for variable in $(pkg-config --print-variables "$pcmodule"); do
 	dir=$(pkg-config --variable="$variable" "$pcmodule")
 	if [[ -n "$dir" && "$dir" != "`realpath $dir`" ]]; then
