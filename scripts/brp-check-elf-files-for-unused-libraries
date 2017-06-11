@@ -12,14 +12,9 @@
 # Public License (GPL) version 2 or later.
 #---------------------------------------------------------------
 
-if [ -z "$RPM_BUILD_ROOT" ]; then
-    echo "No build root defined" >&2
-    exit 1
-fi
-
-if [ ! -d "$RPM_BUILD_ROOT" ]; then
-    echo "Invalid build root" >&2
-    exit 1
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+    exit 0
 fi
 
 LIB="`rpm --eval %{_lib}`"

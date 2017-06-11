@@ -9,7 +9,7 @@
 #
 # Copyright (C) 2012 by Per Øyvind Karlsen <proyvind@mandriva.org>
 # Redistribution of this file is permitted under the terms of the GNU
-# Public License (GPL).
+# Public License (GPL) version 2 or later.
 #---------------------------------------------------------------
 
 # If using normal root, avoid changing anything.
