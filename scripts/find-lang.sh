@@ -105,7 +105,7 @@ while test $# -gt 0 ; do
 		shift
 		;;
 	* )
-		if [ $MO_NAME != $NAME.lang ]; then
+		if [ $MO_NAME != ${NAMES[$#]}.lang ]; then
 		    NAMES[${#NAMES[@]}]=$MO_NAME
 		fi
 		MO_NAME=${1}
