@@ -19,7 +19,7 @@ if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
 fi
 
 # make sure we have chrpath in our search path, otherwise wuzz out
-type chrpath || exit 0
+type chrpath &>/dev/null || echo 'chrpath' not found, skipping; exit 0
 
 find "$RPM_BUILD_ROOT" \
     ! -path "${RPM_BUILD_ROOT}/usr/lib/debug/*" \
