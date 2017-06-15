@@ -186,7 +186,7 @@ static rpmfcAttr rpmfcAttrNew(const char *name)
 	    (*rule)->path = rpmfcAttrReg(name, "path", NULL);
 	    (*rule)->magic = rpmfcAttrReg(name, "magic", NULL);
 	}
-	(*rule)->flags = argvSplitString(flags, ",", ARGV_SKIPEMPTY);
+	(*rule)->flags = argvSplitString(flags, ",", ARGV_SKIPEMPTY | ARGV_USEQUOTING);
 	argvSort((*rule)->flags, NULL);
 
 	free(flags);

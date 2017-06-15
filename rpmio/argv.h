@@ -144,6 +144,7 @@ int argvAppend(ARGV_t * argvp, ARGV_const_t av);
 enum argvFlags_e {
     ARGV_NONE		= 0,
     ARGV_SKIPEMPTY	= (1 << 0),	/* omit empty strings from result */
+    ARGV_USEQUOTING	= (1 << 1),	/* accept macro arguments in double quotes */
 };
 
 typedef rpmFlags argvFlags;

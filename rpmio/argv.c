@@ -178,14 +178,40 @@ ARGV_t argvSplitString(const char * str, const char * seps, argvFlags flags)
 
     if (str == NULL || seps == NULL)
 	return NULL;
-
-    dest = xmalloc(strlen(str) + 1);
-    for (argc = 1, s = str, t = dest; (c = *s); s++, t++) {
+    dest = xmalloc(3*strlen(str) + 1);
+    argc = 1;
+    s = str;
+    t = dest;
+    while ((c = *s)) {
 	if (strchr(seps, c)) {
+	    /* separator of srguments */
+	    *t = '\0';
+	    t++;
+	    s++;
+	} else {
+	    if ((*(s) != '"') || (!(flags & ARGV_USEQUOTING))) {
+		/* read argument not in "" */
+		for (; (c = *s) && (!(strchr(seps, c)) && (c != '"')); t++,s++) {
+		    *t = c;
+		}
+	    } else {
+		s++;
+		if (*(s) == '"') {
+		    /* read argument "" */
+		    strcpy(t,"%nil");
+		    t = t + 4;
+		    s = s + 1;
+		} else {
+		    /* read argument "...nonempty..." */
+		    for (;(c = *s) && (c != '"'); t++,s++)
+			*t = c;
+		    s++;
+		}
+	    }
 	    argc++;
-	    c = '\0';
+	    *t = '\0';
+	    t++;
 	}
-	*t = c;
     }
     *t = '\0';
 
@@ -206,7 +232,7 @@ ARGV_t argvSplitString(const char * str, const char * seps, argvFlags flags)
 int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
 {
     if (argvp) {
-	*argvp = argvSplitString(str, seps, ARGV_SKIPEMPTY);
+	*argvp = argvSplitString(str, seps, ARGV_SKIPEMPTY | ARGV_USEQUOTING);
     }
     return 0;
 }
