@@ -245,3 +245,36 @@ runroot rpm --define "%foo() 1:%1 2:%2 3:%3 4:%4 5:%5" --eval '%foo xx"yy""zz"""
 1:xx 2:yy 3:zz 4: 5:bb
 ])
 AT_CLEANUP
+
+
+AT_SETUP([macro arguments in single quotes])
+AT_KEYWORDS([macros arguments])
+AT_CHECK([
+
+runroot rpm \
+	--define "%foo() 1:%1 2:%2 3:%3 4:%4 5:%5" \
+	--eval "%foo 'arg. number 1''arg. number 2' 'arg number 3' '' normal"
+
+runroot rpm \
+	--define "%foo() 1:%1 2:%2 3:%3 4:%4 5:%5" \
+	--eval "%foo 'arg. number 1'normal'arg. number 2'''normal "
+
+runroot rpm --define "%foo() 1:%1 2:%2 3:%3 4:%4 5:%5" \
+	--eval "%foo '''jjj'''aa'' "
+
+runroot rpm --define "%foo() 1:%1 2:%2 3:%3 4:%4 5:%5" \
+	--eval "%foo ''\"jjj\"''aa\"\" "
+
+runroot rpm --define "%foo() 1:%1 2:%2 3:%3 4:%4 5:%5" --eval "%foo xx'yy''zz''''bb' "
+
+runroot rpm --define "%foo() 1:%1 2:%2 3:%3 4:%4 5:%5" --eval "%foo xx'yy'\"zz\"\"\"'bb' "
+],
+[0],
+[1:arg. number 1 2:arg. number 2 3:arg number 3 4: 5:normal
+1:arg. number 1 2:normal 3:arg. number 2 4: 5:normal
+1: 2:jjj 3: 4:aa 5:
+1: 2:jjj 3: 4:aa 5:
+1:xx 2:yy 3:zz 4: 5:bb
+1:xx 2:yy 3:zz 4: 5:bb
+])
+AT_CLEANUP
