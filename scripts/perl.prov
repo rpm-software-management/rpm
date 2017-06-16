@@ -129,9 +129,9 @@ sub process_file {
     # package name so we report all namespaces except some common
     # false positives as if they were provided packages (really ugly).
 
-    if (m/^\s*package\s+([_:a-zA-Z0-9]+)\s*;/) {
+    if (m/^\s*package\s+([_:a-zA-Z0-9]+)\s*(?:v?([0-9_.]+)\s*)?[;{]/) {
       $package = $1;
-      undef $version;
+      $version = $2;
       if ($package eq 'main') {
         undef $package;
       } else {
@@ -139,7 +139,7 @@ sub process_file {
         # the package definition is broken up over multiple blocks.
         # In that case, don't stomp a previous $VERSION we might have
         # found.  (See BZ#214496.)
-        $require{$package} = undef unless (exists $require{$package});
+        $require{$package} = $version unless (exists $require{$package});
       }
     }
 
