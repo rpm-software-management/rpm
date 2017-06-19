@@ -1,8 +1,6 @@
 AT_BANNER([RPM install/erase ordering])
 
 AT_SETUP([basic install/erase order 1])
-# erase part is failing since commit decd7e619ee629b5bee0d2a597679cbf58457977
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 AT_KEYWORDS([install erase order])
 AT_CHECK([
 RPMDB_CLEAR

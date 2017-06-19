@@ -93,6 +93,11 @@ static inline int addSingleRelation(rpmte p,
 	    RPMSENSE_SCRIPT_PRE : RPMSENSE_SCRIPT_PREUN;
     }
 
+    if (reversed) {
+	rpmte r = p;
+	p = q;
+	q = r;
+    }
 
     tsi_p = rpmteTSI(p);
     tsi_q = rpmteTSI(q);
@@ -127,12 +132,6 @@ static inline int addSingleRelation(rpmte p,
 	    }
 	}
 	assert(0);
-    }
-
-    if (reversed) {
-	rpmte r = p;
-	p = q;
-	q = r;
     }
 
     /* Record next "q <- p" relation (i.e. "p" requires "q"). */
