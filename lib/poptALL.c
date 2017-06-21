@@ -124,7 +124,9 @@ static void rpmcliAllArgCallback( poptContext con,
 	break;
     case 'E':
 	rpmcliConfigured();
-	{   char *val = rpmExpand(arg, NULL);
+	{   char *val = NULL;
+	    if (rpmExpandMacros(NULL, arg, &val, 0) < 0)
+		exit(EXIT_FAILURE);
 	    fprintf(stdout, "%s\n", val);
 	    free(val);
 	}
