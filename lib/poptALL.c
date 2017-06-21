@@ -69,8 +69,9 @@ void rpmcliConfigured(void)
 	exit(EXIT_FAILURE);
 }
 
-static void cliDefine(const char *arg, int predefine)
+static int cliDefine(const char *arg, int predefine)
 {
+    int rc;
     char *s, *t;
     /* XXX Convert '-' in macro name to underscore, skip leading %. */
     s = t = xstrdup(arg);
@@ -81,11 +82,12 @@ static void cliDefine(const char *arg, int predefine)
     t = s;
     if (*t == '%') t++;
 
-    (void) rpmDefineMacro(NULL, t, RMIL_CMDLINE);
-    if (!predefine)
+    rc = rpmDefineMacro(NULL, t, RMIL_CMDLINE);
+    if (!predefine && rc == 0)
 	(void) rpmDefineMacro(rpmCLIMacroContext, t, RMIL_CMDLINE);
 
     free(s);
+    return rc;
 }
 
 /**
@@ -106,11 +108,13 @@ static void rpmcliAllArgCallback( poptContext con,
 	rpmIncreaseVerbosity();
 	break;
     case POPT_PREDEFINE:
-	cliDefine(arg, 1);
+	if (cliDefine(arg, 1))
+	    exit(EXIT_FAILURE);
 	break;
     case 'D':
 	rpmcliConfigured();
-	cliDefine(arg, 0);
+	if (cliDefine(arg, 0))
+	    exit(EXIT_FAILURE);
 	break;
     case POPT_UNDEFINE:
 	rpmcliConfigured();

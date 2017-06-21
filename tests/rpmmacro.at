@@ -13,6 +13,18 @@ runroot rpm --define "this that" --eval '%{this}'
 ])
 AT_CLEANUP
 
+# ------------------------------
+AT_SETUP([invalid rpm --define])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm --define "_ that"
+],
+[1],
+[],
+[error: Macro %_ has illegal name (%define)
+])
+AT_CLEANUP
+
 AT_SETUP([rpm --undefine])
 AT_KEYWORDS([macros])
 AT_CHECK([
