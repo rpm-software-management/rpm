@@ -13,6 +13,21 @@ runroot rpm --define "this that" --eval '%{this}'
 ])
 AT_CLEANUP
 
+AT_SETUP([rpm --undefine])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm --define "this that" --eval '1. %{this}' --undefine 'this' --eval '2. %{this'}
+runroot rpm --eval '1. %{this}' --define "this that" --eval '2. %{this}' --undefine 'this' --eval '3. %{this'}
+],
+[0],
+[1. that
+2. %{this}
+1. %{this}
+2. that
+3. %{this}
+])
+AT_CLEANUP
+
 AT_SETUP([simple true conditional rpm --eval])
 AT_KEYWORDS([macros])
 AT_CHECK([
