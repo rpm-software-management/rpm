@@ -72,7 +72,7 @@ int	rpmExpandMacros	(rpmMacroContext mc, const char * sbuf,
  * Push macro to context.
  * @param mc		macro context (NULL uses global context).
  * @param n		macro name
- * @param o		macro paramaters
+ * @param o		macro parameters
  * @param b		macro body
  * @param level		macro recursion level (0 is entry API)
  * @return		0 on success

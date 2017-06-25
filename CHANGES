@@ -388,7 +388,7 @@ ChangeLog from tarballs.
 	- --queryformat '[%%{*:xml}\n]' to dump header content in XML.
 	- add ".arch" suffix to erase colored packages with identical NEVR.
 	- update ja man pages (#92261).
-	- backport rpmsw stopwatch, insturment rpmts operations.
+	- backport rpmsw stopwatch, instrument rpmts operations.
 	? toy method to enable --stats through bindings.
 	- fdCLose typo (#97257).
 	- brp-python-bytecompile to automagically bytecode compile python.
@@ -1209,7 +1209,7 @@ ChangeLog from tarballs.
 	- handle added dirtoken tags (mostly) correctly with header regions.
 	- add FHS doc/man/info dirs, diddle autoconf goo.
 	- fix: headerUnload handles headers w/o regions correctly on rebuilddb.
-	- resurrect rpmrc Provides: as well as implicit dependency on packge
+	- resurrect rpmrc Provides: as well as implicit dependency on package
 	  info.
 	- change dependency loop message to RPMMESS_WARNING to use stderr, not
 	  stdout.
@@ -1528,7 +1528,7 @@ ChangeLog from tarballs.
 	- resuscitate net shared paths (#4330).
 	- fix: macro table cannot contain NULL pointers (#4263).
 	- fix: last char in rpmrc w/o terminating newline lost (#4361).
-	- prepare for handling \r in macro exapnsions.
+	- prepare for handling \r in macro expansions.
 	- fix: n>1 occurrences of %config(noreplace) should not FA_CREATE (#4355).
 	- fix: use pgp5 rather than pgp-2.6.3 if both are in %_pgpbin (#4564).
 	- match "de" when locale is specified as "de_DE.ISO-8859-1@Munich".
@@ -1539,7 +1539,7 @@ ChangeLog from tarballs.
 	- add headerWrite return code and check for errors.
 	- update python bindings from anaconda.
 	- add versions to prereq.
-	- add syntax sensitive implict prereq on rpm-3.0.3.
+	- add syntax sensitive implicit prereq on rpm-3.0.3.
 	- fix: don't successfully match with strncasecmp("sparc", "sparc64", 5)
 	- add sparcv9 architecture.
 	- add --freshen to usage message (#4823).
@@ -2129,7 +2129,7 @@ ChangeLog from tarballs.
 	  the release)
 	- added buildarch/buildos macros
 	- added %ghost file option
-	- updated linux.req to only find requirements for exectuable files
+	- updated linux.req to only find requirements for executable files
 
 2.4.6 -> 2.4.7:
 	- had some wrong month lengths in changelog date parsing
@@ -2425,7 +2425,7 @@ ChangeLog from tarballs.
 
 2.3.2 -> 2.3.3:
 	- Ripped out header internals and redid them. Any compatibility 
-	  problems this causes are *bugs* as it should be completley 
+	  problems this causes are *bugs* as it should be completely 
 	  transparent. If this works the devil better buy some Prestone (TM).
 	- Use "cp -pr" instead of "cp -ar" for %doc expansion
 	- use <string.h> instead of (non standard) <strings.h> in some places
@@ -2516,7 +2516,7 @@ ChangeLog from tarballs.
 	- fix -Q
 	- The Great Renaming
 	- use external OS specific script to generate requires lines
-	  (should work with ld.so 1.8.x) (find-requries)
+	  (should work with ld.so 1.8.x) (find-requires)
 
 2.2.7 -> 2.2.8:
 	- added --ftpproxy, --ftpport (and wrote about them in rpm.8)
@@ -2654,7 +2654,7 @@ ChangeLog from tarballs.
 	- removed docdir from rpmrc -- always /usr/doc
 	- fixed nasty bug in installing packages with large filelists
 	- made -R work
-	- --provides and --requries don't print anything if no information
+	- --provides and --requires don't print anything if no information
 	  is present (rather then (none) )
 	- -qi prints Summary now
 	- changed Buildprefix: -> Buildroot: (spec file, rpmrc)
@@ -2670,7 +2670,7 @@ ChangeLog from tarballs.
 	- removed build_arch: from rpmrc
 	  Replacing it is buildarchtranslate: and buildostranslate:
 	  to allow building with arch/os other than what uname() returns.
-	  Can still be overriden with --buildarch and --buildos
+	  Can still be overridden with --buildarch and --buildos
 	- rpmrc keywords are now case-insensitive
 	- check os at install time
 	- check return code from gzread() during installs

@@ -217,7 +217,7 @@ add_minidebug()
   # by -S) but also not any other non-allocated PROGBITS or NOTE sections.
   # List and remove them explicitly. We do want to keep the allocated,
   # symbol and NOBITS sections so cannot use --keep-only because that is
-  # too agressive. Field $2 is the section name, $3 is the section type
+  # too aggressive. Field $2 is the section name, $3 is the section type
   # and $8 are the section flags.
   local remove_sections=`readelf -W -S "$debuginfo" | awk '{ if (index($2,".debug_") != 1 && ($3 == "PROGBITS" || $3 == "NOTE") && index($8,"A") == 0) printf "--remove-section "$2" " }'`
 
@@ -388,7 +388,7 @@ do_file()
   fi
 }
 
-# 16^6 - 1 or about 16 milion files
+# 16^6 - 1 or about 16 million files
 FILENUM_DIGITS=6
 run_job()
 {
