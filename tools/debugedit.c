@@ -1621,7 +1621,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 		 any changes).  */
 	      if (phase == 0)
 		{
-		  /* handled_strp is set for attributes refering to
+		  /* handled_strp is set for attributes referring to
 		     files. If it is set the string is already
 		     recorded. */
 		  if (! handled_strp)
@@ -2626,7 +2626,7 @@ main (int argc, char *argv[])
      sure the section headers are updated and the data offsets are
      correct. We set ELF_F_LAYOUT above because we don't want libelf
      to move any allocated sections around itself if there are any
-     phdrs. Which means we are reponsible for setting the section size
+     phdrs. Which means we are responsible for setting the section size
      and offset fields. Plus the shdr offsets. We don't want to change
      anything for the phdrs allocated sections. Keep the offset of
      allocated sections so they are at the same place in the file. Add

@@ -822,7 +822,7 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 			    )
 			memlimit += (SIZE_MAX>>2);
 
-		    /* keep reducing the number of threads untill memory usage gets below limit */
+		    /* keep reducing the number of threads until memory usage gets below limit */
 		    while ((memory_usage = lzma_stream_encoder_mt_memusage(&mt_options)) > memlimit) {
 			/* number of threads shouldn't be able to hit zero with compression
 			 * settings aailable to set through rpm... */

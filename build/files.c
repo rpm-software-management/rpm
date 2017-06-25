@@ -1398,7 +1398,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     if (fl->cur.ar.ar_fmodestr) {
 	if (S_ISLNK(fileMode)) {
 	    rpmlog(RPMLOG_WARNING,
-		   "Explicit %%attr() mode not applicaple to symlink: %s\n",
+		   "Explicit %%attr() mode not applicable to symlink: %s\n",
 		   diskPath);
 	} else {
 	    fileMode &= S_IFMT;
@@ -1914,7 +1914,7 @@ static int generateBuildIDs(FileList fl)
 
 	/* Now add a subdir and symlink for each buildid found.  */
 	for (i = 0; i < nr_ids; i++) {
-	    /* Don't add anything more when an error occured. But do
+	    /* Don't add anything more when an error occurred. But do
 	       cleanup.  */
 	    if (rc == 0) {
 		int isDbg = strncmp (paths[i], DEBUG_LIB_PREFIX,

@@ -810,7 +810,7 @@ test -L "$id_dup_file" && echo "main dup id in main package"
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
   | cpio -diu --quiet
 
-# seperate, so debug ids are here
+# separate, so debug ids are here
 debug_id_file="./usr/lib/debug/.build-id/${id:0:2}/${id:2}.debug"
 test -L "$debug_id_file" && echo "debug id in debug package"
 debug_dup_file="./usr/lib/debug/.build-id/${id:0:2}/${id:2}.1.debug"

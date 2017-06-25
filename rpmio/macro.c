@@ -784,7 +784,7 @@ exit:
  * Perform macro message output
  * @param mb		macro expansion state
  * @param waserror	use rpmlog()?
- * @param msg		message to ouput
+ * @param msg		message to output
  * @param msglen	no. of bytes in message
  */
 static void

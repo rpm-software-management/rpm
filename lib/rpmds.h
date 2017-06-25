@@ -99,7 +99,7 @@ rpmsenseFlags rpmSanitizeDSFlags(rpmTagVal tagN, rpmsenseFlags Flags);
  * Convert a string to the sense flags
  * @param str		the string
  * @param len		length of the string
- * @return		flags, zero for unknwon relations
+ * @return		flags, zero for unknown relations
  */
 rpmsenseFlags rpmParseDSFlags(const char *str, size_t len);
 
@@ -391,7 +391,7 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote);
 
 /**
  * Load rpmlib provides into a dependency set.
- * @retval *dsp		(loaded) depedency set
+ * @retval *dsp		(loaded) dependency set
  * @param tblp		rpmlib provides table (NULL uses internal table)
  * @return		0 on success
  */
@@ -447,7 +447,7 @@ rpmds rpmdsSinglePoolTix(rpmstrPool pool, rpmTagVal tagN,
 /**
  * Load rpmlib provides into a dependency set.
  * @param pool		shared string pool (or NULL for private pool)
- * @retval *dsp		(loaded) depedency set
+ * @retval *dsp		(loaded) dependency set
  * @param tblp		rpmlib provides table (NULL uses internal table)
  * @return		0 on success
  */
