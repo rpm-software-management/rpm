@@ -522,8 +522,9 @@ package or when debugging this package.\
 
 # Whether build-ids should be made unique between package version/releases
 # when generating debuginfo packages. If set to 1 this will pass
-# --ver-rel "%{VERSION}-%{RELEASE}" to find-debuginfo.sh which will pass it
-# onto debugedit --build-id-seed to be used to prime the build-id note hash.
+# --build-id-seed "%{VERSION}-%{RELEASE}" to find-debuginfo.sh which will
+# pass it onto debugedit --build-id-seed to be used to prime the build-id
+# note hash.
 %_unique_build_ids	1
 
 # Do not recompute build-ids but keep whatever is in the ELF file already.
@@ -533,15 +534,16 @@ package or when debugging this package.\
 
 # Whether .debug files should be made unique between package version,
 # release and architecture. If set to 1 this will pass
-# --unique-debug-arch "%{_arch}" to find-debuginfo.sh to create
-# debuginfo files which end in -<ver>-<rel>.<arch>.debug
+# --unique-debug-suffix "-%{VERSION}-%{RELEASE}.%{_arch} find-debuginfo.sh
+# to create debuginfo files which end in -<ver>-<rel>.<arch>.debug
 # Requires _unique_build_ids.
 %_unique_debug_names	1
 
 # Whether the /usr/debug/src/<package> directories should be unique between
 # package version, release and architecture. If set to 1 this will pass
-# --unique-debug-src-base "%{name}" to find-debuginfo.sh to name the
-# directory under /usr/debug/src as <name>-<ver>-<rel>.<arch>
+# --unique-debug-src-base "%{name}-%{VERSION}-%{RELEASE}.%{_arch}" to
+# find-debuginfo.sh to name the directory under /usr/debug/src as
+# <name>-<ver>-<rel>.<arch>.
 %_unique_debug_srcs	1
 
 # Whether rpm should put debug source files into its own subpackage

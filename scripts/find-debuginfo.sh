@@ -3,11 +3,14 @@
 #for inclusion in an rpm spec file.
 #
 # Usage: find-debuginfo.sh [--strict-build-id] [-g] [-r] [-m] [-i] [-n]
+#	 		   [-j N]
 #	 		   [-o debugfiles.list]
 #	 		   [-S debugsourcefiles.list]
 #			   [--run-dwz] [--dwz-low-mem-die-limit N]
 #			   [--dwz-max-die-limit N]
-#			   [--build-id-seed VERSION-RELEASE]
+#			   [--build-id-seed SEED]
+#			   [--unique-debug-suffix SUFFIX]
+#			   [--unique-debug-src-base BASE]
 #			   [[-l filelist]... [-p 'pattern'] -o debuginfo.list]
 #			   [builddir]
 #
@@ -18,6 +21,9 @@
 # The -m flag says to include a .gnu_debugdata section in the main binary.
 # The -i flag says to include a .gdb_index section in the .debug file.
 # The -n flag says to not recompute the build-id.
+#
+# The -j N option will spawn N processes to do the debuginfo extraction
+# in parallel.
 #
 # A single -o switch before any -l or -p switches simply renames
 # the primary output file from debugfiles.list to something else.
@@ -31,11 +37,21 @@
 # if available, and --dwz-low-mem-die-limit and --dwz-max-die-limit
 # provide detailed limits.  See dwz(1) -l and -L option for details.
 #
-# If --build-id-seed VERSION-RELEASE is given then debugedit is called to
-# update the build-ids it finds adding the VERSION-RELEASE string as
-# seed to recalculate the build-id hash.  This makes sure the
-# build-ids in the ELF files are unique between versions and releases
-# of the same package.
+# If --build-id-seed SEED is given then debugedit is called to
+# update the build-ids it finds adding the SEED as seed to recalculate
+# the build-id hash.  This makes sure the build-ids in the ELF files
+# are unique between versions and releases of the same package.
+# (Use --build-id-seed "%{VERSION}-%{RELEASE}".)
+#
+# If --unique-debug-suffix SUFFIX is given then the debug files created
+# for <FILE> will be named <FILE>-<SUFFIX>.debug.  This makes sure .debug
+# are unique between package version, release and architecture.
+# (Use --unique-debug-suffix "-%{VERSION}-%{RELEASE}.%{_arch}".)
+#
+# If --unique-debug-src-base BASE is given then the source directory
+# will be called /usr/debug/src/<BASE>.  This makes sure the debug source
+# directories are unique between package version, release and architecture.
+# (Use --unique-debug-src-base "%{name}-%{VERSION}-%{RELEASE}.%{_arch}".)
 #
 # All file names in switches are relative to builddir (. if not given).
 #
