@@ -458,8 +458,8 @@ fi
 # Invoke the DWARF Compressor utility.
 if $run_dwz \
    && [ -d "${RPM_BUILD_ROOT}/usr/lib/debug" ]; then
-  dwz_files="`cd "${RPM_BUILD_ROOT}/usr/lib/debug"; find -type f -name \*.debug`"
-  if [ -n "${dwz_files}" ]; then
+  readarray dwz_files < <(cd "${RPM_BUILD_ROOT}/usr/lib/debug"; find -type f -name \*.debug)
+  if [ ${#dwz_files[@]} -gt 0 ]; then
     dwz_multifile_name="${RPM_PACKAGE_NAME}-${RPM_PACKAGE_VERSION}-${RPM_PACKAGE_RELEASE}.${RPM_ARCH}"
     dwz_multifile_suffix=
     dwz_multifile_idx=0
@@ -468,14 +468,16 @@ if $run_dwz \
       dwz_multifile_suffix=".${dwz_multifile_idx}"
     done
     dwz_multfile_name="${dwz_multifile_name}${dwz_multifile_suffix}"
-    dwz_opts="-h -q -r -m .dwz/${dwz_multifile_name}"
+    dwz_opts="-h -q -r"
+    [ ${#dwz_files[@]} -gt 1 ] \
+      && dwz_opts="${dwz_opts} -m .dwz/${dwz_multifile_name}"
     mkdir -p "${RPM_BUILD_ROOT}/usr/lib/debug/.dwz"
     [ -n "${dwz_low_mem_die_limit}" ] \
       && dwz_opts="${dwz_opts} -l ${dwz_low_mem_die_limit}"
     [ -n "${dwz_max_die_limit}" ] \
       && dwz_opts="${dwz_opts} -L ${dwz_max_die_limit}"
     if type dwz >/dev/null 2>&1; then
-      ( cd "${RPM_BUILD_ROOT}/usr/lib/debug" && dwz $dwz_opts $dwz_files )
+      ( cd "${RPM_BUILD_ROOT}/usr/lib/debug" && dwz $dwz_opts ${dwz_files[@]} )
     else
       echo >&2 "*** ERROR: DWARF compression requested, but no dwz installed"
       exit 2
