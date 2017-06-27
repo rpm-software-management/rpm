@@ -193,7 +193,7 @@ static ModuleRec newModule(const char *path, const char *name,
     }
 
     if (types) {
-	mod->types = argvSplitString(types, ",", ARGV_SKIPEMPTY | ARGV_USEQUOTING);
+	mod->types = argvSplitString(types, ",", ARGV_SKIPEMPTY);
 	argvSort(mod->types, NULL);
 	if (argvSearch(mod->types, RPMPOL_TYPE_DEFAULT, NULL) && argvCount(mod->types) > 1) {
 	    rpmlog(RPMLOG_WARNING, _("'%s' type given with other types in %%semodule %s. Compacting types to '%s'.\n"),
