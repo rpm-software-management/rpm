@@ -662,7 +662,8 @@ canonicalize_path (const char *s, char *d)
 /* Returns the rest of PATH if it starts with DIR_PREFIX, skipping any
    / path separators, or NULL if PATH doesn't start with
    DIR_PREFIX. Might return the empty string if PATH equals DIR_PREFIX
-   (modulo trailing slashes). Never returns path starting with '/'. */
+   (modulo trailing slashes). Never returns path starting with '/'.
+   Note that DIR_PREFIX itself should NOT end with a '/'.  */
 static const char *
 skip_dir_prefix (const char *path, const char *dir_prefix)
 {
@@ -670,12 +671,17 @@ skip_dir_prefix (const char *path, const char *dir_prefix)
   if (strncmp (path, dir_prefix, prefix_len) == 0)
     {
       path += prefix_len;
+      /* Unless path == dir_prefix there should be at least one '/'
+	 in the path (which we will skip).  Otherwise the path has
+	 a different (longer) directory prefix.  */
+      if (*path != '\0' && !IS_DIR_SEPARATOR (*path))
+	return NULL;
       while (IS_DIR_SEPARATOR (path[0]))
 	path++;
       return path;
     }
 
-  return 0;
+  return NULL;
 }
 
 /* Most strings will be in the existing debug string table. But to
