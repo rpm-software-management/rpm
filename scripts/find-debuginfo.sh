@@ -520,7 +520,11 @@ if [ -s "$SOURCEFILE" ]; then
   fi
 
   mkdir -p "${RPM_BUILD_ROOT}${debug_dest_name}"
-  LC_ALL=C sort -z -u "$SOURCEFILE" | grep -E -v -z '(<internal>|<built-in>)$' |
+  # Filter out anything compiler generated which isn't a source file.
+  # e.g. <internal>, <built-in>, <__thread_local_inner macros>.
+  # Some compilers generate them as if they are part of the working
+  # directory (which is why we match against ^ or /).
+  LC_ALL=C sort -z -u "$SOURCEFILE" | grep -E -v -z '(^|/)<[a-z _-]+>$' |
   (cd "${debug_base_name}"; cpio -pd0mL "${RPM_BUILD_ROOT}${debug_dest_name}")
   # stupid cpio creates new directories in mode 0700,
   # and non-standard modes may be inherented from original directories, fixup
