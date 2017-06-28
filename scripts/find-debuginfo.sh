@@ -366,7 +366,7 @@ do_file()
   # just has its file names collected and adjusted.
   case "$dn" in
   /usr/lib/debug/*)
-    continue ;;
+    return ;;
   esac
 
   mkdir -p "${debugdn}"
