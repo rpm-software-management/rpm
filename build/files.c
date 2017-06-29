@@ -1614,6 +1614,15 @@ exit:
     return rc;
 }
 
+/* add a directory to the file list */
+static void argvAddDir(ARGV_t *filesp, const char *dir)
+{
+    char *line = NULL;
+    rasprintf(&line, "%%dir %s", dir);
+    argvAdd(filesp, line);
+    _free(line);
+}
+
 #if HAVE_LIBDW
 /* How build id links are generated.  See macros.in for description.  */
 #define BUILD_IDS_NONE     0
@@ -1621,7 +1630,7 @@ exit:
 #define BUILD_IDS_SEPARATE 2
 #define BUILD_IDS_COMPAT   3
 
-static int addNewIDSymlink(FileList fl,
+static int addNewIDSymlink(ARGV_t *files,
 			   char *targetpath, char *idlinkpath,
 			   int isDbg, int *dups)
 {
@@ -1670,8 +1679,7 @@ static int addNewIDSymlink(FileList fl,
 	rpmlog(RPMLOG_ERR, "%s: %s -> %s: %m\n",
 	       linkerr, linkpath, targetpath);
     } else {
-	fl->cur.isDir = 0;
-	rc = addFile(fl, linkpath, NULL);
+	rc = argvAdd(files, linkpath);
     }
 
     if (nr > 0) {
@@ -1709,7 +1717,7 @@ static int addNewIDSymlink(FileList fl,
     return rc;
 }
 
-static int generateBuildIDs(FileList fl)
+static int generateBuildIDs(FileList fl, ARGV_t *files)
 {
     int rc = 0;
     int i;
@@ -1858,18 +1866,9 @@ static int generateBuildIDs(FileList fl)
 	    mainiddir = rpmGetPath(fl->buildRoot, BUILD_ID_DIR, NULL);
 	    debugiddir = rpmGetPath(fl->buildRoot, DEBUG_ID_DIR, NULL);
 
-	    /* Make sure to reset all file flags to defaults.
-	       Uses parseForAttr to reset ar, arFlags, and specdFlags.
-	       Note that parseForAttr pokes at the attrstr, so we cannot
-	       just pass a static string. */
-	    fl->cur.attrFlags = 0;
-	    fl->def.attrFlags = 0;
-	    fl->def.verifyFlags = RPMVERIFY_ALL;
-	    fl->cur.verifyFlags = RPMVERIFY_ALL;
-	    fl->def.specdFlags |= SPECD_VERIFY;
-	    fl->cur.specdFlags |= SPECD_VERIFY;
+	    /* Make sure to reset all file flags to defaults.  */
 	    attrstr = mkattr(NULL);
-	    parseForAttr(fl->pool, attrstr, 1, &fl->def);
+	    argvAdd(files, attrstr);
 	    free (attrstr);
 
 	    /* Supported, but questionable.  */
@@ -1881,11 +1880,7 @@ static int generateBuildIDs(FileList fl)
 		if ((rc = rpmioMkpath(mainiddir, 0755, -1, -1)) != 0) {
 		    rpmlog(RPMLOG_ERR, "%s %s: %m\n", errdir, mainiddir);
 		} else {
-		    attrstr = mkattr(mainiddir);
-		    parseForAttr(fl->pool, attrstr, 0, &fl->cur);
-		    fl->cur.isDir = 1;
-		    rc = addFile(fl, mainiddir, NULL);
-		    free (attrstr);
+		    argvAddDir(files, mainiddir);
 		}
 	    }
 
@@ -1893,11 +1888,7 @@ static int generateBuildIDs(FileList fl)
 		if ((rc = rpmioMkpath(debugiddir, 0755, -1, -1)) != 0) {
 		    rpmlog(RPMLOG_ERR, "%s %s: %m\n", errdir, debugiddir);
 		} else {
-		    attrstr = mkattr(debugiddir);
-		    parseForAttr(fl->pool, attrstr, 0, &fl->cur);
-		    fl->cur.isDir = 1;
-		    rc = addFile(fl, debugiddir, NULL);
-		    free (attrstr);
+		    argvAddDir(files, debugiddir);
 		}
 	    }
 	}
@@ -1936,9 +1927,9 @@ static int generateBuildIDs(FileList fl)
 		    && (rc = rpmioMkpath(buildidsubdir, 0755, -1, -1)) != 0) {
 		    rpmlog(RPMLOG_ERR, "%s %s: %m\n", errdir, buildidsubdir);
 		} else {
-		    fl->cur.isDir = 1;
-		    if (!addsubdir
-			|| (rc = addFile(fl, buildidsubdir, NULL)) == 0) {
+		    if (addsubdir)
+		       argvAddDir (files, buildidsubdir);
+		    if (rc == 0) {
 			char *linkpattern, *targetpattern;
 			char *linkpath, *targetpath;
 			int dups = 0;
@@ -1952,7 +1943,7 @@ static int generateBuildIDs(FileList fl)
 			rasprintf(&linkpath, linkpattern,
 				  buildidsubdir, &ids[i][2]);
 			rasprintf(&targetpath, targetpattern, paths[i]);
-			rc = addNewIDSymlink(fl, targetpath, linkpath,
+			rc = addNewIDSymlink(files, targetpath, linkpath,
 					     isDbg, &dups);
 
 			/* We might want to have a link from the debug
@@ -1998,7 +1989,7 @@ static int generateBuildIDs(FileList fl)
 					  "../../../.build-id%s/%s.%d",
 					  subdir, &ids[i][2], dups);
 			      }
-			    rc = addNewIDSymlink(fl, targetpath, linkpath,
+			    rc = addNewIDSymlink(files, targetpath, linkpath,
 						 0, NULL);
 			}
 
@@ -2036,7 +2027,7 @@ static int generateBuildIDs(FileList fl)
 					  buildidsubdir, &ids[i][2]);
 				rasprintf(&targetpath, "../../../../..%s",
 					  targetstr);
-				rc = addNewIDSymlink(fl, targetpath,
+				rc = addNewIDSymlink(files, targetpath,
 						     linkpath, 0, &dups);
 				free(targetstr);
 			    }
@@ -2523,11 +2514,21 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     /* Check build-ids and add build-ids links for files to package list. */
     const char *arch = headerGetString(pkg->header, RPMTAG_ARCH);
     if (!rstreq(arch, "noarch")) {
-	if (generateBuildIDs (&fl) != 0) {
+	/* Go through the current package list and generate a files list. */
+	ARGV_t idFiles = NULL;
+	if (generateBuildIDs (&fl, &idFiles) != 0) {
 	    rpmlog(RPMLOG_ERR, _("Generating build-id links failed\n"));
 	    fl.processingFailed = 1;
 	    goto exit;
 	}
+
+	if (idFiles != NULL) {
+	    resetPackageFilesDefaults (&fl, pkgFlags);
+	    addPackageFileList (&fl, pkg, &idFiles, NULL, NULL, 0);
+	}
+
+	if (fl.processingFailed)
+	    goto exit;
     }
 #endif
 
@@ -2783,15 +2784,6 @@ static Package cloneDebuginfoPackage(rpmSpec spec, Package pkg, Package maindbg)
 
     _free(dbgname);
     return dbg;
-}
-
-/* add a directory to the file list */
-static void argvAddDir(ARGV_t *filesp, const char *dir)
-{
-    char *line = NULL;
-    rasprintf(&line, "%%dir %s", dir);
-    argvAdd(filesp, line);
-    _free(line);
 }
 
 /* collect the debug files for package pkg and put them into
