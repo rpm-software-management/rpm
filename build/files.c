@@ -203,13 +203,12 @@ static void dupAttrRec(const AttrRec oar, AttrRec nar)
     *nar = *oar; /* struct assignment */
 }
 
-static char *mkattr(const char *fn)
+/* Creates a default $defattr string. Can be used with argvAdd().
+   Caller owns the new string which needs to be freed when done.  */
+static char *mkattr(void)
 {
     char *s = NULL;
-    if (fn)
-	rasprintf(&s, "%s(-,%s,%s) %s", "%attr", UID_0_USER, GID_0_GROUP, fn);
-    else
-	rasprintf(&s, "%s(-,%s,%s)", "%defattr", UID_0_USER, GID_0_GROUP);
+    rasprintf(&s, "%s(644,%s,%s,755)", "%defattr", UID_0_USER, GID_0_GROUP);
     return s;
 }
 
@@ -1867,7 +1866,7 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 	    debugiddir = rpmGetPath(fl->buildRoot, DEBUG_ID_DIR, NULL);
 
 	    /* Make sure to reset all file flags to defaults.  */
-	    attrstr = mkattr(NULL);
+	    attrstr = mkattr();
 	    argvAdd(files, attrstr);
 	    free (attrstr);
 
@@ -2825,7 +2824,7 @@ static void filterDebuginfoPackage(rpmSpec spec, Package pkg,
 	if (access(path, F_OK) == 0) {
 	    /* Append the file list preamble */
 	    if (!files) {
-		char *attr = mkattr(NULL);
+		char *attr = mkattr();
 		argvAdd(&files, attr);
 		argvAddDir(&files, DEBUG_LIB_DIR);
 		free(attr);
@@ -2885,7 +2884,7 @@ static int addDebugDwz(Package pkg, char *buildroot)
     rasprintf(&path, "%s%s", buildroot, DEBUG_DWZ_DIR);
     if (lstat(path, &sbuf) == 0 && S_ISDIR(sbuf.st_mode)) {
 	if (!pkg->fileList) {
-	    char *attr = mkattr(NULL);
+	    char *attr = mkattr();
 	    argvAdd(&pkg->fileList, attr);
 	    argvAddDir(&pkg->fileList, DEBUG_LIB_DIR);
 	    free(attr);
@@ -2919,7 +2918,7 @@ static int addDebugSrc(Package pkg, char *buildroot)
 		continue;
 	    rasprintf(&path, "%s/%s", DEBUG_SRC_DIR, de->d_name);
 	    if (!pkg->fileList) {
-		char *attr = mkattr(NULL);
+		char *attr = mkattr();
 		argvAdd(&pkg->fileList, attr);
 		free(attr);
 	    }
