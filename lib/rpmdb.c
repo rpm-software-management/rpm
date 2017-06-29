@@ -2366,117 +2366,77 @@ exit:
     return ret;
 }
 
-/*
- * Remove DB4 environment (and lock), ie the equivalent of 
- * rm -f <prefix>/<dbpath>/__db.???
- * Environment files not existing is not an error, failure to unlink is,
- * return zero on success.
- * TODO/FIX: push this down to db3.c where it belongs
- */
-static int cleanDbenv(const char *prefix, const char *dbpath)
+static int rpmdbRemoveDatabase(const char *dbpath)
 {
     ARGV_t paths = NULL, p;
     int rc = 0; 
-    char *pattern = rpmGetPath(prefix, "/", dbpath, "/__db.???", NULL);
+    char *pattern = rpmGetPath(dbpath, "/*", NULL);
 
-    if (rpmGlob(pattern, NULL, &paths) == 0) {
-	for (p = paths; *p; p++) {
-	    rc += unlink(*p);
+    for (int i=0; i<2; i++) {
+	if (rpmGlob(pattern, NULL, &paths) == 0) {
+	    for (p = paths; *p; p++) {
+		rc += unlink(*p);
+	    }
+	    argvFree(paths);
 	}
-	argvFree(paths);
+	free(pattern);
+	pattern = rpmGetPath(dbpath, "/.??*", NULL);
     }
+    rc += rmdir(dbpath);
     free(pattern);
     return rc;
 }
 
-static int unlinkTag(const char * prefix, const char *dbpath, rpmTagVal dbtag)
+static int rpmdbMoveDatabase(const char * prefix, const char * srcdbpath,
+			     const char * dbpath, const char * tmppath)
 {
-    int rc = 0;
-    const char * base = rpmTagGetName(dbtag);
-    char * path = rpmGetPath(prefix, "/", dbpath, "/", base, NULL);
-    if (access(path, F_OK) == 0)
-	rc = unlink(path);
-    free(path);
-    return rc;
-}
+    int rc = -1;
+    int xx;
+    char *src = rpmGetPath(prefix, "/", srcdbpath, NULL);
+    char *old = rpmGetPath(prefix, "/", tmppath, NULL);
+    char *dest = rpmGetPath(prefix, "/", dbpath, NULL);
 
-static int rpmdbRemoveDatabase(const char * prefix, const char * dbpath)
-{ 
-    char *path;
-    int xx = 0;
-    /* create a handle but dont actually open */
-    rpmdb db = newRpmdb(prefix, dbpath, O_RDONLY, 0644, RPMDB_FLAG_REBUILD);
+    char * oldkeys = rpmGetPath(old, "/", "pubkeys", NULL);
+    char * destkeys = rpmGetPath(dest, "/", "pubkeys", NULL);
 
-    xx = unlinkTag(prefix, dbpath, RPMDBI_PACKAGES);
-    for (int i = 0; i < db->db_ndbi; i++) {
-	xx += unlinkTag(prefix, dbpath, db->db_tags[i]);
+    xx = rename(dest, old);
+    if (xx) {
+	goto exit;
     }
-    cleanDbenv(prefix, dbpath);
+    xx = rename(src, dest);
+    if (xx) {
+	rpmlog(RPMLOG_ERR, _("could not move new database in place\n"));
+	xx = rename(old, dest);
+	if (xx) {
+	    rpmlog(RPMLOG_ERR, _("could also not restore old database from %s\n"),
+		   old);
+	    rpmlog(RPMLOG_ERR, _("replace files in %s with files from %s "
+				 "to recover\n"), dest, old);
+	}
+	goto exit;
+    }
 
-    path = rpmGetPath(prefix, "/", dbpath, NULL);
-    xx += rmdir(path);
-    free(path);
-    rpmdbClose(db);
-
-    return (xx != 0);
-}
-
-static int renameTag(const char * prefix,
-		     const char * olddbpath, const char *newdbpath,
-		     const char * base)
-{
-    int xx, rc = 0;
-    char *src = rpmGetPath(prefix, "/", olddbpath, "/", base, NULL);
-    char *dest = rpmGetPath(prefix, "/", newdbpath, "/", base, NULL);
-    struct stat st;
-
-    if (access(src, F_OK) == 0) {
-	/*
-	 * Restore uid/gid/mode/security context if possible.
-	 */
-	if (stat(dest, &st) < 0)
-	    if (stat(src, &st) < 0)
-		goto exit;
-
-	if ((xx = rename(src, dest)) != 0) {
-	    rc = 1;
+    if (access(oldkeys, F_OK ) != -1) {
+	xx = rename(oldkeys, destkeys);
+	if (xx) {
+	    rpmlog(RPMLOG_ERR, _("Could not get public keys from %s\n"), oldkeys);
 	    goto exit;
 	}
-	xx = chown(dest, st.st_uid, st.st_gid);
-	xx = chmod(dest, (st.st_mode & 07777));
-
-	/* XXX: we should call file prepare plugins here for selinux etc! */
     }
 
-exit:
-    free(src);
-    free(dest);
-    return rc;
-}
-
-static int rpmdbMoveDatabase(const char * prefix,
-			     const char * olddbpath, const char * newdbpath)
-{
-    int rc = 0;
-    /* create a handle but dont actually open */
-    rpmdb db = newRpmdb(prefix, newdbpath, O_RDONLY, 0644, RPMDB_FLAG_REBUILD);
-
-    rpmsqBlock(SIG_BLOCK);
-    rc = renameTag(prefix, olddbpath, newdbpath, rpmTagGetName(RPMDBI_PACKAGES));
-    for (int i = 0; i < db->db_ndbi; i++) {
-	rc += renameTag(prefix, olddbpath, newdbpath, rpmTagGetName(db->db_tags[i]));
+    xx = rpmdbRemoveDatabase(old);
+    if (xx) {
+	rpmlog(RPMLOG_ERR, _("could not delete old database at %s\n"), old);
     }
-#ifdef ENABLE_NDB
-    rc += renameTag(prefix, olddbpath, newdbpath, "Packages.db");
-    rc += renameTag(prefix, olddbpath, newdbpath, "Index.db");
-#endif
 
-    cleanDbenv(prefix, olddbpath);
-    cleanDbenv(prefix, newdbpath);
-    rpmdbClose(db);
+    rc = 0;
 
-    rpmsqBlock(SIG_UNBLOCK);
-
+ exit:
+    _free(src);
+    _free(old);
+    _free(dest);
+    _free(oldkeys);
+    _free(destkeys);
     return rc;
 }
 
@@ -2486,12 +2446,12 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     rpmdb olddb;
     char * dbpath = NULL;
     char * rootdbpath = NULL;
+    char * tmppath = NULL;
     rpmdb newdb;
     char * newdbpath = NULL;
     char * newrootdbpath = NULL;
     int nocleanup = 1;
     int failed = 0;
-    int removedir = 0;
     int rc = 0;
 
     dbpath = rpmGetPath("%{?_dbpath}", NULL);
@@ -2519,7 +2479,6 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	rc = 1;
 	goto exit;
     }
-    removedir = 1;
 
     if (openDatabase(prefix, dbpath, &olddb,
 		     O_RDONLY, 0644, RPMDB_FLAG_REBUILD)) {
@@ -2582,15 +2541,16 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 		_("failed to rebuild database: original database "
 		"remains in place\n"));
 
-	rpmdbRemoveDatabase(prefix, newdbpath);
+	rpmdbRemoveDatabase(newrootdbpath);
 	rc = 1;
 	goto exit;
     } else if (!nocleanup) {
-	if (rpmdbMoveDatabase(prefix, newdbpath, dbpath)) {
+	rasprintf(&tmppath, "%sold.%d", dbpath, (int) getpid());
+	if (rpmdbMoveDatabase(prefix, newdbpath, dbpath, tmppath)) {
 	    rpmlog(RPMLOG_ERR, _("failed to replace old database with new "
 			"database!\n"));
 	    rpmlog(RPMLOG_ERR, _("replace files in %s with files from %s "
-			"to recover"), dbpath, newdbpath);
+			"to recover\n"), dbpath, newdbpath);
 	    rc = 1;
 	    goto exit;
 	}
@@ -2598,13 +2558,9 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     rc = 0;
 
 exit:
-    if (removedir && !(rc == 0 && nocleanup)) {
-	if (rmdir(newrootdbpath))
-	    rpmlog(RPMLOG_ERR, _("failed to remove directory %s: %s\n"),
-			newrootdbpath, strerror(errno));
-    }
     free(newdbpath);
     free(dbpath);
+    free(tmppath);
     free(newrootdbpath);
     free(rootdbpath);
 
