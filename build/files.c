@@ -2349,14 +2349,140 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     freeStringBuf(docScript);
     free(mkdocdir);
 }
-				
+
+
+/* Resets the default settings for files in the package list.
+   Used in processPackageFiles whenever a new set of files is added. */
+static void resetPackageFilesDefaults (struct FileList_s *fl,
+				       rpmBuildPkgFlags pkgFlags)
+{
+    struct AttrRec_s root_ar = { 0, 0, 0, 0, 0, 0 };
+
+    root_ar.ar_user = rpmstrPoolId(fl->pool, UID_0_USER, 1);
+    root_ar.ar_group = rpmstrPoolId(fl->pool, GID_0_GROUP, 1);
+    dupAttrRec(&root_ar, &fl->def.ar);	/* XXX assume %defattr(-,root,root) */
+
+    fl->def.verifyFlags = RPMVERIFY_ALL;
+
+    fl->pkgFlags = pkgFlags;
+}
+
+/* Adds the given fileList to the package. If fromSpecFileList is not zero
+   then the specialDirs are also filled in and the files are sanitized
+   through processBinaryFile(). Otherwise no special files are processed
+   and the files are added directly through addFile().  */
+static void addPackageFileList (struct FileList_s *fl, Package pkg,
+				ARGV_t *fileList,
+				specialDir *specialDoc, specialDir *specialLic,
+				int fromSpecFileList)
+{
+    ARGV_t fileNames = NULL;
+    for (ARGV_const_t fp = *fileList; *fp != NULL; fp++) {
+	char buf[strlen(*fp) + 1];
+	const char *s = *fp;
+	SKIPSPACE(s);
+	if (*s == '\0')
+	    continue;
+	fileNames = argvFree(fileNames);
+	rstrlcpy(buf, s, sizeof(buf));
+	
+	/* Reset for a new line in %files */
+	FileEntryFree(&fl->cur);
+
+	/* turn explicit flags into %def'd ones (gosh this is hacky...) */
+	fl->cur.specdFlags = ((unsigned)fl->def.specdFlags) >> 8;
+	fl->cur.verifyFlags = fl->def.verifyFlags;
+
+	if (parseForVerify(buf, 0, &fl->cur) ||
+	    parseForVerify(buf, 1, &fl->def) ||
+	    parseForAttr(fl->pool, buf, 0, &fl->cur) ||
+	    parseForAttr(fl->pool, buf, 1, &fl->def) ||
+	    parseForDev(buf, &fl->cur) ||
+	    parseForConfig(buf, &fl->cur) ||
+	    parseForLang(buf, &fl->cur) ||
+	    parseForCaps(buf, &fl->cur) ||
+	    parseForSimple(buf, &fl->cur, &fileNames))
+	{
+	    fl->processingFailed = 1;
+	    continue;
+	}
+
+	for (ARGV_const_t fn = fileNames; fn && *fn; fn++) {
+
+	    /* For file lists that don't come from a spec file list
+	       processing is easy. There are no special files and the
+	       file names don't need to be adjusted. */
+	    if (!fromSpecFileList) {
+	        if (fl->cur.attrFlags & RPMFILE_SPECIALDIR
+		    || fl->cur.attrFlags & RPMFILE_DOCDIR
+		    || fl->cur.attrFlags & RPMFILE_PUBKEY) {
+			rpmlog(RPMLOG_ERR,
+			       _("Special file in generated file list: %s\n"),
+			       *fn);
+			fl->processingFailed = 1;
+			continue;
+		}
+		if (fl->cur.attrFlags & RPMFILE_DIR)
+		    fl->cur.isDir = 1;
+		addFile(fl, *fn, NULL);
+		continue;
+	    }
+
+	    /* File list does come from the spec, try to detect special
+	       files and adjust the actual file names.  */
+	    if (fl->cur.attrFlags & RPMFILE_SPECIALDIR) {
+		rpmFlags oattrs = (fl->cur.attrFlags & ~RPMFILE_SPECIALDIR);
+		specialDir *sdp = NULL;
+		if (oattrs == RPMFILE_DOC) {
+		    sdp = specialDoc;
+		} else if (oattrs == RPMFILE_LICENSE) {
+		    sdp = specialLic;
+		}
+
+		if (sdp == NULL || **fn == '/') {
+		    rpmlog(RPMLOG_ERR,
+			   _("Can't mix special %s with other forms: %s\n"),
+			   (oattrs & RPMFILE_DOC) ? "%doc" : "%license", *fn);
+		    fl->processingFailed = 1;
+		    continue;
+		}
+
+		/* save attributes on first special doc/license for later use */
+		if (*sdp == NULL) {
+		    *sdp = specialDirNew(pkg->header, oattrs);
+		}
+		addSpecialFile(*sdp, *fn, &fl->cur, &fl->def);
+		continue;
+	    }
+
+	    /* this is now an artificial limitation */
+	    if (fn != fileNames) {
+		rpmlog(RPMLOG_ERR, _("More than one file on a line: %s\n"),*fn);
+		fl->processingFailed = 1;
+		continue;
+	    }
+
+	    if (fl->cur.attrFlags & RPMFILE_DOCDIR) {
+		argvAdd(&(fl->docDirs), *fn);
+	    } else if (fl->cur.attrFlags & RPMFILE_PUBKEY) {
+		(void) processMetadataFile(pkg, fl, *fn, RPMTAG_PUBKEYS);
+	    } else {
+		if (fl->cur.attrFlags & RPMFILE_DIR)
+		    fl->cur.isDir = 1;
+		(void) processBinaryFile(pkg, fl, *fn);
+	    }
+	}
+
+	if (fl->cur.caps)
+	    fl->haveCaps = 1;
+    }
+    argvFree(fileNames);
+}
 
 static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 				 Package pkg, int didInstall, int test)
 {
-    struct AttrRec_s root_ar = { 0, 0, 0, 0, 0, 0 };
     struct FileList_s fl;
-    ARGV_t fileNames = NULL;
     specialDir specialDoc = NULL;
     specialDir specialLic = NULL;
 
@@ -2374,96 +2500,15 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     fl.buildRoot = rpmGenPath(spec->rootDir, spec->buildRoot, NULL);
     fl.buildRootLen = strlen(fl.buildRoot);
 
-    root_ar.ar_user = rpmstrPoolId(fl.pool, UID_0_USER, 1);
-    root_ar.ar_group = rpmstrPoolId(fl.pool, GID_0_GROUP, 1);
-    dupAttrRec(&root_ar, &fl.def.ar);	/* XXX assume %defattr(-,root,root) */
-
-    fl.def.verifyFlags = RPMVERIFY_ALL;
-
-    fl.pkgFlags = pkgFlags;
+    resetPackageFilesDefaults (&fl, pkgFlags);
 
     {	char *docs = rpmGetPath("%{?__docdir_path}", NULL);
 	argvSplit(&fl.docDirs, docs, ":");
 	free(docs);
     }
-    
-    for (ARGV_const_t fp = pkg->fileList; *fp != NULL; fp++) {
-	char buf[strlen(*fp) + 1];
-	const char *s = *fp;
-	SKIPSPACE(s);
-	if (*s == '\0')
-	    continue;
-	fileNames = argvFree(fileNames);
-	rstrlcpy(buf, s, sizeof(buf));
-	
-	/* Reset for a new line in %files */
-	FileEntryFree(&fl.cur);
 
-	/* turn explicit flags into %def'd ones (gosh this is hacky...) */
-	fl.cur.specdFlags = ((unsigned)fl.def.specdFlags) >> 8;
-	fl.cur.verifyFlags = fl.def.verifyFlags;
-
-	if (parseForVerify(buf, 0, &fl.cur) ||
-	    parseForVerify(buf, 1, &fl.def) ||
-	    parseForAttr(fl.pool, buf, 0, &fl.cur) ||
-	    parseForAttr(fl.pool, buf, 1, &fl.def) ||
-	    parseForDev(buf, &fl.cur) ||
-	    parseForConfig(buf, &fl.cur) ||
-	    parseForLang(buf, &fl.cur) ||
-	    parseForCaps(buf, &fl.cur) ||
-	    parseForSimple(buf, &fl.cur, &fileNames))
-	{
-	    fl.processingFailed = 1;
-	    continue;
-	}
-
-	for (ARGV_const_t fn = fileNames; fn && *fn; fn++) {
-	    if (fl.cur.attrFlags & RPMFILE_SPECIALDIR) {
-		rpmFlags oattrs = (fl.cur.attrFlags & ~RPMFILE_SPECIALDIR);
-		specialDir *sdp = NULL;
-		if (oattrs == RPMFILE_DOC) {
-		    sdp = &specialDoc;
-		} else if (oattrs == RPMFILE_LICENSE) {
-		    sdp = &specialLic;
-		}
-
-		if (sdp == NULL || **fn == '/') {
-		    rpmlog(RPMLOG_ERR,
-			   _("Can't mix special %s with other forms: %s\n"),
-			   (oattrs & RPMFILE_DOC) ? "%doc" : "%license", *fn);
-		    fl.processingFailed = 1;
-		    continue;
-		}
-
-		/* save attributes on first special doc/license for later use */
-		if (*sdp == NULL) {
-		    *sdp = specialDirNew(pkg->header, oattrs);
-		}
-		addSpecialFile(*sdp, *fn, &fl.cur, &fl.def);
-		continue;
-	    }
-
-	    /* this is now an artificial limitation */
-	    if (fn != fileNames) {
-		rpmlog(RPMLOG_ERR, _("More than one file on a line: %s\n"),*fn);
-		fl.processingFailed = 1;
-		continue;
-	    }
-
-	    if (fl.cur.attrFlags & RPMFILE_DOCDIR) {
-		argvAdd(&(fl.docDirs), *fn);
-	    } else if (fl.cur.attrFlags & RPMFILE_PUBKEY) {
-		(void) processMetadataFile(pkg, &fl, *fn, RPMTAG_PUBKEYS);
-	    } else {
-		if (fl.cur.attrFlags & RPMFILE_DIR)
-		    fl.cur.isDir = 1;
-		(void) processBinaryFile(pkg, &fl, *fn);
-	    }
-	}
-
-	if (fl.cur.caps)
-	    fl.haveCaps = 1;
-    }
+    addPackageFileList (&fl, pkg, &pkg->fileList,
+			&specialDoc, &specialLic, 1);
 
     /* Now process special docs and licenses if present */
     if (specialDoc)
@@ -2493,7 +2538,6 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     genCpioListAndHeader(&fl, pkg, 0);
 
 exit:
-    argvFree(fileNames);
     FileListFree(&fl);
     specialDirFree(specialDoc);
     specialDirFree(specialLic);
