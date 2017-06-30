@@ -168,7 +168,8 @@ error: /tmp/hello-2.0-1.x86_64-signed.rpm cannot be installed
 ])
 AT_CLEANUP
 
-# XXX FIXME: "File exists" error message is bogus for this failure
+# This is more about documenting current behavior than what it *should* do
+# when encountering corrupted payload.
 AT_SETUP([rpm -U <corrupted signed 3>])
 AT_KEYWORDS([install])
 AT_CHECK([
@@ -186,7 +187,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 [1],
 [],
 [warning: /tmp/hello-2.0-1.x86_64-signed.rpm: Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
-error: unpacking of archive failed: cpio: read failed - File exists
+error: unpacking of archive failed: cpio: Bad magic
 error: hello-2.0-1.x86_64: install failed
 ])
 AT_CLEANUP

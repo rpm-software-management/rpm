@@ -368,7 +368,7 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
     read = Fread(&magic, 6, 1, cpio->fd);
     cpio->offset += read;
     if (read != 6)
-        return RPMERR_READ_FAILED;
+	return RPMERR_BAD_MAGIC;
 
     /* read stripped header */
     if (!strncmp(CPIO_STRIPPED_MAGIC, magic,
@@ -377,7 +377,7 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
         read = Fread(&shdr, STRIPPED_PHYS_HDR_SIZE, 1, cpio->fd);
         cpio->offset += read;
         if (read != STRIPPED_PHYS_HDR_SIZE)
-            return RPMERR_READ_FAILED;
+	    return RPMERR_BAD_HEADER;
 
         GET_NUM_FIELD(shdr.fx, *fx);
         rc = rpmcpioReadPad(cpio);
@@ -395,7 +395,7 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
     read = Fread(&hdr, PHYS_HDR_SIZE, 1, cpio->fd);
     cpio->offset += read;
     if (read != PHYS_HDR_SIZE)
-	return RPMERR_READ_FAILED;
+        return RPMERR_BAD_HEADER;
 
     GET_NUM_FIELD(hdr.filesize, fsize);
     GET_NUM_FIELD(hdr.namesize, nameSize);
