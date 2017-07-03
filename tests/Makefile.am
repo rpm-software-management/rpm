@@ -138,7 +138,7 @@ check_DATA += testing$(bindir)/rpmbuild
 
 if HAVE_FAKECHROOT
 check-local: $(check_DATA)
-	$(SHELL) '$(TESTSUITE)' $(TESTSUITEFLAGS) ||:
+	$(SHELL) '$(TESTSUITE)' $(TESTSUITEFLAGS)
 else
 check-local:
 	echo "you need to have fakechroot installed"
