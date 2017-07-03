@@ -179,7 +179,7 @@ and then install with:
     make install
 
 Rpm comes with an automated self-test suite. The test-suite relies heavily
-on fakechroot (https://github.com/fakechroot/) and cannot be executed
+on fakechroot (https://github.com/dex4er/fakechroot/) and cannot be executed
 without it. Provided that fakechroot was found during configure,
 it can be executed after a successful build with:
 
