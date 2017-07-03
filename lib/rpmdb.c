@@ -2366,24 +2366,33 @@ exit:
     return ret;
 }
 
+static int rpmdbRemoveFiles(char * pattern)
+{
+    int rc = 0;
+    ARGV_t paths = NULL, p;
+
+    if (rpmGlob(pattern, NULL, &paths) == 0) {
+	for (p = paths; *p; p++) {
+	    rc += unlink(*p);
+	}
+	argvFree(paths);
+    }
+    return rc;
+}
+
 static int rpmdbRemoveDatabase(const char *dbpath)
 {
-    ARGV_t paths = NULL, p;
     int rc = 0; 
-    char *pattern = rpmGetPath(dbpath, "/*", NULL);
+    char *pattern;
 
-    for (int i=0; i<2; i++) {
-	if (rpmGlob(pattern, NULL, &paths) == 0) {
-	    for (p = paths; *p; p++) {
-		rc += unlink(*p);
-	    }
-	    argvFree(paths);
-	}
-	free(pattern);
-	pattern = rpmGetPath(dbpath, "/.??*", NULL);
-    }
-    rc += rmdir(dbpath);
+    pattern = rpmGetPath(dbpath, "/*", NULL);
+    rc += rpmdbRemoveFiles(pattern);
     free(pattern);
+    pattern = rpmGetPath(dbpath, "/.??*", NULL);
+    rc += rpmdbRemoveFiles(pattern);
+    free(pattern);
+    
+    rc += rmdir(dbpath);
     return rc;
 }
 
@@ -2437,6 +2446,45 @@ static int rpmdbMoveDatabase(const char * prefix, const char * srcdbpath,
     _free(dest);
     _free(oldkeys);
     _free(destkeys);
+    return rc;
+}
+
+static int rpmdbSetPermissions(char * src, char * dest)
+{
+    struct dirent *dp;
+    DIR *dfd;
+
+    struct stat st;
+    int xx, rc = -1;
+    char * filepath;
+    
+    if (stat(dest, &st) < 0)
+	    goto exit;
+    if (stat(src, &st) < 0)
+	    goto exit;
+
+    if ((dfd = opendir(dest)) == NULL) {
+	goto exit;
+    }
+
+    rc = 0;
+    while ((dp = readdir(dfd)) != NULL) {
+	if (!strcmp(dp->d_name, "..")) {
+	    continue;
+	}
+	filepath = rpmGetPath(dest, "/", dp->d_name, NULL);
+	xx = chown(filepath, st.st_uid, st.st_gid);
+	rc += xx;
+	if (!strcmp(dp->d_name, ".")) {
+	    xx = chmod(filepath, (st.st_mode & 07777));
+	} else {
+	    xx = chmod(filepath, (st.st_mode & 07666));
+	}
+	rc += xx;
+	_free(filepath);
+    }
+
+ exit:
     return rc;
 }
 
@@ -2544,7 +2592,11 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	rpmdbRemoveDatabase(newrootdbpath);
 	rc = 1;
 	goto exit;
-    } else if (!nocleanup) {
+    } else {
+	rpmdbSetPermissions(dbpath, newdbpath);
+    }
+
+    if (!nocleanup) {
 	rasprintf(&tmppath, "%sold.%d", dbpath, (int) getpid());
 	if (rpmdbMoveDatabase(prefix, newdbpath, dbpath, tmppath)) {
 	    rpmlog(RPMLOG_ERR, _("failed to replace old database with new "
