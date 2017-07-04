@@ -1,0 +1,32 @@
+language: c
+sudo: required
+dist: trusty
+services:
+  - docker
+env:
+    # Fedora
+    # https://hub.docker.com/r/_/fedora/
+    - CONTAINER_IMAGE=fedora:24
+    - CONTAINER_IMAGE=fedora:25
+    - CONTAINER_IMAGE=fedora:26
+    - CONTAINER_IMAGE=fedora:rawhide
+before_install:
+  - |
+    if [ "${CONTAINER_IMAGE}" != '' ]; then
+        sed -i "/^FROM / s|fedora|${CONTAINER_IMAGE}|" Dockerfile
+    fi
+install:
+  - |
+    docker build \
+        -t rpm \
+        .
+before_script:
+  - sudo chown -R 1000 .
+script:
+  - |
+    DIR=$(pwd)
+    docker run \
+        -v "${DIR}:${DIR}" \
+        -w "${DIR}" \
+        -i \
+        -t rpm
