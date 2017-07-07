@@ -1313,7 +1313,7 @@ static rpmRC rpmfcApplyExternal(rpmfc fc)
 	}
 
 	/* Parse dependencies into header */
-	rc = parseRCPOT(NULL, fc->pkg, getStringBuf(sb_stdout), dm->ntag ? dm->ntag != -1 : RPMTAG_REQUIRENAME, 0, tagflags, addReqProvPkg, NULL);
+	rc = parseRCPOT(NULL, fc->pkg, getStringBuf(sb_stdout), dm->ntag != -1 ? dm->ntag : RPMTAG_REQUIRENAME, 0, tagflags, addReqProvPkg, NULL);
 	freeStringBuf(sb_stdout);
 
 	if (rc) {
