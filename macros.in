@@ -798,7 +798,7 @@ package or when debugging this package.\
 
 
 #%___build_body		%{nil}
-%___build_post		exit 0
+%___build_post		exit $?
 
 %___build_template	#!%{___build_shell}\
 %{___build_pre}\
