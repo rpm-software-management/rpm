@@ -649,6 +649,61 @@ freeArgs(MacroBuf mb, int delete)
     mb->level--;
 }
 
+/* XXX: belongs to argv.c but figure a sensible API before making public */
+static ARGV_t argvSplitShell(const char * str, const char * seps)
+{
+    char *dest = NULL;
+    ARGV_t argv;
+    int argc = 1;
+    const char * s;
+    char * t;
+    int c;
+    int quote;
+
+    if (str == NULL || seps == NULL)
+	return NULL;
+
+    dest = xmalloc(strlen(str) + 1);
+    t = dest;
+    s = str;
+    argc = 1;
+
+    while ((c = *s)) {
+	if (strchr(seps, c)) {
+	    s++;
+	} else {
+	    if (!strchr("\"\'",c)) {
+		/* read argument not in "" or ''*/
+		for (; (c = *s); s++, t++) {
+		    if (strchr(seps, c) || strchr("\"\'",c))
+			break;
+		    *t = c;
+		}
+	    } else {
+		/* read argument in "" or '' */
+		quote = *s;
+		s++;
+		for (; (c = *s) && (c != quote); t++,s++)
+		    *t = c;
+		s++;
+	    }
+	    *t = '\0';
+	    t++;
+	    argc++;
+	}
+    }
+    *t = '\0';
+
+    argv = xmalloc((argc + 1) * sizeof(*argv));
+    for (c = 0, s = dest; s < t; s+= strlen(s) + 1) {
+	argv[c] = xstrdup(s);
+	c++;
+    }
+    argv[c] = NULL;
+    free(dest);
+    return argv;
+}
+
 /**
  * Parse arguments (to next new line) for parameterized macro.
  * @todo Use popt rather than getopt to parse args.
@@ -685,7 +740,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 	expandThis(mb, se, lastc-se, &s);
 	mb->escape = oescape;
 
-	argvSplit(&av, s, " \t");
+	av = argvSplitShell(s, " \t");
 	argvAppend(&argv, av);
 	argvFree(av);
 	free(s);
