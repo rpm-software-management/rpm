@@ -36,7 +36,7 @@ dbDetectBackend(rpmdb rdb)
 {
 #ifdef ENABLE_NDB
     const char *dbhome = rpmdbHome(rdb);
-    char *db_backend = rpmExpand("%{?_db_backend}");
+    char *db_backend = rpmExpand("%{?_db_backend}", NULL);
     if (!strcmp(db_backend, "ndb")) {
 	rdb->db_ops = &ndb_dbops;
     } else {
