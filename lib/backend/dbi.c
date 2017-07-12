@@ -8,6 +8,7 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmmacro.h>
+#include <rpm/rpmlog.h>
 #include "lib/rpmdb_internal.h"
 #include "debug.h"
 
@@ -45,12 +46,16 @@ dbDetectBackend(rpmdb rdb)
     free(db_backend);
 
     char *path = rstrscat(NULL, dbhome, "/Packages", NULL);
-    if (access(path, F_OK) == 0)
+    if (access(path, F_OK) == 0 && rdb->db_ops != &db3_dbops) {
 	rdb->db_ops = &db3_dbops;
+	rpmlog(RPMLOG_WARNING, _("Unexpected database format\n"));
+    }
     free(path);
     path = rstrscat(NULL, dbhome, "/Packages.db", NULL);
-    if (access(path, F_OK) == 0)
+    if (access(path, F_OK) == 0 && rdb->db_ops != &ndb_dbops) {
 	rdb->db_ops = &ndb_dbops;
+	rpmlog(RPMLOG_WARNING, _("Unexpected database format\n"));
+    }
     free(path);
 #else
     rdb->db_ops = &db3_dbops;
