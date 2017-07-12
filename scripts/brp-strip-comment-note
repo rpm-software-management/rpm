@@ -9,6 +9,7 @@ OBJDUMP=${2:-objdump}
 
 case `uname -a` in
 Darwin*) exit 0 ;;
+OS/2*) exit 0 ;;
 *) ;;
 esac
 
