@@ -546,6 +546,10 @@ restart:
 	}
 
 	if (headerIsSource(h)) {
+	    if (ia->installInterfaceFlags & INSTALL_FRESHEN) {
+		headerFree(h);
+	        continue;
+	    }
 	    rpmlog(RPMLOG_DEBUG, "\tadded source package [%d]\n",
 		eiu->numSRPMS);
 	    eiu->sourceURL = xrealloc(eiu->sourceURL,
