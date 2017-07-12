@@ -9,7 +9,7 @@
 #include "lib/rpmsignfiles.h"
 #include "debug.h"
 
-#if !defined(__GLIBC__) && !defined(__APPLE__)
+#if !defined(__GLIBC__) && !defined(__APPLE__) && !defined(__OS2__)
 char ** environ = NULL;
 #endif
 

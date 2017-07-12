@@ -404,6 +404,10 @@ static int db_init(rpmdb rdb, const char * dbhome)
     struct dbConfig_s * cfg = &rdb->cfg;
     /* This is our setup, thou shall not have other setups before us */
     uint32_t eflags = (DB_CREATE|DB_INIT_MPOOL|DB_INIT_CDB);
+#ifdef __OS2__
+    // need to set this flag to avoid db48 mmap issues...
+    eflags |= DB_PRIVATE;
+#endif
 
     if (rdb->db_dbenv != NULL) {
 	rdb->db_opens++;
@@ -837,6 +841,12 @@ static int db3_dbiOpen(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flag
     oflags = dbi->cfg.dbi_oflags;
     if ((rdb->db_mode & O_ACCMODE) == O_RDONLY)
 	oflags |= DB_RDONLY;
+
+#ifdef __OS2__
+    // need to set this flag to avoid db48 mmap issues...
+    oflags |= DB_PRIVATE;
+    dbi->dbi_flags |= DB_PRIVATE;
+#endif
 
     rc = db_init(rdb, dbhome);
 

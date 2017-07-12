@@ -5,6 +5,9 @@
 
 #include "system.h"
 
+#ifdef __OS2__
+#include <sys/wait.h>
+#endif
 #include <errno.h>
 #include <netdb.h>
 #include <time.h>

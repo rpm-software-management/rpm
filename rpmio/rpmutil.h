@@ -96,7 +96,7 @@
 #define RPM_GNUC_WARN_UNUSED_RESULT
 #endif /* __GNUC__ */
 
-#if    __GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3)
+#if    (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3)) && !defined(__OS2__)
 #  define RPM_GNUC_INTERNAL __attribute__((visibility("hidden")))
 #else
 #  define RPM_GNUC_INTERNAL

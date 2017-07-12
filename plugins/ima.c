@@ -1,4 +1,6 @@
+#ifndef __OS2__
 #include <sys/xattr.h>
+#endif
 
 #include <rpm/rpmfi.h>
 #include <rpm/rpmte.h>
@@ -31,7 +33,9 @@ static rpmRC ima_psm_post(rpmPlugin plugin, rpmte te, int res)
 		fpath = rpmfiFN(fi);
 		fsig = rpmfiFSignature(fi, &len);
 		if (fsig) {
+#ifndef __OS2__
 		    lsetxattr(fpath, XATTR_NAME_IMA, fsig, len, 0);
+#endif
 		}
 	    }
 	}
