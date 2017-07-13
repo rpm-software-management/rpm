@@ -387,9 +387,11 @@ int rpmdbClose(rpmdb db)
 {
     rpmdb * prev, next;
     int rc = 0;
+    int dbmode;
 
     if (db == NULL)
 	goto exit;
+    dbmode = db->db_mode;
 
     prev = &rpmdbRock;
     while ((next = *prev) != NULL && next != db)
@@ -424,7 +426,7 @@ int rpmdbClose(rpmdb db)
 
     db = _free(db);
 
-    if (rpmdbRock == NULL) {
+    if (rpmdbRock == NULL && (db->db_mode & (O_RDWR|O_WRONLY)) != 0) {
 	rpmsqActivate(0);
     }
 exit:
@@ -505,7 +507,7 @@ static int openDatabase(const char * prefix,
     /* Try to ensure db home exists, error out if we can't even create */
     rc = rpmioMkpath(rpmdbHome(db), 0755, getuid(), getgid());
     if (rc == 0) {
-	if (rpmdbRock == NULL) {
+	if (rpmdbRock == NULL  && (db->db_mode & (O_RDWR|O_WRONLY)) != 0) {
 	    rpmsqActivate(1);
 	}
 
