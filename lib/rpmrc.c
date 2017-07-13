@@ -815,6 +815,14 @@ static inline int RPMClass(void)
 	
 	cpu = (tfms>>8)&15;
 	
+	if (cpu == 5
+	    && cpuid_ecx(0) == '68xM'
+	    && cpuid_edx(0) == 'Teni'
+	    && (cpuid_edx(1) & ((1<<8)|(1<<15))) == ((1<<8)|(1<<15))) {
+		sigaction(SIGILL, &oldsa, NULL);
+		return 6;	/* has CX8 and CMOV */
+	}
+
 	sigaction(SIGILL, &oldsa, NULL);
 
 #define USER686 ((1<<4) | (1<<8) | (1<<15))
