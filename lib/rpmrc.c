@@ -1111,6 +1111,12 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 #		endif
 #	endif
 
+#if defined(__linux__)
+	/* in linux, lets rename parisc to hppa */
+	if (rstreq(un.machine, "parisc"))
+	    strcpy(un.machine, "hppa");
+#endif
+
 #	if defined(__hpux) && defined(_SC_CPU_VERSION)
 	{
 #	    if !defined(CPU_PA_RISC1_2)
