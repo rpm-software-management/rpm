@@ -3,6 +3,7 @@
 #for inclusion in an rpm spec file.
 #
 # Usage: find-debuginfo.sh [--strict-build-id] [-g] [-r] [-m] [-i] [-n]
+#			   [--keep-section SECTION] [--remove-section SECTION]
 #	 		   [-j N]
 #	 		   [-o debugfiles.list]
 #	 		   [-S debugsourcefiles.list]
@@ -15,9 +16,14 @@
 #			   [builddir]
 #
 # The -g flag says to use strip -g instead of full strip on DSOs or EXEs.
+# The -r flag says to use eu-strip --reloc-debug-sections.
+# Use --keep-section SECTION or --remove-section SECTION to explicitly
+# keep a (non-allocated) section in the main executable or explicitly
+# remove it into the .debug file. SECTION is an extended wildcard pattern.
+# Both options can be given more than once.
+#
 # The --strict-build-id flag says to exit with failure status if
 # any ELF binary processed fails to contain a build-id note.
-# The -r flag says to use eu-strip --reloc-debug-sections.
 # The -m flag says to include a .gnu_debugdata section in the main binary.
 # The -i flag says to include a .gdb_index section in the .debug file.
 # The -n flag says to not recompute the build-id.
@@ -64,6 +70,9 @@ strip_g=false
 
 # with -r arg, pass --reloc-debug-sections to eu-strip.
 strip_r=false
+
+# keep or remove arguments to eu-strip.
+keep_remove_args=
 
 # with -m arg, add minimal debuginfo to binary.
 include_minidebug=false
@@ -158,6 +167,14 @@ while [ $# -gt 0 ]; do
   -r)
     strip_r=true
     ;;
+  --keep-section)
+    keep_remove_args="${keep_remove_args} --keep-section $2"
+    shift
+    ;;
+  --remove-section)
+    keep_remove_args="${keep_remove_args} --remove-section $2"
+    shift
+    ;;
   -j)
     n_jobs=$2
     shift
@@ -215,7 +232,7 @@ strip_to_debug()
   application/x-sharedlib*) g=-g ;;
   application/x-executable*) g=-g ;;
   esac
-  eu-strip --remove-comment $r $g -f "$1" "$2" || exit
+  eu-strip --remove-comment $r $g ${keep_remove_args} -f "$1" "$2" || exit
   chmod 444 "$1" || exit
 }
 
