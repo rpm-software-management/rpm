@@ -1,32 +1,20 @@
-language: c
 sudo: required
-dist: trusty
 services:
   - docker
 env:
-    # Fedora
-    # https://hub.docker.com/r/_/fedora/
-    - CONTAINER_IMAGE=fedora:24
-    - CONTAINER_IMAGE=fedora:25
-    - CONTAINER_IMAGE=fedora:26
-    - CONTAINER_IMAGE=fedora:rawhide
+  # Fedora
+  # https://fedoraproject.org/wiki/Container:Guidelines
+  - CONTAINER_IMAGE=registry.fedoraproject.org/fedora:24
+  - CONTAINER_IMAGE=registry.fedoraproject.org/fedora:25
+  - CONTAINER_IMAGE=registry.fedoraproject.org/fedora:26
+  - CONTAINER_IMAGE=registry.fedoraproject.org/fedora:rawhide
 before_install:
   - |
     if [ "${CONTAINER_IMAGE}" != '' ]; then
-        sed -i "/^FROM / s|fedora|${CONTAINER_IMAGE}|" Dockerfile
+        sed -i "s|^FROM .*$|FROM ${CONTAINER_IMAGE}|" Dockerfile
     fi
+  - docker build -t rpm .
 install:
-  - |
-    docker build \
-        -t rpm \
-        .
-before_script:
-  - sudo chown -R 1000 .
+  - true
 script:
-  - |
-    DIR=$(pwd)
-    docker run \
-        -v "${DIR}:${DIR}" \
-        -w "${DIR}" \
-        -i \
-        -t rpm
+  - docker run -t rpm
