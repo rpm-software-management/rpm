@@ -469,6 +469,7 @@ static void unloadImmutableRegion(Header *hdrp, rpmTagVal tag)
     }
 }
 
+#ifdef WITH_IMAEVM
 static rpmRC replaceSigDigests(FD_t fd, const char *rpm, Header *sigp,
 			       off_t sigStart, off_t sigTargetSize,
 			       char *SHA256, char *SHA1, uint8_t *MD5)
@@ -516,6 +517,7 @@ static rpmRC replaceSigDigests(FD_t fd, const char *rpm, Header *sigp,
 exit:
     return rc;
 }
+#endif
 
 static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
 				   Header *sigp, Header *hdrp,
