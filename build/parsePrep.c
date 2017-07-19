@@ -210,6 +210,9 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	    t = "%{__7zip} x";
 	    needtar = 0;
 	    break;
+	case COMPRESSED_ZSTD:
+	    t = "%{__zstd} -dc";
+	    break;
 	case COMPRESSED_GEM:
 	    t = "%{__gem} unpack";
 	    needtar = 0;
