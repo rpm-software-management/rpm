@@ -561,7 +561,15 @@ AM_ICONV
 
 dnl Checks for header files we can live without.
 AC_HEADER_STDC
+dnl glibc and autoconf don't really play well together.
+dnl glibc will produce a warning when including the wrong header.
+dnl but still define major and minor. Causing us to include the header
+dnl that produces a giant warning for each major/minor use.
+dnl Use -Werror to work around that.
+old_CFLAGS=$CFLAGS
+CFLAGS="$CFLAGS -Werror"
 AC_HEADER_MAJOR
+CFLAGS=$old_CFLAGS
 AC_STRUCT_DIRENT_D_TYPE
 
 AC_CHECK_HEADERS(limits.h)
