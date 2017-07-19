@@ -247,12 +247,16 @@ add_minidebug()
   local mini_debuginfo=`mktemp`
 
   # In the minisymtab we don't need the .debug_ sections (already removed
-  # by -S) but also not any other non-allocated PROGBITS or NOTE sections.
+  # by -S) but also not other non-allocated PROGBITS, NOTE or NOBITS sections.
   # List and remove them explicitly. We do want to keep the allocated,
   # symbol and NOBITS sections so cannot use --keep-only because that is
   # too aggressive. Field $2 is the section name, $3 is the section type
   # and $8 are the section flags.
-  local remove_sections=`readelf -W -S "$debuginfo" | awk '{ if (index($2,".debug_") != 1 && ($3 == "PROGBITS" || $3 == "NOTE") && index($8,"A") == 0) printf "--remove-section "$2" " }'`
+  local remove_sections=`readelf -W -S "$debuginfo" \
+	| awk '{ if (index($2,".debug_") != 1 \
+		     && ($3 == "PROGBITS" || $3 == "NOTE" || $3 == "NOBITS") \
+		     && index($8,"A") == 0) \
+		   printf "--remove-section "$2" " }'`
 
   # Extract the dynamic symbols from the main binary, there is no need to also have these
   # in the normal symbol table
