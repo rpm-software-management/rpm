@@ -151,6 +151,7 @@ static const FDIO_t gzdio;
 static const FDIO_t bzdio;
 static const FDIO_t xzdio;
 static const FDIO_t lzdio;
+static const FDIO_t zstdio;
 
 /** \ingroup rpmio
  * Update digest(s) attached to fd.
@@ -1036,6 +1037,243 @@ static const FDIO_t lzdio = &lzdio_s;
 #endif	/* HAVE_LZMA_H */
 
 /* =============================================================== */
+/* Support for ZSTD library.  */
+#if HAVE_ZSTD_H
+
+#include <zstd.h>
+
+typedef struct rpmzstd_s {
+    int flags;			/*!< open flags. */
+    int fdno;
+    int level;			/*!< compression level */
+    FILE * fp;
+    void * _stream;             /*!< ZSTD_{C,D}Stream */
+    size_t nb;
+    void * b;
+    ZSTD_inBuffer zib;          /*!< ZSTD_inBuffer */
+    ZSTD_outBuffer zob;         /*!< ZSTD_outBuffer */
+} * rpmzstd;
+
+static rpmzstd rpmzstdNew(int fdno, const char *fmode)
+{
+    int flags = 0;
+    int level = 3;
+    const char * s = fmode;
+    char stdio[32];
+    char *t = stdio;
+    char *te = t + sizeof(stdio) - 2;
+    int c;
+
+    switch ((c = *s++)) {
+    case 'a':
+	*t++ = (char)c;
+	flags &= ~O_ACCMODE;
+	flags |= O_WRONLY | O_CREAT | O_APPEND;
+	break;
+    case 'w':
+	*t++ = (char)c;
+	flags &= ~O_ACCMODE;
+	flags |= O_WRONLY | O_CREAT | O_TRUNC;
+	break;
+    case 'r':
+	*t++ = (char)c;
+	flags &= ~O_ACCMODE;
+	flags |= O_RDONLY;
+	break;
+    }
+
+    while ((c = *s++) != 0) {
+	switch (c) {
+	case '.':
+	    break;
+	case '+':
+	    if (t < te) *t++ = c;
+	    flags &= ~O_ACCMODE;
+	    flags |= O_RDWR;
+	    continue;
+	    break;
+	default:
+	    if (c >= (int)'0' && c <= (int)'9') {
+		level = strtol(s-1, (char **)&s, 10);
+assert(level >= 1 && level <= 19);
+	    }
+	    continue;
+	    break;
+	}
+	break;
+    }
+    *t = '\0';
+
+    FILE * fp = fdopen(fdno, stdio);
+    if (fp == NULL)
+	return NULL;
+
+    void * _stream = NULL;
+    size_t nb = 0;
+
+    if ((flags & O_ACCMODE) == O_RDONLY) {	/* decompressing */
+	if ((_stream = (void *) ZSTD_createDStream()) == NULL
+	 || ZSTD_isError(ZSTD_initDStream(_stream))) {
+	    return NULL;
+	}
+	nb = ZSTD_DStreamInSize();
+    } else {					/* compressing */
+	if ((_stream = (void *) ZSTD_createCStream()) == NULL
+	 || ZSTD_isError(ZSTD_initCStream(_stream, level))) {
+	    return NULL;
+	}
+	nb = ZSTD_CStreamOutSize();
+    }
+
+    rpmzstd zstd = (rpmzstd) xcalloc(1, sizeof(*zstd));
+    zstd->flags = flags;
+    zstd->fdno = fdno;
+    zstd->level = level;
+    zstd->fp = fp;
+    zstd->_stream = _stream;
+    zstd->nb = nb;
+    zstd->b = xmalloc(nb);
+
+    return zstd;
+}
+
+static FD_t zstdFdopen(FD_t fd, int fdno, const char * fmode)
+{
+    rpmzstd zstd = rpmzstdNew(fdno, fmode);
+
+    if (zstd == NULL)
+	return NULL;
+    
+    fdSetFdno(fd, -1);		/* XXX skip the fdio close */
+    fdPush(fd, zstdio, zstd, fdno);		/* Push zstdio onto stack */
+    return fd;
+}
+
+static int zstdFlush(FDSTACK_t fps)
+{
+    rpmzstd zstd = (rpmzstd) fps->fp;
+assert(zstd);
+    int rc = -1;
+
+    if ((zstd->flags & O_ACCMODE) == O_RDONLY) { /* decompressing */
+	rc = 0;
+    } else {					/* compressing */
+	/* close frame */
+	zstd->zob.dst  = zstd->b;
+	zstd->zob.size = zstd->nb;
+	zstd->zob.pos  = 0;
+	int xx = ZSTD_flushStream(zstd->_stream, &zstd->zob);
+	if (ZSTD_isError(xx))
+	    fps->errcookie = ZSTD_getErrorName(xx);
+	else if (zstd->zob.pos != fwrite(zstd->b, 1, zstd->zob.pos, zstd->fp))
+	    fps->errcookie = "zstdFlush fwrite failed.";
+	else
+	    rc = 0;
+    }
+    return rc;
+}
+
+static ssize_t zstdRead(FDSTACK_t fps, void * buf, size_t count)
+{
+    rpmzstd zstd = (rpmzstd) fps->fp;
+assert(zstd);
+    ZSTD_outBuffer zob = { buf, count, 0 };
+
+    while (zob.pos < zob.size) {
+	/* Re-fill compressed data buffer. */
+	if (zstd->zib.pos >= zstd->zib.size) {
+	    zstd->zib.size = fread(zstd->b, 1, zstd->nb, zstd->fp);
+	    if (zstd->zib.size == 0)
+		break;		/* EOF */
+	    zstd->zib.src  = zstd->b;
+	    zstd->zib.pos  = 0;
+	}
+
+	/* Decompress next chunk. */
+	int xx = ZSTD_decompressStream(zstd->_stream, &zob, &zstd->zib);
+	if (ZSTD_isError(xx)) {
+	    fps->errcookie = ZSTD_getErrorName(xx);
+	    return -1;
+	}
+    }
+    return zob.pos;
+}
+
+static ssize_t zstdWrite(FDSTACK_t fps, const void * buf, size_t count)
+{
+    rpmzstd zstd = (rpmzstd) fps->fp;
+assert(zstd);
+    ZSTD_inBuffer zib = { buf, count, 0 };
+
+    while (zib.pos < zib.size) {
+
+	/* Reset to beginning of compressed data buffer. */
+	zstd->zob.dst  = zstd->b;
+	zstd->zob.size = zstd->nb;
+	zstd->zob.pos  = 0;
+
+	/* Compress next chunk. */
+        int xx = ZSTD_compressStream(zstd->_stream, &zstd->zob, &zib);
+        if (ZSTD_isError(xx)) {
+	    fps->errcookie = ZSTD_getErrorName(xx);
+	    return -1;
+	}
+
+	/* Write compressed data buffer. */
+        if (zstd->zob.pos > 0) {
+	    size_t nw = fwrite(zstd->b, 1, zstd->zob.pos, zstd->fp);
+	    if (nw != zstd->zob.pos) {
+		fps->errcookie = "zstdWrite fwrite failed.";
+		return -1;
+	    }
+	}
+    }
+    return zib.pos;
+}
+
+static int zstdClose(FDSTACK_t fps)
+{
+    rpmzstd zstd = (rpmzstd) fps->fp;
+assert(zstd);
+    int rc = -2;
+
+    if ((zstd->flags & O_ACCMODE) == O_RDONLY) { /* decompressing */
+	rc = 0;
+	ZSTD_freeDStream(zstd->_stream);
+    } else {					/* compressing */
+	/* close frame */
+	zstd->zob.dst  = zstd->b;
+	zstd->zob.size = zstd->nb;
+	zstd->zob.pos  = 0;
+	int xx = ZSTD_endStream(zstd->_stream, &zstd->zob);
+	if (ZSTD_isError(xx))
+	    fps->errcookie = ZSTD_getErrorName(xx);
+	else if (zstd->zob.pos != fwrite(zstd->b, 1, zstd->zob.pos, zstd->fp))
+	    fps->errcookie = "zstdClose fwrite failed.";
+	else
+	    rc = 0;
+	ZSTD_freeCStream(zstd->_stream);
+    }
+
+    if (zstd->fp && fileno(zstd->fp) > 2)
+	(void) fclose(zstd->fp);
+
+    if (zstd->b) free(zstd->b);
+    free(zstd);
+
+    return rc;
+}
+
+static const struct FDIO_s zstdio_s = {
+  "zstdio", "zstd",
+  zstdRead, zstdWrite, NULL, zstdClose,
+  NULL, zstdFdopen, zstdFlush, NULL, zfdError, zfdStrerr
+};
+static const FDIO_t zstdio = &zstdio_s ;
+
+#endif	/* HAVE_ZSTD_H */
+
+/* =============================================================== */
 
 #define	FDIOVEC(_fps, _vec)	\
   ((_fps) && (_fps)->io) ? (_fps)->io->_vec : NULL
@@ -1178,14 +1416,17 @@ static void cvtfmode (const char *m,
 
     switch (*m) {
     case 'a':
+	flags &= ~O_ACCMODE;
 	flags |= O_WRONLY | O_CREAT | O_APPEND;
 	if (--nstdio > 0) *stdio++ = *m;
 	break;
     case 'w':
+	flags &= ~O_ACCMODE;
 	flags |= O_WRONLY | O_CREAT | O_TRUNC;
 	if (--nstdio > 0) *stdio++ = *m;
 	break;
     case 'r':
+	flags &= ~O_ACCMODE;
 	flags |= O_RDONLY;
 	if (--nstdio > 0) *stdio++ = *m;
 	break;
@@ -1201,7 +1442,7 @@ static void cvtfmode (const char *m,
 	case '.':
 	    break;
 	case '+':
-	    flags &= ~(O_RDONLY|O_WRONLY);
+	    flags &= ~O_ACCMODE;
 	    flags |= O_RDWR;
 	    if (--nstdio > 0) *stdio++ = c;
 	    continue;
@@ -1213,6 +1454,11 @@ static void cvtfmode (const char *m,
 	case 'x':
 	    flags |= O_EXCL;
 	    if (--nstdio > 0) *stdio++ = c;
+	    continue;
+	    break;
+	case '?':
+	    flags |= RPMIO_DEBUG_IO;
+	    if (--nother > 0) *other++ = c;
 	    continue;
 	    break;
 	default:
@@ -1242,6 +1488,9 @@ static FDIO_t findIOT(const char *name)
 #if HAVE_LZMA_H
 	&xzdio_s,
 	&lzdio_s,
+#endif
+#if HAVE_ZSTD_H
+	&zstdio_s,
 #endif
 	NULL
     };

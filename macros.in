@@ -59,6 +59,7 @@
 %__ssh			@__SSH@
 %__tar			@__TAR@
 %__unzip		@__UNZIP@
+%__zstd			@__ZSTD@
 %__gem			@__GEM@
 %__git			@__GIT@
 %__hg			@__HG@
