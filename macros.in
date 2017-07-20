@@ -146,6 +146,8 @@
 #
 #	The directory where rpm's configuration and scripts live
 %_rpmconfigdir		%{getconfdir}
+#       The directory where rpm's macro files live
+%_rpmmacrodir		%{_rpmconfigdir}/macros.d
 
 #	The directory where sources/patches will be unpacked and built.
 %_builddir		%{_topdir}/BUILD
