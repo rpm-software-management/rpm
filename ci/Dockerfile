@@ -43,7 +43,8 @@ RUN ./configure \
   --with-selinux \
   --with-cap \
   --with-acl \
-  --with-lua
+  --with-lua \
+  --enable-silent-rules
 RUN make
 
 CMD make check; rc=$?; cat tests/rpmtests.log; exit $rc
