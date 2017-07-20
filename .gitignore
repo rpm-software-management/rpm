@@ -1,4 +1,5 @@
 .*
+!.travis.yml
 !.tx
 !.gitignore
 !.mailmap

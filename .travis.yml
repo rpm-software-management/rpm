@@ -1,0 +1,20 @@
+sudo: required
+services:
+  - docker
+env:
+  # Fedora
+  # https://fedoraproject.org/wiki/Container:Guidelines
+  - CONTAINER_IMAGE=registry.fedoraproject.org/fedora:24
+  - CONTAINER_IMAGE=registry.fedoraproject.org/fedora:25
+  - CONTAINER_IMAGE=registry.fedoraproject.org/fedora:26
+  - CONTAINER_IMAGE=registry.fedoraproject.org/fedora:rawhide
+before_install:
+  - |
+    if [ "${CONTAINER_IMAGE}" != '' ]; then
+        sed -i "s|^FROM .*$|FROM ${CONTAINER_IMAGE}|" Dockerfile
+    fi
+  - docker build -t rpm .
+install:
+  - true
+script:
+  - docker run -t rpm
