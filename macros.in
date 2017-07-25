@@ -549,10 +549,10 @@ package or when debugging this package.\
 %_unique_debug_srcs	1
 
 # Whether rpm should put debug source files into its own subpackage
-#%_debugsource_packages	1
+%_debugsource_packages	1
 
 # Whether rpm should create extra debuginfo packages for each subpackage
-#%_debuginfo_subpackages 1
+%_debuginfo_subpackages 1
 
 #
 # Use internal dependency generator rather than external helpers?
