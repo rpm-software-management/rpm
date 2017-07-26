@@ -186,7 +186,7 @@
     %{?_unique_debug_srcs:--unique-debug-src-base "%{name}-%{VERSION}-%{RELEASE}.%{_arch}"} \\\
     %{?_find_debuginfo_dwz_opts} \\\
     %{?_find_debuginfo_opts} \\\
-    %{?_debugsource_packages:-S debugsourcefiles.list} \\\
+    %{?_debugsource_packages:-S "%{_builddir}/%{?buildsubdir}/debugsourcefiles.list"} \\\
     "%{_builddir}/%{?buildsubdir}"\
 %{nil}
 
