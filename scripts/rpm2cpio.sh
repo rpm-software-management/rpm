@@ -49,5 +49,6 @@ case "$(_dd $offset bs=3 count=1)" in
 	"$(printf '\037\213')"*) _dd $offset | gunzip  ;; # '\x1f\x8b'
 	"$(printf '\375\067')"*) _dd $offset | xzcat   ;; # '\xfd\x37'
 	"$(printf '\135\000')"*) _dd $offset | unlzma  ;; # '\x5d\x00'
+	"$(printf '\050\265')"*) _dd $offset | unzstd  ;; # '\x28\xb5'
 	*) fatal "Unrecognized rpm file: $pkg" ;;
 esac
