@@ -60,6 +60,17 @@
 #define DEBUG_ID_DIR		"/usr/lib/debug/.build-id"
 #define DEBUG_DWZ_DIR 		"/usr/lib/debug/.dwz"
 
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+#define HASHTYPE fileRenameHash
+#define HTKEYTYPE const char *
+#define HTDATATYPE const char *
+#include "lib/rpmhash.C"
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+
 /**
  */
 enum specfFlags_e {
@@ -1022,19 +1033,28 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
     }
 
     /* Adjust paths if needed */
-    if (!isSrc && pkg->removePostfixes)
-    for (i = 0, flp = fl->files.recs; i < fl->files.used; i++, flp++) {
-	char * cpiopath = flp->cpioPath;
+    if (!isSrc && pkg->removePostfixes) {
+	pkg->fileRenameMap = fileRenameHashCreate(fl->files.used,
+	                                          rstrhash, strcmp,
+	                                          (fileRenameHashFreeKey)rfree, (fileRenameHashFreeData)rfree);
+	for (i = 0, flp = fl->files.recs; i < fl->files.used; i++, flp++) {
+	    char * cpiopath = flp->cpioPath;
+	    char * cpiopath_orig = xstrdup(cpiopath);
 
-	for (ARGV_const_t postfix_p = pkg->removePostfixes; *postfix_p; postfix_p++) {
-	    int len = strlen(*postfix_p);
-	    int plen = strlen(cpiopath);
-	    if (len <= plen && !strncmp(cpiopath+plen-len, *postfix_p, len)) {
-		cpiopath[plen-len] = '\0';
-		if (plen-len > 0 && cpiopath[plen-len-1] == '/') {
-		    cpiopath[plen-len-1] = '\0';
+	    for (ARGV_const_t postfix_p = pkg->removePostfixes; *postfix_p; postfix_p++) {
+		int len = strlen(*postfix_p);
+		int plen = strlen(cpiopath);
+		if (len <= plen && !strncmp(cpiopath+plen-len, *postfix_p, len)) {
+		    cpiopath[plen-len] = '\0';
+		    if (plen-len > 0 && cpiopath[plen-len-1] == '/') {
+			cpiopath[plen-len-1] = '\0';
+		    }
 		}
 	    }
+	    if (strcmp(cpiopath_orig, cpiopath))
+		fileRenameHashAddEntry(pkg->fileRenameMap, xstrdup(cpiopath), cpiopath_orig);
+	    else
+		_free(cpiopath_orig);
 	}
     }
 
