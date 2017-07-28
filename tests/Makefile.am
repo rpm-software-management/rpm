@@ -64,6 +64,7 @@ EXTRA_DIST += data/SPECS/filetriggers.spec
 EXTRA_DIST += data/SPECS/prefixtest.spec
 EXTRA_DIST += data/SPECS/testdoc.spec
 EXTRA_DIST += data/SPECS/sigpipe.spec
+EXTRA_DIST += data/SPECS/test-subpackages.spec
 EXTRA_DIST += data/SOURCES/hello-1.0-modernize.patch
 EXTRA_DIST += data/SOURCES/hello-1.0.tar.gz
 EXTRA_DIST += data/SOURCES/hello-2.0.tar.gz
