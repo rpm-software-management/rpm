@@ -573,6 +573,19 @@ if [ -n "$srcout" ]; then
      find src/debug -mindepth 1 -maxdepth 1
     ) | sed 's,^,/usr/,' >> "$srcout"
   fi
+  if [ ! -s "$srcout" ]; then
+    echo >&2 "*** WARNING: No source files found.  Creating empty debugsource package"
+    # Create the empty directory.
+    # See also debugedit invocation. Directories must match up.
+    debug_base_name="$RPM_BUILD_DIR"
+    debug_dest_name="/usr/src/debug"
+    if [ ! -z "$unique_debug_src_base" ]; then
+      debug_base_name="$BUILDDIR"
+      debug_dest_name="/usr/src/debug/${unique_debug_src_base}"
+    fi
+    mkdir -p "${RPM_BUILD_ROOT}${debug_dest_name}"
+    echo "$debug_dest_name" > "$srcout"
+  fi
 fi
 
 # Append to $1 only the lines from stdin not already in the file.
