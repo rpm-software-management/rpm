@@ -2839,6 +2839,19 @@ static void filterDebuginfoPackage(rpmSpec spec, Package pkg,
 	/* strip trailing .debug like in find-debuginfo.sh */
 	if (namel > 6 && !strcmp(name + namel - 6, ".debug"))
 	    namel -= 6;
+
+	/* fileRenameMap doesn't necessarily have to be initialized */
+	if (pkg->fileRenameMap) {
+	    const char **names = NULL;
+	    int namec = 0;
+	    fileRenameHashGetEntry(pkg->fileRenameMap, name, &names, &namec, NULL);
+	    if (namec) {
+		if (namec > 1)
+		    rpmlog(RPMLOG_WARNING, _("%s was mapped to multiple filenames"), name);
+		name = *names;
+		namel = strlen(name);
+	    }
+	}
 	
 	/* generate path */
 	rasprintf(&path, "%s%s%.*s%s.debug", buildroot, DEBUG_LIB_DIR, namel, name, uniquearch);
