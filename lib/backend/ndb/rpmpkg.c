@@ -746,41 +746,12 @@ static int rpmpkgAddSlotPage(rpmpkgdb pkgdb)
     return RPMRC_OK;
 }
 
-static inline int is_correct_db(rpmpkgdb pkgdb)
-{
-    struct stat stb1, stb2;
-    if (stat(pkgdb->filename, &stb1))
-	return 0;
-    if (fstat(pkgdb->fd, &stb2))
-	return 0;
-    return stb1.st_dev == stb2.st_dev && stb1.st_ino == stb2.st_ino;
-}
-
-static inline int reopen_db(rpmpkgdb pkgdb)
-{
-    close(pkgdb->fd);
-    if ((pkgdb->fd = open(pkgdb->filename, pkgdb->flags, pkgdb->mode)) == -1) {
-	return RPMRC_FAIL;
-    }
-    return RPMRC_OK;
-}
-
 static int rpmpkgGetLock(rpmpkgdb pkgdb, int type)
 {
     if (!pkgdb->fd)
 	return RPMRC_FAIL;
-    for (;;) {
-	if (flock(pkgdb->fd, type)) {
-	    return RPMRC_FAIL;
-	}
-	if (!is_correct_db(pkgdb)) {
-	    if (reopen_db(pkgdb)) {
-		return RPMRC_FAIL;
-	    }
-	    continue;
-	}
-	break;
-    }
+    if (flock(pkgdb->fd, type))
+	return RPMRC_FAIL;
     return RPMRC_OK;
 }
 
