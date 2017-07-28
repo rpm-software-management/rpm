@@ -2813,7 +2813,6 @@ static void filterDebuginfoPackage(rpmSpec spec, Package pkg,
 	int namel = strlen(name);
 
 	/* strip trailing .debug like in find-debuginfo.sh */
-	namel = strlen(name);
 	if (namel > 6 && !strcmp(name + namel - 6, ".debug"))
 	    namel -= 6;
 	
