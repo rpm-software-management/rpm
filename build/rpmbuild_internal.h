@@ -6,6 +6,17 @@
 #include <rpm/rpmstrpool.h>
 #include "build/rpmbuild_misc.h"
 
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+#define HASHTYPE fileRenameHash
+#define HTKEYTYPE const char *
+#define HTDATATYPE const char *
+#include "lib/rpmhash.H"
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+
 struct TriggerFileEntry {
     int index;
     char * fileName;
@@ -119,6 +130,7 @@ struct Package_s {
     ARGV_t fileList;		/* If NULL, package will not be written */
     ARGV_t fileExcludeList;
     ARGV_t removePostfixes;
+    fileRenameHash fileRenameMap;
     ARGV_t policyList;
 
     Package next;
