@@ -117,6 +117,7 @@ struct Package_s {
 
     ARGV_t fileFile;
     ARGV_t fileList;		/* If NULL, package will not be written */
+    ARGV_t fileExcludeList;
     ARGV_t removePostfixes;
     ARGV_t policyList;
 
