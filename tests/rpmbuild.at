@@ -1166,3 +1166,69 @@ hello3 debug exists
 ],
 [ignore])
 AT_CLEANUP
+
+# ------------------------------
+# Check that defining _debuginfo_subpackages works with excluded files.
+AT_SETUP([rpmbuild debuginfo subpackages multiple excluded])
+AT_KEYWORDS([build] [debuginfo] [debugsubpackage] [debugsource])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+# Setup sources
+cp "${abs_srcdir}"/data/SOURCES/hello.c ${TOPDIR}/SOURCES
+
+run rpmbuild --quiet \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --define "_unique_debug_names 1" \
+  --define "_unique_debug_srcs 1" \
+  --define "_debugsource_packages 1" \
+  --define "_debuginfo_subpackages 1" \
+  -ba "${abs_srcdir}"/data/SPECS/test-subpackages-exclude.spec
+
+# Check that there are 2 debuginfo packages.
+ls ${abs_builddir}/testing/build/RPMS/*/*debuginfo*rpm | wc --lines
+
+# First contains hello.debug
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-1.0-1.*.rpm \
+  | cpio -diu --quiet
+# Extract the debug name from the exe (.gnu_debuglink section, first string)
+debug_name=$(readelf -p .gnu_debuglink ./bin/hello | grep hello | cut -c13-)
+
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-debuginfo-1.0-1.*.rpm \
+  | cpio -diu --quiet
+if test -f ./usr/lib/debug/bin/$debug_name; then
+  echo "hello debug exists"
+else
+  echo "No hello: $debug_name"
+fi
+
+# Second contains hello2.debug but NOT hello3.debug
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-1.0-1.*.rpm \
+  | cpio -diu --quiet
+# Extract the debug name from the exe (.gnu_debuglink section, first string)
+debug_name=$(readelf -p .gnu_debuglink ./bin/hello2 | grep hello | cut -c13-)
+
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm \
+  | cpio -diu --quiet
+if test -f ./usr/lib/debug/bin/$debug_name; then
+  echo "hello2 debug exists"
+else
+  echo "No hello2: $debug_name"
+fi
+
+if test -f ./usr/lib/debug/bin/hello3*; then
+  echo "hello3 debug exists"
+else
+  echo "No hello3 debug"
+fi
+],
+[0],
+[2
+hello debug exists
+hello2 debug exists
+No hello3 debug
+],
+[ignore])
+AT_CLEANUP
