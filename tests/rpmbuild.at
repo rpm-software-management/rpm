@@ -900,3 +900,269 @@ ls ./usr/src/debug/test-1.0*/
 ],
 [ignore])
 AT_CLEANUP
+
+# ------------------------------
+# Check that undefining _debuginfo_subpackages creates one single -debuginfo.
+AT_SETUP([rpmbuild debuginfo subpackages single])
+AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+# Setup sources
+cp "${abs_srcdir}"/data/SOURCES/hello.c ${TOPDIR}/SOURCES
+
+run rpmbuild --quiet \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --undefine "_unique_debug_names" \
+  --undefine "_unique_debug_srcs" \
+  --undefine "_debugsource_packages" \
+  --undefine "_debuginfo_subpackages" \
+  -ba "${abs_srcdir}"/data/SPECS/test-subpackages.spec
+
+# Check that there is just one debuginfo package.
+ls ${abs_builddir}/testing/build/RPMS/*/*debuginfo*rpm | wc --lines
+
+# Which contains hello.debug
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-1.0-1.*.rpm \
+  | cpio -diu --quiet
+# Extract the debug name from the exe (.gnu_debuglink section, first string)
+debug_name=$(readelf -p .gnu_debuglink ./bin/hello | grep hello | cut -c13-)
+
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-debuginfo-1.0-1.*.rpm \
+  | cpio -diu --quiet
+if test -f ./usr/lib/debug/bin/$debug_name; then
+  echo "hello debug exists"
+else
+  echo "No hello: $debug_name"
+fi
+],
+[0],
+[1
+hello debug exists
+],
+[ignore])
+AT_CLEANUP
+
+# ------------------------------
+# Check that defining _debuginfo_subpackages creates multiple -debuginfos.
+AT_SETUP([rpmbuild debuginfo subpackages multiple])
+AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+# Setup sources
+cp "${abs_srcdir}"/data/SOURCES/hello.c ${TOPDIR}/SOURCES
+
+run rpmbuild --quiet \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --undefine "_unique_debug_names" \
+  --undefine "_unique_debug_srcs" \
+  --undefine "_debugsource_packages" \
+  --define "_debuginfo_subpackages 1" \
+  -ba "${abs_srcdir}"/data/SPECS/test-subpackages.spec
+
+# Check that there are 3 debuginfo packages.
+ls ${abs_builddir}/testing/build/RPMS/*/*debuginfo*rpm | wc --lines
+
+# First contains hello.debug
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-1.0-1.*.rpm \
+  | cpio -diu --quiet
+# Extract the debug name from the exe (.gnu_debuglink section, first string)
+debug_name=$(readelf -p .gnu_debuglink ./bin/hello | grep hello | cut -c13-)
+
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-debuginfo-1.0-1.*.rpm \
+  | cpio -diu --quiet
+if test -f ./usr/lib/debug/bin/$debug_name; then
+  echo "hello debug exists"
+else
+  echo "No hello: $debug_name"
+fi
+
+# Second contains hello2.debug
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-1.0-1.*.rpm \
+  | cpio -diu --quiet
+# Extract the debug name from the exe (.gnu_debuglink section, first string)
+debug_name=$(readelf -p .gnu_debuglink ./bin/hello2 | grep hello | cut -c13-)
+
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm \
+  | cpio -diu --quiet
+if test -f ./usr/lib/debug/bin/$debug_name; then
+  echo "hello2 debug exists"
+else
+  echo "No hello2: $debug_name"
+fi
+
+# Third contains hello3.debug
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-1.0-1.*.rpm \
+  | cpio -diu --quiet
+# Extract the debug name from the exe (.gnu_debuglink section, first string)
+debug_name=$(readelf -p .gnu_debuglink ./bin/hello3 | grep hello | cut -c13-)
+
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm \
+  | cpio -diu --quiet
+if test -f ./usr/lib/debug/bin/$debug_name; then
+  echo "hello3 debug exists"
+else
+  echo "No hello3: $debug_name"
+fi
+],
+[0],
+[3
+hello debug exists
+hello2 debug exists
+hello3 debug exists
+],
+[ignore])
+AT_CLEANUP
+# ------------------------------
+# Check that defining _debuginfo_subpackages creates multiple -debuginfos.
+# With unique debug and source names
+AT_SETUP([rpmbuild debuginfo subpackages multiple unique])
+AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+# Setup sources
+cp "${abs_srcdir}"/data/SOURCES/hello.c ${TOPDIR}/SOURCES
+
+run rpmbuild --quiet \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --define "_unique_debug_names 1" \
+  --define "_unique_debug_srcs 1" \
+  --undefine "_debugsource_packages" \
+  --define "_debuginfo_subpackages 1" \
+  -ba "${abs_srcdir}"/data/SPECS/test-subpackages.spec
+
+# Check that there are 3 debuginfo packages.
+ls ${abs_builddir}/testing/build/RPMS/*/*debuginfo*rpm | wc --lines
+
+# First contains hello.debug
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-1.0-1.*.rpm \
+  | cpio -diu --quiet
+# Extract the debug name from the exe (.gnu_debuglink section, first string)
+debug_name=$(readelf -p .gnu_debuglink ./bin/hello | grep hello | cut -c13-)
+
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-debuginfo-1.0-1.*.rpm \
+  | cpio -diu --quiet
+if test -f ./usr/lib/debug/bin/$debug_name; then
+  echo "hello debug exists"
+else
+  echo "No hello: $debug_name"
+fi
+
+# Second contains hello2.debug
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-1.0-1.*.rpm \
+  | cpio -diu --quiet
+# Extract the debug name from the exe (.gnu_debuglink section, first string)
+debug_name=$(readelf -p .gnu_debuglink ./bin/hello2 | grep hello | cut -c13-)
+
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm \
+  | cpio -diu --quiet
+if test -f ./usr/lib/debug/bin/$debug_name; then
+  echo "hello2 debug exists"
+else
+  echo "No hello2: $debug_name"
+fi
+
+# Third contains hello3.debug
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-1.0-1.*.rpm \
+  | cpio -diu --quiet
+# Extract the debug name from the exe (.gnu_debuglink section, first string)
+debug_name=$(readelf -p .gnu_debuglink ./bin/hello3 | grep hello | cut -c13-)
+
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm \
+  | cpio -diu --quiet
+if test -f ./usr/lib/debug/bin/$debug_name; then
+  echo "hello3 debug exists"
+else
+  echo "No hello3: $debug_name"
+fi
+],
+[0],
+[3
+hello debug exists
+hello2 debug exists
+hello3 debug exists
+],
+[ignore])
+AT_CLEANUP
+# ------------------------------
+# Check that defining _debuginfo_subpackages creates multiple -debuginfos.
+# Unique with debugsources.
+AT_SETUP([rpmbuild debuginfo subpackages multiple unique debugsource])
+AT_KEYWORDS([build] [debuginfo] [debugsubpackage] [debugsource])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+# Setup sources
+cp "${abs_srcdir}"/data/SOURCES/hello.c ${TOPDIR}/SOURCES
+
+run rpmbuild --quiet \
+  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
+  --rcfile=${abs_top_builddir}/rpmrc \
+  --define "_unique_debug_names 1" \
+  --define "_unique_debug_srcs 1" \
+  --define "_debugsource_packages 1" \
+  --define "_debuginfo_subpackages 1" \
+  -ba "${abs_srcdir}"/data/SPECS/test-subpackages.spec
+
+# Check that there are 3 debuginfo packages.
+ls ${abs_builddir}/testing/build/RPMS/*/*debuginfo*rpm | wc --lines
+
+# First contains hello.debug
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-1.0-1.*.rpm \
+  | cpio -diu --quiet
+# Extract the debug name from the exe (.gnu_debuglink section, first string)
+debug_name=$(readelf -p .gnu_debuglink ./bin/hello | grep hello | cut -c13-)
+
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-debuginfo-1.0-1.*.rpm \
+  | cpio -diu --quiet
+if test -f ./usr/lib/debug/bin/$debug_name; then
+  echo "hello debug exists"
+else
+  echo "No hello: $debug_name"
+fi
+
+# Second contains hello2.debug
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-1.0-1.*.rpm \
+  | cpio -diu --quiet
+# Extract the debug name from the exe (.gnu_debuglink section, first string)
+debug_name=$(readelf -p .gnu_debuglink ./bin/hello2 | grep hello | cut -c13-)
+
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm \
+  | cpio -diu --quiet
+if test -f ./usr/lib/debug/bin/$debug_name; then
+  echo "hello2 debug exists"
+else
+  echo "No hello2: $debug_name"
+fi
+
+# Third contains hello3.debug
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-1.0-1.*.rpm \
+  | cpio -diu --quiet
+# Extract the debug name from the exe (.gnu_debuglink section, first string)
+debug_name=$(readelf -p .gnu_debuglink ./bin/hello3 | grep hello | cut -c13-)
+
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm \
+  | cpio -diu --quiet
+if test -f ./usr/lib/debug/bin/$debug_name; then
+  echo "hello3 debug exists"
+else
+  echo "No hello3: $debug_name"
+fi
+],
+[0],
+[3
+hello debug exists
+hello2 debug exists
+hello3 debug exists
+],
+[ignore])
+AT_CLEANUP
