@@ -1100,7 +1100,11 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	}
 
 	/* Skip files that were marked with %exclude. */
-	if (flp->flags & RPMFILE_EXCLUDE) continue;
+	if (flp->flags & RPMFILE_EXCLUDE)
+	{
+	    argvAdd(&pkg->fileExcludeList, flp->cpioPath);
+	    continue;
+	}
 
 	/* Collect on-disk paths for archive creation */
 	pkg->dpaths[npaths++] = xstrdup(flp->diskPath);

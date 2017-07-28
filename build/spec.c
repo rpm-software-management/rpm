@@ -110,6 +110,7 @@ Package newPackage(const char *name, rpmstrPool pool, Package *pkglist)
     p->autoProv = 1;
     p->autoReq = 1;
     p->fileList = NULL;
+    p->fileExcludeList = NULL;
     p->fileFile = NULL;
     p->policyList = NULL;
     p->pool = rpmstrPoolLink(pool);
@@ -152,6 +153,7 @@ static Package freePackage(Package pkg)
     }
 
     pkg->fileList = argvFree(pkg->fileList);
+    pkg->fileExcludeList = argvFree(pkg->fileExcludeList);
     pkg->fileFile = argvFree(pkg->fileFile);
     pkg->policyList = argvFree(pkg->policyList);
     pkg->removePostfixes = argvFree(pkg->removePostfixes);
