@@ -78,6 +78,7 @@ EXTRA_DIST += data/SRPMS/hello-1.0-1.src.rpm
 EXTRA_DIST += data/SOURCES/hello.c
 EXTRA_DIST += data/SPECS/hello-attr-buildid.spec
 EXTRA_DIST += data/SPECS/hello-config-buildid.spec
+EXTRA_DIST += data/SPECS/hello-cd.spec
 EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.pub
 EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.secret
 
