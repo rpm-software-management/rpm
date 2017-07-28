@@ -566,6 +566,7 @@ if [ -d "${RPM_BUILD_ROOT}/usr/lib" -o -d "${RPM_BUILD_ROOT}/usr/src" ]; then
 fi
 
 if [ -n "$srcout" ]; then
+  srcout="$BUILDDIR/$srcout"
   > "$srcout"
   if [ -d "${RPM_BUILD_ROOT}/usr/src/debug" ]; then
     (cd "${RPM_BUILD_ROOT}/usr"
