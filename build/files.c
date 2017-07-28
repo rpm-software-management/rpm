@@ -2851,6 +2851,21 @@ static void filterDebuginfoPackage(rpmSpec spec, Package pkg,
 	}
 	path = _free(path);
     }
+    /* Exclude debug files for files which were excluded in respective non-debug package */
+    for (ARGV_const_t excl = pkg->fileExcludeList; excl && *excl; excl++) {
+        const char *name = *excl;
+
+	/* generate path */
+	rasprintf(&path, "%s%s%s%s.debug", buildroot, DEBUG_LIB_DIR, name, uniquearch);
+	/* Exclude only debuginfo files which actually exist */
+	if (access(path, F_OK) == 0) {
+	    char *line = NULL;
+	    rasprintf(&line, "%%exclude %s", path + buildrootlen);
+	    argvAdd(&files, line);
+	    _free(line);
+	}
+	path = _free(path);
+    }
 
     /* add collected directories to file list */
     if (dirs) {
