@@ -2542,6 +2542,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	if (generateBuildIDs (&fl, &idFiles) != 0) {
 	    rpmlog(RPMLOG_ERR, _("Generating build-id links failed\n"));
 	    fl.processingFailed = 1;
+	    argvFree(idFiles);
 	    goto exit;
 	}
 
@@ -2549,6 +2550,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	    resetPackageFilesDefaults (&fl, pkgFlags);
 	    addPackageFileList (&fl, pkg, &idFiles, NULL, NULL, 0);
 	}
+	argvFree(idFiles);
 
 	if (fl.processingFailed)
 	    goto exit;
@@ -2884,6 +2886,7 @@ static void filterDebuginfoPackage(rpmSpec spec, Package pkg,
 	}
 	path = _free(path);
     }
+    rpmfiFree(fi);
     /* Exclude debug files for files which were excluded in respective non-debug package */
     for (ARGV_const_t excl = pkg->fileExcludeList; excl && *excl; excl++) {
         const char *name = *excl;
