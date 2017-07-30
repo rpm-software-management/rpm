@@ -550,6 +550,7 @@ static int constructDSASigningKey(struct pgpDigKeyDSA_s *key)
 
     if (!DSA_set0_key(dsa, key->y, NULL)) {
         rc = 0;
+        goto done;
     }
 
     key->dsa_key = dsa;
