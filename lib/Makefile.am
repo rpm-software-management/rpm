@@ -7,6 +7,7 @@ AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/
 AM_CPPFLAGS += @WITH_BEECRYPT_INCLUDE@
 AM_CPPFLAGS += @WITH_NSS_INCLUDE@
 AM_CPPFLAGS += @WITH_POPT_INCLUDE@
+AM_CPPFLAGS += $(LMDB_CFLAGS)
 AM_CPPFLAGS += -I$(top_srcdir)/misc
 AM_CPPFLAGS += -DLOCALEDIR="\"$(localedir)\""
 AM_CPPFLAGS += -DSYSCONFDIR="\"$(sysconfdir)\""
@@ -73,6 +74,13 @@ librpm_la_SOURCES += \
 	backend/ndb/rpmidx.h \
 	backend/ndb/rpmxdb.c \
 	backend/ndb/rpmxdb.h
+endif
+
+if LMDB
+AM_CPPFLAGS += $(LMDB_CFLAGS)
+librpm_la_LIBADD += $(LMDB_LIBS)
+librpm_la_SOURCES += \
+	backend/lmdb.c
 endif
 
 tagtbl.C: Makefile.am $(srcdir)/rpmtag.h gentagtbl.sh
