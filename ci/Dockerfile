@@ -24,6 +24,7 @@ RUN dnf -y install \
   popt-devel \
   libarchive-devel \
   libdb-devel \
+  lmdb-devel \
   libselinux-devel \
   ima-evm-utils \
   libcap-devel \
