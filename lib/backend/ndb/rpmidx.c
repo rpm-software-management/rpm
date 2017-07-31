@@ -170,7 +170,6 @@ static int rpmidxReadHeader(rpmidxdb idxdb);
 
 static int rpmidxMap(rpmidxdb idxdb)
 {
-    struct stat stb;
     if (idxdb->xdb) {
 	if (rpmxdbMapBlob(idxdb->xdb, idxdb->xdbid, idxdb->rdonly ? O_RDONLY : O_RDWR, mapcb, idxdb))
 	    return RPMRC_FAIL;
@@ -179,6 +178,8 @@ static int rpmidxMap(rpmidxdb idxdb)
 	    return RPMRC_FAIL;
 	}
     } else {
+#ifdef IDXDB_FILESUPPORT
+	struct stat stb;
 	size_t size;
 	void *mapped;
 	if (fstat(idxdb->fd, &stb))
@@ -192,6 +193,9 @@ static int rpmidxMap(rpmidxdb idxdb)
 	if (mapped == MAP_FAILED)
 	    return RPMRC_FAIL;
 	set_mapped(idxdb, mapped, (unsigned int)stb.st_size);
+#else
+	return RPMRC_FAIL;
+#endif
     }
     return RPMRC_OK;
 }
@@ -203,14 +207,19 @@ static void rpmidxUnmap(rpmidxdb idxdb)
     if (idxdb->xdb) {
 	rpmxdbUnmapBlob(idxdb->xdb, idxdb->xdbid);
     } else {
+#ifdef IDXDB_FILESUPPORT
 	size_t size = idxdb->file_size;
 	/* round up for munmap */
 	size = (size + idxdb->pagesize - 1) & ~(idxdb->pagesize - 1);
 	munmap(idxdb->head_mapped, size);
 	set_mapped(idxdb, 0, 0);
+#else
+	return;
+#endif
     }
 }
 
+#ifdef IDXDB_FILESUPPORT
 static int rpmidxReadHeader(rpmidxdb idxdb);
 
 /* re-open file to get the new version */
@@ -235,6 +244,7 @@ static int rpmidxHandleObsolete(rpmidxdb idxdb)
     idxdb->fd = nfd;
     return rpmidxReadHeader(idxdb);	/* re-try with new file */
 }
+#endif
 
 static int rpmidxReadHeader(rpmidxdb idxdb)
 {
@@ -260,8 +270,10 @@ static int rpmidxReadHeader(rpmidxdb idxdb)
 	rpmidxUnmap(idxdb);
 	return RPMRC_FAIL;
     }
+#ifdef IDXDB_FILESUPPORT
     if (!idxdb->xdb && le2ha(idxdb->head_mapped + IDXDB_OFFSET_OBSOLETE))
 	return rpmidxHandleObsolete(idxdb);
+#endif
     idxdb->generation = le2ha(idxdb->head_mapped + IDXDB_OFFSET_GENERATION);
     idxdb->nslots     = le2ha(idxdb->head_mapped + IDXDB_OFFSET_NSLOTS);
     idxdb->usedslots  = le2ha(idxdb->head_mapped + IDXDB_OFFSET_USEDSLOTS);
@@ -324,6 +336,7 @@ static inline void bumpGeneration(rpmidxdb idxdb)
     h2lea(idxdb->generation, idxdb->head_mapped + IDXDB_OFFSET_GENERATION);
 }
 
+#ifdef IDXDB_FILESUPPORT
 static int createempty(rpmidxdb idxdb, off_t off, size_t size)
 {
     char buf[4096];
@@ -338,6 +351,7 @@ static int createempty(rpmidxdb idxdb, off_t off, size_t size)
 	return RPMRC_FAIL;
     return RPMRC_OK;
 }
+#endif
 
 /*** Key management ***/
 
@@ -442,6 +456,7 @@ static int addkeypage(rpmidxdb idxdb) {
 	if (rpmxdbResizeBlob(idxdb->xdb, idxdb->xdbid, idxdb->file_size + addsize))
 	    return RPMRC_FAIL;
     } else {
+#ifdef IDXDB_FILESUPPORT
 	/* don't use ftruncate because we want to create a "backed" page */
 	void *newaddr;
 	size_t oldsize, newsize;
@@ -456,6 +471,9 @@ static int addkeypage(rpmidxdb idxdb) {
 	if (newaddr == MAP_FAILED)
 	    return RPMRC_FAIL;
 	set_mapped(idxdb, newaddr, idxdb->file_size + addsize);
+#else
+	return RPMRC_FAIL;
+#endif
     }
     return RPMRC_OK;
 }
@@ -622,6 +640,7 @@ static int rpmidxRebuildInternal(rpmidxdb idxdb)
 	    return RPMRC_FAIL;
 	}
     } else {
+#ifdef IDXDB_FILESUPPORT
 	void *mapped;
 	nidxdb->filename = malloc(strlen(idxdb->filename) + 8);
 	if (!nidxdb->filename)
@@ -646,6 +665,9 @@ static int rpmidxRebuildInternal(rpmidxdb idxdb)
 	    return RPMRC_FAIL;
 	}
 	set_mapped(nidxdb, mapped, file_size);
+#else
+	return RPMRC_FAIL;
+#endif
     }
 
     /* copy all entries */
@@ -704,6 +726,7 @@ static int rpmidxRebuildInternal(rpmidxdb idxdb)
 	    return RPMRC_FAIL;
 	idxdb->xdbid = nidxdb->xdbid;
     } else {
+#ifdef IDXDB_FILESUPPORT
 	if (rename(nidxdb->filename, idxdb->filename)) {
 	    close(nidxdb->fd);
 	    unlink(nidxdb->filename);
@@ -718,6 +741,9 @@ static int rpmidxRebuildInternal(rpmidxdb idxdb)
 	free(nidxdb->filename);
 	close(idxdb->fd);
 	idxdb->fd = nidxdb->fd;
+#else
+	return RPMRC_FAIL;
+#endif
     }
     if (rpmidxReadHeader(idxdb))
 	return RPMRC_FAIL;
@@ -1009,11 +1035,15 @@ static int rpmidxInitInternal(rpmidxdb idxdb)
 	if (rc && rc != RPMRC_NOTFOUND)
 	    return rc;
     } else {
+#ifdef IDXDB_FILESUPPORT
 	struct stat stb; 
 	if (stat(idxdb->filename, &stb))
 	    return RPMRC_FAIL;
 	if (stb.st_size)	/* somebody else was faster */
 	    return rpmidxHandleObsolete(idxdb);
+#else
+	return RPMRC_FAIL;
+#endif
     }
     return rpmidxRebuildInternal(idxdb);
 }
@@ -1059,6 +1089,7 @@ static int rpmidxInit(rpmidxdb idxdb)
 
 int rpmidxOpen(rpmidxdb *idxdbp, rpmpkgdb pkgdb, const char *filename, int flags, int mode)
 {
+#ifdef IDXDB_FILESUPPORT
     struct stat stb;
     rpmidxdb idxdb;
 
@@ -1098,6 +1129,9 @@ int rpmidxOpen(rpmidxdb *idxdbp, rpmpkgdb pkgdb, const char *filename, int flags
     }
     *idxdbp = idxdb;
     return RPMRC_OK;
+#else
+    return RPMRC_FAIL;
+#endif
 }
 
 int rpmidxOpenXdb(rpmidxdb *idxdbp, rpmpkgdb pkgdb, rpmxdb xdb, unsigned int xdbtag)
