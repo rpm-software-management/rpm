@@ -16,6 +16,7 @@ RUN dnf -y install \
   zlib-devel \
   bzip2-devel \
   xz-devel \
+  libzstd-devel \
   elfutils-libelf-devel \
   elfutils-devel \
   openssl-devel \
