@@ -944,7 +944,7 @@ package or when debugging this package.\
 %_sharedstatedir	%{_prefix}/com
 %_localstatedir		%{_prefix}/var
 %_lib			lib
-%_libdir		%{_exec_prefix}/%{_lib}
+%_libdir		@libdir@
 %_includedir		%{_prefix}/include
 %_infodir		%{_datadir}/info
 %_mandir		%{_datadir}/man

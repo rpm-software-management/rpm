@@ -1,10 +1,8 @@
 # Internal binaries
-## HACK: It probably should be $(libexecdir)/rpm or $(libdir)/rpm
-rpmlibexecdir = $(prefix)/lib/rpm
+rpmlibexecdir = $(libexecdir)/rpm
 
 # Host independent config files
-## HACK: it probably should be $(datadir)/rpm
-rpmconfigdir = $(prefix)/lib/rpm
+rpmconfigdir = $(datadir)/rpm
 
 # Libtool version (current-revision-age) for all our libraries
 rpm_version_info = 7:0:0
