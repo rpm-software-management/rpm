@@ -348,6 +348,12 @@ static char *getIOFlags(Package pkg)
 	    compr = "lzma";
 	    (void) rpmlibNeedsFeature(pkg, "PayloadIsLzma", "4.4.6-1");
 #endif
+#if HAVE_ZSTD_H
+	} else if (rstreq(s+1, "zstdio")) {
+	    compr = "zstd";
+	    /* Add prereq on rpm version that understands zstd payloads */
+	    (void) rpmlibNeedsFeature(pkg, "PayloadIsZstd", "5.4.18-1");
+#endif
 	} else {
 	    rpmlog(RPMLOG_ERR, _("Unknown payload compression: %s\n"),
 		   rpmio_flags);
