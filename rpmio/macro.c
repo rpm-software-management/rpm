@@ -912,6 +912,9 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	case COMPRESSED_7ZIP:
 	    sprintf(be, "%%__7zip x %s", b);
 	    break;
+	case COMPRESSED_ZSTD:
+	    sprintf(be, "%%__zstd -dc %s", b);
+	    break;
 	}
 	b = be;
     } else if (STREQ("getenv", f, fn)) {

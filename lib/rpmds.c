@@ -1278,6 +1278,11 @@ static const struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(RichDependencies)",    "4.12.0-1",
 	(		RPMSENSE_EQUAL),
     N_("support for rich dependencies.") },
+#if HAVE_ZSTD_H
+    { "rpmlib(PayloadIsZstd)",		"5.4.18-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("package payload can be compressed using zstd.") },
+#endif
     { NULL,				NULL, 0,	NULL }
 };
 
