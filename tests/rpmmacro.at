@@ -181,6 +181,17 @@ runroot rpm \
 ])
 AT_CLEANUP
 
+AT_SETUP([shrink macro])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm \
+    --eval "%{shrink:  h e  l   lo  }"
+],
+[0],
+[h e l lo
+])
+AT_CLEANUP
+
 AT_SETUP([suffix macro])
 AT_KEYWORDS([macros])
 AT_CHECK([
