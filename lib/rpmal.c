@@ -564,3 +564,14 @@ rpmalSatisfiesDepend(const rpmal al, const rpmte te, const rpmds ds)
     }
     return best;
 }
+
+unsigned int
+rpmalLookupTE(const rpmal al, const rpmte te)
+{
+    rpmalNum pkgNum;
+    for (pkgNum=0; pkgNum < al->size; pkgNum++)
+	if (al->list[pkgNum].p == te)
+	    break;
+    return pkgNum < al->size ? pkgNum : (unsigned int)-1;
+}
+
