@@ -126,7 +126,9 @@ int dbiIndexSetPrune(dbiIndexSet set, dbiIndexItem recs,
     unsigned int numCopied = 0;
     size_t recsize = sizeof(*recs);
 
-    assert(set->count > 0);
+    if (num == 0 || nrecs == 0)
+	return 1;
+
     if (nrecs > 1 && !sorted)
 	qsort(recs, nrecs, recsize, hdrNumCmp);
 
@@ -141,6 +143,13 @@ int dbiIndexSetPrune(dbiIndexSet set, dbiIndexItem recs,
 	numCopied++;
     }
     return (numCopied == num);
+}
+
+int dbiIndexSetPruneSet(dbiIndexSet set, dbiIndexSet oset, int sortset)
+{
+    if (oset == NULL)
+	return 1;
+    return dbiIndexSetPrune(set, oset->recs, oset->count, sortset);
 }
 
 unsigned int dbiIndexSetCount(dbiIndexSet set)
