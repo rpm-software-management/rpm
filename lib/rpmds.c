@@ -1377,10 +1377,12 @@ static struct RichOpComp {
     const char * token;
     rpmrichOp op;
 } const RichOps[] = { 
-    { "and",	RPMRICHOP_AND},
-    { "or",	RPMRICHOP_OR},
-    { "if",	RPMRICHOP_IF},
-    { "else",	RPMRICHOP_ELSE},
+    { "and",	 RPMRICHOP_AND},
+    { "or",	 RPMRICHOP_OR},
+    { "if",	 RPMRICHOP_IF},
+    { "else",	 RPMRICHOP_ELSE},
+    { "with",	 RPMRICHOP_WITH},
+    { "without", RPMRICHOP_WITHOUT},
     { NULL, 0 },
 };
 
@@ -1420,6 +1422,10 @@ const char *rpmrichOpStr(rpmrichOp op)
 	return "if";
     if (op == RPMRICHOP_ELSE)
 	return "else";
+    if (op == RPMRICHOP_WITH)
+	return "with";
+    if (op == RPMRICHOP_WITHOUT)
+	return "without";
     return NULL;
 }
 
@@ -1467,10 +1473,11 @@ static rpmRC parseSimpleDep(const char **dstrp, char **emsg, rpmrichParseFunctio
     return RPMRC_OK;
 }
 
-rpmRC rpmrichParse(const char **dstrp, char **emsg, rpmrichParseFunction cb, void *cbdata)
+static rpmRC rpmrichParseInternal(const char **dstrp, char **emsg, rpmrichParseFunction cb, void *cbdata, int *nowithp)
 {
     const char *p = *dstrp, *pe;
     rpmrichOp op = RPMRICHOP_SINGLE, chainop = 0;
+    int nowith = 0;
 
     if (cb(cbdata, RPMRICH_PARSE_ENTER, p, 0, 0, 0, 0, op, emsg) != RPMRC_OK)
         return RPMRC_FAIL;
@@ -1491,7 +1498,7 @@ rpmRC rpmrichParse(const char **dstrp, char **emsg, rpmrichParseFunction cb, voi
             return RPMRC_FAIL;
         }
         if (*p == '(') {
-            if (rpmrichParse(&p, emsg, cb, cbdata) != RPMRC_OK)
+            if (rpmrichParseInternal(&p, emsg, cb, cbdata, &nowith) != RPMRC_OK)
                 return RPMRC_FAIL;
         } else {
             if (parseSimpleDep(&p, emsg, cb, cbdata) != RPMRC_OK)
@@ -1515,15 +1522,23 @@ rpmRC rpmrichParse(const char **dstrp, char **emsg, rpmrichParseFunction cb, voi
                 rasprintf(emsg, _("Cannot chain different ops"));
             return RPMRC_FAIL;
         }
-        if (chainop && op != RPMRICHOP_AND && op != RPMRICHOP_OR) {
+        if (chainop && op != RPMRICHOP_AND && op != RPMRICHOP_OR &&
+	    op != RPMRICHOP_WITH) {
             if (emsg)
-                rasprintf(emsg, _("Can only chain AND and OR ops"));
+                rasprintf(emsg, _("Can only chain and/or/with ops"));
             return RPMRC_FAIL;
 	}
         if (cb(cbdata, RPMRICH_PARSE_OP, p, pe - p, 0, 0, 0, op, emsg) != RPMRC_OK)
             return RPMRC_FAIL;
         chainop = op;
         p = pe;
+	if (nowithp && op != RPMRICHOP_WITH && op != RPMRICHOP_WITHOUT && op != RPMRICHOP_OR)
+	    *nowithp = 1;
+    }
+    if ((op == RPMRICHOP_WITH || op == RPMRICHOP_WITHOUT) && nowith) {
+	if (emsg)
+	    rasprintf(emsg, _("Illegal ops in with/without"));
+	return RPMRC_FAIL;
     }
     p++;
     if (cb(cbdata, RPMRICH_PARSE_LEAVE, *dstrp, p - *dstrp , 0, 0, 0, op, emsg) != RPMRC_OK)
@@ -1532,6 +1547,10 @@ rpmRC rpmrichParse(const char **dstrp, char **emsg, rpmrichParseFunction cb, voi
     return RPMRC_OK;
 }
 
+rpmRC rpmrichParse(const char **dstrp, char **emsg, rpmrichParseFunction cb, void *cbdata)
+{
+    return rpmrichParseInternal(dstrp, emsg, cb, cbdata, NULL);
+}
 
 struct rpmdsParseRichDepData {
     rpmds dep;
