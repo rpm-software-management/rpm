@@ -152,6 +152,39 @@ int dbiIndexSetPruneSet(dbiIndexSet set, dbiIndexSet oset, int sortset)
     return dbiIndexSetPrune(set, oset->recs, oset->count, sortset);
 }
 
+int dbiIndexSetFilter(dbiIndexSet set, dbiIndexItem recs,
+                        unsigned int nrecs, int sorted)
+{
+    unsigned int from;
+    unsigned int to = 0;
+    unsigned int num = set->count;
+    unsigned int numCopied = 0;
+    size_t recsize = sizeof(*recs);
+
+    if (num == 0 || nrecs == 0) {
+	set->count = 0;
+	return num ? 0 : 1;
+    }
+    if (nrecs > 1 && !sorted)
+	qsort(recs, nrecs, recsize, hdrNumCmp);
+    for (from = 0; from < num; from++) {
+	if (!bsearch(&set->recs[from], recs, nrecs, recsize, hdrNumCmp)) {
+	    set->count--;
+	    continue;
+	}
+	if (from != to)
+	    set->recs[to] = set->recs[from]; /* structure assignment */
+	to++;
+	numCopied++;
+    }
+    return (numCopied == num);
+}
+
+int dbiIndexSetFilterSet(dbiIndexSet set, dbiIndexSet oset, int sorted)
+{
+    return dbiIndexSetFilter(set, oset->recs, oset->count, sorted);
+}
+
 unsigned int dbiIndexSetCount(dbiIndexSet set)
 {
     return (set != NULL) ? set->count : 0;
