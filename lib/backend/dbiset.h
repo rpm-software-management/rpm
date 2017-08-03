@@ -76,6 +76,16 @@ RPM_GNUC_INTERNAL
 int dbiIndexSetPrune(dbiIndexSet set, dbiIndexItem recs,
 		     unsigned int nrecs, int sorted);
 
+/**
+ * Remove an index set from another.
+ * @param set          set of index database items
+ * @param oset         set of entries that should be removed
+ * @param sorted       oset is already sorted?
+ * @return             0 success, 1 failure (no items found)
+ */
+RPM_GNUC_INTERNAL
+int dbiIndexSetPruneSet(dbiIndexSet set, dbiIndexSet oset, int sorted);
+
 /* Count items in index database set. */
 RPM_GNUC_INTERNAL
 unsigned int dbiIndexSetCount(dbiIndexSet set);
