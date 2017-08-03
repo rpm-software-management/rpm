@@ -734,11 +734,8 @@ static rpmRC rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 	    if (!skip) {
 		const char *dirName = dirNames[dirIndexes[num]];
 		if (fpLookupEquals(fpc, fp1, dirName, baseNames[num])) {
-		    struct dbiIndexItem_s rec = { 
-			.hdrNum = dbiIndexRecordOffset(allMatches, i),
-			.tagNum = dbiIndexRecordFileNumber(allMatches, i),
-		    };
-		    dbiIndexSetAppend(*matches, &rec, 1, 0);
+		    dbiIndexSetAppendOne(*matches, dbiIndexRecordOffset(allMatches, i),
+					 dbiIndexRecordFileNumber(allMatches, i), 0);
 		}
 	    }
 
@@ -1712,10 +1709,8 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi,
     if (mi->mi_set == NULL)
 	mi->mi_set = dbiIndexSetNew(nHdrNums);
 
-    for (unsigned int i = 0; i < nHdrNums; i++) {
-	struct dbiIndexItem_s rec = { .hdrNum = hdrNums[i], .tagNum = 0 };
-	dbiIndexSetAppend(mi->mi_set, &rec, 1, 0);
-    }
+    for (unsigned int i = 0; i < nHdrNums; i++)
+	dbiIndexSetAppendOne(mi->mi_set, hdrNums[i], 0, 0);
     return 0;
 }
 

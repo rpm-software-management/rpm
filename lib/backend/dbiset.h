@@ -53,6 +53,18 @@ int dbiIndexSetAppend(dbiIndexSet set, dbiIndexItem recs,
 		      unsigned int nrecs, int sortset);
 
 /**
+  * Append a single element to a set of index database items.
+  * @param set          set of index database items
+  * @param hdrNum       header instance in db
+  * @param tagNum       tag index in header
+  * @param sortset      should resulting set be sorted?
+  * @return             0 success, 1 failure (bad args)
+  */
+RPM_GNUC_INTERNAL
+int dbiIndexSetAppendOne(dbiIndexSet set, unsigned int hdrNum,
+			 unsigned int tagNum, int sortset);
+
+/**
  * Remove element(s) from set of index database items.
  * @param set		set of index database items
  * @param recs		array of items to remove from set
