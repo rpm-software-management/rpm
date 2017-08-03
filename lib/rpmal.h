@@ -80,6 +80,15 @@ rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds);
 RPM_GNUC_INTERNAL
 rpmte rpmalSatisfiesDepend(const rpmal al, const rpmte te, const rpmds ds);
 
+/**
+ * Return index of a transaction element  in the available list
+ * @param al           available list
+ * @param te           transaction element
+ * @return             index, (unsigned int)-1 if not found
+ */
+RPM_GNUC_INTERNAL
+unsigned int rpmalLookupTE(const rpmal al, const rpmte te);
+
 #ifdef __cplusplus
 }
 #endif
