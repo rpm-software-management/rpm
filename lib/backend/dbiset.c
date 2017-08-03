@@ -31,11 +31,12 @@ void dbiIndexSetGrow(dbiIndexSet set, unsigned int nrecs)
     }
 }
 
-/* XXX assumes hdrNum is first int in dbiIndexItem */
 static int hdrNumCmp(const void * one, const void * two)
 {
-    const unsigned int * a = one, * b = two;
-    return (*a - *b);
+    const struct dbiIndexItem_s *a = one, *b = two;
+    if (a->hdrNum - b->hdrNum != 0)
+	return a->hdrNum - b->hdrNum;
+    return a->tagNum - b->tagNum;
 }
 
 void dbiIndexSetSort(dbiIndexSet set)
@@ -59,7 +60,8 @@ void dbiIndexSetUniq(dbiIndexSet set, int sorted)
     unsigned int to = 0;
     unsigned int num = set->count;
 
-    assert(set->count > 0);
+    if (set->count < 2)
+	return;
 
     if (!sorted)
 	dbiIndexSetSort(set);
