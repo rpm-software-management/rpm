@@ -100,6 +100,22 @@ int dbiIndexSetAppendSet(dbiIndexSet set, dbiIndexSet oset, int sortset)
     return dbiIndexSetAppend(set, oset->recs, oset->count, sortset);
 }
 
+int dbiIndexSetAppendOne(dbiIndexSet set, unsigned int hdrNum,
+			 unsigned int tagNum, int sortset)
+{
+    if (set == NULL)
+	return 1;
+    dbiIndexSetGrow(set, 1);
+
+    set->recs[set->count].hdrNum = hdrNum;
+    set->recs[set->count].tagNum = tagNum;
+    set->count += 1;
+
+    if (sortset && set->count > 1)
+	qsort(set->recs, set->count, sizeof(*(set->recs)), hdrNumCmp);
+
+    return 0;
+}
 
 int dbiIndexSetPrune(dbiIndexSet set, dbiIndexItem recs,
 		     unsigned int nrecs, int sorted)
