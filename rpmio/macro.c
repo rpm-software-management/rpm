@@ -545,8 +545,8 @@ doDefine(MacroBuf mb, const char * se, size_t slen, int level, int expandbody)
 
     /* Names must start with alphabetic or _ and be at least 3 chars */
     if (!((c = *n) && (risalpha(c) || c == '_') && (ne - n) > 2)) {
-	rpmlog(RPMLOG_ERR,
-		_("Macro %%%s has illegal name (%%define)\n"), n);
+	rpmlog(RPMLOG_ERR, _("Macro %%%s has illegal name (%s)\n"),
+		n, expandbody ? "%global": "%define");
 	goto exit;
     }
 
