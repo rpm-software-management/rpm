@@ -57,9 +57,15 @@ EOF
 # and below /usr/lib/python3.1/, we're targeting /usr/bin/python3.1
 
 shopt -s nullglob
-for python_libdir in `find "$RPM_BUILD_ROOT" -type d|grep -E "/usr/lib(64)?/python[0-9]\.[0-9]$"`;
+for python_libdir in `find "$RPM_BUILD_ROOT" -type d|grep -E "/usr/lib(64)?/(platform-)?python[0-9]\.[0-9]$"`;
 do
-	python_binary=/usr/bin/$(basename $python_libdir)
+	python_basename=$(basename $python_libdir)
+	if [[ $python_basename == platform* ]];
+	then
+		python_binary=/usr/libexec/$python_basename
+	else
+		python_binary=/usr/bin/$python_basename
+	fi
 	real_libdir=${python_libdir/$RPM_BUILD_ROOT/}
 	echo "Bytecompiling .py files below $python_libdir using $python_binary"
 
@@ -88,14 +94,14 @@ if [ ! -x "$default_python" ]; then
 fi
 
 # Generate normal (.pyc) byte-compiled files.
-python_bytecompile "" $default_python "/bin/|/sbin/|/usr/lib(64)?/python[0-9]\.[0-9]|/usr/share/doc" "$RPM_BUILD_ROOT" "$depth" "/"
+python_bytecompile "" $default_python "/bin/|/sbin/|/usr/lib(64)?/(platform-)?python[0-9]\.[0-9]|/usr/share/doc" "$RPM_BUILD_ROOT" "$depth" "/"
 if [ $? -ne 0 -a 0$errors_terminate -ne 0 ]; then
 	# One or more of the files had a syntax error
 	exit 1
 fi
 
 # Generate optimized (.pyo) byte-compiled files.
-python_bytecompile "-O" $default_python "/bin/|/sbin/|/usr/lib(64)?/python[0-9]\.[0-9]|/usr/share/doc" "$RPM_BUILD_ROOT" "$depth" "/"
+python_bytecompile "-O" $default_python "/bin/|/sbin/|/usr/lib(64)?/(platform-)?python[0-9]\.[0-9]|/usr/share/doc" "$RPM_BUILD_ROOT" "$depth" "/"
 if [ $? -ne 0 -a 0$errors_terminate -ne 0 ]; then
 	# One or more of the files had a syntax error
 	exit 1
