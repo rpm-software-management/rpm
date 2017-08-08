@@ -303,3 +303,223 @@ runroot rpm -e hello.i686
 [],
 [])
 AT_CLEANUP
+
+# ------------------------------
+#
+AT_SETUP([unsatisfied WITH require])
+AT_KEYWORDS([install, boolean])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "reqs (deptest-two with flavor = dekstop)" \
+	  /data/SPECS/deptest.spec
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg two" \
+	--define "provs flavor = server" \
+	  /data/SPECS/deptest.spec
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg three" \
+	--define "provs flavor = desktop" \
+	  /data/SPECS/deptest.spec
+
+runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
+],
+[3],
+[],
+[error: Failed dependencies:
+	(deptest-two with flavor = dekstop) is needed by deptest-one-1.0-1.noarch
+])
+AT_CLEANUP
+
+AT_SETUP([unsatisfied WITH require (rpmdb)])
+AT_KEYWORDS([install, boolean])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "reqs (deptest-two with flavor = dekstop)" \
+	  /data/SPECS/deptest.spec
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg two" \
+	--define "provs flavor = server" \
+	  /data/SPECS/deptest.spec
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg three" \
+	--define "provs flavor = desktop" \
+	  /data/SPECS/deptest.spec
+
+runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
+
+runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
+],
+[1],
+[],
+[error: Failed dependencies:
+	(deptest-two with flavor = dekstop) is needed by deptest-one-1.0-1.noarch
+])
+AT_CLEANUP
+
+AT_SETUP([satisfied WITH require])
+AT_KEYWORDS([install, boolean])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "reqs (deptest-two with flavor = desktop)" \
+	  /data/SPECS/deptest.spec
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg two" \
+	--define "provs flavor = desktop" \
+	  /data/SPECS/deptest.spec
+
+runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+AT_SETUP([satisfied WITH require (rpmdb)])
+AT_KEYWORDS([install, boolean])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "reqs (deptest-two with flavor = desktop)" \
+	  /data/SPECS/deptest.spec
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg two" \
+	--define "provs flavor = desktop" \
+	  /data/SPECS/deptest.spec
+
+runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+
+runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+# ------------------------------
+#
+AT_SETUP([unsatisfied WITHOUT require])
+AT_KEYWORDS([install, boolean])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "reqs (deptest-two without flavor)" \
+	  /data/SPECS/deptest.spec
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg two" \
+	--define "provs flavor = server" \
+	  /data/SPECS/deptest.spec
+
+runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+],
+[2],
+[],
+[error: Failed dependencies:
+	(deptest-two without flavor) is needed by deptest-one-1.0-1.noarch
+])
+AT_CLEANUP
+
+AT_SETUP([unsatisfied WITHOUT require (rpmdb)])
+AT_KEYWORDS([install, boolean])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "reqs (deptest-two without flavor)" \
+	  /data/SPECS/deptest.spec
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg two" \
+	--define "provs flavor = server" \
+	  /data/SPECS/deptest.spec
+
+runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+
+runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
+],
+[1],
+[],
+[error: Failed dependencies:
+	(deptest-two without flavor) is needed by deptest-one-1.0-1.noarch
+])
+AT_CLEANUP
+
+AT_SETUP([satisfied WITHOUT require])
+AT_KEYWORDS([install, boolean])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "reqs (deptest-two without flavor)" \
+	  /data/SPECS/deptest.spec
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg two" \
+	  /data/SPECS/deptest.spec
+
+runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+AT_SETUP([satisfied WITHOUT require (rpmdb)])
+AT_KEYWORDS([install, boolean])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "reqs (deptest-two without flavor)" \
+	  /data/SPECS/deptest.spec
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg two" \
+	  /data/SPECS/deptest.spec
+
+runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+
+runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
+],
+[0],
+[],
+[])
+AT_CLEANUP
