@@ -148,9 +148,13 @@ struct FDIO_s {
 static const FDIO_t fdio;
 static const FDIO_t ufdio;
 static const FDIO_t gzdio;
+#if HAVE_BZLIB_H
 static const FDIO_t bzdio;
+#endif
+#ifdef HAVE_LZMA_H
 static const FDIO_t xzdio;
 static const FDIO_t lzdio;
+#endif
 #ifdef HAVE_ZSTD
 static const FDIO_t zstdio;
 #endif
