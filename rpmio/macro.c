@@ -566,7 +566,7 @@ doDefine(MacroBuf mb, const char * se, size_t slen, int level, int expandbody)
 	b = ebody;
     }
 
-    pushMacro(mb->mc, n, o, b, (level - 1), ME_NONE);
+    pushMacro(mb->mc, n, o, b, level, ME_NONE);
     rc = 0;
 
 exit:
@@ -1546,7 +1546,7 @@ static void copyMacros(rpmMacroContext src, rpmMacroContext dst, int level)
     for (int i = 0; i < src->n; i++) {
 	rpmMacroEntry me = src->tab[i];
 	assert(me);
-	pushMacro(dst, me->name, me->opts, me->body, (level - 1), me->flags);
+	pushMacro(dst, me->name, me->opts, me->body, level, me->flags);
     }
 }
 

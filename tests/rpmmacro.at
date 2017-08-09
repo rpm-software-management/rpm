@@ -330,3 +330,42 @@ runroot rpm --define "%foo() 1:%1 2:%2 3:%3 4:%4 5:%5" --eval "%foo xx'yy'\"zz\"
 1:xx 2:yy 3:zz 4: 5:bb
 ])
 AT_CLEANUP
+
+AT_SETUP([%undefine from different scopes])
+AT_KEYWORDS([macros %undefine])
+AT_CHECK([
+runroot rpmbuild --quiet -bb \
+	    --define '%test1 ok'\
+	    /data/SPECS/macro-scope.spec
+],
+[0],
+[],
+[warning: Macro %a01 defined but not used within scope
+warning: Macro %a05 defined but not used within scope
+warning: Macro %a07 defined but not used within scope
+warning: Macro %a08 defined but not used within scope
+warning: Macro %a09 defined but not used within scope
+warning: Macro %a0A defined but not used within scope]
+)
+AT_CLEANUP
+
+
+
+
+AT_SETUP([%define in conditional macro])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm \
+    --define 'dofoo() true'\
+    --eval '.%{!?foo: %define foo bar}.'\
+    --eval '%foo' \
+    --eval '%dofoo'\
+    --eval '%foo'
+],
+[0],
+[. .
+bar
+true
+bar
+])
+AT_CLEANUP
