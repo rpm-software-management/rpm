@@ -8,6 +8,7 @@
 #include <pthread.h>
 #include <errno.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmmacro.h>
 #include "debug.h"
 
 typedef struct rpmlogCtx_s * rpmlogCtx;
@@ -247,9 +248,12 @@ static int rpmlogDefault(FILE *stdlog, rpmlogRec rec)
     static const char fubar[] =
 	"Error occurred during writing of a log message";
     FILE *msgout = (stdlog ? stdlog : stderr);
-    const char * colorOn = isatty(fileno(msgout))
-	? rpmlogLevelColor(rec->pri)
-	: NULL ;
+    char * color = rpmExpand("%{?_color_output}%{!?_color_output:auto}", NULL);
+    const char * colorOn = NULL;
+
+    if (!strcmp(color, "always") ||
+	(!strcmp(color, "auto") && isatty(fileno(msgout))))
+	colorOn = rpmlogLevelColor(rec->pri);
 
     switch (rec->pri) {
     case RPMLOG_INFO:

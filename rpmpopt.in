@@ -156,6 +156,8 @@ rpm	alias --filecaps --qf '[%{FILENAMES}\t%|FILECAPS?{%{FILECAPS}}|\n]' \
 # retrieving header group/description/summary.
 rpm alias --i18ndomains --define '_i18ndomains !#:+'
 
+rpm alias --color --define '_color_output !#:+'
+
 #==============================================================================
 #	[--ftpport <port>]	"port number of ftp server (or proxy)"
 rpm	alias --ftpport		--define '_httpport !#:+'

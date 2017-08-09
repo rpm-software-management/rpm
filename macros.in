@@ -746,6 +746,11 @@ package or when debugging this package.\
 %_query_all_fmt		%%{nvra}
 
 #
+# Default for coloring output
+# valid values are always never and auto
+%_color_output	never
+
+#
 # Default path to the file used for transaction fcntl lock.
 %_rpmlock_path	%{_dbpath}/.rpm.lock
 
