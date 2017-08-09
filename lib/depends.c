@@ -665,7 +665,8 @@ retry:
 	}
 	if (op != RPMRICHOP_IF || rc)
 	    rc = unsatisfiedDepend(ts, dcache, ds1);
-	if ((rc && op == RPMRICHOP_OR) || (!rc && op == RPMRICHOP_AND))
+	if ((rc && op == RPMRICHOP_OR) || (!rc && op == RPMRICHOP_AND) ||
+	    (!rc && op == RPMRICHOP_WITH))
 	    rc = unsatisfiedDepend(ts, dcache, ds2);
 	ds1 = rpmdsFree(ds1);
 	ds2 = rpmdsFree(ds2);
