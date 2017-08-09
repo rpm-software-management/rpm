@@ -8,7 +8,7 @@ Name: RPM
 Description: RPM Package Manager
 Version: @VERSION@
 URL: http://rpm.org
-# Requires: 
+Requires.private: @ZSTD_REQUIRES@
 # Conflicts:
 Cflags: -I${includedir}
 Libs: -L${libdir} -lrpm -lrpmio

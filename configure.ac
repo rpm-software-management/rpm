@@ -136,6 +136,7 @@ AC_PATH_PROG(__SED, sed, /bin/sed, $MYPATH)
 AC_PATH_PROG(__SEMODULE, semodule, /usr/bin/semodule, $MYPATH)
 AC_PATH_PROG(__SSH, ssh, /usr/bin/ssh, $MYPATH)
 AC_PATH_PROG(__TAR, tar, /bin/tar, $MYPATH)
+AC_PATH_PROG(__ZSTD, zstd, /usr/bin/zstd, $MYPATH)
 
 AC_PATH_PROG(__LD, ld, /usr/bin/ld, $MYPATH)
 AC_PATH_PROG(__NM, nm, /usr/bin/nm, $MYPATH)
@@ -201,6 +202,31 @@ AC_CHECK_HEADERS([lzma.h],[
   AC_CHECK_LIB(lzma, lzma_easy_encoder, [WITH_LZMA_LIB=-llzma])
 ])
 AC_SUBST(WITH_LZMA_LIB)
+
+#=================
+# Check for zstd.
+
+AC_ARG_ENABLE([zstd],
+              [AS_HELP_STRING([--enable-zstd=@<:@yes/no/auto@:>@],
+                              [build without zstd support (default=auto)])],
+              [enable_zstd="$enableval"],
+              [enable_zstd=auto])
+
+AS_IF([test "x$enable_zstd" != "xno"], [
+  PKG_CHECK_MODULES([ZSTD], [libzstd], [have_zstd=yes], [have_zstd=no])
+  AS_IF([test "$enable_zstd" = "yes"], [
+    if test "$have_zstd" = "no"; then
+      AC_MSG_ERROR([--enable-zstd specified, but not available])
+    fi
+  ])
+])
+
+if test "x$have_zstd" = "xyes"; then
+  AC_DEFINE([HAVE_ZSTD], [1], [Define if libzstd is available])
+  ZSTD_REQUIRES=libzstd
+  AC_SUBST(ZSTD_REQUIRES)
+fi
+AM_CONDITIONAL([HAVE_ZSTD], [test "x$have_zstd" = "xyes"])
 
 #=================
 
