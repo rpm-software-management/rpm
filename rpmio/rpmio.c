@@ -1178,14 +1178,17 @@ static void cvtfmode (const char *m,
 
     switch (*m) {
     case 'a':
+	flags &= ~O_ACCMODE;
 	flags |= O_WRONLY | O_CREAT | O_APPEND;
 	if (--nstdio > 0) *stdio++ = *m;
 	break;
     case 'w':
+	flags &= ~O_ACCMODE;
 	flags |= O_WRONLY | O_CREAT | O_TRUNC;
 	if (--nstdio > 0) *stdio++ = *m;
 	break;
     case 'r':
+	flags &= ~O_ACCMODE;
 	flags |= O_RDONLY;
 	if (--nstdio > 0) *stdio++ = *m;
 	break;
@@ -1201,7 +1204,7 @@ static void cvtfmode (const char *m,
 	case '.':
 	    break;
 	case '+':
-	    flags &= ~(O_RDONLY|O_WRONLY);
+	    flags &= ~O_ACCMODE;
 	    flags |= O_RDWR;
 	    if (--nstdio > 0) *stdio++ = c;
 	    continue;
