@@ -1218,6 +1218,11 @@ static void cvtfmode (const char *m,
 	    if (--nstdio > 0) *stdio++ = c;
 	    continue;
 	    break;
+	case '?':
+	    flags |= RPMIO_DEBUG_IO;
+	    if (--nother > 0) *other++ = c;
+	    continue;
+	    break;
 	default:
 	    if (--nother > 0) *other++ = c;
 	    continue;
