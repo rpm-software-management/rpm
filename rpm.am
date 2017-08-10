@@ -7,4 +7,4 @@ rpmlibexecdir = $(prefix)/lib/rpm
 rpmconfigdir = $(prefix)/lib/rpm
 
 # Libtool version (current-revision-age) for all our libraries
-rpm_version_info = 7:0:0
+rpm_version_info = 8:0:0
