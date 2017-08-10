@@ -1303,36 +1303,3 @@ No hello.debug
 ],
 [ignore])
 AT_CLEANUP
-
-# ------------------------------
-# Check that defining _debugsource_packages creates -debugsource package
-# doesn't break when there are no source files (found).
-AT_SETUP([rpmbuild debugsource no source files])
-AT_KEYWORDS([build] [debuginfo] [debugsource])
-AT_CHECK([
-rm -rf ${TOPDIR}
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-# Setup sources
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
-
-# Build a package that doesn't use -g.
-run rpmbuild --quiet \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
-  --define "_debugsource_packages 1" \
-  -ba "${abs_srcdir}"/data/SPECS/hello.spec
-
-# Unpack the debugsource rpm so we can check the sources are (not) there.
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-debugsource-1.0-1.*.rpm \
-  | cpio -diu --quiet
-
-# There should be just one empty directory (strip off nvra).
-find ./usr/src/debug/* | cut -f1 -d-
-
-],
-[0],
-[./usr/src/debug/hello
-],
-[ignore])
-AT_CLEANUP
