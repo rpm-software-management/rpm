@@ -9,8 +9,5 @@ EXTRA_DIST = \
 
 noinst_LTLIBRARIES = libmisc.la
 
-libmisc_la_SOURCES =
-if USE_BUNDLED_FTS_KLUDGE
-libmisc_la_SOURCES += fts.c rpmfts.h
-endif
+libmisc_la_SOURCES = fts.c rpmfts.h
 libmisc_la_LIBADD = @LTLIBOBJS@
