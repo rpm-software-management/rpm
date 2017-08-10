@@ -28,16 +28,7 @@
 #include <rpm/rpmbase64.h>
 
 #include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */
-
-#ifdef HAVE_FTS_H
-# include <fts.h>
-# define Fts_open fts_open
-# define Fts_read fts_read
-# define Fts_close fts_close
-#else
-# include "misc/rpmfts.h"
-#endif
-
+#include "misc/rpmfts.h"
 #include "lib/rpmfi_internal.h"	/* XXX fi->apath */
 #include "lib/rpmug.h"
 #include "build/rpmbuild_internal.h"
