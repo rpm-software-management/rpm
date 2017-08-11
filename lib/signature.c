@@ -71,6 +71,7 @@ rpmRC rpmSigInfoParse(rpmtd td, const char *origin,
 	break;
     default:
 	/* anything unknown just falls through for now */
+	sinfo->type = RPMSIG_OTHER_TYPE;
 	break;
     }
 
