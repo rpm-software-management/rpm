@@ -16,6 +16,10 @@
 #include <rpm/rpmds.h>	/* XXX move rpmlib provides to rpmds instead */
 #include <rpm/rpmpgp.h>
 
+#ifdef _RPM_4_4_COMPAT
+#error RPM 4.4.x compatibility layer has been removed in RPM >= 4.14
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
