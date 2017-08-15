@@ -13,8 +13,8 @@ case $1 in
     # generating a line of the form
     #    python(abi) = MAJOR.MINOR
     # (Don't match against -config tools e.g. /usr/bin/python2.6-config)
-    grep "/usr/bin/python.\..$" \
-        | sed -e "s|.*/usr/bin/python\(.\..\)|python(abi) = \1|"
+    egrep '/usr/(bin/|libexec/platform-)python.\..$' \
+        | sed -r -e "s@.*/usr/(bin/|libexec/(platform-))python(.\..)@\2python(abi) = \3@"
     ;;
 -R|--requires)
     shift
@@ -23,8 +23,8 @@ case $1 in
     #    /PATH/OF/BUILDROOT/usr/lib64/pythonMAJOR.MINOR/
     # generating (uniqely) lines of the form:
     #    python(abi) = MAJOR.MINOR
-    grep "/usr/lib[^/]*/python.\../.*" \
-        | sed -e "s|.*/usr/lib[^/]*/python\(.\..\)/.*|python(abi) = \1|g" \
+    egrep '/usr/lib[^/]*/(platform-|)python.\../.*' \
+        | sed -r -e "s@.*/usr/lib[^/]*/(platform-|)python(.\..)/.*@\1python(abi) = \2@g" \
         | sort | uniq
     ;;
 esac
