@@ -788,15 +788,12 @@ exit:
  * @param msglen	no. of bytes in message
  */
 static void
-doOutput(MacroBuf mb, int waserror, const char * msg, size_t msglen)
+doOutput(MacroBuf mb, int loglevel, const char * msg, size_t msglen)
 {
     char *buf = NULL;
 
     (void) expandThis(mb, msg, msglen, &buf);
-    if (waserror)
-	rpmlog(RPMLOG_ERR, "%s\n", buf);
-    else
-	fprintf(stderr, "%s", buf);
+    rpmlog(loglevel, "%s\n", buf);
     _free(buf);
 }
 
@@ -1183,13 +1180,16 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	if (STREQ("echo", f, fn) ||
 		STREQ("warn", f, fn) ||
 		STREQ("error", f, fn)) {
-	    int waserror = 0;
-	    if (STREQ("error", f, fn))
-		waserror = 1;
+	    int loglevel = RPMLOG_NOTICE; /* assume echo */
+	    if (STREQ("error", f, fn)) {
+		loglevel = RPMLOG_ERR;
+	    } else if (STREQ("warn", f, fn)) {
+		loglevel = RPMLOG_WARNING;
+	    }
 	    if (g != NULL && g < ge)
-		doOutput(mb, waserror, g, gn);
+		doOutput(mb, loglevel, g, gn);
 	    else
-		doOutput(mb, waserror, f, fn);
+		doOutput(mb, loglevel, "", 0);
 	    s = se;
 	    continue;
 	}
