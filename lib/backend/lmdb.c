@@ -477,19 +477,6 @@ exit:
     return rc;
 }
 
-union _dbswap {
-    unsigned int ui;
-    unsigned char uc[4];
-};
-
-#define	_DBSWAP(_a) \
-\
-  { unsigned char _b, *_c = (_a).uc; \
-    _b = _c[3]; _c[3] = _c[0]; _c[0] = _b; \
-    _b = _c[2]; _c[2] = _c[1]; _c[1] = _b; \
-\
-  }
-
 /* The LMDB btree implementation needs BIGENDIAN primary keys. */
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 static int _dbibyteswapped = 1;
