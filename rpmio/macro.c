@@ -1183,6 +1183,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    int loglevel = RPMLOG_NOTICE; /* assume echo */
 	    if (STREQ("error", f, fn)) {
 		loglevel = RPMLOG_ERR;
+		mb->error = 1;
 	    } else if (STREQ("warn", f, fn)) {
 		loglevel = RPMLOG_WARNING;
 	    }
