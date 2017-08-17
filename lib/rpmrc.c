@@ -41,6 +41,7 @@
 
 static const char * defrcfiles = NULL;
 const char * macrofiles = NULL;
+const char * premacrofiles = NULL;
 
 typedef struct machCacheEntry_s {
     char * name;
@@ -461,6 +462,16 @@ static void setDefaults(void)
 				SYSCONFDIR "/rpmrc", ":",
 			  	"~/.rpmrc", NULL);
     }
+
+#ifndef PREMACROFILES
+    if (!premacrofiles) {
+	premacrofiles = rstrscat(NULL, confdir, "/premacros.d/premacros.*", ":",
+				SYSCONFDIR "/rpm/premacros.*", ":",
+				"~/.rpmpremacros", NULL);
+    }
+#else
+    premacrofiles = PREMACROFILES;
+#endif
 
 #ifndef MACROFILES
     if (!macrofiles) {
@@ -1631,6 +1642,12 @@ int rpmReadConfigFiles(const char * file, const char * target)
     rpmrcCtx ctx = rpmrcCtxAcquire(1);
 
     pthread_once(&atexit_registered, register_atexit);
+
+    if (premacrofiles != NULL) {
+	char *pmf = rpmGetPath(premacrofiles, NULL);
+	rpmInitMacros(NULL, pmf);
+	_free(pmf);
+    }
 
     /* Force preloading of dlopen()'ed libraries in case we go chrooting */
     if (rpmugInit())
