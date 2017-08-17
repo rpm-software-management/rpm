@@ -492,9 +492,9 @@ union _dbswap {
 
 /* The LMDB btree implementation needs BIGENDIAN primary keys. */
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-int _dbibyteswapped = 1;
+static int _dbibyteswapped = 1;
 #else
-int _dbibyteswapped = 0;
+static int _dbibyteswapped = 0;
 #endif
 
 /**
