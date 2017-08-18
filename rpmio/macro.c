@@ -1467,9 +1467,6 @@ static int loadMacroFile(rpmMacroContext mc, const char * fn)
     if (fd == NULL)
 	goto exit;
 
-    /* XXX Assume new fangled macro expansion */
-    max_macro_depth = 16;
-
     buf[0] = '\0';
     while (rdcl(buf, blen, fd) != NULL) {
 	char c, *n;
