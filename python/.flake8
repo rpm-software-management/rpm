@@ -1,0 +1,5 @@
+[flake8]
+ignore =
+    F403, # import * used
+    F405, # variable may be undefined, or defined from star imports
+    F821  # undefined name

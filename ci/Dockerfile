@@ -38,7 +38,13 @@ RUN dnf -y install \
   pkgconfig \
   /usr/bin/gdb-add-index \
   dwz \
+  python-devel \
+  python3-devel \
+  redhat-rpm-config \
   && dnf clean all
+RUN python3 -m ensurepip \
+    && python3 -m pip install --upgrade pip setuptools \
+    && python3 -m pip install tox
 RUN autoreconf -vfi
 RUN ./configure \
   --with-crypto=openssl \
@@ -48,5 +54,11 @@ RUN ./configure \
   --with-lua \
   --enable-silent-rules
 RUN make
+RUN cd python \
+  && python setup.py build \
+  && python3 setup.py build
+# Install RPM to use /usr/local/lib/rpm/rpmrc in tox test.
+RUN make install
 
-CMD make check; rc=$?; cat tests/rpmtests.log; exit $rc
+CMD make check && pushd python && tox && popd; rc=$?; \
+  cat tests/rpmtests.log; exit $rc

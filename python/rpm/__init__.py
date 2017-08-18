@@ -7,8 +7,8 @@ accessing RPM from Python. For most usage, call
 the TransactionSet method to get a transaction set (rpmts).
 
 For example:
-	import rpm
-	ts = rpm.TransactionSet()
+    import rpm
+    ts = rpm.TransactionSet()
 
 The transaction set will open the RPM database as needed, so
 in most cases, you do not need to explicitly open the
