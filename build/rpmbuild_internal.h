@@ -138,6 +138,7 @@ struct Package_s {
 
 #define PART_SUBNAME  0
 #define PART_NAME     1
+#define PART_QUIET    2
 
 /** \ingroup rpmbuild
  * rpmSpec file parser states.

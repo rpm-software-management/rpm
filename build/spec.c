@@ -73,7 +73,7 @@ rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
     }
 
     /* Construct partial package name */
-    if (flag == PART_SUBNAME) {
+    if (!(flag & PART_NAME)) {
 	rasprintf(&fullName, "%s-%s",
 		 headerGetString(spec->packages->header, RPMTAG_NAME), name);
 	name = fullName;
@@ -87,12 +87,14 @@ rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
 	}
     }
 
-    if (p == NULL && pkg != NULL) {
-	rpmlog(RPMLOG_ERR, _("line %d: %s: package %s does not exist\n"),
-				spec->lineNum, spec->line, name);
-    } else if (p != NULL && pkg == NULL) {
-	rpmlog(RPMLOG_ERR, _("line %d: %s: package %s already exists\n"),
-				spec->lineNum, spec->line, name);
+    if (!(flag & PART_QUIET)) {
+	if (p == NULL && pkg != NULL) {
+	    rpmlog(RPMLOG_ERR, _("line %d: %s: package %s does not exist\n"),
+				    spec->lineNum, spec->line, name);
+	} else if (p != NULL && pkg == NULL) {
+	    rpmlog(RPMLOG_ERR, _("line %d: %s: package %s already exists\n"),
+				    spec->lineNum, spec->line, name);
+	}
     }
 
     if (fullName == name)
