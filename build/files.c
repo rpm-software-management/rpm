@@ -2981,7 +2981,7 @@ static int addDebugSrc(Package pkg, char *buildroot)
 static Package findDebuginfoPackage(rpmSpec spec)
 {
     Package pkg = NULL;
-    if (lookupPackage(spec, "debuginfo", PART_SUBNAME, &pkg))
+    if (lookupPackage(spec, "debuginfo", PART_SUBNAME|PART_QUIET, &pkg))
 	return NULL;
     return pkg && pkg->fileList ? pkg : NULL;
 }
