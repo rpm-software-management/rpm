@@ -9,13 +9,9 @@
 OLD_IFS="$IFS"
 while read instfile ; do
 	case "$instfile" in
-	*.appdata.xml)
+	*.appdata.xml|*.metainfo.xml)
 		echo "metainfo()"
-		echo "metainfo(${instfile##*/appdata/})"
-		;;
-	*.metainfo.xml)
-		echo "metainfo()"
-		echo "metainfo(${instfile##*/metainfo/})"
+		echo "metainfo(${instfile##*/})"
 		;;
 	esac
 done
