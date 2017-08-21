@@ -110,7 +110,7 @@ typedef struct MacroBuf_s {
     rpmMacroContext mc;
 } * MacroBuf;
 
-#define	_MAX_MACRO_DEPTH	16
+#define	_MAX_MACRO_DEPTH	64
 static int max_macro_depth = _MAX_MACRO_DEPTH;
 
 #define	_PRINT_MACRO_TRACE	0
