@@ -619,8 +619,12 @@ int main(int argc, char *argv[])
 	argerror(_("arguments to --root (-r) must begin with a /"));
     }
 
-    /* rpmbuild is rather chatty by default */
-    rpmSetVerbosity(quiet ? RPMLOG_WARNING : RPMLOG_INFO);
+    /* rpmbuild runs in verbose mode by default */
+    if (rpmlogSetMask(0) < RPMLOG_MASK(RPMLOG_INFO))
+	rpmSetVerbosity(RPMLOG_INFO);
+
+    if (quiet)
+	rpmSetVerbosity(RPMLOG_WARNING);
 
     if (rpmcliPipeOutput && initPipe())
 	exit(EXIT_FAILURE);
