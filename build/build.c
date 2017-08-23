@@ -183,7 +183,7 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 exit:
     Fclose(fd);
     if (scriptName) {
-	if (rc == RPMRC_OK)
+	if (rc == RPMRC_OK && !rpmIsDebug())
 	    (void) unlink(scriptName);
 	free(scriptName);
     }
