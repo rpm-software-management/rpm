@@ -52,6 +52,15 @@ static PyObject * checkSignals(PyObject * self)
     return Py_BuildValue("i", rpmsqPoll());
 }
 
+static PyObject * blockSignals(PyObject * self, PyObject *arg)
+{
+    int block;
+    if (!PyArg_Parse(arg, "p", &block)) return NULL;
+
+    return Py_BuildValue("i", rpmsqBlock(block ? SIG_BLOCK : SIG_UNBLOCK));
+}
+
+
 static PyObject * setLogFile (PyObject * self, PyObject *arg)
 {
     FILE *fp;
@@ -166,6 +175,8 @@ static PyMethodDef rpmModuleMethods[] = {
 	"signalCaught(signo) -- Returns True if signal was caught." },
     { "checkSignals", (PyCFunction) checkSignals, METH_NOARGS,
       "checkSignals() -- Check for and exit on termination signals."},
+    { "blockSignals", (PyCFunction) blockSignals, METH_O,
+      "blocksignals(True/False) -- Block/unblock signals, refcounted."},
 
     { "mergeHeaderListFromFD", (PyCFunction) rpmMergeHeadersFromFD, METH_VARARGS|METH_KEYWORDS,
 	NULL },
