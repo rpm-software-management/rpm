@@ -985,6 +985,8 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     const char * lastc;
     int chkexist;
     char *source = NULL;
+    int store_macro_trace;
+    int store_expand_trace;
 
     /*
      * Always make a (terminated) copy of the source string.
@@ -1007,6 +1009,8 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	mb->nb = blen;
     }
     tpos = mb->tpos; /* save expansion pointer for printExpand */
+    store_macro_trace = mb->macro_trace;
+    store_expand_trace = mb->expand_trace;
 
     if (++mb->depth > max_macro_depth) {
 	rpmlog(RPMLOG_ERR,
@@ -1317,6 +1321,8 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     mb->depth--;
     if (mb->error != 0 || mb->expand_trace)
 	printExpansion(mb, mb->buf+tpos, mb->buf+mb->tpos);
+    mb->macro_trace = store_macro_trace;
+    mb->expand_trace = store_expand_trace;
 exit:
     _free(source);
     return mb->error;
