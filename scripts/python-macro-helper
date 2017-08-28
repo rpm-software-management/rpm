@@ -1,4 +1,4 @@
-#!/usr/bin/python -tt
+#!/usr/bin/python
 
 from distutils.sysconfig import get_python_lib
 from platform import python_version_tuple
