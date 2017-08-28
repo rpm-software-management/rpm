@@ -171,7 +171,7 @@ static int db_init(rpmdb rdb, const char * dbhome)
 	eflags |= MDB_MAPASYNC;
 	eflags |= MDB_NOTLS;
 
-	if (access(dbhome, W_OK))
+	if (access(dbhome, W_OK) && (rdb->db_mode & O_ACCMODE) == O_RDONLY)
 	    eflags |= MDB_RDONLY;
 
 	rc = mdb_env_open(env, dbhome, eflags, rdb->db_perms);
