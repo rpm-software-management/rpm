@@ -491,7 +491,7 @@ static int db_init(rpmdb rdb, const char * dbhome)
 	if (rc == EINVAL && errno == rc) {
 	    eflags |= DB_PRIVATE;
 	    retry_open--;
-	} else if (rdonly && (rc == EACCES || rc == EROFS)) {
+	} else if (rdonly && (rc == EACCES || rc == EROFS || rc == DB_VERSION_MISMATCH)) {
 	    eflags |= DB_PRIVATE;
 	    retry_open--;
 	} else {
