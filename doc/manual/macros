@@ -67,9 +67,9 @@ to perform useful operations. The current list is
 			expansion
 	%dump		print the active (i.e. non-covered) macro table
 
-	%{echo:...}	print ... to stderr
-	%{warn:...}	print ... to stderr
-	%{error:...}	print ... to stderr and return BADSPEC
+	%{echo:...}	print ... to stdout
+	%{warn:...}	print warning: ... to stderr
+	%{error:...}	print error: ... to stderr and return an error
  
 	%define ...	define a macro
 	%undefine ...	undefine a macro
