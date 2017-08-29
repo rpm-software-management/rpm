@@ -283,7 +283,7 @@ printMacro(MacroBuf mb, const char * s, const char * se)
     const char *senl;
 
     if (s >= se) {	/* XXX just in case */
-	fprintf(stderr, _("%3d>%*s(empty)"), mb->depth,
+	fprintf(stderr, _("%3d>%*s(empty)\n"), mb->depth,
 		(2 * mb->depth + 1), "");
 	return;
     }
