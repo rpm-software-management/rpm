@@ -748,16 +748,10 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    found = 1;
 	    count = rpmtdCount(td);
 
-	    if (numElements > 1 && count != numElements)
-	    switch (td->type) {
-	    default:
+	    if (numElements > 0 && count != numElements) {
 		hsaError(hsa,
 			_("array iterator used with different sized arrays"));
 		return NULL;
-		break;
-	    case RPM_BIN_TYPE:
-	    case RPM_STRING_TYPE:
-		break;
 	    }
 	    if (count > numElements)
 		numElements = count;
