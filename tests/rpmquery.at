@@ -416,7 +416,6 @@ AT_CLEANUP
 AT_SETUP([xml format])
 AT_KEYWORDS([query])
 AT_CHECK([
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 runroot rpm -qp --xml  data/RPMS/hello-2.0-1.x86_64.rpm
 ],
 [0],
