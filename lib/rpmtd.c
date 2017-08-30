@@ -49,9 +49,12 @@ void rpmtdFreeData(rpmtd td)
 
 rpm_count_t rpmtdCount(rpmtd td)
 {
-    assert(td != NULL);
-    /* fix up for binary type abusing count as data length */
-    return (td->type == RPM_BIN_TYPE) ? 1 : td->count;
+    rpm_count_t count = 0;
+    if (td != NULL) {
+	/* fix up for binary type abusing count as data length */
+	count = (td->type == RPM_BIN_TYPE) ? 1 : td->count;
+    }
+    return count;
 }
 
 rpm_count_t rpmtdSize(rpmtd td)
@@ -61,20 +64,17 @@ rpm_count_t rpmtdSize(rpmtd td)
 
 rpmTagVal rpmtdTag(rpmtd td)
 {
-    assert(td != NULL);
-    return td->tag;
+    return (td != NULL) ? td->tag : 0;
 }
 
 rpmTagType rpmtdType(rpmtd td)
 {
-    assert(td != NULL);
-    return td->type;
+    return (td != NULL) ? td->type : 0;
 }
 
 rpmTagClass rpmtdClass(rpmtd td)
 {
-    assert(td != NULL);
-    return rpmTagTypeGetClass(td->type);
+    return (td != NULL) ? rpmTagTypeGetClass(td->type) : 0;
 }
 
 rpmtdFlags rpmtdGetFlags(rpmtd td)
