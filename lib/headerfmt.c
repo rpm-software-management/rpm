@@ -414,13 +414,6 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 		goto errxit;
 	    }
 
-	    /* Set justOne = 1 for non ARRAY tags */
-	    if (token->type == PTOK_TAG &&
-		!(rpmTagGetReturnType(token->u.tag.tag) &
-		  RPM_ARRAY_RETURN_TYPE)) {
-		token->u.tag.justOne = 1;
-	    }
-
 	    start = next;
 	    break;
 
@@ -689,8 +682,8 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		int element)
 {
     char * t, * te;
-    int i, j, found, singleItem;
-    int count, numElements;
+    int i, j, found;
+    rpm_count_t count, numElements;
     sprintfToken spft;
     int condNumFormats;
     size_t need;
@@ -739,32 +732,23 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	break;
 
     case PTOK_ARRAY:
-	numElements = -1;
-	singleItem = 0;
+	numElements = 0;
 	found = 0;
 	spft = token->u.array.format;
-	/* get number of array items */
 	for (i = 0; i < token->u.array.numTokens; i++, spft++)
 	{
 	    rpmtd td = NULL;
-	    if (spft->type != PTOK_TAG) continue;
+	    if (spft->type != PTOK_TAG ||
+		spft->u.tag.justOne) continue;
 
 	    if (!(td = getData(hsa, spft->u.tag.tag))) {
 		continue;
 	    }
 
-	    count = rpmtdCount(td);
 	    found = 1;
+	    count = rpmtdCount(td);
 
-	    if (spft->u.tag.justOne) {
-		if (count) {
-		    singleItem = 1;
-		}
-		continue;
-	    }
-	    
-
-	    if (numElements > 0 && count != numElements)
+	    if (numElements > 1 && count != numElements)
 	    switch (td->type) {
 	    default:
 		hsaError(hsa,
@@ -777,14 +761,6 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    }
 	    if (count > numElements)
 		numElements = count;
-	}
-
-	if (numElements == -1 && singleItem) {
-	    /* only justOne elements */
-	    numElements = 1;
-	} else if (numElements == -1) {
-	    /* nothing at all */
-	    numElements = 0;
 	}
 
 	if (found) {
