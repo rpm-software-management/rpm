@@ -352,7 +352,6 @@ AT_CLEANUP
 # ------------------------------
 AT_SETUP([different sizes arrays query 3])
 AT_KEYWORDS([query])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 AT_CHECK([
 runroot rpm \
   --queryformat="[[%{name} %{basenames}]\n]" \
