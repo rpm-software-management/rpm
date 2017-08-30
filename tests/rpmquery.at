@@ -320,11 +320,11 @@ runroot rpm \
 AT_CLEANUP
 
 # ------------------------------
-AT_SETUP([different sizes arrays query])
+AT_SETUP([different sizes arrays query 1])
 AT_KEYWORDS([query])
 AT_CHECK([
 runroot rpm \
-  --queryformat="[[%{basenames} %{changelogname}]]" \
+  --queryformat="[[%{basenames} %{changelogname}]\n]" \
   -qp /data/RPMS/hello-1.0-1.i386.rpm
 ],
 [0],
@@ -333,6 +333,53 @@ runroot rpm \
 ])
 AT_CLEANUP
 
+# ------------------------------
+# This is succeeds because there happens to be exactly one changelog entry
+# so the size matches with name.
+AT_SETUP([different sizes arrays query 2])
+AT_KEYWORDS([query])
+AT_CHECK([
+runroot rpm \
+  --queryformat="[[%{name} %{changelogtime}]\n]" \
+  -qp /data/RPMS/hello-1.0-1.i386.rpm
+],
+[0],
+[hello 908877600
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([different sizes arrays query 3])
+AT_KEYWORDS([query])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+AT_CHECK([
+runroot rpm \
+  --queryformat="[[%{name} %{basenames}]\n]" \
+  -qp /data/RPMS/hello-1.0-1.i386.rpm
+],
+[0],
+[],
+[error: incorrect format: array iterator used with different sized arrays
+])
+AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([different sizes arrays query 4])
+AT_KEYWORDS([query])
+AT_CHECK([
+runroot rpm \
+  --queryformat="[[%{=name} %{basenames}\n]]" \
+  -qp /data/RPMS/hello-1.0-1.i386.rpm
+],
+[0],
+[hello hello
+hello hello-1.0
+hello FAQ
+],
+[])
+
+AT_CLEANUP
 # ------------------------------
 AT_SETUP([non-existent string tag])
 AT_KEYWORDS([query])
