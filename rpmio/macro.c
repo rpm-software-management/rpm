@@ -645,6 +645,33 @@ freeArgs(MacroBuf mb)
     mb->level--;
 }
 
+static void splitQuoted(ARGV_t *av, const char * str, const char * seps)
+{
+    const int qchar = 0x1f; /* ASCII unit separator */
+    const char *s = str;
+    const char *start = str;
+    int quoted = 0;
+
+    while (start != NULL) {
+	if ((quoted && *s == qchar) || (!quoted && strchr(seps, *s))) {
+	    size_t alen = s - start - quoted;
+	    /* only keep zero-length args if quoted */
+	    if (quoted || alen > 0) {
+		char arg[alen];
+		memcpy(arg, start + quoted, alen);
+		arg[alen] = '\0';
+		argvAdd(av, arg);
+	    }
+	    start = s + 1;
+	}
+	if (*s == qchar)
+	    quoted = !quoted;
+	else if (*s == '\0')
+	    start = NULL;
+	s++;
+    }
+}
+
 /**
  * Parse arguments (to next new line) for parameterized macro.
  * @todo Use popt rather than getopt to parse args.
@@ -673,7 +700,6 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
     argvAdd(&argv, me->name);
     if (lastc) {
 	int oescape = mb->escape;
-	ARGV_t av = NULL;
 	char *s = NULL;
 
 	/* Expand possible macros in arguments */
@@ -681,9 +707,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 	expandThis(mb, se, lastc-se, &s);
 	mb->escape = oescape;
 
-	argvSplit(&av, s, " \t");
-	argvAppend(&argv, av);
-	argvFree(av);
+	splitQuoted(&argv, s, " \t");
 	free(s);
 
 	cont = ((*lastc == '\0' || *lastc == '\n') && *(lastc-1) != '\\') ?
@@ -879,6 +903,11 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	}
 	buf[j] = '\0';
 	b = buf;
+    } else if (STREQ("quote", f, fn)) {
+	char *quoted = NULL;
+	rasprintf(&quoted, "%c%s%c", 0x1f, buf, 0x1f);
+	free(buf);
+	b = buf = quoted;
     } else if (STREQ("suffix", f, fn)) {
 	if ((b = strrchr(buf, '.')) != NULL)
 	    b++;
@@ -1225,6 +1254,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    STREQ("dirname", f, fn) ||
 	    STREQ("shrink", f, fn) ||
 	    STREQ("suffix", f, fn) ||
+	    STREQ("quote", f, fn) ||
 	    STREQ("expand", f, fn) ||
 	    STREQ("verbose", f, fn) ||
 	    STREQ("uncompress", f, fn) ||

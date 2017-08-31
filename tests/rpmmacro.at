@@ -169,7 +169,8 @@ runroot rpm \
     --eval '%foo 1 2' \
     --eval '%foo %{nil}' \
     --eval '%foo %{nil} xx' \
-    --eval '%foo %{bar} xx'
+    --eval '%foo %{bar} xx' \
+    --eval '%foo %{quote:   2 3  5} %{quote:%{nil}}'
 ],
 [0],
 [1:"1"
@@ -178,6 +179,7 @@ runroot rpm \
 0:
 1:"xx"
 2:"zzz" "xx"
+2:"   2 3  5" ""
 ])
 AT_CLEANUP
 
