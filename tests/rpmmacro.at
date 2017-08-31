@@ -158,6 +158,29 @@ runroot rpm \
 ])
 AT_CLEANUP
 
+AT_SETUP([parametrized macro 5])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm \
+    --define '%foo() %#:%{?1:"%1"}%{?2: "%2"}' \
+    --define 'bar zzz' \
+    --eval '%foo 1' \
+    --eval '%foo   2  ' \
+    --eval '%foo 1 2' \
+    --eval '%foo %{nil}' \
+    --eval '%foo %{nil} xx' \
+    --eval '%foo %{bar} xx'
+],
+[0],
+[1:"1"
+1:"2"
+2:"1" "2"
+0:
+1:"xx"
+2:"zzz" "xx"
+])
+AT_CLEANUP
+
 AT_SETUP([uncompress macro])
 AT_KEYWORDS([macros])
 AT_CHECK([
