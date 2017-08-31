@@ -243,16 +243,37 @@ static const char * rpmlogLevelColor(rpmlogLvl pri)
     return rpmlogMsgPrefixColor[pri&0x7];
 }
 
+enum {
+    COLOR_NO = 0,
+    COLOR_AUTO = 1,
+    COLOR_ALWAYS = 2,
+};
+
+static int getColorConfig(void)
+{
+    int rc = COLOR_NO;
+    char * color = rpmExpand("%{?_color_output}%{!?_color_output:auto}", NULL);
+    if (rstreq(color, "auto"))
+	rc = COLOR_AUTO;
+    else if (rstreq(color, "always"))
+	rc = COLOR_ALWAYS;
+    free(color);
+    return rc;
+}
+
 static int rpmlogDefault(FILE *stdlog, rpmlogRec rec)
 {
     static const char fubar[] =
 	"Error occurred during writing of a log message";
     FILE *msgout = (stdlog ? stdlog : stderr);
-    char * color = rpmExpand("%{?_color_output}%{!?_color_output:auto}", NULL);
+    static __thread int color = -1;
     const char * colorOn = NULL;
 
-    if (!strcmp(color, "always") ||
-	(!strcmp(color, "auto") && isatty(fileno(msgout))))
+    if (color < 0)
+	color = getColorConfig();
+
+    if (color == COLOR_ALWAYS ||
+	    (color == COLOR_AUTO && isatty(fileno(msgout))))
 	colorOn = rpmlogLevelColor(rec->pri);
 
     switch (rec->pri) {
