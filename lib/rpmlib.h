@@ -17,7 +17,7 @@
 #include <rpm/rpmpgp.h>
 
 #ifdef _RPM_4_4_COMPAT
-#error RPM 4.4.x compatibility layer has been removed in RPM >= 4.14
+#warning RPM 4.4.x compatibility layer has been removed in RPM >= 4.14
 #endif
 
 #ifdef __cplusplus
