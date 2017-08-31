@@ -66,6 +66,7 @@ to perform useful operations. The current list is
 	%trace		toggle print of debugging information before/after
 			expansion
 	%dump		print the active (i.e. non-covered) macro table
+	%verbose	is rpm in verbose mode?
 
 	%{echo:...}	print ... to stdout
 	%{warn:...}	print warning: ... to stderr
@@ -75,12 +76,24 @@ to perform useful operations. The current list is
 	%undefine ...	undefine a macro
 	%global ...	define a macro whose body is available in global context
 
+	%{basename:...}	basename(1) macro analogue
+	%{dirname:...}	dirname(1) macro analogue
+	%{suffix:...}	expand to suffix part of a file name
+	%{url2path:...}	convert url to a local path
+	%{getenv:...}	getenv(3) macro analogue
+	%{getconfdir:...}	expand to rpm "home" directory (typically /usr/lib/rpm)
 	%{uncompress:...} expand ... to <file> and test to see if <file> is
 			compressed.  The expansion is
 				cat <file>		# if not compressed
 				gzip -dc <file>		# if gzip'ed
 				bzip2 -dc <file>	# if bzip'ed
+
+	%{lua:...}	expand using the embedded Lua interpreter
 	%{expand:...}	like eval, expand ... to <body> and (re-)expand <body>
+	%{shrink:...}	trim leading and trailing whitespace, reduce
+			intermediate whitespace to a single space
+	%{quote:...}	quote a parametric macro argument, needed to pass
+			empty strings or strings with whitespace
 
 	%{S:...}	expand ... to <source> file name
 	%{P:...}	expand ... to <patch> file name
