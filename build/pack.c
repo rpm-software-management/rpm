@@ -601,6 +601,8 @@ exit:
 	if (MD5 != NULL) {
 	    *pkgidp = MD5;
 	}
+    } else {
+	free(MD5);
     }
 
     Fclose(fd);
