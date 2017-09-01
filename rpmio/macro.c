@@ -653,13 +653,18 @@ static void splitQuoted(ARGV_t *av, const char * str, const char * seps)
     int quoted = 0;
 
     while (start != NULL) {
-	if ((quoted && *s == qchar) || (!quoted && strchr(seps, *s))) {
-	    size_t alen = s - start - quoted;
-	    /* only keep zero-length args if quoted */
-	    if (quoted || alen > 0) {
-		char arg[alen];
-		memcpy(arg, start + quoted, alen);
-		arg[alen] = '\0';
+	if ((!quoted && strchr(seps, *s))) {
+	    size_t slen = s - start;
+	    /* quoted arguments are always kept, otherwise skip empty args */
+	    if (slen > 0) {
+		char *d, arg[slen + 1];
+		const char *t;
+		for (d = arg, t = start; t - start < slen; t++) {
+		    if (*t == qchar)
+			continue;
+		    *d++ = *t;
+		}
+		arg[d - arg] = '\0';
 		argvAdd(av, arg);
 	    }
 	    start = s + 1;
