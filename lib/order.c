@@ -159,7 +159,7 @@ static inline int addRelation(rpmts ts,
 	if (rpmdsParseRichDep(requires, &ds1, &ds2, &op, NULL) == RPMRC_OK) {
 	    if (op != RPMRICHOP_ELSE)
 		addRelation(ts, al, p, ds1);
-	    if (op == RPMRICHOP_IF) {
+	    if (op == RPMRICHOP_IF || op == RPMRICHOP_UNLESS) {
 	      rpmds ds21, ds22;
 	      rpmrichOp op2;
 	      if (rpmdsParseRichDep(requires, &ds21, &ds22, &op2, NULL) == RPMRC_OK && op2 == RPMRICHOP_ELSE) {

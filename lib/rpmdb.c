@@ -2194,7 +2194,7 @@ static rpmRC updateRichDepCB(void *cbdata, rpmrichParseType type,
 	data->nargv++;
 	_free(name);
     }
-    if (type == RPMRICH_PARSE_OP && op == RPMRICHOP_IF) {
+    if (type == RPMRICH_PARSE_OP && (op == RPMRICHOP_IF || op == RPMRICHOP_UNLESS)) {
 	/* save nargv in case of ELSE */
 	data->nargv_level[data->level - 1] = data->nargv;
 	data->neg ^= 1;
@@ -2211,7 +2211,7 @@ static rpmRC updateRichDepCB(void *cbdata, rpmrichParseType type,
 	}
 	data->neg ^= 1;
     }
-    if (type == RPMRICH_PARSE_LEAVE && op == RPMRICHOP_IF) {
+    if (type == RPMRICH_PARSE_LEAVE && (op == RPMRICHOP_IF || op == RPMRICHOP_UNLESS)) {
 	data->neg ^= 1;
     }
     return RPMRC_OK;
