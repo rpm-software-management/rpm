@@ -569,7 +569,7 @@ AC_SUBST([WITH_DB_LIB])
 
 #=================
 # Process --enable-ndb
-AC_ARG_ENABLE([ndb], [AS_HELP_STRING([--enable-ndb],[enable the new rpm database format])],
+AC_ARG_ENABLE([ndb], [AS_HELP_STRING([--enable-ndb (EXPERIMENTAL)],[enable the new rpm database format])],
 [case "$enable_ndb" in
 yes|no) ;;
 *) AC_MSG_ERROR([invalid argument to --enable-ndb])
@@ -584,7 +584,7 @@ AM_CONDITIONAL([NDB], [test "$enable_ndb" = yes])
 #=================
 # Check for LMDB support
 AC_ARG_ENABLE([lmdb],
-              [AS_HELP_STRING([--enable-lmdb=@<:@yes/no/auto@:>@],
+              [AS_HELP_STRING([--enable-lmdb=@<:@yes/no/auto@:>@ (EXPERIMENTAL)],
                               [build with LMDB rpm database format support (default=auto)])],
               [enable_lmdb="$enableval"],
               [enable_lmdb=auto])
