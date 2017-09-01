@@ -733,30 +733,38 @@ retry:
 	    rpmdsNotify(dep, "(rich)", rc);
 	    goto exit;
 	}
-	if (op == RPMRICHOP_IF) {
+	if (op == RPMRICHOP_IF || op == RPMRICHOP_UNLESS) {
+	    /* A IF B -> A OR NOT(B) */
+	    /* A UNLESS B -> A AND NOT(B) */
 	    if (rpmdsIsRich(ds2)) {
-		/* check if this is a IF...ELSE combination */
+		/* check if this has an ELSE clause */
 		rpmds ds21 = NULL, ds22 = NULL;
 		rpmrichOp op2;
 		if (rpmdsParseRichDep(ds2, &ds21, &ds22, &op2, NULL) == RPMRC_OK && op2 == RPMRICHOP_ELSE) {
-		    rc = unsatisfiedDepend(ts, dcache, ds21);
-		    if (rc) {
-			rpmdsFree(ds1);
-			ds1 = ds22;
-			ds22 = NULL;
+		    /* A IF B ELSE C -> (A OR NOT(B)) AND (C OR B) */
+		    /* A UNLESS B ELSE C -> (A AND NOT(B)) OR (C AND B) */
+		    rc = !unsatisfiedDepend(ts, dcache, ds21);	/* NOT(B) */
+		    if ((rc && op == RPMRICHOP_IF) || (!rc && op == RPMRICHOP_UNLESS)) {
+			rc = unsatisfiedDepend(ts, dcache, ds1);	/* A */
+		    } else {
+			rc = unsatisfiedDepend(ts, dcache, ds22);	/* C */
 		    }
-		    rc = 1;
+		    rpmdsFree(ds21);
+		    rpmdsFree(ds22);
+		    goto exitrich;
 		}
 		rpmdsFree(ds21);
 		rpmdsFree(ds22);
 	    }
-	    if (!rc)
-		rc = !unsatisfiedDepend(ts, dcache, ds2);
-	}
-	if (op != RPMRICHOP_IF || rc)
+	    rc = !unsatisfiedDepend(ts, dcache, ds2);	/* NOT(B) */
+	    if ((rc && op == RPMRICHOP_IF) || (!rc && op == RPMRICHOP_UNLESS))
+		rc = unsatisfiedDepend(ts, dcache, ds1);
+	} else {
 	    rc = unsatisfiedDepend(ts, dcache, ds1);
-	if ((rc && op == RPMRICHOP_OR) || (!rc && op == RPMRICHOP_AND))
-	    rc = unsatisfiedDepend(ts, dcache, ds2);
+	    if ((rc && op == RPMRICHOP_OR) || (!rc && op == RPMRICHOP_AND))
+		rc = unsatisfiedDepend(ts, dcache, ds2);
+	}
+exitrich:
 	ds1 = rpmdsFree(ds1);
 	ds2 = rpmdsFree(ds2);
 	rpmdsNotify(dep, "(rich)", rc);
