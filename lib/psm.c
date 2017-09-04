@@ -479,8 +479,10 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal)
     if (psm->total == 0)
 	psm->total = 100;
 
-    rpmlog(RPMLOG_DEBUG, "%s: %s has %d files\n", pkgGoalString(goal),
+    if (goal == PKG_INSTALL || goal == PKG_ERASE) {
+	rpmlog(RPMLOG_DEBUG, "%s: %s has %d files\n", pkgGoalString(goal),
 	    rpmteNEVRA(psm->te), rpmfilesFC(psm->files));
+    }
 
     return psm;
 }
