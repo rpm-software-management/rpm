@@ -1413,9 +1413,10 @@ rpmRC rpmtsSetupTransactionPlugins(rpmts ts)
  * @param arg2		ditto, but for the target package
  * @return		0 on success
  */
-rpmRC runScript(rpmts ts, rpmte te, ARGV_const_t prefixes,
+rpmRC runScript(rpmts ts, rpmte te, Header h, ARGV_const_t prefixes,
 		       rpmScript script, int arg1, int arg2)
 {
+    rpmte xte = te;
     rpmRC stoprc, rc = RPMRC_OK;
     rpmTagVal stag = rpmScriptTag(script);
     FD_t sfd = NULL;
@@ -1423,6 +1424,12 @@ rpmRC runScript(rpmts ts, rpmte te, ARGV_const_t prefixes,
 		     stag != RPMTAG_PREUN &&
 		     stag != RPMTAG_PRETRANS &&
 		     stag != RPMTAG_VERIFYSCRIPT);
+
+    /* Fake up a transaction element for triggers from rpmdb */
+    if (te == NULL) {
+	te = rpmteNew(ts, h, TR_REMOVED, NULL, NULL);
+	rpmteSetHeader(te, h);
+    }
 
     sfd = rpmtsNotify(ts, te, RPMCALLBACK_SCRIPT_START, stag, 0);
     if (sfd == NULL)
@@ -1448,6 +1455,9 @@ rpmRC runScript(rpmts ts, rpmte te, ARGV_const_t prefixes,
 	}
 	rpmtsNotify(ts, te, RPMCALLBACK_SCRIPT_ERROR, stag, rc);
     }
+
+    if (te != xte)
+	rpmteFree(te);
 
     return rc;
 }

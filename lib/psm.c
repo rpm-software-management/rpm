@@ -249,7 +249,7 @@ static rpmRC runInstScript(rpmpsm psm, rpmTagVal scriptTag)
 
     if (script) {
 	headerGet(h, RPMTAG_INSTPREFIXES, &pfx, HEADERGET_ALLOC|HEADERGET_ARGV);
-	rc = runScript(psm->ts, psm->te, pfx.data, script, psm->scriptArg, -1);
+	rc = runScript(psm->ts, psm->te, h, pfx.data, script, psm->scriptArg, -1);
 	rpmtdFreeData(&pfx);
     }
 
@@ -312,8 +312,7 @@ static rpmRC handleOneTrigger(rpmts ts, rpmte te, rpmsenseFlags sense,
 		rpmScript script = rpmScriptFromTriggerTag(trigH,
 			     triggertag(sense), RPMSCRIPT_NORMALTRIGGER, tix);
 		arg1 += countCorrection;
-		rc = runScript(ts, te, pfx.data, script, arg1, arg2);
-
+		rc = runScript(ts, te, trigH, pfx.data, script, arg1, arg2);
 		if (triggersAlreadyRun != NULL)
 		    triggersAlreadyRun[tix] = 1;
 
@@ -361,7 +360,7 @@ static rpmRC runTriggers(rpmpsm psm, rpmsenseFlags sense)
 
 	mi = rpmtsInitIterator(ts, RPMDBI_TRIGGERNAME, N, 0);
 	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
-	    nerrors += handleOneTrigger(ts, psm->te, sense, h, triggeredH,
+	    nerrors += handleOneTrigger(ts, NULL, sense, h, triggeredH,
 					0, numPackage, NULL);
 	}
 	rpmdbFreeIterator(mi);
