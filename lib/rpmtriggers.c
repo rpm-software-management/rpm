@@ -176,7 +176,8 @@ int runPostUnTransFileTrigs(rpmts ts)
 	    continue;
 
 	/* Prepare and run script */
-	script = rpmScriptFromTriggerTag(trigH, RPMSENSE_TRIGGERPOSTUN,
+	script = rpmScriptFromTriggerTag(trigH,
+		triggertag(RPMSENSE_TRIGGERPOSTUN),
 		RPMSCRIPT_TRANSFILETRIGGER, trigs->triggerInfo[i].tix);
 
 	headerGet(trigH, RPMTAG_INSTPREFIXES, &installPrefixes,
