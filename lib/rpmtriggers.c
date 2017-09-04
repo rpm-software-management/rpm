@@ -183,7 +183,7 @@ int runPostUnTransFileTrigs(rpmts ts)
 	headerGet(trigH, RPMTAG_INSTPREFIXES, &installPrefixes,
 		HEADERGET_ALLOC|HEADERGET_ARGV);
 
-	nerrors += runScript(ts, NULL, installPrefixes.data, script, 0, 0);
+	nerrors += runScript(ts, NULL, trigH, installPrefixes.data, script, 0, 0);
 	rpmtdFreeData(&installPrefixes);
 	rpmScriptFree(script);
 	headerFree(trigH);
@@ -424,7 +424,7 @@ static int runHandleTriggersInPkg(rpmts ts, rpmte te, Header h,
 	    inputFunc = (char *(*)(void *)) matchFilesNext;
 	    rpmScriptSetNextFileFunc(script, inputFunc, mfi);
 
-	    nerrors += runScript(ts, te, installPrefixes.data,
+	    nerrors += runScript(ts, te, h, installPrefixes.data,
 				script, 0, 0);
 	    rpmtdFreeData(&installPrefixes);
 	    rpmScriptFree(script);
