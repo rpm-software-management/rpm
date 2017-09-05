@@ -794,31 +794,14 @@ yes|no) ;;
 esac],
 [enable_python=no])
 
+WITH_PYTHON_SUBPACKAGE=0
 AS_IF([test "$enable_python" = yes],[
   AM_PATH_PYTHON([2.6],[
-    WITH_PYTHON_INCLUDE=`${PYTHON} -c 'from distutils.sysconfig import *; import sys; sys.stdout.write(get_python_inc())'`
-    WITH_PYTHON_SUBPACKAGE=1
-    save_CPPFLAGS="$CPPFLAGS"
-    CPPFLAGS="$CPPFLAGS -I$WITH_PYTHON_INCLUDE"
-    AC_CHECK_HEADER([Python.h],[],
-      [AC_MSG_ERROR([missing Python.h])
-      ])
-    CPPFLAGS="$save_CPPFLAGS"
-    save_LIBS="$LIBS"
-    AC_SEARCH_LIBS([Py_Main],[python${PYTHON_VERSION} python],[
-      WITH_PYTHON_LIB="$ac_res"
-    ],[AC_MSG_ERROR([missing python library])
-    ])
-    LIBS="$save_LIBS"
+    PKG_CHECK_MODULES([PYTHON], [python-${PYTHON_VERSION}], [WITH_PYTHON_SUBPACKAGE=1])
+    AC_SUBST(PYTHON_CFLAGS)
+    AC_SUBST(PYTHON_LIB)
   ])
-],[
-    WITH_PYTHON_INCLUDE=
-    WITH_PYTHON_LIB=
-    WITH_PYTHON_SUBPACKAGE=0
 ])
-
-AC_SUBST(WITH_PYTHON_INCLUDE)
-AC_SUBST(WITH_PYTHON_LIB)
 
 AM_CONDITIONAL(ENABLE_PYTHON,[test "$WITH_PYTHON_SUBPACKAGE" = 1])
 
