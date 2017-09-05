@@ -7,7 +7,7 @@ EXTRA_DIST = rpm/__init__.py rpm/transaction.py
 
 AM_CPPFLAGS = -I$(top_builddir)/include/
 AM_CPPFLAGS += -I$(top_srcdir)/python
-AM_CPPFLAGS += -I@WITH_PYTHON_INCLUDE@
+AM_CPPFLAGS += @PYTHON_CFLAGS@
 
 pkgpyexec_LTLIBRARIES = _rpm.la _rpmb.la _rpms.la
 pkgpyexec_DATA = rpm/__init__.py rpm/transaction.py
@@ -16,7 +16,7 @@ _rpm_la_LDFLAGS = -module -avoid-version -shared
 _rpm_la_LIBADD = \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmio/librpmio.la \
-	@WITH_PYTHON_LIB@
+	@PYTHON_LIBS@
 
 _rpm_la_SOURCES = rpmmodule.c rpmsystem-py.h \
 	header-py.c header-py.h \
@@ -40,7 +40,7 @@ _rpmb_la_LIBADD = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmio/librpmio.la \
-	@WITH_PYTHON_LIB@
+	@PYTHON_LIBS@
 
 _rpmb_la_SOURCES = rpmbmodule.c rpmsystem-py.h \
 	spec-py.c spec-py.h
@@ -50,7 +50,7 @@ _rpms_la_LIBADD = \
         $(top_builddir)/sign/librpmsign.la \
         $(top_builddir)/lib/librpm.la \
         $(top_builddir)/rpmio/librpmio.la \
-        @WITH_PYTHON_LIB@
+	@PYTHON_LIBS@
 
 _rpms_la_SOURCES = rpmsmodule.c rpmsystem-py.h
 
