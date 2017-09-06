@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2017-08-10 10:36+0300\n"
+"POT-Creation-Date: 2017-09-06 14:15+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Chinese (Taiwan) (http://www.transifex.com/rpm-team/rpm/"
@@ -686,266 +686,266 @@ msgstr "字串不支援 && 和 ||\n"
 msgid "syntax error in expression\n"
 msgstr "表述式中有語法錯誤\n"
 
-#: build/files.c:352 build/files.c:533 build/files.c:752
+#: build/files.c:343 build/files.c:524 build/files.c:743
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "在 %s %s 中有遺漏的「(」\n"
 
-#: build/files.c:362 build/files.c:674 build/files.c:762 build/files.c:821
+#: build/files.c:353 build/files.c:665 build/files.c:753 build/files.c:812
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "在 %s(%s 中有遺漏的「)」\n"
 
-#: build/files.c:387 build/files.c:693
+#: build/files.c:378 build/files.c:684
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "無效的 %s 符記：%s\n"
 
-#: build/files.c:499
+#: build/files.c:490
 #, c-format
 msgid "Missing %s in %s(%s)\n"
 msgstr ""
 
-#: build/files.c:548
+#: build/files.c:539
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "%s() 之後有非空白空格：%s\n"
 
-#: build/files.c:588
+#: build/files.c:579
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "不良語法：%s(%s)\n"
 
-#: build/files.c:597
+#: build/files.c:588
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "不良模式規格：%s(%s)\n"
 
-#: build/files.c:609
+#: build/files.c:600
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "不良 dirmode 規格：%s(%s)\n"
 
-#: build/files.c:714
+#: build/files.c:705
 #, c-format
 msgid "Unusual locale length: \"%s\" in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:721
+#: build/files.c:712
 #, c-format
 msgid "Duplicate locale %s in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:836
+#: build/files.c:827
 #, c-format
 msgid "Invalid capability: %s\n"
 msgstr "無效的功能：%s\n"
 
-#: build/files.c:846
+#: build/files.c:837
 msgid "File capability support not built in\n"
 msgstr "檔案功能支援未內建於\n"
 
-#: build/files.c:896
+#: build/files.c:887
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "檔案必須以「/」開頭：%s\n"
 
-#: build/files.c:1012
+#: build/files.c:1003
 #, c-format
 msgid "unable to parse %s=%s\n"
 msgstr ""
 
-#: build/files.c:1030
+#: build/files.c:1021
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr ""
 
-#: build/files.c:1082
+#: build/files.c:1073
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "曾列出兩次的檔案：%s\n"
 
-#: build/files.c:1204
+#: build/files.c:1195
 #, c-format
 msgid "reading symlink %s failed: %s\n"
 msgstr ""
 
-#: build/files.c:1212
+#: build/files.c:1203
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "指向 BuildRoot 的符號連結：%s -> %s\n"
 
-#: build/files.c:1354
+#: build/files.c:1345
 #, c-format
 msgid "Path is outside buildroot: %s\n"
 msgstr ""
 
-#: build/files.c:1394
+#: build/files.c:1385
 #, c-format
 msgid "Directory not found: %s\n"
 msgstr ""
 
-#: build/files.c:1395 lib/rpminstall.c:449
+#: build/files.c:1386 lib/rpminstall.c:449
 #, c-format
 msgid "File not found: %s\n"
 msgstr "找不到檔案：%s\n"
 
-#: build/files.c:1407
+#: build/files.c:1398
 #, c-format
 msgid "Not a directory: %s\n"
 msgstr ""
 
-#: build/files.c:1600
+#: build/files.c:1591
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s：無法呼叫不明的標籤 (%d)。\n"
 
-#: build/files.c:1606
+#: build/files.c:1597
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s：公鑰讀入失敗。\n"
 
-#: build/files.c:1610
+#: build/files.c:1601
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s：不是一個受保護的公鑰。\n"
 
-#: build/files.c:1619
+#: build/files.c:1610
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s：編碼失敗\n"
 
-#: build/files.c:1660
+#: build/files.c:1651
 msgid "failed symlink"
 msgstr ""
 
-#: build/files.c:1716 build/files.c:1719
+#: build/files.c:1707 build/files.c:1710
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
 msgstr ""
 
-#: build/files.c:1726
+#: build/files.c:1717
 #, c-format
 msgid "Duplicate build-ids %s and %s\n"
 msgstr ""
 
-#: build/files.c:1758
+#: build/files.c:1749
 msgid "_build_id_links macro not set, assuming 'compat'\n"
 msgstr ""
 
-#: build/files.c:1771
+#: build/files.c:1762
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
 msgstr ""
 
-#: build/files.c:1857
+#: build/files.c:1848
 #, c-format
 msgid "error reading build-id in %s: %s\n"
 msgstr ""
 
-#: build/files.c:1861
+#: build/files.c:1852
 #, c-format
 msgid "Missing build-id in %s\n"
 msgstr ""
 
-#: build/files.c:1866
+#: build/files.c:1857
 #, c-format
 msgid "build-id found in %s too small\n"
 msgstr ""
 
-#: build/files.c:1867
+#: build/files.c:1858
 #, c-format
 msgid "build-id found in %s too large\n"
 msgstr ""
 
-#: build/files.c:1882 rpmio/rpmfileutil.c:606
+#: build/files.c:1873 rpmio/rpmfileutil.c:606
 msgid "failed to create directory"
 msgstr "無法建立目錄"
 
-#: build/files.c:1900
+#: build/files.c:1891
 msgid "Mixing main ELF and debug files in package"
 msgstr ""
 
-#: build/files.c:2101
+#: build/files.c:2092
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "檔案需要以「/」開頭：%s\n"
 
-#: build/files.c:2125
+#: build/files.c:2116
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr ""
 
-#: build/files.c:2137
+#: build/files.c:2128
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2139
+#: build/files.c:2130
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2174
+#: build/files.c:2165
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "無法開啟 %%files 檔案 %s：%m\n"
 
-#: build/files.c:2185
+#: build/files.c:2176
 #, c-format
 msgid "line: %s\n"
 msgstr "列：%s\n"
 
-#: build/files.c:2197
+#: build/files.c:2188
 #, c-format
 msgid "Empty %%files file %s\n"
 msgstr ""
 
-#: build/files.c:2203
+#: build/files.c:2194
 #, c-format
 msgid "Error reading %%files file %s: %m\n"
 msgstr ""
 
-#: build/files.c:2226
+#: build/files.c:2217
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr ""
 
-#: build/files.c:2348 lib/rpminstall.c:451
+#: build/files.c:2339 lib/rpminstall.c:451
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "透過 glob 解析找不到檔案：%s\n"
 
-#: build/files.c:2434
+#: build/files.c:2425
 #, c-format
 msgid "Special file in generated file list: %s\n"
 msgstr ""
 
-#: build/files.c:2458
+#: build/files.c:2449
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:2474
+#: build/files.c:2465
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr ""
 
-#: build/files.c:2543
+#: build/files.c:2534
 msgid "Generating build-id links failed\n"
 msgstr ""
 
-#: build/files.c:2660
+#: build/files.c:2651
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "不良檔案：%s：%s\n"
 
-#: build/files.c:2728
+#: build/files.c:2719
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "正在檢查未打包的檔案：%s\n"
 
-#: build/files.c:2741
+#: build/files.c:2732
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -954,22 +954,22 @@ msgstr ""
 "找到已安裝 (但未打包) 的檔案：\n"
 "%s"
 
-#: build/files.c:2852
+#: build/files.c:2843
 #, c-format
 msgid "%s was mapped to multiple filenames"
 msgstr ""
 
-#: build/files.c:3076
+#: build/files.c:3067
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "正在處理檔案：%s\n"
 
-#: build/files.c:3097
+#: build/files.c:3088
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 
-#: build/files.c:3103
+#: build/files.c:3094
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "noarch 軟體包中有架構依賴二進位檔\n"
 
@@ -1042,32 +1042,32 @@ msgstr "無法開啟 %s：%s\n"
 msgid "Unable to write package: %s\n"
 msgstr "無法寫入軟體包：%s\n"
 
-#: build/pack.c:609
+#: build/pack.c:611
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "已寫入：%s\n"
 
-#: build/pack.c:628
+#: build/pack.c:630
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr "正在執行「%s」：\n"
 
-#: build/pack.c:631
+#: build/pack.c:633
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "「%s」執行失敗。\n"
 
-#: build/pack.c:635
+#: build/pack.c:637
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "軟體包檢查「%s」失敗。\n"
 
-#: build/pack.c:682
+#: build/pack.c:684
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "無法產生軟體包 %s 的檔案名稱輸出：%s\n"
 
-#: build/pack.c:699
+#: build/pack.c:701
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "無法建立 %s：%s\n"
@@ -1406,7 +1406,7 @@ msgstr ""
 msgid "invalid dependency"
 msgstr ""
 
-#: build/parseReqs.c:267 lib/rpmds.c:1461
+#: build/parseReqs.c:267 lib/rpmds.c:1470
 msgid "Version required"
 msgstr ""
 
@@ -1690,17 +1690,17 @@ msgstr "找不到 %s：\n"
 msgid "Deprecated external dependency generator is used!\n"
 msgstr ""
 
-#: build/spec.c:91
+#: build/spec.c:92
 #, c-format
 msgid "line %d: %s: package %s does not exist\n"
 msgstr ""
 
-#: build/spec.c:94
+#: build/spec.c:95
 #, c-format
 msgid "line %d: %s: package %s already exists\n"
 msgstr ""
 
-#: build/spec.c:464
+#: build/spec.c:466
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "%s 規格檔查詢失敗，無法剖析\n"
@@ -1735,74 +1735,90 @@ msgstr "%s 有過大或過小的 long 數值，略過\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s 有過大或過小的整數值，略過\n"
 
-#: lib/backend/db3.c:804
+#: lib/backend/db3.c:808
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "無法取得 %s 於 %s/%s 的鎖定\n"
 
-#: lib/backend/db3.c:806
+#: lib/backend/db3.c:810
 msgid "shared"
 msgstr "已共享"
 
-#: lib/backend/db3.c:806
+#: lib/backend/db3.c:810
 msgid "exclusive"
 msgstr "排他"
 
-#: lib/backend/db3.c:888
+#: lib/backend/db3.c:892
 #, c-format
 msgid "invalid index type %x on %s/%s\n"
 msgstr ""
 
-#: lib/backend/db3.c:1077
+#: lib/backend/db3.c:1068
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index: %s\n"
 msgstr ""
 
-#: lib/backend/db3.c:1107
+#: lib/backend/db3.c:1098
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "儲存記錄「%2$s」到 %3$s 時發生錯誤(%1$d)\n"
 
-#: lib/backend/db3.c:1115
+#: lib/backend/db3.c:1106
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "從 %3$s 移除記錄「%2$s」時發生錯誤(%1$d)\n"
 
-#: lib/backend/db3.c:1217
+#: lib/backend/db3.c:1208
 #, c-format
 msgid "error(%d) adding header #%d record\n"
 msgstr ""
 
-#: lib/backend/db3.c:1226
+#: lib/backend/db3.c:1217
 #, c-format
 msgid "error(%d) removing header #%d record\n"
 msgstr ""
 
-#: lib/backend/db3.c:1281
+#: lib/backend/db3.c:1272
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "分配新軟體包實體時發生錯誤(%d)\n"
 
-#: lib/backend/dbi.c:51 lib/backend/dbi.c:57
-msgid "Unexpected database format\n"
+#: lib/backend/dbi.c:64
+#, c-format
+msgid ""
+"Found LMDB data.mdb database while attempting %s backend: using lmdb "
+"backend.\n"
 msgstr ""
 
-#: lib/depends.c:91
+#: lib/backend/dbi.c:73
+#, c-format
+msgid ""
+"Found NDB Packages.db database while attempting %s backend: using ndb "
+"backend.\n"
+msgstr ""
+
+#: lib/backend/dbi.c:81
+#, c-format
+msgid ""
+"Found BDB Packages database while attempting %s backend: using bdb backend.\n"
+msgstr ""
+
+#: lib/depends.c:93
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr ""
 
-#: lib/depends.c:95
+#: lib/depends.c:97
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
 
-#: lib/depends.c:375
+#: lib/depends.c:377
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "軟體包 %s 已被加入，跳過 %s\n"
 
-#: lib/depends.c:376
+#: lib/depends.c:378
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "軟體包 %s 已被加入，以 %s 替換\n"
@@ -1935,7 +1951,7 @@ msgstr ""
 
 #: lib/header.c:1841
 #, c-format
-msgid "region %d: tag number mismatch %d ril %d dl %d rdl %d\n"
+msgid "region %d: tag number mismatch il %d ril %d dl %d rdl %d\n"
 msgstr ""
 
 #: lib/header.c:1876
@@ -2003,43 +2019,43 @@ msgstr "空白標籤名稱"
 msgid "unknown tag: \"%s\""
 msgstr ""
 
-#: lib/headerfmt.c:440
+#: lib/headerfmt.c:433
 msgid "] expected at end of array"
 msgstr "] 預期在陣列的結尾"
 
-#: lib/headerfmt.c:452
+#: lib/headerfmt.c:445
 msgid "unexpected ]"
 msgstr "未預期的 ]"
 
-#: lib/headerfmt.c:462
+#: lib/headerfmt.c:455
 msgid "unexpected }"
 msgstr "未預期的 }"
 
-#: lib/headerfmt.c:518
+#: lib/headerfmt.c:511
 msgid "? expected in expression"
 msgstr "? 預期於表述式中"
 
-#: lib/headerfmt.c:525
+#: lib/headerfmt.c:518
 msgid "{ expected after ? in expression"
 msgstr "{ 預期於表述式中的 ? 之後"
 
-#: lib/headerfmt.c:537 lib/headerfmt.c:577
+#: lib/headerfmt.c:530 lib/headerfmt.c:570
 msgid "} expected in expression"
 msgstr "} 預期於表述式中"
 
-#: lib/headerfmt.c:545
+#: lib/headerfmt.c:538
 msgid ": expected following ? subexpression"
 msgstr ": 預期跟著 ? 子表述式"
 
-#: lib/headerfmt.c:563
+#: lib/headerfmt.c:556
 msgid "{ expected after : in expression"
 msgstr "{ 預期於表述式中 : 之後"
 
-#: lib/headerfmt.c:585
+#: lib/headerfmt.c:578
 msgid "| expected at end of expression"
 msgstr "| 預期於表述式的結尾"
 
-#: lib/headerfmt.c:771
+#: lib/headerfmt.c:753
 msgid "array iterator used with different sized arrays"
 msgstr "用於不同大小陣列的陣列迭代器"
 
@@ -2565,12 +2581,12 @@ msgstr "預期是源碼軟體包，但卻找到二進位軟體包\n"
 msgid "source package contains no .spec file\n"
 msgstr "源碼軟體包內未包含 .spec 檔案\n"
 
-#: lib/psm.c:605
+#: lib/psm.c:606
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "解包封存檔失敗 %s%s：%s\n"
 
-#: lib/psm.c:606
+#: lib/psm.c:607
 msgid " on file "
 msgstr "  於檔案 "
 
@@ -2783,87 +2799,87 @@ msgstr ""
 msgid "no dbpath has been set\n"
 msgstr "尚未設定 dbpath\n"
 
-#: lib/rpmdb.c:975
+#: lib/rpmdb.c:972
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader：跳過"
 
-#: lib/rpmdb.c:991
+#: lib/rpmdb.c:988
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "儲存記錄 #%2$d 到 %3$s 時發生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:1103
+#: lib/rpmdb.c:1100
 #, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1284
+#: lib/rpmdb.c:1281
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1447
+#: lib/rpmdb.c:1444
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator：跳過"
 
-#: lib/rpmdb.c:1534
+#: lib/rpmdb.c:1531
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb：已擷取損壞的表頭 #%u -- 跳過。\n"
 
-#: lib/rpmdb.c:2066
+#: lib/rpmdb.c:2061
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s：無法讀取位於 0x%x 的表頭\n"
 
-#: lib/rpmdb.c:2417
+#: lib/rpmdb.c:2412
 msgid "could not move new database in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2420
+#: lib/rpmdb.c:2415
 #, c-format
 msgid "could also not restore old database from %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2422 lib/rpmdb.c:2604
+#: lib/rpmdb.c:2417 lib/rpmdb.c:2599
 #, c-format
 msgid "replace files in %s with files from %s to recover\n"
 msgstr ""
 
-#: lib/rpmdb.c:2431
+#: lib/rpmdb.c:2426
 #, c-format
 msgid "Could not get public keys from %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2438
+#: lib/rpmdb.c:2433
 #, c-format
 msgid "could not delete old database at %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2507
+#: lib/rpmdb.c:2502
 msgid "no dbpath has been set"
 msgstr "尚未設定 dbpath"
 
-#: lib/rpmdb.c:2525
+#: lib/rpmdb.c:2520
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2558
+#: lib/rpmdb.c:2553
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "在資料庫中有不良的表頭 #%u -- 跳過。\n"
 
-#: lib/rpmdb.c:2573
+#: lib/rpmdb.c:2568
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "無法加入原本位於 %u 的記錄\n"
 
-#: lib/rpmdb.c:2589
+#: lib/rpmdb.c:2584
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "重建資料庫時失敗：原來的資料庫保持原狀\n"
 
-#: lib/rpmdb.c:2602
+#: lib/rpmdb.c:2597
 msgid "failed to replace old database with new database!\n"
 msgstr "以新的資料庫取代舊的資料庫時失敗！\n"
 
@@ -2951,41 +2967,45 @@ msgstr ""
 msgid "package payload can be compressed using zstd."
 msgstr ""
 
-#: lib/rpmds.c:1407
+#: lib/rpmds.c:1410
 #, c-format
 msgid "Unknown rich dependency op '%.*s'"
 msgstr ""
 
-#: lib/rpmds.c:1442
+#: lib/rpmds.c:1451
 msgid "Name required"
 msgstr ""
 
-#: lib/rpmds.c:1479
+#: lib/rpmds.c:1489
 msgid "Rich dependency does not start with '('"
 msgstr ""
 
-#: lib/rpmds.c:1487
+#: lib/rpmds.c:1497
 msgid "Missing argument to rich dependency op"
 msgstr ""
 
-#: lib/rpmds.c:1489
+#: lib/rpmds.c:1499
 msgid "Empty rich dependency"
 msgstr ""
 
-#: lib/rpmds.c:1503
+#: lib/rpmds.c:1513
 #, c-format
 msgid "Unterminated rich dependency: %s"
 msgstr ""
 
-#: lib/rpmds.c:1515
+#: lib/rpmds.c:1525
 msgid "Cannot chain different ops"
 msgstr ""
 
-#: lib/rpmds.c:1520
-msgid "Can only chain AND and OR ops"
+#: lib/rpmds.c:1531
+msgid "Can only chain and/or/with ops"
 msgstr ""
 
-#: lib/rpmds.c:1610
+#: lib/rpmds.c:1543
+msgid "Illegal ops in with/without"
+msgstr ""
+
+#: lib/rpmds.c:1632
 msgid "Junk after rich dependency"
 msgstr ""
 
@@ -3357,7 +3377,7 @@ msgstr ""
 msgid "Unable to restore current directory: %m"
 msgstr ""
 
-#: lib/rpmscript.c:149 rpmio/macro.c:885
+#: lib/rpmscript.c:149 rpmio/macro.c:852
 msgid "<lua> scriptlet support not built in\n"
 msgstr ""
 
@@ -3391,7 +3411,7 @@ msgstr ""
 msgid "%s scriptlet failed, exit status %d\n"
 msgstr ""
 
-#: lib/rpmtd.c:260
+#: lib/rpmtd.c:248
 msgid "Unknown format"
 msgstr "未知格式"
 
@@ -3556,8 +3576,8 @@ msgid "Failed to register fork handler: %m\n"
 msgstr ""
 
 #: rpmio/macro.c:286
-#, c-format
-msgid "%3d>%*s(empty)"
+#, fuzzy, c-format
+msgid "%3d>%*s(empty)\n"
 msgstr "%3d>%*s(清空)"
 
 #: rpmio/macro.c:316
@@ -3600,38 +3620,38 @@ msgstr "巨集 %%%s 展開時失敗\n"
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "巨集 %%%s 具有無效的名稱 (%%undefine)\n"
 
-#: rpmio/macro.c:635
+#: rpmio/macro.c:634
 #, c-format
 msgid "Macro %%%s defined but not used within scope\n"
 msgstr ""
 
-#: rpmio/macro.c:788
+#: rpmio/macro.c:758
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "在 %2$s(%3$s) 中有未知的選項 %1$c\n"
 
-#: rpmio/macro.c:1075
+#: rpmio/macro.c:1051
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
 msgstr ""
 
-#: rpmio/macro.c:1145 rpmio/macro.c:1161
+#: rpmio/macro.c:1121 rpmio/macro.c:1137
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "未終結的 %c：%s\n"
 
-#: rpmio/macro.c:1202
+#: rpmio/macro.c:1178
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "在無法解析的巨集之後跟著一個 %%\n"
 
-#: rpmio/macro.c:1217
+#: rpmio/macro.c:1193
 #, c-format
 msgid "failed to load macro file %s"
 msgstr ""
 
-#: rpmio/macro.c:1594
+#: rpmio/macro.c:1574
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== 作用中 %d 清空 %d\n"
