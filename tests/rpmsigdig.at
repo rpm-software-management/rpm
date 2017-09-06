@@ -36,7 +36,7 @@ RPMDB_INIT
 rm -rf "${TOPDIR}"
 
 pkg="hello-2.0-1.x86_64.rpm"
-cp "${RPMDATA}"/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 # conv=notrunc bs=1 seek=261 count=6 2> /dev/null
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=333 count=4 2> /dev/null
@@ -61,7 +61,7 @@ RPMDB_INIT
 rm -rf "${TOPDIR}"
 
 pkg="hello-2.0-1.x86_64.rpm"
-cp "${RPMDATA}"/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=5555 count=6 2> /dev/null
 runroot rpmkeys -Kv /tmp/${pkg}
@@ -86,7 +86,7 @@ RPMDB_INIT
 rm -rf "${TOPDIR}"
 
 pkg="hello-2.0-1.x86_64.rpm"
-cp "${RPMDATA}"/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=7777 count=6 2> /dev/null
 runroot rpmkeys -Kv /tmp/${pkg}
@@ -263,7 +263,7 @@ RPMDB_INIT
 rm -rf "${TOPDIR}"
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
-cp "${RPMDATA}"/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=264 count=6 2> /dev/null
 
@@ -299,7 +299,7 @@ RPMDB_INIT
 rm -rf "${TOPDIR}"
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
-cp "${RPMDATA}"/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=5555 count=6 2> /dev/null
 
@@ -336,7 +336,7 @@ RPMDB_INIT
 rm -rf "${TOPDIR}"
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
-cp "${RPMDATA}"/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=7777 count=6 2> /dev/null
 
@@ -372,7 +372,7 @@ RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
-cp "${RPMDATA}"/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
+cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
 run rpmsign --key-id 1964C5FC --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
 echo PRE-IMPORT
 runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
@@ -407,7 +407,7 @@ RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
-cp "${RPMDATA}"/RPMS/hello-2.0-1.x86_64-signed.rpm "${RPMTEST}"/tmp/
+cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64-signed.rpm "${RPMTEST}"/tmp/
 echo PRE-DELSIGN
 runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64-signed.rpm|grep -v digest
 echo POST-DELSIGN
@@ -434,7 +434,7 @@ RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
-cp "${RPMDATA}"/RPMS/hello-2.0-1.x86_64-signed.rpm "${RPMTEST}"/tmp/
+cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64-signed.rpm "${RPMTEST}"/tmp/
 run rpmsign --key-id 1964C5FC --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64-signed.rpm 2>&1 |grep -q "already contains identical signature, skipping"
 ],
 [0],
