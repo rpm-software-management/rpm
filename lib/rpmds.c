@@ -1476,11 +1476,38 @@ static rpmRC parseSimpleDep(const char **dstrp, char **emsg, rpmrichParseFunctio
     return RPMRC_OK;
 }
 
-static rpmRC rpmrichParseInternal(const char **dstrp, char **emsg, rpmrichParseFunction cb, void *cbdata, int *nowithp)
+#define RICHPARSE_CHECK		(1 << 0)
+#define RICHPARSE_NO_WITH	(1 << 1)
+#define RICHPARSE_NO_AND	(1 << 2)
+#define RICHPARSE_NO_OR		(1 << 3)
+
+static rpmRC rpmrichParseCheck(rpmrichOp op, int check, char **emsg)
+{
+    if ((op == RPMRICHOP_WITH || op == RPMRICHOP_WITHOUT) && (check & RICHPARSE_NO_WITH) != 0) {
+	if (emsg)
+	    rasprintf(emsg, _("Illegal ops in with/without"));
+	return RPMRC_FAIL;
+    }
+    if ((check & RICHPARSE_CHECK) == 0)
+	return RPMRC_OK;
+    if ((op == RPMRICHOP_AND || op == RPMRICHOP_IF) && (check & RICHPARSE_NO_AND) != 0) {
+	if (emsg)
+	    rasprintf(emsg, _("Illegal context for 'unless', please use 'or' instead"));
+	return RPMRC_FAIL;
+    }
+    if ((op == RPMRICHOP_OR || op == RPMRICHOP_UNLESS) && (check & RICHPARSE_NO_OR) != 0) {
+	if (emsg)
+	    rasprintf(emsg, _("Illegal context for 'if', please use 'and' instead"));
+	return RPMRC_FAIL;
+    }
+    return RPMRC_OK;
+}
+
+static rpmRC rpmrichParseInternal(const char **dstrp, char **emsg, rpmrichParseFunction cb, void *cbdata, int *checkp)
 {
     const char *p = *dstrp, *pe;
-    rpmrichOp op = RPMRICHOP_SINGLE, chainop = 0;
-    int nowith = 0;
+    rpmrichOp op = RPMRICHOP_SINGLE, firstop = RPMRICHOP_SINGLE, chainop = 0;
+    int check = checkp ? *checkp : 0;
 
     if (cb && cb(cbdata, RPMRICH_PARSE_ENTER, p, 0, 0, 0, 0, op, emsg) != RPMRC_OK)
         return RPMRC_FAIL;
@@ -1500,10 +1527,14 @@ static rpmRC rpmrichParseInternal(const char **dstrp, char **emsg, rpmrichParseF
             }
             return RPMRC_FAIL;
         }
-        if (*p == '(') {
-            if (rpmrichParseInternal(&p, emsg, cb, cbdata, &nowith) != RPMRC_OK)
-                return RPMRC_FAIL;
-        } else {
+	if (*p == '(') {
+	    int subcheck = check & RICHPARSE_CHECK;
+	    if (rpmrichParseInternal(&p, emsg, cb, cbdata, &subcheck) != RPMRC_OK)
+		return RPMRC_FAIL;
+	    if (op == RPMRICHOP_IF || op == RPMRICHOP_UNLESS)
+		subcheck &= ~(RICHPARSE_NO_AND | RICHPARSE_NO_OR);
+	    check |= subcheck;
+	} else {
             if (parseSimpleDep(&p, emsg, cb, cbdata) != RPMRC_OK)
                 return RPMRC_FAIL;
         }
@@ -1518,6 +1549,9 @@ static rpmRC rpmrichParseInternal(const char **dstrp, char **emsg, rpmrichParseF
         pe = p;
         if (parseRichDepOp(&pe, &op, emsg) != RPMRC_OK)
             return RPMRC_FAIL;
+	if (firstop == RPMRICHOP_SINGLE)
+	    firstop = op;
+
 	if (op == RPMRICHOP_ELSE && (chainop == RPMRICHOP_IF || chainop == RPMRICHOP_UNLESS))
 	    chainop = 0;
         if (chainop && op != chainop) {
@@ -1525,8 +1559,7 @@ static rpmRC rpmrichParseInternal(const char **dstrp, char **emsg, rpmrichParseF
                 rasprintf(emsg, _("Cannot chain different ops"));
             return RPMRC_FAIL;
         }
-        if (chainop && op != RPMRICHOP_AND && op != RPMRICHOP_OR &&
-	    op != RPMRICHOP_WITH) {
+        if (chainop && op != RPMRICHOP_AND && op != RPMRICHOP_OR && op != RPMRICHOP_WITH) {
             if (emsg)
                 rasprintf(emsg, _("Can only chain and/or/with ops"));
             return RPMRC_FAIL;
@@ -1535,24 +1568,54 @@ static rpmRC rpmrichParseInternal(const char **dstrp, char **emsg, rpmrichParseF
             return RPMRC_FAIL;
         chainop = op;
         p = pe;
-	if (nowithp && op != RPMRICHOP_WITH && op != RPMRICHOP_WITHOUT && op != RPMRICHOP_OR)
-	    *nowithp = 1;
     }
-    if ((op == RPMRICHOP_WITH || op == RPMRICHOP_WITHOUT) && nowith) {
-	if (emsg)
-	    rasprintf(emsg, _("Illegal ops in with/without"));
+
+    /* check for illegal combinations */
+    if (rpmrichParseCheck(firstop, check, emsg) != RPMRC_OK)
 	return RPMRC_FAIL;
-    }
+
+    /* update check data */
+    if (firstop == RPMRICHOP_IF)
+	check |= RICHPARSE_NO_OR;
+    if (firstop == RPMRICHOP_UNLESS)
+	check |= RICHPARSE_NO_AND;
+    if (op == RPMRICHOP_AND || op == RPMRICHOP_OR)
+	check &= ~(RICHPARSE_NO_AND | RICHPARSE_NO_OR);
+    if (op != RPMRICHOP_SINGLE && op != RPMRICHOP_WITH && op != RPMRICHOP_WITHOUT && op != RPMRICHOP_OR)
+	check |= RICHPARSE_NO_WITH;
+
     p++;
     if (cb && cb(cbdata, RPMRICH_PARSE_LEAVE, *dstrp, p - *dstrp , 0, 0, 0, op, emsg) != RPMRC_OK)
         return RPMRC_FAIL;
     *dstrp = p;
+    if (checkp)
+	*checkp |= check;
     return RPMRC_OK;
 }
 
 rpmRC rpmrichParse(const char **dstrp, char **emsg, rpmrichParseFunction cb, void *cbdata)
 {
     return rpmrichParseInternal(dstrp, emsg, cb, cbdata, NULL);
+}
+
+rpmRC rpmrichParseForTag(const char **dstrp, char **emsg, rpmrichParseFunction cb, void *cbdata, rpmTagVal tagN)
+{
+    int check = RICHPARSE_CHECK;
+    if (rpmrichParseInternal(dstrp, emsg, cb, cbdata, &check) != RPMRC_OK)
+	return RPMRC_FAIL;
+    switch (tagN) {
+    case RPMTAG_CONFLICTNAME:
+    case RPMTAG_SUPPLEMENTNAME:
+    case RPMTAG_ENHANCENAME:
+	if (rpmrichParseCheck(RPMRICHOP_OR, check, emsg) != RPMRC_OK)
+	    return RPMRC_FAIL;
+	break;
+    default:
+	if (rpmrichParseCheck(RPMRICHOP_AND, check, emsg) != RPMRC_OK)
+	    return RPMRC_FAIL;
+	break;
+    }
+    return RPMRC_OK;
 }
 
 struct rpmdsParseRichDepData {
