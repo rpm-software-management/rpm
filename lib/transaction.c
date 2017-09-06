@@ -1607,10 +1607,6 @@ exit:
 	rpmpluginsCallTsmPost(rpmtsPlugins(ts), ts, rc);
 
     /* Finish up... */
-    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST) && rpmtsNElements(ts) > 0) {
-	rpmlog(RPMLOG_DEBUG, "syncing disks...\n");
-	sync();
-    }
     (void) umask(oldmask);
     (void) rpmtsFinish(ts);
     rpmpsFree(tsprobs);
