@@ -131,7 +131,7 @@ RPMDB_CLEAR
 RPMDB_INIT
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
-cp "${RPMDATA}"/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=264 count=2 2> /dev/null
 
@@ -152,7 +152,7 @@ RPMDB_CLEAR
 RPMDB_INIT
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
-cp "${RPMDATA}"/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=5555 count=6 2> /dev/null
 
@@ -177,7 +177,7 @@ RPMDB_CLEAR
 RPMDB_INIT
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
-cp "${RPMDATA}"/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=7788 count=6 2> /dev/null
 
