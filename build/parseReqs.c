@@ -224,7 +224,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	    }
 	    data.spec = spec;
 	    data.sb = newStringBuf();
-	    if (rpmrichParse(&r, &emsg, parseRCPOTRichCB, &data) != RPMRC_OK) {
+	    if (rpmrichParseForTag(&r, &emsg, parseRCPOTRichCB, &data, nametag) != RPMRC_OK) {
 		freeStringBuf(data.sb);
 		goto exit;
 	    }
