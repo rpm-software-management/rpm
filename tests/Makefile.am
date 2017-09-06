@@ -112,6 +112,7 @@ atlocal:	atlocal.in Makefile
 	@sed \
 	  -e "s,[@]usrbindir[@],$(bindir)," \
 	  -e "s,[@]usrlibdir[@],$(libdir)," \
+	  -e "s,[@]execprefix[@],$(exec_prefix)," \
 	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir)," \
 	< $(srcdir)/atlocal.in > atlocal
 DISTCLEANFILES = atlocal
