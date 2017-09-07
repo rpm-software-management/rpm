@@ -767,6 +767,7 @@ AC_CHECK_FUNCS(lutimes)
 AC_CHECK_FUNCS(mergesort)
 AC_CHECK_FUNCS(getauxval)
 AC_CHECK_FUNCS(setprogname, [], [], [#include <stdlib.h>])
+AC_CHECK_FUNCS(syncfs)
 
 AC_MSG_CHECKING([whether __progname is defined])
 AC_LINK_IFELSE([AC_LANG_PROGRAM([extern const char *__progname;],

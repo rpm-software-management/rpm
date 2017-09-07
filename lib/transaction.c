@@ -1271,6 +1271,7 @@ static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet)
 
 static int rpmtsFinish(rpmts ts)
 {
+    rpmtsFreeDSI(ts);
     return rpmChrootSet(NULL);
 }
 
@@ -1369,7 +1370,6 @@ static int rpmtsPrepare(rpmts ts)
 
 exit:
     fpCacheFree(fpc);
-    rpmtsFreeDSI(ts);
     return rc;
 }
 
@@ -1495,6 +1495,26 @@ rpmRC runScript(rpmts ts, rpmte te, Header h, ARGV_const_t prefixes,
     return rc;
 }
 
+static void rpmtsSync(rpmts ts)
+{
+    if (rpmChrootDone())
+	return;
+
+#if HAVE_SYNCFS
+    for (rpmDiskSpaceInfo dsi = ts->dsi; dsi->bsize; dsi++) {
+	int fd = open(dsi->mntPoint, O_RDONLY);
+	if (fd != -1) {
+	    rpmlog(RPMLOG_DEBUG, "syncing fs %s\n", dsi->mntPoint);
+	    syncfs(fd);
+	    close(fd);
+	}
+    }
+#else
+    rpmlog(RPMLOG_DEBUG, "syncing all filesystems\n");
+    sync();
+#endif
+}
+
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
     int rc = -1; /* assume failure */
@@ -1608,8 +1628,7 @@ exit:
 
     /* Finish up... */
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST) && rpmtsNElements(ts) > 0) {
-	rpmlog(RPMLOG_DEBUG, "syncing disks...\n");
-	sync();
+	rpmtsSync(ts);
     }
     (void) umask(oldmask);
     (void) rpmtsFinish(ts);
