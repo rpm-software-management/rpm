@@ -1470,7 +1470,7 @@ static rpmRC parseSimpleDep(const char **dstrp, char **emsg, rpmrichParseFunctio
           rasprintf(emsg, _("Version required"));
         return RPMRC_FAIL;
     }
-    if (cb(cbdata, RPMRICH_PARSE_SIMPLE, n, nl, e, el, sense, RPMRICHOP_SINGLE, emsg) != RPMRC_OK)
+    if (cb && cb(cbdata, RPMRICH_PARSE_SIMPLE, n, nl, e, el, sense, RPMRICHOP_SINGLE, emsg) != RPMRC_OK)
 	return RPMRC_FAIL;
     *dstrp = p;
     return RPMRC_OK;
@@ -1482,7 +1482,7 @@ static rpmRC rpmrichParseInternal(const char **dstrp, char **emsg, rpmrichParseF
     rpmrichOp op = RPMRICHOP_SINGLE, chainop = 0;
     int nowith = 0;
 
-    if (cb(cbdata, RPMRICH_PARSE_ENTER, p, 0, 0, 0, 0, op, emsg) != RPMRC_OK)
+    if (cb && cb(cbdata, RPMRICH_PARSE_ENTER, p, 0, 0, 0, 0, op, emsg) != RPMRC_OK)
         return RPMRC_FAIL;
     if (*p++ != '(') {
         if (emsg)
@@ -1531,7 +1531,7 @@ static rpmRC rpmrichParseInternal(const char **dstrp, char **emsg, rpmrichParseF
                 rasprintf(emsg, _("Can only chain and/or/with ops"));
             return RPMRC_FAIL;
 	}
-        if (cb(cbdata, RPMRICH_PARSE_OP, p, pe - p, 0, 0, 0, op, emsg) != RPMRC_OK)
+        if (cb && cb(cbdata, RPMRICH_PARSE_OP, p, pe - p, 0, 0, 0, op, emsg) != RPMRC_OK)
             return RPMRC_FAIL;
         chainop = op;
         p = pe;
@@ -1544,7 +1544,7 @@ static rpmRC rpmrichParseInternal(const char **dstrp, char **emsg, rpmrichParseF
 	return RPMRC_FAIL;
     }
     p++;
-    if (cb(cbdata, RPMRICH_PARSE_LEAVE, *dstrp, p - *dstrp , 0, 0, 0, op, emsg) != RPMRC_OK)
+    if (cb && cb(cbdata, RPMRICH_PARSE_LEAVE, *dstrp, p - *dstrp , 0, 0, 0, op, emsg) != RPMRC_OK)
         return RPMRC_FAIL;
     *dstrp = p;
     return RPMRC_OK;
