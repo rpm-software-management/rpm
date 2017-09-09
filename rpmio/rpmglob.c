@@ -77,14 +77,6 @@ typedef struct {
 
 #define	NAMLEN(_d)	NLENGTH(_d)
 
-#if (defined POSIX || defined WINDOWS32) && !defined __GNU_LIBRARY__
-/* Posix does not require that the d_ino field be present, and some
-   systems do not provide it. */
-#define REAL_DIR_ENTRY(dp) 1
-#else
-#define REAL_DIR_ENTRY(dp) (dp->d_ino != 0)
-#endif				/* POSIX */
-
 #include <errno.h>
 #ifndef __set_errno
 #define __set_errno(val) errno = (val)
@@ -740,8 +732,6 @@ glob_in_dir(const char *pattern, const char *directory, int flags,
 					: readdir((DIR *) stream));
 		    if (d == NULL)
 			break;
-		    if (!REAL_DIR_ENTRY(d))
-			continue;
 
 #ifdef HAVE_STRUCT_DIRENT_D_TYPE
 		    /* If we shall match only directories use the information
