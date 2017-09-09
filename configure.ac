@@ -784,6 +784,14 @@ AC_CHECK_FUNCS(
    [mkstemp getcwd basename dirname realpath setenv unsetenv regcomp lchown utimes],
    [], [AC_MSG_ERROR([function required by rpm])])
 
+
+# This is fairly subtle: old non-LFS compatible FTS implementations have an
+# explicit check against -D_FILE_OFFSET_BIT S == 64, which has been set
+# by our call to AC_SYS_LARGEFILE for systems that need it. So the apparent
+# existence check ends up testing for LFS compatibility as well.
+AC_CHECK_HEADERS([fts.h])
+AM_CONDITIONAL([USE_BUNDLED_FTS_KLUDGE], [test "$ac_cv_header_fts_h" = no])
+
 AC_LIBOBJ(fnmatch)
 
 dnl check if python is requested
