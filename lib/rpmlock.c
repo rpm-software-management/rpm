@@ -18,6 +18,7 @@ struct rpmlock_s {
     char *path;
     char *descr;
     int fdrefs;
+    const char *managedby_instead;
 };
 
 static rpmlock rpmlock_new(const char *lock_path, const char *descr)
@@ -27,13 +28,26 @@ static rpmlock rpmlock_new(const char *lock_path, const char *descr)
     if (lock != NULL) {
 	mode_t oldmask = umask(022);
 	lock->fd = open(lock_path, O_RDWR|O_CREAT, 0644);
+	int errsv = errno;
 	(void) umask(oldmask);
 
-	if (lock->fd == -1) {
+  /* Check if this is an ostree/rpm-ostree managed system */
+	lock->fdrefs = 1;
+	lock->managedby_instead = NULL;
+    if (lock->fd == -1 && errsv == EROFS) {
+	    struct stat stbuf;
+	    if (stat ("/run/ostree-booted", &stbuf) == 0) {
+		    lock->managedby_instead = "ostree";
+		    if (stat ("/usr/bin/rpm-ostree", &stbuf) == 0) {
+			    lock->managedby_instead = "rpm-ostree";
+		    }
+	    }
+	    lock->openmode = RPMLOCK_READ;
+  } else if (lock->fd == -1) {
 	    lock->fd = open(lock_path, O_RDONLY);
 	    if (lock->fd == -1) {
 		free(lock);
-		lock = NULL;
+		return NULL;
 	    } else {
 		lock->openmode = RPMLOCK_READ;
 	    }
@@ -43,7 +57,6 @@ static rpmlock rpmlock_new(const char *lock_path, const char *descr)
 	if (lock) {
 	    lock->path = xstrdup(lock_path);
 	    lock->descr = xstrdup(descr);
-	    lock->fdrefs = 1;
 	}
     }
     return lock;
@@ -54,7 +67,8 @@ static void rpmlock_free(rpmlock lock)
     if (--lock->fdrefs == 0) {
 	free(lock->path);
 	free(lock->descr);
-	(void) close(lock->fd);
+	if (lock->fd != -1)
+		(void) close(lock->fd);
 	free(lock);
     }
 }
@@ -117,6 +131,8 @@ rpmlock rpmlockNew(const char *lock_path, const char *descr)
     if (!lock) {
 	rpmlog(RPMLOG_ERR, _("can't create %s lock on %s (%s)\n"), 
 		descr, lock_path, strerror(errno));
+    } else if (lock->managedby_instead) {
+	rpmlog(RPMLOG_ERR, _("This system is managed by %s\n"), lock->managedby_instead);
     }
     return lock;
 }
