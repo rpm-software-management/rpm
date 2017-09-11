@@ -1498,6 +1498,12 @@ static void rpmtsSync(rpmts ts)
 {
     if (rpmChrootDone())
 	return;
+    /* If the txn didn't get as far as calculating disk space,
+     * or disk space warnings are filtered out, assume we
+     * shouldn't sync.
+     */
+    if (!ts->dsi)
+	return;
 
 #if HAVE_SYNCFS
     for (rpmDiskSpaceInfo dsi = ts->dsi; dsi->bsize; dsi++) {
