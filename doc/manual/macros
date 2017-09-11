@@ -88,6 +88,7 @@ to perform useful operations. The current list is
 				gzip -dc <file>		# if gzip'ed
 				bzip2 -dc <file>	# if bzip'ed
 
+	%{load:...}	load a macro file
 	%{lua:...}	expand using the embedded Lua interpreter
 	%{expand:...}	like eval, expand ... to <body> and (re-)expand <body>
 	%{shrink:...}	trim leading and trailing whitespace, reduce
