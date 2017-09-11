@@ -1518,6 +1518,7 @@ static void rpmtsSync(rpmts ts)
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
     int rc = -1; /* assume failure */
+    int nfailed = -1;
     tsMembers tsmem = rpmtsMembers(ts);
     rpmtxn txn = NULL;
     rpmps tsprobs = NULL;
@@ -1600,8 +1601,8 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	tsmem->pool = rpmstrPoolFree(tsmem->pool);
 
 
-    /* Actually install and remove packages, get final exit code */
-    rc = rpmtsProcess(ts) ? -1 : 0;
+    /* Actually install and remove packages */
+    nfailed = rpmtsProcess(ts) ? -1 : 0;
 
     /* Run post-transaction scripts unless disabled */
     if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_NOPOSTTRANS))) {
@@ -1621,13 +1622,16 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_NOPOSTTRANS|RPMTRANS_FLAG_NOTRIGGERIN))) {
 	runTransScripts(ts, PKG_TRANSFILETRIGGERIN);
     }
+    /* Final exit code */
+    rc = nfailed ? -1 : 0;
+
 exit:
     /* Run post transaction hook for all plugins */
     if (TsmPreDone) /* If TsmPre hook has been called, call the TsmPost hook */
 	rpmpluginsCallTsmPost(rpmtsPlugins(ts), ts, rc);
 
     /* Finish up... */
-    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST) && rpmtsNElements(ts) > 0) {
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST) && nfailed > 0) {
 	rpmtsSync(ts);
     }
     (void) umask(oldmask);
