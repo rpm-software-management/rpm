@@ -109,8 +109,6 @@ static char *getMntPoint(const char *dirName, dev_t dev)
 
 static int rpmtsInitDSI(const rpmts ts)
 {
-    if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_DISKSPACE)
-	return 0;
     ts->dsi = _free(ts->dsi);
     ts->dsi = xcalloc(1, sizeof(*ts->dsi));
     return 0;
@@ -1347,7 +1345,8 @@ static int rpmtsPrepare(rpmts ts)
 			       hsize, 0, 0, FA_CREATE);
 	    }
 
-	    rpmtsCheckDSIProblems(ts, p);
+	    if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_DISKSPACE))
+		rpmtsCheckDSIProblems(ts, p);
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	rpmfilesFree(files);
