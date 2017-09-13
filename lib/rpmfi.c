@@ -480,10 +480,17 @@ int rpmfiFindOFN(rpmfi fi, const char * fn)
     return ix;
 }
 
+/*
+ * Dirnames are not sorted when separated from basenames, we need to assemble
+ * the whole path for search (binary or otherwise) purposes.
+ */
 static int cmpPfx(rpmfiles files, int ix, const char *pfx)
 {
+    char *fn = rpmfilesFN(files, ix);
     int plen = strlen(pfx);
-    return strncmp(pfx, rpmfilesDN(files, rpmfilesDI(files, ix)), plen);
+    int rc = strncmp(pfx, fn, plen);
+    free(fn);
+    return rc;
 }
 
 rpmfileAttrs rpmfilesFFlags(rpmfiles fi, int ix)
