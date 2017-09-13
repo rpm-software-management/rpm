@@ -484,10 +484,9 @@ int rpmfiFindOFN(rpmfi fi, const char * fn)
  * Dirnames are not sorted when separated from basenames, we need to assemble
  * the whole path for search (binary or otherwise) purposes.
  */
-static int cmpPfx(rpmfiles files, int ix, const char *pfx)
+static int cmpPfx(rpmfiles files, int ix, const char *pfx, size_t plen)
 {
     char *fn = rpmfilesFN(files, ix);
-    int plen = strlen(pfx);
     int rc = strncmp(pfx, fn, plen);
     free(fn);
     return rc;
@@ -1719,26 +1718,27 @@ rpmfi rpmfilesFindPrefix(rpmfiles fi, const char *pfx)
     if (!fi || !pfx)
 	return NULL;
 
+    size_t plen = strlen(pfx);
     l = 0;
     u = rpmfilesFC(fi);
     while (l < u) {
 	c = (l + u) / 2;
 
-	comparison = cmpPfx(fi, c, pfx);
+	comparison = cmpPfx(fi, c, pfx, plen);
 
 	if (comparison < 0)
 	    u = c;
 	else if (comparison > 0)
 	    l = c + 1;
 	else {
-	    if (cmpPfx(fi, l, pfx))
+	    if (cmpPfx(fi, l, pfx, plen))
 		l = c;
-	    while (l > 0 && !cmpPfx(fi, l - 1, pfx))
+	    while (l > 0 && !cmpPfx(fi, l - 1, pfx, plen))
 		l--;
-	    if ( u >= rpmfilesFC(fi) || cmpPfx(fi, u, pfx))
+	    if ( u >= rpmfilesFC(fi) || cmpPfx(fi, u, pfx, plen))
 		u = c;
 	    while (++u < rpmfilesFC(fi)) {
-		if (cmpPfx(fi, u, pfx))
+		if (cmpPfx(fi, u, pfx, plen))
 		    break;
 	    }
 	    break;
