@@ -13,6 +13,7 @@ BuildArch:	noarch
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/usr/bin
+mkdir -p $RPM_BUILD_ROOT/zoot
 cat << EOF > $RPM_BUILD_ROOT/usr/bin/hello
 echo "Hello world!"
 EOF
@@ -20,3 +21,4 @@ EOF
 %files
 %defattr(-,root,root,-)
 /usr/bin/hello
+/zoot
