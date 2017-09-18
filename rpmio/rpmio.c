@@ -113,7 +113,7 @@ typedef int (*fdio_close_function_t) (FDSTACK_t fps);
 typedef FD_t (*fdio_open_function_t) (const char * path, int flags, mode_t mode);
 typedef FD_t (*fdio_fdopen_function_t) (FD_t fd, int fdno, const char * fmode);
 typedef int (*fdio_fflush_function_t) (FDSTACK_t fps);
-typedef long (*fdio_ftell_function_t) (FDSTACK_t fps);
+typedef off_t (*fdio_ftell_function_t) (FDSTACK_t fps);
 typedef int (*fdio_ferror_function_t) (FDSTACK_t fps);
 typedef const char * (*fdio_fstrerr_function_t)(FDSTACK_t fps);
 
@@ -392,7 +392,7 @@ static FD_t fdOpen(const char *path, int flags, mode_t mode)
     return fd;
 }
 
-static long fdTell(FDSTACK_t fps)
+static off_t fdTell(FDSTACK_t fps)
 {
     return lseek(fps->fdno, 0, SEEK_CUR);
 }
@@ -601,7 +601,7 @@ static int gzdClose(FDSTACK_t fps)
     return (rc != 0) ? -1 : 0;
 }
 
-static long gzdTell(FDSTACK_t fps)
+static off_t gzdTell(FDSTACK_t fps)
 {
     off_t pos = -1;
     gzFile gzfile = fps->fp;
