@@ -1,3 +1,6 @@
+%bcond_with unpackaged_dirs
+%bcond_with unpackaged_files
+
 Summary:          Testing hard link behavior
 Name:             hlinktest
 Version:          1.0
@@ -24,6 +27,14 @@ chmod a+x hello copyllo
 for f in foo bar world; do
     ln hello hello-${f}
 done
+
+%if %{with unpackaged_dirs}
+mkdir -p $RPM_BUILD_ROOT/zoo/
+%endif
+
+%if %{with unpackaged_files}
+touch $RPM_BUILD_ROOT/toot
+%endif
 
 %files
 %defattr(-,root,root)

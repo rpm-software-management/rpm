@@ -172,6 +172,46 @@ ls -i "${RPMTEST}"/foo/hello* | awk {'print $1'} | sort -u | wc -l
 [])
 AT_CLEANUP
 
+AT_SETUP([rpmbuild unpackaged files])
+AT_KEYWORDS([build])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf ${TOPDIR}
+
+runroot rpmbuild \
+  -bb --quiet --with unpackaged_files /data/SPECS/hlinktest.spec
+],
+[1],
+[],
+[error: Installed (but unpackaged) file(s) found:
+   /toot
+    Installed (but unpackaged) file(s) found:
+   /toot
+])
+AT_CLEANUP
+
+# rpm doesn't detect unpackaged directories but should, really
+AT_SETUP([rpmbuild unpackaged directories])
+AT_KEYWORDS([build])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf ${TOPDIR}
+
+runroot rpmbuild \
+  -bb --quiet --with unpackaged_dirs /data/SPECS/hlinktest.spec
+],
+[1],
+[],
+[error: Installed (but unpackaged) file(s) found:
+   /zoo
+    Installed (but unpackaged) file(s) found:
+   /zoo
+])
+AT_CLEANUP
+
 AT_SETUP([rpmbuild glob])
 AT_KEYWORDS([build])
 AT_CHECK([
