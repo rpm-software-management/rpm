@@ -740,6 +740,9 @@ package or when debugging this package.\
 # conserve eg SSD disks.
 %_minimize_writes      0
 
+# Set to 1 to flush file IO during transactions (at a severe cost in
+# performance for rotational disks)
+#%_flush_io	0
 
 #
 # Default output format string for rpm -qa
