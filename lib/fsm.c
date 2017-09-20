@@ -14,6 +14,7 @@
 #include <rpm/rpmte.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmmacro.h>
 
 #include "rpmio/rpmio_internal.h"	/* fdInit/FiniDigest */
 #include "lib/fsm.h"
@@ -248,6 +249,16 @@ static int expandRegular(rpmfi fi, const char *dest, rpmpsm psm, int exclusive, 
 exit:
     if (wfd) {
 	int myerrno = errno;
+	static int oneshot = 0;
+	static int flush_io = 0;
+	if (!oneshot) {
+	    flush_io = rpmExpandNumeric("%{?_flush_io}");
+	    oneshot = 1;
+	}
+	if (flush_io) {
+	    int fdno = Fileno(wfd);
+	    fsync(fdno);
+	}
 	Fclose(wfd);
 	errno = myerrno;
     }
