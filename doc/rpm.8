@@ -103,7 +103,7 @@ Scripts and triggers:
  [\fB--oldpackage\fR] [\fB--percent\fR] [\fB--prefix \fINEWPATH\fB\fR]
  [\fB--relocate \fIOLDPATH\fB=\fINEWPATH\fB\fR]
  [\fB--replacefiles\fR] [\fB--replacepkgs\fR]
- [\fB--test\fR]
+ [\fB--test\fR] [\fB--force-fsync-on-close\fR]
 
 .SH "DESCRIPTION"
 .PP
@@ -377,6 +377,14 @@ on this system.
 \fB--test\fR
 Do not install the package, simply check for and report
 potential conflicts.
+.TP
+\fB--force-fsync-on-close\fR
+For each file written out on disk during RPM installation, force an fsync() on
+the filedescriptor before close()ing it. This can help spread IO load more
+evenly, not let RPM dominate IO queues, and prevent evicting too much of the
+diskcache. This can be useful on database-like systems, but will probably not
+be acceptable on rotational media. Can be enabled with the
+\fI_force_fsync_on_close\fR macro.
 .SS "ERASE OPTIONS"
 .PP
 The general form of an rpm erase command is 

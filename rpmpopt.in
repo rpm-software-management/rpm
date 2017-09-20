@@ -169,6 +169,8 @@ rpm	alias --httpport	--define '_httpport !#:+'
 rpm	alias --httpproxy	--define '_httpproxy !#:+'
 #	[--trace]		"trace macro expansion"
 rpm	alias --trace		--eval '%trace'
+#       [--force-fsync-on-close]
+rpm     alias --force-fsync-on-close --define '_force_fsync_on_close 1'
 
 # Minimally preserve commonly used switches from cli split-up
 rpm	exec --addsign		rpmsign --addsign

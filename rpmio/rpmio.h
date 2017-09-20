@@ -57,7 +57,12 @@ off_t Ftell(FD_t fd);
 /** \ingroup rpmio
  * fclose(3) clone.
  */
-int Fclose( FD_t fd);
+int Fclose(FD_t fd);
+
+/** \ingroup rpmio
+ * fsync(3) clone.
+ */
+int Fsync(FD_t fd);
 
 /** \ingroup rpmio
  */
