@@ -2773,6 +2773,9 @@ static void patchDebugPackageString(Package dbg, rpmTag tag, Package pkg, Packag
     _free(newsubst);
 }
 
+/* Early prototype for use in filterDebuginfoPackage. */
+static void addPackageDeps(Package from, Package to, enum rpmTag_e tag);
+
 /* create a new debuginfo subpackage for package pkg from the
  * main debuginfo package */
 static Package cloneDebuginfoPackage(rpmSpec spec, Package pkg, Package maindbg)
@@ -2805,7 +2808,8 @@ static Package cloneDebuginfoPackage(rpmSpec spec, Package pkg, Package maindbg)
 /* collect the debug files for package pkg and put them into
  * a (possibly new) debuginfo subpackage */
 static void filterDebuginfoPackage(rpmSpec spec, Package pkg,
-		Package maindbg, char *buildroot, char *uniquearch)
+				   Package maindbg, Package dbgsrc,
+				   char *buildroot, char *uniquearch)
 {
     rpmfi fi;
     ARGV_t files = NULL;
@@ -2914,6 +2918,9 @@ static void filterDebuginfoPackage(rpmSpec spec, Package pkg,
 	else {
 	    Package dbg = cloneDebuginfoPackage(spec, pkg, maindbg);
 	    dbg->fileList = files;
+	    /* Recommend the debugsource package (or the main debuginfo).  */
+	    addPackageDeps(dbg, dbgsrc ? dbgsrc : maindbg,
+			   RPMTAG_RECOMMENDNAME);
 	}
     }
 }
@@ -2976,6 +2983,16 @@ static int addDebugSrc(Package pkg, char *buildroot)
     return ret;
 }
 
+/* find the debugsource package, if it has been created.
+ * We do this simply by searching for a package with the right name. */
+static Package findDebugsourcePackage(rpmSpec spec)
+{
+    Package pkg = NULL;
+    if (lookupPackage(spec, "debugsource", PART_SUBNAME|PART_QUIET, &pkg))
+	return NULL;
+    return pkg && pkg->fileList ? pkg : NULL;
+}
+
 /* find the main debuginfo package. We do this simply by
  * searching for a package with the right name. */
 static Package findDebuginfoPackage(rpmSpec spec)
@@ -3009,6 +3026,9 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     char *uniquearch = NULL;
     Package maindbg = NULL;		/* the (existing) main debuginfo package */
     Package deplink = NULL;		/* create requires to this package */
+    /* The debugsource package, if it exists, that the debuginfo package(s)
+       should Recommend.  */
+    Package dbgsrcpkg = findDebugsourcePackage(spec);
     
 #if HAVE_LIBDW
     elf_version (EV_CURRENT);
@@ -3039,6 +3059,12 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	    if (rpmExpandNumeric("%{?_unique_debug_names}"))
 		uniquearch = rpmExpand("-%{VERSION}-%{RELEASE}.%{_arch}", NULL);
 	}
+    } else if (dbgsrcpkg != NULL) {
+	/* We have a debugsource package, but no debuginfo subpackages.
+	   The main debuginfo package should recommend the debugsource one. */
+	Package dbgpkg = findDebuginfoPackage(spec);
+	if (dbgpkg)
+	    addPackageDeps(dbgpkg, dbgsrcpkg, RPMTAG_RECOMMENDNAME);
     }
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
@@ -3056,6 +3082,8 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 		deplink = extradbg;
 	    if (addDebugSrc(extradbg, buildroot))
 		deplink = extradbg;
+	    if (dbgsrcpkg != NULL)
+		addPackageDeps(extradbg, dbgsrcpkg, RPMTAG_RECOMMENDNAME);
 	    maindbg = NULL;	/* all normal packages processed */
 	}
 
@@ -3072,7 +3100,8 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	    goto exit;
 
 	if (maindbg)
-	    filterDebuginfoPackage(spec, pkg, maindbg, buildroot, uniquearch);
+	    filterDebuginfoPackage(spec, pkg, maindbg, dbgsrcpkg,
+				   buildroot, uniquearch);
 	else if (deplink && pkg != deplink)
 	    addPackageDeps(pkg, deplink, RPMTAG_REQUIRENAME);
 

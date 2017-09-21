@@ -896,15 +896,20 @@ run rpmbuild --quiet \
   --define "_debugsource_packages 1" \
   -ba "${abs_srcdir}"/data/SPECS/hello2.spec
 
-# Unpack the debuginfo rpms so we can check the sources are there.
+# Unpack the debugsource rpm so we can check the sources are there.
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-debugsource-1.0-1.*.rpm \
   | cpio -diu --quiet
 
 # Check that hello.c is there.
 ls ./usr/src/debug/hello2-1.0*/
+
+# The debuginfo package should recommend the debugsource package (ignore arch).
+echo -n "Recommends: "
+rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 ],
 [0],
 [hello.c
+Recommends: hello2-debugsource(ignore-arch) = 1.0-1
 ],
 [ignore])
 AT_CLEANUP
@@ -1036,6 +1041,11 @@ else
   echo "No hello2: $debug_name"
 fi
 
+# No debugsource package, so sources are in the main debuginfo package.
+# Make sure it is recommended.
+echo -n "Recommends: "
+rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
+
 # Third contains hello3.debug
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-1.0-1.*.rpm \
   | cpio -diu --quiet
@@ -1049,12 +1059,19 @@ if test -f ./usr/lib/debug/bin/$debug_name; then
 else
   echo "No hello3: $debug_name"
 fi
+
+# No debugsource package, so sources are in the main debuginfo package.
+# Make sure it is recommended.
+echo -n "Recommends: "
+rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 ],
 [0],
 [3
 hello debug exists
 hello2 debug exists
+Recommends: test-debuginfo(ignore-arch) = 1.0-1
 hello3 debug exists
+Recommends: test-debuginfo(ignore-arch) = 1.0-1
 ],
 [ignore])
 AT_CLEANUP
@@ -1110,6 +1127,11 @@ else
   echo "No hello2: $debug_name"
 fi
 
+# No debugsource package, so sources are in the main debuginfo package.
+# Make sure it is recommended.
+echo -n "Recommends: "
+rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
+
 # Third contains hello3.debug
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-1.0-1.*.rpm \
   | cpio -diu --quiet
@@ -1123,12 +1145,19 @@ if test -f ./usr/lib/debug/bin/$debug_name; then
 else
   echo "No hello3: $debug_name"
 fi
+
+# No debugsource package, so sources are in the main debuginfo package.
+# Make sure it is recommended.
+echo -n "Recommends: "
+rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 ],
 [0],
 [3
 hello debug exists
 hello2 debug exists
+Recommends: test-debuginfo(ignore-arch) = 1.0-1
 hello3 debug exists
+Recommends: test-debuginfo(ignore-arch) = 1.0-1
 ],
 [ignore])
 AT_CLEANUP
@@ -1170,6 +1199,10 @@ else
   echo "No hello: $debug_name"
 fi
 
+# Sources are in debugsource package. Make sure it is recommended.
+echo -n "Recommends: "
+rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
+
 # Second contains hello2.debug
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-1.0-1.*.rpm \
   | cpio -diu --quiet
@@ -1184,6 +1217,10 @@ else
   echo "No hello2: $debug_name"
 fi
 
+# Sources are in debugsource package. Make sure it is recommended.
+echo -n "Recommends: "
+rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
+
 # Third contains hello3.debug
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-1.0-1.*.rpm \
   | cpio -diu --quiet
@@ -1197,12 +1234,19 @@ if test -f ./usr/lib/debug/bin/$debug_name; then
 else
   echo "No hello3: $debug_name"
 fi
+
+# Sources are in debugsource package. Make sure it is recommended.
+echo -n "Recommends: "
+rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 ],
 [0],
 [3
 hello debug exists
+Recommends: test-debugsource(ignore-arch) = 1.0-1
 hello2 debug exists
+Recommends: test-debugsource(ignore-arch) = 1.0-1
 hello3 debug exists
+Recommends: test-debugsource(ignore-arch) = 1.0-1
 ],
 [ignore])
 AT_CLEANUP
