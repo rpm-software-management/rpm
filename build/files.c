@@ -2986,15 +2986,16 @@ static Package findDebuginfoPackage(rpmSpec spec)
     return pkg && pkg->fileList ? pkg : NULL;
 }
 
-/* add a requires for package "to" into package "from". */
-static void addPackageRequires(Package from, Package to)
+/* add a dependency (e.g. RPMTAG_REQUIRENAME or RPMTAG_RECOMMENDNAME)
+   for package "to" into package "from". */
+static void addPackageDeps(Package from, Package to, enum rpmTag_e tag)
 {
     const char *name;
     char *evr, *isaprov;
     name = headerGetString(to->header, RPMTAG_NAME);
     evr = headerGetAsString(to->header, RPMTAG_EVR);
     isaprov = rpmExpand(name, "%{?_isa}", NULL);
-    addReqProv(from, RPMTAG_REQUIRENAME, isaprov, evr, RPMSENSE_EQUAL, 0);
+    addReqProv(from, tag, isaprov, evr, RPMSENSE_EQUAL, 0);
     free(isaprov);
     free(evr);
 }
@@ -3073,7 +3074,7 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	if (maindbg)
 	    filterDebuginfoPackage(spec, pkg, maindbg, buildroot, uniquearch);
 	else if (deplink && pkg != deplink)
-	    addPackageRequires(pkg, deplink);
+	    addPackageDeps(pkg, deplink, RPMTAG_REQUIRENAME);
 
         if ((rc = rpmfcGenerateDepends(spec, pkg)) != RPMRC_OK)
 	    goto exit;
