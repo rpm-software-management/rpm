@@ -252,6 +252,7 @@ install-data-local:
 			rpmrc platform macros \
 			$(RPMCANONVENDOR) $(RPMCANONOS) $(RPMCANONGNU)
 	@$(MKDIR_P) $(DESTDIR)$(localstatedir)/tmp
+	@$(MKDIR_P) $(DESTDIR)$(rpmconfigdir)/macros.d
 
 # XXX to appease distcheck we need to remove "stuff" here...
 uninstall-local:
@@ -259,6 +260,7 @@ uninstall-local:
 	@rm -f $(DESTDIR)$(bindir)/rpmverify
 	@rm -rf $(DESTDIR)$(rpmconfigdir)/platform/
 	@rm -f $(DESTDIR)$(rpmconfigdir)/macros
+	@rm -rf $(DESTDIR)$(rpmconfigdir)/macros.d
 
 MAINTAINERCLEANFILES = ChangeLog
 
