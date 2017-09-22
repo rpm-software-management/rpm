@@ -30,9 +30,7 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # Build, contains one ELF which should have a buildid.
-run rpmbuild \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild \
   --define="_build_id_links none" \
   --quiet -ba "${abs_srcdir}"/data/SPECS/hello.spec
 
@@ -66,9 +64,7 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # Build, contains one ELF which should have a buildid.
-run rpmbuild \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild \
   --define="_build_id_links alldebug" \
   --undefine "_unique_debug_names" \
   --undefine "_unique_debug_srcs" \
@@ -160,9 +156,7 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # Build, contains one ELF which should have a buildid.
-run rpmbuild \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild \
   --define="_build_id_links alldebug" \
   --define="_unique_debug_names 1" \
   --quiet -ba "${abs_srcdir}"/data/SPECS/hello.spec
@@ -253,9 +247,7 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # Build, contains one ELF which should have a buildid.
-run rpmbuild \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild \
   --define="_build_id_links separate" \
   --undefine "_unique_debug_names" \
   --undefine "_unique_debug_srcs" \
@@ -346,9 +338,7 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # Build, contains one ELF which should have a buildid.
-run rpmbuild \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild \
   --define="_build_id_links separate" \
   --define="_unique_debug_names 1" \
   --quiet -ba "${abs_srcdir}"/data/SPECS/hello.spec
@@ -438,9 +428,7 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # Build, contains one ELF which should have a buildid.
-run rpmbuild \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild \
   --define="_build_id_links compat" \
   --undefine "_unique_debug_names" \
   --undefine "_unique_debug_srcs" \
@@ -544,9 +532,7 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # Build, contains one ELF which should have a buildid.
-run rpmbuild \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild \
   --define="_build_id_links compat" \
   --define="_unique_debug_names 1" \
   --quiet -ba "${abs_srcdir}"/data/SPECS/hello.spec
@@ -649,9 +635,7 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # Should create two warnings
-run rpmbuild --quiet \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild --quiet \
   --define="_build_id_links alldebug" \
   -ba "${abs_srcdir}"/data/SPECS/hello2cp.spec 2>&1 | grep "^warning: " \
   | cut -f1-3 -d' '
@@ -719,9 +703,7 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # No warnings for hard links
-run rpmbuild --quiet \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild --quiet \
   --define="_build_id_links alldebug" \
   -ba "${abs_srcdir}"/data/SPECS/hello2ln.spec 2>&1 | grep "^warning: " \
   | cut -f1-3 -d' '
@@ -786,9 +768,7 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # Should create two warnings
-run rpmbuild --quiet \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild --quiet \
   --define="_build_id_links separate" \
   -ba "${abs_srcdir}"/data/SPECS/hello2cp.spec 2>&1 | grep "^warning: " \
   | cut -f1-3 -d' '
@@ -853,9 +833,7 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # No warnings for hard links
-run rpmbuild --quiet \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild --quiet \
   --define="_build_id_links separate" \
   -ba "${abs_srcdir}"/data/SPECS/hello2ln.spec 2>&1 | grep "^warning: " \
   | cut -f1-3 -d' '
@@ -917,9 +895,7 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # Should create two warnings
-run rpmbuild --quiet \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild --quiet \
   --define="_build_id_links compat" \
   -ba "${abs_srcdir}"/data/SPECS/hello2cp.spec 2>&1 | grep "^warning: " \
   | cut -f1-3 -d' '
@@ -996,9 +972,7 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # No warnings for hard links
-run rpmbuild --quiet \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild --quiet \
   --define="_build_id_links compat" \
   -ba "${abs_srcdir}"/data/SPECS/hello2ln.spec 2>&1 | grep "^warning: " \
   | cut -f1-3 -d' '
@@ -1074,9 +1048,7 @@ cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/he
 export CFLAGS="-g"
 
 # Unique 1
-run rpmbuild --quiet \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild --quiet \
   --define="_unique_build_ids 1" \
   --undefine="_no_recompute_build_ids" \
   -ba "${abs_srcdir}"/data/SPECS/hello.spec
@@ -1095,9 +1067,7 @@ rm $hello_file
 
 # Unique 2
 # Build the "next" release, which has no changes except for the release update.
-run rpmbuild --quiet \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild --quiet \
   --define="_unique_build_ids 1" \
   --undefine="_no_recompute_build_ids" \
   -ba "${abs_srcdir}"/data/SPECS/hello-r2.spec
@@ -1120,9 +1090,7 @@ fi
 rm $hello_file
 
 # no-recompute 1
-run rpmbuild --quiet \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild --quiet \
   --undefine="_unique_build_ids" \
   --undefine="_unique_debug_names" \
   --undefine="_unique_debug_srcs" \
@@ -1150,9 +1118,7 @@ rm $hello_file
 
 # no-recompute 2
 # Build the "next" release, which has no changes except for the release update.
-run rpmbuild --quiet \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild --quiet \
   --undefine="_unique_build_ids" \
   --undefine="_unique_debug_names" \
   --undefine="_unique_debug_srcs" \
@@ -1193,9 +1159,7 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # No warnings for hard links
-run rpmbuild --quiet \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild --quiet \
   --define="_unique_build_ids 1" \
   -ba "${abs_srcdir}"/data/SPECS/hello.spec
 
@@ -1212,9 +1176,7 @@ id1=$(file $hello_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 rm $hello_file
 
 # Build the "next" release, which has no changes except for the release update.
-run rpmbuild --quiet \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild --quiet \
   --define="_unique_build_ids 1" \
   -ba "${abs_srcdir}"/data/SPECS/hello-r2.spec
 
@@ -1245,9 +1207,7 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # No warnings for hard links
-run rpmbuild --quiet \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild --quiet \
   --undefine="_unique_build_ids" \
   --undefine="_unique_debug_names" \
   --undefine="_unique_debug_srcs" \
@@ -1266,9 +1226,7 @@ id1=$(file $hello_file | sed 's/.*, BuildID\[[.*\]]=\([[0-9a-f]]*\),.*/\1/')
 rm $hello_file
 
 # Build the "next" release, which has no changes except for the release update.
-run rpmbuild --quiet \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild --quiet \
   --undefine="_unique_build_ids" \
   --undefine="_unique_debug_names" \
   --undefine="_unique_debug_srcs" \
@@ -1302,9 +1260,7 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 cp "${abs_srcdir}"/data/SOURCES/hello.c ${TOPDIR}/SOURCES
 
 # Build, contains one ELF which should have a buildid.
-run rpmbuild \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild \
   --define="_build_id_links compat" \
   --define "_unique_debug_names 1" \
   --define "_unique_debug_srcs 1" \
@@ -1338,9 +1294,7 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 cp "${abs_srcdir}"/data/SOURCES/hello.c ${TOPDIR}/SOURCES
 
 # Build, contains one ELF which should have a buildid.
-run rpmbuild \
-  --macros=${abs_top_builddir}/macros:${abs_top_builddir}/tests/testing/usr/local/lib/rpm/platform/%{_target_cpu}-%{_target_os}/macros:${top_srcdir}/macros.debug \
-  --rcfile=${abs_top_builddir}/rpmrc \
+rundebug rpmbuild \
   --define="_build_id_links compat" \
   --define "_unique_debug_names 1" \
   --define "_unique_debug_srcs 1" \
