@@ -34,7 +34,8 @@ rpmmod = Extension('rpm._rpm',
                                 'rpmte-py.c', 'rpmts-py.c', 'rpmmodule.c',
                              ],
                    include_dirs = pkgconfig('--cflags'),
-                   libraries = pkgconfig('--libs'),
+                   library_dirs = pkgconfig('--libs-only-L'),
+                   libraries = pkgconfig('--libs-only-l'),
                    extra_compile_args = cflags,
                    extra_link_args = additional_link_args
                   )
@@ -42,7 +43,8 @@ rpmmod = Extension('rpm._rpm',
 rpmbuild_mod = Extension('rpm._rpmb',
                    sources = ['rpmbmodule.c', 'spec-py.c'],
                    include_dirs = pkgconfig('--cflags'),
-                   libraries = pkgconfig('--libs') + ['rpmbuild'],
+                   library_dirs = pkgconfig('--libs-only-L'),
+                   libraries = pkgconfig('--libs-only-l') + ['rpmbuild'],
                    extra_compile_args = cflags,
                    extra_link_args = additional_link_args
                   )
@@ -50,7 +52,8 @@ rpmbuild_mod = Extension('rpm._rpmb',
 rpmsign_mod = Extension('rpm._rpms',
                    sources = ['rpmsmodule.c'],
                    include_dirs = pkgconfig('--cflags'),
-                   libraries = pkgconfig('--libs') + ['rpmsign'],
+                   library_dirs = pkgconfig('--libs-only-L'),
+                   libraries = pkgconfig('--libs-only-l') + ['rpmsign'],
                    extra_compile_args = cflags,
                    extra_link_args = additional_link_args
                   )
