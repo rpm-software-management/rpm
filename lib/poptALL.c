@@ -20,6 +20,7 @@
 #define POPT_DBPATH		-995
 #define POPT_UNDEFINE		-994
 #define POPT_PIPE		-993
+#define POPT_LOAD		-992
 
 static int _debug = 0;
 
@@ -131,6 +132,13 @@ static void rpmcliAllArgCallback( poptContext con,
 	    free(val);
 	}
 	break;
+    case POPT_LOAD:
+	rpmcliConfigured();
+	if (rpmLoadMacroFile(NULL, arg)) {
+	    fprintf(stderr, "failed to load macro file %s\n", arg);
+	    exit(EXIT_FAILURE);
+	}
+	break;
     case POPT_DBPATH:
 	rpmcliConfigured();
 	rpmPushMacro(NULL, "_dbpath", NULL, arg, RMIL_CMDLINE);
@@ -201,6 +209,9 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "macros", '\0', POPT_ARG_STRING, &macrofiles, 0,
 	N_("read <FILE:...> instead of default file(s)"),
 	N_("<FILE:...>") },
+ { "load", '\0', POPT_ARG_STRING, 0, POPT_LOAD,
+	N_("load a single macro file"),
+	N_("<FILE>") },
 
  /* XXX this is a bit out of place here but kinda unavoidable... */
  { "noplugins", '\0', POPT_BIT_SET,
