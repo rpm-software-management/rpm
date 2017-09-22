@@ -135,7 +135,7 @@ static void rpmcliAllArgCallback( poptContext con,
     case POPT_LOAD:
 	rpmcliConfigured();
 	if (rpmLoadMacroFile(NULL, arg)) {
-	    fprintf(stderr, "failed to load macro file %s\n", arg);
+	    fprintf(stderr, _("failed to load macro file %s\n"), arg);
 	    exit(EXIT_FAILURE);
 	}
 	break;
