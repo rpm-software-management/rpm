@@ -1230,7 +1230,6 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	}
 
 	if (STREQ("trace", f, fn)) {
-	    /* XXX TODO restore expand_trace/macro_trace to 0 on return */
 	    mb->expand_trace = mb->macro_trace = (negate ? 0 : mb->depth);
 	    if (mb->depth == 1) {
 		print_macro_trace = mb->macro_trace;
