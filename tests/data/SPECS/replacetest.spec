@@ -1,5 +1,6 @@
 %{!?filetype: %global filetype file}
 %{?fixit: %global havepretrans 1}
+%{!?user: %global user root}
 
 Name:		replacetest%{?sub:-%{sub}}
 Version:	%{ver}
@@ -43,5 +44,5 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %files
-%defattr(-,root,root,-)
+%defattr(-,%{user},%{user},-)
 /opt/*
