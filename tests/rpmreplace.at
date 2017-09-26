@@ -402,6 +402,40 @@ runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
 	--define "filetype datadir" \
 	--define "filedata README1" \
+	--define "user $(id -u -n)" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype datadir" \
+	--define "filedata README2" \
+	--define "user $(id -u -n)" \
+          /data/SPECS/replacetest.spec
+
+mkdir "${RPMTEST}"/opt/f00f
+ln -s f00f "${RPMTEST}"/opt/foo
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+test -L "${tf}" && test -d "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+test -L "${tf}" && test -d "${tf}"
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+AT_SETUP([upgrade invalid locally symlinked directory])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype datadir" \
+	--define "filedata README1" \
           /data/SPECS/replacetest.spec
 
 runroot rpmbuild --quiet -bb \
@@ -414,7 +448,7 @@ mkdir "${RPMTEST}"/opt/f00f
 ln -s f00f "${RPMTEST}"/opt/foo
 runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 test -L "${tf}" && test -d "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
-test -L "${tf}" && test -d "${tf}"
+test -d "${tf}"
 ],
 [0],
 [],
