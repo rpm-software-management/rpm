@@ -69,18 +69,56 @@ AT_KEYWORDS([verify])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+rm -rf "${TOPDIR}"
 
-runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
-	/data/RPMS/hello-1.0-1.i386.rpm
-mv "${RPMTEST}"/usr/share/doc/hello-1.0 "${RPMTEST}"/usr/share/doc/hello-1.0.orig
-ln -s hello-1.0.orig "${RPMTEST}"/usr/share/doc/hello-1.0
-runroot rpm -Vva --nodeps --nouser --nogroup
-rm -rf "${RPMTEST}"/usr/share/doc/
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+        --define "filetype datadir" \
+        --define "filedata README1" \
+        --define "user $(id -u -n)" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+mv "${RPMTEST}"/opt/foo "${RPMTEST}"/opt/was
+ln -s was "${RPMTEST}"/opt/foo
+runroot rpm -Vv replacetest
 ],
 [0],
-[.........    /usr/local/bin/hello
-.........    /usr/share/doc/hello-1.0
-.........  d /usr/share/doc/hello-1.0/FAQ
+[.........    /opt/foo
+.........    /opt/foo/README1
+.........    /opt/goo
+.........    /opt/zoo
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([directory replaced with an invalid directory symlink])
+AT_KEYWORDS([verify])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+        --define "filetype datadir" \
+        --define "filedata README1" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+mv "${RPMTEST}"/opt/foo "${RPMTEST}"/opt/was
+ln -s was "${RPMTEST}"/opt/foo
+runroot rpm -Vv --nouser --nogroup replacetest
+],
+[1],
+[....L....    /opt/foo
+.........    /opt/foo/README1
+.........    /opt/goo
+.........    /opt/zoo
 ],
 [])
 AT_CLEANUP
