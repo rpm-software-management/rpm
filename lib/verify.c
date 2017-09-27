@@ -94,9 +94,18 @@ rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
     }
 
     /* If we expected a directory but got a symlink to one, follow the link */
-    if (S_ISDIR(fmode) && S_ISLNK(sb.st_mode) && stat(fn, &sb) != 0) {
-	vfy |= RPMVERIFY_LSTATFAIL;
-	goto exit;
+    if (S_ISDIR(fmode) && S_ISLNK(sb.st_mode)) {
+	struct stat dsb;
+	/* ...if it actually points to a directory  */
+	if (stat(fn, &dsb) == 0 && S_ISDIR(dsb.st_mode)) {
+	    uid_t fuid;
+	    /* ...and is by a legit user, to match fsmVerify() behavior */
+	    if (sb.st_uid == 0 ||
+			(rpmugUid(rpmfilesFUser(fi, ix), &fuid) == 0 &&
+			 sb.st_uid == fuid)) {
+		sb = dsb; /* struct assignment */
+	    }
+	}
     }
 
     /* Links have no mode, other types have no linkto */
