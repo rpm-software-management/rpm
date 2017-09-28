@@ -883,7 +883,7 @@ ls ./usr/src/debug/hello2-1.0*/
 
 # The debuginfo package should recommend the debugsource package (ignore arch).
 echo -n "Recommends: "
-rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
+run rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 ],
 [0],
 [hello.c
@@ -1016,7 +1016,7 @@ fi
 # No debugsource package, so sources are in the main debuginfo package.
 # Make sure it is recommended.
 echo -n "Recommends: "
-rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
+run rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 
 # Third contains hello3.debug
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-1.0-1.*.rpm \
@@ -1035,7 +1035,7 @@ fi
 # No debugsource package, so sources are in the main debuginfo package.
 # Make sure it is recommended.
 echo -n "Recommends: "
-rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
+run rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 ],
 [0],
 [3
@@ -1100,7 +1100,7 @@ fi
 # No debugsource package, so sources are in the main debuginfo package.
 # Make sure it is recommended.
 echo -n "Recommends: "
-rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
+run rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 
 # Third contains hello3.debug
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-1.0-1.*.rpm \
@@ -1119,7 +1119,7 @@ fi
 # No debugsource package, so sources are in the main debuginfo package.
 # Make sure it is recommended.
 echo -n "Recommends: "
-rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
+run rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 ],
 [0],
 [3
@@ -1169,7 +1169,7 @@ fi
 
 # Sources are in debugsource package. Make sure it is recommended.
 echo -n "Recommends: "
-rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
+run rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 
 # Second contains hello2.debug
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-1.0-1.*.rpm \
@@ -1187,7 +1187,7 @@ fi
 
 # Sources are in debugsource package. Make sure it is recommended.
 echo -n "Recommends: "
-rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
+run rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 
 # Third contains hello3.debug
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-1.0-1.*.rpm \
@@ -1205,7 +1205,7 @@ fi
 
 # Sources are in debugsource package. Make sure it is recommended.
 echo -n "Recommends: "
-rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
+run rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 ],
 [0],
 [3
