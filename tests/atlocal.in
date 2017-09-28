@@ -32,7 +32,7 @@ function run()
 
 function rundebug()
 {
-    cp ${abs_top_builddir}/macros.debug ${RPM_CONFIGDIR}/macros.d/
+    cp ${top_srcdir}/macros.debug ${RPM_CONFIGDIR}/macros.d/
     "$@" --define "_tmppath ${RPMTEST}/tmp" --define "_topdir ${TOPDIR}" --dbpath="${RPMTEST}/var/lib/rpm/"
     rm -f ${RPM_CONFIGDIR}/macros.d/macros.debug
 }
