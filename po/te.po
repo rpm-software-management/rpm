@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2017-09-06 14:15+0300\n"
+"POT-Creation-Date: 2017-09-28 16:29+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/rpm-team/rpm/language/te/)\n"
@@ -951,22 +951,22 @@ msgid ""
 "%s"
 msgstr ""
 
-#: build/files.c:2843
+#: build/files.c:2847
 #, c-format
 msgid "%s was mapped to multiple filenames"
 msgstr ""
 
-#: build/files.c:3067
+#: build/files.c:3096
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
 
-#: build/files.c:3088
+#: build/files.c:3118
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 
-#: build/files.c:3094
+#: build/files.c:3124
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 
@@ -1866,19 +1866,19 @@ msgstr ""
 msgid "normal"
 msgstr ""
 
-#: lib/formats.c:420 lib/verify.c:383
+#: lib/formats.c:420 lib/verify.c:392
 msgid "replaced"
 msgstr ""
 
-#: lib/formats.c:423 lib/verify.c:377
+#: lib/formats.c:423 lib/verify.c:386
 msgid "not installed"
 msgstr ""
 
-#: lib/formats.c:426 lib/verify.c:379
+#: lib/formats.c:426 lib/verify.c:388
 msgid "net shared"
 msgstr ""
 
-#: lib/formats.c:429 lib/verify.c:381
+#: lib/formats.c:429 lib/verify.c:390
 msgid "wrong color"
 msgstr ""
 
@@ -1890,26 +1890,26 @@ msgstr ""
 msgid "(unknown)"
 msgstr ""
 
-#: lib/fsm.c:711
+#: lib/fsm.c:742
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/fsm.c:764
+#: lib/fsm.c:795
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
 
-#: lib/fsm.c:1046
+#: lib/fsm.c:1077
 #, c-format
 msgid "%s %s: remove failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1047
+#: lib/fsm.c:1078
 msgid "directory"
 msgstr ""
 
-#: lib/fsm.c:1047
+#: lib/fsm.c:1078
 msgid "file"
 msgstr ""
 
@@ -2971,104 +2971,112 @@ msgstr ""
 msgid "Name required"
 msgstr ""
 
-#: lib/rpmds.c:1489
+#: lib/rpmds.c:1488
+msgid "Illegal ops in with/without"
+msgstr ""
+
+#: lib/rpmds.c:1495
+msgid "Illegal context for 'unless', please use 'or' instead"
+msgstr ""
+
+#: lib/rpmds.c:1500
+msgid "Illegal context for 'if', please use 'and' instead"
+msgstr ""
+
+#: lib/rpmds.c:1516
 msgid "Rich dependency does not start with '('"
 msgstr ""
 
-#: lib/rpmds.c:1497
+#: lib/rpmds.c:1524
 msgid "Missing argument to rich dependency op"
 msgstr ""
 
-#: lib/rpmds.c:1499
+#: lib/rpmds.c:1526
 msgid "Empty rich dependency"
 msgstr ""
 
-#: lib/rpmds.c:1513
+#: lib/rpmds.c:1544
 #, c-format
 msgid "Unterminated rich dependency: %s"
 msgstr ""
 
-#: lib/rpmds.c:1525
+#: lib/rpmds.c:1559
 msgid "Cannot chain different ops"
 msgstr ""
 
-#: lib/rpmds.c:1531
+#: lib/rpmds.c:1564
 msgid "Can only chain and/or/with ops"
 msgstr ""
 
-#: lib/rpmds.c:1543
-msgid "Illegal ops in with/without"
-msgstr ""
-
-#: lib/rpmds.c:1632
+#: lib/rpmds.c:1695
 msgid "Junk after rich dependency"
 msgstr ""
 
-#: lib/rpmfi.c:804
+#: lib/rpmfi.c:810
 #, c-format
 msgid "user %s does not exist - using %s\n"
 msgstr ""
 
-#: lib/rpmfi.c:811
+#: lib/rpmfi.c:817
 #, c-format
 msgid "group %s does not exist - using %s\n"
 msgstr ""
 
-#: lib/rpmfi.c:1368
+#: lib/rpmfi.c:1374
 #, c-format
 msgid "Wrong number of entries for tag %s: %u found but %u expected.\n"
 msgstr ""
 
-#: lib/rpmfi.c:1373
+#: lib/rpmfi.c:1379
 #, c-format
 msgid "Malformed data for tag %s: %u bytes found but %lu expected.\n"
 msgstr ""
 
-#: lib/rpmfi.c:2341
+#: lib/rpmfi.c:2348
 msgid "Bad magic"
 msgstr ""
 
-#: lib/rpmfi.c:2342
+#: lib/rpmfi.c:2349
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/rpmfi.c:2365
+#: lib/rpmfi.c:2372
 msgid "Header size too big"
 msgstr ""
 
-#: lib/rpmfi.c:2366
+#: lib/rpmfi.c:2373
 msgid "File too large for archive"
 msgstr ""
 
-#: lib/rpmfi.c:2367
+#: lib/rpmfi.c:2374
 msgid "Unknown file type"
 msgstr "తెలియని ఫైల్ రకం"
 
-#: lib/rpmfi.c:2368
+#: lib/rpmfi.c:2375
 msgid "Missing file(s)"
 msgstr ""
 
-#: lib/rpmfi.c:2369
+#: lib/rpmfi.c:2376
 msgid "Digest mismatch"
 msgstr ""
 
-#: lib/rpmfi.c:2370
+#: lib/rpmfi.c:2377
 msgid "Internal error"
 msgstr ""
 
-#: lib/rpmfi.c:2371
+#: lib/rpmfi.c:2378
 msgid "Archive file not in header"
 msgstr ""
 
-#: lib/rpmfi.c:2375
+#: lib/rpmfi.c:2382
 msgid "File from package already exists as a directory in system"
 msgstr ""
 
-#: lib/rpmfi.c:2382
+#: lib/rpmfi.c:2389
 msgid " failed - "
 msgstr ""
 
-#: lib/rpmfi.c:2385
+#: lib/rpmfi.c:2392
 #, c-format
 msgid "%s: (error 0x%x)"
 msgstr ""
@@ -3523,30 +3531,30 @@ msgstr ""
 msgid "failed"
 msgstr ""
 
-#: lib/verify.c:254
+#: lib/verify.c:263
 #, c-format
 msgid "Duplicate username or UID for user %s\n"
 msgstr ""
 
-#: lib/verify.c:275
+#: lib/verify.c:284
 #, c-format
 msgid "Duplicate groupname or GID for group %s\n"
 msgstr ""
 
-#: lib/verify.c:385
+#: lib/verify.c:394
 msgid "no state"
 msgstr ""
 
-#: lib/verify.c:387
+#: lib/verify.c:396
 msgid "unknown state"
 msgstr ""
 
-#: lib/verify.c:438
+#: lib/verify.c:447
 #, c-format
 msgid "missing   %c %s"
 msgstr ""
 
-#: lib/verify.c:488
+#: lib/verify.c:497
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr ""

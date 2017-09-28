@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2017-09-06 14:15+0300\n"
+"POT-Creation-Date: 2017-09-28 16:29+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Swedish (http://www.transifex.com/rpm-team/rpm/language/sv/)\n"
@@ -967,22 +967,22 @@ msgstr ""
 "Installerade (men opaketerade) filer funna:\n"
 "%s"
 
-#: build/files.c:2843
+#: build/files.c:2847
 #, c-format
 msgid "%s was mapped to multiple filenames"
 msgstr ""
 
-#: build/files.c:3067
+#: build/files.c:3096
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Bearberar filer: %s\n"
 
-#: build/files.c:3088
+#: build/files.c:3118
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr "Binärers arkitektur (%d) matchar inte paketarkitekturen (%d).\n"
 
-#: build/files.c:3094
+#: build/files.c:3124
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Arkitekturberoende binärfiler i noarch-paket\n"
 
@@ -1883,19 +1883,19 @@ msgstr "Ogiltig tidpunkt %u"
 msgid "normal"
 msgstr "normal"
 
-#: lib/formats.c:420 lib/verify.c:383
+#: lib/formats.c:420 lib/verify.c:392
 msgid "replaced"
 msgstr "ersatt"
 
-#: lib/formats.c:423 lib/verify.c:377
+#: lib/formats.c:423 lib/verify.c:386
 msgid "not installed"
 msgstr "inte installerad"
 
-#: lib/formats.c:426 lib/verify.c:379
+#: lib/formats.c:426 lib/verify.c:388
 msgid "net shared"
 msgstr "nätdelad"
 
-#: lib/formats.c:429 lib/verify.c:381
+#: lib/formats.c:429 lib/verify.c:390
 msgid "wrong color"
 msgstr "fel färg"
 
@@ -1907,26 +1907,26 @@ msgstr "saknas"
 msgid "(unknown)"
 msgstr "(okänd)"
 
-#: lib/fsm.c:711
+#: lib/fsm.c:742
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s sparades som %s\n"
 
-#: lib/fsm.c:764
+#: lib/fsm.c:795
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s skapades som %s\n"
 
-#: lib/fsm.c:1046
+#: lib/fsm.c:1077
 #, c-format
 msgid "%s %s: remove failed: %s\n"
 msgstr "%s %s: borttagande misslyckades: %s\n"
 
-#: lib/fsm.c:1047
+#: lib/fsm.c:1078
 msgid "directory"
 msgstr "katalog"
 
-#: lib/fsm.c:1047
+#: lib/fsm.c:1078
 msgid "file"
 msgstr "fil"
 
@@ -2994,105 +2994,113 @@ msgstr "Okänt rikt-beroende-op ”%.*s”"
 msgid "Name required"
 msgstr "Namn behövs"
 
-#: lib/rpmds.c:1489
+#: lib/rpmds.c:1488
+msgid "Illegal ops in with/without"
+msgstr ""
+
+#: lib/rpmds.c:1495
+msgid "Illegal context for 'unless', please use 'or' instead"
+msgstr ""
+
+#: lib/rpmds.c:1500
+msgid "Illegal context for 'if', please use 'and' instead"
+msgstr ""
+
+#: lib/rpmds.c:1516
 msgid "Rich dependency does not start with '('"
 msgstr "Rikt beroende börjar inte med ”(”"
 
-#: lib/rpmds.c:1497
+#: lib/rpmds.c:1524
 msgid "Missing argument to rich dependency op"
 msgstr "Argument saknas till rikt-beroende-op"
 
-#: lib/rpmds.c:1499
+#: lib/rpmds.c:1526
 msgid "Empty rich dependency"
 msgstr "Tomt rikt beroende"
 
-#: lib/rpmds.c:1513
+#: lib/rpmds.c:1544
 #, c-format
 msgid "Unterminated rich dependency: %s"
 msgstr "Oavslutat rikt beroende: %s"
 
-#: lib/rpmds.c:1525
+#: lib/rpmds.c:1559
 msgid "Cannot chain different ops"
 msgstr "Kan inte kedja olika operatorer"
 
-#: lib/rpmds.c:1531
+#: lib/rpmds.c:1564
 #, fuzzy
 msgid "Can only chain and/or/with ops"
 msgstr "Kan endast kedja AND- och OR-operatorer"
 
-#: lib/rpmds.c:1543
-msgid "Illegal ops in with/without"
-msgstr ""
-
-#: lib/rpmds.c:1632
+#: lib/rpmds.c:1695
 msgid "Junk after rich dependency"
 msgstr "Skräp efter rikt beroende"
 
-#: lib/rpmfi.c:804
+#: lib/rpmfi.c:810
 #, c-format
 msgid "user %s does not exist - using %s\n"
 msgstr ""
 
-#: lib/rpmfi.c:811
+#: lib/rpmfi.c:817
 #, c-format
 msgid "group %s does not exist - using %s\n"
 msgstr ""
 
-#: lib/rpmfi.c:1368
+#: lib/rpmfi.c:1374
 #, c-format
 msgid "Wrong number of entries for tag %s: %u found but %u expected.\n"
 msgstr ""
 
-#: lib/rpmfi.c:1373
+#: lib/rpmfi.c:1379
 #, c-format
 msgid "Malformed data for tag %s: %u bytes found but %lu expected.\n"
 msgstr ""
 
-#: lib/rpmfi.c:2341
+#: lib/rpmfi.c:2348
 msgid "Bad magic"
 msgstr "Felaktigt magiskt tal"
 
-#: lib/rpmfi.c:2342
+#: lib/rpmfi.c:2349
 msgid "Bad/unreadable  header"
 msgstr "Felaktigt/oläsbart huvud"
 
-#: lib/rpmfi.c:2365
+#: lib/rpmfi.c:2372
 msgid "Header size too big"
 msgstr "Huvudstorleken för stor"
 
-#: lib/rpmfi.c:2366
+#: lib/rpmfi.c:2373
 msgid "File too large for archive"
 msgstr "Filen är för stor att arkivera"
 
-#: lib/rpmfi.c:2367
+#: lib/rpmfi.c:2374
 msgid "Unknown file type"
 msgstr "Okänd filtyp"
 
-#: lib/rpmfi.c:2368
+#: lib/rpmfi.c:2375
 msgid "Missing file(s)"
 msgstr "Saknade filer"
 
-#: lib/rpmfi.c:2369
+#: lib/rpmfi.c:2376
 msgid "Digest mismatch"
 msgstr "Kontrollsumman stämmer inte"
 
-#: lib/rpmfi.c:2370
+#: lib/rpmfi.c:2377
 msgid "Internal error"
 msgstr "Internt fel"
 
-#: lib/rpmfi.c:2371
+#: lib/rpmfi.c:2378
 msgid "Archive file not in header"
 msgstr "Ingen arkivfilen i huvud"
 
-#: lib/rpmfi.c:2375
+#: lib/rpmfi.c:2382
 msgid "File from package already exists as a directory in system"
 msgstr ""
 
-#: lib/rpmfi.c:2382
+#: lib/rpmfi.c:2389
 msgid " failed - "
 msgstr " misslyckades - "
 
-#: lib/rpmfi.c:2385
+#: lib/rpmfi.c:2392
 #, c-format
 msgid "%s: (error 0x%x)"
 msgstr "%s: (fel 0x%x)"
@@ -3547,30 +3555,30 @@ msgstr "hoppade över"
 msgid "failed"
 msgstr "misslyckades"
 
-#: lib/verify.c:254
+#: lib/verify.c:263
 #, c-format
 msgid "Duplicate username or UID for user %s\n"
 msgstr "Dubblerat användarnamn eller UID för användaren %s\n"
 
-#: lib/verify.c:275
+#: lib/verify.c:284
 #, c-format
 msgid "Duplicate groupname or GID for group %s\n"
 msgstr "Dubblerat gruppnamn eller GID för gruppen %s\n"
 
-#: lib/verify.c:385
+#: lib/verify.c:394
 msgid "no state"
 msgstr "inget tillstånd"
 
-#: lib/verify.c:387
+#: lib/verify.c:396
 msgid "unknown state"
 msgstr "okänt tillstånd"
 
-#: lib/verify.c:438
+#: lib/verify.c:447
 #, c-format
 msgid "missing   %c %s"
 msgstr "saknas    %c %s"
 
-#: lib/verify.c:488
+#: lib/verify.c:497
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Ouppfyllda beroenden för %s:\n"
