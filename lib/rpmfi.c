@@ -781,11 +781,9 @@ int rpmfilesStat(rpmfiles fi, int ix, int flags, struct stat *sb)
 	int warn = flags & 0x1;
 	const char *user = rpmfilesFUser(fi, ix);
 	const char *group = rpmfilesFGroup(fi, ix);
-	const int * hardlinks = NULL;
-	uint32_t nlinks = rpmfilesFLinks(fi, ix, &hardlinks);
 
 	memset(sb, 0, sizeof(*sb));
-	sb->st_nlink = nlinks;
+	sb->st_nlink = rpmfilesFLinks(fi, ix, NULL);
 	sb->st_ino = rpmfilesFInode(fi, ix);
 	sb->st_rdev = rpmfilesFRdev(fi, ix);
 	sb->st_mode = rpmfilesFMode(fi, ix);
@@ -793,9 +791,7 @@ int rpmfilesStat(rpmfiles fi, int ix, int flags, struct stat *sb)
 
 	/* Only regular files and symlinks have a size */
 	if (S_ISREG(sb->st_mode)) {
-	    /* Content and thus size comes with last hardlink */
-	    if (!(nlinks > 1 && hardlinks[nlinks-1] != ix))
-		sb->st_size = rpmfilesFSize(fi, ix);
+	    sb->st_size = rpmfilesFSize(fi, ix);
 	} else if (S_ISLNK(sb->st_mode)) {
 	    /*
 	     * Normally rpmfilesFSize() is correct for symlinks too, this is
@@ -1888,7 +1884,17 @@ uint32_t rpmfiFDepends(rpmfi fi, const uint32_t ** fddictp)
 
 int rpmfiStat(rpmfi fi, int flags, struct stat *sb)
 {
-    return rpmfilesStat(fi->files, fi->i, flags, sb);
+    int rc = -1;
+    if (fi != NULL) {
+	rc = rpmfilesStat(fi->files, fi->i, flags, sb);
+	/* In archives, hardlinked files are empty except for the last one */
+	if (rc == 0 && fi->archive && sb->st_nlink > 1) {
+	    const int *links = NULL;
+	    if (rpmfiFLinks(fi, &links) && links[sb->st_nlink-1] != fi->i)
+		sb->st_size = 0;
+	}
+    }
+    return rc;
 }
 
 int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
