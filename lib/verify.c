@@ -59,7 +59,7 @@ rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
     rpmfileAttrs fileAttrs = rpmfilesFFlags(fi, ix);
     rpmVerifyAttrs flags = rpmfilesVFlags(fi, ix);
     const char * fn = rpmfilesFN(fi, ix);
-    struct stat sb;
+    struct stat sb, fsb;
     rpmVerifyAttrs vfy = RPMVERIFY_NONE;
 
     /*
@@ -88,7 +88,7 @@ rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
 	break;
     }
 
-    if (fn == NULL || lstat(fn, &sb) != 0) {
+    if (fn == NULL || lstat(fn, &sb) != 0 || rpmfilesStat(fi, ix, 0, &fsb)) {
 	vfy |= RPMVERIFY_LSTATFAIL;
 	goto exit;
     }
@@ -98,13 +98,9 @@ rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
 	struct stat dsb;
 	/* ...if it actually points to a directory  */
 	if (stat(fn, &dsb) == 0 && S_ISDIR(dsb.st_mode)) {
-	    uid_t fuid;
 	    /* ...and is by a legit user, to match fsmVerify() behavior */
-	    if (sb.st_uid == 0 ||
-			(rpmugUid(rpmfilesFUser(fi, ix), &fuid) == 0 &&
-			 sb.st_uid == fuid)) {
+	    if (sb.st_uid == 0 || sb.st_uid == fsb.st_uid)
 		sb = dsb; /* struct assignment */
-	    }
 	}
     }
 
@@ -246,47 +242,11 @@ rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
 	vfy |= RPMVERIFY_MTIME;
     }
 
-    if (flags & RPMVERIFY_USER) {
-	const char * name = rpmugUname(sb.st_uid);
-	const char * fuser = rpmfilesFUser(fi, ix);
-	uid_t uid;
-	int namematch = 0;
-	int idmatch = 0;
+    if ((flags & RPMVERIFY_USER) && (sb.st_uid != fsb.st_uid))
+	vfy |= RPMVERIFY_USER;
 
-	if (name && fuser)
-	   namematch =  rstreq(name, fuser);
-	if (fuser && rpmugUid(fuser, &uid) == 0)
-	    idmatch = (uid == sb.st_uid);
-
-	if (namematch != idmatch) {
-	    rpmlog(RPMLOG_WARNING,
-		    _("Duplicate username or UID for user %s\n"), fuser);
-	}
-
-	if (!(namematch || idmatch))
-	    vfy |= RPMVERIFY_USER;
-    }
-
-    if (flags & RPMVERIFY_GROUP) {
-	const char * name = rpmugGname(sb.st_gid);
-	const char * fgroup = rpmfilesFGroup(fi, ix);
-	gid_t gid;
-	int namematch = 0;
-	int idmatch = 0;
-
-	if (name && fgroup)
-	    namematch = rstreq(name, fgroup);
-	if (fgroup && rpmugGid(fgroup, &gid) == 0)
-	    idmatch = (gid == sb.st_gid);
-
-	if (namematch != idmatch) {
-	    rpmlog(RPMLOG_WARNING,
-		    _("Duplicate groupname or GID for group %s\n"), fgroup);
-	}
-
-	if (!(namematch || idmatch))
-	    vfy |= RPMVERIFY_GROUP;
-    }
+    if ((flags & RPMVERIFY_GROUP) && (sb.st_gid != fsb.st_gid))
+	vfy |= RPMVERIFY_GROUP;
 
 exit:
     return vfy;
