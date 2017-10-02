@@ -790,15 +790,8 @@ int rpmfilesStat(rpmfiles fi, int ix, int flags, struct stat *sb)
 	sb->st_mtime = rpmfilesFMtime(fi, ix);
 
 	/* Only regular files and symlinks have a size */
-	if (S_ISREG(sb->st_mode)) {
+	if (S_ISREG(sb->st_mode) || S_ISLNK(sb->st_mode))
 	    sb->st_size = rpmfilesFSize(fi, ix);
-	} else if (S_ISLNK(sb->st_mode)) {
-	    /*
-	     * Normally rpmfilesFSize() is correct for symlinks too, this is
-	     * only needed for glob()'ed links from fakechroot environment.
-	     */
-	    sb->st_size = strlen(rpmfilesFLink(fi, ix));
-	}
 
 	if (user && rpmugUid(user, &sb->st_uid)) {
 	    if (warn)
