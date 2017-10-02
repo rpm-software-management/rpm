@@ -166,21 +166,15 @@ rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
     } 
 
     if (flags & RPMVERIFY_MODE) {
-	rpm_mode_t metamode = fmode;
-	rpm_mode_t filemode;
-
-	/*
-	 * Platforms (like AIX) where sizeof(rpm_mode_t) != sizeof(mode_t)
-	 * need the (rpm_mode_t) cast here. 
-	 */
-	filemode = (rpm_mode_t)sb.st_mode;
+	mode_t metamode = fsb.st_mode;
+	mode_t filemode = sb.st_mode;
 
 	/*
 	 * Comparing the type of %ghost files is meaningless, but perms are OK.
 	 */
 	if (fileAttrs & RPMFILE_GHOST) {
-	    metamode &= ~0xf000;
-	    filemode &= ~0xf000;
+	    metamode &= ~S_IFMT;
+	    filemode &= ~S_IFMT;
 	}
 
 	if (metamode != filemode)
