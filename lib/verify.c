@@ -55,7 +55,6 @@ static int cap_compare(cap_t acap, cap_t bcap)
 	
 rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
 {
-    rpm_mode_t fmode = rpmfilesFMode(fi, ix);
     rpmfileAttrs fileAttrs = rpmfilesFFlags(fi, ix);
     rpmVerifyAttrs flags = rpmfilesVFlags(fi, ix);
     const char * fn = rpmfilesFN(fi, ix);
@@ -94,7 +93,7 @@ rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
     }
 
     /* If we expected a directory but got a symlink to one, follow the link */
-    if (S_ISDIR(fmode) && S_ISLNK(sb.st_mode)) {
+    if (S_ISDIR(fsb.st_mode) && S_ISLNK(sb.st_mode)) {
 	struct stat dsb;
 	/* ...if it actually points to a directory  */
 	if (stat(fn, &dsb) == 0 && S_ISDIR(dsb.st_mode)) {
@@ -160,10 +159,8 @@ rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
 	}
     } 
 
-    if (flags & RPMVERIFY_FILESIZE) {
-	if (sb.st_size != rpmfilesFSize(fi, ix))
-	    vfy |= RPMVERIFY_FILESIZE;
-    } 
+    if ((flags & RPMVERIFY_FILESIZE) && (sb.st_size != fsb.st_size))
+	vfy |= RPMVERIFY_FILESIZE;
 
     if (flags & RPMVERIFY_MODE) {
 	mode_t metamode = fsb.st_mode;
@@ -196,13 +193,13 @@ rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
     }
 
     if (flags & RPMVERIFY_RDEV) {
-	if (S_ISCHR(fmode) != S_ISCHR(sb.st_mode)
-	 || S_ISBLK(fmode) != S_ISBLK(sb.st_mode))
+	if (S_ISCHR(fsb.st_mode) != S_ISCHR(sb.st_mode)
+	 || S_ISBLK(fsb.st_mode) != S_ISBLK(sb.st_mode))
 	{
 	    vfy |= RPMVERIFY_RDEV;
-	} else if (S_ISDEV(fmode) && S_ISDEV(sb.st_mode)) {
+	} else if (S_ISDEV(fsb.st_mode) && S_ISDEV(sb.st_mode)) {
 	    rpm_rdev_t st_rdev = (sb.st_rdev & 0xffff);
-	    rpm_rdev_t frdev = (rpmfilesFRdev(fi, ix) & 0xffff);
+	    rpm_rdev_t frdev = (fsb.st_rdev & 0xffff);
 	    if (st_rdev != frdev)
 		vfy |= RPMVERIFY_RDEV;
 	} 
@@ -232,9 +229,8 @@ rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
     }
 #endif
 
-    if ((flags & RPMVERIFY_MTIME) && (sb.st_mtime != rpmfilesFMtime(fi, ix))) {
+    if ((flags & RPMVERIFY_MTIME) && (sb.st_mtime != fsb.st_mtime))
 	vfy |= RPMVERIFY_MTIME;
-    }
 
     if ((flags & RPMVERIFY_USER) && (sb.st_uid != fsb.st_uid))
 	vfy |= RPMVERIFY_USER;
