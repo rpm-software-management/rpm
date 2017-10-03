@@ -30,8 +30,6 @@
  * - te.PkgFileSize() Return no. of bytes in package file (approx).
  * - te.Parent() Return the parent element index.
  * - te.Problems() Return problems associated with this element.
- * - te.AddedKey() Return the added package index (TR_ADDED).
- * - te.DependsOnKey() Return the package index for the added package (TR_REMOVED).
  * - te.DBOffset() Return the Packages database instance number (TR_REMOVED)
  * - te.Key()	Return the associated opaque key, i.e. 2nd arg ts.addInstall().
  * - te.DS(tag)	Return package dependency set.
@@ -136,14 +134,6 @@ static PyObject * rpmte_Problems(rpmteObject * s, PyObject * unused)
     return problems;
 }
 
-/*
-static PyObject *
-rpmte_DependsOnKey(rpmteObject * s, PyObject * unused)
-{
-    return Py_BuildValue("i", rpmteDependsOnKey(s->te));
-}
-*/
-
 static PyObject *
 rpmte_DBOffset(rpmteObject * s, PyObject * unused)
 {
@@ -229,8 +219,6 @@ static struct PyMethodDef rpmte_methods[] = {
      "te.Parent() -- Return the parent element index."},
     {"Problems",(PyCFunction)rpmte_Problems,	METH_NOARGS,
      "te.Problems() -- Return problems associated with this element."},
-/*    {"DependsOnKey",(PyCFunction)rpmte_DependsOnKey,	METH_NOARGS,
-      NULL}, */
     {"DBOffset",(PyCFunction)rpmte_DBOffset,	METH_NOARGS,
      "te.DBOffset() -- Return the Package's database instance number.\n\nTR_REMOVED only"},
     {"Failed",	(PyCFunction)rpmte_Failed,	METH_NOARGS,
