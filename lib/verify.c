@@ -263,8 +263,8 @@ static int rpmVerifyScript(rpmts ts, Header h)
     int rc = 0;
 
     if (headerIsEntry(h, RPMTAG_VERIFYSCRIPT)) {
-	/* fake up a erasure transaction element */
-	rpmte p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL);
+	/* fake up a transaction element */
+	rpmte p = rpmteNew(ts, h, TR_RPMDB, NULL, NULL);
 
 	if (p != NULL) {
 	    rpmteSetHeader(p, h);

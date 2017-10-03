@@ -668,6 +668,8 @@ assert(otherFi != NULL);
 	    /* Otherwise, we can just erase. */
 	    rpmfsSetAction(fs, i, FA_ERASE);
 	    break;
+	default:
+	    break;
 	}
 	rpmfilesFree(otherFi);
 
@@ -1128,6 +1130,8 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 			    rpmfsSetAction(fs, recs[j].fileno, FA_SKIP);
 		    }
 		    break;
+		default:
+		    break;
 		}
 		rpmfilesFree(fi);
 	    }
@@ -1457,9 +1461,9 @@ rpmRC runScript(rpmts ts, rpmte te, Header h, ARGV_const_t prefixes,
 		     stag != RPMTAG_PRETRANS &&
 		     stag != RPMTAG_VERIFYSCRIPT);
 
-    /* Fake up a transaction element for triggers from rpmdb */
+    /* Create a temporary transaction element for triggers from rpmdb */
     if (te == NULL) {
-	te = rpmteNew(ts, h, TR_REMOVED, NULL, NULL);
+	te = rpmteNew(ts, h, TR_RPMDB, NULL, NULL);
 	rpmteSetHeader(te, h);
     }
 

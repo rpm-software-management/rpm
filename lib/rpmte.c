@@ -90,6 +90,7 @@ void rpmteCleanDS(rpmte te)
 
 static rpmfiles getFiles(rpmte p, Header h)
 {
+    /* TR_RPMDB handled as TR_ERASED for now, doesn't really matter */
     rpmfiFlags fiflags;
     fiflags = (p->type == TR_ADDED) ? (RPMFI_NOHEADER | RPMFI_FLAGS_INSTALL) :
 				      (RPMFI_NOHEADER | RPMFI_FLAGS_ERASE);
@@ -562,6 +563,7 @@ static int rpmteOpen(rpmte te, int reload_fi)
 	h = rpmteDBInstance(te) ? rpmteDBHeader(te) : rpmteFDHeader(te);
 	break;
     case TR_REMOVED:
+    case TR_RPMDB:
 	h = rpmteDBHeader(te);
     	break;
     }
@@ -595,6 +597,7 @@ static int rpmteClose(rpmte te, int reset_fi)
 	}
 	break;
     case TR_REMOVED:
+    case TR_RPMDB:
 	/* eventually we'll want notifications for erase open too */
 	break;
     }
@@ -728,6 +731,7 @@ const char * rpmteTypeString(rpmte te)
     switch (rpmteType(te)) {
     case TR_ADDED:	return _("install");
     case TR_REMOVED:	return _("erase");
+    case TR_RPMDB:	return _("rpmdb");
     default:		return "???";
     }
 }

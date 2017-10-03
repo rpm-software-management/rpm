@@ -31,7 +31,7 @@ extern "C" {
  * Create a transaction element.
  * @param ts		transaction set
  * @param h		header
- * @param type		TR_ADDED/TR_REMOVED
+ * @param type		TR_ADDED/TR_REMOVED/TR_RPMDB
  * @param key		(TR_ADDED) package retrieval key (e.g. file name)
  * @param relocs	(TR_ADDED) package file relocations
  * @return		new transaction element
