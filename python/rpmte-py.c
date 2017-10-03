@@ -30,7 +30,7 @@
  * - te.PkgFileSize() Return no. of bytes in package file (approx).
  * - te.Parent() Return the parent element index.
  * - te.Problems() Return problems associated with this element.
- * - te.DBOffset() Return the Packages database instance number (TR_REMOVED)
+ * - te.DBOffset() Return the Packages database instance number
  * - te.Key()	Return the associated opaque key, i.e. 2nd arg ts.addInstall().
  * - te.DS(tag)	Return package dependency set.
  * @param tag	'Providename', 'Requirename', 'Obsoletename', 'Conflictname'
@@ -220,7 +220,7 @@ static struct PyMethodDef rpmte_methods[] = {
     {"Problems",(PyCFunction)rpmte_Problems,	METH_NOARGS,
      "te.Problems() -- Return problems associated with this element."},
     {"DBOffset",(PyCFunction)rpmte_DBOffset,	METH_NOARGS,
-     "te.DBOffset() -- Return the Package's database instance number.\n\nTR_REMOVED only"},
+     "te.DBOffset() -- Return the Package's database instance number.\n"},
     {"Failed",	(PyCFunction)rpmte_Failed,	METH_NOARGS,
      "te.Failed() -- Return if there are any related errors."},
     {"Key",	(PyCFunction)rpmte_Key,		METH_NOARGS,

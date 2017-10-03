@@ -167,23 +167,23 @@ void rpmteCleanProblems(rpmte te);
 void rpmteCleanDS(rpmte te);
 
 /** \ingroup rpmte
- * Set dependent element of TR_REMOVED transaction element.
+ * Set dependent element of transaction element.
  * @param te		transaction element
  * @param depends       dependent transaction element
  */
 void rpmteSetDependsOn(rpmte te, rpmte depends);
 
 /** \ingroup rpmte
- * Retrieve dependent element of TR_REMOVED transaction element.
+ * Retrieve dependent element of transaction element.
  * @param te		transaction element
  * @return		dependent transaction element
  */
 rpmte rpmteDependsOn(rpmte te);
 
 /** \ingroup rpmte
- * Retrieve rpmdb instance of TR_REMOVED transaction element.
+ * Retrieve rpmdb instance of transaction element.
  * @param te		transaction element
- * @return		rpmdb instance
+ * @return		rpmdb instance (0 if not installed))
  */
 int rpmteDBOffset(rpmte te);
 
