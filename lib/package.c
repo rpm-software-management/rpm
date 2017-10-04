@@ -298,6 +298,10 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	.fn = fn ? fn : Fdescr(fd),
     };
 
+    /* XXX: lots of 3rd party software relies on the behavior */
+    if (hdrp)
+	*hdrp = NULL;
+
     rpmRC rc = rpmpkgRead(keyring, vsflags, fd, handlePkgVS, &pkgdata, hdrp);
 
     rpmKeyringFree(keyring);
