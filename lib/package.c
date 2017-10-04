@@ -198,18 +198,23 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
     Header h = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
 
+    if (hdrp)
+	*hdrp = NULL;
+    if (msg)
+	*msg = NULL;
+
     if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERIMMUTABLE, &blob, &buf) != RPMRC_OK)
 	goto exit;
 
     /* OK, blob looks sane, load the header. */
     rc = hdrblobImport(&blob, 0, &h, &buf);
     
+exit:
     if (hdrp && h && rc == RPMRC_OK)
 	*hdrp = headerLink(h);
-exit:
     headerFree(h);
 
-    if (msg != NULL && buf != NULL) {
+    if (msg != NULL && *msg == NULL && buf != NULL) {
 	*msg = buf;
     } else {
 	free(buf);
