@@ -2533,6 +2533,10 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	rc = 1;
 	goto exit;
     }
+    if (rpmdbOpenAll(newdb)) {
+	rc = 1;
+	goto exit;
+    }
 
     {	Header h = NULL;
 	rpmdbMatchIterator mi;

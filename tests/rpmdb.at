@@ -228,6 +228,20 @@ hello-2.0-1.i686 1
 [])
 AT_CLEANUP
 
+# ------------------------------
+# Attempt to initialize, rebuild and verify a db
+AT_SETUP([rpmdb --rebuilddb and verify empty database])
+AT_KEYWORDS([rpmdb])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+runroot rpmdb --rebuilddb
+runroot rpmdb --verifydb
+],
+[0],
+[],
+[])
+AT_CLEANUP
 
 # ------------------------------
 # Install and verify status
