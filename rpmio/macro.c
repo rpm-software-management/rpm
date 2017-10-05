@@ -394,6 +394,7 @@ static void mbAppend(MacroBuf mb, char c)
     mb->nb--;
 }
 
+#ifdef WITH_LUA
 static void mbAppendStr(MacroBuf mb, const char *str)
 {
     size_t len = strlen(str);
@@ -405,6 +406,8 @@ static void mbAppendStr(MacroBuf mb, const char *str)
     mb->tpos += len;
     mb->nb -= len;
 }
+#endif
+
 /**
  * Expand output of shell command into target buffer.
  * @param mb		macro expansion state
