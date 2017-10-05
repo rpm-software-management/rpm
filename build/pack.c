@@ -431,8 +431,8 @@ static rpmRC fdConsume(FD_t fd, off_t start, off_t nbytes)
     };
 
     if (left) {
-	rpmlog(RPMLOG_ERR, _("Failed to read %ld bytes in file %s: %s\n"),
-		nbytes, Fdescr(fd), Fstrerror(fd));
+	rpmlog(RPMLOG_ERR, _("Failed to read %jd bytes in file %s: %s\n"),
+	       (intmax_t) nbytes, Fdescr(fd), Fstrerror(fd));
     }
 
     return (left == 0) ? RPMRC_OK : RPMRC_FAIL;
