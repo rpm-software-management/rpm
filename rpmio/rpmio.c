@@ -839,7 +839,7 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 
 		    if (threads != (int)mt_options.threads)
 			rpmlog(RPMLOG_NOTICE,
-				"XZ: Adjusted the number of threads from %d to %d to not exceed the memory usage limit of %lu bytes",
+				"XZ: Adjusted the number of threads from %d to %d to not exceed the memory usage limit of %u bytes",
 				threads, mt_options.threads, memlimit);
 		}
 #endif
