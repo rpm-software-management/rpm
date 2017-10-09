@@ -329,7 +329,7 @@ int main(int argc, char *argv[])
     case MODE_ERASE:
 #endif
     case MODE_UNKNOWN:
-	if (poptPeekArg(optCon) != NULL || argc <= 1 || rpmIsVerbose()) {
+	if (poptPeekArg(optCon) != NULL || argc <= 1) {
 	    printUsage(optCon, stderr, 0);
 	    ec = argc;
 	}
