@@ -53,12 +53,16 @@ void headerMergeLegacySigs(Header h, Header sigh)
 	case RPMSIGTAG_PAYLOADSIZE:
 	    td.tag = RPMTAG_ARCHIVESIZE;
 	    break;
+	case RPMSIGTAG_FILESIGNATURES:
+	    td.tag = RPMTAG_FILESIGNATURES;
+	    break;
+	case RPMSIGTAG_FILESIGNATURELENGTH:
+	    td.tag = RPMTAG_FILESIGNATURELENGTH;
+	    break;
 	case RPMSIGTAG_SHA1:
 	case RPMSIGTAG_SHA256:
 	case RPMSIGTAG_DSA:
 	case RPMSIGTAG_RSA:
-	case RPMSIGTAG_FILESIGNATURELENGTH:
-	case RPMSIGTAG_FILESIGNATURES:
 	default:
 	    if (!(td.tag >= HEADER_SIGBASE && td.tag < HEADER_TAGBASE))
 		continue;
