@@ -88,23 +88,24 @@ rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass)
     uint32_t siglen;
     const char *algoname;
     const char *digest;
-    char *signature;
-    rpmRC rc = RPMRC_OK;
+    char *signature = NULL;
+    rpmRC rc = RPMRC_FAIL;
 
+    rpmtdReset(&digests);
     algo = headerGetNumber(h, RPMTAG_FILEDIGESTALGO);
     if (!algo) {
         /* use default algorithm */
         algo = PGPHASHALGO_MD5;
     } else if (algo < 0 || algo >= ARRAY_SIZE(hash_algo_name)) {
 	rpmlog(RPMLOG_ERR, _("File digest algorithm id is invalid"));
-	return RPMRC_FAIL;
+	goto exit;
     }
 
     diglen = rpmDigestLength(algo);
     algoname = hash_algo_name[algo];
     if (!algoname) {
 	rpmlog(RPMLOG_ERR, _("hash_algo_name failed\n"));
-	return RPMRC_FAIL;
+	goto exit;
     }
 
     headerDel(sigh, RPMTAG_FILESIGNATURELENGTH);
@@ -129,20 +130,19 @@ rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass)
 	signature = signFile(algoname, digest, diglen, key, keypass);
 	if (!signature) {
 	    rpmlog(RPMLOG_ERR, _("signFile failed\n"));
-	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
 	td.data = &signature;
 	if (!headerPut(sigh, &td, HEADERPUT_APPEND)) {
-	    free(signature);
 	    rpmlog(RPMLOG_ERR, _("headerPutString failed\n"));
-	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
-	free(signature);
+	signature = _free(signature);
     }
+    rc = RPMRC_OK;
 
 exit:
+    free(signature);
     rpmtdFreeData(&digests);
     return rc;
 }
