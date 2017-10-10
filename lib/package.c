@@ -57,6 +57,8 @@ void headerMergeLegacySigs(Header h, Header sigh)
 	case RPMSIGTAG_SHA256:
 	case RPMSIGTAG_DSA:
 	case RPMSIGTAG_RSA:
+	case RPMSIGTAG_FILESIGNATURELENGTH:
+	case RPMSIGTAG_FILESIGNATURES:
 	default:
 	    if (!(td.tag >= HEADER_SIGBASE && td.tag < HEADER_TAGBASE))
 		continue;
@@ -76,11 +78,11 @@ void headerMergeLegacySigs(Header h, Header sigh)
 		    continue;
 		break;
 	    case RPM_STRING_TYPE:
+	    case RPM_STRING_ARRAY_TYPE:
 	    case RPM_BIN_TYPE:
 		if (td.count >= 16*1024)
 		    continue;
 		break;
-	    case RPM_STRING_ARRAY_TYPE:
 	    case RPM_I18NSTRING_TYPE:
 		continue;
 		break;

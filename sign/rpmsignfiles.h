@@ -9,14 +9,15 @@ extern "C" {
 #endif
 
 /**
- * Sign file digests in header and store the signatures in header
+ * Sign file digests in header into signature header
+ * @param sigh		package signature header
  * @param h		package header
  * @param key		signing key
  * @param keypass	signing key password
  * @return		RPMRC_OK on success
  */
 RPM_GNUC_INTERNAL
-rpmRC rpmSignFiles(Header h, const char *key, char *keypass);
+rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass);
 
 #ifdef _cplusplus
 }

@@ -469,74 +469,12 @@ static void unloadImmutableRegion(Header *hdrp, rpmTagVal tag)
     }
 }
 
-#ifdef WITH_IMAEVM
-static rpmRC replaceSigDigests(FD_t fd, const char *rpm, Header *sigp,
-			       off_t sigStart, off_t sigTargetSize,
-			       char *SHA256, char *SHA1, uint8_t *MD5)
-{
-    off_t archiveSize;
-    rpmRC rc = RPMRC_OK;
-
-    if (Fseek(fd, sigStart, SEEK_SET) < 0) {
-	rc = RPMRC_FAIL;
-	rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
-		rpm, Fstrerror(fd));
-	goto exit;
-    }
-
-    /* Get payload size from signature tag */
-    archiveSize = headerGetNumber(*sigp, RPMSIGTAG_PAYLOADSIZE);
-    if (!archiveSize) {
-	archiveSize = headerGetNumber(*sigp, RPMSIGTAG_LONGARCHIVESIZE);
-    }
-
-    /* Set reserved space to 0 */
-    rpmPushMacro(NULL, "__gpg_reserved_space", NULL, 0, RMIL_GLOBAL);
-
-    /* Replace old digests in sigh */
-    rc = rpmGenerateSignature(SHA256, SHA1, MD5, sigTargetSize, archiveSize, fd);
-    if (rc != RPMRC_OK) {
-	rpmlog(RPMLOG_ERR, _("generateSignature failed\n"));
-	goto exit;
-    }
-
-    if (Fseek(fd, sigStart, SEEK_SET) < 0) {
-	rc = RPMRC_FAIL;
-	rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
-		rpm, Fstrerror(fd));
-	goto exit;
-    }
-
-    headerFree(*sigp);
-    rc = rpmReadSignature(fd, sigp, NULL);
-    if (rc != RPMRC_OK) {
-	rpmlog(RPMLOG_ERR, _("rpmReadSignature failed\n"));
-	goto exit;
-    }
-
-exit:
-    return rc;
-}
-#endif
-
-static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
-				   Header *sigp, Header *hdrp,
-				   off_t sigStart, off_t headerStart)
+static rpmRC includeFileSignatures(Header *sigp, Header *hdrp)
 {
 #ifdef WITH_IMAEVM
-    FD_t ofd = NULL;
-    char *trpm = NULL;
+    rpmRC rc;
     char *key;
     char *keypass;
-    char *SHA1 = NULL;
-    char *SHA256 = NULL;
-    uint8_t *MD5 = NULL;
-    off_t sigTargetSize;
-    rpmRC rc = RPMRC_OK;
-    struct rpmtd_s osigtd;
-    char *o_sha1 = NULL;
-
-    unloadImmutableRegion(hdrp, RPMTAG_HEADERIMMUTABLE);
 
     key = rpmExpand("%{?_file_signing_key}", NULL);
 
@@ -546,94 +484,10 @@ static rpmRC includeFileSignatures(FD_t fd, const char *rpm,
 	keypass = NULL;
     }
 
-    rc = rpmSignFiles(*hdrp, key, keypass);
-    if (rc != RPMRC_OK) {
-	goto exit;
-    }
+    rc = rpmSignFiles(*sigp, *hdrp, key, keypass);
 
-    *hdrp = headerReload(*hdrp, RPMTAG_HEADERIMMUTABLE);
-    if (*hdrp == NULL) {
-	rc = RPMRC_FAIL;
-	rpmlog(RPMLOG_ERR, _("headerReload failed\n"));
-	goto exit;
-    }
-
-    ofd = rpmMkTempFile(NULL, &trpm);
-    if (ofd == NULL || Ferror(ofd)) {
-	rc = RPMRC_FAIL;
-	rpmlog(RPMLOG_ERR, _("rpmMkTemp failed\n"));
-	goto exit;
-    }
-
-    /* Copy archive to temp file */
-    if (copyFile(&fd, rpm, &ofd, trpm)) {
-	rc = RPMRC_FAIL;
-	rpmlog(RPMLOG_ERR, _("copyFile failed\n"));
-	goto exit;
-    }
-
-    if (Fseek(fd, headerStart, SEEK_SET) < 0) {
-	rc = RPMRC_FAIL;
-	rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
-		rpm, Fstrerror(fd));
-	goto exit;
-    }
-
-    /* Start MD5 calculation */
-    fdInitDigestID(fd, PGPHASHALGO_MD5, RPMSIGTAG_MD5, 0);
-
-    /* Write header to rpm and recalculate digests */
-    fdInitDigestID(fd, PGPHASHALGO_SHA1, RPMSIGTAG_SHA1, 0);
-    fdInitDigestID(fd, PGPHASHALGO_SHA256, RPMSIGTAG_SHA256, 0);
-    rc = headerWrite(fd, *hdrp, HEADER_MAGIC_YES);
-    if (rc != RPMRC_OK) {
-	rpmlog(RPMLOG_ERR, _("headerWrite failed\n"));
-	goto exit;
-    }
-    fdFiniDigest(fd, RPMSIGTAG_SHA1, (void **)&SHA1, NULL, 1);
-    /* Only add SHA256 if it was there to begin with */
-    if (headerIsEntry(*sigp, RPMSIGTAG_SHA256))
-	fdFiniDigest(fd, RPMSIGTAG_SHA256, (void **)&SHA256, NULL, 1);
-
-    /* Copy archive from temp file */
-    if (Fseek(ofd, 0, SEEK_SET) < 0) {
-	rc = RPMRC_FAIL;
-	rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
-		rpm, Fstrerror(fd));
-	goto exit;
-    }
-    if (copyFile(&ofd, trpm, &fd, rpm)) {
-	rc = RPMRC_FAIL;
-	rpmlog(RPMLOG_ERR, _("copyFile failed\n"));
-	goto exit;
-    }
-    unlink(trpm);
-
-    sigTargetSize = Ftell(fd) - headerStart;
-    fdFiniDigest(fd, RPMSIGTAG_MD5, (void **)&MD5, NULL, 0);
-
-    if (headerGet(*sigp, RPMSIGTAG_SHA1, &osigtd, HEADERGET_DEFAULT)) {
-	o_sha1 = xstrdup(osigtd.data);
-	rpmtdFreeData(&osigtd);
-    }
-
-    if (strcmp(SHA1, o_sha1) == 0)
-	rpmlog(RPMLOG_WARNING,
-	       _("%s already contains identical file signatures\n"),
-	       rpm);
-    else
-	replaceSigDigests(fd, rpm, sigp, sigStart, sigTargetSize, SHA256, SHA1, MD5);
-
-exit:
-    free(trpm);
-    free(MD5);
-    free(SHA1);
-    free(SHA256);
-    free(o_sha1);
     free(keypass);
     free(key);
-    if (ofd)
-	(void) closeFile(&ofd);
     return rc;
 #else
     rpmlog(RPMLOG_ERR, _("file signing support not built in\n"));
@@ -695,12 +549,13 @@ static int rpmSign(const char *rpm, int deleting, int signfiles)
 	goto exit;
     }
 
-    if (signfiles) {
-	includeFileSignatures(fd, rpm, &sigh, &h, sigStart, headerStart);
-    }
-
     unloadImmutableRegion(&sigh, RPMTAG_HEADERSIGNATURES);
     origSigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
+
+    if (signfiles) {
+	if (includeFileSignatures(&sigh, &h))
+	    goto exit;
+    }
 
     if (deleting) {	/* Nuke all the signature tags. */
 	deleteSigs(sigh);
