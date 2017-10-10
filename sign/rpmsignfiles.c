@@ -33,7 +33,7 @@ static const char *hash_algo_name[] = {
 #define ARRAY_SIZE(a)  (sizeof(a) / sizeof(a[0]))
 
 static char *signFile(const char *algo, const uint8_t *fdigest, int diglen,
-const char *key, char *keypass)
+const char *key, char *keypass, uint32_t *siglenp)
 {
     char *fsignature;
     unsigned char digest[diglen];
@@ -56,24 +56,10 @@ const char *key, char *keypass)
 	return NULL;
     }
 
+    *siglenp = siglen + 1;
     /* convert file signature binary to hex */
     fsignature = pgpHexStr(signature, siglen+1);
     return fsignature;
-}
-
-static uint32_t signatureLength(const char *algo, int diglen, const char *key,
-char *keypass)
-{
-    unsigned char digest[diglen];
-    unsigned char signature[MAX_SIGNATURE_LENGTH];
-
-    memset(digest, 0, diglen);
-    memset(signature, 0, MAX_SIGNATURE_LENGTH);
-    signature[0] = '\x03';
-
-    uint32_t siglen = sign_hash(algo, digest, diglen, key, keypass,
-				signature+1);
-    return siglen + 1;
 }
 
 rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass)
@@ -81,7 +67,7 @@ rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass)
     struct rpmtd_s td;
     int algo;
     int diglen;
-    uint32_t siglen;
+    uint32_t siglen = 0;
     const char *algoname;
     const uint8_t *digest;
     char *signature = NULL;
@@ -108,14 +94,6 @@ rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass)
 
     headerDel(sigh, RPMTAG_FILESIGNATURELENGTH);
     headerDel(sigh, RPMTAG_FILESIGNATURES);
-    siglen = signatureLength(algoname, diglen, key, keypass);
-
-    rpmtdReset(&td);
-    td.tag = RPMSIGTAG_FILESIGNATURELENGTH;
-    td.type = RPM_INT32_TYPE;
-    td.data = &siglen;
-    td.count = 1;
-    headerPut(sigh, &td, HEADERPUT_DEFAULT);
 
     rpmtdReset(&td);
     td.tag = RPMSIGTAG_FILESIGNATURES;
@@ -125,7 +103,7 @@ rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass)
 
     while (rpmfiNext(fi) >= 0) {
 	digest = rpmfiFDigest(fi, NULL, NULL);
-	signature = signFile(algoname, digest, diglen, key, keypass);
+	signature = signFile(algoname, digest, diglen, key, keypass, &siglen);
 	if (!signature) {
 	    rpmlog(RPMLOG_ERR, _("signFile failed\n"));
 	    goto exit;
@@ -137,6 +115,16 @@ rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass)
 	}
 	signature = _free(signature);
     }
+
+    if (siglen > 0) {
+	rpmtdReset(&td);
+	td.tag = RPMSIGTAG_FILESIGNATURELENGTH;
+	td.type = RPM_INT32_TYPE;
+	td.data = &siglen;
+	td.count = 1;
+	headerPut(sigh, &td, HEADERPUT_DEFAULT);
+    }
+
     rc = RPMRC_OK;
 
 exit:
