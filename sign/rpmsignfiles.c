@@ -82,7 +82,7 @@ char *keypass)
 
 rpmRC rpmSignFiles(Header h, const char *key, char *keypass)
 {
-    struct rpmtd_s digests;
+    struct rpmtd_s digests, td;
     int algo;
     int diglen;
     uint32_t siglen;
@@ -110,7 +110,19 @@ rpmRC rpmSignFiles(Header h, const char *key, char *keypass)
     headerDel(h, RPMTAG_FILESIGNATURELENGTH);
     headerDel(h, RPMTAG_FILESIGNATURES);
     siglen = signatureLength(algoname, diglen, key, keypass);
-    headerPutUint32(h, RPMTAG_FILESIGNATURELENGTH, &siglen, 1);
+
+    rpmtdReset(&td);
+    td.tag = RPMTAG_FILESIGNATURELENGTH;
+    td.type = RPM_INT32_TYPE;
+    td.data = &siglen;
+    td.count = 1;
+    headerPut(h, &td, HEADERPUT_DEFAULT);
+
+    rpmtdReset(&td);
+    td.tag = RPMTAG_FILESIGNATURES;
+    td.type = RPM_STRING_ARRAY_TYPE;
+    td.data = NULL; /* set in the loop below */
+    td.count = 1;
 
     headerGet(h, RPMTAG_FILEDIGESTS, &digests, HEADERGET_MINMEM);
     while ((digest = rpmtdNextString(&digests))) {
@@ -120,7 +132,8 @@ rpmRC rpmSignFiles(Header h, const char *key, char *keypass)
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
-	if (!headerPutString(h, RPMTAG_FILESIGNATURES, signature)) {
+	td.data = &signature;
+	if (!headerPut(h, &td, HEADERPUT_APPEND)) {
 	    free(signature);
 	    rpmlog(RPMLOG_ERR, _("headerPutString failed\n"));
 	    rc = RPMRC_FAIL;
