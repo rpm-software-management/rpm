@@ -87,10 +87,6 @@ rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass)
 
     diglen = rpmDigestLength(algo);
     algoname = hash_algo_name[algo];
-    if (!algoname) {
-	rpmlog(RPMLOG_ERR, _("hash_algo_name failed\n"));
-	goto exit;
-    }
 
     headerDel(sigh, RPMTAG_FILESIGNATURELENGTH);
     headerDel(sigh, RPMTAG_FILESIGNATURES);
