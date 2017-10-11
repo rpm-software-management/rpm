@@ -260,6 +260,7 @@ void applyRetrofits(Header h, int leadtype)
 
 struct pkgdata_s {
     const char *fn;
+    rpmRC rc;
 };
 
 static rpmRC handlePkgVS(struct rpmsinfo_s *sinfo, rpmRC rc, const char *msg, void *cbdata)
@@ -287,7 +288,11 @@ static rpmRC handlePkgVS(struct rpmsinfo_s *sinfo, rpmRC rc, const char *msg, vo
 
     rpmlog(lvl, "%s: %s\n", pkgdata->fn, vsmsg);
 
-    /* Preserve traditional behavior for now: only failure prevents install  */
+    /* Remember actual return code, but don't override a previous failure */
+    if (rc && pkgdata->rc != RPMRC_FAIL)
+	pkgdata->rc = rc;
+
+    /* Preserve traditional behavior for now: only failure prevents read */
     if (rc != RPMRC_FAIL)
 	rc = RPMRC_OK;
 
@@ -301,6 +306,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
     struct pkgdata_s pkgdata = {
 	.fn = fn ? fn : Fdescr(fd),
+	.rc = RPMRC_OK,
     };
 
     /* XXX: lots of 3rd party software relies on the behavior */
@@ -308,6 +314,10 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	*hdrp = NULL;
 
     rpmRC rc = rpmpkgRead(keyring, vsflags, fd, handlePkgVS, &pkgdata, hdrp);
+
+    /* If there was a "substatus" (NOKEY in practise), return that instead */
+    if (rc == RPMRC_OK && pkgdata.rc)
+	rc = pkgdata.rc;
 
     rpmKeyringFree(keyring);
 
