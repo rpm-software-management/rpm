@@ -134,6 +134,37 @@ myprint(h['arch'])
 [ppc64]
 )
 
+RPMPY_TEST([reading a signed package file 1],[
+ts = rpm.ts()
+try:
+    h = ts.hdrFromFdno('${RPMDATA}/RPMS/hello-2.0-1.x86_64-signed.rpm')
+    myprint(h['arch'])
+except rpm.error, e:
+    myprint(e)
+],
+[public key not available
+],
+[warning: /home/pmatilai/repos/rpm/tests/data//RPMS/hello-2.0-1.x86_64-signed.rpm: Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY]
+)
+
+RPMPY_TEST([reading a signed package file 2],[
+
+keydata = open('${RPMDATA}/keys/rpm.org-rsa-2048-test.pub').read()
+pubkey = rpm.pubkey(keydata)
+keyring = rpm.keyring()
+keyring.addKey(pubkey)
+
+ts = rpm.ts()
+ts.setKeyring(keyring)
+try:
+    h = ts.hdrFromFdno('${RPMDATA}/RPMS/hello-2.0-1.x86_64-signed.rpm')
+    myprint(h['arch'])
+except rpm.error, e:
+    myprint(e)
+],
+[x86_64]
+)
+
 RPMPY_TEST([add package to transaction],[
 ts = rpm.ts()
 ts.addInstall('${RPMDATA}/RPMS/foo-1.0-1.noarch.rpm', 'u')
