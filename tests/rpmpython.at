@@ -136,6 +136,9 @@ myprint(h['arch'])
 
 RPMPY_TEST([reading a signed package file 1],[
 ts = rpm.ts()
+# avoid rpmlog spew with absolute path to package
+sink = open('/dev/null', 'w')
+rpm.setLogFile(sink)
 try:
     h = ts.hdrFromFdno('${RPMDATA}/RPMS/hello-2.0-1.x86_64-signed.rpm')
     myprint(h['arch'])
@@ -144,7 +147,6 @@ except rpm.error, e:
 ],
 [public key not available
 ],
-[warning: /home/pmatilai/repos/rpm/tests/data//RPMS/hello-2.0-1.x86_64-signed.rpm: Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY]
 )
 
 RPMPY_TEST([reading a signed package file 2],[
