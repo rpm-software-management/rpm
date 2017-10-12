@@ -403,6 +403,7 @@ runroot rpmbuild --quiet -bb \
 	--define "filetype datadir" \
 	--define "filedata README1" \
 	--define "user $(id -u -n)" \
+	--define "grp $(id -g -n)" \
           /data/SPECS/replacetest.spec
 
 runroot rpmbuild --quiet -bb \
@@ -410,6 +411,7 @@ runroot rpmbuild --quiet -bb \
 	--define "filetype datadir" \
 	--define "filedata README2" \
 	--define "user $(id -u -n)" \
+	--define "grp $(id -g -n)" \
           /data/SPECS/replacetest.spec
 
 mkdir "${RPMTEST}"/opt/f00f
