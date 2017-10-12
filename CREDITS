@@ -19,6 +19,7 @@ have been contributed by:
 	Tony Breeds
 	Till Bubeck
 	Héctor Daniel Cabrera
+	Davide Cavalca
 	Yuri Chornoivan
 	Michal Čihař
 	Archie Cobbs
@@ -42,6 +43,7 @@ have been contributed by:
 	Nikola Forró
 	Gleb Fotengauer-Malinovskiy
 	David Fox
+	Stephen Gallagher
 	Rafael Garcia-Suarez
 	Alexey Gladkov
 	Igor Gnatenko
@@ -69,6 +71,7 @@ have been contributed by:
 	Lubos Kardos
 	Per Øyvind Karlsen
 	Jiri Kastner
+	Peter Kjellerstedt
 	Phil Knirsch
 	Ales Kozumplik
 	Jan Kratochvil
@@ -79,6 +82,8 @@ have been contributed by:
 	Alec Leamas
 	Dimitri John Ledkov
 	Elliot Lee
+	Robin Lee
+	Simon Lees
 	Dominique Leuenberger
 	Benedict Lofstedt
 	Till Maas
@@ -102,12 +107,15 @@ have been contributed by:
 	Stanislav Ochotnicky
 	Denis Ollier
 	Vít Ondruch
+	Tomas Orsava
 	Rakesh Pandit
 	Thomas Petazzoni
+	Jan Pokorný
 	Trần Ngọc Quân
 	Jerome Quelin
 	Pavel Raiskup
 	Elena Reshetova
+	Sebastian Riedel
 	Lubomir Rintel
 	Pavol Rusnak
 	Kamil Rytarowski
@@ -144,5 +152,6 @@ have been contributed by:
 	Colin Walters
 	Florian Weimer
 	Karsten Weiss
+	Bernhard M. Wiedemann
 	Mark Wielaard
 	Mimi Zohar
