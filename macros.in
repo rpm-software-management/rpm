@@ -160,7 +160,7 @@
 %_bzip2bin		%{__bzip2}
 
 #	The location of the rpm database file(s).
-%_dbpath		%{_var}/lib/rpm
+%_dbpath		%{_usr}/lib/rpmdb
 
 #	The location of the rpm database file(s) after "rpm --rebuilddb".
 %_dbpath_rebuild	%{_dbpath}
