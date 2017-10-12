@@ -25,7 +25,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2017-09-28 16:29+0300\n"
+"POT-Creation-Date: 2017-10-12 11:29+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/rpm-team/rpm/"
@@ -1035,9 +1035,9 @@ msgid "Could not seek in file %s: %s\n"
 msgstr "无法 seek 文件 %s：%s\n"
 
 #: build/pack.c:434
-#, c-format
-msgid "Failed to read %ld bytes in file %s: %s\n"
-msgstr ""
+#, fuzzy, c-format
+msgid "Failed to read %jd bytes in file %s: %s\n"
+msgstr "无法读取策略文件：%s\n"
 
 #: build/pack.c:448
 msgid "Unable to create immutable header region\n"
@@ -2859,7 +2859,7 @@ msgstr ""
 msgid "could also not restore old database from %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2417 lib/rpmdb.c:2599
+#: lib/rpmdb.c:2417 lib/rpmdb.c:2603
 #, c-format
 msgid "replace files in %s with files from %s to recover\n"
 msgstr ""
@@ -2883,21 +2883,21 @@ msgstr "没有设置 dbpath"
 msgid "failed to create directory %s: %s\n"
 msgstr "無法建立 %s 目录： %s\n"
 
-#: lib/rpmdb.c:2553
+#: lib/rpmdb.c:2557
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2568
+#: lib/rpmdb.c:2572
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "无法加入原本位于 %u 的记录\n"
 
-#: lib/rpmdb.c:2584
+#: lib/rpmdb.c:2588
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "重建数据库失败：原始数据库仍保持原状\n"
 
-#: lib/rpmdb.c:2597
+#: lib/rpmdb.c:2601
 msgid "failed to replace old database with new database!\n"
 msgstr "用新的数据库取代旧的数据库失败！\n"
 
@@ -3403,7 +3403,7 @@ msgstr ""
 msgid "Unable to restore current directory: %m"
 msgstr "无法恢复当前目录：%m"
 
-#: lib/rpmscript.c:149 rpmio/macro.c:852
+#: lib/rpmscript.c:149 rpmio/macro.c:855
 msgid "<lua> scriptlet support not built in\n"
 msgstr "<lua> 脚本支持未内建\n"
 
@@ -3611,73 +3611,73 @@ msgstr "%3d>%*s(清空)"
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(清空)\n"
 
-#: rpmio/macro.c:480
+#: rpmio/macro.c:483
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "宏 %%%s 具有未结束的选项\n"
 
-#: rpmio/macro.c:492 rpmio/macro.c:530
+#: rpmio/macro.c:495 rpmio/macro.c:533
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "宏 %%%s 主体未结束\n"
 
-#: rpmio/macro.c:548
+#: rpmio/macro.c:551
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
 msgstr ""
 
-#: rpmio/macro.c:554
+#: rpmio/macro.c:557
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "宏 %%%s 中存在空内容\n"
 
-#: rpmio/macro.c:559
+#: rpmio/macro.c:562
 #, c-format
 msgid "Macro %%%s needs whitespace before body\n"
 msgstr "宏 %%%s 在结构之前需要空格\n"
 
-#: rpmio/macro.c:563
+#: rpmio/macro.c:566
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "宏 %%%s 展开失败\n"
 
-#: rpmio/macro.c:604
+#: rpmio/macro.c:607
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "宏 %%%s 中存在无效的名称 (%%undefine)\n"
 
-#: rpmio/macro.c:634
+#: rpmio/macro.c:637
 #, c-format
 msgid "Macro %%%s defined but not used within scope\n"
 msgstr "宏 %%%s 已经定义但是没有使用\n"
 
-#: rpmio/macro.c:758
+#: rpmio/macro.c:761
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "在 %2$s(%3$s) 中存在未知的选项 %1$c\n"
 
-#: rpmio/macro.c:1051
+#: rpmio/macro.c:1054
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
 msgstr "宏扩展中存在太多层的递归。这有可能是由宏的递归声明引起的。\n"
 
-#: rpmio/macro.c:1121 rpmio/macro.c:1137
+#: rpmio/macro.c:1124 rpmio/macro.c:1140
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "未结束的 %c：%s\n"
 
-#: rpmio/macro.c:1178
+#: rpmio/macro.c:1181
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "在一个不可解析的宏之之后跟着 %%\n"
 
-#: rpmio/macro.c:1193
+#: rpmio/macro.c:1196
 #, c-format
 msgid "failed to load macro file %s"
 msgstr "载入宏文件 %s 失败"
 
-#: rpmio/macro.c:1574
+#: rpmio/macro.c:1577
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== 作用中 %d 清空 %d\n"

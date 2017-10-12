@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2017-09-28 16:29+0300\n"
+"POT-Creation-Date: 2017-10-12 11:29+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Slovak (http://www.transifex.com/rpm-team/rpm/language/sk/)\n"
@@ -1036,9 +1036,9 @@ msgid "Could not seek in file %s: %s\n"
 msgstr ""
 
 #: build/pack.c:434
-#, c-format
-msgid "Failed to read %ld bytes in file %s: %s\n"
-msgstr ""
+#, fuzzy, c-format
+msgid "Failed to read %jd bytes in file %s: %s\n"
+msgstr "Chyba čítania súboru politiky: %s\n"
 
 #: build/pack.c:448
 msgid "Unable to create immutable header region\n"
@@ -2863,7 +2863,7 @@ msgstr ""
 msgid "could also not restore old database from %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2417 lib/rpmdb.c:2599
+#: lib/rpmdb.c:2417 lib/rpmdb.c:2603
 #, c-format
 msgid "replace files in %s with files from %s to recover\n"
 msgstr ""
@@ -2887,21 +2887,21 @@ msgstr "nebola nastavená žiadna dbpath"
 msgid "failed to create directory %s: %s\n"
 msgstr "zlyhanie pri vytváraní priečinka %s: %s\n"
 
-#: lib/rpmdb.c:2553
+#: lib/rpmdb.c:2557
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "hlavička #%u v databázy je zlá -- preskakuje sa.\n"
 
-#: lib/rpmdb.c:2568
+#: lib/rpmdb.c:2572
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "nie je možné pridať záznam pôvodne na %u\n"
 
-#: lib/rpmdb.c:2584
+#: lib/rpmdb.c:2588
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "zlyhalo znovuzostavenie databázy: pôvodná databáza zostáva na mieste\n"
 
-#: lib/rpmdb.c:2597
+#: lib/rpmdb.c:2601
 msgid "failed to replace old database with new database!\n"
 msgstr "nepodarilo sa nahradiť starú databázu novou!\n"
 
@@ -3408,7 +3408,7 @@ msgstr ""
 msgid "Unable to restore current directory: %m"
 msgstr "Nie je možné obnoviť aktuálny priečinok: %m"
 
-#: lib/rpmscript.c:149 rpmio/macro.c:852
+#: lib/rpmscript.c:149 rpmio/macro.c:855
 msgid "<lua> scriptlet support not built in\n"
 msgstr "nie je zabudovaná podpora pre skriptlety <lua>\n"
 
@@ -3616,52 +3616,52 @@ msgstr "%3d>%*s(prázdne)"
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(prázdne)\n"
 
-#: rpmio/macro.c:480
+#: rpmio/macro.c:483
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "Makro %%%s má neukončené parametre\n"
 
-#: rpmio/macro.c:492 rpmio/macro.c:530
+#: rpmio/macro.c:495 rpmio/macro.c:533
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Makro %%%s má neukončené telo\n"
 
-#: rpmio/macro.c:548
+#: rpmio/macro.c:551
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
 msgstr ""
 
-#: rpmio/macro.c:554
+#: rpmio/macro.c:557
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "Makro %%%s má prázdné telo\n"
 
-#: rpmio/macro.c:559
+#: rpmio/macro.c:562
 #, c-format
 msgid "Macro %%%s needs whitespace before body\n"
 msgstr ""
 
-#: rpmio/macro.c:563
+#: rpmio/macro.c:566
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "Zlyhalo vyhodnotenie makra %%%s\n"
 
-#: rpmio/macro.c:604
+#: rpmio/macro.c:607
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "Makro %%%s má nedovolené meno (%%undefine)\n"
 
-#: rpmio/macro.c:634
+#: rpmio/macro.c:637
 #, c-format
 msgid "Macro %%%s defined but not used within scope\n"
 msgstr ""
 
-#: rpmio/macro.c:758
+#: rpmio/macro.c:761
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Neznáma možnosť %c v %s(%s)\n"
 
-#: rpmio/macro.c:1051
+#: rpmio/macro.c:1054
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
@@ -3669,22 +3669,22 @@ msgstr ""
 "Príliž veľa úrovní rekurzie v rozbaľovaní makra. Zrejme je to spôsobené "
 "vyhlásením rekurzívneho makra.\n"
 
-#: rpmio/macro.c:1121 rpmio/macro.c:1137
+#: rpmio/macro.c:1124 rpmio/macro.c:1140
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Neukončené %c: %s\n"
 
-#: rpmio/macro.c:1178
+#: rpmio/macro.c:1181
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Po %% nasleduje nespracovateľné makro\n"
 
-#: rpmio/macro.c:1193
+#: rpmio/macro.c:1196
 #, c-format
 msgid "failed to load macro file %s"
 msgstr ""
 
-#: rpmio/macro.c:1574
+#: rpmio/macro.c:1577
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== aktívnych %d prázdnych %d\n"

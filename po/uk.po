@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2017-09-28 16:29+0300\n"
+"POT-Creation-Date: 2017-10-12 11:29+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Ukrainian (http://www.transifex.com/rpm-team/rpm/language/"
@@ -1059,9 +1059,9 @@ msgid "Could not seek in file %s: %s\n"
 msgstr "Не вдалося виконати позиціювання у файлі %s: %s\n"
 
 #: build/pack.c:434
-#, c-format
-msgid "Failed to read %ld bytes in file %s: %s\n"
-msgstr ""
+#, fuzzy, c-format
+msgid "Failed to read %jd bytes in file %s: %s\n"
+msgstr "Не вдалося прочитати файл правил: %s\n"
 
 #: build/pack.c:448
 msgid "Unable to create immutable header region\n"
@@ -2901,7 +2901,7 @@ msgstr ""
 msgid "could also not restore old database from %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2417 lib/rpmdb.c:2599
+#: lib/rpmdb.c:2417 lib/rpmdb.c:2603
 #, c-format
 msgid "replace files in %s with files from %s to recover\n"
 msgstr ""
@@ -2925,23 +2925,23 @@ msgstr "не було встановлено шляху dbpath"
 msgid "failed to create directory %s: %s\n"
 msgstr "не вдалося створити каталог %s: %s\n"
 
-#: lib/rpmdb.c:2553
+#: lib/rpmdb.c:2557
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "заголовок №%u у базі даних є помилковим — пропущено.\n"
 
-#: lib/rpmdb.c:2568
+#: lib/rpmdb.c:2572
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "не вдалося додати запис з початковим розташуванням у %u\n"
 
-#: lib/rpmdb.c:2584
+#: lib/rpmdb.c:2588
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "не вдалося перебудувати базу даних: початкова база даних залишається на "
 "місці\n"
 
-#: lib/rpmdb.c:2597
+#: lib/rpmdb.c:2601
 msgid "failed to replace old database with new database!\n"
 msgstr "не вдалося замінити стару базу даних новою!\n"
 
@@ -3455,7 +3455,7 @@ msgstr "У скрипті Lua не викликано exec() після fork()\n
 msgid "Unable to restore current directory: %m"
 msgstr "Не вдалося відновити поточний каталог: %m"
 
-#: lib/rpmscript.c:149 rpmio/macro.c:852
+#: lib/rpmscript.c:149 rpmio/macro.c:855
 msgid "<lua> scriptlet support not built in\n"
 msgstr ""
 "підтримку допоміжних скриптів мовою <lua> не було передбачено під час "
@@ -3665,52 +3665,52 @@ msgstr "%3d>%*s(порожньо)"
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(порожньо)\n"
 
-#: rpmio/macro.c:480
+#: rpmio/macro.c:483
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "Запис параметрів макросу %%%s не завершено\n"
 
-#: rpmio/macro.c:492 rpmio/macro.c:530
+#: rpmio/macro.c:495 rpmio/macro.c:533
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Запис макросу %%%s не завершено\n"
 
-#: rpmio/macro.c:548
+#: rpmio/macro.c:551
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
 msgstr ""
 
-#: rpmio/macro.c:554
+#: rpmio/macro.c:557
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "Тіло макросу %%%s є порожнім\n"
 
-#: rpmio/macro.c:559
+#: rpmio/macro.c:562
 #, c-format
 msgid "Macro %%%s needs whitespace before body\n"
 msgstr "У макросі %%%s мало бути використано пробіл перед текстом макросу\n"
 
-#: rpmio/macro.c:563
+#: rpmio/macro.c:566
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "Не вдалося розгорнути макрос %%%s\n"
 
-#: rpmio/macro.c:604
+#: rpmio/macro.c:607
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "Макрос %%%s має некоректну назву (%%undefine)\n"
 
-#: rpmio/macro.c:634
+#: rpmio/macro.c:637
 #, c-format
 msgid "Macro %%%s defined but not used within scope\n"
 msgstr "Макрос %%%s визначено, але не використано у області видимості\n"
 
-#: rpmio/macro.c:758
+#: rpmio/macro.c:761
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Невідомий параметр %c у %s(%s)\n"
 
-#: rpmio/macro.c:1051
+#: rpmio/macro.c:1054
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
@@ -3718,22 +3718,22 @@ msgstr ""
 "Забагато рівнів вкладеності у макросі. Ймовірно, це викликано рекурсивним "
 "оголошенням макросу.\n"
 
-#: rpmio/macro.c:1121 rpmio/macro.c:1137
+#: rpmio/macro.c:1124 rpmio/macro.c:1140
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Не закрито %c: %s\n"
 
-#: rpmio/macro.c:1178
+#: rpmio/macro.c:1181
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "За %% вказано непридатний до обробки макрос\n"
 
-#: rpmio/macro.c:1193
+#: rpmio/macro.c:1196
 #, c-format
 msgid "failed to load macro file %s"
 msgstr "не вдалося завантажити файл макросу %s"
 
-#: rpmio/macro.c:1574
+#: rpmio/macro.c:1577
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "=================== активних %d порожніх %d\n"

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2017-09-28 16:29+0300\n"
+"POT-Creation-Date: 2017-10-12 11:29+0300\n"
 "PO-Revision-Date: 2017-08-10 07:40+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: French (http://www.transifex.com/rpm-team/rpm/language/fr/)\n"
@@ -1058,9 +1058,9 @@ msgid "Could not seek in file %s: %s\n"
 msgstr ""
 
 #: build/pack.c:434
-#, c-format
-msgid "Failed to read %ld bytes in file %s: %s\n"
-msgstr ""
+#, fuzzy, c-format
+msgid "Failed to read %jd bytes in file %s: %s\n"
+msgstr "Impossible de lire les fichier de stratégie : %s\n"
 
 #: build/pack.c:448
 msgid "Unable to create immutable header region\n"
@@ -2900,7 +2900,7 @@ msgstr ""
 msgid "could also not restore old database from %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2417 lib/rpmdb.c:2599
+#: lib/rpmdb.c:2417 lib/rpmdb.c:2603
 #, c-format
 msgid "replace files in %s with files from %s to recover\n"
 msgstr ""
@@ -2924,23 +2924,23 @@ msgstr "aucun dbpath fournit"
 msgid "failed to create directory %s: %s\n"
 msgstr "Impossible de créer le répertoire %s : %s\n"
 
-#: lib/rpmdb.c:2553
+#: lib/rpmdb.c:2557
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "l'entête #%u dans la base de données n'est pas bon -- ignoré.\n"
 
-#: lib/rpmdb.c:2568
+#: lib/rpmdb.c:2572
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "impossible d'ajouter l'article qui était au départ à %u\n"
 
-#: lib/rpmdb.c:2584
+#: lib/rpmdb.c:2588
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "Ne peut reconstruire la base de données : la base originale reste telle "
 "qu'elle est\n"
 
-#: lib/rpmdb.c:2597
+#: lib/rpmdb.c:2601
 msgid "failed to replace old database with new database!\n"
 msgstr "Ne peut remplacer la vieille base de données par la nouvelle!\n"
 
@@ -3465,7 +3465,7 @@ msgstr ""
 msgid "Unable to restore current directory: %m"
 msgstr "Impossible de restaurer le répertoire courant : %m"
 
-#: lib/rpmscript.c:149 rpmio/macro.c:852
+#: lib/rpmscript.c:149 rpmio/macro.c:855
 msgid "<lua> scriptlet support not built in\n"
 msgstr "le support du scriptlet <lua> n'est pas intégrer\n"
 
@@ -3673,52 +3673,52 @@ msgstr "%3d>%*s(vide)"
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(vide)\n"
 
-#: rpmio/macro.c:480
+#: rpmio/macro.c:483
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "La macro %%%s a des options non-terminées\n"
 
-#: rpmio/macro.c:492 rpmio/macro.c:530
+#: rpmio/macro.c:495 rpmio/macro.c:533
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "La macro %%%s a un corps sans fin\n"
 
-#: rpmio/macro.c:548
+#: rpmio/macro.c:551
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
 msgstr ""
 
-#: rpmio/macro.c:554
+#: rpmio/macro.c:557
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "La macro %%%s a un corps vide\n"
 
-#: rpmio/macro.c:559
+#: rpmio/macro.c:562
 #, c-format
 msgid "Macro %%%s needs whitespace before body\n"
 msgstr "La macro %%%s a besoin d'un espace avant le corps\n"
 
-#: rpmio/macro.c:563
+#: rpmio/macro.c:566
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "La macro %%%s ne peut être expansée\n"
 
-#: rpmio/macro.c:604
+#: rpmio/macro.c:607
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "La macro %%%s a un nom illégal (%%undefine)\n"
 
-#: rpmio/macro.c:634
+#: rpmio/macro.c:637
 #, c-format
 msgid "Macro %%%s defined but not used within scope\n"
 msgstr "Macro %%%s définie mais non utilisée sans portée\n"
 
-#: rpmio/macro.c:758
+#: rpmio/macro.c:761
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Option inconnue %c dans %s(%s)\n"
 
-#: rpmio/macro.c:1051
+#: rpmio/macro.c:1054
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
@@ -3726,22 +3726,22 @@ msgstr ""
 "Trop de niveaux de récursivité dans l'expansion de la macro. Il est "
 "probablement causée par une déclaration de macro récursive.\n"
 
-#: rpmio/macro.c:1121 rpmio/macro.c:1137
+#: rpmio/macro.c:1124 rpmio/macro.c:1140
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c non terminé: %s\n"
 
-#: rpmio/macro.c:1178
+#: rpmio/macro.c:1181
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Un %% est suivi d'une macro in-analysable\n"
 
-#: rpmio/macro.c:1193
+#: rpmio/macro.c:1196
 #, c-format
 msgid "failed to load macro file %s"
 msgstr "Impossible de charger le fichier macro %s"
 
-#: rpmio/macro.c:1574
+#: rpmio/macro.c:1577
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== %d actif(s) %d vide(s)\n"
