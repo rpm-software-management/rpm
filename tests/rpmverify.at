@@ -78,6 +78,7 @@ runroot rpmbuild --quiet -bb \
         --define "filetype datadir" \
         --define "filedata README1" \
         --define "user $(id -u -n)" \
+        --define "grp $(id -g -n)" \
           /data/SPECS/replacetest.spec
 
 runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
