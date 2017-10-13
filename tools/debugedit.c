@@ -2141,10 +2141,10 @@ edit_dwarf2 (DSO *dso)
 			  r_offset = rel.r_offset;
 			}
 
-		      while (r_offset > (dso->lines.table[lndx].old_idx
-					 + 4
-					 + dso->lines.table[lndx].unit_length)
-			     && lndx < dso->lines.used)
+		      while (lndx < dso->lines.used
+			     && r_offset > (dso->lines.table[lndx].old_idx
+					    + 4
+					    + dso->lines.table[lndx].unit_length))
 			lndx++;
 
 		      if (lndx >= dso->lines.used)
