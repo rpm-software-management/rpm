@@ -347,7 +347,7 @@ AC_CHECK_LIB(crypto, EVP_MD_CTX_new, [
     AC_DEFINE(HAVE_EVP_MD_CTX_NEW, 1, [Define to 1 if OpenSSL has EVP_MD_CTX_new])
     AC_SUBST(HAVE_EVP_MD_CTX_NEW, [1])
   ], [
-  AC_CHECK_LIB(crypt, EVP_MD_CTX_create, [], [
+  AC_CHECK_LIB(crypto, EVP_MD_CTX_create, [], [
       AC_MSG_ERROR([required OpenSSL library 'libcrypto' missing or too old])
   ])
 ])
