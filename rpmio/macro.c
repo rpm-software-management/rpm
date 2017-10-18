@@ -873,8 +873,14 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
     char *buf = NULL;
     char *b = NULL, *be;
     int c;
+    int verbose = (rpmIsVerbose() != 0);
+    int expand = (g != NULL && gn > 0);
 
-    if (g != NULL && gn > 0) {
+    /* Don't expand %{verbose:...} argument on false condition */
+    if (STREQ("verbose", f, fn) && (verbose == negate))
+	expand = 0;
+
+    if (expand) {
 	(void) expandThis(mb, g, gn, &buf);
     } else {
 	buf = xmalloc(MACROBUFSIZ + fn + gn);
@@ -919,13 +925,8 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
     } else if (STREQ("suffix", f, fn)) {
 	if ((b = strrchr(buf, '.')) != NULL)
 	    b++;
-    } else if (STREQ("expand", f, fn)) {
+    } else if (STREQ("expand", f, fn) || STREQ("verbose", f, fn)) {
 	b = buf;
-    } else if (STREQ("verbose", f, fn)) {
-	if (negate)
-	    b = (rpmIsVerbose() ? NULL : buf);
-	else
-	    b = (rpmIsVerbose() ? buf : NULL);
     } else if (STREQ("url2path", f, fn) || STREQ("u2p", f, fn)) {
 	(void)urlPath(buf, (const char **)&b);
 	if (*b == '\0') b = "/";
