@@ -385,3 +385,39 @@ true
 bar
 ])
 AT_CLEANUP
+
+AT_SETUP([%verbose negative test])
+AT_KEYWORDS([macros verbose])
+AT_CHECK([
+runroot rpm \
+  --eval '%{verbose:%{echo:is verbose}}' \
+  --eval '%{verbose:is verbose text}'\
+  --eval '%{!verbose:%{echo:is not verbose}}'\
+  --eval '%{!verbose:is not verbose text}'
+],
+[0],
+[
+
+is not verbose
+
+is not verbose text
+])
+AT_CLEANUP
+
+AT_SETUP([%verbose positive test])
+AT_KEYWORDS([macros verbose])
+AT_CHECK([
+runroot rpm -v \
+  --eval '%{!verbose:%{echo:is not verbose}}' \
+  --eval '%{!verbose:is not verbose text}'\
+  --eval '%{verbose:%{echo:is verbose}}'\
+  --eval '%{verbose:is verbose text}'
+],
+[0],
+[
+
+is verbose
+
+is verbose text
+])
+AT_CLEANUP
