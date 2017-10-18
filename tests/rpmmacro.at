@@ -297,26 +297,76 @@ runroot rpm \
 )
 AT_CLEANUP
 
-AT_SETUP([%undefine from different scopes])
-AT_KEYWORDS([macros %undefine])
+AT_SETUP([%define + %undefine in nested levels 1])
+AT_KEYWORDS([macros define undefine])
 AT_CHECK([
-runroot rpmbuild --quiet -bb \
-	    --define '%test1 ok'\
-	    /data/SPECS/macro-scope.spec
+# basic %define in nested scoping level
+runroot rpm \
+    --define '%foo() %{expand:%define xxx 1} %{echo:%xxx} %{expand:%undefine xxx} %{echo:%xxx}' \
+    --eval .'%foo'.
 ],
 [0],
-[],
-[warning: Macro %a01 defined but not used within scope
-warning: Macro %a05 defined but not used within scope
-warning: Macro %a07 defined but not used within scope
-warning: Macro %a08 defined but not used within scope
-warning: Macro %a09 defined but not used within scope
-warning: Macro %a0A defined but not used within scope]
-)
+[1
+%xxx
+.   .
+])
 AT_CLEANUP
 
+AT_SETUP([%define + %undefine in nested levels 2])
+AT_KEYWORDS([macros define])
+AT_CHECK([
+# %define macro once in a nested scope
+runroot rpm \
+    --define '%foo() %{expand:%define xxx 1} %{echo:%xxx}' \
+    --eval .'%foo'. \
+    --eval '%xxx'
+],
+[0],
+[1
+. .
+%xxx
+])
+AT_CLEANUP
 
+AT_SETUP([%define + %undefine in nested levels 3])
+AT_KEYWORDS([macros define])
+AT_CHECK([
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+# %define macro twice in a nested scope
+runroot rpm \
+    --define '%foo() %{expand:%define xxx 1} %{echo:%xxx} %{expand: %define xxx 2} %{echo:%xxx}' \
+    --eval .'%foo'. \
+    --eval '%xxx'
+],
+[0],
+[1
+2
+.    .
+%xxx
+])
+AT_CLEANUP
 
+AT_SETUP([%define + %undefine in nested levels 4])
+AT_KEYWORDS([macros define global])
+AT_CHECK([
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+# %define in a nested level covered by %global
+runroot rpm \
+    --define '%foo() %{expand:%define xxx 1} %{echo:%xxx} %{expand: %global xxx 2} %{echo:%xxx}' \
+    --eval .'%foo'. \
+    --eval '%xxx' \
+    --eval .'%undefine xxx'. \
+    --eval '%xxx'
+],
+[0],
+[1
+2
+.    .
+2
+..
+%xxx
+])
+AT_CLEANUP
 
 AT_SETUP([%define in conditional macro])
 AT_KEYWORDS([macros])
