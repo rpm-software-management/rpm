@@ -56,7 +56,6 @@ EXTRA_DIST += data/SPECS/symlinktest.spec
 EXTRA_DIST += data/SPECS/deptest.spec
 EXTRA_DIST += data/SPECS/verifyscript.spec
 EXTRA_DIST += data/SPECS/fakeshell.spec
-EXTRA_DIST += data/SPECS/macro-scope.spec
 EXTRA_DIST += data/SPECS/scripts.spec
 EXTRA_DIST += data/SPECS/selfconflict.spec
 EXTRA_DIST += data/SPECS/replacetest.spec
