@@ -11,10 +11,16 @@ cd "$RPM_BUILD_ROOT"
 COMPRESS=${COMPRESS:-gzip -9 -n}
 COMPRESS_EXT=${COMPRESS_EXT:-.gz}
 
-for d in ./usr/man/man* ./usr/man/*/man* ./usr/info \
-	./usr/share/man/man* ./usr/share/man/*/man* ./usr/share/info \
-	./usr/kerberos/man ./usr/X11R6/man/man* ./usr/lib/perl5/man/man* \
-	./usr/share/doc/*/man/man* ./usr/lib/*/man/man*
+ROOT_PREFIX=${1:-.}
+if [ "${ROOT_PREFIX%%/*}" != "." ]; then
+    echo "$0: Prefix $ROOT_PREFIX must start with ./"
+    exit 1
+fi
+
+for d in ${ROOT_PREFIX}/usr/man/man* ${ROOT_PREFIX}/usr/man/*/man* ${ROOT_PREFIX}/usr/info \
+	${ROOT_PREFIX}/usr/share/man/man* ${ROOT_PREFIX}/usr/share/man/*/man* ${ROOT_PREFIX}/usr/share/info \
+	${ROOT_PREFIX}/usr/kerberos/man ${ROOT_PREFIX}/usr/X11R6/man/man* ${ROOT_PREFIX}/usr/lib/perl5/man/man* \
+	${ROOT_PREFIX}/usr/share/doc/*/man/man* ${ROOT_PREFIX}/usr/lib/*/man/man*
 do
     [ -d $d ] || continue
     for f in `find $d -type f ! -name dir`

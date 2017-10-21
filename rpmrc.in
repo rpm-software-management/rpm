@@ -285,6 +285,8 @@ os_canon:    Linux/ESA: VM/ESA	20
 os_canon:       Darwin: darwin	21
 os_canon:       MacOSX: macosx	21
 
+os_canon:       OS2: os2	22
+
 #############################################################
 # For a given uname().machine, the default build arch
 
