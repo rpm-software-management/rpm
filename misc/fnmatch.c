@@ -22,6 +22,7 @@
 # include <string.h>
 
 /* Find the first occurrence of C in S or the final NUL byte.  */
+#ifndef __OS2__
 static inline char *
 __strchrnul (const char *s, int c)
 {
@@ -156,6 +157,10 @@ __strchrnul (const char *s, int c)
   /* This should never happen.  */
   return NULL;
 }
+#else
+#include <string.h>
+#include <ctype.h>
+#endif // __OS2__
 
 /* For platform which support the ISO C amendement 1 functionality we
    support user defined character classes.  */
@@ -237,7 +242,7 @@ __strchrnul (const char *s, int c)
 /* Avoid depending on library functions or files
    whose names are inconsistent.  */
 
-# if !defined _LIBC && !defined getenv
+# if !defined _LIBC && !defined __OS2__ && !defined getenv
 extern char *getenv ();
 # endif
 

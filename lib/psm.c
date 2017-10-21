@@ -3,6 +3,10 @@
  * Package state machine to handle a package from a transaction set.
  */
 
+#ifdef __OS2__
+#include <process.h>
+#endif
+
 #include "system.h"
 
 #include <errno.h>

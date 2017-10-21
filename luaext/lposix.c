@@ -548,8 +548,17 @@ static int Pttyname(lua_State *L)		/** ttyname(fd) */
 
 static int Pctermid(lua_State *L)		/** ctermid() */
 {
+#ifdef __OS2__
+	/*
+	 * ctermid() is not implemented in EMX or kLIBC (0.6.6 and below).
+         * Use a fixed path that can be open/read/written and should satisfy
+         * simple requests.
+         */
+	lua_pushstring(L, "/dev/tty");
+#else
 	char b[L_ctermid];
 	lua_pushstring(L, ctermid(b));
+#endif
 	return 1;
 }
 
