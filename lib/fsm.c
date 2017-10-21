@@ -24,6 +24,13 @@
 
 #include "debug.h"
 
+#ifdef __OS2__
+#define INCL_DOS
+#define INCL_DOSERRORS
+#include <os2.h>
+#include <rpm/rpmmacro.h>
+#endif
+
 #define	_FSM_DEBUG	0
 int _fsm_debug = _FSM_DEBUG;
 
@@ -43,6 +50,109 @@ static int strict_erasures = 0;
  * things around needlessly 
  */ 
 static const char * fileActionString(rpmFileAction a);
+
+#ifdef __OS2__
+int unlockEx( const char *old_name);
+int renameEx( const char *old_name, const char *new_name);
+
+/**
+*/
+int unlockEx( const char *old_name)
+{
+  APIRET rc;
+  char* expandOptionMacro;
+  int expandOption;
+  CHAR OldName[_MAX_PATH];
+
+  // check expand macro value
+  expandOptionMacro = rpmExpand( "%{_os2_unlock_mode}", NULL);
+  if (expandOptionMacro == NULL)
+    expandOptionMacro = "0";
+  expandOption = atoi( expandOptionMacro);
+
+  // exit now?
+  if (expandOption != 0) {
+    return 0;
+  }
+
+  // get native paths
+  if (_realrealpath( old_name, OldName, sizeof( OldName)) == NULL) {
+    // failed for some reason, report failure
+    errno = EACCES;
+    return -1;
+  }
+
+  // unlock file, rc==2 if the file is not in use
+  rc = DosReplaceModule( (PCSZ)OldName, NULL, NULL);
+  return rc;
+}
+
+/**
+ */
+int renameEx( const char *old_name, const char *new_name)
+{
+  APIRET rc;
+  char* expandOptionMacro;
+  int expandOption;
+  CHAR OldName[_MAX_PATH], NewName[_MAX_PATH];
+
+  // check expand macro value
+  expandOptionMacro = rpmExpand( "%{_os2_unlock_mode}", NULL);
+  if (expandOptionMacro == NULL)
+    expandOptionMacro = "0";
+  expandOption = atoi( expandOptionMacro);
+
+  // exit now?
+  if (expandOption == 2) {
+    errno = EACCES;
+    return -1;
+  }
+
+  // get native paths
+  if (_realrealpath( old_name, OldName, sizeof( OldName)) == NULL) {
+    // failed for some reason, report failure
+    errno = EACCES;
+    return -1;
+  }
+  if (_realrealpath( new_name, NewName, sizeof( NewName)) == NULL) {
+    // failed for some reason, report failure
+    errno = EACCES;
+    return -1;
+  }
+
+  //
+  if (expandOption != 1) {
+
+    // try replacing the module first
+    rc = DosReplaceModule( (PCSZ)NewName, (PCSZ)OldName, NULL);
+    // if module is read-only, rename fails
+    if (rc == ERROR_ACCESS_DENIED) {
+      // unlock module
+      rc = DosReplaceModule( (PCSZ)NewName, NULL, NULL);
+      // remove read-only
+      rc = chmod( OldName, S_IREAD|S_IWRITE);
+      rc = chmod( NewName, S_IREAD|S_IWRITE);
+      // retry replacement
+      rc = DosReplaceModule( (PCSZ)NewName, (PCSZ)OldName, NULL);
+    }
+    if (rc == NO_ERROR || rc == ERROR_MODULE_IN_USE) {
+      // delete temp file
+      rc = unlink( OldName);
+      // replacing done, reset error
+      errno = 0;
+      return 0;
+    }
+    // call failed, either it is not an executable or it is no longer locked...
+    // TODO try rename again?
+    // use config.sys fallback
+  }
+
+  // failure
+  errno = EACCES;
+  return -1;
+
+}
+#endif // __OS2__
 
 /** \ingroup payload
  * Build path to file from file info, optionally ornamented with suffix.
@@ -345,7 +455,13 @@ static int fsmStat(const char *path, int dolstat, struct stat *sb)
 
 static int fsmRmdir(const char *path)
 {
-    int rc = rmdir(path);
+    int rc = 0;
+#ifdef __OS2__
+    if (strcmp(path, "/@unixroot") == 0)
+	rc = 0;
+    else
+#endif
+    rc = rmdir(path);
     if (_fsm_debug)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", __func__,
 	       path, (rc < 0 ? strerror(errno) : ""));
@@ -360,7 +476,13 @@ static int fsmRmdir(const char *path)
 
 static int fsmMkdir(const char *path, mode_t mode)
 {
-    int rc = mkdir(path, (mode & 07777));
+    int rc = 0;
+#ifdef __OS2__
+    if (strcmp(path, "/@unixroot") == 0)
+	rc = 0;
+    else
+#endif
+    rc = mkdir(path, (mode & 07777));
     if (_fsm_debug)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", __func__,
 	       path, (unsigned)(mode & 07777),
@@ -557,6 +679,10 @@ static int fsmUnlink(const char *path)
 {
     int rc = 0;
     removeSBITS(path);
+#ifdef __OS2__
+    // try unlocking
+    rc = unlockEx(path);
+#endif
     rc = unlink(path);
     if (_fsm_debug)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", __func__,
@@ -568,8 +694,16 @@ static int fsmUnlink(const char *path)
 
 static int fsmRename(const char *opath, const char *path)
 {
+    int rc;
     removeSBITS(path);
-    int rc = rename(opath, path);
+#ifdef __OS2__ // rename fails if destination is read-only
+    rc = chmod(path, S_IREAD|S_IWRITE);
+#endif
+    rc = rename(opath, path);
+#ifdef __OS2__
+    if (rc)
+	rc = renameEx(opath, path);
+#endif
 #if defined(ETXTBSY) && defined(__HPUX__)
     /* XXX HP-UX (and other os'es) don't permit rename to busy files. */
     if (rc && errno == ETXTBSY) {

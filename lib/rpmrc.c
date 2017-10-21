@@ -20,6 +20,11 @@
 #define __power_pc() 0
 #endif
 
+#ifdef __OS2__
+#define INCL_DOS
+#include <os2.h>
+#endif
+
 #ifdef HAVE_SYS_AUXV_H
 #include <sys/auxv.h>
 #endif
@@ -500,7 +505,7 @@ static rpmRC doReadRC(rpmrcCtx ctx, const char * urlfn)
 	s = se = next;
 
 	/* Find end-of-line. */
-	while (*se && *se != '\n') se++;
+	while (*se && *se != '\r' && *se != '\n') se++;
 	if (*se != '\0') *se++ = '\0';
 	next = se;
 

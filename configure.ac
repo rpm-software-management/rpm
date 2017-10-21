@@ -50,7 +50,13 @@ if test "$GCC" = yes; then
         ],[])
         CFLAGS=$old_cflags
     done
-    RPMCFLAGS="-fPIC -DPIC -D_REENTRANT -Wall -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes $RPMCFLAGS"
+    case "$host" in
+        *os2*)
+           RPMPICCFLAGS="" ;;
+        *)
+           RPMPICCFLAGS="-fPIC -DPIC" ;;
+    esac
+    RPMCFLAGS="$RPMPICCFLAGS -D_REENTRANT -Wall -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes $RPMCFLAGS"
 fi
 AC_SUBST(RPMCFLAGS)
 
@@ -1044,10 +1050,22 @@ AC_SUBST(RPMCONFIGDIR)
 
 AC_SUBST(OBJDUMP)
 
+AC_MSG_CHECKING([for OS/2])
+case $host in
+  *-*-os2*)
+    rpm_os2="yes"
+    ;;
+  *)
+    rpm_os2="no"
+    ;;
+esac
+AC_MSG_RESULT([$rpm_os2])
+
 if test "$with_external_db" = no; then
     AC_CONFIG_SUBDIRS(db3)
 fi
 
+AM_CONDITIONAL(OS_OS2, [test "$rpm_os2" = "yes"])
 AM_CONDITIONAL([WITH_INTERNAL_DB],[test "$with_external_db" = no])
 AM_CONDITIONAL([DOXYGEN],[test "$DOXYGEN" != no])
 AM_CONDITIONAL([HACKINGDOCS],[test "$with_hackingdocs" = yes])

@@ -1,7 +1,9 @@
 #include "system.h"
 
 #include <errno.h>
+#ifndef __OS2__
 #include <sys/xattr.h>
+#endif
 
 #include <rpm/rpmfi.h>
 #include <rpm/rpmte.h>
@@ -62,6 +64,7 @@ static rpmRC ima_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
 	}
 
 	fsig = rpmfiFSignature(fi, &len);
+#ifndef __OS2__
 	if (fsig && (check_zero_hdr(fsig, len) == 0)) {
 	    if (lsetxattr(path, XATTR_NAME_IMA, fsig, len, 0) < 0) {
 	        rpmlog(RPMLOG_ERR,
@@ -70,6 +73,7 @@ static rpmRC ima_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
 	        rc = RPMRC_FAIL;
 	    }
 	}
+#endif
 
 exit:
 	return rc;

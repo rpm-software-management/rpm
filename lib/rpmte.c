@@ -185,8 +185,12 @@ static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
 			 headerIsEntry(h, RPMTAG_POSTTRANSPROG)) ?
 			RPMTE_HAVE_POSTTRANS : 0;
 
+// these are required only for multilib install on linux X86_64 of
+// mixed 32bit/64bit ELF files
+#ifndef __OS2__
     rpmteColorDS(p, RPMTAG_PROVIDENAME);
     rpmteColorDS(p, RPMTAG_REQUIRENAME);
+#endif
 
     if (p->type == TR_ADDED)
 	p->pkgFileSize = headerGetNumber(h, RPMTAG_LONGSIGSIZE) + 96 + 256;
