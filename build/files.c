@@ -1067,9 +1067,9 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	    /* Note that an %exclude is a duplication of a file reference */
 
 	    /* file flags */
-	    flp[1].flags |= flp->flags;	
+	    flp[1].flags |= flp->flags;
 
-	    if (!(flp[1].flags & RPMFILE_EXCLUDE))
+	    if (!(flp[1].flags & (RPMFILE_EXCLUDE | RPMFILE_DOC | RPMFILE_LICENSE)))
 		rpmlog(RPMLOG_WARNING, _("File listed twice: %s\n"),
 			flp->cpioPath);
    
