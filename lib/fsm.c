@@ -218,6 +218,26 @@ static int linkSane(FD_t wfd, const char *dest)
 	    sb.st_dev == lsb.st_dev && sb.st_ino == lsb.st_ino);
 }
 
+static void wfd_close(FD_t *wfdp)
+{
+    if (wfdp && *wfdp) {
+	int myerrno = errno;
+	static int oneshot = 0;
+	static int flush_io = 0;
+	if (!oneshot) {
+	    flush_io = rpmExpandNumeric("%{?_flush_io}");
+	    oneshot = 1;
+	}
+	if (flush_io) {
+	    int fdno = Fileno(*wfdp);
+	    fsync(fdno);
+	}
+	Fclose(*wfdp);
+	*wfdp = NULL;
+	errno = myerrno;
+    }
+}
+
 /** \ingroup payload
  * Create file from payload stream.
  * @return		0 on success
@@ -247,21 +267,7 @@ static int expandRegular(rpmfi fi, const char *dest, rpmpsm psm, int exclusive, 
     if (!nocontent)
 	rc = rpmfiArchiveReadToFilePsm(fi, wfd, nodigest, psm);
 exit:
-    if (wfd) {
-	int myerrno = errno;
-	static int oneshot = 0;
-	static int flush_io = 0;
-	if (!oneshot) {
-	    flush_io = rpmExpandNumeric("%{?_flush_io}");
-	    oneshot = 1;
-	}
-	if (flush_io) {
-	    int fdno = Fileno(wfd);
-	    fsync(fdno);
-	}
-	Fclose(wfd);
-	errno = myerrno;
-    }
+    wfd_close(&wfd);
     return rc;
 }
 
