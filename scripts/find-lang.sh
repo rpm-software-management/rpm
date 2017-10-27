@@ -11,14 +11,6 @@
 #in tact and are included with any redistribution of this file or any
 #work based on this file.
 
-# 2011-11-16 Per Øyvind Karlsen <peroyvind@mandriva.org>
-#   * add support for HTML files (from Mandriva)
-# 2004-06-20 Arkadiusz Miśkiewicz <arekm@pld-linux.org>
-#   * merge PLD changes, kde, all-name (mkochano,pascalek@PLD)
-# 1999-10-19 Artur Frysiak <wiget@pld-linux.org>
-#   * added support for GNOME help files
-#   * start support for KDE help files
-
 usage () {
 cat <<EOF
 
