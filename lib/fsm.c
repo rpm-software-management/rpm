@@ -269,7 +269,7 @@ exit:
  * Create file from payload stream.
  * @return		0 on success
  */
-static int expandRegular(rpmfi fi, const char *dest, rpmpsm psm, int exclusive, int nodigest, int nocontent)
+static int expandRegular(rpmfi fi, const char *dest, rpmpsm psm, int exclusive, int nodigest)
 {
     FD_t wfd = NULL;
     int rc;
@@ -278,8 +278,7 @@ static int expandRegular(rpmfi fi, const char *dest, rpmpsm psm, int exclusive, 
     if (rc != 0)
         goto exit;
 
-    if (!nocontent)
-	rc = rpmfiArchiveReadToFilePsm(fi, wfd, nodigest, psm);
+    rc = rpmfiArchiveReadToFilePsm(fi, wfd, nodigest, psm);
     wfd_close(&wfd);
 exit:
     return rc;
@@ -311,7 +310,7 @@ static int fsmMkfile(rpmfi fi, const char *dest, rpmfiles files,
        existing) file with content */
     if (numHardlinks<=1) {
 	if (!rc)
-	    rc = expandRegular(fi, dest, psm, 1, nodigest, 0);
+	    rc = expandRegular(fi, dest, psm, 1, nodigest);
     } else if (rpmfiArchiveHasContent(fi)) {
 	if (!rc)
 	    rc = rpmfiArchiveReadToFilePsm(fi, *firstlinkfile, nodigest, psm);
