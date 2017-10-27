@@ -227,6 +227,33 @@ static void wfd_close(FD_t *wfdp)
     }
 }
 
+static int wfd_open(FD_t *wfdp, const char *dest, int exclusive)
+{
+    int rc = 0;
+    /* Create the file with 0200 permissions (write by owner). */
+    {
+	mode_t old_umask = umask(0577);
+	*wfdp = Fopen(dest, exclusive ? "wx.ufdio" : "a.ufdio");
+	umask(old_umask);
+
+	/* If reopening, make sure the file is what we expect */
+	if (!exclusive && *wfdp != NULL && !linkSane(*wfdp, dest)) {
+	    rc = RPMERR_OPEN_FAILED;
+	    goto exit;
+	}
+    }
+    if (Ferror(*wfdp)) {
+	rc = RPMERR_OPEN_FAILED;
+	goto exit;
+    }
+
+    return 0;
+
+exit:
+    wfd_close(wfdp);
+    return rc;
+}
+
 /** \ingroup payload
  * Create file from payload stream.
  * @return		0 on success
@@ -234,29 +261,16 @@ static void wfd_close(FD_t *wfdp)
 static int expandRegular(rpmfi fi, const char *dest, rpmpsm psm, int exclusive, int nodigest, int nocontent)
 {
     FD_t wfd = NULL;
-    int rc = 0;
+    int rc;
 
-    /* Create the file with 0200 permissions (write by owner). */
-    {
-	mode_t old_umask = umask(0577);
-	wfd = Fopen(dest, exclusive ? "wx.ufdio" : "a.ufdio");
-	umask(old_umask);
-
-	/* If reopening, make sure the file is what we expect */
-	if (!exclusive && wfd != NULL && !linkSane(wfd, dest)) {
-	    rc = RPMERR_OPEN_FAILED;
-	    goto exit;
-	}
-    }
-    if (Ferror(wfd)) {
-	rc = RPMERR_OPEN_FAILED;
-	goto exit;
-    }
+    rc = wfd_open(&wfd, dest, exclusive);
+    if (rc != 0)
+        goto exit;
 
     if (!nocontent)
 	rc = rpmfiArchiveReadToFilePsm(fi, wfd, nodigest, psm);
-exit:
     wfd_close(&wfd);
+exit:
     return rc;
 }
 
