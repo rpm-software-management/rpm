@@ -979,6 +979,11 @@ AS_IF([test "$enable_plugins" != no],[
 ])
 AM_CONDITIONAL(DBUS, [test "$with_dbus" = yes])
 
+AS_IF([test "$enable_plugins" != no],[
+  AC_CHECK_FUNCS(lsetxattr, [], [], [#include <sys/xattr.h>])
+])
+AM_CONDITIONAL(IMA, [test "x$ac_cv_func_lsetxattr" = xyes])
+
 with_dmalloc=no
 AC_ARG_WITH(dmalloc, [AS_HELP_STRING([--with-dmalloc],[build with dmalloc debugging support])])
 if test "$with_dmalloc" = yes ; then
