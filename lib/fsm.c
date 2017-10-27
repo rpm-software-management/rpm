@@ -276,7 +276,7 @@ exit:
 
 static int fsmMkfile(rpmfi fi, const char *dest, rpmfiles files,
 		     rpmpsm psm, int nodigest, int *setmeta,
-		     int * firsthardlink)
+		     int * firsthardlink, FD_t *firstlinkfile)
 {
     int rc = 0;
     int numHardlinks = rpmfiFNlink(fi);
@@ -285,7 +285,7 @@ static int fsmMkfile(rpmfi fi, const char *dest, rpmfiles files,
 	/* Create first hardlinked file empty */
 	if (*firsthardlink < 0) {
 	    *firsthardlink = rpmfiFX(fi);
-	    rc = expandRegular(fi, dest, psm, 1, nodigest, 1);
+	    rc = wfd_open(firstlinkfile, dest, 1);
 	} else {
 	    /* Create hard links for others */
 	    char *fn = rpmfilesFN(files, *firsthardlink);
@@ -303,7 +303,8 @@ static int fsmMkfile(rpmfi fi, const char *dest, rpmfiles files,
 	    rc = expandRegular(fi, dest, psm, 1, nodigest, 0);
     } else if (rpmfiArchiveHasContent(fi)) {
 	if (!rc)
-	    rc = expandRegular(fi, dest, psm, 0, nodigest, 0);
+	    rc = rpmfiArchiveReadToFilePsm(fi, *firstlinkfile, nodigest, psm);
+	wfd_close(firstlinkfile);
 	*firsthardlink = -1;
     } else {
 	*setmeta = 0;
@@ -863,6 +864,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     int rc = 0;
     int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST) ? 1 : 0;
     int firsthardlink = -1;
+    FD_t firstlinkfile = NULL;
     int skip;
     rpmFileAction action;
     char *tid = NULL;
@@ -930,7 +932,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
             if (S_ISREG(sb.st_mode)) {
 		if (rc == RPMERR_ENOENT) {
 		    rc = fsmMkfile(fi, fpath, files, psm, nodigest,
-				   &setmeta, &firsthardlink);
+				   &setmeta, &firsthardlink, &firstlinkfile);
 		}
             } else if (S_ISDIR(sb.st_mode)) {
                 if (rc == RPMERR_ENOENT) {
@@ -968,7 +970,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	    /* we skip the hard linked file containing the content */
 	    /* write the content to the first used instead */
 	    char *fn = rpmfilesFN(files, firsthardlink);
-	    rc = expandRegular(fi, fn, psm, 0, nodigest, 0);
+	    rc = rpmfiArchiveReadToFilePsm(fi, firstlinkfile, nodigest, psm);
+	    wfd_close(&firstlinkfile);
 	    firsthardlink = -1;
 	    free(fn);
 	}
