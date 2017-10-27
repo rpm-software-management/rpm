@@ -207,17 +207,6 @@ static int fsmSetFCaps(const char *path, const char *captxt)
     return rc;
 }
 
-/* Check dest is the same, empty and regular file with writeonly permissions */
-static int linkSane(FD_t wfd, const char *dest)
-{
-    struct stat sb, lsb;
-
-    return (fstat(Fileno(wfd), &sb) == 0 && sb.st_size == 0 &&
-	    (sb.st_mode & ~S_IFMT) == S_IWUSR &&
-	    lstat(dest, &lsb) == 0 && S_ISREG(lsb.st_mode) &&
-	    sb.st_dev == lsb.st_dev && sb.st_ino == lsb.st_ino);
-}
-
 static void wfd_close(FD_t *wfdp)
 {
     if (wfdp && *wfdp) {
@@ -238,20 +227,14 @@ static void wfd_close(FD_t *wfdp)
     }
 }
 
-static int wfd_open(FD_t *wfdp, const char *dest, int exclusive)
+static int wfd_open(FD_t *wfdp, const char *dest)
 {
     int rc = 0;
     /* Create the file with 0200 permissions (write by owner). */
     {
 	mode_t old_umask = umask(0577);
-	*wfdp = Fopen(dest, exclusive ? "wx.ufdio" : "a.ufdio");
+	*wfdp = Fopen(dest, "wx.ufdio");
 	umask(old_umask);
-
-	/* If reopening, make sure the file is what we expect */
-	if (!exclusive && *wfdp != NULL && !linkSane(*wfdp, dest)) {
-	    rc = RPMERR_OPEN_FAILED;
-	    goto exit;
-	}
     }
     if (Ferror(*wfdp)) {
 	rc = RPMERR_OPEN_FAILED;
@@ -269,12 +252,12 @@ exit:
  * Create file from payload stream.
  * @return		0 on success
  */
-static int expandRegular(rpmfi fi, const char *dest, rpmpsm psm, int exclusive, int nodigest)
+static int expandRegular(rpmfi fi, const char *dest, rpmpsm psm, int nodigest)
 {
     FD_t wfd = NULL;
     int rc;
 
-    rc = wfd_open(&wfd, dest, exclusive);
+    rc = wfd_open(&wfd, dest);
     if (rc != 0)
         goto exit;
 
@@ -295,7 +278,7 @@ static int fsmMkfile(rpmfi fi, const char *dest, rpmfiles files,
 	/* Create first hardlinked file empty */
 	if (*firsthardlink < 0) {
 	    *firsthardlink = rpmfiFX(fi);
-	    rc = wfd_open(firstlinkfile, dest, 1);
+	    rc = wfd_open(firstlinkfile, dest);
 	} else {
 	    /* Create hard links for others */
 	    char *fn = rpmfilesFN(files, *firsthardlink);
@@ -310,7 +293,7 @@ static int fsmMkfile(rpmfi fi, const char *dest, rpmfiles files,
        existing) file with content */
     if (numHardlinks<=1) {
 	if (!rc)
-	    rc = expandRegular(fi, dest, psm, 1, nodigest);
+	    rc = expandRegular(fi, dest, psm, nodigest);
     } else if (rpmfiArchiveHasContent(fi)) {
 	if (!rc)
 	    rc = rpmfiArchiveReadToFilePsm(fi, *firstlinkfile, nodigest, psm);
