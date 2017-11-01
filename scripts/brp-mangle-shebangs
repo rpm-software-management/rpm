@@ -1,0 +1,43 @@
+#!/bin/sh -eu
+
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+  exit 0
+fi
+
+cd "$RPM_BUILD_ROOT"
+
+trim() {
+  printf '%s' "$*"
+}
+
+fail=0
+for f in $(find -executable -type f | xargs --no-run-if-empty file -N --mime-type | grep -Po "^\K.+(?=: text/)"); do
+
+  ts=$(stat -c %y "$f")
+
+  read orig_shebang < "$f" || :
+  shebang=$(trim $(echo "$orig_shebang" | grep -Po "#!\K.*" || echo))
+  if [ -z "$shebang" ]; then
+    echo >&2 "*** WARNING: $f is executable but has empty or no shebang, removing executable bit"
+    chmod -x "$f"
+    touch -d "$ts" "$f"
+    continue
+  elif [ "${shebang%${shebang#?}}" != "/" ]; then
+    echo >&2 "*** ERROR: $f has shebang which doesn't start with '/' ($shebang)"
+    fail=1
+    continue
+  fi
+
+  # Replace "special" env shebang:
+  # /whatsoever/env foo → /whatsoever/foo
+  shebang=$(echo "$shebang" | sed -r -e 's@^(.+/)env (.+)$@\1\2@')
+
+  if [ "#!$shebang" != "$orig_shebang" ]; then
+    sed -i -e "1c #!$shebang" "$f"
+  fi
+
+  touch -d "$ts" "$f"
+done
+
+exit $fail

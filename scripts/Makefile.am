@@ -7,6 +7,7 @@ CLEANFILES =
 
 EXTRA_DIST = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
+	brp-mangle-shebangs \
 	brp-strip brp-strip-comment-note brp-python-hardlink \
 	brp-strip-shared brp-strip-static-archive \
 	check-files check-prereqs \
@@ -27,6 +28,7 @@ EXTRA_DIST = \
 
 rpmconfig_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
+	brp-mangle-shebangs \
 	brp-strip brp-strip-comment-note brp-python-hardlink \
 	brp-strip-shared brp-strip-static-archive \
 	check-files check-prereqs \

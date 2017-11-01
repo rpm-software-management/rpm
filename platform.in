@@ -68,6 +68,7 @@
 # Standard brp-macro naming:
 # convert all '-' in basename to '_', add two leading underscores.
 %__brp_compress %{_rpmconfigdir}/brp-compress
+%__brp_mangle_shebangs %{_rpmconfigdir}/brp-mangle-shebangs
 %__brp_java_gcjcompile %{_rpmconfigdir}/brp-java-bytecompile
 %__brp_python_bytecompile %{_rpmconfigdir}/brp-python-bytecompile
 %__brp_strip %{_rpmconfigdir}/brp-strip %{__strip}
@@ -77,6 +78,7 @@
 
 %__os_install_post    \
     %{?__brp_compress} \
+    %{?__brp_mangle_shebangs} \
     %{?__brp_strip} \
     %{?__brp_strip_static_archive} \
     %{?__brp_strip_comment_note} \
