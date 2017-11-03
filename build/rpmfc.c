@@ -428,6 +428,12 @@ int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
 	buf_stdin_len = strlen(buf_stdin);
     }
 
+    if (_rpmfc_debug) {
+	char *cmd = argvJoin(xav, " ");
+	rpmlog(RPMLOG_DEBUG, "Executing %s on %s\n", cmd, buf_stdin);
+	free(cmd);
+    }
+
     /* Read output from exec'd helper. */
     sb = getOutputFrom(xav, buf_stdin, buf_stdin_len, failnonzero, buildRoot);
 
