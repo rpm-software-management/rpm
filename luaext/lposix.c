@@ -549,7 +549,13 @@ static int Pttyname(lua_State *L)		/** ttyname(fd) */
 static int Pctermid(lua_State *L)		/** ctermid() */
 {
 	char b[L_ctermid];
+#ifdef HAVE_CTERMID
 	lua_pushstring(L, ctermid(b));
+#else
+	// Use a fixed path that can be open/read/written and should
+	// satisfy simple requests.
+	lua_pushstring(L, "/dev/tty");
+#endif
 	return 1;
 }
 

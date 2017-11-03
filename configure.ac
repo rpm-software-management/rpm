@@ -759,6 +759,7 @@ AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 
 dnl Checks for library functions.
+AC_CHECK_FUNCS(ctermid)
 AC_CHECK_FUNCS(putenv)
 AC_CHECK_FUNCS(mempcpy)
 AC_CHECK_FUNCS(fdatasync)
