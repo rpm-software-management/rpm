@@ -42,6 +42,10 @@ rpmconfig_SCRIPTS = \
 	fontconfig.prov desktop-file.prov script.req \
 	rpmdb_loadcvt rpm2cpio.sh tgpg 
 
+if OS_OS2
+rpmconfig_SCRIPTS += os2deps.sh
+endif
+
 rpmconfig_DATA = \
 	rpm.daily rpm.log rpm.supp \
 	macros.perl macros.php macros.python
