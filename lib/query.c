@@ -147,6 +147,10 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	if ((qva->qva_flags & QUERY_FOR_LICENSE) && !(fflags & RPMFILE_LICENSE))
 	    continue;
 
+	/* If querying only ... yes we know the drill, and this is dumb. */
+	if ((qva->qva_flags & QUERY_FOR_ARTIFACT) && !(fflags & RPMFILE_ARTIFACT))
+	    continue;
+
 	/* Skip on attributes (eg from --noghost) */
 	if (fflags & qva->qva_fflags)
 	    continue;

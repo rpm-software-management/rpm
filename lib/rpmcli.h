@@ -133,7 +133,8 @@ enum rpmQueryFlags_e {
     QUERY_FOR_DOCS	= (1 << 25),	/*!< query:  from --docfiles */
     QUERY_FOR_CONFIG	= (1 << 26),	/*!< query:  from --configfiles */
     QUERY_FOR_DUMPFILES	= (1 << 27),	/*!< query:  from --dump */
-    QUERY_FOR_LICENSE	= (1 << 28)	/*!< query:  from --licensefiles */
+    QUERY_FOR_LICENSE	= (1 << 28),	/*!< query:  from --licensefiles */
+    QUERY_FOR_ARTIFACT	= (1 << 29),	/*!< query:  from --artifacts */
 };
 
 typedef rpmFlags rpmQueryFlags;

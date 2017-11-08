@@ -857,6 +857,7 @@ static VFA_t const virtualAttrs[] = {
     { "%license",	RPMFILE_LICENSE },
     { "%pubkey",	RPMFILE_PUBKEY },
     { "%missingok",	RPMFILE_MISSINGOK },
+    { "%artifact",	RPMFILE_ARTIFACT },
     { NULL, 0 }
 };
 
