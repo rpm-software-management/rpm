@@ -1699,7 +1699,7 @@ static int addNewIDSymlink(ARGV_t *files,
 	rpmlog(RPMLOG_ERR, "%s: %s -> %s: %m\n",
 	       linkerr, linkpath, targetpath);
     } else {
-	rc = argvAdd(files, linkpath);
+	argvAddAttr(files, RPMFILE_ARTIFACT, linkpath);
     }
 
     if (nr > 0) {
@@ -1900,7 +1900,7 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 		if ((rc = rpmioMkpath(mainiddir, 0755, -1, -1)) != 0) {
 		    rpmlog(RPMLOG_ERR, "%s %s: %m\n", errdir, mainiddir);
 		} else {
-		    argvAddAttr(files, RPMFILE_DIR, mainiddir);
+		    argvAddAttr(files, RPMFILE_DIR|RPMFILE_ARTIFACT, mainiddir);
 		}
 	    }
 
@@ -1908,7 +1908,7 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 		if ((rc = rpmioMkpath(debugiddir, 0755, -1, -1)) != 0) {
 		    rpmlog(RPMLOG_ERR, "%s %s: %m\n", errdir, debugiddir);
 		} else {
-		    argvAddAttr(files, RPMFILE_DIR, debugiddir);
+		    argvAddAttr(files, RPMFILE_DIR|RPMFILE_ARTIFACT, debugiddir);
 		}
 	    }
 	}
@@ -1948,7 +1948,7 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 		    rpmlog(RPMLOG_ERR, "%s %s: %m\n", errdir, buildidsubdir);
 		} else {
 		    if (addsubdir)
-		       argvAddAttr(files, RPMFILE_DIR, buildidsubdir);
+		       argvAddAttr(files, RPMFILE_DIR|RPMFILE_ARTIFACT, buildidsubdir);
 		    if (rc == 0) {
 			char *linkpattern, *targetpattern;
 			char *linkpath, *targetpath;
@@ -2944,10 +2944,10 @@ static int addDebugDwz(Package pkg, char *buildroot)
 	if (!pkg->fileList) {
 	    char *attr = mkattr();
 	    argvAdd(&pkg->fileList, attr);
-	    argvAddAttr(&pkg->fileList, RPMFILE_DIR, DEBUG_LIB_DIR);
+	    argvAddAttr(&pkg->fileList, RPMFILE_DIR|RPMFILE_ARTIFACT, DEBUG_LIB_DIR);
 	    free(attr);
 	}
-	argvAdd(&pkg->fileList, DEBUG_DWZ_DIR);
+	argvAddAttr(&pkg->fileList, RPMFILE_ARTIFACT, DEBUG_DWZ_DIR);
 	ret = 1;
     }
     path = _free(path);
