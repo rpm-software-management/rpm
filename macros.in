@@ -744,6 +744,11 @@ package or when debugging this package.\
 # performance for rotational disks)
 #%_flush_io	0
 
+# Set to 1 to have IMA signatures written also on %config files.
+# Note that %config files may be changed and therefore end up with
+# a wrong or missing signature.
+#%_ima_sign_config_files	0
+
 #
 # Default output format string for rpm -qa
 #

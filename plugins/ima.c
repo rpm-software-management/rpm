@@ -9,12 +9,15 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlog.h>
 #include <rpmio/rpmstring.h>
+#include <rpmio/rpmmacro.h>
 
 #include "lib/rpmfs.h"
 #include "lib/rpmplugin.h"
 #include "lib/rpmte_internal.h"
 
 #define XATTR_NAME_IMA "security.ima"
+
+static int write_signatures_on_config_files = 0;
 
 /*
  * check_zero_hdr: Check the signature for a zero header
@@ -54,11 +57,13 @@ static rpmRC ima_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
 	    goto exit;
 
 	/* Don't install signatures for (mutable) files marked
-	 * as config files unless they are also executable.
+	 * as config files unless they are also executable or
+	 * user specifically asks for it.
 	 */
 	if (rpmfiFFlags(fi) & RPMFILE_CONFIG) {
-	    if (!(rpmfiFMode(fi) & (S_IXUSR|S_IXGRP|S_IXOTH)))
-	        goto exit;
+	    if (!(rpmfiFMode(fi) & (S_IXUSR|S_IXGRP|S_IXOTH)) &&
+	        !write_signatures_on_config_files)
+		goto exit;
 	}
 
 	fsig = rpmfiFSignature(fi, &len);
@@ -75,6 +80,15 @@ exit:
 	return rc;
 }
 
+static rpmRC ima_init(rpmPlugin plugin, rpmts ts)
+{
+	write_signatures_on_config_files =
+	    rpmExpandNumeric("%{?_ima_sign_config_files}");
+
+	return RPMRC_OK;
+}
+
 struct rpmPluginHooks_s ima_hooks = {
+        .init = ima_init,
 	.fsm_file_prepare = ima_fsm_file_prepare,
 };
