@@ -1628,13 +1628,18 @@ exit:
     return rc;
 }
 
-/* add a directory to the file list */
-static void argvAddDir(ARGV_t *filesp, const char *dir)
+/* add a file with possible virtual attributes to the file list */
+static void argvAddAttr(ARGV_t *filesp, rpmfileAttrs attrs, const char *path)
 {
     char *line = NULL;
-    rasprintf(&line, "%%dir %s", dir);
+
+    for (VFA_t *vfa = virtualAttrs; vfa->attribute != NULL; vfa++) {
+	if (vfa->flag & attrs)
+	    line = rstrscat(&line, vfa->attribute, " ", NULL);
+    }
+    line = rstrscat(&line, path, NULL);
     argvAdd(filesp, line);
-    _free(line);
+    free(line);
 }
 
 #if HAVE_LIBDW
@@ -1894,7 +1899,7 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 		if ((rc = rpmioMkpath(mainiddir, 0755, -1, -1)) != 0) {
 		    rpmlog(RPMLOG_ERR, "%s %s: %m\n", errdir, mainiddir);
 		} else {
-		    argvAddDir(files, mainiddir);
+		    argvAddAttr(files, RPMFILE_DIR, mainiddir);
 		}
 	    }
 
@@ -1902,7 +1907,7 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 		if ((rc = rpmioMkpath(debugiddir, 0755, -1, -1)) != 0) {
 		    rpmlog(RPMLOG_ERR, "%s %s: %m\n", errdir, debugiddir);
 		} else {
-		    argvAddDir(files, debugiddir);
+		    argvAddAttr(files, RPMFILE_DIR, debugiddir);
 		}
 	    }
 	}
@@ -1942,7 +1947,7 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 		    rpmlog(RPMLOG_ERR, "%s %s: %m\n", errdir, buildidsubdir);
 		} else {
 		    if (addsubdir)
-		       argvAddDir (files, buildidsubdir);
+		       argvAddAttr(files, RPMFILE_DIR, buildidsubdir);
 		    if (rc == 0) {
 			char *linkpattern, *targetpattern;
 			char *linkpath, *targetpath;
@@ -2859,7 +2864,7 @@ static void filterDebuginfoPackage(rpmSpec spec, Package pkg,
 	    if (!files) {
 		char *attr = mkattr();
 		argvAdd(&files, attr);
-		argvAddDir(&files, DEBUG_LIB_DIR);
+		argvAddAttr(&files, RPMFILE_DIR, DEBUG_LIB_DIR);
 		free(attr);
 	    }
 
@@ -2904,7 +2909,7 @@ static void filterDebuginfoPackage(rpmSpec spec, Package pkg,
 	argvSort(dirs, NULL);
 	for (i = 0; dirs[i]; i++) {
 	    if (!i || strcmp(dirs[i], dirs[i - 1]) != 0)
-		argvAddDir(&files, dirs[i]);
+		argvAddAttr(&files, RPMFILE_DIR, dirs[i]);
 	}
 	dirs = argvFree(dirs);
     }
@@ -2938,7 +2943,7 @@ static int addDebugDwz(Package pkg, char *buildroot)
 	if (!pkg->fileList) {
 	    char *attr = mkattr();
 	    argvAdd(&pkg->fileList, attr);
-	    argvAddDir(&pkg->fileList, DEBUG_LIB_DIR);
+	    argvAddAttr(&pkg->fileList, RPMFILE_DIR, DEBUG_LIB_DIR);
 	    free(attr);
 	}
 	argvAdd(&pkg->fileList, DEBUG_DWZ_DIR);
