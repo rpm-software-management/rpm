@@ -315,7 +315,7 @@ char * rpmVerifyString(uint32_t verifyResult, const char *pad)
 char * rpmFFlagsString(uint32_t fflags, const char *pad)
 {
     char *fmt = NULL;
-    rasprintf(&fmt, "%s%s%s%s%s%s%s%s",
+    rasprintf(&fmt, "%s%s%s%s%s%s%s%s%s",
 		(fflags & RPMFILE_DOC) ? "d" : pad,
 		(fflags & RPMFILE_CONFIG) ? "c" : pad,
 		(fflags & RPMFILE_SPECFILE) ? "s" : pad,
@@ -323,7 +323,8 @@ char * rpmFFlagsString(uint32_t fflags, const char *pad)
 		(fflags & RPMFILE_NOREPLACE) ? "n" : pad,
 		(fflags & RPMFILE_GHOST) ? "g" : pad,
 		(fflags & RPMFILE_LICENSE) ? "l" : pad,
-		(fflags & RPMFILE_README) ? "r" : pad);
+		(fflags & RPMFILE_README) ? "r" : pad,
+		(fflags & RPMFILE_ARTIFACT) ? "a" : pad);
     return fmt;
 }
 

@@ -74,7 +74,7 @@ Files:
  [\fB-c,--configfiles\fR] [\fB-d,--docfiles\fR] [\fB--dump\fR] [\fB--fileclass\fR]
  [\fB--filecolor\fR] [\fB--fileprovide\fR][\fB--filerequire\fR] [\fB--filecaps\fR]
  [\fB--filesbypkg\fR] [\fB-l,--list\fR] [\fB-s,--state\fR]
- [\fB--noghost\fR] [\fB--noconfig\fR]
+ [\fB--noartifact\fR] [\fB--noghost\fR] [\fB--noconfig\fR
 .PP
 Scripts and triggers:
  [\fB--filetriggers\fR] [\fB--scripts\fR] [\fB--triggers,--triggerscripts\fR]
@@ -632,6 +632,9 @@ Query all packages that enhance \fICAPABILITY\fR.
 .SS "PACKAGE QUERY OPTIONS:"
 .PP
 .TP
+\fB-d, --artifactfiles\fR
+List only artifact files (implies \fB-l\fR).
+.TP
 \fB--changelog\fR
 Display change information for the package.
 .TP
@@ -714,6 +717,8 @@ Display the \fIstates\fR of files in the package
 Display the trigger scripts, if any, which are contained in
 the package.
 .TP
+\fB--noartifact\fR
+Don't display artifact files.
 \fB--noghost\fR
 Don't display ghost files. Useful in combination with option --list.
 .TP

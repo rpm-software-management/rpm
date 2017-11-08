@@ -60,6 +60,7 @@ enum rpmfileAttrs_e {
     RPMFILE_README	= (1 <<  8),	/*!< from %%readme */
     /* bits 9-10 unused */
     RPMFILE_PUBKEY	= (1 << 11),	/*!< from %%pubkey */
+    RPMFILE_ARTIFACT	= (1 << 12),	/*!< from %%artifact */
 };
 
 typedef rpmFlags rpmfileAttrs;

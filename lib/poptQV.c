@@ -131,6 +131,7 @@ static void queryArgCallback(poptContext con,
     case 'c': qva->qva_flags |= QUERY_FOR_CONFIG | QUERY_FOR_LIST; break;
     case 'd': qva->qva_flags |= QUERY_FOR_DOCS | QUERY_FOR_LIST; break;
     case 'L': qva->qva_flags |= QUERY_FOR_LICENSE | QUERY_FOR_LIST; break;
+    case 'A': qva->qva_flags |= QUERY_FOR_ARTIFACT | QUERY_FOR_LIST; break;
     case 'l': qva->qva_flags |= QUERY_FOR_LIST; break;
     case 's': qva->qva_flags |= QUERY_FOR_STATE | QUERY_FOR_LIST;
 	break;
@@ -194,6 +195,8 @@ struct poptOption rpmQueryPoptTable[] = {
 	N_("list all documentation files"), NULL },
  { "licensefiles", 'L', 0, 0, 'L',
 	N_("list all license files"), NULL },
+ { "artifactfiles", 'A', 0, 0, 'A',
+	N_("list all artifact files"), NULL },
  { "dump", '\0', 0, 0, POPT_DUMP,
 	N_("dump basic file information"), NULL },
  { NULL, 'i', POPT_ARGFLAG_DOC_HIDDEN, 0, 'i',
@@ -208,6 +211,9 @@ struct poptOption rpmQueryPoptTable[] = {
  { "noconfig", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_fflags, RPMFILE_CONFIG,
         N_("skip %%config files"), NULL },
+ { "noartifact", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.qva_fflags, RPMFILE_ARTIFACT,
+        N_("skip %%artifact files"), NULL },
 
  { "qf", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, 0, 
 	POPT_QUERYFORMAT, NULL, NULL },
