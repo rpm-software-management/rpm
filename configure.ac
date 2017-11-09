@@ -783,7 +783,8 @@ AC_REPLACE_FUNCS(stpcpy stpncpy)
 AC_CHECK_FUNCS([secure_getenv __secure_getenv])
 
 AC_CHECK_FUNCS(
-   [mkstemp getcwd basename dirname realpath setenv unsetenv regcomp lchown utimes],
+   [mkstemp getcwd basename dirname realpath setenv unsetenv regcomp lchown \
+    utimes getline],
    [], [AC_MSG_ERROR([function required by rpm])])
 
 AC_LIBOBJ(fnmatch)
