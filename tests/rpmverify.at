@@ -168,6 +168,53 @@ missing   d /usr/share/doc/hello-1.0/FAQ
 [])
 AT_CLEANUP
 
+AT_SETUP([verify file attribute filtering])
+AT_KEYWORDS([query])
+AT_CHECK([
+runroot rpmbuild -bb --quiet \
+  /data/SPECS/vattrtest.spec
+
+runroot rpm -U /build/RPMS/noarch/vattrtest-1.0-1.noarch.rpm
+runroot_other touch /opt/vattrtest/g
+runroot_other chmod 644 /opt/vattrtest/g
+
+cmd="rpm -Vv --nouser --nogroup"
+for filter in --noconfig --noghost --noartifact; do
+    echo ${filter}
+    runroot ${cmd} ${filter} vattrtest
+done
+],
+[ignore],
+[--noconfig
+.........    /opt/vattrtest
+.........  a /opt/vattrtest/a
+.........  d /opt/vattrtest/d
+.........  g /opt/vattrtest/g
+.........  l /opt/vattrtest/l
+.........  m /opt/vattrtest/m
+.........  r /opt/vattrtest/r
+--noghost
+.........    /opt/vattrtest
+.........  a /opt/vattrtest/a
+.........  c /opt/vattrtest/c
+.........  c /opt/vattrtest/cn
+.........  d /opt/vattrtest/d
+.........  l /opt/vattrtest/l
+.........  m /opt/vattrtest/m
+.........  r /opt/vattrtest/r
+--noartifact
+.........    /opt/vattrtest
+.........  c /opt/vattrtest/c
+.........  c /opt/vattrtest/cn
+.........  d /opt/vattrtest/d
+.........  g /opt/vattrtest/g
+.........  l /opt/vattrtest/l
+.........  m /opt/vattrtest/m
+.........  r /opt/vattrtest/r
+],
+[])
+AT_CLEANUP
+
 # Test verify script success & failure behavior
 # Ignoring stderr spew for now
 AT_SETUP([verifyscript failure])

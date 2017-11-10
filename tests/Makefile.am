@@ -67,6 +67,7 @@ EXTRA_DIST += data/SPECS/sigpipe.spec
 EXTRA_DIST += data/SPECS/test-subpackages.spec
 EXTRA_DIST += data/SPECS/test-subpackages-exclude.spec
 EXTRA_DIST += data/SPECS/test-subpackages-pathpostfixes.spec
+EXTRA_DIST += data/SPECS/vattrtest.spec
 EXTRA_DIST += data/SOURCES/hello-1.0-modernize.patch
 EXTRA_DIST += data/SOURCES/hello-1.0.tar.gz
 EXTRA_DIST += data/SOURCES/hello-2.0.tar.gz

@@ -757,3 +757,56 @@ runroot rpm -qp --xml  data/RPMS/hello-2.0-1.x86_64.rpm
 ],
 [])
 AT_CLEANUP
+
+AT_SETUP([query file attribute filtering])
+AT_KEYWORDS([query])
+AT_CHECK([
+runroot rpmbuild -bb --quiet \
+  /data/SPECS/vattrtest.spec
+
+pkg="/build/RPMS/noarch/vattrtest-1.0-1.noarch.rpm"
+cmd="rpm -qpl"
+for filter in --noconfig --noghost --noartifact -A -c -d -L; do
+    echo ${filter}
+    runroot ${cmd} ${filter} ${pkg}
+done
+],
+[0],
+[--noconfig
+/opt/vattrtest
+/opt/vattrtest/a
+/opt/vattrtest/d
+/opt/vattrtest/g
+/opt/vattrtest/l
+/opt/vattrtest/m
+/opt/vattrtest/r
+--noghost
+/opt/vattrtest
+/opt/vattrtest/a
+/opt/vattrtest/c
+/opt/vattrtest/cn
+/opt/vattrtest/d
+/opt/vattrtest/l
+/opt/vattrtest/m
+/opt/vattrtest/r
+--noartifact
+/opt/vattrtest
+/opt/vattrtest/c
+/opt/vattrtest/cn
+/opt/vattrtest/d
+/opt/vattrtest/g
+/opt/vattrtest/l
+/opt/vattrtest/m
+/opt/vattrtest/r
+-A
+/opt/vattrtest/a
+-c
+/opt/vattrtest/c
+/opt/vattrtest/cn
+-d
+/opt/vattrtest/d
+-L
+/opt/vattrtest/l
+],
+[])
+AT_CLEANUP
