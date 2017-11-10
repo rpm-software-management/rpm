@@ -122,18 +122,14 @@ enum rpmQueryFlags_e {
     QUERY_HDRCHK	= (1 << 22),	/*!< verify: from --nohdrchk */
     QUERY_FOR_LIST	= (1 << 23),	/*!< query:  from --list */
     QUERY_FOR_STATE	= (1 << 24),	/*!< query:  from --state */
-    QUERY_FOR_DOCS	= (1 << 25),	/*!< query:  from --docfiles */
-    QUERY_FOR_CONFIG	= (1 << 26),	/*!< query:  from --configfiles */
+	/* bits 25-26 unused */
     QUERY_FOR_DUMPFILES	= (1 << 27),	/*!< query:  from --dump */
-    QUERY_FOR_LICENSE	= (1 << 28),	/*!< query:  from --licensefiles */
-    QUERY_FOR_ARTIFACT	= (1 << 29),	/*!< query:  from --artifacts */
 };
 
 typedef rpmFlags rpmQueryFlags;
 
 #define	_QUERY_FOR_BITS	\
-   (QUERY_FOR_LIST|QUERY_FOR_STATE|QUERY_FOR_DOCS|QUERY_FOR_CONFIG|\
-    QUERY_FOR_LICENSE|QUERY_FOR_DUMPFILES)
+   (QUERY_FOR_LIST|QUERY_FOR_STATE|QUERY_FOR_DUMPFILES)
 
 /** \ingroup rpmcli
  * Bit(s) from common command line options.
@@ -171,6 +167,7 @@ struct rpmQVKArguments_s {
     rpmQVSources qva_source;	/*!< Identify CLI arg type. */
     int 	qva_sourceCount;/*!< Exclusive option check (>1 is error). */
     rpmQueryFlags qva_flags;	/*!< Bit(s) to control operation. */
+    rpmfileAttrs qva_incattr;	/*!< Bit(s) to include on attribute. */
     rpmfileAttrs qva_excattr;	/*!< Bit(s) to exclude on attribute. */
 
     QVF_t qva_showPackage;	/*!< Function to display iterator matches. */

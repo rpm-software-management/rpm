@@ -128,10 +128,6 @@ static void queryArgCallback(poptContext con,
     QVA_t qva = &rpmQVKArgs;
 
     switch (opt->val) {
-    case 'c': qva->qva_flags |= QUERY_FOR_CONFIG | QUERY_FOR_LIST; break;
-    case 'd': qva->qva_flags |= QUERY_FOR_DOCS | QUERY_FOR_LIST; break;
-    case 'L': qva->qva_flags |= QUERY_FOR_LICENSE | QUERY_FOR_LIST; break;
-    case 'A': qva->qva_flags |= QUERY_FOR_ARTIFACT | QUERY_FOR_LIST; break;
     case 'l': qva->qva_flags |= QUERY_FOR_LIST; break;
     case 's': qva->qva_flags |= QUERY_FOR_STATE | QUERY_FOR_LIST;
 	break;
@@ -189,13 +185,17 @@ struct poptOption rpmQueryPoptTable[] = {
 /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE, 
 	queryArgCallback, 0, NULL, NULL },
- { "configfiles", 'c', 0, 0, 'c',
+ { "configfiles", 'c', POPT_BIT_SET,
+	&rpmQVKArgs.qva_incattr, RPMFILE_CONFIG,
 	N_("list all configuration files"), NULL },
- { "docfiles", 'd', 0, 0, 'd',
+ { "docfiles", 'd', POPT_BIT_SET,
+	&rpmQVKArgs.qva_incattr, RPMFILE_DOC,
 	N_("list all documentation files"), NULL },
- { "licensefiles", 'L', 0, 0, 'L',
+ { "licensefiles", 'L', POPT_BIT_SET,
+	&rpmQVKArgs.qva_incattr, RPMFILE_LICENSE,
 	N_("list all license files"), NULL },
- { "artifactfiles", 'A', 0, 0, 'A',
+ { "artifactfiles", 'A', POPT_BIT_SET,
+	&rpmQVKArgs.qva_incattr, RPMFILE_ARTIFACT,
 	N_("list all artifact files"), NULL },
  { "dump", '\0', 0, 0, POPT_DUMP,
 	N_("dump basic file information"), NULL },
