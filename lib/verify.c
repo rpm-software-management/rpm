@@ -474,7 +474,7 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 	    ec = rc;
     }
     if (qva->qva_flags & VERIFY_FILES) {
-	if ((rc = verifyHeader(ts, h, omitMask, qva->qva_fflags)) != 0)
+	if ((rc = verifyHeader(ts, h, omitMask, qva->qva_excattr)) != 0)
 	    ec = rc;
     }
     if (qva->qva_flags & VERIFY_SCRIPT) {

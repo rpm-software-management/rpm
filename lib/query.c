@@ -152,7 +152,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	    continue;
 
 	/* Skip on attributes (eg from --noghost) */
-	if (fflags & qva->qva_fflags)
+	if (fflags & qva->qva_excattr)
 	    continue;
 
 	if (qva->qva_flags & QUERY_FOR_STATE) {

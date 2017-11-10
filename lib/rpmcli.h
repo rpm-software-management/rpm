@@ -179,7 +179,7 @@ struct rpmQVKArguments_s {
     rpmQVSources qva_source;	/*!< Identify CLI arg type. */
     int 	qva_sourceCount;/*!< Exclusive option check (>1 is error). */
     rpmQueryFlags qva_flags;	/*!< Bit(s) to control operation. */
-    rpmfileAttrs qva_fflags;	/*!< Bit(s) to filter on attribute. */
+    rpmfileAttrs qva_excattr;	/*!< Bit(s) to exclude on attribute. */
 
     QVF_t qva_showPackage;	/*!< Function to display iterator matches. */
     QSpecF_t qva_specQuery;	/*!< Function to query spec file. */

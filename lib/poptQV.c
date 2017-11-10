@@ -206,13 +206,13 @@ struct poptOption rpmQueryPoptTable[] = {
 
  /* Duplicate file attr flags from packages into command line options. */
  { "noghost", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_fflags, RPMFILE_GHOST,
+	&rpmQVKArgs.qva_excattr, RPMFILE_GHOST,
         N_("skip %%ghost files"), NULL },
  { "noconfig", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_fflags, RPMFILE_CONFIG,
+	&rpmQVKArgs.qva_excattr, RPMFILE_CONFIG,
         N_("skip %%config files"), NULL },
  { "noartifact", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_fflags, RPMFILE_ARTIFACT,
+	&rpmQVKArgs.qva_excattr, RPMFILE_ARTIFACT,
         N_("skip %%artifact files"), NULL },
 
  { "qf", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, 0, 
