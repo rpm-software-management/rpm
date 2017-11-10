@@ -179,7 +179,7 @@ runroot_other touch /opt/vattrtest/g
 runroot_other chmod 644 /opt/vattrtest/g
 
 cmd="rpm -Vv --nouser --nogroup"
-for filter in --noconfig --noghost --noartifact; do
+for filter in --noconfig --noghost --noartifact -A -c -d -L; do
     echo ${filter}
     runroot ${cmd} ${filter} vattrtest
 done
@@ -211,6 +211,15 @@ done
 .........  l /opt/vattrtest/l
 .........  m /opt/vattrtest/m
 .........  r /opt/vattrtest/r
+-A
+.........  a /opt/vattrtest/a
+-c
+.........  c /opt/vattrtest/c
+.........  c /opt/vattrtest/cn
+-d
+.........  d /opt/vattrtest/d
+-L
+.........  l /opt/vattrtest/l
 ],
 [])
 AT_CLEANUP

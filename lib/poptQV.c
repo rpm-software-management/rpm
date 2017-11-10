@@ -178,43 +178,45 @@ static void queryArgCallback(poptContext con,
     }
 }
 
+ /* Duplicate file attr flags from packages into command line options. */
+struct poptOption rpmQVFilePoptTable[] = {
+ { "configfiles", 'c', POPT_BIT_SET,
+	&rpmQVKArgs.qva_incattr, RPMFILE_CONFIG,
+	N_("only include configuration files"), NULL },
+ { "docfiles", 'd', POPT_BIT_SET,
+	&rpmQVKArgs.qva_incattr, RPMFILE_DOC,
+	N_("only include documentation files"), NULL },
+ { "licensefiles", 'L', POPT_BIT_SET,
+	&rpmQVKArgs.qva_incattr, RPMFILE_LICENSE,
+	N_("only include license files"), NULL },
+ { "artifactfiles", 'A', POPT_BIT_SET,
+	&rpmQVKArgs.qva_incattr, RPMFILE_ARTIFACT,
+	N_("only include artifact files"), NULL },
+ { "noghost", '\0', POPT_BIT_SET,
+	&rpmQVKArgs.qva_excattr, RPMFILE_GHOST,
+        N_("exclude %%ghost files"), NULL },
+ { "noconfig", '\0', POPT_BIT_SET,
+	&rpmQVKArgs.qva_excattr, RPMFILE_CONFIG,
+        N_("exclude %%config files"), NULL },
+ { "noartifact", '\0', POPT_BIT_SET,
+	&rpmQVKArgs.qva_excattr, RPMFILE_ARTIFACT,
+        N_("exclude %%artifact files"), NULL },
+
+   POPT_TABLEEND
+};
+
 /**
  * Query mode options.
  */
 struct poptOption rpmQueryPoptTable[] = {
-/* FIX: cast? */
- { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE, 
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
 	queryArgCallback, 0, NULL, NULL },
- { "configfiles", 'c', POPT_BIT_SET,
-	&rpmQVKArgs.qva_incattr, RPMFILE_CONFIG,
-	N_("list all configuration files"), NULL },
- { "docfiles", 'd', POPT_BIT_SET,
-	&rpmQVKArgs.qva_incattr, RPMFILE_DOC,
-	N_("list all documentation files"), NULL },
- { "licensefiles", 'L', POPT_BIT_SET,
-	&rpmQVKArgs.qva_incattr, RPMFILE_LICENSE,
-	N_("list all license files"), NULL },
- { "artifactfiles", 'A', POPT_BIT_SET,
-	&rpmQVKArgs.qva_incattr, RPMFILE_ARTIFACT,
-	N_("list all artifact files"), NULL },
  { "dump", '\0', 0, 0, POPT_DUMP,
 	N_("dump basic file information"), NULL },
  { NULL, 'i', POPT_ARGFLAG_DOC_HIDDEN, 0, 'i',
 	NULL, NULL },
  { "list", 'l', 0, 0, 'l',
 	N_("list files in package"), NULL },
-
- /* Duplicate file attr flags from packages into command line options. */
- { "noghost", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_excattr, RPMFILE_GHOST,
-        N_("skip %%ghost files"), NULL },
- { "noconfig", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_excattr, RPMFILE_CONFIG,
-        N_("skip %%config files"), NULL },
- { "noartifact", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_excattr, RPMFILE_ARTIFACT,
-        N_("skip %%artifact files"), NULL },
-
  { "qf", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, 0, 
 	POPT_QUERYFORMAT, NULL, NULL },
  { "queryformat", '\0', POPT_ARG_STRING, 0, POPT_QUERYFORMAT,

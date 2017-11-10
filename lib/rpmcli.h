@@ -193,6 +193,10 @@ extern struct poptOption rpmQVSourcePoptTable[];
 
 /** \ingroup rpmcli
  */
+extern struct poptOption rpmQVFilePoptTable[];
+
+/** \ingroup rpmcli
+ */
 extern struct poptOption rpmQueryPoptTable[];
 
 /** \ingroup rpmcli

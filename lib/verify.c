@@ -352,11 +352,12 @@ static const char * stateStr(rpmfileState fstate)
  * @param ts		transaction set
  * @param h		header to verify
  * @param omitMask	bits to disable verify checks
+ * @param incAttr	skip files without these attrs (eg %ghost)
  * @param skipAttr	skip files with these attrs (eg %ghost)
  * @return		0 no problems, 1 problems found
  */
 static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask,
-			rpmfileAttrs skipAttrs)
+			rpmfileAttrs incAttrs, rpmfileAttrs skipAttrs)
 {
     rpmVerifyAttrs verifyResult = 0;
     rpmVerifyAttrs verifyAll = 0; /* assume no problems */
@@ -371,6 +372,10 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask,
 	char *buf = NULL, *attrFormat;
 	const char *fstate = NULL;
 	char ac;
+
+	/* If filtering by inclusion, skip non-matching (eg --configfiles) */
+	if (incAttrs && !(incAttrs & fileAttrs))
+	    continue;
 
 	/* Skip on attributes (eg from --noghost) */
 	if (skipAttrs & fileAttrs)
@@ -474,7 +479,8 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 	    ec = rc;
     }
     if (qva->qva_flags & VERIFY_FILES) {
-	if ((rc = verifyHeader(ts, h, omitMask, qva->qva_excattr)) != 0)
+	if ((rc = verifyHeader(ts, h, omitMask,
+				qva->qva_incattr, qva->qva_excattr)) != 0)
 	    ec = rc;
     }
     if (qva->qva_flags & VERIFY_SCRIPT) {

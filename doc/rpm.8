@@ -526,8 +526,8 @@ two columns, you could use \fB%-30{NAME}%{DISTRIBUTION}\fR.
 \fBrpm\fR will print a list of all of the tags it knows about when it
 is invoked with the \fB--querytags\fR argument.
 .PP
-There are two subsets of options for querying: package selection,
-and information selection.
+There are three subsets of options for querying: package selection,
+file selection and information selection.
 .SS "PACKAGE SELECTION OPTIONS:"
 .PP
 .TP
@@ -632,23 +632,14 @@ Query all packages that enhance \fICAPABILITY\fR.
 .SS "PACKAGE QUERY OPTIONS:"
 .PP
 .TP
-\fB-d, --artifactfiles\fR
-List only artifact files (implies \fB-l\fR).
-.TP
 \fB--changelog\fR
 Display change information for the package.
 .TP
 \fB--changes\fR
 Display change information for the package with full time stamps.
 .TP
-\fB-c, --configfiles\fR
-List only configuration files (implies \fB-l\fR).
-.TP
 \fB--conflicts\fR
 List capabilities this package conflicts with.
-.TP
-\fB-d, --docfiles\fR
-List only documentation files (implies \fB-l\fR).
 .TP
 \fB--dump\fR
 Dump file information as follows (implies \fB-l\fR):
@@ -677,9 +668,6 @@ This uses the \fB--queryformat\fR if one was specified.
 \fB--last\fR
 Orders the package listing by install time such that the latest
 packages are at the top.
-.TP
-\fB-L, --licensefiles\fR
-List only license files (implies \fB-l\fR).
 .TP
 \fB-l, --list\fR
 List files in package.
@@ -716,17 +704,31 @@ Display the \fIstates\fR of files in the package
 \fB--triggers, --triggerscripts\fR
 Display the trigger scripts, if any, which are contained in
 the package.
-.TP
-\fB--noartifact\fR
-Don't display artifact files.
-\fB--noghost\fR
-Don't display ghost files. Useful in combination with option --list.
-.TP
-\fB--noconfig\fR
-Don't display config files.
-.TP
 \fB--xml\fR
 Format package headers as XML.
+
+.SS "FILE SELECTION OPTIONS:"
+.PP
+.TP
+\fB-d, --artifactfiles\fR
+Only include artifact files (implies \fB-l\fR).
+.TP
+.TP
+\fB-c, --configfiles\fR
+Only include configuration files (implies \fB-l\fR).
+.TP
+\fB-d, --docfiles\fR
+Only include documentation files (implies \fB-l\fR).
+\fB-L, --licensefiles\fR
+Only include license files (implies \fB-l\fR).
+.TP
+\fB--noartifact\fR
+Exclude artifact files.
+.TP
+\fB--noconfig\fR
+Exclude config files.
+\fB--noghost\fR
+Exclude ghost files.
 
 .SS "VERIFY OPTIONS"
 .PP
@@ -746,7 +748,7 @@ documentation files excluded on installation using the
 "\fB--excludedocs\fR" option,
 will be silently ignored.
 .PP
-The package selection options are the same as for package
+The package and file selection options are the same as for package
 querying (including package manifest files as arguments).
 Other options unique to verify mode are:
 .TP
@@ -758,12 +760,6 @@ Don't verify package or header digests when reading.
 .TP
 \fB--nofiles\fR
 Don't verify any attributes of package files.
-.TP
-\fB--noghost\fR
-Don't verify ghost files.
-.TP
-\fB--noconfig\fR
-Don't verify config files.
 .TP
 \fB--noscripts\fR
 Don't execute the \fB%verifyscript\fR scriptlet (if any).
