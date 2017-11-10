@@ -110,16 +110,8 @@ typedef rpmFlags rpmQVSources;
  */
 enum rpmQueryFlags_e {
     QUERY_FOR_DEFAULT	= 0,		/*!< */
-    QUERY_MD5		= (1 << 0),	/*!< from --nomd5 */
-    QUERY_FILEDIGEST	= (1 << 0),	/*!< from --nofiledigest, same as --nomd5 */
-    QUERY_SIZE		= (1 << 1),	/*!< from --nosize */
-    QUERY_LINKTO	= (1 << 2),	/*!< from --nolink */
-    QUERY_USER		= (1 << 3),	/*!< from --nouser) */
-    QUERY_GROUP		= (1 << 4),	/*!< from --nogroup) */
-    QUERY_MTIME		= (1 << 5),	/*!< from --nomtime) */
-    QUERY_MODE		= (1 << 6),	/*!< from --nomode) */
-    QUERY_RDEV		= (1 << 7),	/*!< from --nodev */
-	/* bits 8-14 unused, reserved for rpmVerifyAttrs */
+	/* bits 0-7 unused */
+	/* bits 8-14 reserved for rpmVerifyAttrs */
     QUERY_CONTEXTS	= (1 << 15),	/*!< verify: from --nocontexts */
     QUERY_FILES		= (1 << 16),	/*!< verify: from --nofiles */
     QUERY_DEPS		= (1 << 17),	/*!< verify: from --nodeps */

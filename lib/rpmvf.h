@@ -68,11 +68,6 @@ enum rpmVerifyFlags_e {
     VERIFY_SIGNATURE	= (1 << 20),	/*!< verify: from --nosignature */
     VERIFY_PATCHES	= (1 << 21),	/*!< verify: from --nopatches */
     VERIFY_HDRCHK	= (1 << 22),	/*!< verify: from --nohdrchk */
-    VERIFY_FOR_LIST	= (1 << 23),	/*!< query:  from --list */
-    VERIFY_FOR_STATE	= (1 << 24),	/*!< query:  from --state */
-    VERIFY_FOR_DOCS	= (1 << 25),	/*!< query:  from --docfiles */
-    VERIFY_FOR_CONFIG	= (1 << 26),	/*!< query:  from --configfiles */
-    VERIFY_FOR_DUMPFILES= (1 << 27)	/*!< query:  from --dump */
 	/* bits 28-31 used in rpmVerifyAttrs */
 };
 
