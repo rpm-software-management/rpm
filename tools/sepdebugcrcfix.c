@@ -154,7 +154,11 @@ crc32 (const char *fname, const char *base_fname, uint32_t *crcp)
       void *map = NULL;
       if (buf == NULL)
 	{
-	  map = mmap (NULL, maplen, PROT_READ, MAP_PRIVATE | MAP_POPULATE,
+	  map = mmap (NULL, maplen, PROT_READ, MAP_PRIVATE
+#ifdef MAP_POPULATE
+      | MAP_POPULATE
+#endif
+      ,
 		      fd, offset);
 	  if (map == MAP_FAILED)
 	    {
