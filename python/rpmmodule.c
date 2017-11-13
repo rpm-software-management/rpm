@@ -6,7 +6,6 @@
 #include <rpm/rpmsq.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
-#include <rpm/rpmvf.h>
 
 #include "header-py.h"
 #include "rpmarchive-py.h"
@@ -525,9 +524,6 @@ static int initModule(PyObject *m)
     REGISTER_ENUM(RPMPROB_DISKSPACE);
     REGISTER_ENUM(RPMPROB_DISKNODES);
     REGISTER_ENUM(RPMPROB_OBSOLETES);
-
-    REGISTER_ENUM(VERIFY_DIGEST);
-    REGISTER_ENUM(VERIFY_SIGNATURE);
 
     REGISTER_ENUM(RPMLOG_EMERG);
     REGISTER_ENUM(RPMLOG_ALERT);
