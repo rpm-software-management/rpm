@@ -30,7 +30,8 @@ static rpmlock rpmlock_new(const char *lock_path, const char *descr)
 	(void) umask(oldmask);
 
 	if (lock->fd == -1) {
-	    lock->fd = open(lock_path, O_RDONLY);
+	    if (errno == EACCES)
+		lock->fd = open(lock_path, O_RDONLY);
 	    if (lock->fd == -1) {
 		free(lock);
 		lock = NULL;
