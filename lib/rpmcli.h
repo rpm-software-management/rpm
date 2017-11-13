@@ -170,6 +170,8 @@ struct rpmQVKArguments_s {
     rpmfileAttrs qva_incattr;	/*!< Bit(s) to include on attribute. */
     rpmfileAttrs qva_excattr;	/*!< Bit(s) to exclude on attribute. */
 
+    rpmVerifyAttrs qva_ofvattr; /*!< Bit(s) to omit on file verification. */
+
     QVF_t qva_showPackage;	/*!< Function to display iterator matches. */
     QSpecF_t qva_specQuery;	/*!< Function to query spec file. */
     char * qva_queryFormat;	/*!< Format for headerFormat(). */

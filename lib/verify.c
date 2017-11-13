@@ -470,7 +470,6 @@ static int verifyDependencies(rpmts ts, Header h)
 
 int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 {
-    rpmVerifyAttrs omitMask = ((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
     int ec = 0;
     int rc;
 
@@ -479,7 +478,7 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 	    ec = rc;
     }
     if (qva->qva_flags & VERIFY_FILES) {
-	if ((rc = verifyHeader(ts, h, omitMask,
+	if ((rc = verifyHeader(ts, h, qva->qva_ofvattr,
 				qva->qva_incattr, qva->qva_excattr)) != 0)
 	    ec = rc;
     }
