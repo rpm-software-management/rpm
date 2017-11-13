@@ -118,10 +118,6 @@ include/rpm/rpmtypes.h: lib/rpmtypes.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/lib/rpmtypes.h include/rpm/rpmtypes.h
 BUILT_SOURCES += include/rpm/rpmtypes.h
 CLEANFILES += include/rpm/rpmtypes.h
-include/rpm/rpmvf.h: lib/rpmvf.h include/rpm/$(dirstamp)
-	$(INSTALL_DATA) $(top_srcdir)/lib/rpmvf.h include/rpm/rpmvf.h
-BUILT_SOURCES += include/rpm/rpmvf.h
-CLEANFILES += include/rpm/rpmvf.h
 include/rpm/rpmarchive.h: lib/rpmarchive.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/lib/rpmarchive.h include/rpm/rpmarchive.h
 BUILT_SOURCES += include/rpm/rpmarchive.h
