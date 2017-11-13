@@ -21,22 +21,21 @@ struct rpmlock_s {
 
 static rpmlock rpmlock_new(const char *lock_path, const char *descr)
 {
-    rpmlock lock = (rpmlock) malloc(sizeof(*lock));
+    rpmlock lock = (rpmlock) xmalloc(sizeof(*lock));
+    mode_t oldmask;
 
-    if (lock != NULL) {
-	mode_t oldmask = umask(022);
-	lock->fd = open(lock_path, O_RDWR|O_CREAT, 0644);
-	(void) umask(oldmask);
+    oldmask = umask(022);
+    lock->fd = open(lock_path, O_RDWR|O_CREAT, 0644);
+    (void) umask(oldmask);
 
-	if (lock->fd == -1) {
-	    free(lock);
-	    lock = NULL;
-	}
-	if (lock) {
-	    lock->path = xstrdup(lock_path);
-	    lock->descr = xstrdup(descr);
-	    lock->fdrefs = 1;
-	}
+    if (lock->fd == -1) {
+	free(lock);
+	lock = NULL;
+    }
+    if (lock) {
+	lock->path = xstrdup(lock_path);
+	lock->descr = xstrdup(descr);
+	lock->fdrefs = 1;
     }
     return lock;
 }
