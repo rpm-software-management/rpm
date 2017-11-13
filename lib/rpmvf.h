@@ -37,20 +37,6 @@ typedef rpmFlags rpmVerifyFlags;
   ( VERIFY_FILES | VERIFY_DEPS | VERIFY_SCRIPT | VERIFY_DIGEST |\
     VERIFY_SIGNATURE | VERIFY_HDRCHK )
 
-/** \ingroup rpmvf
- * Verify file attributes (including digest).
- * @deprecated		use rpmfiVerify() / rpmfilesVerify() instead
- * @param ts		transaction set
- * @param fi		file info (with linked header and current file index)
- * @retval *res		bit(s) returned to indicate failure
- * @param omitMask	bit(s) to disable verify checks
- * @return		0 on success (or not installed), 1 on error
- */
-RPM_GNUC_DEPRECATED
-int rpmVerifyFile(const rpmts ts, rpmfi fi,
-		rpmVerifyAttrs * res, rpmVerifyAttrs omitMask);
-
-
 #ifdef __cplusplus
 }
 #endif
