@@ -237,8 +237,10 @@ static int rpmidxHandleObsolete(rpmidxdb idxdb)
 	close(nfd);
 	return RPMRC_FAIL;
     }
-    if (stb1.st_dev == stb2.st_dev && stb1.st_ino == stb2.st_ino)
-	return RPMRC_FAIL;		/* openend the same obsolete file */
+    if (stb1.st_dev == stb2.st_dev && stb1.st_ino == stb2.st_ino) {
+	close(nfd);
+	return RPMRC_FAIL;		/* opened the same obsolete file */
+    }
     rpmidxUnmap(idxdb);
     close(idxdb->fd);
     idxdb->fd = nfd;
