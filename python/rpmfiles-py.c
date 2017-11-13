@@ -255,7 +255,7 @@ static PyGetSetDef rpmfile_getseters[] = {
     { "fflags",		(getter) rpmfile_fflags,	NULL,
       "file flags - see RPMFILE_* constants" },
     { "vflags",		(getter) rpmfile_vflags,	NULL,
-      "verification flags - see RPMVERIFY_* (in rpmvf.h)" },
+      "verification flags - see RPMVERIFY_* (in rpmfiles.h)" },
     { "linkto",		(getter) rpmfile_linkto,	NULL,
       "link target - symlinks only" },
     { "color",		(getter) rpmfile_color,		NULL,

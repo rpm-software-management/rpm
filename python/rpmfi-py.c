@@ -256,7 +256,7 @@ static struct PyMethodDef rpmfi_methods[] = {
  {"FFlags",	(PyCFunction)rpmfi_FFlags,	METH_NOARGS,
   "fi.FFlags() -- Return the flags of the current file."},
  {"VFlags",	(PyCFunction)rpmfi_VFlags,	METH_NOARGS,
-  "fi.VFlags() -- Return the verify flags of the current file.\n\nSee RPMVERIFY_* (in rpmvf.h)"},
+  "fi.VFlags() -- Return the verify flags of the current file.\n\nSee RPMVERIFY_* (in rpmfiles.h)"},
  {"FMode",	(PyCFunction)rpmfi_FMode,	METH_NOARGS,
   "fi.FMode() -- Return the mode flags of the current file."},
  {"FState",	(PyCFunction)rpmfi_FState,	METH_NOARGS,
