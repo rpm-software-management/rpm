@@ -26,6 +26,7 @@ Makefile.in.in
 /Doxytags
 /aclocal.m4
 /autom4te.cache
+/compile
 /db.h
 /debugedit
 /depcomp
@@ -79,6 +80,7 @@ Makefile.in.in
 /scripts/macros.perl
 /scripts/macros.php
 /scripts/macros.python
+/sepdebugcrcfix
 /stamp-h1
 /tests/atconfig
 /tests/atlocal
