@@ -150,15 +150,15 @@ static void queryArgCallback(poptContext con,
 	break;
 
     case RPMCLI_POPT_NOFILEDIGEST:
-	qva->qva_ofvattr |= VERIFY_FILEDIGEST;
+	qva->qva_ofvattr |= RPMVERIFY_FILEDIGEST;
 	break;
 
     case RPMCLI_POPT_NOCONTEXTS:
-	qva->qva_ofvattr |= VERIFY_CONTEXTS;
+	qva->qva_ofvattr |= RPMVERIFY_CONTEXTS;
 	break;
 
     case RPMCLI_POPT_NOCAPS:
-	qva->qva_ofvattr |= VERIFY_CAPS;
+	qva->qva_ofvattr |= RPMVERIFY_CAPS;
 	break;
 
 #ifdef	NOTYET
@@ -239,25 +239,25 @@ struct poptOption rpmVerifyPoptTable[] = {
  { "nomd5", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOFILEDIGEST,
 	N_("don't verify digest of files"), NULL },
  { "nosize", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_ofvattr, VERIFY_SIZE,
+	&rpmQVKArgs.qva_ofvattr, RPMVERIFY_FILESIZE,
         N_("don't verify size of files"), NULL },
  { "nolinkto", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_ofvattr, VERIFY_LINKTO,
+	&rpmQVKArgs.qva_ofvattr, RPMVERIFY_LINKTO,
         N_("don't verify symlink path of files"), NULL },
  { "nouser", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_ofvattr, VERIFY_USER,
+	&rpmQVKArgs.qva_ofvattr, RPMVERIFY_USER,
         N_("don't verify owner of files"), NULL },
  { "nogroup", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_ofvattr, VERIFY_GROUP,
+	&rpmQVKArgs.qva_ofvattr, RPMVERIFY_GROUP,
         N_("don't verify group of files"), NULL },
  { "nomtime", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_ofvattr, VERIFY_MTIME,
+	&rpmQVKArgs.qva_ofvattr, RPMVERIFY_MTIME,
         N_("don't verify modification time of files"), NULL },
  { "nomode", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_ofvattr, VERIFY_MODE,
+	&rpmQVKArgs.qva_ofvattr, RPMVERIFY_MODE,
         N_("don't verify mode of files"), NULL },
  { "nordev", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_ofvattr, VERIFY_RDEV,
+	&rpmQVKArgs.qva_ofvattr, RPMVERIFY_RDEV,
         N_("don't verify mode of files"), NULL },
 
  { "nocontexts", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOCONTEXTS,

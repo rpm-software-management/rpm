@@ -19,17 +19,7 @@ extern "C" {
  */
 enum rpmVerifyFlags_e {
     VERIFY_DEFAULT	= 0,		/*!< */
-    VERIFY_MD5		= (1 << 0),	/*!< from --nomd5 - obsolete */
-    VERIFY_FILEDIGEST	= (1 << 0),	/*!< from --nofiledigest */
-    VERIFY_SIZE		= (1 << 1),	/*!< from --nosize */
-    VERIFY_LINKTO	= (1 << 2),	/*!< from --nolinkto */
-    VERIFY_USER		= (1 << 3),	/*!< from --nouser */
-    VERIFY_GROUP	= (1 << 4),	/*!< from --nogroup */
-    VERIFY_MTIME	= (1 << 5),	/*!< from --nomtime */
-    VERIFY_MODE		= (1 << 6),	/*!< from --nomode */
-    VERIFY_RDEV		= (1 << 7),	/*!< from --nodev */
-    VERIFY_CAPS		= (1 << 8),	/*!< from --nocaps */
-	/* bits 9-14 unused, reserved for rpmVerifyAttrs */
+	/* bits 1-14 unused */
     VERIFY_CONTEXTS	= (1 << 15),	/*!< verify: from --nocontexts */
     VERIFY_FILES	= (1 << 16),	/*!< verify: from --nofiles */
     VERIFY_DEPS		= (1 << 17),	/*!< verify: from --nodeps */
@@ -43,11 +33,8 @@ enum rpmVerifyFlags_e {
 
 typedef rpmFlags rpmVerifyFlags;
 
-#define	VERIFY_ATTRS	\
-  ( VERIFY_FILEDIGEST | VERIFY_SIZE | VERIFY_LINKTO | VERIFY_USER | VERIFY_GROUP | \
-    VERIFY_MTIME | VERIFY_MODE | VERIFY_RDEV | VERIFY_CONTEXTS | VERIFY_CAPS )
 #define	VERIFY_ALL	\
-  ( VERIFY_ATTRS | VERIFY_FILES | VERIFY_DEPS | VERIFY_SCRIPT | VERIFY_DIGEST |\
+  ( VERIFY_FILES | VERIFY_DEPS | VERIFY_SCRIPT | VERIFY_DIGEST |\
     VERIFY_SIGNATURE | VERIFY_HDRCHK )
 
 /** \ingroup rpmvf
