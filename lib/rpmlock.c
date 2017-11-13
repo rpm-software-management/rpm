@@ -14,7 +14,6 @@
 
 struct rpmlock_s {
     int fd;
-    int openmode;
     char *path;
     char *descr;
     int fdrefs;
@@ -30,16 +29,8 @@ static rpmlock rpmlock_new(const char *lock_path, const char *descr)
 	(void) umask(oldmask);
 
 	if (lock->fd == -1) {
-	    if (errno == EACCES)
-		lock->fd = open(lock_path, O_RDONLY);
-	    if (lock->fd == -1) {
-		free(lock);
-		lock = NULL;
-	    } else {
-		lock->openmode = RPMLOCK_READ;
-	    }
-	} else {
-	    lock->openmode = RPMLOCK_WRITE | RPMLOCK_READ;
+	    free(lock);
+	    lock = NULL;
 	}
 	if (lock) {
 	    lock->path = xstrdup(lock_path);
@@ -60,12 +51,13 @@ static void rpmlock_free(rpmlock lock)
     }
 }
 
+enum {
+    RPMLOCK_WAIT = 1<<0,
+};
+
 static int rpmlock_acquire(rpmlock lock, int mode)
 {
     int res = 0;
-
-    if (!(mode & lock->openmode))
-	return res;
 
     if (lock->fdrefs > 1) {
 	res = 1;
@@ -76,10 +68,7 @@ static int rpmlock_acquire(rpmlock lock, int mode)
 	    cmd = F_SETLKW;
 	else
 	    cmd = F_SETLK;
-	if (mode & RPMLOCK_READ)
-	    info.l_type = F_RDLCK;
-	else
-	    info.l_type = F_WRLCK;
+	info.l_type = F_WRLCK;
 	info.l_whence = SEEK_SET;
 	info.l_start = 0;
 	info.l_len = 0;
@@ -124,15 +113,15 @@ rpmlock rpmlockNew(const char *lock_path, const char *descr)
 
 int rpmlockAcquire(rpmlock lock)
 {
-    int locked = 0; /* assume failure */
+    int locked = 0;
     int maywait = isatty(STDIN_FILENO); /* dont wait within scriptlets */
 
     if (lock) {
-	locked = rpmlock_acquire(lock, RPMLOCK_WRITE);
-	if (!locked && (lock->openmode & RPMLOCK_WRITE) && maywait) {
+	locked = rpmlock_acquire(lock, 0);
+	if (!locked && maywait) {
 	    rpmlog(RPMLOG_WARNING, _("waiting for %s lock on %s\n"),
 		    lock->descr, lock->path);
-	    locked = rpmlock_acquire(lock, (RPMLOCK_WRITE|RPMLOCK_WAIT));
+	    locked = rpmlock_acquire(lock, RPMLOCK_WAIT);
 	}
 	if (!locked) {
 	    rpmlog(RPMLOG_ERR, _("can't create %s lock on %s (%s)\n"), 
