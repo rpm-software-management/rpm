@@ -109,14 +109,9 @@ typedef rpmFlags rpmQVSources;
  */
 enum rpmQueryFlags_e {
     QUERY_FOR_DEFAULT	= 0,		/*!< */
-	/* bits 0-7 unused */
-	/* bits 8-14 reserved for rpmVerifyAttrs */
-    QUERY_CONTEXTS	= (1 << 15),	/*!< verify: from --nocontexts */
-    QUERY_FILES		= (1 << 16),	/*!< verify: from --nofiles */
-    QUERY_DEPS		= (1 << 17),	/*!< verify: from --nodeps */
-    QUERY_SCRIPT	= (1 << 18),	/*!< verify: from --noscripts */
-	/* bits 19-20 unused */
-    QUERY_PATCHES	= (1 << 21),	/*!< verify: from --nopatches */
+	/* bits 0-14 unused */
+	/* bits 15-18 reserved for rpmVerifyFlags */
+	/* bits 19-21 unused */
     QUERY_FOR_LIST	= (1 << 23),	/*!< query:  from --list */
     QUERY_FOR_STATE	= (1 << 24),	/*!< query:  from --state */
 	/* bits 25-26 unused */
@@ -268,9 +263,6 @@ enum rpmVerifyFlags_e {
     VERIFY_FILES	= (1 << 16),	/*!< verify: from --nofiles */
     VERIFY_DEPS		= (1 << 17),	/*!< verify: from --nodeps */
     VERIFY_SCRIPT	= (1 << 18),	/*!< verify: from --noscripts */
-	/* bits 19-20 unused */
-    VERIFY_PATCHES	= (1 << 21),	/*!< verify: from --nopatches */
-	/* bits 28-31 used in rpmVerifyAttrs */
 };
 
 typedef rpmFlags rpmVerifyFlags;
