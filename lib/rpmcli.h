@@ -115,10 +115,8 @@ enum rpmQueryFlags_e {
     QUERY_FILES		= (1 << 16),	/*!< verify: from --nofiles */
     QUERY_DEPS		= (1 << 17),	/*!< verify: from --nodeps */
     QUERY_SCRIPT	= (1 << 18),	/*!< verify: from --noscripts */
-    QUERY_DIGEST	= (1 << 19),	/*!< verify: from --nodigest */
-    QUERY_SIGNATURE	= (1 << 20),	/*!< verify: from --nosignature */
+	/* bits 19-20 unused */
     QUERY_PATCHES	= (1 << 21),	/*!< verify: from --nopatches */
-    QUERY_HDRCHK	= (1 << 22),	/*!< verify: from --nohdrchk */
     QUERY_FOR_LIST	= (1 << 23),	/*!< query:  from --list */
     QUERY_FOR_STATE	= (1 << 24),	/*!< query:  from --state */
 	/* bits 25-26 unused */
@@ -134,6 +132,8 @@ typedef rpmFlags rpmQueryFlags;
  * Bit(s) from common command line options.
  */
 extern rpmQueryFlags rpmcliQueryFlags;
+
+extern rpmVSFlags rpmcliVSFlags;
 
 /** \ingroup rpmcli
  */
@@ -268,18 +268,15 @@ enum rpmVerifyFlags_e {
     VERIFY_FILES	= (1 << 16),	/*!< verify: from --nofiles */
     VERIFY_DEPS		= (1 << 17),	/*!< verify: from --nodeps */
     VERIFY_SCRIPT	= (1 << 18),	/*!< verify: from --noscripts */
-    VERIFY_DIGEST	= (1 << 19),	/*!< verify: from --nodigest */
-    VERIFY_SIGNATURE	= (1 << 20),	/*!< verify: from --nosignature */
+	/* bits 19-20 unused */
     VERIFY_PATCHES	= (1 << 21),	/*!< verify: from --nopatches */
-    VERIFY_HDRCHK	= (1 << 22),	/*!< verify: from --nohdrchk */
 	/* bits 28-31 used in rpmVerifyAttrs */
 };
 
 typedef rpmFlags rpmVerifyFlags;
 
 #define	VERIFY_ALL	\
-  ( VERIFY_FILES | VERIFY_DEPS | VERIFY_SCRIPT | VERIFY_DIGEST |\
-    VERIFY_SIGNATURE | VERIFY_HDRCHK )
+  ( VERIFY_FILES | VERIFY_DEPS | VERIFY_SCRIPT )
 
 /** \ingroup rpmcli
  * Verify package install.

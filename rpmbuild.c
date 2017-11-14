@@ -538,12 +538,7 @@ static int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
     rpmVSFlags vsflags, ovsflags;
 
     vsflags = rpmExpandNumeric("%{_vsflags_build}");
-    if (rpmcliQueryFlags & VERIFY_DIGEST)
-	vsflags |= _RPMVSF_NODIGESTS;
-    if (rpmcliQueryFlags & VERIFY_SIGNATURE)
-	vsflags |= _RPMVSF_NOSIGNATURES;
-    if (rpmcliQueryFlags & VERIFY_HDRCHK)
-	vsflags |= RPMVSF_NOHDRCHK;
+    vsflags |= rpmcliVSFlags;
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
     if (build_targets == NULL) {

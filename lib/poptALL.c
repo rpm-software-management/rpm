@@ -45,6 +45,8 @@ const char * rpmcliRootDir = "/";
 
 rpmQueryFlags rpmcliQueryFlags;
 
+rpmVSFlags rpmcliVSFlags;
+
 extern int _rpmio_debug;
 
 static int rpmcliInitialized = -1;
@@ -166,18 +168,6 @@ static void rpmcliAllArgCallback( poptContext con,
 	rpmcliPipeOutput = xstrdup(arg);
 	break;
 	
-    case RPMCLI_POPT_NODIGEST:
-	rpmcliQueryFlags |= VERIFY_DIGEST;
-	break;
-
-    case RPMCLI_POPT_NOSIGNATURE:
-	rpmcliQueryFlags |= VERIFY_SIGNATURE;
-	break;
-
-    case RPMCLI_POPT_NOHDRCHK:
-	rpmcliQueryFlags |= VERIFY_HDRCHK;
-	break;
-
     case RPMCLI_POPT_TARGETPLATFORM:
 	rpmcliInitialized = rpmReadConfigFiles(rpmcliRcfile, arg);
 	break;
@@ -218,11 +208,14 @@ struct poptOption rpmcliAllPoptTable[] = {
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_NOPLUGINS,
 	N_("don't enable any plugins"), NULL },
 
- { "nodigest", '\0', 0, 0, RPMCLI_POPT_NODIGEST,
+ { "nodigest", '\0', POPT_BIT_SET,
+	&rpmcliVSFlags, _RPMVSF_NODIGESTS,
         N_("don't verify package digest(s)"), NULL },
- { "nohdrchk", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOHDRCHK,
+ { "nohdrchk", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmcliVSFlags, RPMVSF_NOHDRCHK,
         N_("don't verify database header(s) when retrieved"), NULL },
- { "nosignature", '\0', 0, 0, RPMCLI_POPT_NOSIGNATURE,
+ { "nosignature", '\0', POPT_BIT_SET,
+	&rpmcliVSFlags, _RPMVSF_NOSIGNATURES,
         N_("don't verify package signature(s)"), NULL },
 
  { "pipe", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_PIPE,

@@ -83,12 +83,7 @@ static rpmVSFlags setvsFlags(struct rpmInstallArguments_s * ia)
     else
 	vsflags = rpmExpandNumeric("%{?_vsflags_install}");
 
-    if (rpmcliQueryFlags & VERIFY_DIGEST)
-	vsflags |= _RPMVSF_NODIGESTS;
-    if (rpmcliQueryFlags & VERIFY_SIGNATURE)
-	vsflags |= _RPMVSF_NOSIGNATURES;
-    if (rpmcliQueryFlags & VERIFY_HDRCHK)
-	vsflags |= RPMVSF_NOHDRCHK;
+    vsflags |= rpmcliVSFlags;
 
     return vsflags;
 }

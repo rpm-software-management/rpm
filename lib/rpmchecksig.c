@@ -288,10 +288,7 @@ int rpmcliVerifySignatures(rpmts ts, ARGV_const_t argv)
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
     rpmVSFlags vsflags = 0;
 
-    if (rpmcliQueryFlags & QUERY_DIGEST)
-	vsflags |= _RPMVSF_NODIGESTS;
-    if (rpmcliQueryFlags & QUERY_SIGNATURE)
-	vsflags |= _RPMVSF_NOSIGNATURES;
+    vsflags |= rpmcliVSFlags;
 
     while ((arg = *argv++) != NULL) {
 	FD_t fd = Fopen(arg, "r.ufdio");
