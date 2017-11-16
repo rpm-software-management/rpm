@@ -736,8 +736,11 @@ AS_IF([test "$enable_plugins" = yes],[
 ])
 AM_CONDITIONAL(ENABLE_PLUGINS,[test "$enable_plugins" = yes])
 
-with_dbus=no
-AS_IF([test "$enable_plugins" != no],[
+AC_ARG_WITH([dbus], [AS_HELP_STRING([--with-dbus], [build with dbus support])],
+            [],
+            [with_dbus=yes])
+
+AS_IF([test "$with_dbus" != no],[
   PKG_CHECK_MODULES([DBUS],
     [dbus-1 >= 1.3],
     [AC_DEFINE(DBUS, 1, [Build with dbus support?]) with_dbus=yes],
