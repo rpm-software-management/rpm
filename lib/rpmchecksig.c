@@ -181,7 +181,8 @@ rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
 	goto exit;
     }
 
-    if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERSIGNATURES, &sigblob, &msg))
+    /* Read the signature header. Might not be in a contiguous region. */
+    if (hdrblobRead(fd, 1, 0, RPMTAG_HEADERSIGNATURES, &sigblob, &msg))
 	goto exit;
 
     sigset = rpmvsCreate(&sigblob, flags);
