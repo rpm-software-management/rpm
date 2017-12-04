@@ -836,8 +836,8 @@ int rpmGlob(const char * patterns, int * argcPtr, ARGV_t * argvPtr)
     t = setlocale(LC_CTYPE, NULL);
     if (t)
     	old_ctype = xstrdup(t);
-    (void) setlocale(LC_COLLATE, "C");
-    (void) setlocale(LC_CTYPE, "C");
+    (void) setlocale(LC_COLLATE, C_LOCALE);
+    (void) setlocale(LC_CTYPE, C_LOCALE);
 #endif
 	
     if (av != NULL)

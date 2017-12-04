@@ -76,6 +76,10 @@ Makefile.in.in
 /rpmsign
 /rpmsort
 /rpmspec
+/scripts/check-buildroot
+/scripts/check-files
+/scripts/check-rpaths-worker
+/scripts/find-debuginfo.sh
 /scripts/macros.perl
 /scripts/macros.php
 /scripts/macros.python

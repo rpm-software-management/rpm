@@ -2294,7 +2294,7 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     appendStringBuf(docScript, sdenv);
     appendStringBuf(docScript, "=$RPM_BUILD_ROOT");
     appendLineStringBuf(docScript, sd->dirname);
-    appendLineStringBuf(docScript, "export LC_ALL=C");
+    appendLineStringBuf(docScript, ("export LC_ALL=%s", C_LOCALE));
     appendStringBuf(docScript, "export ");
     appendLineStringBuf(docScript, sdenv);
     appendLineStringBuf(docScript, mkdocdir);

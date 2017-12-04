@@ -97,8 +97,8 @@ old_IFS=$IFS
 
 for i; do
     pos=0
-    rpath=$(readelf -d "$i" 2>/dev/null | LANG=C grep '(RPATH).*:') || continue
-    rpath=$(echo "$rpath" | LANG=C sed -e 's!.*(RPATH).*: \[\(.*\)\]!\1!p;d')
+    rpath=$(readelf -d "$i" 2>/dev/null | LANG=@C_LOCALE@ grep '(RPATH).*:') || continue
+    rpath=$(echo "$rpath" | LANG=@C_LOCALE@ sed -e 's!.*(RPATH).*: \[\(.*\)\]!\1!p;d')
     tmp=aux:$rpath:/lib/aux || :
     IFS=:
     set -- $tmp
