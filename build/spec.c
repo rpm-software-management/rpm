@@ -308,9 +308,12 @@ rpmSpec rpmSpecFree(rpmSpec spec)
     spec->BANames = _free(spec->BANames);
 
 #ifdef WITH_LUA
+    // only destroy lua tables if there are no BASpecs left
+    if (spec->recursing || spec->BACount == 0) {
     rpmlua lua = NULL; /* global state */
     rpmluaDelVar(lua, "patches");
     rpmluaDelVar(lua, "sources");	
+    }
 #endif
 
     spec->sources = freeSources(spec->sources);
