@@ -182,6 +182,10 @@ while [ $# -gt 0 ]; do
   -j*)
     n_jobs=${1#-j}
     ;;
+  --jobs)
+    n_jobs=$2
+    shift
+    ;;
   -S)
     srcout=$2
     shift
