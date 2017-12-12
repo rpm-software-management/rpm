@@ -445,6 +445,24 @@ exit:
     _free(buf);
 }
 
+static const int
+validName(const char *name, size_t namelen, const char *action) {
+    int rc = 0;
+    int c;
+
+    /* Names must start with alphabetic or _ and be at least 3 chars */
+    if (!((c = *name) && (risalpha(c) || c == '_') && (namelen) > 2)) {
+	rpmlog(RPMLOG_ERR, _("Macro %%%s has illegal name (%s)\n"),
+	    name, action);
+	goto exit;
+    }
+
+    rc = 1;
+
+exit:
+    return rc;
+}
+
 /**
  * Parse (and execute) new macro definition.
  * @param mb		macro expansion state
@@ -546,12 +564,8 @@ doDefine(MacroBuf mb, const char * se, size_t slen, int level, int expandbody)
 	s++;
     se = s;
 
-    /* Names must start with alphabetic or _ and be at least 3 chars */
-    if (!((c = *n) && (risalpha(c) || c == '_') && (ne - n) > 2)) {
-	rpmlog(RPMLOG_ERR, _("Macro %%%s has illegal name (%s)\n"),
-		n, expandbody ? "%global": "%define");
+    if (!validName(n, ne - n, expandbody ? "%global": "%define"))
 	goto exit;
-    }
 
     if ((be - b) < 1) {
 	rpmlog(RPMLOG_ERR, _("Macro %%%s has empty body\n"), n);
@@ -602,9 +616,7 @@ doUndefine(MacroBuf mb, const char * se, size_t slen)
 	s++;
     se = s;
 
-    /* Names must start with alphabetic or _ and be at least 3 chars */
-    if (!((c = *n) && (risalpha(c) || c == '_') && (ne - n) > 2)) {
-	rpmlog(RPMLOG_ERR, _("Macro %%%s has illegal name (%%undefine)\n"), n);
+    if (!validName(n, ne - n, "%undefine")) {
 	mb->error = 1;
 	goto exit;
     }
