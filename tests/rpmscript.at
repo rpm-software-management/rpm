@@ -139,13 +139,13 @@ filetriggerin(/foo*)<lua>:
 /foo/hello-world
 /foo/zzzz
 
-filetriggerin(/usr/bin*):
+filetriggerin(/usr/bin*): 0 0
 /usr/bin/hello
 
-filetriggerin(/usr/bin*)<lua>:
+filetriggerin(/usr/bin*)<lua>: 0.0 0.0
 /usr/bin/hello
 
-transfiletriggerin(/usr/bin*):
+transfiletriggerin(/usr/bin*): 0 0
 /usr/bin/hello
 
 transfiletriggerin(/foo*):
@@ -158,7 +158,7 @@ transfiletriggerin(/foo*):
 /foo/zzzz
 
 ERASE
-transfiletriggerun(/usr/bin*):
+transfiletriggerun(/usr/bin*): 0 0
 /usr/bin/hello
 
 transfiletriggerun(/foo*):
@@ -188,13 +188,13 @@ filetriggerpostun(/foo*):
 /foo/hello-world
 /foo/zzzz
 
-filetriggerun(/usr/bin*):
+filetriggerun(/usr/bin*): 0 0
 /usr/bin/hello
 
-filetriggerpostun(/usr/bin*):
+filetriggerpostun(/usr/bin*): 0 0
 /usr/bin/hello
 
-transfiletriggerpostun(/usr/bin*):
+transfiletriggerpostun(/usr/bin*): 0 0
 
 transfiletriggerpostun(/foo*):
 

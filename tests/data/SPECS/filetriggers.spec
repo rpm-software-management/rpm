@@ -13,37 +13,37 @@ BuildArch:      noarch
 
 
 %filetriggerin --  /usr/bin
-echo "filetriggerin(/usr/bin*):"
+echo "filetriggerin(/usr/bin*): $*"
 cat
 echo
 
 %filetriggerun --  /usr/bin
-echo "filetriggerun(/usr/bin*):"
+echo "filetriggerun(/usr/bin*): $*"
 cat
 echo
 
 %filetriggerpostun --  /usr/bin
-echo "filetriggerpostun(/usr/bin*):"
+echo "filetriggerpostun(/usr/bin*): $*"
 cat
 echo
 
 %transfiletriggerin -- /usr/bin
-echo "transfiletriggerin(/usr/bin*):"
+echo "transfiletriggerin(/usr/bin*): $*"
 cat
 echo
 
 %transfiletriggerun -- /usr/bin
-echo "transfiletriggerun(/usr/bin*):"
+echo "transfiletriggerun(/usr/bin*): $*"
 cat
 echo
 
 %transfiletriggerpostun -- /usr/bin
-echo "transfiletriggerpostun(/usr/bin*):"
+echo "transfiletriggerpostun(/usr/bin*): $*"
 cat
 echo
 
 %filetriggerin -p <lua> -- /usr/bin
-print("filetriggerin(/usr/bin*)<lua>:")
+print("filetriggerin(/usr/bin*)<lua>: "..arg[2].." "..arg[3])
 a = rpm.next_file()
 while a do
     print(a)
