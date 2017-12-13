@@ -327,6 +327,8 @@ static const char *matchFilesNext(matchFilesIter mfi)
 						RPMDBI_DIRNAMES, mfi->pfx, 0);
 
 	    rpmdbFilterIterator(mfi->pi, mfi->tranPkgs, 0);
+	    /* Only walk through each header with matches once */
+	    rpmdbUniqIterator(mfi->pi);
 
 	} while (fx >= 0);
 
