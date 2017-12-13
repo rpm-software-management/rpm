@@ -202,3 +202,49 @@ transfiletriggerpostun(/foo*):
 [])
 AT_CLEANUP
 
+AT_SETUP([basic file triggers 2])
+AT_KEYWORDS([filetrigger script])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
+for v in 1.0 2.0 3.0; do
+    runroot rpmbuild --quiet -bb --define "ver ${v}" /data/SPECS/parallel.spec
+done
+
+runroot rpm -U /build/RPMS/noarch/fakeshell-1.0-1.noarch.rpm 
+runroot rpm -i \
+	/build/RPMS/noarch/parallel-1.0-1.noarch.rpm \
+	/build/RPMS/noarch/parallel-2.0-1.noarch.rpm \
+	/build/RPMS/noarch/parallel-3.0-1.noarch.rpm
+
+echo INSTALL:
+runroot rpm -U /build/RPMS/noarch/parallel-trigger-1.0-1.noarch.rpm
+echo UPGRADE:
+runroot rpm -U /build/RPMS/noarch/parallel-trigger-2.0-1.noarch.rpm
+echo ERASE:
+runroot rpm -e parallel-trigger
+
+],
+[0],
+[INSTALL:
+%filetriggerin: 0 0
+36
+%transfiletriggerin: 0 0
+36
+UPGRADE:
+%transfiletriggerun: 0 0
+36
+%filetriggerin: 0 0
+36
+%transfiletriggerin: 0 0
+36
+ERASE:
+%transfiletriggerun: 0 0
+36
+],
+[])
+AT_CLEANUP
+

@@ -61,6 +61,7 @@ EXTRA_DIST += data/SPECS/selfconflict.spec
 EXTRA_DIST += data/SPECS/replacetest.spec
 EXTRA_DIST += data/SPECS/triggers.spec
 EXTRA_DIST += data/SPECS/filetriggers.spec
+EXTRA_DIST += data/SPECS/parallel.spec
 EXTRA_DIST += data/SPECS/prefixtest.spec
 EXTRA_DIST += data/SPECS/testdoc.spec
 EXTRA_DIST += data/SPECS/sigpipe.spec
@@ -134,7 +135,7 @@ testing$(bindir)/rpmbuild: ../rpmbuild
 	for d in dev etc magic tmp var; do if [ ! -d testing/$${d} ]; then mkdir testing/$${d}; fi; done
 	for node in urandom stdin stderr stdout null; do ln -s /dev/$${node} testing/dev/$${node}; done
 	for cf in hosts resolv.conf passwd shadow group gshadow mtab ; do [ -f /etc/$${cf} ] && ln -s /etc/$${cf} testing/etc/$${cf}; done
-	for prog in gzip cat patch tar sh ln chmod rm mkdir uname grep sed find file ionice mktemp nice cut sort diff touch install; do p=`which $${prog}`; ln -s $${p} testing/$(bindir)/; done
+	for prog in gzip cat patch tar sh ln chmod rm mkdir uname grep sed find file ionice mktemp nice cut sort diff touch install wc; do p=`which $${prog}`; ln -s $${p} testing/$(bindir)/; done
 	for d in /proc /sys /selinux /etc/selinux; do if [ -d $${d} ]; then ln -s $${d} testing/$${d}; fi; done
 	(cd testing/magic && file -C)
 	HOME=$(abs_builddir)/testing gpg2 --import ${abs_srcdir}/data/keys/*.secret || HOME=$(abs_builddir)/testing gpg --import ${abs_srcdir}/data/keys/*.secret
