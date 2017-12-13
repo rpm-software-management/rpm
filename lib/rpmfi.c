@@ -1822,7 +1822,7 @@ void rpmfilesFpLookup(rpmfiles fi, fingerPrintCache fpc)
  */
 
 #define RPMFI_ITERFUNC(TYPE, NAME, IXV) \
-    TYPE rpmfi ## NAME(rpmfi fi) { return rpmfiles ## NAME(fi->files, fi ? fi->IXV : -1); }
+    TYPE rpmfi ## NAME(rpmfi fi) { return rpmfiles ## NAME(fi ? fi->files : NULL, fi ? fi->IXV : -1); }
 
 RPMFI_ITERFUNC(rpmsid, BNId, i)
 RPMFI_ITERFUNC(rpmsid, DNId, j)
