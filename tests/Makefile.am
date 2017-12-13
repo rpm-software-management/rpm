@@ -55,6 +55,7 @@ EXTRA_DIST += data/SPECS/selfconflict.spec
 EXTRA_DIST += data/SPECS/replacetest.spec
 EXTRA_DIST += data/SPECS/triggers.spec
 EXTRA_DIST += data/SPECS/filetriggers.spec
+EXTRA_DIST += data/SPECS/parallel.spec
 EXTRA_DIST += data/SPECS/prefixtest.spec
 EXTRA_DIST += data/SPECS/testdoc.spec
 EXTRA_DIST += data/SOURCES/hello-1.0-modernize.patch
@@ -112,7 +113,7 @@ testing$(bindir)/rpmbuild: ../rpmbuild
 	for node in urandom stdin stderr stdout null; do ln -s /dev/$${node} testing/dev/$${node}; done
 	for cf in hosts resolv.conf passwd shadow group gshadow mtab fstab; do [ -f /etc/$${cf} ] && ln -s /etc/$${cf} testing/etc/$${cf}; done
 	ln -s ../$(bindir) testing/usr/bin
-	for prog in gzip cat patch tar sh ln chmod rm mkdir uname grep sed find file ionice mktemp nice cut sort diff touch; do p=`which $${prog}`; ln -s $${p} testing/$${p}; done
+	for prog in gzip cat patch tar sh ln chmod rm mkdir uname grep sed find file ionice mktemp nice cut sort diff touch wc; do p=`which $${prog}`; ln -s $${p} testing/$${p}; done
 	for d in /proc /sys /selinux /etc/selinux; do if [ -d $${d} ]; then ln -s $${d} testing/$${d}; fi; done
 	(cd testing/magic && file -C)
 
