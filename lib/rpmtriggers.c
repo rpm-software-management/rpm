@@ -452,7 +452,7 @@ static int matchFilesInPkg(rpmts ts, rpmte te, const char *pfx,
     return rc;
 }
 
-/* Return true if any added/removed file in ts starts with pfx */
+/* Return number of added/removed files starting with pfx in transaction */
 static int matchFilesInTran(rpmts ts, rpmte te, const char *pfx,
 			    rpmsenseFlags sense)
 {

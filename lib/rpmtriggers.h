@@ -51,32 +51,32 @@ int runPostUnTransFileTrigs(rpmts ts);
  * @param te		transaction entry
  * @param sense		defines which triggers should be set off (triggerin,
  *			triggerun, triggerpostun)
- * @param triggerClass	1 to run triggers that should be executed before
+ * @param tm		trigger mode, (filetrigger/transfiletrigger)
+ * @param priorityClass	1 to run triggers that should be executed before
  *			standard scriptlets
  *			2 to run triggers that should be executed after
  *			standard scriptlets
  *			0 to run all triggers
- * @param tm		trigger mode, (filetrigger/transfiletrigger)
  */
 RPM_GNUC_INTERNAL
 rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
-			rpmscriptTriggerModes tm, int upper);
+			rpmscriptTriggerModes tm, int priorityClass);
 
 /* Run file triggers in this te other package(s) set off.
  * @param ts		transaction set
  * @param te		transaction entry
  * @param sense		defines which triggers should be set off (triggerin,
  *			triggerun, triggerpostun)
- * @param triggerClass	1 to run triggers that should be executed before
+ * @param tm		trigger mode, (filetrigger/transfiletrigger)
+ * @param priorityClass	1 to run triggers that should be executed before
  *			standard scriptlets
  *			2 to run triggers that should be executed after
  *			standard scriptlets
  *			0 to run all triggers
- * @param tm		trigger mode, (filetrigger/transfiletrigger)
  */
 RPM_GNUC_INTERNAL
 rpmRC runImmedFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
-			    rpmscriptTriggerModes tm, int upper);
+			    rpmscriptTriggerModes tm, int priorityClass);
 #ifdef __cplusplus
 }
 #endif
