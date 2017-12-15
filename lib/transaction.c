@@ -1535,18 +1535,19 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	goto exit;
     }
 
+    /* Run %transfiletriggerun scripts unless disabled */
     if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_NOPRETRANS|
 	RPMTRANS_FLAG_NOTRIGGERUN) || rpmpsNumProblems(tsprobs))) {
 
-	/* Run file triggers in this package other package(s) set off. */
 	runFileTriggers(ts, NULL, RPMSENSE_TRIGGERUN,
 			RPMSCRIPT_TRANSFILETRIGGER, 0);
-	/* Run file triggers in other package(s) this package sets off. */
 	runTransScripts(ts, PKG_TRANSFILETRIGGERUN);
     }
 
-    /* Run pre-transaction scripts, but only if there are no known
-     * problems up to this point and not disabled otherwise. */
+    /* Run %pretrans scripts, but only if there are no known problems up to
+     * this point and not disabled otherwise. This is evil as it runs before
+     * fingerprinting and problem checking and is best avoided.
+     */
     if (!((rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_NOPRETRANS))
      	  || (rpmpsNumProblems(tsprobs)))) {
 	rpmlog(RPMLOG_DEBUG, "running pre-transaction scripts\n");
@@ -1583,13 +1584,13 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* Actually install and remove packages, get final exit code */
     rc = rpmtsProcess(ts) ? -1 : 0;
 
-    /* Run post-transaction scripts unless disabled */
+    /* Run %posttrans scripts unless disabled */
     if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_NOPOSTTRANS))) {
 	rpmlog(RPMLOG_DEBUG, "running post-transaction scripts\n");
 	runTransScripts(ts, PKG_POSTTRANS);
     }
 
-    /* Run file triggers in other package(s) this package sets off. */
+    /* Run %transfiletriggerpostun scripts unless disabled */
     if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_NOPOSTTRANS|RPMTRANS_FLAG_NOTRIGGERIN))) {
 	runFileTriggers(ts, NULL, RPMSENSE_TRIGGERIN, RPMSCRIPT_TRANSFILETRIGGER, 0);
     }
@@ -1597,7 +1598,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	runPostUnTransFileTrigs(ts);
     }
 
-    /* Run file triggers in this package other package(s) set off. */
+    /* Run %transfiletriggerin scripts unless disabled */
     if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_NOPOSTTRANS|RPMTRANS_FLAG_NOTRIGGERIN))) {
 	runTransScripts(ts, PKG_TRANSFILETRIGGERIN);
     }
