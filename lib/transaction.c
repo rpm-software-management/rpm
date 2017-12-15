@@ -1559,15 +1559,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	goto exit;
     }
 
-    /* Run %transfiletriggerun scripts unless disabled */
-    if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_NOPRETRANS|
-	RPMTRANS_FLAG_NOTRIGGERUN) || rpmpsNumProblems(tsprobs))) {
-
-	runFileTriggers(ts, NULL, RPMSENSE_TRIGGERUN,
-			RPMSCRIPT_TRANSFILETRIGGER, 0);
-	runTransScripts(ts, PKG_TRANSFILETRIGGERUN);
-    }
-
     /* Run %pretrans scripts, but only if there are no known problems up to
      * this point and not disabled otherwise. This is evil as it runs before
      * fingerprinting and problem checking and is best avoided.
@@ -1604,6 +1595,14 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_BUILD_PROBS)))
 	tsmem->pool = rpmstrPoolFree(tsmem->pool);
 
+    /* Run %transfiletriggerun scripts unless disabled */
+    if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_NOPRETRANS|
+	RPMTRANS_FLAG_NOTRIGGERUN))) {
+
+	runFileTriggers(ts, NULL, RPMSENSE_TRIGGERUN,
+			RPMSCRIPT_TRANSFILETRIGGER, 0);
+	runTransScripts(ts, PKG_TRANSFILETRIGGERUN);
+    }
 
     /* Actually install and remove packages */
     nfailed = rpmtsProcess(ts) ? -1 : 0;
