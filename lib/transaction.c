@@ -629,8 +629,10 @@ assert(otherFi != NULL);
 	    }
 	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
 		break;
-	    if (rpmfilesFState(fi, i) != RPMFILE_STATE_NORMAL)
+	    if (rpmfilesFState(fi, i) != RPMFILE_STATE_NORMAL) {
+		rpmfsSetAction(fs, i, FA_SKIP);
 		break;
+	    }
 		
 	    /* Pre-existing modified config files need to be saved. */
 	    if (rpmfilesConfigConflict(fi, i)) {
