@@ -11,6 +11,7 @@
 #include "lib/rpmdb_internal.h"
 #include "lib/rpmds_internal.h"
 #include "lib/rpmfi_internal.h"
+#include "lib/rpmte_internal.h"
 #include "lib/rpmchroot.h"
 
 #define TRIGGER_PRIORITY_BOUND 10000
@@ -116,12 +117,15 @@ void rpmtriggersPrepPostUnTransFileTrigs(rpmts ts, rpmte te)
 	char pfx[keylen + 1];
 	memcpy(pfx, key, keylen);
 	pfx[keylen] = '\0';
-	/* Check if file trigger matches any file in this te */
+	/* Check if file trigger matches any installed file in this te */
 	rpmfi fi = rpmfilesFindPrefix(files, pfx);
-	if (rpmfiFC(fi) > 0) {
-	    /* If yes then store it */
-	    rpmdbAppendIterator(mi, rpmdbIndexIteratorPkgOffsets(ii),
+	while (rpmfiNext(fi) >= 0) {
+	    if (RPMFILE_IS_INSTALLED(rpmfiFState(fi))) {
+		/* If yes then store it */
+		rpmdbAppendIterator(mi, rpmdbIndexIteratorPkgOffsets(ii),
 				rpmdbIndexIteratorNumPkgs(ii));
+		break;
+	    }
 	}
 	rpmfiFree(fi);
     }
@@ -230,7 +234,7 @@ static rpmfiles rpmtsNextFiles(rpmts ts, rpmdbMatchIterator mi)
 	h = rpmdbNextIterator(mi);
 	if (h) {
 	    files = rpmfilesNew(pool, h, RPMTAG_BASENAMES,
-				RPMFI_FLAGS_ONLY_FILENAMES);
+				RPMFI_FLAGS_FILETRIGGER);
 	}
     }
 
@@ -243,17 +247,19 @@ typedef struct matchFilesIter_s {
     rpmds rpmdsTrigger;
     rpmfiles files;
     rpmfi fi;
+    rpmfs fs;
     const char *pfx;
     rpmdbMatchIterator pi;
     packageHash tranPkgs;
 } *matchFilesIter;
 
-static matchFilesIter matchFilesIterator(rpmds trigger, rpmfiles files)
+static matchFilesIter matchFilesIterator(rpmds trigger, rpmfiles files, rpmte te)
 {
     matchFilesIter mfi = xcalloc(1, sizeof(*mfi));
     rpmdsInit(trigger);
     mfi->rpmdsTrigger = trigger;
     mfi->files = rpmfilesLink(files);
+    mfi->fs = rpmteGetFileStates(te);
     return mfi;
 }
 
@@ -289,11 +295,13 @@ static const char *matchFilesNext(matchFilesIter mfi)
     if (!mfi->ts)
 	do {
 	    /* Get next file from mfi->fi */
-	    rpmfiNext(mfi->fi);
-	    matchFile = rpmfiFN(mfi->fi);
-	    if (strlen(matchFile))
-		break;
 	    matchFile = NULL;
+	    while (matchFile == NULL && rpmfiNext(mfi->fi) >= 0) {
+		if (!XFA_SKIPPING(rpmfsGetAction(mfi->fs, rpmfiFX(mfi->fi))))
+		    matchFile = rpmfiFN(mfi->fi);
+	    }
+	    if (matchFile)
+		break;
 
 	    /* If we are done with current mfi->fi, create mfi->fi for next prefix */
 	    fx = rpmdsNext(mfi->rpmdsTrigger);
@@ -305,11 +313,13 @@ static const char *matchFilesNext(matchFilesIter mfi)
     /* or we iterate over files in rpmdb */
     else
 	do {
-	    rpmfiNext(mfi->fi);
-	    matchFile = rpmfiFN(mfi->fi);
-	    if (strlen(matchFile))
-		break;
 	    matchFile = NULL;
+	    while (matchFile == NULL && rpmfiNext(mfi->fi) >= 0) {
+		if (RPMFILE_IS_INSTALLED(rpmfiFState(mfi->fi)))
+		    matchFile = rpmfiFN(mfi->fi);
+	    }
+	    if (matchFile)
+		break;
 
 	    /* If we are done with current mfi->fi, create mfi->fi for next package */
 	    rpmfilesFree(mfi->files);
@@ -395,7 +405,7 @@ static int runHandleTriggersInPkg(rpmts ts, rpmte te, Header h,
 	    case 0:
 		/* Create iterator over files in te that this trigger matches */
 		files = rpmteFiles(te);
-		mfi = matchFilesIterator(rpmdsTrigger, files);
+		mfi = matchFilesIterator(rpmdsTrigger, files, te);
 		break;
 	    case 1:
 		/* Create iterator over files in ts that this trigger matches */
