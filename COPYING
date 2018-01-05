@@ -1,4 +1,4 @@
-RPM and it's source code are covered under two separate licenses. 
+RPM is covered under two separate licenses.
 
 The entire code base may be distributed under the terms of the GNU General
 Public License (GPL), which appears immediately below.  Alternatively,
@@ -8,7 +8,7 @@ distributed under the GNU Library General Public License (LGPL), at the
 choice of the distributor. The complete text of the LGPL appears
 at the bottom of this file.
 
-This alternatively is allowed to enable applications to be linked against
+This alternative is provided to enable applications to be linked against
 the RPM library (commonly called librpm) without forcing such applications
 to be distributed under the GPL. 
 
