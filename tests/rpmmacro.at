@@ -30,10 +30,12 @@ AT_SETUP([invalid rpm --define])
 AT_KEYWORDS([macros])
 AT_CHECK([
 runroot rpm --define "_ that"
+runroot rpm --define "undefine that"
 ],
 [1],
 [],
 [error: Macro %_ has illegal name (%define)
+error: Macro %undefine is a built-in (%define)
 ])
 AT_CLEANUP
 

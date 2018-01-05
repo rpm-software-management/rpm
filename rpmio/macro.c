@@ -445,6 +445,61 @@ exit:
     _free(buf);
 }
 
+
+/* Names in the table must be in ASCII-code order */
+static struct builtins_s {
+    const char * name;
+} const builtinmacros[] = {
+    { "P" },
+    { "Q" },
+    { "S" },
+    { "basename" },
+    { "define" },
+    { "dirname" },
+    { "dump" },
+    { "echo" },
+    { "error" },
+    { "expand" },
+    { "getconfdir" },
+    { "getenv" },
+    { "global" },
+    { "load" },
+    { "lua" },
+    { "quote" },
+    { "shrink" },
+    { "suffix" },
+    { "trace" },
+    { "uncompress" },
+    { "undefine" },
+    { "url2path" },
+    { "verbose" },
+    { "warn" }
+};
+static const size_t numbuiltins = sizeof(builtinmacros)/sizeof(*builtinmacros);
+
+static int namecmp(const void *name1, const void *name2)
+{
+    struct builtins_s *n1 = (struct builtins_s *)name1;
+    struct builtins_s *n2 = (struct builtins_s *)name2;
+
+    return strcmp(n1->name, n2->name);
+}
+
+/**
+ * Return a pointer to the built-in macro with the given name
+ * @param name		macro name
+ * @return		pointer to the built-in macro or NULL if not found
+ */
+static const struct builtins_s* lookupBuiltin(const char *name)
+{
+    struct builtins_s macro;
+
+    macro.name = name;
+
+    return bsearch(&macro, builtinmacros, numbuiltins, sizeof(*builtinmacros),
+		    namecmp);
+}
+
 static const int
 validName(const char *name, size_t namelen, const char *action) {
     int rc = 0;
@@ -454,6 +509,11 @@ validName(const char *name, size_t namelen, const char *action) {
     if (!((c = *name) && (risalpha(c) || c == '_') && (namelen) > 2)) {
 	rpmlog(RPMLOG_ERR, _("Macro %%%s has illegal name (%s)\n"),
 	    name, action);
+	goto exit;
+    }
+
+    if (lookupBuiltin(name)) {
+	rpmlog(RPMLOG_ERR, _("Macro %%%s is a built-in (%s)\n"), name, action);
 	goto exit;
     }
 
