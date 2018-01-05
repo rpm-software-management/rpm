@@ -307,6 +307,8 @@ rpmRC rpmGenerateSignature(char *SHA1, uint8_t *MD5, rpm_loff_t size,
     char *reservedSpace;
     int spaceSize = 32; /* always reserve a bit of space */
     int gpgSize = rpmExpandNumeric("%{__gpg_reserved_space}");
+    rpm_off_t size32 = size;
+    rpm_off_t payloadSize32 = payloadSize;
 
     /* Prepare signature */
     sig = rpmNewSignature();
@@ -327,21 +329,34 @@ rpmRC rpmGenerateSignature(char *SHA1, uint8_t *MD5, rpm_loff_t size,
 
     rpmtdReset(&td);
     td.count = 1;
-    if (payloadSize < UINT32_MAX) {
-	rpm_off_t p = payloadSize;
-	rpm_off_t s = size;
-	td.type = RPM_INT32_TYPE;
+    td.type = RPM_INT32_TYPE;
 
-	td.tag = RPMSIGTAG_PAYLOADSIZE;
-	td.data = &p;
-	headerPut(sig, &td, HEADERPUT_DEFAULT);
+    td.tag = RPMSIGTAG_PAYLOADSIZE;
+    td.data = &payloadSize32;
+    headerPut(sig, &td, HEADERPUT_DEFAULT);
 
-	td.tag = RPMSIGTAG_SIZE;
-	td.data = &s;
-	headerPut(sig, &td, HEADERPUT_DEFAULT);
-    } else {
+    td.tag = RPMSIGTAG_SIZE;
+    td.data = &size32;
+    headerPut(sig, &td, HEADERPUT_DEFAULT);
+
+    if (size >= UINT32_MAX || payloadSize >= UINT32_MAX) {
+	/*
+	 * Put the 64bit size variants into the header, but
+	 * modify spaceSize so that the resulting header has
+	 * the same size. Note that this only works if all tags
+	 * with a lower number than RPMSIGTAG_RESERVEDSPACE are
+	 * already added and no tag with a higher number is
+	 * added yet.
+	 */
 	rpm_loff_t p = payloadSize;
 	rpm_loff_t s = size;
+	int newsigSize, oldsigSize;
+
+	oldsigSize = headerSizeof(sig, HEADER_MAGIC_YES);
+
+	headerDel(sig, RPMSIGTAG_PAYLOADSIZE);
+	headerDel(sig, RPMSIGTAG_SIZE);
+
 	td.type = RPM_INT64_TYPE;
 
 	td.tag = RPMSIGTAG_LONGARCHIVESIZE;
@@ -352,8 +367,8 @@ rpmRC rpmGenerateSignature(char *SHA1, uint8_t *MD5, rpm_loff_t size,
 	td.data = &s;
 	headerPut(sig, &td, HEADERPUT_DEFAULT);
 
-	/* adjust for the size difference between 64- and 32bit tags */
-	spaceSize -= 8;
+	newsigSize = headerSizeof(sig, HEADER_MAGIC_YES);
+	spaceSize -= newsigSize - oldsigSize;
     }
 
     if (gpgSize > 0)
