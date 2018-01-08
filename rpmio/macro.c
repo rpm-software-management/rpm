@@ -1575,6 +1575,8 @@ static int loadMacroFile(rpmMacroContext mc, const char * fn)
     size_t blen = MACROBUFSIZ;
     char *buf = xmalloc(blen);
     int rc = -1;
+    int ndefs = 0;
+    int nfailed = 0;
 
     if (fd == NULL)
 	goto exit;
@@ -1589,10 +1591,19 @@ static int loadMacroFile(rpmMacroContext mc, const char * fn)
 	if (c != '%')
 		continue;
 	n++;	/* skip % */
-	rc = defineMacro(mc, n, RMIL_MACROFILES);
+	ndefs++;
+	if (defineMacro(mc, n, RMIL_MACROFILES))
+	    nfailed++;
     }
+    fclose(fd);
 
-    rc = fclose(fd);
+    /* if all definitions fail then return an error, otherwise just warn */
+    rc = (nfailed && ndefs == nfailed);
+
+    if (nfailed) {
+	rpmlog(rc ? RPMLOG_ERR : RPMLOG_WARNING,
+		_("file %s: %d invalid macro definitions\n"), fn, nfailed);
+    }
 
 exit:
     _free(buf);
