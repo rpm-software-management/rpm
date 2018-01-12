@@ -412,6 +412,11 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask,
 	    rpmlog(RPMLOG_NOTICE, "%s\n", buf);
 	    buf = _free(buf);
 	}
+
+	/* Filter out missing %ghost/%missingok errors from final result */
+	if (fileAttrs & (RPMFILE_MISSINGOK|RPMFILE_GHOST))
+	    verifyResult &= ~RPMVERIFY_LSTATFAIL;
+
 	verifyAll |= verifyResult;
     }
     rpmfiFree(fi);
