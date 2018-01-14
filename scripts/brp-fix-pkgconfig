@@ -1,0 +1,32 @@
+#!/bin/sh
+#---------------------------------------------------------------
+# Origin	: Mandriva Linux
+# Author	: Per Øyvind Karlsen <proyvind@moondrake.org>
+# Created On	: Tue Oct 27 20:11:52 2015
+# Description	: Fix pkgconfig files to have extra slashes trimmed.
+
+# Copyright (C) 2015 by Per Øyvind Karlsen <peroyvind@mandriva.org>,
+# (C) 2016 Andrey Bondrov <andrey.bondrov@rosalab.ru>
+# Redistribution of this file is permitted under the terms of the GNU
+# Public License (GPL) version 2 or later.
+#---------------------------------------------------------------
+
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+    exit 0
+fi
+
+for pc in $(find "$RPM_BUILD_ROOT" -name \*.pc); do
+    export PKG_CONFIG_PATH="$(dirname $pc)"
+    pcfile="$(basename $pc)"
+    pcmodule="$(echo $pcfile|sed -e 's#.pc$##g')"
+    for variable in $(pkg-config --print-variables "$pcmodule"); do
+	dir=$(pkg-config --variable="$variable" "$pcmodule")
+	if [[ -n "$dir" && "$dir" != "`realpath $dir`" ]]; then
+	    parentdir=$(dirname ${dir})
+	    subdir=$(basename ${dir})
+	    regexp="-e s|\(${variable}=.*/${subdir}\)/.*\$|\1|g -e s|\/\$||g -e s|\/\/|/|g"
+	    sed $regexp -i $pc
+	fi
+    done
+done

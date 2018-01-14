@@ -1,0 +1,24 @@
+#!/bin/sh
+#---------------------------------------------------------------
+# Origin	: Mandriva Linux
+# Author	: Per Øyvind Karlsen <proyvind@moondrake.org>
+# Created On	: Tue Dec 6 06:56:49 2011
+# Description	: Automatically remove undesired libtool .la library files
+#
+# Copyright (C) 2011 by Per Øyvind <peroyvind@mandrake.org>
+# Redistribution of this file is permitted under the terms of the GNU
+# Public License (GPL) version 2 or later.
+#---------------------------------------------------------------
+
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+	exit 0
+fi
+
+find "$RPM_BUILD_ROOT" \( -type f -o -type l \) -name \*.la  -print0 |
+xargs  --no-run-if-empty -0 file -N -L |
+grep "libtool library file" |
+sed -e 's#: libtool library file.*##g' |
+while read path; do
+    rm -f "$path"
+done

@@ -1,0 +1,37 @@
+#!/bin/sh
+#---------------------------------------------------------------
+# Origin	: Mandriva Linux
+# Author	: Per Øyvind Karlsen <proyvind@moondrake.org>
+# Created On	: Wed Dec 19 13:22:11 2012
+#		: Pascal "Pixel" Rigaux <pixel@mandriva.com>
+#		: (original perl implementation, 2008)
+# Description	: Check ELF files and report any undefined symbols found.
+#
+# Copyright (C) 2012 by Per Øyvind Karlsen <peroyvind@mandriva.org>
+# Redistribution of this file is permitted under the terms of the GNU
+# Public License (GPL) version 2 or later.
+#---------------------------------------------------------------
+
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+    exit 0
+fi
+
+LIB="`rpm --eval %{_lib}`"
+export LD_LIBRARY_PATH="$RPM_BUILD_ROOT/$LIB:$RPM_BUILD_ROOT/usr/$LIB"
+
+find "$RPM_BUILD_ROOT" -type f -name \*.so\*  -a \
+	\( ! -path $RPM_BUILD_ROOT/usr/lib/debug/\* -a \
+	   ! -path $RPM_BUILD_ROOT/usr/src/debug/\* \) \
+	-print0 |
+xargs  --no-run-if-empty -0 file -N -L |
+grep -e '\.so.*: ELF.*shared' |
+while read match; do
+path="`echo $match | sed -e 's#\(\.so.*\): ELF.*shared.*#\1#'`"
+syspath="`echo $path | sed -e \"s#^$RPM_BUILD_ROOT##\"`"
+unused_libs="`ldd -u -r $path 2> /dev/null | grep /`"
+undefined_symbols="`ldd -r $path 2>&1 | grep '^undefined symbol: '| sed -e 's#^undefined symbol:##g' -e \"s#($path).*##g\" | tr -d '\n' | tr -d '\t'`"
+if [ -n "$undefined_symbols" ]; then
+    echo "Warning: undefined symbols in $syspath:$undefined_symbols" >&2
+fi
+done

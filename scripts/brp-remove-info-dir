@@ -1,0 +1,25 @@
+#!/bin/sh
+#---------------------------------------------------------------
+# Origin	: Mandriva Linux
+# Author	: Per Øyvind Karlsen <proyvind@moondrake.org>
+# Created On	: Tue Dec 6 06:56:49 2011
+# Description	: Automatically remove /usr/share/dir if created during install
+#
+# Copyright (C) 2011 by Per Øyvind <peroyvind@mandrake.org>
+# Redistribution of this file is permitted under the terms of the GNU
+# Public License (GPL) version 2 or later.
+#---------------------------------------------------------------
+
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+	exit 0
+fi
+
+INFODIR=`rpm --eval %{_infodir}/dir`
+
+dir="$RPM_BUILD_ROOT/$INFODIR"
+
+if [ -f $dir -a ! -f "$RPM_BUILD_ROOT/sbin/install-info" -a ! -f "$RPM_BUILD_ROOT/usr/sbin/install-info" ]; then
+    rm -f $dir
+fi
+

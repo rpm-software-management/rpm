@@ -9,6 +9,11 @@ EXTRA_DIST = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-python-hardlink \
 	brp-strip-shared brp-strip-static-archive \
+	brp-clean-files brp-remove-info-dir brp-relink-symlinks \
+	brp-remove-libtool-files brp-fix-eol brp-remove-rpath \
+	brp-fix-file-permissions brp-fix-desktop-files brp-fix-pkgconfig \
+	brp-lib-symlinks brp-check-elf-files-for-unused-libraries \
+	brp-check-elf-files-for-undefined-symbols \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
 	debuginfo.prov \
@@ -29,6 +34,11 @@ rpmconfig_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-python-hardlink \
 	brp-strip-shared brp-strip-static-archive \
+	brp-clean-files brp-remove-info-dir brp-relink-symlinks \
+	brp-remove-libtool-files brp-fix-eol brp-remove-rpath \
+	brp-fix-file-permissions brp-fix-desktop-files brp-fix-pkgconfig \
+	brp-lib-symlinks brp-check-elf-files-for-unused-libraries \
+	brp-check-elf-files-for-undefined-symbols \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
 	debuginfo.prov \

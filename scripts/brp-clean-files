@@ -1,0 +1,42 @@
+#!/bin/sh
+#---------------------------------------------------------------
+# Origin	: Mandriva Linux
+# Author	: Per Øyvind Karlsen <proyvind@moondrake.org>
+#		: Chmouel Boudjnah (original perl implementation, 2000)
+# Created On	: Wed Dec 19 06:34:17 2012
+# Description	: Remove backup files and other files undesirable to package.
+#
+# Copyright (C) 2012 by Per Øyvind Karlsen <proyvind@mandriva.org>
+# Redistribution of this file is permitted under the terms of the GNU
+# Public License (GPL) version 2 or later.
+#---------------------------------------------------------------
+
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+    exit 0
+fi
+
+if [ -n "$1" ]; then
+    DIRECTORY=$(echo $1 | sed -e "s#^$RPM_BUILD_ROOT##g")
+    if [ ! -d "$RPM_BUILD_ROOT$DIRECTORY" ]; then
+	exit 0
+    fi
+fi
+
+find "$RPM_BUILD_ROOT$DIRECTORY" \( -type f -o -type l \) \( \
+	-name '#*#' -o \
+	-name \*.orig -o \
+	-name \*~ -o \
+	-name DEADJOE -o \
+	-name .cvsignore -o \
+	-name \*.orig -o \
+	-name \*.rej -o \
+	-name \*.bak -o \
+	-name \*.SUMS -o \
+	-name TAGS -o \
+	-name .deps -o \
+	-name .P -o \
+	-name core \) \
+	-delete
+
+find "$RPM_BUILD_ROOT$DIRECTORY" -type d -name CVS | xargs rm -rf

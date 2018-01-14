@@ -1,0 +1,26 @@
+#!/bin/sh
+#---------------------------------------------------------------
+# Origin	: Mandriva Linux
+# Author	: Per Øyvind Karlsen <proyvind@moondrake.org>
+#		: Guillaume Rousse (orginal perl implementation)
+# Created On	: Wed Dec 19 06:58:37 2012
+# Description	: Convert end of line patterns from DOS to UNIX.
+#
+# Copyright (C) 2012 by Per Øyvind Karlsen <peroyvind@mandriva.org>
+# Redistribution of this file is permitted under the terms of the GNU
+# Public License (GPL) version 2 or later.
+#---------------------------------------------------------------
+
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+	exit 0
+fi
+
+find "$RPM_BUILD_ROOT" -type f | while read f; do
+    if [ -n "$EXCLUDE_FROM_EOL_CONVERSION" ]; then
+	basename "$f" | grep -q -P "$EXCLUDE_FROM_EOL_CONVERSION" && continue
+    fi
+    grep -q -Ilsr $'\r$' "$f" && sed -e 's/\r$//' -i "$f"
+done
+
+exit 0
