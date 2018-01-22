@@ -2154,9 +2154,9 @@ edit_dwarf2 (DSO *dso)
 		      /* Offset (pointing into the line program) moves
 			 from old to new index including the header
 			 size diff. */
-		      r_offset += ((dso->lines.table[lndx].new_idx
-				    - dso->lines.table[lndx].old_idx)
-				   + dso->lines.table[lndx].size_diff);
+		      r_offset += (ssize_t)((dso->lines.table[lndx].new_idx
+					     - dso->lines.table[lndx].old_idx)
+					    + dso->lines.table[lndx].size_diff);
 
 		      if (rtype == SHT_RELA)
 			{
