@@ -87,6 +87,10 @@ if [ ! -x "$default_python" ]; then
 	exit 0
 fi
 
+# Figure out if there are files to be bytecompiled with the default_python at all
+# this prevents unnecessary default_python invocation
+find "$RPM_BUILD_ROOT" -type f -name "*.py" | grep -Ev "/bin/|/sbin/|/usr/lib(64)?/python[0-9]\.[0-9]|/usr/share/doc" || exit 0
+
 # Generate normal (.pyc) byte-compiled files.
 python_bytecompile "" $default_python "/bin/|/sbin/|/usr/lib(64)?/python[0-9]\.[0-9]|/usr/share/doc" "$RPM_BUILD_ROOT" "$depth" "/"
 if [ $? -ne 0 -a 0$errors_terminate -ne 0 ]; then
