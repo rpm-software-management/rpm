@@ -29,6 +29,10 @@ for f in $(find -executable -type f | xargs --no-run-if-empty file -N --mime-typ
     continue
   fi
 
+  if ! { echo "$shebang" | grep -q -P "^/(?:usr/)?(?:bin|sbin)/"; }; then
+    continue
+  fi
+
   # Replace "special" env shebang:
   # /whatsoever/env foo → /whatsoever/foo
   shebang=$(echo "$shebang" | sed -r -e 's@^(.+/)env (.+)$@\1\2@')
