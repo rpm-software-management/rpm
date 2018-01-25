@@ -17,6 +17,8 @@
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
+#define WHITELIST_NAME ".-_+%{}"
+
 struct TriggerFileEntry {
     int index;
     char * fileName;
