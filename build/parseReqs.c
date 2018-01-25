@@ -283,6 +283,10 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 				   "Obsoletes"));
 		goto exit;
 	    }
+	    if (!EVR) {
+		rasprintf(&emsg, _("It's not recommended to have "
+				   "unversioned Obsoletes"));
+	    }
 	}
 
 	if (nametag == RPMTAG_FILETRIGGERNAME ||
