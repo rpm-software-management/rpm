@@ -277,6 +277,14 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	if (checkDep(spec, N, EVR, &emsg))
 	    goto exit;
 
+	if (nametag == RPMTAG_OBSOLETENAME) {
+	    if (rpmCharCheck(spec, N, WHITELIST_NAME)) {
+		rasprintf(&emsg, _("Only package names are allowed in "
+				   "Obsoletes"));
+		goto exit;
+	    }
+	}
+
 	if (nametag == RPMTAG_FILETRIGGERNAME ||
 	    nametag == RPMTAG_TRANSFILETRIGGERNAME) {
 	    if (N[0] != '/') {
