@@ -286,6 +286,9 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	    if (!EVR) {
 		rasprintf(&emsg, _("It's not recommended to have "
 				   "unversioned Obsoletes"));
+	    } else if (Flags & RPMSENSE_GREATER) {
+		rasprintf(&emsg, _("It's not recommended to use "
+				   "'>' in Obsoletes"));
 	    }
 	}
 
