@@ -138,7 +138,9 @@ testing$(bindir)/rpmbuild: ../rpmbuild
 	for prog in gzip cat patch tar sh ln chmod rm mkdir uname grep sed find file ionice mktemp nice cut sort diff touch install wc; do p=`which $${prog}`; ln -s $${p} testing/$(bindir)/; done
 	for d in /proc /sys /selinux /etc/selinux; do if [ -d $${d} ]; then ln -s $${d} testing/$${d}; fi; done
 	(cd testing/magic && file -C)
-	HOME=$(abs_builddir)/testing gpg2 --import ${abs_srcdir}/data/keys/*.secret || HOME=$(abs_builddir)/testing gpg --import ${abs_srcdir}/data/keys/*.secret
+	if [ ! -x /usr/bin/gpg2 ] && [ ! -x /usr/bin/gpg ]; then exit 127; fi
+	if [ -x /usr/bin/gpg2 ]; then HOME=$(abs_builddir)/testing gpg2 --import ${abs_srcdir}/data/keys/*.secret; fi
+	if [ -x /usr/bin/gpg ]; then HOME=$(abs_builddir)/testing gpg --import ${abs_srcdir}/data/keys/*.secret; fi
 
 check_DATA = atconfig atlocal $(TESTSUITE)
 check_DATA += testing$(bindir)/rpmbuild
