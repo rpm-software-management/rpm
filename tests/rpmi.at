@@ -374,7 +374,7 @@ RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
-	--define "obs deptest-two" \
+	--define "obs deptest-two <= 1.0" \
 	/data/SPECS/deptest.spec
 runroot rpmbuild --quiet -bb \
 	--define "pkg two" \
@@ -403,7 +403,7 @@ RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
-	--define "obs deptest-two" \
+	--define "obs deptest-two <= 1.0" \
 	/data/SPECS/deptest.spec
 runroot rpmbuild --quiet -bb \
 	--define "pkg two" \

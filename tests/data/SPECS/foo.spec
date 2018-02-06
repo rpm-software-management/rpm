@@ -5,9 +5,6 @@ Release: 1
 Group: Utilities
 License: GPLv2+
 Distribution: RPM test suite.
-Provides: hi
-Conflicts: goodbye
-Obsoletes: howdy
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
