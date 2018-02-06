@@ -348,6 +348,7 @@ static int Pexec(lua_State *L)			/** exec(path,[args]) */
 	for (i=1; i<n; i++) argv[i] = (char*)luaL_checkstring(L, i+1);
 	argv[i] = NULL;
 	execvp(path,argv);
+	free(argv);
 	return pusherror(L, path);
 }
 
