@@ -490,6 +490,8 @@ void rpmpsmNotify(rpmpsm psm, int what, rpm_loff_t amount)
 {
     if (psm) {
 	int changed = 0;
+	if (amount > psm->total)
+	    amount = psm->total;
 	if (amount > psm->amount) {
 	    psm->amount = amount;
 	    changed = 1;
