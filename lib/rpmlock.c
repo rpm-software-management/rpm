@@ -125,7 +125,9 @@ rpmlock rpmlockNew(const char *lock_path, const char *descr)
 int rpmlockAcquire(rpmlock lock)
 {
     int locked = 0; /* assume failure */
+    int myerrno = errno;
     int maywait = isatty(STDIN_FILENO); /* dont wait within scriptlets */
+    errno = myerrno;
 
     if (lock) {
 	locked = rpmlock_acquire(lock, RPMLOCK_WRITE);
