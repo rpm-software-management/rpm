@@ -478,22 +478,31 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
     h = headerReload(h, RPMTAG_HEADERIMMUTABLE);
     if (h != NULL) {
 	char *sha1 = NULL;
+	char *sha256 = NULL;
 	unsigned int blen = 0;
 	void *blob = headerExport(h, &blen);
 
 	/* XXX FIXME: bah, this code is repeated in way too many places */
-	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	rpmDigestUpdate(ctx, rpm_header_magic, sizeof(rpm_header_magic));
-	rpmDigestUpdate(ctx, blob, blen);
-	rpmDigestFinal(ctx, (void **)&sha1, NULL, 1);
+	rpmDigestBundle bundle = rpmDigestBundleNew();
+	rpmDigestBundleAdd(bundle, PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	rpmDigestBundleAdd(bundle, PGPHASHALGO_SHA256, RPMDIGEST_NONE);
 
-	if (sha1) {
+	rpmDigestBundleUpdate(bundle, rpm_header_magic, sizeof(rpm_header_magic));
+	rpmDigestBundleUpdate(bundle, blob, blen);
+
+	rpmDigestBundleFinal(bundle, PGPHASHALGO_SHA1, (void **)&sha1, NULL, 1);
+	rpmDigestBundleFinal(bundle, PGPHASHALGO_SHA256, (void **)&sha256, NULL, 1);
+
+	if (sha1 && sha256) {
 	    headerPutString(h, RPMTAG_SHA1HEADER, sha1);
+	    headerPutString(h, RPMTAG_SHA256HEADER, sha256);
 	    *hdrp = headerLink(h);
 	    rc = 0;
 	}
 	free(sha1);
+	free(sha256);
 	free(blob);
+	rpmDigestBundleFree(bundle);
     }
 
 exit:
