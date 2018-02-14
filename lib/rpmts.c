@@ -480,7 +480,7 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
     if (h != NULL) {
 	char *sha1 = NULL;
 	unsigned int blen = 0;
-	const void *blob = headerExport(h, &blen);
+	void *blob = headerExport(h, &blen);
 
 	/* XXX FIXME: bah, this code is repeated in way too many places */
 	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
@@ -494,6 +494,7 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
 	    rc = 0;
 	}
 	free(sha1);
+	free(blob);
     }
 
 exit:
