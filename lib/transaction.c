@@ -231,11 +231,11 @@ static void rpmtsUpdateDSI(const rpmts ts, dev_t dev, const char *dirName,
 	dsi->bneeded += bneeded;
 	dsi->ineeded++;
 	if (prevSize) {
-	    dsi->bdelta += BLOCK_ROUND(prevSize, dsi->bsize);
+	    dsi->bdelta += BLOCK_ROUND(prevSize - 1, dsi->bsize);
 	    dsi->idelta++;
 	}
 	if (fixupSize) {
-	    dsi->bdelta += BLOCK_ROUND(fixupSize, dsi->bsize);
+	    dsi->bdelta += BLOCK_ROUND(fixupSize - 1, dsi->bsize);
 	    dsi->idelta++;
 	}
 
@@ -481,7 +481,8 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfiles fi, int fx
 	}
     }
 
-    rpmfilesSetFReplacedSize(fi, fx, rpmfilesFSize(otherFi, ofx));
+    /* Add one to make sure the size is not zero */
+    rpmfilesSetFReplacedSize(fi, fx, rpmfilesFSize(otherFi, ofx) + 1);
 }
 
 /**
@@ -628,7 +629,8 @@ assert(otherFi != NULL);
 		break;
 
 	    /* Try to get the disk accounting correct even if a conflict. */
-	    fixupSize = rpmfilesFSize(otherFi, otherFileNum);
+	    /* Add one to make sure the size is not zero */
+	    fixupSize = rpmfilesFSize(otherFi, otherFileNum) + 1;
 
 	    if (rpmfilesConfigConflict(fi, i)) {
 		/* Here is an overlapped  pre-existing config file. */
