@@ -416,6 +416,9 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfiles fi, int fx
 {
     rpmfs fs = rpmteGetFileStates(p);
     int isCfgFile = ((rpmfilesFFlags(otherFi, ofx) | rpmfilesFFlags(fi, fx)) & RPMFILE_CONFIG);
+    rpm_loff_t otherFileSize;
+    int nlink;
+    const int *links;
 
     if (XFA_SKIPPING(rpmfsGetAction(fs, fx)))
 	return;
@@ -485,8 +488,15 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfiles fi, int fx
 	}
     }
 
+    otherFileSize = rpmfilesFSize(otherFi, ofx);
+
+    /* Only account for the last file of a hardlink set */
+    nlink = rpmfilesFLinks(otherFi, ofx, &links);
+    if (nlink > 1 && links[nlink - 1] != ofx)
+	otherFileSize = 0;
+
     /* Add one to make sure the size is not zero */
-    rpmfilesSetFReplacedSize(fi, fx, rpmfilesFSize(otherFi, ofx) + 1);
+    rpmfilesSetFReplacedSize(fi, fx, otherFileSize + 1);
 }
 
 /**
@@ -511,6 +521,9 @@ static void handleOverlappedFiles(rpmts ts, fingerPrintCache fpc, rpmte p, rpmfi
 	rpmfileAttrs FFlags;
 	struct rpmffi_s * recs;
 	int numRecs;
+	rpm_loff_t fileSize;
+	int nlink;
+	const int *links;
 
 	if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
 	    continue;
@@ -679,9 +692,16 @@ assert(otherFi != NULL);
 	}
 	rpmfilesFree(otherFi);
 
+	fileSize = rpmfilesFSize(fi, i);
+	nlink = rpmfilesFLinks(fi, i, &links);
+	if (nlink > 1 && links[nlink - 1] != i) {
+	    /* Only account for the last file of a hardlink set */
+	    fileSize = 0;
+	    fixupSize = fixupSize ? 1 : 0;
+	}
 	/* Update disk space info for a file. */
 	rpmtsUpdateDSI(ts, fpEntryDev(fpc, fiFps), fpEntryDir(fpc, fiFps),
-		       rpmfilesFSize(fi, i), rpmfilesFReplacedSize(fi, i),
+		       fileSize, rpmfilesFReplacedSize(fi, i),
 		       fixupSize, rpmfsGetAction(fs, i));
 
     }
