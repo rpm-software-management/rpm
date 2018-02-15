@@ -382,6 +382,18 @@ static void loadKeyring(rpmts ts)
     }
 }
 
+static void addGpgProvide(Header h, const char *n, const char *v)
+{
+    rpmsenseFlags pflags = (RPMSENSE_KEYRING|RPMSENSE_EQUAL);
+    char * nsn = rstrscat(NULL, "gpg(", n, ")", NULL);
+
+    headerPutString(h, RPMTAG_PROVIDENAME, nsn);
+    headerPutString(h, RPMTAG_PROVIDEVERSION, v);
+    headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &pflags, 1);
+
+    free(nsn);
+}
+
 /* Build pubkey header. */
 static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
 			    int subkeysCount, Header * hdrp)
@@ -392,15 +404,12 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
     const char * license = "pubkey";
     const char * buildhost = "localhost";
     const char * userid;
-    rpmsenseFlags pflags = (RPMSENSE_KEYRING|RPMSENSE_EQUAL);
     uint32_t zero = 0;
     uint32_t keytime = 0;
     pgpDig dig = NULL;
     pgpDigParams pubp = NULL;
     char * d = NULL;
     char * enc = NULL;
-    char * n = NULL;
-    char * u = NULL;
     char * v = NULL;
     char * r = NULL;
     char * evr = NULL;
@@ -420,8 +429,6 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
     userid = pubp->userid ? pubp->userid : "none";
     keytime = pubp->time;
 
-    rasprintf(&n, "gpg(%s)", v+8);
-    rasprintf(&u, "gpg(%s)", userid);
     rasprintf(&r, "%x", keytime);
     rasprintf(&evr, "%d:%s-%s", pubp->version, v, r);
     rasprintf(&s, "%s public key", userid);
@@ -439,40 +446,29 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
     headerPutString(h, RPMTAG_LICENSE, license);
     headerPutString(h, RPMTAG_SUMMARY, s);
     headerPutString(h, RPMTAG_PACKAGER, userid);
-
     headerPutUint32(h, RPMTAG_SIZE, &zero, 1);
-
-    headerPutString(h, RPMTAG_PROVIDENAME, u);
-    headerPutString(h, RPMTAG_PROVIDEVERSION, evr);
-    headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &pflags, 1);
-	
-    headerPutString(h, RPMTAG_PROVIDENAME, n);
-    headerPutString(h, RPMTAG_PROVIDEVERSION, evr);
-    headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &pflags, 1);
-
     headerPutString(h, RPMTAG_RPMVERSION, RPMVERSION);
     headerPutString(h, RPMTAG_BUILDHOST, buildhost);
     headerPutUint32(h, RPMTAG_BUILDTIME, &keytime, 1);
     headerPutString(h, RPMTAG_SOURCERPM, "(none)");
 
+    addGpgProvide(h, userid, evr);
+    addGpgProvide(h, v+8, evr);
+
     for (i = 0; i < subkeysCount; i++) {
-	char *v, *r, *n, *evr;
+	char *v, *r, *evr;
 	pgpDigParams pgpkey;
 
 	pgpkey = rpmPubkeyPgpDigParams(subkeys[i]);
 	v = pgpHexStr(pgpkey->signid, sizeof(pgpkey->signid));
 
-	rasprintf(&n, "gpg(%s)", v+8);
 	rasprintf(&r, "%x", pgpkey->time);
 	rasprintf(&evr, "%d:%s-%s", pubp->version, v, r);
 
-	headerPutString(h, RPMTAG_PROVIDENAME, n);
-	headerPutString(h, RPMTAG_PROVIDEVERSION, evr);
-	headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &pflags, 1);
+	addGpgProvide(h, v+8, evr);
 
 	free(v);
 	free(r);
-	free(n);
 	free(evr);
     }
 
@@ -510,8 +506,6 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
 exit:
     headerFree(h);
     pgpFreeDig(dig);
-    free(n);
-    free(u);
     free(v);
     free(r);
     free(evr);
