@@ -423,6 +423,40 @@ static void finiPgpData(struct pgpdata_s *pd)
     memset(pd, 0, sizeof(*pd));
 }
 
+static Header makeImmutable(Header h)
+{
+    h = headerReload(h, RPMTAG_HEADERIMMUTABLE);
+    if (h != NULL) {
+	char *sha1 = NULL;
+	char *sha256 = NULL;
+	unsigned int blen = 0;
+	void *blob = headerExport(h, &blen);
+
+	/* XXX FIXME: bah, this code is repeated in way too many places */
+	rpmDigestBundle bundle = rpmDigestBundleNew();
+	rpmDigestBundleAdd(bundle, PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	rpmDigestBundleAdd(bundle, PGPHASHALGO_SHA256, RPMDIGEST_NONE);
+
+	rpmDigestBundleUpdate(bundle, rpm_header_magic, sizeof(rpm_header_magic));
+	rpmDigestBundleUpdate(bundle, blob, blen);
+
+	rpmDigestBundleFinal(bundle, PGPHASHALGO_SHA1, (void **)&sha1, NULL, 1);
+	rpmDigestBundleFinal(bundle, PGPHASHALGO_SHA256, (void **)&sha256, NULL, 1);
+
+	if (sha1 && sha256) {
+	    headerPutString(h, RPMTAG_SHA1HEADER, sha1);
+	    headerPutString(h, RPMTAG_SHA256HEADER, sha256);
+	} else {
+	    h = headerFree(h);
+	}
+	free(sha1);
+	free(sha256);
+	free(blob);
+	rpmDigestBundleFree(bundle);
+    }
+    return h;
+}
+
 /* Build pubkey header. */
 static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
 			    int subkeysCount, Header * hdrp)
@@ -484,35 +518,11 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
 	finiPgpData(&skd);
     }
 
-    /* Reload the lot to immutable region and stomp sha1 digest on it */
-    h = headerReload(h, RPMTAG_HEADERIMMUTABLE);
+    /* Reload it into immutable region and stomp standard digests on it */
+    h = makeImmutable(h);
     if (h != NULL) {
-	char *sha1 = NULL;
-	char *sha256 = NULL;
-	unsigned int blen = 0;
-	void *blob = headerExport(h, &blen);
-
-	/* XXX FIXME: bah, this code is repeated in way too many places */
-	rpmDigestBundle bundle = rpmDigestBundleNew();
-	rpmDigestBundleAdd(bundle, PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	rpmDigestBundleAdd(bundle, PGPHASHALGO_SHA256, RPMDIGEST_NONE);
-
-	rpmDigestBundleUpdate(bundle, rpm_header_magic, sizeof(rpm_header_magic));
-	rpmDigestBundleUpdate(bundle, blob, blen);
-
-	rpmDigestBundleFinal(bundle, PGPHASHALGO_SHA1, (void **)&sha1, NULL, 1);
-	rpmDigestBundleFinal(bundle, PGPHASHALGO_SHA256, (void **)&sha256, NULL, 1);
-
-	if (sha1 && sha256) {
-	    headerPutString(h, RPMTAG_SHA1HEADER, sha1);
-	    headerPutString(h, RPMTAG_SHA256HEADER, sha256);
-	    *hdrp = headerLink(h);
-	    rc = 0;
-	}
-	free(sha1);
-	free(sha256);
-	free(blob);
-	rpmDigestBundleFree(bundle);
+	*hdrp = headerLink(h);
+	rc = 0;
     }
 
 exit:
