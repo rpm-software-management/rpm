@@ -404,6 +404,7 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
     char * v = NULL;
     char * r = NULL;
     char * evr = NULL;
+    char * s = NULL;
     int rc = -1;
     int i;
 
@@ -423,6 +424,7 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
     rasprintf(&u, "gpg(%s)", userid);
     rasprintf(&r, "%x", keytime);
     rasprintf(&evr, "%d:%s-%s", pubp->version, v, r);
+    rasprintf(&s, "%s public key", userid);
 
     headerPutString(h, RPMTAG_PUBKEYS, enc);
 
@@ -435,7 +437,7 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
     headerPutString(h, RPMTAG_DESCRIPTION, d);
     headerPutString(h, RPMTAG_GROUP, group);
     headerPutString(h, RPMTAG_LICENSE, license);
-    headerPutString(h, RPMTAG_SUMMARY, u);
+    headerPutString(h, RPMTAG_SUMMARY, s);
     headerPutString(h, RPMTAG_PACKAGER, userid);
 
     headerPutUint32(h, RPMTAG_SIZE, &zero, 1);
@@ -515,6 +517,7 @@ exit:
     free(evr);
     free(enc);
     free(d);
+    free(s);
 
     return rc;
 }
