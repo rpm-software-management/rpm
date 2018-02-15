@@ -394,6 +394,35 @@ static void addGpgProvide(Header h, const char *n, const char *v)
     free(nsn);
 }
 
+struct pgpdata_s {
+    char *signid;
+    char *timestr;
+    char *verid;
+    const char *userid;
+    const char *shortid;
+    uint32_t time;
+};
+
+static void initPgpData(pgpDigParams pubp, struct pgpdata_s *pd)
+{
+    memset(pd, 0, sizeof(*pd));
+    pd->signid = pgpHexStr(pubp->signid, sizeof(pubp->signid));
+    pd->shortid = pd->signid + 8;
+    pd->userid = pubp->userid ? pubp->userid : "none";
+    pd->time = pubp->time;
+
+    rasprintf(&pd->timestr, "%x", pd->time);
+    rasprintf(&pd->verid, "%d:%s-%s", pubp->version, pd->signid, pd->timestr);
+}
+
+static void finiPgpData(struct pgpdata_s *pd)
+{
+    free(pd->timestr);
+    free(pd->verid);
+    free(pd->signid);
+    memset(pd, 0, sizeof(*pd));
+}
+
 /* Build pubkey header. */
 static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
 			    int subkeysCount, Header * hdrp)
@@ -403,16 +432,12 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
     const char * group = "Public Keys";
     const char * license = "pubkey";
     const char * buildhost = "localhost";
-    const char * userid;
     uint32_t zero = 0;
-    uint32_t keytime = 0;
     pgpDig dig = NULL;
     pgpDigParams pubp = NULL;
+    struct pgpdata_s kd;
     char * d = NULL;
     char * enc = NULL;
-    char * v = NULL;
-    char * r = NULL;
-    char * evr = NULL;
     char * s = NULL;
     int rc = -1;
     int i;
@@ -425,51 +450,36 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
 	goto exit;
 
     /* Build header elements. */
-    v = pgpHexStr(pubp->signid, sizeof(pubp->signid)); 
-    userid = pubp->userid ? pubp->userid : "none";
-    keytime = pubp->time;
+    initPgpData(pubp, &kd);
 
-    rasprintf(&r, "%x", keytime);
-    rasprintf(&evr, "%d:%s-%s", pubp->version, v, r);
-    rasprintf(&s, "%s public key", userid);
-
+    rasprintf(&s, "%s public key", kd.userid);
     headerPutString(h, RPMTAG_PUBKEYS, enc);
 
     if ((d = headerFormat(h, afmt, NULL)) == NULL)
 	goto exit;
 
     headerPutString(h, RPMTAG_NAME, "gpg-pubkey");
-    headerPutString(h, RPMTAG_VERSION, v+8);
-    headerPutString(h, RPMTAG_RELEASE, r);
+    headerPutString(h, RPMTAG_VERSION, kd.shortid);
+    headerPutString(h, RPMTAG_RELEASE, kd.timestr);
     headerPutString(h, RPMTAG_DESCRIPTION, d);
     headerPutString(h, RPMTAG_GROUP, group);
     headerPutString(h, RPMTAG_LICENSE, license);
     headerPutString(h, RPMTAG_SUMMARY, s);
-    headerPutString(h, RPMTAG_PACKAGER, userid);
+    headerPutString(h, RPMTAG_PACKAGER, kd.userid);
     headerPutUint32(h, RPMTAG_SIZE, &zero, 1);
     headerPutString(h, RPMTAG_RPMVERSION, RPMVERSION);
     headerPutString(h, RPMTAG_BUILDHOST, buildhost);
-    headerPutUint32(h, RPMTAG_BUILDTIME, &keytime, 1);
+    headerPutUint32(h, RPMTAG_BUILDTIME, &kd.time, 1);
     headerPutString(h, RPMTAG_SOURCERPM, "(none)");
 
-    addGpgProvide(h, userid, evr);
-    addGpgProvide(h, v+8, evr);
+    addGpgProvide(h, kd.userid, kd.verid);
+    addGpgProvide(h, kd.shortid, kd.verid);
 
     for (i = 0; i < subkeysCount; i++) {
-	char *v, *r, *evr;
-	pgpDigParams pgpkey;
-
-	pgpkey = rpmPubkeyPgpDigParams(subkeys[i]);
-	v = pgpHexStr(pgpkey->signid, sizeof(pgpkey->signid));
-
-	rasprintf(&r, "%x", pgpkey->time);
-	rasprintf(&evr, "%d:%s-%s", pubp->version, v, r);
-
-	addGpgProvide(h, v+8, evr);
-
-	free(v);
-	free(r);
-	free(evr);
+	struct pgpdata_s skd;
+	initPgpData(rpmPubkeyPgpDigParams(subkeys[i]), &skd);
+	addGpgProvide(h, skd.shortid, skd.verid);
+	finiPgpData(&skd);
     }
 
     /* Reload the lot to immutable region and stomp sha1 digest on it */
@@ -506,9 +516,7 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
 exit:
     headerFree(h);
     pgpFreeDig(dig);
-    free(v);
-    free(r);
-    free(evr);
+    finiPgpData(&kd);
     free(enc);
     free(d);
     free(s);
