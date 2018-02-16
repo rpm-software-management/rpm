@@ -1598,9 +1598,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	tsmem->pool = rpmstrPoolFree(tsmem->pool);
 
     /* Run %transfiletriggerun scripts unless disabled */
-    if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_NOPRETRANS|
-	RPMTRANS_FLAG_NOTRIGGERUN))) {
-
+    if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_NOPRETRANS|RPMTRANS_FLAG_NOTRIGGERUN))) {
 	runFileTriggers(ts, NULL, RPMSENSE_TRIGGERUN,
 			RPMSCRIPT_TRANSFILETRIGGER, 0);
 	runTransScripts(ts, PKG_TRANSFILETRIGGERUN);
