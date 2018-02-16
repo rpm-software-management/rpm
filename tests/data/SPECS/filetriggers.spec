@@ -43,7 +43,7 @@ cat
 echo
 
 %filetriggerin -p <lua> -- /usr/bin
-print("filetriggerin(/usr/bin*)<lua>: "..arg[2].." "..arg[3])
+print("filetriggerin(/usr/bin*)<lua>: "..arg[2])
 a = rpm.next_file()
 while a do
     print(a)
