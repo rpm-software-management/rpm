@@ -50,7 +50,13 @@ if test "$GCC" = yes; then
         ],[])
         CFLAGS=$old_cflags
     done
-    RPMCFLAGS="-fPIC -DPIC -D_REENTRANT -Wall -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes $RPMCFLAGS"
+    case "$host" in
+        *os2*)
+           RPMPICCFLAGS="" ;;
+        *)
+           RPMPICCFLAGS="-fPIC -DPIC" ;;
+    esac
+    RPMCFLAGS="$RPMPICCFLAGS -D_REENTRANT -Wall -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes $RPMCFLAGS"
 fi
 AC_SUBST(RPMCFLAGS)
 
