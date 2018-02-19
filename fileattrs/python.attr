@@ -1,4 +1,5 @@
+%python_prefix %(%{__python} -c "import sys; sys.stdout.write(sys.prefix)")
 %__python_provides	%{_rpmconfigdir}/pythondeps.sh --provides
 %__python_requires	%{_rpmconfigdir}/pythondeps.sh --requires
-%__python_path	^((/usr/lib(64)?/python[[:digit:]]\\.[[:digit:]]/.*\\.(py[oc]?|so))|(%{_bindir}/python[[:digit:]]\\.[[:digit:]]))$
+%__python_path	^((%{python_prefix}/lib(64)?/python[[:digit:]]\\.[[:digit:]]/.*\\.(py[oc]?|so))|(%{_bindir}/python[[:digit:]]\\.[[:digit:]]))$
 %__python_magic		[Pp]ython.*(executable|byte-compiled)
