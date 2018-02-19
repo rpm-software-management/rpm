@@ -182,6 +182,12 @@ rpmlibexec_PROGRAMS +=	rpmdeps
 rpmdeps_SOURCES =	tools/rpmdeps.c
 rpmdeps_LDADD =		lib/librpm.la rpmio/librpmio.la build/librpmbuild.la @WITH_POPT_LIB@
 
+if OS_OS2
+rpmlibexec_PROGRAMS +=	os2deps
+os2deps_SOURCES =	tools/os2deps.c
+os2deps_LDADD =		@WITH_POPT_LIB@
+endif
+
 bin_PROGRAMS +=		rpmgraph
 rpmgraph_SOURCES =	tools/rpmgraph.c
 rpmgraph_LDADD =	lib/librpm.la rpmio/librpmio.la @WITH_POPT_LIB@

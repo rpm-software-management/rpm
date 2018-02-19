@@ -10,4 +10,8 @@ fattrs_DATA = \
 	perl.attr perllib.attr pkgconfig.attr python.attr ocaml.attr script.attr \
 	mono.attr
 
+if OS_OS2
+fattrs_DATA += os2.attr
+endif
+
 EXTRA_DIST = $(fattrs_DATA)
