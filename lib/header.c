@@ -497,7 +497,8 @@ static int regionSwab(indexEntry entry, int il, int dl,
 	if (dataEnd && (unsigned char *)ie.data >= dataEnd)
 	    return -1;
 
-	if (fast && il > 1) {
+	/* The offset optimization is only relevant for string types */
+	if (fast && il > 1 && typeSizes[ie.info.type] == -1) {
 	    ie.length = ntohl(pe[1].offset) - ie.info.offset;
 	} else {
 	    ie.length = dataLength(ie.info.type, ie.data, ie.info.count,
