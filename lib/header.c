@@ -1130,7 +1130,6 @@ static int copyTdEntry(const indexEntry entry, rpmtd td, headerGetFlags flags)
 	    /* XXX 1 on success. */
 	    rc = (rc < 0) ? 0 : 1;
 	} else {
-	    count = entry->length;
 	    td->data = (!minMem
 		? memcpy(xmalloc(count), entry->data, count)
 		: entry->data);
