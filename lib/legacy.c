@@ -244,12 +244,12 @@ int headerConvert(Header h, int op)
 #define TDWRAP() \
     if (type) \
 	*type = td.type; \
+    if (c) \
+	*c = td.count; \
     if (p) \
 	*p = td.data; \
     else \
-	rpmtdFreeData(&td); \
-    if (c) \
-	*c = td.count
+	rpmtdFreeData(&td)
 
 int headerRemoveEntry(Header h, rpm_tag_t tag)
 {
