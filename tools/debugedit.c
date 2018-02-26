@@ -1947,6 +1947,12 @@ edit_dwarf2 (DSO *dso)
 		  if (rtype != R_68K_32)
 		    goto fail;
 		  break;
+#if defined(EM_RISCV) && defined(R_RISCV_32)
+		case EM_RISCV:
+		  if (rtype != R_RISCV_32)
+		    goto fail;
+		  break;
+#endif
 		default:
 		fail:
 		  error (1, 0, "%s: Unhandled relocation %d in .debug_info section",
