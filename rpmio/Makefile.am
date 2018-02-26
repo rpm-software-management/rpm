@@ -18,7 +18,7 @@ usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
 	argv.c base64.c digest.h digest.c macro.c \
 	rpmhook.c rpmio.c rpmlog.c rpmmalloc.c \
-	rpmpgp.c rpmsq.c rpmsw.c url.c \
+	rpmpgp.c rpminterp.c rpmsq.c rpmsw.c url.c \
 	rpmio_internal.h rpmhook.h \
 	rpmstring.c rpmfileutil.c rpmglob.c \
 	rpmkeyring.c rpmstrpool.c

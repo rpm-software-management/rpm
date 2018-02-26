@@ -29,10 +29,7 @@ extern int optind;
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/argv.h>
-
-#ifdef	WITH_LUA
-#include "rpmio/rpmlua.h"
-#endif
+#include <rpm/rpminterp.h>
 
 #include "debug.h"
 
@@ -897,36 +894,58 @@ doOutput(MacroBuf mb, int loglevel, const char * msg, size_t msglen)
     _free(buf);
 }
 
-static void doLua(MacroBuf mb, const char * f, size_t fn, const char * g, size_t gn)
+static rpmRC doRpminterp(MacroBuf mb, const char * f, size_t fn, const char * g, size_t gn)
 {
-#ifdef WITH_LUA
-    rpmlua lua = NULL; /* Global state. */
-    char *scriptbuf = xmalloc(gn + 1);
-    char *printbuf;
+    rpmRC rc = RPMRC_OK;
+    char ipname[fn+1];
+    char *module = NULL;
+    rpmMacroEntry me = NULL;
+    rpmMacroEntry *mep;
     rpmMacroContext mc = mb->mc;
-    int odepth = mc->depth;
-    int olevel = mc->level;
+    rpminterp interp = NULL;
 
-    if (g != NULL && gn > 0)
-	memcpy(scriptbuf, g, gn);
-    scriptbuf[gn] = '\0';
-    rpmluaPushPrintBuffer(lua);
-    mc->depth = mb->depth;
-    mc->level = mb->level;
-    if (rpmluaRunScript(lua, scriptbuf, NULL) == -1)
+    strncpy(ipname, f, fn);
+    ipname[fn] = '\0';
+
+
+    /* lua is builtin, so don't try load it externally */
+    if (STREQ("lua", ipname, fn)) {
+#ifndef WITH_LUA
+	rpmlog(RPMLOG_ERR, _("<%s> scriptlet support not built in\n"), ipname);
+	rc = RPMRC_FAILED;
 	mb->error = 1;
-    mc->depth = odepth;
-    mc->level = olevel;
-    printbuf = rpmluaPopPrintBuffer(lua);
-    if (printbuf) {
-	mbAppendStr(mb, printbuf);
-	free(printbuf);
-    }
-    free(scriptbuf);
-#else
-    rpmlog(RPMLOG_ERR, _("<lua> scriptlet support not built in\n"));
-    mb->error = 1;
 #endif
+    } else {
+	char modpath[sizeof("_rpminterp_") + sizeof(ipname) + sizeof("_modpath")];
+	stpcpy(stpcpy(stpcpy(modpath, "_rpminterp_"), ipname), "_modpath");
+	if ((mep = findEntry(mb->mc, modpath, strlen(modpath), NULL))) {
+	    me = *mep;
+	    module = rpmExpand(me->body, NULL);
+	} else
+	    return RPMRC_NOTFOUND;
+    }
+
+    if ((interp = rpminterpLoad(ipname, module))) {
+	char scriptbuf[gn+1];
+	char *printbuf = NULL;
+	int odepth = mc->depth;
+	int olevel = mc->level;
+
+	if (g != NULL && gn > 0)
+	    memcpy(scriptbuf, g, gn);
+	scriptbuf[gn] = '\0';
+	mc->depth = mb->depth;
+	mc->level = mb->level;
+	if (interp->run(scriptbuf, &printbuf) != RPMRC_OK)
+	    mb->error = 1;
+	mc->depth = odepth;
+	mc->level = olevel;
+	if (printbuf != NULL && *printbuf != '\0')
+	    mbAppendStr(mb, printbuf);
+	_free(printbuf);
+    }
+    _free(module);
+    return rc;
 }
 
 /**
@@ -1323,8 +1342,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    continue;
 	}
 
-	if (STREQ("lua", f, fn)) {
-	    doLua(mb, f, fn, g, gn);
+	if (f[fn] == ':' && doRpminterp(mb, f, fn, g, gn) != RPMRC_NOTFOUND) {
 	    s = se;
 	    continue;
 	}

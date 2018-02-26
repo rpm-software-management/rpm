@@ -36,6 +36,7 @@
 #include <rpm/rpmurl.h>
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmbase64.h>
+#include <rpm/rpminterp.h>
 #include "rpmio/rpmhook.h"
 
 #define _RPMLUA_INTERNAL
@@ -916,5 +917,20 @@ static int luaopen_rpm(lua_State *L)
     luaL_openlib(L, "rpm", rpmlib, 0);
     return 0;
 }
+
+static rpmRC rpmluaRun(const char * scriptbuf, char **printbuf) {
+    rpmRC rc = RPMRC_OK;
+    rpmlua lua = NULL; /* Global state. */
+
+    rpmluaPushPrintBuffer(lua);
+    if (rpmluaRunScript(lua, scriptbuf, NULL) == -1)
+	rc = RPMRC_FAIL;
+    *printbuf = rpmluaPopPrintBuffer(lua);
+
+    return rc;
+}
+
+rpminterpInit(lua, NULL, NULL, rpmluaRun);
+
 #endif	/* WITH_LUA */
 

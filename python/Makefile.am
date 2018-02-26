@@ -33,7 +33,8 @@ _rpm_la_SOURCES = rpmmodule.c rpmsystem-py.h \
 	rpmstrpool-py.c rpmstrpool-py.h \
 	rpmtd-py.c rpmtd-py.h \
 	rpmte-py.c rpmte-py.h \
-	rpmts-py.c rpmts-py.h
+	rpmts-py.c rpmts-py.h \
+	rpmpython.c
 
 _rpmb_la_LDFLAGS = -module -avoid-version -shared
 _rpmb_la_LIBADD = \

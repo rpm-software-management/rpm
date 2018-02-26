@@ -32,6 +32,7 @@ rpmmod = Extension('rpm._rpm',
                                 'rpmstrpool-py.c', 'rpmfiles-py.c', 
 				'rpmarchive-py.c', 'rpmtd-py.c',
                                 'rpmte-py.c', 'rpmts-py.c', 'rpmmodule.c',
+                                'rpmpython.c'
                              ],
                    include_dirs = pkgconfig('--cflags'),
                    library_dirs = pkgconfig('--libs-only-L'),
