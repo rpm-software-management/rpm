@@ -973,14 +973,22 @@ AS_IF([test "$enable_plugins" = yes],[
 ])
 AM_CONDITIONAL(ENABLE_PLUGINS,[test "$enable_plugins" = yes])
 
+AC_ARG_ENABLE(inhibit_plugin, [AS_HELP_STRING([--disable-inhibit-plugin],[build without systemd inhibit plugin])],,[enable_inhibit_plugin=yes])
+AS_IF([test "$enable_inhibit_plugin" = yes],[
+  AC_DEFINE(ENABLE_INHIBIT_PLUGIN, 1, [Build with systemd inhibit plugin?])
+])
+AM_CONDITIONAL(ENABLE_INHIBIT_PLUGIN,[test "$enable_inhibit_plugin" = yes])
+
 with_dbus=no
 AS_IF([test "$enable_plugins" != no],[
+ AS_IF([test "$enable_inhibit_plugin" != no],[
   PKG_CHECK_MODULES([DBUS],
     [dbus-1 >= 1.3],
     [AC_DEFINE(DBUS, 1, [Build with dbus support?]) with_dbus=yes],
     [with_dbus=no])
   AC_SUBST(DBUS_CFLAGS)
   AC_SUBST(DBUS_LIBS)
+ ])
 ])
 AM_CONDITIONAL(DBUS, [test "$with_dbus" = yes])
 
