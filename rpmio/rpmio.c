@@ -1310,13 +1310,16 @@ ssize_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd)
 {
     ssize_t rc = -1;
 
+    /* Returns the number of bytes vs the number of items */
+    assert(size == 1);
+
     if (fd != NULL) {
 	FDSTACK_t fps = fdGetFps(fd);
 	fdio_read_function_t _read = FDIOVEC(fps, read);
 
 	fdstat_enter(fd, FDSTAT_READ);
 	do {
-	    rc = (_read ? (*_read) (fps, buf, size * nmemb) : -2);
+	    rc = (_read ? (*_read) (fps, buf, nmemb) : -2);
 	} while (rc == -1 && errno == EINTR);
 	fdstat_exit(fd, FDSTAT_READ, rc);
 
@@ -1324,8 +1327,8 @@ ssize_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd)
 	    fdUpdateDigests(fd, buf, rc);
     }
 
-    DBGIO(fd, (stderr, "==>\tFread(%p,%p,%ld) rc %ld %s\n",
-	  fd, buf, (long)size * nmemb, (long)rc, fdbg(fd)));
+    DBGIO(fd, (stderr, "==>\tFread(%p,%p,%zu) rc %zd %s\n",
+	  fd, buf, nmemb, rc, fdbg(fd)));
 
     return rc;
 }
