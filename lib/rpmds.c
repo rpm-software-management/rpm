@@ -37,151 +37,119 @@ struct rpmds_s {
     int *ti;			/*!< Trigger index. */
 };
 
+struct depinfo_s {
+    rpmTagVal typeTag;
+    rpmTagVal evrTag;
+    rpmTagVal flagTag;
+    rpmTagVal ixTag;
+    char *name;
+    char abrev;
+};
+
+static const struct depinfo_s depTypes[] = {
+    {	RPMTAG_PROVIDENAME,		RPMTAG_PROVIDEVERSION,
+	RPMTAG_PROVIDEFLAGS,		0,
+	"Provides",			'P',
+    },
+    {	RPMTAG_REQUIRENAME,		RPMTAG_REQUIREVERSION,
+	RPMTAG_REQUIREFLAGS,		0,
+	"Requires",			'R',
+    },
+    {	RPMTAG_CONFLICTNAME,		RPMTAG_CONFLICTVERSION,
+	RPMTAG_CONFLICTFLAGS,		0,
+	"Conflicts",			'C',
+    },
+    {	RPMTAG_OBSOLETENAME,		RPMTAG_OBSOLETEVERSION,
+	RPMTAG_OBSOLETEFLAGS,		0,
+	"Obsoletes",			'O',
+    },
+    {	RPMTAG_SUPPLEMENTNAME,		RPMTAG_SUPPLEMENTVERSION,
+	RPMTAG_SUPPLEMENTFLAGS,		0,
+	"Supplements",			'S',
+    },
+    { 	RPMTAG_ENHANCENAME,		RPMTAG_ENHANCEVERSION,
+	RPMTAG_ENHANCEFLAGS,		0,
+	"Enhances",			'e',
+    },
+    {	RPMTAG_RECOMMENDNAME,		RPMTAG_RECOMMENDVERSION,
+	RPMTAG_RECOMMENDFLAGS,		0,
+	"Recommends",			'r',
+    },
+    {	RPMTAG_SUGGESTNAME,		RPMTAG_SUGGESTVERSION,
+	RPMTAG_SUGGESTFLAGS,		0,
+	"Suggests",			's',
+    },
+    {	RPMTAG_ORDERNAME,		RPMTAG_ORDERVERSION,
+	RPMTAG_ORDERFLAGS,		0,
+	"Order",			'o',
+    },
+    {	RPMTAG_TRIGGERNAME,		RPMTAG_TRIGGERVERSION,
+	RPMTAG_TRIGGERFLAGS,		RPMTAG_TRIGGERINDEX,
+	"Trigger",			't',
+    },
+    {	RPMTAG_FILETRIGGERNAME,		RPMTAG_FILETRIGGERVERSION,
+	RPMTAG_FILETRIGGERFLAGS,	RPMTAG_FILETRIGGERINDEX,
+	"FileTrigger",			'f',
+    },
+    {	RPMTAG_TRANSFILETRIGGERNAME,	RPMTAG_TRANSFILETRIGGERVERSION,
+	RPMTAG_TRANSFILETRIGGERFLAGS,	RPMTAG_TRANSFILETRIGGERINDEX,
+	"TransFileTrigger",		'F',
+    },
+    {	RPMTAG_OLDSUGGESTSNAME,		RPMTAG_OLDSUGGESTSVERSION,
+	RPMTAG_OLDSUGGESTSFLAGS,	0,
+	"Oldsuggests",			'?',
+    },
+    {	RPMTAG_OLDENHANCESNAME,		RPMTAG_OLDENHANCESVERSION,
+	RPMTAG_OLDENHANCESFLAGS,	0,
+	"Oldenhances",			'?',
+    },
+    {	0,				0,
+	0,				0,
+	NULL,				0,
+    }
+};
+
+static const struct depinfo_s *depinfoByTag(rpmTagVal tag)
+{
+    for (const struct depinfo_s *dse = depTypes; dse->name; dse++) {
+	if (tag == dse->typeTag)
+	    return dse;
+    }
+    return NULL;
+}
+
+static const struct depinfo_s *depinfoByAbrev(char abrev)
+{
+    for (const struct depinfo_s *dse = depTypes; dse->name; dse++) {
+	if (abrev == dse->abrev)
+	    return dse;
+    }
+    return NULL;
+}
 static int dsType(rpmTagVal tag, 
 		  const char ** Type, rpmTagVal * tagEVR, rpmTagVal * tagF,
 		  rpmTagVal * tagTi)
 {
-    int rc = 0;
-    const char *t = NULL;
-    rpmTagVal evr = RPMTAG_NOT_FOUND;
-    rpmTagVal f = RPMTAG_NOT_FOUND;
-    rpmTagVal ti = RPMTAG_NOT_FOUND;
-
-    if (tag == RPMTAG_PROVIDENAME) {
-	t = "Provides";
-	evr = RPMTAG_PROVIDEVERSION;
-	f = RPMTAG_PROVIDEFLAGS;
-    } else if (tag == RPMTAG_REQUIRENAME) {
-	t = "Requires";
-	evr = RPMTAG_REQUIREVERSION;
-	f = RPMTAG_REQUIREFLAGS;
-    } else if (tag == RPMTAG_SUPPLEMENTNAME) {
-	t = "Supplements";
-	evr = RPMTAG_SUPPLEMENTVERSION;
-	f = RPMTAG_SUPPLEMENTFLAGS;
-    } else if (tag == RPMTAG_ENHANCENAME) {
-	t = "Enhances";
-	evr = RPMTAG_ENHANCEVERSION;
-	f = RPMTAG_ENHANCEFLAGS;
-    } else if (tag == RPMTAG_RECOMMENDNAME) {
-	t = "Recommends";
-	evr = RPMTAG_RECOMMENDVERSION;
-	f = RPMTAG_RECOMMENDFLAGS;
-    } else if (tag == RPMTAG_SUGGESTNAME) {
-	t = "Suggests";
-	evr = RPMTAG_SUGGESTVERSION;
-	f = RPMTAG_SUGGESTFLAGS;
-    } else if (tag == RPMTAG_CONFLICTNAME) {
-	t = "Conflicts";
-	evr = RPMTAG_CONFLICTVERSION;
-	f = RPMTAG_CONFLICTFLAGS;
-    } else if (tag == RPMTAG_OBSOLETENAME) {
-	t = "Obsoletes";
-	evr = RPMTAG_OBSOLETEVERSION;
-	f = RPMTAG_OBSOLETEFLAGS;
-    } else if (tag == RPMTAG_ORDERNAME) {
-	t = "Order";
-	evr = RPMTAG_ORDERVERSION;
-	f = RPMTAG_ORDERFLAGS;
-    } else if (tag == RPMTAG_TRIGGERNAME) {
-	t = "Trigger";
-	evr = RPMTAG_TRIGGERVERSION;
-	f = RPMTAG_TRIGGERFLAGS;
-	ti = RPMTAG_TRIGGERINDEX;
-    } else if (tag == RPMTAG_OLDSUGGESTSNAME) {
-	t = "Oldsuggests";
-	evr = RPMTAG_OLDSUGGESTSVERSION;
-	f = RPMTAG_OLDSUGGESTSFLAGS;
-    } else if (tag == RPMTAG_OLDENHANCESNAME) {
-	t = "Oldenhances";
-	evr = RPMTAG_OLDENHANCESVERSION;
-	f = RPMTAG_OLDENHANCESFLAGS;
-    } else if (tag == RPMTAG_FILETRIGGERNAME) {
-	t = "FileTrigger";
-	evr = RPMTAG_FILETRIGGERVERSION;
-	f = RPMTAG_FILETRIGGERFLAGS;
-	ti = RPMTAG_FILETRIGGERINDEX;
-    } else if (tag == RPMTAG_TRANSFILETRIGGERNAME) {
-	t = "TransFileTrigger";
-	evr = RPMTAG_TRANSFILETRIGGERVERSION;
-	f = RPMTAG_TRANSFILETRIGGERFLAGS;
-	ti = RPMTAG_TRANSFILETRIGGERINDEX;
-    } else {
-	rc = 1;
+    const struct depinfo_s *di = depinfoByTag(tag);
+    if (di) {
+	if (Type) *Type = di->name;
+	if (tagEVR) *tagEVR = di->evrTag;
+	if (tagF) *tagF = di->flagTag;
+	if (tagTi) *tagTi = di->ixTag;
     } 
-    if (Type) *Type = t;
-    if (tagEVR) *tagEVR = evr;
-    if (tagF) *tagF = f;
-    if (tagTi) *tagTi = ti;
-    return rc;
+    return (di == NULL);
 }    
 
 static char tagNToChar(rpmTagVal tagN)
 {
-    switch (tagN) {
-    default:
-	return 'R';
-	break;
-    case RPMTAG_REQUIRENAME:
-	return 'R';
-	break;
-    case RPMTAG_PROVIDENAME:
-	return 'P';
-	break;
-    case RPMTAG_RECOMMENDNAME:
-	return 'r';
-	break;
-    case RPMTAG_SUGGESTNAME:
-	return 's';
-	break;
-    case RPMTAG_SUPPLEMENTNAME:
-	return 'S';
-	break;
-    case RPMTAG_ENHANCENAME:
-	return 'e';
-	break;
-    case RPMTAG_CONFLICTNAME:
-	return 'C';
-	break;
-    case RPMTAG_OBSOLETENAME:
-	return 'O';
-	break;
-    }
+    const struct depinfo_s *di = depinfoByTag(tagN);
+    return (di != NULL) ? di->abrev : '\0';
 }
 
 rpmTagVal rpmdsDToTagN(char deptype)
 {
-    rpmTagVal tagN = RPMTAG_REQUIRENAME;
-    switch (deptype) {
-    default:
-	tagN = RPMTAG_NOT_FOUND;
-	break;
-    case 'P':
-	tagN = RPMTAG_PROVIDENAME;
-	break;
-    case 'R':
-	tagN = RPMTAG_REQUIRENAME;
-	break;
-    case 'r':
-	tagN = RPMTAG_RECOMMENDNAME;
-	break;
-    case 's':
-	tagN = RPMTAG_SUGGESTNAME;
-	break;
-    case 'S':
-	tagN = RPMTAG_SUPPLEMENTNAME;
-	break;
-    case 'e':
-	tagN = RPMTAG_ENHANCENAME;
-	break;
-    case 'C':
-	tagN = RPMTAG_CONFLICTNAME;
-	break;
-    case 'O':
-	tagN = RPMTAG_OBSOLETENAME;
-	break;
-    }
-    return tagN;
+    const struct depinfo_s *di = depinfoByAbrev(deptype);
+    return (di != NULL) ? di->typeTag : RPMTAG_NOT_FOUND;
 }
 
 rpmsid rpmdsNIdIndex(rpmds ds, int i)
