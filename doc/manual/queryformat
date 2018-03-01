@@ -133,6 +133,11 @@ name after the tag name. Here are some examples:
 The :shescape may be used on plain strings to get a string which can pass
 through a single level of shell and give the original string.
 
+Formatting names "humansi" and "humaniec" display a number in a human
+readable format in SI resp IEC 80000 standard.
+humansi uses 1K = 1000, 1M = 1000000, ...
+humaniec uses 1K = 1024, 1M = 1048576, ...
+
 \section queryformat_expressions Query Expressions
 
 Simple conditionals may be evaluated through query expressions. Expressions

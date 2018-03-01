@@ -462,6 +462,35 @@ static char * expandFormat(rpmtd td, char **emsg)
     return rpmExpand(rpmtdGetString(td), NULL);
 }
 
+static char * humanFormat(rpmtd td, char **emsg, int kilo)
+{
+    const char* units[] = {"", "K", "M", "G", "T", "P", "E", "Z", "Y"};
+    int i = 0;
+    float number = rpmtdGetNumber(td);
+    int decimals = 0;
+    char * val = NULL;
+
+    while (number >= kilo) {
+	number /= kilo;
+	i++;
+    }
+    if ((number > 0.05) && (number < 9.95))
+	decimals = 1;
+    rasprintf(&val, "%.*f%s", decimals, number, units[i]);
+
+    return val;
+}
+
+static char * humansiFormat(rpmtd td, char **emsg)
+{
+    return humanFormat(td, emsg, 1000);
+}
+
+static char * humaniecFormat(rpmtd td, char **emsg)
+{
+    return humanFormat(td, emsg, 1024);
+}
+
 static const struct headerFmt_s rpmHeaderFormats[] = {
     { RPMTD_FORMAT_STRING,	"string",
 	RPM_ANY_CLASS,		stringFormat },
@@ -505,6 +534,10 @@ static const struct headerFmt_s rpmHeaderFormats[] = {
 	RPM_STRING_CLASS,	expandFormat },
     { RPMTD_FORMAT_FSTATUS,	"fstatus",
 	RPM_NUMERIC_CLASS,	fstatusFormat },
+    { RPMTD_FORMAT_HUMANSI,	"humansi",
+	RPM_NUMERIC_CLASS,	humansiFormat },
+    { RPMTD_FORMAT_HUMANIEC,	"humaniec",
+	RPM_NUMERIC_CLASS,	humaniecFormat },
     { -1,			NULL, 		0,	NULL }
 };
 

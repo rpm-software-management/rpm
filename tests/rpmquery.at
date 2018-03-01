@@ -810,3 +810,25 @@ done
 ],
 [])
 AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([formatting name humansi, humaniec])
+AT_KEYWORDS([query, humansi, humaniec])
+AT_CHECK([
+runroot rpm \
+  --queryformat '%{SIZE:humansi} %{SIZE:humaniec}\n' \
+  -qp /data/RPMS/hello-1.0-1.i386.rpm
+runroot rpm \
+  --queryformat '%{SIZE:humansi} %{SIZE:humaniec}\n' \
+  -qp /data/RPMS/foo-1.0-1.noarch.rpm
+runroot rpm \
+  --queryformat '%{SIZE:humansi} %{SIZE:humaniec}\n' \
+  -qp /data/SRPMS/foo-1.0-1.src.rpm
+],
+[0],
+[2.9K 2.8K
+0 0
+355 355
+],
+[])
+AT_CLEANUP
