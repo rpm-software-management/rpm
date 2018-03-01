@@ -578,6 +578,7 @@ AT_CLEANUP
 AT_SETUP([upgrade empty directory to file link with pretrans])
 AT_KEYWORDS([install])
 AT_CHECK([
+AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_CLEAR
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo

@@ -1253,6 +1253,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid attrs])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
+AT_SKIP_IF([$LUA_DISABLED])
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1287,6 +1288,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid config attrs])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
+AT_SKIP_IF([$LUA_DISABLED])
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 

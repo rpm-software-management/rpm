@@ -259,6 +259,7 @@ AT_CLEANUP
 AT_SETUP([simple lua --eval])
 AT_KEYWORDS([macros lua])
 AT_CHECK([
+AT_SKIP_IF([$LUA_DISABLED])
 runroot rpm --eval '%{lua:print(5*5)}'
 ],
 [0],
@@ -269,6 +270,7 @@ AT_CLEANUP
 AT_SETUP([lua rpm extensions])
 AT_KEYWORDS([macros lua])
 AT_CHECK([
+AT_SKIP_IF([$LUA_DISABLED])
 runroot rpm --eval '%{lua: rpm.define("foo bar") print(rpm.expand("%{foo}"))}'
 ],
 [0],
@@ -279,6 +281,7 @@ AT_CLEANUP
 AT_SETUP([lua posix extensions])
 AT_KEYWORDS([macros lua])
 AT_CHECK([
+AT_SKIP_IF([$LUA_DISABLED])
 runroot rpm \
   --eval '%{lua: posix.putenv("LUATEST=ok") print(posix.getenv("LUATEST"))}'
 ],
@@ -290,6 +293,7 @@ AT_CLEANUP
 AT_SETUP([lua script exit behavior])
 AT_KEYWORDS([macros lua])
 AT_CHECK([
+AT_SKIP_IF([$LUA_DISABLED])
 runroot rpm \
   --eval '%{lua: os.exit()}))}'
 ],

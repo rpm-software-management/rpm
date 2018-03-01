@@ -24,6 +24,11 @@ export TZ
 TOPDIR="${RPMTEST}/build"
 
 RPM_XFAIL=${RPM_XFAIL-1}
+if grep -q 'WITH_LUA 1' "${abs_top_builddir}/config.h"; then
+    LUA_DISABLED=false;
+else
+    LUA_DISABLED=true;
+fi
 
 function run()
 {
