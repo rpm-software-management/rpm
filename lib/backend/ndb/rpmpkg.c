@@ -207,9 +207,7 @@ static int rpmpkgHashSlots(rpmpkgdb pkgdb)
     hash = pkgdb->slothash;
     if (!hash || pkgdb->nslothash != num) {
 	free(pkgdb->slothash);
-	hash = pkgdb->slothash = calloc(num, sizeof(unsigned int));
-	if (!hash)
-	    return RPMRC_FAIL;
+	hash = pkgdb->slothash = xcalloc(num, sizeof(unsigned int));
 	pkgdb->nslothash = num;
     } else {
 	memset(hash, 0, num * sizeof(unsigned int));
@@ -256,10 +254,7 @@ static int rpmpkgReadSlots(rpmpkgdb pkgdb)
 
     /* read (and somewhat verify) all slots */
     pkgdb->aslots = slotnpages * (PAGE_SIZE / SLOT_SIZE);
-    pkgdb->slots = calloc(pkgdb->aslots, sizeof(*pkgdb->slots));
-    if (!pkgdb->slots) {
-	return RPMRC_FAIL;
-    }
+    pkgdb->slots = xcalloc(pkgdb->aslots, sizeof(*pkgdb->slots));
     i = 0;
     slot = pkgdb->slots;
     minblkoff = slotnpages * (PAGE_SIZE / BLK_SIZE);
@@ -682,7 +677,7 @@ static int rpmpkgMoveBlob(rpmpkgdb pkgdb, pkgslot *slot, unsigned int newblkoff)
     unsigned char *blob;
     unsigned int tstamp, blobl;
 
-    blob = malloc((size_t)blkcnt * BLK_SIZE);
+    blob = xmalloc((size_t)blkcnt * BLK_SIZE);
     if (rpmpkgReadBlob(pkgdb, pkgidx, blkoff, blkcnt, blob, &blobl, &tstamp)) {
 	free(blob);
 	return RPMRC_FAIL;
@@ -851,12 +846,8 @@ int rpmpkgOpen(rpmpkgdb *pkgdbp, const char *filename, int flags, int mode)
     rpmpkgdb pkgdb;
 
     *pkgdbp = 0;
-    pkgdb = calloc(1, sizeof(*pkgdb));
-    pkgdb->filename = strdup(filename);
-    if (!pkgdb->filename) {
-	free(pkgdb);
-	return RPMRC_FAIL;
-    }
+    pkgdb = xcalloc(1, sizeof(*pkgdb));
+    pkgdb->filename = xstrdup(filename);
     if ((flags & (O_RDONLY|O_RDWR)) == O_RDONLY)
 	pkgdb->rdonly = 1;
     if ((pkgdb->fd = open(filename, flags, mode)) == -1) {
@@ -868,12 +859,7 @@ int rpmpkgOpen(rpmpkgdb *pkgdbp, const char *filename, int flags, int mode)
 	char *filenameCopy;
 	DIR *pdir;
 
-	if ((filenameCopy = strdup(pkgdb->filename)) == NULL) {
-	    close(pkgdb->fd);
-	    free(pkgdb->filename);
-	    free(pkgdb);
-	    return RPMRC_FAIL;
-	}
+	filenameCopy = xstrdup(pkgdb->filename);
 
 	if ((pdir = opendir(dirname(filenameCopy))) == NULL) {
 	    free(filenameCopy);
@@ -950,7 +936,7 @@ static int rpmpkgGetInternal(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned char 
     if (!slot) {
 	return RPMRC_NOTFOUND;
     }
-    blob = malloc((size_t)slot->blkcnt * BLK_SIZE);
+    blob = xmalloc((size_t)slot->blkcnt * BLK_SIZE);
     if (rpmpkgReadBlob(pkgdb, pkgidx, slot->blkoff, slot->blkcnt, blob, bloblp, (unsigned int *)0)) {
 	free(blob);
 	return RPMRC_FAIL;
@@ -1113,7 +1099,7 @@ static int rpmpkgListInternal(rpmpkgdb pkgdb, unsigned int **pkgidxlistp, unsign
     }
     rpmpkgOrderSlots(pkgdb, SLOTORDER_BLKOFF);
     nslots = pkgdb->nslots;
-    pkgidxlist = calloc(nslots + 1, sizeof(unsigned int));
+    pkgidxlist = xcalloc(nslots + 1, sizeof(unsigned int));
     for (i = 0, slot = pkgdb->slots; i < nslots; i++, slot++) {
 	pkgidxlist[i] = slot->pkgidx;
     }
@@ -1258,16 +1244,9 @@ static int rpmpkgLZOCompress(unsigned char **blobp, unsigned int *bloblp)
     if (lzo_init() != LZO_E_OK) {
 	return RPMRC_FAIL;
     }
-    workmem = malloc(LZO1X_1_MEM_COMPRESS);
-    if (!workmem) {
-	return RPMRC_FAIL;
-    }
+    workmem = xmalloc(LZO1X_1_MEM_COMPRESS);
     lzoblobl = 4 + 4 + blobl + blobl / 16 + 64 + 3;
-    lzoblob = malloc(lzoblobl);
-    if (!lzoblob) {
-	free(workmem);
-	return RPMRC_FAIL;
-    }
+    lzoblob = xmalloc(lzoblobl);
     h2le(BLOBLZO_MAGIC, lzoblob);
     h2le(blobl, lzoblob + 4);
     if (lzo1x_1_compress(blob, blobl, lzoblob + 8, &blobl2, workmem) != LZO_E_OK) {
@@ -1296,9 +1275,7 @@ static int rpmpkgLZODecompress(unsigned char **blobp, unsigned int *bloblp)
     if (lzo_init() != LZO_E_OK)
 	return RPMRC_FAIL;
     blobl = le2h(lzoblob + 4);
-    blob = malloc(blobl ? blobl : 1);
-    if (!blob)
-	return RPMRC_FAIL;
+    blob = xmalloc(blobl ? blobl : 1);
     if (lzo1x_decompress(lzoblob + 8, lzoblobl - 8, blob, &blobl2, 0) != LZO_E_OK || blobl2 != blobl) {
 	free(blob);
 	return RPMRC_FAIL;
