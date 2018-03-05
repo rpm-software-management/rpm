@@ -242,17 +242,8 @@ static int rpmxdbReadHeader(rpmxdb xdb)
     /* read in all slots */
     xdb->firstfree = 0;
     nslots = slotnpages * (pagesize / SLOT_SIZE) - SLOT_START + 1;
-    slots = calloc(nslots + 1, sizeof(struct xdb_slot));
-    if (!slots) {
-	rpmxdbUnmap(xdb);
-	return RPMRC_FAIL;
-    }
-    usedslots = calloc(nslots + 1, sizeof(int));
-    if (!usedslots) {
-	rpmxdbUnmap(xdb);
-	free(slots);
-	return RPMRC_FAIL;
-    }
+    slots = xcalloc(nslots + 1, sizeof(struct xdb_slot));
+    usedslots = xcalloc(nslots + 1, sizeof(int));
     nused = 0;
     slotno = 1;
     slot = slots + 1;
@@ -384,9 +375,7 @@ static int rpmxdbWriteEmptyPages(rpmxdb xdb, unsigned int pageno, unsigned int c
     unsigned char *page;
     if (!count)
 	return RPMRC_OK;
-    page = malloc(xdb->pagesize);
-    if (!page)
-	return RPMRC_FAIL;
+    page = xmalloc(xdb->pagesize);
     memset(page, 0, xdb->pagesize);
     for (; count; count--, pageno++) {
 	if (pwrite(xdb->fd, page, xdb->pagesize, pageno * xdb->pagesize) != xdb->pagesize) {
@@ -402,9 +391,7 @@ static int rpmxdbWriteEmptySlotpage(rpmxdb xdb, int pageno)
 {
     unsigned char *page;
     int i, spp;
-    page = malloc(xdb->pagesize);
-    if (!page)
-	return RPMRC_FAIL;
+    page = xmalloc(xdb->pagesize);
     memset(page, 0, xdb->pagesize);
     spp = xdb->pagesize / SLOT_SIZE;	/* slots per page */
     for (i = pageno ? 0 : SLOT_START; i < spp; i++)
@@ -499,14 +486,10 @@ int rpmxdbOpen(rpmxdb *xdbp, rpmpkgdb pkgdb, const char *filename, int flags, in
     rpmxdb xdb;
 
     *xdbp = 0;
-    xdb = calloc(1, sizeof(*xdb));
+    xdb = xcalloc(1, sizeof(*xdb));
     xdb->pkgdb = pkgdb;
-    xdb->filename = strdup(filename);
+    xdb->filename = xstrdup(filename);
     xdb->systempagesize = sysconf(_SC_PAGE_SIZE);
-    if (!xdb->filename) {
-	free(xdb);
-	return RPMRC_FAIL;
-    }
     if ((flags & (O_RDONLY|O_RDWR)) == O_RDONLY)
 	xdb->rdonly = 1;
     if ((xdb->fd = open(filename, flags, mode)) == -1) {
@@ -518,12 +501,7 @@ int rpmxdbOpen(rpmxdb *xdbp, rpmpkgdb pkgdb, const char *filename, int flags, in
 	char *filenameCopy;
 	DIR *pdir;
 
-	if ((filenameCopy = strdup(xdb->filename)) == NULL) {
-	    close(xdb->fd);
-	    free(xdb->filename);
-	    free(xdb);
-	    return RPMRC_FAIL;
-	}
+	filenameCopy = xstrdup(xdb->filename);
 
 	if ((pdir = opendir(dirname(filenameCopy))) == NULL) {
 	    free(filenameCopy);
@@ -750,9 +728,7 @@ static int addslotpage(rpmxdb xdb)
     }
 
     spp = xdb->pagesize / SLOT_SIZE;	/* slots per page */
-    slot = realloc(xdb->slots, (nslots + 1 + spp) * sizeof(*slot));
-    if (!slot)
-	return RPMRC_FAIL;
+    slot = xrealloc(xdb->slots, (nslots + 1 + spp) * sizeof(*slot));
     xdb->slots = slot;
 
     if (rpmxdbWriteEmptySlotpage(xdb, xdb->slotnpages)) {
@@ -946,11 +922,7 @@ int rpmxdbResizeBlob(rpmxdb xdb, unsigned int id, size_t newsize)
 	    if (slot->mapped) {
 		memset(slot->mapped + pg, 0, xdb->pagesize - pg);
 	    } else {
-		char *empty = calloc(1, xdb->pagesize - pg);
-		if (!empty) {
-		    rpmxdbUnlock(xdb, 1);
-		    return RPMRC_FAIL;
-		}
+		char *empty = xcalloc(1, xdb->pagesize - pg);
                 if (pwrite(xdb->fd, empty, xdb->pagesize - pg, (slot->startpage + newpagecnt - 1) * xdb->pagesize + pg ) != xdb->pagesize - pg) {
 		    free(empty);
 		    rpmxdbUnlock(xdb, 1);

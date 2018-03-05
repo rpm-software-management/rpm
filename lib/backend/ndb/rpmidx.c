@@ -644,9 +644,7 @@ static int rpmidxRebuildInternal(rpmidxdb idxdb)
     } else {
 #ifdef IDXDB_FILESUPPORT
 	void *mapped;
-	nidxdb->filename = malloc(strlen(idxdb->filename) + 8);
-	if (!nidxdb->filename)
-	    return RPMRC_FAIL;
+	nidxdb->filename = xmalloc(strlen(idxdb->filename) + 8);
 	sprintf(nidxdb->filename, "%s-XXXXXX", idxdb->filename);
 	nidxdb->fd = mkstemp(nidxdb->filename);
 	if (nidxdb->fd == -1) {
@@ -673,16 +671,7 @@ static int rpmidxRebuildInternal(rpmidxdb idxdb)
     }
 
     /* copy all entries */
-    done = calloc(idxdb->nslots / 8 + 1, 1);
-    if (!done) {
-	rpmidxUnmap(nidxdb);
-	if (!idxdb->xdb) {
-	    close(nidxdb->fd);
-	    unlink(nidxdb->filename);
-	    free(nidxdb->filename);
-	}
-	return RPMRC_FAIL;
-    }
+    done = xcalloc(idxdb->nslots / 8 + 1, 1);
     keyend = 1;
     for (i = 0, ent = idxdb->slot_mapped; i < idxdb->nslots; i++, ent += 8) {
 	unsigned int x = le2ha(ent);
@@ -931,12 +920,10 @@ static int rpmidxGetInternal(rpmidxdb idxdb, const unsigned char *key, unsigned 
 	    continue;
 	if ((nhits & 15) == 0) {
 	    if (!hits) {
-		hits = malloc(16 * sizeof(unsigned int));
+		hits = xmalloc(16 * sizeof(unsigned int));
 	    } else {
-		hits = realloc(hits, (nhits + 16) * sizeof(unsigned int));
+		hits = xrealloc(hits, (nhits + 16) * sizeof(unsigned int));
 	    }
-	    if (!hits)
-		return RPMRC_FAIL;
 	}
 	data = le2ha(ent + 4);
 	ovldata = (data & 0x80000000) ? le2ha(idxdb->slot_mapped + idxdb->nslots * 8 + 4 * h) : 0;
@@ -959,9 +946,7 @@ static void rpmidxListSort(rpmidxdb idxdb, unsigned int *keylist, unsigned int n
     unsigned int i, *arr;
     if (nkeylist < 2 * 2)
 	return;
-    arr = malloc(nkeylist * sizeof(unsigned int));
-    if (!arr)
-	return;
+    arr = xmalloc(nkeylist * sizeof(unsigned int));
     for (i = 0; i < nkeylist; i += 2) {
 	arr[i] = i;
 	arr[i + 1] = murmurhash(data + keylist[i], keylist[i + 1]) & idxdb->hmask;
@@ -982,15 +967,9 @@ static int rpmidxListInternal(rpmidxdb idxdb, unsigned int **keylistp, unsigned 
     unsigned int nkeylist = 0;
     unsigned char *data, *terminate, *key, *keyendp;
 
-    data = malloc(idxdb->keyend + 1);	/* +1 so we can terminate the last key */
-    if (!data)
-	return RPMRC_FAIL;
+    data = xmalloc(idxdb->keyend + 1);	/* +1 so we can terminate the last key */
     memcpy(data, idxdb->key_mapped, idxdb->keyend);
-    keylist = malloc(16 * sizeof(*keylist));
-    if (!keylist) {
-	free(data);
-	return RPMRC_FAIL;
-    }
+    keylist = xmalloc(16 * sizeof(*keylist));
     terminate = 0;
     for (key = data + 1, keyendp = data + idxdb->keyend; key < keyendp; ) {
 	unsigned int hl, keyl;
@@ -999,12 +978,7 @@ static int rpmidxListInternal(rpmidxdb idxdb, unsigned int **keylistp, unsigned 
 	    continue;
 	}
 	if ((nkeylist & 15) == 0) {
-	    unsigned int *kl = realloc(keylist, (nkeylist + 16) * sizeof(*keylist));
-	    if (!kl) {
-		free(keylist);
-		free(data);
-		return RPMRC_FAIL;
-	    }
+	    unsigned int *kl = xrealloc(keylist, (nkeylist + 16) * sizeof(*keylist));
 	    keylist = kl;
 	}
 	keyl = decodekeyl(key, &hl);
@@ -1096,14 +1070,8 @@ int rpmidxOpen(rpmidxdb *idxdbp, rpmpkgdb pkgdb, const char *filename, int flags
     rpmidxdb idxdb;
 
     *idxdbp = 0;
-    idxdb = calloc(1, sizeof(*idxdb));
-    if (!idxdb)
-	return RPMRC_FAIL;
-    idxdb->filename = strdup(filename);
-    if (!idxdb->filename) {
-	free(idxdb);
-	return RPMRC_FAIL;
-    }   
+    idxdb = xcalloc(1, sizeof(*idxdb));
+    idxdb->filename = xstrdup(filename);
     if ((flags & (O_RDONLY|O_RDWR)) == O_RDONLY)
 	idxdb->rdonly = 1;
     if ((idxdb->fd = open(filename, flags, mode)) == -1) {
@@ -1152,11 +1120,7 @@ int rpmidxOpenXdb(rpmidxdb *idxdbp, rpmpkgdb pkgdb, rpmxdb xdb, unsigned int xdb
 	rpmxdbUnlock(xdb, 0);
 	return RPMRC_FAIL;
     }
-    idxdb = calloc(1, sizeof(*idxdb));
-    if (!idxdb) {
-	rpmxdbUnlock(xdb, 0);
-	return RPMRC_FAIL;
-    }
+    idxdb = xcalloc(1, sizeof(*idxdb));
     idxdb->fd = -1;
     idxdb->xdb = xdb;
     idxdb->xdbtag = xdbtag;
