@@ -460,24 +460,6 @@ typedef enum rpmTagClass_e {
 } rpmTagClass;
 
 /** \ingroup header
- * New rpm data types under consideration/development.
- * These data types may (or may not) be added to rpm at some point. In order
- * to avoid incompatibility with legacy versions of rpm, these data (sub-)types
- * are introduced into the header by overloading RPM_BIN_TYPE, with the binary
- * value of the tag a 16 byte image of what should/will be in the header index,
- * followed by per-tag private data.
- */
-typedef enum rpmSubTagType_e {
-    RPM_REGION_TYPE		= -10,
-    RPM_BIN_ARRAY_TYPE		= -11,
-  /*!<@todo Implement, kinda like RPM_STRING_ARRAY_TYPE for known (but variable)
-	length binary data. */
-    RPM_XREF_TYPE		= -12
-  /*!<@todo Implement, intent is to to carry a (???,tagNum,valNum) cross
-	reference to retrieve data from other tags. */
-} rpmSubTagType;
-
-/** \ingroup header
  *  * Identify how to return the header data type.
  *   */
 enum rpmTagReturnType_e {
