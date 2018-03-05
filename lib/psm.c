@@ -514,13 +514,14 @@ void rpmpsmNotify(rpmpsm psm, int what, rpm_loff_t amount)
  */
 static void markReplacedInstance(rpmts ts, rpmte te)
 {
+    /* this must match rpmNameVersionCompare in depends.c */
     rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(te), 0);
     rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP, rpmteE(te));
     rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP, rpmteV(te));
     rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP, rpmteR(te));
+    rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_STRCMP, rpmteA(te));
     /* XXX shouldn't we also do this on colorless transactions? */
     if (rpmtsColor(ts)) {
-	rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_STRCMP, rpmteA(te));
 	rpmdbSetIteratorRE(mi, RPMTAG_OS, RPMMIRE_STRCMP, rpmteO(te));
     }
 
