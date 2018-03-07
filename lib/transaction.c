@@ -1550,6 +1550,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     rpmtxn txn = NULL;
     rpmps tsprobs = NULL;
     int TsmPreDone = 0; /* TsmPre hook hasn't been called */
+    int nelem = rpmtsNElements(ts);
     /* Ignore SIGPIPE for the duration of transaction */
     rpmsqAction_t oact = rpmsqSetAction(SIGPIPE, RPMSQ_IGN);
     
@@ -1557,7 +1558,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     mode_t oldmask = umask(022);
 
     /* Empty transaction, nothing to do */
-    if (rpmtsNElements(ts) <= 0) {
+    if (nelem <= 0) {
 	rc = 0;
 	goto exit;
     }
@@ -1603,7 +1604,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
      /* If unfiltered problems exist, free memory and return. */
     if ((rpmtsFlags(ts) & RPMTRANS_FLAG_BUILD_PROBS) || (rpmpsNumProblems(tsprobs))) {
-	rc = tsmem->orderCount;
+	rc = nelem;
 	goto exit;
     }
 
