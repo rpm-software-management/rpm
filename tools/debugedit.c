@@ -820,6 +820,9 @@ record_file_string_entry_idx (struct strings *strings, size_t old_idx)
   struct stridxentry *entry = string_find_new_entry (strings, old_idx);
   if (entry != NULL)
     {
+      if (old_idx >= debug_sections[DEBUG_STR].size)
+	error (1, 0, "Bad string pointer index %zd", old_idx);
+
       Strent *strent;
       const char *old_str = (char *)debug_sections[DEBUG_STR].data + old_idx;
       const char *file = skip_dir_prefix (old_str, base_dir);
@@ -870,6 +873,9 @@ record_existing_string_entry_idx (struct strings *strings, size_t old_idx)
   struct stridxentry *entry = string_find_new_entry (strings, old_idx);
   if (entry != NULL)
     {
+      if (old_idx >= debug_sections[DEBUG_STR].size)
+	error (1, 0, "Bad string pointer index %zd", old_idx);
+
       const char *str = (char *)debug_sections[DEBUG_STR].data + old_idx;
       Strent *strent = strtab_add_len (strings->str_tab,
 				       str, strlen (str) + 1);
@@ -1533,6 +1539,10 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 		{
 		  const char *dir;
 		  size_t idx = do_read_32_relocated (ptr);
+		  if (idx >= debug_sections[DEBUG_STR].size)
+		    error (1, 0,
+			   "%s: Bad string pointer index %zd for comp_dir",
+			   dso->filename, idx);
 		  dir = (char *) debug_sections[DEBUG_STR].data + idx;
 
 		  free (comp_dir);
@@ -1558,6 +1568,10 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 		 case.  */
 	      char *name;
 	      size_t idx = do_read_32_relocated (ptr);
+	      if (idx >= debug_sections[DEBUG_STR].size)
+		error (1, 0,
+		       "%s: Bad string pointer index %zd for unit name",
+		       dso->filename, idx);
 	      name = (char *) debug_sections[DEBUG_STR].data + idx;
 	      if (*name == '/' && comp_dir == NULL)
 		{
