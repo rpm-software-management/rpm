@@ -36,7 +36,17 @@ struct rpmsinfo_s {
     char *descr;
 };
 
-typedef rpmRC (*rpmsinfoCb)(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *result, void *cbdata);
+/**
+ * Signature/digest verification callback prototype.
+ * Useful eg for customizing verification output and results.
+ *
+ * @param sinfo		signature/digest info
+ * @param rcp		pointer to verification result (modifiable)
+ * @param msgp		pointer to verification message (modifiable)
+ * @param cbdata	callback data
+ * @return		1 to continue, 0 to stop verification
+ */
+typedef int (*rpmsinfoCb)(struct rpmsinfo_s *sinfo, rpmRC *rcp, char **msgp, void *cbdata);
 
 #ifdef __cplusplus
 extern "C" {
