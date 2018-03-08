@@ -138,22 +138,22 @@ struct vfydata_s {
     int bad;
 };
 
-static rpmRC formatVerbose(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *result, void *cbdata)
+static int formatVerbose(struct rpmsinfo_s *sinfo, rpmRC *rcp, char **msgp, void *cbdata)
 {
-    char *vsmsg = rpmsinfoMsg(sinfo, sigres, result);
+    char *vsmsg = rpmsinfoMsg(sinfo, *rcp, *msgp);
     rpmlog(RPMLOG_NOTICE, "    %s\n", vsmsg);
     free(vsmsg);
-    return sigres;
+    return 1;
 }
 
 /* Failures are uppercase, in parenthesis if NOKEY. Otherwise lowercase. */
-static rpmRC formatDefault(struct rpmsinfo_s *sinfo, rpmRC sigres, const char *result, void *cbdata)
+static int formatDefault(struct rpmsinfo_s *sinfo, rpmRC *rcp, char **msgp, void *cbdata)
 {
     struct vfydata_s *vd = cbdata;
     vd->seen |= sinfo->type;
-    if (sigres != RPMRC_OK)
+    if (*rcp != RPMRC_OK)
 	vd->bad |= sinfo->type;
-    return sigres;
+    return 1;
 }
 
 rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,

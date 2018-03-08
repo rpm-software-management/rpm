@@ -143,15 +143,15 @@ exit:
     return seen;
 }
 
-static rpmRC handleHdrVS(struct rpmsinfo_s *sinfo, rpmRC rc, const char *msg, void *cbdata)
+static int handleHdrVS(struct rpmsinfo_s *sinfo, rpmRC *rcp, char **msgp, void *cbdata)
 {
     char **buf  = cbdata;
     if (buf) {
-	char *vsmsg = rpmsinfoMsg(sinfo, rc, msg);
+	char *vsmsg = rpmsinfoMsg(sinfo, *rcp, *msgp);
 	*buf = rstrscat(buf, "\n", vsmsg, NULL);
 	free(vsmsg);
     }
-    return rc;
+    return 1;
 }
 
 static void updateHdrDigests(rpmDigestBundle bundle, struct hdrblob_s *blob)
@@ -269,12 +269,12 @@ struct pkgdata_s {
     rpmRC rc;
 };
 
-static rpmRC handlePkgVS(struct rpmsinfo_s *sinfo, rpmRC rc, const char *msg, void *cbdata)
+static int handlePkgVS(struct rpmsinfo_s *sinfo, rpmRC *rcp, char **msgp, void *cbdata)
 {
     struct pkgdata_s *pkgdata = cbdata;
     int lvl = RPMLOG_DEBUG;
-    char *vsmsg = rpmsinfoMsg(sinfo, rc, msg);
-    switch (rc) {
+    char *vsmsg = rpmsinfoMsg(sinfo, *rcp, *msgp);
+    switch (*rcp) {
     case RPMRC_OK:		/* Signature is OK. */
 	break;
     case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
@@ -295,15 +295,15 @@ static rpmRC handlePkgVS(struct rpmsinfo_s *sinfo, rpmRC rc, const char *msg, vo
     rpmlog(lvl, "%s: %s\n", pkgdata->fn, vsmsg);
 
     /* Remember actual return code, but don't override a previous failure */
-    if (rc && pkgdata->rc != RPMRC_FAIL)
-	pkgdata->rc = rc;
+    if (*rcp && pkgdata->rc != RPMRC_FAIL)
+	pkgdata->rc = *rcp;
 
     /* Preserve traditional behavior for now: only failure prevents read */
-    if (rc != RPMRC_FAIL)
-	rc = RPMRC_OK;
+    if (*rcp != RPMRC_FAIL)
+	*rcp = RPMRC_OK;
 
     free(vsmsg);
-    return rc;
+    return 1;
 }
 
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)

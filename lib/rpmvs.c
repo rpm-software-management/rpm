@@ -352,8 +352,9 @@ int rpmvsVerifyItems(struct rpmvs_s *sis, int range, rpmDigestBundle bundle,
 		       rpmKeyring keyring, rpmsinfoCb cb, void *cbdata)
 {
     int failed = 0;
+    int cont = 1;
 
-    for (int i = 0; i < sis->nsigs; i++) {
+    for (int i = 0; i < sis->nsigs && cont; i++) {
 	struct rpmsinfo_s *sinfo = &sis->sigs[i];
 
 	if (sinfo->range == range) {
@@ -366,7 +367,7 @@ int rpmvsVerifyItems(struct rpmvs_s *sis, int range, rpmDigestBundle bundle,
 	    }
 
 	    if (cb)
-		sis->rcs[i] = cb(sinfo, sis->rcs[i], sis->results[i], cbdata);
+		cont = cb(sinfo, &sis->rcs[i], &sis->results[i], cbdata);
 
 	    if (sis->rcs[i] != RPMRC_OK)
 		failed++;
