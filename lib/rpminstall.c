@@ -716,7 +716,7 @@ exit:
     rpmtsEmpty(ts);
     rpmtsSetVSFlags(ts, ovsflags);
 
-    return numFailed;
+    return (numFailed < 0) ? numPackages : numFailed;
 }
 
 int rpmInstallSource(rpmts ts, const char * arg,
