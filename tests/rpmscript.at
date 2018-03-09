@@ -2,6 +2,126 @@
 
 AT_BANNER([RPM scriptlets])
 
+AT_SETUP([basic script failures 1])
+AT_KEYWORDS([script])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
+for v in 1.0 2.0; do
+    runroot rpmbuild --quiet --define "ver ${v}" -bb /data/SPECS/scriptfail.spec
+done
+
+runroot rpm -U /build/RPMS/noarch/fakeshell-1.0-1.noarch.rpm
+
+pkgname="scriptfail"
+pkg1="${pkgname}-1.0-1"
+pkg2="${pkgname}-2.0-1"
+pkgfile1="/build/RPMS/noarch/${pkg1}.noarch.rpm"
+pkgfile2="/build/RPMS/noarch/${pkg2}.noarch.rpm"
+
+echo PRETRANSFAIL
+runroot rpm -U --define "exitpretrans 1" ${pkgfile1} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+echo PRETRANS
+runroot rpm -U --define "exitpretrans 0" ${pkgfile1} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+runroot rpm -e ${pkgname} 2>&1
+echo PREFAIL
+runroot rpm -U --define "exitpre 1" ${pkgfile1} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+echo PRE
+runroot rpm -U --define "exitpre 0" ${pkgfile1} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+echo PREUNFAIL
+runroot rpm -e --define "exitpreun 1" ${pkgname} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+echo PREUN
+runroot rpm -e --define "exitpreun 0" ${pkgname} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+echo POSTFAIL
+runroot rpm -U ${pkgfile1} 2>&1
+runroot rpm -U --define "exitpost 1" ${pkgfile2} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+runroot rpm -e ${pkgname} 2>&1
+echo POST
+runroot rpm -U ${pkgfile1} 2>&1
+runroot rpm -U --define "exitpost 0" ${pkgfile2} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+runroot rpm -e ${pkgname} 2>&1
+echo POSTTRANSFAIL
+runroot rpm -U --define "exitposttrans 1" ${pkgfile1} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+runroot rpm -e ${pkgname} 2>&1
+echo POSTTRANS
+runroot rpm -U --define "exitposttrans 0" ${pkgfile1} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+runroot rpm -e ${pkgname} 2>&1
+echo POSTUNFAIL
+runroot rpm -U ${pkgfile1} 2>&1
+runroot rpm -U --define "exitpostun 1" ${pkgfile2} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+runroot rpm -e ${pkgname} 2>&1
+echo POSTUN
+runroot rpm -U ${pkgfile1} 2>&1
+runroot rpm -U --define "exitpostun 0" ${pkgfile2} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+runroot rpm -e ${pkgname} 2>&1
+
+exit 0
+],
+[],
+[PRETRANSFAIL
+error: %pretrans(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
+error: scriptfail-1.0-1.noarch: install skipped
+1
+package scriptfail is not installed
+PRETRANS
+0
+scriptfail-1.0-1.noarch
+PREFAIL
+error: %prein(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
+error: scriptfail-1.0-1.noarch: install failed
+1
+package scriptfail is not installed
+PRE
+0
+scriptfail-1.0-1.noarch
+PREUNFAIL
+error: %preun(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
+error: scriptfail-1.0-1.noarch: erase failed
+1
+scriptfail-1.0-1.noarch
+PREUN
+0
+package scriptfail is not installed
+POSTFAIL
+warning: %post(scriptfail-2.0-1.noarch) scriptlet failed, exit status 1
+0
+scriptfail-2.0-1.noarch
+POST
+0
+scriptfail-2.0-1.noarch
+POSTTRANSFAIL
+warning: %posttrans(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
+0
+scriptfail-1.0-1.noarch
+POSTTRANS
+0
+scriptfail-1.0-1.noarch
+POSTUNFAIL
+warning: %postun(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
+0
+scriptfail-2.0-1.noarch
+POSTUN
+0
+scriptfail-2.0-1.noarch
+],
+[])
+AT_CLEANUP
+
 # ------------------------------
 # 
 AT_SETUP([basic scripts and arguments])

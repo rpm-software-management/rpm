@@ -57,6 +57,7 @@ EXTRA_DIST += data/SPECS/deptest.spec
 EXTRA_DIST += data/SPECS/verifyscript.spec
 EXTRA_DIST += data/SPECS/fakeshell.spec
 EXTRA_DIST += data/SPECS/scripts.spec
+EXTRA_DIST += data/SPECS/scriptfail.spec
 EXTRA_DIST += data/SPECS/selfconflict.spec
 EXTRA_DIST += data/SPECS/replacetest.spec
 EXTRA_DIST += data/SPECS/triggers.spec
