@@ -1628,7 +1628,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     }
 
     /* Actually install and remove packages */
-    nfailed = rpmtsProcess(ts) ? -1 : 0;
+    nfailed = rpmtsProcess(ts);
 
     /* Run %posttrans scripts unless disabled */
     if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_NOPOSTTRANS))) {
@@ -1657,7 +1657,7 @@ exit:
 	rpmpluginsCallTsmPost(rpmtsPlugins(ts), ts, rc);
 
     /* Finish up... */
-    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST) && nfailed > 0) {
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST) && nfailed >= 0) {
 	rpmtsSync(ts);
     }
     (void) umask(oldmask);
