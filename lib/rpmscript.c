@@ -43,33 +43,46 @@ struct scriptInfo_s {
     rpmTagVal tag;
     rpmTagVal progtag;
     rpmTagVal flagtag;
+    rpmscriptFlags deflags;
 };
 
 static const struct scriptInfo_s scriptInfo[] = {
     { RPMSCRIPT_PREIN, "%prein", 0,
-	RPMTAG_PREIN, RPMTAG_PREINPROG, RPMTAG_PREINFLAGS },
+	RPMTAG_PREIN, RPMTAG_PREINPROG, RPMTAG_PREINFLAGS,
+	RPMSCRIPT_FLAG_CRITICAL, },
     { RPMSCRIPT_PREUN, "%preun", 0,
-	RPMTAG_PREUN, RPMTAG_PREUNPROG, RPMTAG_PREUNFLAGS },
+	RPMTAG_PREUN, RPMTAG_PREUNPROG, RPMTAG_PREUNFLAGS,
+	RPMSCRIPT_FLAG_CRITICAL, },
     { RPMSCRIPT_POSTIN, "%post", 0,
-	RPMTAG_POSTIN, RPMTAG_POSTINPROG, RPMTAG_POSTINFLAGS },
+	RPMTAG_POSTIN, RPMTAG_POSTINPROG, RPMTAG_POSTINFLAGS,
+	0, },
     { RPMSCRIPT_POSTUN, "%postun", 0,
-	RPMTAG_POSTUN, RPMTAG_POSTUNPROG, RPMTAG_POSTUNFLAGS },
+	RPMTAG_POSTUN, RPMTAG_POSTUNPROG, RPMTAG_POSTUNFLAGS,
+	0, },
     { RPMSCRIPT_PRETRANS, "%pretrans", 0,
-	RPMTAG_PRETRANS, RPMTAG_PRETRANSPROG, RPMTAG_PRETRANSFLAGS },
+	RPMTAG_PRETRANS, RPMTAG_PRETRANSPROG, RPMTAG_PRETRANSFLAGS,
+	RPMSCRIPT_FLAG_CRITICAL, },
     { RPMSCRIPT_POSTTRANS, "%posttrans", 0,
-	RPMTAG_POSTTRANS, RPMTAG_POSTTRANSPROG, RPMTAG_POSTTRANSFLAGS },
+	RPMTAG_POSTTRANS, RPMTAG_POSTTRANSPROG, RPMTAG_POSTTRANSFLAGS,
+	0, },
     { RPMSCRIPT_TRIGGERPREIN, "%triggerprein", RPMSENSE_TRIGGERPREIN,
-	RPMTAG_TRIGGERPREIN, 0, 0 },
+	RPMTAG_TRIGGERPREIN, 0, 0,
+	0, },
     { RPMSCRIPT_TRIGGERUN, "%triggerun", RPMSENSE_TRIGGERUN,
-	RPMTAG_TRIGGERUN, 0, 0 },
+	RPMTAG_TRIGGERUN, 0, 0,
+	0, },
     { RPMSCRIPT_TRIGGERIN, "%triggerin", RPMSENSE_TRIGGERIN,
-	RPMTAG_TRIGGERIN, 0, 0 },
+	RPMTAG_TRIGGERIN, 0, 0,
+	0, },
     { RPMSCRIPT_TRIGGERPOSTUN, "%triggerpostun", RPMSENSE_TRIGGERPOSTUN,
-	RPMTAG_TRIGGERPOSTUN, 0, 0 },
+	RPMTAG_TRIGGERPOSTUN, 0, 0,
+	0, },
     { RPMSCRIPT_VERIFY, "%verify", 0,
-	RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG, RPMTAG_VERIFYSCRIPTFLAGS},
+	RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG, RPMTAG_VERIFYSCRIPTFLAGS,
+	RPMSCRIPT_FLAG_CRITICAL, },
     { 0, "unknown", 0,
-	RPMTAG_NOT_FOUND, RPMTAG_NOT_FOUND, RPMTAG_NOT_FOUND }
+	RPMTAG_NOT_FOUND, RPMTAG_NOT_FOUND, RPMTAG_NOT_FOUND,
+	0, }
 };
 
 static const struct scriptInfo_s * findTag(rpmTagVal tag)
@@ -404,14 +417,15 @@ exit:
 }
 
 rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
-		   ARGV_const_t prefixes, int warn_only, rpmPlugins plugins)
+		   ARGV_const_t prefixes, rpmPlugins plugins)
 {
+    if (script == NULL) return RPMRC_OK;
+
     ARGV_t args = NULL;
-    rpmlogLvl lvl = warn_only ? RPMLOG_WARNING : RPMLOG_ERR;
+    rpmlogLvl lvl = (script->flags & RPMSCRIPT_FLAG_CRITICAL) ?
+		    RPMLOG_ERR : RPMLOG_WARNING;
     rpmRC rc;
     int script_type = RPMSCRIPTLET_FORK | RPMSCRIPTLET_EXEC;
-
-    if (script == NULL) return RPMRC_OK;
 
     /* construct a new argv as we can't modify the one from header */
     if (script->args) {
@@ -457,6 +471,11 @@ static rpmTagVal getFlagTag(rpmTagVal scriptTag)
     return findTag(scriptTag)->flagtag;
 }
 
+static rpmscriptFlags getDefFlags(rpmTagVal scriptTag)
+{
+    return findTag(scriptTag)->deflags;
+}
+
 static const char * tag2sln(rpmTagVal tag)
 {
     return findTag(tag)->desc;
@@ -469,7 +488,7 @@ static rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
     rpmScript script = xcalloc(1, sizeof(*script));
     script->tag = tag;
     script->type = getScriptType(tag);
-    script->flags = flags;
+    script->flags = getDefFlags(tag) | flags;
     script->body = (body != NULL) ? xstrdup(body) : NULL;
     rasprintf(&script->descr, "%s(%s)", tag2sln(tag), nevra);
 
@@ -642,4 +661,9 @@ rpmTagVal rpmScriptTag(rpmScript script)
 rpmscriptTypes rpmScriptType(rpmScript script)
 {
     return (script != NULL) ? script->type : 0;
+}
+
+rpmscriptFlags rpmScriptFlags(rpmScript script)
+{
+    return (script != NULL) ? script->flags : 0;
 }

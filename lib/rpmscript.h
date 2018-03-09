@@ -35,6 +35,7 @@ enum rpmscriptFlags_e {
     RPMSCRIPT_FLAG_NONE		= 0,
     RPMSCRIPT_FLAG_EXPAND	= (1 << 0), /* macro expansion */
     RPMSCRIPT_FLAG_QFORMAT	= (1 << 1), /* header queryformat expansion */
+    RPMSCRIPT_FLAG_CRITICAL	= (1 << 2), /* critical for success/failure */
 };
 
 typedef rpmFlags rpmscriptFlags;
@@ -66,13 +67,16 @@ rpmScript rpmScriptFree(rpmScript script);
 
 RPM_GNUC_INTERNAL
 rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
-                   ARGV_const_t prefixes, int warn_only, rpmPlugins plugins);
+                   ARGV_const_t prefixes, rpmPlugins plugins);
 
 RPM_GNUC_INTERNAL
 rpmTagVal rpmScriptTag(rpmScript script);
 
 RPM_GNUC_INTERNAL
 rpmscriptTypes rpmScriptType(rpmScript script);
+
+RPM_GNUC_INTERNAL
+rpmscriptFlags rpmScriptFlags(rpmScript script);
 
 RPM_GNUC_INTERNAL
 void rpmScriptSetNextFileFunc(rpmScript script, char *(*func)(void *),
