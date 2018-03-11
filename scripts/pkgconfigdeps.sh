@@ -47,7 +47,7 @@ case $1 in
 	[ $i -eq 1 ] && echo "$pkgconfig"
 	DIR="`dirname ${filename}`"
 	export PKG_CONFIG_PATH="$DIR:$DIR/../../share/pkgconfig"
-	$pkgconfig --print-requires --print-requires-private "$filename" 2> /dev/null | while read n r v ; do
+	$pkgconfig --print-requires "$filename" 2> /dev/null | while read n r v ; do
 	    [ -n "$n" ] || continue
 	    echo -n "pkgconfig($n) "
 	    [ -n "$r" ] && [ -n "$v" ] && echo -n "$r" "$v"
