@@ -1539,14 +1539,18 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 		{
 		  const char *dir;
 		  size_t idx = do_read_32_relocated (ptr);
-		  if (idx >= debug_sections[DEBUG_STR].size)
-		    error (1, 0,
-			   "%s: Bad string pointer index %zd for comp_dir",
-			   dso->filename, idx);
-		  dir = (char *) debug_sections[DEBUG_STR].data + idx;
+		  /* In phase zero we collect the comp_dir.  */
+		  if (phase == 0)
+		    {
+		      if (idx >= debug_sections[DEBUG_STR].size)
+			error (1, 0,
+			       "%s: Bad string pointer index %zd for comp_dir",
+			       dso->filename, idx);
+		      dir = (char *) debug_sections[DEBUG_STR].data + idx;
 
-		  free (comp_dir);
-		  comp_dir = strdup (dir);
+		      free (comp_dir);
+		      comp_dir = strdup (dir);
+		    }
 
 		  if (dest_dir != NULL && phase == 0)
 		    {
@@ -1566,25 +1570,29 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 		 unit. If starting with / it is a full path name.
 		 Note that we don't handle DW_FORM_string in this
 		 case.  */
-	      char *name;
 	      size_t idx = do_read_32_relocated (ptr);
-	      if (idx >= debug_sections[DEBUG_STR].size)
-		error (1, 0,
-		       "%s: Bad string pointer index %zd for unit name",
-		       dso->filename, idx);
-	      name = (char *) debug_sections[DEBUG_STR].data + idx;
-	      if (*name == '/' && comp_dir == NULL)
-		{
-		  char *enddir = strrchr (name, '/');
 
-		  if (enddir != name)
+	      /* In phase zero we will look for a comp_dir to use.  */
+	      if (phase == 0)
+		{
+		  if (idx >= debug_sections[DEBUG_STR].size)
+		    error (1, 0,
+			   "%s: Bad string pointer index %zd for unit name",
+			   dso->filename, idx);
+		  char *name = (char *) debug_sections[DEBUG_STR].data + idx;
+		  if (*name == '/' && comp_dir == NULL)
 		    {
-		      comp_dir = malloc (enddir - name + 1);
-		      memcpy (comp_dir, name, enddir - name);
-		      comp_dir [enddir - name] = '\0';
+		      char *enddir = strrchr (name, '/');
+
+		      if (enddir != name)
+			{
+			  comp_dir = malloc (enddir - name + 1);
+			  memcpy (comp_dir, name, enddir - name);
+			  comp_dir [enddir - name] = '\0';
+			}
+		      else
+			comp_dir = strdup ("/");
 		    }
-		  else
-		    comp_dir = strdup ("/");
 		}
 
 	      /* First pass (0) records the new name to be
