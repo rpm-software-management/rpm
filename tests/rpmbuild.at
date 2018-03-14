@@ -1358,3 +1358,31 @@ No hello.debug
 ],
 [ignore])
 AT_CLEANUP
+
+# ------------------------------
+# Check functionality of %optional tag
+AT_SETUP([rpmbuild optional tag])
+AT_KEYWORDS([build] [optional])
+AT_CHECK([[
+rm -rf ${TOPDIR}
+
+runroot rpmbuild \
+  -bb --quiet /data/SPECS/optional.spec
+
+runroot rpm -qp --qf \
+  "\n[%{filemodes:perms} %-8{fileusername} %-8{filegroupname} %{filenames}\n]"\
+  /build/RPMS/noarch/optional-1.0*.noarch.rpm
+]],
+[0],
+[
+drwxr-xr-x /dir-exists
+drwxr-xr-x /dirglob-exists-1
+drwxr-xr-x /dirglob-exists-2
+-rw-r--r-- /file-exists
+-rw-r--r-- /glob-exists-1
+-rw-r--r-- /glob-exists-2
+lrwxrwxrwx /symlink-exists
+lrwxrwxrwx /symlink-to-dir-exists
+],
+[])
+AT_CLEANUP
