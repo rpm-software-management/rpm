@@ -160,6 +160,26 @@ static const size_t headerMaxbytes = (256*1024*1024);
 static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
 			 int onDisk, rpm_constdata_t pend);
 
+/* Check tag type matches our definition */
+static int hdrchkTagType(rpm_tag_t tag, rpm_tagtype_t type)
+{
+    rpmTagType t = rpmTagGetTagType(tag);
+    if (t == type)
+	return 0;
+
+    /* Permit unknown tags for forward compatibility */
+    if (t == RPM_NULL_TYPE)
+	return 0;
+
+    /* Some string tags harmlessly disagree on array vs non-array */
+    if ((t == RPM_STRING_ARRAY_TYPE && type == RPM_STRING_TYPE) ||
+	    (type == RPM_STRING_ARRAY_TYPE && t == RPM_STRING_TYPE))
+	return 0;
+
+    /* Known tag with mismatching type, bad bad bad. */
+    return 1;
+}
+
 #ifndef htonll
 /* Convert a 64bit value to network byte order. */
 RPM_GNUC_CONST
@@ -253,6 +273,9 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
     const char *ds = (const char *) blob->dataStart;
     int32_t il = (blob->regionTag) ? blob->il-1 : blob->il;
     entryInfo pe = (blob->regionTag) ? blob->pe+1 : blob->pe;
+    /* Can't typecheck signature header tags, sigh */
+    int typechk = (blob->regionTag == RPMTAG_HEADERIMMUTABLE ||
+		   blob->regionTag == RPMTAG_HEADERIMAGE);
 
     for (i = 0; i < il; i++) {
 	ei2h(&pe[i], &info);
@@ -268,6 +291,8 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
 	if (hdrchkAlign(info.type, info.offset))
 	    goto err;
 	if (hdrchkRange(blob->dl, info.offset))
+	    goto err;
+	if (typechk && hdrchkTagType(info.tag, info.type))
 	    goto err;
 
 	/* Verify the data actually fits */
