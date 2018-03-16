@@ -311,7 +311,7 @@ rpmRC rpmKeyringVerifySig(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx)
 {
     rpmRC rc = RPMRC_FAIL;
 
-    if (keyring && sig && ctx) {
+    if (sig && ctx) {
 	pthread_rwlock_rdlock(&keyring->lock);
 
 	pgpDigParams pgpkey = NULL;
