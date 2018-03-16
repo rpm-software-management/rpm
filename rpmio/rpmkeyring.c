@@ -311,9 +311,10 @@ rpmRC rpmKeyringVerifySig(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx)
 {
     rpmRC rc = RPMRC_FAIL;
 
-    if (sig && ctx) {
+    if (keyring)
 	pthread_rwlock_rdlock(&keyring->lock);
 
+    if (sig && ctx) {
 	pgpDigParams pgpkey = NULL;
 	rpmPubkey key = findbySig(keyring, sig);
 
@@ -322,9 +323,10 @@ rpmRC rpmKeyringVerifySig(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx)
 
 	/* We call verify even if key not found for a signature sanity check */
 	rc = pgpVerifySignature(pgpkey, sig, ctx);
-
-	pthread_rwlock_unlock(&keyring->lock);
     }
+
+    if (keyring)
+	pthread_rwlock_unlock(&keyring->lock);
 
     return rc;
 }
