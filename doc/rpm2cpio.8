@@ -10,11 +10,9 @@ to a cpio archive on standard out. If a '-' argument is given, an rpm stream
 is read from standard in.
 
 .br
-.I "\fBrpm2cpio rpm-1.1-1.i386.rpm\fP"
-.br
-.I "\fBrpm2cpio - < glint-1.0-1.i386.rpm\fP"
-.br
 .I "\fBrpm2cpio glint-1.0-1.i386.rpm | cpio -dium\fP"
+.br
+.I "\fBcat glint-1.0-1.i386.rpm | rpm2cpio - | cpio -tv\fP"
 
 .SH SEE ALSO
 .IR rpm (8)
