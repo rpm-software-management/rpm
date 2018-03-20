@@ -20,7 +20,7 @@ static PyObject * addSign(PyObject * self, PyObject * args, PyObject *kwds)
     const char *path = NULL;
     struct rpmSignArgs sargs;
 
-    if (parseSignArgs(args, kwds, &path, &sargs))
+    if (!parseSignArgs(args, kwds, &path, &sargs))
 	return NULL;
 
     return PyBool_FromLong(rpmPkgSign(path, &sargs) == 0);
@@ -31,7 +31,7 @@ static PyObject * delSign(PyObject * self, PyObject * args, PyObject *kwds)
     const char *path = NULL;
     struct rpmSignArgs sargs;
 
-    if (parseSignArgs(args, kwds, &path, &sargs))
+    if (!parseSignArgs(args, kwds, &path, &sargs))
 	return NULL;
 
     return PyBool_FromLong(rpmPkgDelSign(path, &sargs) == 0);
