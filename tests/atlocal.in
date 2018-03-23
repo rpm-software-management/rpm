@@ -29,6 +29,11 @@ if grep -q 'WITH_LUA 1' "${abs_top_builddir}/config.h"; then
 else
     LUA_DISABLED=true;
 fi
+if test -d "$PYTHONPATH/rpm"; then
+    PYTHON_DISABLED=false;
+else
+    PYTHON_DISABLED=true;
+fi
 
 function run()
 {
