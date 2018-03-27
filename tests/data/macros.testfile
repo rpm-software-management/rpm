@@ -1,0 +1,6 @@
+# RPM macros for test 'macro with a line starting by "{"'
+
+%def is_defined
+%first %{?def:macro_1\
+}
+%second %{?def:macro_2}

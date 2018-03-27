@@ -427,3 +427,15 @@ is verbose
 is verbose text
 ])
 AT_CLEANUP
+
+AT_SETUP([macro with a line starting by "{"])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm --macros "/data/macros.testfile" \
+	--eval "%first" --eval "%second"],
+[0],
+[macro_1
+
+macro_2
+])
+AT_CLEANUP

@@ -237,7 +237,7 @@ rdcl(char * buf, size_t size, FILE *f)
 	    *(++q) = '\0';		/* trim trailing \r, \n */
 	    break;
 	}
-	q++; p++; nb++;			/* copy newline too */
+	q++; nb++;			/* copy newline too */
 	size -= nb;
 	if (*q == '\r')			/* XXX avoid \r madness */
 	    *q = '\n';
