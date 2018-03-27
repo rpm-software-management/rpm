@@ -54,7 +54,7 @@ static int is_prelinked(int fdno)
 
     while (!prelinked && (scn = elf_nextscn(elf, scn)) != NULL) {
 	(void) gelf_getshdr(scn, &shdr);
-	if (shdr.sh_type != SHT_DYNAMIC)
+	if (shdr.sh_type != SHT_DYNAMIC || shdr.sh_entsize == 0)
 	    continue;
 	while (!prelinked && (data = elf_getdata (scn, data)) != NULL) {
 	    int maxndx = data->d_size / shdr.sh_entsize;
