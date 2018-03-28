@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2017-10-25 16:11+0300\n"
+"POT-Creation-Date: 2018-03-28 13:37+0300\n"
 "PO-Revision-Date: 2015-08-13 10:35+0000\n"
 "Last-Translator: Lubos Kardos <kardos.lubos@gmail.com>\n"
 "Language-Team: German (http://www.transifex.com/rpm-team/rpm/language/de/)\n"
@@ -1384,7 +1384,7 @@ msgstr ""
 msgid "invalid dependency"
 msgstr "Ungültige Abhängigkeit"
 
-#: build/parseReqs.c:275 lib/rpmds.c:1438
+#: build/parseReqs.c:275 lib/rpmds.c:1447
 msgid "Version required"
 msgstr "Version wird benötigt"
 
@@ -1666,22 +1666,22 @@ msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 "Abfragen der Spec-Datei %s fehlgeschlagen, kann nicht ausgewertet werden\n"
 
-#: lib/depends.c:91
+#: lib/depends.c:93
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s ist ein Delta-RPM und kann nicht direkt installiert werden\n"
 
-#: lib/depends.c:95
+#: lib/depends.c:97
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Nicht unterstütze Nutzdaten (%s) in Paket %s\n"
 
-#: lib/depends.c:375
+#: lib/depends.c:377
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "Paket %s wurde bereits hinzugefügt, %s wird übersprungen\n"
 
-#: lib/depends.c:376
+#: lib/depends.c:378
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "Paket %s wurde bereits hinzugefügt, wird durch %s ersetzt\n"
@@ -1758,26 +1758,26 @@ msgstr "(unbekannt)"
 msgid "(not a string)"
 msgstr "(keine Zeichenkette)"
 
-#: lib/fsm.c:730
+#: lib/fsm.c:733
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s als %s gesichert\n"
 
-#: lib/fsm.c:782
+#: lib/fsm.c:785
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s erstellt als %s\n"
 
-#: lib/fsm.c:1055
+#: lib/fsm.c:1060
 #, c-format
 msgid "%s %s: remove failed: %s\n"
 msgstr "%s %s: Entfernen fehlgeschlagen: %s\n"
 
-#: lib/fsm.c:1056
+#: lib/fsm.c:1061
 msgid "directory"
 msgstr "Verzeichnis"
 
-#: lib/fsm.c:1056
+#: lib/fsm.c:1061
 msgid "file"
 msgstr "Datei"
 
@@ -2372,12 +2372,12 @@ msgstr "Quell-Paket erwartet, Binär-Paket entdeckt\n"
 msgid "source package contains no .spec file\n"
 msgstr "Quell-Paket enthält keine Spec-Datei\n"
 
-#: lib/psm.c:605
+#: lib/psm.c:606
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "Entpacken des Archivs fehlgeschlagen%s%s: %s\n"
 
-#: lib/psm.c:606
+#: lib/psm.c:607
 msgid " on file "
 msgstr " bei Datei "
 
@@ -2677,43 +2677,55 @@ msgstr "Dateien größer als 4 GB werden unterstützt"
 msgid "support for rich dependencies."
 msgstr "Keine Überprüfung der Paket-Abhängigkeiten"
 
-#: lib/rpmds.c:1384
+#: lib/rpmds.c:1387
 #, c-format
 msgid "Unknown rich dependency op '%.*s'"
 msgstr ""
 
-#: lib/rpmds.c:1419
+#: lib/rpmds.c:1428
 #, fuzzy
 msgid "Name required"
 msgstr "Version wird benötigt"
 
-#: lib/rpmds.c:1456
+#: lib/rpmds.c:1465
+msgid "Illegal ops in with/without"
+msgstr ""
+
+#: lib/rpmds.c:1472
+msgid "Illegal context for 'unless', please use 'or' instead"
+msgstr ""
+
+#: lib/rpmds.c:1477
+msgid "Illegal context for 'if', please use 'and' instead"
+msgstr ""
+
+#: lib/rpmds.c:1493
 msgid "Rich dependency does not start with '('"
 msgstr ""
 
-#: lib/rpmds.c:1464
+#: lib/rpmds.c:1501
 msgid "Missing argument to rich dependency op"
 msgstr ""
 
-#: lib/rpmds.c:1466
+#: lib/rpmds.c:1503
 #, fuzzy
 msgid "Empty rich dependency"
 msgstr "Ungültige Abhängigkeit"
 
-#: lib/rpmds.c:1480
+#: lib/rpmds.c:1521
 #, fuzzy, c-format
 msgid "Unterminated rich dependency: %s"
 msgstr "Nicht terminiertes %c: %s\n"
 
-#: lib/rpmds.c:1492
+#: lib/rpmds.c:1536
 msgid "Cannot chain different ops"
 msgstr ""
 
-#: lib/rpmds.c:1497
-msgid "Can only chain AND and OR ops"
+#: lib/rpmds.c:1541
+msgid "Can only chain and/or/with ops"
 msgstr ""
 
-#: lib/rpmds.c:1587
+#: lib/rpmds.c:1672
 #, fuzzy
 msgid "Junk after rich dependency"
 msgstr "Ungültige Abhängigkeit"
@@ -3217,23 +3229,23 @@ msgstr ""
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed"
 msgstr ""
 
-#: lib/signature.c:376
+#: lib/signature.c:391
 msgid "Unable to reload signature header.\n"
 msgstr "Header der Signatur kann nicht erneut geladen werden.\n"
 
-#: lib/signature.c:452
+#: lib/signature.c:467
 msgid "Header "
 msgstr "Header "
 
-#: lib/signature.c:471
+#: lib/signature.c:486
 msgid "MD5 digest:"
 msgstr "MD5-Prüfsumme: "
 
-#: lib/signature.c:474
+#: lib/signature.c:489
 msgid "Header SHA1 digest:"
 msgstr "SHA1-Prüfsumme des Headers: "
 
-#: lib/signature.c:493
+#: lib/signature.c:508
 #, c-format
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)"
 msgstr "Signaturüberprüfung: FALSCHE PARAMETER (%d %p %d %p %p)"
@@ -3352,73 +3364,73 @@ msgstr "%s-Index kann nicht mittels %s geöffnet werden - %s (%d)\n"
 msgid "no dbpath has been set\n"
 msgstr "Datenbank-Pfad wurde nicht gesetzt\n"
 
-#: lib/rpmdb.c:1037
+#: lib/rpmdb.c:1034
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: wird übersprungen"
 
-#: lib/rpmdb.c:1055
+#: lib/rpmdb.c:1052
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "Fehler(%d) beim Speichern des Datensatzes #%d in %s\n"
 
-#: lib/rpmdb.c:1167
+#: lib/rpmdb.c:1164
 #, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s: regexec fehlgeschlagen: %s\n"
 
-#: lib/rpmdb.c:1348
+#: lib/rpmdb.c:1345
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: regcomp fehlgeschlagen: %s\n"
 
-#: lib/rpmdb.c:1511
+#: lib/rpmdb.c:1508
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: wird übersprungen"
 
-#: lib/rpmdb.c:1598
+#: lib/rpmdb.c:1595
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: Beschädigten Header #%u erhalten -- wird übersprungen.\n"
 
-#: lib/rpmdb.c:2131
+#: lib/rpmdb.c:2126
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: Header bei 0x%x kann nicht gelesen werden\n"
 
-#: lib/rpmdb.c:2566
+#: lib/rpmdb.c:2561
 msgid "no dbpath has been set"
 msgstr "Datenbank-Pfad wurde nicht gesetzt"
 
-#: lib/rpmdb.c:2584
+#: lib/rpmdb.c:2579
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "Anlegen des Verzeichnisses %s fehlgeschlagen: %s\n"
 
-#: lib/rpmdb.c:2618
+#: lib/rpmdb.c:2613
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "Header #%u in der Datenbank ist ungültig -- wird übersprungen.\n"
 
-#: lib/rpmdb.c:2631
+#: lib/rpmdb.c:2626
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "Ursprünglicher Datensatz %u kann nicht hinzugefügt werden\n"
 
-#: lib/rpmdb.c:2647
+#: lib/rpmdb.c:2642
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "Neu bauen der Datenbank fehlgeschlagen: Datenbank verbleibt entsprechend\n"
 
-#: lib/rpmdb.c:2655
+#: lib/rpmdb.c:2650
 msgid "failed to replace old database with new database!\n"
 msgstr "Konnte die alte Datenbank nicht durch die neue ersetzen!\n"
 
-#: lib/rpmdb.c:2657
+#: lib/rpmdb.c:2652
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "Für eine Wiederherstellung Dateien in %s durch Dateien aus %s ersetzen"
 
-#: lib/rpmdb.c:2668
+#: lib/rpmdb.c:2663
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Entfernen des Verzeichnisses %s fehlgeschlagen: %s\n"

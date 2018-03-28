@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2017-10-25 16:11+0300\n"
+"POT-Creation-Date: 2018-03-28 13:37+0300\n"
 "PO-Revision-Date: 2014-06-25 12:23+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian (http://www.transifex.com/rpm-team/rpm/language/"
@@ -1374,7 +1374,7 @@ msgstr ""
 msgid "invalid dependency"
 msgstr "некоректна залежність"
 
-#: build/parseReqs.c:275 lib/rpmds.c:1438
+#: build/parseReqs.c:275 lib/rpmds.c:1447
 msgid "Version required"
 msgstr "Слід вказати версію"
 
@@ -1656,23 +1656,23 @@ msgstr ""
 "спроба опитування файла специфікації %s зазнала невдачі, не вдалося "
 "обробити\n"
 
-#: lib/depends.c:91
+#: lib/depends.c:93
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr ""
 "%s належить до типу Delta RPM, його не можна встановлювати безпосередньо\n"
 
-#: lib/depends.c:95
+#: lib/depends.c:97
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Непідтримуваний вміст (%s) у пакунку %s\n"
 
-#: lib/depends.c:375
+#: lib/depends.c:377
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "пакунок %s вже було додано, пропускаємо %s\n"
 
-#: lib/depends.c:376
+#: lib/depends.c:378
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "пакунок %s вже було додано, замінюємо на %s\n"
@@ -1749,26 +1749,26 @@ msgstr "(невідомо)"
 msgid "(not a string)"
 msgstr "(не є рядком)"
 
-#: lib/fsm.c:730
+#: lib/fsm.c:733
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s збережено як %s\n"
 
-#: lib/fsm.c:782
+#: lib/fsm.c:785
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s створено як %s\n"
 
-#: lib/fsm.c:1055
+#: lib/fsm.c:1060
 #, c-format
 msgid "%s %s: remove failed: %s\n"
 msgstr "%s %s: спроба вилучення зазнала невдачі: %s\n"
 
-#: lib/fsm.c:1056
+#: lib/fsm.c:1061
 msgid "directory"
 msgstr "каталог"
 
-#: lib/fsm.c:1056
+#: lib/fsm.c:1061
 msgid "file"
 msgstr "файл"
 
@@ -2363,12 +2363,12 @@ msgstr "слід було вказати пакунок з кодами, вка�
 msgid "source package contains no .spec file\n"
 msgstr "у пакунку з кодами не міститься файла .spec\n"
 
-#: lib/psm.c:605
+#: lib/psm.c:606
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "спроба розпакування архіву завершилася невдало%s%s: %s\n"
 
-#: lib/psm.c:606
+#: lib/psm.c:607
 msgid " on file "
 msgstr " на файлі "
 
@@ -2666,43 +2666,55 @@ msgstr "підтримка файлів, розмір яких перевищу�
 msgid "support for rich dependencies."
 msgstr "не перевіряти залежностей пакунків"
 
-#: lib/rpmds.c:1384
+#: lib/rpmds.c:1387
 #, c-format
 msgid "Unknown rich dependency op '%.*s'"
 msgstr ""
 
-#: lib/rpmds.c:1419
+#: lib/rpmds.c:1428
 #, fuzzy
 msgid "Name required"
 msgstr "Слід вказати версію"
 
-#: lib/rpmds.c:1456
+#: lib/rpmds.c:1465
+msgid "Illegal ops in with/without"
+msgstr ""
+
+#: lib/rpmds.c:1472
+msgid "Illegal context for 'unless', please use 'or' instead"
+msgstr ""
+
+#: lib/rpmds.c:1477
+msgid "Illegal context for 'if', please use 'and' instead"
+msgstr ""
+
+#: lib/rpmds.c:1493
 msgid "Rich dependency does not start with '('"
 msgstr ""
 
-#: lib/rpmds.c:1464
+#: lib/rpmds.c:1501
 msgid "Missing argument to rich dependency op"
 msgstr ""
 
-#: lib/rpmds.c:1466
+#: lib/rpmds.c:1503
 #, fuzzy
 msgid "Empty rich dependency"
 msgstr "некоректна залежність"
 
-#: lib/rpmds.c:1480
+#: lib/rpmds.c:1521
 #, fuzzy, c-format
 msgid "Unterminated rich dependency: %s"
 msgstr "Не закрито %c: %s\n"
 
-#: lib/rpmds.c:1492
+#: lib/rpmds.c:1536
 msgid "Cannot chain different ops"
 msgstr ""
 
-#: lib/rpmds.c:1497
-msgid "Can only chain AND and OR ops"
+#: lib/rpmds.c:1541
+msgid "Can only chain and/or/with ops"
 msgstr ""
 
-#: lib/rpmds.c:1587
+#: lib/rpmds.c:1672
 #, fuzzy
 msgid "Junk after rich dependency"
 msgstr "некоректна залежність"
@@ -3203,23 +3215,23 @@ msgstr "pad sigh (%zd): ПОМИЛКА, прочитано %zd байтів"
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed"
 msgstr "sigSize sigh (%zd): ПОМИЛКА, помилка fstat(2)"
 
-#: lib/signature.c:376
+#: lib/signature.c:391
 msgid "Unable to reload signature header.\n"
 msgstr "Не вдалося перезавантажити заголовок підпису.\n"
 
-#: lib/signature.c:452
+#: lib/signature.c:467
 msgid "Header "
 msgstr "Заголовок "
 
-#: lib/signature.c:471
+#: lib/signature.c:486
 msgid "MD5 digest:"
 msgstr "Сума MD5:"
 
-#: lib/signature.c:474
+#: lib/signature.c:489
 msgid "Header SHA1 digest:"
 msgstr "Сума SHA1 заголовка:"
 
-#: lib/signature.c:493
+#: lib/signature.c:508
 #, c-format
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)"
 msgstr "Перевірка підпису: ПОМИЛКОВІ ПАРАМЕТРИ (%d %p %d %p %p)"
@@ -3338,74 +3350,74 @@ msgstr "не вдалося відкрити покажчик %s за допом
 msgid "no dbpath has been set\n"
 msgstr "не було встановлено шляху dbpath\n"
 
-#: lib/rpmdb.c:1037
+#: lib/rpmdb.c:1034
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: пропущено"
 
-#: lib/rpmdb.c:1055
+#: lib/rpmdb.c:1052
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "помилка (%d) збереження запису №%d до %s\n"
 
-#: lib/rpmdb.c:1167
+#: lib/rpmdb.c:1164
 #, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s: помилка regexec: %s\n"
 
-#: lib/rpmdb.c:1348
+#: lib/rpmdb.c:1345
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: помилка regcomp: %s\n"
 
-#: lib/rpmdb.c:1511
+#: lib/rpmdb.c:1508
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: пропущено"
 
-#: lib/rpmdb.c:1598
+#: lib/rpmdb.c:1595
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: отримано пошкоджений заголовок №%u — пропущено.\n"
 
-#: lib/rpmdb.c:2131
+#: lib/rpmdb.c:2126
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: не вдалося прочитати заголовок за адресою 0x%x\n"
 
-#: lib/rpmdb.c:2566
+#: lib/rpmdb.c:2561
 msgid "no dbpath has been set"
 msgstr "не було встановлено шляху dbpath"
 
-#: lib/rpmdb.c:2584
+#: lib/rpmdb.c:2579
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "не вдалося створити каталог %s: %s\n"
 
-#: lib/rpmdb.c:2618
+#: lib/rpmdb.c:2613
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "заголовок №%u у базі даних є помилковим — пропущено.\n"
 
-#: lib/rpmdb.c:2631
+#: lib/rpmdb.c:2626
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "не вдалося додати запис з початковим розташуванням у %u\n"
 
-#: lib/rpmdb.c:2647
+#: lib/rpmdb.c:2642
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "не вдалося перебудувати базу даних: початкова база даних залишається на "
 "місці\n"
 
-#: lib/rpmdb.c:2655
+#: lib/rpmdb.c:2650
 msgid "failed to replace old database with new database!\n"
 msgstr "не вдалося замінити стару базу даних новою!\n"
 
-#: lib/rpmdb.c:2657
+#: lib/rpmdb.c:2652
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "замінити файли у %s файлами з %s для відновлення"
 
-#: lib/rpmdb.c:2668
+#: lib/rpmdb.c:2663
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "не вдалося вилучити каталог %s: %s\n"
