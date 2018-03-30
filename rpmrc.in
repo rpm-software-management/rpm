@@ -80,6 +80,10 @@ optflags: armv6hl -O2 -g -march=armv6 -mfloat-abi=hard -mfpu=vfp
 optflags: armv7l -O2 -g -march=armv7
 optflags: armv7hl -O2 -g -march=armv7-a -mfloat-abi=hard -mfpu=vfpv3-d16
 optflags: armv7hnl -O2 -g -march=armv7-a -mfloat-abi=hard -mfpu=neon
+optflags: armv8l -O2 -g -march=armv8-a
+optflags: armv8hl -O2 -g -march=armv8-a -mfloat-abi=hard -mfpu=vfpv4
+optflags: armv8hnl -O2 -g -march=armv8-a -mfloat-abi=hard -mfpu=neon-fp-armv8
+optflags: armv8hcnl -O2 -g -march=armv8-a -mfloat-abi=hard -mfpu=crypto-neon-fp-armv8
 
 optflags: m68k -O2 -g -fomit-frame-pointer
 
@@ -124,6 +128,7 @@ archcolor: armv5tel 1
 archcolor: armv5tejl 1
 archcolor: armv6l 1
 archcolor: armv7l 1
+archcolor: armv8l 1
 
 archcolor: mips 1
 archcolor: mipsel 1
@@ -218,6 +223,10 @@ arch_canon:     armv6hl: armv6hl 	12
 arch_canon:     armv7l: armv7l 	12
 arch_canon:     armv7hl: armv7hl 	12
 arch_canon:     armv7hnl: armv7hnl 	12
+arch_canon:	armv8l: armv8l	12
+arch_canon:	armv8hl: armv8hl	12
+arch_canon:	armv8hnl: armv8hnl	12
+arch_canon:	armv8hcnl: armv8hcnl	12
 
 arch_canon:	m68kmint: m68kmint	13
 arch_canon:	atarist: m68kmint	13
@@ -345,6 +354,10 @@ buildarchtranslate: armv6hl: armv6hl
 buildarchtranslate: armv7l: armv7l
 buildarchtranslate: armv7hl: armv7hl
 buildarchtranslate: armv7hnl: armv7hnl
+buildarchtranslate: armv8l: armv8l
+buildarchtranslate: armv8hl: armv8hnl
+buildarchtranslate: armv8hnl: armv8hnl
+buildarchtranslate: armv8hcnl: armv8hcnl
 
 buildarchtranslate: mips: mips
 buildarchtranslate: mipsel: mipsel
@@ -453,6 +466,7 @@ arch_compat: hppa1.0: parisc
 arch_compat: parisc: noarch
 
 arch_compat: armv4b: noarch
+arch_compat: armv8l: armv7l
 arch_compat: armv7l: armv6l
 arch_compat: armv6l: armv5tejl
 arch_compat: armv5tejl: armv5tel
@@ -461,6 +475,10 @@ arch_compat: armv5tl: armv4tl
 arch_compat: armv4tl: armv4l
 arch_compat: armv4l: armv3l
 arch_compat: armv3l: noarch
+arch_compat: armv8hcnl: armv8hnl
+arch_compat: armv8hnl: armv8hl
+arch_compat: armv8hnl: armv7hnl
+arch_compat: armv8hl: armv7hl
 arch_compat: armv7hnl: armv7hl
 arch_compat: armv7hl: armv6hl
 arch_compat: armv6hl: noarch
@@ -584,6 +602,7 @@ buildarch_compat: mips64r6: noarch
 buildarch_compat: mips64r6el: noarch
 
 buildarch_compat: armv4b: noarch
+buildarch_compat: armv8l: armv7l
 buildarch_compat: armv7l: armv6l
 buildarch_compat: armv6l: armv5tejl
 buildarch_compat: armv5tejl: armv5tel armv5tl
@@ -593,6 +612,10 @@ buildarch_compat: armv4tl: armv4l
 buildarch_compat: armv4l: armv3l
 buildarch_compat: armv3l: noarch
 
+buildarch_compat: armv8hcnl: armv8hnl
+buildarch_compat: armv8hnl: armv8hl
+buildarch_compat: armv8hnl: armv7hnl
+buildarch_compat: armv8hl: armv7hl
 buildarch_compat: armv7hnl: armv7hl
 buildarch_compat: armv7hl: armv6hl
 buildarch_compat: armv6hl: noarch
