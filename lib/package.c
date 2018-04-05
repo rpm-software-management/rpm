@@ -143,11 +143,11 @@ exit:
     return seen;
 }
 
-static int handleHdrVS(struct rpmsinfo_s *sinfo, rpmRC *rcp, char **msgp, void *cbdata)
+static int handleHdrVS(struct rpmsinfo_s *sinfo, void *cbdata)
 {
     char **buf  = cbdata;
     if (buf) {
-	char *vsmsg = rpmsinfoMsg(sinfo, *rcp, *msgp);
+	char *vsmsg = rpmsinfoMsg(sinfo);
 	*buf = rstrscat(buf, "\n", vsmsg, NULL);
 	free(vsmsg);
     }
@@ -269,12 +269,12 @@ struct pkgdata_s {
     rpmRC rc;
 };
 
-static int handlePkgVS(struct rpmsinfo_s *sinfo, rpmRC *rcp, char **msgp, void *cbdata)
+static int handlePkgVS(struct rpmsinfo_s *sinfo, void *cbdata)
 {
     struct pkgdata_s *pkgdata = cbdata;
     int lvl = RPMLOG_DEBUG;
-    char *vsmsg = rpmsinfoMsg(sinfo, *rcp, *msgp);
-    switch (*rcp) {
+    char *vsmsg = rpmsinfoMsg(sinfo);
+    switch (sinfo->rc) {
     case RPMRC_OK:		/* Signature is OK. */
 	break;
     case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
@@ -295,12 +295,12 @@ static int handlePkgVS(struct rpmsinfo_s *sinfo, rpmRC *rcp, char **msgp, void *
     rpmlog(lvl, "%s: %s\n", pkgdata->fn, vsmsg);
 
     /* Remember actual return code, but don't override a previous failure */
-    if (*rcp && pkgdata->rc != RPMRC_FAIL)
-	pkgdata->rc = *rcp;
+    if (sinfo->rc && pkgdata->rc != RPMRC_FAIL)
+	pkgdata->rc = sinfo->rc;
 
     /* Preserve traditional behavior for now: only failure prevents read */
-    if (*rcp != RPMRC_FAIL)
-	*rcp = RPMRC_OK;
+    if (sinfo->rc != RPMRC_FAIL)
+	sinfo->rc = RPMRC_OK;
 
     free(vsmsg);
     return 1;

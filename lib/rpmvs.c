@@ -8,8 +8,6 @@
 
 struct rpmvs_s {
     struct rpmsinfo_s *sigs;
-    rpmRC *rcs;
-    char **results;
     int nsigs;
     int nalloced;
     rpmVSFlags vsflags;
@@ -93,8 +91,8 @@ static const struct vfyinfo_s rpmvfyitems[] = {
 
 static const char *rangeName(int range);
 static const char * rpmSigString(rpmRC res);
-static rpmRC rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
-			       DIGEST_CTX ctx, char ** result);
+static void rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
+			       DIGEST_CTX ctx);
 
 static int sinfoLookup(rpmTagVal tag)
 {
@@ -128,10 +126,10 @@ exit:
     return valid;
 }
 
-static rpmRC rpmsinfoInit(const struct vfyinfo_s *vinfo,
+static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
 			  const struct vfytag_s *tinfo,
 			  rpmtd td,  const char *origin,
-			  struct rpmsinfo_s *sinfo, char **msg)
+			  struct rpmsinfo_s *sinfo)
 {
     rpmRC rc = RPMRC_FAIL;
     const void *data = NULL;
@@ -140,13 +138,13 @@ static rpmRC rpmsinfoInit(const struct vfyinfo_s *vinfo,
     *sinfo = vinfo->vi; /* struct assignment */
 
     if (tinfo->tagtype && tinfo->tagtype != td->type) {
-	rasprintf(msg, _("%s tag %u: invalid type %u"),
+	rasprintf(&sinfo->msg, _("%s tag %u: invalid type %u"),
 			origin, td->tag, td->type);
 	goto exit;
     }
 
     if (tinfo->tagcount && tinfo->tagcount != td->count) {
-	rasprintf(msg, _("%s: tag %u: invalid count %u"),
+	rasprintf(&sinfo->msg, _("%s: tag %u: invalid count %u"),
 			origin, td->tag, td->count);
 	goto exit;
     }
@@ -166,7 +164,7 @@ static rpmRC rpmsinfoInit(const struct vfyinfo_s *vinfo,
 
     /* MD5 has data length of 16, everything else is (much) larger */
     if (sinfo->hashalgo && (data == NULL || dlen < 16)) {
-	rasprintf(msg, _("%s tag %u: invalid data %p (%u)"),
+	rasprintf(&sinfo->msg, _("%s tag %u: invalid data %p (%u)"),
 			origin, td->tag, data, dlen);
 	goto exit;
     }
@@ -176,14 +174,14 @@ static rpmRC rpmsinfoInit(const struct vfyinfo_s *vinfo,
 
     if (tinfo->tagsize && (td->flags & RPMTD_IMMUTABLE) &&
 		tinfo->tagsize != td->size) {
-	rasprintf(msg, _("%s tag %u: invalid size %u"),
+	rasprintf(&sinfo->msg, _("%s tag %u: invalid size %u"),
 			origin, td->tag, td->size);
 	goto exit;
     }
 
     if (sinfo->type == RPMSIG_SIGNATURE_TYPE) {
 	if (pgpPrtParams(data, dlen, PGPTAG_SIGNATURE, &sinfo->sig)) {
-	    rasprintf(msg, _("%s tag %u: invalid OpenPGP signature"),
+	    rasprintf(&sinfo->msg, _("%s tag %u: invalid OpenPGP signature"),
 		    origin, td->tag);
 	    goto exit;
 	}
@@ -194,7 +192,8 @@ static rpmRC rpmsinfoInit(const struct vfyinfo_s *vinfo,
 	    sinfo->dig = pgpHexStr(data, dlen);
 	} else {
 	    if (!validHex(data, dlen)) {
-		rasprintf(msg, _("%s: tag %u: invalid hex"), origin, td->tag);
+		rasprintf(&sinfo->msg,
+			_("%s: tag %u: invalid hex"), origin, td->tag);
 		goto exit;
 	    }
 	    sinfo->dig = xstrdup(data);
@@ -207,7 +206,8 @@ static rpmRC rpmsinfoInit(const struct vfyinfo_s *vinfo,
     rc = RPMRC_OK;
 
 exit:
-    return rc;
+    sinfo->rc = rc;
+    return;
 }
 
 static void rpmsinfoFini(struct rpmsinfo_s *sinfo)
@@ -217,6 +217,7 @@ static void rpmsinfoFini(struct rpmsinfo_s *sinfo)
 	    pgpDigParamsFree(sinfo->sig);
 	else if (sinfo->type == RPMSIG_DIGEST_TYPE)
 	    free(sinfo->dig);
+	free(sinfo->msg);
 	free(sinfo->descr);
 	memset(sinfo, 0, sizeof(*sinfo));
     }
@@ -237,8 +238,6 @@ static void rpmvsReserve(struct rpmvs_s *vs, int n)
 {
     if (vs->nsigs + n >= vs->nalloced) {
 	vs->nalloced = (vs->nsigs * 2) + n;
-	vs->rcs = xrealloc(vs->rcs, vs->nalloced * sizeof(*vs->rcs));
-	vs->results = xrealloc(vs->results, vs->nalloced * sizeof(*vs->results));
 	vs->sigs = xrealloc(vs->sigs, vs->nalloced * sizeof(*vs->sigs));
     }
 }
@@ -265,14 +264,15 @@ const char *rpmsinfoDescr(struct rpmsinfo_s *sinfo)
     return sinfo->descr;
 }
 
-char *rpmsinfoMsg(struct rpmsinfo_s *sinfo, rpmRC rc, const char *emsg)
+char *rpmsinfoMsg(struct rpmsinfo_s *sinfo)
 {
     char *msg = NULL;
-    if (emsg) {
+    if (sinfo->msg) {
 	rasprintf(&msg, "%s: %s (%s)",
-		rpmsinfoDescr(sinfo), rpmSigString(rc), emsg);
+		rpmsinfoDescr(sinfo), rpmSigString(sinfo->rc), sinfo->msg);
     } else {
-	rasprintf(&msg, "%s: %s", rpmsinfoDescr(sinfo), rpmSigString(rc));
+	rasprintf(&msg, "%s: %s",
+		rpmsinfoDescr(sinfo), rpmSigString(sinfo->rc));
     }
     return msg;
 }
@@ -293,10 +293,7 @@ static void rpmvsAppend(struct rpmvs_s *sis, hdrblob blob,
 	rpmvsReserve(sis, rpmtdCount(&td));
 
 	while ((ix = rpmtdNext(&td)) >= 0) {
-	    sis->results[sis->nsigs] = NULL;
-	    sis->rcs[sis->nsigs] = rpmsinfoInit(vi, ti, &td, o,
-						&sis->sigs[sis->nsigs],
-						&sis->results[sis->nsigs]);
+	    rpmsinfoInit(vi, ti, &td, o, &sis->sigs[sis->nsigs]);
 	    sis->nsigs++;
 	}
 	rpmtdFreeData(&td);
@@ -331,13 +328,10 @@ struct rpmvs_s *rpmvsCreate(hdrblob blob, rpmVSFlags vsflags)
 struct rpmvs_s *rpmvsFree(struct rpmvs_s *sis)
 {
     if (sis) {
-	free(sis->rcs);
 	for (int i = 0; i < sis->nsigs; i++) {
 	    rpmsinfoFini(&sis->sigs[i]);
-	    free(sis->results[i]);
 	}
 	free(sis->sigs);
-	free(sis->results);
 	free(sis);
     }
     return NULL;
@@ -348,7 +342,7 @@ void rpmvsInitDigests(struct rpmvs_s *sis, int range, rpmDigestBundle bundle)
     for (int i = 0; i < sis->nsigs; i++) {
 	struct rpmsinfo_s *sinfo = &sis->sigs[i];
 	if (sinfo->range & range) {
-	    if (sis->rcs[i] == RPMRC_OK)
+	    if (sinfo->rc == RPMRC_OK)
 		rpmDigestBundleAddID(bundle, sinfo->hashalgo, sinfo->id, 0);
 	}
     }
@@ -364,18 +358,17 @@ int rpmvsVerifyItems(struct rpmvs_s *sis, int range, rpmDigestBundle bundle,
 	struct rpmsinfo_s *sinfo = &sis->sigs[i];
 
 	if (sinfo->range == range) {
-	    if (sis->rcs[i] == RPMRC_OK) {
+	    if (sinfo->rc == RPMRC_OK) {
 		DIGEST_CTX ctx = rpmDigestBundleDupCtx(bundle, sinfo->id);
-		sis->results[i] = _free(sis->results[i]);
-		sis->rcs[i] = rpmVerifySignature(keyring, sinfo, ctx, &sis->results[i]);
+		rpmVerifySignature(keyring, sinfo, ctx);
 		rpmDigestFinal(ctx, NULL, NULL, 0);
 		rpmDigestBundleFinal(bundle, sinfo->id, NULL, NULL, 0);
 	    }
 
 	    if (cb)
-		cont = cb(sinfo, &sis->rcs[i], &sis->results[i], cbdata);
+		cont = cb(sinfo, cbdata);
 
-	    if (sis->rcs[i] != RPMRC_OK)
+	    if (sinfo->rc != RPMRC_OK)
 		failed++;
 	}
     }
@@ -407,8 +400,7 @@ static const char *rangeName(int range)
     return "";
 }
 
-static rpmRC verifyDigest(struct rpmsinfo_s *sinfo, DIGEST_CTX digctx,
-			  char **msg)
+static rpmRC verifyDigest(struct rpmsinfo_s *sinfo, DIGEST_CTX digctx)
 {
     rpmRC res = RPMRC_FAIL; /* assume failure */
     char * dig = NULL;
@@ -421,7 +413,7 @@ static rpmRC verifyDigest(struct rpmsinfo_s *sinfo, DIGEST_CTX digctx,
     if (strcasecmp(sinfo->dig, dig) == 0) {
 	res = RPMRC_OK;
     } else {
-	rasprintf(msg, "Expected %s != %s", sinfo->dig, dig);
+	rasprintf(&sinfo->msg, "Expected %s != %s", sinfo->dig, dig);
     }
 
 exit:
@@ -439,23 +431,20 @@ exit:
  */
 static rpmRC
 verifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
-		DIGEST_CTX hashctx, char **msg)
+		DIGEST_CTX hashctx)
 {
     rpmRC res = rpmKeyringVerifySig(keyring, sinfo->sig, hashctx);
 
     return res;
 }
 
-static rpmRC
-rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
-		   DIGEST_CTX ctx, char ** result)
+static void
+rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo, DIGEST_CTX ctx)
 {
-    rpmRC res = RPMRC_FAIL;
-
     if (sinfo->type == RPMSIG_DIGEST_TYPE)
-	res = verifyDigest(sinfo, ctx, result);
+	sinfo->rc = verifyDigest(sinfo, ctx);
     else if (sinfo->type == RPMSIG_SIGNATURE_TYPE)
-	res = verifySignature(keyring, sinfo, ctx, result);
-
-    return res;
+	sinfo->rc = verifySignature(keyring, sinfo, ctx);
+    else
+	sinfo->rc = RPMRC_FAIL;
 }

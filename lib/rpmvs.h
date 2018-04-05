@@ -34,6 +34,9 @@ struct rpmsinfo_s {
 	char *dig;
     };
     char *descr;
+    /* verify results */
+    rpmRC rc;
+    char *msg;
 };
 
 /**
@@ -41,12 +44,10 @@ struct rpmsinfo_s {
  * Useful eg for customizing verification output and results.
  *
  * @param sinfo		signature/digest info
- * @param rcp		pointer to verification result (modifiable)
- * @param msgp		pointer to verification message (modifiable)
  * @param cbdata	callback data
  * @return		1 to continue, 0 to stop verification
  */
-typedef int (*rpmsinfoCb)(struct rpmsinfo_s *sinfo, rpmRC *rcp, char **msgp, void *cbdata);
+typedef int (*rpmsinfoCb)(struct rpmsinfo_s *sinfo, void *cbdata);
 
 #ifdef __cplusplus
 extern "C" {
@@ -56,7 +57,7 @@ RPM_GNUC_INTERNAL
 const char *rpmsinfoDescr(struct rpmsinfo_s *sinfo);
 
 RPM_GNUC_INTERNAL
-char *rpmsinfoMsg(struct rpmsinfo_s *sinfo, rpmRC rc, const char *emsg);
+char *rpmsinfoMsg(struct rpmsinfo_s *sinfo);
 
 RPM_GNUC_INTERNAL
 struct rpmvs_s *rpmvsCreate(hdrblob blob, rpmVSFlags vsflags);
