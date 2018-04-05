@@ -196,7 +196,7 @@ rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
 
     /* Fish interesting tags from the main header. This is a bit hacky... */
     if (!(flags & (RPMVSF_NOPAYLOAD|RPMVSF_NEEDPAYLOAD)))
-	rpmvsAppend(sigset, &blob, RPMTAG_PAYLOADDIGEST);
+	rpmvsAppendTag(sigset, &blob, RPMTAG_PAYLOADDIGEST);
 
     /* Initialize digests ranging over the payload only */
     rpmvsInitDigests(sigset, RPMSIG_PAYLOAD, bundle);
