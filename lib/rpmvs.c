@@ -127,26 +127,16 @@ exit:
     return valid;
 }
 
-static rpmRC rpmsinfoInit(rpmtd td, const char *origin,
-		      struct rpmsinfo_s *sinfo, char **msg)
+static rpmRC rpmsinfoInit(const struct vfyinfo_s *vinfo,
+			  const struct vfytag_s *tinfo,
+			  rpmtd td,  const char *origin,
+			  struct rpmsinfo_s *sinfo, char **msg)
 {
     rpmRC rc = RPMRC_FAIL;
     const void *data = NULL;
-    const struct vfytag_s *tinfo;
-    const struct vfyinfo_s *vinfo;
     rpm_count_t dlen = 0;
-    int ix;
 
-    if ((ix = sinfoLookup(td->tag)) == -1) {
-	/* anything unknown just falls through for now */
-	rc = RPMRC_OK;
-	goto exit;
-    }
-    vinfo = &rpmvfyitems[ix];
-    tinfo = &rpmvfytags[ix];
-    assert(tinfo->tag == vinfo->tag);
-
-    *sinfo = rpmvfyitems[ix].vi; /* struct assignment */
+    *sinfo = vinfo->vi; /* struct assignment */
 
     if (tinfo->tagtype && tinfo->tagtype != td->type) {
 	rasprintf(msg, _("%s tag %u: invalid type %u"),
@@ -286,10 +276,11 @@ char *rpmsinfoMsg(struct rpmsinfo_s *sinfo, rpmRC rc, const char *emsg)
     return msg;
 }
 
-void rpmvsAppend(struct rpmvs_s *sis, hdrblob blob, rpmTagVal tag)
+static void rpmvsAppend(struct rpmvs_s *sis, hdrblob blob,
+			const struct vfyinfo_s *vi, const struct vfytag_s *ti)
 {
     struct rpmtd_s td;
-    rpmRC rc = hdrblobGet(blob, tag, &td);
+    rpmRC rc = hdrblobGet(blob, vi->tag, &td);
 
     if (rc == RPMRC_OK) {
 	const char *o = (blob->il > blob->ril) ? _("header") : _("package");
@@ -299,7 +290,7 @@ void rpmvsAppend(struct rpmvs_s *sis, hdrblob blob, rpmTagVal tag)
 
 	while ((ix = rpmtdNext(&td)) >= 0) {
 	    sis->results[sis->nsigs] = NULL;
-	    sis->rcs[sis->nsigs] = rpmsinfoInit(&td, o,
+	    sis->rcs[sis->nsigs] = rpmsinfoInit(vi, ti, &td, o,
 						&sis->sigs[sis->nsigs],
 						&sis->results[sis->nsigs]);
 	    sis->nsigs++;
@@ -308,16 +299,28 @@ void rpmvsAppend(struct rpmvs_s *sis, hdrblob blob, rpmTagVal tag)
     }
 }
 
+void rpmvsAppendTag(struct rpmvs_s *vs, hdrblob blob, rpmTagVal tag)
+{
+    int ix = sinfoLookup(tag);
+    if (ix >= 0) {
+	const struct vfyinfo_s *vi = &rpmvfyitems[ix];
+	const struct vfytag_s *ti = &rpmvfytags[ix];
+	rpmvsAppend(vs, blob, vi, ti);
+    }
+}
+
 struct rpmvs_s *rpmvsCreate(hdrblob blob, rpmVSFlags vsflags)
 {
+    const struct vfyinfo_s *si = &rpmvfyitems[0];
+    const struct vfytag_s *ti = &rpmvfytags[0];
     struct rpmvs_s *sis = xcalloc(1, sizeof(*sis));
 
     rpmvsReserve(sis, 2); /* XXX bump this up later */
 
-    for (const struct vfyinfo_s *si = &rpmvfyitems[0]; si->tag; si++) {
+    for (; si->tag && ti->tag; si++, ti++) {
 	if (rpmsinfoDisabled(&si->vi, vsflags))
 	    continue;
-	rpmvsAppend(sis, blob, si->tag);
+	rpmvsAppend(sis, blob, si, ti);
     }
     return sis;
 }

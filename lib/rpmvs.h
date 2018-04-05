@@ -65,7 +65,7 @@ RPM_GNUC_INTERNAL
 struct rpmvs_s *rpmvsFree(struct rpmvs_s *sis);
 
 RPM_GNUC_INTERNAL
-void rpmvsAppend(struct rpmvs_s *sis, hdrblob blob, rpmTagVal tag);
+void rpmvsAppendTag(struct rpmvs_s *sis, hdrblob blob, rpmTagVal tag);
 
 RPM_GNUC_INTERNAL
 void rpmvsInitDigests(struct rpmvs_s *sis, int range, rpmDigestBundle bundle);
