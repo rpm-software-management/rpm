@@ -12,6 +12,7 @@ struct rpmvs_s {
     char **results;
     int nsigs;
     int nalloced;
+    rpmVSFlags vsflags;
 };
 
 struct vfytag_s {
@@ -279,6 +280,9 @@ char *rpmsinfoMsg(struct rpmsinfo_s *sinfo, rpmRC rc, const char *emsg)
 static void rpmvsAppend(struct rpmvs_s *sis, hdrblob blob,
 			const struct vfyinfo_s *vi, const struct vfytag_s *ti)
 {
+    if (rpmsinfoDisabled(&vi->vi, sis->vsflags))
+	return;
+
     struct rpmtd_s td;
     rpmRC rc = hdrblobGet(blob, vi->tag, &td);
 
@@ -314,12 +318,11 @@ struct rpmvs_s *rpmvsCreate(hdrblob blob, rpmVSFlags vsflags)
     const struct vfyinfo_s *si = &rpmvfyitems[0];
     const struct vfytag_s *ti = &rpmvfytags[0];
     struct rpmvs_s *sis = xcalloc(1, sizeof(*sis));
+    sis->vsflags = vsflags;
 
     rpmvsReserve(sis, 2); /* XXX bump this up later */
 
     for (; si->tag && ti->tag; si++, ti++) {
-	if (rpmsinfoDisabled(&si->vi, vsflags))
-	    continue;
 	rpmvsAppend(sis, blob, si, ti);
     }
     return sis;
