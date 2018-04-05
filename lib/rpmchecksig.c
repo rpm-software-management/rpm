@@ -136,23 +136,20 @@ static int readFile(FD_t fd, char **msg)
 struct vfydata_s {
     int seen;
     int bad;
+    int verbose;
 };
 
-static int formatVerbose(struct rpmsinfo_s *sinfo, rpmRC *rcp, char **msgp, void *cbdata)
-{
-    char *vsmsg = rpmsinfoMsg(sinfo, *rcp, *msgp);
-    rpmlog(RPMLOG_NOTICE, "    %s\n", vsmsg);
-    free(vsmsg);
-    return 1;
-}
-
-/* Failures are uppercase, in parenthesis if NOKEY. Otherwise lowercase. */
-static int formatDefault(struct rpmsinfo_s *sinfo, rpmRC *rcp, char **msgp, void *cbdata)
+static int vfyCb(struct rpmsinfo_s *sinfo, rpmRC *rcp, char **msgp, void *cbdata)
 {
     struct vfydata_s *vd = cbdata;
     vd->seen |= sinfo->type;
     if (*rcp != RPMRC_OK)
 	vd->bad |= sinfo->type;
+    if (vd->verbose) {
+	char *vsmsg = rpmsinfoMsg(sinfo, *rcp, *msgp);
+	rpmlog(RPMLOG_NOTICE, "    %s\n", vsmsg);
+	free(vsmsg);
+    }
     return 1;
 }
 
@@ -249,14 +246,17 @@ exit:
 static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
 			   FD_t fd, const char *fn)
 {
+    struct vfydata_s vd = { .seen = 0,
+			    .bad = 0,
+			    .verbose = rpmIsVerbose(),
+    };
     int rc;
-    if (rpmIsVerbose()) {
-	rpmlog(RPMLOG_NOTICE, "%s:\n", fn);
-	rc = rpmpkgRead(keyring, flags, fd, formatVerbose, NULL, NULL);
-    } else {
-	struct vfydata_s vd = { 0, 0 };
-	rpmlog(RPMLOG_NOTICE, "%s:", fn);
-	rc = rpmpkgRead(keyring, flags, fd, formatDefault, &vd, NULL);
+
+    rpmlog(RPMLOG_NOTICE, "%s:%s", fn, vd.verbose ? "\n" : "");
+
+    rc = rpmpkgRead(keyring, flags, fd, vfyCb, &vd, NULL);
+
+    if (!vd.verbose) {
 	if (vd.seen & RPMSIG_DIGEST_TYPE) {
 	    rpmlog(RPMLOG_NOTICE, " %s", (vd.bad & RPMSIG_DIGEST_TYPE) ?
 					_("DIGESTS") : _("digests"));
