@@ -60,7 +60,10 @@ RPM_GNUC_INTERNAL
 char *rpmsinfoMsg(struct rpmsinfo_s *sinfo);
 
 RPM_GNUC_INTERNAL
-struct rpmvs_s *rpmvsCreate(hdrblob blob, rpmVSFlags vsflags);
+struct rpmvs_s *rpmvsCreate(rpmVSFlags vsflags);
+
+RPM_GNUC_INTERNAL
+void rpmvsInit(struct rpmvs_s *vs, hdrblob blob);
 
 RPM_GNUC_INTERNAL
 struct rpmvs_s *rpmvsFree(struct rpmvs_s *sis);
