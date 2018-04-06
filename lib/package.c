@@ -310,6 +310,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 {
     rpmVSFlags vsflags = rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD;
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+    struct rpmvs_s *vs = rpmvsCreate(vsflags, keyring);
     struct pkgdata_s pkgdata = {
 	.fn = fn ? fn : Fdescr(fd),
 	.rc = RPMRC_OK,
@@ -319,13 +320,14 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     if (hdrp)
 	*hdrp = NULL;
 
-    rpmRC rc = rpmpkgRead(keyring, vsflags, fd, handlePkgVS, &pkgdata, hdrp);
+    rpmRC rc = rpmpkgRead(vs, fd, handlePkgVS, &pkgdata, hdrp);
 
     /* If there was a "substatus" (NOKEY in practise), return that instead */
     if (rc == RPMRC_OK && pkgdata.rc)
 	rc = pkgdata.rc;
 
     rpmKeyringFree(keyring);
+    rpmvsFree(vs);
 
     return rc;
 }

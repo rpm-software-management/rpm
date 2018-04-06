@@ -82,7 +82,7 @@ int rpmvsVerifyItems(struct rpmvs_s *sis, int range,
                        rpmsinfoCb cb, void *cbdata);
 
 RPM_GNUC_INTERNAL
-rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
+rpmRC rpmpkgRead(struct rpmvs_s *vs, FD_t fd,
 			    rpmsinfoCb cb, void *cbdata, Header *hdrp);
 
 #ifdef __cplusplus

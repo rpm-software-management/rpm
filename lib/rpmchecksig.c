@@ -153,7 +153,7 @@ static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
     return 1;
 }
 
-rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
+rpmRC rpmpkgRead(struct rpmvs_s *sigset, FD_t fd,
 			    rpmsinfoCb cb, void *cbdata, Header *hdrp)
 {
 
@@ -162,7 +162,6 @@ rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
     int failed = 0;
     int leadtype = -1;
     struct hdrblob_s sigblob, blob;
-    struct rpmvs_s *sigset = rpmvsCreate(flags, keyring);
     Header h = NULL;
     Header sigh = NULL;
     rpmDigestBundle bundle = fdGetBundle(fd, 1); /* freed with fd */
@@ -237,7 +236,6 @@ exit:
     free(blob.ei);
     headerFree(h);
     headerFree(sigh);
-    rpmvsFree(sigset);
     return rc;
 }
 
@@ -249,10 +247,11 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
 			    .verbose = rpmIsVerbose(),
     };
     int rc;
+    struct rpmvs_s *vs = rpmvsCreate(flags, keyring);
 
     rpmlog(RPMLOG_NOTICE, "%s:%s", fn, vd.verbose ? "\n" : "");
 
-    rc = rpmpkgRead(keyring, flags, fd, vfyCb, &vd, NULL);
+    rc = rpmpkgRead(vs, fd, vfyCb, &vd, NULL);
 
     if (!vd.verbose) {
 	if (vd.seen & RPMSIG_DIGEST_TYPE) {
@@ -265,6 +264,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
 	}
 	rpmlog(RPMLOG_NOTICE, " %s\n", rc ? _("NOT OK") : _("OK"));
     }
+    rpmvsFree(vs);
     return rc;
 }
 
