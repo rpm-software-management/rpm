@@ -321,6 +321,11 @@ struct rpmvs_s *rpmvsCreate(rpmVSFlags vsflags, rpmKeyring keyring)
     return sis;
 }
 
+rpmVSFlags rpmvsFlags(struct rpmvs_s *vs)
+{
+    return vs->vsflags;
+}
+
 void rpmvsInit(struct rpmvs_s *vs, hdrblob blob, rpmDigestBundle bundle)
 {
     const struct vfyinfo_s *si = &rpmvfyitems[0];

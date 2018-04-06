@@ -201,7 +201,7 @@ rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
     failed += rpmvsVerifyItems(sigset, (RPMSIG_HEADER), cb, cbdata);
 
     /* Unless disabled, read the file, generating digest(s) on the fly. */
-    if (!(flags & RPMVSF_NEEDPAYLOAD)) {
+    if (!(rpmvsFlags(sigset) & RPMVSF_NEEDPAYLOAD)) {
 	if (readFile(fd, &msg))
 	    goto exit;
     }

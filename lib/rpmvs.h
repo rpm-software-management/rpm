@@ -66,6 +66,9 @@ RPM_GNUC_INTERNAL
 void rpmvsInit(struct rpmvs_s *vs, hdrblob blob, rpmDigestBundle bundle);
 
 RPM_GNUC_INTERNAL
+rpmVSFlags rpmvsFlags(struct rpmvs_s *vs);
+
+RPM_GNUC_INTERNAL
 struct rpmvs_s *rpmvsFree(struct rpmvs_s *sis);
 
 RPM_GNUC_INTERNAL
