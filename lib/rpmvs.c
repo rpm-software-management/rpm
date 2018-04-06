@@ -310,19 +310,24 @@ void rpmvsAppendTag(struct rpmvs_s *vs, hdrblob blob, rpmTagVal tag)
     }
 }
 
-struct rpmvs_s *rpmvsCreate(hdrblob blob, rpmVSFlags vsflags)
+struct rpmvs_s *rpmvsCreate(rpmVSFlags vsflags)
 {
-    const struct vfyinfo_s *si = &rpmvfyitems[0];
-    const struct vfytag_s *ti = &rpmvfytags[0];
     struct rpmvs_s *sis = xcalloc(1, sizeof(*sis));
     sis->vsflags = vsflags;
 
-    rpmvsReserve(sis, 2); /* XXX bump this up later */
+    return sis;
+}
+
+void rpmvsInit(struct rpmvs_s *vs, hdrblob blob)
+{
+    const struct vfyinfo_s *si = &rpmvfyitems[0];
+    const struct vfytag_s *ti = &rpmvfytags[0];
+
+    rpmvsReserve(vs, 2); /* XXX bump this up later */
 
     for (; si->tag && ti->tag; si++, ti++) {
-	rpmvsAppend(sis, blob, si, ti);
+	rpmvsAppend(vs, blob, si, ti);
     }
-    return sis;
 }
 
 struct rpmvs_s *rpmvsFree(struct rpmvs_s *sis)

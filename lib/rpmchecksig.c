@@ -162,7 +162,7 @@ rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
     int failed = 0;
     int leadtype = -1;
     struct hdrblob_s sigblob, blob;
-    struct rpmvs_s *sigset = NULL;
+    struct rpmvs_s *sigset = rpmvsCreate(flags);
     Header h = NULL;
     Header sigh = NULL;
     rpmDigestBundle bundle = fdGetBundle(fd, 1); /* freed with fd */
@@ -182,7 +182,7 @@ rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
     if (hdrblobRead(fd, 1, 0, RPMTAG_HEADERSIGNATURES, &sigblob, &msg))
 	goto exit;
 
-    sigset = rpmvsCreate(&sigblob, flags);
+    rpmvsInit(sigset, &sigblob);
 
     /* Initialize digests ranging over the header */
     rpmvsInitDigests(sigset, RPMSIG_HEADER, bundle);

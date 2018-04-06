@@ -172,11 +172,12 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     struct hdrblob_s blob;
 
     if (hdrblobInit(uh, uc, 0, 0, &blob, msg) == RPMRC_OK) {
-	struct rpmvs_s *vs = rpmvsCreate(&blob, vsflags);
+	struct rpmvs_s *vs = rpmvsCreate(vsflags);
 	rpmDigestBundle bundle = rpmDigestBundleNew();
 
 	rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 
+	rpmvsInit(vs, &blob);
 	rpmvsInitDigests(vs, RPMSIG_HEADER, bundle);
 	updateHdrDigests(bundle, &blob);
 
