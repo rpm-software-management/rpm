@@ -162,7 +162,7 @@ rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
     int failed = 0;
     int leadtype = -1;
     struct hdrblob_s sigblob, blob;
-    struct rpmvs_s *sigset = rpmvsCreate(flags);
+    struct rpmvs_s *sigset = rpmvsCreate(flags, keyring);
     Header h = NULL;
     Header sigh = NULL;
     rpmDigestBundle bundle = fdGetBundle(fd, 1); /* freed with fd */
@@ -199,7 +199,7 @@ rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
     rpmvsInitDigests(sigset, RPMSIG_PAYLOAD);
 
     /* Verify header signatures and digests */
-    failed += rpmvsVerifyItems(sigset, (RPMSIG_HEADER), keyring, cb, cbdata);
+    failed += rpmvsVerifyItems(sigset, (RPMSIG_HEADER), cb, cbdata);
 
     /* Unless disabled, read the file, generating digest(s) on the fly. */
     if (!(flags & RPMVSF_NEEDPAYLOAD)) {
@@ -208,10 +208,9 @@ rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
     }
 
     /* Verify signatures and digests ranging over the payload */
-    failed += rpmvsVerifyItems(sigset, (RPMSIG_PAYLOAD),
-			keyring, cb, cbdata);
+    failed += rpmvsVerifyItems(sigset, (RPMSIG_PAYLOAD), cb, cbdata);
     failed += rpmvsVerifyItems(sigset, (RPMSIG_HEADER|RPMSIG_PAYLOAD),
-			keyring, cb, cbdata);
+			cb, cbdata);
 
     if (failed == 0) {
 	/* Finally import the headers and do whatever required retrofits etc */

@@ -60,7 +60,7 @@ RPM_GNUC_INTERNAL
 char *rpmsinfoMsg(struct rpmsinfo_s *sinfo);
 
 RPM_GNUC_INTERNAL
-struct rpmvs_s *rpmvsCreate(rpmVSFlags vsflags);
+struct rpmvs_s *rpmvsCreate(rpmVSFlags vsflags, rpmKeyring keyring);
 
 RPM_GNUC_INTERNAL
 void rpmvsInit(struct rpmvs_s *vs, hdrblob blob, rpmDigestBundle bundle);
@@ -76,7 +76,7 @@ void rpmvsInitDigests(struct rpmvs_s *sis, int range);
 
 RPM_GNUC_INTERNAL
 int rpmvsVerifyItems(struct rpmvs_s *sis, int range,
-                       rpmKeyring keyring, rpmsinfoCb cb, void *cbdata);
+                       rpmsinfoCb cb, void *cbdata);
 
 RPM_GNUC_INTERNAL
 rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
