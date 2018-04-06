@@ -12,6 +12,7 @@ struct rpmvs_s {
     int nalloced;
     rpmVSFlags vsflags;
     rpmDigestBundle bundle;
+    rpmKeyring keyring;
 };
 
 struct vfytag_s {
@@ -311,10 +312,11 @@ void rpmvsAppendTag(struct rpmvs_s *vs, hdrblob blob, rpmTagVal tag)
     }
 }
 
-struct rpmvs_s *rpmvsCreate(rpmVSFlags vsflags)
+struct rpmvs_s *rpmvsCreate(rpmVSFlags vsflags, rpmKeyring keyring)
 {
     struct rpmvs_s *sis = xcalloc(1, sizeof(*sis));
     sis->vsflags = vsflags;
+    sis->keyring = rpmKeyringLink(keyring);
 
     return sis;
 }
@@ -333,6 +335,7 @@ void rpmvsInit(struct rpmvs_s *vs, hdrblob blob, rpmDigestBundle bundle)
 struct rpmvs_s *rpmvsFree(struct rpmvs_s *sis)
 {
     if (sis) {
+	rpmKeyringFree(sis->keyring);
 	for (int i = 0; i < sis->nsigs; i++) {
 	    rpmsinfoFini(&sis->sigs[i]);
 	}
@@ -354,7 +357,7 @@ void rpmvsInitDigests(struct rpmvs_s *sis, int range)
 }
 
 int rpmvsVerifyItems(struct rpmvs_s *sis, int range,
-		       rpmKeyring keyring, rpmsinfoCb cb, void *cbdata)
+		       rpmsinfoCb cb, void *cbdata)
 {
     int failed = 0;
     int cont = 1;
@@ -365,7 +368,7 @@ int rpmvsVerifyItems(struct rpmvs_s *sis, int range,
 	if (sinfo->range == range) {
 	    if (sinfo->rc == RPMRC_OK) {
 		DIGEST_CTX ctx = rpmDigestBundleDupCtx(sis->bundle, sinfo->id);
-		rpmVerifySignature(keyring, sinfo, ctx);
+		rpmVerifySignature(sis->keyring, sinfo, ctx);
 		rpmDigestFinal(ctx, NULL, NULL, 0);
 		rpmDigestBundleFinal(sis->bundle, sinfo->id, NULL, NULL, 0);
 	    }

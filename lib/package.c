@@ -172,7 +172,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     struct hdrblob_s blob;
 
     if (hdrblobInit(uh, uc, 0, 0, &blob, msg) == RPMRC_OK) {
-	struct rpmvs_s *vs = rpmvsCreate(vsflags);
+	struct rpmvs_s *vs = rpmvsCreate(vsflags, keyring);
 	rpmDigestBundle bundle = rpmDigestBundleNew();
 
 	rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
@@ -181,7 +181,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 	rpmvsInitDigests(vs, RPMSIG_HEADER);
 	updateHdrDigests(bundle, &blob);
 
-	rc = rpmvsVerifyItems(vs, RPMSIG_HEADER, keyring, handleHdrVS, msg);
+	rc = rpmvsVerifyItems(vs, RPMSIG_HEADER, handleHdrVS, msg);
 
 	rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), uc);
 
