@@ -177,12 +177,11 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 
 	rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 
-	rpmvsInit(vs, &blob);
-	rpmvsInitDigests(vs, RPMSIG_HEADER, bundle);
+	rpmvsInit(vs, &blob, bundle);
+	rpmvsInitDigests(vs, RPMSIG_HEADER);
 	updateHdrDigests(bundle, &blob);
 
-	rc = rpmvsVerifyItems(vs, RPMSIG_HEADER, bundle, keyring,
-				handleHdrVS, msg);
+	rc = rpmvsVerifyItems(vs, RPMSIG_HEADER, keyring, handleHdrVS, msg);
 
 	rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), uc);
 

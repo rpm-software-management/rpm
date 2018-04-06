@@ -63,7 +63,7 @@ RPM_GNUC_INTERNAL
 struct rpmvs_s *rpmvsCreate(rpmVSFlags vsflags);
 
 RPM_GNUC_INTERNAL
-void rpmvsInit(struct rpmvs_s *vs, hdrblob blob);
+void rpmvsInit(struct rpmvs_s *vs, hdrblob blob, rpmDigestBundle bundle);
 
 RPM_GNUC_INTERNAL
 struct rpmvs_s *rpmvsFree(struct rpmvs_s *sis);
@@ -72,10 +72,10 @@ RPM_GNUC_INTERNAL
 void rpmvsAppendTag(struct rpmvs_s *sis, hdrblob blob, rpmTagVal tag);
 
 RPM_GNUC_INTERNAL
-void rpmvsInitDigests(struct rpmvs_s *sis, int range, rpmDigestBundle bundle);
+void rpmvsInitDigests(struct rpmvs_s *sis, int range);
 
 RPM_GNUC_INTERNAL
-int rpmvsVerifyItems(struct rpmvs_s *sis, int range, rpmDigestBundle bundle,
+int rpmvsVerifyItems(struct rpmvs_s *sis, int range,
                        rpmKeyring keyring, rpmsinfoCb cb, void *cbdata);
 
 RPM_GNUC_INTERNAL

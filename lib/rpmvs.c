@@ -11,6 +11,7 @@ struct rpmvs_s {
     int nsigs;
     int nalloced;
     rpmVSFlags vsflags;
+    rpmDigestBundle bundle;
 };
 
 struct vfytag_s {
@@ -318,16 +319,15 @@ struct rpmvs_s *rpmvsCreate(rpmVSFlags vsflags)
     return sis;
 }
 
-void rpmvsInit(struct rpmvs_s *vs, hdrblob blob)
+void rpmvsInit(struct rpmvs_s *vs, hdrblob blob, rpmDigestBundle bundle)
 {
     const struct vfyinfo_s *si = &rpmvfyitems[0];
     const struct vfytag_s *ti = &rpmvfytags[0];
 
-    rpmvsReserve(vs, 2); /* XXX bump this up later */
-
     for (; si->tag && ti->tag; si++, ti++) {
 	rpmvsAppend(vs, blob, si, ti);
     }
+    vs->bundle = bundle;
 }
 
 struct rpmvs_s *rpmvsFree(struct rpmvs_s *sis)
@@ -342,18 +342,18 @@ struct rpmvs_s *rpmvsFree(struct rpmvs_s *sis)
     return NULL;
 }
 
-void rpmvsInitDigests(struct rpmvs_s *sis, int range, rpmDigestBundle bundle)
+void rpmvsInitDigests(struct rpmvs_s *sis, int range)
 {
     for (int i = 0; i < sis->nsigs; i++) {
 	struct rpmsinfo_s *sinfo = &sis->sigs[i];
 	if (sinfo->range & range) {
 	    if (sinfo->rc == RPMRC_OK)
-		rpmDigestBundleAddID(bundle, sinfo->hashalgo, sinfo->id, 0);
+		rpmDigestBundleAddID(sis->bundle, sinfo->hashalgo, sinfo->id, 0);
 	}
     }
 }
 
-int rpmvsVerifyItems(struct rpmvs_s *sis, int range, rpmDigestBundle bundle,
+int rpmvsVerifyItems(struct rpmvs_s *sis, int range,
 		       rpmKeyring keyring, rpmsinfoCb cb, void *cbdata)
 {
     int failed = 0;
@@ -364,10 +364,10 @@ int rpmvsVerifyItems(struct rpmvs_s *sis, int range, rpmDigestBundle bundle,
 
 	if (sinfo->range == range) {
 	    if (sinfo->rc == RPMRC_OK) {
-		DIGEST_CTX ctx = rpmDigestBundleDupCtx(bundle, sinfo->id);
+		DIGEST_CTX ctx = rpmDigestBundleDupCtx(sis->bundle, sinfo->id);
 		rpmVerifySignature(keyring, sinfo, ctx);
 		rpmDigestFinal(ctx, NULL, NULL, 0);
-		rpmDigestBundleFinal(bundle, sinfo->id, NULL, NULL, 0);
+		rpmDigestBundleFinal(sis->bundle, sinfo->id, NULL, NULL, 0);
 	    }
 
 	    if (cb)

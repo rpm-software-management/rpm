@@ -182,10 +182,10 @@ rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
     if (hdrblobRead(fd, 1, 0, RPMTAG_HEADERSIGNATURES, &sigblob, &msg))
 	goto exit;
 
-    rpmvsInit(sigset, &sigblob);
+    rpmvsInit(sigset, &sigblob, bundle);
 
     /* Initialize digests ranging over the header */
-    rpmvsInitDigests(sigset, RPMSIG_HEADER, bundle);
+    rpmvsInitDigests(sigset, RPMSIG_HEADER);
 
     /* Read the header from the package. */
     if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERIMMUTABLE, &blob, &msg))
@@ -196,10 +196,10 @@ rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
 	rpmvsAppendTag(sigset, &blob, RPMTAG_PAYLOADDIGEST);
 
     /* Initialize digests ranging over the payload only */
-    rpmvsInitDigests(sigset, RPMSIG_PAYLOAD, bundle);
+    rpmvsInitDigests(sigset, RPMSIG_PAYLOAD);
 
     /* Verify header signatures and digests */
-    failed += rpmvsVerifyItems(sigset, (RPMSIG_HEADER), bundle, keyring, cb, cbdata);
+    failed += rpmvsVerifyItems(sigset, (RPMSIG_HEADER), keyring, cb, cbdata);
 
     /* Unless disabled, read the file, generating digest(s) on the fly. */
     if (!(flags & RPMVSF_NEEDPAYLOAD)) {
@@ -208,9 +208,9 @@ rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags flags, FD_t fd,
     }
 
     /* Verify signatures and digests ranging over the payload */
-    failed += rpmvsVerifyItems(sigset, (RPMSIG_PAYLOAD), bundle,
+    failed += rpmvsVerifyItems(sigset, (RPMSIG_PAYLOAD),
 			keyring, cb, cbdata);
-    failed += rpmvsVerifyItems(sigset, (RPMSIG_HEADER|RPMSIG_PAYLOAD), bundle,
+    failed += rpmvsVerifyItems(sigset, (RPMSIG_HEADER|RPMSIG_PAYLOAD),
 			keyring, cb, cbdata);
 
     if (failed == 0) {
