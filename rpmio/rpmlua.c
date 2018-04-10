@@ -912,9 +912,8 @@ static const luaL_Reg rpmlib[] = {
 
 static int luaopen_rpm(lua_State *L)
 {
-    lua_pushglobaltable(L);
-    luaL_openlib(L, "rpm", rpmlib, 0);
-    return 0;
+    luaL_newlib(L, rpmlib);
+    return 1;
 }
 #endif	/* WITH_LUA */
 
