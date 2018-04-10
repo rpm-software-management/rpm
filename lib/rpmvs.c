@@ -93,8 +93,7 @@ static const struct vfyinfo_s rpmvfyitems[] = {
 
 static const char *rangeName(int range);
 static const char * rpmSigString(rpmRC res);
-static void rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
-			       DIGEST_CTX ctx);
+static void rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo);
 
 static int sinfoLookup(rpmTagVal tag)
 {
@@ -219,6 +218,7 @@ static void rpmsinfoFini(struct rpmsinfo_s *sinfo)
 	    pgpDigParamsFree(sinfo->sig);
 	else if (sinfo->type == RPMSIG_DIGEST_TYPE)
 	    free(sinfo->dig);
+	rpmDigestFinal(sinfo->ctx, NULL, NULL, 0);
 	free(sinfo->msg);
 	free(sinfo->descr);
 	memset(sinfo, 0, sizeof(*sinfo));
@@ -372,9 +372,8 @@ int rpmvsVerifyItems(struct rpmvs_s *sis, int range,
 
 	if (sinfo->range == range) {
 	    if (sinfo->rc == RPMRC_OK) {
-		DIGEST_CTX ctx = rpmDigestBundleDupCtx(sis->bundle, sinfo->id);
-		rpmVerifySignature(sis->keyring, sinfo, ctx);
-		rpmDigestFinal(ctx, NULL, NULL, 0);
+		sinfo->ctx = rpmDigestBundleDupCtx(sis->bundle, sinfo->id);
+		rpmVerifySignature(sis->keyring, sinfo);
 		rpmDigestBundleFinal(sis->bundle, sinfo->id, NULL, NULL, 0);
 	    }
 
@@ -413,12 +412,12 @@ static const char *rangeName(int range)
     return "";
 }
 
-static rpmRC verifyDigest(struct rpmsinfo_s *sinfo, DIGEST_CTX digctx)
+static rpmRC verifyDigest(struct rpmsinfo_s *sinfo)
 {
     rpmRC res = RPMRC_FAIL; /* assume failure */
     char * dig = NULL;
     size_t diglen = 0;
-    DIGEST_CTX ctx = rpmDigestDup(digctx);
+    DIGEST_CTX ctx = rpmDigestDup(sinfo->ctx);
 
     if (rpmDigestFinal(ctx, (void **)&dig, &diglen, 1) || diglen == 0)
 	goto exit;
@@ -438,26 +437,23 @@ exit:
  * Verify DSA/RSA signature.
  * @param keyring	pubkey keyring
  * @param sinfo		OpenPGP signature parameters
- * @param hashctx	digest context
- * @retval msg		verbose success/failure text
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo,
-		DIGEST_CTX hashctx)
+verifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo)
 {
-    rpmRC res = rpmKeyringVerifySig(keyring, sinfo->sig, hashctx);
+    rpmRC res = rpmKeyringVerifySig(keyring, sinfo->sig, sinfo->ctx);
 
     return res;
 }
 
 static void
-rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo, DIGEST_CTX ctx)
+rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo)
 {
     if (sinfo->type == RPMSIG_DIGEST_TYPE)
-	sinfo->rc = verifyDigest(sinfo, ctx);
+	sinfo->rc = verifyDigest(sinfo);
     else if (sinfo->type == RPMSIG_SIGNATURE_TYPE)
-	sinfo->rc = verifySignature(keyring, sinfo, ctx);
+	sinfo->rc = verifySignature(keyring, sinfo);
     else
 	sinfo->rc = RPMRC_FAIL;
 }

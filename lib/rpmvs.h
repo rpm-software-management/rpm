@@ -34,6 +34,7 @@ struct rpmsinfo_s {
 	char *dig;
     };
     char *descr;
+    DIGEST_CTX ctx;
     /* verify results */
     rpmRC rc;
     char *msg;
