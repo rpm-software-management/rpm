@@ -2,8 +2,7 @@ noinst_LTLIBRARIES = libluaext.la
 
 EXTRA_DIST = \
 	modemuncher.c \
-	userconfig.c \
-	linit.lua
+	userconfig.c
 
 AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include -I.
 
@@ -13,7 +12,4 @@ libluaext_la_SOURCES = \
 		lposix.h \
 		lposix.c \
 		lrexlib.h \
-		lrexlib.c 
-
-linit.lch: linit.lua
-	bin2c linit.lua > linit.lch
+		lrexlib.c
