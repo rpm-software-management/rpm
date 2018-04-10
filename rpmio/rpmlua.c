@@ -7,11 +7,6 @@
 #include <lposix.h>
 #include <lrexlib.h>
 
-/* defined as lua_objlen in 5.1 */
-#ifndef lua_strlen
-#define lua_strlen(L,i)	lua_rawlen(L, (i))
-#endif
-
 /* deprecated in 5.1, defined as lua_objlen in 5.1 */
 #ifndef luaL_getn
 #define luaL_getn(L,i)	((int)lua_rawlen(L, i))
@@ -599,8 +594,9 @@ static void _rpmluaInteractive(lua_State *L)
 	 lua_remove(L, -2);
       }
       for (;;) {
-	 rc = luaL_loadbuffer(L, lua_tostring(L, -1),
-			      lua_strlen(L, -1), "<lua>");
+         size_t len;
+	 const char *code = lua_tolstring(L, -1, &len);
+	 rc = luaL_loadbuffer(L, code, len, "<lua>");
 	 if (rc == LUA_ERRSYNTAX &&
 	     strstr(lua_tostring(L, -1), "near `<eof>'") != NULL) {
 	    if (rpmluaReadline(L, ">> ") == 0)
@@ -633,8 +629,8 @@ void rpmluaInteractive(rpmlua _lua)
 
 static int rpm_b64encode(lua_State *L)
 {
-    const char *str = luaL_checkstring(L, 1);
-    size_t len = lua_strlen(L, 1);
+    size_t len;
+    const char *str = luaL_checklstring(L, 1, &len);
     int linelen = -1;
     if (lua_gettop(L) == 2)
 	linelen = luaL_checkinteger(L, 2);
@@ -856,15 +852,15 @@ static int rpm_print (lua_State *L)
     lua_getglobal(L, "tostring");
     for (i = 1; i <= n; i++) {
 	const char *s;
+	size_t sl;
 	lua_pushvalue(L, -1);  /* function to be called */
 	lua_pushvalue(L, i);   /* value to print */
 	lua_call(L, 1, 1);
-	s = lua_tostring(L, -1);  /* get result */
+	s = lua_tolstring(L, -1, &sl);  /* get result */
 	if (s == NULL)
 	    return luaL_error(L, "`tostring' must return a string to `print'");
 	if (lua->printbuf) {
 	    rpmluapb prbuf = lua->printbuf;
-	    int sl = lua_strlen(L, -1);
 	    if (prbuf->used+sl+1 > prbuf->alloced) {
 		prbuf->alloced += sl+512;
 		prbuf->buf = xrealloc(prbuf->buf, prbuf->alloced);
