@@ -350,7 +350,7 @@ struct rpmvs_s *rpmvsFree(struct rpmvs_s *sis)
     return NULL;
 }
 
-void rpmvsInitDigests(struct rpmvs_s *sis, int range)
+void rpmvsInitRange(struct rpmvs_s *sis, int range)
 {
     for (int i = 0; i < sis->nsigs; i++) {
 	struct rpmsinfo_s *sinfo = &sis->sigs[i];
@@ -361,21 +361,40 @@ void rpmvsInitDigests(struct rpmvs_s *sis, int range)
     }
 }
 
-int rpmvsVerifyItems(struct rpmvs_s *sis, int range,
+void rpmvsFiniRange(struct rpmvs_s *sis, int range)
+{
+    for (int i = 0; i < sis->nsigs; i++) {
+	struct rpmsinfo_s *sinfo = &sis->sigs[i];
+
+	if (sinfo->range == range && sinfo->rc == RPMRC_OK) {
+	    sinfo->ctx = rpmDigestBundleDupCtx(sis->bundle, sinfo->id);
+	    rpmDigestBundleFinal(sis->bundle, sinfo->id, NULL, NULL, 0);
+	}
+    }
+}
+
+static int rangeCmp(const void *a, const void *b)
+{
+    const struct rpmsinfo_s *sa = a;
+    const struct rpmsinfo_s *sb = b;
+    return sa->range - sb->range;
+}
+
+int rpmvsVerifyItems(struct rpmvs_s *sis, int type,
 		       rpmsinfoCb cb, void *cbdata)
 {
     int failed = 0;
     int cont = 1;
 
+    /* sort by range to preserve traditional rpm -Kv output */
+    qsort(sis->sigs, sis->nsigs, sizeof(*sis->sigs), rangeCmp);
+
     for (int i = 0; i < sis->nsigs && cont; i++) {
 	struct rpmsinfo_s *sinfo = &sis->sigs[i];
 
-	if (sinfo->range == range) {
-	    if (sinfo->rc == RPMRC_OK) {
-		sinfo->ctx = rpmDigestBundleDupCtx(sis->bundle, sinfo->id);
+	if (type & sinfo->type) {
+	    if (sinfo->rc == RPMRC_OK)
 		rpmVerifySignature(sis->keyring, sinfo);
-		rpmDigestBundleFinal(sis->bundle, sinfo->id, NULL, NULL, 0);
-	    }
 
 	    if (cb)
 		cont = cb(sinfo, cbdata);
