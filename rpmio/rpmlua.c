@@ -8,11 +8,6 @@
 #include <lposix.h>
 #include <lrexlib.h>
 
-/* define added in 5.2 */
-#ifndef lua_pushglobaltable
-#define lua_pushglobaltable(L)	lua_pushvalue(L, LUA_GLOBALSINDEX)
-#endif
-
 #include <unistd.h>
 #include <assert.h>
 
