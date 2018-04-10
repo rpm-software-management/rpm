@@ -8,11 +8,6 @@
 #include <lposix.h>
 #include <lrexlib.h>
 
-/* deprecated in 5.1, defined as lua_objlen in 5.1 */
-#ifndef luaL_getn
-#define luaL_getn(L,i)	((int)lua_rawlen(L, i))
-#endif
-
 /* define added in 5.2 */
 #ifndef lua_pushglobaltable
 #define lua_pushglobaltable(L)	lua_pushvalue(L, LUA_GLOBALSINDEX)
@@ -208,7 +203,7 @@ void rpmluaSetVar(rpmlua _lua, rpmluav var)
     if (var->listmode && lua->pushsize > 0) {
 	if (var->keyType != RPMLUAV_NUMBER || var->key.num == (double)0) {
 	    var->keyType = RPMLUAV_NUMBER;
-	    var->key.num = (double) luaL_getn(L, -1);
+	    var->key.num = (double)lua_rawlen(L, -1);
 	}
 	var->key.num++;
     }
