@@ -7,11 +7,6 @@
 #include <lposix.h>
 #include <lrexlib.h>
 
-/* replaced in 5.1 */
-#ifndef lua_open
-#define lua_open()	luaL_newstate()
-#endif
-
 /* defined as lua_objlen in 5.1 */
 #ifndef lua_strlen
 #define lua_strlen(L,i)	lua_rawlen(L, (i))
@@ -112,7 +107,9 @@ rpmlua rpmluaNew()
 	{NULL, NULL},
     };
 
-    lua_State *L = lua_open();
+    lua_State *L = luaL_newstate();
+    if (!L) return NULL;
+
     luaL_openlibs(L);
 
     lua = (rpmlua) xcalloc(1, sizeof(*lua));
