@@ -88,26 +88,12 @@ rpmlua rpmluaNew()
     for (lib = extlibs; lib->name; lib++) {
         luaL_requiref(L, lib->name, lib->func, 1);
     }
-#ifndef LUA_GLOBALSINDEX
-    lua_pushglobaltable(L);
-#endif
-    lua_pushliteral(L, "LUA_PATH");
+
     lua_pushfstring(L, "%s/%s", rpmConfigDir(), "/lua/?.lua");
-#ifdef LUA_GLOBALSINDEX
-    lua_rawset(L, LUA_GLOBALSINDEX);
-#else
-    lua_settable(L, -3);
-#endif
-    lua_pushliteral(L, "print");
+    lua_setglobal(L, "LUA_PATH");
     lua_pushcfunction(L, rpm_print);
-#ifdef LUA_GLOBALSINDEX
-    lua_rawset(L, LUA_GLOBALSINDEX);
-#else
-    lua_settable(L, -3);
-#endif
-#ifndef LUA_GLOBALSINDEX
-    lua_pop(L, 1);
-#endif
+    lua_setglobal(L, "print");
+
     rpmluaSetData(lua, "lua", lua);
 
     initlua = rpmGenPath(rpmConfigDir(), "init.lua", NULL);
