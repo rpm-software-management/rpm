@@ -1,8 +1,7 @@
 noinst_LTLIBRARIES = libluaext.la
 
 EXTRA_DIST = \
-	modemuncher.c \
-	userconfig.c
+	modemuncher.c
 
 AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include -I.
 
