@@ -31,11 +31,13 @@ static const luaL_Reg luarpmlib_f[] = {
 void rpmLuaInit(void)
 {
     rpmlua lua = rpmluaGetGlobalState();
-    lua_getfield(lua->L, LUA_REGISTRYINDEX, LUA_LOADED_TABLE);
-    lua_getfield(lua->L, -1, "rpm");
 #if (LUA_VERSION_NUM < 502) || defined(LUA_COMPAT_MODULE)
+    lua_getfield(lua->L, LUA_REGISTRYINDEX, "_LOADED");
+    lua_getfield(lua->L, -1, "rpm");
     luaL_register(lua->L, 0, luarpmlib_f);
 #else
+    lua_getfield(lua->L, LUA_REGISTRYINDEX, LUA_LOADED_TABLE);
+    lua_getfield(lua->L, -1, "rpm");
     luaL_setfuncs(lua->L, luarpmlib_f, 0);
 #endif
     lua_pop(lua->L, 2);
