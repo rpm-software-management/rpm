@@ -33,6 +33,7 @@
 
 #include "lua.h"
 #include "lauxlib.h"
+#include "compat-5.3/c-api/compat-5.3.c"
 #include "lposix.h"
 
 
