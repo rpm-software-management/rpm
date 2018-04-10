@@ -184,20 +184,20 @@ rpmRC rpmpkgRead(struct rpmvs_s *sigset, FD_t fd,
     rpmvsInit(sigset, &sigblob, bundle);
 
     /* Initialize digests ranging over the header */
-    rpmvsInitDigests(sigset, RPMSIG_HEADER);
+    rpmvsInitRange(sigset, RPMSIG_HEADER);
 
     /* Read the header from the package. */
     if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERIMMUTABLE, &blob, &msg))
 	goto exit;
 
+    /* Finalize header range */
+    rpmvsFiniRange(sigset, RPMSIG_HEADER);
+
     /* Fish interesting tags from the main header. This is a bit hacky... */
     rpmvsAppendTag(sigset, &blob, RPMTAG_PAYLOADDIGEST);
 
     /* Initialize digests ranging over the payload only */
-    rpmvsInitDigests(sigset, RPMSIG_PAYLOAD);
-
-    /* Verify header signatures and digests */
-    failed += rpmvsVerifyItems(sigset, (RPMSIG_HEADER), cb, cbdata);
+    rpmvsInitRange(sigset, RPMSIG_PAYLOAD);
 
     /* Unless disabled, read the file, generating digest(s) on the fly. */
     if (!(rpmvsFlags(sigset) & RPMVSF_NEEDPAYLOAD)) {
@@ -205,10 +205,12 @@ rpmRC rpmpkgRead(struct rpmvs_s *sigset, FD_t fd,
 	    goto exit;
     }
 
-    /* Verify signatures and digests ranging over the payload */
-    failed += rpmvsVerifyItems(sigset, (RPMSIG_PAYLOAD), cb, cbdata);
-    failed += rpmvsVerifyItems(sigset, (RPMSIG_HEADER|RPMSIG_PAYLOAD),
-			cb, cbdata);
+    /* Finalize payload range */
+    rpmvsFiniRange(sigset, RPMSIG_PAYLOAD);
+    rpmvsFiniRange(sigset, RPMSIG_HEADER|RPMSIG_PAYLOAD);
+
+    /* Actually all verify discovered signatures and digests */
+    failed = rpmvsVerifyItems(sigset, RPMSIG_VERIFIABLE_TYPE, cb, cbdata);
 
     if (failed == 0) {
 	/* Finally import the headers and do whatever required retrofits etc */

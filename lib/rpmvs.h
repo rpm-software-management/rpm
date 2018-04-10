@@ -76,10 +76,13 @@ RPM_GNUC_INTERNAL
 void rpmvsAppendTag(struct rpmvs_s *sis, hdrblob blob, rpmTagVal tag);
 
 RPM_GNUC_INTERNAL
-void rpmvsInitDigests(struct rpmvs_s *sis, int range);
+void rpmvsInitRange(struct rpmvs_s *sis, int range);
 
 RPM_GNUC_INTERNAL
-int rpmvsVerifyItems(struct rpmvs_s *sis, int range,
+void rpmvsFiniRange(struct rpmvs_s *sis, int range);
+
+RPM_GNUC_INTERNAL
+int rpmvsVerifyItems(struct rpmvs_s *sis, int type,
                        rpmsinfoCb cb, void *cbdata);
 
 RPM_GNUC_INTERNAL
