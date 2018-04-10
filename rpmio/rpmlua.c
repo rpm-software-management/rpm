@@ -80,8 +80,6 @@ rpmlua rpmluaNew()
         luaL_requiref(L, lib->name, lib->func, 1);
     }
 
-    lua_pushfstring(L, "%s/%s", rpmConfigDir(), "/lua/?.lua");
-    lua_setglobal(L, "LUA_PATH");
     lua_pushcfunction(L, rpm_print);
     lua_setglobal(L, "print");
 
