@@ -116,19 +116,8 @@ rpmlua rpmluaNew()
 	lua_call(L, 1, 0);
 	lua_settop(L, 0);
     }
-#ifndef LUA_GLOBALSINDEX
-    lua_pushglobaltable(L);
-#endif
-    lua_pushliteral(L, "print");
     lua_pushcfunction(L, rpm_print);
-#ifdef LUA_GLOBALSINDEX
-    lua_rawset(L, LUA_GLOBALSINDEX);
-#else
-    lua_settable(L, -3);
-#endif
-#ifndef LUA_GLOBALSINDEX
-    lua_pop(L, 1);
-#endif
+    lua_setglobal(L, "print");
 
     lua_getglobal(L, "package");
     lua_pushfstring(L, "%s/%s", rpmConfigDir(), "/lua/?.lua");
