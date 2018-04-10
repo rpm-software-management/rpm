@@ -74,11 +74,11 @@ rpmlua rpmluaGetGlobalState(void)
 
 rpmlua rpmluaNew()
 {
-    rpmlua lua = (rpmlua) xcalloc(1, sizeof(*lua));
+    rpmlua lua;
     struct stat st;
     const luaL_Reg *lib;
-    char *initlua = rpmGenPath(rpmConfigDir(), "init.lua", NULL);
-   
+    char *initlua;
+
     static const luaL_Reg extlibs[] = {
 	{"posix", luaopen_posix},
 	{"rex", luaopen_rex},
@@ -86,9 +86,11 @@ rpmlua rpmluaNew()
 	{"os",	luaopen_rpm_os},
 	{NULL, NULL},
     };
-    
+
     lua_State *L = lua_open();
     luaL_openlibs(L);
+
+    lua = (rpmlua) xcalloc(1, sizeof(*lua));
     lua->L = L;
 
     for (lib = extlibs; lib->name; lib++) {
@@ -115,6 +117,8 @@ rpmlua rpmluaNew()
     lua_pop(L, 1);
 #endif
     rpmluaSetData(lua, "lua", lua);
+
+    initlua = rpmGenPath(rpmConfigDir(), "init.lua", NULL);
     if (stat(initlua, &st) != -1)
 	(void)rpmluaRunScriptFile(lua, initlua);
     free(initlua);
@@ -188,7 +192,7 @@ char *rpmluaPopPrintBuffer(rpmlua _lua)
 	lua->printbuf = prbuf->next;
 	free(prbuf);
     }
-    
+
     return ret;
 }
 
