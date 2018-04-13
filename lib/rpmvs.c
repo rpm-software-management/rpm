@@ -42,50 +42,51 @@ static const struct vfytag_s rpmvfytags[] = {
 
 struct vfyinfo_s {
     rpmTagVal tag;
+    int sigh;
     struct rpmsinfo_s vi;
 };
 
 static const struct vfyinfo_s rpmvfyitems[] = {
-    {	RPMSIGTAG_SIZE,
+    {	RPMSIGTAG_SIZE,			1,
 	{ RPMSIG_OTHER_TYPE,		0,
 	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, }, },
-    {	RPMSIGTAG_PGP,
+    {	RPMSIGTAG_PGP,			1,
 	{ RPMSIG_SIGNATURE_TYPE,		RPMVSF_NORSA,
 	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, }, },
-    {	RPMSIGTAG_MD5,
+    {	RPMSIGTAG_MD5,			1,
 	{ RPMSIG_DIGEST_TYPE,		RPMVSF_NOMD5,
 	(RPMSIG_HEADER|RPMSIG_PAYLOAD), PGPHASHALGO_MD5, }, },
-    {	RPMSIGTAG_GPG,
+    {	RPMSIGTAG_GPG,			1,
 	{ RPMSIG_SIGNATURE_TYPE,		RPMVSF_NODSA,
 	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, }, },
-    { 	RPMSIGTAG_PGP5,
+    { 	RPMSIGTAG_PGP5,			1,
 	{ RPMSIG_SIGNATURE_TYPE,		RPMVSF_NORSA,
 	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, }, },
-    {	RPMSIGTAG_PAYLOADSIZE,
+    {	RPMSIGTAG_PAYLOADSIZE,		1,
 	{ RPMSIG_OTHER_TYPE,		0,
 	(RPMSIG_PAYLOAD),		0, }, },
-    {	RPMSIGTAG_RESERVEDSPACE,
+    {	RPMSIGTAG_RESERVEDSPACE,	1,
 	{ RPMSIG_OTHER_TYPE,		0,
 	0,				0, }, },
-    {	RPMTAG_DSAHEADER,
+    {	RPMTAG_DSAHEADER,		1,
 	{ RPMSIG_SIGNATURE_TYPE,		RPMVSF_NODSAHEADER,
 	(RPMSIG_HEADER),		0, }, },
-    {	RPMTAG_RSAHEADER,
+    {	RPMTAG_RSAHEADER,		1,
 	{ RPMSIG_SIGNATURE_TYPE,		RPMVSF_NORSAHEADER,
 	(RPMSIG_HEADER),		0, }, },
-    {	RPMTAG_SHA1HEADER,
+    {	RPMTAG_SHA1HEADER,		1,
 	{ RPMSIG_DIGEST_TYPE,		RPMVSF_NOSHA1HEADER,
 	(RPMSIG_HEADER),		PGPHASHALGO_SHA1, }, },
-    {	RPMSIGTAG_LONGSIZE,
+    {	RPMSIGTAG_LONGSIZE,		1,
 	{ RPMSIG_OTHER_TYPE, 		0,
 	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, }, },
-    {	RPMSIGTAG_LONGARCHIVESIZE,
+    {	RPMSIGTAG_LONGARCHIVESIZE,	1,
 	{ RPMSIG_OTHER_TYPE,		0,
 	(RPMSIG_HEADER|RPMSIG_PAYLOAD),	0, }, },
-    {	RPMTAG_SHA256HEADER,
+    {	RPMTAG_SHA256HEADER,		1,
 	{ RPMSIG_DIGEST_TYPE,		RPMVSF_NOSHA256HEADER,
 	(RPMSIG_HEADER),		PGPHASHALGO_SHA256, }, },
-    {	RPMTAG_PAYLOADDIGEST,
+    {	RPMTAG_PAYLOADDIGEST,		0,
 	{ RPMSIG_DIGEST_TYPE,		RPMVSF_NOPAYLOAD,
 	(RPMSIG_PAYLOAD),		PGPHASHALGO_SHA256, }, },
     { 0 } /* sentinel */
@@ -332,6 +333,9 @@ void rpmvsInit(struct rpmvs_s *vs, hdrblob blob, rpmDigestBundle bundle)
     const struct vfytag_s *ti = &rpmvfytags[0];
 
     for (; si->tag && ti->tag; si++, ti++) {
+	/* Ignore non-signature tags initially */
+	if (!si->sigh)
+	    continue;
 	rpmvsAppend(vs, blob, si, ti);
     }
     vs->bundle = bundle;
