@@ -48,43 +48,43 @@ struct vfyinfo_s {
 static const struct vfyinfo_s rpmvfyitems[] = {
     {	RPMSIGTAG_SIZE,			1,
 	{ RPMSIG_OTHER_TYPE,		0,
-	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, }, },
+	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, 0, }, },
     {	RPMSIGTAG_PGP,			1,
 	{ RPMSIG_SIGNATURE_TYPE,		RPMVSF_NORSA,
-	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, }, },
+	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, PGPPUBKEYALGO_RSA, }, },
     {	RPMSIGTAG_MD5,			1,
 	{ RPMSIG_DIGEST_TYPE,		RPMVSF_NOMD5,
 	(RPMSIG_HEADER|RPMSIG_PAYLOAD), PGPHASHALGO_MD5, }, },
     {	RPMSIGTAG_GPG,			1,
 	{ RPMSIG_SIGNATURE_TYPE,		RPMVSF_NODSA,
-	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, }, },
+	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, PGPPUBKEYALGO_DSA, }, },
     {	RPMSIGTAG_PAYLOADSIZE,		1,
 	{ RPMSIG_OTHER_TYPE,		0,
-	(RPMSIG_PAYLOAD),		0, }, },
+	(RPMSIG_PAYLOAD),		0, 0, }, },
     {	RPMSIGTAG_RESERVEDSPACE,	1,
 	{ RPMSIG_OTHER_TYPE,		0,
-	0,				0, }, },
+	0,				0, 0, }, },
     {	RPMTAG_DSAHEADER,		1,
 	{ RPMSIG_SIGNATURE_TYPE,		RPMVSF_NODSAHEADER,
-	(RPMSIG_HEADER),		0, }, },
+	(RPMSIG_HEADER),		0, PGPPUBKEYALGO_DSA, }, },
     {	RPMTAG_RSAHEADER,		1,
 	{ RPMSIG_SIGNATURE_TYPE,		RPMVSF_NORSAHEADER,
-	(RPMSIG_HEADER),		0, }, },
+	(RPMSIG_HEADER),		0, PGPPUBKEYALGO_RSA, }, },
     {	RPMTAG_SHA1HEADER,		1,
 	{ RPMSIG_DIGEST_TYPE,		RPMVSF_NOSHA1HEADER,
-	(RPMSIG_HEADER),		PGPHASHALGO_SHA1, }, },
+	(RPMSIG_HEADER),		PGPHASHALGO_SHA1, 0, }, },
     {	RPMSIGTAG_LONGSIZE,		1,
 	{ RPMSIG_OTHER_TYPE, 		0,
-	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, }, },
+	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, 0, }, },
     {	RPMSIGTAG_LONGARCHIVESIZE,	1,
 	{ RPMSIG_OTHER_TYPE,		0,
-	(RPMSIG_HEADER|RPMSIG_PAYLOAD),	0, }, },
+	(RPMSIG_HEADER|RPMSIG_PAYLOAD),	0, 0, }, },
     {	RPMTAG_SHA256HEADER,		1,
 	{ RPMSIG_DIGEST_TYPE,		RPMVSF_NOSHA256HEADER,
-	(RPMSIG_HEADER),		PGPHASHALGO_SHA256, }, },
+	(RPMSIG_HEADER),		PGPHASHALGO_SHA256, 0, }, },
     {	RPMTAG_PAYLOADDIGEST,		0,
 	{ RPMSIG_DIGEST_TYPE,		RPMVSF_NOPAYLOAD,
-	(RPMSIG_PAYLOAD),		PGPHASHALGO_SHA256, }, },
+	(RPMSIG_PAYLOAD),		PGPHASHALGO_SHA256, 0, }, },
     { 0 } /* sentinel */
 };
 
@@ -244,7 +244,6 @@ static void rpmvsReserve(struct rpmvs_s *vs, int n)
 const char *rpmsinfoDescr(struct rpmsinfo_s *sinfo)
 {
     if (sinfo->descr == NULL) {
-	char *t;
 	switch (sinfo->type) {
 	case RPMSIG_DIGEST_TYPE:
 	    rasprintf(&sinfo->descr, _("%s%s %s"),
@@ -253,10 +252,15 @@ const char *rpmsinfoDescr(struct rpmsinfo_s *sinfo)
 		    _("digest"));
 	    break;
 	case RPMSIG_SIGNATURE_TYPE:
-	    t = sinfo->sig ? pgpIdentItem(sinfo->sig) : NULL;
-	    rasprintf(&sinfo->descr, _("%s%s"),
-		    rangeName(sinfo->range), t ? t : _("signature"));
-	    free(t);
+	    if (sinfo->sig) {
+		rasprintf(&sinfo->descr, _("%s%s"),
+			rangeName(sinfo->range), pgpIdentItem(sinfo->sig));
+	    } else {
+		rasprintf(&sinfo->descr, _("%s%s %s"),
+			rangeName(sinfo->range),
+			pgpValString(PGPVAL_PUBKEYALGO, sinfo->sigalgo),
+			_("signature"));
+	    }
 	    break;
 	}
     }

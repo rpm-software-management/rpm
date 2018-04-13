@@ -299,14 +299,14 @@ runroot rpmkeys -Kv /tmp/${pkg}
 ],
 [1],
 [/tmp/hello-2.0-1.x86_64-signed.rpm:
-    Header signature: BAD (package tag 268: invalid OpenPGP signature)
+    Header RSA signature: BAD (package tag 268: invalid OpenPGP signature)
     Header SHA1 digest: OK
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
     V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
     MD5 digest: OK
 /tmp/hello-2.0-1.x86_64-signed.rpm:
-    Header signature: BAD (package tag 268: invalid OpenPGP signature)
+    Header RSA signature: BAD (package tag 268: invalid OpenPGP signature)
     Header SHA1 digest: OK
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
