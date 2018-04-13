@@ -88,6 +88,7 @@ EXTRA_DIST += data/SPECS/hello-cd.spec
 EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.pub
 EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.secret
 EXTRA_DIST += data/macros.testfile
+EXTRA_DIST += data/macros.debug
 
 # testsuite voodoo
 AUTOTEST = $(AUTOM4TE) --language=autotest

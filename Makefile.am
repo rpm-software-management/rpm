@@ -203,9 +203,6 @@ macros: $(top_srcdir)/macros.in
 CLEANFILES += macros
 EXTRA_DIST += macros.in
 
-# Used for the testsuite to test creating debuginfo packages
-EXTRA_DIST += macros.debug
-
 noinst_DATA += platform
 platform: $(top_srcdir)/platform.in
 	@$(SED) \
