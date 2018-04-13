@@ -27,6 +27,7 @@ struct rpmsinfo_s {
     int range;
     /* parsed data */
     int hashalgo;
+    int sigalgo;
     int id;
     unsigned int keyid;
     union {
