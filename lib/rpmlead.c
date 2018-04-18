@@ -106,7 +106,7 @@ static rpmRC rpmLeadCheck(struct rpmlead_s *lead, char **msg)
     return RPMRC_OK;
 }
 
-rpmRC rpmLeadRead(FD_t fd, int *type, char **emsg)
+rpmRC rpmLeadRead(FD_t fd, char **emsg)
 {
     rpmRC rc = RPMRC_OK;
     struct rpmlead_s l;
@@ -129,10 +129,7 @@ rpmRC rpmLeadRead(FD_t fd, int *type, char **emsg)
 	rc = rpmLeadCheck(&l, &err);
     }
 
-    if (rc == RPMRC_OK) {
-	if (type != NULL)
-	    *type = l.type;
-    } else {
+    if (rc != RPMRC_OK) {
 	if (emsg != NULL)
 	    *emsg = err;
 	else
