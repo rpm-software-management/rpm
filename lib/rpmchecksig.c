@@ -160,13 +160,11 @@ rpmRC rpmpkgRead(struct rpmvs_s *sigset, FD_t fd,
     char * msg = NULL;
     rpmRC xx, rc = RPMRC_FAIL; /* assume failure */
     int failed = 0;
-    struct hdrblob_s sigblob, blob;
+    hdrblob sigblob = hdrblobCreate();
+    hdrblob blob = hdrblobCreate();
     Header h = NULL;
     Header sigh = NULL;
     rpmDigestBundle bundle = fdGetBundle(fd, 1); /* freed with fd */
-
-    memset(&blob, 0, sizeof(blob));
-    memset(&sigblob, 0, sizeof(sigblob));
 
     if ((xx = rpmLeadRead(fd, &msg)) != RPMRC_OK) {
 	/* Avoid message spew on manifests */
@@ -177,23 +175,23 @@ rpmRC rpmpkgRead(struct rpmvs_s *sigset, FD_t fd,
     }
 
     /* Read the signature header. Might not be in a contiguous region. */
-    if (hdrblobRead(fd, 1, 0, RPMTAG_HEADERSIGNATURES, &sigblob, &msg))
+    if (hdrblobRead(fd, 1, 0, RPMTAG_HEADERSIGNATURES, sigblob, &msg))
 	goto exit;
 
-    rpmvsInit(sigset, &sigblob, bundle);
+    rpmvsInit(sigset, sigblob, bundle);
 
     /* Initialize digests ranging over the header */
     rpmvsInitRange(sigset, RPMSIG_HEADER);
 
     /* Read the header from the package. */
-    if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERIMMUTABLE, &blob, &msg))
+    if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERIMMUTABLE, blob, &msg))
 	goto exit;
 
     /* Finalize header range */
     rpmvsFiniRange(sigset, RPMSIG_HEADER);
 
     /* Fish interesting tags from the main header. This is a bit hacky... */
-    rpmvsAppendTag(sigset, &blob, RPMTAG_PAYLOADDIGEST);
+    rpmvsAppendTag(sigset, blob, RPMTAG_PAYLOADDIGEST);
 
     /* Initialize digests ranging over the payload only */
     rpmvsInitRange(sigset, RPMSIG_PAYLOAD);
@@ -214,9 +212,9 @@ rpmRC rpmpkgRead(struct rpmvs_s *sigset, FD_t fd,
     if (failed == 0) {
 	/* Finally import the headers and do whatever required retrofits etc */
 	if (hdrp) {
-	    if (hdrblobImport(&sigblob, 0, &sigh, &msg))
+	    if (hdrblobImport(sigblob, 0, &sigh, &msg))
 		goto exit;
-	    if (hdrblobImport(&blob, 0, &h, &msg))
+	    if (hdrblobImport(blob, 0, &h, &msg))
 		goto exit;
 
 	    /* Append (and remap) signature tags to the metadata. */
@@ -233,8 +231,8 @@ exit:
     if (rc && msg != NULL)
 	rpmlog(RPMLOG_ERR, "%s: %s\n", Fdescr(fd), msg);
     free(msg);
-    free(sigblob.ei);
-    free(blob.ei);
+    hdrblobFree(sigblob);
+    hdrblobFree(blob);
     headerFree(h);
     headerFree(sigh);
     return rc;
