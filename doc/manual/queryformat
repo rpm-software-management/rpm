@@ -41,7 +41,6 @@ A query format is passed to RPM after the --queryformat argument, and normally
 should be enclosed in single quotes. This query format is then used to print
 the information section of a query. This means that when both -i and 
 --queryformat are used in a command, the -i is essentially ignored. 
-Additionally, using --queryformat implies -q, so you may omit the -q as well.
 
 The query format is similar to a C style printf string, which the printf(2)
 man page provides a good introduction to. However, as RPM already knows the
@@ -88,7 +87,7 @@ for passing information to any program that's line oriented (such as
 grep or awk). If you try the obvious,
 
 \verbatim
-    rpm --queryformat "[%{NAME} %{FILENAMES}\n]" cdp
+    rpm -q --queryformat "[%{NAME} %{FILENAMES}\n]" cdp
 \endverbatim
 
 If you try this, you'll see RPM complain about an "array iterator used
@@ -102,7 +101,7 @@ item in the NAME element. You do this by placing a '=' before the tag
 name, like this:
 
 \verbatim
-    rpm --queryformat "[%{=NAME} %{FILENAMES}\n]" cdp
+    rpm -q --queryformat "[%{=NAME} %{FILENAMES}\n]" cdp
 \endverbatim
 
 which will give you the expected output.
