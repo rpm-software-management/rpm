@@ -17,21 +17,20 @@ command 'rpm --querytags'. It will print out a list like (but much longer
 then) this:
 
 \verbatim
-    RPMTAG_NAME
-    RPMTAG_VERSION
-    RPMTAG_RELEASE
-    RPMTAG_SERIAL
-    RPMTAG_SUMMARY
-    RPMTAG_DESCRIPTION
-    RPMTAG_BUILDTIME
-    RPMTAG_BUILDHOST
-    RPMTAG_INSTALLTIME
-    RPMTAG_SIZE
+    BUILDHOST
+    BUILDTIME
+    DESCRIPTION
+    EPOCH
+    INSTALLTIME
+    NAME
+    RELEASE
+    SIZE
+    SUMMARY
+    VERSION
 \endverbatim
 
-As all of these tags begin with RPMTAG_, you may omit it from query format
-specifiers and it will be omitted from the rest of this documentation for
-the same reason.
+Each of these tags also has a version with a RPMTAG_ prefix, such as
+RPMTAG_NAME. You can use this tags with or without the RPMTAG_ prefix.
 
 A tag can consist of one element or an array of elements. Each element can
 be a string or number only.
@@ -92,11 +91,11 @@ grep or awk). If you try the obvious,
     rpm --queryformat "[%{NAME} %{FILENAMES}\n]" cdp
 \endverbatim
 
-If you try this, you'll see RPM complain about a "parallel array size 
-mismatch". Internally, all items in RPM are actually arrays, so the NAME
-is a string array containing one element. When you tell RPM to iterate
-over the NAME and FILENAMES elements, RPM notices the two tags have 
-different numbers of elements and complains.
+If you try this, you'll see RPM complain about an "array iterator used
+with different sized arrays". Internally, all items in RPM are actually
+arrays, so the NAME is a string array containing one element. When you
+tell RPM to iterate over the NAME and FILENAMES elements, RPM notices
+the two tags have different numbers of elements and complains.
 
 To make this work properly, you need to tell RPM to always print the first
 item in the NAME element. You do this by placing a '=' before the tag
@@ -161,7 +160,7 @@ is used there.
 	rpm -q --qf '[%{filenames} %{fileverifyflags}\n]' dev
 \endverbatim
 
-The flags are defined in rpmlib.h (check there for changes):
+The flags are defined in rpmfiles.h (check there for changes):
 \verbatim
 	#define RPMVERIFY_MD5           (1 << 0)
 	#define RPMVERIFY_FILESIZE      (1 << 1)
