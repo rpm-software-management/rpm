@@ -1875,6 +1875,21 @@ exit:
     return rc;
 }
 
+hdrblob hdrblobCreate(void)
+{
+    hdrblob blob = xcalloc(1, sizeof(*blob));
+    return blob;
+}
+
+hdrblob hdrblobFree(hdrblob blob)
+{
+    if (blob) {
+	free(blob->ei);
+	free(blob);
+    }
+    return NULL;
+}
+
 rpmRC hdrblobRead(FD_t fd, int magic, int exact_size, rpmTagVal regionTag, hdrblob blob, char **emsg)
 {
     int32_t block[4];
