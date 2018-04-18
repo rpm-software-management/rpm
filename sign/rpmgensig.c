@@ -525,7 +525,7 @@ static int rpmSign(const char *rpm, int deleting, int signfiles)
     if (manageFile(&fd, rpm, O_RDWR))
 	goto exit;
 
-    if ((rc = rpmLeadRead(fd, NULL, &msg)) != RPMRC_OK) {
+    if ((rc = rpmLeadRead(fd, &msg)) != RPMRC_OK) {
 	rpmlog(RPMLOG_ERR, "%s: %s\n", rpm, msg);
 	goto exit;
     }

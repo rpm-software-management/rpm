@@ -168,7 +168,7 @@ rpmRC rpmpkgRead(struct rpmvs_s *sigset, FD_t fd,
     memset(&blob, 0, sizeof(blob));
     memset(&sigblob, 0, sizeof(sigblob));
 
-    if ((xx = rpmLeadRead(fd, NULL, &msg)) != RPMRC_OK) {
+    if ((xx = rpmLeadRead(fd, &msg)) != RPMRC_OK) {
 	/* Avoid message spew on manifests */
 	if (xx == RPMRC_NOTFOUND)
 	    msg = _free(msg);
