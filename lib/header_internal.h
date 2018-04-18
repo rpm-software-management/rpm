@@ -61,6 +61,12 @@ static inline void ei2td(const struct entryInfo_s *info,
 }
 
 RPM_GNUC_INTERNAL
+hdrblob hdrblobCreate(void);
+
+RPM_GNUC_INTERNAL
+hdrblob hdrblobFree(hdrblob blob);
+
+RPM_GNUC_INTERNAL
 rpmRC hdrblobInit(const void *uh, size_t uc,
 		rpmTagVal regionTag, int exact_size,
 		struct hdrblob_s *blob, char **emsg);
