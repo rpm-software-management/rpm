@@ -90,7 +90,7 @@ ssize_t Freadall(FD_t fd, void * buf, ssize_t size);
 RPM_GNUC_INTERNAL
 void headerMergeLegacySigs(Header h, Header sigh);
 RPM_GNUC_INTERNAL
-void applyRetrofits(Header h, int leadtype);
+void applyRetrofits(Header h);
 RPM_GNUC_INTERNAL
 int headerIsSourceHeuristic(Header h);
 #ifdef __cplusplus

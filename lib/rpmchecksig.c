@@ -160,7 +160,6 @@ rpmRC rpmpkgRead(struct rpmvs_s *sigset, FD_t fd,
     char * msg = NULL;
     rpmRC xx, rc = RPMRC_FAIL; /* assume failure */
     int failed = 0;
-    int leadtype = -1;
     struct hdrblob_s sigblob, blob;
     Header h = NULL;
     Header sigh = NULL;
@@ -169,7 +168,7 @@ rpmRC rpmpkgRead(struct rpmvs_s *sigset, FD_t fd,
     memset(&blob, 0, sizeof(blob));
     memset(&sigblob, 0, sizeof(sigblob));
 
-    if ((xx = rpmLeadRead(fd, &leadtype, &msg)) != RPMRC_OK) {
+    if ((xx = rpmLeadRead(fd, NULL, &msg)) != RPMRC_OK) {
 	/* Avoid message spew on manifests */
 	if (xx == RPMRC_NOTFOUND)
 	    msg = _free(msg);
@@ -222,7 +221,7 @@ rpmRC rpmpkgRead(struct rpmvs_s *sigset, FD_t fd,
 
 	    /* Append (and remap) signature tags to the metadata. */
 	    headerMergeLegacySigs(h, sigh);
-	    applyRetrofits(h, leadtype);
+	    applyRetrofits(h);
 
 	    /* Bump reference count for return. */
 	    *hdrp = headerLink(h);
