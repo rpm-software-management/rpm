@@ -230,7 +230,7 @@ exit:
     return rc;
 }
 
-void applyRetrofits(Header h, int leadtype)
+void applyRetrofits(Header h)
 {
     /*
      * Make sure that either RPMTAG_SOURCERPM or RPMTAG_SOURCEPACKAGE
