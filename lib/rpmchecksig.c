@@ -154,17 +154,13 @@ static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
 }
 
 rpmRC rpmpkgRead(struct rpmvs_s *vs, FD_t fd,
-		rpmsinfoCb cb, void *cbdata,
-		Header *hdrp, char **emsg)
+		hdrblob *sigblobp, hdrblob *blobp, char **emsg)
 {
 
     char * msg = NULL;
     rpmRC xx, rc = RPMRC_FAIL; /* assume failure */
-    int failed = 0;
     hdrblob sigblob = hdrblobCreate();
     hdrblob blob = hdrblobCreate();
-    Header h = NULL;
-    Header sigh = NULL;
     rpmDigestBundle bundle = fdGetBundle(fd, 1); /* freed with fd */
 
     if ((xx = rpmLeadRead(fd, &msg)) != RPMRC_OK) {
@@ -207,26 +203,13 @@ rpmRC rpmpkgRead(struct rpmvs_s *vs, FD_t fd,
     rpmvsFiniRange(vs, RPMSIG_PAYLOAD);
     rpmvsFiniRange(vs, RPMSIG_HEADER|RPMSIG_PAYLOAD);
 
-    /* Actually all verify discovered signatures and digests */
-    failed = rpmvsVerifyItems(vs, RPMSIG_VERIFIABLE_TYPE, cb, cbdata);
-
-    if (failed == 0) {
-	/* Finally import the headers and do whatever required retrofits etc */
-	if (hdrp) {
-	    if (hdrblobImport(sigblob, 0, &sigh, &msg))
-		goto exit;
-	    if (hdrblobImport(blob, 0, &h, &msg))
-		goto exit;
-
-	    /* Append (and remap) signature tags to the metadata. */
-	    headerMergeLegacySigs(h, sigh);
-	    applyRetrofits(h);
-
-	    /* Bump reference count for return. */
-	    *hdrp = headerLink(h);
-	}
-	rc = RPMRC_OK;
+    if (sigblobp && blobp) {
+	*sigblobp = sigblob;
+	*blobp = blob;
+	sigblob = NULL;
+	blob = NULL;
     }
+    rc = RPMRC_OK;
 
 exit:
     if (emsg)
@@ -235,8 +218,6 @@ exit:
 	free(msg);
     hdrblobFree(sigblob);
     hdrblobFree(blob);
-    headerFree(h);
-    headerFree(sigh);
     return rc;
 }
 
@@ -253,10 +234,15 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
 
     rpmlog(RPMLOG_NOTICE, "%s:%s", fn, vd.verbose ? "\n" : "");
 
-    rc = rpmpkgRead(vs, fd, vfyCb, &vd, NULL, &msg);
+    rc = rpmpkgRead(vs, fd, NULL, NULL, &msg);
 
-    if (rc && msg)
-	rpmlog(RPMLOG_ERR, "%s: %s\n", Fdescr(fd), msg);
+    if (rc) {
+	if (msg)
+	    rpmlog(RPMLOG_ERR, "%s: %s\n", Fdescr(fd), msg);
+	goto exit;
+    }
+
+    rc = rpmvsVerifyItems(vs, RPMSIG_VERIFIABLE_TYPE, vfyCb, &vd);
 
     if (!vd.verbose) {
 	if (vd.seen & RPMSIG_DIGEST_TYPE) {
@@ -269,6 +255,8 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
 	}
 	rpmlog(RPMLOG_NOTICE, " %s\n", rc ? _("NOT OK") : _("OK"));
     }
+
+exit:
     rpmvsFree(vs);
     free(msg);
     return rc;
