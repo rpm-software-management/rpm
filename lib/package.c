@@ -25,6 +25,7 @@
  * @param h		header (dest)
  * @param sigh		signature header (src)
  */
+static
 void headerMergeLegacySigs(Header h, Header sigh)
 {
     HeaderIterator hi;
@@ -224,6 +225,7 @@ exit:
     return rc;
 }
 
+static
 void applyRetrofits(Header h)
 {
     /*
