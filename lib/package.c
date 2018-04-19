@@ -304,6 +304,10 @@ static int handlePkgVS(struct rpmsinfo_s *sinfo, void *cbdata)
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 {
     char *msg = NULL;
+    Header h = NULL;
+    Header sigh = NULL;
+    hdrblob blob = NULL;
+    hdrblob sigblob = NULL;
     rpmVSFlags vsflags = rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD;
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
     struct rpmvs_s *vs = rpmvsCreate(vsflags, keyring);
@@ -316,15 +320,41 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     if (hdrp)
 	*hdrp = NULL;
 
-    rpmRC rc = rpmpkgRead(vs, fd, handlePkgVS, &pkgdata, hdrp, &msg);
+    rpmRC rc = rpmpkgRead(vs, fd, &sigblob, &blob, &msg);
+    if (rc)
+	goto exit;
 
-    if (rc && msg)
-	rpmlog(RPMLOG_ERR, "%s: %s\n", Fdescr(fd), msg);
+    /* Actually all verify discovered signatures and digests */
+    rc = RPMRC_FAIL;
+    if (!rpmvsVerifyItems(vs, RPMSIG_VERIFIABLE_TYPE, handlePkgVS, &pkgdata)) {
+	/* Finally import the headers and do whatever required retrofits etc */
+	if (hdrp) {
+	    if (hdrblobImport(sigblob, 0, &sigh, &msg))
+		goto exit;
+	    if (hdrblobImport(blob, 0, &h, &msg))
+		goto exit;
+
+	    /* Append (and remap) signature tags to the metadata. */
+	    headerMergeLegacySigs(h, sigh);
+	    applyRetrofits(h);
+
+	    /* Bump reference count for return. */
+	    *hdrp = headerLink(h);
+	}
+	rc = RPMRC_OK;
+    }
 
     /* If there was a "substatus" (NOKEY in practise), return that instead */
     if (rc == RPMRC_OK && pkgdata.rc)
 	rc = pkgdata.rc;
 
+exit:
+    if (rc && msg)
+	rpmlog(RPMLOG_ERR, "%s: %s\n", Fdescr(fd), msg);
+    hdrblobFree(sigblob);
+    hdrblobFree(blob);
+    headerFree(sigh);
+    headerFree(h);
     rpmKeyringFree(keyring);
     rpmvsFree(vs);
     free(msg);

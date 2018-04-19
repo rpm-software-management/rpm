@@ -87,8 +87,7 @@ int rpmvsVerifyItems(struct rpmvs_s *sis, int type,
 
 RPM_GNUC_INTERNAL
 rpmRC rpmpkgRead(struct rpmvs_s *vs, FD_t fd,
-		rpmsinfoCb cb, void *cbdata,
-		Header *hdrp, char **emsg);
+		hdrblob *sigblobp, hdrblob *blobp, char **emsg);
 
 #ifdef __cplusplus
 }
