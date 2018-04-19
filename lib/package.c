@@ -303,6 +303,7 @@ static int handlePkgVS(struct rpmsinfo_s *sinfo, void *cbdata)
 
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 {
+    char *msg = NULL;
     rpmVSFlags vsflags = rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD;
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
     struct rpmvs_s *vs = rpmvsCreate(vsflags, keyring);
@@ -315,7 +316,10 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     if (hdrp)
 	*hdrp = NULL;
 
-    rpmRC rc = rpmpkgRead(vs, fd, handlePkgVS, &pkgdata, hdrp);
+    rpmRC rc = rpmpkgRead(vs, fd, handlePkgVS, &pkgdata, hdrp, &msg);
+
+    if (rc && msg)
+	rpmlog(RPMLOG_ERR, "%s: %s\n", Fdescr(fd), msg);
 
     /* If there was a "substatus" (NOKEY in practise), return that instead */
     if (rc == RPMRC_OK && pkgdata.rc)
@@ -323,6 +327,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
     rpmKeyringFree(keyring);
     rpmvsFree(vs);
+    free(msg);
 
     return rc;
 }

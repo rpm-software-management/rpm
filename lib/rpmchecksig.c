@@ -154,7 +154,8 @@ static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
 }
 
 rpmRC rpmpkgRead(struct rpmvs_s *sigset, FD_t fd,
-			    rpmsinfoCb cb, void *cbdata, Header *hdrp)
+		rpmsinfoCb cb, void *cbdata,
+		Header *hdrp, char **emsg)
 {
 
     char * msg = NULL;
@@ -228,9 +229,10 @@ rpmRC rpmpkgRead(struct rpmvs_s *sigset, FD_t fd,
     }
 
 exit:
-    if (rc && msg != NULL)
-	rpmlog(RPMLOG_ERR, "%s: %s\n", Fdescr(fd), msg);
-    free(msg);
+    if (emsg)
+	*emsg = msg;
+    else
+	free(msg);
     hdrblobFree(sigblob);
     hdrblobFree(blob);
     headerFree(h);
@@ -241,6 +243,7 @@ exit:
 static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
 			   FD_t fd, const char *fn)
 {
+    char *msg = NULL;
     struct vfydata_s vd = { .seen = 0,
 			    .bad = 0,
 			    .verbose = rpmIsVerbose(),
@@ -250,7 +253,10 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
 
     rpmlog(RPMLOG_NOTICE, "%s:%s", fn, vd.verbose ? "\n" : "");
 
-    rc = rpmpkgRead(vs, fd, vfyCb, &vd, NULL);
+    rc = rpmpkgRead(vs, fd, vfyCb, &vd, NULL, &msg);
+
+    if (rc && msg)
+	rpmlog(RPMLOG_ERR, "%s: %s\n", Fdescr(fd), msg);
 
     if (!vd.verbose) {
 	if (vd.seen & RPMSIG_DIGEST_TYPE) {
@@ -264,6 +270,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
 	rpmlog(RPMLOG_NOTICE, " %s\n", rc ? _("NOT OK") : _("OK"));
     }
     rpmvsFree(vs);
+    free(msg);
     return rc;
 }
 
