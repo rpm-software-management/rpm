@@ -153,7 +153,7 @@ static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
     return 1;
 }
 
-rpmRC rpmpkgRead(struct rpmvs_s *sigset, FD_t fd,
+rpmRC rpmpkgRead(struct rpmvs_s *vs, FD_t fd,
 		rpmsinfoCb cb, void *cbdata,
 		Header *hdrp, char **emsg)
 {
@@ -179,36 +179,36 @@ rpmRC rpmpkgRead(struct rpmvs_s *sigset, FD_t fd,
     if (hdrblobRead(fd, 1, 0, RPMTAG_HEADERSIGNATURES, sigblob, &msg))
 	goto exit;
 
-    rpmvsInit(sigset, sigblob, bundle);
+    rpmvsInit(vs, sigblob, bundle);
 
     /* Initialize digests ranging over the header */
-    rpmvsInitRange(sigset, RPMSIG_HEADER);
+    rpmvsInitRange(vs, RPMSIG_HEADER);
 
     /* Read the header from the package. */
     if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERIMMUTABLE, blob, &msg))
 	goto exit;
 
     /* Finalize header range */
-    rpmvsFiniRange(sigset, RPMSIG_HEADER);
+    rpmvsFiniRange(vs, RPMSIG_HEADER);
 
     /* Fish interesting tags from the main header. This is a bit hacky... */
-    rpmvsAppendTag(sigset, blob, RPMTAG_PAYLOADDIGEST);
+    rpmvsAppendTag(vs, blob, RPMTAG_PAYLOADDIGEST);
 
     /* Initialize digests ranging over the payload only */
-    rpmvsInitRange(sigset, RPMSIG_PAYLOAD);
+    rpmvsInitRange(vs, RPMSIG_PAYLOAD);
 
     /* Unless disabled, read the file, generating digest(s) on the fly. */
-    if (!(rpmvsFlags(sigset) & RPMVSF_NEEDPAYLOAD)) {
+    if (!(rpmvsFlags(vs) & RPMVSF_NEEDPAYLOAD)) {
 	if (readFile(fd, &msg))
 	    goto exit;
     }
 
     /* Finalize payload range */
-    rpmvsFiniRange(sigset, RPMSIG_PAYLOAD);
-    rpmvsFiniRange(sigset, RPMSIG_HEADER|RPMSIG_PAYLOAD);
+    rpmvsFiniRange(vs, RPMSIG_PAYLOAD);
+    rpmvsFiniRange(vs, RPMSIG_HEADER|RPMSIG_PAYLOAD);
 
     /* Actually all verify discovered signatures and digests */
-    failed = rpmvsVerifyItems(sigset, RPMSIG_VERIFIABLE_TYPE, cb, cbdata);
+    failed = rpmvsVerifyItems(vs, RPMSIG_VERIFIABLE_TYPE, cb, cbdata);
 
     if (failed == 0) {
 	/* Finally import the headers and do whatever required retrofits etc */
