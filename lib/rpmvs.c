@@ -393,7 +393,7 @@ int rpmvsVerifyItems(struct rpmvs_s *sis, int type,
 	struct rpmsinfo_s *sinfo = &sis->sigs[i];
 
 	if (type & sinfo->type) {
-	    if (sinfo->rc == RPMRC_OK)
+	    if (sinfo->ctx)
 		rpmVerifySignature(sis->keyring, sinfo);
 
 	    if (cb)
