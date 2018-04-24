@@ -102,6 +102,27 @@ runroot rpmkeys -Kv /tmp/${pkg}
 AT_CLEANUP
 
 # ------------------------------
+# Test corrupted package verification (corrupted header)
+AT_SETUP([rpmkeys -Kv <corrupted unsigned> 4])
+AT_KEYWORDS([rpmkeys digest])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+pkg="hello-2.0-1.x86_64.rpm"
+cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
+   conv=notrunc bs=1 seek=4750 count=4 2> /dev/null
+runroot rpmkeys -Kv /tmp/${pkg}
+],
+[1],
+[/tmp/hello-2.0-1.x86_64.rpm:
+],
+[error: /tmp/hello-2.0-1.x86_64.rpm: tag[[13]]: BAD, tag 1028 type 0 offset 116 count 5 len 7]
+)
+AT_CLEANUP
+# ------------------------------
 # Reproducably build and verify a package
 AT_SETUP([rpmkeys -Kv <unsigned> 2])
 AT_KEYWORDS([rpmkeys digest])
