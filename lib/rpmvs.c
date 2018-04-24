@@ -388,7 +388,11 @@ static int rangeCmp(const void *a, const void *b)
 {
     const struct rpmsinfo_s *sa = a;
     const struct rpmsinfo_s *sb = b;
-    return sa->range - sb->range;
+    int rc = sa->range - sb->range;
+    /* signatures before digests */
+    if (rc == 0)
+	rc = sb->type - sa->type;
+    return rc;
 }
 
 int rpmvsVerifyItems(struct rpmvs_s *sis, int type,
