@@ -52,6 +52,18 @@ rpm	alias --setugids -q --qf \
         --pipe "(echo 'ch() { chown -h -- \"$1\" \"$3\";chgrp -h -- \"$2\" \"$3\"; }';grep '^ch '|grep -v \(none\))|sh" \
 	--POPTdesc=$"set user/group ownership of files in a package"
 
+rpm	alias --setcaps -q --qf \
+	"[\[ -f %{FILENAMES:shescape} -a ! -L %{FILENAMES:shescape} \] \
+	    && setcap %|FILECAPS?{%{FILECAPS:shescape}}:{''}| %{FILENAMES:shescape}\n]" \
+	--pipe "sh" \
+	--POPTdesc=$"set capabilities of files in a package"
+
+rpm	alias --restore -q --qf \
+	'[  rpm --setugids %{NAME:shescape}; \
+	    rpm --setperms %{NAME:shescape}; \
+	    rpm --setcaps  %{NAME:shescape}; \n]' --pipe "sh" \
+	--POPTdesc=$"restore file/directory permissions"
+
 rpm	alias --conflicts	--qf \
   "[%|VERBOSE?{%{CONFLICTFLAGS:deptype}: }:{}|%{CONFLICTNEVRS}\n]" \
 	--POPTdesc=$"list capabilities this package conflicts with"
