@@ -49,6 +49,10 @@ rpm \- RPM Package Manager
 
 \fBrpm\fR \fB--setugids\fR \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
 
+\fBrpm\fR \fB--setcaps\fR \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
+
+\fBrpm\fR \fB--restore\fR \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
+
 .SS "select-options"
 .PP
 
@@ -839,15 +843,24 @@ options are currently set in
 configuration file(s).
 .TP
 \fBrpm\fR \fB--setperms\fR \fIPACKAGE_NAME\fR
-sets permissions of files in the given package.
+sets permissions of files in the given package. Consider using
+\fB--restore\fR instead.
 .TP
 \fBrpm\fR \fB--setugids\fR \fIPACKAGE_NAME\fR
 sets user/group ownership of files in the given package. This command can
-change permissions of files in that package. It is caused by calling command
-\fBchmod\fR that can clear SUID and SGID bits in some situations. So it is
-safer to call also \fB--setperms\fR after calling \fB--setugids\fR.
+change permissions and capabilities of files in that package. In most
+cases it is better to use \fB--restore\fR instead.
 .TP
-Options \fB--setperms\fR and \fB--setugids\fR are mutually exclusive.
+\fBrpm\fR \fB--setcaps\fR \fIPACKAGE_NAME\fR
+sets capabilities of files in the given package. Consider using
+\fB--restore\fR instead.
+.TP
+\fBrpm\fR \fB--restore\fR \fIPACKAGE_NAME\fR
+The option restores owner, group, permissions and capabilities of files
+in the given package.
+.TP
+Options \fB--setperms\fR, \fB--setugids\fR, \fB--setcaps\fR and
+\fB--restore\fR are mutually exclusive.
 
 .SS "FTP/HTTP OPTIONS"
 .PP
