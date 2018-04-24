@@ -1,5 +1,6 @@
 #!/bin/bash
 errors_terminate=$2
+extra=$3
 
 # If using normal root, avoid changing anything.
 if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
@@ -79,9 +80,13 @@ do
 done
 
 
-# Handle other locations in the filesystem using the default python
-# implementation - if we  have a default python interpreter
+# Handle other locations in the filesystem using the default python implementation
+# if extra is set to 0, don't do this
+if [ 0$extra -eq 0 ]; then
+	exit 0
+fi
 
+# If we don't have a default python interpreter, we cannot proceed
 default_python=${1:-/usr/bin/python}
 if [ ! -x "$default_python" ]; then
 	exit 0
