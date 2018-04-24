@@ -241,11 +241,11 @@ RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
-runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed.rpm
-runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
-runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed.rpm
-runroot rpmkeys -Kv --nodigest /data/RPMS/hello-2.0-1.x86_64-signed.rpm
-runroot rpmkeys -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed.rpm
+runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed.rpm; echo $?
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub; echo $?
+runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed.rpm; echo $?
+runroot rpmkeys -Kv --nodigest /data/RPMS/hello-2.0-1.x86_64-signed.rpm; echo $?
+runroot rpmkeys -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed.rpm; echo $?
 ],
 [0],
 [/data/RPMS/hello-2.0-1.x86_64-signed.rpm:
@@ -255,6 +255,8 @@ runroot rpmkeys -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed.rpm
     Payload SHA256 digest: OK
     V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
     MD5 digest: OK
+1
+0
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
     Header SHA1 digest: OK
@@ -262,14 +264,17 @@ runroot rpmkeys -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed.rpm
     Payload SHA256 digest: OK
     V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
     MD5 digest: OK
+0
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
     V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
+0
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
     Header SHA1 digest: OK
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
     MD5 digest: OK
+0
 ],
 [])
 AT_CLEANUP
