@@ -135,6 +135,11 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
 
     *sinfo = vinfo->vi; /* struct assignment */
 
+    if (td == NULL) {
+	rc = RPMRC_NOTFOUND;
+	goto exit;
+    }
+
     if (tinfo->tagtype && tinfo->tagtype != td->type) {
 	rasprintf(&sinfo->msg, _("%s tag %u: invalid type %u"),
 			origin, td->tag, td->type);
@@ -283,24 +288,26 @@ char *rpmsinfoMsg(struct rpmsinfo_s *sinfo)
 static void rpmvsAppend(struct rpmvs_s *sis, hdrblob blob,
 			const struct vfyinfo_s *vi, const struct vfytag_s *ti)
 {
-    if (rpmsinfoDisabled(&vi->vi, sis->vsflags))
+    if (!(vi->vi.type & RPMSIG_VERIFIABLE_TYPE))
 	return;
 
+    const char *o = (blob->il > blob->ril) ? _("header") : _("package");
     struct rpmtd_s td;
     rpmRC rc = hdrblobGet(blob, vi->tag, &td);
+    int nitems = (rc == RPMRC_OK) ? rpmtdCount(&td) : 1;
 
-    if (rc == RPMRC_OK) {
-	const char *o = (blob->il > blob->ril) ? _("header") : _("package");
-	int ix;
+    rpmvsReserve(sis, nitems);
 
-	rpmvsReserve(sis, rpmtdCount(&td));
-
-	while ((ix = rpmtdNext(&td)) >= 0) {
+    if (!rpmsinfoDisabled(&vi->vi, sis->vsflags) && rc == RPMRC_OK) {
+	while (rpmtdNext(&td) >= 0) {
 	    rpmsinfoInit(vi, ti, &td, o, &sis->sigs[sis->nsigs]);
 	    sis->nsigs++;
 	}
-	rpmtdFreeData(&td);
+    } else {
+	rpmsinfoInit(vi, ti, NULL, o, &sis->sigs[sis->nsigs]);
+	sis->nsigs++;
     }
+    rpmtdFreeData(&td);
 }
 
 void rpmvsAppendTag(struct rpmvs_s *vs, hdrblob blob, rpmTagVal tag)
@@ -396,6 +403,10 @@ int rpmvsVerifyItems(struct rpmvs_s *sis, int type,
     for (int i = 0; i < sis->nsigs && cont; i++) {
 	struct rpmsinfo_s *sinfo = &sis->sigs[i];
 
+	/* Ignore non-present items for now */
+	if (sinfo->rc == RPMRC_NOTFOUND)
+	    continue;
+
 	if (type & sinfo->type) {
 	    if (sinfo->ctx)
 		rpmVerifySignature(sis->keyring, sinfo);
@@ -419,8 +430,8 @@ static const char * rpmSigString(rpmRC res)
     case RPMRC_FAIL:		str = "BAD";		break;
     case RPMRC_NOKEY:		str = "NOKEY";		break;
     case RPMRC_NOTTRUSTED:	str = "NOTTRUSTED";	break;
-    default:
-    case RPMRC_NOTFOUND:	str = "UNKNOWN";	break;
+    case RPMRC_NOTFOUND:	str = "NOTFOUND";	break;
+    default:			str = "UNKNOWN";	break;
     }
     return str;
 }
