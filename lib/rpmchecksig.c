@@ -286,7 +286,7 @@ int rpmcliVerifySignatures(rpmts ts, ARGV_const_t argv)
     const char * arg;
     int res = 0;
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
-    rpmVSFlags vsflags = 0;
+    rpmVSFlags vsflags = rpmExpandNumeric("%{?_vsflags_pkgverify}");
 
     vsflags |= rpmcliVSFlags;
 

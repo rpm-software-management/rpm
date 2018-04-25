@@ -741,6 +741,7 @@ package or when debugging this package.\
 %_vsflags_query		%{__vsflags}
 %_vsflags_rebuilddb	0xc0c00
 %_vsflags_verify	%{__vsflags}
+%_vsflags_pkgverify	0x0
 
 # Set to 1 to minimize writing (at the cost of more reads) to
 # conserve eg SSD disks.
