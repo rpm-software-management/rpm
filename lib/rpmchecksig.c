@@ -187,21 +187,21 @@ rpmRC rpmpkgRead(struct rpmvs_s *vs, FD_t fd,
     /* Finalize header range */
     rpmvsFiniRange(vs, RPMSIG_HEADER);
 
-    /* Fish interesting tags from the main header. This is a bit hacky... */
-    rpmvsAppendTag(vs, blob, RPMTAG_PAYLOADDIGEST);
-
-    /* Initialize digests ranging over the payload only */
-    rpmvsInitRange(vs, RPMSIG_PAYLOAD);
-
-    /* Unless disabled, read the file, generating digest(s) on the fly. */
+    /* Unless disabled, read the payload, generating digest(s) on the fly. */
     if (!(rpmvsFlags(vs) & RPMVSF_NEEDPAYLOAD)) {
+	/* Fish interesting tags from the main header. This is a bit hacky... */
+	rpmvsAppendTag(vs, blob, RPMTAG_PAYLOADDIGEST);
+
+	/* Initialize digests ranging over the payload only */
+	rpmvsInitRange(vs, RPMSIG_PAYLOAD);
+
 	if (readFile(fd, &msg))
 	    goto exit;
-    }
 
-    /* Finalize payload range */
-    rpmvsFiniRange(vs, RPMSIG_PAYLOAD);
-    rpmvsFiniRange(vs, RPMSIG_HEADER|RPMSIG_PAYLOAD);
+	/* Finalize payload range */
+	rpmvsFiniRange(vs, RPMSIG_PAYLOAD);
+	rpmvsFiniRange(vs, RPMSIG_HEADER|RPMSIG_PAYLOAD);
+    }
 
     if (sigblobp && blobp) {
 	*sigblobp = sigblob;
