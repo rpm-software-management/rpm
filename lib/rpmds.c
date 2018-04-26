@@ -1182,7 +1182,23 @@ struct rpmlibProvides_s {
     const char * featureEVR;
     rpmsenseFlags featureFlags;
     const char * featureDescription;
+    int (*featureTestConditions)(void);
 };
+
+static int isUefiSystem(void)
+{
+    struct stat sb;
+    int rc;
+
+    rc = stat("/sys/firmware/efi/", &sb);
+    if (rc < 0)
+        return 0;
+
+    if (S_ISDIR(sb.st_mode))
+        return 1;
+
+    return 0;
+}
 
 static const struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(VersionedDependencies)",	"3.0.3-1",
@@ -1252,7 +1268,9 @@ static const struct rpmlibProvides_s rpmlibProvides[] = {
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload can be compressed using zstd.") },
 #endif
-    { NULL,				NULL, 0,	NULL }
+    { "system(EFI)", "4.14.90-1", (RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+        N_("Running system uses UEFI firmware."), isUefiSystem },
+    { NULL,				NULL, 0,	NULL, NULL }
 };
 
 
@@ -1266,6 +1284,8 @@ int rpmdsRpmlibPool(rpmstrPool pool, rpmds * dsp, const void * tblp)
 	rltblp = rpmlibProvides;
 
     for (rlp = rltblp; rlp->featureName != NULL && rc >= 0; rlp++) {
+        if (rlp->featureTestConditions && !rlp->featureTestConditions())
+            continue;
 	rpmds ds = rpmdsSinglePool(pool, RPMTAG_PROVIDENAME, rlp->featureName,
 			rlp->featureEVR, rlp->featureFlags);
 	rc = rpmdsMerge(dsp, ds);
