@@ -314,7 +314,8 @@ rpmds rpmdsNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, int flags)
 	    for (int i = 0; i < ds->Count; i++) {
 		if (!(rpmdsFlagsIndex(ds, i) & RPMSENSE_RPMLIB)) {
 		    const char *N = rpmdsNIndex(ds, i);
-		    if (rstreqn(N, "rpmlib(", sizeof("rpmlib(")-1))
+		    if (rstreqn(N, "rpmlib(", sizeof("rpmlib(")-1) ||
+                            rstreqn(N, "system(", sizeof("system(")-1))
 			ds->Flags[i] |= RPMSENSE_RPMLIB;
 		}
 	    }
@@ -1626,7 +1627,8 @@ static rpmRC rpmdsParseRichDepCB(void *cbdata, rpmrichParseType type,
 	return RPMRC_OK;	/* we're only interested in top-level parsing */
     if ((type == RPMRICH_PARSE_SIMPLE || type == RPMRICH_PARSE_LEAVE) && !data->dochain) {
 	if (type == RPMRICH_PARSE_SIMPLE && data->dep->tagN == RPMTAG_REQUIRENAME && nl > 7 &&
-			 rstreqn(n, "rpmlib(", sizeof("rpmlib(")-1))
+			 (rstreqn(n, "rpmlib(", sizeof("rpmlib(")-1)) ||
+                          rstreqn(n, "system(", sizeof("system(")-1))
 	    sense |= RPMSENSE_RPMLIB;
 	ds = singleDS(data->dep->pool, data->dep->tagN, 0, 0, sense | data->depflags, 0, 0, 0);
 	ds->N[0] = rpmstrPoolIdn(ds->pool, n, nl, 1);
