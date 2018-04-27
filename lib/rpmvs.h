@@ -29,6 +29,8 @@ struct rpmsinfo_s {
     int hashalgo;
     int sigalgo;
     int id;
+    int wrapped;
+    int strength;
     unsigned int keyid;
     union {
 	pgpDigParams sig;
@@ -83,7 +85,7 @@ RPM_GNUC_INTERNAL
 void rpmvsFiniRange(struct rpmvs_s *sis, int range);
 
 RPM_GNUC_INTERNAL
-int rpmvsVerifyItems(struct rpmvs_s *sis, int type,
+int rpmvsVerify(struct rpmvs_s *sis, int type, int vfylevel,
                        rpmsinfoCb cb, void *cbdata);
 
 RPM_GNUC_INTERNAL

@@ -183,7 +183,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 	updateHdrDigests(bundle, &blob);
 	rpmvsFiniRange(vs, RPMSIG_HEADER);
 
-	rc = rpmvsVerifyItems(vs, RPMSIG_VERIFIABLE_TYPE, handleHdrVS, msg);
+	rc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, 0, handleHdrVS, msg);
 
 	rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), uc);
 
@@ -334,7 +334,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
     /* Actually all verify discovered signatures and digests */
     rc = RPMRC_FAIL;
-    if (!rpmvsVerifyItems(vs, RPMSIG_VERIFIABLE_TYPE, handlePkgVS, &pkgdata)) {
+    if (!rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, 0, handlePkgVS, &pkgdata)) {
 	/* Finally import the headers and do whatever required retrofits etc */
 	if (hdrp) {
 	    if (hdrblobImport(sigblob, 0, &sigh, &msg))
