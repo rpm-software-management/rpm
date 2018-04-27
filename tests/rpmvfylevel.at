@@ -1,0 +1,366 @@
+AT_BANNER([RPM signature/digest verifylevel])
+
+AT_SETUP([rpmkeys -K <unsigned 1> verifylevel])
+AT_KEYWORDS([rpmkeys digest])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+for lvl in none digest signature all; do
+    echo "LEVEL ${lvl}"
+    for dis in "" "--nodigest" "--nosignature" "--nodigest --nosignature"; do
+	    echo "${dis}"
+	    runroot rpmkeys -K ${dis} \
+		--define "_pkgverify_level ${lvl}" \
+		/data/RPMS/hello-2.0-1.x86_64.rpm; echo $?
+    done
+done
+],
+[0],
+[LEVEL none
+
+/data/RPMS/hello-2.0-1.x86_64.rpm: digests OK
+0
+--nodigest
+/data/RPMS/hello-2.0-1.x86_64.rpm: OK
+0
+--nosignature
+/data/RPMS/hello-2.0-1.x86_64.rpm: digests OK
+0
+--nodigest --nosignature
+/data/RPMS/hello-2.0-1.x86_64.rpm: OK
+0
+LEVEL digest
+
+/data/RPMS/hello-2.0-1.x86_64.rpm: digests OK
+0
+--nodigest
+/data/RPMS/hello-2.0-1.x86_64.rpm: DIGESTS NOT OK
+1
+--nosignature
+/data/RPMS/hello-2.0-1.x86_64.rpm: digests OK
+0
+--nodigest --nosignature
+/data/RPMS/hello-2.0-1.x86_64.rpm: DIGESTS NOT OK
+1
+LEVEL signature
+
+/data/RPMS/hello-2.0-1.x86_64.rpm: digests SIGNATURES NOT OK
+1
+--nodigest
+/data/RPMS/hello-2.0-1.x86_64.rpm: SIGNATURES NOT OK
+1
+--nosignature
+/data/RPMS/hello-2.0-1.x86_64.rpm: digests SIGNATURES NOT OK
+1
+--nodigest --nosignature
+/data/RPMS/hello-2.0-1.x86_64.rpm: SIGNATURES NOT OK
+1
+LEVEL all
+
+/data/RPMS/hello-2.0-1.x86_64.rpm: digests SIGNATURES NOT OK
+1
+--nodigest
+/data/RPMS/hello-2.0-1.x86_64.rpm: DIGESTS SIGNATURES NOT OK
+1
+--nosignature
+/data/RPMS/hello-2.0-1.x86_64.rpm: digests SIGNATURES NOT OK
+1
+--nodigest --nosignature
+/data/RPMS/hello-2.0-1.x86_64.rpm: DIGESTS SIGNATURES NOT OK
+1
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpmkeys -K <unsigned 2> verifylevel])
+AT_KEYWORDS([rpmkeys digest])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+nomd5="0x20000"
+nopld="0x10000"
+nopl="0x30000"
+nosha1="0x100"
+nosha2="0x200"
+nosha="0x300"
+nohdr="0x20300"
+
+lvl="digest"
+for dis in nomd5 nopld nopl nosha1 nosha2 nosha nohdr; do
+    vsf="$(eval echo \$${dis})"
+    echo ${dis}
+    runroot rpmkeys -Kv \
+	--define "_pkgverify_level ${lvl}" \
+	--define "_vsflags_pkgverify ${vsf}" \
+	/data/RPMS/hello-2.0-1.x86_64.rpm; echo $?
+done
+],
+[0],
+[nomd5
+/data/RPMS/hello-2.0-1.x86_64.rpm:
+    Header SHA1 digest: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+0
+nopld
+/data/RPMS/hello-2.0-1.x86_64.rpm:
+    Header SHA1 digest: OK
+    Header SHA256 digest: OK
+    MD5 digest: OK
+0
+nopl
+/data/RPMS/hello-2.0-1.x86_64.rpm:
+    Header SHA1 digest: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: NOTFOUND
+    MD5 digest: NOTFOUND
+1
+nosha1
+/data/RPMS/hello-2.0-1.x86_64.rpm:
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+    MD5 digest: OK
+0
+nosha2
+/data/RPMS/hello-2.0-1.x86_64.rpm:
+    Header SHA1 digest: OK
+    Payload SHA256 digest: OK
+    MD5 digest: OK
+0
+nosha
+/data/RPMS/hello-2.0-1.x86_64.rpm:
+    Payload SHA256 digest: OK
+    MD5 digest: OK
+0
+nohdr
+/data/RPMS/hello-2.0-1.x86_64.rpm:
+    Header SHA1 digest: NOTFOUND
+    Header SHA256 digest: NOTFOUND
+    Payload SHA256 digest: OK
+    MD5 digest: NOTFOUND
+1
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpmkeys -K <signed 1> verifylevel])
+AT_KEYWORDS([rpmkeys digest])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+for lvl in none digest signature all; do
+    echo "LEVEL ${lvl}"
+    for dis in "" "--nodigest" "--nosignature" "--nodigest --nosignature"; do
+	    echo "${dis}"
+	    runroot rpmkeys -K ${dis} \
+		--define "_pkgverify_level ${lvl}" \
+		/data/RPMS/hello-2.0-1.x86_64-signed.rpm; echo $?
+    done
+done
+],
+[0],
+[LEVEL none
+
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests SIGNATURES NOT OK
+1
+--nodigest
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: SIGNATURES NOT OK
+1
+--nosignature
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests OK
+0
+--nodigest --nosignature
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: OK
+0
+LEVEL digest
+
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests SIGNATURES NOT OK
+1
+--nodigest
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: DIGESTS SIGNATURES NOT OK
+1
+--nosignature
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests OK
+0
+--nodigest --nosignature
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: DIGESTS NOT OK
+1
+LEVEL signature
+
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests SIGNATURES NOT OK
+1
+--nodigest
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: SIGNATURES NOT OK
+1
+--nosignature
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests SIGNATURES NOT OK
+1
+--nodigest --nosignature
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: SIGNATURES NOT OK
+1
+LEVEL all
+
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests SIGNATURES NOT OK
+1
+--nodigest
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: DIGESTS SIGNATURES NOT OK
+1
+--nosignature
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests SIGNATURES NOT OK
+1
+--nodigest --nosignature
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: DIGESTS SIGNATURES NOT OK
+1
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpmkeys -K <signed 2> verifylevel])
+AT_KEYWORDS([rpmkeys digest])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+for lvl in none digest signature all; do
+    echo "LEVEL ${lvl}"
+    for dis in "" "--nodigest" "--nosignature" "--nodigest --nosignature"; do
+	    echo "${dis}"
+	    runroot rpmkeys -K ${dis} \
+		--define "_pkgverify_level ${lvl}" \
+		/data/RPMS/hello-2.0-1.x86_64-signed.rpm; echo $?
+    done
+done
+],
+[0],
+[LEVEL none
+
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests signatures OK
+0
+--nodigest
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: signatures OK
+0
+--nosignature
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests OK
+0
+--nodigest --nosignature
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: OK
+0
+LEVEL digest
+
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests signatures OK
+0
+--nodigest
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: DIGESTS signatures NOT OK
+1
+--nosignature
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests OK
+0
+--nodigest --nosignature
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: DIGESTS NOT OK
+1
+LEVEL signature
+
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests signatures OK
+0
+--nodigest
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: signatures OK
+0
+--nosignature
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests SIGNATURES NOT OK
+1
+--nodigest --nosignature
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: SIGNATURES NOT OK
+1
+LEVEL all
+
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests signatures OK
+0
+--nodigest
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: DIGESTS signatures NOT OK
+1
+--nosignature
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests SIGNATURES NOT OK
+1
+--nodigest --nosignature
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: DIGESTS SIGNATURES NOT OK
+1
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpmkeys -K <signed 3> verifylevel])
+AT_KEYWORDS([rpmkeys digest])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+nomd5="0x20000"
+nopld="0x10000"
+nopl="0x30000"
+
+nopls="0xc0000"
+noplds="0xd0000"
+nohdrs="0x00c00"
+nosig="0xc0c00"
+
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+lvl="all"
+for dis in nopls noplds nohdrs nosig; do
+    vsf="$(eval echo \$${dis})"
+    echo ${dis}
+    runroot rpmkeys -Kv \
+	--define "_pkgverify_level ${lvl}" \
+	--define "_vsflags_pkgverify ${vsf}" \
+	/data/RPMS/hello-2.0-1.x86_64-signed.rpm; echo $?
+done
+],
+[0],
+[nopls
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm:
+    Header V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
+    Header SHA1 digest: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+    MD5 digest: OK
+0
+noplds
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm:
+    Header V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
+    Header SHA1 digest: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: NOTFOUND
+    RSA signature: NOTFOUND
+    DSA signature: NOTFOUND
+    MD5 digest: OK
+1
+nohdrs
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm:
+    Header SHA1 digest: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+    V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
+    MD5 digest: OK
+0
+nosig
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm:
+    Header DSA signature: NOTFOUND
+    Header RSA signature: NOTFOUND
+    Header SHA1 digest: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+    RSA signature: NOTFOUND
+    DSA signature: NOTFOUND
+    MD5 digest: OK
+1
+],
+[])
+AT_CLEANUP

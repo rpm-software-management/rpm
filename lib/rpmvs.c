@@ -134,6 +134,8 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
     rpm_count_t dlen = 0;
 
     *sinfo = vinfo->vi; /* struct assignment */
+    sinfo->wrapped = (vinfo->sigh == 0);
+    sinfo->strength = sinfo->type;
 
     if (td == NULL) {
 	rc = RPMRC_NOTFOUND;
@@ -395,11 +397,13 @@ static int rangeCmp(const void *a, const void *b)
     return rc;
 }
 
-int rpmvsVerifyItems(struct rpmvs_s *sis, int type,
+int rpmvsVerify(struct rpmvs_s *sis, int type, int vfylevel,
 		       rpmsinfoCb cb, void *cbdata)
 {
     int failed = 0;
     int cont = 1;
+    int range = 0;
+    int verified[3] = { 0, 0, 0 };
 
     /* sort by range to preserve traditional rpm -Kv output */
     qsort(sis->sigs, sis->nsigs, sizeof(*sis->sigs), rangeCmp);
@@ -407,20 +411,46 @@ int rpmvsVerifyItems(struct rpmvs_s *sis, int type,
     for (int i = 0; i < sis->nsigs && cont; i++) {
 	struct rpmsinfo_s *sinfo = &sis->sigs[i];
 
-	/* Ignore non-present items for now */
-	if (sinfo->rc == RPMRC_NOTFOUND)
+	if (type & sinfo->type) {
+	    /* Digests in signed header are signature strength */
+	    if (sinfo->wrapped) {
+		if (verified[RPMSIG_SIGNATURE_TYPE] & RPMSIG_HEADER)
+		    sinfo->strength = RPMSIG_SIGNATURE_TYPE;
+	    }
+
+	    if (sinfo->ctx) {
+		rpmVerifySignature(sis->keyring, sinfo);
+		if (sinfo->rc == RPMRC_OK) {
+		    verified[sinfo->type] |= sinfo->range;
+		    verified[sinfo->strength] |= sinfo->range;
+		}
+	    }
+	    range |= sinfo->range;
+	}
+    }
+
+    for (int i = 0; i < sis->nsigs && cont; i++) {
+	struct rpmsinfo_s *sinfo = &sis->sigs[i];
+	int strength = (sinfo->type | sinfo->strength);
+	int required = 0;
+
+	if (vfylevel & strength & RPMSIG_DIGEST_TYPE) {
+	    int missing = (range & ~verified[RPMSIG_DIGEST_TYPE]);
+	    required |= (missing & sinfo->range);
+	}
+	if (vfylevel & strength & RPMSIG_SIGNATURE_TYPE) {
+	    int missing = (range & ~verified[RPMSIG_SIGNATURE_TYPE]);
+	    required |= (missing & sinfo->range);
+	}
+
+	if (!required && sinfo->rc == RPMRC_NOTFOUND)
 	    continue;
 
-	if (type & sinfo->type) {
-	    if (sinfo->ctx)
-		rpmVerifySignature(sis->keyring, sinfo);
+	if (cb)
+	    cont = cb(sinfo, cbdata);
 
-	    if (cb)
-		cont = cb(sinfo, cbdata);
-
-	    if (sinfo->rc != RPMRC_OK)
-		failed++;
-	}
+	if (sinfo->rc != RPMRC_OK)
+	    failed = 1;
     }
 
     return failed;

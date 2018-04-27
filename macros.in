@@ -737,6 +737,13 @@ package or when debugging this package.\
 %_vsflags_verify	%{__vsflags}
 %_vsflags_pkgverify	0x0
 
+# Enforced package verification level
+# all		require valid digest(s) and signature(s)
+# signature	require valid signature(s)
+# digest	require valid digest(s)
+# none		traditional rpm behavior, nothing required
+%_pkgverify_level none
+
 # Set to 1 to minimize writing (at the cost of more reads) to
 # conserve eg SSD disks.
 %_minimize_writes      0
