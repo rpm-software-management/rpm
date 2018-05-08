@@ -6,7 +6,6 @@
 #include "system.h"
 
 #include <ctype.h>
-#include <pthread.h>
 
 #include <rpm/rpmlib.h>			/* RPMSIGTAG & related */
 #include <rpm/rpmpgp.h>
@@ -222,30 +221,9 @@ exit:
     return rc;
 }
 
-static int vfylevel = 0;
-
-static void vfylevel_init(void)
-{
-    char *val = rpmExpand("%{?_pkgverify_level}", NULL);
-
-    if (rstreq(val, "all"))
-	vfylevel = RPMSIG_SIGNATURE_TYPE|RPMSIG_DIGEST_TYPE;
-    else if (rstreq(val, "signature"))
-	vfylevel = RPMSIG_SIGNATURE_TYPE;
-    else if (rstreq(val, "digest"))
-	vfylevel = RPMSIG_DIGEST_TYPE;
-    else if (rstreq(val, "none"))
-	vfylevel = 0;
-    else if (!rstreq(val, ""))
-	rpmlog(RPMLOG_WARNING, _("invalid package verify level %s\n"), val);
-
-    free(val);
-}
-
 static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
 			   FD_t fd, const char *fn)
 {
-    static pthread_once_t vfylevel_done = PTHREAD_ONCE_INIT;
     char *msg = NULL;
     struct vfydata_s vd = { .seen = 0,
 			    .bad = 0,
@@ -254,8 +232,6 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
     int rc;
     struct rpmvs_s *vs = rpmvsCreate(flags, keyring);
 
-    pthread_once(&vfylevel_done, vfylevel_init);
-
     rpmlog(RPMLOG_NOTICE, "%s:%s", fn, vd.verbose ? "\n" : "");
 
     rc = rpmpkgRead(vs, fd, NULL, NULL, &msg);
@@ -263,7 +239,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmVSFlags flags,
     if (rc)
 	goto exit;
 
-    rc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, vfylevel, vfyCb, &vd);
+    rc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, 1, vfyCb, &vd);
 
     if (!vd.verbose) {
 	if (vd.seen & RPMSIG_DIGEST_TYPE) {

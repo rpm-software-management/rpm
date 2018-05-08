@@ -1,6 +1,9 @@
 #include "system.h"
 
+#include <pthread.h>
 #include <rpm/rpmkeyring.h>
+#include <rpm/rpmmacro.h>
+#include <rpm/rpmlog.h>
 #include "lib/rpmvs.h"
 #include "rpmio/digest.h"
 
@@ -91,6 +94,33 @@ static const struct vfyinfo_s rpmvfyitems[] = {
 static const char *rangeName(int range);
 static const char * rpmSigString(rpmRC res);
 static void rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo);
+
+static int vfylevel_sys = 0;
+
+static void vfylevel_init(void)
+{
+    char *val = rpmExpand("%{?_pkgverify_level}", NULL);
+
+    if (rstreq(val, "all"))
+	vfylevel_sys = RPMSIG_SIGNATURE_TYPE|RPMSIG_DIGEST_TYPE;
+    else if (rstreq(val, "signature"))
+	vfylevel_sys = RPMSIG_SIGNATURE_TYPE;
+    else if (rstreq(val, "digest"))
+	vfylevel_sys = RPMSIG_DIGEST_TYPE;
+    else if (rstreq(val, "none"))
+	vfylevel_sys = 0;
+    else if (!rstreq(val, ""))
+	rpmlog(RPMLOG_WARNING, _("invalid package verify level %s\n"), val);
+
+    free(val);
+}
+
+int rpmvsVfyLevel(void)
+{
+    static pthread_once_t vfylevel_done = PTHREAD_ONCE_INIT;
+    pthread_once(&vfylevel_done, vfylevel_init);
+    return vfylevel_sys;
+}
 
 static int sinfoLookup(rpmTagVal tag)
 {
@@ -397,13 +427,14 @@ static int rangeCmp(const void *a, const void *b)
     return rc;
 }
 
-int rpmvsVerify(struct rpmvs_s *sis, int type, int vfylevel,
+int rpmvsVerify(struct rpmvs_s *sis, int type, int usesys,
 		       rpmsinfoCb cb, void *cbdata)
 {
     int failed = 0;
     int cont = 1;
     int range = 0;
     int verified[3] = { 0, 0, 0 };
+    int vfylevel = usesys ? rpmvsVfyLevel() : 0;
 
     /* sort by range to preserve traditional rpm -Kv output */
     qsort(sis->sigs, sis->nsigs, sizeof(*sis->sigs), rangeCmp);

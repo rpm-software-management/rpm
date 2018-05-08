@@ -85,8 +85,11 @@ RPM_GNUC_INTERNAL
 void rpmvsFiniRange(struct rpmvs_s *sis, int range);
 
 RPM_GNUC_INTERNAL
-int rpmvsVerify(struct rpmvs_s *sis, int type, int vfylevel,
+int rpmvsVerify(struct rpmvs_s *sis, int type, int usesys,
                        rpmsinfoCb cb, void *cbdata);
+
+RPM_GNUC_INTERNAL
+int rpmvsVfyLevel(void);
 
 RPM_GNUC_INTERNAL
 rpmRC rpmpkgRead(struct rpmvs_s *vs, FD_t fd,
