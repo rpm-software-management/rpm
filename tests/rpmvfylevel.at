@@ -102,20 +102,20 @@ done
 [0],
 [nomd5
 /data/RPMS/hello-2.0-1.x86_64.rpm:
-    Header SHA1 digest: OK
     Header SHA256 digest: OK
+    Header SHA1 digest: OK
     Payload SHA256 digest: OK
 0
 nopld
 /data/RPMS/hello-2.0-1.x86_64.rpm:
-    Header SHA1 digest: OK
     Header SHA256 digest: OK
+    Header SHA1 digest: OK
     MD5 digest: OK
 0
 nopl
 /data/RPMS/hello-2.0-1.x86_64.rpm:
-    Header SHA1 digest: OK
     Header SHA256 digest: OK
+    Header SHA1 digest: OK
     Payload SHA256 digest: NOTFOUND
     MD5 digest: NOTFOUND
 1
@@ -138,8 +138,8 @@ nosha
 0
 nohdr
 /data/RPMS/hello-2.0-1.x86_64.rpm:
-    Header SHA1 digest: NOTFOUND
     Header SHA256 digest: NOTFOUND
+    Header SHA1 digest: NOTFOUND
     Payload SHA256 digest: OK
     MD5 digest: NOTFOUND
 1
@@ -327,16 +327,16 @@ done
 [nopls
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
-    Header SHA1 digest: OK
     Header SHA256 digest: OK
+    Header SHA1 digest: OK
     Payload SHA256 digest: OK
     MD5 digest: OK
 0
 noplds
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
-    Header SHA1 digest: OK
     Header SHA256 digest: OK
+    Header SHA1 digest: OK
     Payload SHA256 digest: NOTFOUND
     RSA signature: NOTFOUND
     DSA signature: NOTFOUND
@@ -344,18 +344,18 @@ noplds
 1
 nohdrs
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
-    Header SHA1 digest: OK
     Header SHA256 digest: OK
+    Header SHA1 digest: OK
     Payload SHA256 digest: OK
     V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
     MD5 digest: OK
 0
 nosig
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
-    Header DSA signature: NOTFOUND
     Header RSA signature: NOTFOUND
-    Header SHA1 digest: OK
+    Header DSA signature: NOTFOUND
     Header SHA256 digest: OK
+    Header SHA1 digest: OK
     Payload SHA256 digest: OK
     RSA signature: NOTFOUND
     DSA signature: NOTFOUND

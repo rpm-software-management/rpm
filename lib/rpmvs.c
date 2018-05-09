@@ -416,7 +416,7 @@ void rpmvsFiniRange(struct rpmvs_s *sis, int range)
     }
 }
 
-static int rangeCmp(const void *a, const void *b)
+static int sinfoCmp(const void *a, const void *b)
 {
     const struct rpmsinfo_s *sa = a;
     const struct rpmsinfo_s *sb = b;
@@ -424,6 +424,16 @@ static int rangeCmp(const void *a, const void *b)
     /* signatures before digests */
     if (rc == 0)
 	rc = sb->type - sa->type;
+    /* strongest (in the "newer is better" sense) algos first */
+    if (rc == 0)
+	rc = sb->sigalgo - sb->sigalgo;
+    if (rc == 0)
+	rc = sb->hashalgo - sb->hashalgo;
+    /* last resort, these only makes sense from consistency POV */
+    if (rc == 0)
+	rc = sb->id - sa->id;
+    if (rc == 0)
+	rc = sb->disabler - sa->disabler;
     return rc;
 }
 
@@ -436,8 +446,8 @@ int rpmvsVerify(struct rpmvs_s *sis, int type, int usesys,
     int verified[3] = { 0, 0, 0 };
     int vfylevel = usesys ? rpmvsVfyLevel() : 0;
 
-    /* sort by range to preserve traditional rpm -Kv output */
-    qsort(sis->sigs, sis->nsigs, sizeof(*sis->sigs), rangeCmp);
+    /* sort for consistency and rough "better comes first" semantics*/
+    qsort(sis->sigs, sis->nsigs, sizeof(*sis->sigs), sinfoCmp);
 
     for (int i = 0; i < sis->nsigs && cont; i++) {
 	struct rpmsinfo_s *sinfo = &sis->sigs[i];
