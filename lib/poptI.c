@@ -161,6 +161,9 @@ struct poptOption rpmInstallPoptTable[] = {
  { "ignoresize", '\0', POPT_BIT_SET, &rpmIArgs.probFilter,
 	(RPMPROB_FILTER_DISKSPACE|RPMPROB_FILTER_DISKNODES),
 	N_("don't check disk space before installing"), NULL},
+ { "noverify", '\0', POPT_BIT_SET, &rpmIArgs.probFilter,
+	(RPMPROB_FILTER_VERIFY),
+	N_("short hand for --ignorepayload --ignoresignature"), NULL},
  { "includedocs", '\0', POPT_ARGFLAG_DOC_HIDDEN, &rpmIArgs.incldocs, 0,
 	N_("install documentation"), NULL},
 

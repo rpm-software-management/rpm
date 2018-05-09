@@ -701,6 +701,7 @@ static void rpmtsPrintStats(rpmts ts)
     rpmtsPrintStat("total:       ", rpmtsOp(ts, RPMTS_OP_TOTAL));
     rpmtsPrintStat("check:       ", rpmtsOp(ts, RPMTS_OP_CHECK));
     rpmtsPrintStat("order:       ", rpmtsOp(ts, RPMTS_OP_ORDER));
+    rpmtsPrintStat("verify:      ", rpmtsOp(ts, RPMTS_OP_VERIFY));
     rpmtsPrintStat("fingerprint: ", rpmtsOp(ts, RPMTS_OP_FINGERPRINT));
     rpmtsPrintStat("install:     ", rpmtsOp(ts, RPMTS_OP_INSTALL));
     rpmtsPrintStat("erase:       ", rpmtsOp(ts, RPMTS_OP_ERASE));

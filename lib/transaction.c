@@ -15,6 +15,8 @@
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmsq.h>
+#include <rpm/rpmkeyring.h>
+#include <rpm/rpmcli.h>		/* XXX for rpmcliVSFlags, shouldn't be here */
 
 #include "lib/fprint.h"
 #include "lib/misc.h"
@@ -24,6 +26,7 @@
 #include "lib/rpmfi_internal.h"	/* only internal apis */
 #include "lib/rpmte_internal.h"	/* only internal apis */
 #include "lib/rpmts_internal.h"
+#include "lib/rpmvs.h"
 #include "rpmio/rpmhook.h"
 #include "lib/rpmtriggers.h"
 
@@ -1158,6 +1161,93 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 #define badArch(_a) (rpmMachineScore(RPM_MACHTABLE_INSTARCH, (_a)) == 0)
 #define badOs(_a) (rpmMachineScore(RPM_MACHTABLE_INSTOS, (_a)) == 0)
 
+static rpm_loff_t countPkgs(rpmts ts, rpmElementTypes types)
+{
+    rpm_loff_t npkgs = 0;
+    rpmtsi pi = rpmtsiInit(ts);
+    rpmte p;
+    while ((p = rpmtsiNext(pi, types)))
+	npkgs++;
+    pi = rpmtsiFree(pi);
+    return npkgs;
+}
+
+struct vfydata_s {
+    char *msg;
+};
+
+static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
+{
+    struct vfydata_s *vd = cbdata;
+    switch (sinfo->rc) {
+    case RPMRC_OK:
+	break;
+    case RPMRC_NOTFOUND:
+	vd->msg = xstrdup((sinfo->type == RPMSIG_SIGNATURE_TYPE) ?
+			  _("no signature") : _("no digest"));
+	break;
+    case RPMRC_NOKEY:
+	/*
+	 * Legacy compat: if signatures are not required, install must
+	 * succeed despite missing key.
+	 */
+	if (!(rpmvsVfyLevel() & RPMSIG_SIGNATURE_TYPE))
+	    sinfo->rc = RPMRC_OK;
+    default:
+	vd->msg = rpmsinfoMsg(sinfo);
+	break;
+    }
+    return (sinfo->rc == 0);
+}
+
+static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
+{
+    int rc = 0;
+    rpmKeyring keyring = rpmtsGetKeyring(ts, 0);
+    rpmtsi pi = NULL;
+    rpmte p;
+    rpm_loff_t oc = 0;
+    rpmVSFlags vsflags = rpmExpandNumeric("%{?_vsflags_pkgverify}");
+
+    /* XXX doesn't belong here */
+    vsflags |= rpmcliVSFlags;
+
+    rpmtsNotify(ts, NULL, RPMCALLBACK_VERIFY_START, 0, total);
+
+    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_VERIFY), 0);
+
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, TR_ADDED))) {
+	struct rpmvs_s *vs = rpmvsCreate(vsflags, keyring);
+	struct vfydata_s vd = {
+	    .msg = NULL,
+	};
+	rpmRC prc = RPMRC_FAIL;
+
+	rpmtsNotify(ts, p, RPMCALLBACK_VERIFY_PROGRESS, oc++, total);
+	FD_t fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
+	if (fd != NULL) {
+	    prc = rpmpkgRead(vs, fd, NULL, NULL, &vd.msg);
+	    rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
+	}
+
+	if (prc == RPMRC_OK)
+	    prc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, 1, vfyCb, &vd);
+
+	if (prc)
+	    rpmteAddProblem(p, RPMPROB_VERIFY, NULL, vd.msg, 0);
+
+	vd.msg = _free(vd.msg);
+    }
+    rpmtsNotify(ts, NULL, RPMCALLBACK_VERIFY_STOP, total, total);
+
+    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_VERIFY), 0);
+
+    rpmtsiFree(pi);
+    rpmKeyringFree(keyring);
+    return rc;
+}
+
 /*
  * For packages being installed:
  * - verify package arch/os.
@@ -1168,12 +1258,17 @@ static rpmps checkProblems(rpmts ts)
     rpm_color_t tscolor = rpmtsColor(ts);
     rpmprobFilterFlags probFilter = rpmtsFilterFlags(ts);
     rpmstrPool tspool = rpmtsPool(ts);
-    rpmtsi pi = rpmtsiInit(ts);
+    rpm_loff_t npkgs = countPkgs(ts, TR_ADDED);
+    rpmtsi pi;
     rpmte p;
+
+    if (npkgs == 0)
+	goto exit;
 
     /* The ordering doesn't matter here */
     /* XXX Only added packages need be checked. */
-    rpmlog(RPMLOG_DEBUG, "sanity checking %d elements\n", rpmtsNElements(ts));
+    rpmlog(RPMLOG_DEBUG, "sanity checking %lu elements\n", npkgs);
+    pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 
 	if (!(probFilter & RPMPROB_FILTER_IGNOREARCH) && badArch(rpmteA(p)))
@@ -1214,6 +1309,11 @@ static rpmps checkProblems(rpmts ts)
 	    rpmteAddRelocProblems(p);
     }
     rpmtsiFree(pi);
+
+    if (rpmvsVfyLevel() && !(probFilter & RPMPROB_FILTER_VERIFY))
+	verifyPackageFiles(ts, npkgs);
+
+exit:
     return rpmtsProblems(ts);
 }
 

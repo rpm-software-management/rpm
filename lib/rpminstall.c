@@ -173,6 +173,7 @@ void * rpmShowProgress(const void * arg,
     case RPMCALLBACK_TRANS_PROGRESS:
     case RPMCALLBACK_INST_PROGRESS:
     case RPMCALLBACK_UNINST_PROGRESS:
+    case RPMCALLBACK_VERIFY_PROGRESS:
 	if (flags & INSTALL_PERCENT)
 	    fprintf(stdout, "%%%% %f\n", (double) (total
 				? ((((float) amount) / total) * 100)
@@ -183,6 +184,7 @@ void * rpmShowProgress(const void * arg,
 	break;
 
     case RPMCALLBACK_TRANS_START:
+    case RPMCALLBACK_VERIFY_START:
 	rpmcliHashesCurrent = 0;
 	rpmcliProgressTotal = 1;
 	rpmcliProgressCurrent = 0;
@@ -190,14 +192,18 @@ void * rpmShowProgress(const void * arg,
 	rpmcliProgressState = what;
 	if (!(flags & INSTALL_LABEL))
 	    break;
-	if (flags & INSTALL_HASH)
-	    fprintf(stdout, "%-38s", _("Preparing..."));
-	else
-	    fprintf(stdout, "%s\n", _("Preparing packages..."));
+	if (flags & INSTALL_HASH) {
+	    fprintf(stdout, "%-38s", (what == RPMCALLBACK_TRANS_START) ?
+		    _("Preparing...") : _("Verifying..."));
+	} else {
+	    fprintf(stdout, "%s\n", (what == RPMCALLBACK_TRANS_START) ?
+		    _("Preparing packages...") : _("Verifying packages..."));
+	}
 	(void) fflush(stdout);
 	break;
 
     case RPMCALLBACK_TRANS_STOP:
+    case RPMCALLBACK_VERIFY_STOP:
 	if (flags & INSTALL_HASH)
 	    printHash(1, 1);	/* Fixes "preparing..." progress bar */
 	rpmcliProgressTotal = rpmcliPackagesTotal;
