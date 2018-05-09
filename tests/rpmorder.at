@@ -31,6 +31,7 @@ runroot rpm -ev --justdb \
 ],
 [0],
 [INSTALL:
+Verifying packages...
 Preparing packages...
 deptest-three-1.0-1.noarch
 deptest-two-1.0-1.noarch

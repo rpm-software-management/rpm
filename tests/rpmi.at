@@ -123,6 +123,7 @@ dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
 
 echo "INSTALL 1"
 runroot rpm -U --ignorearch --ignoreos --nodeps --nodigest \
+	--define "_pkgverify_level none" \
 	/tmp/${pkg} 2>&1 | sed -e 's/;.*$//g'
 echo "INSTALL 2"
 runroot rpm -U --ignorearch --ignoreos --nodeps \
@@ -167,6 +168,7 @@ dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
 
 echo "INSTALL 1"
 runroot rpm -U --ignorearch --ignoreos --nodeps \
+	--define "_pkgverify_level none" \
 	/tmp/${pkg} 2>&1
 echo "INSTALL 2"
 runroot rpm -U --ignorearch --ignoreos --nodeps \
@@ -316,10 +318,12 @@ dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
 
 echo "INSTALL 1"
 runroot rpm -U --ignorearch --ignoreos --nodeps \
+	--define "_pkgverify_level none" \
 	/tmp/${pkg} 2>&1
 
 echo "INSTALL 2"
 runroot rpm -U --ignorearch --ignoreos --nodeps --nosignature \
+	--define "_pkgverify_level none" \
 	/tmp/${pkg} 2>&1
 
 echo "INSTALL 3"
@@ -504,7 +508,8 @@ runroot rpm -Uv \
 runroot rpm -q versiontest
 ],
 [0],
-[Preparing packages...
+[Verifying packages...
+Preparing packages...
 versiontest-2.0-1.noarch
 versiontest-2.0-1.noarch
 ],
@@ -524,7 +529,8 @@ runroot rpm -Uv \
 runroot rpm -q versiontest
 ],
 [0],
-[Preparing packages...
+[Verifying packages...
+Preparing packages...
 versiontest-2.0-1.noarch
 versiontest-2.0-1.noarch
 ],
@@ -553,7 +559,8 @@ runroot rpm -Uv \
 runroot rpm -q deptest-one
 ],
 [0],
-[Preparing packages...
+[Verifying packages...
+Preparing packages...
 deptest-one-1.0-1.noarch
 deptest-one-1.0-1.noarch
 ],
@@ -582,7 +589,8 @@ runroot rpm -Uv \
 runroot rpm -q deptest-one
 ],
 [0],
-[Preparing packages...
+[Verifying packages...
+Preparing packages...
 deptest-one-1.0-1.noarch
 deptest-one-1.0-1.noarch
 ],

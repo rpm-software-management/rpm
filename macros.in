@@ -748,7 +748,7 @@ package or when debugging this package.\
 # signature	require valid signature(s)
 # digest	require valid digest(s)
 # none		traditional rpm behavior, nothing required
-%_pkgverify_level none
+%_pkgverify_level digest
 
 # Set to 1 to minimize writing (at the cost of more reads) to
 # conserve eg SSD disks.
