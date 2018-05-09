@@ -162,8 +162,8 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 [1],
 [],
 [error: /tmp/hello-2.0-1.x86_64-signed.rpm: Header V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
-error: /tmp/hello-2.0-1.x86_64-signed.rpm: Header SHA1 digest: BAD (Expected 5cd9874c510b67b44483f9e382a1649ef7743bac != 4261b2c1eb861a4152c2239bce20bfbcaa8971ba)
 error: /tmp/hello-2.0-1.x86_64-signed.rpm: Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 29fdfe92782fb0470a9a164a6c94af87d3b138c63b39d4c30e0223ca1202ba82)
+error: /tmp/hello-2.0-1.x86_64-signed.rpm: Header SHA1 digest: BAD (Expected 5cd9874c510b67b44483f9e382a1649ef7743bac != 4261b2c1eb861a4152c2239bce20bfbcaa8971ba)
 error: /tmp/hello-2.0-1.x86_64-signed.rpm cannot be installed
 ])
 AT_CLEANUP
