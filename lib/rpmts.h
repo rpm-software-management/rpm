@@ -154,7 +154,8 @@ typedef	enum rpmtsOpX_e {
     RPMTS_OP_DBGET		= 14,
     RPMTS_OP_DBPUT		= 15,
     RPMTS_OP_DBDEL		= 16,
-    RPMTS_OP_MAX		= 17
+    RPMTS_OP_VERIFY		= 17,
+    RPMTS_OP_MAX		= 18
 } rpmtsOpX;
 
 enum rpmtxnFlags_e {

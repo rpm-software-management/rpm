@@ -167,6 +167,10 @@ char * rpmProblemString(rpmProblem prob)
 	rasprintf(&buf, _("%s is obsoleted by %s%s"),
 		  prob->str1, (prob->num1 ? _("(installed) ") : ""), altNEVR);
 	break;
+    case RPMPROB_VERIFY:
+	rasprintf(&buf, _("package %s does not verify: %s"),
+			pkgNEVR, prob->str1);
+	break;
     default:
 	rasprintf(&buf,
 		_("unknown error %d encountered while manipulating package %s"),
