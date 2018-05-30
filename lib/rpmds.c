@@ -314,7 +314,8 @@ rpmds rpmdsNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, int flags)
 	    for (int i = 0; i < ds->Count; i++) {
 		if (!(rpmdsFlagsIndex(ds, i) & RPMSENSE_RPMLIB)) {
 		    const char *N = rpmdsNIndex(ds, i);
-		    if (rstreqn(N, "rpmlib(", sizeof("rpmlib(")-1))
+		    if (rstreqn(N, "rpmlib(", sizeof("rpmlib(")-1) ||
+                            rstreqn(N, "system(", sizeof("system(")-1))
 			ds->Flags[i] |= RPMSENSE_RPMLIB;
 		}
 	    }
@@ -1181,7 +1182,23 @@ struct rpmlibProvides_s {
     const char * featureEVR;
     rpmsenseFlags featureFlags;
     const char * featureDescription;
+    int (*featureTestConditions)(void);
 };
+
+static int isUefiSystem(void)
+{
+    struct stat sb;
+    int rc;
+
+    rc = stat("/sys/firmware/efi/", &sb);
+    if (rc < 0)
+        return 0;
+
+    if (S_ISDIR(sb.st_mode))
+        return 1;
+
+    return 0;
+}
 
 static const struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(VersionedDependencies)",	"3.0.3-1",
@@ -1251,7 +1268,9 @@ static const struct rpmlibProvides_s rpmlibProvides[] = {
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload can be compressed using zstd.") },
 #endif
-    { NULL,				NULL, 0,	NULL }
+    { "system(EFI)", "4.14.90-1", (RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+        N_("Running system uses UEFI firmware."), isUefiSystem },
+    { NULL,				NULL, 0,	NULL, NULL }
 };
 
 
@@ -1265,6 +1284,8 @@ int rpmdsRpmlibPool(rpmstrPool pool, rpmds * dsp, const void * tblp)
 	rltblp = rpmlibProvides;
 
     for (rlp = rltblp; rlp->featureName != NULL && rc >= 0; rlp++) {
+        if (rlp->featureTestConditions && !rlp->featureTestConditions())
+            continue;
 	rpmds ds = rpmdsSinglePool(pool, RPMTAG_PROVIDENAME, rlp->featureName,
 			rlp->featureEVR, rlp->featureFlags);
 	rc = rpmdsMerge(dsp, ds);
@@ -1626,7 +1647,8 @@ static rpmRC rpmdsParseRichDepCB(void *cbdata, rpmrichParseType type,
 	return RPMRC_OK;	/* we're only interested in top-level parsing */
     if ((type == RPMRICH_PARSE_SIMPLE || type == RPMRICH_PARSE_LEAVE) && !data->dochain) {
 	if (type == RPMRICH_PARSE_SIMPLE && data->dep->tagN == RPMTAG_REQUIRENAME && nl > 7 &&
-			 rstreqn(n, "rpmlib(", sizeof("rpmlib(")-1))
+			 (rstreqn(n, "rpmlib(", sizeof("rpmlib(")-1)) ||
+                          rstreqn(n, "system(", sizeof("system(")-1))
 	    sense |= RPMSENSE_RPMLIB;
 	ds = singleDS(data->dep->pool, data->dep->tagN, 0, 0, sense | data->depflags, 0, 0, 0);
 	ds->N[0] = rpmstrPoolIdn(ds->pool, n, nl, 1);
