@@ -27,6 +27,7 @@
 #include <unistd.h>
 #include <utime.h>
 #include <rpm/rpmutil.h>
+#include "rpmio/rpmio_internal.h"
 
 #define MYNAME		"posix"
 #define MYVERSION	MYNAME " library for " LUA_VERSION " / Nov 2003"
@@ -335,21 +336,11 @@ static int Pexec(lua_State *L)			/** exec(path,[args]) */
 	const char *path = luaL_checkstring(L, 1);
 	int i,n=lua_gettop(L);
 	char **argv;
-	int flag, fdno, open_max;
 
 	if (!have_forked)
 	    return luaL_error(L, "exec not permitted in this context");
 
-	open_max = sysconf(_SC_OPEN_MAX);
-	if (open_max == -1) {
-	    open_max = 1024;
-	}
-	for (fdno = 3; fdno < open_max; fdno++) {
-	    flag = fcntl(fdno, F_GETFD);
-	    if (flag == -1 || (flag & FD_CLOEXEC))
-		continue;
-	    fcntl(fdno, F_SETFD, FD_CLOEXEC);
-	}
+	rpmSetCloseOnExec();
 
 	argv = malloc((n+1)*sizeof(char*));
 	if (argv==NULL) return luaL_error(L,"not enough memory");
