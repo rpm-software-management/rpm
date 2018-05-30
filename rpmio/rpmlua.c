@@ -29,6 +29,9 @@
 
 #include <unistd.h>
 #include <assert.h>
+#include <spawn.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #include <rpm/rpmio.h>
 #include <rpm/rpmmacro.h>
@@ -40,6 +43,7 @@
 
 #define _RPMLUA_INTERNAL
 #include "rpmio/rpmlua.h"
+#include "rpmio/rpmio_internal.h"
 
 #include "debug.h"
 
@@ -65,6 +69,27 @@ static void *nextFileFuncParam = NULL;
 
 static int luaopen_rpm(lua_State *L);
 static int rpm_print(lua_State *L);
+
+static int pusherror(lua_State *L, int code, const char *info)
+{
+    lua_pushnil(L);
+    if (info == NULL)
+	lua_pushstring(L, strerror(code));
+    else
+	lua_pushfstring(L, "%s: %s", info, strerror(code));
+    lua_pushnumber(L, code);
+    return 3;
+}
+
+static int pushresult(lua_State *L, int result, const char *info)
+{
+    if (result == 0) {
+	lua_pushnumber(L, result);
+	return 1;
+    }
+
+    return pusherror(L, result, info);
+}
 
 rpmlua rpmluaGetGlobalState(void)
 {
@@ -895,6 +920,31 @@ static int rpm_print (lua_State *L)
     return 0;
 }
 
+static int rpm_execute(lua_State *L)
+{
+    const char *file = luaL_checkstring(L, 1);
+    int i, n = lua_gettop(L);
+    int status;
+    pid_t pid;
+
+    char **argv = malloc((n + 1) * sizeof(char *));
+    if (argv == NULL)
+	return luaL_error(L, "not enough memory");
+    argv[0] = (char *)file;
+    for (i = 1; i < n; i++)
+	argv[i] = (char *)luaL_checkstring(L, i + 1);
+    argv[i] = NULL;
+    rpmSetCloseOnExec();
+    status = posix_spawnp(&pid, file, NULL, NULL, argv, environ);
+    free(argv);
+    if (status != 0)
+	return pusherror(L, status, "posix_spawnp");
+    if (waitpid(pid, &status, 0) == -1)
+	return pusherror(L, 0, "waitpid");
+    else
+	return pushresult(L, status, NULL);
+}
+
 static const luaL_Reg rpmlib[] = {
     {"b64encode", rpm_b64encode},
     {"b64decode", rpm_b64decode},
@@ -907,6 +957,7 @@ static const luaL_Reg rpmlib[] = {
     {"call", rpm_call},
     {"interactive", rpm_interactive},
     {"next_file", rpm_next_file},
+    {"execute", rpm_execute},
     {NULL, NULL}
 };
 
