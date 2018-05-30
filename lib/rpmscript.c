@@ -3,7 +3,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <errno.h>
-#include <unistd.h>
 
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmmacro.h>
@@ -170,26 +169,12 @@ static const char * const SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr
 static void doScriptExec(ARGV_const_t argv, ARGV_const_t prefixes,
 			FD_t scriptFd, FD_t out)
 {
-    int flag;
-    int fdno;
     int xx;
-    int open_max;
 
     /* SIGPIPE is ignored in rpm, reset to default for the scriptlet */
     (void) signal(SIGPIPE, SIG_DFL);
 
-    /* XXX Force FD_CLOEXEC on all inherited fdno's. */
-    open_max = sysconf(_SC_OPEN_MAX);
-    if (open_max == -1) {
-	open_max = 1024;
-    }
-    for (fdno = 3; fdno < open_max; fdno++) {
-	flag = fcntl(fdno, F_GETFD);
-	if (flag == -1 || (flag & FD_CLOEXEC))
-	    continue;
-	xx = fcntl(fdno, F_SETFD, FD_CLOEXEC);
-	/* XXX W2DO? debug msg for inheirited fdno w/o FD_CLOEXEC */
-    }
+    rpmSetCloseOnExec();
 
     if (scriptFd != NULL) {
 	int sfdno = Fileno(scriptFd);
