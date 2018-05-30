@@ -10,6 +10,7 @@
 #include <sys/personality.h>
 #endif
 #include <sys/utsname.h>
+#include <sys/resource.h>
 
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
@@ -1778,7 +1779,14 @@ void rpmSetCloseOnExec(void)
 	DIR *dir = opendir("/proc/self/fd");
 	if (dir == NULL) { /* /proc not available */
 		/* iterate over all possible fds, might be slow */
-		int open_max = sysconf(_SC_OPEN_MAX);
+		struct rlimit rl;
+		int open_max;
+
+		if (getrlimit(RLIMIT_NOFILE, &rl) == 0 && rl.rlim_max != RLIM_INFINITY)
+			open_max = rl.rlim_max;
+		else
+			open_max = sysconf(_SC_OPEN_MAX);
+
 		if (open_max == -1)
 			open_max = 1024;
 
