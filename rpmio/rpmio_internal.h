@@ -41,6 +41,12 @@ DIGEST_CTX fdDupDigest(FD_t fd, int id);
 int rpmioSlurp(const char * fn,
                 uint8_t ** bp, ssize_t * blenp);
 
+/**
+ * Set close-on-exec flag for all opened file descriptors, except
+ * stdin/stdout/stderr.
+ */
+void rpmSetCloseOnExec(void);
+
 #ifdef __cplusplus
 }
 #endif
