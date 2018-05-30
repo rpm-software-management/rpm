@@ -1760,18 +1760,43 @@ DIGEST_CTX fdDupDigest(FD_t fd, int id)
     return ctx;
 }
 
+static void set_cloexec(int fd)
+{
+	int flags = fcntl(fd, F_GETFD);
+
+	if (flags == -1 || (flags & FD_CLOEXEC))
+		return;
+
+	fcntl(fd, F_SETFD, flags | FD_CLOEXEC);
+}
+
 void rpmSetCloseOnExec(void)
 {
-	int flag, fdno, open_max;
+	const int min_fd = STDERR_FILENO; /* don't touch stdin/out/err */
+	int fd;
 
-	open_max = sysconf(_SC_OPEN_MAX);
-	if (open_max == -1) {
-		open_max = 1024;
+	DIR *dir = opendir("/proc/self/fd");
+	if (dir == NULL) { /* /proc not available */
+		/* iterate over all possible fds, might be slow */
+		int open_max = sysconf(_SC_OPEN_MAX);
+		if (open_max == -1)
+			open_max = 1024;
+
+		for (fd = min_fd + 1; fd < open_max; fd++)
+			set_cloexec(fd);
+
+		return;
 	}
-	for (fdno = 3; fdno < open_max; fdno++) {
-		flag = fcntl(fdno, F_GETFD);
-		if (flag == -1 || (flag & FD_CLOEXEC))
-			continue;
-		fcntl(fdno, F_SETFD, FD_CLOEXEC);
+
+	/* iterate over fds obtained from /proc */
+	struct dirent *entry;
+	while ((entry = readdir(dir)) != NULL) {
+		fd = atoi(entry->d_name);
+		if (fd > min_fd)
+			set_cloexec(fd);
 	}
+
+	closedir(dir);
+
+	return;
 }
