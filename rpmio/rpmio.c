@@ -1759,3 +1759,19 @@ DIGEST_CTX fdDupDigest(FD_t fd, int id)
 
     return ctx;
 }
+
+void rpmSetCloseOnExec(void)
+{
+	int flag, fdno, open_max;
+
+	open_max = sysconf(_SC_OPEN_MAX);
+	if (open_max == -1) {
+		open_max = 1024;
+	}
+	for (fdno = 3; fdno < open_max; fdno++) {
+		flag = fcntl(fdno, F_GETFD);
+		if (flag == -1 || (flag & FD_CLOEXEC))
+			continue;
+		fcntl(fdno, F_SETFD, FD_CLOEXEC);
+	}
+}
