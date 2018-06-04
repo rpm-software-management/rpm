@@ -502,10 +502,14 @@ static int openDatabase(const char * prefix,
     if (db == NULL)
 	return 1;
 
+    db->db_next = rpmdbRock;
+    rpmdbRock = db;
+
     /* Try to ensure db home exists, error out if we can't even create */
     rc = rpmioMkpath(rpmdbHome(db), 0755, getuid(), getgid());
     if (rc == 0) {
-	if (rpmdbRock == NULL) {
+	/* Enable signal queue on the first db open */
+	if (db->db_next == NULL) {
 	    rpmsqActivate(1);
 	}
 
@@ -516,8 +520,6 @@ static int openDatabase(const char * prefix,
     if (rc || justCheck || dbp == NULL)
 	rpmdbClose(db);
     else {
-	db->db_next = rpmdbRock;
-	rpmdbRock = db;
         *dbp = db;
     }
 
