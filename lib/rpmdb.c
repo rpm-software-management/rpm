@@ -391,14 +391,7 @@ int rpmdbClose(rpmdb db)
     if (db == NULL)
 	goto exit;
 
-    prev = &rpmdbRock;
-    while ((next = *prev) != NULL && next != db)
-	prev = &next->db_next;
-    if (!next)
-	goto exit;
-
     (void) rpmdbUnlink(db);
-
     if (db->nrefs > 0)
 	goto exit;
 
@@ -417,9 +410,13 @@ int rpmdbClose(rpmdb db)
     db->db_indexes = _free(db->db_indexes);
     db->db_descr = _free(db->db_descr);
 
-    if (next) {
-        *prev = next->db_next;
-	next->db_next = NULL;
+    /* unlink from list */
+    prev = &rpmdbRock;
+    while ((next = *prev) != NULL && next != db)
+	prev = &next->db_next;
+    if (prev) {
+	*prev = db->db_next;
+	db->db_next = NULL;
     }
 
     db = _free(db);
