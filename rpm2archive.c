@@ -205,8 +205,8 @@ int main(int argc, char *argv[])
     rpmVSFlags vsflags = 0;
 
     /* XXX retain the ageless behavior of rpm2cpio */
-    vsflags |= _RPMVSF_NODIGESTS;
-    vsflags |= _RPMVSF_NOSIGNATURES;
+    vsflags |= RPMVSF_MASK_NODIGESTS;
+    vsflags |= RPMVSF_MASK_NOSIGNATURES;
     vsflags |= RPMVSF_NOHDRCHK;
     (void) rpmtsSetVSFlags(ts, vsflags);
 
