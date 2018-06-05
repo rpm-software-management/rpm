@@ -41,8 +41,8 @@
  * -	rpm.RPMVSF_NORSA	if set, don't check header+payload RSA signature
  *
  * For convenience, there are the following masks:
- * -    rpm._RPMVSF_NODIGESTS		if set, don't check digest(s).
- * -    rpm._RPMVSF_NOSIGNATURES	if set, don't check signature(s).
+ * -    rpm.RPMVSF_MASK_NODIGESTS		if set, don't check digest(s).
+ * -    rpm.RPMVSF_MASK_NOSIGNATURES	if set, don't check signature(s).
  *
  * A rpm.ts object has the following methods:
  *
@@ -947,8 +947,8 @@ static char rpmts_doc[] =
   "-    rpm.RPMVSF_NORSA	if set, don't check header+payload RSA signature\n"
   "\n"
   "For convenience, there are the following masks:\n"
-  "-    rpm._RPMVSF_NODIGESTS	if set, don't check digest(s).\n"
-  "-    rpm._RPMVSF_NOSIGNATURES	if set, don't check signature(s).\n\n"
+  "-    rpm.RPMVSF_MASK_NODIGESTS	if set, don't check digest(s).\n"
+  "-    rpm.RPMVSF_MASK_NOSIGNATURES	if set, don't check signature(s).\n\n"
   "The transaction set offers an read only iterable interface for the\ntransaction elements added by the .addInstall(), .addErase() and\n.addReinstall() methods.";
 
 static PyGetSetDef rpmts_getseters[] = {
