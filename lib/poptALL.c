@@ -209,13 +209,13 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("don't enable any plugins"), NULL },
 
  { "nodigest", '\0', POPT_BIT_SET,
-	&rpmcliVSFlags, _RPMVSF_NODIGESTS,
+	&rpmcliVSFlags, RPMVSF_MASK_NODIGESTS,
         N_("don't verify package digest(s)"), NULL },
  { "nohdrchk", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmcliVSFlags, RPMVSF_NOHDRCHK,
         N_("don't verify database header(s) when retrieved"), NULL },
  { "nosignature", '\0', POPT_BIT_SET,
-	&rpmcliVSFlags, _RPMVSF_NOSIGNATURES,
+	&rpmcliVSFlags, RPMVSF_MASK_NOSIGNATURES,
         N_("don't verify package signature(s)"), NULL },
 
  { "pipe", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_PIPE,

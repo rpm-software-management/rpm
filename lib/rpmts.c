@@ -371,7 +371,8 @@ static int loadKeyringFromDB(rpmts ts)
 static void loadKeyring(rpmts ts)
 {
     /* Never load the keyring if signature checking is disabled */
-    if ((rpmtsVSFlags(ts) & _RPMVSF_NOSIGNATURES) != _RPMVSF_NOSIGNATURES) {
+    if ((rpmtsVSFlags(ts) & RPMVSF_MASK_NOSIGNATURES) !=
+	RPMVSF_MASK_NOSIGNATURES) {
 	ts->keyring = rpmKeyringNew();
 	if (loadKeyringFromFiles(ts) == 0) {
 	    if (loadKeyringFromDB(ts) > 0) {
@@ -564,7 +565,7 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
 	return rc;
 
     /* XXX keyring wont load if sigcheck disabled, force it temporarily */
-    rpmtsSetVSFlags(ts, (oflags & ~_RPMVSF_NOSIGNATURES));
+    rpmtsSetVSFlags(ts, (oflags & ~RPMVSF_MASK_NOSIGNATURES));
     keyring = rpmtsGetKeyring(ts, 1);
     rpmtsSetVSFlags(ts, oflags);
 
