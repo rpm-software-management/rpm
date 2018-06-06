@@ -653,7 +653,7 @@ static int fsmUtime(const char *path, mode_t mode, time_t mtime)
     return rc;
 }
 
-static int fsmVerify(const char *path, rpmfi fi, const struct stat *fsb)
+static int fsmVerify(const char *path, rpmfi fi)
 {
     int rc;
     int saveerrno = errno;
@@ -684,7 +684,7 @@ static int fsmVerify(const char *path, rpmfi fi, const struct stat *fsb)
             if (rc) return rc;
             errno = saveerrno;
 	    /* Only permit directory symlinks by target owner and root */
-            if (S_ISDIR(dsb.st_mode) && (luid == 0 || luid == fsb->st_uid))
+            if (S_ISDIR(dsb.st_mode) && (luid == 0 || luid == dsb.st_uid))
 		    return 0;
         }
     } else if (S_ISLNK(mode)) {
@@ -928,7 +928,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	    }
 	    /* Assume file does't exist when tmp suffix is in use */
 	    if (!suffix) {
-		rc = fsmVerify(fpath, fi, &sb);
+		rc = fsmVerify(fpath, fi);
 	    } else {
 		rc = (action == FA_TOUCH) ? 0 : RPMERR_ENOENT;
 	    }
