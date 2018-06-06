@@ -206,9 +206,7 @@ static void doScriptExec(ARGV_const_t argv, ARGV_const_t prefixes,
 	/* XXX Don't mtrace into children. */
 	unsetenv("MALLOC_CHECK_");
 
-	if (xx == 0) {
-	    xx = execv(argv[0], argv);
-	}
+	xx = execv(argv[0], argv);
     }
     _exit(127); /* exit 127 for compatibility with bash(1) */
 }
