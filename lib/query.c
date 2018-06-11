@@ -381,6 +381,13 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
 	}
     }	break;
 
+    case RPMQV_WHATOBSOLETES:
+	mi = rpmtsInitIterator(ts, RPMDBI_OBSOLETENAME, arg, 0);
+	if (mi == NULL) {
+	    rpmlog(RPMLOG_NOTICE, _("no package obsoletes %s\n"), arg);
+	}
+	break;
+
     case RPMQV_WHATREQUIRES:
 	mi = rpmtsInitIterator(ts, RPMDBI_REQUIRENAME, arg, 0);
 	if (mi == NULL) {

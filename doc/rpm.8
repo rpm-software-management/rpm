@@ -63,6 +63,7 @@ rpm \- RPM Package Manager
  [\fB--whatprovides \fICAPABILITY\fB\fR] [\fB--whatrequires \fICAPABILITY\fB\fR]
  [\fB--whatrecommends \fICAPABILITY\fB\fR] [\fB--whatsuggests \fICAPABILITY\fB\fR]
  [\fB--whatsupplements \fICAPABILITY\fB\fR] [\fB--whatenhances \fICAPABILITY\fB\fR]
+ [\fB--whatobsoletes \fICAPABILITY\fB\fR]
 
 .SS "query-options"
 .PP
@@ -617,6 +618,9 @@ a single transaction have a common identifier.
 \fB--triggeredby \fIPACKAGE_NAME\fB\fR
 Query packages that are triggered by package(s)
 \fIPACKAGE_NAME\fR.
+.TP
+\fB--whatobsoletes \fICAPABILITY\fB\fR
+Query all packages that obsolete \fICAPABILITY\fR for proper functioning.
 .TP
 \fB--whatprovides \fICAPABILITY\fB\fR
 Query all packages that provide the \fICAPABILITY\fR capability.

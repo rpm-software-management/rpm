@@ -25,6 +25,7 @@ struct rpmQVKArguments_s rpmQVKArgs;
 #define POPT_WHATSUGGESTS	-1012
 #define POPT_WHATSUPPLEMENTS	-1013
 #define POPT_WHATENHANCES	-1014
+#define POPT_WHATOBSOLETES	-1015
 
 /* ========== Query/Verify/Signature source args */
 static void rpmQVSourceArgCallback( poptContext con,
@@ -48,6 +49,7 @@ static void rpmQVSourceArgCallback( poptContext con,
     case 'g': qva->qva_source |= RPMQV_GROUP; break;
     case 'p': qva->qva_source |= RPMQV_RPM; break;
     case POPT_WHATPROVIDES: qva->qva_source |= RPMQV_WHATPROVIDES; break;
+    case POPT_WHATOBSOLETES: qva->qva_source |= RPMQV_WHATOBSOLETES; break;
     case POPT_WHATREQUIRES: qva->qva_source |= RPMQV_WHATREQUIRES; break;
     case POPT_WHATRECOMMENDS: qva->qva_source |= RPMQV_WHATRECOMMENDS; break;
     case POPT_WHATSUGGESTS: qva->qva_source |= RPMQV_WHATSUGGESTS; break;
@@ -99,6 +101,8 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("rpm verify mode"), NULL },
  { "whatrequires", '\0', 0, 0, POPT_WHATREQUIRES, 
 	N_("query/verify the package(s) which require a dependency"), "CAPABILITY" },
+ { "whatobsoletes", '\0', 0, 0, POPT_WHATOBSOLETES,
+	N_("query/verify the package(s) which obsolete a dependency"), "CAPABILITY" },
  { "whatprovides", '\0', 0, 0, POPT_WHATPROVIDES, 
 	N_("query/verify the package(s) which provide a dependency"), "CAPABILITY" },
  { "whatrecommends", '\0', 0, 0, POPT_WHATRECOMMENDS,
