@@ -373,6 +373,13 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
 	}
     }	break;
 
+    case RPMQV_WHATCONFLICTS:
+	mi = rpmtsInitIterator(ts, RPMDBI_CONFLICTNAME, arg, 0);
+	if (mi == NULL) {
+	    rpmlog(RPMLOG_NOTICE, _("no package conflicts %s\n"), arg);
+	}
+	break;
+
     case RPMQV_WHATOBSOLETES:
 	mi = rpmtsInitIterator(ts, RPMDBI_OBSOLETENAME, arg, 0);
 	if (mi == NULL) {
