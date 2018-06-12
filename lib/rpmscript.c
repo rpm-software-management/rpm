@@ -207,6 +207,11 @@ static void doScriptExec(ARGV_const_t argv, ARGV_const_t prefixes,
 	unsetenv("MALLOC_CHECK_");
 
 	xx = execv(argv[0], argv);
+	if (xx) {
+	    rpmlog(RPMLOG_ERR,
+		    _("failed to exec scriptlet interpreter %s: %s\n"),
+		    argv[0], strerror(errno));
+	}
     }
     _exit(127); /* exit 127 for compatibility with bash(1) */
 }
