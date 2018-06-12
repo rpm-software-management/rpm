@@ -37,6 +37,7 @@ RUN dnf -y install \
   tar unzip gzip bzip2 cpio xz \
   pkgconfig \
   /usr/bin/gdb-add-index \
+  /usr/bin/python \
   dwz \
   && dnf clean all
 RUN autoreconf -vfi
