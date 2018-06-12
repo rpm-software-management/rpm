@@ -81,6 +81,8 @@ struct rpmSpec_s {
     struct Source * sources;
     int numSources;
     int noSource;
+    int autonum_patch;
+    int autonum_source;
 
     char * sourceRpmName;
     unsigned char * sourcePkgId;

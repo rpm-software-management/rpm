@@ -186,17 +186,20 @@ static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag
     char *fieldp = NULL;
     char *buf = NULL;
     uint32_t num = 0;
+    int *autonum = NULL;
 
     switch (tag) {
       case RPMTAG_SOURCE:
 	flag = RPMBUILD_ISSOURCE;
 	name = "source";
 	fieldp = spec->line + 6;
+	autonum = &spec->autonum_source;
 	break;
       case RPMTAG_PATCH:
 	flag = RPMBUILD_ISPATCH;
 	name = "patch";
 	fieldp = spec->line + 5;
+	autonum = &spec->autonum_patch;
 	break;
       case RPMTAG_ICON:
 	flag = RPMBUILD_ISICON;
@@ -225,7 +228,8 @@ static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag
 	nump = fieldp_backup;
 	SKIPSPACE(nump);
 	if (nump == NULL || *nump == '\0') {
-	    num = flag == RPMBUILD_ISSOURCE ? 0 : INT_MAX;
+	    (*autonum)++;
+	    num = *autonum;
 	} else {
 	    if (parseUnsignedNum(fieldp_backup, &num)) {
 		rpmlog(RPMLOG_ERR, _("line %d: Bad %s number: %s\n"),
@@ -233,6 +237,7 @@ static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag
 		*fieldp = ch;
 		return RPMRC_FAIL;
 	    }
+	    *autonum = num;
 	}
 	*fieldp = ch;
     }
