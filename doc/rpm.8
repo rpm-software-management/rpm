@@ -63,7 +63,7 @@ rpm \- RPM Package Manager
  [\fB--whatprovides \fICAPABILITY\fB\fR] [\fB--whatrequires \fICAPABILITY\fB\fR]
  [\fB--whatrecommends \fICAPABILITY\fB\fR] [\fB--whatsuggests \fICAPABILITY\fB\fR]
  [\fB--whatsupplements \fICAPABILITY\fB\fR] [\fB--whatenhances \fICAPABILITY\fB\fR]
- [\fB--whatobsoletes \fICAPABILITY\fB\fR]
+ [\fB--whatobsoletes \fICAPABILITY\fB\fR] [\fB--whatconflicts \fICAPABILITY\fB\fR]
 
 .SS "query-options"
 .PP
@@ -627,6 +627,9 @@ Query all packages that provide the \fICAPABILITY\fR capability.
 .TP
 \fB--whatrequires \fICAPABILITY\fB\fR
 Query all packages that require \fICAPABILITY\fR for proper functioning.
+.TP
+\fB--whatconflicts \fICAPABILITY\fB\fR
+Query all packages that conflict with \fICAPABILITY\fR.
 .TP
 \fB--whatrecommends \fICAPABILITY\fB\fR
 Query all packages that recommend \fICAPABILITY\fR.

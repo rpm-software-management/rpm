@@ -26,6 +26,7 @@ struct rpmQVKArguments_s rpmQVKArgs;
 #define POPT_WHATSUPPLEMENTS	-1013
 #define POPT_WHATENHANCES	-1014
 #define POPT_WHATOBSOLETES	-1015
+#define POPT_WHATCONFLICTS	-1016
 
 /* ========== Query/Verify/Signature source args */
 static void rpmQVSourceArgCallback( poptContext con,
@@ -51,6 +52,7 @@ static void rpmQVSourceArgCallback( poptContext con,
     case POPT_WHATPROVIDES: qva->qva_source |= RPMQV_WHATPROVIDES; break;
     case POPT_WHATOBSOLETES: qva->qva_source |= RPMQV_WHATOBSOLETES; break;
     case POPT_WHATREQUIRES: qva->qva_source |= RPMQV_WHATREQUIRES; break;
+    case POPT_WHATCONFLICTS: qva->qva_source |= RPMQV_WHATCONFLICTS; break;
     case POPT_WHATRECOMMENDS: qva->qva_source |= RPMQV_WHATRECOMMENDS; break;
     case POPT_WHATSUGGESTS: qva->qva_source |= RPMQV_WHATSUGGESTS; break;
     case POPT_WHATSUPPLEMENTS: qva->qva_source |= RPMQV_WHATSUPPLEMENTS; break;
@@ -99,6 +101,8 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("query the package(s) triggered by the package"), "PACKAGE" },
  { "verify", 'V', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'V',
 	N_("rpm verify mode"), NULL },
+ { "whatconflicts", '\0', 0, 0, POPT_WHATCONFLICTS, 
+	N_("query/verify the package(s) which require a dependency"), "CAPABILITY" },
  { "whatrequires", '\0', 0, 0, POPT_WHATREQUIRES, 
 	N_("query/verify the package(s) which require a dependency"), "CAPABILITY" },
  { "whatobsoletes", '\0', 0, 0, POPT_WHATOBSOLETES,
