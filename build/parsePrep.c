@@ -70,11 +70,7 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 	}
     }
     if (sp == NULL) {
-	if (c != INT_MAX) {
-	    rpmlog(RPMLOG_ERR, _("No patch number %u\n"), c);
-	} else {
-	    rpmlog(RPMLOG_ERR, _("%%patch without corresponding \"Patch:\" tag\n"));
-	}
+	rpmlog(RPMLOG_ERR, _("No patch number %u\n"), c);
 	goto exit;
     }
 
@@ -121,15 +117,9 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
     free(arg_backup);
     free(args);
 
-    if (c != INT_MAX) {
-	rasprintf(&buf, "echo \"Patch #%u (%s):\"\n"
+    rasprintf(&buf, "echo \"Patch #%u (%s):\"\n"
 			"%s\n", 
 			c, basename(fn), patchcmd);
-    } else {
-	rasprintf(&buf, "echo \"Patch (%s):\"\n"
-			"%s\n", 
-			basename(fn), patchcmd);
-    }
     free(patchcmd);
 
 exit:
@@ -463,10 +453,11 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
     if (! strchr(" \t\n", line[6])) {
 	rasprintf(&buf, "%%patch -P %s", line + 6);
     } else {
+	/* %patch without a number refers to patch 0 */
 	if (strstr(line+6, " -P") == NULL)
-	    rasprintf(&buf, "%%patch -P %d %s", INT_MAX, line + 6); /* INT_MAX denotes not numbered %patch */
+	    rasprintf(&buf, "%%patch -P %d %s", 0, line + 6);
 	else
-	    buf = xstrdup(line); /* it is not numberless patch because -P is present */
+	    buf = xstrdup(line);
     }
     poptParseArgvString(buf, &argc, &argv);
     free(buf);
