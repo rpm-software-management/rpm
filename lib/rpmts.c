@@ -782,6 +782,24 @@ rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags)
     return ovsflags;
 }
 
+int rpmtsVSLevel(rpmts ts)
+{
+    int vslevel = 0;
+    if (ts != NULL)
+	vslevel = ts->vslevel;
+    return vslevel;
+}
+
+int rpmtsSetVSLevel(rpmts ts, int vslevel)
+{
+    int ovslevel = 0;
+    if (ts != NULL) {
+	ovslevel = ts->vslevel;
+	ts->vslevel = vslevel;
+    }
+    return ovslevel;
+}
+
 const char * rpmtsRootDir(rpmts ts)
 {
     return ts ? ts->rootDir : NULL;
@@ -992,6 +1010,26 @@ rpmstrPool rpmtsPool(rpmts ts)
     return tspool;
 }
 
+static int vslevel_init(void)
+{
+    int vslevel = -1;
+    char *val = rpmExpand("%{?_pkgverify_level}", NULL);
+
+    if (rstreq(val, "all"))
+	vslevel = RPMSIG_SIGNATURE_TYPE|RPMSIG_DIGEST_TYPE;
+    else if (rstreq(val, "signature"))
+	vslevel = RPMSIG_SIGNATURE_TYPE;
+    else if (rstreq(val, "digest"))
+	vslevel = RPMSIG_DIGEST_TYPE;
+    else if (rstreq(val, "none"))
+	vslevel = 0;
+    else if (!rstreq(val, ""))
+	rpmlog(RPMLOG_WARNING, _("invalid package verify level %s\n"), val);
+
+    free(val);
+    return vslevel;
+}
+
 rpmts rpmtsCreate(void)
 {
     rpmts ts;
@@ -1051,6 +1089,7 @@ rpmts rpmtsCreate(void)
 
     ts->rootDir = NULL;
     ts->keyring = NULL;
+    ts->vslevel = vslevel_init();
 
     ts->nrefs = 0;
 
