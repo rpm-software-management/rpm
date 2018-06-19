@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 {
     int ec = EXIT_FAILURE;
     poptContext optCon = NULL;
-    rpmts ts = rpmtsCreate();
+    rpmts ts = NULL;
     ARGV_const_t args = NULL;
 
     xsetprogname(argv[0]); /* Portability call -- see system.h */
@@ -63,6 +63,7 @@ int main(int argc, char *argv[])
     if (mode != MODE_LISTKEY && args == NULL)
 	argerror(_("no arguments given"));
 
+    ts = rpmtsCreate();
     rpmtsSetRootDir(ts, rpmcliRootDir);
 
     switch (mode) {
