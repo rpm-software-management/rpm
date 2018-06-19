@@ -16,6 +16,7 @@ struct rpmvs_s {
     rpmVSFlags vsflags;
     rpmDigestBundle bundle;
     rpmKeyring keyring;
+    int vfylevel;
 };
 
 struct vfytag_s {
@@ -354,11 +355,12 @@ void rpmvsAppendTag(struct rpmvs_s *vs, hdrblob blob, rpmTagVal tag)
     }
 }
 
-struct rpmvs_s *rpmvsCreate(rpmVSFlags vsflags, rpmKeyring keyring)
+struct rpmvs_s *rpmvsCreate(int vfylevel, rpmVSFlags vsflags, rpmKeyring keyring)
 {
     struct rpmvs_s *sis = xcalloc(1, sizeof(*sis));
     sis->vsflags = vsflags;
     sis->keyring = rpmKeyringLink(keyring);
+    sis->vfylevel = vfylevel;
 
     return sis;
 }
@@ -439,14 +441,13 @@ static int sinfoCmp(const void *a, const void *b)
     return rc;
 }
 
-int rpmvsVerify(struct rpmvs_s *sis, int type, int usesys,
+int rpmvsVerify(struct rpmvs_s *sis, int type,
 		       rpmsinfoCb cb, void *cbdata)
 {
     int failed = 0;
     int cont = 1;
     int range = 0;
     int verified[3] = { 0, 0, 0 };
-    int vfylevel = usesys ? rpmvsVfyLevel() : 0;
 
     /* sort for consistency and rough "better comes first" semantics*/
     qsort(sis->sigs, sis->nsigs, sizeof(*sis->sigs), sinfoCmp);
@@ -477,11 +478,11 @@ int rpmvsVerify(struct rpmvs_s *sis, int type, int usesys,
 	int strength = (sinfo->type | sinfo->strength);
 	int required = 0;
 
-	if (vfylevel & strength & RPMSIG_DIGEST_TYPE) {
+	if (sis->vfylevel & strength & RPMSIG_DIGEST_TYPE) {
 	    int missing = (range & ~verified[RPMSIG_DIGEST_TYPE]);
 	    required |= (missing & sinfo->range);
 	}
-	if (vfylevel & strength & RPMSIG_SIGNATURE_TYPE) {
+	if (sis->vfylevel & strength & RPMSIG_SIGNATURE_TYPE) {
 	    int missing = (range & ~verified[RPMSIG_SIGNATURE_TYPE]);
 	    required |= (missing & sinfo->range);
 	}

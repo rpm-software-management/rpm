@@ -64,7 +64,7 @@ RPM_GNUC_INTERNAL
 char *rpmsinfoMsg(struct rpmsinfo_s *sinfo);
 
 RPM_GNUC_INTERNAL
-struct rpmvs_s *rpmvsCreate(rpmVSFlags vsflags, rpmKeyring keyring);
+struct rpmvs_s *rpmvsCreate(int vfylevel, rpmVSFlags vsflags, rpmKeyring keyring);
 
 RPM_GNUC_INTERNAL
 void rpmvsInit(struct rpmvs_s *vs, hdrblob blob, rpmDigestBundle bundle);
@@ -85,7 +85,7 @@ RPM_GNUC_INTERNAL
 void rpmvsFiniRange(struct rpmvs_s *sis, int range);
 
 RPM_GNUC_INTERNAL
-int rpmvsVerify(struct rpmvs_s *sis, int type, int usesys,
+int rpmvsVerify(struct rpmvs_s *sis, int type,
                        rpmsinfoCb cb, void *cbdata);
 
 RPM_GNUC_INTERNAL
