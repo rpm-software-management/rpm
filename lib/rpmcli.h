@@ -150,6 +150,8 @@ extern rpmQueryFlags rpmcliQueryFlags;
 
 extern rpmVSFlags rpmcliVSFlags;
 
+extern int rpmcliVSLevelMask;
+
 /** \ingroup rpmcli
  */
 typedef struct rpmQVKArguments_s * QVA_t;

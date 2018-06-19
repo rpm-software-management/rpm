@@ -426,6 +426,12 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 
     if (fileArgv == NULL) goto exit;
 
+    if (rpmcliVSLevelMask) {
+	int vslevel = rpmtsVSLevel(ts);
+	vslevel &= ~rpmcliVSLevelMask;
+	rpmtsSetVSLevel(ts, vslevel);
+    }
+
     (void) rpmtsSetFlags(ts, ia->transFlags);
 
     relocations = ia->relocations;

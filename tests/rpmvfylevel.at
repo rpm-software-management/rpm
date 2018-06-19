@@ -36,14 +36,14 @@ LEVEL digest
 /data/RPMS/hello-2.0-1.x86_64.rpm: digests OK
 0
 --nodigest
-/data/RPMS/hello-2.0-1.x86_64.rpm: DIGESTS NOT OK
-1
+/data/RPMS/hello-2.0-1.x86_64.rpm: OK
+0
 --nosignature
 /data/RPMS/hello-2.0-1.x86_64.rpm: digests OK
 0
 --nodigest --nosignature
-/data/RPMS/hello-2.0-1.x86_64.rpm: DIGESTS NOT OK
-1
+/data/RPMS/hello-2.0-1.x86_64.rpm: OK
+0
 LEVEL signature
 
 /data/RPMS/hello-2.0-1.x86_64.rpm: digests SIGNATURES NOT OK
@@ -52,24 +52,24 @@ LEVEL signature
 /data/RPMS/hello-2.0-1.x86_64.rpm: SIGNATURES NOT OK
 1
 --nosignature
-/data/RPMS/hello-2.0-1.x86_64.rpm: digests SIGNATURES NOT OK
-1
+/data/RPMS/hello-2.0-1.x86_64.rpm: digests OK
+0
 --nodigest --nosignature
-/data/RPMS/hello-2.0-1.x86_64.rpm: SIGNATURES NOT OK
-1
+/data/RPMS/hello-2.0-1.x86_64.rpm: OK
+0
 LEVEL all
 
 /data/RPMS/hello-2.0-1.x86_64.rpm: digests SIGNATURES NOT OK
 1
 --nodigest
-/data/RPMS/hello-2.0-1.x86_64.rpm: DIGESTS SIGNATURES NOT OK
+/data/RPMS/hello-2.0-1.x86_64.rpm: SIGNATURES NOT OK
 1
 --nosignature
-/data/RPMS/hello-2.0-1.x86_64.rpm: digests SIGNATURES NOT OK
-1
+/data/RPMS/hello-2.0-1.x86_64.rpm: digests OK
+0
 --nodigest --nosignature
-/data/RPMS/hello-2.0-1.x86_64.rpm: DIGESTS SIGNATURES NOT OK
-1
+/data/RPMS/hello-2.0-1.x86_64.rpm: OK
+0
 ],
 [])
 AT_CLEANUP
@@ -183,14 +183,14 @@ LEVEL digest
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests SIGNATURES NOT OK
 1
 --nodigest
-/data/RPMS/hello-2.0-1.x86_64-signed.rpm: DIGESTS SIGNATURES NOT OK
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: SIGNATURES NOT OK
 1
 --nosignature
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests OK
 0
 --nodigest --nosignature
-/data/RPMS/hello-2.0-1.x86_64-signed.rpm: DIGESTS NOT OK
-1
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: OK
+0
 LEVEL signature
 
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests SIGNATURES NOT OK
@@ -199,24 +199,24 @@ LEVEL signature
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm: SIGNATURES NOT OK
 1
 --nosignature
-/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests SIGNATURES NOT OK
-1
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests OK
+0
 --nodigest --nosignature
-/data/RPMS/hello-2.0-1.x86_64-signed.rpm: SIGNATURES NOT OK
-1
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: OK
+0
 LEVEL all
 
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests SIGNATURES NOT OK
 1
 --nodigest
-/data/RPMS/hello-2.0-1.x86_64-signed.rpm: DIGESTS SIGNATURES NOT OK
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: SIGNATURES NOT OK
 1
 --nosignature
-/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests SIGNATURES NOT OK
-1
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests OK
+0
 --nodigest --nosignature
-/data/RPMS/hello-2.0-1.x86_64-signed.rpm: DIGESTS SIGNATURES NOT OK
-1
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: OK
+0
 ],
 [])
 AT_CLEANUP
@@ -258,14 +258,14 @@ LEVEL digest
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests signatures OK
 0
 --nodigest
-/data/RPMS/hello-2.0-1.x86_64-signed.rpm: DIGESTS signatures NOT OK
-1
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: signatures OK
+0
 --nosignature
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests OK
 0
 --nodigest --nosignature
-/data/RPMS/hello-2.0-1.x86_64-signed.rpm: DIGESTS NOT OK
-1
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: OK
+0
 LEVEL signature
 
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests signatures OK
@@ -274,24 +274,24 @@ LEVEL signature
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm: signatures OK
 0
 --nosignature
-/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests SIGNATURES NOT OK
-1
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests OK
+0
 --nodigest --nosignature
-/data/RPMS/hello-2.0-1.x86_64-signed.rpm: SIGNATURES NOT OK
-1
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: OK
+0
 LEVEL all
 
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests signatures OK
 0
 --nodigest
-/data/RPMS/hello-2.0-1.x86_64-signed.rpm: DIGESTS signatures NOT OK
-1
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: signatures OK
+0
 --nosignature
-/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests SIGNATURES NOT OK
-1
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests OK
+0
 --nodigest --nosignature
-/data/RPMS/hello-2.0-1.x86_64-signed.rpm: DIGESTS SIGNATURES NOT OK
-1
+/data/RPMS/hello-2.0-1.x86_64-signed.rpm: OK
+0
 ],
 [])
 AT_CLEANUP
