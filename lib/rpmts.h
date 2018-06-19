@@ -138,6 +138,15 @@ typedef rpmFlags rpmVSFlags;
     RPMVSF_NORSA )
 #define	_RPMVSF_NOPAYLOAD	RPMVSF_MASK_NOPAYLOAD
 
+enum {
+    RPMSIG_NONE_TYPE		= 0,
+    RPMSIG_DIGEST_TYPE		= (1 << 0),
+    RPMSIG_SIGNATURE_TYPE	= (1 << 1),
+    RPMSIG_OTHER_TYPE		= (1 << 2),
+};
+
+#define RPMSIG_VERIFIABLE_TYPE (RPMSIG_DIGEST_TYPE|RPMSIG_SIGNATURE_TYPE)
+
 /** \ingroup rpmts
  * Indices for timestamps.
  */
@@ -383,6 +392,10 @@ rpmVSFlags rpmtsVSFlags(rpmts ts);
  * @return		previous value
  */
 rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags);
+
+int rpmtsVSLevel(rpmts ts);
+
+int rpmtsSetVSLevel(rpmts ts, int vslevel);
 
 /** \ingroup rpmts
  * Get transaction rootDir, i.e. path to chroot(2).

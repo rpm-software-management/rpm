@@ -16,7 +16,7 @@ struct rpmvs_s {
     rpmVSFlags vsflags;
     rpmDigestBundle bundle;
     rpmKeyring keyring;
-    int vfylevel;
+    int vslevel;
 };
 
 struct vfytag_s {
@@ -95,33 +95,6 @@ static const struct vfyinfo_s rpmvfyitems[] = {
 static const char *rangeName(int range);
 static const char * rpmSigString(rpmRC res);
 static void rpmVerifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo);
-
-static int vfylevel_sys = 0;
-
-static void vfylevel_init(void)
-{
-    char *val = rpmExpand("%{?_pkgverify_level}", NULL);
-
-    if (rstreq(val, "all"))
-	vfylevel_sys = RPMSIG_SIGNATURE_TYPE|RPMSIG_DIGEST_TYPE;
-    else if (rstreq(val, "signature"))
-	vfylevel_sys = RPMSIG_SIGNATURE_TYPE;
-    else if (rstreq(val, "digest"))
-	vfylevel_sys = RPMSIG_DIGEST_TYPE;
-    else if (rstreq(val, "none"))
-	vfylevel_sys = 0;
-    else if (!rstreq(val, ""))
-	rpmlog(RPMLOG_WARNING, _("invalid package verify level %s\n"), val);
-
-    free(val);
-}
-
-int rpmvsVfyLevel(void)
-{
-    static pthread_once_t vfylevel_done = PTHREAD_ONCE_INIT;
-    pthread_once(&vfylevel_done, vfylevel_init);
-    return vfylevel_sys;
-}
 
 static int sinfoLookup(rpmTagVal tag)
 {
@@ -355,12 +328,12 @@ void rpmvsAppendTag(struct rpmvs_s *vs, hdrblob blob, rpmTagVal tag)
     }
 }
 
-struct rpmvs_s *rpmvsCreate(int vfylevel, rpmVSFlags vsflags, rpmKeyring keyring)
+struct rpmvs_s *rpmvsCreate(int vslevel, rpmVSFlags vsflags, rpmKeyring keyring)
 {
     struct rpmvs_s *sis = xcalloc(1, sizeof(*sis));
     sis->vsflags = vsflags;
     sis->keyring = rpmKeyringLink(keyring);
-    sis->vfylevel = vfylevel;
+    sis->vslevel = vslevel;
 
     return sis;
 }
@@ -478,11 +451,11 @@ int rpmvsVerify(struct rpmvs_s *sis, int type,
 	int strength = (sinfo->type | sinfo->strength);
 	int required = 0;
 
-	if (sis->vfylevel & strength & RPMSIG_DIGEST_TYPE) {
+	if (sis->vslevel & strength & RPMSIG_DIGEST_TYPE) {
 	    int missing = (range & ~verified[RPMSIG_DIGEST_TYPE]);
 	    required |= (missing & sinfo->range);
 	}
-	if (sis->vfylevel & strength & RPMSIG_SIGNATURE_TYPE) {
+	if (sis->vslevel & strength & RPMSIG_SIGNATURE_TYPE) {
 	    int missing = (range & ~verified[RPMSIG_SIGNATURE_TYPE]);
 	    required |= (missing & sinfo->range);
 	}
