@@ -1218,7 +1218,7 @@ static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_ADDED))) {
-	struct rpmvs_s *vs = rpmvsCreate(vsflags, keyring);
+	struct rpmvs_s *vs = rpmvsCreate(rpmvsVfyLevel(), vsflags, keyring);
 	struct vfydata_s vd = {
 	    .msg = NULL,
 	};
@@ -1232,7 +1232,7 @@ static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
 	}
 
 	if (prc == RPMRC_OK)
-	    prc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, 1, vfyCb, &vd);
+	    prc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, vfyCb, &vd);
 
 	if (prc)
 	    rpmteAddProblem(p, RPMPROB_VERIFY, NULL, vd.msg, 0);
