@@ -283,6 +283,10 @@ int rpmcliVerifySignatures(rpmts ts, ARGV_const_t argv)
     int vslevel = rpmtsVSLevel(ts);
 
     vsflags |= rpmcliVSFlags;
+    if (rpmcliVSLevelMask) {
+	vslevel &= ~rpmcliVSLevelMask;
+	rpmtsSetVSLevel(ts, vslevel);
+    }
 
     while ((arg = *argv++) != NULL) {
 	FD_t fd = Fopen(arg, "r.ufdio");

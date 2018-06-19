@@ -273,12 +273,8 @@ runroot rpmkeys -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed.rpm; echo
 0
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
-    Header SHA256 digest: NOTFOUND
-    Header SHA1 digest: NOTFOUND
-    Payload SHA256 digest: NOTFOUND
     V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
-    MD5 digest: NOTFOUND
-1
+0
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
     Header SHA256 digest: OK
     Header SHA1 digest: OK

@@ -130,7 +130,9 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 	--define "_pkgverify_level digest" \
 	/tmp/${pkg} 2>&1
 echo "INSTALL 3"
-runroot rpm -U --ignorearch --ignoreos --nodeps --nodigest \
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	--define "_vsflags_pkgverify 0x30300" \
+	--define "__vsflags 0x30300" \
 	--define "_pkgverify_level digest" \
 	/tmp/${pkg} 2>&1
 echo "INSTALL 4"
@@ -175,7 +177,8 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 	--define "_pkgverify_level digest" \
 	/tmp/${pkg} 2>&1
 echo "INSTALL 3"
-runroot rpm -U --ignorearch --ignoreos --nodeps --nodigest \
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	--define "_vsflags_pkgverify 0x30300" \
 	--define "_pkgverify_level digest" \
 	/tmp/${pkg} 2>&1
 echo "INSTALL 4"
@@ -332,7 +335,9 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 	/tmp/${pkg} 2>&1
 
 echo "INSTALL 4"
-runroot rpm -U --ignorearch --ignoreos --nodeps --nosignature \
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	--define "_vsflags_pkgverify 0xc0c00" \
+	--define "__vsflags 0xc0c00" \
 	--define "_pkgverify_level signature" \
 	/tmp/${pkg} 2>&1
 
