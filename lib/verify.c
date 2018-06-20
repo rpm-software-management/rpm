@@ -99,7 +99,7 @@ rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
 	/* ...if it actually points to a directory  */
 	if (stat(fn, &dsb) == 0 && S_ISDIR(dsb.st_mode)) {
 	    /* ...and is by a legit user, to match fsmVerify() behavior */
-	    if (sb.st_uid == 0 || sb.st_uid == fsb.st_uid)
+	    if (sb.st_uid == 0 || sb.st_uid == dsb.st_uid)
 		sb = dsb; /* struct assignment */
 	}
     }
