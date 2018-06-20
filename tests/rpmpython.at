@@ -126,6 +126,17 @@ for h in [h1, h2]:
 /opt/bing,/opt/bang,/flopt/bong]
 )
 
+RPMPY_TEST([vslevel API],[
+ts = rpm.ts()
+dlv = ts.getVSLevel()
+olv = ts.setVSLevel(rpm.RPMSIG_SIGNATURE_TYPE|rpm.RPMSIG_DIGEST_TYPE)
+nlv = ts.getVSLevel()
+myprint('%s %s %s' % (hex(dlv), hex(olv), hex(nlv)))
+],
+[0x1 0x1 0x3]
+)
+
+
 RPMPY_TEST([reading a package file],[
 ts = rpm.ts()
 h = ts.hdrFromFdno('${RPMDATA}/RPMS/hello-1.0-1.ppc64.rpm')

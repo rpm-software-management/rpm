@@ -25,6 +25,12 @@ class TransactionSet(TransactionSetCore):
     def getVSFlags(self):
         return self._vsflags
 
+    def getVSLevel(self):
+        return self._vslevel
+
+    def setVSLevel(self, flags):
+        return self._wrapSetGet('_vslevel', flags)
+
     def setColor(self, color):
         return self._wrapSetGet('_color', color)
 

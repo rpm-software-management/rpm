@@ -916,6 +916,14 @@ static int rpmts_set_vsflags(rpmtsObject *s, PyObject *value, void *closure)
     return 0;
 }
 
+static int rpmts_set_vslevel(rpmtsObject *s, PyObject *value, void *closure)
+{
+    int vslevel;
+    if (!PyArg_Parse(value, "i", &vslevel)) return -1;
+    rpmtsSetVSLevel(s->ts, vslevel);
+    return 0;
+}
+
 static PyObject *rpmts_get_flags(rpmtsObject *s, void *closure)
 {
     return Py_BuildValue("i", rpmtsFlags(s->ts));
@@ -924,6 +932,11 @@ static PyObject *rpmts_get_flags(rpmtsObject *s, void *closure)
 static PyObject *rpmts_get_vsflags(rpmtsObject *s, void *closure)
 {
     return Py_BuildValue("i", rpmtsVSFlags(s->ts));
+}
+
+static PyObject *rpmts_get_vslevel(rpmtsObject *s, void *closure)
+{
+    return Py_BuildValue("i", rpmtsVSLevel(s->ts));
 }
 
 static char rpmts_doc[] =
@@ -963,6 +976,7 @@ static PyGetSetDef rpmts_getseters[] = {
 	{"_prefcolor",	(getter)rpmts_get_prefcolor, (setter)rpmts_set_prefcolor, NULL},
 	{"_flags",	(getter)rpmts_get_flags, (setter)rpmts_set_flags, NULL},
 	{"_vsflags",	(getter)rpmts_get_vsflags, (setter)rpmts_set_vsflags, NULL},
+	{"_vslevel",	(getter)rpmts_get_vslevel, (setter)rpmts_set_vslevel, NULL},
 	{ NULL }
 };
 
