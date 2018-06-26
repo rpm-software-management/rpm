@@ -172,12 +172,6 @@ static const EVP_MD *getEVPMD(int hashalgo)
     case PGPHASHALGO_SHA1:
         return EVP_sha1();
 
-    case PGPHASHALGO_RIPEMD160:
-        return EVP_ripemd160();
-
-    case PGPHASHALGO_MD2:
-        return EVP_md2();
-
     case PGPHASHALGO_SHA256:
         return EVP_sha256();
 

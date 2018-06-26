@@ -116,7 +116,6 @@ static HASH_HashType getHashType(int hashalgo)
 {
     switch (hashalgo) {
     case PGPHASHALGO_MD5:	return HASH_AlgMD5;
-    case PGPHASHALGO_MD2:	return HASH_AlgMD2;
     case PGPHASHALGO_SHA1:	return HASH_AlgSHA1;
 #ifdef SHA224_LENGTH
     case PGPHASHALGO_SHA224:	return HASH_AlgSHA224;
@@ -216,7 +215,6 @@ static SECOidTag getHashAlg(unsigned int hashalgo)
 {
     switch (hashalgo) {
     case PGPHASHALGO_MD5:	return SEC_OID_MD5;
-    case PGPHASHALGO_MD2:	return SEC_OID_MD2;
     case PGPHASHALGO_SHA1:	return SEC_OID_SHA1;
 #ifdef SHA224_LENGTH
     case PGPHASHALGO_SHA224:	return SEC_OID_SHA224;
