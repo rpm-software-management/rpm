@@ -343,6 +343,10 @@ AC_CHECK_LIB(crypto, EVP_DigestInit_ex, [], [
   AC_MSG_ERROR([required OpenSSL library 'libcrypto' missing or too old])
 ])
 
+AC_CHECK_LIB(crypto, EVP_md2, [], [
+  AC_MSG_ERROR([required OpenSSL library 'libcrypto' wasn't compiled with MD2 support])
+])
+
 AC_CHECK_LIB(crypto, EVP_MD_CTX_new, [
     AC_DEFINE(HAVE_EVP_MD_CTX_NEW, 1, [Define to 1 if OpenSSL has EVP_MD_CTX_new])
     AC_SUBST(HAVE_EVP_MD_CTX_NEW, [1])
