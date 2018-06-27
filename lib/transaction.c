@@ -16,7 +16,6 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmsq.h>
 #include <rpm/rpmkeyring.h>
-#include <rpm/rpmcli.h>		/* XXX for rpmcliVSFlags, shouldn't be here */
 
 #include "lib/fprint.h"
 #include "lib/misc.h"
@@ -1234,9 +1233,6 @@ static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
     rpm_loff_t oc = 0;
     rpmVSFlags vsflags = rpmtsVfyFlags(ts);
     int vfylevel = rpmtsVfyLevel(ts);
-
-    /* XXX doesn't belong here */
-    vsflags |= rpmcliVSFlags;
 
     rpmtsNotify(ts, NULL, RPMCALLBACK_VERIFY_START, 0, total);
 
