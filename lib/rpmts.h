@@ -393,12 +393,34 @@ rpmVSFlags rpmtsVSFlags(rpmts ts);
  */
 rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags);
 
+/** \ingroup rpmts
+ * Get package verify flag(s).
+ * @param ts		transaction set
+ * @return		verify signatures flags
+ */
 rpmVSFlags rpmtsVfyFlags(rpmts ts);
 
+/** \ingroup rpmts
+ * Set package verify flag(s).
+ * @param ts		transaction set
+ * @param vfyflags	new package verify flags
+ * @return		old package verify flags
+ */
 rpmVSFlags rpmtsSetVfyFlags(rpmts ts, rpmVSFlags vfyflags);
 
+/** \ingroup rpmts
+ * Get enforced package verify level
+ * @param ts		transaction set
+ * @return		package verify level
+ */
 int rpmtsVfyLevel(rpmts ts);
 
+/** \ingroup rpmts
+ * Set enforced package verify level
+ * @param ts		transaction set
+ * @param vfylevel	new package verify level
+ * @return		old package verify level
+ */
 int rpmtsSetVfyLevel(rpmts ts, int vfylevel);
 
 /** \ingroup rpmts
