@@ -97,7 +97,7 @@ AT_CLEANUP
 
 AT_SETUP([directory replaced with an invalid directory symlink])
 AT_KEYWORDS([verify])
-AT_XFAIL_IF([test `id -u` = 0 ])
+AT_XFAIL_IF([test `id -u` != 0 ])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
@@ -114,6 +114,7 @@ runroot rpmbuild --quiet -bb \
 runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 mv "${RPMTEST}"/opt/foo "${RPMTEST}"/opt/was
 ln -s was "${RPMTEST}"/opt/foo
+chown -h bin "${RPMTEST}"/opt/foo
 runroot rpm -Vv --nouser --nogroup replacetest
 ],
 [1],
