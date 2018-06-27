@@ -1174,7 +1174,7 @@ static rpm_loff_t countPkgs(rpmts ts, rpmElementTypes types)
 
 struct vfydata_s {
     char *msg;
-    int vslevel;
+    int vfylevel;
 };
 
 static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
@@ -1192,7 +1192,7 @@ static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
 	 * Legacy compat: if signatures are not required, install must
 	 * succeed despite missing key.
 	 */
-	if (!(vd->vslevel & RPMSIG_SIGNATURE_TYPE))
+	if (!(vd->vfylevel & RPMSIG_SIGNATURE_TYPE))
 	    sinfo->rc = RPMRC_OK;
     default:
 	vd->msg = rpmsinfoMsg(sinfo);
@@ -1209,7 +1209,7 @@ static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
     rpmte p;
     rpm_loff_t oc = 0;
     rpmVSFlags vsflags = rpmExpandNumeric("%{?_vsflags_pkgverify}");
-    int vslevel = rpmtsVSLevel(ts);
+    int vfylevel = rpmtsVfyLevel(ts);
 
     /* XXX doesn't belong here */
     vsflags |= rpmcliVSFlags;
@@ -1220,10 +1220,10 @@ static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_ADDED))) {
-	struct rpmvs_s *vs = rpmvsCreate(vslevel, vsflags, keyring);
+	struct rpmvs_s *vs = rpmvsCreate(vfylevel, vsflags, keyring);
 	struct vfydata_s vd = {
 	    .msg = NULL,
-	    .vslevel = vslevel,
+	    .vfylevel = vfylevel,
 	};
 	rpmRC prc = RPMRC_FAIL;
 
@@ -1313,7 +1313,7 @@ static rpmps checkProblems(rpmts ts)
     }
     rpmtsiFree(pi);
 
-    if (rpmtsVSLevel(ts) && !(probFilter & RPMPROB_FILTER_VERIFY))
+    if (rpmtsVfyLevel(ts) && !(probFilter & RPMPROB_FILTER_VERIFY))
 	verifyPackageFiles(ts, npkgs);
 
 exit:

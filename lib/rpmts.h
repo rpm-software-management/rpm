@@ -393,9 +393,9 @@ rpmVSFlags rpmtsVSFlags(rpmts ts);
  */
 rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags);
 
-int rpmtsVSLevel(rpmts ts);
+int rpmtsVfyLevel(rpmts ts);
 
-int rpmtsSetVSLevel(rpmts ts, int vslevel);
+int rpmtsSetVfyLevel(rpmts ts, int vfylevel);
 
 /** \ingroup rpmts
  * Get transaction rootDir, i.e. path to chroot(2).
