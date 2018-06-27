@@ -393,6 +393,10 @@ rpmVSFlags rpmtsVSFlags(rpmts ts);
  */
 rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags);
 
+rpmVSFlags rpmtsVfyFlags(rpmts ts);
+
+rpmVSFlags rpmtsSetVfyFlags(rpmts ts, rpmVSFlags vfyflags);
+
 int rpmtsVfyLevel(rpmts ts);
 
 int rpmtsSetVfyLevel(rpmts ts, int vfylevel);

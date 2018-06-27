@@ -809,6 +809,24 @@ rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags)
     return ovsflags;
 }
 
+rpmVSFlags rpmtsVfyFlags(rpmts ts)
+{
+    rpmVSFlags vfyflags = 0;
+    if (ts != NULL)
+	vfyflags = ts->vfyflags;
+    return vfyflags;
+}
+
+rpmVSFlags rpmtsSetVfyFlags(rpmts ts, rpmVSFlags vfyflags)
+{
+    rpmVSFlags ovfyflags = 0;
+    if (ts != NULL) {
+	ovfyflags = ts->vfyflags;
+	ts->vfyflags = vfyflags;
+    }
+    return ovfyflags;
+}
+
 int rpmtsVfyLevel(rpmts ts)
 {
     int vfylevel = 0;
@@ -1116,6 +1134,7 @@ rpmts rpmtsCreate(void)
 
     ts->rootDir = NULL;
     ts->keyring = NULL;
+    ts->vfyflags = rpmExpandNumeric("%{?_pkgverify_flags}");
     ts->vfylevel = vfylevel_init();
 
     ts->nrefs = 0;

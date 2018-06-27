@@ -741,7 +741,6 @@ package or when debugging this package.\
 %_vsflags_query		%{__vsflags}
 %_vsflags_rebuilddb	0xc0c00
 %_vsflags_verify	%{__vsflags}
-%_vsflags_pkgverify	0x0
 
 # Enforced package verification level
 # all		require valid digest(s) and signature(s)
@@ -749,6 +748,9 @@ package or when debugging this package.\
 # digest	require valid digest(s)
 # none		traditional rpm behavior, nothing required
 %_pkgverify_level digest
+
+# Disabler flags for package verification (similar to vsflags)
+%_pkgverify_flags 0x0
 
 # Set to 1 to minimize writing (at the cost of more reads) to
 # conserve eg SSD disks.
