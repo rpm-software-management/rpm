@@ -916,6 +916,16 @@ static int rpmts_set_vsflags(rpmtsObject *s, PyObject *value, void *closure)
     return 0;
 }
 
+static int rpmts_set_vfyflags(rpmtsObject *s, PyObject *value, void *closure)
+{
+    rpmVSFlags flags;
+    if (!PyArg_Parse(value, "i", &flags)) return -1;
+
+    /* TODO: validate the bits */
+    rpmtsSetVfyFlags(s->ts, flags);
+    return 0;
+}
+
 static int rpmts_set_vfylevel(rpmtsObject *s, PyObject *value, void *closure)
 {
     int vfylevel;
@@ -932,6 +942,11 @@ static PyObject *rpmts_get_flags(rpmtsObject *s, void *closure)
 static PyObject *rpmts_get_vsflags(rpmtsObject *s, void *closure)
 {
     return Py_BuildValue("i", rpmtsVSFlags(s->ts));
+}
+
+static PyObject *rpmts_get_vfyflags(rpmtsObject *s, void *closure)
+{
+    return Py_BuildValue("i", rpmtsVfyFlags(s->ts));
 }
 
 static PyObject *rpmts_get_vfylevel(rpmtsObject *s, void *closure)
@@ -976,6 +991,7 @@ static PyGetSetDef rpmts_getseters[] = {
 	{"_prefcolor",	(getter)rpmts_get_prefcolor, (setter)rpmts_set_prefcolor, NULL},
 	{"_flags",	(getter)rpmts_get_flags, (setter)rpmts_set_flags, NULL},
 	{"_vsflags",	(getter)rpmts_get_vsflags, (setter)rpmts_set_vsflags, NULL},
+	{"_vfyflags",	(getter)rpmts_get_vfyflags, (setter)rpmts_set_vfyflags, NULL},
 	{"_vfylevel",	(getter)rpmts_get_vfylevel, (setter)rpmts_set_vfylevel, NULL},
 	{ NULL }
 };

@@ -25,6 +25,12 @@ class TransactionSet(TransactionSetCore):
     def getVSFlags(self):
         return self._vsflags
 
+    def setVfyFlags(self, flags):
+        return self._wrapSetGet('_vfyflags', flags)
+
+    def getVfyFlags(self):
+        return self._vfyflags
+
     def getVfyLevel(self):
         return self._vfylevel
 

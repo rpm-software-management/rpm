@@ -1208,7 +1208,7 @@ static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
     rpmtsi pi = NULL;
     rpmte p;
     rpm_loff_t oc = 0;
-    rpmVSFlags vsflags = rpmExpandNumeric("%{?_vsflags_pkgverify}");
+    rpmVSFlags vsflags = rpmtsVfyFlags(ts);
     int vfylevel = rpmtsVfyLevel(ts);
 
     /* XXX doesn't belong here */

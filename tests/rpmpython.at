@@ -126,6 +126,17 @@ for h in [h1, h2]:
 /opt/bing,/opt/bang,/flopt/bong]
 )
 
+RPMPY_TEST([vfyflags API],[
+ts = rpm.ts()
+dlv = ts.getVfyFlags()
+tlv = dlv | rpm.RPMVSF_NOSHA1HEADER
+olv = ts.setVfyFlags(tlv)
+nlv = ts.getVfyFlags()
+myprint('%s %s %s' % (hex(dlv), hex(olv), hex(nlv)))
+],
+[0x0 0x0 0x100]
+)
+
 RPMPY_TEST([vfylevel API],[
 ts = rpm.ts()
 dlv = ts.getVfyLevel()

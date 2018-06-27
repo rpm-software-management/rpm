@@ -95,7 +95,7 @@ for dis in nomd5 nopld nopl nosha1 nosha2 nosha nohdr; do
     echo ${dis}
     runroot rpmkeys -Kv \
 	--define "_pkgverify_level ${lvl}" \
-	--define "_vsflags_pkgverify ${vsf}" \
+	--define "_pkgverify_flags ${vsf}" \
 	/data/RPMS/hello-2.0-1.x86_64.rpm; echo $?
 done
 ],
@@ -319,7 +319,7 @@ for dis in nopls noplds nohdrs nosig; do
     echo ${dis}
     runroot rpmkeys -Kv \
 	--define "_pkgverify_level ${lvl}" \
-	--define "_vsflags_pkgverify ${vsf}" \
+	--define "_pkgverify_flags ${vsf}" \
 	/data/RPMS/hello-2.0-1.x86_64-signed.rpm; echo $?
 done
 ],

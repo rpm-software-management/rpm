@@ -71,6 +71,7 @@ struct rpmts_s {
     rpm_color_t prefcolor;	/*!< Preferred file color. */
 
     rpmVSFlags vsflags;		/*!< Signature/digest verification flags. */
+    rpmVSFlags vfyflags;	/*!< Package verification flags */
     int vfylevel;		/*!< Package verification level */
     rpmKeyring keyring;		/*!< Keyring in use. */
 

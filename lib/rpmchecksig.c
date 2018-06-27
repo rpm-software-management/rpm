@@ -279,7 +279,7 @@ int rpmcliVerifySignatures(rpmts ts, ARGV_const_t argv)
     const char * arg;
     int res = 0;
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
-    rpmVSFlags vsflags = rpmExpandNumeric("%{?_vsflags_pkgverify}");
+    rpmVSFlags vsflags = rpmtsVfyFlags(ts);
     int vfylevel = rpmtsVfyLevel(ts);
 
     if (rpmcliQueryFlags & QUERY_DIGEST)
