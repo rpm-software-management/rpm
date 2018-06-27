@@ -418,11 +418,14 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
     rpmRelocation * relocations;
     char * fileURL = NULL;
     rpmVSFlags vsflags, ovsflags;
+    rpmVSFlags ovfyflags;
     int rc;
     int i;
 
     vsflags = setvsFlags(ia);
     ovsflags = rpmtsSetVSFlags(ts, (vsflags | RPMVSF_NEEDPAYLOAD));
+    /* for rpm cli, --nosignature/--nodigest applies to both vs and vfyflags */
+    ovfyflags = rpmtsSetVfyFlags(ts, (rpmtsVfyFlags(ts) | rpmcliVSFlags));
 
     if (fileArgv == NULL) goto exit;
 
@@ -672,6 +675,7 @@ exit:
 
     rpmtsEmpty(ts);
     rpmtsSetVSFlags(ts, ovsflags);
+    rpmtsSetVfyFlags(ts, ovfyflags);
 
     return rc;
 }
