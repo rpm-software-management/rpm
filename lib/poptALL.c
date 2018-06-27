@@ -47,7 +47,7 @@ rpmQueryFlags rpmcliQueryFlags;
 
 rpmVSFlags rpmcliVSFlags;
 
-int rpmcliVSLevelMask;
+int rpmcliVfyLevelMask;
 
 extern int _rpmio_debug;
 
@@ -171,11 +171,11 @@ static void rpmcliAllArgCallback( poptContext con,
 	break;
     case RPMCLI_POPT_NODIGEST:
 	rpmcliVSFlags |= RPMVSF_MASK_NODIGESTS;
-	rpmcliVSLevelMask |= RPMSIG_DIGEST_TYPE;
+	rpmcliVfyLevelMask |= RPMSIG_DIGEST_TYPE;
 	break;
     case RPMCLI_POPT_NOSIGNATURE:
 	rpmcliVSFlags |= RPMVSF_MASK_NOSIGNATURES;
-	rpmcliVSLevelMask |= RPMSIG_SIGNATURE_TYPE;
+	rpmcliVfyLevelMask |= RPMSIG_SIGNATURE_TYPE;
 	break;
     case RPMCLI_POPT_NOHDRCHK:
 	rpmcliVSFlags |= RPMVSF_NOHDRCHK;

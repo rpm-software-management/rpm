@@ -55,7 +55,7 @@ RPM_GNUC_INTERNAL
 char *rpmsinfoMsg(struct rpmsinfo_s *sinfo);
 
 RPM_GNUC_INTERNAL
-struct rpmvs_s *rpmvsCreate(int vslevel, rpmVSFlags vsflags, rpmKeyring keyring);
+struct rpmvs_s *rpmvsCreate(int vfylevel, rpmVSFlags vsflags, rpmKeyring keyring);
 
 RPM_GNUC_INTERNAL
 void rpmvsInit(struct rpmvs_s *vs, hdrblob blob, rpmDigestBundle bundle);

@@ -221,7 +221,7 @@ exit:
     return rc;
 }
 
-static int rpmpkgVerifySigs(rpmKeyring keyring, int vslevel, rpmVSFlags flags,
+static int rpmpkgVerifySigs(rpmKeyring keyring, int vfylevel, rpmVSFlags flags,
 			   FD_t fd, const char *fn)
 {
     char *msg = NULL;
@@ -230,7 +230,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, int vslevel, rpmVSFlags flags,
 			    .verbose = rpmIsVerbose(),
     };
     int rc;
-    struct rpmvs_s *vs = rpmvsCreate(vslevel, flags, keyring);
+    struct rpmvs_s *vs = rpmvsCreate(vfylevel, flags, keyring);
 
     rpmlog(RPMLOG_NOTICE, "%s:%s", fn, vd.verbose ? "\n" : "");
 
@@ -267,8 +267,8 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd, const char * fn)
     int rc = 1; /* assume failure */
     if (ts && qva && fd && fn) {
 	rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
-	int vslevel = rpmtsVSLevel(ts);
-	rc = rpmpkgVerifySigs(keyring, vslevel, qva->qva_flags, fd, fn);
+	int vfylevel = rpmtsVfyLevel(ts);
+	rc = rpmpkgVerifySigs(keyring, vfylevel, qva->qva_flags, fd, fn);
     	rpmKeyringFree(keyring);
     }
     return rc;
@@ -280,12 +280,12 @@ int rpmcliVerifySignatures(rpmts ts, ARGV_const_t argv)
     int res = 0;
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
     rpmVSFlags vsflags = rpmExpandNumeric("%{?_vsflags_pkgverify}");
-    int vslevel = rpmtsVSLevel(ts);
+    int vfylevel = rpmtsVfyLevel(ts);
 
     vsflags |= rpmcliVSFlags;
-    if (rpmcliVSLevelMask) {
-	vslevel &= ~rpmcliVSLevelMask;
-	rpmtsSetVSLevel(ts, vslevel);
+    if (rpmcliVfyLevelMask) {
+	vfylevel &= ~rpmcliVfyLevelMask;
+	rpmtsSetVfyLevel(ts, vfylevel);
     }
 
     while ((arg = *argv++) != NULL) {
@@ -294,7 +294,7 @@ int rpmcliVerifySignatures(rpmts ts, ARGV_const_t argv)
 	    rpmlog(RPMLOG_ERR, _("%s: open failed: %s\n"), 
 		     arg, Fstrerror(fd));
 	    res++;
-	} else if (rpmpkgVerifySigs(keyring, vslevel, vsflags, fd, arg)) {
+	} else if (rpmpkgVerifySigs(keyring, vfylevel, vsflags, fd, arg)) {
 	    res++;
 	}
 

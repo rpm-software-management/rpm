@@ -420,10 +420,10 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 
     if (fileArgv == NULL) goto exit;
 
-    if (rpmcliVSLevelMask) {
-	int vslevel = rpmtsVSLevel(ts);
-	vslevel &= ~rpmcliVSLevelMask;
-	rpmtsSetVSLevel(ts, vslevel);
+    if (rpmcliVfyLevelMask) {
+	int vfylevel = rpmtsVfyLevel(ts);
+	vfylevel &= ~rpmcliVfyLevelMask;
+	rpmtsSetVfyLevel(ts, vfylevel);
     }
 
     (void) rpmtsSetFlags(ts, ia->transFlags);

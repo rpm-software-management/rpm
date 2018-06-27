@@ -132,7 +132,7 @@ extern rpmQueryFlags rpmcliQueryFlags;
 
 extern rpmVSFlags rpmcliVSFlags;
 
-extern int rpmcliVSLevelMask;
+extern int rpmcliVfyLevelMask;
 
 /** \ingroup rpmcli
  */
