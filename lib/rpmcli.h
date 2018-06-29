@@ -148,6 +148,8 @@ typedef rpmFlags rpmQueryFlags;
  */
 extern rpmQueryFlags rpmcliQueryFlags;
 
+extern rpmVSFlags rpmcliVSFlags;
+
 /** \ingroup rpmcli
  */
 typedef struct rpmQVKArguments_s * QVA_t;

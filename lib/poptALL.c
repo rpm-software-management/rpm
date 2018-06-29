@@ -44,6 +44,8 @@ const char * rpmcliRootDir = "/";
 
 rpmQueryFlags rpmcliQueryFlags;
 
+rpmVSFlags rpmcliVSFlags;
+
 extern int _rpmio_debug;
 
 static int rpmcliInitialized = -1;
@@ -160,14 +162,17 @@ static void rpmcliAllArgCallback( poptContext con,
 	
     case RPMCLI_POPT_NODIGEST:
 	rpmcliQueryFlags |= VERIFY_DIGEST;
+	rpmcliVSFlags |= _RPMVSF_NODIGESTS;
 	break;
 
     case RPMCLI_POPT_NOSIGNATURE:
 	rpmcliQueryFlags |= VERIFY_SIGNATURE;
+	rpmcliVSFlags |= _RPMVSF_NOSIGNATURES;
 	break;
 
     case RPMCLI_POPT_NOHDRCHK:
 	rpmcliQueryFlags |= VERIFY_HDRCHK;
+	rpmcliVSFlags |= RPMVSF_NOHDRCHK;
 	break;
 
     case RPMCLI_POPT_TARGETPLATFORM:
