@@ -831,7 +831,7 @@ package or when debugging this package.\
   cd \"%{u2p:%{_builddir}}\"\
 
 
-#%___build_body		%{nil}
+%___build_body		%{nil}
 %___build_post	\
   RPM_EC=$?\
   for pid in $(jobs -p); do kill -9 ${pid}; done\
@@ -840,11 +840,9 @@ package or when debugging this package.\
 
 %___build_template	#!%{___build_shell}\
 %{___build_pre}\
+%{___build_body}\
+%{___build_post}\
 %{nil}
-
-#%{___build_body}\
-#%{___build_post}\
-#%{nil}
 
 #==============================================================================
 # ---- Scriptlet templates.
@@ -858,11 +856,9 @@ package or when debugging this package.\
 %__spec_prep_post	%{___build_post}
 %__spec_prep_template	#!%{__spec_prep_shell}\
 %{__spec_prep_pre}\
+%{__spec_prep_body}\
+%{__spec_prep_post}\
 %{nil}
-
-#%{__spec_prep_body}\
-#%{__spec_prep_post}\
-#%{nil}
 
 %__spec_build_shell	%{___build_shell}
 %__spec_build_args	%{___build_args}
@@ -872,11 +868,9 @@ package or when debugging this package.\
 %__spec_build_post	%{___build_post}
 %__spec_build_template	#!%{__spec_build_shell}\
 %{__spec_build_pre}\
+%{__spec_build_body}\
+%{__spec_build_post}\
 %{nil}
-
-#%{__spec_build_body}\
-#%{__spec_build_post}\
-#%{nil}
 
 %__spec_install_shell	%{___build_shell}
 %__spec_install_args	%{___build_args}
@@ -890,11 +884,9 @@ package or when debugging this package.\
 %{nil}
 %__spec_install_template	#!%{__spec_install_shell}\
 %{__spec_install_pre}\
+%{__spec_install_body}\
+%{__spec_install_post}\
 %{nil}
-
-#%{__spec_install_body}\
-#%{__spec_install_post}\
-#%{nil}
 
 %__spec_check_shell	%{___build_shell}
 %__spec_check_args	%{___build_args}
@@ -904,11 +896,9 @@ package or when debugging this package.\
 %__spec_check_post	%{___build_post}
 %__spec_check_template	#!%{__spec_check_shell}\
 %{__spec_check_pre}\
+%{__spec_check_body}\
+%{__spec_check_post}\
 %{nil}
-
-#%{__spec_check_body}\
-#%{__spec_check_post}\
-#%{nil}
 
 #%__spec_autodep_shell	%{___build_shell}
 #%__spec_autodep_args	%{___build_args}
@@ -918,8 +908,6 @@ package or when debugging this package.\
 #%__spec_autodep_post	%{___build_post}
 #%__spec_autodep_template	#!%{__spec_autodep_shell}\
 #%{__spec_autodep_pre}\
-#%{nil}
-
 #%{__spec_autodep_body}\
 #%{__spec_autodep_post}\
 #%{nil}
@@ -932,11 +920,9 @@ package or when debugging this package.\
 %__spec_clean_post	%{___build_post}
 %__spec_clean_template	#!%{__spec_clean_shell}\
 %{__spec_clean_pre}\
+%{__spec_clean_body}\
+%{__spec_clean_post}\
 %{nil}
-
-#%{__spec_clean_body}\
-#%{__spec_clean_post}\
-#%{nil}
 
 %__spec_rmbuild_shell	%{___build_shell}
 %__spec_rmbuild_args	%{___build_args}
@@ -946,11 +932,9 @@ package or when debugging this package.\
 %__spec_rmbuild_post	%{___build_post}
 %__spec_rmbuild_template	#!%{__spec_rmbuild_shell}\
 %{__spec_rmbuild_pre}\
+%{__spec_rmbuild_body}\
+%{__spec_rmbuild_post}\
 %{nil}
-
-#%{__spec_rmbuild_body}\
-#%{__spec_rmbuild_post}\
-#%{nil}
 
 # XXX We don't expand pre/post install scriptlets (yet).
 #%__spec_pre_pre		%{nil}

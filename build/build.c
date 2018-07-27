@@ -10,6 +10,7 @@
 
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
+#include "rpmio/rpmstring.h"
 #include "build/rpmbuild_internal.h"
 #include "build/rpmbuild_misc.h"
 #include "lib/rpmug.h"
@@ -48,19 +49,50 @@ exit:
 }
 
 /*
+ */
+static char *
+rpmEscapePercent(const char *arg)
+{
+    size_t blen;
+    char *ret = NULL, *b;
+
+    if (arg == NULL) {
+        ret = xstrdup("");
+        goto exit;
+    }
+
+    blen = strlen(arg);
+
+    /* calculate number of '%' characters in 'arg' */
+    for (b = (char *)arg; *b; b++)
+        blen += ('%' == *b);
+
+    ret = xmalloc(blen + 1);
+    ret[blen] = '\0';
+
+    /* Loop over 'arg' by character and copy */
+    for (b = ret; *arg; *b++ = *arg++)
+        if ('%' == *arg)
+            *b++ = *arg; /* duplicate '%' */
+
+exit:
+    return ret;
+}
+
+/*
  * @todo Single use by %%doc in files.c prevents static.
  */
 rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 		const char *sb, int test)
 {
     char *scriptName = NULL;
+    const char * sbEscaped = rpmEscapePercent(sb);
+    char * sbLocal = NULL;
     char * buildDir = rpmGenPath(spec->rootDir, "%{_builddir}", "");
     char * buildCmd = NULL;
     char * buildTemplate = NULL;
-    char * buildPost = NULL;
     const char * mTemplate = NULL;
     const char * mCmd = NULL;
-    const char * mPost = NULL;
     int argc = 0;
     const char **argv = NULL;
     FILE * fp = NULL;
@@ -74,38 +106,31 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
     switch (what) {
     case RPMBUILD_PREP:
 	mTemplate = "%{__spec_prep_template}";
-	mPost = "%{__spec_prep_post}";
 	mCmd = "%{__spec_prep_cmd}";
 	break;
     case RPMBUILD_BUILD:
 	mTemplate = "%{__spec_build_template}";
-	mPost = "%{__spec_build_post}";
 	mCmd = "%{__spec_build_cmd}";
 	break;
     case RPMBUILD_INSTALL:
 	mTemplate = "%{__spec_install_template}";
-	mPost = "%{__spec_install_post}";
 	mCmd = "%{__spec_install_cmd}";
 	break;
     case RPMBUILD_CHECK:
 	mTemplate = "%{__spec_check_template}";
-	mPost = "%{__spec_check_post}";
 	mCmd = "%{__spec_check_cmd}";
 	break;
     case RPMBUILD_CLEAN:
 	mTemplate = "%{__spec_clean_template}";
-	mPost = "%{__spec_clean_post}";
 	mCmd = "%{__spec_clean_cmd}";
 	break;
     case RPMBUILD_RMBUILD:
 	mTemplate = "%{__spec_clean_template}";
-	mPost = "%{__spec_clean_post}";
 	mCmd = "%{__spec_clean_cmd}";
 	break;
     case RPMBUILD_STRINGBUF:
     default:
 	mTemplate = "%{___build_template}";
-	mPost = "%{___build_post}";
 	mCmd = "%{___build_cmd}";
 	break;
     }
@@ -125,22 +150,29 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 	rpmlog(RPMLOG_ERR, _("Unable to open stream: %s\n"), strerror(errno));
 	goto exit;
     }
-    
-    buildTemplate = rpmExpand(mTemplate, NULL);
-    buildPost = rpmExpand(mPost, NULL);
 
-    (void) fputs(buildTemplate, fp);
-
-    if (what != RPMBUILD_PREP && what != RPMBUILD_RMBUILD && spec->buildSubdir)
-	fprintf(fp, "cd '%s'\n", spec->buildSubdir);
-
+    // Prepare a local string for the '%___build_body' macro, prepended with
+    // the appropriate "cd spec->buildSubdir" line if necessary.
     if (what == RPMBUILD_RMBUILD) {
 	if (spec->buildSubdir)
-	    fprintf(fp, "rm -rf '%s'\n", spec->buildSubdir);
-    } else if (sb != NULL)
-	fprintf(fp, "%s", sb);
+	    rasprintf(&sbLocal, "rm -rf '%s'\n", spec->buildSubdir);
+    } else if (sb != NULL) {
+	if (what != RPMBUILD_PREP && spec->buildSubdir)
+	    rasprintf(&sbLocal, "cd '%s'\n%s", spec->buildSubdir, sbEscaped);
+	else
+	    rasprintf(&sbLocal, "%s", sbEscaped);
+    }
 
-    (void) fputs(buildPost, fp);
+    // Transfer the contents of 'sbLocal' to the '%___build_body' macro ...
+    rpmPushMacro(spec->macros, "___build_body", NULL, sbLocal, RMIL_SPEC);
+    // ... which will then dynamically be expanded and used as integral part
+    // of the '%___build_template' macro (or one of the many variants) that
+    // is held by 'mTemplate' here.
+    buildTemplate = rpmExpand(mTemplate, NULL);
+    // Flush temporary macro content.
+    rpmPopMacro(spec->macros, "___build_body");
+
+    (void) fputs(buildTemplate, fp);
     (void) fclose(fp);
 
     if (test) {
@@ -190,8 +222,9 @@ exit:
     free(argv);
     free(buildCmd);
     free(buildTemplate);
-    free(buildPost);
     free(buildDir);
+    free(sbLocal);
+    free(sbEscaped);
 
     return rc;
 }
