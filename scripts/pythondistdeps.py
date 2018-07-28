@@ -82,8 +82,8 @@ for f in files:
     if py_abi and (lower.endswith('.py') or lower.endswith('.pyc') or lower.endswith('.pyo')):
         if name not in py_deps:
             py_deps[name] = []
-        purelib = get_python_lib(standard_lib=1, plat_specific=0).split(version[:3])[0]
-        platlib = get_python_lib(standard_lib=1, plat_specific=1).split(version[:3])[0]
+        purelib = get_python_lib(standard_lib=0, plat_specific=0).split(version[:3])[0]
+        platlib = get_python_lib(standard_lib=0, plat_specific=1).split(version[:3])[0]
         for lib in (purelib, platlib):
             if lib in f:
                 spec = ('==', f.split(lib)[1].split(sep)[0])
