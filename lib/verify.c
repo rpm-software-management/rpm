@@ -58,7 +58,7 @@ rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
     rpm_mode_t fmode = rpmfilesFMode(fi, ix);
     rpmfileAttrs fileAttrs = rpmfilesFFlags(fi, ix);
     rpmVerifyAttrs flags = rpmfilesVFlags(fi, ix);
-    const char * fn = rpmfilesFN(fi, ix);
+    char * fn = rpmfilesFN(fi, ix);
     struct stat sb, fsb;
     rpmVerifyAttrs vfy = RPMVERIFY_NONE;
 
@@ -249,6 +249,7 @@ rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
 	vfy |= RPMVERIFY_GROUP;
 
 exit:
+    free(fn);
     return vfy;
 }
 
