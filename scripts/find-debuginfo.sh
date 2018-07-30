@@ -487,7 +487,7 @@ fi
 # Invoke the DWARF Compressor utility.
 if $run_dwz \
    && [ -d "${RPM_BUILD_ROOT}/usr/lib/debug" ]; then
-  readarray dwz_files < <(cd "${RPM_BUILD_ROOT}/usr/lib/debug"; find -type f -name \*.debug)
+  readarray dwz_files < <(cd "${RPM_BUILD_ROOT}/usr/lib/debug"; find -type f -name \*.debug | LC_ALL=C sort)
   if [ ${#dwz_files[@]} -gt 0 ]; then
     dwz_multifile_name="${RPM_PACKAGE_NAME}-${RPM_PACKAGE_VERSION}-${RPM_PACKAGE_RELEASE}.${RPM_ARCH}"
     dwz_multifile_suffix=
