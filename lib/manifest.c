@@ -170,6 +170,8 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, char *** argvPtr)
 	*argcPtr = ac;
 
 exit:
+    if (f)
+	fclose(f);
     if (argvPtr == NULL || (rpmrc != RPMRC_OK && av)) {
 	if (av)
 	for (i = 0; i < ac; i++)
