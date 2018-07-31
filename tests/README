@@ -1,0 +1,8 @@
+To run these tests you need at least these dependencies:
+fakechroot gdb gpg python-rpm
+
+Then run
+
+   make check
+
+See also the INSTALL file for more information.
