@@ -1176,6 +1176,9 @@ int parsePreamble(rpmSpec spec, int initialPackage)
      */
     if (initialPackage) {
 	char *buildRoot = rpmGetPath(spec->buildRoot, NULL);
+	free(spec->buildRoot);
+	spec->buildRoot = buildRoot;
+	rpmPushMacro(spec->macros, "buildroot", NULL, spec->buildRoot, RMIL_SPEC);
 	if (*buildRoot == '\0') {
 	    rpmlog(RPMLOG_ERR, _("%%{buildroot} couldn't be empty\n"));
 	    goto exit;
@@ -1184,9 +1187,6 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	    rpmlog(RPMLOG_ERR, _("%%{buildroot} can not be \"/\"\n"));
 	    goto exit;
 	}
-	free(spec->buildRoot);
-	spec->buildRoot = buildRoot;
-	rpmPushMacro(spec->macros, "buildroot", NULL, spec->buildRoot, RMIL_SPEC);
     }
 
     /* XXX Skip valid arch check if not building binary package */
