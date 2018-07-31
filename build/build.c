@@ -135,22 +135,6 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 	break;
     }
 
-    if ((what != RPMBUILD_RMBUILD) && sb == NULL) {
-	rc = RPMRC_OK;
-	goto exit;
-    }
-    
-    fd = rpmMkTempFile(spec->rootDir, &scriptName);
-    if (Ferror(fd)) {
-	rpmlog(RPMLOG_ERR, _("Unable to open temp file: %s\n"), Fstrerror(fd));
-	goto exit;
-    }
-
-    if ((fp = fdopen(Fileno(fd), "w")) == NULL) {
-	rpmlog(RPMLOG_ERR, _("Unable to open stream: %s\n"), strerror(errno));
-	goto exit;
-    }
-
     // Prepare a local string for the '%___build_body' macro, prepended with
     // the appropriate "cd spec->buildSubdir" line if necessary.
     if (what == RPMBUILD_RMBUILD) {
@@ -161,6 +145,9 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 	    rasprintf(&sbLocal, "cd '%s'\n%s", spec->buildSubdir, sbEscaped);
 	else
 	    rasprintf(&sbLocal, "%s", sbEscaped);
+    } else {
+	rc = RPMRC_OK;
+	goto exit;
     }
 
     // Transfer the contents of 'sbLocal' to the '%___build_body' macro ...
@@ -171,6 +158,17 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
     buildTemplate = rpmExpand(mTemplate, NULL);
     // Flush temporary macro content.
     rpmPopMacro(spec->macros, "___build_body");
+
+    fd = rpmMkTempFile(spec->rootDir, &scriptName);
+    if (Ferror(fd)) {
+	rpmlog(RPMLOG_ERR, _("Unable to open temp file: %s\n"), Fstrerror(fd));
+	goto exit;
+    }
+
+    if ((fp = fdopen(Fileno(fd), "w")) == NULL) {
+	rpmlog(RPMLOG_ERR, _("Unable to open stream: %s\n"), strerror(errno));
+	goto exit;
+    }
 
     (void) fputs(buildTemplate, fp);
     (void) fclose(fp);
