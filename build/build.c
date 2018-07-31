@@ -270,7 +270,7 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 
 	if (((what & RPMBUILD_PACKAGESOURCE) && !test) &&
 	    (rc = packageSources(spec, &cookie)))
-		return rc;
+		goto exit;
 
 	if (((what & RPMBUILD_PACKAGEBINARY) && !test) &&
 	    (rc = packageBinaries(spec, cookie, (didBuild == 0))))
