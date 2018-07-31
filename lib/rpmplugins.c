@@ -72,6 +72,7 @@ static rpmPlugin rpmPluginNew(const char *name, const char *path,
     if ((error = dlerror()) != NULL) {
 	rpmlog(RPMLOG_ERR, _("Failed to resolve symbol %s: %s\n"),
 	       hooks_name, error);
+	dlclose(handle);
     } else {
 	plugin = xcalloc(1, sizeof(*plugin));
 	plugin->name = xstrdup(name);
