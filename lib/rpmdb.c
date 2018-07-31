@@ -2480,6 +2480,7 @@ static int rpmdbSetPermissions(char * src, char * dest)
 	rc += xx;
 	_free(filepath);
     }
+    closedir(dfd);
 
  exit:
     return rc;
