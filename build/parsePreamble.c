@@ -1085,9 +1085,10 @@ int parsePreamble(rpmSpec spec, int initialPackage)
     int nextPart = PART_ERROR;
     int res = PART_ERROR; /* assume failure */
     int rc;
-    char *name, *linep;
+    char *linep;
     int flag = 0;
     Package pkg;
+    char *name = NULL;
     char *NVR = NULL;
     char lang[BUFSIZ];
 
@@ -1102,10 +1103,8 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	if (rpmCharCheck(spec, name, WHITELIST_NAME))
 	    goto exit;
 	
-	if (!lookupPackage(spec, name, flag, NULL)) {
-	    free(name);
+	if (!lookupPackage(spec, name, flag, NULL))
 	    goto exit;
-	}
 	
 	/* Construct the package */
 	if (flag == PART_SUBNAME) {
@@ -1113,7 +1112,6 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 		    headerGetString(spec->packages->header, RPMTAG_NAME), name);
 	} else
 	    NVR = xstrdup(name);
-	free(name);
 	pkg = newPackage(NVR, spec->pool, &spec->packages);
 	headerPutString(pkg->header, RPMTAG_NAME, NVR);
     } else {
@@ -1219,6 +1217,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
     res = nextPart;
 
 exit:
+    free(name);
     free(NVR);
     return res;
 }
