@@ -504,6 +504,7 @@ static const rpmTagVal sourceTags[] = {
     RPMTAG_PACKAGER,
     RPMTAG_DISTRIBUTION,
     RPMTAG_DISTURL,
+    RPMTAG_DISTTAG,
     RPMTAG_VENDOR,
     RPMTAG_LICENSE,
     RPMTAG_GROUP,
