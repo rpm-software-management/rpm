@@ -163,8 +163,6 @@ static int dateToTimet(const char * datestr, time_t * secs, int * date_words)
 	tz = xstrdup(tz);
     if (*date_words == 6) {
 	/* changelog date is in read time zone */
-	tz = getenv("TZ");
-	if (tz) tz = xstrdup(tz);
 	setenv("TZ", tz_name, 1);
     } else {
 	/* changelog date is always in UTC */
