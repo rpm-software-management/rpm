@@ -496,7 +496,7 @@ if $run_dwz \
       let ++dwz_multifile_idx
       dwz_multifile_suffix=".${dwz_multifile_idx}"
     done
-    dwz_multfile_name="${dwz_multifile_name}${dwz_multifile_suffix}"
+    dwz_multifile_name="${dwz_multifile_name}${dwz_multifile_suffix}"
     dwz_opts="-h -q -r"
     [ ${#dwz_files[@]} -gt 1 ] \
       && dwz_opts="${dwz_opts} -m .dwz/${dwz_multifile_name}"
