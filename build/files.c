@@ -2124,7 +2124,7 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
 	    goto exit;
 	}
 
-	if (rpmGlob(diskPath, &argc, &argv) == 0 && argc >= 1) {
+	if (rpmGlob(diskPath, &argc, &argv) == 0) {
 	    for (i = 0; i < argc; i++) {
 		rc = addFile(fl, argv[i], NULL);
 	    }
