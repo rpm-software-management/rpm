@@ -129,6 +129,15 @@ struct rpmRelocation_s {
     char * newPath;	/*!< NULL means to omit the file completely! */
 };
 
+/**
+ * We pass these around to identify source locations.
+ */
+struct rpmSpecLocation_s {
+    char * source;	/*!< NULL here evals to no source file, */
+    int lineNum;	/*!< -1 here means no line number. */
+    int reserved[16];	/*!< Reserved for future location use. */
+};
+
 enum rpmfiFlags_e {
     RPMFI_NOHEADER		= 0,
     RPMFI_KEEPHEADER		= (1 << 0),

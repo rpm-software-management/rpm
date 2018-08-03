@@ -175,6 +175,7 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
 {
     char *lbuf = NULL;
     int isComment = 0;
+    struct rpmSpecLocation_s loc;
 
      /* Don't expand macros (eg. %define) in false branch of %if clause */
     if (!spec->readStack->reading)
@@ -185,8 +186,9 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
     if (lbuf[0] == '#')
 	isComment = 1;
 
-
-    if (rpmExpandMacros(spec->macros, spec->lbuf, &lbuf, 0) < 0) {
+    loc.lineNum = spec->lineNum;
+    loc.source = spec->specFile;
+    if (rpmExpandMacrosAt(&loc, spec->macros, spec->lbuf, &lbuf, 0) < 0) {
 	rpmlog(RPMLOG_ERR, _("line %d: %s\n"),
 		spec->lineNum, spec->lbuf);
 	return 1;

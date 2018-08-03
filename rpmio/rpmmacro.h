@@ -69,6 +69,18 @@ int	rpmExpandMacros	(rpmMacroContext mc, const char * sbuf,
 				char ** obuf, int flags);
 
 /** \ingroup rpmmacro
+ * Expand macro into buffer with location information for errors.
+ * @param loc		location information (NULL none available).
+ * @param mc		macro context (NULL uses global context).
+ * @param sbuf		input macro to expand
+ * @param obuf		macro expansion (malloc'ed)
+ * @param flags		flags (currently unused)
+ * @return		negative on failure
+ */
+int	rpmExpandMacrosAt (rpmSpecLoc loc, rpmMacroContext mc,
+			   const char * sbuf, char ** obuf, int flags);
+
+/** \ingroup rpmmacro
  * Push macro to context.
  * @param mc		macro context (NULL uses global context).
  * @param n		macro name
