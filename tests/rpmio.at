@@ -48,3 +48,16 @@ AT_CLEANUP
 #[])
 #AT_CLEANUP
 
+AT_SETUP([rpmlog error handling])
+AT_KEYWORDS([log])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpm -qpl /data/RPMS/hello-2.0-1.x86_64.rpm > /dev/full
+],
+[0],
+[],
+[Error writing to log: No space left on device
+])
+AT_CLEANUP

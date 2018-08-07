@@ -261,10 +261,17 @@ static int getColorConfig(void)
     return rc;
 }
 
+static void logerror(void)
+{
+    static __thread int lasterr = 0;
+    if (errno != EPIPE && errno != lasterr) {
+	lasterr = errno;
+	perror(_("Error writing to log"));
+    }
+}
+
 static int rpmlogDefault(FILE *stdlog, rpmlogRec rec)
 {
-    static const char fubar[] =
-	"Error occurred during writing of a log message";
     FILE *msgout = (stdlog ? stdlog : stderr);
     static __thread int color = -1;
     const char * colorOn = NULL;
@@ -288,16 +295,15 @@ static int rpmlogDefault(FILE *stdlog, rpmlogRec rec)
     case RPMLOG_WARNING:
     case RPMLOG_DEBUG:
 	if (colorOn && *colorOn)
-	    if (fputs(rpmlogLevelColor(rec->pri), msgout) == EOF
-	     && errno != EPIPE)
-		perror(fubar);
+	    if (fputs(rpmlogLevelColor(rec->pri), msgout) == EOF)
+		logerror();
 	break;
     default:
 	break;
     }
 
-    if (fputs(rpmlogLevelPrefix(rec->pri), msgout) == EOF && errno != EPIPE)
-	perror(fubar);
+    if (fputs(rpmlogLevelPrefix(rec->pri), msgout) == EOF)
+	logerror();
 
     switch (rec->pri) {
     case RPMLOG_INFO:
@@ -309,10 +315,10 @@ static int rpmlogDefault(FILE *stdlog, rpmlogRec rec)
     case RPMLOG_ERR:
     case RPMLOG_WARNING:
 	if (colorOn && *colorOn) {
-	    if (fputs(ANSI_COLOR_RESET, msgout) == EOF && errno != EPIPE)
-		perror(fubar);
-	    if (fputs(ANSI_COLOR_BOLD, msgout) == EOF && errno != EPIPE)
-		perror(fubar);
+	    if (fputs(ANSI_COLOR_RESET, msgout) == EOF)
+		logerror();
+	    if (fputs(ANSI_COLOR_BOLD, msgout) == EOF)
+		logerror();
 	}
     case RPMLOG_DEBUG:
     default:
@@ -320,8 +326,8 @@ static int rpmlogDefault(FILE *stdlog, rpmlogRec rec)
     }
 
     if (rec->message)
-	if (fputs(rec->message, msgout) == EOF && errno != EPIPE)
-	    perror(fubar);
+	if (fputs(rec->message, msgout) == EOF)
+	    logerror();
 
     switch (rec->pri) {
     case RPMLOG_INFO:
@@ -334,15 +340,15 @@ static int rpmlogDefault(FILE *stdlog, rpmlogRec rec)
     case RPMLOG_WARNING:
     case RPMLOG_DEBUG:
 	if (colorOn && *colorOn)
-	    if (fputs(ANSI_COLOR_RESET, msgout) == EOF && errno != EPIPE)
-		perror(fubar);
+	    if (fputs(ANSI_COLOR_RESET, msgout) == EOF)
+		logerror();
 	break;
     default:
 	break;
     }
 
-    if (fflush(msgout) == EOF && errno != EPIPE)
-	perror(fubar);
+    if (fflush(msgout) == EOF)
+	logerror();
 
     return (rec->pri <= RPMLOG_CRIT ? RPMLOG_EXIT : 0);
 }
