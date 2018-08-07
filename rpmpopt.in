@@ -214,6 +214,8 @@ rpmbuild alias --sign \
 	--POPTdesc=$"generate GPG signature (deprecated, use command rpmsign instead)"
 #	[--trace]		"trace macro expansion"
 rpmbuild alias --trace		--eval '%trace'
+rpmbuild alias --nodebuginfo	--define 'debug_package %{nil}' \
+	--POPTdesc=$"do not generate debuginfo for this package"
 
 rpmsign alias --key-id  --define '_gpg_name !#:+' \
 	--POPTdesc=$"key id/name to sign with" \
