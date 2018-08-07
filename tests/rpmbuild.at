@@ -568,6 +568,36 @@ test "$canonmultiref" = "$canonmultifile" \
 AT_CLEANUP
 
 # ------------------------------
+# Check that rpmbuild creates no debuginfo when --nodebuginfo is passed
+AT_SETUP([rpmbuild no debuginfo])
+AT_KEYWORDS([build] [debuginfo])
+AT_CHECK([
+rm -rf ${TOPDIR}
+
+# Use macros.debug to generate a debuginfo package,
+# but pass --nodebuginfo to skip it.
+export CFLAGS="-g"
+rundebug rpmbuild --quiet --nodebuginfo \
+  --rebuild "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
+
+# Extract the main package and inspect the hello binary
+# It should not contain .gnu_debugdata, but the full .symtab
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-1.*.rpm | cpio -diu
+test -f ./usr/local/bin/hello || exit 1
+readelf -S ./usr/local/bin/hello |\
+   grep -q .gnu_debugdata; test $? == 1 || exit 1
+readelf -S ./usr/local/bin/hello \
+  | grep -q .symtab; test $? == 0 || exit 1
+
+# And the opposite for the debuginfo package
+test ! -e ${abs_builddir}/testing/build/RPMS/*/hello-debuginfo-1.0-1.*.rpm || exit 1
+],
+[0],
+[],
+[ignore])
+AT_CLEANUP
+
+# ------------------------------
 # Check if rpmbuild runs dwz and generates a multi file that with shared
 # debuginfo. This is simply the hello example with one binary build twice
 # so dwz has enough slightly similar debug data.
