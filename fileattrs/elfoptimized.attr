@@ -1,0 +1,4 @@
+%__elfoptimized_requires		%{_rpmconfigdir}/elfdeps --requires %{?__filter_GLIBC_PRIVATE:--filter-private}
+%__elfoptimized_magic		^(setuid,? )?(setgid,? )?(sticky )?ELF (32|64)-bit.*$
+%__elfoptimized_flags		exeonly
+%__elfoptimized_path		^(/usr)?/lib(64)?/(i686|x86_64|sse2|haswell|tls)/

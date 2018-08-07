@@ -6,8 +6,8 @@ AM_CFLAGS = @RPMCFLAGS@
 fattrsdir = $(rpmconfigdir)/fileattrs
 
 fattrs_DATA = \
-	debuginfo.attr desktop.attr elf.attr font.attr libtool.attr metainfo.attr \
-	perl.attr perllib.attr pkgconfig.attr python.attr pythondist.attr ocaml.attr \
-	script.attr mono.attr
+	debuginfo.attr desktop.attr elf.attr elfoptimized.attr font.attr \
+	libtool.attr metainfo.attr perl.attr perllib.attr pkgconfig.attr \
+	python.attr pythondist.attr ocaml.attr script.attr mono.attr
 
 EXTRA_DIST = $(fattrs_DATA)
