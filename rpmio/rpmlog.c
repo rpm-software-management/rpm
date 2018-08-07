@@ -320,7 +320,8 @@ static int rpmlogDefault(FILE *stdlog, rpmlogRec rec)
     }
 
     if (rec->message)
-	(void) fputs(rec->message, msgout);
+	if (fputs(rec->message, msgout) == EOF && errno != EPIPE)
+	    perror(fubar);
 
     switch (rec->pri) {
     case RPMLOG_INFO:
@@ -333,14 +334,15 @@ static int rpmlogDefault(FILE *stdlog, rpmlogRec rec)
     case RPMLOG_WARNING:
     case RPMLOG_DEBUG:
 	if (colorOn && *colorOn)
-	    if (fputs(ANSI_COLOR_RESET, msgout) == EPIPE && errno != EPIPE)
+	    if (fputs(ANSI_COLOR_RESET, msgout) == EOF && errno != EPIPE)
 		perror(fubar);
 	break;
     default:
 	break;
     }
 
-    (void) fflush(msgout);
+    if (fflush(msgout) == EOF && errno != EPIPE)
+	perror(fubar);
 
     return (rec->pri <= RPMLOG_CRIT ? RPMLOG_EXIT : 0);
 }
