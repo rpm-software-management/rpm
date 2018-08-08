@@ -21,7 +21,7 @@
  *  import rpm
  *  rpm.rpmPushMacro("_topdir","/path/to/topdir")
  *  s=rpm.spec("foo.spec")
- *  print s.prep()
+ *  print(s.prep())
  * \endcode
  *
  *  Macros set using add macro will be used allowing testing of conditional builds
