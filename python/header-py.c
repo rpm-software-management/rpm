@@ -86,18 +86,18 @@
  * 	hdr = ts.hdrFromFdno(fdno)
  *	os.close(fdno)
  *	if hdr[rpm.RPMTAG_SOURCEPACKAGE]:
- *	   print "header is from a source package"
+ *	   print("header is from a source package")
  *	else:
- *	   print "header is from a binary package"
+ *	   print("header is from a binary package")
  * \endcode
  *
  * The Python interface to the header data is quite elegant.  It
  * presents the data in a dictionary form.  We'll take the header we
  * just loaded and access the data within it:
  * \code
- * 	print hdr[rpm.RPMTAG_NAME]
- * 	print hdr[rpm.RPMTAG_VERSION]
- * 	print hdr[rpm.RPMTAG_RELEASE]
+ * 	print(hdr[rpm.RPMTAG_NAME])
+ * 	print(hdr[rpm.RPMTAG_VERSION])
+ * 	print(hdr[rpm.RPMTAG_RELEASE])
  * \endcode
  * in the case of our "foo-1.0-1.i386.rpm" package, this code would
  * output:
@@ -109,9 +109,9 @@
  *
  * You make also access the header data by string name:
  * \code
- * 	print hdr['name']
- * 	print hdr['version']
- * 	print hdr['release']
+ * 	print(hdr['name'])
+ * 	print(hdr['version'])
+ * 	print(hdr['release'])
  * \endcode
  *
  * This method of access is a teensy bit slower because the name must be
@@ -687,17 +687,17 @@ static char hdr_doc[] =
   "	hdr = ts.hdrFromFdno(fdno)\n"
   "	os.close(fdno)\n"
   "	if hdr[rpm.RPMTAG_SOURCEPACKAGE]:\n"
-  "	   print 'header is from a source package'\n"
+  "	   print('header is from a source package')\n"
   "	else:\n"
-  "	   print 'header is from a binary package'\n"
+  "	   print('header is from a binary package')\n"
   "\n"
   "The Python interface to the header data is quite elegant.  It\n"
   "presents the data in a dictionary form.  We'll take the header we\n"
   "just loaded and access the data within it:\n"
   "\n"
-  "	print hdr[rpm.RPMTAG_NAME]\n"
-  "	print hdr[rpm.RPMTAG_VERSION]\n"
-  "	print hdr[rpm.RPMTAG_RELEASE]\n"
+  "	print(hdr[rpm.RPMTAG_NAME])\n"
+  "	print(hdr[rpm.RPMTAG_VERSION])\n"
+  "	print(hdr[rpm.RPMTAG_RELEASE])\n"
   "\n"
   "in the case of our 'foo-1.0-1.i386.rpm' package, this code would\n"
   "output:\n"
@@ -707,9 +707,9 @@ static char hdr_doc[] =
   "\n"
   "You make also access the header data by string name:\n"
   "\n"
-  "	print hdr['name']\n"
-  "	print hdr['version']\n"
-  "	print hdr['release']\n"
+  "	print(hdr['name'])\n"
+  "	print(hdr['version'])\n"
+  "	print(hdr['release'])\n"
   "\n"
   "This method of access is a teensy bit slower because the name must be\n"
   "translated into the tag number dynamically. You also must make sure\n"

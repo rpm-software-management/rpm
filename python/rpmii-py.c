@@ -23,7 +23,7 @@
  *	import rpm
  *	ts = rpm.TransactionSet()
  *	for name in ts.dbIndex("conflictname"):
- *	    print name
+ *	    print(name)
  * \endcode
  *
  * ts.dbIndex() can be used to get the packages containing the keys of interest
