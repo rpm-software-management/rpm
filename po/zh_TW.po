@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2018-06-29 13:08+0300\n"
+"POT-Creation-Date: 2018-08-08 15:39+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Chinese (Taiwan) (http://www.transifex.com/rpm-team/rpm/"
@@ -1077,42 +1077,42 @@ msgstr "無法建立 %s：%s\n"
 msgid "line %d: second %s\n"
 msgstr "列 %d：第二個 %s\n"
 
-#: build/parseChangelog.c:185
+#: build/parseChangelog.c:183
 #, c-format
 msgid "bogus date in %%changelog: %s\n"
 msgstr ""
 
-#: build/parseChangelog.c:218
+#: build/parseChangelog.c:216
 #, c-format
 msgid "%%changelog entries must start with *\n"
 msgstr "%%changelog 條目必須以 * 符號開頭\n"
 
-#: build/parseChangelog.c:226
+#: build/parseChangelog.c:224
 #, c-format
 msgid "incomplete %%changelog entry\n"
 msgstr "不完整的 %%changelog 條目\n"
 
-#: build/parseChangelog.c:237
+#: build/parseChangelog.c:235
 #, c-format
 msgid "bad date in %%changelog: %s\n"
 msgstr "%%changelog 中含有不良日期：%s\n"
 
-#: build/parseChangelog.c:242
+#: build/parseChangelog.c:240
 #, c-format
 msgid "%%changelog not in descending chronological order\n"
 msgstr "%%changelog 並非遞減編年順序\n"
 
-#: build/parseChangelog.c:254 build/parseChangelog.c:265
+#: build/parseChangelog.c:252 build/parseChangelog.c:263
 #, c-format
 msgid "missing name in %%changelog\n"
 msgstr "%%changelog 中遺漏名稱\n"
 
-#: build/parseChangelog.c:272
+#: build/parseChangelog.c:270
 #, c-format
 msgid "no description in %%changelog\n"
 msgstr "%%changelog 中沒有描述\n"
 
-#: build/parseChangelog.c:309
+#: build/parseChangelog.c:307
 #, c-format
 msgid "line %d: second %%changelog\n"
 msgstr ""
@@ -1312,26 +1312,26 @@ msgstr "內部錯誤：假造的標籤 %d\n"
 msgid "line %d: %s is deprecated: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:1094
+#: build/parsePreamble.c:1095
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "不良軟體包規格：%s\n"
 
-#: build/parsePreamble.c:1142
+#: build/parsePreamble.c:1140
 msgid "Binary rpm package found. Expected spec file!\n"
 msgstr ""
 
-#: build/parsePreamble.c:1145
+#: build/parsePreamble.c:1143
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "列 %d：未知標籤：%s\n"
 
-#: build/parsePreamble.c:1177
+#: build/parsePreamble.c:1178
 #, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr ""
 
-#: build/parsePreamble.c:1181
+#: build/parsePreamble.c:1182
 #, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr ""
@@ -1523,36 +1523,36 @@ msgstr "%s:%d：有個 %%endif 沒有對應 %%if\n"
 msgid "%s:%d: malformed %%include statement\n"
 msgstr ""
 
-#: build/parseSpec.c:645
+#: build/parseSpec.c:646
 #, c-format
 msgid "encoding %s not supported by system\n"
 msgstr ""
 
-#: build/parseSpec.c:674
+#: build/parseSpec.c:675
 #, c-format
 msgid "Package %s: invalid %s encoding in %s: %s - %s\n"
 msgstr ""
 
-#: build/parseSpec.c:710
+#: build/parseSpec.c:711
 #, c-format
 msgid "line %d: %%end doesn't take any arguments: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:717
+#: build/parseSpec.c:718
 #, c-format
 msgid "line %d: %%end not expected here, no section to close: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:733
+#: build/parseSpec.c:734
 #, c-format
 msgid "line %d doesn't belong to any section: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:878
+#: build/parseSpec.c:879
 msgid "No compatible architectures found for build\n"
 msgstr "找不到可供建置的相容架構\n"
 
-#: build/parseSpec.c:912
+#: build/parseSpec.c:913
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "軟體包沒有 %%description：%s\n"
@@ -1869,19 +1869,19 @@ msgstr ""
 msgid "normal"
 msgstr "一般"
 
-#: lib/formats.c:420 lib/verify.c:353
+#: lib/formats.c:420 lib/verify.c:354
 msgid "replaced"
 msgstr "已替換"
 
-#: lib/formats.c:423 lib/verify.c:347
+#: lib/formats.c:423 lib/verify.c:348
 msgid "not installed"
 msgstr "未安裝"
 
-#: lib/formats.c:426 lib/verify.c:349
+#: lib/formats.c:426 lib/verify.c:350
 msgid "net shared"
 msgstr "已網路分享"
 
-#: lib/formats.c:429 lib/verify.c:351
+#: lib/formats.c:429 lib/verify.c:352
 msgid "wrong color"
 msgstr "錯誤色彩"
 
@@ -2871,7 +2871,7 @@ msgstr ""
 msgid "could also not restore old database from %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2419 lib/rpmdb.c:2605
+#: lib/rpmdb.c:2419 lib/rpmdb.c:2606
 #, c-format
 msgid "replace files in %s with files from %s to recover\n"
 msgstr ""
@@ -2886,30 +2886,30 @@ msgstr ""
 msgid "could not delete old database at %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2504
+#: lib/rpmdb.c:2505
 msgid "no dbpath has been set"
 msgstr "尚未設定 dbpath"
 
-#: lib/rpmdb.c:2522
+#: lib/rpmdb.c:2523
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2559
+#: lib/rpmdb.c:2560
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "在資料庫中有不良的表頭 #%u -- 跳過。\n"
 
-#: lib/rpmdb.c:2574
+#: lib/rpmdb.c:2575
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "無法加入原本位於 %u 的記錄\n"
 
-#: lib/rpmdb.c:2590
+#: lib/rpmdb.c:2591
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "重建資料庫時失敗：原來的資料庫保持原狀\n"
 
-#: lib/rpmdb.c:2603
+#: lib/rpmdb.c:2604
 msgid "failed to replace old database with new database!\n"
 msgstr "以新的資料庫取代舊的資料庫時失敗！\n"
 
@@ -3250,12 +3250,12 @@ msgstr ""
 msgid "Failed to resolve symbol %s: %s\n"
 msgstr ""
 
-#: lib/rpmplugins.c:154
+#: lib/rpmplugins.c:155
 #, c-format
 msgid "Plugin %%__%s_%s not configured\n"
 msgstr ""
 
-#: lib/rpmplugins.c:199
+#: lib/rpmplugins.c:200
 #, c-format
 msgid "Plugin %s not loaded\n"
 msgstr "%s 插件未載入\n"
@@ -3600,20 +3600,20 @@ msgstr "已跳過"
 msgid "failed"
 msgstr "已失敗"
 
-#: lib/verify.c:355
+#: lib/verify.c:356
 msgid "no state"
 msgstr ""
 
-#: lib/verify.c:357
+#: lib/verify.c:358
 msgid "unknown state"
 msgstr ""
 
-#: lib/verify.c:408
+#: lib/verify.c:409
 #, c-format
 msgid "missing   %c %s"
 msgstr "遺漏      %c %s"
 
-#: lib/verify.c:463
+#: lib/verify.c:464
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr ""
@@ -3752,6 +3752,10 @@ msgstr "錯誤："
 #: rpmio/rpmlog.c:195
 msgid "warning: "
 msgstr "警告："
+
+#: rpmio/rpmlog.c:269
+msgid "Error writing to log"
+msgstr ""
 
 #: rpmio/rpmlua.c:523
 #, c-format

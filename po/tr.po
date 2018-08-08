@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2018-06-29 13:08+0300\n"
+"POT-Creation-Date: 2018-08-08 15:39+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Turkish (http://www.transifex.com/rpm-team/rpm/language/tr/)\n"
@@ -1096,42 +1096,42 @@ msgstr "%s dosyası oluşturulamıyor: %s\n"
 msgid "line %d: second %s\n"
 msgstr "%d satır: %s saniye\n"
 
-#: build/parseChangelog.c:185
+#: build/parseChangelog.c:183
 #, c-format
 msgid "bogus date in %%changelog: %s\n"
 msgstr ""
 
-#: build/parseChangelog.c:218
+#: build/parseChangelog.c:216
 #, c-format
 msgid "%%changelog entries must start with *\n"
 msgstr "%%changelog girdi * ile başlamalı\n"
 
-#: build/parseChangelog.c:226
+#: build/parseChangelog.c:224
 #, c-format
 msgid "incomplete %%changelog entry\n"
 msgstr "%%changelog girdi eksik\n"
 
-#: build/parseChangelog.c:237
+#: build/parseChangelog.c:235
 #, c-format
 msgid "bad date in %%changelog: %s\n"
 msgstr "%%changelog içinde tarih hatası: %s\n"
 
-#: build/parseChangelog.c:242
+#: build/parseChangelog.c:240
 #, c-format
 msgid "%%changelog not in descending chronological order\n"
 msgstr ""
 
-#: build/parseChangelog.c:254 build/parseChangelog.c:265
+#: build/parseChangelog.c:252 build/parseChangelog.c:263
 #, c-format
 msgid "missing name in %%changelog\n"
 msgstr "%%changelog içinde isim yok\n"
 
-#: build/parseChangelog.c:272
+#: build/parseChangelog.c:270
 #, c-format
 msgid "no description in %%changelog\n"
 msgstr "%%changelog içinde açıklama yok\n"
 
-#: build/parseChangelog.c:309
+#: build/parseChangelog.c:307
 #, c-format
 msgid "line %d: second %%changelog\n"
 msgstr ""
@@ -1331,26 +1331,26 @@ msgstr "İçsel hata: %d etiketi sahte\n"
 msgid "line %d: %s is deprecated: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:1094
+#: build/parsePreamble.c:1095
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Paket özellikleri hatalı: %s\n"
 
-#: build/parsePreamble.c:1142
+#: build/parsePreamble.c:1140
 msgid "Binary rpm package found. Expected spec file!\n"
 msgstr ""
 
-#: build/parsePreamble.c:1145
+#: build/parsePreamble.c:1143
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "satır %d: Bilinmeyen etiket: %s\n"
 
-#: build/parsePreamble.c:1177
+#: build/parsePreamble.c:1178
 #, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr ""
 
-#: build/parsePreamble.c:1181
+#: build/parsePreamble.c:1182
 #, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr ""
@@ -1542,36 +1542,36 @@ msgstr "%s:%d: %%if'siz bir %%endif alındı\n"
 msgid "%s:%d: malformed %%include statement\n"
 msgstr ""
 
-#: build/parseSpec.c:645
+#: build/parseSpec.c:646
 #, c-format
 msgid "encoding %s not supported by system\n"
 msgstr ""
 
-#: build/parseSpec.c:674
+#: build/parseSpec.c:675
 #, c-format
 msgid "Package %s: invalid %s encoding in %s: %s - %s\n"
 msgstr ""
 
-#: build/parseSpec.c:710
+#: build/parseSpec.c:711
 #, c-format
 msgid "line %d: %%end doesn't take any arguments: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:717
+#: build/parseSpec.c:718
 #, c-format
 msgid "line %d: %%end not expected here, no section to close: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:733
+#: build/parseSpec.c:734
 #, c-format
 msgid "line %d doesn't belong to any section: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:878
+#: build/parseSpec.c:879
 msgid "No compatible architectures found for build\n"
 msgstr "Kurgulamak için uyumlu mimari yok\n"
 
-#: build/parseSpec.c:912
+#: build/parseSpec.c:913
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paket %%description içermiyor: %s\n"
@@ -1888,19 +1888,19 @@ msgstr ""
 msgid "normal"
 msgstr "normal"
 
-#: lib/formats.c:420 lib/verify.c:353
+#: lib/formats.c:420 lib/verify.c:354
 msgid "replaced"
 msgstr ""
 
-#: lib/formats.c:423 lib/verify.c:347
+#: lib/formats.c:423 lib/verify.c:348
 msgid "not installed"
 msgstr "kurulmamış"
 
-#: lib/formats.c:426 lib/verify.c:349
+#: lib/formats.c:426 lib/verify.c:350
 msgid "net shared"
 msgstr ""
 
-#: lib/formats.c:429 lib/verify.c:351
+#: lib/formats.c:429 lib/verify.c:352
 msgid "wrong color"
 msgstr "yanlış renk"
 
@@ -2892,7 +2892,7 @@ msgstr ""
 msgid "could also not restore old database from %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2419 lib/rpmdb.c:2605
+#: lib/rpmdb.c:2419 lib/rpmdb.c:2606
 #, c-format
 msgid "replace files in %s with files from %s to recover\n"
 msgstr ""
@@ -2907,32 +2907,32 @@ msgstr ""
 msgid "could not delete old database at %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2504
+#: lib/rpmdb.c:2505
 msgid "no dbpath has been set"
 msgstr "belirtilmiş bir dbpath yok"
 
-#: lib/rpmdb.c:2522
+#: lib/rpmdb.c:2523
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2559
+#: lib/rpmdb.c:2560
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2574
+#: lib/rpmdb.c:2575
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kayıt özgün olarak %u e eklenemedi\n"
 
-#: lib/rpmdb.c:2590
+#: lib/rpmdb.c:2591
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "veritabanı yeniden oluşturulamadı: mevcut veritabanı değişmeden\n"
 "yerinde bırakıldı\n"
 
-#: lib/rpmdb.c:2603
+#: lib/rpmdb.c:2604
 msgid "failed to replace old database with new database!\n"
 msgstr "eski veritabanının yenisiyle değiştirilirmesi başarısız!\n"
 
@@ -3273,12 +3273,12 @@ msgstr ""
 msgid "Failed to resolve symbol %s: %s\n"
 msgstr ""
 
-#: lib/rpmplugins.c:154
+#: lib/rpmplugins.c:155
 #, c-format
 msgid "Plugin %%__%s_%s not configured\n"
 msgstr ""
 
-#: lib/rpmplugins.c:199
+#: lib/rpmplugins.c:200
 #, c-format
 msgid "Plugin %s not loaded\n"
 msgstr ""
@@ -3623,20 +3623,20 @@ msgstr "atlandı"
 msgid "failed"
 msgstr "başarısız oldu"
 
-#: lib/verify.c:355
+#: lib/verify.c:356
 msgid "no state"
 msgstr ""
 
-#: lib/verify.c:357
+#: lib/verify.c:358
 msgid "unknown state"
 msgstr "bilinmeyen durum"
 
-#: lib/verify.c:408
+#: lib/verify.c:409
 #, c-format
 msgid "missing   %c %s"
 msgstr "eksik   %c %s"
 
-#: lib/verify.c:463
+#: lib/verify.c:464
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr ""
@@ -3775,6 +3775,10 @@ msgstr "hata: "
 #: rpmio/rpmlog.c:195
 msgid "warning: "
 msgstr "uyarı: "
+
+#: rpmio/rpmlog.c:269
+msgid "Error writing to log"
+msgstr ""
 
 #: rpmio/rpmlua.c:523
 #, c-format
