@@ -4,7 +4,7 @@
 #
 # Usage: find-debuginfo.sh [--strict-build-id] [-g] [-r] [-m] [-i] [-n]
 #			   [--keep-section SECTION] [--remove-section SECTION]
-#	 		   [-j N]
+#	 		   [-j N] [--jobs N]
 #	 		   [-o debugfiles.list]
 #	 		   [-S debugsourcefiles.list]
 #			   [--run-dwz] [--dwz-low-mem-die-limit N]
@@ -28,8 +28,8 @@
 # The -i flag says to include a .gdb_index section in the .debug file.
 # The -n flag says to not recompute the build-id.
 #
-# The -j N option will spawn N processes to do the debuginfo extraction
-# in parallel.
+# The -j, --jobs N option will spawn N processes to do the debuginfo
+# extraction in parallel.
 #
 # A single -o switch before any -l or -p switches simply renames
 # the primary output file from debugfiles.list to something else.
