@@ -50,7 +50,6 @@
 %__mv			@__MV@
 %__patch		@__PATCH@
 %__perl			@__PERL@
-%__python		@__PYTHON@
 %__restorecon		@__RESTORECON@
 %__rm			@__RM@
 %__rsh			@__RSH@
@@ -1098,13 +1097,6 @@ package or when debugging this package.\
 %perl_vendorlib  %(eval "`%{__perl} -V:installvendorlib`"; echo $installvendorlib)
 %perl_archlib	%(eval "`%{__perl} -V:installarchlib`"; echo $installarchlib)
 %perl_privlib	%(eval "`%{__perl} -V:installprivlib`"; echo $installprivlib)
-
-#------------------------------------------------------------------------------
-# Useful python macros for determining python version and paths
-#
-%python_sitelib %(%{__python} -Es %{_rpmconfigdir}/python-macro-helper sitelib)
-%python_sitearch %(%{__python} -Es %{_rpmconfigdir}/python-macro-helper sitearch)
-%python_version %(%{__python} -Es %{_rpmconfigdir}/python-macro-helper version)
 
 #------------------------------------------------------------------------------
 # arch macro for all Intel i?86 compatible processors

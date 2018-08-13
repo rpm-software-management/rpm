@@ -14,7 +14,6 @@ EXTRA_DIST = \
 	debuginfo.prov \
 	find-debuginfo.sh find-lang.sh \
 	perl.prov perl.req pythondeps.sh pythondistdeps.py \
-	python-macro-helper \
 	rpmdb_loadcvt rpm.daily rpm.log rpm.supp rpm2cpio.sh \
 	tgpg vpkg-provides.sh \
 	find-requires find-provides \
@@ -34,7 +33,6 @@ rpmconfig_SCRIPTS = \
 	debuginfo.prov \
 	find-lang.sh find-requires find-provides \
 	perl.prov perl.req pythondeps.sh pythondistdeps.py \
-	python-macro-helper \
 	metainfo.prov \
 	mono-find-requires mono-find-provides \
 	pkgconfigdeps.sh libtooldeps.sh \
