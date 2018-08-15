@@ -213,7 +213,7 @@ static int rdToken(ParseState state)
       p++;
     } else {
       rpmlog(RPMLOG_ERR, _("syntax error while parsing ==\n"));
-      return -1;
+      goto err;
     }
     break;
   case '!':
@@ -243,7 +243,7 @@ static int rdToken(ParseState state)
       p++;
     } else {
       rpmlog(RPMLOG_ERR, _("syntax error while parsing &&\n"));
-      return -1;
+      goto err;
     }
     break;
   case '|':
@@ -252,7 +252,7 @@ static int rdToken(ParseState state)
       p++;
     } else {
       rpmlog(RPMLOG_ERR, _("syntax error while parsing ||\n"));
-      return -1;
+      goto err;
     }
     break;
 
@@ -302,7 +302,7 @@ static int rdToken(ParseState state)
 
     } else {
       rpmlog(RPMLOG_ERR, _("parse error in expression\n"));
-      return -1;
+      goto err;
     }
   }
 
@@ -314,6 +314,10 @@ static int rdToken(ParseState state)
   DEBUG(valueDump("rdToken:", state->tokenValue, stdout));
 
   return 0;
+
+err:
+  valueFree(v);
+  return -1;
 }
 
 static Value doLogical(ParseState state);
@@ -323,28 +327,28 @@ static Value doLogical(ParseState state);
  */
 static Value doPrimary(ParseState state)
 {
-  Value v;
+  Value v = NULL;
 
   DEBUG(printf("doPrimary()\n"));
 
   switch (state->nextToken) {
   case TOK_OPEN_P:
     if (rdToken(state))
-      return NULL;
+      goto err;
     v = doLogical(state);
     if (state->nextToken != TOK_CLOSE_P) {
       rpmlog(RPMLOG_ERR, _("unmatched (\n"));
-      return NULL;
+      goto err;
     }
     if (rdToken(state))
-      return NULL;
+      goto err;
     break;
 
   case TOK_INTEGER:
   case TOK_STRING:
     v = state->tokenValue;
     if (rdToken(state))
-      return NULL;
+      goto err;
     break;
 
   case TOK_IDENTIFIER: {
@@ -352,21 +356,21 @@ static Value doPrimary(ParseState state)
 
     v = valueMakeString( rpmExpand(name, NULL) );
     if (rdToken(state))
-      return NULL;
+      goto err;
     break;
   }
 
   case TOK_MINUS:
     if (rdToken(state))
-      return NULL;
+      goto err;
 
     v = doPrimary(state);
     if (v == NULL)
-      return NULL;
+      goto err;
 
     if (! valueIsInteger(v)) {
       rpmlog(RPMLOG_ERR, _("- only on numbers\n"));
-      return NULL;
+      goto err;
     }
 
     v = valueMakeInteger(- v->data.i);
@@ -374,26 +378,30 @@ static Value doPrimary(ParseState state)
 
   case TOK_NOT:
     if (rdToken(state))
-      return NULL;
+      goto err;
 
     v = doPrimary(state);
     if (v == NULL)
-      return NULL;
+      goto err;
 
     if (! valueIsInteger(v)) {
       rpmlog(RPMLOG_ERR, _("! only on numbers\n"));
-      return NULL;
+      goto err;
     }
 
     v = valueMakeInteger(! v->data.i);
     break;
   default:
-    return NULL;
+    goto err;
     break;
   }
 
   DEBUG(valueDump("doPrimary:", v, stdout));
   return v;
+
+err:
+  valueFree(v);
+  return NULL;
 }
 
 /**
@@ -401,30 +409,30 @@ static Value doPrimary(ParseState state)
  */
 static Value doMultiplyDivide(ParseState state)
 {
-  Value v1, v2 = NULL;
+  Value v1 = NULL, v2 = NULL;
 
   DEBUG(printf("doMultiplyDivide()\n"));
 
   v1 = doPrimary(state);
   if (v1 == NULL)
-    return NULL;
+    goto err;
 
   while (state->nextToken == TOK_MULTIPLY
 	 || state->nextToken == TOK_DIVIDE) {
     int op = state->nextToken;
 
     if (rdToken(state))
-      return NULL;
+      goto err;
 
     if (v2) valueFree(v2);
 
     v2 = doPrimary(state);
     if (v2 == NULL)
-      return NULL;
+      goto err;
 
     if (! valueSameType(v1, v2)) {
       rpmlog(RPMLOG_ERR, _("types must match\n"));
-      return NULL;
+      goto err;
     }
 
     if (valueIsInteger(v1)) {
@@ -437,12 +445,17 @@ static Value doMultiplyDivide(ParseState state)
 	v1 = valueMakeInteger(i1 / i2);
     } else {
       rpmlog(RPMLOG_ERR, _("* / not suported for strings\n"));
-      return NULL;
+      goto err;
     }
   }
 
   if (v2) valueFree(v2);
   return v1;
+
+err:
+  valueFree(v1);
+  valueFree(v2);
+  return NULL;
 }
 
 /**
@@ -450,29 +463,29 @@ static Value doMultiplyDivide(ParseState state)
  */
 static Value doAddSubtract(ParseState state)
 {
-  Value v1, v2 = NULL;
+  Value v1 = NULL, v2 = NULL;
 
   DEBUG(printf("doAddSubtract()\n"));
 
   v1 = doMultiplyDivide(state);
   if (v1 == NULL)
-    return NULL;
+    goto err;
 
   while (state->nextToken == TOK_ADD || state->nextToken == TOK_MINUS) {
     int op = state->nextToken;
 
     if (rdToken(state))
-      return NULL;
+      goto err;
 
     if (v2) valueFree(v2);
 
     v2 = doMultiplyDivide(state);
     if (v2 == NULL)
-      return NULL;
+      goto err;
 
     if (! valueSameType(v1, v2)) {
       rpmlog(RPMLOG_ERR, _("types must match\n"));
-      return NULL;
+      goto err;
     }
 
     if (valueIsInteger(v1)) {
@@ -488,7 +501,7 @@ static Value doAddSubtract(ParseState state)
 
       if (op == TOK_MINUS) {
 	rpmlog(RPMLOG_ERR, _("- not suported for strings\n"));
-	return NULL;
+        goto err;
       }
 
       copy = xmalloc(strlen(v1->data.s) + strlen(v2->data.s) + 1);
@@ -501,6 +514,11 @@ static Value doAddSubtract(ParseState state)
 
   if (v2) valueFree(v2);
   return v1;
+
+err:
+  valueFree(v1);
+  valueFree(v2);
+  return NULL;
 }
 
 /**
@@ -508,29 +526,29 @@ static Value doAddSubtract(ParseState state)
  */
 static Value doRelational(ParseState state)
 {
-  Value v1, v2 = NULL;
+  Value v1 = NULL, v2 = NULL;
 
   DEBUG(printf("doRelational()\n"));
 
   v1 = doAddSubtract(state);
   if (v1 == NULL)
-    return NULL;
+    goto err;
 
   while (state->nextToken >= TOK_EQ && state->nextToken <= TOK_GE) {
     int op = state->nextToken;
 
     if (rdToken(state))
-      return NULL;
+      goto err;
 
     if (v2) valueFree(v2);
 
     v2 = doAddSubtract(state);
     if (v2 == NULL)
-      return NULL;
+      goto err;
 
     if (! valueSameType(v1, v2)) {
       rpmlog(RPMLOG_ERR, _("types must match\n"));
-      return NULL;
+      goto err;
     }
 
     if (valueIsInteger(v1)) {
@@ -592,6 +610,11 @@ static Value doRelational(ParseState state)
 
   if (v2) valueFree(v2);
   return v1;
+
+err:
+  valueFree(v1);
+  valueFree(v2);
+  return NULL;
 }
 
 /**
@@ -599,30 +622,30 @@ static Value doRelational(ParseState state)
  */
 static Value doLogical(ParseState state)
 {
-  Value v1, v2 = NULL;
+  Value v1 = NULL, v2 = NULL;
 
   DEBUG(printf("doLogical()\n"));
 
   v1 = doRelational(state);
   if (v1 == NULL)
-    return NULL;
+    goto err;
 
   while (state->nextToken == TOK_LOGICAL_AND
 	 || state->nextToken == TOK_LOGICAL_OR) {
     int op = state->nextToken;
 
     if (rdToken(state))
-      return NULL;
+      goto err;
 
     if (v2) valueFree(v2);
 
     v2 = doRelational(state);
     if (v2 == NULL)
-      return NULL;
+      goto err;
 
     if (! valueSameType(v1, v2)) {
       rpmlog(RPMLOG_ERR, _("types must match\n"));
-      return NULL;
+      goto err;
     }
 
     if (valueIsInteger(v1)) {
@@ -635,12 +658,17 @@ static Value doLogical(ParseState state)
 	v1 = valueMakeInteger(i1 || i2);
     } else {
       rpmlog(RPMLOG_ERR, _("&& and || not suported for strings\n"));
-      return NULL;
+      goto err;
     }
   }
 
   if (v2) valueFree(v2);
   return v1;
+
+err:
+  valueFree(v1);
+  valueFree(v2);
+  return NULL;
 }
 
 int parseExpressionBoolean(const char *expr)
@@ -659,16 +687,13 @@ int parseExpressionBoolean(const char *expr)
 
   /* Parse the expression. */
   v = doLogical(&state);
-  if (!v) {
-    state.str = _free(state.str);
-    return -1;
-  }
+  if (!v)
+    goto exit;
 
   /* If the next token is not TOK_EOF, we have a syntax error. */
   if (state.nextToken != TOK_EOF) {
     rpmlog(RPMLOG_ERR, _("syntax error in expression\n"));
-    state.str = _free(state.str);
-    return -1;
+    goto exit;
   }
 
   DEBUG(valueDump("parseExprBoolean:", v, stdout));
@@ -684,6 +709,7 @@ int parseExpressionBoolean(const char *expr)
     break;
   }
 
+exit:
   state.str = _free(state.str);
   valueFree(v);
   return result;
