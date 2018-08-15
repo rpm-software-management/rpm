@@ -407,11 +407,11 @@ runroot rpm \
   -i no_such_file
 ],
 [1],
-[ignore],
-[ignore])
+[],
+[error: open of no_such_file failed: No such file or directory
+])
 AT_CLEANUP
 
-# XXX hmm, --nomanifest seems broken atm...
 AT_SETUP([rpm -i --nomanifest <garbage text file>])
 AT_KEYWORDS([install])
 AT_CHECK([
@@ -422,11 +422,12 @@ not_an.rpm
 EOF
 
 runroot rpm \
-  -Uvv --nomanifest /textfile
+  -Uv --nomanifest /textfile
 ],
 [1],
-[ignore],
-[ignore])
+[],
+[error: /textfile cannot be installed
+])
 AT_CLEANUP
 
 AT_SETUP([rpm -i <garbage text file])
@@ -439,11 +440,13 @@ not_pkg.rpm
 EOF
 
 runroot rpm \
-  -Uvv /not_an.rpm
+  -Uv /not_an.rpm
 ],
 [2],
-[ignore],
-[ignore])
+[],
+[error: open of no_such.file failed: No such file or directory
+error: open of not_pkg.rpm failed: No such file or directory
+])
 AT_CLEANUP
 
 # ------------------------------
