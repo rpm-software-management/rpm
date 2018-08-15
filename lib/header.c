@@ -963,8 +963,7 @@ rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg)
     h->sorted = HEADERSORT_NONE;
     headerSort(h);
     h->flags |= HEADERFLAG_ALLOCATED;
-    if (hdrp)
-	*hdrp = h;
+    *hdrp = h;
 
     /* We own the memory now, avoid double-frees */
     blob->ei = NULL;
