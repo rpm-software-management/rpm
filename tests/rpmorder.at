@@ -44,3 +44,49 @@ deptest-three-1.0-1.noarch
 ],
 [])
 AT_CLEANUP
+
+# same as above but with recommends instead of requires
+AT_SETUP([basic install/erase order 2])
+AT_KEYWORDS([install erase order])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "recs deptest-two" \
+	/data/SPECS/deptest.spec
+runroot rpmbuild --quiet -bb \
+	--define "pkg two" \
+	--define "recs deptest-three" \
+	/data/SPECS/deptest.spec
+runroot rpmbuild --quiet -bb \
+	--define "pkg three" \
+	/data/SPECS/deptest.spec
+
+echo INSTALL:
+runroot rpm -Uv --justdb \
+	/build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm \
+	/build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm \
+	/build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
+echo ERASE:
+runroot rpm -ev --justdb \
+        deptest-three \
+	deptest-one \
+	deptest-two
+],
+[0],
+[INSTALL:
+Verifying packages...
+Preparing packages...
+deptest-three-1.0-1.noarch
+deptest-two-1.0-1.noarch
+deptest-one-1.0-1.noarch
+ERASE:
+Preparing packages...
+deptest-one-1.0-1.noarch
+deptest-two-1.0-1.noarch
+deptest-three-1.0-1.noarch
+],
+[])
+AT_CLEANUP

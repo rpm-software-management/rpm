@@ -51,6 +51,10 @@ struct rpmte_s {
     rpmds conflicts;		/*!< Conflicts: dependencies. */
     rpmds obsoletes;		/*!< Obsoletes: dependencies. */
     rpmds order;		/*!< Order: dependencies. */
+    rpmds recommends;		/*!< Recommends: dependencies. */
+    rpmds suggests;		/*!< Suggests: dependencies. */
+    rpmds supplements;		/*!< Supplements: dependencies. */
+    rpmds enhances;		/*!< Enhances: dependencies. */
     rpmfiles files;		/*!< File information. */
     rpmfi fi;			/*!< File iterator (backwards compat) */
     rpmps probs;		/*!< Problems (relocations) */
@@ -85,6 +89,10 @@ void rpmteCleanDS(rpmte te)
     te->requires = rpmdsFree(te->requires);
     te->conflicts = rpmdsFree(te->conflicts);
     te->obsoletes = rpmdsFree(te->obsoletes);
+    te->recommends = rpmdsFree(te->recommends);
+    te->suggests = rpmdsFree(te->suggests);
+    te->supplements = rpmdsFree(te->supplements);
+    te->enhances = rpmdsFree(te->enhances);
     te->order = rpmdsFree(te->order);
 }
 
@@ -165,6 +173,10 @@ static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
     p->conflicts = rpmdsNewPool(tspool, h, RPMTAG_CONFLICTNAME, 0);
     p->obsoletes = rpmdsNewPool(tspool, h, RPMTAG_OBSOLETENAME, 0);
     p->order = rpmdsNewPool(tspool, h, RPMTAG_ORDERNAME, 0);
+    p->recommends = rpmdsNewPool(tspool, h, RPMTAG_RECOMMENDNAME, 0);
+    p->suggests = rpmdsNewPool(tspool, h, RPMTAG_SUGGESTNAME, 0);
+    p->supplements = rpmdsNewPool(tspool, h, RPMTAG_SUPPLEMENTNAME, 0);
+    p->enhances = rpmdsNewPool(tspool, h, RPMTAG_ENHANCENAME, 0);
 
     /* Relocation needs to know file count before rpmfiNew() */
     headerGet(h, RPMTAG_BASENAMES, &bnames, HEADERGET_MINMEM);
@@ -422,6 +434,10 @@ rpmds rpmteDS(rpmte te, rpmTagVal tag)
     case RPMTAG_CONFLICTNAME:	return te->conflicts;
     case RPMTAG_OBSOLETENAME:	return te->obsoletes;
     case RPMTAG_ORDERNAME:	return te->order;
+    case RPMTAG_RECOMMENDNAME:	return te->recommends;
+    case RPMTAG_SUGGESTNAME:	return te->suggests;
+    case RPMTAG_SUPPLEMENTNAME:	return te->supplements;
+    case RPMTAG_ENHANCENAME:	return te->enhances;
     default:			break;
     }
     return NULL;
