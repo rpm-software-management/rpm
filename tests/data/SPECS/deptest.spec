@@ -14,6 +14,7 @@ BuildArch:	noarch
 %{?sugs:Suggests: %{sugs}}
 %{?sups:Supplements: %{sups}}
 %{?ens:Enhances: %{ens}}
+%{?ord:OrderWithRequires: %{ord}}
 %{?buildreqs:BuildRequires: %{buildreqs}}
 %{?buildcfls:BuildConflicts: %{buildcfls}}
 
