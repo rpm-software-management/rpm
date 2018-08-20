@@ -217,7 +217,7 @@ may be specified as an
 \fBhttp\fR URL,
 in which case the package will be downloaded before being
 installed. See \fBFTP/HTTP OPTIONS\fR
-for information on \fBrpm\fR's internal
+for information on \fBrpm\fR's
 \fBftp\fR and
 \fBhttp\fR
 client support.
@@ -589,7 +589,7 @@ The \fIPACKAGE_FILE\fR may be specified
 as an \fBftp\fR or \fBhttp\fR style URL, in
 which case the package header will be downloaded and queried.
 See \fBFTP/HTTP OPTIONS\fR for information on
-\fBrpm\fR's internal
+\fBrpm\fR's
 \fBftp\fR and
 \fBhttp\fR
 client support. The \fIPACKAGE_FILE\fR argument(s),
@@ -885,35 +885,21 @@ specified as an
 \fBhttp\fR
 style URL:  
 .PP
-ftp://USER:PASSWORD@HOST:PORT/path/to/package.rpm
+http://HOST[:PORT]/path/to/package.rpm
 .PP
-If the \fB:PASSWORD\fR portion is omitted, the password will be
-prompted for (once per user/hostname pair). If both the user and
-password are omitted, anonymous \fBftp\fR is used.
-In all cases, passive (PASV) \fBftp\fR transfers are
-performed.
+ftp://[USER:PASSWORD]@HOST[:PORT]/path/to/package.rpm
+.PP
+If both the user and password are omitted, anonymous \fBftp\fR is used.
 .PP
 \fBrpm\fR allows the following options to be used with
 ftp URLs:
 .TP
-\fB--ftpproxy \fIHOST\fB\fR
-The host \fIHOST\fR will be used as a proxy server
-for all ftp transfers, which allows users to ftp through firewall
-machines which use proxy systems. This option may also be specified
-by configuring the macro \fB%_ftpproxy\fR.
-.TP
-\fB--ftpport \fIPORT\fB\fR
-The TCP \fIPORT\fR number to use for
-the ftp connection on the proxy ftp server instead of the default
-port. This option may also be specified by configuring the macro
-\fB%_ftpport\fR.
-.PP
 \fBrpm\fR allows the following options to be used with
-\fBhttp\fR URLs:
+\fBhttp\fR and \fBftp\fR URLs:
 .TP
 \fB--httpproxy \fIHOST\fB\fR
 The host \fIHOST\fR will be used as
-a proxy server for all \fBhttp\fR transfers. This
+a proxy server for all \fBhttp\fR and \fBftp\fR transfers. This
 option may also be specified by configuring the macro
 \fB%_httpproxy\fR.
 .TP

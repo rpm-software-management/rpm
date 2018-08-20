@@ -325,18 +325,13 @@ package or when debugging this package.\
 #	marked as %doc should be installed.
 #%_excludedocs
 
-#	The port and machine name of a FTP proxy host running TIS firewall.
-#
-#%_ftpport
-#%_ftpproxy
-
 #	The signature to use and the location of configuration files for
 #	signing packages with GNU gpg.
 #
 #%_gpg_name
 #%_gpg_path
 
-#	The port and machine name of an HTTP proxy host.
+#	The port and machine name of an HTTP proxy host (used for FTP/HTTP).
 #
 #%_httpport
 #%_httpproxy
