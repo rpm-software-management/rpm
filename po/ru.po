@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2018-08-08 15:39+0300\n"
+"POT-Creation-Date: 2018-08-21 13:38+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Russian (http://www.transifex.com/rpm-team/rpm/language/ru/)\n"
@@ -676,36 +676,36 @@ msgstr "синтаксическая ошибка при анализе ||\n"
 msgid "parse error in expression\n"
 msgstr "ошибка анализа выражения\n"
 
-#: build/expression.c:336
+#: build/expression.c:340
 msgid "unmatched (\n"
 msgstr "незакрытая (\n"
 
-#: build/expression.c:368
+#: build/expression.c:372
 msgid "- only on numbers\n"
 msgstr "- только для чисел\n"
 
-#: build/expression.c:384
+#: build/expression.c:388
 msgid "! only on numbers\n"
 msgstr "! только для чисел\n"
 
-#: build/expression.c:426 build/expression.c:474 build/expression.c:532
-#: build/expression.c:624
+#: build/expression.c:434 build/expression.c:487 build/expression.c:550
+#: build/expression.c:647
 msgid "types must match\n"
 msgstr "типы должны совпадать\n"
 
-#: build/expression.c:439
+#: build/expression.c:447
 msgid "* / not suported for strings\n"
 msgstr "* / не поддерживается для строк\n"
 
-#: build/expression.c:490
+#: build/expression.c:503
 msgid "- not suported for strings\n"
 msgstr "- не поддерживается для строк\n"
 
-#: build/expression.c:637
+#: build/expression.c:660
 msgid "&& and || not suported for strings\n"
 msgstr "&& и || не поддерживаются для строк\n"
 
-#: build/expression.c:669
+#: build/expression.c:695
 msgid "syntax error in expression\n"
 msgstr "синтаксическая ошибка в выражении\n"
 
@@ -3503,11 +3503,11 @@ msgstr ""
 msgid "Unknown format"
 msgstr "Неизвестный формат"
 
-#: lib/rpmte.c:729
+#: lib/rpmte.c:745
 msgid "install"
 msgstr "установить"
 
-#: lib/rpmte.c:730
+#: lib/rpmte.c:746
 msgid "erase"
 msgstr "стереть"
 

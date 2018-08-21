@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2018-08-08 15:39+0300\n"
+"POT-Creation-Date: 2018-08-21 13:38+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Chinese (Mandarin) (http://www.transifex.com/rpm-team/rpm/"
@@ -653,36 +653,36 @@ msgstr "剖析 || 時有語法錯誤\n"
 msgid "parse error in expression\n"
 msgstr "表述式剖析錯誤\n"
 
-#: build/expression.c:336
+#: build/expression.c:340
 msgid "unmatched (\n"
 msgstr "不符合的 (\n"
 
-#: build/expression.c:368
+#: build/expression.c:372
 msgid "- only on numbers\n"
 msgstr "- 只能用於數字\n"
 
-#: build/expression.c:384
+#: build/expression.c:388
 msgid "! only on numbers\n"
 msgstr "! 只能用於數字\n"
 
-#: build/expression.c:426 build/expression.c:474 build/expression.c:532
-#: build/expression.c:624
+#: build/expression.c:434 build/expression.c:487 build/expression.c:550
+#: build/expression.c:647
 msgid "types must match\n"
 msgstr "類型必須符合\n"
 
-#: build/expression.c:439
+#: build/expression.c:447
 msgid "* / not suported for strings\n"
 msgstr "字串不支援 *、/\n"
 
-#: build/expression.c:490
+#: build/expression.c:503
 msgid "- not suported for strings\n"
 msgstr "字串不支援 -\n"
 
-#: build/expression.c:637
+#: build/expression.c:660
 msgid "&& and || not suported for strings\n"
 msgstr "字串不支援 && 和 ||\n"
 
-#: build/expression.c:669
+#: build/expression.c:695
 msgid "syntax error in expression\n"
 msgstr "表述式中有語法錯誤\n"
 
@@ -3473,11 +3473,11 @@ msgstr "%s 指令稿片段失敗，離開狀態 %d\n"
 msgid "Unknown format"
 msgstr "不明格式"
 
-#: lib/rpmte.c:729
+#: lib/rpmte.c:745
 msgid "install"
 msgstr "安裝"
 
-#: lib/rpmte.c:730
+#: lib/rpmte.c:746
 msgid "erase"
 msgstr "抹除"
 

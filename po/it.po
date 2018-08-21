@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2018-08-08 15:39+0300\n"
+"POT-Creation-Date: 2018-08-21 13:38+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Italian (http://www.transifex.com/rpm-team/rpm/language/it/)\n"
@@ -694,36 +694,36 @@ msgstr "errore di sintassi durante il parsing di ||\n"
 msgid "parse error in expression\n"
 msgstr "errore durante il parsing dell'espressione\n"
 
-#: build/expression.c:336
+#: build/expression.c:340
 msgid "unmatched (\n"
 msgstr "non corrispondente (\n"
 
-#: build/expression.c:368
+#: build/expression.c:372
 msgid "- only on numbers\n"
 msgstr "- solo sui numeri\n"
 
-#: build/expression.c:384
+#: build/expression.c:388
 msgid "! only on numbers\n"
 msgstr "! solo sui numeri\n"
 
-#: build/expression.c:426 build/expression.c:474 build/expression.c:532
-#: build/expression.c:624
+#: build/expression.c:434 build/expression.c:487 build/expression.c:550
+#: build/expression.c:647
 msgid "types must match\n"
 msgstr "i diversi tipi devono corrispondere\n"
 
-#: build/expression.c:439
+#: build/expression.c:447
 msgid "* / not suported for strings\n"
 msgstr "* / non supportato per le stringhe\n"
 
-#: build/expression.c:490
+#: build/expression.c:503
 msgid "- not suported for strings\n"
 msgstr "- non supportato per le stringhe\n"
 
-#: build/expression.c:637
+#: build/expression.c:660
 msgid "&& and || not suported for strings\n"
 msgstr "&& e || non supportati per le stringhe\n"
 
-#: build/expression.c:669
+#: build/expression.c:695
 msgid "syntax error in expression\n"
 msgstr "errore di sintassi nell'espressione\n"
 
@@ -3553,11 +3553,11 @@ msgstr "scriptlet %s fallita, uscita con stato %d\n"
 msgid "Unknown format"
 msgstr "Formato sconosciuto"
 
-#: lib/rpmte.c:729
+#: lib/rpmte.c:745
 msgid "install"
 msgstr "installa"
 
-#: lib/rpmte.c:730
+#: lib/rpmte.c:746
 msgid "erase"
 msgstr "elimina"
 

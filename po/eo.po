@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2018-08-08 15:39+0300\n"
+"POT-Creation-Date: 2018-08-21 13:38+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Esperanto (http://www.transifex.com/rpm-team/rpm/language/"
@@ -671,36 +671,36 @@ msgstr "Sintaksa eraro dum analizi ||\n"
 msgid "parse error in expression\n"
 msgstr "analiza eraro ĉe esprimo\n"
 
-#: build/expression.c:336
+#: build/expression.c:340
 msgid "unmatched (\n"
 msgstr "( sen )\n"
 
-#: build/expression.c:368
+#: build/expression.c:372
 msgid "- only on numbers\n"
 msgstr "- nur por nobroj\n"
 
-#: build/expression.c:384
+#: build/expression.c:388
 msgid "! only on numbers\n"
 msgstr "! nur por nombroj\n"
 
-#: build/expression.c:426 build/expression.c:474 build/expression.c:532
-#: build/expression.c:624
+#: build/expression.c:434 build/expression.c:487 build/expression.c:550
+#: build/expression.c:647
 msgid "types must match\n"
 msgstr "tipoj devas esti kongruaj\n"
 
-#: build/expression.c:439
+#: build/expression.c:447
 msgid "* / not suported for strings\n"
 msgstr "* / ne por ĉenoj\n"
 
-#: build/expression.c:490
+#: build/expression.c:503
 msgid "- not suported for strings\n"
 msgstr "- no por ĉenoj\n"
 
-#: build/expression.c:637
+#: build/expression.c:660
 msgid "&& and || not suported for strings\n"
 msgstr "&& kaj || ne por ĉenoj\n"
 
-#: build/expression.c:669
+#: build/expression.c:695
 msgid "syntax error in expression\n"
 msgstr "sintaksa eraro en esprimo\n"
 
@@ -3506,11 +3506,11 @@ msgstr "skripteto %s malsukcesis, elira stato %d\n"
 msgid "Unknown format"
 msgstr "nekonata formato"
 
-#: lib/rpmte.c:729
+#: lib/rpmte.c:745
 msgid "install"
 msgstr "instali"
 
-#: lib/rpmte.c:730
+#: lib/rpmte.c:746
 msgid "erase"
 msgstr "forviŝi"
 
