@@ -8,6 +8,7 @@ have been contributed by:
 
 	Tero Aho
 	Stuart Anderson
+	Jun Aruga
 	Ed Bailey
 	Donnie Barnes
 	Stefan Berger
@@ -16,6 +17,7 @@ have been contributed by:
 	Frederic Bonnard
 	Nikita Borisov
 	Pádraig Brady
+	Filipe Brandenburger
 	Tony Breeds
 	Till Bubeck
 	Héctor Daniel Cabrera
@@ -25,6 +27,7 @@ have been contributed by:
 	Archie Cobbs
 	Ralf Corsépius
 	Kit Cosper
+	Mike Crowe
 	Rafal Cygnarowski
 	Jean Delvare
 	Kristof Depraetere
@@ -56,11 +59,13 @@ have been contributed by:
 	Aron Griffis
 	Fionnuala Gunter
 	Anssi Hannula
+	Miro Hrončok
 	Richard Hughes
 	Tom Hughes
 	Thomas Jarosch
 	Zbigniew Jędrzejewski-Szmek
 	Jakub Jelinek
+	Alan Jenkins
 	Jeff Johnson
 	Michael K. Johnson
 	Tadashi Jokagi
@@ -69,6 +74,7 @@ have been contributed by:
 	Guillem Jover
 	Joseph L. Hartmann, Jr
 	Juha Kallioinen
+	Alexander Kanavin
 	Alexandr D. Kanevskiy
 	Eugene Kanter
 	Lubos Kardos
@@ -77,6 +83,7 @@ have been contributed by:
 	Peter Kjellerstedt
 	Phil Knirsch
 	Michal Kochanowicz
+	Kir Kolyshkin
 	Ales Kozumplik
 	Jan Kratochvil
 	Toshio Kuratomi
@@ -110,18 +117,23 @@ have been contributed by:
 	Jindrich Novy
 	Michael Nyquisk
 	Stanislav Ochotnicky
+	Ruediger Oertel
 	Denis Ollier
 	Vít Ondruch
 	Tomas Orsava
 	Rakesh Pandit
+	Jan Pazdziora
 	Thomas Petazzoni
 	Jan Pokorný
+	Richard Purdie
 	Trần Ngọc Quân
 	Jerome Quelin
 	Pavel Raiskup
 	Elena Reshetova
+	Athos Ribeiro
 	Sebastian Riedel
 	Lubomir Rintel
+	Bernhard Rosenkränzer
 	Pavol Rusnak
 	Kamil Rytarowski
 	Mark Salter
@@ -132,6 +144,7 @@ have been contributed by:
 	Michael Schroeder
 	Andreas Schwab
 	Christopher Seawood
+	Vladimir D. Seleznev
 	Misha Shnurapet
 	Kirill A. Shutemov
 	Jan Silhan
@@ -139,6 +152,7 @@ have been contributed by:
 	Mukund Sivaraman
 	Ville Skyttä
 	Jeff Smith
+	Miroslav Suchý
 	Johnie Stafford
 	Hajime Taira
 	Bob Tanner
