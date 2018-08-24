@@ -353,6 +353,7 @@ exit:
 
 int main(int argc, char *argv[])
 {
+    int rc = 0;
     int provides = 0;
     int requires = 0;
     poptContext optCon;
@@ -381,16 +382,18 @@ int main(int argc, char *argv[])
     if (poptPeekArg(optCon)) {
 	const char *fn;
 	while ((fn = poptGetArg(optCon)) != NULL) {
-	    (void) processFile(fn, requires);
+	    if (processFile(fn, requires))
+		rc = EXIT_FAILURE;
 	}
     } else {
 	char fn[BUFSIZ];
 	while (fgets(fn, sizeof(fn), stdin) != NULL) {
 	    fn[strlen(fn)-1] = '\0';
-	    (void) processFile(fn, requires);
+	    if (processFile(fn, requires))
+		rc = EXIT_FAILURE;
 	}
     }
 
     poptFreeContext(optCon);
-    return 0;
+    return rc;
 }
