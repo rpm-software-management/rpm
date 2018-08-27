@@ -126,3 +126,24 @@ def dsSingle(TagN, N, EVR="", Flags=RPMSENSE_ANY):
     dsSingle(RPMTAG_CONFLICTNAME, "rpm") corresponds to "Conflicts: rpm"
     """
     return ds((N, Flags, EVR), TagN)
+
+def parse_evr(evr_string):
+    """
+    Parse epoch:version-release from string. Returns tuple (epoch, version, release).
+    """
+    if evr_string in [None, '']:
+        return (None, None, None)
+    if evr_string.find(':') > -1:
+        epoch, evr_string = evr_string.split(":", 1)
+        if epoch == '':
+            epoch = 0
+    else:
+        epoch = 0
+    if evr_string.find('-') > -1:
+        version, release = evr_string.split("-", 1)
+    else:
+        version = evr_string
+        release = None
+    if version == '':
+        version = None
+    return (epoch, version, release)
