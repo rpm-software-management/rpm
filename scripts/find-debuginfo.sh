@@ -486,6 +486,7 @@ if $run_dwz \
    && [ -d "${RPM_BUILD_ROOT}/usr/lib/debug" ]; then
   readarray dwz_files < <(cd "${RPM_BUILD_ROOT}/usr/lib/debug"; find -type f -name \*.debug | LC_ALL=C sort)
   if [ ${#dwz_files[@]} -gt 0 ]; then
+    size_before=$(du -s ${RPM_BUILD_ROOT}/usr/lib/debug | cut -f1)
     dwz_multifile_name="${RPM_PACKAGE_NAME}-${RPM_PACKAGE_VERSION}-${RPM_PACKAGE_RELEASE}.${RPM_ARCH}"
     dwz_multifile_suffix=
     dwz_multifile_idx=0
@@ -508,6 +509,8 @@ if $run_dwz \
       echo >&2 "*** ERROR: DWARF compression requested, but no dwz installed"
       exit 2
     fi
+    size_after=$(du -s ${RPM_BUILD_ROOT}/usr/lib/debug | cut -f1)
+    echo "original debug info size: ${size_before}, size after compression: ${size_after}"
     # Remove .dwz directory if empty
     rmdir "${RPM_BUILD_ROOT}/usr/lib/debug/.dwz" 2>/dev/null
     if [ -f "${RPM_BUILD_ROOT}/usr/lib/debug/.dwz/${dwz_multifile_name}" ]; then
