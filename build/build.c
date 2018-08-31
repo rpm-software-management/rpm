@@ -209,8 +209,11 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 	struct rpmtd_s td;
 	if (headerGet(h, RPMTAG_CHANGELOGTIME, &td, (HEADERGET_MINMEM|HEADERGET_RAW))) {
 	    char sdestr[22];
-	    snprintf(sdestr, sizeof(sdestr), "%lli",
-		     (long long) rpmtdGetNumber(&td));
+	    long long sdeint = rpmtdGetNumber(&td);
+	    if (sdeint % 86400 == 43200) /* date was rounded to 12:00 */
+		/* make sure it is in the past, so that clamping times works */
+		sdeint -= 43200;
+	    snprintf(sdestr, sizeof(sdestr), "%lli", sdeint);
 	    rpmlog(RPMLOG_NOTICE, _("setting %s=%s\n"), "SOURCE_DATE_EPOCH", sdestr);
 	    setenv("SOURCE_DATE_EPOCH", sdestr, 0);
 	    rpmtdFreeData(&td);
