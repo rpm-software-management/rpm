@@ -357,9 +357,6 @@ do_file()
   get_debugfn "$f"
   [ -f "${debugfn}" ] && return
 
-  echo "explicitly decompress any DWARF compressed ELF sections in $f"
-  eu-elfcompress -q -p -t none "$f"
-
   echo "extracting debug info from $f"
   # See also cpio SOURCEFILE copy. Directories must match up.
   debug_base_name="$RPM_BUILD_DIR"
