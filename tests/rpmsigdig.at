@@ -175,7 +175,6 @@ License     : pubkey
 Signature   : (none)
 Source RPM  : (none)
 Build Host  : localhost
-Relocations : (not relocatable)
 Packager    : rpm.org RSA testkey <rsa@rpm.org>
 Summary     : rpm.org RSA testkey <rsa@rpm.org> public key
 Description :
