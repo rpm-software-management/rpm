@@ -1259,6 +1259,7 @@ static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
 	    rpmteAddProblem(p, RPMPROB_VERIFY, NULL, vd.msg, 0);
 
 	vd.msg = _free(vd.msg);
+	rpmvsFree(vs);
     }
     rpmtsNotify(ts, NULL, RPMCALLBACK_VERIFY_STOP, total, total);
 
