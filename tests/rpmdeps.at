@@ -71,9 +71,17 @@ runroot rpmbuild --quiet -bb \
 	  /data/SPECS/deptest.spec
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+echo $?
+runroot rpm -U --nodeps /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+echo $?
+runroot rpm -e deptest-two
+echo $?
 ],
-[2],
-[],
+[ignore],
+[2
+0
+0
+],
 [error: Failed dependencies:
 	deptest-two >= 2.0 is needed by deptest-one-1.0-1.noarch
 ])
