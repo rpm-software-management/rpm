@@ -841,7 +841,6 @@ static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
     int is_problem = (depTag == RPMTAG_REQUIRENAME);
 
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	char * pkgNEVRA;
 	rpmds ds;
 
 	/* Ignore self-obsoletes and self-conflicts */
@@ -851,15 +850,16 @@ static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
 		continue;
 	}
 
-	pkgNEVRA = headerGetAsString(h, RPMTAG_NEVRA);
 	ds = rpmdsNewPool(pool, h, depTag, 0);
 	rpmdsSetIx(ds, rpmdbGetIteratorFileNum(mi));
 
-	if (unsatisfiedDepend(ts, dcache, ds) == is_problem)
+	if (unsatisfiedDepend(ts, dcache, ds) == is_problem) {
+	    char *pkgNEVRA = headerGetAsString(h, RPMTAG_NEVRA);
 	    rpmteAddDepProblem(te, pkgNEVRA, ds, NULL);
+	    free(pkgNEVRA);
+	}
 
 	rpmdsFree(ds);
-	free(pkgNEVRA);
     }
     rpmdbFreeIterator(mi);
 }
