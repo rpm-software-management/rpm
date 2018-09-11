@@ -832,14 +832,23 @@ static void checkDS(rpmts ts, depCache dcache, rpmte te,
 
 /* Check a given dependency against installed packages */
 static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
-			  rpmTag depTag, const char *dep)
+			  rpmTag depTag, const char *dep, int neg)
 {
     Header h;
-    rpmdbMatchIterator mi = rpmtsPrunedIterator(ts, depTag, dep, 1);
+    rpmdbMatchIterator mi;
     rpmstrPool pool = rpmtsPool(ts);
+    char *ndep = NULL;
     /* require-problems are unsatisfied, others appear "satisfied" */
     int is_problem = (depTag == RPMTAG_REQUIRENAME);
 
+    if (neg) {
+	ndep = rmalloc(strlen(dep) + 2);
+	ndep[0] = '!';
+	strcpy(ndep + 1, dep);
+	dep = ndep;
+    }
+
+    mi = rpmtsPrunedIterator(ts, depTag, dep, 1);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	rpmds ds;
 
@@ -862,15 +871,6 @@ static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
 	rpmdsFree(ds);
     }
     rpmdbFreeIterator(mi);
-}
-
-static void checkNotInstDeps(rpmts ts, depCache dcache, rpmte te,
-			     rpmTag depTag, const char *dep)
-{
-    char *ndep = rmalloc(strlen(dep) + 2);
-    ndep[0] = '!';
-    strcpy(ndep + 1, dep);
-    checkInstDeps(ts, dcache, te, depTag, ndep);
     free(ndep);
 }
 
@@ -906,10 +906,7 @@ static void checkInstFileDeps(rpmts ts, depCache dcache, rpmte te,
 	} else {
 	    continue;
 	}
-	if (!is_not)
-	    checkInstDeps(ts, dcache, te, depTag, dep);
-	else
-	    checkNotInstDeps(ts, dcache, te, depTag, dep);
+	checkInstDeps(ts, dcache, te, depTag, dep, is_not);
 	_free(fpdep);
     }
     _free(fp);
@@ -1063,9 +1060,9 @@ int rpmtsCheck(rpmts ts)
 	/* Check provides against conflicts in installed packages. */
 	while (rpmdsNext(provides) >= 0) {
 	    const char *dep = rpmdsN(provides);
-	    checkInstDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, dep);
+	    checkInstDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, dep, 0);
 	    if (reqnothash && depexistsHashHasEntry(reqnothash, dep))
-		checkNotInstDeps(ts, dcache, p, RPMTAG_REQUIRENAME, dep);
+		checkInstDeps(ts, dcache, p, RPMTAG_REQUIRENAME, dep, 1);
 	}
 
 	/* Skip obsoletion checks for source packages (ie build) */
@@ -1073,7 +1070,7 @@ int rpmtsCheck(rpmts ts)
 	    continue;
 
 	/* Check package name (not provides!) against installed obsoletes */
-	checkInstDeps(ts, dcache, p, RPMTAG_OBSOLETENAME, rpmteN(p));
+	checkInstDeps(ts, dcache, p, RPMTAG_OBSOLETENAME, rpmteN(p), 0);
 
 	/* Check filenames against installed conflicts */
         if (confilehash || reqnotfilehash) {
@@ -1104,9 +1101,9 @@ int rpmtsCheck(rpmts ts)
 	/* Check provides and filenames against installed dependencies. */
 	while (rpmdsNext(provides) >= 0) {
 	    const char *dep = rpmdsN(provides);
-	    checkInstDeps(ts, dcache, p, RPMTAG_REQUIRENAME, dep);
+	    checkInstDeps(ts, dcache, p, RPMTAG_REQUIRENAME, dep, 0);
 	    if (connothash && depexistsHashHasEntry(connothash, dep))
-		checkNotInstDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, dep);
+		checkInstDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, dep, 1);
 	}
 
 	if (reqfilehash || connotfilehash) {
