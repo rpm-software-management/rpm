@@ -1774,6 +1774,10 @@ edit_dwarf2 (DSO *dso)
 {
   Elf_Data *data;
   Elf_Scn *scn;
+#if _ELFUTILS_PREREQ (0, 165)
+  GElf_Chdr chdr;
+#endif
+  size_t data_size;
   int i, j;
 
   for (i = 0; debug_sections[i].name; ++i)
@@ -1805,11 +1809,19 @@ edit_dwarf2 (DSO *dso)
 		    }
 
 		  scn = dso->scn[i];
+		  data_size = dso->shdr[i].sh_size;
+#if _ELFUTILS_PREREQ (0, 165)
+		  if (gelf_getchdr(scn, &chdr))
+		    {
+		      data_size = chdr.ch_size;
+		      elf_compress(scn, 0, 0);
+		    }
+#endif
 		  data = elf_getdata (scn, NULL);
 		  assert (data != NULL && data->d_buf != NULL);
 		  assert (elf_getdata (scn, data) == NULL);
 		  assert (data->d_off == 0);
-		  assert (data->d_size == dso->shdr[i].sh_size);
+		  assert (data->d_size == data_size);
 		  debug_sections[j].data = data->d_buf;
 		  debug_sections[j].elf_data = data;
 		  debug_sections[j].size = data->d_size;
