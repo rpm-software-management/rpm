@@ -171,11 +171,11 @@ static inline int addSingleRelation(rpmte p,
 static inline int addRelation(rpmts ts,
 			      rpmal al,
 			      rpmte p,
-			      rpmds requires,
-			      int reversed)
+			      rpmds requires)
 {
     rpmte q;
     rpmsenseFlags dsflags = rpmdsFlags(requires);
+    int reversed = rpmdsIsReverse(requires);
 
     /* Avoid dependendencies which are not relevant for ordering */
     if (dsflags & (RPMSENSE_RPMLIB|RPMSENSE_CONFIG|RPMSENSE_PRETRANS|RPMSENSE_POSTTRANS))
@@ -186,18 +186,18 @@ static inline int addRelation(rpmts ts,
 	rpmrichOp op;
 	if (rpmdsParseRichDep(requires, &ds1, &ds2, &op, NULL) == RPMRC_OK) {
 	    if (op != RPMRICHOP_ELSE)
-		addRelation(ts, al, p, ds1, reversed);
+		addRelation(ts, al, p, ds1);
 	    if (op == RPMRICHOP_IF || op == RPMRICHOP_UNLESS) {
 	      rpmds ds21, ds22;
 	      rpmrichOp op2;
 	      if (rpmdsParseRichDep(requires, &ds21, &ds22, &op2, NULL) == RPMRC_OK && op2 == RPMRICHOP_ELSE) {
-		  addRelation(ts, al, p, ds22, reversed);
+		  addRelation(ts, al, p, ds22);
 	      }
 	      ds21 = rpmdsFree(ds21);
 	      ds22 = rpmdsFree(ds22);
 	    }
 	    if (op == RPMRICHOP_AND || op == RPMRICHOP_OR)
-		addRelation(ts, al, p, ds2, reversed);
+		addRelation(ts, al, p, ds2);
 	    ds1 = rpmdsFree(ds1);
 	    ds2 = rpmdsFree(ds2);
 	}
@@ -595,32 +595,32 @@ int rpmtsOrder(rpmts ts)
 
 	while (rpmdsNext(requires) >= 0) {
 	    /* Record next "q <- p" relation (i.e. "p" requires "q"). */
-	    (void) addRelation(ts, al, p, requires, 0);
+	    (void) addRelation(ts, al, p, requires);
 	}
 
 	while (rpmdsNext(recommends) >= 0) {
 	    /* Record next "q <- p" relation (i.e. "p" recommends "q"). */
-	    (void) addRelation(ts, al, p, recommends, 0);
+	    (void) addRelation(ts, al, p, recommends);
 	}
 
 	while (rpmdsNext(suggests) >= 0) {
 	    /* Record next "q <- p" relation (i.e. "p" suggests "q"). */
-	    (void) addRelation(ts, al, p, suggests, 0);
+	    (void) addRelation(ts, al, p, suggests);
 	}
 
 	while (rpmdsNext(order) >= 0) {
 	    /* Record next "q <- p" ordering request */
-	    (void) addRelation(ts, al, p, order, 0);
+	    (void) addRelation(ts, al, p, order);
 	}
 
 	while (rpmdsNext(supplements) >= 0) {
 	    /* Record next "p -> q" relation (i.e. "q" supplemented by "p"). */
-	    (void) addRelation(ts, al, p, supplements, 1);
+	    (void) addRelation(ts, al, p, supplements);
 	}
 
 	while (rpmdsNext(enhances) >= 0) {
 	    /* Record next "p <- q" relation (i.e. "q" is enhanced by  "p"). */
-	    (void) addRelation(ts, al, p, enhances, 1);
+	    (void) addRelation(ts, al, p, enhances);
 	}
     }
 
