@@ -362,6 +362,24 @@ myprint('%d %d' % (ds.Instance(), ds.Count()))
 ],
 [])
 
+RPMPY_TEST([dependency sets 3],[
+deps = []
+deps.append(rpm.ds(('foo', rpm.RPMSENSE_EQUAL, '2.0'), rpm.RPMTAG_REQUIRENAME))
+deps.append(rpm.ds(('bar', rpm.RPMSENSE_EQUAL, '2.0'), rpm.RPMTAG_RECOMMENDNAME))
+deps.append(rpm.ds(('bar', rpm.RPMSENSE_EQUAL|rpm.RPMSENSE_MISSINGOK, '2.0'), rpm.RPMTAG_REQUIRENAME))
+deps.append(rpm.ds(('(foo if bar)',), rpm.RPMTAG_REQUIRENAME))
+deps.append(rpm.ds(('(foo if bar)',), rpm.RPMTAG_SUGGESTNAME))
+for d in deps:
+    myprint("%s %s %s" % (d.DNEVR(), d.IsWeak(), d.IsRich()))
+],
+[R foo = 2.0 False False
+r bar = 2.0 True False
+R bar = 2.0 True False
+R (foo if bar) False True
+s (foo if bar) True True
+],
+[])
+
 RPMPY_TEST([file info sets 1],[
 ts = rpm.ts()
 h = ts.hdrFromFdno('${RPMDATA}/RPMS/hello-2.0-1.i686.rpm')

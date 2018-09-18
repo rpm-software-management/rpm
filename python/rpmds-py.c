@@ -65,6 +65,18 @@ rpmds_Color(rpmdsObject * s)
 }
 
 static PyObject *
+rpmds_IsWeak(rpmdsObject * s)
+{
+    return PyBool_FromLong(rpmdsIsWeak(s->ds));
+}
+
+static PyObject *
+rpmds_IsRich(rpmdsObject * s)
+{
+    return PyBool_FromLong(rpmdsIsRich(s->ds));
+}
+
+static PyObject *
 rpmds_iternext(rpmdsObject * s)
 {
     PyObject * result = NULL;
@@ -208,6 +220,10 @@ The current index in ds is positioned at overlapping member." },
   "ds.compare(other) -- Compare current entries of self and other.\n\nReturns True if the entries match each other, False otherwise"},
  {"Instance",	(PyCFunction)rpmds_Instance,	METH_NOARGS,
   "ds.Instance() -- Return rpmdb key of corresponding package or 0."},
+ {"IsWeak",	(PyCFunction)rpmds_IsWeak,	METH_NOARGS,
+  "ds.IsWeak() -- Return whether the dependency is weak."},
+ {"IsRich",	(PyCFunction)rpmds_IsRich,	METH_NOARGS,
+  "ds.IsRich() -- Return whether the dependency is rich."},
  {NULL,		NULL}		/* sentinel */
 };
 
