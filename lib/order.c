@@ -165,32 +165,32 @@ static inline int addSingleRelation(rpmte p,
  * @param ts		transaction set
  * @param al		packages list
  * @param p		predecessor (i.e. package that "Requires: q")
- * @param requires	relation
+ * @param dep		dependency relation
  * @return		0 always
  */
 static inline int addRelation(rpmts ts,
 			      rpmal al,
 			      rpmte p,
-			      rpmds requires)
+			      rpmds dep)
 {
     rpmte q;
-    rpmsenseFlags dsflags = rpmdsFlags(requires);
-    int reversed = rpmdsIsReverse(requires);
+    rpmsenseFlags dsflags = rpmdsFlags(dep);
+    int reversed = rpmdsIsReverse(dep);
 
     /* Avoid dependendencies which are not relevant for ordering */
     if (dsflags & (RPMSENSE_RPMLIB|RPMSENSE_CONFIG|RPMSENSE_PRETRANS|RPMSENSE_POSTTRANS))
 	return 0;
 
-    if (rpmdsIsRich(requires)) {
+    if (rpmdsIsRich(dep)) {
 	rpmds ds1, ds2;
 	rpmrichOp op;
-	if (rpmdsParseRichDep(requires, &ds1, &ds2, &op, NULL) == RPMRC_OK) {
+	if (rpmdsParseRichDep(dep, &ds1, &ds2, &op, NULL) == RPMRC_OK) {
 	    if (op != RPMRICHOP_ELSE)
 		addRelation(ts, al, p, ds1);
 	    if (op == RPMRICHOP_IF || op == RPMRICHOP_UNLESS) {
 	      rpmds ds21, ds22;
 	      rpmrichOp op2;
-	      if (rpmdsParseRichDep(requires, &ds21, &ds22, &op2, NULL) == RPMRC_OK && op2 == RPMRICHOP_ELSE) {
+	      if (rpmdsParseRichDep(dep, &ds21, &ds22, &op2, NULL) == RPMRC_OK && op2 == RPMRICHOP_ELSE) {
 		  addRelation(ts, al, p, ds22);
 	      }
 	      ds21 = rpmdsFree(ds21);
@@ -203,7 +203,7 @@ static inline int addRelation(rpmts ts,
 	}
 	return 0;
     }
-    q = rpmalSatisfiesDepend(al, p, requires);
+    q = rpmalSatisfiesDepend(al, p, dep);
 
     /* Avoid deps outside this transaction and self dependencies */
     if (q == NULL || q == p)
