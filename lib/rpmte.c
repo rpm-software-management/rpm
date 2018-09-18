@@ -703,6 +703,7 @@ static void appendProblem(rpmte te, rpmProblemType type,
 	if (te->probs == NULL)
 	    te->probs = rpmpsCreate();
 	rpmpsAppendProblem(te->probs, p);
+	rpmteMarkFailed(te);
     }
     rpmProblemFree(p);
 }
