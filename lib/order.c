@@ -586,41 +586,20 @@ int rpmtsOrder(rpmts ts)
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	rpmal al = (rpmteType(p) == TR_REMOVED) ? 
 		   erasedPackages : tsmem->addedPackages;
-	rpmds requires = rpmdsInit(rpmteDS(p, RPMTAG_REQUIRENAME));
-	rpmds recommends = rpmdsInit(rpmteDS(p, RPMTAG_RECOMMENDNAME));
-	rpmds suggests = rpmdsInit(rpmteDS(p, RPMTAG_SUGGESTNAME));
-	rpmds supplements = rpmdsInit(rpmteDS(p, RPMTAG_SUPPLEMENTNAME));
-	rpmds enhances = rpmdsInit(rpmteDS(p, RPMTAG_ENHANCENAME));
-	rpmds order = rpmdsInit(rpmteDS(p, RPMTAG_ORDERNAME));
+	rpmTag ordertags[] = {
+		RPMTAG_REQUIRENAME,
+		RPMTAG_RECOMMENDNAME,
+		RPMTAG_SUGGESTNAME,
+		RPMTAG_SUPPLEMENTNAME,
+		RPMTAG_ENHANCENAME,
+		RPMTAG_ORDERNAME,
+		0,
+	};
 
-	while (rpmdsNext(requires) >= 0) {
-	    /* Record next "q <- p" relation (i.e. "p" requires "q"). */
-	    (void) addRelation(ts, al, p, requires);
-	}
-
-	while (rpmdsNext(recommends) >= 0) {
-	    /* Record next "q <- p" relation (i.e. "p" recommends "q"). */
-	    (void) addRelation(ts, al, p, recommends);
-	}
-
-	while (rpmdsNext(suggests) >= 0) {
-	    /* Record next "q <- p" relation (i.e. "p" suggests "q"). */
-	    (void) addRelation(ts, al, p, suggests);
-	}
-
-	while (rpmdsNext(order) >= 0) {
-	    /* Record next "q <- p" ordering request */
-	    (void) addRelation(ts, al, p, order);
-	}
-
-	while (rpmdsNext(supplements) >= 0) {
-	    /* Record next "p -> q" relation (i.e. "q" supplemented by "p"). */
-	    (void) addRelation(ts, al, p, supplements);
-	}
-
-	while (rpmdsNext(enhances) >= 0) {
-	    /* Record next "p <- q" relation (i.e. "q" is enhanced by  "p"). */
-	    (void) addRelation(ts, al, p, enhances);
+	for (int i = 0; ordertags[i]; i++) {
+	    rpmds dep = rpmdsInit(rpmteDS(p, ordertags[i]));
+	    while (rpmdsNext(dep) >= 0)
+		addRelation(ts, al, p, dep);
 	}
     }
 
