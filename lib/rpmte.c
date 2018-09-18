@@ -638,17 +638,21 @@ FD_t rpmtePayload(rpmte te)
 
 static int rpmteMarkFailed(rpmte te)
 {
-    rpmtsi pi = rpmtsiInit(te->ts);
-    rpmte p;
-
     te->failed++;
-    /* XXX we can do a much better here than this... */
-    while ((p = rpmtsiNext(pi, TR_REMOVED))) {
-	if (rpmteDependsOn(p) == te) {
-	    p->failed++;
+
+    /* No need to do this more than once, avoid recursion loops */
+    if (te->failed == 1) {
+	rpmtsi pi = rpmtsiInit(te->ts);
+	rpmte p;
+
+	/* XXX we can do a much better here than this... */
+	while ((p = rpmtsiNext(pi, TR_REMOVED))) {
+	    if (rpmteDependsOn(p) == te) {
+		rpmteMarkFailed(p);
+	    }
 	}
+	rpmtsiFree(pi);
     }
-    rpmtsiFree(pi);
     return te->failed;
 }
 
