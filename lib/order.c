@@ -67,12 +67,13 @@ static void rpmTSIFree(tsortInfo tsi)
 
 static inline int addSingleRelation(rpmte p,
 				    rpmte q,
-				    rpmsenseFlags dsflags,
-				    int reversed)
+				    rpmds dep)
 {
     struct tsortInfo_s *tsi_p, *tsi_q;
     relation rel;
     rpmElementType teType = rpmteType(p);
+    rpmsenseFlags dsflags = rpmdsFlags(dep);
+    int reversed = rpmdsIsReverse(dep);
     rpmsenseFlags flags;
 
     /* Avoid deps outside this transaction and self dependencies */
@@ -174,11 +175,9 @@ static inline int addRelation(rpmts ts,
 			      rpmds dep)
 {
     rpmte q;
-    rpmsenseFlags dsflags = rpmdsFlags(dep);
-    int reversed = rpmdsIsReverse(dep);
 
     /* Avoid dependendencies which are not relevant for ordering */
-    if (dsflags & (RPMSENSE_RPMLIB|RPMSENSE_CONFIG|RPMSENSE_PRETRANS|RPMSENSE_POSTTRANS))
+    if (rpmdsFlags(dep) & (RPMSENSE_RPMLIB|RPMSENSE_CONFIG|RPMSENSE_PRETRANS|RPMSENSE_POSTTRANS))
 	return 0;
 
     if (rpmdsIsRich(dep)) {
@@ -209,7 +208,7 @@ static inline int addRelation(rpmts ts,
     if (q == NULL || q == p)
 	return 0;
 
-    addSingleRelation(p, q, dsflags, reversed);
+    addSingleRelation(p, q, dep);
 
     return 0;
 }
