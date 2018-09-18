@@ -1286,6 +1286,21 @@ rpmstrPool rpmdsPool(rpmds ds)
     return (ds != NULL) ? ds->pool : NULL;
 }
 
+int rpmdsIsWeak(rpmds ds)
+{
+    int weak = 1;
+    switch (rpmdsTagN(ds)) {
+    case RPMTAG_REQUIRENAME:
+    case RPMTAG_PROVIDENAME:
+    case RPMTAG_OBSOLETENAME:
+    case RPMTAG_CONFLICTNAME:
+	if (!(rpmdsFlags(ds) & RPMSENSE_MISSINGOK))
+	    weak = 0;
+	break;
+    }
+    return weak;
+}
+
 rpmsenseFlags rpmSanitizeDSFlags(rpmTagVal tagN, rpmsenseFlags Flags)
 {
     rpmsenseFlags extra = RPMSENSE_ANY;

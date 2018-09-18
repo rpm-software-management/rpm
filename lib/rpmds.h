@@ -276,6 +276,13 @@ rpmTagVal rpmdsTagTi(const rpmds ds);
 unsigned int rpmdsInstance(rpmds ds);
 
 /** \ingroup rpmds
+ * Return whether dependency is weak
+ * @param ds		dependency set
+ * @return		1 if weak, 0 if not
+ */
+int rpmdsIsWeak(rpmds ds);
+
+/** \ingroup rpmds
  * Return current "Don't promote Epoch:" flag.
  *
  * This flag controls for Epoch: promotion when a dependency set is
