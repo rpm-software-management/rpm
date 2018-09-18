@@ -1301,6 +1301,18 @@ int rpmdsIsWeak(rpmds ds)
     return weak;
 }
 
+int rpmdsIsReverse(rpmds ds)
+{
+    int reverse = 0;
+    switch (rpmdsTagN(ds)) {
+    case RPMTAG_SUPPLEMENTNAME:
+    case RPMTAG_ENHANCENAME:
+	reverse = 1;
+	break;
+    }
+    return reverse;
+}
+
 rpmsenseFlags rpmSanitizeDSFlags(rpmTagVal tagN, rpmsenseFlags Flags)
 {
     rpmsenseFlags extra = RPMSENSE_ANY;

@@ -283,6 +283,13 @@ unsigned int rpmdsInstance(rpmds ds);
 int rpmdsIsWeak(rpmds ds);
 
 /** \ingroup rpmds
+ * Return whether dependency is reversed
+ * @param ds		dependency set
+ * @return		1 if reversed, 0 if not
+ */
+int rpmdsIsReverse(rpmds ds);
+
+/** \ingroup rpmds
  * Return current "Don't promote Epoch:" flag.
  *
  * This flag controls for Epoch: promotion when a dependency set is

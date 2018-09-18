@@ -77,6 +77,12 @@ rpmds_IsRich(rpmdsObject * s)
 }
 
 static PyObject *
+rpmds_IsReverse(rpmdsObject * s)
+{
+    return PyBool_FromLong(rpmdsIsReverse(s->ds));
+}
+
+static PyObject *
 rpmds_iternext(rpmdsObject * s)
 {
     PyObject * result = NULL;
@@ -224,6 +230,8 @@ The current index in ds is positioned at overlapping member." },
   "ds.IsWeak() -- Return whether the dependency is weak."},
  {"IsRich",	(PyCFunction)rpmds_IsRich,	METH_NOARGS,
   "ds.IsRich() -- Return whether the dependency is rich."},
+ {"IsReverse",	(PyCFunction)rpmds_IsReverse,	METH_NOARGS,
+  "ds.IsReverse() -- Return whether the dependency is reversed."},
  {NULL,		NULL}		/* sentinel */
 };
 
