@@ -153,9 +153,6 @@
 #	The directory where sources/patches will be unpacked and built.
 %_builddir		%{_topdir}/BUILD
 
-#	The interpreter used for build scriptlets.
-%_buildshell		/bin/sh
-
 #	The path to the bzip2 executable (legacy, use %{__bzip2} instead).
 %_bzip2bin		%{__bzip2}
 
