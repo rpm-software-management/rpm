@@ -426,10 +426,15 @@ size_t rpmstrPoolStrlen(rpmstrPool pool, rpmsid sid)
 int rpmstrPoolStreq(rpmstrPool poolA, rpmsid sidA,
 		    rpmstrPool poolB, rpmsid sidB)
 {
+    int eq;
     if (poolA == poolB)
-	return (sidA == sidB);
-    else
-	return rstreq(rpmstrPoolStr(poolA, sidA), rpmstrPoolStr(poolB, sidB));
+	 eq = (sidA == sidB);
+    else {
+	const char *a = rpmstrPoolStr(poolA, sidA);
+	const char *b = rpmstrPoolStr(poolB, sidB);
+	eq = rstreq(a, b);
+    }
+    return eq;
 }
 
 rpmsid rpmstrPoolNumStr(rpmstrPool pool)
