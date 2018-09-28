@@ -362,7 +362,7 @@ static inline rpmsid strn2id(rpmstrPool pool, const char *s, size_t slen,
 {
     rpmsid sid = 0;
 
-    if (pool && pool->hash) {
+    if (pool->hash) {
 	sid = rpmstrPoolGet(pool, s, slen, hash);
 	if (sid == 0 && create && !pool->frozen)
 	    sid = rpmstrPoolPut(pool, s, slen, hash);
@@ -374,7 +374,7 @@ rpmsid rpmstrPoolIdn(rpmstrPool pool, const char *s, size_t slen, int create)
 {
     rpmsid sid = 0;
 
-    if (s != NULL) {
+    if (pool && s) {
 	unsigned int hash = rstrnhash(s, slen);
 	sid = strn2id(pool, s, slen, hash, create);
     }
@@ -385,7 +385,7 @@ rpmsid rpmstrPoolId(rpmstrPool pool, const char *s, int create)
 {
     rpmsid sid = 0;
 
-    if (s != NULL) {
+    if (pool && s) {
 	size_t slen;
 	unsigned int hash = rstrlenhash(s, &slen);
 	sid = strn2id(pool, s, slen, hash, create);
