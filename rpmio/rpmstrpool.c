@@ -439,5 +439,9 @@ int rpmstrPoolStreq(rpmstrPool poolA, rpmsid sidA,
 
 rpmsid rpmstrPoolNumStr(rpmstrPool pool)
 {
-    return (pool != NULL) ? pool->offs_size : 0;
+    rpmsid n = 0;
+    if (pool) {
+	n = pool->offs_size;
+    }
+    return n;
 }
