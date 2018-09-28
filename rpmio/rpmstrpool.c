@@ -42,6 +42,8 @@ struct rpmstrPool_s {
     int nrefs;			/* refcount */
 };
 
+static inline const char *id2str(rpmstrPool pool, rpmsid sid);
+
 /* calculate hash and string length on at once */
 static inline unsigned int rstrlenhash(const char * str, size_t * len)
 {
@@ -120,7 +122,7 @@ static void poolHashResize(rpmstrPool pool, int numBuckets)
 
     for (int i=0; i<ht->numBuckets; i++) {
         if (!ht->buckets[i].keyid) continue;
-        unsigned int keyHash = rstrhash(rpmstrPoolStr(pool, ht->buckets[i].keyid));
+        unsigned int keyHash = rstrhash(id2str(pool, ht->buckets[i].keyid));
         for (unsigned int j=0;;j++) {
             unsigned int hash = hashbucket(keyHash, j) % numBuckets;
             if (!buckets[hash].keyid) {
@@ -149,7 +151,7 @@ static void poolHashAddHEntry(rpmstrPool pool, const char * key, unsigned int ke
             ht->buckets[hash].keyid = keyid;
             ht->keyCount++;
             break;
-        } else if (!strcmp(rpmstrPoolStr(pool, ht->buckets[hash].keyid), key)) {
+        } else if (!strcmp(id2str(pool, ht->buckets[hash].keyid), key)) {
             return;
         }
     }
@@ -191,7 +193,7 @@ static void poolHashPrintStats(rpmstrPool pool)
     int maxcollisions = 0;
 
     for (i=0; i<ht->numBuckets; i++) {
-        unsigned int keyHash = rstrhash(rpmstrPoolStr(pool, ht->buckets[i].keyid));
+        unsigned int keyHash = rstrhash(id2str(pool, ht->buckets[i].keyid));
         for (unsigned int j=0;;j++) {
             unsigned int hash = hashbucket(keyHash, i) % ht->numBuckets;
             if (hash==i) {
@@ -221,7 +223,7 @@ static void rpmstrPoolRehash(rpmstrPool pool)
 
     pool->hash = poolHashCreate(sizehint);
     for (int i = 1; i <= pool->offs_size; i++)
-	poolHashAddEntry(pool, rpmstrPoolStr(pool, i), i);
+	poolHashAddEntry(pool, id2str(pool, i), i);
 }
 
 rpmstrPool rpmstrPoolCreate(void)
@@ -350,7 +352,7 @@ static rpmsid rpmstrPoolGet(rpmstrPool pool, const char * key, size_t keylen,
             return 0;
         }
 
-	s = rpmstrPoolStr(pool, ht->buckets[hash].keyid);
+	s = id2str(pool, ht->buckets[hash].keyid);
 	/* pool string could be longer than keylen, require exact matche */
 	if (strncmp(s, key, keylen) == 0 && s[keylen] == '\0')
 	    return ht->buckets[hash].keyid;
@@ -368,6 +370,14 @@ static inline rpmsid strn2id(rpmstrPool pool, const char *s, size_t slen,
 	    sid = rpmstrPoolPut(pool, s, slen, hash);
     }
     return sid;
+}
+
+static inline const char *id2str(rpmstrPool pool, rpmsid sid)
+{
+    const char *s = NULL;
+    if (sid > 0 && sid <= pool->offs_size)
+	s = pool->offs[sid];
+    return s;
 }
 
 rpmsid rpmstrPoolIdn(rpmstrPool pool, const char *s, size_t slen, int create)
@@ -396,16 +406,19 @@ rpmsid rpmstrPoolId(rpmstrPool pool, const char *s, int create)
 const char * rpmstrPoolStr(rpmstrPool pool, rpmsid sid)
 {
     const char *s = NULL;
-    if (pool && sid > 0 && sid <= pool->offs_size)
-	s = pool->offs[sid];
+    if (pool) {
+	s = id2str(pool, sid);
+    }
     return s;
 }
 
 size_t rpmstrPoolStrlen(rpmstrPool pool, rpmsid sid)
 {
     size_t slen = 0;
-    if (pool && sid > 0 && sid <= pool->offs_size) {
-	slen = strlen(pool->offs[sid]);
+    if (pool) {
+	const char *s = id2str(pool, sid);
+	if (s)
+	    slen = strlen(s);
     }
     return slen;
 }
