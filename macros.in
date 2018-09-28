@@ -413,6 +413,12 @@ package or when debugging this package.\
 #%_default_patch_flags	-s
 %_default_patch_flags --no-backup-if-mismatch
 
+#	Default flags for source file extraction
+%_default_tar_flags -k
+%_default_gem_flags --ruby
+%_default_unzip_flags %{nil}
+%_default_7zip_flags %{nil}
+
 #==============================================================================
 # ---- Build configuration macros.
 #

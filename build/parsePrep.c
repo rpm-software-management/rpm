@@ -135,8 +135,10 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 {
     char *fn = NULL;
     char *buf = NULL;
-    char *tar = NULL;
-    const char *taropts = ((rpmIsVerbose() && !quietly) ? "-xvvof" : "-xof");
+    char *tar = rpmGetPath("%{__tar}", NULL);
+    char *arg_tar_flags = rpmExpand("%{?_default_tar_flags} ", NULL);
+    arg_tar_flags = rstrcat(&arg_tar_flags,
+	(rpmIsVerbose() && !quietly) ? "-xvvof" : "-xof");
     struct Source *sp;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
 
@@ -161,9 +163,9 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	goto exit;
     }
 
-    tar = rpmGetPath("%{__tar}", NULL);
     if (compressed != COMPRESSED_NOT) {
 	char *zipper, *t = NULL;
+	char *arg_zip_flags = NULL;
 	int needtar = 1;
 	int needgemspec = 0;
 
@@ -176,10 +178,8 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	    t = "%{__bzip2} -dc";
 	    break;
 	case COMPRESSED_ZIP:
-	    if (rpmIsVerbose() && !quietly)
-		t = "%{__unzip}";
-	    else
-		t = "%{__unzip} -qq";
+	    t = (rpmIsVerbose() && !quietly) ? "%{__unzip}" : "%{__unzip} -qq";
+	    arg_zip_flags = rpmExpand("%{?_default_unzip_flags}", NULL);
 	    needtar = 0;
 	    break;
 	case COMPRESSED_LZMA:
@@ -194,6 +194,7 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	    break;
 	case COMPRESSED_7ZIP:
 	    t = "%{__7zip} x";
+	    arg_zip_flags = rpmExpand("%{?_default_7zip_flags}", NULL);
 	    needtar = 0;
 	    break;
 	case COMPRESSED_ZSTD:
@@ -207,43 +208,41 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	}
 	zipper = rpmGetPath(t, NULL);
 	if (needtar) {
-	    rasprintf(&buf, "%s '%s' | %s %s - \n"
-		"STATUS=$?\n"
-		"if [ $STATUS -ne 0 ]; then\n"
-		"  exit $STATUS\n"
-		"fi", zipper, fn, tar, taropts);
+	    rasprintf(&buf, "%s '%s' | %s %s -",
+		zipper, fn, tar, arg_tar_flags);
 	} else if (needgemspec) {
 	    char *gem = rpmGetPath("%{__gem}", NULL);
 	    char *gemspec = NULL;
 	    char gemnameversion[strlen(sp->source) - 3];
+	    char *arg_gem_flags = rpmExpand("%{?_default_gem_flags}", NULL);
 
 	    rstrlcpy(gemnameversion, sp->source, strlen(sp->source) - 3);
 	    gemspec = rpmGetPath("%{_builddir}/", gemnameversion, ".gemspec", NULL);
 
-	    rasprintf(&buf, "%s '%s' && %s spec '%s' --ruby > '%s'\n"
-		"STATUS=$?\n"
-		"if [ $STATUS -ne 0 ]; then\n"
-		"  exit $STATUS\n"
-		"fi", zipper, fn, gem, fn, gemspec);
+	    rasprintf(&buf, "%s '%s' && %s spec '%s' %s > '%s'",
+		zipper, fn, gem, fn, arg_gem_flags, gemspec);
 
+	    free(arg_gem_flags);
 	    free(gemspec);
 	    free(gem);
 	} else {
-	    rasprintf(&buf, "%s '%s'\n"
-		"STATUS=$?\n"
-		"if [ $STATUS -ne 0 ]; then\n"
-		"  exit $STATUS\n"
-		"fi", zipper, fn);
+	    rasprintf(&buf, "%s %s '%s'", zipper, arg_zip_flags, fn);
 	}
+	free(arg_zip_flags);
 	free(zipper);
     } else {
-	rasprintf(&buf, "%s %s %s", tar, taropts, fn);
+	rasprintf(&buf, "%s %s %s", tar, arg_tar_flags, fn);
     }
 
 exit:
     free(fn);
+    free(arg_tar_flags);
     free(tar);
-    return buf;
+    return rstrcat(&buf,
+	"\nSTATUS=$?\n"
+	"if [ $STATUS -ne 0 ]; then\n"
+	"  exit $STATUS\n"
+	"fi");
 }
 
 /**
