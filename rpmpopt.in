@@ -102,6 +102,7 @@ Name        : %{NAME}\n\
 %|EPOCH?{Epoch       : %{EPOCH}\n}|\
 Version     : %{VERSION}\n\
 Release     : %{RELEASE}\n\
+%|DISTTAG?{DistTag     : %{DISTTAG}\n}|\
 Architecture: %{ARCH}\n\
 Install Date: %|INSTALLTIME?{%{INSTALLTIME:date}}:{(not installed)}|\n\
 Group       : %{GROUP}\n\
