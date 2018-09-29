@@ -1270,8 +1270,9 @@ end}
 #           	usage of git repository and per-patch commits.
 # -N		Disable automatic patch application
 # -p<num>	Use -p<num> for patch application	
-%autosetup(a:b:cDn:TvNS:p:)\
-%setup %{-a} %{-b} %{-c} %{-D} %{-n} %{-T} %{!-v:-q}\
+# -t<num>	Use --strip-component=<num> for tar application	
+%autosetup(a:b:cDn:TvNS:p:t:)\
+%setup %{-a} %{-b} %{-c} %{-D} %{-n} %{-T} %{!-v:-q} %{-t:-p%{-t*}}\
 %{-S:%global __scm %{-S*}}\
 %{expand:%__scm_setup_%{__scm} %{!-v:-q}}\
 %{!-N:%autopatch %{-v} %{-p:-p%{-p*}}}
