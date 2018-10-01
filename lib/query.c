@@ -83,7 +83,7 @@ static void printFileInfo(const char * name,
 	(void)strftime(timefield, sizeof(timefield) - 1, fmt, tm);
     }
 
-    rpmlog(RPMLOG_NOTICE, "%s %4d %-8s%-8s %10s %s %s\n", perms,
+    rpmlog(RPMLOG_NOTICE, "%s %4d %-8s %-8s %10s %s %s\n", perms,
 	(int)nlink, ownerfield, groupfield, sizefield, timefield, 
 	link ? link : name);
     free(perms);
