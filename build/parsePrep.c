@@ -58,6 +58,7 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
     char *arg_fuzz = NULL;
     char *arg_dir = NULL;
     char *arg_outfile = NULL;
+    char *arg_strip = NULL;
     char *args = NULL;
     char *arg_patch_flags = rpmExpand("%{?_default_patch_flags}", NULL);
     struct Source *sp;
@@ -79,6 +80,10 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
     /* On non-build parse's, file cannot be stat'd or read. */
     if ((spec->flags & RPMSPEC_FORCE) || checkOwners(fn) || rpmFileIsCompressed(fn, &compressed)) goto exit;
 
+    if (strip > 0) {
+	rasprintf(&arg_strip, "-p%d ", strip);
+    } else arg_strip = xstrdup("");
+
     if (db) {
 	rasprintf(&arg_backup,
 #if HAVE_OLDPATCH_21 == 0
@@ -99,7 +104,7 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 	rasprintf(&arg_fuzz, " --fuzz=%d", fuzz);
     } else arg_fuzz = xstrdup("");
 
-    rasprintf(&args, "%s -p%d %s%s%s%s%s%s", arg_patch_flags, strip, arg_backup, arg_fuzz, arg_dir, arg_outfile,
+    rasprintf(&args, "%s %s%s%s%s%s%s%s", arg_patch_flags, arg_strip, arg_backup, arg_fuzz, arg_dir, arg_outfile,
 		reverse ? " -R" : "", 
 		removeEmpties ? " -E" : "");
 
@@ -111,6 +116,7 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 	patchcmd = rpmExpand("%{__patch} ", args, " < ", fn, NULL);
     }
 
+    free(arg_strip);
     free(arg_fuzz);
     free(arg_outfile);
     free(arg_dir);
@@ -133,14 +139,16 @@ exit:
  * @param spec		build info
  * @param c		source index
  * @param quietly	should -vv be omitted from tar?
+ * @param strip		strip N path levels from tarball contents
  * @return		expanded %setup macro (NULL on error)
  */
-static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
+static char *doUntar(rpmSpec spec, uint32_t c, int quietly, int strip)
 {
     char *fn = NULL;
     char *buf = NULL;
-    char *tar = NULL;
+    char *tar = rpmGetPath("%{__tar}", NULL);
     const char *taropts = ((rpmIsVerbose() && !quietly) ? "-xvvof" : "-xof");
+    char *arg_strip = NULL;
     struct Source *sp;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
 
@@ -165,7 +173,10 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	goto exit;
     }
 
-    tar = rpmGetPath("%{__tar}", NULL);
+    if (strip > 0) {
+	rasprintf(&arg_strip, "--strip-component=%d ", strip);
+    } else arg_strip = xstrdup("");
+
     if (compressed != COMPRESSED_NOT) {
 	char *zipper, *t = NULL;
 	int needtar = 1;
@@ -211,11 +222,11 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	}
 	zipper = rpmGetPath(t, NULL);
 	if (needtar) {
-	    rasprintf(&buf, "%s '%s' | %s %s - \n"
+	    rasprintf(&buf, "%s '%s' | %s %s%s - \n"
 		"STATUS=$?\n"
 		"if [ $STATUS -ne 0 ]; then\n"
 		"  exit $STATUS\n"
-		"fi", zipper, fn, tar, taropts);
+		"fi", zipper, fn, tar, arg_strip, taropts);
 	} else if (needgemspec) {
 	    char *gem = rpmGetPath("%{__gem}", NULL);
 	    char *gemspec = NULL;
@@ -241,11 +252,12 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	}
 	free(zipper);
     } else {
-	rasprintf(&buf, "%s %s %s", tar, taropts, fn);
+	rasprintf(&buf, "%s %s%s %s", tar, arg_strip, taropts, fn);
     }
 
 exit:
     free(fn);
+    free(arg_strip);
     free(tar);
     return buf;
 }
@@ -270,7 +282,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     rpmRC rc = RPMRC_FAIL;
     uint32_t num;
     int leaveDirs = 0, skipDefaultAction = 0;
-    int createDir = 0, quietly = 0;
+    int createDir = 0, quietly = 0, strip = 0;
     int buildInPlace = 0;
     const char * dirName = NULL;
     struct poptOption optionsTable[] = {
@@ -281,6 +293,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 	    { NULL, 'n', POPT_ARG_STRING, &dirName, 0,	NULL, NULL},
 	    { NULL, 'T', 0, &skipDefaultAction, 0,	NULL, NULL},
 	    { NULL, 'q', 0, &quietly, 0,		NULL, NULL},
+	    { NULL, 'p', POPT_ARG_INT, &strip, 'p',	NULL, NULL },
 	    { 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
@@ -303,7 +316,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 	    goto exit;
 	}
 
-	{   char *chptr = doUntar(spec, num, quietly);
+	{   char *chptr = doUntar(spec, num, quietly, strip);
 	    if (chptr == NULL)
 		goto exit;
 
@@ -366,7 +379,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 
     /* do the default action */
    if (!createDir && !skipDefaultAction) {
-	char *chptr = doUntar(spec, 0, quietly);
+	char *chptr = doUntar(spec, 0, quietly, strip);
 	if (!chptr)
 	    goto exit;
 	appendLineStringBuf(spec->prep, chptr);
@@ -380,7 +393,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     }
 
     if (createDir && !skipDefaultAction) {
-	char *chptr = doUntar(spec, 0, quietly);
+	char *chptr = doUntar(spec, 0, quietly, strip);
 	if (chptr == NULL)
 	    goto exit;
 	appendLineStringBuf(spec->prep, chptr);
