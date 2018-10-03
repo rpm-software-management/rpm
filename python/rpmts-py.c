@@ -495,6 +495,8 @@ rpmtsCallback(const void * hd, const rpmCallbackType what,
 
     if (cbInfo->cb == Py_None) return NULL;
 
+    PyEval_RestoreThread(cbInfo->_save);
+
     /* Synthesize a python object for callback (if necessary). */
     if (pkgObj == NULL) {
 	if (h) {
@@ -505,8 +507,6 @@ rpmtsCallback(const void * hd, const rpmCallbackType what,
 	}
     } else
 	Py_INCREF(pkgObj);
-
-    PyEval_RestoreThread(cbInfo->_save);
 
     args = Py_BuildValue("(iLLOO)", what, amount, total, pkgObj, cbInfo->data);
     result = PyEval_CallObject(cbInfo->cb, args);
