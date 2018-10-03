@@ -119,6 +119,7 @@ atlocal:	atlocal.in Makefile
 	  -e "s,[@]usrlibdir[@],$(libdir)," \
 	  -e "s,[@]execprefix[@],$(exec_prefix)," \
 	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir)," \
+	  -e "s,[@]PYTHON[@],$(PYTHON)," \
 	< $(srcdir)/atlocal.in > atlocal
 DISTCLEANFILES = atlocal
 EXTRA_DIST += atlocal.in
