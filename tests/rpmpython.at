@@ -33,7 +33,7 @@ prexp(mname)
 [])
 
 RPMPY_TEST([basic rpmio],[
-msg = 'Killroy was here\n'
+msg = b'Killroy was here\n'
 data = msg * 10
 # TODO: test other compression types too if built in
 for iot in [ 'fpio', 'fdio', 'ufdio', 'gzdio' ]:
@@ -173,7 +173,7 @@ except rpm.error as e:
 
 RPMPY_TEST([reading a signed package file 2],[
 
-keydata = open('${RPMDATA}/keys/rpm.org-rsa-2048-test.pub').read()
+keydata = open('${RPMDATA}/keys/rpm.org-rsa-2048-test.pub', 'rb').read()
 pubkey = rpm.pubkey(keydata)
 keyring = rpm.keyring()
 keyring.addKey(pubkey)
