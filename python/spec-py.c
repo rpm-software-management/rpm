@@ -34,7 +34,7 @@ static PyObject *makeHeader(Header h)
     PyObject *rpmmod = PyImport_ImportModuleNoBlock("rpm");
     if (rpmmod == NULL) return NULL;
 
-    PyObject *ptr = CAPSULE_BUILD(h, "rpm._C_Header");
+    PyObject *ptr = PyCapsule_New(h, "rpm._C_Header", NULL);
     PyObject *hdr = PyObject_CallMethod(rpmmod, "hdr", "(O)", ptr);
     Py_XDECREF(ptr);
     Py_XDECREF(rpmmod);

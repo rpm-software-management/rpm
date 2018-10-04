@@ -376,8 +376,8 @@ static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
 
     if (obj == NULL) {
 	h = headerNew();
-    } else if (CAPSULE_CHECK(obj)) {
-	h = CAPSULE_EXTRACT(obj, "rpm._C_Header");
+    } else if (PyCapsule_CheckExact(obj)) {
+	h = PyCapsule_GetPointer(obj, "rpm._C_Header");
 	headerLink(h);
     } else if (hdrObject_Check(obj)) {
 	h = headerCopy(((hdrObject*) obj)->h);
