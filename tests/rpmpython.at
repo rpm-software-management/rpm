@@ -96,7 +96,7 @@ for a in ['name', 'bugurl', '__class__', '__foo__', ]:
     try:
         x = getattr(h, a)
         myprint(x)
-    except AttributeError, exc:
+    except AttributeError as exc:
         myprint(exc)
 ],
 [testpkg-5:1.0-1.noarch
@@ -119,7 +119,7 @@ h2['dirindexes'] = [ 0, 0, 1 ]
 for h in [h1, h2]:
     try:
         myprint(','.join(h['filenames']))
-    except rpm.error, exc:
+    except rpm.error as exc:
         myprint(exc)
 ],
 [invalid header data
@@ -164,7 +164,7 @@ rpm.setLogFile(sink)
 try:
     h = ts.hdrFromFdno('${RPMDATA}/RPMS/hello-2.0-1.x86_64-signed.rpm')
     myprint(h['arch'])
-except rpm.error, e:
+except rpm.error as e:
     myprint(e)
 ],
 [public key not available
@@ -183,7 +183,7 @@ ts.setKeyring(keyring)
 try:
     h = ts.hdrFromFdno('${RPMDATA}/RPMS/hello-2.0-1.x86_64-signed.rpm')
     myprint(h['arch'])
-except rpm.error, e:
+except rpm.error as e:
     myprint(e)
 ],
 [x86_64]
@@ -207,7 +207,7 @@ h = rpm.hdr()
 h['name'] = "foo"
 try:
     ts.addInstall(h, 'foo', 'u')
-except rpm.error, err:
+except rpm.error as err:
     myprint(err)
 for e in ts:
     myprint(e.NEVRA())
@@ -228,7 +228,7 @@ h['dirnames'] = ['/opt' '/flopt']
 h['dirindexes'] = [ 1, 2, 3 ]
 try:
     ts.addInstall(h, 'foo', 'u')
-except rpm.error, err:
+except rpm.error as err:
     myprint(err)
 for e in ts:
     myprint(e.NEVRA())
