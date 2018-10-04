@@ -338,15 +338,6 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 	goto exit;
     }
     
-    /* cd to the build dir */
-    {	char * buildDir = rpmGenPath(spec->rootDir, "%{_builddir}", "");
-
-	rasprintf(&buf, "cd '%s'", buildDir);
-	appendLineStringBuf(spec->prep, buf);
-	free(buf);
-	free(buildDir);
-    }
-    
     /* delete any old sources */
     if (!leaveDirs) {
 	rasprintf(&buf, "rm -rf '%s'", spec->buildSubdir);
