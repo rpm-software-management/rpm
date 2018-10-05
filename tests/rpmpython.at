@@ -92,7 +92,7 @@ h['arch'] = 'noarch'
 myprint(h['nevra'])
 del h['epoch']
 myprint(h['nevra'])
-for a in ['name', 'bugurl', '__class__', '__foo__', ]:
+for a in ['name', 'bugurl', '__foo__', ]:
     try:
         x = getattr(h, a)
         myprint(x)
@@ -103,7 +103,6 @@ for a in ['name', 'bugurl', '__class__', '__foo__', ]:
 testpkg-1.0-1.noarch
 testpkg
 None
-<type 'rpm.hdr'>
 'rpm.hdr' object has no attribute '__foo__']
 )
 
