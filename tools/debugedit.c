@@ -2347,10 +2347,9 @@ fdopen_dso (int fd, const char *name)
       goto error_out;
     }
 
-  /* If there are phdrs we want to maintain the layout of the
-     allocated sections in the file.  */
-  if (phnum != 0)
-    elf_flagelf (elf, ELF_C_SET, ELF_F_LAYOUT);
+  /* We maintain the layout of the allocated sections in the file:
+     https://github.com/rpm-software-management/rpm/issues/423  */
+  elf_flagelf (elf, ELF_C_SET, ELF_F_LAYOUT);
 
   memset (dso, 0, sizeof(DSO));
   dso->elf = elf;
