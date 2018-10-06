@@ -821,7 +821,7 @@ package or when debugging this package.\
   \
   %{verbose:set -x}%{!verbose:exec > /dev/null}\
   umask 022\
-  cd \"%{u2p:%{_builddir}}\"\
+  cd $RPM_BUILD_DIR\
 
 
 #%___build_body		%{nil}
