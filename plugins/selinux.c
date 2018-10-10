@@ -169,7 +169,7 @@ static rpmRC selinux_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
 
 	    if (rpmIsDebug()) {
 		rpmlog(RPMLOG_DEBUG, "lsetfilecon: (%s, %s) %s\n",
-		       path, scon, (rc < 0 ? strerror(errno) : ""));
+		       path, scon, (conrc < 0 ? strerror(errno) : ""));
 	    }
 
 	    if (conrc == 0 || (conrc < 0 && errno == EOPNOTSUPP))
