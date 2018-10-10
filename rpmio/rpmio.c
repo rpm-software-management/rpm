@@ -1763,48 +1763,48 @@ DIGEST_CTX fdDupDigest(FD_t fd, int id)
 
 static void set_cloexec(int fd)
 {
-	int flags = fcntl(fd, F_GETFD);
+    int flags = fcntl(fd, F_GETFD);
 
-	if (flags == -1 || (flags & FD_CLOEXEC))
-		return;
+    if (flags == -1 || (flags & FD_CLOEXEC))
+	return;
 
-	fcntl(fd, F_SETFD, flags | FD_CLOEXEC);
+    fcntl(fd, F_SETFD, flags | FD_CLOEXEC);
 }
 
 void rpmSetCloseOnExec(void)
 {
-	const int min_fd = STDERR_FILENO; /* don't touch stdin/out/err */
-	int fd;
+    const int min_fd = STDERR_FILENO; /* don't touch stdin/out/err */
+    int fd;
 
-	DIR *dir = opendir("/proc/self/fd");
-	if (dir == NULL) { /* /proc not available */
-		/* iterate over all possible fds, might be slow */
-		struct rlimit rl;
-		int open_max;
+    DIR *dir = opendir("/proc/self/fd");
+    if (dir == NULL) { /* /proc not available */
+	/* iterate over all possible fds, might be slow */
+	struct rlimit rl;
+	int open_max;
 
-		if (getrlimit(RLIMIT_NOFILE, &rl) == 0 && rl.rlim_max != RLIM_INFINITY)
-			open_max = rl.rlim_max;
-		else
-			open_max = sysconf(_SC_OPEN_MAX);
+	if (getrlimit(RLIMIT_NOFILE, &rl) == 0 && rl.rlim_max != RLIM_INFINITY)
+	    open_max = rl.rlim_max;
+	else
+	    open_max = sysconf(_SC_OPEN_MAX);
 
-		if (open_max == -1)
-			open_max = 1024;
+	if (open_max == -1)
+	    open_max = 1024;
 
-		for (fd = min_fd + 1; fd < open_max; fd++)
-			set_cloexec(fd);
-
-		return;
-	}
-
-	/* iterate over fds obtained from /proc */
-	struct dirent *entry;
-	while ((entry = readdir(dir)) != NULL) {
-		fd = atoi(entry->d_name);
-		if (fd > min_fd)
-			set_cloexec(fd);
-	}
-
-	closedir(dir);
+	for (fd = min_fd + 1; fd < open_max; fd++)
+	    set_cloexec(fd);
 
 	return;
+    }
+
+    /* iterate over fds obtained from /proc */
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL) {
+	fd = atoi(entry->d_name);
+	if (fd > min_fd)
+	    set_cloexec(fd);
+    }
+
+    closedir(dir);
+
+    return;
 }
