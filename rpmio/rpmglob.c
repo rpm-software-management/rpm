@@ -314,7 +314,7 @@ glob(const char *pattern, int flags,
 	    else {
 		char *newp;
 		size_t home_len = strlen(home_dir);
-		newp = (char *) alloca(home_len + dirlen);
+		newp = (char *) alloca(home_len + dirlen + 1);
 		mempcpy(mempcpy(newp, home_dir, home_len),
 			&dirname[1], dirlen);
 		dirname = newp;
