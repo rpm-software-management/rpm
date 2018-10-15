@@ -1334,9 +1334,31 @@ static rpmRC rpmfcApplyExternal(rpmfc fc)
     return rc;
 }
 
+typedef const struct macroExport_s {
+    const char * name;
+    rpmTagVal tag;
+} * macroExport;
+
+static struct macroExport_s const macroExportList[] = {
+    { "name",	RPMTAG_NAME },
+    { "epoch",	RPMTAG_EPOCH },
+    { "version",	RPMTAG_VERSION },
+    { "release",	RPMTAG_RELEASE },
+    { NULL,	0 }
+};
+
 rpmRC rpmfcApply(rpmfc fc)
 {
     rpmRC rc;
+    Package pkg = fc->pkg;
+    macroExport me;
+    for (me = macroExportList; me->name; me++) {
+	char *val = headerGetAsString(pkg->header, me->tag);
+	if (val) {
+	    rpmPushMacro(NULL, me->name, NULL, val, RMIL_SPEC);
+	    free(val);
+	}
+    }
     /* If new-fangled dependency generation is disabled ... */
     if (!rpmExpandNumeric("%{?_use_internal_dependency_generator}")) {
 	/* ... then generate dependencies using %{__find_requires} et al. */
@@ -1347,6 +1369,9 @@ rpmRC rpmfcApply(rpmfc fc)
 	/* ... otherwise generate per-file dependencies */
 	rc = rpmfcApplyInternal(fc);
     }
+    for (me = macroExportList; me->name; me++)
+	if (headerIsEntry(pkg->header, me->tag))
+	    rpmPopMacro(NULL, me->name);
     return rc;
 }
 
