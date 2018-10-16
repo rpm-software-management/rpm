@@ -253,6 +253,7 @@ install-data-local:
 			$(RPMCANONVENDOR) $(RPMCANONOS) $(RPMCANONGNU)
 	@$(MKDIR_P) $(DESTDIR)$(localstatedir)/tmp
 	@$(MKDIR_P) $(DESTDIR)$(rpmconfigdir)/macros.d
+	@$(MKDIR_P) $(DESTDIR)$(rpmconfigdir)/lua
 
 # XXX to appease distcheck we need to remove "stuff" here...
 uninstall-local:
@@ -261,6 +262,7 @@ uninstall-local:
 	@rm -rf $(DESTDIR)$(rpmconfigdir)/platform/
 	@rm -f $(DESTDIR)$(rpmconfigdir)/macros
 	@rm -rf $(DESTDIR)$(rpmconfigdir)/macros.d
+	@rm -rf $(DESTDIR)$(rpmconfigdir)/lua
 
 MAINTAINERCLEANFILES = ChangeLog
 

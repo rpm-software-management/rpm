@@ -297,6 +297,21 @@ runroot rpm \
 )
 AT_CLEANUP
 
+AT_SETUP([lua library path])
+AT_KEYWORDS([macros lua])
+AT_CHECK([
+AT_SKIP_IF([$LUA_DISABLED])
+f=$(rpm --eval "%{_rpmconfigdir}/lua/foo.lua")
+echo "bar = 'graak'" > ${f}
+runroot rpm \
+  --eval '%{lua:require "foo"; print(bar)}'
+rm -f ${f}
+],
+[0],
+[graak
+])
+AT_CLEANUP
+
 AT_SETUP([%define + %undefine in nested levels 1])
 AT_KEYWORDS([macros define undefine])
 AT_CHECK([
