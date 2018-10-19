@@ -223,7 +223,7 @@ msgstr "verifiera inte byggberoenden"
 
 #: rpmbuild.c:226
 msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
-msgstr "generera pakethuvd(en) kompatibla med (äldre) rpm-v3-paketering"
+msgstr "generera pakethuvud(en) kompatibla med (äldre) rpm-v3-paketering"
 
 #: rpmbuild.c:230
 #, c-format
