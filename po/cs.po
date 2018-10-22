@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2018-08-21 13:38+0300\n"
+"POT-Creation-Date: 2018-10-22 12:23+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Czech (http://www.transifex.com/rpm-team/rpm/language/cs/)\n"
@@ -3603,11 +3603,11 @@ msgstr "(není OpenPGP podpis)"
 msgid "no digest"
 msgstr ""
 
-#: lib/transaction.c:1518
+#: lib/transaction.c:1519
 msgid "skipped"
 msgstr ""
 
-#: lib/transaction.c:1518
+#: lib/transaction.c:1519
 msgid "failed"
 msgstr ""
 
@@ -3768,27 +3768,27 @@ msgstr "varování: "
 msgid "Error writing to log"
 msgstr ""
 
-#: rpmio/rpmlua.c:523
+#: rpmio/rpmlua.c:522
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "neplatná syntax v lua skriptletu: %s\n"
 
-#: rpmio/rpmlua.c:541
+#: rpmio/rpmlua.c:540
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "neplatná syntax v lua skriptu: %s\n"
 
-#: rpmio/rpmlua.c:546 rpmio/rpmlua.c:565
+#: rpmio/rpmlua.c:545 rpmio/rpmlua.c:564
 #, c-format
 msgid "lua script failed: %s\n"
 msgstr "lua skript selhal: %s\n"
 
-#: rpmio/rpmlua.c:560
+#: rpmio/rpmlua.c:559
 #, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "neplatné syntax v lua souboru: %s\n"
 
-#: rpmio/rpmlua.c:756
+#: rpmio/rpmlua.c:755
 #, c-format
 msgid "lua hook failed: %s\n"
 msgstr "lua obsloužení selhalo: %s\n"

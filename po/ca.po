@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2018-08-21 13:38+0300\n"
+"POT-Creation-Date: 2018-10-22 12:23+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Catalan (http://www.transifex.com/rpm-team/rpm/language/ca/)\n"
@@ -3684,11 +3684,11 @@ msgstr "sense estat"
 msgid "no digest"
 msgstr ""
 
-#: lib/transaction.c:1518
+#: lib/transaction.c:1519
 msgid "skipped"
 msgstr "s'ha ignorat"
 
-#: lib/transaction.c:1518
+#: lib/transaction.c:1519
 msgid "failed"
 msgstr "ha fallat"
 
@@ -3851,27 +3851,27 @@ msgstr "advertència: "
 msgid "Error writing to log"
 msgstr ""
 
-#: rpmio/rpmlua.c:523
+#: rpmio/rpmlua.c:522
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "sintaxi no vàlida en el scriptlet lua: %s\n"
 
-#: rpmio/rpmlua.c:541
+#: rpmio/rpmlua.c:540
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "sintaxi no vàlida en el script lua: %s\n"
 
-#: rpmio/rpmlua.c:546 rpmio/rpmlua.c:565
+#: rpmio/rpmlua.c:545 rpmio/rpmlua.c:564
 #, c-format
 msgid "lua script failed: %s\n"
 msgstr "ha fallat el script lua: %s\n"
 
-#: rpmio/rpmlua.c:560
+#: rpmio/rpmlua.c:559
 #, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "sintaxi no vàlida al fitxer lua: %s\n"
 
-#: rpmio/rpmlua.c:756
+#: rpmio/rpmlua.c:755
 #, c-format
 msgid "lua hook failed: %s\n"
 msgstr "Ha fallat el hook lua: %s\n"

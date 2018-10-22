@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2018-08-21 13:38+0300\n"
+"POT-Creation-Date: 2018-10-22 12:23+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Chinese (Mandarin) (http://www.transifex.com/rpm-team/rpm/"
@@ -3592,11 +3592,11 @@ msgstr "(不是個 OpenPGP 簽名)"
 msgid "no digest"
 msgstr ""
 
-#: lib/transaction.c:1518
+#: lib/transaction.c:1519
 msgid "skipped"
 msgstr "已跳過"
 
-#: lib/transaction.c:1518
+#: lib/transaction.c:1519
 msgid "failed"
 msgstr "已失敗"
 
@@ -3757,27 +3757,27 @@ msgstr "警告："
 msgid "Error writing to log"
 msgstr ""
 
-#: rpmio/rpmlua.c:523
+#: rpmio/rpmlua.c:522
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "無效的語法於 lua 指令稿片段：%s\n"
 
-#: rpmio/rpmlua.c:541
+#: rpmio/rpmlua.c:540
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "無效的語法於 lua 指令稿：%s\n"
 
-#: rpmio/rpmlua.c:546 rpmio/rpmlua.c:565
+#: rpmio/rpmlua.c:545 rpmio/rpmlua.c:564
 #, c-format
 msgid "lua script failed: %s\n"
 msgstr "lua 指令稿失敗：%s\n"
 
-#: rpmio/rpmlua.c:560
+#: rpmio/rpmlua.c:559
 #, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "lua 檔案內有無效語法：%s\n"
 
-#: rpmio/rpmlua.c:756
+#: rpmio/rpmlua.c:755
 #, c-format
 msgid "lua hook failed: %s\n"
 msgstr "lua 攔截指令失敗：%s\n"

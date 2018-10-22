@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2018-08-21 13:38+0300\n"
+"POT-Creation-Date: 2018-10-22 12:23+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Esperanto (http://www.transifex.com/rpm-team/rpm/language/"
@@ -3625,11 +3625,11 @@ msgstr "neniu stato"
 msgid "no digest"
 msgstr ""
 
-#: lib/transaction.c:1518
+#: lib/transaction.c:1519
 msgid "skipped"
 msgstr "preterlasita"
 
-#: lib/transaction.c:1518
+#: lib/transaction.c:1519
 msgid "failed"
 msgstr "malsukcesa"
 
@@ -3792,27 +3792,27 @@ msgstr "averto: "
 msgid "Error writing to log"
 msgstr ""
 
-#: rpmio/rpmlua.c:523
+#: rpmio/rpmlua.c:522
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "nevalida sintakso en lua-skripteto: %s\n"
 
-#: rpmio/rpmlua.c:541
+#: rpmio/rpmlua.c:540
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "nevalida sintakso en lua-skripto: %s\n"
 
-#: rpmio/rpmlua.c:546 rpmio/rpmlua.c:565
+#: rpmio/rpmlua.c:545 rpmio/rpmlua.c:564
 #, c-format
 msgid "lua script failed: %s\n"
 msgstr "lua-skripto malsukcesis: %s\n"
 
-#: rpmio/rpmlua.c:560
+#: rpmio/rpmlua.c:559
 #, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "nevalida sintakso en lua-dosiero: %s\n"
 
-#: rpmio/rpmlua.c:756
+#: rpmio/rpmlua.c:755
 #, c-format
 msgid "lua hook failed: %s\n"
 msgstr "lua hoko malsukcesis: %s\n"
