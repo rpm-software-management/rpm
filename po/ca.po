@@ -1,23 +1,26 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>, 2017
 # Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>, 2015-2016
+# Panu Matilainen <pmatilai@redhat.com>, 2017. #zanata
+# Robert Antoni Buj Gelonch <robert.buj@gmail.com>, 2018. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: RPM\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2017-08-10 10:36+0300\n"
-"PO-Revision-Date: 2017-08-10 07:39+0000\n"
-"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
-"Language-Team: Catalan (http://www.transifex.com/rpm-team/rpm/language/ca/)\n"
-"Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2018-02-15 09:14+0000\n"
+"Last-Translator: Robert Antoni Buj Gelonch <robert.buj@gmail.com>\n"
+"Language-Team: Catalan (http://www.transifex.com/rpm-team/rpm/language/ca/)\n"
+"Language: ca\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 4.6.2\n"
 
 #: cliutils.c:21 lib/poptI.c:29
 #, c-format
@@ -174,7 +177,8 @@ msgstr "<arxiu tar>"
 #: rpmbuild.c:186
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr ""
-"construeix mitjançant el %build (%prep, després compila) des de l'<arxiu tar>"
+"construeix mitjançant el %build (%prep, després compila) des de l'<arxiu "
+"tar>"
 
 #: rpmbuild.c:189
 msgid "build through %install (%prep, %build, then install) from <tarball>"
@@ -452,7 +456,8 @@ msgstr ""
 
 #: rpmqv.c:166
 msgid "--prefix may only be used when installing new packages"
-msgstr "només es pot utilitzar l'opció --prefix quan s'instal·lin paquets nous"
+msgstr ""
+"només es pot utilitzar l'opció --prefix quan s'instal·lin paquets nous"
 
 #: rpmqv.c:169
 msgid "arguments to --prefix must begin with a /"
@@ -466,7 +471,8 @@ msgstr ""
 "del paquet"
 
 #: rpmqv.c:176
-msgid "--percent may only be specified during package installation and erasure"
+msgid ""
+"--percent may only be specified during package installation and erasure"
 msgstr ""
 "--percent només es pot especificar durant la instal·lació i la supressió del "
 "paquet"
@@ -491,7 +497,8 @@ msgstr ""
 
 #: rpmqv.c:192
 msgid "only one of --excludedocs and --includedocs may be specified"
-msgstr "només es pot especificar una opció entre --excludedocs i --includedocs"
+msgstr ""
+"només es pot especificar una opció entre --excludedocs i --includedocs"
 
 #: rpmqv.c:196
 msgid "--ignorearch may only be specified during package installation"
@@ -502,7 +509,8 @@ msgstr ""
 #: rpmqv.c:200
 msgid "--ignoreos may only be specified during package installation"
 msgstr ""
-"només es pot especificar l'opció --ignoreos durant la instal·lació del paquet"
+"només es pot especificar l'opció --ignoreos durant la instal·lació del "
+"paquet"
 
 #: rpmqv.c:205
 msgid "--ignoresize may only be specified during package installation"
@@ -518,7 +526,8 @@ msgstr ""
 #: rpmqv.c:213
 msgid "--allfiles may only be specified during package installation"
 msgstr ""
-"només es pot especificar l'opció --allfiles durant la instal·lació del paquet"
+"només es pot especificar l'opció --allfiles durant la instal·lació del "
+"paquet"
 
 #: rpmqv.c:218
 msgid "--justdb may only be specified during package installation and erasure"
@@ -688,12 +697,10 @@ msgid "setting %s=%s\n"
 msgstr ""
 
 #: build/build.c:299
-msgid ""
-"\n"
+msgid "\n"
 "\n"
 "RPM build errors:\n"
-msgstr ""
-"\n"
+msgstr "\n"
 "\n"
 "Errors de construcció del RPM:\n"
 
@@ -1007,11 +1014,9 @@ msgstr "Comprovació per si hi ha fitxers no empaquetats: %s\n"
 
 #: build/files.c:2741
 #, c-format
-msgid ""
-"Installed (but unpackaged) file(s) found:\n"
+msgid "Installed (but unpackaged) file(s) found:\n"
 "%s"
-msgstr ""
-"Hi ha fitxers instal·lats però no empaquetats:\n"
+msgstr "Hi ha fitxers instal·lats però no empaquetats:\n"
 "%s"
 
 #: build/files.c:2852
@@ -1181,8 +1186,8 @@ msgstr "línia %d: segon %%changelog\n"
 #, c-format
 msgid "line %d: Error parsing %%description: %s\n"
 msgstr ""
-"línia %d: S'ha produït un error en analitzar sintàcticament el "
-"%%description: %s\n"
+"línia %d: S'ha produït un error en analitzar sintàcticament el %%description:"
+" %s\n"
 
 #: build/parseDescription.c:45 build/parseFiles.c:46 build/parsePolicies.c:45
 #: build/parseScript.c:321
@@ -1659,8 +1664,8 @@ msgstr "Ha fallat la determinació d'un nom de política: %s\n"
 #: build/policies.c:199
 #, c-format
 msgid ""
-"'%s' type given with other types in %%semodule %s. Compacting types to "
-"'%s'.\n"
+"'%s' type given with other types in %%semodule %s. Compacting types to '%s'."
+"\n"
 msgstr ""
 
 #: build/policies.c:246
@@ -1899,7 +1904,7 @@ msgstr "%c"
 
 #: lib/formats.c:122
 msgid "%a %b %d %Y"
-msgstr "%a %b %d %Y"
+msgstr "%a %-d %b de %Y"
 
 #: lib/formats.c:253
 msgid "(not base64)"
@@ -2110,7 +2115,8 @@ msgstr "s'esperava | al final de l'expressió"
 
 #: lib/headerfmt.c:771
 msgid "array iterator used with different sized arrays"
-msgstr "iterador de seqüència que s'utilitza amb seqüències de diferents mides"
+msgstr ""
+"iterador de seqüència que s'utilitza amb seqüències de diferents mides"
 
 #: lib/poptALL.c:154
 #, c-format
@@ -2252,7 +2258,8 @@ msgid "relocations must have a / following the ="
 msgstr "els trasllats han de tenir un / a continuació del ="
 
 #: lib/poptI.c:118
-msgid "install all files, even configurations which might otherwise be skipped"
+msgid ""
+"install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "instal·la tots els fitxers, fins i tot les configuracions que podrien ser "
 "ignorades"
@@ -2959,8 +2966,8 @@ msgstr "Les dependències PreReq:, Provides: i Obsoletes: suporten versions."
 #: lib/rpmds.c:1224
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
-"els noms de fitxer s'han emmagatzemat com una tupla (dirName,baseName,"
-"dirIndex), no com un camí."
+"els noms de fitxer s'han emmagatzemat com una tupla "
+"(dirName,baseName,dirIndex), no com un camí."
 
 #: lib/rpmds.c:1228
 msgid "package payload can be compressed using bzip2."
@@ -2985,7 +2992,8 @@ msgstr ""
 
 #: lib/rpmds.c:1246
 msgid "header tags are always sorted after being loaded."
-msgstr "les etiquetes de la capçalera sempre s'ordenen després de carregar-se."
+msgstr ""
+"les etiquetes de la capçalera sempre s'ordenen després de carregar-se."
 
 #: lib/rpmds.c:1249
 msgid "the scriptlet interpreter can use arguments from header."
@@ -3323,7 +3331,8 @@ msgstr "ja s'ha instal·lat el paquet %s, que és més nou que %s"
 #, c-format
 msgid "installing package %s needs %<PRIu64>%cB on the %s filesystem"
 msgstr ""
-"la instal·lació del paquet %s necessita %<PRIu64>%cB al sistema de fitxers %s"
+"la instal·lació del paquet %s necessita %<PRIu64>%cB al sistema de fitxers "
+"%s"
 
 #: lib/rpmprob.c:155
 #, c-format

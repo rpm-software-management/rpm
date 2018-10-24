@@ -1,24 +1,26 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Lubos Kardos <kardos.lubos@gmail.com>, 2015
 # Tomáš Vadina <inactive+kyberdev@transifex.com>, 2011
 # Tomáš Vadina <inactive+kyberdev@transifex.com>, 2011
+# Panu Matilainen <pmatilai@redhat.com>, 2017. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: RPM\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2017-08-10 10:36+0300\n"
-"PO-Revision-Date: 2017-08-10 07:39+0000\n"
-"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
-"Language-Team: Slovak (http://www.transifex.com/rpm-team/rpm/language/sk/)\n"
-"Language: sk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2017-10-13 05:50+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Slovak (http://www.transifex.com/rpm-team/rpm/language/sk/)\n"
+"Language: sk\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Zanata 4.6.2\n"
 
 #: cliutils.c:21 lib/poptI.c:29
 #, c-format
@@ -220,7 +222,8 @@ msgstr "nekontrolovať závislosti balíčkov"
 
 #: rpmbuild.c:226
 msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
-msgstr "generovanie hlavičiek balíčka kompatibilné s (legacy) rpm v3 packaging"
+msgstr ""
+"generovanie hlavičiek balíčka kompatibilné s (legacy) rpm v3 packaging"
 
 #: rpmbuild.c:230
 #, c-format
@@ -442,7 +445,8 @@ msgid ""
 msgstr ""
 
 #: rpmqv.c:176
-msgid "--percent may only be specified during package installation and erasure"
+msgid ""
+"--percent may only be specified during package installation and erasure"
 msgstr ""
 
 #: rpmqv.c:180
@@ -645,12 +649,10 @@ msgid "setting %s=%s\n"
 msgstr ""
 
 #: build/build.c:299
-msgid ""
-"\n"
+msgid "\n"
 "\n"
 "RPM build errors:\n"
-msgstr ""
-"\n"
+msgstr "\n"
 "\n"
 "Chyby zostavenia RPM:\n"
 
@@ -964,11 +966,9 @@ msgstr "Kontrolujú sa nezabalené súbory: %s\n"
 
 #: build/files.c:2741
 #, c-format
-msgid ""
-"Installed (but unpackaged) file(s) found:\n"
+msgid "Installed (but unpackaged) file(s) found:\n"
 "%s"
-msgstr ""
-"Nájdené nainštalované (ale nezabalené) súbory:\n"
+msgstr "Nájdené nainštalované (ale nezabalené) súbory:\n"
 "%s"
 
 #: build/files.c:2852
@@ -1409,7 +1409,8 @@ msgstr "riadok %d: druhý %%prep\n"
 
 #: build/parseReqs.c:52
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
-msgstr "Tokeny závislosti musia začínať alfa-numerickými znakmi, '_' alebo '/'"
+msgstr ""
+"Tokeny závislosti musia začínať alfa-numerickými znakmi, '_' alebo '/'"
 
 #: build/parseReqs.c:57
 msgid "Versioned file name not permitted"
@@ -1611,8 +1612,8 @@ msgstr "Zlyhalo získanie názvu politiky: %s\n"
 #: build/policies.c:199
 #, c-format
 msgid ""
-"'%s' type given with other types in %%semodule %s. Compacting types to "
-"'%s'.\n"
+"'%s' type given with other types in %%semodule %s. Compacting types to '%s'."
+"\n"
 msgstr ""
 "'%s' typ dodaný s ostatnými typmi v %%semodule %s. Úprava typov na '%s'.\n"
 
@@ -2201,7 +2202,8 @@ msgid "relocations must have a / following the ="
 msgstr "presunutia musia mať za znakom = znak /"
 
 #: lib/poptI.c:118
-msgid "install all files, even configurations which might otherwise be skipped"
+msgid ""
+"install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "inštalovať všetky súbory vrátane konfiguračných súborov, ktoré by inak mohli "
 "byť vynechané"

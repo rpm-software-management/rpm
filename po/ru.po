@@ -1,25 +1,27 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # pbludov <pbludov@gmail.com>, 2017
 # pbludov <pbludov@gmail.com>, 2017
+# Panu Matilainen <pmatilai@redhat.com>, 2017. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: RPM\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2017-08-10 10:36+0300\n"
-"PO-Revision-Date: 2017-08-10 07:39+0000\n"
-"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
-"Language-Team: Russian (http://www.transifex.com/rpm-team/rpm/language/ru/)\n"
-"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
-"%100>=11 && n%100<=14)? 2 : 3);\n"
+"PO-Revision-Date: 2017-10-13 05:50+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Russian (http://www.transifex.com/rpm-team/rpm/language/ru/)\n"
+"Language: ru\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
+"X-Generator: Zanata 4.6.2\n"
 
 #: cliutils.c:21 lib/poptI.c:29
 #, c-format
@@ -435,7 +437,8 @@ msgstr ""
 
 #: rpmqv.c:166
 msgid "--prefix may only be used when installing new packages"
-msgstr "вариант --prefix можно использовать только при установке новых пакетов"
+msgstr ""
+"вариант --prefix можно использовать только при установке новых пакетов"
 
 #: rpmqv.c:169
 msgid "arguments to --prefix must begin with a /"
@@ -444,10 +447,12 @@ msgstr "аргументы для --prefix должны начинаться с 
 #: rpmqv.c:172
 msgid ""
 "--hash (-h) may only be specified during package installation and erasure"
-msgstr "--hash (-h) может быть указан только при установке или удалении пакета"
+msgstr ""
+"--hash (-h) может быть указан только при установке или удалении пакета"
 
 #: rpmqv.c:176
-msgid "--percent may only be specified during package installation and erasure"
+msgid ""
+"--percent may only be specified during package installation and erasure"
 msgstr "--percent может быть указан только при установке или удалении пакета"
 
 #: rpmqv.c:180
@@ -513,7 +518,8 @@ msgid ""
 "--nodeps may only be specified during package installation, erasure, and "
 "verification"
 msgstr ""
-"--nodeps может быть указан только при установке, удалении или проверке пакета"
+"--nodeps может быть указан только при установке, удалении или проверке "
+"пакета"
 
 #: rpmqv.c:236
 msgid "--test may only be specified during package installation and erasure"
@@ -651,12 +657,10 @@ msgid "setting %s=%s\n"
 msgstr ""
 
 #: build/build.c:299
-msgid ""
-"\n"
+msgid "\n"
 "\n"
 "RPM build errors:\n"
-msgstr ""
-"\n"
+msgstr "\n"
 "\n"
 "Ошибки сборки пакетов:\n"
 
@@ -970,11 +974,9 @@ msgstr "Проверка на неупакованный(е) файл(ы): %s\n"
 
 #: build/files.c:2741
 #, c-format
-msgid ""
-"Installed (but unpackaged) file(s) found:\n"
+msgid "Installed (but unpackaged) file(s) found:\n"
 "%s"
-msgstr ""
-"Обнаружен(ы) установленный(е) (но не упакованный(е)) файл(ы):\n"
+msgstr "Обнаружен(ы) установленный(е) (но не упакованный(е)) файл(ы):\n"
 "%s"
 
 #: build/files.c:2852
@@ -1617,8 +1619,8 @@ msgstr ""
 #: build/policies.c:199
 #, c-format
 msgid ""
-"'%s' type given with other types in %%semodule %s. Compacting types to "
-"'%s'.\n"
+"'%s' type given with other types in %%semodule %s. Compacting types to '%s'."
+"\n"
 msgstr ""
 
 #: build/policies.c:246
@@ -2207,7 +2209,8 @@ msgid "relocations must have a / following the ="
 msgstr "перемещения должны иметь / после ="
 
 #: lib/poptI.c:118
-msgid "install all files, even configurations which might otherwise be skipped"
+msgid ""
+"install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "устанавливать все файлы, даже конфигурационные, которые могли бы быть "
 "пропущены"

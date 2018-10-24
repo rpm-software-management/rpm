@@ -1,24 +1,26 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Trần Ngọc Quân <vnwildman@gmail.com>, 2015
 # Trần Ngọc Quân <vnwildman@gmail.com>, 2015
+# Panu Matilainen <pmatilai@redhat.com>, 2017. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: RPM\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2017-08-10 10:36+0300\n"
-"PO-Revision-Date: 2017-08-10 07:39+0000\n"
-"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
-"Language-Team: Vietnamese (http://www.transifex.com/rpm-team/rpm/language/"
-"vi/)\n"
-"Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2017-10-13 05:51+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Vietnamese (http://www.transifex.com/rpm-team/rpm/language/vi/"
+")\n"
+"Language: vi\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Zanata 4.6.2\n"
 
 #: cliutils.c:21 lib/poptI.c:29
 #, c-format
@@ -445,7 +447,8 @@ msgstr ""
 
 #: rpmqv.c:166
 msgid "--prefix may only be used when installing new packages"
-msgstr "tùy chọn “--prefix” (tiền tố) chỉ có thể được dùng khi cài đặt gói mới"
+msgstr ""
+"tùy chọn “--prefix” (tiền tố) chỉ có thể được dùng khi cài đặt gói mới"
 
 #: rpmqv.c:169
 msgid "arguments to --prefix must begin with a /"
@@ -458,7 +461,8 @@ msgstr ""
 "tùy chọn --hash (-h) chỉ có thể được chỉ ra trong khi cài đặt và xóa gói"
 
 #: rpmqv.c:176
-msgid "--percent may only be specified during package installation and erasure"
+msgid ""
+"--percent may only be specified during package installation and erasure"
 msgstr ""
 "tùy chọn “--percent” (phần trăm) chỉ có thể được chỉ ra trong khi cài đặt và "
 "xóa gói"
@@ -681,12 +685,10 @@ msgid "setting %s=%s\n"
 msgstr ""
 
 #: build/build.c:299
-msgid ""
-"\n"
+msgid "\n"
 "\n"
 "RPM build errors:\n"
-msgstr ""
-"\n"
+msgstr "\n"
 "\n"
 "Lỗi xây dựng RPM:\n"
 
@@ -1000,11 +1002,9 @@ msgstr "Đang kiểm tra có tập tin chưa đóng gói: %s\n"
 
 #: build/files.c:2741
 #, c-format
-msgid ""
-"Installed (but unpackaged) file(s) found:\n"
+msgid "Installed (but unpackaged) file(s) found:\n"
 "%s"
-msgstr ""
-"Tìm thấy tập tin đã cài đặt (nhưng chưa đóng gói):\n"
+msgstr "Tìm thấy tập tin đã cài đặt (nhưng chưa đóng gói):\n"
 "%s"
 
 #: build/files.c:2852
@@ -1472,7 +1472,8 @@ msgstr "Chỉ có đường dẫn tuyệt đối là cho phép trong bẫy tập
 
 #: build/parseReqs.c:296
 msgid "Trigger fired by the same package is already defined in spec file"
-msgstr "Bẫy bị kích sập bởi cùng một gói đã sẵn được định nghĩa trong tập tin "
+msgstr ""
+"Bẫy bị kích sập bởi cùng một gói đã sẵn được định nghĩa trong tập tin "
 
 #: build/parseReqs.c:324
 #, c-format
@@ -1651,8 +1652,8 @@ msgstr "Gặp lỗi khi dò tìm tên chính sách: %s\n"
 #: build/policies.c:199
 #, c-format
 msgid ""
-"'%s' type given with other types in %%semodule %s. Compacting types to "
-"'%s'.\n"
+"'%s' type given with other types in %%semodule %s. Compacting types to '%s'."
+"\n"
 msgstr ""
 "kiểu “%s” đưa ra với kiểu khác trong %%semodule %s. Tóm lược các kiểu thành "
 "“%s”.\n"
@@ -2243,7 +2244,8 @@ msgid "relocations must have a / following the ="
 msgstr "sự tái định vị phải có một dấu sổ chéo “/” theo sau dấu bằng “=”"
 
 #: lib/poptI.c:118
-msgid "install all files, even configurations which might otherwise be skipped"
+msgid ""
+"install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "cài đặt tất cả các tập tin, ngay cả cấu hình mà có thể bị bỏ qua bằng cách "
 "khác"
@@ -2951,8 +2953,8 @@ msgstr ""
 #: lib/rpmds.c:1224
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
-"tên tập tin được cất giữ dạng một đối tượng dữ liệu đa thành phần (dirName,"
-"baseName,dirIndex), không phải dạng đường dẫn."
+"tên tập tin được cất giữ dạng một đối tượng dữ liệu đa thành phần "
+"(dirName,baseName,dirIndex), không phải dạng đường dẫn."
 
 #: lib/rpmds.c:1228
 msgid "package payload can be compressed using bzip2."
@@ -2991,6 +2993,7 @@ msgstr ""
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "vi văn lệnh của gói cũng có thể truy cập cơ sở dữ liệu RPM trong khi cài đặt."
+""
 
 #: lib/rpmds.c:1259
 msgid "internal support for lua scripts."
@@ -3677,7 +3680,8 @@ msgstr "Vĩ lệnh %%%s có tên không hợp lệ (%%undefine)\n"
 #, c-format
 msgid "Macro %%%s defined but not used within scope\n"
 msgstr ""
-"Vĩ lệnh %%%s được định nghĩa nhưng lại không được dùng trong phạm vi của nó\n"
+"Vĩ lệnh %%%s được định nghĩa nhưng lại không được dùng trong phạm vi của "
+"nó\n"
 
 #: rpmio/macro.c:788
 #, c-format
@@ -3852,8 +3856,7 @@ msgstr "Không thể thực hiện %s: %s\n"
 
 #: sign/rpmgensig.c:280
 msgid "Fopen failed\n"
-msgstr ""
-"Fopen gặp lỗi\n"
+msgstr "Fopen gặp lỗi\n"
 "\n"
 
 #: sign/rpmgensig.c:295

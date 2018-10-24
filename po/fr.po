@@ -1,23 +1,25 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Jérôme Fenal <jfenal@gmail.com>, 2013
 # Mathieu LEFEBVRE Mathdabomb <mathdabomb@gmail.com>, 2011-2012,2015
+# Panu Matilainen <pmatilai@redhat.com>, 2017. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: RPM\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2017-08-10 10:36+0300\n"
-"PO-Revision-Date: 2017-08-10 07:40+0000\n"
-"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
-"Language-Team: French (http://www.transifex.com/rpm-team/rpm/language/fr/)\n"
-"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2017-10-13 05:50+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: French (http://www.transifex.com/rpm-team/rpm/language/fr/)\n"
+"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Zanata 4.6.2\n"
 
 #: cliutils.c:21 lib/poptI.c:29
 #, c-format
@@ -269,8 +271,8 @@ msgstr "surcharger la plate-forme cible"
 #: rpmbuild.c:262
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
-"Options de construction avec [ <fichier_spec> | <tarball> | <paquet "
-"source> ] :"
+"Options de construction avec [ <fichier_spec> | <tarball> | <paquet source> "
+"] :"
 
 #: rpmbuild.c:268 rpmdb.c:40 rpmkeys.c:38 rpmqv.c:63 rpmsign.c:51 rpmspec.c:47
 #: tools/rpmdeps.c:41 tools/rpmgraph.c:221
@@ -456,7 +458,8 @@ msgstr ""
 "suppression de paquet"
 
 #: rpmqv.c:176
-msgid "--percent may only be specified during package installation and erasure"
+msgid ""
+"--percent may only be specified during package installation and erasure"
 msgstr ""
 "--percent ne peut être utilisé que lors d'une installation ou une "
 "suppression de paquet"
@@ -666,12 +669,10 @@ msgid "setting %s=%s\n"
 msgstr ""
 
 #: build/build.c:299
-msgid ""
-"\n"
+msgid "\n"
 "\n"
 "RPM build errors:\n"
-msgstr ""
-"\n"
+msgstr "\n"
 "\n"
 "Erreur de construction de RPM :\n"
 
@@ -985,11 +986,9 @@ msgstr "Vérification des fichiers non empaquetés : %s\n"
 
 #: build/files.c:2741
 #, c-format
-msgid ""
-"Installed (but unpackaged) file(s) found:\n"
+msgid "Installed (but unpackaged) file(s) found:\n"
 "%s"
-msgstr ""
-"Fichier(s) installé(s) (mais non empaquetés) :\n"
+msgstr "Fichier(s) installé(s) (mais non empaquetés) :\n"
 "%s"
 
 #: build/files.c:2852
@@ -1637,8 +1636,8 @@ msgstr "Impossible de déterminer un nom de la stratégie : %s\n"
 #: build/policies.c:199
 #, c-format
 msgid ""
-"'%s' type given with other types in %%semodule %s. Compacting types to "
-"'%s'.\n"
+"'%s' type given with other types in %%semodule %s. Compacting types to '%s'."
+"\n"
 msgstr ""
 "Le type '%s' donnée avec les autres types dans %%semodule %s. Compactage des "
 "types vers '%s'.\n"
@@ -2230,7 +2229,8 @@ msgid "relocations must have a / following the ="
 msgstr "dans les relogements un / doit suivre le ="
 
 #: lib/poptI.c:118
-msgid "install all files, even configurations which might otherwise be skipped"
+msgid ""
+"install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "installer tous les fichiers, même si les configurations disent le contraire"
 
@@ -2945,8 +2945,8 @@ msgstr ""
 #: lib/rpmds.c:1224
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
-"Le(s) nom(s) de fichier sont stockés en tant que triplets (NomRep,NomFich,"
-"IndexRep), pas en tant que chemin."
+"Le(s) nom(s) de fichier sont stockés en tant que triplets "
+"(NomRep,NomFich,IndexRep), pas en tant que chemin."
 
 #: lib/rpmds.c:1228
 msgid "package payload can be compressed using bzip2."
@@ -3006,7 +3006,8 @@ msgstr "les scriptlets du paquet peut être étendu lors de l'installation."
 
 #: lib/rpmds.c:1274
 msgid "dependency comparison supports versions with tilde."
-msgstr "la comparaison de dépendances prend en charge les versions avec tilde."
+msgstr ""
+"la comparaison de dépendances prend en charge les versions avec tilde."
 
 #: lib/rpmds.c:1277
 msgid "support files larger than 4GB"
@@ -3141,8 +3142,7 @@ msgstr ""
 #: lib/rpmgi.c:155
 #, c-format
 msgid "%s: not an rpm package (or package manifest)\n"
-msgstr ""
-"%s: n'est pas un paquet rpm (ni une liste de paquet)\n"
+msgstr "%s: n'est pas un paquet rpm (ni une liste de paquet)\n"
 "\n"
 
 #: lib/rpminstall.c:142
@@ -3291,7 +3291,8 @@ msgstr "le chemin %s dans le paquet %s n'est pas localisable"
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
-"le fichier %s entre en conflit avec les tentatives d'installation de %s et %s"
+"le fichier %s entre en conflit avec les tentatives d'installation de %s et "
+"%s"
 
 #: lib/rpmprob.c:135
 #, c-format
@@ -3420,8 +3421,7 @@ msgstr "Contactez %s\n"
 #: lib/rpmrc.c:1604
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
-msgstr ""
-"Impossible d'ouvrir %s en lecture : %m.\n"
+msgstr "Impossible d'ouvrir %s en lecture : %m.\n"
 "\n"
 
 #: lib/rpmrc.c:1622

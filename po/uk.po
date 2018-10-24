@@ -1,24 +1,26 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Yuri Chornoivan <yurchor@ukr.net>, 2011-2012,2014-2015
+# Panu Matilainen <pmatilai@redhat.com>, 2017. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: RPM\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2017-08-10 10:36+0300\n"
-"PO-Revision-Date: 2017-08-10 07:39+0000\n"
-"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
-"Language-Team: Ukrainian (http://www.transifex.com/rpm-team/rpm/language/"
-"uk/)\n"
-"Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"PO-Revision-Date: 2017-10-13 05:51+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Ukrainian (http://www.transifex.com/rpm-team/rpm/language/uk/"
+")\n"
+"Language: uk\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Zanata 4.6.2\n"
 
 #: cliutils.c:21 lib/poptI.c:29
 #, c-format
@@ -101,7 +103,8 @@ msgstr "перевірити розділ %files з <файла специфік
 
 #: rpmbuild.c:151
 msgid "build source and binary packages from <specfile>"
-msgstr "зібрати пакунки з кодами та бінарними файлами за <файлом специфікації>"
+msgstr ""
+"зібрати пакунки з кодами та бінарними файлами за <файлом специфікації>"
 
 #: rpmbuild.c:154
 msgid "build binary package only from <specfile>"
@@ -432,7 +435,8 @@ msgstr "змінювати розташування файлів можна ли
 
 #: rpmqv.c:160
 msgid "cannot use --prefix with --relocate or --excludepath"
-msgstr "не можна використовувати --prefix разом з --relocate або --excludepath"
+msgstr ""
+"не можна використовувати --prefix разом з --relocate або --excludepath"
 
 #: rpmqv.c:163
 msgid ""
@@ -457,7 +461,8 @@ msgstr ""
 "--hash (-h) можна вказувати лише під час встановлення або вилучення пакунків"
 
 #: rpmqv.c:176
-msgid "--percent may only be specified during package installation and erasure"
+msgid ""
+"--percent may only be specified during package installation and erasure"
 msgstr ""
 "--percent можна вказувати лише під час встановлення або вилучення пакунків"
 
@@ -664,12 +669,10 @@ msgid "setting %s=%s\n"
 msgstr ""
 
 #: build/build.c:299
-msgid ""
-"\n"
+msgid "\n"
 "\n"
 "RPM build errors:\n"
-msgstr ""
-"\n"
+msgstr "\n"
 "\n"
 "Помилки збирання RPM:\n"
 
@@ -985,11 +988,9 @@ msgstr "Пошук незапакованих файлів: %s\n"
 
 #: build/files.c:2741
 #, c-format
-msgid ""
-"Installed (but unpackaged) file(s) found:\n"
+msgid "Installed (but unpackaged) file(s) found:\n"
 "%s"
-msgstr ""
-"Виявлено встановлені (але не запаковані) файли:\n"
+msgstr "Виявлено встановлені (але не запаковані) файли:\n"
 "%s"
 
 #: build/files.c:2852
@@ -1639,8 +1640,8 @@ msgstr "Не вдалося визначити назву правил: %s\n"
 #: build/policies.c:199
 #, c-format
 msgid ""
-"'%s' type given with other types in %%semodule %s. Compacting types to "
-"'%s'.\n"
+"'%s' type given with other types in %%semodule %s. Compacting types to '%s'."
+"\n"
 msgstr ""
 "Тип «%s» вказано з іншими типами у %%semodule %s. Стискання запису типів до "
 "«%s».\n"
@@ -2236,7 +2237,8 @@ msgid "relocations must have a / following the ="
 msgstr "у записах переміщень має бути /, за яким слід вказати ="
 
 #: lib/poptI.c:118
-msgid "install all files, even configurations which might otherwise be skipped"
+msgid ""
+"install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "встановити всі файли, навіть файли налаштувань, які у іншому разі можна було "
 "б пропустити"
@@ -2383,7 +2385,8 @@ msgstr "не виконувати допоміжного скрипту %%posttr
 
 #: lib/poptI.c:219
 msgid "do not execute any scriptlet(s) triggered by this package"
-msgstr "не виконувати жодних допоміжних скриптів, які стосуються цього пакунка"
+msgstr ""
+"не виконувати жодних допоміжних скриптів, які стосуються цього пакунка"
 
 #: lib/poptI.c:222
 #, c-format
@@ -2974,6 +2977,7 @@ msgstr "теґи заголовка завжди впорядковуються 
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 "інтерпретатор допоміжних скриптів може використовувати аргументи з заголовка."
+""
 
 #: lib/rpmds.c:1252
 msgid "a hardlink file set may be installed without being complete."
@@ -3773,7 +3777,8 @@ msgstr "помилка виклику lua: %s\n"
 #, c-format
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr ""
-"у відповідь на спробу отримання області пам’яті (%u байтів) повернуто NULL.\n"
+"у відповідь на спробу отримання області пам’яті (%u байтів) повернуто NULL."
+"\n"
 
 #: rpmio/rpmpgp.c:664 rpmio/rpmpgp.c:752 rpmio/rpmpgp.c:826
 #, c-format

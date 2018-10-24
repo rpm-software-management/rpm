@@ -1,24 +1,26 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Keith Bowes <zooplah@gmail.com>, 2011,2013
 # Keith Bowes <zooplah@gmail.com>, 2011
+# Panu Matilainen <pmatilai@redhat.com>, 2017. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: RPM\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2017-08-10 10:36+0300\n"
-"PO-Revision-Date: 2017-08-10 07:39+0000\n"
-"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
-"Language-Team: Esperanto (http://www.transifex.com/rpm-team/rpm/language/"
-"eo/)\n"
-"Language: eo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2017-10-13 05:51+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Esperanto (http://www.transifex.com/rpm-team/rpm/language/eo/"
+")\n"
+"Language: eo\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 4.6.2\n"
 
 #: cliutils.c:21 lib/poptI.c:29
 #, c-format
@@ -138,7 +140,8 @@ msgstr "konstati sekcion %files laŭ <fontoteksta pakaĵo>"
 
 #: rpmbuild.c:173
 msgid "build source and binary packages from <source package>"
-msgstr "munti fontotekstajn kaj plenumeblajn pakaĵojn laŭ <fontoteksta pakaĵo>"
+msgstr ""
+"munti fontotekstajn kaj plenumeblajn pakaĵojn laŭ <fontoteksta pakaĵo>"
 
 #: rpmbuild.c:176
 msgid "build binary package only from <source package>"
@@ -258,6 +261,7 @@ msgstr "superregi celan platformon"
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 "Multaj elektoj je [ <spec-dosiero> |  <tar-dosiero> | <fontoteksta pakaĵo> ]:"
+""
 
 #: rpmbuild.c:268 rpmdb.c:40 rpmkeys.c:38 rpmqv.c:63 rpmsign.c:51 rpmspec.c:47
 #: tools/rpmdeps.c:41 tools/rpmgraph.c:221
@@ -423,7 +427,8 @@ msgstr "--prefix malkongruas kun --relocate kaj - -excludepath"
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
-"--relocate kaj --excludepath povas esti uzata nur dum instali novajn pakaĵojn"
+"--relocate kaj --excludepath povas esti uzata nur dum instali novajn "
+"pakaĵojn"
 
 #: rpmqv.c:166
 msgid "--prefix may only be used when installing new packages"
@@ -439,20 +444,24 @@ msgid ""
 msgstr "--hash (-h) nur eblas dum pakaĵa instalado aŭ forigado"
 
 #: rpmqv.c:176
-msgid "--percent may only be specified during package installation and erasure"
+msgid ""
+"--percent may only be specified during package installation and erasure"
 msgstr "--percent nur eblas dum pakaĵa instalado aŭ forigado"
 
 #: rpmqv.c:180
 msgid "--replacepkgs may only be specified during package installation"
-msgstr "oni povas specifi la parametron --replacepkgs nur dum pakaĵo-instalado"
+msgstr ""
+"oni povas specifi la parametron --replacepkgs nur dum pakaĵo-instalado"
 
 #: rpmqv.c:184
 msgid "--excludedocs may only be specified during package installation"
-msgstr "oni povas specifi la parametron --excludedocs nur dum pakaĵo-instalado"
+msgstr ""
+"oni povas specifi la parametron --excludedocs nur dum pakaĵo-instalado"
 
 #: rpmqv.c:188
 msgid "--includedocs may only be specified during package installation"
-msgstr "oni povas specifi la parametron --includedocs nur dum pakaĵo-instalado"
+msgstr ""
+"oni povas specifi la parametron --includedocs nur dum pakaĵo-instalado"
 
 #: rpmqv.c:192
 msgid "only one of --excludedocs and --includedocs may be specified"
@@ -646,12 +655,10 @@ msgid "setting %s=%s\n"
 msgstr ""
 
 #: build/build.c:299
-msgid ""
-"\n"
+msgid "\n"
 "\n"
 "RPM build errors:\n"
-msgstr ""
-"\n"
+msgstr "\n"
 "\n"
 "Muntaj eraroj ĉe RPM:\n"
 
@@ -965,11 +972,9 @@ msgstr "Kontrolanta ne pakita(j)n dosiero(j)n: %s\n"
 
 #: build/files.c:2741
 #, c-format
-msgid ""
-"Installed (but unpackaged) file(s) found:\n"
+msgid "Installed (but unpackaged) file(s) found:\n"
 "%s"
-msgstr ""
-"Insalita(j) (sed ne pakita(j) dosiero(j) trovita(j):\n"
+msgstr "Insalita(j) (sed ne pakita(j) dosiero(j) trovita(j):\n"
 "%s"
 
 #: build/files.c:2852
@@ -1617,8 +1622,8 @@ msgstr "Malsukcesis decidi konduto-nomon: %s\n"
 #: build/policies.c:199
 #, c-format
 msgid ""
-"'%s' type given with other types in %%semodule %s. Compacting types to "
-"'%s'.\n"
+"'%s' type given with other types in %%semodule %s. Compacting types to '%s'."
+"\n"
 msgstr ""
 "tipo '%s' donita kun aliaj tipoj en %s %%semodule. Kompaktiganta tipojn al "
 "'%s'.\n"
@@ -2211,7 +2216,8 @@ msgid "relocations must have a / following the ="
 msgstr "/ devas veni post = en relokiĝoj"
 
 #: lib/poptI.c:118
-msgid "install all files, even configurations which might otherwise be skipped"
+msgid ""
+"install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "instali ĉiujn dosierojn, eĉ elektoj, kiuj aliokaze eble estus preterlasitaj"
 

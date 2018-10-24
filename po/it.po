@@ -1,23 +1,25 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Guido Grazioli <guido.grazioli@gmail.com>, 2011-2014
 # Luigi Toscano <luigi.toscano@tiscali.it>, 2016-2017
+# Panu Matilainen <pmatilai@redhat.com>, 2017. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: RPM\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2017-08-10 10:36+0300\n"
-"PO-Revision-Date: 2017-08-10 07:39+0000\n"
-"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
-"Language-Team: Italian (http://www.transifex.com/rpm-team/rpm/language/it/)\n"
-"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2017-10-13 05:50+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Italian (http://www.transifex.com/rpm-team/rpm/language/it/)\n"
+"Language: it\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 4.6.2\n"
 
 #: cliutils.c:21 lib/poptI.c:29
 #, c-format
@@ -129,7 +131,8 @@ msgstr ""
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
-"compila attraverso %install (%prep, %build, poi installa) da <source package>"
+"compila attraverso %install (%prep, %build, poi installa) da <source "
+"package>"
 
 #: rpmbuild.c:170
 #, c-format
@@ -166,7 +169,8 @@ msgstr "compila attraverso %build (%prep, e poi compila) da <tarball>"
 
 #: rpmbuild.c:189
 msgid "build through %install (%prep, %build, then install) from <tarball>"
-msgstr "compila attraverso %install (%prep, %build, poi installa) da <tarball>"
+msgstr ""
+"compila attraverso %install (%prep, %build, poi installa) da <tarball>"
 
 #: rpmbuild.c:192
 #, c-format
@@ -397,7 +401,8 @@ msgstr "Opzioni Installa/Aggiorna/Rimuovi:"
 
 #: rpmqv.c:122
 msgid "one type of query/verify may be performed at a time"
-msgstr "è possibile eseguire solo un tipo di interrogazione/verifica per volta"
+msgstr ""
+"è possibile eseguire solo un tipo di interrogazione/verifica per volta"
 
 #: rpmqv.c:126
 msgid "unexpected query flags"
@@ -448,9 +453,11 @@ msgstr ""
 "pacchetti"
 
 #: rpmqv.c:176
-msgid "--percent may only be specified during package installation and erasure"
+msgid ""
+"--percent may only be specified during package installation and erasure"
 msgstr ""
-"--percent può essere usato solo per installazione o eliminazione di pacchetti"
+"--percent può essere usato solo per installazione o eliminazione di "
+"pacchetti"
 
 #: rpmqv.c:180
 msgid "--replacepkgs may only be specified during package installation"
@@ -669,12 +676,10 @@ msgid "setting %s=%s\n"
 msgstr ""
 
 #: build/build.c:299
-msgid ""
-"\n"
+msgid "\n"
 "\n"
 "RPM build errors:\n"
-msgstr ""
-"\n"
+msgstr "\n"
 "\n"
 "Errori di compilazione RPM:\n"
 
@@ -940,8 +945,7 @@ msgstr "riga: %s\n"
 #: build/files.c:2197
 #, c-format
 msgid "Empty %%files file %s\n"
-msgstr ""
-"File %s vuoto nella sezione %%files\n"
+msgstr "File %s vuoto nella sezione %%files\n"
 "\n"
 
 #: build/files.c:2203
@@ -990,11 +994,9 @@ msgstr "Controllo per file non pacchettizzati in corso: %s\n"
 
 #: build/files.c:2741
 #, c-format
-msgid ""
-"Installed (but unpackaged) file(s) found:\n"
+msgid "Installed (but unpackaged) file(s) found:\n"
 "%s"
-msgstr ""
-"Trovati file installati (ma non inclusi nel pacchetto):\n"
+msgstr "Trovati file installati (ma non inclusi nel pacchetto):\n"
 "%s"
 
 #: build/files.c:2852
@@ -1011,7 +1013,8 @@ msgstr "Elaborazione file: %s\n"
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
-"L'architettura dei binari (%d) non corrisponde a quella del pacchetto (%d).\n"
+"L'architettura dei binari (%d) non corrisponde a quella del pacchetto (%d)."
+"\n"
 
 #: build/files.c:3103
 msgid "Arch dependent binaries in noarch package\n"
@@ -1541,8 +1544,7 @@ msgstr "%s:%d: argomento necessario per %s\n"
 #: build/parseSpec.c:373
 #, c-format
 msgid "line %d: Unclosed %%if\n"
-msgstr ""
-"riga %d: %%if non bilanciato\n"
+msgstr "riga %d: %%if non bilanciato\n"
 "\n"
 
 #: build/parseSpec.c:378
@@ -1642,8 +1644,8 @@ msgstr "Impossibile determinare il nome della policy: %s\n"
 #: build/policies.c:199
 #, c-format
 msgid ""
-"'%s' type given with other types in %%semodule %s. Compacting types to "
-"'%s'.\n"
+"'%s' type given with other types in %%semodule %s. Compacting types to '%s'."
+"\n"
 msgstr ""
 "Tipo '%s' impostato con altri tipi in %%semodule %s. Compattazione dei tipi "
 "in '%s'.\n"
@@ -2234,7 +2236,8 @@ msgid "relocations must have a / following the ="
 msgstr "i riposizionamenti devono avere una / che segue ="
 
 #: lib/poptI.c:118
-msgid "install all files, even configurations which might otherwise be skipped"
+msgid ""
+"install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "installare tutti i file, anche le configurazioni che possono altrimenti "
 "essere saltate"
@@ -3291,7 +3294,8 @@ msgstr "il percorso %s nel pacchetto %s non è riposizionabile"
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
-"il file %s entra in conflitto durante il tentativo d'installazione di %s e %s"
+"il file %s entra in conflitto durante il tentativo d'installazione di %s e "
+"%s"
 
 #: lib/rpmprob.c:135
 #, c-format

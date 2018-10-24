@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Christopher Meng <i@cicku.me>, 2012-2013,2015
 # Christopher Meng <i@cicku.me>, 2015
@@ -21,20 +21,22 @@
 # zwpwjwtz <zwpwjwtz@126.com>, 2016
 # Mingcong Bai <jeffbai@aosc.xyz>, 2015
 # Mingcong Bai <jeffbai@aosc.xyz>, 2015
+# Panu Matilainen <pmatilai@redhat.com>, 2017. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: RPM\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2017-08-10 10:36+0300\n"
-"PO-Revision-Date: 2017-08-10 07:39+0000\n"
-"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
-"Language-Team: Chinese (China) (http://www.transifex.com/rpm-team/rpm/"
-"language/zh_CN/)\n"
-"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2017-10-13 05:52+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Chinese (China) (http://www.transifex.com/rpm-team/rpm/"
+"language/zh_CN/)\n"
+"Language: zh_CN\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Zanata 4.6.2\n"
 
 #: cliutils.c:21 lib/poptI.c:29
 #, c-format
@@ -447,7 +449,8 @@ msgid ""
 msgstr "--hash (-h) 选项只能在软件包安装和擦除时指定"
 
 #: rpmqv.c:176
-msgid "--percent may only be specified during package installation and erasure"
+msgid ""
+"--percent may only be specified during package installation and erasure"
 msgstr "--percent 选项只能在软件包安装和擦除时指定"
 
 #: rpmqv.c:180
@@ -644,12 +647,10 @@ msgid "setting %s=%s\n"
 msgstr ""
 
 #: build/build.c:299
-msgid ""
-"\n"
+msgid "\n"
 "\n"
 "RPM build errors:\n"
-msgstr ""
-"\n"
+msgstr "\n"
 "\n"
 "RPM 构建错误：\n"
 
@@ -963,11 +964,9 @@ msgstr "检查未打包文件：%s\n"
 
 #: build/files.c:2741
 #, c-format
-msgid ""
-"Installed (but unpackaged) file(s) found:\n"
+msgid "Installed (but unpackaged) file(s) found:\n"
 "%s"
-msgstr ""
-"发现已安装(但未打包的)文件：\n"
+msgstr "发现已安装(但未打包的)文件：\n"
 "%s"
 
 #: build/files.c:2852
@@ -1610,8 +1609,8 @@ msgstr "确定策略名称失败：%s\n"
 #: build/policies.c:199
 #, c-format
 msgid ""
-"'%s' type given with other types in %%semodule %s. Compacting types to "
-"'%s'.\n"
+"'%s' type given with other types in %%semodule %s. Compacting types to '%s'."
+"\n"
 msgstr ""
 
 #: build/policies.c:246
@@ -1787,8 +1786,7 @@ msgstr ""
 #: lib/backend/db3.c:1217
 #, c-format
 msgid "error(%d) adding header #%d record\n"
-msgstr ""
-"添加表头 #%d 记录时出错 (%d)\n"
+msgstr "添加表头 #%d 记录时出错 (%d)\n"
 "\n"
 
 #: lib/backend/db3.c:1226
@@ -2201,16 +2199,15 @@ msgid "relocations must have a / following the ="
 msgstr "重定位必须有 / 跟在 = 之后"
 
 #: lib/poptI.c:118
-msgid "install all files, even configurations which might otherwise be skipped"
+msgid ""
+"install all files, even configurations which might otherwise be skipped"
 msgstr "安装全部文件，包含配置文件，否则配置文件会被跳过。"
 
 #: lib/poptI.c:122
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
-msgstr ""
-"移除所有符合 <package> 的软件包(如果 <package> 被指定未多个软件包，常常会导致"
-"错误出现)"
+msgstr "移除所有符合 <package> 的软件包(如果 <package> 被指定未多个软件包，常常会导致错误出现)"
 
 #: lib/poptI.c:127
 msgid "relocate files in non-relocatable package"

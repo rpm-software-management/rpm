@@ -1,27 +1,28 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Hajime Taira <htaira@redhat.com>, 2011-2012
 # Tadashi Jokagi <elf@poyo.jp>, 2012
 # Tadashi Jokagi <elf@elf.no-ip.org>, 2011
 # Tadashi Jokagi <elf@poyo.jp>, 2012
 # Tomoyuki KATO <inactive+katomo@transifex.com>, 2012-2013
+# Panu Matilainen <pmatilai@redhat.com>, 2017. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: RPM\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2017-08-10 10:36+0300\n"
-"PO-Revision-Date: 2017-08-10 07:39+0000\n"
-"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
-"Language-Team: Japanese (http://www.transifex.com/rpm-team/rpm/language/"
-"ja/)\n"
-"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2017-10-13 05:50+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Japanese (http://www.transifex.com/rpm-team/rpm/language/ja/)\n"
+"Language: ja\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Zanata 4.6.2\n"
 
 #: cliutils.c:21 lib/poptI.c:29
 #, c-format
@@ -215,8 +216,7 @@ msgstr "ビルド依存性を検証しない"
 
 #: rpmbuild.c:226
 msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
-msgstr ""
-"レガシーなRPM v3のパッケージングと互換性のあるパッケージのヘッダーの生成"
+msgstr "レガシーなRPM v3のパッケージングと互換性のあるパッケージのヘッダーの生成"
 
 #: rpmbuild.c:230
 #, c-format
@@ -326,9 +326,7 @@ msgstr "データベースを初期化します。"
 
 #: rpmdb.c:23
 msgid "rebuild database inverted lists from installed package headers"
-msgstr ""
-"インストールされたパッケージヘッダーから、データベースのインデックスを再構築"
-"します。"
+msgstr "インストールされたパッケージヘッダーから、データベースのインデックスを再構築します。"
 
 #: rpmdb.c:26
 msgid "verify database files"
@@ -421,9 +419,7 @@ msgstr "--prefix は --relocate や --excludepath とは同時には使用でき
 #: rpmqv.c:163
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
-msgstr ""
-"--relocate と --excludepath は新しいパッケージをインストールする時のみ使用で"
-"きます。"
+msgstr "--relocate と --excludepath は新しいパッケージをインストールする時のみ使用できます。"
 
 #: rpmqv.c:166
 msgid "--prefix may only be used when installing new packages"
@@ -439,7 +435,8 @@ msgid ""
 msgstr "--hash (-h) はパッケージのインストール時または削除時のみ指定できます。"
 
 #: rpmqv.c:176
-msgid "--percent may only be specified during package installation and erasure"
+msgid ""
+"--percent may only be specified during package installation and erasure"
 msgstr "--percent はパッケージのインストール時または削除時のみ指定できます。"
 
 #: rpmqv.c:180
@@ -486,24 +483,19 @@ msgstr "--justdb はパッケージ インストール・削除時のみ指定�
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
-msgstr ""
-"スクリプトを無効にするようなオプションは、パッケージのインストール、削除時の"
-"み指定できます。"
+msgstr "スクリプトを無効にするようなオプションは、パッケージのインストール、削除時のみ指定できます。"
 
 #: rpmqv.c:228
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
-msgstr ""
-"トリガーを無効にするようなオプションはパッケージのインストール、削除時のみ指"
-"定できます。"
+msgstr "トリガーを無効にするようなオプションはパッケージのインストール、削除時のみ指定できます。"
 
 #: rpmqv.c:232
 msgid ""
 "--nodeps may only be specified during package installation, erasure, and "
 "verification"
-msgstr ""
-"--nodeps はパッケージのインストール時、削除時および検証時のみ指定できます。"
+msgstr "--nodeps はパッケージのインストール時、削除時および検証時のみ指定できます。"
 
 #: rpmqv.c:236
 msgid "--test may only be specified during package installation and erasure"
@@ -641,12 +633,10 @@ msgid "setting %s=%s\n"
 msgstr ""
 
 #: build/build.c:299
-msgid ""
-"\n"
+msgid "\n"
 "\n"
 "RPM build errors:\n"
-msgstr ""
-"\n"
+msgstr "\n"
 "\n"
 "RPM ビルドのエラー:\n"
 
@@ -771,9 +761,7 @@ msgstr ""
 #: build/files.c:1030
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
-msgstr ""
-"不明なファイルのダイジェスト アルゴリズム %u です。MD5 にフォールバックしま"
-"す。\n"
+msgstr "不明なファイルのダイジェスト アルゴリズム %u です。MD5 にフォールバックします。\n"
 
 #: build/files.c:1082
 #, c-format
@@ -962,11 +950,9 @@ msgstr "パッケージに含まれないファイルの検査中: %s\n"
 
 #: build/files.c:2741
 #, c-format
-msgid ""
-"Installed (but unpackaged) file(s) found:\n"
+msgid "Installed (but unpackaged) file(s) found:\n"
 "%s"
-msgstr ""
-"インストール済み(ただしパッケージに含まれない)ファイルが見つかりました:\n"
+msgstr "インストール済み(ただしパッケージに含まれない)ファイルが見つかりました:\n"
 "%s"
 
 #: build/files.c:2852
@@ -982,9 +968,7 @@ msgstr "ファイルの処理中: %s\n"
 #: build/files.c:3097
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
-msgstr ""
-"バイナリのアーキテクチャー (%d) がパッケージのアーキテクチャー (%d) と一致し"
-"ません。\n"
+msgstr "バイナリのアーキテクチャー (%d) がパッケージのアーキテクチャー (%d) と一致しません。\n"
 
 #: build/files.c:3103
 msgid "Arch dependent binaries in noarch package\n"
@@ -1409,8 +1393,7 @@ msgstr "%d 行目: ふたつ目の %%prep\n"
 
 #: build/parseReqs.c:52
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
-msgstr ""
-"依存関係トークンは、英数字、'_' または '/' で始まらなければいけません。"
+msgstr "依存関係トークンは、英数字、'_' または '/' で始まらなければいけません。"
 
 #: build/parseReqs.c:57
 msgid "Versioned file name not permitted"
@@ -1583,8 +1566,7 @@ msgstr "ポリシーモジュール '%s' がオーバーラッピングタイプ
 #: build/policies.c:93
 #, c-format
 msgid "Base modules '%s' and '%s' have overlapping types\n"
-msgstr ""
-"ベースモジュール '%s' と '%s' がオーバーラッピングタイプを持っています。\n"
+msgstr "ベースモジュール '%s' と '%s' がオーバーラッピングタイプを持っています。\n"
 "\n"
 
 #: build/policies.c:101
@@ -1614,11 +1596,9 @@ msgstr "ポリシー名 %s の定義に失敗しました。\n"
 #: build/policies.c:199
 #, c-format
 msgid ""
-"'%s' type given with other types in %%semodule %s. Compacting types to "
-"'%s'.\n"
-msgstr ""
-"'%s' 形式が %%semodule %s において他の形式とともに与えられます。形式を '%s' "
-"に固めています。\n"
+"'%s' type given with other types in %%semodule %s. Compacting types to '%s'."
+"\n"
+msgstr "'%s' 形式が %%semodule %s において他の形式とともに与えられます。形式を '%s' に固めています。\n"
 
 #: build/policies.c:246
 #, c-format
@@ -2205,16 +2185,15 @@ msgid "relocations must have a / following the ="
 msgstr "再配置は = の次に / でなければなりません。"
 
 #: lib/poptI.c:118
-msgid "install all files, even configurations which might otherwise be skipped"
+msgid ""
+"install all files, even configurations which might otherwise be skipped"
 msgstr "設定がスキップを指示していても、全ファイルをインストールします。"
 
 #: lib/poptI.c:122
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
-msgstr ""
-"<package> と一致するパッケージ全てを削除します(通常は <package> が複数のパッ"
-"ケージを指す場合はエラーになります)"
+msgstr "<package> と一致するパッケージ全てを削除します(通常は <package> が複数のパッケージを指す場合はエラーになります)"
 
 #: lib/poptI.c:127
 msgid "relocate files in non-relocatable package"
@@ -2262,8 +2241,7 @@ msgstr "<packagefile>+"
 
 #: lib/poptI.c:154
 msgid "print hash marks as package installs (good with -v)"
-msgstr ""
-"パッケージをインストールにつれて '#' を表示します (-v と使用すると良い)"
+msgstr "パッケージをインストールにつれて '#' を表示します (-v と使用すると良い)"
 
 #: lib/poptI.c:157
 msgid "don't verify package architecture"
@@ -2375,9 +2353,7 @@ msgstr "%%triggerpostun スクリプトを実行しません。"
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
-msgstr ""
-"古いバージョンのパッケージにアップグレードします(アップグレード時の --force "
-"はこれを自動的に行います)"
+msgstr "古いバージョンのパッケージにアップグレードします(アップグレード時の --force はこれを自動的に行います)"
 
 #: lib/poptI.c:239
 msgid "print percentages as package installs"
@@ -2457,8 +2433,7 @@ msgstr "ヘッダー インスタンスの問い合わせ/検証をします。"
 
 #: lib/poptQV.c:95
 msgid "query/verify package(s) from install transaction"
-msgstr ""
-"インストール トランザクションからのパッケージの問い合わせ/検証をします。"
+msgstr "インストール トランザクションからのパッケージの問い合わせ/検証をします。"
 
 #: lib/poptQV.c:97
 msgid "query the package(s) triggered by the package"
@@ -2835,8 +2810,7 @@ msgstr "rpmdbNextIterator: スキップします。"
 #: lib/rpmdb.c:1534
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
-msgstr ""
-"rpmdb: 破損したヘッダーインスタンス #%u を取得しました。スキップします。\n"
+msgstr "rpmdb: 破損したヘッダーインスタンス #%u を取得しました。スキップします。\n"
 
 #: lib/rpmdb.c:2066
 #, c-format
@@ -2904,13 +2878,11 @@ msgstr "YES"
 
 #: lib/rpmds.c:1221
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
-msgstr ""
-"「PreReq:」「Provides:」「Obsoletes:」の依存関係をサポートしたバージョン。"
+msgstr "「PreReq:」「Provides:」「Obsoletes:」の依存関係をサポートしたバージョン。"
 
 #: lib/rpmds.c:1224
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
-msgstr ""
-"ファイル名が、パスではなく (dirName, baseName, dirIndex) の組で格納されます。"
+msgstr "ファイル名が、パスではなく (dirName, baseName, dirIndex) の組で格納されます。"
 
 #: lib/rpmds.c:1228
 msgid "package payload can be compressed using bzip2."
@@ -2946,8 +2918,7 @@ msgstr "ハードリンク ファイル群が完全でなくてもインスト�
 
 #: lib/rpmds.c:1255
 msgid "package scriptlets may access the rpm database while installing."
-msgstr ""
-"インストール中に、パッケージスクリプトが rpm データベースにアクセスできます。"
+msgstr "インストール中に、パッケージスクリプトが rpm データベースにアクセスできます。"
 
 #: lib/rpmds.c:1259
 msgid "internal support for lua scripts."
@@ -3254,9 +3225,7 @@ msgstr "ファイル %s は %s と %s のインストールで競合していま
 #: lib/rpmprob.c:135
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
-msgstr ""
-"ファイル %s (パッケージ %s から) は、パッケージ %s からのファイルと競合してい"
-"ます。"
+msgstr "ファイル %s (パッケージ %s から) は、パッケージ %s からのファイルと競合しています。"
 
 #: lib/rpmprob.c:140
 #, c-format
@@ -3266,16 +3235,12 @@ msgstr "パッケージ %s (%s より新しいもの) は既にインストー�
 #: lib/rpmprob.c:145
 #, c-format
 msgid "installing package %s needs %<PRIu64>%cB on the %s filesystem"
-msgstr ""
-"パッケージ %s のインストールには %<PRIu64>%cB の領域が %s ファイルシステム上"
-"に必要です。"
+msgstr "パッケージ %s のインストールには %<PRIu64>%cB の領域が %s ファイルシステム上に必要です。"
 
 #: lib/rpmprob.c:155
 #, c-format
 msgid "installing package %s needs %<PRIu64> inodes on the %s filesystem"
-msgstr ""
-"パッケージ %s のインストールには %<PRIu64> の inode が %s ファイルシステム上"
-"に必要です。"
+msgstr "パッケージ %s のインストールには %<PRIu64> の inode が %s ファイルシステム上に必要です。"
 
 #: lib/rpmprob.c:159
 #, c-format
@@ -3363,8 +3328,7 @@ msgstr "不正なオプションです: '%s' (%s:%d)\n"
 
 #: lib/rpmrc.c:972
 msgid "Failed to read auxiliary vector, /proc not mounted?\n"
-msgstr ""
-"補助ベクトルの読み込みに失敗しました、/proc がマウントされていないですか?\n"
+msgstr "補助ベクトルの読み込みに失敗しました、/proc がマウントされていないですか?\n"
 
 #: lib/rpmrc.c:1469
 #, c-format
@@ -3651,9 +3615,7 @@ msgstr "不明なオプション %c (%s(%s)中に)\n"
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
-msgstr ""
-"マクロ展開の再帰呼び出しが深すぎます。これは再帰的マクロ定義が原因で発生して"
-"いる可能性があります。\n"
+msgstr "マクロ展開の再帰呼び出しが深すぎます。これは再帰的マクロ定義が原因で発生している可能性があります。\n"
 
 #: rpmio/macro.c:1145 rpmio/macro.c:1161
 #, c-format

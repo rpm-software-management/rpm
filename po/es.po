@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Adolfo Jayme Barrientos, 2011
 # Adolfo Jayme Barrientos, 2011
@@ -11,19 +11,21 @@
 # Daniel Cabrera <logan@fedoraproject.org>, 2011
 # beckerde <domingobecker@gmail.com>, 2012
 # Daniel Cabrera <logan@fedoraproject.org>, 2011
+# Panu Matilainen <pmatilai@redhat.com>, 2017. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: RPM\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2017-08-10 10:36+0300\n"
-"PO-Revision-Date: 2017-08-10 07:39+0000\n"
-"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
-"Language-Team: Spanish (http://www.transifex.com/rpm-team/rpm/language/es/)\n"
-"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2017-10-13 05:51+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Spanish (http://www.transifex.com/rpm-team/rpm/language/es/)\n"
+"Language: es\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 4.6.2\n"
 
 #: cliutils.c:21 lib/poptI.c:29
 #, c-format
@@ -271,8 +273,8 @@ msgstr "sobreescribir plataforma de destino"
 #: rpmbuild.c:262
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
-"Opciones de construcción con [ <archivo spec> | <tarball> | <paquete "
-"fuente> ]:"
+"Opciones de construcción con [ <archivo spec> | <tarball> | <paquete fuente> "
+"]:"
 
 #: rpmbuild.c:268 rpmdb.c:40 rpmkeys.c:38 rpmqv.c:63 rpmsign.c:51 rpmspec.c:47
 #: tools/rpmdeps.c:41 tools/rpmgraph.c:221
@@ -459,7 +461,8 @@ msgstr ""
 "de un paquete"
 
 #: rpmqv.c:176
-msgid "--percent may only be specified during package installation and erasure"
+msgid ""
+"--percent may only be specified during package installation and erasure"
 msgstr ""
 "--percent sólo puede ser indicado durante la instalación o la eliminación de "
 "un paquete"
@@ -676,12 +679,10 @@ msgid "setting %s=%s\n"
 msgstr ""
 
 #: build/build.c:299
-msgid ""
-"\n"
+msgid "\n"
 "\n"
 "RPM build errors:\n"
-msgstr ""
-"\n"
+msgstr "\n"
 "\n"
 "Errores de construcción RPM:\n"
 
@@ -995,11 +996,9 @@ msgstr "Comprobando si hay archivos desempaquetados: %s\n"
 
 #: build/files.c:2741
 #, c-format
-msgid ""
-"Installed (but unpackaged) file(s) found:\n"
+msgid "Installed (but unpackaged) file(s) found:\n"
 "%s"
-msgstr ""
-"Se encontraron archivos instalados (pero desempaquetados):\n"
+msgstr "Se encontraron archivos instalados (pero desempaquetados):\n"
 "%s"
 
 #: build/files.c:2852
@@ -1651,8 +1650,8 @@ msgstr "Falló al determinar el nombre de la política: %s\n"
 #: build/policies.c:199
 #, c-format
 msgid ""
-"'%s' type given with other types in %%semodule %s. Compacting types to "
-"'%s'.\n"
+"'%s' type given with other types in %%semodule %s. Compacting types to '%s'."
+"\n"
 msgstr ""
 "El tipo '%s' ha sido ofrecido con otro tipos en %%semodule %s. Compactando "
 "tipos a '%s'.\n"
@@ -2245,7 +2244,8 @@ msgid "relocations must have a / following the ="
 msgstr "realocaciones deben tener una / después de ="
 
 #: lib/poptI.c:118
-msgid "install all files, even configurations which might otherwise be skipped"
+msgid ""
+"install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "instalar todos los archivos, incluso los de configuración, que de otra "
 "manera serían salteados."
@@ -3446,7 +3446,8 @@ msgstr "No es posible restaurar el directorio actual: %m"
 #: lib/rpmscript.c:149 rpmio/macro.c:885
 msgid "<lua> scriptlet support not built in\n"
 msgstr ""
-"soporte interno para macro de inclución de guiones <lua>, no fue construido\n"
+"soporte interno para macro de inclución de guiones <lua>, no fue "
+"construido\n"
 
 #: lib/rpmscript.c:278
 #, c-format

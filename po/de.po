@@ -1,24 +1,26 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Ettore Atalan <atalanttore@googlemail.com>, 2016
 # Roman Spirgi <bigant@fedoraproject.org>, 2012
 # Roman Spirgi <rspirgi@gmail.com>, 2011
+# Panu Matilainen <pmatilai@redhat.com>, 2017. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: RPM\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2017-08-10 10:36+0300\n"
-"PO-Revision-Date: 2017-08-10 07:39+0000\n"
-"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
-"Language-Team: German (http://www.transifex.com/rpm-team/rpm/language/de/)\n"
-"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2017-10-13 05:51+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: German (http://www.transifex.com/rpm-team/rpm/language/de/)\n"
+"Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 4.6.2\n"
 
 #: cliutils.c:21 lib/poptI.c:29
 #, c-format
@@ -454,22 +456,26 @@ msgstr ""
 "angegeben werden"
 
 #: rpmqv.c:176
-msgid "--percent may only be specified during package installation and erasure"
+msgid ""
+"--percent may only be specified during package installation and erasure"
 msgstr ""
 "--percent kann nur während der Paket-Installation oder -Deinstallation "
 "angegeben werden"
 
 #: rpmqv.c:180
 msgid "--replacepkgs may only be specified during package installation"
-msgstr "--replacepkgs darf nur während der Paket-Installation angegeben werden"
+msgstr ""
+"--replacepkgs darf nur während der Paket-Installation angegeben werden"
 
 #: rpmqv.c:184
 msgid "--excludedocs may only be specified during package installation"
-msgstr "--excludedocs darf nur während der Paket-Installation angegeben werden"
+msgstr ""
+"--excludedocs darf nur während der Paket-Installation angegeben werden"
 
 #: rpmqv.c:188
 msgid "--includedocs may only be specified during package installation"
-msgstr "--includedocs darf nur während der Paket-Installation angegeben werden"
+msgstr ""
+"--includedocs darf nur während der Paket-Installation angegeben werden"
 
 #: rpmqv.c:192
 msgid "only one of --excludedocs and --includedocs may be specified"
@@ -666,12 +672,10 @@ msgid "setting %s=%s\n"
 msgstr ""
 
 #: build/build.c:299
-msgid ""
-"\n"
+msgid "\n"
 "\n"
 "RPM build errors:\n"
-msgstr ""
-"\n"
+msgstr "\n"
 "\n"
 "Fehler beim Bauen des RPM:\n"
 
@@ -985,11 +989,9 @@ msgstr "Auf nicht gepackte Datei(en) wird geprüft: %s\n"
 
 #: build/files.c:2741
 #, c-format
-msgid ""
-"Installed (but unpackaged) file(s) found:\n"
+msgid "Installed (but unpackaged) file(s) found:\n"
 "%s"
-msgstr ""
-"Installierte (aber nicht gepackte) Datei(en) gefunden:\n"
+msgstr "Installierte (aber nicht gepackte) Datei(en) gefunden:\n"
 "%s"
 
 #: build/files.c:2852
@@ -1006,8 +1008,8 @@ msgstr "Dateien werden verarbeitet: %s\n"
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
-"Architektur der Binärdateien (%d) entspricht nicht der Paketarchitektur "
-"(%d).\n"
+"Architektur der Binärdateien (%d) entspricht nicht der Paketarchitektur (%d)."
+"\n"
 
 #: build/files.c:3103
 msgid "Arch dependent binaries in noarch package\n"
@@ -1222,8 +1224,7 @@ msgstr "%s wird nach %s heruntergeladen\n"
 #: build/parsePreamble.c:295
 #, c-format
 msgid "Couldn't download %s\n"
-msgstr ""
-"%s konnte nicht heruntergeladen werden\n"
+msgstr "%s konnte nicht heruntergeladen werden\n"
 "\n"
 
 #: build/parsePreamble.c:439
@@ -1610,8 +1611,7 @@ msgstr "Richtlinienmodul »%s« dupliziert mit überlappenden Typen\n"
 #: build/policies.c:93
 #, c-format
 msgid "Base modules '%s' and '%s' have overlapping types\n"
-msgstr ""
-"Basismodule »%s« und »%s« beinhalten überlappende Typen\n"
+msgstr "Basismodule »%s« und »%s« beinhalten überlappende Typen\n"
 "\n"
 
 #: build/policies.c:101
@@ -1621,8 +1621,7 @@ msgstr "Richtlinien konnten nicht aus Header gelesen werden\n"
 #: build/policies.c:154
 #, c-format
 msgid "%%semodule requires a file path\n"
-msgstr ""
-"%%semodule benötigt einen Dateipfad\n"
+msgstr "%%semodule benötigt einen Dateipfad\n"
 "\n"
 
 #: build/policies.c:163
@@ -1643,8 +1642,8 @@ msgstr "Bestimmung des Richtlinien-Namens fehlgeschlagen: %s\n"
 #: build/policies.c:199
 #, c-format
 msgid ""
-"'%s' type given with other types in %%semodule %s. Compacting types to "
-"'%s'.\n"
+"'%s' type given with other types in %%semodule %s. Compacting types to '%s'."
+"\n"
 msgstr ""
 "»%s«-Type zusammen mit anderen Typen in %%semodule %s angegeben. Typen "
 "werden zu »%s« zusammengefasst.\n"
@@ -1657,8 +1656,7 @@ msgstr "Fehler beim Auswerten von %s: %s\n"
 #: build/policies.c:252
 #, c-format
 msgid "Expecting %%semodule tag: %s\n"
-msgstr ""
-"%%semodule-Tag wird erwartet: %s\n"
+msgstr "%%semodule-Tag wird erwartet: %s\n"
 "\n"
 
 #: build/policies.c:262
@@ -2239,7 +2237,8 @@ msgid "relocations must have a / following the ="
 msgstr "Verschiebungen müssen einen / nach dem = enthalten"
 
 #: lib/poptI.c:118
-msgid "install all files, even configurations which might otherwise be skipped"
+msgid ""
+"install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "Alle Dateien installieren, sogar Konfigurationsdateien, die sonst "
 "möglicherweise übersprungen werden"
@@ -2766,8 +2765,7 @@ msgstr "Unbekannter Tag: »%s«\n"
 #: lib/rpmchecksig.c:50 lib/rpmchecksig.c:58
 #, c-format
 msgid "%s: key %d import failed.\n"
-msgstr ""
-"%s: Import des Schlüssels %d fehlgeschlagen.\n"
+msgstr "%s: Import des Schlüssels %d fehlgeschlagen.\n"
 "\n"
 
 #: lib/rpmchecksig.c:66

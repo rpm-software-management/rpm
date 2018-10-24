@@ -1,21 +1,23 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
+# Panu Matilainen <pmatilai@redhat.com>, 2017. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: RPM\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2017-08-10 10:36+0300\n"
-"PO-Revision-Date: 2017-08-10 07:39+0000\n"
-"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
-"Language-Team: Danish (http://www.transifex.com/rpm-team/rpm/language/da/)\n"
-"Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2017-10-13 05:49+0000\n"
+"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"Language-Team: Danish (http://www.transifex.com/rpm-team/rpm/language/da/)\n"
+"Language: da\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Zanata 4.6.2\n"
 
 #: cliutils.c:21 lib/poptI.c:29
 #, c-format
@@ -66,8 +68,7 @@ msgstr "kan ikke genåbne pakkeindhold: %s\n"
 #: rpmbuild.c:114
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
-msgstr ""
-"buildroot allerede angivet, ignorerer %s\n"
+msgstr "buildroot allerede angivet, ignorerer %s\n"
 "\n"
 
 #: rpmbuild.c:139
@@ -415,7 +416,8 @@ msgstr ""
 #: rpmqv.c:163
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
-msgstr "--relocate og --excludepath kan kun bruges, når nye pakker installeres"
+msgstr ""
+"--relocate og --excludepath kan kun bruges, når nye pakker installeres"
 
 #: rpmqv.c:166
 msgid "--prefix may only be used when installing new packages"
@@ -431,7 +433,8 @@ msgid ""
 msgstr ""
 
 #: rpmqv.c:176
-msgid "--percent may only be specified during package installation and erasure"
+msgid ""
+"--percent may only be specified during package installation and erasure"
 msgstr ""
 
 #: rpmqv.c:180
@@ -628,12 +631,10 @@ msgid "setting %s=%s\n"
 msgstr ""
 
 #: build/build.c:299
-msgid ""
-"\n"
+msgid "\n"
 "\n"
 "RPM build errors:\n"
-msgstr ""
-"\n"
+msgstr "\n"
 "\n"
 "RPM opbygningsfejl:\n"
 
@@ -947,8 +948,7 @@ msgstr ""
 
 #: build/files.c:2741
 #, c-format
-msgid ""
-"Installed (but unpackaged) file(s) found:\n"
+msgid "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
@@ -1484,8 +1484,7 @@ msgstr ""
 #: build/parseSpec.c:317
 #, c-format
 msgid "Unable to open %s: %s\n"
-msgstr ""
-"Kunne ikke åbne %s: %s\n"
+msgstr "Kunne ikke åbne %s: %s\n"
 "\n"
 
 #: build/parseSpec.c:351
@@ -1594,8 +1593,8 @@ msgstr ""
 #: build/policies.c:199
 #, c-format
 msgid ""
-"'%s' type given with other types in %%semodule %s. Compacting types to "
-"'%s'.\n"
+"'%s' type given with other types in %%semodule %s. Compacting types to '%s'."
+"\n"
 msgstr ""
 
 #: build/policies.c:246
@@ -2183,7 +2182,8 @@ msgid "relocations must have a / following the ="
 msgstr "i omrokeringer skal = efterfølges af /"
 
 #: lib/poptI.c:118
-msgid "install all files, even configurations which might otherwise be skipped"
+msgid ""
+"install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "installér alle filer -- også konfigurationsfiler, der ellers skulle "
 "overspringes"
@@ -3338,8 +3338,7 @@ msgstr ""
 #: lib/rpmrc.c:1469
 #, c-format
 msgid "Unknown system: %s\n"
-msgstr ""
-"Ukendt system: %s\n"
+msgstr "Ukendt system: %s\n"
 "\n"
 
 #: lib/rpmrc.c:1471
