@@ -116,17 +116,6 @@ AC_PATH_PROG(__MKDIR, mkdir, /bin/mkdir, $MYPATH)
 AC_PATH_PROG(__MV, mv, /bin/mv, $MYPATH)
 AC_PATH_PROG(__PATCH, patch, /usr/bin/patch, $MYPATH)
 AC_PATH_PROG(__RESTORECON, restorecon, /sbin/restorecon, $MYPATH)
-AC_MSG_CHECKING(old version of patch)
-    PATCHVERSION=`patch --version 2>&1`
-
-    if test "$PATCHVERSION" = "Patch version 2.1"; then
-	AC_DEFINE(HAVE_OLDPATCH_21, 1,
-		[Define if the patch call you'll be using is 2.1 or older])
-	AC_MSG_RESULT(patch older then 2.2 found)
-    else
-	AC_MSG_RESULT(patch later then 2.2 found)
-    fi
-
 AC_PATH_PROG(__PERL, perl, /usr/bin/perl, $MYPATH)
 AC_PATH_PROG(__PGP, pgp, /usr/bin/pgp, $MYPATH)
 AC_PATH_PROG(__PYTHON, python, /usr/bin/python, $MYPATH) 

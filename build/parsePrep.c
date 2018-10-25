@@ -80,11 +80,7 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
     if ((spec->flags & RPMSPEC_FORCE) || checkOwners(fn) || rpmFileIsCompressed(fn, &compressed)) goto exit;
 
     if (db) {
-	rasprintf(&arg_backup,
-#if HAVE_OLDPATCH_21 == 0
-		  "-b "
-#endif
-		  "--suffix %s", db);
+	rasprintf(&arg_backup, "-b --suffix %s", db);
     } else arg_backup = xstrdup("");
 
     if (dir) {
