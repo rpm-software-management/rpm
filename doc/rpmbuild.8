@@ -111,6 +111,15 @@ will be run after a chroot(2) to
 .TP
 \fB-D, --define='\fIMACRO EXPR\fB'\fR
 Defines \fIMACRO\fR with value \fIEXPR\fR.
+.TP
+\fB--scm=\fISCM\fR
+Defines macro \fB__scm\fR with value \fISCM\fR. If your spec file uses
+%autosetup \fIwithout\fR option '\fB-S\fR', macro \fB__scm\fR will be used
+to initialize versioning in the BUILD arena and each patch will be added to
+the setup history.
+Note that not all values for \fISCM\fR, e.g., \fBpatch\fR (the default) and
+\fBgendiff\fR, \fBgit\fR, or \fBquilt\fR work interchangeably with all
+other options stated in the %autosetup line, especially option \fB-p\fIN\fR.
 .SS "BUILD OPTIONS"
 .PP
 The general form of an rpm build command is 
