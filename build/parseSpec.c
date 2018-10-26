@@ -798,10 +798,16 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 	    parsePart = parsePrep(spec);
 	    break;
 	case PART_BUILD:
+	    parsePart = parseSimpleScript(spec, "%build", &(spec->build));
+	    break;
 	case PART_INSTALL:
+	    parsePart = parseSimpleScript(spec, "%install", &(spec->check));
+	    break;
 	case PART_CHECK:
+	    parsePart = parseSimpleScript(spec, "%check", &(spec->check));
+	    break;
 	case PART_CLEAN:
-	    parsePart = parseBuildInstallClean(spec, parsePart);
+	    parsePart = parseSimpleScript(spec, "%clean", &(spec->clean));
 	    break;
 	case PART_CHANGELOG:
 	    parsePart = parseChangelog(spec);

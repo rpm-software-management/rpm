@@ -9,27 +9,9 @@
 #include "debug.h"
 
 
-int parseBuildInstallClean(rpmSpec spec, int parsePart)
+int parseSimpleScript(rpmSpec spec, const char * name, StringBuf *sbp)
 {
     int nextPart, rc, res = PART_ERROR;
-    StringBuf *sbp = NULL;
-    const char *name = NULL;
-
-    if (parsePart == PART_BUILD) {
-	sbp = &(spec->build);
-	name = "%build";
-    } else if (parsePart == PART_INSTALL) {
-	sbp = &(spec->install);
-	name = "%install";
-    } else if (parsePart == PART_CHECK) {
-	sbp = &(spec->check);
-	name = "%check";
-    } else if (parsePart == PART_CLEAN) {
-	sbp = &(spec->clean);
-	name = "%clean";
-    } else {
-	goto exit; /* programmer error */
-    }
     
     if (*sbp != NULL) {
 	rpmlog(RPMLOG_ERR, _("line %d: second %s\n"),
