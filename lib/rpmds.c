@@ -1249,6 +1249,9 @@ static const struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(RichDependencies)",    "4.12.0-1",
 	(		RPMSENSE_EQUAL),
     N_("support for rich dependencies.") },
+    { "rpmlib(DynamicBuildRequires)", "4.15.0-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("support for dynamic buildrequires.") },
 #ifdef HAVE_ZSTD
     { "rpmlib(PayloadIsZstd)",		"5.4.18-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),

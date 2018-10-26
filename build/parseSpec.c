@@ -43,6 +43,7 @@ static const struct PartRec {
 } partList[] = {
     { PART_PREAMBLE,      LEN_AND_STR("%package")},
     { PART_PREP,          LEN_AND_STR("%prep")},
+    { PART_BUILDREQUIRES, LEN_AND_STR("%generate_buildrequires")},
     { PART_BUILD,         LEN_AND_STR("%build")},
     { PART_INSTALL,       LEN_AND_STR("%install")},
     { PART_CHECK,         LEN_AND_STR("%check")},
@@ -905,6 +906,10 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 	    break;
 	case PART_PREP:
 	    parsePart = parsePrep(spec);
+	    break;
+	case PART_BUILDREQUIRES:
+	    parsePart = parseSimpleScript(spec, "%generate_buildrequires",
+					  &(spec->buildrequires));
 	    break;
 	case PART_BUILD:
 	    parsePart = parseSimpleScript(spec, "%build", &(spec->build));

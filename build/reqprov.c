@@ -19,9 +19,15 @@ int addReqProv(Package pkg, rpmTagVal tagN,
 
     dsp = packageDependencies(pkg, tagN);
 
-    /* rpmlib() dependency sanity: only requires permitted, ensure sense bit */
+    /* rpmlib() dependency sanity:
+     * - Provides are permitted only for source packages
+     * - Otherwise only requires
+     * - Ensure sense bit
+     */
     if (rstreqn(N, "rpmlib(", sizeof("rpmlib(")-1)) {
-	if (tagN != RPMTAG_REQUIRENAME) return 1;
+	if (tagN != RPMTAG_REQUIRENAME &&
+	        (tagN == RPMTAG_PROVIDENAME && !(Flags & RPMSENSE_RPMLIB)))
+	    return 1;
 	Flags |= RPMSENSE_RPMLIB;
     }
 

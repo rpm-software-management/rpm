@@ -11,13 +11,13 @@ rpmbuild \- Build RPM Package(s)
 .PP
 
 
-\fBrpmbuild\fR {\fB-ba|-bb|-bp|-bc|-bi|-bl|-bs\fR} [\fBrpmbuild-options\fR] \fB\fISPECFILE\fB\fR\fI ...\fR
+\fBrpmbuild\fR {\fB-ba|-bb|-bp|-bc|-bi|-bl|-bs|-br\fR} [\fBrpmbuild-options\fR] \fB\fISPECFILE\fB\fR\fI ...\fR
 
 
-\fBrpmbuild\fR {\fB-ra|-rb|-rp|-rc|-ri|-rl|-rs\fR} [\fBrpmbuild-options\fR] \fB\fISOURCEPACKAGE\fB\fR\fI ...\fR
+\fBrpmbuild\fR {\fB-ra|-rb|-rp|-rc|-ri|-rl|-rs|-rr\fR} [\fBrpmbuild-options\fR] \fB\fISOURCEPACKAGE\fB\fR\fI ...\fR
 
 
-\fBrpmbuild\fR {\fB-ta|-tb|-tp|-tc|-ti|-tl|-ts\fR} [\fBrpmbuild-options\fR] \fB\fITARBALL\fB\fR\fI ...\fR
+\fBrpmbuild\fR {\fB-ta|-tb|-tp|-tc|-ti|-tl|-ts|-tr\fR} [\fBrpmbuild-options\fR] \fB\fITARBALL\fB\fR\fI ...\fR
 
 
 
@@ -162,6 +162,9 @@ exists.
 .TP
 \fB-bs\fR
 Build just the source package.
+.TP
+\fB-br\fR
+Build just the source package - but calculate and include the dynamic build requires.
 .PP
 The following options may also be used:
 .TP

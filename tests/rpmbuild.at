@@ -1406,3 +1406,100 @@ No hello.debug
 ],
 [ignore])
 AT_CLEANUP
+
+
+
+# ------------------------------
+# Check dynamic build requires
+AT_SETUP([dynamic build requires rpmbuild -bs])
+AT_KEYWORDS([build])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+cp "${abs_srcdir}"/data/SOURCES/buildrequires-1.0.tar.gz ${TOPDIR}/SOURCES
+
+run rpmbuild \
+  --quiet -bs "${abs_srcdir}"/data/SPECS/buildrequires.spec
+runroot rpm -qpR /build/SRPMS/buildrequires-1.0-1.src.rpm
+],
+[0],
+[rpmlib(CompressedFileNames) <= 3.0.4-1
+rpmlib(DynamicBuildRequires) <= 4.15.0-1
+rpmlib(FileDigests) <= 4.6.0-1
+],
+[ignore])
+AT_CLEANUP
+
+# ------------------------------
+# Check dynamic build requires
+AT_SETUP([rpmbuild -br])
+AT_KEYWORDS([build])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+cp "${abs_srcdir}"/data/SOURCES/buildrequires-1.0.tar.gz ${TOPDIR}/SOURCES
+
+run rpmbuild \
+  -br  --quiet "${abs_srcdir}"/data/SPECS/buildrequires.spec
+],
+[11],
+[],
+[error: Failed build dependencies:
+	(bar = 3.4 or bar = 3.5) is needed by buildrequires-1.0-1.x86_64
+	foo > 1.3 is needed by buildrequires-1.0-1.x86_64
+	foo-bar = 2.0 is needed by buildrequires-1.0-1.x86_64
+],
+)
+AT_CLEANUP
+
+# ------------------------------
+# Check dynamic build requires
+AT_SETUP([rpmbuild -ba])
+AT_KEYWORDS([build])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+cp "${abs_srcdir}"/data/SOURCES/buildrequires-1.0.tar.gz ${TOPDIR}/SOURCES
+
+run rpmbuild \
+  -ba  --quiet "${abs_srcdir}"/data/SPECS/buildrequires.spec
+],
+[11],
+[],
+[error: Failed build dependencies:
+	(bar = 3.4 or bar = 3.5) is needed by buildrequires-1.0-1.x86_64
+	foo > 1.3 is needed by buildrequires-1.0-1.x86_64
+	foo-bar = 2.0 is needed by buildrequires-1.0-1.x86_64
+],
+)
+AT_CLEANUP
+
+
+# ------------------------------
+# Check dynamic build requires
+AT_SETUP([rpmbuild -br --nodeps])
+AT_KEYWORDS([build])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+cp "${abs_srcdir}"/data/SOURCES/buildrequires-1.0.tar.gz ${TOPDIR}/SOURCES
+
+run rpmbuild \
+  -br  --quiet --nodeps "${abs_srcdir}"/data/SPECS/buildrequires.spec
+runroot rpm -qpR /build/SRPMS/buildrequires-1.0-1.buildreqs.nosrc.rpm
+],
+[0],
+[(bar = 3.4 or bar = 3.5)
+foo > 1.3
+foo-bar = 2.0
+rpmlib(CompressedFileNames) <= 3.0.4-1
+rpmlib(DynamicBuildRequires) <= 4.15.0-1
+rpmlib(FileDigests) <= 4.6.0-1
+rpmlib(RichDependencies) <= 4.12.0-1
+],
+[ignore])
+AT_CLEANUP
