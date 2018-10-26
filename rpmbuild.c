@@ -38,6 +38,7 @@ static struct rpmBuildArguments_s rpmBTArgs;
 #define	POPT_BL			0x626c
 #define	POPT_BP			0x6270
 #define	POPT_BS			0x6273
+#define	POPT_BR			0x6272
 #define	POPT_RA			0x4261
 #define	POPT_RB			0x4262
 #define	POPT_RC			0x4263
@@ -45,6 +46,7 @@ static struct rpmBuildArguments_s rpmBTArgs;
 #define	POPT_RL			0x426c
 #define	POPT_RP			0x4270
 #define	POPT_RS			0x4273
+#define	POPT_RR			0x4272
 #define	POPT_TA			0x7461
 #define	POPT_TB			0x7462
 #define	POPT_TC			0x7463
@@ -52,6 +54,7 @@ static struct rpmBuildArguments_s rpmBTArgs;
 #define	POPT_TL			0x746c
 #define	POPT_TP			0x7470
 #define	POPT_TS			0x7473
+#define	POPT_TR			0x7472
 
 extern int _fsm_debug;
 
@@ -81,6 +84,7 @@ static void buildArgCallback( poptContext con,
     case POPT_BL:
     case POPT_BP:
     case POPT_BS:
+    case POPT_BR:
     case POPT_RA:
     /* case POPT_RB: same value as POPT_REBUILD */
     case POPT_RC:
@@ -88,6 +92,7 @@ static void buildArgCallback( poptContext con,
     case POPT_RL:
     case POPT_RP:
     case POPT_RS:
+    case POPT_RR:
     case POPT_TA:
     case POPT_TB:
     case POPT_TC:
@@ -95,6 +100,7 @@ static void buildArgCallback( poptContext con,
     case POPT_TL:
     case POPT_TP:
     case POPT_TS:
+    case POPT_TR:
 	if (opt->val == POPT_BS || opt->val == POPT_TS)
 	    noDeps = 1;
 	if (buildMode == '\0' && buildChar == '\0') {
@@ -156,6 +162,9 @@ static struct poptOption rpmBuildPoptTable[] = {
  { "bs", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BS,
 	N_("build source package only from <specfile>"),
 	N_("<specfile>") },
+ { "br", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BR,
+	N_("build source package only from <specfile> - calculate dynamic build requires"),
+	N_("<specfile>") },
 
  { "rp", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_RP,
 	N_("build through %prep (unpack sources and apply patches) from <source package>"),
@@ -177,6 +186,9 @@ static struct poptOption rpmBuildPoptTable[] = {
 	N_("<source package>") },
  { "rs", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_RS,
 	N_("build source package only from <source package>"),
+	N_("<source package>") },
+ { "rr", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_RR,
+	N_("build source package only from <source package> - calculate dynamic build requires"),
 	N_("<source package>") },
 
  { "tp", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TP,
@@ -200,7 +212,9 @@ static struct poptOption rpmBuildPoptTable[] = {
  { "ts", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TS,
 	N_("build source package only from <tarball>"),
 	N_("<tarball>") },
-
+ { "tr", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TR,
+	N_("build source package only from <tarball> - calculate dynamic build requires"),
+	N_("<tarball>") },
  { "rebuild", '\0', 0, 0, POPT_REBUILD,
 	N_("build binary package from <source package>"),
 	N_("<source package>") },
@@ -623,7 +637,9 @@ int main(int argc, char *argv[])
 	    break;
     case 'c':
 	ba->buildAmount |= RPMBUILD_BUILD;
+	ba->buildAmount |= RPMBUILD_BUILDREQUIRES;
 	if (!noDeps) {
+	    ba->buildAmount |= RPMBUILD_DUMPBUILDREQUIRES;
 	    ba->buildAmount |= RPMBUILD_CHECKBUILDREQUIRES;
 	}
 	if ((buildChar == 'c') && shortCircuit)
@@ -634,6 +650,12 @@ int main(int argc, char *argv[])
     case 'l':
 	ba->buildAmount |= RPMBUILD_FILECHECK;
 	break;
+    case 'r':
+	ba->buildAmount |= RPMBUILD_PREP;
+	ba->buildAmount |= RPMBUILD_BUILDREQUIRES;
+	ba->buildAmount |= RPMBUILD_DUMPBUILDREQUIRES;
+	if (!noDeps)
+	    ba->buildAmount |= RPMBUILD_CHECKBUILDREQUIRES;
     case 's':
 	ba->buildAmount |= RPMBUILD_PACKAGESOURCE;
 	break;

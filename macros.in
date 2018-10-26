@@ -846,6 +846,21 @@ package or when debugging this package.\
 #%{__spec_prep_post}\
 #%{nil}
 
+%__spec_buildrequires_shell	%{___build_shell}
+%__spec_buildrequires_args	%{___build_args}
+%__spec_buildrequires_cmd	%{___build_cmd}
+%__spec_buildrequires_pre	%{___build_pre}
+%__spec_buildrequires_body	%{___build_body}
+%__spec_buildrequires_post	%{___build_post}
+%__spec_buildrequires_template	#!%{__spec_buildrequires_shell}\
+%{__spec_buildrequires_pre}\
+%{nil}
+
+#%{__spec_buildrequires_body}\
+#%{__spec_buildrequires_post}\
+#%{nil}
+
+
 %__spec_build_shell	%{___build_shell}
 %__spec_build_args	%{___build_args}
 %__spec_build_cmd	%{___build_cmd}

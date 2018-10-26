@@ -140,6 +140,7 @@ struct rpmSpec_s {
     rpmstrPool pool;
 
     StringBuf prep;		/*!< %prep scriptlet. */
+    StringBuf buildrequires;	/*!< %buildrequires scriptlet. */
     StringBuf build;		/*!< %build scriptlet. */
     StringBuf install;		/*!< %install scriptlet. */
     StringBuf check;		/*!< %check scriptlet. */
@@ -237,7 +238,8 @@ typedef enum rpmParseState_e {
     PART_EMPTY			= 39+PART_BASE, /*!< */
     PART_PATCHLIST		= 40+PART_BASE, /*!< */
     PART_SOURCELIST		= 41+PART_BASE, /*!< */
-    PART_LAST			= 42+PART_BASE  /*!< */
+    PART_BUILDREQUIRES		= 42+PART_BASE, /*!< */
+    PART_LAST			= 43+PART_BASE  /*!< */
 } rpmParseState; 
 
 

@@ -71,6 +71,11 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 	mPost = "%{__spec_prep_post}";
 	mCmd = "%{__spec_prep_cmd}";
 	break;
+    case RPMBUILD_BUILDREQUIRES:
+	mTemplate = "%{__spec_buildrequires_template}";
+	mPost = "%{__spec_buildrequires_post}";
+	mCmd = "%{__spec_buildrequires_cmd}";
+	break;
     case RPMBUILD_BUILD:
 	mTemplate = "%{__spec_build_template}";
 	mPost = "%{__spec_build_post}";
@@ -174,6 +179,52 @@ exit:
     return rc;
 }
 
+static int doBuildRequires(rpmSpec spec, int test)
+{
+    StringBuf sb_stdout = NULL;
+    int outc;
+    ARGV_t output = NULL;
+
+    int rc = 1; /* assume failure */
+
+    if (!spec->buildrequires) {
+	rc = RPMRC_OK;
+	goto exit;
+    }
+
+    if ((rc = doScript(spec, RPMBUILD_BUILDREQUIRES, "%generate_buildrequires",
+		       getStringBuf(spec->buildrequires), test, &sb_stdout)))
+	goto exit;
+
+    /* add results to requires of the srpm */
+    argvSplit(&output, getStringBuf(sb_stdout), "\n\r");
+    outc = argvCount(output);
+
+    if (!outc) {
+	goto exit;
+    }
+
+    for (int i = 0; i < outc; i++) {
+	parseRCPOT(spec, spec->sourcePackage, output[i], RPMTAG_REQUIRENAME,
+		   0, 0, addReqProvPkg, NULL);
+    }
+
+    rpmdsPutToHeader(
+	*packageDependencies(spec->sourcePackage, RPMTAG_REQUIRENAME),
+	spec->sourcePackage->header);
+
+    parseRCPOT(spec, spec->sourcePackage,
+	       "rpmlib(DynamicBuildRequires) = 4.15.0-1",
+	       RPMTAG_PROVIDENAME, 0, RPMSENSE_FIND_PROVIDES | RPMSENSE_RPMLIB,
+	       addReqProvPkg, NULL);
+    rc = RPMRC_MISSINGBUILDREQUIRES;
+
+ exit:
+    freeStringBuf(sb_stdout);
+    free(output);
+    return rc;
+}
+
 static rpmRC doCheckBuildRequires(rpmts ts, rpmSpec spec, int test)
 {
     rpmRC rc = RPMRC_OK;
@@ -182,9 +233,9 @@ static rpmRC doCheckBuildRequires(rpmts ts, rpmSpec spec, int test)
     if (ps) {
 	rpmlog(RPMLOG_ERR, _("Failed build dependencies:\n"));
 	rpmpsPrint(NULL, ps);
-    }
-    if (ps != NULL)
 	rc = RPMRC_MISSINGBUILDREQUIRES;
+    }
+
     rpmpsFree(ps);
     return rc;
 }
@@ -230,6 +281,14 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 	}
     } else {
 	int didBuild = (what & (RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL));
+	int sourceOnly = ((what & RPMBUILD_PACKAGESOURCE) &&
+	   !(what & (RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)));
+
+	if (!spec->buildrequires && sourceOnly) {
+		/* don't run prep if not needed for source build */
+		/* with(out) dynamic build requires*/
+	    what &= ~(RPMBUILD_PREP);
+	}
 
 	if ((what & RPMBUILD_CHECKBUILDREQUIRES) &&
 	    (rc = doCheckBuildRequires(ts, spec, test)))
@@ -239,6 +298,29 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 	    (rc = doScript(spec, RPMBUILD_PREP, "%prep",
 			   getStringBuf(spec->prep), test, NULL)))
 		goto exit;
+
+	if (what & RPMBUILD_BUILDREQUIRES)
+            rc = doBuildRequires(spec, test);
+	if ((what & RPMBUILD_CHECKBUILDREQUIRES) &&
+	        (rc == RPMRC_MISSINGBUILDREQUIRES))
+	    rc = doCheckBuildRequires(ts, spec, test);
+	if (rc == RPMRC_MISSINGBUILDREQUIRES) {
+	    if (what & RPMBUILD_DUMPBUILDREQUIRES) {
+		/* Create buildreqs package */
+		char *nvr = headerGetAsString(spec->packages->header, RPMTAG_NVR);
+		rasprintf(&spec->sourceRpmName, "%s.buildreqs.nosrc.rpm", nvr);
+		free(nvr);
+		/* free sources to not include them in the buildreqs package */
+		spec->sources = freeSources(spec->sources);
+		spec->numSources = 0;
+		missing_buildreqs = 1;
+		what = RPMBUILD_PACKAGESOURCE;
+	    } else {
+		rc = RPMRC_OK;
+	    }
+	} else if (rc) {
+	    goto exit;
+	}
 
 	if ((what & RPMBUILD_BUILD) &&
 	    (rc = doScript(spec, RPMBUILD_BUILD, "%build",

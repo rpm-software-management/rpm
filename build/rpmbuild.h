@@ -36,6 +36,8 @@ enum rpmBuildFlags_e {
     RPMBUILD_FILE_LIST  = (1 << 17),    /*!< rpmSpecPkgGetSection: %files */
     RPMBUILD_POLICY     = (1 << 18),    /*!< rpmSpecPkgGetSection: %policy */
     RPMBUILD_CHECKBUILDREQUIRES	= (1 <<  19),	/*!< Check %%buildrequires. */
+    RPMBUILD_BUILDREQUIRES	= (1 <<  20), /*!< Execute %%buildrequires. */
+    RPMBUILD_DUMPBUILDREQUIRES	= (1 <<  21), /*!< Write buildrequires.nosrc.rpm. */
 
     RPMBUILD_NOBUILD	= (1 << 31)	/*!< Don't execute or package. */
 };
@@ -109,7 +111,9 @@ rpmds rpmSpecDS(rpmSpec spec, rpmTagVal tag);
  * @param ts		rpm transaction set
  * @param spec		spec file control structure
  * @param buildArgs	build arguments
- * @return		RPMRC_OK on success, RPMRC_MISSINGBUILDREQUIRES or 1
+ * @return		0 on success, 1 on build error,
+ *			RPMRC_MISSINGBUILDREQUIRES on missing build
+ *			requirements
  */
 int rpmSpecBuild(rpmts ts, rpmSpec spec, BTA_t buildArgs);
 
