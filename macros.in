@@ -1193,12 +1193,12 @@ package or when debugging this package.\
 # Plain patch (-m is unused)
 %__scm_setup_patch(q) %{nil}
 %__scm_apply_patch(qp:m:)\
-%{__patch} %{-p:-p%{-p*}} %{-q:-s} --fuzz=%{_default_patch_fuzz} %{_default_patch_flags}
+%{__patch} %{-p:-p%{-p*}} %{-q:-s} -F %{_default_patch_fuzz} %{_default_patch_flags}
 
 # Plain patch with backups for gendiff
 %__scm_setup_gendiff(q) %{nil}
 %__scm_apply_gendiff(qp:m:)\
-%{__patch} %{-p:-p%{-p*}} %{-q:-s} --fuzz=%{_default_patch_fuzz} %{_default_patch_flags} -b --suffix ".%{2}"
+%{__patch} %{-p:-p%{-p*}} %{-q:-s} -F %{_default_patch_fuzz} %{_default_patch_flags} -b -z ".%{2}"
 
 # Mercurial (aka hg)
 %__scm_setup_hg(q)\
