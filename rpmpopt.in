@@ -57,8 +57,13 @@ rpm	alias --setugids -q --qf \
 	--POPTdesc=$"set user/group ownership of files in a package"
 
 rpm	alias --setcaps -q --qf \
-	"[\[ -f %{FILENAMES:shescape} -a ! -L %{FILENAMES:shescape} \] \
-	    && setcap %|FILECAPS?{%{FILECAPS:shescape}}:{''}| %{FILENAMES:shescape}\n]" \
+        "[if \[ -f %{FILENAMES:shescape} -a ! -L %{FILENAMES:shescape} \]; then\n\
+%|FILECAPS?{  if \[ -n %{FILECAPS:shescape} \]; then\n\
+    setcap %{FILECAPS:shescape} %{FILENAMES:shescape}\n\
+  el}:{  }|if \[ -n \"\$(getcap %{FILENAMES:shescape})\" \]; then\n\
+    setcap -r %{FILENAMES:shescape}\n\
+  fi\n\
+fi\n]" \
 	--pipe "sh" \
 	--POPTdesc=$"set capabilities of files in a package"
 
