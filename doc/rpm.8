@@ -104,7 +104,7 @@ Scripts and triggers:
  [\fB--ignoresize\fR] [\fB--ignorearch\fR] [\fB--ignoreos\fR]
  [\fB--includedocs\fR] [\fB--justdb\fR]
  [\fB--nodeps\fR] [\fB--nodigest\fR] [\fB--noplugins\fR]
- [\fB--nocaps\fR] [\fB--noorder\fR]
+ [\fB--nocaps\fR] [\fB--noorder\fR] [\fB--noverify\fR]
  [\fB--nosignature\fR] [\fB--noscripts\fR] [\fB--notriggers\fR]
  [\fB--oldpackage\fR] [\fB--percent\fR] [\fB--prefix \fINEWPATH\fB\fR]
  [\fB--relocate \fIOLDPATH\fB=\fINEWPATH\fB\fR]
@@ -314,6 +314,9 @@ Don't set file capabilities.
 \fB--noorder\fR
 Don't reorder the packages for an install. The list of
 packages would normally be reordered to satisfy dependencies.
+.TP
+\fB--noverify\fR
+Don't perform verify package files prior to installation.
 .TP
 \fB--noplugins\fR
 Do not load and execute plugins.
