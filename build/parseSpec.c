@@ -801,7 +801,7 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 	    parsePart = parseSimpleScript(spec, "%build", &(spec->build));
 	    break;
 	case PART_INSTALL:
-	    parsePart = parseSimpleScript(spec, "%install", &(spec->check));
+	    parsePart = parseSimpleScript(spec, "%install", &(spec->install));
 	    break;
 	case PART_CHECK:
 	    parsePart = parseSimpleScript(spec, "%check", &(spec->check));
