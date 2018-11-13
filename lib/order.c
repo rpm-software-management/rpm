@@ -177,7 +177,7 @@ static inline int addRelation(rpmts ts,
     rpmte q;
 
     /* Avoid dependendencies which are not relevant for ordering */
-    if (rpmdsFlags(dep) & (RPMSENSE_RPMLIB|RPMSENSE_CONFIG|RPMSENSE_PRETRANS|RPMSENSE_POSTTRANS))
+    if (isUnorderedReq(rpmdsFlags(dep)))
 	return 0;
 
     if (rpmdsIsRich(dep)) {
