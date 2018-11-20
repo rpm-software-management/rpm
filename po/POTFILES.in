@@ -13,7 +13,7 @@ build/expression.c
 build/files.c
 build/misc.c
 build/pack.c
-build/parseBuildInstallClean.c
+build/parseSimpleScript.c
 build/parseChangelog.c
 build/parseDescription.c
 build/parseFiles.c
