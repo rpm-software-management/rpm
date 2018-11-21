@@ -228,12 +228,36 @@ exit:
     return rc;
 }
 
-static int haveTildeDep(Package pkg)
+struct charInDepData {
+    char c;
+    int present;
+};
+
+static rpmRC charInDepCb(void *cbdata, rpmrichParseType type,
+		const char *n, int nl, const char *e, int el, rpmsenseFlags sense,
+		rpmrichOp op, char **emsg) {
+    struct charInDepData *data = cbdata;
+    if (memchr(e, data->c, el))
+	data->present = 1;
+
+    return RPMRC_OK;
+}
+
+static int haveCharInDep(Package pkg, char c)
 {
+    struct charInDepData data = {c, 0};
     for (int i = 0; i < PACKAGE_NUM_DEPS; i++) {
 	rpmds ds = rpmdsInit(pkg->dependencies[i]);
 	while (rpmdsNext(ds) >= 0) {
-	    if (strchr(rpmdsEVR(ds), '~'))
+	    if (rpmdsIsRich(ds)) {
+		const char *depstr = rpmdsN(ds);
+		rpmrichParse(&depstr, NULL, charInDepCb, &data);
+	    } else {
+		const char *evr = rpmdsEVR(ds);
+		if (strchr(evr, c))
+		    data.present = 1;
+	    }
+	    if (data.present)
 		return 1;
 	}
     }
@@ -327,7 +351,7 @@ exit:
 static void finalizeDeps(Package pkg)
 {
     /* check if the package has a dependency with a '~' */
-    if (haveTildeDep(pkg))
+    if (haveCharInDep(pkg, '~'))
 	(void) rpmlibNeedsFeature(pkg, "TildeInVersions", "4.10.0-1");
 
     /* check if the package has a rich dependency */
