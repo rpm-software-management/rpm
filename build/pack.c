@@ -245,7 +245,12 @@ static int haveRichDep(Package pkg)
     for (int i = 0; i < PACKAGE_NUM_DEPS; i++) {
 	rpmds ds = rpmdsInit(pkg->dependencies[i]);
 	rpmTagVal tagN = rpmdsTagN(ds);
-	if (tagN != RPMTAG_REQUIRENAME && tagN != RPMTAG_CONFLICTNAME)
+	if (tagN != RPMTAG_REQUIRENAME &&
+	    tagN != RPMTAG_RECOMMENDNAME &&
+	    tagN != RPMTAG_SUGGESTNAME &&
+	    tagN != RPMTAG_SUPPLEMENTNAME &&
+	    tagN != RPMTAG_ENHANCENAME &&
+	    tagN != RPMTAG_CONFLICTNAME)
 	    continue;
 	while (rpmdsNext(ds) >= 0) {
 	    if (rpmdsIsRich(ds))
