@@ -388,6 +388,9 @@ void rpmvsFiniRange(struct rpmvs_s *sis, int range)
 
 	if (sinfo->range == range && sinfo->rc == RPMRC_OK) {
 	    sinfo->ctx = rpmDigestBundleDupCtx(sis->bundle, sinfo->id);
+	    /* Handle unsupported digests the same as disabled ones */
+	    if (sinfo->ctx == NULL)
+		sinfo->rc = RPMRC_NOTFOUND;
 	    rpmDigestBundleFinal(sis->bundle, sinfo->id, NULL, NULL, 0);
 	}
     }
