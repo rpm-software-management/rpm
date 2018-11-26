@@ -251,7 +251,7 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	}
 	free(zipper);
     } else {
-	rasprintf(&buf, "%s %s %s", tar, taropts, fn);
+	rasprintf(&buf, "%s %s '%s'", tar, taropts, fn);
     }
 
 exit:
