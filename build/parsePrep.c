@@ -207,11 +207,7 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	}
 	zipper = rpmGetPath(t, NULL);
 	if (needtar) {
-	    rasprintf(&buf, "%s '%s' | %s %s - \n"
-		"STATUS=$?\n"
-		"if [ $STATUS -ne 0 ]; then\n"
-		"  exit $STATUS\n"
-		"fi", zipper, fn, tar, taropts);
+	    rasprintf(&buf, "%s '%s' | %s %s -", zipper, fn, tar, taropts);
 	} else if (needgemspec) {
 	    char *gem = rpmGetPath("%{__gem}", NULL);
 	    char *gemspec = NULL;
@@ -220,20 +216,13 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	    rstrlcpy(gemnameversion, sp->source, strlen(sp->source) - 3);
 	    gemspec = rpmGetPath("%{_builddir}/", gemnameversion, ".gemspec", NULL);
 
-	    rasprintf(&buf, "%s '%s' && %s spec '%s' --ruby > '%s'\n"
-		"STATUS=$?\n"
-		"if [ $STATUS -ne 0 ]; then\n"
-		"  exit $STATUS\n"
-		"fi", zipper, fn, gem, fn, gemspec);
+	    rasprintf(&buf, "%s '%s' && %s spec '%s' --ruby > '%s'",
+			zipper, fn, gem, fn, gemspec);
 
 	    free(gemspec);
 	    free(gem);
 	} else {
-	    rasprintf(&buf, "%s '%s'\n"
-		"STATUS=$?\n"
-		"if [ $STATUS -ne 0 ]; then\n"
-		"  exit $STATUS\n"
-		"fi", zipper, fn);
+	    rasprintf(&buf, "%s '%s'", zipper, fn);
 	}
 	free(zipper);
     } else {
@@ -243,7 +232,11 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 exit:
     free(fn);
     free(tar);
-    return buf;
+    return rstrcat(&buf,
+		"\nSTATUS=$?\n"
+		"if [ $STATUS -ne 0 ]; then\n"
+		"  exit $STATUS\n"
+		"fi");
 }
 
 /**
