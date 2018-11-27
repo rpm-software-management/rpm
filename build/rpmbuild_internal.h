@@ -18,7 +18,7 @@
 #undef HTDATATYPE
 
 #define WHITELIST_NAME ".-_+%{}"
-#define WHITELIST_VERREL "._+%{}~"
+#define WHITELIST_VERREL "._+%{}~^"
 #define WHITELIST_EVR WHITELIST_VERREL "-:"
 
 struct TriggerFileEntry {
