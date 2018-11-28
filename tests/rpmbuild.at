@@ -395,7 +395,7 @@ runroot rpmbuild \
   -bb --quiet /data/SPECS/attrtest.spec
 
 runroot rpm2cpio \
-  /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm > /tmp/attrtest.cpio
+  /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm > "${RPMTEST}"/tmp/attrtest.cpio
 ],
 [0],
 [],
