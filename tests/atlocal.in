@@ -35,6 +35,11 @@ if test -d "$PYTHONPATH/rpm"; then
 else
     PYTHON_DISABLED=true;
 fi
+if grep -q '#define WITH_CAP 1' "${abs_top_builddir}/config.h"; then
+    CAP_DISABLED=false;
+else
+    CAP_DISABLED=true;
+fi
 
 function run()
 {

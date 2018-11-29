@@ -586,3 +586,40 @@ fox
 ],
 [])
 AT_CLEANUP
+
+AT_SETUP([verify empty/no capabilities 1])
+AT_KEYWORDS([verify])
+AT_SKIP_IF([$CAP_DISABLED])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpm -U --nocaps --ignoreos \
+	/data/RPMS/capstest-1.0-1.noarch.rpm
+
+runroot rpm -Va --nouser --nogroup
+],
+[1],
+[........P    /a/emptyCaps1
+........P    /a/emptyCaps2
+],
+[])
+AT_CLEANUP
+
+
+AT_SETUP([verify empty/no capabilities 2])
+AT_KEYWORDS([verify])
+AT_SKIP_IF([$CAP_DISABLED])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpm -U --nocaps --nodeps --noscripts --ignorearch --ignoreos \
+	/data/RPMS/hello-1.0-1.ppc64.rpm
+
+runroot rpm -Va --nouser --nogroup --nodeps | grep "/bin/hello"
+],
+[1],
+[],
+[])
+AT_CLEANUP

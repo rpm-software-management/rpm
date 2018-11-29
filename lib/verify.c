@@ -207,21 +207,15 @@ rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
 
 #if WITH_CAP
     if (flags & RPMVERIFY_CAPS) {
-	/*
- 	 * Empty capability set ("=") is not exactly the same as no
- 	 * capabilities at all but suffices for now... 
- 	 */
-	cap_t cap, fcap;
-	cap = cap_from_text(rpmfilesFCaps(fi, ix));
-	if (!cap) {
-	    cap = cap_from_text("=");
-	}
-	fcap = cap_get_file(fn);
-	if (!fcap) {
-	    fcap = cap_from_text("=");
-	}
-	
-	if (cap_compare(cap, fcap) != 0)
+	cap_t cap = NULL;
+	cap_t fcap = cap_get_file(fn);
+	const char *captext = rpmfilesFCaps(fi, ix);
+
+	/* captext "" means no capability */
+	if (captext && captext[0])
+	    cap = cap_from_text(captext);
+
+	if ((fcap || cap) && (cap_compare(cap, fcap) != 0))
 	    vfy |= RPMVERIFY_CAPS;
 
 	cap_free(fcap);
