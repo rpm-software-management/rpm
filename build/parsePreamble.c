@@ -43,6 +43,7 @@ static const rpmTagVal copyTagsDuringParse[] = {
     RPMTAG_DISTTAG,
     RPMTAG_BUGURL,
     RPMTAG_GROUP,
+    RPMTAG_MODULARITYLABEL,
     0
 };
 
@@ -526,6 +527,7 @@ static struct optionalTag {
     { RPMTAG_DISTURL,		"%{disturl}" },
     { RPMTAG_DISTTAG,		"%{disttag}" },
     { RPMTAG_BUGURL,		"%{bugurl}" },
+    { RPMTAG_MODULARITYLABEL,	"%{modularitylabel}"},
     { -1, NULL }
 };
 
@@ -779,6 +781,7 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     case RPMTAG_URL:
     case RPMTAG_DISTTAG:
     case RPMTAG_BUGURL:
+    case RPMTAG_MODULARITYLABEL:
     /* XXX TODO: validate format somehow */
     case RPMTAG_VCS:
 	SINGLE_TOKEN_ONLY;
@@ -1018,6 +1021,7 @@ static struct PreambleRec_s const preambleList[] = {
     {RPMTAG_BUGURL,		0, 0, LEN_AND_STR("bugurl")},
     {RPMTAG_ORDERNAME,		2, 0, LEN_AND_STR("orderwithrequires")},
     {RPMTAG_REMOVEPATHPOSTFIXES,0, 0, LEN_AND_STR("removepathpostfixes")},
+    {RPMTAG_MODULARITYLABEL,	0, 0, LEN_AND_STR("modularitylabel")},
     {0, 0, 0, 0}
 };
 

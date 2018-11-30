@@ -357,6 +357,11 @@ package or when debugging this package.\
 %_javadir      %{_datadir}/java
 %_javadocdir   %{_datadir}/javadoc
 
+
+#	Set ModularityLabel: for packages being build
+#
+#%modularitylabel
+
 #	A colon separated list of paths where files should *not* be installed.
 #	Usually, these are network file system mount points.
 #
