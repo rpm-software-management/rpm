@@ -20,6 +20,17 @@
 
 #include "debug.h"
 
+typedef struct pkgdata_s *pkgdatap;
+
+typedef void (*hdrvsmsg)(struct rpmsinfo_s *sinfo, pkgdatap pkgdata, const char *msg);
+
+struct pkgdata_s {
+    hdrvsmsg msgfunc;
+    const char *fn;
+    char *msg;
+    rpmRC rc;
+};
+
 /** \ingroup header
  * Translate and merge legacy signature tags into header.
  * @param h		header (dest)
@@ -146,13 +157,30 @@ exit:
 
 static int handleHdrVS(struct rpmsinfo_s *sinfo, void *cbdata)
 {
-    char **buf  = cbdata;
-    if (buf) {
+    struct pkgdata_s *pkgdata = cbdata;
+
+    if (pkgdata->msgfunc) {
 	char *vsmsg = rpmsinfoMsg(sinfo);
-	*buf = rstrscat(buf, "\n", vsmsg, NULL);
+	pkgdata->msgfunc(sinfo, pkgdata, vsmsg);
 	free(vsmsg);
     }
+
+    /* Remember actual return code, but don't override a previous failure */
+    if (sinfo->rc && pkgdata->rc != RPMRC_FAIL)
+	pkgdata->rc = sinfo->rc;
+
+    /* Preserve traditional behavior for now: only failure prevents read */
+    if (sinfo->rc != RPMRC_FAIL)
+	sinfo->rc = RPMRC_OK;
+
     return 1;
+}
+
+
+static void appendhdrmsg(struct rpmsinfo_s *sinfo, struct pkgdata_s *pkgdata,
+			const char *msg)
+{
+    pkgdata->msg = rstrscat(&pkgdata->msg, "\n", msg, NULL);
 }
 
 static void updateHdrDigests(rpmDigestBundle bundle, struct hdrblob_s *blob)
@@ -171,6 +199,12 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     rpmVSFlags vsflags = rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD;
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
     struct hdrblob_s blob;
+    struct pkgdata_s pkgdata = {
+	.msgfunc = appendhdrmsg,
+	.fn = NULL,
+	.msg = NULL,
+	.rc = RPMRC_OK,
+    };
 
     if (hdrblobInit(uh, uc, 0, 0, &blob, msg) == RPMRC_OK) {
 	struct rpmvs_s *vs = rpmvsCreate(0, vsflags, keyring);
@@ -183,12 +217,19 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 	updateHdrDigests(bundle, &blob);
 	rpmvsFiniRange(vs, RPMSIG_HEADER);
 
-	rc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, handleHdrVS, msg);
+	rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, handleHdrVS, &pkgdata);
 
 	rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), uc);
 
-	if (rc == RPMRC_OK && msg != NULL && *msg == NULL)
-	    rasprintf(msg, "Header sanity check: OK");
+	rc = pkgdata.rc;
+
+	if (rc == RPMRC_OK && pkgdata.msg == NULL)
+	    pkgdata.msg = xstrdup("Header sanity check: OK");
+
+	if (msg)
+	    *msg = pkgdata.msg;
+	else
+	    free(pkgdata.msg);
 
 	rpmDigestBundleFree(bundle);
 	rpmvsFree(vs);
@@ -267,16 +308,10 @@ void applyRetrofits(Header h)
 	headerConvert(h, HEADERCONV_COMPRESSFILELIST);
 }
 
-struct pkgdata_s {
-    const char *fn;
-    rpmRC rc;
-};
-
-static int handlePkgVS(struct rpmsinfo_s *sinfo, void *cbdata)
+static void loghdrmsg(struct rpmsinfo_s *sinfo, struct pkgdata_s *pkgdata,
+			const char *msg)
 {
-    struct pkgdata_s *pkgdata = cbdata;
     int lvl = RPMLOG_DEBUG;
-    char *vsmsg = rpmsinfoMsg(sinfo);
     switch (sinfo->rc) {
     case RPMRC_OK:		/* Signature is OK. */
 	break;
@@ -295,18 +330,7 @@ static int handlePkgVS(struct rpmsinfo_s *sinfo, void *cbdata)
 	break;
     }
 
-    rpmlog(lvl, "%s: %s\n", pkgdata->fn, vsmsg);
-
-    /* Remember actual return code, but don't override a previous failure */
-    if (sinfo->rc && pkgdata->rc != RPMRC_FAIL)
-	pkgdata->rc = sinfo->rc;
-
-    /* Preserve traditional behavior for now: only failure prevents read */
-    if (sinfo->rc != RPMRC_FAIL)
-	sinfo->rc = RPMRC_OK;
-
-    free(vsmsg);
-    return 1;
+    rpmlog(lvl, "%s: %s\n", pkgdata->fn, msg);
 }
 
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
@@ -320,7 +344,9 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
     struct rpmvs_s *vs = rpmvsCreate(0, vsflags, keyring);
     struct pkgdata_s pkgdata = {
+	.msgfunc = loghdrmsg,
 	.fn = fn ? fn : Fdescr(fd),
+	.msg = NULL,
 	.rc = RPMRC_OK,
     };
 
@@ -334,7 +360,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
     /* Actually all verify discovered signatures and digests */
     rc = RPMRC_FAIL;
-    if (!rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, handlePkgVS, &pkgdata)) {
+    if (!rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, handleHdrVS, &pkgdata)) {
 	/* Finally import the headers and do whatever required retrofits etc */
 	if (hdrp) {
 	    if (hdrblobImport(sigblob, 0, &sigh, &msg))
