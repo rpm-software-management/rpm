@@ -3,6 +3,12 @@
 #ifdef WITH_LUA
 #include <lua.h>
 #include <lauxlib.h>
+
+#ifndef LUA_LOADED_TABLE
+/* feature introduced in Lua 5.3.4 */
+#define LUA_LOADED_TABLE "_LOADED"
+#endif
+
 #include <rpm/rpmlib.h>
 
 #define _RPMLUA_INTERNAL
