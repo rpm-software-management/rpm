@@ -4,9 +4,11 @@ PATH="${abs_builddir}/testing@rpmbindir@:${abs_builddir}/testing@usrbindir@:$PAT
 export PATH
 
 PYTHON=@PYTHON@
-PYLIBDIR=$(${PYTHON} -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib(1,0,'@execprefix@'))")
-PYTHONPATH="${abs_builddir}/testing${PYLIBDIR}"
-export PYTHONPATH
+if test "${PYTHON}"; then
+    PYLIBDIR=$(${PYTHON} -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib(1,0,'@execprefix@'))")
+    PYTHONPATH="${abs_builddir}/testing${PYLIBDIR}"
+    export PYTHONPATH
+fi
 
 RPMTEST="${abs_builddir}/testing"
 RPMDATA="${abs_srcdir}/data/"
@@ -30,7 +32,7 @@ if grep -q 'WITH_LUA 1' "${abs_top_builddir}/config.h"; then
 else
     LUA_DISABLED=true;
 fi
-if test -d "$PYTHONPATH/rpm"; then
+if test "${PYTHON}"; then
     PYTHON_DISABLED=false;
 else
     PYTHON_DISABLED=true;
