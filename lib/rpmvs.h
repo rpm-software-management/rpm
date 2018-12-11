@@ -76,6 +76,9 @@ RPM_GNUC_INTERNAL
 void rpmvsFiniRange(struct rpmvs_s *sis, int range);
 
 RPM_GNUC_INTERNAL
+int rpmvsRange(struct rpmvs_s *vs);
+
+RPM_GNUC_INTERNAL
 int rpmvsVerify(struct rpmvs_s *sis, int type,
                        rpmsinfoCb cb, void *cbdata);
 

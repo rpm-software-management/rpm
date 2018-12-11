@@ -187,11 +187,11 @@ rpmRC rpmpkgRead(struct rpmvs_s *vs, FD_t fd,
     /* Finalize header range */
     rpmvsFiniRange(vs, RPMSIG_HEADER);
 
-    /* Unless disabled, read the payload, generating digest(s) on the fly. */
-    if (!(rpmvsFlags(vs) & RPMVSF_NEEDPAYLOAD)) {
-	/* Fish interesting tags from the main header. This is a bit hacky... */
-	rpmvsAppendTag(vs, blob, RPMTAG_PAYLOADDIGEST);
+    /* Fish interesting tags from the main header. This is a bit hacky... */
+    rpmvsAppendTag(vs, blob, RPMTAG_PAYLOADDIGEST);
 
+    /* If needed and not explicitly disabled, read the payload as well. */
+    if (rpmvsRange(vs) & RPMSIG_PAYLOAD) {
 	/* Initialize digests ranging over the payload only */
 	rpmvsInitRange(vs, RPMSIG_PAYLOAD);
 

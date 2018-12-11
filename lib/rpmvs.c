@@ -396,6 +396,18 @@ void rpmvsFiniRange(struct rpmvs_s *sis, int range)
     }
 }
 
+int rpmvsRange(struct rpmvs_s *vs)
+{
+    int range = 0;
+    for (int i = 0; i < vs->nsigs; i++) {
+	if (rpmsinfoDisabled(&vs->sigs[i], vs->vsflags))
+	    continue;
+	range |= vs->sigs[i].range;
+    }
+
+    return range;
+}
+
 static int sinfoCmp(const void *a, const void *b)
 {
     const struct rpmsinfo_s *sa = a;
