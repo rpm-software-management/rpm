@@ -319,8 +319,10 @@ rpmRC headerVerifyRegion(rpmTagVal regionTag,
     regionEnd += REGION_TAG_COUNT;
     rdl = regionEnd - dataStart;
 
+    /* old packages use HEADERIMAGE */
     if (headerVerifyInfo(1, il * sizeof(*pe) + REGION_TAG_COUNT, &info, &entry->info, 1) != -1 ||
-	!(entry->info.tag == regionTag
+	!(((regionTag == RPMTAG_HEADERSIGNATURES && entry->info.tag == RPMTAG_HEADERIMAGE)
+       || entry->info.tag == regionTag)
        && entry->info.type == REGION_TAG_TYPE
        && entry->info.count == REGION_TAG_COUNT))
     {
