@@ -1841,7 +1841,9 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
     ei2h(&trailer, &einfo);
     /* Trailer offset is negative and has a special meaning */
     einfo.offset = -einfo.offset;
-    if (!(einfo.tag == regionTag &&
+    /* old packages use HEADERIMAGE */
+    if (!(((regionTag == RPMTAG_HEADERSIGNATURES && einfo.tag == RPMTAG_HEADERIMAGE) ||
+	  einfo.tag == regionTag) &&
 	  einfo.type == REGION_TAG_TYPE && einfo.count == REGION_TAG_COUNT))
     {
 	rasprintf(buf,
