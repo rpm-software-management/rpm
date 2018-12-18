@@ -1077,6 +1077,14 @@ package or when debugging this package.\
 %sources %{lua: for i, s in ipairs(sources) do print(s.." ") end}
 
 #------------------------------------------------------------------------------
+# Useful generic macros to bridge some slight inconveniences/unintuitiveness
+# Specify Provides: for both plain and, when not noarch, arch-qualified names,
+# so that the target makes a full-fledged alias for the originating package,
+# obviating, e.g., hefty 'Provides: libGL' + '~ libGL%{?_isa}' (libglvnd.spec);
+# first argument is required alias name, second optionally specified version:
+%alias_provides() Provides: %1 %{?2: = %2} %{?_isa:%1%{_isa} %{?2: = %2}}
+
+#------------------------------------------------------------------------------
 # Useful perl macros (from Artur Frysiak <wiget@t17.ds.pwr.wroc.pl>)
 #
 # For example, these can be used as (from ImageMagick.spec from PLD site)
