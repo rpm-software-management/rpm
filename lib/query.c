@@ -121,7 +121,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 
     fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, fiflags);
     if (rpmfiFC(fi) <= 0) {
-	rpmlog(RPMLOG_NOTICE, _("(contains no files)\n"));
+	rpmlog(RPMLOG_DEBUG, _("(contains no files)\n"));
 	goto exit;
     }
 
