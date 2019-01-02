@@ -75,6 +75,11 @@ int main(int argc, char *argv[])
 	break;
     }
 
+    if (headerIsEntry(h, RPMTAG_LONGFILESIZES)) {
+	fprintf(stderr, _("files over 4GB not supported by cpio, use rpm2archive instead\n"));
+	exit(EXIT_FAILURE);
+    }
+
     /* Retrieve payload size and compression type. */
     {	const char *compr = headerGetString(h, RPMTAG_PAYLOADCOMPRESSOR);
 	rpmio_flags = rstrscat(NULL, "r.", compr ? compr : "gzip", NULL);
