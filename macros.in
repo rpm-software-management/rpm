@@ -1033,7 +1033,7 @@ package or when debugging this package.\
 
 #------------------------------------------------------------------------------
 # The "make" analogue, hiding the _smp_mflags magic from specs
-%make_build %{__make} %{_make_output_sync} %{?_smp_mflags}
+%make_build %{__make} %{_make_output_sync} %{?_smp_mflags} V=1 VERBOSE=1
 
 #------------------------------------------------------------------------------
 # The make install analogue of %configure for modern autotools:
