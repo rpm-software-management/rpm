@@ -176,15 +176,15 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
     char *lbuf = NULL;
     int isComment = 0;
 
-     /* Don't expand macros (eg. %define) in false branch of %if clause */
-    if (!spec->readStack->reading)
-	return 0;
 
     lbuf = spec->lbuf;
     SKIPSPACE(lbuf);
     if (lbuf[0] == '#')
 	isComment = 1;
 
+     /* Don't expand macros (eg. %define) in false branch of %if clause */
+    if (!spec->readStack->reading)
+	return 0;
 
     if (rpmExpandMacros(spec->macros, spec->lbuf, &lbuf, 0) < 0) {
 	rpmlog(RPMLOG_ERR, _("line %d: %s\n"),
