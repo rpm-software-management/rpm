@@ -190,6 +190,14 @@ typedef enum rpmParseState_e {
 } rpmParseState; 
 
 
+/** \ingroup rpmbuild
+ * Bit(s) to control type of the current spec file line
+ */
+enum ifTypes {
+    OTHER_LINE = 0,        /*!< other lines                                        */
+    IF_LINE    = (1 << 0)  /*!< %if or %ifos or %ifnos or %ifarch or %ifnarch line */
+};
+
 #define STRIP_NOTHING             0
 #define STRIP_TRAILINGSPACE (1 << 0)
 #define STRIP_COMMENTS      (1 << 1)
