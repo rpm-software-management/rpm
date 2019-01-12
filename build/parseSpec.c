@@ -400,9 +400,7 @@ int readLine(rpmSpec spec, int strip)
     s = spec->line;
     SKIPSPACE(s);
 
-    if (!spec->readStack->reading && ISMACROWITHARG(s, "%if")) {
-	match = 0;
-    } else if (ISMACROWITHARG(s, "%ifarch")) {
+    if (ISMACROWITHARG(s, "%ifarch")) {
 	lineType = IF_LINE;
 	ARGMATCH(s, "%{_target_cpu}", match);
     } else if (ISMACROWITHARG(s, "%ifnarch")) {
@@ -419,12 +417,14 @@ int readLine(rpmSpec spec, int strip)
     } else if (ISMACROWITHARG(s, "%if")) {
 	lineType = IF_LINE;
 	s += 3;
-        match = parseExpressionBoolean(s);
-	if (match < 0) {
-	    rpmlog(RPMLOG_ERR,
-			_("%s:%d: bad %%if condition\n"),
-			ofi->fileName, ofi->lineNum);
-	    return PART_ERROR;
+	if (spec->readStack->reading) {
+	    match = parseExpressionBoolean(s);
+	    if (match < 0) {
+		rpmlog(RPMLOG_ERR,
+			    _("%s:%d: bad %%if condition\n"),
+			    ofi->fileName, ofi->lineNum);
+		return PART_ERROR;
+	    }
 	}
     } else if (ISMACRO(s, "%else")) {
 	if (! spec->readStack->next) {
