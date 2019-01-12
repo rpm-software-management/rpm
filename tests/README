@@ -1,5 +1,5 @@
 To run these tests you need at least these dependencies:
-fakechroot gdb gpg2 python-rpm
+fakechroot gdb gnupg>=2.0
 
 Then run
 
