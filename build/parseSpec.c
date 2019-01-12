@@ -182,9 +182,15 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
     if (lbuf[0] == '#')
 	isComment = 1;
 
-     /* Don't expand macros (eg. %define) in false branch of %if clause */
-    if (!spec->readStack->reading)
+    /* Don't expand macros after %elif (resp. %elifarch, %elifos) in false branch */
+    if ((ISMACROWITHARG(lbuf, "%elif")) || (ISMACROWITHARG(lbuf, "%elifos")) ||
+	(ISMACROWITHARG(lbuf, "%elifarch"))) {
+	if (!spec->readStack->readable)
+	    return 0;
+    /* Don't expand macros (eg. %define) in false branch of %if clause */
+    } else if (!spec->readStack->reading) {
 	return 0;
+    }
 
     if (rpmExpandMacros(spec->macros, spec->lbuf, &lbuf, 0) < 0) {
 	rpmlog(RPMLOG_ERR, _("line %d: %s\n"),
@@ -426,7 +432,43 @@ int readLine(rpmSpec spec, int strip)
 		return PART_ERROR;
 	    }
 	}
+    } else if (ISMACROWITHARG(s, "%elifarch")) {
+	lineType = ELIF_LINE;
+	ARGMATCH(s, "%{_target_cpu}", match);
+	if (!spec->readStack->elifEnabled) {
+	    rpmlog(RPMLOG_ERR,
+			_("%s:%d: Got %%elifarch with no %%if\n"),
+			ofi->fileName, ofi->lineNum);
+	    return PART_ERROR;
+	}
+    } else if (ISMACROWITHARG(s, "%elifos")) {
+	lineType = ELIF_LINE;
+	ARGMATCH(s, "%{_target_os}", match);
+	if (!spec->readStack->elifEnabled) {
+	    rpmlog(RPMLOG_ERR,
+			_("%s:%d: Got %%elifos with no %%if\n"),
+			ofi->fileName, ofi->lineNum);
+	    return PART_ERROR;
+	}
+    } else if (ISMACROWITHARG(s, "%elif")) {
+	lineType = ELIF_LINE;
+	s += 5;
+    if (spec->readStack->readable) {
+	    match = parseExpressionBoolean(s);
+	    if ((match < 0)) {
+		rpmlog(RPMLOG_ERR,
+			    _("%s:%d: Bad %%elif condition: %s"),
+			    ofi->fileName, ofi->lineNum, s);
+		return PART_ERROR;
+	    }
+	} if (!spec->readStack->elifEnabled) {
+	    rpmlog(RPMLOG_ERR,
+			_("%s:%d: Got %%elif with no %%if\n"),
+			ofi->fileName, ofi->lineNum);
+	return PART_ERROR;
+	}
     } else if (ISMACRO(s, "%else")) {
+	spec->readStack->elifEnabled = 0;
 	if (! spec->readStack->next) {
 	    /* Got an else with no %if ! */
 	    rpmlog(RPMLOG_ERR,
@@ -435,7 +477,7 @@ int readLine(rpmSpec spec, int strip)
 	    return PART_ERROR;
 	}
 	spec->readStack->reading =
-	    spec->readStack->next->reading && ! spec->readStack->reading;
+	    spec->readStack->next->reading && spec->readStack->readable;
 	spec->line[0] = '\0';
     } else if (ISMACRO(s, "%endif")) {
 	if (! spec->readStack->next) {
@@ -477,8 +519,16 @@ int readLine(rpmSpec spec, int strip)
 	rl->reading = spec->readStack->reading && match;
 	rl->next = spec->readStack;
 	rl->lineNum = ofi->lineNum;
+	rl->readable = (!rl->reading) && (spec->readStack->reading);
+	rl->elifEnabled = 1;
 	spec->readStack = rl;
 	spec->line[0] = '\0';
+    } else if (lineType == ELIF_LINE) {
+	spec->readStack->reading = match && spec->readStack->readable;
+	if (spec->readStack->reading)
+	    spec->readStack->readable = 0;
+	spec->line[0] = '\0';
+	match = -1;
     }
 
     if (! spec->readStack->reading) {
