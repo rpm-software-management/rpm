@@ -421,8 +421,8 @@ int readLine(rpmSpec spec, int strip)
 	    match = parseExpressionBoolean(s);
 	    if (match < 0) {
 		rpmlog(RPMLOG_ERR,
-			    _("%s:%d: bad %%if condition\n"),
-			    ofi->fileName, ofi->lineNum);
+			    _("%s:%d: bad %%if condition: %s\n"),
+			    ofi->fileName, ofi->lineNum, s);
 		return PART_ERROR;
 	    }
 	}
