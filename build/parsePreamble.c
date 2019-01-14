@@ -355,19 +355,22 @@ static struct tokenBits_s const installScriptBits[] = {
 static int parseBits(const char * s, const tokenBits tokbits,
 		rpmsenseFlags * bp)
 {
-    tokenBits tb;
+    tokenBits tb = NULL;
     const char * se;
     rpmsenseFlags bits = RPMSENSE_ANY;
     int c = 0;
     int rc = RPMRC_OK;
 
     if (s) {
-	while (*s != '\0') {
+	for (;;) {
 	    while ((c = *s) && risspace(c)) s++;
 	    se = s;
 	    while ((c = *se) && risalpha(c)) se++;
-	    if (s == se)
+	    if (s == se) {
+		if (c || tb)
+		    rc = RPMRC_FAIL;
 		break;
+	    }
 	    for (tb = tokbits; tb->name; tb++) {
 		if (tb->name != NULL &&
 		    strlen(tb->name) == (se-s) && rstreqn(tb->name, s, (se-s)))
@@ -379,8 +382,11 @@ static int parseBits(const char * s, const tokenBits tokbits,
 	    }
 	    bits |= tb->bits;
 	    while ((c = *se) && risspace(c)) se++;
-	    if (c != ',')
+	    if (c != ',') {
+		if (c)
+		    rc = RPMRC_FAIL;
 		break;
+	    }
 	    s = ++se;
 	}
     }
