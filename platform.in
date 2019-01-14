@@ -59,6 +59,9 @@
 
 %_smp_mflags "-j%{_smp_build_ncpus}"
 
+# Enable LTO optimization with a maximal parallelism
+%_lto_cflags "-flto=%{_smp_build_ncpus}"
+
 #==============================================================================
 # ---- Build policy macros.
 #
