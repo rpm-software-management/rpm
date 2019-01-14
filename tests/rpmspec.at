@@ -1,0 +1,90 @@
+# Process this file with autom4te to create testsuite. -*- Autotest -*-
+#
+# This file is part of RPM test suite.
+#
+# Copyright (c) 2019  Dmitry V. Levin <ldv@altlinux.org>
+# All rights reserved.
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+AT_BANNER([RPM Spec Tool])
+
+AT_SETUP([rpmspec --query Requires])
+AT_KEYWORDS([rpmspec query])
+AT_CHECK([[
+runroot rpmspec --query \
+  --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex}\n]' \
+  /data/SPECS/test-parsebits.spec
+]],
+[0],
+[good.0.1 0
+good.0.2 8
+good.0.3 0
+good.0.4 8
+good.1.1 104
+good.1.2 100
+good.1.3 104
+good.1.4 100
+good.1.5 104
+good.19.1 1003fa0
+good.2.1 80c
+good.3.1 202
+good.34.1 120a
+good.34.2 1200
+good.34.3 120a
+good.34.4 1200
+good.34.5 120a
+good.4.1 100a
+good.5.1 400
+good.6.1 1000008
+good.7.1 2004
+good.8.1 8c
+good.9.1 22
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpmspec --query Requires(junk)])
+AT_KEYWORDS([rpmspec query])
+AT_CHECK([[
+runroot rpmspec --query \
+  --define 'extra Requires(junk): bad' \
+  --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
+  /data/SPECS/test-parsebits.spec
+]],
+[1],
+[],
+[error: line 9: Bad Requirename: qualifiers: Requires(junk): bad
+error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
+])
+AT_CLEANUP
+
+AT_SETUP([rpmspec --query Requires(pre,junk)])
+AT_KEYWORDS([rpmspec query])
+AT_CHECK([[
+runroot rpmspec --query \
+  --define 'extra Requires(pre,junk): bad' \
+  --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
+  /data/SPECS/test-parsebits.spec
+]],
+[1],
+[],
+[error: line 9: Bad Requirename: qualifiers: Requires(pre,junk): bad
+error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
+])
+AT_CLEANUP
+
+AT_SETUP([rpmspec --query Requires(junk,pre)])
+AT_KEYWORDS([rpmspec query])
+AT_CHECK([[
+runroot rpmspec --query \
+  --define 'extra Requires(junk,pre): bad' \
+  --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
+  /data/SPECS/test-parsebits.spec
+]],
+[1],
+[],
+[error: line 9: Bad Requirename: qualifiers: Requires(junk,pre): bad
+error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
+])
+AT_CLEANUP
