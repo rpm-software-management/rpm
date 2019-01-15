@@ -124,6 +124,7 @@ static int print_expand_trace = _PRINT_EXPAND_TRACE;
 
 typedef void (*macroFunc)(MacroBuf mb, int chkexist, int negate,
 			const char * f, size_t fn, const char * g, size_t gn);
+typedef const char *(*parseFunc)(MacroBuf mb, const char * se, size_t slen);
 
 /* forward ref */
 static int expandMacro(MacroBuf mb, const char *src, size_t slen);
@@ -142,6 +143,10 @@ static void doOutput(MacroBuf mb, int chkexist, int negate,
 static void doTrace(MacroBuf mb, int chkexist, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
 
+static const char * doDef(MacroBuf mb, const char * se, size_t slen);
+static const char * doGlobal(MacroBuf mb, const char * se, size_t slen);
+static const char * doDump(MacroBuf mb, const char * se, size_t slen);
+static const char * doUndefine(MacroBuf mb, const char * se, size_t slen);
 /* =============================================================== */
 
 static rpmMacroContext rpmmctxAcquire(rpmMacroContext mc)
@@ -486,34 +491,35 @@ static struct builtins_s {
     const char * name;
     size_t len;
     macroFunc func;
+    parseFunc parse;
 } const builtinmacros[] = {
-    { STR_AND_LEN("F"),		doFoo },
-    { STR_AND_LEN("P"),		doFoo },
-    { STR_AND_LEN("Q"),		doFoo },
-    { STR_AND_LEN("S"),		doFoo },
-    { STR_AND_LEN("basename"),	doFoo },
-    { STR_AND_LEN("define"),	NULL },
-    { STR_AND_LEN("dirname"),	doFoo },
-    { STR_AND_LEN("dump"), 	NULL },
-    { STR_AND_LEN("echo"),	doOutput },
-    { STR_AND_LEN("error"),	doOutput },
-    { STR_AND_LEN("expand"),	doFoo },
-    { STR_AND_LEN("getconfdir"),doFoo },
-    { STR_AND_LEN("getenv"),	doFoo },
-    { STR_AND_LEN("getncpus"),	doFoo },
-    { STR_AND_LEN("global"),	NULL },
-    { STR_AND_LEN("load"),	doLoad },
-    { STR_AND_LEN("lua"),	doLua },
-    { STR_AND_LEN("quote"),	doFoo },
-    { STR_AND_LEN("shrink"),	doFoo },
-    { STR_AND_LEN("suffix"),	doFoo },
-    { STR_AND_LEN("trace"),	doTrace },
-    { STR_AND_LEN("u2p"),	doFoo },
-    { STR_AND_LEN("uncompress"),doFoo },
-    { STR_AND_LEN("undefine"),	NULL },
-    { STR_AND_LEN("url2path"),	doFoo },
-    { STR_AND_LEN("verbose"),	doFoo },
-    { STR_AND_LEN("warn"),	doOutput },
+    { STR_AND_LEN("F"),		doFoo,		NULL },
+    { STR_AND_LEN("P"),		doFoo,		NULL },
+    { STR_AND_LEN("Q"),		doFoo,		NULL },
+    { STR_AND_LEN("S"),		doFoo,		NULL },
+    { STR_AND_LEN("basename"),	doFoo,		NULL },
+    { STR_AND_LEN("define"),	NULL,		doDef },
+    { STR_AND_LEN("dirname"),	doFoo,		NULL },
+    { STR_AND_LEN("dump"), 	NULL,		doDump },
+    { STR_AND_LEN("echo"),	doOutput,	NULL },
+    { STR_AND_LEN("error"),	doOutput,	NULL },
+    { STR_AND_LEN("expand"),	doFoo,		NULL },
+    { STR_AND_LEN("getconfdir"),doFoo,		NULL },
+    { STR_AND_LEN("getenv"),	doFoo,		NULL },
+    { STR_AND_LEN("getncpus"),	doFoo,		NULL },
+    { STR_AND_LEN("global"),	NULL,		doGlobal },
+    { STR_AND_LEN("load"),	doLoad,		NULL },
+    { STR_AND_LEN("lua"),	doLua,		NULL },
+    { STR_AND_LEN("quote"),	doFoo,		NULL },
+    { STR_AND_LEN("shrink"),	doFoo,		NULL },
+    { STR_AND_LEN("suffix"),	doFoo,		NULL },
+    { STR_AND_LEN("trace"),	doTrace,	NULL },
+    { STR_AND_LEN("u2p"),	doFoo,		NULL },
+    { STR_AND_LEN("uncompress"),doFoo,		NULL },
+    { STR_AND_LEN("undefine"),	NULL,		doUndefine },
+    { STR_AND_LEN("url2path"),	doFoo,		NULL },
+    { STR_AND_LEN("verbose"),	doFoo,		NULL },
+    { STR_AND_LEN("warn"),	doOutput,	NULL },
 };
 static const size_t numbuiltins = sizeof(builtinmacros)/sizeof(*builtinmacros);
 
@@ -732,6 +738,25 @@ exit:
     _free(buf);
     return se;
 }
+
+static const char * doDef(MacroBuf mb, const char * se, size_t slen)
+{
+    return doDefine(mb, se, slen, mb->level, 0);
+}
+
+static const char * doGlobal(MacroBuf mb, const char * se, size_t slen)
+{
+    return doDefine(mb, se, slen, RMIL_GLOBAL, 1);
+}
+
+static const char * doDump(MacroBuf mb, const char * se, size_t slen)
+{
+    rpmDumpMacroTable(mb->mc, NULL);
+    while (iseol(*se))
+	se++;
+    return se;
+}
+
 
 /**
  * Free parsed arguments for parameterized macro.
@@ -1336,30 +1361,13 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    printMacro(mb, s, se);
 
 	/* Expand builtin macros */
-	if (STREQ("global", f, fn)) {
-	    s = doDefine(mb, se, slen - (se - s), RMIL_GLOBAL, 1);
-	    continue;
-	}
-	if (STREQ("define", f, fn)) {
-	    s = doDefine(mb, se, slen - (se - s), mb->level, 0);
-	    continue;
-	}
-	if (STREQ("undefine", f, fn)) {
-	    s = doUndefine(mb, se, slen - (se - s));
-	    continue;
-	}
-
-	if (STREQ("dump", f, fn)) {
-	    rpmDumpMacroTable(mb->mc, NULL);
-	    while (iseol(*se))
-		se++;
-	    s = se;
-	    continue;
-	}
-
-	if ((builtin = lookupBuiltin(f, fn)) && builtin->func) {
-	    builtin->func(mb, chkexist, negate, f, fn, g, gn);
-	    s = se;
+	if ((builtin = lookupBuiltin(f, fn))) {
+	    if (builtin->parse) {
+		s = builtin->parse(mb, se, slen - (se - s));
+	    } else {
+		builtin->func(mb, chkexist, negate, f, fn, g, gn);
+		s = se;
+	    }
 	    continue;
 	}
 
