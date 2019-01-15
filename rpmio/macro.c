@@ -473,6 +473,7 @@ static struct builtins_s {
     const char * name;
     size_t len;
 } const builtinmacros[] = {
+    { STR_AND_LEN("F") },
     { STR_AND_LEN("P") },
     { STR_AND_LEN("Q") },
     { STR_AND_LEN("S") },
@@ -493,6 +494,7 @@ static struct builtins_s {
     { STR_AND_LEN("shrink") },
     { STR_AND_LEN("suffix") },
     { STR_AND_LEN("trace") },
+    { STR_AND_LEN("u2p") },
     { STR_AND_LEN("uncompress") },
     { STR_AND_LEN("undefine") },
     { STR_AND_LEN("url2path") },
