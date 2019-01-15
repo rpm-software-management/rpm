@@ -133,6 +133,8 @@ static void popMacro(rpmMacroContext mc, const char * n);
 static int loadMacroFile(rpmMacroContext mc, const char * fn);
 static void doFoo(MacroBuf mb, int chkexist, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
+static void doLua(MacroBuf mb, int chkexist, int negate,
+		    const char * f, size_t fn, const char * g, size_t gn);
 
 /* =============================================================== */
 
@@ -495,7 +497,7 @@ static struct builtins_s {
     { STR_AND_LEN("getncpus"),	doFoo },
     { STR_AND_LEN("global"),	NULL },
     { STR_AND_LEN("load"),	NULL },
-    { STR_AND_LEN("lua"),	NULL },
+    { STR_AND_LEN("lua"),	doLua },
     { STR_AND_LEN("quote"),	doFoo },
     { STR_AND_LEN("shrink"),	doFoo },
     { STR_AND_LEN("suffix"),	doFoo },
@@ -934,7 +936,7 @@ doOutput(MacroBuf mb, int loglevel, const char * msg, size_t msglen)
     _free(buf);
 }
 
-static void doLua(MacroBuf mb, const char * f, size_t fn, const char * g, size_t gn)
+static void doLua(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn, const char * g, size_t gn)
 {
 #ifdef WITH_LUA
     rpmlua lua = NULL; /* Global state. */
@@ -1361,12 +1363,6 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    rpmDumpMacroTable(mb->mc, NULL);
 	    while (iseol(*se))
 		se++;
-	    s = se;
-	    continue;
-	}
-
-	if (STREQ("lua", f, fn)) {
-	    doLua(mb, f, fn, g, gn);
 	    s = se;
 	    continue;
 	}
