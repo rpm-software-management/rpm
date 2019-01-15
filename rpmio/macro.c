@@ -466,35 +466,38 @@ static unsigned int getncpus(void)
     return ncpus;
 }
 
+#define STR_AND_LEN(_str) (_str), sizeof(_str)-1
+
 /* Names in the table must be in ASCII-code order */
 static struct builtins_s {
     const char * name;
+    size_t len;
 } const builtinmacros[] = {
-    { "P" },
-    { "Q" },
-    { "S" },
-    { "basename" },
-    { "define" },
-    { "dirname" },
-    { "dump" },
-    { "echo" },
-    { "error" },
-    { "expand" },
-    { "getconfdir" },
-    { "getenv" },
-    { "getncpus" },
-    { "global" },
-    { "load" },
-    { "lua" },
-    { "quote" },
-    { "shrink" },
-    { "suffix" },
-    { "trace" },
-    { "uncompress" },
-    { "undefine" },
-    { "url2path" },
-    { "verbose" },
-    { "warn" }
+    { STR_AND_LEN("P") },
+    { STR_AND_LEN("Q") },
+    { STR_AND_LEN("S") },
+    { STR_AND_LEN("basename") },
+    { STR_AND_LEN("define") },
+    { STR_AND_LEN("dirname") },
+    { STR_AND_LEN("dump") },
+    { STR_AND_LEN("echo") },
+    { STR_AND_LEN("error") },
+    { STR_AND_LEN("expand") },
+    { STR_AND_LEN("getconfdir") },
+    { STR_AND_LEN("getenv") },
+    { STR_AND_LEN("getncpus") },
+    { STR_AND_LEN("global") },
+    { STR_AND_LEN("load") },
+    { STR_AND_LEN("lua") },
+    { STR_AND_LEN("quote") },
+    { STR_AND_LEN("shrink") },
+    { STR_AND_LEN("suffix") },
+    { STR_AND_LEN("trace") },
+    { STR_AND_LEN("uncompress") },
+    { STR_AND_LEN("undefine") },
+    { STR_AND_LEN("url2path") },
+    { STR_AND_LEN("verbose") },
+    { STR_AND_LEN("warn") }
 };
 static const size_t numbuiltins = sizeof(builtinmacros)/sizeof(*builtinmacros);
 
@@ -503,19 +506,24 @@ static int namecmp(const void *name1, const void *name2)
     struct builtins_s *n1 = (struct builtins_s *)name1;
     struct builtins_s *n2 = (struct builtins_s *)name2;
 
-    return strcmp(n1->name, n2->name);
+    int rc = strncmp(n1->name, n2->name, n1->len);
+    if (rc == 0)
+	rc = n1->len - n2->len;
+    return rc;
 }
 
 /**
  * Return a pointer to the built-in macro with the given name
  * @param name		macro name
+ * @param nlen		name length
  * @return		pointer to the built-in macro or NULL if not found
  */
-static const struct builtins_s* lookupBuiltin(const char *name)
+static const struct builtins_s* lookupBuiltin(const char *name, size_t nlen)
 {
-    struct builtins_s macro;
-
-    macro.name = name;
+    struct builtins_s macro = {
+	.name = name,
+	.len = nlen,
+    };
 
     return bsearch(&macro, builtinmacros, numbuiltins, sizeof(*builtinmacros),
 		    namecmp);
@@ -533,7 +541,7 @@ validName(const char *name, size_t namelen, const char *action) {
 	goto exit;
     }
 
-    if (lookupBuiltin(name)) {
+    if (lookupBuiltin(name, namelen)) {
 	rpmlog(RPMLOG_ERR, _("Macro %%%s is a built-in (%s)\n"), name, action);
 	goto exit;
     }
