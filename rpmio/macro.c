@@ -12,6 +12,9 @@
 extern char *optarg;
 extern int optind;
 #endif
+#if HAVE_SCHED_GETAFFINITY
+#include <sched.h>
+#endif
 
 #if !defined(isblank)
 #define	isblank(_c)	((_c) == ' ' || (_c) == '\t')
@@ -446,6 +449,23 @@ exit:
 }
 
 
+static unsigned int getncpus(void)
+{
+    unsigned int ncpus = 0;
+#if HAVE_SCHED_GETAFFINITY
+    cpu_set_t set;
+    if (sched_getaffinity (0, sizeof(set), &set) == 0)
+	ncpus = CPU_COUNT(&set);
+#endif
+    /* Fallback to sysconf() if the above isn't supported or didn't work */
+    if (ncpus < 1)
+	ncpus = sysconf(_SC_NPROCESSORS_ONLN);
+    /* If all else fails, there's always the one we're running on... */
+    if (ncpus < 1)
+	ncpus = 1;
+    return ncpus;
+}
+
 /* Names in the table must be in ASCII-code order */
 static struct builtins_s {
     const char * name;
@@ -462,6 +482,7 @@ static struct builtins_s {
     { "expand" },
     { "getconfdir" },
     { "getenv" },
+    { "getncpus" },
     { "global" },
     { "load" },
     { "lua" },
@@ -1047,6 +1068,9 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
     } else if (STREQ("getconfdir", f, fn)) {
 	sprintf(buf, "%s", rpmConfigDir());
 	b = buf;
+    } else if (STREQ("getncpus", f, fn)) {
+	sprintf(buf, "%u", getncpus());
+	b = buf;
     } else if (STREQ("S", f, fn)) {
 	for (b = buf; (c = *b) && risdigit(c);)
 	    b++;
@@ -1342,6 +1366,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    STREQ("u2p", f, fn) ||
 	    STREQ("getenv", f, fn) ||
 	    STREQ("getconfdir", f, fn) ||
+	    STREQ("getncpus", f, fn) ||
 	    STREQ("S", f, fn) ||
 	    STREQ("P", f, fn) ||
 	    STREQ("F", f, fn))
