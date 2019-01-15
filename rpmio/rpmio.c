@@ -796,7 +796,7 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 #ifdef HAVE_LZMA_MT
 	    } else {
 		if (threads == -1)
-		    threads = sysconf(_SC_NPROCESSORS_ONLN);
+		    threads = rpmExpandNumeric("%{getncpus}");
 		lzma_mt mt_options = {
 		    .flags = 0,
 		    .threads = threads,
