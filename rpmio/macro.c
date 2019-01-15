@@ -139,6 +139,8 @@ static void doLua(MacroBuf mb, int chkexist, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
 static void doOutput(MacroBuf mb, int chkexist, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
+static void doTrace(MacroBuf mb, int chkexist, int negate,
+		    const char * f, size_t fn, const char * g, size_t gn);
 
 /* =============================================================== */
 
@@ -505,7 +507,7 @@ static struct builtins_s {
     { STR_AND_LEN("quote"),	doFoo },
     { STR_AND_LEN("shrink"),	doFoo },
     { STR_AND_LEN("suffix"),	doFoo },
-    { STR_AND_LEN("trace"),	NULL },
+    { STR_AND_LEN("trace"),	doTrace },
     { STR_AND_LEN("u2p"),	doFoo },
     { STR_AND_LEN("uncompress"),doFoo },
     { STR_AND_LEN("undefine"),	NULL },
@@ -1136,6 +1138,16 @@ static void doLoad(MacroBuf mb, int chkexist, int negate,
     free(arg);
 }
 
+static void doTrace(MacroBuf mb, int chkexist, int negate,
+		    const char * f, size_t fn, const char * g, size_t gn)
+{
+    mb->expand_trace = mb->macro_trace = (negate ? 0 : mb->depth);
+    if (mb->depth == 1) {
+	print_macro_trace = mb->macro_trace;
+	print_expand_trace = mb->expand_trace;
+    }
+}
+
 /**
  * The main macro recursion loop.
  * @param mb		macro expansion state
@@ -1334,16 +1346,6 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	}
 	if (STREQ("undefine", f, fn)) {
 	    s = doUndefine(mb, se, slen - (se - s));
-	    continue;
-	}
-
-	if (STREQ("trace", f, fn)) {
-	    mb->expand_trace = mb->macro_trace = (negate ? 0 : mb->depth);
-	    if (mb->depth == 1) {
-		print_macro_trace = mb->macro_trace;
-		print_expand_trace = mb->expand_trace;
-	    }
-	    s = se;
 	    continue;
 	}
 
