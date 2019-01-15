@@ -57,10 +57,10 @@
         if [ -n "$ncpus_max" ] && [ "$ncpus_max" -gt 0 ] && [ "$RPM_BUILD_NCPUS" -gt "$ncpus_max" ]; then RPM_BUILD_NCPUS="$ncpus_max"; fi; \\\
         echo "$RPM_BUILD_NCPUS";)
 
-%_smp_mflags "-j%{_smp_build_ncpus}"
+%_smp_mflags -j%{_smp_build_ncpus}
 
 # Enable LTO optimization with a maximal parallelism
-%_lto_cflags "-flto=%{_smp_build_ncpus}"
+%_lto_cflags -flto=%{_smp_build_ncpus}
 
 #==============================================================================
 # ---- Build policy macros.
