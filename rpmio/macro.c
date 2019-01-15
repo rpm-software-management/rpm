@@ -133,6 +133,8 @@ static void popMacro(rpmMacroContext mc, const char * n);
 static int loadMacroFile(rpmMacroContext mc, const char * fn);
 static void doFoo(MacroBuf mb, int chkexist, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
+static void doLoad(MacroBuf mb, int chkexist, int negate,
+		    const char * f, size_t fn, const char * g, size_t gn);
 static void doLua(MacroBuf mb, int chkexist, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
 static void doOutput(MacroBuf mb, int chkexist, int negate,
@@ -498,7 +500,7 @@ static struct builtins_s {
     { STR_AND_LEN("getenv"),	doFoo },
     { STR_AND_LEN("getncpus"),	doFoo },
     { STR_AND_LEN("global"),	NULL },
-    { STR_AND_LEN("load"),	NULL },
+    { STR_AND_LEN("load"),	doLoad },
     { STR_AND_LEN("lua"),	doLua },
     { STR_AND_LEN("quote"),	doFoo },
     { STR_AND_LEN("shrink"),	doFoo },
@@ -1120,6 +1122,20 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
     free(buf);
 }
 
+static void doLoad(MacroBuf mb, int chkexist, int negate,
+		    const char * f, size_t fn, const char * g, size_t gn)
+{
+    char *arg = NULL;
+    if (g && gn > 0 && expandThis(mb, g, gn, &arg) == 0) {
+	/* Print failure iff %{load:...} or %{!?load:...} */
+	if (loadMacroFile(mb->mc, arg) && chkexist == negate) {
+	    rpmlog(RPMLOG_ERR, _("failed to load macro file %s"), arg);
+	    mb->error = 1;
+	}
+    }
+    free(arg);
+}
+
 /**
  * The main macro recursion loop.
  * @param mb		macro expansion state
@@ -1308,19 +1324,6 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    printMacro(mb, s, se);
 
 	/* Expand builtin macros */
-	if (STREQ("load", f, fn)) {
-	    char *arg = NULL;
-	    if (g && gn > 0 && expandThis(mb, g, gn, &arg) == 0) {
-		/* Print failure iff %{load:...} or %{!?load:...} */
-		if (loadMacroFile(mb->mc, arg) && chkexist == negate) {
-		    rpmlog(RPMLOG_ERR, _("failed to load macro file %s"), arg);
-		    mb->error = 1;
-		}
-	    }
-	    free(arg);
-	    s = se;
-	    continue;
-	}
 	if (STREQ("global", f, fn)) {
 	    s = doDefine(mb, se, slen - (se - s), RMIL_GLOBAL, 1);
 	    continue;
