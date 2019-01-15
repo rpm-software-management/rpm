@@ -122,12 +122,17 @@ static int print_macro_trace = _PRINT_MACRO_TRACE;
 #define	_PRINT_EXPAND_TRACE	0
 static int print_expand_trace = _PRINT_EXPAND_TRACE;
 
+typedef void (*macroFunc)(MacroBuf mb, int chkexist, int negate,
+			const char * f, size_t fn, const char * g, size_t gn);
+
 /* forward ref */
 static int expandMacro(MacroBuf mb, const char *src, size_t slen);
 static void pushMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level, int flags);
 static void popMacro(rpmMacroContext mc, const char * n);
 static int loadMacroFile(rpmMacroContext mc, const char * fn);
+static void doFoo(MacroBuf mb, int chkexist, int negate,
+		    const char * f, size_t fn, const char * g, size_t gn);
 
 /* =============================================================== */
 
@@ -466,40 +471,41 @@ static unsigned int getncpus(void)
     return ncpus;
 }
 
-#define STR_AND_LEN(_str) (_str), sizeof(_str)-1
+#define STR_AND_LEN(_str) (_str), sizeof((_str))-1
 
 /* Names in the table must be in ASCII-code order */
 static struct builtins_s {
     const char * name;
     size_t len;
+    macroFunc func;
 } const builtinmacros[] = {
-    { STR_AND_LEN("F") },
-    { STR_AND_LEN("P") },
-    { STR_AND_LEN("Q") },
-    { STR_AND_LEN("S") },
-    { STR_AND_LEN("basename") },
-    { STR_AND_LEN("define") },
-    { STR_AND_LEN("dirname") },
-    { STR_AND_LEN("dump") },
-    { STR_AND_LEN("echo") },
-    { STR_AND_LEN("error") },
-    { STR_AND_LEN("expand") },
-    { STR_AND_LEN("getconfdir") },
-    { STR_AND_LEN("getenv") },
-    { STR_AND_LEN("getncpus") },
-    { STR_AND_LEN("global") },
-    { STR_AND_LEN("load") },
-    { STR_AND_LEN("lua") },
-    { STR_AND_LEN("quote") },
-    { STR_AND_LEN("shrink") },
-    { STR_AND_LEN("suffix") },
-    { STR_AND_LEN("trace") },
-    { STR_AND_LEN("u2p") },
-    { STR_AND_LEN("uncompress") },
-    { STR_AND_LEN("undefine") },
-    { STR_AND_LEN("url2path") },
-    { STR_AND_LEN("verbose") },
-    { STR_AND_LEN("warn") }
+    { STR_AND_LEN("F"),		doFoo },
+    { STR_AND_LEN("P"),		doFoo },
+    { STR_AND_LEN("Q"),		doFoo },
+    { STR_AND_LEN("S"),		doFoo },
+    { STR_AND_LEN("basename"),	doFoo },
+    { STR_AND_LEN("define"),	NULL },
+    { STR_AND_LEN("dirname"),	doFoo },
+    { STR_AND_LEN("dump"), 	NULL },
+    { STR_AND_LEN("echo"),	NULL },
+    { STR_AND_LEN("error"),	NULL },
+    { STR_AND_LEN("expand"),	doFoo },
+    { STR_AND_LEN("getconfdir"),doFoo },
+    { STR_AND_LEN("getenv"),	doFoo },
+    { STR_AND_LEN("getncpus"),	doFoo },
+    { STR_AND_LEN("global"),	NULL },
+    { STR_AND_LEN("load"),	NULL },
+    { STR_AND_LEN("lua"),	NULL },
+    { STR_AND_LEN("quote"),	doFoo },
+    { STR_AND_LEN("shrink"),	doFoo },
+    { STR_AND_LEN("suffix"),	doFoo },
+    { STR_AND_LEN("trace"),	NULL },
+    { STR_AND_LEN("u2p"),	doFoo },
+    { STR_AND_LEN("uncompress"),doFoo },
+    { STR_AND_LEN("undefine"),	NULL },
+    { STR_AND_LEN("url2path"),	doFoo },
+    { STR_AND_LEN("verbose"),	doFoo },
+    { STR_AND_LEN("warn"),	NULL },
 };
 static const size_t numbuiltins = sizeof(builtinmacros)/sizeof(*builtinmacros);
 
@@ -963,6 +969,7 @@ static void doLua(MacroBuf mb, const char * f, size_t fn, const char * g, size_t
 /**
  * Execute macro primitives.
  * @param mb		macro expansion state
+ * @param chkexist	unused
  * @param negate	should logic be inverted?
  * @param f		beginning of field f
  * @param fn		length of field f
@@ -970,7 +977,7 @@ static void doLua(MacroBuf mb, const char * f, size_t fn, const char * g, size_t
  * @param gn		length of field g
  */
 static void
-doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
+doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
 		const char * g, size_t gn)
 {
     char *buf = NULL;
@@ -1166,6 +1173,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     }
 
     while (mb->error == 0 && (c = *s) != '\0') {
+	const struct builtins_s* builtin = NULL;
 	s++;
 	/* Copy text until next macro */
 	switch (c) {
@@ -1363,26 +1371,8 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    continue;
 	}
 
-	/* XXX necessary but clunky */
-	if (STREQ("basename", f, fn) ||
-	    STREQ("dirname", f, fn) ||
-	    STREQ("shrink", f, fn) ||
-	    STREQ("suffix", f, fn) ||
-	    STREQ("quote", f, fn) ||
-	    STREQ("expand", f, fn) ||
-	    STREQ("verbose", f, fn) ||
-	    STREQ("uncompress", f, fn) ||
-	    STREQ("url2path", f, fn) ||
-	    STREQ("u2p", f, fn) ||
-	    STREQ("getenv", f, fn) ||
-	    STREQ("getconfdir", f, fn) ||
-	    STREQ("getncpus", f, fn) ||
-	    STREQ("S", f, fn) ||
-	    STREQ("P", f, fn) ||
-	    STREQ("F", f, fn))
-	{
-	    /* FIX: verbose may be set */
-	    doFoo(mb, negate, f, fn, g, gn);
+	if ((builtin = lookupBuiltin(f, fn)) && builtin->func) {
+	    builtin->func(mb, chkexist, negate, f, fn, g, gn);
 	    s = se;
 	    continue;
 	}
