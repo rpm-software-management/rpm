@@ -135,6 +135,8 @@ static void doFoo(MacroBuf mb, int chkexist, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
 static void doLua(MacroBuf mb, int chkexist, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
+static void doOutput(MacroBuf mb, int chkexist, int negate,
+		    const char * f, size_t fn, const char * g, size_t gn);
 
 /* =============================================================== */
 
@@ -489,8 +491,8 @@ static struct builtins_s {
     { STR_AND_LEN("define"),	NULL },
     { STR_AND_LEN("dirname"),	doFoo },
     { STR_AND_LEN("dump"), 	NULL },
-    { STR_AND_LEN("echo"),	NULL },
-    { STR_AND_LEN("error"),	NULL },
+    { STR_AND_LEN("echo"),	doOutput },
+    { STR_AND_LEN("error"),	doOutput },
     { STR_AND_LEN("expand"),	doFoo },
     { STR_AND_LEN("getconfdir"),doFoo },
     { STR_AND_LEN("getenv"),	doFoo },
@@ -507,7 +509,7 @@ static struct builtins_s {
     { STR_AND_LEN("undefine"),	NULL },
     { STR_AND_LEN("url2path"),	doFoo },
     { STR_AND_LEN("verbose"),	doFoo },
-    { STR_AND_LEN("warn"),	NULL },
+    { STR_AND_LEN("warn"),	doOutput },
 };
 static const size_t numbuiltins = sizeof(builtinmacros)/sizeof(*builtinmacros);
 
@@ -919,19 +921,20 @@ exit:
     return cont;
 }
 
-/**
- * Perform macro message output
- * @param mb		macro expansion state
- * @param waserror	use rpmlog()?
- * @param msg		message to output
- * @param msglen	no. of bytes in message
- */
-static void
-doOutput(MacroBuf mb, int loglevel, const char * msg, size_t msglen)
+static void doOutput(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn, const char * g, size_t gn)
 {
     char *buf = NULL;
+    int loglevel = RPMLOG_NOTICE; /* assume echo */
+    if (STREQ("error", f, fn)) {
+	loglevel = RPMLOG_ERR;
+	mb->error = 1;
+    } else if (STREQ("warn", f, fn)) {
+	loglevel = RPMLOG_WARNING;
+    }
+    if (gn == 0)
+	g = "";
 
-    (void) expandThis(mb, msg, msglen, &buf);
+    (void) expandThis(mb, g, gn, &buf);
     rpmlog(loglevel, "%s\n", buf);
     _free(buf);
 }
@@ -1328,24 +1331,6 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	}
 	if (STREQ("undefine", f, fn)) {
 	    s = doUndefine(mb, se, slen - (se - s));
-	    continue;
-	}
-
-	if (STREQ("echo", f, fn) ||
-		STREQ("warn", f, fn) ||
-		STREQ("error", f, fn)) {
-	    int loglevel = RPMLOG_NOTICE; /* assume echo */
-	    if (STREQ("error", f, fn)) {
-		loglevel = RPMLOG_ERR;
-		mb->error = 1;
-	    } else if (STREQ("warn", f, fn)) {
-		loglevel = RPMLOG_WARNING;
-	    }
-	    if (g != NULL && g < ge)
-		doOutput(mb, loglevel, g, gn);
-	    else
-		doOutput(mb, loglevel, "", 0);
-	    s = se;
 	    continue;
 	}
 
