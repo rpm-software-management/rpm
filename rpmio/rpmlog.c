@@ -407,6 +407,7 @@ static void dolog(struct rpmlogRec_s *rec, int saverec)
 
 void rpmlog (int code, const char *fmt, ...)
 {
+    int saved_errno = errno;
     unsigned pri = RPMLOG_PRI(code);
     unsigned mask = RPMLOG_MASK(pri);
     int saverec = (pri <= RPMLOG_WARNING);
@@ -414,7 +415,7 @@ void rpmlog (int code, const char *fmt, ...)
     int n;
 
     if ((mask & rpmlogSetMask(0)) == 0)
-	return;
+	goto exit;
 
     va_start(ap, fmt);
     n = vsnprintf(NULL, 0, fmt, ap);
@@ -437,4 +438,6 @@ void rpmlog (int code, const char *fmt, ...)
 
 	free(msg);
     }
+exit:
+    errno = saved_errno;
 }
