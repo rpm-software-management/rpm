@@ -26,6 +26,8 @@ static int _debug = 0;
 
 extern int _rpmds_nopromote;
 
+extern int _rpm_nouserns;
+
 extern int _fsm_debug;
 
 extern int _print_pkts;
@@ -263,6 +265,8 @@ struct poptOption rpmcliAllPoptTable[] = {
 	NULL, NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("debug rpmio I/O"), NULL},
+ { "nouserns", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpm_nouserns, -1,
+	N_("disable user namespace support"), NULL},
  { "stats", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmts_stats, -1,
 	NULL, NULL},
 

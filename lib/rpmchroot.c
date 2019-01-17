@@ -1,9 +1,12 @@
 #include "system.h"
+#include <sched.h>
 #include <stdlib.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>
 #include "lib/rpmchroot.h"
 #include "debug.h"
+
+int _rpm_nouserns = 0;
 
 struct rootState_s {
     char *rootDir;
@@ -17,6 +20,60 @@ static struct rootState_s rootState = {
    .chrootDone = 0,
    .cwd = -1,
 }; 
+
+#if defined(HAVE_UNSHARE) && defined(CLONE_NEWUSER)
+/*
+ * If setgroups file exists (Linux >= 3.19), we need to write "deny" to it,
+ * otherwise gid_map will fail.
+ */
+static int deny_setgroups(void)
+{
+    int fd = open("/proc/self/setgroups", O_WRONLY, 0);
+    int xx = -1;
+    if (fd >= 0) {
+	xx = write(fd, "deny\n", strlen("deny\n"));
+	close (fd);
+    }
+    return (xx == -1);
+}
+
+static int setup_map(const char *path, unsigned int id, unsigned int oid)
+{
+    int xx = -1;
+    int fd = open(path, O_WRONLY);
+    if (fd >= 0) {
+	char buf[256];
+	int ret = snprintf(buf, sizeof(buf), "%u %u 1\n", id, oid);
+	xx = write(fd, buf, ret);
+	close (fd);
+    }
+    return (xx == -1);
+}
+
+/*
+ * Try to become root by creating a user namespace. We don't really care
+ * if this fails here because in that case chroot() will just fail as it
+ * normally would.
+ */
+static void try_become_root(void)
+{
+    static int unshared = 0;
+    uid_t uid = getuid();
+    gid_t gid = getgid();
+    if (!unshared && unshare(CLONE_NEWUSER | CLONE_NEWNS) == 0) {
+	deny_setgroups();
+	setup_map("/proc/self/uid_map", 0, uid);
+	setup_map("/proc/self/gid_map", 0, gid);
+	unshared = 1;
+    }
+    rpmlog(RPMLOG_DEBUG, "user ns: %d original user %d:%d current %d:%d\n",
+	    unshared, uid, gid, getuid(), getgid());
+}
+#else
+static void try_become_root(void)
+{
+}
+#endif
 
 int rpmChrootSet(const char *rootDir)
 {
@@ -43,6 +100,8 @@ int rpmChrootSet(const char *rootDir)
 	    rpmlog(RPMLOG_ERR, _("Unable to open current directory: %m\n"));
 	    rc = -1;
 	}
+	if (!_rpm_nouserns && rc == 0 && getuid())
+	    try_become_root();
     }
 
     return rc;
