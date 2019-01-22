@@ -179,7 +179,7 @@ defined in the spec file. To allow for maximum configurability the
 dependency programs are shell scripts which can be duplicated and edited
 for site specific needs.
 
-The macros: %__find_provides, %__find_prereq, %__find_requires,
+The macros: %__find_provides, %__find_requires,
 %__find_conflicts, %__find_obsoletes, if they exist, are expanded to
 the name of a program to exec. For each package, the program receives
 the glob'ed %files manifest on stdin and returns dependencies on stdout. The
