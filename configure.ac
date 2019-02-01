@@ -527,7 +527,7 @@ no|maybe )
   # Try internal database first, then fall back to external
   # unless --without-external-db (no) was explicitly given.
   if [ test -x db/dist/configure ]; then
-    AC_DEFINE(HAVE_DB_H, 1, [Define if you have the <db3/db.h> header file])
+    with_external_db=no
   else
     case "$with_external_db" in
     maybe)
