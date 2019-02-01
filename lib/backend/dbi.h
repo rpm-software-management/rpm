@@ -277,6 +277,8 @@ RPM_GNUC_INTERNAL
 extern struct rpmdbOps_s lmdb_dbops;
 #endif
 
+extern struct rpmdbOps_s dummydb_dbops;
+
 #ifdef __cplusplus
 }
 #endif

@@ -24,7 +24,7 @@ EXTRA_PROGRAMS =
 
 usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
-	backend/dbi.c backend/dbi.h \
+	backend/dbi.c backend/dbi.h backend/dummydb.c \
 	backend/dbiset.c backend/dbiset.h \
 	headerutil.c header.c headerfmt.c header_internal.h \
 	rpmdb.c rpmdb_internal.h \
