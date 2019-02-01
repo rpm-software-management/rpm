@@ -49,6 +49,7 @@ dbDetectBackend(rpmdb rdb)
 	rdb->db_ops = &ndb_dbops;
     } else
 #endif
+#if defined(WITH_BDB)
     {
 	rdb->db_ops = &db3_dbops;
 	if (*db_backend == '\0') {
@@ -56,6 +57,7 @@ dbDetectBackend(rpmdb rdb)
 	    db_backend = xstrdup("bdb");
 	}
     }
+#endif
 
 #if defined(WITH_LMDB)
     path = rstrscat(NULL, dbhome, "/data.mdb", NULL);
@@ -75,12 +77,14 @@ dbDetectBackend(rpmdb rdb)
     free(path);
 #endif
 
+#if defined(WITH_BDB)
     path = rstrscat(NULL, dbhome, "/Packages", NULL);
     if (access(path, F_OK) == 0 && rdb->db_ops != &db3_dbops) {
 	rdb->db_ops = &db3_dbops;
 	rpmlog(RPMLOG_WARNING, _("Found BDB Packages database while attempting %s backend: using bdb backend.\n"), db_backend);
     }
     free(path);
+#endif
 
     if (db_backend)
 	free(db_backend);

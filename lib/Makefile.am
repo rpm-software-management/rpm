@@ -24,7 +24,7 @@ EXTRA_PROGRAMS =
 
 usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
-	backend/db3.c backend/dbi.c backend/dbi.h \
+	backend/dbi.c backend/dbi.h \
 	backend/dbiset.c backend/dbiset.h \
 	headerutil.c header.c headerfmt.c header_internal.h \
 	rpmdb.c rpmdb_internal.h \
@@ -59,10 +59,13 @@ librpm_la_LIBADD += @LUA_LIBS@
 librpm_la_SOURCES += rpmliblua.c rpmliblua.h
 endif
 
+if BDB
 if WITH_INTERNAL_DB
+librpm_la_SOURCES += backend/db3.c
 librpm_la_LIBADD += $(libdb_la)
 else
 librpm_la_LIBADD += @WITH_DB_LIB@
+endif
 endif
 
 if NDB

@@ -262,8 +262,10 @@ struct rpmdbOps_s {
     const void * (*idxdbKey)(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen);
 };
 
+#if defined(WITH_BDB)
 RPM_GNUC_INTERNAL
 extern struct rpmdbOps_s db3_dbops;
+#endif
 
 #ifdef ENABLE_NDB
 RPM_GNUC_INTERNAL

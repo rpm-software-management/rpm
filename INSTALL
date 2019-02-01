@@ -67,12 +67,12 @@ distinct advantages and disadvantages:
    hand, major BDB upgrades can be disruptive, especially if
    the on-disk format changes somehow. 
 
-   To use this method, simply pass in --with-external-db to ./configure
-   script. If the system BDB is installed outside compiler + linker default
+   This method is the default if no "db" link exists in the top directory.
+   If the system BDB is installed outside compiler + linker default
    paths, you can use CPPFLAGS and LDFLAGS to tell configure where to look,
    for example:
 
-   $ ./configure --with-external-db CPPFLAGS=-I/usr/include/db45
+   $ ./configure CPPFLAGS=-I/usr/include/db45
 
 Minimal instructions for building BDB are 
     cd build_unix 

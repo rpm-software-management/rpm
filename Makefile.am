@@ -2,7 +2,7 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-DISTCHECK_CONFIGURE_FLAGS = --with-external-db --enable-python
+DISTCHECK_CONFIGURE_FLAGS = --enable-python
 
 include $(top_srcdir)/rpm.am
 AM_CFLAGS = @RPMCFLAGS@

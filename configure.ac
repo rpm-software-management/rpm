@@ -498,63 +498,47 @@ AM_CONDITIONAL(LIBDW,[test "$WITH_LIBDW" = yes])
 AM_CONDITIONAL(HAVE_LIBDW_STRTAB,[test "$HAVE_LIBDW_STRTAB" = yes])
 
 #=================
-# Process --with/without-external-db
-AC_ARG_WITH(external_db, [AS_HELP_STRING([--with-external-db],[build against an external Berkeley db])],
-[case "$with_external_db" in
-yes|no) ;;
-*) AC_MSG_ERROR([invalid argument to --with-external-db]) ;;
-esac],
-[with_external_db=maybe])
+# Check for BDB support
+AC_ARG_ENABLE([bdb],
+              [AS_HELP_STRING([--enable-bdb=@<:@yes/no/auto@:>@],
+                              [build with Berkeley DB rpm database format support (default=yes)])],
+              [enable_bdb="$enableval"],
+              [enable_bdb=yes])
 
-case "$with_external_db" in
-yes )
-  AC_CHECK_HEADERS([db.h],[
-    AC_PREPROC_IFELSE([
-      AC_LANG_SOURCE([
-	#include <db.h>
-	#if ((DB_VERSION_MAJOR < 4) || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR < 5))
-	#error Berkeley DB too old
-	#endif
-      ])
-    ],[ WITH_DB_LIB=-ldb ], 
-      [ AC_MSG_ERROR([Berkeley DB version >= 4.5 required])
-    ])
-  ],[
-    AC_MSG_ERROR([missing required header db.h])
-  ])
-  ;;
-no|maybe )
-  # Try internal database first, then fall back to external
-  # unless --without-external-db (no) was explicitly given.
+AS_IF([test "x$enable_bdb" != "xno"], [
   if [ test -x db/dist/configure ]; then
-    with_external_db=no
+    have_bdb="internal"
   else
-    case "$with_external_db" in
-    maybe)
-      AC_CHECK_HEADERS([db.h],[
-        AC_PREPROC_IFELSE([
-          AC_LANG_SOURCE([
-	    #include <db.h>
-	    #if ((DB_VERSION_MAJOR < 4) || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR < 5))
-	    #error Berkeley DB too old
-	    #endif
-          ])
-        ],[ WITH_DB_LIB=-ldb ],
-          [ AC_MSG_ERROR([Berkeley DB version >= 4.5 required])
+    have_bdb="no"
+    AC_CHECK_HEADERS([db.h],[
+      AC_PREPROC_IFELSE([
+        AC_LANG_SOURCE([
+	  #include <db.h>
+	  #if ((DB_VERSION_MAJOR < 4) || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR < 5))
+	  #error Berkeley DB too old
+	  #endif
         ])
-      ],[
-        AC_MSG_ERROR([missing required header db.h])
-      ])
-    ;;
-    no)
-      AC_MSG_ERROR([internal Berkeley DB directory not present, see INSTALL])
-    ;;
-    esac
+      ],[ have_bdb="yes" ])
+    ])
   fi
-  ;;
-esac
+  AC_MSG_CHECKING(for Berkeley DB >= 4.5)
+  AC_MSG_RESULT($have_bdb)
+  AS_IF([test "x$enable_bdb" = "xyes"], [
+    if test "x$have_bdb" = "xno"; then
+      AC_MSG_ERROR([--enable-bdb specified, but not available])
+    fi
+    AC_DEFINE([WITH_BDB], [1], [Define if BDB is available])
+    WITH_DB_LIB=-ldb
+    AC_SUBST([WITH_DB_LIB])
+  ])
+])
 
-AC_SUBST([WITH_DB_LIB])
+AM_CONDITIONAL([BDB], [test "x$have_bdb" != "xno"])
+AM_CONDITIONAL([WITH_INTERNAL_DB],[test "x$have_bdb" = "xinternal"])
+if test "x$have_bdb" = "xinternal"; then
+    AC_CONFIG_SUBDIRS(db3)
+fi
+
 
 #=================
 # Process --enable-ndb
@@ -1052,11 +1036,6 @@ AC_SUBST(RPMCONFIGDIR)
 
 AC_SUBST(OBJDUMP)
 
-if test "$with_external_db" = no; then
-    AC_CONFIG_SUBDIRS(db3)
-fi
-
-AM_CONDITIONAL([WITH_INTERNAL_DB],[test "$with_external_db" = no])
 AM_CONDITIONAL([DOXYGEN],[test "$DOXYGEN" != no])
 AM_CONDITIONAL([HACKINGDOCS],[test "$with_hackingdocs" = yes])
 
