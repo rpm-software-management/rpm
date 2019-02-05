@@ -360,7 +360,8 @@ do { \
 int readLine(rpmSpec spec, int strip)
 {
     char *s;
-    int match;
+    int match = 0;
+    int lineType = OTHER_LINE;
     struct ReadLevelEntry *rl;
     OFI_t *ofi = spec->fileStack;
     int rc;
@@ -399,20 +400,24 @@ int readLine(rpmSpec spec, int strip)
     s = spec->line;
     SKIPSPACE(s);
 
-    match = -1;
     if (!spec->readStack->reading && ISMACROWITHARG(s, "%if")) {
 	match = 0;
     } else if (ISMACROWITHARG(s, "%ifarch")) {
+	lineType = IF_LINE;
 	ARGMATCH(s, "%{_target_cpu}", match);
     } else if (ISMACROWITHARG(s, "%ifnarch")) {
+	lineType = IF_LINE;
 	ARGMATCH(s, "%{_target_cpu}", match);
 	match = !match;
     } else if (ISMACROWITHARG(s, "%ifos")) {
+	lineType = IF_LINE;
 	ARGMATCH(s, "%{_target_os}", match);
     } else if (ISMACROWITHARG(s, "%ifnos")) {
+	lineType = IF_LINE;
 	ARGMATCH(s, "%{_target_os}", match);
 	match = !match;
     } else if (ISMACROWITHARG(s, "%if")) {
+	lineType = IF_LINE;
 	s += 3;
         match = parseExpressionBoolean(s);
 	if (match < 0) {
@@ -467,7 +472,7 @@ int readLine(rpmSpec spec, int strip)
 	goto retry;
     }
 
-    if (match != -1) {
+    if (lineType == IF_LINE) {
 	rl = xmalloc(sizeof(*rl));
 	rl->reading = spec->readStack->reading && match;
 	rl->next = spec->readStack;
