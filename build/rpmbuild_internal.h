@@ -34,6 +34,8 @@ struct TriggerFileEntry {
 typedef struct ReadLevelEntry {
     int reading;
     int lineNum;
+    int elifEnabled;
+    int readable;
     struct ReadLevelEntry * next;
 } RLE_t;
 
@@ -195,7 +197,8 @@ typedef enum rpmParseState_e {
  */
 enum ifTypes {
     OTHER_LINE = 0,        /*!< other lines                                        */
-    IF_LINE    = (1 << 0)  /*!< %if or %ifos or %ifnos or %ifarch or %ifnarch line */
+    IF_LINE    = (1 << 0), /*!< %if or %ifos or %ifnos or %ifarch or %ifnarch line */
+    ELIF_LINE  = (1 << 1)  /*!< %elif or %elifos or %elifarch line                 */
 };
 
 #define STRIP_NOTHING             0
