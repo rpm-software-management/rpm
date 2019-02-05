@@ -1187,6 +1187,14 @@ package or when debugging this package.\
 
 #------------------------------------------------------------------------------
 # Macros for further automated spec %setup and patch application
+#
+# Macros used when expanding %%patchX or %patch -P X
+%__apply_patchx_common(b:d:o:F:REp:m:)\
+%{__patch} %{_default_patch_flags} %{-p:-p%{-p*}} %{-b:-b --suffix %{-b*}} %{-o:-o%{-o*}} %{-F:--fuzz=%{-F*}}%{!-F:--fuzz=%{_default_patch_fuzz}} %{-R} %{-E}
+%__apply_patchx_plain(b:d:o:F:REp:m:)\
+%{__apply_patchx_common %{-p} %{-b} %{-o} %{-F} %{-R} %{-E} %{1} %{2}} < %{1}
+%__apply_patchx_uncompress(b:d:o:F:REp:m:)\
+{ %{uncompress:%{1}} || echo patch_fail ; } | %{__apply_patchx_common %{-p} %{-b} %{-o} %{-F} %{-R} %{-E} %{1} %{2}}
 
 # default to plain patch
 %__scm patch

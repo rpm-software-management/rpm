@@ -53,14 +53,15 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 		     const char *outfile)
 {
     char *fn = NULL;
+    char *fc = NULL;
     char *buf = NULL;
     char *arg_backup = NULL;
     char *arg_fuzz = NULL;
     char *arg_dir = NULL;
     char *arg_outfile = NULL;
     char *args = NULL;
-    char *arg_patch_flags = rpmExpand("%{?_default_patch_flags}", NULL);
     struct Source *sp;
+    const char *patch_variant = NULL;
     char *patchcmd;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
 
@@ -75,12 +76,13 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
     }
 
     fn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
+    rasprintf(&fc, " %d", c);
 
     /* On non-build parse's, file cannot be stat'd or read. */
     if ((spec->flags & RPMSPEC_FORCE) || checkOwners(fn) || rpmFileIsCompressed(fn, &compressed)) goto exit;
 
     if (db) {
-	rasprintf(&arg_backup, "-b --suffix %s", db);
+	rasprintf(&arg_backup, "-b %s", db);
     } else arg_backup = xstrdup("");
 
     if (dir) {
@@ -92,21 +94,23 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
     } else arg_outfile = xstrdup("");
 
     if (fuzz >= 0) {
-	rasprintf(&arg_fuzz, " --fuzz=%d", fuzz);
+	rasprintf(&arg_fuzz, " -F %d", fuzz);
     } else arg_fuzz = xstrdup("");
 
-    rasprintf(&args, "%s -p%d %s%s%s%s%s%s", arg_patch_flags, strip, arg_backup, arg_fuzz, arg_dir, arg_outfile,
+    rasprintf(&args, "-p%d %s%s%s%s%s%s", strip, arg_backup, arg_fuzz, arg_dir, arg_outfile,
 		reverse ? " -R" : "", 
 		removeEmpties ? " -E" : "");
 
     /* Avoid the extra cost of fork and pipe for uncompressed patches */
     if (compressed != COMPRESSED_NOT) {
-	patchcmd = rpmExpand("{ %{uncompress: ", fn, "} || echo patch_fail ; } | "
-                             "%{__patch} ", args, NULL);
+	patch_variant = "%__apply_patchx_uncompress";
     } else {
-	patchcmd = rpmExpand("%{__patch} ", args, " < ", fn, NULL);
+	patch_variant = "%__apply_patchx_plain";
     }
 
+    patchcmd = rpmExpand(patch_variant, " ", args, " ", fn, fc, NULL);
+
+    free(fc);
     free(arg_fuzz);
     free(arg_outfile);
     free(arg_dir);
@@ -119,7 +123,6 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
     free(patchcmd);
 
 exit:
-    free(arg_patch_flags);
     free(fn);
     return buf;
 }
