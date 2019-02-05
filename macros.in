@@ -1265,11 +1265,19 @@ else\
 end}
 
 # Automatically apply all patches
-%autopatch(vp:)\
+# -l<num>       Apply to patches with number >= num
+# -h<num>       Apply to patches with number <= num
+%autopatch(vp:l:h:)\
 %{lua:\
 local options = rpm.expand("%{!-v:-q} %{-p:-p%{-p*}} ")\
+local low_limit = tonumber(rpm.expand("%{-l:%{-l*}}"))\
+local high_limit = tonumber(rpm.expand("%{-h:%{-h*}}"))\
 for i, p in ipairs(patches) do\
-    print(rpm.expand("%apply_patch -m %{basename:"..p.."}  "..options..p.." "..i.."\\n"))\
+    local inum = tonumber(i)\
+    if ((not low_limit or inum>=low_limit) and (not high_limit or inum<=high_limit)) \
+    then\
+        print(rpm.expand("%apply_patch -m %{basename:"..p.."}  "..options..p.." "..i.."\\n")) \
+    end\
 end}
 
 # One macro to (optionally) do it all.
