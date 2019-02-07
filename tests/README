@@ -1,8 +1,13 @@
-To run these tests you need at least these dependencies:
-fakechroot gdb gpg2 python-rpm
+To run these tests you need at least these dependencies on the host:
+
+    fakechroot (https://github.com/dex4er/fakechroot/wiki)
+    gdb (https://www.gnu.org/software/gdb/)
+    gnupg >= 2.0 (https://www.gnupg.org/)
 
 Then run
 
    make check
 
+The number of tests performed depends on enabled features at configure-time,
+at least --with/without-lua and --enable/--disable-python.
 See also the INSTALL file for more information.
