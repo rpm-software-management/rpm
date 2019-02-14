@@ -226,13 +226,14 @@ There are two other ways to invoke building with rpm:
 
 .PP
 When invoked this way, \fBrpmbuild\fR installs the named source
-package, and does a prep, compile and install.  In addition,
+package, and does a prep, compile and install. In addition,
 \fB--rebuild\fR builds a new binary package. When the build
 has completed, the build directory is removed (as in
 \fB--clean\fR) and the the sources and spec file for
 the package are removed.
 
-These options are noaways superseded by the \fB-r*\fR options which allow more more fine control over what stages of the build to run. 
+These options are now superseded by the \fB-r*\fR options which allow 
+much more fine control over what stages of the build to run. 
 .SS "SHOWRC"
 .PP
 The command
