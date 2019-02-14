@@ -178,7 +178,7 @@
 #
 %__debug_install_post   \
     %{_rpmconfigdir}/find-debuginfo.sh \\\
-    %{?_smp_mflags} \\\
+    %{?_smp_build_ncpus:-j%{_smp_build_ncpus}} \\\
     %{?_missing_build_ids_terminate_build:--strict-build-id} \\\
     %{?_no_recompute_build_ids:-n} \\\
     %{?_include_minidebuginfo:-m} \\\
