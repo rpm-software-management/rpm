@@ -214,4 +214,24 @@ can express this as
 	BuildConflicts: gcc <= 2.7.2.1
 \endverbatim
 
+\section conditionals Conditionals
+
+RPM's spec file format allows conditional blocks of code to be used dependent
+on various properties such as architecture (%ifarch / %ifnarch), operating system
+(%ifos / %ifnos), or any other conditional expression (%if). Conditionals may be
+nested within other conditionals:
+
+\verbatim
+	%ifarch ppc64 ppc x86_64
+	...
+	%if 0%{?ver} && 0%{?ver} >= 100
+	...
+	%else
+	...
+	%endif
+	%endif
+\endverbatim
+
+Conditionals are not macros, thus they can be used in spec files only.
+
 */
