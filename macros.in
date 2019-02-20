@@ -1265,6 +1265,8 @@ else\
 end}
 
 # Automatically apply all patches
+# Patches are applied in the order they are listed in the spec file
+# not by their number!
 # -m<min>       Apply patches with number >= min only
 # -M<max>       Apply patches with number <= max only
 %autopatch(vp:m:M:)\
