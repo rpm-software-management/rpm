@@ -303,15 +303,13 @@ rpmSpec newSpec(void)
     spec->pool = rpmstrPoolCreate();
     
 #ifdef WITH_LUA
-    {
     /* make sure patches and sources tables always exist */
     rpmlua lua = NULL; /* global state */
-    rpmluaDelVar(lua, "patches");
-    rpmluaDelVar(lua, "sources");
-    rpmluaPushTable(lua, "patches");
-    rpmluaPushTable(lua, "sources");
-    rpmluaPop(lua);
-    rpmluaPop(lua);
+    const char * luavars[] = { "patches", "sources", NULL, };
+    for (const char **vp = luavars; vp && *vp; vp++) {
+	rpmluaDelVar(lua, *vp);
+	rpmluaPushTable(lua, *vp);
+	rpmluaPop(lua);
     }
 #endif
     return spec;
