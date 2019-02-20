@@ -305,7 +305,8 @@ rpmSpec newSpec(void)
 #ifdef WITH_LUA
     /* make sure patches and sources tables always exist */
     rpmlua lua = NULL; /* global state */
-    const char * luavars[] = { "patches", "sources", NULL, };
+    const char * luavars[] = { "patches", "sources",
+			       "patch_nums", "source_nums", NULL, };
     for (const char **vp = luavars; vp && *vp; vp++) {
 	rpmluaDelVar(lua, *vp);
 	rpmluaPushTable(lua, *vp);

@@ -322,6 +322,15 @@ static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag
 	    rpmluaSetVar(lua, var);
 	    rpmluavFree(var);
 	    rpmluaPop(lua);
+
+	    what = (flag & RPMBUILD_ISPATCH) ? "patch_nums" : "source_nums";
+	    rpmluaPushTable(lua, what);
+	    var = rpmluavNew();
+	    rpmluavSetListMode(var, 1);
+	    rpmluavSetValueNum(var, p->num);
+	    rpmluaSetVar(lua, var);
+	    rpmluavFree(var);
+	    rpmluaPop(lua);
 	}
 #endif
 	free(body);
