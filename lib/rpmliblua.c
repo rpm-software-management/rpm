@@ -1,7 +1,6 @@
 #include "system.h"
 
 #include <lua.h>
-#include <lauxlib.h>
 
 #ifndef LUA_LOADED_TABLE
 /* feature introduced in Lua 5.3.4 */
@@ -10,7 +9,6 @@
 
 #include <rpm/rpmlib.h>
 
-#define _RPMLUA_INTERNAL
 #include "rpmio/rpmlua.h"
 #include "lib/rpmliblua.h"
 
@@ -36,14 +34,7 @@ static const luaL_Reg luarpmlib_f[] = {
 void rpmLuaInit(void)
 {
     rpmlua lua = rpmluaGetGlobalState();
-    lua_getfield(lua->L, LUA_REGISTRYINDEX, LUA_LOADED_TABLE);
-    lua_getfield(lua->L, -1, "rpm");
-#if (LUA_VERSION_NUM < 502) || defined(LUA_COMPAT_MODULE)
-    luaL_register(lua->L, 0, luarpmlib_f);
-#else
-    luaL_setfuncs(lua->L, luarpmlib_f, 0);
-#endif
-    lua_pop(lua->L, 2);
+    rpmluaRegister(lua, luarpmlib_f, "rpm");
     return;
 }
 

@@ -142,6 +142,18 @@ rpmlua rpmluaFree(rpmlua lua)
     return NULL;
 }
 
+void rpmluaRegister(rpmlua lua, const luaL_Reg *funcs, const char *lib)
+{
+    lua_getfield(lua->L, LUA_REGISTRYINDEX, LUA_LOADED_TABLE);
+    lua_getfield(lua->L, -1, lib);
+#if (LUA_VERSION_NUM < 502) || defined(LUA_COMPAT_MODULE)
+    luaL_register(lua->L, 0, funcs);
+#else
+    luaL_setfuncs(lua->L, funcs, 0);
+#endif
+    lua_pop(lua->L, 2);
+}
+
 void rpmluaSetData(rpmlua _lua, const char *key, const void *data)
 {
     INITSTATE(_lua, lua);
