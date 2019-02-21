@@ -897,30 +897,3 @@ LUALIB_API int luaopen_posix (lua_State *L)
 	return 1;
 }
 
-/* RPM specific overrides for Lua standard library */
-
-static int exit_override(lua_State *L)
-{
-    if (!_rpmlua_have_forked)
-	return luaL_error(L, "exit not permitted in this context");
-
-    exit(luaL_optinteger(L, 1, EXIT_SUCCESS));
-}
-
-static const luaL_Reg os_overrides[] =
-{
-    {"exit",    exit_override},
-    {NULL,      NULL}
-};
-
-#ifndef lua_pushglobaltable
-#define lua_pushglobaltable(L) lua_pushvalue(L, LUA_GLOBALSINDEX)
-#endif
-
-int luaopen_rpm_os(lua_State *L)
-{
-    lua_pushglobaltable(L);
-    luaL_openlib(L, "os", os_overrides, 0);
-    return 0;
-}
-

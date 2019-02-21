@@ -87,6 +87,7 @@ static void *nextFileFuncParam = NULL;
 
 static int luaopen_rpm(lua_State *L);
 static int rpm_print(lua_State *L);
+static int rpm_exit(lua_State *L);
 
 static int pusherror(lua_State *L, int code, const char *info)
 {
@@ -115,6 +116,12 @@ rpmlua rpmluaGetGlobalState(void)
     return lua;
 }
 
+static const luaL_Reg os_overrides[] =
+{
+    {"exit",    rpm_exit},
+    {NULL,      NULL}
+};
+
 rpmlua rpmluaNew()
 {
     rpmlua lua = NULL;
@@ -126,7 +133,6 @@ rpmlua rpmluaNew()
 	{"posix", luaopen_posix},
 	{"rex", luaopen_rex},
 	{"rpm", luaopen_rpm},
-	{"os",	luaopen_rpm_os},
 	{NULL, NULL},
     };
 
@@ -146,6 +152,9 @@ rpmlua rpmluaNew()
     }
     lua_pushcfunction(L, rpm_print);
     lua_setglobal(L, "print");
+
+    lua_pushglobaltable(L);
+    luaL_openlib(L, "os", os_overrides, 0);
 
     lua_getglobal(L, "package");
     lua_pushfstring(L, "%s/%s", rpmConfigDir(), "/lua/?.lua");
@@ -943,6 +952,14 @@ static int rpm_print (lua_State *L)
 	prbuf->buf[prbuf->used] = '\0';
     }
     return 0;
+}
+
+static int rpm_exit(lua_State *L)
+{
+    if (!_rpmlua_have_forked)
+	return luaL_error(L, "exit not permitted in this context");
+
+    exit(luaL_optinteger(L, 1, EXIT_SUCCESS));
 }
 
 static int rpm_execute(lua_State *L)
