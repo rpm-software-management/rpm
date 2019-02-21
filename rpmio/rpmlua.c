@@ -40,6 +40,8 @@
 
 #include "debug.h"
 
+int _rpmlua_have_forked = 0;
+
 typedef struct rpmluapb_s * rpmluapb;
 
 struct rpmlua_s {

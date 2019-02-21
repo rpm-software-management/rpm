@@ -43,7 +43,7 @@
 
 #include "modemuncher.c"
 
-static int have_forked = 0;
+extern int _rpmlua_have_forked;
 
 static const char *filetype(mode_t m)
 {
@@ -337,7 +337,7 @@ static int Pexec(lua_State *L)			/** exec(path,[args]) */
 	int i,n=lua_gettop(L);
 	char **argv;
 
-	if (!have_forked)
+	if (!_rpmlua_have_forked)
 	    return luaL_error(L, "exec not permitted in this context");
 
 	rpmSetCloseOnExec();
@@ -357,7 +357,7 @@ static int Pfork(lua_State *L)			/** fork() */
 {
 	pid_t pid = fork();
 	if (pid == 0) {
-	    have_forked = 1;
+	    _rpmlua_have_forked = 1;
 	}
 	return pushresult(L, pid, NULL);
 }
@@ -827,7 +827,7 @@ static int Predirect2null(lua_State *L)
 {
     int target_fd, fd, r, e;
 
-    if (!have_forked)
+    if (!_rpmlua_have_forked)
 	return luaL_error(L, "silence_file_descriptor not permitted in this context");
 
     target_fd = luaL_checkinteger(L, 1);
@@ -901,7 +901,7 @@ LUALIB_API int luaopen_posix (lua_State *L)
 
 static int exit_override(lua_State *L)
 {
-    if (!have_forked)
+    if (!_rpmlua_have_forked)
 	return luaL_error(L, "exit not permitted in this context");
 
     exit(luaL_optinteger(L, 1, EXIT_SUCCESS));
