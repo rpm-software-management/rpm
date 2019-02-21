@@ -1,6 +1,5 @@
 #include "system.h"
 
-#ifdef WITH_LUA
 #include <lua.h>
 #include <lauxlib.h>
 
@@ -53,5 +52,3 @@ void rpmLuaFree(void)
     rpmlua lua = rpmluaGetGlobalState();
     rpmluaFree(lua);
 }
-
-#endif /* WITH_LUA */

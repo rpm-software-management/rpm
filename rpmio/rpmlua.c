@@ -1,6 +1,5 @@
 #include "system.h"
 
-#ifdef	WITH_LUA
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
@@ -951,5 +950,3 @@ static int luaopen_rpm(lua_State *L)
     luaL_openlib(L, "rpm", rpmlib, 0);
     return 0;
 }
-#endif	/* WITH_LUA */
-
