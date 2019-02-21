@@ -9,36 +9,6 @@ typedef enum rpmluavType_e {
     RPMLUAV_NUMBER	= 2
 } rpmluavType;
 
-#if defined(_RPMLUA_INTERNAL)
-
-#include <stdarg.h>
-#include <lua.h>
-
-typedef struct rpmluapb_s * rpmluapb;
-
-struct rpmlua_s {
-    lua_State *L;
-    size_t pushsize;
-    rpmluapb printbuf;
-};
-
-struct rpmluav_s {
-    rpmluavType keyType;
-    rpmluavType valueType;
-    union {
-	const char *str;
-	const void *ptr;
-	double num;
-    } key;
-    union {
-	const char *str;
-	const void *ptr;
-	double num;
-    } value;
-    int listmode;
-};
-
-#endif /* _RPMLUA_INTERNAL */
 
 typedef struct rpmlua_s * rpmlua;
 typedef struct rpmluav_s * rpmluav;

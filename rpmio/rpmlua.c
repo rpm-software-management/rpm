@@ -20,6 +20,7 @@
 #include <spawn.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <stdarg.h>
 
 #include <rpm/rpmio.h>
 #include <rpm/rpmmacro.h>
@@ -29,12 +30,34 @@
 #include <rpm/rpmbase64.h>
 #include "rpmio/rpmhook.h"
 
-#define _RPMLUA_INTERNAL
 #include "rpmio/rpmlua.h"
 #include "rpmio/rpmio_internal.h"
 
 #include "debug.h"
 
+typedef struct rpmluapb_s * rpmluapb;
+
+struct rpmlua_s {
+    lua_State *L;
+    size_t pushsize;
+    rpmluapb printbuf;
+};
+
+struct rpmluav_s {
+    rpmluavType keyType;
+    rpmluavType valueType;
+    union {
+	const char *str;
+	const void *ptr;
+	double num;
+    } key;
+    union {
+	const char *str;
+	const void *ptr;
+	double num;
+    } value;
+    int listmode;
+};
 #define INITSTATE(_lua, lua) \
     rpmlua lua = _lua ? _lua : \
 	    (globalLuaState ? globalLuaState : \
