@@ -81,7 +81,7 @@ Minimal instructions for building BDB are
     make install
 
 For embedded Lua scripting support (recommended and enabled by default),
-you'll need Lua >= 5.1 library + development environment installed.
+you'll need Lua >= 5.2 library + development environment installed.
 Note that only the library is needed at runtime, RPM never calls external
 Lua interpreter for anything. Lua is available from 
     http://www.lua.org

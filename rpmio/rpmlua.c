@@ -6,18 +6,9 @@
 #include <lposix.h>
 #include <lrexlib.h>
 
-#if (LUA_VERSION_NUM < 502)
-#define lua_rawlen(L, i) (lua_objlen(L, i))
-#endif
-
 #ifndef LUA_LOADED_TABLE
 /* feature introduced in Lua 5.3.4 */
 #define LUA_LOADED_TABLE "_LOADED"
-#endif
-
-/* define added in 5.2 */
-#ifndef lua_pushglobaltable
-#define lua_pushglobaltable(L)	lua_pushvalue(L, LUA_GLOBALSINDEX)
 #endif
 
 #include <unistd.h>
@@ -145,16 +136,13 @@ rpmlua rpmluaNew()
     lua->L = L;
 
     for (lib = extlibs; lib->name; lib++) {
-	lua_pushcfunction(L, lib->func);
-	lua_pushstring(L, lib->name);
-	lua_call(L, 1, 0);
-	lua_settop(L, 0);
+	luaL_requiref(L, lib->name, lib->func, 1);
     }
     lua_pushcfunction(L, rpm_print);
     lua_setglobal(L, "print");
 
-    lua_pushglobaltable(L);
-    luaL_openlib(L, "os", os_overrides, 0);
+    lua_getglobal(L, "os");
+    luaL_setfuncs(L, os_overrides, 0);
 
     lua_getglobal(L, "package");
     lua_pushfstring(L, "%s/%s", rpmConfigDir(), "/lua/?.lua");
@@ -185,11 +173,7 @@ void rpmluaRegister(rpmlua lua, const luaL_Reg *funcs, const char *lib)
 {
     lua_getfield(lua->L, LUA_REGISTRYINDEX, LUA_LOADED_TABLE);
     lua_getfield(lua->L, -1, lib);
-#if (LUA_VERSION_NUM < 502) || defined(LUA_COMPAT_MODULE)
-    luaL_register(lua->L, 0, funcs);
-#else
     luaL_setfuncs(lua->L, funcs, 0);
-#endif
     lua_pop(lua->L, 2);
 }
 
@@ -1005,7 +989,6 @@ static const luaL_Reg rpmlib[] = {
 
 static int luaopen_rpm(lua_State *L)
 {
-    lua_pushglobaltable(L);
-    luaL_openlib(L, "rpm", rpmlib, 0);
-    return 0;
+    luaL_newlib(L, rpmlib);
+    return 1;
 }

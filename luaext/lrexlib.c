@@ -327,14 +327,14 @@ LUALIB_API int luaopen_rex(lua_State *L)
 {
 #ifdef WITH_POSIX
   createmeta(L, "regex_t");
-  luaL_openlib(L, NULL, rexmeta, 0);
+  luaL_setfuncs(L, rexmeta, 0);
   lua_pop(L, 1);
 #endif
 #ifdef WITH_PCRE
   createmeta(L, "pcre");
-  luaL_openlib(L, NULL, pcremeta, 0);
+  luaL_setfuncs(L, pcremeta, 0);
   lua_pop(L, 1);
 #endif
-  luaL_openlib(L, "rex", rexlib, 0);
+  luaL_newlib(L, rexlib);
   return 1;
 }
