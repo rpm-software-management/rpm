@@ -267,7 +267,7 @@ runroot rpm --eval '%{lua:print(5*5)}'
 ])
 AT_CLEANUP
 
-AT_SETUP([lua rpm extensions])
+AT_SETUP([lua rpm extensions 1])
 AT_KEYWORDS([macros lua])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
@@ -278,6 +278,17 @@ runroot rpm --eval '%{lua: rpm.define("foo bar") print(rpm.expand("%{foo}"))}'
 ])
 AT_CLEANUP
 
+AT_SETUP([lua rpm extensions 2])
+AT_KEYWORDS([macros lua])
+AT_CHECK([
+AT_SKIP_IF([$LUA_DISABLED])
+runroot rpm --eval '%{lua: print(rpm.vercmp("1.0", "2.0"))}'
+],
+[0],
+[-1
+])
+
+AT_CLEANUP
 AT_SETUP([lua posix extensions])
 AT_KEYWORDS([macros lua])
 AT_CHECK([
