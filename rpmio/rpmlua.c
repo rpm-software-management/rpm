@@ -10,6 +10,11 @@
 #define lua_rawlen(L, i) (lua_objlen(L, i))
 #endif
 
+#ifndef LUA_LOADED_TABLE
+/* feature introduced in Lua 5.3.4 */
+#define LUA_LOADED_TABLE "_LOADED"
+#endif
+
 /* define added in 5.2 */
 #ifndef lua_pushglobaltable
 #define lua_pushglobaltable(L)	lua_pushvalue(L, LUA_GLOBALSINDEX)
