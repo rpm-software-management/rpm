@@ -19,4 +19,11 @@
 #define PyInt_AsSsize_t PyLong_AsSsize_t
 #endif
 
+/* In Python 3, we return all strings as surrogate-escaped utf-8 */
+#if PY_MAJOR_VERSION >= 3
+#define utf8FromString(_s) PyUnicode_DecodeUTF8(_s, strlen(_s), "surrogateescape")
+#else
+#define utf8FromString(_s) PyBytes_FromString(_s)
+#endif
+
 #endif	/* H_SYSTEM_PYTHON */

@@ -231,7 +231,7 @@ static PyObject * hdrFormat(hdrObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
     }
 
-    result = Py_BuildValue("s", r);
+    result = utf8FromString(r);
     free(r);
 
     return result;

@@ -57,7 +57,7 @@ static PyObject *pkgGetSection(rpmSpecPkg pkg, int section)
 {
     char *sect = rpmSpecPkgGetSection(pkg, section);
     if (sect != NULL) {
-        PyObject *ps = PyBytes_FromString(sect);
+        PyObject *ps = utf8FromString(sect);
         free(sect);
         if (ps != NULL)
             return ps;
@@ -158,7 +158,7 @@ static PyObject * getSection(rpmSpec spec, int section)
 {
     const char *sect = rpmSpecGetSection(spec, section);
     if (sect) {
-	return Py_BuildValue("s", sect);
+	return utf8FromString(sect);
     }
     Py_RETURN_NONE;
 }
@@ -208,8 +208,8 @@ static PyObject * spec_get_sources(specObject *s, void *closure)
 
     rpmSpecSrcIter iter = rpmSpecSrcIterInit(s->spec);
     while ((source = rpmSpecSrcIterNext(iter)) != NULL) {
-	PyObject *srcUrl = Py_BuildValue("(sii)",
-				rpmSpecSrcFilename(source, 1),
+	PyObject *srcUrl = Py_BuildValue("(Nii)",
+				utf8FromString(rpmSpecSrcFilename(source, 1)),
 				rpmSpecSrcNum(source),
 				rpmSpecSrcFlags(source)); 
         if (!srcUrl) {

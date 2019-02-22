@@ -52,7 +52,7 @@ rpmmacro_ExpandMacro(PyObject * self, PyObject * args, PyObject * kwds)
 	if (rpmExpandMacros(NULL, macro, &str, 0) < 0)
 	    PyErr_SetString(pyrpmError, "error expanding macro");
 	else
-	    res = Py_BuildValue("s", str);
+	    res = utf8FromString(str);
 	free(str);
     }
     return res;

@@ -44,7 +44,7 @@ static PyObject *strpool_id2str(rpmstrPoolObject *s, PyObject *item)
 	const char *str = rpmstrPoolStr(s->pool, id);
 
 	if (str)
-	    ret = PyBytes_FromString(str);
+	    ret = utf8FromString(str);
 	else 
 	    PyErr_SetObject(PyExc_KeyError, item);
     }

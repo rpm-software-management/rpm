@@ -237,7 +237,7 @@ static void addRpmTags(PyObject *module)
 
 	PyModule_AddIntConstant(module, tagname, tagval);
 	pyval = PyInt_FromLong(tagval);
-	pyname = Py_BuildValue("s", shortname);
+	pyname = utf8FromString(shortname);
 	PyDict_SetItem(dict, pyval, pyname);
 	Py_DECREF(pyval);
 	Py_DECREF(pyname);

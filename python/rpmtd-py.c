@@ -17,7 +17,7 @@ PyObject * rpmtd_ItemAsPyobj(rpmtd td, rpmTagClass tclass)
 
     switch (tclass) {
     case RPM_STRING_CLASS:
-	res = PyBytes_FromString(rpmtdGetString(td));
+	res = utf8FromString(rpmtdGetString(td));
 	break;
     case RPM_NUMERIC_CLASS:
 	res = PyLong_FromLongLong(rpmtdGetNumber(td));

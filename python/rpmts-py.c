@@ -230,8 +230,9 @@ rpmts_SolveCallback(rpmts ts, rpmds ds, const void * data)
 
     PyEval_RestoreThread(cbInfo->_save);
 
-    args = Py_BuildValue("(Oissi)", cbInfo->tso,
-		rpmdsTagN(ds), rpmdsN(ds), rpmdsEVR(ds), rpmdsFlags(ds));
+    args = Py_BuildValue("(OiNNi)", cbInfo->tso,
+		rpmdsTagN(ds), utf8FromString(rpmdsN(ds)),
+		utf8FromString(rpmdsEVR(ds)), rpmdsFlags(ds));
     result = PyEval_CallObject(cbInfo->cb, args);
     Py_DECREF(args);
 
@@ -409,7 +410,7 @@ rpmts_HdrCheck(rpmtsObject * s, PyObject *obj)
     rpmrc = headerCheck(s->ts, uh, uc, &msg);
     Py_END_ALLOW_THREADS;
 
-    return Py_BuildValue("(is)", rpmrc, msg);
+    return Py_BuildValue("(iN)", rpmrc, utf8FromString(msg));
 }
 
 static PyObject *
@@ -500,7 +501,7 @@ rpmtsCallback(const void * hd, const rpmCallbackType what,
     /* Synthesize a python object for callback (if necessary). */
     if (pkgObj == NULL) {
 	if (h) {
-	    pkgObj = Py_BuildValue("s", headerGetString(h, RPMTAG_NAME));
+	    pkgObj = utf8FromString(headerGetString(h, RPMTAG_NAME));
 	} else {
 	    pkgObj = Py_None;
 	    Py_INCREF(pkgObj);
@@ -845,7 +846,7 @@ static PyObject *rpmts_get_tid(rpmtsObject *s, void *closure)
 
 static PyObject *rpmts_get_rootDir(rpmtsObject *s, void *closure)
 {
-    return Py_BuildValue("s", rpmtsRootDir(s->ts));
+    return utf8FromString(rpmtsRootDir(s->ts));
 }
 
 static int rpmts_set_scriptFd(rpmtsObject *s, PyObject *value, void *closure)

@@ -31,19 +31,19 @@ rpmds_Ix(rpmdsObject * s)
 static PyObject *
 rpmds_DNEVR(rpmdsObject * s)
 {
-    return Py_BuildValue("s", rpmdsDNEVR(s->ds));
+    return utf8FromString(rpmdsDNEVR(s->ds));
 }
 
 static PyObject *
 rpmds_N(rpmdsObject * s)
 {
-    return Py_BuildValue("s", rpmdsN(s->ds));
+    return utf8FromString(rpmdsN(s->ds));
 }
 
 static PyObject *
 rpmds_EVR(rpmdsObject * s)
 {
-    return Py_BuildValue("s", rpmdsEVR(s->ds));
+    return utf8FromString(rpmdsEVR(s->ds));
 }
 
 static PyObject *
@@ -261,7 +261,7 @@ rpmds_subscript(rpmdsObject * s, PyObject * key)
 
     ix = (int) PyInt_AsLong(key);
     rpmdsSetIx(s->ds, ix);
-    return Py_BuildValue("s", rpmdsDNEVR(s->ds));
+    return utf8FromString(rpmdsDNEVR(s->ds));
 }
 
 static PyMappingMethods rpmds_as_mapping = {

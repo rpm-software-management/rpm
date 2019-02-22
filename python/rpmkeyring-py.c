@@ -38,7 +38,7 @@ static PyObject *rpmPubkey_new(PyTypeObject *subtype,
 static PyObject * rpmPubkey_Base64(rpmPubkeyObject *s)
 {
     char *b64 = rpmPubkeyBase64(s->pubkey);
-    PyObject *res = Py_BuildValue("s", b64);
+    PyObject *res = utf8FromString(b64);
     free(b64);
     return res;
 }

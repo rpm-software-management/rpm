@@ -327,17 +327,17 @@ static PyObject *rpmfd_get_closed(rpmfdObject *s)
 static PyObject *rpmfd_get_name(rpmfdObject *s)
 {
     /* XXX: rpm returns non-paths with [mumble], python files use <mumble> */
-    return Py_BuildValue("s", Fdescr(s->fd));
+    return utf8FromString(Fdescr(s->fd));
 }
 
 static PyObject *rpmfd_get_mode(rpmfdObject *s)
 {
-    return Py_BuildValue("s", s->mode);
+    return utf8FromString(s->mode);
 }
 
 static PyObject *rpmfd_get_flags(rpmfdObject *s)
 {
-    return Py_BuildValue("s", s->flags);
+    return utf8FromString(s->flags);
 }
 
 static PyGetSetDef rpmfd_getseters[] = {

@@ -106,6 +106,25 @@ None
 'rpm.hdr' object has no attribute '__foo__']
 )
 
+RPMPY_TEST([non-utf8 data in header],[
+str = u'älämölö'
+enc = 'iso-8859-1'
+b = str.encode(enc)
+h = rpm.hdr()
+h['group'] = b
+d = h['group']
+try:
+    # python 3
+    t = bytes(d, 'utf-8', 'surrogateescape')
+except TypeError:
+    # python 2
+    t = bytes(d)
+res = t.decode(enc)
+myprint(str == res)
+],
+[True]
+)
+
 RPMPY_TEST([invalid header data],[
 h1 = rpm.hdr()
 h1['basenames'] = ['bing', 'bang', 'bong']
@@ -123,6 +142,21 @@ for h in [h1, h2]:
 ],
 [invalid header data
 /opt/bing,/opt/bang,/flopt/bong]
+)
+
+RPMPY_TEST([labelCompare],[
+v = '1.0'
+r = '1'
+e = 3
+h = rpm.hdr()
+h['name'] = 'testpkg'
+h['version'] = v
+h['release'] = r
+h['epoch'] = e
+myprint(rpm.labelCompare((str(h['epoch']), h['version'], h['release']),
+			 (str(e), v, r)))
+],
+[0]
 )
 
 RPMPY_TEST([vfyflags API],[

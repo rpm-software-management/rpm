@@ -54,49 +54,49 @@ rpmte_TEType(rpmteObject * s, PyObject * unused)
 static PyObject *
 rpmte_N(rpmteObject * s, PyObject * unused)
 {
-    return Py_BuildValue("s", rpmteN(s->te));
+    return utf8FromString(rpmteN(s->te));
 }
 
 static PyObject *
 rpmte_E(rpmteObject * s, PyObject * unused)
 {
-    return Py_BuildValue("s", rpmteE(s->te));
+    return utf8FromString(rpmteE(s->te));
 }
 
 static PyObject *
 rpmte_V(rpmteObject * s, PyObject * unused)
 {
-    return Py_BuildValue("s", rpmteV(s->te));
+    return utf8FromString(rpmteV(s->te));
 }
 
 static PyObject *
 rpmte_R(rpmteObject * s, PyObject * unused)
 {
-    return Py_BuildValue("s", rpmteR(s->te));
+    return utf8FromString(rpmteR(s->te));
 }
 
 static PyObject *
 rpmte_A(rpmteObject * s, PyObject * unused)
 {
-    return Py_BuildValue("s", rpmteA(s->te));
+    return utf8FromString(rpmteA(s->te));
 }
 
 static PyObject *
 rpmte_O(rpmteObject * s, PyObject * unused)
 {
-    return Py_BuildValue("s", rpmteO(s->te));
+    return utf8FromString(rpmteO(s->te));
 }
 
 static PyObject *
 rpmte_NEVR(rpmteObject * s, PyObject * unused)
 {
-    return Py_BuildValue("s", rpmteNEVR(s->te));
+    return utf8FromString(rpmteNEVR(s->te));
 }
 
 static PyObject *
 rpmte_NEVRA(rpmteObject * s, PyObject * unused)
 {
-    return Py_BuildValue("s", rpmteNEVRA(s->te));
+    return utf8FromString(rpmteNEVRA(s->te));
 }
 
 static PyObject *

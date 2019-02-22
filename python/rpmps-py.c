@@ -18,12 +18,12 @@ static PyObject *rpmprob_get_type(rpmProblemObject *s, void *closure)
 
 static PyObject *rpmprob_get_pkgnevr(rpmProblemObject *s, void *closure)
 {
-    return Py_BuildValue("s", rpmProblemGetPkgNEVR(s->prob));
+    return utf8FromString(rpmProblemGetPkgNEVR(s->prob));
 }
 
 static PyObject *rpmprob_get_altnevr(rpmProblemObject *s, void *closure)
 {
-    return Py_BuildValue("s", rpmProblemGetAltNEVR(s->prob));
+    return utf8FromString(rpmProblemGetAltNEVR(s->prob));
 }
 
 static PyObject *rpmprob_get_key(rpmProblemObject *s, void *closure)
@@ -38,7 +38,7 @@ static PyObject *rpmprob_get_key(rpmProblemObject *s, void *closure)
 
 static PyObject *rpmprob_get_str(rpmProblemObject *s, void *closure)
 {
-    return Py_BuildValue("s", rpmProblemGetStr(s->prob));
+    return utf8FromString(rpmProblemGetStr(s->prob));
 }
 
 static PyObject *rpmprob_get_num(rpmProblemObject *s, void *closure)
@@ -59,7 +59,7 @@ static PyGetSetDef rpmprob_getseters[] = {
 static PyObject *rpmprob_str(rpmProblemObject *s)
 {
     char *str = rpmProblemString(s->prob);
-    PyObject *res = Py_BuildValue("s", str);
+    PyObject *res = utf8FromString(str);
     free(str);
     return res;
 }

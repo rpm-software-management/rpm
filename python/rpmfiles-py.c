@@ -41,37 +41,37 @@ static PyObject *rpmfile_dx(rpmfileObject *s)
 static PyObject *rpmfile_name(rpmfileObject *s)
 {
     char * fn = rpmfilesFN(s->files, s->ix);
-    PyObject *o = Py_BuildValue("s", fn);
+    PyObject *o = utf8FromString(fn);
     free(fn);
     return o;
 }
 
 static PyObject *rpmfile_basename(rpmfileObject *s)
 {
-    return Py_BuildValue("s", rpmfilesBN(s->files, s->ix));
+    return utf8FromString(rpmfilesBN(s->files, s->ix));
 }
 
 static PyObject *rpmfile_dirname(rpmfileObject *s)
 {
-    return Py_BuildValue("s", rpmfilesDN(s->files, rpmfilesDI(s->files, s->ix)));
+    return utf8FromString(rpmfilesDN(s->files, rpmfilesDI(s->files, s->ix)));
 }
 
 static PyObject *rpmfile_orig_name(rpmfileObject *s)
 {
     char * fn = rpmfilesOFN(s->files, s->ix);
-    PyObject *o = Py_BuildValue("s", fn);
+    PyObject *o = utf8FromString(fn);
     free(fn);
     return o;
 }
 
 static PyObject *rpmfile_orig_basename(rpmfileObject *s)
 {
-    return Py_BuildValue("s", rpmfilesOBN(s->files, s->ix));
+    return utf8FromString(rpmfilesOBN(s->files, s->ix));
 }
 
 static PyObject *rpmfile_orig_dirname(rpmfileObject *s)
 {
-    return Py_BuildValue("s", rpmfilesODN(s->files, rpmfilesODI(s->files, s->ix)));
+    return utf8FromString(rpmfilesODN(s->files, rpmfilesODI(s->files, s->ix)));
 }
 static PyObject *rpmfile_mode(rpmfileObject *s)
 {
@@ -105,17 +105,17 @@ static PyObject *rpmfile_nlink(rpmfileObject *s)
 
 static PyObject *rpmfile_linkto(rpmfileObject *s)
 {
-    return Py_BuildValue("s", rpmfilesFLink(s->files, s->ix));
+    return utf8FromString(rpmfilesFLink(s->files, s->ix));
 }
 
 static PyObject *rpmfile_user(rpmfileObject *s)
 {
-    return Py_BuildValue("s", rpmfilesFUser(s->files, s->ix));
+    return utf8FromString(rpmfilesFUser(s->files, s->ix));
 }
 
 static PyObject *rpmfile_group(rpmfileObject *s)
 {
-    return Py_BuildValue("s", rpmfilesFGroup(s->files, s->ix));
+    return utf8FromString(rpmfilesFGroup(s->files, s->ix));
 }
 
 static PyObject *rpmfile_fflags(rpmfileObject *s)
@@ -145,7 +145,7 @@ static PyObject *rpmfile_digest(rpmfileObject *s)
 						  NULL, &diglen);
     if (digest) {
 	char * hex = pgpHexStr(digest, diglen);
-	PyObject *o = Py_BuildValue("s", hex);
+	PyObject *o = utf8FromString(hex);
 	free(hex);
 	return o;
     }
@@ -154,17 +154,17 @@ static PyObject *rpmfile_digest(rpmfileObject *s)
 
 static PyObject *rpmfile_class(rpmfileObject *s)
 {
-    return Py_BuildValue("s", rpmfilesFClass(s->files, s->ix));
+    return utf8FromString(rpmfilesFClass(s->files, s->ix));
 }
 
 static PyObject *rpmfile_caps(rpmfileObject *s)
 {
-    return Py_BuildValue("s", rpmfilesFCaps(s->files, s->ix));
+    return utf8FromString(rpmfilesFCaps(s->files, s->ix));
 }
 
 static PyObject *rpmfile_langs(rpmfileObject *s)
 {
-    return Py_BuildValue("s", rpmfilesFLangs(s->files, s->ix));
+    return utf8FromString(rpmfilesFLangs(s->files, s->ix));
 }
 
 static PyObject *rpmfile_links(rpmfileObject *s)

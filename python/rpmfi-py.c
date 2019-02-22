@@ -41,19 +41,19 @@ rpmfi_DX(rpmfiObject * s, PyObject * unused)
 static PyObject *
 rpmfi_BN(rpmfiObject * s, PyObject * unused)
 {
-    return Py_BuildValue("s", rpmfiBN(s->fi));
+    return utf8FromString(rpmfiBN(s->fi));
 }
 
 static PyObject *
 rpmfi_DN(rpmfiObject * s, PyObject * unused)
 {
-    return Py_BuildValue("s", rpmfiDN(s->fi));
+    return utf8FromString(rpmfiDN(s->fi));
 }
 
 static PyObject *
 rpmfi_FN(rpmfiObject * s, PyObject * unused)
 {
-    return Py_BuildValue("s", rpmfiFN(s->fi));
+    return utf8FromString(rpmfiFN(s->fi));
 }
 
 static PyObject *
@@ -98,7 +98,7 @@ rpmfi_Digest(rpmfiObject * s, PyObject * unused)
 {
     char *digest = rpmfiFDigestHex(s->fi, NULL);
     if (digest) {
-	PyObject *dig = Py_BuildValue("s", digest);
+	PyObject *dig = utf8FromString(digest);
 	free(digest);
 	return dig;
     } else {
@@ -109,7 +109,7 @@ rpmfi_Digest(rpmfiObject * s, PyObject * unused)
 static PyObject *
 rpmfi_FLink(rpmfiObject * s, PyObject * unused)
 {
-    return Py_BuildValue("s", rpmfiFLink(s->fi));
+    return utf8FromString(rpmfiFLink(s->fi));
 }
 
 static PyObject *
@@ -133,13 +133,13 @@ rpmfi_FMtime(rpmfiObject * s, PyObject * unused)
 static PyObject *
 rpmfi_FUser(rpmfiObject * s, PyObject * unused)
 {
-    return Py_BuildValue("s", rpmfiFUser(s->fi));
+    return utf8FromString(rpmfiFUser(s->fi));
 }
 
 static PyObject *
 rpmfi_FGroup(rpmfiObject * s, PyObject * unused)
 {
-    return Py_BuildValue("s", rpmfiFGroup(s->fi));
+    return utf8FromString(rpmfiFGroup(s->fi));
 }
 
 static PyObject *
@@ -155,7 +155,7 @@ rpmfi_FClass(rpmfiObject * s, PyObject * unused)
 
     if ((FClass = rpmfiFClass(s->fi)) == NULL)
 	FClass = "";
-    return Py_BuildValue("s", FClass);
+    return utf8FromString(FClass);
 }
 
 static PyObject *
@@ -208,7 +208,7 @@ rpmfi_iternext(rpmfiObject * s)
 	    Py_INCREF(Py_None);
 	    PyTuple_SET_ITEM(result, 0, Py_None);
 	} else
-	    PyTuple_SET_ITEM(result,  0, Py_BuildValue("s", FN));
+	    PyTuple_SET_ITEM(result,  0, utf8FromString(FN));
 	PyTuple_SET_ITEM(result,  1, PyLong_FromLongLong(FSize));
 	PyTuple_SET_ITEM(result,  2, PyInt_FromLong(FMode));
 	PyTuple_SET_ITEM(result,  3, PyInt_FromLong(FMtime));
@@ -222,12 +222,12 @@ rpmfi_iternext(rpmfiObject * s)
 	    Py_INCREF(Py_None);
 	    PyTuple_SET_ITEM(result, 10, Py_None);
 	} else
-	    PyTuple_SET_ITEM(result, 10, Py_BuildValue("s", FUser));
+	    PyTuple_SET_ITEM(result, 10, utf8FromString(FUser));
 	if (FGroup == NULL) {
 	    Py_INCREF(Py_None);
 	    PyTuple_SET_ITEM(result, 11, Py_None);
 	} else
-	    PyTuple_SET_ITEM(result, 11, Py_BuildValue("s", FGroup));
+	    PyTuple_SET_ITEM(result, 11, utf8FromString(FGroup));
 	PyTuple_SET_ITEM(result, 12, rpmfi_Digest(s, NULL));
 
     } else
@@ -313,7 +313,7 @@ rpmfi_subscript(rpmfiObject * s, PyObject * key)
 
     ix = (int) PyInt_AsLong(key);
     rpmfiSetFX(s->fi, ix);
-    return Py_BuildValue("s", rpmfiFN(s->fi));
+    return utf8FromString(rpmfiFN(s->fi));
 }
 
 static PyMappingMethods rpmfi_as_mapping = {
