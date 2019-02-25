@@ -412,6 +412,7 @@ do_file()
     case "$(file -bi "$f")" in
       application/x-sharedlib*) skip_mini=false ;;
       application/x-executable*) skip_mini=false ;;
+      application/x-pie-executable*) skip_mini=false ;;
     esac
     $skip_mini || add_minidebug "${debugfn}" "$f"
   fi
