@@ -17,6 +17,9 @@ extern "C" {
 RPM_GNUC_INTERNAL
 int handleComments(char * s);
 
+RPM_GNUC_INTERNAL
+struct Source *findSource(rpmSpec spec, uint32_t num, int flag);
+
 /** \ingroup rpmstring
  */
 typedef struct StringBufRec *StringBuf;

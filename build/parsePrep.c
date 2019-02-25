@@ -64,12 +64,7 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
     char *patchcmd;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
 
-    for (sp = spec->sources; sp != NULL; sp = sp->next) {
-	if ((sp->flags & RPMBUILD_ISPATCH) && (sp->num == c)) {
-	    break;
-	}
-    }
-    if (sp == NULL) {
+    if ((sp = findSource(spec, c, RPMBUILD_ISPATCH)) == NULL) {
 	rpmlog(RPMLOG_ERR, _("No patch number %u\n"), c);
 	goto exit;
     }
@@ -140,12 +135,7 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
     struct Source *sp;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
 
-    for (sp = spec->sources; sp != NULL; sp = sp->next) {
-	if ((sp->flags & RPMBUILD_ISSOURCE) && (sp->num == c)) {
-	    break;
-	}
-    }
-    if (sp == NULL) {
+    if ((sp = findSource(spec, c, RPMBUILD_ISSOURCE)) == NULL) {
 	rpmlog(RPMLOG_ERR, _("No source number %u\n"), c);
 	goto exit;
     }

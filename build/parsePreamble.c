@@ -123,7 +123,7 @@ static inline int parseYesNo(const char * s)
 	    ? 0 : 1);
 }
 
-static struct Source *findSource(rpmSpec spec, uint32_t num, int flag)
+struct Source *findSource(rpmSpec spec, uint32_t num, int flag)
 {
     struct Source *p;
 
