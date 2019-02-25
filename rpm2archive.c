@@ -21,8 +21,10 @@
 static void fill_archive_entry(struct archive * a, struct archive_entry * entry, rpmfi fi)
 {
     archive_entry_clear(entry);
+    const char * dn = rpmfiDN(fi);
+    if (!strcmp(dn, "")) dn = "/";
 
-    char * filename = rstrscat(NULL, ".", rpmfiDN(fi), rpmfiBN(fi), NULL);
+    char * filename = rstrscat(NULL, ".", dn, rpmfiBN(fi), NULL);
     archive_entry_copy_pathname(entry, filename);
     _free(filename);
 
@@ -153,7 +155,7 @@ static int process_package(rpmts ts, char * filename)
 	if (nlink > 1) {
 	    if (rpmfiArchiveHasContent(fi)) {
 		_free(hardlink);
-		hardlink = rstrscat(NULL, ".", rpmfiFN(fi), NULL);
+		hardlink = xstrdup(archive_entry_pathname(entry));
 	    } else {
 		archive_entry_set_hardlink(entry, hardlink);
 	    }
