@@ -1081,7 +1081,8 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
 	for (be = b; (c = *be) && !isblank(c);)
 	    be++;
 	*be++ = '\0';
-	(void) rpmFileIsCompressed(b, &compressed);
+	if (rpmFileIsCompressed(b, &compressed))
+	    mb->error = 1;
 	switch (compressed) {
 	default:
 	case COMPRESSED_NOT:
