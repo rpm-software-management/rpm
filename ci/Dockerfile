@@ -30,6 +30,7 @@ RUN dnf -y install \
   libcap-devel \
   libacl-devel \
   lua-devel readline-devel \
+  python3-devel \
   dbus-devel \
   fakechroot which \
   elfutils binutils \
@@ -37,7 +38,6 @@ RUN dnf -y install \
   tar unzip gzip bzip2 cpio xz \
   pkgconfig \
   /usr/bin/gdb-add-index \
-  /usr/bin/python \
   dwz \
   && dnf clean all
 RUN autoreconf -vfi
@@ -47,6 +47,7 @@ RUN ./configure \
   --with-cap \
   --with-acl \
   --with-lua \
+  --enable-python \
   --enable-silent-rules
 RUN make
 
