@@ -100,8 +100,13 @@ These are available from
     http://tukaani.org/xz/
 
 If you want to build the Python bindings to RPM library, it can be enabled
-with --enable-python option to configure. You'll need to have Python (>= 2.3)
-runtime and C API development environment installed, this is available from 
+with --enable-python option to configure. You'll need to have Python >= 3.1
+runtime and C API development environment installed. Python 2.7 support
+is deprecated and will be removed in a future release but for now, you
+can still build for it by passing the Python 2 interpreter name as PYTHON
+on the configure line, eg
+    ./configure PYTHON=python2
+Python is available from:
     http://www.python.org/
 
 To enable POSIX.1e draft 15 file capabilities support, configure with

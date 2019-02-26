@@ -773,6 +773,7 @@ esac],
 
 WITH_PYTHON_SUBPACKAGE=0
 AS_IF([test "$enable_python" = yes],[
+  PYTHON="${PYTHON:-python3}"
   AM_PATH_PYTHON([2.7],[
     PKG_CHECK_MODULES([PYTHON], [python-${PYTHON_VERSION}], [WITH_PYTHON_SUBPACKAGE=1])
     AC_SUBST(PYTHON_CFLAGS)
