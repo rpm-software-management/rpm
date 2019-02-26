@@ -19,11 +19,17 @@
 #define PyInt_AsSsize_t PyLong_AsSsize_t
 #endif
 
+static inline PyObject * utf8FromString(const char *s)
+{
 /* In Python 3, we return all strings as surrogate-escaped utf-8 */
 #if PY_MAJOR_VERSION >= 3
-#define utf8FromString(_s) PyUnicode_DecodeUTF8(_s, strlen(_s), "surrogateescape")
+    if (s != NULL)
+	return PyUnicode_DecodeUTF8(s, strlen(s), "surrogateescape");
 #else
-#define utf8FromString(_s) PyBytes_FromString(_s)
+    if (s != NULL)
+	return PyBytes_FromString(s);
 #endif
+    Py_RETURN_NONE;
+}
 
 #endif	/* H_SYSTEM_PYTHON */
