@@ -223,11 +223,22 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
 {
     char *lbuf = NULL;
     int isComment = 0;
+    parsedSpecLine condition;
 
     lbuf = spec->lbuf;
     SKIPSPACE(lbuf);
     if (lbuf[0] == '#')
 	isComment = 1;
+
+    condition = parseLineType(lbuf);
+    if ((condition) && (!condition->withArgs)) {
+	const char *s = lbuf + condition->textLen;
+	SKIPSPACE(s);
+	if (s[0])
+	    rpmlog(RPMLOG_WARNING,
+		_("extra tokens at the end of %s directive in line %d:  %s\n"),
+		condition->text, spec->lineNum, lbuf);
+    }
 
     /* Don't expand macros (eg. %define) in false branch of %if clause */
     if (!spec->readStack->reading)
