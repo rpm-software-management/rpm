@@ -426,7 +426,7 @@ int readLine(rpmSpec spec, int strip)
     parsedSpecLine lineType;
 
     if (!restoreFirstChar(spec)) {
-    retry:
+retry:
 	if ((rc = readLineFromOFI(spec, ofi)) != 0) {
 	    if (spec->readStack->next) {
 		rpmlog(RPMLOG_ERR, _("line %d: Unclosed %%if\n"),
