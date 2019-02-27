@@ -22,8 +22,8 @@
 
 #define SKIPSPACE(s) { while (*(s) && risspace(*(s))) (s)++; }
 #define SKIPNONSPACE(s) { while (*(s) && !risspace(*(s))) (s)++; }
-#define ISMACRO(s,m) (rstreqn((s), (m), sizeof((m))-1) && !risalpha((s)[sizeof((m))-1]))
-#define ISMACROWITHARG(s,m) (rstreqn((s), (m), sizeof((m))-1) && (risblank((s)[sizeof((m))-1]) || !(s)[sizeof((m))-1]))
+#define ISMACRO(s,m,len) (rstreqn((s), (m), len) && !risalpha((s)[len]))
+#define ISMACROWITHARG(s,m,len) (rstreqn((s), (m), len) && (risblank((s)[len]) || !(s)[len]))
 
 #define LEN_AND_STR(_tag) (sizeof(_tag)-1), (_tag)
 
@@ -170,6 +170,54 @@ static int restoreFirstChar(rpmSpec spec)
     }
     return 0;
 }
+
+typedef enum rpmParseLineType_e {
+    LINE_IF                = 0,
+    LINE_IFARCH            = (1 << 0),
+    LINE_IFNARCH           = (1 << 1),
+    LINE_IFOS              = (1 << 2),
+    LINE_IFNOS             = (1 << 3),
+    LINE_ELSE              = (1 << 4),
+    LINE_ENDIF             = (1 << 5),
+    LINE_INCLUDE           = (1 << 6),
+} rpmParseLineType;
+
+typedef const struct parsedSpecLine_s {
+    int id;
+    size_t textLen;
+    const char *text;
+    int withArgs;
+} * parsedSpecLine;
+
+static struct parsedSpecLine_s const implementedTypes[] = {
+    { LINE_IF,		LEN_AND_STR("%if")     , 1},
+    { LINE_IFARCH,	LEN_AND_STR("%ifarch") , 1},
+    { LINE_IFNARCH,	LEN_AND_STR("%ifnarch"), 1},
+    { LINE_IFOS,	LEN_AND_STR("%ifos")   , 1},
+    { LINE_IFNOS,	LEN_AND_STR("%ifnos")  , 1},
+    { LINE_ELSE,	LEN_AND_STR("%else")   , 0},
+    { LINE_ENDIF,	LEN_AND_STR("%endif")  , 0},
+    { LINE_INCLUDE,	LEN_AND_STR("%include"), 1},
+    { 0, 0, 0, 0 }
+};
+
+static parsedSpecLine parseLineType(char *line)
+{
+    parsedSpecLine condition;
+
+    for (condition = implementedTypes; condition->text != NULL; condition++) {
+	if (condition->withArgs) {
+	    if (ISMACROWITHARG(line, condition->text, condition->textLen))
+		return condition;
+	} else {
+	    if (ISMACRO(line, condition->text, condition->textLen))
+		return condition;
+	}
+    }
+
+    return NULL;
+}
+
 
 static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
 {
@@ -365,6 +413,7 @@ int readLine(rpmSpec spec, int strip)
     OFI_t *ofi = spec->fileStack;
     int rc;
     int startLine = 0;
+    parsedSpecLine lineType;
 
     if (!restoreFirstChar(spec)) {
     retry:
@@ -400,19 +449,22 @@ int readLine(rpmSpec spec, int strip)
     SKIPSPACE(s);
 
     match = -1;
-    if (!spec->readStack->reading && ISMACROWITHARG(s, "%if")) {
+    lineType = parseLineType(s);
+    if (!lineType)
+	goto after_classification;
+    if (!spec->readStack->reading && (lineType->id == LINE_IF)) {
 	match = 0;
-    } else if (ISMACROWITHARG(s, "%ifarch")) {
+    } else if (lineType->id == LINE_IFARCH) {
 	ARGMATCH(s, "%{_target_cpu}", match);
-    } else if (ISMACROWITHARG(s, "%ifnarch")) {
+    } else if (lineType->id == LINE_IFNARCH) {
 	ARGMATCH(s, "%{_target_cpu}", match);
 	match = !match;
-    } else if (ISMACROWITHARG(s, "%ifos")) {
+    } else if (lineType->id == LINE_IFOS) {
 	ARGMATCH(s, "%{_target_os}", match);
-    } else if (ISMACROWITHARG(s, "%ifnos")) {
+    } else if (lineType->id == LINE_IFNOS) {
 	ARGMATCH(s, "%{_target_os}", match);
 	match = !match;
-    } else if (ISMACROWITHARG(s, "%if")) {
+    } else if (lineType->id == LINE_IF) {
 	s += 3;
         match = parseExpressionBoolean(s);
 	if (match < 0) {
@@ -421,7 +473,7 @@ int readLine(rpmSpec spec, int strip)
 			ofi->fileName, ofi->lineNum);
 	    return PART_ERROR;
 	}
-    } else if (ISMACRO(s, "%else")) {
+    } else if (lineType->id == LINE_ELSE) {
 	if (! spec->readStack->next) {
 	    /* Got an else with no %if ! */
 	    rpmlog(RPMLOG_ERR,
@@ -432,7 +484,7 @@ int readLine(rpmSpec spec, int strip)
 	spec->readStack->reading =
 	    spec->readStack->next->reading && ! spec->readStack->reading;
 	spec->line[0] = '\0';
-    } else if (ISMACRO(s, "%endif")) {
+    } else if (lineType->id == LINE_ENDIF) {
 	if (! spec->readStack->next) {
 	    /* Got an end with no %if ! */
 	    rpmlog(RPMLOG_ERR,
@@ -444,7 +496,7 @@ int readLine(rpmSpec spec, int strip)
 	spec->readStack = spec->readStack->next;
 	free(rl);
 	spec->line[0] = '\0';
-    } else if (spec->readStack->reading && ISMACROWITHARG(s, "%include")) {
+    } else if (spec->readStack->reading && (lineType->id == LINE_INCLUDE)) {
 	char *fileName, *endFileName, *p;
 
 	fileName = s+8;
@@ -467,6 +519,7 @@ int readLine(rpmSpec spec, int strip)
 	goto retry;
     }
 
+after_classification:
     if (match != -1) {
 	rl = xmalloc(sizeof(*rl));
 	rl->reading = spec->readStack->reading && match;
