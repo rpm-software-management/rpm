@@ -314,6 +314,19 @@ runroot rpm \
 )
 AT_CLEANUP
 
+AT_SETUP([lua script redirect2null])
+AT_KEYWORDS([macros lua])
+AT_CHECK([
+AT_SKIP_IF([$LUA_DISABLED])
+runroot rpm \
+  --eval '%{lua: posix.redirect2null()}))}'
+],
+[1],
+[],
+[error: lua script failed: [[string "<lua>"]]:1: redirect2null not permitted in this context]
+)
+AT_CLEANUP
+
 AT_SETUP([lua library path])
 AT_KEYWORDS([macros lua])
 AT_CHECK([
