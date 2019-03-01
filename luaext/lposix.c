@@ -828,7 +828,7 @@ static int Predirect2null(lua_State *L)
     int target_fd, fd, r, e;
 
     if (!_rpmlua_have_forked)
-	return luaL_error(L, "silence_file_descriptor not permitted in this context");
+	return luaL_error(L, "redirect2null not permitted in this context");
 
     target_fd = luaL_checkinteger(L, 1);
 
