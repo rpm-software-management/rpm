@@ -17,6 +17,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <stdarg.h>
+#include <errno.h>
 
 #include <rpm/rpmio.h>
 #include <rpm/rpmmacro.h>
@@ -79,6 +80,7 @@ static void *nextFileFuncParam = NULL;
 static int luaopen_rpm(lua_State *L);
 static int rpm_print(lua_State *L);
 static int rpm_exit(lua_State *L);
+static int rpm_redirect2null(lua_State *L);
 
 static int pusherror(lua_State *L, int code, const char *info)
 {
@@ -113,6 +115,12 @@ static const luaL_Reg os_overrides[] =
     {NULL,      NULL}
 };
 
+static const luaL_Reg posix_overrides[] =
+{
+    {"redirect2null",	rpm_redirect2null},
+    {NULL,      NULL}
+};
+
 rpmlua rpmluaNew()
 {
     rpmlua lua = NULL;
@@ -143,6 +151,8 @@ rpmlua rpmluaNew()
 
     lua_getglobal(L, "os");
     luaL_setfuncs(L, os_overrides, 0);
+    lua_getglobal(L, "posix");
+    luaL_setfuncs(L, posix_overrides, 0);
 
     lua_getglobal(L, "package");
     lua_pushfstring(L, "%s/%s", rpmConfigDir(), "/lua/?.lua");
@@ -938,6 +948,25 @@ static int rpm_print (lua_State *L)
     return 0;
 }
 
+static int rpm_redirect2null(lua_State *L)
+{
+    int target_fd, fd, r, e;
+
+    if (!_rpmlua_have_forked)
+	return luaL_error(L, "redirect2null not permitted in this context");
+
+    target_fd = luaL_checkinteger(L, 1);
+
+    r = fd = open("/dev/null", O_WRONLY);
+    if (fd >= 0 && fd != target_fd) {
+	r = dup2(fd, target_fd);
+	e = errno;
+	(void) close(fd);
+	errno = e;
+    }
+    return pushresult(L, r, NULL);
+}
+
 static int rpm_exit(lua_State *L)
 {
     if (!_rpmlua_have_forked)
@@ -984,6 +1013,7 @@ static const luaL_Reg rpmlib[] = {
     {"interactive", rpm_interactive},
     {"next_file", rpm_next_file},
     {"execute", rpm_execute},
+    {"redirect2null", rpm_redirect2null},
     {NULL, NULL}
 };
 
