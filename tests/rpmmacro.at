@@ -478,3 +478,15 @@ runroot rpm --macros "/data/macros.testfile" \
 macro_2
 ])
 AT_CLEANUP
+
+AT_SETUP([macro with %if-%endif])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpmspec -q --qf "%{summary}\n%{description}\n" /data/SPECS/iftest.spec
+],
+[0],
+[macro 1
+%bbb0
+ccc1
+])
+AT_CLEANUP
