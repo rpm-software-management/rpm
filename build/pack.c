@@ -237,7 +237,7 @@ static rpmRC charInDepCb(void *cbdata, rpmrichParseType type,
 		const char *n, int nl, const char *e, int el, rpmsenseFlags sense,
 		rpmrichOp op, char **emsg) {
     struct charInDepData *data = cbdata;
-    if (memchr(e, data->c, el))
+    if (e && data && memchr(e, data->c, el))
 	data->present = 1;
 
     return RPMRC_OK;
