@@ -1051,8 +1051,10 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
     }
 
     /* Sort the big list */
-    qsort(fl->files.recs, fl->files.used,
-	  sizeof(*(fl->files.recs)), compareFileListRecs);
+    if (fl->files.recs) {
+	qsort(fl->files.recs, fl->files.used,
+	      sizeof(*(fl->files.recs)), compareFileListRecs);
+    }
     
     pkg->dpaths = xmalloc((fl->files.used + 1) * sizeof(*pkg->dpaths));
 

@@ -72,7 +72,10 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring)
 static rpmPubkey rpmKeyringFindKeyid(rpmKeyring keyring, rpmPubkey key)
 {
     rpmPubkey *found = NULL;
-    found = bsearch(&key, keyring->keys, keyring->numkeys, sizeof(*keyring->keys), keyidcmp);
+    if (key && keyring->keys) {
+	found = bsearch(&key, keyring->keys, keyring->numkeys,
+			sizeof(*keyring->keys), keyidcmp);
+    }
     return found ? *found : NULL;
 }
 
