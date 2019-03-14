@@ -492,8 +492,7 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
 	}
 	mi = rpmdbFreeIterator(mi);
 	if (! matches) {
-	    size_t l = strlen(arg);
-	    if (!(l > 4 && !strcmp(arg + l - 4, ".rpm")))
+	    if (!rpmFileHasSuffix(arg, ".rpm"))
 		rpmlog(RPMLOG_NOTICE, _("package %s is not installed\n"), arg);
 	} else {
 	    mi = rpmtsInitIterator(ts, RPMDBI_LABEL, arg, 0);
@@ -572,8 +571,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	    rpmdbMatchIterator mi = initQueryIterator(qva, ts, *arg);
 	    ecLocal = rpmcliShowMatches(qva, ts, mi);
 	    if (mi == NULL && qva->qva_source == RPMQV_PACKAGE) {
-		size_t l = strlen(*arg);
-		if (l > 4 && !strcmp(*arg + l - 4, ".rpm")) {
+		if (rpmFileHasSuffix(*arg, ".rpm")) {
 		    char * const argFirst[2] = { arg[0], NULL };
 		    rpmgi gi = rpmgiNew(ts, giFlags, argFirst);
 		    ecLocal = rpmgiShowMatches(qva, ts, gi);
