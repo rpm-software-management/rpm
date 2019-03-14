@@ -574,7 +574,8 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	    if (mi == NULL && qva->qva_source == RPMQV_PACKAGE) {
 		size_t l = strlen(*arg);
 		if (l > 4 && !strcmp(*arg + l - 4, ".rpm")) {
-		    rpmgi gi = rpmgiNew(ts, giFlags, argv);
+		    char * const argFirst[2] = { arg[0], NULL };
+		    rpmgi gi = rpmgiNew(ts, giFlags, argFirst);
 		    ecLocal = rpmgiShowMatches(qva, ts, gi);
 		    rpmgiFree(gi);
 		}
