@@ -454,18 +454,15 @@ exit:
 static void unloadImmutableRegion(Header *hdrp, rpmTagVal tag)
 {
     struct rpmtd_s td;
-    rpmtd utd = &td;
-    Header nh;
-    Header oh;
 
-    if (headerGet(*hdrp, tag, utd, HEADERGET_DEFAULT)) {
-	oh = headerCopyLoad(utd->data);
-	nh = headerCopy(oh);
-	headerFree(oh);
-	rpmtdFreeData(utd);
+    if (headerGet(*hdrp, tag, &td, HEADERGET_DEFAULT)) {
+	Header oh = headerCopyLoad(td.data);
+	Header nh = headerCopy(oh);
+	rpmtdFreeData(&td);
 	headerFree(*hdrp);
 	*hdrp = headerLink(nh);
 	headerFree(nh);
+	headerFree(oh);
     }
 }
 
