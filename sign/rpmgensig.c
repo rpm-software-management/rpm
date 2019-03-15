@@ -470,12 +470,9 @@ static rpmRC includeFileSignatures(Header *sigp, Header *hdrp)
 {
 #ifdef WITH_IMAEVM
     rpmRC rc;
-    char *key;
-    char *keypass;
+    char *key = rpmExpand("%{?_file_signing_key}", NULL);
+    char *keypass = rpmExpand("%{?_file_signing_key_password}", NULL);
 
-    key = rpmExpand("%{?_file_signing_key}", NULL);
-
-    keypass = rpmExpand("%{?_file_signing_key_password}", NULL);
     if (rstreq(keypass, "")) {
 	free(keypass);
 	keypass = NULL;
