@@ -579,25 +579,12 @@ static int rpmSign(const char *rpm, int deleting, int signfiles)
     }
 
     /* Try to make new signature smaller to have size of original signature */
-    rpmtdReset(&utd);
     if (headerGet(sigh, RPMSIGTAG_RESERVEDSPACE, &utd, HEADERGET_MINMEM)) {
-	int diff;
-	int count;
-	char *reservedSpace = NULL;
+	int diff = headerSizeof(sigh, HEADER_MAGIC_YES) - origSigSize;
 
-	count = utd.count;
-	diff = headerSizeof(sigh, HEADER_MAGIC_YES) - origSigSize;
-
-	if (diff < count) {
-	    reservedSpace = xcalloc(count - diff, sizeof(char));
-	    headerDel(sigh, RPMSIGTAG_RESERVEDSPACE);
-	    rpmtdReset(&utd);
-	    utd.tag = RPMSIGTAG_RESERVEDSPACE;
-	    utd.count = count - diff;
-	    utd.type = RPM_BIN_TYPE;
-	    utd.data = reservedSpace;
-	    headerPut(sigh, &utd, HEADERPUT_DEFAULT);
-	    free(reservedSpace);
+	if (diff > 0 && diff < utd.count) {
+	    utd.count -= diff;
+	    headerMod(sigh, &utd);
 	    insSig = 1;
 	}
     }
