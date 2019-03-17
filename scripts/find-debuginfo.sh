@@ -4,6 +4,7 @@
 #
 # Usage: find-debuginfo.sh [--strict-build-id] [-g] [-r] [-m] [-i] [-n]
 #			   [--keep-section SECTION] [--remove-section SECTION]
+#			   [--g-libs]
 #	 		   [-j N] [--jobs N]
 #	 		   [-o debugfiles.list]
 #	 		   [-S debugsourcefiles.list]
@@ -16,6 +17,8 @@
 #			   [builddir]
 #
 # The -g flag says to use strip -g instead of full strip on DSOs or EXEs.
+# The --g-libs flag says to use strip -g instead of full strip ONLY on DSOs.
+# Options -g and --g-libs are mutually exclusive.
 # The -r flag says to use eu-strip --reloc-debug-sections.
 # Use --keep-section SECTION or --remove-section SECTION to explicitly
 # keep a (non-allocated) section in the main executable or explicitly
@@ -67,6 +70,9 @@ lib_rpm_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # With -g arg, pass it to strip on libraries or executables.
 strip_g=false
+
+# With --g-libs arg, pass it to strip on libraries.
+strip_glibs=false
 
 # with -r arg, pass --reloc-debug-sections to eu-strip.
 strip_r=false
@@ -134,6 +140,9 @@ while [ $# -gt 0 ]; do
   --unique-debug-src-base)
     unique_debug_src_base=$2
     shift
+    ;;
+  --g-libs)
+    strip_glibs=true
     ;;
   -g)
     strip_g=true
@@ -204,6 +213,11 @@ if test -n "$build_id_seed" -a "$no_recompute_build_id" = "true"; then
   exit 2
 fi
 
+if ("$strip_g" = "true") && ("$strip_glibs" = "true"); then
+  echo >&2 "*** ERROR: -g  and --g-libs cannot be used together"
+  exit 2
+fi
+
 i=0
 while ((i < nout)); do
   outs[$i]="$BUILDDIR/${outs[$i]}"
@@ -236,6 +250,9 @@ strip_to_debug()
   application/x-sharedlib*) g=-g ;;
   application/x-executable*) g=-g ;;
   application/x-pie-executable*) g=-g ;;
+  esac
+  $strip_glibs && case "$(file -bi "$2")" in
+    application/x-sharedlib*) g=-g ;;
   esac
   eu-strip --remove-comment $r $g ${keep_remove_args} -f "$1" "$2" || exit
   chmod 444 "$1" || exit
@@ -409,8 +426,12 @@ do_file()
   # libraries. Other executable ELF files (like kernel modules) don't need it.
   if [ "$include_minidebug" = "true" -a "$strip_g" = "false" ]; then
     skip_mini=true
+    if [ "$strip_glibs" = "false" ]; then
+      case "$(file -bi "$f")" in
+        application/x-sharedlib*) skip_mini=false ;;
+      esac
+    fi
     case "$(file -bi "$f")" in
-      application/x-sharedlib*) skip_mini=false ;;
       application/x-executable*) skip_mini=false ;;
       application/x-pie-executable*) skip_mini=false ;;
     esac
