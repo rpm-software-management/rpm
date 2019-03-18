@@ -486,7 +486,7 @@ runroot rpmspec -q --qf "%{summary}\n%{description}\n" /data/SPECS/iftest.spec
 ],
 [0],
 [macro 1
-%bbb0
+ccc0
 ccc1
 ])
 AT_CLEANUP
