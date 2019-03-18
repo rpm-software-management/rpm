@@ -472,3 +472,23 @@ run rpmsign --key-id 1964C5FC --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64-sign
 [],
 [])
 AT_CLEANUP
+
+AT_SETUP([rpmsign --addsign <corrupted>])
+AT_KEYWORDS([rpmsign signature])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+pkg="hello-2.0-1.x86_64.rpm"
+cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
+   conv=notrunc bs=1 seek=333 count=4 2> /dev/null
+run rpmsign --key-id 1964C5FC --addsign "${RPMTEST}/tmp/${pkg}"
+],
+[1],
+[/home/pmatilai/repos/rpm/tests/testing/tmp/hello-2.0-1.x86_64.rpm:
+],
+[error: not signing corrupt package /home/pmatilai/repos/rpm/tests/testing/tmp/hello-2.0-1.x86_64.rpm: MD5 digest: BAD (Expected 007ca1d8b35cca02a1854ba301c5432e != 137ca1d8b35cca02a1854ba301c5432e)
+])
+AT_CLEANUP
