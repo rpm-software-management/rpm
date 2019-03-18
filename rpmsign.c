@@ -134,7 +134,8 @@ static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
     const char *arg;
     rc = 0;
     while ((arg = poptGetArg(optCon)) != NULL) {
-	rc += rpmPkgSign(arg, sargs);
+	if (rpmPkgSign(arg, sargs) < 0)
+	    rc++;
     }
 
 exit:
@@ -175,7 +176,8 @@ int main(int argc, char *argv[])
     case MODE_DELSIGN:
 	ec = 0;
 	while ((arg = poptGetArg(optCon)) != NULL) {
-	    ec += rpmPkgDelSign(arg, &sargs);
+	    if (rpmPkgDelSign(arg, &sargs) < 0)
+		ec++;
 	}
 	break;
     case MODE_NONE:
@@ -188,5 +190,5 @@ int main(int argc, char *argv[])
 
 exit:
     rpmcliFini(optCon);
-    return ec;
+    return RETVAL(ec);
 }
