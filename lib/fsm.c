@@ -201,6 +201,10 @@ static int fsmSetFCaps(const char *path, const char *captxt)
 	if (fcaps == NULL || cap_set_file(path, fcaps) != 0) {
 	    rc = RPMERR_SETCAP_FAILED;
 	}
+	if (_fsm_debug) {
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", __func__,
+		   path, captxt, (rc < 0 ? strerror(errno) : ""));
+	}
 	cap_free(fcaps);
     } 
 #endif
