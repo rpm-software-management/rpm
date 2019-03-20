@@ -46,4 +46,4 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,%{user},%{grp},-)
-/opt/*
+%{?fileattr} /opt/*

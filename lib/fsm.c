@@ -898,12 +898,12 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 
 	action = rpmfsGetAction(fs, rpmfiFX(fi));
 	skip = XFA_SKIPPING(action);
-	suffix = S_ISDIR(rpmfiFMode(fi)) ? NULL : tid;
 	if (action != FA_TOUCH) {
-	    fpath = fsmFsPath(fi, suffix);
+	    suffix = S_ISDIR(rpmfiFMode(fi)) ? NULL : tid;
 	} else {
-	    fpath = fsmFsPath(fi, "");
+	    suffix = NULL;
 	}
+	fpath = fsmFsPath(fi, suffix);
 
 	/* Remap file perms, owner, and group. */
 	rc = rpmfiStat(fi, 1, &sb);
@@ -926,6 +926,10 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
         if (!skip) {
 	    int setmeta = 1;
 
+	    /* When touching we don't need any of this... */
+	    if (action == FA_TOUCH)
+		goto touch;
+
 	    /* Directories replacing something need early backup */
 	    if (!suffix) {
 		rc = fsmBackup(fi, action);
@@ -934,7 +938,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	    if (!suffix) {
 		rc = fsmVerify(fpath, fi);
 	    } else {
-		rc = (action == FA_TOUCH) ? 0 : RPMERR_ENOENT;
+		rc = RPMERR_ENOENT;
 	    }
 
             if (S_ISREG(sb.st_mode)) {
@@ -970,11 +974,14 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
                 if (!IS_DEV_LOG(fpath))
                     rc = RPMERR_UNKNOWN_FILETYPE;
             }
+
+touch:
 	    /* Set permissions, timestamps etc for non-hardlink entries */
 	    if (!rc && setmeta) {
 		rc = fsmSetmeta(fpath, fi, plugins, action, &sb, nofcaps);
 	    }
         } else if (firsthardlink >= 0 && rpmfiArchiveHasContent(fi)) {
+	    /* On FA_TOUCH no hardlinks are created thus this is skipped. */
 	    /* we skip the hard linked file containing the content */
 	    /* write the content to the first used instead */
 	    char *fn = rpmfilesFN(files, firsthardlink);
@@ -987,7 +994,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
         if (rc) {
             if (!skip) {
                 /* XXX only erase if temp fn w suffix is in use */
-                if (suffix && (action != FA_TOUCH)) {
+                if (suffix) {
 		    (void) fsmRemove(fpath, sb.st_mode);
                 }
                 errno = saveerrno;
