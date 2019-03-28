@@ -1197,12 +1197,21 @@ static rpm_loff_t countPkgs(rpmts ts, rpmElementTypes types)
 
 struct vfydata_s {
     char *msg;
+    int type[3];
     int vfylevel;
 };
 
 static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
 {
     struct vfydata_s *vd = cbdata;
+
+    if (sinfo->type & RPMSIG_VERIFIABLE_TYPE && sinfo->rc != RPMRC_NOTFOUND) {
+	int res = (sinfo->rc != RPMRC_OK);
+	/* Take care not to override a previous failure with success */
+	if (res > vd->type[sinfo->type])
+	    vd->type[sinfo->type] = res;
+    }
+
     switch (sinfo->rc) {
     case RPMRC_OK:
 	break;
@@ -1243,8 +1252,10 @@ static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
 	struct rpmvs_s *vs = rpmvsCreate(vfylevel, vsflags, keyring);
 	struct vfydata_s vd = {
 	    .msg = NULL,
+	    .type = { -1, -1, -1, },
 	    .vfylevel = vfylevel,
 	};
+	int verified = 0;
 	rpmRC prc = RPMRC_FAIL;
 
 	rpmtsNotify(ts, p, RPMCALLBACK_VERIFY_PROGRESS, oc++, total);
@@ -1256,6 +1267,13 @@ static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
 
 	if (prc == RPMRC_OK)
 	    prc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, vfyCb, &vd);
+
+	/* Record verify result */
+	if (vd.type[RPMSIG_SIGNATURE_TYPE] == RPMRC_OK)
+	    verified |= RPMSIG_SIGNATURE_TYPE;
+	if (vd.type[RPMSIG_DIGEST_TYPE] == RPMRC_OK)
+	    verified |= RPMSIG_DIGEST_TYPE;
+	rpmteSetVerified(p, verified);
 
 	if (prc)
 	    rpmteAddProblem(p, RPMPROB_VERIFY, NULL, vd.msg, 0);
