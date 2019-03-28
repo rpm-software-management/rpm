@@ -248,6 +248,16 @@ rpmfiles rpmteFiles(rpmte te);
  */
 rpmfi rpmteFI(rpmte te);
 
+/** \ingroup rpmte
+ * Retrieve verification status from transaction element.
+ * Returns RPMSIG_UNVERIFIED_TYPE if no verify has been attempted,
+ * otherwise RPMSIG_SIGNATURE_TYPE and RPMSIG_DIGEST_TYPE bits will
+ * be set if that type of verification was successfully performed.
+ * @param te		transaction element
+ * @return 		verification status
+ */
+int rpmteVerified(rpmte te);
+
 #ifdef __cplusplus
 }
 #endif

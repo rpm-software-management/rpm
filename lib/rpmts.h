@@ -146,6 +146,7 @@ enum {
 };
 
 #define RPMSIG_VERIFIABLE_TYPE (RPMSIG_DIGEST_TYPE|RPMSIG_SIGNATURE_TYPE)
+#define RPMSIG_UNVERIFIED_TYPE 	(1 << 30)
 
 /** \ingroup rpmts
  * Indices for timestamps.
