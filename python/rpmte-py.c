@@ -37,6 +37,7 @@
  * - te.FI(tag)	Return package file info set iterator (deprecated).
  * @param tag	'Basenames'
  * - te.Files()	Return package file info set.
+ * - te.Verified() Return package verification status.
  */
 
 struct rpmteObject_s {
@@ -192,6 +193,14 @@ rpmte_Files(rpmteObject * s, PyObject * args, PyObject * kwds)
     }
     return rpmfiles_Wrap(&rpmfiles_Type, files);
 }
+
+static PyObject *
+rpmte_Verified(rpmteObject * s)
+{
+    return Py_BuildValue("i", rpmteVerified(s->te));
+}
+
+
 static struct PyMethodDef rpmte_methods[] = {
     {"Type",	(PyCFunction)rpmte_TEType,	METH_NOARGS,
      "te.Type() -- Return element type (rpm.TR_ADDED | rpm.TR_REMOVED).\n" },
@@ -235,6 +244,8 @@ static struct PyMethodDef rpmte_methods[] = {
 "te.FI(TagN) -- Return file info iterator of element.\n\n DEPRECATED! Use .Files() instead.\n" },
     {"Files",	(PyCFunction)rpmte_Files,	METH_NOARGS,
 "te.Files() -- Return file info set of element.\n" },
+    {"Verified",(PyCFunction)rpmte_Verified,	METH_NOARGS,
+"te.Verified() -- Return element verification status.\n" },
     {NULL,		NULL}		/* sentinel */
 };
 
