@@ -970,6 +970,30 @@ AS_IF([test "$enable_plugins" != no],[
 ])
 AM_CONDITIONAL(IMA, [test "x$ac_cv_func_lsetxattr" = xyes])
 
+#=================
+# Check for audit library.
+AC_ARG_WITH(audit,
+AS_HELP_STRING([--with-audit],[Linux audit plugin]),
+with_audit=$withval,
+with_audit=auto)
+
+WITH_AUDIT_LIB=
+AS_IF([test "$enable_plugins" != no],[
+  AS_IF([test "x$with_audit" != xno],[
+    AC_SEARCH_LIBS([audit_open],[audit],[
+      WITH_AUDIT_LIB="$ac_res"
+      AC_DEFINE(WITH_AUDIT, 1, [libaudit support])
+      with_audit=yes
+    ],[
+      if test "x$with_audit" != xauto; then
+        AC_MSG_ERROR([missing audit library])
+      fi
+    ])
+  ])
+])
+AC_SUBST(WITH_AUDIT_LIB)
+AM_CONDITIONAL(AUDIT,[test "$with_audit" = yes])
+
 with_dmalloc=no
 AC_ARG_WITH(dmalloc, [AS_HELP_STRING([--with-dmalloc],[build with dmalloc debugging support])])
 if test "$with_dmalloc" = yes ; then
