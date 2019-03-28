@@ -30,6 +30,7 @@ RUN dnf -y install \
   ima-evm-utils \
   libcap-devel \
   libacl-devel \
+  audit-libs-devel \
   lua-devel readline-devel \
   python3-devel \
   dbus-devel \
@@ -48,6 +49,7 @@ RUN ./configure \
   --with-cap \
   --with-acl \
   --with-lua \
+  --with-audit \
   --enable-python \
   --enable-silent-rules
 RUN make

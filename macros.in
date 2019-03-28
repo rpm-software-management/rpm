@@ -1145,6 +1145,7 @@ package or when debugging this package.\
 %__transaction_syslog		%{__plugindir}/syslog.so
 %__transaction_ima		%{__plugindir}/ima.so
 %__transaction_prioreset	%{__plugindir}/prioreset.so
+%__transaction_audit		%{__plugindir}/audit.so
 
 #------------------------------------------------------------------------------
 # Macros for further automated spec %setup and patch application
