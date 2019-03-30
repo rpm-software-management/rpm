@@ -1,5 +1,5 @@
-# German translation of manpages
-# This file is distributed under the same license as the manpages-de package.
+# German translation of rpmdb.8
+# This file is distributed under the same license as the rpm package.
 # Copyright © of this file:
 # Mario Blättermann <mario.blaettermann@gmail.com>, 2019.
 msgid ""
@@ -13,7 +13,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 18.12.3\n"
 
 #. type: TH

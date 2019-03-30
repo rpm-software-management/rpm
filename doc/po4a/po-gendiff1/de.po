@@ -1,5 +1,6 @@
+# # German translation of gendiff.1
 # Copyright (C) 2019 Free Software Foundation, Inc.
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the rpm package.
 #
 # Mario Blättermann <mario.blaettermann@gmail.com>, 2019.
 msgid ""
@@ -13,7 +14,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 2.2.1\n"
 
 #. type: TH

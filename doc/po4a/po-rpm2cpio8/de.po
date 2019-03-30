@@ -1,5 +1,5 @@
-# German translation of manpages
-# This file is distributed under the same license as the manpages-de package.
+# German translation of rpm2cpio.8
+# This file is distributed under the same license as the rpm package.
 # Copyright © of this file:
 # Mario Blättermann <mario.blaettermann@gmail.com>, 2014, 2019.
 msgid ""
@@ -14,7 +14,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.2.1\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. type: TH
 #: ../rpm2cpio.8:2

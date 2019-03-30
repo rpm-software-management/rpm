@@ -1,6 +1,7 @@
 # Polish translation of rpmdeps.8
-# This file is distributed under the same license as the manpages-de package.
+# This file is distributed under the same license as the rpm package.
 # Copyright © of this file:
+# Jakub Bogusz <qboosh@pld-linux.org>, 2003.
 # Mario Blättermann <mario.blaettermann@gmail.com>, 2019.
 msgid ""
 msgstr ""
