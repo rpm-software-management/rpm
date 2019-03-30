@@ -1,0 +1,2422 @@
+# German translation of the rpm-8 man page.
+# This file is distributed under the same license as the manpages-de package.
+# Copyright © of this file:
+# Mario Blättermann <mario.blaettermann@gmail.com>, 2019.
+msgid ""
+msgstr ""
+"Project-Id-Version: manpages-de\n"
+"POT-Creation-Date: 2019-03-30 12:26+0100\n"
+"PO-Revision-Date: 2019-03-28 22:43+0100\n"
+"Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
+"Language-Team: German <debian-l10n-german@lists.debian.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 18.12.3\n"
+
+#. type: TH
+#: ../rpm.8:3
+#, no-wrap
+msgid "RPM"
+msgstr "RPM"
+
+#. type: TH
+#: ../rpm.8:3
+#, no-wrap
+msgid "09 June 2002"
+msgstr "9. Juni 2002"
+
+#. type: TH
+#: ../rpm.8:3
+#, no-wrap
+msgid "Red Hat, Inc."
+msgstr "Red Hat, Inc."
+
+#. type: SH
+#: ../rpm.8:4
+#, no-wrap
+msgid "NAME"
+msgstr "BEZEICHNUNG"
+
+#. type: Plain text
+#: ../rpm.8:6
+msgid "rpm - RPM Package Manager"
+msgstr "rpm - RPM-Paketverwaltung"
+
+#. type: SH
+#: ../rpm.8:6
+#, no-wrap
+msgid "SYNOPSIS"
+msgstr "ÜBERSICHT"
+
+#. type: SS
+#: ../rpm.8:7
+#, no-wrap
+msgid "QUERYING AND VERIFYING PACKAGES:"
+msgstr "PAKETE ABFRAGEN UND ÜBERPRÜFEN:"
+
+#. type: Plain text
+#: ../rpm.8:12 ../rpm.8:447
+msgid "B<rpm> {B<-q|--query>} [B<select-options>] [B<query-options>]"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:14
+msgid "B<rpm> B<--querytags>"
+msgstr "B<rpm> B<--querytags>"
+
+#. type: Plain text
+#: ../rpm.8:16 ../rpm.8:762
+msgid "B<rpm> {B<-V|--verify>} [B<select-options>] [B<verify-options>]"
+msgstr ""
+
+#. type: SS
+#: ../rpm.8:17
+#, no-wrap
+msgid "INSTALLING, UPGRADING, AND REMOVING PACKAGES:"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:22 ../rpm.8:225
+msgid "B<rpm> {B<-i|--install>} [B<install-options>] I<PACKAGE_FILE>I< ...>"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:26 ../rpm.8:231
+msgid "B<rpm> {B<-U|--upgrade>} [B<install-options>] I<PACKAGE_FILE>I< ...>"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:30 ../rpm.8:238
+msgid "B<rpm> {B<-F|--freshen>} [B<install-options>] I<PACKAGE_FILE>I< ...>"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:34 ../rpm.8:245
+msgid "B<rpm> {B<--reinstall>} [B<install-options>] I<PACKAGE_FILE>I< ...>"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:39
+#, no-wrap
+msgid ""
+"B<rpm> {B<-e|--erase>} [B<--allmatches>] [B<--justdb] [--nodeps>] [B<--noscripts>]\n"
+"    [B<--notriggers>] [B<--test>] I<PACKAGE_NAME>I<\\ ...>\n"
+msgstr ""
+
+#. type: SS
+#: ../rpm.8:40
+#, no-wrap
+msgid "MISCELLANEOUS:"
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:44 ../rpm.8:850
+#, no-wrap
+msgid "B<rpm> B<--showrc>"
+msgstr "B<rpm> B<--showrc>"
+
+#. type: Plain text
+#: ../rpm.8:46
+msgid "B<rpm> B<--setperms> I<PACKAGE_NAME>I< ...>"
+msgstr "B<rpm> B<--setperms> I<PAKETNAME>I< …>"
+
+#. type: Plain text
+#: ../rpm.8:48
+msgid "B<rpm> B<--setugids> I<PACKAGE_NAME>I< ...>"
+msgstr "B<rpm> B<--setugids> I<PAKETNAME>I< …>"
+
+#. type: Plain text
+#: ../rpm.8:50
+msgid "B<rpm> B<--setcaps> I<PACKAGE_NAME>I< ...>"
+msgstr "B<rpm> B<--setcaps> I<PAKETNAME>I< …>"
+
+#. type: Plain text
+#: ../rpm.8:52
+msgid "B<rpm> B<--restore> I<PACKAGE_NAME>I< ...>"
+msgstr "B<rpm> B<--restore> I<PAKETNAME>I< …>"
+
+#. type: SS
+#: ../rpm.8:53
+#, no-wrap
+msgid "select-options"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:65
+#, no-wrap
+msgid ""
+" [I<PACKAGE_NAME>]\n"
+" [B<-a,--all [>I<SELECTOR>]] [B<-f,--file >I<FILE>]\n"
+" [B<-g,--group >I<GROUP>] [B<-p,--package >I<PACKAGE_FILE>]\n"
+" [B<--hdrid >I<SHA1>] [B<--pkgid >I<MD5>] [B<--tid >I<TID>]\n"
+" [B<--querybynumber >I<HDRNUM>] [B<--triggeredby >I<PACKAGE_NAME>]\n"
+" [B<--whatprovides >I<CAPABILITY>] [B<--whatrequires >I<CAPABILITY>]\n"
+" [B<--whatrecommends >I<CAPABILITY>] [B<--whatsuggests >I<CAPABILITY>]\n"
+" [B<--whatsupplements >I<CAPABILITY>] [B<--whatenhances >I<CAPABILITY>]\n"
+" [B<--whatobsoletes >I<CAPABILITY>] [B<--whatconflicts >I<CAPABILITY>]\n"
+msgstr ""
+
+#. type: SS
+#: ../rpm.8:66
+#, no-wrap
+msgid "query-options"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:71
+#, no-wrap
+msgid ""
+"General:\n"
+" [B<--changelog>] [B<--changes>]  [B<--dupes>] [B<-i,--info>]\n"
+" [B<--last>] [B<--qf,--queryformat >I<QUERYFMT>] [B<--xml>]\n"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:75
+#, no-wrap
+msgid ""
+"Dependencies:\n"
+" [B<--conflicts>] [B<--enhances>] [B<--obsoletes>] [B<--provides>]\n"
+" [B<--recommends>] [B<-R,--requires>] [B<--suggests>] [B<--supplements>]\n"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:81
+#, no-wrap
+msgid ""
+"Files:\n"
+" [B<-c,--configfiles>] [B<-d,--docfiles>] [B<--dump>] [B<--fileclass>]\n"
+" [B<--filecolor>] [B<--fileprovide>][B<--filerequire>] [B<--filecaps>]\n"
+" [B<--filesbypkg>] [B<-l,--list>] [B<-s,--state>]\n"
+" [B<--noartifact>] [B<--noghost>] [B<--noconfig>]\n"
+msgstr ""
+"Dateien:\n"
+" [B<-c,--configfiles>] [B<-d,--docfiles>] [B<--dump>] [B<--fileclass>]\n"
+" [B<--filecolor>] [B<--fileprovide>][B<--filerequire>] [B<--filecaps>]\n"
+" [B<--filesbypkg>] [B<-l,--list>] [B<-s,--state>]\n"
+" [B<--noartifact>] [B<--noghost>] [B<--noconfig>]\n"
+
+#. type: Plain text
+#: ../rpm.8:84
+#, no-wrap
+msgid ""
+"Scripts and triggers:\n"
+" [B<--filetriggers>] [B<--scripts>] [B<--triggers,--triggerscripts>]\n"
+msgstr ""
+"Skripte und Trigger:\n"
+" [B<--filetriggers>] [B<--scripts>] [B<--triggers,--triggerscripts>]\n"
+
+#. type: SS
+#: ../rpm.8:85
+#, no-wrap
+msgid "verify-options"
+msgstr "Überprüfungsoptionen"
+
+#. type: Plain text
+#: ../rpm.8:94
+#, no-wrap
+msgid ""
+" [B<--nodeps>] [B<--nofiles>] [B<--noscripts>]\n"
+" [B<--nodigest>] [B<--nosignature>]\n"
+" [B<--nolinkto>] [B<--nofiledigest>] [B<--nosize>] [B<--nouser>]\n"
+" [B<--nogroup>] [B<--nomtime>] [B<--nomode>] [B<--nordev>]\n"
+" [B<--nocaps>]\n"
+msgstr ""
+" [B<--nodeps>] [B<--nofiles>] [B<--noscripts>]\n"
+" [B<--nodigest>] [B<--nosignature>]\n"
+" [B<--nolinkto>] [B<--nofiledigest>] [B<--nosize>] [B<--nouser>]\n"
+" [B<--nogroup>] [B<--nomtime>] [B<--nomode>] [B<--nordev>]\n"
+" [B<--nocaps>]\n"
+
+#. type: SS
+#: ../rpm.8:95
+#, no-wrap
+msgid "install-options"
+msgstr "Installationsoptionen"
+
+#. type: Plain text
+#: ../rpm.8:110
+#, no-wrap
+msgid ""
+" [B<--allfiles>] [B<--badreloc>] [B<--excludepath >I<OLDPATH>]\n"
+" [B<--excludedocs>] [B<--force>] [B<-h,--hash>]\n"
+" [B<--ignoresize>] [B<--ignorearch>] [B<--ignoreos>]\n"
+" [B<--includedocs>] [B<--justdb>]\n"
+" [B<--nodeps>] [B<--nodigest>] [B<--noplugins>]\n"
+" [B<--nocaps>] [B<--noorder>] [B<--noverify>]\n"
+" [B<--nosignature>] [B<--noscripts>] [B<--notriggers>]\n"
+" [B<--oldpackage>] [B<--percent>] [B<--prefix >I<NEWPATH>]\n"
+" [B<--relocate >I<OLDPATH>B<=>I<NEWPATH>]\n"
+" [B<--replacefiles>] [B<--replacepkgs>]\n"
+" [B<--test>]\n"
+msgstr ""
+" [B<--allfiles>] [B<--badreloc>] [B<--excludepath >I<ALTER_PFAD>]\n"
+" [B<--excludedocs>] [B<--force>] [B<-h,--hash>]\n"
+" [B<--ignoresize>] [B<--ignorearch>] [B<--ignoreos>]\n"
+" [B<--includedocs>] [B<--justdb>]\n"
+" [B<--nodeps>] [B<--nodigest>] [B<--noplugins>]\n"
+" [B<--nocaps>] [B<--noorder>] [B<--noverify>]\n"
+" [B<--nosignature>] [B<--noscripts>] [B<--notriggers>]\n"
+" [B<--oldpackage>] [B<--percent>] [B<--prefix >I<NEUER_PFAD>]\n"
+" [B<--relocate >I<ALTER_PFAD>B<=>I<NEUER_PFAD>]\n"
+" [B<--replacefiles>] [B<--replacepkgs>]\n"
+" [B<--test>]\n"
+
+#. type: SH
+#: ../rpm.8:111
+#, no-wrap
+msgid "DESCRIPTION"
+msgstr "BESCHREIBUNG"
+
+#. type: Plain text
+#: ../rpm.8:124
+msgid ""
+"B<rpm> is a powerful B<Package Manager>, which can be used to build, "
+"install, query, verify, update, and erase individual software packages.  A "
+"B<package> consists of an archive of files and meta-data used to install and "
+"erase the archive files. The meta-data includes helper scripts, file "
+"attributes, and descriptive information about the package.  B<Packages> come "
+"in two varieties: binary packages, used to encapsulate software to be "
+"installed, and source packages, containing the source code and recipe "
+"necessary to produce binary packages."
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:133
+msgid ""
+"One of the following basic modes must be selected: B<Query>, B<Verify>, "
+"B<Install/Upgrade/Freshen/Reinstall>, B<Uninstall>, B<Set Owners/Groups>, "
+"B<Show Querytags>, and B<Show Configuration>."
+msgstr ""
+
+#. type: SS
+#: ../rpm.8:133
+#, no-wrap
+msgid "GENERAL OPTIONS"
+msgstr "ALLGEMEINE OPTIONEN"
+
+#. type: Plain text
+#: ../rpm.8:136
+msgid "These options can be used in all the different modes."
+msgstr ""
+"Diese Optionen können in allen der verschiedenen Modi verwendet werden."
+
+#. type: TP
+#: ../rpm.8:136
+#, no-wrap
+msgid "B<-?, --help>"
+msgstr "B<-?, --help>"
+
+#. type: Plain text
+#: ../rpm.8:139
+msgid "Print a longer usage message then normal."
+msgstr "gibt eine längere Hilfemeldung als sonst aus."
+
+#. type: TP
+#: ../rpm.8:139
+#, no-wrap
+msgid "B<--version>"
+msgstr "B<--version>"
+
+#. type: Plain text
+#: ../rpm.8:143
+msgid "Print a single line containing the version number of B<rpm> being used."
+msgstr ""
+"gibt eine einzelne Zeile aus, welche die Versionsummer von B<rpm> angibt."
+
+#. type: TP
+#: ../rpm.8:143
+#, no-wrap
+msgid "B<--quiet>"
+msgstr "B<--quiet>"
+
+#. type: Plain text
+#: ../rpm.8:147
+msgid ""
+"Print as little as possible - normally only error messages will be displayed."
+msgstr ""
+"gibt so wenig wie möglich aus – es werden normalerweise nur Fehlermeldungen "
+"angezeigt."
+
+#. type: TP
+#: ../rpm.8:147
+#, no-wrap
+msgid "B<-v, --verbose>"
+msgstr "B<-v, --verbose>"
+
+#. type: Plain text
+#: ../rpm.8:151
+msgid ""
+"Print verbose information - normally routine progress messages will be "
+"displayed."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:151
+#, no-wrap
+msgid "B<-vv>"
+msgstr "B<-vv>"
+
+#. type: Plain text
+#: ../rpm.8:154
+msgid "Print lots of ugly debugging information."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:154
+#, no-wrap
+msgid "B<--rcfile >I<FILELIST>"
+msgstr "B<--rcfile >I<DATEILISTE>"
+
+#. type: Plain text
+#: ../rpm.8:164
+msgid ""
+"Replace the list of configuration files to be read. Each of the files in the "
+"colon separated I<FILELIST> is read sequentially by B<rpm> for configuration "
+"information.  Only the first file in the list must exist, and tildes will be "
+"expanded to the value of B<$HOME>.  The default I<FILELIST> is I</usr/\\:lib/"
+"\\:rpm/\\:rpmrc>:\\:I</usr/\\:lib/\\:rpm/\\:redhat/\\:rpmrc>:\\:I</etc/\\:"
+"rpmrc>:\\:I<~/.rpmrc>."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:165
+#, no-wrap
+msgid "B<--load >I<FILE>"
+msgstr "B<--load >I<DATEI>"
+
+#. type: Plain text
+#: ../rpm.8:168
+msgid "Load an individual macro file."
+msgstr "lädt eine individuelle Makro-Datei."
+
+#. type: TP
+#: ../rpm.8:169
+#, no-wrap
+msgid "B<--macros >I<FILELIST>"
+msgstr "B<--macros >I<DATEILISTE>"
+
+#. type: Plain text
+#: ../rpm.8:178
+msgid ""
+"Replace the list of macro files to be loaded. Each of the files in the colon "
+"separated I<FILELIST> is read sequentially by B<rpm> for macro definitions.  "
+"Only the first file in the list must exist, and tildes will be expanded to "
+"the value of B<$HOME>.  The default I<FILELIST> is I</usr/\\:lib/\\:rpm/\\:"
+"macros>:\\:I</usr/\\:lib/\\:rpm/\\:macros.d/\\:macros.*>:\\:I</usr/\\:lib/\\:"
+"rpm/\\:platform/\\:%{_target}/\\:macros>:\\:I</usr/\\:lib/\\:rpm/\\:"
+"fileattrs/\\:*.attr>:\\:I</usr/\\:lib/\\:rpm/\\:redhat/\\:macros>:\\:I</etc/"
+"\\:rpm/\\:macros.*>:\\:I</etc/\\:rpm/\\:macros>:\\:I</etc/\\:rpm/\\:"
+"%{_target}/\\:macros>:\\:I<~/.rpmmacros>"
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:179
+#, no-wrap
+msgid "B<--pipe >I<CMD>"
+msgstr "B<--pipe >I<BEFEHL>"
+
+#. type: Plain text
+#: ../rpm.8:182
+msgid "Pipes the output of B<rpm> to the command I<CMD>."
+msgstr ""
+"leitet die Ausgabe des Befehls B<rpm> an den angegebenen I<BEFEHL> weiter."
+
+#. type: TP
+#: ../rpm.8:182
+#, no-wrap
+msgid "B<--dbpath >I<DIRECTORY>"
+msgstr "B<--dbpath >I<VERZEICHNIS>"
+
+#. type: Plain text
+#: ../rpm.8:186
+msgid ""
+"Use the database in I<DIRECTORY> rather than the default path I</var/lib/rpm>"
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:186
+#, no-wrap
+msgid "B<--root >I<DIRECTORY>"
+msgstr "B<--root >I<VERZEICHNIS>"
+
+#. type: Plain text
+#: ../rpm.8:196
+msgid ""
+"Use the file system tree rooted at I<DIRECTORY> for all operations.  Note "
+"that this means the database within I<DIRECTORY> will be used for dependency "
+"checks and any scriptlet(s) (e.g.  B<%post> if installing, or B<%prep> if "
+"building, a package)  will be run after a chroot(2) to I<DIRECTORY>."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:196
+#, no-wrap
+msgid "B<-D, --define='>I<MACRO EXPR>B<'>"
+msgstr "B<-D, --define='>I<MAKRO AUSDRUCK>B<'>"
+
+#. type: Plain text
+#: ../rpm.8:199
+msgid "Defines I<MACRO> with value I<EXPR>."
+msgstr "definiert ein I<MAKRO> mit dem angegebenen I<AUSDRUCK>."
+
+#. type: TP
+#: ../rpm.8:199
+#, no-wrap
+msgid "B<--undefine='>I<MACRO>B<'>"
+msgstr "B<--undefine='>I<MAKRO>B<'>"
+
+#. type: Plain text
+#: ../rpm.8:202
+msgid "Undefines I<MACRO>."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:202
+#, no-wrap
+msgid "B<-E, --eval='>I<EXPR>B<'>"
+msgstr "B<-E, --eval='>I<AUSDRUCK>B<'>"
+
+#. type: Plain text
+#: ../rpm.8:205
+msgid "Prints macro expansion of I<EXPR>."
+msgstr "gibt aus, wie der angegebene I<AUSDRUCK> expandiert wird."
+
+#. type: Plain text
+#: ../rpm.8:208
+msgid ""
+"More - less often needed - options can be found on the B<rpm-misc(8)> man "
+"page."
+msgstr ""
+
+#. type: SS
+#: ../rpm.8:208
+#, no-wrap
+msgid "INSTALL AND UPGRADE OPTIONS"
+msgstr "INSTALLATIONS- UND AKTUALISIERUNGSOPTIONEN"
+
+#. type: Plain text
+#: ../rpm.8:221
+msgid ""
+"In these options, I<PACKAGE_FILE> can be either B<rpm> binary file or ASCII "
+"package manifest (see B<PACKAGE SELECTION OPTIONS>), and may be specified as "
+"an B<ftp> or B<http> URL, in which case the package will be downloaded "
+"before being installed. See B<FTP/HTTP OPTIONS> for information on B<rpm>'s "
+"B<ftp> and B<http> client support."
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:223
+msgid "The general form of an rpm install command is"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:227
+msgid "This installs a new package."
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:229
+msgid "The general form of an rpm upgrade command is"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:236
+msgid ""
+"This upgrades or installs the package currently installed to a newer "
+"version.  This is the same as install, except all other version(s) of the "
+"package are removed after the new package is installed."
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:241
+msgid ""
+"This will upgrade packages, but only ones for which an earlier version is "
+"installed."
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:243
+msgid "The general form of an rpm reinstall command is"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:247
+msgid "This reinstalls a previously installed package."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:249
+#, no-wrap
+msgid "B<--allfiles>"
+msgstr "B<--allfiles>"
+
+#. type: Plain text
+#: ../rpm.8:253
+msgid ""
+"Installs or upgrades all the missingok files in the package, regardless if "
+"they exist."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:253
+#, no-wrap
+msgid "B<--badreloc>"
+msgstr "B<--badreloc>"
+
+#. type: Plain text
+#: ../rpm.8:258
+msgid ""
+"Used with B<--relocate>, permit relocations on all file paths, not just "
+"those I<OLDPATH>'s included in the binary package relocation hint(s)."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:258
+#, no-wrap
+msgid "B<--excludepath >I<OLDPATH>"
+msgstr "B<--excludepath >I<ALTER_PFAD>"
+
+#. type: Plain text
+#: ../rpm.8:262
+msgid "Don't install files whose name begins with I<OLDPATH>."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:262
+#, no-wrap
+msgid "B<--excludedocs>"
+msgstr "B<--excludedocs>"
+
+#. type: Plain text
+#: ../rpm.8:266
+msgid ""
+"Don't install any files which are marked as documentation (which includes "
+"man pages and texinfo documents)."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:266
+#, no-wrap
+msgid "B<--force>"
+msgstr "B<--force>"
+
+#. type: Plain text
+#: ../rpm.8:272
+msgid "Same as using B<--replacepkgs>, B<--replacefiles>, and B<--oldpackage>."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:272
+#, no-wrap
+msgid "B<-h, --hash>"
+msgstr "B<-h, --hash>"
+
+#. type: Plain text
+#: ../rpm.8:276
+msgid ""
+"Print 50 hash marks as the package archive is unpacked.  Use with B<-v|--"
+"verbose> for a nicer display."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:276
+#, no-wrap
+msgid "B<--ignoresize>"
+msgstr "B<--ignoresize>"
+
+#. type: Plain text
+#: ../rpm.8:280
+msgid ""
+"Don't check mount file systems for sufficient disk space before installing "
+"this package."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:280
+#, no-wrap
+msgid "B<--ignorearch>"
+msgstr "B<--ignorearch>"
+
+#. type: Plain text
+#: ../rpm.8:284
+msgid ""
+"Allow installation or upgrading even if the architectures of the binary "
+"package and host don't match."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:284
+#, no-wrap
+msgid "B<--ignoreos>"
+msgstr "B<--ignoreos>"
+
+#. type: Plain text
+#: ../rpm.8:288
+msgid ""
+"Allow installation or upgrading even if the operating systems of the binary "
+"package and host don't match."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:288
+#, no-wrap
+msgid "B<--includedocs>"
+msgstr "B<--includedocs>"
+
+#. type: Plain text
+#: ../rpm.8:291
+msgid "Install documentation files. This is the default behavior."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:291 ../rpm.8:405
+#, no-wrap
+msgid "B<--justdb>"
+msgstr "B<--justdb>"
+
+#. type: Plain text
+#: ../rpm.8:294 ../rpm.8:408
+msgid "Update only the database, not the filesystem."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:294 ../rpm.8:780
+#, no-wrap
+msgid "B<--nodigest>"
+msgstr "B<--nodigest>"
+
+#. type: Plain text
+#: ../rpm.8:297 ../rpm.8:783
+msgid "Don't verify package or header digests when reading."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:297
+#, no-wrap
+msgid "B<--nomanifest>"
+msgstr "B<--nomanifest>"
+
+#. type: Plain text
+#: ../rpm.8:300
+msgid "Don't process non-package files as manifests."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:300 ../rpm.8:789
+#, no-wrap
+msgid "B<--nosignature>"
+msgstr "B<--nosignature>"
+
+#. type: Plain text
+#: ../rpm.8:303 ../rpm.8:792
+msgid "Don't verify package or header signatures when reading."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:303 ../rpm.8:408 ../rpm.8:777
+#, no-wrap
+msgid "B<--nodeps>"
+msgstr "B<--nodeps>"
+
+#. type: Plain text
+#: ../rpm.8:307
+msgid "Don't do a dependency check before installing or upgrading a package."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:307 ../rpm.8:809
+#, no-wrap
+msgid "B<--nocaps>"
+msgstr "B<--nocaps>"
+
+#. type: Plain text
+#: ../rpm.8:310
+msgid "Don't set file capabilities."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:310
+#, no-wrap
+msgid "B<--noorder>"
+msgstr "B<--noorder>"
+
+#. type: Plain text
+#: ../rpm.8:314
+msgid ""
+"Don't reorder the packages for an install. The list of packages would "
+"normally be reordered to satisfy dependencies."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:314
+#, no-wrap
+msgid "B<--noverify>"
+msgstr "B<--noverify>"
+
+#. type: Plain text
+#: ../rpm.8:317
+msgid "Don't perform verify package files prior to installation."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:317
+#, no-wrap
+msgid "B<--noplugins>"
+msgstr "B<--noplugins>"
+
+#. type: Plain text
+#: ../rpm.8:320
+msgid "Do not load and execute plugins."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:320
+#, no-wrap
+msgid "B<--noscripts>, B<--nopre>, B<--nopost>, B<--nopreun>, B<--nopostun>, B<--nopretrans>, B<--noposttrans>"
+msgstr "B<--noscripts>, B<--nopre>, B<--nopost>, B<--nopreun>, B<--nopostun>, B<--nopretrans>, B<--noposttrans>"
+
+#. type: Plain text
+#: ../rpm.8:324
+msgid ""
+"Don't execute the scriptlet of the same name.  The B<--noscripts> option is "
+"equivalent to"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:331
+msgid ""
+"B<--nopre> B<--nopost> B<--nopreun> B<--nopostun> B<--nopretrans> B<--"
+"noposttrans>"
+msgstr ""
+"B<--nopre> B<--nopost> B<--nopreun> B<--nopostun> B<--nopretrans> B<--"
+"noposttrans>"
+
+#. type: Plain text
+#: ../rpm.8:340
+msgid ""
+"and turns off the execution of the corresponding B<%pre>, B<%post>, B<"
+"%preun>, B<%postun> B<%pretrans>, and B<%posttrans> scriptlet(s)."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:341
+#, no-wrap
+msgid "B<--notriggers>, B<--notriggerin>, B<--notriggerun>, B<--notriggerprein>, B<--notriggerpostun>"
+msgstr "B<--notriggers>, B<--notriggerin>, B<--notriggerun>, B<--notriggerprein>, B<--notriggerpostun>"
+
+#. type: Plain text
+#: ../rpm.8:345 ../rpm.8:428
+msgid ""
+"Don't execute any trigger scriptlet of the named type.  The B<--notriggers> "
+"option is equivalent to"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:350
+msgid ""
+"B<--notriggerprein> B<--notriggerin> B<--notriggerun> B<--notriggerpostun>"
+msgstr ""
+"B<--notriggerprein> B<--notriggerin> B<--notriggerun> B<--notriggerpostun>"
+
+#. type: Plain text
+#: ../rpm.8:357
+msgid ""
+"and turns off execution of the corresponding B<%triggerprein>, B<"
+"%triggerin>, B<%triggerun>, and B<%triggerpostun> scriptlet(s)."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:357
+#, no-wrap
+msgid "B<--oldpackage>"
+msgstr "B<--oldpackage>"
+
+#. type: Plain text
+#: ../rpm.8:360
+msgid "Allow an upgrade to replace a newer package with an older one."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:360
+#, no-wrap
+msgid "B<--percent>"
+msgstr "B<--percent>"
+
+#. type: Plain text
+#: ../rpm.8:365
+msgid ""
+"Print percentages as files are unpacked from the package archive.  This is "
+"intended to make B<rpm> easy to run from other tools."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:365
+#, no-wrap
+msgid "B<--prefix >I<NEWPATH>"
+msgstr "B<--prefix >I<NEUER_PFAD>"
+
+#. type: Plain text
+#: ../rpm.8:370
+msgid ""
+"For relocatable binary packages, translate all file paths that start with "
+"the installation prefix in the package relocation hint(s)  to I<NEWPATH>."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:370
+#, no-wrap
+msgid "B<--relocate >I<OLDPATH>B<=>I<NEWPATH>"
+msgstr "B<--relocate >I<ALTER_PFAD>B<=>I<NEUER_PFAD>"
+
+#. type: Plain text
+#: ../rpm.8:378
+msgid ""
+"For relocatable binary packages, translate all file paths that start with "
+"I<OLDPATH> in the package relocation hint(s) to I<NEWPATH>.  This option can "
+"be used repeatedly if several I<OLDPATH>'s in the package are to be "
+"relocated."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:378
+#, no-wrap
+msgid "B<--replacefiles>"
+msgstr "B<--replacefiles>"
+
+#. type: Plain text
+#: ../rpm.8:382
+msgid ""
+"Install the packages even if they replace files from other, already "
+"installed, packages."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:382
+#, no-wrap
+msgid "B<--replacepkgs>"
+msgstr "B<--replacepkgs>"
+
+#. type: Plain text
+#: ../rpm.8:386
+msgid ""
+"Install the packages even if some of them are already installed on this "
+"system."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:386 ../rpm.8:436
+#, no-wrap
+msgid "B<--test>"
+msgstr "B<--test>"
+
+#. type: Plain text
+#: ../rpm.8:390
+msgid ""
+"Do not install the package, simply check for and report potential conflicts."
+msgstr ""
+
+#. type: SS
+#: ../rpm.8:390
+#, no-wrap
+msgid "ERASE OPTIONS"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:393
+msgid "The general form of an rpm erase command is"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:396
+msgid ""
+"B<rpm> {B<-e|--erase>} [B<--allmatches>] [B<--justdb] [--nodeps>] [B<--"
+"noscripts>] [B<--notriggers>] [B<--test>] I<PACKAGE_NAME>I< ...>"
+msgstr ""
+"B<rpm> {B<-e|--erase>} [B<--allmatches>] [B<--justdb] [--nodeps>] [B<--"
+"noscripts>] [B<--notriggers>] [B<--test>] I<PAKETNAME>I< …>"
+
+#. type: Plain text
+#: ../rpm.8:399
+msgid "The following options may also be used:"
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:399
+#, no-wrap
+msgid "B<--allmatches>"
+msgstr "B<--allmatches>"
+
+#. type: Plain text
+#: ../rpm.8:405
+msgid ""
+"Remove all versions of the package which match I<PACKAGE_NAME>. Normally an "
+"error is issued if I<PACKAGE_NAME> matches multiple packages."
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:411
+msgid "Don't check dependencies before uninstalling the packages."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:411
+#, no-wrap
+msgid "B<--noscripts>, B<--nopreun>, B<--nopostun>"
+msgstr "B<--noscripts>, B<--nopreun>, B<--nopostun>"
+
+#. type: Plain text
+#: ../rpm.8:416
+msgid ""
+"Don't execute the scriptlet of the same name.  The B<--noscripts> option "
+"during package erase is equivalent to"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:419
+msgid "B<--nopreun> B<--nopostun>"
+msgstr "B<--nopreun> B<--nopostun>"
+
+#. type: Plain text
+#: ../rpm.8:424
+msgid ""
+"and turns off the execution of the corresponding B<%preun>, and B<%postun> "
+"scriptlet(s)."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:424
+#, no-wrap
+msgid "B<--notriggers>, B<--notriggerun>, B<--notriggerpostun>"
+msgstr "B<--notriggers>, B<--notriggerun>, B<--notriggerpostun>"
+
+#. type: Plain text
+#: ../rpm.8:431
+msgid "B<--notriggerun> B<--notriggerpostun>"
+msgstr "B<--notriggerun> B<--notriggerpostun>"
+
+#. type: Plain text
+#: ../rpm.8:436
+msgid ""
+"and turns off execution of the corresponding B<%triggerun>, and B<"
+"%triggerpostun> scriptlet(s)."
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:441
+msgid ""
+"Don't really uninstall anything, just go through the motions.  Useful in "
+"conjunction with the B<-vv> option for debugging."
+msgstr ""
+
+#. type: SS
+#: ../rpm.8:441
+#, no-wrap
+msgid "QUERY OPTIONS"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:444
+msgid "The general form of an rpm query command is"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:451
+msgid ""
+"You may specify the format that package information should be printed in. To "
+"do this, you use the"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:453
+#, no-wrap
+msgid " B<--qf|--queryformat> I<QUERYFMT>\n"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:466
+msgid ""
+"option, followed by the I<QUERYFMT> format string.  Query formats are "
+"modified versions of the standard B<printf(3)> formatting. The format is "
+"made up of static strings (which may include standard C character escapes "
+"for newlines, tabs, and other special characters) and B<printf(3)> type "
+"formatters.  As B<rpm> already knows the type to print, the type specifier "
+"must be omitted however, and replaced by the name of the header tag to be "
+"printed, enclosed by B<{}> characters. Tag names are case insensitive, and "
+"the leading B<RPMTAG_> portion of the tag name may be omitted as well."
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:470
+msgid ""
+"Alternate output formats may be requested by following the tag with B<:"
+">I<typetag>.  Currently, the following types are supported:"
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:470
+#, no-wrap
+msgid "B<:armor>"
+msgstr "B<:armor>"
+
+#. type: Plain text
+#: ../rpm.8:473
+msgid "Wrap a public key in ASCII armor."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:473
+#, no-wrap
+msgid "B<:arraysize>"
+msgstr "B<:arraysize>"
+
+#. type: Plain text
+#: ../rpm.8:476
+msgid "Display number of elements in array tags."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:476
+#, no-wrap
+msgid "B<:base64>"
+msgstr "B<:base64>"
+
+#. type: Plain text
+#: ../rpm.8:479
+msgid "Encode binary data using base64."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:479
+#, no-wrap
+msgid "B<:date>"
+msgstr "B<:date>"
+
+#. type: Plain text
+#: ../rpm.8:482
+msgid "Use strftime(3) \"%c\" format."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:482
+#, no-wrap
+msgid "B<:day>"
+msgstr "B<:day>"
+
+#. type: Plain text
+#: ../rpm.8:485
+msgid "Use strftime(3) \"%a %b %d %Y\" format."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:485
+#, no-wrap
+msgid "B<:depflags>"
+msgstr "B<:depflags>"
+
+#. type: Plain text
+#: ../rpm.8:488
+msgid "Format dependency comparison operator."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:488
+#, no-wrap
+msgid "B<:deptype>"
+msgstr "B<:deptype>"
+
+#. type: Plain text
+#: ../rpm.8:491
+msgid "Format dependency type."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:491
+#, no-wrap
+msgid "B<:expand>"
+msgstr "B<:expand>"
+
+#. type: Plain text
+#: ../rpm.8:494
+msgid "Perform macro expansion."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:494
+#, no-wrap
+msgid "B<:fflags>"
+msgstr "B<:fflags>"
+
+#. type: Plain text
+#: ../rpm.8:497
+msgid "Format file flags."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:497
+#, no-wrap
+msgid "B<:fstate>"
+msgstr "B<:fstate>"
+
+#. type: Plain text
+#: ../rpm.8:500
+msgid "Format file state."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:500
+#, no-wrap
+msgid "B<:fstatus>"
+msgstr "B<:fstatus>"
+
+#. type: Plain text
+#: ../rpm.8:503
+msgid "Format file verify status."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:503
+#, no-wrap
+msgid "B<:hex>"
+msgstr "B<:hex>"
+
+#. type: Plain text
+#: ../rpm.8:506
+msgid "Format in hexadecimal."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:506
+#, no-wrap
+msgid "B<:octal>"
+msgstr "B<:octal>"
+
+#. type: Plain text
+#: ../rpm.8:509
+msgid "Format in octal."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:509
+#, no-wrap
+msgid "B<:humaniec>"
+msgstr "B<:humaniec>"
+
+#. type: Plain text
+#: ../rpm.8:512
+msgid ""
+"Human readable number (in IEC 80000). The suffix K = 1024, M = 1048576, ..."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:512
+#, no-wrap
+msgid "B<:humansi>"
+msgstr "B<:humansi>"
+
+#. type: Plain text
+#: ../rpm.8:515
+msgid "Human readable number (in SI). The suffix K = 1000, M = 1000000, ..."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:515
+#, no-wrap
+msgid "B<:perms>"
+msgstr "B<:perms>"
+
+#. type: Plain text
+#: ../rpm.8:518
+msgid "Format file permissions."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:518
+#, no-wrap
+msgid "B<:pgpsig>"
+msgstr "B<:pgpsig>"
+
+#. type: Plain text
+#: ../rpm.8:521
+msgid "Display signature fingerprint and time."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:521
+#, no-wrap
+msgid "B<:shescape>"
+msgstr "B<:shescape>"
+
+#. type: Plain text
+#: ../rpm.8:524
+msgid "Escape single quotes for use in a script."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:524
+#, no-wrap
+msgid "B<:triggertype>"
+msgstr "B<:triggertype>"
+
+#. type: Plain text
+#: ../rpm.8:527
+msgid "Display trigger suffix."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:527
+#, no-wrap
+msgid "B<:vflags>"
+msgstr "B<:vflags>"
+
+#. type: Plain text
+#: ../rpm.8:530
+msgid "File verification flags."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:530
+#, no-wrap
+msgid "B<:xml>"
+msgstr "B<:xml>"
+
+#. type: Plain text
+#: ../rpm.8:533
+msgid "Wrap data in simple xml markup."
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:540
+msgid ""
+"For example, to print only the names of the packages queried, you could use "
+"B<%{NAME}> as the format string.  To print the packages name and "
+"distribution information in two columns, you could use B<"
+"%-30{NAME}%{DISTRIBUTION}>.  B<rpm> will print a list of all of the tags it "
+"knows about when it is invoked with the B<--querytags> argument."
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:543
+msgid ""
+"There are three subsets of options for querying: package selection, file "
+"selection and information selection."
+msgstr ""
+
+#. type: SS
+#: ../rpm.8:543
+#, no-wrap
+msgid "PACKAGE SELECTION OPTIONS:"
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:545
+#, no-wrap
+msgid "I<PACKAGE_NAME>"
+msgstr "I<PAKETNAME>"
+
+#. type: Plain text
+#: ../rpm.8:549
+msgid ""
+"Query installed package named I<PACKAGE_NAME>. To specify the package more "
+"precisely the package name may be followed by the version or version and "
+"release both separated by a dash or an architecture name separated by a dot. "
+"See the output of B<rpm -qa> or B<rpm -qp >I<PACKAGE_FILE> as an example."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:550
+#, no-wrap
+msgid "B<-a, --all [>I<SELECTOR>]"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:553
+msgid "Query all installed packages."
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:557
+msgid ""
+"An optional I<SELECTOR> in the form of tag=pattern can be provided to narrow "
+"the selection, for example name=\"b*\" to query packages whose name starts "
+"with \"b\"."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:557
+#, no-wrap
+msgid "B<--dupes>"
+msgstr "B<--dupes>"
+
+#. type: Plain text
+#: ../rpm.8:560
+msgid "List duplicated packages."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:560
+#, no-wrap
+msgid "B<-f, --file >I<FILE>"
+msgstr "B<-f, --file >I<DATEI>"
+
+#. type: Plain text
+#: ../rpm.8:563
+msgid "Query package owning I<FILE>."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:563
+#, no-wrap
+msgid "B<--filecaps>"
+msgstr "B<--filecaps>"
+
+#. type: Plain text
+#: ../rpm.8:566
+msgid "List file names with POSIX1.e capabilities."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:566
+#, no-wrap
+msgid "B<--fileclass>"
+msgstr "B<--fileclass>"
+
+#. type: Plain text
+#: ../rpm.8:569
+msgid "List file names with their classes (libmagic classification)."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:569
+#, no-wrap
+msgid "B<--filecolor>"
+msgstr "B<--filecolor>"
+
+#. type: Plain text
+#: ../rpm.8:572
+msgid ""
+"List file names with their colors (0 for noarch, 1 for 32bit, 2 for 64 bit)."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:572
+#, no-wrap
+msgid "B<--fileprovide>"
+msgstr "B<--fileprovide>"
+
+#. type: Plain text
+#: ../rpm.8:575
+msgid "List file names with their provides."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:575
+#, no-wrap
+msgid "B<--filerequire>"
+msgstr "B<--filerequire>"
+
+#. type: Plain text
+#: ../rpm.8:578
+msgid "List file names with their requires."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:578
+#, no-wrap
+msgid "B<-g, --group >I<GROUP>"
+msgstr "B<-g, --group >I<GRUPPE>"
+
+#. type: Plain text
+#: ../rpm.8:581
+msgid "Query packages with the group of I<GROUP>."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:581
+#, no-wrap
+msgid "B<--hdrid >I<SHA1>"
+msgstr "B<--hdrid >I<SHA1>"
+
+#. type: Plain text
+#: ../rpm.8:585
+msgid ""
+"Query package that contains a given header identifier, i.e. the I<SHA1> "
+"digest of the immutable header region."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:585
+#, no-wrap
+msgid "B<-p, --package >I<PACKAGE_FILE>"
+msgstr "B<-p, --package >I<PAKETDATEI>"
+
+#. type: Plain text
+#: ../rpm.8:604
+msgid ""
+"Query an (uninstalled) package I<PACKAGE_FILE>.  The I<PACKAGE_FILE> may be "
+"specified as an B<ftp> or B<http> style URL, in which case the package "
+"header will be downloaded and queried.  See B<FTP/HTTP OPTIONS> for "
+"information on B<rpm>'s B<ftp> and B<http> client support. The "
+"I<PACKAGE_FILE> argument(s), if not a binary package, will be interpreted as "
+"an ASCII package manifest unless B<--nomanifest> option is used.  In "
+"manifests, comments are permitted, starting with a '#', and each line of a "
+"package manifest file may include white space separated glob expressions, "
+"including URL's, that will be expanded to paths that are substituted in "
+"place of the package manifest as additional I<PACKAGE_FILE> arguments to the "
+"query."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:604
+#, no-wrap
+msgid "B<--pkgid >I<MD5>"
+msgstr "B<--pkgid >I<MD5>"
+
+#. type: Plain text
+#: ../rpm.8:609
+msgid ""
+"Query package that contains a given package identifier, i.e. the I<MD5> "
+"digest of the combined header and payload contents."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:609
+#, no-wrap
+msgid "B<--querybynumber >I<HDRNUM>"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:613
+msgid ""
+"Query the I<HDRNUM>th database entry directly; this is useful only for "
+"debugging."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:613
+#, no-wrap
+msgid "B<--specfile >I<SPECFILE>"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:620
+msgid ""
+"Parse and query I<SPECFILE> as if it were a package. Although not all the "
+"information (e.g. file lists)  is available, this type of query permits rpm "
+"to be used to extract information from spec files without having to write a "
+"specfile parser."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:620
+#, no-wrap
+msgid "B<--tid >I<TID>"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:626
+msgid ""
+"Query package(s) that have a given I<TID> transaction identifier. A unix "
+"time stamp is currently used as a transaction identifier. All package(s) "
+"installed or erased within a single transaction have a common identifier."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:626
+#, no-wrap
+msgid "B<--triggeredby >I<PACKAGE_NAME>"
+msgstr "B<--triggeredby >I<PAKETNAME>"
+
+#. type: Plain text
+#: ../rpm.8:630
+msgid "Query packages that are triggered by package(s)  I<PACKAGE_NAME>."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:630
+#, no-wrap
+msgid "B<--whatobsoletes >I<CAPABILITY>"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:633
+msgid "Query all packages that obsolete I<CAPABILITY> for proper functioning."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:633
+#, no-wrap
+msgid "B<--whatprovides >I<CAPABILITY>"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:636
+msgid "Query all packages that provide the I<CAPABILITY> capability."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:636
+#, no-wrap
+msgid "B<--whatrequires >I<CAPABILITY>"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:639
+msgid "Query all packages that require I<CAPABILITY> for proper functioning."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:639
+#, no-wrap
+msgid "B<--whatconflicts >I<CAPABILITY>"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:642
+msgid "Query all packages that conflict with I<CAPABILITY>."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:642
+#, no-wrap
+msgid "B<--whatrecommends >I<CAPABILITY>"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:645
+msgid "Query all packages that recommend I<CAPABILITY>."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:645
+#, no-wrap
+msgid "B<--whatsuggests >I<CAPABILITY>"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:648
+msgid "Query all packages that suggest I<CAPABILITY>."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:648
+#, no-wrap
+msgid "B<--whatsupplements >I<CAPABILITY>"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:651
+msgid "Query all packages that supplement I<CAPABILITY>."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:651
+#, no-wrap
+msgid "B<--whatenhances >I<CAPABILITY>"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:654
+msgid "Query all packages that enhance I<CAPABILITY>."
+msgstr ""
+
+#. type: SS
+#: ../rpm.8:654
+#, no-wrap
+msgid "PACKAGE QUERY OPTIONS:"
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:656
+#, no-wrap
+msgid "B<--changelog>"
+msgstr "B<--changelog>"
+
+#. type: Plain text
+#: ../rpm.8:659
+msgid "Display change information for the package."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:659
+#, no-wrap
+msgid "B<--changes>"
+msgstr "B<--changes>"
+
+#. type: Plain text
+#: ../rpm.8:662
+msgid "Display change information for the package with full time stamps."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:662
+#, no-wrap
+msgid "B<--conflicts>"
+msgstr "B<--conflicts>"
+
+#. type: Plain text
+#: ../rpm.8:665
+msgid "List capabilities this package conflicts with."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:665
+#, no-wrap
+msgid "B<--dump>"
+msgstr "B<--dump>"
+
+#. type: Plain text
+#: ../rpm.8:668
+msgid "Dump file information as follows (implies B<-l>):"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:674
+#, no-wrap
+msgid ""
+"path size mtime digest mode owner group isconfig isdoc rdev symlink\n"
+"\t\n"
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:676
+#, no-wrap
+msgid "B<--enhances>"
+msgstr "B<--enhances>"
+
+#. type: Plain text
+#: ../rpm.8:679
+msgid "List capabilities enhanced by package(s)"
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:679
+#, no-wrap
+msgid "B<--filesbypkg>"
+msgstr "B<--filesbypkg>"
+
+#. type: Plain text
+#: ../rpm.8:682
+msgid "List all the files in each selected package."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:682
+#, no-wrap
+msgid "B<--filetriggers>"
+msgstr "B<--filetriggers>"
+
+#. type: Plain text
+#: ../rpm.8:685
+msgid "List filetrigger scriptlets from package(s)."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:685
+#, no-wrap
+msgid "B<-i, --info>"
+msgstr "B<-i, --info>"
+
+#. type: Plain text
+#: ../rpm.8:689
+msgid ""
+"Display package information, including name, version, and description.  This "
+"uses the B<--queryformat> if one was specified."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:689
+#, no-wrap
+msgid "B<--last>"
+msgstr "B<--last>"
+
+#. type: Plain text
+#: ../rpm.8:693
+msgid ""
+"Orders the package listing by install time such that the latest packages are "
+"at the top."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:693
+#, no-wrap
+msgid "B<-l, --list>"
+msgstr "B<-l, --list>"
+
+#. type: Plain text
+#: ../rpm.8:696
+msgid "List files in package."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:696
+#, no-wrap
+msgid "B<--obsoletes>"
+msgstr "B<--obsoletes>"
+
+#. type: Plain text
+#: ../rpm.8:699
+msgid "List packages this package obsoletes."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:699
+#, no-wrap
+msgid "B<--provides>"
+msgstr "B<--provides>"
+
+#. type: Plain text
+#: ../rpm.8:702
+msgid "List capabilities this package provides."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:702
+#, no-wrap
+msgid "B<--recommends>"
+msgstr "B<--recommends>"
+
+#. type: Plain text
+#: ../rpm.8:705
+msgid "List capabilities recommended by package(s)"
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:705
+#, no-wrap
+msgid "B<-R, --requires>"
+msgstr "B<-R, --requires>"
+
+#. type: Plain text
+#: ../rpm.8:708
+msgid "List capabilities on which this package depends."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:708
+#, no-wrap
+msgid "B<--suggests>"
+msgstr "B<--suggests>"
+
+#. type: Plain text
+#: ../rpm.8:711
+msgid "List capabilities suggested by package(s)"
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:711
+#, no-wrap
+msgid "B<--supplements>"
+msgstr "B<--supplements>"
+
+#. type: Plain text
+#: ../rpm.8:714
+msgid "List capabilities supplemented by package(s)"
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:714
+#, no-wrap
+msgid "B<--scripts>"
+msgstr "B<--scripts>"
+
+#. type: Plain text
+#: ../rpm.8:718
+msgid ""
+"List the package specific scriptlet(s) that are used as part of the "
+"installation and uninstallation processes."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:718
+#, no-wrap
+msgid "B<-s, --state>"
+msgstr "B<-s, --state>"
+
+#. type: Plain text
+#: ../rpm.8:725
+msgid ""
+"Display the I<states> of files in the package (implies B<-l>).  The state of "
+"each file is one of I<normal>, I<not installed>, or I<replaced>."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:725
+#, no-wrap
+msgid "B<--triggers, --triggerscripts>"
+msgstr "B<--triggers, --triggerscripts>"
+
+#. type: Plain text
+#: ../rpm.8:731
+msgid ""
+"Display the trigger scripts, if any, which are contained in the package.  "
+"B<--xml> Format package headers as XML."
+msgstr ""
+
+#. type: SS
+#: ../rpm.8:732
+#, no-wrap
+msgid "FILE SELECTION OPTIONS:"
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:734
+#, no-wrap
+msgid "B<-A, --artifactfiles>"
+msgstr "B<-A, --artifactfiles>"
+
+#. type: Plain text
+#: ../rpm.8:737
+msgid "Only include artifact files (implies B<-l>)."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:737
+#, no-wrap
+msgid "B<-c, --configfiles>"
+msgstr "B<-c, --configfiles>"
+
+#. type: Plain text
+#: ../rpm.8:740
+msgid "Only include configuration files (implies B<-l>)."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:740
+#, no-wrap
+msgid "B<-d, --docfiles>"
+msgstr "B<-d, --docfiles>"
+
+#. type: Plain text
+#: ../rpm.8:743
+msgid "Only include documentation files (implies B<-l>)."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:743
+#, no-wrap
+msgid "B<-L, --licensefiles>"
+msgstr "B<-L, --licensefiles>"
+
+#. type: Plain text
+#: ../rpm.8:746
+msgid "Only include license files (implies B<-l>)."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:746
+#, no-wrap
+msgid "B<--noartifact>"
+msgstr "B<--noartifact>"
+
+#. type: Plain text
+#: ../rpm.8:749
+msgid "Exclude artifact files."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:749
+#, no-wrap
+msgid "B<--noconfig>"
+msgstr "B<--noconfig>"
+
+#. type: Plain text
+#: ../rpm.8:752
+msgid "Exclude config files."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:752
+#, no-wrap
+msgid "B<--noghost>"
+msgstr "B<--noghost>"
+
+#. type: Plain text
+#: ../rpm.8:755
+msgid "Exclude ghost files."
+msgstr ""
+
+#. type: SS
+#: ../rpm.8:756
+#, no-wrap
+msgid "VERIFY OPTIONS"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:759
+msgid "The general form of an rpm verify command is"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:773
+msgid ""
+"Verifying a package compares information about the installed files in the "
+"package with information about the files taken from the package metadata "
+"stored in the rpm database.  Among other things, verifying compares the "
+"size, digest, permissions, type, owner and group of each file.  Any "
+"discrepancies are displayed.  Files that were not installed from the "
+"package, for example, documentation files excluded on installation using the "
+"\"B<--excludedocs>\" option, will be silently ignored."
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:777
+msgid ""
+"The package and file selection options are the same as for package querying "
+"(including package manifest files as arguments).  Other options unique to "
+"verify mode are:"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:780
+msgid "Don't verify dependencies of packages."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:783
+#, no-wrap
+msgid "B<--nofiles>"
+msgstr "B<--nofiles>"
+
+#. type: Plain text
+#: ../rpm.8:786
+msgid "Don't verify any attributes of package files."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:786
+#, no-wrap
+msgid "B<--noscripts>"
+msgstr "B<--noscripts>"
+
+#. type: Plain text
+#: ../rpm.8:789
+msgid "Don't execute the B<%verifyscript> scriptlet (if any)."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:792
+#, no-wrap
+msgid "B<--nolinkto>"
+msgstr "B<--nolinkto>"
+
+#. type: TP
+#: ../rpm.8:794
+#, no-wrap
+msgid "B<--nofiledigest> (formerly B<--nomd5>)"
+msgstr "B<--nofiledigest> (früher B<--nomd5>)"
+
+#. type: TP
+#: ../rpm.8:796
+#, no-wrap
+msgid "B<--nosize>"
+msgstr "B<--nosize>"
+
+#. type: TP
+#: ../rpm.8:798
+#, no-wrap
+msgid "B<--nouser>"
+msgstr "B<--nouser>"
+
+#. type: TP
+#: ../rpm.8:800
+#, no-wrap
+msgid "B<--nogroup>"
+msgstr "B<--nogroup>"
+
+#. type: TP
+#: ../rpm.8:802
+#, no-wrap
+msgid "B<--nomtime>"
+msgstr "B<--nomtime>"
+
+#. type: TP
+#: ../rpm.8:804
+#, no-wrap
+msgid "B<--nomode>"
+msgstr "B<--nomode>"
+
+#. type: TP
+#: ../rpm.8:806
+#, no-wrap
+msgid "B<--nordev>"
+msgstr "B<--nordev>"
+
+#. type: Plain text
+#: ../rpm.8:809
+msgid "Don't verify the corresponding file attribute."
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:812
+msgid "Don't verify file capabilities."
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:815
+msgid ""
+"The format of the output is a string of 9 characters, a possible attribute "
+"marker:"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:822
+#, no-wrap
+msgid ""
+"B<c> B<%config> configuration file.\n"
+"B<d> B<%doc> documentation file.\n"
+"B<g> B<%ghost> file (i.e. the file contents are not included in the package payload).\n"
+"B<l> B<%license> license file.\n"
+"B<r> B<%readme> readme file.\n"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:835
+msgid ""
+"from the package header, followed by the file name.  Each of the 9 "
+"characters denotes the result of a comparison of attribute(s) of the file to "
+"the value of those attribute(s) recorded in the database.  A single \"B<.>"
+"\" (period)  means the test passed, while a single \"B<?>\" (question mark)  "
+"indicates the test could not be performed (e.g. file permissions prevent "
+"reading). Otherwise, the (mnemonically emB<B>oldened) character denotes "
+"failure of the corresponding B<--verify> test:"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:846
+#, no-wrap
+msgid ""
+"B<S> file B<S>ize differs\n"
+"B<M> B<M>ode differs (includes permissions and file type)\n"
+"B<5> digest (formerly MDB<5> sum) differs\n"
+"B<D> B<D>evice major/minor number mismatch\n"
+"B<L> readB<L>ink(2) path mismatch\n"
+"B<U> B<U>ser ownership differs\n"
+"B<G> B<G>roup ownership differs\n"
+"B<T> mB<T>ime differs\n"
+"B<P> caB<P>abilities differ\n"
+msgstr ""
+
+#. type: SS
+#: ../rpm.8:848
+#, no-wrap
+msgid "MISCELLANEOUS COMMANDS"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:857
+msgid ""
+"shows the values B<rpm> will use for all of the options are currently set in "
+"I<rpmrc> and I<macros> configuration file(s)."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:857
+#, no-wrap
+msgid "B<rpm> B<--setperms> I<PACKAGE_NAME>"
+msgstr "B<rpm> B<--setperms> I<PAKETNAME>"
+
+#. type: Plain text
+#: ../rpm.8:861
+msgid ""
+"sets permissions of files in the given package. Consider using B<--restore> "
+"instead."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:861
+#, no-wrap
+msgid "B<rpm> B<--setugids> I<PACKAGE_NAME>"
+msgstr "B<rpm> B<--setugids> I<PAKETNAME>"
+
+#. type: Plain text
+#: ../rpm.8:866
+msgid ""
+"sets user/group ownership of files in the given package. This command can "
+"change permissions and capabilities of files in that package. In most cases "
+"it is better to use B<--restore> instead."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:866
+#, no-wrap
+msgid "B<rpm> B<--setcaps> I<PACKAGE_NAME>"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:870
+msgid ""
+"sets capabilities of files in the given package. Consider using B<--restore> "
+"instead."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:870
+#, no-wrap
+msgid "B<rpm> B<--restore> I<PACKAGE_NAME>"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:874
+msgid ""
+"The option restores owner, group, permissions and capabilities of files in "
+"the given package."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:874
+#, no-wrap
+msgid "Options B<--setperms>, B<--setugids>, B<--setcaps> and"
+msgstr "Die Optionen B<--setperms>, B<--setugids>, B<--setcaps> und"
+
+#. type: Plain text
+#: ../rpm.8:877
+msgid "B<--restore> are mutually exclusive."
+msgstr "B<--restore> schließen sich gegenseitig aus."
+
+#. type: SS
+#: ../rpm.8:878
+#, no-wrap
+msgid "FTP/HTTP OPTIONS"
+msgstr "FTP/HTTP-OPTIONEN"
+
+#. type: Plain text
+#: ../rpm.8:887
+msgid ""
+"B<rpm> can act as an FTP and/or HTTP client so that packages can be queried "
+"or installed from the internet.  Package files for install, upgrade, and "
+"query operations may be specified as an B<ftp> or B<http> style URL:"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:889
+msgid "http://HOST[:PORT]/path/to/package.rpm"
+msgstr "http://HOST[:PORT]/Pfad/zum/Paket.rpm"
+
+#. type: Plain text
+#: ../rpm.8:891
+msgid "ftp://[USER:PASSWORD]@HOST[:PORT]/path/to/package.rpm"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:893
+msgid "If both the user and password are omitted, anonymous B<ftp> is used."
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:896
+msgid "B<rpm> allows the following options to be used with ftp URLs:"
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:896
+#, no-wrap
+msgid "B<rpm> allows the following options to be used with"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:899
+msgid "B<http> and B<ftp> URLs:"
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:899
+#, no-wrap
+msgid "B<--httpproxy >I<HOST>"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:905
+msgid ""
+"The host I<HOST> will be used as a proxy server for all B<http> and B<ftp> "
+"transfers. This option may also be specified by configuring the macro B<"
+"%_httpproxy>."
+msgstr ""
+
+#. type: TP
+#: ../rpm.8:905
+#, no-wrap
+msgid "B<--httpport >I<PORT>"
+msgstr "B<--httpport >I<PORT>"
+
+#. type: Plain text
+#: ../rpm.8:911
+msgid ""
+"The TCP I<PORT> number to use for the B<http> connection on the proxy http "
+"server instead of the default port. This option may also be specified by "
+"configuring the macro B<%_httpport>."
+msgstr ""
+
+#. type: SH
+#: ../rpm.8:911
+#, no-wrap
+msgid "LEGACY ISSUES"
+msgstr ""
+
+#. type: SS
+#: ../rpm.8:912
+#, no-wrap
+msgid "Executing rpmbuild"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:918
+msgid ""
+"The build modes of rpm are now resident in the I</usr/bin/rpmbuild> "
+"executable.  Install the package containing B<rpmbuild> (usually B<rpm-"
+"build>) and see B<rpmbuild>(8) for documentation of all the B<rpm> build "
+"modes."
+msgstr ""
+
+#. type: SH
+#: ../rpm.8:918
+#, no-wrap
+msgid "FILES"
+msgstr "DATEIEN"
+
+#. type: SS
+#: ../rpm.8:919
+#, no-wrap
+msgid "rpmrc Configuration"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:926
+#, no-wrap
+msgid ""
+"I</usr/lib/rpm/rpmrc>\n"
+"I</usr/lib/rpm/redhat/rpmrc>\n"
+"I</etc/rpmrc>\n"
+"I<~/.rpmrc>\n"
+msgstr ""
+"I</usr/lib/rpm/rpmrc>\n"
+"I</usr/lib/rpm/redhat/rpmrc>\n"
+"I</etc/rpmrc>\n"
+"I<~/.rpmrc>\n"
+
+#. type: SS
+#: ../rpm.8:927
+#, no-wrap
+msgid "Macro Configuration"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:934
+#, no-wrap
+msgid ""
+"I</usr/lib/rpm/macros>\n"
+"I</usr/lib/rpm/redhat/macros>\n"
+"I</etc/rpm/macros>\n"
+"I<~/.rpmmacros>\n"
+msgstr ""
+"I</usr/lib/rpm/macros>\n"
+"I</usr/lib/rpm/redhat/macros>\n"
+"I</etc/rpm/macros>\n"
+"I<~/.rpmmacros>\n"
+
+#. type: SS
+#: ../rpm.8:935
+#, no-wrap
+msgid "Database"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:951
+#, no-wrap
+msgid ""
+"I</var/lib/rpm/Basenames>\n"
+"I</var/lib/rpm/Conflictname>\n"
+"I</var/lib/rpm/Dirnames>\n"
+"I</var/lib/rpm/Group>\n"
+"I</var/lib/rpm/Installtid>\n"
+"I</var/lib/rpm/Name>\n"
+"I</var/lib/rpm/Obsoletename>\n"
+"I</var/lib/rpm/Packages>\n"
+"I</var/lib/rpm/Providename>\n"
+"I</var/lib/rpm/Requirename>\n"
+"I</var/lib/rpm/Sha1header>\n"
+"I</var/lib/rpm/Sigmd5>\n"
+"I</var/lib/rpm/Triggername>\n"
+msgstr ""
+
+#. type: SS
+#: ../rpm.8:952
+#, no-wrap
+msgid "Temporary"
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:955
+msgid "I</var/tmp/rpm*>"
+msgstr "I</var/tmp/rpm*>"
+
+#. type: SH
+#: ../rpm.8:955
+#, no-wrap
+msgid "SEE ALSO"
+msgstr "SIEHE AUCH"
+
+#. type: Plain text
+#: ../rpm.8:966
+#, fuzzy, no-wrap
+#| msgid ""
+#| "B<rpm-misc(8)>(3),\n"
+#| "B<popt>(3),\n"
+#| "B<rpm2cpio>(8),\n"
+#| "B<rpmbuild>(8),\n"
+#| "B<rpmdb>(8),\n"
+#| "B<rpmkeys>(8),\n"
+#| "B<rpmsign>(8),\n"
+#| "B<rpmspec>(8),\n"
+msgid ""
+"B<rpm-misc(8),\n"
+"popt>(3),\n"
+"B<rpm2cpio>(8),\n"
+"B<rpmbuild>(8),\n"
+"B<rpmdb>(8),\n"
+"B<rpmkeys>(8),\n"
+"B<rpmsign>(8),\n"
+"B<rpmspec>(8),\n"
+msgstr ""
+"B<rpm-misc(8)>(3),\n"
+"B<popt>(3),\n"
+"B<rpm2cpio>(8),\n"
+"B<rpmbuild>(8),\n"
+"B<rpmdb>(8),\n"
+"B<rpmkeys>(8),\n"
+"B<rpmsign>(8),\n"
+"B<rpmspec>(8),\n"
+
+#. type: Plain text
+#: ../rpm.8:971
+msgid ""
+"B<rpm --help> - as rpm supports customizing the options via popt aliases "
+"it's impossible to guarantee that what's described in the manual matches "
+"what's available."
+msgstr ""
+
+#. type: Plain text
+#: ../rpm.8:975
+msgid "B<http://www.rpm.org/ E<lt>URL:http://www.rpm.org/E<gt>>"
+msgstr "B<http://www.rpm.org/ E<lt>URL:http://www.rpm.org/E<gt>>"
+
+#. type: SH
+#: ../rpm.8:975
+#, no-wrap
+msgid "AUTHORS"
+msgstr "AUTOREN"
+
+#. type: Plain text
+#: ../rpm.8:981
+#, no-wrap
+msgid ""
+"Marc Ewing E<lt>marc@redhat.comE<gt>\n"
+"Jeff Johnson E<lt>jbj@redhat.comE<gt>\n"
+"Erik Troan E<lt>ewt@redhat.comE<gt>\n"
+msgstr ""
+"Marc Ewing E<lt>marc@redhat.comE<gt>\n"
+"Jeff Johnson E<lt>jbj@redhat.comE<gt>\n"
+"Erik Troan E<lt>ewt@redhat.comE<gt>\n"

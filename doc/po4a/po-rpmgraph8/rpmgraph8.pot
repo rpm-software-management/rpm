@@ -1,0 +1,127 @@
+# SOME DESCRIPTIVE TITLE
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-03-30 22:32+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. type: TH
+#: ../rpmgraph.8:3
+#, no-wrap
+msgid "RPMGRAPH"
+msgstr ""
+
+#. type: TH
+#: ../rpmgraph.8:3
+#, no-wrap
+msgid "30 June 2002"
+msgstr ""
+
+#. type: TH
+#: ../rpmgraph.8:3
+#, no-wrap
+msgid "Red Hat, Inc."
+msgstr ""
+
+#. type: SH
+#: ../rpmgraph.8:4
+#, no-wrap
+msgid "NAME"
+msgstr ""
+
+#. type: Plain text
+#: ../rpmgraph.8:6
+msgid "rpmgraph - Display RPM Package Dependency Graph"
+msgstr ""
+
+#. type: SH
+#: ../rpmgraph.8:6
+#, no-wrap
+msgid "SYNOPSIS"
+msgstr ""
+
+#. type: Plain text
+#: ../rpmgraph.8:11
+msgid "B<rpmgraph> I<PACKAGE_FILE>I< ...>"
+msgstr ""
+
+#. type: SH
+#: ../rpmgraph.8:12
+#, no-wrap
+msgid "DESCRIPTION"
+msgstr ""
+
+#. type: Plain text
+#: ../rpmgraph.8:20
+msgid ""
+"B<rpmgraph> uses I<PACKAGE_FILE> arguments to generate a package dependency "
+"graph. Each I<PACKAGE_FILE> argument is read and added to an rpm transaction "
+"set. The elements of the transaction set are partially ordered using a "
+"topological sort. The partially ordered elements are then printed to "
+"standard output."
+msgstr ""
+
+#. type: Plain text
+#: ../rpmgraph.8:26
+msgid ""
+"Nodes in the dependency graph are package names, and edges in the directed "
+"graph point to the parent of each node. The parent node is defined as the "
+"last predecessor of a package when partially ordered using the package "
+"dependencies as a relation. That means that the parent of a given package is "
+"the package's last prerequisite."
+msgstr ""
+
+#. type: Plain text
+#: ../rpmgraph.8:32
+msgid ""
+"The output is in B<dot>(1) directed graph format, and can be displayed or "
+"printed using the B<dotty> graph editor from the B<graphviz> package.  There "
+"are no B<rpmgraph> specific options, only common B<rpm> options.  See the "
+"B<rpmgraph> usage message for what is currently implemented."
+msgstr ""
+
+#. type: SH
+#: ../rpmgraph.8:32
+#, no-wrap
+msgid "SEE ALSO"
+msgstr ""
+
+#. type: Plain text
+#: ../rpmgraph.8:35
+msgid "B<dot>(1),"
+msgstr ""
+
+#. type: Plain text
+#: ../rpmgraph.8:37
+msgid "B<dotty>(1),"
+msgstr ""
+
+#. type: Plain text
+#: ../rpmgraph.8:40
+#, no-wrap
+msgid ""
+" B<http://www.graphviz.org/ E<lt>URL:http://www.graphviz.org/E<gt>>\n"
+"\n"
+msgstr ""
+
+#. type: SH
+#: ../rpmgraph.8:40
+#, no-wrap
+msgid "AUTHORS"
+msgstr ""
+
+#. type: Plain text
+#: ../rpmgraph.8:42
+msgid "Jeff Johnson E<lt>jbj@redhat.comE<gt>"
+msgstr ""

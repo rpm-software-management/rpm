@@ -1,0 +1,100 @@
+# SOME DESCRIPTIVE TITLE
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-03-30 22:19+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. type: TH
+#: ../rpmdeps.8:3
+#, no-wrap
+msgid "RPMDEPS"
+msgstr ""
+
+#. type: TH
+#: ../rpmdeps.8:3
+#, no-wrap
+msgid "24 October 2002"
+msgstr ""
+
+#. type: TH
+#: ../rpmdeps.8:3
+#, no-wrap
+msgid "Red Hat, Inc."
+msgstr ""
+
+#. type: SH
+#: ../rpmdeps.8:4
+#, no-wrap
+msgid "NAME"
+msgstr ""
+
+#. type: Plain text
+#: ../rpmdeps.8:6
+msgid "rpmdeps - Generate RPM Package Dependencies"
+msgstr ""
+
+#. type: SH
+#: ../rpmdeps.8:6
+#, no-wrap
+msgid "SYNOPSIS"
+msgstr ""
+
+#. type: Plain text
+#: ../rpmdeps.8:11
+msgid ""
+"B<rpmdeps> B<{-P|--provides}> B<{-R|--requires}> B<{--rpmfcdebug}> I<FILE>I< "
+"...>"
+msgstr ""
+
+#. type: SH
+#: ../rpmdeps.8:12
+#, no-wrap
+msgid "DESCRIPTION"
+msgstr ""
+
+#. type: Plain text
+#: ../rpmdeps.8:19
+msgid ""
+"B<rpmdeps> generates package dependencies for the set of I<FILE> arguments.  "
+"Each I<FILE> argument is searched for Elf32/Elf64, script interpreter, or "
+"per-script dependencies, and the dependencies are printed to stdout."
+msgstr ""
+
+#. type: SH
+#: ../rpmdeps.8:19
+#, no-wrap
+msgid "SEE ALSO"
+msgstr ""
+
+#. type: Plain text
+#: ../rpmdeps.8:22
+msgid "B<rpm>(8),"
+msgstr ""
+
+#. type: Plain text
+#: ../rpmdeps.8:24
+msgid "B<rpmbuild>(8),"
+msgstr ""
+
+#. type: SH
+#: ../rpmdeps.8:24
+#, no-wrap
+msgid "AUTHORS"
+msgstr ""
+
+#. type: Plain text
+#: ../rpmdeps.8:26
+msgid "Jeff Johnson E<lt>jbj@redhat.comE<gt>"
+msgstr ""

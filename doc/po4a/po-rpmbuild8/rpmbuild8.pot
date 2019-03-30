@@ -1,0 +1,747 @@
+# SOME DESCRIPTIVE TITLE
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-03-30 21:20+01:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. type: TH
+#: debian-unstable
+#, no-wrap
+msgid "RPMBUILD"
+msgstr ""
+
+#. type: TH
+#: debian-unstable
+#, no-wrap
+msgid "09 June 2002"
+msgstr ""
+
+#. type: TH
+#: debian-unstable
+#, no-wrap
+msgid "Red Hat, Inc."
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "NAME"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "rpmbuild - Build RPM Package(s)"
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "SYNOPSIS"
+msgstr ""
+
+#. type: SS
+#: debian-unstable
+#, no-wrap
+msgid "BUILDING PACKAGES:"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"B<rpmbuild> {B<-ba|-bb|-bp|-bc|-bi|-bl|-bs>} [B<rpmbuild-options>] "
+"I<SPECFILE>I< ...>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"B<rpmbuild> {B<-ra|-rb|-rp|-rc|-ri|-rl|-rs>} [B<rpmbuild-options>] "
+"I<SOURCEPACKAGE>I< ...>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"B<rpmbuild> {B<-ta|-tb|-tp|-tc|-ti|-tl|-ts>} [B<rpmbuild-options>] "
+"I<TARBALL>I< ...>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<rpmbuild> {B<--rebuild|--recompile>} I<SOURCEPKG>I< ...>"
+msgstr ""
+
+#. type: SS
+#: debian-unstable
+#, no-wrap
+msgid "MISCELLANEOUS:"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<rpmbuild> B<--showrc>"
+msgstr ""
+
+#. type: SS
+#: debian-unstable
+#, no-wrap
+msgid "rpmbuild-options"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+#, no-wrap
+msgid ""
+" [B<--buildroot >I<DIRECTORY>] [B<--clean>] [B<--nobuild>]\n"
+" [B<--rmsource>] [B<--rmspec>] [B<--short-circuit>] [B<--build-in-place>]\n"
+" [B<--noprep>] [B<--noclean>] [B<--nocheck>]\n"
+" [B<--rpmfcdebug>]\n"
+" [B<--target >I<PLATFORM>]\n"
+" [B<--with >I<OPTION>] [B<--without >I<OPTION>]\n"
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "DESCRIPTION"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"B<rpmbuild> is used to build both binary and source software packages.  A "
+"B<package> consists of an archive of files and meta-data used to install and "
+"erase the archive files. The meta-data includes helper scripts, file "
+"attributes, and descriptive information about the package.  B<Packages> come "
+"in two varieties: binary packages, used to encapsulate software to be "
+"installed, and source packages, containing the source code and recipe "
+"necessary to produce binary packages."
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"One of the following basic modes must be selected: B<Build Package>, B<Build "
+"Package from Tarball>, B<Recompile Package>, B<Show Configuration>."
+msgstr ""
+
+#. type: SS
+#: debian-unstable
+#, no-wrap
+msgid "GENERAL OPTIONS"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "These options can be used in all the different modes."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<-?, --help>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "Print a longer usage message then normal."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--version>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "Print a single line containing the version number of B<rpm> being used."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--quiet>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Print as little as possible - normally only error messages will be displayed."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<-v>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Print verbose information - normally routine progress messages will be "
+"displayed."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<-vv>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "Print lots of ugly debugging information."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--rpmfcdebug>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "Enables to debug dependencies generation."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--rcfile >I<FILELIST>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Each of the files in the colon separated I<FILELIST> is read sequentially by "
+"B<rpm> for configuration information.  Only the first file in the list must "
+"exist, and tildes will be expanded to the value of B<$HOME>.  The default "
+"I<FILELIST> is I</usr/lib/rpm/rpmrc>:I</usr/lib/rpm/redhat/rpmrc>:I</etc/"
+"rpmrc>:I<~/.rpmrc>."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--pipe >I<CMD>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "Pipes the output of B<rpm> to the command I<CMD>."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--dbpath >I<DIRECTORY>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Use the database in I<DIRECTORY> rather than the default path I</var/lib/rpm>"
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--root >I<DIRECTORY>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Use the file system tree rooted at I<DIRECTORY> for all operations.  Note "
+"that this means the database within I<DIRECTORY> will be used for dependency "
+"checks and any scriptlet(s) (e.g.  B<%post> if installing, or B<%prep> if "
+"building, a package)  will be run after a chroot(2) to I<DIRECTORY>."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<-D, --define='>I<MACRO EXPR>B<'>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "Defines I<MACRO> with value I<EXPR>."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--scm=>I<SCM>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Select the I<SCM> to use with %autosetup, if one is not set in the spec "
+"file.  Note that not all values for I<SCM>, e.g., B<patch> (the default) and "
+"B<gendiff>, B<git>, or B<quilt> work interchangeably with all other patches "
+"and options stated in the %autosetup line, especially option B<-p>I<N>."
+msgstr ""
+
+#. type: SS
+#: debian-unstable
+#, no-wrap
+msgid "BUILD OPTIONS"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "The general form of an rpm build command is"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"B<rpmbuild> {B<-b>I<STAGE>B<|-r>I<STAGE>B<|-t>I<STAGE>} [B<rpmbuild-"
+"options>] I<FILE>I< ...>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"The argument used is B<-b> if a spec file is being used to build the "
+"package, B<-r> if a source package is to be rebuild and B<-t> if B<rpmbuild> "
+"should look inside of a (possibly compressed) tar file for the spec file to "
+"use. After the first argument, the next character (I<STAGE>) specifies the "
+"stages of building and packaging to be done and is one of:"
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<-ba>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Build binary and source packages (after doing the %prep, %build, and "
+"%install stages)."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<-bb>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Build a binary package (after doing the %prep, %build, and %install stages)."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<-bp>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Executes the \"%prep\" stage from the spec file. Normally this involves "
+"unpacking the sources and applying any patches."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<-bc>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Do the \"%build\" stage from the spec file (after doing the %prep stage).  "
+"This generally involves the equivalent of a \"make\"."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<-bi>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Do the \"%install\" stage from the spec file (after doing the %prep and "
+"%build stages).  This generally involves the equivalent of a \"make install"
+"\"."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<-bl>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Do a \"list check\".  The \"%files\" section from the spec file is macro "
+"expanded, and checks are made to verify that each file exists."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<-bs>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "Build just the source package."
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "The following options may also be used:"
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--buildroot >I<DIRECTORY>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"When building a package, override the BuildRoot tag with directory "
+"I<DIRECTORY>."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--clean>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "Remove the build tree after the packages are made."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--nobuild>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "Do not execute any build stages. Useful for testing out spec files."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--noprep>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "Do not execute %prep build stage even if present in spec."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--noclean>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "Do not execute %clean build stage even if present in spec."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--nocheck>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "Do not execute %check build stage even if present in spec."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--nodebuginfo>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "Do not generate debuginfo packages."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--nodeps>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "Do not verify build dependencies."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--rmsource>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Remove the sources after the build (may also be used standalone, e.g. "
+"\"B<rpmbuild> B<--rmsource foo.spec>\")."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--rmspec>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Remove the spec file after the build (may also be used standalone, eg. "
+"\"B<rpmbuild> B<--rmspec foo.spec>\")."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--short-circuit>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Skip straight to specified stage (i.e., skip all stages leading up to the "
+"specified stage).  Only valid with B<-bc>, B<-bi>, and B<-bb>.  Useful for "
+"local testing only.  Packages built this way will be marked with an "
+"unsatisfiable dependency to prevent their accidental use."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--build-in-place>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Build from locally checked out sources. Sets _builddir to current working "
+"directory. Skips handling of -n and untar in the %setup and the deletion of "
+"the buildSubdir."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--target >I<PLATFORM>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"When building the package, interpret I<PLATFORM> as B<arch-vendor-os> and "
+"set the macros B<%_target>, B<%_target_cpu>, and B<%_target_os> accordingly."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--with >I<OPTION>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "Enable configure I<OPTION> for build."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--without >I<OPTION>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "Disable configure I<OPTION> for build."
+msgstr ""
+
+#. type: SS
+#: debian-unstable
+#, no-wrap
+msgid "REBUILD AND RECOMPILE OPTIONS"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "There are two other ways to invoke building with rpm:"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<rpmbuild> B<--rebuild|--recompile> I<SOURCEPKG>I< ...>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"When invoked this way, B<rpmbuild> installs the named source package, and "
+"does a prep, compile and install. In addition, B<--rebuild> builds a new "
+"binary package. When the build has completed, the build directory is removed "
+"(as in B<--clean>) and the the sources and spec file for the package are "
+"removed."
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"These options are now superseded by the B<-r*> options which allow much more "
+"fine control over what stages of the build to run."
+msgstr ""
+
+#. type: SS
+#: debian-unstable
+#, no-wrap
+msgid "SHOWRC"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "The command"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"shows the values B<rpmbuild> will use for all of the options are currently "
+"set in I<rpmrc> and I<macros> configuration file(s)."
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "FILES"
+msgstr ""
+
+#. type: SS
+#: debian-unstable
+#, no-wrap
+msgid "rpmrc Configuration"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+#, no-wrap
+msgid ""
+"I</usr/lib/rpm/rpmrc>\n"
+"I</usr/lib/rpm/redhat/rpmrc>\n"
+"I</etc/rpmrc>\n"
+"I<~/.rpmrc>\n"
+msgstr ""
+
+#. type: SS
+#: debian-unstable
+#, no-wrap
+msgid "Macro Configuration"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+#, no-wrap
+msgid ""
+"I</usr/lib/rpm/macros>\n"
+"I</usr/lib/rpm/redhat/macros>\n"
+"I</etc/rpm/macros>\n"
+"I<~/.rpmmacros>\n"
+msgstr ""
+
+#. type: SS
+#: debian-unstable
+#, no-wrap
+msgid "Temporary"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "I</var/tmp/rpm*>"
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "SEE ALSO"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+#, no-wrap
+msgid ""
+"B<gendiff>(1),\n"
+"B<popt>(3),\n"
+"B<rpm>(8),\n"
+"B<rpm2cpio>(8),\n"
+"B<rpmkeys>(8)\n"
+"B<rpmspec>(8),\n"
+"B<rpmsign>(8),\n"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"B<rpmbuild --help> - as rpm supports customizing the options via popt "
+"aliases it's impossible to guarantee that what's described in the manual "
+"matches what's available."
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<http://www.rpm.org/ E<lt>URL:http://www.rpm.org/E<gt>>"
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "AUTHORS"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+#, no-wrap
+msgid ""
+"Marc Ewing E<lt>marc@redhat.comE<gt>\n"
+"Jeff Johnson E<lt>jbj@redhat.comE<gt>\n"
+"Erik Troan E<lt>ewt@redhat.comE<gt>\n"
+msgstr ""

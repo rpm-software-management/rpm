@@ -1,0 +1,185 @@
+# German translation of manpages
+# This file is distributed under the same license as the manpages-de package.
+# Copyright © of this file:
+# Mario Blättermann <mario.blaettermann@gmail.com>, 2019.
+msgid ""
+msgstr ""
+"Project-Id-Version: manpages-de\n"
+"POT-Creation-Date: 2019-03-30 21:22+01:00\n"
+"PO-Revision-Date: 2019-03-30 21:44+0100\n"
+"Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
+"Language-Team: German <debian-l10n-german@lists.debian.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 18.12.3\n"
+
+#. type: TH
+#: debian-unstable
+#, no-wrap
+msgid "RPMKEYS"
+msgstr "RPMKEYS"
+
+#. type: TH
+#: debian-unstable
+#, no-wrap
+msgid "29 October 2010"
+msgstr "29. Oktober 2010"
+
+#. type: TH
+#: debian-unstable
+#, no-wrap
+msgid "Red Hat, Inc"
+msgstr "Red Hat, Inc"
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "NAME"
+msgstr "BEZEICHNUNG"
+
+#. type: Plain text
+#: debian-unstable
+msgid "rpmkeys - RPM Keyring"
+msgstr "rpmkeys - RPM-Schlüsselbund"
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "SYNOPSIS"
+msgstr "ÜBERSICHT"
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<rpmkeys> {B<--import|--checksig>}"
+msgstr "B<rpmkeys> {B<--import|--checksig>}"
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "DESCRIPTION"
+msgstr "BESCHREIBUNG"
+
+#. type: Plain text
+#: debian-unstable
+msgid "The general forms of rpm digital signature commands are"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<rpmkeys> B<--import> I<PUBKEY>I< ...>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<rpmkeys> {B<-K|--checksig>} I<PACKAGE_FILE>I< ...>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"The B<--checksig> option checks all the digests and signatures contained in "
+"I<PACKAGE_FILE> to ensure the integrity and origin of the package. Note that "
+"signatures are now verified whenever a package is read, and B<--checksig> is "
+"useful to verify all of the digests and signatures associated with a package."
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Digital signatures cannot be verified without a public key.  An ASCII "
+"armored public key can be added to the B<rpm> database using B<--import>. An "
+"imported public key is carried in a header, and key ring management is "
+"performed exactly like package management. For example, all currently "
+"imported public keys can be displayed by:"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<rpm -qa gpg-pubkey*>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Details about a specific public key, when imported, can be displayed by "
+"querying.  Here's information about the Red Hat GPG/DSA key:"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<rpm -qi gpg-pubkey-db42a60e>"
+msgstr "B<rpm -qi gpg-pubkey-db42a60e>"
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Finally, public keys can be erased after importing just like packages. "
+"Here's how to remove the Red Hat GPG/DSA key"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<rpm -e gpg-pubkey-db42a60e>"
+msgstr "B<rpm -e gpg-pubkey-db42a60e>"
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "SEE ALSO"
+msgstr "SIEHE AUCH"
+
+#. type: Plain text
+#: debian-unstable
+#, no-wrap
+msgid ""
+"B<popt>(3),\n"
+"B<rpm>(8),\n"
+"B<rpmdb>(8),\n"
+"B<rpmsign>(8),\n"
+"B<rpm2cpio>(8),\n"
+"B<rpmbuild>(8),\n"
+"B<rpmspec>(8),\n"
+msgstr ""
+"B<popt>(3),\n"
+"B<rpm>(8),\n"
+"B<rpmdb>(8),\n"
+"B<rpmsign>(8),\n"
+"B<rpm2cpio>(8),\n"
+"B<rpmbuild>(8),\n"
+"B<rpmspec>(8),\n"
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"B<rpmkeys --help> - as rpm supports customizing the options via popt aliases "
+"it's impossible to guarantee that what's described in the manual matches "
+"what's available."
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<http://www.rpm.org/ E<lt>URL:http://www.rpm.org/E<gt>>"
+msgstr "B<http://www.rpm.org/ E<lt>URL:http://www.rpm.org/E<gt>>"
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "AUTHORS"
+msgstr "AUTOREN"
+
+#. type: Plain text
+#: debian-unstable
+#, no-wrap
+msgid ""
+"Marc Ewing E<lt>marc@redhat.comE<gt>\n"
+"Jeff Johnson E<lt>jbj@redhat.comE<gt>\n"
+"Erik Troan E<lt>ewt@redhat.comE<gt>\n"
+"Panu Matilainen E<lt>pmatilai@redhat.comE<gt>\n"
+msgstr ""
+"Marc Ewing E<lt>marc@redhat.comE<gt>\n"
+"Jeff Johnson E<lt>jbj@redhat.comE<gt>\n"
+"Erik Troan E<lt>ewt@redhat.comE<gt>\n"
+"Panu Matilainen E<lt>pmatilai@redhat.comE<gt>\n"

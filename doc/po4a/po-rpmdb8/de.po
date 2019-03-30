@@ -1,0 +1,144 @@
+# German translation of manpages
+# This file is distributed under the same license as the manpages-de package.
+# Copyright © of this file:
+# Mario Blättermann <mario.blaettermann@gmail.com>, 2019.
+msgid ""
+msgstr ""
+"Project-Id-Version: manpages-de\n"
+"POT-Creation-Date: 2019-03-30 21:21+01:00\n"
+"PO-Revision-Date: 2019-03-30 21:39+0100\n"
+"Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
+"Language-Team: German <debian-l10n-german@lists.debian.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 18.12.3\n"
+
+#. type: TH
+#: debian-unstable
+#, no-wrap
+msgid "RPMDB"
+msgstr "RPMDB"
+
+#. type: TH
+#: debian-unstable
+#, no-wrap
+msgid "29 June 2010"
+msgstr "29. Juni 2010"
+
+#. type: TH
+#: debian-unstable
+#, no-wrap
+msgid "Red Hat, Inc"
+msgstr "Red Hat, Inc"
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "NAME"
+msgstr "BEZEICHNUNG"
+
+#. type: Plain text
+#: debian-unstable
+msgid "rpmdb - RPM Database Tool"
+msgstr "rpmdb - RPM-Datenbankwerkzeug"
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "SYNOPSIS"
+msgstr "ÜBERSICHT"
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<rpm> {B<--initdb|--rebuilddb>}"
+msgstr "B<rpm> {B<--initdb|--rebuilddb>}"
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "DESCRIPTION"
+msgstr "BESCHREIBUNG"
+
+#. type: Plain text
+#: debian-unstable
+msgid "The general form of an rpm rebuild database command is"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"B<rpm> {B<--initdb|--rebuilddb>} [B<-v>] [B<--dbpath >I<DIRECTORY>] [B<--"
+"root >I<DIRECTORY>]"
+msgstr ""
+"B<rpm> {B<--initdb|--rebuilddb>} [B<-v>] [B<--dbpath >I<VERZEICHNIS>] [B<--"
+"root >I<VERZEICHNIS>]"
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Use B<--initdb> to create a new database if one doesn't already exist "
+"(existing database is not overwritten), use B<--rebuilddb> to rebuild the "
+"database indices from the installed package headers."
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "SEE ALSO"
+msgstr "SIEHE AUCH"
+
+#. type: Plain text
+#: debian-unstable
+#, no-wrap
+msgid ""
+"B<popt>(3),\n"
+"B<rpm>(8),\n"
+"B<rpmkeys>(8),\n"
+"B<rpmsign>(8),\n"
+"B<rpm2cpio>(8),\n"
+"B<rpmbuild>(8),\n"
+"B<rpmspec>(8),\n"
+msgstr ""
+"B<popt>(3),\n"
+"B<rpm>(8),\n"
+"B<rpmkeys>(8),\n"
+"B<rpmsign>(8),\n"
+"B<rpm2cpio>(8),\n"
+"B<rpmbuild>(8),\n"
+"B<rpmspec>(8),\n"
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"B<rpm --help> - as rpm supports customizing the options via popt aliases "
+"it's impossible to guarantee that what's described in the manual matches "
+"what's available."
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<http://www.rpm.org/ E<lt>URL:http://www.rpm.org/E<gt>>"
+msgstr "B<http://www.rpm.org/ E<lt>URL:http://www.rpm.org/E<gt>>"
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "AUTHORS"
+msgstr "AUTOREN"
+
+#. type: Plain text
+#: debian-unstable
+#, no-wrap
+msgid ""
+"Marc Ewing E<lt>marc@redhat.comE<gt>\n"
+"Jeff Johnson E<lt>jbj@redhat.comE<gt>\n"
+"Erik Troan E<lt>ewt@redhat.comE<gt>\n"
+"Panu Matilainen E<lt>pmatilai@redhat.comE<gt>\n"
+msgstr ""
+"Marc Ewing E<lt>marc@redhat.comE<gt>\n"
+"Jeff Johnson E<lt>jbj@redhat.comE<gt>\n"
+"Erik Troan E<lt>ewt@redhat.comE<gt>\n"
+"Panu Matilainen E<lt>pmatilai@redhat.comE<gt>\n"

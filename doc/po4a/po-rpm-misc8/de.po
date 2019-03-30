@@ -1,0 +1,240 @@
+# German translation of manpages
+# This file is distributed under the same license as the manpages-de package.
+# Copyright © of this file:
+# Mario Blättermann <mario.blaettermann@gmail.com>, 2019.
+msgid ""
+msgstr ""
+"Project-Id-Version: manpages-de\n"
+"POT-Creation-Date: 2019-03-30 21:19+01:00\n"
+"PO-Revision-Date: 2019-03-30 21:49+0100\n"
+"Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
+"Language-Team: German <debian-l10n-german@lists.debian.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 18.12.3\n"
+
+#. type: TH
+#: debian-unstable
+#, no-wrap
+msgid "RPM misc options"
+msgstr "RPM misc options"
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "NAME rpm - lesser need options for rpm(8)"
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "OPTIONS"
+msgstr "OPTIONEN"
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--predefine>='I<MACRO EXPR>B<'>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "Defines I<MACRO> with value I<EXPR>. before loading macro files."
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "Switching off features"
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--color [never|auto|always]>"
+msgstr "B<--color [never|auto|always]>"
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Use terminal colors for highlighting error and debug message. Default is "
+"turning colors on for ttys only (B<auto>)."
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"B<--nocontexts> Disable the SELinux plugin if available. This stops the "
+"plugin from setting SELinux contexts for files and scriptlets."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--noglob>"
+msgstr "B<--noglob>"
+
+#. type: Plain text
+#: debian-unstable
+msgid "Do not glob arguments when installing package files."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--nocaps>"
+msgstr "B<--nocaps>"
+
+#. type: Plain text
+#: debian-unstable
+msgid "Don't verify capabilities of files."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--excludeconfigs, --noconfigs>"
+msgstr "B<--excludeconfigs, --noconfigs>"
+
+#. type: Plain text
+#: debian-unstable
+msgid "Do not install configuration files."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--nohdrchk>"
+msgstr "B<--nohdrchk>"
+
+#. type: Plain text
+#: debian-unstable
+msgid "Don't verify database header(s) when retrieved."
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "Debugging"
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<-d, --debug>"
+msgstr "B<-d, --debug>"
+
+#. type: Plain text
+#: debian-unstable
+msgid "Print debugging information."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--deploops>"
+msgstr "B<--deploops>"
+
+#. type: Plain text
+#: debian-unstable
+msgid "Print dependency loops as warning."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--fsmdebug>"
+msgstr "B<--fsmdebug>"
+
+#. type: Plain text
+#: debian-unstable
+msgid "Print debuging information of payload handling code."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--rpmfcdebug>"
+msgstr "B<--rpmfcdebug>"
+
+#. type: Plain text
+#: debian-unstable
+msgid "Print debug information about files packaged."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--rpmiodebug>"
+msgstr "B<--rpmiodebug>"
+
+#. type: Plain text
+#: debian-unstable
+msgid "Print debug information about file IO."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--stats>"
+msgstr "B<--stats>"
+
+#. type: Plain text
+#: debian-unstable
+msgid "Print runtime statistics of often used functions."
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "Obsolete Options"
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<-K, --checksig>"
+msgstr "B<-K, --checksig>"
+
+#. type: Plain text
+#: debian-unstable
+msgid "See and use rpmkeys(8)."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--nodocs>"
+msgstr "B<--nodocs>"
+
+#. type: Plain text
+#: debian-unstable
+msgid "Do not install documentation.  Use B<--excludedocs> instead."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--promoteepoch>"
+msgstr "B<--promoteepoch>"
+
+#. type: Plain text
+#: debian-unstable
+msgid "Enable obsolete epoch handling used in rpm 3.x time frame."
+msgstr ""
+
+#. type: TP
+#: debian-unstable
+#, no-wrap
+msgid "B<--prtpkts>"
+msgstr "B<--prtpkts>"
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"OBSOLETE! Used to print the packages containing and representing the pgp "
+"keys for debugging purposes."
+msgstr ""

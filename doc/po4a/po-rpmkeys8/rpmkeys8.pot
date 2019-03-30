@@ -1,0 +1,174 @@
+# SOME DESCRIPTIVE TITLE
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-03-30 21:22+01:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. type: TH
+#: debian-unstable
+#, no-wrap
+msgid "RPMKEYS"
+msgstr ""
+
+#. type: TH
+#: debian-unstable
+#, no-wrap
+msgid "29 October 2010"
+msgstr ""
+
+#. type: TH
+#: debian-unstable
+#, no-wrap
+msgid "Red Hat, Inc"
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "NAME"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "rpmkeys - RPM Keyring"
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "SYNOPSIS"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<rpmkeys> {B<--import|--checksig>}"
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "DESCRIPTION"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "The general forms of rpm digital signature commands are"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<rpmkeys> B<--import> I<PUBKEY>I< ...>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<rpmkeys> {B<-K|--checksig>} I<PACKAGE_FILE>I< ...>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"The B<--checksig> option checks all the digests and signatures contained in "
+"I<PACKAGE_FILE> to ensure the integrity and origin of the package. Note that "
+"signatures are now verified whenever a package is read, and B<--checksig> is "
+"useful to verify all of the digests and signatures associated with a package."
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Digital signatures cannot be verified without a public key.  An ASCII "
+"armored public key can be added to the B<rpm> database using B<--import>. An "
+"imported public key is carried in a header, and key ring management is "
+"performed exactly like package management. For example, all currently "
+"imported public keys can be displayed by:"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<rpm -qa gpg-pubkey*>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Details about a specific public key, when imported, can be displayed by "
+"querying.  Here's information about the Red Hat GPG/DSA key:"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<rpm -qi gpg-pubkey-db42a60e>"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Finally, public keys can be erased after importing just like packages. "
+"Here's how to remove the Red Hat GPG/DSA key"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<rpm -e gpg-pubkey-db42a60e>"
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "SEE ALSO"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+#, no-wrap
+msgid ""
+"B<popt>(3),\n"
+"B<rpm>(8),\n"
+"B<rpmdb>(8),\n"
+"B<rpmsign>(8),\n"
+"B<rpm2cpio>(8),\n"
+"B<rpmbuild>(8),\n"
+"B<rpmspec>(8),\n"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"B<rpmkeys --help> - as rpm supports customizing the options via popt aliases "
+"it's impossible to guarantee that what's described in the manual matches "
+"what's available."
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<http://www.rpm.org/ E<lt>URL:http://www.rpm.org/E<gt>>"
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "AUTHORS"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+#, no-wrap
+msgid ""
+"Marc Ewing E<lt>marc@redhat.comE<gt>\n"
+"Jeff Johnson E<lt>jbj@redhat.comE<gt>\n"
+"Erik Troan E<lt>ewt@redhat.comE<gt>\n"
+"Panu Matilainen E<lt>pmatilai@redhat.comE<gt>\n"
+msgstr ""

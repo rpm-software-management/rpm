@@ -1,0 +1,130 @@
+# SOME DESCRIPTIVE TITLE
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-03-30 20:54+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. type: TH
+#: ../gendiff.1:1
+#, no-wrap
+msgid "GENDIFF"
+msgstr ""
+
+#. type: TH
+#: ../gendiff.1:1
+#, no-wrap
+msgid "Mon Jan 10 2000"
+msgstr ""
+
+#. type: SH
+#: ../gendiff.1:3
+#, no-wrap
+msgid "NAME"
+msgstr ""
+
+#. type: Plain text
+#: ../gendiff.1:5
+msgid "gendiff - utility to aid in error-free diff file generation"
+msgstr ""
+
+#. type: SH
+#: ../gendiff.1:5
+#, no-wrap
+msgid "SYNOPSIS"
+msgstr ""
+
+#. type: Plain text
+#: ../gendiff.1:7
+msgid "B<gendiff> E<lt>directoryE<gt> E<lt>diff-extensionE<gt>"
+msgstr ""
+
+#. type: SH
+#: ../gendiff.1:7
+#, no-wrap
+msgid "DESCRIPTION"
+msgstr ""
+
+#. type: Plain text
+#: ../gendiff.1:14
+msgid ""
+"B<gendiff> is a rather simple script which aids in generating a diff file "
+"from a single directory.  It takes a directory name and a \"diff-extension\" "
+"as its only arguments.  The diff extension should be a unique sequence of "
+"characters added to the end of all original, unmodified files.  The output "
+"of the program is a diff file which may be applied with the B<patch> program "
+"to recreate the changes."
+msgstr ""
+
+#. type: Plain text
+#: ../gendiff.1:21
+msgid ""
+"The usual sequence of events for creating a diff is to create two identical "
+"directories, make changes in one directory, and then use the B<diff> utility "
+"to create a list of differences between the two.  Using gendiff eliminates "
+"the need for the extra, original and unmodified directory copy.  Instead, "
+"only the individual files that are modified need to be saved."
+msgstr ""
+
+#. type: Plain text
+#: ../gendiff.1:26
+msgid ""
+"Before editing a file, copy the file, appending the extension you have "
+"chosen to the filename.  I.e. if you were going to edit somefile.cpp and "
+"have chosen the extension \"fix\", copy it to somefile.cpp.fix before "
+"editing it.  Then edit the first copy (somefile.cpp)."
+msgstr ""
+
+#. type: Plain text
+#: ../gendiff.1:29
+msgid ""
+"After editing all the files you need to edit in this fashion, enter the "
+"directory one level above where your source code resides, and then type"
+msgstr ""
+
+#. type: Plain text
+#: ../gendiff.1:32
+#, no-wrap
+msgid "    $ gendiff somedirectory .fix E<gt> mydiff-fix.patch\n"
+msgstr ""
+
+#. type: Plain text
+#: ../gendiff.1:36
+msgid ""
+"You should redirect the output to a file (as illustrated) unless you want to "
+"see the results on stdout."
+msgstr ""
+
+#. type: SH
+#: ../gendiff.1:38
+#, no-wrap
+msgid "SEE ALSO"
+msgstr ""
+
+#. type: Plain text
+#: ../gendiff.1:41
+msgid "B<diff>(1), B<patch>(1)"
+msgstr ""
+
+#. type: SH
+#: ../gendiff.1:42
+#, no-wrap
+msgid "AUTHOR"
+msgstr ""
+
+#. type: Plain text
+#: ../gendiff.1:45
+#, no-wrap
+msgid "Marc Ewing E<lt>marc@redhat.comE<gt>\n"
+msgstr ""

@@ -1,0 +1,131 @@
+# SOME DESCRIPTIVE TITLE
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-03-30 21:21+01:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. type: TH
+#: debian-unstable
+#, no-wrap
+msgid "RPMDB"
+msgstr ""
+
+#. type: TH
+#: debian-unstable
+#, no-wrap
+msgid "29 June 2010"
+msgstr ""
+
+#. type: TH
+#: debian-unstable
+#, no-wrap
+msgid "Red Hat, Inc"
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "NAME"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "rpmdb - RPM Database Tool"
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "SYNOPSIS"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<rpm> {B<--initdb|--rebuilddb>}"
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "DESCRIPTION"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "The general form of an rpm rebuild database command is"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"B<rpm> {B<--initdb|--rebuilddb>} [B<-v>] [B<--dbpath >I<DIRECTORY>] [B<--"
+"root >I<DIRECTORY>]"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"Use B<--initdb> to create a new database if one doesn't already exist "
+"(existing database is not overwritten), use B<--rebuilddb> to rebuild the "
+"database indices from the installed package headers."
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "SEE ALSO"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+#, no-wrap
+msgid ""
+"B<popt>(3),\n"
+"B<rpm>(8),\n"
+"B<rpmkeys>(8),\n"
+"B<rpmsign>(8),\n"
+"B<rpm2cpio>(8),\n"
+"B<rpmbuild>(8),\n"
+"B<rpmspec>(8),\n"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid ""
+"B<rpm --help> - as rpm supports customizing the options via popt aliases "
+"it's impossible to guarantee that what's described in the manual matches "
+"what's available."
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+msgid "B<http://www.rpm.org/ E<lt>URL:http://www.rpm.org/E<gt>>"
+msgstr ""
+
+#. type: SH
+#: debian-unstable
+#, no-wrap
+msgid "AUTHORS"
+msgstr ""
+
+#. type: Plain text
+#: debian-unstable
+#, no-wrap
+msgid ""
+"Marc Ewing E<lt>marc@redhat.comE<gt>\n"
+"Jeff Johnson E<lt>jbj@redhat.comE<gt>\n"
+"Erik Troan E<lt>ewt@redhat.comE<gt>\n"
+"Panu Matilainen E<lt>pmatilai@redhat.comE<gt>\n"
+msgstr ""

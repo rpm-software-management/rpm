@@ -1,0 +1,102 @@
+# German translation of manpages
+# This file is distributed under the same license as the manpages-de package.
+# Copyright © of this file:
+# Mario Blättermann <mario.blaettermann@gmail.com>, 2019.
+msgid ""
+msgstr ""
+"Project-Id-Version: manpages-de\n"
+"POT-Creation-Date: 2019-03-30 22:19+0100\n"
+"PO-Revision-Date: 2019-03-30 21:41+0100\n"
+"Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
+"Language-Team: German <debian-l10n-german@lists.debian.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 18.12.3\n"
+
+#. type: TH
+#: ../rpmdeps.8:3
+#, no-wrap
+msgid "RPMDEPS"
+msgstr "RPMDEPS"
+
+#. type: TH
+#: ../rpmdeps.8:3
+#, no-wrap
+msgid "24 October 2002"
+msgstr "24. Oktober 2002"
+
+#. type: TH
+#: ../rpmdeps.8:3
+#, no-wrap
+msgid "Red Hat, Inc."
+msgstr "Red Hat, Inc."
+
+#. type: SH
+#: ../rpmdeps.8:4
+#, no-wrap
+msgid "NAME"
+msgstr "BEZEICHNUNG"
+
+#. type: Plain text
+#: ../rpmdeps.8:6
+msgid "rpmdeps - Generate RPM Package Dependencies"
+msgstr "rpmdeps - RPM-Paketabhängigkeiten erzeugen"
+
+#. type: SH
+#: ../rpmdeps.8:6
+#, no-wrap
+msgid "SYNOPSIS"
+msgstr "ÜBERSICHT"
+
+#. type: Plain text
+#: ../rpmdeps.8:11
+msgid ""
+"B<rpmdeps> B<{-P|--provides}> B<{-R|--requires}> B<{--rpmfcdebug}> "
+"I<FILE>I< ...>"
+msgstr ""
+"B<rpmdeps> B<{-P|--provides}> B<{-R|--requires}> B<{--rpmfcdebug}> "
+"I<DATEI>I< …>"
+
+#. type: SH
+#: ../rpmdeps.8:12
+#, no-wrap
+msgid "DESCRIPTION"
+msgstr "BESCHREIBUNG"
+
+#. type: Plain text
+#: ../rpmdeps.8:19
+msgid ""
+"B<rpmdeps> generates package dependencies for the set of I<FILE> arguments.  "
+"Each I<FILE> argument is searched for Elf32/Elf64, script interpreter, or "
+"per-script dependencies, and the dependencies are printed to stdout."
+msgstr ""
+
+#. type: SH
+#: ../rpmdeps.8:19
+#, no-wrap
+msgid "SEE ALSO"
+msgstr "SIEHE AUCH"
+
+#. type: Plain text
+#: ../rpmdeps.8:22
+msgid "B<rpm>(8),"
+msgstr "B<rpm>(8),"
+
+#. type: Plain text
+#: ../rpmdeps.8:24
+msgid "B<rpmbuild>(8),"
+msgstr "B<rpmbuild>(8),"
+
+#. type: SH
+#: ../rpmdeps.8:24
+#, no-wrap
+msgid "AUTHORS"
+msgstr "AUTOREN"
+
+#. type: Plain text
+#: ../rpmdeps.8:26
+msgid "Jeff Johnson E<lt>jbj@redhat.comE<gt>"
+msgstr "Jeff Johnson E<lt>jbj@redhat.comE<gt>"
