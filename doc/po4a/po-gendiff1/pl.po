@@ -1,0 +1,153 @@
+# Polish translation of gendiff.1
+# Copyright (C) 2019 Free Software Foundation, Inc.
+# This file is distributed under the same license as the rpm package.
+#
+# Jakub Bogusz <qboosh@pld-linux.org>, 2003.
+# Mario Blättermann <mario.blaettermann@gmail.com>, 2019.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2019-03-30 20:54+0100\n"
+"PO-Revision-Date: 2019-03-31 13:32+0200\n"
+"Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
+"Language-Team: German <debian-l10n-german@lists.debian.org>\n"
+"Language: pl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 18.12.3\n"
+
+#. type: TH
+#: ../gendiff.1:1
+#, no-wrap
+msgid "GENDIFF"
+msgstr "GENDIFF"
+
+#. type: TH
+#: ../gendiff.1:1
+#, no-wrap
+msgid "Mon Jan 10 2000"
+msgstr "10 stycznia 2000"
+
+#. type: SH
+#: ../gendiff.1:3
+#, no-wrap
+msgid "NAME"
+msgstr "NAZWA"
+
+#. type: Plain text
+#: ../gendiff.1:5
+msgid "gendiff - utility to aid in error-free diff file generation"
+msgstr ""
+"gendiff - narzędzie pomagające przy generowaniu bezbłędnych plików diff"
+
+#. type: SH
+#: ../gendiff.1:5
+#, no-wrap
+msgid "SYNOPSIS"
+msgstr "SKŁADNIA"
+
+#. type: Plain text
+#: ../gendiff.1:7
+msgid "B<gendiff> E<lt>directoryE<gt> E<lt>diff-extensionE<gt>"
+msgstr "B<gendiff> E<lt>katalogE<gt> E<lt>rozszerzenie-diffE<gt>"
+
+#. type: SH
+#: ../gendiff.1:7
+#, no-wrap
+msgid "DESCRIPTION"
+msgstr "OPIS"
+
+#. type: Plain text
+#: ../gendiff.1:14
+msgid ""
+"B<gendiff> is a rather simple script which aids in generating a diff file "
+"from a single directory.  It takes a directory name and a \"diff-extension\" "
+"as its only arguments.  The diff extension should be a unique sequence of "
+"characters added to the end of all original, unmodified files.  The output "
+"of the program is a diff file which may be applied with the B<patch> program "
+"to recreate the changes."
+msgstr ""
+"B<gendiff> jest dość prostym skryptem pomagającym przy generowaniu"
+"pliku diff z pojedynczego katalogu. Jako jedyne argumenty przyjmuje nazwę"
+"katalogu i \"rozszerzenie-diff\". Rozszerzenie diff powinno być unikalną"
+"sekwencją znaków dodaną na końcu wszystkich oryginalnych, nie"
+"zmodyfikowanych plików. Wyjściem programu jest plik diff, który można"
+"nałożyć przy użyciu programu B<patch>, aby odtworzyć zmiany."
+
+#. type: Plain text
+#: ../gendiff.1:21
+msgid ""
+"The usual sequence of events for creating a diff is to create two identical "
+"directories, make changes in one directory, and then use the B<diff> utility "
+"to create a list of differences between the two.  Using gendiff eliminates "
+"the need for the extra, original and unmodified directory copy.  Instead, "
+"only the individual files that are modified need to be saved."
+msgstr ""
+"Zwykle sekwencja czynności do stworzenia pliku diff to utworzenie dwóch"
+"identycznych katalogów, dokonanie zmian w jednym katalogu i użycie"
+"narzędzia B<diff> do utworzenia listy różnic między nimi."
+"Użycie gendiff eliminuje potrzebę dodatkowej kopii oryginalnego, nie"
+"zmodyfikowanego katalogu. Zamiast tego trzeba zachować tylko pojedyncze"
+"pliki przed zmodyfikowaniem."
+
+#. type: Plain text
+#: ../gendiff.1:26
+msgid ""
+"Before editing a file, copy the file, appending the extension you have "
+"chosen to the filename.  I.e. if you were going to edit somefile.cpp and "
+"have chosen the extension \"fix\", copy it to somefile.cpp.fix before "
+"editing it.  Then edit the first copy (somefile.cpp)."
+msgstr ""
+"Przed edycją pliku skopiuj go, dołączając do nazwy wybrane rozszerzenie."
+"Tzn. jeśli zamierzasz zmodyfikować plik somefile.cpp i wybrałeś rozszerzenie"
+"\"fix\", skopiuj go do somefile.cpp.fix przed edycją. Następnie modyfikuj"
+"pierwszą kopię (somefile.cpp)."
+
+#. type: Plain text
+#: ../gendiff.1:29
+msgid ""
+"After editing all the files you need to edit in this fashion, enter the "
+"directory one level above where your source code resides, and then type"
+msgstr ""
+"Po edycji wszystkich potrzebnych plików w ten sposób wejdź do katalogu"
+"jeden poziom wyżej niż jest obecny kod źródłowy i napisz:"
+
+#. type: Plain text
+#: ../gendiff.1:32
+#, no-wrap
+msgid "    $ gendiff somedirectory .fix E<gt> mydiff-fix.patch\n"
+msgstr "    $ gendiff tenkatalog .fix E<gt> mydiff-fix.patch\n"
+
+#. type: Plain text
+#: ../gendiff.1:36
+msgid ""
+"You should redirect the output to a file (as illustrated) unless you want to "
+"see the results on stdout."
+msgstr ""
+"Powinieneś przekierować wyjście do pliku (jak na przykładzie), chyba że"
+"chcesz zobaczyć wynik na standardowym wyjściu."
+
+#. type: SH
+#: ../gendiff.1:38
+#, no-wrap
+msgid "SEE ALSO"
+msgstr "ZOBACZ TAKŻE"
+
+#. type: Plain text
+#: ../gendiff.1:41
+msgid "B<diff>(1), B<patch>(1)"
+msgstr "B<diff>(1), B<patch>(1)"
+
+#. type: SH
+#: ../gendiff.1:42
+#, no-wrap
+msgid "AUTHOR"
+msgstr "AUTOR"
+
+#. type: Plain text
+#: ../gendiff.1:45
+#, no-wrap
+msgid "Marc Ewing E<lt>marc@redhat.comE<gt>\n"
+msgstr "Marc Ewing E<lt>marc@redhat.comE<gt>\n"
