@@ -3,6 +3,7 @@
 #include <pthread.h>
 #include <nss.h>
 #include <sechash.h>
+#include <signal.h>
 #include <keyhi.h>
 #include <cryptohi.h>
 #include <blapit.h>
