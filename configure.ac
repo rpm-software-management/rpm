@@ -487,6 +487,10 @@ AS_IF([test "$WITH_LIBELF" = yes],[
       # If possible we also want the strtab functions from elfutils 0.167.
       # But we can fall back on the (unsupported) ebl alternatives if not.
       AC_CHECK_LIB(dw, dwelf_strtab_init, [HAVE_LIBDW_STRTAB=yes])
+      # whether libdw supports compressed ELF objects
+      AC_CHECK_LIB(dw, dwelf_elf_begin, [
+                   AC_DEFINE(HAVE_DWELF_ELF_BEGIN, 1, [Have dwelf_elf_begin?])
+      ])
     ])
   ])
 ])
