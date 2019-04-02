@@ -1739,6 +1739,28 @@ static int addNewIDSymlink(ARGV_t *files,
     return rc;
 }
 
+static int haveModinfo(Elf *elf)
+{
+    Elf_Scn * scn = NULL;
+    size_t shstrndx;
+    int have_modinfo = 0;
+    const char *sname;
+
+    if (elf_getshdrstrndx(elf, &shstrndx) == 0) {
+	while ((scn = elf_nextscn(elf, scn)) != NULL) {
+	    GElf_Shdr shdr_mem, *shdr = gelf_getshdr(scn, &shdr_mem);
+	    if (shdr == NULL)
+		continue;
+	    sname = elf_strptr(elf, shstrndx, shdr->sh_name);
+	    if (sname && rstreq(sname, ".modinfo")) {
+		have_modinfo = 1;
+		break;
+	    }
+	}
+    }
+    return have_modinfo;
+}
+
 static int generateBuildIDs(FileList fl, ARGV_t *files)
 {
     int rc = 0;
@@ -1803,15 +1825,14 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 	    int fd = open (flp->diskPath, O_RDONLY);
 	    if (fd >= 0) {
 		/* Only real ELF files, that are ET_EXEC, ET_DYN or
-		   kernel modules (ET_REL files with names ending in .ko)
+		   kernel modules (ET_REL files with .modinfo section)
 		   should have build-ids. */
 		GElf_Ehdr ehdr;
 		Elf *elf = elf_begin (fd, ELF_C_READ, NULL);
 		if (elf != NULL && elf_kind(elf) == ELF_K_ELF
 		    && gelf_getehdr(elf, &ehdr) != NULL
 		    && (ehdr.e_type == ET_EXEC || ehdr.e_type == ET_DYN
-			|| (ehdr.e_type == ET_REL
-			    && rpmFileHasSuffix (flp->diskPath, ".ko")))) {
+			|| (ehdr.e_type == ET_REL && haveModinfo(elf)))) {
 		    const void *build_id;
 		    ssize_t len = dwelf_elf_gnu_build_id (elf, &build_id);
 		    /* len == -1 means error. Zero means no
