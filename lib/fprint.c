@@ -488,7 +488,7 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
 	(void) rpmsqPoll();
 
 	if ((fi = rpmteFiles(p)) == NULL)
-	    continue;	/* XXX can't happen */
+	    continue;
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	rpmfilesFpLookup(fi, fpc);
@@ -522,6 +522,9 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	(void) rpmsqPoll();
 
+	if ((fi = rpmteFiles(p)) == NULL)
+	    continue;
+
 	fs = rpmteGetFileStates(p);
 	fc = rpmfsFC(fs);
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
@@ -531,6 +534,7 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
 	    fpLookupSubdir(symlinks, fpc, p, i);
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
+	rpmfilesFree(fi);
     }
     rpmtsiFree(pi);
 
