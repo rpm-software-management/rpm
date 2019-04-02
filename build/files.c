@@ -1828,7 +1828,11 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 		   kernel modules (ET_REL files with .modinfo section)
 		   should have build-ids. */
 		GElf_Ehdr ehdr;
+#if HAVE_DWELF_ELF_BEGIN
+		Elf *elf = dwelf_elf_begin(fd);
+#else
 		Elf *elf = elf_begin (fd, ELF_C_READ, NULL);
+#endif
 		if (elf != NULL && elf_kind(elf) == ELF_K_ELF
 		    && gelf_getehdr(elf, &ehdr) != NULL
 		    && (ehdr.e_type == ET_EXEC || ehdr.e_type == ET_DYN
