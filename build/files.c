@@ -2354,6 +2354,7 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     FileEntryFree(&fl->cur);
     FileEntryFree(&fl->def);
     copyFileEntry(&sd->entries[0].defEntry, &fl->def);
+    copyFileEntry(&sd->entries[0].curEntry, &fl->cur);
     fl->cur.isDir = 1;
     (void) processBinaryFile(pkg, fl, sd->dirname);
 
