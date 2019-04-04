@@ -1,0 +1,107 @@
+# Korean translation of rpm2cpio.8
+# This file is distributed under the same license as the rpm package.
+# Copyright © of this file:
+# 이 만 용 <geoman@nownuri.nowcom.co.kr>
+# Mario Blättermann <mario.blaettermann@gmail.com>, 2019.
+msgid ""
+msgstr ""
+"Project-Id-Version: manpages-de\n"
+"POT-Creation-Date: 2019-03-30 21:15+0100\n"
+"PO-Revision-Date: 2019-04-02 20:10+0200\n"
+"Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
+"Language-Team: German <debian-l10n-german@lists.debian.org>\n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Lokalize 18.12.3\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. type: TH
+#: ../rpm2cpio.8:2
+#, no-wrap
+msgid "rpm2cpio"
+msgstr "rpm2cpio"
+
+#. type: TH
+#: ../rpm2cpio.8:2
+#, fuzzy, no-wrap
+msgid "11 January 2001"
+msgstr "1995년 9월 15일"
+
+#. type: TH
+#: ../rpm2cpio.8:2
+#, no-wrap
+msgid "Red Hat, Inc."
+msgstr "Red Hat, Inc."
+
+#. type: SH
+#: ../rpm2cpio.8:3
+#, no-wrap
+msgid "NAME"
+msgstr "이름"
+
+#. type: Plain text
+#: ../rpm2cpio.8:5
+msgid "rpm2cpio - Extract cpio archive from RPM Package Manager (RPM) package."
+msgstr "rpm2cpio - 레드햇 (RPM) 패키지를 cpio 화일로 변환"
+
+#. type: SH
+#: ../rpm2cpio.8:5
+#, no-wrap
+msgid "SYNOPSIS"
+msgstr "개요"
+
+#. type: Plain text
+#: ../rpm2cpio.8:7
+msgid "B<rpm2cpio> [filename]"
+msgstr "B<rpm2cpio> [filename]"
+
+#. type: SH
+#: ../rpm2cpio.8:7
+#, no-wrap
+msgid "DESCRIPTION"
+msgstr "설명"
+
+#. type: Plain text
+#: ../rpm2cpio.8:11
+msgid ""
+"B<rpm2cpio> converts the .rpm file specified as a single argument to a cpio "
+"archive on standard out. If a '-' argument is given, an rpm stream is read "
+"from standard in."
+msgstr ""
+"B<rpm2cpio> 는 .rpm 화일명을 하나 받아들여서 표준출력으로 cpio 저장화일을 출력한다. 만약 아무런 전달인수가 없다면"
+" 표준입력으로부터 rpm 화일을 받아들인다."
+
+#. type: Plain text
+#: ../rpm2cpio.8:14
+msgid "B<rpm2cpio glint-1.0-1.i386.rpm | cpio -dium>"
+msgstr "B<rpm2cpio glint-1.0-1.i386.rpm | cpio -dium>"
+
+#. type: Plain text
+#: ../rpm2cpio.8:16
+msgid "B<cat glint-1.0-1.i386.rpm | rpm2cpio - | cpio -tv>"
+msgstr "B<cat glint-1.0-1.i386.rpm | rpm2cpio - | cpio -tv>"
+
+#. type: SH
+#: ../rpm2cpio.8:17
+#, no-wrap
+msgid "SEE ALSO"
+msgstr "참고"
+
+#. type: Plain text
+#: ../rpm2cpio.8:19
+msgid "I<rpm>(8)"
+msgstr "I<rpm>(8)"
+
+#. type: SH
+#: ../rpm2cpio.8:19
+#, no-wrap
+msgid "AUTHOR"
+msgstr "저자"
+
+#. type: Plain text
+#: ../rpm2cpio.8:22
+#, no-wrap
+msgid "Erik Troan E<lt>ewt@redhat.comE<gt>\n"
+msgstr "Erik Troan E<lt>ewt@redhat.comE<gt>\n"
