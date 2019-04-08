@@ -66,9 +66,6 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
     FILE * fp = NULL;
 
     FD_t fd = NULL;
-    pid_t pid;
-    pid_t child;
-    int status;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     
     switch (what) {
@@ -156,29 +153,12 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
     (void) poptParseArgvString(buildCmd, &argc, &argv);
 
     rpmlog(RPMLOG_NOTICE, _("Executing(%s): %s\n"), name, buildCmd);
-    if (!(child = fork())) {
-	errno = 0;
-	(void) execvp(argv[0], (char *const *)argv);
-
+    if (rpmfcExec((ARGV_const_t)argv, NULL, NULL, 1, spec->buildSubdir, stdout)) {
 	rpmlog(RPMLOG_ERR, _("Exec of %s failed (%s): %s\n"),
 		scriptName, name, strerror(errno));
-
-	_exit(127); /* exit 127 for compatibility with bash(1) */
-    }
-
-    pid = waitpid(child, &status, 0);
-
-    if (pid == -1) {
-	rpmlog(RPMLOG_ERR, _("Error executing scriptlet %s (%s)\n"),
-		 scriptName, name);
 	goto exit;
     }
-
-    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	rpmlog(RPMLOG_ERR, _("Bad exit status from %s (%s)\n"),
-		 scriptName, name);
-    } else
-	rc = RPMRC_OK;
+    rc = RPMRC_OK;
     
 exit:
     Fclose(fd);
