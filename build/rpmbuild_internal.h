@@ -408,10 +408,11 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg);
  * @retval *sb_stdoutp	helper output
  * @param failnonzero	IS non-zero helper exit status a failure?
  * @param buildRoot	buildRoot directory (or NULL)
+ * @param dup		duplicate output (or NULL)
  */
 RPM_GNUC_INTERNAL
 int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
-		int failnonzero, const char *buildRoot);
+		int failnonzero, const char *buildRoot, FILE *dup);
 
 /** \ingroup rpmbuild
  * Post-build processing for policies in binary package(s).
