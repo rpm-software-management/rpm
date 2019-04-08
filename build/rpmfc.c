@@ -248,11 +248,12 @@ static rpmds rpmdsSingleNS(rpmstrPool pool,
  * @param writeBytesLeft no. of bytes to feed to script on stdin
  * @param failNonZero	is script failure an error?
  * @param buildRoot	buildRoot directory (or NULL)
+ * @param dup		duplicate output to stream (or NULL)
  * @return		buffered stdout from script, NULL on error
  */     
 static StringBuf getOutputFrom(ARGV_t argv,
                         const char * writePtr, size_t writeBytesLeft,
-                        int failNonZero, const char *buildRoot)
+                        int failNonZero, const char *buildRoot, FILE *dup)
 {
     pid_t child, reaped;
     int toProg[2] = { -1, -1 };
@@ -359,6 +360,8 @@ static StringBuf getOutputFrom(ARGV_t argv,
 	    }
 	    buf[iorc] = '\0';
 	    appendStringBuf(readBuff, buf);
+	    if (dup)
+		fprintf(dup, "%s", buf);
 	}
     }
 
@@ -393,7 +396,7 @@ exit:
 }
 
 int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
-		int failnonzero, const char *buildRoot)
+		int failnonzero, const char *buildRoot, FILE *dup)
 {
     char * s = NULL;
     ARGV_t xav = NULL;
@@ -435,7 +438,8 @@ int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
     }
 
     /* Read output from exec'd helper. */
-    sb = getOutputFrom(xav, buf_stdin, buf_stdin_len, failnonzero, buildRoot);
+    sb = getOutputFrom(xav, buf_stdin, buf_stdin_len,
+			failnonzero, buildRoot, dup);
 
     if (sb_stdoutp != NULL) {
 	*sb_stdoutp = sb;
@@ -488,7 +492,7 @@ static ARGV_t runCmd(const char *nsdep, const char *depname,
 	argvAdd(&av, buf);
 
 	appendLineStringBuf(sb_stdin, fn);
-	if (rpmfcExec(av, sb_stdin, &sb_stdout, 0, buildRoot) == 0) {
+	if (rpmfcExec(av, sb_stdin, &sb_stdout, 0, buildRoot, NULL) == 0) {
 	    argvSplit(&output, getStringBuf(sb_stdout), "\n\r");
 	}
 
@@ -1310,7 +1314,7 @@ static rpmRC rpmfcApplyExternal(rpmfc fc)
 	free(s);
 
 	if (rpmfcExec(dm->argv, sb_stdin, &sb_stdout,
-			failnonzero, fc->buildRoot) == -1)
+			failnonzero, fc->buildRoot, NULL) == -1)
 	    continue;
 
 	if (sb_stdout == NULL) {
