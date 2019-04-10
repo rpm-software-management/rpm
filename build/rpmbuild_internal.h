@@ -284,6 +284,14 @@ RPM_GNUC_INTERNAL
 int parseLines(rpmSpec spec, int strip, ARGV_t *avp, StringBuf *sbp);
 
 /** \ingroup rpmbuild
+ * Destroy source component chain.
+ * @param s		source component chain
+ * @return		NULL always
+ */
+RPM_GNUC_INTERNAL
+struct Source * freeSources(struct Source * s);
+
+/** \ingroup rpmbuild
  * Check line for section separator, return next parser state.
  * @param		line from spec file
  * @return		next parser state
