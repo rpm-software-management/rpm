@@ -43,12 +43,6 @@ struct TriggerFileEntry * freeTriggerFiles(struct TriggerFileEntry * p)
     return NULL;
 }
 
-/**
- * Destroy source component chain.
- * @param s		source component chain
- * @return		NULL always
- */
-static inline
 struct Source * freeSources(struct Source * s)
 {
     struct Source *r, *t = s;
