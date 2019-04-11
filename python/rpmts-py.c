@@ -170,6 +170,17 @@ static void die(PyObject *cb)
     exit(EXIT_FAILURE);
 }
 
+int rpmtsFromPyObject(PyObject *item, rpmts *ts)
+{
+    if (rpmtsObject_Check(item)) {
+	*ts = ((rpmtsObject *) item)->ts;
+	return 1;
+    }
+    PyErr_SetString(PyExc_TypeError, "TransactionSet object expected");
+    return 0;
+}
+
+
 static PyObject *
 rpmts_AddInstall(rpmtsObject * s, PyObject * args)
 {
