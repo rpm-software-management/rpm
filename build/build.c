@@ -283,7 +283,7 @@ exit:
     return rc;
 }
 
-rpmRC rpmSpecBuild(rpmSpec spec, BTA_t buildArgs)
+int rpmSpecBuild(rpmts ts, rpmSpec spec, BTA_t buildArgs)
 {
     /* buildSpec() can recurse with different buildAmount, pass it separately */
     return buildSpec(buildArgs, spec, buildArgs->buildAmount);

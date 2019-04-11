@@ -103,11 +103,12 @@ rpmds rpmSpecDS(rpmSpec spec, rpmTagVal tag);
 
 /** \ingroup rpmbuild
  * Spec build stages state machine driver.
+ * @param ts		rpm transaction set
  * @param spec		spec file control structure
  * @param buildArgs	build arguments
  * @return		RPMRC_OK on success
  */
-rpmRC rpmSpecBuild(rpmSpec spec, BTA_t buildArgs);
+int rpmSpecBuild(rpmts ts, rpmSpec spec, BTA_t buildArgs);
 
 #ifdef __cplusplus
 }
