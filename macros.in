@@ -1021,6 +1021,7 @@ package or when debugging this package.\
   CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; \
   CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; \
   FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; \
+  LDFLAGS="${LDFLAGS:-%?build_ldflags}" ; export LDFLAGS; \
   %{_configure} --host=%{_host} --build=%{_build} \\\
 	--program-prefix=%{?_program_prefix} \\\
 	--disable-dependency-tracking \\\
