@@ -94,6 +94,8 @@ EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.secret
 EXTRA_DIST += data/macros.testfile
 EXTRA_DIST += data/macros.debug
 
+.PHONY: populate_testing
+
 # testsuite voodoo
 AUTOTEST = $(AUTOM4TE) --language=autotest
 $(TESTSUITE): $(srcdir)/package.m4 local.at $(TESTSUITE_AT)
@@ -127,9 +129,8 @@ atlocal:	atlocal.in Makefile
 DISTCLEANFILES = atlocal
 EXTRA_DIST += atlocal.in
 
-# Hack: Abusing testing$(bindir)/rpmbuild as stamp file
 # The chmod is needed when copying from read-only sources (eg in distcheck)
-testing$(bindir)/rpmbuild: ../rpmbuild
+populate_testing:
 	HOME=$(abs_builddir)/testing gpg-connect-agent --no-autostart killagent bye ||:
 	rm -rf testing
 	mkdir -p testing/$(bindir)
@@ -149,10 +150,9 @@ testing$(bindir)/rpmbuild: ../rpmbuild
 	HOME=$(abs_builddir)/testing gpg2 --import ${abs_srcdir}/data/keys/*.secret
 
 check_DATA = atconfig atlocal $(TESTSUITE)
-check_DATA += testing$(bindir)/rpmbuild
 
 if HAVE_FAKECHROOT
-check-local: $(check_DATA)
+check-local: $(check_DATA) populate_testing
 	$(SHELL) '$(TESTSUITE)' $(TESTSUITEFLAGS)
 else
 check-local:
@@ -160,7 +160,7 @@ check-local:
 	exit 1
 endif !HAVE_FAKECHROOT
 
-installcheck-local: $(check_DATA)
+installcheck-local: $(check_DATA) populate_testing
 	$(SHELL) '$(TESTSUITE)' AUTOTEST_PATH='$(bindir)' \
 	$(TESTSUITEFLAGS) ||:
 
