@@ -20,6 +20,7 @@
 #define WHITELIST_NAME ".-_+%{}"
 #define WHITELIST_VERREL "._+%{}~^"
 #define WHITELIST_EVR WHITELIST_VERREL "-:"
+#define LEN_AND_STR(_tag) (sizeof(_tag)-1), (_tag)
 
 struct TriggerFileEntry {
     int index;
@@ -31,9 +32,44 @@ struct TriggerFileEntry {
     uint32_t priority;
 };
 
+typedef enum rpmParseLineType_e {
+    LINE_DEFAULT           = 0,
+    LINE_IF                = (1 << 0),
+    LINE_IFARCH            = (1 << 1),
+    LINE_IFNARCH           = (1 << 2),
+    LINE_IFOS              = (1 << 3),
+    LINE_IFNOS             = (1 << 4),
+    LINE_ELSE              = (1 << 5),
+    LINE_ENDIF             = (1 << 6),
+    LINE_INCLUDE           = (1 << 7),
+} rpmParseLineType;
+
+typedef const struct parsedSpecLine_s {
+    int id;
+    size_t textLen;
+    const char *text;
+    int withArgs;
+    int isConditional;
+    int wrongPrecursors;
+} * parsedSpecLine;
+
+static struct parsedSpecLine_s const lineTypes[] = {
+    { LINE_ENDIF,      LEN_AND_STR("%endif")  , 0, 1, LINE_ENDIF},
+    { LINE_ELSE,       LEN_AND_STR("%else")   , 0, 1, LINE_ENDIF | LINE_ELSE },
+    { LINE_IF,         LEN_AND_STR("%if")     , 1, 1, 0},
+    { LINE_IFARCH,     LEN_AND_STR("%ifarch") , 1, 1, 0},
+    { LINE_IFNARCH,    LEN_AND_STR("%ifnarch"), 1, 1, 0},
+    { LINE_IFOS,       LEN_AND_STR("%ifos")   , 1, 1, 0},
+    { LINE_IFNOS,      LEN_AND_STR("%ifnos")  , 1, 1, 0},
+    { LINE_INCLUDE,    LEN_AND_STR("%include"), 1, 0, 0},
+    { 0, 0, 0, 0, 0, 0 }
+ };
+
+
 typedef struct ReadLevelEntry {
     int reading;
     int lineNum;
+    parsedSpecLine lastConditional;
     struct ReadLevelEntry * next;
 } RLE_t;
 

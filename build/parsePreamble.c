@@ -1003,8 +1003,6 @@ typedef const struct PreambleRec_s {
     const char * token;
 } * PreambleRec;
 
-#define LEN_AND_STR(_tag) (sizeof(_tag)-1), _tag
-
 static struct PreambleRec_s const preambleList[] = {
     {RPMTAG_NAME,		0, 0, 1, LEN_AND_STR("name")},
     {RPMTAG_VERSION,		0, 0, 1, LEN_AND_STR("version")},
