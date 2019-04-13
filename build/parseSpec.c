@@ -25,8 +25,6 @@
 #define ISMACRO(s,m,len) (rstreqn((s), (m), len) && !risalpha((s)[len]))
 #define ISMACROWITHARG(s,m,len) (rstreqn((s), (m), len) && (risblank((s)[len]) || !(s)[len]))
 
-#define LEN_AND_STR(_tag) (sizeof(_tag)-1), (_tag)
-
 typedef struct OpenFileInfo {
     char * fileName;
     FILE *fp;
@@ -173,41 +171,11 @@ static int restoreFirstChar(rpmSpec spec)
     return 0;
 }
 
-typedef enum rpmParseLineType_e {
-    LINE_IF                = 0,
-    LINE_IFARCH            = (1 << 0),
-    LINE_IFNARCH           = (1 << 1),
-    LINE_IFOS              = (1 << 2),
-    LINE_IFNOS             = (1 << 3),
-    LINE_ELSE              = (1 << 4),
-    LINE_ENDIF             = (1 << 5),
-    LINE_INCLUDE           = (1 << 6),
-} rpmParseLineType;
-
-typedef const struct parsedSpecLine_s {
-    int id;
-    size_t textLen;
-    const char *text;
-    int withArgs;
-} * parsedSpecLine;
-
-static struct parsedSpecLine_s const implementedTypes[] = {
-    { LINE_IF,		LEN_AND_STR("%if")     , 1},
-    { LINE_IFARCH,	LEN_AND_STR("%ifarch") , 1},
-    { LINE_IFNARCH,	LEN_AND_STR("%ifnarch"), 1},
-    { LINE_IFOS,	LEN_AND_STR("%ifos")   , 1},
-    { LINE_IFNOS,	LEN_AND_STR("%ifnos")  , 1},
-    { LINE_ELSE,	LEN_AND_STR("%else")   , 0},
-    { LINE_ENDIF,	LEN_AND_STR("%endif")  , 0},
-    { LINE_INCLUDE,	LEN_AND_STR("%include"), 1},
-    { 0, 0, 0, 0 }
-};
-
 static parsedSpecLine parseLineType(char *line)
 {
     parsedSpecLine condition;
 
-    for (condition = implementedTypes; condition->text != NULL; condition++) {
+    for (condition = lineTypes; condition->text != NULL; condition++) {
 	if (condition->withArgs) {
 	    if (ISMACROWITHARG(line, condition->text, condition->textLen))
 		return condition;
@@ -426,6 +394,7 @@ int readLine(rpmSpec spec, int strip)
     int rc;
     int startLine = 0;
     parsedSpecLine lineType;
+    int prevType = spec->readStack->lastConditional->id;
 
     if (!restoreFirstChar(spec)) {
 retry:
@@ -464,6 +433,20 @@ retry:
     lineType = parseLineType(s);
     if (!lineType)
 	goto after_classification;
+
+    /* check ordering of the conditional */
+    if (lineType->isConditional && (prevType & lineType->wrongPrecursors)) {
+	if (prevType == LINE_ENDIF) {
+	    rpmlog(RPMLOG_ERR,_("%s: line %d: %s with no %%if\n"),
+		ofi->fileName, ofi->lineNum, lineType->text);
+	} else {
+	    rpmlog(RPMLOG_ERR,_("%s: line %d: %s after %s\n"),
+		ofi->fileName, ofi->lineNum, lineType->text,
+		spec->readStack->lastConditional->text);
+	}
+	return PART_ERROR;
+    }
+
     if (!spec->readStack->reading && (lineType->id == LINE_IF)) {
 	match = 0;
     } else if (lineType->id == LINE_IFARCH) {
@@ -486,24 +469,11 @@ retry:
 	    return PART_ERROR;
 	}
     } else if (lineType->id == LINE_ELSE) {
-	if (! spec->readStack->next) {
-	    /* Got an else with no %if ! */
-	    rpmlog(RPMLOG_ERR,
-			_("%s:%d: Got a %%else with no %%if\n"),
-			ofi->fileName, ofi->lineNum);
-	    return PART_ERROR;
-	}
+	spec->readStack->lastConditional = lineType;
 	spec->readStack->reading =
 	    spec->readStack->next->reading && ! spec->readStack->reading;
 	spec->line[0] = '\0';
     } else if (lineType->id == LINE_ENDIF) {
-	if (! spec->readStack->next) {
-	    /* Got an end with no %if ! */
-	    rpmlog(RPMLOG_ERR,
-			_("%s:%d: Got a %%endif with no %%if\n"),
-			ofi->fileName, ofi->lineNum);
-	    return PART_ERROR;
-	}
 	rl = spec->readStack;
 	spec->readStack = spec->readStack->next;
 	free(rl);
@@ -537,6 +507,7 @@ after_classification:
 	rl->reading = spec->readStack->reading && match;
 	rl->next = spec->readStack;
 	rl->lineNum = ofi->lineNum;
+	rl->lastConditional = lineType;
 	spec->readStack = rl;
 	spec->line[0] = '\0';
     }

@@ -269,6 +269,7 @@ rpmSpec newSpec(void)
     spec->readStack = xcalloc(1, sizeof(*spec->readStack));
     spec->readStack->next = NULL;
     spec->readStack->reading = 1;
+    spec->readStack->lastConditional = lineTypes;
 
     spec->rootDir = NULL;
     spec->prep = NULL;
