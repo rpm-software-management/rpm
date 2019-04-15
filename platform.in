@@ -81,7 +81,7 @@
 %__brp_strip %{_rpmconfigdir}/brp-strip %{__strip}
 %__brp_strip_comment_note %{_rpmconfigdir}/brp-strip-comment-note %{__strip} %{__objdump}
 %__brp_strip_shared %{_rpmconfigdir}/brp-strip-shared
-%__brp_strip_static_archive %{_rpmconfigdir}/brp-strip-static-archive %{__strip}
+%__brp_strip_static_archive %{_rpmconfigdir}/brp-strip-static-archive %{__strip} %{_smp_build_ncpus}
 
 %__os_install_post    \
     %{?__brp_compress} \
