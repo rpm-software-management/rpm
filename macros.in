@@ -807,7 +807,8 @@ package or when debugging this package.\
   RPM_OPT_FLAGS=\"%{optflags}\"\
   RPM_ARCH=\"%{_arch}\"\
   RPM_OS=\"%{_os}\"\
-  export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS\
+  RPM_BUILD_NCPUS=\"%{_smp_build_ncpus}\"\
+  export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS RPM_BUILD_NCPUS\
   RPM_DOC_DIR=\"%{_docdir}\"\
   export RPM_DOC_DIR\
   RPM_PACKAGE_NAME=\"%{NAME}\"\
