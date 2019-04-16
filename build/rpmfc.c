@@ -246,26 +246,27 @@ static rpmds rpmdsSingleNS(rpmstrPool pool,
  * @param argv		program and arguments to run
  * @param writePtr	bytes to feed to script on stdin (or NULL)
  * @param writeBytesLeft no. of bytes to feed to script on stdin
+ * @param sb_stdout	StringBuf to store output of the script (or NULL)
  * @param failNonZero	is script failure an error?
  * @param buildRoot	buildRoot directory (or NULL)
  * @param dup		duplicate output to stream (or NULL)
- * @return		buffered stdout from script, NULL on error
- */     
-static StringBuf getOutputFrom(ARGV_t argv,
-                        const char * writePtr, size_t writeBytesLeft,
-                        int failNonZero, const char *buildRoot, FILE *dup)
+ * @return		0 on success
+ */
+static int getOutputFrom(ARGV_t argv,
+			 const char * writePtr, size_t writeBytesLeft,
+			 StringBuf sb_stdout,
+			 int failNonZero, const char *buildRoot, FILE *dup)
 {
     pid_t child, reaped;
     int toProg[2] = { -1, -1 };
     int fromProg[2] = { -1, -1 };
     int status;
-    StringBuf readBuff;
     int myerrno = 0;
     int ret = 1; /* assume failure */
 
     if (pipe(toProg) < 0 || pipe(fromProg) < 0) {
 	rpmlog(RPMLOG_ERR, _("Couldn't create pipe for %s: %m\n"), argv[0]);
-	return NULL;
+	return -1;
     }
     
     child = fork();
@@ -294,13 +295,11 @@ static StringBuf getOutputFrom(ARGV_t argv,
     if (child < 0) {
 	rpmlog(RPMLOG_ERR, _("Couldn't fork %s: %s\n"),
 		argv[0], strerror(errno));
-	return NULL;
+	return -1;
     }
 
     close(toProg[0]);
     close(fromProg[1]);
-
-    readBuff = newStringBuf();
 
     while (1) {
 	fd_set ibits, obits;
@@ -359,7 +358,8 @@ static StringBuf getOutputFrom(ARGV_t argv,
 		break;
 	    }
 	    buf[iorc] = '\0';
-	    appendStringBuf(readBuff, buf);
+	    if (sb_stdout)
+		appendStringBuf(sb_stdout, buf);
 	    if (dup)
 		fprintf(dup, "%s", buf);
 	}
@@ -388,11 +388,7 @@ static StringBuf getOutputFrom(ARGV_t argv,
     ret = 0;
 
 exit:
-    if (ret) {
-	readBuff = freeStringBuf(readBuff);
-    }
-
-    return readBuff;
+    return ret;
 }
 
 int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
@@ -438,8 +434,14 @@ int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
     }
 
     /* Read output from exec'd helper. */
-    sb = getOutputFrom(xav, buf_stdin, buf_stdin_len,
-			failnonzero, buildRoot, dup);
+    if (sb_stdoutp != NULL) {
+	sb = newStringBuf();
+    }
+    ec = getOutputFrom(xav, buf_stdin, buf_stdin_len, sb,
+		       failnonzero, buildRoot, dup);
+    if (ec) {
+	sb = freeStringBuf(sb);
+    }
 
     if (sb_stdoutp != NULL) {
 	*sb_stdoutp = sb;
