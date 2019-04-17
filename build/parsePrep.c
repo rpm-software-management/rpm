@@ -494,7 +494,7 @@ exit:
 
 int parsePrep(rpmSpec spec)
 {
-    int nextPart, rc, res = PART_ERROR;
+    int rc, res = PART_ERROR;
     ARGV_t saveLines = NULL;
 
     if (spec->prep != NULL) {
@@ -505,24 +505,9 @@ int parsePrep(rpmSpec spec)
     spec->prep = newStringBuf();
 
     /* There are no options to %prep */
-    if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
-	return PART_NONE;
-    } else if (rc < 0) {
-	return PART_ERROR;
-    }
+    if ((res = parseLines(spec, STRIP_NOTHING, &saveLines, NULL)) == PART_ERROR)
+	goto exit;
     
-    while (! (nextPart = isPart(spec->line))) {
-	/* Need to expand the macros inline.  That way we  */
-	/* can give good line number information on error. */
-	argvAdd(&saveLines, spec->line);
-	if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
-	    nextPart = PART_NONE;
-	    break;
-	} else if (rc < 0) {
-	    goto exit;
-	}
-    }
-
     for (ARGV_const_t lines = saveLines; lines && *lines; lines++) {
 	rc = RPMRC_OK;
 	if (rstreqn(*lines, "%setup", sizeof("%setup")-1)) {
@@ -536,7 +521,6 @@ int parsePrep(rpmSpec spec)
 	    goto exit;
 	}
     }
-    res = nextPart;
 
 exit:
     argvFree(saveLines);
