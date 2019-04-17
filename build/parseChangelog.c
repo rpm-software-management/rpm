@@ -300,7 +300,7 @@ exit:
 
 int parseChangelog(rpmSpec spec)
 {
-    int nextPart, rc, res = PART_ERROR;
+    int res = PART_ERROR;
     ARGV_t sb = NULL;
 
     if (headerIsEntry(spec->packages->header, RPMTAG_CHANGELOGTIME)) {
@@ -308,28 +308,12 @@ int parseChangelog(rpmSpec spec)
 	goto exit;
     }
     
-    /* There are no options to %changelog */
-    if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
-	res = PART_NONE;
+    if ((res = parseLines(spec, STRIP_COMMENTS, &sb, NULL)) == PART_ERROR)
 	goto exit;
-    } else if (rc < 0) {
-	goto exit;
-    }
-    
-    while (! (nextPart = isPart(spec->line))) {
-	argvAdd(&sb, spec->line);
-	if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
-	    nextPart = PART_NONE;
-	    break;
-	} else if (rc < 0) {
-	    goto exit;
-	}
-    }
 
     if (sb && addChangelog(spec->packages->header, sb)) {
 	goto exit;
     }
-    res = nextPart;
 
 exit:
     argvFree(sb);
