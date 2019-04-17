@@ -63,27 +63,11 @@ int parseDescription(rpmSpec spec)
     if (lookupPackage(spec, name, flag, &pkg))
 	goto exit;
 
-    sb = newStringBuf();
-
-    if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
-	nextPart = PART_NONE;
-    } else if (rc < 0) {
-	    nextPart = PART_ERROR;
-	    goto exit;
-    } else {
-	while (! (nextPart = isPart(spec->line))) {
-	    appendLineStringBuf(sb, spec->line);
-	    if ((rc =
-		readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
-		nextPart = PART_NONE;
-		break;
-	    } else if (rc < 0) {
-		nextPart = PART_ERROR;
-		goto exit;
-	    }
-	}
+    if ((nextPart = parseLines(spec, (STRIP_TRAILINGSPACE |STRIP_COMMENTS),
+				NULL, &sb)) == PART_ERROR) {
+	goto exit;
     }
-    
+
     stripTrailingBlanksStringBuf(sb);
     if (addLangTag(spec, pkg->header,
 		   RPMTAG_DESCRIPTION, getStringBuf(sb), lang)) {
