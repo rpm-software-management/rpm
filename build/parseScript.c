@@ -92,7 +92,6 @@ int parseScript(rpmSpec spec, int parsePart)
     int flag = PART_SUBNAME;
     Package pkg;
     StringBuf sb = NULL;
-    int nextPart;
     int index;
     char * reqargs = NULL;
 
@@ -355,22 +354,8 @@ int parseScript(rpmSpec spec, int parsePart)
 	goto exit;
     }
 
-    sb = newStringBuf();
-    if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
-	nextPart = PART_NONE;
-    } else if (rc < 0) {
+    if ((res = parseLines(spec, STRIP_NOTHING, NULL, &sb)) == PART_ERROR)
 	goto exit;
-    } else {
-	while (! (nextPart = isPart(spec->line))) {
-	    appendStringBuf(sb, spec->line);
-	    if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
-		nextPart = PART_NONE;
-		break;
-	    } else if (rc < 0) {
-		goto exit;
-	    }
-	}
-    }
     stripTrailingBlanksStringBuf(sb);
     p = getStringBuf(sb);
 
@@ -474,8 +459,7 @@ int parseScript(rpmSpec spec, int parsePart)
 	    }
 	}
     }
-    res = nextPart;
-    
+
 exit:
     free(reqargs);
     freeStringBuf(sb);
