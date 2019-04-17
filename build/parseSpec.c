@@ -552,6 +552,39 @@ after_classification:
     return 0;
 }
 
+int parseLines(rpmSpec spec, int strip, ARGV_t *avp, StringBuf *sbp)
+{
+    int rc, nextPart = PART_ERROR;
+    int nl = (strip & STRIP_TRAILINGSPACE);
+
+    if ((rc = readLine(spec, strip)) > 0) {
+	nextPart = PART_NONE;
+	goto exit;
+    } else if (rc < 0) {
+	goto exit;
+    }
+
+    if (sbp && *sbp == NULL)
+	*sbp = newStringBuf();
+
+    while (! (nextPart = isPart(spec->line))) {
+	if (avp)
+	    argvAdd(avp, spec->line);
+	if (sbp)
+	    appendStringBufAux(*sbp, spec->line, nl);
+	if ((rc = readLine(spec, strip)) > 0) {
+	    nextPart = PART_NONE;
+	    break;
+	} else if (rc < 0) {
+	    nextPart = PART_ERROR;
+	    break;
+	}
+    }
+
+exit:
+    return nextPart;
+}
+
 void closeSpec(rpmSpec spec)
 {
     while (popOFI(spec)) {};

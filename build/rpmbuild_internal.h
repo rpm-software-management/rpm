@@ -222,6 +222,17 @@ RPM_GNUC_INTERNAL
 int readLine(rpmSpec spec, int strip);
 
 /** \ingroup rpmbuild
+ * Read next line from spec file.
+ * @param spec		spec file control structure
+ * @param strip		truncate comments?
+ * @retval avp		pointer to argv (optional, alloced)
+ * @retval sbp		pointer to string buf (optional, alloced)
+ * @return		next spec part or PART_ERROR on error
+ */
+RPM_GNUC_INTERNAL
+int parseLines(rpmSpec spec, int strip, ARGV_t *avp, StringBuf *sbp);
+
+/** \ingroup rpmbuild
  * Check line for section separator, return next parser state.
  * @param		line from spec file
  * @return		next parser state
