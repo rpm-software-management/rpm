@@ -12,7 +12,7 @@
 
 int parseFiles(rpmSpec spec)
 {
-    int nextPart, res = PART_ERROR;
+    int res = PART_ERROR;
     Package pkg;
     int rc, argc;
     int arg;
@@ -84,23 +84,7 @@ int parseFiles(rpmSpec spec)
     }
 
     pkg->fileList = argvNew();
-
-    if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
-	nextPart = PART_NONE;
-    } else if (rc < 0) {
-	goto exit;
-    } else {
-	while (! (nextPart = isPart(spec->line))) {
-	    argvAdd(&(pkg->fileList), spec->line);
-	    if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
-		nextPart = PART_NONE;
-		break;
-	    } else if (rc < 0) {
-		goto exit;
-	    }
-	}
-    }
-    res = nextPart;
+    res = parseLines(spec, STRIP_COMMENTS, &(pkg->fileList), NULL);
 
 exit:
     rpmPopMacro(NULL, "license");
