@@ -138,6 +138,7 @@ static struct Source *newSource(uint32_t num, const char *path, int flags)
     } else {
 	p->source = p->fullSource;
     }
+    p->path = rpmGetPath("%{_sourcedir}/", p->source, NULL);
     return p;
 }
 
@@ -270,10 +271,10 @@ static int addSource(rpmSpec spec, const char *field, rpmTagVal tag)
     spec->numSources++;
 
     {
-	char *body = rpmGetPath("%{_sourcedir}/", p->source, NULL);
 	struct stat st;
 	int nofetch = (spec->flags & RPMSPEC_FORCE) ||
 		      rpmExpandNumeric("%{_disable_source_fetch}");
+	const char *body = p->path;
 
 	/* try to download source/patch if it's missing */
 	if (lstat(body, &st) != 0 && errno == ENOENT && !nofetch) {
@@ -326,7 +327,6 @@ static int addSource(rpmSpec spec, const char *field, rpmTagVal tag)
 	    rpmluaPop(lua);
 	}
 #endif
-	free(body);
     }
     
     return 0;

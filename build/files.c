@@ -2631,7 +2631,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
     argvAdd(&files, spec->specFile);
     for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
 	char * sfn = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
-		"%{_sourcedir}/", srcPtr->source, NULL);
+				srcPtr->path, NULL);
 	argvAdd(&files, sfn);
 	free(sfn);
     }
@@ -2640,7 +2640,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	for (srcPtr = pkg->icon; srcPtr != NULL; srcPtr = srcPtr->next) {
 	    char * sfn;
 	    sfn = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
-		"%{_sourcedir}/", srcPtr->source, NULL);
+				srcPtr->path, NULL);
 	    argvAdd(&files, sfn);
 	    free(sfn);
 	}

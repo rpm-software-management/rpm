@@ -52,7 +52,6 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 		     int reverse, int removeEmpties, int fuzz, const char *dir,
 		     const char *outfile)
 {
-    char *fn = NULL;
     char *buf = NULL;
     char *arg_backup = NULL;
     char *arg_fuzz = NULL;
@@ -68,8 +67,7 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 	rpmlog(RPMLOG_ERR, _("No patch number %u\n"), c);
 	goto exit;
     }
-
-    fn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
+    const char *fn = sp->path;
 
     /* On non-build parse's, file cannot be stat'd or read. */
     if ((spec->flags & RPMSPEC_FORCE) || checkOwners(fn) || rpmFileIsCompressed(fn, &compressed)) goto exit;
@@ -110,12 +108,11 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 
     rasprintf(&buf, "echo \"Patch #%u (%s):\"\n"
 			"%s\n", 
-			c, basename(fn), patchcmd);
+			c, sp->source, patchcmd);
     free(patchcmd);
 
 exit:
     free(arg_patch_flags);
-    free(fn);
     return buf;
 }
 
@@ -128,7 +125,6 @@ exit:
  */
 static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 {
-    char *fn = NULL;
     char *buf = NULL;
     char *tar = NULL;
     const char *taropts = ((rpmIsVerbose() && !quietly) ? "-xvvof" : "-xof");
@@ -139,8 +135,7 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	rpmlog(RPMLOG_ERR, _("No source number %u\n"), c);
 	goto exit;
     }
-
-    fn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
+    const char *fn = sp->path;
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
     if (!(spec->flags & RPMSPEC_FORCE) && (checkOwners(fn) || rpmFileIsCompressed(fn, &compressed))) {
@@ -216,7 +211,6 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
     }
 
 exit:
-    free(fn);
     free(tar);
     return rstrcat(&buf,
 		"\nSTATUS=$?\n"
