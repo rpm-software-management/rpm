@@ -221,6 +221,33 @@ static void addLuaSource(const struct Source *p)
 #endif
 }
 
+static int tryDownload(const struct Source *p)
+{
+    int rc = 0;
+    struct stat st;
+
+    /* try to download source/patch if it's missing */
+    if (lstat(p->path, &st) != 0 && errno == ENOENT) {
+	char *url = NULL;
+	if (urlIsURL(p->fullSource) != URL_IS_UNKNOWN) {
+	    url = rstrdup(p->fullSource);
+	} else {
+	    url = rpmExpand("%{_default_source_url}", NULL);
+	    rstrcat(&url, p->source);
+	    if (*url == '%') url = _free(url);
+	}
+	if (url) {
+	    rpmlog(RPMLOG_WARNING, _("Downloading %s to %s\n"), url, p->path);
+	    if (urlGetFile(url, p->path) != 0) {
+		rpmlog(RPMLOG_ERR, _("Couldn't download %s\n"), p->fullSource);
+		rc = -1;
+	    }
+	}
+	free(url);
+    }
+    return rc;
+}
+
 static int addSource(rpmSpec spec, const char *field, rpmTagVal tag)
 {
     struct Source *p;
@@ -231,6 +258,8 @@ static int addSource(rpmSpec spec, const char *field, rpmTagVal tag)
     char *buf = NULL;
     uint32_t num = 0;
     int *autonum = NULL;
+    int nofetch = (spec->flags & RPMSPEC_FORCE) ||
+		      rpmExpandNumeric("%{_disable_source_fetch}");
 
     switch (tag) {
       case RPMTAG_SOURCE:
@@ -294,44 +323,19 @@ static int addSource(rpmSpec spec, const char *field, rpmTagVal tag)
     spec->sources = p;
     spec->numSources++;
 
-    {
-	struct stat st;
-	int nofetch = (spec->flags & RPMSPEC_FORCE) ||
-		      rpmExpandNumeric("%{_disable_source_fetch}");
-	const char *body = p->path;
+    rasprintf(&buf, "%s%d",
+	    (flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
+    rpmPushMacro(spec->macros, buf, NULL, p->path, RMIL_SPEC);
+    free(buf);
+    rasprintf(&buf, "%sURL%d",
+	    (flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
+    rpmPushMacro(spec->macros, buf, NULL, p->fullSource, RMIL_SPEC);
+    free(buf);
 
-	/* try to download source/patch if it's missing */
-	if (lstat(body, &st) != 0 && errno == ENOENT && !nofetch) {
-	    char *url = NULL;
-	    if (urlIsURL(p->fullSource) != URL_IS_UNKNOWN) {
-		url = rstrdup(p->fullSource);
-	    } else {
-		url = rpmExpand("%{_default_source_url}", NULL);
-		rstrcat(&url, p->source);
-		if (*url == '%') url = _free(url);
-	    }
-	    if (url) {
-		rpmlog(RPMLOG_WARNING, _("Downloading %s to %s\n"), url, body);
-		if (urlGetFile(url, body) != 0) {
-		    free(url);
-		    rpmlog(RPMLOG_ERR, _("Couldn't download %s\n"), p->fullSource);
-		    return RPMRC_FAIL;
-		}
-		free(url);
-	    }
-	}
+    addLuaSource(p);
 
-	rasprintf(&buf, "%s%d",
-		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
-	rpmPushMacro(spec->macros, buf, NULL, body, RMIL_SPEC);
-	free(buf);
-	rasprintf(&buf, "%sURL%d",
-		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
-	rpmPushMacro(spec->macros, buf, NULL, p->fullSource, RMIL_SPEC);
-	free(buf);
-
-	addLuaSource(p);
-    }
+    if (!nofetch && tryDownload(p))
+	return RPMRC_FAIL;
     
     return 0;
 }
