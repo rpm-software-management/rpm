@@ -197,6 +197,30 @@ static int parseNoSource(rpmSpec spec, const char * field, rpmTagVal tag)
     return 0;
 }
 
+static void addLuaSource(const struct Source *p)
+{
+#ifdef WITH_LUA
+    rpmlua lua = NULL; /* global state */
+    const char * what = (p->flags & RPMBUILD_ISPATCH) ? "patches" : "sources";
+    rpmluaPushTable(lua, what);
+    rpmluav var = rpmluavNew();
+    rpmluavSetListMode(var, 1);
+    rpmluavSetValue(var, RPMLUAV_STRING, p->path);
+    rpmluaSetVar(lua, var);
+    rpmluavFree(var);
+    rpmluaPop(lua);
+
+    what = (p->flags & RPMBUILD_ISPATCH) ? "patch_nums" : "source_nums";
+    rpmluaPushTable(lua, what);
+    var = rpmluavNew();
+    rpmluavSetListMode(var, 1);
+    rpmluavSetValueNum(var, p->num);
+    rpmluaSetVar(lua, var);
+    rpmluavFree(var);
+    rpmluaPop(lua);
+#endif
+}
+
 static int addSource(rpmSpec spec, const char *field, rpmTagVal tag)
 {
     struct Source *p;
@@ -305,28 +329,8 @@ static int addSource(rpmSpec spec, const char *field, rpmTagVal tag)
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
 	rpmPushMacro(spec->macros, buf, NULL, p->fullSource, RMIL_SPEC);
 	free(buf);
-#ifdef WITH_LUA
-	{
-	    rpmlua lua = NULL; /* global state */
-	    const char * what = (flag & RPMBUILD_ISPATCH) ? "patches" : "sources";
-	    rpmluaPushTable(lua, what);
-	    rpmluav var = rpmluavNew();
-	    rpmluavSetListMode(var, 1);
-	    rpmluavSetValue(var, RPMLUAV_STRING, body);
-	    rpmluaSetVar(lua, var);
-	    rpmluavFree(var);
-	    rpmluaPop(lua);
 
-	    what = (flag & RPMBUILD_ISPATCH) ? "patch_nums" : "source_nums";
-	    rpmluaPushTable(lua, what);
-	    var = rpmluavNew();
-	    rpmluavSetListMode(var, 1);
-	    rpmluavSetValueNum(var, p->num);
-	    rpmluaSetVar(lua, var);
-	    rpmluavFree(var);
-	    rpmluaPop(lua);
-	}
-#endif
+	addLuaSource(p);
     }
     
     return 0;
