@@ -123,6 +123,24 @@ static inline int parseYesNo(const char * s)
 	    ? 0 : 1);
 }
 
+static struct Source *newSource(uint32_t num, const char *path, int flags)
+{
+    struct Source *p = xmalloc(sizeof(*p));
+    p->num = num;
+    p->fullSource = xstrdup(path);
+    p->flags = flags;
+    p->source = strrchr(p->fullSource, '/');
+    if (p->source) {
+	const char *buf = strrchr(p->source,'=');
+	if (buf)
+	    p->source = buf;
+	p->source++;
+    } else {
+	p->source = p->fullSource;
+    }
+    return p;
+}
+
 struct Source *findSource(rpmSpec spec, uint32_t num, int flag)
 {
     struct Source *p;
@@ -254,17 +272,7 @@ static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag
     }
 
     /* Create the entry and link it in */
-    p = xmalloc(sizeof(*p));
-    p->num = num;
-    p->fullSource = xstrdup(field);
-    p->flags = flag;
-    p->source = strrchr(p->fullSource, '/');
-    if (p->source) {
-	if ((buf = strrchr(p->source,'='))) p->source = buf;
-	p->source++;
-    } else {
-	p->source = p->fullSource;
-    }
+    p = newSource(num, field, flag);
 
     if (tag != RPMTAG_ICON) {
 	p->next = spec->sources;
