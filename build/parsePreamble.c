@@ -196,7 +196,7 @@ static int parseNoSource(rpmSpec spec, const char * field, rpmTagVal tag)
     return 0;
 }
 
-static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag)
+static int addSource(rpmSpec spec, const char *field, rpmTagVal tag)
 {
     struct Source *p;
     int flag = 0;
@@ -220,17 +220,13 @@ static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag
 	fieldp = spec->line + 5;
 	autonum = &spec->autonum_patch;
 	break;
-      case RPMTAG_ICON:
-	flag = RPMBUILD_ISICON;
-	fieldp = NULL;
-	break;
       default:
 	return -1;
 	break;
     }
 
     /* Get the number */
-    if (tag != RPMTAG_ICON) {
+    {
 	/* We already know that a ':' exists, and that there */
 	/* are no spaces before it.                          */
 	/* This also now allows for spaces and tabs between  */
@@ -269,18 +265,11 @@ static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag
 
     /* Create the entry and link it in */
     p = newSource(num, field, flag);
-
-    if (tag != RPMTAG_ICON) {
-	p->next = spec->sources;
-	spec->sources = p;
-    } else {
-	p->next = pkg->icon;
-	pkg->icon = p;
-    }
-
+    p->next = spec->sources;
+    spec->sources = p;
     spec->numSources++;
 
-    if (tag != RPMTAG_ICON) {
+    {
 	char *body = rpmGetPath("%{_sourcedir}/", p->source, NULL);
 	struct stat st;
 	int nofetch = (spec->flags & RPMSPEC_FORCE) ||
@@ -576,14 +565,18 @@ void copyInheritedTags(Header h, Header fromh)
 
 /**
  */
-static rpmRC readIcon(Header h, const char * file)
+static rpmRC addIcon(Package pkg, const char * file)
 {
+    struct Source *p = newSource(0, file, RPMBUILD_ISICON);
     char *fn = NULL;
     uint8_t *icon = NULL;
     FD_t fd = NULL;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     off_t size;
     size_t nb, iconsize;
+
+    p->next = pkg->icon;
+    pkg->icon = p;
 
     /* XXX use rpmGenPath(rootdir, "%{_sourcedir}/", file) for icon path. */
     fn = rpmGetPath("%{_sourcedir}/", file, NULL);
@@ -612,9 +605,9 @@ static rpmRC readIcon(Header h, const char * file)
     }
 
     if (rstreqn((char*)icon, "GIF", sizeof("GIF")-1)) {
-	headerPutBin(h, RPMTAG_GIF, icon, iconsize);
+	headerPutBin(pkg->header, RPMTAG_GIF, icon, iconsize);
     } else if (rstreqn((char*)icon, "/* XPM", sizeof("/* XPM")-1)) {
-	headerPutBin(h, RPMTAG_XPM, icon, iconsize);
+	headerPutBin(pkg->header, RPMTAG_XPM, icon, iconsize);
     } else {
 	rpmlog(RPMLOG_ERR, _("Unknown icon type: %s\n"), file);
 	goto exit;
@@ -874,12 +867,12 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     case RPMTAG_SOURCE:
     case RPMTAG_PATCH:
 	macro = NULL;
-	if (addSource(spec, pkg, field, tag))
+	if (addSource(spec, field, tag))
 	    goto exit;
 	break;
     case RPMTAG_ICON:
 	SINGLE_TOKEN_ONLY;
-	if (addSource(spec, pkg, field, tag) || readIcon(pkg->header, field))
+	if (addIcon(pkg, field))
 	    goto exit;
 	break;
     case RPMTAG_NOSOURCE:
