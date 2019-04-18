@@ -57,6 +57,7 @@ struct Source * freeSources(struct Source * s)
 	r = t;
 	t = t->next;
 	r->fullSource = _free(r->fullSource);
+	r->path = _free(r->path);
 	free(r);
     }
     return NULL;

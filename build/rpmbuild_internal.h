@@ -42,6 +42,7 @@ typedef struct ReadLevelEntry {
 struct Source {
     char * fullSource;
     const char * source;     /* Pointer into fullSource */
+    char * path;             /* On-disk path (including %_sourcedir) */
     int flags;
     uint32_t num;
 struct Source * next;
