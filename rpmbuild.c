@@ -503,7 +503,12 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     if (_anyarch(buildAmount))
 	specFlags |= RPMSPEC_ANYARCH;
 #undef	_anyarch
-    
+
+	/* Don't check the spec subpackage if building the SRPM */
+	if (ba->buildAmount == RPMBUILD_PACKAGESOURCE) {
+		specFlags |= RPMSPEC_NOCHECK;
+	}
+
     spec = rpmSpecParse(specFile, specFlags, buildRootURL);
     if (spec == NULL) {
 	goto exit;

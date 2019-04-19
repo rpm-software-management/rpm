@@ -91,9 +91,13 @@ rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
     }
 
     if (!(flag & PART_QUIET)) {
-	if (p == NULL && pkg != NULL) {
+	if (p == NULL && pkg != NULL && !(spec->flags & RPMSPEC_NOCHECK)) {
 	    rpmlog(RPMLOG_ERR, _("line %d: %s: package %s does not exist\n"),
 				    spec->lineNum, spec->line, name);
+	} else if (p == NULL && pkg != NULL && spec->flags & RPMSPEC_NOCHECK) {
+	    rpmlog(RPMLOG_WARNING, _("line %d: %s: package %s does not exist\n"),
+				    spec->lineNum, spec->line, name);
+		p = spec->packages;
 	} else if (p != NULL && pkg == NULL) {
 	    rpmlog(RPMLOG_ERR, _("line %d: %s: package %s already exists\n"),
 				    spec->lineNum, spec->line, name);

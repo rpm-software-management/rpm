@@ -37,6 +37,7 @@ enum rpmSpecFlags_e {
     RPMSPEC_FORCE	= (1 << 1),
     RPMSPEC_NOLANG	= (1 << 2),
     RPMSPEC_NOUTF8	= (1 << 3),
+    RPMSPEC_NOCHECK	= (1 << 4),
 };
 
 typedef rpmFlags rpmSpecFlags;
