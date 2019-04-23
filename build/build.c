@@ -47,7 +47,7 @@ exit:
  * @todo Single use by %%doc in files.c prevents static.
  */
 rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
-		const char *sb, int test)
+	       const char *sb, int test, StringBuf * sb_stdoutp)
 {
     char *scriptName = NULL;
     char * buildDir = rpmGenPath(spec->rootDir, "%{_builddir}", "");
@@ -149,7 +149,7 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
     (void) poptParseArgvString(buildCmd, &argc, &argv);
 
     rpmlog(RPMLOG_NOTICE, _("Executing(%s): %s\n"), name, buildCmd);
-    if (rpmfcExec((ARGV_const_t)argv, NULL, NULL, 1, spec->buildSubdir, stdout)) {
+    if (rpmfcExec((ARGV_const_t)argv, NULL, sb_stdoutp, 1, spec->buildSubdir, stdout)) {
 	rpmlog(RPMLOG_ERR, _("Exec of %s failed (%s): %s\n"),
 		scriptName, name, strerror(errno));
 	goto exit;
@@ -215,22 +215,22 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 
 	if ((what & RPMBUILD_PREP) &&
 	    (rc = doScript(spec, RPMBUILD_PREP, "%prep",
-			   getStringBuf(spec->prep), test)))
+			   getStringBuf(spec->prep), test, NULL)))
 		goto exit;
 
 	if ((what & RPMBUILD_BUILD) &&
 	    (rc = doScript(spec, RPMBUILD_BUILD, "%build",
-			   getStringBuf(spec->build), test)))
+			   getStringBuf(spec->build), test, NULL)))
 		goto exit;
 
 	if ((what & RPMBUILD_INSTALL) &&
 	    (rc = doScript(spec, RPMBUILD_INSTALL, "%install",
-			   getStringBuf(spec->install), test)))
+			   getStringBuf(spec->install), test, NULL)))
 		goto exit;
 
 	if ((what & RPMBUILD_CHECK) &&
 	    (rc = doScript(spec, RPMBUILD_CHECK, "%check",
-			   getStringBuf(spec->check), test)))
+			   getStringBuf(spec->check), test, NULL)))
 		goto exit;
 
 	if ((what & RPMBUILD_PACKAGESOURCE) &&
@@ -257,11 +257,11 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 	
 	if ((what & RPMBUILD_CLEAN) &&
 	    (rc = doScript(spec, RPMBUILD_CLEAN, "%clean",
-			   getStringBuf(spec->clean), test)))
+			   getStringBuf(spec->clean), test, NULL)))
 		goto exit;
 
 	if ((what & RPMBUILD_RMBUILD) &&
-	    (rc = doScript(spec, RPMBUILD_RMBUILD, "--clean", NULL, test)))
+	    (rc = doScript(spec, RPMBUILD_RMBUILD, "--clean", NULL, test, NULL)))
 		goto exit;
     }
 

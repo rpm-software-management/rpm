@@ -2347,7 +2347,7 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
 
     if (install) {
 	rpmRC rc = doScript(spec, RPMBUILD_STRINGBUF, sdname,
-			    getStringBuf(docScript), test);
+			    getStringBuf(docScript), test, NULL);
 
 	if (rc && rpmExpandNumeric("%{?_missing_doc_files_terminate_build}"))
 	    fl->processingFailed = 1;
