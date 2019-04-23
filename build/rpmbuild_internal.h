@@ -415,11 +415,12 @@ int parseExpressionBoolean(const char * expr);
  * @param name		name of scriptlet section
  * @param sb		lines that compose script body
  * @param test		don't execute scripts or package if testing
+ * @param sb_stdoutp	StringBuf to catupre the stdout of the script or NULL
  * @return		RPMRC_OK on success
  */
 RPM_GNUC_INTERNAL
 rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char * name,
-		const char * sb, int test);
+	       const char * sb, int test, StringBuf * sb_stdoutp);
 
 /** \ingroup rpmbuild
  * Find sub-package control structure by name.
