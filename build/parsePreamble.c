@@ -248,13 +248,42 @@ static int tryDownload(const struct Source *p)
     return rc;
 }
 
+/*
+ * Parse an option number of a tag, such as in sources and patches.
+ * Return -1 on error, 0 if number present and 1 if no number found.
+ */
+static int parseTagNumber(const char *line, uint32_t *snum)
+{
+    int rc = 0;
+    char *l = xstrdup(line);
+    char *fieldp = l;
+    char *nump = l;
+
+    /* We already know that a ':' exists, and that there */
+    /* are no spaces before it.                          */
+    /* This also now allows for spaces and tabs between  */
+    /* the number and the ':'                            */
+    while ((*fieldp != ':') && (*fieldp != ' ') && (*fieldp != '\t')) {
+	fieldp++;
+    }
+    *fieldp = '\0';
+
+    SKIPSPACE(nump);
+    if (nump == NULL || *nump == '\0') {
+	rc = 1;
+    } else {
+	rc = parseUnsignedNum(l, snum);
+    }
+    free(l);
+    return rc;
+}
+
 static int addSource(rpmSpec spec, const char *field, rpmTagVal tag)
 {
     struct Source *p;
     int flag = 0;
+    int nonum = 1; /* assume autonumbering */
     const char *name = NULL;
-    char *nump;
-    char *fieldp = NULL;
     char *buf = NULL;
     uint32_t num = 0;
     int *autonum = NULL;
@@ -265,13 +294,11 @@ static int addSource(rpmSpec spec, const char *field, rpmTagVal tag)
       case RPMTAG_SOURCE:
 	flag = RPMBUILD_ISSOURCE;
 	name = "source";
-	fieldp = spec->line + 6;
 	autonum = &spec->autonum_source;
 	break;
       case RPMTAG_PATCH:
 	flag = RPMBUILD_ISPATCH;
 	name = "patch";
-	fieldp = spec->line + 5;
 	autonum = &spec->autonum_patch;
 	break;
       default:
@@ -279,36 +306,17 @@ static int addSource(rpmSpec spec, const char *field, rpmTagVal tag)
 	break;
     }
 
-    /* Get the number */
-    {
-	/* We already know that a ':' exists, and that there */
-	/* are no spaces before it.                          */
-	/* This also now allows for spaces and tabs between  */
-	/* the number and the ':'                            */
-	char ch;
-	char *fieldp_backup = fieldp;
+    nonum = parseTagNumber(spec->line + strlen(name), &num);
+    if (nonum < 0) {
+	rpmlog(RPMLOG_ERR, _("line %d: Bad %s number: %s\n"),
+		 spec->lineNum, name, spec->line);
+	return RPMRC_FAIL;
+    }
 
-	while ((*fieldp != ':') && (*fieldp != ' ') && (*fieldp != '\t')) {
-	    fieldp++;
-	}
-	ch = *fieldp;
-	*fieldp = '\0';
-
-	nump = fieldp_backup;
-	SKIPSPACE(nump);
-	if (nump == NULL || *nump == '\0') {
-	    (*autonum)++;
-	    num = *autonum;
-	} else {
-	    if (parseUnsignedNum(fieldp_backup, &num)) {
-		rpmlog(RPMLOG_ERR, _("line %d: Bad %s number: %s\n"),
-			 spec->lineNum, name, spec->line);
-		*fieldp = ch;
-		return RPMRC_FAIL;
-	    }
-	    *autonum = num;
-	}
-	*fieldp = ch;
+    /* No number, use autonumbering */
+    if (nonum > 0) {
+	(*autonum)++;
+	num = *autonum;
     }
 
     /* Check whether tags of the same number haven't already been defined */
