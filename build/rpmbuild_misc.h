@@ -61,10 +61,10 @@ void appendStringBufAux(StringBuf sb, const char * s, int nl);
  * Parse an unsigned number.
  * @param		line from spec file
  * @retval res		pointer to uint32_t
- * @return		0 on success, 1 on failure
+ * @return		0 on success, -1 on failure
  */
 RPM_GNUC_INTERNAL
-uint32_t parseUnsignedNum(const char * line, uint32_t * res);
+int parseUnsignedNum(const char * line, uint32_t * res);
 
 #ifdef __cplusplus
 }
