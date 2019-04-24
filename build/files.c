@@ -1200,6 +1200,10 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 		fl->processingFailed = 1;
 	    } else {
 		buf[llen] = '\0';
+		if (buf[0] == '/') {
+		    rpmlog(RPMLOG_WARNING, _("absolute symlink: %s -> %s\n"),
+			flp->cpioPath, buf);
+		}
 		if (buf[0] == '/' && !rstreq(fl->buildRoot, "/") &&
 			rstreqn(buf, fl->buildRoot, fl->buildRootLen)) {
 		    rpmlog(RPMLOG_ERR,
