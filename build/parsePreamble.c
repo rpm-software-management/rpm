@@ -278,7 +278,7 @@ static int parseTagNumber(const char *line, uint32_t *snum)
     return rc;
 }
 
-static int addSource(rpmSpec spec, const char *field, rpmTagVal tag)
+int addSource(rpmSpec spec, int specline, const char *srcname, rpmTagVal tag)
 {
     struct Source *p;
     int flag = 0;
@@ -306,11 +306,13 @@ static int addSource(rpmSpec spec, const char *field, rpmTagVal tag)
 	break;
     }
 
-    nonum = parseTagNumber(spec->line + strlen(name), &num);
-    if (nonum < 0) {
-	rpmlog(RPMLOG_ERR, _("line %d: Bad %s number: %s\n"),
-		 spec->lineNum, name, spec->line);
-	return RPMRC_FAIL;
+    if (specline) {
+	nonum = parseTagNumber(spec->line + strlen(name), &num);
+	if (nonum < 0) {
+	    rpmlog(RPMLOG_ERR, _("line %d: Bad %s number: %s\n"),
+		     spec->lineNum, name, spec->line);
+	    return RPMRC_FAIL;
+	}
     }
 
     if (nonum > 0) {
@@ -330,7 +332,7 @@ static int addSource(rpmSpec spec, const char *field, rpmTagVal tag)
     }
 
     /* Create the entry and link it in */
-    p = newSource(num, field, flag);
+    p = newSource(num, srcname, flag);
     p->next = spec->sources;
     spec->sources = p;
     spec->numSources++;
@@ -884,7 +886,7 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	break;
     case RPMTAG_SOURCE:
     case RPMTAG_PATCH:
-	if (addSource(spec, field, tag))
+	if (addSource(spec, 1, field, tag))
 	    goto exit;
 	break;
     case RPMTAG_ICON:
