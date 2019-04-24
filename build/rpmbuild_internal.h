@@ -500,6 +500,9 @@ rpmRC addReqProvPkg(void *cbdata, rpmTagVal tagN,
 RPM_GNUC_INTERNAL
 void addPackageProvides(Package pkg);
 
+RPM_GNUC_INTERNAL
+int addSource(rpmSpec spec, int specline, const char *srcname, rpmTagVal tag);
+
 /** \ingroup rpmbuild
  * Add rpmlib feature dependency.
  * @param pkg		package
