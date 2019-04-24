@@ -16,7 +16,7 @@ librpmbuild_la_SOURCES = \
 	build.c expression.c files.c misc.c pack.c \
 	parseSimpleScript.c parseChangelog.c parseDescription.c \
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
-	parseSpec.c reqprov.c rpmfc.c spec.c \
+	parseSpec.c parseList.c reqprov.c rpmfc.c spec.c \
 	parsePolicies.c policies.c \
 	rpmbuild_internal.h rpmbuild_misc.h
 
