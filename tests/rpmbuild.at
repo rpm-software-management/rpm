@@ -241,7 +241,9 @@ lrwxrwxrwx /opt/globtest/linkgood
 -rw-r--r-- /opt/globtest/zeb
 -rw-r--r-- /opt/globtest/zib
 ],
-[])
+[warning: absolute symlink: /opt/globtest/linkbad -> /opt/globtest/zub
+warning: absolute symlink: /opt/globtest/linkgood -> /opt/globtest/zab
+])
 AT_CLEANUP
 
 AT_SETUP([rpmbuild prefixpostfix])
@@ -274,7 +276,9 @@ lrwxrwxrwx /opt/prefixtest/linkgood
 -rw-r--r-- /opt/prefixtest/zeb
 -rw-r--r-- /opt/prefixtest/zib
 ],
-[])
+[warning: absolute symlink: /opt/prefixtest/linkbad -> /opt/prefixtest/zub
+warning: absolute symlink: /opt/prefixtest/linkgood -> /opt/prefixtest/zab
+])
 AT_CLEANUP
 
 # ------------------------------
