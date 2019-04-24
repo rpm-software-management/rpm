@@ -187,34 +187,34 @@ static int process_package(rpmts ts, char * filename)
 
 int main(int argc, char *argv[])
 {
-    int rc;
-    
+    int rc, i;
+
     xsetprogname(argv[0]);	/* Portability call -- see system.h */
     rpmReadConfigFiles(NULL, NULL);
-    char * filename;
-    if (argc == 1)
-	filename = "-";
-    else {
-	if (rstreq(argv[1], "-h") || rstreq(argv[1], "--help")) {
-	    fprintf(stderr, "Usage: rpm2archive file.rpm\n");
-	    exit(EXIT_FAILURE);
-	} else {
-	    filename = argv[1];
-	}
+
+    if (argc > 1 && (rstreq(argv[1], "-h") || rstreq(argv[1], "--help"))) {
+	fprintf(stderr, "Usage: %s [file.rpm ...]\n", argv[0]);
+	exit(EXIT_FAILURE);
     }
 
-    rpmts ts = rpmtsCreate();
-    rpmVSFlags vsflags = 0;
+    if (argc == 1)
+	argv[argc++] = "-";
 
-    /* XXX retain the ageless behavior of rpm2cpio */
-    vsflags |= RPMVSF_MASK_NODIGESTS;
-    vsflags |= RPMVSF_MASK_NOSIGNATURES;
-    vsflags |= RPMVSF_NOHDRCHK;
-    (void) rpmtsSetVSFlags(ts, vsflags);
+    for (i = 1; i < argc; i++) {
+	rpmts ts = rpmtsCreate();
+	rpmVSFlags vsflags = 0;
 
-    rc = process_package(ts, filename);
+	/* XXX retain the ageless behavior of rpm2cpio */
+	vsflags |= RPMVSF_MASK_NODIGESTS;
+	vsflags |= RPMVSF_MASK_NOSIGNATURES;
+	vsflags |= RPMVSF_NOHDRCHK;
+	(void) rpmtsSetVSFlags(ts, vsflags);
 
-    ts = rpmtsFree(ts);
+	rc = process_package(ts, argv[i]);
+	(void) rpmtsFree(ts);
+	if (rc != 0)
+	    return rc;
+    }
 
     return rc;
 }
