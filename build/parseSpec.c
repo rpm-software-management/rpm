@@ -74,6 +74,8 @@ static const struct PartRec {
     { PART_TRANSFILETRIGGERUN,	    LEN_AND_STR("%transfiletriggerun")},
     { PART_TRANSFILETRIGGERPOSTUN,  LEN_AND_STR("%transfiletriggerpostun")},
     { PART_EMPTY,		    LEN_AND_STR("%end")},
+    { PART_PATCHLIST,               LEN_AND_STR("%patchlist")},
+    { PART_SOURCELIST,              LEN_AND_STR("%sourcelist")},
     {0, 0, 0}
 };
 
@@ -890,6 +892,12 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 	case PART_PREAMBLE:
 	    parsePart = parsePreamble(spec, initialPackage);
 	    initialPackage = 0;
+	    break;
+	case PART_PATCHLIST:
+	    parsePart = parseList(spec, "%patchlist", RPMTAG_PATCH);
+	    break;
+	case PART_SOURCELIST:
+	    parsePart = parseList(spec, "%sourcelist", RPMTAG_SOURCE);
 	    break;
 	case PART_PREP:
 	    parsePart = parsePrep(spec);

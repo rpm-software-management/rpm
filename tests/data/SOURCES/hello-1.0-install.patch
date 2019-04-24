@@ -1,0 +1,11 @@
+diff -up hello-1.0/Makefile.flags hello-1.0/Makefile
+--- hello-1.0/Makefile.flags	2019-04-25 12:26:37.684540172 +0300
++++ hello-1.0/Makefile	2019-04-25 12:27:22.438450581 +0300
+@@ -1,6 +1,7 @@
+ all: hello
+ 
+ install:
++	mkdir -p $(DESTDIR)/usr/local/bin/
+ 	install -m 0755 hello $(DESTDIR)/usr/local/bin
+ 
+ clean:

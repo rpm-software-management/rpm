@@ -187,7 +187,9 @@ typedef enum rpmParseState_e {
     PART_TRANSFILETRIGGERUN	= 37+PART_BASE, /*!< */
     PART_TRANSFILETRIGGERPOSTUN	= 38+PART_BASE, /*!< */
     PART_EMPTY			= 39+PART_BASE, /*!< */
-    PART_LAST			= 40+PART_BASE  /*!< */
+    PART_PATCHLIST		= 40+PART_BASE, /*!< */
+    PART_SOURCELIST		= 41+PART_BASE, /*!< */
+    PART_LAST			= 42+PART_BASE  /*!< */
 } rpmParseState; 
 
 
@@ -307,6 +309,9 @@ int parsePrep(rpmSpec spec);
  */
 RPM_GNUC_INTERNAL
 int parseScript(rpmSpec spec, int parsePart);
+
+RPM_GNUC_INTERNAL
+int parseList(rpmSpec spec, const char *name, int stype);
 
 /** \ingroup rpmbuild
  * Check for inappropriate characters. All alphanums are considered sane.
