@@ -137,6 +137,10 @@ static void rpmcliAllArgCallback( poptContext con,
 	break;
     case POPT_DBPATH:
 	rpmcliConfigured();
+	if (arg && arg[0] != '/') {
+	    fprintf(stderr, _("arguments to --dbpath must begin with '/'\n"));
+	    exit(EXIT_FAILURE);
+	}
 	rpmPushMacro(NULL, "_dbpath", NULL, arg, RMIL_CMDLINE);
 	break;
     case POPT_SHOWVERSION:
