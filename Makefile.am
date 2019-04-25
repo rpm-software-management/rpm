@@ -145,11 +145,11 @@ rpmspec_LDADD +=	@WITH_POPT_LIB@
 
 rpm2cpio_SOURCES =	rpm2cpio.c debug.h system.h
 rpm2cpio_LDADD =	lib/librpm.la rpmio/librpmio.la
-rpm2cpio_LDADD +=	@WITH_POPT_LIB@
+rpm2cpio_LDADD +=	@WITH_POPT_LIB@ @LIBINTL@
 
 rpm2archive_SOURCES =	rpm2archive.c debug.h system.h
 rpm2archive_LDADD =	lib/librpm.la rpmio/librpmio.la
-rpm2archive_LDADD +=	@WITH_POPT_LIB@ @WITH_ARCHIVE_LIB@
+rpm2archive_LDADD +=	@WITH_POPT_LIB@ @WITH_ARCHIVE_LIB@ @LIBINTL@
 
 
 if LIBELF
