@@ -313,10 +313,14 @@ static int addSource(rpmSpec spec, const char *field, rpmTagVal tag)
 	return RPMRC_FAIL;
     }
 
-    /* No number, use autonumbering */
     if (nonum > 0) {
+	/* No number specified, use autonumbering */
 	(*autonum)++;
 	num = *autonum;
+    } else {
+	/* Autonumbering continues from last specified number */
+	if ((int)num > *autonum)
+	    *autonum = num;
     }
 
     /* Check whether tags of the same number haven't already been defined */
