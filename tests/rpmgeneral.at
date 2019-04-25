@@ -299,8 +299,8 @@ AT_CLEANUP
 AT_SETUP([rpm2cpio])
 AT_KEYWORDS([basic])
 AT_CHECK([
-runroot rpm2cpio data/RPMS/hello-2.0-1.x86_64.rpm | cpio -t --quiet
-runroot rpm2cpio data/SRPMS/hello-1.0-1.src.rpm | cpio -t --quiet
+runroot_other rpm2cpio data/RPMS/hello-2.0-1.x86_64.rpm | cpio -t --quiet
+runroot_other rpm2cpio data/SRPMS/hello-1.0-1.src.rpm | cpio -t --quiet
 ],
 [0],
 [./usr/bin/hello
@@ -316,8 +316,8 @@ AT_CLEANUP
 AT_SETUP([rpm2archive])
 AT_KEYWORDS([basic])
 AT_CHECK([
-runroot rpm2archive - < "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm | tar tz
-runroot rpm2archive - < "${RPMTEST}"/data/SRPMS/hello-1.0-1.src.rpm | tar tz
+runroot_other rpm2archive - < "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm | tar tz
+runroot_other rpm2archive - < "${RPMTEST}"/data/SRPMS/hello-1.0-1.src.rpm | tar tz
 ],
 [0],
 [./usr/bin/hello
