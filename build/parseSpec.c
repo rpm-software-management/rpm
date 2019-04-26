@@ -516,6 +516,7 @@ retry:
 	spec->line[0] = '\0';
     } else if (spec->readStack->reading && (lineType->id == LINE_INCLUDE)) {
 	char *fileName, *endFileName, *p;
+	char *sysinc = NULL;
 
 	fileName = s+8;
 	SKIPSPACE(fileName);
@@ -533,7 +534,17 @@ retry:
 	}
 	*endFileName = '\0';
 
+	/* System includes live in a special path and become buildrequires */
+	if (*fileName == '<' && *(endFileName-1) == '>') {
+	    *(endFileName-1) = '\0';
+	    sysinc = rpmGetPath("%{_rpmincludedir}/", fileName + 1, NULL);
+	    addReqProv(spec->sourcePackage, RPMTAG_REQUIRENAME,
+			sysinc, NULL, 0, 0);
+	    fileName = sysinc;
+	}
+
 	ofi = pushOFI(spec, fileName, (spec->flags & RPMSPEC_FORCE));
+	free(sysinc);
 	goto retry;
     }
 

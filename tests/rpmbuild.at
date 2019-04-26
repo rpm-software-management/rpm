@@ -107,6 +107,7 @@ echo "Describe me" > "${RPMTEST}/${dsc}"
 runroot rpmspec -q "/data/SPECS/notthere.spec" 2>&1; echo $?
 runroot rpmspec -q --define "incfile /not/there" "/data/SPECS/inctest.spec" 2>&1; echo $?
 runroot rpmspec -q --define "incfile ${dsc}" --qf "%{description}\n" "/data/SPECS/inctest.spec" 2>&1; echo $?
+runroot rpmspec -q --define "%_rpmincludedir /usr/lib/rpm/include" --define "incfile <system.inc>" --buildrequires "/data/SPECS/inctest.spec" 2>&1; echo $?
 rm -f "${RPMTEST}/${dsc}"
 ],
 [0],
@@ -117,6 +118,9 @@ warning: Unable to open /not/there: No such file or directory
 inctest-1.0-1.noarch
 0
 Describe me
+0
+warning: Unable to open /usr/lib/rpm/include/system.inc: No such file or directory
+/usr/lib/rpm/include/system.inc
 0
 ],
 [])

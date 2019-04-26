@@ -250,6 +250,7 @@ install-data-local:
 	@$(MKDIR_P) $(DESTDIR)$(localstatedir)/tmp
 	@$(MKDIR_P) $(DESTDIR)$(rpmconfigdir)/macros.d
 	@$(MKDIR_P) $(DESTDIR)$(rpmconfigdir)/lua
+	@$(MKDIR_P) $(DESTDIR)$(rpmconfigdir)/include
 
 # XXX to appease distcheck we need to remove "stuff" here...
 uninstall-local:
@@ -259,6 +260,7 @@ uninstall-local:
 	@rm -f $(DESTDIR)$(rpmconfigdir)/macros
 	@rm -rf $(DESTDIR)$(rpmconfigdir)/macros.d
 	@rm -rf $(DESTDIR)$(rpmconfigdir)/lua
+	@rm -rf $(DESTDIR)$(rpmconfigdir)/include
 
 MAINTAINERCLEANFILES = ChangeLog
 

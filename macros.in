@@ -604,6 +604,7 @@ package or when debugging this package.\
 # %__myattr_exclude_path	exclude by path regex
 #
 %_fileattrsdir		%{_rpmconfigdir}/fileattrs
+%_rpmincludedir		%{_rpmconfigdir}/include
 
 # This macro defines how much space (in bytes) in package should be
 # reserved for gpg signatures during building of a package. If this space is
