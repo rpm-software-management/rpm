@@ -34,6 +34,7 @@ typedef struct OpenFileInfo {
     char *readBuf;
     size_t readBufLen;
     const char * readPtr;
+    int missingok;
     struct OpenFileInfo * next;
 } OFI_t;
 
@@ -127,7 +128,7 @@ int handleComments(char *s)
 }
 
 /* Push a file to spec's file stack, return the newly pushed entry */
-static OFI_t * pushOFI(rpmSpec spec, const char *fn)
+static OFI_t * pushOFI(rpmSpec spec, const char *fn, int missingok)
 {
     OFI_t *ofi = xcalloc(1, sizeof(*ofi));
 
@@ -138,6 +139,7 @@ static OFI_t * pushOFI(rpmSpec spec, const char *fn)
     ofi->readBuf = xmalloc(ofi->readBufLen);
     ofi->readBuf[0] = '\0';
     ofi->readPtr = NULL;
+    ofi->missingok = missingok;
     ofi->next = spec->fileStack;
 
     spec->fileStack = ofi;
@@ -372,9 +374,15 @@ retry:
     if (ofi->fp == NULL) {
 	ofi->fp = fopen(ofi->fileName, "r");
 	if (ofi->fp == NULL) {
-	    rpmlog(RPMLOG_ERR, _("Unable to open %s: %s\n"),
-		     ofi->fileName, strerror(errno));
-	    return PART_ERROR;
+	    /* Try to ignore missing includes on forced parse */
+	    rpmlog(ofi->missingok ? RPMLOG_WARNING : RPMLOG_ERR,
+		_("Unable to open %s: %s\n"), ofi->fileName, strerror(errno));
+	    if (ofi->missingok) {
+		ofi = popOFI(spec);
+		goto retry;
+	    } else {
+		return PART_ERROR;
+	    }
 	}
 	spec->lineNum = ofi->lineNum = 0;
     }
@@ -525,7 +533,7 @@ retry:
 	}
 	*endFileName = '\0';
 
-	ofi = pushOFI(spec, fileName);
+	ofi = pushOFI(spec, fileName, (spec->flags & RPMSPEC_FORCE));
 	goto retry;
     }
 
@@ -860,7 +868,7 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
     spec = newSpec();
 
     spec->specFile = rpmGetPath(specFile, NULL);
-    pushOFI(spec, spec->specFile);
+    pushOFI(spec, spec->specFile, 0);
     /* If buildRoot not specified, use default %{buildroot} */
     if (buildRoot) {
 	spec->buildRoot = xstrdup(buildRoot);

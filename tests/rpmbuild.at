@@ -99,6 +99,29 @@ run rpmbuild \
 [ignore])
 AT_CLEANUP
 
+AT_SETUP([rpmbuild include])
+AT_KEYWORDS([build])
+AT_CHECK([
+dsc="/tmp/description"
+echo "Describe me" > "${RPMTEST}/${dsc}"
+runroot rpmspec -q "/data/SPECS/notthere.spec" 2>&1; echo $?
+runroot rpmspec -q --define "incfile /not/there" "/data/SPECS/inctest.spec" 2>&1; echo $?
+runroot rpmspec -q --define "incfile ${dsc}" --qf "%{description}\n" "/data/SPECS/inctest.spec" 2>&1; echo $?
+rm -f "${RPMTEST}/${dsc}"
+],
+[0],
+[error: Unable to open /data/SPECS/notthere.spec: No such file or directory
+error: query of specfile /data/SPECS/notthere.spec failed, can't parse
+1
+warning: Unable to open /not/there: No such file or directory
+inctest-1.0-1.noarch
+0
+Describe me
+0
+],
+[])
+AT_CLEANUP
+
 # ------------------------------
 # %attr/%defattr tests
 AT_SETUP([rpmbuild %attr and %defattr])
