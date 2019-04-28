@@ -6,6 +6,7 @@
 #include <rpm/rpmsq.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
+#include <rpm/rpmsign.h>
 
 #include "header-py.h"
 #include "rpmarchive-py.h"
@@ -22,6 +23,7 @@
 #include "rpmtd-py.h"
 #include "rpmte-py.h"
 #include "rpmts-py.h"
+#include "spec-py.h"
 
 /** \ingroup python
  * \name Module: rpm
@@ -156,6 +158,38 @@ static PyObject * setInterruptSafety(PyObject * self, PyObject * args, PyObject 
     Py_RETURN_NONE;
 }
 
+static int parseSignArgs(PyObject * args, PyObject *kwds,
+			const char **path, struct rpmSignArgs *sargs)
+{
+    char * kwlist[] = { "path", "keyid", "hashalgo", NULL };
+
+    memset(sargs, 0, sizeof(*sargs));
+    return PyArg_ParseTupleAndKeywords(args, kwds, "s|si", kwlist,
+				    path, &sargs->keyid, &sargs->hashalgo);
+}
+
+static PyObject * addSign(PyObject * self, PyObject * args, PyObject *kwds)
+{
+    const char *path = NULL;
+    struct rpmSignArgs sargs;
+
+    if (!parseSignArgs(args, kwds, &path, &sargs))
+	return NULL;
+
+    return PyBool_FromLong(rpmPkgSign(path, &sargs) == 0);
+}
+
+static PyObject * delSign(PyObject * self, PyObject * args, PyObject *kwds)
+{
+    const char *path = NULL;
+    struct rpmSignArgs sargs;
+
+    if (!parseSignArgs(args, kwds, &path, &sargs))
+	return NULL;
+
+    return PyBool_FromLong(rpmPkgDelSign(path, &sargs) == 0);
+}
+
 static PyMethodDef rpmModuleMethods[] = {
     { "addMacro", (PyCFunction) rpmmacro_AddMacro, METH_VARARGS|METH_KEYWORDS,
       "rpmPushMacro(macro, value)\n"
@@ -215,6 +249,8 @@ static PyMethodDef rpmModuleMethods[] = {
       "once only at process startup because currently signal handlers will\n"
       "not be retroactively applied if a database is open."
     },
+    { "addSign", (PyCFunction) addSign, METH_VARARGS|METH_KEYWORDS, NULL },
+    { "delSign", (PyCFunction) delSign, METH_VARARGS|METH_KEYWORDS, NULL },
     { NULL }
 } ;
 
@@ -269,6 +305,8 @@ static int prepareInitModule(void)
 #endif
     if (PyType_Ready(&rpmte_Type) < 0) return 0;
     if (PyType_Ready(&rpmts_Type) < 0) return 0;
+    if (PyType_Ready(&spec_Type) < 0) return 0;
+    if (PyType_Ready(&specPkg_Type) < 0) return 0;
 
     return 1;
 }
@@ -387,6 +425,11 @@ static int initModule(PyObject *m)
 
     Py_INCREF(&rpmts_Type);
     PyModule_AddObject(m, "ts", (PyObject *) &rpmts_Type);
+
+    Py_INCREF(&spec_Type);
+    PyModule_AddObject(m, "spec", (PyObject *) &spec_Type);
+    Py_INCREF(&specPkg_Type);
+    PyModule_AddObject(m, "specPkg", (PyObject *) &specPkg_Type);
 
     addRpmTags(m);
 
@@ -607,6 +650,32 @@ static int initModule(PyObject *m)
     REGISTER_ENUM(RPMVERIFY_READLINKFAIL);
     REGISTER_ENUM(RPMVERIFY_READFAIL);
     REGISTER_ENUM(RPMVERIFY_LSTATFAIL);
+
+    REGISTER_ENUM(RPMBUILD_ISSOURCE);
+    REGISTER_ENUM(RPMBUILD_ISPATCH);
+    REGISTER_ENUM(RPMBUILD_ISICON);
+    REGISTER_ENUM(RPMBUILD_ISNO);
+
+    REGISTER_ENUM(RPMBUILD_NONE);
+    REGISTER_ENUM(RPMBUILD_PREP);
+    REGISTER_ENUM(RPMBUILD_BUILD);
+    REGISTER_ENUM(RPMBUILD_INSTALL);
+    REGISTER_ENUM(RPMBUILD_CHECK);
+    REGISTER_ENUM(RPMBUILD_CLEAN);
+    REGISTER_ENUM(RPMBUILD_FILECHECK);
+    REGISTER_ENUM(RPMBUILD_PACKAGESOURCE);
+    REGISTER_ENUM(RPMBUILD_PACKAGEBINARY);
+    REGISTER_ENUM(RPMBUILD_RMSOURCE);
+    REGISTER_ENUM(RPMBUILD_RMBUILD);
+    REGISTER_ENUM(RPMBUILD_RMSPEC);
+
+    REGISTER_ENUM(RPMBUILD_PKG_NONE);
+    REGISTER_ENUM(RPMBUILD_PKG_NODIRTOKENS);
+
+    REGISTER_ENUM(RPMSPEC_NONE);
+    REGISTER_ENUM(RPMSPEC_ANYARCH);
+    REGISTER_ENUM(RPMSPEC_FORCE);
+    REGISTER_ENUM(RPMSPEC_NOLANG);
 
     return 1;
 }
