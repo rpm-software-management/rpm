@@ -24,11 +24,12 @@ fi
 
 tmp=$(mktemp ${TMPDIR:-/tmp}/cbr.XXXXXX)
 trap "rm -f $tmp" EXIT
+NCPUS=${RPM_BUILD_NCPUS:-1}
 
 find "$RPM_BUILD_ROOT" \! \( \
     -name '*.pyo' -o -name '*.pyc' -o -name '*.elc' -o -name '.packlist' \
     \) -type f -print0 | \
-    LANG=C xargs -0r grep -F "$RPM_BUILD_ROOT" >$tmp
+    LANG=C xargs -0r -P$NCPUS -n16 grep -F "$RPM_BUILD_ROOT" >>$tmp
 
 test -s "$tmp" && {
     cat "$tmp"
