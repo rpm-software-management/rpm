@@ -88,6 +88,7 @@
 %__autoheader		autoheader
 %__automake		automake
 %__autoconf		autoconf
+%__autoreconf		autoreconf
 
 #==============================================================================
 # Conditional build stuff.
