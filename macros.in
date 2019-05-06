@@ -1024,6 +1024,16 @@ package or when debugging this package.\
 # Link editor flags.  This is usually called LDFLAGS in makefiles.
 #%build_ldflags -Wl,-z,relro %{?_lto_cflags}
 
+# Expands to shell code to seot the compiler/linker environment
+# variables CFLAGS, CXXFLAGS, FFLAGS, FCFLAGS, LDFLAGS if they have
+# not been set already.
+%set_build_flags \
+  CFLAGS="${CFLAGS:-%{build_cflags}}" ; export CFLAGS ; \
+  CXXFLAGS="${CXXFLAGS:-%{build_cxxflags}}" ; export CXXFLAGS ; \
+  FFLAGS="${FFLAGS:-%{build_fflags}}" ; export FFLAGS ; \
+  FCFLAGS="${FCFLAGS:-%{build_fflags}}" ; export FCFLAGS ; \
+  LDFLAGS="${LDFLAGS:-%{build_ldflags}}" ; export LDFLAGS
+
 #==============================================================================
 # ---- specfile macros.
 #	Macro(s) here can be used reliably for reproducible builds.
@@ -1035,11 +1045,7 @@ package or when debugging this package.\
 #
 %_configure ./configure
 %configure \
-  CFLAGS="${CFLAGS:-%{build_cflags}}" ; export CFLAGS ; \
-  CXXFLAGS="${CXXFLAGS:-%{build_cxxflags}}" ; export CXXFLAGS ; \
-  FFLAGS="${FFLAGS:-%{build_fflags}}" ; export FFLAGS ; \
-  FCFLAGS="${FCFLAGS:-%{build_fflags}}" ; export FCFLAGS ; \
-  LDFLAGS="${LDFLAGS:-%{build_ldflags}}" ; export LDFLAGS ; \
+  %{set_build_flags}; \
   %{_configure} --host=%{_host} --build=%{_build} \\\
 	--program-prefix=%{?_program_prefix} \\\
 	--disable-dependency-tracking \\\
