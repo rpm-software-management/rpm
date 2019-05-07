@@ -705,7 +705,7 @@ static rpmRC packageBinary(rpmSpec spec, Package pkg, const char *cookie, int ch
     }
 
     /* Copy changelog from src rpm */
-    headerCopyTags(spec->packages->header, pkg->header, copyTags);
+    headerCopyTags(spec->sourcePackage->header, pkg->header, copyTags);
 
     headerPutString(pkg->header, RPMTAG_RPMVERSION, VERSION);
     headerPutString(pkg->header, RPMTAG_BUILDHOST, spec->buildHost);
