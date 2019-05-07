@@ -622,6 +622,27 @@ static rpmRC checkPackages(char *pkgcheck)
     return RPMRC_OK;
 }
 
+static rpmRC checkPackageSet(Package pkgs)
+{
+    char *pkglist = NULL;
+    char *pkgcheck_set = NULL;
+
+    for (Package pkg = pkgs; pkg != NULL; pkg = pkg->next) {
+	if (pkg->filename)
+	    rstrscat(&pkglist, pkg->filename, " ", NULL);
+    }
+
+    pkgcheck_set = rpmExpand("%{?_build_pkgcheck_set} ", pkglist,  NULL);
+
+    /* run only if _build_pkgcheck_set is defined */
+    if (pkgcheck_set[0] != ' ')
+	checkPackages(pkgcheck_set);
+
+    free(pkgcheck_set);
+    free(pkglist);
+    return RPMRC_OK;
+}
+
 /* watchout, argument is modified */
 static rpmRC ensureDir(char *binRpm)
 {
@@ -715,33 +736,18 @@ static rpmRC packageBinary(rpmSpec spec, Package pkg, const char *cookie, int ch
 
 rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 {
-    rpmRC rc;
+    rpmRC rc = RPMRC_OK;
     Package pkg;
-    char *pkglist = NULL;
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	rc = packageBinary(spec, pkg, cookie, cheating, &pkg->filename);
-	if (rc == RPMRC_OK) {
-	    rstrcat(&pkglist, pkg->filename);
-	    rstrcat(&pkglist, " ");
-	}
-	if (rc != RPMRC_OK) {
-	    pkglist = _free(pkglist);
-	    return rc;
-	}
     }
 
     /* Now check the package set if enabled */
-    if (pkglist != NULL) {
-	char *pkgcheck_set = rpmExpand("%{?_build_pkgcheck_set} ", pkglist,  NULL);
-	if (pkgcheck_set[0] != ' ') {	/* run only if _build_pkgcheck_set is defined */
-	    checkPackages(pkgcheck_set);
-	}
-	free(pkgcheck_set);
-	pkglist = _free(pkglist);
-    }
-    
-    return RPMRC_OK;
+    if (rc == RPMRC_OK)
+	checkPackageSet(spec->packages);
+
+    return rc;
 }
 
 rpmRC packageSources(rpmSpec spec, char **cookie)
