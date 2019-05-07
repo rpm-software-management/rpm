@@ -180,6 +180,7 @@ struct Package_s {
     ARGV_t policyList;
 
     char *filename;
+    rpmRC rc;
 
     Package next;
 };

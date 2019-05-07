@@ -740,7 +740,11 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
     Package pkg;
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	rc = packageBinary(spec, pkg, cookie, cheating, &pkg->filename);
+	pkg->rc = packageBinary(spec, pkg, cookie, cheating, &pkg->filename);
+	if (pkg->rc) {
+	    rc = pkg->rc;
+	    break;
+	}
     }
 
     /* Now check the package set if enabled */
