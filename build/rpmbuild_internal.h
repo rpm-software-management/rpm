@@ -179,6 +179,8 @@ struct Package_s {
     fileRenameHash fileRenameMap;
     ARGV_t policyList;
 
+    char *filename;
+
     Package next;
 };
 
