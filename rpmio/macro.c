@@ -1174,6 +1174,20 @@ static void doTrace(MacroBuf mb, int chkexist, int negate,
     }
 }
 
+static const char *setNegateAndCheck(const char *str, int *pnegate, int *pchkexist) {
+
+    *pnegate = 0;
+    *pchkexist = 0;
+    while ((*str == '?') || (*str == '!')) {
+	if (*str == '!')
+	    *pnegate = !*pnegate;
+	else
+	    (*pchkexist)++;
+	str++;
+    }
+    return str;
+}
+
 /**
  * The main macro recursion loop.
  * @param mb		macro expansion state
@@ -1255,21 +1269,10 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	g = ge = NULL;
 	if (mb->depth > 1)	/* XXX full expansion for outermost level */
 	    tpos = mb->tpos;	/* save expansion pointer for printExpand */
-	negate = 0;
 	lastc = NULL;
-	chkexist = 0;
 	switch ((c = *s)) {
 	default:		/* %name substitution */
-	    while (*s != '\0' && strchr("!?", *s) != NULL) {
-		switch (*s++) {
-		    case '!':
-			negate = ((negate + 1) % 2);
-			break;
-		    case '?':
-			chkexist++;
-			break;
-		}
-	    }
+	    s = setNegateAndCheck(s, &negate, &chkexist);
 	    f = se = s;
 	    if (*se == '-')
 		se++;
@@ -1317,16 +1320,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    }
 	    f = s+1;/* skip { */
 	    se++;	/* skip } */
-	    while (strchr("!?", *f) != NULL) {
-		switch (*f++) {
-		case '!':
-		    negate = ((negate + 1) % 2);
-		    break;
-		case '?':
-		    chkexist++;
-		    break;
-		}
-	    }
+	    f = setNegateAndCheck(f, &negate, &chkexist);
 	    for (fe = f; (c = *fe) && !strchr(" :}", c);)
 		fe++;
 	    switch (c) {
