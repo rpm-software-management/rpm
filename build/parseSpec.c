@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <errno.h>
+#include <omp.h>
 #ifdef HAVE_ICONV
 #include <iconv.h>
 #endif
@@ -1002,6 +1003,12 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 	    goto exit;
 	}
     }
+
+    /* Set number of OMP threads centrally */
+    int ncpus = rpmExpandNumeric("%{?_smp_build_ncpus}");
+    if (ncpus <= 0)
+	ncpus = 1;
+    omp_set_num_threads(ncpus);
 
     if (spec->clean == NULL) {
 	char *body = rpmExpand("%{?buildroot: %{__rm} -rf %{buildroot}}", NULL);
