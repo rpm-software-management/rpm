@@ -187,7 +187,7 @@ static int process_package(rpmts ts, char * filename)
 
 int main(int argc, char *argv[])
 {
-    int rc, i;
+    int rc = 0, i;
 
     xsetprogname(argv[0]);	/* Portability call -- see system.h */
     rpmReadConfigFiles(NULL, NULL);
