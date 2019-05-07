@@ -622,9 +622,55 @@ static rpmRC checkPackages(char *pkgcheck)
     return RPMRC_OK;
 }
 
-static rpmRC packageBinary(rpmSpec spec, Package pkg, const char *cookie, int cheating, char** filename)
+/* watchout, argument is modified */
+static rpmRC ensureDir(char *binRpm)
+{
+    rpmRC rc = RPMRC_OK;
+    char *binDir = strchr(binRpm, '/');
+    char *dn = NULL;
+    if (binDir) {
+	struct stat st;
+	*binDir = '\0';
+	dn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
+	if (stat(dn, &st) < 0) {
+	    switch (errno) {
+	    case ENOENT:
+		if (mkdir(dn, 0755) == 0 || errno == EEXIST)
+		    break;
+	    default:
+		rpmlog(RPMLOG_ERR,_("cannot create %s: %s\n"),
+			dn, strerror(errno));
+		rc = RPMRC_FAIL;
+		break;
+	    }
+	}
+    }
+    free(dn);
+    return rc;
+}
+
+static rpmRC getPkgFilename(Header h, char **filename)
 {
     const char *errorString;
+    char *binFormat = rpmGetPath("%{_rpmfilename}", NULL);
+    char *binRpm = headerFormat(h, binFormat, &errorString);
+    rpmRC rc = RPMRC_FAIL;
+
+    if (binRpm == NULL) {
+	rpmlog(RPMLOG_ERR, _("Could not generate output "
+	     "filename for package %s: %s\n"),
+	     headerGetString(h, RPMTAG_NAME), errorString);
+    } else {
+	*filename = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
+	rc = ensureDir(binRpm);
+    }
+    free(binFormat);
+    free(binRpm);
+    return rc;
+}
+
+static rpmRC packageBinary(rpmSpec spec, Package pkg, const char *cookie, int cheating, char** filename)
+{
     rpmRC rc = RPMRC_OK;
 
     if (pkg->fileList == NULL)
@@ -652,37 +698,8 @@ static rpmRC packageBinary(rpmSpec spec, Package pkg, const char *cookie, int ch
 	(void) rpmlibNeedsFeature(pkg, "ShortCircuited", "4.9.0-1");
     }
 
-    {   char *binFormat = rpmGetPath("%{_rpmfilename}", NULL);
-	char *binRpm, *binDir;
-	binRpm = headerFormat(pkg->header, binFormat, &errorString);
-	free(binFormat);
-	if (binRpm == NULL) {
-	    rpmlog(RPMLOG_ERR, _("Could not generate output "
-		 "filename for package %s: %s\n"),
-		 headerGetString(pkg->header, RPMTAG_NAME), errorString);
-	    return RPMRC_FAIL;
-	}
-	*filename = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
-	if ((binDir = strchr(binRpm, '/')) != NULL) {
-	    struct stat st;
-	    char *dn;
-	    *binDir = '\0';
-	    dn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
-	    if (stat(dn, &st) < 0) {
-		switch (errno) {
-		case  ENOENT:
-		    if (mkdir(dn, 0755) == 0)
-			break;
-		default:
-		    rpmlog(RPMLOG_ERR,_("cannot create %s: %s\n"),
-			dn, strerror(errno));
-		    break;
-		}
-	    }
-	    free(dn);
-	}
-	free(binRpm);
-    }
+    if ((rc = getPkgFilename(pkg->header, filename)))
+	return rc;
 
     rc = writeRPM(pkg, NULL, *filename, NULL, spec->buildTime, spec->buildHost);
     if (rc == RPMRC_OK) {
