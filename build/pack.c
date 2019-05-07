@@ -624,76 +624,76 @@ static rpmRC checkPackages(char *pkgcheck)
 
 static rpmRC packageBinary(rpmSpec spec, Package pkg, const char *cookie, int cheating, char** filename)
 {
-	const char *errorString;
-	rpmRC rc = RPMRC_OK;
+    const char *errorString;
+    rpmRC rc = RPMRC_OK;
 
-	if (pkg->fileList == NULL)
-	    return rc;
-
-	if ((rc = processScriptFiles(spec, pkg)))
-	    return rc;
-	
-	if (cookie) {
-	    headerPutString(pkg->header, RPMTAG_COOKIE, cookie);
-	}
-
-	/* Copy changelog from src rpm */
-	headerCopyTags(spec->packages->header, pkg->header, copyTags);
-	
-	headerPutString(pkg->header, RPMTAG_RPMVERSION, VERSION);
-	headerPutString(pkg->header, RPMTAG_BUILDHOST, spec->buildHost);
-	headerPutUint32(pkg->header, RPMTAG_BUILDTIME, &(spec->buildTime), 1);
-
-	if (spec->sourcePkgId != NULL) {
-	    headerPutBin(pkg->header, RPMTAG_SOURCEPKGID, spec->sourcePkgId,16);
-	}
-
-	if (cheating) {
-	    (void) rpmlibNeedsFeature(pkg, "ShortCircuited", "4.9.0-1");
-	}
-	
-	{   char *binFormat = rpmGetPath("%{_rpmfilename}", NULL);
-	    char *binRpm, *binDir;
-	    binRpm = headerFormat(pkg->header, binFormat, &errorString);
-	    free(binFormat);
-	    if (binRpm == NULL) {
-		rpmlog(RPMLOG_ERR, _("Could not generate output "
-		     "filename for package %s: %s\n"), 
-		     headerGetString(pkg->header, RPMTAG_NAME), errorString);
-		return RPMRC_FAIL;
-	    }
-	    *filename = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
-	    if ((binDir = strchr(binRpm, '/')) != NULL) {
-		struct stat st;
-		char *dn;
-		*binDir = '\0';
-		dn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
-		if (stat(dn, &st) < 0) {
-		    switch (errno) {
-		    case  ENOENT:
-			if (mkdir(dn, 0755) == 0)
-			    break;
-		    default:
-			rpmlog(RPMLOG_ERR,_("cannot create %s: %s\n"),
-			    dn, strerror(errno));
-			break;
-		    }
-		}
-		free(dn);
-	    }
-	    free(binRpm);
-	}
-
-	rc = writeRPM(pkg, NULL, *filename, NULL, spec->buildTime, spec->buildHost);
-	if (rc == RPMRC_OK) {
-	    /* Do check each written package if enabled */
-	    char *pkgcheck = rpmExpand("%{?_build_pkgcheck} ", *filename, NULL);
-	    if (pkgcheck[0] != ' ') {
-		rc = checkPackages(pkgcheck);
-	    }
-	    free(pkgcheck);
-	}
+    if (pkg->fileList == NULL)
 	return rc;
+
+    if ((rc = processScriptFiles(spec, pkg)))
+	return rc;
+
+    if (cookie) {
+	headerPutString(pkg->header, RPMTAG_COOKIE, cookie);
+    }
+
+    /* Copy changelog from src rpm */
+    headerCopyTags(spec->packages->header, pkg->header, copyTags);
+
+    headerPutString(pkg->header, RPMTAG_RPMVERSION, VERSION);
+    headerPutString(pkg->header, RPMTAG_BUILDHOST, spec->buildHost);
+    headerPutUint32(pkg->header, RPMTAG_BUILDTIME, &(spec->buildTime), 1);
+
+    if (spec->sourcePkgId != NULL) {
+	headerPutBin(pkg->header, RPMTAG_SOURCEPKGID, spec->sourcePkgId,16);
+    }
+
+    if (cheating) {
+	(void) rpmlibNeedsFeature(pkg, "ShortCircuited", "4.9.0-1");
+    }
+
+    {   char *binFormat = rpmGetPath("%{_rpmfilename}", NULL);
+	char *binRpm, *binDir;
+	binRpm = headerFormat(pkg->header, binFormat, &errorString);
+	free(binFormat);
+	if (binRpm == NULL) {
+	    rpmlog(RPMLOG_ERR, _("Could not generate output "
+		 "filename for package %s: %s\n"),
+		 headerGetString(pkg->header, RPMTAG_NAME), errorString);
+	    return RPMRC_FAIL;
+	}
+	*filename = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
+	if ((binDir = strchr(binRpm, '/')) != NULL) {
+	    struct stat st;
+	    char *dn;
+	    *binDir = '\0';
+	    dn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
+	    if (stat(dn, &st) < 0) {
+		switch (errno) {
+		case  ENOENT:
+		    if (mkdir(dn, 0755) == 0)
+			break;
+		default:
+		    rpmlog(RPMLOG_ERR,_("cannot create %s: %s\n"),
+			dn, strerror(errno));
+		    break;
+		}
+	    }
+	    free(dn);
+	}
+	free(binRpm);
+    }
+
+    rc = writeRPM(pkg, NULL, *filename, NULL, spec->buildTime, spec->buildHost);
+    if (rc == RPMRC_OK) {
+	/* Do check each written package if enabled */
+	char *pkgcheck = rpmExpand("%{?_build_pkgcheck} ", *filename, NULL);
+	if (pkgcheck[0] != ' ') {
+	    rc = checkPackages(pkgcheck);
+	}
+	free(pkgcheck);
+    }
+    return rc;
 }
 
 rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
