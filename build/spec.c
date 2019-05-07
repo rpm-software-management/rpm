@@ -146,6 +146,7 @@ Package freePackage(Package pkg)
 {
     if (pkg == NULL) return NULL;
     
+    pkg->filename = _free(pkg->filename);
     pkg->preInFile = _free(pkg->preInFile);
     pkg->postInFile = _free(pkg->postInFile);
     pkg->preUnFile = _free(pkg->preUnFile);

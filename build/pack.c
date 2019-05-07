@@ -720,13 +720,11 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
     char *pkglist = NULL;
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	char *fn = NULL;
-	rc = packageBinary(spec, pkg, cookie, cheating, &fn);
+	rc = packageBinary(spec, pkg, cookie, cheating, &pkg->filename);
 	if (rc == RPMRC_OK) {
-	    rstrcat(&pkglist, fn);
+	    rstrcat(&pkglist, pkg->filename);
 	    rstrcat(&pkglist, " ");
 	}
-	free(fn);
 	if (rc != RPMRC_OK) {
 	    pkglist = _free(pkglist);
 	    return rc;
@@ -759,11 +757,11 @@ rpmRC packageSources(rpmSpec spec, char **cookie)
     headerPutUint32(sourcePkg->header, RPMTAG_SOURCEPACKAGE, &one, 1);
 
     /* XXX this should be %_srpmdir */
-    {	char *fn = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);
-	char *pkgcheck = rpmExpand("%{?_build_pkgcheck_srpm} ", fn, NULL);
+    {	sourcePkg->filename = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);
+	char *pkgcheck = rpmExpand("%{?_build_pkgcheck_srpm} ", sourcePkg->filename, NULL);
 
 	spec->sourcePkgId = NULL;
-	rc = writeRPM(sourcePkg, &spec->sourcePkgId, fn, cookie, spec->buildTime, spec->buildHost);
+	rc = writeRPM(sourcePkg, &spec->sourcePkgId, sourcePkg->filename, cookie, spec->buildTime, spec->buildHost);
 
 	/* Do check SRPM package if enabled */
 	if (rc == RPMRC_OK && pkgcheck[0] != ' ') {
@@ -771,7 +769,6 @@ rpmRC packageSources(rpmSpec spec, char **cookie)
 	}
 
 	free(pkgcheck);
-	free(fn);
     }
     return rc;
 }
