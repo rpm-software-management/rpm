@@ -739,12 +739,23 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
     rpmRC rc = RPMRC_OK;
     Package pkg;
 
+    /* Run binary creation in parallel */
+    #pragma omp parallel
+    #pragma omp single
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+	#pragma omp task
+	{
 	pkg->rc = packageBinary(spec, pkg, cookie, cheating, &pkg->filename);
+	rpmlog(RPMLOG_DEBUG,
+		_("Finished binary package job, result %d, filename %s\n"),
+		pkg->rc, pkg->filename);
 	if (pkg->rc) {
+	    #pragma omp critical
 	    rc = pkg->rc;
-	    break;
 	}
+	} /* omp task */
+	if (rc)
+	    break;
     }
 
     /* Now check the package set if enabled */
