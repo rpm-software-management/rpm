@@ -677,6 +677,7 @@ static void rpmfcAttributes(rpmfc fc, int ix, const char *ftype, const char *ful
 	/* Add attributes on libmagic type & path pattern matches */
 	if (matches(&(*attr)->incl, ftype, path, is_executable)) {
 	    argvAddTokens(&fc->fattrs[ix], (*attr)->name);
+	    #pragma omp critical(fahash)
 	    fattrHashAddEntry(fc->fahash, attr-fc->atypes, ix);
 	}
     }
@@ -1063,7 +1064,7 @@ static int initAttrs(rpmfc fc)
 rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 {
     int msflags = MAGIC_CHECK | MAGIC_COMPRESS | MAGIC_NO_CHECK_TOKENS;
-    magic_t ms = NULL;
+    int nerrors = 0;
     rpmRC rc = RPMRC_FAIL;
 
     if (fc == NULL) {
@@ -1094,18 +1095,23 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     /* Build (sorted) file class dictionary. */
     fc->cdict = rpmstrPoolCreate();
 
-    ms = magic_open(msflags);
+    #pragma omp parallel
+    {
+    /* libmagic is not thread-safe, each thread needs to a private handle */
+    magic_t ms = magic_open(msflags);
+
     if (ms == NULL) {
 	rpmlog(RPMLOG_ERR, _("magic_open(0x%x) failed: %s\n"),
 		msflags, strerror(errno));
-	goto exit;
+	#pragma omp cancel parallel
     }
 
     if (magic_load(ms, NULL) == -1) {
 	rpmlog(RPMLOG_ERR, _("magic_load failed: %s\n"), magic_error(ms));
-	goto exit;
+	#pragma omp cancel parallel
     }
 
+    #pragma omp for reduction(+:nerrors)
     for (int ix = 0; ix < fc->nfiles; ix++) {
 	rpmsid ftypeId;
 	const char * ftype;
@@ -1148,7 +1154,8 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 		       s, mode, magic_error(ms));
 		/* only executable files are critical to dep extraction */
 		if (is_executable) {
-		    goto exit;
+		    nerrors++;
+		    #pragma omp cancel for
 		}
 		/* unrecognized non-executables get treated as "data" */
 		ftype = "data";
@@ -1171,21 +1178,28 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	/* Add to file class dictionary and index array */
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE)) {
 	    ftypeId = rpmstrPoolId(fc->cdict, ftype, 1);
+	    #pragma omp atomic
 	    fc->fknown++;
 	} else {
 	    ftypeId = rpmstrPoolId(fc->cdict, "", 1);
+	    #pragma omp atomic
 	    fc->fwhite++;
 	}
 	/* Pool id's start from 1, for headers we want it from 0 */
 	fc->fcdictx[ix] = ftypeId - 1;
     }
-    rc = RPMRC_OK;
+
+    if (ms != NULL)
+	magic_close(ms);
+
+    } /* omp parallel */
+
+    if (nerrors == 0)
+	rc = RPMRC_OK;
 
 exit:
     /* No more additions after this, freeze pool to minimize memory use */
     rpmstrPoolFreeze(fc->cdict, 0);
-    if (ms != NULL)
-	magic_close(ms);
 
     return rc;
 }
