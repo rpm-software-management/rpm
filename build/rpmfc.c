@@ -500,31 +500,24 @@ static void rpmfcAddFileDep(rpmfcFileDeps *fileDeps, rpmds ds, int ix)
     fileDeps->data[fileDeps->size++].dep = ds;
 }
 
-static ARGV_t runCmd(const char *nsdep, const char *depname,
+static ARGV_t runCmd(const char *cmd,
 		     const char *buildRoot, const char *fn)
 {
     ARGV_t output = NULL;
-    char *buf = NULL;
-    char *mname = rstrscat(NULL, "__", nsdep, "_", depname, NULL);
+    ARGV_t av = NULL;
+    StringBuf sb_stdout = NULL;
+    StringBuf sb_stdin = newStringBuf();
+    argvAdd(&av, cmd);
 
-    rasprintf(&buf, "%%{?%s:%%{%s} %%{?%s_opts}}", mname, mname, mname);
-    if (!rstreq(buf, "")) {
-	ARGV_t av = NULL;
-	StringBuf sb_stdout = NULL;
-	StringBuf sb_stdin = newStringBuf();
-	argvAdd(&av, buf);
-
-	appendLineStringBuf(sb_stdin, fn);
-	if (rpmfcExec(av, sb_stdin, &sb_stdout, 0, buildRoot, NULL) == 0) {
-	    argvSplit(&output, getStringBuf(sb_stdout), "\n\r");
-	}
-
-	argvFree(av);
-	freeStringBuf(sb_stdin);
-	freeStringBuf(sb_stdout);
+    appendLineStringBuf(sb_stdin, fn);
+    if (rpmfcExec(av, sb_stdin, &sb_stdout, 0, buildRoot, NULL) == 0) {
+	argvSplit(&output, getStringBuf(sb_stdout), "\n\r");
     }
-    free(buf);
-    free(mname);
+
+    argvFree(av);
+    freeStringBuf(sb_stdin);
+    freeStringBuf(sb_stdout);
+
     return output;
 }
 
@@ -583,12 +576,11 @@ static void exclFini(struct exclreg_s *excl)
  * @return		0 on success
  */
 static int rpmfcHelper(rpmfc fc, int ix, const struct exclreg_s *excl,
-		       const char *nsdep, const char *depname,
-		       rpmsenseFlags dsContext, rpmTagVal tagN)
+		       rpmsenseFlags dsContext, rpmTagVal tagN,
+		       const char *namespace, const char *cmd)
 {
     ARGV_t pav = NULL;
     const char * fn = fc->fn[ix];
-    char *namespace = NULL;
     int pac;
     int rc = 0;
 
@@ -599,12 +591,11 @@ static int rpmfcHelper(rpmfc fc, int ix, const struct exclreg_s *excl,
     if (regMatch(excl->global_exclude_from, fn+fc->brlen))
 	goto exit;
 
-    pav = runCmd(nsdep, depname, fc->buildRoot, fn);
+    pav = runCmd(cmd, fc->buildRoot, fn);
     if (pav == NULL)
 	goto exit;
 
     pac = argvCount(pav);
-    namespace = rpmfcAttrMacro(nsdep, "namespace", NULL);
 
     struct addReqProvDataFc data;
     data.fc = fc;
@@ -617,7 +608,6 @@ static int rpmfcHelper(rpmfc fc, int ix, const struct exclreg_s *excl,
     }
 
     argvFree(pav);
-    free(namespace);
 
 exit:
     return rc;
@@ -991,6 +981,27 @@ static const struct applyDep_s applyDepTable[] = {
     { 0, 0, NULL },
 };
 
+static void applyAttr(rpmfc fc, int aix, const char *aname,
+			const struct exclreg_s *excl,
+			const struct applyDep_s *dep)
+{
+    int n, *ixs;
+
+    if (fattrHashGetEntry(fc->fahash, aix, &ixs, &n, NULL)) {
+	char *mname = rstrscat(NULL, "__", aname, "_", dep->name, NULL);
+	char *cmd = rpmExpand("%{?", mname, ":%{", mname, "} %{?",
+				mname, "_opts}}", NULL);
+	if (!rstreq(cmd, "")) {
+	    char *ns = rpmfcAttrMacro(aname, "namespace", NULL);
+	    for (int i = 0; i < n; i++)
+		rpmfcHelper(fc, ixs[i], excl, dep->type, dep->tag, ns, cmd);
+	    free(ns);
+	}
+	free(cmd);
+	free(mname);
+    }
+}
+
 static rpmRC rpmfcApplyInternal(rpmfc fc)
 {
     rpmds ds, * dsp;
@@ -1013,15 +1024,8 @@ static rpmRC rpmfcApplyInternal(rpmfc fc)
 	if (skip & dep->type)
 	    continue;
 	exclInit(dep->name, &excl);
-	for (rpmfcAttr *attr = fc->atypes; attr && *attr; attr++, aix++) {
-	    int n, *ixs;
-	    if (fattrHashGetEntry(fc->fahash, aix, &ixs, &n, NULL)) {
-		for (int i = 0; i < n; i++) {
-		    rpmfcHelper(fc, ixs[i], &excl, (*attr)->name,
-				dep->name, dep->type, dep->tag);
-		}
-	    }
-	}
+	for (rpmfcAttr *attr = fc->atypes; attr && *attr; attr++, aix++)
+	    applyAttr(fc, aix, (*attr)->name, &excl, dep);
 	exclFini(&excl);
     }
     /* No more additions after this, freeze pool to minimize memory use */
