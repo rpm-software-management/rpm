@@ -971,11 +971,11 @@ static rpmRC rpmfcApplyInternal(rpmfc fc)
 	skip |= RPMSENSE_FIND_REQUIRES;
 
     /* Generate package and per-file dependencies. */
-    for (ix = 0; ix < fc->nfiles && fc->fn[ix] != NULL; ix++) {
-	for (ARGV_t fattr = fc->fattrs[ix]; fattr && *fattr; fattr++) {
-	    for (dep = applyDepTable; dep->tag; dep++) {
-		if (skip & dep->type)
-		    continue;
+    for (dep = applyDepTable; dep->tag; dep++) {
+	if (skip & dep->type)
+	    continue;
+	for (ix = 0; ix < fc->nfiles && fc->fn[ix] != NULL; ix++) {
+	    for (ARGV_t fattr = fc->fattrs[ix]; fattr && *fattr; fattr++) {
 		rpmfcHelper(fc, ix, *fattr, dep->name, dep->type, dep->tag);
 	    }
 	}
