@@ -495,7 +495,6 @@ static struct builtins_s {
 } const builtinmacros[] = {
     { STR_AND_LEN("F"),		doFoo,		NULL },
     { STR_AND_LEN("P"),		doFoo,		NULL },
-    { STR_AND_LEN("Q"),		doFoo,		NULL },
     { STR_AND_LEN("S"),		doFoo,		NULL },
     { STR_AND_LEN("basename"),	doFoo,		NULL },
     { STR_AND_LEN("define"),	NULL,		doDef },
