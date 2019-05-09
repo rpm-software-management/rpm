@@ -530,6 +530,27 @@ static rpmRC addReqProvFc(void *cbdata, rpmTagVal tagN,
     return RPMRC_OK;
 }
 
+struct exclreg_s {
+    regex_t *exclude;
+    regex_t *exclude_from;
+    regex_t *global_exclude_from;
+};
+
+static void exclInit(const char *depname, struct exclreg_s *excl)
+{
+    excl->exclude = rpmfcAttrReg(depname, "exclude", NULL);
+    excl->exclude_from = rpmfcAttrReg(depname, "exclude", "from", NULL);
+    excl->global_exclude_from = rpmfcAttrReg("global", depname, "exclude", "from", NULL);
+}
+
+static void exclFini(struct exclreg_s *excl)
+{
+    regFree(excl->exclude);
+    regFree(excl->exclude_from);
+    regFree(excl->global_exclude_from);
+    memset(excl, 0, sizeof(*excl));
+}
+
 /**
  * Run per-interpreter dependency helper.
  * @param fc		file classifier
@@ -540,7 +561,7 @@ static rpmRC addReqProvFc(void *cbdata, rpmTagVal tagN,
  * @param tagN		RPMTAG_PROVIDENAME or RPMTAG_REQUIRENAME
  * @return		0 on success
  */
-static int rpmfcHelper(rpmfc fc, int ix,
+static int rpmfcHelper(rpmfc fc, int ix, const struct exclreg_s *excl,
 		       const char *nsdep, const char *depname,
 		       rpmsenseFlags dsContext, rpmTagVal tagN)
 {
@@ -549,17 +570,12 @@ static int rpmfcHelper(rpmfc fc, int ix,
     char *namespace = NULL;
     int pac;
     int rc = 0;
-    regex_t *exclude = NULL;
-    regex_t *exclude_from = NULL;
-    regex_t *global_exclude_from = NULL;
 
     /* If the entire path is filtered out, there's nothing more to do */
-    exclude_from = rpmfcAttrReg(depname, "exclude", "from", NULL);
-    if (regMatch(exclude_from, fn+fc->brlen))
+    if (regMatch(excl->exclude_from, fn+fc->brlen))
 	goto exit;
 
-    global_exclude_from = rpmfcAttrReg("global", depname, "exclude", "from", NULL);
-    if (regMatch(global_exclude_from, fn+fc->brlen))
+    if (regMatch(excl->global_exclude_from, fn+fc->brlen))
 	goto exit;
 
     pav = runCmd(nsdep, depname, fc->buildRoot, fn);
@@ -568,12 +584,11 @@ static int rpmfcHelper(rpmfc fc, int ix,
 
     pac = argvCount(pav);
     namespace = rpmfcAttrMacro(nsdep, "namespace", NULL);
-    exclude = rpmfcAttrReg(depname, "exclude", NULL);
 
     struct addReqProvDataFc data;
     data.fc = fc;
     data.namespace = namespace;
-    data.exclude = exclude;
+    data.exclude = excl->exclude;
 
     for (int i = 0; i < pac; i++) {
 	if (parseRCPOT(NULL, fc->pkg, pav[i], tagN, ix, dsContext, addReqProvFc, &data))
@@ -581,12 +596,9 @@ static int rpmfcHelper(rpmfc fc, int ix,
     }
 
     argvFree(pav);
-    regFree(exclude);
     free(namespace);
 
 exit:
-    regFree(exclude_from);
-    regFree(global_exclude_from);
     return rc;
 }
 
@@ -964,6 +976,7 @@ static rpmRC rpmfcApplyInternal(rpmfc fc)
     int ix;
     const struct applyDep_s *dep;
     int skip = 0;
+    struct exclreg_s excl;
 
     if (fc->skipProv)
 	skip |= RPMSENSE_FIND_PROVIDES;
@@ -974,11 +987,13 @@ static rpmRC rpmfcApplyInternal(rpmfc fc)
     for (dep = applyDepTable; dep->tag; dep++) {
 	if (skip & dep->type)
 	    continue;
+	exclInit(dep->name, &excl);
 	for (ix = 0; ix < fc->nfiles && fc->fn[ix] != NULL; ix++) {
 	    for (ARGV_t fattr = fc->fattrs[ix]; fattr && *fattr; fattr++) {
-		rpmfcHelper(fc, ix, *fattr, dep->name, dep->type, dep->tag);
+		rpmfcHelper(fc, ix, &excl, *fattr, dep->name, dep->type, dep->tag);
 	    }
 	}
+	exclFini(&excl);
     }
     /* No more additions after this, freeze pool to minimize memory use */
 
