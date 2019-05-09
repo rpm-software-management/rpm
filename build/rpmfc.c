@@ -937,6 +937,24 @@ static void rpmfcNormalizeFDeps(rpmfc fc)
     fc->fileDeps.size = ix;
 }
 
+struct applyDep_s {
+    rpmTagVal tag;
+    int type;
+    const char *name;
+};
+
+static const struct applyDep_s applyDepTable[] = {
+    { RPMTAG_PROVIDENAME,	RPMSENSE_FIND_PROVIDES,	"provides" },
+    { RPMTAG_REQUIRENAME,	RPMSENSE_FIND_REQUIRES, "requires" },
+    { RPMTAG_RECOMMENDNAME,	RPMSENSE_FIND_REQUIRES, "recommends" },
+    { RPMTAG_SUGGESTNAME,	RPMSENSE_FIND_REQUIRES, "suggests" },
+    { RPMTAG_SUPPLEMENTNAME,	RPMSENSE_FIND_REQUIRES, "supplements" },
+    { RPMTAG_ENHANCENAME,	RPMSENSE_FIND_REQUIRES, "enhances" },
+    { RPMTAG_CONFLICTNAME,	RPMSENSE_FIND_REQUIRES, "conflicts" },
+    { RPMTAG_OBSOLETENAME,	RPMSENSE_FIND_REQUIRES, "obsoletes" },
+    { 0, 0, NULL },
+};
+
 static rpmRC rpmfcApplyInternal(rpmfc fc)
 {
     rpmds ds, * dsp;
@@ -944,29 +962,21 @@ static rpmRC rpmfcApplyInternal(rpmfc fc)
     unsigned int val;
     int dix;
     int ix;
+    const struct applyDep_s *dep;
+    int skip = 0;
+
+    if (fc->skipProv)
+	skip |= RPMSENSE_FIND_PROVIDES;
+    if (fc->skipReq)
+	skip |= RPMSENSE_FIND_REQUIRES;
 
     /* Generate package and per-file dependencies. */
     for (ix = 0; ix < fc->nfiles && fc->fn[ix] != NULL; ix++) {
 	for (ARGV_t fattr = fc->fattrs[ix]; fattr && *fattr; fattr++) {
-	    if (!fc->skipProv) {
-		rpmfcHelper(fc, ix, *fattr, "provides",
-			    RPMSENSE_FIND_PROVIDES, RPMTAG_PROVIDENAME);
-	    }
-	    if (!fc->skipReq) {
-		rpmfcHelper(fc, ix, *fattr, "requires",
-			    RPMSENSE_FIND_REQUIRES, RPMTAG_REQUIRENAME);
-		rpmfcHelper(fc, ix, *fattr, "recommends",
-			    RPMSENSE_FIND_REQUIRES, RPMTAG_RECOMMENDNAME);
-		rpmfcHelper(fc, ix, *fattr, "suggests",
-			    RPMSENSE_FIND_REQUIRES, RPMTAG_SUGGESTNAME);
-		rpmfcHelper(fc, ix, *fattr, "supplements",
-			    RPMSENSE_FIND_REQUIRES, RPMTAG_SUPPLEMENTNAME);
-		rpmfcHelper(fc, ix, *fattr, "enhances",
-			    RPMSENSE_FIND_REQUIRES, RPMTAG_ENHANCENAME);
-		rpmfcHelper(fc, ix, *fattr, "conflicts",
-			    RPMSENSE_FIND_REQUIRES, RPMTAG_CONFLICTNAME);
-		rpmfcHelper(fc, ix, *fattr, "obsoletes",
-			    RPMSENSE_FIND_REQUIRES, RPMTAG_OBSOLETENAME);
+	    for (dep = applyDepTable; dep->tag; dep++) {
+		if (skip & dep->type)
+		    continue;
+		rpmfcHelper(fc, ix, *fattr, dep->name, dep->type, dep->tag);
 	    }
 	}
     }
