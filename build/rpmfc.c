@@ -45,6 +45,15 @@ typedef struct {
     int alloced;
 } rpmfcFileDeps;
 
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+#define HASHTYPE fattrHash
+#define HTKEYTYPE int
+#define HTDATATYPE int
+#include "lib/rpmhash.H"
+#include "lib/rpmhash.C"
+
 /**
  */
 struct rpmfc_s {
@@ -69,6 +78,7 @@ struct rpmfc_s {
     rpmstrPool cdict;	/*!< file class dictionary */
     rpmfcFileDeps fileDeps; /*!< file dependency mapping */
 
+    fattrHash fahash;	/*!< attr:file mapping */
     rpmstrPool pool;	/*!< general purpose string storage */
 };
 
@@ -76,6 +86,17 @@ struct rpmfcTokens_s {
     const char * token;
     rpm_color_t colors;
 };  
+
+static int intCmp(int a, int b)
+{
+    return (a != b);
+}
+
+static unsigned int intId(int a)
+{
+    return a;
+}
+
 
 static int regMatch(regex_t *reg, const char *val)
 {
@@ -690,8 +711,10 @@ static void rpmfcAttributes(rpmfc fc, int ix, const char *ftype, const char *ful
 	    continue;
 
 	/* Add attributes on libmagic type & path pattern matches */
-	if (matches(&(*attr)->incl, ftype, path, is_executable))
+	if (matches(&(*attr)->incl, ftype, path, is_executable)) {
 	    argvAddTokens(&fc->fattrs[ix], (*attr)->name);
+	    fattrHashAddEntry(fc->fahash, attr-fc->atypes, ix);
+	}
     }
 }
 
@@ -799,6 +822,7 @@ rpmfc rpmfcFree(rpmfc fc)
 	}
 	free(fc->fileDeps.data);
 
+	fattrHashFree(fc->fahash);
 	rpmstrPoolFree(fc->cdict);
 
 	rpmstrPoolFree(fc->pool);
@@ -985,12 +1009,17 @@ static rpmRC rpmfcApplyInternal(rpmfc fc)
 
     /* Generate package and per-file dependencies. */
     for (dep = applyDepTable; dep->tag; dep++) {
+	int aix = 0;
 	if (skip & dep->type)
 	    continue;
 	exclInit(dep->name, &excl);
-	for (ix = 0; ix < fc->nfiles && fc->fn[ix] != NULL; ix++) {
-	    for (ARGV_t fattr = fc->fattrs[ix]; fattr && *fattr; fattr++) {
-		rpmfcHelper(fc, ix, &excl, *fattr, dep->name, dep->type, dep->tag);
+	for (rpmfcAttr *attr = fc->atypes; attr && *attr; attr++, aix++) {
+	    int n, *ixs;
+	    if (fattrHashGetEntry(fc->fahash, aix, &ixs, &n, NULL)) {
+		for (int i = 0; i < n; i++) {
+		    rpmfcHelper(fc, ixs[i], &excl, (*attr)->name,
+				dep->name, dep->type, dep->tag);
+		}
 	    }
 	}
 	exclFini(&excl);
@@ -1078,6 +1107,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     fc->fattrs = xcalloc(fc->nfiles, sizeof(*fc->fattrs));
     fc->fcolor = xcalloc(fc->nfiles, sizeof(*fc->fcolor));
     fc->fcdictx = xcalloc(fc->nfiles, sizeof(*fc->fcdictx));
+    fc->fahash = fattrHashCreate(fc->nfiles / 3, intId, intCmp, NULL, NULL);
 
     /* Initialize the per-file dictionary indices. */
     argiAdd(&fc->fddictx, fc->nfiles-1, 0);
