@@ -777,7 +777,7 @@ rpmfc rpmfcFree(rpmfc fc)
 	free(fc->fattrs);
 	free(fc->fcolor);
 	free(fc->fcdictx);
-	free(fc->pkg);
+	freePackage(fc->pkg);
 	argiFree(fc->fddictx);
 	argiFree(fc->fddictn);
 	argiFree(fc->ddictx);
@@ -1407,7 +1407,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     }
 
     fc = rpmfcCreate(spec->buildRoot, 0);
-    free(fc->pkg);
+    freePackage(fc->pkg);
     fc->pkg = pkg;
     fc->skipProv = !pkg->autoProv;
     fc->skipReq = !pkg->autoReq;
