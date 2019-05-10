@@ -677,16 +677,6 @@ package or when debugging this package.\
 #	gpg --batch --no-verbose --verify --no-secmem-warning \
 #	%{__signature_filename} %{__plaintext_filename}
 #
-# XXX rpm-4.1 verifies prelinked libraries using a prelink undo helper.
-#	Normally this macro is defined in /etc/rpm/macros.prelink, installed
-#	with the prelink package. If the macro is undefined, then prelinked
-#	shared libraries contents are MD5 digest verified (as usual), rather
-#	than MD5 verifying the output of the prelink undo helper.
-#
-#	Note: The 2nd token is used as argv[0] and "library" is a
-#	placeholder that will be deleted and replaced with the appropriate
-#	library file path.
-#%__prelink_undo_cmd     /usr/sbin/prelink prelink -y library
 
 # Horowitz Key Protocol server configuration
 #

@@ -42,7 +42,6 @@ librpmio_la_LIBADD = \
 	@WITH_OPENSSL_LIB@ \
 	@WITH_BZ2_LIB@ \
 	@WITH_ZLIB_LIB@ \
-	@WITH_LIBELF_LIB@ \
 	@WITH_POPT_LIB@ \
 	@WITH_LZMA_LIB@ \
 	$(ZSTD_LIBS) \

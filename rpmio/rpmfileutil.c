@@ -1,18 +1,5 @@
 #include "system.h"
 
-#if HAVE_GELF_H
-
-#include <gelf.h>
-
-#if !defined(DT_GNU_PRELINKED)
-#define DT_GNU_PRELINKED        0x6ffffdf5
-#endif
-#if !defined(DT_GNU_LIBLIST)
-#define DT_GNU_LIBLIST          0x6ffffef9
-#endif
-
-#endif
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -34,178 +21,33 @@
 static const char *rpm_config_dir = NULL;
 static pthread_once_t configDirSet = PTHREAD_ONCE_INIT;
 
-static int is_prelinked(int fdno)
-{
-    int prelinked = 0;
-#if HAVE_GELF_H && HAVE_LIBELF
-    Elf *elf = NULL;
-    Elf_Scn *scn = NULL;
-    Elf_Data *data = NULL;
-    GElf_Ehdr ehdr;
-    GElf_Shdr shdr;
-    GElf_Dyn dyn;
-
-    (void) elf_version(EV_CURRENT);
-
-    if ((elf = elf_begin (fdno, ELF_C_READ, NULL)) == NULL ||
-	       elf_kind(elf) != ELF_K_ELF || gelf_getehdr(elf, &ehdr) == NULL ||
-	       !(ehdr.e_type == ET_DYN || ehdr.e_type == ET_EXEC))
-	goto exit;
-
-    while (!prelinked && (scn = elf_nextscn(elf, scn)) != NULL) {
-	(void) gelf_getshdr(scn, &shdr);
-	if (shdr.sh_type != SHT_DYNAMIC || shdr.sh_entsize == 0)
-	    continue;
-	while (!prelinked && (data = elf_getdata (scn, data)) != NULL) {
-	    int maxndx = data->d_size / shdr.sh_entsize;
-
-            for (int ndx = 0; ndx < maxndx; ++ndx) {
-		(void) gelf_getdyn (data, ndx, &dyn);
-		if (!(dyn.d_tag == DT_GNU_PRELINKED || dyn.d_tag == DT_GNU_LIBLIST))
-		    continue;
-		prelinked = 1;
-		break;
-	    }
-	}
-    }
-
-exit:
-    if (elf) (void) elf_end(elf);
-#endif
-    return prelinked;
-}
-
-static int open_dso(const char * path, pid_t * pidp, rpm_loff_t *fsizep)
-{
-    static const char * cmd = NULL;
-    static int initted = 0;
-    int fdno;
-
-    if (!initted) {
-	cmd = rpmExpand("%{?__prelink_undo_cmd}", NULL);
-	initted++;
-    }
-
-    if (pidp) *pidp = 0;
-
-    if (fsizep) {
-	struct stat sb, * st = &sb;
-	if (stat(path, st) < 0)
-	    return -1;
-	*fsizep = st->st_size;
-    }
-
-    fdno = open(path, O_RDONLY);
-    if (fdno < 0)
-	return fdno;
-
-    if (!(cmd && *cmd))
-	return fdno;
-
-    if (pidp != NULL && is_prelinked(fdno)) {
-	int pipes[2];
-	pid_t pid;
-
-	close(fdno);
-	pipes[0] = pipes[1] = -1;
-	if (pipe(pipes) < 0)
-	    return -1;
-
-	pid = fork();
-	if (pid < 0) {
-	    close(pipes[0]);
-	    close(pipes[1]);
-	    return -1;
-	}
-
-	if (pid == 0) {
-	    ARGV_t av, lib;
-	    int dfd;
-	    argvSplit(&av, cmd, " ");
-
-	    close(pipes[0]);
-	    dfd = dup2(pipes[1], STDOUT_FILENO);
-	    close(pipes[1]);
-	    if (dfd >= 0 && (lib = argvSearch(av, "library", NULL)) != NULL) {
-		*lib = (char *) path;
-		unsetenv("MALLOC_CHECK_");
-		execve(av[0], av+1, environ);
-	    }
-	    _exit(127); /* not normally reached */
-	} else {
-	    *pidp = pid;
-	    fdno = pipes[0];
-	    close(pipes[1]);
-	}
-    }
-
-    return fdno;
-}
-
 int rpmDoDigest(int algo, const char * fn,int asAscii,
                 unsigned char * digest, rpm_loff_t * fsizep)
 {
-    const char * path;
-    urltype ut = urlPath(fn, &path);
     unsigned char * dig = NULL;
     size_t diglen, buflen = 32 * BUFSIZ;
     unsigned char *buf = xmalloc(buflen);
-    FD_t fd;
     rpm_loff_t fsize = 0;
-    pid_t pid = 0;
     int rc = 0;
-    int fdno;
 
-    fdno = open_dso(path, &pid, &fsize);
-    if (fdno < 0) {
-	rc = 1;
-	goto exit;
-    }
+    FD_t fd = Fopen(fn, "r.ufdio");
 
-    switch (ut) {
-    case URL_IS_PATH:
-    case URL_IS_UNKNOWN:
-    case URL_IS_HTTPS:
-    case URL_IS_HTTP:
-    case URL_IS_FTP:
-    case URL_IS_HKP:
-    case URL_IS_DASH:
-    default:
-	/* Either use the pipe to prelink -y or open the URL. */
-	fd = (pid != 0) ? fdDup(fdno) : Fopen(fn, "r.ufdio");
-	(void) close(fdno);
-	if (fd == NULL || Ferror(fd)) {
-	    rc = 1;
-	    if (fd != NULL)
-		(void) Fclose(fd);
-	    break;
-	}
-	
+    if (fd) {
 	fdInitDigest(fd, algo, 0);
-	fsize = 0;
 	while ((rc = Fread(buf, sizeof(*buf), buflen, fd)) > 0)
 	    fsize += rc;
 	fdFiniDigest(fd, algo, (void **)&dig, &diglen, asAscii);
-	if (dig == NULL || Ferror(fd))
-	    rc = 1;
-
-	(void) Fclose(fd);
-	break;
+	Fclose(fd);
     }
 
-    /* Reap the prelink -y helper. */
-    if (pid) {
-	int status;
-	(void) waitpid(pid, &status, 0);
-	if (!WIFEXITED(status) || WEXITSTATUS(status))
-	    rc = 1;
-    }
-
-exit:
-    if (fsizep)
-	*fsizep = fsize;
-    if (!rc)
+    if (dig == NULL || Ferror(fd)) {
+	rc = 1;
+    } else {
 	memcpy(digest, dig, diglen);
+	if (fsizep)
+	    *fsizep = fsize;
+    }
+
     dig = _free(dig);
     free(buf);
 
