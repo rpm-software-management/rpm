@@ -1748,7 +1748,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* Run %posttrans scripts unless disabled */
     if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_NOPOSTTRANS))) {
 	rpmlog(RPMLOG_DEBUG, "running post-transaction scripts\n");
-	nfailed += runTransScripts(ts, PKG_POSTTRANS);
+	runTransScripts(ts, PKG_POSTTRANS);
     }
 
     /* Run %transfiletriggerpostun scripts unless disabled */
