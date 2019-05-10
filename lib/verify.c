@@ -344,19 +344,20 @@ static const char * stateStr(rpmfileState fstate)
 static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask,
 			rpmfileAttrs incAttrs, rpmfileAttrs skipAttrs)
 {
-    rpmVerifyAttrs verifyResult = 0;
+    rpmVerifyAttrs *results = NULL;
     rpmVerifyAttrs verifyAll = 0; /* assume no problems */
-    rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_FLAGS_VERIFY);
+    rpmfiles fi = rpmfilesNew(NULL, h, RPMTAG_BASENAMES, RPMFI_FLAGS_VERIFY);
+    int i, fc = rpmfilesFC(fi);
 
     if (fi == NULL)
 	return 1;
 
-    rpmfiInit(fi, 0);
-    while (rpmfiNext(fi) >= 0) {
-	rpmfileAttrs fileAttrs = rpmfiFFlags(fi);
-	char *buf = NULL, *attrFormat;
-	const char *fstate = NULL;
-	char ac;
+    results = xcalloc(fc, sizeof(*results));
+
+    #pragma omp parallel
+    #pragma omp single
+    for (i = 0; i < fc; i++) {
+	rpmfileAttrs fileAttrs = rpmfilesFFlags(fi, i);
 
 	/* If filtering by inclusion, skip non-matching (eg --configfiles) */
 	if (incAttrs && !(incAttrs & fileAttrs))
@@ -366,12 +367,22 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask,
 	if (skipAttrs & fileAttrs)
 	    continue;
 
-	verifyResult = rpmfiVerify(fi, omitMask);
+	#pragma omp task
+	results[i] = rpmfilesVerify(fi, i, omitMask);
+    }
+
+    for (i = 0; i < fc; i++) {
+	rpmfileAttrs fileAttrs = rpmfilesFFlags(fi, i);
+	rpmVerifyAttrs verifyResult = results[i];
+	char *fn = rpmfilesFN(fi, i);
+	char *buf = NULL, *attrFormat;
+	const char *fstate = NULL;
+	char ac;
 
 	/* Filter out timestamp differences of shared files */
 	if (verifyResult & RPMVERIFY_MTIME) {
 	    rpmdbMatchIterator mi;
-	    mi = rpmtsInitIterator(ts, RPMDBI_BASENAMES, rpmfiFN(fi), 0);
+	    mi = rpmtsInitIterator(ts, RPMDBI_BASENAMES, fn, 0);
 	    if (rpmdbGetIteratorCount(mi) > 1) 
 		verifyResult &= ~RPMVERIFY_MTIME;
 	    rpmdbFreeIterator(mi);
@@ -379,13 +390,13 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask,
 
 	/* State is only meaningful for installed packages */
 	if (headerGetInstance(h))
-	    fstate = stateStr(rpmfiFState(fi));
+	    fstate = stateStr(rpmfilesFState(fi, i));
 
 	attrFormat = rpmFFlagsString(fileAttrs, "");
 	ac = rstreq(attrFormat, "") ? ' ' : attrFormat[0];
 	if (verifyResult & RPMVERIFY_LSTATFAIL) {
 	    if (!(fileAttrs & (RPMFILE_MISSINGOK|RPMFILE_GHOST)) || rpmIsVerbose()) {
-		rasprintf(&buf, _("missing   %c %s"), ac, rpmfiFN(fi));
+		rasprintf(&buf, _("missing   %c %s"), ac, fn);
 		if ((verifyResult & RPMVERIFY_LSTATFAIL) != 0 &&
 		    errno != ENOENT) {
 		    char *app;
@@ -396,7 +407,7 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask,
 	    }
 	} else if (verifyResult || fstate || rpmIsVerbose()) {
 	    char *verifyFormat = rpmVerifyString(verifyResult, ".");
-	    rasprintf(&buf, "%s  %c %s", verifyFormat, ac, rpmfiFN(fi));
+	    rasprintf(&buf, "%s  %c %s", verifyFormat, ac, fn);
 	    free(verifyFormat);
 	}
 	free(attrFormat);
@@ -413,8 +424,10 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask,
 	    verifyResult &= ~RPMVERIFY_LSTATFAIL;
 
 	verifyAll |= verifyResult;
+	free(fn);
     }
-    rpmfiFree(fi);
+    rpmfilesFree(fi);
+    free(results);
 	
     return (verifyAll != 0) ? 1 : 0;
 }
