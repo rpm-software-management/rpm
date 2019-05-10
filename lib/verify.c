@@ -332,6 +332,11 @@ static const char * stateStr(rpmfileState fstate)
     return _("unknown state");
 }
 
+struct filevfy_s {
+    rpmVerifyAttrs res;
+    int err;
+};
+
 /**
  * Check file info from header against what's actually installed.
  * @param ts		transaction set
@@ -344,7 +349,7 @@ static const char * stateStr(rpmfileState fstate)
 static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask,
 			rpmfileAttrs incAttrs, rpmfileAttrs skipAttrs)
 {
-    rpmVerifyAttrs *results = NULL;
+    struct filevfy_s *results = NULL;
     rpmVerifyAttrs verifyAll = 0; /* assume no problems */
     rpmfiles fi = rpmfilesNew(NULL, h, RPMTAG_BASENAMES, RPMFI_FLAGS_VERIFY);
     int i, fc = rpmfilesFC(fi);
@@ -368,17 +373,29 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask,
 	    continue;
 
 	#pragma omp task
-	results[i] = rpmfilesVerify(fi, i, omitMask);
+	{
+	results[i].res = rpmfilesVerify(fi, i, omitMask);
+	results[i].err = errno;
+	}
     }
 
     for (i = 0; i < fc; i++) {
 	rpmfileAttrs fileAttrs = rpmfilesFFlags(fi, i);
-	rpmVerifyAttrs verifyResult = results[i];
-	char *fn = rpmfilesFN(fi, i);
+	rpmVerifyAttrs verifyResult = results[i].res;
+	char *fn = NULL;
 	char *buf = NULL, *attrFormat;
 	const char *fstate = NULL;
 	char ac;
 
+	/* If filtering by inclusion, skip non-matching (eg --configfiles) */
+	if (incAttrs && !(incAttrs & fileAttrs))
+	    continue;
+
+	/* Skip on attributes (eg from --noghost) */
+	if (skipAttrs & fileAttrs)
+	    continue;
+
+	fn = rpmfilesFN(fi, i);
 	/* Filter out timestamp differences of shared files */
 	if (verifyResult & RPMVERIFY_MTIME) {
 	    rpmdbMatchIterator mi;
@@ -398,9 +415,9 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask,
 	    if (!(fileAttrs & (RPMFILE_MISSINGOK|RPMFILE_GHOST)) || rpmIsVerbose()) {
 		rasprintf(&buf, _("missing   %c %s"), ac, fn);
 		if ((verifyResult & RPMVERIFY_LSTATFAIL) != 0 &&
-		    errno != ENOENT) {
+		    results[i].err != ENOENT) {
 		    char *app;
-		    rasprintf(&app, " (%s)", strerror(errno));
+		    rasprintf(&app, " (%s)", strerror(results[i].err));
 		    rstrcat(&buf, app);
 		    free(app);
 		}
