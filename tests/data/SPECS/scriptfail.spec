@@ -14,7 +14,7 @@ BuildArch:	noarch
 
 %{lua:
 for i, s in ipairs({"pre","preun","pretrans","post","postun","posttrans"}) do
-   print('%'..s..' '..rpm.expand('%{?critical:-c}')..' -e\n')
+   print('%'..s..' -e\n')
    print('%{!?exit'..s..':%global exit'..s..' 0}\n')
    print('exit %{exit'..s..'}\n\n')
 end

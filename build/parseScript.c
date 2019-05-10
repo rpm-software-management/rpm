@@ -112,8 +112,6 @@ int parseScript(rpmSpec spec, int parsePart)
 	  NULL, NULL},
 	{ NULL, 'q', POPT_BIT_SET, &scriptFlags, RPMSCRIPT_FLAG_QFORMAT,
 	  NULL, NULL},
-	{ NULL, 'c', POPT_BIT_SET, &scriptFlags, RPMSCRIPT_FLAG_CRITICAL,
-	  NULL, NULL},
 	{ NULL, 'P', POPT_ARG_INT, &priority, 'P', NULL, NULL},
 	{ 0, 0, 0, 0, 0,	NULL, NULL}
     };
