@@ -382,6 +382,12 @@ rpmRC lookupPackage(rpmSpec spec, const char * name, int flag,
 RPM_GNUC_INTERNAL
 Package newPackage(const char *name, rpmstrPool pool, Package * pkglist);
 
+/** \ingroup rpmbuild
+ * Free a package control structure.
+ * @param pkg          package control structure
+ */
+RPM_GNUC_INTERNAL
+Package freePackage(Package pkg);
 
 /** \ingroup rpmbuild
  * Return rpmds containing the dependencies of a given type

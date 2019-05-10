@@ -142,7 +142,7 @@ Package newPackage(const char *name, rpmstrPool pool, Package *pkglist)
     return p;
 }
 
-static Package freePackage(Package pkg)
+Package freePackage(Package pkg)
 {
     if (pkg == NULL) return NULL;
     
