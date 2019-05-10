@@ -1155,9 +1155,8 @@ static void doLoad(MacroBuf mb, int chkexist, int negate,
 {
     char *arg = NULL;
     if (g && gn > 0 && expandThis(mb, g, gn, &arg) == 0) {
-	/* Print failure iff %{load:...} or %{!?load:...} */
-	if (loadMacroFile(mb->mc, arg) && chkexist == negate) {
-	    rpmlog(RPMLOG_ERR, _("failed to load macro file %s"), arg);
+	if (loadMacroFile(mb->mc, arg)) {
+	    rpmlog(RPMLOG_ERR, _("failed to load macro file %s\n"), arg);
 	    mb->error = 1;
 	}
     }
