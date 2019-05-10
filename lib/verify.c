@@ -128,15 +128,12 @@ rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
 	int algo;
 	size_t diglen;
 
-	/* XXX If --nomd5, then prelinked library sizes are not corrected. */
 	if ((digest = rpmfilesFDigest(fi, ix, &algo, &diglen))) {
 	    unsigned char fdigest[diglen];
-	    rpm_loff_t fsize;
 
-	    if (rpmDoDigest(algo, fn, 0, fdigest, &fsize)) {
+	    if (rpmDoDigest(algo, fn, 0, fdigest)) {
 		vfy |= (RPMVERIFY_READFAIL|RPMVERIFY_FILEDIGEST);
 	    } else {
-		sb.st_size = fsize;
 		if (memcmp(fdigest, digest, diglen))
 		    vfy |= RPMVERIFY_FILEDIGEST;
 	    }
