@@ -993,7 +993,7 @@ int rpmfileContentsEqual(rpmfiles ofi, int oix, rpmfiles nfi, int nix)
 	    goto exit;
 	}
 
-	if (rpmDoDigest(nalgo, fn, 0, (unsigned char *)buffer, NULL) != 0) {
+	if (rpmDoDigest(nalgo, fn, 0, (unsigned char *)buffer) != 0) {
 	     goto exit;		/* assume file has been removed */
 	}
 
@@ -1077,7 +1077,7 @@ rpmFileAction rpmfilesDecideFate(rpmfiles ofi, int oix,
 	/* See if the file on disk is identical to the one in new pkg */
 	ndigest = rpmfilesFDigest(nfi, nix, &nalgo, &ndiglen);
 	if (diskWhat == REG && newWhat == REG) {
-	    if (rpmDoDigest(nalgo, fn, 0, (unsigned char *)buffer, NULL))
+	    if (rpmDoDigest(nalgo, fn, 0, (unsigned char *)buffer))
 		goto exit;		/* assume file has been removed */
 	    if (ndigest && memcmp(ndigest, buffer, ndiglen) == 0) {
 		action = FA_TOUCH;
@@ -1090,7 +1090,7 @@ rpmFileAction rpmfilesDecideFate(rpmfiles ofi, int oix,
 	if (diskWhat == REG) {
 	    /* hash algo changed or digest was not computed, recalculate it */
 	    if ((oalgo != nalgo) || (newWhat != REG)) {
-		if (rpmDoDigest(oalgo, fn, 0, (unsigned char *)buffer, NULL))
+		if (rpmDoDigest(oalgo, fn, 0, (unsigned char *)buffer))
 		    goto exit;	/* assume file has been removed */
 		}
 	    if (odigest && memcmp(odigest, buffer, odiglen) == 0)
@@ -1216,7 +1216,7 @@ int rpmfilesConfigConflict(rpmfiles fi, int ix)
 	int algo;
 	size_t diglen;
 	const unsigned char *ndigest = rpmfilesFDigest(fi,ix, &algo, &diglen);
-	if (rpmDoDigest(algo, fn, 0, (unsigned char *)buffer, NULL))
+	if (rpmDoDigest(algo, fn, 0, (unsigned char *)buffer))
 	    goto exit;	/* assume file has been removed */
 	if (ndigest && memcmp(ndigest, buffer, diglen) == 0)
 	    goto exit;	/* unmodified config file */

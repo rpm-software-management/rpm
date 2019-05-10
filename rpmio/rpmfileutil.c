@@ -21,21 +21,18 @@
 static const char *rpm_config_dir = NULL;
 static pthread_once_t configDirSet = PTHREAD_ONCE_INIT;
 
-int rpmDoDigest(int algo, const char * fn,int asAscii,
-                unsigned char * digest, rpm_loff_t * fsizep)
+int rpmDoDigest(int algo, const char * fn,int asAscii, unsigned char * digest)
 {
     unsigned char * dig = NULL;
     size_t diglen, buflen = 32 * BUFSIZ;
     unsigned char *buf = xmalloc(buflen);
-    rpm_loff_t fsize = 0;
     int rc = 0;
 
     FD_t fd = Fopen(fn, "r.ufdio");
 
     if (fd) {
 	fdInitDigest(fd, algo, 0);
-	while ((rc = Fread(buf, sizeof(*buf), buflen, fd)) > 0)
-	    fsize += rc;
+	while ((rc = Fread(buf, sizeof(*buf), buflen, fd)) > 0) {};
 	fdFiniDigest(fd, algo, (void **)&dig, &diglen, asAscii);
 	Fclose(fd);
     }
@@ -44,8 +41,6 @@ int rpmDoDigest(int algo, const char * fn,int asAscii,
 	rc = 1;
     } else {
 	memcpy(digest, dig, diglen);
-	if (fsizep)
-	    *fsizep = fsize;
     }
 
     dig = _free(dig);
