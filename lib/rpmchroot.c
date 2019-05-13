@@ -100,8 +100,6 @@ int rpmChrootSet(const char *rootDir)
 	    rpmlog(RPMLOG_ERR, _("Unable to open current directory: %m\n"));
 	    rc = -1;
 	}
-	if (!_rpm_nouserns && rc == 0 && getuid())
-	    try_become_root();
     }
 
     return rc;
@@ -123,6 +121,9 @@ int rpmChrootIn(void)
     if (rootState.chrootDone > 0) {
 	rootState.chrootDone++;
     } else if (rootState.chrootDone == 0) {
+	if (!_rpm_nouserns && getuid())
+	    try_become_root();
+
 	if (chdir("/") == 0 && chroot(rootState.rootDir) == 0) {
 	    rootState.chrootDone = 1;
 	} else {
