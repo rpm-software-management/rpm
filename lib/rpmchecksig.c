@@ -288,7 +288,11 @@ int rpmcliVerifySignatures(rpmts ts, ARGV_const_t argv)
 	rpmtsSetVfyLevel(ts, vfylevel);
     }
 
+    #pragma omp parallel reduction(+:res)
+    #pragma omp single
     while ((arg = *argv++) != NULL) {
+	#pragma omp task
+	{
 	FD_t fd = Fopen(arg, "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("%s: open failed: %s\n"), 
@@ -299,6 +303,7 @@ int rpmcliVerifySignatures(rpmts ts, ARGV_const_t argv)
 	}
 
 	Fclose(fd);
+	} /* omp task */
 	rpmsqPoll();
     }
     rpmKeyringFree(keyring);
