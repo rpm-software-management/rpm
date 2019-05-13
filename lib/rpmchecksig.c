@@ -288,7 +288,7 @@ int rpmcliVerifySignatures(rpmts ts, ARGV_const_t argv)
 	rpmtsSetVfyLevel(ts, vfylevel);
     }
 
-    #pragma omp parallel reduction(+:res)
+    #pragma omp parallel
     #pragma omp single
     while ((arg = *argv++) != NULL) {
 	#pragma omp task
@@ -297,8 +297,10 @@ int rpmcliVerifySignatures(rpmts ts, ARGV_const_t argv)
 	if (fd == NULL || Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("%s: open failed: %s\n"), 
 		     arg, Fstrerror(fd));
+	    #pragma omp atomic
 	    res++;
 	} else if (rpmpkgVerifySigs(keyring, vfylevel, vsflags, fd, arg)) {
+	    #pragma omp atomic
 	    res++;
 	}
 
