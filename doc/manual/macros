@@ -66,6 +66,7 @@ to perform useful operations. The current list is
 	%trace		toggle print of debugging information before/after
 			expansion
 	%dump		print the active (i.e. non-covered) macro table
+	%getncpus	return the number of CPUs
 	%verbose	is rpm in verbose mode?
 
 	%{echo:...}	print ... to stdout
