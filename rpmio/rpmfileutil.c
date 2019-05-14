@@ -34,7 +34,6 @@ int rpmDoDigest(int algo, const char * fn,int asAscii, unsigned char * digest)
 	fdInitDigest(fd, algo, 0);
 	while ((rc = Fread(buf, sizeof(*buf), buflen, fd)) > 0) {};
 	fdFiniDigest(fd, algo, (void **)&dig, &diglen, asAscii);
-	Fclose(fd);
     }
 
     if (dig == NULL || Ferror(fd)) {
@@ -45,6 +44,7 @@ int rpmDoDigest(int algo, const char * fn,int asAscii, unsigned char * digest)
 
     dig = _free(dig);
     free(buf);
+    Fclose(fd);
 
     return rc;
 }
