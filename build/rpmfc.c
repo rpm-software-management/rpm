@@ -54,8 +54,6 @@ typedef struct {
 #include "lib/rpmhash.H"
 #include "lib/rpmhash.C"
 
-/**
- */
 struct rpmfc_s {
     Package pkg;
     int nfiles;		/*!< no. of files */
@@ -227,8 +225,6 @@ static rpmfcAttr rpmfcAttrFree(rpmfcAttr attr)
     return NULL;
 }
 
-/**
- */
 static int rpmfcExpandAppend(ARGV_t * argvp, ARGV_const_t av)
 {
     ARGV_t argv = *argvp;
@@ -261,18 +257,6 @@ static rpmds rpmdsSingleNS(rpmstrPool pool,
 
 #define max(x,y) ((x) > (y) ? (x) : (y))
 
-/** \ingroup rpmbuild
- * Return output from helper script.
- * @todo Use poll(2) rather than select(2), if available.
- * @param argv		program and arguments to run
- * @param writePtr	bytes to feed to script on stdin (or NULL)
- * @param writeBytesLeft no. of bytes to feed to script on stdin
- * @param sb_stdout	StringBuf to store output of the script (or NULL)
- * @param failNonZero	is script failure an error?
- * @param buildRoot	buildRoot directory (or NULL)
- * @param dup		duplicate output to stream (or NULL)
- * @return		0 on success
- */
 static int getOutputFrom(ARGV_t argv,
 			 const char * writePtr, size_t writeBytesLeft,
 			 StringBuf sb_stdout,
@@ -565,16 +549,6 @@ static void exclFini(struct exclreg_s *excl)
     memset(excl, 0, sizeof(*excl));
 }
 
-/**
- * Run per-interpreter dependency helper.
- * @param fc		file classifier
- * @param ix		file index
- * @param nsdep		class name for interpreter (e.g. "perl")
- * @param depname	"provides" or "requires"
- * @param dsContext	RPMSENSE_FIND_PROVIDES or RPMSENSE_FIND_REQUIRES
- * @param tagN		RPMTAG_PROVIDENAME or RPMTAG_REQUIRENAME
- * @return		0 on success
- */
 static int rpmfcHelper(rpmfc fc, int ix, const struct exclreg_s *excl,
 		       rpmsenseFlags dsContext, rpmTagVal tagN,
 		       const char *namespace, const char *cmd)
@@ -1216,12 +1190,8 @@ exit:
     return rc;
 }
 
-/**
- */
 typedef struct DepMsg_s * DepMsg_t;
 
-/**
- */
 struct DepMsg_s {
     const char * msg;
     char * const argv[4];
@@ -1232,8 +1202,6 @@ struct DepMsg_s {
     int xormask;
 };
 
-/**
- */
 static struct DepMsg_s depMsgs[] = {
   { "Provides",		{ "%{?__find_provides}", NULL, NULL, NULL },
 	RPMTAG_PROVIDENAME, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS,
@@ -1291,8 +1259,6 @@ static struct DepMsg_s depMsgs[] = {
 
 static DepMsg_t DepMsgs = depMsgs;
 
-/**
- */
 static void printDeps(rpmfc fc)
 {
     DepMsg_t dm;
