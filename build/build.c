@@ -40,7 +40,7 @@ static rpmRC doRmSource(rpmSpec spec)
 	}
     }
 exit:
-    return !rc ? RPMRC_OK : RPMRC_FAIL;
+    return !rc ? 0 : 1;
 }
 
 /*
@@ -172,9 +172,25 @@ exit:
     return rc;
 }
 
-static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
+static rpmRC doCheckBuildRequires(rpmts ts, rpmSpec spec, int test)
 {
     rpmRC rc = RPMRC_OK;
+    rpmps ps = rpmSpecCheckDeps(ts, spec);
+
+    if (ps) {
+	rpmlog(RPMLOG_ERR, _("Failed build dependencies:\n"));
+	rpmpsPrint(NULL, ps);
+    }
+    if (ps != NULL)
+	rc = RPMRC_MISSINGBUILDREQUIRES;
+    rpmpsFree(ps);
+    return rc;
+}
+
+static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
+{
+    rpmRC rc = RPMRC_OK;
+    int missing_buildreqs = 0;
     int test = (what & RPMBUILD_NOBUILD);
     char *cookie = buildArgs->cookie ? xstrdup(buildArgs->cookie) : NULL;
 
@@ -204,7 +220,7 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 	/* packaging on the first run, and skip RMSOURCE altogether */
 	if (spec->BASpecs != NULL)
 	for (x = 0; x < spec->BACount; x++) {
-	    if ((rc = buildSpec(buildArgs, spec->BASpecs[x],
+	    if ((rc = buildSpec(ts, buildArgs, spec->BASpecs[x],
 				(what & ~RPMBUILD_RMSOURCE) |
 				(x ? 0 : (what & RPMBUILD_PACKAGESOURCE))))) {
 		goto exit;
@@ -212,6 +228,10 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 	}
     } else {
 	int didBuild = (what & (RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL));
+
+	if ((what & RPMBUILD_CHECKBUILDREQUIRES) &&
+	    (rc = doCheckBuildRequires(ts, spec, test)))
+		goto exit;
 
 	if ((what & RPMBUILD_PREP) &&
 	    (rc = doScript(spec, RPMBUILD_PREP, "%prep",
@@ -274,17 +294,23 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 exit:
     free(cookie);
     spec->rootDir = NULL;
-    if (rc != RPMRC_OK && rpmlogGetNrecs() > 0) {
+    if (rc != RPMRC_OK && rc != RPMRC_MISSINGBUILDREQUIRES &&
+	    rpmlogGetNrecs() > 0) {
 	rpmlog(RPMLOG_NOTICE, _("\n\nRPM build errors:\n"));
 	rpmlogPrint(NULL);
     }
     rpmugFree();
-
+    if (missing_buildreqs && !rc) {
+	rc = RPMRC_MISSINGBUILDREQUIRES;
+    }
+    if (rc == RPMRC_FAIL) {
+	rc = 1;
+    }
     return rc;
 }
 
 int rpmSpecBuild(rpmts ts, rpmSpec spec, BTA_t buildArgs)
 {
     /* buildSpec() can recurse with different buildAmount, pass it separately */
-    return buildSpec(buildArgs, spec, buildArgs->buildAmount);
+    return buildSpec(ts, buildArgs, spec, buildArgs->buildAmount);
 }

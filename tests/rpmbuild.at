@@ -334,7 +334,7 @@ runroot rpmbuild -bb --quiet \
 		--define "buildreqs foo > 1.2.3" \
 		/data/SPECS/deptest.spec
 ],
-[1],
+[11],
 [],
 [error: Failed build dependencies:
 	foo > 1.2.3 is needed by deptest-buildreq-1.0-1.noarch
