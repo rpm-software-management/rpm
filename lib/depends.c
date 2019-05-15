@@ -121,7 +121,8 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
 
     /* Filter out duplicate erasures. */
     if (packageHashGetEntry(tsmem->removedPackages, dboffset, &pp, NULL, NULL)) {
-	rpmteSetDependsOn(pp[0], depends);
+	if (depends)
+	    rpmteSetDependsOn(pp[0], depends);
 	return 0;
     }
 
