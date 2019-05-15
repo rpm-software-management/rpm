@@ -273,20 +273,6 @@ static struct poptOption optionsTable[] = {
    POPT_TABLEEND
 };
 
-static int checkSpec(rpmts ts, rpmSpec spec)
-{
-    int rc;
-    rpmps ps = rpmSpecCheckDeps(ts, spec);
-
-    if (ps) {
-	rpmlog(RPMLOG_ERR, _("Failed build dependencies:\n"));
-	rpmpsPrint(NULL, ps);
-    }
-    rc = (ps != NULL);
-    rpmpsFree(ps);
-    return rc;
-}
-
 static int isSpecFile(const char * specfile)
 {
     char buf[256];
@@ -423,7 +409,6 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     char * specFile = NULL;
     rpmSpec spec = NULL;
     int rc = 1; /* assume failure */
-    int justRm = ((buildAmount & ~(RPMBUILD_RMSOURCE|RPMBUILD_RMSPEC)) == 0);
     rpmSpecFlags specFlags = spec_flags;
 
     /* Override default BUILD value for _builddir */
@@ -509,12 +494,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	goto exit;
     }
 
-    /* Check build prerequisites if necessary, unless disabled */
-    if (!justRm && !noDeps && checkSpec(ts, spec)) {
-	goto exit;
-    }
-
-    if (rpmSpecBuild(ts, spec, ba)) {
+    if ((rc = rpmSpecBuild(ts, spec, ba))) {
 	goto exit;
     }
     
@@ -643,6 +623,9 @@ int main(int argc, char *argv[])
 	    break;
     case 'c':
 	ba->buildAmount |= RPMBUILD_BUILD;
+	if (!noDeps) {
+	    ba->buildAmount |= RPMBUILD_CHECKBUILDREQUIRES;
+	}
 	if ((buildChar == 'c') && shortCircuit)
 	    break;
     case 'p':
