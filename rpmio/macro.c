@@ -1599,7 +1599,6 @@ static int loadMacroFile(rpmMacroContext mc, const char * fn)
     size_t blen = MACROBUFSIZ;
     char *buf = xmalloc(blen);
     int rc = -1;
-    int ndefs = 0;
     int nfailed = 0;
 
     if (fd == NULL)
@@ -1615,14 +1614,12 @@ static int loadMacroFile(rpmMacroContext mc, const char * fn)
 	if (c != '%')
 		continue;
 	n++;	/* skip % */
-	ndefs++;
 	if (defineMacro(mc, n, RMIL_MACROFILES))
 	    nfailed++;
     }
     fclose(fd);
 
-    /* if all definitions fail then return an error, otherwise just warn */
-    rc = (nfailed && ndefs == nfailed);
+    rc = (nfailed > 0);
 
     if (nfailed) {
 	rpmlog(rc ? RPMLOG_ERR : RPMLOG_WARNING,
