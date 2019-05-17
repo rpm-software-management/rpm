@@ -52,31 +52,39 @@ int rstrncasecmp(const char *s1, const char *s2, size_t n)
   return (int)(c1 - c2);
 }
 
-/* 
- * Simple and stupid asprintf() clone.
- * FIXME: write to work with non-C99 vsnprintf or check for one in configure.
- */
-int rasprintf(char **strp, const char *fmt, ...)
+int rvasprintf(char **strp, const char *fmt, va_list ap)
 {
     int n;
-    va_list ap;
     char * p = NULL;
+    va_list aq;
   
     if (strp == NULL) 
 	return -1;
 
-    va_start(ap, fmt);
-    n = vsnprintf(NULL, 0, fmt, ap);
-    va_end(ap);
+    va_copy(aq, ap);
+    n = vsnprintf(NULL, 0, fmt, aq);
+    va_end(aq);
 
     if (n >= -1) {
 	size_t nb = n + 1;
 	p = xmalloc(nb);
-    	va_start(ap, fmt);
-        n = vsnprintf(p, nb, fmt, ap);
-    	va_end(ap);
+	va_copy(aq, ap);
+        n = vsnprintf(p, nb, fmt, aq);
+	va_end(aq);
     } 
     *strp = p;
+    return n;
+}
+
+int rasprintf(char **strp, const char *fmt, ...)
+{
+    int n;
+    va_list ap;
+
+    va_start(ap, fmt);
+    n = rvasprintf(strp, fmt, ap);
+    va_end(ap);
+
     return n;
 }
 
