@@ -305,7 +305,12 @@ static void mbErr(MacroBuf mb, int error, const char *fmt, ...)
     va_end(ap);
 
     if (n >= -1) {
-	rpmlog(error ? RPMLOG_ERR : RPMLOG_WARNING, "%s", emsg);
+	/* XXX should have an non-locking version for this */
+	char *pfx = rpmExpand("%{?__file_name:%{__file_name}: }",
+			      "%{?__file_lineno:line %{__file_lineno}: }",
+			      NULL);
+	rpmlog(error ? RPMLOG_ERR : RPMLOG_WARNING, "%s%s", pfx, emsg);
+	free(pfx);
     }
 
     if (error)
@@ -1602,31 +1607,37 @@ static int loadMacroFile(rpmMacroContext mc, const char * fn)
     char *buf = xmalloc(blen);
     int rc = -1;
     int nfailed = 0;
+    int lineno = 0;
+    int nlines = 0;
 
     if (fd == NULL)
 	goto exit;
 
-    buf[0] = '\0';
-    while (rdcl(buf, blen, fd) > 0) {
-	char c, *n;
+    pushMacro(mc, "__file_name", NULL, fn, RMIL_MACROFILES, ME_NONE);
 
+    buf[0] = '\0';
+    while ((nlines = rdcl(buf, blen, fd)) > 0) {
+	char c, *n;
+	char lnobuf[16];
+
+	lineno += nlines;
 	n = buf;
 	SKIPBLANK(n, c);
 
 	if (c != '%')
 		continue;
 	n++;	/* skip % */
+
+	snprintf(lnobuf, sizeof(lnobuf), "%d", lineno);
+	pushMacro(mc, "__file_lineno", NULL, lnobuf, RMIL_MACROFILES, ME_NONE);
 	if (defineMacro(mc, n, RMIL_MACROFILES))
 	    nfailed++;
+	popMacro(mc, "__file_lineno");
     }
     fclose(fd);
+    popMacro(mc, "__file_name");
 
     rc = (nfailed > 0);
-
-    if (nfailed) {
-	rpmlog(rc ? RPMLOG_ERR : RPMLOG_WARNING,
-		_("file %s: %d invalid macro definitions\n"), fn, nfailed);
-    }
 
 exit:
     _free(buf);
