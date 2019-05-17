@@ -141,6 +141,8 @@ static OFI_t * pushOFI(rpmSpec spec, const char *fn)
     ofi->readPtr = NULL;
     ofi->next = spec->fileStack;
 
+    rpmPushMacro(spec->macros, "__file_name", NULL, fn, RMIL_SPEC);
+
     spec->fileStack = ofi;
     return spec->fileStack;
 }
@@ -157,6 +159,7 @@ static OFI_t * popOFI(rpmSpec spec)
 	free(ofi->fileName);
 	free(ofi->readBuf);
 	free(ofi);
+	rpmPopMacro(spec->macros, "__file_name");
     }
     return spec->fileStack;
 }
@@ -189,12 +192,28 @@ static parsedSpecLine parseLineType(char *line)
     return NULL;
 }
 
+int specExpand(rpmSpec spec, int lineno, const char *sbuf,
+		char **obuf)
+{
+    char lnobuf[16];
+    int rc;
+
+    snprintf(lnobuf, sizeof(lnobuf), "%d", lineno);
+    rpmPushMacro(spec->macros, "__file_lineno", NULL, lnobuf, RMIL_SPEC);
+
+    rc = (rpmExpandMacros(spec->macros, sbuf, obuf, 0) < 0);
+
+    rpmPopMacro(spec->macros, "__file_lineno");
+
+    return rc;
+}
 
 static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
 {
     char *lbuf = NULL;
     int isComment = 0;
     parsedSpecLine condition;
+    OFI_t *ofi = spec->fileStack;
 
     lbuf = spec->lbuf;
     SKIPSPACE(lbuf);
@@ -215,11 +234,8 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
     if (!spec->readStack->reading)
 	return 0;
 
-    if (rpmExpandMacros(spec->macros, spec->lbuf, &lbuf, 0) < 0) {
-	rpmlog(RPMLOG_ERR, _("line %d: %s\n"),
-		spec->lineNum, spec->lbuf);
+    if (specExpand(spec, ofi->lineNum, spec->lbuf, &lbuf))
 	return 1;
-    }
 
     if (strip & STRIP_COMMENTS && isComment) {
 	char *bufA = spec->lbuf;

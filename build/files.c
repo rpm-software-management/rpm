@@ -2189,6 +2189,7 @@ static rpmRC readFilesManifest(rpmSpec spec, Package pkg, const char *path)
     rpmRC rc = RPMRC_FAIL;
     unsigned int nlines = 0;
     char *expanded;
+    int lineno = 0;
 
     if (*path == '/') {
 	fn = rpmGetPath(path, NULL);
@@ -2203,16 +2204,16 @@ static rpmRC readFilesManifest(rpmSpec spec, Package pkg, const char *path)
 	goto exit;
     }
 
+    rpmPushMacro(spec->macros, "__file_name", NULL, fn, RMIL_SPEC);
     /* XXX unmask %license while parsing files manifest*/
     rpmPushMacro(spec->macros, "license", NULL, "%%license", RMIL_SPEC);
 
     while (fgets(buf, sizeof(buf), fd)) {
+	lineno++;
 	if (handleComments(buf))
 	    continue;
-	if (rpmExpandMacros(spec->macros, buf, &expanded, 0) < 0) {
-	    rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
+	if (specExpand(spec, lineno, buf, &expanded))
 	    goto exit;
-	}
 	argvAdd(&(pkg->fileList), expanded);
 	free(expanded);
 	nlines++;
@@ -2234,7 +2235,10 @@ static rpmRC readFilesManifest(rpmSpec spec, Package pkg, const char *path)
 
 exit:
     rpmPopMacro(NULL, "license");
-    if (fd) fclose(fd);
+    if (fd) {
+	fclose(fd);
+	rpmPopMacro(spec->macros, "__file_name");
+    }
     free(fn);
     return rc;
 }
