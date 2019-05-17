@@ -530,6 +530,10 @@ rpmRC checkForEncoding(Header h, int addtag);
 RPM_GNUC_INTERNAL
 void copyInheritedTags(Header h, Header fromh);
 
+RPM_GNUC_INTERNAL
+int specExpand(rpmSpec spec, int lineno, const char *sbuf,
+		char **obuf);
+
 #ifdef __cplusplus
 }
 #endif

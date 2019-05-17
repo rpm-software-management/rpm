@@ -107,6 +107,7 @@ static rpmRC addFileToTag(rpmSpec spec, const char * file,
     char * fn;
     FILE * f;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
+    int lineno = 0;
 
     /* no script file is not an error */
     if (file == NULL)
@@ -130,12 +131,13 @@ static rpmRC addFileToTag(rpmSpec spec, const char * file,
 	}
     }
 
+    rpmPushMacro(spec->macros, "__file_name", NULL, fn, RMIL_SPEC);
+
     while (fgets(buf, sizeof(buf), f)) {
 	char *expanded;
-	if (rpmExpandMacros(spec->macros, buf, &expanded, 0) < 0) {
-	    rpmlog(RPMLOG_ERR, _("%s: line: %s\n"), fn, buf);
+	lineno++;
+	if (specExpand(spec, lineno, buf, &expanded))
 	    goto exit;
-	}
 	appendStringBuf(sb, expanded);
 	free(expanded);
     }
@@ -143,7 +145,10 @@ static rpmRC addFileToTag(rpmSpec spec, const char * file,
     rc = RPMRC_OK;
 
 exit:
-    if (f) fclose(f);
+    if (f) {
+	fclose(f);
+	rpmPopMacro(spec->macros, "__file_name");
+    }
     free(fn);
     freeStringBuf(sb);
 
