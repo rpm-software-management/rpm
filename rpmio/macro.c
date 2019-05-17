@@ -213,15 +213,16 @@ findEntry(rpmMacroContext mc, const char *name, size_t namelen, size_t *pos)
  * @param buf		input buffer
  * @param size		inbut buffer size (bytes)
  * @param f		file handle
- * @return		buffer, or NULL on end-of-file
+ * @return		number of lines read, or 0 on end-of-file
  */
-static char *
+static int
 rdcl(char * buf, size_t size, FILE *f)
 {
     char *q = buf - 1;		/* initialize just before buffer. */
     size_t nb = 0;
     size_t nread = 0;
     int pc = 0, bc = 0;
+    int nlines = 0;
     char *p = buf;
 
     if (f != NULL)
@@ -229,6 +230,7 @@ rdcl(char * buf, size_t size, FILE *f)
 	*(++q) = '\0';			/* terminate and move forward. */
 	if (fgets(q, size, f) == NULL)	/* read next line. */
 	    break;
+	nlines++;
 	nb = strlen(q);
 	nread += nb;			/* trim trailing \r and \n */
 	for (q += nb - 1; nb > 0 && iseol(*q); q--)
@@ -263,7 +265,7 @@ rdcl(char * buf, size_t size, FILE *f)
 	if (*q == '\r')			/* XXX avoid \r madness */
 	    *q = '\n';
     } while (size > 0);
-    return (nread > 0 ? buf : NULL);
+    return nlines;
 }
 
 /**
@@ -1605,7 +1607,7 @@ static int loadMacroFile(rpmMacroContext mc, const char * fn)
 	goto exit;
 
     buf[0] = '\0';
-    while (rdcl(buf, blen, fd) != NULL) {
+    while (rdcl(buf, blen, fd) > 0) {
 	char c, *n;
 
 	n = buf;
