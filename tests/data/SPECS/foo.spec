@@ -2,22 +2,22 @@ Summary: foo
 Name: foo
 Version: 1.0
 Release: 1
-Group: Utilities
+Source: hello-2.0.tar.gz
+Patch1: hello-1.0-modernize.patch
+Group: Testing
 License: GPLv2+
-Distribution: RPM test suite.
 BuildArch: noarch
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
 Simple rpm demonstration.
 
-%prep
+%package sub
+Summary: %{summary}
+Requires: %{name} = %{version}-%{release}
 
-%build
-
-%install
-
-%clean
-rm -rf $RPM_BUILD_ROOT
+%description sub
+%{summary}
 
 %files
+
+%files sub

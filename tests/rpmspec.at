@@ -228,3 +228,34 @@ runroot rpmspec --query \
 error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
 AT_CLEANUP
+
+AT_SETUP([rpmspec --parse])
+AT_KEYWORDS([rpmspec])
+AT_CHECK([runroot rpmspec --parse /data/SPECS/foo.spec],
+[0],
+[Summary: foo
+Name: foo
+Version: 1.0
+Release: 1
+Source: hello-2.0.tar.gz
+Patch1: hello-1.0-modernize.patch
+Group: Testing
+License: GPLv2+
+BuildArch: noarch
+
+%description
+Simple rpm demonstration.
+
+%package sub
+Summary: foo
+Requires: foo = 1.0-1
+
+%description sub
+foo
+
+%files
+
+%files sub
+],
+[])
+AT_CLEANUP

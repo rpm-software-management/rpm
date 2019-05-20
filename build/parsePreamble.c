@@ -1111,8 +1111,7 @@ static int findPreambleTag(rpmSpec spec,rpmTagVal * tag,
     }
 
     *tag = p->tag;
-    if (p->ismacro && macro)
-	*macro = p->token;
+    *macro = p->ismacro ? p->token : NULL;
     return 0;
 }
 
