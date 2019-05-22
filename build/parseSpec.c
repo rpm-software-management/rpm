@@ -479,8 +479,8 @@ retry:
 	    match = parseExpressionBoolean(s);
 	    if (match < 0) {
 		rpmlog(RPMLOG_ERR,
-			    _("%s:%d: bad %%if condition\n"),
-			      ofi->fileName, ofi->lineNum);
+			    _("%s:%d: bad %s condition: %s\n"),
+			    ofi->fileName, ofi->lineNum, lineType->text, s);
 		return PART_ERROR;
 	    }
 	}
