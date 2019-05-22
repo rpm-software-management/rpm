@@ -230,9 +230,15 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
 		condition->text, spec->lineNum, lbuf);
     }
 
+    /* Don't expand macros after %elif (resp. %elifarch, %elifos) in a false branch */
+    if (condition && (condition->id & LINE_ELIFANY)) {
+	if (!spec->readStack->readable)
+	    return 0;
     /* Don't expand macros (eg. %define) in false branch of %if clause */
-    if (!spec->readStack->reading)
-	return 0;
+    } else {
+	if (!spec->readStack->reading)
+	    return 0;
+    }
 
     if (specExpand(spec, ofi->lineNum, spec->lbuf, &lbuf))
 	return 1;
@@ -412,6 +418,7 @@ int readLine(rpmSpec spec, int strip)
     int startLine = 0;
     parsedSpecLine lineType;
     int prevType = spec->readStack->lastConditional->id;
+    int checkCondition;
 
     if (!restoreFirstChar(spec)) {
 retry:
@@ -463,19 +470,23 @@ retry:
 	return PART_ERROR;
     }
 
-    if (lineType->id == LINE_IFARCH) {
+    if (lineType->id & (LINE_IFARCH | LINE_ELIFARCH)) {
 	ARGMATCH(s, "%{_target_cpu}", match);
     } else if (lineType->id == LINE_IFNARCH) {
 	ARGMATCH(s, "%{_target_cpu}", match);
 	match = !match;
-    } else if (lineType->id == LINE_IFOS) {
+    } else if (lineType->id & (LINE_IFOS | LINE_ELIFOS)) {
 	ARGMATCH(s, "%{_target_os}", match);
     } else if (lineType->id == LINE_IFNOS) {
 	ARGMATCH(s, "%{_target_os}", match);
 	match = !match;
-    } else if (lineType->id == LINE_IF) {
-	s += 3;
-	if (spec->readStack->reading) {
+    } else if (lineType->id & (LINE_IF | LINE_ELIF)) {
+	s += lineType->textLen;
+	if (lineType->id == LINE_IF)
+	    checkCondition = spec->readStack->reading;
+	else
+	    checkCondition = spec->readStack->readable;
+	if (checkCondition) {
 	    match = parseExpressionBoolean(s);
 	    if (match < 0) {
 		rpmlog(RPMLOG_ERR,
@@ -487,7 +498,7 @@ retry:
     } else if (lineType->id == LINE_ELSE) {
 	spec->readStack->lastConditional = lineType;
 	spec->readStack->reading =
-	    spec->readStack->next->reading && ! spec->readStack->reading;
+	    spec->readStack->next->reading && spec->readStack->readable;
 	spec->line[0] = '\0';
     } else if (lineType->id == LINE_ENDIF) {
 	rl = spec->readStack;
@@ -517,13 +528,19 @@ retry:
 	goto retry;
     }
 
-    if (lineType->id & (LINE_IFANY)) {
+    if (lineType->id & LINE_IFANY) {
 	rl = xmalloc(sizeof(*rl));
 	rl->reading = spec->readStack->reading && match;
 	rl->next = spec->readStack;
 	rl->lineNum = ofi->lineNum;
+	rl->readable = (!rl->reading) && (spec->readStack->reading);
 	rl->lastConditional = lineType;
 	spec->readStack = rl;
+	spec->line[0] = '\0';
+    } else if (lineType->id & LINE_ELIFANY) {
+	spec->readStack->reading = spec->readStack->readable && match;
+	if (spec->readStack->reading)
+	    spec->readStack->readable = 0;
 	spec->line[0] = '\0';
     }
 

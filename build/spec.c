@@ -271,6 +271,7 @@ rpmSpec newSpec(void)
     spec->readStack->next = NULL;
     spec->readStack->reading = 1;
     spec->readStack->lastConditional = lineTypes;
+    spec->readStack->readable = 1;
 
     spec->rootDir = NULL;
     spec->prep = NULL;
