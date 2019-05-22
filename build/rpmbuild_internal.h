@@ -42,6 +42,9 @@ typedef enum rpmParseLineType_e {
     LINE_ELSE              = (1 << 5),
     LINE_ENDIF             = (1 << 6),
     LINE_INCLUDE           = (1 << 7),
+    LINE_ELIF              = (1 << 8),
+    LINE_ELIFARCH          = (1 << 9),
+    LINE_ELIFOS            = (1 << 10),
 } rpmParseLineType;
 
 typedef const struct parsedSpecLine_s {
@@ -62,14 +65,19 @@ static struct parsedSpecLine_s const lineTypes[] = {
     { LINE_IFOS,       LEN_AND_STR("%ifos")   , 1, 1, 0},
     { LINE_IFNOS,      LEN_AND_STR("%ifnos")  , 1, 1, 0},
     { LINE_INCLUDE,    LEN_AND_STR("%include"), 1, 0, 0},
+    { LINE_ELIFARCH,   LEN_AND_STR("%elifarch"), 1, 1, LINE_ENDIF | LINE_ELSE},
+    { LINE_ELIFOS,     LEN_AND_STR("%elifos"),  1, 1, LINE_ENDIF | LINE_ELSE},
+    { LINE_ELIF,       LEN_AND_STR("%elif")    ,1, 1, LINE_ENDIF | LINE_ELSE},
     { 0, 0, 0, 0, 0, 0 }
  };
 
 #define LINE_IFANY (LINE_IF | LINE_IFARCH | LINE_IFNARCH | LINE_IFOS | LINE_IFNOS)
+#define LINE_ELIFANY (LINE_ELIF | LINE_ELIFOS | LINE_ELIFARCH)
 
 typedef struct ReadLevelEntry {
     int reading;
     int lineNum;
+    int readable;
     parsedSpecLine lastConditional;
     struct ReadLevelEntry * next;
 } RLE_t;
