@@ -65,6 +65,7 @@ static struct parsedSpecLine_s const lineTypes[] = {
     { 0, 0, 0, 0, 0, 0 }
  };
 
+#define LINE_IFANY (LINE_IF | LINE_IFARCH | LINE_IFNARCH | LINE_IFOS | LINE_IFNOS)
 
 typedef struct ReadLevelEntry {
     int reading;

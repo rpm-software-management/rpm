@@ -405,7 +405,7 @@ do { \
 int readLine(rpmSpec spec, int strip)
 {
     char *s;
-    int match;
+    int match = 0;
     struct ReadLevelEntry *rl;
     OFI_t *ofi = spec->fileStack;
     int rc;
@@ -446,7 +446,6 @@ retry:
     s = spec->line;
     SKIPSPACE(s);
 
-    match = -1;
     lineType = parseLineType(s);
     if (!lineType)
 	goto after_classification;
@@ -518,8 +517,7 @@ retry:
 	goto retry;
     }
 
-after_classification:
-    if (match != -1) {
+    if (lineType->id & (LINE_IFANY)) {
 	rl = xmalloc(sizeof(*rl));
 	rl->reading = spec->readStack->reading && match;
 	rl->next = spec->readStack;
@@ -529,6 +527,7 @@ after_classification:
 	spec->line[0] = '\0';
     }
 
+after_classification:
     if (! spec->readStack->reading) {
 	spec->line[0] = '\0';
     }
