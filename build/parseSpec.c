@@ -463,9 +463,7 @@ retry:
 	return PART_ERROR;
     }
 
-    if (!spec->readStack->reading && (lineType->id == LINE_IF)) {
-	match = 0;
-    } else if (lineType->id == LINE_IFARCH) {
+    if (lineType->id == LINE_IFARCH) {
 	ARGMATCH(s, "%{_target_cpu}", match);
     } else if (lineType->id == LINE_IFNARCH) {
 	ARGMATCH(s, "%{_target_cpu}", match);
@@ -477,12 +475,14 @@ retry:
 	match = !match;
     } else if (lineType->id == LINE_IF) {
 	s += 3;
-        match = parseExpressionBoolean(s);
-	if (match < 0) {
-	    rpmlog(RPMLOG_ERR,
-			_("%s:%d: bad %%if condition\n"),
-			ofi->fileName, ofi->lineNum);
-	    return PART_ERROR;
+	if (spec->readStack->reading) {
+	    match = parseExpressionBoolean(s);
+	    if (match < 0) {
+		rpmlog(RPMLOG_ERR,
+			    _("%s:%d: bad %%if condition\n"),
+			      ofi->fileName, ofi->lineNum);
+		return PART_ERROR;
+	    }
 	}
     } else if (lineType->id == LINE_ELSE) {
 	spec->readStack->lastConditional = lineType;
