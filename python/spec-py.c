@@ -28,17 +28,9 @@
  *
  */
 
-/* Header objects are in another module, some hoop jumping required... */
 static PyObject *makeHeader(Header h)
 {
-    PyObject *rpmmod = PyImport_ImportModuleNoBlock("rpm");
-    if (rpmmod == NULL) return NULL;
-
-    PyObject *ptr = PyCapsule_New(h, "rpm._C_Header", NULL);
-    PyObject *hdr = PyObject_CallMethod(rpmmod, "hdr", "(O)", ptr);
-    Py_XDECREF(ptr);
-    Py_XDECREF(rpmmod);
-    return hdr;
+    return hdr_Wrap(&hdr_Type, headerLink(h));
 }
 
 struct specPkgObject_s {
