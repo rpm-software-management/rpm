@@ -419,6 +419,19 @@ static PyObject * hdr_iternext(hdrObject *s)
     return res;
 }
 
+PyObject * utf8FromString(const char *s)
+{
+/* In Python 3, we return all strings as surrogate-escaped utf-8 */
+#if PY_MAJOR_VERSION >= 3
+    if (s != NULL)
+	return PyUnicode_DecodeUTF8(s, strlen(s), "surrogateescape");
+#else
+    if (s != NULL)
+	return PyBytes_FromString(s);
+#endif
+    Py_RETURN_NONE;
+}
+
 int utf8FromPyObject(PyObject *item, PyObject **str)
 {
     PyObject *res = NULL;
