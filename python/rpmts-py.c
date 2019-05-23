@@ -367,6 +367,21 @@ rpmts_VerifyDB(rpmtsObject * s)
 }
 
 static PyObject *
+rpmts_dbCookie(rpmtsObject * s)
+{
+    PyObject *ret = NULL;
+    char *cookie = NULL;
+
+    Py_BEGIN_ALLOW_THREADS
+    cookie = rpmdbCookie(rpmtsGetRdb(s->ts));
+    Py_END_ALLOW_THREADS
+
+    ret = utf8FromString(cookie);
+    free(cookie);
+    return ret;
+}
+
+static PyObject *
 rpmts_HdrFromFdno(rpmtsObject * s, PyObject *arg)
 {
     PyObject *ho = NULL;
@@ -797,6 +812,9 @@ Remove all elements from the transaction set\n" },
  {"dbIndex",     (PyCFunction) rpmts_index,	METH_VARARGS|METH_KEYWORDS,
 "ts.dbIndex(TagN) -> ii\n\
 - Create a key iterator for the default transaction rpmdb.\n" },
+ {"dbCookie",	(PyCFunction) rpmts_dbCookie, 	METH_NOARGS,
+"dbCookie -> cookie\n\
+- Return a cookie string for determining if database has changed\n" },
     {NULL,		NULL}		/* sentinel */
 };
 
