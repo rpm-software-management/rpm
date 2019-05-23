@@ -2644,3 +2644,23 @@ int rpmdbCtrl(rpmdb db, rpmdbCtrlOp ctrl)
     return dbctrl ? dbCtrl(db, dbctrl) : 1;
 }
 
+char *rpmdbCookie(rpmdb db)
+{
+    void *cookie = NULL;
+    rpmdbIndexIterator ii = rpmdbIndexIteratorInit(db, RPMDBI_NAME);
+
+    if (ii) {
+	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	const void *key = 0;
+	size_t keylen = 0;
+	while ((rpmdbIndexIteratorNext(ii, &key, &keylen)) == 0) {
+	    const unsigned int *offsets = rpmdbIndexIteratorPkgOffsets(ii);
+	    unsigned int npkgs = rpmdbIndexIteratorNumPkgs(ii);
+	    rpmDigestUpdate(ctx, key, keylen);
+	    rpmDigestUpdate(ctx, offsets, sizeof(*offsets) * npkgs);
+	}
+	rpmDigestFinal(ctx, &cookie, NULL, 1);
+    }
+    rpmdbIndexIteratorFree(ii);
+    return cookie;
+}

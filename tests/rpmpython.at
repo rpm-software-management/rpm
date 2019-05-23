@@ -368,6 +368,75 @@ hi
 [])
 AT_CLEANUP
 
+AT_SETUP([database cookies])
+AT_KEYWORDS([python rpmdb])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+],
+[0],
+[],
+[])
+
+RPMPY_CHECK([
+ts = rpm.ts()
+ts.openDB()
+c1 = ts.dbCookie()
+ts.closeDB()
+ts.openDB()
+c2 = ts.dbCookie()
+myprint(c1 == c2 != None)
+open("dbcookie", "w+").write(c1)
+],
+[True
+],
+[])
+
+AT_CHECK([
+runroot rpm -i \
+  --justdb --nodeps --ignorearch --ignoreos \
+  /data/RPMS/foo-1.0-1.noarch.rpm \
+  /data/RPMS/hello-2.0-1.i686.rpm \
+],
+[0],
+[],
+[])
+
+RPMPY_CHECK([
+ts = rpm.ts()
+ts.openDB()
+c1 = ts.dbCookie()
+c2 = open("dbcookie", "r").read()
+myprint(c1 != c2)
+open("dbcookie", "w+").write(c1)
+],
+[True
+],
+[])
+
+AT_CHECK([
+runroot rpm -i \
+  --justdb --nodeps --ignorearch --ignoreos \
+  --define "_transaction_color 3" \
+  --define "_prefer_color 2" \
+  /data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[0],
+[],
+[])
+
+RPMPY_CHECK([
+ts = rpm.ts()
+ts.openDB()
+c1 = ts.dbCookie()
+c2 = open("dbcookie", "r").read()
+myprint(c1 != c2)
+],
+[True
+],
+[])
+AT_CLEANUP
+
 RPMPY_TEST([dependency sets 1],[
 ts = rpm.ts()
 h = ts.hdrFromFdno('${RPMDATA}/RPMS/hello-1.0-1.ppc64.rpm')
