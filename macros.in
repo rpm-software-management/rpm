@@ -808,7 +808,7 @@ package or when debugging this package.\
   PKG_CONFIG_PATH=\"${PKG_CONFIG_PATH}:%{_libdir}/pkgconfig:%{_datadir}/pkgconfig\"\
   export PKG_CONFIG_PATH\
   \
-  %{verbose:set -x}%{!verbose:exec > /dev/null}\
+  %{verbose:set -x}\
   umask 022\
   cd \"%{u2p:%{_builddir}}\"\
 

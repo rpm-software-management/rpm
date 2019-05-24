@@ -60,6 +60,7 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
     int argc = 0;
     const char **argv = NULL;
     FILE * fp = NULL;
+    FILE * cmdOut = rpmIsVerbose() ? stdout : NULL;
 
     FD_t fd = NULL;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
@@ -149,7 +150,8 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
     (void) poptParseArgvString(buildCmd, &argc, &argv);
 
     rpmlog(RPMLOG_NOTICE, _("Executing(%s): %s\n"), name, buildCmd);
-    if (rpmfcExec((ARGV_const_t)argv, NULL, sb_stdoutp, 1, spec->buildSubdir, stdout)) {
+    if (rpmfcExec((ARGV_const_t)argv, NULL, sb_stdoutp, 1,
+		  spec->buildSubdir, cmdOut)) {
 	rpmlog(RPMLOG_ERR, _("Exec of %s failed (%s): %s\n"),
 		scriptName, name, strerror(errno));
 	goto exit;
