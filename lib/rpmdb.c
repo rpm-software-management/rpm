@@ -1973,7 +1973,7 @@ unsigned int rpmdbIndexIteratorPkgOffset(rpmdbIndexIterator ii, unsigned int nr)
     return dbiIndexRecordOffset(ii->ii_set, nr);
 }
 
-unsigned int *rpmdbIndexIteratorPkgOffsets(rpmdbIndexIterator ii)
+const unsigned int *rpmdbIndexIteratorPkgOffsets(rpmdbIndexIterator ii)
 {
     int i;
 
