@@ -175,7 +175,7 @@ rpmdbMatchIterator rpmdbInitPrefixIterator(rpmdb db, rpmDbiTagVal rpmtag,
  * @return		db offsets of pkgs
  */
 RPM_GNUC_INTERNAL
-unsigned int *rpmdbIndexIteratorPkgOffsets(rpmdbIndexIterator ii);
+const unsigned int *rpmdbIndexIteratorPkgOffsets(rpmdbIndexIterator ii);
 
 /** \ingroup rpmdb
  * Return current index (position) in iterator.
