@@ -441,7 +441,7 @@ package or when debugging this package.\
 %_binaries_in_noarch_packages_terminate_build	1
 
 # Should invalid utf8 encoding in package metadata terminate a build?
-%_invalid_encoding_terminates_build 0
+%_invalid_encoding_terminates_build 1
 
 # Should invalid version format in requires, provides, ... terminate a build?
 %_wrong_version_format_terminate_build 1
