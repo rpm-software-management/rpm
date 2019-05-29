@@ -2,7 +2,21 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-DISTCHECK_CONFIGURE_FLAGS = --enable-python
+DISTCHECK_CONFIGURE_FLAGS = \
+	--enable-python \
+	--enable-lmdb \
+	--enable-bdb \
+	--enable-ndb \
+	--enable-zstd \
+	--with-cap \
+	--with-acl \
+	--with-archive \
+	--with-lua \
+	--with-audit \
+	--with-selinux \
+	--with-imaevm \
+	--with-crypto=openssl \
+	--disable-dependency-tracking
 
 include $(top_srcdir)/rpm.am
 AM_CFLAGS = @RPMCFLAGS@
