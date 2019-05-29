@@ -39,6 +39,7 @@ EXTRA_DIST += $(TESTSUITE_AT)
 
 ## testsuite data
 EXTRA_DIST += data/SPECS/attrtest.spec
+EXTRA_DIST += data/SPECS/buildrequires.spec
 EXTRA_DIST += data/SPECS/hello.spec
 EXTRA_DIST += data/SPECS/hello-auto.spec
 EXTRA_DIST += data/SPECS/hello-r2.spec
@@ -76,6 +77,7 @@ EXTRA_DIST += data/SPECS/test-subpackages.spec
 EXTRA_DIST += data/SPECS/test-subpackages-exclude.spec
 EXTRA_DIST += data/SPECS/test-subpackages-pathpostfixes.spec
 EXTRA_DIST += data/SPECS/vattrtest.spec
+EXTRA_DIST += data/SOURCES/buildrequires-1.0.tar.gz
 EXTRA_DIST += data/SOURCES/hello-1.0-modernize.patch
 EXTRA_DIST += data/SOURCES/hello-1.0-install.patch
 EXTRA_DIST += data/SOURCES/hello-1.0.tar.gz
