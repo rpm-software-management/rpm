@@ -82,6 +82,7 @@ EXTRA_DIST += data/SOURCES/hello-1.0-modernize.patch
 EXTRA_DIST += data/SOURCES/hello-1.0-install.patch
 EXTRA_DIST += data/SOURCES/hello-1.0.tar.gz
 EXTRA_DIST += data/SOURCES/hello-2.0.tar.gz
+EXTRA_DIST += data/RPMS/capstest-1.0-1.noarch.rpm
 EXTRA_DIST += data/RPMS/foo-1.0-1.noarch.rpm
 EXTRA_DIST += data/RPMS/hello-1.0-1.i386.rpm
 EXTRA_DIST += data/RPMS/hello-1.0-1.ppc64.rpm
