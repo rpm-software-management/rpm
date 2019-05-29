@@ -80,6 +80,11 @@ static rpmRC systemd_inhibit_init(rpmPlugin plugin, rpmts ts)
     return RPMRC_NOTFOUND;
 }
 
+static void systemd_inhibit_cleanup(rpmPlugin plugin)
+{
+    dbus_shutdown();
+}
+
 static rpmRC systemd_inhibit_tsm_pre(rpmPlugin plugin, rpmts ts)
 {
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_BUILD_PROBS))
@@ -106,6 +111,7 @@ static rpmRC systemd_inhibit_tsm_post(rpmPlugin plugin, rpmts ts, int res)
 
 struct rpmPluginHooks_s systemd_inhibit_hooks = {
     .init = systemd_inhibit_init,
+    .cleanup = systemd_inhibit_cleanup,
     .tsm_pre = systemd_inhibit_tsm_pre,
     .tsm_post = systemd_inhibit_tsm_post,
 };
