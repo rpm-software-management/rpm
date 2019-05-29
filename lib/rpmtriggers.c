@@ -154,6 +154,7 @@ void rpmtriggersPrepPostUnTransFileTrigs(rpmts ts, rpmte te)
 	}
     }
     rpmdbFreeIterator(mi);
+    rpmfilesFree(files);
 }
 
 int runPostUnTransFileTrigs(rpmts ts)
