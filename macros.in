@@ -335,16 +335,16 @@ package or when debugging this package.\
 
 #	A colon separated list of desired locales to be installed;
 #	"all" means install all locale specific files.
-#	
+#
 %_install_langs	all
 
 #	The value of CLASSPATH in build scriptlets (iff configured).
-#	
+#
 #%_javaclasspath	all
 
 #	Import packaging conventions from jpackage.org (prefixed with _
 #	to avoid name collisions).
-#	
+#
 %_javadir      %{_datadir}/java
 %_javadocdir   %{_datadir}/javadoc
 
@@ -577,17 +577,17 @@ package or when debugging this package.\
 #%__find_conflicts	???
 #%__find_obsoletes	???
 
-# 
-# Path to file attribute classifications for automatic dependency 
+#
+# Path to file attribute classifications for automatic dependency
 # extraction, used when _use_internal_dependency_generator
 # is used (on by default). Files can have any number of attributes
 # attached to them, and dependencies are separately extracted for
 # each attribute.
-# 
+#
 # To define a new file attribute called "myattr", add a file named
 # "myattr" to this directory, defining the requires and/or provides
 # finder script(s) + magic and/or path pattern regex(es).
-# provides finder and 
+# provides finder and
 # %__myattr_requires	path + args to requires finder script for <myattr>
 # %__myattr_provides	path + args to provides finder script for <myattr>
 # %__myattr_magic	libmagic classification match regex
@@ -1273,12 +1273,27 @@ end}
 # -S<scm name>	Sets the used patch application style, eg '-S git' enables
 #           	usage of git repository and per-patch commits.
 # -N		Disable automatic patch application
-# -p<num>	Use -p<num> for patch application	
+# -p<num>	Use -p<num> for patch application
 %autosetup(a:b:cDn:TvNS:p:)\
 %setup %{-a} %{-b} %{-c} %{-D} %{-n} %{-T} %{!-v:-q}\
 %{-S:%global __scm %{-S*}}\
 %{expand:%__scm_setup_%{__scm} %{!-v:-q}}\
 %{!-N:%autopatch %{-v} %{-p:-p%{-p*}}}
+
+# Macro to remove or replace tilde from version.
+# -v<version> Sets the version to be used for replacement. Default is %version.
+%version_notilde(v:) %{lua:
+    local sep = rpm.expand('%1')
+    local ver = rpm.expand('%{!-v:%{version}}%{-v:%{-v*}}')
+\
+    if sep == '%1' then
+        sep = ''
+    end
+\
+    ver = ver:gsub('~', sep)
+\
+    print(ver)
+}
 
 # \endverbatim
 #*/
