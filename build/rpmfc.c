@@ -446,14 +446,13 @@ int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
 		       failnonzero, buildRoot, dup);
     if (ec) {
 	sb = freeStringBuf(sb);
+	goto exit;
     }
 
     if (sb_stdoutp != NULL) {
 	*sb_stdoutp = sb;
 	sb = NULL;	/* XXX don't free */
     }
-
-    ec = 0;
 
 exit:
     freeStringBuf(sb);
