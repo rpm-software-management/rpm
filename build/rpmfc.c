@@ -382,7 +382,7 @@ static int getOutputFrom(ARGV_t argv,
         (unsigned)child, (unsigned)reaped, status);
 
     if (failNonZero && (!WIFEXITED(status) || WEXITSTATUS(status))) {
-	rpmlog(RPMLOG_ERR, _("%s failed: %x\n"), argv[0], status);
+	rpmlog(RPMLOG_DEBUG, _("%s failed: %x\n"), argv[0], status);
 	goto exit;
     }
     if (writeBytesLeft || myerrno) {
