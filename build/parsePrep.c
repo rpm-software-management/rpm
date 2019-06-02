@@ -212,11 +212,11 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 
 exit:
     free(tar);
-    return rstrcat(&buf,
-		"\nSTATUS=$?\n"
-		"if [ $STATUS -ne 0 ]; then\n"
-		"  exit $STATUS\n"
-		"fi");
+    return buf ? rstrcat(&buf,
+		    "\nSTATUS=$?\n"
+		    "if [ $STATUS -ne 0 ]; then\n"
+		    "  exit $STATUS\n"
+		    "fi") : NULL;
 }
 
 /**
@@ -493,7 +493,7 @@ int parsePrep(rpmSpec spec)
 
     if (spec->prep != NULL) {
 	rpmlog(RPMLOG_ERR, _("line %d: second %%prep\n"), spec->lineNum);
-	return PART_ERROR;
+	goto exit;
     }
 
     spec->prep = newStringBuf();
@@ -512,6 +512,7 @@ int parsePrep(rpmSpec spec)
 	    appendStringBuf(spec->prep, *lines);
 	}
 	if (rc != RPMRC_OK && !(spec->flags & RPMSPEC_FORCE)) {
+	    res = PART_ERROR;
 	    goto exit;
 	}
     }
