@@ -157,8 +157,8 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
     rpmlog(RPMLOG_NOTICE, _("Executing(%s): %s\n"), name, buildCmd);
     if (rpmfcExec((ARGV_const_t)argv, NULL, sb_stdoutp, 1,
 		  spec->buildSubdir, cmdOut)) {
-	rpmlog(RPMLOG_ERR, _("Exec of %s failed (%s): %s\n"),
-		scriptName, name, strerror(errno));
+	rpmlog(RPMLOG_ERR, _("Bad exit status from %s (%s)\n"),
+		scriptName, name);
 	goto exit;
     }
     rc = RPMRC_OK;
