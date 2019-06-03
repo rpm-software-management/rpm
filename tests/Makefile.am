@@ -167,8 +167,7 @@ check-local:
 endif !HAVE_FAKECHROOT
 
 installcheck-local: $(check_DATA) populate_testing
-	$(SHELL) '$(TESTSUITE)' AUTOTEST_PATH='$(bindir)' \
-	$(TESTSUITEFLAGS) ||:
+	$(SHELL) '$(TESTSUITE)' AUTOTEST_PATH='$(bindir)' $(TESTSUITEFLAGS)
 
 clean-local:
 	test ! -f '$(TESTSUITE)' || $(SHELL) '$(TESTSUITE)' --clean
