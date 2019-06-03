@@ -4,6 +4,7 @@ AT_BANNER([RPM scriptlets])
 
 AT_SETUP([basic script failures 1])
 AT_KEYWORDS([script])
+AT_SKIP_IF([$LUA_DISABLED])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
