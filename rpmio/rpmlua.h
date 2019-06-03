@@ -1,7 +1,9 @@
 #ifndef RPMLUA_H
 #define RPMLUA_H
 
+#ifdef WITH_LUA
 #include <lauxlib.h>
+#endif
 
 typedef enum rpmluavType_e {
     RPMLUAV_NIL		= 0,
@@ -20,7 +22,10 @@ extern "C" {
 rpmlua rpmluaNew(void);
 rpmlua rpmluaFree(rpmlua lua);
 rpmlua rpmluaGetGlobalState(void);
+
+#ifdef WITH_LUA
 void rpmluaRegister(rpmlua lua, const luaL_Reg *funcs, const char *lib);
+#endif
 
 int rpmluaCheckScript(rpmlua lua, const char *script,
 		      const char *name);
