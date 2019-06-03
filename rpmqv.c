@@ -10,10 +10,6 @@
 
 #include "debug.h"
 
-#if defined(IAM_RPMQ) || defined(IAM_RPMV)
-#define IAM_RPMQV
-#endif
-
 enum modes {
 
     MODE_QUERY		= (1 <<  0),
@@ -35,30 +31,21 @@ static int quiet;
 /* the structure describing the options we take and the defaults */
 static struct poptOption optionsTable[] = {
 
-#ifdef	IAM_RPMQV
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
         N_("Query/Verify package selection options:"),
         NULL },
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVFilePoptTable, 0,
         N_("Query/Verify file selection options:"),
         NULL },
-#endif
-#ifdef IAM_RPMQ
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQueryPoptTable, 0,
 	N_("Query options (with -q or --query):"),
 	NULL },
-#endif
-#ifdef IAM_RPMV
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmVerifyPoptTable, 0,
 	N_("Verify options (with -V or --verify):"),
 	NULL },
-#endif
-
-#ifdef	IAM_RPMEIU
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmInstallPoptTable, 0,
 	N_("Install/Upgrade/Erase options:"),
 	NULL },
-#endif	/* IAM_RPMEIU */
 
  { "quiet", '\0', POPT_ARGFLAG_DOC_HIDDEN, &quiet, 0, NULL, NULL},
 
@@ -75,32 +62,20 @@ int main(int argc, char *argv[])
 {
     rpmts ts = NULL;
     enum modes bigMode = MODE_UNKNOWN;
-
-#if defined(IAM_RPMQV)
     QVA_t qva = &rpmQVKArgs;
-#endif
-
-#ifdef	IAM_RPMEIU
-   struct rpmInstallArguments_s * ia = &rpmIArgs;
-#endif
-
+    struct rpmInstallArguments_s * ia = &rpmIArgs;
     poptContext optCon;
     int ec = 0;
-#ifdef	IAM_RPMEIU
     int i;
-#endif
 
     xsetprogname(argv[0]); /* Portability call -- see system.h */
 
     optCon = rpmcliInit(argc, argv, optionsTable);
 
     /* Set the major mode based on argv[0] */
-#ifdef	IAM_RPMQV
     if (rstreq(xgetprogname(), "rpmquery"))	bigMode = MODE_QUERY;
     if (rstreq(xgetprogname(), "rpmverify")) bigMode = MODE_VERIFY;
-#endif
 
-#if defined(IAM_RPMQV)
     /* Jumpstart option from argv[0] if necessary. */
     switch (bigMode) {
     case MODE_QUERY:	qva->qva_mode = 'q';	break;
@@ -111,9 +86,7 @@ int main(int argc, char *argv[])
     default:
 	break;
     }
-#endif
 
-#ifdef	IAM_RPMQV
   if (bigMode == MODE_UNKNOWN || (bigMode & MODES_QV)) {
     switch (qva->qva_mode) {
     case 'q':	bigMode = MODE_QUERY;		break;
@@ -134,9 +107,7 @@ int main(int argc, char *argv[])
     if (qva->qva_source != RPMQV_PACKAGE && (bigMode & ~MODES_QV)) 
 	argerror(_("unexpected query source"));
   }
-#endif	/* IAM_RPMQV */
 
-#ifdef	IAM_RPMEIU
   if (bigMode == MODE_UNKNOWN || (bigMode & MODES_IE))
     {	int iflags = (ia->installInterfaceFlags &
 			(INSTALL_UPGRADE|INSTALL_FRESHEN|
@@ -150,9 +121,7 @@ int main(int argc, char *argv[])
 	else if (eflags)
 	    bigMode = MODE_ERASE;
     }
-#endif	/* IAM_RPMEIU */
 
-#if defined(IAM_RPMEIU)
     if (!( bigMode == MODE_INSTALL ) &&
 (ia->probFilter & (RPMPROB_FILTER_REPLACEPKG | RPMPROB_FILTER_OLDPACKAGE)))
 	argerror(_("only installation and upgrading may be forced"));
@@ -238,7 +207,6 @@ int main(int argc, char *argv[])
     if ((ia->transFlags & RPMTRANS_FLAG_TEST) && (bigMode & ~MODES_FOR_TEST))
 	argerror(_("--test may only be specified during package installation "
 		 "and erasure"));
-#endif	/* IAM_RPMEIU */
 
     if (rpmcliRootDir && rpmcliRootDir[0] != '/') {
 	argerror(_("arguments to --root (-r) must begin with a /"));
@@ -253,7 +221,6 @@ int main(int argc, char *argv[])
     ts = rpmtsCreate();
     (void) rpmtsSetRootDir(ts, rpmcliRootDir);
     switch (bigMode) {
-#ifdef	IAM_RPMEIU
     case MODE_ERASE:
 	if (ia->noDeps) ia->installInterfaceFlags |= UNINSTALL_NODEPS;
 
@@ -299,9 +266,6 @@ int main(int argc, char *argv[])
 	}
 	break;
 
-#endif	/* IAM_RPMEIU */
-
-#ifdef	IAM_RPMQV
     case MODE_QUERY:
 	if (!poptPeekArg(optCon) && !(qva->qva_source == RPMQV_ALL))
 	    argerror(_("no arguments given for query"));
@@ -321,16 +285,7 @@ int main(int argc, char *argv[])
 	    argerror(_("no arguments given for verify"));
 	ec = rpmcliVerify(ts, qva, (ARGV_const_t) poptGetArgs(optCon));
     }	break;
-#endif	/* IAM_RPMQV */
 
-#if !defined(IAM_RPMQV)
-    case MODE_QUERY:
-    case MODE_VERIFY:
-#endif
-#if !defined(IAM_RPMEIU)
-    case MODE_INSTALL:
-    case MODE_ERASE:
-#endif
     case MODE_UNKNOWN:
 	if (poptPeekArg(optCon) != NULL || argc <= 1) {
 	    printUsage(optCon, stderr, 0);
@@ -343,17 +298,13 @@ int main(int argc, char *argv[])
     if (finishPipe())
 	ec = EXIT_FAILURE;
 
-#ifdef	IAM_RPMQV
     free(qva->qva_queryFormat);
-#endif
 
-#ifdef	IAM_RPMEIU
     if (ia->relocations != NULL) {
 	for (i = 0; i < ia->numRelocations; i++)
 	    free(ia->relocations[i].oldPath);
 	free(ia->relocations);
     }
-#endif
 
     rpmcliFini(optCon);
 
