@@ -8,8 +8,6 @@
  *
  */
 
-#include <popt.h>
-
 #include <rpm/rpmio.h>
 #include <rpm/header.h>
 #include <rpm/rpmtag.h>
