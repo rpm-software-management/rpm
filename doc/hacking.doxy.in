@@ -757,7 +757,7 @@ INPUT                  = @top_srcdir@/doc/hacking/Doxyheader.h \
                          @top_srcdir@/config.h \
                          @top_srcdir@/debug.h \
                          @top_srcdir@/macros \
-                         @top_srcdir@/rpmqv.c \
+                         @top_srcdir@/rpm.c \
                          @top_srcdir@/rpmpopt-@VERSION@ \
                          @top_srcdir@/rpmrc \
                          @top_srcdir@/rpm2cpio.c \
