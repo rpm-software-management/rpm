@@ -38,6 +38,7 @@ AT_CLEANUP
 
 AT_SETUP([rpmbuild -ba autosetup])
 AT_KEYWORDS([build])
+AT_SKIP_IF([$LUA_DISABLED])
 AT_CHECK([
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
