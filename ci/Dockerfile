@@ -1,7 +1,7 @@
 FROM fedora
 MAINTAINER Igor Gnatenko <i.gnatenko.brain@gmail.com>
 
-WORKDIR /opt/rpm
+WORKDIR /srv/rpm
 COPY . .
 
 RUN echo -e "deltarpm=0\ninstall_weak_deps=0\ntsflags=nodocs" >> /etc/dnf/dnf.conf
@@ -12,8 +12,10 @@ RUN dnf -y install \
   automake \
   libtool \
   gettext-devel \
+  doxygen \
   make \
   gcc \
+  git-core \
   zlib-devel \
   bzip2-devel \
   xz-devel \
@@ -27,7 +29,7 @@ RUN dnf -y install \
   libdb-devel \
   lmdb-devel \
   libselinux-devel \
-  ima-evm-utils \
+  ima-evm-utils-devel \
   libcap-devel \
   libacl-devel \
   audit-libs-devel \
@@ -54,4 +56,4 @@ RUN ./configure \
   --enable-silent-rules
 RUN make
 
-CMD make check; rc=$?; cat tests/rpmtests.log; exit $rc
+CMD make distcheck; rc=$?; find . -name rpmtests.log|xargs cat; exit $rc
