@@ -1,7 +1,7 @@
 AC_PREREQ(2.61)
 AC_INIT(rpm, 4.14.90, rpm-maint@lists.rpm.org)
 
-AC_CONFIG_SRCDIR([rpmqv.c])
+AC_CONFIG_SRCDIR([rpm.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 

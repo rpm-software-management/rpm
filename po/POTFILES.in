@@ -5,7 +5,7 @@ rpm2cpio.c
 rpmbuild.c
 rpmdb.c
 rpmkeys.c
-rpmqv.c
+rpm.c
 rpmsign.c
 rpmspec.c
 build/build.c
