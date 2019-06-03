@@ -135,9 +135,11 @@ atlocal:	atlocal.in Makefile
 DISTCLEANFILES = atlocal
 EXTRA_DIST += atlocal.in
 
+KILLAGENT = gpgconf --kill gpg-agent
+
 # The chmod is needed when copying from read-only sources (eg in distcheck)
 populate_testing:
-	HOME=$(abs_builddir)/testing gpg-connect-agent --no-autostart killagent bye ||:
+	HOME=$(abs_builddir)/testing $(KILLAGENT) ||:
 	rm -rf testing
 	mkdir -p testing/$(bindir)
 	ln -s ./$(bindir) testing/bin
@@ -160,6 +162,7 @@ check_DATA = atconfig atlocal $(TESTSUITE)
 if HAVE_FAKECHROOT
 check-local: $(check_DATA) populate_testing
 	$(SHELL) '$(TESTSUITE)' $(TESTSUITEFLAGS)
+	HOME=$(abs_builddir)/testing $(KILLAGENT) ||:
 else
 check-local:
 	echo "you need to have fakechroot installed"
@@ -168,6 +171,7 @@ endif !HAVE_FAKECHROOT
 
 installcheck-local: $(check_DATA) populate_testing
 	$(SHELL) '$(TESTSUITE)' AUTOTEST_PATH='$(bindir)' $(TESTSUITEFLAGS)
+	HOME=$(abs_builddir)/testing $(KILLAGENT) ||:
 
 clean-local:
 	test ! -f '$(TESTSUITE)' || $(SHELL) '$(TESTSUITE)' --clean
