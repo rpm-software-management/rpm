@@ -121,10 +121,12 @@ atlocal:	atlocal.in Makefile
 DISTCLEANFILES = atlocal
 EXTRA_DIST += atlocal.in
 
+KILLAGENT = gpgconf --kill gpg-agent
+
 # Hack: Abusing testing$(bindir)/rpmbuild as stamp file
 # The chmod is needed when copying from read-only sources (eg in distcheck)
 testing$(bindir)/rpmbuild: ../rpmbuild
-	HOME=$(abs_builddir)/testing gpg-connect-agent --no-autostart killagent bye ||:
+	HOME=$(abs_builddir)/testing $(KILLAGENT) ||:
 	rm -rf testing
 	mkdir -p testing/$(bindir)
 	ln -s ./$(bindir) testing/bin
@@ -148,6 +150,7 @@ check_DATA += testing$(bindir)/rpmbuild
 if HAVE_FAKECHROOT
 check-local: $(check_DATA)
 	$(SHELL) '$(TESTSUITE)' $(TESTSUITEFLAGS)
+	HOME=$(abs_builddir)/testing $(KILLAGENT) ||:
 else
 check-local:
 	echo "you need to have fakechroot installed"
@@ -156,6 +159,7 @@ endif !HAVE_FAKECHROOT
 
 installcheck-local: $(check_DATA)
 	$(SHELL) '$(TESTSUITE)' AUTOTEST_PATH='$(bindir)' $(TESTSUITEFLAGS)
+	HOME=$(abs_builddir)/testing $(KILLAGENT) ||:
 
 clean-local:
 	test ! -f '$(TESTSUITE)' || $(SHELL) '$(TESTSUITE)' --clean
