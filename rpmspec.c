@@ -17,7 +17,6 @@ enum modes {
 
 static int mode = MODE_UNKNOWN;
 static int source = RPMQV_SPECRPMS;
-const char *target = NULL;
 char *queryformat = NULL;
 
 static struct poptOption specOptsTable[] = {
@@ -65,12 +64,6 @@ int main(int argc, char *argv[])
 
     if (rpmcliPipeOutput && initPipe())
 	exit(EXIT_FAILURE);
-
-    if (target) {
-	rpmFreeMacros(NULL);
-	rpmFreeRpmrc();
-	rpmReadConfigFiles(rpmcliRcfile, target);
-    }
 	
     ts = rpmtsCreate();
     switch (mode) {
