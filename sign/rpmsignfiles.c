@@ -50,7 +50,7 @@ const char *key, char *keypass, uint32_t *siglenp)
     signature[0] = '\x03';
 
     /* calculate file signature */
-    siglen = sign_hash(algo, digest, diglen, key, keypass, signature+1);
+    siglen = sign_hash(algo, fdigest, diglen, key, keypass, signature+1);
     if (siglen < 0) {
 	rpmlog(RPMLOG_ERR, _("sign_hash failed\n"));
 	return NULL;
