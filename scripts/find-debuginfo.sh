@@ -213,7 +213,7 @@ if test -n "$build_id_seed" -a "$no_recompute_build_id" = "true"; then
   exit 2
 fi
 
-if ("$strip_g" = "true") && ("$strip_glibs" = "true"); then
+if [ "$strip_g" = "true" -a "$strip_glibs" = "true" ]; then
   echo >&2 "*** ERROR: -g  and --g-libs cannot be used together"
   exit 2
 fi
