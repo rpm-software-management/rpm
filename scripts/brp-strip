@@ -5,6 +5,7 @@ if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
 fi
 
 STRIP=${1:-strip}
+NCPUS=${RPM_BUILD_NCPUS:-1}
 
 case `uname -a` in
 Darwin*) exit 0 ;;
@@ -12,9 +13,5 @@ Darwin*) exit 0 ;;
 esac
 
 # Strip ELF binaries
-for f in `find "$RPM_BUILD_ROOT" -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 \) -exec file {} \; | \
-        grep -v "^${RPM_BUILD_ROOT}/\?usr/lib/debug"  | \
-	grep -v ' shared object,' | \
-	sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped.*/\1/p'`; do
-	$STRIP -g "$f" || :
-done
+find "$RPM_BUILD_ROOT" -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 \) \! -regex "${RPM_BUILD_ROOT}/*usr/lib/debug.*" -print0 | \
+    xargs -0 -r -P$NCPUS -n32 sh -c "file \"\$@\" | grep -v ' shared object,' | sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped.*/\1/p' | xargs -I\{\} $STRIP -g \{\}" ARG0
