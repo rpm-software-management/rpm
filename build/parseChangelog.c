@@ -44,7 +44,8 @@ static int dateToTimet(const char * datestr, time_t * secs, int * date_words)
     struct tm time, ntime;
     const char * const * idx;
     char *p, *pe, *q, *date, *tz;
-    char tz_name[10];               /* name of timezone (if extended format is used) */
+    char *tz_name = NULL;               /* name of timezone (if extended format is used) */
+    int tz_len;
 
     static const char * const days[] =
 	{ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", NULL };
@@ -130,10 +131,10 @@ static int dateToTimet(const char * datestr, time_t * secs, int * date_words)
 	SKIPNONSPACE(pe);
 	if (*pe != '\0')
 	   *pe++ = '\0';
-	if (((int)(pe-p) + 1) > 9 )
-	   goto exit;
-	strncpy(tz_name, p, (int)(pe-p));
-	tz_name[(int)(pe-p)] = '\0';
+	tz_len = pe - p;
+	tz_name = xmalloc(tz_len + 1);
+	strncpy(tz_name, p, tz_len);
+	tz_name[tz_len] = '\0';
 
 	/* first part of year entry */
 	p = pe;
@@ -185,6 +186,7 @@ static int dateToTimet(const char * datestr, time_t * secs, int * date_words)
     rc = 0;
 
 exit:
+    free(tz_name);
     free(date);
     return rc;
 }
