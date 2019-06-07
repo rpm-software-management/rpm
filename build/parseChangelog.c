@@ -314,6 +314,7 @@ int parseChangelog(rpmSpec spec)
 	goto exit;
 
     if (sb && addChangelog(spec->packages->header, sb)) {
+	res = PART_ERROR;
 	goto exit;
     }
 
