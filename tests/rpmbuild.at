@@ -1448,9 +1448,9 @@ run rpmbuild \
 [11],
 [],
 [error: Failed build dependencies:
-	(bar = 3.4 or bar = 3.5) is needed by buildrequires-1.0-1.x86_64
-	foo > 1.3 is needed by buildrequires-1.0-1.x86_64
-	foo-bar = 2.0 is needed by buildrequires-1.0-1.x86_64
+	(bar = 3.4 or bar = 3.5) is needed by buildrequires-1.0-1.noarch
+	foo > 1.3 is needed by buildrequires-1.0-1.noarch
+	foo-bar = 2.0 is needed by buildrequires-1.0-1.noarch
 ],
 )
 AT_CLEANUP
@@ -1471,9 +1471,9 @@ run rpmbuild \
 [11],
 [],
 [error: Failed build dependencies:
-	(bar = 3.4 or bar = 3.5) is needed by buildrequires-1.0-1.x86_64
-	foo > 1.3 is needed by buildrequires-1.0-1.x86_64
-	foo-bar = 2.0 is needed by buildrequires-1.0-1.x86_64
+	(bar = 3.4 or bar = 3.5) is needed by buildrequires-1.0-1.noarch
+	foo > 1.3 is needed by buildrequires-1.0-1.noarch
+	foo-bar = 2.0 is needed by buildrequires-1.0-1.noarch
 ],
 )
 AT_CLEANUP

@@ -7,6 +7,7 @@ License: GPL
 Distribution: RPM test suite.
 Source0: buildrequires-1.0.tar.gz
 Prefix: /usr
+BuildArch: noarch
 
 %description
 Simple build requires demonstration.
@@ -19,12 +20,14 @@ echo foo-bar = 2.0
 cat buildrequires.txt
 
 %build
-make
 
 %install
-rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/usr/local/bin
-make DESTDIR=$RPM_BUILD_ROOT install
+cat < EOF >> $RPM_BUILD_ROOT/usr/local/bin/hello
+#!/bin/sh
+echo hello
+EOF
+chmod a+x $RPM_BUILD_ROOT/usr/local/bin/hello
 
 %clean
 rm -rf $RPM_BUILD_ROOT
