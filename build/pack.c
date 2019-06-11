@@ -113,6 +113,8 @@ static rpmRC addFileToTag(rpmSpec spec, const char * file,
     if (file == NULL)
 	return RPMRC_OK;
 
+    #pragma omp critical
+    {
     fn = rpmGetPath("%{_builddir}/%{?buildsubdir:%{buildsubdir}/}", file, NULL);
 
     f = fopen(fn, "r");
@@ -151,6 +153,7 @@ exit:
     }
     free(fn);
     freeStringBuf(sb);
+    } /* omp critical */
 
     return rc;
 }
