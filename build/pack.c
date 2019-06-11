@@ -713,6 +713,7 @@ static rpmRC packageBinary(rpmSpec spec, Package pkg, const char *cookie, int ch
     }
 
     /* Copy changelog from src rpm */
+    #pragma omp critical
     headerCopyTags(spec->sourcePackage->header, pkg->header, copyTags);
 
     headerPutString(pkg->header, RPMTAG_RPMVERSION, VERSION);
