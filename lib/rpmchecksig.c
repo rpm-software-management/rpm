@@ -267,8 +267,9 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd, const char * fn)
     int rc = 1; /* assume failure */
     if (ts && qva && fd && fn) {
 	rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+	rpmVSFlags vsflags = rpmtsVfyFlags(ts);
 	int vfylevel = rpmtsVfyLevel(ts);
-	rc = rpmpkgVerifySigs(keyring, vfylevel, qva->qva_flags, fd, fn);
+	rc = rpmpkgVerifySigs(keyring, vfylevel, vsflags, fd, fn);
     	rpmKeyringFree(keyring);
     }
     return rc;
