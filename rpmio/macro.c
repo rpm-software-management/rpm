@@ -45,6 +45,11 @@ enum macroFlags_e {
     ME_USED	= (1 << 1),
 };
 
+enum checkConditionType {
+    CHK_NONE		= 0,
+    CHK_BASIC		= (1 << 0),
+};
+
 /*! The structure used to store a macro. */
 struct rpmMacroEntry_s {
     struct rpmMacroEntry_s *prev;/*!< Macro entry stack. */
@@ -65,7 +70,6 @@ struct rpmMacroContext_s {
     pthread_mutex_t lock;
     pthread_mutexattr_t lockattr;
 };
-
 
 static struct rpmMacroContext_s rpmGlobalMacroContext_s;
 rpmMacroContext rpmGlobalMacroContext = &rpmGlobalMacroContext_s;
@@ -122,7 +126,7 @@ static int print_macro_trace = _PRINT_MACRO_TRACE;
 #define	_PRINT_EXPAND_TRACE	0
 static int print_expand_trace = _PRINT_EXPAND_TRACE;
 
-typedef void (*macroFunc)(MacroBuf mb, int chkexist, int negate,
+typedef void (*macroFunc)(MacroBuf mb, int chktype, int negate,
 			const char * f, size_t fn, const char * g, size_t gn);
 typedef const char *(*parseFunc)(MacroBuf mb, const char * se, size_t slen);
 
@@ -132,15 +136,15 @@ static void pushMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level, int flags);
 static void popMacro(rpmMacroContext mc, const char * n);
 static int loadMacroFile(rpmMacroContext mc, const char * fn);
-static void doFoo(MacroBuf mb, int chkexist, int negate,
+static void doFoo(MacroBuf mb, int chktype, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
-static void doLoad(MacroBuf mb, int chkexist, int negate,
+static void doLoad(MacroBuf mb, int chktype, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
-static void doLua(MacroBuf mb, int chkexist, int negate,
+static void doLua(MacroBuf mb, int chktype, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
-static void doOutput(MacroBuf mb, int chkexist, int negate,
+static void doOutput(MacroBuf mb, int chktype, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
-static void doTrace(MacroBuf mb, int chkexist, int negate,
+static void doTrace(MacroBuf mb, int chktype, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
 
 static const char * doDef(MacroBuf mb, const char * se, size_t slen);
@@ -972,7 +976,7 @@ exit:
     return cont;
 }
 
-static void doOutput(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn, const char * g, size_t gn)
+static void doOutput(MacroBuf mb, int chktype, int negate, const char * f, size_t fn, const char * g, size_t gn)
 {
     char *buf = NULL;
     int loglevel = RPMLOG_NOTICE; /* assume echo */
@@ -990,7 +994,7 @@ static void doOutput(MacroBuf mb, int chkexist, int negate, const char * f, size
     _free(buf);
 }
 
-static void doLua(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn, const char * g, size_t gn)
+static void doLua(MacroBuf mb, int chktype, int negate, const char * f, size_t fn, const char * g, size_t gn)
 {
 #ifdef WITH_LUA
     rpmlua lua = NULL; /* Global state. */
@@ -1024,7 +1028,7 @@ static void doLua(MacroBuf mb, int chkexist, int negate, const char * f, size_t 
 /**
  * Execute macro primitives.
  * @param mb		macro expansion state
- * @param chkexist	unused
+ * @param chktype	unused
  * @param negate	should logic be inverted?
  * @param f		beginning of field f
  * @param fn		length of field f
@@ -1032,7 +1036,7 @@ static void doLua(MacroBuf mb, int chkexist, int negate, const char * f, size_t 
  * @param gn		length of field g
  */
 static void
-doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
+doFoo(MacroBuf mb, int chktype, int negate, const char * f, size_t fn,
 		const char * g, size_t gn)
 {
     char *buf = NULL;
@@ -1171,20 +1175,21 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
     free(buf);
 }
 
-static void doLoad(MacroBuf mb, int chkexist, int negate,
+static void doLoad(MacroBuf mb, int chktype, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn)
 {
     char *arg = NULL;
     if (g && gn > 0 && expandThis(mb, g, gn, &arg) == 0) {
 	/* Print failure iff %{load:...} or %{!?load:...} */
-	if (loadMacroFile(mb->mc, arg) && chkexist == negate) {
+	if (loadMacroFile(mb->mc, arg) &&
+	    (((chktype == CHK_NONE) && !negate) || ((chktype == CHK_BASIC) && negate))) {
 	    mbErr(mb, 1, _("failed to load macro file %s"), arg);
 	}
     }
     free(arg);
 }
 
-static void doTrace(MacroBuf mb, int chkexist, int negate,
+static void doTrace(MacroBuf mb, int chktype, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn)
 {
     mb->expand_trace = mb->macro_trace = (negate ? 0 : mb->depth);
@@ -1194,15 +1199,15 @@ static void doTrace(MacroBuf mb, int chkexist, int negate,
     }
 }
 
-static const char *setNegateAndCheck(const char *str, int *pnegate, int *pchkexist) {
+static const char *setNegateAndCheck(const char *str, int *pnegate, int *pchktype) {
 
     *pnegate = 0;
-    *pchkexist = 0;
+    *pchktype = CHK_NONE;
     while ((*str == '?') || (*str == '!')) {
 	if (*str == '!')
 	    *pnegate = !*pnegate;
 	else
-	    (*pchkexist)++;
+	    *pchktype = CHK_BASIC;
 	str++;
     }
     return str;
@@ -1227,7 +1232,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     int c;
     int negate;
     const char * lastc;
-    int chkexist;
+    int chktype;
     char *source = NULL;
     int store_macro_trace;
     int store_expand_trace;
@@ -1291,7 +1296,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	lastc = NULL;
 	switch ((c = *s)) {
 	default:		/* %name substitution */
-	    s = setNegateAndCheck(s, &negate, &chkexist);
+	    s = setNegateAndCheck(s, &negate, &chktype);
 	    f = se = s;
 	    if (*se == '-')
 		se++;
@@ -1337,7 +1342,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    }
 	    f = s+1;/* skip { */
 	    se++;	/* skip } */
-	    f = setNegateAndCheck(f, &negate, &chkexist);
+	    f = setNegateAndCheck(f, &negate, &chktype);
 	    for (fe = f; (c = *fe) && !strchr(" :}", c);)
 		fe++;
 	    switch (c) {
@@ -1377,7 +1382,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    if (builtin->parse) {
 		s = builtin->parse(mb, se, slen - (se - s));
 	    } else {
-		builtin->func(mb, chkexist, negate, f, fn, g, gn);
+		builtin->func(mb, chktype, negate, f, fn, g, gn);
 		s = se;
 	    }
 	    continue;
@@ -1416,7 +1421,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	}
 
 	/* XXX Special processing for macro existence */
-	if (chkexist) {
+	if (chktype == CHK_BASIC) {
 	    if ((me == NULL && !negate) ||	/* Without -f, skip %{?f...} */
 		    (me != NULL && negate)) {	/* With -f, skip %{!?f...} */
 		s = se;
