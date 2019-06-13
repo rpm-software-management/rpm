@@ -251,10 +251,7 @@ static Header headerCreate(void *blob, int32_t indexLen)
     }
     h->instance = 0;
     h->sorted = HEADERSORT_NONE;
-
-    h->index = (h->indexAlloced
-	? xcalloc(h->indexAlloced, sizeof(*h->index))
-	: NULL);
+    h->index = xcalloc(h->indexAlloced, sizeof(*h->index));
 
     h->nrefs = 0;
     return headerLink(h);
