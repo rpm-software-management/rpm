@@ -816,7 +816,7 @@ package or when debugging this package.\
 #%___build_body		%{nil}
 %___build_post	\
   RPM_EC=$?\
-  for pid in $(jobs -p); do kill -9 ${pid}; done\
+  for pid in $(jobs -p); do kill -9 ${pid} || continue; done\
   exit ${RPM_EC}\
 %{nil}
 
