@@ -296,6 +296,8 @@ add_minidebug()
   xz "$mini_debuginfo"
   mini_debuginfo="${mini_debuginfo}.xz"
   objcopy --add-section .gnu_debugdata="$mini_debuginfo" "$binary"
+  # Compress any annobin notes in the original binary.
+  objcopy --merge-notes "$binary"
   rm -f "$dynsyms" "$funcsyms" "$keep_symbols" "$mini_debuginfo"
 }
 
