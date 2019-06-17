@@ -401,13 +401,18 @@ dwarf2_write_be32 (unsigned char *p, uint32_t v)
    relend). Might just update the addend. So relocations need to be
    updated at the end.  */
 
+static bool rel_updated;
+
 #define do_write_32_relocated(ptr,val) ({ \
   if (relptr && relptr < relend && relptr->ptr == ptr)	\
     {							\
       if (reltype == SHT_REL)				\
 	do_write_32 (ptr, val - relptr->addend);	\
       else						\
-	relptr->addend = val;				\
+	{						\
+	  relptr->addend = val;				\
+	  rel_updated = true;				\
+	}						\
     }							\
   else							\
     do_write_32 (ptr,val);				\
@@ -418,14 +423,18 @@ dwarf2_write_be32 (unsigned char *p, uint32_t v)
   ptr += 4;			       \
 })
 
-static struct
+typedef struct debug_section
   {
     const char *name;
     unsigned char *data;
     Elf_Data *elf_data;
     size_t size;
     int sec, relsec;
-  } debug_sections[] =
+    REL *relbuf;
+    REL *relend;
+  } debug_section;
+
+static debug_section debug_sections[] =
   {
 #define DEBUG_INFO	0
 #define DEBUG_ABBREV	1
@@ -457,6 +466,201 @@ static struct
     { ".debug_gdb_scripts", NULL, NULL, 0, 0, 0 },
     { NULL, NULL, NULL, 0, 0, 0 }
   };
+
+static int
+rel_cmp (const void *a, const void *b)
+{
+  REL *rela = (REL *) a, *relb = (REL *) b;
+
+  if (rela->ptr < relb->ptr)
+    return -1;
+
+  if (rela->ptr > relb->ptr)
+    return 1;
+
+  return 0;
+}
+
+/* Returns a malloced REL array, or NULL when there are no relocations
+   for this section.  When there are relocations, will setup relend,
+   as the last REL, and reltype, as SHT_REL or SHT_RELA.  */
+static void
+setup_relbuf (DSO *dso, debug_section *sec, int *reltype)
+{
+  int ndx, maxndx;
+  GElf_Rel rel;
+  GElf_Rela rela;
+  GElf_Sym sym;
+  GElf_Addr base = dso->shdr[sec->sec].sh_addr;
+  Elf_Data *symdata = NULL;
+  int rtype;
+  REL *relbuf;
+  Elf_Scn *scn;
+  Elf_Data *data;
+  int i = sec->relsec;
+
+  /* No relocations, or did we do this already? */
+  if (i == 0 || sec->relbuf != NULL)
+    {
+      relptr = sec->relbuf;
+      relend = sec->relend;
+      return;
+    }
+
+  scn = dso->scn[i];
+  data = elf_getdata (scn, NULL);
+  assert (data != NULL && data->d_buf != NULL);
+  assert (elf_getdata (scn, data) == NULL);
+  assert (data->d_off == 0);
+  assert (data->d_size == dso->shdr[i].sh_size);
+  maxndx = dso->shdr[i].sh_size / dso->shdr[i].sh_entsize;
+  relbuf = malloc (maxndx * sizeof (REL));
+  *reltype = dso->shdr[i].sh_type;
+  if (relbuf == NULL)
+    error (1, errno, "%s: Could not allocate memory", dso->filename);
+
+  symdata = elf_getdata (dso->scn[dso->shdr[i].sh_link], NULL);
+  assert (symdata != NULL && symdata->d_buf != NULL);
+  assert (elf_getdata (dso->scn[dso->shdr[i].sh_link], symdata) == NULL);
+  assert (symdata->d_off == 0);
+  assert (symdata->d_size == dso->shdr[dso->shdr[i].sh_link].sh_size);
+
+  for (ndx = 0, relend = relbuf; ndx < maxndx; ++ndx)
+    {
+      if (dso->shdr[i].sh_type == SHT_REL)
+	{
+	  gelf_getrel (data, ndx, &rel);
+	  rela.r_offset = rel.r_offset;
+	  rela.r_info = rel.r_info;
+	  rela.r_addend = 0;
+	}
+      else
+	gelf_getrela (data, ndx, &rela);
+      gelf_getsym (symdata, ELF64_R_SYM (rela.r_info), &sym);
+      /* Relocations against section symbols are uninteresting in REL.  */
+      if (dso->shdr[i].sh_type == SHT_REL && sym.st_value == 0)
+	continue;
+      /* Only consider relocations against .debug_str, .debug_line
+	 and .debug_abbrev.  */
+      if (sym.st_shndx != debug_sections[DEBUG_STR].sec
+	  && sym.st_shndx != debug_sections[DEBUG_LINE].sec
+	  && sym.st_shndx != debug_sections[DEBUG_ABBREV].sec)
+	continue;
+      rela.r_addend += sym.st_value;
+      rtype = ELF64_R_TYPE (rela.r_info);
+      switch (dso->ehdr.e_machine)
+	{
+	case EM_SPARC:
+	case EM_SPARC32PLUS:
+	case EM_SPARCV9:
+	  if (rtype != R_SPARC_32 && rtype != R_SPARC_UA32)
+	    goto fail;
+	  break;
+	case EM_386:
+	  if (rtype != R_386_32)
+	    goto fail;
+	  break;
+	case EM_PPC:
+	case EM_PPC64:
+	  if (rtype != R_PPC_ADDR32 && rtype != R_PPC_UADDR32)
+	    goto fail;
+	  break;
+	case EM_S390:
+	  if (rtype != R_390_32)
+	    goto fail;
+	  break;
+	case EM_IA_64:
+	  if (rtype != R_IA64_SECREL32LSB)
+	    goto fail;
+	  break;
+	case EM_X86_64:
+	  if (rtype != R_X86_64_32)
+	    goto fail;
+	  break;
+	case EM_ALPHA:
+	  if (rtype != R_ALPHA_REFLONG)
+	    goto fail;
+	  break;
+#if defined(EM_AARCH64) && defined(R_AARCH64_ABS32)
+	case EM_AARCH64:
+	  if (rtype != R_AARCH64_ABS32)
+	    goto fail;
+	  break;
+#endif
+	case EM_68K:
+	  if (rtype != R_68K_32)
+	    goto fail;
+	  break;
+#if defined(EM_RISCV) && defined(R_RISCV_32)
+	case EM_RISCV:
+	  if (rtype != R_RISCV_32)
+	    goto fail;
+	  break;
+#endif
+	default:
+	fail:
+	  error (1, 0, "%s: Unhandled relocation %d in %s section",
+		 dso->filename, rtype, sec->name);
+	}
+      relend->ptr = sec->data
+	+ (rela.r_offset - base);
+      relend->addend = rela.r_addend;
+      relend->ndx = ndx;
+      ++(relend);
+    }
+  if (relbuf == relend)
+    {
+      free (relbuf);
+      relbuf = NULL;
+      relend = NULL;
+    }
+  else
+    qsort (relbuf, relend - relbuf, sizeof (REL), rel_cmp);
+
+  sec->relbuf = relbuf;
+  sec->relend = relend;
+  relptr = relbuf;
+}
+
+/* Updates SHT_RELA section associated with the given section based on
+   the relbuf data. The relbuf data is freed at the end.  */
+static void
+update_rela_data (DSO *dso, struct debug_section *sec)
+{
+  Elf_Data *symdata;
+  int relsec_ndx = sec->relsec;
+  Elf_Data *data = elf_getdata (dso->scn[relsec_ndx], NULL);
+  symdata = elf_getdata (dso->scn[dso->shdr[relsec_ndx].sh_link],
+			 NULL);
+
+  relptr = sec->relbuf;
+  relend = sec->relend;
+  while (relptr < relend)
+    {
+      GElf_Sym sym;
+      GElf_Rela rela;
+      int ndx = relptr->ndx;
+
+      if (gelf_getrela (data, ndx, &rela) == NULL)
+	error (1, 0, "Couldn't get relocation: %s",
+	       elf_errmsg (-1));
+
+      if (gelf_getsym (symdata, GELF_R_SYM (rela.r_info),
+		       &sym) == NULL)
+	error (1, 0, "Couldn't get symbol: %s", elf_errmsg (-1));
+
+      rela.r_addend = relptr->addend - sym.st_value;
+
+      if (gelf_update_rela (data, ndx, &rela) == 0)
+	error (1, 0, "Couldn't update relocations: %s",
+	       elf_errmsg (-1));
+
+      ++relptr;
+    }
+  elf_flagdata (data, ELF_C_SET, ELF_F_DIRTY);
+
+  free (sec->relbuf);
+}
 
 struct abbrev_attr
   {
@@ -1744,20 +1948,6 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 }
 
 static int
-rel_cmp (const void *a, const void *b)
-{
-  REL *rela = (REL *) a, *relb = (REL *) b;
-
-  if (rela->ptr < relb->ptr)
-    return -1;
-
-  if (rela->ptr > relb->ptr)
-    return 1;
-
-  return 0;
-}
-
-static int
 line_rel_cmp (const void *a, const void *b)
 {
   LINE_REL *rela = (LINE_REL *) a, *relb = (LINE_REL *) b;
@@ -1871,132 +2061,7 @@ edit_dwarf2 (DSO *dso)
       htab_t abbrev;
       struct abbrev_tag tag, *t;
       int phase;
-      REL *relbuf = NULL;
-
-      if (debug_sections[DEBUG_INFO].relsec)
-	{
-	  int ndx, maxndx;
-	  GElf_Rel rel;
-	  GElf_Rela rela;
-	  GElf_Sym sym;
-	  GElf_Addr base = dso->shdr[debug_sections[DEBUG_INFO].sec].sh_addr;
-	  Elf_Data *symdata = NULL;
-	  int rtype;
-
-	  i = debug_sections[DEBUG_INFO].relsec;
-	  scn = dso->scn[i];
-	  data = elf_getdata (scn, NULL);
-	  assert (data != NULL && data->d_buf != NULL);
-	  assert (elf_getdata (scn, data) == NULL);
-	  assert (data->d_off == 0);
-	  assert (data->d_size == dso->shdr[i].sh_size);
-	  maxndx = dso->shdr[i].sh_size / dso->shdr[i].sh_entsize;
-	  relbuf = malloc (maxndx * sizeof (REL));
-	  reltype = dso->shdr[i].sh_type;
-	  if (relbuf == NULL)
-	    error (1, errno, "%s: Could not allocate memory", dso->filename);
-
-	  symdata = elf_getdata (dso->scn[dso->shdr[i].sh_link], NULL);
-	  assert (symdata != NULL && symdata->d_buf != NULL);
-	  assert (elf_getdata (dso->scn[dso->shdr[i].sh_link], symdata)
-		  == NULL);
-	  assert (symdata->d_off == 0);
-	  assert (symdata->d_size
-		  == dso->shdr[dso->shdr[i].sh_link].sh_size);
-
-	  for (ndx = 0, relend = relbuf; ndx < maxndx; ++ndx)
-	    {
-	      if (dso->shdr[i].sh_type == SHT_REL)
-		{
-		  gelf_getrel (data, ndx, &rel);
-		  rela.r_offset = rel.r_offset;
-		  rela.r_info = rel.r_info;
-		  rela.r_addend = 0;
-		}
-	      else
-		gelf_getrela (data, ndx, &rela);
-	      gelf_getsym (symdata, ELF64_R_SYM (rela.r_info), &sym);
-	      /* Relocations against section symbols are uninteresting
-		 in REL.  */
-	      if (dso->shdr[i].sh_type == SHT_REL && sym.st_value == 0)
-		continue;
-	      /* Only consider relocations against .debug_str, .debug_line
-		 and .debug_abbrev.  */
-	      if (sym.st_shndx != debug_sections[DEBUG_STR].sec
-		  && sym.st_shndx != debug_sections[DEBUG_LINE].sec
-		  && sym.st_shndx != debug_sections[DEBUG_ABBREV].sec)
-		continue;
-	      rela.r_addend += sym.st_value;
-	      rtype = ELF64_R_TYPE (rela.r_info);
-	      switch (dso->ehdr.e_machine)
-		{
-		case EM_SPARC:
-		case EM_SPARC32PLUS:
-		case EM_SPARCV9:
-		  if (rtype != R_SPARC_32 && rtype != R_SPARC_UA32)
-		    goto fail;
-		  break;
-		case EM_386:
-		  if (rtype != R_386_32)
-		    goto fail;
-		  break;
-		case EM_PPC:
-		case EM_PPC64:
-		  if (rtype != R_PPC_ADDR32 && rtype != R_PPC_UADDR32)
-		    goto fail;
-		  break;
-		case EM_S390:
-		  if (rtype != R_390_32)
-		    goto fail;
-		  break;
-		case EM_IA_64:
-		  if (rtype != R_IA64_SECREL32LSB)
-		    goto fail;
-		  break;
-		case EM_X86_64:
-		  if (rtype != R_X86_64_32)
-		    goto fail;
-		  break;
-		case EM_ALPHA:
-		  if (rtype != R_ALPHA_REFLONG)
-		    goto fail;
-		  break;
-#if defined(EM_AARCH64) && defined(R_AARCH64_ABS32)
-		case EM_AARCH64:
-		  if (rtype != R_AARCH64_ABS32)
-		    goto fail;
-		  break;
-#endif
-		case EM_68K:
-		  if (rtype != R_68K_32)
-		    goto fail;
-		  break;
-#if defined(EM_RISCV) && defined(R_RISCV_32)
-		case EM_RISCV:
-		  if (rtype != R_RISCV_32)
-		    goto fail;
-		  break;
-#endif
-		default:
-		fail:
-		  error (1, 0, "%s: Unhandled relocation %d in .debug_info section",
-			 dso->filename, rtype);
-		}
-	      relend->ptr = debug_sections[DEBUG_INFO].data
-			    + (rela.r_offset - base);
-	      relend->addend = rela.r_addend;
-	      relend->ndx = ndx;
-	      ++relend;
-	    }
-	  if (relbuf == relend)
-	    {
-	      free (relbuf);
-	      relbuf = NULL;
-	      relend = NULL;
-	    }
-	  else
-	    qsort (relbuf, relend - relbuf, sizeof (REL), rel_cmp);
-	}
+      bool info_rel_updated = false;
 
       for (phase = 0; phase < 2; phase++)
 	{
@@ -2008,7 +2073,8 @@ edit_dwarf2 (DSO *dso)
 	    break;
 
 	  ptr = debug_sections[DEBUG_INFO].data;
-	  relptr = relbuf;
+	  setup_relbuf(dso, &debug_sections[DEBUG_INFO], &reltype);
+	  rel_updated = false;
 	  endsec = ptr + debug_sections[DEBUG_INFO].size;
 	  while (ptr < endsec)
 	    {
@@ -2095,6 +2161,10 @@ edit_dwarf2 (DSO *dso)
 
 	      htab_delete (abbrev);
 	    }
+
+	  /* Remember whether any .debug_info relocations might need
+	     to be updated. */
+	  info_rel_updated = rel_updated;
 
 	  /* We might have to recalculate/rewrite the debug_line
 	     section.  We need to do that before going into phase one
@@ -2240,41 +2310,8 @@ edit_dwarf2 (DSO *dso)
 	dirty_section (DEBUG_INFO);
 
       /* Update any debug_info relocations addends we might have touched. */
-      if (relbuf != NULL && reltype == SHT_RELA)
-	{
-	  Elf_Data *symdata;
-          int relsec_ndx = debug_sections[DEBUG_INFO].relsec;
-          data = elf_getdata (dso->scn[relsec_ndx], NULL);
-	  symdata = elf_getdata (dso->scn[dso->shdr[relsec_ndx].sh_link],
-				 NULL);
-
-	  relptr = relbuf;
-	  while (relptr < relend)
-	    {
-	      GElf_Sym sym;
-	      GElf_Rela rela;
-	      int ndx = relptr->ndx;
-
-	      if (gelf_getrela (data, ndx, &rela) == NULL)
-		error (1, 0, "Couldn't get relocation: %s",
-		       elf_errmsg (-1));
-
-	      if (gelf_getsym (symdata, GELF_R_SYM (rela.r_info),
-			       &sym) == NULL)
-		error (1, 0, "Couldn't get symbol: %s", elf_errmsg (-1));
-
-	      rela.r_addend = relptr->addend - sym.st_value;
-
-	      if (gelf_update_rela (data, ndx, &rela) == 0)
-		error (1, 0, "Couldn't update relocations: %s",
-		       elf_errmsg (-1));
-
-	      ++relptr;
-	    }
-	  elf_flagdata (data, ELF_C_SET, ELF_F_DIRTY);
-	}
-
-      free (relbuf);
+      if (info_rel_updated)
+	update_rela_data (dso, &debug_sections[DEBUG_INFO]);
     }
 
   return 0;
