@@ -35,4 +35,7 @@ RPMPY_CHECK([$2], [$3], [$4])
 AT_CLEANUP
 ])
 
+# Enable colored test output if available
+m4_ifdef([AT_COLOR_TESTS], [AT_COLOR_TESTS])
+
 AT_INIT
