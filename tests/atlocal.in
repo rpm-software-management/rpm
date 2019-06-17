@@ -1,6 +1,6 @@
 LD_LIBRARY_PATH="${abs_builddir}/testing@usrlibdir@"
 export LD_LIBRARY_PATH
-PATH="${abs_builddir}/testing@rpmbindir@:${abs_builddir}/testing@usrbindir@:$PATH"
+PATH="${abs_builddir}/testing@rpmbindir@:${abs_builddir}/testing@usrbindir@:${abs_builddir}/testing@usrlibexecdir@:$PATH"
 export PATH
 
 PYTHON=@PYTHON@

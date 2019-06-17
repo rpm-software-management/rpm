@@ -1,0 +1,322 @@
+# debugedit.at: Tests for the debugedit tool
+#
+# Copyright (C) 2019 Mark J. Wielaard <mark@klomp.org>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see see <http://www.gnu.org/licenses/>.
+
+# Tests for the tools/debugedit program.
+AT_BANNER([RPM debugedit])
+
+# Show which debugedit binary we are testing.
+AT_TESTED([debugedit])
+
+# Helper to create some test binaries.
+m4_define([RPM_DEBUGEDIT_SETUP],[[
+# Create some test binaries. Create and build them in different subdirs
+# to make sure they produce different relative/absolute paths.
+
+mkdir subdir_foo
+cp "${abs_srcdir}"/data/SOURCES/foo.c subdir_foo
+mkdir subdir_bar
+cp "${abs_srcdir}"/data/SOURCES/bar.c subdir_bar
+mkdir subdir_headers
+cp "${abs_srcdir}"/data/SOURCES/foobar.h subdir_headers
+cp "${abs_srcdir}"/data/SOURCES/baz.c .
+
+# First three object files (foo.o subdir_bar/bar.o and baz.o)
+gcc -g -Isubdir_headers -c subdir_foo/foo.c
+cd subdir_bar
+gcc -g -I../subdir_headers -c bar.c
+cd ..
+gcc -g -I$(pwd)/subdir_headers -c $(pwd)/baz.c
+
+# Then a partially linked object file (somewhat like a kernel module).
+# This will still have relocations between the debug sections.
+ld -r -o foobarbaz.part.o foo.o subdir_bar/bar.o baz.o
+
+# Create an executable. Relocations between debug sections will
+# have been resolved.
+gcc -g -o foobarbaz.exe foo.o subdir_bar/bar.o baz.o
+]])
+
+# ===
+# Check debugedit --help doesn't crash and burn.
+# ===
+AT_SETUP([debugedit help])
+AT_KEYWORDS([debuginfo] [debugedit])
+AT_CHECK([debugedit --help],[0],[ignore],[ignore])
+AT_CLEANUP
+
+# ===
+# Make sure that an executable still runs after debugedit munged it.
+# ===
+AT_SETUP([debugedit executable])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP
+
+AT_CHECK([[./foobarbaz.exe]])
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.exe]])
+AT_CHECK([[./foobarbaz.exe]])
+
+AT_CLEANUP
+
+# ===
+# debugedit should at least replace the .debug_str directory paths
+# in the objects.
+# ===
+AT_SETUP([debugedit .debug_str objects])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP
+
+# Capture strings that start with the testdir (pwd) directory path
+# (and replace that textually with /foo/bar/baz)
+readelf -p.debug_str foo.o subdir_bar/bar.o baz.o | cut -c13- \
+        | grep ^$(pwd) | sort \
+        | sed -e "s@$(pwd)@/foo/bar/baz@" > expout
+
+# Make sure there is at least some output
+expout_lines=$(wc --lines expout | cut -f1 -d\ )
+if test $expout_lines -lt 3; then
+  echo "Expecting at least 3 debug strings starting with ${testdir}" >> expout
+fi
+
+# Check the replaced strings are all there.
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foo.o]])
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./subdir_bar/bar.o]])
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./baz.o]])
+AT_CHECK([[
+readelf -p.debug_str foo.o subdir_bar/bar.o baz.o | cut -c13- \
+        | grep ^/foo/bar/baz | sort
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# debugedit should at least replace the .debug_str directory paths
+# also in partially linked files.
+# ===
+AT_SETUP([debugedit .debug_str partial])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP
+
+# Capture strings that start with the testdir (pwd) directory path
+# (and replace that textually with /foo/bar/baz)
+# Note that partially linked files, might have multiple duplicate
+# strings, but debugedit will merge them. So use sort -u.
+readelf -p.debug_str ./foobarbaz.part.o | cut -c13- \
+        | grep ^$(pwd) | sort -u \
+        | sed -e "s@$(pwd)@/foo/bar/baz@" > expout
+
+# Make sure there is at least some output
+expout_lines=$(wc --lines expout | cut -f1 -d\ )
+if test $expout_lines -lt 3; then
+  echo "Expecting at least 3 debug strings starting with ${testdir}" >> expout
+fi
+
+# Check the replaced strings are all there.
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.part.o]])
+AT_CHECK([[
+readelf -p.debug_str ./foobarbaz.part.o | cut -c13- \
+        | grep ^/foo/bar/baz | sort
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# debugedit should at least replace the .debug_str directory paths
+# and in the executable.
+# ===
+AT_SETUP([debugedit .debug_str exe])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP
+
+# Capture strings that start with the testdir (pwd) directory path
+# (and replace that textually with /foo/bar/baz)
+readelf -p.debug_str foobarbaz.exe | cut -c13- \
+        | grep ^$(pwd) | sort \
+        | sed -e "s@$(pwd)@/foo/bar/baz@" > expout
+
+# Make sure there is at least some output
+# The linker will have merged unique strings, so no need for sort -u.
+expout_lines=$(wc --lines expout | cut -f1 -d\ )
+if test $expout_lines -lt 3; then
+  echo "Expecting at least 3 debug strings starting with ${testdir}" >> expout
+fi
+
+# Check the replaced strings are all there.
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.exe]])
+AT_CHECK([[
+readelf -p.debug_str foobarbaz.exe | cut -c13- \
+        | grep ^/foo/bar/baz | sort
+]],[0],[expout])
+
+AT_CLEANUP
+
+# For .debug_info we expect the following DW_AT_name and DW_AT_comp_dir
+# strings for the DW_TAG_compile_unit:
+# - foo.o
+#   DW_AT_name: subdir_foo/foo.c
+#   DW_AT_comp_dir: /foo/baz/baz
+# - bar.o
+#   DW_AT_name: bar.c
+#   DW_AT_comp_dir: /foo/bar/baz/subdir_bar
+# - baz.o
+#   DW_AT_name: /foo/bar/baz/baz.c
+#   DW_AT_comp_dir: /foo/baz/baz
+#
+# Older gcc (before 7) don't emit the DW_AT_comp_dir for baz.o.
+# But because it is similar to the comp_dir of foo.o, just sort -u.
+
+# ===
+# Make sure DW_AT_name and DW_AT_comp_dir strings are replaced
+# in objects.
+# ===
+AT_SETUP([debugedit .debug_info objects])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP
+
+AT_DATA([expout],
+[/foo/bar/baz
+/foo/bar/baz/baz.c
+/foo/bar/baz/subdir_bar
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foo.o]])
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./subdir_bar/bar.o]])
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./baz.o]])
+AT_CHECK([[
+readelf --debug-dump=info foo.o subdir_bar/bar.o baz.o \
+        | grep -E 'DW_AT_(name|comp_dir)' \
+        | rev | cut -d: -f1 | rev | cut -c2- | grep ^/foo/bar/baz | sort -u
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# Make sure DW_AT_name and DW_AT_comp_dir strings are replaced
+# in partial linked object.
+# ===
+AT_SETUP([debugedit .debug_info partial])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP
+
+AT_DATA([expout],
+[/foo/bar/baz
+/foo/bar/baz/baz.c
+/foo/bar/baz/subdir_bar
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.part.o]])
+AT_CHECK([[
+readelf --debug-dump=info ./foobarbaz.part.o \
+        | grep -E 'DW_AT_(name|comp_dir)' \
+        | rev | cut -d: -f1 | rev | cut -c2- | grep ^/foo/bar/baz | sort -u
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# Make sure DW_AT_name and DW_AT_comp_dir strings are replaced
+# in executable.
+# ===
+AT_SETUP([debugedit .debug_info exe])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP
+
+AT_DATA([expout],
+[/foo/bar/baz
+/foo/bar/baz/baz.c
+/foo/bar/baz/subdir_bar
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.exe]])
+AT_CHECK([[
+readelf --debug-dump=info ./foobarbaz.exe | grep -E 'DW_AT_(name|comp_dir)' \
+        | rev | cut -d: -f1 | rev | cut -c2- | grep ^/foo/bar/baz | sort -u
+]],[0],[expout])
+
+AT_CLEANUP
+
+# foo.o and bar.o are build with relative paths and so will use the
+# comp_dir (from .debug_info). But bar.o is build from sources with
+# an absolute path, so the .debug_line Directory Table should contain
+# /foo/bar/baz and /foo/bar/baz/subdir_headers.
+
+# ===
+# Make sure .debug_line Directory Table entries are replaced
+# in objects.
+# ===
+AT_SETUP([debugedit .debug_line objects])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP
+
+AT_DATA([expout],
+[/foo/bar/baz
+/foo/bar/baz/subdir_headers
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foo.o]])
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./subdir_bar/bar.o]])
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./baz.o]])
+AT_CHECK([[
+readelf --debug-dump=line foo.o subdir_bar/bar.o baz.o \
+        | grep -A3 "The Directory Table" | grep "^  [123]" \
+	| grep /foo/ | cut -c5- | sort
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# Make sure .debug_line Directory Table entries are replaced
+# in partial linked object.
+# ===
+AT_SETUP([debugedit .debug_line partial])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP
+
+AT_DATA([expout],
+[/foo/bar/baz
+/foo/bar/baz/subdir_headers
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.part.o]])
+AT_CHECK([[
+readelf --debug-dump=line ./foobarbaz.part.o \
+        | grep -A3 "The Directory Table" | grep "^  [123]" \
+	| grep /foo/ | cut -c5- | sort
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# Make sure .debug_line Directory Table entries are replaced
+# in executable.
+# ===
+AT_SETUP([debugedit .debug_line exe])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP
+
+AT_DATA([expout],
+[/foo/bar/baz
+/foo/bar/baz/subdir_headers
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.exe]])
+AT_CHECK([[
+readelf --debug-dump=line ./foobarbaz.exe \
+        | grep -A3 "The Directory Table" | grep "^  [123]" \
+	| grep /foo/ | cut -c5- | sort
+]],[0],[expout])
+
+AT_CLEANUP
