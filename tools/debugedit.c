@@ -41,6 +41,7 @@
 #include <gelf.h>
 #include <dwarf.h>
 
+
 /* Unfortunately strtab manipulation functions were only officially added
    to elfutils libdw in 0.167.  Before that there were internal unsupported
    ebl variants.  While libebl.h isn't supported we'll try to use it anyway
@@ -432,6 +433,7 @@ typedef struct debug_section
     int sec, relsec;
     REL *relbuf;
     REL *relend;
+    struct debug_section *next; /* Only happens for COMDAT .debug_macro.  */
   } debug_section;
 
 static debug_section debug_sections[] =
@@ -1989,11 +1991,35 @@ edit_dwarf2 (DSO *dso)
 	    for (j = 0; debug_sections[j].name; ++j)
 	      if (strcmp (name, debug_sections[j].name) == 0)
 	 	{
+		  struct debug_section *debug_sec = &debug_sections[j];
 		  if (debug_sections[j].data)
 		    {
-		      error (0, 0, "%s: Found two copies of %s section",
-			     dso->filename, name);
-		      return 1;
+		      if (j != DEBUG_MACRO)
+			{
+			  error (0, 0, "%s: Found two copies of %s section",
+				 dso->filename, name);
+			  return 1;
+			}
+		      else
+			{
+			  /* In relocatable files .debug_macro might
+			     appear multiple times as COMDAT
+			     section.  */
+			  struct debug_section *sec;
+			  sec = calloc (sizeof (struct debug_section), 1);
+			  if (sec == NULL)
+			    error (1, errno,
+				   "%s: Could not allocate more macro sections",
+				   dso->filename);
+			  sec->name = ".debug_macro";
+
+			  struct debug_section *macro_sec = debug_sec;
+			  while (macro_sec->next != NULL)
+			    macro_sec = macro_sec->next;
+
+			  macro_sec->next = sec;
+			  debug_sec = sec;
+			}
 		    }
 
 		  scn = dso->scn[i];
@@ -2002,10 +2028,10 @@ edit_dwarf2 (DSO *dso)
 		  assert (elf_getdata (scn, data) == NULL);
 		  assert (data->d_off == 0);
 		  assert (data->d_size == dso->shdr[i].sh_size);
-		  debug_sections[j].data = data->d_buf;
-		  debug_sections[j].elf_data = data;
-		  debug_sections[j].size = data->d_size;
-		  debug_sections[j].sec = i;
+		  debug_sec->data = data->d_buf;
+		  debug_sec->elf_data = data;
+		  debug_sec->size = data->d_size;
+		  debug_sec->sec = i;
 		  break;
 		}
 
@@ -2028,7 +2054,26 @@ edit_dwarf2 (DSO *dso)
 			  + (dso->shdr[i].sh_type == SHT_RELA),
 			  debug_sections[j].name) == 0)
 	 	{
-		  debug_sections[j].relsec = i;
+		  if (j == DEBUG_MACRO)
+		    {
+		      /* Pick the correct one.  */
+		      int rel_target = dso->shdr[i].sh_info;
+		      struct debug_section *macro_sec = &debug_sections[j];
+		      while (macro_sec != NULL)
+			{
+			  if (macro_sec->sec == rel_target)
+			    {
+			      macro_sec->relsec = i;
+			      break;
+			    }
+			  macro_sec = macro_sec->next;
+			}
+		      if (macro_sec == NULL)
+			error (0, 1, "No .debug_macro reloc section: %s",
+			       dso->filename);
+		    }
+		  else
+		    debug_sections[j].relsec = i;
 		  break;
 		}
 	  }
@@ -2062,6 +2107,7 @@ edit_dwarf2 (DSO *dso)
       struct abbrev_tag tag, *t;
       int phase;
       bool info_rel_updated = false;
+      bool macro_rel_updated = false;
 
       for (phase = 0; phase < 2; phase++)
 	{
@@ -2279,6 +2325,113 @@ edit_dwarf2 (DSO *dso)
 		}
 	    }
 
+	  /* The .debug_macro section also contains offsets into the
+	     .debug_str section and references to the .debug_line
+	     tables, so we need to update those as well if we update
+	     the strings or the stmts.  */
+	  if ((need_strp_update || need_stmt_update)
+	      && debug_sections[DEBUG_MACRO].data)
+	    {
+	      /* There might be multiple (COMDAT) .debug_macro sections.  */
+	      struct debug_section *macro_sec = &debug_sections[DEBUG_MACRO];
+	      while (macro_sec != NULL)
+		{
+		  setup_relbuf(dso, macro_sec, &reltype);
+		  rel_updated = false;
+
+		  ptr = macro_sec->data;
+		  endsec = ptr + macro_sec->size;
+		  int op = 0, macro_version, macro_flags;
+		  int offset_len = 4, line_offset = 0;
+
+		  while (ptr < endsec)
+		    {
+		      if (!op)
+			{
+			  macro_version = read_16 (ptr);
+			  macro_flags = read_8 (ptr);
+			  if (macro_version < 4 || macro_version > 5)
+			    error (1, 0, "unhandled .debug_macro version: %d",
+				   macro_version);
+			  if ((macro_flags & ~2) != 0)
+			    error (1, 0, "unhandled .debug_macro flags: 0x%x",
+				   macro_flags);
+
+			  offset_len = (macro_flags & 0x01) ? 8 : 4;
+			  line_offset = (macro_flags & 0x02) ? 1 : 0;
+
+			  if (offset_len != 4)
+			    error (0, 1,
+				   "Cannot handle 8 byte macro offsets: %s",
+				   dso->filename);
+
+			  /* Update the line_offset if it is there.  */
+			  if (line_offset)
+			    {
+			      if (phase == 0)
+				ptr += offset_len;
+			      else
+				{
+				  size_t idx, new_idx;
+				  idx = do_read_32_relocated (ptr);
+				  new_idx = find_new_list_offs (&dso->lines,
+								idx);
+				  write_32_relocated (ptr, new_idx);
+				}
+			    }
+			}
+
+		      op = read_8 (ptr);
+		      if (!op)
+			continue;
+		      switch(op)
+			{
+			case DW_MACRO_GNU_define:
+			case DW_MACRO_GNU_undef:
+			  read_uleb128 (ptr);
+			  ptr = ((unsigned char *) strchr ((char *) ptr, '\0')
+				 + 1);
+			  break;
+			case DW_MACRO_GNU_start_file:
+			  read_uleb128 (ptr);
+			  read_uleb128 (ptr);
+			  break;
+			case DW_MACRO_GNU_end_file:
+			  break;
+			case DW_MACRO_GNU_define_indirect:
+			case DW_MACRO_GNU_undef_indirect:
+			  read_uleb128 (ptr);
+			  if (phase == 0)
+			    {
+			      size_t idx = read_32_relocated (ptr);
+			      record_existing_string_entry_idx (&dso->strings,
+								idx);
+			    }
+			  else
+			    {
+			      struct stridxentry *entry;
+			      size_t idx, new_idx;
+			      idx = do_read_32_relocated (ptr);
+			      entry = string_find_entry (&dso->strings, idx);
+			      new_idx = strent_offset (entry->entry);
+			      write_32_relocated (ptr, new_idx);
+			    }
+			  break;
+			case DW_MACRO_GNU_transparent_include:
+			  ptr += offset_len;
+			  break;
+			default:
+			  error (1, 0, "Unhandled DW_MACRO op 0x%x", op);
+			  break;
+			}
+		    }
+
+		  if (rel_updated)
+		    macro_rel_updated = true;
+		  macro_sec = macro_sec->next;
+		}
+	    }
+
 	  /* Same for the debug_str section. Make sure everything is
 	     in place for phase 1 updating of debug_info
 	     references. */
@@ -2308,10 +2461,24 @@ edit_dwarf2 (DSO *dso)
 	 new strp, strings and/or linep offsets.  */
       if (need_strp_update || need_string_replacement || need_stmt_update)
 	dirty_section (DEBUG_INFO);
+      if (need_strp_update || need_stmt_update)
+	dirty_section (DEBUG_MACRO);
+      if (need_stmt_update)
+	dirty_section (DEBUG_LINE);
 
-      /* Update any debug_info relocations addends we might have touched. */
+      /* Update any relocations addends we might have touched. */
       if (info_rel_updated)
 	update_rela_data (dso, &debug_sections[DEBUG_INFO]);
+
+      if (macro_rel_updated)
+	{
+	  struct debug_section *macro_sec = &debug_sections[DEBUG_MACRO];
+	  while (macro_sec != NULL)
+	    {
+	      update_rela_data (dso, macro_sec);
+	      macro_sec = macro_sec->next;
+	    }
+	}
     }
 
   return 0;
@@ -2842,6 +3009,17 @@ main (int argc, char *argv[])
   destroy_strings (&dso->strings);
   destroy_lines (&dso->lines);
   free (dso);
+
+  /* In case there were multiple (COMDAT) .debug_macro sections,
+     free them.  */
+  struct debug_section *macro_sec = &debug_sections[DEBUG_MACRO];
+  macro_sec = macro_sec->next;
+  while (macro_sec != NULL)
+    {
+      struct debug_section *next = macro_sec->next;
+      free (macro_sec);
+      macro_sec = next;
+    }
 
   poptFreeContext (optCon);
 
