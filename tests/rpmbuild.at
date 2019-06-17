@@ -834,6 +834,39 @@ readelf -S ./usr/lib/debug/usr/local/bin/hello2*.debug \
 AT_CLEANUP
 
 # ------------------------------
+# Check that a -g3 (macros) build creates a valid .debug file.
+AT_SETUP([rpmbuild debuginfo -g3 .debug_macro])
+AT_KEYWORDS([build] [debuginfo] [gdb])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+# Build a package that has some debuginfo generated with -g3.
+# Specifically it uses -DDEBUG_DEFINE=1, which we want to see back
+# in the .debug_macro section of the .debug file.
+cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
+
+rundebug rpmbuild --quiet \
+  --define "_include_gdb_index 1" \
+  -ba "${abs_srcdir}"/data/SPECS/hello-g3.spec
+
+# Unpack the debuginfo rpms so we can check the .debug files.
+rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-g3-debuginfo-1.0-1.*.rpm \
+  | cpio -diu --quiet
+
+# We are looking for a line like:
+#  DW_MACRO_define_strp - lineno : 0 macro : DEBUG_DEFINE 1
+readelf --debug-dump=macro ./usr/lib/debug/usr/local/bin/hello-g3*.debug \
+  | grep DEBUG_DEFINE | cut -f3 -d:
+],
+[0],
+[ DEBUG_DEFINE 1
+],
+[ignore])
+AT_CLEANUP
+
+# ------------------------------
+# ------------------------------
 # Check that a debug source is in a "unique" directory when requested.
 AT_SETUP([rpmbuild debuginfo unique debug src dir])
 AT_KEYWORDS([build] [debuginfo])

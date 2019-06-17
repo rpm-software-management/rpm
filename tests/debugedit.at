@@ -35,11 +35,11 @@ cp "${abs_srcdir}"/data/SOURCES/foobar.h subdir_headers
 cp "${abs_srcdir}"/data/SOURCES/baz.c .
 
 # First three object files (foo.o subdir_bar/bar.o and baz.o)
-gcc -g -Isubdir_headers -c subdir_foo/foo.c
+gcc -g3 -Isubdir_headers -c subdir_foo/foo.c
 cd subdir_bar
-gcc -g -I../subdir_headers -c bar.c
+gcc -g3 -I../subdir_headers -c bar.c
 cd ..
-gcc -g -I$(pwd)/subdir_headers -c $(pwd)/baz.c
+gcc -g3 -I$(pwd)/subdir_headers -c $(pwd)/baz.c
 
 # Then a partially linked object file (somewhat like a kernel module).
 # This will still have relocations between the debug sections.
@@ -47,7 +47,7 @@ ld -r -o foobarbaz.part.o foo.o subdir_bar/bar.o baz.o
 
 # Create an executable. Relocations between debug sections will
 # have been resolved.
-gcc -g -o foobarbaz.exe foo.o subdir_bar/bar.o baz.o
+gcc -g3 -o foobarbaz.exe foo.o subdir_bar/bar.o baz.o
 ]])
 
 # ===
@@ -317,6 +317,77 @@ AT_CHECK([[
 readelf --debug-dump=line ./foobarbaz.exe \
         | grep -A3 "The Directory Table" | grep "^  [123]" \
 	| grep /foo/ | cut -c5- | sort
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# Make sure .debug_macro strings are still there
+# in objects.
+# ===
+AT_SETUP([debugedit .debug_macro objects])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP
+
+# We expect 3 for each compile unit.
+AT_DATA([expout],
+[NUMBER 42
+NUMBER 42
+NUMBER 42
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foo.o]])
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./subdir_bar/bar.o]])
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./baz.o]])
+AT_CHECK([[
+readelf --debug-dump=macro foo.o subdir_bar/bar.o baz.o \
+        | grep NUMBER | rev | cut -d: -f1 | rev | cut -c2-
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# Make sure .debug_macro strings are still there
+# in partial linked object.
+# ===
+AT_SETUP([debugedit .debug_macro partial])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP
+
+# We expect 3 for each compile unit.
+AT_DATA([expout],
+[NUMBER 42
+NUMBER 42
+NUMBER 42
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.part.o]])
+AT_CHECK([[
+readelf --debug-dump=macro ./foobarbaz.part.o \
+        | grep NUMBER | rev | cut -d: -f1 | rev | cut -c2-
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# Make sure .debug_macro strings are still there
+# in executable.
+# ===
+AT_SETUP([debugedit .debug_macro exe])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP
+
+# We expect 3 for each compile unit.
+AT_DATA([expout],
+[NUMBER 42
+NUMBER 42
+NUMBER 42
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.exe]])
+AT_CHECK([[
+readelf --debug-dump=macro ./foobarbaz.exe \
+        | grep NUMBER | rev | cut -d: -f1 | rev | cut -c2-
 ]],[0],[expout])
 
 AT_CLEANUP
