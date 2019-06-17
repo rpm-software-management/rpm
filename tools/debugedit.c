@@ -1177,6 +1177,7 @@ get_line_table (DSO *dso, size_t off, struct line_table **table)
   *table = NULL;
 
   t->old_idx = off;
+  t->new_idx = off;
   t->size_diff = 0;
   t->replace_dirs = false;
   t->replace_files = false;
