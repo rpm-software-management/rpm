@@ -88,6 +88,8 @@ int do_build_id = 0;
 int no_recompute_build_id = 0;
 char *build_id_seed = NULL;
 
+int show_version = 0;
+
 /* We go over the debug sections in two phases. In phase zero we keep
    track of any needed changes and collect strings, indexes and
    sizes. In phase one we do the actual replacements updating the
@@ -2291,6 +2293,8 @@ static struct poptOption optionsTable[] = {
       "if recomputing the build ID note use this string as hash seed", NULL },
     { "no-recompute-build-id",  'n', POPT_ARG_NONE, &no_recompute_build_id, 0,
       "do not recompute build ID note even when -i or -s are given", NULL },
+    { "version", '\0', POPT_ARG_NONE, &show_version, 0,
+      "print the debugedit version", NULL },
       POPT_AUTOHELP
     { NULL, 0, 0, NULL, 0, NULL, NULL }
 };
@@ -2525,6 +2529,12 @@ main (int argc, char *argv[])
 	      poptStrerror (nextopt),
 	      argv[0]);
       exit (1);
+    }
+
+  if (show_version)
+    {
+      printf("RPM debugedit %s\n", VERSION);
+      exit(EXIT_SUCCESS);
     }
 
   args = poptGetArgs (optCon);

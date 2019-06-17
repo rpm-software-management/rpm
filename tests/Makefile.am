@@ -18,6 +18,7 @@ TESTSUITE_AT += rpmverify.at
 TESTSUITE_AT += rpmdb.at
 TESTSUITE_AT += rpmbuild.at
 TESTSUITE_AT += rpmbuildid.at
+TESTSUITE_AT += debugedit.at
 TESTSUITE_AT += rpmi.at
 TESTSUITE_AT += rpmvercmp.at
 TESTSUITE_AT += rpmdeps.at
@@ -99,6 +100,10 @@ EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.pub
 EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.secret
 EXTRA_DIST += data/macros.testfile
 EXTRA_DIST += data/macros.debug
+EXTRA_DIST += data/SOURCES/foo.c
+EXTRA_DIST += data/SOURCES/bar.c
+EXTRA_DIST += data/SOURCES/baz.c
+EXTRA_DIST += data/SOURCES/foobar.h
 
 .PHONY: populate_testing
 
@@ -129,6 +134,7 @@ atlocal:	atlocal.in Makefile
 	  -e "s,[@]usrbindir[@],$(bindir)," \
 	  -e "s,[@]usrlibdir[@],$(libdir)," \
 	  -e "s,[@]execprefix[@],$(exec_prefix)," \
+	  -e "s,[@]usrlibexecdir[@],$(rpmlibexecdir),g" \
 	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir)," \
 	  -e "s,[@]PYTHON[@],$(PYTHON)," \
 	< $(srcdir)/atlocal.in > atlocal
@@ -170,7 +176,7 @@ check-local:
 endif !HAVE_FAKECHROOT
 
 installcheck-local: $(check_DATA) populate_testing
-	$(SHELL) '$(TESTSUITE)' AUTOTEST_PATH='$(bindir)' $(TESTSUITEFLAGS)
+	$(SHELL) '$(TESTSUITE)' AUTOTEST_PATH='$(bindir):$(rpmlibexecdir)' $(TESTSUITEFLAGS)
 	HOME=$(abs_builddir)/testing $(KILLAGENT) ||:
 
 clean-local:
