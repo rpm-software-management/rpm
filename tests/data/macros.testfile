@@ -4,3 +4,13 @@
 %first %{?def:macro_1\
 }
 %second %{?def:macro_2}
+
+%comment1 %{expand:
+read
+%dnl comment
+me
+}
+
+%comment2 see\
+%dnl comment\
+this
