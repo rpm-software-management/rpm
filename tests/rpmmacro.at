@@ -515,6 +515,24 @@ warning: macros.bad: line 8: Macro %bad needs whitespace before body
 ])
 AT_CLEANUP
 
+AT_SETUP([macro comments])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm \
+	--macros /data/macros.testfile \
+	--eval "%{comment1}" \
+	--eval "%{comment2}"
+],
+[0],
+[
+read
+me
+
+see
+this
+],
+[])
+AT_CLEANUP
 
 AT_SETUP([%if, %else, %elif test basic])
 AT_KEYWORDS([if, else, elif])

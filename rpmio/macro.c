@@ -456,6 +456,14 @@ static void mbAppendStr(MacroBuf mb, const char *str)
 }
 #endif
 
+static const char * doDnl(MacroBuf mb, const char * se, size_t slen)
+{
+    const char *s = se;
+    while (*s && !iseol(*s))
+	s++;
+    return (*s != '\0') ? s + 1 : s;
+}
+
 /**
  * Expand output of shell command into target buffer.
  * @param mb		macro expansion state
@@ -526,6 +534,7 @@ static struct builtins_s {
     { STR_AND_LEN("basename"),	doFoo,		NULL },
     { STR_AND_LEN("define"),	NULL,		doDef },
     { STR_AND_LEN("dirname"),	doFoo,		NULL },
+    { STR_AND_LEN("dnl"),	NULL,		doDnl },
     { STR_AND_LEN("dump"), 	NULL,		doDump },
     { STR_AND_LEN("echo"),	doOutput,	NULL },
     { STR_AND_LEN("error"),	doOutput,	NULL },

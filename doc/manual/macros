@@ -68,6 +68,7 @@ to perform useful operations. The current list is
 	%dump		print the active (i.e. non-covered) macro table
 	%getncpus	return the number of CPUs
 	%verbose	is rpm in verbose mode?
+	%dnl		discard to next line (without expanding)
 
 	%{echo:...}	print ... to stdout
 	%{warn:...}	print warning: ... to stderr
