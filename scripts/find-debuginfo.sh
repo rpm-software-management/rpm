@@ -296,8 +296,6 @@ add_minidebug()
   xz "$mini_debuginfo"
   mini_debuginfo="${mini_debuginfo}.xz"
   objcopy --add-section .gnu_debugdata="$mini_debuginfo" "$binary"
-  # Compress any annobin notes in the original binary.
-  objcopy --merge-notes "$binary"
   rm -f "$dynsyms" "$funcsyms" "$keep_symbols" "$mini_debuginfo"
 }
 
@@ -406,6 +404,10 @@ do_file()
       exit 2
     fi
   fi
+
+  # Compress any annobin notes in the original binary.
+  # Ignore any errors, since older objcopy don't support --merge-notes.
+  objcopy --merge-notes "$f" 2>/dev/null || true
 
   # A binary already copied into /usr/lib/debug doesn't get stripped,
   # just has its file names collected and adjusted.
