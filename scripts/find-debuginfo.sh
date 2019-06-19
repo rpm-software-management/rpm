@@ -388,6 +388,10 @@ do_file()
     fi
   fi
 
+  # Compress any annobin notes in the original binary.
+  # Ignore any errors, since older objcopy don't support --merge-notes.
+  objcopy --merge-notes "$f" 2>/dev/null || true
+
   # A binary already copied into /usr/lib/debug doesn't get stripped,
   # just has its file names collected and adjusted.
   case "$dn" in
