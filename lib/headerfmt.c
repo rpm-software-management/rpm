@@ -221,18 +221,18 @@ static char * hsaReserve(headerSprintfArgs hsa, size_t need)
 RPM_GNUC_PRINTF(2, 3)
 static void hsaError(headerSprintfArgs hsa, const char *fmt, ...)
 {
-    /* Use thread local static buffer as headerFormat() errmsg arg is const */
-    static __thread char errbuf[BUFSIZ];
+    /* Use thread local buffer as headerFormat() errmsg arg is const */
+    static __thread char *errbuf = NULL;
 
     if (fmt == NULL) {
 	hsa->errmsg = NULL;
     } else {
 	va_list ap;
 
+	free(errbuf);
 	va_start(ap, fmt);
-	vsnprintf(errbuf, sizeof(errbuf), fmt, ap);
+	rvasprintf(&errbuf, fmt, ap);
 	va_end(ap);
-
 	hsa->errmsg = errbuf;
     }
 }
