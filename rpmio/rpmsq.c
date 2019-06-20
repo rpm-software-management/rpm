@@ -16,9 +16,9 @@
 
 #include "debug.h"
 
-static __thread int disableInterruptSafety;
-static __thread sigset_t rpmsqCaught;
-static __thread sigset_t rpmsqActive;
+static int disableInterruptSafety;
+static sigset_t rpmsqCaught;
+static sigset_t rpmsqActive;
 
 typedef struct rpmsig_s * rpmsig;
 
@@ -171,8 +171,8 @@ int rpmsqPoll(void)
 
 int rpmsqBlock(int op)
 {
-    static __thread sigset_t oldMask;
-    static __thread int blocked = 0;
+    static sigset_t oldMask;
+    static int blocked = 0;
     sigset_t newMask;
     int ret = 0;
 
