@@ -12,7 +12,6 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
 AC_CONFIG_TESTDIR(tests)
 
 AC_USE_SYSTEM_EXTENSIONS
-AC_OPENMP
 
 AC_DISABLE_STATIC
 
@@ -189,6 +188,16 @@ AC_CHECK_HEADERS([lzma.h],[
   AC_CHECK_LIB(lzma, lzma_easy_encoder, [WITH_LZMA_LIB=-llzma])
 ])
 AC_SUBST(WITH_LZMA_LIB)
+
+# AC_OPENMP supports --enable/disable-openmp out of the box, but it doesn't
+# actually give us a way to conditionalize the build based on that. Argh.
+OPENMP_CFLAGS=
+AC_OPENMP
+AS_IF([test "x$ac_cv_prog_c_openmp" != x &&
+       test "x$ac_cv_prog_c_openmp" != unsupported],[
+  AC_DEFINE(ENABLE_OPENMP, 1, [Enable multithreading support?])
+])
+AC_SUBST(OPENMP_CFLAGS)
 
 #=================
 # Check for zstd.
