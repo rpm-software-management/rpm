@@ -145,7 +145,10 @@ for f in files:
                 if legacy_name not in py_deps:
                     py_deps[legacy_name] = []
             if dist.version:
-                spec = ('==', dist.version)
+                version = dist.version
+                while version.endswith('.0'):
+                    version = version[:-2]
+                spec = ('==', version)
                 if spec not in py_deps[name]:
                     if not legacy:
                         py_deps[name].append(spec)
@@ -189,11 +192,12 @@ for f in files:
                     else:
                         name = 'python{}dist({})'.format(dist.py_version, dep.key)
                 for spec in dep.specs:
-                    if spec[0] != '!=':
-                        if name not in py_deps:
-                            py_deps[name] = []
-                        if spec not in py_deps[name]:
-                            py_deps[name].append(spec)
+                    while spec[1].endswith('.0'):
+                        spec = (spec[0], spec[1][:-2])
+                    if name not in py_deps:
+                        py_deps[name] = []
+                    if spec not in py_deps[name]:
+                        py_deps[name].append(spec)
                 if not dep.specs:
                     py_deps[name] = []
         # Unused, for automatic sub-package generation based on 'extras' from egg/dist metadata
@@ -239,7 +243,10 @@ for name in names:
     if py_deps[name]:
         # Print out versioned provides, requires, recommends, conflicts
         for spec in py_deps[name]:
-            print('{} {} {}'.format(name, spec[0], spec[1]))
+            if spec[0] == '!=':
+                print('({n} < {v} or {n} >= {v}.0)'.format(n=name, v=spec[1]))
+            else:
+                print('{} {} {}'.format(name, spec[0], spec[1]))
     else:
         # Print out unversioned provides, requires, recommends, conflicts
         print(name)
