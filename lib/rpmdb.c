@@ -1588,6 +1588,7 @@ int rpmdbExtendIterator(rpmdbMatchIterator mi,
 	    dbiIndexSetAppendSet(mi->mi_set, set, 0);
 	    dbiIndexSetFree(set);
 	}
+	mi->mi_sorted = 0;
 	rc = 0;
     }
 
@@ -1649,6 +1650,7 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi,
 
     for (unsigned int i = 0; i < nHdrNums; i++)
 	dbiIndexSetAppendOne(mi->mi_set, hdrNums[i], 0, 0);
+    mi->mi_sorted = 0;
     return 0;
 }
 
