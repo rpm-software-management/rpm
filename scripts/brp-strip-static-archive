@@ -15,4 +15,4 @@ esac
 # Strip static libraries.
 find "$RPM_BUILD_ROOT" -type f | \
     grep -v "^${RPM_BUILD_ROOT}/\?usr/lib/debug" | \
-    xargs -r -P$NCPUS -n32 sh -c "file \"\$@\" | sed 's/:  */: /' | grep 'current ar archive' | sed -n -e 's/^\(.*\):[  ]*current ar archive/\1/p' | xargs -I\{\} $STRIP -g \{\}" ARG0
+    xargs -d '\n' -r -P$NCPUS -n32 sh -c "file \"\$@\" | sed 's/:  */: /' | grep 'current ar archive' | sed -n -e 's/^\(.*\):[  ]*current ar archive/\1/p' | xargs -d '\n' -I\{\} $STRIP -g \{\}" ARG0
