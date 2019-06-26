@@ -10,6 +10,7 @@
 
 #include <errno.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <regex.h>
 #if WITH_CAP
 #include <sys/capability.h>
@@ -1325,8 +1326,8 @@ static int validFilename(const char *fn)
     int rc = 1;
     /* char is signed but we're dealing with unsigned values here! */
     for (const unsigned char *s = (const unsigned char *)fn; *s; s++) {
-	/* Ban DEL and anything below space, UTF-8 is validated elsewhere */
-	if (*s == 0x7f || *s < 0x20) {
+	/* Ban anything that's a control character. UTF-8 is validated elsewhere */
+	if (iscntrl(*s)) {
 	    rpmlog(RPMLOG_ERR,
 		_("Illegal character (0x%x) in filename: %s\n"), *s, fn);
 	    rc = 0;
