@@ -1323,7 +1323,8 @@ static struct stat * fakeStat(FileEntry cur, struct stat * statp)
 static int validFilename(const char *fn)
 {
     int rc = 1;
-    for (const char *s = fn; *s; s++) {
+    /* char is signed but we're dealing with unsigned values here! */
+    for (const unsigned char *s = (const unsigned char *)fn; *s; s++) {
 	/* Ban DEL and anything below space, UTF-8 is validated elsewhere */
 	if (*s == 0x7f || *s < 0x20) {
 	    rpmlog(RPMLOG_ERR,
