@@ -129,7 +129,6 @@ AT_SETUP([rpm -U --replacepkgs 2])
 AT_KEYWORDS([rpmdb install])
 
 AT_CHECK([
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 RPMDB_CLEAR
 RPMDB_INIT
 

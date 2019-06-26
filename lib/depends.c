@@ -66,12 +66,6 @@ const int rpmFLAGS = RPMSENSE_EQUAL;
 #undef HASHTYPE
 #undef HTKEYTYPE
 
-enum addOp_e {
-    RPMTE_INSTALL	= 0,
-    RPMTE_UPGRADE	= 1,
-    RPMTE_REINSTALL	= 2,
-};
-
 /**
  * Check for supported payload format in header.
  * @param h		header to check
@@ -126,7 +120,7 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
 	return 0;
     }
 
-    p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL);
+    p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL, 0);
     if (p == NULL)
 	return 1;
 
@@ -178,23 +172,22 @@ static int addSelfErasures(rpmts ts, rpm_color_t tscolor, int op,
     Header oh;
     rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(p), 0);
     int rc = 0;
-    int cmp;
 
     while ((oh = rpmdbNextIterator(mi)) != NULL) {
 	/* Ignore colored packages not in our rainbow. */
 	if (skipColor(tscolor, hcolor, headerGetNumber(oh, RPMTAG_HEADERCOLOR)))
 	    continue;
 
-	cmp = rpmVersionCompare(h, oh);
+	/* On reinstall, skip packages with differing NEVRA. */
+	if (op != RPMTE_UPGRADE) {
+	    char * ohNEVRA = headerGetAsString(oh, RPMTAG_NEVRA);
+	    if (!rstreq(rpmteNEVRA(p), ohNEVRA)) {
+		free(ohNEVRA);
+		continue;
+	    }
+	    free(ohNEVRA);
+	}
 
-	/* On upgrade, skip packages that contain identical NEVR. */
-	if ((op == RPMTE_UPGRADE) && (cmp == 0))
-	    continue;
-
-	/* On reinstall, skip packages with differing NEVR. */
-	if ((op == RPMTE_REINSTALL) && (cmp != 0))
-	    continue;
-	
 	if (removePackage(ts, oh, p)) {
 	    rc = 1;
 	    break;
@@ -222,16 +215,7 @@ static int addObsoleteErasures(rpmts ts, rpm_color_t tscolor, rpmte p)
 	mi = rpmtsPrunedIterator(ts, RPMDBI_NAME, Name, 1);
 
 	while ((oh = rpmdbNextIterator(mi)) != NULL) {
-	    const char *oarch = headerGetString(oh, RPMTAG_ARCH);
 	    int match;
-
-	    /* avoid self-obsoleting packages */
-	    if (rstreq(rpmteN(p), Name) && rstreq(rpmteA(p), oarch)) {
-		char * ohNEVRA = headerGetAsString(oh, RPMTAG_NEVRA);
-		rpmlog(RPMLOG_DEBUG, "  Not obsoleting: %s\n", ohNEVRA);
-		free(ohNEVRA);
-		continue;
-	    }
 
 	    /*
 	     * Rpm prior to 3.0.3 does not have versioned obsoletes.
@@ -438,7 +422,7 @@ static int addPackage(rpmts ts, Header h,
 	    goto exit;
     }
 
-    p = rpmteNew(ts, h, TR_ADDED, key, relocs);
+    p = rpmteNew(ts, h, TR_ADDED, key, relocs, op);
     if (p == NULL) {
 	ec = 1;
 	goto exit;
