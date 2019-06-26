@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2019-06-05 14:48+0300\n"
+"POT-Creation-Date: 2019-06-26 17:41+0300\n"
 "PO-Revision-Date: 2019-01-17 10:09+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish (http://www.transifex.com/rpm-team/rpm/language/pl/)\n"
@@ -834,176 +834,181 @@ msgstr ""
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Dowiązanie symboliczne wskazuje na BuildRoot: %s → %s\n"
 
-#: build/files.c:1352
+#: build/files.c:1331
+#, fuzzy, c-format
+msgid "Illegal character (0x%x) in filename: %s\n"
+msgstr "Niedozwolony znak „%c” (0x%x)"
+
+#: build/files.c:1368
 #, c-format
 msgid "Path is outside buildroot: %s\n"
 msgstr "Ścieżka jest poza buildroot: %s\n"
 
-#: build/files.c:1392
+#: build/files.c:1411
 #, c-format
 msgid "Directory not found: %s\n"
 msgstr "Nie odnaleziono katalogu: %s\n"
 
-#: build/files.c:1393 lib/rpminstall.c:459
+#: build/files.c:1412 lib/rpminstall.c:459
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Nie odnaleziono pliku: %s\n"
 
-#: build/files.c:1405
+#: build/files.c:1424
 #, c-format
 msgid "Not a directory: %s\n"
 msgstr "Nie jest katalogiem: %s\n"
 
-#: build/files.c:1598
+#: build/files.c:1617
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: nie można wczytać nieznanego znacznika (%d).\n"
 
-#: build/files.c:1604
+#: build/files.c:1623
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: odczytanie klucza publicznego się nie powiodło.\n"
 
-#: build/files.c:1608
+#: build/files.c:1627
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: nie jest opakowanym kluczem publicznym.\n"
 
-#: build/files.c:1617
+#: build/files.c:1636
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s: odkodowanie się nie powiodło\n"
 
-#: build/files.c:1663
+#: build/files.c:1682
 msgid "failed symlink"
 msgstr "dowiązanie symboliczne się nie powiodło"
 
-#: build/files.c:1719 build/files.c:1722
+#: build/files.c:1738 build/files.c:1741
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
 msgstr "Podwójny identyfikator budowania, stat %s: %m\n"
 
-#: build/files.c:1729
+#: build/files.c:1748
 #, c-format
 msgid "Duplicate build-ids %s and %s\n"
 msgstr "Podwójne identyfikatory budowania %s i %s\n"
 
-#: build/files.c:1783
+#: build/files.c:1802
 msgid "_build_id_links macro not set, assuming 'compat'\n"
 msgstr "Nie ustawiono makra _build_id_links, przyjmowanie „compat”\n"
 
-#: build/files.c:1796
+#: build/files.c:1815
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
 msgstr "Ustawiono makro _build_id_links na nieznaną wartość „%s”\n"
 
-#: build/files.c:1885
+#: build/files.c:1904
 #, c-format
 msgid "error reading build-id in %s: %s\n"
 msgstr "błąd podczas odczytywania identyfikatora budowania w %s: %s\n"
 
-#: build/files.c:1889
+#: build/files.c:1908
 #, c-format
 msgid "Missing build-id in %s\n"
 msgstr "Brak identyfikatora budowania w %s\n"
 
-#: build/files.c:1894
+#: build/files.c:1913
 #, c-format
 msgid "build-id found in %s too small\n"
 msgstr "Identyfikator budowania odnaleziony w %s jest za mały\n"
 
-#: build/files.c:1895
+#: build/files.c:1914
 #, c-format
 msgid "build-id found in %s too large\n"
 msgstr "Identyfikator budowania odnaleziony w %s jest za duży\n"
 
-#: build/files.c:1910 rpmio/rpmfileutil.c:443
+#: build/files.c:1929 rpmio/rpmfileutil.c:443
 msgid "failed to create directory"
 msgstr "utworzenie katalogu się nie powiodło"
 
-#: build/files.c:1928
+#: build/files.c:1947
 msgid "Mixing main ELF and debug files in package"
 msgstr "Mieszanie głównych plików ELF i plików debugowania w pakiecie"
 
-#: build/files.c:2129
+#: build/files.c:2148
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Plik musi zaczynać się od „/”: %s\n"
 
-#: build/files.c:2153
+#: build/files.c:2172
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr "Wyrażenie regularne %%dev nie jest dozwolone: %s\n"
 
-#: build/files.c:2165
+#: build/files.c:2184
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 "Wyrażenie regularne nie odnalazło katalogu: %s. Próbowanie bez wyrażenia "
 "regularnego.\n"
 
-#: build/files.c:2167
+#: build/files.c:2186
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 "Wyrażenie regularne nie odnalazło pliku: %s. Próbowanie bez wyrażenia "
 "regularnego.\n"
 
-#: build/files.c:2203
+#: build/files.c:2222
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "Nie można otworzyć pliku %s w %%files: %m\n"
 
-#: build/files.c:2226
+#: build/files.c:2245
 #, c-format
 msgid "Empty %%files file %s\n"
 msgstr "Pusty plik %s w %%files\n"
 
-#: build/files.c:2232
+#: build/files.c:2251
 #, c-format
 msgid "Error reading %%files file %s: %m\n"
 msgstr "Błąd podczas odczytywania pliku %s w %%files: %m\n"
 
-#: build/files.c:2258
+#: build/files.c:2277
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr "illegal _docdir_fmt %s: %s\n"
 
-#: build/files.c:2380 lib/rpminstall.c:461
+#: build/files.c:2399 lib/rpminstall.c:461
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Nie odnaleziono pliku przez wyrażenie regularne: %s\n"
 
-#: build/files.c:2467
+#: build/files.c:2486
 #, c-format
 msgid "Special file in generated file list: %s\n"
 msgstr "Plik specjalny na utworzonej liście plików: %s\n"
 
-#: build/files.c:2491
+#: build/files.c:2510
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr "Nie można mieszać specjalnego %s z innymi formami: %s\n"
 
-#: build/files.c:2507
+#: build/files.c:2526
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr "Więcej niż jeden plik na wiersz: %s\n"
 
-#: build/files.c:2576
+#: build/files.c:2595
 msgid "Generating build-id links failed\n"
 msgstr "Tworzenie dowiązań identyfikatorów budowania się nie powiodło\n"
 
-#: build/files.c:2693
+#: build/files.c:2712
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Błędny plik: %s: %s\n"
 
-#: build/files.c:2761
+#: build/files.c:2780
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Sprawdzanie niespakietowanych plików: %s\n"
 
-#: build/files.c:2774
+#: build/files.c:2793
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -1012,24 +1017,24 @@ msgstr ""
 "Odnaleziono zainstalowane (ale niespakietowane) pliki:\n"
 "%s"
 
-#: build/files.c:2889
+#: build/files.c:2908
 #, c-format
 msgid "%s was mapped to multiple filenames"
 msgstr "%s zostało przydzielone do wielu nazw plików"
 
-#: build/files.c:3138
+#: build/files.c:3157
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Przetwarzanie plików: %s\n"
 
-#: build/files.c:3160
+#: build/files.c:3179
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 "Architektura plików binarnych (%d) nie zgadza się z architekturą pakietu "
 "(%d).\n"
 
-#: build/files.c:3166
+#: build/files.c:3185
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Pliki binarne zależne od architektury w pakiecie noarch\n"
 
@@ -1043,77 +1048,77 @@ msgstr "utworzenie archiwum się nie powiodło na pliku %s: %s\n"
 msgid "create archive failed: %s\n"
 msgstr "utworzenie archiwum się nie powiodło: %s\n"
 
-#: build/pack.c:120
+#: build/pack.c:122
 #, c-format
 msgid "Could not open %s file: %s\n"
 msgstr "Nie można otworzyć pliku %s: %s\n"
 
-#: build/pack.c:339
+#: build/pack.c:342
 #, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "Nieznana kompresja danych: %s\n"
 
-#: build/pack.c:393 sign/rpmgensig.c:286 sign/rpmgensig.c:632
+#: build/pack.c:396 sign/rpmgensig.c:286 sign/rpmgensig.c:632
 #: sign/rpmgensig.c:667
 #, c-format
 msgid "Could not seek in file %s: %s\n"
 msgstr "Nie można wyszukać w pliku %s: %s\n"
 
-#: build/pack.c:419
+#: build/pack.c:422
 #, c-format
 msgid "Failed to read %jd bytes in file %s: %s\n"
 msgstr "Odczytanie %jd B w pliku %s się nie powiodło: %s\n"
 
-#: build/pack.c:433
+#: build/pack.c:436
 msgid "Unable to create immutable header region\n"
 msgstr "Nie można utworzyć regionu niezmiennego nagłówka\n"
 
-#: build/pack.c:438
+#: build/pack.c:441
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Nie można zapisać nagłówka do %s: %s\n"
 
-#: build/pack.c:506
+#: build/pack.c:509
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Nie można otworzyć %s: %s\n"
 
-#: build/pack.c:513
+#: build/pack.c:516
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nie można zapisać pakietu: %s\n"
 
-#: build/pack.c:597
+#: build/pack.c:600
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
 
-#: build/pack.c:616
+#: build/pack.c:619
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr "Wykonywanie „%s”:\n"
 
-#: build/pack.c:619
+#: build/pack.c:622
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "Wykonanie „%s” się nie powiodło.\n"
 
-#: build/pack.c:623
+#: build/pack.c:626
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "Sprawdzenie pakietu „%s” się nie powiodło.\n"
 
-#: build/pack.c:667
+#: build/pack.c:670
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "nie można utworzyć %s: %s\n"
 
-#: build/pack.c:686
+#: build/pack.c:689
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Nie można utworzyć wyjściowej nazwy pliku dla pakietu %s: %s\n"
 
-#: build/pack.c:755
+#: build/pack.c:759
 #, c-format
 msgid "Finished binary package job, result %d, filename %s\n"
 msgstr ""
@@ -1604,7 +1609,7 @@ msgstr "%d. wiersz nie należy do żadnej sekcji: %s\n"
 msgid "No compatible architectures found for build\n"
 msgstr "Nie odnaleziono zgodnych architektur do zbudowania\n"
 
-#: build/parseSpec.c:1039
+#: build/parseSpec.c:1041
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Pakiet nie ma %%description: %s\n"
@@ -1986,78 +1991,78 @@ msgstr "katalog"
 msgid "file"
 msgstr "plik"
 
-#: lib/header.c:310
+#: lib/header.c:307
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d len %d"
 msgstr "znacznik[%d]: BŁĘDNY, znacznik %d typ %d offset %d liczba %d len %d"
 
-#: lib/header.c:977
+#: lib/header.c:974
 msgid "hdr load: BAD"
 msgstr "load hdr: BŁĘDNE"
 
-#: lib/header.c:1799
+#: lib/header.c:1796
 msgid "region: no tags"
 msgstr "region: brak znaczników"
 
-#: lib/header.c:1821
+#: lib/header.c:1818
 #, c-format
 msgid "region tag: BAD, tag %d type %d offset %d count %d"
 msgstr "znacznik regionu: BŁĘDNY, znacznik %d typ %d offset %d liczba %d"
 
-#: lib/header.c:1829
+#: lib/header.c:1826
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d"
 msgstr "offset regionu: BŁĘDNY, znacznik %d typ %d offset %d liczba %d"
 
-#: lib/header.c:1851
+#: lib/header.c:1848
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d"
 msgstr "zakończenie regionu: BŁĘDNE, znacznik %d typ %d offset %d liczba %d"
 
-#: lib/header.c:1860
+#: lib/header.c:1857
 #, c-format
 msgid "region %d size: BAD, ril %d il %d rdl %d dl %d"
 msgstr "rozmiar regionu %d: BŁĘDNY, ril %d il %d rdl %d dl %d"
 
-#: lib/header.c:1868
+#: lib/header.c:1865
 #, c-format
 msgid "region %d: tag number mismatch il %d ril %d dl %d rdl %d\n"
 msgstr "region %d: numer znacznika się nie zgadza il %d ril %d dl %d rdl %d\n"
 
-#: lib/header.c:1918
+#: lib/header.c:1915
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d"
 msgstr "rozmiar hdr(%d): BŁĘDNY, odczytanie zwróciło %d"
 
-#: lib/header.c:1922
+#: lib/header.c:1919
 msgid "hdr magic: BAD"
 msgstr "magic hdr: BŁĘDNE"
 
-#: lib/header.c:1927
+#: lib/header.c:1924
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range"
 msgstr "znaczniki hdr: BŁĘDNE, liczba znaczników(%d) jest poza zakresem"
 
-#: lib/header.c:1932
+#: lib/header.c:1929
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range"
 msgstr "dane hdr: BŁĘDNE, liczba bajtów(%d) jest poza zakresem"
 
-#: lib/header.c:1942
+#: lib/header.c:1939
 #, c-format
 msgid "hdr blob(%zd): BAD, read returned %d"
 msgstr "blob hdr(%zd): BŁĘDNE, odczytanie zwróciło %d"
 
-#: lib/header.c:1951
+#: lib/header.c:1948
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr "pad sigh(%zd): BŁĘDNE, odczyt %zd B"
 
-#: lib/header.c:1964
+#: lib/header.c:1961
 msgid "signature "
 msgstr "podpis "
 
-#: lib/header.c:1991
+#: lib/header.c:1988
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
 msgstr "rozmiar blob(%d): BŁĘDNY, 8 + 16 * il(%d) + dl(%d)"
@@ -2885,7 +2890,7 @@ msgstr "NIE JEST OK"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmchecksig.c:294 sign/rpmgensig.c:135
+#: lib/rpmchecksig.c:295 sign/rpmgensig.c:135
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: otwarcie się nie powiodło: %s\n"
@@ -2952,61 +2957,61 @@ msgstr "rpmdbNextIterator: pomijanie"
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: pobrano uszkodzony %u. nagłówek — pomijanie.\n"
 
-#: lib/rpmdb.c:2063
+#: lib/rpmdb.c:2065
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: nie można odczytać nagłówka pod 0x%x\n"
 
-#: lib/rpmdb.c:2414
+#: lib/rpmdb.c:2416
 msgid "could not move new database in place\n"
 msgstr "nie można wstawić nowej bazy danych na miejsce\n"
 
-#: lib/rpmdb.c:2417
+#: lib/rpmdb.c:2419
 #, c-format
 msgid "could also not restore old database from %s\n"
 msgstr "nie można także przywrócić poprzedniej bazy danych z %s\n"
 
-#: lib/rpmdb.c:2419 lib/rpmdb.c:2606
+#: lib/rpmdb.c:2421 lib/rpmdb.c:2608
 #, c-format
 msgid "replace files in %s with files from %s to recover\n"
 msgstr "zastąpienie plików w %s plikami z %s pozwoli przywrócić\n"
 
-#: lib/rpmdb.c:2428
+#: lib/rpmdb.c:2430
 #, c-format
 msgid "Could not get public keys from %s\n"
 msgstr "Nie można pobrać publicznych kluczy z %s\n"
 
-#: lib/rpmdb.c:2435
+#: lib/rpmdb.c:2437
 #, c-format
 msgid "could not delete old database at %s\n"
 msgstr "nie można usunąć poprzedniej bazy danych w %s\n"
 
-#: lib/rpmdb.c:2505
+#: lib/rpmdb.c:2507
 msgid "no dbpath has been set"
 msgstr "ścieżka bazy danych nie została ustawiona"
 
-#: lib/rpmdb.c:2523
+#: lib/rpmdb.c:2525
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "utworzenie katalogu %s się nie powiodło: %s\n"
 
-#: lib/rpmdb.c:2560
+#: lib/rpmdb.c:2562
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "%u. nagłówek w bazie danych jest błędny — pomijanie.\n"
 
-#: lib/rpmdb.c:2575
+#: lib/rpmdb.c:2577
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "nie można dodać wpisu będącego pierwotnie przy %u\n"
 
-#: lib/rpmdb.c:2591
+#: lib/rpmdb.c:2593
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "przebudowanie bazy danych się nie powiodło: pierwotna baza danych pozostała "
 "na miejscu\n"
 
-#: lib/rpmdb.c:2604
+#: lib/rpmdb.c:2606
 msgid "failed to replace old database with new database!\n"
 msgstr "zamiana poprzedniej bazy danych na nową się nie powiodła.\n"
 
@@ -3541,7 +3546,7 @@ msgstr "Nie wywołano exec() po fork() w skrypcie Lua\n"
 msgid "Unable to restore current directory: %m"
 msgstr "Nie można przywrócić bieżącego katalogu: %m"
 
-#: lib/rpmscript.c:162 rpmio/macro.c:1020
+#: lib/rpmscript.c:162 rpmio/macro.c:1029
 msgid "<lua> scriptlet support not built in\n"
 msgstr "Obsługa skryptów <lua> nie jest wbudowana\n"
 
@@ -3762,57 +3767,57 @@ msgstr "%3d>%*s(puste)\n"
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(puste)\n"
 
-#: rpmio/macro.c:588
+#: rpmio/macro.c:597
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
 msgstr "Makro %%%s ma niedozwoloną nazwę (%s)\n"
 
-#: rpmio/macro.c:593
+#: rpmio/macro.c:602
 #, c-format
 msgid "Macro %%%s is a built-in (%s)\n"
 msgstr "Makro %%%s jest wbudowane (%s)\n"
 
-#: rpmio/macro.c:638
+#: rpmio/macro.c:647
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "Makro %%%s ma niezakończone opcje\n"
 
-#: rpmio/macro.c:649 rpmio/macro.c:686
+#: rpmio/macro.c:658 rpmio/macro.c:695
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Makro %%%s ma niezakończoną treść\n"
 
-#: rpmio/macro.c:706
+#: rpmio/macro.c:715
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "Makro %%%s ma pustą treść\n"
 
-#: rpmio/macro.c:711
+#: rpmio/macro.c:720
 #, c-format
 msgid "Macro %%%s needs whitespace before body\n"
 msgstr "Makro %%%s wymaga spacji przed treścią\n"
 
-#: rpmio/macro.c:715
+#: rpmio/macro.c:724
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "Rozwinięcie makra %%%s się nie powiodło\n"
 
-#: rpmio/macro.c:802
+#: rpmio/macro.c:811
 #, c-format
 msgid "Macro %%%s defined but not used within scope\n"
 msgstr "Określono makro %%%s, ale nie jest używane w ramach zakresu\n"
 
-#: rpmio/macro.c:926
+#: rpmio/macro.c:935
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Nieznana opcja %c w %s(%s)\n"
 
-#: rpmio/macro.c:1181
+#: rpmio/macro.c:1190
 #, c-format
 msgid "failed to load macro file %s"
 msgstr "wczytanie pliku makra %s się nie powiodło"
 
-#: rpmio/macro.c:1261
+#: rpmio/macro.c:1270
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
@@ -3820,17 +3825,17 @@ msgstr ""
 "Za dużo poziomów rekurencji w rozwinięciu makra. Prawdopodobnie jest to "
 "spowodowane rekurencyjną deklaracją makra.\n"
 
-#: rpmio/macro.c:1320 rpmio/macro.c:1335
+#: rpmio/macro.c:1329 rpmio/macro.c:1344
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Niezakończone %c: %s\n"
 
-#: rpmio/macro.c:1366
+#: rpmio/macro.c:1375
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Makro niemożliwe do przetworzenia po %%\n"
 
-#: rpmio/macro.c:1694
+#: rpmio/macro.c:1703
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== aktywne %d puste %d\n"
