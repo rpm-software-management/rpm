@@ -70,6 +70,7 @@ struct rpmte_s {
     uint8_t *badrelocs;		/*!< (TR_ADDED) Bad relocations (or NULL) */
     FD_t fd;			/*!< (TR_ADDED) Payload file descriptor. */
     int verified;		/*!< (TR_ADDED) Verification status */
+    int addop;			/*!< (TR_ADDED) RPMTE_INSTALL/UPDATE/REINSTALL */
 
 #define RPMTE_HAVE_PRETRANS	(1 << 0)
 #define RPMTE_HAVE_POSTTRANS	(1 << 1)
@@ -246,11 +247,12 @@ rpmte rpmteFree(rpmte te)
 }
 
 rpmte rpmteNew(rpmts ts, Header h, rpmElementType type, fnpyKey key,
-	       rpmRelocation * relocs)
+	       rpmRelocation * relocs, int addop)
 {
     rpmte p = xcalloc(1, sizeof(*p));
     p->ts = ts;
     p->type = type;
+    p->addop = addop;
     p->verified = RPMSIG_UNVERIFIED_TYPE;
 
     if (addTE(p, h, key, relocs)) {
@@ -772,6 +774,11 @@ void rpmteSetVerified(rpmte te, int verified)
 int rpmteVerified(rpmte te)
 {
     return (te != NULL) ? te->verified : 0;
+}
+
+int rpmteAddOp(rpmte te)
+{
+    return te->addop;
 }
 
 int rpmteProcess(rpmte te, pkgGoal goal, int num)
