@@ -1320,6 +1320,21 @@ static struct stat * fakeStat(FileEntry cur, struct stat * statp)
     return statp;
 }
 
+static int validFilename(const char *fn)
+{
+    int rc = 1;
+    for (const char *s = fn; *s; s++) {
+	/* Ban DEL and anything below space, UTF-8 is validated elsewhere */
+	if (*s == 0x7f || *s < 0x20) {
+	    rpmlog(RPMLOG_ERR,
+		_("Illegal character (0x%x) in filename: %s\n"), *s, fn);
+	    rc = 0;
+	    break;
+	}
+    }
+    return rc;
+}
+
 /**
  * Add a file to the package manifest.
  * @param fl		package file tree walk data
@@ -1352,6 +1367,9 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	rpmlog(RPMLOG_ERR, _("Path is outside buildroot: %s\n"), diskPath);
 	goto exit;
     }
+
+    if (!validFilename(diskPath))
+	goto exit;
     
     /* Path may have prepended buildRoot, so locate the original filename. */
     /*
