@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2019-06-05 14:48+0300\n"
+"POT-Creation-Date: 2019-06-26 17:41+0300\n"
 "PO-Revision-Date: 2017-10-13 05:50+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Japanese (http://www.transifex.com/rpm-team/rpm/language/"
@@ -815,172 +815,177 @@ msgstr ""
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "シンボリックリンクが BuildRoot を指しています: %s -> %s\n"
 
-#: build/files.c:1352
+#: build/files.c:1331
+#, c-format
+msgid "Illegal character (0x%x) in filename: %s\n"
+msgstr ""
+
+#: build/files.c:1368
 #, c-format
 msgid "Path is outside buildroot: %s\n"
 msgstr ""
 
-#: build/files.c:1392
+#: build/files.c:1411
 #, c-format
 msgid "Directory not found: %s\n"
 msgstr "ディレクトリーがありません: %s\n"
 
-#: build/files.c:1393 lib/rpminstall.c:459
+#: build/files.c:1412 lib/rpminstall.c:459
 #, c-format
 msgid "File not found: %s\n"
 msgstr "ファイルが見つかりません: %s\n"
 
-#: build/files.c:1405
+#: build/files.c:1424
 #, c-format
 msgid "Not a directory: %s\n"
 msgstr ""
 
-#: build/files.c:1598
+#: build/files.c:1617
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: 不明なタグ (%d) を読み込めませんでした。\n"
 
-#: build/files.c:1604
+#: build/files.c:1623
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: 公開鍵の読み込みに失敗しました。\n"
 
-#: build/files.c:1608
+#: build/files.c:1627
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: ASCII 形式の公開鍵ではありません。\n"
 
-#: build/files.c:1617
+#: build/files.c:1636
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s: エンコードに失敗\n"
 
-#: build/files.c:1663
+#: build/files.c:1682
 msgid "failed symlink"
 msgstr ""
 
-#: build/files.c:1719 build/files.c:1722
+#: build/files.c:1738 build/files.c:1741
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
 msgstr ""
 
-#: build/files.c:1729
+#: build/files.c:1748
 #, c-format
 msgid "Duplicate build-ids %s and %s\n"
 msgstr ""
 
-#: build/files.c:1783
+#: build/files.c:1802
 msgid "_build_id_links macro not set, assuming 'compat'\n"
 msgstr ""
 
-#: build/files.c:1796
+#: build/files.c:1815
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
 msgstr ""
 
-#: build/files.c:1885
+#: build/files.c:1904
 #, c-format
 msgid "error reading build-id in %s: %s\n"
 msgstr ""
 
-#: build/files.c:1889
+#: build/files.c:1908
 #, c-format
 msgid "Missing build-id in %s\n"
 msgstr ""
 
-#: build/files.c:1894
+#: build/files.c:1913
 #, c-format
 msgid "build-id found in %s too small\n"
 msgstr ""
 
-#: build/files.c:1895
+#: build/files.c:1914
 #, c-format
 msgid "build-id found in %s too large\n"
 msgstr ""
 
-#: build/files.c:1910 rpmio/rpmfileutil.c:443
+#: build/files.c:1929 rpmio/rpmfileutil.c:443
 msgid "failed to create directory"
 msgstr "ディレクトリーの作成に失敗しました"
 
-#: build/files.c:1928
+#: build/files.c:1947
 msgid "Mixing main ELF and debug files in package"
 msgstr ""
 
-#: build/files.c:2129
+#: build/files.c:2148
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "ファイルは先頭に \"/\" が必要です: %s\n"
 
-#: build/files.c:2153
+#: build/files.c:2172
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr "%%dev グロブは許可されません: %s\n"
 
-#: build/files.c:2165
+#: build/files.c:2184
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2167
+#: build/files.c:2186
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2203
+#: build/files.c:2222
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "%%files のファイル %s を開けません: %m\n"
 
-#: build/files.c:2226
+#: build/files.c:2245
 #, c-format
 msgid "Empty %%files file %s\n"
 msgstr ""
 
-#: build/files.c:2232
+#: build/files.c:2251
 #, c-format
 msgid "Error reading %%files file %s: %m\n"
 msgstr "%%files ファイル %s の読み込み中にエラー: %m\n"
 
-#: build/files.c:2258
+#: build/files.c:2277
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr "不正な _docdir_fmt %s: %s\n"
 
-#: build/files.c:2380 lib/rpminstall.c:461
+#: build/files.c:2399 lib/rpminstall.c:461
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "ファイルが見つかりません (by glob): %s\n"
 
-#: build/files.c:2467
+#: build/files.c:2486
 #, c-format
 msgid "Special file in generated file list: %s\n"
 msgstr ""
 
-#: build/files.c:2491
+#: build/files.c:2510
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr "他の形式で特別な %s を混ぜることはできません: %s\n"
 
-#: build/files.c:2507
+#: build/files.c:2526
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr "１ 行に複数のファイル: %s\n"
 
-#: build/files.c:2576
+#: build/files.c:2595
 msgid "Generating build-id links failed\n"
 msgstr ""
 
-#: build/files.c:2693
+#: build/files.c:2712
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "不正なファイル: %s: %s\n"
 
-#: build/files.c:2761
+#: build/files.c:2780
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "パッケージに含まれないファイルの検査中: %s\n"
 
-#: build/files.c:2774
+#: build/files.c:2793
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -989,24 +994,24 @@ msgstr ""
 "インストール済み(ただしパッケージに含まれない)ファイルが見つかりました:\n"
 "%s"
 
-#: build/files.c:2889
+#: build/files.c:2908
 #, c-format
 msgid "%s was mapped to multiple filenames"
 msgstr ""
 
-#: build/files.c:3138
+#: build/files.c:3157
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "ファイルの処理中: %s\n"
 
-#: build/files.c:3160
+#: build/files.c:3179
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 "バイナリのアーキテクチャー (%d) がパッケージのアーキテクチャー (%d) と一致し"
 "ません。\n"
 
-#: build/files.c:3166
+#: build/files.c:3185
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "noarch パッケージ内にアーキテクチャ依存のバイナリー\n"
 
@@ -1020,77 +1025,77 @@ msgstr "ファイル %s にアーカイブの作成を失敗しました: %s\n"
 msgid "create archive failed: %s\n"
 msgstr "アーカイブの作成に失敗しました: %s\n"
 
-#: build/pack.c:120
+#: build/pack.c:122
 #, c-format
 msgid "Could not open %s file: %s\n"
 msgstr "%s ファイルを開けませんでした: %s\n"
 
-#: build/pack.c:339
+#: build/pack.c:342
 #, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "不明なペイロード圧縮: %s\n"
 
-#: build/pack.c:393 sign/rpmgensig.c:286 sign/rpmgensig.c:632
+#: build/pack.c:396 sign/rpmgensig.c:286 sign/rpmgensig.c:632
 #: sign/rpmgensig.c:667
 #, c-format
 msgid "Could not seek in file %s: %s\n"
 msgstr ""
 
-#: build/pack.c:419
+#: build/pack.c:422
 #, c-format
 msgid "Failed to read %jd bytes in file %s: %s\n"
 msgstr ""
 
-#: build/pack.c:433
+#: build/pack.c:436
 msgid "Unable to create immutable header region\n"
 msgstr ""
 
-#: build/pack.c:438
+#: build/pack.c:441
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:506
+#: build/pack.c:509
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: build/pack.c:513
+#: build/pack.c:516
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗: %s\n"
 
-#: build/pack.c:597
+#: build/pack.c:600
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み完了: %s\n"
 
-#: build/pack.c:616
+#: build/pack.c:619
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr "「%s」を実行しています:\n"
 
-#: build/pack.c:619
+#: build/pack.c:622
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "「%s」の実行に失敗しました。\n"
 
-#: build/pack.c:623
+#: build/pack.c:626
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "パッケージ \"%s\" のチェックに失敗しました。\n"
 
-#: build/pack.c:667
+#: build/pack.c:670
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
 
-#: build/pack.c:686
+#: build/pack.c:689
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:755
+#: build/pack.c:759
 #, c-format
 msgid "Finished binary package job, result %d, filename %s\n"
 msgstr ""
@@ -1579,7 +1584,7 @@ msgstr ""
 msgid "No compatible architectures found for build\n"
 msgstr "作成(build)可能な互換アーキテクチャはありません\n"
 
-#: build/parseSpec.c:1039
+#: build/parseSpec.c:1041
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "パッケージには %%description がありません: %s\n"
@@ -1956,78 +1961,78 @@ msgstr "ディレクトリー"
 msgid "file"
 msgstr "ファイル"
 
-#: lib/header.c:310
+#: lib/header.c:307
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d len %d"
 msgstr ""
 
-#: lib/header.c:977
+#: lib/header.c:974
 msgid "hdr load: BAD"
 msgstr ""
 
-#: lib/header.c:1799
+#: lib/header.c:1796
 msgid "region: no tags"
 msgstr ""
 
-#: lib/header.c:1821
+#: lib/header.c:1818
 #, c-format
 msgid "region tag: BAD, tag %d type %d offset %d count %d"
 msgstr ""
 
-#: lib/header.c:1829
+#: lib/header.c:1826
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d"
 msgstr ""
 
-#: lib/header.c:1851
+#: lib/header.c:1848
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d"
 msgstr ""
 
-#: lib/header.c:1860
+#: lib/header.c:1857
 #, c-format
 msgid "region %d size: BAD, ril %d il %d rdl %d dl %d"
 msgstr ""
 
-#: lib/header.c:1868
+#: lib/header.c:1865
 #, c-format
 msgid "region %d: tag number mismatch il %d ril %d dl %d rdl %d\n"
 msgstr ""
 
-#: lib/header.c:1918
+#: lib/header.c:1915
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d"
 msgstr ""
 
-#: lib/header.c:1922
+#: lib/header.c:1919
 msgid "hdr magic: BAD"
 msgstr ""
 
-#: lib/header.c:1927
+#: lib/header.c:1924
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range"
 msgstr ""
 
-#: lib/header.c:1932
+#: lib/header.c:1929
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range"
 msgstr ""
 
-#: lib/header.c:1942
+#: lib/header.c:1939
 #, c-format
 msgid "hdr blob(%zd): BAD, read returned %d"
 msgstr ""
 
-#: lib/header.c:1951
+#: lib/header.c:1948
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr ""
 
-#: lib/header.c:1964
+#: lib/header.c:1961
 msgid "signature "
 msgstr ""
 
-#: lib/header.c:1991
+#: lib/header.c:1988
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
 msgstr ""
@@ -2853,7 +2858,7 @@ msgstr "OK ではありません。"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmchecksig.c:294 sign/rpmgensig.c:135
+#: lib/rpmchecksig.c:295 sign/rpmgensig.c:135
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: オープンに失敗しました: %s\n"
@@ -2921,59 +2926,59 @@ msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 "rpmdb: 破損したヘッダーインスタンス #%u を取得しました。スキップします。\n"
 
-#: lib/rpmdb.c:2063
+#: lib/rpmdb.c:2065
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ヘッダーを読むことができません (0x%x)\n"
 
-#: lib/rpmdb.c:2414
+#: lib/rpmdb.c:2416
 msgid "could not move new database in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2417
+#: lib/rpmdb.c:2419
 #, c-format
 msgid "could also not restore old database from %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2419 lib/rpmdb.c:2606
+#: lib/rpmdb.c:2421 lib/rpmdb.c:2608
 #, c-format
 msgid "replace files in %s with files from %s to recover\n"
 msgstr ""
 
-#: lib/rpmdb.c:2428
+#: lib/rpmdb.c:2430
 #, c-format
 msgid "Could not get public keys from %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2435
+#: lib/rpmdb.c:2437
 #, c-format
 msgid "could not delete old database at %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2505
+#: lib/rpmdb.c:2507
 msgid "no dbpath has been set"
 msgstr "dbpath が設定されていません。"
 
-#: lib/rpmdb.c:2523
+#: lib/rpmdb.c:2525
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "ディレクトリー %s の作成に失敗しました: %s\n"
 
-#: lib/rpmdb.c:2560
+#: lib/rpmdb.c:2562
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "データベース中のヘッダー #%u は不正です -- スキップします。\n"
 
-#: lib/rpmdb.c:2575
+#: lib/rpmdb.c:2577
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "元々 %u にあったレコードを追加できません。\n"
 
-#: lib/rpmdb.c:2591
+#: lib/rpmdb.c:2593
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "データベースの再構築に失敗: オリジナルのデータベースは残っています。\n"
 
-#: lib/rpmdb.c:2604
+#: lib/rpmdb.c:2606
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースで置き換えるのに失敗!\n"
 
@@ -3510,7 +3515,7 @@ msgstr ""
 msgid "Unable to restore current directory: %m"
 msgstr "カレントディレクトリを戻せません: %m"
 
-#: lib/rpmscript.c:162 rpmio/macro.c:1020
+#: lib/rpmscript.c:162 rpmio/macro.c:1029
 msgid "<lua> scriptlet support not built in\n"
 msgstr "<lua> スクリプトは組み込みでサポートしていません\n"
 
@@ -3730,57 +3735,57 @@ msgstr ""
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(空)\n"
 
-#: rpmio/macro.c:588
+#: rpmio/macro.c:597
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
 msgstr ""
 
-#: rpmio/macro.c:593
+#: rpmio/macro.c:602
 #, c-format
 msgid "Macro %%%s is a built-in (%s)\n"
 msgstr ""
 
-#: rpmio/macro.c:638
+#: rpmio/macro.c:647
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "マクロ %%%s はオプションが終端されていません。\n"
 
-#: rpmio/macro.c:649 rpmio/macro.c:686
+#: rpmio/macro.c:658 rpmio/macro.c:695
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "マクロ %%%s はボディが終端していません。\n"
 
-#: rpmio/macro.c:706
+#: rpmio/macro.c:715
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "マクロ %%%s のボディは空です。\n"
 
-#: rpmio/macro.c:711
+#: rpmio/macro.c:720
 #, c-format
 msgid "Macro %%%s needs whitespace before body\n"
 msgstr ""
 
-#: rpmio/macro.c:715
+#: rpmio/macro.c:724
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "マクロ %%%s の展開に失敗しました。\n"
 
-#: rpmio/macro.c:802
+#: rpmio/macro.c:811
 #, c-format
 msgid "Macro %%%s defined but not used within scope\n"
 msgstr ""
 
-#: rpmio/macro.c:926
+#: rpmio/macro.c:935
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "不明なオプション %c (%s(%s)中に)\n"
 
-#: rpmio/macro.c:1181
+#: rpmio/macro.c:1190
 #, c-format
 msgid "failed to load macro file %s"
 msgstr ""
 
-#: rpmio/macro.c:1261
+#: rpmio/macro.c:1270
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
@@ -3788,17 +3793,17 @@ msgstr ""
 "マクロ展開の再帰呼び出しが深すぎます。これは再帰的マクロ定義が原因で発生して"
 "いる可能性があります。\n"
 
-#: rpmio/macro.c:1320 rpmio/macro.c:1335
+#: rpmio/macro.c:1329 rpmio/macro.c:1344
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "終端されていない %c: %s\n"
 
-#: rpmio/macro.c:1366
+#: rpmio/macro.c:1375
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "%% の後ろに構文解析できないマクロが続いています。\n"
 
-#: rpmio/macro.c:1694
+#: rpmio/macro.c:1703
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== 有効 %d 空 %d\n"
