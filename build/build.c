@@ -305,7 +305,8 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 	        (rc == RPMRC_MISSINGBUILDREQUIRES))
 	    rc = doCheckBuildRequires(ts, spec, test);
 	if (rc == RPMRC_MISSINGBUILDREQUIRES) {
-	    if (what & RPMBUILD_DUMPBUILDREQUIRES) {
+	    if ((what & RPMBUILD_DUMPBUILDREQUIRES) &&
+		!(spec->flags & RPMSPEC_FORCE)) {
 		/* Create buildreqs package */
 		char *nvr = headerGetAsString(spec->packages->header, RPMTAG_NVR);
 		rasprintf(&spec->sourceRpmName, "%s.buildreqs.nosrc.rpm", nvr);
