@@ -1026,11 +1026,11 @@ package or when debugging this package.\
 # variables CFLAGS, CXXFLAGS, FFLAGS, FCFLAGS, LDFLAGS if they have
 # not been set already.
 %set_build_flags \
-  CFLAGS="${CFLAGS:-%{build_cflags}}" ; export CFLAGS ; \
-  CXXFLAGS="${CXXFLAGS:-%{build_cxxflags}}" ; export CXXFLAGS ; \
-  FFLAGS="${FFLAGS:-%{build_fflags}}" ; export FFLAGS ; \
-  FCFLAGS="${FCFLAGS:-%{build_fflags}}" ; export FCFLAGS ; \
-  LDFLAGS="${LDFLAGS:-%{build_ldflags}}" ; export LDFLAGS
+  CFLAGS="${CFLAGS:-%{?build_cflags}}" ; export CFLAGS ; \
+  CXXFLAGS="${CXXFLAGS:-%{?build_cxxflags}}" ; export CXXFLAGS ; \
+  FFLAGS="${FFLAGS:-%{?build_fflags}}" ; export FFLAGS ; \
+  FCFLAGS="${FCFLAGS:-%{?build_fflags}}" ; export FCFLAGS ; \
+  LDFLAGS="${LDFLAGS:-%{?build_ldflags}}" ; export LDFLAGS
 
 #==============================================================================
 # ---- specfile macros.
