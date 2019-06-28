@@ -30,10 +30,38 @@ static int sameDate(const struct tm *ot, const struct tm *nt)
 	    ot->tm_wday == nt->tm_wday);
 }
 
+static int parseTimeZone(const char *tz_name)
+{
+    if ((tz_name[0] != 'U') || (tz_name[1] != 'T') || (tz_name[2] != 'C'))
+	goto exit;
+
+    if (tz_name[3] == '\0')
+	return 0;   // timezone: UTC
+
+    if ((tz_name[3] != '+') && (tz_name[3] != '-'))
+	goto exit;
+    tz_name = tz_name + 4;
+
+    if ((tz_name[0] < '0') || (tz_name[0] > '9'))
+	goto exit;
+    tz_name++;
+    if ((tz_name[0] >= '0') && (tz_name[0] <= '9'))
+	tz_name++;
+
+    if (tz_name[0] == '\0')
+        return 0; // timezone: UTC-08
+    if ((tz_name[0] == ':') && (tz_name[1] >= '0') && (tz_name[1] <= '9')
+	&& (tz_name[2] >= '0') && (tz_name[2] <= '9') && (tz_name[3] == '\0'))
+        return 0; // timezone: UTC-08:30
+
+exit:
+    return 1;
+}
+
 /**
  * Parse date string to seconds.
  * accepted date formats are "Mon Jun 6 2016" (original one)
- * and "Thu Oct  6 06:48:39 CEST 2016" (extended one)
+ * and "Thu Oct  6 06:48:39 UTC-03:00 2016" (extended one)
  * @param datestr	date string (e.g. 'Wed Jan 1 1997')
  * @retval secs		secs since the unix epoch
  * @return 		0 on success, -1 on error
@@ -135,6 +163,10 @@ static int dateToTimet(const char * datestr, time_t * secs, int * date_words)
 	tz_name = xmalloc(tz_len + 1);
 	strncpy(tz_name, p, tz_len);
 	tz_name[tz_len] = '\0';
+
+	if (parseTimeZone(tz_name))
+	    rpmlog(RPMLOG_WARNING,
+		_("unknown timezone in %%changelog: %s\n"), datestr);
 
 	/* first part of year entry */
 	p = pe;
