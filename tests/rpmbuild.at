@@ -1520,3 +1520,65 @@ run rpmbuild \
 [error: Bad source: ${TOPDIR}/SOURCES/hello-1.0.tar.gz: No such file or directory
 ])
 AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([changelog time zone test success])
+AT_KEYWORDS([build changelog])
+AT_CHECK([
+rm -rf ${TOPDIR}
+
+run rpmbuild \
+  -ba "${abs_srcdir}/data/SPECS/timezonetest.spec" \
+  --quiet \
+  --define "%timezone_old UTC-3" \
+  --define "%timezone_new UTC-1" \
+
+run rpmbuild \
+  -ba "${abs_srcdir}/data/SPECS/timezonetest.spec" \
+  --quiet \
+  --define "%timezone_old UTC-83:00" \
+  --define "%timezone_new UTC-81:00" \
+
+run rpmbuild \
+  -ba "${abs_srcdir}/data/SPECS/timezonetest.spec" \
+  --quiet \
+  --define "%timezone_old UTC-3:00" \
+  --define "%timezone_new UTC" \
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([changelog time zone test failure])
+AT_KEYWORDS([build changelog])
+AT_CHECK([
+rm -rf ${TOPDIR}
+
+run rpmbuild \
+  -ba "${abs_srcdir}/data/SPECS/timezonetest.spec" \
+  --quiet \
+  --define "%timezone_old UTC-1" \
+  --define "%timezone_new UTC-99" \
+
+run rpmbuild \
+  -ba "${abs_srcdir}/data/SPECS/timezonetest.spec" \
+  --quiet \
+  --define "%timezone_old UTC-01:00" \
+  --define "%timezone_new UTC-83:00" \
+
+
+run rpmbuild \
+  -ba "${abs_srcdir}/data/SPECS/timezonetest.spec" \
+  --quiet \
+  --define "%timezone_old UTC" \
+  --define "%timezone_new UTC-3:00" \
+],
+[1],
+[],
+[error: %changelog not in descending chronological order
+error: %changelog not in descending chronological order
+error: %changelog not in descending chronological order
+])
+AT_CLEANUP
