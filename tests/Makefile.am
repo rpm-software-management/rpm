@@ -59,6 +59,7 @@ EXTRA_DIST += data/SPECS/filedep.spec
 EXTRA_DIST += data/SPECS/flangtest.spec
 EXTRA_DIST += data/SPECS/hlinktest.spec
 EXTRA_DIST += data/SPECS/iftest.spec
+EXTRA_DIST += data/SPECS/ifmultiline.spec
 EXTRA_DIST += data/SPECS/eliftest.spec
 EXTRA_DIST += data/SPECS/symlinktest.spec
 EXTRA_DIST += data/SPECS/deptest.spec
