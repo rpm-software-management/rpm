@@ -637,3 +637,15 @@ error: /data/SPECS/eliftest.spec:40: bad %elif condition:  rubbish:4-3
 
 ])
 AT_CLEANUP
+
+
+AT_SETUP([multiline %if test])
+AT_KEYWORDS([if, macros])
+AT_CHECK([
+runroot rpmbuild -ba --quiet      \
+ data/SPECS/ifmultiline.spec
+],
+[0],
+[],
+[])
+AT_CLEANUP

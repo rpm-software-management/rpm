@@ -332,15 +332,29 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi, int strip)
     return 0;
 }
 
-static void copyNextLineFinish(rpmSpec spec, int strip)
+static parsedSpecLine copyNextLineFinish(rpmSpec spec, int strip)
 {
     char *last;
     char ch;
+    char *s;
+    parsedSpecLine lineType;
 
     /* Find next line in expanded line buffer */
-    spec->line = last = spec->nextline;
+    s = spec->line = last = spec->nextline;
     ch = ' ';
+
+    /* skip space until '\n' or non space is reached */
+    while (*(s) && (*s != '\n') && risspace(*(s)))
+	(s)++;
+    lineType = parseLineType(s);
+
     while (*spec->nextline && ch != '\n') {
+	/* for conditionals and %include trim trailing '\' */
+	if (lineType && (*spec->nextline == '\\') &&
+	    (*spec->nextline+1) && (*(spec->nextline+1) == '\n')) {
+	    *spec->nextline = ' ';
+	    *(spec->nextline+1) = ' ';
+	}
 	ch = *spec->nextline++;
 	if (!risspace(ch))
 	    last = spec->nextline;
@@ -357,6 +371,8 @@ static void copyNextLineFinish(rpmSpec spec, int strip)
     
     if (strip & STRIP_TRAILINGSPACE)
 	*last = '\0';
+
+    return lineType;
 }
 
 static int readLineFromOFI(rpmSpec spec, OFI_t *ofi)
@@ -449,12 +465,9 @@ retry:
 	}
     }
 
-    copyNextLineFinish(spec, strip);
-
+    lineType = copyNextLineFinish(spec, strip);
     s = spec->line;
     SKIPSPACE(s);
-
-    lineType = parseLineType(s);
     if (!lineType)
 	goto after_classification;
 
