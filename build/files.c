@@ -1575,6 +1575,8 @@ static rpmRC recurseDir(FileList fl, const char * diskPath)
 	case FTS_INIT:		/* initialized only */
 	case FTS_W:		/* whiteout object */
 	default:
+	    rpmlog(RPMLOG_ERR, _("Can't read content of file: %s\n"),
+		fts->fts_path);
 	    rc = RPMRC_FAIL;
 	    break;
 	}
