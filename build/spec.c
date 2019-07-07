@@ -207,7 +207,7 @@ static rpm_time_t getBuildTime(void)
     char *endptr;
 
     srcdate = getenv("SOURCE_DATE_EPOCH");
-    if (srcdate) {
+    if (srcdate && rpmExpandNumeric("%{?use_source_date_epoch_as_buildtime}")) {
         errno = 0;
         epoch = strtol(srcdate, &endptr, 10);
         if (srcdate == endptr || *endptr || errno != 0)
