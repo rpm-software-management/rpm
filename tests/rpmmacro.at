@@ -619,3 +619,33 @@ error: /data/SPECS/eliftest.spec:40: bad %elif condition:  rubbish:4-3
 
 ])
 AT_CLEANUP
+
+AT_SETUP([triple coindition operatot test])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm --eval '%{?!{cosi001}:%{echo:OK1}:%{echo:WRONG}}x'
+runroot rpm --eval '%{?{cosi001}:%{echo:WRONG}:%{echo:OK2}}x'
+runroot rpm --define 'this that' --eval '%{?{this}:%{echo:OK3}%{echo:OK4}:%{echo:WRONG}}x'
+runroot rpm --define 'this that' --eval '%{?!{this}:%{echo:WRONG}:%{echo:OK5}}x'
+runroot rpm --eval '%{?!{cosi001}:OK6}x'
+runroot rpm --eval '%{?{cosi001}:WRONG}x'
+runroot rpm --define "this that" --eval '%{?{this}:OK7}x'
+runroot rpm --define "this that" --eval '%{?!{this}:WRONG}x'
+],
+[0],
+[OK1
+x
+OK2
+x
+OK3
+OK4
+x
+OK5
+x
+OK6x
+x
+OK7x
+x
+],
+[])
+AT_CLEANUP

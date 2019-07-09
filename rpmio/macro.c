@@ -48,6 +48,7 @@ enum macroFlags_e {
 enum checkConditionType {
     CHK_NONE		= 0,
     CHK_BASIC		= (1 << 0),
+    CHK_TRIPLE		= (1 << 1),
 };
 
 /*! The structure used to store a macro. */
@@ -1233,6 +1234,60 @@ static void setPartsSize(macroPartition *parts)
 }
 
 /**
+ * Checking and parsing triple operator for conditional shortcut
+ * @param source	string to expand
+ * @param sourceEnd	pointer after the valid string to expand
+ * @param parts		macro partitioned to the three possible parts
+ * @return		parsed triple condition operator macro
+ */
+static macroPartition *testTripleCondition(const char *source,
+	const char *sourceEnd, macroPartition *parts)
+{
+    macroPartition *partition = NULL;
+
+    parts->f = source;
+
+    /* the first parameter must start by { */
+    if (parts->f[0] != '{') {
+	goto exit;
+    } else {
+	parts->f++;
+	/* the first parameter ends by } */
+	if ((parts->fe = matchchar(parts->f, '{', '}')) == NULL)
+	    goto exit;
+	parts->g = parts->fe + 1;
+    }
+
+    /* after the first parameter must be ':' */
+    if (parts->g[0] != ':') {
+	goto exit;
+    } else {
+	parts->g++;
+	parts->ge = parts->g;
+	while ((parts->ge[0] != 0) && (parts->ge[0] != ':')) {
+	    parts->ge++;
+	    if (parts->ge[0] == '{') {
+		if ((parts->ge = matchchar(parts->ge++, '{', '}')) == NULL)
+		    goto exit;
+	    }
+	}
+    }
+
+    parts->h = parts->ge;
+    /* second ':' is optional */
+    if (parts->h[0] == ':') {
+	parts->h++;
+	parts->he = sourceEnd-1;
+    } else {
+	parts->ge = parts->h = parts->he = sourceEnd-1;
+    }
+    partition = parts;
+
+exit:
+    return partition;
+}
+
+/**
  * The main macro recursion loop.
  * @param mb		macro expansion state
  * @param src		string to expand
@@ -1245,7 +1300,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     rpmMacroEntry *mep;
     rpmMacroEntry me;
     const char *s = src, *se;
-    macroPartition parts;
+    macroPartition parts, parts_triple_c;
     size_t tpos;
     int c;
     int negate;
@@ -1376,6 +1431,12 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    break;
 	}
 
+	if ((chktype != CHK_NONE) &&
+	    testTripleCondition(parts.f, se, &parts_triple_c)) {
+	    chktype = CHK_TRIPLE;
+	    parts = parts_triple_c;
+	}
+
 	/* XXX Everything below expects fe > f */
 	setPartsSize(&parts);
 	if (parts.fn <= 0) {
@@ -1454,6 +1515,21 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    continue;
 	}
 	
+	/* XXX Special processing for triple condition operator */
+	if (chktype == CHK_TRIPLE) {
+	    /* Expand X in %{?{macro}:X:Y} or %{!?{macro}:X:Y} */
+	    if ((negate && !me) || (!negate && me)) {
+		if (parts.g && parts.g < parts.ge)
+		    expandMacro(mb, parts.g, parts.gn);
+	    /* Expand Y in %{?{macro}:X:Y} or %{!?{macro}:X:Y} */
+	    } else {
+		if (parts.h && parts.h < parts.he)
+		    expandMacro(mb, parts.h, parts.hn);
+	    }
+	    s = se;
+	    continue;
+	}
+
 	if (me == NULL) {	/* leave unknown %... as is */
 	    /* XXX hack to permit non-overloaded %foo to be passed */
 	    c = '%';	/* XXX only need to save % */
