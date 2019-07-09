@@ -71,6 +71,13 @@ struct rpmMacroContext_s {
     pthread_mutexattr_t lockattr;
 };
 
+typedef struct macroPartition_s {
+    const char *f, *fe;
+    const char *g, *ge;
+    const char *h, *he;
+    size_t fn, gn, hn;
+} macroPartition;
+
 static struct rpmMacroContext_s rpmGlobalMacroContext_s;
 rpmMacroContext rpmGlobalMacroContext = &rpmGlobalMacroContext_s;
 
@@ -1213,6 +1220,18 @@ static const char *setNegateAndCheck(const char *str, int *pnegate, int *pchktyp
     return str;
 }
 
+static void partsInit(macroPartition *parts)
+{
+    memset(parts, 0, sizeof(*parts));
+}
+
+static void setPartsSize(macroPartition *parts)
+{
+    parts->fn = parts->fe - parts->f;
+    parts->gn = parts->ge - parts->g;
+    parts->hn = parts->he - parts->h;
+}
+
 /**
  * The main macro recursion loop.
  * @param mb		macro expansion state
@@ -1226,9 +1245,8 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     rpmMacroEntry *mep;
     rpmMacroEntry me;
     const char *s = src, *se;
-    const char *f, *fe;
-    const char *g, *ge;
-    size_t fn, gn, tpos;
+    macroPartition parts;
+    size_t tpos;
     int c;
     int negate;
     const char * lastc;
@@ -1289,15 +1307,14 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	}
 
 	/* Expand next macro */
-	f = fe = NULL;
-	g = ge = NULL;
+	partsInit(&parts);
 	if (mb->depth > 1)	/* XXX full expansion for outermost level */
 	    tpos = mb->tpos;	/* save expansion pointer for printExpand */
 	lastc = NULL;
 	switch ((c = *s)) {
 	default:		/* %name substitution */
 	    s = setNegateAndCheck(s, &negate, &chktype);
-	    f = se = s;
+	    parts.f = se = s;
 	    if (*se == '-')
 		se++;
 	    while ((c = *se) && (risalnum(c) || c == '_'))
@@ -1314,11 +1331,11 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    default:
 		break;
 	    }
-	    fe = se;
+	    parts.fe = se;
 	    /* For "%name " macros ... */
-	    if ((c = *fe) && isblank(c))
-		if ((lastc = strchr(fe,'\n')) == NULL)
-		    lastc = strchr(fe, '\0');
+	    if ((c = *parts.fe) && isblank(c))
+		if ((lastc = strchr(parts.fe,'\n')) == NULL)
+		    lastc = strchr(parts.fe, '\0');
 	    break;
 	case '(':		/* %(...) shell escape */
 	    if ((se = matchchar(s, c, ')')) == NULL) {
@@ -1340,15 +1357,15 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 		mbErr(mb, 1, _("Unterminated %c: %s\n"), (char)c, s);
 		continue;
 	    }
-	    f = s+1;/* skip { */
+	    parts.f = s+1;/* skip { */
 	    se++;	/* skip } */
-	    f = setNegateAndCheck(f, &negate, &chktype);
-	    for (fe = f; (c = *fe) && !strchr(" :}", c);)
-		fe++;
+	    parts.f = setNegateAndCheck(parts.f, &negate, &chktype);
+	    for (parts.fe = parts.f; (c = *parts.fe) && !strchr(" :}", c);)
+		parts.fe++;
 	    switch (c) {
 	    case ':':
-		g = fe + 1;
-		ge = se - 1;
+		parts.g = parts.fe + 1;
+		parts.ge = se - 1;
 		break;
 	    case ' ':
 		lastc = se-1;
@@ -1360,9 +1377,8 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	}
 
 	/* XXX Everything below expects fe > f */
-	fn = (fe - f);
-	gn = (ge - g);
-	if ((fe - f) <= 0) {
+	setPartsSize(&parts);
+	if (parts.fn <= 0) {
 	    /* XXX Process % in unknown context */
 	    c = '%';	/* XXX only need to save % */
 	    mbAppend(mb, c);
@@ -1378,18 +1394,19 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    printMacro(mb, s, se);
 
 	/* Expand builtin macros */
-	if ((builtin = lookupBuiltin(f, fn))) {
+	if ((builtin = lookupBuiltin(parts.f, parts.fn))) {
 	    if (builtin->parse) {
 		s = builtin->parse(mb, se, slen - (se - s));
 	    } else {
-		builtin->func(mb, chktype, negate, f, fn, g, gn);
+		builtin->func(mb, chktype, negate, parts.f, parts.fn,
+		    parts.g, parts.gn);
 		s = se;
 	    }
 	    continue;
 	}
 
 	/* Expand defined macros */
-	mep = findEntry(mb->mc, f, fn, NULL);
+	mep = findEntry(mb->mc, parts.f, parts.fn, NULL);
 	me = (mep ? *mep : NULL);
 
 	if (me) {
@@ -1403,15 +1420,15 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	}
 
 	/* XXX Special processing for flags */
-	if (*f == '-') {
+	if (*parts.f == '-') {
 	    if ((me == NULL && !negate) ||	/* Without -f, skip %{-f...} */
 		    (me != NULL && negate)) {	/* With -f, skip %{!-f...} */
 		s = se;
 		continue;
 	    }
 
-	    if (g && g < ge) {		/* Expand X in %{-f:X} */
-		expandMacro(mb, g, gn);
+	    if (parts.g && parts.g < parts.ge) {	/* Expand X in %{-f:X} */
+		expandMacro(mb, parts.g, parts.gn);
 	    } else
 		if (me && me->body && *me->body) {/* Expand %{-f}/%{-f*} */
 		    expandMacro(mb, me->body, 0);
@@ -1427,8 +1444,8 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 		s = se;
 		continue;
 	    }
-	    if (g && g < ge) {		/* Expand X in %{?f:X} */
-		expandMacro(mb, g, gn);
+	    if (parts.g && parts.g < parts.ge) {	/* Expand X in %{?f:X} */
+		expandMacro(mb, parts.g, parts.gn);
 	    } else
 		if (me && me->body && *me->body) { /* Expand %{?f}/%{?f*} */
 		    expandMacro(mb, me->body, 0);
@@ -1446,7 +1463,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 
 	/* Setup args for "%name " macros with opts */
 	if (me && me->opts != NULL) {
-	    const char *xe = grabArgs(mb, me, fe, lastc);
+	    const char *xe = grabArgs(mb, me, parts.fe, lastc);
 	    if (xe != NULL)
 		se = xe;
 	}
