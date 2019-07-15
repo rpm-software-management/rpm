@@ -14,3 +14,9 @@ me
 %comment2 see\
 %dnl comment\
 this
+
+%comment3 %{expand:
+read
+%dnl expansion depends on the braces inside %dnl line
+%dnl e.g. '}' change this meaning
+me}
