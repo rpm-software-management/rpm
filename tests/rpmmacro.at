@@ -534,6 +534,21 @@ this
 [])
 AT_CLEANUP
 
+AT_SETUP([macro comments 2])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm \
+	--macros /data/macros.testfile \
+	--eval "%{comment3}"
+],
+[0],
+[
+read
+' change this meaning
+],
+[])
+AT_CLEANUP
+
 AT_SETUP([%if, %else, %elif test basic])
 AT_KEYWORDS([if, else, elif])
 AT_CHECK([
