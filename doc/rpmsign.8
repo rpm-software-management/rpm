@@ -21,6 +21,9 @@ options generate and insert new signatures for each package
 existing signatures. There are two options for historical reasons,
 there is no difference in behavior currently.
 
+To create a signature rpm needs to verify the package's checksum. As a result
+packages with a MD5/SHA1 checksums cannot be signed in FIPS mode.
+
 \fBrpm\fR \fB--delsign\fR \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
 .PP
