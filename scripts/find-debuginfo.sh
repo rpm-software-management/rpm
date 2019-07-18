@@ -10,6 +10,7 @@
 #	 		   [-S debugsourcefiles.list]
 #			   [--run-dwz] [--dwz-low-mem-die-limit N]
 #			   [--dwz-max-die-limit N]
+#			   [--zlib-compress-debug-sections]
 #			   [--build-id-seed SEED]
 #			   [--unique-debug-suffix SUFFIX]
 #			   [--unique-debug-src-base BASE]
@@ -97,6 +98,9 @@ run_dwz=false
 dwz_low_mem_die_limit=
 dwz_max_die_limit=
 
+# Zlib-compress debug sections
+zlib_compress_debug_sections=false
+
 # build id seed given by the --build-id-seed option
 build_id_seed=
 
@@ -127,6 +131,10 @@ while [ $# -gt 0 ]; do
     ;;
   --dwz-max-die-limit)
     dwz_max_die_limit=$2
+    shift
+    ;;
+  --zlib-compress-debug-sections)
+    zlib_compress_debug_sections=true
     shift
     ;;
   --build-id-seed)
@@ -508,11 +516,13 @@ else
 fi
 
 # Invoke the DWARF Compressor utility.
-if $run_dwz \
-   && [ -d "${RPM_BUILD_ROOT}/usr/lib/debug" ]; then
+if [ -d "${RPM_BUILD_ROOT}/usr/lib/debug" ]; then
   readarray dwz_files < <(cd "${RPM_BUILD_ROOT}/usr/lib/debug"; find -type f -name \*.debug | LC_ALL=C sort)
-  if [ ${#dwz_files[@]} -gt 0 ]; then
-    size_before=$(du -sk ${RPM_BUILD_ROOT}/usr/lib/debug | cut -f1)
+fi
+
+if [ ${#dwz_files[@]} -gt 0 ]; then
+  size_before=$(du -sk ${RPM_BUILD_ROOT}/usr/lib/debug | cut -f1)
+  if $run_dwz; then \
     dwz_multifile_name="${RPM_PACKAGE_NAME}-${RPM_PACKAGE_VERSION}-${RPM_PACKAGE_RELEASE}.${RPM_ARCH}"
     dwz_multifile_suffix=
     dwz_multifile_idx=0
@@ -536,15 +546,26 @@ if $run_dwz \
       exit 2
     fi
     size_after=$(du -sk ${RPM_BUILD_ROOT}/usr/lib/debug | cut -f1)
-    echo "original debug info size: ${size_before}kB, size after compression: ${size_after}kB"
+    echo "original debug info size: ${size_before}kB, size after dwz compression: ${size_after}kB"
     # Remove .dwz directory if empty
     rmdir "${RPM_BUILD_ROOT}/usr/lib/debug/.dwz" 2>/dev/null
-    if [ -f "${RPM_BUILD_ROOT}/usr/lib/debug/.dwz/${dwz_multifile_name}" ]; then
-      id="`readelf -Wn "${RPM_BUILD_ROOT}/usr/lib/debug/.dwz/${dwz_multifile_name}" \
-	     2>/dev/null | sed -n 's/^    Build ID: \([0-9a-f]\+\)/\1/p'`"
-    fi
+    size_before=$size_after
+  fi
 
-    # dwz invalidates .gnu_debuglink CRC32 in the main files.
+  if $zlib_compress_debug_sections; then
+    ( cd "${RPM_BUILD_ROOT}/usr/lib/debug" \
+      && objcopy --compress-debug-sections "${dwz_files[@]}" )
+    if [ -f "${RPM_BUILD_ROOT}/usr/lib/debug/.dwz/${dwz_multifile_name}" ]; then
+      ( cd "${RPM_BUILD_ROOT}/usr/lib/debug" \
+        && objcopy --compress-debug-sections ".dwz/${dwz_multifile_name}" )
+    fi
+    size_after_zlib=$(du -sk ${RPM_BUILD_ROOT}/usr/lib/debug | cut -f1)
+    echo "original debug info size: ${size_before}kB, size after zlib compression: ${size_after_zlib}kB"
+  fi
+
+  if $run_dwz || $zlib_compress_debug_sections; then
+    # dwz and objcopy --compress-debug-sections invalidate .gnu_debuglink
+    # CRC32 in the main files.
     cat "$ELFBINSFILE" |
     (cd "$RPM_BUILD_ROOT"; \
      xargs -d '\n' ${lib_rpm_dir}/sepdebugcrcfix usr/lib/debug)
