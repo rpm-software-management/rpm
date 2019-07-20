@@ -200,10 +200,6 @@ static int doBuildRequires(rpmSpec spec, int test)
     argvSplit(&output, getStringBuf(sb_stdout), "\n\r");
     outc = argvCount(output);
 
-    if (!outc) {
-	goto exit;
-    }
-
     for (int i = 0; i < outc; i++) {
 	parseRCPOT(spec, spec->sourcePackage, output[i], RPMTAG_REQUIRENAME,
 		   0, 0, addReqProvPkg, NULL);
