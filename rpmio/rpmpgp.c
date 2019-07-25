@@ -1289,9 +1289,10 @@ static pgpArmor decodePkts(uint8_t *b, uint8_t **pkt, size_t *pktlen)
 		goto exit;
 	    }
 	    t += (sizeof("-----")-1);
-	    if (t >= te) continue;
+	    /* Handle EOF without EOL here, *t == '\0' at EOF */
+	    if (*t && (t >= te)) continue;
 	    /* XXX permitting \r here is not RFC-2440 compliant <shrug> */
-	    if (!(*t == '\n' || *t == '\r')) continue;
+	    if (!(*t == '\n' || *t == '\r' || *t == '\0')) continue;
 
 	    crcdec = NULL;
 	    crclen = 0;
