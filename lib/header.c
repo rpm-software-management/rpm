@@ -2016,7 +2016,7 @@ rpmRC hdrblobGet(hdrblob blob, uint32_t tag, rpmtd td)
     memset(&einfo, 0, sizeof(einfo));
     rpmtdReset(td);
 
-    for (int i = 1; i < blob->il; i++, pe++) {
+    for (int i = 0; i < blob->il; i++, pe++) {
 	if (pe->tag != ntag)
 	    continue;
 	ei2h(pe, &einfo);
