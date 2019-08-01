@@ -1072,8 +1072,12 @@ package or when debugging this package.\
 %_make_output_sync %(! %{__make} --version -O >/dev/null 2>&1 || echo -O)
 
 #------------------------------------------------------------------------------
+# Verbosity options passed to make
+%_make_verbose V=1 VERBOSE=1
+
+#------------------------------------------------------------------------------
 # The "make" analogue, hiding the _smp_mflags magic from specs
-%make_build %{__make} %{_make_output_sync} %{?_smp_mflags} V=1 VERBOSE=1
+%make_build %{__make} %{_make_output_sync} %{?_smp_mflags} %{_make_verbose}
 
 #------------------------------------------------------------------------------
 # The make install analogue of %configure for modern autotools:
