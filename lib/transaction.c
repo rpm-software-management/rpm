@@ -1226,8 +1226,10 @@ static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
 	 */
 	if (!(vd->vfylevel & RPMSIG_SIGNATURE_TYPE))
 	    sinfo->rc = RPMRC_OK;
+	/* fallthrough */
     default:
-	vd->msg = rpmsinfoMsg(sinfo);
+	if (sinfo->rc)
+	    vd->msg = rpmsinfoMsg(sinfo);
 	break;
     }
     return (sinfo->rc == 0);
