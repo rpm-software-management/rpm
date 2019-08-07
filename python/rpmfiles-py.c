@@ -468,8 +468,8 @@ static PyObject *rpmfiles_subscript(rpmfilesObject *s, PyObject *item)
     PyObject *str = NULL;
 
     /* treat numbers as sequence accesses */
-    if (PyInt_Check(item)) {
-	return rpmfiles_getitem(s, PyInt_AsSsize_t(item));
+    if (PyLong_Check(item)) {
+	return rpmfiles_getitem(s, PyLong_AsSsize_t(item));
     } else if (PyLong_Check(item)) {
 	return rpmfiles_getitem(s, PyLong_AsSsize_t(item));
     }

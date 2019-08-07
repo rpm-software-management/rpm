@@ -272,7 +272,7 @@ static void addRpmTags(PyObject *module)
 	tagval = rpmTagGetValue(shortname);
 
 	PyModule_AddIntConstant(module, tagname, tagval);
-	pyval = PyInt_FromLong(tagval);
+	pyval = PyLong_FromLong(tagval);
 	pyname = utf8FromString(shortname);
 	PyDict_SetItem(dict, pyval, pyname);
 	Py_DECREF(pyval);
