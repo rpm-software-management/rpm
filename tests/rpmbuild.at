@@ -98,6 +98,50 @@ run rpmbuild \
 ])
 AT_CLEANUP
 
+# weird filename survival test
+AT_SETUP([rpmbuild package with weird filenames])
+AT_KEYWORDS([build])
+AT_CHECK([
+rm -rf ${TOPDIR}
+
+runroot rpmbuild -bb --quiet /data/SPECS/weirdnames.spec
+runroot rpm -qpl /build/RPMS/noarch/weirdnames-1.0-1.noarch.rpm
+],
+[0],
+[/opt/!absolutely
+/opt/#nocomment
+/opt/$talks
+/opt/&ground
+/opt/(maybe)
+/opt/<namehere>
+/opt/\.back
+/opt/after{all}
+/opt/bar"ed
+/opt/equals=not
+/opt/foo'ed
+/opt/index[[this]]
+/opt/just space
+/opt/perhaps;not
+/opt/tee|two
+/opt/the * are falling
+/opt/to?be
+/opt/true:false
+/opt/~right
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpmbuild package with illegal filenames])
+AT_KEYWORDS([build])
+AT_CHECK([
+# XXX current output is not well suited for grab + compare, just ignore
+runroot rpmbuild -bb --quiet --with illegal /data/SPECS/weirdnames.spec
+],
+[1],
+[],
+[ignore])
+AT_CLEANUP
+
 # ------------------------------
 # Check if tar build works
 # TODO: test that the rpms are actually created...
