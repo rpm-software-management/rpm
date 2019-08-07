@@ -98,9 +98,6 @@ static PyNumberMethods rpmii_as_number = {
 	0, /* nb_add */
 	0, /* nb_subtract */
 	0, /* nb_multiply */
-#if PY_MAJOR_VERSION < 3
-	0, /* nb_divide */
-#endif
 	0, /* nb_remainder */
 	0, /* nb_divmod */
 	0, /* nb_power */

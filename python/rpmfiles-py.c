@@ -479,11 +479,7 @@ static PyObject *rpmfiles_subscript(rpmfilesObject *s, PyObject *item)
 	Py_ssize_t start, stop, step, slicelength, i, cur;
 	PyObject * result;
 	
-	if (PySlice_GetIndicesEx(
-#if PY_MAJOR_VERSION < 3
-				 (PySliceObject*)
-#endif
-				 item, rpmfiles_length(s),
+	if (PySlice_GetIndicesEx(item, rpmfiles_length(s),
 				 &start, &stop, &step, &slicelength) < 0) {
 	    return NULL;
 	}
