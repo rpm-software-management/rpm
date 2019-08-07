@@ -172,7 +172,7 @@ rpmfi_FLinks(rpmfiObject * s, PyObject * unused)
 
     result = PyTuple_New(nlinks);
     for (uint32_t i=0; i<nlinks; i++) {
-	PyTuple_SET_ITEM(result,  i, PyInt_FromLong(files[i]));
+	PyTuple_SET_ITEM(result,  i, PyLong_FromLong(files[i]));
     }
     return result;
 }
@@ -210,14 +210,14 @@ rpmfi_iternext(rpmfiObject * s)
 	} else
 	    PyTuple_SET_ITEM(result,  0, utf8FromString(FN));
 	PyTuple_SET_ITEM(result,  1, PyLong_FromLongLong(FSize));
-	PyTuple_SET_ITEM(result,  2, PyInt_FromLong(FMode));
-	PyTuple_SET_ITEM(result,  3, PyInt_FromLong(FMtime));
-	PyTuple_SET_ITEM(result,  4, PyInt_FromLong(FFlags));
-	PyTuple_SET_ITEM(result,  5, PyInt_FromLong(FRdev));
-	PyTuple_SET_ITEM(result,  6, PyInt_FromLong(FInode));
-	PyTuple_SET_ITEM(result,  7, PyInt_FromLong(FNlink));
-	PyTuple_SET_ITEM(result,  8, PyInt_FromLong(FState));
-	PyTuple_SET_ITEM(result,  9, PyInt_FromLong(VFlags));
+	PyTuple_SET_ITEM(result,  2, PyLong_FromLong(FMode));
+	PyTuple_SET_ITEM(result,  3, PyLong_FromLong(FMtime));
+	PyTuple_SET_ITEM(result,  4, PyLong_FromLong(FFlags));
+	PyTuple_SET_ITEM(result,  5, PyLong_FromLong(FRdev));
+	PyTuple_SET_ITEM(result,  6, PyLong_FromLong(FInode));
+	PyTuple_SET_ITEM(result,  7, PyLong_FromLong(FNlink));
+	PyTuple_SET_ITEM(result,  8, PyLong_FromLong(FState));
+	PyTuple_SET_ITEM(result,  9, PyLong_FromLong(VFlags));
 	if (FUser == NULL) {
 	    Py_INCREF(Py_None);
 	    PyTuple_SET_ITEM(result, 10, Py_None);
@@ -306,12 +306,12 @@ rpmfi_subscript(rpmfiObject * s, PyObject * key)
 {
     int ix;
 
-    if (!PyInt_Check(key)) {
+    if (!PyLong_Check(key)) {
 	PyErr_SetString(PyExc_TypeError, "integer expected");
 	return NULL;
     }
 
-    ix = (int) PyInt_AsLong(key);
+    ix = (int) PyLong_AsLong(key);
     rpmfiSetFX(s->fi, ix);
     return utf8FromString(rpmfiFN(s->fi));
 }

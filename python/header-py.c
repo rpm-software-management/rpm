@@ -143,7 +143,7 @@ static PyObject * hdrKeyList(hdrObject * s)
 
     hi = headerInitIterator(s->h);
     while ((tag = headerNextTag(hi)) != RPMTAG_NOT_FOUND) {
-	PyObject *to = PyInt_FromLong(tag);
+	PyObject *to = PyLong_FromLong(tag);
         if (!to) {
             headerFreeIterator(hi);
             Py_DECREF(keys);
@@ -412,7 +412,7 @@ static PyObject * hdr_iternext(hdrObject *s)
     if (s->hi == NULL) s->hi = headerInitIterator(s->h);
 
     if ((tag = headerNextTag(s->hi)) != RPMTAG_NOT_FOUND) {
-	res = PyInt_FromLong(tag);
+	res = PyLong_FromLong(tag);
     } else {
 	s->hi = headerFreeIterator(s->hi);
     }
@@ -447,9 +447,9 @@ int tagNumFromPyObject (PyObject *item, rpmTagVal *tagp)
     rpmTagVal tag = RPMTAG_NOT_FOUND;
     PyObject *str = NULL;
 
-    if (PyInt_Check(item)) {
+    if (PyLong_Check(item)) {
 	/* XXX we should probably validate tag numbers too */
-	tag = PyInt_AsLong(item);
+	tag = PyLong_AsLong(item);
     } else if (utf8FromPyObject(item, &str)) {
 	tag = rpmTagGetValue(PyBytes_AsString(str));
 	Py_DECREF(str);
@@ -488,7 +488,7 @@ static int validItem(rpmTagClass tclass, PyObject *item)
 
     switch (tclass) {
     case RPM_NUMERIC_CLASS:
-	rc = (PyLong_Check(item) || PyInt_Check(item));
+	rc = (PyLong_Check(item) || PyLong_Check(item));
 	break;
     case RPM_STRING_CLASS:
 	rc = (PyBytes_Check(item) || PyUnicode_Check(item));
@@ -547,20 +547,20 @@ static int hdrAppendItem(Header h, rpmTagVal tag, rpmTagType type, PyObject *ite
 	rc = headerPutBin(h, tag, val, len);
 	} break;
     case RPM_INT64_TYPE: {
-	uint64_t val = PyInt_AsUnsignedLongLongMask(item);
+	uint64_t val = PyLong_AsUnsignedLongLongMask(item);
 	rc = headerPutUint64(h, tag, &val, 1);
 	} break;
     case RPM_INT32_TYPE: {
-	uint32_t val = PyInt_AsUnsignedLongMask(item);
+	uint32_t val = PyLong_AsUnsignedLongMask(item);
 	rc = headerPutUint32(h, tag, &val, 1);
 	} break;
     case RPM_INT16_TYPE: {
-	uint16_t val = PyInt_AsUnsignedLongMask(item);
+	uint16_t val = PyLong_AsUnsignedLongMask(item);
 	rc = headerPutUint16(h, tag, &val, 1);
 	} break;
     case RPM_INT8_TYPE:
     case RPM_CHAR_TYPE: {
-	uint8_t val = PyInt_AsUnsignedLongMask(item);
+	uint8_t val = PyLong_AsUnsignedLongMask(item);
 	rc = headerPutUint8(h, tag, &val, 1);
 	} break;
     default:
