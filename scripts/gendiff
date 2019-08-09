@@ -1,6 +1,6 @@
 #!/bin/sh
 
-[ -z "$1" -o -z "$2" ] && {
+[ -z "$1" ] || [ -z "$2" ] && {
 # usage
   echo "usage: $0 <directory> <diff-extension>" 1>&2
   exit 1

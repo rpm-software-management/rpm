@@ -28,7 +28,7 @@ loadfmt="${5%%:}"
     exit 0
 }
 
-[ "$ac" != "0" -o "`/usr/bin/id -u`" != "0" ] && {
+[ "$ac" != "0" ] || [ "`/usr/bin/id -u`" != "0" ] && {
     echo "$cmd: Convert $rpmdb files to db-$loadfmt format."
     echo "$cmd: Must be run as root, takes no arguments."
     exit 1
