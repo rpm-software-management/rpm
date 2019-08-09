@@ -6,7 +6,7 @@ fatal() {
 }
 
 pkg="$1"
-[ -n "$pkg" -a -e "$pkg" ] ||
+[ -n "$pkg" ] && [ -e "$pkg" ] ||
 	fatal "No package supplied"
 
 _dd() {
