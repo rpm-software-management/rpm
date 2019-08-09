@@ -59,8 +59,10 @@
 
 %_smp_mflags -j%{_smp_build_ncpus}
 
-# Enable LTO optimization with a maximal parallelism
-%_lto_cflags -flto=%{_smp_build_ncpus}
+# Enable LTO optimization with automatic detection
+# for GNU make's jobserver or maximum parallelism based
+# on number of cores.
+%_lto_cflags -flto=auto
 
 #==============================================================================
 # ---- Build policy macros.
