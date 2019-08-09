@@ -3,7 +3,7 @@
 
 for pkg in $*
 do
-    if [ "$pkg" = "" -o ! -e "$pkg" ]; then
+    if [ "$pkg" = "" ] || [ ! -e "$pkg" ]; then
 	echo "no package supplied" 1>&2
 	exit 1
     fi
