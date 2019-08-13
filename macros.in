@@ -1025,7 +1025,7 @@ package or when debugging this package.\
 %build_fflags %{optflags} %{?_fmoddir:-I%{_fmoddir}}
 
 # Link editor flags.  This is usually called LDFLAGS in makefiles.
-#%build_ldflags -Wl,-z,relro %{?_lto_cflags}
+#%build_ldflags -Wl,-z,relro
 
 # Expands to shell code to seot the compiler/linker environment
 # variables CFLAGS, CXXFLAGS, FFLAGS, FCFLAGS, LDFLAGS if they have
