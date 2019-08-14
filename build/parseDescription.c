@@ -21,6 +21,7 @@ int parseDescription(rpmSpec spec)
     const char **argv = NULL;
     const char *name = NULL;
     const char *lang = RPMBUILD_DEFAULT_LANG;
+    const char *descr = "";
     poptContext optCon = NULL;
     struct poptOption optionsTable[] = {
 	{ NULL, 'n', POPT_ARG_STRING, &name, 'n', NULL, NULL},
@@ -68,9 +69,13 @@ int parseDescription(rpmSpec spec)
 	goto exit;
     }
 
-    stripTrailingBlanksStringBuf(sb);
+    if (sb) {
+	stripTrailingBlanksStringBuf(sb);
+	descr = getStringBuf(sb);
+    }
+
     if (addLangTag(spec, pkg->header,
-		   RPMTAG_DESCRIPTION, getStringBuf(sb), lang)) {
+		   RPMTAG_DESCRIPTION, descr, lang)) {
 	nextPart = PART_ERROR;
     }
      
