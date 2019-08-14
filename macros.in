@@ -1012,6 +1012,13 @@ package or when debugging this package.\
 #==============================================================================
 # ---- compiler flags.
 
+# The function can be used to either replace a compiler option with another one,
+# or to append to %%{optflags} when a compiler option is present.
+# Examples:
+# %replace_optflags "-O2" "-O3"
+# %replace_optflags "-flto=auto"
+%replace_optflags() %global optflags %(echo %optflags | sed s/%{?1}/%{?2}/)
+
 # C compiler flags.  This is traditionally called CFLAGS in makefiles.
 # Historically also available as %%{optflags}, and %%build sets the
 # environment variable RPM_OPT_FLAGS to this value.
