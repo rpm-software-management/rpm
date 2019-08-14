@@ -79,7 +79,7 @@ int parseScript(rpmSpec spec, int parsePart)
     /*  -p "<sh> <args>..."                */
     /*  -f <file>                          */
 
-    const char *p;
+    const char *p = "";
     const char **progArgv = NULL;
     int progArgc;
     const char *partname = NULL;
@@ -354,8 +354,11 @@ int parseScript(rpmSpec spec, int parsePart)
 
     if ((res = parseLines(spec, STRIP_NOTHING, NULL, &sb)) == PART_ERROR)
 	goto exit;
-    stripTrailingBlanksStringBuf(sb);
-    p = getStringBuf(sb);
+
+    if (sb) {
+	stripTrailingBlanksStringBuf(sb);
+	p = getStringBuf(sb);
+    }
 
 #ifdef WITH_LUA
     if (rstreq(progArgv[0], "<lua>")) {
