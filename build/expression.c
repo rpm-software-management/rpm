@@ -714,3 +714,47 @@ exit:
   valueFree(v);
   return result;
 }
+
+char * parseExpressionString(const char *expr)
+{
+  struct _parseState state;
+  char *result = NULL;
+  Value v;
+
+  DEBUG(printf("parseExprString(?, '%s')\n", expr));
+
+  /* Initialize the expression parser state. */
+  state.p = state.str = xstrdup(expr);
+  state.nextToken = 0;
+  state.tokenValue = NULL;
+  (void) rdToken(&state);
+
+  /* Parse the expression. */
+  v = doLogical(&state);
+  if (!v)
+    goto exit;
+
+  /* If the next token is not TOK_EOF, we have a syntax error. */
+  if (state.nextToken != TOK_EOF) {
+    rpmlog(RPMLOG_ERR, _("syntax error in expression\n"));
+    goto exit;
+  }
+
+  DEBUG(valueDump("parseExprString:", v, stdout));
+
+  switch (v->type) {
+  case VALUE_TYPE_INTEGER: {
+    rasprintf(&result, "%d", v->data.i);
+  } break;
+  case VALUE_TYPE_STRING:
+    result = xstrdup(v->data.s);
+    break;
+  default:
+    break;
+  }
+
+exit:
+  state.str = _free(state.str);
+  valueFree(v);
+  return result;
+}
