@@ -268,8 +268,9 @@ static int getOutputFrom(ARGV_t argv,
     int status;
     int myerrno = 0;
     int ret = 1; /* assume failure */
+    int doio = (writePtr || sb_stdout || dup);
 
-    if (pipe(toProg) < 0 || pipe(fromProg) < 0) {
+    if (doio && (pipe(toProg) < 0 || pipe(fromProg) < 0)) {
 	rpmlog(RPMLOG_ERR, _("Couldn't create pipe for %s: %m\n"), argv[0]);
 	return -1;
     }
@@ -302,6 +303,9 @@ static int getOutputFrom(ARGV_t argv,
 		argv[0], strerror(errno));
 	return -1;
     }
+
+    if (!doio)
+	goto reap;
 
     close(toProg[0]);
     close(fromProg[1]);
@@ -376,6 +380,7 @@ static int getOutputFrom(ARGV_t argv,
     if (fromProg[0] >= 0)
 	close(fromProg[0]);
 
+reap:
     /* Collect status from prog */
     reaped = waitpid(child, &status, 0);
     rpmlog(RPMLOG_DEBUG, "\twaitpid(%d) rc %d status %x\n",
