@@ -410,6 +410,15 @@ RPM_GNUC_INTERNAL
 int parseExpressionBoolean(const char * expr);
 
 /** \ingroup rpmbuild
+ * Evaluate string expression.
+ * @param expr		expression to parse
+ * @return
+ */
+RPM_GNUC_INTERNAL
+char * parseExpressionString(const char * expr);
+
+
+/** \ingroup rpmbuild
  * Run a build script, assembled from spec file scriptlet section.
  *
  * @param spec		spec file control structure
