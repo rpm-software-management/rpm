@@ -9,7 +9,6 @@ rpm.c
 rpmsign.c
 rpmspec.c
 build/build.c
-build/expression.c
 build/files.c
 build/misc.c
 build/pack.c
@@ -79,6 +78,7 @@ python/rpmts-py.c
 rpmio/argv.c
 rpmio/digest.c
 rpmio/digest_nss.c
+rpmio/expression.c
 rpmio/macro.c
 rpmio/rpmfileutil.c
 rpmio/rpmio.c
