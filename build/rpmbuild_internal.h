@@ -402,23 +402,6 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char * field, rpmTagVal tagN,
 		int index, rpmsenseFlags tagflags, addReqProvFunction cb, void *cbdata);
 
 /** \ingroup rpmbuild
- * Evaluate boolean expression.
- * @param expr		expression to parse
- * @return
- */
-RPM_GNUC_INTERNAL
-int parseExpressionBoolean(const char * expr);
-
-/** \ingroup rpmbuild
- * Evaluate string expression.
- * @param expr		expression to parse
- * @return
- */
-RPM_GNUC_INTERNAL
-char * parseExpressionString(const char * expr);
-
-
-/** \ingroup rpmbuild
  * Run a build script, assembled from spec file scriptlet section.
  *
  * @param spec		spec file control structure
