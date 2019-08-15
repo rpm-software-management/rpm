@@ -14,7 +14,7 @@
 #include "system.h"
 
 #include <rpm/rpmlog.h>
-#include "build/rpmbuild_internal.h"
+#include <rpm/rpmmacro.h>
 #include "debug.h"
 
 /* #define DEBUG_PARSER 1 */
@@ -671,7 +671,7 @@ err:
   return NULL;
 }
 
-int parseExpressionBoolean(const char *expr)
+int rpmExprBool(const char *expr)
 {
   struct _parseState state;
   int result = -1;
@@ -715,7 +715,7 @@ exit:
   return result;
 }
 
-char * parseExpressionString(const char *expr)
+char *rpmExprStr(const char *expr)
 {
   struct _parseState state;
   char *result = NULL;
