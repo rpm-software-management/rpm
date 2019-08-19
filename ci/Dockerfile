@@ -6,6 +6,8 @@ COPY . .
 
 RUN echo -e "deltarpm=0\ninstall_weak_deps=0\ntsflags=nodocs" >> /etc/dnf/dnf.conf
 RUN rm -f /etc/yum.repos.d/*modular.repo
+# dummy for controlling per-repo gpgcheck via Semaphore setup
+RUN sed -i -e "s:^gpgcheck=.$:gpgcheck=1:g" /etc/yum.repos.d/*.repo
 RUN dnf -y update
 RUN dnf -y install \
   autoconf \
