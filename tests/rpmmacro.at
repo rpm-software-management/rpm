@@ -245,6 +245,45 @@ runroot rpm \
 ])
 AT_CLEANUP
 
+AT_SETUP([expr macro 1])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm \
+    --define "aaa 5" \
+    --define "bbb 0" \
+    --eval '%{expr:4*1024}' \
+    --eval '%{expr:5 < 1}' \
+    --eval '%{expr:(4 + 5) * 2 == 18}' \
+    --eval '%{expr:%{aaa} || %{bbb}}' \
+    --eval '%{expr:%{aaa} && %{bbb}}'
+],
+[0],
+[4096
+0
+1
+1
+0
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([expr macro 2])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm --eval '%{expr:a*1}'
+runroot rpm --eval '%{expr:(5+1)*4)}'
+runroot rpm --eval '%{expr:a=!b}'
+],
+[1],
+[],
+[error: types must match: a*1
+error: syntax error in expression: (5+1)*4)
+error:                                    ^
+error: syntax error while parsing ==: a=!b
+error:                                  ^
+])
+AT_CLEANUP
+
 AT_SETUP([shell expansion])
 AT_KEYWORDS([macros])
 AT_CHECK([
