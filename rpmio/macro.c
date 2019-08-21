@@ -539,6 +539,7 @@ static struct builtins_s {
     { STR_AND_LEN("echo"),	doOutput,	NULL },
     { STR_AND_LEN("error"),	doOutput,	NULL },
     { STR_AND_LEN("expand"),	doFoo,		NULL },
+    { STR_AND_LEN("expr"),	doFoo,		NULL },
     { STR_AND_LEN("getconfdir"),doFoo,		NULL },
     { STR_AND_LEN("getenv"),	doFoo,		NULL },
     { STR_AND_LEN("getncpus"),	doFoo,		NULL },
@@ -1101,6 +1102,14 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
 	    b++;
     } else if (STREQ("expand", f, fn) || STREQ("verbose", f, fn)) {
 	b = buf;
+    } else if (STREQ("expr", f, fn)) {
+	char *expr = rpmExprStr(buf);
+	if (expr) {
+	    free(buf);
+	    b = buf = expr;
+	} else {
+	    mb->error = 1;
+	}
     } else if (STREQ("url2path", f, fn) || STREQ("u2p", f, fn)) {
 	(void)urlPath(buf, (const char **)&b);
 	if (*b == '\0') b = "/";
