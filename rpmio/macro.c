@@ -6,6 +6,7 @@
 #include <stdarg.h>
 #include <pthread.h>
 #include <errno.h>
+#include <sys/resource.h>
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
 #else
@@ -15,6 +16,9 @@ extern int optind;
 #if HAVE_SCHED_GETAFFINITY
 #include <sched.h>
 #endif
+#if defined(__linux)
+#include <sys/personality.h>
+#endif
 
 #if !defined(isblank)
 #define	isblank(_c)	((_c) == ' ' || (_c) == '\t')
@@ -22,6 +26,7 @@ extern int optind;
 #define	iseol(_c)	((_c) == '\n' || (_c) == '\r')
 
 #define	STREQ(_t, _f, _fn)	((_fn) == (sizeof(_t)-1) && rstreqn((_t), (_f), (_fn)))
+#define min(x,y) ((x) < (y) ? (x) : (y))
 
 #define MACROBUFSIZ (BUFSIZ * 2)
 
@@ -519,6 +524,59 @@ static unsigned int getncpus(void)
     return ncpus;
 }
 
+static uint64_t getmem_phys(int avail)
+{
+    uint64_t mem = 0;
+    long pagesize = sysconf(_SC_PAGESIZE);
+    long physpages = sysconf(avail ? _SC_AVPHYS_PAGES : _SC_PHYS_PAGES);
+
+    if (pagesize < 0)
+	pagesize = 4096;
+    if (physpages > 0)
+	mem = physpages * pagesize;
+
+    return mem;
+}
+
+static uint64_t getmem_virt(void)
+{
+    uint64_t mem = SIZE_MAX;
+    struct rlimit rl;
+
+#if defined(__linux__) && __WORDSIZE == 64
+    if ((personality(0xffffffff) & PER_MASK) == PER_LINUX32)
+	mem = UINT32_MAX;
+#endif
+    if (getrlimit(RLIMIT_AS, &rl) == 0 && rl.rlim_cur < mem)
+	mem = rl.rlim_cur;
+
+    return mem;
+}
+
+static unsigned int getmem(const char *g, int gn)
+{
+    uint64_t mem = 0;
+
+    if (STREQ("phys", g, gn)) {
+	mem = getmem_phys(0);
+    } else if (STREQ("avail", g, gn)) {
+	mem = getmem_phys(1);
+    } else if (STREQ("virt", g, gn)) {
+	mem = getmem_virt();
+    } else if (STREQ("proc", g, gn)) {
+	mem = min(getmem_phys(0), getmem_virt());
+    } else if (STREQ("thread", g, gn)) {
+	mem = min(getmem_phys(0), getmem_virt());
+#if __WORDSIZE == 32
+	/* only use up to half of 32bit addr space for threads */
+	if (mem > INT32_MAX)
+	    mem = INT32_MAX;
+#endif
+    }
+
+    return (mem > 0) ? mem / (1024 * 1024) + 1: 0;
+}
+
 #define STR_AND_LEN(_str) (_str), sizeof((_str))-1
 
 /* Names in the table must be in ASCII-code order */
@@ -542,6 +600,7 @@ static struct builtins_s {
     { STR_AND_LEN("expr"),	doFoo,		NULL },
     { STR_AND_LEN("getconfdir"),doFoo,		NULL },
     { STR_AND_LEN("getenv"),	doFoo,		NULL },
+    { STR_AND_LEN("getmem"),	doFoo,		NULL },
     { STR_AND_LEN("getncpus"),	doFoo,		NULL },
     { STR_AND_LEN("global"),	NULL,		doGlobal },
     { STR_AND_LEN("load"),	doLoad,		NULL },
@@ -1162,6 +1221,14 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
     } else if (STREQ("getncpus", f, fn)) {
 	sprintf(buf, "%u", getncpus());
 	b = buf;
+    } else if (STREQ("getmem", f, fn)) {
+	unsigned int mem = getmem(g, gn);
+	if (mem > 0) {
+	    sprintf(buf, "%u", mem);
+	    b = buf;
+	} else {
+	    mb->error = 1;
+	}
     } else if (STREQ("S", f, fn)) {
 	for (b = buf; (c = *b) && risdigit(c);)
 	    b++;

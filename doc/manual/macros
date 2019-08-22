@@ -84,6 +84,13 @@ to perform useful operations. The current list is
 	%{url2path:...}	convert url to a local path
 	%{getenv:...}	getenv(3) macro analogue
 	%{getconfdir:...}	expand to rpm "home" directory (typically /usr/lib/rpm)
+	%{getmem:<type>} get available memory info in megabytes, where <type>
+			is one of:
+				phys	total physical memory
+				avail	available physical memory
+				virt	virtual address space
+				proc	for process use
+				thread	for thread use
 	%{uncompress:...} expand ... to <file> and test to see if <file> is
 			compressed.  The expansion is
 				cat <file>		# if not compressed
