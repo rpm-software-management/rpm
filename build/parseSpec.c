@@ -1035,7 +1035,7 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 
 #ifdef ENABLE_OPENMP
     /* Set number of OMP threads centrally */
-    int ncpus = rpmExpandNumeric("%{?_smp_build_ncpus}");
+    int ncpus = rpmExpandNumeric("%{?_smp_build_nthreads}");
     if (ncpus <= 0)
 	ncpus = 1;
     omp_set_num_threads(ncpus);

@@ -1069,12 +1069,27 @@ package or when debugging this package.\
 #------------------------------------------------------------------------------
 # Maximum number of CPU's to use when building, 0 for unlimited.
 #%_smp_ncpus_max 0
+#%_smp_nthreads_max 0
+
+# Estimated size of process/thread
+%_smp_procsize 1024
+%_smp_threadsize 512
 
 %_smp_build_ncpus %([ -z "$RPM_BUILD_NCPUS" ] \\\
 	&& RPM_BUILD_NCPUS="%{getncpus}"; \\\
         ncpus_max=%{?_smp_ncpus_max}; \\\
         if [ -n "$ncpus_max" ] && [ "$ncpus_max" -gt 0 ] && [ "$RPM_BUILD_NCPUS" -gt "$ncpus_max" ]; then RPM_BUILD_NCPUS="$ncpus_max"; fi; \\\
+        memtasks_max="%{expr:%{getmem:proc}/%{_smp_procsize}}"; \\\
+        if [ "$RPM_BUILD_NCPUS" -gt "$memtasks_max" ]; then RPM_BUILD_NCPUS="$memtasks_max"; fi; \\\
         echo "$RPM_BUILD_NCPUS";)
+
+%_smp_build_nthreads %([ -z "$RPM_BUILD_NTHREADS" ] \\\
+	&& RPM_BUILD_NTHREADS="%{_smp_build_ncpus}"; \\\
+        nthreads_max=%{?_smp_nthreads_max}; \\\
+        if [ -n "$nthreads_max" ] && [ "$nthreads_max" -gt 0 ] && [ "$RPM_BUILD_NTHREADS" -gt "$nthreads_max" ]; then RPM_BUILD_NTHREADS="$nthreads_max"; fi; \\\
+        memtasks_max="%{expr:%{getmem:thread}/%{_smp_threadsize}}"; \\\
+        if [ "$RPM_BUILD_NTHREADS" -gt "$memtasks_max" ]; then RPM_BUILD_NTHREADS="$memtasks_max"; fi; \\\
+        echo "$RPM_BUILD_NTHREADS";)
 
 %_smp_mflags -j%{_smp_build_ncpus}
 
