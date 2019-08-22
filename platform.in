@@ -48,17 +48,6 @@
 
 %_defaultdocdir		%{_datadir}/doc
 
-# Maximum number of CPU's to use when building, 0 for unlimited.
-#%_smp_ncpus_max 0
-
-%_smp_build_ncpus %([ -z "$RPM_BUILD_NCPUS" ] \\\
-	&& RPM_BUILD_NCPUS="%{getncpus}"; \\\
-        ncpus_max=%{?_smp_ncpus_max}; \\\
-        if [ -n "$ncpus_max" ] && [ "$ncpus_max" -gt 0 ] && [ "$RPM_BUILD_NCPUS" -gt "$ncpus_max" ]; then RPM_BUILD_NCPUS="$ncpus_max"; fi; \\\
-        echo "$RPM_BUILD_NCPUS";)
-
-%_smp_mflags -j%{_smp_build_ncpus}
-
 #==============================================================================
 # ---- Build policy macros.
 #
