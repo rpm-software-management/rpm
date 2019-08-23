@@ -59,6 +59,11 @@
 
 %_smp_mflags -j%{_smp_build_ncpus}
 
+# Maximum number of threads to use when building, 0 for unlimited
+#%_smp_nthreads_max 0
+
+%_smp_build_nthreads %{_smp_build_ncpus}
+
 #==============================================================================
 # ---- Build policy macros.
 #
