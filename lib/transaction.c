@@ -1226,8 +1226,10 @@ static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
 	 */
 	if (!(vd->vfylevel & RPMSIG_SIGNATURE_TYPE))
 	    sinfo->rc = RPMRC_OK;
+	/* fallthrough */
     default:
-	vd->msg = rpmsinfoMsg(sinfo);
+	if (sinfo->rc)
+	    vd->msg = rpmsinfoMsg(sinfo);
 	break;
     }
     return (sinfo->rc == 0);
@@ -1328,10 +1330,10 @@ static rpmps checkProblems(rpmts ts)
 	    rpmdbFreeIterator(mi);
 	}
 
-	if (!(probFilter & RPMPROB_FILTER_REPLACEPKG)) {
+	if (!(probFilter & RPMPROB_FILTER_REPLACEPKG) && rpmteAddOp(p) != RPMTE_REINSTALL) {
 	    Header h;
 	    rpmdbMatchIterator mi;
-	    mi = rpmtsPrunedIterator(ts, RPMDBI_NAME, rpmteN(p), 1);
+	    mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(p), 0);
 	    rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP, rpmteE(p));
 	    rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP, rpmteV(p));
 	    rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP, rpmteR(p));
@@ -1602,7 +1604,7 @@ rpmRC runScript(rpmts ts, rpmte te, Header h, ARGV_const_t prefixes,
 
     /* Create a temporary transaction element for triggers from rpmdb */
     if (te == NULL) {
-	te = rpmteNew(ts, h, TR_RPMDB, NULL, NULL);
+	te = rpmteNew(ts, h, TR_RPMDB, NULL, NULL, 0);
 	rpmteSetHeader(te, h);
     }
 

@@ -184,7 +184,7 @@ s:%lang(C) ::
 /^$/d' >> $MO_NAME
 
 KDE3_HTML=`kde-config --expandvars --install html 2>/dev/null`
-if [ x"$KDE3_HTML" != x -a -d "$TOP_DIR$KDE3_HTML" ]; then
+if [ x"$KDE3_HTML" != x ] && [ -d "$TOP_DIR$KDE3_HTML" ]; then
 find "$TOP_DIR$KDE3_HTML" -type d|sed '
 s:'"$TOP_DIR"'::
 '"$NO_ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'/\)::
@@ -197,7 +197,7 @@ s:%lang(C) ::
 fi
 
 KDE4_HTML=`kde4-config --expandvars --install html 2>/dev/null`
-if [ x"$KDE4_HTML" != x -a -d "$TOP_DIR$KDE4_HTML" ]; then
+if [ x"$KDE4_HTML" != x ] && [ -d "$TOP_DIR$KDE4_HTML" ]; then
 find "$TOP_DIR$KDE4_HTML" -type d|sed '
 s:'"$TOP_DIR"'::
 '"$NO_ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'/\)::
@@ -210,7 +210,7 @@ s:%lang(C) ::
 fi
 
 KF5_HTML=`kf5-config --expandvars --install html 2>/dev/null`
-if [ x"$KF5_HTML" != x -a -d "$TOP_DIR$KF5_HTML" ]; then
+if [ x"$KF5_HTML" != x ] && [ -d "$TOP_DIR$KF5_HTML" ]; then
 find "$TOP_DIR$KF5_HTML" -type d|sed '
 s:'"$TOP_DIR"'::
 '"$NO_ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'/\)::

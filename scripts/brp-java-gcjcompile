@@ -1,14 +1,14 @@
 #!/bin/sh
 
 # If using normal root, avoid changing anything.
-[ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ] && exit 0
+[ -z "$RPM_BUILD_ROOT" ] || [ "$RPM_BUILD_ROOT" = "/" ] && exit 0
 
 # If we are a noarch package, avoid changing anything.
 [ "$RPM_ARCH" = "noarch" ] && exit 0
 
 # If we don't have the required executables, avoid changing anything.
 gcj=${1:-/usr/bin/gcj}
-[ ! -x "$gcj" -o ! -x "$gcj-dbtool" ] && exit 0
+[ ! -x "$gcj" ] || [ ! -x "$gcj-dbtool" ] && exit 0
 
 # Now get to work...
 libdir="/usr/lib" # XXX need to sed this in or something

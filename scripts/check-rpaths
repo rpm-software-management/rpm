@@ -21,7 +21,7 @@ test -z "$QA_SKIP_RPATHS" || {
     exit 0
 }
 
-if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+if [ -z "$RPM_BUILD_ROOT" ] || [ "$RPM_BUILD_ROOT" = "/" ]; then
         exit 0
 fi
 

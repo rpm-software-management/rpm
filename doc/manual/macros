@@ -93,6 +93,7 @@ to perform useful operations. The current list is
 	%{load:...}	load a macro file
 	%{lua:...}	expand using the embedded Lua interpreter
 	%{expand:...}	like eval, expand ... to <body> and (re-)expand <body>
+	%{expr:...}	evaluate an expression
 	%{shrink:...}	trim leading and trailing whitespace, reduce
 			intermediate whitespace to a single space
 	%{quote:...}	quote a parametric macro argument, needed to pass
@@ -107,6 +108,49 @@ Macros may also be automatically included from /usr/lib/rpm/macros.
 In addition, rpm itself defines numerous macros. To display the current
 set, add "%dump" to the beginning of any spec file, process with rpm, and
 examine the output from stderr.
+
+\section conditionally_expanded_macros Conditionally Expanded Macros
+
+Sometimes it is useful to test whether a macro is defined or not. Syntax
+\verbatim
+%{?macro_name:value}
+%{?!macro_name:value}
+\endverbatim
+can be used for this purpose. %{?macro_name:value} is expanded to "value"
+if "macro_name" is defined, otherwise it is expanded to the empty string.
+%{?!macro_name:value} is the negative variant. It is expanded to "value" if
+"macro_name" not is defined. Otherwise it is expanded to the empty string.
+
+Frequently used conditionally expanded macros are e.g.
+Define a macro if it is not defined:
+\verbatim
+%{?!with_python3: %global with_python3 1}
+\endverbatim
+A macro that is expanded to 1 if "with_python3" is defined and 0 otherwise:
+\verbatim
+%{?with_python3:1}%{!?with_python3:0}
+\endverbatim
+or shortly
+\verbatim
+0%{!?with_python3:1}
+\endverbatim
+
+%"{?macro_name}" is a shortcut for "%{?macro_name:%macro_name}".
+
+For "macro_name" that is builtin macro conditionally expanded macros
+behave differently. In such a case both macro "%{?builtin_macro:value}" and
+its negative version "%{?!builtin_macro:value}" are expanded exactly like
+the macro without exclamation mark and question mark "%{builtin_macro:value}".
+There is a special case among builtin macros:
+/verbatim
+%{?load:file}
+/verbatim
+it works like "%{load:file}" with the difference that the expansion does not
+emit an error if the file fails to load.
+
+For more complex tests it is possible to use conditionals like %if, %ifarch or
+%ifos. But the conditionals are not macros thus they are not described here.
+For more information please refer to spec manual.
 
 \section macros_example Example of a Macro
 

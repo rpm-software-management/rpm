@@ -83,12 +83,7 @@ static int rpmfd_init(rpmfdObject *s, PyObject *args, PyObject *kwds)
 	fd = openPath(PyBytes_AsString(fo), rpmio_mode);
     } else if (PyUnicode_Check(fo)) {
 	PyObject *enc = NULL;
-	int rc;
-#if PY_MAJOR_VERSION >= 3
-	rc = PyUnicode_FSConverter(fo, &enc);
-#else
-	rc = utf8FromPyObject(fo, &enc);
-#endif
+	int rc = PyUnicode_FSConverter(fo, &enc);
 	if (rc) {
 	    fd = openPath(PyBytes_AsString(enc), rpmio_mode);
 	    Py_DECREF(enc);

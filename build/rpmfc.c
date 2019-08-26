@@ -260,7 +260,7 @@ static rpmds rpmdsSingleNS(rpmstrPool pool,
 static int getOutputFrom(ARGV_t argv,
 			 const char * writePtr, size_t writeBytesLeft,
 			 StringBuf sb_stdout,
-			 int failNonZero, const char *buildRoot, FILE *dup)
+			 int failNonZero, const char *buildRoot)
 {
     pid_t child, reaped;
     int toProg[2] = { -1, -1 };
@@ -268,8 +268,9 @@ static int getOutputFrom(ARGV_t argv,
     int status;
     int myerrno = 0;
     int ret = 1; /* assume failure */
+    int doio = (writePtr || sb_stdout);
 
-    if (pipe(toProg) < 0 || pipe(fromProg) < 0) {
+    if (doio && (pipe(toProg) < 0 || pipe(fromProg) < 0)) {
 	rpmlog(RPMLOG_ERR, _("Couldn't create pipe for %s: %m\n"), argv[0]);
 	return -1;
     }
@@ -302,6 +303,9 @@ static int getOutputFrom(ARGV_t argv,
 		argv[0], strerror(errno));
 	return -1;
     }
+
+    if (!doio)
+	goto reap;
 
     close(toProg[0]);
     close(fromProg[1]);
@@ -365,8 +369,6 @@ static int getOutputFrom(ARGV_t argv,
 	    buf[iorc] = '\0';
 	    if (sb_stdout)
 		appendStringBuf(sb_stdout, buf);
-	    if (dup)
-		fprintf(dup, "%s", buf);
 	}
     }
 
@@ -376,6 +378,7 @@ static int getOutputFrom(ARGV_t argv,
     if (fromProg[0] >= 0)
 	close(fromProg[0]);
 
+reap:
     /* Collect status from prog */
     reaped = waitpid(child, &status, 0);
     rpmlog(RPMLOG_DEBUG, "\twaitpid(%d) rc %d status %x\n",
@@ -397,7 +400,7 @@ exit:
 }
 
 int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
-		int failnonzero, const char *buildRoot, FILE *dup)
+		int failnonzero, const char *buildRoot)
 {
     char * s = NULL;
     ARGV_t xav = NULL;
@@ -443,7 +446,7 @@ int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
 	sb = newStringBuf();
     }
     ec = getOutputFrom(xav, buf_stdin, buf_stdin_len, sb,
-		       failnonzero, buildRoot, dup);
+		       failnonzero, buildRoot);
     if (ec) {
 	sb = freeStringBuf(sb);
 	goto exit;
@@ -493,7 +496,7 @@ static ARGV_t runCmd(const char *cmd,
     argvAdd(&av, cmd);
 
     appendLineStringBuf(sb_stdin, fn);
-    if (rpmfcExec(av, sb_stdin, &sb_stdout, 0, buildRoot, NULL) == 0) {
+    if (rpmfcExec(av, sb_stdin, &sb_stdout, 0, buildRoot) == 0) {
 	argvSplit(&output, getStringBuf(sb_stdout), "\n\r");
     }
 
@@ -1354,7 +1357,7 @@ static rpmRC rpmfcApplyExternal(rpmfc fc)
 	free(s);
 
 	if (rpmfcExec(dm->argv, sb_stdin, &sb_stdout,
-			failnonzero, fc->buildRoot, NULL) == -1)
+			failnonzero, fc->buildRoot) == -1)
 	    continue;
 
 	if (sb_stdout == NULL) {

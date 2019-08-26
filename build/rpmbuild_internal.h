@@ -402,14 +402,6 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char * field, rpmTagVal tagN,
 		int index, rpmsenseFlags tagflags, addReqProvFunction cb, void *cbdata);
 
 /** \ingroup rpmbuild
- * Evaluate boolean expression.
- * @param expr		expression to parse
- * @return
- */
-RPM_GNUC_INTERNAL
-int parseExpressionBoolean(const char * expr);
-
-/** \ingroup rpmbuild
  * Run a build script, assembled from spec file scriptlet section.
  *
  * @param spec		spec file control structure
@@ -490,11 +482,10 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg);
  * @retval *sb_stdoutp	helper output
  * @param failnonzero	IS non-zero helper exit status a failure?
  * @param buildRoot	buildRoot directory (or NULL)
- * @param dup		duplicate output (or NULL)
  */
 RPM_GNUC_INTERNAL
 int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
-		int failnonzero, const char *buildRoot, FILE *dup);
+		int failnonzero, const char *buildRoot);
 
 /** \ingroup rpmbuild
  * Post-build processing for policies in binary package(s).

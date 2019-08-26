@@ -68,9 +68,9 @@ rpmii_instances(rpmiiObject * s)
     for (int i = 0; i < entries; i++) {
         tuple = PyTuple_New(2);
         PyTuple_SET_ITEM(tuple, 0,
-                         PyInt_FromLong(rpmdbIndexIteratorPkgOffset(s->ii, i)));
+                         PyLong_FromLong(rpmdbIndexIteratorPkgOffset(s->ii, i)));
         PyTuple_SET_ITEM(tuple, 1,
-                         PyInt_FromLong(rpmdbIndexIteratorTagNum(s->ii, i)));
+                         PyLong_FromLong(rpmdbIndexIteratorTagNum(s->ii, i)));
 	PyList_SET_ITEM(list, i, tuple);
     }
     return list;
@@ -98,9 +98,6 @@ static PyNumberMethods rpmii_as_number = {
 	0, /* nb_add */
 	0, /* nb_subtract */
 	0, /* nb_multiply */
-#if PY_MAJOR_VERSION < 3
-	0, /* nb_divide */
-#endif
 	0, /* nb_remainder */
 	0, /* nb_divmod */
 	0, /* nb_power */

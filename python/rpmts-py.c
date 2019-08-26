@@ -250,8 +250,8 @@ rpmts_SolveCallback(rpmts ts, rpmds ds, const void * data)
     if (!result) {
 	die(cbInfo->cb);
     } else {
-	if (PyInt_Check(result))
-	    res = PyInt_AsLong(result);
+	if (PyLong_Check(result))
+	    res = PyLong_AsLong(result);
 	Py_DECREF(result);
     }
 
@@ -651,8 +651,8 @@ rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
 
     if (Key) {
-	if (PyInt_Check(Key)) {
-	    lkey = PyInt_AsLong(Key);
+	if (PyLong_Check(Key)) {
+	    lkey = PyLong_AsLong(Key);
 	    key = (char *)&lkey;
 	    len = sizeof(lkey);
 	} else if (PyLong_Check(Key)) {

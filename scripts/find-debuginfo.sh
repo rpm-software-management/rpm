@@ -165,7 +165,7 @@ while [ $# -gt 0 ]; do
     include_gdb_index=true
     ;;
   -o)
-    if [ -z "${lists[$nout]}" -a -z "${ptns[$nout]}" ]; then
+    if [ -z "${lists[$nout]}" ] && [ -z "${ptns[$nout]}" ]; then
       out=$2
     else
       outs[$nout]=$2
@@ -221,7 +221,7 @@ if test -n "$build_id_seed" -a "$no_recompute_build_id" = "true"; then
   exit 2
 fi
 
-if [ "$strip_g" = "true" -a "$strip_glibs" = "true" ]; then
+if [ "$strip_g" = "true" ] && [ "$strip_glibs" = "true" ]; then
   echo >&2 "*** ERROR: -g  and --g-libs cannot be used together"
   exit 2
 fi
@@ -436,7 +436,7 @@ do_file()
   # strip -g implies we have full symtab, don't add mini symtab in that case.
   # It only makes sense to add a minisymtab for executables and shared
   # libraries. Other executable ELF files (like kernel modules) don't need it.
-  if [ "$include_minidebug" = "true" -a "$strip_g" = "false" ]; then
+  if [ "$include_minidebug" = "true" ] && [ "$strip_g" = "false" ]; then
     skip_mini=true
     if [ "$strip_glibs" = "false" ]; then
       case "$(file -bi "$f")" in
@@ -608,7 +608,7 @@ if [ -s "$SOURCEFILE" ]; then
   xargs --no-run-if-empty -0 chmod 0755
 fi
 
-if [ -d "${RPM_BUILD_ROOT}/usr/lib" -o -d "${RPM_BUILD_ROOT}/usr/src" ]; then
+if [ -d "${RPM_BUILD_ROOT}/usr/lib" ] || [ -d "${RPM_BUILD_ROOT}/usr/src" ]; then
   ((nout > 0)) ||
   test ! -d "${RPM_BUILD_ROOT}/usr/lib" ||
   (cd "${RPM_BUILD_ROOT}/usr/lib"; find debug -type d) |

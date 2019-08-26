@@ -23,6 +23,12 @@ typedef enum pkgGoal_e {
  */
 typedef struct tsortInfo_s *		tsortInfo;
 
+enum addOp_e {
+  RPMTE_INSTALL       = 0,
+  RPMTE_UPGRADE       = 1,
+  RPMTE_REINSTALL     = 2,
+};
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -34,11 +40,12 @@ extern "C" {
  * @param type		TR_ADDED/TR_REMOVED/TR_RPMDB
  * @param key		(TR_ADDED) package retrieval key (e.g. file name)
  * @param relocs	(TR_ADDED) package file relocations
+ * @param addop         (TR_ADDED) RPMTE_INSTALL/UPGRADE/REINSTALL
  * @return		new transaction element
  */
 RPM_GNUC_INTERNAL
 rpmte rpmteNew(rpmts ts, Header h, rpmElementType type, fnpyKey key,
-	       rpmRelocation * relocs);
+	       rpmRelocation * relocs, int addop);
 
 /** \ingroup rpmte
  * Destroy a transaction element.
@@ -106,6 +113,9 @@ unsigned int rpmteHeaderSize(rpmte te);
  */
 RPM_GNUC_INTERNAL
 rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal);
+
+RPM_GNUC_INTERNAL
+int rpmteAddOp(rpmte te);
 
 #ifdef __cplusplus
 }

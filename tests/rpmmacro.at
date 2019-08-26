@@ -245,6 +245,45 @@ runroot rpm \
 ])
 AT_CLEANUP
 
+AT_SETUP([expr macro 1])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm \
+    --define "aaa 5" \
+    --define "bbb 0" \
+    --eval '%{expr:4*1024}' \
+    --eval '%{expr:5 < 1}' \
+    --eval '%{expr:(4 + 5) * 2 == 18}' \
+    --eval '%{expr:%{aaa} || %{bbb}}' \
+    --eval '%{expr:%{aaa} && %{bbb}}'
+],
+[0],
+[4096
+0
+1
+1
+0
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([expr macro 2])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm --eval '%{expr:a*1}'
+runroot rpm --eval '%{expr:(5+1)*4)}'
+runroot rpm --eval '%{expr:a=!b}'
+],
+[1],
+[],
+[error: types must match: a*1
+error: syntax error in expression: (5+1)*4)
+error:                                    ^
+error: syntax error while parsing ==: a=!b
+error:                                  ^
+])
+AT_CLEANUP
+
 AT_SETUP([shell expansion])
 AT_KEYWORDS([macros])
 AT_CHECK([
@@ -534,118 +573,18 @@ this
 [])
 AT_CLEANUP
 
-AT_SETUP([%if, %else, %elif test basic])
-AT_KEYWORDS([if, else, elif])
+AT_SETUP([macro comments 2])
+AT_KEYWORDS([macros])
 AT_CHECK([
-runroot rpmbuild -ba --quiet \
-    --define "testif 0"      \
-   /data/SPECS/iftest.spec
+runroot rpm \
+	--macros /data/macros.testfile \
+	--eval "%{comment3}"
 ],
 [0],
+[
+read
+' change this meaning
+],
 [])
 AT_CLEANUP
 
-AT_SETUP([%if, %else, %elif test existing script])
-AT_KEYWORDS([if, else, elif])
-AT_CHECK([
-runroot rpmbuild -ba --quiet  \
-    --define "testif 2"       \
-    --define "fedora 1"       \
-   /data/SPECS/iftest.spec
-],
-[0],
-[])
-AT_CLEANUP
-
-AT_SETUP([%if, %else, %elif test 1])
-AT_KEYWORDS([if, else, elif])
-AT_CHECK([
-runroot rpmbuild -ba --quiet \
- --define "testif 1"         \
- --define "variable1 1"      \
- --define "variable2 1"      \
- --define "variable3 1"      \
- --define "action1 echo 0"   \
- --define "action2 %if 1"    \
- --define "action3 %if 1"    \
- --define "action4 %if 1"    \
-   /data/SPECS/eliftest.spec
-],
-[0],
-[])
-AT_CLEANUP
-
-
-
-AT_SETUP([%if, %else, %elif test 2])
-AT_KEYWORDS([if, else, elif])
-AT_CHECK([
-runroot rpmbuild -ba --quiet   \
- --define "testif 1"           \
- --define "variable1 0"        \
- --define "variable2 0"        \
- --define "variable3 1"        \
- --define "action1 echo 0"     \
- --define "action2 echo 0"     \
- --define "action3 %if 1"      \
- --define "action4 echo 0"     \
-   /data/SPECS/eliftest.spec > /dev/null 2>&1
-],
-[1],
-[])
-AT_CLEANUP
-
-
-
-AT_SETUP([%if, %else, %elif test 3])
-AT_KEYWORDS([if, else, elif])
-AT_CHECK([
-runroot rpmbuild -ba --quiet      \
- --define "testif 1"              \
- --define "variable1 0"           \
- --define "variable2 1"           \
- --define "variable3 rubbish:4-3" \
- --define "action1 %if 1"         \
- --define "action2 echo 0"        \
- --define "action3 %if 1"         \
- --define "action4 %if 1"         \
-   /data/SPECS/eliftest.spec
-],
-[0],
-[])
-AT_CLEANUP
-
-
-AT_SETUP([%if, %else, %elif test 4])
-AT_KEYWORDS([if, else, elif])
-AT_CHECK([
-runroot rpmbuild -ba --quiet      \
- --define "testif 1"              \
- --define "variable1 0"           \
- --define "variable2 rubbish:4-3" \
- --define "variable3 1"           \
- --define "action1 exit 1"        \
- --define "action2 echo 0"        \
- --define "action3 exit 1"        \
- --define "action4 exit 1"        \
-   /data/SPECS/eliftest.spec
-],
-[1],
-[],
-[error: parse error in expression
-error: /data/SPECS/eliftest.spec:40: bad %elif condition:  rubbish:4-3
-
-])
-AT_CLEANUP
-
-
-AT_SETUP([multiline %if test])
-AT_KEYWORDS([if, macros])
-AT_CHECK([
-runroot rpmbuild -ba --quiet      \
- data/SPECS/ifmultiline.spec
-],
-[0],
-[],
-[])
-AT_CLEANUP

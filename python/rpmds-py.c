@@ -254,12 +254,12 @@ rpmds_subscript(rpmdsObject * s, PyObject * key)
 {
     int ix;
 
-    if (!PyInt_Check(key)) {
+    if (!PyLong_Check(key)) {
 	PyErr_SetString(PyExc_TypeError, "integer expected");
 	return NULL;
     }
 
-    ix = (int) PyInt_AsLong(key);
+    ix = (int) PyLong_AsLong(key);
     rpmdsSetIx(s->ds, ix);
     return utf8FromString(rpmdsDNEVR(s->ds));
 }
@@ -282,9 +282,9 @@ static int depflags(PyObject *o, rpmsenseFlags *senseFlags)
     PyObject *str = NULL;
     rpmsenseFlags flags = RPMSENSE_ANY;
 
-    if (PyInt_Check(o)) {
+    if (PyLong_Check(o)) {
 	ok = 1;
-	flags = PyInt_AsLong(o);
+	flags = PyLong_AsLong(o);
     } else if (utf8FromPyObject(o, &str)) {
 	ok = 1;
 	for (const char *s = PyBytes_AsString(str); *s; s++) {
