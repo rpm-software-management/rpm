@@ -391,6 +391,7 @@ AT_KEYWORDS([build])
 AT_CHECK([
 
 runroot rpmbuild -bb --quiet \
+		--define "_binary_payload w9.gzdio" \
 		/data/SPECS/filedep.spec
 echo Requires:
 runroot rpm  -qp --requires /build/RPMS/noarch/filedep-1.0-1.noarch.rpm
