@@ -384,6 +384,7 @@ package or when debugging this package.\
 #		"w6.xzdio"	xz level 6, xz's default.
 #		"w7T16.xzdio"	xz level 7 using 16 thread (xz only)
 #		"w6.lzdio"	lzma-alone level 6, lzma's default
+#		"w3.zstdio"	zstd level 3, zstd's default
 #		"w.ufdio"	uncompressed
 #
 #%_source_payload	w9.gzdio
