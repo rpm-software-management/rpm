@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2019-06-26 17:41+0300\n"
+"POT-Creation-Date: 2019-08-28 11:48+0300\n"
 "PO-Revision-Date: 2017-10-13 05:51+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Ukrainian (http://www.transifex.com/rpm-team/rpm/language/"
@@ -655,31 +655,31 @@ msgstr "Параметри spec:"
 msgid "no arguments given for parse"
 msgstr "не вказано аргументів обробки"
 
-#: build/build.c:119
+#: build/build.c:118
 #, c-format
 msgid "Unable to open temp file: %s\n"
 msgstr "Не вдалося відкрити файл тимчасових даних: %s\n"
 
-#: build/build.c:124
+#: build/build.c:123
 #, c-format
 msgid "Unable to open stream: %s\n"
 msgstr "Не вдалося відкрити потік даних: %s\n"
 
-#: build/build.c:157
+#: build/build.c:156
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Виконання(%s): %s\n"
 
-#: build/build.c:160
+#: build/build.c:159
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "Отримано стан виходу з помилкою від %s (%s)\n"
 
-#: build/build.c:234
+#: build/build.c:229
 msgid "Failed build dependencies:\n"
 msgstr "Не вдалося зібрати залежності:\n"
 
-#: build/build.c:262
+#: build/build.c:260
 #, c-format
 msgid "setting %s=%s\n"
 msgstr ""
@@ -693,55 +693,6 @@ msgstr ""
 "\n"
 "\n"
 "Помилки збирання RPM:\n"
-
-#: build/expression.c:215
-msgid "syntax error while parsing ==\n"
-msgstr "синтаксична помилка під час обробки ==\n"
-
-#: build/expression.c:245
-msgid "syntax error while parsing &&\n"
-msgstr "синтаксична помилка під час обробки &&\n"
-
-#: build/expression.c:254
-msgid "syntax error while parsing ||\n"
-msgstr "синтаксична помилка під час обробки ||\n"
-
-#: build/expression.c:304
-msgid "parse error in expression\n"
-msgstr "помилка обробки у виразі\n"
-
-#: build/expression.c:340
-msgid "unmatched (\n"
-msgstr "незакрита дужка (\n"
-
-#: build/expression.c:372
-msgid "- only on numbers\n"
-msgstr "- лише для чисел\n"
-
-#: build/expression.c:388
-msgid "! only on numbers\n"
-msgstr "! лише для чисел\n"
-
-#: build/expression.c:434 build/expression.c:487 build/expression.c:550
-#: build/expression.c:647
-msgid "types must match\n"
-msgstr "типи мають збігатися\n"
-
-#: build/expression.c:447
-msgid "* / not suported for strings\n"
-msgstr "* / не підтримується для рядків\n"
-
-#: build/expression.c:503
-msgid "- not suported for strings\n"
-msgstr "- не підтримується для рядків\n"
-
-#: build/expression.c:660
-msgid "&& and || not suported for strings\n"
-msgstr "&& і || не підтримуються для рядків\n"
-
-#: build/expression.c:695
-msgid "syntax error in expression\n"
-msgstr "синтаксична помилка у виразі\n"
 
 #: build/files.c:343 build/files.c:524 build/files.c:743
 #, c-format
@@ -864,152 +815,157 @@ msgstr "Файл не знайдено: %s\n"
 msgid "Not a directory: %s\n"
 msgstr "Не є каталогом: %s\n"
 
-#: build/files.c:1617
+#: build/files.c:1578
+#, fuzzy, c-format
+msgid "Can't read content of file: %s\n"
+msgstr "Не вдалося прочитати файл правил: %s\n"
+
+#: build/files.c:1619
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: не вдалося завантажити невідомий теґ (%d).\n"
 
-#: build/files.c:1623
+#: build/files.c:1625
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: невдала спроба читання відкритого ключа.\n"
 
-#: build/files.c:1627
+#: build/files.c:1629
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: не є захищеним відкритим ключем.\n"
 
-#: build/files.c:1636
+#: build/files.c:1638
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s: не вдалося закодувати\n"
 
-#: build/files.c:1682
+#: build/files.c:1684
 msgid "failed symlink"
 msgstr ""
 
-#: build/files.c:1738 build/files.c:1741
+#: build/files.c:1740 build/files.c:1743
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
 msgstr ""
 
-#: build/files.c:1748
+#: build/files.c:1750
 #, c-format
 msgid "Duplicate build-ids %s and %s\n"
 msgstr ""
 
-#: build/files.c:1802
+#: build/files.c:1804
 msgid "_build_id_links macro not set, assuming 'compat'\n"
 msgstr ""
 
-#: build/files.c:1815
+#: build/files.c:1817
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
 msgstr ""
 
-#: build/files.c:1904
+#: build/files.c:1906
 #, c-format
 msgid "error reading build-id in %s: %s\n"
 msgstr ""
 
-#: build/files.c:1908
+#: build/files.c:1910
 #, c-format
 msgid "Missing build-id in %s\n"
 msgstr ""
 
-#: build/files.c:1913
+#: build/files.c:1915
 #, c-format
 msgid "build-id found in %s too small\n"
 msgstr ""
 
-#: build/files.c:1914
+#: build/files.c:1916
 #, c-format
 msgid "build-id found in %s too large\n"
 msgstr ""
 
-#: build/files.c:1929 rpmio/rpmfileutil.c:443
+#: build/files.c:1931 rpmio/rpmfileutil.c:443
 msgid "failed to create directory"
 msgstr "не вдалося створити каталог"
 
-#: build/files.c:1947
+#: build/files.c:1949
 msgid "Mixing main ELF and debug files in package"
 msgstr ""
 
-#: build/files.c:2148
+#: build/files.c:2150
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Назва файла має починатися з «/»: %s\n"
 
-#: build/files.c:2172
+#: build/files.c:2174
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr "Не можна використовувати glob %%dev: %s\n"
 
-#: build/files.c:2184
+#: build/files.c:2186
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2186
+#: build/files.c:2188
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2222
+#: build/files.c:2224
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "Не вдалося відкрити файл %%files %s: %m\n"
 
-#: build/files.c:2245
+#: build/files.c:2247
 #, c-format
 msgid "Empty %%files file %s\n"
 msgstr "Порожній файл %%files %s\n"
 
-#: build/files.c:2251
+#: build/files.c:2253
 #, c-format
 msgid "Error reading %%files file %s: %m\n"
 msgstr "Помилка під час спроби читання файла %%files %s: %m\n"
 
-#: build/files.c:2277
+#: build/files.c:2279
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr "некоректний формат каталогу документації %s: %s\n"
 
-#: build/files.c:2399 lib/rpminstall.c:461
+#: build/files.c:2401 lib/rpminstall.c:461
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "У glob файла не виявлено: %s\n"
 
-#: build/files.c:2486
+#: build/files.c:2488
 #, c-format
 msgid "Special file in generated file list: %s\n"
 msgstr ""
 
-#: build/files.c:2510
+#: build/files.c:2512
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr "Не можна змішувати спеціальний %s з іншими формами: %s\n"
 
-#: build/files.c:2526
+#: build/files.c:2528
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr "Декілька файлів у одному рядку: %s\n"
 
-#: build/files.c:2595
+#: build/files.c:2597
 msgid "Generating build-id links failed\n"
 msgstr ""
 
-#: build/files.c:2712
+#: build/files.c:2714
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Помилковий файл: %s: %s\n"
 
-#: build/files.c:2780
+#: build/files.c:2782
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Пошук незапакованих файлів: %s\n"
 
-#: build/files.c:2793
+#: build/files.c:2795
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -1018,24 +974,24 @@ msgstr ""
 "Виявлено встановлені (але не запаковані) файли:\n"
 "%s"
 
-#: build/files.c:2908
+#: build/files.c:2910
 #, c-format
 msgid "%s was mapped to multiple filenames"
 msgstr ""
 
-#: build/files.c:3157
+#: build/files.c:3159
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Обробка файлів: %s\n"
 
-#: build/files.c:3179
+#: build/files.c:3181
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 "Архітектура виконуваних файлів (%d) не збігається з архітектурою пакунка "
 "(%d).\n"
 
-#: build/files.c:3185
+#: build/files.c:3187
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Виявлено залежні від архітектури бінарні файли у пакунку noarch\n"
 
@@ -1169,18 +1125,18 @@ msgstr "у %%changelog не вказано опису\n"
 msgid "line %d: second %%changelog\n"
 msgstr "рядок %d: другий запис %%changelog\n"
 
-#: build/parseDescription.c:32
+#: build/parseDescription.c:33
 #, c-format
 msgid "line %d: Error parsing %%description: %s\n"
 msgstr "рядок %d: помилка під час обробки %%description: %s\n"
 
-#: build/parseDescription.c:45 build/parseFiles.c:46 build/parsePolicies.c:45
+#: build/parseDescription.c:46 build/parseFiles.c:46 build/parsePolicies.c:45
 #: build/parseScript.c:320
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
 msgstr "рядок %d: помилковий параметр %s: %s\n"
 
-#: build/parseDescription.c:56 build/parseFiles.c:57 build/parsePolicies.c:55
+#: build/parseDescription.c:57 build/parseFiles.c:57 build/parsePolicies.c:55
 #: build/parseScript.c:331
 #, c-format
 msgid "line %d: Too many names: %s\n"
@@ -1393,42 +1349,42 @@ msgstr "%%{buildroot} не може приймати значення «/»\n"
 msgid "Bad source: %s: %s\n"
 msgstr "Помилкове джерело: %s: %s\n"
 
-#: build/parsePrep.c:67
+#: build/parsePrep.c:68
 #, c-format
 msgid "No patch number %u\n"
 msgstr "Латки з номером %u не існує\n"
 
-#: build/parsePrep.c:135
+#: build/parsePrep.c:137
 #, c-format
 msgid "No source number %u\n"
 msgstr "Джерела з номером %u не існує\n"
 
-#: build/parsePrep.c:259
+#: build/parsePrep.c:261
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Помилка під час обробки %%setup: %s\n"
 
-#: build/parsePrep.c:270
+#: build/parsePrep.c:272
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "рядок %d: помилковий аргумент %%setup: %s\n"
 
-#: build/parsePrep.c:285
+#: build/parsePrep.c:287
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "рядок %d: помилковий параметр %%setup %s: %s\n"
 
-#: build/parsePrep.c:455
+#: build/parsePrep.c:458
 #, c-format
 msgid "%s: %s: %s\n"
 msgstr "%s: %s: %s\n"
 
-#: build/parsePrep.c:468
+#: build/parsePrep.c:471
 #, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "Некоректний номер латки %s: %s\n"
 
-#: build/parsePrep.c:495
+#: build/parsePrep.c:498
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "рядок %d: друге %%prep\n"
@@ -1516,17 +1472,17 @@ msgstr ""
 msgid "line %d: Second %s\n"
 msgstr "рядок %d: друге %s\n"
 
-#: build/parseScript.c:371
+#: build/parseScript.c:374
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "рядок %d: непідтримуваний вбудований скрипт: %s\n"
 
-#: build/parseScript.c:389
+#: build/parseScript.c:392
 #, c-format
 msgid "line %d: file trigger condition must begin with '/': %s"
 msgstr ""
 
-#: build/parseScript.c:395
+#: build/parseScript.c:398
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
 msgstr ""
@@ -1543,76 +1499,76 @@ msgstr ""
 msgid "Macro expanded in comment on line %d: %s\n"
 msgstr "Макрос розгорнуто у коментарі у рядку %d: %s\n"
 
-#: build/parseSpec.c:369
+#: build/parseSpec.c:385
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Не вдалося відкрити %s: %s\n"
 
-#: build/parseSpec.c:403
+#: build/parseSpec.c:419
 #, c-format
 msgid "%s:%d: Argument expected for %s\n"
 msgstr "%s:%d: мало бути вказано аргумент для %s\n"
 
-#: build/parseSpec.c:428
+#: build/parseSpec.c:444
 #, c-format
 msgid "line %d: Unclosed %%if\n"
 msgstr "рядок %d: незавершена команда %%if\n"
 
-#: build/parseSpec.c:433
+#: build/parseSpec.c:449
 #, c-format
 msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr "рядок %d: незавершений макрос або помилкове продовження рядка\n"
 
-#: build/parseSpec.c:464
+#: build/parseSpec.c:477
 #, fuzzy, c-format
 msgid "%s: line %d: %s with no %%if\n"
 msgstr "%s:%d: вказано %%else без %%if\n"
 
-#: build/parseSpec.c:467
+#: build/parseSpec.c:480
 #, fuzzy, c-format
 msgid "%s: line %d: %s after %s\n"
 msgstr "рядок %d: %s: %s\n"
 
-#: build/parseSpec.c:494
+#: build/parseSpec.c:507
 #, fuzzy, c-format
 msgid "%s:%d: bad %s condition: %s\n"
 msgstr "%s:%d: помилкова умова %%if\n"
 
-#: build/parseSpec.c:522
+#: build/parseSpec.c:535
 #, c-format
 msgid "%s:%d: malformed %%include statement\n"
 msgstr "%s:%d: помилкове форматування інструкції %%include\n"
 
-#: build/parseSpec.c:750
+#: build/parseSpec.c:763
 #, c-format
 msgid "encoding %s not supported by system\n"
 msgstr "у системі не передбачено підтримки кодування %s\n"
 
-#: build/parseSpec.c:779
+#: build/parseSpec.c:792
 #, c-format
 msgid "Package %s: invalid %s encoding in %s: %s - %s\n"
 msgstr "Пакунок %s: некоректне кодування %s у %s: %s - %s\n"
 
-#: build/parseSpec.c:815
+#: build/parseSpec.c:828
 #, c-format
 msgid "line %d: %%end doesn't take any arguments: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:822
+#: build/parseSpec.c:835
 #, c-format
 msgid "line %d: %%end not expected here, no section to close: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:838
+#: build/parseSpec.c:851
 #, c-format
 msgid "line %d doesn't belong to any section: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:999
+#: build/parseSpec.c:1012
 msgid "No compatible architectures found for build\n"
 msgstr "Не знайдено сумісних архітектур для збирання\n"
 
-#: build/parseSpec.c:1041
+#: build/parseSpec.c:1067
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "У пакунка немає поля %%description: %s\n"
@@ -1690,65 +1646,65 @@ msgstr "Обробка правил: %s\n"
 msgid "Ignoring invalid regex %s\n"
 msgstr "Ігноруємо некоректний формальний вираз %s\n"
 
-#: build/rpmfc.c:273
+#: build/rpmfc.c:274
 #, c-format
 msgid "Couldn't create pipe for %s: %m\n"
 msgstr "Не вдалося створити канал для %s: %m\n"
 
-#: build/rpmfc.c:296
+#: build/rpmfc.c:297
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Не вдалося виконати %s: %s\n"
 
-#: build/rpmfc.c:301 lib/rpmscript.c:322
+#: build/rpmfc.c:302 lib/rpmscript.c:322
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Не вдалося розгалуження %s: %s\n"
 
-#: build/rpmfc.c:385
+#: build/rpmfc.c:388
 #, c-format
 msgid "%s failed: %x\n"
 msgstr "Помилка %s: %x\n"
 
-#: build/rpmfc.c:389
+#: build/rpmfc.c:392
 #, c-format
 msgid "failed to write all data to %s: %s\n"
 msgstr "Не вдалося записати всі дані до %s: %s\n"
 
-#: build/rpmfc.c:1070
+#: build/rpmfc.c:1073
 msgid "Empty file classifier\n"
 msgstr "Порожній класифікатор файла\n"
 
-#: build/rpmfc.c:1079
+#: build/rpmfc.c:1082
 msgid "No file attributes configured\n"
 msgstr "Не вказано атрибутів файла\n"
 
-#: build/rpmfc.c:1103
+#: build/rpmfc.c:1106
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "помилка magic_open(0x%x): %s\n"
 
-#: build/rpmfc.c:1109
+#: build/rpmfc.c:1112
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "помилка magic_load: %s\n"
 
-#: build/rpmfc.c:1152
+#: build/rpmfc.c:1155
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Спроба розпізнавання файла «%s» зазнала невдачі: режим %06o %s\n"
 
-#: build/rpmfc.c:1353
+#: build/rpmfc.c:1356
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Пошук %s: %s\n"
 
-#: build/rpmfc.c:1362 build/rpmfc.c:1371
+#: build/rpmfc.c:1365 build/rpmfc.c:1374
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Не вдалося знайти %s:\n"
 
-#: build/rpmfc.c:1410
+#: build/rpmfc.c:1413
 msgid "Deprecated external dependency generator is used!\n"
 msgstr ""
 
@@ -1877,23 +1833,23 @@ msgid ""
 "Found BDB Packages database while attempting %s backend: using bdb backend.\n"
 msgstr ""
 
-#: lib/depends.c:93
+#: lib/depends.c:87
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr ""
 "%s належить до типу Delta RPM, його не можна встановлювати безпосередньо\n"
 
-#: lib/depends.c:97
+#: lib/depends.c:91
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Непідтримуваний вміст (%s) у пакунку %s\n"
 
-#: lib/depends.c:378
+#: lib/depends.c:362
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "пакунок %s вже було додано, пропускаємо %s\n"
 
-#: lib/depends.c:379
+#: lib/depends.c:363
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "пакунок %s вже було додано, замінюємо на %s\n"
@@ -2134,7 +2090,7 @@ msgstr "вираз має завершуватися символом |"
 msgid "array iterator used with different sized arrays"
 msgstr "ітератор масиву використано з двома масивами різної розмірності"
 
-#: lib/poptALL.c:144
+#: lib/poptALL.c:144 rpmio/macro.c:1199
 #, c-format
 msgid "failed to load macro file %s\n"
 msgstr ""
@@ -3549,7 +3505,7 @@ msgstr "У скрипті Lua не викликано exec() після fork()\n
 msgid "Unable to restore current directory: %m"
 msgstr "Не вдалося відновити поточний каталог: %m"
 
-#: lib/rpmscript.c:162 rpmio/macro.c:1029
+#: lib/rpmscript.c:162 rpmio/macro.c:1030
 msgid "<lua> scriptlet support not built in\n"
 msgstr ""
 "підтримку допоміжних скриптів мовою <lua> не було передбачено під час "
@@ -3594,15 +3550,15 @@ msgstr "помилка допоміжного скрипту %s, стан вих
 msgid "Unknown format"
 msgstr "Невідомий формат"
 
-#: lib/rpmte.c:755
+#: lib/rpmte.c:757
 msgid "install"
 msgstr "встановити"
 
-#: lib/rpmte.c:756
+#: lib/rpmte.c:758
 msgid "erase"
 msgstr "вилучити"
 
-#: lib/rpmte.c:757
+#: lib/rpmte.c:759
 msgid "rpmdb"
 msgstr ""
 
@@ -3716,11 +3672,11 @@ msgstr ""
 msgid "no digest"
 msgstr ""
 
-#: lib/transaction.c:1540
+#: lib/transaction.c:1542
 msgid "skipped"
 msgstr "пропущено"
 
-#: lib/transaction.c:1540
+#: lib/transaction.c:1542
 msgid "failed"
 msgstr "невдача"
 
@@ -3761,6 +3717,67 @@ msgstr ""
 msgid "Failed to register fork handler: %m\n"
 msgstr ""
 
+#: rpmio/expression.c:224
+#, fuzzy
+msgid "syntax error while parsing =="
+msgstr "синтаксична помилка під час обробки ==\n"
+
+#: rpmio/expression.c:254
+#, fuzzy
+msgid "syntax error while parsing &&"
+msgstr "синтаксична помилка під час обробки &&\n"
+
+#: rpmio/expression.c:263
+#, fuzzy
+msgid "syntax error while parsing ||"
+msgstr "синтаксична помилка під час обробки ||\n"
+
+#: rpmio/expression.c:313
+#, fuzzy
+msgid "parse error in expression"
+msgstr "помилка обробки у виразі\n"
+
+#: rpmio/expression.c:350
+#, fuzzy
+msgid "unmatched ("
+msgstr "незакрита дужка (\n"
+
+#: rpmio/expression.c:382
+#, fuzzy
+msgid "- only on numbers"
+msgstr "- лише для чисел\n"
+
+#: rpmio/expression.c:398
+#, fuzzy
+msgid "! only on numbers"
+msgstr "! лише для чисел\n"
+
+#: rpmio/expression.c:444 rpmio/expression.c:497 rpmio/expression.c:560
+#: rpmio/expression.c:657
+#, fuzzy
+msgid "types must match"
+msgstr "типи мають збігатися\n"
+
+#: rpmio/expression.c:457
+#, fuzzy
+msgid "* and / not supported for strings"
+msgstr "* / не підтримується для рядків\n"
+
+#: rpmio/expression.c:513
+#, fuzzy
+msgid "- not supported for strings"
+msgstr "- не підтримується для рядків\n"
+
+#: rpmio/expression.c:670
+#, fuzzy
+msgid "&& and || not supported for strings"
+msgstr "&& і || не підтримуються для рядків\n"
+
+#: rpmio/expression.c:705 rpmio/expression.c:749
+#, fuzzy
+msgid "syntax error in expression"
+msgstr "синтаксична помилка у виразі\n"
+
 #: rpmio/macro.c:334
 #, c-format
 msgid "%3d>%*s(empty)\n"
@@ -3771,57 +3788,52 @@ msgstr ""
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(порожньо)\n"
 
-#: rpmio/macro.c:597
+#: rpmio/macro.c:598
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
 msgstr ""
 
-#: rpmio/macro.c:602
+#: rpmio/macro.c:603
 #, c-format
 msgid "Macro %%%s is a built-in (%s)\n"
 msgstr ""
 
-#: rpmio/macro.c:647
+#: rpmio/macro.c:648
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "Запис параметрів макросу %%%s не завершено\n"
 
-#: rpmio/macro.c:658 rpmio/macro.c:695
+#: rpmio/macro.c:659 rpmio/macro.c:696
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Запис макросу %%%s не завершено\n"
 
-#: rpmio/macro.c:715
+#: rpmio/macro.c:716
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "Тіло макросу %%%s є порожнім\n"
 
-#: rpmio/macro.c:720
+#: rpmio/macro.c:721
 #, c-format
 msgid "Macro %%%s needs whitespace before body\n"
 msgstr "У макросі %%%s мало бути використано пробіл перед текстом макросу\n"
 
-#: rpmio/macro.c:724
+#: rpmio/macro.c:725
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "Не вдалося розгорнути макрос %%%s\n"
 
-#: rpmio/macro.c:811
+#: rpmio/macro.c:812
 #, c-format
 msgid "Macro %%%s defined but not used within scope\n"
 msgstr "Макрос %%%s визначено, але не використано у області видимості\n"
 
-#: rpmio/macro.c:935
+#: rpmio/macro.c:936
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Невідомий параметр %c у %s(%s)\n"
 
-#: rpmio/macro.c:1190
-#, c-format
-msgid "failed to load macro file %s"
-msgstr "не вдалося завантажити файл макросу %s"
-
-#: rpmio/macro.c:1270
+#: rpmio/macro.c:1279
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
@@ -3829,17 +3841,17 @@ msgstr ""
 "Забагато рівнів вкладеності у макросі. Ймовірно, це викликано рекурсивним "
 "оголошенням макросу.\n"
 
-#: rpmio/macro.c:1329 rpmio/macro.c:1344
+#: rpmio/macro.c:1338 rpmio/macro.c:1353
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Не закрито %c: %s\n"
 
-#: rpmio/macro.c:1375
+#: rpmio/macro.c:1384
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "За %% вказано непридатний до обробки макрос\n"
 
-#: rpmio/macro.c:1703
+#: rpmio/macro.c:1712
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "=================== активних %d порожніх %d\n"
@@ -4079,6 +4091,9 @@ msgstr "%s: помилка читання маніфесту: %s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr "не перевіряти підпис заголовка та вмісту"
+
+#~ msgid "failed to load macro file %s"
+#~ msgstr "не вдалося завантажити файл макросу %s"
 
 #~ msgid "Exec of %s failed (%s): %s\n"
 #~ msgstr "Не вдалося виконати %s (%s): %s\n"

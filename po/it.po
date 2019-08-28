@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2019-06-26 17:41+0300\n"
+"POT-Creation-Date: 2019-08-28 11:48+0300\n"
 "PO-Revision-Date: 2017-10-13 05:50+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Italian (http://www.transifex.com/rpm-team/rpm/language/it/)\n"
@@ -659,31 +659,31 @@ msgstr "Opzioni specfile:"
 msgid "no arguments given for parse"
 msgstr "nessun argomento passato per il parsing"
 
-#: build/build.c:119
+#: build/build.c:118
 #, c-format
 msgid "Unable to open temp file: %s\n"
 msgstr "Impossibile aprire il file temporaneo: %s\n"
 
-#: build/build.c:124
+#: build/build.c:123
 #, c-format
 msgid "Unable to open stream: %s\n"
 msgstr "Impossibile aprire lo stream: %s\n"
 
-#: build/build.c:157
+#: build/build.c:156
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Esecuzione(%s) in corso: %s\n"
 
-#: build/build.c:160
+#: build/build.c:159
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "Stato d'uscita errato da %s (%s)\n"
 
-#: build/build.c:234
+#: build/build.c:229
 msgid "Failed build dependencies:\n"
 msgstr "Dipendenze di build fallite:\n"
 
-#: build/build.c:262
+#: build/build.c:260
 #, c-format
 msgid "setting %s=%s\n"
 msgstr ""
@@ -697,55 +697,6 @@ msgstr ""
 "\n"
 "\n"
 "Errori di compilazione RPM:\n"
-
-#: build/expression.c:215
-msgid "syntax error while parsing ==\n"
-msgstr "errore di sintassi durante il parsing di ==\n"
-
-#: build/expression.c:245
-msgid "syntax error while parsing &&\n"
-msgstr "errore di sintassi durante il parsing di &&\n"
-
-#: build/expression.c:254
-msgid "syntax error while parsing ||\n"
-msgstr "errore di sintassi durante il parsing di ||\n"
-
-#: build/expression.c:304
-msgid "parse error in expression\n"
-msgstr "errore durante il parsing dell'espressione\n"
-
-#: build/expression.c:340
-msgid "unmatched (\n"
-msgstr "non corrispondente (\n"
-
-#: build/expression.c:372
-msgid "- only on numbers\n"
-msgstr "- solo sui numeri\n"
-
-#: build/expression.c:388
-msgid "! only on numbers\n"
-msgstr "! solo sui numeri\n"
-
-#: build/expression.c:434 build/expression.c:487 build/expression.c:550
-#: build/expression.c:647
-msgid "types must match\n"
-msgstr "i diversi tipi devono corrispondere\n"
-
-#: build/expression.c:447
-msgid "* / not suported for strings\n"
-msgstr "* / non supportato per le stringhe\n"
-
-#: build/expression.c:503
-msgid "- not suported for strings\n"
-msgstr "- non supportato per le stringhe\n"
-
-#: build/expression.c:660
-msgid "&& and || not suported for strings\n"
-msgstr "&& e || non supportati per le stringhe\n"
-
-#: build/expression.c:695
-msgid "syntax error in expression\n"
-msgstr "errore di sintassi nell'espressione\n"
 
 #: build/files.c:343 build/files.c:524 build/files.c:743
 #, c-format
@@ -866,154 +817,159 @@ msgstr "File non trovato: %s\n"
 msgid "Not a directory: %s\n"
 msgstr "Non è una directory: %s\n"
 
-#: build/files.c:1617
+#: build/files.c:1578
+#, fuzzy, c-format
+msgid "Can't read content of file: %s\n"
+msgstr "Impossibile leggere il file policy: %s\n"
+
+#: build/files.c:1619
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: impossibile caricare tag sconosciuto (%d).\n"
 
-#: build/files.c:1623
+#: build/files.c:1625
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: lettura chiave pubblica fallita.\n"
 
-#: build/files.c:1627
+#: build/files.c:1629
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: non è una chiave pubblica con formato 'armored'.\n"
 
-#: build/files.c:1636
+#: build/files.c:1638
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s: errore durante l'encoding\n"
 
-#: build/files.c:1682
+#: build/files.c:1684
 msgid "failed symlink"
 msgstr ""
 
-#: build/files.c:1738 build/files.c:1741
+#: build/files.c:1740 build/files.c:1743
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
 msgstr ""
 
-#: build/files.c:1748
+#: build/files.c:1750
 #, c-format
 msgid "Duplicate build-ids %s and %s\n"
 msgstr ""
 
-#: build/files.c:1802
+#: build/files.c:1804
 msgid "_build_id_links macro not set, assuming 'compat'\n"
 msgstr ""
 
-#: build/files.c:1815
+#: build/files.c:1817
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
 msgstr ""
 
-#: build/files.c:1904
+#: build/files.c:1906
 #, c-format
 msgid "error reading build-id in %s: %s\n"
 msgstr ""
 
-#: build/files.c:1908
+#: build/files.c:1910
 #, c-format
 msgid "Missing build-id in %s\n"
 msgstr ""
 
-#: build/files.c:1913
+#: build/files.c:1915
 #, c-format
 msgid "build-id found in %s too small\n"
 msgstr ""
 
-#: build/files.c:1914
+#: build/files.c:1916
 #, c-format
 msgid "build-id found in %s too large\n"
 msgstr ""
 
-#: build/files.c:1929 rpmio/rpmfileutil.c:443
+#: build/files.c:1931 rpmio/rpmfileutil.c:443
 msgid "failed to create directory"
 msgstr "impossibile creare la directory"
 
-#: build/files.c:1947
+#: build/files.c:1949
 msgid "Mixing main ELF and debug files in package"
 msgstr ""
 
-#: build/files.c:2148
+#: build/files.c:2150
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Il file deve essere preceduto da \"/\": %s\n"
 
-#: build/files.c:2172
+#: build/files.c:2174
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr "glob %%dev non consentito: %s\n"
 
-#: build/files.c:2184
+#: build/files.c:2186
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2186
+#: build/files.c:2188
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2222
+#: build/files.c:2224
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "Impossibile aprire %%files file %s: %m\n"
 
-#: build/files.c:2245
+#: build/files.c:2247
 #, c-format
 msgid "Empty %%files file %s\n"
 msgstr ""
 "File %s vuoto nella sezione %%files\n"
 "\n"
 
-#: build/files.c:2251
+#: build/files.c:2253
 #, c-format
 msgid "Error reading %%files file %s: %m\n"
 msgstr "Errore nella lettura del file %s in %%files: %m\n"
 
-#: build/files.c:2277
+#: build/files.c:2279
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr "_docdir_fmt %s non valido: %s\n"
 
-#: build/files.c:2399 lib/rpminstall.c:461
+#: build/files.c:2401 lib/rpminstall.c:461
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "File non trovato dal glob: %s\n"
 
-#: build/files.c:2486
+#: build/files.c:2488
 #, c-format
 msgid "Special file in generated file list: %s\n"
 msgstr ""
 
-#: build/files.c:2510
+#: build/files.c:2512
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr "Impossibile unire %s speciali con altre forme: %s\n"
 
-#: build/files.c:2526
+#: build/files.c:2528
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr "Più di un file su una riga: %s\n"
 
-#: build/files.c:2595
+#: build/files.c:2597
 msgid "Generating build-id links failed\n"
 msgstr ""
 
-#: build/files.c:2712
+#: build/files.c:2714
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "File errato: %s: %s\n"
 
-#: build/files.c:2780
+#: build/files.c:2782
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Controllo per file non pacchettizzati in corso: %s\n"
 
-#: build/files.c:2793
+#: build/files.c:2795
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -1022,23 +978,23 @@ msgstr ""
 "Trovati file installati (ma non inclusi nel pacchetto):\n"
 "%s"
 
-#: build/files.c:2908
+#: build/files.c:2910
 #, c-format
 msgid "%s was mapped to multiple filenames"
 msgstr ""
 
-#: build/files.c:3157
+#: build/files.c:3159
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Elaborazione file: %s\n"
 
-#: build/files.c:3179
+#: build/files.c:3181
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 "L'architettura dei binari (%d) non corrisponde a quella del pacchetto (%d).\n"
 
-#: build/files.c:3185
+#: build/files.c:3187
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Binari dipendenti dall'architettura presenti in un pacchetto noarch\n"
 
@@ -1172,18 +1128,18 @@ msgstr "nessuna descrizione in %%changelog\n"
 msgid "line %d: second %%changelog\n"
 msgstr "linea %d: seconda sezione %%changelog\n"
 
-#: build/parseDescription.c:32
+#: build/parseDescription.c:33
 #, c-format
 msgid "line %d: Error parsing %%description: %s\n"
 msgstr "riga %d: Errore durante il parsing di %%description: %s\n"
 
-#: build/parseDescription.c:45 build/parseFiles.c:46 build/parsePolicies.c:45
+#: build/parseDescription.c:46 build/parseFiles.c:46 build/parsePolicies.c:45
 #: build/parseScript.c:320
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
 msgstr "riga  %d: Opzione %s errata: %s\n"
 
-#: build/parseDescription.c:56 build/parseFiles.c:57 build/parsePolicies.c:55
+#: build/parseDescription.c:57 build/parseFiles.c:57 build/parsePolicies.c:55
 #: build/parseScript.c:331
 #, c-format
 msgid "line %d: Too many names: %s\n"
@@ -1396,42 +1352,42 @@ msgstr "%%{buildroot} non può essere \"/\"\n"
 msgid "Bad source: %s: %s\n"
 msgstr "Sorgenti non validi: %s: %s\n"
 
-#: build/parsePrep.c:67
+#: build/parsePrep.c:68
 #, c-format
 msgid "No patch number %u\n"
 msgstr "Nessuna patch con numero %u\n"
 
-#: build/parsePrep.c:135
+#: build/parsePrep.c:137
 #, c-format
 msgid "No source number %u\n"
 msgstr "Nessun sorgente con numero %u\n"
 
-#: build/parsePrep.c:259
+#: build/parsePrep.c:261
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Errore nel parsing di %%setup: %s\n"
 
-#: build/parsePrep.c:270
+#: build/parsePrep.c:272
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "riga %d: Argomento errato su %%setup: %s\n"
 
-#: build/parsePrep.c:285
+#: build/parsePrep.c:287
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "riga %d: Opzione di %%setup errata %s: %s\n"
 
-#: build/parsePrep.c:455
+#: build/parsePrep.c:458
 #, c-format
 msgid "%s: %s: %s\n"
 msgstr "%s: %s: %s\n"
 
-#: build/parsePrep.c:468
+#: build/parsePrep.c:471
 #, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "Numero patch non valido %s: %s\n"
 
-#: build/parsePrep.c:495
+#: build/parsePrep.c:498
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "riga %d: secondo %%prep\n"
@@ -1517,17 +1473,17 @@ msgstr ""
 msgid "line %d: Second %s\n"
 msgstr "riga %d: Secondo %s\n"
 
-#: build/parseScript.c:371
+#: build/parseScript.c:374
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "linea %d: script interno non supportato: %s\n"
 
-#: build/parseScript.c:389
+#: build/parseScript.c:392
 #, c-format
 msgid "line %d: file trigger condition must begin with '/': %s"
 msgstr ""
 
-#: build/parseScript.c:395
+#: build/parseScript.c:398
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
 msgstr "linea %d: argomenti dell'interprete non consentiti nei trigger: %s\n"
@@ -1542,79 +1498,79 @@ msgstr ""
 msgid "Macro expanded in comment on line %d: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:369
+#: build/parseSpec.c:385
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Impossibile aprire %s: %s\n"
 
-#: build/parseSpec.c:403
+#: build/parseSpec.c:419
 #, c-format
 msgid "%s:%d: Argument expected for %s\n"
 msgstr "%s:%d: argomento necessario per %s\n"
 
-#: build/parseSpec.c:428
+#: build/parseSpec.c:444
 #, c-format
 msgid "line %d: Unclosed %%if\n"
 msgstr ""
 "riga %d: %%if non bilanciato\n"
 "\n"
 
-#: build/parseSpec.c:433
+#: build/parseSpec.c:449
 #, c-format
 msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr "linea %d: macro non chiusa o errata continuazione linea\n"
 
-#: build/parseSpec.c:464
+#: build/parseSpec.c:477
 #, fuzzy, c-format
 msgid "%s: line %d: %s with no %%if\n"
 msgstr "%s:%d: Trovato un %%else con nessun %%if\n"
 
-#: build/parseSpec.c:467
+#: build/parseSpec.c:480
 #, fuzzy, c-format
 msgid "%s: line %d: %s after %s\n"
 msgstr "linea %d: %s: %s\n"
 
-#: build/parseSpec.c:494
+#: build/parseSpec.c:507
 #, fuzzy, c-format
 msgid "%s:%d: bad %s condition: %s\n"
 msgstr "%s:%d: condizione %%if errata\n"
 
-#: build/parseSpec.c:522
+#: build/parseSpec.c:535
 #, c-format
 msgid "%s:%d: malformed %%include statement\n"
 msgstr "%s: %d: istruzione %%include malformata\n"
 
-#: build/parseSpec.c:750
+#: build/parseSpec.c:763
 #, c-format
 msgid "encoding %s not supported by system\n"
 msgstr "la codifica %s non è supportata dal sistema\n"
 
-#: build/parseSpec.c:779
+#: build/parseSpec.c:792
 #, c-format
 msgid "Package %s: invalid %s encoding in %s: %s - %s\n"
 msgstr "Pacchetto %s: codifica %s non valida in %s: %s - %s\n"
 
-#: build/parseSpec.c:815
+#: build/parseSpec.c:828
 #, c-format
 msgid "line %d: %%end doesn't take any arguments: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:822
+#: build/parseSpec.c:835
 #, c-format
 msgid "line %d: %%end not expected here, no section to close: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:838
+#: build/parseSpec.c:851
 #, c-format
 msgid "line %d doesn't belong to any section: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:999
+#: build/parseSpec.c:1012
 msgid "No compatible architectures found for build\n"
 msgstr ""
 "Non è stata trovata alcuna architettura compatibile per la compilazione\n"
 
-#: build/parseSpec.c:1041
+#: build/parseSpec.c:1067
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Il pacchetto non possiede alcuna %%description: %s\n"
@@ -1692,65 +1648,65 @@ msgstr "Elaborazione policies: %s\n"
 msgid "Ignoring invalid regex %s\n"
 msgstr "Viene ignorata la regex non valida %s\n"
 
-#: build/rpmfc.c:273
+#: build/rpmfc.c:274
 #, c-format
 msgid "Couldn't create pipe for %s: %m\n"
 msgstr "Impossibile creare la pipe per %s: %m\n"
 
-#: build/rpmfc.c:296
+#: build/rpmfc.c:297
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Impossibile eseguire %s: %s\n"
 
-#: build/rpmfc.c:301 lib/rpmscript.c:322
+#: build/rpmfc.c:302 lib/rpmscript.c:322
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Impossibile biforcare %s: %s\n"
 
-#: build/rpmfc.c:385
+#: build/rpmfc.c:388
 #, c-format
 msgid "%s failed: %x\n"
 msgstr "%s fallito: %x\n"
 
-#: build/rpmfc.c:389
+#: build/rpmfc.c:392
 #, c-format
 msgid "failed to write all data to %s: %s\n"
 msgstr "impossibile salvare tutti i dati su %s: %s\n"
 
-#: build/rpmfc.c:1070
+#: build/rpmfc.c:1073
 msgid "Empty file classifier\n"
 msgstr "File classifier vuoto\n"
 
-#: build/rpmfc.c:1079
+#: build/rpmfc.c:1082
 msgid "No file attributes configured\n"
 msgstr "Non è configurato alcun attributo dei file\n"
 
-#: build/rpmfc.c:1103
+#: build/rpmfc.c:1106
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) fallita: %s\n"
 
-#: build/rpmfc.c:1109
+#: build/rpmfc.c:1112
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load fallita: %s\n"
 
-#: build/rpmfc.c:1152
+#: build/rpmfc.c:1155
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Identificazione file \"%s\" fallita: modalità %06o %s\n"
 
-#: build/rpmfc.c:1353
+#: build/rpmfc.c:1356
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Ricerca di %s in corso: %s\n"
 
-#: build/rpmfc.c:1362 build/rpmfc.c:1371
+#: build/rpmfc.c:1365 build/rpmfc.c:1374
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Impossibile trovare %s:\n"
 
-#: build/rpmfc.c:1410
+#: build/rpmfc.c:1413
 msgid "Deprecated external dependency generator is used!\n"
 msgstr ""
 
@@ -1877,22 +1833,22 @@ msgid ""
 "Found BDB Packages database while attempting %s backend: using bdb backend.\n"
 msgstr ""
 
-#: lib/depends.c:93
+#: lib/depends.c:87
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s è un Delta RPM e non può essere installato direttamente\n"
 
-#: lib/depends.c:97
+#: lib/depends.c:91
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Payload non supportato (%s) nel pacchetto %s\n"
 
-#: lib/depends.c:378
+#: lib/depends.c:362
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "il pacchetto %s è già stato aggiunto, salto %s\n"
 
-#: lib/depends.c:379
+#: lib/depends.c:363
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "il pacchetto %s è stato già aggiunto, sostituzione con %s in corso\n"
@@ -2133,7 +2089,7 @@ msgstr "| previsto alla fine dell'espressione"
 msgid "array iterator used with different sized arrays"
 msgstr "iteratore di array usato con array di dimensioni differenti"
 
-#: lib/poptALL.c:144
+#: lib/poptALL.c:144 rpmio/macro.c:1199
 #, c-format
 msgid "failed to load macro file %s\n"
 msgstr ""
@@ -3558,7 +3514,7 @@ msgstr "Funzione exec() non chiamata dopo fork() nello scriptlet lua\n"
 msgid "Unable to restore current directory: %m"
 msgstr "Impossibile tornare alla direcotry corrente: %m"
 
-#: lib/rpmscript.c:162 rpmio/macro.c:1029
+#: lib/rpmscript.c:162 rpmio/macro.c:1030
 msgid "<lua> scriptlet support not built in\n"
 msgstr "supporto agli scriptlet <lua> non disponibile\n"
 
@@ -3601,15 +3557,15 @@ msgstr "scriptlet %s fallita, uscita con stato %d\n"
 msgid "Unknown format"
 msgstr "Formato sconosciuto"
 
-#: lib/rpmte.c:755
+#: lib/rpmte.c:757
 msgid "install"
 msgstr "installa"
 
-#: lib/rpmte.c:756
+#: lib/rpmte.c:758
 msgid "erase"
 msgstr "elimina"
 
-#: lib/rpmte.c:757
+#: lib/rpmte.c:759
 msgid "rpmdb"
 msgstr ""
 
@@ -3723,11 +3679,11 @@ msgstr ""
 msgid "no digest"
 msgstr ""
 
-#: lib/transaction.c:1540
+#: lib/transaction.c:1542
 msgid "skipped"
 msgstr "saltato"
 
-#: lib/transaction.c:1540
+#: lib/transaction.c:1542
 msgid "failed"
 msgstr "fallito"
 
@@ -3768,6 +3724,67 @@ msgstr ""
 msgid "Failed to register fork handler: %m\n"
 msgstr ""
 
+#: rpmio/expression.c:224
+#, fuzzy
+msgid "syntax error while parsing =="
+msgstr "errore di sintassi durante il parsing di ==\n"
+
+#: rpmio/expression.c:254
+#, fuzzy
+msgid "syntax error while parsing &&"
+msgstr "errore di sintassi durante il parsing di &&\n"
+
+#: rpmio/expression.c:263
+#, fuzzy
+msgid "syntax error while parsing ||"
+msgstr "errore di sintassi durante il parsing di ||\n"
+
+#: rpmio/expression.c:313
+#, fuzzy
+msgid "parse error in expression"
+msgstr "errore durante il parsing dell'espressione\n"
+
+#: rpmio/expression.c:350
+#, fuzzy
+msgid "unmatched ("
+msgstr "non corrispondente (\n"
+
+#: rpmio/expression.c:382
+#, fuzzy
+msgid "- only on numbers"
+msgstr "- solo sui numeri\n"
+
+#: rpmio/expression.c:398
+#, fuzzy
+msgid "! only on numbers"
+msgstr "! solo sui numeri\n"
+
+#: rpmio/expression.c:444 rpmio/expression.c:497 rpmio/expression.c:560
+#: rpmio/expression.c:657
+#, fuzzy
+msgid "types must match"
+msgstr "i diversi tipi devono corrispondere\n"
+
+#: rpmio/expression.c:457
+#, fuzzy
+msgid "* and / not supported for strings"
+msgstr "* / non supportato per le stringhe\n"
+
+#: rpmio/expression.c:513
+#, fuzzy
+msgid "- not supported for strings"
+msgstr "- non supportato per le stringhe\n"
+
+#: rpmio/expression.c:670
+#, fuzzy
+msgid "&& and || not supported for strings"
+msgstr "&& e || non supportati per le stringhe\n"
+
+#: rpmio/expression.c:705 rpmio/expression.c:749
+#, fuzzy
+msgid "syntax error in expression"
+msgstr "errore di sintassi nell'espressione\n"
+
 #: rpmio/macro.c:334
 #, c-format
 msgid "%3d>%*s(empty)\n"
@@ -3778,57 +3795,52 @@ msgstr ""
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(vuoto)\n"
 
-#: rpmio/macro.c:597
+#: rpmio/macro.c:598
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
 msgstr ""
 
-#: rpmio/macro.c:602
+#: rpmio/macro.c:603
 #, c-format
 msgid "Macro %%%s is a built-in (%s)\n"
 msgstr ""
 
-#: rpmio/macro.c:647
+#: rpmio/macro.c:648
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "La macro %%%s presenta delle opzioni incomplete\n"
 
-#: rpmio/macro.c:658 rpmio/macro.c:695
+#: rpmio/macro.c:659 rpmio/macro.c:696
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "La macro %%%s presenta un corpo incompleto\n"
 
-#: rpmio/macro.c:715
+#: rpmio/macro.c:716
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "La macro %%%s presenta contenuto vuoto\n"
 
-#: rpmio/macro.c:720
+#: rpmio/macro.c:721
 #, c-format
 msgid "Macro %%%s needs whitespace before body\n"
 msgstr "La Macro %%%s richiede whitespace prima del corpo\n"
 
-#: rpmio/macro.c:724
+#: rpmio/macro.c:725
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "Impossibile espandere la macro %%%s\n"
 
-#: rpmio/macro.c:811
+#: rpmio/macro.c:812
 #, c-format
 msgid "Macro %%%s defined but not used within scope\n"
 msgstr "Macro %%%s definita ma non usata nello scope\n"
 
-#: rpmio/macro.c:935
+#: rpmio/macro.c:936
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Opzione %c sconosciuta in %s(%s)\n"
 
-#: rpmio/macro.c:1190
-#, c-format
-msgid "failed to load macro file %s"
-msgstr "impossibile caricare il file di macro %s"
-
-#: rpmio/macro.c:1270
+#: rpmio/macro.c:1279
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
@@ -3836,17 +3848,17 @@ msgstr ""
 "Troppo livelli di ricorsione nell'espansione della macro. Si tratta "
 "probabilmente di una macro definita ricorsivamente.\n"
 
-#: rpmio/macro.c:1329 rpmio/macro.c:1344
+#: rpmio/macro.c:1338 rpmio/macro.c:1353
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c non terminato: %s\n"
 
-#: rpmio/macro.c:1375
+#: rpmio/macro.c:1384
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Un %% è seguito da una macro non parsabile\n"
 
-#: rpmio/macro.c:1703
+#: rpmio/macro.c:1712
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== %d attivo %d vuoto\n"
@@ -4085,6 +4097,9 @@ msgstr "%s: lettura manifesto fallita: %s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr "non verificare firma header+payload"
+
+#~ msgid "failed to load macro file %s"
+#~ msgstr "impossibile caricare il file di macro %s"
 
 #~ msgid "Exec of %s failed (%s): %s\n"
 #~ msgstr "Esecuzione di %s fallita (%s): %s\n"
