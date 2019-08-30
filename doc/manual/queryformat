@@ -38,9 +38,8 @@ be a string or number only.
 \section queryformat_format Query Formats
 
 A query format is passed to RPM after the --queryformat argument, and normally
-should be enclosed in single quotes. This query format is then used to print
-the information section of a query. This means that when both -i and 
---queryformat are used in a command, the -i is essentially ignored. 
+should be enclosed in quotes. This query format is then used to print
+the information section of a query.
 
 The query format is similar to a C style printf string, which the printf(2)
 man page provides a good introduction to. However, as RPM already knows the
@@ -90,11 +89,11 @@ grep or awk). If you try the obvious,
     rpm -q --queryformat "[%{NAME} %{FILENAMES}\n]" cdp
 \endverbatim
 
-If you try this, you'll see RPM complain about an "array iterator used
-with different sized arrays". Internally, all items in RPM are actually
-arrays, so the NAME is a string array containing one element. When you
-tell RPM to iterate over the NAME and FILENAMES elements, RPM notices
-the two tags have different numbers of elements and complains.
+you'll see RPM complain about an "array iterator used with different
+sized arrays". Internally, all items in RPM are actually arrays, so the
+NAME is a string array containing one element. When you tell RPM to iterate
+over the NAME and FILENAMES elements, RPM notices the two tags have
+different numbers of elements and complains.
 
 To make this work properly, you need to tell RPM to always print the first
 item in the NAME element. You do this by placing a '=' before the tag
@@ -136,6 +135,9 @@ readable format in SI resp IEC 80000 standard.
 humansi uses 1K = 1000, 1M = 1000000, ...
 humaniec uses 1K = 1024, 1M = 1048576, ...
 
+The formatting tags are documented in rpm (8) manual in the QUERY OPTIONS
+section.
+
 \section queryformat_expressions Query Expressions
 
 Simple conditionals may be evaluated through query expressions. Expressions
@@ -151,26 +153,8 @@ the SOMETAG tag is present, and "missing" otherwise:
 Notice that the subformats "present" and "missing" must be inside of curly
 braces.
 
-\section queryformat_example Example: Viewing the Verify Flags
-
-The following example query is run against dev because I know %verify
-is used there.
 \verbatim
-	rpm -q --qf '[%{filenames} %{fileverifyflags}\n]' dev
+    rpm -qa --queryformat "%-30{NAME} %|PREINPROG?{%{PREINPROG}}:{no}|\n"
 \endverbatim
-
-The flags are defined in rpmfiles.h (check there for changes):
-\verbatim
-	#define RPMVERIFY_MD5           (1 << 0)
-	#define RPMVERIFY_FILESIZE      (1 << 1)
-	#define RPMVERIFY_LINKTO        (1 << 2)
-	#define RPMVERIFY_USER          (1 << 3)
-	#define RPMVERIFY_GROUP         (1 << 4)
-	#define RPMVERIFY_MTIME         (1 << 5)
-	#define RPMVERIFY_MODE          (1 << 6)
-	#define RPMVERIFY_RDEV          (1 << 7)
-\endverbatim
-
-A 1 bit in the output of the query means the check is enabled.
 
 */
