@@ -110,6 +110,11 @@ typedef struct _parseState {
 static void exprErr(const struct _parseState *state, const char *msg,
 		    const char *p)
 {
+    const char *newLine = strchr(state->str,'\n');
+
+    if (newLine && (*(newLine+1) != '\0'))
+	p = NULL;
+
     rpmlog(RPMLOG_ERR, "%s: %s\n", msg, state->str);
     if (p) {
 	int l = p - state->str + strlen(msg) + 2;
