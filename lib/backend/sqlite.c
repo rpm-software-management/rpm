@@ -22,7 +22,7 @@ struct dbiCursor_s {
     unsigned int keylen;
 };
 
-static rpmRC sqlite_pkgdbNew(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum);
+static rpmRC sqlite_pkgdbNew(dbiIndex dbi, unsigned int *hdrNum);
 static int sqlexec(sqlite3 *sdb, const char *fmt, ...);
 
 static int dbiCursorResult(dbiCursor dbc)
@@ -252,7 +252,7 @@ static int sqlite_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flag
 
     if (!rc && dbi->dbi_type == DBI_PRIMARY) {
 	unsigned int hnum = 0;
-	if (sqlite_pkgdbNew(dbi, NULL, &hnum) == 0 && hnum == 1) {
+	if (sqlite_pkgdbNew(dbi, &hnum) == 0 && hnum == 1) {
 	    dbi->dbi_flags |= DBI_CREATED;
 	}
     }
@@ -345,7 +345,7 @@ static dbiCursor sqlite_CursorFree(dbiIndex dbi, dbiCursor dbc)
     return NULL;
 }
 
-static rpmRC sqlite_pkgdbNew(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum)
+static rpmRC sqlite_pkgdbNew(dbiIndex dbi, unsigned int *hdrNum)
 {
     dbiCursor c = dbiCursorInit(dbi, 0);
     int rc = dbiCursorPrep(c, "SELECT MAX(hnum) FROM '%q'", dbi->dbi_file);
@@ -361,13 +361,20 @@ static rpmRC sqlite_pkgdbNew(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum)
     return rc;
 }
 
-static rpmRC sqlite_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum, unsigned char *hdrBlob, unsigned int hdrLen)
+static rpmRC sqlite_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum, unsigned char *hdrBlob, unsigned int hdrLen)
 {
-    int rc = dbiCursorPrep(dbc, "INSERT OR REPLACE INTO '%q' VALUES(?, ?)",
+    int rc = 0;
+
+    if (*hdrNum == 0)
+	rc = sqlite_pkgdbNew(dbi, hdrNum);
+
+    if (!rc) {
+	rc = dbiCursorPrep(dbc, "INSERT OR REPLACE INTO '%q' VALUES(?, ?)",
 			    dbi->dbi_file);
+    }
 
     if (!rc)
-	rc = dbiCursorBindPkg(dbc, hdrNum, hdrBlob, hdrLen);
+	rc = dbiCursorBindPkg(dbc, *hdrNum, hdrBlob, hdrLen);
 
     if (!rc)
 	while ((rc = sqlite3_step(dbc->stmt)) == SQLITE_ROW) {};
@@ -590,7 +597,6 @@ struct rpmdbOps_s sqlite_dbops = {
     .cursorInit	= sqlite_CursorInit,
     .cursorFree	= sqlite_CursorFree,
 
-    .pkgdbNew	= sqlite_pkgdbNew,
     .pkgdbPut	= sqlite_pkgdbPut,
     .pkgdbDel	= sqlite_pkgdbDel,
     .pkgdbGet	= sqlite_pkgdbGet,

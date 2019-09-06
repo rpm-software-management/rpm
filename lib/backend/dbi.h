@@ -216,15 +216,13 @@ dbiCursor dbiCursorFree(dbiIndex dbi, dbiCursor dbc);
 
 
 RPM_GNUC_INTERNAL
-rpmRC pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum,
+rpmRC pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum,
                unsigned char *hdrBlob, unsigned int hdrLen);
 RPM_GNUC_INTERNAL
 rpmRC pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum);
 RPM_GNUC_INTERNAL
 rpmRC pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
                unsigned char **hdrBlob, unsigned int *hdrLen);
-RPM_GNUC_INTERNAL
-rpmRC pkgdbNew(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum);
 RPM_GNUC_INTERNAL
 unsigned int pkgdbKey(dbiIndex dbi, dbiCursor dbc);
 
@@ -251,9 +249,8 @@ struct rpmdbOps_s {
     dbiCursor (*cursorFree)(dbiIndex dbi, dbiCursor dbc);
 
     rpmRC (*pkgdbGet)(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum, unsigned char **hdrBlob, unsigned int *hdrLen);
-    rpmRC (*pkgdbPut)(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum, unsigned char *hdrBlob, unsigned int hdrLen);
+    rpmRC (*pkgdbPut)(dbiIndex dbi, dbiCursor dbc, unsigned int *hdrNum, unsigned char *hdrBlob, unsigned int hdrLen);
     rpmRC (*pkgdbDel)(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum);
-    rpmRC (*pkgdbNew)(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum);
     unsigned int (*pkgdbKey)(dbiIndex dbi, dbiCursor dbc);
 
     rpmRC (*idxdbGet)(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexSet *set, int curFlags);

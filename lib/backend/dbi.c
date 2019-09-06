@@ -160,7 +160,7 @@ dbiCursor dbiCursorFree(dbiIndex dbi, dbiCursor dbc)
     return dbi->dbi_rpmdb->db_ops->cursorFree(dbi, dbc);
 }
 
-rpmRC pkgdbPut(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum, unsigned char *hdrBlob, unsigned int hdrLen)
+rpmRC pkgdbPut(dbiIndex dbi, dbiCursor dbc, unsigned int *hdrNum, unsigned char *hdrBlob, unsigned int hdrLen)
 {
     return dbi->dbi_rpmdb->db_ops->pkgdbPut(dbi, dbc, hdrNum, hdrBlob, hdrLen);
 }
@@ -173,11 +173,6 @@ rpmRC pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
 rpmRC pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum, unsigned char **hdrBlob, unsigned int *hdrLen)
 {
     return dbi->dbi_rpmdb->db_ops->pkgdbGet(dbi, dbc, hdrNum, hdrBlob, hdrLen);
-}
-
-rpmRC pkgdbNew(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum)
-{
-    return dbi->dbi_rpmdb->db_ops->pkgdbNew(dbi, dbc, hdrNum);
 }
 
 unsigned int pkgdbKey(dbiIndex dbi, dbiCursor dbc)
