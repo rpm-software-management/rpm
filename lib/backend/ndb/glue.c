@@ -273,20 +273,24 @@ static void setdata(dbiCursor dbc,  unsigned int hdrNum, unsigned char *hdrBlob,
     ndbenv->datalen = hdrLen;
 }
 
-static rpmRC ndb_pkgdbNew(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum)
+static rpmRC ndb_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum, unsigned char *hdrBlob, unsigned int hdrLen)
 {
-    int rc = rpmpkgNextPkgIdx(dbc->dbi->dbi_db, hdrNum);
-    if (!rc)
-	setdata(dbc, *hdrNum, 0, 0);
-    return rc;
-}
+    unsigned int hnum = *hdrNum;
+    int rc = RPMRC_OK;
 
-static rpmRC ndb_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum, unsigned char *hdrBlob, unsigned int hdrLen)
-{
-    int rc = rpmpkgPut(dbc->dbi->dbi_db, hdrNum, hdrBlob, hdrLen);
+    if (hnum == 0) {
+	rc = rpmpkgNextPkgIdx(dbc->dbi->dbi_db, &hnum);
+	if (!rc)
+	    setdata(dbc, hnum, 0, 0);
+    }
+
+    if (!rc)
+	rc = rpmpkgPut(dbc->dbi->dbi_db, hnum, hdrBlob, hdrLen);
+
     if (!rc) {
-	dbc->hdrNum = hdrNum;
-	setdata(dbc, hdrNum, 0, 0);
+	dbc->hdrNum = hnum;
+	setdata(dbc, hnum, 0, 0);
+	*hdrNum = hnum;
     }
     return rc;
 }
@@ -491,7 +495,6 @@ struct rpmdbOps_s ndb_dbops = {
     .cursorInit	= ndb_CursorInit,
     .cursorFree	= ndb_CursorFree,
 
-    .pkgdbNew	= ndb_pkgdbNew,
     .pkgdbPut	= ndb_pkgdbPut,
     .pkgdbDel	= ndb_pkgdbDel,
     .pkgdbGet	= ndb_pkgdbGet,

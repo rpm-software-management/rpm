@@ -45,12 +45,7 @@ static dbiCursor dummydb_CursorFree(dbiIndex dbi, dbiCursor dbc)
 }
 
 
-static rpmRC dummydb_pkgdbNew(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum)
-{
-    return RPMRC_FAIL;
-}
-
-static rpmRC dummydb_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum, unsigned char *hdrBlob, unsigned int hdrLen)
+static rpmRC dummydb_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum, unsigned char *hdrBlob, unsigned int hdrLen)
 {
     return RPMRC_FAIL;
 }
@@ -102,7 +97,6 @@ struct rpmdbOps_s dummydb_dbops = {
     .cursorInit	= dummydb_CursorInit,
     .cursorFree	= dummydb_CursorFree,
 
-    .pkgdbNew	= dummydb_pkgdbNew,
     .pkgdbPut	= dummydb_pkgdbPut,
     .pkgdbDel	= dummydb_pkgdbDel,
     .pkgdbGet	= dummydb_pkgdbGet,

@@ -839,13 +839,25 @@ static unsigned int pkgInstance(dbiCursor dbc, int alloc)
     return hdrNum;
 }
 
-static rpmRC lmdb_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum,
+static rpmRC lmdb_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum,
                unsigned char *hdrBlob, unsigned int hdrLen)
 {
+    rpmRC rc = RPMRC_FAIL;
+    unsigned int hnum = *hdrNum;
     MDB_val hdr;
     hdr.mv_data = hdrBlob;
     hdr.mv_size = hdrLen;
-    return updatePackages(dbc, hdrNum, &hdr);
+
+    if (hnum == 0)
+	hnum = pkgInstance(dbc, 1);
+
+    if (hnum)
+	rc = updatePackages(dbc, hnum, &hdr);
+
+    if (rc == RPMRC_OK)
+	*hdrNum = hnum;
+
+    return rc;
 }
 
 static rpmRC lmdb_pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
@@ -899,22 +911,6 @@ static unsigned int lmdb_pkgdbKey(dbiIndex dbi, dbiCursor dbc)
     return mi_offset.ui;
 }
 
-static rpmRC lmdb_pkgdbNew(dbiIndex dbi, dbiCursor dbc, unsigned int *hdrNum)
-{
-    unsigned int num;
-    rpmRC rc = RPMRC_FAIL;
-
-    if (dbc == NULL)
-	goto exit;
-    num = pkgInstance(dbc, 1);
-    if (num) {
-	*hdrNum = num;
-	rc = RPMRC_OK;
-    }
-exit:
-    return rc;
-}
-
 struct rpmdbOps_s lmdb_dbops = {
     .open   = lmdb_dbiOpen,
     .close  = lmdb_dbiClose,
@@ -929,7 +925,6 @@ struct rpmdbOps_s lmdb_dbops = {
     .pkgdbGet = lmdb_pkgdbGet,
     .pkgdbPut = lmdb_pkgdbPut,
     .pkgdbDel = lmdb_pkgdbDel,
-    .pkgdbNew = lmdb_pkgdbNew,
     .pkgdbKey = lmdb_pkgdbKey,
 
     .idxdbGet = lmdb_idxdbGet,

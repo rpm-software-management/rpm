@@ -979,7 +979,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	if (hdrBlob != NULL && rpmrc != RPMRC_FAIL) {
 	    rpmsqBlock(SIG_BLOCK);
 	    dbCtrl(mi->mi_db, DB_CTRL_LOCK_RW);
-	    rc = pkgdbPut(dbi, mi->mi_dbc, mi->mi_prevoffset,
+	    rc = pkgdbPut(dbi, mi->mi_dbc, &mi->mi_prevoffset,
 			  hdrBlob, hdrLen);
 	    dbCtrl(mi->mi_db, DB_CTRL_INDEXSYNC);
 	    dbCtrl(mi->mi_db, DB_CTRL_UNLOCK_RW);
@@ -2329,9 +2329,7 @@ int rpmdbAdd(rpmdb db, Header h)
 
     /* Add header to primary index */
     dbc = dbiCursorInit(dbi, DBC_WRITE);
-    ret = pkgdbNew(dbi, dbc, &hdrNum);
-    if (ret == 0)
-	ret = pkgdbPut(dbi, dbc, hdrNum, hdrBlob, hdrLen);
+    ret = pkgdbPut(dbi, dbc, &hdrNum, hdrBlob, hdrLen);
     dbiCursorFree(dbi, dbc);
 
     /* Add associated data to secondary indexes */
