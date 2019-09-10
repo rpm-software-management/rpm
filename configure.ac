@@ -270,9 +270,9 @@ AM_CONDITIONAL(LIBDWARF,[test "$WITH_LIBDWARF" = yes])
 # Select crypto library
 AC_ARG_WITH(crypto,
             [AC_HELP_STRING([--with-crypto=CRYPTO_LIB],
-                            [The cryptographic library to use (nss|beecrypt|openssl|libgcrypt). The default is nss.])
+                            [The cryptographic library to use (nss|beecrypt|openssl|libgcrypt). The default is libgcrypt.])
                             ],[],
-                            [with_crypto=nss])
+                            [with_crypto=libgcrypt])
 
 # Refuse to proceed if someone specified --with-beecrypt (removed)
 AC_ARG_WITH(beecrypt,

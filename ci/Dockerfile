@@ -25,6 +25,7 @@ RUN dnf -y install \
   elfutils-libelf-devel \
   elfutils-devel \
   openssl-devel \
+  libgcrypt-devel \
   file-devel \
   popt-devel \
   libarchive-devel \
@@ -48,7 +49,7 @@ RUN dnf -y install \
   && dnf clean all
 RUN autoreconf -vfi
 RUN ./configure \
-  --with-crypto=openssl \
+  --with-crypto=libgcrypt \
   --with-selinux \
   --with-cap \
   --with-acl \

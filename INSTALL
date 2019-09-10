@@ -10,9 +10,12 @@ The source for the file utility + library is available from
     ftp://ftp.astron.com/pub/file/
 
 You will need a cryptographic library to support digests and signatures.
-This library may be Mozilla NSS, OpenSSL or beecrypt. Which library to use
-must be specified with the --with-crypto=[beecrypt|nss|openssl] argument
-to configure.
+This library may be libgcrypt, Mozilla NSS, OpenSSL or beecrypt.
+Which library to use can be specified with the
+--with-crypto=[libgcrypt|beecrypt|nss|openssl] argument to configure,
+libgcrypt is the default.
+
+libgcrypt library is available from https://www.gnupg.org/software/libgcrypt/
 
 If using the Mozilla NSS library for encyption (and NSPR library which
 NSS uses) it must be version 3.12 or later. Both NSPR and NSS libraries and
