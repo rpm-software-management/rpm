@@ -273,6 +273,7 @@ AT_CHECK([
 runroot rpm --eval '%{expr:a*1}'
 runroot rpm --eval '%{expr:(5+1)*4)}'
 runroot rpm --eval '%{expr:a=!b}'
+runroot rpm --eval '%{expr:1/0}'
 ],
 [1],
 [],
@@ -281,6 +282,7 @@ error: syntax error in expression: (5+1)*4)
 error:                                    ^
 error: syntax error while parsing ==: a=!b
 error:                                  ^
+error: division by zero: 1/0
 ])
 AT_CLEANUP
 
