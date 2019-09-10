@@ -214,6 +214,28 @@ can express this as
 	BuildConflicts: gcc <= 2.7.2.1
 \endverbatim
 
+\section comments Comments
+
+Comments in spec file have # at the start of the line.
+
+\verbatim
+    # this is a comment
+\endverbatim
+
+Macros are expanded even in comment lines. If this is undesireable, escape
+the macro with an extra percent sign (%):
+
+\verbatim
+    # make unversioned %%__python an error unless explicitly overridden
+\endverbatim
+
+Another option is to use built-in macro %dnl that discards text to next
+line without expanding it.
+
+\verbatim
+    %dnl make unversioned %__python an error unless explicitly overridden
+\endverbatim
+
 \section conditionals Conditionals
 
 RPM's spec file format allows conditional blocks of code to be used
