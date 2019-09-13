@@ -442,7 +442,6 @@ static void mbAppend(MacroBuf mb, char c)
     mb->nb--;
 }
 
-#ifdef WITH_LUA
 static void mbAppendStr(MacroBuf mb, const char *str)
 {
     size_t len = strlen(str);
@@ -454,7 +453,6 @@ static void mbAppendStr(MacroBuf mb, const char *str)
     mb->tpos += len;
     mb->nb -= len;
 }
-#endif
 
 static const char * doDnl(MacroBuf mb, const char * se)
 {
@@ -1048,6 +1046,7 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
     int c;
     int verbose = (rpmIsVerbose() != 0);
     int expand = (g != NULL && gn > 0);
+    int expandagain = 1;
 
     /* Don't expand %{verbose:...} argument on false condition */
     if (STREQ("verbose", f, fn) && (verbose == negate))
@@ -1105,6 +1104,7 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
 	if (expr) {
 	    free(buf);
 	    b = buf = expr;
+	    expandagain = 0;
 	} else {
 	    mb->error = 1;
 	}
@@ -1182,7 +1182,11 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
     }
 
     if (b) {
-	(void) expandMacro(mb, b, 0);
+	if (expandagain) {
+	    (void) expandMacro(mb, b, 0);
+	} else {
+	    mbAppendStr(mb, b);
+	}
     }
     free(buf);
 }
