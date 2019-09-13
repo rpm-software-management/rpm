@@ -276,9 +276,8 @@ static int rdToken(ParseState state)
       for (ts=1; p[ts] && risdigit(p[ts]); ts++);
       temp = xmalloc(ts+1);
       memcpy(temp, p, ts);
-      p += ts-1;
       temp[ts] = '\0';
-
+      p += ts-1;
       token = TOK_INTEGER;
       v = valueMakeInteger(atoi(temp));
       free(temp);
@@ -293,12 +292,14 @@ static int rdToken(ParseState state)
 
       p++;
       for (ts=0; p[ts] && p[ts] != '\"'; ts++);
+      if (p[ts] != '\"') {
+        exprErr(state, _("unterminated string in expression"), p + ts + 1);
+        goto err;
+      }
       temp = xmalloc(ts+1);
       memcpy(temp, p, ts);
-      p += ts-1;
       temp[ts] = '\0';
-      p++;
-
+      p += ts;
       token = TOK_STRING;
       v = valueMakeString( temp );
 
