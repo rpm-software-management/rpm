@@ -268,7 +268,7 @@ or a mathematical statement:
 \endverbatim
 Generally, a mathematical statement allows to use logical operators
 &&, ||, !, relational operators !=, ==, <, > , <=, >=, arithmetic operators
-+, -, /, * and parentheses.
++, -, /, *, the ternary operator ? :, and parentheses.
 
 The conditional blocks end by %endif. Inside the conditional block %elif,
 %elifarch, %elifos or %else can be optionally used. Conditionals %endif and

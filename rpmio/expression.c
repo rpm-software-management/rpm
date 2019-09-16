@@ -143,6 +143,8 @@ static void exprErr(const struct _parseState *state, const char *msg,
 #define TOK_NOT         16
 #define TOK_LOGICAL_AND 17
 #define TOK_LOGICAL_OR  18
+#define TOK_TERNARY_COND 19
+#define TOK_TERNARY_ALT 20
 
 #if defined(DEBUG_PARSER)
 typedef struct exprTokTableEntry {
@@ -169,6 +171,8 @@ ETTE_t exprTokTable[] = {
     { "!",	TOK_NOT },
     { "&&",	TOK_LOGICAL_AND },
     { "||",	TOK_LOGICAL_OR },
+    { "?",	TOK_TERNARY_COND },
+    { ":",	TOK_TERNARY_ALT},
     { NULL, 0 }
 };
 
@@ -267,6 +271,12 @@ static int rdToken(ParseState state)
       goto err;
     }
     break;
+  case '?':
+    token = TOK_TERNARY_COND;
+    break;
+  case ':':
+    token = TOK_TERNARY_ALT;
+    break;
 
   default:
     if (risdigit(*p)) {
@@ -323,7 +333,7 @@ err:
   return -1;
 }
 
-static Value doLogical(ParseState state);
+static Value doTernary(ParseState state);
 
 
 /**
@@ -339,7 +349,7 @@ static Value doPrimary(ParseState state)
   case TOK_OPEN_P:
     if (rdToken(state))
       goto err;
-    v = doLogical(state);
+    v = doTernary(state);
     if (state->nextToken != TOK_CLOSE_P) {
       exprErr(state, _("unmatched ("), NULL);
       goto err;
@@ -675,6 +685,52 @@ err:
   return NULL;
 }
 
+static Value doTernary(ParseState state)
+{
+  Value v1 = NULL, v2 = NULL;
+  DEBUG(printf("doTernary()\n"));
+
+  v1 = doLogical(state);
+  if (v1 == NULL)
+    goto err;
+  if (state->nextToken == TOK_TERNARY_COND) {
+    int result;
+    switch (v1->type) {
+      case VALUE_TYPE_INTEGER:
+	result = v1->data.i != 0;
+	break;
+      case VALUE_TYPE_STRING:
+	result = v1->data.s[0] != '\0';
+	break;
+      default:
+	goto err;
+    }
+    valueFree(v1);
+    if (rdToken(state))
+      goto err;
+    v1 = doTernary(state);
+    if (v1 == NULL)
+      goto err;
+    if (state->nextToken != TOK_TERNARY_ALT) {
+      exprErr(state, _("syntax error in expression"), state->p);
+      goto err;
+    }
+    if (rdToken(state))
+      goto err;
+    v2 = doTernary(state);
+    if (v2 == NULL)
+      goto err;
+    valueFree(result ? v2 : v1);
+    return result ? v1 : v2;
+  }
+  return v1;
+
+err:
+  valueFree(v1);
+  valueFree(v2);
+  return NULL;
+}
+
 int rpmExprBool(const char *expr)
 {
   struct _parseState state;
@@ -690,7 +746,7 @@ int rpmExprBool(const char *expr)
   (void) rdToken(&state);
 
   /* Parse the expression. */
-  v = doLogical(&state);
+  v = doTernary(&state);
   if (!v)
     goto exit;
 
@@ -734,7 +790,7 @@ char *rpmExprStr(const char *expr)
   (void) rdToken(&state);
 
   /* Parse the expression. */
-  v = doLogical(&state);
+  v = doTernary(&state);
   if (!v)
     goto exit;
 
