@@ -291,6 +291,36 @@ error: division by zero: 1/0
 ])
 AT_CLEANUP
 
+AT_SETUP([ternary expressions])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm \
+    --eval '%{expr: 0 ? 2 : 3}' \
+    --eval '%{expr: 1 ? 2 : 3}' \
+    --eval '%{expr: 0 ? 0 ? 3 : 4 : 0 ? 6 : 7}' \
+    --eval '%{expr: 0 ? 0 ? 3 : 4 : 5 ? 6 : 7}' \
+    --eval '%{expr: 0 ? 2 ? 3 : 4 : 0 ? 6 : 7}' \
+    --eval '%{expr: 0 ? 2 ? 3 : 4 : 5 ? 6 : 7}' \
+    --eval '%{expr: 1 ? 0 ? 3 : 4 : 0 ? 6 : 7}' \
+    --eval '%{expr: 1 ? 0 ? 3 : 4 : 5 ? 6 : 7}' \
+    --eval '%{expr: 1 ? 2 ? 3 : 4 : 0 ? 6 : 7}' \
+    --eval '%{expr: 1 ? 2 ? 3 : 4 : 5 ? 6 : 7}' \
+],
+[0],
+[3
+2
+7
+6
+7
+6
+4
+4
+3
+3
+],
+[])
+AT_CLEANUP
+
 AT_SETUP([shell expansion])
 AT_KEYWORDS([macros])
 AT_CHECK([
