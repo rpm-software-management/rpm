@@ -124,7 +124,7 @@ static int print_expand_trace = _PRINT_EXPAND_TRACE;
 
 typedef void (*macroFunc)(MacroBuf mb, int chkexist, int negate,
 			const char * f, size_t fn, const char * g, size_t gn);
-typedef const char *(*parseFunc)(MacroBuf mb, const char * se, size_t slen);
+typedef const char *(*parseFunc)(MacroBuf mb, const char * se);
 
 /* forward ref */
 static int expandMacro(MacroBuf mb, const char *src, size_t slen);
@@ -143,10 +143,10 @@ static void doOutput(MacroBuf mb, int chkexist, int negate,
 static void doTrace(MacroBuf mb, int chkexist, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
 
-static const char * doDef(MacroBuf mb, const char * se, size_t slen);
-static const char * doGlobal(MacroBuf mb, const char * se, size_t slen);
-static const char * doDump(MacroBuf mb, const char * se, size_t slen);
-static const char * doUndefine(MacroBuf mb, const char * se, size_t slen);
+static const char * doDef(MacroBuf mb, const char * se);
+static const char * doGlobal(MacroBuf mb, const char * se);
+static const char * doDump(MacroBuf mb, const char * se);
+static const char * doUndefine(MacroBuf mb, const char * se);
 /* =============================================================== */
 
 static rpmMacroContext rpmmctxAcquire(rpmMacroContext mc)
@@ -456,7 +456,7 @@ static void mbAppendStr(MacroBuf mb, const char *str)
 }
 #endif
 
-static const char * doDnl(MacroBuf mb, const char * se, size_t slen)
+static const char * doDnl(MacroBuf mb, const char * se)
 {
     const char *s = se;
     while (*s && !iseol(*s))
@@ -614,16 +614,15 @@ exit:
  * Parse (and execute) new macro definition.
  * @param mb		macro expansion state
  * @param se		macro definition to parse
- * @param slen		length of se argument
  * @param level		macro recursion level
  * @param expandbody	should body be expanded?
  * @return		address to continue parsing
  */
 static const char *
-doDefine(MacroBuf mb, const char * se, size_t slen, int level, int expandbody)
+doDefine(MacroBuf mb, const char * se, int level, int expandbody)
 {
     const char *s = se;
-    char *buf = xmalloc(slen + 3); /* Some leeway for termination issues... */
+    char *buf = xmalloc(strlen(s) + 3); /* Some leeway for termination issues... */
     char *n = buf, *ne = n;
     char *o = NULL, *oe;
     char *b, *be, *ebody = NULL;
@@ -743,14 +742,13 @@ exit:
  * Parse (and execute) macro undefinition.
  * @param mb		macro expansion state
  * @param se		macro name to undefine
- * @param slen		length of se argument
  * @return		address to continue parsing
  */
 static const char *
-doUndefine(MacroBuf mb, const char * se, size_t slen)
+doUndefine(MacroBuf mb, const char * se)
 {
     const char *s = se;
-    char *buf = xmalloc(slen + 1);
+    char *buf = xmalloc(strlen(s) + 1);
     char *n = buf, *ne = n;
     int c;
 
@@ -773,17 +771,17 @@ exit:
     return se;
 }
 
-static const char * doDef(MacroBuf mb, const char * se, size_t slen)
+static const char * doDef(MacroBuf mb, const char * se)
 {
-    return doDefine(mb, se, slen, mb->level, 0);
+    return doDefine(mb, se, mb->level, 0);
 }
 
-static const char * doGlobal(MacroBuf mb, const char * se, size_t slen)
+static const char * doGlobal(MacroBuf mb, const char * se)
 {
-    return doDefine(mb, se, slen, RMIL_GLOBAL, 1);
+    return doDefine(mb, se, RMIL_GLOBAL, 1);
 }
 
-static const char * doDump(MacroBuf mb, const char * se, size_t slen)
+static const char * doDump(MacroBuf mb, const char * se)
 {
     rpmDumpMacroTable(mb->mc, NULL);
     while (iseol(*se))
@@ -1393,7 +1391,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	/* Expand builtin macros */
 	if ((builtin = lookupBuiltin(f, fn))) {
 	    if (builtin->parse) {
-		s = builtin->parse(mb, se, slen - (se - s));
+		s = builtin->parse(mb, se);
 	    } else {
 		builtin->func(mb, chkexist, negate, f, fn, g, gn);
 		s = se;
@@ -1612,7 +1610,7 @@ static int defineMacro(rpmMacroContext mc, const char * macro, int level)
 
     /* XXX just enough to get by */
     mb->mc = mc;
-    (void) doDefine(mb, macro, strlen(macro), level, 0);
+    (void) doDefine(mb, macro, level, 0);
     rc = mb->error;
     _free(mb);
     return rc;
