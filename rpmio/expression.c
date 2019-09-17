@@ -406,6 +406,11 @@ static Value doPrimary(ParseState state)
 
     v = valueMakeInteger(! v->data.i);
     break;
+
+  case TOK_EOF:
+    exprErr(&state, _("unexpected end of expression"), NULL);
+    goto err;
+
   default:
     goto err;
     break;
