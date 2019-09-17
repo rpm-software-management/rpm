@@ -1711,9 +1711,9 @@ runroot rpmbuild -ba --quiet      \
 ],
 [1],
 [],
-[error: parse error in expression:  rubbish:4-3
+[error: bare words are no longer supported, please use "...":  rubbish:4-3
 
-error:                                    ^
+error:                                                        ^
 error: /data/SPECS/eliftest.spec:40: bad %elif condition:  rubbish:4-3
 
 ])
