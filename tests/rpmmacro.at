@@ -270,19 +270,22 @@ AT_CLEANUP
 AT_SETUP([expr macro 2])
 AT_KEYWORDS([macros])
 AT_CHECK([
-runroot rpm --eval '%{expr:a*1}'
+runroot rpm --eval '%{expr:"a"*1}'
 runroot rpm --eval '%{expr:(5+1)*4)}'
-runroot rpm --eval '%{expr:a=!b}'
+runroot rpm --eval '%{expr:"a"=!"b"}'
 runroot rpm --eval '%{expr:4+}'
+runroot rpm --eval '%{expr:bare}'
 ],
 [1],
 [],
-[error: types must match: a*1
+[error: types must match: "a"*1
 error: syntax error in expression: (5+1)*4)
 error:                                    ^
-error: syntax error while parsing ==: a=!b
-error:                                  ^
+error: syntax error while parsing ==: "a"=!"b"
+error:                                    ^
 error: unexpected end of expression: 4+
+error: bare words are no longer supported, please use "...": bare
+error:                                                       ^
 ])
 AT_CLEANUP
 
