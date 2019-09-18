@@ -336,6 +336,45 @@ runroot rpm \
 ])
 AT_CLEANUP
 
+AT_SETUP([expression expansion 1])
+AT_KEYWORDS([macros])
+AT_CHECK([[
+runroot rpm \
+    --define "aaa 5" \
+    --define "bbb 0" \
+    --eval '%[4*1024]' \
+    --eval '%[5 < 1]' \
+    --eval '%[%aaa]' \
+    --eval '%[%{aaa}]' \
+    --eval '%["%{aaa}"]' \
+    --eval '%[%{?ccc}]' \
+]],
+[0],
+[4096
+0
+5
+5
+5
+0
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([expression expansion 2])
+AT_KEYWORDS([macros])
+AT_CHECK([[
+runroot rpm --define "aaa hello" --eval '%[%aaa]'
+runroot rpm --eval '%[%{foo]'
+]],
+[1],
+[],
+[error: macro expansion returned a bare word, please use "...": %aaa
+error:                                                         ^
+error: expanded string: hello
+error: Unterminated {: {foo 
+])
+AT_CLEANUP
+
 AT_SETUP([simple lua --eval])
 AT_KEYWORDS([macros lua])
 AT_CHECK([

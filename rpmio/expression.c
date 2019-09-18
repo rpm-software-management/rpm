@@ -15,6 +15,7 @@
 
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
+#include "rpmio/rpmmacro_internal.h"
 #include "debug.h"
 
 /* #define DEBUG_PARSER 1 */
@@ -105,6 +106,7 @@ typedef struct _parseState {
     const char *p;	/*!< current position in expression string */
     int nextToken;	/*!< current lookahead token */
     Value tokenValue;	/*!< valid when TOK_INTEGER or TOK_STRING */
+    int flags;		/*!< parser flags */
 } *ParseState;
 
 static void exprErr(const struct _parseState *state, const char *msg,
@@ -188,6 +190,40 @@ static const char *prToken(int val)
 }
 #endif	/* DEBUG_PARSER */
 
+static char *getValuebuf(ParseState state, const char *p, size_t size)
+{
+    char *temp;
+    temp = xmalloc(size + 1);
+    memcpy(temp, p, size);
+    temp[size] = '\0';
+    if (size && (state->flags & RPMEXPR_EXPAND) != 0) {
+	char *temp2 = NULL;
+	rpmExpandMacros(NULL, temp, &temp2, 0);
+	free(temp);
+	temp = temp2;
+    }
+    return temp;
+}
+
+static size_t skipMacro(const char *p, size_t ts)
+{
+    const char *pe;
+    if (p[ts] == '%')
+	return ts + 1;	/* %% is special */
+    pe = findMacroEnd(p + ts);
+    return pe ? pe - p : strlen(p);
+}
+
+static int wellformedInteger(const char *p)
+{
+  if (*p == '-')
+    p++;
+  for (; *p; p++)
+    if (!risdigit(*p))
+      return 0;
+  return 1;
+}
+
 /**
  * @param state		expression parser state
  */
@@ -196,6 +232,7 @@ static int rdToken(ParseState state)
   int token;
   Value v = NULL;
   const char *p = state->p;
+  int expand = (state->flags & RPMEXPR_EXPAND) != 0;
 
   /* Skip whitespace before the next token. */
   while (*p && risspace(*p)) p++;
@@ -279,14 +316,29 @@ static int rdToken(ParseState state)
     break;
 
   default:
-    if (risdigit(*p)) {
+    if (risdigit(*p) || (*p == '%' && expand)) {
       char *temp;
       size_t ts;
 
-      for (ts=1; p[ts] && risdigit(p[ts]); ts++);
-      temp = xmalloc(ts+1);
-      memcpy(temp, p, ts);
-      temp[ts] = '\0';
+      for (ts=0; p[ts]; ts++) {
+	if (p[ts] == '%' && expand)
+	  ts = skipMacro(p, ts + 1) - 1;
+	else if (!risdigit(p[ts]))
+	  break;
+      }
+      temp = getValuebuf(state, p, ts);
+      if (!temp)
+	goto err;
+      /* make sure that the expanded buffer only contains digits */
+      if (expand && !wellformedInteger(temp)) {
+	if (risalpha(*temp))
+	  exprErr(state, _("macro expansion returned a bare word, please use \"...\""), p + 1);
+	else
+	  exprErr(state, _("macro expansion did not return an integer"), p + 1);
+	rpmlog(RPMLOG_ERR, _("expanded string: %s\n"), temp);
+	free(temp);
+	goto err;
+      }
       p += ts-1;
       token = TOK_INTEGER;
       v = valueMakeInteger(atoi(temp));
@@ -301,14 +353,19 @@ static int rdToken(ParseState state)
       size_t ts;
 
       p++;
-      for (ts=0; p[ts] && p[ts] != '\"'; ts++);
+      for (ts=0; p[ts]; ts++) {
+	if (p[ts] == '%' && expand)
+	  ts = skipMacro(p, ts + 1) - 1;
+	else if (p[ts] == '\"')
+	  break;
+      }
       if (p[ts] != '\"') {
         exprErr(state, _("unterminated string in expression"), p + ts + 1);
         goto err;
       }
-      temp = xmalloc(ts+1);
-      memcpy(temp, p, ts);
-      temp[ts] = '\0';
+      temp = getValuebuf(state, p, ts);
+      if (!temp)
+	goto err;
       p += ts;
       token = TOK_STRING;
       v = valueMakeString( temp );
@@ -732,7 +789,7 @@ err:
   return NULL;
 }
 
-int rpmExprBool(const char *expr)
+int rpmExprBool(const char *expr, int flags)
 {
   struct _parseState state;
   int result = -1;
@@ -744,6 +801,7 @@ int rpmExprBool(const char *expr)
   state.p = state.str = xstrdup(expr);
   state.nextToken = 0;
   state.tokenValue = NULL;
+  state.flags = flags;
   if (rdToken(&state))
     goto exit;
 
@@ -777,7 +835,7 @@ exit:
   return result;
 }
 
-char *rpmExprStr(const char *expr)
+char *rpmExprStr(const char *expr, int flags)
 {
   struct _parseState state;
   char *result = NULL;
@@ -789,6 +847,7 @@ char *rpmExprStr(const char *expr)
   state.p = state.str = xstrdup(expr);
   state.nextToken = 0;
   state.tokenValue = NULL;
+  state.flags = flags;
   if (rdToken(&state))
     goto exit;
 
