@@ -37,6 +37,7 @@ extern int optind;
 #include "rpmio/rpmlua.h"
 #endif
 
+#include "rpmio/rpmmacro_internal.h"
 #include "debug.h"
 
 enum macroFlags_e {
@@ -221,7 +222,7 @@ rdcl(char * buf, size_t size, FILE *f)
     char *q = buf - 1;		/* initialize just before buffer. */
     size_t nb = 0;
     size_t nread = 0;
-    int pc = 0, bc = 0;
+    int pc = 0, bc = 0, xc = 0;
     int nlines = 0;
     char *p = buf;
 
@@ -247,6 +248,7 @@ rdcl(char * buf, size_t size, FILE *f)
 		    switch (*(p+1)) {
 			case '{': p++, bc++; break;
 			case '(': p++, pc++; break;
+			case '[': p++, xc++; break;
 			case '%': p++; break;
 		    }
 		    break;
@@ -254,9 +256,11 @@ rdcl(char * buf, size_t size, FILE *f)
 		case '}': if (bc > 0) bc--; break;
 		case '(': if (pc > 0) pc++; break;
 		case ')': if (pc > 0) pc--; break;
+		case '[': if (xc > 0) xc++; break;
+		case ']': if (xc > 0) xc--; break;
 	    }
 	}
-	if (nb == 0 || (*q != '\\' && !bc && !pc) || *(q+1) == '\0') {
+	if (nb == 0 || (*q != '\\' && !bc && !pc && !xc) || *(q+1) == '\0') {
 	    *(++q) = '\0';		/* trim trailing \r, \n */
 	    break;
 	}
@@ -499,6 +503,28 @@ exit:
     _free(buf);
 }
 
+/**
+ * Expand an expression into target buffer.
+ * @param mb		macro expansion state
+ * @param expr		expression
+ * @param len		no. bytes in expression
+ */
+static void doExpressionExpansion(MacroBuf mb, const char * expr, size_t len)
+{
+    char *buf = xmalloc(len + 1);
+    char *result;
+    strncpy(buf, expr, len);
+    buf[len] = 0;
+    result = rpmExprStr(buf, RPMEXPR_EXPAND);
+    if (!result) {
+	mb->error = 1;
+	goto exit;
+    }
+    mbAppendStr(mb, result);
+    free(result);
+exit:
+    _free(buf);
+}
 
 static unsigned int getncpus(void)
 {
@@ -663,7 +689,7 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
 	be += strlen(b);
 	s = se;	/* move scan forward */
     } else {	/* otherwise free-field */
-	int bc = 0, pc = 0;
+	int bc = 0, pc = 0, xc = 0;
 	while (*s && (bc || pc || !iseol(*s))) {
 	    switch (*s) {
 		case '\\':
@@ -676,6 +702,7 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
 		    switch (*(s+1)) {
 			case '{': *be++ = *s++; bc++; break;
 			case '(': *be++ = *s++; pc++; break;
+			case '[': *be++ = *s++; xc++; break;
 			case '%': *be++ = *s++; break;
 		    }
 		    break;
@@ -683,12 +710,14 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
 		case '}': if (bc > 0) bc--; break;
 		case '(': if (pc > 0) pc++; break;
 		case ')': if (pc > 0) pc--; break;
+		case '[': if (xc > 0) xc++; break;
+		case ']': if (xc > 0) xc--; break;
 	    }
 	    *be++ = *s++;
 	}
 	*be = '\0';
 
-	if (bc || pc) {
+	if (bc || pc || xc) {
 	    mbErr(mb, 1, _("Macro %%%s has unterminated body\n"), n);
 	    se = s;	/* XXX W2DO? */
 	    goto exit;
@@ -1099,7 +1128,7 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
     } else if (STREQ("expand", f, fn) || STREQ("verbose", f, fn)) {
 	b = buf;
     } else if (STREQ("expr", f, fn)) {
-	char *expr = rpmExprStr(buf);
+	char *expr = rpmExprStr(buf, 0);
 	if (expr) {
 	    free(buf);
 	    b = buf = expr;
@@ -1227,13 +1256,21 @@ static const char *setNegateAndCheck(const char *str, int *pnegate, int *pchkexi
     return str;
 }
 
-static const char *findMacroEnd(const char *str)
+/**
+ * Find the end of a macro call
+ * @param str           pointer to the character after the initial '%'
+ * @return              pointer to the next character after the macro
+ */
+RPM_GNUC_INTERNAL
+const char *findMacroEnd(const char *str)
 {
     int c;
     if (*str == '(')
 	return matchchar(str, *str, ')');
     if (*str == '{')
 	return matchchar(str, *str, '}');
+    if (*str == '[')
+	return matchchar(str, *str, ']');
     while (*str == '?' || *str == '!')
 	str++;
     if (*str == '-')				/* %-f */
@@ -1347,6 +1384,13 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 		printMacro(mb, s, se);
 	    s++;	/* skip ( */
 	    doShellEscape(mb, s, (se - 1 - s));
+	    s = se;
+	    continue;
+	case '[':		/* %[...] expression expansion */
+	    if (mb->macro_trace)
+		printMacro(mb, s, se);
+	    s++;	/* skip [ */
+	    doExpressionExpansion(mb, s, (se - 1 - s));
 	    s = se;
 	    continue;
 	case '{':		/* %{...}/%{...:...} substitution */

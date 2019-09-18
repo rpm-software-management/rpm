@@ -49,6 +49,9 @@ extern const char * macrofiles;
 #define addMacro(_mc, _n, _o, _b, _l) rpmPushMacro(_mc, _n, _o, _b, _l)
 #define delMacro(_mc, _n) rpmPopMacro(_mc, _n)
 
+/* rpm expression parser flags */
+#define RPMEXPR_EXPAND		(1 << 0)	/*!< expand primary terms */
+
 /** \ingroup rpmmacro
  * Print macros to file stream.
  * @param mc		macro context (NULL uses global context).
@@ -156,16 +159,18 @@ const char *rpmConfigDir(void);
 /** \ingroup rpmmacro
  * Evaluate boolean expression.
  * @param expr		expression to parse
+ * @param flags		parser flags
  * @return
  */
-int rpmExprBool(const char * expr);
+int rpmExprBool(const char * expr, int flags);
 
 /** \ingroup rpmmacro
  * Evaluate string expression.
  * @param expr		expression to parse
+ * @param flags		parser flags
  * @return
  */
-char * rpmExprStr(const char * expr);
+char * rpmExprStr(const char * expr, int flags);
 
 
 #ifdef __cplusplus

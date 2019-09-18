@@ -22,7 +22,7 @@ librpmio_la_SOURCES = \
 	rpmpgp.c rpmsq.c rpmsw.c url.c \
 	rpmio_internal.h rpmhook.h \
 	rpmstring.c rpmfileutil.c rpmglob.c \
-	rpmkeyring.c rpmstrpool.c
+	rpmkeyring.c rpmstrpool.c rpmmacro_internal.h
 
 if WITH_BEECRYPT
 librpmio_la_SOURCES += digest_beecrypt.c
