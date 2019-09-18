@@ -110,6 +110,11 @@ typedef struct _parseState {
 static void exprErr(const struct _parseState *state, const char *msg,
 		    const char *p)
 {
+    const char *newLine = strchr(state->str,'\n');
+
+    if (newLine && (*(newLine+1) != '\0'))
+	p = NULL;
+
     rpmlog(RPMLOG_ERR, "%s: %s\n", msg, state->str);
     if (p) {
 	int l = p - state->str + strlen(msg) + 2;
@@ -123,22 +128,21 @@ static void exprErr(const struct _parseState *state, const char *msg,
 #define TOK_EOF          1
 #define TOK_INTEGER      2
 #define TOK_STRING       3
-#define TOK_IDENTIFIER   4
-#define TOK_ADD          5
-#define TOK_MINUS        6
-#define TOK_MULTIPLY     7
-#define TOK_DIVIDE       8
-#define TOK_OPEN_P       9
-#define TOK_CLOSE_P     10
-#define TOK_EQ          11
-#define TOK_NEQ         12
-#define TOK_LT          13
-#define TOK_LE          14
-#define TOK_GT          15
-#define TOK_GE          16
-#define TOK_NOT         17
-#define TOK_LOGICAL_AND 18
-#define TOK_LOGICAL_OR  19
+#define TOK_ADD          4
+#define TOK_MINUS        5
+#define TOK_MULTIPLY     6
+#define TOK_DIVIDE       7
+#define TOK_OPEN_P       8
+#define TOK_CLOSE_P      9
+#define TOK_EQ          10
+#define TOK_NEQ         11
+#define TOK_LT          12
+#define TOK_LE          13
+#define TOK_GT          14
+#define TOK_GE          15
+#define TOK_NOT         16
+#define TOK_LOGICAL_AND 17
+#define TOK_LOGICAL_OR  18
 
 #if defined(DEBUG_PARSER)
 typedef struct exprTokTableEntry {
@@ -150,7 +154,6 @@ ETTE_t exprTokTable[] = {
     { "EOF",	TOK_EOF },
     { "I",	TOK_INTEGER },
     { "S",	TOK_STRING },
-    { "ID",	TOK_IDENTIFIER },
     { "+",	TOK_ADD },
     { "-",	TOK_MINUS },
     { "*",	TOK_MULTIPLY },
@@ -281,17 +284,8 @@ static int rdToken(ParseState state)
       free(temp);
 
     } else if (risalpha(*p)) {
-      char *temp;
-      size_t ts;
-
-      for (ts=1; p[ts] && (risalnum(p[ts]) || p[ts] == '_'); ts++);
-      temp = xmalloc(ts+1);
-      memcpy(temp, p, ts);
-      p += ts-1;
-      temp[ts] = '\0';
-
-      token = TOK_IDENTIFIER;
-      v = valueMakeString(temp);
+      exprErr(state, _("bare words are no longer supported, please use \"...\""), p+1);
+      goto err;
 
     } else if (*p == '\"') {
       char *temp;
@@ -361,15 +355,6 @@ static Value doPrimary(ParseState state)
       goto err;
     break;
 
-  case TOK_IDENTIFIER: {
-    const char *name = state->tokenValue->data.s;
-
-    v = valueMakeString( rpmExpand(name, NULL) );
-    if (rdToken(state))
-      goto err;
-    break;
-  }
-
   case TOK_MINUS:
     if (rdToken(state))
       goto err;
@@ -401,6 +386,11 @@ static Value doPrimary(ParseState state)
 
     v = valueMakeInteger(! v->data.i);
     break;
+
+  case TOK_EOF:
+    exprErr(state, _("unexpected end of expression"), NULL);
+    goto err;
+
   default:
     goto err;
     break;

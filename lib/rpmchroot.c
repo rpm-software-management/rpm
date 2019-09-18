@@ -124,6 +124,7 @@ int rpmChrootIn(void)
 	if (!_rpm_nouserns && getuid())
 	    try_become_root();
 
+	rpmlog(RPMLOG_DEBUG, "entering chroot %s\n", rootState.rootDir);
 	if (chdir("/") == 0 && chroot(rootState.rootDir) == 0) {
 	    rootState.chrootDone = 1;
 	} else {
@@ -149,6 +150,7 @@ int rpmChrootOut(void)
     if (rootState.chrootDone > 1) {
 	rootState.chrootDone--;
     } else if (rootState.chrootDone == 1) {
+	rpmlog(RPMLOG_DEBUG, "exiting chroot %s\n", rootState.rootDir);
 	if (chroot(".") == 0 && fchdir(rootState.cwd) == 0) {
 	    rootState.chrootDone = 0;
 	} else {

@@ -214,24 +214,68 @@ can express this as
 	BuildConflicts: gcc <= 2.7.2.1
 \endverbatim
 
-\section conditionals Conditionals
+\section comments Comments
 
-RPM's spec file format allows conditional blocks of code to be used dependent
-on various properties such as architecture (%ifarch / %ifnarch), operating system
-(%ifos / %ifnos), or any other conditional expression (%if). Conditionals may be
-nested within other conditionals:
+Comments in spec file have # at the start of the line.
 
 \verbatim
-	%ifarch ppc64 ppc x86_64
-	...
-	%if 0%{?ver} && 0%{?ver} >= 100
-	...
-	%else
-	...
-	%endif
+    # this is a comment
+\endverbatim
+
+Macros are expanded even in comment lines. If this is undesireable, escape
+the macro with an extra percent sign (%):
+
+\verbatim
+    # make unversioned %%__python an error unless explicitly overridden
+\endverbatim
+
+Another option is to use built-in macro %dnl that discards text to next
+line without expanding it.
+
+\verbatim
+    %dnl make unversioned %__python an error unless explicitly overridden
+\endverbatim
+
+\section conditionals Conditionals
+
+RPM's spec file format allows conditional blocks of code to be used
+depending on various properties such as architecture (%ifarch /%ifnarch),
+operating system (%ifos / %ifnos), or a conditional expression (%if).
+
+%ifarch is generally used for building RPM packages for multiple
+platforms like:
+\verbatim
+	%ifarch s390 s390x
+	BuildRequires: s390utils-devel
 	%endif
 \endverbatim
 
-Conditionals are not macros, thus they can be used in spec files only.
+%ifos is used to control RPM's spec file processing according to the
+build target operating system.
+
+%if can be used for various purposes. The test can be evaluated based on
+the existence of a macro, like:
+\verbatim
+	%if %{defined with_foo} && %{undefined with_bar}
+\endverbatim
+string comparison:
+\verbatim
+	%if "%{optimize_flags}" != "none"
+\endverbatim
+or a mathematical statement:
+\verbatim
+	%if 0%{?fedora} > 10 || 0%{?rhel} > 7
+\endverbatim
+Generally, a mathematical statement allows to use logical operators
+&&, ||, !, relational operators !=, ==, <, > , <=, >=, arithmetic operators
++, -, /, * and parentheses.
+
+The conditional blocks end by %endif. Inside the conditional block %elif,
+%elifarch, %elifos or %else can be optionally used. Conditionals %endif and
+%else should not be followed by any text. Conditionals may be nested within
+other conditionals.
+
+%if-conditionals are not macros, and are unlikely to yield expected results
+if used in them.
 
 */

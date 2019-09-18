@@ -270,9 +270,9 @@ AM_CONDITIONAL(LIBDWARF,[test "$WITH_LIBDWARF" = yes])
 # Select crypto library
 AC_ARG_WITH(crypto,
             [AC_HELP_STRING([--with-crypto=CRYPTO_LIB],
-                            [The cryptographic library to use (nss|beecrypt|openssl). The default is nss.])
+                            [The cryptographic library to use (nss|beecrypt|openssl|libgcrypt). The default is libgcrypt.])
                             ],[],
-                            [with_crypto=nss])
+                            [with_crypto=libgcrypt])
 
 # Refuse to proceed if someone specified --with-beecrypt (removed)
 AC_ARG_WITH(beecrypt,
@@ -387,6 +387,25 @@ fi
 AM_CONDITIONAL([WITH_OPENSSL],[test "$with_crypto" = openssl])
 AC_SUBST(WITH_OPENSSL_INCLUDE)
 AC_SUBST(WITH_OPENSSL_LIB)
+
+#=================
+# Check for libgcrypt library.
+WITH_LIBGCRYPT_INCLUDE=
+WITH_LIBGCRYPT_LIB=
+if test "$with_crypto" = libgcrypt ; then
+AC_PATH_TOOL(LIBGCRYPT_CONFIG, libgcrypt-config, notfound)
+if test notfound != "$LIBGCRYPT_CONFIG" ; then
+WITH_LIBGCRYPT_INCLUDE=`$LIBGCRYPT_CONFIG --cflags`
+WITH_LIBGCRYPT_LIB=`$LIBGCRYPT_CONFIG --libs`
+fi
+if test -z "$WITH_LIBGCRYPT_LIB" ; then
+AC_MSG_ERROR([libgcrypt not found])
+fi
+fi
+
+AM_CONDITIONAL([WITH_LIBGCRYPT],[test "$with_crypto" = libgcrypt])
+AC_SUBST(WITH_LIBGCRYPT_INCLUDE)
+AC_SUBST(WITH_LIBGCRYPT_LIB)
 
 #=================
 # Check for NSS library.
