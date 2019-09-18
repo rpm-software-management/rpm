@@ -300,8 +300,7 @@ static int rdToken(ParseState state)
       p++;
 
       token = TOK_STRING;
-      v = valueMakeString( rpmExpand(temp, NULL) );
-      free(temp);
+      v = valueMakeString( temp );
 
     } else {
       exprErr(state, _("parse error in expression"), p+1);
