@@ -403,7 +403,7 @@ static Value doPrimary(ParseState state)
     break;
 
   case TOK_EOF:
-    exprErr(&state, _("unexpected end of expression"), NULL);
+    exprErr(state, _("unexpected end of expression"), NULL);
     goto err;
 
   default:
