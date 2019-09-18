@@ -190,9 +190,13 @@ static const char *prToken(int val)
 }
 #endif	/* DEBUG_PARSER */
 
+#define RPMEXPR_DISCARD		(1 << 31)	/* internal, discard result */
+
 static char *getValuebuf(ParseState state, const char *p, size_t size)
 {
     char *temp;
+    if ((state->flags & RPMEXPR_DISCARD) != 0)
+	size = 0;
     temp = xmalloc(size + 1);
     memcpy(temp, p, size);
     temp[size] = '\0';
@@ -506,6 +510,8 @@ static Value doMultiplyDivide(ParseState state)
     if (valueIsInteger(v1)) {
       int i1 = v1->data.i, i2 = v2->data.i;
 
+      if ((state->flags & RPMEXPR_DISCARD) != 0)
+        continue;	/* just use v1 in discard mode */
       if ((i2 == 0) && (op == TOK_DIVIDE)) {
 	    exprErr(state, _("division by zero"), NULL);
 	    goto err;
@@ -695,6 +701,7 @@ err:
 static Value doLogical(ParseState state)
 {
   Value v1 = NULL, v2 = NULL;
+  int oldflags = state->flags;
 
   DEBUG(printf("doLogical()\n"));
 
@@ -705,6 +712,10 @@ static Value doLogical(ParseState state)
   while (state->nextToken == TOK_LOGICAL_AND
 	 || state->nextToken == TOK_LOGICAL_OR) {
     int op = state->nextToken;
+
+    if (valueIsInteger(v1) && ((op == TOK_LOGICAL_AND && !v1->data.i) ||
+                               (op == TOK_LOGICAL_OR && v1->data.i)))
+      state->flags |= RPMEXPR_DISCARD;		/* short-circuit */
 
     if (rdToken(state))
       goto err;
@@ -732,6 +743,7 @@ static Value doLogical(ParseState state)
       exprErr(state, _("&& and || not supported for strings"), NULL);
       goto err;
     }
+    state->flags = oldflags;
   }
 
   if (v2) valueFree(v2);
@@ -740,12 +752,15 @@ static Value doLogical(ParseState state)
 err:
   valueFree(v1);
   valueFree(v2);
+  state->flags = oldflags;
   return NULL;
 }
 
 static Value doTernary(ParseState state)
 {
   Value v1 = NULL, v2 = NULL;
+  int oldflags = state->flags;
+
   DEBUG(printf("doTernary()\n"));
 
   v1 = doLogical(state);
@@ -763,6 +778,9 @@ static Value doTernary(ParseState state)
       default:
 	goto err;
     }
+
+    if (!result)
+	state->flags |= RPMEXPR_DISCARD;	/* short-circuit */
     if (rdToken(state))
       goto err;
     valueFree(v1);
@@ -773,11 +791,17 @@ static Value doTernary(ParseState state)
       exprErr(state, _("syntax error in expression"), state->p);
       goto err;
     }
+    state->flags = oldflags;
+
+    if (result)
+	state->flags |= RPMEXPR_DISCARD;	/* short-circuit */
     if (rdToken(state))
       goto err;
     v2 = doTernary(state);
     if (v2 == NULL)
       goto err;
+    state->flags = oldflags;
+
     valueFree(result ? v2 : v1);
     return result ? v1 : v2;
   }
@@ -786,6 +810,7 @@ static Value doTernary(ParseState state)
 err:
   valueFree(v1);
   valueFree(v2);
+  state->flags = oldflags;
   return NULL;
 }
 
