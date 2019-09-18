@@ -438,6 +438,10 @@ static Value doMultiplyDivide(ParseState state)
     if (valueIsInteger(v1)) {
       int i1 = v1->data.i, i2 = v2->data.i;
 
+      if ((i2 == 0) && (op == TOK_DIVIDE)) {
+	    exprErr(state, _("division by zero"), NULL);
+	    goto err;
+      }
       valueFree(v1);
       if (op == TOK_MULTIPLY)
 	v1 = valueMakeInteger(i1 * i2);
