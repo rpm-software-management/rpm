@@ -273,7 +273,7 @@ rdcl(char * buf, size_t size, FILE *f)
  * @param p		start of text
  * @param pl		left char, i.e. '[', '(', '{', etc.
  * @param pr		right char, i.e. ']', ')', '}', etc.
- * @return		address of last char before pr (or NULL)
+ * @return		address of char after pr (or NULL)
  */
 static const char *
 matchchar(const char * p, char pl, char pr)
@@ -287,7 +287,7 @@ matchchar(const char * p, char pl, char pr)
 	    continue;
 	}
 	if (c == pr) {
-	    if (--lvl <= 0)	return --p;
+	    if (--lvl <= 0)	return p;
 	} else if (c == pl)
 	    lvl++;
     }
@@ -658,10 +658,9 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
 	    goto exit;
 	}
 	s++;	/* XXX skip { */
-	strncpy(b, s, (se - s));
-	b[se - s] = '\0';
+	strncpy(b, s, (se - 1 - s));
+	b[se - 1 - s] = '\0';
 	be += strlen(b);
-	se++;	/* XXX skip } */
 	s = se;	/* move scan forward */
     } else {	/* otherwise free-field */
 	int bc = 0, pc = 0;
@@ -1228,6 +1227,26 @@ static const char *setNegateAndCheck(const char *str, int *pnegate, int *pchkexi
     return str;
 }
 
+static const char *findMacroEnd(const char *str)
+{
+    int c;
+    if (*str == '(')
+	return matchchar(str, *str, ')');
+    if (*str == '{')
+	return matchchar(str, *str, '}');
+    while (*str == '?' || *str == '!')
+	str++;
+    if (*str == '-')				/* %-f */
+	str++;
+    while ((c = *str) && (risalnum(c) || c == '_'))
+	str++;
+    if (*str == '*' && str[1] == '*')		/* %** */
+	str += 2;
+    else if (*str == '*' || *str == '#')	/* %* and %# */
+	str++;
+    return str;
+}
+
 /**
  * The main macro recursion loop.
  * @param mb		macro expansion state
@@ -1309,26 +1328,14 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	if (mb->depth > 1)	/* XXX full expansion for outermost level */
 	    tpos = mb->tpos;	/* save expansion pointer for printExpand */
 	lastc = NULL;
-	switch ((c = *s)) {
+	if ((se = findMacroEnd(s)) == NULL) {
+	    mbErr(mb, 1, _("Unterminated %c: %s\n"), (char)*s, s);
+	    continue;
+	}
+
+	switch (*s) {
 	default:		/* %name substitution */
-	    s = setNegateAndCheck(s, &negate, &chkexist);
-	    f = se = s;
-	    if (*se == '-')
-		se++;
-	    while ((c = *se) && (risalnum(c) || c == '_'))
-		se++;
-	    /* Recognize non-alnum macros too */
-	    switch (*se) {
-	    case '*':
-		se++;
-		if (*se == '*') se++;
-		break;
-	    case '#':
-		se++;
-		break;
-	    default:
-		break;
-	    }
+	    f = s = setNegateAndCheck(s, &negate, &chkexist);
 	    fe = se;
 	    /* For "%name " macros ... */
 	    if ((c = *fe) && isblank(c))
@@ -1336,27 +1343,14 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 		    lastc = strchr(fe, '\0');
 	    break;
 	case '(':		/* %(...) shell escape */
-	    if ((se = matchchar(s, c, ')')) == NULL) {
-		mbErr(mb, 1, _("Unterminated %c: %s\n"), (char)c, s);
-		continue;
-	    }
 	    if (mb->macro_trace)
-		printMacro(mb, s, se+1);
-
+		printMacro(mb, s, se);
 	    s++;	/* skip ( */
-	    doShellEscape(mb, s, (se - s));
-	    se++;	/* skip ) */
-
+	    doShellEscape(mb, s, (se - 1 - s));
 	    s = se;
 	    continue;
-	    break;
 	case '{':		/* %{...}/%{...:...} substitution */
-	    if ((se = matchchar(s, c, '}')) == NULL) {
-		mbErr(mb, 1, _("Unterminated %c: %s\n"), (char)c, s);
-		continue;
-	    }
-	    f = s+1;/* skip { */
-	    se++;	/* skip } */
+	    f = s+1;	/* skip { */
 	    f = setNegateAndCheck(f, &negate, &chkexist);
 	    for (fe = f; (c = *fe) && !strchr(" :}", c);)
 		fe++;
