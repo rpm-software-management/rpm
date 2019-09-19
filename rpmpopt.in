@@ -221,8 +221,8 @@ rpmbuild alias --buildpolicy --define '__os_install_post %{_rpmconfigdir}/brp-!#
 rpmbuild alias --sign \
 	--pipe 'rpm --addsign `grep ".*: .*\.rpm$"|cut -d: -f2` < "/dev/"`ps -p $$ -o tty | tail -n 1`' \
 	--POPTdesc=$"generate GPG signature (deprecated, use command rpmsign instead)"
-#	[--trace]		"trace macro expansion"
-rpmbuild alias --trace		--eval '%trace'
+rpmbuild alias --trace		--eval '%trace' \
+	--POPTdesc=$"trace macro expansion"
 rpmbuild alias --nodebuginfo	--define 'debug_package %{nil}' \
 	--POPTdesc=$"do not generate debuginfo for this package"
 
@@ -249,7 +249,24 @@ rpmspec	alias --buildconflicts	--srpm --conflicts \
 	--POPTdesc=$"list capabilities conflicting with build of this package"
 rpmspec	alias --buildrequires	--srpm --requires \
 	--POPTdesc=$"list capabilities required to build this package"
-#	[--trace]		"trace macro expansion"
-rpmspec alias --trace		--eval '%trace'
+rpmspec alias --httpport	--define '_httpport !#:+'
+rpmspec alias --httpproxy	--define '_httpproxy !#:+'
+rpmspec alias --with		--define "_with_!#:+     --with-!#:+" \
+	--POPTdesc=$"enable configure <option> for build" \
+	--POPTargs=$"<option>"
+rpmspec alias --without	--define "_without_!#:+  --without-!#:+" \
+	--POPTdesc=$"disable configure <option> for build" \
+	--POPTargs=$"<option>"
+rpmspec alias --scm		--define '__scm !#:+' \
+	--POPTdesc=$"shortcut for '--define=\"__scm <scm>\"'" \
+	--POPTargs=$"<scm>"
+# Build policies enabled from command line. Last policy applies.
+rpmspec alias --buildpolicy --define '__os_install_post %{_rpmconfigdir}/brp-!#:+' \
+	--POPTdesc=$"set buildroot <policy> (e.g. compress man pages)" \
+	--POPTargs=$"<policy>"
+rpmspec alias --trace		--eval '%trace' \
+	--POPTdesc=$"trace macro expansion"
+rpmspec alias --nodebuginfo	--define 'debug_package %{nil}' \
+	--POPTdesc=$"do not generate debuginfo for this package"
 # \endverbatim
 #*/
