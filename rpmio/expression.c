@@ -705,9 +705,9 @@ static Value doTernary(ParseState state)
       default:
 	goto err;
     }
-    valueFree(v1);
     if (rdToken(state))
       goto err;
+    valueFree(v1);
     v1 = doTernary(state);
     if (v1 == NULL)
       goto err;
