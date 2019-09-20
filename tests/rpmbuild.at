@@ -1613,6 +1613,26 @@ run rpmbuild \
 [])
 AT_CLEANUP
 
+AT_SETUP([rpmbuild missing doc])
+AT_KEYWORDS([build])
+AT_CHECK_UNQUOTED([
+rm -rf ${TOPDIR}
+
+for val in 1 0; do
+    run rpmbuild \
+        -bb --quiet \
+        --define "_missing_doc_files_terminate_build ${val}" \
+        "${abs_srcdir}"/data/SPECS/docmiss.spec
+    echo $?
+done
+],
+[],
+[1
+0
+],
+[ignore])
+AT_CLEANUP
+
 AT_SETUP([%if, %else, %elif test basic])
 AT_KEYWORDS([if else elif build])
 AT_CHECK([
