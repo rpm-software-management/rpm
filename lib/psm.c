@@ -670,7 +670,10 @@ static rpmRC rpmPackageInstall(rpmts ts, rpmpsm psm)
 	    if (rc) break;
 	}
 
-	rc = rpmpsmUnpack(psm);
+	if ((rc = rpmChrootIn()) == 0) {
+	    rc = rpmpsmUnpack(psm);
+	    rpmChrootOut();
+	}
 	if (rc) break;
 
 	/*
@@ -777,7 +780,10 @@ static rpmRC rpmPackageErase(rpmts ts, rpmpsm psm)
 	    if (rc) break;
 	}
 
-	rc = rpmpsmRemove(psm);
+	if ((rc = rpmChrootIn()) == 0) {
+	    rc = rpmpsmRemove(psm);
+	    rpmChrootOut();
+	}
 	if (rc) break;
 
 	/* Run file triggers in other package(s) this package sets off. */
@@ -866,18 +872,19 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 	return RPMRC_OK;
 
     psm = rpmpsmNew(ts, te, goal);
+    /* Run pre transaction element hook for all plugins */
     if (rpmChrootIn() == 0) {
-	/* Run pre transaction element hook for all plugins */
 	rc = rpmpluginsCallPsmPre(rpmtsPlugins(ts), te);
+	rpmChrootOut();
+    }
 
-	if (!rc)
-	    rc = runGoal(psm, goal);
+    if (!rc)
+	rc = runGoal(psm, goal);
 
-	/* Run post transaction element hook for all plugins */
+    /* Run post transaction element hook for all plugins (even on failure) */
+    if (rpmChrootIn() == 0) {
 	rpmpluginsCallPsmPost(rpmtsPlugins(ts), te, rc);
-
-	/* XXX an error here would require a full abort */
-	(void) rpmChrootOut();
+	rpmChrootOut();
     }
     rpmpsmFree(psm);
     return rc;
