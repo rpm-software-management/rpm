@@ -1408,9 +1408,19 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	    statp = fakeStat(&(fl->cur), &statbuf);
 	} else {
 	    int lvl = RPMLOG_ERR;
+	    int ignore = 0;
 	    const char *msg = fl->cur.isDir ? _("Directory not found: %s\n") :
 					      _("File not found: %s\n");
-	    if (fl->cur.attrFlags & RPMFILE_EXCLUDE) {
+	    if (fl->cur.attrFlags & RPMFILE_EXCLUDE)
+		ignore = 1;
+	    if (fl->cur.attrFlags & RPMFILE_DOC) {
+		int strict_doc =
+		    rpmExpandNumeric("%{?_missing_doc_files_terminate_build}");
+		if (!strict_doc)
+		    ignore = 1;
+	    }
+
+	    if (ignore) {
 		lvl = RPMLOG_WARNING;
 		rc = RPMRC_OK;
 	    }
@@ -2367,11 +2377,10 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     }
 
     if (install) {
-	rpmRC rc = doScript(spec, RPMBUILD_STRINGBUF, sdname,
-			    getStringBuf(docScript), test, NULL);
-
-	if (rc && rpmExpandNumeric("%{?_missing_doc_files_terminate_build}"))
+	if (doScript(spec, RPMBUILD_STRINGBUF, sdname,
+			    getStringBuf(docScript), test, NULL)) {
 	    fl->processingFailed = 1;
+	}
     }
 
     basepath = rpmGenPath(spec->rootDir, "%{_builddir}", spec->buildSubdir);
