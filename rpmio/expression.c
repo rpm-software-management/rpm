@@ -407,6 +407,7 @@ static Value doPrimary(ParseState state)
     goto err;
 
   default:
+    exprErr(state, _("syntax error in expression"), state->p);
     goto err;
     break;
   }
