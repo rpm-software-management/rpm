@@ -1602,6 +1602,9 @@ rpmRC runScript(rpmts ts, rpmte te, Header h, ARGV_const_t prefixes,
     FD_t sfd = NULL;
     int warn_only = !(rpmScriptFlags(script) & RPMSCRIPT_FLAG_CRITICAL);
 
+    if (rpmChrootIn())
+	return RPMRC_FAIL;
+
     /* Create a temporary transaction element for triggers from rpmdb */
     if (te == NULL) {
 	te = rpmteNew(ts, h, TR_RPMDB, NULL, NULL, 0);
@@ -1632,6 +1635,8 @@ rpmRC runScript(rpmts ts, rpmte te, Header h, ARGV_const_t prefixes,
 	}
 	rpmtsNotify(ts, te, RPMCALLBACK_SCRIPT_ERROR, stag, rc);
     }
+
+    rpmChrootOut();
 
     if (te != xte)
 	rpmteFree(te);

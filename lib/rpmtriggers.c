@@ -166,9 +166,6 @@ int runPostUnTransFileTrigs(rpmts ts)
     rpmtriggers trigs = ts->trigs2run;
     int nerrors = 0;
 
-    if (rpmChrootIn() != 0)
-	return -1;
-
     rpmtriggersSortAndUniq(trigs);
     /* Iterate over stored triggers */
     for (i = 0; i < trigs->count; i++) {
@@ -193,8 +190,6 @@ int runPostUnTransFileTrigs(rpmts ts)
 	rpmScriptFree(script);
 	headerFree(trigH);
     }
-
-    rpmChrootOut();
 
     return nerrors;
 }
@@ -554,11 +549,6 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
     /* Sort triggers by priority, offset, trigger index */
     rpmtriggersSortAndUniq(triggers);
 
-    if (rpmChrootIn() != 0) {
-	rpmtriggersFree(triggers);
-	return RPMRC_FAIL;
-    }
-
     /* Handle stored triggers */
     for (i = 0; i < triggers->count; i++) {
 	if (priorityClass == 1) {
@@ -579,8 +569,6 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
 	headerFree(trigH);
     }
     rpmtriggersFree(triggers);
-    /* XXX an error here would require a full abort */
-    (void) rpmChrootOut();
 
     return (nerrors == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
