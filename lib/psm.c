@@ -827,6 +827,35 @@ static const char * pkgGoalString(pkgGoal goal)
     }
 }
 
+static rpmRC runGoal(rpmpsm psm, pkgGoal goal)
+{
+    rpmRC rc = RPMRC_FAIL;
+    switch (goal) {
+    case PKG_INSTALL:
+	rc = rpmPackageInstall(psm->ts, psm);
+	break;
+    case PKG_ERASE:
+	rc = rpmPackageErase(psm->ts, psm);
+	break;
+    case PKG_PRETRANS:
+    case PKG_POSTTRANS:
+    case PKG_VERIFY:
+	rc = runInstScript(psm, goal);
+	break;
+    case PKG_TRANSFILETRIGGERIN:
+	rc = runImmedFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERIN,
+				    RPMSCRIPT_TRANSFILETRIGGER, 0);
+	break;
+    case PKG_TRANSFILETRIGGERUN:
+	rc = runImmedFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERUN,
+				    RPMSCRIPT_TRANSFILETRIGGER, 0);
+	break;
+    default:
+	break;
+    }
+    return rc;
+}
+
 rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 {
     rpmpsm psm = NULL;
@@ -841,31 +870,9 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 	/* Run pre transaction element hook for all plugins */
 	rc = rpmpluginsCallPsmPre(rpmtsPlugins(ts), te);
 
-	if (!rc) {
-	    switch (goal) {
-	    case PKG_INSTALL:
-		rc = rpmPackageInstall(ts, psm);
-		break;
-	    case PKG_ERASE:
-		rc = rpmPackageErase(ts, psm);
-		break;
-	    case PKG_PRETRANS:
-	    case PKG_POSTTRANS:
-	    case PKG_VERIFY:
-		rc = runInstScript(psm, goal);
-		break;
-	    case PKG_TRANSFILETRIGGERIN:
-		rc = runImmedFileTriggers(ts, te, RPMSENSE_TRIGGERIN,
-					    RPMSCRIPT_TRANSFILETRIGGER, 0);
-		break;
-	    case PKG_TRANSFILETRIGGERUN:
-		rc = runImmedFileTriggers(ts, te, RPMSENSE_TRIGGERUN,
-					    RPMSCRIPT_TRANSFILETRIGGER, 0);
-		break;
-	    default:
-		break;
-	    }
-	}
+	if (!rc)
+	    rc = runGoal(psm, goal);
+
 	/* Run post transaction element hook for all plugins */
 	rpmpluginsCallPsmPost(rpmtsPlugins(ts), te, rc);
 
