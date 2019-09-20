@@ -714,7 +714,7 @@ int rpmExprBool(const char *expr)
 {
   struct _parseState state;
   int result = -1;
-  Value v;
+  Value v = NULL;
 
   DEBUG(printf("parseExprBoolean(?, '%s')\n", expr));
 
@@ -722,7 +722,8 @@ int rpmExprBool(const char *expr)
   state.p = state.str = xstrdup(expr);
   state.nextToken = 0;
   state.tokenValue = NULL;
-  (void) rdToken(&state);
+  if (rdToken(&state))
+    goto exit;
 
   /* Parse the expression. */
   v = doLogical(&state);
@@ -758,7 +759,7 @@ char *rpmExprStr(const char *expr)
 {
   struct _parseState state;
   char *result = NULL;
-  Value v;
+  Value v = NULL;
 
   DEBUG(printf("parseExprString(?, '%s')\n", expr));
 
@@ -766,7 +767,8 @@ char *rpmExprStr(const char *expr)
   state.p = state.str = xstrdup(expr);
   state.nextToken = 0;
   state.tokenValue = NULL;
-  (void) rdToken(&state);
+  if (rdToken(&state))
+    goto exit;
 
   /* Parse the expression. */
   v = doLogical(&state);
