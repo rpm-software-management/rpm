@@ -69,6 +69,26 @@ static Value valueMakeString(char *s)
 
 /**
  */
+static void valueSetInteger(Value v, int i)
+{
+  if (v->type == VALUE_TYPE_STRING)
+    v->data.s = _free(v->data.s);
+  v->type = VALUE_TYPE_INTEGER;
+  v->data.i = i;
+}
+
+/**
+ */
+static void valueSetString(Value v, char *s)
+{
+  if (v->type == VALUE_TYPE_STRING)
+    v->data.s = _free(v->data.s);
+  v->type = VALUE_TYPE_STRING;
+  v->data.s = s;
+}
+
+/**
+ */
 static void valueFree( Value v)
 {
   if (v) {
@@ -439,7 +459,7 @@ static Value doPrimary(ParseState state)
       goto err;
     }
 
-    v = valueMakeInteger(- v->data.i);
+    valueSetInteger(v, - v->data.i);
     break;
 
   case TOK_NOT:
@@ -455,7 +475,7 @@ static Value doPrimary(ParseState state)
       goto err;
     }
 
-    v = valueMakeInteger(! v->data.i);
+    valueSetInteger(v, ! v->data.i);
     break;
 
   case TOK_EOF:
@@ -516,11 +536,10 @@ static Value doMultiplyDivide(ParseState state)
 	    exprErr(state, _("division by zero"), NULL);
 	    goto err;
       }
-      valueFree(v1);
       if (op == TOK_MULTIPLY)
-	v1 = valueMakeInteger(i1 * i2);
+	valueSetInteger(v1, i1 * i2);
       else
-	v1 = valueMakeInteger(i1 / i2);
+	valueSetInteger(v1, i1 / i2);
     } else {
       exprErr(state, _("* and / not supported for strings"), NULL);
       goto err;
@@ -569,11 +588,10 @@ static Value doAddSubtract(ParseState state)
     if (valueIsInteger(v1)) {
       int i1 = v1->data.i, i2 = v2->data.i;
 
-      valueFree(v1);
       if (op == TOK_ADD)
-	v1 = valueMakeInteger(i1 + i2);
+	valueSetInteger(v1, i1 + i2);
       else
-	v1 = valueMakeInteger(i1 - i2);
+	valueSetInteger(v1, i1 - i2);
     } else {
       char *copy;
 
@@ -585,8 +603,7 @@ static Value doAddSubtract(ParseState state)
       copy = xmalloc(strlen(v1->data.s) + strlen(v2->data.s) + 1);
       (void) stpcpy( stpcpy(copy, v1->data.s), v2->data.s);
 
-      valueFree(v1);
-      v1 = valueMakeString(copy);
+      valueSetString(v1, copy);
     }
   }
 
@@ -653,8 +670,7 @@ static Value doRelational(ParseState state)
       default:
 	break;
       }
-      valueFree(v1);
-      v1 = valueMakeInteger(r);
+      valueSetInteger(v1, r);
     } else {
       const char * s1 = v1->data.s;
       const char * s2 = v2->data.s;
@@ -681,8 +697,7 @@ static Value doRelational(ParseState state)
       default:
 	break;
       }
-      valueFree(v1);
-      v1 = valueMakeInteger(r);
+      valueSetInteger(v1, r);
     }
   }
 
@@ -734,11 +749,10 @@ static Value doLogical(ParseState state)
     if (valueIsInteger(v1)) {
       int i1 = v1->data.i, i2 = v2->data.i;
 
-      valueFree(v1);
       if (op == TOK_LOGICAL_AND)
-	v1 = valueMakeInteger(i1 && i2);
+	valueSetInteger(v1, i1 && i2);
       else
-	v1 = valueMakeInteger(i1 || i2);
+	valueSetInteger(v1, i1 || i2);
     } else {
       exprErr(state, _("&& and || not supported for strings"), NULL);
       goto err;
