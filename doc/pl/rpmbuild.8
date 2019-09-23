@@ -67,7 +67,7 @@ konfiguracji.
 Istnieć musi tylko pierwszy plik z listy, a tyldy są zamieniane na
 wartość \fB$HOME\fR.
 Domyślną \fILISTĄ_PLIKÓW\fR jest 
-\fI/usr/lib/rpm/rpmrc\fR:\fI/usr/lib/rpm/redhat/rpmrc\fR:\fI/etc/rpmrc\fR:\fI~/.rpmrc\fR.
+\fI/usr/lib/rpm/rpmrc\fR:\fI/usr/lib/rpm/<vendor>/rpmrc\fR:\fI/etc/rpmrc\fR:\fI~/.rpmrc\fR.
 .TP
 \fB--pipe \fIKOMENDA\fB\fR
 Przekazuje potokiem wyjście \fBrpm\fP-a do \fIKOMENDY\fR.
@@ -189,7 +189,7 @@ opcji, które są aktualnie ustawione w plikach konfiguracyjnych
 .PP
 .nf
 \fI/usr/lib/rpm/rpmrc\fR
-\fI/usr/lib/rpm/redhat/rpmrc\fR
+\fI/usr/lib/rpm/<vendor>/rpmrc\fR
 \fI/etc/rpmrc\fR
 \fI~/.rpmrc\fR
 .fi
@@ -197,7 +197,7 @@ opcji, które są aktualnie ustawione w plikach konfiguracyjnych
 .PP
 .nf
 \fI/usr/lib/rpm/macros\fR
-\fI/usr/lib/rpm/redhat/macros\fR
+\fI/usr/lib/rpm/<vendor>/macros\fR
 \fI/etc/rpm/macros\fR
 \fI~/.rpmmacros\fR
 .fi
