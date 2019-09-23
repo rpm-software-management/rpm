@@ -159,7 +159,7 @@ rpm \- Менеджер пакетов RPM
 В этом списке обязан существовать только первый файл; 
 все знаки тильда будут заменены значением \fB$HOME\fR.
 По умолчанию список файлов \fIFILELIST\fR выглядит как 
-\fI/usr/lib/rpm/rpmrc\fR:\fI/usr/lib/rpm/redhat/rpmrc\fR:\fI/etc/rpmrc\fR:\fI~/.rpmrc\fR.
+\fI/usr/lib/rpm/rpmrc\fR:\fI/usr/lib/rpm/<vendor>/rpmrc\fR:\fI/etc/rpmrc\fR:\fI~/.rpmrc\fR.
 .TP
 \fB--pipe \fICMD\fB\fR
 Перенаправляет вывод \fBrpm\fR на вход команды \fICMD\fR.
@@ -884,7 +884,7 @@ rpm     exec --short-circuit    rpmb --short-circuit
 .PP
 .nf
 \fI/usr/lib/rpm/rpmrc\fR
-\fI/usr/lib/rpm/redhat/rpmrc\fR
+\fI/usr/lib/rpm/<vendor>/rpmrc\fR
 \fI/etc/rpmrc\fR
 \fI~/.rpmrc\fR
 .fi
@@ -892,7 +892,7 @@ rpm     exec --short-circuit    rpmb --short-circuit
 .PP
 .nf
 \fI/usr/lib/rpm/macros\fR
-\fI/usr/lib/rpm/redhat/macros\fR
+\fI/usr/lib/rpm/<vendor>/macros\fR
 \fI/etc/rpm/macros\fR
 \fI~/.rpmmacros\fR
 .fi
