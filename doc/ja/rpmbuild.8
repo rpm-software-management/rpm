@@ -90,7 +90,7 @@ rpmbuils \- RPM パッケージのビルド
 に指定された順番で行われる。
 .I FILELIST
 のデフォルトは
-.IR /usr/lib/rpm/rpmrc : /usr/lib/rpm/redhat/rpmrc : ~/.rpmrc
+.IR /usr/lib/rpm/rpmrc : /usr/lib/rpm/<vendor>/rpmrc : ~/.rpmrc
 である。
 .TP
 .BI \-\-pipe  " CMD"
@@ -263,14 +263,14 @@ rpm を使ってビルドするには、他にも 2 つのやり方がある。
 .SS "rpmrc の設定"
 .nf
 \fI/usr/lib/rpm/rpmrc\fR
-\fI/usr/lib/rpm/redhat/rpmrc\fR
+\fI/usr/lib/rpm/<vendor>/rpmrc\fR
 \fI/etc/rpmrc\fR
 \fI~/.rpmrc\fR
 .fi
 .SS マクロの設定
 .nf
 \fI/usr/lib/rpm/macros\fR
-\fI/usr/lib/rpm/redhat/macros\fR
+\fI/usr/lib/rpm/<vendor>/macros\fR
 \fI/etc/rpm/macros\fR
 \fI~/.rpmmacros\fR
 .fi
