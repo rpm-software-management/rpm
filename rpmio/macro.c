@@ -551,35 +551,36 @@ static struct builtins_s {
     size_t len;
     macroFunc func;
     parseFunc parse;
+    int havearg;
 } const builtinmacros[] = {
-    { STR_AND_LEN("F"),		doFoo,		NULL },
-    { STR_AND_LEN("P"),		doFoo,		NULL },
-    { STR_AND_LEN("S"),		doFoo,		NULL },
-    { STR_AND_LEN("basename"),	doFoo,		NULL },
-    { STR_AND_LEN("define"),	NULL,		doDef },
-    { STR_AND_LEN("dirname"),	doFoo,		NULL },
-    { STR_AND_LEN("dnl"),	NULL,		doDnl },
-    { STR_AND_LEN("dump"), 	NULL,		doDump },
-    { STR_AND_LEN("echo"),	doOutput,	NULL },
-    { STR_AND_LEN("error"),	doOutput,	NULL },
-    { STR_AND_LEN("expand"),	doFoo,		NULL },
-    { STR_AND_LEN("expr"),	doFoo,		NULL },
-    { STR_AND_LEN("getconfdir"),doFoo,		NULL },
-    { STR_AND_LEN("getenv"),	doFoo,		NULL },
-    { STR_AND_LEN("getncpus"),	doFoo,		NULL },
-    { STR_AND_LEN("global"),	NULL,		doGlobal },
-    { STR_AND_LEN("load"),	doLoad,		NULL },
-    { STR_AND_LEN("lua"),	doLua,		NULL },
-    { STR_AND_LEN("quote"),	doFoo,		NULL },
-    { STR_AND_LEN("shrink"),	doFoo,		NULL },
-    { STR_AND_LEN("suffix"),	doFoo,		NULL },
-    { STR_AND_LEN("trace"),	doTrace,	NULL },
-    { STR_AND_LEN("u2p"),	doFoo,		NULL },
-    { STR_AND_LEN("uncompress"),doFoo,		NULL },
-    { STR_AND_LEN("undefine"),	NULL,		doUndefine },
-    { STR_AND_LEN("url2path"),	doFoo,		NULL },
-    { STR_AND_LEN("verbose"),	doFoo,		NULL },
-    { STR_AND_LEN("warn"),	doOutput,	NULL },
+    { STR_AND_LEN("F"),		doFoo,		NULL,		1 },
+    { STR_AND_LEN("P"),		doFoo,		NULL,		1 },
+    { STR_AND_LEN("S"),		doFoo,		NULL,		1 },
+    { STR_AND_LEN("basename"),	doFoo,		NULL,		1 },
+    { STR_AND_LEN("define"),	NULL,		doDef,		0 },
+    { STR_AND_LEN("dirname"),	doFoo,		NULL,		1 },
+    { STR_AND_LEN("dnl"),	NULL,		doDnl,		0 },
+    { STR_AND_LEN("dump"), 	NULL,		doDump,		0 },
+    { STR_AND_LEN("echo"),	doOutput,	NULL,		1 },
+    { STR_AND_LEN("error"),	doOutput,	NULL,		1 },
+    { STR_AND_LEN("expand"),	doFoo,		NULL,		1 },
+    { STR_AND_LEN("expr"),	doFoo,		NULL,		1 },
+    { STR_AND_LEN("getconfdir"),doFoo,		NULL,		0 },
+    { STR_AND_LEN("getenv"),	doFoo,		NULL,		1 },
+    { STR_AND_LEN("getncpus"),	doFoo,		NULL,		0 },
+    { STR_AND_LEN("global"),	NULL,		doGlobal,	0 },
+    { STR_AND_LEN("load"),	doLoad,		NULL,		1 },
+    { STR_AND_LEN("lua"),	doLua,		NULL,		1 },
+    { STR_AND_LEN("quote"),	doFoo,		NULL,		1 },
+    { STR_AND_LEN("shrink"),	doFoo,		NULL,		1 },
+    { STR_AND_LEN("suffix"),	doFoo,		NULL,		1 },
+    { STR_AND_LEN("trace"),	doTrace,	NULL,		0 },
+    { STR_AND_LEN("u2p"),	doFoo,		NULL,		1 },
+    { STR_AND_LEN("uncompress"),doFoo,		NULL,		1 },
+    { STR_AND_LEN("undefine"),	NULL,		doUndefine,	0 },
+    { STR_AND_LEN("url2path"),	doFoo,		NULL,		1 },
+    { STR_AND_LEN("verbose"),	doFoo,		NULL,		1 },
+    { STR_AND_LEN("warn"),	doOutput,	NULL,		1 },
 };
 static const size_t numbuiltins = sizeof(builtinmacros)/sizeof(*builtinmacros);
 
@@ -1432,6 +1433,11 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 
 	/* Expand builtin macros */
 	if ((builtin = lookupBuiltin(f, fn))) {
+	    if (builtin->havearg != (g != NULL)) {
+		mbErr(mb, 1, "%%%s: %s\n", builtin->name, builtin->havearg ?
+			_("argument expected") : _("unexpected argument"));
+		continue;
+	    }
 	    if (builtin->parse) {
 		s = builtin->parse(mb, se);
 	    } else {

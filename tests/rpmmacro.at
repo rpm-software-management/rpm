@@ -245,6 +245,29 @@ runroot rpm \
 ])
 AT_CLEANUP
 
+AT_SETUP([builtin macro arguments])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm --eval "%{dirname}"
+runroot rpm --eval "%{dirname:}"
+runroot rpm --eval "%{dirname:dir}"
+runroot rpm --eval "%{getncpus:}"
+runroot rpm --eval "%{getncpus:5}"
+runroot rpm --eval "%{define:}"
+runroot rpm --eval "%{dump:foo}"
+],
+[1],
+[
+dir
+],
+[error: %dirname: argument expected
+error: %getncpus: unexpected argument
+error: %getncpus: unexpected argument
+error: %define: unexpected argument
+error: %dump: unexpected argument
+])
+AT_CLEANUP
+
 AT_SETUP([expr macro 1])
 AT_KEYWORDS([macros])
 AT_CHECK([
