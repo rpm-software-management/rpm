@@ -277,7 +277,7 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi, int strip)
 {
     /* Expand next line from file into line buffer */
     if (!(spec->nextline && *spec->nextline)) {
-	int pc = 0, bc = 0, nc = 0;
+	int pc = 0, bc = 0, xc = 0, nc = 0;
 	const char *from = ofi->readPtr;
 	char ch = ' ';
 	while (from && *from && ch != '\n') {
@@ -307,6 +307,7 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi, int strip)
 		    switch (*(p+1)) {
 			case '{': p++, bc++; break;
 			case '(': p++, pc++; break;
+			case '[': p++, xc++; break;
 			case '%': p++; break;
 		    }
 		    break;
@@ -314,11 +315,13 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi, int strip)
 		case '}': if (bc > 0) bc--; break;
 		case '(': if (pc > 0) pc++; break;
 		case ')': if (pc > 0) pc--; break;
+		case '[': if (xc > 0) xc++; break;
+		case ']': if (xc > 0) xc--; break;
 	    }
 	}
 	
 	/* If it doesn't, ask for one more line. */
-	if (pc || bc || nc ) {
+	if (pc || bc || xc || nc ) {
 	    spec->nextline = "";
 	    return 1;
 	}
