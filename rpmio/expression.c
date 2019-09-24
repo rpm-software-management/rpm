@@ -817,6 +817,11 @@ static Value doTernary(ParseState state)
       goto err;
     state->flags = oldflags;
 
+    if (! valueSameType(v1, v2)) {
+      exprErr(state, _("types must match"), NULL);
+      goto err;
+    }
+
     valueFree(cond ? v2 : v1);
     return cond ? v1 : v2;
   }
