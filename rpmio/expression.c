@@ -98,6 +98,17 @@ static void valueFree( Value v)
   }
 }
 
+/**
+ */
+static int boolifyValue(Value v)
+{
+  if (v && v->type == VALUE_TYPE_INTEGER)
+    return v->data.i != 0;
+  if (v && v->type == VALUE_TYPE_STRING)
+    return v->data.s[0] != '\0';
+  return 0;
+}
+
 #ifdef DEBUG_PARSER
 static void valueDump(const char *msg, Value v, FILE *fp)
 {
@@ -781,19 +792,9 @@ static Value doTernary(ParseState state)
   if (v1 == NULL)
     goto err;
   if (state->nextToken == TOK_TERNARY_COND) {
-    int result;
-    switch (v1->type) {
-      case VALUE_TYPE_INTEGER:
-	result = v1->data.i != 0;
-	break;
-      case VALUE_TYPE_STRING:
-	result = v1->data.s[0] != '\0';
-	break;
-      default:
-	goto err;
-    }
+    int cond = boolifyValue(v1);;
 
-    if (!result)
+    if (!cond)
 	state->flags |= RPMEXPR_DISCARD;	/* short-circuit */
     if (rdToken(state))
       goto err;
@@ -807,7 +808,7 @@ static Value doTernary(ParseState state)
     }
     state->flags = oldflags;
 
-    if (result)
+    if (cond)
 	state->flags |= RPMEXPR_DISCARD;	/* short-circuit */
     if (rdToken(state))
       goto err;
@@ -816,8 +817,8 @@ static Value doTernary(ParseState state)
       goto err;
     state->flags = oldflags;
 
-    valueFree(result ? v2 : v1);
-    return result ? v1 : v2;
+    valueFree(cond ? v2 : v1);
+    return cond ? v1 : v2;
   }
   return v1;
 
@@ -857,16 +858,7 @@ int rpmExprBool(const char *expr, int flags)
 
   DEBUG(valueDump("parseExprBoolean:", v, stdout));
 
-  switch (v->type) {
-  case VALUE_TYPE_INTEGER:
-    result = v->data.i != 0;
-    break;
-  case VALUE_TYPE_STRING:
-    result = v->data.s[0] != '\0';
-    break;
-  default:
-    break;
-  }
+  result = boolifyValue(v);
 
 exit:
   state.str = _free(state.str);
