@@ -255,12 +255,16 @@ runroot rpm \
     --eval '%{expr:5 < 1}' \
     --eval '%{expr:(4 + 5) * 2 == 18}' \
     --eval '%{expr:%{aaa} || %{bbb}}' \
-    --eval '%{expr:%{aaa} && %{bbb}}'
+    --eval '%{expr:%{aaa} && %{bbb}}' \
+    --eval '%{expr:! ""}' \
+    --eval '%{expr:! "foo"}' 
 ],
 [0],
 [4096
 0
 1
+1
+0
 1
 0
 ],
