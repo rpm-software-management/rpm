@@ -62,7 +62,7 @@ to perform useful operations. The current list is
 			expansion
 	%dump		print the active (i.e. non-covered) macro table
 	%getncpus	return the number of CPUs
-	%verbose	is rpm in verbose mode?
+	%getconfdir	expand to rpm "home" directory (typically /usr/lib/rpm)
 	%dnl		discard to next line (without expanding)
 
 	%{echo:...}	print ... to stdout
@@ -78,7 +78,6 @@ to perform useful operations. The current list is
 	%{suffix:...}	expand to suffix part of a file name
 	%{url2path:...}	convert url to a local path
 	%{getenv:...}	getenv(3) macro analogue
-	%{getconfdir:...}	expand to rpm "home" directory (typically /usr/lib/rpm)
 	%{uncompress:...} expand ... to <file> and test to see if <file> is
 			compressed.  The expansion is
 				cat <file>		# if not compressed
@@ -93,6 +92,8 @@ to perform useful operations. The current list is
 			intermediate whitespace to a single space
 	%{quote:...}	quote a parametric macro argument, needed to pass
 			empty strings or strings with whitespace
+	%{verbose:...}	expand ... if rpm is in verbose mode (%{!verbose:...}
+			works for non-verbose mode)
 
 	%{S:...}	expand ... to <source> file name
 	%{P:...}	expand ... to <patch> file name
