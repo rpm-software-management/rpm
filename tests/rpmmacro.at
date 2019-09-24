@@ -276,8 +276,10 @@ runroot rpm --eval '%{expr:"a"=!"b"}'
 runroot rpm --eval '%{expr:4+}'
 runroot rpm --eval '%{expr:bare}'
 runroot rpm --eval '%{expr:1/0}'
-runroot rpm --eval '%{expr:0 < 1 ? "a" : 1*"a"}'
-runroot rpm --eval '%{expr:0 < 1 ? 1*"a" : "a"}'
+runroot rpm --eval '%{expr:0 < 1 ? 2 : 1*"a"}'
+runroot rpm --eval '%{expr:0 < 1 ? 1*"a" : 2}'
+runroot rpm --eval '%{expr:0 < 1 ? 2 : "a"}'
+runroot rpm --eval '%{expr:0 < 1 ? "a" : 2}'
 ],
 [1],
 [],
@@ -290,8 +292,10 @@ error: unexpected end of expression: 4+
 error: bare words are no longer supported, please use "...": bare
 error:                                                       ^
 error: division by zero: 1/0
-error: types must match: 0 < 1 ? "a" : 1*"a"
-error: types must match: 0 < 1 ? 1*"a" : "a"
+error: types must match: 0 < 1 ? 2 : 1*"a"
+error: types must match: 0 < 1 ? 1*"a" : 2
+error: types must match: 0 < 1 ? 2 : "a"
+error: types must match: 0 < 1 ? "a" : 2
 ])
 AT_CLEANUP
 
