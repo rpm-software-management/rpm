@@ -257,16 +257,32 @@ runroot rpm \
     --eval '%{expr:%{aaa} || %{bbb}}' \
     --eval '%{expr:%{aaa} && %{bbb}}' \
     --eval '%{expr:! ""}' \
-    --eval '%{expr:! "foo"}' 
+    --eval '%{expr:! "foo"}' \
+    --eval '%{expr: 0 || 3}' \
+    --eval '%{expr: 2 || 3}' \
+    --eval '%{expr: "" || "foo"}' \
+    --eval '%{expr: "bar" || "foo"}' \
+    --eval '%{expr: 0 && 3}' \
+    --eval '%{expr: 2 && 3}' \
+    --eval '%{expr: "" && "foo"}' \
+    --eval '%{expr: "bar" && "foo"}'
 ],
 [0],
 [4096
 0
 1
-1
+5
 0
 1
 0
+3
+2
+foo
+bar
+0
+3
+
+foo
 ],
 [])
 AT_CLEANUP

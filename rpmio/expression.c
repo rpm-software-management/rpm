@@ -733,9 +733,9 @@ static Value doLogical(ParseState state)
   while (state->nextToken == TOK_LOGICAL_AND
 	 || state->nextToken == TOK_LOGICAL_OR) {
     int op = state->nextToken;
+    int b1 = boolifyValue(v1);
 
-    if (valueIsInteger(v1) && ((op == TOK_LOGICAL_AND && !v1->data.i) ||
-                               (op == TOK_LOGICAL_OR && v1->data.i)))
+    if ((op == TOK_LOGICAL_AND && !b1) || (op == TOK_LOGICAL_OR && b1))
       state->flags |= RPMEXPR_DISCARD;		/* short-circuit */
 
     if (rdToken(state))
@@ -752,16 +752,10 @@ static Value doLogical(ParseState state)
       goto err;
     }
 
-    if (valueIsInteger(v1)) {
-      int i1 = v1->data.i, i2 = v2->data.i;
-
-      if (op == TOK_LOGICAL_AND)
-	valueSetInteger(v1, i1 && i2);
-      else
-	valueSetInteger(v1, i1 || i2);
-    } else {
-      exprErr(state, _("&& and || not supported for strings"), NULL);
-      goto err;
+    if ((op == TOK_LOGICAL_AND && b1) || (op == TOK_LOGICAL_OR && !b1)) {
+      Value vtmp = v1;
+      v1 = v2;
+      v2 = vtmp;
     }
     state->flags = oldflags;
   }
