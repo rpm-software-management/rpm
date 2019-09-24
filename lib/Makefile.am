@@ -86,6 +86,12 @@ librpm_la_SOURCES += \
 	backend/lmdb.c
 endif
 
+if SQLITE
+AM_CPPFLAGS += $(SQLITE_CFLAGS)
+librpm_la_LIBADD += $(SQLITE_LIBS)
+librpm_la_SOURCES += backend/sqlite.c
+endif
+
 tagtbl.C: Makefile.am $(srcdir)/rpmtag.h gentagtbl.sh
 	@AWK=${AWK} ${SHELL} $(srcdir)/gentagtbl.sh \
 		    	     $(srcdir)/rpmtag.h > $@.new && \
