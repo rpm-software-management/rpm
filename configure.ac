@@ -611,6 +611,29 @@ if test "x$have_lmdb" = "xyes"; then
 fi
 AM_CONDITIONAL([LMDB], [test "x$have_lmdb" = "xyes"])
 
+# Check for SQLITE support
+AC_ARG_ENABLE([sqlite],
+              [AS_HELP_STRING([--enable-sqlite=@<:@yes/no/auto@:>@)],
+                              [build with sqlite rpm database format support (default=auto)])],
+              [enable_sqlite="$enableval"],
+              [enable_sqlite=auto])
+
+AS_IF([test "x$enable_sqlite" != "xno"], [
+  PKG_CHECK_MODULES([SQLITE], [sqlite3], [have_sqlite=yes], [have_sqlite=no])
+  AS_IF([test "$enable_sqlite" = "yes"], [
+    if test "$have_sqlite" = "no"; then
+      AC_MSG_ERROR([--enable-sqlite specified, but not available])
+    fi
+  ])
+])
+
+if test "x$have_sqlite" = "xyes"; then
+  AC_DEFINE([WITH_SQLITE], [1], [Define if SQLITE is available])
+  SQLITE_REQUIRES=sqlite
+  AC_SUBST(SQLITE_REQUIRES)
+fi
+AM_CONDITIONAL([SQLITE], [test "x$have_sqlite" = "xyes"])
+
 AM_GNU_GETTEXT_VERSION([0.16.1])
 AM_GNU_GETTEXT([external])
 AM_ICONV

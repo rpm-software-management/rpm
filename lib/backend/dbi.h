@@ -277,6 +277,11 @@ RPM_GNUC_INTERNAL
 extern struct rpmdbOps_s lmdb_dbops;
 #endif
 
+#if defined(WITH_SQLITE)
+RPM_GNUC_INTERNAL
+extern struct rpmdbOps_s sqlite_dbops;
+#endif
+
 RPM_GNUC_INTERNAL
 extern struct rpmdbOps_s dummydb_dbops;
 

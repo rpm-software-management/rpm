@@ -39,6 +39,11 @@ dbDetectBackend(rpmdb rdb)
     char *db_backend = rpmExpand("%{?_db_backend}", NULL);
     char *path = NULL;
 
+#if defined(WITH_SQLITE)
+    if (!strcmp(db_backend, "sqlite")) {
+	rdb->db_ops = &sqlite_dbops;
+    } else
+#endif
 #if defined(WITH_LMDB)
     if (!strcmp(db_backend, "lmdb")) {
 	rdb->db_ops = &lmdb_dbops;
@@ -57,6 +62,15 @@ dbDetectBackend(rpmdb rdb)
 	    db_backend = xstrdup("bdb");
 	}
     }
+#endif
+
+#if defined(WITH_SQLITE)
+    path = rstrscat(NULL, dbhome, "/rpmdb.sqlite", NULL);
+    if (access(path, F_OK) == 0 && rdb->db_ops != &sqlite_dbops) {
+	rdb->db_ops = &sqlite_dbops;
+	rpmlog(RPMLOG_WARNING, _("Found sqlite rpmdb.sqlite database while attempting %s backend: using sqlite backend.\n"), db_backend);
+    }
+    free(path);
 #endif
 
 #if defined(WITH_LMDB)
