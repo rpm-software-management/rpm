@@ -262,55 +262,6 @@ int rpmtsSetKeyring(rpmts ts, rpmKeyring keyring)
     return 0;
 }
 
-static int loadKeyringFromFiles(rpmts ts)
-{
-    ARGV_t files = NULL;
-    /* XXX TODO: deal with chroot path issues */
-    char *pkpath = rpmGetPath(ts->rootDir, "%{_keyringpath}/*.key", NULL);
-    int nkeys = 0;
-
-    rpmlog(RPMLOG_DEBUG, "loading keyring from pubkeys in %s\n", pkpath);
-    if (rpmGlob(pkpath, NULL, &files)) {
-	rpmlog(RPMLOG_DEBUG, "couldn't find any keys in %s\n", pkpath);
-	goto exit;
-    }
-
-    for (char **f = files; *f; f++) {
-	int subkeysCount, i;
-	rpmPubkey *subkeys;
-	rpmPubkey key = rpmPubkeyRead(*f);
-
-	if (!key) {
-	    rpmlog(RPMLOG_ERR, _("%s: reading of public key failed.\n"), *f);
-	    continue;
-	}
-	if (rpmKeyringAddKey(ts->keyring, key) == 0) {
-	    nkeys++;
-	    rpmlog(RPMLOG_DEBUG, "added key %s to keyring\n", *f);
-	}
-	subkeys = rpmGetSubkeys(key, &subkeysCount);
-	rpmPubkeyFree(key);
-
-	for (i = 0; i < subkeysCount; i++) {
-	    rpmPubkey subkey = subkeys[i];
-
-	    if (rpmKeyringAddKey(ts->keyring, subkey) == 0) {
-		rpmlog(RPMLOG_DEBUG,
-		    "added subkey %d of main key %s to keyring\n",
-		    i, *f);
-
-		nkeys++;
-	    }
-	    rpmPubkeyFree(subkey);
-	}
-	free(subkeys);
-    }
-exit:
-    free(pkpath);
-    argvFree(files);
-    return nkeys;
-}
-
 static int loadKeyringFromDB(rpmts ts)
 {
     Header h;
@@ -374,11 +325,8 @@ static void loadKeyring(rpmts ts)
     if ((rpmtsVSFlags(ts) & RPMVSF_MASK_NOSIGNATURES) !=
 	RPMVSF_MASK_NOSIGNATURES) {
 	ts->keyring = rpmKeyringNew();
-	if (loadKeyringFromFiles(ts) == 0) {
-	    if (loadKeyringFromDB(ts) > 0) {
-		/* XXX make this a warning someday... */
-		rpmlog(RPMLOG_DEBUG, "Using legacy gpg-pubkey(s) from rpmdb\n");
-	    }
+	if (loadKeyringFromDB(ts) > 0) {
+	    rpmlog(RPMLOG_DEBUG, "Using gpg-pubkey(s) from rpmdb\n");
 	}
     }
 }
