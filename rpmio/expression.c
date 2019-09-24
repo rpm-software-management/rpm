@@ -481,12 +481,7 @@ static Value doPrimary(ParseState state)
     if (v == NULL)
       goto err;
 
-    if (! valueIsInteger(v)) {
-      exprErr(state, _("! only on numbers"), NULL);
-      goto err;
-    }
-
-    valueSetInteger(v, ! v->data.i);
+    valueSetInteger(v, ! boolifyValue(v));
     break;
 
   case TOK_EOF:
