@@ -98,6 +98,7 @@ EXTRA_DIST += data/RPMS/hello-2.0-1.x86_64-signed.rpm
 EXTRA_DIST += data/SRPMS/foo-1.0-1.src.rpm
 EXTRA_DIST += data/SRPMS/hello-1.0-1.src.rpm
 EXTRA_DIST += data/SOURCES/hello.c
+EXTRA_DIST += data/SOURCES/patchlist
 EXTRA_DIST += data/SPECS/hello-attr-buildid.spec
 EXTRA_DIST += data/SPECS/hello-config-buildid.spec
 EXTRA_DIST += data/SPECS/hello-cd.spec
