@@ -1327,31 +1327,39 @@ end}
 # Automatically apply all patches
 # Patches are applied in the order they are listed in the spec file
 # not by their number!
+# -p<num>       Use -p<num> for patch application
 # -m<min>       Apply patches with number >= min only
 # -M<max>       Apply patches with number <= max only
+# -v            Be verbose
 %autopatch(vp:m:M:)\
-%{lua:\
-local options = rpm.expand("%{!-v:-q} %{-p:-p%{-p*}} ")\
-local low_limit = tonumber(rpm.expand("%{-m:%{-m*}}"))\
-local high_limit = tonumber(rpm.expand("%{-M:%{-M*}}"))\
-for i, p in ipairs(patches) do\
-    local inum = patch_nums[i]\
-    if ((not low_limit or inum>=low_limit) and (not high_limit or inum<=high_limit)) \
-    then\
-        print(rpm.expand("%apply_patch -m %{basename:"..p.."}  "..options..p.." "..i.."\\n")) \
-    end\
-end}
+%{expand:\
+  %%{lua:\
+     local options = rpm.expand("%%{!-v:-q} %%{-p:-p%%{-p*}} ")\
+     local low_limit = tonumber(rpm.expand("%%{-m:%%{-m*}}"))\
+     local high_limit = tonumber(rpm.expand("%%{-M:%%{-M*}}"))\
+     for i, p in ipairs(patches) do\
+         local inum = patch_nums[i]\
+         if ((not low_limit or inum>=low_limit) and (not high_limit or inum<=high_limit)) \
+         then\
+             print(rpm.expand("%%apply_patch -m %%{basename:"..p.."}  "..options..p.." "..i.."\\n")) \
+         end\
+     end\
+  }\
+}
 
 # One macro to (optionally) do it all.
-# -S<scm name>	Sets the used patch application style, eg '-S git' enables
-#           	usage of git repository and per-patch commits.
-# -N		Disable automatic patch application
-# -p<num>	Use -p<num> for patch application	
-%autosetup(a:b:cDn:TvNS:p:)\
+# -S<scm name>  Sets the used patch application style, eg '-S git' enables
+#               usage of git repository and per-patch commits.
+# -N            Disable automatic patch application
+# -p<num>       Use -p<num> for patch application
+# -m<min>       Apply patches with number >= min only
+# -M<max>       Apply patches with number <= max only
+# -v            Be verbose
+%autosetup(a:b:cDn:TvNS:p:m:M:)\
 %setup %{-a} %{-b} %{-c} %{-D} %{-n} %{-T} %{!-v:-q}\
 %{-S:%global __scm %{-S*}}\
 %{expand:%__scm_setup_%{__scm} %{!-v:-q}}\
-%{!-N:%autopatch %{-v} %{-p:-p%{-p*}}}
+%{!-N:%{autopatch %{-v} %{-p:-p%{-p*}} %{-m:-m%{-m*}} %{-M:-M%{-M*}}}}
 
 # \endverbatim
 #*/
