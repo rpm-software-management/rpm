@@ -1218,7 +1218,11 @@ package or when debugging this package.\
 %{__git} config user.email "%{__scm_usermail}"\
 %{__git} add .\
 %{__git} commit %{-q} --allow-empty -a\\\
-	--author "%{__scm_author}" -m "%{NAME}-%{VERSION} base"
+	--author "%{__scm_author}" -m "%{NAME}-%{VERSION} base"\\\
+	%{_commit_flags} \
+%{__git} branch rpm-build \
+%{__git} checkout rpm-build \
+%{__git} branch --set-upstream-to=master
 
 %__scm_apply_git(qp:m:)\
 %{__git} apply --index %{-p:-p%{-p*}} -\
