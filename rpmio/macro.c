@@ -483,7 +483,8 @@ doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
 	goto exit;
 
     if ((shf = popen(buf, "r")) == NULL) {
-	mb->error = 1;
+	mbErr(mb, 1, _("Failed to open shell expansion pipe for command: "
+		"%s: %m \n"), buf);
 	goto exit;
     }
 
