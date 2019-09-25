@@ -1172,7 +1172,10 @@ package or when debugging this package.\
 %{__git} config gc.auto 0\
 %{__git} add --force .\
 %{__git} commit %{-q} --allow-empty -a\\\
-	--author "%{__scm_author}" -m "%{NAME}-%{VERSION} base"
+	--author "%{__scm_author}" -m "%{NAME}-%{VERSION} base"\
+%{__git} branch rpm-build \
+%{__git} checkout rpm-build \
+%{__git} branch --set-upstream-to=master
 
 %__scm_apply_git(qp:m:)\
 %{__git} apply --index --reject %{-p:-p%{-p*}} -\
