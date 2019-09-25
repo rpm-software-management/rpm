@@ -434,6 +434,7 @@ static Value doTernary(ParseState state);
 static Value doPrimary(ParseState state)
 {
   Value v = NULL;
+  const char *p = state->p;
 
   DEBUG(printf("doPrimary()\n"));
 
@@ -443,7 +444,7 @@ static Value doPrimary(ParseState state)
       goto err;
     v = doTernary(state);
     if (state->nextToken != TOK_CLOSE_P) {
-      exprErr(state, _("unmatched ("), NULL);
+      exprErr(state, _("unmatched ("), p);
       goto err;
     }
     if (rdToken(state))
@@ -466,7 +467,7 @@ static Value doPrimary(ParseState state)
       goto err;
 
     if (! valueIsInteger(v)) {
-      exprErr(state, _("- only on numbers"), NULL);
+      exprErr(state, _("- only on numbers"), p);
       goto err;
     }
 
@@ -485,7 +486,7 @@ static Value doPrimary(ParseState state)
     break;
 
   case TOK_EOF:
-    exprErr(state, _("unexpected end of expression"), NULL);
+    exprErr(state, _("unexpected end of expression"), state->p);
     goto err;
 
   default:
@@ -518,6 +519,7 @@ static Value doMultiplyDivide(ParseState state)
   while (state->nextToken == TOK_MULTIPLY
 	 || state->nextToken == TOK_DIVIDE) {
     int op = state->nextToken;
+    const char *p = state->p;
 
     if (rdToken(state))
       goto err;
@@ -539,7 +541,7 @@ static Value doMultiplyDivide(ParseState state)
       if ((state->flags & RPMEXPR_DISCARD) != 0)
         continue;	/* just use v1 in discard mode */
       if ((i2 == 0) && (op == TOK_DIVIDE)) {
-	    exprErr(state, _("division by zero"), NULL);
+	    exprErr(state, _("division by zero"), p);
 	    goto err;
       }
       if (op == TOK_MULTIPLY)
@@ -547,7 +549,7 @@ static Value doMultiplyDivide(ParseState state)
       else
 	valueSetInteger(v1, i1 / i2);
     } else {
-      exprErr(state, _("* and / not supported for strings"), NULL);
+      exprErr(state, _("* and / not supported for strings"), p);
       goto err;
     }
   }
@@ -576,6 +578,7 @@ static Value doAddSubtract(ParseState state)
 
   while (state->nextToken == TOK_ADD || state->nextToken == TOK_MINUS) {
     int op = state->nextToken;
+    const char *p = state->p;
 
     if (rdToken(state))
       goto err;
@@ -602,7 +605,7 @@ static Value doAddSubtract(ParseState state)
       char *copy;
 
       if (op == TOK_MINUS) {
-        exprErr(state, _("- not supported for strings"), NULL);
+        exprErr(state, _("- not supported for strings"), p);
         goto err;
       }
 

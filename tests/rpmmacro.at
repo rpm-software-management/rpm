@@ -332,9 +332,11 @@ error:                                    ^
 error: syntax error while parsing ==: "a"=!"b"
 error:                                    ^
 error: unexpected end of expression: 4+
+error:                                ^
 error: bare words are no longer supported, please use "...": bare
 error:                                                       ^
 error: division by zero: 1/0
+error:                    ^
 error: types must match: 0 < 1 ? 2 : 1*"a"
 error: types must match: 0 < 1 ? 1*"a" : 2
 error: types must match: 0 < 1 ? 2 : "a"
