@@ -1233,6 +1233,10 @@ package or when debugging this package.\
 %{__hg} import - %{-p:-p%{-p*}} %{-q} -m %{-m*} --user "%{__scm_author}" %{_import_flags}
 
 # Git
+#  Defaults for git
+%_default_git_apply_flags --ignore-whitespace --whitespace=nowarn
+%_default_git_import_flags %{_default_git_apply_flags}
+
 %__scm_setup_git(q)\
 %{__git} init %{-q}\
 %{__git} config user.name "%{__scm_username}"\
@@ -1250,6 +1254,10 @@ package or when debugging this package.\
 %{__git} commit %{-q} -m %{-m*} --author "%{__scm_author}" %{_commit_flags}
 
 # Git, using "git am" (-m is unused)
+#  Defaults for "git am"
+%_default_git_am_apply_flags %{_default_git_apply_flags}
+%_default_git_am_import_flags %{_default_git_import_flags} --committer-date-is-author-date
+
 %__scm_setup_git_am(q)\
 %{expand:%__scm_setup_git %{-q}}
 
