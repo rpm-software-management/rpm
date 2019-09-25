@@ -408,13 +408,6 @@ package or when debugging this package.\
 #
 #%vendor
 
-#	Default fuzz level for %patch in spec file.
-%_default_patch_fuzz	0
-
-#	Default patch flags
-#%_default_patch_flags	-s
-%_default_patch_flags --no-backup-if-mismatch
-
 #==============================================================================
 # ---- Build configuration macros.
 #
@@ -1185,6 +1178,24 @@ package or when debugging this package.\
 #------------------------------------------------------------------------------
 # Macros for further automated spec %setup and patch application
 
+# Build the scm-indepdendent default apply flags
+%_default_apply_flags %{expand:%%{?_default_%{__scm}_apply_flags}}
+
+# Choose between default apply flags and user-defined apply flags
+%_apply_flags %{expand:%%{!?__scm_%{__scm}_apply_flags:%%{?_default_apply_flags}}%%{?__scm_%{__scm}_apply_flags:%%{?__scm_%{__scm}_apply_flags}}}
+
+# Build the scm-indepdendent default import flags
+%_default_import_flags %{expand:%%{?_default_%{__scm}_import_flags}}
+
+# Choose between default import flags and user-defined import flags
+%_import_flags %{expand:%%{!?__scm_%{__scm}_import_flags:%%{?_default_import_flags}}%%{?__scm_%{__scm}_import_flags:%%{?__scm_%{__scm}_import_flags}}}
+
+# Build the scm-independant default commit flags
+%_default_commit_flags %{expand:%%{?_default_%{__scm}_commit_flags}}
+
+# Choose between default commit flags and user-defined commit flags
+%_commit_flags %{expand:%%{!?__scm_%{__scm}_commit_flags:%%{?_default_commit_flags}}%%{?__scm_%{__scm}_commit_flags:%%{?__scm_%{__scm}_commit_flags}}}
+
 # default to plain patch
 %__scm patch
 # meh, figure something saner
@@ -1193,23 +1204,33 @@ package or when debugging this package.\
 %__scm_author %{__scm_username} %{__scm_usermail}
 
 # Plain patch (-m is unused)
+#  Default fuzz level for %patch in spec file.
+%_default_patch_fuzz	0
+
+#  Default patch flags
+%_default_patch_flags --no-backup-if-mismatch
+
+#  This is an intermediate so if people have overriden %_default_patch_flags
+#  before, their hack still works.
+%_default_patch_apply_flags %{?_default_patch_flags}
+
 %__scm_setup_patch(q) %{nil}
 %__scm_apply_patch(qp:m:)\
-%{__patch} %{-p:-p%{-p*}} %{-q:-s} --fuzz=%{_default_patch_fuzz} %{_default_patch_flags}
+%{__patch} %{-p:-p%{-p*}} %{-q:-s} --fuzz=%{_default_patch_fuzz} %{_apply_flags}
 
 # Plain patch with backups for gendiff
 %__scm_setup_gendiff(q) %{nil}
 %__scm_apply_gendiff(qp:m:)\
-%{__patch} %{-p:-p%{-p*}} %{-q:-s} --fuzz=%{_default_patch_fuzz} %{_default_patch_flags} -b --suffix ".%{2}"
+%{__patch} %{-p:-p%{-p*}} %{-q:-s} --fuzz=%{_default_patch_fuzz} -b --suffix ".%{2}" %{_apply_flags}
 
 # Mercurial (aka hg)
 %__scm_setup_hg(q)\
 %{__hg} init %{-q} .\
 %{__hg} add %{-q} .\
-%{__hg} commit %{-q} --user "%{__scm_author}" -m "%{NAME}-%{VERSION} base"
+%{__hg} commit %{-q} --user "%{__scm_author}" -m "%{NAME}-%{VERSION} base" %{_commit_flags}
 
 %__scm_apply_hg(qp:m:)\
-%{__hg} import - %{-p:-p%{-p*}} %{-q} -m %{-m*} --user "%{__scm_author}"
+%{__hg} import - %{-p:-p%{-p*}} %{-q} -m %{-m*} --user "%{__scm_author}" %{_import_flags}
 
 # Git
 %__scm_setup_git(q)\
@@ -1225,32 +1246,35 @@ package or when debugging this package.\
 %{__git} branch --set-upstream-to=master
 
 %__scm_apply_git(qp:m:)\
-%{__git} apply --index %{-p:-p%{-p*}} -\
-%{__git} commit %{-q} -m %{-m*} --author "%{__scm_author}"
+%{__git} apply --index %{-p:-p%{-p*}} %{_apply_flags} -\
+%{__git} commit %{-q} -m %{-m*} --author "%{__scm_author}" %{_commit_flags}
 
 # Git, using "git am" (-m is unused)
 %__scm_setup_git_am(q)\
 %{expand:%__scm_setup_git %{-q}}
 
 %__scm_apply_git_am(qp:m:)\
-%{__git} am %{-q} %{-p:-p%{-p*}}
+%{__git} am %{_import_flags} %{-q} %{-p:-p%{-p*}}
 
 # Quilt
 %__scm_setup_quilt(q) %{nil}
 %__scm_apply_quilt(qp:m:)\
-%{__quilt} import %{-p:-p%{-p*}} %{1} && %{__quilt} push %{-q}
+%{__quilt} import %{-p:-p%{-p*}} %{_import_flags} %{1} && %{__quilt} push %{-q}
 
 # Bzr
+#  Defaults for bzr are same as for patch
+%_default_bzr_apply_flags %{?_default_patch_apply_flags}
+
 %__scm_setup_bzr(q)\
 %{__bzr} init %{-q}\
 %{__bzr} whoami --branch "%{__scm_author}"\
 %{__bzr} add .\
-%{__bzr} commit %{-q} -m "%{NAME}-%{VERSION} base"
+%{__bzr} commit %{-q} -m "%{NAME}-%{VERSION} base" %{_commit_flags}
 
 # bzr doesn't seem to have its own command to apply patches?
 %__scm_apply_bzr(qp:m:)\
-%{__patch} %{-p:-p%{-p*}} %{-q:-s}\
-%{__bzr} commit %{-q} -m %{-m*}
+%{__patch} %{-p:-p%{-p*}} %{-q:-s} %{_apply_flags}\
+%{__bzr} commit %{-q} -m %{-m*} %{_commit_flags}
 
 # Single patch application
 %apply_patch(qp:m:)\
