@@ -160,6 +160,20 @@ run rpmbuild \
 AT_CLEANUP
 
 # ------------------------------
+# Check if patchlist -f works
+AT_SETUP([rpmbuild -ba patchlist -f])
+AT_KEYWORDS([build])
+RPMDB_INIT
+AT_CHECK([
+run rpmbuild \
+  -ba "${abs_srcdir}"/data/SPECS/hello-patchlist-f.spec
+],
+[0],
+[ignore],
+[ignore])
+AT_CLEANUP
+
+# ------------------------------
 # Check if rpmbuild --rebuild *.src.rpm works
 AT_SETUP([rpmbuild --rebuild])
 AT_KEYWORDS([build])
