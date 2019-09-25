@@ -443,6 +443,16 @@ package or when debugging this package.\
 %_empty_manifest_terminate_build	1
 
 #
+# Should empty %sourcelist file terminate a build?
+#
+%_empty_sourcelist_terminate_build	1
+
+#
+# Should empty %patchlist file terminate a build?
+#
+%_empty_patchlist_terminate_build	1
+
+#
 # Should binaries in noarch packages terminate a build?
 %_binaries_in_noarch_packages_terminate_build	1
 
