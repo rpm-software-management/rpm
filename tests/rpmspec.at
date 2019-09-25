@@ -259,3 +259,21 @@ foo
 ],
 [])
 AT_CLEANUP
+
+AT_SETUP([rpmspec -P with patches -m -M])
+AT_KEYWORDS([rpmspec sources patches])
+AT_CHECK([
+runroot rpmspec -P /data/SPECS/hello-patches-m.spec | grep RESULTS
+],
+[0],
+[RESULTS patches:/build/SOURCES/hello-1.0-modernize.patch /build/SOURCES/hello-1.0-install.patch
+RESULTS patches -M 0:/build/SOURCES/hello-1.0-modernize.patch
+RESULTS patches -m 1 -M 1:/build/SOURCES/hello-1.0-install.patch
+RESULTS patches -m 2:
+RESULTS sources:/build/SOURCES/hello-1.0.tar.gz /build/SOURCES/buildrequires-1.0.tar.gz
+RESULTS sources -M 0:/build/SOURCES/hello-1.0.tar.gz
+RESULTS sources -m 1 -M 1:/build/SOURCES/buildrequires-1.0.tar.gz
+RESULTS sources -m 2:
+],
+[])
+AT_CLEANUP

@@ -1099,8 +1099,35 @@ package or when debugging this package.\
   install
 
 #------------------------------------------------------------------------------
-%patches %{lua: for i, p in ipairs(patches) do print(p.." ") end}
-%sources %{lua: for i, s in ipairs(sources) do print(s.." ") end}
+# The list of all patches, or a slice of it
+# -m<min>       Include patches with number >= min only
+# -M<max>       Include patches with number <= max only
+%patches(m:M:) %{shrink:%{lua:\
+    local low_limit = tonumber(rpm.expand("%{-m:%{-m*}}"))\
+    local high_limit = tonumber(rpm.expand("%{-M:%{-M*}}"))\
+    for i, p in ipairs(patches) do\
+        local inum = patch_nums[i]\
+        if ((not low_limit or inum>=low_limit) and (not high_limit or inum<=high_limit)) \
+        then\
+            print(p.." ") \
+        end\
+    end\
+}}
+
+# The list of all sources, or a slice of it
+# -m<min>       Include patches with number >= min only
+# -M<max>       Include patches with number <= max only
+%sources(m:M:) %{shrink:%{lua:\
+    local low_limit = tonumber(rpm.expand("%{-m:%{-m*}}"))\
+    local high_limit = tonumber(rpm.expand("%{-M:%{-M*}}"))\
+    for i, s in ipairs(sources) do\
+        local inum = source_nums[i]\
+        if ((not low_limit or inum>=low_limit) and (not high_limit or inum<=high_limit)) \
+        then\
+            print(s.." ") \
+        end\
+    end\
+}}
 
 #------------------------------------------------------------------------------
 # arch macro for all Intel i?86 compatible processors
