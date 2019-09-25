@@ -1291,6 +1291,9 @@ package or when debugging this package.\
 %__scm_apply_git_am(qp:m:)\
 %{__git} am %{_import_flags} %{-q} %{-p:-p%{-p*}}
 
+%__scm_apply_patches_git_am(qp:m:M:)\
+%{__git} am %{_import_flags} %{-q} %{-p:-p%{-p*}} %{patches %{-m:-m%{-m*}} %{-M:-M%{-M*}}} </dev/null
+
 # Quilt
 %__scm_setup_quilt(q) %{nil}
 %__scm_apply_quilt(qp:m:)\
