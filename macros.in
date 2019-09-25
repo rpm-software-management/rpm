@@ -1333,17 +1333,26 @@ end}
 # -v            Be verbose
 %autopatch(vp:m:M:)\
 %{expand:\
-  %%{lua:\
-     local options = rpm.expand("%%{!-v:-q} %%{-p:-p%%{-p*}} ")\
-     local low_limit = tonumber(rpm.expand("%%{-m:%%{-m*}}"))\
-     local high_limit = tonumber(rpm.expand("%%{-M:%%{-M*}}"))\
-     for i, p in ipairs(patches) do\
-         local inum = patch_nums[i]\
-         if ((not low_limit or inum>=low_limit) and (not high_limit or inum<=high_limit)) \
-         then\
-             print(rpm.expand("%%apply_patch -m %%{basename:"..p.."}  "..options..p.." "..i.."\\n")) \
-         end\
-     end\
+  %%{?__scm_apply_patches_%{__scm}:\
+     %%{__scm_apply_patches_%{__scm} %{!-v:-q} \
+                                     %{-p:-p%{-p*}} \
+                                     %{-m:-m%{-m*}} \
+                                     %{-M:-M%{-M*}} \
+     }\
+  }\
+  %%{!?__scm_apply_patches_%{__scm}:\
+     %%{lua:\
+        local options = rpm.expand("%%{!-v:-q} %%{-p:-p%%{-p*}} ")\
+        local low_limit = tonumber(rpm.expand("%%{-m:%%{-m*}}"))\
+        local high_limit = tonumber(rpm.expand("%%{-M:%%{-M*}}"))\
+        for i, p in ipairs(patches) do\
+            local inum = patch_nums[i]\
+            if ((not low_limit or inum>=low_limit) and (not high_limit or inum<=high_limit)) \
+            then\
+                print(rpm.expand("%%apply_patch -m %%{basename:"..p.."}  "..options..p.." "..i.."\\n")) \
+            end\
+        end\
+     }\
   }\
 }
 
