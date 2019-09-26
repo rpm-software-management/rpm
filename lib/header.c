@@ -574,7 +574,8 @@ static int regionSwab(indexEntry entry, int il, int dl,
     return dl;
 }
 
-void * headerExport(Header h, unsigned int *bsize)
+static void * doExport(struct indexEntry_s *index, int indexUsed,
+			headerFlags flags, unsigned int *bsize)
 {
     int32_t * ei = NULL;
     entryInfo pe;
@@ -587,14 +588,9 @@ void * headerExport(Header h, unsigned int *bsize)
     int i;
     int drlen, ndribbles;
 
-    if (h == NULL) return NULL;
-
-    /* Sort entries by (offset,tag). */
-    headerUnsort(h);
-
     /* Compute (il,dl) for all tags, including those deleted in region. */
     drlen = ndribbles = 0;
-    for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
+    for (i = 0, entry = index; i < indexUsed; i++, entry++) {
 	if (ENTRY_IS_REGION(entry)) {
 	    int32_t rdl = -entry->info.offset;	/* negative offset */
 	    int32_t ril = rdl/sizeof(*pe);
@@ -603,11 +599,11 @@ void * headerExport(Header h, unsigned int *bsize)
 	    il += ril;
 	    dl += entry->rdlen + entry->info.count;
 	    /* Reserve space for legacy region tag */
-	    if (i == 0 && (h->flags & HEADERFLAG_LEGACY))
+	    if (i == 0 && (flags & HEADERFLAG_LEGACY))
 		il += 1;
 
 	    /* Skip rest of entries in region, but account for dribbles. */
-	    for (; i < h->indexUsed && entry->info.offset <= rid+1; i++, entry++) {
+	    for (; i < indexUsed && entry->info.offset <= rid+1; i++, entry++) {
 		if (entry->info.offset <= rid)
 		    continue;
 
@@ -652,7 +648,7 @@ void * headerExport(Header h, unsigned int *bsize)
     pe = (entryInfo) &ei[2];
     dataStart = te = (char *) (pe + il);
 
-    for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
+    for (i = 0, entry = index; i < indexUsed; i++, entry++) {
 	const char * src;
 	unsigned char *t;
 	int count;
@@ -676,7 +672,7 @@ void * headerExport(Header h, unsigned int *bsize)
 	    rdlen = entry->rdlen;
 
 	    /* Legacy headers don't have regions originally, create one */
-	    if (i == 0 && (h->flags & HEADERFLAG_LEGACY)) {
+	    if (i == 0 && (flags & HEADERFLAG_LEGACY)) {
 		int32_t stei[4];
 
 		memcpy(pe+1, src, rdl);
@@ -715,7 +711,7 @@ void * headerExport(Header h, unsigned int *bsize)
 	    }
 
 	    /* Skip rest of entries in region. */
-	    while (i < h->indexUsed && entry->info.offset <= rid+1) {
+	    while (i < indexUsed && entry->info.offset <= rid+1) {
 		i++;
 		entry++;
 	    }
@@ -787,13 +783,25 @@ void * headerExport(Header h, unsigned int *bsize)
     if (bsize)
 	*bsize = len;
 
-    headerSort(h);
-
     return (void *) ei;
 
 errxit:
     free(ei);
     return NULL;
+}
+
+void * headerExport(Header h, unsigned int *bsize)
+{
+    void *blob = NULL;
+
+    if (h) {
+	/* Sort entries by (offset,tag). */
+	headerUnsort(h);
+	blob = doExport(h->index, h->indexUsed, h->flags, bsize);
+	headerSort(h);
+    }
+
+    return blob;
 }
 
 void * headerUnload(Header h)
