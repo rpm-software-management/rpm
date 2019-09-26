@@ -114,10 +114,9 @@ msgid "build source package only from <specfile>"
 msgstr "vytvoření zdrojového balíčku podle <spec_soubor>"
 
 #: rpmbuild.c:166
-#, fuzzy
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "vytvoření zdrojového balíčku podle <spec_soubor>"
+msgstr ""
 
 #: rpmbuild.c:170
 #, c-format
@@ -157,11 +156,10 @@ msgid "build source package only from <source package>"
 msgstr ""
 
 #: rpmbuild.c:191
-#, fuzzy
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr "vytvoření zdrojového balíčku podle <spec_soubor>"
+msgstr ""
 
 #: rpmbuild.c:195
 #, c-format
@@ -201,10 +199,9 @@ msgid "build source package only from <tarball>"
 msgstr "vytvoření pouze zdrojového balíčku z <tar_soubor>"
 
 #: rpmbuild.c:216
-#, fuzzy
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "vytvoření pouze zdrojového balíčku z <tar_soubor>"
+msgstr ""
 
 #: rpmbuild.c:219
 msgid "build binary package from <source package>"
@@ -1482,19 +1479,19 @@ msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr ""
 
 #: build/parseSpec.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr "%s:%d: %%else bez počítečního %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "řádek %d: Špatné určení %s: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr "řádek %d: Špatná volba v %%setup %s: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:535
 #, c-format
@@ -2052,9 +2049,9 @@ msgid "failed to load macro file %s\n"
 msgstr ""
 
 #: lib/poptALL.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr "parametry pro --prefix musejí začínat znakem /"
+msgstr ""
 
 #: lib/poptALL.c:172
 #, c-format
@@ -4026,18 +4023,3 @@ msgstr "%s: čtení seznamu selhalo: %s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr "neověřuj podpis hlavičky a payloadu"
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "Spuštění %s selhalo (%s): %s\n"
-
-#~ msgid "line: %s\n"
-#~ msgstr "řádek: %s\n"
-
-#~ msgid "%s: line: %s\n"
-#~ msgstr "%s: řádek: %s\n"
-
-#~ msgid "line %d: %s\n"
-#~ msgstr "řádek %d: %s\n"
-
-#~ msgid "%s:%d: Got a %%endif with no %%if\n"
-#~ msgstr "%s:%d: %%endif bez počátečního %%if\n"

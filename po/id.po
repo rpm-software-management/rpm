@@ -118,10 +118,9 @@ msgid "build source package only from <specfile>"
 msgstr "membangun paket sumber dari <specfile>"
 
 #: rpmbuild.c:166
-#, fuzzy
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "membangun paket sumber dari <specfile>"
+msgstr ""
 
 #: rpmbuild.c:170
 #, c-format
@@ -163,11 +162,10 @@ msgid "build source package only from <source package>"
 msgstr ""
 
 #: rpmbuild.c:191
-#, fuzzy
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr "membangun paket sumber dari <specfile>"
+msgstr ""
 
 #: rpmbuild.c:195
 #, c-format
@@ -208,10 +206,9 @@ msgid "build source package only from <tarball>"
 msgstr "pembangunan paket sumber saja dari <tarball>"
 
 #: rpmbuild.c:216
-#, fuzzy
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "pembangunan paket sumber saja dari <tarball>"
+msgstr ""
 
 #: rpmbuild.c:219
 msgid "build binary package from <source package>"
@@ -2057,9 +2054,9 @@ msgid "failed to load macro file %s\n"
 msgstr ""
 
 #: lib/poptALL.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr "argumen untuk --prefix harus dimulai dengan /"
+msgstr ""
 
 #: lib/poptALL.c:172
 #, c-format

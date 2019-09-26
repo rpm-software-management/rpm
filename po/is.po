@@ -1469,14 +1469,14 @@ msgid "%s: line %d: %s with no %%if\n"
 msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "lína %d: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr "lína %d: Óleyfilegur rofi %s: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:535
 #, c-format
@@ -3991,9 +3991,3 @@ msgstr ""
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr ""
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "Gat ekki keyrt %s (%s): %s\n"
-
-#~ msgid "line: %s\n"
-#~ msgstr "lína: %s\n"

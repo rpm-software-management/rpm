@@ -118,10 +118,9 @@ msgid "build source package only from <specfile>"
 msgstr "construir pacote fonte somente a partir do <specfile>"
 
 #: rpmbuild.c:166
-#, fuzzy
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "construir pacote fonte somente a partir do <specfile>"
+msgstr ""
 
 #: rpmbuild.c:170
 #, c-format
@@ -163,11 +162,10 @@ msgid "build source package only from <source package>"
 msgstr ""
 
 #: rpmbuild.c:191
-#, fuzzy
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr "construir pacote fonte somente a partir do <specfile>"
+msgstr ""
 
 #: rpmbuild.c:195
 #, c-format
@@ -210,10 +208,9 @@ msgid "build source package only from <tarball>"
 msgstr "construir pacote fonte somente a partir do <tarball>"
 
 #: rpmbuild.c:216
-#, fuzzy
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "construir pacote fonte somente a partir do <tarball>"
+msgstr ""
 
 #: rpmbuild.c:219
 msgid "build binary package from <source package>"
@@ -1507,19 +1504,19 @@ msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr ""
 
 #: build/parseSpec.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr "%s:%d: Há um %%else sem um %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "linha %d: %s inválido: qualificadores: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr "linha %d: Opção inválida %s de %%setup: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:535
 #, c-format
@@ -2077,9 +2074,9 @@ msgid "failed to load macro file %s\n"
 msgstr ""
 
 #: lib/poptALL.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr "argumentos para --prefix devem começar com uma /"
+msgstr ""
 
 #: lib/poptALL.c:172
 #, c-format
@@ -4064,21 +4061,3 @@ msgstr "%s: falha na leitura do manifesto: %s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr "não verificar a assinatura do cabeçalho+carga útil"
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "A execução de %s falhou (%s): %s\n"
-
-#~ msgid "line: %s\n"
-#~ msgstr "linha: %s\n"
-
-#~ msgid "%s: line: %s\n"
-#~ msgstr "%s: linha: %s\n"
-
-#~ msgid "No \"Source:\" tag in the spec file\n"
-#~ msgstr "Nenhuma etiqueta \"Source:\" no arquivo .spec\n"
-
-#~ msgid "line %d: %s\n"
-#~ msgstr "linha %d: %s\n"
-
-#~ msgid "%s:%d: Got a %%endif with no %%if\n"
-#~ msgstr "%s:%d: Há um %%endif sem um %%if\n"

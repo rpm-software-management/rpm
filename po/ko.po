@@ -111,10 +111,9 @@ msgid "build source package only from <specfile>"
 msgstr "<spec파일>로 소스 패키지 만을 제작합니다"
 
 #: rpmbuild.c:166
-#, fuzzy
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "<spec파일>로 소스 패키지 만을 제작합니다"
+msgstr ""
 
 #: rpmbuild.c:170
 #, c-format
@@ -155,11 +154,10 @@ msgid "build source package only from <source package>"
 msgstr ""
 
 #: rpmbuild.c:191
-#, fuzzy
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr "<spec파일>로 소스 패키지 만을 제작합니다"
+msgstr ""
 
 #: rpmbuild.c:195
 #, c-format
@@ -197,10 +195,9 @@ msgid "build source package only from <tarball>"
 msgstr "<tar파일>로 소스 패키지 만을 제작합니다"
 
 #: rpmbuild.c:216
-#, fuzzy
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "<tar파일>로 소스 패키지 만을 제작합니다"
+msgstr ""
 
 #: rpmbuild.c:219
 msgid "build binary package from <source package>"
@@ -1475,19 +1472,19 @@ msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr ""
 
 #: build/parseSpec.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr "%s:%d: %%else가 %%if 없이 사용되었습니다\n"
+msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "%d 번째 행: 잘못된 %s: 수식자(qualifier): %s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr "%d 번째 행: %%setup에 잘못된 %s 옵션: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:535
 #, c-format
@@ -2046,9 +2043,9 @@ msgid "failed to load macro file %s\n"
 msgstr ""
 
 #: lib/poptALL.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr "--prefix 옵션의 인수는 반드시 '/' 로 시작해야 합니다"
+msgstr ""
 
 #: lib/poptALL.c:172
 #, c-format
@@ -4028,15 +4025,3 @@ msgstr "%s: 읽는데 실패했습니다: %s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr ""
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "%s의 실행에 실패함 (%s): %s\n"
-
-#~ msgid "line: %s\n"
-#~ msgstr "행: %s\n"
-
-#~ msgid "line %d: %s\n"
-#~ msgstr "%d 번째 행: %s\n"
-
-#~ msgid "%s:%d: Got a %%endif with no %%if\n"
-#~ msgstr "%s:%d: %%endif가 %%if 없이 사용되었습니다\n"

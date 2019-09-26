@@ -1464,14 +1464,14 @@ msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr ""
 
 #: build/parseSpec.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr "linenn %d : %s : %s\n"
+msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "linenn %d : %s : %s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
 #, c-format
@@ -3991,15 +3991,3 @@ msgstr ""
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr ""
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "Sac'het eo bet seveniñ %s (%s) : %s\n"
-
-#~ msgid "line: %s\n"
-#~ msgstr "linenn : %s\n"
-
-#~ msgid "%s: line: %s\n"
-#~ msgstr "%s : linenn : %s\n"
-
-#~ msgid "line %d: %s\n"
-#~ msgstr "linenn %d : %s\n"

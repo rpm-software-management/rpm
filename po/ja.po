@@ -117,10 +117,9 @@ msgid "build source package only from <specfile>"
 msgstr "<specfile> を元に、ソースパッケージのみ作成"
 
 #: rpmbuild.c:166
-#, fuzzy
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "<specfile> を元に、ソースパッケージのみ作成"
+msgstr ""
 
 #: rpmbuild.c:170
 #, c-format
@@ -160,11 +159,10 @@ msgid "build source package only from <source package>"
 msgstr ""
 
 #: rpmbuild.c:191
-#, fuzzy
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr "<specfile> を元に、ソースパッケージのみ作成"
+msgstr ""
 
 #: rpmbuild.c:195
 #, c-format
@@ -202,10 +200,9 @@ msgid "build source package only from <tarball>"
 msgstr "<tarball> を元に、ソースパッケージのみを作成"
 
 #: rpmbuild.c:216
-#, fuzzy
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "<tarball> を元に、ソースパッケージのみを作成"
+msgstr ""
 
 #: rpmbuild.c:219
 msgid "build binary package from <source package>"
@@ -1492,19 +1489,19 @@ msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr "%d 行目: 終了していないマクロまたは行の不正な継続\n"
 
 #: build/parseSpec.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr "%s:%d: %%if がないのに %%else があります\n"
+msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "%d 行目: %s: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr "%s:%d: 不正な %%if 条件\n"
+msgstr ""
 
 #: build/parseSpec.c:535
 #, c-format
@@ -2066,9 +2063,9 @@ msgid "failed to load macro file %s\n"
 msgstr ""
 
 #: lib/poptALL.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr "--prefix の引数は / から始まらなければなりません。"
+msgstr ""
 
 #: lib/poptALL.c:172
 #, c-format
@@ -4054,24 +4051,3 @@ msgstr "%s: manifest の読み込みに失敗: %s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr "ヘッダーとペイロード署名を検証しません。"
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "%s の実行に失敗 (%s): %s\n"
-
-#~ msgid "Error executing scriptlet %s (%s)\n"
-#~ msgstr "スクリプトレット %s (%s) の実行エラー\n"
-
-#~ msgid "line: %s\n"
-#~ msgstr "%s行目: \n"
-
-#~ msgid "%s: line: %s\n"
-#~ msgstr "%s: 行: %s\n"
-
-#~ msgid "No \"Source:\" tag in the spec file\n"
-#~ msgstr "spec ファイルに「Source:」タグがありません\n"
-
-#~ msgid "line %d: %s\n"
-#~ msgstr "%d 行目: %s\n"
-
-#~ msgid "%s:%d: Got a %%endif with no %%if\n"
-#~ msgstr "%s:%d: %%if がないのに %%endif があります\n"

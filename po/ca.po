@@ -123,10 +123,9 @@ msgid "build source package only from <specfile>"
 msgstr "construeix només el paquet de les fonts des del <fitxer spec>"
 
 #: rpmbuild.c:166
-#, fuzzy
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "construeix només el paquet de les fonts des del <fitxer spec>"
+msgstr ""
 
 #: rpmbuild.c:170
 #, c-format
@@ -174,11 +173,10 @@ msgid "build source package only from <source package>"
 msgstr "construeix només el paquet de les fonts des del <paquet de les fonts>"
 
 #: rpmbuild.c:191
-#, fuzzy
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr "construeix només el paquet de les fonts des del <paquet de les fonts>"
+msgstr ""
 
 #: rpmbuild.c:195
 #, c-format
@@ -222,10 +220,9 @@ msgid "build source package only from <tarball>"
 msgstr "construeix el paquet de les fonts només des de l'<arxiu tar>"
 
 #: rpmbuild.c:216
-#, fuzzy
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "construeix el paquet de les fonts només des de l'<arxiu tar>"
+msgstr ""
 
 #: rpmbuild.c:219
 msgid "build binary package from <source package>"
@@ -1540,19 +1537,19 @@ msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr ""
 
 #: build/parseSpec.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr "%s:%d: s'ha obtingut un %%else sense %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "línia %d: %s: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr "%s:%d: condició incorrecta del %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:535
 #, c-format
@@ -2114,9 +2111,9 @@ msgid "failed to load macro file %s\n"
 msgstr ""
 
 #: lib/poptALL.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr "els arguments a --prefix han de començar amb una /"
+msgstr ""
 
 #: lib/poptALL.c:172
 #, c-format
@@ -3082,9 +3079,8 @@ msgid "support for rich dependencies."
 msgstr "compatibilitat per a les dependències enriquides."
 
 #: lib/rpmds.c:1254
-#, fuzzy
 msgid "support for dynamic buildrequires."
-msgstr "compatibilitat per a les dependències enriquides."
+msgstr ""
 
 #: lib/rpmds.c:1258
 msgid "package payload can be compressed using zstd."
@@ -4113,24 +4109,3 @@ msgstr "no verifiquis la signatura de la capçalera i la càrrega"
 
 #~ msgid "failed to load macro file %s"
 #~ msgstr "ha fallat la càrrega del fitxer de les macros %s"
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "Ha fallat l'execució de %s (%s): %s\n"
-
-#~ msgid "Error executing scriptlet %s (%s)\n"
-#~ msgstr "S'ha produït un error en executar el scriptlet %s (%s)\n"
-
-#~ msgid "line: %s\n"
-#~ msgstr "línia: %s\n"
-
-#~ msgid "%s: line: %s\n"
-#~ msgstr "%s: línia: %s\n"
-
-#~ msgid "No \"Source:\" tag in the spec file\n"
-#~ msgstr "Sense \"Source:\" etiqueta al fitxer spec\n"
-
-#~ msgid "line %d: %s\n"
-#~ msgstr "línia %d: %s\n"
-
-#~ msgid "%s:%d: Got a %%endif with no %%if\n"
-#~ msgstr "%s:%d: s'ha obtingut un %%endif sense %%if\n"

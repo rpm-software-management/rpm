@@ -115,10 +115,9 @@ msgid "build source package only from <specfile>"
 msgstr "根據 <specfile> 只建置源碼軟體包"
 
 #: rpmbuild.c:166
-#, fuzzy
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "根據 <specfile> 只建置源碼軟體包"
+msgstr ""
 
 #: rpmbuild.c:170
 #, c-format
@@ -158,11 +157,10 @@ msgid "build source package only from <source package>"
 msgstr "只從 <source package> 編譯來源軟體包"
 
 #: rpmbuild.c:191
-#, fuzzy
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr "只從 <source package> 編譯來源軟體包"
+msgstr ""
 
 #: rpmbuild.c:195
 #, c-format
@@ -200,10 +198,9 @@ msgid "build source package only from <tarball>"
 msgstr "從 <tarball> 中只建置源碼軟體包"
 
 #: rpmbuild.c:216
-#, fuzzy
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "從 <tarball> 中只建置源碼軟體包"
+msgstr ""
 
 #: rpmbuild.c:219
 msgid "build binary package from <source package>"
@@ -1477,19 +1474,19 @@ msgstr ""
 "\n"
 
 #: build/parseSpec.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr "%s:%d：有個 %%else 沒有對應 %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "第 %d 行：%s：%s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr "%s:%d：錯誤的 %%if 條件\n"
+msgstr ""
 
 #: build/parseSpec.c:535
 #, c-format
@@ -2051,9 +2048,9 @@ msgid "failed to load macro file %s\n"
 msgstr ""
 
 #: lib/poptALL.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr "--prefix 的引數必須以「/」開頭"
+msgstr ""
 
 #: lib/poptALL.c:172
 #, c-format
@@ -3003,9 +3000,8 @@ msgid "support for rich dependencies."
 msgstr "支援富相依性"
 
 #: lib/rpmds.c:1254
-#, fuzzy
 msgid "support for dynamic buildrequires."
-msgstr "支援富相依性"
+msgstr ""
 
 #: lib/rpmds.c:1258
 msgid "package payload can be compressed using zstd."
@@ -4026,24 +4022,3 @@ msgstr "不驗證表頭+酬載簽署"
 
 #~ msgid "failed to load macro file %s"
 #~ msgstr "無法載入巨集檔案 %s"
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "執行 %s 失敗 (%s)：%s\n"
-
-#~ msgid "Error executing scriptlet %s (%s)\n"
-#~ msgstr "執行指令小稿 時錯誤 %s (%s)\n"
-
-#~ msgid "line: %s\n"
-#~ msgstr "列：%s\n"
-
-#~ msgid "%s: line: %s\n"
-#~ msgstr "%s: 列：%s\n"
-
-#~ msgid "No \"Source:\" tag in the spec file\n"
-#~ msgstr "規格檔內無「Source:」標籤\n"
-
-#~ msgid "line %d: %s\n"
-#~ msgstr "列 %d：%s\n"
-
-#~ msgid "%s:%d: Got a %%endif with no %%if\n"
-#~ msgstr "%s:%d：有個 %%endif 沒有對應 %%if\n"

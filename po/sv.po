@@ -116,10 +116,9 @@ msgid "build source package only from <specfile>"
 msgstr "bygg endast källpaket från <specfil>"
 
 #: rpmbuild.c:166
-#, fuzzy
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "bygg endast källpaket från <specfil>"
+msgstr ""
 
 #: rpmbuild.c:170
 #, c-format
@@ -161,11 +160,10 @@ msgid "build source package only from <source package>"
 msgstr "bygg endast källpaket från <källpaket>"
 
 #: rpmbuild.c:191
-#, fuzzy
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr "bygg endast källpaket från <källpaket>"
+msgstr ""
 
 #: rpmbuild.c:195
 #, c-format
@@ -206,10 +204,9 @@ msgid "build source package only from <tarball>"
 msgstr "bygg endast källpaket från <tar-arkiv>"
 
 #: rpmbuild.c:216
-#, fuzzy
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "bygg endast källpaket från <tar-arkiv>"
+msgstr ""
 
 #: rpmbuild.c:219
 msgid "build binary package from <source package>"
@@ -1491,19 +1488,19 @@ msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr "rad %d: oavslutat makro eller felaktig fortsättning på rad\n"
 
 #: build/parseSpec.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr "%s:%d: Fick ett %%else utan något %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "rad %d: %s: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr "%s:%d: felaktigt %%if-villkor\n"
+msgstr ""
 
 #: build/parseSpec.c:535
 #, c-format
@@ -2062,9 +2059,9 @@ msgid "failed to load macro file %s\n"
 msgstr ""
 
 #: lib/poptALL.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr "argument till --prefix måste börja med /"
+msgstr ""
 
 #: lib/poptALL.c:172
 #, c-format
@@ -3018,9 +3015,8 @@ msgid "support for rich dependencies."
 msgstr "stöd för rika beroenden"
 
 #: lib/rpmds.c:1254
-#, fuzzy
 msgid "support for dynamic buildrequires."
-msgstr "stöd för rika beroenden"
+msgstr ""
 
 #: lib/rpmds.c:1258
 msgid "package payload can be compressed using zstd."
@@ -4044,24 +4040,3 @@ msgstr "verifiera inte huvud+lastsignatur"
 
 #~ msgid "failed to load macro file %s"
 #~ msgstr "misslyckades med att läsa in makrofilen %s"
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "Körning (exec) av %s misslyckades (%s): %s\n"
-
-#~ msgid "Error executing scriptlet %s (%s)\n"
-#~ msgstr "Fel vid körning av skript %s (%s)\n"
-
-#~ msgid "line: %s\n"
-#~ msgstr "rad: %s\n"
-
-#~ msgid "%s: line: %s\n"
-#~ msgstr "%s: rad: %s\n"
-
-#~ msgid "No \"Source:\" tag in the spec file\n"
-#~ msgstr "Ingen ”Source:”-tagg i spec-filen\n"
-
-#~ msgid "line %d: %s\n"
-#~ msgstr "rad %d: %s\n"
-
-#~ msgid "%s:%d: Got a %%endif with no %%if\n"
-#~ msgstr "%s:%d: Fick ett %%endif utan något %%if\n"
