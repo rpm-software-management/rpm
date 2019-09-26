@@ -116,10 +116,9 @@ msgid "build source package only from <specfile>"
 msgstr "munti nur fontotekstan pakaĵon laŭ <spec-dosiero>"
 
 #: rpmbuild.c:166
-#, fuzzy
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "munti nur fontotekstan pakaĵon laŭ <spec-dosiero>"
+msgstr ""
 
 #: rpmbuild.c:170
 #, c-format
@@ -162,11 +161,10 @@ msgid "build source package only from <source package>"
 msgstr "munti nur fontotekstan pakaĵon laŭ <fontoteksta pakaĵo>"
 
 #: rpmbuild.c:191
-#, fuzzy
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr "munti nur fontotekstan pakaĵon laŭ <fontoteksta pakaĵo>"
+msgstr ""
 
 #: rpmbuild.c:195
 #, c-format
@@ -204,10 +202,9 @@ msgid "build source package only from <tarball>"
 msgstr "munti nur fontotekstan pakaĵon laŭ <tar-dosiero>"
 
 #: rpmbuild.c:216
-#, fuzzy
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "munti nur fontotekstan pakaĵon laŭ <tar-dosiero>"
+msgstr ""
 
 #: rpmbuild.c:219
 msgid "build binary package from <source package>"
@@ -1497,19 +1494,19 @@ msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr "linio %d: nefinita makroo aŭ fuŝa linio-daŭrigo\n"
 
 #: build/parseSpec.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr "%s:%d %%else sen %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "linio %d: %s: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr "%s:%d: fuŝa kondiĉo ĉe %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:535
 #, c-format
@@ -2071,9 +2068,9 @@ msgid "failed to load macro file %s\n"
 msgstr ""
 
 #: lib/poptALL.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr "parametroj de --prefix devas komenciĝi per /"
+msgstr ""
 
 #: lib/poptALL.c:172
 #, c-format
@@ -3028,9 +3025,8 @@ msgid "support for rich dependencies."
 msgstr "rego por riĉaj dependaĵoj."
 
 #: lib/rpmds.c:1254
-#, fuzzy
 msgid "support for dynamic buildrequires."
-msgstr "rego por riĉaj dependaĵoj."
+msgstr ""
 
 #: lib/rpmds.c:1258
 msgid "package payload can be compressed using zstd."
@@ -4053,24 +4049,3 @@ msgstr "ne konstati pretendojn de kapo+ŝarĝo"
 
 #~ msgid "failed to load macro file %s"
 #~ msgstr "malsukcesis ŝargi makroan dosieron %s"
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "Plenumigo de %s malsukcesis (%s): %s\n"
-
-#~ msgid "Error executing scriptlet %s (%s)\n"
-#~ msgstr "Eraro dum plenumigi pakaĵo-skripteton %s (%s)\n"
-
-#~ msgid "line: %s\n"
-#~ msgstr "linio: %s\n"
-
-#~ msgid "%s: line: %s\n"
-#~ msgstr "%s: linio: %s\n"
-
-#~ msgid "No \"Source:\" tag in the spec file\n"
-#~ msgstr "Neniu etikedo \"Source:\" en la spec-dosiero\n"
-
-#~ msgid "line %d: %s\n"
-#~ msgstr "linio %d: %s\n"
-
-#~ msgid "%s:%d: Got a %%endif with no %%if\n"
-#~ msgstr "%s:%d: %%endif sen %%if\n"

@@ -3995,6 +3995,3 @@ msgstr ""
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr ""
-
-#~ msgid "line: %s\n"
-#~ msgstr "వరుస: %s\n"

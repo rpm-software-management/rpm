@@ -117,10 +117,9 @@ msgid "build source package only from <specfile>"
 msgstr "vytvorenie zdrojového balíčka z <spec_subor>"
 
 #: rpmbuild.c:166
-#, fuzzy
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "vytvorenie zdrojového balíčka z <spec_subor>"
+msgstr ""
 
 #: rpmbuild.c:170
 #, c-format
@@ -162,11 +161,10 @@ msgid "build source package only from <source package>"
 msgstr ""
 
 #: rpmbuild.c:191
-#, fuzzy
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr "vytvorenie zdrojového balíčka z <spec_subor>"
+msgstr ""
 
 #: rpmbuild.c:195
 #, c-format
@@ -207,10 +205,9 @@ msgid "build source package only from <tarball>"
 msgstr "vytvorenie iba zdrojového balíčka z <tar_subor>"
 
 #: rpmbuild.c:216
-#, fuzzy
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "vytvorenie iba zdrojového balíčka z <tar_subor>"
+msgstr ""
 
 #: rpmbuild.c:219
 msgid "build binary package from <source package>"
@@ -1491,19 +1488,19 @@ msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr "riadok %d: neuzatvorené makro alebo zlá náväznosť riadka\n"
 
 #: build/parseSpec.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr "%s:%d: %%else bez počiatočného %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "riadok %d: %s: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr "%s:%d: zlá kondícia %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:535
 #, c-format
@@ -2062,9 +2059,9 @@ msgid "failed to load macro file %s\n"
 msgstr ""
 
 #: lib/poptALL.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr "argumenty pre --prefix musia začínať znakom /"
+msgstr ""
 
 #: lib/poptALL.c:172
 #, c-format
@@ -4040,24 +4037,3 @@ msgstr "%s: čítanie zoznamu zlyhalo: %s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr "neoverovať podpis hlavičky a payloadu"
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "Spustenie %s zlyhalo (%s): %s\n"
-
-#~ msgid "Error executing scriptlet %s (%s)\n"
-#~ msgstr "Chyba spustenia skriptletu %s (%s)\n"
-
-#~ msgid "line: %s\n"
-#~ msgstr "riadok: %s\n"
-
-#~ msgid "%s: line: %s\n"
-#~ msgstr "%s: riadok: %s\n"
-
-#~ msgid "No \"Source:\" tag in the spec file\n"
-#~ msgstr "Bez značky \"Source:\" v spec súbore\n"
-
-#~ msgid "line %d: %s\n"
-#~ msgstr "riadok %d: %s\n"
-
-#~ msgid "%s:%d: Got a %%endif with no %%if\n"
-#~ msgstr "%s:%d: %%endif bez počiatočného %%if\n"

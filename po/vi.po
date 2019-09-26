@@ -122,10 +122,9 @@ msgid "build source package only from <specfile>"
 msgstr "xây dựng chỉ gói nguồn từ <tập_tin_đặc_tả>"
 
 #: rpmbuild.c:166
-#, fuzzy
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "xây dựng chỉ gói nguồn từ <tập_tin_đặc_tả>"
+msgstr ""
 
 #: rpmbuild.c:170
 #, c-format
@@ -171,11 +170,10 @@ msgid "build source package only from <source package>"
 msgstr "chỉ xây dựng gói nguồn từ <gói nguồn>"
 
 #: rpmbuild.c:191
-#, fuzzy
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr "chỉ xây dựng gói nguồn từ <gói nguồn>"
+msgstr ""
 
 #: rpmbuild.c:195
 #, c-format
@@ -219,10 +217,9 @@ msgid "build source package only from <tarball>"
 msgstr "xây dựng chỉ gói nguồn từ <kho_tar>"
 
 #: rpmbuild.c:216
-#, fuzzy
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "xây dựng chỉ gói nguồn từ <kho_tar>"
+msgstr ""
 
 #: rpmbuild.c:219
 msgid "build binary package from <source package>"
@@ -1531,19 +1528,19 @@ msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr "dòng %d: chưa đóng vĩ lệnh hoặc dòng kéo dài sai\n"
 
 #: build/parseSpec.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr "%s:%d: Có một toán tử %%else (nếu không) mà không có %%if (nếu)\n"
+msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "dòng %d: %s: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr "%s:%d: điều kiện %%if sai\n"
+msgstr ""
 
 #: build/parseSpec.c:535
 #, c-format
@@ -2103,9 +2100,9 @@ msgid "failed to load macro file %s\n"
 msgstr ""
 
 #: lib/poptALL.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr "đối số cho “--prefix” (tiền tố) phải bắt đầu với dấu sổ chéo “/”"
+msgstr ""
 
 #: lib/poptALL.c:172
 #, c-format
@@ -3069,9 +3066,8 @@ msgid "support for rich dependencies."
 msgstr "hỗ trợ cho các phần phục thuộc dồi dào"
 
 #: lib/rpmds.c:1254
-#, fuzzy
 msgid "support for dynamic buildrequires."
-msgstr "hỗ trợ cho các phần phục thuộc dồi dào"
+msgstr ""
 
 #: lib/rpmds.c:1258
 msgid "package payload can be compressed using zstd."
@@ -4097,25 +4093,3 @@ msgstr "không nên thẩm tra chữ ký phần_đầu+trọng_tải"
 
 #~ msgid "failed to load macro file %s"
 #~ msgstr "gặp lỗi khi tải tập tin vĩ lệnh %s"
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "Gặp lỗi khi thực thi %s (%s): %s\n"
-
-#~ msgid "Error executing scriptlet %s (%s)\n"
-#~ msgstr "Gặp lỗi khi thực thi scriptlet %s (%s)\n"
-
-#~ msgid "line: %s\n"
-#~ msgstr "dòng: %s\n"
-
-#~ msgid "%s: line: %s\n"
-#~ msgstr "%s: dòng: %s\n"
-
-#~ msgid "No \"Source:\" tag in the spec file\n"
-#~ msgstr "Không có thẻ \"Source:\" trong tập tin đặc tả\n"
-
-#~ msgid "line %d: %s\n"
-#~ msgstr "dòng %d: %s\n"
-
-#~ msgid "%s:%d: Got a %%endif with no %%if\n"
-#~ msgstr ""
-#~ "%s:%d: Có một toán tử %%endif (kết thúc nếu) mà không có %%if (nếu)\n"

@@ -1470,9 +1470,9 @@ msgid "%s: line %d: %s with no %%if\n"
 msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "vrstica %d: Napačno število %s: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
 #, c-format
@@ -2037,9 +2037,9 @@ msgid "failed to load macro file %s\n"
 msgstr ""
 
 #: lib/poptALL.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr "argumenti izbire --prefix se morajo začeti z /"
+msgstr ""
 
 #: lib/poptALL.c:172
 #, c-format

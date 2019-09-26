@@ -119,10 +119,9 @@ msgid "build source package only from <specfile>"
 msgstr "зібрати за <файлом специфікації> лише пакунок з кодами"
 
 #: rpmbuild.c:166
-#, fuzzy
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "зібрати за <файлом специфікації> лише пакунок з кодами"
+msgstr ""
 
 #: rpmbuild.c:170
 #, c-format
@@ -171,12 +170,10 @@ msgstr ""
 "зібрати за <пакунком з початковими кодами> лише пакунок з початковими кодами"
 
 #: rpmbuild.c:191
-#, fuzzy
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
 msgstr ""
-"зібрати за <пакунком з початковими кодами> лише пакунок з початковими кодами"
 
 #: rpmbuild.c:195
 #, c-format
@@ -218,10 +215,9 @@ msgid "build source package only from <tarball>"
 msgstr "зібрати за <архівом tar> лише пакунок з кодами"
 
 #: rpmbuild.c:216
-#, fuzzy
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "зібрати за <архівом tar> лише пакунок з кодами"
+msgstr ""
 
 #: rpmbuild.c:219
 msgid "build binary package from <source package>"
@@ -1520,19 +1516,19 @@ msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr "рядок %d: незавершений макрос або помилкове продовження рядка\n"
 
 #: build/parseSpec.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr "%s:%d: вказано %%else без %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "рядок %d: %s: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr "%s:%d: помилкова умова %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:535
 #, c-format
@@ -2096,9 +2092,9 @@ msgid "failed to load macro file %s\n"
 msgstr ""
 
 #: lib/poptALL.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr "аргументи параметра --prefix мають починатися символом /"
+msgstr ""
 
 #: lib/poptALL.c:172
 #, c-format
@@ -3065,9 +3061,8 @@ msgid "support for rich dependencies."
 msgstr "підтримка розширених залежностей."
 
 #: lib/rpmds.c:1254
-#, fuzzy
 msgid "support for dynamic buildrequires."
-msgstr "підтримка розширених залежностей."
+msgstr ""
 
 #: lib/rpmds.c:1258
 msgid "package payload can be compressed using zstd."
@@ -4094,24 +4089,3 @@ msgstr "не перевіряти підпис заголовка та вміс�
 
 #~ msgid "failed to load macro file %s"
 #~ msgstr "не вдалося завантажити файл макросу %s"
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "Не вдалося виконати %s (%s): %s\n"
-
-#~ msgid "Error executing scriptlet %s (%s)\n"
-#~ msgstr "Помилка під час спроби виконання допоміжного скрипту %s (%s)\n"
-
-#~ msgid "line: %s\n"
-#~ msgstr "рядок: %s\n"
-
-#~ msgid "%s: line: %s\n"
-#~ msgstr "%s: рядок: %s\n"
-
-#~ msgid "No \"Source:\" tag in the spec file\n"
-#~ msgstr "У файлі spec немає теґу \"Source:\"\n"
-
-#~ msgid "line %d: %s\n"
-#~ msgstr "рядок %d: %s\n"
-
-#~ msgid "%s:%d: Got a %%endif with no %%if\n"
-#~ msgstr "%s:%d: вказано %%endif без %%if\n"

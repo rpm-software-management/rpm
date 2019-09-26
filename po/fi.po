@@ -112,10 +112,9 @@ msgid "build source package only from <specfile>"
 msgstr "käännä vain lähdepaketti spec-tiedostosta"
 
 #: rpmbuild.c:166
-#, fuzzy
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "käännä vain lähdepaketti spec-tiedostosta"
+msgstr ""
 
 #: rpmbuild.c:170
 #, c-format
@@ -155,11 +154,10 @@ msgid "build source package only from <source package>"
 msgstr ""
 
 #: rpmbuild.c:191
-#, fuzzy
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr "käännä vain lähdepaketti spec-tiedostosta"
+msgstr ""
 
 #: rpmbuild.c:195
 #, c-format
@@ -198,10 +196,9 @@ msgid "build source package only from <tarball>"
 msgstr "käännä vain lähdepaketti tar-tiedostosta"
 
 #: rpmbuild.c:216
-#, fuzzy
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "käännä vain lähdepaketti tar-tiedostosta"
+msgstr ""
 
 #: rpmbuild.c:219
 msgid "build binary package from <source package>"
@@ -1479,19 +1476,19 @@ msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr ""
 
 #: build/parseSpec.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr "%s:%d: %%else ilman %%if:iä\n"
+msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "%s: rivi: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr "rivi %d: virheellinen %%setup valitsin %s: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:535
 #, c-format
@@ -2049,9 +2046,9 @@ msgid "failed to load macro file %s\n"
 msgstr ""
 
 #: lib/poptALL.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr "--prefix parametrien pitää alkaa /-merkillä"
+msgstr ""
 
 #: lib/poptALL.c:172
 #, c-format
@@ -4026,15 +4023,3 @@ msgstr "%s: pakettilistan luku epäonnistui: %s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr "älä tarkista otsikon ja kuorman allekirjoitusta"
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "%s:n suoritus epäonnistui (%s): %s\n"
-
-#~ msgid "line: %s\n"
-#~ msgstr "rivi: %s\n"
-
-#~ msgid "line %d: %s\n"
-#~ msgstr "rivi %d: %s:\n"
-
-#~ msgid "%s:%d: Got a %%endif with no %%if\n"
-#~ msgstr "%s:%d: %%endif ilman %%if:iä\n"

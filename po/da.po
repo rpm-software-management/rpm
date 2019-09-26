@@ -113,10 +113,9 @@ msgid "build source package only from <specfile>"
 msgstr "opbyg kun kildepakke ud fra <spec-fil>"
 
 #: rpmbuild.c:166
-#, fuzzy
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "opbyg kun kildepakke ud fra <spec-fil>"
+msgstr ""
 
 #: rpmbuild.c:170
 #, c-format
@@ -157,11 +156,10 @@ msgid "build source package only from <source package>"
 msgstr ""
 
 #: rpmbuild.c:191
-#, fuzzy
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr "opbyg kun kildepakke ud fra <spec-fil>"
+msgstr ""
 
 #: rpmbuild.c:195
 #, c-format
@@ -199,10 +197,9 @@ msgid "build source package only from <tarball>"
 msgstr "opbyg kun kildepakke ud fra <tararkiv>"
 
 #: rpmbuild.c:216
-#, fuzzy
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "opbyg kun kildepakke ud fra <tararkiv>"
+msgstr ""
 
 #: rpmbuild.c:219
 msgid "build binary package from <source package>"
@@ -1474,19 +1471,19 @@ msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr ""
 
 #: build/parseSpec.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr "%s:%d: Fik et %%else uden et %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "linie %d: Ugyldig %s: angivere: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr "linie %d: Ugyldigt '%%setup'-tilvalg %s: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:535
 #, c-format
@@ -2044,9 +2041,9 @@ msgid "failed to load macro file %s\n"
 msgstr ""
 
 #: lib/poptALL.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr "parametre til --prefix skal starte med et /"
+msgstr ""
 
 #: lib/poptALL.c:172
 #, c-format
@@ -4023,15 +4020,3 @@ msgstr "%s: læs manifest mislykkedes: %s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr ""
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "Udførelse af %s mislykkedes (%s): %s\n"
-
-#~ msgid "line: %s\n"
-#~ msgstr "linie: %s\n"
-
-#~ msgid "line %d: %s\n"
-#~ msgstr "linie %d: %s\n"
-
-#~ msgid "%s:%d: Got a %%endif with no %%if\n"
-#~ msgstr "%s:%d: Fik et %%endif uden et %%if\n"

@@ -121,10 +121,9 @@ msgid "build source package only from <specfile>"
 msgstr "construction du paquet source seulement à partir du <fichier_spec>"
 
 #: rpmbuild.c:166
-#, fuzzy
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "construction du paquet source seulement à partir du <fichier_spec>"
+msgstr ""
 
 #: rpmbuild.c:170
 #, c-format
@@ -166,11 +165,10 @@ msgid "build source package only from <source package>"
 msgstr ""
 
 #: rpmbuild.c:191
-#, fuzzy
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr "construction du paquet source seulement à partir du <fichier_spec>"
+msgstr ""
 
 #: rpmbuild.c:195
 #, c-format
@@ -214,10 +212,9 @@ msgid "build source package only from <tarball>"
 msgstr "construire seulement le paquet source à partir du <tarball>"
 
 #: rpmbuild.c:216
-#, fuzzy
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "construire seulement le paquet source à partir du <tarball>"
+msgstr ""
 
 #: rpmbuild.c:219
 msgid "build binary package from <source package>"
@@ -1516,19 +1513,19 @@ msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr "ligne %d : macro non fermée ou mauvaise continuation de ligne\n"
 
 #: build/parseSpec.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr "%s : %d : j'ai là un %%else sans %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "ligne %d : %s : %s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr "%s : %d : mauvaise condition %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:535
 #, c-format
@@ -2091,9 +2088,9 @@ msgid "failed to load macro file %s\n"
 msgstr ""
 
 #: lib/poptALL.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr "les arguments de --prefix doivent commencer par un /"
+msgstr ""
 
 #: lib/poptALL.c:172
 #, c-format
@@ -4100,24 +4097,3 @@ msgstr "ne pas vérifier la signature de l'entête+charge_utile"
 
 #~ msgid "failed to load macro file %s"
 #~ msgstr "Impossible de charger le fichier macro %s"
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "L'exec de %s a échoué (%s): %s\n"
-
-#~ msgid "Error executing scriptlet %s (%s)\n"
-#~ msgstr "Erreur d'exécution du scriptlet %s (%s)\n"
-
-#~ msgid "line: %s\n"
-#~ msgstr "Ligne : %s\n"
-
-#~ msgid "%s: line: %s\n"
-#~ msgstr "%s : ligne : %s\n"
-
-#~ msgid "No \"Source:\" tag in the spec file\n"
-#~ msgstr "Pas de tag « Source: » dans le fichier spec\n"
-
-#~ msgid "line %d: %s\n"
-#~ msgstr "ligne %d : %s\n"
-
-#~ msgid "%s:%d: Got a %%endif with no %%if\n"
-#~ msgstr "%s : %d : j'ai là un %%endif sans %%if\n"

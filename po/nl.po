@@ -1463,14 +1463,14 @@ msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr ""
 
 #: build/parseSpec.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr "%s: regel: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "%s: regel: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
 #, c-format
@@ -3992,9 +3992,3 @@ msgstr ""
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr ""
-
-#~ msgid "line: %s\n"
-#~ msgstr "regel: %s\n"
-
-#~ msgid "line %d: %s\n"
-#~ msgstr "regel %d: %s\n"

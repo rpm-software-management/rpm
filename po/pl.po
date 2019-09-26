@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2019-08-28 11:48+0300\n"
-"PO-Revision-Date: 2019-01-17 10:09+0000\n"
+"PO-Revision-Date: 2019-06-06 09:42+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish (http://www.transifex.com/rpm-team/rpm/language/pl/)\n"
 "Language: pl\n"
@@ -127,10 +127,11 @@ msgid "build source package only from <specfile>"
 msgstr "zbudowanie tylko pakietu źródłowego z <pliku-spec>"
 
 #: rpmbuild.c:166
-#, fuzzy
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "zbudowanie tylko pakietu źródłowego z <pliku-spec>"
+msgstr ""
+"zbudowanie tylko pakietu źródłowego z <pliku-spec> — obliczenie dynamicznych "
+"wymagań budowania"
 
 #: rpmbuild.c:170
 #, c-format
@@ -174,11 +175,12 @@ msgid "build source package only from <source package>"
 msgstr "zbudowanie tylko pakietu źródłowego z <pakietu-źródłowego>"
 
 #: rpmbuild.c:191
-#, fuzzy
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr "zbudowanie tylko pakietu źródłowego z <pakietu-źródłowego>"
+msgstr ""
+"zbudowanie tylko pakietu źródłowego z <pakietu-źródłowego> — obliczenie "
+"dynamicznych wymagań budowania"
 
 #: rpmbuild.c:195
 #, c-format
@@ -218,10 +220,11 @@ msgid "build source package only from <tarball>"
 msgstr "zbudowanie tylko pakietu źródłowego z <pliku-tar>"
 
 #: rpmbuild.c:216
-#, fuzzy
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "zbudowanie tylko pakietu źródłowego z <pliku-tar>"
+msgstr ""
+"zbudowanie tylko pakietu źródłowego z <pliku-tar> — obliczenie dynamicznych "
+"wymagań budowania"
 
 #: rpmbuild.c:219
 msgid "build binary package from <source package>"
@@ -778,7 +781,7 @@ msgstr "odczytanie dowiązania symbolicznego %s się nie powiodło: %s\n"
 #: build/files.c:1204
 #, c-format
 msgid "absolute symlink: %s -> %s\n"
-msgstr ""
+msgstr "bezwzględne dowiązanie symboliczne: %s → %s\n"
 
 #: build/files.c:1210
 #, c-format
@@ -1077,7 +1080,7 @@ msgstr "Nie można utworzyć wyjściowej nazwy pliku dla pakietu %s: %s\n"
 #: build/pack.c:759
 #, c-format
 msgid "Finished binary package job, result %d, filename %s\n"
-msgstr ""
+msgstr "Ukończono zadanie pakietu binarnego, wynik %d, nazwa pliku %s\n"
 
 #: build/parseSimpleScript.c:17 build/parsePreamble.c:745
 #, c-format
@@ -1489,7 +1492,7 @@ msgstr ""
 #: build/parseSpec.c:230
 #, c-format
 msgid "extra tokens at the end of %s directive in line %d:  %s\n"
-msgstr ""
+msgstr "dodatkowe tokeny na końcu dyrektywy %s w %d. wierszu:  %s\n"
 
 #: build/parseSpec.c:264
 #, c-format
@@ -1517,19 +1520,19 @@ msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr "%d. wiersz: niezamknięte makro lub błędna kontynuacja wiersza\n"
 
 #: build/parseSpec.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr "%s:%d: napotkano %%else bez %%if\n"
+msgstr "%s: %d. wiersz: %s bez %%if\n"
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "%d. wiersz: %s: %s\n"
+msgstr "%s: %d. wiersz: %s po %s\n"
 
 #: build/parseSpec.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr "%s:%d: błędny warunek %%if\n"
+msgstr "%s:%d: błędny warunek %s: %s\n"
 
 #: build/parseSpec.c:535
 #, c-format
@@ -2096,9 +2099,9 @@ msgid "failed to load macro file %s\n"
 msgstr "wczytanie pliku makra %s się nie powiodło\n"
 
 #: lib/poptALL.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr "parametry dla --prefix muszą zaczynać się od /"
+msgstr "parametry dla --dbpath muszą zaczynać się od „/”\n"
 
 #: lib/poptALL.c:172
 #, c-format
@@ -2230,7 +2233,7 @@ msgstr "debugowanie wejścia/wyjścia rpmio"
 
 #: lib/poptALL.c:273
 msgid "disable user namespace support"
-msgstr ""
+msgstr "wyłączenie obsługi przestrzeni nazw użytkownika"
 
 #: lib/poptALL.c:332
 #, c-format
@@ -3059,9 +3062,8 @@ msgid "support for rich dependencies."
 msgstr "obsługa złożonych zależności."
 
 #: lib/rpmds.c:1254
-#, fuzzy
 msgid "support for dynamic buildrequires."
-msgstr "obsługa złożonych zależności."
+msgstr "obsługa dynamicznych wymagań budowania."
 
 #: lib/rpmds.c:1258
 msgid "package payload can be compressed using zstd."
@@ -4089,27 +4091,3 @@ msgstr "bez sprawdzania podpisu nagłówka+danych"
 
 #~ msgid "failed to load macro file %s"
 #~ msgstr "wczytanie pliku makra %s się nie powiodło"
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "Wykonanie %s się nie powiodło (%s): %s\n"
-
-#~ msgid "Error executing scriptlet %s (%s)\n"
-#~ msgstr "Błąd podczas wykonywania skryptu %s (%s)\n"
-
-#~ msgid "line: %s\n"
-#~ msgstr "wiersz: %s\n"
-
-#~ msgid "%s: line: %s\n"
-#~ msgstr "%s: wiersz: %s\n"
-
-#~ msgid "No \"Source:\" tag in the spec file\n"
-#~ msgstr "Brak znacznika „Source:” w pliku spec\n"
-
-#~ msgid "line %d: %s\n"
-#~ msgstr "%d. wiersz: %s\n"
-
-#~ msgid "%s:%d: Got a %%endif with no %%if\n"
-#~ msgstr "%s:%d: napotkano %%endif bez %%if\n"
-
-#~ msgid "file %s: %d invalid macro definitions\n"
-#~ msgstr "plik %s: %d nieprawidłowe definicje makr\n"

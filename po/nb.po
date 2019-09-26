@@ -113,10 +113,9 @@ msgid "build source package only from <specfile>"
 msgstr ""
 
 #: rpmbuild.c:166
-#, fuzzy
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "spør pakke som eier <fil>"
+msgstr ""
 
 #: rpmbuild.c:170
 #, c-format
@@ -1475,19 +1474,19 @@ msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr ""
 
 #: build/parseSpec.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr "%s:%d: %%else uten %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "linje %d: Ugyldig %s: kvalifikatorer: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr "linje %d: Ugyldig %%setup flagg %s: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:535
 #, c-format
@@ -2045,9 +2044,9 @@ msgid "failed to load macro file %s\n"
 msgstr ""
 
 #: lib/poptALL.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr "argumenter til --prefix må begynne med en /"
+msgstr ""
 
 #: lib/poptALL.c:172
 #, c-format
@@ -4018,15 +4017,3 @@ msgstr "%s: lesing av manifest feilet: %s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr ""
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "Kjøring av %s feilet (%s): %s\n"
-
-#~ msgid "line: %s\n"
-#~ msgstr "Installerer %s\n"
-
-#~ msgid "line %d: %s\n"
-#~ msgstr "linje %d: %s\n"
-
-#~ msgid "%s:%d: Got a %%endif with no %%if\n"
-#~ msgstr "%s:%d: %%endif uten %%if\n"

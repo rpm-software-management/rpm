@@ -120,10 +120,9 @@ msgid "build source package only from <specfile>"
 msgstr "собрать исходный пакет по <файлу спецификации>"
 
 #: rpmbuild.c:166
-#, fuzzy
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "собрать исходный пакет по <файлу спецификации>"
+msgstr ""
 
 #: rpmbuild.c:170
 #, c-format
@@ -165,11 +164,10 @@ msgid "build source package only from <source package>"
 msgstr ""
 
 #: rpmbuild.c:191
-#, fuzzy
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr "собрать исходный пакет по <файлу спецификации>"
+msgstr ""
 
 #: rpmbuild.c:195
 #, c-format
@@ -210,10 +208,9 @@ msgid "build source package only from <tarball>"
 msgstr "собрать исходный пакет из <архив tar>"
 
 #: rpmbuild.c:216
-#, fuzzy
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "собрать исходный пакет из <архив tar>"
+msgstr ""
 
 #: rpmbuild.c:219
 msgid "build binary package from <source package>"
@@ -1497,19 +1494,19 @@ msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr ""
 
 #: build/parseSpec.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr "%s:%d: Найден %%else без %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "строка %d: %s: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr "%s:%d: плохое %%if условие\n"
+msgstr ""
 
 #: build/parseSpec.c:535
 #, c-format
@@ -2068,9 +2065,9 @@ msgid "failed to load macro file %s\n"
 msgstr ""
 
 #: lib/poptALL.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr "аргументы для --prefix должны начинаться с /"
+msgstr ""
 
 #: lib/poptALL.c:172
 #, c-format
@@ -4045,15 +4042,3 @@ msgstr "%s: ошибка чтения списка файлов: %s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr "не проверять подпись заголовока и содержимого"
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "Выполнить %s не удалось (%s): %s\n"
-
-#~ msgid "line: %s\n"
-#~ msgstr "строка: %s\n"
-
-#~ msgid "line %d: %s\n"
-#~ msgstr "строка %d: %s\n"
-
-#~ msgid "%s:%d: Got a %%endif with no %%if\n"
-#~ msgstr "%s:%d: Найден %%endif без %%if\n"

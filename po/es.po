@@ -125,10 +125,9 @@ msgid "build source package only from <specfile>"
 msgstr "construir paquete fuente únicamente desde <specfile>"
 
 #: rpmbuild.c:166
-#, fuzzy
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "construir paquete fuente únicamente desde <specfile>"
+msgstr ""
 
 #: rpmbuild.c:170
 #, c-format
@@ -170,11 +169,10 @@ msgid "build source package only from <source package>"
 msgstr ""
 
 #: rpmbuild.c:191
-#, fuzzy
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr "construir paquete fuente únicamente desde <specfile>"
+msgstr ""
 
 #: rpmbuild.c:195
 #, c-format
@@ -216,10 +214,9 @@ msgid "build source package only from <tarball>"
 msgstr "construir paquete fuente desde <tarball> "
 
 #: rpmbuild.c:216
-#, fuzzy
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "construir paquete fuente desde <tarball> "
+msgstr ""
 
 #: rpmbuild.c:219
 msgid "build binary package from <source package>"
@@ -1529,19 +1526,19 @@ msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr "línea %d: macro no cerrado o continuación de línea errónea\n"
 
 #: build/parseSpec.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr "%s:%d: Tiene un %%else sin %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr "línea %d: %s: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr "%s:%d: mal %%si condición\n"
+msgstr ""
 
 #: build/parseSpec.c:535
 #, c-format
@@ -2105,9 +2102,9 @@ msgid "failed to load macro file %s\n"
 msgstr ""
 
 #: lib/poptALL.c:151
-#, fuzzy, c-format
+#, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr "los argumentos de --prefix deber iniciar con una /"
+msgstr ""
 
 #: lib/poptALL.c:172
 #, c-format
@@ -4104,24 +4101,3 @@ msgstr "%s: falló la lectura del manifiesto: %s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr "no verificar firma de encabezado+carga"
-
-#~ msgid "Exec of %s failed (%s): %s\n"
-#~ msgstr "Falló exec sobre %s  (%s): %s\n"
-
-#~ msgid "Error executing scriptlet %s (%s)\n"
-#~ msgstr "Error ejecutando scriptlet %s (%s)\n"
-
-#~ msgid "line: %s\n"
-#~ msgstr "línea: %s\n"
-
-#~ msgid "%s: line: %s\n"
-#~ msgstr "%s: línea: %s\n"
-
-#~ msgid "No \"Source:\" tag in the spec file\n"
-#~ msgstr "No hay etiqueta \"Source:\" en el archivo spec\n"
-
-#~ msgid "line %d: %s\n"
-#~ msgstr "línea %d: %s\n"
-
-#~ msgid "%s:%d: Got a %%endif with no %%if\n"
-#~ msgstr "%s:%d: Tiene un %%endif sin %%if\n"
