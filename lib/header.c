@@ -68,12 +68,6 @@ static const int typeSizes[16] =  {
     0
 };
 
-enum headerSorted_e {
-    HEADERSORT_NONE	= 0,	/* Not sorted */
-    HEADERSORT_OFFSET	= 1,	/* Sorted by offset (on-disk format) */
-    HEADERSORT_INDEX	= 2,	/* Sorted by index  */
-};
-
 enum headerFlags_e {
     HEADERFLAG_ALLOCATED = (1 << 1), /*!< Is 1st header region allocated? */
     HEADERFLAG_LEGACY    = (1 << 2), /*!< Header came from legacy source? */
@@ -250,7 +244,7 @@ static Header headerCreate(void *blob, int32_t indexLen)
 	h->indexUsed = 0;
     }
     h->instance = 0;
-    h->sorted = HEADERSORT_NONE;
+    h->sorted = 0;
     h->index = xcalloc(h->indexAlloced, sizeof(*h->index));
 
     h->nrefs = 0;
@@ -318,9 +312,9 @@ static int indexCmp(const void * avp, const void * bvp)
 
 static void headerSort(Header h)
 {
-    if (h->sorted != HEADERSORT_INDEX) {
+    if (!h->sorted) {
 	qsort(h->index, h->indexUsed, sizeof(*h->index), indexCmp);
-	h->sorted = HEADERSORT_INDEX;
+	h->sorted = 1;
     }
 }
 
@@ -337,14 +331,6 @@ static int offsetCmp(const void * avp, const void * bvp)
 	    rc = (ap->info.tag - bp->info.tag);
     }
     return rc;
-}
-
-static void headerUnsort(Header h)
-{
-    if (h->sorted != HEADERSORT_OFFSET) {
-	qsort(h->index, h->indexUsed, sizeof(*h->index), offsetCmp);
-	h->sorted = HEADERSORT_OFFSET;
-    }
 }
 
 static inline unsigned int alignDiff(rpm_tagtype_t type, unsigned int alignsize)
@@ -574,7 +560,7 @@ static int regionSwab(indexEntry entry, int il, int dl,
     return dl;
 }
 
-static void * doExport(struct indexEntry_s *index, int indexUsed,
+static void * doExport(const struct indexEntry_s *hindex, int indexUsed,
 			headerFlags flags, unsigned int *bsize)
 {
     int32_t * ei = NULL;
@@ -587,6 +573,11 @@ static void * doExport(struct indexEntry_s *index, int indexUsed,
     indexEntry entry; 
     int i;
     int drlen, ndribbles;
+    size_t ilen = indexUsed * sizeof(struct indexEntry_s);
+    indexEntry index = memcpy(xmalloc(ilen), hindex, ilen);
+
+    /* Sort entries by (offset,tag). */
+    qsort(index, indexUsed, sizeof(*index), offsetCmp);
 
     /* Compute (il,dl) for all tags, including those deleted in region. */
     drlen = ndribbles = 0;
@@ -783,10 +774,12 @@ static void * doExport(struct indexEntry_s *index, int indexUsed,
     if (bsize)
 	*bsize = len;
 
+    free(index);
     return (void *) ei;
 
 errxit:
     free(ei);
+    free(index);
     return NULL;
 }
 
@@ -795,10 +788,7 @@ void * headerExport(Header h, unsigned int *bsize)
     void *blob = NULL;
 
     if (h) {
-	/* Sort entries by (offset,tag). */
-	headerUnsort(h);
 	blob = doExport(h->index, h->indexUsed, h->flags, bsize);
-	headerSort(h);
     }
 
     return blob;
@@ -823,8 +813,7 @@ indexEntry findEntry(Header h, rpmTagVal tag, rpm_tagtype_t type)
     struct indexEntry_s key;
 
     if (h == NULL) return NULL;
-    if (h->sorted != HEADERSORT_INDEX)
-	headerSort(h);
+    headerSort(h);
 
     key.info.tag = tag;
 
@@ -965,7 +954,7 @@ rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg)
     }
 
     /* Force sorting, dribble lookups can cause early sort on partial header */
-    h->sorted = HEADERSORT_NONE;
+    h->sorted = 0;
     headerSort(h);
     h->flags |= HEADERFLAG_ALLOCATED;
     *hdrp = h;
@@ -1457,7 +1446,7 @@ static int intAddEntry(Header h, rpmtd td)
     entry->length = length;
 
     if (h->indexUsed > 0 && td->tag < h->index[h->indexUsed-1].info.tag)
-	h->sorted = HEADERSORT_NONE;
+	h->sorted = 0;
     h->indexUsed++;
 
     return 1;
