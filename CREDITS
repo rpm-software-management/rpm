@@ -19,11 +19,13 @@ have been contributed by:
 	Pádraig Brady
 	Filipe Brandenburger
 	Tony Breeds
+	Stepan Broz
 	Till Bubeck
 	Héctor Daniel Cabrera
 	Davide Cavalca
 	Yuri Chornoivan
 	Michal Čihař
+	Nick Clifton
 	Archie Cobbs
 	Ralf Corsépius
 	Kit Cosper
@@ -31,7 +33,8 @@ have been contributed by:
 	Rafal Cygnarowski
 	Jean Delvare
 	Kristof Depraetere
-        Alex deVries
+        Alex de Vries
+	Tom de Vries
 	Johannes Dewender
 	Michal Domonkos
 	Piotr Drąg
@@ -45,6 +48,7 @@ have been contributed by:
 	Jakub Filak
 	Brian Elliott Finley
 	Fred Fish
+	Fabrice Fontaine
 	Nikola Forró
 	Gleb Fotengauer-Malinovskiy
 	David Fox
@@ -59,6 +63,7 @@ have been contributed by:
 	Aron Griffis
 	Fionnuala Gunter
 	Anssi Hannula
+	Johan Heikkilä
 	Miro Hrončok
 	Richard Hughes
 	Tom Hughes
@@ -66,6 +71,7 @@ have been contributed by:
 	Zbigniew Jędrzejewski-Szmek
 	Jakub Jelinek
 	Alan Jenkins
+	Howard Johnson
 	Jeff Johnson
 	Michael K. Johnson
 	Tadashi Jokagi
@@ -73,6 +79,7 @@ have been contributed by:
 	Richard W.M. Jones
 	Guillem Jover
 	Joseph L. Hartmann, Jr
+	Robbie Harwood
 	Juha Kallioinen
 	Alexander Kanavin
 	Alexandr D. Kanevskiy
@@ -86,6 +93,7 @@ have been contributed by:
 	Kir Kolyshkin
 	Ales Kozumplik
 	Jan Kratochvil
+	Ernestas Kulik
 	Toshio Kuratomi
 	Tim Landscheidt
 	Hermann Lauer
@@ -96,15 +104,20 @@ have been contributed by:
 	Robin Lee
 	Simon Lees
 	Dominique Leuenberger
+	Dmitry V. Levin
+	Markus Linnala
+	Martin Liška
 	Benedict Lofstedt
 	Till Maas
 	David Malcolm
 	Michal Marek
 	Panu Matilainen
+	Shogo Matsumoto
 	Jared Mauch
 	Roland McGrath
 	Kyle McMartin
 	Joshua Megerman
+	Petr Menšík
 	Nigel Metheringham
 	Arkadiusz Miśkiewicz
 	Tomas Mlcoch
@@ -121,6 +134,7 @@ have been contributed by:
 	Denis Ollier
 	Vít Ondruch
 	Tomas Orsava
+	Ruediger Oertel
 	Rakesh Pandit
 	Jan Pazdziora
 	Thomas Petazzoni
@@ -158,6 +172,7 @@ have been contributed by:
 	Bob Tanner
 	Pascal Terjan
 	Gary Thomas
+	Jason Tibbitts
 	Jeff Tickle
 	Michal Toman
 	Alexey Tourbin
