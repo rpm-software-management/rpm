@@ -277,3 +277,105 @@ RESULTS sources -m 2:
 ],
 [])
 AT_CLEANUP
+
+AT_SETUP([rpmspec -P with autosetup -S git])
+AT_KEYWORDS([rpmspec])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-*.patch ${TOPDIR}/SOURCES
+
+runroot rpmspec -P /data/SPECS/hello-autosetup-git.spec \
+  | grep -c 'cat.*\(modernize\|install\).patch\|git apply\|git commit'
+],
+[0],
+[7
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpmspec -P with autosetup -N -S git and autopatch])
+AT_KEYWORDS([rpmspec])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-*.patch ${TOPDIR}/SOURCES
+
+runroot rpmspec -P /data/SPECS/hello-autopatch-git.spec \
+  | grep -c 'cat.*\(modernize\|install\).patch\|git apply\|git commit'
+],
+[0],
+[7
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpmspec -P with autosetup -N -S git and autopatch -m -M])
+AT_KEYWORDS([rpmspec])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-*.patch ${TOPDIR}/SOURCES
+
+runroot rpmspec -P /data/SPECS/hello-autopatch-m-git.spec \
+  | grep -c 'cat.*\(modernize\|install\).patch\|git apply\|git commit'
+],
+[0],
+[7
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpmspec -P with autosetup -S git_am])
+AT_KEYWORDS([rpmspec])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-*.patch ${TOPDIR}/SOURCES
+
+runroot rpmspec -P /data/SPECS/hello-autosetup-git-am.spec \
+  | grep -c 'git am.*modernize.*install.patch'
+],
+[0],
+[1
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpmspec -P with autosetup -N -S git_am and autopatch])
+AT_KEYWORDS([rpmspec])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-*.patch ${TOPDIR}/SOURCES
+
+runroot rpmspec -P /data/SPECS/hello-autopatch-git-am.spec \
+  | grep -c 'git am.*modernize.*install.patch'
+],
+[0],
+[1
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpmspec -P with autosetup -N -S git_am and autopatch -m -M])
+AT_KEYWORDS([rpmspec])
+AT_CHECK([
+rm -rf ${TOPDIR}
+AS_MKDIR_P(${TOPDIR}/SOURCES)
+
+cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-*.patch ${TOPDIR}/SOURCES
+
+runroot rpmspec -P /data/SPECS/hello-autopatch-m-git-am.spec \
+  | grep -c 'git am\(\s--[[[:alnum:]=-]]\+\)*\s\+\(/[[[:alnum:].-]]\+\)*/hello-1.0-\(modernize\|install\).patch\s*</dev/null'
+],
+[0],
+[2
+],
+[])
+AT_CLEANUP
