@@ -441,14 +441,13 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
     optCon = poptGetContext(NULL, argc, argv, patchOpts, 0);
     while ((c = poptGetNextOpt(optCon)) > 0) {
 	switch (c) {
-	case 'P': {
-	    char *arg = poptGetOptArg(optCon);
-	    if (arg) {
-	    	argvAdd(&patchnums, arg);
-	    	free(arg);
+	case 'P':
+	    if (opt_P) {
+		argvAdd(&patchnums, opt_P);
+		free(opt_P);
 	    }
 	    break;
-	}
+
 	default:
 	    break;
 	}
@@ -483,6 +482,9 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
     rc = RPMRC_OK;
 
 exit:
+    free(opt_b);
+    free(opt_d);
+    free(opt_o);
     argvFree(patchnums);
     free(argv);
     poptFreeContext(optCon);
