@@ -15,13 +15,13 @@ SYNOPSIS
 BUILDING PACKAGES:
 ------------------
 
-**rpmbuild** {**-ba\|-bb\|-bp\|-bc\|-bi\|-bl\|-bs\|-br**}
+**rpmbuild** {**-ba\|-bb\|-bp\|-bc\|-bi\|-bl\|-bs\|-br\|-bd**}
 \[**rpmbuild-options**\] *SPECFILE \...*
 
-**rpmbuild** {**-ra\|-rb\|-rp\|-rc\|-ri\|-rl\|-rs\|-rr**}
+**rpmbuild** {**-ra\|-rb\|-rp\|-rc\|-ri\|-rl\|-rs\|-rr\|-rd**}
 \[**rpmbuild-options**\] *SOURCEPACKAGE \...*
 
-**rpmbuild** {**-ta\|-tb\|-tp\|-tc\|-ti\|-tl\|-ts\|-tr**}
+**rpmbuild** {**-ta\|-tb\|-tp\|-tc\|-ti\|-tl\|-ts\|-tr\|-td**}
 \[**rpmbuild-options**\] *TARBALL \...*
 
 **rpmbuild** {**\--rebuild\|\--recompile**} *SOURCEPKG \...*
@@ -191,6 +191,11 @@ all the stages preceding it), and is one of:
     assembly stage, without creating binary packages. This command can
     be used to fully resolve dynamic build dependencies. See the DYNAMIC
     BUILD DEPENDENCIES section for details.
+
+**-bd**
+
+:   Check dynamic build dependencies and build the .buildreqs.nosrc.rpm
+    package if any are missing. Don't build anything else.
 
 The following options may also be used:
 
