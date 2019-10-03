@@ -109,6 +109,8 @@ EXTRA_DIST += data/SOURCES/foo.c
 EXTRA_DIST += data/SOURCES/bar.c
 EXTRA_DIST += data/SOURCES/baz.c
 EXTRA_DIST += data/SOURCES/foobar.h
+EXTRA_DIST += data/misc/hello.intro
+EXTRA_DIST += data/misc/hello.payload
 
 .PHONY: populate_testing
 

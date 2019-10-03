@@ -40,6 +40,7 @@ static const struct vfytag_s rpmvfytags[] = {
     {	RPMSIGTAG_LONGARCHIVESIZE,	RPM_INT64_TYPE,		1,	8, },
     {	RPMTAG_SHA256HEADER,		RPM_STRING_TYPE,	1,	65, },
     {	RPMTAG_PAYLOADDIGEST,		RPM_STRING_ARRAY_TYPE,	0,	0, },
+    {	RPMTAG_PAYLOADDIGESTALT,	RPM_STRING_ARRAY_TYPE,	0,	0, },
     { 0 } /* sentinel */
 };
 
@@ -89,6 +90,9 @@ static const struct vfyinfo_s rpmvfyitems[] = {
     {	RPMTAG_PAYLOADDIGEST,		0,
 	{ RPMSIG_DIGEST_TYPE,		RPMVSF_NOPAYLOAD,
 	(RPMSIG_PAYLOAD),		PGPHASHALGO_SHA256, 0, }, },
+    {	RPMTAG_PAYLOADDIGESTALT,	0,
+	{ RPMSIG_DIGEST_TYPE,		RPMVSF_NOPAYLOAD,
+	(RPMSIG_PAYLOAD),		PGPHASHALGO_SHA256, 0, 1, }, },
     { 0 } /* sentinel */
 };
 

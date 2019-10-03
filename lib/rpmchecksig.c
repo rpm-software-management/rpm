@@ -189,6 +189,7 @@ rpmRC rpmpkgRead(struct rpmvs_s *vs, FD_t fd,
 
     /* Fish interesting tags from the main header. This is a bit hacky... */
     rpmvsAppendTag(vs, blob, RPMTAG_PAYLOADDIGEST);
+    rpmvsAppendTag(vs, blob, RPMTAG_PAYLOADDIGESTALT);
 
     /* If needed and not explicitly disabled, read the payload as well. */
     if (rpmvsRange(vs) & RPMSIG_PAYLOAD) {

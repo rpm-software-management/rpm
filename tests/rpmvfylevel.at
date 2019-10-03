@@ -117,6 +117,7 @@ nopl
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: NOTFOUND
+    Payload SHA256 ALT digest: NOTFOUND
     MD5 digest: NOTFOUND
 1
 nosha1
@@ -338,6 +339,7 @@ noplds
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: NOTFOUND
+    Payload SHA256 ALT digest: NOTFOUND
     RSA signature: NOTFOUND
     DSA signature: NOTFOUND
     MD5 digest: OK

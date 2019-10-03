@@ -68,7 +68,8 @@ static int rpmPackageFilesArchive(rpmfiles fi, int isSrc,
  * @todo Create transaction set *much* earlier.
  */
 static rpmRC cpio_doio(FD_t fdo, Package pkg, const char * fmodeMacro,
-			rpm_loff_t *archiveSize)
+			int pld_algo,
+			rpm_loff_t *archiveSize, char ** pldig)
 {
     char *failedFile = NULL;
     FD_t cfd;
@@ -79,9 +80,12 @@ static rpmRC cpio_doio(FD_t fdo, Package pkg, const char * fmodeMacro,
     if (cfd == NULL)
 	return RPMRC_FAIL;
 
+    /* Calculate alternative (uncompressed) payload digest while writing */
+    fdInitDigestID(cfd, pld_algo, RPMTAG_PAYLOADDIGESTALT, 0);
     fsmrc = rpmPackageFilesArchive(pkg->cpioList, headerIsSource(pkg->header),
 				   cfd, pkg->dpaths,
 				   archiveSize, &failedFile);
+    fdFiniDigest(cfd, RPMTAG_PAYLOADDIGESTALT, (void **)pldig, NULL, 1);
 
     if (fsmrc) {
 	char *emsg = rpmfileStrerror(fsmrc);
@@ -473,6 +477,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     char * SHA256 = NULL;
     uint8_t * MD5 = NULL;
     char * pld = NULL;
+    char * upld = NULL;
     uint32_t pld_algo = PGPHASHALGO_SHA256; /* TODO: macro configuration */
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     rpm_loff_t archiveSize = 0;
@@ -493,10 +498,11 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	headerPutString(pkg->header, RPMTAG_COOKIE, *cookie);
     }
 
-    /* Create a dummy payload digest to get the header size right */
+    /* Create a dummy payload digests to get the header size right */
     pld = nullDigest(pld_algo, 1);
     headerPutUint32(pkg->header, RPMTAG_PAYLOADDIGESTALGO, &pld_algo, 1);
     headerPutString(pkg->header, RPMTAG_PAYLOADDIGEST, pld);
+    headerPutString(pkg->header, RPMTAG_PAYLOADDIGESTALT, pld);
     pld = _free(pld);
     
     /* Check for UTF-8 encoding of string tags, add encoding tag if all good */
@@ -537,7 +543,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 
     /* Write payload section (cpio archive) */
     payloadStart = Ftell(fd);
-    if (cpio_doio(fd, pkg, rpmio_flags, &archiveSize))
+    if (cpio_doio(fd, pkg, rpmio_flags, pld_algo, &archiveSize, &upld))
 	goto exit;
     payloadEnd = Ftell(fd);
 
@@ -547,9 +553,11 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	goto exit;
     fdFiniDigest(fd, RPMTAG_PAYLOADDIGEST, (void **)&pld, NULL, 1);
 
-    /* Insert the payload digest in main header */
+    /* Insert the payload digests in main header */
     headerDel(pkg->header, RPMTAG_PAYLOADDIGEST);
     headerPutString(pkg->header, RPMTAG_PAYLOADDIGEST, pld);
+    headerDel(pkg->header, RPMTAG_PAYLOADDIGESTALT);
+    headerPutString(pkg->header, RPMTAG_PAYLOADDIGESTALT, upld);
     pld = _free(pld);
 
     /* Write the final header */
