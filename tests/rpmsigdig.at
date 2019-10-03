@@ -26,6 +26,34 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64.rpm /data/RPMS/hello-1.0-1.i38
 [])
 AT_CLEANUP
 
+AT_SETUP([rpmkeys -Kv <reconstructed> 1])
+AT_KEYWORDS([rpmkeys digest])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+cp "${RPMTEST}"/data/misc/hello.intro "${RPMTEST}"/data/misc/hello.payload .
+gzip -cd < hello.payload > hello.uc-payload
+cat hello.intro hello.payload > "${RPMTEST}"/tmp/hello-c.rpm
+cat hello.intro hello.uc-payload > "${RPMTEST}"/tmp/hello-uc.rpm
+runroot rpmkeys -Kv /tmp/hello-c.rpm /tmp/hello-uc.rpm
+],
+[1],
+[/tmp/hello-c.rpm:
+    Header SHA256 digest: OK
+    Header SHA1 digest: OK
+    Payload SHA256 digest: OK
+    MD5 digest: OK
+/tmp/hello-uc.rpm:
+    Header SHA256 digest: OK
+    Header SHA1 digest: OK
+    Payload SHA256 ALT digest: OK
+    MD5 digest: BAD (Expected 055607c4dee6464b9415ae726e7d81a7 != 839d24c30e5188e0b83599fbe3865919)
+],
+[])
+AT_CLEANUP
+
 # ------------------------------
 # Test corrupted package verification (corrupted signature)
 AT_SETUP([rpmkeys -Kv <corrupted unsigned> 1])
@@ -96,6 +124,7 @@ runroot rpmkeys -Kv /tmp/${pkg}
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
+    Payload SHA256 ALT digest: NOTFOUND
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != d662cd0d81601a7107312684ad1ddf38)
 ],
 [])
@@ -145,6 +174,7 @@ runroot rpmkeys -Kv /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm
 [/build/RPMS/noarch/attrtest-1.0-1.noarch.rpm:
     Header SHA256 digest: OK
     Header SHA1 digest: OK
+    Payload SHA256 ALT digest: OK
     Payload SHA256 digest: OK
     MD5 digest: OK
 ],
@@ -381,6 +411,7 @@ runroot rpmkeys -Kv /tmp/${pkg}
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
+    Payload SHA256 ALT digest: NOTFOUND
     V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != d662cd0d81601a7107312684ad1ddf38)
 /tmp/hello-2.0-1.x86_64-signed.rpm:
@@ -388,6 +419,7 @@ runroot rpmkeys -Kv /tmp/${pkg}
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
+    Payload SHA256 ALT digest: NOTFOUND
     V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != d662cd0d81601a7107312684ad1ddf38)
 ],
