@@ -19,6 +19,7 @@ struct rpmsinfo_s {
     /* parsed data */
     int hashalgo;
     int sigalgo;
+    int alt;
     int id;
     int wrapped;
     int strength;
