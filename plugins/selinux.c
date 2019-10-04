@@ -140,7 +140,7 @@ exit:
     if (sehandle == NULL)
 	return RPMRC_OK;
 
-    if ((xx = setexecfilecon(path, "rpm_script_t") == 0))
+    if ((xx = setexecfilecon(path, "rpm_script_t")) == 0)
 	rc = RPMRC_OK;
 
     if (rpmIsDebug()) {
