@@ -70,6 +70,7 @@ EXTRA_DIST += data/SPECS/mini.spec
 EXTRA_DIST += data/SPECS/scripts.spec
 EXTRA_DIST += data/SPECS/scriptfail.spec
 EXTRA_DIST += data/SPECS/selfconflict.spec
+EXTRA_DIST += data/SPECS/shebang.spec
 EXTRA_DIST += data/SPECS/replacetest.spec
 EXTRA_DIST += data/SPECS/triggers.spec
 EXTRA_DIST += data/SPECS/filetriggers.spec
