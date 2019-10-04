@@ -142,7 +142,7 @@ char * rpmProblemString(rpmProblem prob)
 	break;
     case RPMPROB_DISKSPACE:
 	rasprintf(&buf,
-	    _("installing package %s needs %" PRIu64 "%cB on the %s filesystem"),
+	    _("installing package %s needs %" PRIu64 "%cB more space on the %s filesystem"),
 		pkgNEVR,
 		prob->num1 > (1024*1024)
 		    ? (prob->num1 + 1024 * 1024 - 1) / (1024 * 1024)
@@ -152,7 +152,7 @@ char * rpmProblemString(rpmProblem prob)
 	break;
     case RPMPROB_DISKNODES:
 	rasprintf(&buf,
-	    _("installing package %s needs %" PRIu64 " inodes on the %s filesystem"),
+	    _("installing package %s needs %" PRIu64 " more inodes on the %s filesystem"),
 		pkgNEVR, prob->num1, str1);
 	break;
     case RPMPROB_REQUIRES:
