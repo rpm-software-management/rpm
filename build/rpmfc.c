@@ -958,10 +958,11 @@ static const struct applyDep_s applyDepTable[] = {
     { 0, 0, NULL },
 };
 
-static void applyAttr(rpmfc fc, int aix, const char *aname,
+static int applyAttr(rpmfc fc, int aix, const char *aname,
 			const struct exclreg_s *excl,
 			const struct applyDep_s *dep)
 {
+    int rc = 0;
     int n, *ixs;
 
     if (fattrHashGetEntry(fc->fahash, aix, &ixs, &n, NULL)) {
@@ -970,17 +971,21 @@ static void applyAttr(rpmfc fc, int aix, const char *aname,
 				mname, "_opts}}", NULL);
 	if (!rstreq(cmd, "")) {
 	    char *ns = rpmfcAttrMacro(aname, "namespace", NULL);
-	    for (int i = 0; i < n; i++)
-		rpmfcHelper(fc, ixs[i], excl, dep->type, dep->tag, ns, cmd);
+	    for (int i = 0; i < n; i++) {
+		if (rpmfcHelper(fc, ixs[i], excl, dep->type, dep->tag, ns, cmd))
+		    rc = 1;
+	    }
 	    free(ns);
 	}
 	free(cmd);
 	free(mname);
     }
+    return rc;
 }
 
 static rpmRC rpmfcApplyInternal(rpmfc fc)
 {
+    rpmRC rc = RPMRC_OK;
     rpmds ds, * dsp;
     int previx;
     unsigned int val;
@@ -1001,8 +1006,10 @@ static rpmRC rpmfcApplyInternal(rpmfc fc)
 	if (skip & dep->type)
 	    continue;
 	exclInit(dep->name, &excl);
-	for (rpmfcAttr *attr = fc->atypes; attr && *attr; attr++, aix++)
-	    applyAttr(fc, aix, (*attr)->name, &excl, dep);
+	for (rpmfcAttr *attr = fc->atypes; attr && *attr; attr++, aix++) {
+	    if (applyAttr(fc, aix, (*attr)->name, &excl, dep))
+		rc = RPMRC_FAIL;
+	}
 	exclFini(&excl);
     }
     /* No more additions after this, freeze pool to minimize memory use */
@@ -1038,7 +1045,7 @@ static rpmRC rpmfcApplyInternal(rpmfc fc)
 	    fc->fddictn->vals[ix]++;
 
     }
-    return RPMRC_OK;
+    return rc;
 }
 
 static int initAttrs(rpmfc fc)
