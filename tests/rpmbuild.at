@@ -386,7 +386,7 @@ runroot rpmbuild -bb --quiet \
 ])
 AT_CLEANUP
 
-AT_SETUP([Dependency generation])
+AT_SETUP([Dependency generation 1])
 AT_KEYWORDS([build])
 AT_CHECK([
 
@@ -427,6 +427,40 @@ Fileprovides:
 [])
 AT_CLEANUP
 
+AT_SETUP([Dependency generation 2])
+AT_KEYWORDS([build])
+AT_CHECK([
+
+runroot rpmbuild -bb --quiet \
+		/data/SPECS/shebang.spec
+runroot rpm -qp --requires /build/RPMS/noarch/shebang-0.1-1.noarch.rpm|grep -v ^rpmlib
+],
+[0],
+[/bin/blabla
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([Dependency generation 3])
+AT_KEYWORDS([build])
+AT_CHECK([
+
+cat << EOF > "${RPMTEST}"/tmp/bad.req
+#!/bin/sh
+echo 'bad = *'
+EOF
+chmod a+x "${RPMTEST}"/tmp/bad.req
+
+runroot rpmbuild -bb --quiet \
+		--define "__script_requires /tmp/bad.req" \
+		/data/SPECS/shebang.spec
+],
+[1],
+[],
+[error: Illegal char '*' (0x2a) in: *
+    Illegal char '*' (0x2a) in: *
+])
+AT_CLEANUP
 
 # ------------------------------
 # Test spec query functionality
