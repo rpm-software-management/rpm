@@ -1603,16 +1603,16 @@ cp "${abs_srcdir}"/data/SOURCES/buildrequires-1.0.tar.gz ${TOPDIR}/SOURCES
 
 run rpmbuild \
   -br  --quiet --nodeps "${abs_srcdir}"/data/SPECS/buildrequires.spec
-runroot rpm -qpR /build/SRPMS/buildrequires-1.0-1.buildreqs.nosrc.rpm
+runroot rpm -qpvR /build/SRPMS/buildrequires-1.0-1.buildreqs.nosrc.rpm
 ],
 [0],
-[(bar = 3.4 or bar = 3.5)
-foo > 1.3
-foo-bar = 2.0
-rpmlib(CompressedFileNames) <= 3.0.4-1
-rpmlib(DynamicBuildRequires) <= 4.15.0-1
-rpmlib(FileDigests) <= 4.6.0-1
-rpmlib(RichDependencies) <= 4.12.0-1
+[auto: (bar = 3.4 or bar = 3.5)
+auto: foo > 1.3
+auto: foo-bar = 2.0
+rpmlib: rpmlib(CompressedFileNames) <= 3.0.4-1
+rpmlib: rpmlib(DynamicBuildRequires) <= 4.15.0-1
+rpmlib: rpmlib(FileDigests) <= 4.6.0-1
+rpmlib: rpmlib(RichDependencies) <= 4.12.0-1
 ],
 [ignore])
 AT_CLEANUP
