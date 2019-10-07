@@ -2213,14 +2213,13 @@ exit:
     return rc;
 }
 
-static rpmRC readFilesManifest(rpmSpec spec, Package pkg, const char *path)
+int readManifest(rpmSpec spec, const char *path, const char *descr, int flags,
+		ARGV_t *avp, StringBuf *sbp)
 {
     char *fn, buf[BUFSIZ];
     FILE *fd = NULL;
-    rpmRC rc = RPMRC_FAIL;
-    unsigned int nlines = 0;
-    char *expanded;
     int lineno = 0;
+    int nlines = -1;
 
     if (*path == '/') {
 	fn = rpmGetPath(path, NULL);
@@ -2231,47 +2230,62 @@ static rpmRC readFilesManifest(rpmSpec spec, Package pkg, const char *path)
     fd = fopen(fn, "r");
 
     if (fd == NULL) {
-	rpmlog(RPMLOG_ERR, _("Could not open %%files file %s: %m\n"), fn);
+	rpmlog(RPMLOG_ERR, _("Could not open %s file %s: %m\n"), descr, fn);
 	goto exit;
     }
 
     rpmPushMacro(spec->macros, "__file_name", NULL, fn, RMIL_SPEC);
-    /* XXX unmask %license while parsing files manifest*/
-    rpmPushMacro(spec->macros, "license", NULL, "%%license", RMIL_SPEC);
 
+    nlines = 0;
     while (fgets(buf, sizeof(buf), fd)) {
+	char *expanded = NULL;
 	lineno++;
-	if (handleComments(buf))
+	if ((flags & STRIP_COMMENTS) && handleComments(buf))
 	    continue;
 	if (specExpand(spec, lineno, buf, &expanded))
 	    goto exit;
-	argvAdd(&(pkg->fileList), expanded);
+	if (avp)
+	    argvAdd(avp, expanded);
+	if (sbp)
+	    appendStringBufAux(*sbp, expanded, (flags & STRIP_TRAILINGSPACE));
 	free(expanded);
 	nlines++;
     }
 
     if (nlines == 0) {
-	int terminate =
-		rpmExpandNumeric("%{?_empty_manifest_terminate_build}");
-	rpmlog(terminate ? RPMLOG_ERR : RPMLOG_WARNING,
-	       _("Empty %%files file %s\n"), fn);
-	if (terminate)
-		goto exit;
+	int emptyok = (flags & ALLOW_EMPTY);
+	rpmlog(emptyok ? RPMLOG_WARNING : RPMLOG_ERR,
+	       _("Empty %s file %s\n"), descr, fn);
+	if (!emptyok)
+	    nlines = -1;
     }
 
-    if (ferror(fd))
-	rpmlog(RPMLOG_ERR, _("Error reading %%files file %s: %m\n"), fn);
-    else
-	rc = RPMRC_OK;
-
 exit:
-    rpmPopMacro(NULL, "license");
     if (fd) {
 	fclose(fd);
 	rpmPopMacro(spec->macros, "__file_name");
     }
     free(fn);
-    return rc;
+
+    return nlines;
+}
+
+static rpmRC readFilesManifest(rpmSpec spec, Package pkg, const char *path)
+{
+    int nlines = 0;
+    int flags = STRIP_COMMENTS | STRIP_TRAILINGSPACE;
+
+    if (!rpmExpandNumeric("%{?_empty_manifest_terminate_build}"))
+	flags |= ALLOW_EMPTY;
+
+    /* XXX unmask %license while parsing files manifest*/
+    rpmPushMacro(spec->macros, "license", NULL, "%%license", RMIL_SPEC);
+
+    nlines = readManifest(spec, path, "%files", flags, &(pkg->fileList), NULL);
+
+    rpmPopMacro(NULL, "license");
+
+    return (nlines >= 0) ? RPMRC_OK : RPMRC_FAIL;
 }
 
 static char * getSpecialDocDir(Header h, rpmFlags sdtype)
