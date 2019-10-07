@@ -158,6 +158,52 @@ run rpmbuild \
 [ignore])
 AT_CLEANUP
 
+AT_SETUP([rpmbuild scriptlet -f])
+AT_KEYWORDS([build])
+AT_CHECK([
+
+runroot rpmbuild \
+	-bb --quiet /data/SPECS/scriptfile.spec
+runroot rpm -qp --scripts --triggers --filetriggers \
+	/build/RPMS/noarch/scriptfile-1-1.noarch.rpm
+],
+[0],
+[preinstall scriptlet (using /bin/sh):
+#!/bin/sh
+echo one
+
+postuninstall scriptlet (using /bin/sh):
+#!/bin/sh
+echo two
+
+triggerin scriptlet (using /bin/sh) -- scriptfile
+#!/bin/sh
+echo one
+
+triggerun scriptlet (using /bin/sh) -- scriptfile
+#!/bin/sh
+echo two
+
+filetriggerin scriptlet (using /bin/sh) -- /path
+#!/bin/sh
+echo one
+
+filetriggerin scriptlet (using /bin/sh) -- /path
+#!/bin/sh
+echo two
+
+transfiletriggerin scriptlet (using /bin/sh) -- /path
+#!/bin/sh
+echo one
+
+transfiletriggerun scriptlet (using /bin/sh) -- /path
+#!/bin/sh
+echo two
+
+],
+[])
+AT_CLEANUP
+
 # ------------------------------
 # %attr/%defattr tests
 AT_SETUP([rpmbuild %attr and %defattr])
