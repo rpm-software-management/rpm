@@ -103,28 +103,16 @@ static rpmRC addFileToTag(rpmSpec spec, const char * file,
 			  Header h, rpmTagVal tag, int append)
 {
     StringBuf sb = NULL;
-    char buf[BUFSIZ];
-    char * fn;
-    FILE * f;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
-    int lineno = 0;
+    int flags = ALLOW_EMPTY;
 
     /* no script file is not an error */
     if (file == NULL)
 	return RPMRC_OK;
 
+    sb = newStringBuf();
     #pragma omp critical
     {
-    fn = rpmGetPath("%{_builddir}/%{?buildsubdir:%{buildsubdir}/}", file, NULL);
-
-    f = fopen(fn, "r");
-    if (f == NULL) {
-	rpmlog(RPMLOG_ERR,_("Could not open %s file: %s\n"),
-			   rpmTagGetName(tag), file);
-	goto exit;
-    }
-
-    sb = newStringBuf();
     if (append) {
 	const char *s = headerGetString(h, tag);
 	if (s) {
@@ -133,27 +121,13 @@ static rpmRC addFileToTag(rpmSpec spec, const char * file,
 	}
     }
 
-    rpmPushMacro(spec->macros, "__file_name", NULL, fn, RMIL_SPEC);
-
-    while (fgets(buf, sizeof(buf), f)) {
-	char *expanded;
-	lineno++;
-	if (specExpand(spec, lineno, buf, &expanded))
-	    goto exit;
-	appendStringBuf(sb, expanded);
-	free(expanded);
+    if (readManifest(spec, file, rpmTagGetName(tag), flags, NULL, &sb) >= 0) {
+	headerPutString(h, tag, getStringBuf(sb));
+	rc = RPMRC_OK;
     }
-    headerPutString(h, tag, getStringBuf(sb));
-    rc = RPMRC_OK;
 
-exit:
-    if (f) {
-	fclose(f);
-	rpmPopMacro(spec->macros, "__file_name");
-    }
-    free(fn);
-    freeStringBuf(sb);
     } /* omp critical */
+    freeStringBuf(sb);
 
     return rc;
 }
