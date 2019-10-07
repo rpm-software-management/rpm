@@ -247,6 +247,8 @@ typedef enum rpmParseState_e {
 #define STRIP_TRAILINGSPACE (1 << 0)
 #define STRIP_COMMENTS      (1 << 1)
 
+#define ALLOW_EMPTY         (1 << 16)
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -584,6 +586,14 @@ RPM_GNUC_INTERNAL
 int specExpand(rpmSpec spec, int lineno, const char *sbuf,
 		char **obuf);
 
+/*
+ * Read expanded lines from a file into avp and/or sbp, controlled by
+ * flags (STRIP_*, ALLOW_EMPTY)
+ * Returns number or read lines, or -1 on error.
+ */
+RPM_GNUC_INTERNAL
+int readManifest(rpmSpec spec, const char *path, const char *descr, int flags,
+		ARGV_t *avp, StringBuf *sbp);
 #ifdef __cplusplus
 }
 #endif
