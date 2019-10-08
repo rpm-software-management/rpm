@@ -200,8 +200,9 @@ static int doBuildRequires(rpmSpec spec, int test)
     outc = argvCount(output);
 
     for (int i = 0; i < outc; i++) {
-	parseRCPOT(spec, spec->sourcePackage, output[i], RPMTAG_REQUIRENAME,
-		   0, RPMSENSE_FIND_REQUIRES, addReqProvPkg, NULL);
+	if (parseRCPOT(spec, spec->sourcePackage, output[i], RPMTAG_REQUIRENAME,
+		       0, RPMSENSE_FIND_REQUIRES, addReqProvPkg, NULL))
+	    goto exit;
     }
 
     rpmdsPutToHeader(
