@@ -51,6 +51,7 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 {
     char *scriptName = NULL;
     char * buildDir = rpmGenPath(spec->rootDir, "%{_builddir}", "");
+    char * buildSubdir = rpmGetPath("%{?buildsubdir}", NULL);
     char * buildCmd = NULL;
     char * buildTemplate = NULL;
     char * buildPost = NULL;
@@ -129,12 +130,12 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 
     (void) fputs(buildTemplate, fp);
 
-    if (what != RPMBUILD_PREP && what != RPMBUILD_RMBUILD && spec->buildSubdir)
-	fprintf(fp, "cd '%s'\n", spec->buildSubdir);
+    if (what != RPMBUILD_PREP && what != RPMBUILD_RMBUILD && buildSubdir[0] != '\0')
+	fprintf(fp, "cd '%s'\n", buildSubdir);
 
     if (what == RPMBUILD_RMBUILD) {
-	if (spec->buildSubdir)
-	    fprintf(fp, "rm -rf '%s'\n", spec->buildSubdir);
+	if (buildSubdir[0] != '\0')
+	    fprintf(fp, "rm -rf '%s'\n", buildSubdir);
     } else if (sb != NULL)
 	fprintf(fp, "%s", sb);
 
@@ -154,8 +155,7 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
     (void) poptParseArgvString(buildCmd, &argc, &argv);
 
     rpmlog(RPMLOG_NOTICE, _("Executing(%s): %s\n"), name, buildCmd);
-    if (rpmfcExec((ARGV_const_t)argv, NULL, sb_stdoutp, 1,
-		  spec->buildSubdir)) {
+    if (rpmfcExec((ARGV_const_t)argv, NULL, sb_stdoutp, 1, buildSubdir)) {
 	rpmlog(RPMLOG_ERR, _("Bad exit status from %s (%s)\n"),
 		scriptName, name);
 	goto exit;
@@ -173,6 +173,7 @@ exit:
     free(buildCmd);
     free(buildTemplate);
     free(buildPost);
+    free(buildSubdir);
     free(buildDir);
 
     return rc;
