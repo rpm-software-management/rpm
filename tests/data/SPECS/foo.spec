@@ -1,3 +1,5 @@
+%bcond_with bus
+
 Summary: foo
 Name: foo
 Version: 1.0
@@ -18,6 +20,17 @@ Requires: %{name} = %{version}-%{release}
 %description sub
 %{summary}
 
+%package bus
+Summary: %{summary}
+Requires: %{name} = %{version}-%{release}
+
+%description bus
+%{summary}
+
 %files
 
 %files sub
+
+%if %{with bus}
+%files bus
+%endif
