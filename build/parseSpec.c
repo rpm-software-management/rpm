@@ -690,6 +690,17 @@ static void initSourceHeader(rpmSpec spec)
 	    }
 	}
     }
+
+    /* Provide all package NEVRs that would be built */
+    for (Package p = spec->packages; p != NULL; p = p->next) {
+	if (p->fileList) {
+	    Header h = sourcePkg->header;
+	    uint32_t dsflags = rpmdsFlags(p->ds);
+	    headerPutString(h, RPMTAG_PROVIDENAME, rpmdsN(p->ds));
+	    headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &dsflags, 1);
+	    headerPutString(h, RPMTAG_PROVIDEVERSION, rpmdsEVR(p->ds));
+	}
+    }
 }
 
 /* Add extra provides to package.  */

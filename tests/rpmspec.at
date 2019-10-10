@@ -233,7 +233,9 @@ AT_SETUP([rpmspec --parse])
 AT_KEYWORDS([rpmspec])
 AT_CHECK([runroot rpmspec --parse /data/SPECS/foo.spec],
 [0],
-[Summary: foo
+[
+
+Summary: foo
 Name: foo
 Version: 1.0
 Release: 1
@@ -253,9 +255,33 @@ Requires: foo = 1.0-1
 %description sub
 foo
 
+%package bus
+Summary: foo
+Requires: foo = 1.0-1
+
+%description bus
+foo
+
 %files
 
 %files sub
+
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpmspec --srpm provides])
+AT_KEYWORDS([rpmspec])
+AT_CHECK([
+runroot rpmspec -q --srpm --provides /data/SPECS/foo.spec
+runroot rpmspec -q --srpm --provides --with bus /data/SPECS/foo.spec
+],
+[0],
+[foo = 1.0-1
+foo-sub = 1.0-1
+foo = 1.0-1
+foo-sub = 1.0-1
+foo-bus = 1.0-1
 ],
 [])
 AT_CLEANUP
