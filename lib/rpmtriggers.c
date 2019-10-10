@@ -437,7 +437,7 @@ static int runHandleTriggersInPkg(rpmts ts, rpmte te, Header h,
 	    inputFunc = (char *(*)(void *)) matchFilesNext;
 	    rpmScriptSetNextFileFunc(script, inputFunc, mfi);
 
-	    nerrors += runScript(ts, te, h, installPrefixes.data,
+	    nerrors += runScript(ts, NULL, h, installPrefixes.data,
 				script, 0, -1);
 	    rpmtdFreeData(&installPrefixes);
 	    rpmScriptFree(script);
