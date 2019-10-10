@@ -179,8 +179,9 @@ rpmlua rpmluaFree(rpmlua lua)
     return NULL;
 }
 
-void rpmluaRegister(rpmlua lua, const luaL_Reg *funcs, const char *lib)
+void rpmluaRegister(rpmlua lua, const void *regfuncs, const char *lib)
 {
+    const luaL_Reg *funcs = regfuncs;
     lua_getfield(lua->L, LUA_REGISTRYINDEX, LUA_LOADED_TABLE);
     lua_getfield(lua->L, -1, lib);
     luaL_setfuncs(lua->L, funcs, 0);

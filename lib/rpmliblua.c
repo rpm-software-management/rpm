@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <lua.h>
+#include <lauxlib.h>
 
 #include <rpm/rpmlib.h>
 
