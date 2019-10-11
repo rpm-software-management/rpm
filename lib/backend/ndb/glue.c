@@ -30,6 +30,7 @@ struct ndbEnv_s {
     rpmpkgdb pkgdb;
     rpmxdb xdb;
     int refs;
+    int dofsync;
 
     unsigned int hdrNum;
     void *data;
@@ -58,8 +59,10 @@ static void closeEnv(rpmdb rdb)
 static struct ndbEnv_s *openEnv(rpmdb rdb)
 {
     struct ndbEnv_s *ndbenv = rdb->db_dbenv;
-    if (!ndbenv)
+    if (!ndbenv) {
 	rdb->db_dbenv = ndbenv = xcalloc(1, sizeof(struct ndbEnv_s));
+	ndbenv->dofsync = 1;
+    }
     ndbenv->refs++;
     return ndbenv;
 }
@@ -114,6 +117,7 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 	}
 	free(path);
 	dbi->dbi_db = ndbenv->pkgdb = pkgdb;
+	rpmpkgSetFsync(pkgdb, ndbenv->dofsync);
 
 	if ((oflags & (O_RDWR | O_RDONLY)) == O_RDONLY)
 	    dbi->dbi_flags |= DBI_RDONLY;
@@ -148,6 +152,7 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 		return 1;
 	    }
 	    free(path);
+	    rpmxdbSetFsync(ndbenv->xdb, ndbenv->dofsync);
 	}
 	if (rpmxdbLookupBlob(ndbenv->xdb, &id, rpmtag, 0, 0) == RPMRC_NOTFOUND) {
 	    dbi->dbi_flags |= DBI_CREATED;
@@ -179,6 +184,14 @@ static int ndb_Verify(dbiIndex dbi, unsigned int flags)
 
 static void ndb_SetFSync(rpmdb rdb, int enable)
 {
+    struct ndbEnv_s *ndbenv = rdb->db_dbenv;
+    if (ndbenv) {
+	ndbenv->dofsync = enable;
+	if (ndbenv->pkgdb)
+	    rpmpkgSetFsync(ndbenv->pkgdb, enable);
+	if (ndbenv->xdb)
+	    rpmxdbSetFsync(ndbenv->xdb, enable);
+    }
 }
 
 static int indexSync(rpmpkgdb pkgdb, rpmxdb xdb)
