@@ -580,10 +580,8 @@ yes|no) ;;
 esac],
 [enable_ndb=no])
 AS_IF([test "$enable_ndb" = yes],[
-  AC_CHECK_FUNCS([mremap],
-    [AC_DEFINE(ENABLE_NDB, 1, [Enable new rpm database format?])],
-    [AC_MSG_ERROR([mremap function required by ndb])],
-    [#include <sys/mman.h>])
+  AC_DEFINE(ENABLE_NDB, 1, [Enable new rpm database format?])
+  AC_CHECK_FUNCS(mremap, [], [], [#include <sys/mman.h>])
 ])
 AM_CONDITIONAL([NDB], [test "$enable_ndb" = yes])
 
