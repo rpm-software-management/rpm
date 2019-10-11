@@ -1127,12 +1127,21 @@ int rpmxdbIsRdonly(rpmxdb xdb)
     return xdb->rdonly;
 }
 
+static int rpmxdbFsync(rpmxdb xdb)
+{
+#ifdef HAVE_FDATASYNC
+    return fdatasync(xdb->fd);
+#else
+    return fsync(xdb->fd);
+#endif
+}
+
 int rpmxdbSetUserGeneration(rpmxdb xdb, unsigned int usergeneration)
 {
     if (rpmxdbLockReadHeader(xdb, 1))
         return RPMRC_FAIL;
     /* sync before the update */
-    if (xdb->dofsync && fsync(xdb->fd)) {
+    if (xdb->dofsync && rpmxdbFsync(xdb)) {
 	rpmxdbUnlock(xdb, 1);
 	return RPMRC_FAIL;
     }

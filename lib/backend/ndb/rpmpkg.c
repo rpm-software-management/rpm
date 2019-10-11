@@ -156,6 +156,15 @@ static int rpmpkgReadHeader(rpmpkgdb pkgdb)
     return RPMRC_OK;
 }
 
+static int rpmpkgFsync(rpmpkgdb pkgdb)
+{
+#ifdef HAVE_FDATASYNC
+    return fdatasync(pkgdb->fd);
+#else
+    return fsync(pkgdb->fd);
+#endif
+}
+
 static int rpmpkgWriteHeader(rpmpkgdb pkgdb)
 {
     unsigned char header[PKGDB_HEADER_SIZE];
@@ -168,7 +177,7 @@ static int rpmpkgWriteHeader(rpmpkgdb pkgdb)
     if (pwrite(pkgdb->fd, header, sizeof(header), 0) != sizeof(header)) {
 	return RPMRC_FAIL;
     }
-    if (pkgdb->dofsync && fsync(pkgdb->fd))
+    if (pkgdb->dofsync && rpmpkgFsync(pkgdb))
 	return RPMRC_FAIL;	/* write error */
     return RPMRC_OK;
 }
@@ -440,7 +449,7 @@ static int rpmpkgWriteEmptySlotpage(rpmpkgdb pkgdb, int pageno)
     if (pwrite(pkgdb->fd, page, PAGE_SIZE - off, pageno * PAGE_SIZE + off) != PAGE_SIZE - off) {
 	return RPMRC_FAIL;
     }
-    if (pkgdb->dofsync && fsync(pkgdb->fd)) {
+    if (pkgdb->dofsync && rpmpkgFsync(pkgdb)) {
 	return RPMRC_FAIL;	/* write error */
     }
     return RPMRC_OK;
@@ -651,7 +660,7 @@ static int rpmpkgWriteBlob(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned int blk
     /* update file length */
     if (blkoff + blkcnt > pkgdb->fileblks)
 	pkgdb->fileblks = blkoff + blkcnt;
-    if (pkgdb->dofsync && fsync(pkgdb->fd)) {
+    if (pkgdb->dofsync && rpmpkgFsync(pkgdb)) {
 	return RPMRC_FAIL;	/* write error */
     }
     return RPMRC_OK;
@@ -663,7 +672,7 @@ static int rpmpkgDelBlob(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned int blkof
 	return RPMRC_FAIL;
     if (rpmpkgZeroBlks(pkgdb, blkoff, blkcnt))
 	return RPMRC_FAIL;
-    if (pkgdb->dofsync && fsync(pkgdb->fd))
+    if (pkgdb->dofsync && rpmpkgFsync(pkgdb))
 	return RPMRC_FAIL;	/* write error */
     return RPMRC_OK;
 }
