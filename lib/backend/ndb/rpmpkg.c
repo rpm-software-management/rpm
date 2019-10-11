@@ -840,6 +840,23 @@ static int rpmpkgInit(rpmpkgdb pkgdb)
     return rc;
 }
 
+static int rpmpkgFsyncDir(const char *filename)
+{
+    int rc = RPMRC_OK;
+    DIR *pdir;
+    char *filenameCopy = xstrdup(filename);
+
+    if ((pdir = opendir(dirname(filenameCopy))) == NULL) {
+	free(filenameCopy);
+	return RPMRC_FAIL;
+    }    
+    if (fsync(dirfd(pdir)) == -1)
+	rc = RPMRC_FAIL;
+    closedir(pdir);
+    free(filenameCopy);
+    return rc;
+}
+
 int rpmpkgOpen(rpmpkgdb *pkgdbp, const char *filename, int flags, int mode)
 {
     struct stat stb;
@@ -855,32 +872,6 @@ int rpmpkgOpen(rpmpkgdb *pkgdbp, const char *filename, int flags, int mode)
 	free(pkgdb);
         return RPMRC_FAIL;
     }
-    if (flags & O_CREAT) {
-	char *filenameCopy;
-	DIR *pdir;
-
-	filenameCopy = xstrdup(pkgdb->filename);
-
-	if ((pdir = opendir(dirname(filenameCopy))) == NULL) {
-	    free(filenameCopy);
-	    close(pkgdb->fd);
-	    free(pkgdb->filename);
-	    free(pkgdb);
-	    return RPMRC_FAIL;
-	}
-
-	if (fsync(dirfd(pdir)) == -1) {
-	    closedir(pdir);
-	    free(filenameCopy);
-	    close(pkgdb->fd);
-	    free(pkgdb->filename);
-	    free(pkgdb);
-	    return RPMRC_FAIL;
-	}
-	closedir(pdir);
-	free(filenameCopy);
-
-    }
     if (fstat(pkgdb->fd, &stb)) {
 	close(pkgdb->fd);
 	free(pkgdb->filename);
@@ -888,6 +879,13 @@ int rpmpkgOpen(rpmpkgdb *pkgdbp, const char *filename, int flags, int mode)
         return RPMRC_FAIL;
     }
     if (stb.st_size == 0) {
+	/* created new database */
+	if (rpmpkgFsyncDir(pkgdb->filename)) {
+	    close(pkgdb->fd);
+	    free(pkgdb->filename);
+	    free(pkgdb);
+	    return RPMRC_FAIL;
+	}
 	if (rpmpkgInit(pkgdb)) {
 	    close(pkgdb->fd);
 	    free(pkgdb->filename);

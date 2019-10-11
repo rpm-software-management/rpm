@@ -480,6 +480,23 @@ static int rpmxdbInit(rpmxdb xdb)
     return rc;
 }
 
+static int rpmxdbFsyncDir(const char *filename)
+{
+    int rc = RPMRC_OK;
+    DIR *pdir;
+    char *filenameCopy = xstrdup(filename);
+
+    if ((pdir = opendir(dirname(filenameCopy))) == NULL) {
+	free(filenameCopy);
+	return RPMRC_FAIL;
+    }
+    if (fsync(dirfd(pdir)) == -1)
+	rc = RPMRC_FAIL;
+    closedir(pdir);
+    free(filenameCopy);
+    return rc;
+}
+
 int rpmxdbOpen(rpmxdb *xdbp, rpmpkgdb pkgdb, const char *filename, int flags, int mode)
 {
     struct stat stb;
@@ -497,31 +514,6 @@ int rpmxdbOpen(rpmxdb *xdbp, rpmpkgdb pkgdb, const char *filename, int flags, in
 	free(xdb);
 	return RPMRC_FAIL;
     }
-    if (flags & O_CREAT) {
-	char *filenameCopy;
-	DIR *pdir;
-
-	filenameCopy = xstrdup(xdb->filename);
-
-	if ((pdir = opendir(dirname(filenameCopy))) == NULL) {
-	    free(filenameCopy);
-	    close(xdb->fd);
-	    free(xdb->filename);
-	    free(xdb);
-	    return RPMRC_FAIL;
-	}
-
-	if (fsync(dirfd(pdir)) == -1) {
-	    closedir(pdir);
-	    free(filenameCopy);
-	    close(xdb->fd);
-	    free(xdb->filename);
-	    free(xdb);
-	    return RPMRC_FAIL;
-	}
-	closedir(pdir);
-	free(filenameCopy);
-    }
     if (fstat(xdb->fd, &stb)) {
 	close(xdb->fd);
 	free(xdb->filename);
@@ -529,6 +521,13 @@ int rpmxdbOpen(rpmxdb *xdbp, rpmpkgdb pkgdb, const char *filename, int flags, in
 	return RPMRC_FAIL;
     }
     if (stb.st_size == 0) {
+	/* created new database */
+	if (rpmxdbFsyncDir(xdb->filename)) {
+	    close(xdb->fd);
+	    free(xdb->filename);
+	    free(xdb);
+	    return RPMRC_FAIL;
+	}
 	if (rpmxdbInit(xdb)) {
 	    close(xdb->fd);
 	    free(xdb->filename);
