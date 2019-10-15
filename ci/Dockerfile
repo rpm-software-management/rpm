@@ -55,7 +55,8 @@ RUN ./configure \
   --with-lua \
   --with-audit \
   --enable-python \
-  --enable-silent-rules
+  --enable-silent-rules \
+  --enable-werror
 RUN make
 
 CMD make distcheck; rc=$?; find . -name rpmtests.log|xargs cat; exit $rc
