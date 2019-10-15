@@ -52,6 +52,8 @@ if test "$GCC" = yes; then
     done
     RPMCFLAGS="-D_REENTRANT -Wall -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes $RPMCFLAGS"
 fi
+AC_ARG_ENABLE(werror, [AS_HELP_STRING([--enable-werror], [build with -Werror])],
+		[RPMCFLAGS="$RPMCFLAGS -Werror"], [])
 AC_SUBST(RPMCFLAGS)
 
 AC_SYS_LARGEFILE
