@@ -103,7 +103,6 @@ optflags: sh4 -O2 -g -mieee
 optflags: sh4a -O2 -g -mieee
 
 optflags: aarch64 -O2 -g
-optflags: arm64 -O2 -g
 
 optflags: riscv64 -O2 -g
 
@@ -252,9 +251,7 @@ arch_canon:	sh3: sh3	17
 arch_canon:	sh4: sh4	17
 arch_canon:	sh4a: sh4a	17
 arch_canon:	xtensa: xtensa	18
-
-arch_canon:	aarch64: aarch64	19
-arch_canon:	arm64: arm64		19
+arch_canon:	aarch64: aarch64 19
 
 arch_canon:	mipsr6: mipsr6	20
 arch_canon:	mipsr6el: mipsr6el	20
@@ -393,7 +390,6 @@ buildarchtranslate: sh4: sh4
 buildarchtranslate: sh4a: sh4
 
 buildarchtranslate: aarch64: aarch64
-buildarchtranslate: arm64: aarch64
 
 buildarchtranslate: riscv: riscv64
 buildarchtranslate: riscv64: riscv64
@@ -507,8 +503,7 @@ arch_compat: sh3: noarch
 arch_compat: sh4: noarch
 arch_compat: sh4a: sh4
 
-arch_compat: aarch64: arm64 noarch
-arch_compat: arm64: aarch64 noarch
+arch_compat: aarch64: noarch
 
 arch_compat: riscv: noarch
 arch_compat: riscv64: noarch
@@ -545,7 +540,6 @@ os_compat: Darwin: MacOSX
 buildarch_compat: ia64: noarch
 
 buildarch_compat: aarch64: noarch
-buildarch_compat: arm64: aarch64
 
 buildarch_compat: riscv: noarch
 buildarch_compat: riscv64: noarch
