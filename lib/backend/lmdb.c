@@ -145,7 +145,7 @@ static int db_init(rpmdb rdb, const char * dbhome)
 
     MDB_dbi maxdbs = 32;
     unsigned int maxreaders = 16;
-    size_t mapsize = 256 * 1024 * 1024;
+    size_t mapsize = 1024 * 1024 * 1024;
 
     if ((rc = mdb_env_create(&env))
      || (rc = mdb_env_set_maxreaders(env, maxreaders))
