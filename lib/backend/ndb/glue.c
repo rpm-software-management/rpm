@@ -179,7 +179,7 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 
 static int ndb_Verify(dbiIndex dbi, unsigned int flags)
 {
-    return 1;
+    return 0;
 }
 
 static void ndb_SetFSync(rpmdb rdb, int enable)
