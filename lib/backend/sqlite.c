@@ -544,7 +544,7 @@ static rpmRC sqlite_idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size
     return rc;
 }
 
-static rpmRC sqlite_idxdbPut(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
+static rpmRC sqlite_idxdbPutOne(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
 {
     int rc = dbiCursorPrep(dbc, "INSERT INTO '%q' VALUES(?, ?, ?)",
 			dbi->dbi_file);
@@ -558,7 +558,13 @@ static rpmRC sqlite_idxdbPut(dbiIndex dbi, dbiCursor dbc, const char *keyp, size
     return dbiCursorResult(dbc);
 }
 
-static rpmRC sqlite_idxdbDel(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
+static rpmRC sqlite_idxdbPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
+{
+    return tag2index(dbi, rpmtag, hdrNum, h, sqlite_idxdbPutOne);
+}
+
+
+static rpmRC sqlite_idxdbDelOne(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
 {
     int rc = dbiCursorPrep(dbc,
 			"DELETE FROM '%q' WHERE key=? AND hnum=? AND idx=?",
@@ -572,6 +578,11 @@ static rpmRC sqlite_idxdbDel(dbiIndex dbi, dbiCursor dbc, const char *keyp, size
 	while ((rc = sqlite3_step(dbc->stmt)) == SQLITE_ROW) {};
 
     return dbiCursorResult(dbc);
+}
+
+static rpmRC sqlite_idxdbDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
+{
+    return tag2index(dbi, rpmtag, hdrNum, h, sqlite_idxdbDelOne);
 }
 
 static const void * sqlite_idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen)

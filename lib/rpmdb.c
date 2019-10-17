@@ -32,6 +32,7 @@
 #include "lib/rpmdb_internal.h"
 #include "lib/fprint.h"
 #include "lib/header_internal.h"	/* XXX for headerSetInstance() */
+#include "lib/backend/dbi.h"
 #include "lib/backend/dbiset.h"
 #include "lib/misc.h"
 #include "debug.h"
@@ -48,14 +49,6 @@
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
-typedef rpmRC (*idxfunc)(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
-			 dbiIndexItem rec);
-
-static rpmRC tag2index(dbiIndex dbi, rpmTagVal rpmtag,
-		       unsigned int hdrNum, Header h,
-		       idxfunc idxupdate);
-
-static rpmRC indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h);
 static rpmdb rpmdbUnlink(rpmdb db);
 
 static int buildIndexes(rpmdb db)
@@ -87,7 +80,7 @@ static int buildIndexes(rpmdb db)
 	for (int dbix = 0; dbix < db->db_ndbi; dbix++) {
 	    dbiIndex dbi = db->db_indexes[dbix];
 	    if (dbi && (dbiFlags(dbi) & DBI_CREATED)) {
-		rc += indexPut(dbi, db->db_tags[dbix], hdrNum, h);
+		rc += idxdbPut(dbi, db->db_tags[dbix], hdrNum, h);
 	    }
 	}
     }
@@ -2044,11 +2037,6 @@ static void logAddRemove(const char *dbiname, int removing, rpmtd tagdata)
     }
 }
 
-static rpmRC indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
-{
-    return tag2index(dbi, rpmtag, hdrNum, h, idxdbDel);
-}
-
 int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 {
     dbiIndex dbi = NULL;
@@ -2090,7 +2078,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 	    if (indexOpen(db, rpmtag, 0, &dbi))
 		continue;
 
-	    ret += indexDel(dbi, rpmtag, hdrNum, h);
+	    ret += idxdbDel(dbi, rpmtag, hdrNum, h);
 	}
     }
 
@@ -2187,7 +2175,7 @@ static rpmRC updateRichDep(dbiIndex dbi, dbiCursor dbc, const char *str,
     return rc;
 }
 
-static rpmRC tag2index(dbiIndex dbi, rpmTagVal rpmtag,
+rpmRC tag2index(dbiIndex dbi, rpmTagVal rpmtag,
 		       unsigned int hdrNum, Header h,
 		       idxfunc idxupdate)
 {
@@ -2297,11 +2285,6 @@ exit:
     return (rc == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
 
-static rpmRC indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
-{
-    return tag2index(dbi, rpmtag, hdrNum, h, idxdbPut);
-}
-
 int rpmdbAdd(rpmdb db, Header h)
 {
     dbiIndex dbi = NULL;
@@ -2340,7 +2323,7 @@ int rpmdbAdd(rpmdb db, Header h)
 	    if (indexOpen(db, rpmtag, 0, &dbi))
 		continue;
 
-	    ret += indexPut(dbi, rpmtag, hdrNum, h);
+	    ret += idxdbPut(dbi, rpmtag, hdrNum, h);
 	}
     }
 

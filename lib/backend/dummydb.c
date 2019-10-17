@@ -70,12 +70,12 @@ static rpmRC dummydb_idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, siz
     return RPMRC_FAIL;
 }
 
-static rpmRC dummydb_idxdbPut(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
+static rpmRC dummydb_idxdbPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
 {
     return RPMRC_FAIL;
 }
 
-static rpmRC dummydb_idxdbDel(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
+static rpmRC dummydb_idxdbDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
 {
     return RPMRC_FAIL;
 }
