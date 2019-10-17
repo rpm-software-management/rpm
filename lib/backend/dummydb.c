@@ -22,7 +22,7 @@ static int dummydb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int fla
 
 static int dummydb_Verify(dbiIndex dbi, unsigned int flags)
 {
-    return 1;
+    return 0;
 }
 
 static void dummydb_SetFSync(rpmdb rdb, int enable)
@@ -31,7 +31,7 @@ static void dummydb_SetFSync(rpmdb rdb, int enable)
 
 static int dummydb_Ctrl(rpmdb rdb, dbCtrlOp ctrl)
 {
-    return 1;
+    return 0;
 }
 
 static dbiCursor dummydb_CursorInit(dbiIndex dbi, unsigned int flags)
