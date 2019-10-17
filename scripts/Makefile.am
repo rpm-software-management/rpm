@@ -14,6 +14,7 @@ EXTRA_DIST = \
 	debuginfo.prov \
 	find-debuginfo.sh find-lang.sh \
 	perl.prov perl.req pythondeps.sh pythondistdeps.py \
+	rpmdb_dump rpmdb_load \
 	rpm.daily rpm.log rpm.supp rpm2cpio.sh \
 	tgpg vpkg-provides.sh \
 	find-requires find-provides \
@@ -35,6 +36,7 @@ rpmconfig_SCRIPTS = \
 	pkgconfigdeps.sh libtooldeps.sh \
 	ocaml-find-requires.sh ocaml-find-provides.sh \
 	fontconfig.prov desktop-file.prov script.req \
+	rpmdb_dump rpmdb_load \
 	rpm2cpio.sh tgpg 
 
 rpmconfig_DATA = \
