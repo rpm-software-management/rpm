@@ -1115,7 +1115,7 @@ static rpmRC updateIndex(dbiCursor dbc, const char *keyp, unsigned int keylen,
     return rc;
 }
 
-static rpmRC db3_idxdbPut(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
+static rpmRC db3_idxdbPutOne(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
 	       dbiIndexItem rec)
 {
     dbiIndexSet set = NULL;
@@ -1141,7 +1141,12 @@ static rpmRC db3_idxdbPut(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t 
     return rc;
 }
 
-static rpmRC db3_idxdbDel(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
+static rpmRC db3_idxdbPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
+{
+    return tag2index(dbi, rpmtag, hdrNum, h, db3_idxdbPutOne);
+}
+
+static rpmRC db3_idxdbDelOne(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
 	       dbiIndexItem rec)
 {
     dbiIndexSet set = NULL;
@@ -1169,6 +1174,11 @@ static rpmRC db3_idxdbDel(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t 
     dbiIndexSetFree(set);
 
     return rc;
+}
+
+static rpmRC db3_idxdbDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
+{
+    return tag2index(dbi, rpmtag, hdrNum, h, db3_idxdbDelOne);
 }
 
 static const void * db3_idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen)

@@ -466,14 +466,24 @@ static rpmRC ndb_idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t 
     return rc;
 }
 
-static rpmRC ndb_idxdbPut(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
+static rpmRC ndb_idxdbPutOne(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
 {
     return rpmidxPut(dbc->dbi->dbi_db, (const unsigned char *)keyp, keylen, rec->hdrNum, rec->tagNum);
 }
 
-static rpmRC ndb_idxdbDel(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
+static rpmRC ndb_idxdbPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
+{
+    return tag2index(dbi, rpmtag, hdrNum, h, ndb_idxdbPutOne);
+}
+
+static rpmRC ndb_idxdbDelOne(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
 {
     return rpmidxDel(dbc->dbi->dbi_db, (const unsigned char *)keyp, keylen, rec->hdrNum, rec->tagNum);
+}
+
+static rpmRC ndb_idxdbDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
+{
+    return tag2index(dbi, rpmtag, hdrNum, h, ndb_idxdbDelOne);
 }
 
 static const void * ndb_idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen)

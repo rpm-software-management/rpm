@@ -123,10 +123,16 @@ union _dbswap {
 \
   }
 
+typedef rpmRC (*idxfunc)(dbiIndex dbi, dbiCursor dbc,
+			const char *keyp, size_t keylen, dbiIndexItem rec);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+RPM_GNUC_INTERNAL
+rpmRC tag2index(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h,
+		idxfunc idxupdate);
 
 RPM_GNUC_INTERNAL
 /* Globally enable/disable fsync in the backend */
@@ -230,11 +236,11 @@ RPM_GNUC_INTERNAL
 rpmRC idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
                dbiIndexSet *set, int curFlags);
 RPM_GNUC_INTERNAL
-rpmRC idxdbPut(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
-               dbiIndexItem rec);
+rpmRC idxdbPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h);
+
 RPM_GNUC_INTERNAL
-rpmRC idxdbDel(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
-               dbiIndexItem rec);
+rpmRC idxdbDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h);
+
 RPM_GNUC_INTERNAL
 const void * idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen);
 
@@ -254,8 +260,8 @@ struct rpmdbOps_s {
     unsigned int (*pkgdbKey)(dbiIndex dbi, dbiCursor dbc);
 
     rpmRC (*idxdbGet)(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexSet *set, int curFlags);
-    rpmRC (*idxdbPut)(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec);
-    rpmRC (*idxdbDel)(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec);
+    rpmRC (*idxdbPut)(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h);
+    rpmRC (*idxdbDel)(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h);
     const void * (*idxdbKey)(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen);
 };
 

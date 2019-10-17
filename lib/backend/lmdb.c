@@ -679,7 +679,7 @@ static rpmRC updateIndex(dbiCursor dbc, const char *keyp, unsigned int keylen,
     return rc;
 }
 
-static rpmRC lmdb_idxdbPut(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
+static rpmRC lmdb_idxdbPutOne(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
 	       dbiIndexItem rec)
 {
     dbiIndexSet set = NULL;
@@ -707,7 +707,12 @@ exit:
     return rc;
 }
 
-static rpmRC lmdb_idxdbDel(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
+static rpmRC lmdb_idxdbPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
+{
+    return tag2index(dbi, rpmtag, hdrNum, h, lmdb_idxdbPutOne);
+}
+
+static rpmRC lmdb_idxdbDelOne(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
 	       dbiIndexItem rec)
 {
     rpmRC rc = RPMRC_FAIL;
@@ -736,6 +741,11 @@ static rpmRC lmdb_idxdbDel(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t
 
 exit:
     return rc;
+}
+
+static rpmRC lmdb_idxdbDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
+{
+    return tag2index(dbi, rpmtag, hdrNum, h, lmdb_idxdbDelOne);
 }
 
 static const void * lmdb_idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen)

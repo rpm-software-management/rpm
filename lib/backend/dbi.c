@@ -185,14 +185,14 @@ rpmRC idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbi
     return dbi->dbi_rpmdb->db_ops->idxdbGet(dbi, dbc, keyp, keylen, set, curFlags);
 }
 
-rpmRC idxdbPut(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
+rpmRC idxdbPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
 {
-    return dbi->dbi_rpmdb->db_ops->idxdbPut(dbi, dbc, keyp, keylen, rec);
+    return dbi->dbi_rpmdb->db_ops->idxdbPut(dbi, rpmtag, hdrNum, h);
 }
 
-rpmRC idxdbDel(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
+rpmRC idxdbDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
 {
-    return dbi->dbi_rpmdb->db_ops->idxdbDel(dbi, dbc, keyp, keylen, rec);
+    return dbi->dbi_rpmdb->db_ops->idxdbDel(dbi, rpmtag, hdrNum, h);
 }
 
 const void * idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen)
