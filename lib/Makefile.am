@@ -110,57 +110,6 @@ $(libdb_la): $(top_builddir)/db3/libdb-$(BDBVER).la
 	sed -e"/^libdir=/s/^.*$$/libdir=''/" \
 	  < $(top_builddir)/db3/libdb-$(BDBVER).la > $(libdb_la)
 CLEANFILES += $(libdb_la)
-
-
-rpmlibexec_PROGRAMS =
-
-rpmlibexec_PROGRAMS += rpmdb_dump
-rpmdb_dump_SOURCES =
-rpmdb_dump_LDADD = \
-	$(top_builddir)/db3/db_dump.o \
-	$(top_builddir)/db3/util_cache.o \
-	$(top_builddir)/db3/util_sig.o \
-	librpm.la
-
-rpmlibexec_PROGRAMS += rpmdb_load
-rpmdb_load_SOURCES =
-rpmdb_load_LDADD = \
-	$(top_builddir)/db3/db_load.o \
-	$(top_builddir)/db3/util_cache.o \
-	$(top_builddir)/db3/util_sig.o \
-	librpm.la
-
-rpmlibexec_PROGRAMS += rpmdb_recover
-rpmdb_recover_SOURCES =
-rpmdb_recover_LDADD = \
-	$(top_builddir)/db3/db_recover.o \
-	$(top_builddir)/db3/util_cache.o \
-	$(top_builddir)/db3/util_sig.o \
-	librpm.la
-
-rpmlibexec_PROGRAMS += rpmdb_stat
-rpmdb_stat_SOURCES =
-rpmdb_stat_LDADD = \
-	$(top_builddir)/db3/db_stat.o \
-	$(top_builddir)/db3/util_cache.o \
-	$(top_builddir)/db3/util_sig.o \
-	librpm.la
-
-rpmlibexec_PROGRAMS += rpmdb_upgrade
-rpmdb_upgrade_SOURCES =
-rpmdb_upgrade_LDADD = \
-	$(top_builddir)/db3/db_upgrade.o \
-	$(top_builddir)/db3/util_cache.o \
-	$(top_builddir)/db3/util_sig.o \
-	librpm.la
-
-rpmlibexec_PROGRAMS += rpmdb_verify 
-rpmdb_verify_SOURCES =
-rpmdb_verify_LDADD = \
-	$(top_builddir)/db3/db_verify.o \
-	$(top_builddir)/db3/util_cache.o \
-	$(top_builddir)/db3/util_sig.o \
-	librpm.la
 endif
 
 CLEANFILES += $(BUILT_SOURCES)
