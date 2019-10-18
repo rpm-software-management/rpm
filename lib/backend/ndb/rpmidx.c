@@ -483,7 +483,7 @@ static int rpmidxRebuildInternal(rpmidxdb idxdb)
 
     nidxdb = &nidxdb_s;
     memset(nidxdb, 0, sizeof(*nidxdb));
-    nidxdb->pagesize = sysconf(_SC_PAGE_SIZE);
+    nidxdb->pagesize = rpmxdbPagesize(idxdb->xdb);
 
     /* calculate nslots the hard way, don't trust usedslots */
     nslots = 0;
@@ -906,9 +906,8 @@ int rpmidxOpenXdb(rpmidxdb *idxdbp, rpmpkgdb pkgdb, rpmxdb xdb, unsigned int xdb
     idxdb->xdbtag = xdbtag;
     idxdb->xdbid = id;
     idxdb->pkgdb = pkgdb;
-    idxdb->pagesize = sysconf(_SC_PAGE_SIZE);
-    if (rpmxdbIsRdonly(xdb))
-	idxdb->rdonly = 1;
+    idxdb->pagesize = rpmxdbPagesize(xdb);
+    idxdb->rdonly = rpmxdbIsRdonly(xdb) ? 1 : 0;
     if (!id) {
 	if (rpmidxInit(idxdb)) {
 	    free(idxdb);
