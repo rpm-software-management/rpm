@@ -7,6 +7,7 @@ int rpmxdbOpen(rpmxdb *xdbp, rpmpkgdb pkgdb, const char *filename, int flags, in
 void rpmxdbClose(rpmxdb xdb);
 void rpmxdbSetFsync(rpmxdb xdb, int dofsync);
 int rpmxdbIsRdonly(rpmxdb xdb);
+unsigned int rpmxdbPagesize(rpmxdb xdb);
 
 int rpmxdbLock(rpmxdb xdb, int excl);
 int rpmxdbUnlock(rpmxdb xdb, int excl);

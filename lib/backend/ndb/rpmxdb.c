@@ -1151,6 +1151,11 @@ int rpmxdbIsRdonly(rpmxdb xdb)
     return xdb->rdonly;
 }
 
+unsigned int rpmxdbPagesize(rpmxdb xdb)
+{
+    return xdb->pagesize;
+}
+
 static int rpmxdbFsync(rpmxdb xdb)
 {
 #ifdef HAVE_FDATASYNC
