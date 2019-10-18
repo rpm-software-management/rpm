@@ -563,26 +563,20 @@ static rpmRC sqlite_idxdbPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum
     return tag2index(dbi, rpmtag, hdrNum, h, sqlite_idxdbPutOne);
 }
 
-
-static rpmRC sqlite_idxdbDelOne(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
+static rpmRC sqlite_idxdbDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
 {
-    int rc = dbiCursorPrep(dbc,
-			"DELETE FROM '%q' WHERE key=? AND hnum=? AND idx=?",
-			dbi->dbi_file);
-
+    dbiCursor dbc = dbiCursorInit(dbi, DBC_WRITE);
+    int rc = dbiCursorPrep(dbc, "DELETE FROM '%q' WHERE hnum=?", dbi->dbi_file);
 
     if (!rc)
-	rc = dbiCursorBindIdx(dbc, keyp, keylen, rec);
+	rc = dbiCursorBindPkg(dbc, hdrNum, NULL, 0);
 
     if (!rc)
 	while ((rc = sqlite3_step(dbc->stmt)) == SQLITE_ROW) {};
 
-    return dbiCursorResult(dbc);
-}
-
-static rpmRC sqlite_idxdbDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
-{
-    return tag2index(dbi, rpmtag, hdrNum, h, sqlite_idxdbDelOne);
+    rc = dbiCursorResult(dbc);
+    dbiCursorFree(dbi, dbc);
+    return rc;
 }
 
 static const void * sqlite_idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen)
