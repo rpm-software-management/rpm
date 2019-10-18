@@ -28,6 +28,13 @@ build/rpmfc.c
 build/spec.c
 lib/backend/db3.c
 lib/backend/dbi.c
+lib/backend/dummydb.c
+lib/backend/lmdb.c
+lib/backend/ndb/glue.c
+lib/backend/ndb/rpmidx.c
+lib/backend/ndb/rpmpkg.c
+lib/backend/ndb/rpmxdb.c
+lib/backend/sqlite.c
 lib/cpio.c
 lib/depends.c
 lib/formats.c
