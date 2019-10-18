@@ -31,6 +31,7 @@ RUN dnf -y install \
   libarchive-devel \
   libdb-devel \
   lmdb-devel \
+  sqlite-devel \
   libselinux-devel \
   ima-evm-utils-devel \
   libcap-devel \
