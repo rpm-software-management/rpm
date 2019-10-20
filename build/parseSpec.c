@@ -6,7 +6,9 @@
 #include "system.h"
 
 #include <errno.h>
+#ifdef ENABLE_OPENMP
 #include <omp.h>
+#endif
 #ifdef HAVE_ICONV
 #include <iconv.h>
 #endif
