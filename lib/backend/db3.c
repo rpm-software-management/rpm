@@ -1365,6 +1365,9 @@ static unsigned int db3_pkgdbKey(dbiIndex dbi, dbiCursor dbc)
 }
 
 struct rpmdbOps_s db3_dbops = {
+    .name   = "bdb",
+    .path   = "Packages",
+
     .open   = db3_dbiOpen,
     .close  = db3_dbiClose,
     .verify = db3_dbiVerify,

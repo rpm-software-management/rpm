@@ -922,6 +922,9 @@ static unsigned int lmdb_pkgdbKey(dbiIndex dbi, dbiCursor dbc)
 }
 
 struct rpmdbOps_s lmdb_dbops = {
+    .name   = "lmdb",
+    .path   = "data.mdb",
+
     .open   = lmdb_dbiOpen,
     .close  = lmdb_dbiClose,
     .verify = lmdb_dbiVerify,

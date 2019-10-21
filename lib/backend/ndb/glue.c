@@ -496,6 +496,9 @@ static const void * ndb_idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keyl
 
 
 struct rpmdbOps_s ndb_dbops = {
+    .name	= "ndb",
+    .path	= "Packages.db",
+
     .open	= ndb_Open,
     .close	= ndb_Close,
     .verify	= ndb_Verify,
