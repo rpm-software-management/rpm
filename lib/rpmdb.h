@@ -8,6 +8,7 @@
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmsw.h>
+#include <sys/stat.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -225,6 +226,22 @@ int rpmdbCtrl(rpmdb db, rpmdbCtrlOp ctrl);
  * @return 		cookie string (malloced), or NULL on error
  */
 char *rpmdbCookie(rpmdb db);
+
+/** \ingroup rpmdb
+ * Perform stat() on rpm database
+ * @param prefix	prefix or NULL for /
+ * @retval statbuf	returned data from stat()
+ * @return 		0 on success, -1 on error
+ */
+int rpmdbStat(const char *prefix, struct stat *statbuf);
+
+/** \ingroup rpmdb
+ * Perform stat() on an open rpm database
+ * @param db		rpm database
+ * @retval statbuf	returned data from stat()
+ * @return 		0 on success, -1 on error
+ */
+int rpmdbFStat(rpmdb db, struct stat *statbuf);
 
 #ifdef __cplusplus
 }
