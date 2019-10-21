@@ -12,6 +12,22 @@
 #include "lib/rpmdb_internal.h"
 #include "debug.h"
 
+const struct rpmdbOps_s *backends[] = {
+#if defined(WITH_SQLITE)
+    &sqlite_dbops,
+#endif
+#if defined(WITH_LMDB)
+    &lmdb_dbops,
+#endif
+#ifdef ENABLE_NDB
+    &ndb_dbops,
+#endif
+#if defined(WITH_BDB)
+    &db3_dbops,
+#endif
+    &dummydb_dbops,
+    NULL
+};
 
 dbiIndex dbiFree(dbiIndex dbi)
 {
@@ -38,67 +54,33 @@ dbDetectBackend(rpmdb rdb)
     const char *dbhome = rpmdbHome(rdb);
     char *db_backend = rpmExpand("%{?_db_backend}", NULL);
     char *path = NULL;
+    const struct rpmdbOps_s **ops;
 
-#if defined(WITH_SQLITE)
-    if (!strcmp(db_backend, "sqlite")) {
-	rdb->db_ops = &sqlite_dbops;
-    } else
-#endif
-#if defined(WITH_LMDB)
-    if (!strcmp(db_backend, "lmdb")) {
-	rdb->db_ops = &lmdb_dbops;
-    } else
-#endif
-#ifdef ENABLE_NDB
-    if (!strcmp(db_backend, "ndb")) {
-	rdb->db_ops = &ndb_dbops;
-    } else
-#endif
-#if defined(WITH_BDB)
-    {
-	rdb->db_ops = &db3_dbops;
-	if (*db_backend == '\0') {
-	    free(db_backend);
-	    db_backend = xstrdup("bdb");
+    for (ops = backends; ops && *ops; ops++) {
+	if (rstreq(db_backend, (*ops)->name)) {
+	    rdb->db_ops = *ops;
+	    break;
 	}
     }
-#endif
 
-#if defined(WITH_SQLITE)
-    path = rstrscat(NULL, dbhome, "/rpmdb.sqlite", NULL);
-    if (access(path, F_OK) == 0 && rdb->db_ops != &sqlite_dbops) {
-	rdb->db_ops = &sqlite_dbops;
-	rpmlog(RPMLOG_WARNING, _("Found sqlite rpmdb.sqlite database while attempting %s backend: using sqlite backend.\n"), db_backend);
-    }
-    free(path);
-#endif
+    for (ops = backends; ops && *ops; ops++) {
+	int stop = 0;
+	if ((*ops)->path == NULL)
+	    continue;
 
-#if defined(WITH_LMDB)
-    path = rstrscat(NULL, dbhome, "/data.mdb", NULL);
-    if (access(path, F_OK) == 0 && rdb->db_ops != &lmdb_dbops) {
-	rdb->db_ops = &lmdb_dbops;
-	rpmlog(RPMLOG_WARNING, _("Found LMDB data.mdb database while attempting %s backend: using lmdb backend.\n"), db_backend);
+	path = rstrscat(NULL, dbhome, "/", (*ops)->path, NULL);
+	if (access(path, F_OK) == 0 && rdb->db_ops != *ops) {
+	    rpmlog(RPMLOG_WARNING,
+		_("Found %s %s database while attempting %s backend: "
+		"using %s backend.\n"),
+		(*ops)->name, (*ops)->path, db_backend, (*ops)->name);
+	    rdb->db_ops = *ops;
+	    stop = 1;
+	}
+	free(path);
+	if (stop)
+	    break;
     }
-    free(path);
-#endif
-
-#ifdef ENABLE_NDB
-    path = rstrscat(NULL, dbhome, "/Packages.db", NULL);
-    if (access(path, F_OK) == 0 && rdb->db_ops != &ndb_dbops) {
-	rdb->db_ops = &ndb_dbops;
-	rpmlog(RPMLOG_WARNING, _("Found NDB Packages.db database while attempting %s backend: using ndb backend.\n"), db_backend);
-    }
-    free(path);
-#endif
-
-#if defined(WITH_BDB)
-    path = rstrscat(NULL, dbhome, "/Packages", NULL);
-    if (access(path, F_OK) == 0 && rdb->db_ops != &db3_dbops) {
-	rdb->db_ops = &db3_dbops;
-	rpmlog(RPMLOG_WARNING, _("Found BDB Packages database while attempting %s backend: using bdb backend.\n"), db_backend);
-    }
-    free(path);
-#endif
 
     if (rdb->db_ops == NULL) {
 	rdb->db_ops = &dummydb_dbops;
