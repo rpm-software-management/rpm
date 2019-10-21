@@ -101,7 +101,7 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
     
     if (dbi->dbi_type == DBI_PRIMARY) {
 	rpmpkgdb pkgdb = 0;
-	char *path = rstrscat(NULL, dbhome, "/Packages.db", NULL);
+	char *path = rstrscat(NULL, dbhome, "/", rdb->db_ops->path, NULL);
 	rpmlog(RPMLOG_DEBUG, "opening  db index       %s mode=0x%x\n", path, rdb->db_mode);
 	rc = rpmpkgOpen(&pkgdb, path, oflags, 0666);
  	if (rc && errno == ENOENT) {
