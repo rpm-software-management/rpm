@@ -619,6 +619,7 @@ package or when debugging this package.\
 # lmdb Lightning Memory-mapped Database
 # ndb new data base format
 # sqlite Sqlite database
+# dummy dummy backend (no actual functionality)
 #
 %_db_backend	      bdb
 
