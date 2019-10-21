@@ -84,7 +84,7 @@ dbDetectBackend(rpmdb rdb)
 
     if (rdb->db_ops == NULL) {
 	rdb->db_ops = &dummydb_dbops;
-	rpmlog(RPMLOG_DEBUG, "using dummy database, installs not possible\n");
+	rpmlog(RPMLOG_WARNING, "using dummy database, installs not possible\n");
     }
 
     if (db_backend)
