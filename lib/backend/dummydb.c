@@ -88,6 +88,9 @@ static const void * dummydb_idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *
 
 
 struct rpmdbOps_s dummydb_dbops = {
+    .name	= "dummy",
+    .path	= NULL,
+
     .open	= dummydb_Open,
     .close	= dummydb_Close,
     .verify	= dummydb_Verify,

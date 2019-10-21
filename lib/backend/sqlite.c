@@ -593,6 +593,9 @@ static const void * sqlite_idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *k
 
 
 struct rpmdbOps_s sqlite_dbops = {
+    .name	= "sqlite",
+    .path	= "rpmdb.sqlite",
+
     .open	= sqlite_Open,
     .close	= sqlite_Close,
     .verify	= sqlite_Verify,

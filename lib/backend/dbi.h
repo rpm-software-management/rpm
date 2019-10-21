@@ -59,7 +59,7 @@ struct rpmdb_s {
     dbiIndex 	* db_indexes;	/*!< Tag indices. */
     int		db_buildindex;	/*!< Index rebuild indicator */
 
-    struct rpmdbOps_s * db_ops;	/*!< backend ops */
+    const struct rpmdbOps_s * db_ops;	/*!< backend ops */
 
     /* dbenv and related parameters */
     void * db_dbenv;		/*!< Backend private handle */
@@ -245,6 +245,9 @@ RPM_GNUC_INTERNAL
 const void * idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen);
 
 struct rpmdbOps_s {
+    const char *name; /* backend name */
+    const char *path; /* main database name */
+
     int (*open)(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags);
     int (*close)(dbiIndex dbi, unsigned int flags);
     int (*verify)(dbiIndex dbi, unsigned int flags);
