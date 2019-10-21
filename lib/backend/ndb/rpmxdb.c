@@ -274,7 +274,7 @@ static int rpmxdbReadHeader(rpmxdb xdb)
     xdb->firstfree = 0;
     nslots = slotnpages * (pagesize / SLOT_SIZE) - SLOT_START + 1;
     slots = xcalloc(nslots + 1, sizeof(struct xdb_slot));
-    usedslots = xcalloc(nslots + 1, sizeof(int));
+    usedslots = xcalloc(nslots + 1, sizeof(struct xdb_slot *));
     nused = 0;
     slotno = 1;
     slot = slots + 1;
@@ -615,6 +615,7 @@ static int moveblobto(rpmxdb xdb, struct xdb_slot *oldslot, struct xdb_slot *aft
     didmap = 0;
     oldpagecnt = oldslot->pagecnt;
     if (!oldslot->mapped && oldpagecnt) {
+	oldslot->mapflags = PROT_READ;
 	if (mapslot(xdb, oldslot))
 	    return RPMRC_FAIL;
         didmap = 1;
@@ -786,13 +787,16 @@ static int addslotpage(rpmxdb xdb)
     *slot = xdb->slots[nslots];
     slot->slotno = nslots + spp;
     xdb->slots[slot->prev].next = slot->slotno;
+
+    /* we have a new slotpage */
     xdb->nslots += spp;
+    xdb->slots[0].pagecnt++;
 
     /* add new free slots to the firstfree chain */
     memset(xdb->slots + nslots, 0, sizeof(*slot) * spp);
     for (i = 0; i < spp - 1; i++) {
 	xdb->slots[nslots + i].slotno = nslots + i;
-	xdb->slots[nslots + i].next = i + 1;
+	xdb->slots[nslots + i].next = nslots + i + 1;
     }
     xdb->slots[nslots + i].slotno = nslots + i;
     xdb->firstfree = nslots;
