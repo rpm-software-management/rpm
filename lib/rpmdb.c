@@ -2647,3 +2647,30 @@ char *rpmdbCookie(rpmdb db)
     rpmdbIndexIteratorFree(ii);
     return cookie;
 }
+
+int rpmdbFStat(rpmdb db, struct stat *statbuf)
+{
+    int rc = -1;
+    if (db) {
+	const char *dbfile = db->db_ops->path;
+	if (dbfile) {
+	    char *path = rpmGenPath(rpmdbHome(db), dbfile, NULL);
+	    rc = stat(path, statbuf);
+	    free(path);
+	}
+    }
+    return rc;
+}
+
+int rpmdbStat(const char *prefix, struct stat *statbuf)
+{
+    rpmdb db = NULL;
+    int flags = RPMDB_FLAG_VERIFYONLY;
+    int rc = -1;
+
+    if (openDatabase(prefix, NULL, &db, O_RDONLY, 0644, flags) == 0) {
+	rc = rpmdbFStat(db, statbuf);
+	rpmdbClose(db);
+    }
+    return rc;
+}
