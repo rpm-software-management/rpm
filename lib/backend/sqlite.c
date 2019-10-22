@@ -28,7 +28,7 @@ static int sqlexec(sqlite3 *sdb, const char *fmt, ...);
 static int dbiCursorResult(dbiCursor dbc)
 {
     int rc = sqlite3_errcode(dbc->sdb);
-    int err = (rc != SQLITE_OK && rc != SQLITE_DONE);
+    int err = (rc != SQLITE_OK && rc != SQLITE_DONE && rc != SQLITE_ROW);
     if (err) {
 	rpmlog(RPMLOG_ERR, "%s: %d: %s\n", sqlite3_sql(dbc->stmt),
 		sqlite3_errcode(dbc->sdb), sqlite3_errmsg(dbc->sdb));
@@ -396,6 +396,19 @@ static rpmRC sqlite_pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
     return dbiCursorResult(dbc);
 }
 
+static rpmRC sqlite_stepPkg(dbiCursor dbc, unsigned char **hdrBlob, unsigned int *hdrLen)
+{
+    int rc = sqlite3_step(dbc->stmt);
+
+    if (rc == SQLITE_ROW) {
+	if (hdrLen)
+	    *hdrLen = sqlite3_column_bytes(dbc->stmt, 1);
+	if (hdrBlob)
+	    *hdrBlob = (void *) sqlite3_column_blob(dbc->stmt, 1);
+    }
+    return rc;
+}
+
 static rpmRC sqlite_pkgdbByKey(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum, unsigned char **hdrBlob, unsigned int *hdrLen)
 {
     int rc = dbiCursorPrep(dbc, "SELECT hnum, blob from '%q' where hnum=?",
@@ -404,13 +417,8 @@ static rpmRC sqlite_pkgdbByKey(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
     if (!rc)
 	rc = dbiCursorBindPkg(dbc, hdrNum, NULL, 0);
 
-    if (!rc) {
-	while ((rc = sqlite3_step(dbc->stmt)) == SQLITE_ROW) {
-	    *hdrLen = sqlite3_column_bytes(dbc->stmt, 1);
-	    *hdrBlob = memcpy(xmalloc(*hdrLen),
-				sqlite3_column_blob(dbc->stmt, 1), *hdrLen);
-	}
-    }
+    if (!rc)
+	rc = sqlite_stepPkg(dbc, hdrBlob, hdrLen);
 
     return dbiCursorResult(dbc);
 }
@@ -420,18 +428,13 @@ static rpmRC sqlite_pkgdbIter(dbiIndex dbi, dbiCursor dbc,
 {
     int rc = RPMRC_OK;
     if (dbc->stmt == NULL) {
-	rc = dbiCursorPrep(dbc, "SELECT hnum from '%q'", dbi->dbi_file);
+	rc = dbiCursorPrep(dbc, "SELECT hnum, blob from '%q'", dbi->dbi_file);
     }
 
     if (!rc)
-	rc = sqlite3_step(dbc->stmt);
+	rc = sqlite_stepPkg(dbc, hdrBlob, hdrLen);
 
-    if (rc == SQLITE_ROW) {
-	int hnum = sqlite3_column_int(dbc->stmt, 0);
-	dbiCursor kc = dbiCursorInit(dbi, 0);
-	rc = sqlite_pkgdbByKey(dbi, kc, hnum, hdrBlob, hdrLen);
-	dbiCursorFree(dbi, kc);
-    } else if (rc == SQLITE_DONE) {
+    if (rc == SQLITE_DONE) {
 	rc = RPMRC_NOTFOUND;
     } else {
 	rc = dbiCursorResult(dbc);
