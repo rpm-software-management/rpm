@@ -63,6 +63,7 @@ struct rpmdb_s {
 
     /* dbenv and related parameters */
     void * db_dbenv;		/*!< Backend private handle */
+    void * db_cache;		/*!< Backend private cache handle */
     struct dbConfig_s cfg;
     int db_remove_env;
 

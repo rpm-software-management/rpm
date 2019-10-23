@@ -8,11 +8,21 @@
 
 #include "debug.h"
 
+#define HASHTYPE stmtHash
+#define HTKEYTYPE const char *
+#define HTDATATYPE sqlite3_stmt *
+#include "lib/rpmhash.H"
+#include "lib/rpmhash.C"
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+
 static const int sleep_ms = 50;
 
 struct dbiCursor_s {
     sqlite3 *sdb;
     sqlite3_stmt *stmt;
+    stmtHash stcache;
     const char *fmt;
     int flags;
     rpmTagVal tag;
@@ -38,10 +48,26 @@ static int dbiCursorResult(dbiCursor dbc)
 
 static int dbiCursorReset(dbiCursor dbc)
 {
-    int rc = sqlite3_finalize(dbc->stmt);
     dbc->stmt = NULL;
     dbc->fmt = NULL;
-    return rc;
+    return 0;
+}
+
+static sqlite3_stmt *cachedStmt(dbiCursor dbc, const char *cmd)
+{
+    sqlite3_stmt *stmt = NULL;
+    sqlite3_stmt **sts = NULL;
+    if (stmtHashGetEntry(dbc->stcache, cmd, &sts, NULL, NULL)) {
+	stmt = sts[0];
+	sqlite3_reset(stmt);
+	sqlite3_clear_bindings(stmt);
+    } else {
+	if (sqlite3_prepare_v2(dbc->sdb, cmd, -1, &stmt, NULL) == SQLITE_OK) {
+	    stmtHashAddEntry(dbc->stcache, xstrdup(cmd), stmt);
+	}
+    }
+
+    return stmt;
 }
 
 static int dbiCursorPrep(dbiCursor dbc, const char *fmt, ...)
@@ -64,7 +90,7 @@ static int dbiCursorPrep(dbiCursor dbc, const char *fmt, ...)
     }
 
     if (dbc->stmt == NULL) {
-	sqlite3_prepare_v2(dbc->sdb, cmd, -1, &dbc->stmt, NULL);
+	dbc->stmt = cachedStmt(dbc, cmd);
     } else {
 	sqlite3_reset(dbc->stmt);
     }
@@ -137,6 +163,10 @@ static int sqlite_init(rpmdb rdb, const char * dbhome)
 	}
 	sqlite3_busy_timeout(sdb, sleep_ms);
 
+	rdb->db_cache = stmtHashCreate(31, rstrhash, strcmp,
+				   (stmtHashFreeKey)rfree,
+				   (stmtHashFreeData)sqlite3_finalize);
+
 	if (rdb->db_flags & RPMDB_FLAG_REBUILD) {
 	    sqlexec(sdb, "PRAGMA journal_mode = OFF");
 	    sqlexec(sdb, "PRAGMA locking_mode = EXCLUSIVE");
@@ -163,6 +193,7 @@ static int sqlite_fini(rpmdb rdb)
 	    if (sqlite3_db_readonly(sdb, NULL) == 0) {
 		sqlexec(sdb, "PRAGMA optimize");
 	    }
+	    rdb->db_cache = stmtHashFree(rdb->db_cache);
 	    int xx = sqlite3_close(sdb);
 	    rc = (xx != SQLITE_OK);
 	}
@@ -323,6 +354,7 @@ static dbiCursor sqlite_CursorInit(dbiIndex dbi, unsigned int flags)
     dbc->sdb = dbi->dbi_db;
     dbc->flags = flags;
     dbc->tag = rpmTagGetValue(dbi->dbi_file);
+    dbc->stcache = dbi->dbi_rpmdb->db_cache;
     if (rpmTagGetClass(dbc->tag) == RPM_STRING_CLASS) {
 	dbc->ctype = SQLITE_TEXT;
     } else {
@@ -338,8 +370,6 @@ static dbiCursor sqlite_CursorFree(dbiIndex dbi, dbiCursor dbc)
     if (dbc) {
 	if (dbc->flags & DBC_WRITE)
 	    sqlexec(dbc->sdb, "RELEASE '%s'", dbi->dbi_file);
-	if (dbc->stmt)
-	    sqlite3_finalize(dbc->stmt);
 	free(dbc);
     }
     return NULL;
