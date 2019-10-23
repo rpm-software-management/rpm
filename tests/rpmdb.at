@@ -84,6 +84,37 @@ runroot rpm -q foo-
 [])
 AT_CLEANUP
 
+AT_SETUP([rpm -q --querybynumber])
+AT_KEYWORDS([rpmdb query])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpm -i \
+  /data/RPMS/foo-1.0-1.noarch.rpm
+
+],
+[0],
+[],
+[])
+
+AT_CHECK([
+runroot rpm -q --querybynumber 1
+],
+[0],
+[foo-1.0-1.noarch
+],
+[])
+
+AT_CHECK([
+runroot rpm -q --querybynumber 999
+],
+[1],
+[],
+[error: record 999 could not be read
+])
+AT_CLEANUP
+
 # ------------------------------
 # install a noarch package into a local rpmdb without --relocate and --nodeps
 # * Should always succeed
