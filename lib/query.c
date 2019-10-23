@@ -294,6 +294,19 @@ static int rpmcliShowMatches(QVA_t qva, rpmts ts, rpmdbMatchIterator mi)
     return ec;
 }
 
+static rpmdbMatchIterator matchesIterator(rpmts ts, rpmDbiTag dbi,
+					const void *arg, size_t arglen)
+{
+    unsigned int matches = 0;
+    rpmdbMatchIterator mi = rpmtsInitIterator(ts, dbi, arg, arglen);
+    while (rpmdbNextIterator(mi) != NULL)
+	matches++;
+    mi = rpmdbFreeIterator(mi);
+    if (matches)
+	mi = rpmtsInitIterator(ts, dbi, arg, arglen);
+    return mi;
+}
+
 static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * arg)
 {
     const char * s;
@@ -485,18 +498,10 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
 
     case RPMQV_PACKAGE:
     {
-	int matches = 0;
-	mi = rpmtsInitIterator(ts, RPMDBI_LABEL, arg, 0);
-	while (rpmdbNextIterator(mi) != NULL) {
-	    matches++;
-	}
-	mi = rpmdbFreeIterator(mi);
-	if (! matches) {
-	    if (!rpmFileHasSuffix(arg, ".rpm"))
-		rpmlog(RPMLOG_NOTICE, _("package %s is not installed\n"), arg);
-	} else {
-	    mi = rpmtsInitIterator(ts, RPMDBI_LABEL, arg, 0);
-	}
+	mi = matchesIterator(ts, RPMDBI_LABEL, arg, 0);
+
+	if (mi == NULL && !rpmFileHasSuffix(arg, ".rpm"))
+	    rpmlog(RPMLOG_NOTICE, _("package %s is not installed\n"), arg);
 	break;
     }
     default:
