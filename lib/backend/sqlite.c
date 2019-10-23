@@ -173,7 +173,6 @@ static int sqlite_init(rpmdb rdb, const char * dbhome)
 	}
 
 	rdb->db_dbenv = sdb;
-	rdb->db_descr = xstrdup("sqlite");
     }
     rdb->db_opens++;
 
