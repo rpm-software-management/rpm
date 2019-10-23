@@ -415,10 +415,6 @@ static int db_init(rpmdb rdb, const char * dbhome)
     if (rdb->db_dbenv != NULL) {
 	rdb->db_opens++;
 	return 0;
-    } else {
-	/* On first call, set backend description to something... */
-	free(rdb->db_descr);
-	rasprintf(&rdb->db_descr, "db%u", DB_VERSION_MAJOR);
     }
 
     /*

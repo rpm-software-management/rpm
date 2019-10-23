@@ -408,7 +408,6 @@ int rpmdbClose(rpmdb db)
     db->db_fullpath = _free(db->db_fullpath);
     db->db_checked = dbChkFree(db->db_checked);
     db->db_indexes = _free(db->db_indexes);
-    db->db_descr = _free(db->db_descr);
 
     if (next) {
         *prev = next->db_next;
@@ -473,7 +472,6 @@ static rpmdb newRpmdb(const char * root, const char * home,
     db->db_tags = dbiTags;
     db->db_ndbi = sizeof(dbiTags) / sizeof(rpmDbiTag);
     db->db_indexes = xcalloc(db->db_ndbi, sizeof(*db->db_indexes));
-    db->db_descr = xstrdup("unknown db");
     db->nrefs = 0;
     return rpmdbLink(db);
 }
@@ -508,6 +506,7 @@ static int openDatabase(const char * prefix,
 
 	/* Just the primary Packages database opened here */
 	rc = pkgdbOpen(db, db->db_flags, NULL);
+	db->db_descr = (rc == 0) ? db->db_ops->name : "unknown db";
     }
 
     if (rc || justCheck || dbp == NULL)
