@@ -140,6 +140,8 @@ static int rpmlibDeps(Header h)
     while (rpmdsNext(req) >= 0) {
 	if (!(rpmdsFlags(req) & RPMSENSE_RPMLIB))
 	    continue;
+	if (rpmdsFlags(req) & RPMSENSE_MISSINGOK)
+	    continue;
 	if (rpmdsSearch(rpmlib, req) < 0) {
 	    if (!nvr) {
 		nvr = headerGetAsString(h, RPMTAG_NEVRA);
