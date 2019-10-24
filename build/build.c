@@ -209,10 +209,6 @@ static int doBuildRequires(rpmSpec spec, int test)
 	*packageDependencies(spec->sourcePackage, RPMTAG_REQUIRENAME),
 	spec->sourcePackage->header);
 
-    parseRCPOT(spec, spec->sourcePackage,
-	       "rpmlib(DynamicBuildRequires) = 4.15.0-1",
-	       RPMTAG_PROVIDENAME, 0, RPMSENSE_FIND_PROVIDES | RPMSENSE_RPMLIB,
-	       addReqProvPkg, NULL);
     rc = RPMRC_MISSINGBUILDREQUIRES;
 
  exit:
