@@ -1656,7 +1656,7 @@ runroot rpm -qpvR /build/SRPMS/buildrequires-1.0-1.buildreqs.nosrc.rpm
 auto: foo > 1.3
 auto: foo-bar = 2.0
 rpmlib: rpmlib(CompressedFileNames) <= 3.0.4-1
-rpmlib: rpmlib(DynamicBuildRequires) <= 4.15.0-1
+rpmlib,missingok: rpmlib(DynamicBuildRequires) <= 4.15.0-1
 rpmlib: rpmlib(FileDigests) <= 4.6.0-1
 rpmlib: rpmlib(RichDependencies) <= 4.12.0-1
 ],
