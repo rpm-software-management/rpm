@@ -850,3 +850,18 @@ runroot rpm \
 ],
 [])
 AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([incomplete escape sequence for format query])
+AT_KEYWORDS([query])
+AT_CHECK([
+runroot rpm \
+  --queryformat='%{NAME}\n\' \
+  -qp /data/RPMS/foo-1.0-1.noarch.rpm
+],
+[0],
+[],
+[error: incorrect format: escaped char expected after \
+],
+)
+AT_CLEANUP
