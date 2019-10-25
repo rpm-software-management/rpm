@@ -469,6 +469,10 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 
 	    if (*start == '\\') {
 		start++;
+		if (*start == '\0') {
+		    hsaError(hsa, _("escaped char expected after \\"));
+		    goto errxit;
+		}
 		*dst++ = escapedChar(*start++);
 	    } else {
 		*dst++ = *start++;
