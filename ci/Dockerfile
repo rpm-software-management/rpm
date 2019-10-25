@@ -40,6 +40,7 @@ RUN dnf -y install \
   lua-devel readline-devel \
   python3-devel \
   dbus-devel \
+  libubsan \
   fakechroot which \
   elfutils binutils \
   findutils sed grep gawk diffutils file patch \
@@ -58,7 +59,9 @@ RUN ./configure \
   --with-audit \
   --enable-python \
   --enable-silent-rules \
-  --enable-werror
+  --enable-werror \
+  CFLAGS="-fsanitize=undefined -fno-sanitize=shift" \
+  LDFLAGS="-lubsan"
 RUN make
 
 CMD make distcheck; rc=$?; find . -name rpmtests.log|xargs cat; exit $rc
