@@ -1084,7 +1084,7 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 			    strcpy(un.machine, "mips64el");
 #			else
 			    /* r6 */
-			    strcpy(un.machine, "mips64r6el");
+			    strcpy(un.machine, "mipsisa64r6el");
 #			endif
 #		else
 		    /* 32-bit */
@@ -1093,7 +1093,7 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 			    strcpy(un.machine, "mipsel");
 #			else
 			    /* r6 */
-			    strcpy(un.machine, "mipsr6el");
+			    strcpy(un.machine, "mipsisa32r6el");
 #			endif
 #		endif
 #	elif defined(__MIPSEB__) || defined(__MIPSEB) || defined(_MIPSEB)
@@ -1105,7 +1105,7 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 			    strcpy(un.machine, "mips64");
 #			else
 			    /* r6 */
-			    strcpy(un.machine, "mips64r6");
+			    strcpy(un.machine, "mipsisa64r6");
 #			endif
 #		else
 		    /* 32-bit */
@@ -1114,7 +1114,7 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 			    strcpy(un.machine, "mips");
 #			else
 			    /* r6 */
-			    strcpy(un.machine, "mipsr6");
+			    strcpy(un.machine, "mipsisa32r6");
 #			endif
 #		endif
 #	endif

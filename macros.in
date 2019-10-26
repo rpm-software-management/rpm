@@ -1125,19 +1125,27 @@ package or when debugging this package.\
 
 #------------------------------------------------------------------------------
 # arch macro for 32-bit MIPS processors
-%mips32	mips mipsel mipsr6 mipsr6el
+%mips32	mips mipsel mipsisa32r6 mipsisa32r6el
 
 #------------------------------------------------------------------------------
 # arch macro for 64-bit MIPS processors
-%mips64	mips64 mips64el mips64r6 mips64r6el
+%mips64	mips64 mips64el mipsisa64r6 mipsisa64r6el
 
 #------------------------------------------------------------------------------
 # arch macro for big endian MIPS processors
-%mipseb	mips mipsr6 mips64 mips64r6
+%mipseb	mips mipsisa32r6 mips64 mipsisa64r6
 
 #------------------------------------------------------------------------------
 # arch macro for little endian MIPS processors
-%mipsel	mipsel mipsr6el mips64el mips64r6el
+%mipsel	mipsel mipsisa32r6el mips64el mipsisa64r6el
+
+#------------------------------------------------------------------------------
+# arch macro for all supported MIPSr6 processors
+%mipsr6	mipsisa32r6 mipsisa32r6el mipsisa64r6 mipsisa64r6el
+
+#------------------------------------------------------------------------------
+# arch macro for all supported MIPS pre-r6 processors
+%mipslegacy	mips mipsel mips64 mips64el
 
 #------------------------------------------------------------------------------
 # arch macro for all supported MIPS processors

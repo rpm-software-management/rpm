@@ -144,28 +144,28 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
 	CANONARCH=mips64el
 	CANONCOLOR=3
 	;;
-    mipsr6)
+    mipsisa32r6)
 	ISANAME=mipsr6
 	ISABITS=32
-	CANONARCH=mipsr6
+	CANONARCH=mipsisa32r6
 	CANONCOLOR=0
 	;;
-    mipsr6el)
+    mipsisa32r6el)
 	ISANAME=mipsr6
 	ISABITS=32
-	CANONARCH=mipsr6el
+	CANONARCH=mipsisa32r6el
 	CANONCOLOR=0
 	;;
-    mips64r6)
+    mipsisa64r6)
 	ISANAME=mipsr6
 	ISABITS=64
-	CANONARCH=mips64r6
+	CANONARCH=mipsisa64r6
 	CANONCOLOR=3
 	;;
-    mips64r6el)
+    mipsisa64r6el)
 	ISANAME=mipsr6
 	ISABITS=64
-	CANONARCH=mips64r6el
+	CANONARCH=mipsisa64r6el
 	CANONCOLOR=3
 	;;
     m68k)

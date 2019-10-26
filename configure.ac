@@ -1073,6 +1073,14 @@ if echo "$host_os" | grep '.*-gnueabi' > /dev/null ; then
 	host_os=`echo "${host_os}" | sed 's/-gnueabi$//'`
 	host_os_gnu=-gnueabi
 fi
+if echo "$host_os" | grep '.*-gnuabi64' > /dev/null ; then
+	host_os=`echo "${host_os}" | sed 's/-gnuabi64$//'`
+	host_os_gnu=-gnuabi64
+fi
+if echo "$host_os" | grep '.*-gnuabin32' > /dev/null ; then
+	host_os=`echo "${host_os}" | sed 's/-gnuabin32$//'`
+	host_os_gnu=-gnuabin32
+fi
 if echo "$host_os" | grep '.*-gnu' > /dev/null ; then
 	host_os=`echo "${host_os}" | sed 's/-gnu$//'`
 fi
