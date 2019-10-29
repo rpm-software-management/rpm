@@ -84,7 +84,8 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, char *** argvPtr)
 	}
 
 	/* Skip comments. */
-	if ((se = strchr(s, '#')) != NULL) *se = '\0';
+	if (*s == '#')
+	    continue;
 
 	/* Trim white space. */
 	se = s + strlen(s);
