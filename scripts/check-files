@@ -28,5 +28,5 @@ trap "rm -f \"${FILES_DISK}\"" 0 2 3 5 10 13 15
 # Find non-directory files in the build root and compare to the manifest.
 # TODO: regex chars in last sed(1) expression should be escaped
 find "${RPM_BUILD_ROOT}" -type f -o -type l | LC_ALL=C sort > "${FILES_DISK}"
-LC_ALL=C sort | diff -d "${FILES_DISK}" - | sed -n 's|^< '"${RPM_BUILD_ROOT}"'\(.*\)$|   \1|gp'
+LC_ALL=C sort | diff -d "${FILES_DISK}" - | sed -n 's!^\(-\|< \)'"${RPM_BUILD_ROOT}"'\(.*\)$!   \2!gp'
 
