@@ -483,15 +483,15 @@ static rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
 
     /* macros need to be expanded before possible queryformat */
     if (script->body && (script->flags & RPMSCRIPT_FLAG_EXPAND)) {
-	char *body = rpmExpand(script->body, NULL);
+	char *b = rpmExpand(script->body, NULL);
 	free(script->body);
-	script->body = body;
+	script->body = b;
     }
     if (script->body && (script->flags & RPMSCRIPT_FLAG_QFORMAT)) {
 	/* XXX TODO: handle queryformat errors */
-	char *body = headerFormat(h, script->body, NULL);
+	char *b = headerFormat(h, script->body, NULL);
 	free(script->body);
-	script->body = body;
+	script->body = b;
     }
 
     script->nextFileFunc.func = NULL;
