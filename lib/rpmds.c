@@ -277,7 +277,7 @@ rpmds rpmdsNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, int flags)
 	goto exit;
 
     if (headerGet(h, tagN, &names, HEADERGET_MINMEM)) {
-	struct rpmtd_s evr, flags, tindices;
+	struct rpmtd_s evr, dflags, tindices;
 	rpm_count_t count = rpmtdCount(&names);
 
 	headerGet(h, tagEVR, &evr, HEADERGET_MINMEM);
@@ -286,9 +286,9 @@ rpmds rpmdsNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, int flags)
 	    return NULL;
 	}
 
-	headerGet(h, tagF, &flags, HEADERGET_ALLOC);
-	if (flags.count && flags.count != count) {
-	    rpmtdFreeData(&flags);
+	headerGet(h, tagF, &dflags, HEADERGET_ALLOC);
+	if (dflags.count && dflags.count != count) {
+	    rpmtdFreeData(&dflags);
 	    return NULL;
 	}
 
@@ -304,7 +304,7 @@ rpmds rpmdsNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, int flags)
 
 	ds->N = names.count ? rpmtdToPool(&names, ds->pool) : NULL;
 	ds->EVR = evr.count ? rpmtdToPool(&evr, ds->pool): NULL;
-	ds->Flags = flags.data;
+	ds->Flags = dflags.data;
 	if (tagTi != RPMTAG_NOT_FOUND) {
 	    ds->ti = tindices.data;
 	}
