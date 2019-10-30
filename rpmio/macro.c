@@ -613,7 +613,7 @@ static const struct builtins_s* lookupBuiltin(const char *name, size_t nlen)
 		    namecmp);
 }
 
-static const int
+static int
 validName(MacroBuf mb, const char *name, size_t namelen, const char *action)
 {
     int rc = 0;
