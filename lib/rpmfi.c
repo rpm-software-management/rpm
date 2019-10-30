@@ -1323,7 +1323,7 @@ static rpmsid * tag2pool(rpmstrPool pool, Header h, rpmTag tag, rpm_count_t size
     rpmsid *sids = NULL;
     struct rpmtd_s td;
     if (headerGet(h, tag, &td, HEADERGET_MINMEM)) {
-	if ((size >= 0) && (rpmtdCount(&td) == size)) { /* ensure right size */
+	if (rpmtdCount(&td) == size) { /* ensure right size */
 	    sids = rpmtdToPool(&td, pool);
 	}
 	rpmtdFreeData(&td);
