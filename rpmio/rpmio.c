@@ -1523,7 +1523,7 @@ static FDIO_t findIOT(const char *name)
 
 FD_t Fdopen(FD_t ofd, const char *fmode)
 {
-    char stdio[20], other[20], zstdio[40];
+    char stdio[20], other[20], stdioz[40];
     const char *end = NULL;
     FDIO_t iot = NULL;
     FD_t fd = ofd;
@@ -1538,9 +1538,9 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
     cvtfmode(fmode, stdio, sizeof(stdio), other, sizeof(other), &end, NULL);
     if (stdio[0] == '\0')
 	return NULL;
-    zstdio[0] = '\0';
-    strncat(zstdio, stdio, sizeof(zstdio) - strlen(zstdio) - 1);
-    strncat(zstdio, other, sizeof(zstdio) - strlen(zstdio) - 1);
+    stdioz[0] = '\0';
+    strncat(stdioz, stdio, sizeof(stdioz) - strlen(stdioz) - 1);
+    strncat(stdioz, other, sizeof(stdioz) - strlen(stdioz) - 1);
 
     if (end == NULL && other[0] == '\0')
 	return fd;
@@ -1555,7 +1555,7 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
     }
 
     if (iot && iot->_fdopen)
-	fd = iot->_fdopen(fd, fdno, zstdio);
+	fd = iot->_fdopen(fd, fdno, stdioz);
 
 DBGIO(fd, (stderr, "==> Fdopen(%p,\"%s\") returns fd %p %s\n", ofd, fmode, (fd ? fd : NULL), fdbg(fd)));
     return fd;
