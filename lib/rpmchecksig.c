@@ -24,8 +24,6 @@
 
 #include "debug.h"
 
-int _print_pkts = 0;
-
 static int doImport(rpmts ts, const char *fn, char *buf, ssize_t blen)
 {
     char const * const pgpmark = "-----BEGIN PGP ";
