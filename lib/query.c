@@ -37,7 +37,7 @@ static void printFileInfo(const char * name,
     char ownerfield[8+1], groupfield[8+1];
     char timefield[100];
     time_t when = mtime;  /* important if sizeof(int32_t) ! sizeof(time_t) */
-    struct tm * tm;
+    struct tm * tm, _tm;
     char * perms = rpmPermsString(mode);
     char *link = NULL;
 
@@ -62,7 +62,7 @@ static void printFileInfo(const char * name,
     }
 
     /* Convert file mtime to display format */
-    tm = localtime(&when);
+    tm = localtime_r(&when, &_tm);
     timefield[0] = '\0';
     if (tm != NULL)
     {	const char *fmt;
