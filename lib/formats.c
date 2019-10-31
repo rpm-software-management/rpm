@@ -96,10 +96,10 @@ static char * hexFormat(rpmtd td, char **emsg)
 static char * realDateFormat(rpmtd td, const char * strftimeFormat, char **emsg)
 {
     char * val = NULL;
-    struct tm * tstruct;
+    struct tm * tstruct, _tm;
     char buf[1024];
     time_t dateint = rpmtdGetNumber(td);
-    tstruct = localtime(&dateint);
+    tstruct = localtime_r(&dateint, &_tm);
 
     buf[0] = '\0';
     if (tstruct)
@@ -361,7 +361,7 @@ static char * pgpsigFormat(rpmtd td, char **emsg)
 	char *keyid = pgpHexStr(sigp->signid, sizeof(sigp->signid));
 	unsigned int dateint = sigp->time;
 	time_t date = dateint;
-	struct tm * tms = localtime(&date);
+	struct tm _tm, * tms = localtime_r(&date, &_tm);
 	unsigned int key_algo = pgpDigParamsAlgo(sigp, PGPVAL_PUBKEYALGO);
 	unsigned int hash_algo = pgpDigParamsAlgo(sigp, PGPVAL_HASHALGO);
 
