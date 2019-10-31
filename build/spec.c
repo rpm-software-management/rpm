@@ -325,6 +325,7 @@ rpmSpec rpmSpecFree(rpmSpec spec)
     spec->check = freeStringBuf(spec->check);
     spec->clean = freeStringBuf(spec->clean);
     spec->parsed = freeStringBuf(spec->parsed);
+    spec->buildrequires = freeStringBuf(spec->buildrequires);
 
     spec->buildRoot = _free(spec->buildRoot);
     spec->buildSubdir = _free(spec->buildSubdir);
