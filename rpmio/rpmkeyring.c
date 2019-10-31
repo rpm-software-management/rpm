@@ -13,6 +13,8 @@
 
 #include "debug.h"
 
+int _print_pkts = 0;
+
 struct rpmPubkey_s {
     uint8_t *pkt;
     size_t pktlen;
@@ -227,7 +229,7 @@ pgpDig rpmPubkeyDig(rpmPubkey key)
     dig = pgpNewDig();
 
     pthread_rwlock_rdlock(&key->lock);
-    rc = pgpPrtPkts(key->pkt, key->pktlen, dig, 0);
+    rc = pgpPrtPkts(key->pkt, key->pktlen, dig, _print_pkts);
     pthread_rwlock_unlock(&key->lock);
 
     if (rc == 0) {
@@ -302,7 +304,7 @@ rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig)
  	 * on (successful) return, sigh. No need to check for return
  	 * here as this is validated at rpmPubkeyNew() already.
  	 */
-	pgpPrtPkts(key->pkt, key->pktlen, sig, 0);
+	pgpPrtPkts(key->pkt, key->pktlen, sig, _print_pkts);
 	res = RPMRC_OK;
     }
 
