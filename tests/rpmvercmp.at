@@ -80,17 +80,17 @@ RPMVERCMP(2_0, 2.0, 0)
 
 dnl RhBug:178798 case
 RPMVERCMP(a, a, 0)
-RPMVERCMP(a+, a+, 0)
-RPMVERCMP(a+, a_, 0)
-RPMVERCMP(a_, a+, 0)
-RPMVERCMP(+a, +a, 0)
-RPMVERCMP(+a, _a, 0)
-RPMVERCMP(_a, +a, 0)
-RPMVERCMP(+_, +_, 0)
-RPMVERCMP(_+, +_, 0)
-RPMVERCMP(_+, _+, 0)
-RPMVERCMP(+, _, 0)
-RPMVERCMP(_, +, 0)
+RPMVERCMP(a-, a-, 0)
+RPMVERCMP(a-, a_, 0)
+RPMVERCMP(a_, a-, 0)
+RPMVERCMP(-a, -a, 0)
+RPMVERCMP(-a, _a, 0)
+RPMVERCMP(_a, -a, 0)
+RPMVERCMP(-_, -_, 0)
+RPMVERCMP(_-, -_, 0)
+RPMVERCMP(_-, _-, 0)
+RPMVERCMP(-, _, 0)
+RPMVERCMP(_, -, 0)
 
 dnl Basic testcases for tilde sorting
 RPMVERCMP(1.0~rc1, 1.0~rc1, 0)
@@ -127,6 +127,16 @@ RPMVERCMP(1.0~rc1, 1.0~rc1^git1, -1)
 RPMVERCMP(1.0^git1~pre, 1.0^git1~pre, 0)
 RPMVERCMP(1.0^git1, 1.0^git1~pre, 1)
 RPMVERCMP(1.0^git1~pre, 1.0^git1, -1)
+
+dnl Basic testcases for plus sorting
+RPMVERCMP(1.0+rc1, 1.0+rc1, 0)
+RPMVERCMP(1.0+rc1, 1.0, 1)
+RPMVERCMP(1.0, 1.0+rc1, -1)
+RPMVERCMP(1.0+rc2, 1.0+rc1, 1)
+RPMVERCMP(1.0+rc1+git123, 1.0+rc1+git123, 0)
+RPMVERCMP(1.0+rc1+git123, 1.0+rc1, 1)
+RPMVERCMP(1.0+rc1, 1.0~rc1+git123, 1)
+RPMVERCMP(1.0+, 1.0, 1)
 
 dnl These are included here to document current, arguably buggy behaviors
 dnl for reference purposes and for easy checking against  unintended
