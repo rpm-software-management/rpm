@@ -227,9 +227,21 @@ static int sqlexec(sqlite3 *sdb, const char *fmt, ...)
     return rc ? RPMRC_FAIL : RPMRC_OK;
 }
 
+static int dbiExists(dbiIndex dbi)
+{
+    const char *col = (dbi->dbi_type == DBI_PRIMARY) ? "hnum" : "key";
+    const char *tbl = dbi->dbi_file;
+    int rc = sqlite3_table_column_metadata(dbi->dbi_db, NULL, tbl, col,
+					   NULL, NULL, NULL, NULL, NULL);
+    return (rc == 0);
+}
+
 static int init_table(dbiIndex dbi, rpmTagVal tag)
 {
     int rc = 0;
+
+    if (dbiExists(dbi))
+	return 0;
 
     if (dbi->dbi_type == DBI_PRIMARY) {
 	rc = sqlexec(dbi->dbi_db,
@@ -250,6 +262,8 @@ static int init_table(dbiIndex dbi, rpmTagVal tag)
 			")",
 			dbi->dbi_file, keytype);
     }
+    if (!rc)
+	dbi->dbi_flags |= DBI_CREATED;
 
     return rc;
 }
@@ -278,13 +292,6 @@ static int sqlite_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flag
 
 	if (!rc)
 	    rc = init_index(dbi, rpmtag);
-    }
-
-    if (!rc && dbi->dbi_type == DBI_PRIMARY) {
-	unsigned int hnum = 0;
-	if (sqlite_pkgdbNew(dbi, &hnum) == 0 && hnum == 1) {
-	    dbi->dbi_flags |= DBI_CREATED;
-	}
     }
 
     if (dbip)
