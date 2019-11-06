@@ -1223,7 +1223,7 @@ package or when debugging this package.\
 	--author "%{__scm_author}" -m "%{NAME}-%{VERSION} base"
 
 %__scm_apply_git(qp:m:)\
-%{__git} apply --index %{-p:-p%{-p*}} -\
+%{__git} apply --index --reject %{-p:-p%{-p*}} -\
 %{__git} commit %{-q} -m %{-m*} --author "%{__scm_author}"
 
 # Git, using "git am" (-m is unused)
