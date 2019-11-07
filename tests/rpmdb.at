@@ -84,6 +84,27 @@ runroot rpm -q foo-
 [])
 AT_CLEANUP
 
+AT_SETUP([rpmdb header numbering])
+AT_KEYWORDS([rpmdb])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+for i in 1 2 3; do
+    runroot rpm -i /data/RPMS/foo-1.0-1.noarch.rpm
+    runroot rpm -q --qf "%{dbinstance} %{name}\n" foo
+    runroot rpm -e foo
+done
+
+],
+[0],
+[1 foo
+2 foo
+3 foo
+],
+[])
+AT_CLEANUP
+
 AT_SETUP([rpm -q --querybynumber])
 AT_KEYWORDS([rpmdb query])
 AT_CHECK([
