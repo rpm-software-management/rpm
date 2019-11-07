@@ -32,7 +32,6 @@ struct dbiCursor_s {
     unsigned int keylen;
 };
 
-static rpmRC sqlite_pkgdbNew(dbiIndex dbi, unsigned int *hdrNum);
 static int sqlexec(sqlite3 *sdb, const char *fmt, ...);
 
 static int dbiCursorResult(dbiCursor dbc)
@@ -102,7 +101,13 @@ static int dbiCursorPrep(dbiCursor dbc, const char *fmt, ...)
 static int dbiCursorBindPkg(dbiCursor dbc, unsigned int hnum,
 				void *blob, unsigned int bloblen)
 {
-    int rc = sqlite3_bind_int(dbc->stmt, 1, hnum);
+    int rc = 0;
+
+    if (hnum)
+	rc = sqlite3_bind_int(dbc->stmt, 1, hnum);
+    else
+	rc = sqlite3_bind_null(dbc->stmt, 1);
+
     if (blob) {
 	if (!rc)
 	    rc = sqlite3_bind_blob(dbc->stmt, 2, blob, bloblen, NULL);
@@ -246,7 +251,7 @@ static int init_table(dbiIndex dbi, rpmTagVal tag)
     if (dbi->dbi_type == DBI_PRIMARY) {
 	rc = sqlexec(dbi->dbi_db,
 			"CREATE TABLE IF NOT EXISTS '%q' ("
-			    "hnum INTEGER PRIMARY KEY NOT NULL,"
+			    "hnum INTEGER PRIMARY KEY AUTOINCREMENT,"
 			    "blob BLOB NOT NULL"
 			")",
 			dbi->dbi_file);
@@ -381,28 +386,9 @@ static dbiCursor sqlite_CursorFree(dbiIndex dbi, dbiCursor dbc)
     return NULL;
 }
 
-static rpmRC sqlite_pkgdbNew(dbiIndex dbi, unsigned int *hdrNum)
-{
-    dbiCursor c = dbiCursorInit(dbi, 0);
-    int rc = dbiCursorPrep(c, "SELECT MAX(hnum) FROM '%q'", dbi->dbi_file);
-
-    if (!rc) {
-	while ((rc = sqlite3_step(c->stmt)) == SQLITE_ROW) {
-	    *hdrNum = sqlite3_column_int(c->stmt, 0) + 1;
-	}
-    }
-    rc = dbiCursorResult(c);
-    dbiCursorFree(dbi, c);
-
-    return rc;
-}
-
 static rpmRC sqlite_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum, unsigned char *hdrBlob, unsigned int hdrLen)
 {
     int rc = 0;
-
-    if (*hdrNum == 0)
-	rc = sqlite_pkgdbNew(dbi, hdrNum);
 
     if (!rc) {
 	rc = dbiCursorPrep(dbc, "INSERT OR REPLACE INTO '%q' VALUES(?, ?)",
@@ -414,6 +400,10 @@ static rpmRC sqlite_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum,
 
     if (!rc)
 	while ((rc = sqlite3_step(dbc->stmt)) == SQLITE_ROW) {};
+
+    /* XXX rowid is a 64bit integer and could overflow hdrnum */
+    if (rc == SQLITE_DONE && *hdrNum == 0)
+	*hdrNum = sqlite3_last_insert_rowid(dbc->sdb);
 
     return dbiCursorResult(dbc);
 }
