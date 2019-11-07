@@ -275,7 +275,6 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     int argc;
     const char ** argv = NULL;
     int arg;
-    const char * optArg;
     int xx;
     rpmRC rc = RPMRC_FAIL;
     uint32_t num;
@@ -303,7 +302,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 
     optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
     while ((arg = poptGetNextOpt(optCon)) > 0) {
-	optArg = poptGetOptArg(optCon);
+	char *optArg = poptGetOptArg(optCon);
 
 	/* We only parse -a and -b here */
 
@@ -320,6 +319,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 	    appendLineStringBuf((arg == 'a' ? after : before), chptr);
 	    free(chptr);
 	}
+	free(optArg);
     }
 
     if (arg < -1) {
