@@ -1231,7 +1231,7 @@ package or when debugging this package.\
 %{expand:%__scm_setup_git %{-q}}
 
 %__scm_apply_git_am(qp:m:)\
-%{__git} am %{-q} %{-p:-p%{-p*}}
+%{__git} am --reject %{-q} %{-p:-p%{-p*}}
 
 # Quilt
 %__scm_setup_quilt(q) %{nil}
