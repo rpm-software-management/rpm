@@ -34,6 +34,13 @@ struct dbiCursor_s {
 
 static int sqlexec(sqlite3 *sdb, const char *fmt, ...);
 
+static void errCb(void *data, int err, const char *msg)
+{
+    rpmdb rdb = data;
+    rpmlog(RPMLOG_WARNING, "%s: %s: %s\n",
+		rdb->db_descr, sqlite3_errstr(err), msg);
+}
+
 static int dbiCursorResult(dbiCursor dbc)
 {
     int rc = sqlite3_errcode(dbc->sdb);
@@ -167,6 +174,7 @@ static int sqlite_init(rpmdb rdb, const char * dbhome)
 	    goto exit;
 	}
 	sqlite3_busy_timeout(sdb, sleep_ms);
+	sqlite3_config(SQLITE_CONFIG_LOG, errCb, rdb);
 
 	rdb->db_cache = stmtHashCreate(31, rstrhash, strcmp,
 				   (stmtHashFreeKey)rfree,
