@@ -893,6 +893,7 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	SINGLE_TOKEN_ONLY;
 	if (addIcon(pkg, field))
 	    goto exit;
+	spec->numSources++;
 	break;
     case RPMTAG_NOSOURCE:
     case RPMTAG_NOPATCH:
