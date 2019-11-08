@@ -60,6 +60,13 @@ typedef rpmRC (*plugin_fsm_file_prepare_func)(rpmPlugin plugin, rpmfi fi,
 					      int fd, const char* path,
 					      const char *dest,
 					      mode_t file_mode, rpmFsmOp op);
+typedef rpmRC (*plugin_fsm_file_install_func)(rpmPlugin plugin, rpmfi fi,
+					      const char* path,
+					      mode_t file_mode, rpmFsmOp op);
+typedef rpmRC (*plugin_fsm_file_archive_reader_func)(rpmPlugin plugin,
+						     FD_t payload,
+						     rpmfiles files, rpmfi *fi);
+
 
 typedef struct rpmPluginHooks_s * rpmPluginHooks;
 struct rpmPluginHooks_s {
@@ -80,6 +87,8 @@ struct rpmPluginHooks_s {
     plugin_fsm_file_pre_func		fsm_file_pre;
     plugin_fsm_file_post_func		fsm_file_post;
     plugin_fsm_file_prepare_func	fsm_file_prepare;
+    plugin_fsm_file_install_func	fsm_file_install;
+    plugin_fsm_file_archive_reader_func	fsm_file_archive_reader;
 };
 
 #ifdef __cplusplus

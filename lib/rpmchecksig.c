@@ -20,6 +20,7 @@
 #include "rpmio/rpmio_internal.h" 	/* fdSetBundle() */
 #include "lib/rpmlead.h"
 #include "lib/header_internal.h"
+#include "lib/rpmextents_internal.h"
 #include "lib/rpmvs.h"
 
 #include "debug.h"
@@ -208,36 +209,24 @@ exit:
 }
 
 static int rpmpkgVerifySigs(rpmKeyring keyring, int vfylevel, rpmVSFlags flags,
-			   FD_t fd, const char *fn)
+			   FD_t fd, rpmsinfoCb cb, void *cbdata)
 {
     char *msg = NULL;
-    struct vfydata_s vd = { .seen = 0,
-			    .bad = 0,
-			    .verbose = rpmIsVerbose(),
-    };
     int rc;
-    struct rpmvs_s *vs = rpmvsCreate(vfylevel, flags, keyring);
 
-    rpmlog(RPMLOG_NOTICE, "%s:%s", fn, vd.verbose ? "\n" : "");
+
+    if(isTranscodedRpm(fd) == RPMRC_OK){
+	return extentsVerifySigs(fd, 1);
+    }
+
+    struct rpmvs_s *vs = rpmvsCreate(vfylevel, flags, keyring);
 
     rc = rpmpkgRead(vs, fd, NULL, NULL, &msg);
 
     if (rc)
 	goto exit;
 
-    rc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, vfyCb, &vd);
-
-    if (!vd.verbose) {
-	if (vd.seen & RPMSIG_DIGEST_TYPE) {
-	    rpmlog(RPMLOG_NOTICE, " %s", (vd.bad & RPMSIG_DIGEST_TYPE) ?
-					_("DIGESTS") : _("digests"));
-	}
-	if (vd.seen & RPMSIG_SIGNATURE_TYPE) {
-	    rpmlog(RPMLOG_NOTICE, " %s", (vd.bad & RPMSIG_SIGNATURE_TYPE) ?
-					_("SIGNATURES") : _("signatures"));
-	}
-	rpmlog(RPMLOG_NOTICE, " %s\n", rc ? _("NOT OK") : _("OK"));
-    }
+    rc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, cb, cbdata);
 
 exit:
     if (rc && msg)
@@ -247,15 +236,39 @@ exit:
     return rc;
 }
 
+static void rpmkgVerifySigsPreLogging(struct vfydata_s *vd, const char *fn){
+    rpmlog(RPMLOG_NOTICE, "%s:%s", fn, vd->verbose ? "\n" : "");
+}
+
+static void rpmkgVerifySigsPostLogging(struct vfydata_s *vd, int rc){
+    if (!vd->verbose) {
+	if (vd->seen & RPMSIG_DIGEST_TYPE) {
+	    rpmlog(RPMLOG_NOTICE, " %s", (vd->bad & RPMSIG_DIGEST_TYPE) ?
+					_("DIGESTS") : _("digests"));
+	}
+	if (vd->seen & RPMSIG_SIGNATURE_TYPE) {
+	    rpmlog(RPMLOG_NOTICE, " %s", (vd->bad & RPMSIG_SIGNATURE_TYPE) ?
+					_("SIGNATURES") : _("signatures"));
+	}
+	rpmlog(RPMLOG_NOTICE, " %s\n", rc ? _("NOT OK") : _("OK"));
+    }
+}
+
 /* Wrapper around rpmkVerifySigs to preserve API */
 int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd, const char * fn)
 {
     int rc = 1; /* assume failure */
+    struct vfydata_s vd = { .seen = 0,
+			    .bad = 0,
+			    .verbose = rpmIsVerbose(),
+    };
     if (ts && qva && fd && fn) {
 	rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
 	rpmVSFlags vsflags = rpmtsVfyFlags(ts);
 	int vfylevel = rpmtsVfyLevel(ts);
-	rc = rpmpkgVerifySigs(keyring, vfylevel, vsflags, fd, fn);
+	rpmkgVerifySigsPreLogging(&vd, fn);
+	rc = rpmpkgVerifySigs(keyring, vfylevel, vsflags, fd, vfyCb, &vd);
+	rpmkgVerifySigsPostLogging(&vd, rc);
     	rpmKeyringFree(keyring);
     }
     return rc;
@@ -277,12 +290,22 @@ int rpmcliVerifySignatures(rpmts ts, ARGV_const_t argv)
 
     while ((arg = *argv++) != NULL) {
 	FD_t fd = Fopen(arg, "r.ufdio");
+	struct vfydata_s vd = { .seen = 0,
+				.bad = 0,
+				.verbose = rpmIsVerbose(),
+	};
 	if (fd == NULL || Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("%s: open failed: %s\n"), 
 		     arg, Fstrerror(fd));
 	    res++;
-	} else if (rpmpkgVerifySigs(keyring, vfylevel, vsflags, fd, arg)) {
+	} else {
+	    rpmkgVerifySigsPreLogging(&vd, arg);
+	    int rc = rpmpkgVerifySigs(keyring, vfylevel, vsflags, fd,
+				      vfyCb, &vd);
+	    rpmkgVerifySigsPostLogging(&vd, rc);
+	    if (rc) {
 	    res++;
+	    }
 	}
 
 	Fclose(fd);
@@ -290,3 +313,52 @@ int rpmcliVerifySignatures(rpmts ts, ARGV_const_t argv)
     rpmKeyringFree(keyring);
     return res;
 }
+
+struct vfydatafd_s {
+    size_t len;
+    char msg[BUFSIZ];
+};
+
+
+static int vfyFDCb(struct rpmsinfo_s *sinfo, void *cbdata)
+{
+    struct vfydatafd_s *vd = cbdata;
+    char *vmsg, *msg;
+    size_t n;
+    size_t remainder = BUFSIZ - vd->len >= 0 ? BUFSIZ - vd->len : 0;
+
+    vmsg = rpmsinfoMsg(sinfo);
+    rasprintf(&msg, "    %s\n", vmsg);
+    n = rstrlcpy(vd->msg + vd->len, msg, remainder);
+    free(vmsg);
+    free(msg);
+    if(n <= remainder){
+	vd->len += n;
+    }
+    return 1;
+}
+
+
+int rpmcliVerifySignaturesFD(rpmts ts, FD_t fdi, char **msg)
+{
+    rpmRC rc = RPMRC_FAIL;
+    rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+    rpmVSFlags vsflags = rpmtsVfyFlags(ts);
+    int vfylevel = rpmtsVfyLevel(ts);
+    struct vfydatafd_s vd = {.len = 0};
+
+    vsflags |= rpmcliVSFlags;
+    if (rpmcliVfyLevelMask) {
+	vfylevel &= ~rpmcliVfyLevelMask;
+	rpmtsSetVfyLevel(ts, vfylevel);
+    }
+
+    if (!rpmpkgVerifySigs(keyring, vfylevel, vsflags, fdi, vfyFDCb, &vd)) {
+	rc = RPMRC_OK;
+    }
+    *msg = strdup(vd.msg);
+
+    rpmKeyringFree(keyring);
+    return rc;
+}
+

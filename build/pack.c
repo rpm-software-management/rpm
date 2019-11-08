@@ -495,7 +495,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     }
 
     /* Write the lead section into the package. */
-    if (rpmLeadWrite(fd, pkg->header)) {
+    if (rpmLeadWriteFromHeader(fd, pkg->header)) {
 	rpmlog(RPMLOG_ERR, _("Unable to write package: %s\n"), Fstrerror(fd));
 	goto exit;
     }

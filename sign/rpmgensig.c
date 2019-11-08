@@ -679,7 +679,7 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	}
 
 	/* Write the lead/signature of the output rpm */
-	rc = rpmLeadWrite(ofd, h);
+	rc = rpmLeadWriteFromHeader(ofd, h);
 	if (rc != RPMRC_OK) {
 	    rpmlog(RPMLOG_ERR, _("%s: writeLead failed: %s\n"), trpm,
 		Fstrerror(ofd));

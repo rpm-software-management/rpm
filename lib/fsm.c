@@ -846,16 +846,35 @@ static int onChdir(rpmfi fi, void *data)
     return 0;
 }
 
-static rpmfi fsmIter(FD_t payload, rpmfiles files, rpmFileIter iter, void *data)
+static rpmRC fsmIter(FD_t payload, rpmfiles files, rpmFileIter iter, void *data, rpmPlugins plugins, rpmfi *ret)
 {
     rpmfi fi;
-    if (payload)
-	fi = rpmfiNewArchiveReader(payload, files, RPMFI_ITER_READ_ARCHIVE);
-    else
+    rpmRC rc = RPMRC_OK;
+
+    if (payload) {
+	rpmRC plugin_rc = rpmpluginsCallFsmFileArchiveReader(plugins, payload, files, &fi);
+	switch(plugin_rc) {
+	case RPMRC_PLUGIN_CONTENTS:
+	    if(fi == NULL) {
+	    rc = RPMERR_BAD_MAGIC;
+	    }
+	    break;
+	case RPMRC_OK:
+	    fi = rpmfiNewArchiveReader(payload, files, RPMFI_ITER_READ_ARCHIVE);
+	    if (fi == NULL) {
+	    rc = RPMERR_BAD_MAGIC;
+	    }
+	    break;
+	default:
+	    rc = RPMRC_FAIL;
+	}
+    } else
 	fi = rpmfilesIter(files, iter);
     if (fi && data)
 	rpmfiSetOnChdir(fi, onChdir, data);
-    return fi;
+    *ret = fi;
+
+    return rc;
 }
 
 static rpmfi fsmIterFini(rpmfi fi, struct diriter_s *di)
@@ -916,13 +935,11 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     if (rc)
 	goto exit;
 
-    fi = fsmIter(payload, files,
-		 payload ? RPMFI_ITER_READ_ARCHIVE : RPMFI_ITER_FWD, &di);
+    rc = fsmIter(payload, files,
+		 payload ? RPMFI_ITER_READ_ARCHIVE : RPMFI_ITER_FWD, &di, plugins, &fi);
 
-    if (fi == NULL) {
-        rc = RPMERR_BAD_MAGIC;
-        goto exit;
-    }
+    if (rc)
+	goto exit;
 
     /* Process the payload */
     while (!rc && (fx = rpmfiNext(fi)) >= 0) {
@@ -978,7 +995,12 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	    if (fp->action == FA_TOUCH)
 		goto setmeta;
 
-            if (S_ISREG(fp->sb.st_mode)) {
+	    rpmRC plugin_rc = rpmpluginsCallFsmFileInstall(plugins, fi, fp->fpath, fp->sb.st_mode, fp->action);
+	    if(!(plugin_rc == RPMRC_PLUGIN_CONTENTS || plugin_rc == RPMRC_OK)){
+		rc = plugin_rc;
+	    } else if(plugin_rc == RPMRC_PLUGIN_CONTENTS){
+		rc = RPMRC_OK;
+	    } else if (S_ISREG(fp->sb.st_mode)) {
 		if (rc == RPMERR_ENOENT) {
 		    rc = fsmMkfile(di.dirfd, fi, fp, files, psm, nodigest,
 				   &firstlink, &firstlinkfile, &di.firstdir,
@@ -1045,7 +1067,7 @@ setmeta:
 	rc = fx;
 
     /* If all went well, commit files to final destination */
-    fi = fsmIter(NULL, files, RPMFI_ITER_FWD, &di);
+    fsmIter(NULL, files, RPMFI_ITER_FWD, &di, plugins, &fi);
     while (!rc && (fx = rpmfiNext(fi)) >= 0) {
 	struct filedata_s *fp = &fdata[fx];
 
@@ -1074,7 +1096,7 @@ setmeta:
 
     /* On failure, walk backwards and erase non-committed files */
     if (rc) {
-	fi = fsmIter(NULL, files, RPMFI_ITER_BACK, &di);
+	fsmIter(NULL, files, RPMFI_ITER_BACK, &di, plugins, &fi);
 	while ((fx = rpmfiNext(fi)) >= 0) {
 	    struct filedata_s *fp = &fdata[fx];
 
@@ -1107,13 +1129,15 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile)
 {
     struct diriter_s di = { -1, -1 };
-    rpmfi fi = fsmIter(NULL, files, RPMFI_ITER_BACK, &di);
+    rpmfi fi;
     rpmfs fs = rpmteGetFileStates(te);
     rpmPlugins plugins = rpmtsPlugins(ts);
     int fc = rpmfilesFC(files);
     int fx = -1;
     struct filedata_s *fdata = xcalloc(fc, sizeof(*fdata));
     int rc = 0;
+
+    fsmIter(NULL, files, RPMFI_ITER_BACK, &di, plugins, &fi);
 
     while (!rc && (fx = rpmfiNext(fi)) >= 0) {
 	struct filedata_s *fp = &fdata[fx];

@@ -24,24 +24,6 @@ static unsigned char const lead_magic[] = {
     RPMLEAD_MAGIC0, RPMLEAD_MAGIC1, RPMLEAD_MAGIC2, RPMLEAD_MAGIC3
 };
 
-/** \ingroup lead
- * The lead data structure.
- * The lead needs to be 8 byte aligned.
- * @deprecated The lead (except for signature_type) is legacy.
- * @todo Don't use any information from lead.
- */
-struct rpmlead_s {
-    unsigned char magic[4];
-    unsigned char major;
-    unsigned char minor;
-    short type;
-    short archnum;
-    char name[66];
-    short osnum;
-    short signature_type;       /*!< Signature header type (RPMSIG_HEADERSIG) */
-    char reserved[16];      /*!< Pad to 96 bytes -- 8 byte aligned! */
-};
-
 static int rpmLeadFromHeader(Header h, struct rpmlead_s *l)
 {
     if (h != NULL) {
@@ -70,13 +52,23 @@ static int rpmLeadFromHeader(Header h, struct rpmlead_s *l)
 }
 
 /* The lead needs to be 8 byte aligned */
-rpmRC rpmLeadWrite(FD_t fd, Header h)
+rpmRC rpmLeadWriteFromHeader(FD_t fd, Header h)
 {
     rpmRC rc = RPMRC_FAIL;
     struct rpmlead_s l;
 
-    if (rpmLeadFromHeader(h, &l)) {
-	
+    if (rpmLeadFromHeader(h, &l)) {	
+	rc = rpmLeadWrite(fd, l);
+    }
+
+    return rc;
+}
+
+/* The lead needs to be 8 byte aligned */
+rpmRC rpmLeadWrite(FD_t fd, struct rpmlead_s l)
+{
+    rpmRC rc = RPMRC_FAIL;
+
 	l.type = htons(l.type);
 	l.archnum = htons(l.archnum);
 	l.osnum = htons(l.osnum);
@@ -84,7 +76,6 @@ rpmRC rpmLeadWrite(FD_t fd, Header h)
 	    
 	if (Fwrite(&l, 1, sizeof(l), fd) == sizeof(l))
 	    rc = RPMRC_OK;
-    }
 
     return rc;
 }
@@ -107,6 +98,11 @@ static rpmRC rpmLeadCheck(struct rpmlead_s *lead, char **msg)
 }
 
 rpmRC rpmLeadRead(FD_t fd, char **emsg)
+{
+    return rpmLeadReadAndReturn(fd, emsg, NULL);
+}
+
+rpmRC rpmLeadReadAndReturn(FD_t fd, char **emsg, struct rpmlead_s * ret)
 {
     rpmRC rc = RPMRC_OK;
     struct rpmlead_s l;
@@ -135,6 +131,9 @@ rpmRC rpmLeadRead(FD_t fd, char **emsg)
 	else
 	    free(err);
     }
+
+	if (ret)
+		*ret = l;
 
     return rc;
 }

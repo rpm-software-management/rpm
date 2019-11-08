@@ -49,6 +49,16 @@ const char * pgpValString(pgpValType type, uint8_t val)
     return (tbl != NULL) ? pgpValStr(tbl, val) : NULL;
 }
 
+int pgpStringVal(pgpValType type, const char *str, uint8_t *val)
+{
+    pgpValTbl tbl = pgpValTable(type);
+    if (tbl == NULL) return -1;
+    int v = pgpValTok(tbl, str, str + strlen(str));
+    if (v == -1) return -1;
+    *val = (uint8_t)v;
+    return 0;
+}
+
 char *pgpIdentItem(pgpDigParams digp)
 {
     char *id = NULL;
