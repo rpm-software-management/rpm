@@ -356,13 +356,28 @@ rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, rpmfi fi, const char *path,
     plugin_fsm_file_pre_func hookFunc;
     int i;
     rpmRC rc = RPMRC_OK;
+    rpmRC hook_rc;
 
     for (i = 0; i < plugins->count; i++) {
 	rpmPlugin plugin = plugins->plugins[i];
 	RPMPLUGINS_SET_HOOK_FUNC(fsm_file_pre);
-	if (hookFunc && hookFunc(plugin, fi, path, file_mode, op) == RPMRC_FAIL) {
-	    rpmlog(RPMLOG_ERR, "Plugin %s: hook fsm_file_pre failed\n", plugin->name);
-	    rc = RPMRC_FAIL;
+	if (hookFunc) {
+	    hook_rc = hookFunc(plugin, fi, path, file_mode, op);
+	    if (hook_rc == RPMRC_FAIL) {
+		rpmlog(RPMLOG_ERR, "Plugin %s: hook fsm_file_pre failed\n", plugin->name);
+		rc = RPMRC_FAIL;
+	    } else if (hook_rc == RPMRC_PLUGIN_CONTENTS && rc != RPMRC_FAIL) {
+		if (rc == RPMRC_PLUGIN_CONTENTS) {
+		    /*
+		    Another plugin already said it'd handle contents. It's undefined how
+		    these would combine, so treat this as a failure condition.
+		    */
+		    rc = RPMRC_FAIL;
+		} else {
+		    /* Plugin will handle content */
+		    rc = RPMRC_PLUGIN_CONTENTS;
+		}
+	    }
 	}
     }
 

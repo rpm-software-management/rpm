@@ -7,6 +7,7 @@
 
 #include <utime.h>
 #include <errno.h>
+#include <stdbool.h>
 #if WITH_CAP
 #include <sys/capability.h>
 #endif
@@ -18,6 +19,7 @@
 
 #include "rpmio/rpmio_internal.h"	/* fdInit/FiniDigest */
 #include "lib/fsm.h"
+#include "lib/rpmlib.h"
 #include "lib/rpmte_internal.h"	/* XXX rpmfs */
 #include "lib/rpmplugins.h"	/* rpm plugins hooks */
 #include "lib/rpmug.h"
@@ -835,7 +837,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile)
 {
     FD_t payload = rpmtePayload(te);
-    rpmfi fi = rpmfiNewArchiveReader(payload, files, RPMFI_ITER_READ_ARCHIVE);
+    rpmfi fi;
     rpmfs fs = rpmteGetFileStates(te);
     rpmPlugins plugins = rpmtsPlugins(ts);
     struct stat sb;
@@ -850,10 +852,21 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     char *tid = NULL;
     const char *suffix;
     char *fpath = NULL;
+    Header h = rpmteHeader(te);
+    const char *payloadfmt = headerGetString(h, RPMTAG_PAYLOADFORMAT);
+    bool cpio = true;
 
-    if (fi == NULL) {
-	rc = RPMERR_BAD_MAGIC;
-	goto exit;
+    if (payloadfmt && rstreq(payloadfmt, "clon")) {
+	cpio = false;
+    }
+    if (cpio) {
+	fi = rpmfiNewArchiveReader(payload, files, RPMFI_ITER_READ_ARCHIVE);
+	if (fi == NULL) {
+	    rc = RPMERR_BAD_MAGIC;
+	    goto exit;
+	}
+    } else {
+	fi = rpmfilesIter(files, RPMFI_ITER_FWD);
     }
 
     /* transaction id used for temporary path suffix while installing */
@@ -893,10 +906,20 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	/* Run fsm file pre hook for all plugins */
 	rc = rpmpluginsCallFsmFilePre(plugins, fi, fpath,
 				      sb.st_mode, action);
-	if (rc) {
-	    skip = 1;
-	} else {
+	skip = skip || rpmfiFFlags(fi) & RPMFILE_GHOST;
+	bool plugin_contents = false;
+	switch (rc) {
+	case RPMRC_OK:
 	    setFileState(fs, rpmfiFX(fi));
+	    break;
+	case RPMRC_PLUGIN_CONTENTS:
+	    plugin_contents = true;
+	    // reduce reads on cpio to this value. Could be zero if
+	    // this is from a hard link.
+	    rc = RPMRC_OK;
+	    break;
+	default:
+	    skip = 1;
 	}
 
         if (!skip) {
@@ -926,8 +949,12 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 
             if (S_ISREG(sb.st_mode)) {
 		if (rc == RPMERR_ENOENT) {
-		    rc = fsmMkfile(fi, fpath, files, psm, nodigest,
-				   &setmeta, &firsthardlink, &firstlinkfile);
+		    if (plugin_contents) {
+			rc = RPMRC_OK;
+		    } else {
+			rc = fsmMkfile(fi, fpath, files, psm, nodigest,
+				&setmeta, &firsthardlink, &firstlinkfile);
+		    }
 		}
             } else if (S_ISDIR(sb.st_mode)) {
                 if (rc == RPMERR_ENOENT) {
@@ -1011,7 +1038,10 @@ touch:
 exit:
 
     /* No need to bother with close errors on read */
-    rpmfiArchiveClose(fi);
+    if (cpio) {
+	rpmfiArchiveClose(fi);
+    }
+	h = headerFree(h);
     rpmfiFree(fi);
     Fclose(payload);
     free(tid);

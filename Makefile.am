@@ -105,7 +105,7 @@ pkginclude_HEADERS += build/rpmfc.h
 pkginclude_HEADERS += build/rpmspec.h
 
 
-bin_PROGRAMS =		rpm rpm2cpio rpmbuild rpmdb rpmkeys rpmsign rpmspec
+bin_PROGRAMS =		rpm rpm2cpio rpmbuild rpmdb rpmkeys rpmsign rpmspec rpm2extents
 if WITH_ARCHIVE
 bin_PROGRAMS += 	rpm2archive 
 endif
@@ -158,6 +158,10 @@ rpmspec_LDADD +=	@WITH_POPT_LIB@
 rpm2cpio_SOURCES =	rpm2cpio.c debug.h system.h
 rpm2cpio_LDADD =	lib/librpm.la rpmio/librpmio.la
 rpm2cpio_LDADD +=	@WITH_POPT_LIB@
+
+rpm2extents_SOURCES =	rpm2extents.c debug.h system.h
+rpm2extents_LDADD =	lib/librpm.la rpmio/librpmio.la
+rpm2extents_LDADD +=	@WITH_POPT_LIB@
 
 rpm2archive_SOURCES =	rpm2archive.c debug.h system.h
 rpm2archive_LDADD =	lib/librpm.la rpmio/librpmio.la

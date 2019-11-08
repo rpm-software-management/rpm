@@ -974,6 +974,15 @@ typedef rpmFlags rpmDigestFlags;
 const char * pgpValString(pgpValType type, uint8_t val);
 
 /** \ingroup rpmpgp
+ * Return  OpenPGP value for a string.
+ * @param type		type of value
+ * @param str		string to lookup
+ * @param[out] val  byte value associated with string
+ * @return		0 on success else -1
+ */
+int pgpStringVal(pgpValType type, const char *str, uint8_t *val);
+
+/** \ingroup rpmpgp
  * Return (native-endian) integer from big-endian representation.
  * @param s		pointer to big-endian integer
  * @param nbytes	no. of bytes
