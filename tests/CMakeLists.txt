@@ -43,6 +43,7 @@ set(TESTSUITE_AT
 	rpmorder.at
 	rpmvfylevel.at
 	rpmpgp.at
+	rpm2extents.at
 )
 
 set(AUTOTEST ${AUTOM4TE} --language=autotest)

@@ -10,6 +10,24 @@ typedef const struct pgpValTbl_s {
 
 const char * pgpValStr(pgpValTbl vs, uint8_t val);
 
+/** \ingroup rpmpgp
+ * Return value of an OpenPGP string.
+ * @param vs		table of (string,value) pairs
+ * @param s		string token to lookup
+ * @param se		end-of-string address
+ * @return		byte value
+ */
+static inline
+int pgpValTok(pgpValTbl vs, const char * s, const char * se)
+{
+    do {
+	size_t vlen = strlen(vs->str);
+	if (vlen <= (se-s) && rstreqn(s, vs->str, vlen))
+	    break;
+    } while ((++vs)->val != -1);
+    return vs->val;
+}
+
 
 static struct pgpValTbl_s const pgpSigTypeTbl[] = {
     { PGPSIGTYPE_BINARY,	"Binary document signature" },

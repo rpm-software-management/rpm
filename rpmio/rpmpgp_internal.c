@@ -89,24 +89,6 @@ static void pgpPrtTime(const char * pre, const uint8_t *p, size_t plen)
 }
 
 /** \ingroup rpmpgp
- * Return value of an OpenPGP string.
- * @param vs		table of (string,value) pairs
- * @param s		string token to lookup
- * @param se		end-of-string address
- * @return		byte value
- */
-static inline
-int pgpValTok(pgpValTbl vs, const char * s, const char * se)
-{
-    do {
-	size_t vlen = strlen(vs->str);
-	if (vlen <= (se-s) && rstreqn(s, vs->str, vlen))
-	    break;
-    } while ((++vs)->val != -1);
-    return vs->val;
-}
-
-/** \ingroup rpmpgp
  * Decode length from 1, 2, or 5 octet body length encoding, used in
  * new format packet headers and V4 signature subpackets.
  * Partial body lengths are (intentionally) not supported.

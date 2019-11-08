@@ -168,6 +168,23 @@ rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins, rpmfi fi,
                                    int fd, const char *path, const char *dest,
                                    mode_t mode, rpmFsmOp op);
 
+/** \ingroup rpmplugins
+ * Call the fsm file install plugin hook
+ * @param plugins	plugins structure
+ * @param fi		file info iterator (or NULL)
+ * @param path		file object path
+ * @param file_mode	file object mode
+ * @param op		file operation + associated flags
+ * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
+ */
+RPM_GNUC_INTERNAL
+rpmRC rpmpluginsCallFsmFileInstall(rpmPlugins plugins, rpmfi fi,
+				   const char* path, mode_t file_mode,
+				   rpmFsmOp op);
+
+RPM_GNUC_INTERNAL
+rpmRC rpmpluginsCallFsmFileArchiveReader(rpmPlugins plugins, FD_t payload,
+					 rpmfiles files, rpmfi *fi);
 #ifdef __cplusplus
 }
 #endif

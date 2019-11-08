@@ -1,0 +1,151 @@
+#    rpm2extents.at: Some very basic checks
+#
+#    Copyright (C) 2022  Manu Bretelle <chantr4@gmail.com>
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+AT_BANNER([rpm2extents tests])
+
+# ------------------------------
+
+# check that transcoder write magic at the end
+AT_SETUP([rpm2extents magic])
+AT_KEYWORDS([rpm2extents])
+AT_CHECK([runroot_other cat /data/RPMS/hello-2.0-1.x86_64.rpm | runroot_other rpm2extents SHA256 | tail -c8],
+[0],
+[KWTSH100],
+[ignore])
+AT_CLEANUP
+
+# Check that transcoder writes checksig return code and content.
+#
+AT_SETUP([rpm2extents signature])
+AT_KEYWORDS([rpm2extents])
+AT_CHECK([
+RPMDB_INIT
+
+runroot_other cat /data/RPMS/hello-2.0-1.x86_64-signed.rpm | runroot_other rpm2extents SHA256 > /tmp/hello-2.0-1.x86_64-signed.rpm 2> /dev/null
+rpm2extents_dump --dump-signature /tmp/hello-2.0-1.x86_64-signed.rpm
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot_other cat /data/RPMS/hello-2.0-1.x86_64-signed.rpm | runroot_other rpm2extents SHA256 > /tmp/hello-2.0-1.x86_64-signed.rpm
+rpm2extents_dump --dump-signature /tmp/hello-2.0-1.x86_64-signed.rpm
+],
+[0],
+[RPMSignOutput RC 2
+RPMSignOutput Content     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+    Header SHA256 digest: OK
+    Header SHA1 digest: OK
+    Payload SHA256 digest: OK
+    V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+    MD5 digest: OK
+
+RPMSignOutput RC 0
+RPMSignOutput Content     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
+    Header SHA256 digest: OK
+    Header SHA1 digest: OK
+    Payload SHA256 digest: OK
+    V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
+    MD5 digest: OK
+
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpm2extents signature verification])
+AT_KEYWORDS([rpm2extents])
+AT_CHECK([
+RPMDB_INIT
+
+runroot_other cat /data/RPMS/hello-2.0-1.x86_64-signed.rpm | runroot_other rpm2extents SHA256 > ${RPMTEST}/tmp/hello-2.0-1.x86_64-signed.rpm 2> /dev/null
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64-signed.rpm; echo $?
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot_other cat /data/RPMS/hello-2.0-1.x86_64-signed.rpm | runroot_other rpm2extents SHA256 > ${RPMTEST}/tmp/hello-2.0-1.x86_64-signed.rpm
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64-signed.rpm; echo $?
+],
+[0],
+[/tmp/hello-2.0-1.x86_64-signed.rpm:
+    Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+    Header SHA256 digest: OK
+    Header SHA1 digest: OK
+    Payload SHA256 digest: OK
+    V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+    MD5 digest: OK
+1
+/tmp/hello-2.0-1.x86_64-signed.rpm:
+    Header V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
+    Header SHA256 digest: OK
+    Header SHA1 digest: OK
+    Payload SHA256 digest: OK
+    V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
+    MD5 digest: OK
+0
+],
+[])
+AT_CLEANUP
+
+# check that package in denylist is not transcoded
+AT_SETUP([rpm2extents denylist])
+AT_KEYWORDS([rpm2extents])
+AT_CHECK([
+export LIBREPO_TRANSCODE_RPMS_DENYLIST="vim,hello,cowsay"
+runroot_other cat /data/RPMS/hello-2.0-1.x86_64.rpm | runroot_other rpm2extents SHA256 | runroot_other cmp /data/RPMS/hello-2.0-1.x86_64.rpm -],
+[0],
+[],
+[ignore])
+AT_CLEANUP
+
+AT_SETUP([rpm2extents install package])
+AT_KEYWORDS([rpm2extents reflink])
+AT_SKIP_IF([$REFLINK_DISABLED])
+AT_CHECK([
+RPMDB_INIT
+
+runroot_other cat /data/RPMS/hello-2.0-1.x86_64.rpm | runroot_other rpm2extents SHA256 > ${RPMTEST}/tmp/hello-2.0-1.x86_64.rpm 2> /dev/null
+runroot_plugins rpm -i --nodeps --undefine=%__transaction_dbus_announce /tmp/hello-2.0-1.x86_64.rpm
+test -f ${RPMTEST}/usr/bin/hello
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+AT_SETUP([reflink ignores non-transcoded package])
+AT_KEYWORDS([reflink])
+AT_CHECK([
+RPMDB_INIT
+
+runroot_plugins rpm -i --nodeps --undefine=%__transaction_dbus_announce /data/RPMS/hello-2.0-1.x86_64.rpm && exit $?
+# Check that the file is properly installed in chroot
+test -f ${RPMTEST}/usr/bin/hello
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+AT_SETUP([reflink hardlink package])
+AT_KEYWORDS([reflink hardlink])
+AT_SKIP_IF([$REFLINK_DISABLED])
+AT_CHECK([
+RPMDB_INIT
+
+PKG=hlinktest-1.0-1.noarch.rpm
+runroot_other cat /data/RPMS/${PKG} | runroot_other rpm2extents SHA256 > ${RPMTEST}/tmp/${PKG} 2> /dev/null
+runroot_plugins rpm -i --nodeps --undefine=%__transaction_dbus_announce /tmp/${PKG}
+],
+[0],
+[],
+[])
+AT_CLEANUP

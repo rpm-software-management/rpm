@@ -37,6 +37,7 @@
 #include "lib/rpmfi_internal.h"	/* only internal apis */
 #include "lib/rpmte_internal.h"	/* only internal apis */
 #include "lib/rpmts_internal.h"
+#include "lib/rpmextents_internal.h"
 #include "lib/rpmvs.h"
 #include "rpmio/rpmhook.h"
 #include "lib/rpmtriggers.h"
@@ -1294,19 +1295,25 @@ static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
 
 	rpmtsNotify(ts, p, RPMCALLBACK_VERIFY_PROGRESS, oc++, total);
 	FD_t fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
-	if (fd != NULL) {
-	    prc = rpmpkgRead(vs, fd, NULL, NULL, &vd.msg);
-	    rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
+	if(fd != NULL && isTranscodedRpm(fd) == RPMRC_OK) {
+	    /* Transcoded RPMs are validated at transcoding time */
+	    prc = extentsVerifySigs(fd, 0);
+	    verified = prc == RPMRC_OK;
+	} else {
+	    if (fd != NULL) {
+		prc = rpmpkgRead(vs, fd, NULL, NULL, &vd.msg);
+		rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
+	    }
+	    if (prc == RPMRC_OK)
+		prc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, vfyCb, &vd);
+
+	    /* Record verify result */
+	    if (vd.type[RPMSIG_SIGNATURE_TYPE] == RPMRC_OK)
+		verified |= RPMSIG_SIGNATURE_TYPE;
+	    if (vd.type[RPMSIG_DIGEST_TYPE] == RPMRC_OK)
+		verified |= RPMSIG_DIGEST_TYPE;
 	}
 
-	if (prc == RPMRC_OK)
-	    prc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, vfyCb, &vd);
-
-	/* Record verify result */
-	if (vd.type[RPMSIG_SIGNATURE_TYPE] == RPMRC_OK)
-	    verified |= RPMSIG_SIGNATURE_TYPE;
-	if (vd.type[RPMSIG_DIGEST_TYPE] == RPMRC_OK)
-	    verified |= RPMSIG_DIGEST_TYPE;
 	rpmteSetVerified(p, verified);
 
 	if (prc)

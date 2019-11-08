@@ -299,6 +299,7 @@ add_executable(rpm2cpio rpm2cpio.c cliutils)
 add_executable(rpmsign rpmsign.c cliutils)
 add_executable(rpmbuild rpmbuild.c cliutils)
 add_executable(rpmspec rpmspec.c cliutils)
+add_executable(rpm2extents rpm2extents.c)
 
 add_executable(rpmdeps tools/rpmdeps.c)
 add_executable(rpmgraph tools/rpmgraph.c)
@@ -339,7 +340,7 @@ foreach(cmd rpmverify rpmquery)
 endforeach()
 install(TARGETS
 	rpm rpmdb rpmkeys rpm2cpio rpmsign rpmbuild rpmspec
-	rpmlua rpmgraph rpmsort
+	rpmlua rpmgraph rpmsort rpm2extents
 )
 install(TARGETS elfdeps rpmdeps rpmuncompress DESTINATION ${RPMCONFIGDIR})
 

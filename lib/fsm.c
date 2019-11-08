@@ -916,12 +916,25 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     if (rc)
 	goto exit;
 
-    fi = fsmIter(payload, files,
+    rpmRC plugin_rc = rpmpluginsCallFsmFileArchiveReader(plugins, payload, files, &fi);
+    switch(plugin_rc) {
+	case RPMRC_PLUGIN_CONTENTS:
+	    if(fi == NULL) {
+		rc = RPMERR_BAD_MAGIC;
+		goto exit;
+	    }
+	    rc = RPMRC_OK;
+	    break;
+	case RPMRC_OK:
+	    fi = fsmIter(payload, files,
 		 payload ? RPMFI_ITER_READ_ARCHIVE : RPMFI_ITER_FWD, &di);
-
-    if (fi == NULL) {
-        rc = RPMERR_BAD_MAGIC;
-        goto exit;
+	     if (fi == NULL) {
+		rc = RPMERR_BAD_MAGIC;
+		goto exit;
+	    }
+	    break;
+	default:
+	    rc = RPMRC_FAIL;
     }
 
     /* Process the payload */
@@ -978,7 +991,12 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	    if (fp->action == FA_TOUCH)
 		goto setmeta;
 
-            if (S_ISREG(fp->sb.st_mode)) {
+	    rpmRC plugin_rc = rpmpluginsCallFsmFileInstall(plugins, fi, fp->fpath, fp->sb.st_mode, fp->action);
+	    if(!(plugin_rc == RPMRC_PLUGIN_CONTENTS || plugin_rc == RPMRC_OK)){
+		rc = plugin_rc;
+	    } else if(plugin_rc == RPMRC_PLUGIN_CONTENTS){
+		rc = RPMRC_OK;
+	    } else if (S_ISREG(fp->sb.st_mode)) {
 		if (rc == RPMERR_ENOENT) {
 		    rc = fsmMkfile(di.dirfd, fi, fp, files, psm, nodigest,
 				   &firstlink, &firstlinkfile, &di.firstdir,
