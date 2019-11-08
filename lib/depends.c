@@ -77,6 +77,8 @@ static rpmRC headerCheckPayloadFormat(Header h) {
      */
     if (!payloadfmt) return rc;
 
+    if (rstreq(payloadfmt, "clon")) return rc;
+
     if (!rstreq(payloadfmt, "cpio")) {
         char *nevra = headerGetAsString(h, RPMTAG_NEVRA);
         if (payloadfmt && rstreq(payloadfmt, "drpm")) {

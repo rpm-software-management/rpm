@@ -12,6 +12,7 @@ add_executable(rpmgraph rpmgraph.c)
 add_executable(rpmlua rpmlua.c)
 add_executable(rpmuncompress rpmuncompress.c)
 add_executable(rpmdump rpmdump.c)
+add_executable(rpm2extents rpm2extents.c)
 
 target_link_libraries(rpmsign PRIVATE librpmsign)
 target_link_libraries(rpmlua PRIVATE LUA::LUA)
@@ -33,6 +34,7 @@ endif()
 
 target_include_directories(rpmlua PRIVATE ${CMAKE_SOURCE_DIR}/rpmio)
 target_include_directories(rpmgraph PRIVATE ${CMAKE_SOURCE_DIR}/lib)
+target_include_directories(rpm2extents PRIVATE ${CMAKE_SOURCE_DIR}/lib ${CMAKE_SOURCE_DIR}/rpmio)
 
 if (READLINE_FOUND)
 	target_link_libraries(rpmspec PRIVATE PkgConfig::READLINE)
@@ -70,5 +72,5 @@ install(TARGETS
 	rpm rpmdb rpmkeys rpmsign rpmbuild rpmspec
 	rpmlua rpmgraph
 )
-install(TARGETS rpmdeps rpmdump rpmuncompress DESTINATION ${RPM_CONFIGDIR})
+install(TARGETS rpmdeps rpmdump rpmuncompress rpm2extents DESTINATION ${RPM_CONFIGDIR})
 

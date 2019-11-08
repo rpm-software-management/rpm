@@ -43,10 +43,38 @@ static pgpValTbl pgpValTable(pgpValType type)
     return NULL;
 }
 
+/** \ingroup rpmpgp
+ * Return value of an OpenPGP string.
+ * @param vs		table of (string,value) pairs
+ * @param s		string token to lookup
+ * @param se		end-of-string address
+ * @return		byte value
+ */
+static inline
+int pgpValTok(pgpValTbl vs, const char * s, const char * se)
+{
+    do {
+	size_t vlen = strlen(vs->str);
+	if (vlen <= (se-s) && rstreqn(s, vs->str, vlen))
+	    break;
+    } while ((++vs)->val != -1);
+    return vs->val;
+}
+
 const char * pgpValString(pgpValType type, uint8_t val)
 {
     pgpValTbl tbl = pgpValTable(type);
     return (tbl != NULL) ? pgpValStr(tbl, val) : NULL;
+}
+
+int pgpStringVal(pgpValType type, const char *str, uint8_t *val)
+{
+    pgpValTbl tbl = pgpValTable(type);
+    if (tbl == NULL) return -1;
+    int v = pgpValTok(tbl, str, str + strlen(str));
+    if (v == -1) return -1;
+    *val = (uint8_t)v;
+    return 0;
 }
 
 char *pgpIdentItem(pgpDigParams digp)

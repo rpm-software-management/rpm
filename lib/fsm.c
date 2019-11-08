@@ -8,6 +8,7 @@
 #include <inttypes.h>
 #include <utime.h>
 #include <errno.h>
+#include <stdbool.h>
 #include <fcntl.h>
 #ifdef WITH_CAP
 #include <sys/capability.h>
@@ -17,6 +18,7 @@
 #include <rpm/rpmts.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
+#include <rpm/rpmlib.h>
 
 #include "rpmio_internal.h"	/* fdInit/FiniDigest */
 #include "fsm.h"
@@ -54,6 +56,7 @@ struct filedata_s {
     int stage;
     int setmeta;
     int skip;
+    bool plugin_contents;
     rpmFileAction action;
     const char *suffix;
     char *fpath;
@@ -886,6 +889,13 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     struct filedata_s *fdata = xcalloc(fc, sizeof(*fdata));
     struct filedata_s *firstlink = NULL;
     struct diriter_s di = { -1, -1 };
+    Header h = rpmteHeader(te);
+    const char *payloadfmt = headerGetString(h, RPMTAG_PAYLOADFORMAT);
+    bool cpio = true;
+
+    if (payloadfmt && rstreq(payloadfmt, "clon")) {
+	cpio = false;
+    }
 
     /* transaction id used for temporary path suffix while installing */
     rasprintf(&tid, ";%08x", (unsigned)rpmtsGetTid(ts));
@@ -910,7 +920,20 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	fp->setmeta = (fp->skip == 0) &&
 		      (fp->sb.st_nlink == 1 || fp->action == FA_TOUCH);
 
-	setFileState(fs, fx);
+	switch (rc) {
+	case RPMRC_OK:
+	    setFileState(fs, fx);
+	    break;
+	case RPMRC_PLUGIN_CONTENTS:
+	    fp->plugin_contents = true;
+	    // reduce reads on cpio to this value. Could be zero if
+	    // this is from a hard link.
+	    rc = RPMRC_OK;
+	    break;
+	default:
+	    fp->action = FA_SKIP;
+	    fp->skip = XFA_SKIPPING(fp->action);
+	}
 	fsmDebug(rpmfiDN(fi), fp->fpath, fp->action, &fp->sb);
 
 	fp->stage = FILE_PRE;
@@ -920,8 +943,12 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     if (rc)
 	goto exit;
 
-    fi = fsmIter(payload, files,
-		 payload ? RPMFI_ITER_READ_ARCHIVE : RPMFI_ITER_FWD, &di);
+    if (cpio) {
+	fi = fsmIter(payload, files,
+		     payload ? RPMFI_ITER_READ_ARCHIVE : RPMFI_ITER_FWD, &di);
+    } else {
+	fi = rpmfilesIter(files, RPMFI_ITER_FWD);
+    }
 
     if (fi == NULL) {
         rc = RPMERR_BAD_MAGIC;
@@ -944,6 +971,9 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
         if (!fp->skip) {
 	    int mayopen = 0;
 	    int fd = -1;
+
+	    if (!cpio && di.dirfd >= 0)
+		fsmClose(&di.dirfd);
 	    rc = ensureDir(plugins, rpmfiDN(fi), 0,
 			    (fp->action == FA_CREATE), 0, &di.dirfd);
 
@@ -953,9 +983,14 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	    }
 
 	    /* Run fsm file pre hook for all plugins */
-	    if (!rc)
+	    if (!rc) {
 		rc = rpmpluginsCallFsmFilePre(plugins, fi, fp->fpath,
 					      fp->sb.st_mode, fp->action);
+		if (rc == RPMRC_PLUGIN_CONTENTS) {
+		    fp->plugin_contents = true;
+		    rc = RPMRC_OK;
+		}
+	    }
 	    if (rc)
 		goto setmeta; /* for error notification */
 
@@ -985,9 +1020,13 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 
             if (S_ISREG(fp->sb.st_mode)) {
 		if (rc == RPMERR_ENOENT) {
-		    rc = fsmMkfile(di.dirfd, fi, fp, files, psm, nodigest,
-				   &firstlink, &firstlinkfile, &di.firstdir,
-				   &fd);
+		    if (fp->plugin_contents) {
+			rc = RPMRC_OK;
+		    } else {
+			rc = fsmMkfile(di.dirfd, fi, fp, files, psm, nodigest,
+				       &firstlink, &firstlinkfile,
+				       &di.firstdir, &fd);
+		    }
 		}
             } else if (S_ISDIR(fp->sb.st_mode)) {
                 if (rc == RPMERR_ENOENT) {
@@ -1055,11 +1094,17 @@ setmeta:
 	rc = fx;
 
     /* If all went well, commit files to final destination */
-    fi = fsmIter(NULL, files, RPMFI_ITER_FWD, &di);
+    if (cpio) {
+	fi = fsmIter(NULL, files, RPMFI_ITER_FWD, &di);
+    } else {
+	fi = rpmfilesIter(files, RPMFI_ITER_FWD);
+    }
     while (!rc && (fx = rpmfiNext(fi)) >= 0) {
 	struct filedata_s *fp = &fdata[fx];
 
 	if (!fp->skip) {
+	    if (!cpio && di.dirfd >= 0)
+		fsmClose(&di.dirfd);
 	    if (!rc)
 		rc = ensureDir(NULL, rpmfiDN(fi), 0, 0, 0, &di.dirfd);
 
