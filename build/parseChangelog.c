@@ -203,6 +203,8 @@ static rpmRC addChangelog(Header h, ARGV_const_t sb)
     time_t time;
     time_t lastTime = 0;
     time_t trimtime = rpmExpandNumeric("%{?_changelog_trimtime}");
+    int minchangescount = rpmExpandNumeric("%{?_changelog_mincount}");
+    int changescount = 0;
     char *date, *name, *text, *next;
     int date_words;      /* number of words in date string */
 
@@ -284,7 +286,7 @@ static rpmRC addChangelog(Header h, ARGV_const_t sb)
 	    *s-- = '\0';
 	}
 	
-	if ( !trimtime || time >= trimtime ) {
+	if ( !trimtime || time >= trimtime || changescount++ < minchangescount ) {
 	    addChangelogEntry(h, time, name, text);
 	} else break;
 	

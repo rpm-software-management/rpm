@@ -234,6 +234,10 @@ package or when debugging this package.\
 #	Any older entry is not packaged in binary packages.
 %_changelog_trimtime	0
 
+#	When using %_changelog_trimtime, ensure to keep at least
+#	this many entries to reduce confusion of users and tools
+%_changelog_mincount	1
+
 #	If true, set the SOURCE_DATE_EPOCH environment variable
 #	to the timestamp of the topmost changelog entry
 %source_date_epoch_from_changelog 0
