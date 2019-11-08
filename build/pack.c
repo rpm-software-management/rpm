@@ -566,6 +566,7 @@ exit:
     free(rpmio_flags);
     free(SHA1);
     free(SHA256);
+    free(upld);
 
     /* XXX Fish the pkgid out of the signature header. */
     if (pkgidp != NULL) {
