@@ -254,6 +254,8 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 		/* make sure it is in the past, so that clamping times works */
 		sdeint -= 43200;
 	    snprintf(sdestr, sizeof(sdestr), "%lli", sdeint);
+	    if (rpmExpandNumeric("%{?use_source_date_epoch_as_buildtime}"))
+	        spec->buildTime = sdeint;
 	    rpmlog(RPMLOG_NOTICE, _("setting %s=%s\n"), "SOURCE_DATE_EPOCH", sdestr);
 	    setenv("SOURCE_DATE_EPOCH", sdestr, 0);
 	    rpmtdFreeData(&td);
