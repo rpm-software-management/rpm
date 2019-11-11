@@ -7,6 +7,8 @@
 
 #include <errno.h>
 #include <sys/wait.h>
+#include <netdb.h>
+#include <time.h>
 
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
@@ -15,6 +17,50 @@
 #include "lib/rpmug.h"
 
 #include "debug.h"
+
+static rpm_time_t getBuildTime(void)
+{
+    rpm_time_t buildTime = 0;
+    char *srcdate;
+    time_t epoch;
+    char *endptr;
+
+    srcdate = getenv("SOURCE_DATE_EPOCH");
+    if (srcdate && rpmExpandNumeric("%{?use_source_date_epoch_as_buildtime}")) {
+        errno = 0;
+        epoch = strtol(srcdate, &endptr, 10);
+        if (srcdate == endptr || *endptr || errno != 0)
+            rpmlog(RPMLOG_ERR, _("unable to parse SOURCE_DATE_EPOCH\n"));
+        else
+            buildTime = (int32_t) epoch;
+    } else
+        buildTime = (int32_t) time(NULL);
+
+    return buildTime;
+}
+
+static char * buildHost(void)
+{
+    char* hostname;
+    struct hostent *hbn;
+    char *bhMacro;
+
+    bhMacro = rpmExpand("%{?_buildhost}", NULL);
+    if (strcmp(bhMacro, "") != 0) {
+        rasprintf(&hostname, "%s", bhMacro);
+    } else {
+        hostname = rcalloc(1024, sizeof(*hostname));
+        (void) gethostname(hostname, 1024);
+        hbn = gethostbyname(hostname);
+        if (hbn)
+            strcpy(hostname, hbn->h_name);
+        else
+            rpmlog(RPMLOG_WARNING,
+                    _("Could not canonicalize hostname: %s\n"), hostname);
+    }
+    free(bhMacro);
+    return(hostname);
+}
 
 /**
  */
@@ -259,6 +305,9 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 	    rpmtdFreeData(&td);
 	}
     }
+
+    spec->buildTime = getBuildTime();
+    spec->buildHost = buildHost();
 
     /* XXX TODO: rootDir is only relevant during build, eliminate from spec */
     spec->rootDir = buildArgs->rootdir;
