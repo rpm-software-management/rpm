@@ -1120,7 +1120,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	#pragma omp cancel parallel
     }
 
-    #pragma omp for reduction(+:nerrors)
+    #pragma omp for ordered reduction(+:nerrors)
     for (int ix = 0; ix < fc->nfiles; ix++) {
 	rpmsid ftypeId;
 	const char * ftype;
@@ -1164,7 +1164,6 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 		/* only executable files are critical to dep extraction */
 		if (is_executable) {
 		    nerrors++;
-		    #pragma omp cancel for
 		}
 		/* unrecognized non-executables get treated as "data" */
 		ftype = "data";
@@ -1185,6 +1184,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	fc->fcolor[ix] = fcolor;
 
 	/* Add to file class dictionary and index array */
+	#pragma omp ordered
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE)) {
 	    ftypeId = rpmstrPoolId(fc->cdict, ftype, 1);
 	    #pragma omp atomic
