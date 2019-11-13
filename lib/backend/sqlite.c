@@ -181,6 +181,7 @@ static int sqlite_init(rpmdb rdb, const char * dbhome)
 				   (stmtHashFreeData)sqlite3_finalize);
 
 	sqlexec(sdb, "PRAGMA secure_delete = OFF");
+	sqlexec(sdb, "PRAGMA case_sensitive_like = ON");
 	if (rdb->db_flags & RPMDB_FLAG_REBUILD) {
 	    sqlexec(sdb, "PRAGMA journal_mode = OFF");
 	    sqlexec(sdb, "PRAGMA locking_mode = EXCLUSIVE");
