@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2019-08-28 11:48+0300\n"
+"POT-Creation-Date: 2019-11-13 10:23+0200\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Serbian (http://www.transifex.com/rpm-team/rpm/language/sr/)\n"
@@ -625,36 +625,45 @@ msgstr ""
 msgid "no arguments given for parse"
 msgstr ""
 
-#: build/build.c:118
+#: build/build.c:33
+msgid "unable to parse SOURCE_DATE_EPOCH\n"
+msgstr ""
+
+#: build/build.c:59
+#, c-format
+msgid "Could not canonicalize hostname: %s\n"
+msgstr "Није могуће утврдити назив домаћина: %s\n"
+
+#: build/build.c:164
 #, c-format
 msgid "Unable to open temp file: %s\n"
 msgstr ""
 
-#: build/build.c:123
+#: build/build.c:169
 #, c-format
 msgid "Unable to open stream: %s\n"
 msgstr ""
 
-#: build/build.c:156
+#: build/build.c:202
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Извршавам(%s): %s\n"
 
-#: build/build.c:159
+#: build/build.c:205
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "Лош статус излаза из %s (%s)\n"
 
-#: build/build.c:229
+#: build/build.c:272
 msgid "Failed build dependencies:\n"
 msgstr "Неуспело прављење зависности:\n"
 
-#: build/build.c:260
+#: build/build.c:303
 #, c-format
 msgid "setting %s=%s\n"
 msgstr ""
 
-#: build/build.c:383
+#: build/build.c:429
 msgid ""
 "\n"
 "\n"
@@ -768,172 +777,172 @@ msgstr ""
 msgid "Path is outside buildroot: %s\n"
 msgstr ""
 
-#: build/files.c:1411
+#: build/files.c:1412
 #, c-format
 msgid "Directory not found: %s\n"
 msgstr ""
 
-#: build/files.c:1412 lib/rpminstall.c:459
+#: build/files.c:1413 lib/rpminstall.c:459
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Датотека није пронађена: %s\n"
 
-#: build/files.c:1424
+#: build/files.c:1434
 #, c-format
 msgid "Not a directory: %s\n"
 msgstr ""
 
-#: build/files.c:1578
+#: build/files.c:1588
 #, fuzzy, c-format
 msgid "Can't read content of file: %s\n"
 msgstr "%s: неуспело читање манифеста: %s\n"
 
-#: build/files.c:1619
+#: build/files.c:1629
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: не могу да учитам непознату ознаку (%d).\n"
 
-#: build/files.c:1625
+#: build/files.c:1635
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: неуспело читање јавног кључа.\n"
 
-#: build/files.c:1629
+#: build/files.c:1639
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: јавни кључ није ојачан.\n"
 
-#: build/files.c:1638
+#: build/files.c:1648
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr ""
 
-#: build/files.c:1684
+#: build/files.c:1694
 msgid "failed symlink"
 msgstr ""
 
-#: build/files.c:1740 build/files.c:1743
+#: build/files.c:1750 build/files.c:1753
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
 msgstr ""
 
-#: build/files.c:1750
+#: build/files.c:1760
 #, c-format
 msgid "Duplicate build-ids %s and %s\n"
 msgstr ""
 
-#: build/files.c:1804
+#: build/files.c:1814
 msgid "_build_id_links macro not set, assuming 'compat'\n"
 msgstr ""
 
-#: build/files.c:1817
+#: build/files.c:1827
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
 msgstr ""
 
-#: build/files.c:1906
+#: build/files.c:1916
 #, c-format
 msgid "error reading build-id in %s: %s\n"
 msgstr ""
 
-#: build/files.c:1910
+#: build/files.c:1920
 #, c-format
 msgid "Missing build-id in %s\n"
 msgstr ""
 
-#: build/files.c:1915
+#: build/files.c:1925
 #, c-format
 msgid "build-id found in %s too small\n"
 msgstr ""
 
-#: build/files.c:1916
+#: build/files.c:1926
 #, c-format
 msgid "build-id found in %s too large\n"
 msgstr ""
 
-#: build/files.c:1931 rpmio/rpmfileutil.c:443
+#: build/files.c:1941 rpmio/rpmfileutil.c:443
 msgid "failed to create directory"
 msgstr "неуспело креирање директоријума"
 
-#: build/files.c:1949
+#: build/files.c:1959
 msgid "Mixing main ELF and debug files in package"
 msgstr ""
 
-#: build/files.c:2150
+#: build/files.c:2160
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Испред датотеке је потребно да стоји „/“: %s\n"
 
-#: build/files.c:2174
+#: build/files.c:2184
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr ""
 
-#: build/files.c:2186
+#: build/files.c:2196
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2188
+#: build/files.c:2198
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2224
+#: build/files.c:2234
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "Не могу да отворим %%files датотеку %s: %m\n"
 
-#: build/files.c:2247
+#: build/files.c:2257
 #, c-format
 msgid "Empty %%files file %s\n"
 msgstr ""
 
-#: build/files.c:2253
+#: build/files.c:2263
 #, c-format
 msgid "Error reading %%files file %s: %m\n"
 msgstr ""
 
-#: build/files.c:2279
+#: build/files.c:2289
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr ""
 
-#: build/files.c:2401 lib/rpminstall.c:461
+#: build/files.c:2410 lib/rpminstall.c:461
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Датотека није пронађена поклапањем: %s\n"
 
-#: build/files.c:2488
+#: build/files.c:2497
 #, c-format
 msgid "Special file in generated file list: %s\n"
 msgstr ""
 
-#: build/files.c:2512
+#: build/files.c:2521
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:2528
+#: build/files.c:2537
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr ""
 
-#: build/files.c:2597
+#: build/files.c:2606
 msgid "Generating build-id links failed\n"
 msgstr ""
 
-#: build/files.c:2714
+#: build/files.c:2723
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Лоша датотека: %s: %s\n"
 
-#: build/files.c:2782
+#: build/files.c:2791
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Проверавам за незапаковане датотеке: %s\n"
 
-#: build/files.c:2795
+#: build/files.c:2804
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -942,22 +951,22 @@ msgstr ""
 "Пронађене су инсталиране (али незапаковане) датотеке:\n"
 "%s"
 
-#: build/files.c:2910
+#: build/files.c:2919
 #, c-format
 msgid "%s was mapped to multiple filenames"
 msgstr ""
 
-#: build/files.c:3159
+#: build/files.c:3168
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
 
-#: build/files.c:3181
+#: build/files.c:3190
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 
-#: build/files.c:3187
+#: build/files.c:3196
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Бинарне датотеке зависне од архитектуре у noarch пакету\n"
 
@@ -1256,56 +1265,56 @@ msgstr "ред %d: Docdir мора почети са „/“: %s\n"
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "ред %d: Поље епохе мора бити број без предзнака: %s\n"
 
-#: build/parsePreamble.c:906
+#: build/parsePreamble.c:907
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "ред %d: Лоши %s: квалификатори: %s\n"
 
-#: build/parsePreamble.c:940
+#: build/parsePreamble.c:941
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "ред %d: Лош облик за BuildArchitecture: %s\n"
 
-#: build/parsePreamble.c:947
+#: build/parsePreamble.c:948
 #, c-format
 msgid "line %d: Duplicate BuildArch entry: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:957
+#: build/parsePreamble.c:958
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr "ред %d: Само noarch подпакети су подржани: %s\n"
 
-#: build/parsePreamble.c:972
+#: build/parsePreamble.c:973
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Интерна грешка: Лажна ознака %d\n"
 
-#: build/parsePreamble.c:1070
+#: build/parsePreamble.c:1071
 #, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:1131
+#: build/parsePreamble.c:1132
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Лоша спецификација пакета: %s\n"
 
-#: build/parsePreamble.c:1176
+#: build/parsePreamble.c:1177
 msgid "Binary rpm package found. Expected spec file!\n"
 msgstr ""
 
-#: build/parsePreamble.c:1179
+#: build/parsePreamble.c:1180
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "ред %d: Непозната ознака: %s\n"
 
-#: build/parsePreamble.c:1214
+#: build/parsePreamble.c:1215
 #, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "%%{buildroot} не може бити празно\n"
 
-#: build/parsePreamble.c:1218
+#: build/parsePreamble.c:1219
 #, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "%%{buildroot} не може бити „/“\n"
@@ -1325,12 +1334,12 @@ msgstr "Нема закрпе број %u\n"
 msgid "No source number %u\n"
 msgstr "Нема извора број %u\n"
 
-#: build/parsePrep.c:261
+#: build/parsePrep.c:260
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Грешка у тумачењу %%setup: %s\n"
 
-#: build/parsePrep.c:272
+#: build/parsePrep.c:271
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "ред %d: Лош аргумент за %%setup: %s\n"
@@ -1450,86 +1459,86 @@ msgstr ""
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:230
+#: build/parseSpec.c:232
 #, c-format
 msgid "extra tokens at the end of %s directive in line %d:  %s\n"
 msgstr ""
 
-#: build/parseSpec.c:264
+#: build/parseSpec.c:266
 #, c-format
 msgid "Macro expanded in comment on line %d: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:385
+#: build/parseSpec.c:387
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Не могу да отворим %s: %s\n"
 
-#: build/parseSpec.c:419
+#: build/parseSpec.c:421
 #, c-format
 msgid "%s:%d: Argument expected for %s\n"
 msgstr ""
 
-#: build/parseSpec.c:444
+#: build/parseSpec.c:446
 #, c-format
 msgid "line %d: Unclosed %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:449
+#: build/parseSpec.c:451
 #, c-format
 msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr ""
 
-#: build/parseSpec.c:477
+#: build/parseSpec.c:479
 #, fuzzy, c-format
 msgid "%s: line %d: %s with no %%if\n"
 msgstr "%s:%d: Добио %%else без %%if\n"
 
-#: build/parseSpec.c:480
+#: build/parseSpec.c:482
 #, fuzzy, c-format
 msgid "%s: line %d: %s after %s\n"
 msgstr "ред %d: Лоши %s: квалификатори: %s\n"
 
-#: build/parseSpec.c:507
+#: build/parseSpec.c:509
 #, fuzzy, c-format
 msgid "%s:%d: bad %s condition: %s\n"
 msgstr "ред %d: Лоша %%setup опција %s: %s\n"
 
-#: build/parseSpec.c:535
+#: build/parseSpec.c:537
 #, c-format
 msgid "%s:%d: malformed %%include statement\n"
 msgstr ""
 
-#: build/parseSpec.c:763
+#: build/parseSpec.c:765
 #, c-format
 msgid "encoding %s not supported by system\n"
 msgstr ""
 
-#: build/parseSpec.c:792
+#: build/parseSpec.c:794
 #, c-format
 msgid "Package %s: invalid %s encoding in %s: %s - %s\n"
 msgstr ""
 
-#: build/parseSpec.c:828
+#: build/parseSpec.c:830
 #, c-format
 msgid "line %d: %%end doesn't take any arguments: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:835
+#: build/parseSpec.c:837
 #, c-format
 msgid "line %d: %%end not expected here, no section to close: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:851
+#: build/parseSpec.c:853
 #, c-format
 msgid "line %d doesn't belong to any section: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:1012
+#: build/parseSpec.c:1014
 msgid "No compatible architectures found for build\n"
 msgstr "Нису пронађене усаглашене архитектуре за прављење\n"
 
-#: build/parseSpec.c:1067
+#: build/parseSpec.c:1069
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Пакет нема %%description: %s\n"
@@ -1630,63 +1639,54 @@ msgstr ""
 msgid "failed to write all data to %s: %s\n"
 msgstr ""
 
-#: build/rpmfc.c:1073
+#: build/rpmfc.c:1080
 msgid "Empty file classifier\n"
 msgstr ""
 
-#: build/rpmfc.c:1082
+#: build/rpmfc.c:1089
 msgid "No file attributes configured\n"
 msgstr ""
 
-#: build/rpmfc.c:1106
+#: build/rpmfc.c:1113
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) није успело: %s\n"
 
-#: build/rpmfc.c:1112
+#: build/rpmfc.c:1119
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load није успело: %s\n"
 
-#: build/rpmfc.c:1155
+#: build/rpmfc.c:1162
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Препознавање датотеке „%s“ није успело: режим %06o %s\n"
 
-#: build/rpmfc.c:1356
+#: build/rpmfc.c:1363
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Проналазак %s: %s\n"
 
-#: build/rpmfc.c:1365 build/rpmfc.c:1374
+#: build/rpmfc.c:1372 build/rpmfc.c:1381
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Неуспело тражење %s:\n"
 
-#: build/rpmfc.c:1413
+#: build/rpmfc.c:1420
 msgid "Deprecated external dependency generator is used!\n"
 msgstr ""
 
-#: build/spec.c:90
+#: build/spec.c:88
 #, c-format
 msgid "line %d: %s: package %s does not exist\n"
 msgstr ""
 
-#: build/spec.c:93
+#: build/spec.c:91
 #, c-format
 msgid "line %d: %s: package %s already exists\n"
 msgstr ""
 
-#: build/spec.c:214
-msgid "unable to parse SOURCE_DATE_EPOCH\n"
-msgstr ""
-
-#: build/spec.c:240
-#, c-format
-msgid "Could not canonicalize hostname: %s\n"
-msgstr "Није могуће утврдити назив домаћина: %s\n"
-
-#: build/spec.c:520
+#: build/spec.c:471
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "упит на датотеком спецификације %s није успео, не могу да протумачим\n"
@@ -2017,35 +2017,39 @@ msgstr "неочекиван ]"
 msgid "unexpected }"
 msgstr "неочекиван }"
 
-#: lib/headerfmt.c:511
+#: lib/headerfmt.c:473
+msgid "escaped char expected after \\"
+msgstr ""
+
+#: lib/headerfmt.c:515
 msgid "? expected in expression"
 msgstr "? очекиван у изразу"
 
-#: lib/headerfmt.c:518
+#: lib/headerfmt.c:522
 msgid "{ expected after ? in expression"
 msgstr "{ очекивано после ? у изразу"
 
-#: lib/headerfmt.c:530 lib/headerfmt.c:570
+#: lib/headerfmt.c:534 lib/headerfmt.c:574
 msgid "} expected in expression"
 msgstr "} очекиван у изразу"
 
-#: lib/headerfmt.c:538
+#: lib/headerfmt.c:542
 msgid ": expected following ? subexpression"
 msgstr ": очекиван након ? подизраза"
 
-#: lib/headerfmt.c:556
+#: lib/headerfmt.c:560
 msgid "{ expected after : in expression"
 msgstr "{ очекивано после : у изразу"
 
-#: lib/headerfmt.c:578
+#: lib/headerfmt.c:582
 msgid "| expected at end of expression"
 msgstr "| очекиван на крају израза"
 
-#: lib/headerfmt.c:753
+#: lib/headerfmt.c:757
 msgid "array iterator used with different sized arrays"
 msgstr "показивач низа коришћен са низовима различитих величина"
 
-#: lib/poptALL.c:144 rpmio/macro.c:1199
+#: lib/poptALL.c:144 rpmio/macro.c:1203
 #, fuzzy, c-format
 msgid "failed to load macro file %s\n"
 msgstr "Неуспело читање датотеке спецификације из %s\n"
@@ -2601,25 +2605,25 @@ msgstr "немој проверавати зависности пакета"
 msgid "don't execute verify script(s)"
 msgstr "немој извршити скрипту(е) провере"
 
-#: lib/psm.c:146
+#: lib/psm.c:148
 #, c-format
 msgid "Missing rpmlib features for %s:\n"
 msgstr ""
 
-#: lib/psm.c:183
+#: lib/psm.c:185
 msgid "source package expected, binary found\n"
 msgstr "очекиван је изворни пакет, пронађен је бинарни\n"
 
-#: lib/psm.c:194
+#: lib/psm.c:196
 msgid "source package contains no .spec file\n"
 msgstr "изворни пакет не садржи .spec датотеку\n"
 
-#: lib/psm.c:608
+#: lib/psm.c:610
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "распакивање архиве није успело %s%s: %s\n"
 
-#: lib/psm.c:609
+#: lib/psm.c:611
 msgid " on file "
 msgstr " на датотеци "
 
@@ -2759,51 +2763,51 @@ msgstr "пакет %s није инсталиран\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "непозната ознака: „%s“\n"
 
-#: lib/rpmchecksig.c:50 lib/rpmchecksig.c:58
+#: lib/rpmchecksig.c:48 lib/rpmchecksig.c:56
 #, c-format
 msgid "%s: key %d import failed.\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:66
+#: lib/rpmchecksig.c:64
 #, c-format
 msgid "%s: key %d not an armored public key.\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:111
+#: lib/rpmchecksig.c:109
 #, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr "%s: увозно читање није успело(%d).\n"
 
-#: lib/rpmchecksig.c:131
+#: lib/rpmchecksig.c:129
 #, c-format
 msgid "Fread failed: %s"
 msgstr ""
 
-#: lib/rpmchecksig.c:247
+#: lib/rpmchecksig.c:245
 msgid "DIGESTS"
 msgstr ""
 
-#: lib/rpmchecksig.c:247
+#: lib/rpmchecksig.c:245
 msgid "digests"
 msgstr ""
 
-#: lib/rpmchecksig.c:251
+#: lib/rpmchecksig.c:249
 msgid "SIGNATURES"
 msgstr ""
 
-#: lib/rpmchecksig.c:251
+#: lib/rpmchecksig.c:249
 msgid "signatures"
 msgstr ""
 
-#: lib/rpmchecksig.c:253
+#: lib/rpmchecksig.c:251
 msgid "NOT OK"
 msgstr "НИЈЕ УРЕДУ"
 
-#: lib/rpmchecksig.c:253
+#: lib/rpmchecksig.c:251
 msgid "OK"
 msgstr "УРЕДУ"
 
-#: lib/rpmchecksig.c:295 sign/rpmgensig.c:135
+#: lib/rpmchecksig.c:293 sign/rpmgensig.c:135
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: отварање није успело: %s\n"
@@ -2813,17 +2817,17 @@ msgstr "%s: отварање није успело: %s\n"
 msgid "Unable to open current directory: %m\n"
 msgstr ""
 
-#: lib/rpmchroot.c:116 lib/rpmchroot.c:144
+#: lib/rpmchroot.c:116 lib/rpmchroot.c:145
 #, c-format
 msgid "%s: chroot directory not set\n"
 msgstr ""
 
-#: lib/rpmchroot.c:130
+#: lib/rpmchroot.c:131
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Не могу да променим коренски директоријум: %m\n"
 
-#: lib/rpmchroot.c:155
+#: lib/rpmchroot.c:157
 #, c-format
 msgid "Unable to restore root directory: %m\n"
 msgstr ""
@@ -3456,7 +3460,7 @@ msgstr ""
 msgid "Unable to restore current directory: %m"
 msgstr ""
 
-#: lib/rpmscript.c:162 rpmio/macro.c:1030
+#: lib/rpmscript.c:162 rpmio/macro.c:1028
 msgid "<lua> scriptlet support not built in\n"
 msgstr "није уграђена подршка <lua> скриптица\n"
 
@@ -3667,66 +3671,75 @@ msgstr ""
 msgid "Failed to register fork handler: %m\n"
 msgstr ""
 
-#: rpmio/expression.c:224
+#: rpmio/expression.c:249
 #, fuzzy
 msgid "syntax error while parsing =="
 msgstr "синтаксна грешка при рашчлањивању ==\n"
 
-#: rpmio/expression.c:254
+#: rpmio/expression.c:279
 #, fuzzy
 msgid "syntax error while parsing &&"
 msgstr "синтаксна грешка при рашчлањивању &&\n"
 
-#: rpmio/expression.c:263
+#: rpmio/expression.c:288
 #, fuzzy
 msgid "syntax error while parsing ||"
 msgstr "синтаксна грешка при рашчлањивању ||\n"
 
-#: rpmio/expression.c:313
+#: rpmio/expression.c:338
 #, fuzzy
 msgid "parse error in expression"
 msgstr "грешка рашчлањивања у изразу\n"
 
-#: rpmio/expression.c:350
+#: rpmio/expression.c:375
 #, fuzzy
 msgid "unmatched ("
 msgstr "неупарена (\n"
 
-#: rpmio/expression.c:382
+#: rpmio/expression.c:407
 #, fuzzy
 msgid "- only on numbers"
 msgstr "- само код бројева\n"
 
-#: rpmio/expression.c:398
+#: rpmio/expression.c:423
 #, fuzzy
 msgid "! only on numbers"
 msgstr "! само код бројева\n"
 
-#: rpmio/expression.c:444 rpmio/expression.c:497 rpmio/expression.c:560
-#: rpmio/expression.c:657
+#: rpmio/expression.c:431
+#, fuzzy
+msgid "unexpected end of expression"
+msgstr "| очекиван на крају израза"
+
+#: rpmio/expression.c:435 rpmio/expression.c:735 rpmio/expression.c:780
+#, fuzzy
+msgid "syntax error in expression"
+msgstr "синтаксна грешка у изразу\n"
+
+#: rpmio/expression.c:475 rpmio/expression.c:531 rpmio/expression.c:592
+#: rpmio/expression.c:687
 #, fuzzy
 msgid "types must match"
 msgstr "врсте се морају поклапати\n"
 
-#: rpmio/expression.c:457
+#: rpmio/expression.c:483
+msgid "division by zero"
+msgstr ""
+
+#: rpmio/expression.c:491
 #, fuzzy
 msgid "* and / not supported for strings"
 msgstr "* / није подржано за стрингове\n"
 
-#: rpmio/expression.c:513
+#: rpmio/expression.c:546
 #, fuzzy
 msgid "- not supported for strings"
 msgstr "- није подржано за стрингове\n"
 
-#: rpmio/expression.c:670
+#: rpmio/expression.c:699
 #, fuzzy
 msgid "&& and || not supported for strings"
 msgstr "&& и || нису подржани за стрингове\n"
-
-#: rpmio/expression.c:705 rpmio/expression.c:749
-#, fuzzy
-msgid "syntax error in expression"
-msgstr "синтаксна грешка у изразу\n"
 
 #: rpmio/macro.c:334
 #, fuzzy, c-format
@@ -3738,68 +3751,68 @@ msgstr "%3d>%*s(празно)"
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(празно)\n"
 
-#: rpmio/macro.c:598
+#: rpmio/macro.c:596
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
 msgstr ""
 
-#: rpmio/macro.c:603
+#: rpmio/macro.c:601
 #, fuzzy, c-format
 msgid "Macro %%%s is a built-in (%s)\n"
 msgstr "Макро %%%s има незавршене опције\n"
 
-#: rpmio/macro.c:648
+#: rpmio/macro.c:646
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "Макро %%%s има незавршене опције\n"
 
-#: rpmio/macro.c:659 rpmio/macro.c:696
+#: rpmio/macro.c:657 rpmio/macro.c:694
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Макро %%%s има незавршено тело\n"
 
-#: rpmio/macro.c:716
+#: rpmio/macro.c:714
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "Макро %%%s има празно тело\n"
 
-#: rpmio/macro.c:721
+#: rpmio/macro.c:719
 #, c-format
 msgid "Macro %%%s needs whitespace before body\n"
 msgstr ""
 
-#: rpmio/macro.c:725
+#: rpmio/macro.c:723
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "Макро %%%s није могао да се прошири\n"
 
-#: rpmio/macro.c:812
+#: rpmio/macro.c:810
 #, c-format
 msgid "Macro %%%s defined but not used within scope\n"
 msgstr ""
 
-#: rpmio/macro.c:936
+#: rpmio/macro.c:934
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Непозната опција %c у %s(%s)\n"
 
-#: rpmio/macro.c:1279
+#: rpmio/macro.c:1283
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
 msgstr ""
 
-#: rpmio/macro.c:1338 rpmio/macro.c:1353
+#: rpmio/macro.c:1342 rpmio/macro.c:1357
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Неограничено %c: %s\n"
 
-#: rpmio/macro.c:1384
+#: rpmio/macro.c:1388
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "%% је праћена са макроом кога није могуће рашчланити\n"
 
-#: rpmio/macro.c:1712
+#: rpmio/macro.c:1716
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== активно %d празно %d\n"
@@ -3843,27 +3856,27 @@ msgstr "упозорење: "
 msgid "Error writing to log"
 msgstr ""
 
-#: rpmio/rpmlua.c:575
+#: rpmio/rpmlua.c:576
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "неправилна синтакса у lua скриптици: %s\n"
 
-#: rpmio/rpmlua.c:593
+#: rpmio/rpmlua.c:594
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "неправилна синтакса у lua скрипти: %s\n"
 
-#: rpmio/rpmlua.c:598 rpmio/rpmlua.c:617
+#: rpmio/rpmlua.c:599 rpmio/rpmlua.c:618
 #, c-format
 msgid "lua script failed: %s\n"
 msgstr "lua скрипта није успела: %s\n"
 
-#: rpmio/rpmlua.c:612
+#: rpmio/rpmlua.c:613
 #, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "неправилна синтакса у lua датотеци: %s\n"
 
-#: rpmio/rpmlua.c:809
+#: rpmio/rpmlua.c:810
 #, c-format
 msgid "lua hook failed: %s\n"
 msgstr "lua удица није успела: %s\n"
