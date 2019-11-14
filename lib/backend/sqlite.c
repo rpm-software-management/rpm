@@ -284,13 +284,23 @@ static int init_table(dbiIndex dbi, rpmTagVal tag)
     return rc;
 }
 
+static int create_index(sqlite3 *sdb, const char *table, const char *col)
+{
+    return sqlexec(sdb,
+		"CREATE INDEX IF NOT EXISTS '%s_%s_idx' ON '%q'(%s ASC)",
+		table, col, table, col);
+}
+
 static int init_index(dbiIndex dbi, rpmTagVal tag)
 {
     int rc = 0;
     if (dbi->dbi_type == DBI_SECONDARY) {
-	rc = sqlexec(dbi->dbi_db,
-		    "CREATE INDEX IF NOT EXISTS '%q_idx' ON '%q'(key ASC)",
-		    dbi->dbi_file, dbi->dbi_file);
+	int string = (rpmTagGetClass(tag) == RPM_STRING_CLASS);
+	int array = (rpmTagGetReturnType(tag) == RPM_ARRAY_RETURN_TYPE);
+	if (!rc && string)
+	    rc = create_index(dbi->dbi_db, dbi->dbi_file, "key");
+	if (!rc && array)
+	    rc = create_index(dbi->dbi_db, dbi->dbi_file, "hnum");
     }
     return rc;
 }
