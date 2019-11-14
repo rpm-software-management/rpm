@@ -182,9 +182,11 @@ static int sqlite_init(rpmdb rdb, const char * dbhome)
 
 	sqlexec(sdb, "PRAGMA secure_delete = OFF");
 	sqlexec(sdb, "PRAGMA case_sensitive_like = ON");
-	if (rdb->db_flags & RPMDB_FLAG_REBUILD) {
-	    sqlexec(sdb, "PRAGMA journal_mode = OFF");
-	    sqlexec(sdb, "PRAGMA locking_mode = EXCLUSIVE");
+
+	if (!(flags & SQLITE_OPEN_READONLY)) {
+	    if (sqlexec(sdb, "PRAGMA journal_mode = WAL") == 0) {
+		sqlexec(sdb, "PRAGMA wal_autocheckpoint = 0");
+	    }
 	}
 
 	rdb->db_dbenv = sdb;
@@ -204,11 +206,12 @@ static int sqlite_fini(rpmdb rdb)
 	if (rdb->db_opens > 1) {
 	    rdb->db_opens--;
 	} else {
+	    rdb->db_cache = stmtHashFree(rdb->db_cache);
 	    if (sqlite3_db_readonly(sdb, NULL) == 0) {
 		sqlexec(sdb, "PRAGMA optimize");
+		sqlexec(sdb, "PRAGMA wal_checkpoint = TRUNCATE");
 	    }
 	    rdb->db_dbenv = NULL;
-	    rdb->db_cache = stmtHashFree(rdb->db_cache);
 	    int xx = sqlite3_close(sdb);
 	    rc = (xx != SQLITE_OK);
 	}
