@@ -4,6 +4,7 @@
 
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
+#include <rpm/rpmmacro.h>
 #include "lib/rpmdb_internal.h"
 
 #include "debug.h"
@@ -185,7 +186,8 @@ static int sqlite_init(rpmdb rdb, const char * dbhome)
 
 	if (!(flags & SQLITE_OPEN_READONLY)) {
 	    if (sqlexec(sdb, "PRAGMA journal_mode = WAL") == 0) {
-		sqlexec(sdb, "PRAGMA wal_autocheckpoint = 0");
+		if (!rpmExpandNumeric("%{?_flush_io}"))
+		    sqlexec(sdb, "PRAGMA wal_autocheckpoint = 0");
 	    }
 	}
 
