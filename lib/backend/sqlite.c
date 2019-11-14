@@ -207,6 +207,7 @@ static int sqlite_fini(rpmdb rdb)
 	    if (sqlite3_db_readonly(sdb, NULL) == 0) {
 		sqlexec(sdb, "PRAGMA optimize");
 	    }
+	    rdb->db_dbenv = NULL;
 	    rdb->db_cache = stmtHashFree(rdb->db_cache);
 	    int xx = sqlite3_close(sdb);
 	    rc = (xx != SQLITE_OK);
