@@ -359,7 +359,7 @@ static int sqlite_Verify(dbiIndex dbi, unsigned int flags)
 static void sqlite_SetFSync(rpmdb rdb, int enable)
 {
     sqlexec(rdb->db_dbenv,
-	    "PRAGMA synchronous = %s", enable ? "NORMAL" : "OFF");
+	    "PRAGMA synchronous = %s", enable ? "FULL" : "OFF");
 }
 
 static int sqlite_Ctrl(rpmdb rdb, dbCtrlOp ctrl)
