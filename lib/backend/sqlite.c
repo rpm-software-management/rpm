@@ -390,6 +390,7 @@ static dbiCursor sqlite_CursorInit(dbiIndex dbi, unsigned int flags)
 static dbiCursor sqlite_CursorFree(dbiIndex dbi, dbiCursor dbc)
 {
     if (dbc) {
+	sqlite3_reset(dbc->stmt);
 	if (dbc->flags & DBC_WRITE)
 	    sqlexec(dbc->sdb, "RELEASE '%s'", dbi->dbi_file);
 	free(dbc);
