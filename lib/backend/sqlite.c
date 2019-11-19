@@ -184,7 +184,7 @@ static int sqlite_init(rpmdb rdb, const char * dbhome)
 	sqlexec(sdb, "PRAGMA secure_delete = OFF");
 	sqlexec(sdb, "PRAGMA case_sensitive_like = ON");
 
-	if (!(flags & SQLITE_OPEN_READONLY)) {
+	if (sqlite3_db_readonly(sdb, NULL) == 0) {
 	    if (sqlexec(sdb, "PRAGMA journal_mode = WAL") == 0) {
 		if (!rpmExpandNumeric("%{?_flush_io}"))
 		    sqlexec(sdb, "PRAGMA wal_autocheckpoint = 0");
