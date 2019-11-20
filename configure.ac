@@ -619,7 +619,7 @@ AC_ARG_ENABLE([sqlite],
               [enable_sqlite=auto])
 
 AS_IF([test "x$enable_sqlite" != "xno"], [
-  PKG_CHECK_MODULES([SQLITE], [sqlite3], [have_sqlite=yes], [have_sqlite=no])
+  PKG_CHECK_MODULES([SQLITE], [sqlite3 >= 3.22.0], [have_sqlite=yes], [have_sqlite=no])
   AS_IF([test "$enable_sqlite" = "yes"], [
     if test "$have_sqlite" = "no"; then
       AC_MSG_ERROR([--enable-sqlite specified, but not available])

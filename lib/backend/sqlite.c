@@ -186,6 +186,10 @@ static int sqlite_init(rpmdb rdb, const char * dbhome)
 
 	if (sqlite3_db_readonly(sdb, NULL) == 0) {
 	    if (sqlexec(sdb, "PRAGMA journal_mode = WAL") == 0) {
+		int one = 1;
+		/* Annoying but necessary to support non-privileged readers */
+		sqlite3_file_control(sdb, NULL, SQLITE_FCNTL_PERSIST_WAL, &one);
+
 		if (!rpmExpandNumeric("%{?_flush_io}"))
 		    sqlexec(sdb, "PRAGMA wal_autocheckpoint = 0");
 	    }
