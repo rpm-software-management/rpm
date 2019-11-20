@@ -299,6 +299,11 @@ static int create_index(sqlite3 *sdb, const char *table, const char *col)
 static int init_index(dbiIndex dbi, rpmTagVal tag)
 {
     int rc = 0;
+
+    /* Can't create on readonly database, but things will still work */
+    if (sqlite3_db_readonly(dbi->dbi_db, NULL) == 1)
+	return 0;
+
     if (dbi->dbi_type == DBI_SECONDARY) {
 	int string = (rpmTagGetClass(tag) == RPM_STRING_CLASS);
 	int array = (rpmTagGetReturnType(tag) == RPM_ARRAY_RETURN_TYPE);
@@ -314,21 +319,20 @@ static int sqlite_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flag
 {
     int rc = sqlite_init(rdb, rpmdbHome(rdb));
 
-    dbiIndex dbi = dbiNew(rdb, rpmtag);
-    dbi->dbi_db = rdb->db_dbenv;
+    if (!rc) {
+	dbiIndex dbi = dbiNew(rdb, rpmtag);
+	dbi->dbi_db = rdb->db_dbenv;
 
-    if (sqlite3_db_readonly(rdb->db_dbenv, NULL) == 0) {
-	if (!rc)
-	    rc = init_table(dbi, rpmtag);
+	rc = init_table(dbi, rpmtag);
 
 	if (!rc)
 	    rc = init_index(dbi, rpmtag);
-    }
 
-    if (dbip)
-	*dbip = dbi;
-    else
-	dbiFree(dbi);
+	if (!rc && dbip)
+	    *dbip = dbi;
+	else
+	    dbiFree(dbi);
+    }
 
     return rc;
 }
