@@ -395,14 +395,21 @@ AC_SUBST(WITH_OPENSSL_LIB)
 WITH_LIBGCRYPT_INCLUDE=
 WITH_LIBGCRYPT_LIB=
 if test "$with_crypto" = libgcrypt ; then
-AC_PATH_TOOL(LIBGCRYPT_CONFIG, libgcrypt-config, notfound)
-if test notfound != "$LIBGCRYPT_CONFIG" ; then
-WITH_LIBGCRYPT_INCLUDE=`$LIBGCRYPT_CONFIG --cflags`
-WITH_LIBGCRYPT_LIB=`$LIBGCRYPT_CONFIG --libs`
-fi
-if test -z "$WITH_LIBGCRYPT_LIB" ; then
-AC_MSG_ERROR([libgcrypt not found])
-fi
+  # libgcrypt 1.8.5 onwards ships a pkg-config file so prefer that
+  PKG_CHECK_MODULES([LIBGCRYPT], [libgcrypt], [have_libgcrypt=yes], [have_libgcrypt=no])
+  if test "$have_libgcrypt" = "yes"; then
+    WITH_LIBGCRYPT_INCLUDE="$LIBGCRYPT_CFLAGS"
+    WITH_LIBGCRYPT_LIB="$LIBGCRYPT_LIBS"
+  else
+    AC_PATH_TOOL(LIBGCRYPT_CONFIG, libgcrypt-config, notfound)
+      if test notfound != "$LIBGCRYPT_CONFIG" ; then
+        WITH_LIBGCRYPT_INCLUDE=`$LIBGCRYPT_CONFIG --cflags`
+        WITH_LIBGCRYPT_LIB=`$LIBGCRYPT_CONFIG --libs`
+     fi
+     if test -z "$WITH_LIBGCRYPT_LIB" ; then
+       AC_MSG_ERROR([libgcrypt not found])
+    fi
+  fi
 fi
 
 AM_CONDITIONAL([WITH_LIBGCRYPT],[test "$with_crypto" = libgcrypt])
