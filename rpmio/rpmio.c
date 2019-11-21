@@ -1128,13 +1128,13 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
     if ((flags & O_ACCMODE) == O_RDONLY) {	/* decompressing */
 	if ((_stream = (void *) ZSTD_createDStream()) == NULL
 	 || ZSTD_isError(ZSTD_initDStream(_stream))) {
-	    return NULL;
+	    goto err;
 	}
 	nb = ZSTD_DStreamInSize();
     } else {					/* compressing */
 	if ((_stream = (void *) ZSTD_createCStream()) == NULL
 	 || ZSTD_isError(ZSTD_initCStream(_stream, level))) {
-	    return NULL;
+	    goto err;
 	}
 	nb = ZSTD_CStreamOutSize();
     }
@@ -1149,6 +1149,14 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
     zstd->b = xmalloc(nb);
 
     return zstd;
+
+err:
+    fclose(fp);
+    if ((flags & O_ACCMODE) == O_RDONLY)
+	ZSTD_freeDStream(_stream);
+    else
+	ZSTD_freeCStream(_stream);
+    return NULL;
 }
 
 static FD_t zstdFdopen(FD_t fd, int fdno, const char * fmode)
