@@ -67,6 +67,7 @@ struct rpmfc_s {
     rpmfcAttr *atypes;	/*!< known file attribute types */
 
     char ** fn;		/*!< (no. files) file names */
+    char ** ftype;	/*!< (no. files) file types */
     ARGV_t *fattrs;	/*!< (no. files) file attribute tokens */
     rpm_color_t *fcolor;/*!< (no. files) file colors */
     rpmsid *fcdictx;	/*!< (no. files) file class dictionary indices */
@@ -773,9 +774,11 @@ rpmfc rpmfcFree(rpmfc fc)
 	free(fc->buildRoot);
 	for (int i = 0; i < fc->nfiles; i++) {
 	    free(fc->fn[i]);
+	    free(fc->ftype[i]);
 	    argvFree(fc->fattrs[i]);
 	}
 	free(fc->fn);
+	free(fc->ftype);
 	free(fc->fattrs);
 	free(fc->fcolor);
 	free(fc->fcdictx);
@@ -1092,6 +1095,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 
     fc->nfiles = argvCount(argv);
     fc->fn = xcalloc(fc->nfiles, sizeof(*fc->fn));
+    fc->ftype = xcalloc(fc->nfiles, sizeof(*fc->ftype));
     fc->fattrs = xcalloc(fc->nfiles, sizeof(*fc->fattrs));
     fc->fcolor = xcalloc(fc->nfiles, sizeof(*fc->fcolor));
     fc->fcdictx = xcalloc(fc->nfiles, sizeof(*fc->fcdictx));
@@ -1122,7 +1126,6 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 
     #pragma omp for reduction(+:nerrors)
     for (int ix = 0; ix < fc->nfiles; ix++) {
-	rpmsid ftypeId;
 	const char * ftype;
 	const char * s = argv[ix];
 	size_t slen = strlen(s);
@@ -1164,7 +1167,6 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 		/* only executable files are critical to dep extraction */
 		if (is_executable) {
 		    nerrors++;
-		    #pragma omp cancel for
 		}
 		/* unrecognized non-executables get treated as "data" */
 		ftype = "data";
@@ -1184,24 +1186,26 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 
 	fc->fcolor[ix] = fcolor;
 
-	/* Add to file class dictionary and index array */
-	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE)) {
-	    ftypeId = rpmstrPoolId(fc->cdict, ftype, 1);
-	    #pragma omp atomic
-	    fc->fknown++;
-	} else {
-	    ftypeId = rpmstrPoolId(fc->cdict, "", 1);
-	    #pragma omp atomic
-	    fc->fwhite++;
-	}
-	/* Pool id's start from 1, for headers we want it from 0 */
-	fc->fcdictx[ix] = ftypeId - 1;
+	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
+	    fc->ftype[ix] = xstrdup(ftype);
     }
 
     if (ms != NULL)
 	magic_close(ms);
 
     } /* omp parallel */
+
+    /* Add to file class dictionary and index array */
+    for (int ix = 0; ix < fc->nfiles; ix++) {
+	const char *ftype = fc->ftype[ix] ? fc->ftype[ix] : "";
+	/* Pool id's start from 1, for headers we want it from 0 */
+	fc->fcdictx[ix] = rpmstrPoolId(fc->cdict, ftype, 1) - 1;
+
+	if (*ftype)
+	    fc->fknown++;
+	else
+	    fc->fwhite++;
+    }
 
     if (nerrors == 0)
 	rc = RPMRC_OK;
