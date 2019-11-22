@@ -6,6 +6,16 @@
 
 #include <inttypes.h>
 #include <libgen.h>
+#include <errno.h>
+
+/* duplicated from cpio.c */
+#if MAJOR_IN_MKDEV
+#include <sys/mkdev.h>
+#elif MAJOR_IN_SYSMACROS
+#include <sys/sysmacros.h>
+#else
+#include <sys/types.h> /* already included from system.h */
+#endif
 
 #include <rpm/rpmlib.h>		/* rpmMachineScore, rpmReadPackageFile */
 #include <rpm/rpmmacro.h>	/* XXX for rpmExpand */
@@ -64,6 +74,8 @@ struct diskspaceInfo_s {
     int64_t oineeded;	/*!< Bookkeeping to avoid duplicate reports */
     int64_t bdelta;	/*!< Delta for temporary space need on updates */
     int64_t idelta;	/*!< Delta for temporary inode need on updates */
+
+    int rotational;	/*!< Rotational media? */
 };
 
 /* Adjust for root only reserved space. On linux e2fs, this is 5%. */
@@ -107,6 +119,27 @@ static char *getMntPoint(const char *dirName, dev_t dev)
 	}
     }
     return res;
+}
+
+static int getRotational(const char *dirName, dev_t dev)
+{
+    int rotational = 1;	/* Be a good pessimist, assume the worst */
+#if defined(__linux__)
+    char *devpath = NULL;
+    FILE *f = NULL;
+
+    rasprintf(&devpath, "/sys/dev/block/%d:%d/queue/rotational",
+			major(dev), minor(dev));
+    if ((f = fopen(devpath, "r")) != NULL) {
+	int v;
+	if (fscanf(f, "%d", &v) == 1)
+	    rotational = v;
+	fclose(f);
+    }
+    free(devpath);
+#endif
+
+    return rotational;
 }
 
 static int rpmtsInitDSI(const rpmts ts)
@@ -177,6 +210,9 @@ static rpmDiskSpaceInfo rpmtsCreateDSI(const rpmts ts, dev_t dev,
     /* Find mount point belonging to this device number */
     dsi->mntPoint = getMntPoint(dirName, dsi->dev);
 
+    /* Initialized on demand */
+    dsi->rotational = -1;
+
     /* normalize block size to 4096 bytes if it is too big. */
     if (dsi->bsize > 4096) {
 	uint64_t old_size = dsi->bavail * dsi->bsize;
@@ -188,9 +224,9 @@ static rpmDiskSpaceInfo rpmtsCreateDSI(const rpmts ts, dev_t dev,
     }
 
     rpmlog(RPMLOG_DEBUG,
-	   "0x%08x %8" PRId64 " %12" PRId64 " %12" PRId64" %s\n",
+	   "0x%08x %8" PRId64 " %12" PRId64 " %12" PRId64" rotational:%d %s\n",
 	   (unsigned) dsi->dev, dsi->bsize,
-	   dsi->bavail, dsi->iavail,
+	   dsi->bavail, dsi->iavail, dsi->rotational,
 	   dsi->mntPoint);
     return dsi;
 }
@@ -208,6 +244,22 @@ static rpmDiskSpaceInfo rpmtsGetDSI(const rpmts ts, dev_t dev,
 	}
     }
     return dsi;
+}
+
+static int rpmtsGetDSIRotational(rpmts ts)
+{
+    int rc = 1;
+    int nrot = 0;
+    rpmDiskSpaceInfo dsi = ts->dsi;
+    while (dsi && dsi->bsize != 0) {
+	if (dsi->rotational < 0)
+	    dsi->rotational = getRotational(dsi->mntPoint, dsi->dev);
+	nrot += dsi->rotational;
+	dsi++;
+    }
+    if (dsi != ts->dsi && nrot == 0)
+	rc = 0;
+    return rc;
 }
 
 static void rpmtsUpdateDSI(const rpmts ts, dev_t dev, const char *dirName,
@@ -1415,8 +1467,23 @@ static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet)
     return 0;
 }
 
+/* Enable / disable optimizations for solid state disks */
+static void setSSD(int enable)
+{
+    if (enable) {
+	rpmlog(RPMLOG_DEBUG, "optimizing for non-rotational disks\n");
+	rpmPushMacro(NULL, "_minimize_writes", NULL, "1", 0);
+	rpmPushMacro(NULL, "_flush_io", NULL, "1", 0);
+    } else {
+	rpmPopMacro(NULL, "_minimize_writes");
+	rpmPopMacro(NULL, "_flush_io");
+    }
+}
+
 static int rpmtsFinish(rpmts ts)
 {
+    if (rpmtsGetDSIRotational(ts) == 0)
+	setSSD(0);
     rpmtsFreeDSI(ts);
     return rpmChrootSet(NULL);
 }
@@ -1506,14 +1573,18 @@ static int rpmtsPrepare(rpmts ts)
     if (rpmChrootOut())
 	rc = -1;
 
-    /* On actual transaction, file info sets are not needed after this */
     if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_BUILD_PROBS))) {
+	/* On actual transaction, file info sets are not needed after this */
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	    rpmteCleanFiles(p);
 	}
 	rpmtsiFree(pi);
+
     }
+
+    if (rpmtsGetDSIRotational(ts) == 0)
+	setSSD(1);
 
 exit:
     fpCacheFree(fpc);
