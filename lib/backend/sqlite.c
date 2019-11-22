@@ -329,7 +329,7 @@ static int sqlite_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flag
 
 	rc = init_table(dbi, rpmtag);
 
-	if (!rc)
+	if (!rc && !(rdb->db_flags & RPMDB_FLAG_REBUILD))
 	    rc = init_index(dbi, rpmtag);
 
 	if (!rc && dbip)
@@ -343,9 +343,13 @@ static int sqlite_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flag
 
 static int sqlite_Close(dbiIndex dbi, unsigned int flags)
 {
+    rpmdb rdb = dbi->dbi_rpmdb;
+    int rc = 0;
+    if (rdb->db_flags & RPMDB_FLAG_REBUILD)
+	rc = init_index(dbi, rpmTagGetValue(dbi->dbi_file));
     sqlite_fini(dbi->dbi_rpmdb);
     dbiFree(dbi);
-    return 0;
+    return rc;
 }
 
 static int sqlite_Verify(dbiIndex dbi, unsigned int flags)
