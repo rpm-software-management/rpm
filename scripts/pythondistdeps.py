@@ -116,7 +116,7 @@ for f in files:
             # Try to parse the Python version from the path the metadata
             # resides at (e.g. /usr/lib/pythonX.Y/site-packages/...)
             import re
-            res = re.search(r"/python(?P<pyver>\d+\.\d)/", path_item)
+            res = re.search(r"/python(?P<pyver>\d+\.\d+)/", path_item)
             if res:
                 dist.py_version = res.group('pyver')
             else:
