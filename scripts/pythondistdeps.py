@@ -102,7 +102,7 @@ for f in files:
             lower.endswith('.egg-info') or \
             lower.endswith('.dist-info'):
         # This import is very slow, so only do it if needed
-        from pkg_resources import Distribution, FileMetadata, PathMetadata, Requirement
+        from pkg_resources import Distribution, FileMetadata, PathMetadata, Requirement, parse_version
         dist_name = basename(f)
         if isdir(f):
             path_item = dirname(f)
@@ -246,6 +246,15 @@ for name in names:
         for spec in py_deps[name]:
             if spec[0] == '!=':
                 spec_list.append('{n} < {v} or {n} >= {v}.0'.format(n=name, v=spec[1]))
+            elif spec[0] == '~=':
+                # Parse the current version
+                next_ver = parse_version(spec[1]).base_version.split('.')
+                # Drop the micro version
+                next_ver = next_ver[0:-1]
+                # Increment the minor version
+                next_ver[-1] = str(int(next_ver[-1]) + 1)
+                next_ver = '.'.join(next_ver)
+                spec_list.append('{n} >= {v} with {n} < {vnext}'.format(n=name, v=spec[1], vnext=next_ver))
             else:
                 spec_list.append('{} {} {}'.format(name, spec[0], spec[1]))
         print('(%s)' % ' with '.join(spec_list))
