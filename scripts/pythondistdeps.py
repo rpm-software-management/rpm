@@ -242,11 +242,13 @@ names.sort()
 for name in names:
     if py_deps[name]:
         # Print out versioned provides, requires, recommends, conflicts
+        spec_list = []
         for spec in py_deps[name]:
             if spec[0] == '!=':
-                print('({n} < {v} or {n} >= {v}.0)'.format(n=name, v=spec[1]))
+                spec_list.append('{n} < {v} or {n} >= {v}.0'.format(n=name, v=spec[1]))
             else:
-                print('{} {} {}'.format(name, spec[0], spec[1]))
+                spec_list.append('{} {} {}'.format(name, spec[0], spec[1]))
+        print('(%s)' % ' with '.join(spec_list))
     else:
         # Print out unversioned provides, requires, recommends, conflicts
         print(name)
