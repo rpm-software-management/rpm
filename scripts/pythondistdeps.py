@@ -255,6 +255,16 @@ for name in names:
                 next_ver[-1] = str(int(next_ver[-1]) + 1)
                 next_ver = '.'.join(next_ver)
                 spec_list.append('{n} >= {v} with {n} < {vnext}'.format(n=name, v=spec[1], vnext=next_ver))
+            elif spec[0] == '==' and spec[1].endswith('.*'):
+                # Parse the current version
+                next_ver = parse_version(spec[1]).base_version.split('.')
+                # Drop the micro version from both the version in spec and next_ver
+                next_ver = next_ver[0:-1]
+                spec = (spec[0], '.'.join(next_ver))
+                # Increment the minor version
+                next_ver[-1] = str(int(next_ver[-1]) + 1)
+                next_ver = '.'.join(next_ver)
+                spec_list.append('{n} >= {v} with {n} < {vnext}'.format(n=name, v=spec[1], vnext=next_ver))
             else:
                 spec_list.append('{} {} {}'.format(name, spec[0], spec[1]))
         print('(%s)' % ' with '.join(spec_list))
