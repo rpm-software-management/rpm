@@ -79,7 +79,6 @@ static sqlite3_stmt *cachedStmt(dbiCursor dbc, const char *cmd)
 
 static int dbiCursorPrep(dbiCursor dbc, const char *fmt, ...)
 {
-    char *cmd = NULL;
     /*
      * rpmdb recycles cursors for different purposes, reset if necessary.
      * This only works as long as fmt is always static (as it is now)
@@ -87,21 +86,20 @@ static int dbiCursorPrep(dbiCursor dbc, const char *fmt, ...)
     if (dbc->fmt && dbc->fmt != fmt)
 	dbiCursorReset(dbc);
 
-    if (dbc->fmt == NULL) {
+    if (dbc->stmt == NULL) {
+	char *cmd = NULL;
 	va_list ap;
 
 	va_start(ap, fmt); 
 	cmd = sqlite3_vmprintf(fmt, ap);
 	va_end(ap);
-	dbc->fmt = fmt;
-    }
 
-    if (dbc->stmt == NULL) {
+	dbc->fmt = fmt;
 	dbc->stmt = cachedStmt(dbc, cmd);
+	sqlite3_free(cmd);
     } else {
 	sqlite3_reset(dbc->stmt);
     }
-    sqlite3_free(cmd);
 
     return dbiCursorResult(dbc);
 }
