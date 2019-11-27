@@ -478,3 +478,365 @@
                 python3.9dist(simplejson) = 3.16
                 python3dist(simplejson) = 3.16
             requires: python(abi) = 3.9
+    --provides --majorver-provides-versions 3.9 --majorver-provides-versions 2.7:
+        usr/lib/python2.7/site-packages/attrs-19.1.0-py2.7.egg-info:
+            provides: |-
+                python2.7dist(attrs) = 19.1
+                python2dist(attrs) = 19.1
+            requires: python(abi) = 2.7
+        usr/lib/python2.7/site-packages/kubernetes-11.0.0b2.dist-info:
+            provides: |-
+                python2.7dist(kubernetes) = 11~b2
+                python2dist(kubernetes) = 11~b2
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(certifi) >= 14.5.14
+                python2.7dist(google-auth) >= 1.0.1
+                python2.7dist(ipaddress) >= 1.0.17
+                python2.7dist(python-dateutil) >= 2.5.3
+                python2.7dist(pyyaml) >= 3.12
+                python2.7dist(requests)
+                python2.7dist(requests-oauthlib)
+                python2.7dist(setuptools) >= 21
+                python2.7dist(six) >= 1.9
+                python2.7dist(urllib3) >= 1.24.2
+                ((python2.7dist(websocket-client) < 0.40 or python2.7dist(websocket-client) > 0.40) with (python2.7dist(websocket-client) < 0.41 or python2.7dist(websocket-client) > 0.42) with (python2.7dist(websocket-client) < 0.42 or python2.7dist(websocket-client) > 0.43) with python2.7dist(websocket-client) >= 0.32)
+        usr/lib/python2.7/site-packages/mistune-0.8.4-py2.7.egg-info:
+            provides: |-
+                python2.7dist(mistune) = 0.8.4
+                python2dist(mistune) = 0.8.4
+            requires: python(abi) = 2.7
+        usr/lib/python2.7/site-packages/packaging-19.0.dist-info:
+            provides: |-
+                python2.7dist(packaging) = 19
+                python2dist(packaging) = 19
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(pyparsing) >= 2.0.2
+                python2.7dist(six)
+        usr/lib/python2.7/site-packages/pip-19.1.1.dist-info:
+            provides: |-
+                python2.7dist(pip) = 19.1.1
+                python2dist(pip) = 19.1.1
+            requires: python(abi) = 2.7
+        usr/lib/python2.7/site-packages/pyparsing-2.4.0.dist-info:
+            provides: |-
+                python2.7dist(pyparsing) = 2.4
+                python2dist(pyparsing) = 2.4
+            requires: python(abi) = 2.7
+        usr/lib/python2.7/site-packages/setuptools-41.6.0-py2.7.egg-info:
+            provides: |-
+                python2.7dist(setuptools) = 41.6
+                python2dist(setuptools) = 41.6
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(setuptools)
+        usr/lib/python2.7/site-packages/setuptools-41.6.0.dist-info:
+            provides: |-
+                python2.7dist(setuptools) = 41.6
+                python2dist(setuptools) = 41.6
+            requires: python(abi) = 2.7
+        usr/lib/python2.7/site-packages/six-1.12.0.dist-info:
+            provides: |-
+                python2.7dist(six) = 1.12
+                python2dist(six) = 1.12
+            requires: python(abi) = 2.7
+        usr/lib/python3.11/site-packages/pip-20.0.2-py3.11.egg-info:
+            provides: python3.11dist(pip) = 20.0.2
+            requires: |-
+                python(abi) = 3.11
+                python3.11dist(setuptools)
+        usr/lib/python3.7/site-packages/astroid-2.3.3.dist-info:
+            provides: python3.7dist(astroid) = 2.3.3
+            requires: |-
+                python(abi) = 3.7
+                (python3.7dist(lazy-object-proxy) >= 1.4 with python3.7dist(lazy-object-proxy) < 1.5)
+                (python3.7dist(six) >= 1.12 with python3.7dist(six) < 2)
+                (python3.7dist(typed-ast) < 1.5 with python3.7dist(typed-ast) >= 1.4)
+                (python3.7dist(wrapt) >= 1.11 with python3.7dist(wrapt) < 1.12)
+        usr/lib/python3.7/site-packages/packaging-19.0.dist-info:
+            provides: python3.7dist(packaging) = 19
+            requires: |-
+                python(abi) = 3.7
+                python3.7dist(pyparsing) >= 2.0.2
+                python3.7dist(six)
+        usr/lib/python3.7/site-packages/pip-19.1.1.dist-info:
+            provides: python3.7dist(pip) = 19.1.1
+            requires: python(abi) = 3.7
+        usr/lib/python3.7/site-packages/pyparsing-2.4.0.dist-info:
+            provides: python3.7dist(pyparsing) = 2.4
+            requires: python(abi) = 3.7
+        usr/lib/python3.9/site-packages/attrs-19.1.0-py3.9.egg-info:
+            provides: |-
+                python3.9dist(attrs) = 19.1
+                python3dist(attrs) = 19.1
+            requires: python(abi) = 3.9
+        usr/lib/python3.9/site-packages/mistune-0.8.4-py3.9.egg-info:
+            provides: |-
+                python3.9dist(mistune) = 0.8.4
+                python3dist(mistune) = 0.8.4
+            requires: python(abi) = 3.9
+        usr/lib/python3.9/site-packages/packaging-20.1.dist-info:
+            provides: |-
+                python3.9dist(packaging) = 20.1
+                python3dist(packaging) = 20.1
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(pyparsing) >= 2.0.2
+                python3.9dist(six)
+        usr/lib/python3.9/site-packages/pip-20.0.2.dist-info:
+            provides: |-
+                python3.9dist(pip) = 20.0.2
+                python3dist(pip) = 20.0.2
+            requires: python(abi) = 3.9
+        usr/lib/python3.9/site-packages/pyparsing-2.4.0.dist-info:
+            provides: |-
+                python3.9dist(pyparsing) = 2.4
+                python3dist(pyparsing) = 2.4
+            requires: python(abi) = 3.9
+        usr/lib/python3.9/site-packages/setuptools-41.6.0-py3.9.egg-info:
+            provides: |-
+                python3.9dist(setuptools) = 41.6
+                python3dist(setuptools) = 41.6
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(setuptools)
+        usr/lib/python3.9/site-packages/setuptools-41.6.0.dist-info:
+            provides: |-
+                python3.9dist(setuptools) = 41.6
+                python3dist(setuptools) = 41.6
+            requires: python(abi) = 3.9
+        usr/lib/python3.9/site-packages/six-1.12.0.dist-info:
+            provides: |-
+                python3.9dist(six) = 1.12
+                python3dist(six) = 1.12
+            requires: python(abi) = 3.9
+        usr/lib/python3.9/site-packages/tox-3.14.0.dist-info:
+            provides: |-
+                python3.9dist(tox) = 3.14
+                python3dist(tox) = 3.14
+            requires: |-
+                python(abi) = 3.9
+                (python3.9dist(filelock) < 4 with python3.9dist(filelock) >= 3)
+                python3.9dist(packaging) >= 14
+                (python3.9dist(pluggy) < 1 with python3.9dist(pluggy) >= 0.12)
+                (python3.9dist(py) < 2 with python3.9dist(py) >= 1.4.17)
+                (python3.9dist(six) < 2 with python3.9dist(six) >= 1)
+                python3.9dist(toml) >= 0.9.4
+                python3.9dist(virtualenv) >= 14
+        usr/lib/python3.9/site-packages/urllib3-1.25.7-py3.9.egg-info:
+            provides: |-
+                python3.9dist(urllib3) = 1.25.7
+                python3dist(urllib3) = 1.25.7
+            requires: python(abi) = 3.9
+        usr/lib/python3.9/site-packages/zope.schema-4.4.2-py3.9.egg-info:
+            provides: |-
+                python3.9dist(zope.schema) = 4.4.2
+                python3dist(zope.schema) = 4.4.2
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(setuptools)
+                python3.9dist(zope.event)
+                python3.9dist(zope.interface) >= 3.6
+        usr/lib64/python2.7/site-packages/MarkupSafe-1.1.1.dist-info:
+            provides: |-
+                python2.7dist(markupsafe) = 1.1.1
+                python2dist(markupsafe) = 1.1.1
+            requires: python(abi) = 2.7
+        usr/lib64/python2.7/site-packages/backports.range-3.7.2-py2.7.egg-info:
+            provides: |-
+                python2.7dist(backports.range) = 3.7.2
+                python2dist(backports.range) = 3.7.2
+            requires: python(abi) = 2.7
+        usr/lib64/python2.7/site-packages/lxml-4.4.0.dist-info:
+            provides: |-
+                python2.7dist(lxml) = 4.4
+                python2dist(lxml) = 4.4
+            requires: python(abi) = 2.7
+        usr/lib64/python2.7/site-packages/numpy-1.16.4.dist-info:
+            provides: |-
+                python2.7dist(numpy) = 1.16.4
+                python2dist(numpy) = 1.16.4
+            requires: python(abi) = 2.7
+        usr/lib64/python2.7/site-packages/numpy_stl-2.11.2-py2.7.egg-info:
+            provides: |-
+                python2.7dist(numpy-stl) = 2.11.2
+                python2dist(numpy-stl) = 2.11.2
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(numpy)
+                python2.7dist(python-utils) >= 1.6.2
+                python2.7dist(setuptools)
+    --provides --majorver-provides-versions 3.9,2.7:
+        usr/lib/python2.7/site-packages/tox-3.14.0.dist-info:
+            provides: |-
+                python2.7dist(tox) = 3.14
+                python2dist(tox) = 3.14
+            requires: |-
+                python(abi) = 2.7
+                (python2.7dist(filelock) < 4 with python2.7dist(filelock) >= 3)
+                (python2.7dist(importlib-metadata) < 1 with python2.7dist(importlib-metadata) >= 0.12)
+                python2.7dist(packaging) >= 14
+                (python2.7dist(pluggy) < 1 with python2.7dist(pluggy) >= 0.12)
+                (python2.7dist(py) < 2 with python2.7dist(py) >= 1.4.17)
+                (python2.7dist(six) < 2 with python2.7dist(six) >= 1)
+                python2.7dist(toml) >= 0.9.4
+                python2.7dist(virtualenv) >= 14
+        usr/lib/python2.7/site-packages/urllib3-1.25.7-py2.7.egg-info:
+            provides: |-
+                python2.7dist(urllib3) = 1.25.7
+                python2dist(urllib3) = 1.25.7
+            requires: python(abi) = 2.7
+        usr/lib/python2.7/site-packages/zope.component-4.3.0-py2.7.egg-info:
+            provides: |-
+                python2.7dist(zope.component) = 4.3
+                python2dist(zope.component) = 4.3
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(setuptools)
+                python2.7dist(zope.event)
+                python2.7dist(zope.interface) >= 4.1
+        usr/lib/python3.10/site-packages/setuptools-41.6.0-py3.10.egg-info:
+            provides: python3.10dist(setuptools) = 41.6
+            requires: |-
+                python(abi) = 3.10
+                python3.10dist(setuptools)
+        usr/lib/python3.7/site-packages/setuptools-41.6.0-py3.7.egg-info:
+            provides: python3.7dist(setuptools) = 41.6
+            requires: |-
+                python(abi) = 3.7
+                python3.7dist(setuptools)
+        usr/lib/python3.7/site-packages/setuptools-41.6.0.dist-info:
+            provides: python3.7dist(setuptools) = 41.6
+            requires: python(abi) = 3.7
+        usr/lib/python3.7/site-packages/six-1.12.0.dist-info:
+            provides: python3.7dist(six) = 1.12
+            requires: python(abi) = 3.7
+        usr/lib/python3.7/site-packages/tox-3.14.0.dist-info:
+            provides: python3.7dist(tox) = 3.14
+            requires: |-
+                python(abi) = 3.7
+                (python3.7dist(filelock) < 4 with python3.7dist(filelock) >= 3)
+                (python3.7dist(importlib-metadata) < 1 with python3.7dist(importlib-metadata) >= 0.12)
+                python3.7dist(packaging) >= 14
+                (python3.7dist(pluggy) < 1 with python3.7dist(pluggy) >= 0.12)
+                (python3.7dist(py) < 2 with python3.7dist(py) >= 1.4.17)
+                (python3.7dist(six) < 2 with python3.7dist(six) >= 1)
+                python3.7dist(toml) >= 0.9.4
+                python3.7dist(virtualenv) >= 14
+        usr/lib64/python2.7/site-packages/scipy-1.2.1.dist-info:
+            provides: |-
+                python2.7dist(scipy) = 1.2.1
+                python2dist(scipy) = 1.2.1
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(numpy) >= 1.8.2
+        usr/lib64/python2.7/site-packages/simplejson-3.16.0-py2.7.egg-info:
+            provides: |-
+                python2.7dist(simplejson) = 3.16
+                python2dist(simplejson) = 3.16
+            requires: python(abi) = 2.7
+        usr/lib64/python3.7/site-packages/MarkupSafe-1.1.1.dist-info:
+            provides: python3.7dist(markupsafe) = 1.1.1
+            requires: python(abi) = 3.7
+        usr/lib64/python3.7/site-packages/PyQt5_sip-4.19.19.dist-info:
+            provides: python3.7dist(pyqt5-sip) = 4.19.19
+            requires: python(abi) = 3.7
+        usr/lib64/python3.7/site-packages/PyQtWebEngine-5.12.1.dist-info:
+            provides: python3.7dist(pyqtwebengine) = 5.12.1
+            requires: |-
+                python(abi) = 3.7
+                python3.7dist(pyqt5) >= 5.12
+        usr/lib64/python3.7/site-packages/backports.range-3.7.2-py3.7.egg-info:
+            provides: python3.7dist(backports.range) = 3.7.2
+            requires: python(abi) = 3.7
+        usr/lib64/python3.7/site-packages/lxml-4.4.0.dist-info:
+            provides: python3.7dist(lxml) = 4.4
+            requires: python(abi) = 3.7
+        usr/lib64/python3.7/site-packages/numpy-1.17.4.dist-info:
+            provides: python3.7dist(numpy) = 1.17.4
+            requires: python(abi) = 3.7
+        usr/lib64/python3.7/site-packages/numpy_stl-2.11.2-py3.7.egg-info:
+            provides: python3.7dist(numpy-stl) = 2.11.2
+            requires: |-
+                python(abi) = 3.7
+                python3.7dist(numpy)
+                python3.7dist(python-utils) >= 1.6.2
+                python3.7dist(setuptools)
+        usr/lib64/python3.7/site-packages/scipy-1.2.1.dist-info:
+            provides: python3.7dist(scipy) = 1.2.1
+            requires: |-
+                python(abi) = 3.7
+                python3.7dist(numpy) >= 1.8.2
+        usr/lib64/python3.7/site-packages/simplejson-3.16.0-py3.7.egg-info:
+            provides: python3.7dist(simplejson) = 3.16
+            requires: python(abi) = 3.7
+        usr/lib64/python3.9/site-packages/PyQtWebEngine-5.12.1.dist-info:
+            provides: |-
+                python3.9dist(pyqtwebengine) = 5.12.1
+                python3dist(pyqtwebengine) = 5.12.1
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(pyqt5) >= 5.12
+        usr/lib64/python3.9/site-packages/backports.range-3.7.2-py3.9.egg-info:
+            provides: |-
+                python3.9dist(backports.range) = 3.7.2
+                python3dist(backports.range) = 3.7.2
+            requires: python(abi) = 3.9
+        usr/lib64/python3.9/site-packages/numpy_stl-2.11.2-py3.9.egg-info:
+            provides: |-
+                python3.9dist(numpy-stl) = 2.11.2
+                python3dist(numpy-stl) = 2.11.2
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(numpy)
+                python3.9dist(python-utils) >= 1.6.2
+                python3.9dist(setuptools)
+        usr/lib64/python3.9/site-packages/simplejson-3.16.0-py3.9.egg-info:
+            provides: |-
+                python3.9dist(simplejson) = 3.16
+                python3dist(simplejson) = 3.16
+            requires: python(abi) = 3.9
+    --provides --majorver-provides-versions 3.9,2.7 --majorver-provides-versions 3.10:
+        usr/lib/python2.7/site-packages/zope.interface-4.6.0.dist-info:
+            provides: |-
+                python2.7dist(zope.interface) = 4.6
+                python2dist(zope.interface) = 4.6
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(setuptools)
+        usr/lib/python3.10/site-packages/setuptools-41.6.0-py3.10.egg-info:
+            provides: |-
+                python3.10dist(setuptools) = 41.6
+                python3dist(setuptools) = 41.6
+            requires: |-
+                python(abi) = 3.10
+                python3.10dist(setuptools)
+        usr/lib/python3.11/site-packages/pip-20.0.2-py3.11.egg-info:
+            provides: python3.11dist(pip) = 20.0.2
+            requires: |-
+                python(abi) = 3.11
+                python3.11dist(setuptools)
+        usr/lib64/python3.7/site-packages/lxml-4.4.0.dist-info:
+            provides: python3.7dist(lxml) = 4.4
+            requires: python(abi) = 3.7
+        usr/lib64/python3.9/site-packages/simplejson-3.16.0-py3.9.egg-info:
+            provides: |-
+                python3.9dist(simplejson) = 3.16
+                python3dist(simplejson) = 3.16
+            requires: python(abi) = 3.9
+    --provides --majorver-provides-versions 3.9:
+        usr/lib/python2.7/site-packages/zope.interface-4.6.0.dist-info:
+            provides: |-
+                python2.7dist(zope.interface) = 4.6
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(setuptools)
+        usr/lib64/python3.7/site-packages/lxml-4.4.0.dist-info:
+            provides: python3.7dist(lxml) = 4.4
+            requires: python(abi) = 3.7
+        usr/lib64/python3.9/site-packages/simplejson-3.16.0-py3.9.egg-info:
+            provides: |-
+                python3.9dist(simplejson) = 3.16
+                python3dist(simplejson) = 3.16
+            requires: python(abi) = 3.9

@@ -150,7 +150,11 @@ group.add_argument('-R', '--requires', action='store_true', help='Print Requires
 group.add_argument('-r', '--recommends', action='store_true', help='Print Recommends')
 group.add_argument('-C', '--conflicts', action='store_true', help='Print Conflicts')
 group.add_argument('-E', '--extras', action='store_true', help='Print Extras')
-parser.add_argument('-M', '--majorver-provides', action='store_true', help='Print extra Provides with Python major version only')
+group_majorver = parser.add_mutually_exclusive_group()
+group_majorver.add_argument('-M', '--majorver-provides', action='store_true', help='Print extra Provides with Python major version only')
+group_majorver.add_argument('--majorver-provides-versions', action='append',
+                            help='Print extra Provides with Python major version only for listed '
+                                 'Python VERSIONS (appended or comma separated without spaces, e.g. 2.7,3.9)')
 parser.add_argument('-m', '--majorver-only', action='store_true', help='Print Provides/Requires with Python major version only')
 parser.add_argument('-L', '--legacy-provides', action='store_true', help='Print extra legacy pythonegg Provides')
 parser.add_argument('-l', '--legacy', action='store_true', help='Print legacy pythonegg Provides/Requires instead')
@@ -160,6 +164,11 @@ args = parser.parse_args()
 py_abi = args.requires
 py_deps = {}
 
+if args.majorver_provides_versions:
+    # Go through the arguments (can be specified multiple times),
+    # and parse individual versions (can be comma-separated)
+    args.majorver_provides_versions = [v for vstring in args.majorver_provides_versions
+                                         for v in vstring.split(",")]
 
 for f in (args.files or stdin.readlines()):
     f = f.strip()
@@ -233,7 +242,8 @@ for f in (args.files or stdin.readlines()):
         # See https://bugzilla.redhat.com/show_bug.cgi?id=1791530
         normalized_name = normalize_name(dist.project_name)
 
-        if args.majorver_provides or args.majorver_only or args.legacy_provides or args.legacy:
+        if args.majorver_provides or args.majorver_provides_versions or \
+                args.majorver_only or args.legacy_provides or args.legacy:
             # Get the Python major version
             pyver_major = dist.py_version.split('.')[0]
         if args.provides:
@@ -250,7 +260,9 @@ for f in (args.files or stdin.readlines()):
                 name_ = 'python{}dist({})'.format(dist.py_version, normalized_name)
                 if name_ not in py_deps:
                     py_deps[name_] = []
-            if args.majorver_provides or args.majorver_only:
+            if args.majorver_provides or args.majorver_only or \
+                    (args.majorver_provides_versions and
+                     dist.py_version in args.majorver_provides_versions):
                 pymajor_name = 'python{}dist({})'.format(pyver_major, dist.key)
                 if pymajor_name not in py_deps:
                     py_deps[pymajor_name] = []
@@ -269,7 +281,9 @@ for f in (args.files or stdin.readlines()):
                         py_deps[name].append(spec)
                         if name != name_:
                             py_deps[name_].append(spec)
-                    if args.majorver_provides:
+                    if args.majorver_provides or \
+                            (args.majorver_provides_versions and
+                             dist.py_version in args.majorver_provides_versions):
                         py_deps[pymajor_name].append(spec)
                         if pymajor_name != pymajor_name_:
                             py_deps[pymajor_name_].append(spec)
