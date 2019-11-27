@@ -53,6 +53,7 @@
 %__rm			@__RM@
 %__rsh			@__RSH@
 %__sed			@__SED@
+%__sed_i		%{__sed} -i
 %__semodule		@__SEMODULE@
 %__ssh			@__SSH@
 %__tar			@__TAR@
