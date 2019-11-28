@@ -543,7 +543,7 @@ if $run_dwz \
     # dwz invalidates .gnu_debuglink CRC32 in the main files.
     cat "$ELFBINSFILE" |
     (cd "$RPM_BUILD_ROOT"; \
-     xargs -d '\n' ${lib_rpm_dir}/sepdebugcrcfix usr/lib/debug)
+     tr '\n' '\0' | xargs -0 ${lib_rpm_dir}/sepdebugcrcfix usr/lib/debug)
   fi
 fi
 
