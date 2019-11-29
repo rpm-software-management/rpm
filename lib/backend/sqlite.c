@@ -9,21 +9,11 @@
 
 #include "debug.h"
 
-#define HASHTYPE stmtHash
-#define HTKEYTYPE const char *
-#define HTDATATYPE sqlite3_stmt *
-#include "lib/rpmhash.H"
-#include "lib/rpmhash.C"
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
-
 static const int sleep_ms = 50;
 
 struct dbiCursor_s {
     sqlite3 *sdb;
     sqlite3_stmt *stmt;
-    stmtHash stcache;
     const char *fmt;
     int flags;
     rpmTagVal tag;
@@ -42,6 +32,15 @@ static void errCb(void *data, int err, const char *msg)
 		rdb->db_descr, sqlite3_errstr(err), msg);
 }
 
+static int dbiCursorReset(dbiCursor dbc)
+{
+    if (dbc->stmt) {
+	sqlite3_reset(dbc->stmt);
+	sqlite3_clear_bindings(dbc->stmt);
+    }
+    return 0;
+}
+
 static int dbiCursorResult(dbiCursor dbc)
 {
     int rc = sqlite3_errcode(dbc->sdb);
@@ -51,23 +50,6 @@ static int dbiCursorResult(dbiCursor dbc)
 		sqlite3_errcode(dbc->sdb), sqlite3_errmsg(dbc->sdb));
     }
     return err ? RPMRC_FAIL : RPMRC_OK;
-}
-
-static sqlite3_stmt *cachedStmt(dbiCursor dbc, const char *cmd)
-{
-    sqlite3_stmt *stmt = NULL;
-    sqlite3_stmt **sts = NULL;
-    if (stmtHashGetEntry(dbc->stcache, cmd, &sts, NULL, NULL)) {
-	stmt = sts[0];
-	sqlite3_reset(stmt);
-	sqlite3_clear_bindings(stmt);
-    } else {
-	if (sqlite3_prepare_v2(dbc->sdb, cmd, -1, &stmt, NULL) == SQLITE_OK) {
-	    stmtHashAddEntry(dbc->stcache, xstrdup(cmd), stmt);
-	}
-    }
-
-    return stmt;
 }
 
 static int dbiCursorPrep(dbiCursor dbc, const char *fmt, ...)
@@ -80,10 +62,10 @@ static int dbiCursorPrep(dbiCursor dbc, const char *fmt, ...)
 	cmd = sqlite3_vmprintf(fmt, ap);
 	va_end(ap);
 
-	dbc->stmt = cachedStmt(dbc, cmd);
+	sqlite3_prepare_v2(dbc->sdb, cmd, -1, &dbc->stmt, NULL);
 	sqlite3_free(cmd);
     } else {
-	sqlite3_reset(dbc->stmt);
+	dbiCursorReset(dbc);
     }
 
     return dbiCursorResult(dbc);
@@ -160,10 +142,6 @@ static int sqlite_init(rpmdb rdb, const char * dbhome)
 	sqlite3_busy_timeout(sdb, sleep_ms);
 	sqlite3_config(SQLITE_CONFIG_LOG, errCb, rdb);
 
-	rdb->db_cache = stmtHashCreate(31, rstrhash, strcmp,
-				   (stmtHashFreeKey)rfree,
-				   (stmtHashFreeData)sqlite3_finalize);
-
 	sqlexec(sdb, "PRAGMA secure_delete = OFF");
 	sqlexec(sdb, "PRAGMA case_sensitive_like = ON");
 
@@ -195,7 +173,6 @@ static int sqlite_fini(rpmdb rdb)
 	if (rdb->db_opens > 1) {
 	    rdb->db_opens--;
 	} else {
-	    rdb->db_cache = stmtHashFree(rdb->db_cache);
 	    if (sqlite3_db_readonly(sdb, NULL) == 0) {
 		sqlexec(sdb, "PRAGMA optimize");
 		sqlexec(sdb, "PRAGMA wal_checkpoint = TRUNCATE");
@@ -386,7 +363,6 @@ static dbiCursor sqlite_CursorInit(dbiIndex dbi, unsigned int flags)
     dbc->sdb = dbi->dbi_db;
     dbc->flags = flags;
     dbc->tag = rpmTagGetValue(dbi->dbi_file);
-    dbc->stcache = dbi->dbi_rpmdb->db_cache;
     if (rpmTagGetClass(dbc->tag) == RPM_STRING_CLASS) {
 	dbc->ctype = SQLITE_TEXT;
     } else {
@@ -400,7 +376,7 @@ static dbiCursor sqlite_CursorInit(dbiIndex dbi, unsigned int flags)
 static dbiCursor sqlite_CursorFree(dbiIndex dbi, dbiCursor dbc)
 {
     if (dbc) {
-	sqlite3_reset(dbc->stmt);
+	sqlite3_finalize(dbc->stmt);
 	if (dbc->flags & DBC_WRITE)
 	    sqlexec(dbc->sdb, "RELEASE '%s'", dbi->dbi_file);
 	free(dbc);
