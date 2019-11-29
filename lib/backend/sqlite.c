@@ -53,13 +53,6 @@ static int dbiCursorResult(dbiCursor dbc)
     return err ? RPMRC_FAIL : RPMRC_OK;
 }
 
-static int dbiCursorReset(dbiCursor dbc)
-{
-    dbc->stmt = NULL;
-    dbc->fmt = NULL;
-    return 0;
-}
-
 static sqlite3_stmt *cachedStmt(dbiCursor dbc, const char *cmd)
 {
     sqlite3_stmt *stmt = NULL;
@@ -79,13 +72,6 @@ static sqlite3_stmt *cachedStmt(dbiCursor dbc, const char *cmd)
 
 static int dbiCursorPrep(dbiCursor dbc, const char *fmt, ...)
 {
-    /*
-     * rpmdb recycles cursors for different purposes, reset if necessary.
-     * This only works as long as fmt is always static (as it is now)
-     */
-    if (dbc->fmt && dbc->fmt != fmt)
-	dbiCursorReset(dbc);
-
     if (dbc->stmt == NULL) {
 	char *cmd = NULL;
 	va_list ap;
@@ -94,7 +80,6 @@ static int dbiCursorPrep(dbiCursor dbc, const char *fmt, ...)
 	cmd = sqlite3_vmprintf(fmt, ap);
 	va_end(ap);
 
-	dbc->fmt = fmt;
 	dbc->stmt = cachedStmt(dbc, cmd);
 	sqlite3_free(cmd);
     } else {
@@ -426,6 +411,13 @@ static dbiCursor sqlite_CursorFree(dbiIndex dbi, dbiCursor dbc)
 static rpmRC sqlite_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum, unsigned char *hdrBlob, unsigned int hdrLen)
 {
     int rc = 0;
+    dbiCursor dbwc = NULL;
+
+    /* Avoid trashing existing query cursor on header rewrite */
+    if (hdrNum && *hdrNum) {
+	dbwc = dbiCursorInit(dbi, DBC_WRITE);
+	dbc = dbwc;
+    }
 
     if (!rc) {
 	rc = dbiCursorPrep(dbc, "INSERT OR REPLACE INTO '%q' VALUES(?, ?)",
@@ -442,7 +434,12 @@ static rpmRC sqlite_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum,
     if (rc == SQLITE_DONE && *hdrNum == 0)
 	*hdrNum = sqlite3_last_insert_rowid(dbc->sdb);
 
-    return dbiCursorResult(dbc);
+    rc = dbiCursorResult(dbc);
+
+    if (dbwc)
+	dbiCursorFree(dbi, dbwc);
+
+    return rc;
 }
 
 static rpmRC sqlite_pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
