@@ -18,6 +18,7 @@ struct dbiCursor_s {
     int flags;
     rpmTagVal tag;
     int ctype;
+    struct dbiCursor_s *subc;
 
     const void *key;
     unsigned int keylen;
@@ -377,6 +378,8 @@ static dbiCursor sqlite_CursorFree(dbiIndex dbi, dbiCursor dbc)
 {
     if (dbc) {
 	sqlite3_finalize(dbc->stmt);
+	if (dbc->subc)
+	    dbiCursorFree(dbi, dbc->subc);
 	if (dbc->flags & DBC_WRITE)
 	    sqlexec(dbc->sdb, "RELEASE '%s'", dbi->dbi_file);
 	free(dbc);
@@ -543,6 +546,8 @@ static rpmRC sqlite_idxdbIter(dbiIndex dbi, dbiCursor dbc, const char *keyp, siz
 				    "ORDER BY key",
 				dbi->dbi_file);
 	}
+	if (set)
+	    dbc->subc = dbiCursorInit(dbi, 0);
     }
 
     if (!rc)
@@ -555,11 +560,8 @@ static rpmRC sqlite_idxdbIter(dbiIndex dbi, dbiCursor dbc, const char *keyp, siz
 	    dbc->key = sqlite3_column_blob(dbc->stmt, 0);
 	}
 	dbc->keylen = sqlite3_column_bytes(dbc->stmt, 0);
-	if (set) {
-	    dbiCursor kc = dbiCursorInit(dbi, 0);
-	    rc = sqlite_idxdbByKey(dbi, kc, dbc->key, dbc->keylen, set);
-	    dbiCursorFree(dbi, kc);
-	}
+	if (set)
+	    rc = sqlite_idxdbByKey(dbi, dbc->subc, dbc->key, dbc->keylen, set);
 	rc = RPMRC_OK;
     } else if (rc == SQLITE_DONE) {
 	if (searchType == DBC_PREFIX_SEARCH && (*set))
