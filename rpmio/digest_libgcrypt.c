@@ -20,6 +20,8 @@ struct DIGEST_CTX_s {
 /****************************  init   ************************************/
 
 int rpmInitCrypto(void) {
+    gcry_check_version (NULL);
+    gcry_control (GCRYCTL_INITIALIZATION_FINISHED, 0);
     return 0;
 }
 
