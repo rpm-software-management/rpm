@@ -298,6 +298,7 @@ struct rpmdbIndexIterator_s {
     dbiCursor		ii_dbc;
     dbiIndexSet		ii_set;
     unsigned int	*ii_hdrNums;
+    int			ii_skipdata;
 };
 
 static rpmdb rpmdbRock;
@@ -1885,6 +1886,13 @@ rpmdbIndexIterator rpmdbIndexIteratorInit(rpmdb db, rpmDbiTag rpmtag)
     return ii;
 }
 
+rpmdbIndexIterator rpmdbIndexKeyIteratorInit(rpmdb db, rpmDbiTag rpmtag)
+{
+    rpmdbIndexIterator ki = rpmdbIndexIteratorInit(db, rpmtag);
+    ki->ii_skipdata = 1;
+    return ki;
+}
+
 int rpmdbIndexIteratorNext(rpmdbIndexIterator ii, const void ** key, size_t * keylen)
 {
     int rc;
@@ -1899,7 +1907,8 @@ int rpmdbIndexIteratorNext(rpmdbIndexIterator ii, const void ** key, size_t * ke
     /* free old data */
     ii->ii_set = dbiIndexSetFree(ii->ii_set);
 
-    rc = idxdbGet(ii->ii_dbi, ii->ii_dbc, NULL, 0, &ii->ii_set, DBC_NORMAL_SEARCH);
+    rc = idxdbGet(ii->ii_dbi, ii->ii_dbc, NULL, 0,
+		ii->ii_skipdata ? NULL : &ii->ii_set, DBC_NORMAL_SEARCH);
 
     *key = idxdbKey(ii->ii_dbi, ii->ii_dbc, &iikeylen);
     *keylen = iikeylen;

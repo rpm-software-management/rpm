@@ -154,6 +154,14 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi);
 rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi);
 
 /** \ingroup rpmdb
+ * Get an iterator for index keys
+ * @param db		rpm database
+ * @param rpmtag	the index to iterate over
+ * @return		the index iterator
+ */
+rpmdbIndexIterator rpmdbIndexKeyIteratorInit(rpmdb db, rpmDbiTag rpmtag);
+
+/** \ingroup rpmdb
  * Get an iterator for an index
  * @param db		rpm database
  * @param rpmtag	the index to iterate over
