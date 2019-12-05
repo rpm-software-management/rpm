@@ -938,7 +938,7 @@ static void addIndexToDepHashes(rpmts ts, rpmDbiTag tag,
 {
     char *key;
     size_t keylen;
-    rpmdbIndexIterator ii = rpmdbIndexIteratorInit(rpmtsGetRdb(ts), tag);
+    rpmdbIndexIterator ii = rpmdbIndexKeyIteratorInit(rpmtsGetRdb(ts), tag);
 
     if (!ii)
 	return;
