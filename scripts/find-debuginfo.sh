@@ -661,17 +661,27 @@ while ((i < nout)); do
 done
 if ((nout > 0)); then
   # Now add the right %dir lines to each output list.
-  (cd "${RPM_BUILD_ROOT}"; find usr/lib/debug -type d) |
-  sed 's#^.*$#\\@^/&/@{h;s@^.*$@%dir /&@p;g;}#' |
-  LC_ALL=C sort -ur > "${LISTFILE}.dirs.sed"
+  add_percent_dir()
+  {
+    while read -r line; do
+      while test "${line:0:15}" = "/usr/lib/debug/"; do
+        line="${line%/*}"
+        printf '%s\n' "$line"
+      done
+    done | \
+    sort -u | \
+    while read -r line; do
+      test -d "${RPM_BUILD_ROOT}$line" && printf '%%dir %s\n' "$line"
+    done
+  }
   i=0
   while ((i < nout)); do
-    sed -n -f "${LISTFILE}.dirs.sed" "${outs[$i]}" | sort -u > "${outs[$i]}.new"
+    add_percent_dir < "${outs[$i]}" > "${outs[$i]}.new"
     cat "${outs[$i]}" >> "${outs[$i]}.new"
     mv -f "${outs[$i]}.new" "${outs[$i]}"
     ((++i))
   done
-  sed -n -f "${LISTFILE}.dirs.sed" "${LISTFILE}" | sort -u > "${LISTFILE}.new"
+  add_percent_dir < "${LISTFILE}" > "${LISTFILE}.new"
   cat "$LISTFILE" >> "${LISTFILE}.new"
   mv "${LISTFILE}.new" "$LISTFILE"
 fi
