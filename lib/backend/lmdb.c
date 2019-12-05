@@ -574,7 +574,7 @@ static rpmRC lmdb_idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t
 			  dbiIndexSet *set, int searchType)
 {
     rpmRC rc = RPMRC_FAIL; /* assume failure */
-    if (dbi != NULL && dbc != NULL && set != NULL) {
+    if (dbi != NULL && dbc != NULL) {
 	int cflags = MDB_NEXT;
 	int dbrc;
 	MDB_val key = { 0, NULL };
@@ -598,12 +598,14 @@ static rpmRC lmdb_idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t
 	    if (searchType == DBC_PREFIX_SEARCH &&
 		    (key.mv_size < keylen || memcmp(key.mv_data, keyp, keylen) != 0))
 		break;
-	    dbt2set(dbi, &data, &newset);
-	    if (*set == NULL) {
-		*set = newset;
-	    } else {
-		dbiIndexSetAppendSet(*set, newset, 0);
-		dbiIndexSetFree(newset);
+	    if (set) {
+		dbt2set(dbi, &data, &newset);
+		if (*set == NULL) {
+		    *set = newset;
+		} else {
+		    dbiIndexSetAppendSet(*set, newset, 0);
+		    dbiIndexSetFree(newset);
+		}
 	    }
 	    if (searchType != DBC_PREFIX_SEARCH)
 		break;
@@ -613,7 +615,7 @@ static rpmRC lmdb_idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t
 	}
 
 	/* fixup result status for prefix search */
-	if (searchType == DBC_PREFIX_SEARCH) {
+	if (searchType == DBC_PREFIX_SEARCH && set) {
 	    if (dbrc == MDB_NOTFOUND && *set != NULL && (*set)->count > 0)
 		dbrc = 0;
 	    else if (dbrc == 0 && (*set == NULL || (*set)->count == 0))

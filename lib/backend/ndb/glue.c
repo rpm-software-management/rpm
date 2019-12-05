@@ -400,15 +400,15 @@ static rpmRC ndb_idxdbIter(dbiIndex dbi, dbiCursor dbc, dbiIndexSet *set)
 	}
 	k = dbc->listdata + dbc->list[dbc->ilist];
 	kl = dbc->list[dbc->ilist + 1];
-#if 0
-	if (searchType == DBC_KEY_SEARCH) {
+
+	if (set == NULL) {
 	    dbc->ilist += 2;
 	    dbc->key = k;
 	    dbc->keylen = kl;
 	    rc = RPMRC_OK;
 	    break;
 	}
-#endif
+
 	pkglist = 0;
 	pkglistn = 0;
 	rc = rpmidxGet(dbc->dbi->dbi_db, k, kl, &pkglist, &pkglistn);

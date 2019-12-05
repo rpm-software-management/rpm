@@ -578,15 +578,17 @@ static rpmRC sqlite_idxdbIter(dbiIndex dbi, dbiCursor dbc, const char *keyp, siz
 	rc = sqlite3_step(dbc->stmt);
 
     if (rc == SQLITE_ROW) {
-	dbiCursor kc = dbiCursorInit(dbi, 0);
 	if (dbc->ctype == SQLITE_TEXT) {
 	    dbc->key = sqlite3_column_text(dbc->stmt, 0);
 	} else {
 	    dbc->key = sqlite3_column_blob(dbc->stmt, 0);
 	}
 	dbc->keylen = sqlite3_column_bytes(dbc->stmt, 0);
-	rc = sqlite_idxdbByKey(dbi, kc, dbc->key, dbc->keylen, set);
-	dbiCursorFree(dbi, kc);
+	if (set) {
+	    dbiCursor kc = dbiCursorInit(dbi, 0);
+	    rc = sqlite_idxdbByKey(dbi, kc, dbc->key, dbc->keylen, set);
+	    dbiCursorFree(dbi, kc);
+	}
 	rc = RPMRC_OK;
     } else if (rc == SQLITE_DONE) {
 	if (searchType == DBC_PREFIX_SEARCH && (*set))
