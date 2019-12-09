@@ -178,8 +178,10 @@ for f in files:
                             depsextras.remove(dep)
                 deps = depsextras
             # console_scripts/gui_scripts entry points need pkg_resources from setuptools
-            if (dist.get_entry_map('console_scripts') or
-                    dist.get_entry_map('gui_scripts')):
+            if ((dist.get_entry_map('console_scripts') or
+                     dist.get_entry_map('gui_scripts')) and
+                    (lower.endswith('.egg') or
+                     lower.endswith('.egg-info'))):
                 # stick them first so any more specific requirement overrides it
                 deps.insert(0, Requirement.parse('setuptools'))
             # add requires/recommends based on egg/dist metadata
