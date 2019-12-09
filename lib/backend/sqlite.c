@@ -502,7 +502,7 @@ static unsigned int sqlite_pkgdbKey(dbiIndex dbi, dbiCursor dbc)
 
 static rpmRC sqlite_idxdbByKey(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexSet *set)
 {
-    int rc = dbiCursorPrep(dbc, "SELECT key, hnum, idx from '%q' where key=?",
+    int rc = dbiCursorPrep(dbc, "SELECT hnum, idx from '%q' where key=?",
 			dbi->dbi_file);
 
     if (!rc)
@@ -510,8 +510,8 @@ static rpmRC sqlite_idxdbByKey(dbiIndex dbi, dbiCursor dbc, const char *keyp, si
 
     if (!rc) {
 	while ((rc = sqlite3_step(dbc->stmt)) == SQLITE_ROW) {
-	    unsigned int hnum = sqlite3_column_int(dbc->stmt, 1);
-	    unsigned int tnum = sqlite3_column_int(dbc->stmt, 2);
+	    unsigned int hnum = sqlite3_column_int(dbc->stmt, 0);
+	    unsigned int tnum = sqlite3_column_int(dbc->stmt, 1);
 
 	    if (*set == NULL)
 		*set = dbiIndexSetNew(5);
