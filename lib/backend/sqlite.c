@@ -520,8 +520,6 @@ static rpmRC sqlite_idxdbByKey(dbiIndex dbi, dbiCursor dbc, const char *keyp, si
     }
 
     if (rc == SQLITE_DONE) {
-	if (*set)
-	    dbiIndexSetSort(*set);
 	rc = (*set) ? RPMRC_OK : RPMRC_NOTFOUND;
     } else {
 	rc = dbiCursorResult(dbc);
