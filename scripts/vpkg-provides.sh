@@ -232,9 +232,9 @@ fi
 
 
 
-provides_tmp=${TMPDIR:-/tmp}/provides.$$
-if test -f $provides_tmp ; then
-	echo "$provides_tmp already exists.  Exiting."
+provides_tmp=$(tempfile -p provides)
+if test -z "$provides_tmp" ; then
+	echo "unable to make a temp file";
 	exit 11
 fi
 
@@ -247,9 +247,9 @@ do
 	find $d -type f -print 2>/dev/null | grep -E -v \'$ignore_dirs\' | $find_provides >> $provides_tmp
 done
 
-sum_tmp=${TMPDIR:-/tmp}/sum.$$
-if test -f $sum_tmp ; then
-	echo "$sum_tmp already exists.  Exiting."
+sum_tmp=$(tempfile -p sum)
+if test -z "$sum_tmp" ; then
+	echo "unable to make a temp file"
 	exit 11
 fi
 
@@ -347,15 +347,15 @@ cat <<_EIEIO_
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/ucb:/usr/bsd
 export PATH
 
-sum_current_tmp=\${TMPDIR:-/tmp}/rpm.sum.current.\$\$
-if test -f \$sum_current_tmp ; then
-	echo "\$sum_current_tmp already exists.  Exiting."
+sum_current_tmp=\$(tempfile -p sum.current)
+if test -z "\$sum_current_tmp" ; then
+	echo "unable to make a temp file"
 	exit 11
 fi
 
-sum_package_tmp=\${TMPDIR:-/tmp}/rpm.sum.package.\$\$
-if test -f \$sum_package_tmp ; then
-	echo "\$sum_package_tmp already exists.  Exiting."
+sum_package_tmp=\$(tempfile -p rpm.sum.package)
+if test -z "\$sum_package_tmp" ; then
+	echo "unable to make a temp file"
 	exit 11
 fi
 
