@@ -145,6 +145,11 @@ struct poptOption rpmInstallPoptTable[] = {
 
  { "force", '\0', 0, NULL, RPMCLI_POPT_FORCE,
 	N_("short hand for --replacepkgs --replacefiles"), NULL},
+#if defined(ON_DEBIAN)
+ { "force-debian", '\0', POPT_BIT_SET, &rpmIArgs.probFilter,
+	(RPMPROB_FILTER_DEBIAN),
+	N_("force installation of rpm on Debian system"), NULL},
+#endif
 
  { "freshen", 'F', POPT_BIT_SET, &rpmIArgs.installInterfaceFlags,
 	(INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL),

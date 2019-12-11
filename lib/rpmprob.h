@@ -30,6 +30,7 @@ enum rpmprobFilterFlags_e {
     RPMPROB_FILTER_DISKSPACE	= (1 << 7),	/*!< from --ignoresize */
     RPMPROB_FILTER_DISKNODES	= (1 << 8),	/*!< from --ignoresize */
     RPMPROB_FILTER_VERIFY	= (1 << 9),	/*!< from --noverify */
+    RPMPROB_FILTER_DEBIAN	= (1 << 10),	/*!< from --force-debian */
 };
 
 typedef rpmFlags rpmprobFilterFlags;

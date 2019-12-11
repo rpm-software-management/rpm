@@ -122,6 +122,14 @@ int main(int argc, char *argv[])
 	    bigMode = MODE_ERASE;
     }
 
+#if defined(ON_DEBIAN)
+    if ((bigMode == MODE_INSTALL || bigMode == MODE_ERASE) &&
+        (ia->probFilter & RPMPROB_FILTER_DEBIAN) == 0) {
+        fprintf(stderr, _("%s: %s\n"), __progname, _("RPM should not be used directly install RPM packages, use Alien instead!"));
+        fprintf(stderr, _("%s: %s\n"), __progname, _("However assuming you know what you are doing..."));
+    }
+#endif
+
     if (!( bigMode == MODE_INSTALL ) &&
 (ia->probFilter & (RPMPROB_FILTER_REPLACEPKG | RPMPROB_FILTER_OLDPACKAGE)))
 	argerror(_("only installation and upgrading may be forced"));

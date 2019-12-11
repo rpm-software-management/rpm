@@ -846,6 +846,8 @@ AS_IF([test "$enable_python" = yes],[
 
 AM_CONDITIONAL(ENABLE_PYTHON,[test "$WITH_PYTHON_SUBPACKAGE" = 1])
 
+AC_ARG_WITH(debian, [  --with-debian		build rpm for usage on Debian],[AC_DEFINE(ON_DEBIAN, 1, [Define as 1 if you do not want to use rpm for installing packages])])
+
 AC_PATH_PROG(DOXYGEN, doxygen, no)
 dnl
 dnl Only build internal API + source hacking docs on request
