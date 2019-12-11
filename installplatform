@@ -211,6 +211,7 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
   | grep -v '^@' \
   | ${FILTER} \
   > ${PPD}/macros
+  echo "Created ${PPD}/macros"
 
 done
 
