@@ -168,11 +168,12 @@ static rpmRC selinux_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
 	if (selabel_lookup_raw(sehandle, &scon, dest, file_mode) == 0) {
 	    int conrc = lsetfilecon(path, scon);
 
-	    rpmlog(loglvl(conrc < 0), "lsetfilecon: (%s, %s) %s\n",
-		       path, scon, (conrc < 0 ? strerror(errno) : ""));
-
 	    if (conrc == 0 || (conrc < 0 && errno == EOPNOTSUPP))
 		rc = RPMRC_OK;
+
+	    rpmlog(loglvl(rc != RPMRC_OK), "lsetfilecon: (%s, %s) %s\n",
+		       path, scon, (conrc < 0 ? strerror(errno) : ""));
+
 	    freecon(scon);
 	} else {
 	    /* No context for dest is not our headache */
