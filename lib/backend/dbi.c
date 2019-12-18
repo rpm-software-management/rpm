@@ -87,6 +87,8 @@ dbDetectBackend(rpmdb rdb)
 	rpmlog(RPMLOG_WARNING, "using dummy database, installs not possible\n");
     }
 
+    rdb->db_descr = rdb->db_ops->name;
+
     if (db_backend)
 	free(db_backend);
 }

@@ -507,7 +507,8 @@ static int openDatabase(const char * prefix,
 
 	/* Just the primary Packages database opened here */
 	rc = pkgdbOpen(db, db->db_flags, NULL);
-	db->db_descr = (rc == 0) ? db->db_ops->name : "unknown db";
+	if (!db->db_descr)
+	    db->db_descr = "unknown db";
     }
 
     if (rc || justCheck || dbp == NULL)
