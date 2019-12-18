@@ -544,11 +544,11 @@ AC_ARG_ENABLE([bdb],
               [enable_bdb="$enableval"],
               [enable_bdb=yes])
 
+have_bdb="no"
 AS_IF([test "x$enable_bdb" != "xno"], [
   if [ test -x db/dist/configure ]; then
     have_bdb="internal"
   else
-    have_bdb="no"
     AC_CHECK_HEADERS([db.h],[
       AC_PREPROC_IFELSE([
         AC_LANG_SOURCE([
