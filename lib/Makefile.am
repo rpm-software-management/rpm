@@ -68,6 +68,10 @@ librpm_la_LIBADD += @WITH_DB_LIB@
 endif
 endif
 
+if BDB_RO
+librpm_la_SOURCES += backend/bdb_ro.c
+endif
+
 if NDB
 librpm_la_SOURCES += \
 	backend/ndb/glue.c \

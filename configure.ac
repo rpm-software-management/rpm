@@ -595,6 +595,20 @@ AS_IF([test "$enable_ndb" = yes],[
 AM_CONDITIONAL([NDB], [test "$enable_ndb" = yes])
 
 #=================
+# Process --enable-bdb-ro
+AC_ARG_ENABLE([bdb-ro], [AS_HELP_STRING([--enable-bdb-ro (EXPERIMENTAL)],[enable the read-only Berkeley DB code])],
+[case "$enable_bdb_ro" in
+yes|no) ;;
+*) AC_MSG_ERROR([invalid argument to --enable-bdb-ro])
+  ;;
+esac],
+[enable_bdb_ro=no])
+AS_IF([test "$enable_bdb_ro" = yes],[
+  AC_DEFINE(WITH_BDB_RO, 1, [Build with read-only Berkeley DB])
+])
+AM_CONDITIONAL([BDB_RO], [test "$enable_bdb_ro" = yes])
+
+#=================
 # Check for LMDB support
 AC_ARG_ENABLE([lmdb],
               [AS_HELP_STRING([--enable-lmdb=@<:@yes/no/auto@:>@ (EXPERIMENTAL)],

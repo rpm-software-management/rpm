@@ -59,6 +59,7 @@ RUN ./configure \
   --enable-bdb \
   --enable-ndb \
   --enable-lmdb \
+  --enable-bdb-ro \
   --enable-sqlite \
   --enable-python \
   --enable-silent-rules \

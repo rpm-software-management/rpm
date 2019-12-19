@@ -274,6 +274,11 @@ RPM_GNUC_INTERNAL
 extern struct rpmdbOps_s db3_dbops;
 #endif
 
+#if defined(WITH_BDB_RO)
+RPM_GNUC_INTERNAL
+extern struct rpmdbOps_s bdbro_dbops;
+#endif
+
 #ifdef ENABLE_NDB
 RPM_GNUC_INTERNAL
 extern struct rpmdbOps_s ndb_dbops;
