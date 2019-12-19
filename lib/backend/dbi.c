@@ -25,6 +25,9 @@ const struct rpmdbOps_s *backends[] = {
 #if defined(WITH_BDB)
     &db3_dbops,
 #endif
+#if defined(WITH_BDB_RO)
+    &bdbro_dbops,
+#endif
     &dummydb_dbops,
     NULL
 };
