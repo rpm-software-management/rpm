@@ -660,8 +660,8 @@ while ((i < nout)); do
   ((++i))
 done
 if ((nout > 0)); then
-  # Now add the right %dir lines to each output list.
-  add_percent_dir()
+  # Generate %dir lines for each output list.
+  generate_percent_dir()
   {
     while read -r line; do
       while test "${line:0:15}" = "/usr/lib/debug/"; do
@@ -676,12 +676,12 @@ if ((nout > 0)); then
   }
   i=0
   while ((i < nout)); do
-    add_percent_dir < "${outs[$i]}" > "${outs[$i]}.new"
+    generate_percent_dir < "${outs[$i]}" > "${outs[$i]}.new"
     cat "${outs[$i]}" >> "${outs[$i]}.new"
     mv -f "${outs[$i]}.new" "${outs[$i]}"
     ((++i))
   done
-  add_percent_dir < "${LISTFILE}" > "${LISTFILE}.new"
+  generate_percent_dir < "${LISTFILE}" > "${LISTFILE}.new"
   cat "$LISTFILE" >> "${LISTFILE}.new"
   mv "${LISTFILE}.new" "$LISTFILE"
 fi
