@@ -269,7 +269,10 @@ for name in names:
                 spec_list.append('{n} >= {v} with {n} < {vnext}'.format(n=name, v=spec[1], vnext=next_ver))
             else:
                 spec_list.append('{} {} {}'.format(name, spec[0], spec[1]))
-        print('(%s)' % ' with '.join(spec_list))
+        if len(spec_list) == 1:
+            print(spec_list[0])
+        else:
+            print('({})'.format(' with '.join(spec_list)))
     else:
         # Print out unversioned provides, requires, recommends, conflicts
         print(name)
