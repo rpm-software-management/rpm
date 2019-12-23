@@ -188,7 +188,7 @@ int rpmFileIsCompressed(const char * file, rpmCompressedMagic * compressed)
 	       (magic[4] == 0x5a) && (magic[5] == 0x00)) {
 	/* new style xz (lzma) with magic */
 	*compressed = COMPRESSED_XZ;
-    } else if ((magic[0] == 0x28) && (magic[1] == 0x85) &&
+    } else if ((magic[0] == 0x28) && (magic[1] == 0xB5) &&
 	       (magic[2] == 0x2f)                     ) {
 	*compressed = COMPRESSED_ZSTD;
     } else if ((magic[0] == 'L') && (magic[1] == 'Z') &&
