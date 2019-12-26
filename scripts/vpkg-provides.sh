@@ -232,7 +232,7 @@ fi
 
 
 
-provides_tmp=$(tempfile -p provides)
+provides_tmp=$(mktemp -d provides)
 if test -z "$provides_tmp" ; then
 	echo "unable to make a temp file";
 	exit 11
@@ -247,7 +247,7 @@ do
 	find $d -type f -print 2>/dev/null | grep -E -v \'$ignore_dirs\' | $find_provides >> $provides_tmp
 done
 
-sum_tmp=$(tempfile -p sum)
+sum_tmp=$(mktemp -d sum)
 if test -z "$sum_tmp" ; then
 	echo "unable to make a temp file"
 	exit 11
@@ -347,13 +347,13 @@ cat <<_EIEIO_
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/ucb:/usr/bsd
 export PATH
 
-sum_current_tmp=\$(tempfile -p sum.current)
+sum_current_tmp=\$(mktemp -d sum.current)
 if test -z "\$sum_current_tmp" ; then
 	echo "unable to make a temp file"
 	exit 11
 fi
 
-sum_package_tmp=\$(tempfile -p rpm.sum.package)
+sum_package_tmp=\$(mktemp -d rpm.sum.package)
 if test -z "\$sum_package_tmp" ; then
 	echo "unable to make a temp file"
 	exit 11
