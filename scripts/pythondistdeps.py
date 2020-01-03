@@ -247,7 +247,7 @@ for name in names:
         spec_list = []
         for spec in py_deps[name]:
             if spec[0] == '!=':
-                spec_list.append('{n} < {v} or {n} >= {v}.0'.format(n=name, v=spec[1]))
+                spec_list.append('({n} < {v} or {n} >= {v}.0)'.format(n=name, v=spec[1]))
             elif spec[0] == '~=':
                 # Parse the current version
                 next_ver = parse_version(spec[1]).base_version.split('.')
@@ -256,7 +256,7 @@ for name in names:
                 # Increment the minor version
                 next_ver[-1] = str(int(next_ver[-1]) + 1)
                 next_ver = '.'.join(next_ver)
-                spec_list.append('{n} >= {v} with {n} < {vnext}'.format(n=name, v=spec[1], vnext=next_ver))
+                spec_list.append('({n} >= {v} with {n} < {vnext})'.format(n=name, v=spec[1], vnext=next_ver))
             elif spec[0] == '==' and spec[1].endswith('.*'):
                 # Parse the current version
                 next_ver = parse_version(spec[1]).base_version.split('.')
@@ -266,7 +266,7 @@ for name in names:
                 # Increment the minor version
                 next_ver[-1] = str(int(next_ver[-1]) + 1)
                 next_ver = '.'.join(next_ver)
-                spec_list.append('{n} >= {v} with {n} < {vnext}'.format(n=name, v=spec[1], vnext=next_ver))
+                spec_list.append('({n} >= {v} with {n} < {vnext})'.format(n=name, v=spec[1], vnext=next_ver))
             else:
                 spec_list.append('{} {} {}'.format(name, spec[0], spec[1]))
         if len(spec_list) == 1:
