@@ -408,13 +408,6 @@ package or when debugging this package.\
 #
 #%vendor
 
-#	Default fuzz level for %patch in spec file.
-%_default_patch_fuzz	0
-
-#	Default patch flags
-#%_default_patch_flags	-s
-%_default_patch_flags --no-backup-if-mismatch
-
 #==============================================================================
 # ---- Build configuration macros.
 #
@@ -1108,8 +1101,35 @@ package or when debugging this package.\
   install
 
 #------------------------------------------------------------------------------
-%patches %{lua: for i, p in ipairs(patches) do print(p.." ") end}
-%sources %{lua: for i, s in ipairs(sources) do print(s.." ") end}
+# The list of all patches, or a slice of it
+# -m<min>       Include patches with number >= min only
+# -M<max>       Include patches with number <= max only
+%patches(m:M:) %{shrink:%{lua:\
+    local low_limit = tonumber(rpm.expand("%{-m:%{-m*}}"))\
+    local high_limit = tonumber(rpm.expand("%{-M:%{-M*}}"))\
+    for i, p in ipairs(patches) do\
+        local inum = patch_nums[i]\
+        if ((not low_limit or inum>=low_limit) and (not high_limit or inum<=high_limit)) \
+        then\
+            print(p.." ") \
+        end\
+    end\
+}}
+
+# The list of all sources, or a slice of it
+# -m<min>       Include patches with number >= min only
+# -M<max>       Include patches with number <= max only
+%sources(m:M:) %{shrink:%{lua:\
+    local low_limit = tonumber(rpm.expand("%{-m:%{-m*}}"))\
+    local high_limit = tonumber(rpm.expand("%{-M:%{-M*}}"))\
+    for i, s in ipairs(sources) do\
+        local inum = source_nums[i]\
+        if ((not low_limit or inum>=low_limit) and (not high_limit or inum<=high_limit)) \
+        then\
+            print(s.." ") \
+        end\
+    end\
+}}
 
 #------------------------------------------------------------------------------
 # arch macro for all Intel i?86 compatible processors
@@ -1187,6 +1207,24 @@ package or when debugging this package.\
 #------------------------------------------------------------------------------
 # Macros for further automated spec %setup and patch application
 
+# Build the scm-indepdendent default apply flags
+%_default_apply_flags %{expand:%%{?_default_%{__scm}_apply_flags}}
+
+# Choose between default apply flags and user-defined apply flags
+%_apply_flags %{expand:%%{!?__scm_%{__scm}_apply_flags:%%{?_default_apply_flags}}%%{?__scm_%{__scm}_apply_flags:%%{?__scm_%{__scm}_apply_flags}}}
+
+# Build the scm-indepdendent default import flags
+%_default_import_flags %{expand:%%{?_default_%{__scm}_import_flags}}
+
+# Choose between default import flags and user-defined import flags
+%_import_flags %{expand:%%{!?__scm_%{__scm}_import_flags:%%{?_default_import_flags}}%%{?__scm_%{__scm}_import_flags:%%{?__scm_%{__scm}_import_flags}}}
+
+# Build the scm-independant default commit flags
+%_default_commit_flags %{expand:%%{?_default_%{__scm}_commit_flags}}
+
+# Choose between default commit flags and user-defined commit flags
+%_commit_flags %{expand:%%{!?__scm_%{__scm}_commit_flags:%%{?_default_commit_flags}}%%{?__scm_%{__scm}_commit_flags:%%{?__scm_%{__scm}_commit_flags}}}
+
 # default to plain patch
 %__scm patch
 # meh, figure something saner
@@ -1195,60 +1233,88 @@ package or when debugging this package.\
 %__scm_author %{__scm_username} %{__scm_usermail}
 
 # Plain patch (-m is unused)
+#  Default fuzz level for %patch in spec file.
+%_default_patch_fuzz	0
+
+#  Default patch flags
+%_default_patch_flags --no-backup-if-mismatch
+
+#  This is an intermediate so if people have overriden %_default_patch_flags
+#  before, their hack still works.
+%_default_patch_apply_flags %{?_default_patch_flags}
+
 %__scm_setup_patch(q) %{nil}
 %__scm_apply_patch(qp:m:)\
-%{__patch} %{-p:-p%{-p*}} %{-q:-s} --fuzz=%{_default_patch_fuzz} %{_default_patch_flags}
+%{__patch} %{-p:-p%{-p*}} %{-q:-s} --fuzz=%{_default_patch_fuzz} %{_apply_flags}
 
 # Plain patch with backups for gendiff
 %__scm_setup_gendiff(q) %{nil}
 %__scm_apply_gendiff(qp:m:)\
-%{__patch} %{-p:-p%{-p*}} %{-q:-s} --fuzz=%{_default_patch_fuzz} %{_default_patch_flags} -b --suffix ".%{2}"
+%{__patch} %{-p:-p%{-p*}} %{-q:-s} --fuzz=%{_default_patch_fuzz} -b --suffix ".%{2}" %{_apply_flags}
 
 # Mercurial (aka hg)
 %__scm_setup_hg(q)\
 %{__hg} init %{-q} .\
 %{__hg} add %{-q} .\
-%{__hg} commit %{-q} --user "%{__scm_author}" -m "%{NAME}-%{VERSION} base"
+%{__hg} commit %{-q} --user "%{__scm_author}" -m "%{NAME}-%{VERSION} base" %{_commit_flags}
 
 %__scm_apply_hg(qp:m:)\
-%{__hg} import - %{-p:-p%{-p*}} %{-q} -m %{-m*} --user "%{__scm_author}"
+%{__hg} import - %{-p:-p%{-p*}} %{-q} -m %{-m*} --user "%{__scm_author}" %{_import_flags}
 
 # Git
+#  Defaults for git
+%_default_git_apply_flags --ignore-whitespace --whitespace=nowarn
+%_default_git_import_flags %{_default_git_apply_flags}
+
 %__scm_setup_git(q)\
 %{__git} init %{-q}\
 %{__git} config user.name "%{__scm_username}"\
 %{__git} config user.email "%{__scm_usermail}"\
 %{__git} add .\
 %{__git} commit %{-q} --allow-empty -a\\\
-	--author "%{__scm_author}" -m "%{NAME}-%{VERSION} base"
+	--author "%{__scm_author}" -m "%{NAME}-%{VERSION} base"\\\
+	%{_commit_flags} \
+%{__git} branch rpm-build \
+%{__git} checkout rpm-build \
+%{__git} branch --set-upstream-to=master
 
 %__scm_apply_git(qp:m:)\
-%{__git} apply --index %{-p:-p%{-p*}} -\
-%{__git} commit %{-q} -m %{-m*} --author "%{__scm_author}"
+%{__git} apply --index %{-p:-p%{-p*}} %{_apply_flags} -\
+%{__git} commit %{-q} -m %{-m*} --author "%{__scm_author}" %{_commit_flags}
 
 # Git, using "git am" (-m is unused)
+#  Defaults for "git am"
+%_default_git_am_apply_flags %{_default_git_apply_flags}
+%_default_git_am_import_flags %{_default_git_import_flags} --committer-date-is-author-date
+
 %__scm_setup_git_am(q)\
 %{expand:%__scm_setup_git %{-q}}
 
 %__scm_apply_git_am(qp:m:)\
-%{__git} am %{-q} %{-p:-p%{-p*}}
+%{__git} am %{_import_flags} %{-q} %{-p:-p%{-p*}}
+
+%__scm_apply_patches_git_am(qp:m:M:)\
+%{__git} am %{_import_flags} %{-q} %{-p:-p%{-p*}} %{patches %{-m:-m%{-m*}} %{-M:-M%{-M*}}} </dev/null
 
 # Quilt
 %__scm_setup_quilt(q) %{nil}
 %__scm_apply_quilt(qp:m:)\
-%{__quilt} import %{-p:-p%{-p*}} %{1} && %{__quilt} push %{-q}
+%{__quilt} import %{-p:-p%{-p*}} %{_import_flags} %{1} && %{__quilt} push %{-q}
 
 # Bzr
+#  Defaults for bzr are same as for patch
+%_default_bzr_apply_flags %{?_default_patch_apply_flags}
+
 %__scm_setup_bzr(q)\
 %{__bzr} init %{-q}\
 %{__bzr} whoami --branch "%{__scm_author}"\
 %{__bzr} add .\
-%{__bzr} commit %{-q} -m "%{NAME}-%{VERSION} base"
+%{__bzr} commit %{-q} -m "%{NAME}-%{VERSION} base" %{_commit_flags}
 
 # bzr doesn't seem to have its own command to apply patches?
 %__scm_apply_bzr(qp:m:)\
-%{__patch} %{-p:-p%{-p*}} %{-q:-s}\
-%{__bzr} commit %{-q} -m %{-m*}
+%{__patch} %{-p:-p%{-p*}} %{-q:-s} %{_apply_flags}\
+%{__bzr} commit %{-q} -m %{-m*} %{_commit_flags}
 
 # Single patch application
 %apply_patch(qp:m:)\
@@ -1266,31 +1332,48 @@ end}
 # Automatically apply all patches
 # Patches are applied in the order they are listed in the spec file
 # not by their number!
+# -p<num>       Use -p<num> for patch application
 # -m<min>       Apply patches with number >= min only
 # -M<max>       Apply patches with number <= max only
+# -v            Be verbose
 %autopatch(vp:m:M:)\
-%{lua:\
-local options = rpm.expand("%{!-v:-q} %{-p:-p%{-p*}} ")\
-local low_limit = tonumber(rpm.expand("%{-m:%{-m*}}"))\
-local high_limit = tonumber(rpm.expand("%{-M:%{-M*}}"))\
-for i, p in ipairs(patches) do\
-    local inum = patch_nums[i]\
-    if ((not low_limit or inum>=low_limit) and (not high_limit or inum<=high_limit)) \
-    then\
-        print(rpm.expand("%apply_patch -m %{basename:"..p.."}  "..options..p.." "..i.."\\n")) \
-    end\
-end}
+%{expand:\
+  %%{?__scm_apply_patches_%{__scm}:\
+     %%{__scm_apply_patches_%{__scm} %{!-v:-q} \
+                                     %{-p:-p%{-p*}} \
+                                     %{-m:-m%{-m*}} \
+                                     %{-M:-M%{-M*}} \
+     }\
+  }\
+  %%{!?__scm_apply_patches_%{__scm}:\
+     %%{lua:\
+        local options = rpm.expand("%%{!-v:-q} %%{-p:-p%%{-p*}} ")\
+        local low_limit = tonumber(rpm.expand("%%{-m:%%{-m*}}"))\
+        local high_limit = tonumber(rpm.expand("%%{-M:%%{-M*}}"))\
+        for i, p in ipairs(patches) do\
+            local inum = patch_nums[i]\
+            if ((not low_limit or inum>=low_limit) and (not high_limit or inum<=high_limit)) \
+            then\
+                print(rpm.expand("%%apply_patch -m %%{basename:"..p.."}  "..options..p.." "..i.."\\n")) \
+            end\
+        end\
+     }\
+  }\
+}
 
 # One macro to (optionally) do it all.
-# -S<scm name>	Sets the used patch application style, eg '-S git' enables
-#           	usage of git repository and per-patch commits.
-# -N		Disable automatic patch application
-# -p<num>	Use -p<num> for patch application	
-%autosetup(a:b:cDn:TvNS:p:)\
+# -S<scm name>  Sets the used patch application style, eg '-S git' enables
+#               usage of git repository and per-patch commits.
+# -N            Disable automatic patch application
+# -p<num>       Use -p<num> for patch application
+# -m<min>       Apply patches with number >= min only
+# -M<max>       Apply patches with number <= max only
+# -v            Be verbose
+%autosetup(a:b:cDn:TvNS:p:m:M:)\
 %setup %{-a} %{-b} %{-c} %{-D} %{-n} %{-T} %{!-v:-q}\
 %{-S:%global __scm %{-S*}}\
 %{expand:%__scm_setup_%{__scm} %{!-v:-q}}\
-%{!-N:%autopatch %{-v} %{-p:-p%{-p*}}}
+%{!-N:%{autopatch %{-v} %{-p:-p%{-p*}} %{-m:-m%{-m*}} %{-M:-M%{-M*}}}}
 
 # \endverbatim
 #*/
