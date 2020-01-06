@@ -29,6 +29,7 @@ do
 	 *.gz|*.Z)    gunzip  -f $f; b=`echo $f | sed -e 's/\.\(gz\|Z\)$//'`;;
 	 *.bz2)       bunzip2 -f $f; b=`echo $f | sed -e 's/\.bz2$//'`;;
 	 *.xz|*.lzma) unxz    -f $f; b=`echo $f | sed -e 's/\.\(xz\|lzma\)$//'`;;
+	 *.zst|*.zstd) unzstd -f --rm $f; b=`echo $f | sed -e 's/\.\(zst\|zstd\)$//'`;;
 	 *) b=$f;;
 	esac
 
@@ -51,9 +52,9 @@ do
 
     for f in `find $d -type l`
     do
-	l=`ls -l $f | sed -e 's/.* -> //' -e 's/\.\(gz\|Z\|bz2\|xz\|lzma\)$//'`
+	l=`ls -l $f | sed -e 's/.* -> //' -e 's/\.\(gz\|Z\|bz2\|xz\|lzma\|zst\|zstd\)$//'`
 	rm -f $f
-	b=`echo $f | sed -e 's/\.\(gz\|Z\|bz2\|xz\|lzma\)$//'`
+	b=`echo $f | sed -e 's/\.\(gz\|Z\|bz2\|xz\|lzma\|zst\|zstd\)$//'`
 	ln -sf $l$COMPRESS_EXT $b$COMPRESS_EXT
     done
 done
