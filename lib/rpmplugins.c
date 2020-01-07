@@ -68,6 +68,8 @@ static rpmPlugin rpmPluginNew(const char *name, const char *path,
 
     /* make sure the plugin has the supported hooks flag */
     hooks_name = rstrscat(NULL, name, "_hooks", NULL);
+    /* clear out any old errors that weren't fetched */
+    dlerror();
     hooks = dlsym(handle, hooks_name);
     if ((error = dlerror()) != NULL) {
 	rpmlog(RPMLOG_ERR, _("Failed to resolve symbol %s: %s\n"),
