@@ -56,6 +56,10 @@ RUN ./configure \
   --with-acl \
   --with-lua \
   --with-audit \
+  --enable-bdb \
+  --enable-ndb \
+  --enable-lmdb \
+  --enable-sqlite \
   --enable-python \
   --enable-silent-rules \
   --enable-werror
