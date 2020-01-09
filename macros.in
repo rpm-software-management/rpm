@@ -815,6 +815,9 @@ package or when debugging this package.\
   export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\
   LANG=C\
   export LANG\
+  CC=\"%{__cc}\"\
+  CXX=\"%{__cxx}\"\
+  export CC CXX \
   unset CDPATH DISPLAY ||:\
   %{?buildroot:RPM_BUILD_ROOT=\"%{u2p:%{buildroot}}\"\
   export RPM_BUILD_ROOT}\
