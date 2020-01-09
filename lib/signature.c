@@ -65,7 +65,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
     if (sighp)
 	*sighp = NULL;
 
-    if (hdrblobRead(fd, 1, 1, RPMTAG_HEADERSIGNATURES, &blob, &buf) != RPMRC_OK)
+    if (hdrblobRead(fd, 1, 0, RPMTAG_HEADERSIGNATURES, &blob, &buf) != RPMRC_OK)
 	goto exit;
     
     /* OK, blob looks sane, load the header. */
