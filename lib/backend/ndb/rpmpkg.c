@@ -196,6 +196,7 @@ static inline unsigned int hashpkgidx(unsigned int h)
     return h;
 }
 
+/* (re-)create a hash mapping pkgidx numbers to slots */
 static int rpmpkgHashSlots(rpmpkgdb pkgdb)
 {
     unsigned int nslots, num;
@@ -336,6 +337,8 @@ static inline pkgslot *rpmpkgFindSlot(rpmpkgdb pkgdb, unsigned int pkgidx)
     return 0;
 }
 
+/* Find an empty space for blkcnt blocks. If dontprepend is true, ignore
+   the space between the slot area and the first blob */
 static int rpmpkgFindEmptyOffset(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned int blkcnt, unsigned *blkoffp, pkgslot **oldslotp, int dontprepend)
 {
     unsigned int i, nslots = pkgdb->nslots;
@@ -378,6 +381,7 @@ static int rpmpkgFindEmptyOffset(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned i
     return RPMRC_OK;
 }
 
+/* verify the blobs to the left and right of a free area */
 static int rpmpkgNeighbourCheck(rpmpkgdb pkgdb, unsigned int blkoff, unsigned int blkcnt, unsigned int *newblkcnt)
 {
     unsigned int i, nslots = pkgdb->nslots;
@@ -409,7 +413,7 @@ static int rpmpkgNeighbourCheck(rpmpkgdb pkgdb, unsigned int blkoff, unsigned in
     if (right && rpmpkgVerifyblob(pkgdb, right->pkgidx, right->blkoff, right->blkcnt) != RPMRC_OK)
 	return RPMRC_FAIL;
     *newblkcnt = right ? right->blkoff - blkoff : blkcnt;
-    /* bounds are intect. free area. */
+    /* bounds are intact. ok to zero area. */
     return RPMRC_OK;
 }
 
@@ -429,6 +433,7 @@ static int rpmpkgWriteslot(rpmpkgdb pkgdb, unsigned int slotno, unsigned int pkg
 	return RPMRC_FAIL;
     }
     pkgdb->generation++;
+    /* rpmpkgFsync() is done by rpmpkgWriteHeader() */
     if (rpmpkgWriteHeader(pkgdb)) {
 	return RPMRC_FAIL;
     }
@@ -954,6 +959,7 @@ static int rpmpkgPutInternal(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned char 
     pkgslot *oldslot;
 
     /* we always read all slots when writing, just in case */
+    /* this also will set pkgdb->freeslot */
     if (rpmpkgReadSlots(pkgdb)) {
 	return RPMRC_FAIL;
     }
@@ -1045,9 +1051,10 @@ static int rpmpkgDelInternal(rpmpkgdb pkgdb, unsigned int pkgidx)
 	}
 	slot->blkoff = 0;
 	slot->blkcnt = 0;
+	/* try to move the last two slots, the bigger one first */
 	slot = pkgdb->slots + pkgdb->nslots - 2;
 	if (slot->blkcnt < slot[1].blkcnt)
-	  slot++;	/* bigger slot first */
+	    slot++;	/* bigger slot first */
 	for (i = 0; i < 2; i++, slot++) {
 	    if (slot == pkgdb->slots + pkgdb->nslots)
 		slot -= 2;
