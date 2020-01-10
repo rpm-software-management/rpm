@@ -1101,6 +1101,22 @@ static int rpmpkgListInternal(rpmpkgdb pkgdb, unsigned int **pkgidxlistp, unsign
     return RPMRC_OK;
 }
 
+static int rpmpkgVerifyInternal(rpmpkgdb pkgdb)
+{
+    unsigned int i, nslots;
+    pkgslot *slot;
+
+    if (rpmpkgReadSlots(pkgdb))
+	return RPMRC_FAIL;
+    rpmpkgOrderSlots(pkgdb);
+    nslots = pkgdb->nslots;
+    for (i = 0, slot = pkgdb->slots; i < nslots; i++, slot++) {
+	if (rpmpkgVerifyblob(pkgdb, slot->pkgidx, slot->blkoff, slot->blkcnt))
+	    return RPMRC_FAIL;
+    }
+    return RPMRC_OK;
+}
+
 int rpmpkgGet(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned char **blobp, unsigned int *bloblp)
 {
     int rc;
@@ -1153,6 +1169,16 @@ int rpmpkgList(rpmpkgdb pkgdb, unsigned int **pkgidxlistp, unsigned int *npkgidx
     if (rpmpkgLockReadHeader(pkgdb, 0))
 	return RPMRC_FAIL;
     rc = rpmpkgListInternal(pkgdb, pkgidxlistp, npkgidxlistp);
+    rpmpkgUnlock(pkgdb, 0);
+    return rc;
+}
+
+int rpmpkgVerify(rpmpkgdb pkgdb)
+{
+    int rc;
+    if (rpmpkgLockReadHeader(pkgdb, 0))
+	return RPMRC_FAIL;
+    rc = rpmpkgVerifyInternal(pkgdb);
     rpmpkgUnlock(pkgdb, 0);
     return rc;
 }
