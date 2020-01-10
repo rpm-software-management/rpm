@@ -52,15 +52,12 @@ typedef struct rpmpkgdb_s {
     unsigned int nslothash;
 
     unsigned int freeslot;	/* first free slot */
-    int slotorder;
+    int ordered;		/* slots are ordered by the blk offsets */
 
     char *filename;
     unsigned int fileblks;	/* file size in blks */
     int dofsync;
 } * rpmpkgdb;
-
-#define SLOTORDER_UNORDERED	0
-#define SLOTORDER_BLKOFF	1
 
 
 static inline unsigned int le2h(unsigned char *p) 
@@ -296,7 +293,7 @@ static int rpmpkgReadSlots(rpmpkgdb pkgdb)
 	}
     }
     pkgdb->nslots = i;
-    pkgdb->slotorder = SLOTORDER_UNORDERED;	/* XXX: always order? */
+    pkgdb->ordered = 0;
     pkgdb->fileblks = fileblks;
     pkgdb->freeslot = freeslot;
     if (rpmpkgHashSlots(pkgdb)) {
@@ -314,15 +311,13 @@ static int orderslots_blkoff_cmp(const void *a, const void *b)
     return blkoffa > blkoffb ? 1 : blkoffa < blkoffb ? -1 : 0;
 }
 
-static void rpmpkgOrderSlots(rpmpkgdb pkgdb, int slotorder)
+static void rpmpkgOrderSlots(rpmpkgdb pkgdb)
 {
-    if (pkgdb->slotorder == slotorder)
+    if (pkgdb->ordered)
 	return;
-    if (slotorder == SLOTORDER_BLKOFF) {
-	if (pkgdb->nslots > 1)
-	    qsort(pkgdb->slots, pkgdb->nslots, sizeof(*pkgdb->slots), orderslots_blkoff_cmp);
-    }
-    pkgdb->slotorder = slotorder;
+    if (pkgdb->nslots > 1)
+	qsort(pkgdb->slots, pkgdb->nslots, sizeof(*pkgdb->slots), orderslots_blkoff_cmp);
+    pkgdb->ordered = 1;
     rpmpkgHashSlots(pkgdb);
 }
 
@@ -347,8 +342,8 @@ static int rpmpkgFindEmptyOffset(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned i
     unsigned int lastblkend = pkgdb->slotnpages * (PAGE_SIZE / BLK_SIZE);
     pkgslot *slot, *oldslot = 0;
 
-    if (pkgdb->slotorder != SLOTORDER_BLKOFF)
-	rpmpkgOrderSlots(pkgdb, SLOTORDER_BLKOFF);
+    if (!pkgdb->ordered)
+	rpmpkgOrderSlots(pkgdb);
 
     if (dontprepend && nslots) {
 	lastblkend = pkgdb->slots[0].blkoff;
@@ -388,8 +383,8 @@ static int rpmpkgNeighbourCheck(rpmpkgdb pkgdb, unsigned int blkoff, unsigned in
     unsigned int lastblkend = pkgdb->slotnpages * (PAGE_SIZE / BLK_SIZE);
     pkgslot *slot, *left = 0, *right = 0;
 
-    if (pkgdb->slotorder != SLOTORDER_BLKOFF)
-	rpmpkgOrderSlots(pkgdb, SLOTORDER_BLKOFF);
+    if (!pkgdb->ordered)
+	rpmpkgOrderSlots(pkgdb);
     if (blkoff < lastblkend)
 	return RPMRC_FAIL;
     for (i = 0, slot = pkgdb->slots; i < nslots; i++, slot++) {
@@ -704,15 +699,15 @@ static int rpmpkgMoveBlob(rpmpkgdb pkgdb, pkgslot *slot, unsigned int newblkoff)
 	return RPMRC_FAIL;
     }
     slot->blkoff = newblkoff;
-    pkgdb->slotorder = SLOTORDER_UNORDERED;
+    pkgdb->ordered = 0;
     return RPMRC_OK;
 }
 
 static int rpmpkgAddSlotPage(rpmpkgdb pkgdb)
 {
     unsigned int cutoff;
-    if (pkgdb->slotorder != SLOTORDER_BLKOFF)
-	rpmpkgOrderSlots(pkgdb, SLOTORDER_BLKOFF);
+    if (!pkgdb->ordered)
+	rpmpkgOrderSlots(pkgdb);
     cutoff = (pkgdb->slotnpages + 1) * (PAGE_SIZE / BLK_SIZE);
 
     /* now move every blob before cutoff */
@@ -730,7 +725,7 @@ static int rpmpkgAddSlotPage(rpmpkgdb pkgdb)
 	if (rpmpkgMoveBlob(pkgdb, slot, newblkoff)) {
 	    return RPMRC_FAIL;
 	}
-	rpmpkgOrderSlots(pkgdb, SLOTORDER_BLKOFF);
+	rpmpkgOrderSlots(pkgdb);
     }
 
     /* make sure our new page is empty */
@@ -1008,7 +1003,7 @@ static int rpmpkgPutInternal(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned char 
 	/* just update the slot, no need to free the slot data */
 	oldslot->blkoff = blkoff;
 	oldslot->blkcnt = blkcnt;
-	pkgdb->slotorder = SLOTORDER_UNORDERED;
+	pkgdb->ordered = 0;
     } else {
 	free(pkgdb->slots);
 	pkgdb->slots = 0;
@@ -1025,7 +1020,7 @@ static int rpmpkgDelInternal(rpmpkgdb pkgdb, unsigned int pkgidx)
     if (rpmpkgReadSlots(pkgdb)) {
 	return RPMRC_FAIL;
     }
-    rpmpkgOrderSlots(pkgdb, SLOTORDER_BLKOFF);
+    rpmpkgOrderSlots(pkgdb);
     slot = rpmpkgFindSlot(pkgdb, pkgidx);
     if (!slot) {
 	return RPMRC_OK;
@@ -1068,7 +1063,7 @@ static int rpmpkgDelInternal(rpmpkgdb pkgdb, unsigned int pkgidx)
 	    blkoff += slot->blkcnt;
 	    blkcnt -= slot->blkcnt;
 	}
-	rpmpkgOrderSlots(pkgdb, SLOTORDER_BLKOFF);
+	rpmpkgOrderSlots(pkgdb);
     } else {
 	slot->blkoff = 0;
 	slot->blkcnt = 0;
@@ -1107,7 +1102,7 @@ static int rpmpkgListInternal(rpmpkgdb pkgdb, unsigned int **pkgidxlistp, unsign
 	*npkgidxlistp = pkgdb->nslots;
 	return RPMRC_OK;
     }
-    rpmpkgOrderSlots(pkgdb, SLOTORDER_BLKOFF);
+    rpmpkgOrderSlots(pkgdb);
     nslots = pkgdb->nslots;
     pkgidxlist = xcalloc(nslots + 1, sizeof(unsigned int));
     for (i = 0, slot = pkgdb->slots; i < nslots; i++, slot++) {
