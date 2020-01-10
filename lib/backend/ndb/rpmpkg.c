@@ -45,7 +45,6 @@ typedef struct rpmpkgdb_s {
     unsigned int nextpkgidx;
 
     struct pkgslot_s *slots;
-    unsigned int aslots;	/* allocated slots */
     unsigned int nslots;	/* used slots */
 
     unsigned int *slothash;
@@ -256,8 +255,7 @@ static int rpmpkgReadSlots(rpmpkgdb pkgdb)
     fileblks = stb.st_size / BLK_SIZE;
 
     /* read (and somewhat verify) all slots */
-    pkgdb->aslots = slotnpages * (PAGE_SIZE / SLOT_SIZE);
-    pkgdb->slots = xcalloc(pkgdb->aslots, sizeof(*pkgdb->slots));
+    pkgdb->slots = xcalloc(slotnpages * (PAGE_SIZE / SLOT_SIZE), sizeof(*pkgdb->slots));
     i = 0;
     slot = pkgdb->slots;
     minblkoff = slotnpages * (PAGE_SIZE / BLK_SIZE);
