@@ -14,6 +14,7 @@ int rpmxdbUnlock(rpmxdb xdb, int excl);
 
 int rpmxdbLookupBlob(rpmxdb xdb, unsigned int *idp, unsigned int blobtag, unsigned int subtag, int flags);
 int rpmxdbDelBlob(rpmxdb xdb, unsigned int id) ;
+int rpmxdbDelAllBlobs(rpmxdb xdb);
 
 int rpmxdbMapBlob(rpmxdb xdb, unsigned int id, int flags, void (*mapcallback)(rpmxdb xdb, void *data, void *newaddr, size_t newsize), void *mapcallbackdata);
 int rpmxdbUnmapBlob(rpmxdb xdb, unsigned int id);

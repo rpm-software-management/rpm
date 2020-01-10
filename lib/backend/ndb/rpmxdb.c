@@ -224,11 +224,33 @@ static int usedslots_cmp(const void *a, const void *b)
     return sa->startpage > sb->startpage ? 1 : -1;
 }
 
+static int rpmxdbReadHeaderRaw(rpmxdb xdb, unsigned int *generationp, unsigned int *slotnpagesp, unsigned int *pagesizep, unsigned int *usergenerationp)
+{
+    unsigned int header[XDB_HEADER_SIZE / sizeof(unsigned int)];
+    unsigned int version;
+    if (pread(xdb->fd, header, sizeof(header), 0) != sizeof(header))
+	return RPMRC_FAIL;
+    if (le2ha((unsigned char *)header + XDB_OFFSET_MAGIC) != XDB_MAGIC)
+	return RPMRC_FAIL;
+    version = le2ha((unsigned char *)header + XDB_OFFSET_VERSION);
+    if (version != XDB_VERSION) {
+	rpmlog(RPMLOG_ERR, _("rpmxdb: Version mismatch. Expected version: %u. "
+	    "Found version: %u\n"), XDB_VERSION, version);
+	return RPMRC_FAIL;
+    }
+    *generationp = le2ha((unsigned char *)header + XDB_OFFSET_GENERATION);
+    *slotnpagesp = le2ha((unsigned char *)header + XDB_OFFSET_SLOTNPAGES);
+    *pagesizep = le2ha((unsigned char *)header + XDB_OFFSET_PAGESIZE);
+    *usergenerationp = le2ha((unsigned char *)header + XDB_OFFSET_USERGENERATION);
+    if (!*slotnpagesp || !*pagesizep)
+	return RPMRC_FAIL;
+    return RPMRC_OK;
+}
+
 static int rpmxdbReadHeader(rpmxdb xdb)
 {
     struct xdb_slot *slot;
-    unsigned int header[XDB_HEADER_SIZE / sizeof(unsigned int)];
-    unsigned int slotnpages, pagesize, generation, usergeneration, version;
+    unsigned int slotnpages, pagesize, generation, usergeneration;
     unsigned int page, *lastfreep;
     unsigned char *pageptr;
     struct xdb_slot *slots, **usedslots, *lastslot;
@@ -246,23 +268,9 @@ static int rpmxdbReadHeader(rpmxdb xdb)
     if (fstat(xdb->fd, &stb)) {
         return RPMRC_FAIL;
     }
-    if (pread(xdb->fd, header, sizeof(header), 0) != sizeof(header)) {
+    if (rpmxdbReadHeaderRaw(xdb, &generation, &slotnpages, &pagesize, &usergeneration))
 	return RPMRC_FAIL;
-    }
-    if (le2ha((unsigned char *)header + XDB_OFFSET_MAGIC) != XDB_MAGIC)
-	return RPMRC_FAIL;
-    version = le2ha((unsigned char *)header + XDB_OFFSET_VERSION);
-    if (version != XDB_VERSION) {
-	rpmlog(RPMLOG_ERR, _("rpmxdb: Version mismatch. Expected version: %u. "
-	    "Found version: %u\n"), XDB_VERSION, version);
-	return RPMRC_FAIL;
-    }
-
-    generation = le2ha((unsigned char *)header + XDB_OFFSET_GENERATION);
-    slotnpages = le2ha((unsigned char *)header + XDB_OFFSET_SLOTNPAGES);
-    pagesize = le2ha((unsigned char *)header + XDB_OFFSET_PAGESIZE);
-    usergeneration = le2ha((unsigned char *)header + XDB_OFFSET_USERGENERATION);
-    if (!slotnpages || !pagesize || stb.st_size % pagesize != 0)
+    if (stb.st_size % pagesize != 0)
 	return RPMRC_FAIL;
     xdb->pagesize = pagesize;
     xdb->mapflags = xdb->rdonly ? PROT_READ : PROT_READ | PROT_WRITE;
@@ -919,6 +927,43 @@ int rpmxdbDelBlob(rpmxdb xdb, unsigned int id)
 	    xdb->slots[xdb->nslots].startpage = newend;
     }
 
+    rpmxdbUnlock(xdb, 1);
+    return RPMRC_OK;
+}
+
+int rpmxdbDelAllBlobs(rpmxdb xdb)
+{
+    unsigned int slotnpages, pagesize, generation, usergeneration;
+    if (rpmxdbLockOnly(xdb, 1))
+	return RPMRC_FAIL;
+    /* unmap all blobs */
+    if (xdb->slots) {
+	int i;
+	struct xdb_slot *slot;
+	for (i = 1, slot = xdb->slots + i; i < xdb->nslots; i++, slot++) {
+	    if (slot->startpage && slot->mapped) {
+		unmapslot(xdb, slot);
+		slot->mapcallback(xdb, slot->mapcallbackdata, 0, 0);
+	    }
+	}
+	free(xdb->slots);
+	xdb->slots = 0;
+    }
+    if (xdb->mapped)
+	unmapheader(xdb);
+    if (rpmxdbReadHeaderRaw(xdb, &generation, &slotnpages, &pagesize, &usergeneration)) {
+	rpmxdbUnlock(xdb, 1);
+	return RPMRC_FAIL;
+    }
+    xdb->generation = generation + 1;
+    xdb->slotnpages = 1;
+    xdb->pagesize = pagesize;
+    xdb->usergeneration = usergeneration;
+    if (rpmxdbWriteEmptySlotpage(xdb, 0)) {
+	rpmxdbUnlock(xdb, 1);
+	return RPMRC_FAIL;
+    }
+    ftruncate(xdb->fd, xdb->pagesize);
     rpmxdbUnlock(xdb, 1);
     return RPMRC_OK;
 }
