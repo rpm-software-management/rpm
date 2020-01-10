@@ -7,7 +7,6 @@
 #include <sys/file.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include <time.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
@@ -511,7 +510,7 @@ static int rpmpkgValidateZero(rpmpkgdb pkgdb, unsigned int blkoff, unsigned int 
 
 /*** Blob primitives ***/
 
-/* head: magic + pkgidx + timestamp + bloblen */
+/* head: magic + pkgidx + generation + bloblen */
 /* tail: adler32 + bloblen + magic */
 
 #define BLOBHEAD_MAGIC	('B' | 'l' << 8 | 'b' << 16 | 'S' << 24)
@@ -520,10 +519,10 @@ static int rpmpkgValidateZero(rpmpkgdb pkgdb, unsigned int blkoff, unsigned int 
 #define BLOBHEAD_SIZE	(4 + 4 + 4 + 4)
 #define BLOBTAIL_SIZE	(4 + 4 + 4)
 
-static int rpmpkgReadBlob(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned int blkoff, unsigned int blkcnt, unsigned char *blob, unsigned int *bloblp, unsigned int *tstampp)
+static int rpmpkgReadBlob(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned int blkoff, unsigned int blkcnt, unsigned char *blob, unsigned int *bloblp, unsigned int *generationp)
 {
     unsigned char buf[BLOBHEAD_SIZE > BLOBTAIL_SIZE ? BLOBHEAD_SIZE : BLOBTAIL_SIZE];
-    unsigned int bloblen, toread, tstamp;
+    unsigned int bloblen, toread, generation;
     off_t fileoff;
     unsigned int adl;
     int verifyadler = bloblp ? 0 : 1;
@@ -539,7 +538,7 @@ static int rpmpkgReadBlob(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned int blko
 	return RPMRC_FAIL;	/* bad blob */
     if (le2h(buf + 4) != pkgidx)
 	return RPMRC_FAIL;	/* bad blob */
-    tstamp = le2h(buf + 8);
+    generation = le2h(buf + 8);
     bloblen = le2h(buf + 12);
     if (blkcnt != (BLOBHEAD_SIZE + bloblen + BLOBTAIL_SIZE + BLK_SIZE - 1) / BLK_SIZE)
 	return RPMRC_FAIL;	/* bad blob */
@@ -584,8 +583,8 @@ static int rpmpkgReadBlob(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned int blko
     }
     if (bloblp)
 	*bloblp = bloblen;
-    if (tstampp)
-	*tstampp = tstamp;
+    if (generationp)
+	*generationp = generation;
     return RPMRC_OK;
 }
 
@@ -668,14 +667,14 @@ static int rpmpkgMoveBlob(rpmpkgdb pkgdb, pkgslot *slot, unsigned int newblkoff)
     unsigned int blkoff = slot->blkoff;
     unsigned int blkcnt = slot->blkcnt;
     unsigned char *blob;
-    unsigned int tstamp, blobl;
+    unsigned int generation, blobl;
 
     blob = xmalloc((size_t)blkcnt * BLK_SIZE);
-    if (rpmpkgReadBlob(pkgdb, pkgidx, blkoff, blkcnt, blob, &blobl, &tstamp)) {
+    if (rpmpkgReadBlob(pkgdb, pkgidx, blkoff, blkcnt, blob, &blobl, &generation)) {
 	free(blob);
 	return RPMRC_FAIL;
     }
-    if (rpmpkgWriteBlob(pkgdb, pkgidx, newblkoff, blkcnt, blob, blobl, tstamp)) {
+    if (rpmpkgWriteBlob(pkgdb, pkgidx, newblkoff, blkcnt, blob, blobl, generation)) {
 	free(blob);
 	return RPMRC_FAIL;
     }
@@ -966,7 +965,7 @@ static int rpmpkgPutInternal(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned char 
 	return RPMRC_FAIL;
     }
     /* write new blob */
-    if (rpmpkgWriteBlob(pkgdb, pkgidx, blkoff, blkcnt, blob, blobl, (unsigned int)time(0))) {
+    if (rpmpkgWriteBlob(pkgdb, pkgidx, blkoff, blkcnt, blob, blobl, pkgdb->generation)) {
 	return RPMRC_FAIL;
     }
     /* write slot */
