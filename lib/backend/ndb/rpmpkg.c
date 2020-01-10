@@ -136,10 +136,6 @@ static int rpmpkgReadHeader(rpmpkgdb pkgdb)
     if (pkgdb->slots && (pkgdb->generation != generation || pkgdb->slotnpages != slotnpages)) {
 	free(pkgdb->slots);
 	pkgdb->slots = 0;
-	if (pkgdb->slothash) {
-	    free(pkgdb->slothash);
-	    pkgdb->slothash = 0;
-	}
     }
     pkgdb->generation = generation;
     pkgdb->slotnpages = slotnpages;
@@ -201,14 +197,14 @@ static int rpmpkgHashSlots(rpmpkgdb pkgdb)
     int i;
     pkgslot *slot;
 
-    pkgdb->nslothash = 0;
-    num = pkgdb->nslots;
+    num = pkgdb->nslots + 32;
     while (num & (num - 1))
 	num = num & (num - 1);
     num *= 4;
     hash = pkgdb->slothash;
     if (!hash || pkgdb->nslothash != num) {
-	free(pkgdb->slothash);
+	if (hash)
+	    free(hash);
 	hash = pkgdb->slothash = xcalloc(num, sizeof(unsigned int));
 	pkgdb->nslothash = num;
     } else {
@@ -221,8 +217,6 @@ static int rpmpkgHashSlots(rpmpkgdb pkgdb)
 	    ;
 	hash[h] = i + 1;
     }
-    pkgdb->slothash = hash;
-    pkgdb->nslothash = num;
     return RPMRC_OK;
 }
 
@@ -239,10 +233,6 @@ static int rpmpkgReadSlots(rpmpkgdb pkgdb)
     if (pkgdb->slots) {
 	free(pkgdb->slots);
 	pkgdb->slots = 0;
-    }
-    if (pkgdb->slothash) {
-	free(pkgdb->slothash);
-	pkgdb->slothash = 0;
     }
     pkgdb->nslots = 0;
     pkgdb->freeslot = 0;
