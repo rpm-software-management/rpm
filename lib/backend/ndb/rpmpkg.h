@@ -12,6 +12,7 @@ int rpmpkgGet(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned char **blobp, unsign
 int rpmpkgPut(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned char *blob, unsigned int blobl);
 int rpmpkgDel(rpmpkgdb pkgdb, unsigned int pkgidx);
 int rpmpkgList(rpmpkgdb pkgdb, unsigned int **pkgidxlistp, unsigned int *npkgidxlistp);
+int rpmpkgVerify(rpmpkgdb pkgdb);
 
 int rpmpkgNextPkgIdx(rpmpkgdb pkgdb, unsigned int *pkgidxp);
 int rpmpkgGeneration(rpmpkgdb pkgdb, unsigned int *generationp);

@@ -179,7 +179,13 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 
 static int ndb_Verify(dbiIndex dbi, unsigned int flags)
 {
-    return 0;
+    int rc;
+    if (dbi->dbi_type == DBI_PRIMARY) {
+	rc = rpmpkgVerify(dbi->dbi_db);
+    } else {
+	rc = 0;		/* cannot verify the index databases */
+    }
+    return rc;
 }
 
 static void ndb_SetFSync(rpmdb rdb, int enable)
