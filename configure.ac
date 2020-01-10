@@ -581,7 +581,7 @@ fi
 
 #=================
 # Process --enable-ndb
-AC_ARG_ENABLE([ndb], [AS_HELP_STRING([--enable-ndb (EXPERIMENTAL)],[enable the new rpm database format])],
+AC_ARG_ENABLE([ndb], [AS_HELP_STRING([--enable-ndb],[enable the new rpm database format])],
 [case "$enable_ndb" in
 yes|no) ;;
 *) AC_MSG_ERROR([invalid argument to --enable-ndb])
