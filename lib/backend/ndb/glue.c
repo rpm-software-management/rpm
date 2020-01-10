@@ -80,6 +80,31 @@ static int ndb_Close(dbiIndex dbi, unsigned int flags)
     return 0;
 }
 
+static void ndb_CheckIndexSync(rpmpkgdb pkgdb, rpmxdb xdb)
+{
+    unsigned int generation, xdb_generation;
+    if (!pkgdb || !xdb)
+        return;
+    if (rpmpkgLock(pkgdb, 0))
+        return;
+    if (rpmpkgGeneration(pkgdb, &generation)) {
+        rpmpkgUnlock(pkgdb, 0);
+        return;
+    }
+    if (!rpmxdbGetUserGeneration(xdb, &xdb_generation) && generation == xdb_generation) {
+        rpmpkgUnlock(pkgdb, 0);
+        return;
+    }
+    rpmpkgUnlock(pkgdb, 0);
+    /* index corrupt or with different generation */
+    if (rpmxdbIsRdonly(xdb)) {
+	rpmlog(RPMLOG_WARNING, _("Detected outdated index databases\n"));
+    } else {
+	rpmlog(RPMLOG_WARNING, _("Rebuilding outdated index databases\n"));
+	rpmxdbDelAllBlobs(xdb);
+    }
+}
+
 static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 {
     const char *dbhome = rpmdbHome(rdb);
@@ -130,6 +155,7 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 	}
 	if (!ndbenv->xdb) {
 	    char *path = rstrscat(NULL, dbhome, "/Index.db", NULL);
+	    int created = 0;
 	    rpmlog(RPMLOG_DEBUG, "opening  db index       %s mode=0x%x\n", path, rdb->db_mode);
 
 	    /* Open indexes readwrite if possible */
@@ -144,6 +170,7 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 	    } else if (rc && errno == ENOENT) {
 		ioflags = O_CREAT|O_RDWR;
 		rc = rpmxdbOpen(&ndbenv->xdb, rdb->db_pkgs->dbi_db, path, ioflags, 0666);
+		created = 1;
 	    }
 	    if (rc) {
 		perror("rpmxdbOpen");
@@ -153,6 +180,8 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 	    }
 	    free(path);
 	    rpmxdbSetFsync(ndbenv->xdb, ndbenv->dofsync);
+	    if (!created)
+		ndb_CheckIndexSync(ndbenv->pkgdb, ndbenv->xdb);
 	}
 	if (rpmxdbLookupBlob(ndbenv->xdb, &id, rpmtag, 0, 0) == RPMRC_NOTFOUND) {
 	    dbi->dbi_flags |= DBI_CREATED;
