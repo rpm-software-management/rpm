@@ -52,8 +52,8 @@ static void closeEnv(rpmdb rdb)
 	if (ndbenv->data)
 	    free(ndbenv->data);
 	free(ndbenv);
+	rdb->db_dbenv = 0;
     }
-    rdb->db_dbenv = 0;
 }
 
 static struct ndbEnv_s *openEnv(rpmdb rdb)
