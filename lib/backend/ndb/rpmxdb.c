@@ -963,7 +963,9 @@ int rpmxdbDelAllBlobs(rpmxdb xdb)
 	rpmxdbUnlock(xdb, 1);
 	return RPMRC_FAIL;
     }
-    ftruncate(xdb->fd, xdb->pagesize);
+    if (ftruncate(xdb->fd, xdb->pagesize)) {
+	/* ftruncate failed, but that is not a problem */
+    }
     rpmxdbUnlock(xdb, 1);
     return RPMRC_OK;
 }
