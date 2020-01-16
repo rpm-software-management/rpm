@@ -57,34 +57,51 @@ dbDetectBackend(rpmdb rdb)
     const char *dbhome = rpmdbHome(rdb);
     char *db_backend = rpmExpand("%{?_db_backend}", NULL);
     char *path = NULL;
-    const struct rpmdbOps_s **ops;
+    const struct rpmdbOps_s **ops, *ops_config;
 
-    for (ops = backends; ops && *ops; ops++) {
+    rdb->db_ops = NULL;
+
+    ops_config = NULL;
+    for (ops = backends; *ops; ops++) {
 	if (rstreq(db_backend, (*ops)->name)) {
-	    rdb->db_ops = *ops;
+	    ops_config = *ops;
 	    break;
 	}
     }
 
-    for (ops = backends; ops && *ops; ops++) {
-	int stop = 0;
-	if ((*ops)->path == NULL)
-	    continue;
-
-	path = rstrscat(NULL, dbhome, "/", (*ops)->path, NULL);
-	if (access(path, F_OK) == 0 && rdb->db_ops != *ops) {
-	    rpmlog(RPMLOG_WARNING,
-		_("Found %s %s database while attempting %s backend: "
-		"using %s backend.\n"),
-		(*ops)->name, (*ops)->path, db_backend, (*ops)->name);
-	    rdb->db_ops = *ops;
-	    stop = 1;
-	}
+    /* if we have a configured backend, check it first */
+    if (ops_config && ops_config->path) {
+	path = rstrscat(NULL, dbhome, "/", ops_config->path, NULL);
+	if (access(path, F_OK) == 0)
+	    rdb->db_ops = ops_config;
 	free(path);
-	if (stop)
-	    break;
     }
 
+    /* if it did not match, check all available backends */
+    if (rdb->db_ops == NULL) {
+	for (ops = backends; *ops; ops++) {
+	    if ((*ops)->path == NULL || *ops == ops_config)
+		continue;
+
+	    path = rstrscat(NULL, dbhome, "/", (*ops)->path, NULL);
+	    if (access(path, F_OK) == 0) {
+		rpmlog(RPMLOG_WARNING,
+		    _("Found %s %s database while attempting %s backend: "
+		    "using %s backend.\n"),
+		    (*ops)->name, (*ops)->path, db_backend, (*ops)->name);
+		rdb->db_ops = *ops;
+	    }
+	    free(path);
+	    if (rdb->db_ops != NULL)
+		break;
+	}
+    }
+
+    /* if we did not find a match, use the configured backend */
+    if (rdb->db_ops == NULL && ops_config)
+	rdb->db_ops = ops_config;
+
+    /* if everything failed fall back to dummydb */
     if (rdb->db_ops == NULL) {
 	rdb->db_ops = &dummydb_dbops;
 	rpmlog(RPMLOG_WARNING, "using dummy database, installs not possible\n");
