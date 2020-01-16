@@ -23,6 +23,10 @@ extern "C" {
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
+enum rpmdbRebuildFlags_e {
+    RPMDB_REBUILD_FLAG_CONVERT	= (1 << 0),
+};
+
 /** \ingroup rpmdb
  * Reference a database instance.
  * @param db		rpm database
@@ -63,11 +67,13 @@ int rpmdbClose (rpmdb db);
  * @param prefix	path to top of install tree
  * @param ts		transaction set (or NULL)
  * @param (*hdrchk)	headerCheck() vector (or NULL)
+ * @param rebuildflags	flags
  * @return		0 on success
  */
 RPM_GNUC_INTERNAL
 int rpmdbRebuild(const char * prefix, rpmts ts,
-		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg));
+		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg),
+		int rebuildflags);
 
 /** \ingroup rpmdb
  * Verify database components.

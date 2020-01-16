@@ -804,7 +804,7 @@ exit:
 }
 
 /* Get current header instance number or try to allocate a new one */
-static unsigned int pkgInstance(dbiCursor dbc, int alloc)
+static unsigned int pkgInstance(dbiCursor dbc, int alloc, unsigned int hdrNumIn)
 {
     unsigned int hdrNum = 0;
 
@@ -824,6 +824,11 @@ static unsigned int pkgInstance(dbiCursor dbc, int alloc)
 	if (_dbibyteswapped)
 	    _DBSWAP(mi_offset);
 	hdrNum = mi_offset.ui;
+    }
+
+    if (alloc && hdrNumIn) {
+	alloc = hdrNum >= hdrNumIn ? 0 : 1;
+	hdrNum = alloc ? hdrNumIn - 1 : hdrNumIn;
     }
 
     if (alloc) {
@@ -856,8 +861,8 @@ static rpmRC lmdb_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum,
     hdr.mv_data = hdrBlob;
     hdr.mv_size = hdrLen;
 
-    if (hnum == 0)
-	hnum = pkgInstance(dbc, 1);
+    if (hnum == 0 || (dbi->dbi_rpmdb->db_flags & RPMDB_FLAG_CONVERT) != 0)
+	hnum = pkgInstance(dbc, 1, hnum);
 
     if (hnum)
 	rc = updatePackages(dbc, hnum, &hdr);

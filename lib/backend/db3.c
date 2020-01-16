@@ -1231,7 +1231,7 @@ static rpmRC updatePackages(dbiCursor dbc, unsigned int hdrNum, DBT *hdr)
 }
 
 /* Get current header instance number or try to allocate a new one */
-static unsigned int pkgInstance(dbiIndex dbi, int alloc)
+static unsigned int pkgInstance(dbiIndex dbi, int alloc, unsigned int hdrNumIn)
 {
     unsigned int hdrNum = 0;
 
@@ -1257,6 +1257,11 @@ static unsigned int pkgInstance(dbiIndex dbi, int alloc)
 	    if (dbiByteSwapped(dbi) == 1)
 		_DBSWAP(mi_offset);
 	    hdrNum = mi_offset.ui;
+	}
+
+	if (alloc && hdrNumIn) {
+	    alloc = hdrNum >= hdrNumIn ? 0 : 1;
+	    hdrNum = alloc ? hdrNumIn - 1 : hdrNumIn;
 	}
 
 	if (alloc) {
@@ -1296,8 +1301,8 @@ static rpmRC db3_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum,
     hdr.data = hdrBlob;
     hdr.size = hdrLen;
 
-    if (hnum == 0)
-	hnum = pkgInstance(dbi, 1);
+    if (hnum == 0 || (dbi->dbi_rpmdb->db_flags & RPMDB_FLAG_CONVERT) != 0)
+	hnum = pkgInstance(dbi, 1, hnum);
 
     if (hnum)
 	rc = updatePackages(dbc, hnum, &hdr);

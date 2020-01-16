@@ -968,11 +968,12 @@ static int rpmpkgPutInternal(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned char 
     if (rpmpkgWriteBlob(pkgdb, pkgidx, blkoff, blkcnt, blob, blobl, pkgdb->generation)) {
 	return RPMRC_FAIL;
     }
+    /* update nextpkgidx if needed */
+    if (pkgidx >= pkgdb->nextpkgidx) {
+	pkgdb->nextpkgidx = pkgidx + 1;
+    }
     /* write slot */
     slotno = oldslot ? oldslot->slotno : pkgdb->freeslot;
-    if (!slotno) {
-	return RPMRC_FAIL;
-    }
     if (rpmpkgWriteslot(pkgdb, slotno, pkgidx, blkoff, blkcnt)) {
 	free(pkgdb->slots);
 	pkgdb->slots = 0;

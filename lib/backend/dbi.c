@@ -108,9 +108,18 @@ dbDetectBackend(rpmdb rdb)
     }
 
     rdb->db_descr = rdb->db_ops->name;
+    rdb->db_ops_config = ops_config;
 
     if (db_backend)
 	free(db_backend);
+}
+
+int dbiNeedConversion(rpmdb rdb)
+{
+    if (!rdb->db_ops)
+	dbDetectBackend(rdb);
+    return rdb->db_ops->readonly && rdb->db_ops_config
+	&& rdb->db_ops_config->path && !rdb->db_ops_config->readonly;
 }
 
 const char * dbiName(dbiIndex dbi)

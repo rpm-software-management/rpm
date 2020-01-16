@@ -505,8 +505,16 @@ static int openDatabase(const char * prefix,
 	    rpmsqActivate(1);
 	}
 
+	/* Convert the database if needed */
+	if (!db->db_pkgs && !justCheck && (mode & O_ACCMODE) == O_RDWR && dbiNeedConversion(db)) {
+	    rpmlog(RPMLOG_WARNING, _("Converting database from %s to %s format\n"), db->db_ops->name, db->db_ops_config->name);
+	    rc = rpmdbRebuild(prefix, NULL, NULL, RPMDB_REBUILD_FLAG_CONVERT);
+	    db->db_ops = NULL;		/* force re-detection of backend */
+	}
+
 	/* Just the primary Packages database opened here */
-	rc = pkgdbOpen(db, db->db_flags, NULL);
+	if (!rc)
+	    rc = pkgdbOpen(db, db->db_flags, NULL);
 	if (!db->db_descr)
 	    db->db_descr = "unknown db";
     }
@@ -2306,6 +2314,15 @@ int rpmdbAdd(rpmdb db, Header h)
     if (db == NULL)
 	return 0;
 
+    if ((db->db_flags & RPMDB_FLAG_CONVERT) != 0) {
+	/* keep old instance numbers when converting */
+	hdrNum = headerGetInstance(h);
+	if (hdrNum == 0) {
+	    ret = -1;
+	    goto exit;
+	}
+    }
+
     hdrBlob = headerExport(h, &hdrLen);
     if (hdrBlob == NULL || hdrLen == 0) {
 	ret = -1;
@@ -2479,7 +2496,8 @@ static int rpmdbSetPermissions(char * src, char * dest)
 }
 
 int rpmdbRebuild(const char * prefix, rpmts ts,
-		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg))
+		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg),
+		int rebuildflags)
 {
     rpmdb olddb;
     char * dbpath = NULL;
@@ -2524,7 +2542,9 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	goto exit;
     }
     if (openDatabase(prefix, newdbpath, &newdb,
-		     (O_RDWR | O_CREAT), 0644, RPMDB_FLAG_REBUILD)) {
+		     (O_RDWR | O_CREAT), 0644, RPMDB_FLAG_REBUILD |
+		     (rebuildflags & RPMDB_REBUILD_FLAG_CONVERT ?
+		         RPMDB_FLAG_CONVERT : 0))) {
 	rc = 1;
 	goto exit;
     }
@@ -2557,6 +2577,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	    /* Deleted entries are eliminated in legacy headers by copy. */
 	    if (headerIsEntry(h, RPMTAG_HEADERIMAGE)) {
 		Header nh = headerReload(headerCopy(h), RPMTAG_HEADERIMAGE);
+		headerSetInstance(nh, headerGetInstance(h));
 		rc = rpmdbAdd(newdb, nh);
 		headerFree(nh);
 	    } else {
