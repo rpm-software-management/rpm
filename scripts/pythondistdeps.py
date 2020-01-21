@@ -132,6 +132,11 @@ for f in files:
                 if name not in py_deps:
                     py_deps[name] = []
                 py_deps[name].append(('==', dist.py_version))
+            if dist.extras:
+                for extra in dist.extras:
+                    name = 'python{}dist({}::{})'.format(dist.py_version, dist.key, extra)
+                    if name not in py_deps:
+                        py_deps[name] = []
             if not legacy or not PyMajorVer_Deps:
                 name = 'python{}dist({})'.format(dist.py_version, dist.key)
                 if name not in py_deps:
