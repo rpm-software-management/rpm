@@ -18,6 +18,113 @@ from distutils.sysconfig import get_python_lib
 from warnings import warn
 
 
+class RpmVersion():
+    def __init__(self, version_id):
+        version = parse_version(version_id)
+        if isinstance(version._version, str):
+            self.version = version._version
+        else:
+            self.epoch = version._version.epoch
+            self.version = list(version._version.release)
+            self.pre = version._version.pre
+            self.dev = version._version.dev
+            self.post = version._version.post
+
+    def increment(self):
+        self.version[-1] += 1
+        self.pre = None
+        self.dev = None
+        self.post = None
+        return self
+
+    def __str__(self):
+        if isinstance(self.version, str):
+            return self.version
+        if self.epoch:
+            rpm_epoch = str(self.epoch) + ':'
+        else:
+            rpm_epoch = ''
+        while self.version[-1] == 0:
+            self.version.pop()
+        rpm_version = '.'.join(str(x) for x in self.version)
+        if self.pre:
+            rpm_suffix = '~{}'.format(''.join(str(x) for x in self.pre))
+        elif self.dev:
+            rpm_suffix = '~{}'.format(''.join(str(x) for x in self.dev))
+        elif self.post:
+            rpm_suffix = '^post{}'.format(self.post[1])
+        else:
+            rpm_suffix = ''
+        return '{}{}{}'.format(rpm_epoch, rpm_version, rpm_suffix)
+
+def convert_compatible(name, operator, version_id):
+    if version_id.endswith('.*'):
+        print('Invalid requirement: {} {} {}'.format(name, operator, version_id))
+        exit(65) # os.EX_DATAERR
+    version = RpmVersion(version_id)
+    if len(version.version) == 1:
+        print('Invalid requirement: {} {} {}'.format(name, operator, version_id))
+        exit(65) # os.EX_DATAERR
+    upper_version = RpmVersion(version_id)
+    upper_version.version.pop()
+    upper_version.increment()
+    return '({} >= {} with {} < {})'.format(
+        name, version, name, upper_version)
+
+def convert_equal(name, operator, version_id):
+    if version_id.endswith('.*'):
+        version_id = version_id[:-2] + '.0'
+        return convert_compatible(name, '~=', version_id)
+    version = RpmVersion(version_id)
+    return '{} = {}'.format(name, version)
+
+def convert_arbitrary_equal(name, operator, version_id):
+    if version_id.endswith('.*'):
+        print('Invalid requirement: {} {} {}'.format(name, operator, version_id))
+        exit(65) # os.EX_DATAERR
+    version = RpmVersion(version_id)
+    return '{} = {}'.format(name, version)
+
+def convert_not_equal(name, operator, version_id):
+    if version_id.endswith('.*'):
+        version_id = version_id[:-2]
+        version = RpmVersion(version_id)
+        lower_version = RpmVersion(version_id).increment()
+    else:
+        version = RpmVersion(version_id)
+        lower_version = version
+    return '({} < {} or {} > {})'.format(
+        name, version, name, lower_version)
+
+def convert_ordered(name, operator, version_id):
+    if version_id.endswith('.*'):
+        # PEP 440 does not define semantics for prefix matching
+        # with ordered comparisons
+        version_id = version_id[:-2]
+        version = RpmVersion(version_id)
+        if '>' == operator:
+            # distutils does not behave this way, but this is
+            # their recommendation
+            # https://mail.python.org/archives/list/distutils-sig@python.org/thread/NWEQVTCX5CR2RKW2LT4H77PJTEINSX7P/
+            operator = '>='
+            version.increment()
+    else:
+        version = RpmVersion(version_id)
+    return '{} {} {}'.format(name, operator, version)
+
+OPERATORS = {'~=': convert_compatible,
+             '==': convert_equal,
+             '===': convert_arbitrary_equal,
+             '!=': convert_not_equal,
+             '<=': convert_ordered,
+             '<':  convert_ordered,
+             '>=': convert_ordered,
+             '>':  convert_ordered}
+
+def convert(name, operator, version_id):
+    return OPERATORS[operator](name, operator, version_id)
+
+
 opts, args = getopt(
     argv[1:], 'hPRrCEMmLl:',
     ['help', 'provides', 'requires', 'recommends', 'conflicts', 'extras', 'majorver-provides', 'majorver-only', 'legacy-provides' , 'legacy'])
@@ -146,8 +253,6 @@ for f in files:
                     py_deps[legacy_name] = []
             if dist.version:
                 version = dist.version
-                while version.endswith('.0'):
-                    version = version[:-2]
                 spec = ('==', version)
                 if spec not in py_deps[name]:
                     if not legacy:
@@ -194,8 +299,6 @@ for f in files:
                     else:
                         name = 'python{}dist({})'.format(dist.py_version, dep.key)
                 for spec in dep.specs:
-                    while spec[1].endswith('.0'):
-                        spec = (spec[0], spec[1][:-2])
                     if name not in py_deps:
                         py_deps[name] = []
                     if spec not in py_deps[name]:
@@ -246,29 +349,7 @@ for name in names:
         # Print out versioned provides, requires, recommends, conflicts
         spec_list = []
         for spec in py_deps[name]:
-            if spec[0] == '!=':
-                spec_list.append('({n} < {v} or {n} >= {v}.0)'.format(n=name, v=spec[1]))
-            elif spec[0] == '~=':
-                # Parse the current version
-                next_ver = parse_version(spec[1]).base_version.split('.')
-                # Drop the micro version
-                next_ver = next_ver[0:-1]
-                # Increment the minor version
-                next_ver[-1] = str(int(next_ver[-1]) + 1)
-                next_ver = '.'.join(next_ver)
-                spec_list.append('({n} >= {v} with {n} < {vnext})'.format(n=name, v=spec[1], vnext=next_ver))
-            elif spec[0] == '==' and spec[1].endswith('.*'):
-                # Parse the current version
-                next_ver = parse_version(spec[1]).base_version.split('.')
-                # Drop the micro version from both the version in spec and next_ver
-                next_ver = next_ver[0:-1]
-                spec = (spec[0], '.'.join(next_ver))
-                # Increment the minor version
-                next_ver[-1] = str(int(next_ver[-1]) + 1)
-                next_ver = '.'.join(next_ver)
-                spec_list.append('({n} >= {v} with {n} < {vnext})'.format(n=name, v=spec[1], vnext=next_ver))
-            else:
-                spec_list.append('{} {} {}'.format(name, spec[0], spec[1]))
+            spec_list.append(convert(name, spec[0], spec[1]))
         if len(spec_list) == 1:
             print(spec_list[0])
         else:
