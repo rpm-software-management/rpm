@@ -277,6 +277,17 @@ static int getOutputFrom(ARGV_t argv,
     }
     
     child = fork();
+    if (child < 0) {
+	rpmlog(RPMLOG_ERR, _("Couldn't fork %s: %s\n"),
+		argv[0], strerror(errno));
+	if (doio) {
+	    close(toProg[1]);
+	    close(toProg[0]);
+	    close(fromProg[0]);
+	    close(fromProg[1]);
+	}
+	return -1;
+    }
     if (child == 0) {
 	close(toProg[1]);
 	close(fromProg[0]);
@@ -298,11 +309,6 @@ static int getOutputFrom(ARGV_t argv,
 	rpmlog(RPMLOG_ERR, _("Couldn't exec %s: %s\n"),
 		argv[0], strerror(errno));
 	_exit(EXIT_FAILURE);
-    }
-    if (child < 0) {
-	rpmlog(RPMLOG_ERR, _("Couldn't fork %s: %s\n"),
-		argv[0], strerror(errno));
-	return -1;
     }
 
     if (!doio)
