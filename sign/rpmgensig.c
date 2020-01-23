@@ -216,7 +216,6 @@ static int runGPG(sigTarget sigt, const char *sigfile)
 	dup2(pipefd[0], STDIN_FILENO);
 	close(pipefd[1]);
 
-	unsetenv("MALLOC_CHECK_");
 	cmd = rpmExpand("%{?__gpg_sign_cmd}", NULL);
 	rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
 	if (!rc)
