@@ -267,7 +267,11 @@ static int runGPG(sigTarget sigt, const char *sigfile)
 	if (!rc)
 	    rc = execve(av[0], av+1, environ);
 
-	rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), "gpg",
+	/*
+	 * We are in a child which is a separate process, do not use rpmlog()
+	 * since locking is not safe across [v]fork.
+	 */
+	fprintf(stderr, _("Could not exec %s: %s\n"), "gpg",
 			strerror(errno));
 	_exit(EXIT_FAILURE);
     }
