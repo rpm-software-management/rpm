@@ -216,9 +216,6 @@ static void doScriptExec(ARGV_const_t argv, ARGV_const_t prefixes,
     }
 	
     if (chdir("/") == 0) {
-	/* XXX Don't mtrace into children. */
-	unsetenv("MALLOC_CHECK_");
-
 	xx = execv(argv[0], argv);
 	if (xx) {
 	    rpmlog(RPMLOG_ERR,
