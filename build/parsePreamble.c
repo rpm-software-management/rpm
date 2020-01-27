@@ -903,6 +903,10 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	break;
     case RPMTAG_ORDERNAME:
     case RPMTAG_REQUIRENAME:
+    case RPMTAG_RECOMMENDNAME:
+    case RPMTAG_SUGGESTNAME:
+    case RPMTAG_SUPPLEMENTNAME:
+    case RPMTAG_ENHANCENAME:
 	if (parseBits(lang, installScriptBits, &tagflags)) {
 	    rpmlog(RPMLOG_ERR, _("line %d: Bad %s: qualifiers: %s\n"),
 		     spec->lineNum, rpmTagGetName(tag), spec->line);
@@ -910,10 +914,6 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	}
 	/* fallthrough */
     case RPMTAG_PREREQ:
-    case RPMTAG_RECOMMENDNAME:
-    case RPMTAG_SUGGESTNAME:
-    case RPMTAG_SUPPLEMENTNAME:
-    case RPMTAG_ENHANCENAME:
     case RPMTAG_CONFLICTNAME:
     case RPMTAG_OBSOLETENAME:
     case RPMTAG_PROVIDENAME:
