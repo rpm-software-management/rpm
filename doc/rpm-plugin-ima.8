@@ -1,0 +1,26 @@
+.TH "RPM-IMA" "8" "28 Jan 2020" "Red Hat, Inc."
+.SH NAME
+rpm-plugin-ima \- IMA plugin for the RPM Package Manager
+
+.SH Description
+
+Integrity Measurement Architecture (IMA) and the Linux Extended
+Verification Module (EVM) allow to detect when files have been
+accidentally or maliciously altered. This plugin puts IMA/EVM
+signatures in the \fIsecurity.ima\fR extended file attribute during
+installation. This requires packages to contain the signatures -
+typically by being signed with \fBrpmsign --signfiles\fR.
+
+.SH Configuration
+
+The \fI%_ima_sign_config_files\fR macro controls whether signatures
+should also be written for config files.
+
+See
+.BR rpm-plugins (8)
+on how to control plugins in general.
+
+.SH SEE ALSO
+.IR evmctl (1)
+.IR rpmsign (8)
+.IR rpm (8)

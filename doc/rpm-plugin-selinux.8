@@ -1,0 +1,23 @@
+.TH "RPM-SELINUX" "8" "14 Apr 2016" "Red Hat, Inc."
+.SH NAME
+rpm-plugin-selinux \- SELinux plugin for the RPM Package Manager
+
+.SH Description
+
+The plugin sets SELinux contexts for installed files and executed
+scriptlets. It needs SELinux to be enabled to work but will work in
+both enforcing and permissive mode.
+
+.SH Configuration
+
+The plugin can be disabled temporarily by passing \fB--nocontexts\fR
+at the RPM command line or setting the transaction flag
+\fBRPMTRANS_FLAG_NOCONTEXTS\fR in the API.
+
+See
+.BR rpm-plugins (8)
+on how to control plugins in general.
+
+.SH SEE ALSO
+.IR rpm (8)
+.IR rpm-plugins (8)
