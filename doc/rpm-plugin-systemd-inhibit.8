@@ -13,7 +13,7 @@ roughly equivalent to executing
 
 \fBsystemd-inhibit --mode=block --what=idle:sleep:shutdown --who=RPM --why="Transaction running"\fR
 
-See \fBsystemd-inhibit(1)\fR for the details of this mechanism.
+See \fBsystemd-inhibit\fR(1) for the details of this mechanism.
 
 It is strongly advised to have the plugin installed on all systemd
 based systems.
@@ -26,11 +26,11 @@ interface it gives a warning but does not stop the transaction.
 
 .SH Configuration
 
-The plugin currently does not have any configuration option other than
-turning it on and off. It can be disabled by commenting out the
-\fI%__transaction_systemd_inhibit\fR macro in main macros file
-(typically located at \fI/usr/lib/rpm/macros\fR) or otherwise change
-the value of the macro.
+There are currently no options for this plugin in particular. See
+.BR rpm-plugins (8)
+on how to control plugins in general.
 
-Another option is to remove the plugin from the system if it is
-packaged in its own sub package.
+.SH SEE ALSO
+.IR systemd-inhibit (1)
+.IR rpm (8)
+.IR rpm-plugins (8)
