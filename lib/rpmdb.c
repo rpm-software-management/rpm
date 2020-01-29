@@ -2557,7 +2557,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	    /* Deleted entries are eliminated in legacy headers by copy. */
 	    if (headerIsEntry(h, RPMTAG_HEADERIMAGE)) {
 		Header nh = headerReload(headerCopy(h), RPMTAG_HEADERIMAGE);
-		rc = rpmdbAdd(newdb, h);
+		rc = rpmdbAdd(newdb, nh);
 		headerFree(nh);
 	    } else {
 		rc = rpmdbAdd(newdb, h);
