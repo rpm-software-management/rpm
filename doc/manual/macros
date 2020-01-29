@@ -97,7 +97,6 @@ to perform useful operations. The current list is
 
 	%{S:...}	expand ... to <source> file name
 	%{P:...}	expand ... to <patch> file name
-	%{F:...}	expand ... to <file> file name
 \endverbatim
 
 Macros may also be automatically included from /usr/lib/rpm/macros.

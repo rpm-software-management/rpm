@@ -554,7 +554,6 @@ static struct builtins_s {
     parseFunc parse;
     int havearg;
 } const builtinmacros[] = {
-    { STR_AND_LEN("F"),		doFoo,		NULL,		1 },
     { STR_AND_LEN("P"),		doFoo,		NULL,		1 },
     { STR_AND_LEN("S"),		doFoo,		NULL,		1 },
     { STR_AND_LEN("basename"),	doFoo,		NULL,		1 },
@@ -1206,9 +1205,6 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
 	    sprintf(b, "%%PATCH%s", buf);
 	} else
 			b = buf;
-    } else if (STREQ("F", f, fn)) {
-	b = buf + strlen(buf) + 1;
-	sprintf(b, "file%s.file", buf);
     }
 
     if (b) {
