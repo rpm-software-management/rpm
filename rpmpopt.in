@@ -217,10 +217,9 @@ rpmbuild alias --scm		--define '__scm !#:+' \
 rpmbuild alias --buildpolicy --define '__os_install_post %{_rpmconfigdir}/brp-!#:+' \
 	--POPTdesc=$"set buildroot <policy> (e.g. compress man pages)" \
 	--POPTargs=$"<policy>"
-# Minimally preserve rpmbuild's --sign functionality
-rpmbuild alias --sign \
-	--pipe 'rpm --addsign `grep ".*: .*\.rpm$"|cut -d: -f2` < "/dev/"`ps -p $$ -o tty | tail -n 1`' \
-	--POPTdesc=$"generate GPG signature (deprecated, use command rpmsign instead)"
+# Print error on rpmbuild --sign
+rpmbuild alias --sign --eval "%{error:rpmbuild --sign is no longer supported. Use the rpmsign command instead!}"
+	--POPTdesc=$"Obsolete, use command rpmsign instead!"
 rpmbuild alias --trace		--eval '%trace' \
 	--POPTdesc=$"trace macro expansion"
 rpmbuild alias --nodebuginfo	--define 'debug_package %{nil}' \
