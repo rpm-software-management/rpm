@@ -49,7 +49,8 @@ enum rpmsenseFlags_e {
     RPMSENSE_TRIGGERPREIN = (1 << 25),	/*!< %triggerprein dependency. */
     RPMSENSE_KEYRING	= (1 << 26),
     /* bit 27 unused */
-    RPMSENSE_CONFIG	= (1 << 28)
+    RPMSENSE_CONFIG	= (1 << 28),
+    RPMSENSE_META	= (1 << 29),	/*!< meta dependency. */
 };
 
 typedef rpmFlags rpmsenseFlags;
@@ -73,6 +74,7 @@ typedef rpmFlags rpmsenseFlags;
     RPMSENSE_PRETRANS | \
     RPMSENSE_POSTTRANS | \
     RPMSENSE_PREREQ | \
+    RPMSENSE_META | \
     RPMSENSE_MISSINGOK)
 
 #define	_notpre(_x)		((_x) & ~RPMSENSE_PREREQ)
@@ -81,7 +83,7 @@ typedef rpmFlags rpmsenseFlags;
 #define	_ERASE_ONLY_MASK  \
     _notpre(RPMSENSE_SCRIPT_PREUN|RPMSENSE_SCRIPT_POSTUN)
 #define _UNORDERED_ONLY_MASK \
-    _notpre(RPMSENSE_RPMLIB|RPMSENSE_CONFIG|RPMSENSE_PRETRANS|RPMSENSE_POSTTRANS|RPMSENSE_SCRIPT_VERIFY)
+    _notpre(RPMSENSE_RPMLIB|RPMSENSE_CONFIG|RPMSENSE_PRETRANS|RPMSENSE_POSTTRANS|RPMSENSE_SCRIPT_VERIFY|RPMSENSE_META)
 #define _FORCE_ORDER_ONLY_MASK \
     _notpre(RPMSENSE_SCRIPT_PRE|RPMSENSE_SCRIPT_POST|RPMSENSE_SCRIPT_PREUN|RPMSENSE_SCRIPT_POSTUN)
 
@@ -91,7 +93,8 @@ typedef rpmFlags rpmsenseFlags;
 #define	isUnorderedReq(_x)	((_x) & _UNORDERED_ONLY_MASK && \
 				 !((_x) & _FORCE_ORDER_ONLY_MASK))
 #define isTransientReq(_x)	(isInstallPreReq(_x) && \
-				 !isErasePreReq(_x))
+				 !isErasePreReq(_x) &&	\
+				 !((_x) & RPMSENSE_META))
 
 /** \ingroup rpmds
  * Return only those flags allowed for given type of dependencies

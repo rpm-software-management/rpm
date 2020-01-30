@@ -206,6 +206,8 @@ static char * deptypeFormat(rpmtd td, char **emsg)
 	argvAdd(&sdeps, "config");
     if (item & RPMSENSE_MISSINGOK)
 	argvAdd(&sdeps, "missingok");
+    if (item & RPMSENSE_META)
+	argvAdd(&sdeps, "meta");
 
     if (sdeps) {
 	val = argvJoin(sdeps, ",");
