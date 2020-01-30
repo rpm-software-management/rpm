@@ -363,6 +363,7 @@ typedef const struct tokenBits_s {
  */
 static struct tokenBits_s const installScriptBits[] = {
     { "interp",		RPMSENSE_INTERP },
+    { "meta",		RPMSENSE_META },
     { "preun",		RPMSENSE_SCRIPT_PREUN },
     { "pre",		RPMSENSE_SCRIPT_PRE },
     { "postun",		RPMSENSE_SCRIPT_POSTUN },
