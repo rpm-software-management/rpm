@@ -82,12 +82,14 @@ typedef rpmFlags rpmsenseFlags;
     _notpre(RPMSENSE_SCRIPT_PREUN|RPMSENSE_SCRIPT_POSTUN)
 #define _UNORDERED_ONLY_MASK \
     _notpre(RPMSENSE_RPMLIB|RPMSENSE_CONFIG|RPMSENSE_PRETRANS|RPMSENSE_POSTTRANS|RPMSENSE_SCRIPT_VERIFY)
+#define _FORCE_ORDER_ONLY_MASK \
+    _notpre(RPMSENSE_SCRIPT_PRE|RPMSENSE_SCRIPT_POST|RPMSENSE_SCRIPT_PREUN|RPMSENSE_SCRIPT_POSTUN)
 
 #define	isLegacyPreReq(_x)  (((_x) & _ALL_REQUIRES_MASK) == RPMSENSE_PREREQ)
 #define	isInstallPreReq(_x)	((_x) & _INSTALL_ONLY_MASK)
 #define	isErasePreReq(_x)	((_x) & _ERASE_ONLY_MASK)
-#define	isUnorderedReq(_x)	((_x) & _UNORDERED_ONLY_MASK)
-
+#define	isUnorderedReq(_x)	((_x) & _UNORDERED_ONLY_MASK && \
+				 !((_x) & _FORCE_ORDER_ONLY_MASK))
 
 
 /** \ingroup rpmds
