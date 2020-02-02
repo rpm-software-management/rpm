@@ -132,35 +132,34 @@ for f in files:
                 if name not in py_deps:
                     py_deps[name] = []
                 py_deps[name].append(('==', dist.py_version))
-            if dist.extras:
-                for extra in dist.extras:
-                    name = 'python{}dist({}::{})'.format(dist.py_version, dist.key, extra)
-                    if name not in py_deps:
-                        py_deps[name] = []
-            if not legacy or not PyMajorVer_Deps:
-                name = 'python{}dist({})'.format(dist.py_version, dist.key)
-                if name not in py_deps:
-                    py_deps[name] = []
-            if Provides_PyMajorVer_Variant or PyMajorVer_Deps:
-                pymajor_name = 'python{}dist({})'.format(pyver_major, dist.key)
-                if pymajor_name not in py_deps:
-                    py_deps[pymajor_name] = []
-            if legacy or legacy_Provides:
-                legacy_name = 'pythonegg({})({})'.format(pyver_major, dist.key)
-                if legacy_name not in py_deps:
-                    py_deps[legacy_name] = []
             if dist.version:
                 version = dist.version
                 while version.endswith('.0'):
                     version = version[:-2]
-                spec = ('==', version)
-                if spec not in py_deps[name]:
-                    if not legacy:
-                        py_deps[name].append(spec)
-                    if Provides_PyMajorVer_Variant:
-                        py_deps[pymajor_name].append(spec)
-                    if legacy or legacy_Provides:
-                        py_deps[legacy_name].append(spec)
+                spec = [('==', version)]
+            else:
+                spec = []
+            if not legacy or not PyMajorVer_Deps:
+                name = 'python{}dist({})'.format(dist.py_version, dist.key)
+                if name not in py_deps:
+                    py_deps[name] = spec
+                    for extra in dist.extras:
+                        name = 'python{}dist({}/{})'.format(dist.py_version, dist.key, extra)
+                        py_deps[name] = spec
+            if Provides_PyMajorVer_Variant or PyMajorVer_Deps:
+                pymajor_name = 'python{}dist({})'.format(pyver_major, dist.key)
+                if pymajor_name not in py_deps:
+                    py_deps[pymajor_name] = spec
+                    for extra in dist.extras:
+                        name = 'python{}dist({}/{})'.format(pyver_major, dist.key, extra)
+                        py_deps[name] = spec
+            if legacy or legacy_Provides:
+                legacy_name = 'pythonegg({})({})'.format(pyver_major, dist.key)
+                if legacy_name not in py_deps:
+                    py_deps[legacy_name] = spec
+                    for extra in dist.extras:
+                        name = 'pythonegg({})({}/{})'.format(pyver_major, dist.key, extra)
+                        py_deps[name] = spec
         if Requires or (Recommends and dist.extras):
             name = 'python(abi)'
             # If egg/dist metadata says package name is python, we don't add dependency on python(abi)
