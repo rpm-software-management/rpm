@@ -20,8 +20,10 @@ optflags: pentium3 -O2 -g -march=pentium3
 optflags: pentium4 -O2 -g -march=pentium4
 optflags: athlon -O2 -g -march=athlon
 optflags: geode -Os -g -m32 -march=geode
+optflags: znver1_32 -O2 -g -march=znver1 -mtune=znver1 -mfpmath=sse
 optflags: ia64 -O2 -g
 optflags: x86_64 -O2 -g
+optflags: znver1 -O2 -g -march=znver1 -mtune=znver1
 optflags: amd64 -O2 -g
 optflags: ia32e -O2 -g
 
@@ -147,6 +149,7 @@ archcolor: s390x 2
 archcolor: ia64 2
 
 archcolor: x86_64 2
+archcolor: znver1 2
 
 archcolor: sh3 1
 archcolor: sh4 1
@@ -166,7 +169,9 @@ arch_canon:	i686:	i686	1
 arch_canon:	i586:	i586	1
 arch_canon:	i486:	i486	1
 arch_canon:	i386:	i386	1
+arch_canon:	znver1_32:	znver1_32	1
 arch_canon:	x86_64:	x86_64	1
+arch_canon:	znver1:	znver1	1
 arch_canon:	amd64:	amd64	1
 arch_canon:	ia32e:	ia32e	1
 arch_canon:	em64t:	em64t	1
@@ -298,6 +303,7 @@ buildarchtranslate: osfmach3_i586: i386
 buildarchtranslate: osfmach3_i486: i386
 buildarchtranslate: osfmach3_i386: i386
 
+buildarchtranslate: znver1_32: znver1_32
 buildarchtranslate: athlon: i386
 buildarchtranslate: geode: i386
 buildarchtranslate: pentium4: i386
@@ -378,6 +384,7 @@ buildarchtranslate: ia64: ia64
 buildarchtranslate: x86_64: x86_64
 buildarchtranslate: amd64: x86_64
 buildarchtranslate: ia32e: x86_64
+buildarchtranslate: znver1: znver1
 
 buildarchtranslate: sh3: sh3
 buildarchtranslate: sh4: sh4
@@ -398,6 +405,7 @@ arch_compat: alphaev56: alphaev5
 arch_compat: alphaev5: alpha
 arch_compat: alpha: axp noarch
 
+arch_compat: znver1_32: znver1_32 athlon geode pentium4 pentium3 i686 i586 i486 i386 noarch
 arch_compat: athlon: i686
 arch_compat: geode: i586
 arch_compat: pentium4: pentium3
@@ -489,6 +497,7 @@ arch_compat: ia64: noarch
 arch_compat: x86_64: amd64 em64t athlon noarch
 arch_compat: amd64: x86_64 em64t athlon noarch
 arch_compat: ia32e: x86_64 em64t athlon noarch
+arch_compat: znver1: znver1 amd64 x86_64 em64t noarch
 
 arch_compat: sh3: noarch
 arch_compat: sh4: noarch
@@ -535,6 +544,7 @@ buildarch_compat: aarch64: noarch
 buildarch_compat: riscv: noarch
 buildarch_compat: riscv64: noarch
 
+buildarch_compat: znver1_32: znver1_32 athlon geode pentium4 pentium3 i686 i586 i486 i386 noarch
 buildarch_compat: athlon: i686
 buildarch_compat: geode: i586
 buildarch_compat: pentium4: pentium3
@@ -627,6 +637,7 @@ buildarch_compat: ia64: noarch
 buildarch_compat: x86_64: noarch
 buildarch_compat: amd64: x86_64
 buildarch_compat: ia32e: x86_64
+buildarch_compat: znver1: znver1 x86_64
 
 buildarch_compat: sh3: noarch
 buildarch_compat: sh4: noarch

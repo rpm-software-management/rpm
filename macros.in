@@ -1117,7 +1117,11 @@ package or when debugging this package.\
 #   rpm can use regular expressions against target platforms in macro
 #   conditionals.
 #
-%ix86   i386 i486 i586 i686 pentium3 pentium4 athlon geode
+%ix86   i386 i486 i586 i686 pentium3 pentium4 athlon geode znver1_32
+
+#------------------------------------------------------------------------------
+# arch macro for all supported x86_64 processors
+%x86_64	x86_64 znver1 amd64 em64t
 
 #------------------------------------------------------------------------------
 # arch macro for all supported ARM processors

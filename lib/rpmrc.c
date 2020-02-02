@@ -736,6 +736,16 @@ exit:
 }
 
 
+#	if defined(__linux__) && defined(__x86_64__)
+static inline void cpuid(uint32_t op, uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx)
+{
+    asm volatile (
+	"cpuid\n"
+    : "=a" (*eax), "=b" (*ebx), "=c" (*ecx), "=d" (*edx)
+    : "a" (op));
+}
+#	endif
+
 #	if defined(__linux__) && defined(__i386__)
 #include <setjmp.h>
 #include <signal.h>
@@ -949,6 +959,25 @@ static int is_geode(void)
 }
 #endif
 
+#if defined(__linux__) && (defined(__i386__) || defined(__x86_64__))
+static int is_ryzen(void) {
+    uint32_t eax, ebx, ecx, edx;
+    char vendor[13];
+    int family;
+    vendor[12]=0;
+    cpuid(0, &eax, &ebx, &ecx, &edx);
+    memcpy(vendor, &ebx, sizeof(ebx));
+    memcpy(vendor+4, &edx, sizeof(edx));
+    memcpy(vendor+8, &ecx, sizeof(ecx));
+    if (!rstreqn(vendor, "AuthenticAMD", 12))
+        return 0;
+    cpuid(1, &eax, &ebx, &ecx, &edx);
+    family = (eax>>8)&0xf;
+    if(family == 0xf)
+        family += (eax>>20)&0x7f;
+    return family >= 0x17;
+}
+#endif
 
 #if defined(__linux__)
 #ifndef AT_HWCAP2 /* glibc < 2.18 */
@@ -1290,7 +1319,9 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 	{
 	    char mclass = (char) (RPMClass() | '0');
 
-	    if ((mclass == '6' && is_athlon()) || mclass == '7')
+	    if(is_ryzen())
+                strcpy(un.machine, "znver1_32");
+	    else if ((mclass == '6' && is_athlon()) || mclass == '7')
 	    	strcpy(un.machine, "athlon");
 	    else if (is_pentium4())
 		strcpy(un.machine, "pentium4");
@@ -1301,6 +1332,11 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 	    else if (strchr("3456", un.machine[1]) && un.machine[1] != mclass)
 		un.machine[1] = mclass;
 	}
+#	endif
+
+#	if defined(__linux__) && defined(__x86_64__)
+        if (is_ryzen())
+             strcpy(un.machine, "znver1");
 #	endif
 
 	/* the uname() result goes through the arch_canon table */
