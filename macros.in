@@ -1128,6 +1128,10 @@ package or when debugging this package.\
 %arm	%{arm32}
 
 #------------------------------------------------------------------------------
+# arch macro for all supported 64-bit ARM processors
+%arm64	aarch64
+
+#------------------------------------------------------------------------------
 # arch macro for 32-bit MIPS processors
 %mips32	mips mipsel mipsr6 mipsr6el
 
