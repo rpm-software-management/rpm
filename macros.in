@@ -1120,8 +1120,12 @@ package or when debugging this package.\
 %ix86   i386 i486 i586 i686 pentium3 pentium4 athlon geode
 
 #------------------------------------------------------------------------------
-# arch macro for all supported ARM processors
-%arm	armv3l armv4b armv4l armv4tl armv5tl armv5tel armv5tejl armv6l armv6hl armv7l armv7hl armv7hnl armv8l armv8hl armv8hnl armv8hcnl
+# arch macro for all supported 32-bit ARM processors
+%arm32	armv3l armv4b armv4l armv4tl armv5tl armv5tel armv5tejl armv6l armv6hl armv7l armv7hl armv7hnl armv8l armv8hl armv8hnl armv8hcnl
+
+#------------------------------------------------------------------------------
+# arch macro for all supported 32-bit ARM processors (legacy, use %%arm32 instead)
+%arm	%{arm32}
 
 #------------------------------------------------------------------------------
 # arch macro for 32-bit MIPS processors
