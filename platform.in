@@ -68,6 +68,16 @@
 # ---- Build policy macros.
 #
 #---------------------------------------------------------------------
+#	Expanded at beginning of %install scriptlet.
+#
+
+%__spec_install_pre %{___build_pre}\
+    %{__rm} -rf "%{buildroot}"\
+    %{__mkdir_p} "%{dirname:%{buildroot}}"\
+    %{__mkdir} "%{buildroot}"\
+%{nil}
+
+#---------------------------------------------------------------------
 #	Expanded at end of %install scriptlet.
 #
 
