@@ -241,7 +241,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     uint32_t num;
     int leaveDirs = 0, skipDefaultAction = 0;
     int createDir = 0, quietly = 0;
-    const char * dirName = NULL;
+    char * dirName = NULL;
     struct poptOption optionsTable[] = {
 	    { NULL, 'a', POPT_ARG_STRING, NULL, 'a',	NULL, NULL},
 	    { NULL, 'b', POPT_ARG_STRING, NULL, 'b',	NULL, NULL},
@@ -368,6 +368,7 @@ exit:
     freeStringBuf(before);
     freeStringBuf(after);
     poptFreeContext(optCon);
+    free(dirName);
     free(argv);
 
     return rc;
@@ -479,6 +480,9 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 
 exit:
     argvFree(patchnums);
+    free(opt_b);
+    free(opt_d);
+    free(opt_o);
     free(argv);
     poptFreeContext(optCon);
     return rc;

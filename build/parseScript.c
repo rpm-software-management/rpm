@@ -100,9 +100,9 @@ int parseScript(rpmSpec spec, int parsePart)
     int arg;
     const char **argv = NULL;
     poptContext optCon = NULL;
-    const char *name = NULL;
-    const char *prog = "/bin/sh";
-    const char *file = NULL;
+    char *name = NULL;
+    char *prog = xstrdup("/bin/sh");
+    char *file = NULL;
     int priority = 1000000;
     struct poptOption optionsTable[] = {
 	{ NULL, 'p', POPT_ARG_STRING, &prog, 'p',	NULL, NULL},
@@ -326,7 +326,7 @@ int parseScript(rpmSpec spec, int parsePart)
 
     if (poptPeekArg(optCon)) {
 	if (name == NULL)
-	    name = poptGetArg(optCon);
+	    name = xstrdup(poptGetArg(optCon));
 	if (poptPeekArg(optCon)) {
 	    rpmlog(RPMLOG_ERR, _("line %d: Too many names: %s\n"),
 		     spec->lineNum,
@@ -465,6 +465,9 @@ exit:
     free(reqargs);
     freeStringBuf(sb);
     free(progArgv);
+    free(prog);
+    free(name);
+    free(file);
     free(argv);
     poptFreeContext(optCon);
     
