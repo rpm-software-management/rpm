@@ -161,7 +161,7 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 	    /* Open indexes readwrite if possible */
 	    ioflags = O_RDWR;
 	    rc = rpmxdbOpen(&ndbenv->xdb, rdb->db_pkgs->dbi_db, path, ioflags, 0666);
-	    if (rc && errno == EACCES) {
+	    if (rc && (errno == EACCES || errno == EROFS)) {
 		/* If it is not asked for rw explicitly, try to open ro */
 		if (!(oflags & O_RDWR)) {
 		    ioflags = O_RDONLY;
