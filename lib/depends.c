@@ -692,7 +692,7 @@ retry:
     }
 
     /* Dont look at pre-requisites of already installed packages */
-    if (!adding && isInstallPreReq(dsflags) && !isErasePreReq(dsflags))
+    if (!adding && isTransientReq(dsflags))
 	goto exit;
 
     /* Handle rich dependencies */
