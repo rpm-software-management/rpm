@@ -90,7 +90,8 @@ typedef rpmFlags rpmsenseFlags;
 #define	isErasePreReq(_x)	((_x) & _ERASE_ONLY_MASK)
 #define	isUnorderedReq(_x)	((_x) & _UNORDERED_ONLY_MASK && \
 				 !((_x) & _FORCE_ORDER_ONLY_MASK))
-
+#define isTransientReq(_x)	(isInstallPreReq(_x) && \
+				 !isErasePreReq(_x))
 
 /** \ingroup rpmds
  * Return only those flags allowed for given type of dependencies

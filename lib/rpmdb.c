@@ -2243,8 +2243,7 @@ rpmRC tag2index(dbiIndex dbi, rpmTagVal rpmtag,
 	case RPMTAG_REQUIRENAME: {
 	    /* Filter out install prerequisites. */
 	    rpm_flag_t *rflag = rpmtdNextUint32(&reqflags);
-	    if (rflag && isInstallPreReq(*rflag) &&
-			 !isErasePreReq(*rflag))
+	    if (rflag && isTransientReq(*rflag))
 		continue;
 	    break;
 	    }
