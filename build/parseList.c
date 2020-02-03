@@ -10,59 +10,34 @@
 
 static int addLinesFromFile(rpmSpec spec, const char * const fn, rpmTagVal tag)
 {
-    char buf[PATH_MAX+1];
-    char *expanded;
-    FILE *f;
-    int res = -1;
-    int lineno = 0, nlines = 0;
+    int nlines = 0;
+    int flags = STRIP_COMMENTS | STRIP_TRAILINGSPACE;
+    ARGV_t argv = NULL;
 
-    f = fopen(fn, "r");
-    if (f == NULL)
-	return -1;
+    int terminate = rpmExpandNumeric(tag == RPMTAG_SOURCE
+				     ? "%{?_empty_sourcelist_terminate_build}"
+				     : "%{?_empty_patchlist_terminate_build}");
 
-    buf[PATH_MAX] = '\0';
+    if (!terminate)
+	flags |= ALLOW_EMPTY;
 
-    while (fgets(buf, sizeof(buf), f)) {
-	char *c;
-	lineno++;
 
-	c = strrchr(buf, '\n');
-	if (c)
-	    *c = '\0';
+    nlines = readManifest(spec, fn, tag == RPMTAG_SOURCE ? "%sourcelist" : "%patchlist", flags, &argv, NULL);
 
-	if (handleComments(buf))
-	    continue;
-	if (specExpand(spec, lineno, buf, &expanded))
-	    goto exit;
-
-	addSource(spec, 0, expanded, tag);
-	free(expanded);
-	nlines++;
+    for (ARGV_t av = argv; *av; av++) {
+	addSource(spec, 0, *av, tag);
     }
 
-    if (nlines == 0) {
-	int terminate =
-                rpmExpandNumeric(tag == RPMTAG_SOURCE
-				 ? "%{?_empty_sourcelist_terminate_build}"
-				 : "%{?_empyy_patchlist_terminate_build}");
-        rpmlog(terminate ? RPMLOG_ERR : RPMLOG_WARNING,
-               _("Empty %s file %s\n"),
+    argvFree(argv);
+
+    if (nlines <= 0) {
+	rpmlog(terminate ? RPMLOG_ERR : RPMLOG_WARNING,
+	       _("Empty %s file %s\n"),
 	       tag == RPMTAG_SOURCE ? "%sourcelist" : "%patchlist",
 	       fn);
-        if (terminate)
-                goto exit;
     }
 
-    if (ferror(f))
-        rpmlog(RPMLOG_ERR, _("Error reading %s file %s: %m\n"),
-	       tag == RPMTAG_SOURCE ? "%sourcelist" : "%patchlist",
-	       fn);
-    else
-	res = 0;
-
-exit:
-    fclose(f);
-    return res;
+    return (nlines < 0) ? RPMRC_FAIL : RPMRC_OK;
 }
 
 int parseList(rpmSpec spec, const char *name, rpmTagVal tag)
