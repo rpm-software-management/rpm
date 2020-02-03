@@ -135,17 +135,21 @@ int rpmtsRebuildDB(rpmts ts)
 {
     int rc = -1;
     rpmtxn txn = NULL;
+    int rebuildflags = 0;
 
     /* Cannot do this on a populated transaction set */
     if (rpmtsNElements(ts) > 0)
 	return -1;
 
+    if (rpmExpandNumeric("%{?_rebuilddb_salvage}"))
+	rebuildflags |= RPMDB_REBUILD_FLAG_SALVAGE;
+
     txn = rpmtxnBegin(ts, RPMTXN_WRITE);
     if (txn) {
 	if (!(ts->vsflags & RPMVSF_NOHDRCHK))
-	    rc = rpmdbRebuild(ts->rootDir, ts, headerCheck);
+	    rc = rpmdbRebuild(ts->rootDir, ts, headerCheck, rebuildflags);
 	else
-	    rc = rpmdbRebuild(ts->rootDir, NULL, NULL);
+	    rc = rpmdbRebuild(ts->rootDir, NULL, NULL, rebuildflags);
 	rpmtxnEnd(txn);
     }
     return rc;
