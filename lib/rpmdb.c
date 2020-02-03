@@ -2479,7 +2479,8 @@ static int rpmdbSetPermissions(char * src, char * dest)
 }
 
 int rpmdbRebuild(const char * prefix, rpmts ts,
-		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg))
+		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg),
+		int rebuildflags)
 {
     rpmdb olddb;
     char * dbpath = NULL;
@@ -2519,7 +2520,9 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     }
 
     if (openDatabase(prefix, dbpath, &olddb,
-		     O_RDONLY, 0644, RPMDB_FLAG_REBUILD)) {
+		     O_RDONLY, 0644, RPMDB_FLAG_REBUILD |
+		     (rebuildflags & RPMDB_REBUILD_FLAG_SALVAGE ?
+		         RPMDB_FLAG_SALVAGE : 0))) {
 	rc = 1;
 	goto exit;
     }

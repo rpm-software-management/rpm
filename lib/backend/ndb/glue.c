@@ -128,8 +128,11 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 	rpmpkgdb pkgdb = 0;
 	char *path = rstrscat(NULL, dbhome, "/", rdb->db_ops->path, NULL);
 	rpmlog(RPMLOG_DEBUG, "opening  db index       %s mode=0x%x\n", path, rdb->db_mode);
-	rc = rpmpkgOpen(&pkgdb, path, oflags, 0666);
- 	if (rc && errno == ENOENT) {
+	if ((rdb->db_flags & RPMDB_FLAG_SALVAGE) == 0)
+	    rc = rpmpkgOpen(&pkgdb, path, oflags, 0666);
+	else
+	    rc = rpmpkgSalvage(&pkgdb, path);
+ 	if (rc && errno == ENOENT && (rdb->db_flags & RPMDB_FLAG_SALVAGE) == 0) {
 	    oflags = O_RDWR|O_CREAT;
 	    dbi->dbi_flags |= DBI_CREATED;
 	    rc = rpmpkgOpen(&pkgdb, path, oflags, 0666);

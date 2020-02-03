@@ -10,6 +10,7 @@ enum rpmdbFlags {
     RPMDB_FLAG_JUSTCHECK	= (1 << 0),
     RPMDB_FLAG_REBUILD		= (1 << 1),
     RPMDB_FLAG_VERIFYONLY	= (1 << 2),
+    RPMDB_FLAG_SALVAGE		= (1 << 3),
 };
 
 typedef enum dbCtrlOp_e {
