@@ -2258,6 +2258,12 @@ int readManifest(rpmSpec spec, const char *path, const char *descr, int flags,
 	    continue;
 	if (specExpand(spec, lineno, buf, &expanded))
 	    goto exit;
+	if (flags & STRIP_TRAILINGSPACE) {
+	    char *end = expanded + strlen(expanded) - 1;
+	    while (end >= expanded && risspace((unsigned char)*end))
+		end--;
+	    end[1] = '\0';
+	}
 	if (avp)
 	    argvAdd(avp, expanded);
 	if (sbp)
