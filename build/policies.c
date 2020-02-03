@@ -276,16 +276,20 @@ static rpmRC processPolicies(rpmSpec spec, Package pkg, int test)
 	}
 
 	if (writeModuleToHeader(mod, pkg) != RPMRC_OK) {
-	    freeModule(mod);
 	    goto exit;
 	}
 
-	freeModule(mod);
+	mod = freeModule(mod);
+	name = _free(name);
+	types = _free(types);
     }
 
     rc = RPMRC_OK;
 
   exit:
+    freeModule(mod);
+    free(name);
+    free(types);
 
     return rc;
 }
