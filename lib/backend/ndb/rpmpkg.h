@@ -2,6 +2,7 @@ struct rpmpkgdb_s;
 typedef struct rpmpkgdb_s *rpmpkgdb;
 
 int rpmpkgOpen(rpmpkgdb *pkgdbp, const char *filename, int flags, int mode);
+int rpmpkgSalvage(rpmpkgdb *pkgdbp, const char *filename);
 void rpmpkgClose(rpmpkgdb pkgdbp);
 void rpmpkgSetFsync(rpmpkgdb pkgdbp, int dofsync);
 
