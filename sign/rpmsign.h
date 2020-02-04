@@ -17,6 +17,7 @@ struct rpmSignArgs {
     char *keyid;
     pgpHashAlgo hashalgo;
     int signfiles;
+    char *name;
     /* ... what else? */
 };
 

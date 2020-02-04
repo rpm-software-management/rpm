@@ -4,6 +4,7 @@
 #include <rpm/rpmkeyring.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmbase64.h>
 #include "lib/rpmvs.h"
 #include "rpmio/digest.h"
 
@@ -41,6 +42,7 @@ static const struct vfytag_s rpmvfytags[] = {
     {	RPMTAG_SHA256HEADER,		RPM_STRING_TYPE,	1,	65, },
     {	RPMTAG_PAYLOADDIGEST,		RPM_STRING_ARRAY_TYPE,	0,	0, },
     {	RPMTAG_PAYLOADDIGESTALT,	RPM_STRING_ARRAY_TYPE,	0,	0, },
+    {	RPMTAG_OPENPGPHEADER,		RPM_STRING_ARRAY_TYPE,	0,	0, },
     { 0 } /* sentinel */
 };
 
@@ -93,6 +95,9 @@ static const struct vfyinfo_s rpmvfyitems[] = {
     {	RPMTAG_PAYLOADDIGESTALT,	0,
 	{ RPMSIG_DIGEST_TYPE,		RPMVSF_NOPAYLOAD,
 	(RPMSIG_PAYLOAD),		PGPHASHALGO_SHA256, 0, 1, }, },
+    {	RPMTAG_OPENPGPHEADER,		1,
+	{ RPMSIG_SIGNATURE_TYPE,	0 /* XXX FIXME disabler */,
+	(RPMSIG_HEADER),		0, 0, }, },
     { 0 } /* sentinel */
 };
 
@@ -140,6 +145,8 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
     rpmRC rc = RPMRC_FAIL;
     const void *data = NULL;
     rpm_count_t dlen = 0;
+    uint8_t *pkt = NULL;
+    size_t pktlen = 0;
 
     *sinfo = vinfo->vi; /* struct assignment */
     sinfo->wrapped = (vinfo->sigh == 0);
@@ -175,6 +182,22 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
 	break;
     }
 
+    if (td->tag == RPMTAG_OPENPGPHEADER) {
+	const char *split = strchr(data, ':');
+	if (split) {
+	    /* Grab a copy of name */
+	    size_t nlen = split - (const char *)data;
+	    sinfo->name = memcpy(xmalloc(nlen + 1), data, nlen);
+	    sinfo->name[nlen] = '\0';
+	    /* Adjust data to beginning of hex part */
+	    data = split + 1;
+	    dlen -= nlen + 1;
+	} else {
+	    /* XXX: Should we permit missing nole? */
+	    data = NULL;
+	}
+    }
+
     /* MD5 has data length of 16, everything else is (much) larger */
     if (sinfo->hashalgo && (data == NULL || dlen < 16)) {
 	rasprintf(&sinfo->msg, _("%s tag %u: invalid data %p (%u)"),
@@ -193,6 +216,16 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
     }
 
     if (sinfo->type == RPMSIG_SIGNATURE_TYPE) {
+	if (td->type == RPM_STRING_ARRAY_TYPE) {
+	    if (rpmBase64Decode(data, (void **)&pkt, &pktlen)) {
+		rasprintf(&sinfo->msg, _("%s tag %u: invalid base64"),
+			origin, td->tag);
+		goto exit;
+	    }
+	    data = pkt;
+	    dlen = pktlen;
+	}
+
 	if (pgpPrtParams(data, dlen, PGPTAG_SIGNATURE, &sinfo->sig)) {
 	    rasprintf(&sinfo->msg, _("%s tag %u: invalid OpenPGP signature"),
 		    origin, td->tag);
@@ -219,6 +252,8 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
     rc = RPMRC_OK;
 
 exit:
+    if (pkt && pkt != td->data)
+	free(pkt);
     sinfo->rc = rc;
     return;
 }
@@ -233,6 +268,7 @@ static void rpmsinfoFini(struct rpmsinfo_s *sinfo)
 	rpmDigestFinal(sinfo->ctx, NULL, NULL, 0);
 	free(sinfo->msg);
 	free(sinfo->descr);
+	free(sinfo->name);
 	memset(sinfo, 0, sizeof(*sinfo));
     }
 }
@@ -270,13 +306,20 @@ const char *rpmsinfoDescr(struct rpmsinfo_s *sinfo)
 	case RPMSIG_SIGNATURE_TYPE:
 	    if (sinfo->sig) {
 		char *t = pgpIdentItem(sinfo->sig);
-		rasprintf(&sinfo->descr, _("%s%s"),
-			rangeName(sinfo->range), t);
+		if (sinfo->name) {
+		    rasprintf(&sinfo->descr, _("%s%s [%s]"),
+			    rangeName(sinfo->range), t, sinfo->name);
+		} else {
+		    rasprintf(&sinfo->descr, _("%s%s"),
+			    rangeName(sinfo->range), t);
+		}
 		free(t);
 	    } else {
+		const char *alg = sinfo->sigalgo ?
+			pgpValString(PGPVAL_PUBKEYALGO, sinfo->sigalgo) :
+			"OpenPGP";
 		rasprintf(&sinfo->descr, _("%s%s%s %s"),
-			rangeName(sinfo->range),
-			pgpValString(PGPVAL_PUBKEYALGO, sinfo->sigalgo),
+			rangeName(sinfo->range), alg,
 			sinfo->alt ? " ALT" : "",
 			_("signature"));
 	    }
@@ -394,6 +437,8 @@ void rpmvsFiniRange(struct rpmvs_s *sis, int range)
 
 	if (sinfo->range == range && sinfo->rc == RPMRC_OK) {
 	    sinfo->ctx = rpmDigestBundleDupCtx(sis->bundle, sinfo->id);
+	    if (sinfo->name)
+		rpmDigestUpdate(sinfo->ctx, sinfo->name, strlen(sinfo->name)+1);
 	    /* Handle unsupported digests the same as disabled ones */
 	    if (sinfo->ctx == NULL)
 		sinfo->rc = RPMRC_NOTFOUND;

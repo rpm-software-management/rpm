@@ -22,6 +22,7 @@ static int mode = MODE_NONE;
 static int signfiles = 0, fskpass = 0;
 static char * fileSigningKey = NULL;
 #endif
+static char * name = NULL;
 
 static struct rpmSignArgs sargs = {NULL, 0, 0};
 
@@ -32,6 +33,8 @@ static struct poptOption signOptsTable[] = {
 	N_("sign package(s) (identical to --addsign)"), NULL },
     { "delsign", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_DELSIGN,
 	N_("delete package signatures"), NULL },
+    { "name", '\0', POPT_ARG_STRING, &name, 0,
+	N_("signature name"), NULL },
 #ifdef WITH_IMAEVM
     { "signfiles", '\0', POPT_ARG_NONE, &signfiles, 0,
 	N_("sign package(s) files"), NULL},
@@ -167,6 +170,9 @@ int main(int argc, char *argv[])
 	argerror(_("--fskpath may only be specified when signing files"));
     }
 #endif
+
+    if (name)
+	sargs.name = name;
 
     switch (mode) {
     case MODE_ADDSIGN:

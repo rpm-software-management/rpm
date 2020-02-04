@@ -17,6 +17,7 @@
 #include <rpm/rpmfileutil.h>	/* rpmMkTemp() */
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
+#include <rpm/rpmbase64.h>
 #include <rpmio/rpmio_internal.h>
 
 #include "lib/rpmlead.h"
@@ -191,7 +192,8 @@ exit:
  * generated signature is something we can use.
  * Return generated signature tag data on success, NULL on failure.
  */
-static rpmtd makeSigTag(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
+static rpmtd makeSigTag(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen,
+			const char *name)
 {
     pgpDigParams sigp = NULL;
     rpmTagVal sigtag;
@@ -225,20 +227,35 @@ static rpmtd makeSigTag(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
 	break;
     }
 
+    if (name)
+	sigtag = RPMSIGTAG_OPENPGP;
+
     /* Looks sane, create the tag data */
     sigtd = rpmtdNew();
-    sigtd->count = pktlen;
-    sigtd->data = memcpy(xmalloc(pktlen), pkt, pktlen);;
-    sigtd->type = RPM_BIN_TYPE;
     sigtd->tag = sigtag;
     sigtd->flags |= RPMTD_ALLOCED;
+
+    if (name) {
+	char *b64 = rpmBase64Encode(pkt, pktlen, 0);
+	char *sigstr = rstrscat(NULL, name, ":", b64, NULL);
+	char **arr = xmalloc(1 * sizeof(*arr));
+	arr[0] = sigstr;
+	sigtd->data = arr;
+	sigtd->count = 1;
+	sigtd->type = RPM_STRING_ARRAY_TYPE;
+	free(b64);
+    } else {
+	sigtd->count = pktlen;
+	sigtd->data = memcpy(xmalloc(pktlen), pkt, pktlen);;
+	sigtd->type = RPM_BIN_TYPE;
+    }
 
 exit:
     pgpDigParamsFree(sigp);
     return sigtd;
 }
 
-static int runGPG(sigTarget sigt, const char *sigfile)
+static int runGPG(sigTarget sigt, const char *sigfile, const char *name)
 {
     int pid = 0, status;
     FD_t fnamedPipe = NULL;
@@ -304,6 +321,15 @@ static int runGPG(sigTarget sigt, const char *sigfile)
 		sigt->fileName, Fstrerror(sigt->fd));
 	goto exit;
     }
+
+    if (name) {
+	size_t nlen = strlen(name) + 1; /* include trailing \0 */
+	if (Fwrite(name, 1, nlen, fnamedPipe) != nlen) {
+	    rpmlog(RPMLOG_ERR, _("Could not write to pipe\n"));
+	    goto exit;
+	}
+    }
+
     Fclose(fnamedPipe);
     fnamedPipe = NULL;
 
@@ -337,9 +363,11 @@ exit:
  * @param ishdr		header-only signature?
  * @param sigt		signature target
  * @param passPhrase	private key pass phrase
+ * @param name		signer name (or NULL)
  * @return		generated sigtag on success, 0 on failure
  */
-static rpmtd makeGPGSignature(Header sigh, int ishdr, sigTarget sigt)
+static rpmtd makeGPGSignature(Header sigh, int ishdr, sigTarget sigt,
+				const char *name)
 {
     char * sigfile = rstrscat(NULL, sigt->fileName, ".sig", NULL);
     struct stat st;
@@ -347,7 +375,7 @@ static rpmtd makeGPGSignature(Header sigh, int ishdr, sigTarget sigt)
     size_t pktlen = 0;
     rpmtd sigtd = NULL;
 
-    if (runGPG(sigt, sigfile))
+    if (runGPG(sigt, sigfile, name))
 	goto exit;
 
     if (stat(sigfile, &st)) {
@@ -377,7 +405,7 @@ static rpmtd makeGPGSignature(Header sigh, int ishdr, sigTarget sigt)
     rpmlog(RPMLOG_DEBUG, "Got %zd bytes of GPG sig\n", pktlen);
 
     /* Parse the signature, change signature tag as appropriate. */
-    sigtd = makeSigTag(sigh, ishdr, pkt, pktlen);
+    sigtd = makeSigTag(sigh, ishdr, pkt, pktlen, name);
 exit:
     (void) unlink(sigfile);
     free(sigfile);
@@ -393,6 +421,7 @@ static void deleteSigs(Header sigh)
     headerDel(sigh, RPMSIGTAG_DSA);
     headerDel(sigh, RPMSIGTAG_RSA);
     headerDel(sigh, RPMSIGTAG_PGP5);
+    headerDel(sigh, RPMSIGTAG_OPENPGP);
 }
 
 static int haveSignature(rpmtd sigtd, Header h)
@@ -418,13 +447,15 @@ static int haveSignature(rpmtd sigtd, Header h)
     return rc;
 }
 
-static int replaceSignature(Header sigh, sigTarget sigt_v3, sigTarget sigt_v4)
+static int replaceSignature(Header sigh, sigTarget sigt_v3, sigTarget sigt_v4,
+				const char *name)
 {
     int rc = -1;
     rpmtd sigtd = NULL;
+    int mode = name ? HEADERPUT_APPEND : HEADERPUT_DEFAULT;
     
     /* Make the cheaper v4 signature first */
-    if ((sigtd = makeGPGSignature(sigh, 1, sigt_v4)) == NULL)
+    if ((sigtd = makeGPGSignature(sigh, 1, sigt_v4, name)) == NULL)
 	goto exit;
 
     /* See if we already have a signature by the same key and parameters */
@@ -433,18 +464,22 @@ static int replaceSignature(Header sigh, sigTarget sigt_v3, sigTarget sigt_v4)
 	goto exit;
     }
     /* Nuke all signature tags */
-    deleteSigs(sigh);
+    if (!name)
+	deleteSigs(sigh);
 
-    if (headerPut(sigh, sigtd, HEADERPUT_DEFAULT) == 0)
-	goto exit;
-    rpmtdFree(sigtd);
-
-    /* Assume the same signature test holds for v3 signature too */
-    if ((sigtd = makeGPGSignature(sigh, 0, sigt_v3)) == NULL)
+    if (headerPut(sigh, sigtd, mode) == 0)
 	goto exit;
 
-    if (headerPut(sigh, sigtd, HEADERPUT_DEFAULT) == 0)
-	goto exit;
+    if (!name) {
+	rpmtdFree(sigtd);
+
+	/* Assume the same signature test holds for v3 signature too */
+	if ((sigtd = makeGPGSignature(sigh, 0, sigt_v3, NULL)) == NULL)
+	    goto exit;
+
+	if (headerPut(sigh, sigtd, mode) == 0)
+	    goto exit;
+    }
 
     rc = 0;
 exit:
@@ -522,7 +557,7 @@ static int checkPkg(FD_t fd, char **msg)
  * @param signfiles	sign files if non-zero
  * @return		0 on success, -1 on error
  */
-static int rpmSign(const char *rpm, int deleting, int signfiles)
+static int rpmSign(const char *rpm, int deleting, int signfiles, const char *name)
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
@@ -596,7 +631,7 @@ static int rpmSign(const char *rpm, int deleting, int signfiles)
 	sigt_v4 = sigt_v3;
 	sigt_v4.size = headerSizeof(h, HEADER_MAGIC_YES);
 
-	res = replaceSignature(sigh, &sigt_v3, &sigt_v4);
+	res = replaceSignature(sigh, &sigt_v3, &sigt_v4, name);
 	if (res != 0) {
 	    if (res == 1) {
 		rpmlog(RPMLOG_WARNING,
@@ -716,7 +751,7 @@ int rpmPkgSign(const char *path, const struct rpmSignArgs * args)
 	}
     }
 
-    rc = rpmSign(path, 0, args ? args->signfiles : 0);
+    rc = rpmSign(path, 0, args ? args->signfiles : 0, args ? args->name : NULL);
 
     if (args) {
 	if (args->hashalgo) {
@@ -732,5 +767,5 @@ int rpmPkgSign(const char *path, const struct rpmSignArgs * args)
 
 int rpmPkgDelSign(const char *path, const struct rpmSignArgs * args)
 {
-    return rpmSign(path, 1, 0);
+    return rpmSign(path, 1, 0, NULL);
 }

@@ -75,6 +75,7 @@ void headerMergeLegacySigs(Header h, Header sigh)
 	case RPMSIGTAG_SHA256:
 	case RPMSIGTAG_DSA:
 	case RPMSIGTAG_RSA:
+	case RPMSIGTAG_OPENPGP:
 	default:
 	    if (!(td.tag >= HEADER_SIGBASE && td.tag < HEADER_TAGBASE))
 		continue;
