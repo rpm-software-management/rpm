@@ -126,5 +126,6 @@ extern int fdatasync(int fildes);
 #include "misc/fnmatch.h"
 
 #include <dlfcn.h>
+#include <errno.h>
 
 #endif	/* H_SYSTEM */
