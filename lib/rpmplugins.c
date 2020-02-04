@@ -8,6 +8,8 @@
 #include <rpm/rpmts.h>
 
 #include "lib/rpmplugins.h"
+#include <dlfcn.h>
+
 
 #define STR1(x) #x
 #define STR(x) STR1(x)
