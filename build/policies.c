@@ -221,6 +221,7 @@ static rpmRC processPolicies(rpmSpec spec, Package pkg, int test)
     char *types = NULL;
     uint32_t flags = 0;
     poptContext optCon = NULL;
+    ModuleRec mod = NULL;
 
     rpmRC rc = RPMRC_FAIL;
 
@@ -236,7 +237,6 @@ static rpmRC processPolicies(rpmSpec spec, Package pkg, int test)
     }
 
     for (ARGV_const_t pol = pkg->policyList; *pol != NULL; pol++) {
-	ModuleRec mod;
 	const char *line = *pol;
 	const char **argv = NULL;
 	int argc = 0;
