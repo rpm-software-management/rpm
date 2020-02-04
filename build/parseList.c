@@ -11,16 +11,8 @@
 static int addLinesFromFile(rpmSpec spec, const char * const fn, rpmTagVal tag)
 {
     int nlines = 0;
-    int flags = STRIP_COMMENTS | STRIP_TRAILINGSPACE;
+    int flags = STRIP_COMMENTS | STRIP_TRAILINGSPACE | ALLOW_EMPTY;
     ARGV_t argv = NULL;
-
-    int terminate = rpmExpandNumeric(tag == RPMTAG_SOURCE
-				     ? "%{?_empty_sourcelist_terminate_build}"
-				     : "%{?_empty_patchlist_terminate_build}");
-
-    if (!terminate)
-	flags |= ALLOW_EMPTY;
-
 
     nlines = readManifest(spec, fn, tag == RPMTAG_SOURCE ? "%sourcelist" : "%patchlist", flags, &argv, NULL);
 
@@ -30,9 +22,8 @@ static int addLinesFromFile(rpmSpec spec, const char * const fn, rpmTagVal tag)
 
     argvFree(argv);
 
-    if (nlines <= 0) {
-	rpmlog(terminate ? RPMLOG_ERR : RPMLOG_WARNING,
-	       _("Empty %s file %s\n"),
+    if (nlines == 0) {
+	rpmlog(RPMLOG_WARNING, _("Empty %s file %s\n"),
 	       tag == RPMTAG_SOURCE ? "%sourcelist" : "%patchlist",
 	       fn);
     }
