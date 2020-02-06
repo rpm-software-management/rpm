@@ -508,6 +508,21 @@ runroot rpmbuild -bb --quiet \
 ])
 AT_CLEANUP
 
+AT_SETUP([Dependency generation 4])
+AT_KEYWORDS([build])
+AT_CHECK([
+
+runroot rpmbuild -bb --quiet \
+		--define '__script_requires() foo(%{basename:%{1}})' \
+		/data/SPECS/shebang.spec
+runroot rpm -qp --requires /build/RPMS/noarch/shebang-0.1-1.noarch.rpm|grep -v ^rpmlib
+],
+[0],
+[foo(shebang)
+],
+[])
+AT_CLEANUP
+
 # ------------------------------
 # Test spec query functionality
 AT_SETUP([rpmspec query 1])
