@@ -514,6 +514,27 @@ static ARGV_t runCmd(const char *cmd,
     return output;
 }
 
+static ARGV_t runCall(const char *cmd,
+		     const char *buildRoot, const char *fn)
+{
+    ARGV_t output = NULL;
+    char *path = rstrscat(NULL, buildRoot ? buildRoot : "", "/", fn, NULL);
+
+    if (_rpmfc_debug)
+	rpmlog(RPMLOG_DEBUG, "Calling %s() on %s\n", cmd, path);
+
+    /* Hack to pass in the path as what looks like a macro argument */
+    rpmPushMacroFlags(NULL, "1", NULL, path, 1, RPMMACRO_LITERAL);
+    char *exp = rpmExpand(cmd, NULL);
+    rpmPopMacro(NULL, "1");
+    if (*exp)
+	argvSplit(&output, exp, "\n\r");
+    free(exp);
+
+    free(path);
+    return output;
+}
+
 struct addReqProvDataFc {
     rpmfc fc;
     const char *namespace;
@@ -560,7 +581,7 @@ static void exclFini(struct exclreg_s *excl)
 
 static int rpmfcHelper(rpmfc fc, int ix, const struct exclreg_s *excl,
 		       rpmsenseFlags dsContext, rpmTagVal tagN,
-		       const char *namespace, const char *cmd)
+		       const char *namespace, const char *cmd, int callable)
 {
     ARGV_t pav = NULL;
     const char * fn = fc->fn[ix];
@@ -574,7 +595,12 @@ static int rpmfcHelper(rpmfc fc, int ix, const struct exclreg_s *excl,
     if (regMatch(excl->global_exclude_from, fn+fc->brlen))
 	goto exit;
 
-    pav = runCmd(cmd, fc->buildRoot, fn);
+    if (callable) {
+	pav = runCall(cmd, fc->buildRoot, fn);
+    } else {
+	pav = runCmd(cmd, fc->buildRoot, fn);
+    }
+
     if (pav == NULL)
 	goto exit;
 
@@ -976,12 +1002,22 @@ static int applyAttr(rpmfc fc, int aix, const char *aname,
 
     if (fattrHashGetEntry(fc->fahash, aix, &ixs, &n, NULL)) {
 	char *mname = rstrscat(NULL, "__", aname, "_", dep->name, NULL);
-	char *cmd = rpmExpand("%{?", mname, ":%{", mname, "} %{?",
+	char *cmd;
+	int callable = rpmMacroIsParametric(NULL, mname);
+
+	if (callable) {
+	    cmd = rstrscat(NULL, "%{", mname,
+				" %{?", mname, "_opts}", "}", NULL);
+	} else {
+	    cmd = rpmExpand("%{?", mname, ":%{", mname, "} %{?",
 				mname, "_opts}}", NULL);
+	}
+
 	if (!rstreq(cmd, "")) {
 	    char *ns = rpmfcAttrMacro(aname, "namespace", NULL);
 	    for (int i = 0; i < n; i++) {
-		if (rpmfcHelper(fc, ixs[i], excl, dep->type, dep->tag, ns, cmd))
+		if (rpmfcHelper(fc, ixs[i], excl, dep->type, dep->tag,
+				ns, cmd, callable))
 		    rc = 1;
 	    }
 	    free(ns);
