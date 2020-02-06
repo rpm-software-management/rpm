@@ -1813,6 +1813,29 @@ rpmDefineMacro(rpmMacroContext mc, const char * macro, int level)
     return rc;
 }
 
+int rpmMacroIsDefined(rpmMacroContext mc, const char *n)
+{
+    int defined = 0;
+    if ((mc = rpmmctxAcquire(mc)) != NULL) {
+	if (findEntry(mc, n, 0, NULL))
+	    defined = 1;
+	rpmmctxRelease(mc);
+    }
+    return defined;
+}
+
+int rpmMacroIsParametric(rpmMacroContext mc, const char *n)
+{
+    int parametric = 0;
+    if ((mc = rpmmctxAcquire(mc)) != NULL) {
+	rpmMacroEntry *mep = findEntry(mc, n, 0, NULL);
+	if (mep && (*mep)->opts)
+	    parametric = 1;
+	rpmmctxRelease(mc);
+    }
+    return parametric;
+}
+
 void
 rpmLoadMacros(rpmMacroContext mc, int level)
 {

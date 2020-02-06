@@ -122,6 +122,22 @@ int	rpmPopMacro	(rpmMacroContext mc, const char * n);
 int	rpmDefineMacro	(rpmMacroContext mc, const char * macro,
 				int level);
 
+/*
+ * Test whether a macro is defined
+ * @param mc		macro context (NULL uses global context).
+ * @param n		macro name
+ * @return		1 if defined, 0 if not
+ */
+int rpmMacroIsDefined(rpmMacroContext mc, const char *n);
+
+/*
+ * Test whether a macro is parametric (ie takes arguments)
+ * @param mc		macro context (NULL uses global context).
+ * @param n		macro name
+ * @return		1 if parametric, 0 if not
+ */
+int rpmMacroIsParametric(rpmMacroContext mc, const char *n);
+
 /** \ingroup rpmmacro
  * Load macros from specific context into global context.
  * @param mc		macro context (NULL does nothing).
