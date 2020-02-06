@@ -1492,41 +1492,24 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    }
 	}
 
-	/* XXX Special processing for flags */
-	if (*f == '-') {
-	    if ((me == NULL && !negate) ||	/* Without -f, skip %{-f...} */
-		    (me != NULL && negate)) {	/* With -f, skip %{!-f...} */
+	/* XXX Special processing for flags and existance test */
+	if (*f == '-' || chkexist) {
+	    if ((me == NULL && !negate) ||	/* Without existance, skip %{?...} */
+		    (me != NULL && negate)) {	/* With existance, skip %{!?...} */
 		s = se;
 		continue;
 	    }
 
-	    if (g && g < ge) {		/* Expand X in %{-f:X} */
+	    if (g && g < ge) {		/* Expand X in %{...:X} */
 		expandMacro(mb, g, gn);
 	    } else
-		if (me && me->body && *me->body) {/* Expand %{-f}/%{-f*} */
+		if (me && me->body && *me->body) {/* Expand macro body */
 		    expandMacro(mb, me->body, 0);
 		}
 	    s = se;
 	    continue;
 	}
 
-	/* XXX Special processing for macro existence */
-	if (chkexist) {
-	    if ((me == NULL && !negate) ||	/* Without -f, skip %{?f...} */
-		    (me != NULL && negate)) {	/* With -f, skip %{!?f...} */
-		s = se;
-		continue;
-	    }
-	    if (g && g < ge) {		/* Expand X in %{?f:X} */
-		expandMacro(mb, g, gn);
-	    } else
-		if (me && me->body && *me->body) { /* Expand %{?f}/%{?f*} */
-		    expandMacro(mb, me->body, 0);
-		}
-	    s = se;
-	    continue;
-	}
-	
 	if (me == NULL) {	/* leave unknown %... as is */
 	    /* XXX hack to permit non-overloaded %foo to be passed */
 	    c = '%';	/* XXX only need to save % */
