@@ -207,7 +207,7 @@ exit:
         pkgURL[i] = _free(pkgURL[i]);
     pkgState = _free(pkgState);
     pkgURL = _free(pkgURL);
-    argv = _free(argv);
+    _free(argv);
 
     return rc;
 }

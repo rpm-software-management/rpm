@@ -1319,7 +1319,7 @@ static void printDeps(rpmfc fc)
 	    if (!((Flags & dm->mask) ^ dm->xormask))
 		continue;
 	    if (bingo == 0) {
-		rpmlog(RPMLOG_NOTICE, "%s:", (dm->msg ? dm->msg : ""));
+		rpmlog(RPMLOG_NOTICE, "%s:", dm->msg);
 		bingo = 1;
 	    }
 	    if ((DNEVR = rpmdsDNEVR(ds)) == NULL)

@@ -2011,112 +2011,101 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 		} else {
 		    if (addsubdir)
 		       argvAddAttr(files, RPMFILE_DIR|RPMFILE_ARTIFACT, buildidsubdir);
-		    if (rc == 0) {
-			char *linkpattern, *targetpattern;
-			char *linkpath, *targetpath;
-			int dups = 0;
-			if (isDbg) {
-			    linkpattern = "%s/%s";
-			    targetpattern = "../../../../..%s";
-			} else {
-			    linkpattern = "%s/%s";
-			    targetpattern = "../../../..%s";
-			}
-			rasprintf(&linkpath, linkpattern,
-				  buildidsubdir, &ids[i][2]);
-			rasprintf(&targetpath, targetpattern, paths[i]);
-			rc = addNewIDSymlink(files, targetpath, linkpath,
-					     isDbg, &dups);
+		    char *linkpattern, *targetpattern;
+		    char *linkpath, *targetpath;
+		    int dups = 0;
+		    linkpattern = "%s/%s";
+		    if (isDbg)
+			targetpattern = "../../../../..%s";
+		    else
+			targetpattern = "../../../..%s";
+		    rasprintf(&linkpath, linkpattern,
+			      buildidsubdir, &ids[i][2]);
+		    rasprintf(&targetpath, targetpattern, paths[i]);
+		    rc = addNewIDSymlink(files, targetpath, linkpath,
+					 isDbg, &dups);
 
-			/* We might want to have a link from the debug
-			   build_ids dir to the main one. We create it
-			   when we are creating compat links or doing
-			   an old style alldebug build-ids package. In
-			   the first case things are simple since we
-			   just link to the main build-id symlink. The
-			   second case is a bit tricky, since we
-			   cannot be 100% sure the file names in the
-			   main and debug package match. Currently
-			   they do, but when creating parallel
-			   installable debuginfo packages they might
-			   not (in that case we might have to also
-			   strip the nvr from the debug name).
+		    /* We might want to have a link from the debug
+		       build_ids dir to the main one. We create it
+		       when we are creating compat links or doing
+		       an old style alldebug build-ids package. In
+		       the first case things are simple since we
+		       just link to the main build-id symlink. The
+		       second case is a bit tricky, since we
+		       cannot be 100% sure the file names in the
+		       main and debug package match. Currently
+		       they do, but when creating parallel
+		       installable debuginfo packages they might
+		       not (in that case we might have to also
+		       strip the nvr from the debug name).
 
-			   In general either method is discouraged
-                           since it might create dangling symlinks if
-                           the package versions get out of sync.  */
-			if (rc == 0 && isDbg
-			    && build_id_links == BUILD_IDS_COMPAT) {
-			    /* buildidsubdir already points to the
-			       debug buildid. We just need to setup
-			       the symlink to the main one. There
-			       might be duplicate IDs, those are found
-			       by the addNewIDSymlink above. Target
-			       the last found duplicate, if any. */
-			    free(linkpath);
-			    free(targetpath);
-			    if (dups == 0)
-			      {
-				rasprintf(&linkpath, "%s/%s",
-					  buildidsubdir, &ids[i][2]);
-				rasprintf(&targetpath,
-					  "../../../.build-id%s/%s",
-					  subdir, &ids[i][2]);
-			      }
-			    else
-			      {
-				rasprintf(&linkpath, "%s/%s.%d",
-					  buildidsubdir, &ids[i][2], dups);
-				rasprintf(&targetpath,
-					  "../../../.build-id%s/%s.%d",
-					  subdir, &ids[i][2], dups);
-			      }
-			    rc = addNewIDSymlink(files, targetpath, linkpath,
-						 0, NULL);
-			}
-
-			if (rc == 0 && isDbg
-			    && build_id_links == BUILD_IDS_ALLDEBUG) {
-			    /* buildidsubdir already points to the
-			       debug buildid. We do have to figure out
-			       the main ELF file though (which is most
-			       likely not in this package). Guess we
-			       can find it by stripping the
-			       /usr/lib/debug path and .debug
-			       prefix. Which might not really be
-			       correct if there was a more involved
-			       transformation (for example for
-			       parallel installable debuginfo
-			       packages), but then we shouldn't be
-			       using ALLDEBUG in the first place.
-			       Also ignore things like .dwz multifiles
-			       which don't end in ".debug". */
-			    int pathlen = strlen(paths[i]);
-			    int debuglen = strlen(".debug");
-			    int prefixlen = strlen(DEBUG_LIB_DIR);
-			    int vralen = vra == NULL ? 0 : strlen(vra);
-			    if (pathlen > prefixlen + debuglen + vralen
-				&& strcmp ((paths[i] + pathlen - debuglen),
-					   ".debug") == 0) {
-				free(linkpath);
-				free(targetpath);
-				char *targetstr = xstrdup (paths[i]
-							   + prefixlen);
-				int targetlen = pathlen - prefixlen;
-				int targetend = targetlen - debuglen - vralen;
-				targetstr[targetend] = '\0';
-				rasprintf(&linkpath, "%s/%s",
-					  buildidsubdir, &ids[i][2]);
-				rasprintf(&targetpath, "../../../../..%s",
-					  targetstr);
-				rc = addNewIDSymlink(files, targetpath,
-						     linkpath, 0, &dups);
-				free(targetstr);
-			    }
-			}
+		       In general either method is discouraged
+                       since it might create dangling symlinks if
+                       the package versions get out of sync.  */
+		    if (rc == 0 && isDbg
+			&& build_id_links == BUILD_IDS_COMPAT) {
+			/* buildidsubdir already points to the
+			   debug buildid. We just need to setup
+			   the symlink to the main one. There
+			   might be duplicate IDs, those are found
+			   by the addNewIDSymlink above. Target
+			   the last found duplicate, if any. */
 			free(linkpath);
 			free(targetpath);
+			if (dups == 0) {
+			    rasprintf(&linkpath, "%s/%s",
+				      buildidsubdir, &ids[i][2]);
+			    rasprintf(&targetpath,
+				      "../../../.build-id%s/%s",
+				      subdir, &ids[i][2]);
+			} else {
+			    rasprintf(&linkpath, "%s/%s.%d",
+				      buildidsubdir, &ids[i][2], dups);
+			    rasprintf(&targetpath,
+				      "../../../.build-id%s/%s.%d",
+				      subdir, &ids[i][2], dups);
+			}
+			rc = addNewIDSymlink(files, targetpath, linkpath,
+					     0, NULL);
 		    }
+
+		    if (rc == 0 && isDbg
+			&& build_id_links == BUILD_IDS_ALLDEBUG) {
+			/* buildidsubdir already points to the debug buildid.
+			   We do have to figure out the main ELF file though
+			   (which is most likely not in this package).
+			   Guess we can find it by stripping the
+			   /usr/lib/debug path and .debug prefix.
+			   Which might not really be correct if there was
+			   a more involved transformation (for example for
+			   parallel installable debuginfo packages), but then
+			   we shouldn't be using ALLDEBUG in the first place.
+			   Also ignore things like .dwz multifiles
+			   which don't end in ".debug". */
+			int pathlen = strlen(paths[i]);
+			int debuglen = strlen(".debug");
+			int prefixlen = strlen(DEBUG_LIB_DIR);
+			int vralen = vra == NULL ? 0 : strlen(vra);
+			if (pathlen > prefixlen + debuglen + vralen
+			    && strcmp ((paths[i] + pathlen - debuglen),
+				       ".debug") == 0) {
+			    free(linkpath);
+			    free(targetpath);
+			    char *targetstr = xstrdup (paths[i] + prefixlen);
+			    int targetlen = pathlen - prefixlen;
+			    int targetend = targetlen - debuglen - vralen;
+			    targetstr[targetend] = '\0';
+			    rasprintf(&linkpath, "%s/%s",
+				      buildidsubdir, &ids[i][2]);
+			    rasprintf(&targetpath, "../../../../..%s",
+				      targetstr);
+			    rc = addNewIDSymlink(files, targetpath,
+						 linkpath, 0, &dups);
+			    free(targetstr);
+			}
+		    }
+		    free(linkpath);
+		    free(targetpath);
 		}
 		free(buildidsubdir);
 	    }
@@ -3030,7 +3019,7 @@ static int addDebugDwz(Package pkg, char *buildroot)
 	argvAddAttr(&pkg->fileList, RPMFILE_ARTIFACT, DEBUG_DWZ_DIR);
 	ret = 1;
     }
-    path = _free(path);
+    _free(path);
     return ret;
 }
 

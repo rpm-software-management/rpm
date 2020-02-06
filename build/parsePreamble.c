@@ -72,7 +72,7 @@ static rpmRC addOrAppendListEntry(Header h, rpmTagVal tag, const char * line)
     }
     if (argc) 
 	headerPutStringArray(h, tag, argv, argc);
-    argv = _free(argv);
+    _free(argv);
 
     return RPMRC_OK;
 }
