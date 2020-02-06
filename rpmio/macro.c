@@ -109,7 +109,6 @@ typedef struct MacroBuf_s {
     int error;			/*!< Errors encountered during expansion? */
     int macro_trace;		/*!< Pre-print macro to expand? */
     int expand_trace;		/*!< Post-print macro expansion? */
-    int escape;			/*!< Preserve '%%' during expansion? */
     int flags;			/*!< Flags to control behavior */
     rpmMacroContext mc;
 } * MacroBuf;
@@ -860,11 +859,13 @@ static void splitQuoted(ARGV_t *av, const char * str, const char * seps)
 	    size_t slen = s - start;
 	    /* quoted arguments are always kept, otherwise skip empty args */
 	    if (slen > 0) {
-		char *d, arg[slen + 1];
+		char *d, arg[2 * slen + 1];
 		const char *t;
 		for (d = arg, t = start; t - start < slen; t++) {
 		    if (*t == qchar)
 			continue;
+		    if (*t == '%')	/* preserve '%' characters by doubling */
+			*d++ = '%';
 		    *d++ = *t;
 		}
 		arg[d - arg] = '\0';
@@ -907,14 +908,10 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
      */
     argvAdd(&argv, me->name);
     if (lastc) {
-	int oescape = mb->escape;
 	char *s = NULL;
 
 	/* Expand possible macros in arguments */
-	mb->escape = 1;
 	expandThis(mb, se, lastc-se, &s);
-	mb->escape = oescape;
-
 	splitQuoted(&argv, s, " \t");
 	free(s);
 
@@ -1348,8 +1345,6 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 		if (*s != '%')
 		    break;
 		s++;	/* skip first % in %% */
-		if (mb->escape)
-		    mbAppend(mb, c);
 	    }
 	default:
 	    mbAppend(mb, c);
