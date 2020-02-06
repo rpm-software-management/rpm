@@ -210,11 +210,11 @@ const char * rpmtdGetString(rpmtd td)
 
 uint64_t rpmtdGetNumber(rpmtd td)
 {
-    uint64_t val = 0;
-    int ix = (td->ix >= 0 ? td->ix : 0);
-
     if (td == NULL)
 	return 0;
+
+    uint64_t val = 0;
+    int ix = (td->ix >= 0 ? td->ix : 0);
 
     switch (td->type) {
     case RPM_INT64_TYPE:
