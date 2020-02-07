@@ -2234,7 +2234,7 @@ int readManifest(rpmSpec spec, const char *path, const char *descr, int flags,
 	goto exit;
     }
 
-    rpmPushMacro(spec->macros, "__file_name", NULL, fn, RMIL_SPEC);
+    rpmPushMacroFlags(spec->macros, "__file_name", NULL, fn, RMIL_SPEC, RPMMACRO_LITERAL);
 
     nlines = 0;
     while (fgets(buf, sizeof(buf), fd)) {
@@ -2279,7 +2279,7 @@ static rpmRC readFilesManifest(rpmSpec spec, Package pkg, const char *path)
 	flags |= ALLOW_EMPTY;
 
     /* XXX unmask %license while parsing files manifest*/
-    rpmPushMacro(spec->macros, "license", NULL, "%%license", RMIL_SPEC);
+    rpmPushMacroFlags(spec->macros, "license", NULL, "%license", RMIL_SPEC, RPMMACRO_LITERAL);
 
     nlines = readManifest(spec, path, "%files", flags, &(pkg->fileList), NULL);
 

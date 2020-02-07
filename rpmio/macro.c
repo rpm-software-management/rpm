@@ -1696,7 +1696,7 @@ static int loadMacroFile(rpmMacroContext mc, const char * fn)
     if (fd == NULL)
 	goto exit;
 
-    pushMacro(mc, "__file_name", NULL, fn, RMIL_MACROFILES, ME_NONE);
+    pushMacro(mc, "__file_name", NULL, fn, RMIL_MACROFILES, ME_LITERAL);
 
     buf[0] = '\0';
     while ((nlines = rdcl(buf, blen, fd)) > 0) {
@@ -1712,7 +1712,7 @@ static int loadMacroFile(rpmMacroContext mc, const char * fn)
 	n++;	/* skip % */
 
 	snprintf(lnobuf, sizeof(lnobuf), "%d", lineno);
-	pushMacro(mc, "__file_lineno", NULL, lnobuf, RMIL_MACROFILES, ME_NONE);
+	pushMacro(mc, "__file_lineno", NULL, lnobuf, RMIL_MACROFILES, ME_LITERAL);
 	if (defineMacro(mc, n, RMIL_MACROFILES))
 	    nfailed++;
 	popMacro(mc, "__file_lineno");
