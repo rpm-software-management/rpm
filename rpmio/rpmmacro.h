@@ -52,6 +52,11 @@ extern const char * macrofiles;
 /* rpm expression parser flags */
 #define RPMEXPR_EXPAND		(1 << 0)	/*!< expand primary terms */
 
+typedef enum rpmMacroFlags_e {
+    RPMMACRO_DEFAULT	= 0,
+    RPMMACRO_LITERAL	= (1 << 0),		/*!< do not expand body of macro */
+} rpmMacroFlags;
+
 /** \ingroup rpmmacro
  * Print macros to file stream.
  * @param mc		macro context (NULL uses global context).
@@ -83,6 +88,21 @@ int	rpmExpandMacros	(rpmMacroContext mc, const char * sbuf,
 int	rpmPushMacro	(rpmMacroContext mc, const char * n,
 				const char * o,
 				const char * b, int level);
+
+/** \ingroup rpmmacro
+ * Push macro to context.
+ * @param mc		macro context (NULL uses global context).
+ * @param n		macro name
+ * @param o		macro parameters
+ * @param b		macro body
+ * @param level		macro recursion level (0 is entry API)
+ * @param flags		macro flags
+ * @return		0 on success
+ */
+int	rpmPushMacroFlags	(rpmMacroContext mc, const char * n,
+					const char * o,
+					const char * b, int level,
+					rpmMacroFlags flags);
 
 /** \ingroup rpmmacro
  * Pop macro from context.
