@@ -44,6 +44,7 @@ enum macroFlags_e {
     ME_NONE	= 0,
     ME_AUTO	= (1 << 0),
     ME_USED	= (1 << 1),
+    ME_LITERAL	= (1 << 2),
 };
 
 /*! The structure used to store a macro. */
@@ -859,13 +860,11 @@ static void splitQuoted(ARGV_t *av, const char * str, const char * seps)
 	    size_t slen = s - start;
 	    /* quoted arguments are always kept, otherwise skip empty args */
 	    if (slen > 0) {
-		char *d, arg[2 * slen + 1];
+		char *d, arg[slen + 1];
 		const char *t;
 		for (d = arg, t = start; t - start < slen; t++) {
 		    if (*t == qchar)
 			continue;
-		    if (*t == '%')	/* preserve '%' characters by doubling */
-			*d++ = '%';
 		    *d++ = *t;
 		}
 		arg[d - arg] = '\0';
@@ -923,7 +922,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
     mb->level++;
 
     /* Setup macro name as %0 */
-    pushMacro(mb->mc, "0", NULL, me->name, mb->level, ME_AUTO);
+    pushMacro(mb->mc, "0", NULL, me->name, mb->level, ME_AUTO | ME_LITERAL);
 
     /*
      * The macro %* analoguous to the shell's $* means "Pass all non-macro
@@ -934,7 +933,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
      * This is the (potential) justification for %{**} ...
     */
     args = argvJoin(argv + 1, " ");
-    pushMacro(mb->mc, "**", NULL, args, mb->level, ME_AUTO);
+    pushMacro(mb->mc, "**", NULL, args, mb->level, ME_AUTO | ME_LITERAL);
     free(args);
 
     /*
@@ -966,13 +965,13 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 	} else {
 	    rasprintf(&body, "-%c", c);
 	}
-	pushMacro(mb->mc, name, NULL, body, mb->level, ME_AUTO);
+	pushMacro(mb->mc, name, NULL, body, mb->level, ME_AUTO | ME_LITERAL);
 	free(name);
 	free(body);
 
 	if (optarg) {
 	    rasprintf(&name, "-%c*", c);
-	    pushMacro(mb->mc, name, NULL, optarg, mb->level, ME_AUTO);
+	    pushMacro(mb->mc, name, NULL, optarg, mb->level, ME_AUTO | ME_LITERAL);
 	    free(name);
 	}
     }
@@ -980,7 +979,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
     /* Add argument count (remaining non-option items) as macro. */
     {	char *ac = NULL;
     	rasprintf(&ac, "%d", (argc - optind));
-	pushMacro(mb->mc, "#", NULL, ac, mb->level, ME_AUTO);
+	pushMacro(mb->mc, "#", NULL, ac, mb->level, ME_AUTO | ME_LITERAL);
 	free(ac);
     }
 
@@ -989,14 +988,14 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 	for (c = optind; c < argc; c++) {
 	    char *name = NULL;
 	    rasprintf(&name, "%d", (c - optind + 1));
-	    pushMacro(mb->mc, name, NULL, argv[c], mb->level, ME_AUTO);
+	    pushMacro(mb->mc, name, NULL, argv[c], mb->level, ME_AUTO | ME_LITERAL);
 	    free(name);
 	}
     }
 
     /* Add concatenated unexpanded arguments as yet another macro. */
     args = argvJoin(argv + optind, " ");
-    pushMacro(mb->mc, "*", NULL, args ? args : "", mb->level, ME_AUTO);
+    pushMacro(mb->mc, "*", NULL, args ? args : "", mb->level, ME_AUTO | ME_LITERAL);
     free(args);
 
 exit:
@@ -1465,7 +1464,10 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 		expandMacro(mb, g, gn);
 	    } else
 		if (me && me->body && *me->body) {/* Expand macro body */
-		    expandMacro(mb, me->body, 0);
+		    if ((me->flags & ME_LITERAL) != 0)
+			mbAppendStr(mb, me->body);
+		    else
+			expandMacro(mb, me->body, 0);
 		}
 	    s = se;
 	    continue;
@@ -1487,7 +1489,10 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 
 	/* Recursively expand body of macro */
 	if (me->body && *me->body) {
-	    expandMacro(mb, me->body, 0);
+	    if ((me->flags & ME_LITERAL) != 0)
+		mbAppendStr(mb, me->body);
+	    else
+		expandMacro(mb, me->body, 0);
 	}
 
 	/* Free args for "%name " macros with opts */
