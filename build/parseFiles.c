@@ -27,7 +27,7 @@ int parseFiles(rpmSpec spec)
     };
 
     /* XXX unmask %license while parsing %files */
-    rpmPushMacro(spec->macros, "license", NULL, "%%license", RMIL_SPEC);
+    rpmPushMacroFlags(spec->macros, "license", NULL, "%license", RMIL_SPEC, RPMMACRO_LITERAL);
 
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
 	rpmlog(RPMLOG_ERR, _("line %d: Error parsing %%files: %s\n"),

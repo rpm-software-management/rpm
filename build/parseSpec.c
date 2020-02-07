@@ -144,7 +144,7 @@ static OFI_t * pushOFI(rpmSpec spec, const char *fn)
     ofi->readPtr = NULL;
     ofi->next = spec->fileStack;
 
-    rpmPushMacro(spec->macros, "__file_name", NULL, fn, RMIL_SPEC);
+    rpmPushMacroFlags(spec->macros, "__file_name", NULL, fn, RMIL_SPEC, RPMMACRO_LITERAL);
 
     spec->fileStack = ofi;
     return spec->fileStack;
@@ -202,7 +202,7 @@ int specExpand(rpmSpec spec, int lineno, const char *sbuf,
     int rc;
 
     snprintf(lnobuf, sizeof(lnobuf), "%d", lineno);
-    rpmPushMacro(spec->macros, "__file_lineno", NULL, lnobuf, RMIL_SPEC);
+    rpmPushMacroFlags(spec->macros, "__file_lineno", NULL, lnobuf, RMIL_SPEC, RPMMACRO_LITERAL);
 
     rc = (rpmExpandMacros(spec->macros, sbuf, obuf, 0) < 0);
 

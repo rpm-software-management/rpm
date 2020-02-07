@@ -302,7 +302,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 		  headerGetString(spec->packages->header, RPMTAG_NAME),
 		  headerGetString(spec->packages->header, RPMTAG_VERSION));
     }
-    rpmPushMacro(spec->macros, "buildsubdir", NULL, spec->buildSubdir, RMIL_SPEC);
+    rpmPushMacroFlags(spec->macros, "buildsubdir", NULL, spec->buildSubdir, RMIL_SPEC, RPMMACRO_LITERAL);
     
     /* cd to the build dir */
     {	char * buildDir = rpmGenPath(spec->rootDir, "%{_builddir}", "");
