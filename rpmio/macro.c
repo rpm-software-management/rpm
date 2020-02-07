@@ -1740,13 +1740,20 @@ rpmDumpMacroTable(rpmMacroContext mc, FILE * fp)
     rpmmctxRelease(mc);
 }
 
+int rpmPushMacroFlags(rpmMacroContext mc,
+	      const char * n, const char * o, const char * b,
+	      int level, rpmMacroFlags flags)
+{
+    mc = rpmmctxAcquire(mc);
+    pushMacro(mc, n, o, b, level, flags & RPMMACRO_LITERAL ? ME_LITERAL : ME_NONE);
+    rpmmctxRelease(mc);
+    return 0;
+}
+
 int rpmPushMacro(rpmMacroContext mc,
 	      const char * n, const char * o, const char * b, int level)
 {
-    mc = rpmmctxAcquire(mc);
-    pushMacro(mc, n, o, b, level, ME_NONE);
-    rpmmctxRelease(mc);
-    return 0;
+    return rpmPushMacroFlags(mc, n, o, b, level, RPMMACRO_DEFAULT);
 }
 
 int rpmPopMacro(rpmMacroContext mc, const char * n)
