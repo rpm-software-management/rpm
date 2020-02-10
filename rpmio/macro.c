@@ -1166,7 +1166,6 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
     char *b = NULL;
     int verbose = (rpmIsVerbose() != 0);
     int expand = (g != NULL && gn > 0);
-    int expandagain = 1;
 
     /* Don't expand %{verbose:...} argument on false condition */
     if (STREQ("verbose", f, fn) && (verbose == negate))
@@ -1224,7 +1223,6 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
 	if (expr) {
 	    free(buf);
 	    b = buf = expr;
-	    expandagain = 0;
 	} else {
 	    mb->error = 1;
 	}
@@ -1242,11 +1240,7 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
     }
 
     if (b) {
-	if (expandagain) {
-	    (void) expandMacro(mb, b, 0);
-	} else {
-	    mbAppendStr(mb, b);
-	}
+	mbAppendStr(mb, b);
     }
     free(buf);
 }
