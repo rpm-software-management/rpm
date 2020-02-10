@@ -132,6 +132,8 @@ static void pushMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level, int flags);
 static void popMacro(rpmMacroContext mc, const char * n);
 static int loadMacroFile(rpmMacroContext mc, const char * fn);
+static void doExpand(MacroBuf mb, int chkexist, int negate,
+		    const char * f, size_t fn, const char * g, size_t gn);
 static void doFoo(MacroBuf mb, int chkexist, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
 static void doLoad(MacroBuf mb, int chkexist, int negate,
@@ -566,7 +568,7 @@ static struct builtins_s {
     { STR_AND_LEN("dump"), 	NULL,		doDump,		0 },
     { STR_AND_LEN("echo"),	doOutput,	NULL,		1 },
     { STR_AND_LEN("error"),	doOutput,	NULL,		1 },
-    { STR_AND_LEN("expand"),	doFoo,		NULL,		1 },
+    { STR_AND_LEN("expand"),	doExpand,	NULL,		1 },
     { STR_AND_LEN("expr"),	doFoo,		NULL,		1 },
     { STR_AND_LEN("getconfdir"),doFoo,		NULL,		0 },
     { STR_AND_LEN("getenv"),	doFoo,		NULL,		1 },
@@ -1135,6 +1137,17 @@ exit:
     free(buf);
 }
 
+static void doExpand(MacroBuf mb, int chkexist, int negate,
+		    const char * f, size_t fn, const char * g, size_t gn)
+{
+    if (gn > 0) {
+	char *buf;
+	expandThis(mb, g, gn, &buf);
+	expandMacro(mb, buf, 0);
+	free(buf);
+    }
+}
+
 /**
  * Execute macro primitives.
  * @param mb		macro expansion state
@@ -1204,7 +1217,7 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
     } else if (STREQ("suffix", f, fn)) {
 	if ((b = strrchr(buf, '.')) != NULL)
 	    b++;
-    } else if (STREQ("expand", f, fn) || STREQ("verbose", f, fn)) {
+    } else if STREQ("verbose", f, fn) {
 	b = buf;
     } else if (STREQ("expr", f, fn)) {
 	char *expr = rpmExprStr(buf, 0);
