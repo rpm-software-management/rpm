@@ -263,6 +263,7 @@ AT_CHECK([
 runroot rpm --eval "%{dirname}"
 runroot rpm --eval "%{dirname:}"
 runroot rpm --eval "%{dirname:dir}"
+runroot rpm --define '%xxx /hello/%%%%/world' --eval '%{dirname:%xxx}'
 runroot rpm --eval "%{uncompress}"
 runroot rpm --eval "%{uncompress:}"
 runroot rpm --eval "%{getncpus:}"
@@ -273,6 +274,7 @@ runroot rpm --eval "%{dump:foo}"
 [1],
 [
 dir
+/hello/%%
 
 ],
 [error: %dirname: argument expected
