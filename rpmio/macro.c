@@ -148,6 +148,8 @@ static void doTrace(MacroBuf mb, int chkexist, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
 static void doUncompress(MacroBuf mb, int chkexist, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
+static void doVerbose(MacroBuf mb, int chkexist, int negate,
+		    const char * f, size_t fn, const char * g, size_t gn);
 
 static const char * doDef(MacroBuf mb, const char * se);
 static const char * doGlobal(MacroBuf mb, const char * se);
@@ -584,7 +586,7 @@ static struct builtins_s {
     { STR_AND_LEN("uncompress"),doUncompress,	NULL,		1 },
     { STR_AND_LEN("undefine"),	NULL,		doUndefine,	0 },
     { STR_AND_LEN("url2path"),	doFoo,		NULL,		1 },
-    { STR_AND_LEN("verbose"),	doFoo,		NULL,		1 },
+    { STR_AND_LEN("verbose"),	doVerbose,	NULL,		1 },
     { STR_AND_LEN("warn"),	doOutput,	NULL,		1 },
 };
 static const size_t numbuiltins = sizeof(builtinmacros)/sizeof(*builtinmacros);
@@ -1148,6 +1150,19 @@ static void doExpand(MacroBuf mb, int chkexist, int negate,
     }
 }
 
+static void doVerbose(MacroBuf mb, int chkexist, int negate,
+		const char * f, size_t fn, const char * g, size_t gn)
+{
+    int verbose = (rpmIsVerbose() != 0);
+    /* Don't expand %{verbose:...} argument on false condition */
+    if (verbose != negate) {
+	char *buf = NULL;
+	expandThis(mb, g, gn, &buf);
+	mbAppendStr(mb, buf);
+	free(buf);
+    }
+}
+
 /**
  * Execute macro primitives.
  * @param mb		macro expansion state
@@ -1164,12 +1179,7 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
 {
     char *buf = NULL;
     char *b = NULL;
-    int verbose = (rpmIsVerbose() != 0);
     int expand = (g != NULL && gn > 0);
-
-    /* Don't expand %{verbose:...} argument on false condition */
-    if (STREQ("verbose", f, fn) && (verbose == negate))
-	expand = 0;
 
     if (expand) {
 	(void) expandThis(mb, g, gn, &buf);
@@ -1216,8 +1226,6 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
     } else if (STREQ("suffix", f, fn)) {
 	if ((b = strrchr(buf, '.')) != NULL)
 	    b++;
-    } else if STREQ("verbose", f, fn) {
-	b = buf;
     } else if (STREQ("expr", f, fn)) {
 	char *expr = rpmExprStr(buf, 0);
 	if (expr) {
