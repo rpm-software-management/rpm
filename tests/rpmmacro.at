@@ -189,7 +189,7 @@ runroot rpm \
 ])
 AT_CLEANUP
 
-AT_SETUP([uncompress macro])
+AT_SETUP([uncompress macro 1])
 AT_KEYWORDS([macros])
 AT_CHECK([
 runroot rpm \
@@ -201,6 +201,18 @@ runroot rpm \
 ])
 AT_CLEANUP
 
+AT_SETUP([uncompress macro 2])
+AT_KEYWORDS([macros])
+AT_CHECK([
+echo xxxxxxxxxxxxxxxxxxxxxxxxx > ${RPMTEST}/tmp/"some%%ath"
+runroot rpm \
+    --eval "%{uncompress:/tmp/some%%%%ath}"
+],
+[0],
+[/usr/bin/cat /tmp/some%%ath
+])
+
+AT_CLEANUP
 AT_SETUP([basename macro])
 AT_KEYWORDS([macros])
 AT_CHECK([
@@ -251,6 +263,8 @@ AT_CHECK([
 runroot rpm --eval "%{dirname}"
 runroot rpm --eval "%{dirname:}"
 runroot rpm --eval "%{dirname:dir}"
+runroot rpm --eval "%{uncompress}"
+runroot rpm --eval "%{uncompress:}"
 runroot rpm --eval "%{getncpus:}"
 runroot rpm --eval "%{getncpus:5}"
 runroot rpm --eval "%{define:}"
@@ -259,8 +273,10 @@ runroot rpm --eval "%{dump:foo}"
 [1],
 [
 dir
+
 ],
 [error: %dirname: argument expected
+error: %uncompress: argument expected
 error: %getncpus: unexpected argument
 error: %getncpus: unexpected argument
 error: %define: unexpected argument
