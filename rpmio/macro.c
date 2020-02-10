@@ -140,6 +140,8 @@ static void doLua(MacroBuf mb, int chkexist, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
 static void doOutput(MacroBuf mb, int chkexist, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
+static void doSP(MacroBuf mb, int chkexist, int negate,
+		    const char * f, size_t fn, const char * g, size_t gn);
 static void doTrace(MacroBuf mb, int chkexist, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
 
@@ -553,8 +555,8 @@ static struct builtins_s {
     parseFunc parse;
     int havearg;
 } const builtinmacros[] = {
-    { STR_AND_LEN("P"),		doFoo,		NULL,		1 },
-    { STR_AND_LEN("S"),		doFoo,		NULL,		1 },
+    { STR_AND_LEN("P"),		doSP,		NULL,		1 },
+    { STR_AND_LEN("S"),		doSP,		NULL,		1 },
     { STR_AND_LEN("basename"),	doFoo,		NULL,		1 },
     { STR_AND_LEN("define"),	NULL,		doDef,		0 },
     { STR_AND_LEN("dirname"),	doFoo,		NULL,		1 },
@@ -1053,6 +1055,25 @@ static void doLua(MacroBuf mb, int chkexist, int negate, const char * f, size_t 
 #endif
 }
 
+static void
+doSP(MacroBuf mb, int chkexist, int negate,
+	    const char * f, size_t fn, const char * g, size_t gn)
+{
+    const char *b = "";
+    char *buf = NULL;
+    char *s = NULL;
+
+    if (gn > 0) {
+	expandThis(mb, g, gn, &buf);
+	b = buf;
+    }
+
+    s = rstrscat(NULL, (*f == 'S') ? "%SOURCE" : "%PATCH", b, NULL);
+    expandMacro(mb, s, 0);
+    free(s);
+    free(buf);
+}
+
 /**
  * Execute macro primitives.
  * @param mb		macro expansion state
@@ -1186,22 +1207,6 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
     } else if (STREQ("getncpus", f, fn)) {
 	sprintf(buf, "%u", getncpus());
 	b = buf;
-    } else if (STREQ("S", f, fn)) {
-	for (b = buf; (c = *b) && risdigit(c);)
-	    b++;
-	if (!c) {	/* digit index */
-	    b++;
-	    sprintf(b, "%%SOURCE%s", buf);
-	} else
-	    b = buf;
-    } else if (STREQ("P", f, fn)) {
-	for (b = buf; (c = *b) && risdigit(c);)
-	    b++;
-	if (!c) {	/* digit index */
-	    b++;
-	    sprintf(b, "%%PATCH%s", buf);
-	} else
-			b = buf;
     }
 
     if (b) {
