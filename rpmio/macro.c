@@ -144,6 +144,8 @@ static void doSP(MacroBuf mb, int chkexist, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
 static void doTrace(MacroBuf mb, int chkexist, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
+static void doUncompress(MacroBuf mb, int chkexist, int negate,
+		    const char * f, size_t fn, const char * g, size_t gn);
 
 static const char * doDef(MacroBuf mb, const char * se);
 static const char * doGlobal(MacroBuf mb, const char * se);
@@ -577,7 +579,7 @@ static struct builtins_s {
     { STR_AND_LEN("suffix"),	doFoo,		NULL,		1 },
     { STR_AND_LEN("trace"),	doTrace,	NULL,		0 },
     { STR_AND_LEN("u2p"),	doFoo,		NULL,		1 },
-    { STR_AND_LEN("uncompress"),doFoo,		NULL,		1 },
+    { STR_AND_LEN("uncompress"),doUncompress,	NULL,		1 },
     { STR_AND_LEN("undefine"),	NULL,		doUndefine,	0 },
     { STR_AND_LEN("url2path"),	doFoo,		NULL,		1 },
     { STR_AND_LEN("verbose"),	doFoo,		NULL,		1 },
@@ -1074,6 +1076,65 @@ doSP(MacroBuf mb, int chkexist, int negate,
     free(buf);
 }
 
+static void doUncompress(MacroBuf mb, int chkexist, int negate,
+		const char * f, size_t fn, const char * g, size_t gn)
+{
+    rpmCompressedMagic compressed = COMPRESSED_OTHER;
+    char *b, *be, *buf = NULL;
+    int c;
+
+    if (gn) {
+	expandThis(mb, g, gn, &buf);
+	for (b = buf; (c = *b) && isblank(c);)
+	    b++;
+	for (be = b; (c = *be) && !isblank(c);)
+	    be++;
+	*be++ = '\0';
+    }
+
+    if (gn == 0 || *b == '\0')
+	goto exit;
+
+    if (rpmFileIsCompressed(b, &compressed))
+	mb->error = 1;
+
+    switch (compressed) {
+    default:
+    case COMPRESSED_NOT:
+	expandMacro(mb, "%__cat ", 0);
+	break;
+    case COMPRESSED_OTHER:
+	expandMacro(mb, "%__gzip -dc ", 0);
+	break;
+    case COMPRESSED_BZIP2:
+	expandMacro(mb, "%__bzip2 -dc ", 0);
+	break;
+    case COMPRESSED_ZIP:
+	expandMacro(mb, "%__unzip ", 0);
+	break;
+    case COMPRESSED_LZMA:
+    case COMPRESSED_XZ:
+	expandMacro(mb, "%__xz -dc ", 0);
+	break;
+    case COMPRESSED_LZIP:
+	expandMacro(mb, "%__lzip -dc ", 0);
+	break;
+    case COMPRESSED_LRZIP:
+	expandMacro(mb, "%__lrzip -dqo- ", 0);
+	break;
+    case COMPRESSED_7ZIP:
+	expandMacro(mb, "%__7zip x ", 0);
+	break;
+    case COMPRESSED_ZSTD:
+	expandMacro(mb, "%__zstd -dc ", 0);
+	break;
+    }
+    mbAppendStr(mb, buf);
+
+exit:
+    free(buf);
+}
+
 /**
  * Execute macro primitives.
  * @param mb		macro expansion state
@@ -1089,8 +1150,7 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
 		const char * g, size_t gn)
 {
     char *buf = NULL;
-    char *b = NULL, *be;
-    int c;
+    char *b = NULL;
     int verbose = (rpmIsVerbose() != 0);
     int expand = (g != NULL && gn > 0);
     int expandagain = 1;
@@ -1158,47 +1218,6 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
     } else if (STREQ("url2path", f, fn) || STREQ("u2p", f, fn)) {
 	(void)urlPath(buf, (const char **)&b);
 	if (*b == '\0') b = "/";
-    } else if (STREQ("uncompress", f, fn)) {
-	rpmCompressedMagic compressed = COMPRESSED_OTHER;
-	for (b = buf; (c = *b) && isblank(c);)
-	    b++;
-	for (be = b; (c = *be) && !isblank(c);)
-	    be++;
-	*be++ = '\0';
-	if (rpmFileIsCompressed(b, &compressed))
-	    mb->error = 1;
-	switch (compressed) {
-	default:
-	case COMPRESSED_NOT:
-	    sprintf(be, "%%__cat %s", b);
-	    break;
-	case COMPRESSED_OTHER:
-	    sprintf(be, "%%__gzip -dc %s", b);
-	    break;
-	case COMPRESSED_BZIP2:
-	    sprintf(be, "%%__bzip2 -dc %s", b);
-	    break;
-	case COMPRESSED_ZIP:
-	    sprintf(be, "%%__unzip %s", b);
-	    break;
-        case COMPRESSED_LZMA:
-        case COMPRESSED_XZ:
-            sprintf(be, "%%__xz -dc %s", b);
-            break;
-	case COMPRESSED_LZIP:
-	    sprintf(be, "%%__lzip -dc %s", b);
-	    break;
-	case COMPRESSED_LRZIP:
-	    sprintf(be, "%%__lrzip -dqo- %s", b);
-	    break;
-	case COMPRESSED_7ZIP:
-	    sprintf(be, "%%__7zip x %s", b);
-	    break;
-	case COMPRESSED_ZSTD:
-	    sprintf(be, "%%__zstd -dc %s", b);
-	    break;
-	}
-	b = be;
     } else if (STREQ("getenv", f, fn)) {
 	b = getenv(buf);
     } else if (STREQ("getconfdir", f, fn)) {
