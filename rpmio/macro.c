@@ -133,6 +133,8 @@ static void pushMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level, int flags);
 static void popMacro(rpmMacroContext mc, const char * n);
 static int loadMacroFile(rpmMacroContext mc, const char * fn);
+static void doBody(MacroBuf mb, int chkexist, int negate,
+		const char * f, size_t fn, const char * g, size_t gn);
 static void doExpand(MacroBuf mb, int chkexist, int negate,
 		    const char * f, size_t fn, const char * g, size_t gn);
 static void doFoo(MacroBuf mb, int chkexist, int negate,
@@ -579,6 +581,7 @@ static struct builtins_s {
     { STR_AND_LEN("global"),	NULL,		doGlobal,	0 },
     { STR_AND_LEN("load"),	doLoad,		NULL,		1 },
     { STR_AND_LEN("lua"),	doLua,		NULL,		1 },
+    { STR_AND_LEN("macrobody"),	doBody,		NULL,		1 },
     { STR_AND_LEN("quote"),	doFoo,		NULL,		1 },
     { STR_AND_LEN("shrink"),	doFoo,		NULL,		1 },
     { STR_AND_LEN("suffix"),	doFoo,		NULL,		1 },
@@ -1009,6 +1012,23 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 exit:
     argvFree(argv);
     return cont;
+}
+
+static void doBody(MacroBuf mb, int chkexist, int negate,
+		const char * f, size_t fn, const char * g, size_t gn)
+{
+    if (gn > 0) {
+	char *buf = NULL;
+	if (expandThis(mb, g, gn, &buf) == 0) {
+	    rpmMacroEntry *mep = findEntry(mb->mc, buf, 0, NULL);
+	    if (mep) {
+		mbAppendStr(mb, (*mep)->body);
+	    } else {
+		mbErr(mb, 1, _("no such macro: '%s'\n"), buf);
+	    }
+	    free(buf);
+	}
+    }
 }
 
 static void doOutput(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn, const char * g, size_t gn)

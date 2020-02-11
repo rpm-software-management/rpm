@@ -73,6 +73,8 @@ to perform useful operations. The current list is
 	%undefine ...	undefine a macro
 	%global ...	define a macro whose body is available in global context
 
+	%{macrobody:...}	literal body of a macro
+
 	%{basename:...}	basename(1) macro analogue
 	%{dirname:...}	dirname(1) macro analogue
 	%{suffix:...}	expand to suffix part of a file name
