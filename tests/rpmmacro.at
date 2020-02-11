@@ -486,6 +486,26 @@ runroot rpm --eval '%{lua:print(5*5)}'
 ])
 AT_CLEANUP
 
+AT_SETUP([lua macro arguments])
+AT_KEYWORDS([macros lua])
+AT_CHECK([
+AT_SKIP_IF([$LUA_DISABLED])
+[
+runroot rpm --define "foo() %{lua:for i, a in ipairs(arg) do print('arg '..i..': '..arg[i]..'\\\n') end}" \
+	--eval "%foo a b" \
+	--eval "%foo 6 %{quote:5 4} 3"
+]],
+[0],
+[arg 1: a
+arg 2: b
+
+arg 1: 6
+arg 2: 5 4
+arg 3: 3
+
+])
+AT_CLEANUP
+
 AT_SETUP([lua rpm extensions 1])
 AT_KEYWORDS([macros lua])
 AT_CHECK([

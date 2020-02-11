@@ -835,6 +835,7 @@ static const char * doDump(MacroBuf mb, const char * se)
 static void
 freeArgs(MacroBuf mb)
 {
+    int seen = 0;
     rpmMacroContext mc = mb->mc;
 
     /* Delete dynamic macro definitions */
@@ -850,12 +851,23 @@ freeArgs(MacroBuf mb)
 	    /* Only whine once */
 	    me->flags |= ME_USED;
 	}
+	seen |= me->flags;
 
 	/* compensate if the slot is to go away */
 	if (me->prev == NULL)
 	    i--;
 	popMacro(mc, me->name);
     }
+
+    if (seen & ME_AUTO) {
+#ifdef WITH_LUA
+	rpmlua lua = NULL; /* Global state. */
+	rpmluaDelVar(lua, "arg");
+	rpmluaPushTable(lua, "arg");
+	rpmluaPop(lua);
+#endif
+    }
+
     mb->level--;
 }
 
@@ -1002,6 +1014,20 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 	    pushMacro(mb->mc, name, NULL, argv[c], mb->level, ME_AUTO | ME_LITERAL);
 	    free(name);
 	}
+
+#ifdef WITH_LUA
+	/* Set up arguments as a native Lua table too */
+	rpmlua lua = NULL; /* Global state. */
+	rpmluav var = rpmluavNew();
+	rpmluaPushTable(lua, "arg");
+	rpmluavSetListMode(var, 1);
+	for (c = optind; c < argc; c++) {
+	    rpmluavSetValue(var, RPMLUAV_STRING, argv[c]);
+	    rpmluaSetVar(lua, var);
+	}
+	rpmluaPop(lua);
+	rpmluavFree(var);
+#endif
     }
 
     /* Add concatenated unexpanded arguments as yet another macro. */
