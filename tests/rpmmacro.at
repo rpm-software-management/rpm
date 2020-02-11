@@ -257,6 +257,23 @@ runroot rpm \
 ])
 AT_CLEANUP
 
+AT_SETUP([macrobody macro])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm \
+    --define "somedir %{_exec_prefix}/%{_lib}" \
+    --eval "%{macrobody:somedir}"
+runroot rpm \
+    --define "something somedir" \
+    --define "somedir %{_exec_prefix}/%{_lib}" \
+    --eval "%{macrobody:%{something}}"
+],
+[0],
+[%{_exec_prefix}/%{_lib}
+%{_exec_prefix}/%{_lib}
+])
+AT_CLEANUP
+
 AT_SETUP([builtin macro arguments])
 AT_KEYWORDS([macros])
 AT_CHECK([
