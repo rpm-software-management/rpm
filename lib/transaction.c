@@ -1471,9 +1471,27 @@ static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet)
 static void setSSD(int enable)
 {
     if (enable) {
-	rpmlog(RPMLOG_DEBUG, "optimizing for non-rotational disks\n");
-	rpmPushMacro(NULL, "_minimize_writes", NULL, "1", 0);
-	rpmPushMacro(NULL, "_flush_io", NULL, "1", 0);
+	/* Push a value no matter what */
+	if (!rpmMacroIsDefined(NULL, "_minimize_writes") ||
+	    rpmExpandNumeric("%{_minimize_writes}") == -1 ) {
+	    rpmlog(RPMLOG_DEBUG,
+		   "enabling _minimize_writes for non-rotational disks\n");
+	    rpmPushMacro(NULL, "_minimize_writes", NULL, "1", 0);
+	} else {
+	    char * val = rpmExpand("%{_minimize_writes}", NULL);
+	    rpmPushMacro(NULL, "_minimize_writes", NULL, val, 0);
+	    _free(val);
+	}
+	if (!rpmMacroIsDefined(NULL, "_flush_io") ||
+	    rpmExpandNumeric("%{_flush_io}") == -1) {
+	    rpmlog(RPMLOG_DEBUG,
+		   "enabling _flush_io for non-rotational disks\n");
+	    rpmPushMacro(NULL, "_flush_io", NULL, "1", 0);
+	} else {
+	    char * val = rpmExpand("%{_flush_io}", NULL);
+	    rpmPushMacro(NULL, "_flush_io", NULL, val, 0);
+	    _free(val);
+	}
     } else {
 	rpmPopMacro(NULL, "_minimize_writes");
 	rpmPopMacro(NULL, "_flush_io");

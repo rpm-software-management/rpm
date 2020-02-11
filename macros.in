@@ -745,12 +745,14 @@ package or when debugging this package.\
 %_pkgverify_flags 0x0
 
 # Set to 1 to minimize writing (at the cost of more reads) to
-# conserve eg SSD disks.
-%_minimize_writes      0
+# conserve eg SSD disks. Set to -1 for enabling when runnning on SSDs.
+# Set to 0 for always off.
+%_minimize_writes      -1
 
 # Set to 1 to flush file IO during transactions (at a severe cost in
-# performance for rotational disks)
-#%_flush_io	0
+# performance for rotational disks). Set to -1 for enabling when running on
+# SSDs. Set to 0 for always off.
+%_flush_io	-1
 
 # Set to 1 to have IMA signatures written also on %config files.
 # Note that %config files may be changed and therefore end up with
