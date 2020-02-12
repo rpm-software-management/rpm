@@ -80,18 +80,22 @@ int main(int argc, char *argv[])
 
     case MODE_PARSE: {
 	const char * spath;
+	char *target = rpmExpand("%{_target}", NULL);
 	if (!poptPeekArg(optCon))
 	    argerror(_("no arguments given for parse"));
 
 	while ((spath = poptGetArg(optCon)) != NULL) {
 	    rpmSpec spec = rpmSpecParse(spath, (RPMSPEC_ANYARCH|RPMSPEC_FORCE), NULL);
-	    if (spec == NULL) {
+	    if (spec) {
+		fprintf(stdout, "%s", rpmSpecGetSection(spec, RPMBUILD_NONE));
+		rpmSpecFree(spec);
+	    } else {
 		ec++;
-		continue;
 	    }
-	    fprintf(stdout, "%s", rpmSpecGetSection(spec, RPMBUILD_NONE));
-	    rpmSpecFree(spec);
+	    rpmFreeMacros(NULL);
+	    rpmReadConfigFiles(rpmcliRcfile, target);
 	}
+	free(target);
 	break;
     }
 

@@ -564,12 +564,17 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
     }
     case RPMQV_SPECRPMS:
     case RPMQV_SPECBUILTRPMS:
-    case RPMQV_SPECSRPM:
+    case RPMQV_SPECSRPM: {
+	char *target = rpmExpand("%{_target}", NULL);
 	for (ARGV_const_t arg = argv; arg && *arg; arg++) {
 	    ec += ((qva->qva_specQuery != NULL)
 		    ? qva->qva_specQuery(ts, qva, *arg) : 1);
+	    rpmFreeMacros(NULL);
+	    rpmReadConfigFiles(rpmcliRcfile, target);
 	}
+	free(target);
 	break;
+    }
     default:
 	for (ARGV_const_t arg = argv; arg && *arg; arg++) {
 	    int ecLocal;
