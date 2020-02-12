@@ -53,7 +53,29 @@ int parseList(rpmSpec spec, const char *name, rpmTagVal tag)
 
     optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
     while ((arg = poptGetNextOpt(optCon)) > 0) {
-	;
+
+	char * filename = poptGetOptArg(optCon);
+	if (!filename) {
+	    rpmlog(RPMLOG_ERR,
+		   _("line %d: \"%%%s -f\" requires an argument.\n"),
+		   spec->lineNum, name);
+	    goto exit;
+	}
+
+	addSource(spec, 0, filename, RPMTAG_SOURCE);
+
+	if (filename[0] == '/')
+	    file = rpmGetPath(filename, NULL);
+	else
+	    file = rpmGetPath("%{_sourcedir}/", filename, NULL);
+
+	res = addLinesFromFile(spec, file, tag);
+	if (res < 0) {
+	    rpmlog(RPMLOG_ERR, _("line %d: %%%s: Error parsing %s\n"),
+		   spec->lineNum, name, filename);
+	    goto exit;
+	}
+	free(filename);
     }
 
     if (arg < -1) {
@@ -65,32 +87,6 @@ int parseList(rpmSpec spec, const char *name, rpmTagVal tag)
     }
 
     lst = argvNew();
-
-    for (arg = 1; arg < argc; arg++) {
-	if (rstreq(argv[arg], "-f")) {
-
-	    if (!argv[arg+1]) {
-		rpmlog(RPMLOG_ERR,
-		       _("line %d: \"%%%s -f\" requires an argument.\n"),
-		       spec->lineNum, name);
-		goto exit;
-	    }
-
-	    addSource(spec, 0, argv[arg+1], RPMTAG_SOURCE);
-
-	    if (argv[arg+1][0] == '/')
-		file = rpmGetPath(argv[arg+1], NULL);
-	    else
-		file = rpmGetPath("%{_sourcedir}/", argv[arg+1], NULL);
-
-	    res = addLinesFromFile(spec, file, tag);
-	    if (res < 0) {
-		rpmlog(RPMLOG_ERR, _("line %d: %%%s: Error parsing %s\n"),
-		       spec->lineNum, name, argv[arg+1]);
-		goto exit;
-	    }
-	}
-    }
 
     if ((res = parseLines(spec, (STRIP_TRAILINGSPACE | STRIP_COMMENTS),
 			  &lst, NULL)) == PART_ERROR) {
