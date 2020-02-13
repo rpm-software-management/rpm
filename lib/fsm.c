@@ -423,9 +423,8 @@ static int fsmMkdirs(rpmfiles files, rpmfs fs, rpmPlugins plugins)
     const char *dpath;
     int rc = 0;
     int i;
-    int ldnlen = 0;
-    int ldnalloc = 0;
-    char * ldn = NULL;
+    size_t ldnlen = 0;
+    const char * ldn = NULL;
 
     while ((dpath = dnlNextIterator(dnli)) != NULL) {
 	size_t dnlen = strlen(dpath);
@@ -434,7 +433,7 @@ static int fsmMkdirs(rpmfiles files, rpmfs fs, rpmPlugins plugins)
 	if (dnlen <= 1)
 	    continue;
 
-	if (dnlen <= ldnlen && rstreq(dpath, ldn))
+	if (dnlen == ldnlen && rstreq(dpath, ldn))
 	    continue;
 
 	/* Copy as we need to modify the string */
@@ -445,17 +444,13 @@ static int fsmMkdirs(rpmfiles files, rpmfs fs, rpmPlugins plugins)
 	    if (*te != '/')
 		continue;
 
-	    *te = '\0';
-
 	    /* Already validated? */
 	    if (i < ldnlen &&
 		(ldn[i] == '/' || ldn[i] == '\0') && rstreqn(dn, ldn, i))
-	    {
-		*te = '/';
 		continue;
-	    }
 
 	    /* Validate next component of path. */
+	    *te = '\0';
 	    rc = fsmStat(dn, 1, &sb); /* lstat */
 	    *te = '/';
 
@@ -494,16 +489,9 @@ static int fsmMkdirs(rpmfiles files, rpmfs fs, rpmPlugins plugins)
 	if (rc) break;
 
 	/* Save last validated path. */
-	if (ldnalloc < (dnlen + 1)) {
-	    ldnalloc = dnlen + 100;
-	    ldn = xrealloc(ldn, ldnalloc);
-	}
-	if (ldn != NULL) { /* XXX can't happen */
-	    strcpy(ldn, dn);
-	    ldnlen = dnlen;
-	}
+	ldn = dpath;
+	ldnlen = dnlen;
     }
-    free(ldn);
     dnlFreeIterator(dnli);
 
     return rc;
