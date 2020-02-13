@@ -746,7 +746,7 @@ package or when debugging this package.\
 
 # Set to 1 to minimize writing (at the cost of more reads) to
 # conserve eg SSD disks.
-%_minimize_writes      0
+#%_minimize_writes      0
 
 # Set to 1 to flush file IO during transactions (at a severe cost in
 # performance for rotational disks)

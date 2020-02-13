@@ -218,7 +218,7 @@ static void wfd_close(FD_t *wfdp)
 	static int oneshot = 0;
 	static int flush_io = 0;
 	if (!oneshot) {
-	    flush_io = rpmExpandNumeric("%{?_flush_io}");
+	    flush_io = (rpmExpandNumeric("%{?_flush_io}") > 0);
 	    oneshot = 1;
 	}
 	if (flush_io) {
