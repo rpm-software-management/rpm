@@ -744,13 +744,21 @@ package or when debugging this package.\
 # Disabler flags for package verification (similar to vsflags)
 %_pkgverify_flags 0x0
 
-# Set to 1 to minimize writing (at the cost of more reads) to
+# Minimize writes during transactions (at the cost of more reads) to
 # conserve eg SSD disks.
-#%_minimize_writes      0
+# 1			enable
+# 0 			disable
+# -1 (or undefined)	autodetect on platforms where supported, otherwise
+# 			default to disabled
+#%_minimize_writes      -1
 
-# Set to 1 to flush file IO during transactions (at a severe cost in
-# performance for rotational disks)
-#%_flush_io	0
+# Flush file IO during transactions (at a severe cost in performance
+# for rotational disks).
+# 1			enable
+# 0 			disable
+# -1 (or undefined)	autodetect on platforms where supported, otherwise
+# 			default to disabled
+#%_flush_io		-1
 
 # Set to 1 to have IMA signatures written also on %config files.
 # Note that %config files may be changed and therefore end up with
