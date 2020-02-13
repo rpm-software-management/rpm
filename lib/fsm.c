@@ -421,24 +421,16 @@ static int fsmMkdirs(rpmfiles files, rpmfs fs, rpmPlugins plugins)
     DNLI_t dnli = dnlInitIterator(files, fs, 0);
     struct stat sb;
     const char *dpath;
-    int dc = rpmfilesDC(files);
     int rc = 0;
     int i;
     int ldnlen = 0;
     int ldnalloc = 0;
     char * ldn = NULL;
-    short * dnlx = NULL; 
 
-    dnlx = (dc ? xcalloc(dc, sizeof(*dnlx)) : NULL);
-
-    if (dnlx != NULL)
     while ((dpath = dnlNextIterator(dnli)) != NULL) {
 	size_t dnlen = strlen(dpath);
 	char * te, dn[dnlen+1];
 
-	dc = dnli->isave;
-	if (dc < 0) continue;
-	dnlx[dc] = dnlen;
 	if (dnlen <= 1)
 	    continue;
 
@@ -460,8 +452,6 @@ static int fsmMkdirs(rpmfiles files, rpmfs fs, rpmPlugins plugins)
 		(ldn[i] == '/' || ldn[i] == '\0') && rstreqn(dn, ldn, i))
 	    {
 		*te = '/';
-		/* Move pre-existing path marker forward. */
-		dnlx[dc] = (te - dn);
 		continue;
 	    }
 
@@ -471,8 +461,7 @@ static int fsmMkdirs(rpmfiles files, rpmfs fs, rpmPlugins plugins)
 
 	    /* Directory already exists? */
 	    if (rc == 0 && S_ISDIR(sb.st_mode)) {
-		/* Move pre-existing path marker forward. */
-		dnlx[dc] = (te - dn);
+		continue;
 	    } else if (rc == RPMERR_ENOENT) {
 		*te = '\0';
 		mode_t mode = S_IFDIR | (_dirPerms & 07777);
@@ -514,7 +503,6 @@ static int fsmMkdirs(rpmfiles files, rpmfs fs, rpmPlugins plugins)
 	    ldnlen = dnlen;
 	}
     }
-    free(dnlx);
     free(ldn);
     dnlFreeIterator(dnli);
 
