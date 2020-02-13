@@ -344,47 +344,50 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, fingerPrint
     int i;
     int symlinkcount = 0;
 
-    if (fp->subDirId == 0)
-	return;
+    for (;;) {
+	int found = 0;
 
-    currentsubdir = rpmstrPoolStr(fpc->pool, fp->subDirId);
-    lensubDir = rpmstrPoolStrlen(fpc->pool, fp->subDirId);
-    current_fp = *fp;
+	if (fp->subDirId == 0)
+	    break;	/* directory exists - no need to look for symlinks */
 
-    /* Set baseName to the upper most dir */
-    bnStart = bnEnd = 1;
-    while (bnEnd < lensubDir && currentsubdir[bnEnd] != '/')
-	bnEnd++;
-    /* no subDir for now */
-    current_fp.subDirId = 0;
+	currentsubdir = rpmstrPoolStr(fpc->pool, fp->subDirId);
+	lensubDir = rpmstrPoolStrlen(fpc->pool, fp->subDirId);
+	current_fp = *fp;
 
-    while (bnEnd < lensubDir) {
-	char found = 0;
+	/* Set baseName to the upper most dir */
+	bnStart = bnEnd = 1;
+	while (bnEnd < lensubDir && currentsubdir[bnEnd] != '/')
+	    bnEnd++;
+	/* no subDir for now */
+	current_fp.subDirId = 0;
 
-	current_fp.baseNameId = rpmstrPoolIdn(fpc->pool,
-						currentsubdir + bnStart,
-						bnEnd - bnStart, 1);
+	while (bnEnd < lensubDir) {
+	    current_fp.baseNameId = rpmstrPoolIdn(fpc->pool,
+						    currentsubdir + bnStart,
+						    bnEnd - bnStart, 1);
 
-	rpmFpHashGetEntry(symlinks, &current_fp, &recs, &numRecs, NULL);
+	    rpmFpHashGetEntry(symlinks, &current_fp, &recs, &numRecs, NULL);
 
-	for (i = 0; i < numRecs; i++) {
-	    rpmfiles foundfi = rpmteFiles(recs[i].p);
-	    char const *linktarget = rpmfilesFLink(foundfi, recs[i].fileno);
-	    char *link;
-
-	    /* Ignore already removed (by eg %pretrans) links */
-	    if (linktarget && rpmteType(recs[i].p) == TR_REMOVED) {
-		char *path = rpmfilesFN(foundfi, recs[i].fileno);
-		struct stat sb;
-		if (lstat(path, &sb) == -1)
-		    linktarget = NULL;
-		free(path);
-	    }
-
-	    foundfi = rpmfilesFree(foundfi);
-
-	    if (linktarget && *linktarget != '\0') {
+	    for (i = 0; i < numRecs; i++) {
+		rpmfiles foundfi = rpmteFiles(recs[i].p);
+		char const *linktarget = rpmfilesFLink(foundfi, recs[i].fileno);
+		char *link;
 		const char *bn;
+
+		/* Ignore already removed (by eg %pretrans) links */
+		if (linktarget && rpmteType(recs[i].p) == TR_REMOVED) {
+		    char *path = rpmfilesFN(foundfi, recs[i].fileno);
+		    struct stat sb;
+		    if (lstat(path, &sb) == -1)
+			linktarget = NULL;
+		    free(path);
+		}
+
+		foundfi = rpmfilesFree(foundfi);
+
+		if (!linktarget || *linktarget == '\0')
+		    continue;
+
 		/* this "directory" is a symlink */
 		link = NULL;
 		if (*linktarget != '/') {
@@ -401,52 +404,36 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, fingerPrint
 		}
 
 		bn = rpmstrPoolStr(fpc->pool, fp->baseNameId);
-		doLookup(fpc, link, bn, fp);	/* modifies fingerprint */
+		doLookup(fpc, link, bn, fp);	/* modifies the fingerprint! */
 
 		free(link);
-		symlinkcount++;
 
-		/* setup current_fp for the new path */
 		found = 1;
-		current_fp = *fp;
-		if (fp->subDirId == 0) {
-		    /* directory exists - no need to look for symlinks */
-		    return;
-		}
-		currentsubdir = rpmstrPoolStr(fpc->pool, fp->subDirId);
-		lensubDir = rpmstrPoolStrlen(fpc->pool, fp->subDirId);
-		/* no subDir for now */
-		current_fp.subDirId = 0;
+		break;
+	    }
 
-		/* Set baseName to the upper most dir */
-		bnStart = bnEnd = 1;
-		while (bnEnd < lensubDir && currentsubdir[bnEnd] != '/')
-		    bnEnd++;
+	    if (found)
 		break;
 
-	    }
+	    /* Set former baseName as subDir */
+	    bnEnd++;
+	    current_fp.subDirId = rpmstrPoolIdn(fpc->pool, currentsubdir, bnEnd, 1);
+
+	    /* set baseName to the next lower dir */
+	    bnStart = bnEnd;
+	    while (bnEnd < lensubDir && currentsubdir[bnEnd] != '/')
+		bnEnd++;
 	}
-	if (symlinkcount > 50) {
-	    // found too many symlinks in the path
-	    // most likley a symlink cicle
-	    // giving up
-	    // TODO warning/error
+
+	if (!found)
+	    break;	/* no symlink found, we are done */
+
+	if (++symlinkcount > 50) {
+	    /* we followed too many symlinks, there is most likely a cycle */
+	    /* TODO: warning/error */
 	    break;
 	}
-	if (found) {
-	    continue; // restart loop after symlink
-	}
-
-	/* Set former baseName as subDir */
-	bnEnd++;
-	current_fp.subDirId = rpmstrPoolIdn(fpc->pool, currentsubdir, bnEnd, 1);
-
-	/* set baseName to the next lower dir */
-	bnStart = bnEnd;
-	while (bnEnd < lensubDir && currentsubdir[bnEnd] != '/')
-	    bnEnd++;
     }
-
 }
 
 fingerPrint * fpCacheGetByFp(fingerPrintCache cache,
