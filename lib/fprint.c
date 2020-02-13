@@ -333,9 +333,8 @@ fingerPrint * fpLookupList(fingerPrintCache cache, rpmstrPool pool,
 }
 
 /* Check file for to be installed symlinks in their path and correct their fp */
-static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, int filenr)
+static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, fingerPrint *fp)
 {
-    rpmfiles fi = rpmteFiles(p);
     struct fingerPrint_s current_fp;
     const char *currentsubdir;
     size_t lensubDir, bnStart, bnEnd;
@@ -343,14 +342,10 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
     struct rpmffi_s * recs;
     int numRecs;
     int i;
-    fingerPrint *fp = rpmfilesFps(fi) + filenr;
     int symlinkcount = 0;
-    struct rpmffi_s ffi = { p, filenr};
 
-    if (fp->subDirId == 0) {
-	rpmFpHashAddEntry(fpc->fp, fp, ffi);
-	goto exit;
-    }
+    if (fp->subDirId == 0)
+	return;
 
     currentsubdir = rpmstrPoolStr(fpc->pool, fp->subDirId);
     lensubDir = rpmstrPoolStrlen(fpc->pool, fp->subDirId);
@@ -406,7 +401,7 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
 		}
 
 		bn = rpmstrPoolStr(fpc->pool, fp->baseNameId);
-		doLookup(fpc, link, bn, fp);
+		doLookup(fpc, link, bn, fp);	/* modifies fingerprint */
 
 		free(link);
 		symlinkcount++;
@@ -416,8 +411,7 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
 		current_fp = *fp;
 		if (fp->subDirId == 0) {
 		    /* directory exists - no need to look for symlinks */
-		    rpmFpHashAddEntry(fpc->fp, fp, ffi);
-		    goto exit;
+		    return;
 		}
 		currentsubdir = rpmstrPoolStr(fpc->pool, fp->subDirId);
 		lensubDir = rpmstrPoolStrlen(fpc->pool, fp->subDirId);
@@ -452,10 +446,7 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
 	while (bnEnd < lensubDir && currentsubdir[bnEnd] != '/')
 	    bnEnd++;
     }
-    rpmFpHashAddEntry(fpc->fp, fp, ffi);
 
-exit:
-    rpmfilesFree(fi);
 }
 
 fingerPrint * fpCacheGetByFp(fingerPrintCache cache,
@@ -475,6 +466,7 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
     rpmfs fs;
     rpmfiles fi;
     int i, fc;
+    int havesymlinks = 0;
 
     if (fpc->fp == NULL)
 	fpc->fp = rpmFpHashCreate(fileCount/2 + 10001, fpHashFunction, fpEqual,
@@ -507,6 +499,7 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
 	    ffi.p = p;
 	    ffi.fileno = i;
 	    rpmFpHashAddEntry(symlinks, fpList + i, ffi);
+	    havesymlinks = 1;
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
 	rpmfilesFree(fi);
@@ -514,12 +507,12 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
     rpmtsiFree(pi);
 
     /* ===============================================
-     * Check fingerprints if they contain symlinks
-     * and add them to the hash table
+     * Create the fingerprint -> (p, fileno) hash table
+     * Also adapt the fingerprint if we have symlinks
      */
-
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	fingerPrint *fpList;
 	(void) rpmsqPoll();
 
 	if ((fi = rpmteFiles(p)) == NULL)
@@ -527,11 +520,17 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
 
 	fs = rpmteGetFileStates(p);
 	fc = rpmfsFC(fs);
+	fpList = rpmfilesFps(fi);
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	for (i = 0; i < fc; i++) {
+	    struct rpmffi_s ffi;
 	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
 		continue;
-	    fpLookupSubdir(symlinks, fpc, p, i);
+	    if (havesymlinks)
+		fpLookupSubdir(symlinks, fpc, fpList + i);
+	    ffi.p = p;
+	    ffi.fileno = i;
+	    rpmFpHashAddEntry(fpc->fp, fpList + i, ffi);
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	rpmfilesFree(fi);
