@@ -372,7 +372,7 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, fingerPrint
 		rpmfiles foundfi = rpmteFiles(recs[i].p);
 		char const *linktarget = rpmfilesFLink(foundfi, recs[i].fileno);
 		char *link;
-		const char *bn;
+		rpmsid linkId;
 
 		/* Ignore already removed (by eg %pretrans) links */
 		if (linktarget && rpmteType(recs[i].p) == TR_REMOVED) {
@@ -399,15 +399,13 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, fingerPrint
 		    rstrscat(&link, dn, subDir ? subDir : "", "/", NULL);
 		}
 		rstrscat(&link, linktarget, "/", NULL);
-		if (strlen(currentsubdir + bnEnd)) {
+		if (currentsubdir[bnEnd])
 		    rstrscat(&link, currentsubdir + bnEnd, NULL);
-		}
-
-		bn = rpmstrPoolStr(fpc->pool, fp->baseNameId);
-		doLookup(fpc, link, bn, fp);	/* modifies the fingerprint! */
-
+		linkId = rpmstrPoolId(fpc->pool, link, 1);
 		free(link);
 
+		/* this modifies the fingerprint! */
+		doLookupId(fpc, linkId, fp->baseNameId, fp);
 		found = 1;
 		break;
 	    }
