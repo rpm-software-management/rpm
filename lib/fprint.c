@@ -497,7 +497,7 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
      */
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	fingerPrint *fpList;
+	fingerPrint *fpList, *lastfp = NULL;
 	(void) rpmsqPoll();
 
 	if ((fi = rpmteFiles(p)) == NULL)
@@ -511,11 +511,17 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
 	    struct rpmffi_s ffi;
 	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
 		continue;
-	    if (havesymlinks)
-		fpLookupSubdir(symlinks, fpc, fpList + i);
+	    if (havesymlinks) {
+		/* if the entry/subdirid matches the one from the
+		 * last entry we do not need to call fpLookupSubdir */
+		if (!lastfp || lastfp->entry != fpList[i].entry ||
+			lastfp->subDirId != fpList[i].subDirId)
+		    fpLookupSubdir(symlinks, fpc, fpList + i);
+	    }
 	    ffi.p = p;
 	    ffi.fileno = i;
 	    rpmFpHashAddEntry(fpc->fp, fpList + i, ffi);
+	    lastfp = fpList + i;
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	rpmfilesFree(fi);
