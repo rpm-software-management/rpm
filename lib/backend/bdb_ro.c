@@ -790,6 +790,7 @@ static unsigned int bdbro_pkgdbKey(dbiIndex dbi, dbiCursor dbc)
 struct rpmdbOps_s bdbro_dbops = {
     .name       = "bdb_ro",
     .path       = "Packages",
+    .readonly   = 1,
 
     .open       = bdbro_Open,
     .close      = bdbro_Close,

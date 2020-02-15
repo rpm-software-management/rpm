@@ -143,9 +143,9 @@ int rpmtsRebuildDB(rpmts ts)
     txn = rpmtxnBegin(ts, RPMTXN_WRITE);
     if (txn) {
 	if (!(ts->vsflags & RPMVSF_NOHDRCHK))
-	    rc = rpmdbRebuild(ts->rootDir, ts, headerCheck);
+	    rc = rpmdbRebuild(ts->rootDir, ts, headerCheck, 0);
 	else
-	    rc = rpmdbRebuild(ts->rootDir, NULL, NULL);
+	    rc = rpmdbRebuild(ts->rootDir, NULL, NULL, 0);
 	rpmtxnEnd(txn);
     }
     return rc;

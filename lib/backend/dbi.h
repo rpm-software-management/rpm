@@ -10,6 +10,7 @@ enum rpmdbFlags {
     RPMDB_FLAG_JUSTCHECK	= (1 << 0),
     RPMDB_FLAG_REBUILD		= (1 << 1),
     RPMDB_FLAG_VERIFYONLY	= (1 << 2),
+    RPMDB_FLAG_CONVERT		= (1 << 3),
 };
 
 typedef enum dbCtrlOp_e {
@@ -60,6 +61,7 @@ struct rpmdb_s {
     int		db_buildindex;	/*!< Index rebuild indicator */
 
     const struct rpmdbOps_s * db_ops;	/*!< backend ops */
+    const struct rpmdbOps_s * db_ops_config;	/*!< configured backend ops */
 
     /* dbenv and related parameters */
     void * db_dbenv;		/*!< Backend private handle */
@@ -205,6 +207,14 @@ RPM_GNUC_INTERNAL
 const char * dbiName(dbiIndex dbi);
 
 /** \ingroup dbi
+ * Check if the database needs to be converted to a different format
+ * @param db           rpm database
+ * @return             boolean
+ */
+RPM_GNUC_INTERNAL
+int dbiNeedConversion(rpmdb rdb);
+
+/** \ingroup dbi
  * Open a database cursor.
  * @param dbi		index database handle
  * @param flags		DBC_WRITE if writing, or 0 (DBC_READ) for reading
@@ -248,6 +258,7 @@ const void * idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen);
 struct rpmdbOps_s {
     const char *name; /* backend name */
     const char *path; /* main database name */
+    int readonly;     /* cannot modify database */
 
     int (*open)(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags);
     int (*close)(dbiIndex dbi, unsigned int flags);
