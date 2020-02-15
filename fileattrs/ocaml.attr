@@ -1,3 +1,4 @@
-%__ocaml_provides	%{_rpmconfigdir}/ocaml-find-provides.sh
-%__ocaml_requires	%{_rpmconfigdir}/ocaml-find-requires.sh
-%__ocaml_magic		^(Objective caml|OCaml) .*$
+%__ocaml_provides	%{_rpmconfigdir}/ocamldeps.sh --provides
+%__ocaml_requires	%{_rpmconfigdir}/ocamldeps.sh --requires
+%__ocaml_magic		^(ELF|Objective caml|OCaml) .*$
+%__ocaml_path		.(cma|cmi|cmo|cmx|cmxa|cmxs)$
