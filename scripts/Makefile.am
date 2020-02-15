@@ -19,7 +19,7 @@ EXTRA_DIST = \
 	tgpg vpkg-provides.sh \
 	find-requires find-provides \
 	find-requires.php find-provides.php \
-	ocaml-find-requires.sh ocaml-find-provides.sh \
+	ocamldeps.sh \
 	pkgconfigdeps.sh libtooldeps.sh metainfo.prov \
 	fontconfig.prov desktop-file.prov script.req 
 
@@ -34,7 +34,7 @@ rpmconfig_SCRIPTS = \
 	perl.prov perl.req pythondeps.sh pythondistdeps.py \
 	metainfo.prov \
 	pkgconfigdeps.sh libtooldeps.sh \
-	ocaml-find-requires.sh ocaml-find-provides.sh \
+	ocamldeps.sh \
 	fontconfig.prov desktop-file.prov script.req \
 	rpmdb_dump rpmdb_load \
 	rpm2cpio.sh tgpg 
