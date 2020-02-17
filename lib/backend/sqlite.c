@@ -316,6 +316,7 @@ static int sqlite_Close(dbiIndex dbi, unsigned int flags)
 static int sqlite_Verify(dbiIndex dbi, unsigned int flags)
 {
     int errors = -1;
+    int key_errors = -1;
     sqlite3_stmt *s = NULL;
     const char *cmd = "PRAGMA integrity_check";
 
@@ -336,7 +337,27 @@ static int sqlite_Verify(dbiIndex dbi, unsigned int flags)
 	rpmlog(RPMLOG_ERR, "%s: %s\n", cmd, sqlite3_errmsg(dbi->dbi_db));
     }
 
-    return (errors == 0) ? RPMRC_OK : RPMRC_FAIL;
+    /* No point checking higher-level errors if low-level errors exist */
+    if (errors)
+	goto exit;
+
+    cmd = "PRAGMA foreign_key_check";
+    if (sqlite3_prepare_v2(dbi->dbi_db, cmd, -1, &s, NULL) == SQLITE_OK) {
+	key_errors = 0;
+	while (sqlite3_step(s) == SQLITE_ROW) {
+	    key_errors++;
+	    rpmlog(RPMLOG_ERR, "verify key: %s[%lld]\n",
+				sqlite3_column_text(s, 0),
+				sqlite3_column_int64(s, 1));
+	}
+	sqlite3_finalize(s);
+    } else {
+	rpmlog(RPMLOG_ERR, "%s: %s\n", cmd, sqlite3_errmsg(dbi->dbi_db));
+    }
+
+exit:
+
+    return (errors == 0 && key_errors == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
 
 static void sqlite_SetFSync(rpmdb rdb, int enable)
