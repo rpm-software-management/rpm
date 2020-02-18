@@ -94,64 +94,62 @@ static rpmRC selinux_psm_pre(rpmPlugin plugin, rpmte te)
     return rc;
 }
 
-static rpmRC selinux_scriptlet_fork_post(rpmPlugin plugin,
-						 const char *path, int type)
-{
-    rpmRC rc = RPMRC_FAIL;
-    int xx;
 #ifndef HAVE_SETEXECFILECON
+static int setexecfilecon(const char *path, const char *fallback_type)
+{
+    int rc = -1;
     security_context_t mycon = NULL, fcon = NULL, newcon = NULL;
     context_t con = NULL;
-
-    if (sehandle == NULL)
-	return RPMRC_OK;
 
     /* Figure the context to for next exec() */
     if (getcon(&mycon) < 0)
 	goto exit;
     if (getfilecon(path, &fcon) < 0)
 	goto exit;
-    if (security_compute_create(mycon, fcon, string_to_security_class("process"), &newcon) < 0)
+    if (security_compute_create(mycon, fcon,
+			string_to_security_class("process"), &newcon) < 0)
 	goto exit;
 
     if (rstreq(mycon, newcon)) {
-	/* No default transition, use rpm_script_t for now. */
-	const char * script_type = "rpm_script_t";
-
 	con = context_new(mycon);
 	if (!con)
 	    goto exit;
-	if (context_type_set(con, script_type))
+	if (context_type_set(con, fallback_type))
 	    goto exit;
 	freecon(newcon);
 	newcon = xstrdup(context_str(con));
     }
 
-    if ((xx = setexeccon(newcon)) == 0)
-	rc = RPMRC_OK;
-
-    rpmlog(loglvl(xx < 0), "setexeccon: (%s, %s) %s\n",
-	       path, newcon, (xx < 0 ? strerror(errno) : ""));
+    rc = setexeccon(newcon);
 
 exit:
     context_free(con);
     freecon(newcon);
     freecon(fcon);
     freecon(mycon);
+    return rc;
+}
+#endif
 
-#else
+static rpmRC selinux_scriptlet_fork_post(rpmPlugin plugin,
+						 const char *path, int type)
+{
+    /* No default transition, use rpm_script_t for now. */
+    const char *script_type  = "rpm_script_t";
+    rpmRC rc = RPMRC_FAIL;
+
     if (sehandle == NULL)
 	return RPMRC_OK;
 
-    if ((xx = setexecfilecon(path, "rpm_script_t")) == 0)
+    if (setexecfilecon(path, script_type) == 0)
 	rc = RPMRC_OK;
 
-    rpmlog(loglvl(xx < 0), "setexecfilecon: (%s) %s\n",
-	       path, (xx < 0 ? strerror(errno) : ""));
-#endif
     /* If selinux is not enforcing, we don't care either */
     if (rc && security_getenforce() < 1)
 	rc = RPMRC_OK;
+
+    rpmlog(loglvl(rc), "setexecfilecon: (%s, %s) %s\n",
+	       path, script_type, rc ? strerror(errno) : "");
 
     return rc;
 }
