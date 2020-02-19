@@ -374,21 +374,12 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, fingerPrint
 		char *link;
 		rpmsid linkId;
 
-		/* Ignore already removed (by eg %pretrans) links */
-		if (linktarget && rpmteType(recs[i].p) == TR_REMOVED) {
-		    char *path = rpmfilesFN(foundfi, recs[i].fileno);
-		    struct stat sb;
-		    if (lstat(path, &sb) == -1)
-			linktarget = NULL;
-		    free(path);
-		}
-
 		foundfi = rpmfilesFree(foundfi);
 
 		if (!linktarget || *linktarget == '\0')
 		    continue;
 
-		/* this "directory" is a symlink */
+		/* this "directory" will be symlink */
 		link = NULL;
 		if (*linktarget != '/') {
 		    const char *dn, *subDir = NULL;
@@ -459,9 +450,10 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
 
     rpmFpHash symlinks = rpmFpHashCreate(fileCount/16+16, fpHashFunction, fpEqual, NULL, NULL);
 
+    /* populate the fingerprints of all packages in the transaction */
+    /* also create a hash of all symlinks in the new packages */
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	fingerPrint *fpList;
 	(void) rpmsqPoll();
 
 	if ((fi = rpmteFiles(p)) == NULL)
@@ -471,21 +463,25 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
 	rpmfilesFpLookup(fi, fpc);
 	fs = rpmteGetFileStates(p);
 	fc = rpmfsFC(fs);
-	fpList = rpmfilesFps(fi);
-	/* collect symbolic links */
-	for (i = 0; i < fc; i++) {
-	    struct rpmffi_s ffi;
-	    char const *linktarget;
-	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
-		continue;
-	    linktarget = rpmfilesFLink(fi, i);
-	    if (!(linktarget && *linktarget != '\0'))
-		continue;
-	    ffi.p = p;
-	    ffi.fileno = i;
-	    rpmFpHashAddEntry(symlinks, fpList + i, ffi);
-	    havesymlinks = 1;
+
+	if (rpmteType(p) != TR_REMOVED) {
+	    fingerPrint *fpList = rpmfilesFps(fi);
+	    /* collect symbolic links */
+	    for (i = 0; i < fc; i++) {
+		struct rpmffi_s ffi;
+		char const *linktarget;
+		if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
+		    continue;
+		linktarget = rpmfilesFLink(fi, i);
+		if (!(linktarget && *linktarget != '\0'))
+		    continue;
+		ffi.p = p;
+		ffi.fileno = i;
+		rpmFpHashAddEntry(symlinks, fpList + i, ffi);
+		havesymlinks = 1;
+	    }
 	}
+
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
 	rpmfilesFree(fi);
     }
