@@ -881,22 +881,23 @@ static void checkInstFileDeps(rpmts ts, depCache dcache, rpmte te,
     filedepHashGetEntry(cache, basename, &dirnames, &ndirnames, NULL);
     if (!ndirnames)
 	return;
-    if (!fpc)
-	*fpcp = fpc = fpCacheCreate(1001, NULL);
     dirname = rpmfiDN(fi);
-    fpLookup(fpc, dirname, basename, &fp);
     for (i = 0; i < ndirnames; i++) {
 	char *fpdep = 0;
 	const char *dep;
 	if (!strcmp(dirnames[i], dirname)) {
 	    dep = rpmfiFN(fi);
-	} else if (fpLookupEquals(fpc, fp, dirnames[i], basename)) {
+	} else {
+	    if (!fpc)
+		*fpcp = fpc = fpCacheCreate(1001, NULL);
+	    if (!fp)
+		fpLookup(fpc, dirname, basename, &fp);
+	    if (!fpLookupEquals(fpc, fp, dirnames[i], basename))
+		continue;
 	    fpdep = rmalloc(strlen(dirnames[i]) + strlen(basename) + 1);
 	    strcpy(fpdep, dirnames[i]);
 	    strcat(fpdep, basename);
 	    dep = fpdep;
-	} else {
-	    continue;
 	}
 	checkInstDeps(ts, dcache, te, depTag, dep, NULL, is_not);
 	_free(fpdep);
