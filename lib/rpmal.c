@@ -420,10 +420,6 @@ static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const char *fileName,
 	    fingerPrint * fp = NULL;
 	    rpmsid dirName = rpmstrPoolIdn(al->pool, fileName, bnStart, 1);
 
-	    if (!al->fpc)
-		al->fpc = fpCacheCreate(1001, al->pool);
-	    fpLookupId(al->fpc, dirName, baseName, &fp);
-
 	    for (found = i = 0; i < resultCnt; i++) {
 		availablePackage alp = al->list + result[i].pkgNum;
 		if (alp->p == NULL) /* deleted */
@@ -431,10 +427,15 @@ static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const char *fileName,
 		/* ignore self-conflicts/obsoletes */
 		if (filterds && rpmteDS(alp->p, rpmdsTagN(filterds)) == filterds)
 		    continue;
-		if (result[i].dirName != dirName &&
-		    !fpLookupEqualsId(al->fpc, fp, result[i].dirName, baseName))
-		    continue;
-
+		if (result[i].dirName != dirName) {
+		    /* if the directory is different check the fingerprints */
+		    if (!al->fpc)
+			al->fpc = fpCacheCreate(1001, al->pool);
+		    if (!fp)
+			fpLookupId(al->fpc, dirName, baseName, &fp);
+		    if (!fpLookupEqualsId(al->fpc, fp, result[i].dirName, baseName))
+			continue;
+		}
 		ret[found] = alp->p;
 		found++;
 	    }
