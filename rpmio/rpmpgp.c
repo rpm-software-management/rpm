@@ -96,6 +96,8 @@ static struct pgpValTbl_s const pgpHashTbl[] = {
     { PGPHASHALGO_SHA384,	"SHA384" },
     { PGPHASHALGO_SHA512,	"SHA512" },
     { PGPHASHALGO_SHA224,	"SHA224" },
+    { PGPHASHALGO_GOST12_256,	"MD_GOST12_256" },
+    { PGPHASHALGO_GOST12_512,	"MD_GOST12_512" },
     { -1,			"Unknown hash algorithm" },
 };
 

@@ -1246,6 +1246,11 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	rpmlibNeedsFeature(pkg, "FileDigests", "4.6.0-1");
     }
 
+    if (digestalgo == PGPHASHALGO_GOST12_256 || digestalgo == PGPHASHALGO_GOST12_512) {
+	headerPutUint32(h, RPMTAG_FILEDIGESTALGO, &digestalgo, 1);
+	rpmlibNeedsFeature(pkg, "FileDigestsGOST12", "4.16.0-1");
+    }
+
     if (fl->haveCaps) {
 	rpmlibNeedsFeature(pkg, "FileCaps", "4.6.1-1");
     }

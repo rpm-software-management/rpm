@@ -395,6 +395,7 @@ AC_SUBST(WITH_OPENSSL_LIB)
 WITH_LIBGCRYPT_INCLUDE=
 WITH_LIBGCRYPT_LIB=
 if test "$with_crypto" = libgcrypt ; then
+  AC_DEFINE(WITH_LIBGCRYPT, 1, [Build with libgcrypt instead of nss3 support?])
   # libgcrypt 1.8.5 onwards ships a pkg-config file so prefer that
   PKG_CHECK_MODULES([LIBGCRYPT], [libgcrypt], [have_libgcrypt=yes], [have_libgcrypt=no])
   if test "$have_libgcrypt" = "yes"; then

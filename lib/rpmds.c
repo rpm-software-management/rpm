@@ -1229,6 +1229,17 @@ static const struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(FileDigests)", 		"4.6.0-1",
 	(		 RPMSENSE_EQUAL),
     N_("file digest algorithm is per package configurable") },
+#ifdef WITH_LIBGCRYPT
+    /*
+     * As rpmlib(FileDigestsGOST12) is available only when RPM is built with libcgrypt,
+     * to avoid other versions of RPM from misunderatanding hashes
+     * (see e.g. https://github.com/rpm-software-management/rpm/issues/959),
+     * require FileDigestsGOST12 separately
+     */
+    { "rpmlib(FileDigestsGOST12)", 		"4.16.0-1",
+	(		 RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("file digest can be GOST R 34.11 2012 (STREEBOG256, STREEBOG512)") },
+#endif
 #ifdef WITH_CAP
     { "rpmlib(FileCaps)", 		"4.6.1-1",
 	(		 RPMSENSE_EQUAL),
