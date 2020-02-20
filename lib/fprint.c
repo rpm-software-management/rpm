@@ -248,6 +248,15 @@ int fpLookup(fingerPrintCache cache,
     return doLookup(cache, dirName, baseName, *fp);
 }
 
+int fpLookupId(fingerPrintCache cache,
+               rpmsid dirNameId, rpmsid baseNameId,
+               fingerPrint **fp)
+{
+    if (*fp == NULL)
+	*fp = xcalloc(1, sizeof(**fp));
+    return doLookupId(cache, dirNameId, baseNameId, *fp);
+}
+
 /**
  * Return hash value for a finger print.
  * Hash based on dev and inode only!
@@ -299,6 +308,14 @@ int fpLookupEquals(fingerPrintCache cache, fingerPrint *fp,
 {
     struct fingerPrint_s ofp;
     doLookup(cache, dirName, baseName, &ofp);
+    return FP_EQUAL(*fp, ofp);
+}
+
+int fpLookupEqualsId(fingerPrintCache cache, fingerPrint *fp,
+	          rpmsid dirNameId, rpmsid baseNameId)
+{
+    struct fingerPrint_s ofp;
+    doLookupId(cache, dirNameId, baseNameId, &ofp);
     return FP_EQUAL(*fp, ofp);
 }
 
