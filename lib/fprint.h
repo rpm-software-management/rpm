@@ -57,6 +57,10 @@ int fpLookupEquals(fingerPrintCache cache, fingerPrint * fp,
 	           const char * dirName, const char * baseName);
 
 RPM_GNUC_INTERNAL
+int fpLookupEqualsId(fingerPrintCache cache, fingerPrint * fp,
+	             rpmsid dirNameId, rpmsid baseNameId);
+
+RPM_GNUC_INTERNAL
 const char *fpEntryDir(fingerPrintCache cache, fingerPrint *fp);
 
 RPM_GNUC_INTERNAL
@@ -74,6 +78,19 @@ RPM_GNUC_INTERNAL
 int fpLookup(fingerPrintCache cache,
 	     const char * dirName, const char * baseName,
 	     fingerPrint **fp);
+
+/**
+ * Return finger print of a file path given as ids.
+ * @param cache		pointer to fingerprint cache
+ * @param dirNameId	id of leading directory name of file path
+ * @param baseNameId	id of base name of file path
+ * @retval fp		pointer of fingerprint struct to fill out
+ * @return		0 on success
+ */
+RPM_GNUC_INTERNAL
+int fpLookupId(fingerPrintCache cache,
+	       rpmsid dirNameId, rpmsid BaseNameId,
+	       fingerPrint **fp);
 
 /**
  * Compare two finger print entries.
