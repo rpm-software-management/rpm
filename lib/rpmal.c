@@ -421,8 +421,8 @@ static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const char *fileName,
 	    rpmsid dirName = rpmstrPoolIdn(al->pool, fileName, bnStart, 1);
 
 	    if (!al->fpc)
-		al->fpc = fpCacheCreate(1001, NULL);
-	    fpLookup(al->fpc, rpmstrPoolStr(al->pool, dirName), fileName + bnStart, &fp);
+		al->fpc = fpCacheCreate(1001, al->pool);
+	    fpLookupId(al->fpc, dirName, baseName, &fp);
 
 	    for (found = i = 0; i < resultCnt; i++) {
 		availablePackage alp = al->list + result[i].pkgNum;
@@ -432,7 +432,7 @@ static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const char *fileName,
 		if (filterds && rpmteDS(alp->p, rpmdsTagN(filterds)) == filterds)
 		    continue;
 		if (result[i].dirName != dirName &&
-		    !fpLookupEquals(al->fpc, fp, rpmstrPoolStr(al->pool, result[i].dirName), fileName + bnStart))
+		    !fpLookupEqualsId(al->fpc, fp, result[i].dirName, baseName))
 		    continue;
 
 		ret[found] = alp->p;
