@@ -384,10 +384,8 @@ rpmal rpmtsCreateAl(rpmts ts, rpmElementTypes types)
     if (ts) {
 	rpmte p;
 	rpmtsi pi;
-	rpmstrPool tspool = rpmtsPool(ts);
 
-	al = rpmalCreate(tspool, (rpmtsNElements(ts) / 4) + 1, rpmtsFlags(ts),
-				rpmtsColor(ts), rpmtsPrefColor(ts));
+	al = rpmalCreate(ts, (rpmtsNElements(ts) / 4) + 1);
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, types)))
 	    rpmalAdd(al, p);
@@ -455,8 +453,7 @@ static int addPackage(rpmts ts, Header h,
     }
     
     if (tsmem->addedPackages == NULL) {
-	tsmem->addedPackages = rpmalCreate(rpmtsPool(ts), 5, rpmtsFlags(ts),
-					   tscolor, rpmtsPrefColor(ts));
+	tsmem->addedPackages = rpmalCreate(ts, 5);
     }
     rpmalAdd(tsmem->addedPackages, p);
 
