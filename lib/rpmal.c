@@ -14,6 +14,7 @@
 #include "lib/rpmte_internal.h"
 #include "lib/rpmds_internal.h"
 #include "lib/rpmfi_internal.h"
+#include "lib/rpmts_internal.h"
 
 #include "debug.h"
 
@@ -92,26 +93,22 @@ static void rpmalFreeIndex(rpmal al)
     al->fpc = fpCacheFree(al->fpc);
 }
 
-rpmal rpmalCreate(rpmstrPool pool, int delta, rpmtransFlags tsflags,
-		  rpm_color_t tscolor, rpm_color_t prefcolor)
+rpmal rpmalCreate(rpmts ts, int delta)
 {
     rpmal al = xcalloc(1, sizeof(*al));
 
-    /* transition time safe-guard */
-    assert(pool != NULL);
-
-    al->pool = rpmstrPoolLink(pool);
+    al->pool = rpmstrPoolLink(rpmtsPool(ts));
     al->delta = delta;
     al->size = 0;
     al->alloced = al->delta;
-    al->list = xmalloc(sizeof(*al->list) * al->alloced);;
+    al->list = xmalloc(sizeof(*al->list) * al->alloced);
 
     al->providesHash = NULL;
     al->obsoletesHash = NULL;
     al->fileHash = NULL;
-    al->tsflags = tsflags;
-    al->tscolor = tscolor;
-    al->prefcolor = prefcolor;
+    al->tsflags = rpmtsFlags(ts);
+    al->tscolor = rpmtsColor(ts);
+    al->prefcolor = rpmtsPrefColor(ts);
 
     return al;
 }
