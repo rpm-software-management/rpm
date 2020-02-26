@@ -26,6 +26,22 @@ struct dbiCursor_s {
 
 static int sqlexec(sqlite3 *sdb, const char *fmt, ...);
 
+static void rpm_match3(sqlite3_context *sctx, int argc, sqlite3_value **argv)
+{
+    int match = 0;
+    if (argc == 3) {
+	int b1len = sqlite3_value_bytes(argv[0]);
+	int b2len = sqlite3_value_bytes(argv[1]);
+	int n = sqlite3_value_int(argv[2]);
+	if (b1len >= n && b2len >= n) {
+	    const char *b1 = sqlite3_value_blob(argv[0]);
+	    const char *b2 = sqlite3_value_blob(argv[1]);
+	    match = (memcmp(b1, b2, n) == 0);
+	}
+    }
+    sqlite3_result_int(sctx, match);
+}
+
 static void errCb(void *data, int err, const char *msg)
 {
     rpmdb rdb = data;
@@ -140,6 +156,11 @@ static int sqlite_init(rpmdb rdb, const char * dbhome)
 	    rc = 1;
 	    goto exit;
 	}
+
+	sqlite3_create_function(sdb, "match", 3,
+				(SQLITE_UTF8|SQLITE_DETERMINISTIC),
+				NULL, rpm_match3, NULL, NULL);
+
 	sqlite3_busy_timeout(sdb, sleep_ms);
 	sqlite3_config(SQLITE_CONFIG_LOG, errCb, rdb);
 
@@ -561,8 +582,7 @@ static rpmRC sqlite_idxdbIter(dbiIndex dbi, dbiCursor dbc, const char *keyp, siz
     if (dbc->stmt == NULL) {
 	if (searchType == DBC_PREFIX_SEARCH) {
 	    rc = dbiCursorPrep(dbc, "SELECT DISTINCT key FROM '%q' "
-				    "WHERE key LIKE '%q%%' "
-				    "AND LENGTH(key) >= %d "
+				    "WHERE MATCH(key,'%q',%d) "
 				    "ORDER BY key",
 				    dbi->dbi_file, keyp, keylen);
 	} else {
