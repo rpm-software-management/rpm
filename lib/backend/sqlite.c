@@ -476,7 +476,7 @@ static rpmRC sqlite_stepPkg(dbiCursor dbc, unsigned char **hdrBlob, unsigned int
 
 static rpmRC sqlite_pkgdbByKey(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum, unsigned char **hdrBlob, unsigned int *hdrLen)
 {
-    int rc = dbiCursorPrep(dbc, "SELECT hnum, blob from '%q' where hnum=?",
+    int rc = dbiCursorPrep(dbc, "SELECT hnum, blob FROM '%q' WHERE hnum=?",
 				dbi->dbi_file);
 
     if (!rc)
@@ -493,7 +493,7 @@ static rpmRC sqlite_pkgdbIter(dbiIndex dbi, dbiCursor dbc,
 {
     int rc = RPMRC_OK;
     if (dbc->stmt == NULL) {
-	rc = dbiCursorPrep(dbc, "SELECT hnum, blob from '%q'", dbi->dbi_file);
+	rc = dbiCursorPrep(dbc, "SELECT hnum, blob FROM '%q'", dbi->dbi_file);
     }
 
     if (!rc)
@@ -528,7 +528,7 @@ static unsigned int sqlite_pkgdbKey(dbiIndex dbi, dbiCursor dbc)
 
 static rpmRC sqlite_idxdbByKey(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexSet *set)
 {
-    int rc = dbiCursorPrep(dbc, "SELECT hnum, idx from '%q' where key=?",
+    int rc = dbiCursorPrep(dbc, "SELECT hnum, idx FROM '%q' WHERE key=?",
 			dbi->dbi_file);
 
     if (!rc)
@@ -560,13 +560,13 @@ static rpmRC sqlite_idxdbIter(dbiIndex dbi, dbiCursor dbc, const char *keyp, siz
 
     if (dbc->stmt == NULL) {
 	if (searchType == DBC_PREFIX_SEARCH) {
-	    rc = dbiCursorPrep(dbc, "SELECT DISTINCT key from '%q' "
+	    rc = dbiCursorPrep(dbc, "SELECT DISTINCT key FROM '%q' "
 				    "WHERE key LIKE '%q%%' "
 				    "AND LENGTH(key) >= %d "
 				    "ORDER BY key",
 				    dbi->dbi_file, keyp, keylen);
 	} else {
-	    rc = dbiCursorPrep(dbc, "SELECT DISTINCT key from '%q' "
+	    rc = dbiCursorPrep(dbc, "SELECT DISTINCT key FROM '%q' "
 				    "ORDER BY key",
 				dbi->dbi_file);
 	}
