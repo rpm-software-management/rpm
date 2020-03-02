@@ -519,10 +519,10 @@ static int checkPkg(FD_t fd, char **msg)
  * Create/modify elements in signature header.
  * @param rpm		path to package
  * @param deleting	adding or deleting signature?
- * @param signfiles	sign files if non-zero
+ * @param flags
  * @return		0 on success, -1 on error
  */
-static int rpmSign(const char *rpm, int deleting, int signfiles)
+static int rpmSign(const char *rpm, int deleting, int flags)
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
@@ -578,7 +578,7 @@ static int rpmSign(const char *rpm, int deleting, int signfiles)
     unloadImmutableRegion(&sigh, RPMTAG_HEADERSIGNATURES);
     origSigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
 
-    if (signfiles) {
+    if (flags & RPMSIGN_FLAG_IMA) {
 	if (includeFileSignatures(&sigh, &h))
 	    goto exit;
     }
@@ -716,7 +716,7 @@ int rpmPkgSign(const char *path, const struct rpmSignArgs * args)
 	}
     }
 
-    rc = rpmSign(path, 0, args ? args->signfiles : 0);
+    rc = rpmSign(path, 0, args ? args->signflags : 0);
 
     if (args) {
 	if (args->hashalgo) {
