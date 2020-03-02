@@ -11,6 +11,7 @@ rpmsign \- RPM Package Signing
 
 .SS "rpmsign-options"
 .PP
+[\fb--rpmv3\fR]
 [\fb--fskpath \fIKEY\fb\fR] [\fB--signfiles\fR]
 
 .SH DESCRIPTION
@@ -31,6 +32,14 @@ Delete all signatures from each package \fIPACKAGE_FILE\fR given.
 
 .SS "SIGN OPTIONS"
 .PP
+.TP
+\fB--rpmv3\fR
+Force RPM V3 header+payload signature addition.
+These are expensive and redundant baggage on packages where a separate
+payload digest exists (packages built with rpm >= 4.14).  Rpm will
+automatically detect the need for V3 signatures, but this option can be
+used to force their creation if the packages must be fully 
+signature verifiable with rpm < 4.14 or other interoperability reasons.
 .TP
 \fB--fskpath \fIKEY\fB\fR
 Used with \fB--signfiles\fR, use file signing key \fIKey\fR.

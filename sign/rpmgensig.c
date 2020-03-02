@@ -437,14 +437,17 @@ static int replaceSignature(Header sigh, sigTarget sigt_v3, sigTarget sigt_v4)
 
     if (headerPut(sigh, sigtd, HEADERPUT_DEFAULT) == 0)
 	goto exit;
-    rpmtdFree(sigtd);
 
-    /* Assume the same signature test holds for v3 signature too */
-    if ((sigtd = makeGPGSignature(sigh, 0, sigt_v3)) == NULL)
-	goto exit;
+    if (sigt_v3) {
+	rpmtdFree(sigtd);
 
-    if (headerPut(sigh, sigtd, HEADERPUT_DEFAULT) == 0)
-	goto exit;
+	/* Assume the same signature test holds for v3 signature too */
+	if ((sigtd = makeGPGSignature(sigh, 0, sigt_v3)) == NULL)
+	    goto exit;
+
+	if (headerPut(sigh, sigtd, HEADERPUT_DEFAULT) == 0)
+	    goto exit;
+    }
 
     rc = 0;
 exit:
@@ -575,6 +578,12 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	goto exit;
     }
 
+    /* Always add V3 signatures if no payload digest present */
+    if (!(headerIsEntry(h, RPMTAG_PAYLOADDIGEST) ||
+	  headerIsEntry(h, RPMTAG_PAYLOADDIGESTALT))) {
+	flags |= RPMSIGN_FLAG_RPMV3;
+    }
+
     unloadImmutableRegion(&sigh, RPMTAG_HEADERSIGNATURES);
     origSigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
 
@@ -587,6 +596,7 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	deleteSigs(sigh);
     } else {
 	/* Signature target containing header + payload */
+	int v3 = (flags & RPMSIGN_FLAG_RPMV3);
 	sigt_v3.fd = fd;
 	sigt_v3.start = headerStart;
 	sigt_v3.fileName = rpm;
@@ -596,7 +606,7 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	sigt_v4 = sigt_v3;
 	sigt_v4.size = headerSizeof(h, HEADER_MAGIC_YES);
 
-	res = replaceSignature(sigh, &sigt_v3, &sigt_v4);
+	res = replaceSignature(sigh, v3 ? &sigt_v3 : NULL, &sigt_v4);
 	if (res != 0) {
 	    if (res == 1) {
 		rpmlog(RPMLOG_WARNING,

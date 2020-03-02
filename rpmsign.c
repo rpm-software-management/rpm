@@ -32,6 +32,9 @@ static struct poptOption signOptsTable[] = {
 	N_("sign package(s) (identical to --addsign)"), NULL },
     { "delsign", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_DELSIGN,
 	N_("delete package signatures"), NULL },
+    { "rpmv3", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR),
+	&sargs.signflags, RPMSIGN_FLAG_RPMV3,
+	N_("create rpm v3 header+payload signatures") },
 #ifdef WITH_IMAEVM
     { "signfiles", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR),
 	&sargs.signflags, RPMSIGN_FLAG_IMA,
