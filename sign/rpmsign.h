@@ -16,6 +16,7 @@ extern "C" {
 enum rpmSignFlags_e {
     RPMSIGN_FLAG_NONE		= 0,
     RPMSIGN_FLAG_IMA		= (1 << 0),
+    RPMSIGN_FLAG_RPMV3		= (1 << 1),
 };
 typedef rpmFlags rpmSignFlags;
 
