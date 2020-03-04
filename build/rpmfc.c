@@ -26,6 +26,7 @@
 struct matchRule {
     regex_t *path;
     regex_t *magic;
+    regex_t *mime;
     ARGV_t flags;
 };
 
@@ -116,6 +117,7 @@ static void ruleFree(struct matchRule *rule)
 {
     regFree(rule->path);
     regFree(rule->magic);
+    regFree(rule->mime);
     argvFree(rule->flags);
 }
 
@@ -201,12 +203,21 @@ static rpmfcAttr rpmfcAttrNew(const char *name)
 
 	    (*rule)->path = rpmfcAttrReg(name, prefix, "path", NULL);
 	    (*rule)->magic = rpmfcAttrReg(name, prefix, "magic", NULL);
+	    (*rule)->mime = rpmfcAttrReg(name, prefix, "mime", NULL);
 	} else {
 	    flags = rpmfcAttrMacro(name, "flags", NULL);
 
 	    (*rule)->path = rpmfcAttrReg(name, "path", NULL);
 	    (*rule)->magic = rpmfcAttrReg(name, "magic", NULL);
+	    (*rule)->mime = rpmfcAttrReg(name, "mime", NULL);
 	}
+	if ((*rule)->magic && (*rule)->mime) {
+	    rpmlog(RPMLOG_WARNING,
+		_("%s: mime and magic supplied, only mime will be used\n"),
+		name);
+	}
+
+
 	(*rule)->flags = argvSplitString(flags, ",", ARGV_SKIPEMPTY);
 	argvSort((*rule)->flags, NULL);
 
@@ -684,18 +695,22 @@ static void argvAddTokens(ARGV_t *argv, const char *tnames)
 }
 
 static int matches(const struct matchRule *rule,
-		   const char *ftype, const char *path, int executable)
+		   const char *ftype, const char *fmime,
+		    const char *path, int executable)
 {
+    const char *mtype = rule->mime ? fmime : ftype;
+    regex_t *mreg = rule->mime ? rule->mime : rule->magic;
+
     if (!executable && hasAttr(rule->flags, "exeonly"))
 	return 0;
-    if (rule->magic && rule->path && hasAttr(rule->flags, "magic_and_path")) {
-	return (regMatch(rule->magic, ftype) && regMatch(rule->path, path));
+    if (mreg && rule->path && hasAttr(rule->flags, "magic_and_path")) {
+	return (regMatch(mreg, mtype) && regMatch(rule->path, path));
     } else {
-	return (regMatch(rule->magic, ftype) || regMatch(rule->path, path));
+	return (regMatch(mreg, mtype) || regMatch(rule->path, path));
     }
 }
 
-static void rpmfcAttributes(rpmfc fc, int ix, const char *ftype, const char *fullpath)
+static void rpmfcAttributes(rpmfc fc, int ix, const char *ftype, const char *fmime, const char *fullpath)
 {
     const char *path = fullpath + fc->brlen;
     int is_executable = 0;
@@ -707,11 +722,11 @@ static void rpmfcAttributes(rpmfc fc, int ix, const char *ftype, const char *ful
 
     for (rpmfcAttr *attr = fc->atypes; attr && *attr; attr++) {
 	/* Filter out excludes */
-	if (matches(&(*attr)->excl, ftype, path, is_executable))
+	if (matches(&(*attr)->excl, ftype, fmime, path, is_executable))
 	    continue;
 
 	/* Add attributes on libmagic type & path pattern matches */
-	if (matches(&(*attr)->incl, ftype, path, is_executable)) {
+	if (matches(&(*attr)->incl, ftype, fmime, path, is_executable)) {
 	    argvAddTokens(&fc->fattrs[ix], (*attr)->name);
 	    #pragma omp critical(fahash)
 	    fattrHashAddEntry(fc->fahash, attr-fc->atypes, ix);
@@ -1142,6 +1157,7 @@ static uint32_t getElfColor(const char *fn)
 rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 {
     int msflags = MAGIC_CHECK | MAGIC_COMPRESS | MAGIC_NO_CHECK_TOKENS | MAGIC_ERROR;
+    int mimeflags = msflags | MAGIC_MIME_TYPE;
     int nerrors = 0;
     rpmRC rc = RPMRC_FAIL;
 
@@ -1178,8 +1194,9 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     {
     /* libmagic is not thread-safe, each thread needs to a private handle */
     magic_t ms = magic_open(msflags);
+    magic_t mime = magic_open(mimeflags);
 
-    if (ms == NULL) {
+    if (ms == NULL || mime == NULL) {
 	rpmlog(RPMLOG_ERR, _("magic_open(0x%x) failed: %s\n"),
 		msflags, strerror(errno));
 	#pragma omp cancel parallel
@@ -1189,9 +1206,14 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	rpmlog(RPMLOG_ERR, _("magic_load failed: %s\n"), magic_error(ms));
 	#pragma omp cancel parallel
     }
+    if (magic_load(mime, NULL) == -1) {
+	rpmlog(RPMLOG_ERR, _("magic_load failed: %s\n"), magic_error(mime));
+	#pragma omp cancel parallel
+    }
 
     #pragma omp for reduction(+:nerrors)
     for (int ix = 0; ix < fc->nfiles; ix++) {
+	const char * fmime;
 	const char * ftype;
 	const char * s = argv[ix];
 	size_t slen = strlen(s);
@@ -1243,7 +1265,24 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	    }
 	}
 
-	rpmlog(RPMLOG_DEBUG, "%s: %s\n", s, ftype);
+	fmime = magic_file(mime, s);
+
+	/* Silence errors from immaterial %ghosts */
+	if (fmime == NULL && errno == ENOENT)
+	    fmime = "";
+
+	if (fmime == NULL) {
+	    rpmlog(is_executable ? RPMLOG_ERR : RPMLOG_WARNING,
+		   _("Recognition of file \"%s\" failed: mode %06o %s\n"),
+		   s, mode, magic_error(ms));
+	    /* only executable files are critical to dep extraction */
+	    if (is_executable) {
+		nerrors++;
+	    }
+	    fmime = "application/octet-stream";
+	}
+
+	rpmlog(RPMLOG_DEBUG, "%s: %s (%s)\n", s, fmime, ftype);
 
 	/* Save the path. */
 	fc->fn[ix] = xstrdup(s);
@@ -1252,7 +1291,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	fcolor |= rpmfcColor(ftype);
 
 	/* Add attributes based on file type and/or path */
-	rpmfcAttributes(fc, ix, ftype, s);
+	rpmfcAttributes(fc, ix, ftype, fmime, s);
 
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
 	    fc->ftype[ix] = xstrdup(ftype);
@@ -1264,6 +1303,8 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 
     if (ms != NULL)
 	magic_close(ms);
+    if (mime != NULL)
+	magic_close(mime);
 
     } /* omp parallel */
 
