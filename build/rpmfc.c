@@ -7,6 +7,7 @@
 #include <signal.h>
 #include <magic.h>
 #include <regex.h>
+#include <gelf.h>
 
 #include <rpm/header.h>
 #include <rpm/argv.h>
@@ -622,7 +623,7 @@ exit:
     return rc;
 }
 
-/* Only used for elf coloring and controlling RPMTAG_FILECLASS inclusion now */
+/* Only used for controlling RPMTAG_FILECLASS inclusion now */
 static const struct rpmfcTokens_s rpmfcTokens[] = {
   { "directory",		RPMFC_INCLUDE },
 
@@ -1115,6 +1116,29 @@ static int initAttrs(rpmfc fc)
     return nattrs;
 }
 
+static uint32_t getElfColor(const char *fn)
+{
+    uint32_t color = 0;
+    int fd = open(fn, O_RDONLY);
+    if (fd >= 0) {
+	Elf *elf = elf_begin (fd, ELF_C_READ, NULL);
+	GElf_Ehdr ehdr;
+	if (elf && gelf_getehdr(elf, &ehdr)) {
+	    switch (ehdr.e_ident[EI_CLASS]) {
+	    case ELFCLASS64:
+		color = RPMFC_ELF64;
+		break;
+	    case ELFCLASS32:
+		color = RPMFC_ELF32;
+		break;
+	    }
+	    elf_end(elf);
+	}
+	close(fd);
+    }
+    return color;
+}
+
 rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 {
     int msflags = MAGIC_CHECK | MAGIC_COMPRESS | MAGIC_NO_CHECK_TOKENS;
@@ -1226,10 +1250,12 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	/* Add attributes based on file type and/or path */
 	rpmfcAttributes(fc, ix, ftype, s);
 
-	fc->fcolor[ix] = fcolor;
-
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
 	    fc->ftype[ix] = xstrdup(ftype);
+
+	/* Add ELF colors */
+	if (S_ISREG(mode) && is_executable)
+	    fc->fcolor[ix] = getElfColor(s);
     }
 
     if (ms != NULL)
@@ -1533,9 +1559,6 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 	goto exit;
 
     /* Add per-file colors(#files) */
-    /* XXX Make sure only primary (i.e. Elf32/Elf64) colors are added. */
-    for (int i = 0; i < fc->nfiles; i++)
-	fc->fcolor[i] &= 0x0f;
     headerPutUint32(pkg->header, RPMTAG_FILECOLORS, fc->fcolor, fc->nfiles);
     
     /* Add classes(#classes) */
