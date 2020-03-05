@@ -459,7 +459,7 @@ for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
         --define "ver $v" \
 	--define "filetype link" \
-	--define "filedata foo" \
+	--define "filedata doh" \
           /data/SPECS/replacetest.spec
 done
 
@@ -502,8 +502,8 @@ runroot rpm -Va  --nouser --nogroup replacetest
 readlink "${tf}"
 ],
 [0],
-[foo
-foo
+[doh
+doh
 fox
 xx
 fox
@@ -526,7 +526,7 @@ for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
         --define "ver $v" \
 	--define "filetype link" \
-	--define "filedata foo" \
+	--define "filedata doh" \
           /data/SPECS/replacetest.spec
 done
 
@@ -573,9 +573,9 @@ grep -c  "touch" output.txt
 readlink "${tf}"
 ],
 [0],
-[foo
+[doh
 2
-foo
+doh
 1
 fox
 xx
