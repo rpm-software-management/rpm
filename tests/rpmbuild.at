@@ -539,6 +539,37 @@ runroot rpm -qp --requires /build/RPMS/noarch/shebang-0.1-1.noarch.rpm|grep -v ^
 [])
 AT_CLEANUP
 
+AT_SETUP([File class generation])
+AT_KEYWORDS([build])
+AT_CHECK([
+
+runroot rpmbuild -bb --quiet /data/SPECS/attrtest.spec
+runroot rpm -qp --fileclass /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm
+],
+[0],
+[/a/dir	directory
+/a/file	ASCII text
+/b/dir	directory
+/b/file	ASCII text
+/c/dir	directory
+/c/file	ASCII text
+/d/dir	directory
+/d/file	ASCII text
+/e/dir	directory
+/e/file	ASCII text
+/f/dir	directory
+/f/file	ASCII text
+/g/dir	directory
+/g/file	ASCII text
+/h/dir	directory
+/h/file	ASCII text
+/i/dir	directory
+/i/file	ASCII text
+/j/dir	directory
+/j/file	ASCII text
+],
+[])
+AT_CLEANUP
 # ------------------------------
 # Test spec query functionality
 AT_SETUP([rpmspec query 1])
