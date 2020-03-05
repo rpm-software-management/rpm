@@ -83,11 +83,6 @@ struct rpmfc_s {
     rpmstrPool pool;	/*!< general purpose string storage */
 };
 
-struct rpmfcTokens_s {
-    const char * token;
-    rpm_color_t colors;
-};  
-
 static int intCmp(int a, int b)
 {
     return (a != b);
@@ -634,55 +629,6 @@ exit:
     return rc;
 }
 
-/* Only used for controlling RPMTAG_FILECLASS inclusion now */
-static const struct rpmfcTokens_s rpmfcTokens[] = {
-  { "directory",		RPMFC_INCLUDE },
-
-  { "ELF 32-bit",		RPMFC_ELF32|RPMFC_INCLUDE },
-  { "ELF 64-bit",		RPMFC_ELF64|RPMFC_INCLUDE },
-
-  { "troff or preprocessor input",	RPMFC_INCLUDE },
-  { "GNU Info",			RPMFC_INCLUDE },
-
-  { "perl ",			RPMFC_INCLUDE },
-  { "Perl5 module source text", RPMFC_INCLUDE },
-  { "python ",			RPMFC_INCLUDE },
-
-  { "libtool library ",         RPMFC_INCLUDE },
-  { "pkgconfig ",               RPMFC_INCLUDE },
-
-  { "Objective caml ",		RPMFC_INCLUDE },
-  { "Mono/.Net assembly",       RPMFC_INCLUDE },
-
-  { "current ar archive",	RPMFC_INCLUDE },
-  { "Zip archive data",		RPMFC_INCLUDE },
-  { "tar archive",		RPMFC_INCLUDE },
-  { "cpio archive",		RPMFC_INCLUDE },
-  { "RPM v3",			RPMFC_INCLUDE },
-  { "RPM v4",			RPMFC_INCLUDE },
-
-  { " image",			RPMFC_INCLUDE },
-  { " font",			RPMFC_INCLUDE },
-  { " Font",			RPMFC_INCLUDE },
-
-  { " commands",		RPMFC_INCLUDE },
-  { " script",			RPMFC_INCLUDE },
-
-  { "empty",			RPMFC_INCLUDE },
-
-  { "HTML",			RPMFC_INCLUDE },
-  { "SGML",			RPMFC_INCLUDE },
-  { "XML",			RPMFC_INCLUDE },
-
-  { " source",			RPMFC_INCLUDE },
-  { "GLS_BINARY_LSB_FIRST",	RPMFC_INCLUDE },
-  { " DB ",			RPMFC_INCLUDE },
-
-  { " text",			RPMFC_INCLUDE },
-
-  { NULL,			RPMFC_BLACK }
-};
-
 static void argvAddTokens(ARGV_t *argv, const char *tnames)
 {
     if (tnames) {
@@ -732,24 +678,6 @@ static void rpmfcAttributes(rpmfc fc, int ix, const char *ftype, const char *fmi
 	    fattrHashAddEntry(fc->fahash, attr-fc->atypes, ix);
 	}
     }
-}
-
-/* Return color for a given libmagic classification string */
-static rpm_color_t rpmfcColor(const char * fmstr)
-{
-    rpmfcToken fct;
-    rpm_color_t fcolor = RPMFC_BLACK;
-
-    for (fct = rpmfcTokens; fct->token != NULL; fct++) {
-	if (strstr(fmstr, fct->token) == NULL)
-	    continue;
-
-	fcolor |= fct->colors;
-	if (fcolor & RPMFC_INCLUDE)
-	    break;
-    }
-
-    return fcolor;
 }
 
 void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp)
@@ -1217,7 +1145,6 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	const char * ftype;
 	const char * s = argv[ix];
 	size_t slen = strlen(s);
-	int fcolor = RPMFC_BLACK;
 	rpm_mode_t mode = (fmode ? fmode[ix] : 0);
 	int is_executable = (mode & (S_IXUSR|S_IXGRP|S_IXOTH));
 
@@ -1278,14 +1205,11 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	/* Save the path. */
 	fc->fn[ix] = xstrdup(s);
 
-	/* Add (filtered) file coloring */
-	fcolor |= rpmfcColor(ftype);
-
 	/* Add attributes based on file type and/or path */
 	rpmfcAttributes(fc, ix, ftype, fmime, s);
 
-	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
-	    fc->ftype[ix] = xstrdup(ftype);
+	/* Add mime types */
+	fc->ftype[ix] = xstrdup(fmime);
 
 	/* Add ELF colors */
 	if (S_ISREG(mode) && is_executable)

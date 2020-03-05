@@ -547,26 +547,26 @@ runroot rpmbuild -bb --quiet /data/SPECS/attrtest.spec
 runroot rpm -qp --fileclass /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm
 ],
 [0],
-[/a/dir	directory
-/a/file	ASCII text
-/b/dir	directory
-/b/file	ASCII text
-/c/dir	directory
-/c/file	ASCII text
-/d/dir	directory
-/d/file	ASCII text
-/e/dir	directory
-/e/file	ASCII text
-/f/dir	directory
-/f/file	ASCII text
-/g/dir	directory
-/g/file	ASCII text
-/h/dir	directory
-/h/file	ASCII text
-/i/dir	directory
-/i/file	ASCII text
-/j/dir	directory
-/j/file	ASCII text
+[/a/dir	inode/directory
+/a/file	text/plain
+/b/dir	inode/directory
+/b/file	text/plain
+/c/dir	inode/directory
+/c/file	text/plain
+/d/dir	inode/directory
+/d/file	text/plain
+/e/dir	inode/directory
+/e/file	text/plain
+/f/dir	inode/directory
+/f/file	text/plain
+/g/dir	inode/directory
+/g/file	text/plain
+/h/dir	inode/directory
+/h/file	text/plain
+/i/dir	inode/directory
+/i/file	text/plain
+/j/dir	inode/directory
+/j/file	text/plain
 ],
 [])
 AT_CLEANUP
