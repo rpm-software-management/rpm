@@ -89,40 +89,54 @@ sub process_file {
     return;
   }
 
-  my ($package, $version, $incomment, $inover) = ();
+  my ($package, $version, $incomment, $inover, $inheredoc) = ();
 
   while (<FILE>) {
 
-    # skip the documentation
+    # Skip contents of HEREDOCs
+    if (! defined $inheredoc) {
+      # skip the documentation
 
-    # we should not need to have item in this if statement (it
-    # properly belongs in the over/back section) but people do not
-    # read the perldoc.
+      # we should not need to have item in this if statement (it
+      # properly belongs in the over/back section) but people do not
+      # read the perldoc.
 
-    if (m/^=(head[1-4]|pod|for|item)/) {
-      $incomment = 1;
-    }
+      if (m/^=(head[1-4]|pod|for|item)/) {
+        $incomment = 1;
+      }
 
-    if (m/^=(cut)/) {
-      $incomment = 0;
-      $inover = 0;
-    }
+      if (m/^=(cut)/) {
+        $incomment = 0;
+        $inover = 0;
+      }
 
-    if (m/^=(over)/) {
-      $inover = 1;
-    }
+      if (m/^=(over)/) {
+        $inover = 1;
+      }
 
-    if (m/^=(back)/) {
-      $inover = 0;
-    }
+      if (m/^=(back)/) {
+        $inover = 0;
+      }
 
-    if ($incomment || $inover || m/^\s*#/) {
-       next;
-    }
+      if ($incomment || $inover || m/^\s*#/) {
+        next;
+      }
 
-    # skip the data section
-    if (m/^__(DATA|END)__$/) {
-      last;
+      # skip the data section
+      if (m/^__(DATA|END)__$/) {
+        last;
+      }
+
+      # Find the start of a HEREDOC
+      if (m/<<\s*[\"\'](\w+)[\"\']\s*;\s*$/) {
+        $inheredoc = $1;
+      }
+    } else {
+      # We're in a HEREDOC; continue until the end of it
+      if (m/^$inheredoc\s*$/) {
+        $inheredoc = undef;
+      }
+      next;
     }
 
     # not everyone puts the package name of the file as the first
@@ -195,6 +209,10 @@ sub process_file {
       }
     }
 
+  }
+
+  if (defined $inheredoc) {
+	  die "Unclosed HEREDOC [$inheredoc] in file: '$file'\n";
   }
 
   close(FILE) ||
