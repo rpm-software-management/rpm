@@ -1117,7 +1117,7 @@ static int initAttrs(rpmfc fc)
 
 rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 {
-    int msflags = MAGIC_CHECK | MAGIC_COMPRESS | MAGIC_NO_CHECK_TOKENS;
+    int msflags = MAGIC_CHECK | MAGIC_COMPRESS | MAGIC_NO_CHECK_TOKENS | MAGIC_ERROR;
     int nerrors = 0;
     rpmRC rc = RPMRC_FAIL;
 
@@ -1201,6 +1201,10 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 		ftype = "";
 	    else
 		ftype = magic_file(ms, s);
+
+	    /* Silence errors from immaterial %ghosts */
+	    if (ftype == NULL && errno == ENOENT)
+		ftype = "";
 
 	    if (ftype == NULL) {
 		rpmlog(is_executable ? RPMLOG_ERR : RPMLOG_WARNING, 
