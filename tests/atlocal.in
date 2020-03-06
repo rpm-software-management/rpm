@@ -17,6 +17,9 @@ RPM_CONFIGDIR="${RPMTEST}/@RPMCONFIGDIR@"
 RPM_POPTEXEC_PATH="${RPMTEST}/@usrbindir@"
 export RPM_CONFIGDIR RPM_POPTEXEC_PATH
 
+DBFORMAT=$(awk '/^%_db_backend/{print $2}' "${RPM_CONFIGDIR}/macros")
+export DBFORMAT
+
 # Popt looks into $HOME
 HOME="${RPMTEST}"
 export HOME
@@ -45,13 +48,13 @@ fi
 
 function run()
 {
-    "$@" --define "_buildhost testhost" --define "_tmppath ${RPMTEST}/tmp" --define "_topdir ${TOPDIR}" --dbpath="${RPMTEST}/var/lib/rpm/"
+    "$@" --define "_buildhost testhost" --define "_tmppath ${RPMTEST}/tmp" --define "_topdir ${TOPDIR}" --define "_db_backend ${DBFORMAT}" --dbpath="${RPMTEST}/var/lib/rpm/"
 }
 
 function rundebug()
 {
     cp ${RPMDATA}/macros.debug ${RPM_CONFIGDIR}/macros.d/
-    "$@" --define "_buildhost testhost" --define "_tmppath ${RPMTEST}/tmp" --define "_topdir ${TOPDIR}" --dbpath="${RPMTEST}/var/lib/rpm/"
+    "$@" --define "_buildhost testhost" --define "_tmppath ${RPMTEST}/tmp" --define "_topdir ${TOPDIR}" --define "_db_backend ${DBFORMAT}" --dbpath="${RPMTEST}/var/lib/rpm/"
     rm -f ${RPM_CONFIGDIR}/macros.d/macros.debug
 }
 
