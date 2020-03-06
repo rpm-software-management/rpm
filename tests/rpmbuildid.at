@@ -36,11 +36,11 @@ rundebug rpmbuild \
 
 # There should be zero build-id files in both the main and debuginfo package
 echo -n "hello build-id files: "
-run rpm -ql -p "${TOPDIR}"/RPMS/*/hello-1.0-1.*.rpm \
+runroot rpm -ql -p /build/RPMS/*/hello-1.0-1.*.rpm \
   | grep /.build-id/ | wc --lines
 
 echo -n "hello debuginfo build-id files: "
-run rpm -ql -p "${TOPDIR}"/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
+runroot rpm -ql -p /build/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
   | grep /.build-id/ | wc --lines
 
 ],
@@ -74,11 +74,11 @@ rundebug rpmbuild \
 # Main and debug should be in the debuginfo package,
 # plus the .build-id/xx subdir, 3 in total.
 echo -n "hello build-id files: "
-run rpm -ql -p "${TOPDIR}"/RPMS/*/hello-1.0-1.*.rpm \
+runroot rpm -ql -p /build/RPMS/*/hello-1.0-1.*.rpm \
   | grep /.build-id/ | wc --lines
 
 echo -n "hello debuginfo build-id files: "
-run rpm -ql -p "${TOPDIR}"/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
+runroot rpm -ql -p /build/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
   | grep /.build-id/ | wc --lines
 
 # Extract the both packages to check the build-id files link to the
@@ -165,11 +165,11 @@ rundebug rpmbuild \
 # Main and debug should be in the debuginfo package,
 # plus the .build-id/xx subdir, 3 in total.
 echo -n "hello build-id files: "
-run rpm -ql -p "${TOPDIR}"/RPMS/*/hello-1.0-1.*.rpm \
+runroot rpm -ql -p /build/RPMS/*/hello-1.0-1.*.rpm \
   | grep /.build-id/ | wc --lines
 
 echo -n "hello debuginfo build-id files: "
-run rpm -ql -p "${TOPDIR}"/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
+runroot rpm -ql -p /build/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
   | grep /.build-id/ | wc --lines
 
 # Extract the both packages to check the build-id files link to the
@@ -256,11 +256,11 @@ rundebug rpmbuild \
 # There should be one build-id files in the main and debuginfo package
 # plus the .build-id/xx subdir, 2 in total.
 echo -n "hello build-id files: "
-run rpm -ql -p "${TOPDIR}"/RPMS/*/hello-1.0-1.*.rpm \
+runroot rpm -ql -p /build/RPMS/*/hello-1.0-1.*.rpm \
   | grep /.build-id/ | wc --lines
 
 echo -n "hello debuginfo build-id files: "
-run rpm -ql -p "${TOPDIR}"/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
+runroot rpm -ql -p /build/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
   | grep /.build-id/ | wc --lines
 
 # Extract the both packages to check the build-id files link to the
@@ -346,11 +346,11 @@ rundebug rpmbuild \
 # There should be one build-id files in the main and debuginfo package
 # plus the .build-id/xx subdir, 2 in total.
 echo -n "hello build-id files: "
-run rpm -ql -p "${TOPDIR}"/RPMS/*/hello-1.0-1.*.rpm \
+runroot rpm -ql -p /build/RPMS/*/hello-1.0-1.*.rpm \
   | grep /.build-id/ | wc --lines
 
 echo -n "hello debuginfo build-id files: "
-run rpm -ql -p "${TOPDIR}"/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
+runroot rpm -ql -p /build/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
   | grep /.build-id/ | wc --lines
 
 # Extract the both packages to check the build-id files link to the
@@ -438,11 +438,11 @@ rundebug rpmbuild \
 # the debuginfo package has one extra main build-id compat symlink
 # plus the .build-id/xx subdir, 2 in total in main, 3 in total in debug
 echo -n "hello build-id files: "
-run rpm -ql -p "${TOPDIR}"/RPMS/*/hello-1.0-1.*.rpm \
+runroot rpm -ql -p /build/RPMS/*/hello-1.0-1.*.rpm \
   | grep /.build-id/ | wc --lines
 
 echo -n "hello debuginfo build-id files: "
-run rpm -ql -p "${TOPDIR}"/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
+runroot rpm -ql -p /build/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
   | grep /.build-id/ | wc --lines
 
 # Extract the both packages to check the build-id files link to the
@@ -541,11 +541,11 @@ rundebug rpmbuild \
 # the debuginfo package has one extra main build-id compat symlink
 # plus the .build-id/xx subdir, 2 in total in main, 3 in total in debug
 echo -n "hello build-id files: "
-run rpm -ql -p "${TOPDIR}"/RPMS/*/hello-1.0-1.*.rpm \
+runroot rpm -ql -p /build/RPMS/*/hello-1.0-1.*.rpm \
   | grep /.build-id/ | wc --lines
 
 echo -n "hello debuginfo build-id files: "
-run rpm -ql -p "${TOPDIR}"/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
+runroot rpm -ql -p /build/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
   | grep /.build-id/ | wc --lines
 
 # Extract the both packages to check the build-id files link to the
@@ -1267,12 +1267,12 @@ rundebug rpmbuild \
   --define "_unique_debug_srcs 1" \
   --quiet -ba "${abs_srcdir}"/data/SPECS/hello-attr-buildid.spec
 
-run rpm -qp --qf "[[%{filenames} %{filemodes:perms}\n]]" \
-        ${abs_builddir}/testing/build/RPMS/*/test-1.0-1*rpm \
+runroot rpm -qp --qf "[[%{filenames} %{filemodes:perms}\n]]" \
+        /build/RPMS/*/test-1.0-1*rpm \
 	| grep "build-id d"
 
-run rpm -qp --qf "[[%{filenames} %{filemodes:perms}\n]]" \
-        ${abs_builddir}/testing/build/RPMS/*/test-debuginfo-1.0-1*rpm \
+runroot rpm -qp --qf "[[%{filenames} %{filemodes:perms}\n]]" \
+        /build/RPMS/*/test-debuginfo-1.0-1*rpm \
 	| grep "build-id d"
 ],
 [0],
@@ -1303,9 +1303,9 @@ rundebug rpmbuild \
   --quiet -ba "${abs_srcdir}"/data/SPECS/hello-config-buildid.spec
 
 # Should contain one config file.
-run rpm -c -qp ${abs_builddir}/testing/build/RPMS/*/test-1.0-1*rpm
+runroot rpm -c -qp /build/RPMS/*/test-1.0-1*rpm
 # Should not contain config files.
-run rpm -c -qp ${abs_builddir}/testing/build/RPMS/*/test-debuginfo-1.0-1*rpm
+runroot rpm -c -qp /build/RPMS/*/test-debuginfo-1.0-1*rpm
 ],
 [0],
 [/etc/config.file
