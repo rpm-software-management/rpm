@@ -89,8 +89,8 @@ AT_KEYWORDS([build])
 AT_CHECK([
 rm -rf ${TOPDIR}
 
-run rpmbuild \
-  -tb "${RPMDATA}/SOURCES/hello-1.0.tar.gz"
+runroot rpmbuild \
+  -tb /data/SOURCES/hello-1.0.tar.gz
 ],
 [1],
 [ignore],
@@ -1121,7 +1121,7 @@ ls ./usr/src/debug/hello2-1.0*/
 
 # The debuginfo package should recommend the debugsource package (ignore arch).
 echo -n "Recommends: "
-run rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
+runroot rpm -qp --recommends /build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 ],
 [0],
 [hello.c
@@ -1257,7 +1257,7 @@ fi
 # No debugsource package, so sources are in the main debuginfo package.
 # Make sure it is recommended.
 echo -n "Recommends: "
-run rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
+runroot rpm -qp --recommends /build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 
 # Third contains hello3.debug
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-1.0-1.*.rpm \
@@ -1276,7 +1276,7 @@ fi
 # No debugsource package, so sources are in the main debuginfo package.
 # Make sure it is recommended.
 echo -n "Recommends: "
-run rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
+runroot rpm -qp --recommends /build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 ],
 [0],
 [3
@@ -1342,7 +1342,7 @@ fi
 # No debugsource package, so sources are in the main debuginfo package.
 # Make sure it is recommended.
 echo -n "Recommends: "
-run rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
+runroot rpm -qp --recommends /build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 
 # Third contains hello3.debug
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-1.0-1.*.rpm \
@@ -1361,7 +1361,7 @@ fi
 # No debugsource package, so sources are in the main debuginfo package.
 # Make sure it is recommended.
 echo -n "Recommends: "
-run rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
+runroot rpm -qp --recommends /build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 ],
 [0],
 [3
@@ -1412,7 +1412,7 @@ fi
 
 # Sources are in debugsource package. Make sure it is recommended.
 echo -n "Recommends: "
-run rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
+runroot rpm -qp --recommends /build/RPMS/*/test-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 
 # Second contains hello2.debug
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-1.0-1.*.rpm \
@@ -1430,7 +1430,7 @@ fi
 
 # Sources are in debugsource package. Make sure it is recommended.
 echo -n "Recommends: "
-run rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
+runroot rpm -qp --recommends /build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 
 # Third contains hello3.debug
 rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-1.0-1.*.rpm \
@@ -1448,7 +1448,7 @@ fi
 
 # Sources are in debugsource package. Make sure it is recommended.
 echo -n "Recommends: "
-run rpm -qp --recommends ${abs_builddir}/testing/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
+runroot rpm -qp --recommends /build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 ],
 [0],
 [3
@@ -1609,8 +1609,8 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 cp "${abs_srcdir}"/data/SOURCES/buildrequires-1.0.tar.gz ${TOPDIR}/SOURCES
 
-run rpmbuild \
-  --quiet -bs "${abs_srcdir}"/data/SPECS/buildrequires.spec
+runroot rpmbuild \
+  --quiet -bs /data/SPECS/buildrequires.spec
 runroot rpm -qpR /build/SRPMS/buildrequires-1.0-1.src.rpm
 ],
 [0],
@@ -1631,8 +1631,8 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 cp "${abs_srcdir}"/data/SOURCES/buildrequires-1.0.tar.gz ${TOPDIR}/SOURCES
 
-run rpmbuild \
-  -br  --quiet "${abs_srcdir}"/data/SPECS/buildrequires.spec
+runroot rpmbuild \
+  -br  --quiet /data/SPECS/buildrequires.spec
 ],
 [11],
 [],
@@ -1654,8 +1654,8 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 cp "${abs_srcdir}"/data/SOURCES/buildrequires-1.0.tar.gz ${TOPDIR}/SOURCES
 
-run rpmbuild \
-  -ba  --quiet "${abs_srcdir}"/data/SPECS/buildrequires.spec
+runroot rpmbuild \
+  -ba  --quiet /data/SPECS/buildrequires.spec
 ],
 [11],
 [],
@@ -1678,8 +1678,8 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 cp "${abs_srcdir}"/data/SOURCES/buildrequires-1.0.tar.gz ${TOPDIR}/SOURCES
 
-run rpmbuild \
-  -br  --quiet --nodeps "${abs_srcdir}"/data/SPECS/buildrequires.spec
+runroot rpmbuild \
+  -br  --quiet --nodeps /data/SPECS/buildrequires.spec
 runroot rpm -qpvR /build/SRPMS/buildrequires-1.0-1.buildreqs.nosrc.rpm
 ],
 [0],
@@ -1702,12 +1702,12 @@ AT_CHECK_UNQUOTED([
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
-run rpmbuild \
-  -bb "${abs_srcdir}"/data/SPECS/hello.spec
+runroot rpmbuild \
+  -bb /data/SPECS/hello.spec
 ],
 [1],
 [],
-[error: Bad source: ${TOPDIR}/SOURCES/hello-1.0.tar.gz: No such file or directory
+[error: Bad source: /build/SOURCES/hello-1.0.tar.gz: No such file or directory
 ])
 AT_CLEANUP
 
@@ -1716,8 +1716,8 @@ AT_KEYWORDS([build])
 AT_CHECK_UNQUOTED([
 rm -rf ${TOPDIR}
 
-run rpmbuild \
-  -bb --quiet "${abs_srcdir}"/data/SPECS/mini.spec
+runroot rpmbuild \
+  -bb --quiet /data/SPECS/mini.spec
 ],
 [0],
 [],
@@ -1730,10 +1730,10 @@ AT_CHECK_UNQUOTED([
 rm -rf ${TOPDIR}
 
 for val in 1 0; do
-    run rpmbuild \
+    runroot rpmbuild \
         -bb --quiet \
         --define "_missing_doc_files_terminate_build ${val}" \
-        "${abs_srcdir}"/data/SPECS/docmiss.spec
+        /data/SPECS/docmiss.spec
     echo $?
 done
 ],
