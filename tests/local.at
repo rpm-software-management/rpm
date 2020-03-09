@@ -17,7 +17,7 @@ def myprint(msg = ''):
     sys.stdout.write('%s\n' % msg)
 $1
 EOF
-python test.py
+python2 test.py
 ]])
 
 m4_define([RPMPY_CHECK],[
