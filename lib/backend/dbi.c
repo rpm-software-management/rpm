@@ -51,40 +51,65 @@ dbiIndex dbiNew(rpmdb rdb, rpmDbiTagVal rpmtag)
     return dbi;
 }
 
+/* Test whether there's a database for this backend, return true/false */
+static int tryBackend(const char *dbhome, const struct rpmdbOps_s *be)
+{
+    int rc = 0;
+    if (be->path) {
+	char *path = rstrscat(NULL, dbhome, "/", be->path, NULL);
+	rc = (access(path, F_OK) == 0);
+	free(path);
+    }
+    return rc;
+}
+
 static void
 dbDetectBackend(rpmdb rdb)
 {
     const char *dbhome = rpmdbHome(rdb);
     char *db_backend = rpmExpand("%{?_db_backend}", NULL);
-    char *path = NULL;
     const struct rpmdbOps_s **ops;
+    const struct rpmdbOps_s *cfg = NULL;
+    const struct rpmdbOps_s *ondisk = NULL;
 
+    /* Find configured backend */
     for (ops = backends; ops && *ops; ops++) {
 	if (rstreq(db_backend, (*ops)->name)) {
-	    rdb->db_ops = *ops;
+	    cfg = *ops;
 	    break;
 	}
     }
 
-    for (ops = backends; ops && *ops; ops++) {
-	int stop = 0;
-	if ((*ops)->path == NULL)
-	    continue;
-
-	path = rstrscat(NULL, dbhome, "/", (*ops)->path, NULL);
-	if (access(path, F_OK) == 0 && rdb->db_ops != *ops) {
-	    rpmlog(RPMLOG_WARNING,
-		_("Found %s %s database while attempting %s backend: "
-		"using %s backend.\n"),
-		(*ops)->name, (*ops)->path, db_backend, (*ops)->name);
-	    rdb->db_ops = *ops;
-	    stop = 1;
+    /* If configured database doesn't exist, try autodetection */
+    if (!tryBackend(dbhome, cfg)) {
+	for (ops = backends; ops && *ops; ops++) {
+	    if (tryBackend(dbhome, *ops)) {
+		ondisk = *ops;
+		break;
+	    }
 	}
-	free(path);
-	if (stop)
-	    break;
+
+	/* On-disk database differs from configuration */
+	if (ondisk && ondisk != cfg) {
+	    if (rdb->db_flags & RPMDB_FLAG_REBUILD) {
+		rpmlog(RPMLOG_WARNING,
+			_("Converting database from %s to %s backend\n"),
+			ondisk->name, cfg->name);
+	    } else {
+		rpmlog(RPMLOG_WARNING,
+		    _("Found %s %s database while attempting %s backend: "
+		    "using %s backend.\n"),
+		    ondisk->name, ondisk->path, db_backend, ondisk->name);
+	    }
+	    rdb->db_ops = ondisk;
+	}
     }
 
+    /* Newly created database, use configured backend */
+    if (rdb->db_ops == NULL && cfg)
+	rdb->db_ops = cfg;
+
+    /* If all else fails... */
     if (rdb->db_ops == NULL) {
 	rdb->db_ops = &dummydb_dbops;
 	rpmlog(RPMLOG_WARNING, "using dummy database, installs not possible\n");
