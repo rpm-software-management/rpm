@@ -374,6 +374,9 @@ typedef enum rpmTag_e {
     RPMTAG_IDENTITY		= 5095, /* s reservation (unimplemented) */
     RPMTAG_MODULARITYLABEL	= 5096, /* s */
     RPMTAG_PAYLOADDIGESTALT	= 5097, /* s[] */
+    RPMTAG_FILEMIMEINDEX	= 5098,	/* i[] */
+    RPMTAG_MIMEDICT		= 5099,	/* s[] */
+    RPMTAG_FILEMIMES		= 5100,	/* s[] extension */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;

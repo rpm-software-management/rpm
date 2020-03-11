@@ -240,6 +240,13 @@ rpm_color_t rpmfiFColor(rpmfi fi);
 const char * rpmfiFClass(rpmfi fi);
 
 /** \ingroup rpmfi
+ * Return current file mime type from file info set iterator.
+ * @param fi		file info set iterator
+ * @return		current file mime type, 0 on invalid
+ */
+const char * rpmfiFMime(rpmfi fi);
+
+/** \ingroup rpmfi
  * Return current file depends dictionary from file info set iterator.
  * @param fi		file info set iterator
  * @retval *fddictp	file depends dictionary array (or NULL)

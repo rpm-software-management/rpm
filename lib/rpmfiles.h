@@ -150,6 +150,7 @@ enum rpmfiFlags_e {
     RPMFI_NOFILEVERIFYFLAGS	= (1 << 16),
     RPMFI_NOFILEFLAGS		= (1 << 17),
     RPMFI_NOFILESIGNATURES	= (1 << 18),
+    RPMFI_NOFILEMIME		= (1 << 19),
 };
 
 typedef rpmFlags rpmfiFlags;
@@ -157,18 +158,18 @@ typedef rpmFlags rpmfiFlags;
 #define RPMFI_FLAGS_ERASE \
     (RPMFI_NOFILECLASS | RPMFI_NOFILELANGS | \
      RPMFI_NOFILEMTIMES | RPMFI_NOFILERDEVS | \
-     RPMFI_NOFILEVERIFYFLAGS)
+     RPMFI_NOFILEVERIFYFLAGS | RPMFI_NOFILEMIME)
 
 #define RPMFI_FLAGS_INSTALL \
-    (RPMFI_NOFILECLASS | RPMFI_NOFILEVERIFYFLAGS)
+    (RPMFI_NOFILECLASS | RPMFI_NOFILEVERIFYFLAGS | RPMFI_NOFILEMIME)
 
 #define RPMFI_FLAGS_VERIFY \
     (RPMFI_NOFILECLASS | RPMFI_NOFILEDEPS | RPMFI_NOFILELANGS | \
-     RPMFI_NOFILECOLORS)
+     RPMFI_NOFILECOLORS | RPMFI_NOFILEMIME)
 
 #define RPMFI_FLAGS_QUERY \
     (RPMFI_NOFILECLASS | RPMFI_NOFILEDEPS | RPMFI_NOFILELANGS | \
-     RPMFI_NOFILECOLORS | RPMFI_NOFILEVERIFYFLAGS)
+     RPMFI_NOFILECOLORS | RPMFI_NOFILEVERIFYFLAGS | RPMFI_NOFILEMIME)
 
 #define RPMFI_FLAGS_FILETRIGGER \
     (RPMFI_NOFILECLASS | RPMFI_NOFILEDEPS | RPMFI_NOFILELANGS | \
@@ -176,7 +177,7 @@ typedef rpmFlags rpmfiFlags;
      RPMFI_NOFILESIZES | RPMFI_NOFILECAPS | RPMFI_NOFILELINKTOS | \
      RPMFI_NOFILEDIGESTS | RPMFI_NOFILEMTIMES | RPMFI_NOFILERDEVS | \
      RPMFI_NOFILEINODES | RPMFI_NOFILECOLORS | \
-     RPMFI_NOFILEVERIFYFLAGS | RPMFI_NOFILEFLAGS)
+     RPMFI_NOFILEVERIFYFLAGS | RPMFI_NOFILEFLAGS | RPMFI_NOFILEMIME)
 
 #define RPMFI_FLAGS_ONLY_FILENAMES \
     (RPMFI_FLAGS_FILETRIGGER | RPMFI_NOFILESTATES)
@@ -402,6 +403,14 @@ rpm_color_t rpmfilesFColor(rpmfiles fi, int ix);
  * @return		file class, 0 on invalid
  */
 const char * rpmfilesFClass(rpmfiles fi, int ix);
+
+/** \ingroup rpmfiles
+ * return file mime type from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		file mime type, 0 on invalid
+ */
+const char * rpmfilesFMime(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
  * Return file depends dictionary from file info set.

@@ -511,6 +511,30 @@ static int fileclassTag(Header h, rpmtd td, headerGetFlags hgflags)
     return (numfiles > 0); 
 }
 
+static int filemimesTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, RPMFI_NOHEADER);
+    int numfiles = rpmfiFC(fi);
+
+    if (numfiles > 0) {
+	char **fmimes = xmalloc(numfiles * sizeof(*fmimes));
+	int ix;
+
+	rpmfiInit(fi, 0);
+	while ((ix = rpmfiNext(fi)) >= 0) {
+	    fmimes[ix] = xstrdup(rpmfiFMime(fi));
+	}
+
+	td->data = fmimes;
+	td->count = numfiles;
+	td->flags = RPMTD_ALLOCED | RPMTD_PTR_ALLOCED;
+	td->type = RPM_STRING_ARRAY_TYPE;
+    }
+
+    rpmfiFree(fi);
+    return (numfiles > 0); 
+}
+
 /**
  * Retrieve file provides.
  * @param h		header
@@ -990,6 +1014,7 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_OBSOLETENEVRS,	obsoletenevrsTag },
     { RPMTAG_CONFLICTNEVRS,	conflictnevrsTag },
     { RPMTAG_FILENLINKS,	filenlinksTag },
+    { RPMTAG_FILEMIMES,		filemimesTag },
     { 0, 			NULL }
 };
 

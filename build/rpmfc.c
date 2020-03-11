@@ -59,8 +59,6 @@ typedef struct {
 struct rpmfc_s {
     Package pkg;
     int nfiles;		/*!< no. of files */
-    int fknown;		/*!< no. of classified files */
-    int fwhite;		/*!< no. of "white" files */
     int skipProv;	/*!< Don't auto-generate Provides:? */
     int skipReq;	/*!< Don't auto-generate Requires:? */
     char *buildRoot;	/*!< (Build) root dir */
@@ -69,24 +67,19 @@ struct rpmfc_s {
     rpmfcAttr *atypes;	/*!< known file attribute types */
 
     char ** fn;		/*!< (no. files) file names */
-    char ** ftype;	/*!< (no. files) file types */
+    char ** fmime;	/*!< (no. files) file mime types */
     ARGV_t *fattrs;	/*!< (no. files) file attribute tokens */
     rpm_color_t *fcolor;/*!< (no. files) file colors */
-    rpmsid *fcdictx;	/*!< (no. files) file class dictionary indices */
+    rpmsid *fmdictx;	/*!< (no. files) file mime dictionary indices */
     ARGI_t fddictx;	/*!< (no. files) file depends dictionary start */
     ARGI_t fddictn;	/*!< (no. files) file depends dictionary no. entries */
     ARGI_t ddictx;	/*!< (no. dependencies) file->dependency mapping */
-    rpmstrPool cdict;	/*!< file class dictionary */
+    rpmstrPool mdict;	/*!< file mime dictionary */
     rpmfcFileDeps fileDeps; /*!< file dependency mapping */
 
     fattrHash fahash;	/*!< attr:file mapping */
     rpmstrPool pool;	/*!< general purpose string storage */
 };
-
-struct rpmfcTokens_s {
-    const char * token;
-    rpm_color_t colors;
-};  
 
 static int intCmp(int a, int b)
 {
@@ -634,55 +627,6 @@ exit:
     return rc;
 }
 
-/* Only used for controlling RPMTAG_FILECLASS inclusion now */
-static const struct rpmfcTokens_s rpmfcTokens[] = {
-  { "directory",		RPMFC_INCLUDE },
-
-  { "ELF 32-bit",		RPMFC_ELF32|RPMFC_INCLUDE },
-  { "ELF 64-bit",		RPMFC_ELF64|RPMFC_INCLUDE },
-
-  { "troff or preprocessor input",	RPMFC_INCLUDE },
-  { "GNU Info",			RPMFC_INCLUDE },
-
-  { "perl ",			RPMFC_INCLUDE },
-  { "Perl5 module source text", RPMFC_INCLUDE },
-  { "python ",			RPMFC_INCLUDE },
-
-  { "libtool library ",         RPMFC_INCLUDE },
-  { "pkgconfig ",               RPMFC_INCLUDE },
-
-  { "Objective caml ",		RPMFC_INCLUDE },
-  { "Mono/.Net assembly",       RPMFC_INCLUDE },
-
-  { "current ar archive",	RPMFC_INCLUDE },
-  { "Zip archive data",		RPMFC_INCLUDE },
-  { "tar archive",		RPMFC_INCLUDE },
-  { "cpio archive",		RPMFC_INCLUDE },
-  { "RPM v3",			RPMFC_INCLUDE },
-  { "RPM v4",			RPMFC_INCLUDE },
-
-  { " image",			RPMFC_INCLUDE },
-  { " font",			RPMFC_INCLUDE },
-  { " Font",			RPMFC_INCLUDE },
-
-  { " commands",		RPMFC_INCLUDE },
-  { " script",			RPMFC_INCLUDE },
-
-  { "empty",			RPMFC_INCLUDE },
-
-  { "HTML",			RPMFC_INCLUDE },
-  { "SGML",			RPMFC_INCLUDE },
-  { "XML",			RPMFC_INCLUDE },
-
-  { " source",			RPMFC_INCLUDE },
-  { "GLS_BINARY_LSB_FIRST",	RPMFC_INCLUDE },
-  { " DB ",			RPMFC_INCLUDE },
-
-  { " text",			RPMFC_INCLUDE },
-
-  { NULL,			RPMFC_BLACK }
-};
-
 static void argvAddTokens(ARGV_t *argv, const char *tnames)
 {
     if (tnames) {
@@ -734,24 +678,6 @@ static void rpmfcAttributes(rpmfc fc, int ix, const char *ftype, const char *fmi
     }
 }
 
-/* Return color for a given libmagic classification string */
-static rpm_color_t rpmfcColor(const char * fmstr)
-{
-    rpmfcToken fct;
-    rpm_color_t fcolor = RPMFC_BLACK;
-
-    for (fct = rpmfcTokens; fct->token != NULL; fct++) {
-	if (strstr(fmstr, fct->token) == NULL)
-	    continue;
-
-	fcolor |= fct->colors;
-	if (fcolor & RPMFC_INCLUDE)
-	    break;
-    }
-
-    return fcolor;
-}
-
 void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp)
 {
     int ndx;
@@ -767,14 +693,14 @@ void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp)
     for (fx = 0; fx < fc->nfiles; fx++) {
 	fprintf(fp, "%3d %s", fx, fc->fn[fx]);
 	if (_rpmfc_debug) {
-	    rpmsid cx = fc->fcdictx[fx] + 1; /* id's are one off */
+	    rpmsid cx = fc->fmdictx[fx] + 1; /* id's are one off */
 	    rpm_color_t fcolor = fc->fcolor[fx];
 	    ARGV_t fattrs = fc->fattrs[fx];
 
 	    if (fcolor != RPMFC_BLACK)
 		fprintf(fp, "\t0x%x", fc->fcolor[fx]);
 	    else
-		fprintf(fp, "\t%s", rpmstrPoolStr(fc->cdict, cx));
+		fprintf(fp, "\t%s", rpmstrPoolStr(fc->mdict, cx));
 	    if (fattrs) {
 		char *attrs = argvJoin(fattrs, ",");
 		fprintf(fp, " [%s]", attrs);
@@ -822,14 +748,14 @@ rpmfc rpmfcFree(rpmfc fc)
 	free(fc->buildRoot);
 	for (int i = 0; i < fc->nfiles; i++) {
 	    free(fc->fn[i]);
-	    free(fc->ftype[i]);
+	    free(fc->fmime[i]);
 	    argvFree(fc->fattrs[i]);
 	}
 	free(fc->fn);
-	free(fc->ftype);
+	free(fc->fmime);
 	free(fc->fattrs);
 	free(fc->fcolor);
-	free(fc->fcdictx);
+	free(fc->fmdictx);
 	freePackage(fc->pkg);
 	argiFree(fc->fddictx);
 	argiFree(fc->fddictn);
@@ -841,7 +767,7 @@ rpmfc rpmfcFree(rpmfc fc)
 	free(fc->fileDeps.data);
 
 	fattrHashFree(fc->fahash);
-	rpmstrPoolFree(fc->cdict);
+	rpmstrPoolFree(fc->mdict);
 
 	rpmstrPoolFree(fc->pool);
 	memset(fc, 0, sizeof(*fc)); /* trash and burn */
@@ -1177,18 +1103,18 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 
     fc->nfiles = argvCount(argv);
     fc->fn = xcalloc(fc->nfiles, sizeof(*fc->fn));
-    fc->ftype = xcalloc(fc->nfiles, sizeof(*fc->ftype));
+    fc->fmime = xcalloc(fc->nfiles, sizeof(*fc->fmime));
     fc->fattrs = xcalloc(fc->nfiles, sizeof(*fc->fattrs));
     fc->fcolor = xcalloc(fc->nfiles, sizeof(*fc->fcolor));
-    fc->fcdictx = xcalloc(fc->nfiles, sizeof(*fc->fcdictx));
+    fc->fmdictx = xcalloc(fc->nfiles, sizeof(*fc->fmdictx));
     fc->fahash = fattrHashCreate(fc->nfiles / 3, intId, intCmp, NULL, NULL);
 
     /* Initialize the per-file dictionary indices. */
     argiAdd(&fc->fddictx, fc->nfiles-1, 0);
     argiAdd(&fc->fddictn, fc->nfiles-1, 0);
 
-    /* Build (sorted) file class dictionary. */
-    fc->cdict = rpmstrPoolCreate();
+    /* Build (sorted) file mime dictionary. */
+    fc->mdict = rpmstrPoolCreate();
 
     #pragma omp parallel
     {
@@ -1217,7 +1143,6 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	const char * ftype;
 	const char * s = argv[ix];
 	size_t slen = strlen(s);
-	int fcolor = RPMFC_BLACK;
 	rpm_mode_t mode = (fmode ? fmode[ix] : 0);
 	int is_executable = (mode & (S_IXUSR|S_IXGRP|S_IXOTH));
 
@@ -1287,14 +1212,10 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	/* Save the path. */
 	fc->fn[ix] = xstrdup(s);
 
-	/* Add (filtered) file coloring */
-	fcolor |= rpmfcColor(ftype);
-
 	/* Add attributes based on file type and/or path */
 	rpmfcAttributes(fc, ix, ftype, fmime, s);
 
-	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
-	    fc->ftype[ix] = xstrdup(ftype);
+	fc->fmime[ix] = xstrdup(fmime);
 
 	/* Add ELF colors */
 	if (S_ISREG(mode) && is_executable)
@@ -1308,16 +1229,11 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 
     } /* omp parallel */
 
-    /* Add to file class dictionary and index array */
+    /* Add to file mime dictionary and index array */
     for (int ix = 0; ix < fc->nfiles; ix++) {
-	const char *ftype = fc->ftype[ix] ? fc->ftype[ix] : "";
+	const char *fmime = fc->fmime[ix] ? fc->fmime[ix] : "";
 	/* Pool id's start from 1, for headers we want it from 0 */
-	fc->fcdictx[ix] = rpmstrPoolId(fc->cdict, ftype, 1) - 1;
-
-	if (*ftype)
-	    fc->fknown++;
-	else
-	    fc->fwhite++;
+	fc->fmdictx[ix] = rpmstrPoolId(fc->mdict, fmime, 1) - 1;
     }
 
     if (nerrors == 0)
@@ -1325,7 +1241,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 
 exit:
     /* No more additions after this, freeze pool to minimize memory use */
-    rpmstrPoolFreeze(fc->cdict, 0);
+    rpmstrPoolFreeze(fc->mdict, 0);
 
     return rc;
 }
@@ -1606,14 +1522,14 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     /* Add per-file colors(#files) */
     headerPutUint32(pkg->header, RPMTAG_FILECOLORS, fc->fcolor, fc->nfiles);
     
-    /* Add classes(#classes) */
-    for (rpmsid id = 1; id <= rpmstrPoolNumStr(fc->cdict); id++) {
-	headerPutString(pkg->header, RPMTAG_CLASSDICT,
-			rpmstrPoolStr(fc->cdict, id));
+    /* Add classes(#mime types) */
+    for (rpmsid id = 1; id <= rpmstrPoolNumStr(fc->mdict); id++) {
+	headerPutString(pkg->header, RPMTAG_MIMEDICT,
+			rpmstrPoolStr(fc->mdict, id));
     }
 
     /* Add per-file classes(#files) */
-    headerPutUint32(pkg->header, RPMTAG_FILECLASS, fc->fcdictx, fc->nfiles);
+    headerPutUint32(pkg->header, RPMTAG_FILEMIMEINDEX, fc->fmdictx, fc->nfiles);
 
     /* Add dependency dictionary(#dependencies) */
     if (rpmtdFromArgi(&td, RPMTAG_DEPENDSDICT, fc->ddictx)) {
@@ -1632,9 +1548,9 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 
     if (_rpmfc_debug) {
 	char *msg = NULL;
-	rasprintf(&msg, "final: files %d cdict[%d] %d%% ddictx[%d]",
-		  fc->nfiles, rpmstrPoolNumStr(fc->cdict),
-		  ((100 * fc->fknown)/fc->nfiles), argiCount(fc->ddictx));
+	rasprintf(&msg, "final: files %d mdict[%d] ddictx[%d]",
+		  fc->nfiles, rpmstrPoolNumStr(fc->mdict),
+		  argiCount(fc->ddictx));
 	rpmfcPrint(msg, fc, NULL);
 	free(msg);
     }

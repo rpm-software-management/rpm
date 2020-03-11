@@ -539,6 +539,38 @@ runroot rpm -qp --requires /build/RPMS/noarch/shebang-0.1-1.noarch.rpm|grep -v ^
 [])
 AT_CLEANUP
 
+AT_SETUP([File mime type generation])
+AT_KEYWORDS([build])
+AT_CHECK([
+
+runroot rpmbuild -bb --quiet /data/SPECS/attrtest.spec
+runroot rpm -qp --filemime /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm
+],
+[0],
+[/a/dir	inode/directory
+/a/file	text/plain
+/b/dir	inode/directory
+/b/file	text/plain
+/c/dir	inode/directory
+/c/file	text/plain
+/d/dir	inode/directory
+/d/file	text/plain
+/e/dir	inode/directory
+/e/file	text/plain
+/f/dir	inode/directory
+/f/file	text/plain
+/g/dir	inode/directory
+/g/file	text/plain
+/h/dir	inode/directory
+/h/file	text/plain
+/i/dir	inode/directory
+/i/file	text/plain
+/j/dir	inode/directory
+/j/file	text/plain
+],
+[])
+AT_CLEANUP
+
 # ------------------------------
 # Test spec query functionality
 AT_SETUP([rpmspec query 1])

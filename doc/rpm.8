@@ -79,6 +79,7 @@ Dependencies:
 Files:
  [\fB-c,--configfiles\fR] [\fB-d,--docfiles\fR] [\fB--dump\fR] [\fB--fileclass\fR]
  [\fB--filecolor\fR] [\fB--fileprovide\fR][\fB--filerequire\fR] [\fB--filecaps\fR]
+ [\fB--filemime\fR]
  [\fB--filesbypkg\fR] [\fB-l,--list\fR] [\fB-s,--state\fR]
  [\fB--noartifact\fR] [\fB--noghost\fR] [\fB--noconfig\fR]
 .PP
@@ -571,10 +572,13 @@ Query package owning \fIFILE\fR.
 List file names with POSIX1.e capabilities.
 .TP
 \fB--fileclass\fR
-List file names with their classes (libmagic classification).
+List file names with their classes (libmagic classification, deprecated).
 .TP
 \fB--filecolor\fR
 List file names with their colors (0 for noarch, 1 for 32bit, 2 for 64 bit).
+.TP
+\fB--filemime\fR
+List file names with their mime types
 .TP
 \fB--fileprovide\fR
 List file names with their provides.

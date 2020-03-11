@@ -165,6 +165,9 @@ rpm	alias --fileclass --qf '[%{FILENAMES}\t%{FILECLASS}\n]' \
 rpm	alias --filecolor --qf '[%{FILENAMES}\t%{FILECOLORS}\n]' \
 	--POPTdesc=$"list file names with their colors"
 
+rpm	alias --filemime --qf '[%{FILENAMES}\t%{FILEMIMES}\n]' \
+	--POPTdesc=$"list file names with their mime types"
+
 rpm	alias --fileprovide --qf '[%{FILENAMES}\t%{FILEPROVIDE}\n]' \
 	--POPTdesc=$"list file names with their provides"
 

@@ -102,6 +102,9 @@ struct rpmfiles_s {
     char ** cdict;		/*!< File class dictionary (header) */
     rpm_count_t ncdict;		/*!< No. of class entries. */
     uint32_t * fcdictx;		/*!< File class dictionary index (header) */
+    char ** mdict;		/*!< File mime type dictionary (header) */
+    rpm_count_t nmdict;		/*!< No. of mime type entries. */
+    uint32_t * fmdictx;		/*!< File mime type dictionary index (header) */
 
     uint32_t * ddict;		/*!< File depends dictionary (header) */
     rpm_count_t nddict;		/*!< No. of depends entries. */
@@ -669,6 +672,19 @@ const char * rpmfilesFClass(rpmfiles fi, int ix)
 	    fclass = fi->cdict[cdictx];
     }
     return fclass;
+}
+
+const char * rpmfilesFMime(rpmfiles fi, int ix)
+{
+    const char * fmime = NULL;
+    int mdictx;
+
+    if (fi != NULL && fi->fmdictx != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
+	mdictx = fi->fmdictx[ix];
+	if (fi->mdict != NULL && mdictx >= 0 && mdictx < fi->nmdict)
+	    fmime = fi->mdict[mdictx];
+    }
+    return fmime;
 }
 
 uint32_t rpmfilesFDepends(rpmfiles fi, int ix, const uint32_t ** fddictp)
@@ -1536,6 +1552,11 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 	fi->ncdict = rpmtdCount(&td);
 	_hgfi(h, RPMTAG_FILECLASS, &td, scareFlags, fi->fcdictx);
     }
+    if (!(flags & RPMFI_NOFILEMIME)) {
+	_hgfinc(h, RPMTAG_MIMEDICT, &td, scareFlags, fi->mdict);
+	fi->nmdict = rpmtdCount(&td);
+	_hgfi(h, RPMTAG_FILEMIMEINDEX, &td, scareFlags, fi->fmdictx);
+    }
     if (!(flags & RPMFI_NOFILEDEPS)) {
 	_hgfinc(h, RPMTAG_DEPENDSDICT, &td, scareFlags, fi->ddict);
 	fi->nddict = rpmtdCount(&td);
@@ -1825,6 +1846,7 @@ RPMFI_ITERFUNC(const char *, FGroup, i)
 RPMFI_ITERFUNC(const char *, FCaps, i)
 RPMFI_ITERFUNC(const char *, FLangs, i)
 RPMFI_ITERFUNC(const char *, FClass, i)
+RPMFI_ITERFUNC(const char *, FMime, i)
 RPMFI_ITERFUNC(rpmfileState, FState, i)
 RPMFI_ITERFUNC(rpmfileAttrs, FFlags, i)
 RPMFI_ITERFUNC(rpmVerifyAttrs, VFlags, i)
