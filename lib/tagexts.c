@@ -745,7 +745,8 @@ enum nevraFlags_e {
     NEVRA_EPOCH		= (1 << 1),
     NEVRA_VERSION	= (1 << 2),
     NEVRA_RELEASE	= (1 << 3),
-    NEVRA_ARCH		= (1 << 4)
+    NEVRA_ARCH		= (1 << 4),
+    NEVRA_SRCARCH	= (1 << 5)
 };
 typedef rpmFlags nevraFlags;
 
@@ -774,6 +775,17 @@ static int getNEVRA(Header h, rpmtd td, nevraFlags flags)
     if ((flags & NEVRA_ARCH)) {
 	val = headerGetString(h, RPMTAG_ARCH);
 	if (headerIsSource(h) && val == NULL) val = "src";
+	if (val) rstrscat(&res, ".", val, NULL);
+    }
+    if ((flags & NEVRA_SRCARCH)) {
+	if (headerIsSource(h)) {
+	    if (headerIsEntry(h, RPMTAG_NOSOURCE))
+		val = "nosrc";
+	    else
+		val = "src";
+	} else {
+	    val = headerGetString(h, RPMTAG_ARCH);
+	}
 	if (val) rstrscat(&res, ".", val, NULL);
     }
 
@@ -808,6 +820,15 @@ static int nevrTag(Header h, rpmtd td, headerGetFlags hgflags)
 static int nevraTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     return getNEVRA(h, td, NEVRA_NAME|NEVRA_EPOCH|NEVRA_VERSION|NEVRA_RELEASE|NEVRA_ARCH);
+}
+
+static int nvrsTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return getNEVRA(h, td, NEVRA_NAME|NEVRA_VERSION|NEVRA_RELEASE|NEVRA_SRCARCH);
+}
+static int nevrsTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return getNEVRA(h, td, NEVRA_NAME|NEVRA_EPOCH|NEVRA_VERSION|NEVRA_RELEASE|NEVRA_SRCARCH);
 }
 
 static int verboseTag(Header h, rpmtd td, headerGetFlags hgflags)
@@ -977,6 +998,8 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_NEVR,		nevrTag },
     { RPMTAG_NVRA,		nvraTag },
     { RPMTAG_NEVRA,		nevraTag },
+    { RPMTAG_NVRS,		nvrsTag },
+    { RPMTAG_NEVRS,		nevrsTag },
     { RPMTAG_HEADERCOLOR,	headercolorTag },
     { RPMTAG_VERBOSE,		verboseTag },
     { RPMTAG_EPOCHNUM,		epochnumTag },
