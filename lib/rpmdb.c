@@ -349,17 +349,22 @@ const char *rpmdbHome(rpmdb db)
     return dbdir;
 }
 
-int rpmdbOpenAll(rpmdb db)
+static int doOpen(rpmdb db, int justPkgs)
 {
-    int rc = 0;
-
-    if (db == NULL) return -2;
-
-    rc = pkgdbOpen(db, db->db_flags, NULL);
-    for (int dbix = 0; dbix < db->db_ndbi; dbix++) {
-	rc += indexOpen(db, db->db_tags[dbix], db->db_flags, NULL);
+    int rc = pkgdbOpen(db, db->db_flags, NULL);
+    if (!justPkgs) {
+	for (int dbix = 0; dbix < db->db_ndbi; dbix++) {
+	    rc += indexOpen(db, db->db_tags[dbix], db->db_flags, NULL);
+	}
     }
     return rc;
+}
+
+int rpmdbOpenAll(rpmdb db)
+{
+    if (db == NULL) return -2;
+
+    return doOpen(db, 0);
 }
 
 static int dbiForeach(dbiIndex *dbis, int ndbi,
@@ -500,13 +505,16 @@ static int openDatabase(const char * prefix,
     /* Try to ensure db home exists, error out if we can't even create */
     rc = rpmioMkpath(rpmdbHome(db), 0755, getuid(), getgid());
     if (rc == 0) {
+	/* Open just bare minimum when rebuilding a potentially damaged db */
+	int justPkgs = (db->db_flags & RPMDB_FLAG_REBUILD) &&
+		       ((db->db_mode & O_ACCMODE) == O_RDONLY);
 	/* Enable signal queue on the first db open */
 	if (db->db_next == NULL) {
 	    rpmsqActivate(1);
 	}
 
-	/* Just the primary Packages database opened here */
-	rc = pkgdbOpen(db, db->db_flags, NULL);
+	rc = doOpen(db, justPkgs);
+
 	if (!db->db_descr)
 	    db->db_descr = "unknown db";
     }
@@ -546,10 +554,7 @@ int rpmdbInit (const char * prefix, int perms)
 
     rc = openDatabase(prefix, NULL, &db, (O_CREAT | O_RDWR), perms, 0);
     if (db != NULL) {
-	int xx;
-	xx = rpmdbOpenAll(db);
-	if (xx && rc == 0) rc = xx;
-	xx = rpmdbClose(db);
+	int xx = rpmdbClose(db);
 	if (xx && rc == 0) rc = xx;
 	db = NULL;
     }
@@ -565,8 +570,6 @@ int rpmdbVerify(const char * prefix)
 
     if (db != NULL) {
 	int xx;
-	rc = rpmdbOpenAll(db);
-
 	
 	if (db->db_pkgs)
 	    rc += dbiVerify(db->db_pkgs, 0);
@@ -2527,10 +2530,6 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     }
     if (openDatabase(prefix, newdbpath, &newdb,
 		     (O_RDWR | O_CREAT), 0644, RPMDB_FLAG_REBUILD)) {
-	rc = 1;
-	goto exit;
-    }
-    if (rpmdbOpenAll(newdb)) {
 	rc = 1;
 	goto exit;
     }
