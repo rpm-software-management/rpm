@@ -16,9 +16,6 @@ const struct rpmdbOps_s *backends[] = {
 #if defined(WITH_SQLITE)
     &sqlite_dbops,
 #endif
-#if defined(WITH_LMDB)
-    &lmdb_dbops,
-#endif
 #ifdef ENABLE_NDB
     &ndb_dbops,
 #endif

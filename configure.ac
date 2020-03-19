@@ -608,30 +608,6 @@ AS_IF([test "$enable_bdb_ro" = yes],[
 ])
 AM_CONDITIONAL([BDB_RO], [test "$enable_bdb_ro" = yes])
 
-#=================
-# Check for LMDB support
-AC_ARG_ENABLE([lmdb],
-              [AS_HELP_STRING([--enable-lmdb=@<:@yes/no/auto@:>@ (EXPERIMENTAL)],
-                              [build with LMDB rpm database format support (default=auto)])],
-              [enable_lmdb="$enableval"],
-              [enable_lmdb=auto])
-
-AS_IF([test "x$enable_lmdb" != "xno"], [
-  PKG_CHECK_MODULES([LMDB], [lmdb], [have_lmdb=yes], [have_lmdb=no])
-  AS_IF([test "$enable_lmdb" = "yes"], [
-    if test "$have_lmdb" = "no"; then
-      AC_MSG_ERROR([--enable-lmdb specified, but not available])
-    fi
-  ])
-])
-
-if test "x$have_lmdb" = "xyes"; then
-  AC_DEFINE([WITH_LMDB], [1], [Define if LMDB is available])
-  LMDB_REQUIRES=lmdb
-  AC_SUBST(LMDB_REQUIRES)
-fi
-AM_CONDITIONAL([LMDB], [test "x$have_lmdb" = "xyes"])
-
 # Check for SQLITE support
 AC_ARG_ENABLE([sqlite],
               [AS_HELP_STRING([--enable-sqlite=@<:@yes/no/auto@:>@)],
