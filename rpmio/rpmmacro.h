@@ -198,7 +198,7 @@ const char *rpmConfigDir(void);
  * @param flags		parser flags
  * @return
  */
-int rpmExprBool(const char * expr, int flags);
+int rpmExprBoolFlags(const char * expr, int flags);
 
 /** \ingroup rpmmacro
  * Evaluate string expression.
@@ -206,8 +206,21 @@ int rpmExprBool(const char * expr, int flags);
  * @param flags		parser flags
  * @return
  */
-char * rpmExprStr(const char * expr, int flags);
+char * rpmExprStrFlags(const char * expr, int flags);
 
+/** \ingroup rpmmacro
+ * Evaluate boolean expression.
+ * @param expr		expression to parse
+ * @return
+ */
+int rpmExprBool(const char * expr);
+
+/** \ingroup rpmmacro
+ * Evaluate string expression.
+ * @param expr		expression to parse
+ * @return
+ */
+char * rpmExprStr(const char * expr);
 
 #ifdef __cplusplus
 }
