@@ -276,12 +276,6 @@ AC_ARG_WITH(crypto,
                             ],[],
                             [with_crypto=libgcrypt])
 
-# Refuse to proceed if someone specified --with-beecrypt (removed)
-AC_ARG_WITH(beecrypt,
-    [AC_HELP_STRING([--with-beecrypt (OBSOLETE)], [Obsolete argument. Use --with-crypto=beecrypt])
-    ],[AC_MSG_ERROR([--with-beecrypt no longer supported. Use --with-crypto=beecrypt])],
-    [])
-
 # Check for beecrypt library if requested.
 AC_ARG_WITH(internal_beecrypt, [  --with-internal-beecrypt build with internal beecrypt library ],,[with_internal_beecrypt=no])
 AM_CONDITIONAL([WITH_INTERNAL_BEECRYPT],[test "$with_internal_beecrypt" = yes])
