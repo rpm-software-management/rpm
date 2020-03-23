@@ -533,7 +533,7 @@ AM_CONDITIONAL(HAVE_LIBDW_STRTAB,[test "$HAVE_LIBDW_STRTAB" = yes])
 #=================
 # Check for BDB support
 AC_ARG_ENABLE([bdb],
-              [AS_HELP_STRING([--enable-bdb=@<:@yes/no/auto@:>@],
+              [AS_HELP_STRING([--enable-bdb=@<:@yes/no/auto@:>@ (DEPRECATED)],
                               [build with Berkeley DB rpm database format support (default=yes)])],
               [enable_bdb="$enableval"],
               [enable_bdb=yes])
