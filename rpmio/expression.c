@@ -826,7 +826,7 @@ err:
   return NULL;
 }
 
-int rpmExprBool(const char *expr, int flags)
+int rpmExprBoolFlags(const char *expr, int flags)
 {
   struct _parseState state;
   int result = -1;
@@ -863,7 +863,7 @@ exit:
   return result;
 }
 
-char *rpmExprStr(const char *expr, int flags)
+char *rpmExprStrFlags(const char *expr, int flags)
 {
   struct _parseState state;
   char *result = NULL;
@@ -907,4 +907,14 @@ exit:
   state.str = _free(state.str);
   valueFree(v);
   return result;
+}
+
+int rpmExprBool(const char *expr)
+{
+    return rpmExprBoolFlags(expr, 0);
+}
+
+char *rpmExprStr(const char *expr)
+{
+    return rpmExprStrFlags(expr, 0);
 }

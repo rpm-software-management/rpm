@@ -526,7 +526,7 @@ static void doExpressionExpansion(MacroBuf mb, const char * expr, size_t len)
     char *result;
     strncpy(buf, expr, len);
     buf[len] = 0;
-    result = rpmExprStr(buf, RPMEXPR_EXPAND);
+    result = rpmExprStrFlags(buf, RPMEXPR_EXPAND);
     if (!result) {
 	mb->error = 1;
 	goto exit;
@@ -1246,7 +1246,7 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
 	if ((b = strrchr(buf, '.')) != NULL)
 	    b++;
     } else if (STREQ("expr", f, fn)) {
-	char *expr = rpmExprStr(buf, 0);
+	char *expr = rpmExprStrFlags(buf, 0);
 	if (expr) {
 	    free(buf);
 	    b = buf = expr;

@@ -506,7 +506,7 @@ retry:
 	else
 	    checkCondition = spec->readStack->readable;
 	if (checkCondition) {
-	    match = rpmExprBool(s, 0);
+	    match = rpmExprBoolFlags(s, 0);
 	    if (match < 0) {
 		rpmlog(RPMLOG_ERR,
 			    _("%s:%d: bad %s condition: %s\n"),
