@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2018-10-22 12:23+0300\n"
+"POT-Creation-Date: 2020-03-23 23:24+0100\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Catalan (http://www.transifex.com/rpm-team/rpm/language/ca/)\n"
@@ -52,20 +52,25 @@ msgstr "Ha fallat la creació d'una canonada per a --pipe: %m\n"
 msgid "exec failed\n"
 msgstr "ha fallat l'exec\n"
 
-#: rpm2archive.c:91 rpm2cpio.c:68
+#: rpm2archive.c:93 rpm2cpio.c:68
 #, c-format
 msgid "argument is not an RPM package\n"
 msgstr "l'argument no és un paquet RPM\n"
 
-#: rpm2archive.c:96 rpm2cpio.c:73
+#: rpm2archive.c:98 rpm2cpio.c:73
 #, c-format
 msgid "error reading header from package\n"
 msgstr "s'ha produït un error en llegir la capçalera del paquet\n"
 
-#: rpm2archive.c:111 rpm2cpio.c:88
+#: rpm2archive.c:113 rpm2cpio.c:93
 #, c-format
 msgid "cannot re-open payload: %s\n"
 msgstr "no s'ha pogut tornar a obrir la càrrega: %s\n"
+
+#: rpm2cpio.c:79
+#, c-format
+msgid "files over 4GB not supported by cpio, use rpm2archive instead\n"
+msgstr ""
 
 #: rpmbuild.c:114
 #, c-format
@@ -370,7 +375,7 @@ msgstr ""
 msgid "Database options:"
 msgstr "Opcions de la base de dades:"
 
-#: rpmdb.c:126 rpmkeys.c:83 rpmqv.c:144 rpmsign.c:185
+#: rpmdb.c:126 rpmkeys.c:83 rpmqv.c:144 rpmsign.c:187
 msgid "only one major mode may be specified"
 msgstr "només es pot especificar un mode principal"
 
@@ -394,7 +399,7 @@ msgstr "llista les claus des de l'anell de claus RPM"
 msgid "Keyring options:"
 msgstr "Opcions de l'anell de claus:"
 
-#: rpmkeys.c:64 rpmsign.c:161
+#: rpmkeys.c:64 rpmsign.c:162
 msgid "no arguments given"
 msgstr "no s'han donat arguments"
 
@@ -616,7 +621,7 @@ msgid ""
 "line with --fskpath\n"
 msgstr ""
 
-#: rpmsign.c:166
+#: rpmsign.c:167
 msgid "--fskpath may only be specified when signing files"
 msgstr ""
 
@@ -855,157 +860,162 @@ msgstr "No s'ha trobat el fitxer: %s\n"
 msgid "Not a directory: %s\n"
 msgstr "No és un directori: %s\n"
 
-#: build/files.c:1592
+#: build/files.c:1553
+#, fuzzy, c-format
+msgid "Can't read content of file: %s\n"
+msgstr "Ha fallat la lectura del pitxer de política: %s\n"
+
+#: build/files.c:1594
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: no es pot carregar l'etiqueta incorrecta (%d).\n"
 
-#: build/files.c:1598
+#: build/files.c:1600
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: ha fallat la lectura de la clau pública.\n"
 
-#: build/files.c:1602
+#: build/files.c:1604
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: no és una clau pública armada.\n"
 
-#: build/files.c:1611
+#: build/files.c:1613
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s: ha fallat la codificació\n"
 
-#: build/files.c:1657
+#: build/files.c:1659
 msgid "failed symlink"
 msgstr ""
 
-#: build/files.c:1713 build/files.c:1716
+#: build/files.c:1715 build/files.c:1718
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
 msgstr ""
 
-#: build/files.c:1723
+#: build/files.c:1725
 #, c-format
 msgid "Duplicate build-ids %s and %s\n"
 msgstr ""
 
-#: build/files.c:1755
+#: build/files.c:1779
 msgid "_build_id_links macro not set, assuming 'compat'\n"
 msgstr ""
 
-#: build/files.c:1768
+#: build/files.c:1792
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
 msgstr ""
 
-#: build/files.c:1854
+#: build/files.c:1881
 #, c-format
 msgid "error reading build-id in %s: %s\n"
 msgstr ""
 
-#: build/files.c:1858
+#: build/files.c:1885
 #, c-format
 msgid "Missing build-id in %s\n"
 msgstr ""
 
-#: build/files.c:1863
+#: build/files.c:1890
 #, c-format
 msgid "build-id found in %s too small\n"
 msgstr ""
 
-#: build/files.c:1864
+#: build/files.c:1891
 #, c-format
 msgid "build-id found in %s too large\n"
 msgstr ""
 
-#: build/files.c:1879 rpmio/rpmfileutil.c:606
+#: build/files.c:1906 rpmio/rpmfileutil.c:606
 msgid "failed to create directory"
 msgstr "no s'ha pogut crear el directori"
 
-#: build/files.c:1897
+#: build/files.c:1924
 msgid "Mixing main ELF and debug files in package"
 msgstr ""
 
-#: build/files.c:2098
+#: build/files.c:2125
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "El fitxer necessita el «/» principal: %s\n"
 
-#: build/files.c:2122
+#: build/files.c:2149
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr ""
 
-#: build/files.c:2134
+#: build/files.c:2161
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2136
+#: build/files.c:2163
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2171
+#: build/files.c:2198
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "No s'ha pogut obrir el fitxer %s del %%files: %m\n"
 
-#: build/files.c:2182
+#: build/files.c:2209
 #, c-format
 msgid "line: %s\n"
 msgstr "línia: %s\n"
 
-#: build/files.c:2194
+#: build/files.c:2221
 #, c-format
 msgid "Empty %%files file %s\n"
 msgstr ""
 
-#: build/files.c:2200
+#: build/files.c:2227
 #, c-format
 msgid "Error reading %%files file %s: %m\n"
 msgstr "S'ha produït un error en llegir %%files del fitxer %s: %m\n"
 
-#: build/files.c:2223
+#: build/files.c:2250
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr ""
 
-#: build/files.c:2345 lib/rpminstall.c:467
+#: build/files.c:2372 lib/rpminstall.c:467
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "El glob no ha trobat el fitxer: %s\n"
 
-#: build/files.c:2431
+#: build/files.c:2459
 #, c-format
 msgid "Special file in generated file list: %s\n"
 msgstr ""
 
-#: build/files.c:2455
+#: build/files.c:2483
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:2471
+#: build/files.c:2499
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr "Més d'un fitxer en una línia: %s\n"
 
-#: build/files.c:2540
+#: build/files.c:2568
 msgid "Generating build-id links failed\n"
 msgstr ""
 
-#: build/files.c:2657
+#: build/files.c:2685
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Fitxer incorrecte: %s: %s\n"
 
-#: build/files.c:2725
+#: build/files.c:2753
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Comprovació per si hi ha fitxers no empaquetats: %s\n"
 
-#: build/files.c:2738
+#: build/files.c:2766
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -1014,22 +1024,22 @@ msgstr ""
 "Hi ha fitxers instal·lats però no empaquetats:\n"
 "%s"
 
-#: build/files.c:2853
+#: build/files.c:2881
 #, c-format
 msgid "%s was mapped to multiple filenames"
 msgstr ""
 
-#: build/files.c:3102
+#: build/files.c:3130
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Processament dels fitxers: %s\n"
 
-#: build/files.c:3124
+#: build/files.c:3152
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 
-#: build/files.c:3130
+#: build/files.c:3158
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Els binaris dependents de l'arquitectura estan en el paquet noarch\n"
 
@@ -1066,73 +1076,73 @@ msgstr ""
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "El nom de màquina no es pot fer canònic: %s\n"
 
-#: build/pack.c:358
+#: build/pack.c:382
 #, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "Càrrega desconeguda de compressió: %s\n"
 
-#: build/pack.c:408 sign/rpmgensig.c:285 sign/rpmgensig.c:482
+#: build/pack.c:436 sign/rpmgensig.c:285 sign/rpmgensig.c:482
 #: sign/rpmgensig.c:505 sign/rpmgensig.c:577 sign/rpmgensig.c:601
 #: sign/rpmgensig.c:764 sign/rpmgensig.c:799
 #, c-format
 msgid "Could not seek in file %s: %s\n"
 msgstr ""
 
-#: build/pack.c:434
+#: build/pack.c:462
 #, fuzzy, c-format
 msgid "Failed to read %jd bytes in file %s: %s\n"
 msgstr "Ha fallat la lectura del pitxer de política: %s\n"
 
-#: build/pack.c:448
+#: build/pack.c:476
 msgid "Unable to create immutable header region\n"
 msgstr ""
 
-#: build/pack.c:453
+#: build/pack.c:481
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:520
+#: build/pack.c:548
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "No es pot obrir %s: %s\n"
 
-#: build/pack.c:527
+#: build/pack.c:555
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "No es pot escriure el paquet: %s\n"
 
-#: build/pack.c:611
+#: build/pack.c:639
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "S'ha escrit: %s\n"
 
-#: build/pack.c:630
+#: build/pack.c:658
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr "S'està executant «%s»:\n"
 
-#: build/pack.c:633
+#: build/pack.c:661
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "Ha fallat l'execució de «%s».\n"
 
-#: build/pack.c:637
+#: build/pack.c:665
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "Ha fallat la verificació del paquet «%s».\n"
 
-#: build/pack.c:684
+#: build/pack.c:712
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "No es pot generar el nom de fitxer de sortida per al paquet %s: %s\n"
 
-#: build/pack.c:701
+#: build/pack.c:729
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "no es pot crear %s: %s\n"
 
-#: build/parseBuildInstallClean.c:35 build/parsePreamble.c:706
+#: build/parseBuildInstallClean.c:35 build/parsePreamble.c:704
 #, c-format
 msgid "line %d: second %s\n"
 msgstr "línia %d: segon %s\n"
@@ -1214,189 +1224,189 @@ msgstr ""
 "línia %d: S'ha produït un error en analitzar sintàcticament el %%policies: "
 "%s\n"
 
-#: build/parsePreamble.c:71
+#: build/parsePreamble.c:69
 #, c-format
 msgid "Error parsing tag field: %s\n"
 msgstr "S'ha produït un error en analitzar sintàcticament el camp tag: %s\n"
 
-#: build/parsePreamble.c:164
+#: build/parsePreamble.c:162
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "línia %d: número incorrecte: %s\n"
 
-#: build/parsePreamble.c:170
+#: build/parsePreamble.c:168
 #, c-format
 msgid "line %d: Bad no%s number: %u\n"
 msgstr "línia %d: Número incorrecte de no%s: %u\n"
 
-#: build/parsePreamble.c:233
+#: build/parsePreamble.c:231
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "línia %d: número incorrecte %s: %s\n"
 
-#: build/parsePreamble.c:247
+#: build/parsePreamble.c:245
 #, c-format
 msgid "%s %d defined multiple times\n"
 msgstr "%s %d es va definir diverses vegades\n"
 
-#: build/parsePreamble.c:292
+#: build/parsePreamble.c:290
 #, c-format
 msgid "Downloading %s to %s\n"
 msgstr "S'està baixant %s a %s\n"
 
-#: build/parsePreamble.c:295
+#: build/parsePreamble.c:293
 #, c-format
 msgid "Couldn't download %s\n"
 msgstr "No s'ha pogut baixar %s\n"
 
-#: build/parsePreamble.c:439
+#: build/parsePreamble.c:437
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "S'ha exclòs l'arquitectura: %s\n"
 
-#: build/parsePreamble.c:444
+#: build/parsePreamble.c:442
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "No s'ha inclòs l'arquitectura: %s\n"
 
-#: build/parsePreamble.c:449
+#: build/parsePreamble.c:447
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "S'ha exclòs el SO: %s\n"
 
-#: build/parsePreamble.c:454
+#: build/parsePreamble.c:452
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "No s'ha inclòs el SO: %s\n"
 
-#: build/parsePreamble.c:480
+#: build/parsePreamble.c:478
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "El camp %s ha d'estar present al paquet: %s\n"
 
-#: build/parsePreamble.c:503
+#: build/parsePreamble.c:501
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "L'entrada %s està duplicada al paquet: %s\n"
 
-#: build/parsePreamble.c:569
+#: build/parsePreamble.c:567
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "No s'ha pogut obrir la icona %s: %s\n"
 
-#: build/parsePreamble.c:585
+#: build/parsePreamble.c:583
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "No s'ha pogut llegir la icona %s: %s\n"
 
-#: build/parsePreamble.c:595
+#: build/parsePreamble.c:593
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Tipus desconegut d'icona: %s\n"
 
-#: build/parsePreamble.c:609
+#: build/parsePreamble.c:607
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "línia %d: L'etiqueta pren un únic testimoni: %s\n"
 
-#: build/parsePreamble.c:617
+#: build/parsePreamble.c:615
 #, c-format
 msgid "line %d: %s in: %s\n"
 msgstr "línia %d: %s a: %s\n"
 
-#: build/parsePreamble.c:619
+#: build/parsePreamble.c:617
 #, c-format
 msgid "%s in: %s\n"
 msgstr "%s a: %s\n"
 
-#: build/parsePreamble.c:638
+#: build/parsePreamble.c:636
 #, c-format
 msgid "Illegal char '%c' (0x%x)"
 msgstr ""
 
-#: build/parsePreamble.c:644
+#: build/parsePreamble.c:642
 msgid "Possible unexpanded macro"
 msgstr ""
 
-#: build/parsePreamble.c:650
+#: build/parsePreamble.c:648
 msgid "Illegal sequence \"..\""
 msgstr ""
 
-#: build/parsePreamble.c:738
+#: build/parsePreamble.c:736
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "línia %d: Etiqueta mal formada: %s\n"
 
-#: build/parsePreamble.c:746
+#: build/parsePreamble.c:744
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "línia %d: l'etiqueta és buida: %s\n"
 
-#: build/parsePreamble.c:807
+#: build/parsePreamble.c:805
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "línia %d: els prefixos no poden acabar amb «/»: %s\n"
 
-#: build/parsePreamble.c:819
+#: build/parsePreamble.c:817
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "línia %d: «Docdir» ha de començar per «/»: %s\n"
 
-#: build/parsePreamble.c:832
+#: build/parsePreamble.c:830
 #, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "línia %d: el camp Epoch ha d'ésser un nombre sense signe: %s\n"
 
-#: build/parsePreamble.c:869
+#: build/parsePreamble.c:867
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "línia %d: %s incorrecte: qualificadors: %s\n"
 
-#: build/parsePreamble.c:903
+#: build/parsePreamble.c:901
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "línia %d: Format incorrecte del BuildArchitecture: %s\n"
 
-#: build/parsePreamble.c:910
+#: build/parsePreamble.c:908
 #, c-format
 msgid "line %d: Duplicate BuildArch entry: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:920
+#: build/parsePreamble.c:918
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr "línia %d: Només els subpaquets noarch estan suportats: %s\n"
 
-#: build/parsePreamble.c:935
+#: build/parsePreamble.c:933
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "S'ha produït un error intern: l'etiqueta %d és incorrecta\n"
 
-#: build/parsePreamble.c:1033
+#: build/parsePreamble.c:1031
 #, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr "línia %d: %s està en desús: %s\n"
 
-#: build/parsePreamble.c:1095
+#: build/parsePreamble.c:1093
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Especificació incorrecta del paquet: %s\n"
 
-#: build/parsePreamble.c:1140
+#: build/parsePreamble.c:1138
 msgid "Binary rpm package found. Expected spec file!\n"
 msgstr ""
 
-#: build/parsePreamble.c:1143
+#: build/parsePreamble.c:1141
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "línia %d: Etiqueta desconeguda: %s\n"
 
-#: build/parsePreamble.c:1178
+#: build/parsePreamble.c:1176
 #, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "%%{buildroot} no pot estar buit\n"
 
-#: build/parsePreamble.c:1182
+#: build/parsePreamble.c:1180
 #, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "%%{buildroot} no pot ser \"/\"\n"
@@ -1425,12 +1435,12 @@ msgstr "No existeix la font número %u\n"
 msgid "No \"Source:\" tag in the spec file\n"
 msgstr "Sense \"Source:\" etiqueta al fitxer spec\n"
 
-#: build/parsePrep.c:300
+#: build/parsePrep.c:299
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "S'ha produït un error en analitzar sintàcticament el %%setup: %s\n"
 
-#: build/parsePrep.c:311
+#: build/parsePrep.c:310
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "línia %d: Argument incorrecte al %%setup: %s\n"
@@ -1467,23 +1477,27 @@ msgstr ""
 msgid "No rich dependencies allowed for this type"
 msgstr "No es permet ca dependència enriquida per a aquest tipus"
 
-#: build/parseReqs.c:232 build/parseReqs.c:307
+#: build/parseReqs.c:232 build/parseReqs.c:315
 msgid "invalid dependency"
 msgstr "dependència no vàlida"
 
-#: build/parseReqs.c:267 lib/rpmds.c:1470
+#: build/parseReqs.c:267 lib/rpmds.c:1473
 msgid "Version required"
 msgstr "Es requereix la versió"
 
-#: build/parseReqs.c:283
+#: build/parseReqs.c:282
+msgid "Only package names are allowed in Obsoletes"
+msgstr ""
+
+#: build/parseReqs.c:291
 msgid "Only absolute paths are allowed in file triggers"
 msgstr ""
 
-#: build/parseReqs.c:296
+#: build/parseReqs.c:304
 msgid "Trigger fired by the same package is already defined in spec file"
 msgstr ""
 
-#: build/parseReqs.c:324
+#: build/parseReqs.c:332
 #, c-format
 msgid "line %d: %s: %s\n"
 msgstr "línia %d: %s: %s\n"
@@ -1882,12 +1896,12 @@ msgstr "%s és un Delta RPM i no es pot instal·lar directament\n"
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Càrrega (%s) no admesa al paquet %s\n"
 
-#: lib/depends.c:377
+#: lib/depends.c:378
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "el paquet %s ja es va afegir i s'ignora %s\n"
 
-#: lib/depends.c:378
+#: lib/depends.c:379
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "el paquet %s ja es va afegir, s'està substituint amb %s\n"
@@ -1962,26 +1976,26 @@ msgstr "falta"
 msgid "(unknown)"
 msgstr "(desconegut)"
 
-#: lib/fsm.c:745
+#: lib/fsm.c:749
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s s'ha desat com a %s\n"
 
-#: lib/fsm.c:798
+#: lib/fsm.c:802
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s s'ha creat com a %s\n"
 
-#: lib/fsm.c:1082
+#: lib/fsm.c:1086
 #, c-format
 msgid "%s %s: remove failed: %s\n"
 msgstr "%s %s: ha fallat la supressió: %s\n"
 
-#: lib/fsm.c:1083
+#: lib/fsm.c:1087
 msgid "directory"
 msgstr "directori"
 
-#: lib/fsm.c:1083
+#: lib/fsm.c:1087
 msgid "file"
 msgstr "fitxer"
 
@@ -2008,55 +2022,55 @@ msgstr ""
 msgid "region offset: BAD, tag %d type %d offset %d count %d"
 msgstr ""
 
-#: lib/header.c:1849
+#: lib/header.c:1852
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d"
 msgstr ""
 
-#: lib/header.c:1858
+#: lib/header.c:1861
 #, c-format
 msgid "region %d size: BAD, ril %d il %d rdl %d dl %d"
 msgstr ""
 
-#: lib/header.c:1866
+#: lib/header.c:1869
 #, c-format
 msgid "region %d: tag number mismatch il %d ril %d dl %d rdl %d\n"
 msgstr ""
 
-#: lib/header.c:1916
+#: lib/header.c:1919
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d"
 msgstr ""
 
-#: lib/header.c:1920
+#: lib/header.c:1923
 msgid "hdr magic: BAD"
 msgstr "hdr magic: DOLENT"
 
-#: lib/header.c:1925
+#: lib/header.c:1928
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range"
 msgstr ""
 
-#: lib/header.c:1930
+#: lib/header.c:1933
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range"
 msgstr ""
 
-#: lib/header.c:1940
+#: lib/header.c:1943
 #, c-format
 msgid "hdr blob(%zd): BAD, read returned %d"
 msgstr ""
 
-#: lib/header.c:1949
+#: lib/header.c:1952
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr "sigh pad(%zd): DOLENT, ha llegit %zd bytes"
 
-#: lib/header.c:1962
+#: lib/header.c:1965
 msgid "signature "
 msgstr ""
 
-#: lib/header.c:1989
+#: lib/header.c:1992
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
 msgstr ""
@@ -2100,153 +2114,162 @@ msgstr "no s'esperava ]"
 msgid "unexpected }"
 msgstr "no s'esperava }"
 
-#: lib/headerfmt.c:511
+#: lib/headerfmt.c:473
+msgid "escaped char expected after \\"
+msgstr ""
+
+#: lib/headerfmt.c:515
 msgid "? expected in expression"
 msgstr "s'esperava ? a l'expressió"
 
-#: lib/headerfmt.c:518
+#: lib/headerfmt.c:522
 msgid "{ expected after ? in expression"
 msgstr "s'esperava { després de ? a l'expressió"
 
-#: lib/headerfmt.c:530 lib/headerfmt.c:570
+#: lib/headerfmt.c:534 lib/headerfmt.c:574
 msgid "} expected in expression"
 msgstr "s'esperava } a l'expressió"
 
-#: lib/headerfmt.c:538
+#: lib/headerfmt.c:542
 msgid ": expected following ? subexpression"
 msgstr "s'esperava : després de ? a la subexpressió"
 
-#: lib/headerfmt.c:556
+#: lib/headerfmt.c:560
 msgid "{ expected after : in expression"
 msgstr "s'esperava { després de : a l'expressió"
 
-#: lib/headerfmt.c:578
+#: lib/headerfmt.c:582
 msgid "| expected at end of expression"
 msgstr "s'esperava | al final de l'expressió"
 
-#: lib/headerfmt.c:753
+#: lib/headerfmt.c:757
 msgid "array iterator used with different sized arrays"
 msgstr "iterador de seqüència que s'utilitza amb seqüències de diferents mides"
 
-#: lib/poptALL.c:158
+#: lib/poptALL.c:141
+#, fuzzy, c-format
+msgid "arguments to --dbpath must begin with '/'\n"
+msgstr "els arguments a --prefix han de començar amb una /"
+
+#: lib/poptALL.c:162
 #, c-format
 msgid ""
 "%s: error: more than one --pipe specified (incompatible popt aliases?)\n"
 msgstr ""
 
-#: lib/poptALL.c:197
+#: lib/poptALL.c:201
 msgid "predefine MACRO with value EXPR"
 msgstr "predefineix MACRO amb el valor EXPR"
 
-#: lib/poptALL.c:198 lib/poptALL.c:201
+#: lib/poptALL.c:202 lib/poptALL.c:205
 msgid "'MACRO EXPR'"
 msgstr "'MACRO EXPR'"
 
-#: lib/poptALL.c:200
+#: lib/poptALL.c:204
 msgid "define MACRO with value EXPR"
 msgstr "defineix la MACRO amb el valor de l'EXPR"
 
-#: lib/poptALL.c:203
+#: lib/poptALL.c:207
 msgid "undefine MACRO"
 msgstr "des-defineix la MACRO"
 
-#: lib/poptALL.c:204
+#: lib/poptALL.c:208
 msgid "MACRO"
 msgstr "MACRO"
 
-#: lib/poptALL.c:206
+#: lib/poptALL.c:210
 msgid "print macro expansion of EXPR"
 msgstr "imprimeix l'expansió de la macro de l'EXPR"
 
-#: lib/poptALL.c:207
+#: lib/poptALL.c:211
 msgid "'EXPR'"
 msgstr "'EXPR'"
 
-#: lib/poptALL.c:209
+#: lib/poptALL.c:213
 msgid "Specify target platform"
 msgstr ""
 
-#: lib/poptALL.c:209
+#: lib/poptALL.c:213
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
-#: lib/poptALL.c:211 lib/poptALL.c:230
+#: lib/poptALL.c:215 lib/poptALL.c:234
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "llegeix <FITXER:...> en comptes dels fitxers per defecte"
 
-#: lib/poptALL.c:212 lib/poptALL.c:231
+#: lib/poptALL.c:216 lib/poptALL.c:235
 msgid "<FILE:...>"
 msgstr "<FITXER:...>"
 
-#: lib/poptALL.c:217
+#: lib/poptALL.c:221
 msgid "don't enable any plugins"
 msgstr "no habilitis cap complement"
 
-#: lib/poptALL.c:220
+#: lib/poptALL.c:224
 msgid "don't verify package digest(s)"
 msgstr "no verifiquis els resums dels paquets"
 
-#: lib/poptALL.c:222
+#: lib/poptALL.c:226
 msgid "don't verify database header(s) when retrieved"
 msgstr "no verifiquis les capçaleres de la base de dades quan s'obtinguin"
 
-#: lib/poptALL.c:224
+#: lib/poptALL.c:228
 msgid "don't verify package signature(s)"
 msgstr "no verifiquis les signatures del paquet"
 
-#: lib/poptALL.c:227
+#: lib/poptALL.c:231
 msgid "send stdout to CMD"
 msgstr "envia de la sortida estàndard a l'ORDRE"
 
-#: lib/poptALL.c:228
+#: lib/poptALL.c:232
 msgid "CMD"
 msgstr "ORDRE"
 
-#: lib/poptALL.c:233
+#: lib/poptALL.c:237
 msgid "use ROOT as top level directory"
 msgstr "utilitza l'ARREL com el directori de nivell superior"
 
-#: lib/poptALL.c:234
+#: lib/poptALL.c:238
 msgid "ROOT"
 msgstr "ARREL"
 
-#: lib/poptALL.c:236
+#: lib/poptALL.c:240
 msgid "use database in DIRECTORY"
 msgstr "utilitza la base de dades en el DIRECTORI"
 
-#: lib/poptALL.c:237
+#: lib/poptALL.c:241
 msgid "DIRECTORY"
 msgstr "DIRECTORI"
 
-#: lib/poptALL.c:240
+#: lib/poptALL.c:244
 msgid "display known query tags"
 msgstr "mostra les etiquetes conegudes de consulta"
 
-#: lib/poptALL.c:242
+#: lib/poptALL.c:246
 msgid "display final rpmrc and macro configuration"
 msgstr "mostra el rpmrc final i la configuració de les macros"
 
-#: lib/poptALL.c:244
+#: lib/poptALL.c:248
 msgid "provide less detailed output"
 msgstr "proporciona sortides menys detallades"
 
-#: lib/poptALL.c:246
+#: lib/poptALL.c:250
 msgid "provide more detailed output"
 msgstr "proporciona sortides més detallades"
 
-#: lib/poptALL.c:248
+#: lib/poptALL.c:252
 msgid "print the version of rpm being used"
 msgstr "escriu la versió del RPM que s'està utilitzant"
 
-#: lib/poptALL.c:254
+#: lib/poptALL.c:258
 msgid "debug payload file state machine"
 msgstr "depura la màquina d'estats del fitxer de càrrega"
 
-#: lib/poptALL.c:260
+#: lib/poptALL.c:264
 msgid "debug rpmio I/O"
 msgstr "depura l'E/S de rpmio"
 
-#: lib/poptALL.c:319
+#: lib/poptALL.c:323
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: la taula d'opcions no està ben configurada (%d)\n"
@@ -2662,26 +2685,26 @@ msgstr "no verifiquis les relacions de dependència del paquet"
 msgid "don't execute verify script(s)"
 msgstr "no executis els scripts de verificació"
 
-#: lib/psm.c:146
+#: lib/psm.c:148
 #, c-format
 msgid "Missing rpmlib features for %s:\n"
 msgstr "Falten les funcionalitats rpmlib per a %s:\n"
 
-#: lib/psm.c:183
+#: lib/psm.c:185
 msgid "source package expected, binary found\n"
 msgstr ""
 "s'esperava un paquet de les fonts, però se n'ha trobat un dels binaris\n"
 
-#: lib/psm.c:194
+#: lib/psm.c:196
 msgid "source package contains no .spec file\n"
 msgstr "el paquet de les fonts no conté cap fitxer .spec\n"
 
-#: lib/psm.c:608
+#: lib/psm.c:610
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "ha fallat el desempaquetatge de l'arxiu%s%s: %s\n"
 
-#: lib/psm.c:609
+#: lib/psm.c:611
 msgid " on file "
 msgstr " al fitxer "
 
@@ -2865,7 +2888,7 @@ msgstr "NO ÉS CORRECTE"
 msgid "OK"
 msgstr "D'ACORD"
 
-#: lib/rpmchecksig.c:298 sign/rpmgensig.c:134
+#: lib/rpmchecksig.c:299 sign/rpmgensig.c:134
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: ha fallat l'obertura: %s\n"
@@ -3071,65 +3094,69 @@ msgid "dependency comparison supports versions with tilde."
 msgstr ""
 
 #: lib/rpmds.c:1277
+msgid "dependency comparison supports versions with caret."
+msgstr ""
+
+#: lib/rpmds.c:1280
 msgid "support files larger than 4GB"
 msgstr "suporta els fitxers superiors als 4 GB"
 
-#: lib/rpmds.c:1280
+#: lib/rpmds.c:1283
 msgid "support for rich dependencies."
 msgstr "compatibilitat per a les dependències enriquides."
 
-#: lib/rpmds.c:1284
+#: lib/rpmds.c:1287
 msgid "package payload can be compressed using zstd."
 msgstr ""
 
-#: lib/rpmds.c:1410
+#: lib/rpmds.c:1413
 #, c-format
 msgid "Unknown rich dependency op '%.*s'"
 msgstr "op desconegut de dependència enriquida '%.*s'"
 
-#: lib/rpmds.c:1451
+#: lib/rpmds.c:1454
 msgid "Name required"
 msgstr "Cal el nom"
 
-#: lib/rpmds.c:1488
+#: lib/rpmds.c:1491
 msgid "Illegal ops in with/without"
 msgstr ""
 
-#: lib/rpmds.c:1495
+#: lib/rpmds.c:1498
 msgid "Illegal context for 'unless', please use 'or' instead"
 msgstr ""
 
-#: lib/rpmds.c:1500
+#: lib/rpmds.c:1503
 msgid "Illegal context for 'if', please use 'and' instead"
 msgstr ""
 
-#: lib/rpmds.c:1516
+#: lib/rpmds.c:1519
 msgid "Rich dependency does not start with '('"
 msgstr "La dependència enriquida no comença amb '('"
 
-#: lib/rpmds.c:1524
+#: lib/rpmds.c:1527
 msgid "Missing argument to rich dependency op"
 msgstr "Falten argument a l'op de la dependència enriquida"
 
-#: lib/rpmds.c:1526
+#: lib/rpmds.c:1529
 msgid "Empty rich dependency"
 msgstr "Dependència enriquida buida"
 
-#: lib/rpmds.c:1544
+#: lib/rpmds.c:1547
 #, c-format
 msgid "Unterminated rich dependency: %s"
 msgstr "Dependència enriquida sense acabar: %s"
 
-#: lib/rpmds.c:1559
+#: lib/rpmds.c:1562
 msgid "Cannot chain different ops"
 msgstr "No es poden encadenar diferents ops"
 
-#: lib/rpmds.c:1564
+#: lib/rpmds.c:1567
 #, fuzzy
 msgid "Can only chain and/or/with ops"
 msgstr "Únicament es poden encadenar ops AND i OR"
 
-#: lib/rpmds.c:1695
+#: lib/rpmds.c:1698
 msgid "Junk after rich dependency"
 msgstr ""
 
@@ -3663,11 +3690,11 @@ msgstr ""
 msgid "package"
 msgstr ""
 
-#: lib/rpmvs.c:493
+#: lib/rpmvs.c:496
 msgid "Header "
 msgstr "Capçalera "
 
-#: lib/rpmvs.c:494
+#: lib/rpmvs.c:497
 msgid "Payload "
 msgstr ""
 
@@ -3684,11 +3711,11 @@ msgstr "sense estat"
 msgid "no digest"
 msgstr ""
 
-#: lib/transaction.c:1519
+#: lib/transaction.c:1521
 msgid "skipped"
 msgstr "s'ha ignorat"
 
-#: lib/transaction.c:1519
+#: lib/transaction.c:1521
 msgid "failed"
 msgstr "ha fallat"
 
@@ -3720,11 +3747,11 @@ msgstr "No es pot restablir el valor de nice: %s"
 msgid "Unable to reset I/O priority: %s"
 msgstr "No es pot restablir la prioritat de l'E/S: %s"
 
-#: rpmio/digest_nss.c:68
+#: rpmio/digest_nss.c:69
 msgid "Failed to initialize NSS library\n"
 msgstr ""
 
-#: rpmio/digest_nss.c:79
+#: rpmio/digest_nss.c:80
 #, c-format
 msgid "Failed to register fork handler: %m\n"
 msgstr ""
