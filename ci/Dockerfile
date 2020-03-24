@@ -38,6 +38,7 @@ RUN dnf -y install \
   pkgconfig \
   /usr/bin/gdb-add-index \
   /usr/bin/python2 \
+  python2-devel \
   dwz \
   && dnf clean all
 RUN autoreconf -vfi
