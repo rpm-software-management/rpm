@@ -2,7 +2,6 @@ FROM fedora
 MAINTAINER Igor Gnatenko <i.gnatenko.brain@gmail.com>
 
 WORKDIR /srv/rpm
-COPY . .
 
 RUN echo -e "deltarpm=0\ninstall_weak_deps=0\ntsflags=nodocs" >> /etc/dnf/dnf.conf
 RUN rm -f /etc/yum.repos.d/*modular.repo
@@ -47,6 +46,9 @@ RUN dnf -y install \
   /usr/bin/gdb-add-index \
   dwz \
   && dnf clean all
+
+COPY . .
+
 RUN autoreconf -vfi
 RUN ./configure \
   --with-crypto=libgcrypt \
