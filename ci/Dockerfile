@@ -30,7 +30,6 @@ RUN dnf -y install \
   popt-devel \
   libarchive-devel \
   libdb-devel \
-  lmdb-devel \
   sqlite-devel \
   libselinux-devel \
   ima-evm-utils-devel \
@@ -58,7 +57,6 @@ RUN ./configure \
   --with-audit \
   --enable-bdb \
   --enable-ndb \
-  --enable-lmdb \
   --enable-bdb-ro \
   --enable-sqlite \
   --enable-python \
