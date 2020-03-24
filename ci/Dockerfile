@@ -2,7 +2,6 @@ FROM fedora
 MAINTAINER Igor Gnatenko <i.gnatenko.brain@gmail.com>
 
 WORKDIR /opt/rpm
-COPY . .
 
 RUN echo -e "deltarpm=0\ninstall_weak_deps=0\ntsflags=nodocs" >> /etc/dnf/dnf.conf
 RUN dnf -y update
@@ -41,6 +40,7 @@ RUN dnf -y install \
   python2-devel \
   dwz \
   && dnf clean all
+COPY . .
 RUN autoreconf -vfi
 RUN ./configure \
   --with-crypto=openssl \
