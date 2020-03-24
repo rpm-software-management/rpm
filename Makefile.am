@@ -318,6 +318,11 @@ BUILT_SOURCES += db.h
 endif
 DISTCLEANFILES = db.h
 
+.PHONY: ci
+ci:
+	podman build -t rpm -f ci/Dockerfile .
+	podman run -t rpm
+
 ChangeLog:
 	touch ChangeLog
 
