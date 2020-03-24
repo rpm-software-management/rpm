@@ -4,7 +4,6 @@ ACLOCAL_AMFLAGS = -I m4
 
 DISTCHECK_CONFIGURE_FLAGS = \
 	--enable-python \
-	--enable-lmdb \
 	--enable-bdb \
 	--enable-ndb \
 	--enable-zstd \
