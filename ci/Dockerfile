@@ -48,7 +48,8 @@ RUN ./configure \
   --with-cap \
   --with-acl \
   --with-lua \
-  --enable-silent-rules
+  --enable-silent-rules \
+  --enable-python
 RUN make
 
 CMD make check; rc=$?; cat tests/rpmtests.log; exit $rc
