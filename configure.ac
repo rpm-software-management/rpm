@@ -625,7 +625,7 @@ if test "x$have_sqlite" = "xyes"; then
 fi
 AM_CONDITIONAL([SQLITE], [test "x$have_sqlite" = "xyes"])
 
-AM_GNU_GETTEXT_VERSION([0.16.1])
+AM_GNU_GETTEXT_VERSION([0.18.2])
 AM_GNU_GETTEXT([external])
 AM_ICONV
 
