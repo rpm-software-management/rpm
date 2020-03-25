@@ -303,9 +303,9 @@ doc/librpm.doxy: doc/librpm.doxy.in doc/librpm/Doxyheader.h Makefile.am configur
 	  -e "s,[@]VERSION[@],$(VERSION)," \
 	< $(top_srcdir)/doc/librpm.doxy.in > doc/librpm.doxy
 
-doc/librpm/html/index.html: doc/librpm.doxy
+doc/librpm/html: doc/librpm.doxy
 	@DOXYGEN@ doc/librpm.doxy
-noinst_DATA += doc/librpm/html/index.html
+noinst_DATA += doc/librpm/html
 endif
 EXTRA_DIST += doc/librpm.doxy.in doc/librpm/Doxyheader.h
 EXTRA_DIST += doc/librpm/html
