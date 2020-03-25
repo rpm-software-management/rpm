@@ -1,5 +1,5 @@
 FROM fedora
-MAINTAINER Igor Gnatenko <i.gnatenko.brain@gmail.com>
+MAINTAINER rpm-maint@lists.rpm.org
 
 WORKDIR /srv/rpm
 
