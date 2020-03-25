@@ -49,7 +49,9 @@ RUN ./configure \
   --with-acl \
   --with-lua \
   --enable-silent-rules \
-  --enable-python
-RUN make
+  --enable-python \
+  --enable-werror
+
+RUN make -j
 
 CMD make check; rc=$?; cat tests/rpmtests.log; exit $rc
