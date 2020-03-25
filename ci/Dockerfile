@@ -1,4 +1,4 @@
-FROM fedora
+FROM fedora:31
 MAINTAINER rpm-maint@lists.rpm.org
 
 WORKDIR /opt/rpm
