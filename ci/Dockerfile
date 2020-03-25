@@ -64,6 +64,6 @@ RUN ./configure \
   --enable-python \
   --enable-silent-rules \
   --enable-werror
-RUN make
+RUN make -j
 
-CMD make distcheck; rc=$?; find . -name rpmtests.log|xargs cat; exit $rc
+CMD make -j distcheck; rc=$?; find . -name rpmtests.log|xargs cat; exit $rc
