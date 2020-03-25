@@ -30,6 +30,9 @@ librpmbuild_la_LIBADD = \
 	@WITH_POPT_LIB@ \
 	@WITH_MAGIC_LIB@
 
+if LIBELF
+librpmbuild_la_LIBADD += @WITH_LIBELF_LIB@
+endif
 if LIBDW
-librpmbuild_la_LIBADD += @WITH_LIBELF_LIB@ @WITH_LIBDW_LIB@
+librpmbuild_la_LIBADD += @WITH_LIBDW_LIB@
 endif

@@ -7,7 +7,9 @@
 #include <signal.h>
 #include <magic.h>
 #include <regex.h>
+#ifdef HAVE_LIBELF
 #include <gelf.h>
+#endif
 
 #include <rpm/header.h>
 #include <rpm/argv.h>
@@ -1134,6 +1136,7 @@ static int initAttrs(rpmfc fc)
 static uint32_t getElfColor(const char *fn)
 {
     uint32_t color = 0;
+#ifdef HAVE_LIBELF
     int fd = open(fn, O_RDONLY);
     if (fd >= 0) {
 	Elf *elf = elf_begin (fd, ELF_C_READ, NULL);
@@ -1151,6 +1154,7 @@ static uint32_t getElfColor(const char *fn)
 	}
 	close(fd);
     }
+#endif
     return color;
 }
 
