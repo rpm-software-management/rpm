@@ -1009,13 +1009,6 @@ AS_IF([test "$enable_plugins" != no],[
 AC_SUBST(WITH_AUDIT_LIB)
 AM_CONDITIONAL(AUDIT,[test "$with_audit" = yes])
 
-with_dmalloc=no
-AC_ARG_WITH(dmalloc, [AS_HELP_STRING([--with-dmalloc],[build with dmalloc debugging support])])
-if test "$with_dmalloc" = yes ; then
-  AC_DEFINE(DMALLOC, 1, [Build with dmalloc support?])
-  LIBS="$LIBS -ldmalloc"
-fi
-
 user_with_uid0=$(awk -F: '$3==0 {print $1;exit}' /etc/passwd)
 group_with_gid0=$(awk -F: '$3==0 {print $1;exit}' /etc/group)
 AC_DEFINE_UNQUOTED([UID_0_USER],["$user_with_uid0"],[Get the user name having userid 0])
