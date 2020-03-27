@@ -110,8 +110,7 @@ bin_PROGRAMS += 	rpm2archive
 endif
 
 rpmlibexec_PROGRAMS =
-rpmconfig_SCRIPTS =	mkinstalldirs \
-			config.guess config.sub
+rpmconfig_SCRIPTS =	mkinstalldirs
 
 noinst_LTLIBRARIES = 		libcliutils.la
 libcliutils_la_SOURCES = 	cliutils.h cliutils.c
