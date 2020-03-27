@@ -4,6 +4,7 @@ AC_INIT(rpm, 4.15.90, rpm-maint@lists.rpm.org)
 AC_CONFIG_SRCDIR([rpm.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_AUX_DIR([build-aux])
 
 AM_INIT_AUTOMAKE([1.10 foreign tar-pax dist-bzip2 subdir-objects nostdinc])
 dnl Allow silent build on automake versions that support it

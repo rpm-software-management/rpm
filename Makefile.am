@@ -21,7 +21,7 @@ AM_CFLAGS = @RPMCFLAGS@
 
 CLEANFILES =
 EXTRA_DIST = ChangeLog CREDITS INSTALL \
-	autogen.sh db3/configure installplatform platform.in
+	autogen.sh db3/configure installplatform platform.in build-aux
 BUILT_SOURCES =
 
 SUBDIRS = po misc
