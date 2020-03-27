@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include <libgen.h>
 #include <errno.h>
+#include <sys/statvfs.h>
 
 /* duplicated from cpio.c */
 #if MAJOR_IN_MKDEV
@@ -40,25 +41,6 @@
 #include "lib/rpmtriggers.h"
 
 #include "lib/rpmplugins.h"
-
-/* XXX FIXME: merge with existing (broken?) tests in system.h */
-/* portability fiddles */
-#if STATFS_IN_SYS_STATVFS
-#include <sys/statvfs.h>
-
-#else
-# if STATFS_IN_SYS_VFS
-#  include <sys/vfs.h>
-# else
-#  if STATFS_IN_SYS_MOUNT
-#   include <sys/mount.h>
-#  else
-#   if STATFS_IN_SYS_STATFS
-#    include <sys/statfs.h>
-#   endif
-#  endif
-# endif
-#endif
 
 #include "debug.h"
 
@@ -155,25 +137,10 @@ static rpmDiskSpaceInfo rpmtsCreateDSI(const rpmts ts, dev_t dev,
     rpmDiskSpaceInfo dsi;
     struct stat sb;
     int rc;
-
-#if STATFS_IN_SYS_STATVFS
     struct statvfs sfb;
+
     memset(&sfb, 0, sizeof(sfb));
     rc = statvfs(dirName, &sfb);
-#else
-    struct statfs sfb;
-    memset(&sfb, 0, sizeof(sfb));
-#  if STAT_STATFS4
-/* This platform has the 4-argument version of the statfs call.  The last two
- * should be the size of struct statfs and 0, respectively.  The 0 is the
- * filesystem type, and is always 0 when statfs is called on a mounted
- * filesystem, as we're doing.
- */
-    rc = statfs(dirName, &sfb, sizeof(sfb), 0);
-#  else
-    rc = statfs(dirName, &sfb);
-#  endif
-#endif
     if (rc)
 	return NULL;
 
@@ -193,15 +160,8 @@ static rpmDiskSpaceInfo rpmtsCreateDSI(const rpmts ts, dev_t dev,
 	dsi->bsize = 512;       /* we need a bsize */
     dsi->bneeded = 0;
     dsi->ineeded = 0;
-#ifdef STATFS_HAS_F_BAVAIL
     dsi->bavail = (sfb.f_flag & ST_RDONLY) ? 0 : sfb.f_bavail;
-#else
-/* FIXME: the statfs struct doesn't have a member to tell how many blocks are
- * available for non-superusers.  f_blocks - f_bfree is probably too big, but
- * it's about all we can do.
- */
-    dsi->bavail = sfb.f_blocks - sfb.f_bfree;
-#endif
+
     /* XXX Avoid FAT and other file systems that have not inodes. */
     /* XXX assigning negative value to unsigned type */
     dsi->iavail = !(sfb.f_ffree == 0 && sfb.f_files == 0)

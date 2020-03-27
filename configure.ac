@@ -633,125 +633,6 @@ AC_CHECK_HEADERS(sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/param.h)
 AC_CHECK_HEADERS(sys/auxv.h)
 
-dnl statfs portability fiddles.
-dnl
-dnl We should really emulate/steal sections of the statfs and struct statfs
-dnl checks from GNU fileutils.
-dnl
-AC_MSG_CHECKING(for struct statfs)
-
-dnl
-dnl this is easier than nesting AC_TRY_COMPILEs...
-dnl
-found_struct_statfs=no
-
-if test X$found_struct_statfs = Xno ; then
-dnl Solaris 2.6+ wants to use statvfs
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#include <sys/statvfs.h> ]], [[struct statvfs sfs;]])],[AC_MSG_RESULT(in sys/statvfs.h)
-	AC_DEFINE(STATFS_IN_SYS_STATVFS, 1,
-		[statfs in <sys/statvfs.h> (for solaris 2.6+ systems)])
-	found_struct_statfs=yes],[])
-fi
-
-if test X$found_struct_statfs = Xno ; then
-dnl first try including sys/vfs.h
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#include <sys/vfs.h> ]], [[struct statfs sfs;]])],[AC_MSG_RESULT(in sys/vfs.h)
-	AC_DEFINE(STATFS_IN_SYS_VFS, 1, [statfs in <sys/vfs.h> (for linux systems)])
-	found_struct_statfs=yes],[])
-fi
-
-if test X$found_struct_statfs = Xno ; then
-dnl ...next try including sys/mount.h
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_PARAM_H
-#include <sys/param.h>
-#endif
-#include <sys/mount.h> ]], [[struct statfs sfs;]])],[AC_MSG_RESULT(in sys/mount.h)
-	AC_DEFINE(STATFS_IN_SYS_MOUNT, 1, [statfs in <sys/mount.h> (for Digital Unix 4.0D systems)])
-	found_struct_statfs=yes],[])
-fi
-
-if test X$found_struct_statfs = Xno ; then
-dnl ...still no joy.  Try sys/statfs.h
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#include <sys/statfs.h> ]], [[struct statfs sfs;]])],[AC_MSG_RESULT(in sys/statfs.h)
-	AC_DEFINE(STATFS_IN_SYS_STATFS, 1, [statfs in <sys/statfs.h> (for Irix 6.4 systems)])
-	found_struct_statfs=yes],[])
-fi
-
-if test X$found_struct_statfs = Xno ; then
-dnl ...no luck.  Warn the user of impending doom.
-AC_MSG_WARN(not found)
-fi
-
-dnl
-dnl if we found the struct, see if it has the f_bavail member.  Some OSes
-dnl don't, including IRIX 6.5+
-dnl
-if test X$found_struct_statfs = Xyes ; then
-AC_MSG_CHECKING(for f_bavail member in struct statfs)
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#if STATFS_IN_SYS_STATVFS
-# include <sys/statvfs.h>
-  typedef struct statvfs STATFS_t;
-#else
-  typedef struct statfs STATFS_t;
-# if STATFS_IN_SYS_VFS
-#  include <sys/vfs.h>
-# elif STATFS_IN_SYS_MOUNT
-#  include <sys/mount.h>
-# elif STATFS_IN_SYS_STATFS
-#  include <sys/statfs.h>
-# endif
-#endif ]], [[STATFS_t sfs;
-	sfs.f_bavail = 0;]])],[AC_MSG_RESULT(yes)
-	AC_DEFINE(STATFS_HAS_F_BAVAIL, 1, [Define if struct statfs has the f_bavail member])],[AC_MSG_RESULT(no)
-])
-fi
-
-if test X$found_struct_statfs = Xyes ; then
-dnl
-dnl now check to see if we have the 4-argument variant of statfs()
-dnl this pretty much requires AC_RUN_IFELSE([AC_LANG_SOURCE([[]])],[],[],[])
-dnl
-AC_MSG_CHECKING([if statfs() requires 4 arguments])
-AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#ifdef STATFS_IN_SYS_VFS
-#include <sys/vfs.h>
-#elif STATFS_IN_SYS_MOUNT
-#include <sys/mouht.h>
-#elif STATFS_IN_SYS_STATFS
-#include <sys/statfs.h>
-#endif
-main() {
-	struct statfs sfs;
-	exit (statfs(".", &sfs, sizeof(sfs), 0));
-}
-]])],[AC_MSG_RESULT(yes)
-	AC_DEFINE(STAT_STATFS4, 1, [Define if the statfs() call takes 4 arguments])],[AC_MSG_RESULT(no)],[AC_MSG_RESULT(no)
-])
-fi
-
 dnl look for libc features
 
 dnl Check for missing typedefs
@@ -786,7 +667,7 @@ AC_CHECK_FUNCS([secure_getenv __secure_getenv])
 
 AC_CHECK_FUNCS(
    [mkstemp getcwd basename dirname realpath setenv unsetenv regcomp lchown \
-    utimes getline localtime_r ],
+    utimes getline localtime_r statvfs ],
    [], [AC_MSG_ERROR([function required by rpm])])
 
 AC_LIBOBJ(fnmatch)
