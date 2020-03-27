@@ -813,20 +813,6 @@ AS_IF([test "$enable_python" = yes],[
 AM_CONDITIONAL(ENABLE_PYTHON,[test "$WITH_PYTHON_SUBPACKAGE" = 1])
 
 AC_PATH_PROG(DOXYGEN, doxygen, no)
-dnl
-dnl Only build internal API + source hacking docs on request
-dnl
-AC_ARG_WITH(hackingdocs, [AS_HELP_STRING([--with-hackingdocs],[build rpm hacking docs])],,[with_hackingdocs=no])
-
-case "$with_hackingdocs" in
-auto)
-  AS_IF([test "$DOXYGEN" = no],[with_hackingdocs=no],[with_hackingdocs=no])
-  ;;
-yes)
-  AS_IF([test "$DOXYGEN" = no],
-    [AC_MSG_ERROR([rpm hacking docs eeds doxygen in PATH])])
-  ;;
-esac
 AC_CHECK_PROG(HAVE_DOT,[dot],[YES],[NO])
 
 WITH_SELINUX_LIB=
@@ -1088,7 +1074,6 @@ AC_SUBST(RPMCONFIGDIR)
 AC_SUBST(OBJDUMP)
 
 AM_CONDITIONAL([DOXYGEN],[test "$DOXYGEN" != no])
-AM_CONDITIONAL([HACKINGDOCS],[test "$with_hackingdocs" = yes])
 
 AC_PATH_PROG(AUTOM4TE,autom4te,:)
 

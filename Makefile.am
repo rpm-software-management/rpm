@@ -273,24 +273,6 @@ uninstall-local:
 
 MAINTAINERCLEANFILES = ChangeLog
 
-# Build hacking docs only on request
-if HACKINGDOCS
-if DOXYGEN
-doc/hacking.doxy: doc/hacking.doxy.in doc/hacking/Doxyheader.h Makefile.am
-	$(SED) \
-	  -e "s,\@top_srcdir\@/,$(top_srcdir)/,g" \
-	  -e "s,[@]HAVE_DOT[@],$(HAVE_DOT)," \
-	  -e "s,[@]PACKAGE[@],$(PACKAGE)," \
-	  -e "s,[@]VERSION[@],$(VERSION)," \
-	< $(top_srcdir)/doc/hacking.doxy.in > doc/hacking.doxy
-
-doc/hacking/html/index.html: doc/hacking.doxy rpmpopt-@VERSION@
-	@DOXYGEN@ doc/hacking.doxy
-noinst_DATA += doc/hacking/html/index.html
-endif
-endif
-EXTRA_DIST += doc/hacking.doxy.in doc/hacking/Doxyheader.h
-
 # Always build librpm docs
 if DOXYGEN
 doc/librpm.doxy: doc/librpm.doxy.in doc/librpm/Doxyheader.h Makefile.am configure.ac $(pkginclude_HEADERS)
@@ -328,7 +310,6 @@ dist-hook:
 	if [ -d .git ] && [ -x $(command -v git) ]; then git log --no-merges > $(distdir)/ChangeLog; fi
 
 clean-local:
-	rm -rf doc/hacking/html
 	rm -rf include
 
 distclean-local:
