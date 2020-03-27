@@ -58,24 +58,6 @@ AC_SUBST(RPMCFLAGS)
 
 AC_SYS_LARGEFILE
 
-dnl
-dnl look for POSIX chmod attributes
-dnl
-AC_MSG_CHECKING(POSIX chmod)
-touch foo.chmodtest
-chmod 744 foo.chmodtest
-chmod +X foo.chmodtest 2>/dev/null
-a=`ls -l foo.chmodtest | awk '{print substr($1,1,10)}'`
-rm -f foo.chmodtest
-if test "$a" = "-rwxr-xr-x"; then
-    AC_MSG_RESULT(yes)
-    FIXPERMS=a+rX,u+w,g-w,o-w 
-else
-    AC_MSG_RESULT(no (tell your OS vendor about GNU fileutils))
-    FIXPERMS=a+r,u+w,g-w,o-w 
-fi
-AC_SUBST(FIXPERMS)
-
 dnl AM_DISABLE_SHARED
 AM_PROG_LIBTOOL
 

@@ -789,7 +789,7 @@ package or when debugging this package.\
 %__os_install_post	%{___build_post}
 
 # Macro to fix broken permissions in sources
-%_fixperms      %{__chmod} -Rf @FIXPERMS@
+%_fixperms      %{__chmod} -Rf a+rX,u+w,g-w,o-w
 
 #==============================================================================
 # ---- Scriptlet template templates.
