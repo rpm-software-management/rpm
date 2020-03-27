@@ -6,10 +6,6 @@
 
 #include <assert.h>
 
-#ifdef	DMALLOC
-#include <dmalloc.h>
-#endif
-
 #define RPMDBG_TOSTR(a)		RPMDBG_TOSTR_ARG(a)
 #define RPMDBG_TOSTR_ARG(a)	#a
 
