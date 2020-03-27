@@ -18,7 +18,7 @@ enum modes {
 
 static int mode = MODE_NONE;
 
-#ifdef WITH_IMAEVM
+#if defined(WITH_IMAEVM) || defined(WITH_FSVERITY)
 static int fskpass = 0;
 static char * fileSigningKey = NULL;
 #endif
@@ -39,6 +39,13 @@ static struct poptOption signOptsTable[] = {
     { "signfiles", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR),
 	&sargs.signflags, RPMSIGN_FLAG_IMA,
 	N_("sign package(s) files"), NULL},
+#endif
+#ifdef WITH_FSVERITY
+    { "signverity", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR),
+	&sargs.signflags, RPMSIGN_FLAG_FSVERITY,
+	N_("generate fsverity signatures for package(s) files"), NULL},
+#endif
+#if defined(WITH_IMAEVM) || defined(WITH_FSVERITY)
     { "fskpath", '\0', POPT_ARG_STRING, &fileSigningKey, 0,
 	N_("use file signing key <key>"),
 	N_("<key>") },
@@ -59,7 +66,7 @@ static struct poptOption optionsTable[] = {
     POPT_TABLEEND
 };
 
-#ifdef WITH_IMAEVM
+#if defined(WITH_IMAEVM) || defined(WITH_FSVERITY)
 static char *get_fskpass(void)
 {
     struct termios flags, tmp_flags;
@@ -106,12 +113,12 @@ static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
 	goto exit;
     }
 
-#ifdef WITH_IMAEVM
+#if defined(WITH_IMAEVM) || defined(WITH_FSVERITY)
     if (fileSigningKey) {
 	rpmPushMacro(NULL, "_file_signing_key", NULL, fileSigningKey, RMIL_GLOBAL);
     }
 
-    if (sargs->signflags & RPMSIGN_FLAG_IMA) {
+    if (sargs->signflags & (RPMSIGN_FLAG_IMA | RPMSIGN_FLAG_FSVERITY)) {
 	char *fileSigningKeyPassword = NULL;
 	char *key = rpmExpand("%{?_file_signing_key}", NULL);
 	if (rstreq(key, "")) {
@@ -165,8 +172,9 @@ int main(int argc, char *argv[])
 	argerror(_("no arguments given"));
     }
 
-#ifdef WITH_IMAEVM
-    if (fileSigningKey && !(sargs.signflags & RPMSIGN_FLAG_IMA)) {
+#if defined(WITH_IMAEVM) || defined(WITH_FSVERITY)
+    if (fileSigningKey &&
+	!(sargs.signflags & (RPMSIGN_FLAG_IMA | RPMSIGN_FLAG_FSVERITY))) {
 	argerror(_("--fskpath may only be specified when signing files"));
     }
 #endif

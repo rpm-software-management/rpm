@@ -717,6 +717,25 @@ fi
 AM_CONDITIONAL(WITH_IMAEVM,[test "$with_imaevm" = yes])
 AC_SUBST(WITH_IMAEVM_LIB)
 
+# fsverity
+AC_ARG_WITH([fsverity], [AS_HELP_STRING([--with-fsverity],[build with fsverity support])],[],[with_fsverity=no])
+if test "$with_fsverity" = yes ; then
+  AC_MSG_CHECKING([libfsverity])
+  AC_COMPILE_IFELSE(
+    [AC_LANG_PROGRAM(
+      [[#include <libfsverity.h>]],
+      [[return libfsverity_sign_digest(NULL, NULL, NULL, NULL);]]
+    )],
+    [AC_MSG_RESULT(yes)
+      AC_DEFINE(WITH_FSVERITY, 1, [Build with fsverity support?])
+      WITH_FSVERITY_LIB="-lfsverity"
+    ],
+    [AC_MSG_ERROR([--with-fsverity given, libfsverity or libfsverity.h missing])]
+  )
+fi
+AM_CONDITIONAL(WITH_FSVERITY,[test "$with_fsverity" = yes])
+AC_SUBST(WITH_FSVERITY_LIB)
+
 # libcap
 WITH_CAP_LIB=
 AC_ARG_WITH(cap, [AS_HELP_STRING([--with-cap],[build with capability support])],

@@ -22,3 +22,8 @@ if WITH_IMAEVM
 librpmsign_la_SOURCES += rpmsignfiles.c rpmsignfiles.h
 librpmsign_la_LIBADD += @WITH_IMAEVM_LIB@
 endif
+
+if WITH_FSVERITY
+librpmsign_la_SOURCES += rpmsignverity.c rpmsignverity.h
+librpmsign_la_LIBADD += @WITH_FSVERITY_LIB@
+endif
