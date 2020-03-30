@@ -2,6 +2,7 @@
 
 #include <errno.h>
 #include <stdlib.h>
+#include <fcntl.h>
 
 #include "lib/rpmdb_internal.h"
 #include <rpm/rpmstring.h>

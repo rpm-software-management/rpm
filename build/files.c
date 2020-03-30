@@ -11,6 +11,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <regex.h>
+#include <fcntl.h>
 #if WITH_CAP
 #include <sys/capability.h>
 #endif

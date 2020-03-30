@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <sqlite3.h>
+#include <fcntl.h>
 
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>

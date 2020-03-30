@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <ctype.h>
 #include <dirent.h>
+#include <fcntl.h>
 #if defined(__linux__)
 #include <sys/personality.h>
 #endif

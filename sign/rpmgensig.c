@@ -9,6 +9,7 @@
 #include <sys/wait.h>
 #include <popt.h>
 #include <libgen.h>
+#include <fcntl.h>
 
 #include <rpm/rpmlib.h>			/* RPMSIGTAG & related */
 #include <rpm/rpmmacro.h>

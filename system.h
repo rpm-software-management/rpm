@@ -43,12 +43,6 @@ char * stpncpy(char * dest, const char * src, size_t n);
 #define	getenv(_s)	__secure_getenv(_s)
 #endif
 
-#ifdef HAVE_FCNTL_H
-#include <fcntl.h>
-#else
-#include <sys/file.h>
-#endif
-
 #if HAVE_LIMITS_H
 #include <limits.h>
 #endif

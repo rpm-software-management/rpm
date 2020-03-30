@@ -18,6 +18,7 @@
 #include <sys/wait.h>
 #include <stdarg.h>
 #include <errno.h>
+#include <fcntl.h>
 
 #include <rpm/rpmio.h>
 #include <rpm/rpmmacro.h>

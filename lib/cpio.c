@@ -17,6 +17,7 @@
 #include <sys/types.h> /* already included from system.h */
 #endif
 #include <string.h>
+#include <fcntl.h>
 
 #include <rpm/rpmio.h>
 #include <rpm/rpmlog.h>

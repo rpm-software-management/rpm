@@ -11,6 +11,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 #include <popt.h>
 #include <db.h>
 #include <signal.h>
+#include <fcntl.h>
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmmacro.h>

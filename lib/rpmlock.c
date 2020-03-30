@@ -2,6 +2,7 @@
 #include "system.h"
 
 #include <errno.h>
+#include <fcntl.h>
 
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
