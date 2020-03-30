@@ -11,6 +11,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <libgen.h>
+#include <dirent.h>
 
 #include "rpmpkg.h"
 

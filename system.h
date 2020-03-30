@@ -49,23 +49,6 @@ char * stpncpy(char * dest, const char * src, size_t n);
 #include <sys/file.h>
 #endif
 
-#ifdef HAVE_DIRENT_H
-# include <dirent.h>
-# define NLENGTH(direct) (strlen((direct)->d_name))
-#else /* not HAVE_DIRENT_H */
-# define dirent direct
-# define NLENGTH(direct) ((direct)->d_namlen)
-# ifdef HAVE_SYS_NDIR_H
-#  include <sys/ndir.h>
-# endif /* HAVE_SYS_NDIR_H */
-# ifdef HAVE_SYS_DIR_H
-#  include <sys/dir.h>
-# endif /* HAVE_SYS_DIR_H */
-# ifdef HAVE_NDIR_H
-#  include <ndir.h>
-# endif /* HAVE_NDIR_H */
-#endif /* HAVE_DIRENT_H */
-
 #if HAVE_LIMITS_H
 #include <limits.h>
 #endif
