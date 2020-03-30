@@ -11,7 +11,7 @@ process can be inherited by the actual daemons on restart.  As a
 result daemons may end up with unwanted nice or ionice values.  This
 plugin resets the scriptlet process priorities after forking, and can
 be used to counter that effect. Should not be used with systemd
-because the it's not needed there, and the effect is
+because it's not needed there, and the effect is
 counter-productive.
 
 .SH Configuration
