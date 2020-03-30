@@ -625,7 +625,7 @@ CFLAGS=$old_CFLAGS
 AC_STRUCT_DIRENT_D_TYPE
 
 AC_CHECK_HEADERS(limits.h)
-AC_CHECK_HEADERS(fcntl.h getopt.h)
+AC_CHECK_HEADERS(getopt.h)
 
 AC_CHECK_HEADERS(sys/utsname.h)
 

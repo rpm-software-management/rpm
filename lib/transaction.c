@@ -8,6 +8,7 @@
 #include <libgen.h>
 #include <errno.h>
 #include <sys/statvfs.h>
+#include <fcntl.h>
 
 /* duplicated from cpio.c */
 #if MAJOR_IN_MKDEV

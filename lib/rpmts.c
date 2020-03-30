@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 #include <libgen.h>
+#include <fcntl.h>
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>			/* rpmReadPackage etc */

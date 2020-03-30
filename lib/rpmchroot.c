@@ -1,6 +1,7 @@
 #include "system.h"
 #include <sched.h>
 #include <stdlib.h>
+#include <fcntl.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>
 #include "lib/rpmchroot.h"

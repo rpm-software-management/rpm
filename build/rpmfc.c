@@ -5,6 +5,7 @@
 #include <sys/select.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <fcntl.h>
 #include <magic.h>
 #include <regex.h>
 #ifdef HAVE_LIBELF
