@@ -8,8 +8,9 @@ EXTRA_DIST += $(man_man1_DATA)
 
 man_man8dir = $(mandir)/man8
 man_man8_DATA = rpm.8 rpm-misc.8 rpmbuild.8 rpmdeps.8 rpmgraph.8 rpm2cpio.8
-man_man8_DATA += rpmdb.8 rpmkeys.8 rpmsign.8 rpmspec.8
-man_man8_DATA += rpm-plugin-systemd-inhibit.8
+man_man8_DATA += rpmdb.8 rpmkeys.8 rpmsign.8 rpmspec.8 rpm2archive.8
+man_man8_DATA += rpm-plugin-systemd-inhibit.8 rpm-plugin-audit.8 rpm-plugin-ima.8
+man_man8_DATA += rpm-plugin-prioreset.8 rpm-plugin-selinux.8 rpm-plugin-syslog.8
 EXTRA_DIST += $(man_man8_DATA)
 
 man_fr_man8dir = $(mandir)/fr/man8
