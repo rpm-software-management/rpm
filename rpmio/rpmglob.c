@@ -26,6 +26,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
 #include <pwd.h>
 #include <assert.h>
 #include <sys/stat.h>		/* S_ISDIR */
@@ -74,8 +75,6 @@ typedef struct {
     int (*gl_lstat)(const char *, struct stat *);
     int (*gl_stat)(const char *, struct stat *);
 } glob_t;
-
-#define	NAMLEN(_d)	NLENGTH(_d)
 
 #include <errno.h>
 #ifndef __set_errno
@@ -746,7 +745,7 @@ glob_in_dir(const char *pattern, const char *directory, int flags,
 		    if (fnmatch(pattern, name, fnm_flags) == 0) {
 			struct globlink *new = (struct globlink *)
 			    alloca(sizeof(struct globlink));
-			len = NAMLEN(d);
+			len = strlen(d->d_name);
 			new->name = (char *) xmalloc(len + 1);
 			*((char *) mempcpy(new->name, name, len))
 			    = '\0';

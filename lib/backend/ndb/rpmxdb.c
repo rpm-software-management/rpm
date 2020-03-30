@@ -16,6 +16,7 @@
 #include <sys/mman.h>
 #include <endian.h>
 #include <libgen.h>
+#include <dirent.h>
 
 #include "rpmxdb.h"
 

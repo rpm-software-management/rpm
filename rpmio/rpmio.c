@@ -6,6 +6,7 @@
 #include <stdarg.h>
 #include <errno.h>
 #include <ctype.h>
+#include <dirent.h>
 #if defined(__linux__)
 #include <sys/personality.h>
 #endif
