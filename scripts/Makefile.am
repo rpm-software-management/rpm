@@ -13,7 +13,7 @@ EXTRA_DIST = \
 	check-buildroot check-rpaths check-rpaths-worker \
 	debuginfo.prov \
 	find-debuginfo.sh find-lang.sh \
-	perl.prov perl.req pythondeps.sh pythondistdeps.py \
+	perl.prov perl.req pythondistdeps.py \
 	rpmdb_dump rpmdb_load \
 	rpm.daily rpm.log rpm.supp rpm2cpio.sh \
 	tgpg vpkg-provides.sh \
@@ -31,7 +31,7 @@ rpmconfig_SCRIPTS = \
 	check-buildroot check-rpaths check-rpaths-worker \
 	debuginfo.prov \
 	find-lang.sh find-requires find-provides \
-	perl.prov perl.req pythondeps.sh pythondistdeps.py \
+	perl.prov perl.req pythondistdeps.py \
 	metainfo.prov \
 	pkgconfigdeps.sh libtooldeps.sh \
 	ocamldeps.sh \
