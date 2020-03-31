@@ -27,6 +27,8 @@ export HOME
 TZ=UTC
 export TZ
 
+unset SOURCE_DATE_EPOCH
+
 TOPDIR="${RPMTEST}/build"
 
 RPM_XFAIL=${RPM_XFAIL-1}
