@@ -1051,7 +1051,7 @@ ls ./usr/src/debug/ | cut -f1,2 -d\.
 # Check that the source path has been rewritten in the .debug file.
 # Drop the final arch prefix to make the test arch-independent.
 readelf --debug-dump=info ./usr/lib/debug/usr/local/bin/hello2*.debug \
-  | grep comp_dir | sed -e 's/\t$//' | cut -f5- -d/ | cut -f1,2 -d\.
+  | grep comp_dir | egrep -v 'glibc.*/csu$' | sed -e 's/\t$//' | cut -f5- -d/ | cut -f1,2 -d\.
 ],
 [0],
 [hello2-1.0-1
@@ -1088,7 +1088,7 @@ ls ./usr/src/debug/
 
 # Check that the source path has been rewritten in the .debug file.
 readelf --debug-dump=info ./usr/lib/debug/usr/local/bin/hello2*.debug \
-  | grep comp_dir | sed -e 's/\t$//' | cut -f5- -d/
+  | grep comp_dir | egrep -v 'glibc.*/csu$' | sed -e 's/\t$//' | cut -f5- -d/
 ],
 [0],
 [hello-1.0
