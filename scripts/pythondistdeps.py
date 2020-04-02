@@ -205,6 +205,20 @@ for f in (args.files or stdin.readlines()):
             else:
                 warn("Version for {!r} has not been found".format(dist), RuntimeWarning)
                 continue
+
+        # pkg_resources use platform.python_version to evaluate if a
+        # dependency is relevant based on environment markers [1],
+        # e.g. requirement `argparse;python_version<"2.7"`
+        #
+        # Since we're running this script on one Python version while
+        # possibly evaluating packages for different versions, we mock the
+        # platform.python_version function. Discussed upstream [2].
+        #
+        # [1] https://www.python.org/dev/peps/pep-0508/#environment-markers
+        # [2] https://github.com/pypa/setuptools/pull/1275
+        import platform
+        platform.python_version = lambda: dist.py_version
+
         # This is the PEP 503 normalized name.
         # It does also convert dots to dashes, unlike dist.key.
         # In the current code, we only add additional provides with this.
