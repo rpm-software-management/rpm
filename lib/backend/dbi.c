@@ -52,7 +52,7 @@ dbiIndex dbiNew(rpmdb rdb, rpmDbiTagVal rpmtag)
 static int tryBackend(const char *dbhome, const struct rpmdbOps_s *be)
 {
     int rc = 0;
-    if (be->path) {
+    if (be && be->path) {
 	char *path = rstrscat(NULL, dbhome, "/", be->path, NULL);
 	rc = (access(path, F_OK) == 0);
 	free(path);
