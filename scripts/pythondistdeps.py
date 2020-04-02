@@ -133,6 +133,12 @@ def convert(name, operator, version_id):
     return OPERATORS[operator](name, operator, version_id)
 
 
+def normalize_name(name):
+    """https://www.python.org/dev/peps/pep-0503/#normalized-names"""
+    import re
+    return re.sub(r'[-_.]+', '-', name).lower()
+
+
 parser = argparse.ArgumentParser(prog=argv[0])
 group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument('-P', '--provides', action='store_true', help='Print Provides')
@@ -199,6 +205,13 @@ for f in (args.files or stdin.readlines()):
             else:
                 warn("Version for {!r} has not been found".format(dist), RuntimeWarning)
                 continue
+        # This is the PEP 503 normalized name.
+        # It does also convert dots to dashes, unlike dist.key.
+        # In the current code, we only add additional provides with this.
+        # Later, we can start requiring them.
+        # See https://bugzilla.redhat.com/show_bug.cgi?id=1791530
+        normalized_name = normalize_name(dist.project_name)
+
         if args.majorver_provides or args.majorver_only or args.legacy_provides or args.legacy:
             # Get the Python major version
             pyver_major = dist.py_version.split('.')[0]
@@ -213,10 +226,16 @@ for f in (args.files or stdin.readlines()):
                 name = 'python{}dist({})'.format(dist.py_version, dist.key)
                 if name not in py_deps:
                     py_deps[name] = []
+                name_ = 'python{}dist({})'.format(dist.py_version, normalized_name)
+                if name_ not in py_deps:
+                    py_deps[name_] = []
             if args.majorver_provides or args.majorver_only:
                 pymajor_name = 'python{}dist({})'.format(pyver_major, dist.key)
                 if pymajor_name not in py_deps:
                     py_deps[pymajor_name] = []
+                pymajor_name_ = 'python{}dist({})'.format(pyver_major, normalized_name)
+                if pymajor_name_ not in py_deps:
+                    py_deps[pymajor_name_] = []
             if args.legacy or args.legacy_provides:
                 legacy_name = 'pythonegg({})({})'.format(pyver_major, dist.key)
                 if legacy_name not in py_deps:
@@ -227,8 +246,12 @@ for f in (args.files or stdin.readlines()):
                 if spec not in py_deps[name]:
                     if not args.legacy:
                         py_deps[name].append(spec)
+                        if name != name_:
+                            py_deps[name_].append(spec)
                     if args.majorver_provides:
                         py_deps[pymajor_name].append(spec)
+                        if pymajor_name != pymajor_name_:
+                            py_deps[pymajor_name_].append(spec)
                     if args.legacy or args.legacy_provides:
                         py_deps[legacy_name].append(spec)
         if args.requires or (args.recommends and dist.extras):
