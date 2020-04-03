@@ -22,6 +22,9 @@ static int mode = MODE_NONE;
 static int fskpass = 0;
 static char * fileSigningKey = NULL;
 #endif
+#ifdef WITH_FSVERITY
+static char * fileSigningCert = NULL;
+#endif
 
 static struct rpmSignArgs sargs = {NULL, 0, 0};
 
@@ -44,6 +47,9 @@ static struct poptOption signOptsTable[] = {
     { "signverity", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR),
 	&sargs.signflags, RPMSIGN_FLAG_FSVERITY,
 	N_("generate fsverity signatures for package(s) files"), NULL},
+    { "certpath", '\0', POPT_ARG_STRING, &fileSigningCert, 0,
+	N_("use file signing cert <cert>"),
+	N_("<cert>") },
 #endif
 #if defined(WITH_IMAEVM) || defined(WITH_FSVERITY)
     { "fskpath", '\0', POPT_ARG_STRING, &fileSigningKey, 0,
@@ -122,6 +128,12 @@ static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
     if (fileSigningKey) {
 	rpmPushMacro(NULL, "_file_signing_key", NULL, fileSigningKey, RMIL_GLOBAL);
     }
+
+#ifdef WITH_FSVERITY
+    if (fileSigningCert) {
+	rpmPushMacro(NULL, "_file_signing_cert", NULL, fileSigningCert, RMIL_GLOBAL);
+    }
+#endif
 
     if (flags_sign_files(sargs->signflags)) {
 	char *fileSigningKeyPassword = NULL;
