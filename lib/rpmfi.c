@@ -2261,7 +2261,7 @@ int rpmfiArchiveHasContent(rpmfi fi)
     return res;
 }
 
-size_t rpmfiArchiveRead(rpmfi fi, void * buf, size_t size)
+ssize_t rpmfiArchiveRead(rpmfi fi, void * buf, size_t size)
 {
     if (fi == NULL || fi->archive == NULL)
 	return -1;
