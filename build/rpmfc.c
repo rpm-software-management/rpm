@@ -533,20 +533,18 @@ static ARGV_t runCall(const char *cmd,
 		     const char *buildRoot, const char *fn)
 {
     ARGV_t output = NULL;
-    char *path = rstrscat(NULL, buildRoot ? buildRoot : "", "/", fn, NULL);
 
     if (_rpmfc_debug)
-	rpmlog(RPMLOG_DEBUG, "Calling %s() on %s\n", cmd, path);
+	rpmlog(RPMLOG_DEBUG, "Calling %s() on %s\n", cmd, fn);
 
     /* Hack to pass in the path as what looks like a macro argument */
-    rpmPushMacroFlags(NULL, "1", NULL, path, 1, RPMMACRO_LITERAL);
+    rpmPushMacroFlags(NULL, "1", NULL, fn, 1, RPMMACRO_LITERAL);
     char *exp = rpmExpand(cmd, NULL);
     rpmPopMacro(NULL, "1");
     if (*exp)
 	argvSplit(&output, exp, "\n\r");
     free(exp);
 
-    free(path);
     return output;
 }
 
