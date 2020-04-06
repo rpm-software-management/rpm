@@ -156,10 +156,16 @@ group_majorver.add_argument('--majorver-provides-versions', action='append',
                             help='Print extra Provides with Python major version only for listed '
                                  'Python VERSIONS (appended or comma separated without spaces, e.g. 2.7,3.9)')
 parser.add_argument('-m', '--majorver-only', action='store_true', help='Print Provides/Requires with Python major version only')
+parser.add_argument('-n', '--normalized-names-format', action='store',
+                    default="legacy-dots", choices=["pep503", "legacy-dots"],
+                    help='Format of normalized names according to pep503 or legacy format that allows dots [default]')
+parser.add_argument('--normalized-names-provide-both', action='store_true',
+                    help='Provide both `pep503` and `legacy-dots` format of normalized names (useful for a transition period)')
 parser.add_argument('-L', '--legacy-provides', action='store_true', help='Print extra legacy pythonegg Provides')
 parser.add_argument('-l', '--legacy', action='store_true', help='Print legacy pythonegg Provides/Requires instead')
 parser.add_argument('files', nargs=argparse.REMAINDER)
 args = parser.parse_args()
+
 
 py_abi = args.requires
 py_deps = {}
@@ -169,6 +175,20 @@ if args.majorver_provides_versions:
     # and parse individual versions (can be comma-separated)
     args.majorver_provides_versions = [v for vstring in args.majorver_provides_versions
                                          for v in vstring.split(",")]
+
+# If normalized_names_require_pep503 is True we require the pep503
+# normalized name, if it is False we provide the legacy normalized name
+normalized_names_require_pep503 = args.normalized_names_format == "pep503"
+
+# If normalized_names_provide_pep503/legacy is True we provide the
+#   pep503/legacy normalized name, if it is False we don't
+normalized_names_provide_pep503 = \
+    args.normalized_names_format == "pep503" or args.normalized_names_provide_both
+normalized_names_provide_legacy = \
+    args.normalized_names_format == "legacy-dots" or args.normalized_names_provide_both
+
+# At least one type of normalization must be provided
+assert normalized_names_provide_pep503 or normalized_names_provide_legacy
 
 for f in (args.files or stdin.readlines()):
     f = f.strip()
@@ -237,8 +257,6 @@ for f in (args.files or stdin.readlines()):
 
         # This is the PEP 503 normalized name.
         # It does also convert dots to dashes, unlike dist.key.
-        # In the current code, we only add additional provides with this.
-        # Later, we can start requiring them.
         # See https://bugzilla.redhat.com/show_bug.cgi?id=1791530
         normalized_name = normalize_name(dist.project_name)
 
@@ -254,21 +272,24 @@ for f in (args.files or stdin.readlines()):
                     py_deps[name] = []
                 py_deps[name].append(('==', dist.py_version))
             if not args.legacy or not args.majorver_only:
-                name = 'python{}dist({})'.format(dist.py_version, dist.key)
-                if name not in py_deps:
-                    py_deps[name] = []
-                name_ = 'python{}dist({})'.format(dist.py_version, normalized_name)
-                if name_ not in py_deps:
-                    py_deps[name_] = []
+                if normalized_names_provide_legacy:
+                    name = 'python{}dist({})'.format(dist.py_version, dist.key)
+                    if name not in py_deps:
+                        py_deps[name] = []
+                if normalized_names_provide_pep503:
+                    name_ = 'python{}dist({})'.format(dist.py_version, normalized_name)
+                    if name_ not in py_deps:
+                        py_deps[name_] = []
             if args.majorver_provides or args.majorver_only or \
-                    (args.majorver_provides_versions and
-                     dist.py_version in args.majorver_provides_versions):
-                pymajor_name = 'python{}dist({})'.format(pyver_major, dist.key)
-                if pymajor_name not in py_deps:
-                    py_deps[pymajor_name] = []
-                pymajor_name_ = 'python{}dist({})'.format(pyver_major, normalized_name)
-                if pymajor_name_ not in py_deps:
-                    py_deps[pymajor_name_] = []
+                    (args.majorver_provides_versions and dist.py_version in args.majorver_provides_versions):
+                if normalized_names_provide_legacy:
+                    pymajor_name = 'python{}dist({})'.format(pyver_major, dist.key)
+                    if pymajor_name not in py_deps:
+                        py_deps[pymajor_name] = []
+                if normalized_names_provide_pep503:
+                    pymajor_name_ = 'python{}dist({})'.format(pyver_major, normalized_name)
+                    if pymajor_name_ not in py_deps:
+                        py_deps[pymajor_name_] = []
             if args.legacy or args.legacy_provides:
                 legacy_name = 'pythonegg({})({})'.format(pyver_major, dist.key)
                 if legacy_name not in py_deps:
@@ -276,18 +297,21 @@ for f in (args.files or stdin.readlines()):
             if dist.version:
                 version = dist.version
                 spec = ('==', version)
-                if spec not in py_deps[name]:
-                    if not args.legacy:
+
+                if normalized_names_provide_legacy:
+                    if spec not in py_deps[name]:
                         py_deps[name].append(spec)
-                        if name != name_:
-                            py_deps[name_].append(spec)
-                    if args.majorver_provides or \
-                            (args.majorver_provides_versions and
-                             dist.py_version in args.majorver_provides_versions):
-                        py_deps[pymajor_name].append(spec)
-                        if pymajor_name != pymajor_name_:
+                        if args.majorver_provides or \
+                                (args.majorver_provides_versions and dist.py_version in args.majorver_provides_versions):
+                            py_deps[pymajor_name].append(spec)
+                if normalized_names_provide_pep503:
+                    if spec not in py_deps[name_]:
+                        py_deps[name_].append(spec)
+                        if args.majorver_provides or \
+                                (args.majorver_provides_versions and dist.py_version in args.majorver_provides_versions):
                             py_deps[pymajor_name_].append(spec)
-                    if args.legacy or args.legacy_provides:
+                if args.legacy or args.legacy_provides:
+                    if spec not in py_deps[legacy_name]:
                         py_deps[legacy_name].append(spec)
         if args.requires or (args.recommends and dist.extras):
             name = 'python(abi)'
@@ -319,13 +343,18 @@ for f in (args.files or stdin.readlines()):
                 deps.insert(0, Requirement.parse('setuptools'))
             # add requires/recommends based on egg/dist metadata
             for dep in deps:
+                if normalized_names_require_pep503:
+                    dep_normalized_name = normalize_name(dep.project_name)
+                else:
+                    dep_normalized_name = dep.key
+
                 if args.legacy:
                     name = 'pythonegg({})({})'.format(pyver_major, dep.key)
                 else:
                     if args.majorver_only:
-                        name = 'python{}dist({})'.format(pyver_major, dep.key)
+                        name = 'python{}dist({})'.format(pyver_major, dep_normalized_name)
                     else:
-                        name = 'python{}dist({})'.format(dist.py_version, dep.key)
+                        name = 'python{}dist({})'.format(dist.py_version, dep_normalized_name)
                 for spec in dep.specs:
                     if name not in py_deps:
                         py_deps[name] = []
@@ -370,6 +399,7 @@ for f in (args.files or stdin.readlines()):
                         spec = ('==', spec[1])
                         if spec not in py_deps[name]:
                             py_deps[name].append(spec)
+
 names = list(py_deps.keys())
 names.sort()
 for name in names:
