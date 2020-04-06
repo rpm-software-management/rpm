@@ -840,3 +840,359 @@
                 python3.9dist(simplejson) = 3.16
                 python3dist(simplejson) = 3.16
             requires: python(abi) = 3.9
+--requires --normalized-names-format legacy-dots:
+    --provides --majorver-provides --normalized-names-format legacy-dots:
+        usr/lib/python2.7/site-packages/zope.component-4.3.0-py2.7.egg-info:
+            provides: |-
+                python2.7dist(zope.component) = 4.3
+                python2dist(zope.component) = 4.3
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(setuptools)
+                python2.7dist(zope.event)
+                python2.7dist(zope.interface) >= 4.1
+        usr/lib/python2.7/site-packages/zope.event-4.2.0.dist-info:
+            provides: |-
+                python2.7dist(zope.event) = 4.2
+                python2dist(zope.event) = 4.2
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(setuptools)
+        usr/lib/python2.7/site-packages/zope.interface-4.6.0.dist-info:
+            provides: |-
+                python2.7dist(zope.interface) = 4.6
+                python2dist(zope.interface) = 4.6
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(setuptools)
+        usr/lib/python2.7/site-packages/zope.schema-4.4.2-py2.7.egg-info:
+            provides: |-
+                python2.7dist(zope.schema) = 4.4.2
+                python2dist(zope.schema) = 4.4.2
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(setuptools)
+                python2.7dist(zope.event)
+                python2.7dist(zope.interface) >= 3.6
+        usr/lib/python3.10/site-packages/setuptools-41.6.0-py3.10.egg-info:
+            provides: |-
+                python3.10dist(setuptools) = 41.6
+                python3dist(setuptools) = 41.6
+            requires: |-
+                python(abi) = 3.10
+                python3.10dist(setuptools)
+        usr/lib/python3.11/site-packages/pip-20.0.2-py3.11.egg-info:
+            provides: |-
+                python3.11dist(pip) = 20.0.2
+                python3dist(pip) = 20.0.2
+            requires: |-
+                python(abi) = 3.11
+                python3.11dist(setuptools)
+        usr/lib/python3.9/site-packages/zope.component-4.3.0-py3.9.egg-info:
+            provides: |-
+                python3.9dist(zope.component) = 4.3
+                python3dist(zope.component) = 4.3
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(setuptools)
+                python3.9dist(zope.event)
+                python3.9dist(zope.interface) >= 4.1
+        usr/lib/python3.9/site-packages/zope.event-4.2.0.dist-info:
+            provides: |-
+                python3.9dist(zope.event) = 4.2
+                python3dist(zope.event) = 4.2
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(setuptools)
+        usr/lib/python3.9/site-packages/zope.interface-5.1.0-py3.9.egg-info:
+            provides: |-
+                python3.9dist(zope.interface) = 5.1
+                python3dist(zope.interface) = 5.1
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(setuptools)
+        usr/lib/python3.9/site-packages/zope.schema-4.4.2-py3.9.egg-info:
+            provides: |-
+                python3.9dist(zope.schema) = 4.4.2
+                python3dist(zope.schema) = 4.4.2
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(setuptools)
+                python3.9dist(zope.event)
+                python3.9dist(zope.interface) >= 3.6
+        usr/lib64/python2.7/site-packages/backports.range-3.7.2-py2.7.egg-info:
+            provides: |-
+                python2.7dist(backports.range) = 3.7.2
+                python2dist(backports.range) = 3.7.2
+            requires: python(abi) = 2.7
+        usr/lib64/python3.7/site-packages/backports.range-3.7.2-py3.7.egg-info:
+            provides: |-
+                python3.7dist(backports.range) = 3.7.2
+                python3dist(backports.range) = 3.7.2
+            requires: python(abi) = 3.7
+    --provides --majorver-provides --normalized-names-format legacy-dots --normalized-names-provide-both:
+        usr/lib/python2.7/site-packages/zope.component-4.3.0-py2.7.egg-info:
+            provides: |-
+                python2.7dist(zope-component) = 4.3
+                python2.7dist(zope.component) = 4.3
+                python2dist(zope-component) = 4.3
+                python2dist(zope.component) = 4.3
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(setuptools)
+                python2.7dist(zope.event)
+                python2.7dist(zope.interface) >= 4.1
+        usr/lib/python2.7/site-packages/zope.event-4.2.0.dist-info:
+            provides: |-
+                python2.7dist(zope-event) = 4.2
+                python2.7dist(zope.event) = 4.2
+                python2dist(zope-event) = 4.2
+                python2dist(zope.event) = 4.2
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(setuptools)
+        usr/lib/python2.7/site-packages/zope.interface-4.6.0.dist-info:
+            provides: |-
+                python2.7dist(zope-interface) = 4.6
+                python2.7dist(zope.interface) = 4.6
+                python2dist(zope-interface) = 4.6
+                python2dist(zope.interface) = 4.6
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(setuptools)
+        usr/lib/python2.7/site-packages/zope.schema-4.4.2-py2.7.egg-info:
+            provides: |-
+                python2.7dist(zope-schema) = 4.4.2
+                python2.7dist(zope.schema) = 4.4.2
+                python2dist(zope-schema) = 4.4.2
+                python2dist(zope.schema) = 4.4.2
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(setuptools)
+                python2.7dist(zope.event)
+                python2.7dist(zope.interface) >= 3.6
+        usr/lib/python3.9/site-packages/zope.component-4.3.0-py3.9.egg-info:
+            provides: |-
+                python3.9dist(zope-component) = 4.3
+                python3.9dist(zope.component) = 4.3
+                python3dist(zope-component) = 4.3
+                python3dist(zope.component) = 4.3
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(setuptools)
+                python3.9dist(zope.event)
+                python3.9dist(zope.interface) >= 4.1
+        usr/lib/python3.9/site-packages/zope.event-4.2.0.dist-info:
+            provides: |-
+                python3.9dist(zope-event) = 4.2
+                python3.9dist(zope.event) = 4.2
+                python3dist(zope-event) = 4.2
+                python3dist(zope.event) = 4.2
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(setuptools)
+        usr/lib/python3.9/site-packages/zope.interface-5.1.0-py3.9.egg-info:
+            provides: |-
+                python3.9dist(zope-interface) = 5.1
+                python3.9dist(zope.interface) = 5.1
+                python3dist(zope-interface) = 5.1
+                python3dist(zope.interface) = 5.1
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(setuptools)
+        usr/lib/python3.9/site-packages/zope.schema-4.4.2-py3.9.egg-info:
+            provides: |-
+                python3.9dist(zope-schema) = 4.4.2
+                python3.9dist(zope.schema) = 4.4.2
+                python3dist(zope-schema) = 4.4.2
+                python3dist(zope.schema) = 4.4.2
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(setuptools)
+                python3.9dist(zope.event)
+                python3.9dist(zope.interface) >= 3.6
+        usr/lib64/python2.7/site-packages/backports.range-3.7.2-py2.7.egg-info:
+            provides: |-
+                python2.7dist(backports-range) = 3.7.2
+                python2.7dist(backports.range) = 3.7.2
+                python2dist(backports-range) = 3.7.2
+                python2dist(backports.range) = 3.7.2
+            requires: python(abi) = 2.7
+        usr/lib64/python3.7/site-packages/backports.range-3.7.2-py3.7.egg-info:
+            provides: |-
+                python3.7dist(backports-range) = 3.7.2
+                python3.7dist(backports.range) = 3.7.2
+                python3dist(backports-range) = 3.7.2
+                python3dist(backports.range) = 3.7.2
+            requires: python(abi) = 3.7
+--requires --normalized-names-format pep503:
+    --provides --majorver-provides --normalized-names-format pep503:
+        usr/lib/python2.7/site-packages/zope.component-4.3.0-py2.7.egg-info:
+            provides: |-
+                python2.7dist(zope-component) = 4.3
+                python2dist(zope-component) = 4.3
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(setuptools)
+                python2.7dist(zope-event)
+                python2.7dist(zope-interface) >= 4.1
+        usr/lib/python2.7/site-packages/zope.event-4.2.0.dist-info:
+            provides: |-
+                python2.7dist(zope-event) = 4.2
+                python2dist(zope-event) = 4.2
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(setuptools)
+        usr/lib/python2.7/site-packages/zope.interface-4.6.0.dist-info:
+            provides: |-
+                python2.7dist(zope-interface) = 4.6
+                python2dist(zope-interface) = 4.6
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(setuptools)
+        usr/lib/python2.7/site-packages/zope.schema-4.4.2-py2.7.egg-info:
+            provides: |-
+                python2.7dist(zope-schema) = 4.4.2
+                python2dist(zope-schema) = 4.4.2
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(setuptools)
+                python2.7dist(zope-event)
+                python2.7dist(zope-interface) >= 3.6
+        usr/lib/python3.9/site-packages/zope.component-4.3.0-py3.9.egg-info:
+            provides: |-
+                python3.9dist(zope-component) = 4.3
+                python3dist(zope-component) = 4.3
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(setuptools)
+                python3.9dist(zope-event)
+                python3.9dist(zope-interface) >= 4.1
+        usr/lib/python3.9/site-packages/zope.event-4.2.0.dist-info:
+            provides: |-
+                python3.9dist(zope-event) = 4.2
+                python3dist(zope-event) = 4.2
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(setuptools)
+        usr/lib/python3.9/site-packages/zope.interface-5.1.0-py3.9.egg-info:
+            provides: |-
+                python3.9dist(zope-interface) = 5.1
+                python3dist(zope-interface) = 5.1
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(setuptools)
+        usr/lib/python3.9/site-packages/zope.schema-4.4.2-py3.9.egg-info:
+            provides: |-
+                python3.9dist(zope-schema) = 4.4.2
+                python3dist(zope-schema) = 4.4.2
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(setuptools)
+                python3.9dist(zope-event)
+                python3.9dist(zope-interface) >= 3.6
+        usr/lib64/python2.7/site-packages/backports.range-3.7.2-py2.7.egg-info:
+            provides: |-
+                python2.7dist(backports-range) = 3.7.2
+                python2dist(backports-range) = 3.7.2
+            requires: python(abi) = 2.7
+        usr/lib64/python3.7/site-packages/backports.range-3.7.2-py3.7.egg-info:
+            provides: |-
+                python3.7dist(backports-range) = 3.7.2
+                python3dist(backports-range) = 3.7.2
+            requires: python(abi) = 3.7
+    --provides --majorver-provides --normalized-names-format pep503 --normalized-names-provide-both:
+        usr/lib/python2.7/site-packages/zope.component-4.3.0-py2.7.egg-info:
+            provides: |-
+                python2.7dist(zope-component) = 4.3
+                python2.7dist(zope.component) = 4.3
+                python2dist(zope-component) = 4.3
+                python2dist(zope.component) = 4.3
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(setuptools)
+                python2.7dist(zope-event)
+                python2.7dist(zope-interface) >= 4.1
+        usr/lib/python2.7/site-packages/zope.event-4.2.0.dist-info:
+            provides: |-
+                python2.7dist(zope-event) = 4.2
+                python2.7dist(zope.event) = 4.2
+                python2dist(zope-event) = 4.2
+                python2dist(zope.event) = 4.2
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(setuptools)
+        usr/lib/python2.7/site-packages/zope.interface-4.6.0.dist-info:
+            provides: |-
+                python2.7dist(zope-interface) = 4.6
+                python2.7dist(zope.interface) = 4.6
+                python2dist(zope-interface) = 4.6
+                python2dist(zope.interface) = 4.6
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(setuptools)
+        usr/lib/python2.7/site-packages/zope.schema-4.4.2-py2.7.egg-info:
+            provides: |-
+                python2.7dist(zope-schema) = 4.4.2
+                python2.7dist(zope.schema) = 4.4.2
+                python2dist(zope-schema) = 4.4.2
+                python2dist(zope.schema) = 4.4.2
+            requires: |-
+                python(abi) = 2.7
+                python2.7dist(setuptools)
+                python2.7dist(zope-event)
+                python2.7dist(zope-interface) >= 3.6
+        usr/lib/python3.9/site-packages/zope.component-4.3.0-py3.9.egg-info:
+            provides: |-
+                python3.9dist(zope-component) = 4.3
+                python3.9dist(zope.component) = 4.3
+                python3dist(zope-component) = 4.3
+                python3dist(zope.component) = 4.3
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(setuptools)
+                python3.9dist(zope-event)
+                python3.9dist(zope-interface) >= 4.1
+        usr/lib/python3.9/site-packages/zope.event-4.2.0.dist-info:
+            provides: |-
+                python3.9dist(zope-event) = 4.2
+                python3.9dist(zope.event) = 4.2
+                python3dist(zope-event) = 4.2
+                python3dist(zope.event) = 4.2
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(setuptools)
+        usr/lib/python3.9/site-packages/zope.interface-5.1.0-py3.9.egg-info:
+            provides: |-
+                python3.9dist(zope-interface) = 5.1
+                python3.9dist(zope.interface) = 5.1
+                python3dist(zope-interface) = 5.1
+                python3dist(zope.interface) = 5.1
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(setuptools)
+        usr/lib/python3.9/site-packages/zope.schema-4.4.2-py3.9.egg-info:
+            provides: |-
+                python3.9dist(zope-schema) = 4.4.2
+                python3.9dist(zope.schema) = 4.4.2
+                python3dist(zope-schema) = 4.4.2
+                python3dist(zope.schema) = 4.4.2
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(setuptools)
+                python3.9dist(zope-event)
+                python3.9dist(zope-interface) >= 3.6
+        usr/lib64/python2.7/site-packages/backports.range-3.7.2-py2.7.egg-info:
+            provides: |-
+                python2.7dist(backports-range) = 3.7.2
+                python2.7dist(backports.range) = 3.7.2
+                python2dist(backports-range) = 3.7.2
+                python2dist(backports.range) = 3.7.2
+            requires: python(abi) = 2.7
+        usr/lib64/python3.7/site-packages/backports.range-3.7.2-py3.7.egg-info:
+            provides: |-
+                python3.7dist(backports-range) = 3.7.2
+                python3.7dist(backports.range) = 3.7.2
+                python3dist(backports-range) = 3.7.2
+                python3dist(backports.range) = 3.7.2
+            requires: python(abi) = 3.7
