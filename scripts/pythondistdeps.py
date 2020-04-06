@@ -367,7 +367,8 @@ for name in names:
         if len(spec_list) == 1:
             print(spec_list[0])
         else:
-            print('({})'.format(' with '.join(spec_list)))
+            # Sort spec_list so that the results can be tested easily
+            print('({})'.format(' with '.join(sorted(spec_list))))
     else:
         # Print out unversioned provides, requires, recommends, conflicts
         print(name)
