@@ -81,3 +81,4 @@ Makefile.in.in
 /tests/rpmtests.dir
 /tests/rpmtests.log
 /tests/testing/
+/tests/data/scripts_pythondistdeps/usr/
