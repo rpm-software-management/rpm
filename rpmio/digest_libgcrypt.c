@@ -302,10 +302,16 @@ static int pgpVerifySigDSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig, uint8_t *hash, si
     struct pgpDigSigDSA_s *sig = pgpsig->data;
     gcry_sexp_t sexp_sig = NULL, sexp_data = NULL, sexp_pkey = NULL;
     int rc = 1;
+    size_t qlen;
 
     if (!sig || !key)
 	return rc;
 
+    qlen = (mpi_get_nbits(key->q) + 7) / 8;
+    if (qlen < 20)
+	qlen = 20;		/* sanity */
+    if (hashlen > qlen)
+	hashlen = qlen;		/* dsa2: truncate hash to qlen */
     gcry_sexp_build(&sexp_sig, NULL, "(sig-val (dsa (r %M) (s %M)))", sig->r, sig->s);
     gcry_sexp_build(&sexp_data, NULL, "(data (flags raw) (value %b))", (int)hashlen, (const char *)hash);
     gcry_sexp_build(&sexp_pkey, NULL, "(public-key (dsa (p %M) (q %M) (g %M) (y %M)))", key->p, key->q, key->g, key->y);
