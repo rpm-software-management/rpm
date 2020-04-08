@@ -439,6 +439,8 @@ int rpmMkdirs(const char *root, const char *pathstr)
     
     for (char **d = dirs; *d; d++) {
 	char *path = rpmGetPath(root ? root : "", *d, NULL);
+	if (strstr(path, "%{"))
+	    rpmlog(RPMLOG_WARNING, ("undefined macro(s) in %s: %s\n"), *d, path);
 	if ((rc = rpmioMkpath(path, 0755, -1, -1)) != 0) {
 	    const char *msg = _("failed to create directory");
 	    /* try to be more informative if the failing part was a macro */
