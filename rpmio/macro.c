@@ -308,8 +308,7 @@ matchchar(const char * p, char pl, char pr)
     return (const char *)NULL;
 }
 
-static void mbErr(MacroBuf mb, int error, const char *fmt, ...)
-{
+static void mbErr(MacroBuf mb, int error, const char *fmt, ...) {
     char *emsg = NULL;
     int n;
     va_list ap;
@@ -1394,6 +1393,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     }
 
     while (mb->error == 0 && (c = *s) != '\0') {
+	int brace = 0;
 	const struct builtins_s* builtin = NULL;
 	s++;
 	/* Copy text until next macro */
@@ -1445,6 +1445,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    s = se;
 	    continue;
 	case '{':		/* %{...}/%{...:...} substitution */
+	    brace = 1;
 	    f = s+1;	/* skip { */
 	    f = setNegateAndCheck(f, &negate, &chkexist);
 	    for (fe = f; (c = *fe) && !strchr(" :}", c);)
@@ -1536,6 +1537,10 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    /* XXX hack to permit non-overloaded %foo to be passed */
 	    c = '%';	/* XXX only need to save % */
 	    mbAppend(mb, c);
+	    if (brace && mb->flags & RPMMACRO_WUNDEF) {
+		mbErr(mb, 0, _("undefined macro %.*s in %.*s\n"),
+				(int)fn, f, (int)slen, src);
+	    }
 	    continue;
 	}
 

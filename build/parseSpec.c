@@ -204,7 +204,7 @@ int specExpand(rpmSpec spec, int lineno, const char *sbuf,
     snprintf(lnobuf, sizeof(lnobuf), "%d", lineno);
     rpmPushMacroFlags(spec->macros, "__file_lineno", NULL, lnobuf, RMIL_SPEC, RPMMACRO_LITERAL);
 
-    rc = (rpmExpandMacros(spec->macros, sbuf, obuf, 0) < 0);
+    rc = (rpmExpandMacros(spec->macros, sbuf, obuf, RPMMACRO_WUNDEF) < 0);
 
     rpmPopMacro(spec->macros, "__file_lineno");
 

@@ -1,4 +1,5 @@
 %{!?filetype: %global filetype file}
+%{!?filedata: %global filedata somestuff}
 %{?fixit: %global havepretrans 1}
 %{!?user: %global user root}
 %{!?grp: %global grp root}

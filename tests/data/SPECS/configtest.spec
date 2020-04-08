@@ -2,6 +2,7 @@
 %define _sysconfdir /etc
 
 %{!?filetype: %global filetype file}
+%{!?filedata: %global filedata somestuff}
 
 Name:		configtest%{?sub:-%{sub}}
 Version:	%{ver}

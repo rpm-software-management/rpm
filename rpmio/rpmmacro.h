@@ -65,6 +65,8 @@ typedef enum rpmMacroFlags_e {
 void	rpmDumpMacroTable	(rpmMacroContext mc,
 					FILE * fp);
 
+#define RPMMACRO_WUNDEF (1 << 0)
+
 /** \ingroup rpmmacro
  * Expand macro into buffer.
  * @param mc		macro context (NULL uses global context).
