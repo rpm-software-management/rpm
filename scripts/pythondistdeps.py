@@ -11,6 +11,10 @@
 # RPM python dependency generator, using .egg-info/.egg-link/.dist-info data
 #
 
+# Please know:
+# - Notes from an attempted rewrite from pkg_resources to importlib.metadata in
+#   2020 can be found in the message of the commit that added this line.
+
 from __future__ import print_function
 import argparse
 from os.path import basename, dirname, isdir, sep
@@ -185,6 +189,9 @@ for f in (args.files or stdin.readlines()):
             lower.endswith('.egg-info') or \
             lower.endswith('.dist-info'):
         # This import is very slow, so only do it if needed
+        # - Notes from an attempted rewrite from pkg_resources to
+        #   importlib.metadata in 2020 can be found in the message of
+        #   the commit that added this line.
         from pkg_resources import Distribution, FileMetadata, PathMetadata, Requirement, parse_version
         dist_name = basename(f)
         if isdir(f):
