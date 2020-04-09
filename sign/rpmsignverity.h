@@ -8,6 +8,13 @@
 extern "C" {
 #endif
 
+/*
+ * Block size used to generate the Merkle tree for fsverity. For now
+ * we only support 4K blocks, if we ever decide to support different
+ * block sizes, we will need a tag to indicate this.
+ */
+#define RPM_FSVERITY_BLKSZ	4096
+
 /**
  * Sign file digests in header into signature header
  * @param fd		file descriptor of RPM
