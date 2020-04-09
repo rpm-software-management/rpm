@@ -421,6 +421,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     int buildAmount = ba->buildAmount;
     char * buildRootURL = NULL;
     char * specFile = NULL;
+    char *buildtree = NULL;
     rpmSpec spec = NULL;
     int rc = 1; /* assume failure */
     rpmSpecFlags specFlags = spec_flags;
@@ -436,8 +437,12 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	buildRootURL = rpmGenPath(NULL, ba->buildRootOverride, NULL);
 
     /* Create build tree if necessary */
-    const char * buildtree = "%{_topdir}:%{_specdir}:%{_sourcedir}:%{_builddir}:%{_rpmdir}:%{_srcrpmdir}:%{_buildrootdir}";
+    const char * buildpath = "%{_topdir}:%{_specdir}:%{_sourcedir}:%{_builddir}:%{_rpmdir}:%{_srcrpmdir}:%{_buildrootdir}";
     const char * rootdir = rpmtsRootDir(ts);
+
+    if (rpmExpandMacros(NULL, buildpath, &buildtree, RPMMACRO_WUNDEF) < 0)
+	goto exit;
+
     if (rpmMkdirs(!rstreq(rootdir, "/") ? rootdir : NULL , buildtree)) {
 	goto exit;
     }
@@ -520,6 +525,7 @@ exit:
     free(specFile);
     rpmSpecFree(spec);
     free(buildRootURL);
+    free(buildtree);
     return rc;
 }
 
