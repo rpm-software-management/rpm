@@ -337,6 +337,14 @@ static void deleteSigs(Header sigh)
     headerDel(sigh, RPMSIGTAG_PGP5);
 }
 
+static void deleteFileSigs(Header sigh)
+{
+    headerDel(sigh, RPMSIGTAG_FILESIGNATURELENGTH);
+    headerDel(sigh, RPMSIGTAG_FILESIGNATURES);
+    headerDel(sigh, RPMSIGTAG_VERITYSIGNATURES);
+    headerDel(sigh, RPMSIGTAG_VERITYSIGNATUREALGO);
+}
+
 static int haveSignature(rpmtd sigtd, Header h)
 {
     pgpDigParams sig1 = NULL;
@@ -577,7 +585,9 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	    goto exit;
     }
 
-    if (deleting) {	/* Nuke all the signature tags. */
+    if (deleting == 2) {	/* Nuke IMA + fsverity file signature tags. */
+	deleteFileSigs(sigh);
+    } else if (deleting) {	/* Nuke all the signature tags. */
 	deleteSigs(sigh);
     } else {
 	/* Signature target containing header + payload */
@@ -728,4 +738,9 @@ int rpmPkgSign(const char *path, const struct rpmSignArgs * args)
 int rpmPkgDelSign(const char *path, const struct rpmSignArgs * args)
 {
     return rpmSign(path, 1, 0);
+}
+
+int rpmPkgDelFileSign(const char *path, const struct rpmSignArgs * args)
+{
+    return rpmSign(path, 2, 0);
 }
