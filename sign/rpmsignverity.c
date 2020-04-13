@@ -41,7 +41,7 @@ static char *rpmVeritySignFile(rpmfi fi, size_t *sig_size, char *key,
     struct libfsverity_digest *digest = NULL;
     rpm_loff_t file_size;
     char *digest_hex, *sig_hex = NULL;
-    uint8_t *sig;
+    uint8_t *sig = NULL;
     int status;
 
     file_size = rpmfiFSize(fi);
@@ -72,7 +72,7 @@ static char *rpmVeritySignFile(rpmfi fi, size_t *sig_size, char *key,
 	goto out;
     }
 
-    sig_hex = pgpHexStr(sig, *sig_size + 1);
+    sig_hex = pgpHexStr(sig, *sig_size);
  out:
     free(digest);
     free(sig);
@@ -86,6 +86,7 @@ rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
     FD_t gzdi;
     rpmfiles files = NULL;
     rpmfi fi = NULL;
+    rpmfi hfi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, RPMFI_FLAGS_QUERY);
     rpmts ts = rpmtsCreate();
     struct rpmtd_s td;
     rpm_loff_t file_size;
@@ -93,11 +94,14 @@ rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
     const char *compr;
     char *rpmio_flags = NULL;
     char *sig_hex;
+    char **signatures = NULL;
     size_t sig_size;
+    int nr_files, idx;
 
     Fseek(fd, 0, SEEK_SET);
     rpmtsSetVSFlags(ts, RPMVSF_MASK_NODIGESTS | RPMVSF_MASK_NOSIGNATURES |
 		    RPMVSF_NOHDRCHK);
+
     rc = rpmReadPackageFile(ts, fd, "fsverity", &h);
     if (rc != RPMRC_OK) {
 	rpmlog(RPMLOG_DEBUG, _("%s: rpmReadPackageFile returned %i\n"),
@@ -113,6 +117,8 @@ rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
 
     gzdi = Fdopen(fdDup(Fileno(fd)), rpmio_flags);
     free(rpmio_flags);
+    if (!gzdi)
+	rpmlog(RPMLOG_DEBUG, _("Fdopen() failed\n"));
 
     files = rpmfilesNew(NULL, h, RPMTAG_BASENAMES, RPMFI_FLAGS_QUERY);
     fi = rpmfiNewArchiveReader(gzdi, files,
@@ -123,39 +129,64 @@ rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
      */
     headerDel(sigh, RPMSIGTAG_VERITYSIGNATURES);
 
-    rpmtdReset(&td);
-    td.tag = RPMSIGTAG_VERITYSIGNATURES;
-    td.type = RPM_STRING_ARRAY_TYPE;
-    td.count = 1;
+    /*
+     * The payload doesn't include special files, like ghost files, and
+     * we cannot rely on the file order in the payload to match that of
+     * the header. Instead we allocate an array of pointers and populate
+     * it as we go along. Then walk the header fi and account for the
+     * special files. Last we walk the array and populate the header.
+     */
+    nr_files = rpmfiFC(hfi);
+    signatures = xcalloc(nr_files, sizeof(char *));
+
+    rpmlog(RPMLOG_DEBUG, _("file count - header: %i, payload %i\n"),
+	   nr_files, rpmfiFC(fi));
 
     while (rpmfiNext(fi) >= 0) {
 	file_size = rpmfiFSize(fi);
+	idx = rpmfiFX(fi);
 
 	rpmlog(RPMLOG_DEBUG, _("file: %s, (size %li, link %s, idx %i)\n"),
 	       rpmfiFN(fi), file_size, rpmfiFLink(fi), rpmfiFX(fi));
 
-	sig_hex = rpmVeritySignFile(fi, &sig_size, key, keypass, cert);
+	signatures[idx] = rpmVeritySignFile(fi, &sig_size, key, keypass, cert);
+    }
+
+    while (rpmfiNext(hfi) >= 0) {
+	idx = rpmfiFX(hfi);
+	if (signatures[idx])
+	    continue;
+	signatures[idx] = rpmVeritySignFile(hfi, &sig_size, key, keypass, cert);
+    }
+
+    rpmtdReset(&td);
+    td.tag = RPMSIGTAG_VERITYSIGNATURES;
+    td.type = RPM_STRING_ARRAY_TYPE;
+    td.count = 1;
+    for (idx = 0; idx < nr_files; idx++) {
+	sig_hex = signatures[idx];
 	td.data = &sig_hex;
-	rpmlog(RPMLOG_DEBUG, _("digest signed, len: %li\n"), sig_size);
-#if 0
-	rpmlog(RPMLOG_DEBUG, _("digest: %s\n"), (char *)sig_hex);
-#endif
 	if (!headerPut(sigh, &td, HEADERPUT_APPEND)) {
 	    rpmlog(RPMLOG_ERR, _("headerPutString failed\n"));
 	    rc = RPMRC_FAIL;
 	    goto out;
 	}
-	free(sig_hex);
+	rpmlog(RPMLOG_DEBUG, _("signature: %s\n"), signatures[idx]);
+	rpmlog(RPMLOG_DEBUG, _("digest signed, len: %li\n"), sig_size);
+	free(signatures[idx]);
+	signatures[idx] = NULL;
     }
 
     rpmlog(RPMLOG_DEBUG, _("sigh size: %i\n"), headerSizeof(sigh, 0));
 
     rc = RPMRC_OK;
  out:
+    signatures = _free(signatures);
     Fseek(fd, offset, SEEK_SET);
 
     rpmfilesFree(files);
     rpmfiFree(fi);
+    rpmfiFree(hfi);
     rpmtsFree(ts);
     return rc;
 }
