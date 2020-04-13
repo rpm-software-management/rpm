@@ -14,6 +14,7 @@ enum modes {
     MODE_ADDSIGN = (1 << 0),
     MODE_RESIGN  = (1 << 1),
     MODE_DELSIGN = (1 << 2),
+    MODE_DELFILESIGN = (1 << 3),
 };
 
 static int mode = MODE_NONE;
@@ -35,6 +36,10 @@ static struct poptOption signOptsTable[] = {
 	N_("sign package(s) (identical to --addsign)"), NULL },
     { "delsign", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_DELSIGN,
 	N_("delete package signatures"), NULL },
+#if defined(WITH_IMAEVM) || defined(WITH_FSVERITY)
+    { "delfilesign", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode,
+      MODE_DELFILESIGN,	N_("delete IMA and fsverity file signatures"), NULL },
+#endif
     { "rpmv3", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR),
 	&sargs.signflags, RPMSIGN_FLAG_RPMV3,
 	N_("create rpm v3 header+payload signatures") },
@@ -204,6 +209,13 @@ int main(int argc, char *argv[])
 	ec = 0;
 	while ((arg = poptGetArg(optCon)) != NULL) {
 	    if (rpmPkgDelSign(arg, &sargs) < 0)
+		ec++;
+	}
+	break;
+    case MODE_DELFILESIGN:
+	ec = 0;
+	while ((arg = poptGetArg(optCon)) != NULL) {
+	    if (rpmPkgDelFileSign(arg, &sargs) < 0)
 		ec++;
 	}
 	break;
