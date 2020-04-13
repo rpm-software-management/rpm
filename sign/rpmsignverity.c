@@ -15,6 +15,7 @@
 #include "lib/rpmtypes.h"	/* rpmRC */
 #include <libfsverity.h>
 #include "rpmio/rpmio_internal.h"
+#include "rpmio/rpmbase64.h"
 #include "lib/rpmvs.h"
 
 #include "sign/rpmsignverity.h"
@@ -40,7 +41,7 @@ static char *rpmVeritySignFile(rpmfi fi, size_t *sig_size, char *key,
     struct libfsverity_signature_params sig_params;
     struct libfsverity_digest *digest = NULL;
     rpm_loff_t file_size;
-    char *digest_hex, *sig_hex = NULL;
+    char *digest_hex, *digest_base64, *sig_base64 = NULL, *sig_hex = NULL;
     uint8_t *sig = NULL;
     int status;
 
@@ -60,8 +61,14 @@ static char *rpmVeritySignFile(rpmfi fi, size_t *sig_size, char *key,
     }
 
     digest_hex = pgpHexStr(digest->digest, digest->digest_size);
-    rpmlog(RPMLOG_DEBUG, _("digest(%i): %s\n"),
-	   digest->digest_size, digest_hex);
+    digest_base64 = rpmBase64Encode(digest->digest, digest->digest_size, -1);
+    rpmlog(RPMLOG_DEBUG, _("file(size %li): %s: digest(%i): %s, idx %i\n"),
+	   file_size, rpmfiFN(fi), digest->digest_size, digest_hex,
+	   rpmfiFX(fi));
+    rpmlog(RPMLOG_DEBUG, _("file(size %li): %s: digest sz (%i): base64 sz (%li), %s, idx %i\n"),
+	   file_size, rpmfiFN(fi), digest->digest_size, strlen(digest_base64),
+	   digest_base64, rpmfiFX(fi));
+
     free(digest_hex);
 
     memset(&sig_params, 0, sizeof(struct libfsverity_signature_params));
@@ -73,10 +80,15 @@ static char *rpmVeritySignFile(rpmfi fi, size_t *sig_size, char *key,
     }
 
     sig_hex = pgpHexStr(sig, *sig_size);
+    sig_base64 = rpmBase64Encode(sig, *sig_size, -1);
+    rpmlog(RPMLOG_DEBUG, _("%s: sig_size(%li), base64_size(%li), idx %i: signature:\n%s\n"),
+	   rpmfiFN(fi), *sig_size, strlen(sig_base64), rpmfiFX(fi), sig_hex);
  out:
+    free(sig_hex);
+
     free(digest);
     free(sig);
-    return sig_hex;
+    return sig_base64;
 }
 
 rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,

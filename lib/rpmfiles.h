@@ -150,6 +150,7 @@ enum rpmfiFlags_e {
     RPMFI_NOFILEVERIFYFLAGS	= (1 << 16),
     RPMFI_NOFILEFLAGS		= (1 << 17),
     RPMFI_NOFILESIGNATURES	= (1 << 18),
+    RPMFI_NOVERITYSIGNATURES	= (1 << 19),
 };
 
 typedef rpmFlags rpmfiFlags;
@@ -472,6 +473,15 @@ const unsigned char * rpmfilesFDigest(rpmfiles fi, int ix, int *algo, size_t *le
  * @return              file signature, NULL on invalid
  */
 const unsigned char * rpmfilesFSignature(rpmfiles fi, int ix, size_t *len);
+
+/** \ingroup rpmfiles
+ * Return file verity signature (binary)
+ * @param fi            file info set
+ * @param ix            file index
+ * @retval len       signature length (pass NULL to ignore)
+ * @return              verity signature, NULL on invalid
+ */
+const unsigned char * rpmfilesVSignature(rpmfiles fi, int ix, size_t *len);
 
 /** \ingroup rpmfiles
  * Return file rdev from file info set.
