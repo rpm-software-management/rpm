@@ -117,8 +117,10 @@ struct rpmfiles_s {
 
     int digestalgo;		/*!< File digest algorithm */
     int signaturelength;	/*!< File signature length */
+    int veritysiglength;	/*!< Verity signature length */
     unsigned char * digests;	/*!< File digests in binary. */
     unsigned char * signatures; /*!< File signatures in binary. */
+    unsigned char * veritysigs; /*!< Verity signatures in binary. */
 
     struct nlinkHash_s * nlinks;/*!< Files connected by hardlinks */
     rpm_off_t * replacedSizes;	/*!< (TR_ADDED) */
@@ -581,6 +583,19 @@ const unsigned char * rpmfilesFSignature(rpmfiles fi, int ix, size_t *len)
 	    *len = fi->signaturelength;
     }
     return signature;
+}
+
+const unsigned char * rpmfilesVSignature(rpmfiles fi, int ix, size_t *len)
+{
+    const unsigned char *vsignature = NULL;
+
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
+	if (fi->veritysigs != NULL)
+	    vsignature = fi->veritysigs + (fi->veritysiglength * ix);
+	if (len)
+	    *len = fi->veritysiglength;
+    }
+    return vsignature;
 }
 
 const char * rpmfilesFLink(rpmfiles fi, int ix)
@@ -1258,6 +1273,7 @@ rpmfiles rpmfilesFree(rpmfiles fi)
 	fi->flangs = _free(fi->flangs);
 	fi->digests = _free(fi->digests);
 	fi->signatures = _free(fi->signatures);
+	fi->veritysigs = _free(fi->veritysigs);
 	fi->fcaps = _free(fi->fcaps);
 
 	fi->cdict = _free(fi->cdict);
@@ -1639,6 +1655,12 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 				 totalfc, fi->signaturelength);
     }
 
+    fi->veritysigs = NULL;
+    if (!(flags & RPMFI_NOVERITYSIGNATURES)) {
+	fi->veritysigs = base2bin(h, RPMTAG_VERITYSIGNATURES,
+				  totalfc, &fi->veritysiglength);
+    }
+
     /* XXX TR_REMOVED doesn;t need fmtimes, frdevs, finodes */
     if (!(flags & RPMFI_NOFILEMTIMES))
 	_hgfi(h, RPMTAG_FILEMTIMES, &td, scareFlags, fi->fmtimes);
@@ -1927,6 +1949,11 @@ const unsigned char * rpmfiFDigest(rpmfi fi, int *algo, size_t *len)
 const unsigned char * rpmfiFSignature(rpmfi fi, size_t *len)
 {
     return rpmfilesFSignature(fi->files, fi ? fi->i : -1, len);
+}
+
+const unsigned char * rpmfiVSignature(rpmfi fi, size_t *len)
+{
+    return rpmfilesVSignature(fi->files, fi ? fi->i : -1, len);
 }
 
 uint32_t rpmfiFDepends(rpmfi fi, const uint32_t ** fddictp)

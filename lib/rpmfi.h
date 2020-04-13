@@ -191,6 +191,14 @@ char * rpmfiFDigestHex(rpmfi fi, int *algo);
 const unsigned char * rpmfiFSignature(rpmfi fi, size_t *siglen);
 
 /** \ingroup rpmfi
+ * Return current verity (binary) signature of file info set iterator.
+ * @param fi		file info set iterator
+ * @retval siglen	signature length (pass NULL to ignore)
+ * @return		current verity signature, NULL on invalid
+ */
+const unsigned char * rpmfiVSignature(rpmfi fi, size_t *siglen);
+
+/** \ingroup rpmfi
  * Return current file linkto (i.e. symlink(2) target) from file info set iterator.
  * @param fi		file info set iterator
  * @return		current file linkto, NULL on invalid
