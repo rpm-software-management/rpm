@@ -369,6 +369,8 @@ static int rpmxdbReadHeader(rpmxdb xdb)
 			    nslot->mapcallback(xdb, nslot->mapcallbackdata, 0, 0);
 			}
 		    }
+		} else {
+		    nslot->mapped = slot->mapped;
 		}
 	    }
 	}
@@ -624,7 +626,8 @@ static int moveblobto(rpmxdb xdb, struct xdb_slot *oldslot, struct xdb_slot *aft
     didmap = 0;
     oldpagecnt = oldslot->pagecnt;
     if (!oldslot->mapped && oldpagecnt) {
-	oldslot->mapflags = PROT_READ;
+	if (!oldslot->mapcallback)
+	    oldslot->mapflags = PROT_READ;
 	if (mapslot(xdb, oldslot))
 	    return RPMRC_FAIL;
         didmap = 1;
