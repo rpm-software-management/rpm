@@ -37,7 +37,7 @@ typedef struct rpmxdb_s {
     unsigned int usergeneration;
 
     unsigned char *mapped;
-    int mapflags;
+    int mappedrw;
     unsigned int mappedlen;
 
     struct xdb_slot {
@@ -58,6 +58,7 @@ typedef struct rpmxdb_s {
     unsigned int usedblobpages;
     unsigned int systempagesize;
     int dofsync;
+    unsigned int locked_excl;
 } *rpmxdb;
 
 
@@ -126,17 +127,19 @@ static void unmapmem(void *addr, size_t size)
 #define ROUNDTOSYSTEMPAGE(xdb, size) (((size) + (xdb->systempagesize - 1)) & ~(xdb->systempagesize - 1))
 
 /* xdb header mapping functions */
-static int mapheader(rpmxdb xdb, unsigned int slotnpages)
+static int mapheader(rpmxdb xdb, unsigned int slotnpages, int rw)
 {
     unsigned char *mapped;
     size_t mappedlen = slotnpages * xdb->pagesize;
+    int mapflags = rw ? PROT_READ | PROT_WRITE : PROT_READ;
 
     mappedlen = ROUNDTOSYSTEMPAGE(xdb, mappedlen);
-    mapped = mapmem(xdb->mapped, xdb->mappedlen, mappedlen, xdb->mapflags, xdb->fd, 0);
+    mapped = mapmem(xdb->mapped, xdb->mappedlen, mappedlen, mapflags, xdb->fd, 0);
     if ((void *)mapped == MAP_FAILED)
 	return RPMRC_FAIL;
     xdb->mapped = mapped;
     xdb->mappedlen = mappedlen;
+    xdb->mappedrw = rw;
     return RPMRC_OK;
 }
 
@@ -248,7 +251,7 @@ static int rpmxdbReadHeaderRaw(rpmxdb xdb, unsigned int *generationp, unsigned i
     return RPMRC_OK;
 }
 
-static int rpmxdbReadHeader(rpmxdb xdb)
+static int rpmxdbReadHeader(rpmxdb xdb, int rw)
 {
     struct xdb_slot *slot;
     unsigned int slotnpages, pagesize, generation, usergeneration;
@@ -262,6 +265,11 @@ static int rpmxdbReadHeader(rpmxdb xdb)
 
     if (xdb->mapped) {
 	if (le2ha(xdb->mapped + XDB_OFFSET_GENERATION) == xdb->generation) {
+	    if (rw && !xdb->mappedrw) {
+		unmapheader(xdb);
+		if (mapheader(xdb, xdb->slotnpages, rw))
+		    return RPMRC_FAIL;
+	    }
 	    return RPMRC_OK;
 	}
 	unmapheader(xdb);
@@ -274,9 +282,8 @@ static int rpmxdbReadHeader(rpmxdb xdb)
     if (stb.st_size % pagesize != 0)
 	return RPMRC_FAIL;
     xdb->pagesize = pagesize;
-    xdb->mapflags = xdb->rdonly ? PROT_READ : PROT_READ | PROT_WRITE;
 
-    if (mapheader(xdb, slotnpages))
+    if (mapheader(xdb, slotnpages, rw))
 	return RPMRC_FAIL;
 
     /* read in all slots */
@@ -476,19 +483,25 @@ static int rpmxdbInitInternal(rpmxdb xdb)
 /* we use the master pdb for locking */
 static int rpmxdbLockOnly(rpmxdb xdb, int excl)
 {
+    int rc;
     if (excl && xdb->rdonly)
         return RPMRC_FAIL;
-    return rpmpkgLock(xdb->pkgdb, excl);
+    rc = rpmpkgLock(xdb->pkgdb, excl);
+    if (!rc && excl)
+	xdb->locked_excl++;
+    return rc;
 }
 
-/* this is the same as rpmxdbLockReadHeader. It does the
+/* This is similar to rpmxdbLockReadHeader. It does the
  * ReadHeader to sync the mappings if xdb moved some blobs.
+ * Note that we just ask for rad-only access in the
+ * rpmxdbReadHeader call.
  */
 int rpmxdbLock(rpmxdb xdb, int excl)
 {
     if (rpmxdbLockOnly(xdb, excl))
 	return RPMRC_FAIL;
-    if (rpmxdbReadHeader(xdb)) {
+    if (rpmxdbReadHeader(xdb, 0)) {
 	rpmxdbUnlock(xdb, excl);
         return RPMRC_FAIL;
     }
@@ -497,14 +510,25 @@ int rpmxdbLock(rpmxdb xdb, int excl)
 
 int rpmxdbUnlock(rpmxdb xdb, int excl)
 {
+    if (excl && xdb->locked_excl) {
+	xdb->locked_excl--;
+	if (!xdb->locked_excl && xdb->mapped && xdb->mappedrw) {
+	    unmapheader(xdb);
+	    mapheader(xdb, xdb->slotnpages, 0);
+	}
+    }
     return rpmpkgUnlock(xdb->pkgdb, excl);
 }
 
+/* Like rpmxdbLock, but map the header rw if excl is set.
+ * This is what the functions in this module use, whereas
+ * rpmidx uses rpmxdbLock.
+ */
 static int rpmxdbLockReadHeader(rpmxdb xdb, int excl)
 {
     if (rpmxdbLockOnly(xdb, excl))
 	return RPMRC_FAIL;
-    if (rpmxdbReadHeader(xdb)) {
+    if (rpmxdbReadHeader(xdb, excl)) {
 	rpmxdbUnlock(xdb, excl);
         return RPMRC_FAIL;
     }
@@ -776,7 +800,7 @@ static int addslotpage(rpmxdb xdb)
 	return RPMRC_FAIL;
 
     /* remap the header */
-    if (mapheader(xdb, xdb->slotnpages + 1))
+    if (mapheader(xdb, xdb->slotnpages + 1, xdb->mappedrw))
 	return RPMRC_FAIL;
 
     /* update the header */
@@ -856,7 +880,8 @@ int rpmxdbLookupBlob(rpmxdb xdb, unsigned int *idp, unsigned int blobtag, unsign
 {
     struct xdb_slot *slot;
     unsigned int i, nslots;
-    if (rpmxdbLockReadHeader(xdb, flags ? 1 : 0))
+    int excl = flags ? 1 : 0;
+    if (rpmxdbLockReadHeader(xdb, excl))
         return RPMRC_FAIL;
     nslots = xdb->nslots;
     slot = 0;
@@ -869,18 +894,18 @@ int rpmxdbLookupBlob(rpmxdb xdb, unsigned int *idp, unsigned int blobtag, unsign
 	i = 0;
     if (i && (flags & O_TRUNC) != 0) {
 	if (rpmxdbResizeBlob(xdb, i, 0)) {
-	    rpmxdbUnlock(xdb, flags ? 1 : 0);
+	    rpmxdbUnlock(xdb, excl);
 	    return RPMRC_FAIL;
 	}
     }
     if (!i && (flags & O_CREAT) != 0) {
 	if (createblob(xdb, &i, blobtag, subtag)) {
-	    rpmxdbUnlock(xdb, flags ? 1 : 0);
+	    rpmxdbUnlock(xdb, excl);
 	    return RPMRC_FAIL;
 	}
     }
     *idp = i;
-    rpmxdbUnlock(xdb, flags ? 1 : 0);
+    rpmxdbUnlock(xdb, excl);
     return i ? RPMRC_OK : RPMRC_NOTFOUND;
 }
 
