@@ -147,9 +147,6 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 	free(path);
 	dbi->dbi_db = ndbenv->pkgdb = pkgdb;
 	rpmpkgSetFsync(pkgdb, ndbenv->dofsync);
-
-	if ((oflags & (O_RDWR | O_RDONLY)) == O_RDONLY)
-	    dbi->dbi_flags |= DBI_RDONLY;
     } else {
 	unsigned int id;
 	rpmidxdb idxdb = 0;
@@ -188,20 +185,20 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 		ndb_CheckIndexSync(ndbenv->pkgdb, ndbenv->xdb);
 	}
 	if (rpmxdbLookupBlob(ndbenv->xdb, &id, rpmtag, 0, 0) == RPMRC_NOTFOUND) {
+	    oflags = O_RDWR|O_CREAT;
 	    dbi->dbi_flags |= DBI_CREATED;
 	}
 	rpmlog(RPMLOG_DEBUG, "opening  db index       %s tag=%d\n", dbiName(dbi), rpmtag);
-	if (rpmidxOpenXdb(&idxdb, rdb->db_pkgs->dbi_db, ndbenv->xdb, rpmtag)) {
+	if (rpmidxOpenXdb(&idxdb, rdb->db_pkgs->dbi_db, ndbenv->xdb, rpmtag, oflags)) {
 	    perror("rpmidxOpenXdb");
 	    ndb_Close(dbi, 0);
 	    return 1;
 	}
 	dbi->dbi_db = idxdb;
-
-	if (rpmxdbIsRdonly(ndbenv->xdb))
-	    dbi->dbi_flags |= DBI_RDONLY;
     }
 
+    if ((oflags & (O_RDWR | O_RDONLY)) == O_RDONLY)
+	dbi->dbi_flags |= DBI_RDONLY;
 
     if (dbip != NULL)
 	*dbip = dbi;

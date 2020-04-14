@@ -885,13 +885,17 @@ int rpmidxOpen(rpmidxdb *idxdbp, rpmpkgdb pkgdb, const char *filename, int flags
     return RPMRC_FAIL;
 }
 
-int rpmidxOpenXdb(rpmidxdb *idxdbp, rpmpkgdb pkgdb, rpmxdb xdb, unsigned int xdbtag)
+int rpmidxOpenXdb(rpmidxdb *idxdbp, rpmpkgdb pkgdb, rpmxdb xdb, unsigned int xdbtag, int flags)
 {
     rpmidxdb idxdb;
     unsigned int id;
     *idxdbp = 0;
     int rc;
     
+    if (rpmxdbIsRdonly(xdb) && (flags & (O_RDONLY|O_RDWR)) != O_RDONLY) {
+	errno = EACCES;
+	return RPMRC_FAIL;
+    }
     if (rpmxdbLock(xdb, 0))
 	return RPMRC_FAIL;
     rc = rpmxdbLookupBlob(xdb, &id, xdbtag, IDXDB_XDB_SUBTAG, 0);
@@ -907,7 +911,7 @@ int rpmidxOpenXdb(rpmidxdb *idxdbp, rpmpkgdb pkgdb, rpmxdb xdb, unsigned int xdb
     idxdb->xdbid = id;
     idxdb->pkgdb = pkgdb;
     idxdb->pagesize = rpmxdbPagesize(xdb);
-    idxdb->rdonly = rpmxdbIsRdonly(xdb) ? 1 : 0;
+    idxdb->rdonly = (flags & (O_RDONLY|O_RDWR)) == O_RDONLY ? 1 : 0;
     if (!id) {
 	if (rpmidxInit(idxdb)) {
 	    free(idxdb);
