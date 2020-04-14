@@ -24,5 +24,5 @@
     end
 }
 
-%__python_path ((/lib(64)?/python[[:digit:]]\\.[[:digit:]]+/.*\\.(py[oc]?|so))|(^%{_bindir}/python[[:digit:]]\\.[[:digit:]]+))$
+%__python_path ^((%{_prefix}/lib(64)?/python[[:digit:]]+\\.[[:digit:]]+/.*\\.(py[oc]?|so))|(%{_bindir}/python[[:digit:]]+\\.[[:digit:]]+))$
 %__python_magic [Pp]ython.*(executable|byte-compiled)
