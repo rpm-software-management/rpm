@@ -621,6 +621,8 @@ void rpmxdbClose(rpmxdb xdb)
     }
     if (xdb->slots)
 	free(xdb->slots);
+    if (xdb->mapped)
+	unmapheader(xdb);
     if (xdb->fd >= 0)
 	close(xdb->fd);
     if (xdb->filename)
