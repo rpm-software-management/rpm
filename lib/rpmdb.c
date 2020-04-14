@@ -2578,6 +2578,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     }
 
     rpmdbClose(olddb);
+    dbCtrl(newdb, DB_CTRL_INDEXSYNC);
     rpmdbClose(newdb);
 
     if (failed) {
