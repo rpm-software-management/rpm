@@ -392,17 +392,14 @@ static int rpmxdbReadHeader(rpmxdb xdb, int rw)
     return RPMRC_OK;
 }
 
-static int rpmxdbWriteHeader(rpmxdb xdb)
+static void rpmxdbWriteHeader(rpmxdb xdb)
 {
-    if (!xdb->mapped)
-	return RPMRC_FAIL;
     h2lea(XDB_MAGIC, xdb->mapped + XDB_OFFSET_MAGIC);
     h2lea(XDB_VERSION, xdb->mapped + XDB_OFFSET_VERSION);
     h2lea(xdb->generation, xdb->mapped + XDB_OFFSET_GENERATION);
     h2lea(xdb->slotnpages, xdb->mapped + XDB_OFFSET_SLOTNPAGES);
     h2lea(xdb->pagesize, xdb->mapped + XDB_OFFSET_PAGESIZE);
     h2lea(xdb->usergeneration, xdb->mapped + XDB_OFFSET_USERGENERATION);
-    return RPMRC_OK;
 }
 
 static void rpmxdbUpdateSlot(rpmxdb xdb, struct xdb_slot *slot)
