@@ -45,7 +45,10 @@ static char *rpmVeritySignFile(rpmfi fi, size_t *sig_size, char *key,
     uint8_t *sig = NULL;
     int status;
 
-    file_size = rpmfiFSize(fi);
+    if (S_ISLNK(rpmfiFMode(fi)))
+	file_size = 0;
+    else
+	file_size = rpmfiFSize(fi);
 
     memset(&params, 0, sizeof(struct libfsverity_merkle_tree_params));
     params.version = 1;
