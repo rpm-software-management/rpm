@@ -104,7 +104,6 @@ rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
     rpmfi hfi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, RPMFI_FLAGS_QUERY);
     rpmts ts = rpmtsCreate();
     struct rpmtd_s td;
-    rpm_loff_t file_size;
     off_t offset = Ftell(fd);
     const char *compr;
     char *rpmio_flags = NULL;
@@ -158,11 +157,7 @@ rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
 	   nr_files, rpmfiFC(fi));
 
     while (rpmfiNext(fi) >= 0) {
-	file_size = rpmfiFSize(fi);
 	idx = rpmfiFX(fi);
-
-	rpmlog(RPMLOG_DEBUG, _("file: %s, (size %li, link %s, idx %i)\n"),
-	       rpmfiFN(fi), file_size, rpmfiFLink(fi), rpmfiFX(fi));
 
 	signatures[idx] = rpmVeritySignFile(fi, &sig_size, key, keypass, cert);
     }
