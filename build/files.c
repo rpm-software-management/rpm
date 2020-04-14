@@ -2867,11 +2867,14 @@ static void addPackageDeps(Package from, Package to, enum rpmTag_e tag);
  * main debuginfo package */
 static Package cloneDebuginfoPackage(rpmSpec spec, Package pkg, Package maindbg)
 {
-    const char *name = headerGetString(pkg->header, RPMTAG_NAME);
-    char *dbgname = NULL;
-    Package dbg;
+    Package dbg = NULL;
+    char *dbgname = headerFormat(pkg->header, "%{name}-debuginfo", NULL);
 
-    rasprintf(&dbgname, "%s-%s", name, "debuginfo");
+    if (lookupPackage(spec, dbgname, PART_NAME|PART_QUIET, &dbg) == RPMRC_OK) {
+	rpmlog(RPMLOG_WARNING, _("package %s already exists\n"), dbgname);
+	goto exit;
+    }
+
     dbg = newPackage(dbgname, spec->pool, &spec->packages);
     headerPutString(dbg->header, RPMTAG_NAME, dbgname);
     copyInheritedTags(dbg->header, pkg->header);
@@ -2888,6 +2891,7 @@ static Package cloneDebuginfoPackage(rpmSpec spec, Package pkg, Package maindbg)
     addPackageProvides(dbg);
     dbg->ds = rpmdsThis(dbg->header, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
 
+exit:
     _free(dbgname);
     return dbg;
 }
