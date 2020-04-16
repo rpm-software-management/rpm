@@ -254,7 +254,7 @@ AM_CONDITIONAL(LIBDWARF,[test "$WITH_LIBDWARF" = yes])
 # Select crypto library
 AC_ARG_WITH(crypto,
             [AC_HELP_STRING([--with-crypto=CRYPTO_LIB],
-                            [The cryptographic library to use (nss|beecrypt|openssl|libgcrypt). The default is libgcrypt. beecrypt is DEPRECATED.])
+                            [The cryptographic library to use (nss|beecrypt|openssl|libgcrypt). The default is libgcrypt. beecrypt and nss are DEPRECATED.])
                             ],[],
                             [with_crypto=libgcrypt])
 
@@ -401,6 +401,7 @@ AC_SUBST(WITH_LIBGCRYPT_LIB)
 WITH_NSS_INCLUDE=
 WITH_NSS_LIB=
 if test "$with_crypto" = nss; then
+AC_MSG_WARN([Using the nss library with rpm is deprecated and support will be removed in a future release!])
 # If we have pkgconfig make sure CPPFLAGS are setup correctly for the nss
 # -I include path. Otherwise the below checks will fail because nspr.h
 # cannot be found.
