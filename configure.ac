@@ -269,6 +269,7 @@ AM_CONDITIONAL([WITH_BEECRYPT],[test "$with_crypto" = beecrypt])
 WITH_BEECRYPT_INCLUDE=
 WITH_BEECRYPT_LIB=
 if test "$with_crypto" = beecrypt ; then
+  AC_MSG_WARN([Using the beecrypt library with rpm is deprecated and support will be removed in a future release!])
   AC_DEFINE(WITH_BEECRYPT, 1, [Build with beecrypt instead of nss3 support?])
   if test "$with_internal_beecrypt" = yes ; then
     WITH_BEECRYPT_INCLUDE="-I\$(top_srcdir)/beecrypt"
