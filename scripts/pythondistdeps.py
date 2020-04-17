@@ -58,19 +58,21 @@ class RpmVersion():
             rpm_suffix = ''
         return '{}{}{}'.format(rpm_epoch, rpm_version, rpm_suffix)
 
+
 def convert_compatible(name, operator, version_id):
     if version_id.endswith('.*'):
         print('Invalid requirement: {} {} {}'.format(name, operator, version_id))
-        exit(65) # os.EX_DATAERR
+        exit(65)  # os.EX_DATAERR
     version = RpmVersion(version_id)
     if len(version.version) == 1:
         print('Invalid requirement: {} {} {}'.format(name, operator, version_id))
-        exit(65) # os.EX_DATAERR
+        exit(65)  # os.EX_DATAERR
     upper_version = RpmVersion(version_id)
     upper_version.version.pop()
     upper_version.increment()
     return '({} >= {} with {} < {})'.format(
         name, version, name, upper_version)
+
 
 def convert_equal(name, operator, version_id):
     if version_id.endswith('.*'):
@@ -79,12 +81,14 @@ def convert_equal(name, operator, version_id):
     version = RpmVersion(version_id)
     return '{} = {}'.format(name, version)
 
+
 def convert_arbitrary_equal(name, operator, version_id):
     if version_id.endswith('.*'):
         print('Invalid requirement: {} {} {}'.format(name, operator, version_id))
-        exit(65) # os.EX_DATAERR
+        exit(65)  # os.EX_DATAERR
     version = RpmVersion(version_id)
     return '{} = {}'.format(name, version)
+
 
 def convert_not_equal(name, operator, version_id):
     if version_id.endswith('.*'):
@@ -96,6 +100,7 @@ def convert_not_equal(name, operator, version_id):
         lower_version = version
     return '({} < {} or {} > {})'.format(
         name, version, name, lower_version)
+
 
 def convert_ordered(name, operator, version_id):
     if version_id.endswith('.*'):
@@ -249,9 +254,9 @@ for f in (args.files or stdin.readlines()):
                 deps = depsextras
             # console_scripts/gui_scripts entry points need pkg_resources from setuptools
             if ((dist.get_entry_map('console_scripts') or
-                     dist.get_entry_map('gui_scripts')) and
-                    (lower.endswith('.egg') or
-                     lower.endswith('.egg-info'))):
+                dist.get_entry_map('gui_scripts')) and
+                (lower.endswith('.egg') or
+                 lower.endswith('.egg-info'))):
                 # stick them first so any more specific requirement overrides it
                 deps.insert(0, Requirement.parse('setuptools'))
             # add requires/recommends based on egg/dist metadata
