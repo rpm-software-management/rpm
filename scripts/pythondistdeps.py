@@ -3,6 +3,7 @@
 #
 # Copyright 2010 Per Øyvind Karlsen <proyvind@moondrake.org>
 # Copyright 2015 Neal Gompa <ngompa13@gmail.com>
+# Copyright 2020 SUSE LLC
 #
 # This program is free software. It may be redistributed and/or modified under
 # the terms of the LGPL version 2.1 (or later).
@@ -11,7 +12,7 @@
 #
 
 from __future__ import print_function
-from getopt import getopt
+import argparse
 from os.path import basename, dirname, isdir, sep
 from sys import argv, stdin, version
 from distutils.sysconfig import get_python_lib
@@ -112,76 +113,40 @@ def convert_ordered(name, operator, version_id):
         version = RpmVersion(version_id)
     return '{} {} {}'.format(name, operator, version)
 
+
 OPERATORS = {'~=': convert_compatible,
              '==': convert_equal,
              '===': convert_arbitrary_equal,
              '!=': convert_not_equal,
              '<=': convert_ordered,
-             '<':  convert_ordered,
+             '<': convert_ordered,
              '>=': convert_ordered,
-             '>':  convert_ordered}
+             '>': convert_ordered}
+
 
 def convert(name, operator, version_id):
     return OPERATORS[operator](name, operator, version_id)
 
 
-opts, args = getopt(
-    argv[1:], 'hPRrCEMmLl:',
-    ['help', 'provides', 'requires', 'recommends', 'conflicts', 'extras', 'majorver-provides', 'majorver-only', 'legacy-provides' , 'legacy'])
+parser = argparse.ArgumentParser(prog=argv[0])
+group = parser.add_mutually_exclusive_group(required=True)
+group.add_argument('-P', '--provides', action='store_true', help='Print Provides')
+group.add_argument('-R', '--requires', action='store_true', help='Print Requires')
+group.add_argument('-r', '--recommends', action='store_true', help='Print Recommends')
+group.add_argument('-C', '--conflicts', action='store_true', help='Print Conflicts')
+group.add_argument('-E', '--extras', action='store_true', help='Print Extras')
+parser.add_argument('-M', '--majorver-provides', action='store_true', help='Print extra Provides with Python major version only')
+parser.add_argument('-m', '--majorver-only', action='store_true', help='Print Provides/Requires with Python major version only')
+parser.add_argument('-L', '--legacy-provides', action='store_true', help='Print extra legacy pythonegg Provides')
+parser.add_argument('-l', '--legacy', action='store_true', help='Print legacy pythonegg Provides/Requires instead')
+parser.add_argument('files', nargs=argparse.REMAINDER)
+args = parser.parse_args()
 
-Provides = False
-Requires = False
-Recommends = False
-Conflicts = False
-Extras = False
-Provides_PyMajorVer_Variant = False
-PyMajorVer_Deps = False
-legacy_Provides = False
-legacy = False
-
-for o, a in opts:
-    if o in ('-h', '--help'):
-        print('-h, --help\tPrint help')
-        print('-P, --provides\tPrint Provides')
-        print('-R, --requires\tPrint Requires')
-        print('-r, --recommends\tPrint Recommends')
-        print('-C, --conflicts\tPrint Conflicts')
-        print('-E, --extras\tPrint Extras ')
-        print('-M, --majorver-provides\tPrint extra Provides with Python major version only')
-        print('-m, --majorver-only\tPrint Provides/Requires with Python major version only')
-        print('-L, --legacy-provides\tPrint extra legacy pythonegg Provides')
-        print('-l, --legacy\tPrint legacy pythonegg Provides/Requires instead')
-        exit(1)
-    elif o in ('-P', '--provides'):
-        Provides = True
-    elif o in ('-R', '--requires'):
-        Requires = True
-    elif o in ('-r', '--recommends'):
-        Recommends = True
-    elif o in ('-C', '--conflicts'):
-        Conflicts = True
-    elif o in ('-E', '--extras'):
-        Extras = True
-    elif o in ('-M', '--majorver-provides'):
-        Provides_PyMajorVer_Variant = True
-    elif o in ('-m', '--majorver-only'):
-        PyMajorVer_Deps = True
-    elif o in ('-L', '--legacy-provides'):
-        legacy_Provides = True
-    elif o in ('-l', '--legacy'):
-        legacy = True
-
-if Requires:
-    py_abi = True
-else:
-    py_abi = False
+py_abi = args.requires
 py_deps = {}
-if args:
-    files = args
-else:
-    files = stdin.readlines()
 
-for f in files:
+
+for f in (args.files or stdin.readlines()):
     f = f.strip()
     lower = f.lower()
     name = 'python(abi)'
@@ -229,25 +194,25 @@ for f in files:
             else:
                 warn("Version for {!r} has not been found".format(dist), RuntimeWarning)
                 continue
-        if Provides_PyMajorVer_Variant or PyMajorVer_Deps or legacy_Provides or legacy:
+        if args.majorver_provides or args.majorver_only or args.legacy_provides or args.legacy:
             # Get the Python major version
             pyver_major = dist.py_version.split('.')[0]
-        if Provides:
+        if args.provides:
             # If egg/dist metadata says package name is python, we provide python(abi)
             if dist.key == 'python':
                 name = 'python(abi)'
                 if name not in py_deps:
                     py_deps[name] = []
                 py_deps[name].append(('==', dist.py_version))
-            if not legacy or not PyMajorVer_Deps:
+            if not args.legacy or not args.majorver_only:
                 name = 'python{}dist({})'.format(dist.py_version, dist.key)
                 if name not in py_deps:
                     py_deps[name] = []
-            if Provides_PyMajorVer_Variant or PyMajorVer_Deps:
+            if args.majorver_provides or args.majorver_only:
                 pymajor_name = 'python{}dist({})'.format(pyver_major, dist.key)
                 if pymajor_name not in py_deps:
                     py_deps[pymajor_name] = []
-            if legacy or legacy_Provides:
+            if args.legacy or args.legacy_provides:
                 legacy_name = 'pythonegg({})({})'.format(pyver_major, dist.key)
                 if legacy_name not in py_deps:
                     py_deps[legacy_name] = []
@@ -255,13 +220,13 @@ for f in files:
                 version = dist.version
                 spec = ('==', version)
                 if spec not in py_deps[name]:
-                    if not legacy:
+                    if not args.legacy:
                         py_deps[name].append(spec)
-                    if Provides_PyMajorVer_Variant:
+                    if args.majorver_provides:
                         py_deps[pymajor_name].append(spec)
-                    if legacy or legacy_Provides:
+                    if args.legacy or args.legacy_provides:
                         py_deps[legacy_name].append(spec)
-        if Requires or (Recommends and dist.extras):
+        if args.requires or (args.recommends and dist.extras):
             name = 'python(abi)'
             # If egg/dist metadata says package name is python, we don't add dependency on python(abi)
             if dist.key == 'python':
@@ -275,9 +240,9 @@ for f in files:
                 if spec not in py_deps[name]:
                     py_deps[name].append(spec)
             deps = dist.requires()
-            if Recommends:
+            if args.recommends:
                 depsextras = dist.requires(extras=dist.extras)
-                if not Requires:
+                if not args.requires:
                     for dep in reversed(depsextras):
                         if dep in deps:
                             depsextras.remove(dep)
@@ -291,10 +256,10 @@ for f in files:
                 deps.insert(0, Requirement.parse('setuptools'))
             # add requires/recommends based on egg/dist metadata
             for dep in deps:
-                if legacy:
+                if args.legacy:
                     name = 'pythonegg({})({})'.format(pyver_major, dep.key)
                 else:
-                    if PyMajorVer_Deps:
+                    if args.majorver_only:
                         name = 'python{}dist({})'.format(pyver_major, dep.key)
                     else:
                         name = 'python{}dist({})'.format(dist.py_version, dep.key)
@@ -307,7 +272,7 @@ for f in files:
                     py_deps[name] = []
         # Unused, for automatic sub-package generation based on 'extras' from egg/dist metadata
         # TODO: implement in rpm later, or...?
-        if Extras:
+        if args.extras:
             deps = dist.requires()
             extras = dist.extras
             print(extras)
@@ -329,7 +294,7 @@ for f in files:
                 print('%%description\t{}'.format(extra))
                 print('{} extra for {} python package'.format(extra, dist.key))
                 print('%%files\t\textras-{}\n'.format(extra))
-        if Conflicts:
+        if args.conflicts:
             # Should we really add conflicts for extras?
             # Creating a meta package per extra with recommends on, which has
             # the requires/conflicts in stead might be a better solution...
