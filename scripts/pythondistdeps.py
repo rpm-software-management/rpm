@@ -45,7 +45,7 @@ class RpmVersion():
             rpm_epoch = str(self.epoch) + ':'
         else:
             rpm_epoch = ''
-        while self.version[-1] == 0:
+        while len(self.version) > 1 and self.version[-1] == 0:
             self.version.pop()
         rpm_version = '.'.join(str(x) for x in self.version)
         if self.pre:
