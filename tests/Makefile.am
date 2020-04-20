@@ -188,7 +188,11 @@ installcheck-local: $(check_DATA) populate_testing
 	$(SHELL) '$(TESTSUITE)' AUTOTEST_PATH='$(bindir):$(rpmlibexecdir)' $(TESTSUITEFLAGS)
 	HOME=$(abs_builddir)/testing $(KILLAGENT) ||:
 
+check-scripts:
+	python3 -m pytest --ignore testing/ -vvv
+
 clean-local:
 	test ! -f '$(TESTSUITE)' || $(SHELL) '$(TESTSUITE)' --clean
 	rm -f *.tmp
 	rm -rf testing
+	rm -rf data/scripts_pythondistdeps/usr

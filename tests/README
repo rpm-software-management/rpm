@@ -34,3 +34,25 @@ See
 
 for more options. But be aware some (like -j) may not work properly with
 the test suite unless a very restricted set of test is run.
+
+
+Tests for pythondistdeps.py script need these Python dependencies
+
+   - Python >= 3.6
+   - pip >= 20.0.1
+   - setuptools
+   - pytest
+   - pyyaml
+   - wheel
+
+to run the tests, cd into the tests directory and use
+
+   make check-scripts
+
+or run directly
+
+   python3 -m pytest --ignore testing/
+
+For easier reading of the test results, see the top section of file
+
+   tests/test_scripts_pythondistdeps.py
