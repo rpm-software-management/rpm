@@ -72,6 +72,7 @@ void headerMergeLegacySigs(Header h, Header sigh)
 	    td.tag = RPMTAG_FILESIGNATURELENGTH;
 	    break;
 	case RPMSIGTAG_VERITYSIGNATURES:
+	case RPMSIGTAG_VERITYSIGNATUREALGO:
 	case RPMSIGTAG_SHA1:
 	case RPMSIGTAG_SHA256:
 	case RPMSIGTAG_DSA:
