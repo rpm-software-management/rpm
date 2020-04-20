@@ -839,6 +839,11 @@ AS_IF([test "$enable_plugins" != no],[
 ])
 AM_CONDITIONAL(IMA, [test "x$ac_cv_func_lsetxattr" = xyes])
 
+AS_IF([test "$enable_plugins" != no],[
+AC_CHECK_HEADERS([linux/fsverity.h],[FSVERITY_IOCTL="yes"])
+])
+AM_CONDITIONAL(FSVERITY_IOCTL,[test "x$FSVERITY_IOCTL" = xyes])
+
 #=================
 # Check for audit library.
 AC_ARG_WITH(audit,
