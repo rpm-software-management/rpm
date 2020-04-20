@@ -130,7 +130,6 @@ static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
 	    free(fileSigningKeyPassword);
 	}
 
-	sargs->signflags |= RPMSIGN_FLAG_IMA;
 	free(key);
     }
 #endif
