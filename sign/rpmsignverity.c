@@ -35,7 +35,7 @@ static int rpmVerityRead(void *opaque, void *buf, size_t size)
 }
 
 static char *rpmVeritySignFile(rpmfi fi, size_t *sig_size, char *key,
-			       char *keypass, char *cert)
+			       char *keypass, char *cert, uint16_t algo)
 {
     struct libfsverity_merkle_tree_params params;
     struct libfsverity_signature_params sig_params;
@@ -52,7 +52,7 @@ static char *rpmVeritySignFile(rpmfi fi, size_t *sig_size, char *key,
 
     memset(&params, 0, sizeof(struct libfsverity_merkle_tree_params));
     params.version = 1;
-    params.hash_algorithm = FS_VERITY_HASH_ALG_SHA256;
+    params.hash_algorithm = algo;
     params.block_size = RPM_FSVERITY_BLKSZ;
     params.salt_size = 0 /* salt_size */;
     params.salt = NULL /* salt */;
@@ -111,6 +111,8 @@ rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
     char **signatures = NULL;
     size_t sig_size;
     int nr_files, idx;
+    uint16_t algo;
+    uint32_t algo32;
 
     Fseek(fd, 0, SEEK_SET);
     rpmtsSetVSFlags(ts, RPMVSF_MASK_NODIGESTS | RPMVSF_MASK_NOSIGNATURES |
@@ -142,6 +144,7 @@ rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
      * Should this be sigh from the cloned fd or the sigh we received?
      */
     headerDel(sigh, RPMSIGTAG_VERITYSIGNATURES);
+    headerDel(sigh, RPMSIGTAG_VERITYSIGNATUREALGO);
 
     /*
      * The payload doesn't include special files, like ghost files, and
@@ -153,20 +156,24 @@ rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
     nr_files = rpmfiFC(hfi);
     signatures = xcalloc(nr_files, sizeof(char *));
 
+    algo = FS_VERITY_HASH_ALG_SHA256;
+
     rpmlog(RPMLOG_DEBUG, _("file count - header: %i, payload %i\n"),
 	   nr_files, rpmfiFC(fi));
 
     while (rpmfiNext(fi) >= 0) {
 	idx = rpmfiFX(fi);
 
-	signatures[idx] = rpmVeritySignFile(fi, &sig_size, key, keypass, cert);
+	signatures[idx] = rpmVeritySignFile(fi, &sig_size, key, keypass, cert,
+					    algo);
     }
 
     while (rpmfiNext(hfi) >= 0) {
 	idx = rpmfiFX(hfi);
 	if (signatures[idx])
 	    continue;
-	signatures[idx] = rpmVeritySignFile(hfi, &sig_size, key, keypass, cert);
+	signatures[idx] = rpmVeritySignFile(hfi, &sig_size, key, keypass, cert,
+					    algo);
     }
 
     rpmtdReset(&td);
@@ -186,6 +193,23 @@ rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
 	free(signatures[idx]);
 	signatures[idx] = NULL;
     }
+
+    if (sig_size == 0) {
+	rpmlog(RPMLOG_ERR, _("Zero length fsverity signature\n"));
+	rc = RPMRC_FAIL;
+	goto out;
+    }
+
+    rpmtdReset(&td);
+
+    /* RPM doesn't like new 16 bit types, so use a 32 bit tag */
+    algo32 = algo;
+    rpmtdReset(&td);
+    td.tag = RPMSIGTAG_VERITYSIGNATUREALGO;
+    td.type = RPM_INT32_TYPE;
+    td.data = &algo32;
+    td.count = 1;
+    headerPut(sigh, &td, HEADERPUT_DEFAULT);
 
     rpmlog(RPMLOG_DEBUG, _("sigh size: %i\n"), headerSizeof(sigh, 0));
 

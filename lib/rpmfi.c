@@ -118,6 +118,7 @@ struct rpmfiles_s {
     int digestalgo;		/*!< File digest algorithm */
     int signaturelength;	/*!< File signature length */
     int veritysiglength;	/*!< Verity signature length */
+    uint16_t verityalgo;	/*!< Verity algorithm */
     unsigned char * digests;	/*!< File digests in binary. */
     unsigned char * signatures; /*!< File signatures in binary. */
     unsigned char * veritysigs; /*!< Verity signatures in binary. */
@@ -1657,6 +1658,7 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 
     fi->veritysigs = NULL;
     if (!(flags & RPMFI_NOVERITYSIGNATURES)) {
+	fi->verityalgo = headerGetNumber(h, RPMTAG_VERITYSIGNATUREALGO);
 	fi->veritysigs = base2bin(h, RPMTAG_VERITYSIGNATURES,
 				  totalfc, &fi->veritysiglength);
     }
