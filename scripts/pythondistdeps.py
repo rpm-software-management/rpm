@@ -134,7 +134,11 @@ OPERATORS = {'~=': convert_compatible,
 
 
 def convert(name, operator, version_id):
-    return OPERATORS[operator](name, operator, version_id)
+    try:
+        return OPERATORS[operator](name, operator, version_id)
+    except Exception as exc:
+        raise RuntimeError("Cannot process Python package version `{}` for name `{}`".
+                           format(version_id, name)) from exc
 
 
 def normalize_name(name):
