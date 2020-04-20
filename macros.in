@@ -734,6 +734,9 @@ package or when debugging this package.\
 # a wrong or missing signature.
 #%_ima_sign_config_files	0
 
+# Set to 1 to have fsverity signatures written for %config files.
+#%_fsverity_sign_config_files	0
+
 #
 # Default output format string for rpm -qa
 #
@@ -1173,6 +1176,7 @@ package or when debugging this package.\
 %__transaction_selinux		%{__plugindir}/selinux.so
 %__transaction_syslog		%{__plugindir}/syslog.so
 %__transaction_ima		%{__plugindir}/ima.so
+%__transaction_fsverity		%{__plugindir}/fsverity.so
 %__transaction_prioreset	%{__plugindir}/prioreset.so
 %__transaction_audit		%{__plugindir}/audit.so
 
