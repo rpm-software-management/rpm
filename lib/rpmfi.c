@@ -586,7 +586,8 @@ const unsigned char * rpmfilesFSignature(rpmfiles fi, int ix, size_t *len)
     return signature;
 }
 
-const unsigned char * rpmfilesVSignature(rpmfiles fi, int ix, size_t *len)
+const unsigned char * rpmfilesVSignature(rpmfiles fi, int ix, size_t *len,
+					 uint16_t *algo)
 {
     const unsigned char *vsignature = NULL;
 
@@ -595,6 +596,8 @@ const unsigned char * rpmfilesVSignature(rpmfiles fi, int ix, size_t *len)
 	    vsignature = fi->veritysigs + (fi->veritysiglength * ix);
 	if (len)
 	    *len = fi->veritysiglength;
+	if (algo)
+	    *algo = fi->verityalgo;
     }
     return vsignature;
 }
@@ -1953,9 +1956,9 @@ const unsigned char * rpmfiFSignature(rpmfi fi, size_t *len)
     return rpmfilesFSignature(fi->files, fi ? fi->i : -1, len);
 }
 
-const unsigned char * rpmfiVSignature(rpmfi fi, size_t *len)
+const unsigned char * rpmfiVSignature(rpmfi fi, size_t *len, uint16_t *algo)
 {
-    return rpmfilesVSignature(fi->files, fi ? fi->i : -1, len);
+    return rpmfilesVSignature(fi->files, fi ? fi->i : -1, len, algo);
 }
 
 uint32_t rpmfiFDepends(rpmfi fi, const uint32_t ** fddictp)

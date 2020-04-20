@@ -194,9 +194,10 @@ const unsigned char * rpmfiFSignature(rpmfi fi, size_t *siglen);
  * Return current verity (binary) signature of file info set iterator.
  * @param fi		file info set iterator
  * @retval siglen	signature length (pass NULL to ignore)
+ * @retval algo		fsverity algorithm
  * @return		current verity signature, NULL on invalid
  */
-const unsigned char * rpmfiVSignature(rpmfi fi, size_t *siglen);
+const unsigned char * rpmfiVSignature(rpmfi fi, size_t *siglen, uint16_t *algo);
 
 /** \ingroup rpmfi
  * Return current file linkto (i.e. symlink(2) target) from file info set iterator.
