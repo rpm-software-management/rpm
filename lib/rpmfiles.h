@@ -481,7 +481,8 @@ const unsigned char * rpmfilesFSignature(rpmfiles fi, int ix, size_t *len);
  * @retval len       signature length (pass NULL to ignore)
  * @return              verity signature, NULL on invalid
  */
-const unsigned char * rpmfilesVSignature(rpmfiles fi, int ix, size_t *len);
+const unsigned char * rpmfilesVSignature(rpmfiles fi, int ix, size_t *len,
+					 uint16_t *algo);
 
 /** \ingroup rpmfiles
  * Return file rdev from file info set.

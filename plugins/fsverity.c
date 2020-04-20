@@ -39,6 +39,7 @@ static rpmRC fsverity_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
     struct fsverity_enable_arg arg;
     const unsigned char * signature = NULL;
     size_t len;
+    uint16_t algo = 0;
     int rc = RPMRC_OK;
     int fd;
     rpmFileAction action = XFO_ACTION(op);
@@ -75,7 +76,7 @@ static rpmRC fsverity_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
 	goto exit;
     }
 
-    signature = rpmfiVSignature(fi, &len);
+    signature = rpmfiVSignature(fi, &len, &algo);
     if (!signature || !len) {
 	rpmlog(RPMLOG_DEBUG, "fsverity no signature for: path %s dest %s\n",
 	       path, dest);
@@ -84,7 +85,10 @@ static rpmRC fsverity_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
 
     memset(&arg, 0, sizeof(arg));
     arg.version = 1;
-    arg.hash_algorithm = FS_VERITY_HASH_ALG_SHA256;
+    if (algo)
+	arg.hash_algorithm = algo;
+    else
+	arg.hash_algorithm = FS_VERITY_HASH_ALG_SHA256;
     arg.block_size = RPM_FSVERITY_BLKSZ;
     arg.sig_ptr = (uintptr_t)signature;
     arg.sig_size = len;
