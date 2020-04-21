@@ -20,8 +20,8 @@ EXTRA_DIST = \
 	find-requires find-provides \
 	find-requires.php find-provides.php \
 	ocamldeps.sh \
-	pkgconfigdeps.sh libtooldeps.sh metainfo.prov \
-	fontconfig.prov desktop-file.prov script.req 
+	pkgconfigdeps.sh libtooldeps.sh \
+	fontconfig.prov desktop-file.prov script.req
 
 rpmconfig_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
@@ -32,12 +32,11 @@ rpmconfig_SCRIPTS = \
 	debuginfo.prov \
 	find-lang.sh find-requires find-provides \
 	perl.prov perl.req pythondistdeps.py \
-	metainfo.prov \
 	pkgconfigdeps.sh libtooldeps.sh \
 	ocamldeps.sh \
 	fontconfig.prov desktop-file.prov script.req \
 	rpmdb_dump rpmdb_load \
-	rpm2cpio.sh tgpg 
+	rpm2cpio.sh tgpg
 
 rpmconfig_DATA = \
 	rpm.daily rpm.log rpm.supp
