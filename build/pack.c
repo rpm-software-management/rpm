@@ -732,9 +732,9 @@ static int compareBinaries(const void *p1, const void *p2) {
     Package pkg2 = *(Package *)p2;
     uint64_t size1 = headerGetNumber(pkg1->header, RPMTAG_LONGSIZE);
     uint64_t size2 = headerGetNumber(pkg2->header, RPMTAG_LONGSIZE);
-    if (size1 < size2)
-        return -1;
     if (size1 > size2)
+        return -1;
+    if (size1 < size2)
         return 1;
     return 0;
 }
@@ -763,7 +763,7 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 
     #pragma omp parallel
     #pragma omp single
-    for (int i = npkgs - 1; i >= 0; i--) {
+    for (int i = 0; i < npkgs; i++) {
 	pkg = tasks[i];
 	#pragma omp task untied priority(i)
 	{
