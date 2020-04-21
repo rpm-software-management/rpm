@@ -11,7 +11,6 @@ EXTRA_DIST = \
 	brp-strip-shared brp-strip-static-archive \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
-	debuginfo.prov \
 	find-debuginfo.sh find-lang.sh \
 	perl.prov perl.req pythondistdeps.py \
 	rpmdb_dump rpmdb_load \
@@ -29,7 +28,6 @@ rpmconfig_SCRIPTS = \
 	brp-strip-shared brp-strip-static-archive \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
-	debuginfo.prov \
 	find-lang.sh find-requires find-provides \
 	perl.prov perl.req pythondistdeps.py \
 	pkgconfigdeps.sh libtooldeps.sh \
