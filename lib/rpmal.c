@@ -247,6 +247,10 @@ void rpmalAdd(rpmal al, rpmte p)
     rpmalNum pkgNum;
     availablePackage alp;
 
+    /* Source packages don't provide anything to depsolving */
+    if (rpmteIsSource(p))
+	return;
+
     if (al->size == al->alloced) {
 	al->alloced += al->delta;
 	al->list = xrealloc(al->list, sizeof(*al->list) * al->alloced);

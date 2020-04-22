@@ -1040,16 +1040,16 @@ int rpmtsCheck(rpmts ts)
 	checkDS(ts, dcache, p, rpmteNEVRA(p), rpmteDS(p, RPMTAG_OBSOLETENAME),
 		tscolor);
 
+	/* Skip obsoletion and provides checks for source packages (ie build) */
+	if (rpmteIsSource(p))
+	    continue;
+
 	/* Check provides against conflicts in installed packages. */
 	while (rpmdsNext(provides) >= 0) {
 	    checkInstDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, NULL, provides, 0);
 	    if (reqnothash && depexistsHashHasEntry(reqnothash, rpmdsNId(provides)))
 		checkInstDeps(ts, dcache, p, RPMTAG_REQUIRENAME, NULL, provides, 1);
 	}
-
-	/* Skip obsoletion checks for source packages (ie build) */
-	if (rpmteIsSource(p))
-	    continue;
 
 	/* Check package name (not provides!) against installed obsoletes */
 	checkInstDeps(ts, dcache, p, RPMTAG_OBSOLETENAME, NULL, rpmteDS(p, RPMTAG_NAME), 0);
