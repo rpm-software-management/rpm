@@ -89,8 +89,19 @@
                 python3.9dist(foobar86) > 2.4.8^post1
                 python3.9dist(foobar87) > 2^post1
                 (python3.9dist(foobar9) >= 2.4.8^post1 with python3.9dist(foobar9) < 2.5)
+                python3.9dist(hugo1) = 1~~dev7
+                python3.9dist(hugo2) <= 8~a4
+                (python3.9dist(hugo3) < 11.1.1~b14 or python3.9dist(hugo3) > 11.1.1~b14)
+                python3.9dist(hugo4) > 11~rc0
+                python3.9dist(hugo5) = 11.1^post3
                 python3.9dist(pyparsing0)
                 ((python3.9dist(pyparsing1) < 2.0.4 or python3.9dist(pyparsing1) > 2.0.4) with (python3.9dist(pyparsing1) < 2.1.2 or python3.9dist(pyparsing1) > 2.1.2) with (python3.9dist(pyparsing1) < 2.1.6 or python3.9dist(pyparsing1) > 2.1.6) with python3.9dist(pyparsing1) >= 2.0.1)
+        usr/lib/python3.9/site-packages/taskotron_python_versions-0.1.dev6.dist-info:
+            provides: python3.9dist(taskotron-python-versions) = 0.1~~dev6
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(libarchive-c)
+                python3.9dist(python-bugzilla)
     --provides --majorver-provides:
         usr/lib/python2.7/site-packages/attrs-19.1.0-py2.7.egg-info:
             provides: |-
@@ -331,6 +342,14 @@
                 python3.9dist(six) = 1.12
                 python3dist(six) = 1.12
             requires: python(abi) = 3.9
+        usr/lib/python3.9/site-packages/taskotron_python_versions-0.1.dev6.dist-info:
+            provides: |-
+                python3.9dist(taskotron-python-versions) = 0.1~~dev6
+                python3dist(taskotron-python-versions) = 0.1~~dev6
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(libarchive-c)
+                python3.9dist(python-bugzilla)
         usr/lib/python3.9/site-packages/tox-3.14.0.dist-info:
             provides: |-
                 python3.9dist(tox) = 3.14

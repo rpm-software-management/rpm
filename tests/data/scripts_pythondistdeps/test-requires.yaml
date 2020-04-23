@@ -92,3 +92,6 @@ kubernetes:
 fsleyes:
     wheel:
         '0.32.3': ['3.9']
+taskotron-python-versions:
+    wheel:
+        '0.1.dev6': ['3.9']

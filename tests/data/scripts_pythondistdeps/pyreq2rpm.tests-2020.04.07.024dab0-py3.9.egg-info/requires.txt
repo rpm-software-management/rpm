@@ -93,3 +93,10 @@ babel>=1.3,!=2.0
 
 # Tests for breakages in Fedora
 fedora-python-nb2plots==0+unknown
+
+# Other tests
+hugo1==1.0.0.dev7
+hugo2<=8a4
+hugo3!=11.1.1b14
+hugo4>11rc0
+hugo5===11.1.0.post3
