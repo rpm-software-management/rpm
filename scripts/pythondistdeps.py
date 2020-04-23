@@ -55,7 +55,7 @@ class RpmVersion():
         if self.pre:
             rpm_suffix = '~{}'.format(''.join(str(x) for x in self.pre))
         elif self.dev:
-            rpm_suffix = '~{}'.format(''.join(str(x) for x in self.dev))
+            rpm_suffix = '~~{}'.format(''.join(str(x) for x in self.dev))
         elif self.post:
             rpm_suffix = '^post{}'.format(self.post[1])
         else:
