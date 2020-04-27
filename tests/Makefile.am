@@ -190,6 +190,11 @@ installcheck-local: $(check_DATA) populate_testing
 
 check-scripts:
 	python3 -m pytest --ignore testing/ -vvv
+TESTSUITE_PYTHONDISTDEPS = data/scripts_pythondistdeps/test-data.yaml
+TESTSUITE_PYTHONDISTDEPS += data/scripts_pythondistdeps/test-requires.yaml
+TESTSUITE_PYTHONDISTDEPS += data/scripts_pythondistdeps/pyreq2rpm.tests-2020.04.07.024dab0-py3.9.egg-info/PKG-INFO
+TESTSUITE_PYTHONDISTDEPS += data/scripts_pythondistdeps/pyreq2rpm.tests-2020.04.07.024dab0-py3.9.egg-info/requires.txt
+EXTRA_DIST += $(TESTSUITE_PYTHONDISTDEPS)
 
 clean-local:
 	test ! -f '$(TESTSUITE)' || $(SHELL) '$(TESTSUITE)' --clean
