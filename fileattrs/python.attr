@@ -6,7 +6,7 @@
     -- (Don't match against -config tools e.g. /usr/bin/python2.6-config)
     local path = rpm.expand('%1')
     if path:match('/usr/bin/python%d+%.%d+$') then
-        provides = path:gsub('.*/usr/bin/python(%d+%.%d+)', 'python(abi) = %1')
+        local provides = path:gsub('.*/usr/bin/python(%d+%.%d+)', 'python(abi) = %1')
         print(provides)
     end
 }
@@ -19,7 +19,7 @@
     --    python(abi) = MAJOR.MINOR
     local path = rpm.expand('%1')
     if path:match('/usr/lib%d*/python%d+%.%d+/.*') then
-        requires = path:gsub('.*/usr/lib%d*/python(%d+%.%d+)/.*', 'python(abi) = %1')
+        local requires = path:gsub('.*/usr/lib%d*/python(%d+%.%d+)/.*', 'python(abi) = %1')
         print(requires)
     end
 }
