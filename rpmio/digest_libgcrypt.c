@@ -346,6 +346,117 @@ static void pgpFreeKeyDSA(pgpDigAlg pgpkey)
 }
 
 
+/****************************** EDDSA **************************************/
+
+struct pgpDigSigEDDSA_s {
+    gcry_mpi_t r;
+    gcry_mpi_t s;
+};
+
+struct pgpDigKeyEDDSA_s {
+    gcry_mpi_t q;
+};
+
+static int pgpSetSigMpiEDDSA(pgpDigAlg pgpsig, int num, const uint8_t *p)
+{
+    struct pgpDigSigEDDSA_s *sig = pgpsig->data;
+    int mlen = pgpMpiLen(p);
+    int rc = 1;
+
+    if (!sig)
+	sig = pgpsig->data = xcalloc(1, sizeof(*sig));
+
+    switch (num) {
+    case 0:
+	if (!gcry_mpi_scan(&sig->r, GCRYMPI_FMT_PGP, p, mlen, NULL))
+	    rc = 0;
+	break;
+    case 1:
+	if (!gcry_mpi_scan(&sig->s, GCRYMPI_FMT_PGP, p, mlen, NULL))
+	    rc = 0;
+	break;
+    }
+    return rc;
+}
+
+static int pgpSetKeyMpiEDDSA(pgpDigAlg pgpkey, int num, const uint8_t *p)
+{
+    struct pgpDigKeyEDDSA_s *key = pgpkey->data;
+    int mlen = pgpMpiLen(p);
+    int rc = 1;
+
+    if (!key)
+	key = pgpkey->data = xcalloc(1, sizeof(*key));
+
+    switch (num) {
+    case 0:
+	if (!gcry_mpi_scan(&key->q, GCRYMPI_FMT_PGP, p, mlen, NULL))
+	    rc = 0;
+	break;
+    }
+    return rc;
+}
+
+static int
+ed25519_zero_extend(gcry_mpi_t x, unsigned char *buf, int bufl)
+{
+    int n = (gcry_mpi_get_nbits(x) + 7) / 8;
+    if (n == 0 || n > bufl)
+	return 1;
+    n = bufl - n;
+    if (n)
+	memset(buf, 0, n);
+    gcry_mpi_print(GCRYMPI_FMT_USG, buf + n, bufl - n, NULL, x);
+    return 0;
+}
+
+static int pgpVerifySigEDDSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig, uint8_t *hash, size_t hashlen, int hash_algo)
+{
+    struct pgpDigKeyEDDSA_s *key = pgpkey->data;
+    struct pgpDigSigEDDSA_s *sig = pgpsig->data;
+    gcry_sexp_t sexp_sig = NULL, sexp_data = NULL, sexp_pkey = NULL;
+    int rc = 1;
+    unsigned char buf_r[32], buf_s[32];
+
+    if (!sig || !key)
+	return rc;
+    if (pgpkey->curve != PGPCURVE_ED25519)
+	return rc;
+    if (hash_algo != PGPHASHALGO_SHA256)
+	return rc;
+    if (ed25519_zero_extend(sig->r, buf_r, 32) || ed25519_zero_extend(sig->s, buf_s, 32))
+	return rc;
+    gcry_sexp_build(&sexp_sig, NULL, "(sig-val (eddsa (r %b) (s %b)))", 32, (const char *)buf_r, 32, (const char *)buf_s, 32);
+    gcry_sexp_build(&sexp_data, NULL, "(data (flags eddsa) (hash-algo sha512) (value %b))", (int)hashlen, (const char *)hash);
+    gcry_sexp_build(&sexp_pkey, NULL, "(public-key (ecc (curve \"Ed25519\") (flags eddsa) (q %M)))", key->q);
+    if (sexp_sig && sexp_data && sexp_pkey)
+	rc = gcry_pk_verify(sexp_sig, sexp_data, sexp_pkey) == 0 ? 0 : 1;
+    gcry_sexp_release(sexp_sig);
+    gcry_sexp_release(sexp_data);
+    gcry_sexp_release(sexp_pkey);
+    return rc;
+}
+
+static void pgpFreeSigEDDSA(pgpDigAlg pgpsig)
+{
+    struct pgpDigSigEDDSA_s *sig = pgpsig->data;
+    if (sig) {
+	gcry_mpi_release(sig->r);
+	gcry_mpi_release(sig->s);
+	pgpsig->data = _free(sig);
+    }
+}
+
+static void pgpFreeKeyEDDSA(pgpDigAlg pgpkey)
+{
+    struct pgpDigKeyEDDSA_s *key = pgpkey->data;
+    if (key) {
+	gcry_mpi_release(key->q);
+	pgpkey->data = _free(key);
+    }
+}
+
+
 /****************************** NULL **************************************/
 
 static int pgpSetMpiNULL(pgpDigAlg pgpkey, int num, const uint8_t *p)
@@ -357,6 +468,23 @@ static int pgpVerifyNULL(pgpDigAlg pgpkey, pgpDigAlg pgpsig,
                          uint8_t *hash, size_t hashlen, int hash_algo)
 {
     return 1;
+}
+
+static int pgpSupportedCurve(int curve)
+{
+    if (curve == PGPCURVE_ED25519) {
+	static int supported_ed25519;
+	if (!supported_ed25519) {
+	    gcry_sexp_t sexp = NULL;
+	    unsigned int nbits;
+	    gcry_sexp_build(&sexp, NULL, "(public-key (ecc (curve \"Ed25519\")))");
+	    nbits = gcry_pk_get_nbits(sexp);
+	    gcry_sexp_release(sexp);
+	    supported_ed25519 = nbits > 0 ? 1 : -1;
+	}
+	return supported_ed25519 > 0;
+    }
+    return 0;
 }
 
 pgpDigAlg pgpPubkeyNew(int algo, int curve)
@@ -373,6 +501,17 @@ pgpDigAlg pgpPubkeyNew(int algo, int curve)
         ka->setmpi = pgpSetKeyMpiDSA;
         ka->free = pgpFreeKeyDSA;
         ka->mpis = 4;
+        break;
+    case PGPPUBKEYALGO_EDDSA:
+	if (!pgpSupportedCurve(curve)) {
+	    ka->setmpi = pgpSetMpiNULL;
+	    ka->mpis = -1;
+	    break;
+	}
+        ka->setmpi = pgpSetKeyMpiEDDSA;
+        ka->free = pgpFreeKeyEDDSA;
+        ka->mpis = 1;
+        ka->curve = curve;
         break;
     default:
         ka->setmpi = pgpSetMpiNULL;
@@ -400,6 +539,12 @@ pgpDigAlg pgpSignatureNew(int algo)
         sa->setmpi = pgpSetSigMpiDSA;
         sa->free = pgpFreeSigDSA;
         sa->verify = pgpVerifySigDSA;
+        sa->mpis = 2;
+        break;
+    case PGPPUBKEYALGO_EDDSA:
+        sa->setmpi = pgpSetSigMpiEDDSA;
+        sa->free = pgpFreeSigEDDSA;
+        sa->verify = pgpVerifySigEDDSA;
         sa->mpis = 2;
         break;
     default:
