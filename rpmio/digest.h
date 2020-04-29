@@ -14,6 +14,7 @@ struct pgpDigAlg_s {
     setmpifunc setmpi;
     verifyfunc verify;
     freefunc free;
+    int curve;
     int mpis;
     void *data;			/*!< algorithm specific private data */
 };
@@ -42,7 +43,7 @@ struct pgpDigParams_s {
     pgpDigAlg alg;
 };
 
-pgpDigAlg pgpPubkeyNew(int algo);
+pgpDigAlg pgpPubkeyNew(int algo, int curve);
 
 pgpDigAlg pgpSignatureNew(int algo);
 
