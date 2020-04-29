@@ -780,7 +780,7 @@ static int pgpVerifyNULL(pgpDigAlg pgpkey, pgpDigAlg pgpsig,
 }
 
 /****************************** PGP **************************************/
-pgpDigAlg pgpPubkeyNew(int algo)
+pgpDigAlg pgpPubkeyNew(int algo, int curve)
 {
     pgpDigAlg ka = xcalloc(1, sizeof(*ka));;
 
