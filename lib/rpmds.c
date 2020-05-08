@@ -1229,7 +1229,7 @@ static const struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(FileDigests)", 		"4.6.0-1",
 	(		 RPMSENSE_EQUAL),
     N_("file digest algorithm is per package configurable") },
-#ifdef WITH_CAP
+#if WITH_CAP
     { "rpmlib(FileCaps)", 		"4.6.1-1",
 	(		 RPMSENSE_EQUAL),
     N_("support for POSIX.1e file capabilities") },

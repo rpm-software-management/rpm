@@ -6,7 +6,7 @@
 #include <stdarg.h>
 #include <pthread.h>
 #include <errno.h>
-#ifdef HAVE_GETOPT_H
+#if HAVE_GETOPT_H
 #include <getopt.h>
 #else
 extern char *optarg;

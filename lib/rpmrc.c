@@ -20,7 +20,7 @@
 #define __power_pc() 0
 #endif
 
-#ifdef HAVE_SYS_AUXV_H
+#if HAVE_SYS_AUXV_H
 #include <sys/auxv.h>
 #endif
 
@@ -962,7 +962,7 @@ static void read_auxv(void)
     static int oneshot = 1;
 
     if (oneshot) {
-#ifdef HAVE_GETAUXVAL
+#if HAVE_GETAUXVAL
 	rpmat.platform = (char *) getauxval(AT_PLATFORM);
 	if (!rpmat.platform)
 	    rpmat.platform = "";

@@ -9,7 +9,7 @@
 #ifdef ENABLE_OPENMP
 #include <omp.h>
 #endif
-#ifdef HAVE_ICONV
+#if HAVE_ICONV
 #include <iconv.h>
 #endif
 

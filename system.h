@@ -11,7 +11,7 @@
 #include "config.h"
 #endif
 
-#ifdef HAVE_SYS_PARAM_H
+#if HAVE_SYS_PARAM_H
 #include <sys/param.h>
 #endif
 
@@ -88,7 +88,7 @@ extern int fdatasync(int fildes);
 #endif
 
 /* Take care of NLS matters.  */
-#if ENABLE_NLS
+#ifdef ENABLE_NLS
 # include <locale.h>
 # include <libintl.h>
 # define _(Text) dgettext (PACKAGE, Text)
