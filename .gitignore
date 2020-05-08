@@ -35,7 +35,7 @@ Makefile.in.in
 /include
 /lib/rpmints.h
 /lib/stamp-h2
-/lib/tagtbl.C
+/lib/tagtbl.h
 /libtool
 /m4
 /macros
