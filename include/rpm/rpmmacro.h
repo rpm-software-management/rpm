@@ -1,0 +1,1 @@
+../../rpmio/rpmmacro.h

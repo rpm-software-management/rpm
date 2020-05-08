@@ -1,0 +1,42 @@
+librpmbuild_sources = files([
+  'build.c',
+  'files.c',
+  'misc.c',
+  'pack.c',
+  'parseChangelog.c',
+  'parseDescription.c',
+  'parseFiles.c',
+  'parseList.c',
+  'parsePolicies.c',
+  'parsePreamble.c',
+  'parsePrep.c',
+  'parseReqs.c',
+  'parseScript.c',
+  'parseSimpleScript.c',
+  'parseSpec.c',
+  'policies.c',
+  'reqprov.c',
+  'rpmfc.c',
+  'spec.c',
+])
+librpmbuild_extra_deps = []
+librpmbuild = library(
+  'rpmbuild',
+  librpmbuild_sources,
+  version : libversion,
+  link_with : [
+    libmisc,
+    librpm,
+    librpmio,
+  ],
+  dependencies : [
+    popt,
+    libcap,
+    libmagic,
+    openmp,
+    libelf,
+    libdw,
+    librpmbuild_extra_deps,
+  ],
+  install : true,
+)

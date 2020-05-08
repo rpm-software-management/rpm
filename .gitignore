@@ -32,7 +32,6 @@ Makefile.in.in
 /doc/librpm.doxy
 /doc/librpm/html
 /elfdeps
-/include
 /lib/rpmints.h
 /lib/stamp-h2
 /lib/tagtbl.h
@@ -81,3 +80,4 @@ Makefile.in.in
 /tests/rpmtests.dir
 /tests/rpmtests.log
 /tests/testing/
+/builddir/

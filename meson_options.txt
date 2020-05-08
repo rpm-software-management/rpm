@@ -1,0 +1,128 @@
+option(
+  'bzip2',
+  type : 'feature',
+  description : 'Build with bzip2 support',
+)
+option(
+  'lzma',
+  type : 'feature',
+  description : 'Build with lzma (xz/lz) support',
+)
+option(
+  'zstd',
+  type : 'feature',
+  description : 'Build with zstd support',
+)
+option(
+  'acl',
+  type : 'feature',
+  description : 'Build with ACL support',
+)
+option(
+  'cap',
+  type : 'feature',
+  description : 'Build with capability support',
+)
+option(
+  'crypto',
+  type : 'combo',
+  choices : [
+    'openssl',
+    'libgcrypt',
+  ],
+  value : 'libgcrypt',
+  description : 'The cryptographic library to use',
+)
+option(
+  'lua',
+  type : 'feature',
+  description : 'Build with LUA support',
+)
+option(
+  'vendor',
+  type : 'string',
+  value : 'redhat',
+  description : 'RPM vendor name',
+)
+option(
+  'bdb',
+  type : 'feature',
+  value : 'enabled',
+  description : 'Build with Berkeley DB database format support',
+)
+option(
+  'bdb-ro',
+  type : 'feature',
+  value : 'disabled',
+  description : 'Buildd with read-only Berkeley DB database format support',
+)
+option(
+  'ndb',
+  type : 'feature',
+  value : 'disabled',
+  description : 'Build with new database format support',
+)
+option(
+  'sqlite',
+  type : 'feature',
+  description : 'Build with SQLite database format support',
+)
+option(
+  'openmp',
+  type : 'feature',
+  description : 'Build with multithreading support',
+)
+option(
+  'imaevm',
+  type : 'feature',
+  value : 'disabled',
+  description : 'Build with imaevm support',
+)
+option(
+  'archive',
+  type : 'feature',
+  value : 'enabled',
+  description : 'Build rpm2archive',
+)
+option(
+  'doc',
+  type : 'feature',
+  value : 'disabled',
+  description : 'Build documentation',
+)
+option(
+  'plugins',
+  type : 'feature',
+  description : 'Build plugins',
+)
+option(
+  'plugin-audit',
+  type : 'feature',
+  description : 'Audit plugin',
+)
+option(
+  'plugin-ima',
+  type : 'feature',
+  description : 'IMA plugin',
+)
+option(
+  'plugin-inhibit',
+  type : 'feature',
+  description : 'Plugin to prevent system from shutdown during transaction',
+)
+option(
+  'plugin-prioreset',
+  type : 'feature',
+  value : 'disabled',
+  description : 'Plugin to fix issues with daemon priorities on SysV init',
+)
+option(
+  'plugin-selinux',
+  type : 'feature',
+  description : 'SELinux plugin',
+)
+option(
+  'plugin-syslog',
+  type : 'feature',
+  description : 'Syslog plugin',
+)
