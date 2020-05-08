@@ -98,7 +98,7 @@ int DSA_SIG_set0(DSA_SIG *sig, BIGNUM *r, BIGNUM *s)
 }
 #endif /* HAVE_DSA_SIG_SET0 */
 
-#ifndef HAVE_BN2BINPAD
+#ifndef HAVE_BN_BN2BINPAD
 static int BN_bn2binpad(const BIGNUM *a, unsigned char *to, int tolen)
 {
     int i;
@@ -117,7 +117,7 @@ static int BN_bn2binpad(const BIGNUM *a, unsigned char *to, int tolen)
 
     return tolen;
 }
-#endif /* HAVE_BN2BINPAD */
+#endif /* HAVE_BN_BN2BINPAD */
 
 struct DIGEST_CTX_s {
     rpmDigestFlags flags;	/*!< Bit(s) to control digest operation. */

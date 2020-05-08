@@ -356,8 +356,8 @@ AC_CHECK_LIB(crypto, RSA_set0_key, [
 )
 
 AC_CHECK_LIB(crypto, BN_bn2binpad, [
-    AC_DEFINE(HAVE_BN2BINPAD, 1, [Define to 1 if OpenSSL has BN_bn2binpad])
-    AC_SUBST(HAVE_BN2BINPAD, [1])
+    AC_DEFINE(HAVE_BN_BN2BINPAD, 1, [Define to 1 if OpenSSL has BN_bn2binpad])
+    AC_SUBST(HAVE_BN_BN2BINPAD, [1])
     ], []
 )
 
