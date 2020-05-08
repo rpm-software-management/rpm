@@ -1,5 +1,7 @@
 #!/bin/sh
 
+AWK=${AWK:-awk}
+
 cat << EOF
 static const struct headerTagTableEntry_s rpmTagTable[] = {
 EOF
