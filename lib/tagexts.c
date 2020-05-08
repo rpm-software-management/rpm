@@ -539,10 +539,9 @@ static int filerequireTag(Header h, rpmtd td, headerGetFlags hgflags)
 
 #if defined(ENABLE_NLS)
 extern int _nl_msg_cat_cntr;	/* XXX GNU gettext voodoo */
-#endif
 static const char * const language = "LANGUAGE";
-
 static const char * const _macro_i18ndomains = "%{?_i18ndomains}";
+#endif
 
 /**
  * Retrieve i18n text.
