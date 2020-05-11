@@ -26,11 +26,9 @@
 %__awk			@AWK@
 %__bzip2		@__BZIP2@
 %__cat			@__CAT@
-%__chgrp		@__CHGRP@
 %__chmod		@__CHMOD@
 %__chown		@__CHOWN@
 %__cp			@__CP@
-%__cpio			@__CPIO@
 %__file			@__FILE@
 %__gpg			@__GPG@
 %__grep			@__GREP@
@@ -41,20 +39,14 @@
 %__ln_s			@LN_S@
 %__lrzip		@__LRZIP@
 %__lzip			@__LZIP@
-# Deprecated, use %__xz instead.
-%__lzma			%__xz --format=lzma
 %__xz			@__XZ@
 %__make			@__MAKE@
 %__mkdir		@__MKDIR@
 %__mkdir_p		@__MKDIR_P@
 %__mv			@__MV@
 %__patch		@__PATCH@
-%__restorecon		@__RESTORECON@
 %__rm			@__RM@
-%__rsh			@__RSH@
 %__sed			@__SED@
-%__semodule		@__SEMODULE@
-%__ssh			@__SSH@
 %__tar			@__TAR@
 %__unzip		@__UNZIP@
 %__zstd			@__ZSTD@
@@ -73,11 +65,7 @@
 %__cpp			@CPP@
 %__cxx			@CXX@
 %__ld			@__LD@
-%__nm			@__NM@
-%__objcopy		@__OBJCOPY@
 %__objdump		@__OBJDUMP@
-%__ranlib		@RANLIB@
-%__remsh		%{__rsh}
 %__strip		@__STRIP@
 
 #==============================================================================
@@ -148,9 +136,6 @@
 
 #	The interpreter used for build scriptlets.
 %_buildshell		/bin/sh
-
-#	The path to the bzip2 executable (legacy, use %{__bzip2} instead).
-%_bzip2bin		%{__bzip2}
 
 #	The location of the rpm database file(s).
 %_dbpath		%{_var}/lib/rpm
@@ -227,9 +212,6 @@ package or when debugging this package.\
 %__global_requires_exclude_from		%{?_docdir:%{_docdir}}
 %__global_provides_exclude_from		%{?_docdir:%{_docdir}}
 
-#	The path to the gzip executable (legacy, use %{__gzip} instead).
-%_gzipbin		%{__gzip}
-
 #	The Unix time of the latest kept changelog entry in binary packages.
 #	Any older entry is not packaged in binary packages.
 %_changelog_trimtime	0
@@ -277,9 +259,6 @@ package or when debugging this package.\
 
 #	Path to top of build area.
 %_topdir		%{getenv:HOME}/rpmbuild
-
-#	The path to the unzip executable (legacy, use %{__unzip} instead).
-%_unzipbin		%{__unzip}
 
 #==============================================================================
 # ---- Optional rpmrc macros.
@@ -342,17 +321,6 @@ package or when debugging this package.\
 #	"all" means install all locale specific files.
 #	
 %_install_langs	all
-
-#	The value of CLASSPATH in build scriptlets (iff configured).
-#	
-#%_javaclasspath	all
-
-#	Import packaging conventions from jpackage.org (prefixed with _
-#	to avoid name collisions).
-#	
-%_javadir      %{_datadir}/java
-%_javadocdir   %{_datadir}/javadoc
-
 
 #	Set ModularityLabel: for packages being build
 #
