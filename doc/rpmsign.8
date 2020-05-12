@@ -9,6 +9,8 @@ rpmsign \- RPM Package Signing
 
 \fBrpm\fR \fB--delsign\fR \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
+\fBrpm\fR \fB--delfilesign\fR \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+
 .SS "rpmsign-options"
 .PP
 [\fb--rpmv3\fR]
@@ -30,6 +32,12 @@ packages with a MD5/SHA1 checksums cannot be signed in FIPS mode.
 .PP
 Delete all signatures from each package \fIPACKAGE_FILE\fR given.
 
+\fBrpm\fR \fB--delfilesign\fR \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+
+.PP
+Delete all IMA and fsverity file signatures from each package
+\fIPACKAGE_FILE\fR given.
+
 .SS "SIGN OPTIONS"
 .PP
 .TP
@@ -44,12 +52,23 @@ signature verifiable with rpm < 4.14 or other interoperability reasons.
 \fB--fskpath \fIKEY\fB\fR
 Used with \fB--signfiles\fR, use file signing key \fIKey\fR.
 .TP
+\fB--certpath \fICERT\fB\fR
+Used with \fB--signverity\fR, use file signing certificate \fICert\fR.
+.TP
 \fB--signfiles\fR
 Sign package files. The macro \fB%_binary_filedigest_algorithm\fR must
 be set to a supported algorithm before building the package. The
 supported algorithms are SHA1, SHA256, SHA384, and SHA512, which are
 represented as 2, 8, 9, and 10 respectively.  The file signing key (RSA
 private key) must be set before signing the package, it can be configured on the command line with \fB--fskpath\fR or the macro %_file_signing_key.
+.TP
+\fB--signverity\fR
+Sign package files with fsverity signatures. The file signing key (RSA
+private key) and the signing certificate must be set before signing
+the package. The key can be configured on the command line with
+\fB--fskpath\fR or the macro %_file_signing_key, and the cert can be
+configured on the command line with \fB--certpath\fR or the macro
+%_file_signing_cert.
 
 .SS "USING GPG TO SIGN PACKAGES"
 .PP
@@ -110,4 +129,5 @@ Jeff Johnson <jbj@redhat.com>
 Erik Troan <ewt@redhat.com>
 Panu Matilainen <pmatilai@redhat.com>
 Fionnuala Gunter <fin@linux.vnet.ibm.com>
+Jes Sorensen <jsorensen@fb.com>
 .fi
