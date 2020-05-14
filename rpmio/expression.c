@@ -15,6 +15,7 @@
 
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
+#include <rpm/rpmver.h>
 #include "rpmio/rpmmacro_internal.h"
 #include "debug.h"
 
@@ -30,6 +31,7 @@
 typedef enum { 
     VALUE_TYPE_INTEGER,
     VALUE_TYPE_STRING,
+    VALUE_TYPE_VERSION,
 } valueType;
 
 /**
@@ -67,11 +69,21 @@ static Value valueMakeString(char *s)
   return v;
 }
 
+static Value valueMakeVersion(char *s)
+{
+  Value v;
+
+  v = (Value) xmalloc(sizeof(*v));
+  v->type = VALUE_TYPE_VERSION;
+  v->data.s = s;
+  return v;
+}
+
 /**
  */
 static void valueSetInteger(Value v, int i)
 {
-  if (v->type == VALUE_TYPE_STRING)
+  if (v->type != VALUE_TYPE_INTEGER)
     v->data.s = _free(v->data.s);
   v->type = VALUE_TYPE_INTEGER;
   v->data.i = i;
@@ -81,7 +93,7 @@ static void valueSetInteger(Value v, int i)
  */
 static void valueSetString(Value v, char *s)
 {
-  if (v->type == VALUE_TYPE_STRING)
+  if (v->type != VALUE_TYPE_INTEGER)
     v->data.s = _free(v->data.s);
   v->type = VALUE_TYPE_STRING;
   v->data.s = s;
@@ -92,7 +104,7 @@ static void valueSetString(Value v, char *s)
 static void valueFree( Value v)
 {
   if (v) {
-    if (v->type == VALUE_TYPE_STRING)
+    if (v->type != VALUE_TYPE_INTEGER)
 	v->data.s = _free(v->data.s);
     free(v);
   }
@@ -104,7 +116,7 @@ static int boolifyValue(Value v)
 {
   if (v && v->type == VALUE_TYPE_INTEGER)
     return v->data.i != 0;
-  if (v && v->type == VALUE_TYPE_STRING)
+  if (v && (v->type == VALUE_TYPE_STRING || v->type == VALUE_TYPE_VERSION))
     return v->data.s[0] != '\0';
   return 0;
 }
@@ -117,6 +129,8 @@ static void valueDump(const char *msg, Value v, FILE *fp)
   if (v) {
     if (v->type == VALUE_TYPE_INTEGER)
       fprintf(fp, "INTEGER %d\n", v->data.i);
+    else if (v->type == VALUE_TYPE_VERSION)
+      fprintf(fp, "VERSION '%s'\n", v->data.s);
     else
       fprintf(fp, "STRING '%s'\n", v->data.s);
   } else
@@ -126,6 +140,7 @@ static void valueDump(const char *msg, Value v, FILE *fp)
 
 #define valueIsInteger(v) ((v)->type == VALUE_TYPE_INTEGER)
 #define valueIsString(v) ((v)->type == VALUE_TYPE_STRING)
+#define valueIsVersion(v) ((v)->type == VALUE_TYPE_VERSION)
 #define valueSameType(v1,v2) ((v1)->type == (v2)->type)
 
 
@@ -178,6 +193,7 @@ static void exprErr(const struct _parseState *state, const char *msg,
 #define TOK_LOGICAL_OR  18
 #define TOK_TERNARY_COND 19
 #define TOK_TERNARY_ALT 20
+#define TOK_VERSION	21
 
 #if defined(DEBUG_PARSER)
 typedef struct exprTokTableEntry {
@@ -189,6 +205,7 @@ ETTE_t exprTokTable[] = {
     { "EOF",	TOK_EOF },
     { "I",	TOK_INTEGER },
     { "S",	TOK_STRING },
+    { "V",	TOK_VERSION },
     { "+",	TOK_ADD },
     { "-",	TOK_MINUS },
     { "*",	TOK_MULTIPLY },
@@ -383,18 +400,20 @@ static int rdToken(ParseState state)
       exprErr(state, _("bare words are no longer supported, please use \"...\""), p+1);
       goto err;
 
-    } else if (*p == '\"') {
+    } else if (*p == '\"' || *p == '`') {
       char *temp;
       size_t ts;
+      char q = *p;
+      int qtok = (q == '\"') ? TOK_STRING : TOK_VERSION;
 
       p++;
       for (ts=0; p[ts]; ts++) {
 	if (p[ts] == '%' && expand)
 	  ts = skipMacro(p, ts + 1) - 1;
-	else if (p[ts] == '\"')
+	else if (p[ts] == q)
 	  break;
       }
-      if (p[ts] != '\"') {
+      if (p[ts] != q) {
         exprErr(state, _("unterminated string in expression"), p + ts + 1);
         goto err;
       }
@@ -402,8 +421,11 @@ static int rdToken(ParseState state)
       if (!temp)
 	goto err;
       p += ts;
-      token = TOK_STRING;
-      v = valueMakeString( temp );
+      token = qtok;
+      if (qtok == TOK_STRING)
+	v = valueMakeString(temp);
+      else
+	v = valueMakeVersion(temp);
 
     } else {
       exprErr(state, _("parse error in expression"), p+1);
@@ -453,6 +475,7 @@ static Value doPrimary(ParseState state)
 
   case TOK_INTEGER:
   case TOK_STRING:
+  case TOK_VERSION:
     v = state->tokenValue;
     if (rdToken(state))
       goto err;
@@ -681,27 +704,28 @@ static Value doRelational(ParseState state)
       }
       valueSetInteger(v1, r);
     } else {
+      int (*cmpfunc)(const char *s1, const char *s2) = valueIsString(v1) ? strcmp : rpmvercmp;
       const char * s1 = v1->data.s;
       const char * s2 = v2->data.s;
       int r = 0;
       switch (op) {
       case TOK_EQ:
-	r = (strcmp(s1,s2) == 0);
+	r = (cmpfunc(s1,s2) == 0);
 	break;
       case TOK_NEQ:
-	r = (strcmp(s1,s2) != 0);
+	r = (cmpfunc(s1,s2) != 0);
 	break;
       case TOK_LT:
-	r = (strcmp(s1,s2) < 0);
+	r = (cmpfunc(s1,s2) < 0);
 	break;
       case TOK_LE:
-	r = (strcmp(s1,s2) <= 0);
+	r = (cmpfunc(s1,s2) <= 0);
 	break;
       case TOK_GT:
-	r = (strcmp(s1,s2) > 0);
+	r = (cmpfunc(s1,s2) > 0);
 	break;
       case TOK_GE:
-	r = (strcmp(s1,s2) >= 0);
+	r = (cmpfunc(s1,s2) >= 0);
 	break;
       default:
 	break;
@@ -897,6 +921,7 @@ char *rpmExprStrFlags(const char *expr, int flags)
     rasprintf(&result, "%d", v->data.i);
   } break;
   case VALUE_TYPE_STRING:
+  case VALUE_TYPE_VERSION:
     result = xstrdup(v->data.s);
     break;
   default:
