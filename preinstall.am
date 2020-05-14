@@ -54,6 +54,10 @@ include/rpm/rpmbase64.h: rpmio/rpmbase64.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/rpmio/rpmbase64.h include/rpm/rpmbase64.h
 BUILT_SOURCES += include/rpm/rpmbase64.h
 CLEANFILES += include/rpm/rpmbase64.h
+include/rpm/rpmver.h: rpmio/rpmver.h include/rpm/$(dirstamp)
+	$(INSTALL_DATA) $(top_srcdir)/rpmio/rpmver.h include/rpm/rpmver.h
+BUILT_SOURCES += include/rpm/rpmver.h
+CLEANFILES += include/rpm/rpmver.h
 include/rpm/header.h: lib/header.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/lib/header.h include/rpm/header.h
 BUILT_SOURCES += include/rpm/header.h

@@ -68,7 +68,6 @@ lib/rpmscript.c
 lib/rpmtd.c
 lib/rpmte.c
 lib/rpmts.c
-lib/rpmvercmp.c
 lib/rpmvs.c
 lib/signature.c
 lib/tagexts.c
@@ -95,6 +94,7 @@ rpmio/rpmpgp.c
 rpmio/rpmsq.c
 rpmio/rpmstring.c
 rpmio/rpmsw.c
+rpmio/rpmvercmp.c
 rpmio/url.c
 sign/rpmgensig.c
 sign/rpmsignfiles.c
