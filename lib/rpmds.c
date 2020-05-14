@@ -32,7 +32,6 @@ struct rpmds_s {
     int32_t Count;		/*!< No. of elements */
     unsigned int instance;	/*!< From rpmdb instance? */
     int i;			/*!< Element index. */
-    int nopromote;		/*!< Don't promote Epoch: in rpmdsCompare()? */
     int nrefs;			/*!< Reference count. */
     int *ti;			/*!< Trigger index. */
 };
@@ -261,7 +260,6 @@ static rpmds rpmdsCreate(rpmstrPool pool,
     ds->Type = Type;
     ds->Count = Count;
     ds->instance = instance;
-    ds->nopromote = _rpmds_nopromote;
     ds->i = -1;
 
     return rpmdsLink(ds);
@@ -659,22 +657,12 @@ unsigned int rpmdsInstance(rpmds ds)
 
 int rpmdsNoPromote(const rpmds ds)
 {
-    int nopromote = 0;
-
-    if (ds != NULL)
-	nopromote = ds->nopromote;
-    return nopromote;
+    return 1;
 }
 
 int rpmdsSetNoPromote(rpmds ds, int nopromote)
 {
-    int onopromote = 0;
-
-    if (ds != NULL) {
-	onopromote = ds->nopromote;
-	ds->nopromote = nopromote;
-    }
-    return onopromote;
+    return 1;
 }
 
 rpm_color_t rpmdsColor(const rpmds ds)
@@ -748,7 +736,6 @@ static rpmds rpmdsDup(const rpmds ods)
     size_t nb;
     
     ds->i = ods->i;
-    ds->nopromote = ods->nopromote;
 
     nb = ds->Count * sizeof(*ds->N);
     ds->N = memcpy(xmalloc(nb), ods->N, nb);
@@ -1017,8 +1004,7 @@ void parseEVR(char * evr,
 }
 
 static inline int rpmdsCompareEVR(const char *AEVR, uint32_t AFlags,
-				  const char *BEVR, uint32_t BFlags,
-				  int nopromote)
+				  const char *BEVR, uint32_t BFlags)
 {
     const char *aE, *aV, *aR, *bE, *bV, *bR;
     char *aEVR = xstrdup(AEVR);
@@ -1033,10 +1019,7 @@ static inline int rpmdsCompareEVR(const char *AEVR, uint32_t AFlags,
     if (aE && *aE && bE && *bE)
 	sense = rpmvercmp(aE, bE);
     else if (aE && *aE && atol(aE) > 0) {
-	if (!nopromote) {
-	    sense = 0;
-	} else
-	    sense = 1;
+	sense = 1;
     } else if (bE && *bE && atol(bE) > 0)
 	sense = -1;
 
@@ -1110,7 +1093,7 @@ int rpmdsCompareIndex(rpmds A, int aix, rpmds B, int bix)
 	result = 1;
     } else {
 	/* Both AEVR and BEVR exist, compare [epoch:]version[-release]. */
-	result = rpmdsCompareEVR(AEVR, AFlags, BEVR, BFlags, B->nopromote);
+	result = rpmdsCompareEVR(AEVR, AFlags, BEVR, BFlags);
     }
 
 exit:
@@ -1123,7 +1106,7 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 }
 
 int rpmdsMatches(rpmstrPool pool, Header h, int prix,
-		 rpmds req, int selfevr, int nopromote)
+		 rpmds req, int selfevr)
 {
     rpmds provides;
     rpmTagVal tag = RPMTAG_PROVIDENAME;
@@ -1134,8 +1117,6 @@ int rpmdsMatches(rpmstrPool pool, Header h, int prix,
 	provides = rpmdsThisPool(pool, h, tag, RPMSENSE_EQUAL);
     else
 	provides = rpmdsNewPool(pool, h, tag, 0);
-
-    rpmdsSetNoPromote(provides, nopromote);
 
     /*
      * For a self-provide and indexed provide, we only need one comparison.
@@ -1161,17 +1142,17 @@ int rpmdsMatches(rpmstrPool pool, Header h, int prix,
 
 int rpmdsMatchesDep (const Header h, int ix, const rpmds req, int nopromote)
 {
-    return rpmdsMatches(NULL, h, ix, req, 0, nopromote);
+    return rpmdsMatches(NULL, h, ix, req, 0);
 }
 
 int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
 {
-    return rpmdsMatches(NULL, h, -1, req, 0, nopromote);
+    return rpmdsMatches(NULL, h, -1, req, 0);
 }
 
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 {
-    return rpmdsMatches(NULL, h, -1, req, 1, nopromote);
+    return rpmdsMatches(NULL, h, -1, req, 1);
 }
 
 /**

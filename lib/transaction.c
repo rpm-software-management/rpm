@@ -733,7 +733,7 @@ static void ensureOlder(rpmstrPool tspool, const rpmte p, const Header h)
 
     req = rpmdsSinglePool(tspool, RPMTAG_REQUIRENAME,
 			  rpmteN(p), rpmteEVR(p), reqFlags);
-    if (rpmdsMatches(tspool, h, -1, req, 1, _rpmds_nopromote) == 0) {
+    if (rpmdsMatches(tspool, h, -1, req, 1) == 0) {
 	char * altNEVR = headerGetAsString(h, RPMTAG_NEVRA);
 	rpmteAddProblem(p, RPMPROB_OLDPACKAGE, altNEVR, NULL,
 			headerGetInstance(h));
