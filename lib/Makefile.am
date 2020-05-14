@@ -36,7 +36,7 @@ librpm_la_SOURCES = \
 	rpmgi.h rpmgi.c rpminstall.c rpmts_internal.h \
 	rpmlead.c rpmlead.h rpmps.c rpmprob.c rpmrc.c \
 	rpmte.c rpmte_internal.h rpmts.c rpmfs.h rpmfs.c \
-	rpmvercmp.c signature.c signature.h transaction.c \
+	signature.c signature.h transaction.c \
 	verify.c rpmlock.c rpmlock.h misc.h relocation.c \
 	rpmscript.h rpmscript.c \
 	rpmchroot.c rpmchroot.h \
