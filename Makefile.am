@@ -78,6 +78,7 @@ pkginclude_HEADERS += rpmio/rpmfileutil.h
 pkginclude_HEADERS += rpmio/rpmutil.h
 pkginclude_HEADERS += rpmio/rpmkeyring.h
 pkginclude_HEADERS += rpmio/rpmbase64.h
+pkginclude_HEADERS += rpmio/rpmver.h
 
 pkginclude_HEADERS += lib/header.h
 pkginclude_HEADERS += lib/rpmdb.h
