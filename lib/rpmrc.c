@@ -34,7 +34,6 @@
 #include "rpmio/rpmlua.h"
 #include "rpmio/rpmio_internal.h"	/* XXX for rpmioSlurp */
 #include "lib/misc.h"
-#include "lib/rpmliblua.h"
 #include "lib/rpmug.h"
 
 #include "debug.h"
@@ -1685,7 +1684,7 @@ int rpmReadConfigFiles(const char * file, const char * target)
 
 #ifdef WITH_LUA
     /* Force Lua state initialization */
-    rpmLuaInit();
+    rpmluaGetGlobalState();
 #endif
     rc = 0;
 
@@ -1763,7 +1762,8 @@ void rpmFreeRpmrc(void)
     /* XXX doesn't really belong here but... */
     rpmFreeCrypto();
 #ifdef WITH_LUA
-    rpmLuaFree();
+    rpmlua lua = rpmluaGetGlobalState();
+    rpmluaFree(lua);
 #endif
 
     rpmrcCtxRelease(ctx);

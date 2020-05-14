@@ -26,6 +26,7 @@
 #include <rpm/rpmurl.h>
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmbase64.h>
+#include <rpm/rpmver.h>
 #include "rpmio/rpmhook.h"
 
 #include "rpmio/rpmlua.h"
@@ -688,6 +689,20 @@ void rpmluaInteractive(rpmlua _lua)
 /* ------------------------------------------------------------------ */
 /* Lua API */
 
+static int rpm_vercmp(lua_State *L)
+{
+    const char *v1, *v2;
+    int rc = 0;
+
+    v1 = luaL_checkstring(L, 1);
+    v2 = luaL_checkstring(L, 2);
+    if (v1 && v2) {
+	lua_pushinteger(L, rpmvercmp(v1, v2));
+	rc = 1;
+    }
+    return rc;
+}
+
 static int rpm_b64encode(lua_State *L)
 {
     size_t len;
@@ -1016,6 +1031,7 @@ static const luaL_Reg rpmlib[] = {
     {"next_file", rpm_next_file},
     {"execute", rpm_execute},
     {"redirect2null", rpm_redirect2null},
+    {"vercmp", rpm_vercmp},
     {NULL, NULL}
 };
 
