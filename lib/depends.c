@@ -223,8 +223,7 @@ static int addObsoleteErasures(rpmts ts, rpm_color_t tscolor, rpmte p)
 	     */
 	    match = (rpmdsEVR(obsoletes) == NULL);
 	    if (!match)
-		match = rpmdsMatches(tspool, oh, -1, obsoletes, 1,
-					 _rpmds_nopromote);
+		match = rpmdsMatches(tspool, oh, -1, obsoletes, 1);
 
 	    if (match) {
 		char * ohNEVRA = headerGetAsString(oh, RPMTAG_NEVRA);
@@ -558,8 +557,7 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep, dbiIndexSet *matc
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    /* Provide-indexes can't be used with nevr-only matching */
 	    int prix = (selfevr) ? -1 : rpmdbGetIteratorFileNum(mi);
-	    int match = rpmdsMatches(tspool, h, prix, dep, selfevr,
-					_rpmds_nopromote);
+	    int match = rpmdsMatches(tspool, h, prix, dep, selfevr);
 	    /* Ignore self-obsoletes and self-conflicts */
 	    if (match && (deptag == RPMTAG_OBSOLETENAME || deptag == RPMTAG_CONFLICTNAME)) {
 		unsigned int instance = headerGetInstance(h);

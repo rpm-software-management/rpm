@@ -299,25 +299,17 @@ int rpmdsIsWeak(rpmds ds);
 int rpmdsIsReverse(rpmds ds);
 
 /** \ingroup rpmds
- * Return current "Don't promote Epoch:" flag.
- *
- * This flag controls for Epoch: promotion when a dependency set is
- * compared. If the flag is set (for already installed packages), then
- * an unspecified value will be treated as Epoch: 0. Otherwise (for added
- * packages), the Epoch: portion of the comparison is skipped if the value
- * is not specified, i.e. an unspecified Epoch: is assumed to be equal
- * in dependency comparisons.
- *
- * @param ds		dependency set
- * @return		current "Don't promote Epoch:" flag
+ * Obsolete, do not use.
+ * @param ds		unused
+ * @return		1 always
  */
 int rpmdsNoPromote(const rpmds ds);
 
 /** \ingroup rpmds
- * Set "Don't promote Epoch:" flag.
- * @param ds		dependency set
- * @param nopromote	Should an unspecified Epoch: be treated as Epoch: 0?
- * @return		previous "Don't promote Epoch:" flag
+ * Obsolete, do not use.
+ * @param ds		unused
+ * @param nopromote	unused
+ * @return		1 always
  */
 int rpmdsSetNoPromote(rpmds ds, int nopromote);
 
@@ -388,7 +380,7 @@ int rpmdsCompare(const rpmds A, const rpmds B);
  * Compare package provides dependencies from header with a single dependency.
  * @param h		header
  * @param req		dependency set
- * @param nopromote	Don't promote Epoch: in comparison?
+ * @param nopromote	unused
  * @return		1 if any dependency overlaps, 0 otherwise
  */
 int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote);
@@ -398,7 +390,7 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote);
  * @param h		header
  * @param ix            index in header provides
  * @param req		dependency set
- * @param nopromote	Don't promote Epoch: in comparison?
+ * @param nopromote	unused
  * @return		1 if any dependency overlaps, 0 otherwise
  */
 int rpmdsMatchesDep (const Header h, int ix, const rpmds req, int nopromote);
@@ -407,7 +399,7 @@ int rpmdsMatchesDep (const Header h, int ix, const rpmds req, int nopromote);
  * Compare package name-version-release from header with a single dependency.
  * @param h		header
  * @param req		dependency set
- * @param nopromote	Don't promote Epoch: in comparison?
+ * @param nopromote	unused
  * @return		1 if dependency overlaps, 0 otherwise
  */
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote);

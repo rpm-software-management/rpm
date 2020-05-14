@@ -99,15 +99,6 @@ setVerbosity (PyObject * self, PyObject * arg)
     Py_RETURN_NONE;
 }
 
-static PyObject *
-setEpochPromote (PyObject * self, PyObject * arg)
-{
-    if (!PyArg_Parse(arg, "i", &_rpmds_nopromote))
-	return NULL;
-
-    Py_RETURN_NONE;
-}
-
 static PyObject * setStats (PyObject * self, PyObject * arg)
 {
     if (!PyArg_Parse(arg, "i", &_rpmts_stats))
@@ -231,8 +222,6 @@ static PyMethodDef rpmModuleMethods[] = {
       "but arguments are tuples of of strings for (epoch, version, release)"},
     { "setVerbosity", (PyCFunction) setVerbosity, METH_O,
       "setVerbosity(level) -- Set log level. See RPMLOG_* constants." },
-    { "setEpochPromote", (PyCFunction) setEpochPromote, METH_O,
-	"setEpochPromote(bool) -- Set if no epoch shall be treated as epoch 0" },
     { "setStats", (PyCFunction) setStats, METH_O,
       "setStats(bool) -- Set if timing stats are printed after a transaction."},
     { "reloadConfig", (PyCFunction) reloadConfig, METH_VARARGS|METH_KEYWORDS,
