@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <rpm/rpmtypes.h>
+#include <rpm/rpmlib.h>
 #include <rpm/header.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmds.h>
@@ -416,3 +417,23 @@ int headerConvert(Header h, int op)
     return rc;
 };
 
+int rpmVersionCompare(Header first, Header second)
+{
+    /* Missing epoch becomes zero here, which is what we want */
+    uint32_t epochOne = headerGetNumber(first, RPMTAG_EPOCH);
+    uint32_t epochTwo = headerGetNumber(second, RPMTAG_EPOCH);
+    int rc;
+
+    if (epochOne < epochTwo)
+	return -1;
+    else if (epochOne > epochTwo)
+	return 1;
+
+    rc = rpmvercmp(headerGetString(first, RPMTAG_VERSION),
+		   headerGetString(second, RPMTAG_VERSION));
+    if (rc)
+	return rc;
+
+    return rpmvercmp(headerGetString(first, RPMTAG_RELEASE),
+		     headerGetString(second, RPMTAG_RELEASE));
+}
