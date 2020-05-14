@@ -52,12 +52,6 @@ librpm_la_LIBADD = \
 	@WITH_ACL_LIB@ \
 	@LIBINTL@
 
-if WITH_LUA
-AM_CPPFLAGS += @LUA_CFLAGS@
-librpm_la_LIBADD += @LUA_LIBS@
-librpm_la_SOURCES += rpmliblua.c rpmliblua.h
-endif
-
 if BDB
 librpm_la_SOURCES += backend/db3.c
 if WITH_INTERNAL_DB
