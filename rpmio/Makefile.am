@@ -20,7 +20,7 @@ librpmio_la_SOURCES = \
 	argv.c base64.c digest.h digest.c expression.c macro.c \
 	rpmhook.c rpmio.c rpmlog.c rpmmalloc.c \
 	rpmpgp.c rpmsq.c rpmsw.c url.c \
-	rpmio_internal.h rpmhook.h rpmvercmp.c \
+	rpmio_internal.h rpmhook.h rpmvercmp.c rpmver.c \
 	rpmstring.c rpmfileutil.c rpmglob.c \
 	rpmkeyring.c rpmstrpool.c rpmmacro_internal.h
 
