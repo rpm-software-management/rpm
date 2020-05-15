@@ -960,104 +960,6 @@ int rpmdsSearch(rpmds ds, rpmds ods)
     }
     return i;
 }
-/**
- * Split EVR into epoch, version, and release components.
- * @param evr		[epoch:]version[-release] string
- * @retval *ep		pointer to epoch
- * @retval *vp		pointer to version
- * @retval *rp		pointer to release
- */
-static
-void parseEVR(char * evr,
-		const char ** ep,
-		const char ** vp,
-		const char ** rp)
-{
-    const char *epoch;
-    const char *version;		/* assume only version is present */
-    const char *release;
-    char *s, *se;
-
-    s = evr;
-    while (*s && risdigit(*s)) s++;	/* s points to epoch terminator */
-    se = strrchr(s, '-');		/* se points to version terminator */
-
-    if (*s == ':') {
-	epoch = evr;
-	*s++ = '\0';
-	version = s;
-	if (*epoch == '\0') epoch = "0";
-    } else {
-	epoch = NULL;	/* XXX disable epoch compare if missing */
-	version = evr;
-    }
-    if (se) {
-	*se++ = '\0';
-	release = se;
-    } else {
-	release = NULL;
-    }
-
-    if (ep) *ep = epoch;
-    if (vp) *vp = version;
-    if (rp) *rp = release;
-}
-
-static inline int rpmdsCompareEVR(const char *AEVR, uint32_t AFlags,
-				  const char *BEVR, uint32_t BFlags)
-{
-    const char *aE, *aV, *aR, *bE, *bV, *bR;
-    char *aEVR = xstrdup(AEVR);
-    char *bEVR = xstrdup(BEVR);
-    int sense = 0;
-    int result = 0;
-
-    parseEVR(aEVR, &aE, &aV, &aR);
-    parseEVR(bEVR, &bE, &bV, &bR);
-
-    /* Compare {A,B} [epoch:]version[-release] */
-    if (aE && *aE && bE && *bE)
-	sense = rpmvercmp(aE, bE);
-    else if (aE && *aE && atol(aE) > 0) {
-	sense = 1;
-    } else if (bE && *bE && atol(bE) > 0)
-	sense = -1;
-
-    if (sense == 0) {
-	sense = rpmvercmp(aV, bV);
-	if (sense == 0) {
-	    if (aR && *aR && bR && *bR) {
-		sense = rpmvercmp(aR, bR);
-	    } else {
-		/* always matches if the side with no release has SENSE_EQUAL */
-		if ((aR && *aR && (BFlags & RPMSENSE_EQUAL)) ||
-		    (bR && *bR && (AFlags & RPMSENSE_EQUAL))) {
-		    aEVR = _free(aEVR);
-		    bEVR = _free(bEVR);
-		    result = 1;
-		    goto exit;
-		}
-	    }
-	}
-    }
-
-    /* Detect overlap of {A,B} range. */
-    if (sense < 0 && ((AFlags & RPMSENSE_GREATER) || (BFlags & RPMSENSE_LESS))) {
-	result = 1;
-    } else if (sense > 0 && ((AFlags & RPMSENSE_LESS) || (BFlags & RPMSENSE_GREATER))) {
-	result = 1;
-    } else if (sense == 0 &&
-	(((AFlags & RPMSENSE_EQUAL) && (BFlags & RPMSENSE_EQUAL)) ||
-	 ((AFlags & RPMSENSE_LESS) && (BFlags & RPMSENSE_LESS)) ||
-	 ((AFlags & RPMSENSE_GREATER) && (BFlags & RPMSENSE_GREATER)))) {
-	result = 1;
-    }
-
-exit:
-    free(aEVR);
-    free(bEVR);
-    return result;
-}
 
 int rpmdsCompareIndex(rpmds A, int aix, rpmds B, int bix)
 {
@@ -1093,7 +995,13 @@ int rpmdsCompareIndex(rpmds A, int aix, rpmds B, int bix)
 	result = 1;
     } else {
 	/* Both AEVR and BEVR exist, compare [epoch:]version[-release]. */
-	result = rpmdsCompareEVR(AEVR, AFlags, BEVR, BFlags);
+	rpmver av = rpmverParse(AEVR);
+	rpmver bv = rpmverParse(BEVR);
+
+	result = rpmverOverlap(av, AFlags, bv, BFlags);
+
+	rpmverFree(av);
+	rpmverFree(bv);
     }
 
 exit:
