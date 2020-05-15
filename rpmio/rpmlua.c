@@ -691,14 +691,24 @@ void rpmluaInteractive(rpmlua _lua)
 
 static int rpm_vercmp(lua_State *L)
 {
-    const char *v1, *v2;
+    const char *s1 = luaL_checkstring(L, 1);
+    const char *s2 = luaL_checkstring(L, 2);
     int rc = 0;
 
-    v1 = luaL_checkstring(L, 1);
-    v2 = luaL_checkstring(L, 2);
-    if (v1 && v2) {
-	lua_pushinteger(L, rpmvercmp(v1, v2));
-	rc = 1;
+    if (s1 && s2) {
+	rpmver v1 = rpmverParse(luaL_checkstring(L, 1));
+	rpmver v2 = rpmverParse(luaL_checkstring(L, 2));
+	if (v1 && v2) {
+	    lua_pushinteger(L, rpmverCmp(v1, v2));
+	    rc = 1;
+	} else {
+	    if (v1 == NULL)
+		luaL_argerror(L, 1, "invalid version ");
+	    if (v1 == NULL)
+		luaL_argerror(L, 2, "invalid version ");
+	}
+	rpmverFree(v1);
+	rpmverFree(v2);
     }
     return rc;
 }
