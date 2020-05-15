@@ -155,8 +155,29 @@ h['release'] = r
 h['epoch'] = e
 myprint(rpm.labelCompare((str(h['epoch']), h['version'], h['release']),
 			 (str(e), v, r)))
+myprint(rpm.labelCompare((None, '1.0', '1'),
+			 (None, '1.1', '2')))
+myprint(rpm.labelCompare((None, '1.0', '1'),
+			 (None, '1.1', '1')))
+myprint(rpm.labelCompare((None, '1.1', '1'),
+			 (None, '1.0', '1')))
+myprint(rpm.labelCompare((None, '1.1', '1'),
+			 (None, '1.0', '2')))
+myprint(rpm.labelCompare(('1', '1.0', '1'),
+			 ('0', '1.0', '1')))
+myprint(rpm.labelCompare(('0', '1.0', '1'),
+			 ('1', '1.0', '1')))
+myprint(rpm.labelCompare(('0', '1.0', '1'),
+			 (None, '1.0', '1')))
 ],
-[0]
+[0
+-1
+-1
+1
+1
+1
+-1
+0]
 )
 
 RPMPY_TEST([vfyflags API],[
