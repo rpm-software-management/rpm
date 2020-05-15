@@ -37,6 +37,9 @@
 /** \defgroup	rpmstrpool	String Pool API.
     \brief How to store strings in pools.
  */
+/** \defgroup	rpmver		RPM version API.
+    \brief Rpm version comparison API.
+ */
 /** @} */
 /** \defgroup install (un)Installing packages:
  *
