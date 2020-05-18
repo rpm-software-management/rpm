@@ -8,13 +8,86 @@
 #include "build/rpmbuild_internal.h"
 #include "debug.h"
 
+static int addLinesFromFile(rpmSpec spec, const char * const fn, rpmTagVal tag)
+{
+    int nlines = 0;
+    int flags = STRIP_COMMENTS | STRIP_TRAILINGSPACE | ALLOW_EMPTY;
+    ARGV_t argv = NULL;
+
+    nlines = readManifest(spec, fn, tag == RPMTAG_SOURCE ? "%sourcelist" : "%patchlist", flags, &argv, NULL);
+
+    for (ARGV_t av = argv; *av; av++) {
+	addSource(spec, 0, *av, tag);
+    }
+
+    argvFree(argv);
+
+    if (nlines == 0) {
+	rpmlog(RPMLOG_WARNING, _("Empty %s file %s\n"),
+	       tag == RPMTAG_SOURCE ? "%sourcelist" : "%patchlist",
+	       fn);
+    }
+
+    return (nlines < 0) ? RPMRC_FAIL : RPMRC_OK;
+}
 
 int parseList(rpmSpec spec, const char *name, rpmTagVal tag)
 {
     int res = PART_ERROR;
     ARGV_t lst = NULL;
+    int rc, argc = 0;
+    int arg;
+    const char **argv = NULL;
+    poptContext optCon = NULL;
+    struct poptOption optionsTable[] = {
+	{ NULL, 'f', POPT_ARG_STRING, NULL, 'f', NULL, NULL},
+	{ 0, 0, 0, 0, 0, NULL, NULL}
+    };
+    char * file = NULL;
 
-    /* There are no options to %patchlist and %sourcelist */
+    if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
+	rpmlog(RPMLOG_ERR, _("line %d: Error parsing %%%s: %s\n"),
+	       spec->lineNum, name, poptStrerror(rc));
+	goto exit;
+    }
+
+    optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
+    while ((arg = poptGetNextOpt(optCon)) > 0) {
+
+	char * filename = poptGetOptArg(optCon);
+	if (!filename) {
+	    rpmlog(RPMLOG_ERR,
+		   _("line %d: \"%%%s -f\" requires an argument.\n"),
+		   spec->lineNum, name);
+	    goto exit;
+	}
+
+	addSource(spec, 0, filename, RPMTAG_SOURCE);
+
+	if (filename[0] == '/')
+	    file = rpmGetPath(filename, NULL);
+	else
+	    file = rpmGetPath("%{_sourcedir}/", filename, NULL);
+
+	res = addLinesFromFile(spec, file, tag);
+	if (res < 0) {
+	    rpmlog(RPMLOG_ERR, _("line %d: %%%s: Error parsing %s\n"),
+		   spec->lineNum, name, filename);
+	    goto exit;
+	}
+	free(filename);
+    }
+
+    if (arg < -1) {
+	rpmlog(RPMLOG_ERR, _("line %d: Bad option %s: %s\n"),
+	       spec->lineNum,
+	       poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
+	       spec->line);
+	goto exit;
+    }
+
+    lst = argvNew();
+
     if ((res = parseLines(spec, (STRIP_TRAILINGSPACE | STRIP_COMMENTS),
 			  &lst, NULL)) == PART_ERROR) {
 	goto exit;
@@ -27,6 +100,9 @@ int parseList(rpmSpec spec, const char *name, rpmTagVal tag)
     }
 
 exit:
+    free(file);
     argvFree(lst);
+    free(argv);
+    poptFreeContext(optCon);
     return res;
 }
