@@ -15,6 +15,7 @@
 
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
+#include <rpm/rpmver.h>
 #include "rpmio/rpmmacro_internal.h"
 #include "debug.h"
 
@@ -30,6 +31,7 @@
 typedef enum { 
     VALUE_TYPE_INTEGER,
     VALUE_TYPE_STRING,
+    VALUE_TYPE_VERSION,
 } valueType;
 
 /**
@@ -40,6 +42,7 @@ typedef struct _value {
   union {
     char *s;
     int i;
+    rpmver v;
   } data;
 } *Value;
 
@@ -55,10 +58,17 @@ static int valueCmpString(Value v1, Value v2)
     return strcmp(v1->data.s, v2->data.s);
 }
 
+static int valueCmpVersion(Value v1, Value v2)
+{
+    return rpmverCmp(v1->data.v, v2->data.v);
+}
+
 static void valueReset(Value v)
 {
   if (v->type == VALUE_TYPE_STRING)
     v->data.s = _free(v->data.s);
+  else if (v->type == VALUE_TYPE_VERSION)
+    v->data.v = rpmverFree(v->data.v);
 }
 
 /**
@@ -85,6 +95,18 @@ static Value valueMakeString(char *s)
   return v;
 }
 
+static Value valueMakeVersion(const char *s)
+{
+  Value v = NULL;
+  rpmver rv = rpmverParse(s);
+
+  if (rv) {
+    v = (Value) xmalloc(sizeof(*v));
+    v->type = VALUE_TYPE_VERSION;
+    v->data.v = rv;
+  }
+  return v;
+}
 /**
  */
 static void valueSetInteger(Value v, int i)
@@ -141,6 +163,7 @@ static void valueDump(const char *msg, Value v, FILE *fp)
 
 #define valueIsInteger(v) ((v)->type == VALUE_TYPE_INTEGER)
 #define valueIsString(v) ((v)->type == VALUE_TYPE_STRING)
+#define valueIsVersion(v) ((v)->type == VALUE_TYPE_VERSION)
 #define valueSameType(v1,v2) ((v1)->type == (v2)->type)
 
 
@@ -193,6 +216,7 @@ static void exprErr(const struct _parseState *state, const char *msg,
 #define TOK_LOGICAL_OR  18
 #define TOK_TERNARY_COND 19
 #define TOK_TERNARY_ALT 20
+#define TOK_VERSION	21
 
 #if defined(DEBUG_PARSER)
 typedef struct exprTokTableEntry {
@@ -221,6 +245,7 @@ ETTE_t exprTokTable[] = {
     { "||",	TOK_LOGICAL_OR },
     { "?",	TOK_TERNARY_COND },
     { ":",	TOK_TERNARY_ALT},
+    { "V",	TOK_VERSION},
     { NULL, 0 }
 };
 
@@ -394,15 +419,19 @@ static int rdToken(ParseState state)
       v = valueMakeInteger(atoi(temp));
       free(temp);
 
-    } else if (risalpha(*p)) {
-      exprErr(state, _("bare words are no longer supported, please use \"...\""), p+1);
-      goto err;
-
-    } else if (*p == '\"') {
+    } else if (*p == '\"' || (*p == 'v' && *(p+1) == '\"')) {
       char *temp;
       size_t ts;
+      int qtok;
 
-      p++;
+      if (*p == 'v') {
+	qtok = TOK_VERSION;
+	p += 2;
+      } else {
+	qtok = TOK_STRING;
+	p++;
+      }
+
       for (ts=0; p[ts]; ts++) {
 	if (p[ts] == '%' && expand)
 	  ts = skipMacro(p, ts + 1) - 1;
@@ -418,7 +447,19 @@ static int rdToken(ParseState state)
 	goto err;
       p += ts;
       token = TOK_STRING;
-      v = valueMakeString( temp );
+      if (qtok == TOK_STRING) {
+	v = valueMakeString(temp);
+      } else {
+	v = valueMakeVersion(temp);
+        free(temp); /* version doesn't take ownership of the string */
+        if (v == 0) {
+	  exprErr(state, _("invalid version"), p+1);
+	  goto err;
+	}
+      }
+    } else if (risalpha(*p)) {
+      exprErr(state, _("bare words are no longer supported, please use \"...\""), p+1);
+      goto err;
 
     } else {
       exprErr(state, _("parse error in expression"), p+1);
@@ -674,6 +715,8 @@ static Value doRelational(ParseState state)
 
     if (valueIsInteger(v1))
       cmp = valueCmpInteger;
+    else if (valueIsVersion(v1))
+      cmp = valueCmpVersion;
     else
       cmp = valueCmpString;
 

@@ -465,6 +465,7 @@ AT_KEYWORDS([macros])
 AT_CHECK([[
 runroot rpm --define "aaa hello" --eval '%[%aaa]'
 runroot rpm --eval '%[%{foo]'
+runroot rpm --eval '%[v""]'
 ]],
 [1],
 [],
@@ -472,7 +473,27 @@ runroot rpm --eval '%[%{foo]'
 error:                                                         ^
 error: expanded string: hello
 error: Unterminated {: {foo 
+error: invalid version: v""
+error:                    ^
 ])
+AT_CLEANUP
+
+AT_SETUP([expression version comparison])
+AT_KEYWORDS([macros])
+AT_CHECK([[
+runroot rpm \
+    --eval '%[v"1.0" == v"1.0"]' \
+    --eval '%[v"1.0~rc" < v"1.0"]' \
+    --eval '%[v"1.0~rc" > v"1.0"]' \
+    --eval '%[v"1.0-rc" > v"1.0"]' \
+]],
+[0],
+[1
+1
+0
+1
+],
+[])
 AT_CLEANUP
 
 AT_SETUP([simple lua --eval])

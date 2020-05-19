@@ -241,15 +241,18 @@ newline is deleted). Note the 2nd % needed to escape the arguments to
 
 Expression expansion can be performed using "%[expression]".  An
 expression consists of terms that can be combined using
-operators.  Rpm supports two kinds of terms, numbers made up
-from digits and strings enclosed in double quotes.  Rpm will
-expand macros when evaluating terms.
+operators.  Rpm supports three kinds of terms, numbers made up
+from digits, strings enclosed in double quotes (eg "somestring") and
+versions enclosed in double quotes preceded by v (eg v"3:1.2-1").
+Rpm will expand macros when evaluating terms.
 
 You can use the standard operators to combine terms: logical
 operators &&, ||, !, relational operators !=, ==, <, > , <=, >=,
 arithmetic operators +, -, /, *, the ternary operator ? :, and
 parentheses.  For example, "%[ 3 + 4 * (1 + %two) ]" will expand
-to "15" if "%two" expands to "2".
+to "15" if "%two" expands to "2". Version terms are compared using
+rpm version ([epoch:]version[-release]) comparison algorithm,
+rather than regular string comparison.
 
 Note that the "%[expression]" expansion is different to the
 "%{expr:expression}" macro.  With the latter, the macros in the
