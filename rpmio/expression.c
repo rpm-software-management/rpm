@@ -55,6 +55,12 @@ static int valueCmpString(Value v1, Value v2)
     return strcmp(v1->data.s, v2->data.s);
 }
 
+static void valueReset(Value v)
+{
+  if (v->type == VALUE_TYPE_STRING)
+    v->data.s = _free(v->data.s);
+}
+
 /**
  */
 static Value valueMakeInteger(int i)
@@ -83,8 +89,7 @@ static Value valueMakeString(char *s)
  */
 static void valueSetInteger(Value v, int i)
 {
-  if (v->type == VALUE_TYPE_STRING)
-    v->data.s = _free(v->data.s);
+  valueReset(v);
   v->type = VALUE_TYPE_INTEGER;
   v->data.i = i;
 }
@@ -93,8 +98,7 @@ static void valueSetInteger(Value v, int i)
  */
 static void valueSetString(Value v, char *s)
 {
-  if (v->type == VALUE_TYPE_STRING)
-    v->data.s = _free(v->data.s);
+  valueReset(v);
   v->type = VALUE_TYPE_STRING;
   v->data.s = s;
 }
@@ -104,8 +108,7 @@ static void valueSetString(Value v, char *s)
 static void valueFree( Value v)
 {
   if (v) {
-    if (v->type == VALUE_TYPE_STRING)
-	v->data.s = _free(v->data.s);
+    valueReset(v);
     free(v);
   }
 }
