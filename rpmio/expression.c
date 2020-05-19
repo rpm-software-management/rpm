@@ -43,6 +43,18 @@ typedef struct _value {
   } data;
 } *Value;
 
+typedef int (*valueCmp)(Value v1, Value v2);
+
+static int valueCmpInteger(Value v1, Value v2)
+{
+    return v1->data.i - v2->data.i;
+}
+
+static int valueCmpString(Value v1, Value v2)
+{
+    return strcmp(v1->data.s, v2->data.s);
+}
+
 /**
  */
 static Value valueMakeInteger(int i)
@@ -640,6 +652,8 @@ static Value doRelational(ParseState state)
 
   while (state->nextToken >= TOK_EQ && state->nextToken <= TOK_GE) {
     int op = state->nextToken;
+    int r = 0;
+    valueCmp cmp;
 
     if (rdToken(state))
       goto err;
@@ -655,59 +669,34 @@ static Value doRelational(ParseState state)
       goto err;
     }
 
-    if (valueIsInteger(v1)) {
-      int i1 = v1->data.i, i2 = v2->data.i, r = 0;
-      switch (op) {
-      case TOK_EQ:
-	r = (i1 == i2);
-	break;
-      case TOK_NEQ:
-	r = (i1 != i2);
-	break;
-      case TOK_LT:
-	r = (i1 < i2);
-	break;
-      case TOK_LE:
-	r = (i1 <= i2);
-	break;
-      case TOK_GT:
-	r = (i1 > i2);
-	break;
-      case TOK_GE:
-	r = (i1 >= i2);
-	break;
-      default:
-	break;
-      }
-      valueSetInteger(v1, r);
-    } else {
-      const char * s1 = v1->data.s;
-      const char * s2 = v2->data.s;
-      int r = 0;
-      switch (op) {
-      case TOK_EQ:
-	r = (strcmp(s1,s2) == 0);
-	break;
-      case TOK_NEQ:
-	r = (strcmp(s1,s2) != 0);
-	break;
-      case TOK_LT:
-	r = (strcmp(s1,s2) < 0);
-	break;
-      case TOK_LE:
-	r = (strcmp(s1,s2) <= 0);
-	break;
-      case TOK_GT:
-	r = (strcmp(s1,s2) > 0);
-	break;
-      case TOK_GE:
-	r = (strcmp(s1,s2) >= 0);
-	break;
-      default:
-	break;
-      }
-      valueSetInteger(v1, r);
+    if (valueIsInteger(v1))
+      cmp = valueCmpInteger;
+    else
+      cmp = valueCmpString;
+
+    switch (op) {
+    case TOK_EQ:
+      r = (cmp(v1,v2) == 0);
+      break;
+    case TOK_NEQ:
+      r = (cmp(v1,v2) != 0);
+      break;
+    case TOK_LT:
+      r = (cmp(v1,v2) < 0);
+      break;
+    case TOK_LE:
+      r = (cmp(v1,v2) <= 0);
+      break;
+    case TOK_GT:
+      r = (cmp(v1,v2) > 0);
+      break;
+    case TOK_GE:
+      r = (cmp(v1,v2) >= 0);
+      break;
+    default:
+      break;
     }
+    valueSetInteger(v1, r);
   }
 
   if (v2) valueFree(v2);
