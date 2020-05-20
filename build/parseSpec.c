@@ -291,7 +291,7 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
 }
 
 /* Return zero on success, 1 if we need to read more and -1 on errors. */
-static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi, int strip)
+static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi, int strip, int raw)
 {
     /* Expand next line from file into line buffer */
     if (!(spec->nextline && *spec->nextline)) {
@@ -309,6 +309,9 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi, int strip)
 	}
 	spec->lbuf[spec->lbufOff] = '\0';
 	ofi->readPtr = from;
+
+	if (raw)
+	    goto after_macro_handling;
 
 	/* Check if we need another line before expanding the buffer. */
 	for (const char *p = spec->lbuf; *p; p++) {
@@ -343,11 +346,11 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi, int strip)
 	    spec->nextline = "";
 	    return 1;
 	}
-	spec->lbufOff = 0;
 
 	if (expandMacrosInSpecBuf(spec, strip))
 	    return -1;
-
+after_macro_handling:
+	spec->lbufOff = 0;
 	spec->nextline = spec->lbuf;
     }
     return 0;
@@ -446,7 +449,7 @@ do { \
 } while (0)
 
 
-int readLine(rpmSpec spec, int strip)
+static int _readLine(rpmSpec spec, int strip, int raw)
 {
     char *s;
     int match = 0;
@@ -476,7 +479,7 @@ retry:
 	ofi = spec->fileStack;
 
 	/* Copy next file line into the spec line buffer */
-	rc = copyNextLineFromOFI(spec, ofi, strip);
+	rc = copyNextLineFromOFI(spec, ofi, strip, raw);
 	if (rc > 0) {
 	    if (startLine == 0)
 		startLine = spec->lineNum;
@@ -489,7 +492,7 @@ retry:
     lineType = copyNextLineFinish(spec, strip);
     s = spec->line;
     SKIPSPACE(s);
-    if (!lineType)
+    if (raw || !lineType)
 	goto after_classification;
 
     /* check ordering of the conditional */
@@ -591,6 +594,10 @@ after_classification:
 
     /* FIX: spec->readStack->next should be dependent */
     return 0;
+}
+
+int readLine(rpmSpec spec, int strip) {
+    return _readLine(spec, strip, 0);
 }
 
 int parseLines(rpmSpec spec, int strip, ARGV_t *avp, StringBuf *sbp)
