@@ -860,22 +860,23 @@ static int parseEmpty(rpmSpec spec, int prevParsePart)
     int nextPart, rc;
     char *line;
 
-    line = spec->line + sizeof("%end") - 1;
-    SKIPSPACE(line);
-    if (line[0] != '\0') {
-	rpmlog(RPMLOG_ERR,
-	    _("line %d: %%end doesn't take any arguments: %s\n"),
-	    spec->lineNum, spec->line);
-	goto exit;
-    }
+    if (!strncmp(spec->line, "%end", 4)) {
+	line = spec->line + sizeof("%end") - 1;
+	SKIPSPACE(line);
+	if (line[0] != '\0') {
+	    rpmlog(RPMLOG_ERR,
+		   _("line %d: %%end doesn't take any arguments: %s\n"),
+		   spec->lineNum, spec->line);
+	    goto exit;
+	}
 
-    if (prevParsePart == PART_EMPTY) {
-	rpmlog(RPMLOG_ERR,
-	    _("line %d: %%end not expected here, no section to close: %s\n"),
-	    spec->lineNum, spec->line);
-	goto exit;
+	if (prevParsePart == PART_EMPTY) {
+	    rpmlog(RPMLOG_ERR,
+		   _("line %d: %%end not expected here, no section to close: %s\n"),
+		   spec->lineNum, spec->line);
+	    goto exit;
+	}
     }
-
     if ((rc = readLine(spec, STRIP_TRAILINGSPACE|STRIP_COMMENTS)) > 0) {
 	nextPart = PART_NONE;
     } else if (rc < 0) {
