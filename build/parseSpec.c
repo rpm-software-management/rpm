@@ -150,6 +150,22 @@ static OFI_t * pushOFI(rpmSpec spec, const char *fn)
     return spec->fileStack;
 }
 
+static OFI_t * pushStrOFI(rpmSpec spec, const char *fn, const char * data)
+{
+    OFI_t *ofi = xcalloc(1, sizeof(*ofi));
+
+    ofi->fp = NULL;
+    ofi->fileName = xstrdup(fn);
+    ofi->lineNum = 0;
+    ofi->readBuf = xstrdup(data);
+    ofi->readBufLen = strlen(ofi->readBuf) + 1;
+    ofi->readPtr = ofi->readBuf;
+    ofi->next = spec->fileStack;
+    rpmPushMacroFlags(spec->macros, "__file_name", NULL, ofi->fileName, RMIL_SPEC, RPMMACRO_LITERAL);
+    spec->fileStack = ofi;
+    return spec->fileStack;
+}
+
 /* Pop from spec's file stack */
 static OFI_t * popOFI(rpmSpec spec)
 {
@@ -384,7 +400,7 @@ static int readLineFromOFI(rpmSpec spec, OFI_t *ofi)
 {
 retry:
     /* Make sure the current file is open */
-    if (ofi->fp == NULL) {
+    if (ofi->fp == NULL && !ofi->readPtr) {
 	ofi->fp = fopen(ofi->fileName, "r");
 	if (ofi->fp == NULL) {
 	    rpmlog(RPMLOG_ERR, _("Unable to open %s: %s\n"),
@@ -396,7 +412,7 @@ retry:
 
     /* Make sure we have something in the read buffer */
     if (!(ofi->readPtr && *(ofi->readPtr))) {
-	if (getline(&ofi->readBuf, &ofi->readBufLen, ofi->fp) <= 0) {
+	if (!ofi->fp || getline(&ofi->readBuf, &ofi->readBufLen, ofi->fp) <= 0) {
 	    /* EOF, remove this file from the stack */
 	    ofi = popOFI(spec);
 
