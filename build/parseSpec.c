@@ -887,29 +887,20 @@ exit:
 }
 
 static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
-			 const char *buildRoot, int recursing)
+			 const char *buildRoot, int recursing);
+
+static rpmRC parseSpecSection(rpmSpec *specptr, int secondary)
 {
+    rpmSpec spec = *specptr;
     int parsePart = PART_PREAMBLE;
     int prevParsePart = PART_EMPTY;
     int storedParsePart;
     int initialPackage = 1;
-    rpmSpec spec;
-    
-    /* Set up a new Spec structure with no packages. */
-    spec = newSpec();
 
-    spec->specFile = rpmGetPath(specFile, NULL);
-    pushOFI(spec, spec->specFile);
-    /* If buildRoot not specified, use default %{buildroot} */
-    if (buildRoot) {
-	spec->buildRoot = xstrdup(buildRoot);
-    } else {
-	spec->buildRoot = rpmGetPath("%{?buildroot:%{buildroot}}", NULL);
+    if (secondary) {
+	initialPackage = 0;
+	parsePart = PART_EMPTY;
     }
-    rpmPushMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
-    rpmPushMacro(NULL, "_licensedir", NULL, "%{_defaultlicensedir}", RMIL_SPEC);
-    spec->recursing = recursing;
-    spec->flags = flags;
 
     /* All the parse*() functions expect to have a line pre-read */
     /* in the spec's line buffer.  Except for parsePreamble(),   */
@@ -1021,7 +1012,7 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 		if (!rpmMachineScore(RPM_MACHTABLE_BUILDARCH, spec->BANames[x]))
 		    continue;
 		rpmPushMacro(NULL, "_target_cpu", NULL, spec->BANames[x], RMIL_RPMRC);
-		spec->BASpecs[index] = parseSpec(specFile, flags, buildRoot, 1);
+		spec->BASpecs[index] = parseSpec(spec->specFile, spec->flags, spec->buildRoot, 1);
 		if (spec->BASpecs[index] == NULL) {
 			spec->BACount = index;
 			goto errxit;
@@ -1050,18 +1041,11 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 		rpmSpec nspec = spec->BASpecs[0];
 		spec->BASpecs = _free(spec->BASpecs);
 		rpmSpecFree(spec);
-		spec = nspec;
+		*specptr = spec = nspec;
 	    }
 
 	    goto exit;
 	}
-    }
-
-    if (spec->clean == NULL) {
-	char *body = rpmExpand("%{?buildroot: %{__rm} -rf %{buildroot}}", NULL);
-	spec->clean = newStringBuf();
-	appendLineStringBuf(spec->clean, body);
-	free(body);
     }
 
     /* Check for description in each package */
@@ -1089,14 +1073,53 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
     }
 
     closeSpec(spec);
+
 exit:
+    return RPMRC_OK;
+
+errxit:
+    return RPMRC_FAIL;
+}
+
+
+
+static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
+			 const char *buildRoot, int recursing)
+{
+    rpmSpec spec;
+
+    /* Set up a new Spec structure with no packages. */
+    spec = newSpec();
+
+    spec->specFile = rpmGetPath(specFile, NULL);
+    pushOFI(spec, spec->specFile);
+    /* If buildRoot not specified, use default %{buildroot} */
+    if (buildRoot) {
+	spec->buildRoot = xstrdup(buildRoot);
+    } else {
+	spec->buildRoot = rpmGetPath("%{?buildroot:%{buildroot}}", NULL);
+    }
+    rpmPushMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
+    rpmPushMacro(NULL, "_licensedir", NULL, "%{_defaultlicensedir}", RMIL_SPEC);
+    spec->recursing = recursing;
+    spec->flags = flags;
+
+    if (parseSpecSection(&spec, 0) != RPMRC_OK)
+	goto errxit;
+
+    if (spec->clean == NULL) {
+	char *body = rpmExpand("%{?buildroot: %{__rm} -rf %{buildroot}}", NULL);
+	spec->clean = newStringBuf();
+	appendLineStringBuf(spec->clean, body);
+	free(body);
+    }
+
     /* Assemble source header from parsed components */
     initSourceHeader(spec);
-
     return spec;
 
 errxit:
-    rpmSpecFree(spec);
+    spec = rpmSpecFree(spec);
     return NULL;
 }
 
