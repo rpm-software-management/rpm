@@ -884,29 +884,19 @@ exit:
 }
 
 static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
-			 const char *buildRoot, int recursing)
+			 const char *buildRoot, int recursing);
+
+static rpmSpec parseSpecSection(rpmSpec spec, int secondary)
 {
     int parsePart = PART_PREAMBLE;
     int prevParsePart = PART_EMPTY;
     int storedParsePart;
     int initialPackage = 1;
-    rpmSpec spec;
-    
-    /* Set up a new Spec structure with no packages. */
-    spec = newSpec();
 
-    spec->specFile = rpmGetPath(specFile, NULL);
-    pushOFI(spec, spec->specFile);
-    /* If buildRoot not specified, use default %{buildroot} */
-    if (buildRoot) {
-	spec->buildRoot = xstrdup(buildRoot);
-    } else {
-	spec->buildRoot = rpmGetPath("%{?buildroot:%{buildroot}}", NULL);
+    if (secondary) {
+	initialPackage = 0;
+	parsePart = PART_EMPTY;
     }
-    rpmPushMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
-    rpmPushMacro(NULL, "_licensedir", NULL, "%{_defaultlicensedir}", RMIL_SPEC);
-    spec->recursing = recursing;
-    spec->flags = flags;
 
     /* All the parse*() functions expect to have a line pre-read */
     /* in the spec's line buffer.  Except for parsePreamble(),   */
@@ -1013,7 +1003,7 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 		if (!rpmMachineScore(RPM_MACHTABLE_BUILDARCH, spec->BANames[x]))
 		    continue;
 		rpmPushMacro(NULL, "_target_cpu", NULL, spec->BANames[x], RMIL_RPMRC);
-		spec->BASpecs[index] = parseSpec(specFile, flags, buildRoot, 1);
+		spec->BASpecs[index] = parseSpec(spec->specFile, spec->flags, spec->buildRoot, 1);
 		if (spec->BASpecs[index] == NULL) {
 			spec->BACount = index;
 			goto errxit;
@@ -1049,6 +1039,66 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 	}
     }
 
+    /* Check for description in each package */
+    for (Package pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
+	    rpmlog(RPMLOG_ERR, _("Package has no %%description: %s\n"),
+		   headerGetString(pkg->header, RPMTAG_NAME));
+	    goto errxit;
+	}
+    }
+
+    /* Add arch, os and platform, self-provides etc for each package */
+    addTargets(spec->packages);
+
+    /* Check for encoding in each package unless disabled */
+    if (!(spec->flags & RPMSPEC_NOUTF8)) {
+	int badenc = 0;
+	for (Package pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+	    if (checkForEncoding(pkg->header, 0) != RPMRC_OK) {
+		badenc = 1;
+	    }
+	}
+	if (badenc)
+	    goto errxit;
+    }
+
+    closeSpec(spec);
+
+exit:
+    return spec;
+
+errxit:
+    rpmSpecFree(spec);
+    return NULL;
+}
+
+
+
+static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
+			 const char *buildRoot, int recursing)
+{
+    rpmSpec spec;
+
+    /* Set up a new Spec structure with no packages. */
+    spec = newSpec();
+
+    spec->specFile = rpmGetPath(specFile, NULL);
+    pushOFI(spec, spec->specFile);
+    /* If buildRoot not specified, use default %{buildroot} */
+    if (buildRoot) {
+	spec->buildRoot = xstrdup(buildRoot);
+    } else {
+	spec->buildRoot = rpmGetPath("%{?buildroot:%{buildroot}}", NULL);
+    }
+    rpmPushMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
+    rpmPushMacro(NULL, "_licensedir", NULL, "%{_defaultlicensedir}", RMIL_SPEC);
+    spec->recursing = recursing;
+    spec->flags = flags;
+
+    if (! (spec = parseSpecSection(spec, 0)))
+	goto errxit;
+
 #ifdef ENABLE_OPENMP
     /* Set number of OMP threads centrally */
     int nthreads = rpmExpandNumeric("%{?_smp_build_nthreads}");
@@ -1077,32 +1127,6 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 	free(body);
     }
 
-    /* Check for description in each package */
-    for (Package pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
-	    rpmlog(RPMLOG_ERR, _("Package has no %%description: %s\n"),
-		   headerGetString(pkg->header, RPMTAG_NAME));
-	    goto errxit;
-	}
-    }
-
-    /* Add arch, os and platform, self-provides etc for each package */
-    addTargets(spec->packages);
-
-    /* Check for encoding in each package unless disabled */
-    if (!(spec->flags & RPMSPEC_NOUTF8)) {
-	int badenc = 0;
-	for (Package pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	    if (checkForEncoding(pkg->header, 0) != RPMRC_OK) {
-		badenc = 1;
-	    }
-	}
-	if (badenc)
-	    goto errxit;
-    }
-
-    closeSpec(spec);
-exit:
     /* Assemble source header from parsed components */
     initSourceHeader(spec);
 
