@@ -222,6 +222,7 @@ rpmSpec newSpec(void)
     spec->build = NULL;
     spec->install = NULL;
     spec->check = NULL;
+    spec->postbuild = NULL;
     spec->clean = NULL;
     spec->parsed = NULL;
 
@@ -273,6 +274,7 @@ rpmSpec rpmSpecFree(rpmSpec spec)
     spec->build = freeStringBuf(spec->build);
     spec->install = freeStringBuf(spec->install);
     spec->check = freeStringBuf(spec->check);
+    spec->postbuild = freeStringBuf(spec->postbuild);
     spec->clean = freeStringBuf(spec->clean);
     spec->parsed = freeStringBuf(spec->parsed);
     spec->buildrequires = freeStringBuf(spec->buildrequires);
@@ -451,6 +453,7 @@ const char * rpmSpecGetSection(rpmSpec spec, int section)
 	case RPMBUILD_BUILD:	return getStringBuf(spec->build);
 	case RPMBUILD_INSTALL:	return getStringBuf(spec->install);
 	case RPMBUILD_CHECK:	return getStringBuf(spec->check);
+	    //case RPMBUILD_POSTBUILD:	return getStringBuf(spec->postbuild);
 	case RPMBUILD_CLEAN:	return getStringBuf(spec->clean);
 	}
     }

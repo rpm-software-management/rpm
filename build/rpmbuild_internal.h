@@ -144,6 +144,7 @@ struct rpmSpec_s {
     StringBuf build;		/*!< %build scriptlet. */
     StringBuf install;		/*!< %install scriptlet. */
     StringBuf check;		/*!< %check scriptlet. */
+    StringBuf postbuild;	/*!< %postbuild section */
     StringBuf clean;		/*!< %clean scriptlet. */
 
     StringBuf parsed;		/*!< parsed spec contents */
@@ -239,7 +240,8 @@ typedef enum rpmParseState_e {
     PART_PATCHLIST		= 40+PART_BASE, /*!< */
     PART_SOURCELIST		= 41+PART_BASE, /*!< */
     PART_BUILDREQUIRES		= 42+PART_BASE, /*!< */
-    PART_LAST			= 43+PART_BASE  /*!< */
+    PART_POSTBUILD		= 43+PART_BASE, /*!< */
+    PART_LAST			= 44+PART_BASE  /*!< */
 } rpmParseState; 
 
 
@@ -266,6 +268,9 @@ rpmSpec newSpec(void);
  */
 RPM_GNUC_INTERNAL
 void closeSpec(rpmSpec spec);
+
+
+rpmRC reparsePostbuild(rpmSpec spec);
 
 /** \ingroup rpmbuild
  * Read next line from spec file.
