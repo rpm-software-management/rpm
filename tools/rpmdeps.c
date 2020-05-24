@@ -23,6 +23,8 @@ static int print_conflicts;
 
 static int print_obsoletes;
 
+static int print_orderwithrequires;
+
 static int print_alldeps;
 
 static void rpmdsPrint(const char * msg, rpmds ds, FILE * fp)
@@ -58,6 +60,8 @@ static struct poptOption optionsTable[] = {
  { "conflicts", '\0', POPT_ARG_VAL, &print_conflicts, -1,
         NULL, NULL },
  { "obsoletes", '\0', POPT_ARG_VAL, &print_obsoletes, -1,
+        NULL, NULL },
+ { "orderwithrequires", '\0', POPT_ARG_VAL, &print_orderwithrequires, -1,
         NULL, NULL },
  { "alldeps", '\0', POPT_ARG_VAL, &print_alldeps, -1,
         NULL, NULL },
@@ -124,6 +128,8 @@ main(int argc, char *argv[])
 	    rpmdsPrint(NULL, rpmfcConflicts(fc), stdout);
 	if (print_obsoletes)
 	    rpmdsPrint(NULL, rpmfcObsoletes(fc), stdout);
+	if (print_orderwithrequires)
+	    rpmdsPrint(NULL, rpmfcOrderWithRequires(fc), stdout);
     }
 
     ec = 0;
