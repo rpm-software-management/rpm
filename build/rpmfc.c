@@ -919,6 +919,11 @@ rpmds rpmfcObsoletes(rpmfc fc)
     return rpmfcDependencies(fc, RPMTAG_OBSOLETENAME);
 }
 
+rpmds rpmfcOrderWithRequires(rpmfc fc)
+{
+    return rpmfcDependencies(fc, RPMTAG_ORDERNAME);
+}
+
 
 /* Versioned deps are less than unversioned deps */
 static int cmpVerDeps(const void *a, const void *b)
@@ -1007,6 +1012,7 @@ static const struct applyDep_s applyDepTable[] = {
     { RPMTAG_ENHANCENAME,	RPMSENSE_FIND_REQUIRES, "enhances" },
     { RPMTAG_CONFLICTNAME,	RPMSENSE_FIND_REQUIRES, "conflicts" },
     { RPMTAG_OBSOLETENAME,	RPMSENSE_FIND_REQUIRES, "obsoletes" },
+    { RPMTAG_ORDERNAME,	        RPMSENSE_FIND_REQUIRES, "orderwithrequires" },
     { 0, 0, NULL },
 };
 
@@ -1397,6 +1403,9 @@ static struct DepMsg_s depMsgs[] = {
   { "Enhances",		{ "%{?__find_enhances}", NULL, NULL, NULL },
 	RPMTAG_ENHANCENAME, RPMTAG_ENHANCEVERSION, RPMTAG_ENHANCEFLAGS,
 	0, -1 },
+  { "OrderWithRequires",	{ "%{?__find_orderwithrequires}", NULL, NULL, NULL },
+	RPMTAG_ORDERNAME, RPMTAG_ORDERFLAGS,
+	0, -1 },
   { NULL,		{ NULL, NULL, NULL, NULL },	0, 0, 0, 0, 0 }
 };
 
@@ -1470,6 +1479,7 @@ static rpmRC rpmfcApplyExternal(rpmfc fc)
 	case RPMTAG_ENHANCEFLAGS:
 	case RPMTAG_CONFLICTFLAGS:
 	case RPMTAG_OBSOLETEFLAGS:
+	case RPMTAG_ORDERNAME:
 	    if (fc->skipReq)
 		continue;
 	    tagflags = RPMSENSE_FIND_REQUIRES;
