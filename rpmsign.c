@@ -67,6 +67,11 @@ static struct poptOption optionsTable[] = {
 };
 
 #if defined(WITH_IMAEVM) || defined(WITH_FSVERITY)
+static int flags_sign_files(int flags)
+{
+	return (flags & (RPMSIGN_FLAG_IMA | RPMSIGN_FLAG_FSVERITY) ? 1 : 0);
+}
+
 static char *get_fskpass(void)
 {
     struct termios flags, tmp_flags;
@@ -118,7 +123,7 @@ static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
 	rpmPushMacro(NULL, "_file_signing_key", NULL, fileSigningKey, RMIL_GLOBAL);
     }
 
-    if (sargs->signflags & (RPMSIGN_FLAG_IMA | RPMSIGN_FLAG_FSVERITY)) {
+    if (flags_sign_files(sargs->signflags)) {
 	char *fileSigningKeyPassword = NULL;
 	char *key = rpmExpand("%{?_file_signing_key}", NULL);
 	if (rstreq(key, "")) {
@@ -173,8 +178,7 @@ int main(int argc, char *argv[])
     }
 
 #if defined(WITH_IMAEVM) || defined(WITH_FSVERITY)
-    if (fileSigningKey &&
-	!(sargs.signflags & (RPMSIGN_FLAG_IMA | RPMSIGN_FLAG_FSVERITY))) {
+    if (fileSigningKey && !(flags_sign_files(sargs.signflags))) {
 	argerror(_("--fskpath may only be specified when signing files"));
     }
 #endif
