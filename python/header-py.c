@@ -11,6 +11,7 @@
 #include "rpmfd-py.h"
 #include "rpmfi-py.h"
 #include "rpmtd-py.h"
+#include "rpmver-py.h"
 
 /** \ingroup python
  * \class Rpm
@@ -891,21 +892,16 @@ PyObject * versionCompare (PyObject * self, PyObject * args, PyObject * kwds)
 
 PyObject * labelCompare (PyObject * self, PyObject * args)
 {
-    const char *v1, *r1, *v2, *r2;
-    const char *e1, *e2;
     PyObject *rco = NULL;
+    rpmver rv1 = NULL;
+    rpmver rv2 = NULL;
 
-    if (!PyArg_ParseTuple(args, "(zzz)(zzz)",
-			&e1, &v1, &r1, &e2, &v2, &r2))
+    if (!PyArg_ParseTuple(args, "O&O&",
+			    verFromPyObject, &rv1, verFromPyObject, &rv2)) {
 	return NULL;
+    }
 
-    rpmver rv1 = rpmverNew(e1, v1, r1);
-    rpmver rv2 = rpmverNew(e2, v2, r2);
-
-    if (rv1 && rv2)
-	rco = Py_BuildValue("i", rpmverCmp(rv1, rv2));
-    else
-	PyErr_SetString(PyExc_ValueError, "invalid version label");
+    rco = Py_BuildValue("i", rpmverCmp(rv1, rv2));
 
     rpmverFree(rv1);
     rpmverFree(rv2);
