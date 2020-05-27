@@ -169,6 +169,8 @@ myprint(rpm.labelCompare(('0', '1.0', '1'),
 			 ('1', '1.0', '1')))
 myprint(rpm.labelCompare(('0', '1.0', '1'),
 			 (None, '1.0', '1')))
+myprint(rpm.labelCompare("1.0-1", "2.0-1"))
+myprint(rpm.labelCompare("2:1.0-1", "2.0-1"))
 ],
 [0
 -1
@@ -177,7 +179,9 @@ myprint(rpm.labelCompare(('0', '1.0', '1'),
 1
 1
 -1
-0]
+0
+-1
+1]
 )
 
 RPMPY_TEST([vfyflags API],[
