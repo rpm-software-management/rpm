@@ -23,6 +23,7 @@
 #include "rpmtd-py.h"
 #include "rpmte-py.h"
 #include "rpmts-py.h"
+#include "rpmver-py.h"
 #include "spec-py.h"
 
 /** \ingroup python
@@ -291,6 +292,7 @@ static int prepareInitModule(void)
     if (PyType_Ready(&rpmstrPool_Type) < 0) return 0;
     if (PyType_Ready(&rpmte_Type) < 0) return 0;
     if (PyType_Ready(&rpmts_Type) < 0) return 0;
+    if (PyType_Ready(&rpmver_Type) < 0) return 0;
     if (PyType_Ready(&spec_Type) < 0) return 0;
     if (PyType_Ready(&specPkg_Type) < 0) return 0;
 
@@ -392,6 +394,9 @@ static int initModule(PyObject *m)
 
     Py_INCREF(&rpmts_Type);
     PyModule_AddObject(m, "ts", (PyObject *) &rpmts_Type);
+
+    Py_INCREF(&rpmver_Type);
+    PyModule_AddObject(m, "ver", (PyObject *) &rpmver_Type);
 
     Py_INCREF(&spec_Type);
     PyModule_AddObject(m, "spec", (PyObject *) &spec_Type);
