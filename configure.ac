@@ -246,7 +246,7 @@ AM_CONDITIONAL(LIBDWARF,[test "$WITH_LIBDWARF" = yes])
 # Select crypto library
 AC_ARG_WITH(crypto,
             [AC_HELP_STRING([--with-crypto=CRYPTO_LIB],
-                            [The cryptographic library to use (nss|openssl|libgcrypt). The default is libgcrypt. nss is DEPRECATED.])
+                            [The cryptographic library to use (openssl|libgcrypt). The default is libgcrypt.])
                             ],[],
                             [with_crypto=libgcrypt])
 
@@ -355,38 +355,6 @@ fi
 AM_CONDITIONAL([WITH_LIBGCRYPT],[test "$with_crypto" = libgcrypt])
 AC_SUBST(WITH_LIBGCRYPT_INCLUDE)
 AC_SUBST(WITH_LIBGCRYPT_LIB)
-
-#=================
-# Check for NSS library.
-# We need nss.h from NSS which needs nspr.h. Unfortunately both glibc and NSS
-# have a header named nss.h... so make extra check for NSS's sechash.h
-# which we use too and hopefully is slightly more unique to NSS.
-WITH_NSS_INCLUDE=
-WITH_NSS_LIB=
-if test "$with_crypto" = nss; then
-AC_MSG_WARN([Using the nss library with rpm is deprecated and support will be removed in a future release!])
-# If we have pkgconfig make sure CPPFLAGS are setup correctly for the nss
-# -I include path. Otherwise the below checks will fail because nspr.h
-# cannot be found.
-AC_PATH_TOOL([PKGCONFIG], [pkg-config], [no], [$PATH:/usr/bin:/usr/local/bin])
-if test "x$PKGCONFIG" != "xno"; then
-  CPPFLAGS="$CPPFLAGS $($PKGCONFIG --cflags nss)"
-fi
-AC_CHECK_HEADERS([nspr.h nss.h sechash.h], [], [
-  AC_MSG_ERROR([missing required NSPR / NSS header])
-])
-AC_CHECK_LIB(nss3, VFY_VerifyDigestDirect, [
-  WITH_NSS_LIB=-lnss3
-  AC_CHECK_LIB(nss3, NSS_InitContext, [
-    AC_DEFINE(HAVE_NSS_INITCONTEXT, 1, [Define to 1 if NSS has NSS_InitContext])
-    AC_SUBST(HAVE_NSS_INITCONTEXT, [1])
-  ])
-], [
-  AC_MSG_ERROR([required NSS library 'nss3' missing or too old])
-])
-fi
-AC_SUBST(WITH_NSS_INCLUDE)
-AC_SUBST(WITH_NSS_LIB)
 
 #=================
 # Check for magic library.

@@ -14,23 +14,11 @@ The source for the file utility + library is available from
     ftp://ftp.astron.com/pub/file/
 
 You will need a cryptographic library to support digests and signatures.
-This library may be libgcrypt, Mozilla NSS or OpenSSL.
-Which library to use can be specified with the
---with-crypto=[libgcrypt|nss|openssl] argument to configure,
+This library may be libgcrypt or OpenSSL, and can be specified with the
+--with-crypto=[libgcrypt|openssl] argument to configure.
 libgcrypt is the default.
 
 libgcrypt library is available from https://www.gnupg.org/software/libgcrypt/
-
-If using the Mozilla NSS library for encyption (and NSPR library which
-NSS uses) it must be version 3.12 or later. Both NSPR and NSS libraries and
-headers need to be installed during RPM compilation. As NSPR and NSS
-typically install their headers outside the regular include search path,
-you need to tell configure about this, eg something like:
-    ./configure <......> CPPFLAGS="-I/usr/include/nspr -I/usr/include/nss"
-
-The NSPR and NSS libraries are available from 
-    http://www.mozilla.org/projects/security/pki/nss/
-    http://www.mozilla.org/projects/nspr/
 
 If using the OpenSSL library for encryption, it must be version 1.0.2 or
 later. Note: when compiling against OpenSSL, there is a possible license
