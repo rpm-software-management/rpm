@@ -8,7 +8,6 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include <popt.h>
-#include <libgen.h>
 #include <fcntl.h>
 
 #include <rpm/rpmlib.h>			/* RPMSIGTAG & related */
@@ -33,68 +32,6 @@ typedef struct sigTarget_s {
     off_t start;
     rpm_loff_t size;
 } *sigTarget;
-
-/*
- * There is no function for creating unique temporary fifos so create
- * unique temporary directory and then create fifo in it.
- */
-static char *mkTempFifo(void)
-{
-    char *tmppath = NULL, *tmpdir = NULL, *fifofn = NULL;
-    mode_t mode;
-
-    tmppath = rpmExpand("%{_tmppath}", NULL);
-    if (rpmioMkpath(tmppath, 0755, (uid_t) -1, (gid_t) -1))
-	goto exit;
-
-
-    tmpdir = rpmGetPath(tmppath, "/rpm-tmp.XXXXXX", NULL);
-    mode = umask(0077);
-    tmpdir = mkdtemp(tmpdir);
-    umask(mode);
-    if (tmpdir == NULL) {
-	rpmlog(RPMLOG_ERR, _("error creating temp directory %s: %m\n"),
-	    tmpdir);
-	tmpdir = _free(tmpdir);
-	goto exit;
-    }
-
-    fifofn = rpmGetPath(tmpdir, "/fifo", NULL);
-    if (mkfifo(fifofn, 0600) == -1) {
-	rpmlog(RPMLOG_ERR, _("error creating fifo %s: %m\n"), fifofn);
-	fifofn = _free(fifofn);
-    }
-
-exit:
-    if (fifofn == NULL && tmpdir != NULL)
-	unlink(tmpdir);
-
-    free(tmppath);
-    free(tmpdir);
-
-    return fifofn;
-}
-
-/* Delete fifo and then temporary directory in which it was located */
-static int rpmRmTempFifo(const char *fn)
-{
-    int rc = 0;
-    char *dfn = NULL, *dir = NULL;
-
-    if ((rc = unlink(fn)) != 0) {
-	rpmlog(RPMLOG_ERR, _("error delete fifo %s: %m\n"), fn);
-	return rc;
-    }
-
-    dfn = xstrdup(fn);
-    dir = dirname(dfn);
-
-    if ((rc = rmdir(dir)) != 0)
-	rpmlog(RPMLOG_ERR, _("error delete directory %s: %m\n"), dir);
-    free(dfn);
-
-    return rc;
-}
 
 static int closeFile(FD_t *fdp)
 {
@@ -242,26 +179,37 @@ exit:
 static int runGPG(sigTarget sigt, const char *sigfile)
 {
     int pid = 0, status;
-    FD_t fnamedPipe = NULL;
-    char *namedPipeName = NULL;
+    int pipefd[2];
+    FILE *fpipe = NULL;
     unsigned char buf[BUFSIZ];
     ssize_t count;
     ssize_t wantCount;
     rpm_loff_t size;
     int rc = 1; /* assume failure */
 
-    namedPipeName = mkTempFifo();
+    if (pipe(pipefd) < 0) {
+        rpmlog(RPMLOG_ERR, _("Could not create pipe for signing: %m\n"));
+        goto exit;
+    }
 
-    rpmPushMacro(NULL, "__plaintext_filename", NULL, namedPipeName, -1);
+    rpmPushMacro(NULL, "__plaintext_filename", NULL, "-", -1);
     rpmPushMacro(NULL, "__signature_filename", NULL, sigfile, -1);
 
     if (!(pid = fork())) {
 	char *const *av;
 	char *cmd = NULL;
-	const char *gpg_path = rpmExpand("%{?_gpg_path}", NULL);
+	const char *tty = ttyname(STDIN_FILENO);
+	const char *gpg_path = NULL;
 
+	if (!getenv("GPG_TTY") && (!tty || setenv("GPG_TTY", tty, 0)))
+	    rpmlog(RPMLOG_WARNING, _("Could not set GPG_TTY to stdin: %m\n"));
+
+	gpg_path = rpmExpand("%{?_gpg_path}", NULL);
 	if (gpg_path && *gpg_path != '\0')
 	    (void) setenv("GNUPGHOME", gpg_path, 1);
+
+	dup2(pipefd[0], STDIN_FILENO);
+	close(pipefd[1]);
 
 	unsetenv("MALLOC_CHECK_");
 	cmd = rpmExpand("%{?__gpg_sign_cmd}", NULL);
@@ -277,9 +225,10 @@ static int runGPG(sigTarget sigt, const char *sigfile)
     rpmPopMacro(NULL, "__plaintext_filename");
     rpmPopMacro(NULL, "__signature_filename");
 
-    fnamedPipe = Fopen(namedPipeName, "w");
-    if (!fnamedPipe) {
-	rpmlog(RPMLOG_ERR, _("Fopen failed\n"));
+    close(pipefd[0]);
+    fpipe = fdopen(pipefd[1], "w");
+    if (!fpipe) {
+	rpmlog(RPMLOG_ERR, _("Could not open pipe for writing: %m\n"));
 	goto exit;
     }
 
@@ -292,8 +241,8 @@ static int runGPG(sigTarget sigt, const char *sigfile)
     size = sigt->size;
     wantCount = size < sizeof(buf) ? size : sizeof(buf);
     while ((count = Fread(buf, sizeof(buf[0]), wantCount, sigt->fd)) > 0) {
-	Fwrite(buf, sizeof(buf[0]), count, fnamedPipe);
-	if (Ferror(fnamedPipe)) {
+	fwrite(buf, sizeof(buf[0]), count, fpipe);
+	if (ferror(fpipe)) {
 	    rpmlog(RPMLOG_ERR, _("Could not write to pipe\n"));
 	    goto exit;
 	}
@@ -305,8 +254,10 @@ static int runGPG(sigTarget sigt, const char *sigfile)
 		sigt->fileName, Fstrerror(sigt->fd));
 	goto exit;
     }
-    Fclose(fnamedPipe);
-    fnamedPipe = NULL;
+    fclose(fpipe);
+    fpipe = NULL;
+    close(pipefd[1]);
+    pipefd[1] = NULL;
 
     (void) waitpid(pid, &status, 0);
     pid = 0;
@@ -318,16 +269,13 @@ static int runGPG(sigTarget sigt, const char *sigfile)
 
 exit:
 
-    if (fnamedPipe)
-	Fclose(fnamedPipe);
+    if (fpipe)
+	fclose(fpipe);
+    if (pipefd[1])
+	close(pipefd[1]);
 
     if (pid)
 	waitpid(pid, &status, 0);
-
-    if (namedPipeName) {
-	rpmRmTempFifo(namedPipeName);
-	free(namedPipeName);
-    }
 
     return rc;
 }
