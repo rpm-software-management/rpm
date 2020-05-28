@@ -82,7 +82,6 @@ plugins/systemd_inhibit.c
 python/rpmts-py.c
 rpmio/argv.c
 rpmio/digest.c
-rpmio/digest_nss.c
 rpmio/expression.c
 rpmio/macro.c
 rpmio/rpmfileutil.c
