@@ -20,6 +20,7 @@
 #include "lib/fsm.h"	/* rpmpsm stuff for now */
 #include "lib/rpmug.h"
 #include "rpmio/rpmio_internal.h"       /* fdInit/FiniDigest */
+#include "rpmio/rpmbase64.h"
 
 #include "debug.h"
 
@@ -1505,6 +1506,63 @@ static uint8_t *hex2bin(Header h, rpmTagVal tag, rpm_count_t num, size_t len)
 		*t = (rnibble(s[0]) << 4) | rnibble(s[1]);
 	}
     }
+    rpmtdFreeData(&td);
+
+    return bin;
+}
+
+/*
+ * Convert a tag of base64 strings to binary presentation.
+ * This handles variable length strings by finding the longest string
+ * before building the output array. Dummy strings in the tag should be
+ * added as '\0'
+ */
+static uint8_t *base2bin(Header h, rpmTagVal tag, rpm_count_t num, int *len)
+{
+    struct rpmtd_s td;
+    uint8_t *bin = NULL, *t = NULL;
+    size_t maxlen = 0;
+    int status, i= 0;
+    void **arr = xmalloc(num * sizeof(void *));
+    size_t *lengths = xcalloc(num, sizeof(size_t));
+    const char *s;
+
+    if (headerGet(h, tag, &td, HEADERGET_MINMEM) && rpmtdCount(&td) != num)
+	goto out;
+
+    while ((s = rpmtdNextString(&td))) {
+	/* Insert a dummy entry for empty strings */
+	if (*s == '\0') {
+	    arr[i++] = NULL;
+	    continue;
+	}
+	status = rpmBase64Decode(s, &arr[i], &lengths[i]);
+	if (lengths[i] > maxlen)
+	    maxlen = lengths[i];
+	if (status) {
+	    rpmlog(RPMLOG_DEBUG, _("%s: base64 decode failed, len %li\n"),
+		   __func__, lengths[i]);
+	    goto out;
+	}
+	i++;
+    }
+
+    if (maxlen) {
+	rpmlog(RPMLOG_DEBUG, _("%s: base64 decode success, len %li\n"),
+	       __func__, maxlen);
+
+	t = bin = xcalloc(num, maxlen);
+
+	for (i = 0; i < num; i++) {
+	    memcpy(t, arr[i], lengths[i]);
+	    free(arr[i]);
+	    t += maxlen;
+	}
+	*len = maxlen;
+    }
+ out:
+    free(arr);
+    free(lengths);
     rpmtdFreeData(&td);
 
     return bin;
