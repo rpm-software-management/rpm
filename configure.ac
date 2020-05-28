@@ -246,38 +246,9 @@ AM_CONDITIONAL(LIBDWARF,[test "$WITH_LIBDWARF" = yes])
 # Select crypto library
 AC_ARG_WITH(crypto,
             [AC_HELP_STRING([--with-crypto=CRYPTO_LIB],
-                            [The cryptographic library to use (nss|beecrypt|openssl|libgcrypt). The default is libgcrypt. beecrypt and nss are DEPRECATED.])
+                            [The cryptographic library to use (nss|openssl|libgcrypt). The default is libgcrypt. nss is DEPRECATED.])
                             ],[],
                             [with_crypto=libgcrypt])
-
-# Check for beecrypt library if requested.
-AC_ARG_WITH(internal_beecrypt, [  --with-internal-beecrypt build with internal beecrypt library (DEPRECATED)],,[with_internal_beecrypt=no])
-AM_CONDITIONAL([WITH_INTERNAL_BEECRYPT],[test "$with_internal_beecrypt" = yes])
-if test "$with_internal_beecrypt" = yes ; then
-  with_crypto=beecrypt
-fi
-AM_CONDITIONAL([WITH_BEECRYPT],[test "$with_crypto" = beecrypt])
-
-WITH_BEECRYPT_INCLUDE=
-WITH_BEECRYPT_LIB=
-if test "$with_crypto" = beecrypt ; then
-  AC_MSG_WARN([Using the beecrypt library with rpm is deprecated and support will be removed in a future release!])
-  AC_DEFINE(WITH_BEECRYPT, 1, [Build with beecrypt instead of nss3 support?])
-  if test "$with_internal_beecrypt" = yes ; then
-    WITH_BEECRYPT_INCLUDE="-I\$(top_srcdir)/beecrypt"
-    AC_DEFINE(HAVE_BEECRYPT_API_H, 1, [Define to 1 if you have the <beecrypt/api.h> header file.])
-  else
-    AC_CHECK_LIB(beecrypt, mpfprintln, [
-      WITH_BEECRYPT_LIB="-lbeecrypt"
-    ],[
-      AC_MSG_ERROR([missing required library 'beecrypt'])
-    ])
-    AC_CHECK_HEADER([beecrypt/api.h], [AC_DEFINE(HAVE_BEECRYPT_API_H, 1, [Define to 1 if you have the <beecrypt/api.h> header file.])
-    ])
-  fi
-fi
-AC_SUBST(WITH_BEECRYPT_LIB)
-AC_SUBST(WITH_BEECRYPT_INCLUDE)
 
 #=================
 # Check for OpenSSL library.

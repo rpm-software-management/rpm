@@ -5,7 +5,6 @@ AM_CFLAGS = @RPMCFLAGS@
 
 AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/
 AM_CPPFLAGS += @WITH_NSS_INCLUDE@
-AM_CPPFLAGS += @WITH_BEECRYPT_INCLUDE@
 AM_CPPFLAGS += @WITH_OPENSSL_INCLUDE@
 AM_CPPFLAGS += @WITH_LIBGCRYPT_INCLUDE@
 AM_CPPFLAGS += @WITH_POPT_INCLUDE@
@@ -24,9 +23,6 @@ librpmio_la_SOURCES = \
 	rpmstring.c rpmfileutil.c rpmglob.c \
 	rpmkeyring.c rpmstrpool.c rpmmacro_internal.h
 
-if WITH_BEECRYPT
-librpmio_la_SOURCES += digest_beecrypt.c
-else
 if WITH_OPENSSL
 librpmio_la_SOURCES += digest_openssl.c
 else
@@ -36,14 +32,12 @@ else
 librpmio_la_SOURCES += digest_nss.c
 endif
 endif
-endif
 
 
 librpmio_la_LDFLAGS = -version-info $(rpm_version_info)
 librpmio_la_LIBADD = \
 	../misc/libmisc.la \
 	@WITH_NSS_LIB@ \
-	@WITH_BEECRYPT_LIB@ \
 	@WITH_OPENSSL_LIB@ \
 	@WITH_LIBGCRYPT_LIB@ \
 	@WITH_BZ2_LIB@ \
@@ -52,15 +46,6 @@ librpmio_la_LIBADD = \
 	@WITH_LZMA_LIB@ \
 	$(ZSTD_LIBS) \
 	-lpthread
-
-if WITH_INTERNAL_BEECRYPT
-librpmio_la_LIBADD += $(libbeecrypt_la)
-
-libbeecrypt_la = $(top_builddir)/beecrypt/libbeecrypt_nolibdir.la
-
-$(top_builddir)/beecrypt/libbeecrypt_nolibdir.la: $(top_builddir)/beecrypt/libbeecrypt.la
-	sed -e 's/libdir=.*/libdir=/' < $(top_builddir)/beecrypt/libbeecrypt.la > $(top_builddir)/beecrypt/libbeecrypt_nolibdir.la
-endif
 
 if WITH_LUA
 AM_CPPFLAGS += -I$(top_srcdir)/luaext/
