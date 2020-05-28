@@ -254,18 +254,6 @@ static int runGPG(sigTarget sigt, const char *sigfile)
 		sigt->fileName, Fstrerror(sigt->fd));
 	goto exit;
     }
-    fclose(fpipe);
-    fpipe = NULL;
-    close(pipefd[1]);
-    pipefd[1] = NULL;
-
-    (void) waitpid(pid, &status, 0);
-    pid = 0;
-    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	rpmlog(RPMLOG_ERR, _("gpg exec failed (%d)\n"), WEXITSTATUS(status));
-    } else {
-	rc = 0;
-    }
 
 exit:
 
@@ -274,9 +262,13 @@ exit:
     if (pipefd[1])
 	close(pipefd[1]);
 
-    if (pid)
-	waitpid(pid, &status, 0);
-
+    (void) waitpid(pid, &status, 0);
+    pid = 0;
+    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
+	rpmlog(RPMLOG_ERR, _("gpg exec failed (%d)\n"), WEXITSTATUS(status));
+    } else {
+	rc = 0;
+    }
     return rc;
 }
 
