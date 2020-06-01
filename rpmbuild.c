@@ -337,18 +337,14 @@ static int isSpecFile(const char * specfile)
 static char * getTarSpec(const char *arg)
 {
     char *specFile = NULL;
-    char *specDir;
-    char *specBase;
-    char *tmpSpecFile;
     const char **spec;
     char tarbuf[BUFSIZ];
-    int gotspec = 0, res;
+    int gotspec = 0;
+    FD_t fd = NULL;
     static const char *tryspec[] = { "Specfile", "\\*.spec", NULL };
 
-    specDir = rpmGetPath("%{_specdir}", NULL);
-    tmpSpecFile = rpmGetPath("%{_specdir}/", "rpm-spec.XXXXXX", NULL);
-
-    (void) close(mkstemp(tmpSpecFile));
+    if (!(fd = rpmMkTempFile(NULL, &specFile)))
+       goto exit;
 
     for (spec = tryspec; *spec != NULL; spec++) {
 	FILE *fp;
@@ -357,7 +353,7 @@ static char * getTarSpec(const char *arg)
 
 	cmd = rpmExpand("%{uncompress: ", arg, "} | ",
 			"%{__tar} xOvof - --wildcards ", *spec,
-			" 2>&1 > ", tmpSpecFile, NULL);
+			" 2>&1 > ", specFile, NULL);
 
 	if (!(fp = popen(cmd, "r"))) {
 	    rpmlog(RPMLOG_ERR, _("Failed to open tar pipe: %m\n"));
@@ -373,46 +369,25 @@ static char * getTarSpec(const char *arg)
 		specfiles++;
 	    }
 	    pclose(fp);
-	    gotspec = (specfiles == 1) && isSpecFile(tmpSpecFile);
+	    gotspec = (specfiles == 1) && isSpecFile(specFile);
 	    if (specfiles > 1) {
 		rpmlog(RPMLOG_ERR, _("Found more than one spec file in %s\n"), arg);
 		goto exit;
 	    }
 	}
 
-	if (!gotspec) 
-	    unlink(tmpSpecFile);
+	if (!gotspec)
+	    unlink(specFile);
 	free(cmd);
     }
 
     if (!gotspec) {
     	rpmlog(RPMLOG_ERR, _("Failed to read spec file from %s\n"), arg);
-	goto exit;
-    }
-
-    specBase = basename(tarbuf);
-    /* remove trailing \n */
-    specBase[strlen(specBase)-1] = '\0';
-
-    rasprintf(&specFile, "%s/%s", specDir, specBase);
-    res = rename(tmpSpecFile, specFile);
-
-    if (res) {
-    	rpmlog(RPMLOG_ERR, _("Failed to rename %s to %s: %m\n"),
-		tmpSpecFile, specFile);
-    	free(specFile);
 	specFile = NULL;
-    } else {
-    	/* mkstemp() can give unnecessarily strict permissions, fixup */
-	mode_t mask;
-	umask(mask = umask(0));
-	(void) chmod(specFile, 0666 & ~mask);
     }
 
 exit:
-    (void) unlink(tmpSpecFile);
-    free(tmpSpecFile);
-    free(specDir);
+    Fclose(fd);
     return specFile;
 }
 
@@ -437,9 +412,6 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 
     const char *rootdir = rpmtsRootDir(ts);
     const char *root = !rstreq(rootdir, "/") ? rootdir : NULL;
-    /* Create minimal build tree if necessary */
-    if (rpmMkdirs(root, "%{_topdir}:%{_specdir}"))
-	goto exit;
 
     if (buildMode == 't') {
     	char *srcdir = NULL, *dir;
@@ -508,7 +480,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     }
 
     /* Create build tree if necessary */
-    if (rpmMkdirs(root, "%{_sourcedir}:%{_builddir}:%{_rpmdir}:%{_srcrpmdir}:%{_buildrootdir}"))
+    if (rpmMkdirs(root, "%{_topdir}:%{_builddir}:%{_rpmdir}:%{_srcrpmdir}:%{_buildrootdir}"))
 	goto exit;
 
     if ((rc = rpmSpecBuild(ts, spec, ba))) {
