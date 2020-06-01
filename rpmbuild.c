@@ -435,12 +435,11 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     if (ba->buildRootOverride)
 	buildRootURL = rpmGenPath(NULL, ba->buildRootOverride, NULL);
 
-    /* Create build tree if necessary */
-    const char * buildtree = "%{_topdir}:%{_specdir}:%{_sourcedir}:%{_builddir}:%{_rpmdir}:%{_srcrpmdir}:%{_buildrootdir}";
-    const char * rootdir = rpmtsRootDir(ts);
-    if (rpmMkdirs(!rstreq(rootdir, "/") ? rootdir : NULL , buildtree)) {
+    const char *rootdir = rpmtsRootDir(ts);
+    const char *root = !rstreq(rootdir, "/") ? rootdir : NULL;
+    /* Create minimal build tree if necessary */
+    if (rpmMkdirs(root, "%{_topdir}:%{_specdir}"))
 	goto exit;
-    }
 
     if (buildMode == 't') {
     	char *srcdir = NULL, *dir;
@@ -507,6 +506,10 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     if (spec == NULL) {
 	goto exit;
     }
+
+    /* Create build tree if necessary */
+    if (rpmMkdirs(root, "%{_sourcedir}:%{_builddir}:%{_rpmdir}:%{_srcrpmdir}:%{_buildrootdir}"))
+	goto exit;
 
     if ((rc = rpmSpecBuild(ts, spec, ba))) {
 	goto exit;
