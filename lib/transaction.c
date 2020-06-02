@@ -1346,6 +1346,23 @@ static void checkAdded(rpmts ts, rpmprobFilterFlags probFilter, rpmte p)
 	rpmteAddRelocProblems(p);
 }
 
+static void checkRemoved(rpmts ts, rpmprobFilterFlags probFilter, rpmte p)
+{
+    unsigned int offset = rpmteDBInstance(p);
+    int found = 0;
+    rpmdbMatchIterator mi;
+
+    mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &offset, sizeof(offset));
+    while (rpmdbNextIterator(mi)) {
+	found = 1;
+	break;
+    }
+    rpmdbFreeIterator(mi);
+
+    if (!found)
+	rpmteAddProblem(p, RPMPROB_PKG_INSTALLED, NULL, NULL, 0);
+}
+
 /*
  * For packages being installed:
  * - verify package arch/os.
@@ -1372,6 +1389,9 @@ static rpmps checkProblems(rpmts ts)
 	case TR_ADDED:
 	    checkAdded(ts, probFilter, p);
 	    ninst++;
+	    break;
+	case TR_REMOVED:
+	    checkRemoved(ts, probFilter, p);
 	    break;
 	default:
 	    break;
