@@ -119,7 +119,10 @@ char * rpmProblemString(rpmProblem prob)
 		pkgNEVR, str1);
 	break;
     case RPMPROB_PKG_INSTALLED:
-	rasprintf(&buf, _("package %s is already installed"), pkgNEVR);
+	if (prob->num1)
+	    rasprintf(&buf, _("package %s is already installed"), pkgNEVR);
+	else
+	    rasprintf(&buf, _("package %s is not installed"), pkgNEVR);
 	break;
     case RPMPROB_BADRELOCATE:
 	rasprintf(&buf, _("path %s in package %s is not relocatable"),
