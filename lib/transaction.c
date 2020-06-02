@@ -1305,6 +1305,47 @@ static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
     return rc;
 }
 
+static void checkAdded(rpmts ts, rpmprobFilterFlags probFilter, rpmte p)
+{
+    if (!(probFilter & RPMPROB_FILTER_IGNOREARCH) && badArch(rpmteA(p)))
+	rpmteAddProblem(p, RPMPROB_BADARCH, rpmteA(p), NULL, 0);
+
+    if (!(probFilter & RPMPROB_FILTER_IGNOREOS) && badOs(rpmteO(p)))
+	rpmteAddProblem(p, RPMPROB_BADOS, rpmteO(p), NULL, 0);
+
+    if (!(probFilter & RPMPROB_FILTER_OLDPACKAGE)) {
+	rpmstrPool tspool = rpmtsPool(ts);
+	Header h;
+	rpmdbMatchIterator mi;
+	mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(p), 0);
+	while ((h = rpmdbNextIterator(mi)) != NULL)
+	    ensureOlder(tspool, p, h);
+	rpmdbFreeIterator(mi);
+    }
+
+    if (!(probFilter & RPMPROB_FILTER_REPLACEPKG) && rpmteAddOp(p) != RPMTE_REINSTALL) {
+	Header h;
+	rpmdbMatchIterator mi;
+	mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(p), 0);
+	rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP, rpmteE(p));
+	rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP, rpmteV(p));
+	rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP, rpmteR(p));
+	if (rpmtsColor(ts)) {
+	    rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_STRCMP, rpmteA(p));
+	    rpmdbSetIteratorRE(mi, RPMTAG_OS, RPMMIRE_STRCMP, rpmteO(p));
+	}
+
+	if ((h = rpmdbNextIterator(mi)) != NULL) {
+	    rpmteAddProblem(p, RPMPROB_PKG_INSTALLED, NULL, NULL,
+			    headerGetInstance(h));
+	}
+	rpmdbFreeIterator(mi);
+    }
+
+    if (!(probFilter & RPMPROB_FILTER_FORCERELOCATE))
+	rpmteAddRelocProblems(p);
+}
+
 /*
  * For packages being installed:
  * - verify package arch/os.
@@ -1312,10 +1353,10 @@ static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
  */
 static rpmps checkProblems(rpmts ts)
 {
-    rpm_color_t tscolor = rpmtsColor(ts);
     rpmprobFilterFlags probFilter = rpmtsFilterFlags(ts);
-    rpmstrPool tspool = rpmtsPool(ts);
-    rpm_loff_t npkgs = countPkgs(ts, TR_ADDED);
+    rpmElementTypes etypes = (TR_ADDED|TR_REMOVED);
+    rpm_loff_t npkgs = countPkgs(ts, etypes);
+    rpm_loff_t ninst = 0;
     rpmtsi pi;
     rpmte p;
 
@@ -1326,49 +1367,20 @@ static rpmps checkProblems(rpmts ts)
     /* XXX Only added packages need be checked. */
     rpmlog(RPMLOG_DEBUG, "sanity checking %lu elements\n", npkgs);
     pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
-
-	if (!(probFilter & RPMPROB_FILTER_IGNOREARCH) && badArch(rpmteA(p)))
-	    rpmteAddProblem(p, RPMPROB_BADARCH, rpmteA(p), NULL, 0);
-
-	if (!(probFilter & RPMPROB_FILTER_IGNOREOS) && badOs(rpmteO(p)))
-	    rpmteAddProblem(p, RPMPROB_BADOS, rpmteO(p), NULL, 0);
-
-	if (!(probFilter & RPMPROB_FILTER_OLDPACKAGE)) {
-	    Header h;
-	    rpmdbMatchIterator mi;
-	    mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(p), 0);
-	    while ((h = rpmdbNextIterator(mi)) != NULL)
-		ensureOlder(tspool, p, h);
-	    rpmdbFreeIterator(mi);
+    while ((p = rpmtsiNext(pi, etypes)) != NULL) {
+	switch (rpmteType(p)) {
+	case TR_ADDED:
+	    checkAdded(ts, probFilter, p);
+	    ninst++;
+	    break;
+	default:
+	    break;
 	}
-
-	if (!(probFilter & RPMPROB_FILTER_REPLACEPKG) && rpmteAddOp(p) != RPMTE_REINSTALL) {
-	    Header h;
-	    rpmdbMatchIterator mi;
-	    mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(p), 0);
-	    rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP, rpmteE(p));
-	    rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP, rpmteV(p));
-	    rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP, rpmteR(p));
-	    if (tscolor) {
-		rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_STRCMP, rpmteA(p));
-		rpmdbSetIteratorRE(mi, RPMTAG_OS, RPMMIRE_STRCMP, rpmteO(p));
-	    }
-
-	    if ((h = rpmdbNextIterator(mi)) != NULL) {
-		rpmteAddProblem(p, RPMPROB_PKG_INSTALLED, NULL, NULL,
-				headerGetInstance(h));
-	    }
-	    rpmdbFreeIterator(mi);
-	}
-
-	if (!(probFilter & RPMPROB_FILTER_FORCERELOCATE))
-	    rpmteAddRelocProblems(p);
     }
     rpmtsiFree(pi);
 
-    if (rpmtsVfyLevel(ts) && !(probFilter & RPMPROB_FILTER_VERIFY))
-	verifyPackageFiles(ts, npkgs);
+    if (ninst > 0 && rpmtsVfyLevel(ts) && !(probFilter & RPMPROB_FILTER_VERIFY))
+	verifyPackageFiles(ts, ninst);
 
 exit:
     return rpmtsProblems(ts);
