@@ -1206,7 +1206,7 @@ package or when debugging this package.\
 %{__git} init %{-q}\
 %{__git} config user.name "%{__scm_username}"\
 %{__git} config user.email "%{__scm_usermail}"\
-%{__git} add .\
+%{__git} add --force .\
 %{__git} commit %{-q} --allow-empty -a\\\
 	--author "%{__scm_author}" -m "%{NAME}-%{VERSION} base"
 
