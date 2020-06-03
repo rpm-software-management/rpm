@@ -1478,10 +1478,8 @@ static void setSSD(int enable)
     if (enable) {
 	rpmlog(RPMLOG_DEBUG, "optimizing for non-rotational disks\n");
 	ensureMacro("_minimize_writes", "1");
-	ensureMacro("_flush_io", "1");
     } else {
 	rpmPopMacro(NULL, "_minimize_writes");
-	rpmPopMacro(NULL, "_flush_io");
     }
 }
 
