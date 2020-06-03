@@ -722,10 +722,8 @@ package or when debugging this package.\
 # Flush file IO during transactions (at a severe cost in performance
 # for rotational disks).
 # 1			enable
-# 0 			disable
-# -1 (or undefined)	autodetect on platforms where supported, otherwise
-# 			default to disabled
-#%_flush_io		-1
+# <= 0 (or undefined)	disable
+#%_flush_io		0
 
 # Set to 1 to have IMA signatures written also on %config files.
 # Note that %config files may be changed and therefore end up with
