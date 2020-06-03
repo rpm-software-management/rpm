@@ -27,6 +27,15 @@ systemd_inhibit_la_SOURCES = systemd_inhibit.c
 systemd_inhibit_la_CPPFLAGS = $(AM_CPPFLAGS) @DBUS_CFLAGS@
 systemd_inhibit_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la @DBUS_LIBS@
 plugins_LTLIBRARIES += systemd_inhibit.la
+
+dbus_announce_la_SOURCES = dbus_announce.c
+dbus_announce_la_CPPFLAGS = $(AM_CPPFLAGS) @DBUS_CFLAGS@
+dbus_announce_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la @DBUS_LIBS@
+plugins_LTLIBRARIES += dbus_announce.la
+
+dbus_confdir=$(sysconfdir)/dbus-1/system.d/
+dbus_conf_DATA = org.rpm.conf
+EXTRA_DIST = org.rpm.conf
 endif
 
 prioreset_la_SOURCES = prioreset.c
