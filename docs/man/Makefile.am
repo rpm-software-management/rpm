@@ -23,6 +23,7 @@ man_man8_DATA += rpm-plugin-audit.8
 endif
 if DBUS
 man_man8_DATA += rpm-plugin-systemd-inhibit.8
+man_man8_DATA += rpm-plugin-dbus-announce.8
 endif
 if IMA
 man_man8_DATA += rpm-plugin-ima.8
@@ -42,7 +43,7 @@ endif
 EXTRA_DIST += rpm-plugins.8.md rpm-plugin-prioreset.8.md rpm-plugin-syslog.8.md
 EXTRA_DIST += rpm-plugin-audit.8.md rpm-plugin-systemd-inhibit.8.md
 EXTRA_DIST += rpm-plugin-ima.8.md rpm-plugin-selinux.8.md rpm2archive.8.md
-EXTRA_DIST += rpm-plugin-fapolicyd.8.md
+EXTRA_DIST += rpm-plugin-fapolicyd.8.md rpm-plugin-dbus-announce.8.md
 
 
 man_fr_man8dir = $(mandir)/fr/man8
