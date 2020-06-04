@@ -72,13 +72,16 @@ class TransactionSet(TransactionSetCore):
         upgrade = (how == "u")
 
         if not TransactionSetCore.addInstall(self, header, key, upgrade):
-            raise rpm.error("adding package to transaction failed")
+            if upgrade:
+                raise rpm.error("adding upgrade to transaction failed")
+            else:
+                raise rpm.error("adding install to transaction failed")
 
     def addReinstall(self, item, key):
         header = self._f2hdr(item)
 
         if not TransactionSetCore.addReinstall(self, header, key):
-            raise rpm.error("adding package to transaction failed")
+            raise rpm.error("adding reinstall to transaction failed")
 
     def addErase(self, item):
         hdrs = []
@@ -95,7 +98,7 @@ class TransactionSet(TransactionSetCore):
 
         for h in hdrs:
             if not TransactionSetCore.addErase(self, h):
-                raise rpm.error("package not installed")
+                raise rpm.error("adding erasure to transaction failed")
 
         # garbage collection should take care but just in case...
         if isinstance(hdrs, rpm.mi):
