@@ -382,7 +382,8 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 			   getStringBuf(spec->check), test, sbp)))
 		goto exit;
 
-	if ((rc = reparsePostbuild(spec)))
+	if (((what & RPMBUILD_INSTALL) || (what & RPMBUILD_PACKAGEBINARY)) &&
+	    (rc = reparsePostbuild(spec)))
 	    goto exit;
 
 	if ((what & RPMBUILD_PACKAGESOURCE) &&
