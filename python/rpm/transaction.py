@@ -85,24 +85,28 @@ class TransactionSet(TransactionSetCore):
 
     def addErase(self, item):
         hdrs = []
-        if isinstance(item, rpm.hdr):
-            hdrs = [item]
-        elif isinstance(item, rpm.mi):
+        # match iterators are passed on as-is
+        if isinstance(item, rpm.mi):
             hdrs = item
-        elif isinstance(item, int):
-            hdrs = self.dbMatch(rpm.RPMDBI_PACKAGES, item)
-        elif isinstance(item, str):
-            hdrs = self.dbMatch(rpm.RPMDBI_LABEL, item)
+        elif isinstance(item, rpm.hdr):
+            hdrs.append(item)
+        elif isinstance(item, (int, str)):
+            if isinstance(item, int):
+                dbi = rpm.RPMDBI_PACKAGES
+            else:
+                dbi = rpm.RPMDBI_LABEL
+
+            for h in self.dbMatch(dbi, item):
+                hdrs.append(h)
+
+            if not hdrs:
+                raise rpm.error("package not installed")
         else:
             raise TypeError("invalid type %s" % type(item))
 
         for h in hdrs:
             if not TransactionSetCore.addErase(self, h):
                 raise rpm.error("adding erasure to transaction failed")
-
-        # garbage collection should take care but just in case...
-        if isinstance(hdrs, rpm.mi):
-            del hdrs
 
     def run(self, callback, data):
         rc = TransactionSetCore.run(self, callback, data, self._probFilter)
