@@ -1139,7 +1139,8 @@ exit:
     return spec;
 
 errxit:
-    rpmSpecFree(spec);
+    if (!secondary)
+	rpmSpecFree(spec);
     return NULL;
 }
 
