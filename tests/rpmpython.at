@@ -259,6 +259,28 @@ for e in ts:
 [foo-1.0-1.noarch]
 )
 
+RPMPY_TEST([add erasure to transaction],[
+ts = rpm.ts()
+for i in ['foo', 1234]:
+    myprint('addErase %s' % i)
+    try:
+        ts.addErase(i)
+    except rpm.error as err:
+        myprint(err)
+myprint('addErase mi')
+mi = ts.dbMatch('name', 'foo')
+try:
+    ts.addErase(mi)
+except rpm.error as err:
+    myprint(err)
+],
+[addErase foo
+package not installed
+addErase 1234
+package not installed
+addErase mi]
+)
+
 RPMPY_TEST([add bogus package to transaction 1],[
 ts = rpm.ts()
 h = rpm.hdr()
