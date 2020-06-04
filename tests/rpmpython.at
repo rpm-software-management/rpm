@@ -264,13 +264,13 @@ ts = rpm.ts()
 h = rpm.hdr()
 h['name'] = "foo"
 try:
-    ts.addInstall(h, 'foo', 'u')
+    ts.addInstall(h, 'foo', 'i')
 except rpm.error as err:
     myprint(err)
 for e in ts:
     myprint(e.NEVRA())
 ],
-[adding package to transaction failed]
+[adding install to transaction failed]
 )
 
 RPMPY_TEST([add bogus package to transaction 2],[
@@ -291,7 +291,7 @@ except rpm.error as err:
 for e in ts:
     myprint(e.NEVRA())
 ],
-[adding package to transaction failed]
+[adding upgrade to transaction failed]
 )
 
 AT_SETUP([database iterators])
