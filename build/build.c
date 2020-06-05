@@ -310,6 +310,9 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 	    rpmlog(RPMLOG_NOTICE, _("setting %s=%s\n"), "SOURCE_DATE_EPOCH", sdestr);
 	    setenv("SOURCE_DATE_EPOCH", sdestr, 0);
 	    rpmtdFreeData(&td);
+	} else {
+	    rpmlog(RPMLOG_WARNING, _("source_date_epoch_from_changelog set but "
+	        "%%changelog is missing\n"));
 	}
     }
 
