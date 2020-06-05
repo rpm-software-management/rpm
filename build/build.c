@@ -378,6 +378,7 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 		goto exit;
 
 	if ((what & RPMBUILD_CHECK) &&
+	    (!rpmExpandNumeric("%{_without_check}")) &&
 	    (rc = doScript(spec, RPMBUILD_CHECK, "%check",
 			   getStringBuf(spec->check), test, sbp)))
 		goto exit;

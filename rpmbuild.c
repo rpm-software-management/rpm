@@ -473,6 +473,12 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     if (_anyarch(buildAmount))
 	specFlags |= RPMSPEC_ANYARCH;
 #undef	_anyarch
+
+    if (!(buildAmount & RPMBUILD_CHECK)) {
+	rpmDefineMacro(NULL, "_without_check 1", 0);
+    } else if (!rpmMacroIsDefined(NULL, "_without_check")) {
+	rpmDefineMacro(NULL, "_without_check 0", 0);
+    }
     
     spec = rpmSpecParse(specFile, specFlags, buildRootURL);
     if (spec == NULL) {
