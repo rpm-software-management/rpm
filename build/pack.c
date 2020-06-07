@@ -618,6 +618,7 @@ static rpmRC checkPackageSet(Package pkgs)
 {
     char *pkglist = NULL;
     char *pkgcheck_set = NULL;
+    rpmRC rc = RPMRC_OK;
 
     for (Package pkg = pkgs; pkg != NULL; pkg = pkg->next) {
 	if (pkg->filename)
@@ -628,11 +629,11 @@ static rpmRC checkPackageSet(Package pkgs)
 
     /* run only if _build_pkgcheck_set is defined */
     if (pkgcheck_set[0] != ' ')
-	checkPackages(pkgcheck_set);
+	rc = checkPackages(pkgcheck_set);
 
     free(pkgcheck_set);
     free(pkglist);
-    return RPMRC_OK;
+    return rc;
 }
 
 /* watchout, argument is modified */
@@ -782,7 +783,7 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 
     /* Now check the package set if enabled */
     if (rc == RPMRC_OK)
-	checkPackageSet(spec->packages);
+	rc = checkPackageSet(spec->packages);
 
     free(tasks);
 
