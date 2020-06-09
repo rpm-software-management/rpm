@@ -765,7 +765,7 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
     #pragma omp parallel
     #pragma omp single
     for (int i = 0; i < npkgs; i++) {
-	pkg = tasks[i];
+	Package pkg = tasks[i];
 	#pragma omp task untied priority(i)
 	{
 	pkg->rc = packageBinary(spec, pkg, cookie, cheating, &pkg->filename);
