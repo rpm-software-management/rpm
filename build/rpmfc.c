@@ -1404,7 +1404,7 @@ static struct DepMsg_s depMsgs[] = {
 	RPMTAG_ENHANCENAME, RPMTAG_ENHANCEVERSION, RPMTAG_ENHANCEFLAGS,
 	0, -1 },
   { "OrderWithRequires",	{ "%{?__find_orderwithrequires}", NULL, NULL, NULL },
-	RPMTAG_ORDERNAME, RPMTAG_ORDERFLAGS,
+	RPMTAG_ORDERNAME, RPMTAG_ORDERVERSION, RPMTAG_ORDERFLAGS,
 	0, -1 },
   { NULL,		{ NULL, NULL, NULL, NULL },	0, 0, 0, 0, 0 }
 };
@@ -1479,7 +1479,7 @@ static rpmRC rpmfcApplyExternal(rpmfc fc)
 	case RPMTAG_ENHANCEFLAGS:
 	case RPMTAG_CONFLICTFLAGS:
 	case RPMTAG_OBSOLETEFLAGS:
-	case RPMTAG_ORDERNAME:
+	case RPMTAG_ORDERFLAGS:
 	    if (fc->skipReq)
 		continue;
 	    tagflags = RPMSENSE_FIND_REQUIRES;
