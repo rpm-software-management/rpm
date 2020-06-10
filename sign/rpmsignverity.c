@@ -95,7 +95,7 @@ static char *rpmVeritySignFile(rpmfi fi, size_t *sig_size, char *key,
 }
 
 rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
-		    char *keypass, char *cert)
+		    char *keypass, char *cert, uint16_t algo)
 {
     int rc;
     FD_t gzdi;
@@ -111,7 +111,6 @@ rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
     char **signatures = NULL;
     size_t sig_size;
     int nr_files, idx;
-    uint16_t algo;
     uint32_t algo32;
 
     Fseek(fd, 0, SEEK_SET);
@@ -156,7 +155,8 @@ rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
     nr_files = rpmfiFC(hfi);
     signatures = xcalloc(nr_files, sizeof(char *));
 
-    algo = FS_VERITY_HASH_ALG_SHA256;
+    if (!algo)
+	    algo = FS_VERITY_HASH_ALG_SHA256;
 
     rpmlog(RPMLOG_DEBUG, _("file count - header: %i, payload %i\n"),
 	   nr_files, rpmfiFC(fi));

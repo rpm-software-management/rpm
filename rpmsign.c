@@ -25,6 +25,7 @@ static char * fileSigningKey = NULL;
 #endif
 #ifdef WITH_FSVERITY
 static char * fileSigningCert = NULL;
+static char * verityAlgorithm = NULL;
 #endif
 
 static struct rpmSignArgs sargs = {NULL, 0, 0};
@@ -52,6 +53,9 @@ static struct poptOption signOptsTable[] = {
     { "signverity", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR),
 	&sargs.signflags, RPMSIGN_FLAG_FSVERITY,
 	N_("generate fsverity signatures for package(s) files"), NULL},
+    { "verityalgo", '\0', POPT_ARG_STRING, &verityAlgorithm, 0,
+	N_("algorithm to use for verity signatures, default sha256"),
+	N_("<algorithm>") },
     { "certpath", '\0', POPT_ARG_STRING, &fileSigningCert, 0,
 	N_("use file signing cert <cert>"),
 	N_("<cert>") },
@@ -137,6 +141,9 @@ static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
 #ifdef WITH_FSVERITY
     if (fileSigningCert) {
 	rpmPushMacro(NULL, "_file_signing_cert", NULL, fileSigningCert, RMIL_GLOBAL);
+    }
+    if (verityAlgorithm) {
+	rpmPushMacro(NULL, "_verity_algorithm", NULL, verityAlgorithm, RMIL_GLOBAL);
     }
 #endif
 
