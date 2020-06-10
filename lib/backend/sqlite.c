@@ -548,13 +548,24 @@ static unsigned int sqlite_pkgdbKey(dbiIndex dbi, dbiCursor dbc)
     return sqlite3_column_int(dbc->stmt, 0);
 }
 
-static rpmRC sqlite_idxdbByKey(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexSet *set)
+static rpmRC sqlite_idxdbByKey(dbiIndex dbi, dbiCursor dbc,
+			    const char *keyp, size_t keylen, int searchType,
+			    dbiIndexSet *set)
 {
-    int rc = dbiCursorPrep(dbc, "SELECT hnum, idx FROM '%q' WHERE key=?",
-			dbi->dbi_file);
+    int rc = RPMRC_NOTFOUND;
 
-    if (!rc)
-	rc = dbiCursorBindIdx(dbc, keyp, keylen, NULL);
+    if (searchType == DBC_PREFIX_SEARCH) {
+	rc = dbiCursorPrep(dbc, "SELECT hnum, idx FROM '%q' "
+				"WHERE MATCH(key,'%q',%d) "
+				"ORDER BY key",
+				dbi->dbi_file, keyp, keylen);
+    } else {
+	rc = dbiCursorPrep(dbc, "SELECT hnum, idx FROM '%q' WHERE key=?",
+			dbi->dbi_file);
+	if (!rc)
+	    rc = dbiCursorBindIdx(dbc, keyp, keylen, NULL);
+    }
+
 
     if (!rc) {
 	while ((rc = sqlite3_step(dbc->stmt)) == SQLITE_ROW) {
@@ -576,21 +587,13 @@ static rpmRC sqlite_idxdbByKey(dbiIndex dbi, dbiCursor dbc, const char *keyp, si
     return rc;
 }
 
-static rpmRC sqlite_idxdbIter(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexSet *set, int searchType)
+static rpmRC sqlite_idxdbIter(dbiIndex dbi, dbiCursor dbc, dbiIndexSet *set)
 {
     int rc = RPMRC_OK;
 
     if (dbc->stmt == NULL) {
-	if (searchType == DBC_PREFIX_SEARCH) {
-	    rc = dbiCursorPrep(dbc, "SELECT DISTINCT key FROM '%q' "
-				    "WHERE MATCH(key,'%q',%d) "
-				    "ORDER BY key",
-				    dbi->dbi_file, keyp, keylen);
-	} else {
-	    rc = dbiCursorPrep(dbc, "SELECT DISTINCT key FROM '%q' "
-				    "ORDER BY key",
+	rc = dbiCursorPrep(dbc, "SELECT DISTINCT key FROM '%q' ORDER BY key",
 				dbi->dbi_file);
-	}
 	if (set)
 	    dbc->subc = dbiCursorInit(dbi, 0);
     }
@@ -605,14 +608,14 @@ static rpmRC sqlite_idxdbIter(dbiIndex dbi, dbiCursor dbc, const char *keyp, siz
 	    dbc->key = sqlite3_column_blob(dbc->stmt, 0);
 	}
 	dbc->keylen = sqlite3_column_bytes(dbc->stmt, 0);
-	if (set)
-	    rc = sqlite_idxdbByKey(dbi, dbc->subc, dbc->key, dbc->keylen, set);
-	rc = RPMRC_OK;
-    } else if (rc == SQLITE_DONE) {
-	if (searchType == DBC_PREFIX_SEARCH && (*set))
+	if (dbc->subc) {
+	    rc = sqlite_idxdbByKey(dbi, dbc->subc, dbc->key, dbc->keylen,
+				    DBC_NORMAL_SEARCH, set);
+	} else {
 	    rc = RPMRC_OK;
-	else
-	    rc = RPMRC_NOTFOUND;
+	}
+    } else if (rc == SQLITE_DONE) {
+	rc = RPMRC_NOTFOUND;
     } else {
 	rc = dbiCursorResult(dbc);
     }
@@ -623,10 +626,10 @@ static rpmRC sqlite_idxdbIter(dbiIndex dbi, dbiCursor dbc, const char *keyp, siz
 static rpmRC sqlite_idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexSet *set, int searchType)
 {
     int rc;
-    if (keyp && searchType != DBC_PREFIX_SEARCH) {
-	rc = sqlite_idxdbByKey(dbi, dbc, keyp, keylen, set);
+    if (keyp) {
+	rc = sqlite_idxdbByKey(dbi, dbc, keyp, keylen, searchType, set);
     } else {
-	rc = sqlite_idxdbIter(dbi, dbc, keyp, keylen, set, searchType);
+	rc = sqlite_idxdbIter(dbi, dbc, set);
     }
 
     return rc;
