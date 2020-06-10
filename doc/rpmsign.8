@@ -55,6 +55,9 @@ Used with \fB--signfiles\fR, use file signing key \fIKey\fR.
 \fB--certpath \fICERT\fB\fR
 Used with \fB--signverity\fR, use file signing certificate \fICert\fR.
 .TP
+\fB--verityalgo \fIALG\fB\fR
+Used with \fB--signverity\fR, to specify the signing algorithm. sha256 and sha512 are supported, with sha256 being the default if this argument is not specified. This can also be specified with the macro %_verity_algorithm
+.TP
 \fB--signfiles\fR
 Sign package files. The macro \fB%_binary_filedigest_algorithm\fR must
 be set to a supported algorithm before building the package. The
