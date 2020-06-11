@@ -24,7 +24,6 @@ AT_SETUP([rpmbuild -ba *.spec])
 AT_KEYWORDS([build])
 RPMDB_INIT
 AT_CHECK([
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
@@ -42,7 +41,6 @@ AT_KEYWORDS([build])
 AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
 AT_CHECK([
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-*.patch ${TOPDIR}/SOURCES
@@ -59,7 +57,6 @@ AT_SETUP([rpmbuild --rebuild])
 AT_KEYWORDS([build])
 RPMDB_INIT
 AT_CHECK([
-rm -rf ${TOPDIR}
 
 run rpmbuild \
   --rebuild "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
@@ -73,7 +70,6 @@ AT_SETUP([rpmbuild --short-circuit -bl])
 AT_KEYWORDS([build])
 RPMDB_INIT
 AT_CHECK([
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
@@ -92,7 +88,6 @@ AT_SETUP([rpmbuild -tb <tar with bad spec>])
 AT_KEYWORDS([build])
 RPMDB_INIT
 AT_CHECK([
-rm -rf ${TOPDIR}
 
 runroot rpmbuild \
   -tb /data/SOURCES/hello-1.0.tar.gz
@@ -108,7 +103,6 @@ AT_SETUP([rpmbuild package with weird filenames])
 AT_KEYWORDS([build])
 RPMDB_INIT
 AT_CHECK([
-rm -rf ${TOPDIR}
 
 runroot rpmbuild -bb --quiet /data/SPECS/weirdnames.spec
 runroot rpm -qpl /build/RPMS/noarch/weirdnames-1.0-1.noarch.rpm
@@ -156,7 +150,6 @@ AT_SETUP([rpmbuild -tb])
 AT_KEYWORDS([build])
 RPMDB_INIT
 AT_CHECK([
-rm -rf ${TOPDIR}
 
 run rpmbuild \
   -ta "${RPMDATA}/SOURCES/hello-2.0.tar.gz"
@@ -219,7 +212,6 @@ AT_SETUP([rpmbuild %attr and %defattr])
 AT_KEYWORDS([build])
 RPMDB_INIT
 AT_CHECK([[
-rm -rf ${TOPDIR}
 
 runroot rpmbuild \
   -bb --quiet /data/SPECS/attrtest.spec
@@ -261,7 +253,6 @@ AT_KEYWORDS([build])
 RPMDB_INIT
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 
 runroot rpmbuild \
   -bb --quiet /data/SPECS/hlinktest.spec
@@ -292,7 +283,6 @@ AT_KEYWORDS([build])
 RPMDB_INIT
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 
 runroot rpmbuild \
   -bb --quiet --with unpackaged_files /data/SPECS/hlinktest.spec
@@ -313,7 +303,6 @@ AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 RPMDB_INIT
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 
 runroot rpmbuild \
   -bb --quiet --with unpackaged_dirs /data/SPECS/hlinktest.spec
@@ -332,7 +321,6 @@ AT_KEYWORDS([build])
 RPMDB_INIT
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 
 runroot rpmbuild -bb --quiet /data/SPECS/globtest.spec
 runroot rpm -qp \
@@ -365,7 +353,6 @@ AT_SETUP([rpmbuild prefixpostfix])
 AT_KEYWORDS([build])
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 
 runroot rpmbuild -bb --quiet \
 	/data/SPECS/prefixtest.spec
@@ -581,7 +568,6 @@ AT_SETUP([rpmbuild archive sanity])
 AT_KEYWORDS([build])
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 
 runroot rpmbuild \
   -bb --quiet /data/SPECS/attrtest.spec
@@ -600,7 +586,6 @@ AT_SETUP([rpmbuild debuginfo minisymtab])
 AT_KEYWORDS([build] [debuginfo])
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 
 # Use macros.debug to generate a debuginfo package.
 export CFLAGS="-g"
@@ -638,7 +623,6 @@ AT_SETUP([rpmbuild debuginfo minisymtab strip -g])
 AT_KEYWORDS([build] [debuginfo])
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 
 # Use macros.debug to generate a debuginfo package.
 export CFLAGS="-g"
@@ -678,7 +662,6 @@ AT_SETUP([rpmbuild debuginfo dwz])
 AT_KEYWORDS([build] [debuginfo] [dwz])
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
@@ -768,7 +751,6 @@ AT_SETUP([rpmbuild no debuginfo])
 AT_KEYWORDS([build] [debuginfo])
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 
 # Use macros.debug to generate a debuginfo package,
 # but pass --nodebuginfo to skip it.
@@ -802,7 +784,6 @@ AT_SETUP([rpmbuild debuginfo dwz unique debug names])
 AT_KEYWORDS([build] [debuginfo] [dwz])
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
@@ -892,7 +873,6 @@ AT_SETUP([rpmbuild debuginfo dwz gnu_debuglink crc])
 AT_KEYWORDS([build] [debuginfo])
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Build a package that
@@ -927,7 +907,6 @@ AT_SETUP([rpmbuild implicit suid binary])
 AT_KEYWORDS([build] [debuginfo] [dwz] [suid])
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Build a package that has some debuginfo
@@ -962,7 +941,6 @@ AT_SETUP([rpmbuild debuginfo gdb index included])
 AT_KEYWORDS([build] [debuginfo] [gdb])
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Build a package that has some debuginfo
@@ -992,7 +970,6 @@ AT_SETUP([rpmbuild debuginfo no gdb index included])
 AT_KEYWORDS([build] [debuginfo] [gdb])
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Build a package that has some debuginfo
@@ -1021,7 +998,6 @@ AT_SETUP([rpmbuild debuginfo -g3 .debug_macro])
 AT_KEYWORDS([build] [debuginfo] [gdb])
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Build a package that has some debuginfo generated with -g3.
@@ -1055,7 +1031,6 @@ AT_SETUP([rpmbuild debuginfo unique debug src dir])
 AT_KEYWORDS([build] [debuginfo])
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Build a package that has some debuginfo
@@ -1095,7 +1070,6 @@ AT_SETUP([rpmbuild debuginfo no unique debug src dir])
 AT_KEYWORDS([build] [debuginfo])
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Build a package that has some debuginfo
@@ -1132,7 +1106,6 @@ AT_SETUP([rpmbuild debugsource])
 AT_KEYWORDS([build] [debuginfo] [debugsource])
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Build a package that has some debuginfo
@@ -1169,7 +1142,6 @@ AT_KEYWORDS([build] [debuginfo] [debugsource])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Setup sources
@@ -1199,7 +1171,6 @@ AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Setup sources
@@ -1243,7 +1214,6 @@ AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Setup sources
@@ -1329,7 +1299,6 @@ AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Setup sources
@@ -1415,7 +1384,6 @@ AT_KEYWORDS([build] [debuginfo] [debugsubpackage] [debugsource])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Setup sources
@@ -1504,7 +1472,6 @@ AT_KEYWORDS([build] [debuginfo] [debugsubpackage] [debugsource])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Setup sources
@@ -1570,7 +1537,6 @@ AT_KEYWORDS([build] [debuginfo] [debugsubpackage] [debugsource])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Setup sources
@@ -1642,7 +1608,6 @@ AT_SETUP([dynamic build requires rpmbuild -bs])
 AT_KEYWORDS([build])
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 cp "${abs_srcdir}"/data/SOURCES/buildrequires-1.0.tar.gz ${TOPDIR}/SOURCES
@@ -1665,7 +1630,6 @@ AT_SETUP([rpmbuild -br])
 AT_KEYWORDS([build])
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 cp "${abs_srcdir}"/data/SOURCES/buildrequires-1.0.tar.gz ${TOPDIR}/SOURCES
@@ -1689,7 +1653,6 @@ AT_SETUP([rpmbuild -ba])
 AT_KEYWORDS([build])
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 cp "${abs_srcdir}"/data/SOURCES/buildrequires-1.0.tar.gz ${TOPDIR}/SOURCES
@@ -1714,7 +1677,6 @@ AT_SETUP([rpmbuild -br --nodeps])
 AT_KEYWORDS([build])
 AT_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 cp "${abs_srcdir}"/data/SOURCES/buildrequires-1.0.tar.gz ${TOPDIR}/SOURCES
@@ -1741,7 +1703,6 @@ AT_SETUP([rpmbuild -ba missing source])
 AT_KEYWORDS([build])
 AT_CHECK_UNQUOTED([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 runroot rpmbuild \
@@ -1757,7 +1718,6 @@ AT_SETUP([rpmbuild minimal spec])
 AT_KEYWORDS([build])
 AT_CHECK_UNQUOTED([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 
 runroot rpmbuild \
   -bb --quiet /data/SPECS/mini.spec
@@ -1771,7 +1731,6 @@ AT_SETUP([rpmbuild missing doc])
 AT_KEYWORDS([build])
 AT_CHECK_UNQUOTED([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 
 for val in 1 0; do
     runroot rpmbuild \
