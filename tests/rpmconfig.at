@@ -9,7 +9,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -37,7 +36,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -71,7 +69,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -97,7 +94,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -122,7 +118,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -151,7 +146,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -182,7 +176,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -211,7 +204,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -238,7 +230,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -270,7 +261,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -299,7 +289,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -334,7 +323,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -368,7 +356,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -399,7 +386,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -432,7 +418,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -462,7 +447,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -498,7 +482,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -532,7 +515,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 for s in "A" "B"; do
     for v in "1.0" "2.0"; do
@@ -569,7 +551,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 for s in "A" "B"; do
     for v in "1.0" "2.0"; do
@@ -608,7 +589,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 for s in "A" "B"; do
     for v in "1.0" "2.0"; do
@@ -644,7 +624,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 for s in "A" "B"; do
     for v in "1.0" "2.0"; do
@@ -686,7 +665,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 for s in "A" "B"; do
     for v in "1.0" "2.0"; do
@@ -726,7 +704,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 for s in "A" "B"; do
     for v in "1.0" "2.0"; do
@@ -769,7 +746,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 for s in "A" "B"; do
     for v in "1.0" "2.0"; do
@@ -809,7 +785,6 @@ AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-rm -rf "${TOPDIR}"
 
 for v in 1.0 2.0; do
     runroot rpmbuild --quiet -bb \

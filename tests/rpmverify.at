@@ -8,7 +8,6 @@ AT_SETUP([dependency problems])
 AT_KEYWORDS([verify])
 AT_CHECK([
 RPMDB_INIT
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -67,7 +66,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -98,7 +96,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -229,7 +226,6 @@ AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
 
-rm -rf "${TOPDIR}"
 runroot rpmbuild --quiet -bb /data/SPECS/verifyscript.spec
 runroot rpm -U --nodeps /build/RPMS/noarch/verifyscript-1.0-1.noarch.rpm
 rm -f "${RPMTEST}"/var/checkme
@@ -246,7 +242,6 @@ AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
 
-rm -rf "${TOPDIR}"
 runroot rpmbuild --quiet -bb /data/SPECS/verifyscript.spec
 runroot rpm -U --nodeps /build/RPMS/noarch/verifyscript-1.0-1.noarch.rpm
 touch "${RPMTEST}"/var/checkme
@@ -263,7 +258,6 @@ AT_SETUP([shared file timestamp behavior])
 AT_KEYWORDS([verify])
 AT_CHECK([
 RPMDB_INIT
-rm -rf "${TOPDIR}"
 
 # create packages sharing a file but with different timestamp
 for p in "one" "two"; do
@@ -293,7 +287,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}" "${tf}".rpm*
-rm -rf "${TOPDIR}"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -364,7 +357,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}" "${tf}".rpm*
-rm -rf "${TOPDIR}"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -442,7 +434,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}" "${tf}".rpm*
-rm -rf "${TOPDIR}"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -508,7 +499,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}" "${tf}".rpm*
-rm -rf "${TOPDIR}"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -581,7 +571,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}" "${tf}".rpm*
-rm -rf "${TOPDIR}"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \

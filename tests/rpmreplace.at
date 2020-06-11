@@ -7,7 +7,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}" "${tf}".rpm*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -42,7 +41,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -77,7 +75,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -112,7 +109,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -144,7 +140,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -176,7 +171,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -208,7 +202,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -238,7 +231,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -268,7 +260,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -298,7 +289,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -328,7 +318,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -355,7 +344,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -383,7 +371,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -418,7 +405,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -449,7 +435,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -477,7 +462,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -505,7 +489,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -534,7 +517,6 @@ AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -564,7 +546,6 @@ AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
