@@ -166,6 +166,8 @@ AT_CLEANUP
 AT_SETUP([verify file attribute filtering])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
+
 runroot rpmbuild -bb --quiet \
   /data/SPECS/vattrtest.spec
 
