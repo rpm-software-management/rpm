@@ -26,6 +26,7 @@ m4_define([RPM_DEBUGEDIT_SETUP],[[
 # Create some test binaries. Create and build them in different subdirs
 # to make sure they produce different relative/absolute paths.
 
+export HOME=${PWD}
 mkdir subdir_foo
 cp "${abs_srcdir}"/data/SOURCES/foo.c subdir_foo
 mkdir subdir_bar

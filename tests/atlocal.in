@@ -21,7 +21,7 @@ DBFORMAT=$(awk '/^%_db_backend/{print $2}' "${RPM_CONFIGDIR}/macros")
 export DBFORMAT
 
 # Popt looks into $HOME
-HOME="${RPMTEST}"
+HOME="${PWD}"
 export HOME
 
 TZ=UTC
@@ -29,7 +29,7 @@ export TZ
 
 unset SOURCE_DATE_EPOCH
 
-TOPDIR="${RPMTEST}/build"
+TOPDIR="${HOME}/build"
 
 RPM_XFAIL=${RPM_XFAIL-1}
 if grep -q 'WITH_LUA 1' "${abs_top_builddir}/config.h"; then
@@ -48,13 +48,25 @@ else
     CAP_DISABLED=true;
 fi
 
+function setup_env()
+{
+    if [ -d testing ]; then
+        RPMTEST=${PWD}/testing
+        HOME=${RPMTEST}
+        RPM_CONFIGDIR=${RPMTEST}/@RPMCONFIGDIR@
+        export RPMTEST HOME RPM_CONFIGDIR
+    fi
+}
+
 function run()
 {
+    setup_env
     "$@" --define "_buildhost testhost" --define "_tmppath ${RPMTEST}/tmp" --define "_topdir ${TOPDIR}" --define "_db_backend ${DBFORMAT}" --dbpath="${RPMTEST}/var/lib/rpm/"
 }
 
 function rundebug()
 {
+    setup_env
     cp ${RPMDATA}/macros.debug ${RPM_CONFIGDIR}/macros.d/
     "$@" --define "_buildhost testhost" --define "_tmppath ${RPMTEST}/tmp" --define "_topdir ${TOPDIR}" --define "_db_backend ${DBFORMAT}" --dbpath="${RPMTEST}/var/lib/rpm/"
     rm -f ${RPM_CONFIGDIR}/macros.d/macros.debug
@@ -62,6 +74,7 @@ function rundebug()
 
 function runroot()
 {
+    setup_env
     (unset RPM_CONFIGDIR RPM_POPTEXEC_PATH; cd ${RPMTEST} && \
      MAGIC="/magic/magic" FAKECHROOT_BASE="${RPMTEST}" fakechroot "$@" --define "_buildhost testhost" --define "_topdir /build" --noplugins --nouserns
     )
@@ -69,6 +82,7 @@ function runroot()
 
 function runroot_other()
 {
+    setup_env
     (unset RPM_CONFIGDIR RPM_POPTEXEC_PATH; cd ${RPMTEST} && \
      FAKECHROOT_BASE="${RPMTEST}" fakechroot "$@"
     )

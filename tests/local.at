@@ -1,9 +1,20 @@
 AT_TESTED([rpm rpmbuild rpmquery])
 
-m4_define([RPMDB_INIT],[[
-rm -rf "${RPMTEST}"$(run rpm --eval '%_dbpath')/*
-runroot rpm --initdb
+m4_define([RPMTEST_SETUP],[[
+if ! [ -d testing/ ]; then
+    cp -aP "${RPMTEST}" .
+    chmod -R u+w testing/
+fi
+export RPMTEST="${PWD}/testing"
+export TOPDIR="${RPMTEST}/build"
+export HOME="${RPMTEST}"
 ]])
+
+m4_define([RPMDB_INIT],[
+RPMTEST_SETUP
+rm -rf "${RPMTEST}"`rpm --eval '%_dbpath'`/*
+runroot rpm --initdb
+])
 
 m4_define([RPMPY_RUN],[[
 cat << EOF > test.py
@@ -21,13 +32,13 @@ ${PYTHON} test.py
 
 m4_define([RPMPY_CHECK],[
 AT_SKIP_IF([$PYTHON_DISABLED])
+RPMTEST_SETUP
 AT_CHECK([RPMPY_RUN([$1])], [], [$2], [$3])
 ])
 
 m4_define([RPMPY_TEST],[
 AT_SETUP([$1])
 AT_KEYWORDS([python])
-RPMDB_INIT
 RPMPY_CHECK([$2], [$3], [$4])
 AT_CLEANUP
 ])
