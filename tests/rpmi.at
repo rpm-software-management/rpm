@@ -440,9 +440,7 @@ error: open of not_pkg.rpm failed: No such file or directory
 AT_CLEANUP
 
 # ------------------------------
-# Test normal upgrade
-AT_SETUP([rpm -U upgrade to newer])
-AT_CHECK([
+AT_SETUP([rpm upgrade/downgrade])
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -452,6 +450,9 @@ for v in "1.0" "2.0"; do
           /data/SPECS/versiontest.spec
 done
 
+# Test normal upgrade
+AT_CHECK([
+RPMDB_INIT
 runroot rpm -U /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm
 runroot rpm -U /build/RPMS/noarch/versiontest-2.0-1.noarch.rpm
 runroot rpm -q versiontest
@@ -460,10 +461,8 @@ runroot rpm -q versiontest
 [versiontest-2.0-1.noarch
 ],
 [])
-AT_CLEANUP
 
 # Test upgrading to older package (should fail)
-AT_SETUP([rpm -U upgrade to older])
 AT_CHECK([
 RPMDB_INIT
 
@@ -474,10 +473,8 @@ runroot rpm -U /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm
 [],
 [	package versiontest-2.0-1.noarch (which is newer than versiontest-1.0-1.noarch) is already installed
 ])
-AT_CLEANUP
 
 # Test downgrading to older package with --oldpackage
-AT_SETUP([rpm -U --oldpackage downgrade])
 AT_CHECK([
 RPMDB_INIT
 
@@ -489,10 +486,8 @@ runroot rpm -q versiontest
 [versiontest-1.0-1.noarch
 ],
 [ignore])
-AT_CLEANUP
 
 # Test upgrade of different versions in same transaction
-AT_SETUP([rpm -U two versions of same package 1])
 AT_CHECK([
 RPMDB_INIT
 
@@ -509,10 +504,8 @@ versiontest-2.0-1.noarch
 ],
 [warning: package versiontest-1.0-1.noarch was already added, replacing with versiontest-2.0-1.noarch
 ])
-AT_CLEANUP
 
 # Test upgrade of different versions in same transaction
-AT_SETUP([rpm -U two versions of same package 2])
 AT_CHECK([
 RPMDB_INIT
 
@@ -529,6 +522,37 @@ versiontest-2.0-1.noarch
 ],
 [warning: package versiontest-2.0-1.noarch was already added, skipping versiontest-1.0-1.noarch
 ])
+
+# Test install of two different versions in same transaction
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpm -i \
+  /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm \
+  /build/RPMS/noarch/versiontest-2.0-1.noarch.rpm
+runroot rpm -q versiontest
+],
+[0],
+[versiontest-2.0-1.noarch
+versiontest-1.0-1.noarch
+],
+[])
+
+# Test install of two different versions in same transaction
+# TODO: test only one was installed
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpm -i \
+  /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm \
+  /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm
+runroot rpm -q versiontest
+],
+[0],
+[versiontest-1.0-1.noarch
+],
+[])
+# TODO: the same with epoch vs no epoch
 AT_CLEANUP
 
 # Test upgrade of obsoleted package in same transaction
@@ -588,42 +612,6 @@ deptest-one-1.0-1.noarch
 [warning: package deptest-one-1.0-1.noarch was already added, skipping deptest-two-1.0-1.noarch
 ])
 AT_CLEANUP
-
-# Test install of two different versions in same transaction
-AT_SETUP([rpm -i two versions of same package])
-AT_CHECK([
-RPMDB_INIT
-
-runroot rpm -i \
-  /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm \
-  /build/RPMS/noarch/versiontest-2.0-1.noarch.rpm
-runroot rpm -q versiontest
-],
-[0],
-[versiontest-2.0-1.noarch
-versiontest-1.0-1.noarch
-],
-[])
-AT_CLEANUP
-
-# Test install of two different versions in same transaction
-# TODO: test only one was installed
-AT_SETUP([rpm -i identical versions of same package])
-AT_CHECK([
-RPMDB_INIT
-
-runroot rpm -i \
-  /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm \
-  /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm
-runroot rpm -q versiontest
-],
-[0],
-[versiontest-1.0-1.noarch
-],
-[])
-AT_CLEANUP
-
-# TODO: the same with epoch vs no epoch
 
 AT_SETUP([rpm -U with invalid --relocate])
 AT_KEYWORDS([install relocate])
