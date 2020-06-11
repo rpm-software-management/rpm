@@ -591,7 +591,7 @@ rundebug rpmbuild --quiet \
 
 # Extract the main package and inspect the hello binary
 # It should contain .gnu_debugdata, but not the full .symtab
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-1.*.rpm | cpio -diu
+rpm2cpio ${RPMTEST}/build/RPMS/*/hello-1.0-1.*.rpm | cpio -diu
 test -f ./usr/local/bin/hello || exit 1
 readelf -S ./usr/local/bin/hello |\
    grep -q .gnu_debugdata; test $? == 0 || exit 1
@@ -599,7 +599,7 @@ readelf -S ./usr/local/bin/hello \
   | grep -q .symtab; test $? == 1 || exit 1
 
 # And the opposite for the debuginfo package
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
   | cpio -diu
 test -f ./usr/lib/debug/usr/local/bin/hello*.debug || exit 1
 readelf -S ./usr/lib/debug/usr/local/bin/hello*.debug \
@@ -629,7 +629,7 @@ rundebug rpmbuild --quiet \
 
 # Extract the main package and inspect the hello binary
 # It should contain .symtab (because of strip -g), so doesn't .gnu_debugdata.
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-1.*.rpm | cpio -diu
+rpm2cpio ${RPMTEST}/build/RPMS/*/hello-1.0-1.*.rpm | cpio -diu
 test -f ./usr/local/bin/hello || exit 1
 readelf -S ./usr/local/bin/hello \
   | grep -q .gnu_debugdata; test $? == 1 || exit 1
@@ -637,7 +637,7 @@ readelf -S ./usr/local/bin/hello \
   | grep -q .symtab; test $? == 0 || exit 1
 
 # The debuginfo package should contain neither. The .symtab is NOBITS.
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
   | cpio -diu
 test -f ./usr/lib/debug/usr/local/bin/hello*.debug || exit 1
 readelf -S ./usr/lib/debug/usr/local/bin/hello*.debug \
@@ -670,7 +670,7 @@ rundebug rpmbuild --quiet \
 
 # The debuginfo package should contain a .debug file for each binary
 # and a dwz multi file that contains the shared debuginfo between them.
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
   | cpio -diu
 
 hello_file_debug=./usr/lib/debug/usr/local/bin/hello.debug
@@ -682,7 +682,7 @@ test -f $hello_multi_file || echo "no dwz multi file: $hello_multi_file"
 
 # Make sure the main package binaries contain the correct build-ids
 # linking them to the debug packages.
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/hello2-1.0-1.*.rpm \
   | cpio -diu
 hello_file=./usr/local/bin/hello
 hello2_file=./usr/local/bin/hello2
@@ -757,7 +757,7 @@ rundebug rpmbuild --quiet --nodebuginfo \
 
 # Extract the main package and inspect the hello binary
 # It should not contain .gnu_debugdata, but the full .symtab
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-1.0-1.*.rpm | cpio -diu
+rpm2cpio ${RPMTEST}/build/RPMS/*/hello-1.0-1.*.rpm | cpio -diu
 test -f ./usr/local/bin/hello || exit 1
 readelf -S ./usr/local/bin/hello |\
    grep -q .gnu_debugdata; test $? == 1 || exit 1
@@ -765,7 +765,7 @@ readelf -S ./usr/local/bin/hello \
   | grep -q .symtab; test $? == 0 || exit 1
 
 # And the opposite for the debuginfo package
-test ! -e ${abs_builddir}/testing/build/RPMS/*/hello-debuginfo-1.0-1.*.rpm || exit 1
+test ! -e ${RPMTEST}/build/RPMS/*/hello-debuginfo-1.0-1.*.rpm || exit 1
 ],
 [0],
 [],
@@ -791,7 +791,7 @@ rundebug rpmbuild --quiet \
 
 # The debuginfo package should contain a .debug file for each binary
 # and a dwz multi file that contains the shared debuginfo between them.
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
   | cpio -diu
 
 hello_file_debug=./usr/lib/debug/usr/local/bin/hello-*.debug
@@ -803,7 +803,7 @@ test -f $hello_multi_file || echo "no dwz multi file: $hello_multi_file"
 
 # Make sure the main package binaries contain the correct build-ids
 # linking them to the debug packages.
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/hello2-1.0-1.*.rpm \
   | cpio -diu
 hello_file=./usr/local/bin/hello
 hello2_file=./usr/local/bin/hello2
@@ -879,9 +879,9 @@ rundebug rpmbuild --quiet \
   -ba "${abs_srcdir}"/data/SPECS/hello2.spec
 
 # Unpack the main and debuginfo rpms so we can check binaries and .debug files.
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
   | cpio -diu
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/hello2-1.0-1.*.rpm \
   | cpio -diu
 
 # Check that dwz has ran and a multi file has been produced
@@ -913,7 +913,7 @@ rundebug rpmbuild --quiet \
   -ba "${abs_srcdir}"/data/SPECS/hello2-suid.spec
 
 # Unpack rpm so we can check the included binaries.
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/hello2-1.0-1.*.rpm \
   | cpio -diu --quiet
 
 # List all binaries with suid bit set (should be one, hello).
@@ -948,7 +948,7 @@ rundebug rpmbuild --quiet \
   -ba "${abs_srcdir}"/data/SPECS/hello2.spec
 
 # Unpack the debuginfo rpms so we can check the .debug files.
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
   | cpio -diu --quiet
 
 # Check that gdb-add-index has ran and a .gdb_index section has been added
@@ -977,7 +977,7 @@ rundebug rpmbuild --quiet \
   -ba "${abs_srcdir}"/data/SPECS/hello2.spec
 
 # Unpack the debuginfo rpms so we can check the .debug files.
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
   | cpio -diu --quiet
 
 # Check that gdb-add-index has not ran and no .gdb_index section has been added
@@ -1007,7 +1007,7 @@ rundebug rpmbuild --quiet \
   -ba "${abs_srcdir}"/data/SPECS/hello-g3.spec
 
 # Unpack the debuginfo rpms so we can check the .debug files.
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello-g3-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/hello-g3-debuginfo-1.0-1.*.rpm \
   | cpio -diu --quiet
 
 # We are looking for a line like:
@@ -1041,7 +1041,7 @@ rundebug rpmbuild --quiet \
   -ba "${abs_srcdir}"/data/SPECS/hello2.spec
 
 # Unpack the debuginfo rpms so we can check the .debug files.
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
   | cpio -diu --quiet
 
 # Check that the source path is "unique"
@@ -1080,7 +1080,7 @@ rundebug rpmbuild --quiet \
   -ba "${abs_srcdir}"/data/SPECS/hello2.spec
 
 # Unpack the debuginfo rpms so we can check the .debug files.
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
   | cpio -diu --quiet
 
 # Check that the source path is "unique"
@@ -1113,7 +1113,7 @@ rundebug rpmbuild --quiet \
   -ba "${abs_srcdir}"/data/SPECS/hello2.spec
 
 # Unpack the debugsource rpm so we can check the sources are there.
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/hello2-debugsource-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/hello2-debugsource-1.0-1.*.rpm \
   | cpio -diu --quiet
 
 # Check that hello.c is there.
@@ -1149,7 +1149,7 @@ rundebug rpmbuild --quiet \
   -ba "${abs_srcdir}"/data/SPECS/hello-cd.spec
 
 # Unpack the debuginfo rpms so we can check the sources are there.
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-debugsource-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-debugsource-1.0-1.*.rpm \
   | cpio -diu --quiet
 
 # Check that hello.c is there.
@@ -1181,15 +1181,15 @@ rundebug rpmbuild --quiet \
   -ba "${abs_srcdir}"/data/SPECS/test-subpackages.spec
 
 # Check that there is just one debuginfo package.
-ls ${abs_builddir}/testing/build/RPMS/*/*debuginfo*rpm | wc --lines
+ls ${RPMTEST}/build/RPMS/*/*debuginfo*rpm | wc --lines
 
 # Which contains hello.debug
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-1.0-1.*.rpm \
   | cpio -diu --quiet
 # Extract the debug name from the exe (.gnu_debuglink section, first string)
 debug_name=$(readelf -p .gnu_debuglink ./bin/hello | grep hello | cut -c13-)
 
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-debuginfo-1.0-1.*.rpm \
   | cpio -diu --quiet
 if test -f ./usr/lib/debug/bin/$debug_name; then
   echo "hello debug exists"
@@ -1224,15 +1224,15 @@ rundebug rpmbuild --quiet \
   -ba "${abs_srcdir}"/data/SPECS/test-subpackages.spec
 
 # Check that there are 3 debuginfo packages.
-ls ${abs_builddir}/testing/build/RPMS/*/*debuginfo*rpm | wc --lines
+ls ${RPMTEST}/build/RPMS/*/*debuginfo*rpm | wc --lines
 
 # First contains hello.debug
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-1.0-1.*.rpm \
   | cpio -diu --quiet
 # Extract the debug name from the exe (.gnu_debuglink section, first string)
 debug_name=$(readelf -p .gnu_debuglink ./bin/hello | grep hello | cut -c13-)
 
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-debuginfo-1.0-1.*.rpm \
   | cpio -diu --quiet
 if test -f ./usr/lib/debug/bin/$debug_name; then
   echo "hello debug exists"
@@ -1241,12 +1241,12 @@ else
 fi
 
 # Second contains hello2.debug
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-test2-1.0-1.*.rpm \
   | cpio -diu --quiet
 # Extract the debug name from the exe (.gnu_debuglink section, first string)
 debug_name=$(readelf -p .gnu_debuglink ./bin/hello2 | grep hello | cut -c13-)
 
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm \
   | cpio -diu --quiet
 if test -f ./usr/lib/debug/bin/$debug_name; then
   echo "hello2 debug exists"
@@ -1260,12 +1260,12 @@ echo -n "Recommends: "
 runroot rpm -qp --recommends /build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 
 # Third contains hello3.debug
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-test3-1.0-1.*.rpm \
   | cpio -diu --quiet
 # Extract the debug name from the exe (.gnu_debuglink section, first string)
 debug_name=$(readelf -p .gnu_debuglink ./bin/hello3 | grep hello | cut -c13-)
 
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm \
   | cpio -diu --quiet
 if test -f ./usr/lib/debug/bin/$debug_name; then
   echo "hello3 debug exists"
@@ -1309,15 +1309,15 @@ rundebug rpmbuild --quiet \
   -ba "${abs_srcdir}"/data/SPECS/test-subpackages.spec
 
 # Check that there are 3 debuginfo packages.
-ls ${abs_builddir}/testing/build/RPMS/*/*debuginfo*rpm | wc --lines
+ls ${RPMTEST}/build/RPMS/*/*debuginfo*rpm | wc --lines
 
 # First contains hello.debug
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-1.0-1.*.rpm \
   | cpio -diu --quiet
 # Extract the debug name from the exe (.gnu_debuglink section, first string)
 debug_name=$(readelf -p .gnu_debuglink ./bin/hello | grep hello | cut -c13-)
 
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-debuginfo-1.0-1.*.rpm \
   | cpio -diu --quiet
 if test -f ./usr/lib/debug/bin/$debug_name; then
   echo "hello debug exists"
@@ -1326,12 +1326,12 @@ else
 fi
 
 # Second contains hello2.debug
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-test2-1.0-1.*.rpm \
   | cpio -diu --quiet
 # Extract the debug name from the exe (.gnu_debuglink section, first string)
 debug_name=$(readelf -p .gnu_debuglink ./bin/hello2 | grep hello | cut -c13-)
 
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm \
   | cpio -diu --quiet
 if test -f ./usr/lib/debug/bin/$debug_name; then
   echo "hello2 debug exists"
@@ -1345,12 +1345,12 @@ echo -n "Recommends: "
 runroot rpm -qp --recommends /build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 
 # Third contains hello3.debug
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-test3-1.0-1.*.rpm \
   | cpio -diu --quiet
 # Extract the debug name from the exe (.gnu_debuglink section, first string)
 debug_name=$(readelf -p .gnu_debuglink ./bin/hello3 | grep hello | cut -c13-)
 
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm \
   | cpio -diu --quiet
 if test -f ./usr/lib/debug/bin/$debug_name; then
   echo "hello3 debug exists"
@@ -1394,15 +1394,15 @@ rundebug rpmbuild --quiet \
   -ba "${abs_srcdir}"/data/SPECS/test-subpackages.spec
 
 # Check that there are 3 debuginfo packages.
-ls ${abs_builddir}/testing/build/RPMS/*/*debuginfo*rpm | wc --lines
+ls ${RPMTEST}/build/RPMS/*/*debuginfo*rpm | wc --lines
 
 # First contains hello.debug
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-1.0-1.*.rpm \
   | cpio -diu --quiet
 # Extract the debug name from the exe (.gnu_debuglink section, first string)
 debug_name=$(readelf -p .gnu_debuglink ./bin/hello | grep hello | cut -c13-)
 
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-debuginfo-1.0-1.*.rpm \
   | cpio -diu --quiet
 if test -f ./usr/lib/debug/bin/$debug_name; then
   echo "hello debug exists"
@@ -1415,12 +1415,12 @@ echo -n "Recommends: "
 runroot rpm -qp --recommends /build/RPMS/*/test-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 
 # Second contains hello2.debug
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-test2-1.0-1.*.rpm \
   | cpio -diu --quiet
 # Extract the debug name from the exe (.gnu_debuglink section, first string)
 debug_name=$(readelf -p .gnu_debuglink ./bin/hello2 | grep hello | cut -c13-)
 
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm \
   | cpio -diu --quiet
 if test -f ./usr/lib/debug/bin/$debug_name; then
   echo "hello2 debug exists"
@@ -1433,12 +1433,12 @@ echo -n "Recommends: "
 runroot rpm -qp --recommends /build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm | sed -E 's/([[-.a-z0-9]]+)\(.*\) = ([[-.0-9]]+)/\1\(ignore-arch\) = \2/'
 
 # Third contains hello3.debug
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-test3-1.0-1.*.rpm \
   | cpio -diu --quiet
 # Extract the debug name from the exe (.gnu_debuglink section, first string)
 debug_name=$(readelf -p .gnu_debuglink ./bin/hello3 | grep hello | cut -c13-)
 
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm \
   | cpio -diu --quiet
 if test -f ./usr/lib/debug/bin/$debug_name; then
   echo "hello3 debug exists"
@@ -1482,15 +1482,15 @@ rundebug rpmbuild --quiet \
   -ba "${abs_srcdir}"/data/SPECS/test-subpackages-exclude.spec
 
 # Check that there are 2 debuginfo packages.
-ls ${abs_builddir}/testing/build/RPMS/*/*debuginfo*rpm | wc --lines
+ls ${RPMTEST}/build/RPMS/*/*debuginfo*rpm | wc --lines
 
 # First contains hello.debug
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-1.0-1.*.rpm \
   | cpio -diu --quiet
 # Extract the debug name from the exe (.gnu_debuglink section, first string)
 debug_name=$(readelf -p .gnu_debuglink ./bin/hello | grep hello | cut -c13-)
 
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-debuginfo-1.0-1.*.rpm \
   | cpio -diu --quiet
 if test -f ./usr/lib/debug/bin/$debug_name; then
   echo "hello debug exists"
@@ -1499,12 +1499,12 @@ else
 fi
 
 # Second contains hello2.debug but NOT hello3.debug
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-test2-1.0-1.*.rpm \
   | cpio -diu --quiet
 # Extract the debug name from the exe (.gnu_debuglink section, first string)
 debug_name=$(readelf -p .gnu_debuglink ./bin/hello2 | grep hello | cut -c13-)
 
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm \
   | cpio -diu --quiet
 if test -f ./usr/lib/debug/bin/$debug_name; then
   echo "hello2 debug exists"
@@ -1547,15 +1547,15 @@ rundebug rpmbuild --quiet \
   -ba "${abs_srcdir}"/data/SPECS/test-subpackages-pathpostfixes.spec
 
 # Check that there are 2 debuginfo packages.
-ls ${abs_builddir}/testing/build/RPMS/*/*debuginfo*rpm | wc --lines
+ls ${RPMTEST}/build/RPMS/*/*debuginfo*rpm | wc --lines
 
 # First contains hello.debug
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-1.0-1.*.rpm \
   | cpio -diu --quiet
 # Extract the debug name from the exe (.gnu_debuglink section, first string)
 debug_name=$(readelf -p .gnu_debuglink ./bin/hello | grep hello | cut -c13-)
 
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-debuginfo-1.0-1.*.rpm \
   | cpio -diu --quiet
 if test -f ./usr/lib/debug/bin/$debug_name; then
   echo "hello debug exists"
@@ -1569,12 +1569,12 @@ rm ./usr/lib/debug/bin/$debug_name
 orig_debugname=$debugname
 
 # Second contains hello.foobar.debug but NOT hello.debug
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-test2-1.0-1.*.rpm \
   | cpio -diu --quiet
 # Extract the debug name from the exe (.gnu_debuglink section, first string)
 debug_name=$(readelf -p .gnu_debuglink ./bin/hello | grep hello | cut -c13-)
 
-rpm2cpio ${abs_builddir}/testing/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm \
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-test2-debuginfo-1.0-1.*.rpm \
   | cpio -diu --quiet
 if test -f ./usr/lib/debug/bin/$debug_name; then
   echo "hello.foobar debug exists"
