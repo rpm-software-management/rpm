@@ -574,7 +574,7 @@ AT_KEYWORDS([macros lua])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
-f=$(rpm --eval "%{_rpmconfigdir}/lua/foo.lua")
+f=$(run rpm --eval "%{_rpmconfigdir}/lua/foo.lua")
 echo "bar = 'graak'" > ${f}
 runroot rpm \
   --eval '%{lua:require "foo"; print(bar)}'
