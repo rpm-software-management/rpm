@@ -6,7 +6,6 @@ AT_BANNER([RPM implicit file conflicts])
 AT_SETUP([packages with file conflicts])
 AT_KEYWORDS([install])
 RPMDB_INIT
-rm -rf "${TOPDIR}"
 
 for p in "one" "two"; do
     runroot rpmbuild --quiet -bb \
@@ -42,7 +41,6 @@ AT_CLEANUP
 AT_SETUP([shareable files])
 AT_KEYWORDS([install])
 RPMDB_INIT
-rm -rf "${TOPDIR}"
 
 for p in "one" "two"; do
     runroot rpmbuild --quiet -bb \
@@ -80,7 +78,6 @@ AT_SETUP([non-conflicting identical basenames])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb /data/SPECS/selfconflict.spec
 rm -rf "${RPMTEST}"/opt/mydir
@@ -97,7 +94,6 @@ AT_SETUP([conflicting identical basenames])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb /data/SPECS/selfconflict.spec
 rm -rf "${RPMTEST}"/opt/mydir
@@ -331,7 +327,6 @@ AT_SETUP([replacing directory with symlink])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
-rm -rf "${TOPDIR}"
 rm -rf "${RPMTEST}"/usr/{share,lib}/symlinktest*
 
 runroot rpmbuild --quiet -bb \
@@ -354,7 +349,6 @@ AT_SETUP([replacing symlink with directory])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
-rm -rf "${TOPDIR}"
 rm -rf "${RPMTEST}"/usr/{share,lib}/symlinktest*
 
 runroot rpmbuild --quiet -bb \
@@ -379,7 +373,6 @@ AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 fn="${RPMTEST}"/usr/share/my.version
-rm -rf "${TOPDIR}" "${fn}"
 
 runroot rpmbuild --quiet -bb \
     --define "pkg one" --define "filedata one" \
