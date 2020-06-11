@@ -357,6 +357,7 @@ AT_CLEANUP
 AT_SETUP([rpm -U *.src.rpm])
 AT_KEYWORDS([install])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 
 runroot rpm \
@@ -372,6 +373,7 @@ AT_CLEANUP
 AT_SETUP([rpm -i *.src.rpm])
 AT_KEYWORDS([install])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 
 runroot rpm \
@@ -388,6 +390,7 @@ AT_CLEANUP
 AT_SETUP([rpm -i <nonexistent file>])
 AT_KEYWORDS([install])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   -i no_such_file
 ],
@@ -400,6 +403,7 @@ AT_CLEANUP
 AT_SETUP([rpm -i --nomanifest <garbage text file>])
 AT_KEYWORDS([install])
 AT_CHECK([
+RPMDB_INIT
 junk="${RPMTEST}/textfile"
 cat << EOF > "${junk}"
 no_such.file
@@ -418,6 +422,7 @@ AT_CLEANUP
 AT_SETUP([rpm -i <garbage text file])
 AT_KEYWORDS([install])
 AT_CHECK([
+RPMDB_INIT
 junk="${RPMTEST}/not_an.rpm"
 cat << EOF > "${junk}"
 no_such.file
