@@ -286,7 +286,6 @@ AT_SETUP([rpm -U and verify status])
 AT_KEYWORDS([install rpmdb query])
 AT_CHECK([
 RPMDB_INIT
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
         --define "pkg status" \
@@ -308,7 +307,6 @@ AT_SETUP([rpm -U with _install_lang and verify status])
 AT_KEYWORDS([install rpmdb query])
 AT_CHECK([
 RPMDB_INIT
-rm -rf "${TOPDIR}"
 
 runroot rpmbuild --quiet -bb \
           /data/SPECS/flangtest.spec
@@ -333,7 +331,6 @@ AT_SETUP([rpm -U and verify files on disk])
 AT_KEYWORDS([install rpmdb])
 AT_CHECK([
 RPMDB_INIT
-rm -rf "${TOPDIR}"
 rm -rf "${RPMTEST}"/opt/*
 
 runroot rpmbuild --quiet -bb /data/SPECS/selfconflict.spec
@@ -353,7 +350,6 @@ AT_SETUP([rpm -e and verify files removed])
 AT_KEYWORDS([install rpmdb])
 AT_CHECK([
 RPMDB_INIT
-rm -rf "${TOPDIR}"
 rm -rf "${RPMTEST}"/opt/*
 
 runroot rpmbuild --quiet -bb /data/SPECS/selfconflict.spec

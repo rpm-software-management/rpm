@@ -442,7 +442,6 @@ AT_CLEANUP
 # ------------------------------
 AT_SETUP([rpm upgrade/downgrade])
 RPMDB_INIT
-rm -rf "${TOPDIR}"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
