@@ -23,7 +23,6 @@ AT_BANNER([RPM database access])
 AT_SETUP([rpm --initdb])
 AT_KEYWORDS([rpmdb])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 ],
 [0],
@@ -36,7 +35,6 @@ AT_CLEANUP
 AT_SETUP([rpm -qa])
 AT_KEYWORDS([rpmdb query])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 runroot rpm \
   -qa
@@ -49,7 +47,6 @@ AT_CLEANUP
 AT_SETUP([rpm -q foo])
 AT_KEYWORDS([rpmdb query])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -i \
@@ -69,7 +66,6 @@ AT_CLEANUP
 AT_SETUP([rpm -q foo-])
 AT_KEYWORDS([rpmdb query])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -i \
@@ -87,7 +83,6 @@ AT_CLEANUP
 AT_SETUP([rpmdb header numbering])
 AT_KEYWORDS([rpmdb])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 for i in 1 2 3; do
@@ -108,7 +103,6 @@ AT_CLEANUP
 AT_SETUP([rpm -q --querybynumber])
 AT_KEYWORDS([rpmdb query])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -i \
@@ -143,7 +137,6 @@ AT_SETUP([rpm -i *.noarch.rpm])
 AT_KEYWORDS([rpmdb install])
 
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -i \
@@ -159,7 +152,6 @@ AT_SETUP([rpm -U --replacepkgs 1])
 AT_KEYWORDS([rpmdb install])
 
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 tpkg="/data/RPMS/foo-1.0-1.noarch.rpm"
@@ -181,7 +173,6 @@ AT_SETUP([rpm -U --replacepkgs 2])
 AT_KEYWORDS([rpmdb install])
 
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 tpkg="/data/RPMS/hello-2.0-1.i686.rpm"
@@ -202,7 +193,6 @@ AT_SETUP([rpm --reinstall 1])
 AT_KEYWORDS([rpmdb install])
 
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 tpkg="/data/RPMS/hello-2.0-1.i686.rpm"
@@ -224,7 +214,6 @@ AT_CLEANUP
 AT_SETUP([rpm -i --relocate=.. *.i386.rpm])
 AT_KEYWORDS([rpmdb install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -i \
@@ -243,7 +232,6 @@ AT_CLEANUP
 AT_SETUP([rpm -i --relocate=.. *.ppc64.rpm])
 AT_KEYWORDS([rpmdb install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -i \
@@ -259,7 +247,6 @@ AT_CLEANUP
 AT_SETUP([rpmdb --rebuilddb])
 AT_KEYWORDS([rpmdb])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U --noscripts --nodeps --ignorearch \
@@ -284,7 +271,6 @@ AT_CLEANUP
 AT_SETUP([rpmdb --rebuilddb and verify empty database])
 AT_KEYWORDS([rpmdb])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 runroot rpmdb --rebuilddb
 runroot rpmdb --verifydb
@@ -299,7 +285,6 @@ AT_CLEANUP
 AT_SETUP([rpm -U and verify status])
 AT_KEYWORDS([install rpmdb query])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -322,7 +307,6 @@ AT_CLEANUP
 AT_SETUP([rpm -U with _install_lang and verify status])
 AT_KEYWORDS([install rpmdb query])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -348,7 +332,6 @@ AT_CLEANUP
 AT_SETUP([rpm -U and verify files on disk])
 AT_KEYWORDS([install rpmdb])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 rm -rf "${RPMTEST}"/opt/*
@@ -369,7 +352,6 @@ AT_CLEANUP
 AT_SETUP([rpm -e and verify files removed])
 AT_KEYWORDS([install rpmdb])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 rm -rf "${RPMTEST}"/opt/*

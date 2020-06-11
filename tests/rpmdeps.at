@@ -7,7 +7,6 @@ AT_BANNER([RPM dependencies])
 AT_SETUP([missing dependency])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -30,7 +29,6 @@ AT_CLEANUP
 AT_SETUP([cross-depending packages])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -56,7 +54,6 @@ AT_CLEANUP
 AT_SETUP([unsatisfied versioned require])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -92,7 +89,6 @@ AT_CLEANUP
 AT_SETUP([satisfied versioned require])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -118,7 +114,6 @@ AT_CLEANUP
 AT_SETUP([versioned conflict in transaction])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -145,7 +140,6 @@ AT_CLEANUP
 AT_SETUP([versioned conflict in database])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -171,7 +165,6 @@ AT_CLEANUP
 AT_SETUP([install and verify self-conflicting package])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -193,7 +186,6 @@ AT_CLEANUP
 AT_SETUP([explicit file conflicts])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -232,7 +224,6 @@ AT_CLEANUP
 AT_SETUP([erase to break dependencies])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -260,7 +251,6 @@ AT_CLEANUP
 AT_SETUP([erase to break colored file dependency])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -289,7 +279,6 @@ AT_CLEANUP
 AT_SETUP([erase on wrong-colored file dependency])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -317,7 +306,6 @@ AT_CLEANUP
 AT_SETUP([unsatisfied WITH require])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -348,7 +336,6 @@ AT_CLEANUP
 AT_SETUP([unsatisfied WITH require (rpmdb)])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -381,7 +368,6 @@ AT_CLEANUP
 AT_SETUP([satisfied WITH require])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -405,7 +391,6 @@ AT_CLEANUP
 AT_SETUP([satisfied WITH require (rpmdb)])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -433,7 +418,6 @@ AT_CLEANUP
 AT_SETUP([unsatisfied WITHOUT require])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -459,7 +443,6 @@ AT_CLEANUP
 AT_SETUP([unsatisfied WITHOUT require (rpmdb)])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -487,7 +470,6 @@ AT_CLEANUP
 AT_SETUP([satisfied WITHOUT require])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -510,7 +492,6 @@ AT_CLEANUP
 AT_SETUP([satisfied WITHOUT require (rpmdb)])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -537,7 +518,6 @@ AT_CLEANUP
 AT_SETUP([unsatisfied AND require - all missing])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -558,7 +538,6 @@ AT_CLEANUP
 AT_SETUP([unsatisfied AND require - first is missing])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -583,7 +562,6 @@ AT_CLEANUP
 AT_SETUP([unsatisfied AND require - second is missing])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -608,7 +586,6 @@ AT_CLEANUP
 AT_SETUP([satisfied AND require])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -637,7 +614,6 @@ AT_CLEANUP
 AT_SETUP([unsatisfied OR require - all missing])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -658,7 +634,6 @@ AT_CLEANUP
 AT_SETUP([satisfied OR require - first is missing])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -681,7 +656,6 @@ AT_CLEANUP
 AT_SETUP([satisfied OR require - second is missing])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -704,7 +678,6 @@ AT_CLEANUP
 AT_SETUP([satisfied OR require - both present])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -733,7 +706,6 @@ AT_CLEANUP
 AT_SETUP([unsatisfied IF require])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -758,7 +730,6 @@ AT_CLEANUP
 AT_SETUP([satisfied IF require])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -785,7 +756,6 @@ AT_CLEANUP
 AT_SETUP([unsatisfied IF-ELSE require])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -806,7 +776,6 @@ AT_CLEANUP
 AT_SETUP([satisfied IF-ELSE require - right clause])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -829,7 +798,6 @@ AT_CLEANUP
 AT_SETUP([satisfied IF-ELSE require - left clause])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -858,7 +826,6 @@ AT_CLEANUP
 AT_SETUP([unsatisfied nested AND-OR require])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -883,7 +850,6 @@ AT_CLEANUP
 AT_SETUP([satisfied nested AND-OR require])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -912,7 +878,6 @@ AT_CLEANUP
 AT_SETUP([satisfied nested AND-IF require - without right clause])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -935,7 +900,6 @@ AT_CLEANUP
 AT_SETUP([satisfied nested AND-IF require - with right clause])
 AT_KEYWORDS([install, boolean])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 

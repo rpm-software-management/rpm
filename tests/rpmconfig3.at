@@ -6,7 +6,6 @@ AT_BANNER([RPM config filetype changes])
 AT_SETUP([upgrade config to/from non-config])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
@@ -44,7 +43,6 @@ AT_CLEANUP
 AT_SETUP([upgrade modified config to/from non-config 1])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
@@ -88,7 +86,6 @@ AT_CLEANUP
 AT_SETUP([upgrade modified config to/from non-config 2])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
@@ -129,7 +126,6 @@ AT_CLEANUP
 AT_SETUP([upgrade config to/from config link])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
@@ -166,7 +162,6 @@ AT_CLEANUP
 AT_SETUP([upgrade modified config to config link])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
@@ -206,7 +201,6 @@ AT_CLEANUP
 AT_SETUP([upgrade modified config link to config])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
@@ -246,7 +240,6 @@ AT_CLEANUP
 AT_SETUP([upgrade config to directory])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
@@ -278,7 +271,6 @@ AT_CLEANUP
 AT_SETUP([upgrade modified config to directory])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*

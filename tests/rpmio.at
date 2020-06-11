@@ -21,7 +21,6 @@ AT_BANNER([I/O])
 AT_SETUP([SIGPIPE from install scriptlet])
 AT_KEYWORDS([signals])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/sigpipe.spec
@@ -51,7 +50,6 @@ AT_CLEANUP
 AT_SETUP([rpmlog error handling])
 AT_KEYWORDS([log])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -qpl /data/RPMS/hello-2.0-1.x86_64.rpm > /dev/full
