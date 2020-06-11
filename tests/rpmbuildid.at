@@ -23,6 +23,7 @@ AT_BANNER([RPM buildid tests])
 AT_SETUP([rpmbuild buildid none])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -57,6 +58,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid alldebug])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -149,6 +151,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid alldebug unique debug names])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -240,6 +243,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid separate])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -331,6 +335,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid separate unique debug names])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -421,6 +426,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid compat])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -525,6 +531,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid compat unique debug names])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -629,6 +636,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid duplicate alldebug])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -697,6 +705,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid hardlink alldebug])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -762,6 +771,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid duplicate separate])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -827,6 +837,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid hardlink separate])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -889,6 +900,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid duplicate compat])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -966,6 +978,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid hardlink compat])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1039,6 +1052,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid recompute])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1153,6 +1167,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid unique r1 r2])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1201,6 +1216,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid non-unique r1 r2])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1253,6 +1269,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid attrs])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
+RPMDB_INIT
 AT_SKIP_IF([$LUA_DISABLED])
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
@@ -1288,6 +1305,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid config attrs])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
+RPMDB_INIT
 AT_SKIP_IF([$LUA_DISABLED])
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)

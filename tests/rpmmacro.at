@@ -87,6 +87,7 @@ AT_CLEANUP
 AT_SETUP([parametrized macro 1])
 AT_KEYWORDS([macros])
 AT_CHECK([
+RPMDB_INIT
 cat << EOF > ${RPMTEST}/mtest
 %bar() bar
 %foo()\\
@@ -204,6 +205,7 @@ AT_CLEANUP
 AT_SETUP([uncompress macro 2])
 AT_KEYWORDS([macros])
 AT_CHECK([
+RPMDB_INIT
 echo xxxxxxxxxxxxxxxxxxxxxxxxx > ${RPMTEST}/tmp/"some%%ath"
 runroot rpm \
     --eval "%{uncompress:/tmp/some%%%%ath}"
@@ -571,6 +573,7 @@ AT_SETUP([lua library path])
 AT_KEYWORDS([macros lua])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
+RPMDB_INIT
 f=$(rpm --eval "%{_rpmconfigdir}/lua/foo.lua")
 echo "bar = 'graak'" > ${f}
 runroot rpm \
