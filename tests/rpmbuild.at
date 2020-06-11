@@ -22,6 +22,7 @@ AT_BANNER([RPM build])
 # Check if rpmbuild -ba *.spec works
 AT_SETUP([rpmbuild -ba *.spec])
 AT_KEYWORDS([build])
+RPMDB_INIT
 AT_CHECK([
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
@@ -39,6 +40,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild -ba autosetup])
 AT_KEYWORDS([build])
 AT_SKIP_IF([$LUA_DISABLED])
+RPMDB_INIT
 AT_CHECK([
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
@@ -55,6 +57,7 @@ AT_CLEANUP
 # Check if rpmbuild --rebuild *.src.rpm works
 AT_SETUP([rpmbuild --rebuild])
 AT_KEYWORDS([build])
+RPMDB_INIT
 AT_CHECK([
 rm -rf ${TOPDIR}
 
@@ -68,6 +71,7 @@ AT_CLEANUP
 
 AT_SETUP([rpmbuild --short-circuit -bl])
 AT_KEYWORDS([build])
+RPMDB_INIT
 AT_CHECK([
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
@@ -86,6 +90,7 @@ AT_CLEANUP
 # Check if tar unpacking works
 AT_SETUP([rpmbuild -tb <tar with bad spec>])
 AT_KEYWORDS([build])
+RPMDB_INIT
 AT_CHECK([
 rm -rf ${TOPDIR}
 
@@ -101,6 +106,7 @@ AT_CLEANUP
 # weird filename survival test
 AT_SETUP([rpmbuild package with weird filenames])
 AT_KEYWORDS([build])
+RPMDB_INIT
 AT_CHECK([
 rm -rf ${TOPDIR}
 
@@ -133,6 +139,7 @@ AT_CLEANUP
 
 AT_SETUP([rpmbuild package with illegal filenames])
 AT_KEYWORDS([build])
+RPMDB_INIT
 AT_CHECK([
 # XXX current output is not well suited for grab + compare, just ignore
 runroot rpmbuild -bb --quiet --with illegal /data/SPECS/weirdnames.spec
@@ -147,6 +154,7 @@ AT_CLEANUP
 # TODO: test that the rpms are actually created...
 AT_SETUP([rpmbuild -tb])
 AT_KEYWORDS([build])
+RPMDB_INIT
 AT_CHECK([
 rm -rf ${TOPDIR}
 
@@ -160,6 +168,7 @@ AT_CLEANUP
 
 AT_SETUP([rpmbuild scriptlet -f])
 AT_KEYWORDS([build])
+RPMDB_INIT
 AT_CHECK([
 
 runroot rpmbuild \
@@ -208,6 +217,7 @@ AT_CLEANUP
 # %attr/%defattr tests
 AT_SETUP([rpmbuild %attr and %defattr])
 AT_KEYWORDS([build])
+RPMDB_INIT
 AT_CHECK([[
 rm -rf ${TOPDIR}
 
@@ -248,6 +258,7 @@ AT_CLEANUP
 # hardlink tests
 AT_SETUP([rpmbuild hardlink])
 AT_KEYWORDS([build])
+RPMDB_INIT
 AT_CHECK([
 RPMDB_INIT
 rm -rf ${TOPDIR}
@@ -278,6 +289,7 @@ AT_CLEANUP
 
 AT_SETUP([rpmbuild unpackaged files])
 AT_KEYWORDS([build])
+RPMDB_INIT
 AT_CHECK([
 RPMDB_INIT
 rm -rf ${TOPDIR}
@@ -298,6 +310,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild unpackaged directories])
 AT_KEYWORDS([build])
 AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+RPMDB_INIT
 AT_CHECK([
 RPMDB_INIT
 rm -rf ${TOPDIR}
@@ -316,6 +329,7 @@ AT_CLEANUP
 
 AT_SETUP([rpmbuild glob])
 AT_KEYWORDS([build])
+RPMDB_INIT
 AT_CHECK([
 RPMDB_INIT
 rm -rf ${TOPDIR}
@@ -386,6 +400,7 @@ AT_CLEANUP
 AT_SETUP([Weak and reverse requires])
 AT_KEYWORDS([build])
 AT_CHECK([
+RPMDB_INIT
 
 runroot rpmbuild -bb --quiet \
 	--define "pkg weakdeps" \
@@ -414,6 +429,7 @@ AT_CLEANUP
 AT_SETUP([Build requires])
 AT_KEYWORDS([build])
 AT_CHECK([
+RPMDB_INIT
 
 runroot rpmbuild -bb --quiet \
 		--define "pkg buildreq" \
@@ -430,6 +446,7 @@ AT_CLEANUP
 AT_SETUP([Dependency generation 1])
 AT_KEYWORDS([build])
 AT_CHECK([
+RPMDB_INIT
 
 runroot rpmbuild -bb --quiet \
 		--define "_binary_payload w9.gzdio" \
@@ -471,6 +488,7 @@ AT_CLEANUP
 AT_SETUP([Dependency generation 2])
 AT_KEYWORDS([build])
 AT_CHECK([
+RPMDB_INIT
 
 runroot rpmbuild -bb --quiet \
 		/data/SPECS/shebang.spec
@@ -485,6 +503,7 @@ AT_CLEANUP
 AT_SETUP([Dependency generation 3])
 AT_KEYWORDS([build])
 AT_CHECK([
+RPMDB_INIT
 
 cat << EOF > "${RPMTEST}"/tmp/bad.req
 #!/bin/sh
@@ -506,6 +525,7 @@ AT_CLEANUP
 AT_SETUP([Dependency generation 4])
 AT_KEYWORDS([build])
 AT_CHECK([
+RPMDB_INIT
 
 runroot rpmbuild -bb --quiet \
 		--define '__script_requires() foo(%{basename:%{1}})' \
@@ -521,6 +541,7 @@ AT_CLEANUP
 AT_SETUP([Dependency generation 5])
 AT_KEYWORDS([build])
 AT_CHECK([
+RPMDB_INIT
 
 runroot rpmbuild -bb --quiet \
 		--define '__script_mime text/plain' \
@@ -559,6 +580,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild archive sanity])
 AT_KEYWORDS([build])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 
 runroot rpmbuild \
@@ -577,6 +599,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild debuginfo minisymtab])
 AT_KEYWORDS([build] [debuginfo])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 
 # Use macros.debug to generate a debuginfo package.
@@ -614,6 +637,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild debuginfo minisymtab strip -g])
 AT_KEYWORDS([build] [debuginfo])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 
 # Use macros.debug to generate a debuginfo package.
@@ -653,6 +677,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild debuginfo dwz])
 AT_KEYWORDS([build] [debuginfo] [dwz])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -742,6 +767,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild no debuginfo])
 AT_KEYWORDS([build] [debuginfo])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 
 # Use macros.debug to generate a debuginfo package,
@@ -775,6 +801,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild debuginfo dwz unique debug names])
 AT_KEYWORDS([build] [debuginfo] [dwz])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -864,6 +891,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild debuginfo dwz gnu_debuglink crc])
 AT_KEYWORDS([build] [debuginfo])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -898,6 +926,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild implicit suid binary])
 AT_KEYWORDS([build] [debuginfo] [dwz] [suid])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -932,6 +961,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild debuginfo gdb index included])
 AT_KEYWORDS([build] [debuginfo] [gdb])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -961,6 +991,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild debuginfo no gdb index included])
 AT_KEYWORDS([build] [debuginfo] [gdb])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -989,6 +1020,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild debuginfo -g3 .debug_macro])
 AT_KEYWORDS([build] [debuginfo] [gdb])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1022,6 +1054,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild debuginfo unique debug src dir])
 AT_KEYWORDS([build] [debuginfo])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1061,6 +1094,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild debuginfo no unique debug src dir])
 AT_KEYWORDS([build] [debuginfo])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1097,6 +1131,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild debugsource])
 AT_KEYWORDS([build] [debuginfo] [debugsource])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1133,6 +1168,7 @@ AT_SETUP([rpmbuild debugsource debugsourcefiles.list path])
 AT_KEYWORDS([build] [debuginfo] [debugsource])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1162,6 +1198,7 @@ AT_SETUP([rpmbuild debuginfo subpackages single])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1205,6 +1242,7 @@ AT_SETUP([rpmbuild debuginfo subpackages multiple])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1290,6 +1328,7 @@ AT_SETUP([rpmbuild debuginfo subpackages multiple unique])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1375,6 +1414,7 @@ AT_SETUP([rpmbuild debuginfo subpackages multiple unique debugsource])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage] [debugsource])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1463,6 +1503,7 @@ AT_SETUP([rpmbuild debuginfo subpackages multiple excluded])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage] [debugsource])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1528,6 +1569,7 @@ AT_SETUP([rpmbuild debuginfo subpackages multiple excluded])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage] [debugsource])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1599,6 +1641,7 @@ AT_CLEANUP
 AT_SETUP([dynamic build requires rpmbuild -bs])
 AT_KEYWORDS([build])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1621,6 +1664,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild -br])
 AT_KEYWORDS([build])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1644,6 +1688,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild -ba])
 AT_KEYWORDS([build])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1668,6 +1713,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild -br --nodeps])
 AT_KEYWORDS([build])
 AT_CHECK([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1694,6 +1740,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild -ba missing source])
 AT_KEYWORDS([build])
 AT_CHECK_UNQUOTED([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
 
@@ -1709,6 +1756,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild minimal spec])
 AT_KEYWORDS([build])
 AT_CHECK_UNQUOTED([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 
 runroot rpmbuild \
@@ -1722,6 +1770,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild missing doc])
 AT_KEYWORDS([build])
 AT_CHECK_UNQUOTED([
+RPMDB_INIT
 rm -rf ${TOPDIR}
 
 for val in 1 0; do
@@ -1742,6 +1791,7 @@ AT_CLEANUP
 AT_SETUP([%if, %else, %elif test basic])
 AT_KEYWORDS([if else elif build])
 AT_CHECK([
+RPMDB_INIT
 runroot rpmbuild -ba --quiet \
     --define "testif 0"      \
    /data/SPECS/iftest.spec
@@ -1753,6 +1803,7 @@ AT_CLEANUP
 AT_SETUP([%if, %else, %elif test existing script])
 AT_KEYWORDS([if else elif build])
 AT_CHECK([
+RPMDB_INIT
 runroot rpmbuild -ba --quiet  \
     --define "testif 2"       \
     --define "fedora 1"       \
@@ -1765,6 +1816,7 @@ AT_CLEANUP
 AT_SETUP([%if, %else, %elif test 1])
 AT_KEYWORDS([if else elif build])
 AT_CHECK([
+RPMDB_INIT
 runroot rpmbuild -ba --quiet \
  --define "testif 1"         \
  --define "variable1 1"      \
@@ -1785,6 +1837,7 @@ AT_CLEANUP
 AT_SETUP([%if, %else, %elif test 2])
 AT_KEYWORDS([if else elif build])
 AT_CHECK([
+RPMDB_INIT
 runroot rpmbuild -ba --quiet   \
  --define "testif 1"           \
  --define "variable1 0"        \
@@ -1805,6 +1858,7 @@ AT_CLEANUP
 AT_SETUP([%if, %else, %elif test 3])
 AT_KEYWORDS([if else elif build])
 AT_CHECK([
+RPMDB_INIT
 runroot rpmbuild -ba --quiet      \
  --define "testif 1"              \
  --define "variable1 0"           \
@@ -1824,6 +1878,7 @@ AT_CLEANUP
 AT_SETUP([%if, %else, %elif test 4])
 AT_KEYWORDS([if else elif build])
 AT_CHECK([
+RPMDB_INIT
 runroot rpmbuild -ba --quiet      \
  --define "testif 1"              \
  --define "variable1 0"           \
@@ -1849,6 +1904,7 @@ AT_CLEANUP
 AT_SETUP([multiline %if test])
 AT_KEYWORDS([if macros build])
 AT_CHECK([
+RPMDB_INIT
 runroot rpmbuild -ba --quiet      \
  data/SPECS/ifmultiline.spec
 ],

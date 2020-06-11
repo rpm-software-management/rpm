@@ -22,6 +22,7 @@ AT_BANNER([RPM queries])
 AT_SETUP([rpm --qf -p *.i386.rpm])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   -q --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n" \
   -p /data/RPMS/hello-1.0-1.i386.rpm
@@ -36,6 +37,7 @@ AT_CLEANUP
 AT_SETUP([rpm --qf -p *.src.rpm])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   -q --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n" \
   -p /data/SRPMS/hello-1.0-1.src.rpm
@@ -50,6 +52,7 @@ AT_CLEANUP
 AT_SETUP([rpm -ql -p *.src.rpm])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   -ql \
   -p /data/SRPMS/hello-1.0-1.src.rpm
@@ -65,6 +68,7 @@ AT_CLEANUP
 AT_SETUP([rpm -ql multiple *.rpm])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   -ql \
   /data/SRPMS/hello-1.0-1.src.rpm /data/RPMS/hello-1.0-1.i386.rpm
@@ -83,6 +87,7 @@ AT_CLEANUP
 AT_SETUP([rpmspec -q])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpmspec \
   -q --qf "%{name}" /data/SPECS/hello.spec
 ],
@@ -95,6 +100,7 @@ AT_CLEANUP
 AT_SETUP([rpm -ql -p *.i386.rpm])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   -ql \
   -p /data/RPMS/hello-1.0-1.i386.rpm
@@ -112,6 +118,7 @@ AT_CLEANUP
 AT_SETUP([rpm -qp <manifest>])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 cat << EOF > ${RPMTEST}/query.mft
 /data/RPMS/hello-1.0-1.i386.rpm
 /data/RPMS/hello-1.0-1.ppc64.rpm
@@ -133,6 +140,7 @@ AT_CLEANUP
 AT_SETUP([rpm -q --scripts -p *.i386.rpm])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   -q --scripts \
   -p /data/RPMS/hello-1.0-1.i386.rpm
@@ -197,6 +205,7 @@ AT_CLEANUP
 AT_SETUP([integer array query])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat="[[%{filemodes}\n]]" \
   -qp /data/RPMS/hello-1.0-1.i386.rpm
@@ -213,6 +222,7 @@ AT_CLEANUP
 AT_SETUP([formatted filesbypkg query])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat="[[%-10{=NAME} %{FILENAMES}\n]]" \
   -qp /data/RPMS/hello-1.0-1.i386.rpm
@@ -229,6 +239,7 @@ AT_CLEANUP
 AT_SETUP([hex formatted integer array extension query])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat="[[%5{longfilesizes:hex}\n]]" \
   -qp /data/RPMS/hello-1.0-1.i386.rpm
@@ -245,6 +256,7 @@ AT_CLEANUP
 AT_SETUP([base64 extension query])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat="%{pkgid:base64}" \
   -qp /data/RPMS/foo-1.0-1.noarch.rpm
@@ -258,6 +270,7 @@ AT_CLEANUP
 AT_SETUP([pgpsig extension query])
 AT_KEYWORDS([query signature])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
     --queryformat="%{rsaheader:pgpsig}" \
     -qp /data/RPMS/hello-2.0-1.x86_64-signed.rpm
@@ -272,6 +285,7 @@ AT_CLEANUP
 AT_SETUP([integer array perms format query])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat="[[%{filemodes:perms}\n]]" \
   -qp /data/RPMS/hello-1.0-1.i386.rpm
@@ -288,6 +302,7 @@ AT_CLEANUP
 AT_SETUP([string array query])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat="[[%{basenames} ]]" \
   -qp /data/RPMS/hello-1.0-1.i386.rpm
@@ -301,6 +316,7 @@ AT_CLEANUP
 AT_SETUP([empty string array query])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat="[[%{basenames}]]" \
   -qp /data/RPMS/foo-1.0-1.noarch.rpm
@@ -314,6 +330,7 @@ AT_CLEANUP
 AT_SETUP([empty string array extension array format])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat="[[%{filenames}]]" \
   -qp /data/RPMS/foo-1.0-1.noarch.rpm
@@ -327,6 +344,7 @@ AT_CLEANUP
 AT_SETUP([empty string array extension query])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat="%{filenames}" \
   -qp /data/RPMS/foo-1.0-1.noarch.rpm
@@ -340,6 +358,7 @@ AT_CLEANUP
 AT_SETUP([different sizes arrays query 1])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat="[[%{basenames} %{changelogname}]\n]" \
   -qp /data/RPMS/hello-1.0-1.i386.rpm
@@ -356,6 +375,7 @@ AT_CLEANUP
 AT_SETUP([different sizes arrays query 2])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat="[[%{name} %{changelogtime}]\n]" \
   -qp /data/RPMS/hello-1.0-1.i386.rpm
@@ -370,6 +390,7 @@ AT_CLEANUP
 AT_SETUP([different sizes arrays query 3])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat="[[%{name} %{basenames}]\n]" \
   -qp /data/RPMS/hello-1.0-1.i386.rpm
@@ -384,6 +405,7 @@ AT_CLEANUP
 AT_SETUP([different sizes arrays query 4])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat="[[%{=name} %{basenames}\n]]" \
   -qp /data/RPMS/hello-1.0-1.i386.rpm
@@ -400,6 +422,7 @@ AT_CLEANUP
 AT_SETUP([non-existent string tag])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat="%{vendor}" \
   -qp /data/RPMS/foo-1.0-1.noarch.rpm
@@ -413,6 +436,7 @@ AT_CLEANUP
 AT_SETUP([non-existent integer tag query])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat="%{installcolor}" \
   -qp /data/RPMS/foo-1.0-1.noarch.rpm
@@ -426,6 +450,7 @@ AT_CLEANUP
 AT_SETUP([conditional queryformat])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat="%|name?{%{name}}:{no}| %|installtime?{%{installtime}}:{(not installed)}|" \
   -qp /data/RPMS/foo-1.0-1.noarch.rpm
@@ -439,6 +464,7 @@ AT_CLEANUP
 AT_SETUP([invalid tag query])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat="%{notag}" \
   -qp /data/RPMS/foo-1.0-1.noarch.rpm
@@ -453,6 +479,7 @@ AT_CLEANUP
 AT_SETUP([invalid data for format query])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat="%{name:depflags}" \
   -qp /data/RPMS/foo-1.0-1.noarch.rpm
@@ -466,6 +493,7 @@ AT_CLEANUP
 AT_SETUP([invalid format width query])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat="%ss{size}" \
   -qp /data/RPMS/foo-1.0-1.noarch.rpm
@@ -479,6 +507,7 @@ AT_CLEANUP
 AT_SETUP([xml format])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm -qp --xml  data/RPMS/hello-2.0-1.x86_64.rpm
 ],
 [0],
@@ -778,6 +807,7 @@ AT_CLEANUP
 AT_SETUP([query file attribute filtering])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpmbuild -bb --quiet \
   /data/SPECS/vattrtest.spec
 
@@ -832,6 +862,7 @@ AT_CLEANUP
 AT_SETUP([formatting name humansi, humaniec])
 AT_KEYWORDS([query, humansi, humaniec])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat '%{SIZE:humansi} %{SIZE:humaniec}\n' \
   -qp /data/RPMS/hello-1.0-1.i386.rpm
@@ -854,6 +885,7 @@ AT_CLEANUP
 AT_SETUP([incomplete escape sequence for format query])
 AT_KEYWORDS([query])
 AT_CHECK([
+RPMDB_INIT
 runroot rpm \
   --queryformat='%{NAME}\n\' \
   -qp /data/RPMS/foo-1.0-1.noarch.rpm
