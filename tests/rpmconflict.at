@@ -7,7 +7,6 @@ AT_BANNER([RPM implicit file conflicts])
 AT_SETUP([package with file conflict])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -31,7 +30,6 @@ AT_CLEANUP
 AT_SETUP([two packages with a conflicting file])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U \
@@ -48,7 +46,6 @@ AT_CLEANUP
 AT_SETUP([package with shareable file])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -72,7 +69,6 @@ AT_CLEANUP
 AT_SETUP([two packages with shareable file])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U \
@@ -89,7 +85,6 @@ AT_CLEANUP
 AT_SETUP([non-conflicting identical basenames])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -107,7 +102,6 @@ AT_CLEANUP
 AT_SETUP([conflicting identical basenames])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -127,7 +121,6 @@ AT_CLEANUP
 AT_SETUP([multilib elf conflict, prefer 64bit 1])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
@@ -149,7 +142,6 @@ AT_CLEANUP
 AT_SETUP([multilib elf conflict, prefer 64bit 2])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
@@ -176,7 +168,6 @@ AT_CLEANUP
 AT_SETUP([multilib elf conflict, prefer 64bit 3])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
@@ -203,7 +194,6 @@ AT_CLEANUP
 AT_SETUP([multilib elf conflict, prefer 32bit 1])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
@@ -225,7 +215,6 @@ AT_CLEANUP
 AT_SETUP([multilib elf conflict, prefer 32bit 2])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
@@ -252,7 +241,6 @@ AT_CLEANUP
 AT_SETUP([multilib elf conflict, prefer 32bit 3])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
@@ -279,7 +267,6 @@ AT_CLEANUP
 AT_SETUP([multilib elf vs non-elf file conflict 1])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
@@ -300,7 +287,6 @@ AT_CLEANUP
 AT_SETUP([multilib elf vs non-elf file conflict 2])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
@@ -325,7 +311,6 @@ AT_CLEANUP
 AT_SETUP([multilib elf vs non-elf file conflict 3])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
@@ -351,7 +336,6 @@ AT_CLEANUP
 AT_SETUP([replacing directory with symlink])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 rm -rf "${RPMTEST}"/usr/{share,lib}/symlinktest*
@@ -375,7 +359,6 @@ AT_CLEANUP
 AT_SETUP([replacing symlink with directory])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 rm -rf "${RPMTEST}"/usr/{share,lib}/symlinktest*
@@ -400,7 +383,6 @@ AT_CLEANUP
 AT_SETUP([real file with shared ghost])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 fn="${RPMTEST}"/usr/share/my.version
 rm -rf "${TOPDIR}" "${fn}"

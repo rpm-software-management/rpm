@@ -6,7 +6,6 @@ AT_SETUP([basic script failures 1])
 AT_KEYWORDS([script])
 AT_SKIP_IF([$LUA_DISABLED])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -128,7 +127,6 @@ AT_CLEANUP
 AT_SETUP([basic scripts and arguments])
 AT_KEYWORDS([verify])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -165,7 +163,6 @@ AT_CLEANUP
 AT_SETUP([basic trigger scripts and arguments])
 AT_KEYWORDS([trigger script])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -224,7 +221,6 @@ AT_SETUP([basic file trigger scripts])
 AT_KEYWORDS([file trigger script])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -327,7 +323,6 @@ AT_CLEANUP
 AT_SETUP([basic file triggers 2])
 AT_KEYWORDS([filetrigger script])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
