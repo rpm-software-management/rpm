@@ -3,10 +3,8 @@
 AT_BANNER([RPM implicit file conflicts])
 
 # ------------------------------
-# (Build and) install conflicting package (should fail)
-AT_SETUP([package with file conflict])
+AT_SETUP([packages with file conflicts])
 AT_KEYWORDS([install])
-AT_CHECK([
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -17,18 +15,17 @@ for p in "one" "two"; do
           /data/SPECS/conflicttest.spec
 done
 
+AT_CHECK([
+RPMDB_INIT
+# (Build and) install conflicting package (should fail)
 runroot rpm -U /build/RPMS/noarch/conflictone-1.0-1.noarch.rpm
 runroot rpm -U /build/RPMS/noarch/conflicttwo-1.0-1.noarch.rpm
 ],
 [1],
 [ignore],
 [ignore])
-AT_CLEANUP
 
-# ------------------------------
 # Install conflicting packages in same transaction (should fail)
-AT_SETUP([two packages with a conflicting file])
-AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 
@@ -42,10 +39,8 @@ runroot rpm -U \
 AT_CLEANUP
 
 # ------------------------------
-# (Build and) install package with shareable file
-AT_SETUP([package with shareable file])
+AT_SETUP([shareable files])
 AT_KEYWORDS([install])
-AT_CHECK([
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -56,18 +51,17 @@ for p in "one" "two"; do
           /data/SPECS/conflicttest.spec
 done
 
+# (Build and) install package with shareable file
+AT_CHECK([
+RPMDB_INIT
 runroot rpm -U /build/RPMS/noarch/conflictone-1.0-1.noarch.rpm
 runroot rpm -U /build/RPMS/noarch/conflicttwo-1.0-1.noarch.rpm
 ],
 [0],
 [ignore],
 [ignore])
-AT_CLEANUP
 
-# ------------------------------
 # Install packages with shareable file in same transaction
-AT_SETUP([two packages with shareable file])
-AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 
