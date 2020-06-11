@@ -87,7 +87,7 @@ AT_CLEANUP
 AT_SETUP([parametrized macro 1])
 AT_KEYWORDS([macros])
 AT_CHECK([
-cat << EOF > ${abs_builddir}/testing/mtest
+cat << EOF > ${RPMTEST}/mtest
 %bar() bar
 %foo()\\
 %bar\\
