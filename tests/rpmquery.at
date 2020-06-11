@@ -155,7 +155,6 @@ AT_SETUP([rpm -q on installed package])
 AT_KEYWORDS([rpmdb install query])
 
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm \

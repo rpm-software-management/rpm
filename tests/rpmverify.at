@@ -7,7 +7,6 @@ AT_BANNER([RPM verification])
 AT_SETUP([dependency problems])
 AT_KEYWORDS([verify])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -32,7 +31,6 @@ AT_CLEANUP
 AT_SETUP([files with no problems])
 AT_KEYWORDS([verify])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
@@ -48,7 +46,6 @@ AT_CLEANUP
 AT_SETUP([files with no problems in verbose mode])
 AT_KEYWORDS([verify])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
@@ -67,7 +64,6 @@ AT_CLEANUP
 AT_SETUP([directory replaced with a directory symlink])
 AT_KEYWORDS([verify])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
@@ -99,7 +95,6 @@ AT_SETUP([directory replaced with an invalid directory symlink])
 AT_KEYWORDS([verify])
 AT_XFAIL_IF([test `id -u` != 0 ])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
@@ -130,7 +125,6 @@ AT_CLEANUP
 AT_SETUP([verify from db, with problems present])
 AT_KEYWORDS([verify])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
@@ -152,7 +146,6 @@ AT_CLEANUP
 AT_SETUP([verify from package, with problems present])
 AT_KEYWORDS([verify])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
@@ -232,7 +225,6 @@ AT_SETUP([verifyscript failure])
 AT_KEYWORDS([verify])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
-RPMDB_CLEAR
 RPMDB_INIT
 
 rm -rf "${TOPDIR}"
@@ -250,7 +242,6 @@ AT_SETUP([verifyscript success])
 AT_KEYWORDS([verify])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
-RPMDB_CLEAR
 RPMDB_INIT
 
 rm -rf "${TOPDIR}"
@@ -269,7 +260,6 @@ AT_CLEANUP
 AT_SETUP([shared file timestamp behavior])
 AT_KEYWORDS([verify])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -298,7 +288,6 @@ AT_CLEANUP
 AT_SETUP([Upgraded verification with min_writes 1 (files)])
 AT_KEYWORDS([upgrade verify min_writes])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}" "${tf}".rpm*
@@ -370,7 +359,6 @@ AT_CLEANUP
 AT_SETUP([Upgraded verification with min_writes 2 (files)])
 AT_KEYWORDS([upgrade verify min_writes])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}" "${tf}".rpm*
@@ -449,7 +437,6 @@ AT_CLEANUP
 AT_SETUP([Upgraded verification with min_writes 3 (LINKs)])
 AT_KEYWORDS([upgrade verify min_writes])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}" "${tf}".rpm*
@@ -516,7 +503,6 @@ AT_CLEANUP
 AT_SETUP([Upgraded verification with min_writes 4 (LINKs)])
 AT_KEYWORDS([upgrade verify min_writes])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}" "${tf}".rpm*
@@ -590,7 +576,6 @@ AT_CLEANUP
 AT_SETUP([Upgraded verification with min_writes 5 (suid files)])
 AT_KEYWORDS([upgrade verify min_writes])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}" "${tf}".rpm*
@@ -627,7 +612,6 @@ AT_SETUP([verify empty/no capabilities 1])
 AT_KEYWORDS([verify])
 AT_SKIP_IF([$CAP_DISABLED])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U --nocaps --ignoreos \
@@ -647,7 +631,6 @@ AT_SETUP([verify empty/no capabilities 2])
 AT_KEYWORDS([verify])
 AT_SKIP_IF([$CAP_DISABLED])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U --nocaps --nodeps --noscripts --ignorearch --ignoreos \

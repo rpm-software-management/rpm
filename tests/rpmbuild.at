@@ -249,7 +249,6 @@ AT_CLEANUP
 AT_SETUP([rpmbuild hardlink])
 AT_KEYWORDS([build])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf ${TOPDIR}
 
@@ -280,7 +279,6 @@ AT_CLEANUP
 AT_SETUP([rpmbuild unpackaged files])
 AT_KEYWORDS([build])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf ${TOPDIR}
 
@@ -301,7 +299,6 @@ AT_SETUP([rpmbuild unpackaged directories])
 AT_KEYWORDS([build])
 AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf ${TOPDIR}
 
@@ -320,7 +317,6 @@ AT_CLEANUP
 AT_SETUP([rpmbuild glob])
 AT_KEYWORDS([build])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf ${TOPDIR}
 
@@ -354,7 +350,6 @@ AT_CLEANUP
 AT_SETUP([rpmbuild prefixpostfix])
 AT_KEYWORDS([build])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf ${TOPDIR}
 

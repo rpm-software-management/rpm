@@ -319,7 +319,6 @@ for e in ts:
 AT_SETUP([database iterators])
 AT_KEYWORDS([python rpmdb])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 runroot rpm -i \
   --justdb --nodeps --ignorearch --ignoreos \
@@ -418,7 +417,6 @@ AT_CLEANUP
 AT_SETUP([database cookies])
 AT_KEYWORDS([python rpmdb])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 ],
 [0],

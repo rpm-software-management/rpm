@@ -21,7 +21,6 @@ AT_BANNER([RPM install tests])
 AT_SETUP([rpm -U <manifest>])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 echo /data/RPMS/hello-2.0-1.x86_64.rpm > ${RPMTEST}/tmp/test.mft
@@ -36,7 +35,6 @@ AT_CLEANUP
 AT_SETUP([rpm -U <manifest notfound 1>])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 echo /data/RPMS/hello-2.0-1.x86_64.rpm > ${RPMTEST}/tmp/test.mft
@@ -52,7 +50,6 @@ AT_CLEANUP
 AT_SETUP([rpm -U <manifest notfound 2>])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 echo /data/RPMS/hello-not-there-2.0-1.x86_64.rpm > ${RPMTEST}/tmp/test.mft
@@ -68,7 +65,6 @@ AT_CLEANUP
 AT_SETUP([rpm -U <notfound>])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U --ignorearch --ignoreos --nodeps \
@@ -83,7 +79,6 @@ AT_CLEANUP
 AT_SETUP([rpm -U <unsigned 1>])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U --ignorearch --ignoreos --nodeps \
@@ -97,7 +92,6 @@ AT_CLEANUP
 AT_SETUP([rpm -U <unsigned 2>])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U --ignorearch --ignoreos --nodeps \
@@ -113,7 +107,6 @@ AT_CLEANUP
 AT_SETUP([rpm -U <corrupted unsigned 1>])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 pkg="hello-2.0-1.x86_64.rpm"
@@ -160,7 +153,6 @@ AT_CLEANUP
 AT_SETUP([rpm -U <corrupted unsigned 2>])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 pkg="hello-2.0-1.x86_64.rpm"
@@ -204,7 +196,6 @@ AT_CLEANUP
 AT_SETUP([rpm -U <signed nokey 1>])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U --ignorearch --ignoreos --nodeps \
@@ -219,7 +210,6 @@ AT_CLEANUP
 AT_SETUP([rpm -U <signed nokey 2>])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U --ignorearch --ignoreos --nodeps \
@@ -236,7 +226,6 @@ AT_CLEANUP
 AT_SETUP([rpm -U <signed 1>])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
@@ -251,7 +240,6 @@ AT_CLEANUP
 AT_SETUP([rpm -U <signed 2>])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
@@ -267,7 +255,6 @@ AT_CLEANUP
 AT_SETUP([rpm -U <corrupted signed 1>])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
@@ -288,7 +275,6 @@ AT_CLEANUP
 AT_SETUP([rpm -U <corrupted signed 2>])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
@@ -311,7 +297,6 @@ AT_CLEANUP
 AT_SETUP([rpm -U <corrupted signed 3>])
 AT_KEYWORDS([install])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
@@ -453,7 +438,6 @@ AT_CLEANUP
 # Test normal upgrade
 AT_SETUP([rpm -U upgrade to newer])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -476,7 +460,6 @@ AT_CLEANUP
 # Test upgrading to older package (should fail)
 AT_SETUP([rpm -U upgrade to older])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/versiontest-2.0-1.noarch.rpm
@@ -491,7 +474,6 @@ AT_CLEANUP
 # Test downgrading to older package with --oldpackage
 AT_SETUP([rpm -U --oldpackage downgrade])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/versiontest-2.0-1.noarch.rpm
@@ -507,7 +489,6 @@ AT_CLEANUP
 # Test upgrade of different versions in same transaction
 AT_SETUP([rpm -U two versions of same package 1])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -Uv \
@@ -528,7 +509,6 @@ AT_CLEANUP
 # Test upgrade of different versions in same transaction
 AT_SETUP([rpm -U two versions of same package 2])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -Uv \
@@ -549,7 +529,6 @@ AT_CLEANUP
 # Test upgrade of obsoleted package in same transaction
 AT_SETUP([rpm -U obsoleted package 1])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
@@ -579,7 +558,6 @@ AT_CLEANUP
 # Test upgrade of obsoleted package in same transaction
 AT_SETUP([rpm -U obsoleted package 2])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
@@ -609,7 +587,6 @@ AT_CLEANUP
 # Test install of two different versions in same transaction
 AT_SETUP([rpm -i two versions of same package])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -i \
@@ -628,7 +605,6 @@ AT_CLEANUP
 # TODO: test only one was installed
 AT_SETUP([rpm -i identical versions of same package])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpm -i \
@@ -647,7 +623,6 @@ AT_CLEANUP
 AT_SETUP([rpm -U with invalid --relocate])
 AT_KEYWORDS([install relocate])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
@@ -664,7 +639,6 @@ AT_CLEANUP
 AT_SETUP([rpm -U --badreloc with invalid --relocate])
 AT_KEYWORDS([install relocate])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
@@ -680,7 +654,6 @@ AT_CLEANUP
 AT_SETUP([rpm -i with/without --excludedocs])
 AT_KEYWORDS([install excludedocs])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/testdoc.spec
