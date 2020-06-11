@@ -1,11 +1,8 @@
 AT_TESTED([rpm rpmbuild rpmquery])
 
 m4_define([RPMDB_INIT],[[
+rm -rf "${RPMTEST}"$(run rpm --eval '%_dbpath')/*
 runroot rpm --initdb
-]])
-
-m4_define([RPMDB_CLEAR],[[
-rm -rf "${RPMTEST}"`rpm --eval '%_dbpath'`/*
 ]])
 
 m4_define([RPMPY_RUN],[[
@@ -30,7 +27,6 @@ AT_CHECK([RPMPY_RUN([$1])], [], [$2], [$3])
 m4_define([RPMPY_TEST],[
 AT_SETUP([$1])
 AT_KEYWORDS([python])
-RPMDB_CLEAR
 RPMDB_INIT
 RPMPY_CHECK([$2], [$3], [$4])
 AT_CLEANUP

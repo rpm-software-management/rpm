@@ -7,7 +7,6 @@ AT_BANNER([RPM signatures and digests])
 AT_SETUP([rpmkeys -Kv <unsigned> 1])
 AT_KEYWORDS([rpmkeys digest])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -29,7 +28,6 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -Kv <reconstructed> 1])
 AT_KEYWORDS([rpmkeys digest])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -59,7 +57,6 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -Kv <corrupted unsigned> 1])
 AT_KEYWORDS([rpmkeys digest])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -84,7 +81,6 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -Kv <corrupted unsigned> 2])
 AT_KEYWORDS([rpmkeys digest])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -109,7 +105,6 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -Kv <corrupted unsigned> 3])
 AT_KEYWORDS([rpmkeys digest])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -135,7 +130,6 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -Kv <corrupted unsigned> 4])
 AT_KEYWORDS([rpmkeys digest])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -156,7 +150,6 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -Kv <unsigned> 2])
 AT_KEYWORDS([rpmkeys digest])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -195,7 +188,6 @@ AT_CLEANUP
 AT_SETUP([rpmkeys --import rsa])
 AT_KEYWORDS([rpmkeys import])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -261,7 +253,6 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -K <signed> 1])
 AT_KEYWORDS([rpmkeys digest signature])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -281,7 +272,6 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -Kv <signed> 1])
 AT_KEYWORDS([rpmkeys digest signature])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -328,7 +318,6 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -Kv <corrupted signed> 1])
 AT_KEYWORDS([rpmkeys digest signature])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -364,7 +353,6 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -Kv <corrupted signed> 2])
 AT_KEYWORDS([rpmkeys digest signature])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -401,7 +389,6 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -Kv <corrupted signed> 3])
 AT_KEYWORDS([rpmkeys digest signature])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -440,7 +427,6 @@ AT_CLEANUP
 AT_SETUP([rpmsign --addsign --rpmv3 <unsigned>])
 AT_KEYWORDS([rpmsign signature])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -474,7 +460,6 @@ AT_CLEANUP
 AT_SETUP([rpmsign --addsign <unsigned>])
 AT_KEYWORDS([rpmsign signature])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -507,7 +492,6 @@ AT_CLEANUP
 AT_SETUP([rpmsign --delsign <package>])
 AT_KEYWORDS([rpmsign signature])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -534,7 +518,6 @@ AT_CLEANUP
 AT_SETUP([rpmsign --addsign <signed>])
 AT_KEYWORDS([rpmsign signature])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
@@ -549,7 +532,6 @@ AT_CLEANUP
 AT_SETUP([rpmsign --addsign <corrupted>])
 AT_KEYWORDS([rpmsign signature])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 

@@ -3,7 +3,6 @@ AT_BANNER([RPM install/erase ordering])
 AT_SETUP([basic install/erase order 1])
 AT_KEYWORDS([install erase order])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
@@ -49,7 +48,6 @@ AT_CLEANUP
 AT_SETUP([basic install/erase order 2])
 AT_KEYWORDS([install erase order])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
@@ -95,7 +93,6 @@ AT_CLEANUP
 AT_SETUP([basic install/erase order 3])
 AT_KEYWORDS([install erase order])
 AT_CHECK([
-RPMDB_CLEAR
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
