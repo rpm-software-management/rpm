@@ -154,6 +154,7 @@ KILLAGENT = gpgconf --kill gpg-agent
 
 # The chmod is needed when copying from read-only sources (eg in distcheck)
 populate_testing:
+	if [ -d testing ]; then chmod -R u+w testing/; fi
 	HOME=$(abs_builddir)/testing $(KILLAGENT) ||:
 	rm -rf testing
 	mkdir -p testing/$(bindir)
@@ -163,7 +164,6 @@ populate_testing:
 	(cd ${top_builddir} && \
 	          $(MAKE) DESTDIR=`pwd`/${subdir}/testing install)
 	cp -r ${srcdir}/data/ testing/
-	chmod -R u+w testing/data/
 	for d in dev etc magic tmp var; do if [ ! -d testing/$${d} ]; then mkdir testing/$${d}; fi; done
 	for node in urandom stdin stderr stdout null full; do ln -s /dev/$${node} testing/dev/$${node}; done
 	for cf in hosts resolv.conf passwd shadow group gshadow mtab ; do [ -f /etc/$${cf} ] && ln -s /etc/$${cf} testing/etc/$${cf}; done
@@ -171,6 +171,7 @@ populate_testing:
 	for d in /proc /sys /selinux /etc/selinux; do if [ -d $${d} ]; then ln -s $${d} testing/$${d}; fi; done
 	(cd testing/magic && file -C)
 	HOME=$(abs_builddir)/testing gpg2 --import ${abs_srcdir}/data/keys/*.secret
+	chmod -R u-w testing/
 
 check_DATA = atconfig atlocal $(TESTSUITE)
 
@@ -191,4 +192,5 @@ installcheck-local: $(check_DATA) populate_testing
 clean-local:
 	test ! -f '$(TESTSUITE)' || $(SHELL) '$(TESTSUITE)' --clean
 	rm -f *.tmp
+	if [ -d testing ]; then chmod -R u+w testing/; fi
 	rm -rf testing
