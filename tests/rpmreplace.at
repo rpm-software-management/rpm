@@ -401,7 +401,7 @@ runroot rpmbuild --quiet -bb \
 	--define "grp $(id -g -n)" \
           /data/SPECS/replacetest.spec
 
-mkdir "${RPMTEST}"/opt/f00f
+mkdir -p "${RPMTEST}"/opt/f00f
 ln -s f00f "${RPMTEST}"/opt/foo
 runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 test -L "${tf}" && test -d "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
@@ -432,7 +432,7 @@ runroot rpmbuild --quiet -bb \
 	--define "filedata README2" \
           /data/SPECS/replacetest.spec
 
-mkdir "${RPMTEST}"/opt/f00f
+mkdir -p "${RPMTEST}"/opt/f00f
 ln -s f00f "${RPMTEST}"/opt/foo
 runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 test -L "${tf}" && test -d "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
