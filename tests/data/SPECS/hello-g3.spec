@@ -15,9 +15,14 @@ Simple rpm demonstration.
 %patch0 -p1 -b .modernize
 
 %build
-make CFLAGS="-g3 -O1 -DDEBUG_DEFINE=1"
+
+%if "%{__cc}" == "clang"
+%global debug_flags -fdebug-macro
+%endif
+
+make CFLAGS="-g3 -O1 -DDEBUG_DEFINE=1 %{?debug_flags}" CC=%{__cc}
 mv hello hello-g3
-make CFLAGS="-g3 -O2 -D_FORTIFY_SOURCE=2"
+make CFLAGS="-g3 -O2 -D_FORTIFY_SOURCE=2 %{?debug_flags}" CC=%{__cc}
 
 %install
 rm -rf $RPM_BUILD_ROOT
