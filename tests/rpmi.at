@@ -554,11 +554,9 @@ runroot rpm -q versiontest
 # TODO: the same with epoch vs no epoch
 AT_CLEANUP
 
-# Test upgrade of obsoleted package in same transaction
-AT_SETUP([rpm -U obsoleted package 1])
-AT_CHECK([
+AT_SETUP([rpm -U obsoleted packages])
+AT_KEYWORDS([install obsolete])
 RPMDB_INIT
-
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
 	--define "obs deptest-two <= 1.0" \
@@ -567,6 +565,9 @@ runroot rpmbuild --quiet -bb \
 	--define "pkg two" \
 	/data/SPECS/deptest.spec
 
+# Test upgrade of obsoleted package in same transaction
+AT_CHECK([
+RPMDB_INIT
 
 runroot rpm -Uv \
   /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm \
@@ -581,21 +582,10 @@ deptest-one-1.0-1.noarch
 ],
 [warning: package deptest-two-1.0-1.noarch was already added, replacing with deptest-one-1.0-1.noarch
 ])
-AT_CLEANUP
 
 # Test upgrade of obsoleted package in same transaction
-AT_SETUP([rpm -U obsoleted package 2])
 AT_CHECK([
 RPMDB_INIT
-
-runroot rpmbuild --quiet -bb \
-	--define "pkg one" \
-	--define "obs deptest-two <= 1.0" \
-	/data/SPECS/deptest.spec
-runroot rpmbuild --quiet -bb \
-	--define "pkg two" \
-	/data/SPECS/deptest.spec
-
 
 runroot rpm -Uv \
   /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm \
