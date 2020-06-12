@@ -65,4 +65,4 @@ RUN ./configure \
   --enable-silent-rules \
   --enable-werror
 
-CMD make -j distcheck; rc=$?; find . -name rpmtests.log|xargs cat; exit $rc
+CMD make -j$(nproc) distcheck TESTSUITEFLAGS=-j$(nproc); rc=$?; find . -name rpmtests.log|xargs cat; exit $rc
