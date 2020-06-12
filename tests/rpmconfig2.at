@@ -2,19 +2,23 @@
 
 AT_BANNER([RPM config symlink behavior])
 
-# Install over existing config file
-AT_SETUP([install config on existiting symlink])
+AT_SETUP([config symlinks])
 AT_KEYWORDS([install])
-AT_CHECK([
 RPMDB_INIT
-cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
 
-runroot rpmbuild --quiet -bb \
-        --define "ver 1.0" \
+for v in "1.0" "2.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
 	--define "filedata foo" \
 	--define "filetype link" \
           /data/SPECS/configtest.spec
+done
+
+# Install over existing config file
+AT_CHECK([
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}"*
 
 ln -s "otherstuff" "${cf}"
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
@@ -28,21 +32,12 @@ otherstuff
 ],
 [warning: /etc/my.conf saved as /etc/my.conf.rpmorig]
 )
-AT_CLEANUP
 
 # Install over existing identical config link, no backup needed
-AT_SETUP([install config on existiting identical link])
-AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
-
-runroot rpmbuild --quiet -bb \
-        --define "ver 1.0" \
-	--define "filedata foo" \
-	--define "filetype link" \
-          /data/SPECS/configtest.spec
+rm -rf "${cf}"*
 
 ln -s "foo" "${cf}"
 readlink "${cf}"
@@ -56,21 +51,12 @@ test ! -L "${cf}"
 foo
 ],
 [])
-AT_CLEANUP
 
 # Erase unmodified config link, no backup here
-AT_SETUP([erase unchanged config link])
-AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
-
-runroot rpmbuild --quiet -bb \
-        --define "ver 1.0" \
-	--define "filedata foo" \
-	--define "filetype link" \
-          /data/SPECS/configtest.spec
+rm -rf "${cf}"*
 
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
@@ -81,21 +67,12 @@ test ! -L "${cf}"
 [foo
 ],
 [])
-AT_CLEANUP
 
 # Erase modified config link
-AT_SETUP([erase changed config link])
-AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
-
-runroot rpmbuild --quiet -bb \
-        --define "ver 1.0" \
-	--define "filedata foo" \
-	--define "filetype link" \
-          /data/SPECS/configtest.spec
+rm -rf "${cf}"*
 
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
@@ -109,24 +86,12 @@ otherstuff
 ],
 [warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
 )
-AT_CLEANUP
 
-# ------------------------------
-# (Build and) upgrade package with config link, no backup here
-AT_SETUP([upgrade unchanged config link])
-AT_KEYWORDS([install])
+# Upgrade package with config link, no backup here
 AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
-
-for v in "1.0" "2.0"; do
-    runroot rpmbuild --quiet -bb \
-        --define "ver $v" \
-	--define "filedata foo" \
-	--define "filetype link" \
-          /data/SPECS/configtest.spec
-done
+rm -rf "${cf}"*
 
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
@@ -138,24 +103,13 @@ readlink "${cf}"
 foo
 ],
 [])
-AT_CLEANUP
 
 #
-# (Build and) upgrade package with config link, no backup here
-AT_SETUP([upgrade unchanged config link - touching test])
-AT_KEYWORDS([install])
+# Upgrade package with config link, no backup here
 AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
-
-for v in "1.0" "2.0"; do
-    runroot rpmbuild --quiet -bb \
-        --define "ver $v" \
-	--define "filedata foo" \
-	--define "filetype link" \
-          /data/SPECS/configtest.spec
-done
+rm -rf "${cf}"*
 
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 runroot rpm -Uvv --fsmdebug /build/RPMS/noarch/configtest-2.0-1.noarch.rpm > output.txt 2>&1
@@ -165,25 +119,12 @@ grep -c  "touch" output.txt
 [1
 ],
 [])
-AT_CLEANUP
 
-#
-# ------------------------------
 # Upgrade package with modified config link, unchanged in pkg. No backup.
-AT_SETUP([upgrade modified config link])
-AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
-
-for v in "1.0" "2.0"; do
-    runroot rpmbuild --quiet -bb \
-        --define "ver $v" \
-	--define "filedata foo" \
-	--define "filetype link" \
-          /data/SPECS/configtest.spec
-done
+rm -rf "${cf}"*
 
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
@@ -201,14 +142,9 @@ otherstuff
 AT_CLEANUP
 
 # ------------------------------
-# Upgrade package with unmodified config link, changed in pkg
-AT_SETUP([upgrade changing config link])
+AT_SETUP([changing config symlinks])
 AT_KEYWORDS([install])
-AT_CHECK([
 RPMDB_INIT
-cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
-
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
         --define "ver $v" \
@@ -216,6 +152,12 @@ for v in "1.0" "2.0"; do
 	--define "filetype link" \
           /data/SPECS/configtest.spec
 done
+
+# Upgrade package with unmodified config link, changed in pkg
+AT_CHECK([
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}"*
 
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
@@ -227,24 +169,12 @@ readlink "${cf}"
 foo-2.0
 ],
 [])
-AT_CLEANUP
 
-# ------------------------------
 # Upgrade package with locally modified config link, changed in pkg
-AT_SETUP([upgrade changing, modified config link 1])
-AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
-
-for v in "1.0" "2.0"; do
-    runroot rpmbuild --quiet -bb \
-        --define "ver $v" \
-	--define "filedata foo-$v" \
-	--define "filetype link" \
-          /data/SPECS/configtest.spec
-done
+rm -rf "${cf}"*
 
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
@@ -262,24 +192,12 @@ otherstuff
 ],
 [warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
 )
-AT_CLEANUP
 
-# ------------------------------
 # Modified config link matches the content from new package.
-AT_SETUP([upgrade changing, modified config link 2])
-AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
-
-for v in "1.0" "2.0"; do
-    runroot rpmbuild --quiet -bb \
-        --define "ver $v" \
-	--define "filedata foo-$v" \
-	--define "filetype link" \
-          /data/SPECS/configtest.spec
-done
+rm -rf "${cf}"*
 
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
@@ -299,14 +217,9 @@ AT_CLEANUP
 # config(noreplace) variants of the same cases.
 #
 # ------------------------------
-# (Build and) upgrade package with config file, no backup here
-AT_SETUP([upgrade unchanged config(noreplace) link])
+AT_SETUP([upgrade unchanged config(noreplace) links])
 AT_KEYWORDS([install])
-AT_CHECK([
 RPMDB_INIT
-cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
-
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
         --define "ver $v" \
@@ -315,6 +228,12 @@ for v in "1.0" "2.0"; do
 	--define "noreplace 1" \
           /data/SPECS/configtest.spec
 done
+
+# Upgrade package with config file, no backup here
+AT_CHECK([
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}"*
 
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
@@ -326,26 +245,12 @@ readlink "${cf}"
 foo
 ],
 [])
-AT_CLEANUP
 
-#
-# ------------------------------
 # Upgrade package with locally modified config file, unchanged in pkg
-AT_SETUP([upgrade modified config(noreplace) link])
-AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
-
-for v in "1.0" "2.0"; do
-    runroot rpmbuild --quiet -bb \
-        --define "ver $v" \
-	--define "filedata foo" \
-	--define "filetype link" \
-	--define "noreplace 1" \
-          /data/SPECS/configtest.spec
-done
+rm -rf "${cf}"*
 
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
@@ -363,13 +268,9 @@ otherstuff
 AT_CLEANUP
 
 # ------------------------------
-# Upgrade package with unmodified config file, changed in pkg
-AT_SETUP([upgrade changing config(noreplace) link])
+AT_SETUP([upgrade changing config(noreplace) links])
 AT_KEYWORDS([install])
-AT_CHECK([
 RPMDB_INIT
-cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -380,6 +281,12 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
+AT_CHECK([
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}"*
+
+# Upgrade package with unmodified config file, changed in pkg
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
 runroot rpm -U /build/RPMS/noarch/configtest-2.0-1.noarch.rpm
@@ -390,25 +297,12 @@ readlink "${cf}"
 foo-2.0
 ],
 [])
-AT_CLEANUP
 
-# ------------------------------
 # Upgrade package with locally modified config file, changed in pkg
-AT_SETUP([upgrade changing, modified config(noreplace) link 1])
-AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
-
-for v in "1.0" "2.0"; do
-    runroot rpmbuild --quiet -bb \
-        --define "ver $v" \
-	--define "filedata foo-$v" \
-	--define "filetype link" \
-	--define "noreplace 1" \
-          /data/SPECS/configtest.spec
-done
+rm -rf "${cf}"*
 
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
@@ -426,25 +320,12 @@ foo-2.0
 ],
 [warning: /etc/my.conf created as /etc/my.conf.rpmnew]
 )
-AT_CLEANUP
 
-# ------------------------------
 # Modified config link matches the content from new package.
-AT_SETUP([upgrade changing, modified config(noreplace) link 2])
-AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
-
-for v in "1.0" "2.0"; do
-    runroot rpmbuild --quiet -bb \
-        --define "ver $v" \
-	--define "filedata foo-$v" \
-	--define "filetype link" \
-	--define "noreplace 1" \
-          /data/SPECS/configtest.spec
-done
+rm -rf "${cf}"*
 
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 readlink "${cf}"
@@ -464,13 +345,9 @@ AT_CLEANUP
 
 # Shared config link variants of the same cases
 # ------------------------------
-# (Build and) upgrade package with config file, no backup here
-AT_SETUP([upgrade unchanged shared config link])
+AT_SETUP([upgrade unchanged shared config links])
 AT_KEYWORDS([install])
-AT_CHECK([
 RPMDB_INIT
-cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
 
 for s in "A" "B"; do
     for v in "1.0" "2.0"; do
@@ -482,6 +359,12 @@ for s in "A" "B"; do
               /data/SPECS/configtest.spec
     done
 done
+
+# Upgrade package with config file, no backup here
+AT_CHECK([
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}"*
 
 runroot rpm -U \
     /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
@@ -498,27 +381,11 @@ foo
 ],
 [])
 
-AT_CLEANUP
-#
-# ------------------------------
 # Upgrade package with locally modified config file, unchanged in pkg
-AT_SETUP([upgrade modified shared config link])
-AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
-
-for s in "A" "B"; do
-    for v in "1.0" "2.0"; do
-        runroot rpmbuild --quiet -bb \
-            --define "sub $s" \
-            --define "ver $v" \
-	    --define "filedata foo" \
-	    --define "filetype link" \
-              /data/SPECS/configtest.spec
-    done
-done
+rm -rf "${cf}"*
 
 runroot rpm -U \
     /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
@@ -540,13 +407,9 @@ otherstuff
 AT_CLEANUP
 
 # ------------------------------
-# Upgrade package with unmodified config file, changed in pkg
-AT_SETUP([upgrade changing shared config link])
+AT_SETUP([upgrade changing shared config links])
 AT_KEYWORDS([install])
-AT_CHECK([
 RPMDB_INIT
-cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
 
 for s in "A" "B"; do
     for v in "1.0" "2.0"; do
@@ -558,6 +421,12 @@ for s in "A" "B"; do
               /data/SPECS/configtest.spec
     done
 done
+
+# Upgrade package with unmodified config file, changed in pkg
+AT_CHECK([
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}"*
 
 runroot rpm -U \
     /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
@@ -573,27 +442,12 @@ readlink "${cf}"
 foo-2.0
 ],
 [])
-AT_CLEANUP
 
-# ------------------------------
 # Upgrade package with locally modified config file, changed in pkg
-AT_SETUP([upgrade changing, modified shared config link 1])
-AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
-
-for s in "A" "B"; do
-    for v in "1.0" "2.0"; do
-        runroot rpmbuild --quiet -bb \
-            --define "sub $s" \
-            --define "ver $v" \
-	    --define "filedata foo-$v" \
-	    --define "filetype link" \
-              /data/SPECS/configtest.spec
-    done
-done
+rm -rf "${cf}"*
 
 runroot rpm -U \
     /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
@@ -615,27 +469,12 @@ otherstuff
 ],
 [warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
 )
-AT_CLEANUP
 
-# ------------------------------
 # Modified config link matches the content from new package.
-AT_SETUP([upgrade changing, modified shared config link 2])
-AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
-
-for s in "A" "B"; do
-    for v in "1.0" "2.0"; do
-        runroot rpmbuild --quiet -bb \
-            --define "sub $s" \
-            --define "ver $v" \
-	    --define "filedata foo-$v" \
-	    --define "filetype link" \
-              /data/SPECS/configtest.spec
-    done
-done
+rm -rf "${cf}"*
 
 runroot rpm -U \
     /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
@@ -658,13 +497,9 @@ AT_CLEANUP
 
 # Shared config(noreplace) variants of the more interesting cases
 # ------------------------------
-# Upgrade package with locally modified config file, changed in pkg.
-AT_SETUP([upgrade changing, modified shared config(noreplace) link 1])
+AT_SETUP([upgrade changing shared config(noreplace) links])
 AT_KEYWORDS([install])
-AT_CHECK([
 RPMDB_INIT
-cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
 
 for s in "A" "B"; do
     for v in "1.0" "2.0"; do
@@ -677,6 +512,12 @@ for s in "A" "B"; do
               /data/SPECS/configtest.spec
     done
 done
+
+# Upgrade package with locally modified config file, changed in pkg.
+AT_CHECK([
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}"*
 
 runroot rpm -U \
     /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
@@ -698,28 +539,12 @@ foo-2.0
 ],
 [warning: /etc/my.conf created as /etc/my.conf.rpmnew]
 )
-AT_CLEANUP
 
-# ------------------------------
 # Modified config link matches the content from new package.
-AT_SETUP([upgrade changing, modified shared config(noreplace) link 2])
-AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
-
-for s in "A" "B"; do
-    for v in "1.0" "2.0"; do
-        runroot rpmbuild --quiet -bb \
-            --define "sub $s" \
-            --define "ver $v" \
-	    --define "filedata foo-$v" \
-	    --define "filetype link" \
-	    --define "noreplace 1" \
-              /data/SPECS/configtest.spec
-    done
-done
+rm -rf "${cf}"*
 
 runroot rpm -U \
     /build/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
