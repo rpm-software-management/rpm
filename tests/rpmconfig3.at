@@ -1,14 +1,10 @@
-#    rpmconfig2.at: rpm config symlink behavior tests
+#    rpmconfig3.at: rpm config file type change tests
 
 AT_BANNER([RPM config filetype changes])
 
-# non-modified config changes to non-config and back, no backups
 AT_SETUP([upgrade config to/from non-config])
 AT_KEYWORDS([install])
-AT_CHECK([
 RPMDB_INIT
-cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -22,6 +18,12 @@ runroot rpmbuild --quiet -bb \
 	--define "filedata bar" \
 	--define "noconfig 1" \
           /data/SPECS/configtest.spec
+
+# non-modified config changes to non-config and back, no backups
+AT_CHECK([
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
 
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
@@ -36,28 +38,12 @@ bar
 foo
 ],
 [])
-AT_CLEANUP
 
 # modified config changes to non-config and back, back up on first upgrade
-AT_SETUP([upgrade modified config to/from non-config 1])
-AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
-
-runroot rpmbuild --quiet -bb \
-        --define "ver 1.0" \
-	--define "filetype file" \
-	--define "filedata foo" \
-          /data/SPECS/configtest.spec
-
-runroot rpmbuild --quiet -bb \
-        --define "ver 2.0" \
-	--define "filetype file" \
-	--define "filedata bar" \
-	--define "noconfig 1" \
-          /data/SPECS/configtest.spec
+rm -rf "${cf}"*
 
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
@@ -78,28 +64,12 @@ foo
 ],
 [warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
 )
-AT_CLEANUP
 
 # modified config changes to identical non-config and back, no backups
-AT_SETUP([upgrade modified config to/from non-config 2])
-AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
-
-runroot rpmbuild --quiet -bb \
-        --define "ver 1.0" \
-	--define "filetype file" \
-	--define "filedata foo" \
-          /data/SPECS/configtest.spec
-
-runroot rpmbuild --quiet -bb \
-        --define "ver 2.0" \
-	--define "filetype file" \
-	--define "filedata bar" \
-	--define "noconfig 1" \
-          /data/SPECS/configtest.spec
+rm -rf "${cf}"*
 
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
@@ -119,13 +89,9 @@ foo
 [])
 AT_CLEANUP
 
-# non-modified config file changes to config symlink and back, no backups
 AT_SETUP([upgrade config to/from config link])
 AT_KEYWORDS([install])
-AT_CHECK([
 RPMDB_INIT
-cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -138,6 +104,12 @@ runroot rpmbuild --quiet -bb \
 	--define "filetype link" \
 	--define "filedata bar" \
           /data/SPECS/configtest.spec
+
+# non-modified config file changes to config symlink and back, no backups
+AT_CHECK([
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
 
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
@@ -152,27 +124,12 @@ bar
 foo
 ],
 [])
-AT_CLEANUP
 
 # Modified config changes to config symlink
-AT_SETUP([upgrade modified config to config link])
-AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
-
-runroot rpmbuild --quiet -bb \
-        --define "ver 1.0" \
-	--define "filetype file" \
-	--define "filedata foo" \
-          /data/SPECS/configtest.spec
-
-runroot rpmbuild --quiet -bb \
-        --define "ver 2.0" \
-	--define "filetype link" \
-	--define "filedata bar" \
-          /data/SPECS/configtest.spec
 
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
@@ -230,13 +187,9 @@ otherstuff
 )
 AT_CLEANUP
 
-# Non-modified config file changes to directory.
 AT_SETUP([upgrade config to directory])
 AT_KEYWORDS([install])
-AT_CHECK([
 RPMDB_INIT
-cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -248,6 +201,12 @@ runroot rpmbuild --quiet -bb \
         --define "ver 2.0" \
 	--define "filetype dir" \
           /data/SPECS/configtest.spec
+
+# Non-modified config file changes to directory.
+AT_CHECK([
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}"*
 
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
@@ -258,26 +217,12 @@ test -d "${cf}"
 [foo
 ],
 [])
-AT_CLEANUP
 
 # Modified config changes to directory
-AT_SETUP([upgrade modified config to directory])
-AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
-rm -rf "${cf}" "${cf}".rpm*
-
-runroot rpmbuild --quiet -bb \
-        --define "ver 1.0" \
-	--define "filetype file" \
-	--define "filedata foo" \
-          /data/SPECS/configtest.spec
-
-runroot rpmbuild --quiet -bb \
-        --define "ver 2.0" \
-	--define "filetype dir" \
-          /data/SPECS/configtest.spec
+rm -rf "${cf}"*
 
 runroot rpm -U /build/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
