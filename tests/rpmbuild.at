@@ -24,9 +24,6 @@ AT_SETUP([rpmbuild -ba *.spec])
 AT_KEYWORDS([build])
 RPMDB_INIT
 AT_CHECK([
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 run rpmbuild \
   -ba "${abs_srcdir}"/data/SPECS/hello.spec
@@ -41,9 +38,7 @@ AT_KEYWORDS([build])
 AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
 AT_CHECK([
-AS_MKDIR_P(${TOPDIR}/SOURCES)
 
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-*.patch ${TOPDIR}/SOURCES
 run rpmbuild \
   -ba "${abs_srcdir}"/data/SPECS/hello-auto.spec
 ],
@@ -51,6 +46,7 @@ run rpmbuild \
 [ignore],
 [ignore])
 AT_CLEANUP
+
 # ------------------------------
 # Check if rpmbuild --rebuild *.src.rpm works
 AT_SETUP([rpmbuild --rebuild])
@@ -70,9 +66,6 @@ AT_SETUP([rpmbuild --short-circuit -bl])
 AT_KEYWORDS([build])
 RPMDB_INIT
 AT_CHECK([
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 run rpmbuild -bi "${abs_srcdir}"/data/SPECS/hello.spec &> /dev/null
 run rpmbuild --quiet -bl --short-circuit "${abs_srcdir}"/data/SPECS/hello.spec
@@ -662,9 +655,6 @@ AT_SETUP([rpmbuild debuginfo dwz])
 AT_KEYWORDS([build] [debuginfo] [dwz])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 rundebug rpmbuild --quiet \
   --undefine "_unique_debug_names" \
@@ -784,9 +774,6 @@ AT_SETUP([rpmbuild debuginfo dwz unique debug names])
 AT_KEYWORDS([build] [debuginfo] [dwz])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 rundebug rpmbuild --quiet \
   --define "_unique_debug_names 1" \
@@ -873,10 +860,6 @@ AT_SETUP([rpmbuild debuginfo dwz gnu_debuglink crc])
 AT_KEYWORDS([build] [debuginfo])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-# Build a package that
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 rundebug rpmbuild --quiet \
   -ba "${abs_srcdir}"/data/SPECS/hello2.spec
@@ -907,11 +890,8 @@ AT_SETUP([rpmbuild implicit suid binary])
 AT_KEYWORDS([build] [debuginfo] [dwz] [suid])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Build a package that has some debuginfo
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
-
 rundebug rpmbuild --quiet \
   -ba "${abs_srcdir}"/data/SPECS/hello2-suid.spec
 
@@ -941,11 +921,8 @@ AT_SETUP([rpmbuild debuginfo gdb index included])
 AT_KEYWORDS([build] [debuginfo] [gdb])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Build a package that has some debuginfo
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
-
 rundebug rpmbuild --quiet \
   --define "_include_gdb_index 1" \
   -ba "${abs_srcdir}"/data/SPECS/hello2.spec
@@ -970,11 +947,8 @@ AT_SETUP([rpmbuild debuginfo no gdb index included])
 AT_KEYWORDS([build] [debuginfo] [gdb])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Build a package that has some debuginfo
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
-
 rundebug rpmbuild --quiet \
   --undefine "_include_gdb_index" \
   -ba "${abs_srcdir}"/data/SPECS/hello2.spec
@@ -998,13 +972,10 @@ AT_SETUP([rpmbuild debuginfo -g3 .debug_macro])
 AT_KEYWORDS([build] [debuginfo] [gdb])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Build a package that has some debuginfo generated with -g3.
 # Specifically it uses -DDEBUG_DEFINE=1, which we want to see back
 # in the .debug_macro section of the .debug file.
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
-
 rundebug rpmbuild --quiet \
   --define "_include_gdb_index 1" \
   -ba "${abs_srcdir}"/data/SPECS/hello-g3.spec
@@ -1031,11 +1002,8 @@ AT_SETUP([rpmbuild debuginfo unique debug src dir])
 AT_KEYWORDS([build] [debuginfo])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Build a package that has some debuginfo
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
-
 # Note that the spec defines hello2 as name, but the source is hello-1.0.
 # Disable dwz to make debuginfo path rewrite checking easier.
 rundebug rpmbuild --quiet \
@@ -1070,11 +1038,8 @@ AT_SETUP([rpmbuild debuginfo no unique debug src dir])
 AT_KEYWORDS([build] [debuginfo])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 # Build a package that has some debuginfo
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
-
 # Note that the spec defines hello2 as name, but the source is hello-1.0.
 # Disable dwz to make debuginfo path rewrite checking easier.
 rundebug rpmbuild --quiet \
@@ -1106,10 +1071,6 @@ AT_SETUP([rpmbuild debugsource])
 AT_KEYWORDS([build] [debuginfo] [debugsource])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-# Build a package that has some debuginfo
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 rundebug rpmbuild --quiet \
   --define "_debugsource_packages 1" \
@@ -1142,10 +1103,6 @@ AT_KEYWORDS([build] [debuginfo] [debugsource])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-# Setup sources
-cp "${abs_srcdir}"/data/SOURCES/hello.c ${TOPDIR}/SOURCES
 
 rundebug rpmbuild --quiet \
   --define "_debugsource_packages 1" \
@@ -1171,10 +1128,6 @@ AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-# Setup sources
-cp "${abs_srcdir}"/data/SOURCES/hello.c ${TOPDIR}/SOURCES
 
 rundebug rpmbuild --quiet \
   --undefine "_unique_debug_names" \
@@ -1214,10 +1167,6 @@ AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-# Setup sources
-cp "${abs_srcdir}"/data/SOURCES/hello.c ${TOPDIR}/SOURCES
 
 rundebug rpmbuild --quiet \
   --undefine "_unique_debug_names" \
@@ -1299,10 +1248,6 @@ AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-# Setup sources
-cp "${abs_srcdir}"/data/SOURCES/hello.c ${TOPDIR}/SOURCES
 
 rundebug rpmbuild --quiet \
   --define "_unique_debug_names 1" \
@@ -1384,10 +1329,6 @@ AT_KEYWORDS([build] [debuginfo] [debugsubpackage] [debugsource])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-# Setup sources
-cp "${abs_srcdir}"/data/SOURCES/hello.c ${TOPDIR}/SOURCES
 
 rundebug rpmbuild --quiet \
   --define "_unique_debug_names 1" \
@@ -1472,10 +1413,6 @@ AT_KEYWORDS([build] [debuginfo] [debugsubpackage] [debugsource])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-# Setup sources
-cp "${abs_srcdir}"/data/SOURCES/hello.c ${TOPDIR}/SOURCES
 
 rundebug rpmbuild --quiet \
   --define "_unique_debug_names 1" \
@@ -1537,10 +1474,6 @@ AT_KEYWORDS([build] [debuginfo] [debugsubpackage] [debugsource])
 AT_CHECK([
 AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-# Setup sources
-cp "${abs_srcdir}"/data/SOURCES/hello.c ${TOPDIR}/SOURCES
 
 rundebug rpmbuild --quiet \
   --define "_unique_debug_names 1" \
@@ -1608,9 +1541,6 @@ AT_SETUP([dynamic build requires rpmbuild -bs])
 AT_KEYWORDS([build])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-cp "${abs_srcdir}"/data/SOURCES/buildrequires-1.0.tar.gz ${TOPDIR}/SOURCES
 
 runroot rpmbuild \
   --quiet -bs /data/SPECS/buildrequires.spec
@@ -1630,9 +1560,6 @@ AT_SETUP([rpmbuild -br])
 AT_KEYWORDS([build])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-cp "${abs_srcdir}"/data/SOURCES/buildrequires-1.0.tar.gz ${TOPDIR}/SOURCES
 
 runroot rpmbuild \
   -br  --quiet /data/SPECS/buildrequires.spec
@@ -1653,9 +1580,6 @@ AT_SETUP([rpmbuild -ba])
 AT_KEYWORDS([build])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-cp "${abs_srcdir}"/data/SOURCES/buildrequires-1.0.tar.gz ${TOPDIR}/SOURCES
 
 runroot rpmbuild \
   -ba  --quiet /data/SPECS/buildrequires.spec
@@ -1677,9 +1601,6 @@ AT_SETUP([rpmbuild -br --nodeps])
 AT_KEYWORDS([build])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-cp "${abs_srcdir}"/data/SOURCES/buildrequires-1.0.tar.gz ${TOPDIR}/SOURCES
 
 runroot rpmbuild \
   -br  --quiet --nodeps /data/SPECS/buildrequires.spec
@@ -1703,14 +1624,14 @@ AT_SETUP([rpmbuild -ba missing source])
 AT_KEYWORDS([build])
 AT_CHECK_UNQUOTED([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 runroot rpmbuild \
+  --define "_sourcedir /notthere" \
   -bb /data/SPECS/hello.spec
 ],
 [1],
 [],
-[error: Bad source: /build/SOURCES/hello-1.0.tar.gz: No such file or directory
+[error: Bad source: /notthere/hello-1.0.tar.gz: No such file or directory
 ])
 AT_CLEANUP
 
