@@ -24,10 +24,6 @@ AT_SETUP([rpmbuild buildid none])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-# Setup sources
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # Build, contains one ELF which should have a buildid.
 rundebug rpmbuild \
@@ -58,10 +54,6 @@ AT_SETUP([rpmbuild buildid alldebug])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-# Setup sources
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # Build, contains one ELF which should have a buildid.
 rundebug rpmbuild \
@@ -150,10 +142,6 @@ AT_SETUP([rpmbuild buildid alldebug unique debug names])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-# Setup sources
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # Build, contains one ELF which should have a buildid.
 rundebug rpmbuild \
@@ -241,10 +229,6 @@ AT_SETUP([rpmbuild buildid separate])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-# Setup sources
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # Build, contains one ELF which should have a buildid.
 rundebug rpmbuild \
@@ -332,10 +316,6 @@ AT_SETUP([rpmbuild buildid separate unique debug names])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-# Setup sources
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # Build, contains one ELF which should have a buildid.
 rundebug rpmbuild \
@@ -422,10 +402,6 @@ AT_SETUP([rpmbuild buildid compat])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-# Setup sources
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # Build, contains one ELF which should have a buildid.
 rundebug rpmbuild \
@@ -526,10 +502,6 @@ AT_SETUP([rpmbuild buildid compat unique debug names])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-# Setup sources
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
 
 # Build, contains one ELF which should have a buildid.
 rundebug rpmbuild \
@@ -630,10 +602,6 @@ AT_SETUP([rpmbuild buildid duplicate alldebug])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
-
 # Should create two warnings
 rundebug rpmbuild --quiet \
   --define="_build_id_links alldebug" \
@@ -698,10 +666,6 @@ AT_SETUP([rpmbuild buildid hardlink alldebug])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
-
 # No warnings for hard links
 rundebug rpmbuild --quiet \
   --define="_build_id_links alldebug" \
@@ -763,10 +727,6 @@ AT_SETUP([rpmbuild buildid duplicate separate])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
-
 # Should create two warnings
 rundebug rpmbuild --quiet \
   --define="_build_id_links separate" \
@@ -828,10 +788,6 @@ AT_SETUP([rpmbuild buildid hardlink separate])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
-
 # No warnings for hard links
 rundebug rpmbuild --quiet \
   --define="_build_id_links separate" \
@@ -890,10 +846,6 @@ AT_SETUP([rpmbuild buildid duplicate compat])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
-
 # Should create two warnings
 rundebug rpmbuild --quiet \
   --define="_build_id_links compat" \
@@ -967,10 +919,6 @@ AT_SETUP([rpmbuild buildid hardlink compat])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
-
 # No warnings for hard links
 rundebug rpmbuild --quiet \
   --define="_build_id_links compat" \
@@ -1040,10 +988,6 @@ AT_SETUP([rpmbuild buildid recompute])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
-
 # Make sure we get debuginfo
 export CFLAGS="-g"
 
@@ -1154,10 +1098,6 @@ AT_SETUP([rpmbuild buildid unique r1 r2])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
-
 # No warnings for hard links
 rundebug rpmbuild --quiet \
   --define="_unique_build_ids 1" \
@@ -1202,10 +1142,6 @@ AT_SETUP([rpmbuild buildid non-unique r1 r2])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
 RPMDB_INIT
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz "${abs_srcdir}"/data/SOURCES/hello-1.0-modernize.patch ${TOPDIR}/SOURCES
-
 # No warnings for hard links
 rundebug rpmbuild --quiet \
   --undefine="_unique_build_ids" \
@@ -1255,10 +1191,6 @@ AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
 RPMDB_INIT
 AT_SKIP_IF([$LUA_DISABLED])
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-# Setup sources
-cp "${abs_srcdir}"/data/SOURCES/hello.c ${TOPDIR}/SOURCES
 
 # Build, contains one ELF which should have a buildid.
 rundebug rpmbuild \
@@ -1290,10 +1222,6 @@ AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
 RPMDB_INIT
 AT_SKIP_IF([$LUA_DISABLED])
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-# Setup sources
-cp "${abs_srcdir}"/data/SOURCES/hello.c ${TOPDIR}/SOURCES
 
 # Build, contains one ELF which should have a buildid.
 rundebug rpmbuild \

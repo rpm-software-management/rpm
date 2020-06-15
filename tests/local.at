@@ -4,6 +4,8 @@ m4_define([RPMTEST_SETUP],[[
 if ! [ -d testing/ ]; then
     cp -aP "${RPMTEST}" .
     chmod -R u+w testing/
+    mkdir -p testing/build
+    ln -s ../data/SOURCES testing/build/
 fi
 export RPMTEST="${PWD}/testing"
 export TOPDIR="${RPMTEST}/build"
