@@ -1747,22 +1747,21 @@ done
 [ignore])
 AT_CLEANUP
 
-AT_SETUP([%if, %else, %elif test basic])
+AT_SETUP([spec conditionals])
 AT_KEYWORDS([if else elif build])
-AT_CHECK([
 RPMDB_INIT
+
+# %if, %else, %elif test basic
+AT_CHECK([
 runroot rpmbuild -ba --quiet \
     --define "testif 0"      \
    /data/SPECS/iftest.spec
 ],
 [0],
 [])
-AT_CLEANUP
 
-AT_SETUP([%if, %else, %elif test existing script])
-AT_KEYWORDS([if else elif build])
+# %if, %else, %elif test existing script
 AT_CHECK([
-RPMDB_INIT
 runroot rpmbuild -ba --quiet  \
     --define "testif 2"       \
     --define "fedora 1"       \
@@ -1770,12 +1769,8 @@ runroot rpmbuild -ba --quiet  \
 ],
 [0],
 [])
-AT_CLEANUP
 
-AT_SETUP([%if, %else, %elif test 1])
-AT_KEYWORDS([if else elif build])
 AT_CHECK([
-RPMDB_INIT
 runroot rpmbuild -ba --quiet \
  --define "testif 1"         \
  --define "variable1 1"      \
@@ -1789,14 +1784,8 @@ runroot rpmbuild -ba --quiet \
 ],
 [0],
 [])
-AT_CLEANUP
 
-
-
-AT_SETUP([%if, %else, %elif test 2])
-AT_KEYWORDS([if else elif build])
 AT_CHECK([
-RPMDB_INIT
 runroot rpmbuild -ba --quiet   \
  --define "testif 1"           \
  --define "variable1 0"        \
@@ -1810,14 +1799,8 @@ runroot rpmbuild -ba --quiet   \
 ],
 [1],
 [])
-AT_CLEANUP
 
-
-
-AT_SETUP([%if, %else, %elif test 3])
-AT_KEYWORDS([if else elif build])
 AT_CHECK([
-RPMDB_INIT
 runroot rpmbuild -ba --quiet      \
  --define "testif 1"              \
  --define "variable1 0"           \
@@ -1831,13 +1814,8 @@ runroot rpmbuild -ba --quiet      \
 ],
 [0],
 [])
-AT_CLEANUP
 
-
-AT_SETUP([%if, %else, %elif test 4])
-AT_KEYWORDS([if else elif build])
 AT_CHECK([
-RPMDB_INIT
 runroot rpmbuild -ba --quiet      \
  --define "testif 1"              \
  --define "variable1 0"           \
@@ -1857,13 +1835,9 @@ error:                                                        ^
 error: /data/SPECS/eliftest.spec:40: bad %elif condition:  rubbish:4-3
 
 ])
-AT_CLEANUP
 
-
-AT_SETUP([multiline %if test])
-AT_KEYWORDS([if macros build])
+# multiline %if test
 AT_CHECK([
-RPMDB_INIT
 runroot rpmbuild -ba --quiet      \
  data/SPECS/ifmultiline.spec
 ],
