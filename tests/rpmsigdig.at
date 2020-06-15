@@ -411,8 +411,9 @@ AT_CLEANUP
 
 # ------------------------------
 # Test --addsign
-AT_SETUP([rpmsign --addsign --rpmv3 <unsigned>])
+AT_SETUP([rpmsign --addsign])
 AT_KEYWORDS([rpmsign signature])
+# rpmsign --addsign --rpmv3 <unsigned>
 AT_CHECK([
 RPMDB_INIT
 
@@ -440,11 +441,8 @@ POST-DELSIGN
 /tmp/hello-2.0-1.x86_64.rpm:
 ],
 [])
-AT_CLEANUP
 
-# Test --addsign
-AT_SETUP([rpmsign --addsign <unsigned>])
-AT_KEYWORDS([rpmsign signature])
+# rpmsign --addsign <unsigned>
 AT_CHECK([
 RPMDB_INIT
 
@@ -470,37 +468,8 @@ POST-DELSIGN
 /tmp/hello-2.0-1.x86_64.rpm:
 ],
 [])
-AT_CLEANUP
 
-# ------------------------------
-# Test --delsign
-AT_SETUP([rpmsign --delsign <package>])
-AT_KEYWORDS([rpmsign signature])
-AT_CHECK([
-RPMDB_INIT
-
-cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64-signed.rpm "${RPMTEST}"/tmp/
-echo PRE-DELSIGN
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64-signed.rpm|grep -v digest
-echo POST-DELSIGN
-run rpmsign --delsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64-signed.rpm > /dev/null
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64-signed.rpm|grep -v digest
-],
-[0],
-[PRE-DELSIGN
-/tmp/hello-2.0-1.x86_64-signed.rpm:
-    Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
-    V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
-POST-DELSIGN
-/tmp/hello-2.0-1.x86_64-signed.rpm:
-],
-[])
-AT_CLEANUP
-
-# ------------------------------
-# Test --addsign
-AT_SETUP([rpmsign --addsign <signed>])
-AT_KEYWORDS([rpmsign signature])
+# rpmsign --addsign <signed>
 AT_CHECK([
 RPMDB_INIT
 
@@ -510,10 +479,8 @@ run rpmsign --key-id 1964C5FC --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64-sign
 [0],
 [],
 [])
-AT_CLEANUP
 
-AT_SETUP([rpmsign --addsign <corrupted>])
-AT_KEYWORDS([rpmsign signature])
+# rpmsign --addsign <corrupted>
 AT_CHECK([
 RPMDB_INIT
 
@@ -536,6 +503,31 @@ echo $?
     Payload SHA256 digest: OK
     MD5 digest: BAD (Expected 007ca1d8b35cca02a1854ba301c5432e != 137ca1d8b35cca02a1854ba301c5432e)
 1
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# Test --delsign
+AT_SETUP([rpmsign --delsign])
+AT_KEYWORDS([rpmsign signature])
+AT_CHECK([
+RPMDB_INIT
+
+cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64-signed.rpm "${RPMTEST}"/tmp/
+echo PRE-DELSIGN
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64-signed.rpm|grep -v digest
+echo POST-DELSIGN
+run rpmsign --delsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64-signed.rpm > /dev/null
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64-signed.rpm|grep -v digest
+],
+[0],
+[PRE-DELSIGN
+/tmp/hello-2.0-1.x86_64-signed.rpm:
+    Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+    V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+POST-DELSIGN
+/tmp/hello-2.0-1.x86_64-signed.rpm:
 ],
 [])
 AT_CLEANUP
