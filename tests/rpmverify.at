@@ -280,13 +280,9 @@ runroot rpm -Va --nouser --nogroup
 AT_CLEANUP
 
 # ------------------------------
-# Upgraded verification with min_writes 1 (files)
-AT_SETUP([Upgraded verification with min_writes 1 (files)])
+AT_SETUP([minimize writes (files)])
 AT_KEYWORDS([upgrade verify min_writes])
-AT_CHECK([
 RPMDB_INIT
-tf="${RPMTEST}"/opt/foo
-rm -rf "${tf}" "${tf}".rpm*
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -303,6 +299,11 @@ for v in "3.0" "4.0"; do
 	--define "filedata fox" \
           /data/SPECS/replacetest.spec
 done
+
+AT_CHECK([
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${tf}"*
 
 runroot rpm -i /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 cat "${tf}"
@@ -346,33 +347,11 @@ fox
 fox
 ],
 [])
-AT_CLEANUP
 
-
-# ------------------------------
-# Upgraded verification with min_writes 2 (files)
-AT_SETUP([Upgraded verification with min_writes 2 (files)])
-AT_KEYWORDS([upgrade verify min_writes])
 AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
-rm -rf "${tf}" "${tf}".rpm*
-
-for v in "1.0" "2.0"; do
-    runroot rpmbuild --quiet -bb \
-        --define "ver $v" \
-	--define "filetype file" \
-	--define "filedata foo" \
-          /data/SPECS/replacetest.spec
-done
-
-for v in "3.0" "4.0"; do
-    runroot rpmbuild --quiet -bb \
-        --define "ver $v" \
-	--define "filetype file" \
-	--define "filedata fox" \
-          /data/SPECS/replacetest.spec
-done
+rm -rf "${tf}"*
 
 runroot rpm -i /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 cat "${tf}"
@@ -426,15 +405,9 @@ fox
 [])
 AT_CLEANUP
 
-# ------------------------------
-# Upgraded verification with min_writes 3 (LINKs)
-AT_SETUP([Upgraded verification with min_writes 3 (LINKs)])
+AT_SETUP([minimize writes (links)])
 AT_KEYWORDS([upgrade verify min_writes])
-AT_CHECK([
 RPMDB_INIT
-tf="${RPMTEST}"/opt/foo
-rm -rf "${tf}" "${tf}".rpm*
-
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
         --define "ver $v" \
@@ -450,6 +423,11 @@ for v in "3.0" "4.0"; do
 	--define "filedata fox" \
           /data/SPECS/replacetest.spec
 done
+
+AT_CHECK([
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${tf}"*
 
 runroot rpm -i /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 readlink "${tf}"
@@ -490,31 +468,11 @@ fox
 fox
 ],
 [])
-AT_CLEANUP
-# ------------------------------
-# Upgraded verification with min_writes 4 (LINKs)
-AT_SETUP([Upgraded verification with min_writes 4 (LINKs)])
-AT_KEYWORDS([upgrade verify min_writes])
+
 AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}" "${tf}".rpm*
-
-for v in "1.0" "2.0"; do
-    runroot rpmbuild --quiet -bb \
-        --define "ver $v" \
-	--define "filetype link" \
-	--define "filedata doh" \
-          /data/SPECS/replacetest.spec
-done
-
-for v in "3.0" "4.0"; do
-    runroot rpmbuild --quiet -bb \
-        --define "ver $v" \
-	--define "filetype link" \
-	--define "filedata fox" \
-          /data/SPECS/replacetest.spec
-done
 
 runroot rpm -i /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 readlink "${tf}"
@@ -565,7 +523,7 @@ fox
 [])
 AT_CLEANUP
 
-AT_SETUP([Upgraded verification with min_writes 5 (suid files)])
+AT_SETUP([minimize writes (SUID files)])
 AT_KEYWORDS([upgrade verify min_writes])
 AT_CHECK([
 RPMDB_INIT
