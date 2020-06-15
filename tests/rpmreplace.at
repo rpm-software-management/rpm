@@ -35,12 +35,9 @@ foo
 [])
 AT_CLEANUP
 
-AT_SETUP([upgrade regular file to/from broken link])
+AT_SETUP([upgrade regular file to/from link])
 AT_KEYWORDS([install])
-AT_CHECK([
 RPMDB_INIT
-tf="${RPMTEST}"/opt/foo
-rm -rf "${RPMTEST}"/opt/*
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -53,6 +50,12 @@ runroot rpmbuild --quiet -bb \
 	--define "filetype link" \
 	--define "filedata stuff" \
           /data/SPECS/replacetest.spec
+
+# upgrade regular file to/from broken link
+AT_CHECK([
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
 
 runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 cat "${tf}"
@@ -67,27 +70,13 @@ stuff
 foo
 ],
 [])
-AT_CLEANUP
 
-AT_SETUP([upgrade regular file to/from file link])
-AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
 
-runroot rpmbuild --quiet -bb \
-        --define "ver 1.0" \
-	--define "filetype file" \
-	--define "filedata foo" \
-          /data/SPECS/replacetest.spec
-
-runroot rpmbuild --quiet -bb \
-        --define "ver 2.0" \
-	--define "filetype link" \
-	--define "filedata goo" \
-          /data/SPECS/replacetest.spec
-
+# upgrade regular file to/from file link
 runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 cat "${tf}"
 runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
@@ -97,7 +86,7 @@ cat "${tf}"
 ],
 [0],
 [foo
-goo
+stuff
 foo
 ],
 [])
@@ -431,10 +420,7 @@ AT_CLEANUP
 
 AT_SETUP([upgrade empty directory to broken link])
 AT_KEYWORDS([install])
-AT_CHECK([
 RPMDB_INIT
-tf="${RPMTEST}"/opt/foo
-rm -rf "${RPMTEST}"/opt/*
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -446,6 +432,26 @@ runroot rpmbuild --quiet -bb \
 	--define "filetype link" \
 	--define "filedata woot" \
           /data/SPECS/replacetest.spec
+
+# upgrade empty directory to broken link
+AT_CHECK([
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+
+runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+test -d "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+],
+[2],
+[],
+[	file /opt/foo from install of replacetest-2.0-1.noarch conflicts with file from package replacetest-1.0-1.noarch
+])
+
+# upgrade empty directory to file link
+AT_CHECK([
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
 
 runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 test -d "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
@@ -458,37 +464,7 @@ AT_CLEANUP
 
 AT_SETUP([upgrade empty directory to file link])
 AT_KEYWORDS([install])
-AT_CHECK([
 RPMDB_INIT
-tf="${RPMTEST}"/opt/foo
-rm -rf "${RPMTEST}"/opt/*
-
-runroot rpmbuild --quiet -bb \
-        --define "ver 1.0" \
-	--define "filetype dir" \
-          /data/SPECS/replacetest.spec
-
-runroot rpmbuild --quiet -bb \
-        --define "ver 2.0" \
-	--define "filetype link" \
-	--define "filedata woot" \
-          /data/SPECS/replacetest.spec
-
-runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
-test -d "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
-],
-[2],
-[],
-[	file /opt/foo from install of replacetest-2.0-1.noarch conflicts with file from package replacetest-1.0-1.noarch
-])
-AT_CLEANUP
-
-AT_SETUP([upgrade removed empty directory to file link])
-AT_KEYWORDS([install])
-AT_CHECK([
-RPMDB_INIT
-tf="${RPMTEST}"/opt/foo
-rm -rf "${RPMTEST}"/opt/*
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -500,6 +476,12 @@ runroot rpmbuild --quiet -bb \
 	--define "filetype link" \
 	--define "filedata goo" \
           /data/SPECS/replacetest.spec
+
+# upgrade removed empty directory to file link
+AT_CHECK([
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
 
 runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 test -d "${tf}" && rmdir "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
@@ -509,25 +491,12 @@ readlink "${tf}"
 [goo
 ],
 [])
-AT_CLEANUP
 
-AT_SETUP([upgrade replaced empty directory to file link])
-AT_KEYWORDS([install])
+# upgrade replaced empty directory to file link
 AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
-
-runroot rpmbuild --quiet -bb \
-        --define "ver 1.0" \
-	--define "filetype dir" \
-          /data/SPECS/replacetest.spec
-
-runroot rpmbuild --quiet -bb \
-        --define "ver 2.0" \
-	--define "filetype link" \
-	--define "filedata goo" \
-          /data/SPECS/replacetest.spec
 
 runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 test -d "${tf}" && rmdir "${tf}" && ln -sf goo "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
