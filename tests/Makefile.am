@@ -150,12 +150,9 @@ atlocal:	atlocal.in Makefile
 DISTCLEANFILES = atlocal
 EXTRA_DIST += atlocal.in
 
-KILLAGENT = gpgconf --kill gpg-agent
-
 # The chmod is needed when copying from read-only sources (eg in distcheck)
 populate_testing:
 	if [ -d testing ]; then chmod -R u+w testing/; fi
-	HOME=$(abs_builddir)/testing $(KILLAGENT) ||:
 	rm -rf testing
 	mkdir -p testing/$(bindir)
 	ln -s ./$(bindir) testing/bin
@@ -170,7 +167,6 @@ populate_testing:
 	for prog in gzip cat patch tar sh ln chmod rm mkdir uname grep sed find file ionice mktemp nice cut sort diff touch install wc coreutils xargs; do p=`which $${prog}`; if [ "$${p}" != "" ]; then ln -s $${p} testing/$(bindir)/; fi; done
 	for d in /proc /sys /selinux /etc/selinux; do if [ -d $${d} ]; then ln -s $${d} testing/$${d}; fi; done
 	(cd testing/magic && file -C)
-	HOME=$(abs_builddir)/testing gpg2 --import ${abs_srcdir}/data/keys/*.secret
 	chmod -R u-w testing/
 
 check_DATA = atconfig atlocal $(TESTSUITE)
@@ -178,7 +174,6 @@ check_DATA = atconfig atlocal $(TESTSUITE)
 if HAVE_FAKECHROOT
 check-local: $(check_DATA) populate_testing
 	$(SHELL) '$(TESTSUITE)' $(TESTSUITEFLAGS)
-	HOME=$(abs_builddir)/testing $(KILLAGENT) ||:
 else
 check-local:
 	echo "you need to have fakechroot installed"
@@ -187,7 +182,6 @@ endif !HAVE_FAKECHROOT
 
 installcheck-local: $(check_DATA) populate_testing
 	$(SHELL) '$(TESTSUITE)' AUTOTEST_PATH='$(bindir):$(rpmlibexecdir)' $(TESTSUITEFLAGS)
-	HOME=$(abs_builddir)/testing $(KILLAGENT) ||:
 
 clean-local:
 	test ! -f '$(TESTSUITE)' || $(SHELL) '$(TESTSUITE)' --clean

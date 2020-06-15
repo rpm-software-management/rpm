@@ -413,6 +413,9 @@ AT_CLEANUP
 # Test --addsign
 AT_SETUP([rpmsign --addsign])
 AT_KEYWORDS([rpmsign signature])
+RPMDB_INIT
+gpg2 --import ${RPMTEST}/data/keys/*.secret
+
 # rpmsign --addsign --rpmv3 <unsigned>
 AT_CHECK([
 RPMDB_INIT
@@ -505,6 +508,7 @@ echo $?
 1
 ],
 [])
+gpgconf --kill gpg-agent
 AT_CLEANUP
 
 # ------------------------------
