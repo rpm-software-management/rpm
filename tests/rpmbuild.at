@@ -482,6 +482,8 @@ AT_CLEANUP
 
 AT_SETUP([Dependency generation 3])
 AT_KEYWORDS([build])
+RPMDB_INIT
+
 AT_CHECK([
 RPMDB_INIT
 
@@ -499,6 +501,40 @@ runroot rpmbuild -bb --quiet \
 [],
 [error: Illegal char '*' (0x2a) in: *
     Illegal char '*' (0x2a) in: *
+])
+
+AT_CHECK([
+RPMDB_INIT
+
+cat << EOF > "${RPMTEST}"/tmp/fail.req
+#!/bin/sh
+exit 1
+EOF
+chmod a+x "${RPMTEST}"/tmp/fail.req
+
+runroot rpmbuild -bb --quiet \
+		--define "__script_requires /tmp/fail.req" \
+		/data/SPECS/shebang.spec
+],
+[1],
+[],
+[error: Requirename generator /tmp/fail.req  failed: /build/BUILDROOT/shebang-0.1-1.x86_64/bin/shebang
+    Requirename generator /tmp/fail.req  failed: /build/BUILDROOT/shebang-0.1-1.x86_64/bin/shebang
+])
+
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpmbuild -bb --quiet \
+		--define "__script_provides() %{error:bad %{basename:%1} stuff}" \
+		/data/SPECS/shebang.spec
+],
+[1],
+[],
+[error: bad shebang stuff
+error: Providename generator %{__script_provides %{?__script_provides_opts}} failed: /build/BUILDROOT/shebang-0.1-1.x86_64/bin/shebang
+    bad shebang stuff
+    Providename generator %{__script_provides %{?__script_provides_opts}} failed: /build/BUILDROOT/shebang-0.1-1.x86_64/bin/shebang
 ])
 AT_CLEANUP
 
