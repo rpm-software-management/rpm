@@ -928,9 +928,14 @@ static int isDoc(ARGV_const_t docDirs, const char * fileName)
     return 0;
 }
 
+static int isLinkable(mode_t mode)
+{
+    return (S_ISREG(mode) || S_ISLNK(mode));
+}
+
 static int isHardLink(FileListRec flp, FileListRec tlp)
 {
-    return ((S_ISREG(flp->fl_mode) && S_ISREG(tlp->fl_mode)) &&
+    return ((isLinkable(flp->fl_mode) && isLinkable(tlp->fl_mode)) &&
 	    ((flp->fl_nlink > 1) && (flp->fl_nlink == tlp->fl_nlink)) &&
 	    (flp->fl_ino == tlp->fl_ino) && 
 	    (flp->fl_dev == tlp->fl_dev));
@@ -949,7 +954,7 @@ static int checkHardLinks(FileRecords files)
 
     for (i = 0;  i < files->used; i++) {
 	ilp = files->recs + i;
-	if (!(S_ISREG(ilp->fl_mode) && ilp->fl_nlink > 1))
+	if (!(isLinkable(ilp->fl_mode) && ilp->fl_nlink > 1))
 	    continue;
 
 	for (j = i + 1; j < files->used; j++) {
@@ -1140,7 +1145,7 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	    headerPutUint32(h, RPMTAG_FILESIZES, &rsize32, 1);
 	}
 	/* Excludes and dupes have been filtered out by now. */
-	if (S_ISREG(flp->fl_mode)) {
+	if (isLinkable(flp->fl_mode)) {
 	    if (flp->fl_nlink == 1 || !seenHardLink(&fl->files, flp, &fileid)) {
 		totalFileSize += flp->fl_size;
 	    }
