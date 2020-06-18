@@ -666,3 +666,20 @@ runroot rpm -e testdoc
 [])
 AT_CLEANUP
 
+AT_SETUP([rpm -i --excludeartifacts])
+AT_KEYWORDS([install])
+RPMDB_INIT
+runroot rpmbuild --quiet -bb /data/SPECS/vattrtest.spec
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -i --excludeartifacts /build/RPMS/noarch/vattrtest-1.0-1.noarch.rpm
+test -e ${RPMTEST}/opt/vattrtest/a && exit 1
+runroot rpm -e vattrtest
+runroot rpm -i /build/RPMS/noarch/vattrtest-1.0-1.noarch.rpm
+test -e ${RPMTEST}/opt/vattrtest/a || exit 1
+],
+[0],
+[],
+[])
+AT_CLEANUP

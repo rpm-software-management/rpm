@@ -822,6 +822,7 @@ static void skipInstallFiles(const rpmts ts, rpmfiles files, rpmfs fs)
     rpm_color_t FColor;
     int noConfigs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONFIGS);
     int noDocs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NODOCS);
+    int noArtifacts = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOARTIFACTS);
     int * drc;
     char * dff;
     int dc;
@@ -917,6 +918,13 @@ static void skipInstallFiles(const rpmts ts, rpmfiles files, rpmfs fs)
 	 * Skip documentation if requested.
 	 */
 	if (noDocs && (rpmfiFFlags(fi) & RPMFILE_DOC)) {
+	    drc[ix]--;	dff[ix] = 1;
+	    rpmfsSetAction(fs, i, FA_SKIPNSTATE);
+	    continue;
+	}
+
+	/* Skip artifacts if requested. */
+	if (noArtifacts && (rpmfiFFlags(fi) & RPMFILE_ARTIFACT)) {
 	    drc[ix]--;	dff[ix] = 1;
 	    rpmfsSetAction(fs, i, FA_SKIPNSTATE);
 	    continue;
