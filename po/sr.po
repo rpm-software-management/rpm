@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-05-28 13:08+0300\n"
+"POT-Creation-Date: 2020-06-23 13:16+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Serbian (http://www.transifex.com/rpm-team/rpm/language/sr/)\n"
@@ -288,52 +288,47 @@ msgstr "Заједничке опције за све rpm режиме и изв
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Не могу да отворим датотеку спецификације %s: %s\n"
 
-#: rpmbuild.c:363
+#: rpmbuild.c:359
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "Неуспело отварање tar цеви: %m\n"
 
-#: rpmbuild.c:378
+#: rpmbuild.c:374
 #, c-format
 msgid "Found more than one spec file in %s\n"
 msgstr ""
 
-#: rpmbuild.c:389
+#: rpmbuild.c:385
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Неуспело читање датотеке спецификације из %s\n"
 
-#: rpmbuild.c:401
-#, c-format
-msgid "Failed to rename %s to %s: %m\n"
-msgstr "Неуспела промена имена %s у %s: %m\n"
-
-#: rpmbuild.c:478
+#: rpmbuild.c:449
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "stat није успео %s: %m\n"
 
-#: rpmbuild.c:482
+#: rpmbuild.c:453
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Датотека %s није обична датотека.\n"
 
-#: rpmbuild.c:489
+#: rpmbuild.c:460
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Датотека %s не личи на датотеку спецификације.\n"
 
-#: rpmbuild.c:545
+#: rpmbuild.c:520
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Правим циљне платформе: %s\n"
 
-#: rpmbuild.c:553
+#: rpmbuild.c:528
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Правим за циљ %s\n"
 
-#: rpmbuild.c:608 rpm.c:212
+#: rpmbuild.c:583 rpm.c:212
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "аргументи за --root (-r) морају почети знаком /"
 
@@ -747,207 +742,207 @@ msgstr "Није уграђена подршка за могућност дат�
 msgid "File must begin with \"/\": %s\n"
 msgstr "Датотека мора почети са „/“: %s\n"
 
-#: build/files.c:1005
+#: build/files.c:1010
 #, c-format
 msgid "unable to parse %s=%s\n"
 msgstr ""
 
-#: build/files.c:1023
+#: build/files.c:1028
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr "Непознат алгоритам %u за сажимање датотека, враћам се на MD5\n"
 
-#: build/files.c:1077
+#: build/files.c:1082
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Датотека наведена двапут: %s\n"
 
-#: build/files.c:1199
+#: build/files.c:1204
 #, c-format
 msgid "reading symlink %s failed: %s\n"
 msgstr ""
 
-#: build/files.c:1205
+#: build/files.c:1210
 #, c-format
 msgid "absolute symlink: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1211
+#: build/files.c:1216
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symlink тачке за BuildRoot: %s -> %s\n"
 
-#: build/files.c:1332
+#: build/files.c:1337
 #, c-format
 msgid "Illegal character (0x%x) in filename: %s\n"
 msgstr ""
 
-#: build/files.c:1369
+#: build/files.c:1374
 #, c-format
 msgid "Path is outside buildroot: %s\n"
 msgstr ""
 
-#: build/files.c:1413
+#: build/files.c:1418
 #, c-format
 msgid "Directory not found: %s\n"
 msgstr ""
 
-#: build/files.c:1414 lib/rpminstall.c:459
+#: build/files.c:1419 lib/rpminstall.c:459
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Датотека није пронађена: %s\n"
 
-#: build/files.c:1435
+#: build/files.c:1440
 #, c-format
 msgid "Not a directory: %s\n"
 msgstr ""
 
-#: build/files.c:1589
+#: build/files.c:1594
 #, fuzzy, c-format
 msgid "Can't read content of file: %s\n"
 msgstr "%s: неуспело читање манифеста: %s\n"
 
-#: build/files.c:1630
+#: build/files.c:1635
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: не могу да учитам непознату ознаку (%d).\n"
 
-#: build/files.c:1636
+#: build/files.c:1641
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: неуспело читање јавног кључа.\n"
 
-#: build/files.c:1640
+#: build/files.c:1645
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: јавни кључ није ојачан.\n"
 
-#: build/files.c:1649
+#: build/files.c:1654
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr ""
 
-#: build/files.c:1695
+#: build/files.c:1700
 msgid "failed symlink"
 msgstr ""
 
-#: build/files.c:1751 build/files.c:1754
+#: build/files.c:1756 build/files.c:1759
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
 msgstr ""
 
-#: build/files.c:1761
+#: build/files.c:1766
 #, c-format
 msgid "Duplicate build-ids %s and %s\n"
 msgstr ""
 
-#: build/files.c:1815
+#: build/files.c:1820
 msgid "_build_id_links macro not set, assuming 'compat'\n"
 msgstr ""
 
-#: build/files.c:1828
+#: build/files.c:1833
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
 msgstr ""
 
-#: build/files.c:1917
+#: build/files.c:1922
 #, c-format
 msgid "error reading build-id in %s: %s\n"
 msgstr ""
 
-#: build/files.c:1921
+#: build/files.c:1926
 #, c-format
 msgid "Missing build-id in %s\n"
 msgstr ""
 
-#: build/files.c:1926
+#: build/files.c:1931
 #, c-format
 msgid "build-id found in %s too small\n"
 msgstr ""
 
-#: build/files.c:1927
+#: build/files.c:1932
 #, c-format
 msgid "build-id found in %s too large\n"
 msgstr ""
 
-#: build/files.c:1942 rpmio/rpmfileutil.c:445
+#: build/files.c:1947 rpmio/rpmfileutil.c:445
 msgid "failed to create directory"
 msgstr "неуспело креирање директоријума"
 
-#: build/files.c:1960
+#: build/files.c:1965
 msgid "Mixing main ELF and debug files in package"
 msgstr ""
 
-#: build/files.c:2161
+#: build/files.c:2166
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Испред датотеке је потребно да стоји „/“: %s\n"
 
-#: build/files.c:2185
+#: build/files.c:2190
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr ""
 
-#: build/files.c:2197
+#: build/files.c:2202
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2199
+#: build/files.c:2204
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2234
+#: build/files.c:2239
 #, fuzzy, c-format
 msgid "Could not open %s file %s: %m\n"
 msgstr "Не могу да отворим %%files датотеку %s: %m\n"
 
-#: build/files.c:2259
+#: build/files.c:2264
 #, fuzzy, c-format
 msgid "Empty %s file %s\n"
 msgstr "отварање %s није успело: %s\n"
 
-#: build/files.c:2304
+#: build/files.c:2309
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr ""
 
-#: build/files.c:2425 lib/rpminstall.c:461
+#: build/files.c:2430 lib/rpminstall.c:461
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Датотека није пронађена поклапањем: %s\n"
 
-#: build/files.c:2512
+#: build/files.c:2517
 #, c-format
 msgid "Special file in generated file list: %s\n"
 msgstr ""
 
-#: build/files.c:2536
+#: build/files.c:2541
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:2552
+#: build/files.c:2557
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr ""
 
-#: build/files.c:2621
+#: build/files.c:2626
 msgid "Generating build-id links failed\n"
 msgstr ""
 
-#: build/files.c:2738
+#: build/files.c:2743
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Лоша датотека: %s: %s\n"
 
-#: build/files.c:2806
+#: build/files.c:2811
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Проверавам за незапаковане датотеке: %s\n"
 
-#: build/files.c:2819
+#: build/files.c:2824
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -956,27 +951,27 @@ msgstr ""
 "Пронађене су инсталиране (али незапаковане) датотеке:\n"
 "%s"
 
-#: build/files.c:2874
+#: build/files.c:2879
 #, fuzzy, c-format
 msgid "package %s already exists\n"
 msgstr "пакет %s је већ инсталиран"
 
-#: build/files.c:2938
+#: build/files.c:2943
 #, c-format
 msgid "%s was mapped to multiple filenames"
 msgstr ""
 
-#: build/files.c:3187
+#: build/files.c:3192
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
 
-#: build/files.c:3209
+#: build/files.c:3214
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 
-#: build/files.c:3215
+#: build/files.c:3220
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Бинарне датотеке зависне од архитектуре у noarch пакету\n"
 
@@ -1045,17 +1040,17 @@ msgstr "Извршавање „%s“ није успело.\n"
 msgid "Package check \"%s\" failed.\n"
 msgstr "Неуспела провера пакета „%s“.\n"
 
-#: build/pack.c:654
+#: build/pack.c:655
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "не могу да направим %s: %s\n"
 
-#: build/pack.c:673
+#: build/pack.c:674
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Не могу да направим име излазне датотеке за пакет %s: %s\n"
 
-#: build/pack.c:772
+#: build/pack.c:773
 #, c-format
 msgid "Finished binary package job, result %d, filename %s\n"
 msgstr ""
@@ -1649,40 +1644,45 @@ msgstr ""
 msgid "failed to write all data to %s: %s\n"
 msgstr ""
 
-#: build/rpmfc.c:1168
+#: build/rpmfc.c:640
+#, fuzzy, c-format
+msgid "%s generator %s failed: %s\n"
+msgstr "отварање %s није успело: %s\n"
+
+#: build/rpmfc.c:1177
 msgid "Empty file classifier\n"
 msgstr ""
 
-#: build/rpmfc.c:1177
+#: build/rpmfc.c:1186
 msgid "No file attributes configured\n"
 msgstr ""
 
-#: build/rpmfc.c:1203
+#: build/rpmfc.c:1212
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) није успело: %s\n"
 
-#: build/rpmfc.c:1209 build/rpmfc.c:1213
+#: build/rpmfc.c:1218 build/rpmfc.c:1222
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load није успело: %s\n"
 
-#: build/rpmfc.c:1260 build/rpmfc.c:1279
+#: build/rpmfc.c:1269 build/rpmfc.c:1288
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Препознавање датотеке „%s“ није успело: режим %06o %s\n"
 
-#: build/rpmfc.c:1483
+#: build/rpmfc.c:1491
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Проналазак %s: %s\n"
 
-#: build/rpmfc.c:1492 build/rpmfc.c:1501
+#: build/rpmfc.c:1500 build/rpmfc.c:1509
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Неуспело тражење %s:\n"
 
-#: build/rpmfc.c:1540
+#: build/rpmfc.c:1548
 msgid "Deprecated external dependency generator is used!\n"
 msgstr ""
 
@@ -2277,194 +2277,199 @@ msgstr "избриши (деинсталирај) пакет"
 msgid "<package>+"
 msgstr "<package>+"
 
-#: lib/poptI.c:138 lib/poptI.c:178
+#: lib/poptI.c:138
+#, fuzzy
+msgid "do not install artifacts"
+msgstr "немој да инсталираш документацију"
+
+#: lib/poptI.c:141 lib/poptI.c:181
 msgid "do not install configuration files"
 msgstr "немој инсталирати датотеке подешавања"
 
-#: lib/poptI.c:141 lib/poptI.c:183
+#: lib/poptI.c:144 lib/poptI.c:186
 msgid "do not install documentation"
 msgstr "немој да инсталираш документацију"
 
-#: lib/poptI.c:143
+#: lib/poptI.c:146
 msgid "skip files with leading component <path> "
 msgstr "прескочи датотеке које садрже компоненту <path> "
 
-#: lib/poptI.c:144
+#: lib/poptI.c:147
 msgid "<path>"
 msgstr "<path>"
 
-#: lib/poptI.c:147
+#: lib/poptI.c:150
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "скраћеница за --replacepkgs --replacefiles"
 
-#: lib/poptI.c:151
+#: lib/poptI.c:154
 msgid "upgrade package(s) if already installed"
 msgstr "надгради пакете ако су већ инсталирани"
 
-#: lib/poptI.c:152 lib/poptI.c:171 lib/poptI.c:260 lib/poptI.c:264
+#: lib/poptI.c:155 lib/poptI.c:174 lib/poptI.c:263 lib/poptI.c:267
 msgid "<packagefile>+"
 msgstr "<packagefile>+"
 
-#: lib/poptI.c:154
+#: lib/poptI.c:157
 msgid "print hash marks as package installs (good with -v)"
 msgstr "исписуј знак тарабе док се пакет инсталира (добро уз -v)"
 
-#: lib/poptI.c:157
+#: lib/poptI.c:160
 msgid "don't verify package architecture"
 msgstr "немој проверавати архитектуру пакета"
 
-#: lib/poptI.c:160
+#: lib/poptI.c:163
 msgid "don't verify package operating system"
 msgstr "немој проверавати оперативни систем пакета"
 
-#: lib/poptI.c:163
+#: lib/poptI.c:166
 msgid "don't check disk space before installing"
 msgstr "немој проверавати простор на диску пре инсталације"
 
-#: lib/poptI.c:166
+#: lib/poptI.c:169
 #, fuzzy
 msgid "short hand for --ignorepayload --ignoresignature"
 msgstr "скраћеница за --replacepkgs --replacefiles"
 
-#: lib/poptI.c:168
+#: lib/poptI.c:171
 msgid "install documentation"
 msgstr "инсталирај документацију"
 
-#: lib/poptI.c:171
+#: lib/poptI.c:174
 msgid "install package(s)"
 msgstr "инсталирај пакет(е)"
 
-#: lib/poptI.c:174
+#: lib/poptI.c:177
 msgid "update the database, but do not modify the filesystem"
 msgstr "ажурирај базу података, али немој мењати систем датотека"
 
-#: lib/poptI.c:180
+#: lib/poptI.c:183
 msgid "do not verify package dependencies"
 msgstr "немој проверавати зависности пакета"
 
-#: lib/poptI.c:186 lib/poptQV.c:246 lib/poptQV.c:248
+#: lib/poptI.c:189 lib/poptQV.c:246 lib/poptQV.c:248
 msgid "don't verify digest of files"
 msgstr ""
 
-#: lib/poptI.c:188
+#: lib/poptI.c:191
 msgid "don't verify digest of files (obsolete)"
 msgstr ""
 
-#: lib/poptI.c:190
+#: lib/poptI.c:193
 msgid "don't install file security contexts"
 msgstr "немој инсталирати безбедносне контексте датотека"
 
-#: lib/poptI.c:192
+#: lib/poptI.c:195
 msgid "don't install file capabilities"
 msgstr ""
 
-#: lib/poptI.c:196
+#: lib/poptI.c:199
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
 "немој преуређивати редослед инсталације пакета ради задовољавања зависности"
 
-#: lib/poptI.c:200
+#: lib/poptI.c:203
 msgid "do not execute package scriptlet(s)"
 msgstr "немој извршити скриптицу(е) пакета"
 
-#: lib/poptI.c:204
+#: lib/poptI.c:207
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "немој извршити %%pre скриптицу (ако постоји)"
 
-#: lib/poptI.c:207
+#: lib/poptI.c:210
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "немој извршити %%post скриптицу (ако постоји)"
 
-#: lib/poptI.c:210
+#: lib/poptI.c:213
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "немој извршити %%preun скриптицу (ако постоји)"
 
-#: lib/poptI.c:213
+#: lib/poptI.c:216
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "немој извршити %%postun скриптицу (ако постоји)"
 
-#: lib/poptI.c:216
+#: lib/poptI.c:219
 #, c-format
 msgid "do not execute %%pretrans scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:219
+#: lib/poptI.c:222
 #, c-format
 msgid "do not execute %%posttrans scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:222
+#: lib/poptI.c:225
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "немој извршити ниједну скриптицу(е) коју активира овај пакет"
 
-#: lib/poptI.c:225
+#: lib/poptI.c:228
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "немој извршити ниједну %%triggerprein скриптицу(е)"
 
-#: lib/poptI.c:228
+#: lib/poptI.c:231
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "немој извршити ниједну %%triggerin скриптицу(е)"
 
-#: lib/poptI.c:231
+#: lib/poptI.c:234
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "немој извршити ниједну %%triggerun скриптицу(е)"
 
-#: lib/poptI.c:234
+#: lib/poptI.c:237
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "немој извршити ниједну %%triggerpostun скриптицу(е)"
 
-#: lib/poptI.c:238
+#: lib/poptI.c:241
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr ""
 "надгради на стару верзију пакета (--force код надградње ово ради самостално)"
 
-#: lib/poptI.c:242
+#: lib/poptI.c:245
 msgid "print percentages as package installs"
 msgstr "исписуј проценте док се пакет инсталира"
 
-#: lib/poptI.c:244
+#: lib/poptI.c:247
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "премести пакет у <dir>, ако се може преместити"
 
-#: lib/poptI.c:245
+#: lib/poptI.c:248
 msgid "<dir>"
 msgstr "<dir>"
 
-#: lib/poptI.c:247
+#: lib/poptI.c:250
 msgid "relocate files from path <old> to <new>"
 msgstr "премести датотеке из путање <old> у <new>"
 
-#: lib/poptI.c:248
+#: lib/poptI.c:251
 msgid "<old>=<new>"
 msgstr "<old>=<new>"
 
-#: lib/poptI.c:251
+#: lib/poptI.c:254
 msgid "ignore file conflicts between packages"
 msgstr "занемари сукобе датотека између пакета"
 
-#: lib/poptI.c:254
+#: lib/poptI.c:257
 msgid "reinstall if the package is already present"
 msgstr "поново инсталирај ако је пакет већ присутан"
 
-#: lib/poptI.c:256
+#: lib/poptI.c:259
 msgid "don't install, but tell if it would work or not"
 msgstr "немој инсталирати, али реци да ли би радило или не"
 
-#: lib/poptI.c:259
+#: lib/poptI.c:262
 msgid "upgrade package(s)"
 msgstr "надгради пакет(е)"
 
-#: lib/poptI.c:263
+#: lib/poptI.c:266
 msgid "reinstall package(s)"
 msgstr ""
 
@@ -3340,68 +3345,73 @@ msgstr "пакет %s је намењен за %s архитектуру"
 msgid "package %s is intended for a %s operating system"
 msgstr "пакет %s је намењен за %s оперативни систем"
 
-#: lib/rpmprob.c:122
+#: lib/rpmprob.c:123
 #, c-format
 msgid "package %s is already installed"
 msgstr "пакет %s је већ инсталиран"
 
 #: lib/rpmprob.c:125
+#, fuzzy, c-format
+msgid "package %s is not installed"
+msgstr "пакет %s није инсталиран\n"
+
+#: lib/rpmprob.c:128
 #, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "путања %s у пакету %s се не може премештати"
 
-#: lib/rpmprob.c:130
+#: lib/rpmprob.c:133
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "датотека %s је у сукобу између покушаних инсталација %s и %s"
 
-#: lib/rpmprob.c:135
+#: lib/rpmprob.c:138
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "датотека %s из %s инсталације је у сукобу са датотеком из пакета %s"
 
-#: lib/rpmprob.c:140
+#: lib/rpmprob.c:143
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "пакет %s (који је новији од %s) је већ инсталиран"
 
-#: lib/rpmprob.c:145
+#: lib/rpmprob.c:148
 #, fuzzy, c-format
 msgid ""
 "installing package %s needs %<PRIu64>%cB more space on the %s filesystem"
 msgstr "пакет %s који се инсталира захтева %<PRIu64>%cБ на %s систему датотека"
 
-#: lib/rpmprob.c:155
+#: lib/rpmprob.c:158
 #, fuzzy, c-format
 msgid "installing package %s needs %<PRIu64> more inodes on the %s filesystem"
 msgstr ""
 "пакет %s који се инсталира захтева %<PRIu64> и-чворова на %s систему датотека"
 
-#: lib/rpmprob.c:159
+#: lib/rpmprob.c:162
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s је потребан за %s%s"
 
-#: lib/rpmprob.c:160 lib/rpmprob.c:164 lib/rpmprob.c:168
+#: lib/rpmprob.c:163 lib/rpmprob.c:167 lib/rpmprob.c:171
 msgid "(installed) "
 msgstr "(инсталирано) "
 
-#: lib/rpmprob.c:163
+#: lib/rpmprob.c:166
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s је у сукобу са %s%s"
 
-#: lib/rpmprob.c:167
+#: lib/rpmprob.c:170
 #, c-format
 msgid "%s is obsoleted by %s%s"
 msgstr ""
 
-#: lib/rpmprob.c:171
+#: lib/rpmprob.c:174
 #, fuzzy, c-format
 msgid "package %s does not verify: %s"
 msgstr "пакет %s није инсталиран\n"
 
-#: lib/rpmprob.c:176
+#: lib/rpmprob.c:179
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "непозната грешка %d се десила у току руковања пакетом %s"
@@ -3655,20 +3665,20 @@ msgstr ""
 msgid "Unable to reload signature header.\n"
 msgstr "Не могу да поново учитам заглавље потписа.\n"
 
-#: lib/transaction.c:1233
+#: lib/transaction.c:1244
 #, fuzzy
 msgid "no signature"
 msgstr "(није OpenPGP потпис)"
 
-#: lib/transaction.c:1233
+#: lib/transaction.c:1244
 msgid "no digest"
 msgstr ""
 
-#: lib/transaction.c:1585
+#: lib/transaction.c:1626
 msgid "skipped"
 msgstr ""
 
-#: lib/transaction.c:1585
+#: lib/transaction.c:1626
 msgid "failed"
 msgstr ""
 
@@ -4127,6 +4137,10 @@ msgstr "%s: неуспело читање манифеста: %s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr "немој проверавати потпис заглавља+товара"
+
+#, c-format
+#~ msgid "Failed to rename %s to %s: %m\n"
+#~ msgstr "Неуспела промена имена %s у %s: %m\n"
 
 #~ msgid "! only on numbers\n"
 #~ msgstr "! само код бројева\n"
