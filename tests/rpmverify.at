@@ -405,7 +405,29 @@ fox
 [])
 AT_CLEANUP
 
-AT_SETUP([minimize writes (links)])
+AT_SETUP([minimize writes (hardlinks)])
+AT_KEYWORDS([upgrade verify min_writes])
+RPMDB_INIT
+for v in "0" "1"; do
+    runroot rpmbuild --quiet -bb --define "ver ${v}" /data/SPECS/hlbreak.spec
+done
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -U --define "_minimize_writes 1" /build/RPMS/noarch/hlbreak-0-0.noarch.rpm
+runroot rpm -Vav --nouser --nogroup
+runroot rpm -U --define "_minimize_writes 1" /build/RPMS/noarch/hlbreak-1-0.noarch.rpm
+runroot rpm -Vav --nouser --nogroup
+],
+[0],
+[.........    /opt/file2
+.........    /opt/file1
+.........    /opt/file2
+],
+)
+AT_CLEANUP
+
+
+AT_SETUP([minimize writes (symlinks)])
 AT_KEYWORDS([upgrade verify min_writes])
 RPMDB_INIT
 for v in "1.0" "2.0"; do
