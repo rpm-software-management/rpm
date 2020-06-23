@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-05-28 13:08+0300\n"
+"POT-Creation-Date: 2020-06-23 13:16+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Chinese (Mandarin) (http://www.transifex.com/rpm-team/rpm/"
@@ -287,52 +287,47 @@ msgstr "用於所有 rpm 模式和可執行檔案的共同選項："
 msgid "Unable to open spec file %s: %s\n"
 msgstr "無法開啟 %s 規格檔：%s\n"
 
-#: rpmbuild.c:363
+#: rpmbuild.c:359
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "無法開啟 tar 管線：%m\n"
 
-#: rpmbuild.c:378
+#: rpmbuild.c:374
 #, c-format
 msgid "Found more than one spec file in %s\n"
 msgstr ""
 
-#: rpmbuild.c:389
+#: rpmbuild.c:385
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "無法從 %s 讀取規格檔\n"
 
-#: rpmbuild.c:401
-#, c-format
-msgid "Failed to rename %s to %s: %m\n"
-msgstr "無法將 %s 重新命名為 %s：%m\n"
-
-#: rpmbuild.c:478
+#: rpmbuild.c:449
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "無法檢視 %s 的狀態：%m\n"
 
-#: rpmbuild.c:482
+#: rpmbuild.c:453
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "%s 不是通常的檔案。\n"
 
-#: rpmbuild.c:489
+#: rpmbuild.c:460
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s 似乎不是規格檔。\n"
 
-#: rpmbuild.c:545
+#: rpmbuild.c:520
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "建置目標平臺：%s\n"
 
-#: rpmbuild.c:553
+#: rpmbuild.c:528
 #, c-format
 msgid "Building for target %s\n"
 msgstr "建置目標 %s\n"
 
-#: rpmbuild.c:608 rpm.c:212
+#: rpmbuild.c:583 rpm.c:212
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) 的引數必須以「/」開頭"
 
@@ -739,207 +734,207 @@ msgstr "檔案功能支援未內建於\n"
 msgid "File must begin with \"/\": %s\n"
 msgstr "檔案必須以「/」開頭：%s\n"
 
-#: build/files.c:1005
+#: build/files.c:1010
 #, c-format
 msgid "unable to parse %s=%s\n"
 msgstr ""
 
-#: build/files.c:1023
+#: build/files.c:1028
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr "不明檔案摘要演算法 %u，權宜落回 MD5\n"
 
-#: build/files.c:1077
+#: build/files.c:1082
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "列出了兩次的檔案：%s\n"
 
-#: build/files.c:1199
+#: build/files.c:1204
 #, c-format
 msgid "reading symlink %s failed: %s\n"
 msgstr "讀取符號鏈結 %s 失敗：%s\n"
 
-#: build/files.c:1205
+#: build/files.c:1210
 #, c-format
 msgid "absolute symlink: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1211
+#: build/files.c:1216
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "指向 BuildRoot 的符號鏈結：%s -> %s\n"
 
-#: build/files.c:1332
+#: build/files.c:1337
 #, c-format
 msgid "Illegal character (0x%x) in filename: %s\n"
 msgstr ""
 
-#: build/files.c:1369
+#: build/files.c:1374
 #, c-format
 msgid "Path is outside buildroot: %s\n"
 msgstr ""
 
-#: build/files.c:1413
+#: build/files.c:1418
 #, c-format
 msgid "Directory not found: %s\n"
 msgstr "找不到目錄：%s\n"
 
-#: build/files.c:1414 lib/rpminstall.c:459
+#: build/files.c:1419 lib/rpminstall.c:459
 #, c-format
 msgid "File not found: %s\n"
 msgstr "找不到檔案：%s\n"
 
-#: build/files.c:1435
+#: build/files.c:1440
 #, c-format
 msgid "Not a directory: %s\n"
 msgstr ""
 
-#: build/files.c:1589
+#: build/files.c:1594
 #, fuzzy, c-format
 msgid "Can't read content of file: %s\n"
 msgstr "讀取策略檔案時失敗：%s\n"
 
-#: build/files.c:1630
+#: build/files.c:1635
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s：無法呼叫不明的標籤 (%d)。\n"
 
-#: build/files.c:1636
+#: build/files.c:1641
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s：公鑰讀入失敗。\n"
 
-#: build/files.c:1640
+#: build/files.c:1645
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s：不是一個受保護的公鑰。\n"
 
-#: build/files.c:1649
+#: build/files.c:1654
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s：編碼失敗\n"
 
-#: build/files.c:1695
+#: build/files.c:1700
 msgid "failed symlink"
 msgstr ""
 
-#: build/files.c:1751 build/files.c:1754
+#: build/files.c:1756 build/files.c:1759
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
 msgstr ""
 
-#: build/files.c:1761
+#: build/files.c:1766
 #, c-format
 msgid "Duplicate build-ids %s and %s\n"
 msgstr ""
 
-#: build/files.c:1815
+#: build/files.c:1820
 msgid "_build_id_links macro not set, assuming 'compat'\n"
 msgstr ""
 
-#: build/files.c:1828
+#: build/files.c:1833
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
 msgstr ""
 
-#: build/files.c:1917
+#: build/files.c:1922
 #, c-format
 msgid "error reading build-id in %s: %s\n"
 msgstr ""
 
-#: build/files.c:1921
+#: build/files.c:1926
 #, c-format
 msgid "Missing build-id in %s\n"
 msgstr ""
 
-#: build/files.c:1926
+#: build/files.c:1931
 #, c-format
 msgid "build-id found in %s too small\n"
 msgstr ""
 
-#: build/files.c:1927
+#: build/files.c:1932
 #, c-format
 msgid "build-id found in %s too large\n"
 msgstr ""
 
-#: build/files.c:1942 rpmio/rpmfileutil.c:445
+#: build/files.c:1947 rpmio/rpmfileutil.c:445
 msgid "failed to create directory"
 msgstr "無法建立目錄"
 
-#: build/files.c:1960
+#: build/files.c:1965
 msgid "Mixing main ELF and debug files in package"
 msgstr ""
 
-#: build/files.c:2161
+#: build/files.c:2166
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "檔案需要以「/」開頭：%s\n"
 
-#: build/files.c:2185
+#: build/files.c:2190
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr "%%dev 不允許透過 glob 解析：%s\n"
 
-#: build/files.c:2197
+#: build/files.c:2202
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2199
+#: build/files.c:2204
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2234
+#: build/files.c:2239
 #, fuzzy, c-format
 msgid "Could not open %s file %s: %m\n"
 msgstr "無法開啟 %%files 檔案 %s：%m\n"
 
-#: build/files.c:2259
+#: build/files.c:2264
 #, fuzzy, c-format
 msgid "Empty %s file %s\n"
 msgstr "空的檔案分類器\n"
 
-#: build/files.c:2304
+#: build/files.c:2309
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr "不合法的 _docdir_fmt %s：%s\n"
 
-#: build/files.c:2425 lib/rpminstall.c:461
+#: build/files.c:2430 lib/rpminstall.c:461
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "透過 glob 解析找不到檔案：%s\n"
 
-#: build/files.c:2512
+#: build/files.c:2517
 #, c-format
 msgid "Special file in generated file list: %s\n"
 msgstr ""
 
-#: build/files.c:2536
+#: build/files.c:2541
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr "無法混合特殊 %s 與其他表單：%s\n"
 
-#: build/files.c:2552
+#: build/files.c:2557
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr "一列中超過一個檔案：%s\n"
 
-#: build/files.c:2621
+#: build/files.c:2626
 msgid "Generating build-id links failed\n"
 msgstr ""
 
-#: build/files.c:2738
+#: build/files.c:2743
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "不當檔案：%s：%s\n"
 
-#: build/files.c:2806
+#: build/files.c:2811
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "正在檢查未打包的檔案：%s\n"
 
-#: build/files.c:2819
+#: build/files.c:2824
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -948,27 +943,27 @@ msgstr ""
 "找到已安裝 (但未打包) 的檔案：\n"
 "%s"
 
-#: build/files.c:2874
+#: build/files.c:2879
 #, fuzzy, c-format
 msgid "package %s already exists\n"
 msgstr "套件 %s 已經安裝"
 
-#: build/files.c:2938
+#: build/files.c:2943
 #, c-format
 msgid "%s was mapped to multiple filenames"
 msgstr ""
 
-#: build/files.c:3187
+#: build/files.c:3192
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "正在處理檔案：%s\n"
 
-#: build/files.c:3209
+#: build/files.c:3214
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr "二進位架構 (%d) 無法匹配套件架構 (%d)。\n"
 
-#: build/files.c:3215
+#: build/files.c:3220
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "noarch 套件中有依賴架構的二進位檔\n"
 
@@ -1037,17 +1032,17 @@ msgstr "「%s」執行失敗。\n"
 msgid "Package check \"%s\" failed.\n"
 msgstr "套件檢查「%s」失敗。\n"
 
-#: build/pack.c:654
+#: build/pack.c:655
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "無法建立 %s：%s\n"
 
-#: build/pack.c:673
+#: build/pack.c:674
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "無法產生套件 %s 的檔案名稱輸出：%s\n"
 
-#: build/pack.c:772
+#: build/pack.c:773
 #, c-format
 msgid "Finished binary package job, result %d, filename %s\n"
 msgstr ""
@@ -1641,40 +1636,45 @@ msgstr "%s 失敗：%x\n"
 msgid "failed to write all data to %s: %s\n"
 msgstr "無法寫入所有資料至 %s：%s\n"
 
-#: build/rpmfc.c:1168
+#: build/rpmfc.c:640
+#, fuzzy, c-format
+msgid "%s generator %s failed: %s\n"
+msgstr "開啟 %s 失敗：%s\n"
+
+#: build/rpmfc.c:1177
 msgid "Empty file classifier\n"
 msgstr "空的檔案分類器\n"
 
-#: build/rpmfc.c:1177
+#: build/rpmfc.c:1186
 msgid "No file attributes configured\n"
 msgstr "無設定檔案特性\n"
 
-#: build/rpmfc.c:1203
+#: build/rpmfc.c:1212
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) 失敗：%s\n"
 
-#: build/rpmfc.c:1209 build/rpmfc.c:1213
+#: build/rpmfc.c:1218 build/rpmfc.c:1222
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load 失敗：%s\n"
 
-#: build/rpmfc.c:1260 build/rpmfc.c:1279
+#: build/rpmfc.c:1269 build/rpmfc.c:1288
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "檔案「%s」辨識失敗：模式 %06o %s\n"
 
-#: build/rpmfc.c:1483
+#: build/rpmfc.c:1491
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "正在尋找 %s：%s\n"
 
-#: build/rpmfc.c:1492 build/rpmfc.c:1501
+#: build/rpmfc.c:1500 build/rpmfc.c:1509
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "找不到 %s：\n"
 
-#: build/rpmfc.c:1540
+#: build/rpmfc.c:1548
 msgid "Deprecated external dependency generator is used!\n"
 msgstr ""
 
@@ -2268,192 +2268,197 @@ msgstr "抹除 (解除安裝) 套件"
 msgid "<package>+"
 msgstr "<package>+"
 
-#: lib/poptI.c:138 lib/poptI.c:178
+#: lib/poptI.c:138
+#, fuzzy
+msgid "do not install artifacts"
+msgstr "不安裝文件"
+
+#: lib/poptI.c:141 lib/poptI.c:181
 msgid "do not install configuration files"
 msgstr "不安裝組態檔案"
 
-#: lib/poptI.c:141 lib/poptI.c:183
+#: lib/poptI.c:144 lib/poptI.c:186
 msgid "do not install documentation"
 msgstr "不安裝文件"
 
-#: lib/poptI.c:143
+#: lib/poptI.c:146
 msgid "skip files with leading component <path> "
 msgstr "略過以 <path> 部件開頭的檔案"
 
-#: lib/poptI.c:144
+#: lib/poptI.c:147
 msgid "<path>"
 msgstr "<path>"
 
-#: lib/poptI.c:147
+#: lib/poptI.c:150
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "--replacepkgs 與 --replacefiles 的速寫"
 
-#: lib/poptI.c:151
+#: lib/poptI.c:154
 msgid "upgrade package(s) if already installed"
 msgstr "如果套件已安裝，便升級套件"
 
-#: lib/poptI.c:152 lib/poptI.c:171 lib/poptI.c:260 lib/poptI.c:264
+#: lib/poptI.c:155 lib/poptI.c:174 lib/poptI.c:263 lib/poptI.c:267
 msgid "<packagefile>+"
 msgstr "<packagefile>+"
 
-#: lib/poptI.c:154
+#: lib/poptI.c:157
 msgid "print hash marks as package installs (good with -v)"
 msgstr "套件安裝時列印 Hash 標記 (和 -v 一起用會更好)"
 
-#: lib/poptI.c:157
+#: lib/poptI.c:160
 msgid "don't verify package architecture"
 msgstr "不要驗證套件架構"
 
-#: lib/poptI.c:160
+#: lib/poptI.c:163
 msgid "don't verify package operating system"
 msgstr "不要驗證套間作葉系統"
 
-#: lib/poptI.c:163
+#: lib/poptI.c:166
 msgid "don't check disk space before installing"
 msgstr "安裝前不檢查磁碟空間"
 
-#: lib/poptI.c:166
+#: lib/poptI.c:169
 #, fuzzy
 msgid "short hand for --ignorepayload --ignoresignature"
 msgstr "--replacepkgs 與 --replacefiles 的速寫"
 
-#: lib/poptI.c:168
+#: lib/poptI.c:171
 msgid "install documentation"
 msgstr "安裝文件"
 
-#: lib/poptI.c:171
+#: lib/poptI.c:174
 msgid "install package(s)"
 msgstr "安裝套件"
 
-#: lib/poptI.c:174
+#: lib/poptI.c:177
 msgid "update the database, but do not modify the filesystem"
 msgstr "更新資料庫，但不修改檔案系統"
 
-#: lib/poptI.c:180
+#: lib/poptI.c:183
 msgid "do not verify package dependencies"
 msgstr "不驗證套件相依性"
 
-#: lib/poptI.c:186 lib/poptQV.c:246 lib/poptQV.c:248
+#: lib/poptI.c:189 lib/poptQV.c:246 lib/poptQV.c:248
 msgid "don't verify digest of files"
 msgstr "不要驗證檔案的摘要"
 
-#: lib/poptI.c:188
+#: lib/poptI.c:191
 msgid "don't verify digest of files (obsolete)"
 msgstr "不要驗證檔案的摘要 (棄用)"
 
-#: lib/poptI.c:190
+#: lib/poptI.c:193
 msgid "don't install file security contexts"
 msgstr "不安裝檔案安全情境資料"
 
-#: lib/poptI.c:192
+#: lib/poptI.c:195
 msgid "don't install file capabilities"
 msgstr ""
 
-#: lib/poptI.c:196
+#: lib/poptI.c:199
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "不重新排列套件安裝順序以滿足相依關係"
 
-#: lib/poptI.c:200
+#: lib/poptI.c:203
 msgid "do not execute package scriptlet(s)"
 msgstr "不執行套件指令稿片段"
 
-#: lib/poptI.c:204
+#: lib/poptI.c:207
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "不執行 %%pre 指令稿稿片段 (如果有)"
 
-#: lib/poptI.c:207
+#: lib/poptI.c:210
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "不執行 %%post 指令稿片段 (如果有)"
 
-#: lib/poptI.c:210
+#: lib/poptI.c:213
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "不執行 %%preun 指令稿片段 (如果有)"
 
-#: lib/poptI.c:213
+#: lib/poptI.c:216
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "不執行 %%postun 指令稿片段 (如果有)"
 
-#: lib/poptI.c:216
+#: lib/poptI.c:219
 #, c-format
 msgid "do not execute %%pretrans scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:219
+#: lib/poptI.c:222
 #, c-format
 msgid "do not execute %%posttrans scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:222
+#: lib/poptI.c:225
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "不執行任何此套件觸發的指令稿片段"
 
-#: lib/poptI.c:225
+#: lib/poptI.c:228
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "不執行任何 %%triggerprein 指令稿片段"
 
-#: lib/poptI.c:228
+#: lib/poptI.c:231
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "不執行任何 %%triggerin 指令稿片段"
 
-#: lib/poptI.c:231
+#: lib/poptI.c:234
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "不執行任何 %%triggerun 指令稿片段"
 
-#: lib/poptI.c:234
+#: lib/poptI.c:237
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "不執行任何 %%triggerpostun 指令稿片段"
 
-#: lib/poptI.c:238
+#: lib/poptI.c:241
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr "升級到套件的舊版本 (在升級作業中加入 --force 會自動進行)"
 
-#: lib/poptI.c:242
+#: lib/poptI.c:245
 msgid "print percentages as package installs"
 msgstr "當套件安裝時列印進度百分比"
 
-#: lib/poptI.c:244
+#: lib/poptI.c:247
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "如果可以重新分配位置，便把套件重新分配至 <dir>"
 
-#: lib/poptI.c:245
+#: lib/poptI.c:248
 msgid "<dir>"
 msgstr "<dir>"
 
-#: lib/poptI.c:247
+#: lib/poptI.c:250
 msgid "relocate files from path <old> to <new>"
 msgstr "將檔案從路徑 <old> 重新配置到 <new>"
 
-#: lib/poptI.c:248
+#: lib/poptI.c:251
 msgid "<old>=<new>"
 msgstr "<old>=<new>"
 
-#: lib/poptI.c:251
+#: lib/poptI.c:254
 msgid "ignore file conflicts between packages"
 msgstr "忽略套件之間的檔案衝突"
 
-#: lib/poptI.c:254
+#: lib/poptI.c:257
 msgid "reinstall if the package is already present"
 msgstr "如果套件已經存在則重新安裝"
 
-#: lib/poptI.c:256
+#: lib/poptI.c:259
 msgid "don't install, but tell if it would work or not"
 msgstr "不安裝，只回報作業是否能運作"
 
-#: lib/poptI.c:259
+#: lib/poptI.c:262
 msgid "upgrade package(s)"
 msgstr "升級套件"
 
-#: lib/poptI.c:263
+#: lib/poptI.c:266
 msgid "reinstall package(s)"
 msgstr ""
 
@@ -3326,67 +3331,72 @@ msgstr "套件 %s 是針對 %s 架構"
 msgid "package %s is intended for a %s operating system"
 msgstr "套件 %s 是針對 %s 作業系統"
 
-#: lib/rpmprob.c:122
+#: lib/rpmprob.c:123
 #, c-format
 msgid "package %s is already installed"
 msgstr "套件 %s 已經安裝"
 
 #: lib/rpmprob.c:125
+#, fuzzy, c-format
+msgid "package %s is not installed"
+msgstr "套件 %s 尚未安裝\n"
+
+#: lib/rpmprob.c:128
 #, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "在套件 %2$s 中的路徑 %1$s 無法重新分配位置"
 
-#: lib/rpmprob.c:130
+#: lib/rpmprob.c:133
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "在試圖安裝 %2$s 和 %3$s 之間產生檔案 %1$s 衝突"
 
-#: lib/rpmprob.c:135
+#: lib/rpmprob.c:138
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "從 %2$s 安裝的檔案 %1$s 與來自套件 %3$s 的檔案產生衝突"
 
-#: lib/rpmprob.c:140
+#: lib/rpmprob.c:143
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "套件 %s (比 %s 還新) 已經安裝"
 
-#: lib/rpmprob.c:145
+#: lib/rpmprob.c:148
 #, fuzzy, c-format
 msgid ""
 "installing package %s needs %<PRIu64>%cB more space on the %s filesystem"
 msgstr "安裝套件 %s 需要 %<PRIu64>%cB 於 %s 檔案系統之上"
 
-#: lib/rpmprob.c:155
+#: lib/rpmprob.c:158
 #, fuzzy, c-format
 msgid "installing package %s needs %<PRIu64> more inodes on the %s filesystem"
 msgstr "安裝套件 %s 需要 %<PRIu64> inodes 於 %s 檔案系統之上"
 
-#: lib/rpmprob.c:159
+#: lib/rpmprob.c:162
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s 被 %s%s 需要"
 
-#: lib/rpmprob.c:160 lib/rpmprob.c:164 lib/rpmprob.c:168
+#: lib/rpmprob.c:163 lib/rpmprob.c:167 lib/rpmprob.c:171
 msgid "(installed) "
 msgstr "(已安裝) "
 
-#: lib/rpmprob.c:163
+#: lib/rpmprob.c:166
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s 與 %s%s 衝突"
 
-#: lib/rpmprob.c:167
+#: lib/rpmprob.c:170
 #, c-format
 msgid "%s is obsoleted by %s%s"
 msgstr "%s 已被 %s%s 淘汰"
 
-#: lib/rpmprob.c:171
+#: lib/rpmprob.c:174
 #, fuzzy, c-format
 msgid "package %s does not verify: %s"
 msgstr "套件 %s 尚未安裝\n"
 
-#: lib/rpmprob.c:176
+#: lib/rpmprob.c:179
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "遭遇不明錯誤 %d 於處理套件 %s 之時"
@@ -3640,20 +3650,20 @@ msgstr ""
 msgid "Unable to reload signature header.\n"
 msgstr "無法重新載入簽名標頭。\n"
 
-#: lib/transaction.c:1233
+#: lib/transaction.c:1244
 #, fuzzy
 msgid "no signature"
 msgstr "(不是個 OpenPGP 簽名)"
 
-#: lib/transaction.c:1233
+#: lib/transaction.c:1244
 msgid "no digest"
 msgstr ""
 
-#: lib/transaction.c:1585
+#: lib/transaction.c:1626
 msgid "skipped"
 msgstr "已跳過"
 
-#: lib/transaction.c:1585
+#: lib/transaction.c:1626
 msgid "failed"
 msgstr "已失敗"
 
@@ -4112,6 +4122,10 @@ msgstr "%s：讀取清單失敗：%s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr "不驗證標頭+酬載簽名"
+
+#, c-format
+#~ msgid "Failed to rename %s to %s: %m\n"
+#~ msgstr "無法將 %s 重新命名為 %s：%m\n"
 
 #~ msgid "! only on numbers\n"
 #~ msgstr "! 只能用於數字\n"

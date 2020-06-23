@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-05-28 13:08+0300\n"
+"POT-Creation-Date: 2020-06-23 13:16+0300\n"
 "PO-Revision-Date: 2017-10-13 05:50-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/rpm-team/rpm/"
@@ -297,52 +297,47 @@ msgstr "Opções comuns para todos os executáveis e modos rpm:"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Não foi possível abrir o arquivo spec %s: %s\n"
 
-#: rpmbuild.c:363
+#: rpmbuild.c:359
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "Não foi possível abrir o pipe do tar: %m\n"
 
-#: rpmbuild.c:378
+#: rpmbuild.c:374
 #, c-format
 msgid "Found more than one spec file in %s\n"
 msgstr ""
 
-#: rpmbuild.c:389
+#: rpmbuild.c:385
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Falha ao ler o arquivo spec de %s\n"
 
-#: rpmbuild.c:401
-#, c-format
-msgid "Failed to rename %s to %s: %m\n"
-msgstr "Falha ao renomear %s para %s: %m\n"
-
-#: rpmbuild.c:478
+#: rpmbuild.c:449
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "falha ao iniciar %s: %m\n"
 
-#: rpmbuild.c:482
+#: rpmbuild.c:453
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "O arquivo %s não é um arquivo normal.\n"
 
-#: rpmbuild.c:489
+#: rpmbuild.c:460
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "O arquivo %s não parece ser um specfile.\n"
 
-#: rpmbuild.c:545
+#: rpmbuild.c:520
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Construindo plataformas de destino: %s\n"
 
-#: rpmbuild.c:553
+#: rpmbuild.c:528
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Construindo para o destino %s\n"
 
-#: rpmbuild.c:608 rpm.c:212
+#: rpmbuild.c:583 rpm.c:212
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "os argumentos para --root (-r) devem começar com uma /"
 
@@ -767,209 +762,209 @@ msgstr "Suporte à capacidade de arquivo não embutida\n"
 msgid "File must begin with \"/\": %s\n"
 msgstr "O arquivo deve começar com uma \"/\": %s\n"
 
-#: build/files.c:1005
+#: build/files.c:1010
 #, c-format
 msgid "unable to parse %s=%s\n"
 msgstr ""
 
-#: build/files.c:1023
+#: build/files.c:1028
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr ""
 "Algoritmo de digest %u do arquivo é desconhecido, utilizando o MD5 como "
 "alternativa\n"
 
-#: build/files.c:1077
+#: build/files.c:1082
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Arquivo listado duas vezes: %s\n"
 
-#: build/files.c:1199
+#: build/files.c:1204
 #, c-format
 msgid "reading symlink %s failed: %s\n"
 msgstr ""
 
-#: build/files.c:1205
+#: build/files.c:1210
 #, c-format
 msgid "absolute symlink: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1211
+#: build/files.c:1216
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Ligação simbólica aponta para BuildRoot: %s -> %s\n"
 
-#: build/files.c:1332
+#: build/files.c:1337
 #, c-format
 msgid "Illegal character (0x%x) in filename: %s\n"
 msgstr ""
 
-#: build/files.c:1369
+#: build/files.c:1374
 #, c-format
 msgid "Path is outside buildroot: %s\n"
 msgstr ""
 
-#: build/files.c:1413
+#: build/files.c:1418
 #, c-format
 msgid "Directory not found: %s\n"
 msgstr ""
 
-#: build/files.c:1414 lib/rpminstall.c:459
+#: build/files.c:1419 lib/rpminstall.c:459
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Arquivo não encontrado: %s\n"
 
-#: build/files.c:1435
+#: build/files.c:1440
 #, c-format
 msgid "Not a directory: %s\n"
 msgstr ""
 
-#: build/files.c:1589
+#: build/files.c:1594
 #, fuzzy, c-format
 msgid "Can't read content of file: %s\n"
 msgstr "%s: falha na leitura do manifesto: %s\n"
 
-#: build/files.c:1630
+#: build/files.c:1635
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: não foi possível carregar a etiqueta desconhecida (%d).\n"
 
-#: build/files.c:1636
+#: build/files.c:1641
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: falha ao ler a chave pública.\n"
 
-#: build/files.c:1640
+#: build/files.c:1645
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: não é uma chave pública blindada.\n"
 
-#: build/files.c:1649
+#: build/files.c:1654
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s: falha ao codificar\n"
 
-#: build/files.c:1695
+#: build/files.c:1700
 msgid "failed symlink"
 msgstr ""
 
-#: build/files.c:1751 build/files.c:1754
+#: build/files.c:1756 build/files.c:1759
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
 msgstr ""
 
-#: build/files.c:1761
+#: build/files.c:1766
 #, c-format
 msgid "Duplicate build-ids %s and %s\n"
 msgstr ""
 
-#: build/files.c:1815
+#: build/files.c:1820
 msgid "_build_id_links macro not set, assuming 'compat'\n"
 msgstr ""
 
-#: build/files.c:1828
+#: build/files.c:1833
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
 msgstr ""
 
-#: build/files.c:1917
+#: build/files.c:1922
 #, c-format
 msgid "error reading build-id in %s: %s\n"
 msgstr ""
 
-#: build/files.c:1921
+#: build/files.c:1926
 #, c-format
 msgid "Missing build-id in %s\n"
 msgstr ""
 
-#: build/files.c:1926
+#: build/files.c:1931
 #, c-format
 msgid "build-id found in %s too small\n"
 msgstr ""
 
-#: build/files.c:1927
+#: build/files.c:1932
 #, c-format
 msgid "build-id found in %s too large\n"
 msgstr ""
 
-#: build/files.c:1942 rpmio/rpmfileutil.c:445
+#: build/files.c:1947 rpmio/rpmfileutil.c:445
 msgid "failed to create directory"
 msgstr "falha ao criar o diretório"
 
-#: build/files.c:1960
+#: build/files.c:1965
 msgid "Mixing main ELF and debug files in package"
 msgstr ""
 
-#: build/files.c:2161
+#: build/files.c:2166
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "O arquivo precisa da \"/\" inicial: %s\n"
 
-#: build/files.c:2185
+#: build/files.c:2190
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr ""
 
-#: build/files.c:2197
+#: build/files.c:2202
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2199
+#: build/files.c:2204
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2234
+#: build/files.c:2239
 #, fuzzy, c-format
 msgid "Could not open %s file %s: %m\n"
 msgstr "Não foi possível abrir %%files arquivo %s: %m\n"
 
-#: build/files.c:2259
+#: build/files.c:2264
 #, fuzzy, c-format
 msgid "Empty %s file %s\n"
 msgstr "falha ao abrir %s: %s\n"
 
-#: build/files.c:2304
+#: build/files.c:2309
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr ""
 
-#: build/files.c:2425 lib/rpminstall.c:461
+#: build/files.c:2430 lib/rpminstall.c:461
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "O arquivo não foi encontrado pelo glob: %s\n"
 
-#: build/files.c:2512
+#: build/files.c:2517
 #, c-format
 msgid "Special file in generated file list: %s\n"
 msgstr ""
 
-#: build/files.c:2536
+#: build/files.c:2541
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:2552
+#: build/files.c:2557
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr ""
 
-#: build/files.c:2621
+#: build/files.c:2626
 msgid "Generating build-id links failed\n"
 msgstr ""
 
-#: build/files.c:2738
+#: build/files.c:2743
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Arquivo inválido: %s: %s\n"
 
-#: build/files.c:2806
+#: build/files.c:2811
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Procurando por arquivos desempacotados: %s\n"
 
-#: build/files.c:2819
+#: build/files.c:2824
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -978,27 +973,27 @@ msgstr ""
 "Arquivo(s) instalado(s) (mas não empacotado(s)) encontrado(s):\n"
 "%s"
 
-#: build/files.c:2874
+#: build/files.c:2879
 #, fuzzy, c-format
 msgid "package %s already exists\n"
 msgstr "o pacote %s já está instalado"
 
-#: build/files.c:2938
+#: build/files.c:2943
 #, c-format
 msgid "%s was mapped to multiple filenames"
 msgstr ""
 
-#: build/files.c:3187
+#: build/files.c:3192
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Processando arquivos: %s\n"
 
-#: build/files.c:3209
+#: build/files.c:3214
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 
-#: build/files.c:3215
+#: build/files.c:3220
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Binários dependentes de arquitetura no pacote noarch\n"
 
@@ -1067,18 +1062,18 @@ msgstr "A execução de \"%s\" falhou.\n"
 msgid "Package check \"%s\" failed.\n"
 msgstr "Falha na verificação \"%s\" do pacote.\n"
 
-#: build/pack.c:654
+#: build/pack.c:655
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "Não foi possível criar %s: %s\n"
 
-#: build/pack.c:673
+#: build/pack.c:674
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 "Não foi possível gerar o nome de arquivo de saída para o pacote %s: %s\n"
 
-#: build/pack.c:772
+#: build/pack.c:773
 #, c-format
 msgid "Finished binary package job, result %d, filename %s\n"
 msgstr ""
@@ -1672,40 +1667,45 @@ msgstr ""
 msgid "failed to write all data to %s: %s\n"
 msgstr ""
 
-#: build/rpmfc.c:1168
+#: build/rpmfc.c:640
+#, fuzzy, c-format
+msgid "%s generator %s failed: %s\n"
+msgstr "falha ao abrir %s: %s\n"
+
+#: build/rpmfc.c:1177
 msgid "Empty file classifier\n"
 msgstr ""
 
-#: build/rpmfc.c:1177
+#: build/rpmfc.c:1186
 msgid "No file attributes configured\n"
 msgstr "Os atributos do arquivo não foram configurados\n"
 
-#: build/rpmfc.c:1203
+#: build/rpmfc.c:1212
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) falhou: %s\n"
 
-#: build/rpmfc.c:1209 build/rpmfc.c:1213
+#: build/rpmfc.c:1218 build/rpmfc.c:1222
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load falhou: %s\n"
 
-#: build/rpmfc.c:1260 build/rpmfc.c:1279
+#: build/rpmfc.c:1269 build/rpmfc.c:1288
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Falha no reconhecimento do arquivo \"%s\": modo %06o %s\n"
 
-#: build/rpmfc.c:1483
+#: build/rpmfc.c:1491
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Localizando %s: %s\n"
 
-#: build/rpmfc.c:1492 build/rpmfc.c:1501
+#: build/rpmfc.c:1500 build/rpmfc.c:1509
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Falha ao localizar %s:\n"
 
-#: build/rpmfc.c:1540
+#: build/rpmfc.c:1548
 msgid "Deprecated external dependency generator is used!\n"
 msgstr ""
 
@@ -2299,149 +2299,154 @@ msgstr "remover (desinstalar) pacote"
 msgid "<package>+"
 msgstr "<pacote>+"
 
-#: lib/poptI.c:138 lib/poptI.c:178
+#: lib/poptI.c:138
+#, fuzzy
+msgid "do not install artifacts"
+msgstr "não instalar documentação"
+
+#: lib/poptI.c:141 lib/poptI.c:181
 msgid "do not install configuration files"
 msgstr "não instalar arquivos de configuração"
 
-#: lib/poptI.c:141 lib/poptI.c:183
+#: lib/poptI.c:144 lib/poptI.c:186
 msgid "do not install documentation"
 msgstr "não instalar documentação"
 
-#: lib/poptI.c:143
+#: lib/poptI.c:146
 msgid "skip files with leading component <path> "
 msgstr "ignorar arquivos com componentes principais <caminho> "
 
-#: lib/poptI.c:144
+#: lib/poptI.c:147
 msgid "<path>"
 msgstr "<caminho>"
 
-#: lib/poptI.c:147
+#: lib/poptI.c:150
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "atalho para --replacepkgs --replacefiles"
 
-#: lib/poptI.c:151
+#: lib/poptI.c:154
 msgid "upgrade package(s) if already installed"
 msgstr "atualizar pacote(s) se já estiver(em) instalado(s)"
 
-#: lib/poptI.c:152 lib/poptI.c:171 lib/poptI.c:260 lib/poptI.c:264
+#: lib/poptI.c:155 lib/poptI.c:174 lib/poptI.c:263 lib/poptI.c:267
 msgid "<packagefile>+"
 msgstr "<arquivo_do_pacote>+"
 
-#: lib/poptI.c:154
+#: lib/poptI.c:157
 msgid "print hash marks as package installs (good with -v)"
 msgstr "exibir cerquilhas a medida que o pacote instala (bom com -v)"
 
-#: lib/poptI.c:157
+#: lib/poptI.c:160
 msgid "don't verify package architecture"
 msgstr "não verificar a arquitetura do pacote"
 
-#: lib/poptI.c:160
+#: lib/poptI.c:163
 msgid "don't verify package operating system"
 msgstr "não verificar o sistema operacional do pacote"
 
-#: lib/poptI.c:163
+#: lib/poptI.c:166
 msgid "don't check disk space before installing"
 msgstr "não verificar o espaço em disco antes de instalar"
 
-#: lib/poptI.c:166
+#: lib/poptI.c:169
 msgid "short hand for --ignorepayload --ignoresignature"
 msgstr ""
 
-#: lib/poptI.c:168
+#: lib/poptI.c:171
 msgid "install documentation"
 msgstr "instalar a documentação"
 
-#: lib/poptI.c:171
+#: lib/poptI.c:174
 msgid "install package(s)"
 msgstr "instalar pacote(s)"
 
-#: lib/poptI.c:174
+#: lib/poptI.c:177
 msgid "update the database, but do not modify the filesystem"
 msgstr "atualizar o banco de dados, mas não modificar o sistema de arquivos"
 
-#: lib/poptI.c:180
+#: lib/poptI.c:183
 msgid "do not verify package dependencies"
 msgstr "não verificar as dependências do pacote"
 
-#: lib/poptI.c:186 lib/poptQV.c:246 lib/poptQV.c:248
+#: lib/poptI.c:189 lib/poptQV.c:246 lib/poptQV.c:248
 msgid "don't verify digest of files"
 msgstr "não verificar o digest dos arquivos"
 
-#: lib/poptI.c:188
+#: lib/poptI.c:191
 msgid "don't verify digest of files (obsolete)"
 msgstr "não verificar o digest dos arquivos (obsoleto)"
 
-#: lib/poptI.c:190
+#: lib/poptI.c:193
 msgid "don't install file security contexts"
 msgstr "não instalar contextos de segurança dos arquivos"
 
-#: lib/poptI.c:192
+#: lib/poptI.c:195
 msgid "don't install file capabilities"
 msgstr ""
 
-#: lib/poptI.c:196
+#: lib/poptI.c:199
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "não reordenar a instalação dos pacotes para satisfazer as dependências"
 
-#: lib/poptI.c:200
+#: lib/poptI.c:203
 msgid "do not execute package scriptlet(s)"
 msgstr "não executar scriptlet(s) do pacote"
 
-#: lib/poptI.c:204
+#: lib/poptI.c:207
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "não executar o scriptlet %%pre (se existir)"
 
-#: lib/poptI.c:207
+#: lib/poptI.c:210
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "não executar o scriptlet %%post (se existir)"
 
-#: lib/poptI.c:210
+#: lib/poptI.c:213
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "não executar o scriptlet %%preun (se existir)"
 
-#: lib/poptI.c:213
+#: lib/poptI.c:216
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "não executar o scriptlet %%postun (se existir)"
 
-#: lib/poptI.c:216
+#: lib/poptI.c:219
 #, c-format
 msgid "do not execute %%pretrans scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:219
+#: lib/poptI.c:222
 #, c-format
 msgid "do not execute %%posttrans scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:222
+#: lib/poptI.c:225
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "não executar nenhum scriptlet disparado por este pacote"
 
-#: lib/poptI.c:225
+#: lib/poptI.c:228
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "não executar nenhum scriptlet %%triggerprein"
 
-#: lib/poptI.c:228
+#: lib/poptI.c:231
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "não executar nenhum scriptlet %%triggerin"
 
-#: lib/poptI.c:231
+#: lib/poptI.c:234
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "não executar nenhum scriptlet %%triggerun"
 
-#: lib/poptI.c:234
+#: lib/poptI.c:237
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "não executar nenhum scriptlet %%triggerpostun"
 
-#: lib/poptI.c:238
+#: lib/poptI.c:241
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -2449,43 +2454,43 @@ msgstr ""
 "atualizar para uma versão mais antiga do pacote (--force em atualizações faz "
 "isso automaticamente)"
 
-#: lib/poptI.c:242
+#: lib/poptI.c:245
 msgid "print percentages as package installs"
 msgstr "exibir porcentagens na medida em que o pacote vai sendo instalado"
 
-#: lib/poptI.c:244
+#: lib/poptI.c:247
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "realocar o pacote para <dir>, se for realocável"
 
-#: lib/poptI.c:245
+#: lib/poptI.c:248
 msgid "<dir>"
 msgstr "<dir>"
 
-#: lib/poptI.c:247
+#: lib/poptI.c:250
 msgid "relocate files from path <old> to <new>"
 msgstr "realocar arquivos do caminho <antigo> para o <novo>"
 
-#: lib/poptI.c:248
+#: lib/poptI.c:251
 msgid "<old>=<new>"
 msgstr "<antigo>=<novo>"
 
-#: lib/poptI.c:251
+#: lib/poptI.c:254
 msgid "ignore file conflicts between packages"
 msgstr "ignorar conflitos de arquivos entre pacotes"
 
-#: lib/poptI.c:254
+#: lib/poptI.c:257
 msgid "reinstall if the package is already present"
 msgstr "reinstalar se o pacote já estiver presente"
 
-#: lib/poptI.c:256
+#: lib/poptI.c:259
 msgid "don't install, but tell if it would work or not"
 msgstr "não instalar, mas dizer se a instalação funcionaria ou não"
 
-#: lib/poptI.c:259
+#: lib/poptI.c:262
 msgid "upgrade package(s)"
 msgstr "atualizar pacote(s)"
 
-#: lib/poptI.c:263
+#: lib/poptI.c:266
 msgid "reinstall package(s)"
 msgstr ""
 
@@ -3362,70 +3367,75 @@ msgstr "o pacote %s é destinado para a arquitetura %s"
 msgid "package %s is intended for a %s operating system"
 msgstr "o pacote %s é destinado para o sistema operacional %s"
 
-#: lib/rpmprob.c:122
+#: lib/rpmprob.c:123
 #, c-format
 msgid "package %s is already installed"
 msgstr "o pacote %s já está instalado"
 
 #: lib/rpmprob.c:125
+#, fuzzy, c-format
+msgid "package %s is not installed"
+msgstr "o pacote %s não está instalado\n"
+
+#: lib/rpmprob.c:128
 #, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "o caminho %s no pacote %s não é realocável"
 
-#: lib/rpmprob.c:130
+#: lib/rpmprob.c:133
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "o arquivo %s conflita entre a tentativa de instalação de %s e %s"
 
-#: lib/rpmprob.c:135
+#: lib/rpmprob.c:138
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "o arquivo %s da instalação de %s conflita com o arquivo do pacote %s"
 
-#: lib/rpmprob.c:140
+#: lib/rpmprob.c:143
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "o pacote %s (que é mais recente que o %s) já está instalado"
 
-#: lib/rpmprob.c:145
+#: lib/rpmprob.c:148
 #, fuzzy, c-format
 msgid ""
 "installing package %s needs %<PRIu64>%cB more space on the %s filesystem"
 msgstr ""
 "a instalação do pacote %s precisa de %<PRIu64>%cB no sistema de arquivos %s"
 
-#: lib/rpmprob.c:155
+#: lib/rpmprob.c:158
 #, fuzzy, c-format
 msgid "installing package %s needs %<PRIu64> more inodes on the %s filesystem"
 msgstr ""
 "a instalação do pacote %s precisa de %<PRIu64> inodes no sistema de arquivos "
 "%s"
 
-#: lib/rpmprob.c:159
+#: lib/rpmprob.c:162
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s é requerido por %s%s"
 
-#: lib/rpmprob.c:160 lib/rpmprob.c:164 lib/rpmprob.c:168
+#: lib/rpmprob.c:163 lib/rpmprob.c:167 lib/rpmprob.c:171
 msgid "(installed) "
 msgstr "(instalado) "
 
-#: lib/rpmprob.c:163
+#: lib/rpmprob.c:166
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s conflita com %s%s"
 
-#: lib/rpmprob.c:167
+#: lib/rpmprob.c:170
 #, c-format
 msgid "%s is obsoleted by %s%s"
 msgstr "%s tornou-se obsoleto pelo(a) %s%s"
 
-#: lib/rpmprob.c:171
+#: lib/rpmprob.c:174
 #, c-format
 msgid "package %s does not verify: %s"
 msgstr ""
 
-#: lib/rpmprob.c:176
+#: lib/rpmprob.c:179
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "erro desconhecido %d encontrado ao manipular o pacote %s"
@@ -3679,19 +3689,19 @@ msgstr ""
 msgid "Unable to reload signature header.\n"
 msgstr "Não foi possível recarregar o cabeçalho da assinatura.\n"
 
-#: lib/transaction.c:1233
+#: lib/transaction.c:1244
 msgid "no signature"
 msgstr ""
 
-#: lib/transaction.c:1233
+#: lib/transaction.c:1244
 msgid "no digest"
 msgstr ""
 
-#: lib/transaction.c:1585
+#: lib/transaction.c:1626
 msgid "skipped"
 msgstr "ignorado"
 
-#: lib/transaction.c:1585
+#: lib/transaction.c:1626
 msgid "failed"
 msgstr "falhou"
 
@@ -4150,6 +4160,10 @@ msgstr "%s: falha na leitura do manifesto: %s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr "não verificar a assinatura do cabeçalho+carga útil"
+
+#, c-format
+#~ msgid "Failed to rename %s to %s: %m\n"
+#~ msgstr "Falha ao renomear %s para %s: %m\n"
 
 #~ msgid "! only on numbers\n"
 #~ msgstr "! somente em números\n"
