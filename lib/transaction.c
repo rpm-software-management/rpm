@@ -492,13 +492,6 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfiles fi, int fx
 	rpmfsSetAction(fs, fx, action);
     }
 
-    /* Skip already existing files - if 'minimize_writes' is set. */
-    if ((!isCfgFile) && (rpmfsGetAction(fs, fx) == FA_UNKNOWN)  && ts->min_writes) {
-	if (rpmfileContentsEqual(otherFi, ofx, fi, fx)) {
-	   rpmfsSetAction(fs, fx, FA_TOUCH);
-	}
-    }
-
     otherFileSize = rpmfilesFSize(otherFi, ofx);
 
     /* Only account for the last file of a hardlink set */
@@ -508,6 +501,16 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfiles fi, int fx
 
     /* Add one to make sure the size is not zero */
     rpmfilesSetFReplacedSize(fi, fx, otherFileSize + 1);
+
+    /* Just touch already existing files if minimize_writes is enabled */
+    if (ts->min_writes) {
+	if ((!isCfgFile) && (rpmfsGetAction(fs, fx) == FA_UNKNOWN)) {
+	    /* XXX fsm can't handle FA_TOUCH of hardlinked files */
+	    int nolinks = (nlink == 1 && rpmfilesFNlink(fi, fx) == 1);
+	    if (nolinks && rpmfileContentsEqual(otherFi, ofx, fi, fx))
+	       rpmfsSetAction(fs, fx, FA_TOUCH);
+	}
+    }
 }
 
 /**
