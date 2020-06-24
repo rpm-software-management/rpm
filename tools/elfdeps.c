@@ -18,6 +18,8 @@ int soname_only = 0;
 int fake_soname = 1;
 int filter_soname = 1;
 int require_interp = 0;
+int biarch_deps = 0;
+int multiarch_deps = 0;
 
 typedef struct elfInfo_s {
     Elf *elf;
@@ -29,7 +31,8 @@ typedef struct elfInfo_s {
     int gotGNUHASH;
     char *soname;
     char *interp;
-    const char *marker;		/* elf class marker or NULL */
+    const char *classmarker;		/* elf class marker or NULL */
+    const char *archmarker;		/* elf arch marker or NULL */
 
     ARGV_t requires;
     ARGV_t provides;
@@ -79,9 +82,9 @@ static int skipSoname(const char *soname)
     return 0;
 }
 
-static const char *mkmarker(GElf_Ehdr *ehdr)
+static const char *mkclassmarker(GElf_Ehdr *ehdr)
 {
-    const char *marker = NULL;
+    const char *classmarker = NULL;
 
     if (ehdr->e_ident[EI_CLASS] == ELFCLASS64) {
 	switch (ehdr->e_machine) {
@@ -90,11 +93,106 @@ static const char *mkmarker(GElf_Ehdr *ehdr)
 	    /* alpha doesn't traditionally have 64bit markers */
 	    break;
 	default:
-	    marker = "(64bit)";
+	    classmarker = "(64bit)";
 	    break;
 	}
     }
-    return marker;
+    return classmarker;
+}
+
+static const char *mkarchmarker(GElf_Ehdr *ehdr)
+{
+    char *archmarker = NULL;
+    const char *elf_machine = NULL;
+    const char *elf_endian = NULL;
+    const char *elf_bitsize = NULL;
+
+    /* First the machine type... */
+    switch (ehdr->e_machine) {
+    case EM_SPARC:
+	elf_machine = "sparc";
+	break;
+    case EM_386:
+    case EM_X86_64:
+	elf_machine = "x86";
+	break;
+    case EM_MIPS:
+	elf_machine = "mips";
+	break;
+    case EM_PPC:
+    case EM_PPC64:
+	elf_machine = "ppc";
+	break;
+    case EM_S390:
+	elf_machine = "s390";
+	break;
+    case EM_ARM:
+	if ((ehdr->e_flags & EF_ARM_ABI_FLOAT_HARD) == EF_ARM_ABI_FLOAT_HARD)
+		elf_machine = "armhfp";
+	if ((ehdr->e_flags & EF_ARM_ABI_FLOAT_SOFT) == EF_ARM_ABI_FLOAT_SOFT)
+		elf_machine = "armsfp";
+	break;
+    case EM_SPARCV9:
+	elf_machine = "sparcv9";
+	break;
+    case EM_ALPHA:
+	elf_machine = "alpha";
+	break;
+    case EM_AARCH64:
+	elf_machine = "aarch";
+	break;
+    case EM_RISCV:
+	elf_machine = "riscv";
+	break;
+    default:
+	break;
+    }
+
+    /* Then the endianness of the CPU... */
+    switch (ehdr->e_ident[EI_DATA]) {
+    case ELFDATA2LSB:
+	elf_endian = "le";
+	break;
+    case ELFDATA2MSB:
+	elf_endian = "be";
+	break;
+    default:
+	break;
+    }
+
+    /* Then the bit size of the CPU... */
+    switch (ehdr->e_ident[EI_CLASS]) {
+    case ELFCLASS64:
+	elf_bitsize = "64";
+	break;
+    case ELFCLASS32:
+	elf_bitsize = "32";
+	break;
+    default:
+	break;
+    }
+
+    /* Finally the arch marker! */
+    switch (ehdr->e_machine) {
+    case EM_MIPS:
+    case EM_ARM:
+    case EM_PPC64:
+	rasprintf(&archmarker, "(%s%s-%s)", elf_machine, elf_endian, elf_bitsize);
+	break;
+    case EM_X86_64:
+	/* This handling for x32 makes me weep inside... */
+	if (ehdr->e_ident[EI_CLASS] == ELFCLASS32) {
+	    rasprintf(&archmarker, "(%s-%s-%s)", elf_machine, "64", "x32");
+	} else {
+	    rasprintf(&archmarker, "(%s-%s)", elf_machine, elf_bitsize);
+	}
+	break;
+    default:
+	rasprintf(&archmarker, "(%s-%s)", elf_machine, elf_bitsize);
+	break;
+    }
+
+    return archmarker;
 }
 
 static void addDep(ARGV_t *deps,
@@ -145,7 +243,10 @@ static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    auxoffset += aux->vda_next;
 		    continue;
 		} else if (soname && !soname_only && !skipPrivate(s)) {
-		    addDep(&ei->provides, soname, s, ei->marker);
+		    if (multiarch_deps)
+		    	addDep(&ei->provides, soname, s, ei->archmarker);
+		    if (biarch_deps)
+		    	addDep(&ei->provides, soname, s, ei->classmarker);
 		}
 	    }
 		    
@@ -184,7 +285,10 @@ static void processVerNeed(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    break;
 
 		if (ei->isExec && soname && !soname_only && !skipPrivate(s)) {
-		    addDep(&ei->requires, soname, s, ei->marker);
+	    	    if (multiarch_deps)
+		        addDep(&ei->requires, soname, s, ei->archmarker);
+		    if (biarch_deps)
+		    	addDep(&ei->requires, soname, s, ei->classmarker);
 		}
 		auxoffset += aux->vna_next;
 	    }
@@ -224,8 +328,12 @@ static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 	    case DT_NEEDED:
 		if (ei->isExec) {
 		    s = elf_strptr(ei->elf, shdr->sh_link, dyn->d_un.d_val);
-		    if (s)
-			addDep(&ei->requires, s, NULL, ei->marker);
+		    if (s) {
+	    	        if (multiarch_deps)
+			    addDep(&ei->requires, s, NULL, ei->archmarker);
+		        if (biarch_deps)
+			    addDep(&ei->requires, s, NULL, ei->classmarker);
+		    }
 		}
 		break;
 	    }
@@ -298,7 +406,8 @@ static int processFile(const char *fn, int dtype)
 	goto exit;
 
     if (ehdr->e_type == ET_DYN || ehdr->e_type == ET_EXEC) {
-	ei->marker = mkmarker(ehdr);
+	ei->archmarker = mkarchmarker(ehdr);
+	ei->classmarker = mkclassmarker(ehdr);
     	ei->isDSO = (ehdr->e_type == ET_DYN);
 	ei->isExec = (st.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
 
@@ -324,8 +433,12 @@ static int processFile(const char *fn, int dtype)
 	    const char *bn = strrchr(fn, '/');
 	    ei->soname = rstrdup(bn ? bn + 1 : fn);
 	}
-	if (ei->soname)
-	    addDep(&ei->provides, ei->soname, NULL, ei->marker);
+	if (ei->soname) {
+	    if (multiarch_deps)
+	    	addDep(&ei->provides, ei->soname, NULL, ei->archmarker);
+	    if (biarch_deps)
+	    	addDep(&ei->provides, ei->soname, NULL, ei->classmarker);
+	}
     }
 
     /* If requested and present, add dep for interpreter (ie dynamic linker) */
@@ -366,6 +479,8 @@ int main(int argc, char *argv[])
 	{ "no-fake-soname", 0, POPT_ARG_VAL, &fake_soname, 0, NULL, NULL },
 	{ "no-filter-soname", 0, POPT_ARG_VAL, &filter_soname, 0, NULL, NULL },
 	{ "require-interp", 0, POPT_ARG_VAL, &require_interp, -1, NULL, NULL },
+	{ "biarch-deps", 0, POPT_ARG_VAL, &biarch_deps, -1, NULL, NULL },
+	{ "multiarch-deps", 0, POPT_ARG_VAL, &multiarch_deps, -1, NULL, NULL },
 	POPT_AUTOHELP 
 	POPT_TABLEEND
     };
@@ -377,6 +492,10 @@ int main(int argc, char *argv[])
 	poptPrintUsage(optCon, stderr, 0);
 	exit(EXIT_FAILURE);
     }
+
+    /* In the event that neither biarch nor multiarch modes are set, fallback to biarch */
+    if (biarch_deps == 0 && multiarch_deps == 0)
+	biarch_deps = 1;
 
     /* Normally our data comes from stdin, but permit args too */
     if (poptPeekArg(optCon)) {
