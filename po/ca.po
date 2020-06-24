@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-06-23 13:16+0300\n"
+"POT-Creation-Date: 2020-06-24 10:42+0300\n"
 "PO-Revision-Date: 2018-02-15 09:14-0500\n"
 "Last-Translator: Robert Antoni Buj Gelonch <robert.buj@gmail.com>\n"
 "Language-Team: Catalan (http://www.transifex.com/rpm-team/rpm/language/ca/)\n"
@@ -1700,45 +1700,40 @@ msgstr "ha fallat %s: %x\n"
 msgid "failed to write all data to %s: %s\n"
 msgstr "ha fallat l'escriptura de totes les dades a %s: %s\n"
 
-#: build/rpmfc.c:640
-#, fuzzy, c-format
-msgid "%s generator %s failed: %s\n"
-msgstr "ha fallat l'obertura de %s: %s\n"
-
-#: build/rpmfc.c:1177
+#: build/rpmfc.c:1168
 msgid "Empty file classifier\n"
 msgstr "Classificador buit de fitxer\n"
 
-#: build/rpmfc.c:1186
+#: build/rpmfc.c:1177
 msgid "No file attributes configured\n"
 msgstr "Sense atributs de fitxer configurats\n"
 
-#: build/rpmfc.c:1212
+#: build/rpmfc.c:1203
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "Ha fallat magic_open(0x%x): %s\n"
 
-#: build/rpmfc.c:1218 build/rpmfc.c:1222
+#: build/rpmfc.c:1209 build/rpmfc.c:1213
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "Ha fallat magic_load: %s\n"
 
-#: build/rpmfc.c:1269 build/rpmfc.c:1288
+#: build/rpmfc.c:1260 build/rpmfc.c:1279
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Ha fallat el reconeixement del fitxer «%s»: mode %06o %s\n"
 
-#: build/rpmfc.c:1491
+#: build/rpmfc.c:1483
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "S'està cercant %s: %s\n"
 
-#: build/rpmfc.c:1500 build/rpmfc.c:1509
+#: build/rpmfc.c:1492 build/rpmfc.c:1501
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Ha fallat la cerca de %s:\n"
 
-#: build/rpmfc.c:1548
+#: build/rpmfc.c:1540
 msgid "Deprecated external dependency generator is used!\n"
 msgstr ""
 
@@ -4205,6 +4200,10 @@ msgstr "%s: ha fallat la lectura del manifest: %s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr "no verifiquis la signatura de la capçalera i la càrrega"
+
+#, fuzzy, c-format
+#~ msgid "%s generator %s failed: %s\n"
+#~ msgstr "ha fallat l'obertura de %s: %s\n"
 
 #, c-format
 #~ msgid "Failed to rename %s to %s: %m\n"
