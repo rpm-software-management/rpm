@@ -509,7 +509,7 @@ static void rpmfcAddFileDep(rpmfcFileDeps *fileDeps, rpmds ds, int ix)
 }
 
 static ARGV_t runCmd(const char *cmd,
-		     const char *buildRoot, const char *fn, int *rcp)
+		     const char *buildRoot, const char *fn)
 {
     ARGV_t output = NULL;
     ARGV_t av = NULL;
@@ -518,10 +518,8 @@ static ARGV_t runCmd(const char *cmd,
     argvAdd(&av, cmd);
 
     appendLineStringBuf(sb_stdin, fn);
-    if (rpmfcExec(av, sb_stdin, &sb_stdout, 1, buildRoot) == 0) {
+    if (rpmfcExec(av, sb_stdin, &sb_stdout, 0, buildRoot) == 0) {
 	argvSplit(&output, getStringBuf(sb_stdout), "\n\r");
-    } else {
-	*rcp = -1;
     }
 
     argvFree(av);
@@ -532,21 +530,19 @@ static ARGV_t runCmd(const char *cmd,
 }
 
 static ARGV_t runCall(const char *cmd,
-		     const char *buildRoot, const char *fn, int *rcp)
+		     const char *buildRoot, const char *fn)
 {
     ARGV_t output = NULL;
-    char *exp = NULL;
 
     if (_rpmfc_debug)
 	rpmlog(RPMLOG_DEBUG, "Calling %s() on %s\n", cmd, fn);
 
     /* Hack to pass in the path as what looks like a macro argument */
     rpmPushMacroFlags(NULL, "1", NULL, fn, 1, RPMMACRO_LITERAL);
-    if (rpmExpandMacros(NULL, cmd, &exp, 0) < 0)
-	*rcp = -1;
-    else
-	argvSplit(&output, exp, "\n\r");
+    char *exp = rpmExpand(cmd, NULL);
     rpmPopMacro(NULL, "1");
+    if (*exp)
+	argvSplit(&output, exp, "\n\r");
     free(exp);
 
     return output;
@@ -613,12 +609,12 @@ static int rpmfcHelper(rpmfc fc, int ix, const struct exclreg_s *excl,
 	goto exit;
 
     if (callable) {
-	pav = runCall(cmd, fc->buildRoot, fn, &rc);
+	pav = runCall(cmd, fc->buildRoot, fn);
     } else {
-	pav = runCmd(cmd, fc->buildRoot, fn, &rc);
+	pav = runCmd(cmd, fc->buildRoot, fn);
     }
 
-    if (pav == NULL || rc < 0)
+    if (pav == NULL)
 	goto exit;
 
     pac = argvCount(pav);
@@ -633,14 +629,9 @@ static int rpmfcHelper(rpmfc fc, int ix, const struct exclreg_s *excl,
 	    rc++;
     }
 
-exit:
     argvFree(pav);
 
-    if (rc < 0) {
-	rpmlog(RPMLOG_ERR, _("%s generator %s failed: %s\n"),
-		rpmTagGetName(tagN), cmd, fn);
-    }
-
+exit:
     return rc;
 }
 
@@ -1473,6 +1464,7 @@ static rpmRC rpmfcApplyExternal(rpmfc fc)
 	rpmsenseFlags tagflags;
 	char * s = NULL;
 	StringBuf sb_stdout = NULL;
+	int failnonzero = (tag == RPMTAG_PROVIDEFLAGS);
 
 	switch (tag) {
 	case RPMTAG_PROVIDEFLAGS:
@@ -1502,7 +1494,7 @@ static rpmRC rpmfcApplyExternal(rpmfc fc)
 	free(s);
 
 	if (rpmfcExec(dm->argv, sb_stdin, &sb_stdout,
-			1, fc->buildRoot) == -1)
+			failnonzero, fc->buildRoot) == -1)
 	    continue;
 
 	if (sb_stdout == NULL) {
