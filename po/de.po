@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-06-23 13:16+0300\n"
+"POT-Creation-Date: 2020-06-24 10:42+0300\n"
 "PO-Revision-Date: 2019-11-10 07:23-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: German (http://www.transifex.com/rpm-team/rpm/language/de/)\n"
@@ -1703,45 +1703,40 @@ msgstr "%s fehlgeschlagen: %x\n"
 msgid "failed to write all data to %s: %s\n"
 msgstr "Nicht alle Daten konnten nach %s geschrieben werden: %s\n"
 
-#: build/rpmfc.c:640
-#, fuzzy, c-format
-msgid "%s generator %s failed: %s\n"
-msgstr "Öffnen von %s fehlgeschlagen: %s\n"
-
-#: build/rpmfc.c:1177
+#: build/rpmfc.c:1168
 msgid "Empty file classifier\n"
 msgstr "Leerer Dateiklassifizierer\n"
 
-#: build/rpmfc.c:1186
+#: build/rpmfc.c:1177
 msgid "No file attributes configured\n"
 msgstr "Keine Dateiattribute konfiguriert\n"
 
-#: build/rpmfc.c:1212
+#: build/rpmfc.c:1203
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) fehlgeschlagen: %s\n"
 
-#: build/rpmfc.c:1218 build/rpmfc.c:1222
+#: build/rpmfc.c:1209 build/rpmfc.c:1213
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load fehlgeschlagen: %s\n"
 
-#: build/rpmfc.c:1269 build/rpmfc.c:1288
+#: build/rpmfc.c:1260 build/rpmfc.c:1279
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Erkennung der Datei »%s« fehlgeschlagen: Modus %06o %s\n"
 
-#: build/rpmfc.c:1491
+#: build/rpmfc.c:1483
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "%s wird gesucht: %s\n"
 
-#: build/rpmfc.c:1500 build/rpmfc.c:1509
+#: build/rpmfc.c:1492 build/rpmfc.c:1501
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s konnte nicht gefunden werden:\n"
 
-#: build/rpmfc.c:1548
+#: build/rpmfc.c:1540
 msgid "Deprecated external dependency generator is used!\n"
 msgstr "Veraltete externe Abhängigkeitserzeugung wird verwendet!\n"
 
@@ -4211,6 +4206,10 @@ msgstr "%s: Lesen der Paket-Liste fehlgeschlagen: %s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr "Keine Überprüfung der Header- und Nutzdaten-Signatur"
+
+#, fuzzy, c-format
+#~ msgid "%s generator %s failed: %s\n"
+#~ msgstr "Öffnen von %s fehlgeschlagen: %s\n"
 
 #, c-format
 #~ msgid "Failed to rename %s to %s: %m\n"
