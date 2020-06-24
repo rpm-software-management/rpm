@@ -319,9 +319,12 @@ static int getOutputFrom(ARGV_t argv,
 	if (buildRoot)
 	    setenv("RPM_BUILD_ROOT", buildRoot, 1);
 
-	unsetenv("MALLOC_CHECK_");
 	execvp(argv[0], (char *const *)argv);
-	rpmlog(RPMLOG_ERR, _("Couldn't exec %s: %s\n"),
+	/*
+	 * We are in a child which is a separate process, do not use rpmlog()
+	 * since locking is not safe across [v]fork.
+	 */
+	fprintf(stderr, _("Couldn't exec %s: %s\n"),
 		argv[0], strerror(errno));
 	_exit(EXIT_FAILURE);
     }
