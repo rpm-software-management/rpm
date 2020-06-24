@@ -513,28 +513,30 @@ EOF
 chmod a+x "${RPMTEST}"/tmp/fail.req
 
 runroot rpmbuild -bb --quiet \
+		--define "buildroot %{_buildrootdir}/%{NAME}" \
 		--define "__script_requires /tmp/fail.req" \
 		/data/SPECS/shebang.spec
 ],
 [1],
 [],
-[error: Requirename generator /tmp/fail.req  failed: /build/BUILDROOT/shebang-0.1-1.x86_64/bin/shebang
-    Requirename generator /tmp/fail.req  failed: /build/BUILDROOT/shebang-0.1-1.x86_64/bin/shebang
+[error: Requirename generator /tmp/fail.req  failed: /build/BUILDROOT/shebang/bin/shebang
+    Requirename generator /tmp/fail.req  failed: /build/BUILDROOT/shebang/bin/shebang
 ])
 
 AT_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild -bb --quiet \
+		--define "buildroot %{_buildrootdir}/%{NAME}" \
 		--define "__script_provides() %{error:bad %{basename:%1} stuff}" \
 		/data/SPECS/shebang.spec
 ],
 [1],
 [],
 [error: bad shebang stuff
-error: Providename generator %{__script_provides %{?__script_provides_opts}} failed: /build/BUILDROOT/shebang-0.1-1.x86_64/bin/shebang
+error: Providename generator %{__script_provides %{?__script_provides_opts}} failed: /build/BUILDROOT/shebang/bin/shebang
     bad shebang stuff
-    Providename generator %{__script_provides %{?__script_provides_opts}} failed: /build/BUILDROOT/shebang-0.1-1.x86_64/bin/shebang
+    Providename generator %{__script_provides %{?__script_provides_opts}} failed: /build/BUILDROOT/shebang/bin/shebang
 ])
 AT_CLEANUP
 
