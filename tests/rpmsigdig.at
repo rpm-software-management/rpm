@@ -415,6 +415,8 @@ AT_SETUP([rpmsign --addsign])
 AT_KEYWORDS([rpmsign signature])
 RPMDB_INIT
 gpg2 --import ${RPMTEST}/data/keys/*.secret
+# Our keys have no passphrases to be asked, silence GPG_TTY warning
+export GPG_TTY=""
 
 # rpmsign --addsign --rpmv3 <unsigned>
 AT_CHECK([
