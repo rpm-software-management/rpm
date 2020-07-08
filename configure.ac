@@ -185,7 +185,7 @@ AC_ARG_ENABLE([zstd],
               [enable_zstd=auto])
 
 AS_IF([test "x$enable_zstd" != "xno"], [
-  PKG_CHECK_MODULES([ZSTD], [libzstd], [have_zstd=yes], [have_zstd=no])
+  PKG_CHECK_MODULES([ZSTD], [libzstd >= 1.3.8], [have_zstd=yes], [have_zstd=no])
   AS_IF([test "$enable_zstd" = "yes"], [
     if test "$have_zstd" = "no"; then
       AC_MSG_ERROR([--enable-zstd specified, but not available])
