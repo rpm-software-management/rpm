@@ -745,7 +745,7 @@ typedef union pgpPktKey_u {
     struct pgpPktKeyV4_s v4;
 } pgpPktKey;
 
-/* \ingroup rpmpgp
+/** \ingroup rpmpgp
  * 5.6. Compressed Data Packet (Tag 8)
  *
  * The Compressed Data packet contains compressed data. Typically, this
@@ -774,7 +774,7 @@ typedef struct pgpPktCdata_s {
     uint8_t data[1];
 } pgpPktCdata;
 
-/* \ingroup rpmpgp
+/** \ingroup rpmpgp
  * 5.7. Symmetrically Encrypted Data Packet (Tag 9)
  *
  * The Symmetrically Encrypted Data packet contains data encrypted with
@@ -812,7 +812,7 @@ typedef struct pgpPktEdata_s {
     uint8_t data[1];
 } pgpPktEdata;
 
-/* \ingroup rpmpgp
+/** \ingroup rpmpgp
  * 5.8. Marker Packet (Obsolete Literal Packet) (Tag 10)
  *
  * An experimental version of PGP used this packet as the Literal
@@ -828,7 +828,7 @@ typedef struct pgpPktEdata_s {
  * in order to cause that version to report that newer software is
  * necessary to process the message.
  */
-/* \ingroup rpmpgp
+/** \ingroup rpmpgp
  * 5.9. Literal Data Packet (Tag 11)
  *
  * A Literal Data packet contains the body of a message; data that is
@@ -865,7 +865,7 @@ typedef struct pgpPktLdata_s {
     uint8_t filename[1];
 } pgpPktLdata;
 
-/* \ingroup rpmpgp
+/** \ingroup rpmpgp
  * 5.10. Trust Packet (Tag 12)
  *
  * The Trust packet is used only within keyrings and is not normally
@@ -882,7 +882,7 @@ typedef struct pgpPktTrust_s {
     uint8_t flag;
 } pgpPktTrust;
 
-/* \ingroup rpmpgp
+/** \ingroup rpmpgp
  * 5.11. User ID Packet (Tag 13)
  *
  * A User ID packet consists of data that is intended to represent the
