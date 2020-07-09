@@ -31,6 +31,8 @@ static PyObject *rpmPubkey_new(PyTypeObject *subtype,
 	return NULL;
     }
     pubkey = rpmPubkeyNew(pkt, pktlen);
+    if (!pubkey)
+	return NULL;
 
     return rpmPubkey_Wrap(subtype, pubkey);
 }

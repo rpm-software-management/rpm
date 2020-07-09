@@ -1069,7 +1069,16 @@ int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
 	p += (pkt.body - pkt.head) + pkt.blen;
     }
 
-    rc = (digp && (p == pend)) ? 0 : -1;
+	rc = 0;
+    if(!digp){
+		rpmlog(RPMLOG_WARNING, "pgpPrtParams: Key params have not been found\n");
+		rc = -1;
+	}
+
+	if(p != pend){
+		rpmlog(RPMLOG_WARNING, "pgpPrtParams: The parsing has not consumed the whole stream: pos = %ld, remaining = %ld\n", pktlen - (pend - p), pend - p);
+		rc = -1;
+	}
 
     if (ret && rc == 0) {
 	*ret = digp;
