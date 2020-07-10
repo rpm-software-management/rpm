@@ -261,6 +261,7 @@ if __name__ == "__main__":
             # [2] https://github.com/pypa/setuptools/pull/1275
             import platform
             platform.python_version = lambda: dist.py_version
+            platform.python_version_tuple = lambda: tuple(dist.py_version.split('.'))
 
             # This is the PEP 503 normalized name.
             # It does also convert dots to dashes, unlike dist.key.
