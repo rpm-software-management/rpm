@@ -16,7 +16,7 @@ import argparse
 from distutils.sysconfig import get_python_lib
 from os.path import dirname, sep
 import re
-from sys import argv, stdin
+from sys import argv, stdin, stderr
 from warnings import warn
 
 from packaging.requirements import Requirement as Requirement_
@@ -129,11 +129,13 @@ class RpmVersion():
 
 def convert_compatible(name, operator, version_id):
     if version_id.endswith('.*'):
-        print('Invalid requirement: {} {} {}'.format(name, operator, version_id))
+        print("*** INVALID_REQUIREMENT_ERROR___SEE_STDERR ***")
+        print('Invalid requirement: {} {} {}'.format(name, operator, version_id), file=stderr)
         exit(65)  # os.EX_DATAERR
     version = RpmVersion(version_id)
     if len(version.version) == 1:
-        print('Invalid requirement: {} {} {}'.format(name, operator, version_id))
+        print("*** INVALID_REQUIREMENT_ERROR___SEE_STDERR ***")
+        print('Invalid requirement: {} {} {}'.format(name, operator, version_id), file=stderr)
         exit(65)  # os.EX_DATAERR
     upper_version = RpmVersion(version_id)
     upper_version.version.pop()
@@ -152,7 +154,8 @@ def convert_equal(name, operator, version_id):
 
 def convert_arbitrary_equal(name, operator, version_id):
     if version_id.endswith('.*'):
-        print('Invalid requirement: {} {} {}'.format(name, operator, version_id))
+        print("*** INVALID_REQUIREMENT_ERROR___SEE_STDERR ***")
+        print('Invalid requirement: {} {} {}'.format(name, operator, version_id), file=stderr)
         exit(65)  # os.EX_DATAERR
     version = RpmVersion(version_id)
     return '{} = {}'.format(name, version)
