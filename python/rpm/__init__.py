@@ -38,6 +38,8 @@ import warnings
 from rpm._rpm import *
 from rpm.transaction import *
 import rpm._rpm as _rpm
+from .rpmEnum import *
+
 _RPMVSF_NODIGESTS = _rpm._RPMVSF_NODIGESTS
 _RPMVSF_NOHEADER = _rpm._RPMVSF_NOHEADER
 _RPMVSF_NOPAYLOAD = _rpm._RPMVSF_NOPAYLOAD
