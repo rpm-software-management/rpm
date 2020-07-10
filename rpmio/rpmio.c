@@ -1072,6 +1072,7 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
     char *t = stdio;
     char *te = t + sizeof(stdio) - 2;
     int c;
+    int threads = 0;
 
     switch ((c = *s++)) {
     case 'a':
@@ -1100,7 +1101,11 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
 	    flags &= ~O_ACCMODE;
 	    flags |= O_RDWR;
 	    continue;
-	    break;
+	case 'T':
+	    c = *s++;
+	    if (c >= (int)'0' && c <= (int)'9')
+		threads = strtol(s-1, (char **)&s, 10);
+	    continue;
 	default:
 	    if (c >= (int)'0' && c <= (int)'9') {
 		level = strtol(s-1, (char **)&s, 10);
@@ -1114,7 +1119,6 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
 		}
 	    }
 	    continue;
-	    break;
 	}
 	break;
     }
@@ -1138,6 +1142,11 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
 	 || ZSTD_isError(ZSTD_CCtx_setParameter(_stream, ZSTD_c_compressionLevel, level))) {
 	    goto err;
 	}
+
+	if (threads > 0)
+	    if (ZSTD_isError (ZSTD_CCtx_setParameter(_stream, ZSTD_c_nbWorkers, threads)))
+		rpmlog(RPMLOG_WARNING, "zstd library does not support multi-threading\n");
+
 	nb = ZSTD_CStreamOutSize();
     }
 
