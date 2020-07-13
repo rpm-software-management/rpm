@@ -234,7 +234,7 @@ int rpmTagGetNames(rpmtd tagnames, int fullname)
 
     pthread_once(&tagsLoaded, loadTags);
 
-    if (tagnames == NULL || tagsByName == NULL)
+    if (tagnames == NULL)
 	return 0;
 
     rpmtdReset(tagnames);
