@@ -46,6 +46,8 @@ typedef enum rpmParseLineType_e {
     LINE_ELIF              = (1 << 8),
     LINE_ELIFARCH          = (1 << 9),
     LINE_ELIFOS            = (1 << 10),
+    LINE_DEFINE            = (1 << 11),
+    LINE_GLOBAL            = (1 << 12),
 } rpmParseLineType;
 
 typedef const struct parsedSpecLine_s {
@@ -69,6 +71,8 @@ static struct parsedSpecLine_s const lineTypes[] = {
     { LINE_ELIFARCH,   LEN_AND_STR("%elifarch"), 1, 1, LINE_ENDIF | LINE_ELSE},
     { LINE_ELIFOS,     LEN_AND_STR("%elifos"),  1, 1, LINE_ENDIF | LINE_ELSE},
     { LINE_ELIF,       LEN_AND_STR("%elif")    ,1, 1, LINE_ENDIF | LINE_ELSE},
+    { LINE_DEFINE,     LEN_AND_STR("%define") , 1, 0, 0},
+    { LINE_GLOBAL,     LEN_AND_STR("%global") , 1, 0, 0},
     { 0, 0, 0, 0, 0, 0 }
  };
 
