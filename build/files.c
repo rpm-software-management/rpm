@@ -1929,8 +1929,8 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 			if (terminate)
 			    rc = 1;
 		    }
-		    elf_end (elf);
 		}
+		elf_end (elf);
 		close (fd);
 	    }
 	}
