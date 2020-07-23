@@ -174,6 +174,8 @@ Build just the source package, but also parse and include dynamic build
 dependencies - executes up to and including the %generate_buildrequires stage
 and then skips straight to the assembly stage, without creating binary
 packages.
+This command can be used to fully resolve dynamic build dependencies.
+See the DYNAMIC BUILD DEPENDENCIES section for details.
 .PP
 The following options may also be used:
 .TP
@@ -252,6 +254,26 @@ the package are removed.
 
 These options are now superseded by the \fB-r*\fR options which allow
 much more fine control over what stages of the build to run.
+.SS "DYNAMIC BUILD DEPENDENCIES"
+.PP
+When the %generate_buildrequires stage runs and some of the newly generated
+BuildRequires are not satisfied, \fBrpmbuild\fR creates an intermediate source
+package ending in \fIbuildreqs.nosrc.rpm\fR, which has the new BuildRequires,
+and exits with code 11.
+This package can then be used in place of the original source package to
+resolve and install the missing build dependencies in the usual way, such as
+with \fBdnf-builddep(8)\fR.
+.PP
+Multiple layers of dynamic build dependencies may exist in a spec file; the
+presence of specific BuildRequires on the system may yield new BuildRequires
+next time a build is performed with the same source package.
+The easiest way to ensure that all dynamic build dependencies are satisfied is
+to run the \fB-br\fR command, install the new dependencies of the
+\fIbuildreqs.nosrc.rpm\fR package and repeat the whole procedure until
+\fBrpmbuild\fR no longer exits with code 11.
+.PP
+If the \fB-br\fR command is coupled with \fB\-\-nodeps\fR, exit code 11 is
+always returned and a \fIbuildreqs.nosrc.rpm\fR package is always created.
 .SS "SHOWRC"
 .PP
 The command
