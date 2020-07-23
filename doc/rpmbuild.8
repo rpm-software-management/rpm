@@ -127,44 +127,53 @@ The general form of an rpm build command is
 
 .PP
 The argument used is \fB-b\fR if a spec file is being
-used to build the package, \fB-r\fR if a source package is to be rebuild
+used to build the package, \fB-r\fR if a source package is to be rebuilt
 and \fB-t\fR if \fBrpmbuild\fR
 should look inside of a (possibly compressed) tar file for
-the spec file to use. After the first argument, the next
-character (\fISTAGE\fR) specifies the stages
-of building and packaging to be done and is one of:
+the spec file to use.
+.PP
+Packages are built in a number of stages.
+The first six correspond to the following sections in a spec file: \fB%prep\fR,
+\fB%generate_buildrequires\fR, \fB%build\fR, \fB%install\fR, \fB%check\fR and
+\fB%clean\fR.
+Finally, binary and source packages are created in an assembly stage.
+.PP
+The \fISTAGE\fR character specifies the stage to finish with (after doing all
+the stages preceding it), and is one of:
 .TP
 \fB-ba\fR
-Build binary and source packages (after doing the %prep, %build, and
-%install stages).
+Perform a full build - executes up to and including the assembly stage.
+In most cases, this is the option to choose.
 .TP
 \fB-bb\fR
-Build a binary package (after doing the %prep, %build, and %install
-stages).
+Build just the binary packages - executes up to and including the assembly
+stage, but without creating the source package.
 .TP
 \fB-bp\fR
-Executes the "%prep" stage from the spec file. Normally this
-involves unpacking the sources and applying any patches.
+Unpack the sources and apply any patches - executes the %prep stage only.
 .TP
 \fB-bc\fR
-Do the "%build" stage from the spec file (after doing the %prep stage).
+Compile the sources - executes up to and including the %build stage.
 This generally involves the equivalent of a "make".
 .TP
 \fB-bi\fR
-Do the "%install" stage from the spec file (after doing the %prep and
-%build stages).  This generally involves the equivalent of a
-"make install".
+Install the binaries into the build root - executes up to and including the
+%check stage.
+This generally involves the equivalent of a "make install" and "make check".
 .TP
 \fB-bl\fR
-Do a "list check".  The "%files" section from the spec file is
-macro expanded, and checks are made to verify that each file
-exists.
+Do a "list check" - the %files section from the spec file is macro expanded,
+and checks are made to verify that each file exists.
 .TP
 \fB-bs\fR
-Build just the source package.
+Build just the source package - skips straight to the assembly stage, without
+executing any of the preceding stages or creating binary packages.
 .TP
 \fB-br\fR
-Build just the source package - but calculate and include the dynamic build requires.
+Build just the source package, but also parse and include dynamic build
+dependencies - executes up to and including the %generate_buildrequires stage
+and then skips straight to the assembly stage, without creating binary
+packages.
 .PP
 The following options may also be used:
 .TP
