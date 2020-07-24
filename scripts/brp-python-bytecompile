@@ -57,6 +57,10 @@ EOF
 # For example, below /usr/lib/python2.6/, we're targeting /usr/bin/python2.6
 # and below /usr/lib/python3.1/, we're targeting /usr/bin/python3.1
 
+# Disable Python hash seed randomization
+# This helps to make byte-compilation more reproducible
+export PYTHONHASHSEED=0
+
 shopt -s nullglob
 for python_libdir in `find "$RPM_BUILD_ROOT" -type d|grep -E "/usr/lib(64)?/python[0-9]\.[0-9]$"`;
 do
