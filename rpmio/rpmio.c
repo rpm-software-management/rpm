@@ -1087,8 +1087,12 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
 	    continue;
 	case 'T':
 	    c = *s++;
-	    if (c >= (int)'0' && c <= (int)'9')
+	    if (c >= (int)'0' && c <= (int)'9') {
 		threads = strtol(s-1, (char **)&s, 10);
+		/* T0 means automatic detection */
+		if (threads == 0)
+		  threads = -1;
+	    }
 	    continue;
 	default:
 	    if (c >= (int)'0' && c <= (int)'9') {
@@ -1127,9 +1131,11 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
 	    goto err;
 	}
 
-	if (threads > 0)
+	threads = get_compression_threads(threads);
+	if (threads > 0) {
 	    if (ZSTD_isError (ZSTD_CCtx_setParameter(_stream, ZSTD_c_nbWorkers, threads)))
 		rpmlog(RPMLOG_DEBUG, "zstd library does not support multi-threading\n");
+	}
 
 	nb = ZSTD_CStreamOutSize();
     }
