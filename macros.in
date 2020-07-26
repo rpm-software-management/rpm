@@ -351,9 +351,12 @@ package or when debugging this package.\
 #		"w9.bzdio"	bzip2 level 9.
 #		"w6.xzdio"	xz level 6, xz's default.
 #		"w7T16.xzdio"	xz level 7 using 16 threads
+#		"w7T0.xzdio"	xz level 7 using %{getncpus} threads
+#		"w7T.xzdio"	xz level 7 using %{getncpus} threads
 #		"w6.lzdio"	lzma-alone level 6, lzma's default
 #		"w3.zstdio"	zstd level 3, zstd's default
 #		"w19T8.zstdio"	zstd level 19 using 8 threads
+#		"w7T0.zstdio"	zstd level 7 using %{getncpus} threads
 #		"w.ufdio"	uncompressed
 #
 #%_source_payload	w9.gzdio
