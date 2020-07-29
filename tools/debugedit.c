@@ -2100,385 +2100,385 @@ edit_dwarf2 (DSO *dso)
       return 1;
     }
 
-  if (debug_sections[DEBUG_INFO].data != NULL)
+  if (debug_sections[DEBUG_INFO].data == NULL)
+    return 0;
+
+  unsigned char *ptr, *endcu, *endsec;
+  uint32_t value;
+  htab_t abbrev;
+  struct abbrev_tag tag, *t;
+  int phase;
+  bool info_rel_updated = false;
+  bool macro_rel_updated = false;
+
+  for (phase = 0; phase < 2; phase++)
     {
-      unsigned char *ptr, *endcu, *endsec;
-      uint32_t value;
-      htab_t abbrev;
-      struct abbrev_tag tag, *t;
-      int phase;
-      bool info_rel_updated = false;
-      bool macro_rel_updated = false;
+      /* If we don't need to update anyhing, skip phase 1. */
+      if (phase == 1
+	  && !need_strp_update
+	  && !need_string_replacement
+	  && !need_stmt_update)
+	break;
 
-      for (phase = 0; phase < 2; phase++)
+      ptr = debug_sections[DEBUG_INFO].data;
+      setup_relbuf(dso, &debug_sections[DEBUG_INFO], &reltype);
+      rel_updated = false;
+      endsec = ptr + debug_sections[DEBUG_INFO].size;
+      while (ptr < endsec)
 	{
-	  /* If we don't need to update anyhing, skip phase 1. */
-	  if (phase == 1
-	      && !need_strp_update
-	      && !need_string_replacement
-	      && !need_stmt_update)
-	    break;
-
-	  ptr = debug_sections[DEBUG_INFO].data;
-	  setup_relbuf(dso, &debug_sections[DEBUG_INFO], &reltype);
-	  rel_updated = false;
-	  endsec = ptr + debug_sections[DEBUG_INFO].size;
-	  while (ptr < endsec)
+	  if (ptr + 11 > endsec)
 	    {
-	      if (ptr + 11 > endsec)
-		{
-		  error (0, 0, "%s: .debug_info CU header too small",
-			 dso->filename);
-		  return 1;
-		}
-
-	      endcu = ptr + 4;
-	      endcu += read_32 (ptr);
-	      if (endcu == ptr + 0xffffffff)
-		{
-		  error (0, 0, "%s: 64-bit DWARF not supported", dso->filename);
-		  return 1;
-		}
-
-	      if (endcu > endsec)
-		{
-		  error (0, 0, "%s: .debug_info too small", dso->filename);
-		  return 1;
-		}
-
-	      cu_version = read_16 (ptr);
-	      if (cu_version != 2 && cu_version != 3 && cu_version != 4)
-		{
-		  error (0, 0, "%s: DWARF version %d unhandled", dso->filename,
-			 cu_version);
-		  return 1;
-		}
-
-	      value = read_32_relocated (ptr);
-	      if (value >= debug_sections[DEBUG_ABBREV].size)
-		{
-		  if (debug_sections[DEBUG_ABBREV].data == NULL)
-		    error (0, 0, "%s: .debug_abbrev not present", dso->filename);
-		  else
-		    error (0, 0, "%s: DWARF CU abbrev offset too large",
-			   dso->filename);
-		  return 1;
-		}
-
-	      if (ptr_size == 0)
-		{
-		  ptr_size = read_8 (ptr);
-		  if (ptr_size != 4 && ptr_size != 8)
-		    {
-		      error (0, 0, "%s: Invalid DWARF pointer size %d",
-			     dso->filename, ptr_size);
-		      return 1;
-		    }
-		}
-	      else if (read_8 (ptr) != ptr_size)
-		{
-		  error (0, 0, "%s: DWARF pointer size differs between CUs",
-			 dso->filename);
-		  return 1;
-		}
-
-	      abbrev = read_abbrev (dso,
-				    debug_sections[DEBUG_ABBREV].data + value);
-	      if (abbrev == NULL)
-		return 1;
-
-	      while (ptr < endcu)
-		{
-		  tag.entry = read_uleb128 (ptr);
-		  if (tag.entry == 0)
-		    continue;
-		  t = htab_find_with_hash (abbrev, &tag, tag.entry);
-		  if (t == NULL)
-		    {
-		      error (0, 0, "%s: Could not find DWARF abbreviation %d",
-			     dso->filename, tag.entry);
-		      htab_delete (abbrev);
-		      return 1;
-		    }
-
-		  ptr = edit_attributes (dso, ptr, t, phase);
-		  if (ptr == NULL)
-		    break;
-		}
-
-	      htab_delete (abbrev);
+	      error (0, 0, "%s: .debug_info CU header too small",
+		     dso->filename);
+	      return 1;
 	    }
 
-	  /* Remember whether any .debug_info relocations might need
-	     to be updated. */
-	  info_rel_updated = rel_updated;
-
-	  /* We might have to recalculate/rewrite the debug_line
-	     section.  We need to do that before going into phase one
-	     so we have all new offsets.  We do this separately from
-	     scanning the dirs/file names because the DW_AT_stmt_lists
-	     might not be in order or skip some padding we might have
-	     to (re)move. */
-	  if (phase == 0 && need_stmt_update)
+	  endcu = ptr + 4;
+	  endcu += read_32 (ptr);
+	  if (endcu == ptr + 0xffffffff)
 	    {
-	      edit_dwarf2_line (dso);
+	      error (0, 0, "%s: 64-bit DWARF not supported", dso->filename);
+	      return 1;
+	    }
 
-	      /* The line table programs will be moved
-		 forward/backwards a bit in the new data. Update the
-		 debug_line relocations to the new offsets. */
-	      int rndx = debug_sections[DEBUG_LINE].relsec;
-	      if (rndx != 0)
+	  if (endcu > endsec)
+	    {
+	      error (0, 0, "%s: .debug_info too small", dso->filename);
+	      return 1;
+	    }
+
+	  cu_version = read_16 (ptr);
+	  if (cu_version != 2 && cu_version != 3 && cu_version != 4)
+	    {
+	      error (0, 0, "%s: DWARF version %d unhandled", dso->filename,
+		     cu_version);
+	      return 1;
+	    }
+
+	  value = read_32_relocated (ptr);
+	  if (value >= debug_sections[DEBUG_ABBREV].size)
+	    {
+	      if (debug_sections[DEBUG_ABBREV].data == NULL)
+		error (0, 0, "%s: .debug_abbrev not present", dso->filename);
+	      else
+		error (0, 0, "%s: DWARF CU abbrev offset too large",
+		       dso->filename);
+	      return 1;
+	    }
+
+	  if (ptr_size == 0)
+	    {
+	      ptr_size = read_8 (ptr);
+	      if (ptr_size != 4 && ptr_size != 8)
 		{
-		  LINE_REL *rbuf;
-		  size_t rels;
-		  Elf_Data *rdata = elf_getdata (dso->scn[rndx], NULL);
-		  int rtype = dso->shdr[rndx].sh_type;
-		  rels = dso->shdr[rndx].sh_size / dso->shdr[rndx].sh_entsize;
-		  rbuf = malloc (rels * sizeof (LINE_REL));
-		  if (rbuf == NULL)
-		    error (1, errno, "%s: Could not allocate line relocations",
-			   dso->filename);
-
-		  /* Sort them by offset into section. */
-		  for (size_t i = 0; i < rels; i++)
-		    {
-		      if (rtype == SHT_RELA)
-			{
-			  GElf_Rela rela;
-			  if (gelf_getrela (rdata, i, &rela) == NULL)
-			    error (1, 0, "Couldn't get relocation: %s",
-				   elf_errmsg (-1));
-			  rbuf[i].r_offset = rela.r_offset;
-			  rbuf[i].ndx = i;
-			}
-		      else
-			{
-			  GElf_Rel rel;
-			  if (gelf_getrel (rdata, i, &rel) == NULL)
-			    error (1, 0, "Couldn't get relocation: %s",
-				   elf_errmsg (-1));
-			  rbuf[i].r_offset = rel.r_offset;
-			  rbuf[i].ndx = i;
-			}
-		    }
-		  qsort (rbuf, rels, sizeof (LINE_REL), line_rel_cmp);
-
-		  size_t lndx = 0;
-		  for (size_t i = 0; i < rels; i++)
-		    {
-		      /* These relocations only happen in ET_REL files
-			 and are section offsets. */
-		      GElf_Addr r_offset;
-		      size_t ndx = rbuf[i].ndx;
-
-		      GElf_Rel rel;
-		      GElf_Rela rela;
-		      if (rtype == SHT_RELA)
-			{
-			  if (gelf_getrela (rdata, ndx, &rela) == NULL)
-			    error (1, 0, "Couldn't get relocation: %s",
-				   elf_errmsg (-1));
-			  r_offset = rela.r_offset;
-			}
-		      else
-			{
-			  if (gelf_getrel (rdata, ndx, &rel) == NULL)
-			    error (1, 0, "Couldn't get relocation: %s",
-				   elf_errmsg (-1));
-			  r_offset = rel.r_offset;
-			}
-
-		      while (lndx < dso->lines.used
-			     && r_offset > (dso->lines.table[lndx].old_idx
-					    + 4
-					    + dso->lines.table[lndx].unit_length))
-			lndx++;
-
-		      if (lndx >= dso->lines.used)
-			error (1, 0,
-			       ".debug_line relocation offset out of range");
-
-		      /* Offset (pointing into the line program) moves
-			 from old to new index including the header
-			 size diff. */
-		      r_offset += (ssize_t)((dso->lines.table[lndx].new_idx
-					     - dso->lines.table[lndx].old_idx)
-					    + dso->lines.table[lndx].size_diff);
-
-		      if (rtype == SHT_RELA)
-			{
-			  rela.r_offset = r_offset;
-			  if (gelf_update_rela (rdata, ndx, &rela) == 0)
-			    error (1, 0, "Couldn't update relocation: %s",
-				   elf_errmsg (-1));
-			}
-		      else
-			{
-			  rel.r_offset = r_offset;
-			  if (gelf_update_rel (rdata, ndx, &rel) == 0)
-			    error (1, 0, "Couldn't update relocation: %s",
-				   elf_errmsg (-1));
-			}
-		    }
-
-		  elf_flagdata (rdata, ELF_C_SET, ELF_F_DIRTY);
-		  free (rbuf);
+		  error (0, 0, "%s: Invalid DWARF pointer size %d",
+			 dso->filename, ptr_size);
+		  return 1;
 		}
 	    }
-
-	  /* The .debug_macro section also contains offsets into the
-	     .debug_str section and references to the .debug_line
-	     tables, so we need to update those as well if we update
-	     the strings or the stmts.  */
-	  if ((need_strp_update || need_stmt_update)
-	      && debug_sections[DEBUG_MACRO].data)
+	  else if (read_8 (ptr) != ptr_size)
 	    {
-	      /* There might be multiple (COMDAT) .debug_macro sections.  */
-	      struct debug_section *macro_sec = &debug_sections[DEBUG_MACRO];
-	      while (macro_sec != NULL)
+	      error (0, 0, "%s: DWARF pointer size differs between CUs",
+		     dso->filename);
+	      return 1;
+	    }
+
+	  abbrev = read_abbrev (dso,
+				debug_sections[DEBUG_ABBREV].data + value);
+	  if (abbrev == NULL)
+	    return 1;
+
+	  while (ptr < endcu)
+	    {
+	      tag.entry = read_uleb128 (ptr);
+	      if (tag.entry == 0)
+		continue;
+	      t = htab_find_with_hash (abbrev, &tag, tag.entry);
+	      if (t == NULL)
 		{
-		  setup_relbuf(dso, macro_sec, &reltype);
-		  rel_updated = false;
-
-		  ptr = macro_sec->data;
-		  endsec = ptr + macro_sec->size;
-		  int op = 0, macro_version, macro_flags;
-		  int offset_len = 4, line_offset = 0;
-
-		  while (ptr < endsec)
-		    {
-		      if (!op)
-			{
-			  macro_version = read_16 (ptr);
-			  macro_flags = read_8 (ptr);
-			  if (macro_version < 4 || macro_version > 5)
-			    error (1, 0, "unhandled .debug_macro version: %d",
-				   macro_version);
-			  if ((macro_flags & ~2) != 0)
-			    error (1, 0, "unhandled .debug_macro flags: 0x%x",
-				   macro_flags);
-
-			  offset_len = (macro_flags & 0x01) ? 8 : 4;
-			  line_offset = (macro_flags & 0x02) ? 1 : 0;
-
-			  if (offset_len != 4)
-			    error (0, 1,
-				   "Cannot handle 8 byte macro offsets: %s",
-				   dso->filename);
-
-			  /* Update the line_offset if it is there.  */
-			  if (line_offset)
-			    {
-			      if (phase == 0)
-				ptr += offset_len;
-			      else
-				{
-				  size_t idx, new_idx;
-				  idx = do_read_32_relocated (ptr);
-				  new_idx = find_new_list_offs (&dso->lines,
-								idx);
-				  write_32_relocated (ptr, new_idx);
-				}
-			    }
-			}
-
-		      op = read_8 (ptr);
-		      if (!op)
-			continue;
-		      switch(op)
-			{
-			case DW_MACRO_GNU_define:
-			case DW_MACRO_GNU_undef:
-			  read_uleb128 (ptr);
-			  ptr = ((unsigned char *) strchr ((char *) ptr, '\0')
-				 + 1);
-			  break;
-			case DW_MACRO_GNU_start_file:
-			  read_uleb128 (ptr);
-			  read_uleb128 (ptr);
-			  break;
-			case DW_MACRO_GNU_end_file:
-			  break;
-			case DW_MACRO_GNU_define_indirect:
-			case DW_MACRO_GNU_undef_indirect:
-			  read_uleb128 (ptr);
-			  if (phase == 0)
-			    {
-			      size_t idx = read_32_relocated (ptr);
-			      record_existing_string_entry_idx (&dso->strings,
-								idx);
-			    }
-			  else
-			    {
-			      struct stridxentry *entry;
-			      size_t idx, new_idx;
-			      idx = do_read_32_relocated (ptr);
-			      entry = string_find_entry (&dso->strings, idx);
-			      new_idx = strent_offset (entry->entry);
-			      write_32_relocated (ptr, new_idx);
-			    }
-			  break;
-			case DW_MACRO_GNU_transparent_include:
-			  ptr += offset_len;
-			  break;
-			default:
-			  error (1, 0, "Unhandled DW_MACRO op 0x%x", op);
-			  break;
-			}
-		    }
-
-		  if (rel_updated)
-		    macro_rel_updated = true;
-		  macro_sec = macro_sec->next;
+		  error (0, 0, "%s: Could not find DWARF abbreviation %d",
+			 dso->filename, tag.entry);
+		  htab_delete (abbrev);
+		  return 1;
 		}
+
+	      ptr = edit_attributes (dso, ptr, t, phase);
+	      if (ptr == NULL)
+		break;
 	    }
 
-	  /* Same for the debug_str section. Make sure everything is
-	     in place for phase 1 updating of debug_info
-	     references. */
-	  if (phase == 0 && need_strp_update)
-	    {
-	      Strtab *strtab = dso->strings.str_tab;
-	      Elf_Data *strdata = debug_sections[DEBUG_STR].elf_data;
-	      int strndx = debug_sections[DEBUG_STR].sec;
-	      Elf_Scn *strscn = dso->scn[strndx];
-
-	      /* Out with the old. */
-	      strdata->d_size = 0;
-	      /* In with the new. */
-	      strdata = elf_newdata (strscn);
-
-	      /* We really should check whether we had enough memory,
-		 but the old ebl version will just abort on out of
-		 memory... */
-	      strtab_finalize (strtab, strdata);
-	      debug_sections[DEBUG_STR].size = strdata->d_size;
-	      dso->strings.str_buf = strdata->d_buf;
-	    }
-
+	  htab_delete (abbrev);
 	}
 
-      /* After phase 1 we might have rewritten the debug_info with
-	 new strp, strings and/or linep offsets.  */
-      if (need_strp_update || need_string_replacement || need_stmt_update)
-	dirty_section (DEBUG_INFO);
-      if (need_strp_update || need_stmt_update)
-	dirty_section (DEBUG_MACRO);
-      if (need_stmt_update)
-	dirty_section (DEBUG_LINE);
+      /* Remember whether any .debug_info relocations might need
+	 to be updated. */
+      info_rel_updated = rel_updated;
 
-      /* Update any relocations addends we might have touched. */
-      if (info_rel_updated)
-	update_rela_data (dso, &debug_sections[DEBUG_INFO]);
-
-      if (macro_rel_updated)
+      /* We might have to recalculate/rewrite the debug_line
+	 section.  We need to do that before going into phase one
+	 so we have all new offsets.  We do this separately from
+	 scanning the dirs/file names because the DW_AT_stmt_lists
+	 might not be in order or skip some padding we might have
+	 to (re)move. */
+      if (phase == 0 && need_stmt_update)
 	{
+	  edit_dwarf2_line (dso);
+
+	  /* The line table programs will be moved
+	     forward/backwards a bit in the new data. Update the
+	     debug_line relocations to the new offsets. */
+	  int rndx = debug_sections[DEBUG_LINE].relsec;
+	  if (rndx != 0)
+	    {
+	      LINE_REL *rbuf;
+	      size_t rels;
+	      Elf_Data *rdata = elf_getdata (dso->scn[rndx], NULL);
+	      int rtype = dso->shdr[rndx].sh_type;
+	      rels = dso->shdr[rndx].sh_size / dso->shdr[rndx].sh_entsize;
+	      rbuf = malloc (rels * sizeof (LINE_REL));
+	      if (rbuf == NULL)
+		error (1, errno, "%s: Could not allocate line relocations",
+		       dso->filename);
+
+	      /* Sort them by offset into section. */
+	      for (size_t i = 0; i < rels; i++)
+		{
+		  if (rtype == SHT_RELA)
+		    {
+		      GElf_Rela rela;
+		      if (gelf_getrela (rdata, i, &rela) == NULL)
+			error (1, 0, "Couldn't get relocation: %s",
+			       elf_errmsg (-1));
+		      rbuf[i].r_offset = rela.r_offset;
+		      rbuf[i].ndx = i;
+		    }
+		  else
+		    {
+		      GElf_Rel rel;
+		      if (gelf_getrel (rdata, i, &rel) == NULL)
+			error (1, 0, "Couldn't get relocation: %s",
+			       elf_errmsg (-1));
+		      rbuf[i].r_offset = rel.r_offset;
+		      rbuf[i].ndx = i;
+		    }
+		}
+	      qsort (rbuf, rels, sizeof (LINE_REL), line_rel_cmp);
+
+	      size_t lndx = 0;
+	      for (size_t i = 0; i < rels; i++)
+		{
+		  /* These relocations only happen in ET_REL files
+		     and are section offsets. */
+		  GElf_Addr r_offset;
+		  size_t ndx = rbuf[i].ndx;
+
+		  GElf_Rel rel;
+		  GElf_Rela rela;
+		  if (rtype == SHT_RELA)
+		    {
+		      if (gelf_getrela (rdata, ndx, &rela) == NULL)
+			error (1, 0, "Couldn't get relocation: %s",
+			       elf_errmsg (-1));
+		      r_offset = rela.r_offset;
+		    }
+		  else
+		    {
+		      if (gelf_getrel (rdata, ndx, &rel) == NULL)
+			error (1, 0, "Couldn't get relocation: %s",
+			       elf_errmsg (-1));
+		      r_offset = rel.r_offset;
+		    }
+
+		  while (lndx < dso->lines.used
+			 && r_offset > (dso->lines.table[lndx].old_idx
+					+ 4
+					+ dso->lines.table[lndx].unit_length))
+		    lndx++;
+
+		  if (lndx >= dso->lines.used)
+		    error (1, 0,
+			   ".debug_line relocation offset out of range");
+
+		  /* Offset (pointing into the line program) moves
+		     from old to new index including the header
+		     size diff. */
+		  r_offset += (ssize_t)((dso->lines.table[lndx].new_idx
+					 - dso->lines.table[lndx].old_idx)
+					+ dso->lines.table[lndx].size_diff);
+
+		  if (rtype == SHT_RELA)
+		    {
+		      rela.r_offset = r_offset;
+		      if (gelf_update_rela (rdata, ndx, &rela) == 0)
+			error (1, 0, "Couldn't update relocation: %s",
+			       elf_errmsg (-1));
+		    }
+		  else
+		    {
+		      rel.r_offset = r_offset;
+		      if (gelf_update_rel (rdata, ndx, &rel) == 0)
+			error (1, 0, "Couldn't update relocation: %s",
+			       elf_errmsg (-1));
+		    }
+		}
+
+	      elf_flagdata (rdata, ELF_C_SET, ELF_F_DIRTY);
+	      free (rbuf);
+	    }
+	}
+
+      /* The .debug_macro section also contains offsets into the
+	 .debug_str section and references to the .debug_line
+	 tables, so we need to update those as well if we update
+	 the strings or the stmts.  */
+      if ((need_strp_update || need_stmt_update)
+	  && debug_sections[DEBUG_MACRO].data)
+	{
+	  /* There might be multiple (COMDAT) .debug_macro sections.  */
 	  struct debug_section *macro_sec = &debug_sections[DEBUG_MACRO];
 	  while (macro_sec != NULL)
 	    {
-	      update_rela_data (dso, macro_sec);
+	      setup_relbuf(dso, macro_sec, &reltype);
+	      rel_updated = false;
+
+	      ptr = macro_sec->data;
+	      endsec = ptr + macro_sec->size;
+	      int op = 0, macro_version, macro_flags;
+	      int offset_len = 4, line_offset = 0;
+
+	      while (ptr < endsec)
+		{
+		  if (!op)
+		    {
+		      macro_version = read_16 (ptr);
+		      macro_flags = read_8 (ptr);
+		      if (macro_version < 4 || macro_version > 5)
+			error (1, 0, "unhandled .debug_macro version: %d",
+			       macro_version);
+		      if ((macro_flags & ~2) != 0)
+			error (1, 0, "unhandled .debug_macro flags: 0x%x",
+			       macro_flags);
+
+		      offset_len = (macro_flags & 0x01) ? 8 : 4;
+		      line_offset = (macro_flags & 0x02) ? 1 : 0;
+
+		      if (offset_len != 4)
+			error (0, 1,
+			       "Cannot handle 8 byte macro offsets: %s",
+			       dso->filename);
+
+		      /* Update the line_offset if it is there.  */
+		      if (line_offset)
+			{
+			  if (phase == 0)
+			    ptr += offset_len;
+			  else
+			    {
+			      size_t idx, new_idx;
+			      idx = do_read_32_relocated (ptr);
+			      new_idx = find_new_list_offs (&dso->lines,
+							    idx);
+			      write_32_relocated (ptr, new_idx);
+			    }
+			}
+		    }
+
+		  op = read_8 (ptr);
+		  if (!op)
+		    continue;
+		  switch(op)
+		    {
+		    case DW_MACRO_GNU_define:
+		    case DW_MACRO_GNU_undef:
+		      read_uleb128 (ptr);
+		      ptr = ((unsigned char *) strchr ((char *) ptr, '\0')
+			     + 1);
+		      break;
+		    case DW_MACRO_GNU_start_file:
+		      read_uleb128 (ptr);
+		      read_uleb128 (ptr);
+		      break;
+		    case DW_MACRO_GNU_end_file:
+		      break;
+		    case DW_MACRO_GNU_define_indirect:
+		    case DW_MACRO_GNU_undef_indirect:
+		      read_uleb128 (ptr);
+		      if (phase == 0)
+			{
+			  size_t idx = read_32_relocated (ptr);
+			  record_existing_string_entry_idx (&dso->strings,
+							    idx);
+			}
+		      else
+			{
+			  struct stridxentry *entry;
+			  size_t idx, new_idx;
+			  idx = do_read_32_relocated (ptr);
+			  entry = string_find_entry (&dso->strings, idx);
+			  new_idx = strent_offset (entry->entry);
+			  write_32_relocated (ptr, new_idx);
+			}
+		      break;
+		    case DW_MACRO_GNU_transparent_include:
+		      ptr += offset_len;
+		      break;
+		    default:
+		      error (1, 0, "Unhandled DW_MACRO op 0x%x", op);
+		      break;
+		    }
+		}
+
+	      if (rel_updated)
+		macro_rel_updated = true;
 	      macro_sec = macro_sec->next;
 	    }
+	}
+
+      /* Same for the debug_str section. Make sure everything is
+	 in place for phase 1 updating of debug_info
+	 references. */
+      if (phase == 0 && need_strp_update)
+	{
+	  Strtab *strtab = dso->strings.str_tab;
+	  Elf_Data *strdata = debug_sections[DEBUG_STR].elf_data;
+	  int strndx = debug_sections[DEBUG_STR].sec;
+	  Elf_Scn *strscn = dso->scn[strndx];
+
+	  /* Out with the old. */
+	  strdata->d_size = 0;
+	  /* In with the new. */
+	  strdata = elf_newdata (strscn);
+
+	  /* We really should check whether we had enough memory,
+	     but the old ebl version will just abort on out of
+	     memory... */
+	  strtab_finalize (strtab, strdata);
+	  debug_sections[DEBUG_STR].size = strdata->d_size;
+	  dso->strings.str_buf = strdata->d_buf;
+	}
+
+    }
+
+  /* After phase 1 we might have rewritten the debug_info with
+     new strp, strings and/or linep offsets.  */
+  if (need_strp_update || need_string_replacement || need_stmt_update)
+    dirty_section (DEBUG_INFO);
+  if (need_strp_update || need_stmt_update)
+    dirty_section (DEBUG_MACRO);
+  if (need_stmt_update)
+    dirty_section (DEBUG_LINE);
+
+  /* Update any relocations addends we might have touched. */
+  if (info_rel_updated)
+    update_rela_data (dso, &debug_sections[DEBUG_INFO]);
+
+  if (macro_rel_updated)
+    {
+      struct debug_section *macro_sec = &debug_sections[DEBUG_MACRO];
+      while (macro_sec != NULL)
+	{
+	  update_rela_data (dso, macro_sec);
+	  macro_sec = macro_sec->next;
 	}
     }
 
