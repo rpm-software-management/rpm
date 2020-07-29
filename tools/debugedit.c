@@ -1459,7 +1459,7 @@ edit_dwarf2_line (DSO *dso)
    adjustments needed in the debug_list data structures. Returns true
    if line_table needs to be rewrite either the dir or file paths. */
 static bool
-read_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir)
+read_dwarf2_line (DSO *dso, int info_scn_ix, uint32_t off, char *comp_dir)
 {
   unsigned char *ptr, *dir;
   unsigned char **dirt;
@@ -1470,7 +1470,7 @@ read_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir)
   if (get_line_table (dso, off, &table) == false
       || table == NULL)
     {
-      if (table != NULL)
+      if (table != NULL && info_scn_ix == DEBUG_INFO)
 	error (0, 0, ".debug_line offset 0x%x referenced multiple times",
 	       off);
       return false;
@@ -1644,7 +1644,8 @@ find_new_list_offs (struct debug_lines *lines, size_t idx)
    abbrev data is consumed. In phase zero data is collected, in phase one
    data might be replaced/updated.  */
 static unsigned char *
-edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
+edit_attributes (DSO *dso, int info_scn_ix, unsigned char *ptr,
+		 struct abbrev_tag *t, int phase)
 {
   int i;
   uint32_t list_offs;
@@ -1942,7 +1943,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
      separately (at the end of phase zero after all CUs have been
      scanned in dwarf2_edit). */
   if (phase == 0 && found_list_offs
-      && read_dwarf2_line (dso, list_offs, comp_dir))
+      && read_dwarf2_line (dso, info_scn_ix, list_offs, comp_dir))
     need_stmt_update = true;
 
   free (comp_dir);
@@ -1960,6 +1961,114 @@ line_rel_cmp (const void *a, const void *b)
 
   if (rela->r_offset > relb->r_offset)
     return 1;
+
+  return 0;
+}
+
+static int
+edit_info (DSO *dso, int phase, int scn_ix)
+{
+  unsigned char *ptr, *endcu, *endsec;
+  uint32_t value;
+  htab_t abbrev;
+  struct abbrev_tag tag, *t;
+
+  assert (scn_ix == DEBUG_INFO || scn_ix == DEBUG_TYPES);
+  ptr = debug_sections[scn_ix].data;
+  if (ptr == NULL)
+    return 0;
+
+  setup_relbuf(dso, &debug_sections[scn_ix], &reltype);
+  endsec = ptr + debug_sections[scn_ix].size;
+  while (ptr < endsec)
+    {
+      if (ptr + (scn_ix == DEBUG_INFO ? 11 : 23) > endsec)
+	{
+	  error (0, 0, "%s: %s CU header too small",
+		 dso->filename, debug_sections[scn_ix].name);
+	  return 1;
+	}
+
+      endcu = ptr + 4;
+      endcu += read_32 (ptr);
+      if (endcu == ptr + 0xffffffff)
+	{
+	  error (0, 0, "%s: 64-bit DWARF not supported", dso->filename);
+	  return 1;
+	}
+
+      if (endcu > endsec)
+	{
+	  error (0, 0, "%s: %s too small", dso->filename,
+		 debug_sections[scn_ix].name);
+	  return 1;
+	}
+
+      cu_version = read_16 (ptr);
+      if (cu_version != 2 && cu_version != 3 && cu_version != 4)
+	{
+	  error (0, 0, "%s: DWARF version %d unhandled", dso->filename,
+		 cu_version);
+	  return 1;
+	}
+
+      value = read_32_relocated (ptr);
+      if (value >= debug_sections[DEBUG_ABBREV].size)
+	{
+	  if (debug_sections[DEBUG_ABBREV].data == NULL)
+	    error (0, 0, "%s: .debug_abbrev not present", dso->filename);
+	  else
+	    error (0, 0, "%s: DWARF CU abbrev offset too large",
+		   dso->filename);
+	  return 1;
+	}
+
+      if (ptr_size == 0)
+	{
+	  ptr_size = read_8 (ptr);
+	  if (ptr_size != 4 && ptr_size != 8)
+	    {
+	      error (0, 0, "%s: Invalid DWARF pointer size %d",
+		     dso->filename, ptr_size);
+	      return 1;
+	    }
+	}
+      else if (read_8 (ptr) != ptr_size)
+	{
+	  error (0, 0, "%s: DWARF pointer size differs between CUs",
+		 dso->filename);
+	  return 1;
+	}
+
+      if (scn_ix == DEBUG_TYPES)
+	ptr += 12; /* Skip type_signature and type_offset.  */
+
+      abbrev = read_abbrev (dso,
+			    debug_sections[DEBUG_ABBREV].data + value);
+      if (abbrev == NULL)
+	return 1;
+
+      while (ptr < endcu)
+	{
+	  tag.entry = read_uleb128 (ptr);
+	  if (tag.entry == 0)
+	    continue;
+	  t = htab_find_with_hash (abbrev, &tag, tag.entry);
+	  if (t == NULL)
+	    {
+	      error (0, 0, "%s: Could not find DWARF abbreviation %d",
+		     dso->filename, tag.entry);
+	      htab_delete (abbrev);
+	      return 1;
+	    }
+
+	  ptr = edit_attributes (dso, scn_ix, ptr, t, phase);
+	  if (ptr == NULL)
+	    break;
+	}
+
+      htab_delete (abbrev);
+    }
 
   return 0;
 }
@@ -2103,12 +2212,10 @@ edit_dwarf2 (DSO *dso)
   if (debug_sections[DEBUG_INFO].data == NULL)
     return 0;
 
-  unsigned char *ptr, *endcu, *endsec;
-  uint32_t value;
-  htab_t abbrev;
-  struct abbrev_tag tag, *t;
+  unsigned char *ptr, *endsec;
   int phase;
   bool info_rel_updated = false;
+  bool types_rel_updated = false;
   bool macro_rel_updated = false;
 
   for (phase = 0; phase < 2; phase++)
@@ -2120,99 +2227,20 @@ edit_dwarf2 (DSO *dso)
 	  && !need_stmt_update)
 	break;
 
-      ptr = debug_sections[DEBUG_INFO].data;
-      setup_relbuf(dso, &debug_sections[DEBUG_INFO], &reltype);
       rel_updated = false;
-      endsec = ptr + debug_sections[DEBUG_INFO].size;
-      while (ptr < endsec)
-	{
-	  if (ptr + 11 > endsec)
-	    {
-	      error (0, 0, "%s: .debug_info CU header too small",
-		     dso->filename);
-	      return 1;
-	    }
-
-	  endcu = ptr + 4;
-	  endcu += read_32 (ptr);
-	  if (endcu == ptr + 0xffffffff)
-	    {
-	      error (0, 0, "%s: 64-bit DWARF not supported", dso->filename);
-	      return 1;
-	    }
-
-	  if (endcu > endsec)
-	    {
-	      error (0, 0, "%s: .debug_info too small", dso->filename);
-	      return 1;
-	    }
-
-	  cu_version = read_16 (ptr);
-	  if (cu_version != 2 && cu_version != 3 && cu_version != 4)
-	    {
-	      error (0, 0, "%s: DWARF version %d unhandled", dso->filename,
-		     cu_version);
-	      return 1;
-	    }
-
-	  value = read_32_relocated (ptr);
-	  if (value >= debug_sections[DEBUG_ABBREV].size)
-	    {
-	      if (debug_sections[DEBUG_ABBREV].data == NULL)
-		error (0, 0, "%s: .debug_abbrev not present", dso->filename);
-	      else
-		error (0, 0, "%s: DWARF CU abbrev offset too large",
-		       dso->filename);
-	      return 1;
-	    }
-
-	  if (ptr_size == 0)
-	    {
-	      ptr_size = read_8 (ptr);
-	      if (ptr_size != 4 && ptr_size != 8)
-		{
-		  error (0, 0, "%s: Invalid DWARF pointer size %d",
-			 dso->filename, ptr_size);
-		  return 1;
-		}
-	    }
-	  else if (read_8 (ptr) != ptr_size)
-	    {
-	      error (0, 0, "%s: DWARF pointer size differs between CUs",
-		     dso->filename);
-	      return 1;
-	    }
-
-	  abbrev = read_abbrev (dso,
-				debug_sections[DEBUG_ABBREV].data + value);
-	  if (abbrev == NULL)
-	    return 1;
-
-	  while (ptr < endcu)
-	    {
-	      tag.entry = read_uleb128 (ptr);
-	      if (tag.entry == 0)
-		continue;
-	      t = htab_find_with_hash (abbrev, &tag, tag.entry);
-	      if (t == NULL)
-		{
-		  error (0, 0, "%s: Could not find DWARF abbreviation %d",
-			 dso->filename, tag.entry);
-		  htab_delete (abbrev);
-		  return 1;
-		}
-
-	      ptr = edit_attributes (dso, ptr, t, phase);
-	      if (ptr == NULL)
-		break;
-	    }
-
-	  htab_delete (abbrev);
-	}
+      if (edit_info (dso, phase, DEBUG_INFO))
+	return 1;
 
       /* Remember whether any .debug_info relocations might need
 	 to be updated. */
       info_rel_updated = rel_updated;
+
+      if (edit_info (dso, phase, DEBUG_TYPES))
+	return 1;
+
+      /* Remember whether any .debug_types relocations might need
+	 to be updated. */
+      types_rel_updated = rel_updated;
 
       /* We might have to recalculate/rewrite the debug_line
 	 section.  We need to do that before going into phase one
@@ -2471,6 +2499,8 @@ edit_dwarf2 (DSO *dso)
   /* Update any relocations addends we might have touched. */
   if (info_rel_updated)
     update_rela_data (dso, &debug_sections[DEBUG_INFO]);
+  if (types_rel_updated)
+    update_rela_data (dso, &debug_sections[DEBUG_TYPES]);
 
   if (macro_rel_updated)
     {
