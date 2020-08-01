@@ -22,6 +22,7 @@ AT_BANNER([RPM debugedit])
 AT_TESTED([debugedit])
 
 # Helper to create some test binaries.
+# Optional parameter can specify additional gcc parameters.
 m4_define([RPM_DEBUGEDIT_SETUP],[[
 # Create some test binaries. Create and build them in different subdirs
 # to make sure they produce different relative/absolute paths.
@@ -36,11 +37,11 @@ cp "${abs_srcdir}"/data/SOURCES/foobar.h subdir_headers
 cp "${abs_srcdir}"/data/SOURCES/baz.c .
 
 # First three object files (foo.o subdir_bar/bar.o and baz.o)
-gcc -g3 -Isubdir_headers -c subdir_foo/foo.c
+gcc -g3 -Isubdir_headers $1 -c subdir_foo/foo.c
 cd subdir_bar
-gcc -g3 -I../subdir_headers -c bar.c
+gcc -g3 -I../subdir_headers $1 -c bar.c
 cd ..
-gcc -g3 -I$(pwd)/subdir_headers -c $(pwd)/baz.c
+gcc -g3 -I$(pwd)/subdir_headers $1 -c $(pwd)/baz.c
 
 # Then a partially linked object file (somewhat like a kernel module).
 # This will still have relocations between the debug sections.
@@ -245,6 +246,98 @@ AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.exe]])
 AT_CHECK([[
 readelf --debug-dump=info ./foobarbaz.exe | grep -E 'DW_AT_(name|comp_dir)' \
         | rev | cut -d: -f1 | rev | cut -c2- | grep ^/foo/bar/baz | sort -u
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# Make sure -fdebug-types-section has updated strings in objects.
+# ===
+AT_SETUP([debugedit .debug_types objects])
+AT_KEYWORDS([debugtypes] [debugedit])
+RPM_DEBUGEDIT_SETUP([-fdebug-types-section])
+
+AT_DATA([expout],
+[st1
+stf
+stringp1
+stringp_foo
+st1
+stb
+stringp1
+stringp_bar
+st1
+stringp1
+stringp_baz
+stz
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foo.o]])
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./subdir_bar/bar.o]])
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./baz.o]])
+AT_CHECK([[
+for i in ./foo.o ./subdir_bar/bar.o ./baz.o;do \
+  readelf --debug-dump=info $i \
+          | awk '/Abbrev Number:.*DW_TAG_type_unit/{p=1}{if(p)print}/^$/{p=0}' \
+          | sed -n 's/^.*> *DW_AT_name *:.* \(stringp[^ ]*\|st.\)$/\1/p' \
+          | sort;
+done
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# Make sure -fdebug-types-section has updated strings in partial linked object.
+# ===
+AT_SETUP([debugedit .debug_types partial])
+AT_KEYWORDS([debugtypes] [debugedit])
+RPM_DEBUGEDIT_SETUP([-fdebug-types-section])
+
+AT_DATA([expout],
+[st1
+stb
+stf
+stringp1
+stringp_bar
+stringp_baz
+stringp_foo
+stz
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.part.o]])
+AT_CHECK([[
+readelf --debug-dump=info ./foobarbaz.part.o \
+        | awk '/Abbrev Number:.*DW_TAG_type_unit/{p=1}{if(p)print}/^$/{p=0}' \
+        | sed -n 's/^.*> *DW_AT_name *:.* \(stringp[^ ]*\|st.\)$/\1/p' \
+        | sort
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# Make sure -fdebug-types-section has updated strings in executable.
+# ===
+AT_SETUP([debugedit .debug_types exe])
+AT_KEYWORDS([debugtypes] [debugedit])
+RPM_DEBUGEDIT_SETUP([-fdebug-types-section])
+
+AT_DATA([expout],
+[st1
+stb
+stf
+stringp1
+stringp_bar
+stringp_baz
+stringp_foo
+stz
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.exe]])
+AT_CHECK([[
+readelf --debug-dump=info ./foobarbaz.exe \
+        | awk '/Abbrev Number:.*DW_TAG_type_unit/{p=1}{if(p)print}/^$/{p=0}' \
+        | sed -n 's/^.*> *DW_AT_name *:.* \(stringp[^ ]*\|st.\)$/\1/p' \
+        | sort
 ]],[0],[expout])
 
 AT_CLEANUP
