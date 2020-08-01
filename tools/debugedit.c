@@ -433,7 +433,8 @@ typedef struct debug_section
     int sec, relsec;
     REL *relbuf;
     REL *relend;
-    struct debug_section *next; /* Only happens for COMDAT .debug_macro.  */
+    /* Only happens for COMDAT .debug_macro and .debug_types.  */
+    struct debug_section *next;
   } debug_section;
 
 static debug_section debug_sections[] =
@@ -1269,7 +1270,9 @@ static int dirty_elf;
 static void
 dirty_section (unsigned int sec)
 {
-  elf_flagdata (debug_sections[sec].elf_data, ELF_C_SET, ELF_F_DIRTY);
+  for (struct debug_section *secp = &debug_sections[sec]; secp != NULL;
+       secp = secp->next)
+    elf_flagdata (secp->elf_data, ELF_C_SET, ELF_F_DIRTY);
   dirty_elf = 1;
 }
 
@@ -1469,12 +1472,7 @@ read_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir)
 
   if (get_line_table (dso, off, &table) == false
       || table == NULL)
-    {
-      if (table != NULL)
-	error (0, 0, ".debug_line offset 0x%x referenced multiple times",
-	       off);
-      return false;
-    }
+    return false;
 
   /* Skip to the directory table. The rest of the header has already
      been read and checked by get_line_table. */
@@ -1965,22 +1963,25 @@ line_rel_cmp (const void *a, const void *b)
 }
 
 static int
-edit_info (DSO *dso, int phase)
+edit_info (DSO *dso, int phase, struct debug_section *sec)
 {
   unsigned char *ptr, *endcu, *endsec;
   uint32_t value;
   htab_t abbrev;
   struct abbrev_tag tag, *t;
 
-  ptr = debug_sections[DEBUG_INFO].data;
-  setup_relbuf(dso, &debug_sections[DEBUG_INFO], &reltype);
-  endsec = ptr + debug_sections[DEBUG_INFO].size;
+  ptr = sec->data;
+  if (ptr == NULL)
+    return 0;
+
+  setup_relbuf(dso, sec, &reltype);
+  endsec = ptr + sec->size;
   while (ptr < endsec)
     {
-      if (ptr + 11 > endsec)
+      if (ptr + (sec == &debug_sections[DEBUG_INFO] ? 11 : 23) > endsec)
 	{
-	  error (0, 0, "%s: .debug_info CU header too small",
-		 dso->filename);
+	  error (0, 0, "%s: %s CU header too small",
+		 dso->filename, sec->name);
 	  return 1;
 	}
 
@@ -1994,7 +1995,7 @@ edit_info (DSO *dso, int phase)
 
       if (endcu > endsec)
 	{
-	  error (0, 0, "%s: .debug_info too small", dso->filename);
+	  error (0, 0, "%s: %s too small", dso->filename, sec->name);
 	  return 1;
 	}
 
@@ -2033,6 +2034,9 @@ edit_info (DSO *dso, int phase)
 		 dso->filename);
 	  return 1;
 	}
+
+      if (sec != &debug_sections[DEBUG_INFO])
+	ptr += 12; /* Skip type_signature and type_offset.  */
 
       abbrev = read_abbrev (dso,
 			    debug_sections[DEBUG_ABBREV].data + value);
@@ -2095,7 +2099,7 @@ edit_dwarf2 (DSO *dso)
 		  struct debug_section *debug_sec = &debug_sections[j];
 		  if (debug_sections[j].data)
 		    {
-		      if (j != DEBUG_MACRO)
+		      if (j != DEBUG_MACRO && j != DEBUG_TYPES)
 			{
 			  error (0, 0, "%s: Found two copies of %s section",
 				 dso->filename, name);
@@ -2103,22 +2107,21 @@ edit_dwarf2 (DSO *dso)
 			}
 		      else
 			{
-			  /* In relocatable files .debug_macro might
-			     appear multiple times as COMDAT
-			     section.  */
+			  /* In relocatable files .debug_macro and .debug_types
+			     might appear multiple times as COMDAT section.  */
 			  struct debug_section *sec;
 			  sec = calloc (sizeof (struct debug_section), 1);
 			  if (sec == NULL)
 			    error (1, errno,
-				   "%s: Could not allocate more macro sections",
-				   dso->filename);
-			  sec->name = ".debug_macro";
+				   "%s: Could not allocate more %s sections",
+				   dso->filename, name);
+			  sec->name = name;
 
-			  struct debug_section *macro_sec = debug_sec;
-			  while (macro_sec->next != NULL)
-			    macro_sec = macro_sec->next;
+			  struct debug_section *multi_sec = debug_sec;
+			  while (multi_sec->next != NULL)
+			    multi_sec = multi_sec->next;
 
-			  macro_sec->next = sec;
+			  multi_sec->next = sec;
 			  debug_sec = sec;
 			}
 		    }
@@ -2155,23 +2158,23 @@ edit_dwarf2 (DSO *dso)
 			  + (dso->shdr[i].sh_type == SHT_RELA),
 			  debug_sections[j].name) == 0)
 	 	{
-		  if (j == DEBUG_MACRO)
+		  if (j == DEBUG_MACRO || j == DEBUG_TYPES)
 		    {
 		      /* Pick the correct one.  */
 		      int rel_target = dso->shdr[i].sh_info;
-		      struct debug_section *macro_sec = &debug_sections[j];
-		      while (macro_sec != NULL)
+		      struct debug_section *multi_sec = &debug_sections[j];
+		      while (multi_sec != NULL)
 			{
-			  if (macro_sec->sec == rel_target)
+			  if (multi_sec->sec == rel_target)
 			    {
-			      macro_sec->relsec = i;
+			      multi_sec->relsec = i;
 			      break;
 			    }
-			  macro_sec = macro_sec->next;
+			  multi_sec = multi_sec->next;
 			}
-		      if (macro_sec == NULL)
-			error (0, 1, "No .debug_macro reloc section: %s",
-			       dso->filename);
+		      if (multi_sec == NULL)
+			error (0, 1, "No %s reloc section: %s",
+			       debug_sections[j].name, dso->filename);
 		    }
 		  else
 		    debug_sections[j].relsec = i;
@@ -2203,12 +2206,10 @@ edit_dwarf2 (DSO *dso)
   if (debug_sections[DEBUG_INFO].data == NULL)
     return 0;
 
-  unsigned char *ptr, *endcu, *endsec;
-  uint32_t value;
-  htab_t abbrev;
-  struct abbrev_tag tag, *t;
+  unsigned char *ptr, *endsec;
   int phase;
   bool info_rel_updated = false;
+  bool types_rel_updated = false;
   bool macro_rel_updated = false;
 
   for (phase = 0; phase < 2; phase++)
@@ -2221,12 +2222,25 @@ edit_dwarf2 (DSO *dso)
 	break;
 
       rel_updated = false;
-      if (edit_info (dso, phase))
-       return 1;
+      if (edit_info (dso, phase, &debug_sections[DEBUG_INFO]))
+	return 1;
 
       /* Remember whether any .debug_info relocations might need
 	 to be updated. */
       info_rel_updated = rel_updated;
+
+      rel_updated = false;
+      struct debug_section *types_sec = &debug_sections[DEBUG_TYPES];
+      while (types_sec != NULL)
+	{
+	  if (edit_info (dso, phase, types_sec))
+	    return 1;
+	  types_sec = types_sec->next;
+	}
+
+      /* Remember whether any .debug_types relocations might need
+	 to be updated. */
+      types_rel_updated = rel_updated;
 
       /* We might have to recalculate/rewrite the debug_line
 	 section.  We need to do that before going into phase one
@@ -2475,8 +2489,11 @@ edit_dwarf2 (DSO *dso)
 
   /* After phase 1 we might have rewritten the debug_info with
      new strp, strings and/or linep offsets.  */
-  if (need_strp_update || need_string_replacement || need_stmt_update)
+  if (need_strp_update || need_string_replacement || need_stmt_update) {
     dirty_section (DEBUG_INFO);
+    if (debug_sections[DEBUG_TYPES].data != NULL)
+      dirty_section (DEBUG_TYPES);
+  }
   if (need_strp_update || need_stmt_update)
     dirty_section (DEBUG_MACRO);
   if (need_stmt_update)
@@ -2485,6 +2502,15 @@ edit_dwarf2 (DSO *dso)
   /* Update any relocations addends we might have touched. */
   if (info_rel_updated)
     update_rela_data (dso, &debug_sections[DEBUG_INFO]);
+  if (types_rel_updated)
+    {
+      struct debug_section *types_sec = &debug_sections[DEBUG_TYPES];
+      while (types_sec != NULL)
+	{
+	  update_rela_data (dso, types_sec);
+	  types_sec = types_sec->next;
+	}
+    }
 
   if (macro_rel_updated)
     {
@@ -3034,6 +3060,17 @@ main (int argc, char *argv[])
       struct debug_section *next = macro_sec->next;
       free (macro_sec);
       macro_sec = next;
+    }
+
+  /* In case there were multiple (COMDAT) .debug_types sections,
+     free them.  */
+  struct debug_section *types_sec = &debug_sections[DEBUG_TYPES];
+  types_sec = types_sec->next;
+  while (types_sec != NULL)
+    {
+      struct debug_section *next = types_sec->next;
+      free (types_sec);
+      types_sec = next;
     }
 
   poptFreeContext (optCon);
