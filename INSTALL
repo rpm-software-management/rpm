@@ -154,6 +154,12 @@ If you plan on using cryptographic signatures you will need a version
 of GPG, available from
     http://www.gnupg.org/
 
+OpenMP multithreading support is automatically enabled if your C compiler has
+support for OpenMP version 4.5 or higher (to disable, pass the --disable-openmp
+option to configure).  For GCC, OpenMP 4.5 is fully supported since GCC 6.1,
+which is available from
+    http://www.gnu.org/
+
 To compile RPM:
 --------------
 
