@@ -175,11 +175,32 @@ AC_SUBST(WITH_LZMA_LIB)
 
 # AC_OPENMP supports --enable/disable-openmp out of the box, but it doesn't
 # actually give us a way to conditionalize the build based on that. Argh.
+# Version 4.5 (201511) introduced "priority" clause for tasks.
 OPENMP_CFLAGS=
 AC_OPENMP
 AS_IF([test "x$ac_cv_prog_c_openmp" != x &&
-       test "x$ac_cv_prog_c_openmp" != unsupported],[
-  AC_DEFINE(ENABLE_OPENMP, 1, [Enable multithreading support?])
+       test "x$ac_cv_prog_c_openmp" != xunsupported],[
+  old_CFLAGS=$CFLAGS
+  CFLAGS="$CFLAGS $OPENMP_CFLAGS"
+  AC_MSG_CHECKING([OpenMP is at least version 4.5])
+  AC_RUN_IFELSE(
+    [AC_LANG_PROGRAM(
+      [#include <omp.h>],
+      [#if _OPENMP < 201511
+       exit(1);
+       #endif
+      ]
+    )],
+    [AC_MSG_RESULT([yes])
+     AC_DEFINE(ENABLE_OPENMP, 1, [Enable multithreading support?])
+    ],
+    [AC_MSG_RESULT([no])
+     if test "$enable_openmp" = "yes"; then
+       AC_MSG_ERROR([OpenMP too old])
+     fi
+    ]
+  )
+  CFLAGS=$old_CFLAGS
 ])
 AC_SUBST(OPENMP_CFLAGS)
 
