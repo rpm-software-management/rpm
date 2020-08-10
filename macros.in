@@ -212,8 +212,12 @@ package or when debugging this package.\
 %__global_requires_exclude_from		%{?_docdir:%{_docdir}}
 %__global_provides_exclude_from		%{?_docdir:%{_docdir}}
 
+#	Maximum age of preserved changelog entries in binary packages,
+#	relative to newest existing entry. Unix timestamp format.
+%_changelog_trimage	0
+
 #	The Unix time of the latest kept changelog entry in binary packages.
-#	Any older entry is not packaged in binary packages.
+#	DEPRACATED, use %_changelog_trimage instead.
 %_changelog_trimtime	0
 
 #	If true, set the SOURCE_DATE_EPOCH environment variable
