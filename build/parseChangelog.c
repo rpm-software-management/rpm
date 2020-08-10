@@ -200,11 +200,18 @@ static rpmRC addChangelog(Header h, ARGV_const_t sb)
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     char *s, *sp;
     int i;
-    time_t time;
+    time_t firstTime = 0;
     time_t lastTime = 0;
     time_t trimtime = rpmExpandNumeric("%{?_changelog_trimtime}");
+    time_t trimage = rpmExpandNumeric("%{?_changelog_trimage}");
     char *date, *name, *text, *next;
     int date_words;      /* number of words in date string */
+
+    /* Convert _changelog_trimtime to age for backwards compatibility */
+    if (trimtime && !trimage) {
+	trimage = time(NULL) - trimtime;
+	trimtime = 0;
+    }
 
     s = sp = argvJoin(sb, "");
 
@@ -212,6 +219,7 @@ static rpmRC addChangelog(Header h, ARGV_const_t sb)
     SKIPSPACE(s);
 
     while (*s != '\0') {
+	time_t time;
 	if (*s != '*') {
 	    rpmlog(RPMLOG_ERR, _("%%changelog entries must start with *\n"));
 	    goto exit;
@@ -234,6 +242,12 @@ static rpmRC addChangelog(Header h, ARGV_const_t sb)
 	if (dateToTimet(date, &time, &date_words)) {
 	    rpmlog(RPMLOG_ERR, _("bad date in %%changelog: %s\n"), date);
 	    goto exit;
+	}
+	/* Changelog trimming is always relative to first entry */
+	if (!firstTime) {
+	    firstTime = time;
+	    if (trimage)
+		trimtime = firstTime - trimage;
 	}
 	if (lastTime && lastTime < time) {
 	    rpmlog(RPMLOG_ERR,
