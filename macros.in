@@ -229,9 +229,13 @@ package or when debugging this package.\
 
 #	The path to the gzip executable (legacy, use %{__gzip} instead).
 %_gzipbin		%{__gzip}
+#
+#	Maximum age of preserved changelog entries in binary packages,
+#	relative to newest existing entry. Unix timestamp format.
+%_changelog_trimage	0
 
 #	The Unix time of the latest kept changelog entry in binary packages.
-#	Any older entry is not packaged in binary packages.
+#	DEPRACATED, use %_changelog_trimage instead.
 %_changelog_trimtime	0
 
 #	If true, set the SOURCE_DATE_EPOCH environment variable
