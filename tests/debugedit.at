@@ -22,10 +22,14 @@ AT_BANNER([RPM debugedit])
 AT_TESTED([debugedit])
 
 # Helper to create some test binaries.
-# Optional parameter can specify additional gcc parameters.
-m4_define([RPM_DEBUGEDIT_SETUP],[[
+# Optional first parameter can specify alternative compiler than [gcc].
+# Optional second parameter can specify additional compiler parameters.
+m4_define([RPM_DEBUGEDIT_SETUP],[
 # Create some test binaries. Create and build them in different subdirs
 # to make sure they produce different relative/absolute paths.
+
+# Skip clang tests if clang is not available.
+AT_SKIP_IF([test -n "$1" && ! which $1 ])
 
 export HOME=${PWD}
 mkdir subdir_foo
@@ -37,11 +41,11 @@ cp "${abs_srcdir}"/data/SOURCES/foobar.h subdir_headers
 cp "${abs_srcdir}"/data/SOURCES/baz.c .
 
 # First three object files (foo.o subdir_bar/bar.o and baz.o)
-gcc -g3 -Isubdir_headers $1 -c subdir_foo/foo.c
+m4_if($1,,gcc,$1) -g3 -Isubdir_headers -c $2 subdir_foo/foo.c
 cd subdir_bar
-gcc -g3 -I../subdir_headers $1 -c bar.c
+m4_if($1,,gcc,$1) -g3 -I../subdir_headers -c $2 bar.c
 cd ..
-gcc -g3 -I$(pwd)/subdir_headers $1 -c $(pwd)/baz.c
+m4_if($1,,gcc,$1) -g3 -I$(pwd)/subdir_headers -c $2 $(pwd)/baz.c
 
 # Then a partially linked object file (somewhat like a kernel module).
 # This will still have relocations between the debug sections.
@@ -49,8 +53,8 @@ ld -r -o foobarbaz.part.o foo.o subdir_bar/bar.o baz.o
 
 # Create an executable. Relocations between debug sections will
 # have been resolved.
-gcc -g3 -o foobarbaz.exe foo.o subdir_bar/bar.o baz.o
-]])
+m4_if($1,,gcc,$1) -g3 -o foobarbaz.exe foo.o subdir_bar/bar.o baz.o
+])
 
 # ===
 # Check debugedit --help doesn't crash and burn.
@@ -254,7 +258,7 @@ AT_CLEANUP
 # Make sure -fdebug-types-section has updated strings in objects.
 # ===
 m4_define([RPM_DEBUGEDIT_DEBUG_TYPES_OBJECTS],[
-RPM_DEBUGEDIT_SETUP($1)
+RPM_DEBUGEDIT_SETUP($1,$2)
 
 AT_DATA([expout],
 [st1
@@ -274,21 +278,28 @@ stz
 AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foo.o]])
 AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./subdir_bar/bar.o]])
 AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./baz.o]])
-AT_CHECK([[
+AT_CHECK([
 for i in ./foo.o ./subdir_bar/bar.o ./baz.o;do \
+m4_if($1,gcc,[[ \
   readelf --debug-dump=info $i \
           | awk '/Abbrev Number:.*DW_TAG_type_unit/{p=1}{if(p)print}/^$/{p=0}' \
           | sed -n 's/^.*> *DW_AT_name *:.* \(stringp[^ ]*\|st.\)$/\1/p' \
           | sort;
+]],[[ \
+  llvm-dwarfdump $i \
+          | awk '/^0x[0-9a-f]*: [^ ]* Unit:/{p=0}/^0x[0-9a-f]*: Type Unit:/{p=1}{if(p)print}' \
+          | sed -n 's/^ *DW_AT_name\t("\(stringp[^ ]*\|st.\)")$/\1/p' \
+          | sort;
+]]) \
 done
-]],[0],[expout])
+],[0],[expout])
 ])
 
 # ===
 # Make sure -fdebug-types-section has updated strings in partial linked object.
 # ===
 m4_define([RPM_DEBUGEDIT_DEBUG_TYPES_PARTIAL],[
-RPM_DEBUGEDIT_SETUP($1)
+RPM_DEBUGEDIT_SETUP($1,$2)
 
 AT_DATA([expout],
 [st1
@@ -302,19 +313,26 @@ stz
 ])
 
 AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.part.o]])
-AT_CHECK([[
+AT_CHECK([
+m4_if($1,gcc,[[
 readelf --debug-dump=info ./foobarbaz.part.o \
         | awk '/Abbrev Number:.*DW_TAG_type_unit/{p=1}{if(p)print}/^$/{p=0}' \
         | sed -n 's/^.*> *DW_AT_name *:.* \(stringp[^ ]*\|st.\)$/\1/p' \
         | sort
-]],[0],[expout])
+]],[[
+  llvm-dwarfdump ./foobarbaz.part.o \
+        | awk '/^0x[0-9a-f]*: [^ ]* Unit:/{p=0}/^0x[0-9a-f]*: Type Unit:/{p=1}{if(p)print}' \
+        | sed -n 's/^ *DW_AT_name\t("\(stringp[^ ]*\|st.\)")$/\1/p' \
+        | sort
+]])
+],[0],[expout])
 ])
 
 # ===
 # Make sure -fdebug-types-section has updated strings in executable.
 # ===
 m4_define([RPM_DEBUGEDIT_DEBUG_TYPES_EXE],[
-RPM_DEBUGEDIT_SETUP($1)
+RPM_DEBUGEDIT_SETUP($1,$2)
 
 AT_DATA([expout],
 [st1
@@ -328,42 +346,67 @@ stz
 ])
 
 AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.exe]])
-AT_CHECK([[
+AT_CHECK([
+m4_if($1,gcc,[[
 readelf --debug-dump=info ./foobarbaz.exe \
         | awk '/Abbrev Number:.*DW_TAG_type_unit/{p=1}{if(p)print}/^$/{p=0}' \
         | sed -n 's/^.*> *DW_AT_name *:.* \(stringp[^ ]*\|st.\)$/\1/p' \
         | sort
-]],[0],[expout])
+]],[[
+  llvm-dwarfdump ./foobarbaz.exe \
+        | awk '/^0x[0-9a-f]*: [^ ]* Unit:/{p=0}/^0x[0-9a-f]*: Type Unit:/{p=1}{if(p)print}' \
+        | sed -n 's/^ *DW_AT_name\t("\(stringp[^ ]*\|st.\)")$/\1/p' \
+        | sort
+]])
+],[0],[expout])
 ])
 
-AT_SETUP([debugedit DWARF-4 .debug_types objects])
+AT_SETUP([debugedit gcc DWARF-4 .debug_types objects])
 AT_KEYWORDS([debugtypes] [debugedit])
-RPM_DEBUGEDIT_DEBUG_TYPES_OBJECTS([-gdwarf-4 -fdebug-types-section])
+RPM_DEBUGEDIT_DEBUG_TYPES_OBJECTS([gcc],[-gdwarf-4 -fdebug-types-section])
 AT_CLEANUP
 
-AT_SETUP([debugedit DWARF-4 .debug_types partial])
+AT_SETUP([debugedit gcc DWARF-4 .debug_types partial])
 AT_KEYWORDS([debugtypes] [debugedit])
-RPM_DEBUGEDIT_DEBUG_TYPES_PARTIAL([-gdwarf-4 -fdebug-types-section])
+RPM_DEBUGEDIT_DEBUG_TYPES_PARTIAL([gcc],[-gdwarf-4 -fdebug-types-section])
 AT_CLEANUP
 
-AT_SETUP([debugedit DWARF-4 .debug_types exe])
+AT_SETUP([debugedit gcc DWARF-4 .debug_types exe])
 AT_KEYWORDS([debugtypes] [debugedit])
-RPM_DEBUGEDIT_DEBUG_TYPES_EXE([-gdwarf-4 -fdebug-types-section])
+RPM_DEBUGEDIT_DEBUG_TYPES_EXE([gcc],[-gdwarf-4 -fdebug-types-section])
 AT_CLEANUP
 
-AT_SETUP([debugedit DWARF-5 .debug_types objects])
+AT_SETUP([debugedit gcc DWARF-5 .debug_types objects])
 AT_KEYWORDS([debugtypes] [debugedit])
-RPM_DEBUGEDIT_DEBUG_TYPES_OBJECTS([-gdwarf-5 -fdebug-types-section])
+RPM_DEBUGEDIT_DEBUG_TYPES_OBJECTS([gcc],[-gdwarf-5 -fdebug-types-section])
 AT_CLEANUP
 
-AT_SETUP([debugedit DWARF-5 .debug_types partial])
+AT_SETUP([debugedit gcc DWARF-5 .debug_types partial])
 AT_KEYWORDS([debugtypes] [debugedit])
-RPM_DEBUGEDIT_DEBUG_TYPES_PARTIAL([-gdwarf-5 -fdebug-types-section])
+RPM_DEBUGEDIT_DEBUG_TYPES_PARTIAL([gcc],[-gdwarf-5 -fdebug-types-section])
 AT_CLEANUP
 
-AT_SETUP([debugedit DWARF-5 .debug_types exe])
+AT_SETUP([debugedit gcc DWARF-5 .debug_types exe])
 AT_KEYWORDS([debugtypes] [debugedit])
-RPM_DEBUGEDIT_DEBUG_TYPES_EXE([-gdwarf-5 -fdebug-types-section])
+RPM_DEBUGEDIT_DEBUG_TYPES_EXE([gcc],[-gdwarf-5 -fdebug-types-section])
+AT_CLEANUP
+
+AT_SETUP([debugedit clang DWARF-5 .debug_types objects])
+AT_KEYWORDS([debugtypes] [debugedit])
+# -x c++ as clang does ignores -fdebug-types-section for C.
+RPM_DEBUGEDIT_DEBUG_TYPES_OBJECTS([clang],[-gdwarf-5 -fdebug-types-section -x c++])
+AT_CLEANUP
+
+AT_SETUP([debugedit clang DWARF-5 .debug_types partial])
+AT_KEYWORDS([debugtypes] [debugedit])
+# -x c++ as clang does ignores -fdebug-types-section for C.
+RPM_DEBUGEDIT_DEBUG_TYPES_PARTIAL([clang],[-gdwarf-5 -fdebug-types-section -x c++])
+AT_CLEANUP
+
+AT_SETUP([debugedit clang DWARF-5 .debug_types exe])
+AT_KEYWORDS([debugtypes] [debugedit])
+# -x c++ as clang does ignores -fdebug-types-section for C.
+RPM_DEBUGEDIT_DEBUG_TYPES_EXE([clang],[-gdwarf-5 -fdebug-types-section -x c++])
 AT_CLEANUP
 
 # foo.o and bar.o are build with relative paths and so will use the
@@ -373,9 +416,9 @@ AT_CLEANUP
 
 # ===
 # Make sure .debug_line Directory Table entries are replaced
-# in objects.
+# in objects for DWARF-4.
 # ===
-AT_SETUP([debugedit .debug_line objects])
+AT_SETUP([debugedit gcc DWARF-4 .debug_line objects])
 AT_KEYWORDS([debuginfo] [debugedit])
 RPM_DEBUGEDIT_SETUP
 
@@ -397,9 +440,9 @@ AT_CLEANUP
 
 # ===
 # Make sure .debug_line Directory Table entries are replaced
-# in partial linked object.
+# in partial linked object for DWARF-4.
 # ===
-AT_SETUP([debugedit .debug_line partial])
+AT_SETUP([debugedit gcc DWARF-4 .debug_line partial])
 AT_KEYWORDS([debuginfo] [debugedit])
 RPM_DEBUGEDIT_SETUP
 
@@ -419,9 +462,9 @@ AT_CLEANUP
 
 # ===
 # Make sure .debug_line Directory Table entries are replaced
-# in executable.
+# in executable for DWARF-4.
 # ===
-AT_SETUP([debugedit .debug_line exe])
+AT_SETUP([debugedit gcc DWARF-4 .debug_line exe])
 AT_KEYWORDS([debuginfo] [debugedit])
 RPM_DEBUGEDIT_SETUP
 
@@ -435,6 +478,107 @@ AT_CHECK([[
 readelf --debug-dump=line ./foobarbaz.exe \
         | grep -A3 "The Directory Table" | grep "^  [123]" \
 	| grep /foo/ | cut -c5- | sort
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# Make sure .debug_line Directory Table entries are replaced
+# in objects for DWARF-5.
+# ===
+AT_SETUP([debugedit clang DWARF-5 .debug_line objects])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP([clang],[-gdwarf-5])
+
+AT_DATA([expout],
+[../subdir_headers
+/foo/bar/baz
+/foo/bar/baz
+/foo/bar/baz/baz.c
+/foo/bar/baz/subdir_bar
+bar.c
+baz.c
+foobar.h
+foobar.h
+foobar.h
+subdir_foo/foo.c
+subdir_headers
+subdir_headers
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foo.o]])
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./subdir_bar/bar.o]])
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./baz.o]])
+AT_CHECK([[
+readelf --debug-dump=line foo.o subdir_bar/bar.o baz.o \
+        | sed -n '/^ The Directory Table/,/^ Line Number Statements:/p' | grep "^  [0-9]" \
+	| sed 's/^.* //' | sort
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# Make sure .debug_line Directory Table entries are replaced
+# in partial linked object for DWARF-5.
+# ===
+AT_SETUP([debugedit clang DWARF-5 .debug_line partial])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP([clang],[-gdwarf-5])
+
+AT_DATA([expout],
+[../subdir_headers
+/foo/bar/baz
+/foo/bar/baz
+/foo/bar/baz/baz.c
+/foo/bar/baz/subdir_bar
+bar.c
+baz.c
+foobar.h
+foobar.h
+foobar.h
+subdir_foo/foo.c
+subdir_headers
+subdir_headers
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.part.o]])
+AT_CHECK([[
+readelf --debug-dump=line ./foobarbaz.part.o \
+        | sed -n '/^ The Directory Table/,/^ Line Number Statements:/p' | grep "^  [0-9]" \
+	| sed 's/^.* //' | sort
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# Make sure .debug_line Directory Table entries are replaced
+# in executable for DWARF-5.
+# ===
+AT_SETUP([debugedit clang DWARF-5 .debug_line exe])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP([clang],[-gdwarf-5])
+
+AT_DATA([expout],
+[../subdir_headers
+/foo/bar/baz
+/foo/bar/baz
+/foo/bar/baz/baz.c
+/foo/bar/baz/subdir_bar
+bar.c
+baz.c
+foobar.h
+foobar.h
+foobar.h
+subdir_foo/foo.c
+subdir_headers
+subdir_headers
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.exe]])
+AT_CHECK([[
+readelf --debug-dump=line ./foobarbaz.exe \
+        | sed -n '/^ The Directory Table/,/^ Line Number Statements:/p' | grep "^  [0-9]" \
+	| sed 's/^.* //' | sort
 ]],[0],[expout])
 
 AT_CLEANUP

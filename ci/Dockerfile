@@ -46,6 +46,7 @@ RUN dnf -y install \
   /usr/bin/gdb-add-index \
   dwz \
   fsverity-utils fsverity-utils-devel \
+  clang llvm \
   && dnf clean all
 
 COPY . .
