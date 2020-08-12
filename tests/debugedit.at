@@ -253,9 +253,9 @@ AT_CLEANUP
 # ===
 # Make sure -fdebug-types-section has updated strings in objects.
 # ===
-AT_SETUP([debugedit .debug_types objects])
+AT_SETUP([debugedit DWARF-4 .debug_types objects])
 AT_KEYWORDS([debugtypes] [debugedit])
-RPM_DEBUGEDIT_SETUP([-fdebug-types-section])
+RPM_DEBUGEDIT_SETUP([-gdwarf-4 -fdebug-types-section])
 
 AT_DATA([expout],
 [st1
@@ -278,9 +278,9 @@ AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./baz.o]])
 AT_CHECK([[
 for i in ./foo.o ./subdir_bar/bar.o ./baz.o;do \
   readelf --debug-dump=info $i \
-          | awk '/Abbrev Number:.*DW_TAG_type_unit/{p=1}{if(p)print}/^$/{p=0}' \
-          | sed -n 's/^.*> *DW_AT_name *:.* \(stringp[^ ]*\|st.\)$/\1/p' \
-          | sort;
+	  | awk '/Abbrev Number:.*DW_TAG_type_unit/{p=1}{if(p)print}/^$/{p=0}' \
+	  | sed -n 's/^.*> *DW_AT_name *:.* \(stringp[^ ]*\|st.\)$/\1/p' \
+	  | sort;
 done
 ]],[0],[expout])
 
@@ -289,9 +289,9 @@ AT_CLEANUP
 # ===
 # Make sure -fdebug-types-section has updated strings in partial linked object.
 # ===
-AT_SETUP([debugedit .debug_types partial])
+AT_SETUP([debugedit DWARF-4 .debug_types partial])
 AT_KEYWORDS([debugtypes] [debugedit])
-RPM_DEBUGEDIT_SETUP([-fdebug-types-section])
+RPM_DEBUGEDIT_SETUP([-gdwarf-4 -fdebug-types-section])
 
 AT_DATA([expout],
 [st1
@@ -307,9 +307,9 @@ stz
 AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.part.o]])
 AT_CHECK([[
 readelf --debug-dump=info ./foobarbaz.part.o \
-        | awk '/Abbrev Number:.*DW_TAG_type_unit/{p=1}{if(p)print}/^$/{p=0}' \
-        | sed -n 's/^.*> *DW_AT_name *:.* \(stringp[^ ]*\|st.\)$/\1/p' \
-        | sort
+	| awk '/Abbrev Number:.*DW_TAG_type_unit/{p=1}{if(p)print}/^$/{p=0}' \
+	| sed -n 's/^.*> *DW_AT_name *:.* \(stringp[^ ]*\|st.\)$/\1/p' \
+	| sort
 ]],[0],[expout])
 
 AT_CLEANUP
@@ -317,9 +317,9 @@ AT_CLEANUP
 # ===
 # Make sure -fdebug-types-section has updated strings in executable.
 # ===
-AT_SETUP([debugedit .debug_types exe])
+AT_SETUP([debugedit DWARF-4 .debug_types exe])
 AT_KEYWORDS([debugtypes] [debugedit])
-RPM_DEBUGEDIT_SETUP([-fdebug-types-section])
+RPM_DEBUGEDIT_SETUP([-gdwarf-4 -fdebug-types-section])
 
 AT_DATA([expout],
 [st1
@@ -335,9 +335,101 @@ stz
 AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.exe]])
 AT_CHECK([[
 readelf --debug-dump=info ./foobarbaz.exe \
-        | awk '/Abbrev Number:.*DW_TAG_type_unit/{p=1}{if(p)print}/^$/{p=0}' \
-        | sed -n 's/^.*> *DW_AT_name *:.* \(stringp[^ ]*\|st.\)$/\1/p' \
-        | sort
+	| awk '/Abbrev Number:.*DW_TAG_type_unit/{p=1}{if(p)print}/^$/{p=0}' \
+	| sed -n 's/^.*> *DW_AT_name *:.* \(stringp[^ ]*\|st.\)$/\1/p' \
+	| sort
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# Make sure -fdebug-types-section has updated strings in objects.
+# ===
+AT_SETUP([debugedit DWARF-5 .debug_types objects])
+AT_KEYWORDS([debugtypes] [debugedit])
+RPM_DEBUGEDIT_SETUP([-gdwarf-5 -fdebug-types-section])
+
+AT_DATA([expout],
+[st1
+stf
+stringp1
+stringp_foo
+st1
+stb
+stringp1
+stringp_bar
+st1
+stringp1
+stringp_baz
+stz
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foo.o]])
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./subdir_bar/bar.o]])
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./baz.o]])
+AT_CHECK([[
+for i in ./foo.o ./subdir_bar/bar.o ./baz.o;do \
+  readelf --debug-dump=info $i \
+	  | awk '/Abbrev Number:.*DW_TAG_type_unit/{p=1}{if(p)print}/^$/{p=0}' \
+	  | sed -n 's/^.*> *DW_AT_name *:.* \(stringp[^ ]*\|st.\)$/\1/p' \
+	  | sort;
+done
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# Make sure -fdebug-types-section has updated strings in partial linked object.
+# ===
+AT_SETUP([debugedit DWARF-5 .debug_types partial])
+AT_KEYWORDS([debugtypes] [debugedit])
+RPM_DEBUGEDIT_SETUP([-gdwarf-5 -fdebug-types-section])
+
+AT_DATA([expout],
+[st1
+stb
+stf
+stringp1
+stringp_bar
+stringp_baz
+stringp_foo
+stz
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.part.o]])
+AT_CHECK([[
+readelf --debug-dump=info ./foobarbaz.part.o \
+	| awk '/Abbrev Number:.*DW_TAG_type_unit/{p=1}{if(p)print}/^$/{p=0}' \
+	| sed -n 's/^.*> *DW_AT_name *:.* \(stringp[^ ]*\|st.\)$/\1/p' \
+	| sort
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# Make sure -fdebug-types-section has updated strings in executable.
+# ===
+AT_SETUP([debugedit DWARF-5 .debug_types exe])
+AT_KEYWORDS([debugtypes] [debugedit])
+RPM_DEBUGEDIT_SETUP([-gdwarf-5 -fdebug-types-section])
+
+AT_DATA([expout],
+[st1
+stb
+stf
+stringp1
+stringp_bar
+stringp_baz
+stringp_foo
+stz
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.exe]])
+AT_CHECK([[
+readelf --debug-dump=info ./foobarbaz.exe \
+	| awk '/Abbrev Number:.*DW_TAG_type_unit/{p=1}{if(p)print}/^$/{p=0}' \
+	| sed -n 's/^.*> *DW_AT_name *:.* \(stringp[^ ]*\|st.\)$/\1/p' \
+	| sort
 ]],[0],[expout])
 
 AT_CLEANUP
