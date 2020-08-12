@@ -523,6 +523,27 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
     return fd;
 }
 
+/* Return number of threads ought to be used for compression based
+   on a parsed value threads (e.g. from w7T0.xzdio or w7T16.xzdio).
+   Value -1 means automatic detection. */
+
+static int
+get_compression_threads(int threads)
+{
+    if (threads == -1)
+	threads = rpmExpandNumeric("%{getncpus}");
+
+#if __WORDSIZE == 32
+    /* Limit threads up to 4 for 32-bit systems.  */
+    if (threads > 4) {
+	threads = 4;
+	rpmlog(RPMLOG_DEBUG, "threading compression limited to 4 threads on 32-bit systems\n");
+    }
+#endif
+
+    return threads;
+}
+
 static const struct FDIO_s ufdio_s = {
   "ufdio", NULL,
   fdRead, fdWrite, fdSeek, fdClose,
@@ -769,6 +790,9 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 	    if (isdigit(*(mode+1))) {
 #ifdef HAVE_LZMA_MT
 		threads = atoi(++mode);
+		/* T0 means automatic detection */
+		if (threads == 0)
+		    threads = -1;
 #endif
 		/* skip past rest of digits in string that atoi()
 		 * should've processed
@@ -797,8 +821,7 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 		ret = lzma_easy_encoder(&lzfile->strm, level, LZMA_CHECK_SHA256);
 #ifdef HAVE_LZMA_MT
 	    } else {
-		if (threads == -1)
-		    threads = rpmExpandNumeric("%{getncpus}");
+		threads = get_compression_threads(threads);
 		lzma_mt mt_options = {
 		    .flags = 0,
 		    .threads = threads,
@@ -807,45 +830,6 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 		    .preset = level,
 		    .filters = NULL,
 		    .check = LZMA_CHECK_SHA256 };
-
-#if __WORDSIZE == 32
-		/* In 32 bit environment, required memory easily exceeds memory address
-		 * space limit if compressing using multiple threads.
-		 * By setting a memory limit, liblzma will automatically adjust number
-		 * of threads to avoid exceeding memory.
-		 */
-		if (threads > 1) {
-		    struct utsname u;
-		    uint32_t memlimit = (SIZE_MAX>>1) + (SIZE_MAX>>3);
-		    uint64_t memory_usage;
-		    /* While a 32 bit linux kernel will have an address limit of 3GiB
-		     * for processes (which is why set the memory limit to 2.5GiB as a safety
-		     * margin), 64 bit kernels will have a limit of 4GiB for 32 bit binaries.
-		     * Therefore the memory limit should be higher if running on a 64 bit
-		     * kernel, so we increase it to 3,5GiB.
-		     */
-		    uname(&u);
-		    if (strstr(u.machine, "64") || strstr(u.machine, "s390x")
-#if defined(__linux__)
-				    || ((personality(0xffffffff) & PER_MASK) == PER_LINUX32)
-#endif
-			    )
-			memlimit += (SIZE_MAX>>2);
-
-		    /* keep reducing the number of threads until memory usage gets below limit */
-		    while ((memory_usage = lzma_stream_encoder_mt_memusage(&mt_options)) > memlimit) {
-			/* number of threads shouldn't be able to hit zero with compression
-			 * settings aailable to set through rpm... */
-			assert(--mt_options.threads != 0);
-		    }
-		    lzma_memlimit_set(&lzfile->strm, memlimit);
-
-		    if (threads != (int)mt_options.threads)
-			rpmlog(RPMLOG_NOTICE,
-				"XZ: Adjusted the number of threads from %d to %d to not exceed the memory usage limit of %u bytes\n",
-				threads, mt_options.threads, memlimit);
-		}
-#endif
 
 		ret = lzma_stream_encoder_mt(&lzfile->strm, &mt_options);
 	    }
@@ -1145,7 +1129,7 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
 
 	if (threads > 0)
 	    if (ZSTD_isError (ZSTD_CCtx_setParameter(_stream, ZSTD_c_nbWorkers, threads)))
-		rpmlog(RPMLOG_WARNING, "zstd library does not support multi-threading\n");
+		rpmlog(RPMLOG_DEBUG, "zstd library does not support multi-threading\n");
 
 	nb = ZSTD_CStreamOutSize();
     }
