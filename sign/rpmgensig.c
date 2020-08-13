@@ -455,11 +455,19 @@ exit:
 static void unloadImmutableRegion(Header *hdrp, rpmTagVal tag)
 {
     struct rpmtd_s td;
+    Header oh = NULL;
 
     if (headerGet(*hdrp, tag, &td, HEADERGET_DEFAULT)) {
-	Header oh = headerCopyLoad(td.data);
-	Header nh = headerCopy(oh);
+	oh = headerCopyLoad(td.data);
 	rpmtdFreeData(&td);
+    } else {
+	/* XXX should we warn if the immutable region is corrupt/missing? */
+	oh = headerLink(*hdrp);
+    }
+
+    if (oh) {
+	/* Perform a copy to eliminate crud from buggy signing tools etc */
+	Header nh = headerCopy(oh);
 	headerFree(*hdrp);
 	*hdrp = headerLink(nh);
 	headerFree(nh);
