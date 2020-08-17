@@ -1454,37 +1454,128 @@ edit_dwarf2_line (DSO *dso)
     }
 }
 
-/* Called during phase zero for each debug_line table referenced from
-   .debug_info.  Outputs all source files seen and records any
-   adjustments needed in the debug_list data structures.  Function sets
-   need_stmt_update if line_table needs to be rewritten either for its dir or
-   file paths.  Function returns false if it cannot process the file.  */
-static bool
-read_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir)
+/* Record or adjust (according to phase) DW_FORM_strp.  */
+static void
+edit_strp (DSO *dso, unsigned char *ptr, int phase, bool handled_strp)
 {
-  unsigned char *ptr, *dir;
+  unsigned char *ptr_orig = ptr;
+
+  /* In the first pass we collect all strings, in the
+     second we put the new references back (if there are
+     any changes).  */
+  if (phase == 0)
+    {
+      /* handled_strp is set for attributes referring to
+	 files. If it is set the string is already
+	 recorded. */
+      if (! handled_strp)
+	{
+	  size_t idx = do_read_32_relocated (ptr);
+	  record_existing_string_entry_idx (&dso->strings, idx);
+	}
+    }
+  else if (need_strp_update) /* && phase == 1 */
+    {
+      struct stridxentry *entry;
+      size_t idx, new_idx;
+      idx = do_read_32_relocated (ptr);
+      entry = string_find_entry (&dso->strings, idx);
+      new_idx = strent_offset (entry->entry);
+      do_write_32_relocated (ptr, new_idx);
+    }
+
+  assert (ptr == ptr_orig);
+}
+
+/* Adjust *PTRP after the current *FORMP, update *FORMP for FORM_INDIRECT.  */
+static enum { FORM_OK, FORM_ERROR, FORM_INDIRECT }
+skip_form (DSO *dso, uint32_t *formp, unsigned char **ptrp)
+{
+  size_t len = 0;
+
+  switch (*formp)
+    {
+    case DW_FORM_ref_addr:
+      if (cu_version == 2)
+	*ptrp += ptr_size;
+      else
+	*ptrp += 4;
+      break;
+    case DW_FORM_flag_present:
+      break;
+    case DW_FORM_addr:
+      *ptrp += ptr_size;
+      break;
+    case DW_FORM_ref1:
+    case DW_FORM_flag:
+    case DW_FORM_data1:
+      ++*ptrp;
+      break;
+    case DW_FORM_ref2:
+    case DW_FORM_data2:
+      *ptrp += 2;
+      break;
+    case DW_FORM_ref4:
+    case DW_FORM_data4:
+    case DW_FORM_sec_offset:
+      *ptrp += 4;
+      break;
+    case DW_FORM_ref8:
+    case DW_FORM_data8:
+    case DW_FORM_ref_sig8:
+      *ptrp += 8;
+      break;
+    case DW_FORM_sdata:
+    case DW_FORM_ref_udata:
+    case DW_FORM_udata:
+      read_uleb128 (*ptrp);
+      break;
+    case DW_FORM_strp:
+      *ptrp += 4;
+      break;
+    case DW_FORM_string:
+      *ptrp = (unsigned char *) strchr ((char *)*ptrp, '\0') + 1;
+      break;
+    case DW_FORM_indirect:
+      *formp = read_uleb128 (*ptrp);
+      return FORM_INDIRECT;
+    case DW_FORM_block1:
+      len = *(*ptrp)++;
+      break;
+    case DW_FORM_block2:
+      len = read_16 (*ptrp);
+      *formp = DW_FORM_block1;
+      break;
+    case DW_FORM_block4:
+      len = read_32 (*ptrp);
+      *formp = DW_FORM_block1;
+      break;
+    case DW_FORM_block:
+    case DW_FORM_exprloc:
+      len = read_uleb128 (*ptrp);
+      *formp = DW_FORM_block1;
+      assert (len < UINT_MAX);
+      break;
+    default:
+      error (0, 0, "%s: Unknown DWARF DW_FORM_%d", dso->filename, *formp);
+      return FORM_ERROR;
+    }
+
+  if (*formp == DW_FORM_block1)
+    *ptrp += len;
+
+  return FORM_OK;
+}
+
+/* Part of read_dwarf2_line processing DWARF-4.  */
+static bool
+read_dwarf4_line (DSO *dso, unsigned char *ptr, char *comp_dir,
+		  struct line_table *table)
+{
   unsigned char **dirt;
   uint32_t value, dirt_cnt;
   size_t comp_dir_len = !comp_dir ? 0 : strlen (comp_dir);
-  struct line_table *table;
-
-  if (! get_line_table (dso, off, &table))
-    return false;
-
-  /* Skip to the directory table. The rest of the header has already
-     been read and checked by get_line_table. */
-  ptr = debug_sections[DEBUG_LINE].data + off;
-  ptr += (4 /* unit len */
-	  + 2 /* version */
-	  + 4 /* header len */
-	  + 1 /* min instr len */
-	  + (table->version >= 4) /* max op per instr, if version >= 4 */
-	  + 1 /* default is stmt */
-	  + 1 /* line base */
-	  + 1 /* line range */
-	  + 1 /* opcode base */
-	  + table->opcode_base - 1); /* opcode len table */
-  dir = ptr;
+  unsigned char *dir = ptr;
 
   /* dir table: */
   value = 1;
@@ -1617,6 +1708,40 @@ read_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir)
       read_uleb128 (ptr);
     }
 
+  return true;
+}
+
+/* Called during phase zero for each debug_line table referenced from
+   .debug_info.  Outputs all source files seen and records any
+   adjustments needed in the debug_list data structures.  Function sets
+   need_stmt_update if line_table needs to be rewritten either for its dir or
+   file paths.  Function returns false if it cannot process the file.  */
+static bool
+read_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir)
+{
+  unsigned char *ptr;
+  struct line_table *table;
+
+  if (! get_line_table (dso, off, &table))
+    return false;
+
+  /* Skip to the directory table. The rest of the header has already
+     been read and checked by get_line_table. */
+  ptr = debug_sections[DEBUG_LINE].data + off;
+  ptr += (4 /* unit len */
+	  + 2 /* version */
+	  + 4 /* header len */
+	  + 1 /* min instr len */
+	  + (table->version >= 4) /* max op per instr, if version >= 4 */
+	  + 1 /* default is stmt */
+	  + 1 /* line base */
+	  + 1 /* line range */
+	  + 1 /* opcode base */
+	  + table->opcode_base - 1); /* opcode len table */
+
+  if (! read_dwarf4_line (dso, ptr, comp_dir, table))
+   return false;
+
   dso->lines.debug_lines_len += 4 + table->unit_length + table->size_diff;
   need_stmt_update = table->replace_dirs || table->replace_files;
   return true;
@@ -1633,6 +1758,33 @@ find_new_list_offs (struct debug_lines *lines, size_t idx)
 				      sizeof (struct line_table),
 				      line_table_cmp);
   return table->new_idx;
+}
+
+/* Read DW_FORM_strp collecting compilation directory.  */
+static void
+edit_attributes_str_comp_dir (DSO *dso, unsigned char **ptrp, int phase,
+			      char **comp_dirp, bool *handled_strpp)
+{
+  const char *dir;
+  size_t idx = do_read_32_relocated (*ptrp);
+  /* In phase zero we collect the comp_dir.  */
+  if (phase == 0)
+    {
+      if (idx >= debug_sections[DEBUG_STR].size)
+	error (1, 0, "%s: Bad string pointer index %zd for comp_dir",
+	       dso->filename, idx);
+      dir = (char *) debug_sections[DEBUG_STR].data + idx;
+
+      free (*comp_dirp);
+      *comp_dirp = strdup (dir);
+    }
+
+  if (dest_dir != NULL && phase == 0)
+    {
+      if (record_file_string_entry_idx (&dso->strings, idx))
+	need_strp_update = true;
+      *handled_strpp = true;
+    }
 }
 
 /* This scans the attributes of one DIE described by the given abbrev_tag.
@@ -1653,7 +1805,6 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
   for (i = 0; i < t->nattr; ++i)
     {
       uint32_t form = t->attr[i].form;
-      size_t len = 0;
       while (1)
 	{
 	  /* Whether we already handled a string as file for this
@@ -1741,29 +1892,8 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 		}
 	      else if (form == DW_FORM_strp &&
 		       debug_sections[DEBUG_STR].data)
-		{
-		  const char *dir;
-		  size_t idx = do_read_32_relocated (ptr);
-		  /* In phase zero we collect the comp_dir.  */
-		  if (phase == 0)
-		    {
-		      if (idx >= debug_sections[DEBUG_STR].size)
-			error (1, 0,
-			       "%s: Bad string pointer index %zd for comp_dir",
-			       dso->filename, idx);
-		      dir = (char *) debug_sections[DEBUG_STR].data + idx;
-
-		      free (comp_dir);
-		      comp_dir = strdup (dir);
-		    }
-
-		  if (dest_dir != NULL && phase == 0)
-		    {
-		      if (record_file_string_entry_idx (&dso->strings, idx))
-			need_strp_update = true;
-		      handled_strp = true;
-		    }
-		}
+		edit_attributes_str_comp_dir (dso, &ptr, phase, &comp_dir,
+					      &handled_strp);
 	    }
 	  else if ((t->tag == DW_TAG_compile_unit
 		    || t->tag == DW_TAG_partial_unit)
@@ -1813,98 +1943,20 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 
 	  switch (form)
 	    {
-	    case DW_FORM_ref_addr:
-	      if (cu_version == 2)
-		ptr += ptr_size;
-	      else
-		ptr += 4;
-	      break;
-	    case DW_FORM_flag_present:
-	      break;
-	    case DW_FORM_addr:
-	      ptr += ptr_size;
-	      break;
-	    case DW_FORM_ref1:
-	    case DW_FORM_flag:
-	    case DW_FORM_data1:
-	      ++ptr;
-	      break;
-	    case DW_FORM_ref2:
-	    case DW_FORM_data2:
-	      ptr += 2;
-	      break;
-	    case DW_FORM_ref4:
-	    case DW_FORM_data4:
-	    case DW_FORM_sec_offset:
-	      ptr += 4;
-	      break;
-	    case DW_FORM_ref8:
-	    case DW_FORM_data8:
-	    case DW_FORM_ref_sig8:
-	      ptr += 8;
-	      break;
-	    case DW_FORM_sdata:
-	    case DW_FORM_ref_udata:
-	    case DW_FORM_udata:
-	      read_uleb128 (ptr);
-	      break;
 	    case DW_FORM_strp:
-	      /* In the first pass we collect all strings, in the
-		 second we put the new references back (if there are
-		 any changes).  */
-	      if (phase == 0)
-		{
-		  /* handled_strp is set for attributes referring to
-		     files. If it is set the string is already
-		     recorded. */
-		  if (! handled_strp)
-		    {
-		      size_t idx = do_read_32_relocated (ptr);
-		      record_existing_string_entry_idx (&dso->strings, idx);
-		    }
-		}
-	      else if (need_strp_update) /* && phase == 1 */
-		{
-		  struct stridxentry *entry;
-		  size_t idx, new_idx;
-		  idx = do_read_32_relocated (ptr);
-		  entry = string_find_entry (&dso->strings, idx);
-		  new_idx = strent_offset (entry->entry);
-		  do_write_32_relocated (ptr, new_idx);
-		}
-	      ptr += 4;
+	      edit_strp (dso, ptr, phase, handled_strp);
 	      break;
-	    case DW_FORM_string:
-	      ptr = (unsigned char *) strchr ((char *)ptr, '\0') + 1;
-	      break;
-	    case DW_FORM_indirect:
-	      form = read_uleb128 (ptr);
-	      continue;
-	    case DW_FORM_block1:
-	      len = *ptr++;
-	      break;
-	    case DW_FORM_block2:
-	      len = read_16 (ptr);
-	      form = DW_FORM_block1;
-	      break;
-	    case DW_FORM_block4:
-	      len = read_32 (ptr);
-	      form = DW_FORM_block1;
-	      break;
-	    case DW_FORM_block:
-	    case DW_FORM_exprloc:
-	      len = read_uleb128 (ptr);
-	      form = DW_FORM_block1;
-	      assert (len < UINT_MAX);
-	      break;
-	    default:
-	      error (0, 0, "%s: Unknown DWARF DW_FORM_%d", dso->filename,
-		     form);
-	      return NULL;
 	    }
 
-	  if (form == DW_FORM_block1)
-	    ptr += len;
+	  switch (skip_form (dso, &form, &ptr))
+	    {
+	    case FORM_OK:
+	      break;
+	    case FORM_ERROR:
+	      return NULL;
+	    case FORM_INDIRECT:
+	      continue;
+	    }
 
 	  break;
 	}
@@ -2070,6 +2122,28 @@ edit_info (DSO *dso, int phase, struct debug_section *sec)
     }
 
   return 0;
+}
+
+/* Rebuild .debug_str.  */
+static void
+edit_dwarf2_any_str (DSO *dso)
+{
+  Strtab *strtab = dso->strings.str_tab;
+  Elf_Data *strdata = debug_sections[DEBUG_STR].elf_data;
+  int strndx = debug_sections[DEBUG_STR].sec;
+  Elf_Scn *strscn = dso->scn[strndx];
+
+  /* Out with the old. */
+  strdata->d_size = 0;
+  /* In with the new. */
+  strdata = elf_newdata (strscn);
+
+  /* We really should check whether we had enough memory,
+     but the old ebl version will just abort on out of
+     memory... */
+  strtab_finalize (strtab, strdata);
+  debug_sections[DEBUG_STR].size = strdata->d_size;
+  dso->strings.str_buf = strdata->d_buf;
 }
 
 static int
@@ -2470,24 +2544,7 @@ edit_dwarf2 (DSO *dso)
 	 in place for phase 1 updating of debug_info
 	 references. */
       if (phase == 0 && need_strp_update)
-	{
-	  Strtab *strtab = dso->strings.str_tab;
-	  Elf_Data *strdata = debug_sections[DEBUG_STR].elf_data;
-	  int strndx = debug_sections[DEBUG_STR].sec;
-	  Elf_Scn *strscn = dso->scn[strndx];
-
-	  /* Out with the old. */
-	  strdata->d_size = 0;
-	  /* In with the new. */
-	  strdata = elf_newdata (strscn);
-
-	  /* We really should check whether we had enough memory,
-	     but the old ebl version will just abort on out of
-	     memory... */
-	  strtab_finalize (strtab, strdata);
-	  debug_sections[DEBUG_STR].size = strdata->d_size;
-	  dso->strings.str_buf = strdata->d_buf;
-	}
+	edit_dwarf2_any_str (dso);
 
     }
 
