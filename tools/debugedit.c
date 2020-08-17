@@ -1137,10 +1137,9 @@ destroy_strings (struct strings *strings)
 /* The minimum number of line tables we pre-allocate. */
 #define MIN_LINE_TABLES 64
 
-/* Gets a line_table at offset. Returns true if not yet know and
-   successfully read, false otherwise.  Sets *table to NULL and
-   outputs a warning if there was a problem reading the table at the
-   given offset.  */
+/* Gets a line_table at offset. Returns true if already known or
+   successfully read. Otherwise it outputs a warning there was a problem
+   reading the table at the given offset.  */
 static bool
 get_line_table (DSO *dso, size_t off, struct line_table **table)
 {
@@ -1155,7 +1154,7 @@ get_line_table (DSO *dso, size_t off, struct line_table **table)
     if (lines->table[i].old_idx == off)
       {
 	*table = &lines->table[i];
-	return false;
+	return true;
       }
 
   if (lines->size == lines->used)
@@ -1167,7 +1166,6 @@ get_line_table (DSO *dso, size_t off, struct line_table **table)
       if (new_table == NULL)
 	{
 	  error (0, ENOMEM, "Couldn't add more debug_line tables");
-	  *table = NULL;
 	  return false;
 	}
       lines->table = new_table;
@@ -1175,7 +1173,6 @@ get_line_table (DSO *dso, size_t off, struct line_table **table)
     }
 
   struct line_table *t = &lines->table[lines->used];
-  *table = NULL;
 
   t->old_idx = off;
   t->new_idx = off;
@@ -1459,8 +1456,9 @@ edit_dwarf2_line (DSO *dso)
 
 /* Called during phase zero for each debug_line table referenced from
    .debug_info.  Outputs all source files seen and records any
-   adjustments needed in the debug_list data structures. Returns true
-   if line_table needs to be rewrite either the dir or file paths. */
+   adjustments needed in the debug_list data structures.  Function sets
+   need_stmt_update if line_table needs to be rewritten either for its dir or
+   file paths.  Function returns false if it cannot process the file.  */
 static bool
 read_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir)
 {
@@ -1470,8 +1468,7 @@ read_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir)
   size_t comp_dir_len = !comp_dir ? 0 : strlen (comp_dir);
   struct line_table *table;
 
-  if (get_line_table (dso, off, &table) == false
-      || table == NULL)
+  if (! get_line_table (dso, off, &table))
     return false;
 
   /* Skip to the directory table. The rest of the header has already
@@ -1621,7 +1618,8 @@ read_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir)
     }
 
   dso->lines.debug_lines_len += 4 + table->unit_length + table->size_diff;
-  return table->replace_dirs || table->replace_files;
+  need_stmt_update = table->replace_dirs || table->replace_files;
+  return true;
 }
 
 /* Called during phase one, after the table has been sorted. */
@@ -1940,8 +1938,11 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
      separately (at the end of phase zero after all CUs have been
      scanned in dwarf2_edit). */
   if (phase == 0 && found_list_offs
-      && read_dwarf2_line (dso, list_offs, comp_dir))
-    need_stmt_update = true;
+      && ! read_dwarf2_line (dso, list_offs, comp_dir))
+    {
+      free (comp_dir);
+      return NULL;
+    }
 
   free (comp_dir);
 
@@ -2059,7 +2060,10 @@ edit_info (DSO *dso, int phase, struct debug_section *sec)
 
 	  ptr = edit_attributes (dso, ptr, t, phase);
 	  if (ptr == NULL)
-	    break;
+	    {
+	      htab_delete (abbrev);
+	      return 1;
+	    }
 	}
 
       htab_delete (abbrev);
