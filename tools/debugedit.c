@@ -433,7 +433,8 @@ typedef struct debug_section
     int sec, relsec;
     REL *relbuf;
     REL *relend;
-    /* Only happens for COMDAT .debug_macro and .debug_types.  */
+    /* Only happens for COMDAT .debug_macro, .debug_types and DWARF-5
+       .debug_info.  */
     struct debug_section *next;
   } debug_section;
 
@@ -755,11 +756,18 @@ no_memory:
 	    }
 	  form = read_uleb128 (ptr);
 	  if (form == 2
-	      || (form > DW_FORM_flag_present && form != DW_FORM_ref_sig8))
+	      || (form > DW_FORM_flag_present && form != DW_FORM_ref_sig8
+		  && form != DW_FORM_implicit_const))
 	    {
-	      error (0, 0, "%s: Unknown DWARF DW_FORM_%d", dso->filename, form);
+	      error (0, 0, "%s: Unknown DWARF abbrev DW_FORM_0x%x",
+	             dso->filename, form);
 	      htab_delete (h);
 	      return NULL;
+	    }
+	  if (form == DW_FORM_implicit_const)
+	    {
+	      /* It is SLEB128 but the value is dropped anyway.  */
+	      read_uleb128 (ptr);
 	    }
 
 	  t->attr[t->nattr].attr = attr;
@@ -1502,6 +1510,7 @@ skip_form (DSO *dso, uint32_t *formp, unsigned char **ptrp)
 	*ptrp += 4;
       break;
     case DW_FORM_flag_present:
+    case DW_FORM_implicit_const:
       break;
     case DW_FORM_addr:
       *ptrp += ptr_size;
@@ -2016,7 +2025,7 @@ line_rel_cmp (const void *a, const void *b)
 }
 
 static int
-edit_info (DSO *dso, int phase, struct debug_section *sec)
+edit_info (DSO *dso, int phase, struct debug_section *sec, bool is_types)
 {
   unsigned char *ptr, *endcu, *endsec;
   uint32_t value;
@@ -2031,7 +2040,9 @@ edit_info (DSO *dso, int phase, struct debug_section *sec)
   endsec = ptr + sec->size;
   while (ptr < endsec)
     {
-      if (ptr + (sec == &debug_sections[DEBUG_INFO] ? 11 : 23) > endsec)
+      unsigned char *sec_start = ptr;
+
+      if (ptr + 4 + 2 + 1 + 1 > endsec)
 	{
 	  error (0, 0, "%s: %s CU header too small",
 		 dso->filename, sec->name);
@@ -2053,10 +2064,45 @@ edit_info (DSO *dso, int phase, struct debug_section *sec)
 	}
 
       cu_version = read_16 (ptr);
-      if (cu_version != 2 && cu_version != 3 && cu_version != 4)
+      if (cu_version != 2 && cu_version != 3 && cu_version != 4
+	  && cu_version != 5)
 	{
 	  error (0, 0, "%s: DWARF version %d unhandled", dso->filename,
 		 cu_version);
+	  return 1;
+	}
+
+      int cu_ptr_size;
+      bool cu_is_types;
+
+      if (cu_version >= 5)
+	{
+	  if (is_types)
+	    {
+	      error (0, 0, "%s: .debug_types are invalid for DWARF 5+",
+		     dso->filename);
+	      return 1;
+	    }
+
+	  uint8_t unit_type = read_8 (ptr);
+	  if (unit_type != DW_UT_compile && unit_type != DW_UT_type)
+	    {
+	      error (0, 0, "%s: Unit type %u unhandled", dso->filename,
+		     unit_type);
+	      return 1;
+	    }
+	  cu_is_types = unit_type == DW_UT_type;
+
+	  cu_ptr_size = read_8 (ptr);
+	}
+      else
+	cu_is_types = is_types;
+
+      unsigned char *header_end = (sec_start + (!cu_is_types ? 11 : 23)
+				   + (cu_version < 5 ? 0 : 1));
+      if (header_end > endsec)
+	{
+	  error (0, 0, "%s: %s CU header too small", dso->filename, sec->name);
 	  return 1;
 	}
 
@@ -2071,9 +2117,12 @@ edit_info (DSO *dso, int phase, struct debug_section *sec)
 	  return 1;
 	}
 
+      if (cu_version < 5)
+	cu_ptr_size = read_8 (ptr);
+
       if (ptr_size == 0)
 	{
-	  ptr_size = read_8 (ptr);
+	  ptr_size = cu_ptr_size;
 	  if (ptr_size != 4 && ptr_size != 8)
 	    {
 	      error (0, 0, "%s: Invalid DWARF pointer size %d",
@@ -2081,14 +2130,14 @@ edit_info (DSO *dso, int phase, struct debug_section *sec)
 	      return 1;
 	    }
 	}
-      else if (read_8 (ptr) != ptr_size)
+      else if (cu_ptr_size != ptr_size)
 	{
 	  error (0, 0, "%s: DWARF pointer size differs between CUs",
 		 dso->filename);
 	  return 1;
 	}
 
-      if (sec != &debug_sections[DEBUG_INFO])
+      if (cu_is_types)
 	ptr += 12; /* Skip type_signature and type_offset.  */
 
       abbrev = read_abbrev (dso,
@@ -2177,7 +2226,8 @@ edit_dwarf2 (DSO *dso)
 		  struct debug_section *debug_sec = &debug_sections[j];
 		  if (debug_sections[j].data)
 		    {
-		      if (j != DEBUG_MACRO && j != DEBUG_TYPES)
+		      if (j != DEBUG_MACRO && j != DEBUG_TYPES
+			  && j != DEBUG_INFO)
 			{
 			  error (0, 0, "%s: Found two copies of %s section",
 				 dso->filename, name);
@@ -2185,8 +2235,9 @@ edit_dwarf2 (DSO *dso)
 			}
 		      else
 			{
-			  /* In relocatable files .debug_macro and .debug_types
-			     might appear multiple times as COMDAT section.  */
+			  /* In relocatable files .debug_macro, .debug_types
+			     and DWARF-5 .debug_info might appear multiple
+			     times as COMDAT section.  */
 			  struct debug_section *sec;
 			  sec = calloc (sizeof (struct debug_section), 1);
 			  if (sec == NULL)
@@ -2236,7 +2287,7 @@ edit_dwarf2 (DSO *dso)
 			  + (dso->shdr[i].sh_type == SHT_RELA),
 			  debug_sections[j].name) == 0)
 	 	{
-		  if (j == DEBUG_MACRO || j == DEBUG_TYPES)
+		  if (j == DEBUG_MACRO || j == DEBUG_TYPES || j == DEBUG_INFO)
 		    {
 		      /* Pick the correct one.  */
 		      int rel_target = dso->shdr[i].sh_info;
@@ -2300,8 +2351,13 @@ edit_dwarf2 (DSO *dso)
 	break;
 
       rel_updated = false;
-      if (edit_info (dso, phase, &debug_sections[DEBUG_INFO]))
-	return 1;
+      struct debug_section *info_sec = &debug_sections[DEBUG_INFO];
+      while (info_sec != NULL)
+	{
+	  if (edit_info (dso, phase, info_sec, false /* is_types */))
+	    return 1;
+	  info_sec = info_sec->next;
+	}
 
       /* Remember whether any .debug_info relocations might need
 	 to be updated. */
@@ -2311,7 +2367,7 @@ edit_dwarf2 (DSO *dso)
       struct debug_section *types_sec = &debug_sections[DEBUG_TYPES];
       while (types_sec != NULL)
 	{
-	  if (edit_info (dso, phase, types_sec))
+	  if (edit_info (dso, phase, types_sec, true /* is_types */))
 	    return 1;
 	  types_sec = types_sec->next;
 	}
@@ -2562,7 +2618,14 @@ edit_dwarf2 (DSO *dso)
 
   /* Update any relocations addends we might have touched. */
   if (info_rel_updated)
-    update_rela_data (dso, &debug_sections[DEBUG_INFO]);
+    {
+      struct debug_section *info_sec = &debug_sections[DEBUG_INFO];
+      while (info_sec != NULL)
+	{
+	  update_rela_data (dso, info_sec);
+	  info_sec = info_sec->next;
+	}
+    }
   if (types_rel_updated)
     {
       struct debug_section *types_sec = &debug_sections[DEBUG_TYPES];
@@ -2912,6 +2975,7 @@ main (int argc, char *argv[])
   if (dso == NULL)
     exit (1);
 
+  bool have_info = false;
   for (i = 1; i < dso->ehdr.e_shnum; i++)
     {
       const char *name;
@@ -2927,7 +2991,7 @@ main (int argc, char *argv[])
 	      break;
 	    }
 	  if (strcmp (name, ".debug_info") == 0)
-	    edit_dwarf2 (dso);
+	    have_info = true;
 
 	  break;
 	case SHT_NOTE:
@@ -2957,6 +3021,9 @@ main (int argc, char *argv[])
 	  break;
 	}
     }
+
+  if (have_info)
+    edit_dwarf2 (dso);
 
   /* Normally we only need to explicitly update the section headers
      and data when any section data changed size. But because of a bug
@@ -3132,6 +3199,17 @@ main (int argc, char *argv[])
       struct debug_section *next = types_sec->next;
       free (types_sec);
       types_sec = next;
+    }
+
+  /* In case there were multiple (COMDAT) DWARF-5 .debug_info sections,
+     free them.  */
+  struct debug_section *info_sec = &debug_sections[DEBUG_INFO];
+  info_sec = info_sec->next;
+  while (info_sec != NULL)
+    {
+      struct debug_section *next = info_sec->next;
+      free (info_sec);
+      info_sec = next;
     }
 
   poptFreeContext (optCon);

@@ -253,9 +253,8 @@ AT_CLEANUP
 # ===
 # Make sure -fdebug-types-section has updated strings in objects.
 # ===
-AT_SETUP([debugedit .debug_types objects])
-AT_KEYWORDS([debugtypes] [debugedit])
-RPM_DEBUGEDIT_SETUP([-fdebug-types-section])
+m4_define([RPM_DEBUGEDIT_DEBUG_TYPES_OBJECTS],[
+RPM_DEBUGEDIT_SETUP($1)
 
 AT_DATA([expout],
 [st1
@@ -283,15 +282,13 @@ for i in ./foo.o ./subdir_bar/bar.o ./baz.o;do \
           | sort;
 done
 ]],[0],[expout])
-
-AT_CLEANUP
+])
 
 # ===
 # Make sure -fdebug-types-section has updated strings in partial linked object.
 # ===
-AT_SETUP([debugedit .debug_types partial])
-AT_KEYWORDS([debugtypes] [debugedit])
-RPM_DEBUGEDIT_SETUP([-fdebug-types-section])
+m4_define([RPM_DEBUGEDIT_DEBUG_TYPES_PARTIAL],[
+RPM_DEBUGEDIT_SETUP($1)
 
 AT_DATA([expout],
 [st1
@@ -311,15 +308,13 @@ readelf --debug-dump=info ./foobarbaz.part.o \
         | sed -n 's/^.*> *DW_AT_name *:.* \(stringp[^ ]*\|st.\)$/\1/p' \
         | sort
 ]],[0],[expout])
-
-AT_CLEANUP
+])
 
 # ===
 # Make sure -fdebug-types-section has updated strings in executable.
 # ===
-AT_SETUP([debugedit .debug_types exe])
-AT_KEYWORDS([debugtypes] [debugedit])
-RPM_DEBUGEDIT_SETUP([-fdebug-types-section])
+m4_define([RPM_DEBUGEDIT_DEBUG_TYPES_EXE],[
+RPM_DEBUGEDIT_SETUP($1)
 
 AT_DATA([expout],
 [st1
@@ -339,7 +334,36 @@ readelf --debug-dump=info ./foobarbaz.exe \
         | sed -n 's/^.*> *DW_AT_name *:.* \(stringp[^ ]*\|st.\)$/\1/p' \
         | sort
 ]],[0],[expout])
+])
 
+AT_SETUP([debugedit DWARF-4 .debug_types objects])
+AT_KEYWORDS([debugtypes] [debugedit])
+RPM_DEBUGEDIT_DEBUG_TYPES_OBJECTS([-gdwarf-4 -fdebug-types-section])
+AT_CLEANUP
+
+AT_SETUP([debugedit DWARF-4 .debug_types partial])
+AT_KEYWORDS([debugtypes] [debugedit])
+RPM_DEBUGEDIT_DEBUG_TYPES_PARTIAL([-gdwarf-4 -fdebug-types-section])
+AT_CLEANUP
+
+AT_SETUP([debugedit DWARF-4 .debug_types exe])
+AT_KEYWORDS([debugtypes] [debugedit])
+RPM_DEBUGEDIT_DEBUG_TYPES_EXE([-gdwarf-4 -fdebug-types-section])
+AT_CLEANUP
+
+AT_SETUP([debugedit DWARF-5 .debug_types objects])
+AT_KEYWORDS([debugtypes] [debugedit])
+RPM_DEBUGEDIT_DEBUG_TYPES_OBJECTS([-gdwarf-5 -fdebug-types-section])
+AT_CLEANUP
+
+AT_SETUP([debugedit DWARF-5 .debug_types partial])
+AT_KEYWORDS([debugtypes] [debugedit])
+RPM_DEBUGEDIT_DEBUG_TYPES_PARTIAL([-gdwarf-5 -fdebug-types-section])
+AT_CLEANUP
+
+AT_SETUP([debugedit DWARF-5 .debug_types exe])
+AT_KEYWORDS([debugtypes] [debugedit])
+RPM_DEBUGEDIT_DEBUG_TYPES_EXE([-gdwarf-5 -fdebug-types-section])
 AT_CLEANUP
 
 # foo.o and bar.o are build with relative paths and so will use the
