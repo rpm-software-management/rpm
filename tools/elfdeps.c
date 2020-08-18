@@ -13,7 +13,6 @@
 #include <rpm/rpmstring.h>
 #include <rpm/argv.h>
 
-int filter_private = 0;
 int soname_only = 0;
 int fake_soname = 1;
 int filter_soname = 1;
@@ -34,11 +33,6 @@ typedef struct elfInfo_s {
     ARGV_t requires;
     ARGV_t provides;
 } elfInfo;
-
-static int skipPrivate(const char *s)
-{ 
-    return (filter_private && rstreq(s, "GLIBC_PRIVATE"));
-}
 
 /*
  * Rough soname sanity filtering: all sane soname's dependencies need to
@@ -144,7 +138,7 @@ static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    soname = rstrdup(s);
 		    auxoffset += aux->vda_next;
 		    continue;
-		} else if (soname && !soname_only && !skipPrivate(s)) {
+		} else if (soname && !soname_only) {
 		    addDep(&ei->provides, soname, s, ei->marker);
 		}
 	    }
@@ -183,7 +177,7 @@ static void processVerNeed(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		if (s == NULL)
 		    break;
 
-		if (ei->isExec && soname && !soname_only && !skipPrivate(s)) {
+		if (ei->isExec && soname && !soname_only) {
 		    addDep(&ei->requires, soname, s, ei->marker);
 		}
 		auxoffset += aux->vna_next;
@@ -361,7 +355,6 @@ int main(int argc, char *argv[])
     struct poptOption opts[] = {
 	{ "provides", 'P', POPT_ARG_VAL, &provides, -1, NULL, NULL },
 	{ "requires", 'R', POPT_ARG_VAL, &requires, -1, NULL, NULL },
-	{ "filter-private", 0, POPT_ARG_VAL, &filter_private, -1, NULL, NULL },
 	{ "soname-only", 0, POPT_ARG_VAL, &soname_only, -1, NULL, NULL },
 	{ "no-fake-soname", 0, POPT_ARG_VAL, &fake_soname, 0, NULL, NULL },
 	{ "no-filter-soname", 0, POPT_ARG_VAL, &filter_soname, 0, NULL, NULL },
