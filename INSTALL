@@ -33,7 +33,7 @@ Debian: https://lists.debian.org/debian-legal/2002/10/msg00113.html
 The OpenSSL crypto library is available from https://www.openssl.org/
 
 The Berkeley DB >= 4.3.x (4.5.x or newer recommended) is required for the
-default database backend. BDB can be downloaded from
+deprecated "bdb" database backend. BDB can be downloaded from
 http://www.oracle.com/technology/software/products/berkeley-db/index.html
 
 RPM supports two different ways to include it, both methods have their 
