@@ -32,6 +32,16 @@ Debian: https://lists.debian.org/debian-legal/2002/10/msg00113.html
 
 The OpenSSL crypto library is available from https://www.openssl.org/
 
+RPM needs a database engine for normal operation. The main options are 
+"ndb" (--enable-ndb) and "sqlite" (--enable-sqlite), and the now
+deprecated "bdb" (--enable-bdb). Additionally standalone support for
+read-only BDB databases is available as "bdb_ro" (--enable-bdb-ro)
+to aid with migration from BDB.
+
+The ndb and bdb_ro backends have no external dependencies.
+SQLite >= 3.22.0 is required for the sqlite database backend.
+SQLite is available from https://www.sqlite.org/
+
 The Berkeley DB >= 4.3.x (4.5.x or newer recommended) is required for the
 deprecated "bdb" database backend. BDB can be downloaded from
 http://www.oracle.com/technology/software/products/berkeley-db/index.html
