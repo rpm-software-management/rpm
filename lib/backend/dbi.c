@@ -77,6 +77,11 @@ dbDetectBackend(rpmdb rdb)
 	}
     }
 
+    if (!cfg) {
+	rpmlog(RPMLOG_WARNING, _("invalid %%_db_backend: %s\n"), db_backend);
+	goto exit;
+    }
+
     /* If configured database doesn't exist, try autodetection */
     if (!tryBackend(dbhome, cfg)) {
 	for (ops = backends; ops && *ops; ops++) {
@@ -106,6 +111,7 @@ dbDetectBackend(rpmdb rdb)
     if (rdb->db_ops == NULL && cfg)
 	rdb->db_ops = cfg;
 
+exit:
     /* If all else fails... */
     if (rdb->db_ops == NULL) {
 	rdb->db_ops = &dummydb_dbops;
