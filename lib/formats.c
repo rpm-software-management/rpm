@@ -113,13 +113,13 @@ static char * realDateFormat(rpmtd td, const char * strftimeFormat, char **emsg)
 /* date formatting */
 static char * dateFormat(rpmtd td, char **emsg)
 {
-    return realDateFormat(td, _("%c"), emsg);
+    return realDateFormat(td, "%c", emsg);
 }
 
 /* day formatting */
 static char * dayFormat(rpmtd td, char **emsg)
 {
-    return realDateFormat(td, _("%a %b %d %Y"), emsg);
+    return realDateFormat(td, "%a %b %d %Y", emsg);
 }
 
 /* shell escape formatting */
