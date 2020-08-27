@@ -12,13 +12,14 @@
 # Piotr Drąg <piotrdrag@gmail.com>, 2018. #zanata, 2020.
 # Piotr Drąg <piotrdrag@gmail.com>, 2019. #zanata, 2020.
 # Piotr Drąg <piotrdrag@gmail.com>, 2020. #zanata
+# Panu Matilainen <pmatilai@redhat.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-08-22 11:18+0000\n"
-"Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
+"PO-Revision-Date: 2020-08-27 11:10+0000\n"
+"Last-Translator: Panu Matilainen <pmatilai@redhat.com>\n"
 "Language-Team: Polish <https://translate.fedoraproject.org/projects/rpm/"
 "master/pl/>\n"
 "Language: pl\n"
@@ -1446,8 +1447,8 @@ msgstr "Konwertowanie bazy danych z mechanizmu %s do %s\n"
 #, c-format
 msgid "Found %s %s database while attempting %s backend: using %s backend.\n"
 msgstr ""
-"Odnaleziono bazę danych %2$s %1$s podczas próby użycia mechanizmu %s: "
-"używanie mechanizmu %s.\n"
+"Odnaleziono bazę danych %s %s podczas próby użycia mechanizmu %s: używanie "
+"mechanizmu %s.\n"
 
 msgid "Detected outdated index databases\n"
 msgstr "Wykryto przestarzałe bazy danych indeksów\n"
