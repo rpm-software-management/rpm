@@ -5,24 +5,26 @@
 # Translators:
 # Jérôme Fenal <jfenal@gmail.com>, 2013
 # Mathieu LEFEBVRE Mathdabomb <mathdabomb@gmail.com>, 2011-2012,2015
+# Julien Humbert <julroy67@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-03-23 08:38-0400\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: French (http://www.transifex.com/rpm-team/rpm/language/fr/)\n"
+"PO-Revision-Date: 2020-08-27 10:59+0000\n"
+"Last-Translator: Julien Humbert <julroy67@gmail.com>\n"
+"Language-Team: French <https://translate.fedoraproject.org/projects/rpm/"
+"master/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Zanata 4.6.2\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.2.1\n"
 
 #, c-format
 msgid "%s: %s\n"
-msgstr "%s: %s\n"
+msgstr "%s : %s\n"
 
 #, c-format
 msgid "RPM version %s\n"
@@ -30,7 +32,7 @@ msgstr "RPM version %s\n"
 
 #, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
-msgstr "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
+msgstr "Copyright © 1998-2002 - Red Hat, Inc.\n"
 
 #, c-format
 msgid ""
@@ -57,7 +59,7 @@ msgstr "erreur dans la lecteur de l'entête du paquet\n"
 
 #, c-format
 msgid "cannot re-open payload: %s\n"
-msgstr "impossible de réouvrir la charge utile: %s\n"
+msgstr "impossible de rouvrir la charge utile : %s\n"
 
 #, c-format
 msgid "files over 4GB not supported by cpio, use rpm2archive instead\n"
@@ -187,7 +189,7 @@ msgid "remove build tree when done"
 msgstr "effacer l'arborescence de construction une fois terminé"
 
 msgid "ignore ExcludeArch: directives from spec file"
-msgstr "ignorer les directives ExcludeArch: du fichier spec"
+msgstr "ignorer les directives ExcludeArch : du fichier spec"
 
 msgid "debug file state machine"
 msgstr "déboguer la machine à états de fichiers (déballage)"
@@ -240,11 +242,11 @@ msgstr "Options communes à tous les modes et exécutables rpm :"
 
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
-msgstr "Impossible d'ouvrir le fichier spec %s: %s\n"
+msgstr "Impossible d’ouvrir le fichier spec %s : %s\n"
 
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
-msgstr "Impossible d'ouvrir le pipe de tar: %m\n"
+msgstr "Impossible d’ouvrir le pipe de tar : %m\n"
 
 #, c-format
 msgid "Found more than one spec file in %s\n"
@@ -256,7 +258,7 @@ msgstr "Impossible de lire le fichier spec à %s\n"
 
 #, c-format
 msgid "failed to stat %s: %m\n"
-msgstr "échec de stat sur %s: %m\n"
+msgstr "échec de stat sur %s : %m\n"
 
 #, c-format
 msgid "File %s is not a regular file.\n"
@@ -268,7 +270,7 @@ msgstr "Le fichier %s ne semble pas être un fichier spec.\n"
 
 #, c-format
 msgid "Building target platforms: %s\n"
-msgstr "Construction pour plate-formes cibles: %s\n"
+msgstr "Construction pour plateformes cibles : %s\n"
 
 #, c-format
 msgid "Building for target %s\n"
@@ -541,7 +543,7 @@ msgid "Bad exit status from %s (%s)\n"
 msgstr "Mauvais statut de sortie pour %s (%s)\n"
 
 msgid "Failed build dependencies:\n"
-msgstr "Dépendances de construction manquantes:\n"
+msgstr "Dépendances de construction manquantes :\n"
 
 #, c-format
 msgid "setting %s=%s\n"
@@ -649,7 +651,7 @@ msgstr "Fichier non trouvé : %s\n"
 
 #, c-format
 msgid "Not a directory: %s\n"
-msgstr "Pas de répertoire: %s\n"
+msgstr "Pas de répertoire : %s\n"
 
 #, fuzzy, c-format
 msgid "Can't read content of file: %s\n"
@@ -713,7 +715,7 @@ msgstr ""
 
 #, c-format
 msgid "File needs leading \"/\": %s\n"
-msgstr "Le fichier non précédé d'un \"/\": %s\n"
+msgstr "Le fichier non précédé d’un « / » : %s\n"
 
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
@@ -727,17 +729,17 @@ msgstr ""
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open %s file %s: %m\n"
-msgstr "Impossible d'ouvrir le fichier %%files %s : %m\n"
+msgstr "Impossible d’ouvrir le fichier %s %s : %m\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Empty %s file %s\n"
-msgstr "Classificateur de fichier vide\n"
+msgstr "Fichier %s vide %s\n"
 
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
-msgstr "illegal _docdir_fmt %s: %s\n"
+msgstr "illegal _docdir_fmt %s : %s\n"
 
 #, c-format
 msgid "File not found by glob: %s\n"
@@ -774,9 +776,9 @@ msgstr ""
 "Fichier(s) installé(s) (mais non empaquetés) :\n"
 "%s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s already exists\n"
-msgstr "paquet %s déjà installé"
+msgstr "paquet %s déjà installé\n"
 
 #, c-format
 msgid "%s was mapped to multiple filenames"
@@ -1217,7 +1219,7 @@ msgstr ""
 
 #, c-format
 msgid "%s:%d: malformed %%include statement\n"
-msgstr "%s:%d: directive %%include mal-formée\n"
+msgstr "%s :%d : directive %%include mal-formée\n"
 
 #, c-format
 msgid "encoding %s not supported by system\n"
@@ -1375,11 +1377,11 @@ msgstr ""
 
 #, c-format
 msgid "%s error(%d) from %s: %s\n"
-msgstr "%s erreur(%d) de %s: %s\n"
+msgstr "%s erreur (%d) de %s : %s\n"
 
 #, c-format
 msgid "%s error(%d): %s\n"
-msgstr "%s erreur(%d): %s\n"
+msgstr "%s erreur (%d) : %s\n"
 
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
@@ -1464,9 +1466,9 @@ msgstr ""
 msgid "rpmxdb: Version mismatch. Expected version: %u. Found version: %u\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open sqlite database %s: %s\n"
-msgstr "Impossible d'ouvrir le fichier spec %s: %s\n"
+msgstr "Impossible d’ouvrir la base de donnée sqlite %s : %s\n"
 
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
@@ -1649,7 +1651,7 @@ msgid "escaped char expected after \\"
 msgstr ""
 
 msgid "? expected in expression"
-msgstr "? attendu dans l'expression"
+msgstr "? attendu dans l’expression"
 
 msgid "{ expected after ? in expression"
 msgstr "{ attendu après ? dans l'expression"
