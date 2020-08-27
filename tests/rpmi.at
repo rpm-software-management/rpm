@@ -683,3 +683,42 @@ test -e ${RPMTEST}/opt/vattrtest/a || exit 1
 [],
 [])
 AT_CLEANUP
+
+AT_SETUP([rpm -U <suicidal>])
+AT_KEYWORDS([install])
+RPMDB_INIT
+
+for r in 1 2; do
+    runroot rpmbuild -bb --quiet \
+		--define "rel ${r}" \
+		/data/SPECS/suicidal.spec
+done
+
+AT_CHECK([
+RPMDB_INIT
+
+for r in 1 2; do
+    runroot rpm -U \
+	--define "_minimize_writes 0" \
+	/build/RPMS/noarch/suicidal-1-${r}.noarch.rpm
+done
+runroot rpm -V --nouser --nogroup suicidal
+],
+[0],
+[],
+[])
+
+AT_CHECK([
+RPMDB_INIT
+
+for r in 1 2; do
+    runroot rpm -U \
+	--define "_minimize_writes 1" \
+	/build/RPMS/noarch/suicidal-1-${r}.noarch.rpm
+done
+runroot rpm -V --nouser --nogroup suicidal
+],
+[0],
+[],
+[])
+AT_CLEANUP
