@@ -3,23 +3,24 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Göran Uddeborg <goeran@uddeborg.se>, 2011,2013,2015
-# Göran Uddeborg <goeran@uddeborg.se>, 2011,2013,2015
-# Göran Uddeborg <goeran@uddeborg.se>, 2017. #zanata
+# Göran Uddeborg <goeran@uddeborg.se>, 2011,2013,2015, 2020.
+# Göran Uddeborg <goeran@uddeborg.se>, 2011,2013,2015, 2020.
+# Göran Uddeborg <goeran@uddeborg.se>, 2017. #zanata, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-03-23 08:39-0400\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: Swedish (http://www.transifex.com/rpm-team/rpm/language/sv/)\n"
+"PO-Revision-Date: 2020-08-27 10:59+0000\n"
+"Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
+"Language-Team: Swedish <https://translate.fedoraproject.org/projects/rpm/"
+"master/sv/>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.6.2\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.2.1\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -60,7 +61,7 @@ msgstr "kan inte återöppna lasten: %s\n"
 
 #, c-format
 msgid "files over 4GB not supported by cpio, use rpm2archive instead\n"
-msgstr ""
+msgstr "filer över 4 GB stödjs inte av cpio, använd rpm2archive istället\n"
 
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
@@ -96,7 +97,7 @@ msgstr "bygg endast källpaket från <specfil>"
 
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr ""
+msgstr "bygg källpaket endast från <spec-fil> – beräkna dynamiska byggberoenden"
 
 #, c-format
 msgid ""
@@ -132,6 +133,7 @@ msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
 msgstr ""
+"bygg källpaket endast från <källpaket> – beräkna dynamiska byggberoenden"
 
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
@@ -164,7 +166,7 @@ msgstr "bygg endast källpaket från <tar-arkiv>"
 
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr ""
+msgstr "bygg källpaket endast från <tar-boll> – beräkna dynamiska byggberoenden"
 
 msgid "build binary package from <source package>"
 msgstr "bygg binärpaket från <källpaket>"
@@ -274,9 +276,8 @@ msgstr "bygg om databasens inverterade listor från installerade pakets huvuden"
 msgid "verify database files"
 msgstr "verifiera databasfiler"
 
-#, fuzzy
 msgid "salvage database"
-msgstr "initiera databas"
+msgstr "rädda databasen"
 
 msgid "export database to stdout header list"
 msgstr "exportera databasen till standard ut huvudlista"
@@ -312,7 +313,7 @@ msgid "Query/Verify package selection options:"
 msgstr "Flaggor för att fråga/kontrollera paket:"
 
 msgid "Query/Verify file selection options:"
-msgstr ""
+msgstr "Flaggor för att fråga/kontrollera filer:"
 
 msgid "Query options (with -q or --query):"
 msgstr "Frågeflaggor (med -q eller --query):"
@@ -437,9 +438,8 @@ msgstr "signera paket (detsamma som --addsign)"
 msgid "delete package signatures"
 msgstr "tag bort paketsignaturer"
 
-#, fuzzy
 msgid "create rpm v3 header+payload signatures"
-msgstr "verifiera inte huvud+lastsignatur"
+msgstr "skapa rpm v3 huvud+lastsignatur"
 
 msgid "sign package(s) files"
 msgstr "signera paketfiler"
@@ -603,15 +603,15 @@ msgstr "läsning av symlänk %s misslyckades: %s\n"
 
 #, c-format
 msgid "absolute symlink: %s -> %s\n"
-msgstr ""
+msgstr "absolut symbolisk länk %s → %s\n"
 
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolisk länk pekar på BuildRoot: %s → %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Illegal character (0x%x) in filename: %s\n"
-msgstr "Otillåtet tecken ”%c” (0x%x)"
+msgstr "Otillåtet tecken (0x%x) i filnamn: %s\n"
 
 #, c-format
 msgid "Path is outside buildroot: %s\n"
@@ -629,9 +629,9 @@ msgstr "Filen hittades inte: %s\n"
 msgid "Not a directory: %s\n"
 msgstr "Inte en katalog: %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't read content of file: %s\n"
-msgstr "Misslyckades med att läsa policyfil: %s\n"
+msgstr "Kan inte läsa innehållet i filen: %s\n"
 
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
@@ -699,20 +699,19 @@ msgstr "%%dev-matchning inte tillåten: %s\n"
 
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
-msgstr ""
-"Hittade ingen katalog vid matchningen: %s.  Försöker utan att matcha.\n"
+msgstr "Hittade ingen katalog vid matchningen: %s. Försöker utan att matcha.\n"
 
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
-msgstr "Hittade ingen fil vid matchningen: %s.  Försöker utan att matcha.\n"
+msgstr "Hittade ingen fil vid matchningen: %s. Försöker utan att matcha.\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open %s file %s: %m\n"
-msgstr "Kunde inte öppna %%files-fil %s: %m\n"
+msgstr "Kunde inte öppna %s-filen %s: %m\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Empty %s file %s\n"
-msgstr "Tom %%files-fil %s\n"
+msgstr "Tom %s-fil %s\n"
 
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
@@ -753,9 +752,9 @@ msgstr ""
 "Installerade (men opaketerade) filer funna:\n"
 "%s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s already exists\n"
-msgstr "rad %d: %s: paket %s finns redan\n"
+msgstr "peketet %s finns redan\n"
 
 #, c-format
 msgid "%s was mapped to multiple filenames"
@@ -790,7 +789,7 @@ msgstr "Kunde inte söka i filen %s: %s\n"
 
 #, c-format
 msgid "Failed to read %jd bytes in file %s: %s\n"
-msgstr ""
+msgstr "Misslyckades att läsa %jd byte i filen %s: %s\n"
 
 msgid "Unable to create immutable header region\n"
 msgstr "Kan inte skapa oföränderlig huvudregion\n"
@@ -833,7 +832,7 @@ msgstr "Kunde inte generera utfilnamn för paketet %s: %s\n"
 
 #, c-format
 msgid "Finished binary package job, result %d, filename %s\n"
-msgstr ""
+msgstr "Avslutade binärt paketjobb, resultat %d, filnamn %s\n"
 
 #, c-format
 msgid "line %d: second %s\n"
@@ -1030,7 +1029,7 @@ msgid "Bad package specification: %s\n"
 msgstr "Felaktig paketangivelse %s\n"
 
 msgid "Binary rpm package found. Expected spec file!\n"
-msgstr "Binärt rpm-paket hittat.  Spec-fil förväntades!\n"
+msgstr "Binärt rpm-paket hittat. Spec-fil förväntades!\n"
 
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
@@ -1096,13 +1095,13 @@ msgid "Version required"
 msgstr "Version krävs"
 
 msgid "Only package names are allowed in Obsoletes"
-msgstr ""
+msgstr "Endast paketnamn är tillåta i Obsoletes"
 
 msgid "It's not recommended to have unversioned Obsoletes"
-msgstr ""
+msgstr "Det rekommenderas inte att ha versionslösa Obsoletes"
 
 msgid "It's not recommended to use '>' in Obsoletes"
-msgstr ""
+msgstr "Det rekommenderas inte att använda ”>” i Obsoletes"
 
 msgid "Only absolute paths are allowed in file triggers"
 msgstr "Endast absoluta sökvägar är tillåtna i filutlösare"
@@ -1156,7 +1155,7 @@ msgstr "rad %d: argument till tolken tillåts inte i utlösare: %s\n"
 
 #, c-format
 msgid "extra tokens at the end of %s directive in line %d:  %s\n"
-msgstr ""
+msgstr "extra symboler i slutet av %s-direktivet på rad %d:  %s\n"
 
 #, c-format
 msgid "Macro expanded in comment on line %d: %s\n"
@@ -1180,7 +1179,7 @@ msgstr "rad %d: oavslutat makro eller felaktig fortsättning på rad\n"
 
 #, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr ""
+msgstr "%s: rad %d: %s utan %%if\n"
 
 #, c-format
 msgid "%s: line %d: %s after %s\n"
@@ -1253,7 +1252,7 @@ msgid ""
 "'%s' type given with other types in %%semodule %s. Compacting types to "
 "'%s'.\n"
 msgstr ""
-"”%s”-typ ges med andra typer i %%semodule %s.  Komprimerar typer till ”%s”.\n"
+"”%s”-typ ges med andra typer i %%semodule %s. Komprimerar typer till ”%s”.\n"
 
 #, c-format
 msgid "Error parsing %s: %s\n"
@@ -1802,7 +1801,7 @@ msgid "do not install documentation"
 msgstr "installera inte dokumentation"
 
 msgid "skip files with leading component <path> "
-msgstr "hoppa över filer med inledande <sökväg>"
+msgstr "hoppa över filer med inledande <sökväg> "
 
 msgid "<path>"
 msgstr "<sökväg>"
@@ -2099,23 +2098,23 @@ msgid "normal        "
 msgstr "normal        "
 
 msgid "replaced      "
-msgstr "ersatt        "
+msgstr "ersatt      "
 
 msgid "not installed "
-msgstr "oinstallerat  "
+msgstr "oinstallerat "
 
 msgid "net shared    "
-msgstr "nätdelad      "
+msgstr "nätdelad    "
 
 msgid "wrong color   "
-msgstr "fel färg      "
+msgstr "fel färg   "
 
 msgid "(no state)    "
-msgstr "(ej tillstnd) "
+msgstr "(ej tillstnd)    "
 
 #, c-format
 msgid "(unknown %3d) "
-msgstr "(okänd %3d)   "
+msgstr "(okänd %3d) "
 
 msgid "package has not file owner/group lists\n"
 msgstr "paketet har inte filägare-/-grupplistor\n"
@@ -2387,7 +2386,7 @@ msgid "support files larger than 4GB"
 msgstr "stöd filer större än 4 GB"
 
 msgid "support for rich dependencies."
-msgstr "stöd för rika beroenden"
+msgstr "stöd för rika beroenden."
 
 msgid "support for dynamic buildrequires."
 msgstr ""
@@ -2613,9 +2612,9 @@ msgstr "paket %s är avsett för ett %s-operativsystem"
 msgid "package %s is already installed"
 msgstr "paket %s är redan installerat"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is not installed"
-msgstr "paket %s är inte installerat\n"
+msgstr "paket %s är inte installerat"
 
 #, c-format
 msgid "path %s in package %s is not relocatable"
