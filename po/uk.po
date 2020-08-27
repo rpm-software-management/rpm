@@ -3,23 +3,23 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Yuri Chornoivan <yurchor@ukr.net>, 2011-2012,2014-2015
+# Yuri Chornoivan <yurchor@ukr.net>, 2011-2012,2014-2015, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-03-23 08:40-0400\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: Ukrainian (http://www.transifex.com/rpm-team/rpm/language/"
-"uk/)\n"
+"PO-Revision-Date: 2020-08-23 20:29+0000\n"
+"Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
+"Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/rpm/"
+"master/uk/>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Zanata 4.6.2\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.2.1\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -61,6 +61,8 @@ msgstr "не вдалося повторно відкрити вміст: %s\n"
 #, c-format
 msgid "files over 4GB not supported by cpio, use rpm2archive instead\n"
 msgstr ""
+"підтримки файлів, розмір яких перевищує 4 ГБ, у cpio не передбачено, "
+"скористайтеся rpm2archive\n"
 
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
@@ -100,6 +102,8 @@ msgstr "зібрати за <файлом специфікації> лише п�
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
 msgstr ""
+"зібрати пакунок початкових кодів лише з <файл специфікації> — обчислити "
+"залежності збирання динамічних залежностей"
 
 #, c-format
 msgid ""
@@ -142,6 +146,8 @@ msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
 msgstr ""
+"зібрати пакунок початкових кодів лише з <пакунок з початковими кодами> — "
+"обчислити залежності збирання динамічних залежностей"
 
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
@@ -176,6 +182,8 @@ msgstr "зібрати за <архівом tar> лише пакунок з ко
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
 msgstr ""
+"зібрати пакунок початкових кодів лише з <архів tar> — обчислити залежності "
+"збирання динамічних залежностей"
 
 msgid "build binary package from <source package>"
 msgstr "зібрати за <пакунком з кодами> пакунок з бінарними файлами"
@@ -289,9 +297,8 @@ msgstr ""
 msgid "verify database files"
 msgstr "перевірити файли бази даних"
 
-#, fuzzy
 msgid "salvage database"
-msgstr "ініціалізувати базу даних"
+msgstr "врятувати базу даних"
 
 msgid "export database to stdout header list"
 msgstr "експортувати базу даних до списку заголовків stdout"
@@ -327,7 +334,7 @@ msgid "Query/Verify package selection options:"
 msgstr "Опитування/Перевірка параметрів вибору пакунка:"
 
 msgid "Query/Verify file selection options:"
-msgstr ""
+msgstr "Опитування/Перевірка параметрів вибору файла:"
 
 msgid "Query options (with -q or --query):"
 msgstr "Опитати параметри (за допомогою -q або --query):"
@@ -459,21 +466,20 @@ msgstr "підписати пакунки (тотожне до --addsign)"
 msgid "delete package signatures"
 msgstr "вилучити підписи пакунка"
 
-#, fuzzy
 msgid "create rpm v3 header+payload signatures"
-msgstr "не перевіряти підпис заголовка та вмісту"
+msgstr "створити підписи заголовка і вмісту rpm версії 3"
 
 msgid "sign package(s) files"
-msgstr ""
+msgstr "підписати файли пакунків"
 
 msgid "use file signing key <key>"
-msgstr ""
+msgstr "скористатися для підписування файлів ключем <ключ>"
 
 msgid "<key>"
-msgstr ""
+msgstr "<ключ>"
 
 msgid "prompt for file signing key password"
-msgstr ""
+msgstr "запит щодо пароля до ключа для підписування"
 
 msgid "Signature options:"
 msgstr "Параметри підписування:"
@@ -487,9 +493,11 @@ msgid ""
 "You must set \"%%_file_signing_key\" in your macro file or on the command "
 "line with --fskpath\n"
 msgstr ""
+"Вам слід встановити у вашому файлі макросу значення «%%_file_signing_key» "
+"або скористатися у рядку команди параметром --fskpath\n"
 
 msgid "--fskpath may only be specified when signing files"
-msgstr ""
+msgstr "--fskpath можна вказувати лише при підписуванні файлів"
 
 msgid "parse spec file(s) to stdout"
 msgstr "вивести оброблені дані файлів spec до stdout"
@@ -501,7 +509,7 @@ msgid "operate on binary rpms generated by spec (default)"
 msgstr "обробити бінарні rpm, створені на основі spec (типово)"
 
 msgid "operate on binary rpms that would be built from spec"
-msgstr ""
+msgstr "працювати із бінарними rpm, які буде зібрано з spec"
 
 msgid "operate on source rpm generated by spec"
 msgstr "обробити srpm, створені на основі spec"
@@ -516,7 +524,7 @@ msgid "no arguments given for parse"
 msgstr "не вказано аргументів обробки"
 
 msgid "unable to parse SOURCE_DATE_EPOCH\n"
-msgstr ""
+msgstr "не вдалося обробити SOURCE_DATE_EPOCH\n"
 
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
@@ -543,7 +551,7 @@ msgstr "Не вдалося зібрати залежності:\n"
 
 #, c-format
 msgid "setting %s=%s\n"
-msgstr ""
+msgstr "встановлюємо значення %s=%s\n"
 
 msgid ""
 "\n"
@@ -568,7 +576,7 @@ msgstr "Некоректний елемент %s: %s\n"
 
 #, c-format
 msgid "Missing %s in %s(%s)\n"
-msgstr ""
+msgstr "Пропущено %s у %s(%s)\n"
 
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
@@ -607,7 +615,7 @@ msgstr "Назва файла має починатися з «/»: %s\n"
 
 #, c-format
 msgid "unable to parse %s=%s\n"
-msgstr ""
+msgstr "не вдалося обробити %s=%s\n"
 
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
@@ -625,15 +633,15 @@ msgstr "під час спроби читання символічного по�
 
 #, c-format
 msgid "absolute symlink: %s -> %s\n"
-msgstr ""
+msgstr "абсолютне символічне посилання: %s -> %s\n"
 
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Символічне посилання вказує на BuildRoot: %s -> %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Illegal character (0x%x) in filename: %s\n"
-msgstr "Некоректний символ «%c» (0x%x)"
+msgstr "Некоректний символ (0x%x) у назві файла: %s\n"
 
 #, c-format
 msgid "Path is outside buildroot: %s\n"
@@ -651,9 +659,9 @@ msgstr "Файл не знайдено: %s\n"
 msgid "Not a directory: %s\n"
 msgstr "Не є каталогом: %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't read content of file: %s\n"
-msgstr "Не вдалося прочитати файл правил: %s\n"
+msgstr "Не вдалося прочитати вміст файла: %s\n"
 
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
@@ -672,44 +680,44 @@ msgid "%s: failed to encode\n"
 msgstr "%s: не вдалося закодувати\n"
 
 msgid "failed symlink"
-msgstr ""
+msgstr "помилкове символічне посилання"
 
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
-msgstr ""
+msgstr "Дублювання ідентифікатора збирання (build-id), статистика %s: %m\n"
 
 #, c-format
 msgid "Duplicate build-ids %s and %s\n"
-msgstr ""
+msgstr "Дублювання ідентифікаторів збирання %s і %s\n"
 
 msgid "_build_id_links macro not set, assuming 'compat'\n"
-msgstr ""
+msgstr "Макрос _build_id_links не визначено, припускаємо значення «compat»\n"
 
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
-msgstr ""
+msgstr "Для макросу _build_id_links встановлено невідоме значення «%s»\n"
 
 #, c-format
 msgid "error reading build-id in %s: %s\n"
-msgstr ""
+msgstr "помилка під час спроби прочитати ідентифікатор збирання у %s: %s\n"
 
 #, c-format
 msgid "Missing build-id in %s\n"
-msgstr ""
+msgstr "Не вказано ідентифікатор збирання (build-id) у %s\n"
 
 #, c-format
 msgid "build-id found in %s too small\n"
-msgstr ""
+msgstr "Виявлений у %s ідентифікатор збирання є надто малим\n"
 
 #, c-format
 msgid "build-id found in %s too large\n"
-msgstr ""
+msgstr "Виявлений у %s ідентифікатор збирання є надто великим\n"
 
 msgid "failed to create directory"
 msgstr "не вдалося створити каталог"
 
 msgid "Mixing main ELF and debug files in package"
-msgstr ""
+msgstr "Суміш основного файла ELF і діагностичних файлів у пакунку"
 
 #, c-format
 msgid "File needs leading \"/\": %s\n"
@@ -722,18 +730,22 @@ msgstr "Не можна використовувати glob %%dev: %s\n"
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
 msgstr ""
+"За формальним виразом каталогу не виявлено: %s. Намагаємося знайти його без "
+"формального виразу.\n"
 
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
+"За формальним виразом файла не виявлено: %s. Намагаємося знайти його без "
+"формального виразу.\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open %s file %s: %m\n"
-msgstr "Не вдалося відкрити файл %%files %s: %m\n"
+msgstr "Не вдалося відкрити файл %s %s: %m\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Empty %s file %s\n"
-msgstr "Порожній файл %%files %s\n"
+msgstr "Порожній файл %s %s\n"
 
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
@@ -745,7 +757,7 @@ msgstr "У glob файла не виявлено: %s\n"
 
 #, c-format
 msgid "Special file in generated file list: %s\n"
-msgstr ""
+msgstr "Спеціальний файл у створеному списку файлів: %s\n"
 
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
@@ -756,7 +768,7 @@ msgid "More than one file on a line: %s\n"
 msgstr "Декілька файлів у одному рядку: %s\n"
 
 msgid "Generating build-id links failed\n"
-msgstr ""
+msgstr "Не вдалося створити посилання для ідентифікаторів збирання (build-id)\n"
 
 #, c-format
 msgid "Bad file: %s: %s\n"
@@ -774,13 +786,13 @@ msgstr ""
 "Виявлено встановлені (але не запаковані) файли:\n"
 "%s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s already exists\n"
-msgstr "пакунок %s вже встановлено"
+msgstr "пакунок %s вже існує\n"
 
 #, c-format
 msgid "%s was mapped to multiple filenames"
-msgstr ""
+msgstr "%s пов'язано із декількома назвами файлів"
 
 #, c-format
 msgid "Processing files: %s\n"
@@ -813,14 +825,14 @@ msgstr "Не вдалося виконати позиціювання у фай�
 
 #, c-format
 msgid "Failed to read %jd bytes in file %s: %s\n"
-msgstr ""
+msgstr "Не вдалося прочитати %jd байтів у файлі %s: %s\n"
 
 msgid "Unable to create immutable header region\n"
-msgstr ""
+msgstr "Не вдалося створити незмінну область заголовка\n"
 
 #, c-format
 msgid "Unable to write header to %s: %s\n"
-msgstr ""
+msgstr "Не вдалося записати заголовок до %s: %s\n"
 
 #, c-format
 msgid "Could not open %s: %s\n"
@@ -857,6 +869,8 @@ msgstr "Не вдалося створити назву файла виведе�
 #, c-format
 msgid "Finished binary package job, result %d, filename %s\n"
 msgstr ""
+"Завершено завдання з обробки бінарних пакунків. Результат — %d, назва файла —"
+" %s\n"
 
 #, c-format
 msgid "line %d: second %s\n"
@@ -912,7 +926,7 @@ msgstr "рядок %d: помилка під час обробки %%files: %s\n
 
 #, c-format
 msgid "line %d: multiple %%files for package '%s'\n"
-msgstr ""
+msgstr "рядок %d: декілька записів %%files для пакунка «%s»\n"
 
 #, c-format
 msgid "line %d: Error parsing %%policies: %s\n"
@@ -999,7 +1013,7 @@ msgid "Illegal char '%c' (0x%x)"
 msgstr "Некоректний символ «%c» (0x%x)"
 
 msgid "Possible unexpanded macro"
-msgstr ""
+msgstr "Можливий нерозгорнутий макрос"
 
 msgid "Illegal sequence \"..\""
 msgstr "Заборонена послідовність «..»"
@@ -1034,7 +1048,7 @@ msgstr "рядок %d: помилковий формат BuildArchitecture: %s\n
 
 #, c-format
 msgid "line %d: Duplicate BuildArch entry: %s\n"
-msgstr ""
+msgstr "рядок %d: дублювання запису BuildArch: %s\n"
 
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
@@ -1053,7 +1067,7 @@ msgid "Bad package specification: %s\n"
 msgstr "Помилкова специфікація пакунка: %s\n"
 
 msgid "Binary rpm package found. Expected spec file!\n"
-msgstr ""
+msgstr "Виявлено бінарний пакунок rpm. Мало бути вказано файл spec!\n"
 
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
@@ -1119,13 +1133,13 @@ msgid "Version required"
 msgstr "Слід вказати версію"
 
 msgid "Only package names are allowed in Obsoletes"
-msgstr ""
+msgstr "У Obsoletes можна вказувати лише назви пакунків"
 
 msgid "It's not recommended to have unversioned Obsoletes"
-msgstr ""
+msgstr "Не рекомендуємо використовувати Obsoletes без визначення версій"
 
 msgid "It's not recommended to use '>' in Obsoletes"
-msgstr ""
+msgstr "Не рекомендуємо використовувати «>» у Obsoletes"
 
 msgid "Only absolute paths are allowed in file triggers"
 msgstr "У файлових перемикачах можна використовувати лише абсолютні шляхи"
@@ -1143,7 +1157,7 @@ msgstr "рядок %d: у записах перемикачів має бути 
 
 #, c-format
 msgid "line %d: missing trigger condition: %s\n"
-msgstr ""
+msgstr "рядок %d: не вказано умови: %s\n"
 
 #, c-format
 msgid "line %d: Error parsing %s: %s\n"
@@ -1156,7 +1170,7 @@ msgstr ""
 
 #, c-format
 msgid "line %d: script program must begin with '/': %s\n"
-msgstr "рядок %d: програма скрипту має починатися з  символу «/»: %s\n"
+msgstr "рядок %d: програма скрипту має починатися з символу «/»: %s\n"
 
 #, c-format
 msgid "line %d: Priorities are allowed only for file triggers : %s\n"
@@ -1174,7 +1188,7 @@ msgstr "рядок %d: непідтримуваний вбудований ск�
 
 #, c-format
 msgid "line %d: file trigger condition must begin with '/': %s"
-msgstr ""
+msgstr "рядок %d: запис файла в умові має починатися з «/»: %s"
 
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
@@ -1184,7 +1198,7 @@ msgstr ""
 
 #, c-format
 msgid "extra tokens at the end of %s directive in line %d:  %s\n"
-msgstr ""
+msgstr "зайві лексеми наприкінці команди %s у рядку %d:  %s\n"
 
 #, c-format
 msgid "Macro expanded in comment on line %d: %s\n"
@@ -1208,15 +1222,15 @@ msgstr "рядок %d: незавершений макрос або помилк
 
 #, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr ""
+msgstr "%s: рядок %d: %s без %%if\n"
 
 #, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr ""
+msgstr "%s: рядок %d: %s після %s\n"
 
 #, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr ""
+msgstr "%s:%d: помилкова умова %s: %s\n"
 
 #, c-format
 msgid "%s:%d: malformed %%include statement\n"
@@ -1232,15 +1246,16 @@ msgstr "Пакунок %s: некоректне кодування %s у %s: %s 
 
 #, c-format
 msgid "line %d: %%end doesn't take any arguments: %s\n"
-msgstr ""
+msgstr "рядок %d: %%end не слід супроводжувати аргументами: %s\n"
 
 #, c-format
 msgid "line %d: %%end not expected here, no section to close: %s\n"
 msgstr ""
+"рядок %d: %%end тут не повинно бути — немає розділів для завершення: %s\n"
 
 #, c-format
 msgid "line %d doesn't belong to any section: %s\n"
-msgstr ""
+msgstr "рядок %d не належить до жодного з розділів: %s\n"
 
 msgid "No compatible architectures found for build\n"
 msgstr "Не знайдено сумісних архітектур для збирання\n"
@@ -1311,6 +1326,7 @@ msgstr "Ігноруємо некоректний формальний вира�
 #, c-format
 msgid "%s: mime and magic supplied, only mime will be used\n"
 msgstr ""
+"%s: вказано тип mime і контрольний рядок; буде використано лише тип mime\n"
 
 #, c-format
 msgid "Couldn't create pipe for %s: %m\n"
@@ -1359,15 +1375,15 @@ msgid "Failed to find %s:\n"
 msgstr "Не вдалося знайти %s:\n"
 
 msgid "Deprecated external dependency generator is used!\n"
-msgstr ""
+msgstr "Використано застарілий зовнішній породжувач залежностей!\n"
 
 #, c-format
 msgid "line %d: %s: package %s does not exist\n"
-msgstr ""
+msgstr "рядок %d: %s: пакунка %s не існує\n"
 
 #, c-format
 msgid "line %d: %s: package %s already exists\n"
-msgstr ""
+msgstr "рядок %d: %s: пакунок %s вже існує\n"
 
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
@@ -1440,36 +1456,43 @@ msgstr "помилка (%d) розподілу нового екземпляра
 
 #, c-format
 msgid "Converting database from %s to %s backend\n"
-msgstr ""
+msgstr "Перетворюємо базу даних з %s до модуля %s\n"
 
 #, c-format
 msgid "Found %s %s database while attempting %s backend: using %s backend.\n"
 msgstr ""
+"Знайдено базу даних %s %s при спробі використати модуль %s: використовуємо "
+"модуль %s.\n"
 
 msgid "Detected outdated index databases\n"
-msgstr ""
+msgstr "Виявлено застарілі бази даних покажчика\n"
 
 msgid "Rebuilding outdated index databases\n"
-msgstr ""
+msgstr "Перебудовуємо застарілі бази даних покажчика\n"
 
 #, c-format
 msgid "rpmidx: Version mismatch. Expected version: %u. Found version: %u\n"
 msgstr ""
+"rpmidx: невідповідність версій. Потрібна версія: %u. Знайдена версія: %u\n"
 
 #, c-format
 msgid "rpmpkg: Version mismatch. Expected version: %u. Found version: %u\n"
 msgstr ""
+"rpmpkg: невідповідність версій. Потрібна версія: %u. Знайдена версія: %u\n"
 
 msgid "rpmpkg: detected non-zero blob, trying auto repair\n"
 msgstr ""
+"rpmpkg: виявлено ненульовий бінарний блок, намагаємося автоматично "
+"виправити\n"
 
 #, c-format
 msgid "rpmxdb: Version mismatch. Expected version: %u. Found version: %u\n"
 msgstr ""
+"rpmxdb: невідповідність версій. Потрібна версія: %u. Знайдена версія: %u\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open sqlite database %s: %s\n"
-msgstr "Не вдалося відкрити файл spec %s: %s\n"
+msgstr "Не вдалося відкрити базу даних sqlite %s: %s\n"
 
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
@@ -1561,13 +1584,13 @@ msgstr "файл"
 
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d len %d"
-msgstr ""
+msgstr "мітка[%d]: ПОМИЛКА, мітка %d, тип %d, зсув %d, лічильник %d, довжина %d"
 
 msgid "hdr load: BAD"
 msgstr "завантаження заголовка: ПОМИЛКА"
 
 msgid "region: no tags"
-msgstr ""
+msgstr "область: немає міток"
 
 #, c-format
 msgid "region tag: BAD, tag %d type %d offset %d count %d"
@@ -1583,11 +1606,11 @@ msgstr "залишок ділянки: ПОМИЛКА, теґ %d тип %d зм�
 
 #, c-format
 msgid "region %d size: BAD, ril %d il %d rdl %d dl %d"
-msgstr ""
+msgstr "область %d, розмір: ПОМИЛКА, ril %d il %d rdl %d dl %d"
 
 #, c-format
 msgid "region %d: tag number mismatch il %d ril %d dl %d rdl %d\n"
-msgstr ""
+msgstr "область %d: невідповідність номеру мітки il %d ril %d dl %d rdl %d\n"
 
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d"
@@ -1613,7 +1636,7 @@ msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr "pad sigh (%zd): ПОМИЛКА, прочитано %zd байтів"
 
 msgid "signature "
-msgstr ""
+msgstr "підпис "
 
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
@@ -1624,11 +1647,11 @@ msgstr "некоректна ширина поля"
 
 #, c-format
 msgid "missing { after %%"
-msgstr ""
+msgstr "не вистачає { після %%"
 
 #, c-format
 msgid "missing } after %%{"
-msgstr ""
+msgstr "не вистачає { після %%{"
 
 msgid "empty tag format"
 msgstr "порожній формат теґу"
@@ -1638,7 +1661,7 @@ msgstr "порожня назва теґу"
 
 #, c-format
 msgid "unknown tag: \"%s\""
-msgstr ""
+msgstr "невідома мітка: «%s»"
 
 msgid "] expected at end of array"
 msgstr "не вистачає ] у кінці запису масиву"
@@ -1650,7 +1673,7 @@ msgid "unexpected }"
 msgstr "неочікувана }"
 
 msgid "escaped char expected after \\"
-msgstr ""
+msgstr "після \\ мав бути екранований символ"
 
 msgid "? expected in expression"
 msgstr "не вистачає ? у виразі"
@@ -1673,17 +1696,17 @@ msgstr "вираз має завершуватися символом |"
 msgid "array iterator used with different sized arrays"
 msgstr "ітератор масиву використано з двома масивами різної розмірності"
 
-#, fuzzy, c-format
+#, c-format
 msgid "RPM v3 packages are deprecated: %s\n"
-msgstr "рядок %d: %s вважається застарілим: %s\n"
+msgstr "Пакунки RPM версії 3 вважаються застарілими: %s\n"
 
 #, c-format
 msgid "failed to load macro file %s\n"
-msgstr ""
+msgstr "не вдалося завантажити файл макросу %s\n"
 
 #, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr ""
+msgstr "аргументи параметра --dbpath мають починатися символом «/»\n"
 
 #, c-format
 msgid ""
@@ -1714,10 +1737,10 @@ msgid "'EXPR'"
 msgstr "'ВИРАЗ'"
 
 msgid "Specify target platform"
-msgstr ""
+msgstr "Вказати платформу призначення"
 
 msgid "CPU-VENDOR-OS"
-msgstr ""
+msgstr "ПРОЦЕСОР-ВИРОБНИК-ОС"
 
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "читати <ФАЙЛ:...> замість типових файлів"
@@ -1726,10 +1749,10 @@ msgid "<FILE:...>"
 msgstr "<ФАЙЛ:...>"
 
 msgid "load a single macro file"
-msgstr ""
+msgstr "завантажити один файл макросу"
 
 msgid "<FILE>"
-msgstr ""
+msgstr "<ФАЙЛ>"
 
 msgid "don't enable any plugins"
 msgstr "не вмикати жодних додатків"
@@ -1783,7 +1806,7 @@ msgid "debug rpmio I/O"
 msgstr "зневаджування вводу-виводу rpmio"
 
 msgid "disable user namespace support"
-msgstr ""
+msgstr "вимкнути підтримку простору назв користувача"
 
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
@@ -1825,9 +1848,8 @@ msgstr "вилучити пакунок"
 msgid "<package>+"
 msgstr "<пакунок>+"
 
-#, fuzzy
 msgid "do not install artifacts"
-msgstr "не встановлювати документацію"
+msgstr "не встановлювати ключів"
 
 msgid "do not install configuration files"
 msgstr "не встановлювати файли налаштувань"
@@ -1865,7 +1887,7 @@ msgid "don't check disk space before installing"
 msgstr "не перевіряти наявність місця на диску перед встановленням"
 
 msgid "short hand for --ignorepayload --ignoresignature"
-msgstr ""
+msgstr "скорочення для --ignorepayload --ignoresignature"
 
 msgid "install documentation"
 msgstr "встановити документацію"
@@ -1889,7 +1911,7 @@ msgid "don't install file security contexts"
 msgstr "не встановлювати контекстів безпеки файлів"
 
 msgid "don't install file capabilities"
-msgstr ""
+msgstr "не встановлювати можливості для файла"
 
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "не змінювати порядок пакунків для задоволення залежностей"
@@ -2017,7 +2039,7 @@ msgid "query/verify the package(s) which require a dependency"
 msgstr "опитати/перевірити пакунки, яким потрібні залежні пакунки"
 
 msgid "query/verify the package(s) which obsolete a dependency"
-msgstr ""
+msgstr "опитати/перевірити пакунки, які роблять застарілим залежний пакунок"
 
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "опитати/перевірити пакунки, які надають файли залежностей"
@@ -2041,28 +2063,28 @@ msgid "do not process non-package files as manifests"
 msgstr "не обробляти не запаковані файли як маніфести"
 
 msgid "only include configuration files"
-msgstr ""
+msgstr "включити лише файли налаштувань"
 
 msgid "only include documentation files"
-msgstr ""
+msgstr "включити лише файли документації"
 
 msgid "only include license files"
-msgstr ""
+msgstr "включити лише файли ліцензій"
 
 msgid "only include artifact files"
-msgstr ""
+msgstr "включити лише файли ключів"
 
 #, c-format
 msgid "exclude %%ghost files"
-msgstr ""
+msgstr "виключити файли %%ghost"
 
 #, c-format
 msgid "exclude %%config files"
-msgstr ""
+msgstr "виключити файли %%config"
 
 #, c-format
 msgid "exclude %%artifact files"
-msgstr ""
+msgstr "виключити файли %%artifact"
 
 msgid "dump basic file information"
 msgstr "створити дамп основних даних щодо файлів"
@@ -2131,7 +2153,7 @@ msgid "(contains no files)\n"
 msgstr "(не містить файлів)\n"
 
 msgid "normal        "
-msgstr "звичайний    "
+msgstr "звичайний        "
 
 msgid "replaced      "
 msgstr "замінено      "
@@ -2140,13 +2162,13 @@ msgid "not installed "
 msgstr "не встановлено "
 
 msgid "net shared    "
-msgstr "мережевий     "
+msgstr "мережевий    "
 
 msgid "wrong color   "
-msgstr "помилк. колір  "
+msgstr "помилк. колір   "
 
 msgid "(no state)    "
-msgstr "(не має стану)"
+msgstr "(не має стану)    "
 
 #, c-format
 msgid "(unknown %3d) "
@@ -2177,11 +2199,11 @@ msgstr "жодне з пакунків не відповідає ключу %s: 
 
 #, c-format
 msgid "no package conflicts %s\n"
-msgstr ""
+msgstr "немає конфліктів пакунків %s\n"
 
 #, c-format
 msgid "no package obsoletes %s\n"
-msgstr ""
+msgstr "жоден з пакунків не робить застарілим %s\n"
 
 #, c-format
 msgid "no package requires %s\n"
@@ -2245,19 +2267,19 @@ msgstr "%s: помилка читання під час імпортування
 
 #, c-format
 msgid "Fread failed: %s"
-msgstr ""
+msgstr "Помилка у fread: %s"
 
 msgid "DIGESTS"
-msgstr ""
+msgstr "КОНТРОЛЬНІ СУМИ"
 
 msgid "digests"
-msgstr ""
+msgstr "контрольні суми"
 
 msgid "SIGNATURES"
-msgstr ""
+msgstr "ПІДПИСИ"
 
 msgid "signatures"
-msgstr ""
+msgstr "підписи"
 
 msgid "NOT OK"
 msgstr "ПОМИЛКА"
@@ -2323,23 +2345,23 @@ msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: не вдалося прочитати заголовок за адресою 0x%x\n"
 
 msgid "could not move new database in place\n"
-msgstr ""
+msgstr "не вдалося пересунути нову базу даних на місце\n"
 
 #, c-format
 msgid "could also not restore old database from %s\n"
-msgstr ""
+msgstr "також не вдалося відновити стару базу даних з %s\n"
 
 #, c-format
 msgid "replace files in %s with files from %s to recover\n"
-msgstr ""
+msgstr "замінити файли у %s файлами з %s для відновлення\n"
 
 #, c-format
 msgid "Could not get public keys from %s\n"
-msgstr ""
+msgstr "Не вдалося отримати відкриті ключі від %s\n"
 
 #, c-format
 msgid "could not delete old database at %s\n"
-msgstr ""
+msgstr "не вдалося вилучити застарілу базу даних у %s\n"
 
 msgid "no dbpath has been set"
 msgstr "не було встановлено шляху dbpath"
@@ -2425,7 +2447,7 @@ msgid "dependency comparison supports versions with tilde."
 msgstr "порівнянням залежностей підтримується запис версій з тильдою."
 
 msgid "dependency comparison supports versions with caret."
-msgstr ""
+msgstr "порівнянням залежностей підтримується запис версій з кареткою."
 
 msgid "support files larger than 4GB"
 msgstr "підтримка файлів, розмір яких перевищує 4 ГБ"
@@ -2434,10 +2456,10 @@ msgid "support for rich dependencies."
 msgstr "підтримка розширених залежностей."
 
 msgid "support for dynamic buildrequires."
-msgstr ""
+msgstr "підтримка динамічних buildrequires."
 
 msgid "package payload can be compressed using zstd."
-msgstr ""
+msgstr "вміст пакунка може бути стиснуто за допомогою zstd."
 
 #, c-format
 msgid "Unknown rich dependency op '%.*s'"
@@ -2447,13 +2469,16 @@ msgid "Name required"
 msgstr "Потрібна назва"
 
 msgid "Illegal ops in with/without"
-msgstr ""
+msgstr "Некоректні дії у with/without"
 
 msgid "Illegal context for 'unless', please use 'or' instead"
 msgstr ""
+"Некоректний контекст для «unless». Будь ласка, скористайтеся замість нього "
+"«or»"
 
 msgid "Illegal context for 'if', please use 'and' instead"
 msgstr ""
+"Некоректний контекст для «if». Будь ласка, скористайтеся замість нього «and»"
 
 msgid "Rich dependency does not start with '('"
 msgstr "Розширена залежність не починається з «(»"
@@ -2472,26 +2497,29 @@ msgid "Cannot chain different ops"
 msgstr "Не можна створювати ланцюжок із різних дій"
 
 msgid "Can only chain and/or/with ops"
-msgstr ""
+msgstr "Ланцюг можна складати лише з дій and/or/with"
 
 msgid "Junk after rich dependency"
 msgstr "Зайві дані після запису розширеної залежності"
 
 #, c-format
 msgid "user %s does not exist - using %s\n"
-msgstr ""
+msgstr "запису користувача %s не існує, — використовуємо %s\n"
 
 #, c-format
 msgid "group %s does not exist - using %s\n"
-msgstr ""
+msgstr "запису групи %s не існує, — використовуємо %s\n"
 
 #, c-format
 msgid "Wrong number of entries for tag %s: %u found but %u expected.\n"
 msgstr ""
+"Помилкова кількість записів для мітки %s: виявлено %u, мало бути — %u.\n"
 
 #, c-format
 msgid "Malformed data for tag %s: %u bytes found but %lu expected.\n"
 msgstr ""
+"Помилкове форматування даних для мітки %s: виявлено %u байтів, мало бути — "
+"%lu.\n"
 
 msgid "Bad magic"
 msgstr "Помилкове значення magic"
@@ -2521,7 +2549,7 @@ msgid "Archive file not in header"
 msgstr "Файла архіву не вказано у заголовку"
 
 msgid "File from package already exists as a directory in system"
-msgstr ""
+msgstr "Файл з пакунка вже існує як каталог у системі"
 
 msgid " failed - "
 msgstr " помилка - "
@@ -2554,13 +2582,13 @@ msgid "Preparing..."
 msgstr "Підготовка..."
 
 msgid "Verifying..."
-msgstr ""
+msgstr "Перевірка…"
 
 msgid "Preparing packages..."
 msgstr "Приготування пакунків…"
 
 msgid "Verifying packages..."
-msgstr ""
+msgstr "Перевіряємо пакунки…"
 
 msgid "Failed dependencies:\n"
 msgstr "Помилкові залежності:\n"
@@ -2656,9 +2684,9 @@ msgstr "пакунок %s призначено для операційної с�
 msgid "package %s is already installed"
 msgstr "пакунок %s вже встановлено"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is not installed"
-msgstr "пакунок %s не встановлено\n"
+msgstr "пакунок %s не встановлено"
 
 #, c-format
 msgid "path %s in package %s is not relocatable"
@@ -2676,15 +2704,15 @@ msgstr "файл %s, який встановлюється у %s, конфлік
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "пакунок %s (який є новішим за %s) вже встановлено"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "installing package %s needs %<PRIu64>%cB more space on the %s filesystem"
-msgstr "встановлення пакунка %s потребує %<PRIu64>%cБ у файловій системі %s"
+msgstr "встановлення пакунка %s потребує ще %<PRIu64>%cБ у файловій системі %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %<PRIu64> more inodes on the %s filesystem"
 msgstr ""
-"встановлення пакунка %s потребує %<PRIu64> inod-ів у файловій системі %s"
+"встановлення пакунка %s потребує іще %<PRIu64> inod-ів у файловій системі %s"
 
 #, c-format
 msgid "%s is needed by %s%s"
@@ -2703,7 +2731,7 @@ msgstr "%s став застарілим через %s%s"
 
 #, c-format
 msgid "package %s does not verify: %s"
-msgstr ""
+msgstr "пакунок %s не перевіряє %s"
 
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
@@ -2773,7 +2801,7 @@ msgid "Unable to open %s for reading: %m.\n"
 msgstr "Не вдалося відкрити %s для читання: %m.\n"
 
 msgid "failed to register exit handler"
-msgstr ""
+msgstr "не вдалося зареєструвати обробник виходу"
 
 msgid "No exec() called after fork() in lua scriptlet\n"
 msgstr "У скрипті Lua не викликано exec() після fork()\n"
@@ -2789,7 +2817,7 @@ msgstr ""
 
 #, c-format
 msgid "failed to exec scriptlet interpreter %s: %s\n"
-msgstr ""
+msgstr "не вдалося запустити інтерпретатор дієскриптів %s: %s\n"
 
 #, c-format
 msgid "Couldn't create temporary file for %s: %s\n"
@@ -2825,7 +2853,7 @@ msgid "erase"
 msgstr "вилучити"
 
 msgid "rpmdb"
-msgstr ""
+msgstr "rpmdb"
 
 #, c-format
 msgid "cannot open Packages database in %s\n"
@@ -2849,69 +2877,69 @@ msgstr "%s: спроба читання відкритого ключа заве
 
 #, c-format
 msgid "invalid package verify level %s\n"
-msgstr ""
+msgstr "некоректний рівень перевірки пакунка %s\n"
 
 msgid "transaction"
 msgstr "операція"
 
 #, c-format
 msgid "%s tag %u: invalid type %u"
-msgstr ""
+msgstr "%s, мітка %u: некоректний тип %u"
 
 #, c-format
 msgid "%s: tag %u: invalid count %u"
-msgstr ""
+msgstr "%s: мітка %u: некоректне значення лічильника %u"
 
 #, c-format
 msgid "%s tag %u: invalid data %p (%u)"
-msgstr ""
+msgstr "%s, мітка %u: некоректні дані %p (%u)"
 
 #, c-format
 msgid "%s tag %u: invalid size %u"
-msgstr ""
+msgstr "%s, мітка %u: некоректний розмір %u"
 
 #, c-format
 msgid "%s tag %u: invalid OpenPGP signature"
-msgstr ""
+msgstr "%s, мітка %u: некоректний підпис OpenPGP"
 
 #, c-format
 msgid "%s: tag %u: invalid hex"
-msgstr ""
+msgstr "%s: мітка %u: некоректне шістнадцяткове значення"
 
 #, c-format
 msgid "%s%s%s %s"
-msgstr ""
+msgstr "%s%s%s %s"
 
 msgid "digest"
-msgstr ""
+msgstr "контрольна сума"
 
 #, c-format
 msgid "%s%s"
-msgstr ""
+msgstr "%s%s"
 
 msgid "signature"
-msgstr ""
+msgstr "підпис"
 
 msgid "header"
-msgstr ""
+msgstr "заголовок"
 
 msgid "package"
-msgstr ""
+msgstr "пакунок"
 
 msgid "Header "
 msgstr "Заголовок "
 
 msgid "Payload "
-msgstr ""
+msgstr "Вміст "
 
 msgid "Unable to reload signature header.\n"
 msgstr "Не вдалося перезавантажити заголовок підпису.\n"
 
 msgid "no signature"
-msgstr ""
+msgstr "немає підпису"
 
 msgid "no digest"
-msgstr ""
+msgstr "немає контрольної суми"
 
 msgid "skipped"
 msgstr "пропущено"
@@ -2941,93 +2969,83 @@ msgstr "Не вдалося скинути значення пріоритетн
 msgid "Unable to reset I/O priority: %s"
 msgstr "Не вдалося скинути пріоритетність введення-виведення: %s"
 
-#, fuzzy
 msgid "syntax error while parsing =="
-msgstr "синтаксична помилка під час обробки ==\n"
+msgstr "синтаксична помилка під час обробки =="
 
-#, fuzzy
 msgid "syntax error while parsing &&"
-msgstr "синтаксична помилка під час обробки &&\n"
+msgstr "синтаксична помилка під час обробки &&"
 
-#, fuzzy
 msgid "syntax error while parsing ||"
-msgstr "синтаксична помилка під час обробки ||\n"
+msgstr "синтаксична помилка під час обробки ||"
 
 msgid "macro expansion returned a bare word, please use \"...\""
 msgstr ""
+"розгортання макросу повернуло просте слово — будь ласка, скористайтеся «...»"
 
 msgid "macro expansion did not return an integer"
-msgstr ""
+msgstr "розгортанням макросу не повернуто цілого числа"
 
-#, fuzzy, c-format
+#, c-format
 msgid "expanded string: %s\n"
-msgstr "рядок %d: %s у %s\n"
+msgstr "розгорнутий рядок: %s\n"
 
-#, fuzzy
 msgid "unterminated string in expression"
-msgstr "у виразі після ? слід вказати {"
+msgstr "незавершений рядок у виразі"
 
-#, fuzzy
 msgid "invalid version"
-msgstr "(некоректний тип)"
+msgstr "некоректна версія"
 
 msgid "bare words are no longer supported, please use \"...\""
 msgstr ""
+"підтримки простих слів більше не передбачено; будь ласка, скористайтеся «...»"
 
-#, fuzzy
 msgid "parse error in expression"
-msgstr "помилка обробки у виразі\n"
+msgstr "помилка обробки у виразі"
 
-#, fuzzy
 msgid "unmatched ("
-msgstr "незакрита дужка (\n"
+msgstr "( без відповідника"
 
-#, fuzzy
 msgid "- only on numbers"
-msgstr "- лише для чисел\n"
+msgstr "- лише для чисел"
 
-#, fuzzy
 msgid "unexpected end of expression"
-msgstr "вираз має завершуватися символом |"
+msgstr "неочікуваний кінець виразу"
 
-#, fuzzy
 msgid "syntax error in expression"
-msgstr "синтаксична помилка у виразі\n"
+msgstr "синтаксична помилка у виразі"
 
-#, fuzzy
 msgid "types must match"
-msgstr "типи мають збігатися\n"
+msgstr "типи мають збігатися"
 
 msgid "division by zero"
-msgstr ""
+msgstr "ділення на нуль"
 
-#, fuzzy
 msgid "* and / not supported for strings"
-msgstr "* / не підтримується для рядків\n"
+msgstr "підтримки * і / для рядків не передбачено"
 
-#, fuzzy
 msgid "- not supported for strings"
-msgstr "- не підтримується для рядків\n"
+msgstr "- не підтримується для рядків"
 
 #, c-format
 msgid "%3d>%*s(empty)\n"
-msgstr ""
+msgstr "%3d>%*s(порожньо)\n"
 
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(порожньо)\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open shell expansion pipe for command: %s: %m \n"
-msgstr "Не вдалося відкрити канал tar: %m\n"
+msgstr ""
+"Не вдалося відкрити канал розширення командної оболонки для команди %s: %m \n"
 
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
-msgstr ""
+msgstr "Макрос %%%s має некоректну назву (%s)\n"
 
 #, c-format
 msgid "Macro %%%s is a built-in (%s)\n"
-msgstr ""
+msgstr "Макрос %%%s є вбудованим (%s)\n"
 
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
@@ -3059,7 +3077,7 @@ msgstr "Невідомий параметр %c у %s(%s)\n"
 
 #, c-format
 msgid "no such macro: '%s'\n"
-msgstr ""
+msgstr "такого макросу не існує: «%s»\n"
 
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
@@ -3076,13 +3094,11 @@ msgstr "Не закрито %c: %s\n"
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "За %% вказано непридатний до обробки макрос\n"
 
-#, fuzzy
 msgid "argument expected"
-msgstr "неочікувана ]"
+msgstr "мало бути вказано аргумент"
 
-#, fuzzy
 msgid "unexpected argument"
-msgstr "неочікувана ]"
+msgstr "несподіваний аргумент"
 
 #, c-format
 msgid "======================== active %d empty %d\n"
@@ -3116,7 +3132,7 @@ msgid "warning: "
 msgstr "попередження: "
 
 msgid "Error writing to log"
-msgstr ""
+msgstr "Помилка під час запису до журналу"
 
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
@@ -3145,7 +3161,7 @@ msgstr ""
 
 #, c-format
 msgid "Unsupported version of key: V%d\n"
-msgstr ""
+msgstr "Непідтримувана версія ключа: V%d\n"
 
 #, c-format
 msgid "V%d %s/%s %s, key ID %s"
@@ -3156,7 +3172,7 @@ msgstr "(нічого)"
 
 #, c-format
 msgid "exiting on signal %d from pid %d\n"
-msgstr ""
+msgstr "завершуємо роботу унаслідок сигналу %d від pid %d\n"
 
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
@@ -3181,21 +3197,21 @@ msgstr "Непідтримуваний алгоритм хешування PGP, 
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr "Непідтримуваний алгоритм обчислення відкритого ключа PGP, %u\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not create pipe for signing: %m\n"
-msgstr "Не вдалося створити канал для %s: %m\n"
+msgstr "Не вдалося створити канал для підписування: %m\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not set GPG_TTY to stdin: %m\n"
-msgstr "Не вдалося відкрити файл %%files %s: %m\n"
+msgstr "Не вдалося встановити для GPG_TTY значення stdin: %m\n"
 
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Не вдалося виконати %s: %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open pipe for writing: %m\n"
-msgstr "Не вдалося створити канал для %s: %m\n"
+msgstr "Не вдалося відкрити канал для запису: %m\n"
 
 msgid "Could not write to pipe\n"
 msgstr "Не вдалося виконати запис до каналу\n"
@@ -3215,7 +3231,7 @@ msgid "unable to read the signature\n"
 msgstr "не вдалося прочитати підпис\n"
 
 msgid "file signing support not built in\n"
-msgstr ""
+msgstr "підтримку підписування файлів не зібрано\n"
 
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
@@ -3248,16 +3264,16 @@ msgid "replacing %s failed: %s\n"
 msgstr "спроба заміни %s зазнала невдачі: %s\n"
 
 msgid "sign_hash failed\n"
-msgstr ""
+msgstr "Помилка у sign_hash\n"
 
 msgid "File digest algorithm id is invalid"
-msgstr ""
+msgstr "Ідентифікатор алгоритму обчислення контрольної суми файла є некоректним"
 
 msgid "signFile failed\n"
-msgstr ""
+msgstr "Помилка у signFile\n"
 
 msgid "headerPutString failed\n"
-msgstr ""
+msgstr "Помилка у headerPutString\n"
 
 #, c-format
 msgid "%s: read manifest failed: %s\n"
