@@ -24,6 +24,9 @@
 
 #include "debug.h"
 
+/* Compression semaphore shared among threads.  */
+sem_t *comp_semaphore = NULL;
+
 typedef struct FDSTACK_s * FDSTACK_t;
 
 struct FDSTACK_s {
@@ -1135,6 +1138,7 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
 	if (threads > 0) {
 	    if (ZSTD_isError (ZSTD_CCtx_setParameter(_stream, ZSTD_c_nbWorkers, threads)))
 		rpmlog(RPMLOG_DEBUG, "zstd library does not support multi-threading\n");
+            ZSTD_useSemaphore (_stream, comp_semaphore);
 	}
 
 	nb = ZSTD_CStreamOutSize();

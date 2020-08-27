@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <semaphore.h>
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmsw.h>
@@ -135,6 +136,8 @@ typedef enum fdOpX_e {
  *
  */
 rpmop fdOp(FD_t fd, fdOpX opx);
+
+extern sem_t *comp_semaphore;
 
 #ifdef __cplusplus
 }

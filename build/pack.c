@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <sys/wait.h>
+#include <omp.h>
 
 #include <rpm/rpmlib.h>			/* RPMSIGTAG*, rpmReadPackageFile */
 #include <rpm/rpmfileutil.h>
@@ -762,6 +763,9 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
     }
     qsort(tasks, npkgs, sizeof(Package), compareBinaries);
 
+    comp_semaphore = xmalloc (sizeof (sem_t));
+    sem_init (comp_semaphore, 0, omp_get_num_threads ());
+
     #pragma omp parallel
     #pragma omp single
     for (int i = 0; i < npkgs; i++) {
@@ -780,6 +784,9 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 	if (rc)
 	    break;
     }
+    sem_close (comp_semaphore);
+    free (comp_semaphore);
+    comp_semaphore = NULL;
 
     /* Now check the package set if enabled */
     if (rc == RPMRC_OK)
