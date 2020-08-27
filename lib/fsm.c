@@ -902,10 +902,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
         if (!skip) {
 	    int setmeta = 1;
 
-	    /* When touching we don't need any of this... */
-	    if (action == FA_TOUCH)
-		goto touch;
-
 	    /* Directories replacing something need early backup */
 	    if (!suffix) {
 		rc = fsmBackup(fi, action);
@@ -916,6 +912,17 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	    } else {
 		rc = RPMERR_ENOENT;
 	    }
+
+	    /* See if the file was removed while our attention was elsewhere */
+	    if (rc == RPMERR_ENOENT && action == FA_TOUCH) {
+		rpmlog(RPMLOG_DEBUG, "file %s vanished unexpectedly\n", fpath);
+		action = FA_CREATE;
+		fsmDebug(fpath, action, &sb);
+	    }
+
+	    /* When touching we don't need any of this... */
+	    if (action == FA_TOUCH)
+		goto touch;
 
             if (S_ISREG(sb.st_mode)) {
 		if (rc == RPMERR_ENOENT) {
