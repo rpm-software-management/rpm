@@ -6,20 +6,21 @@
 # Arkadiusz Miskiewicz <arekm@pld-linux.org>, 2003
 # Jakub Bogusz <qboosh@pld-linux.org>, 2002
 # Paweł Dziekoński <pdziekonski@mml.ch.pwr.wroc.pl>, 1999
-# Piotr Drąg <piotrdrag@gmail.com>, 2007,2011-2012,2014-2017
+# Piotr Drąg <piotrdrag@gmail.com>, 2007,2011-2012,2014-2017, 2020.
 # Wojciech Drapiński <wojciech.drapinski@zie.pg.gda.pl>, 1999
-# Piotr Drąg <piotrdrag@gmail.com>, 2017. #zanata
-# Piotr Drąg <piotrdrag@gmail.com>, 2018. #zanata
-# Piotr Drąg <piotrdrag@gmail.com>, 2019. #zanata
+# Piotr Drąg <piotrdrag@gmail.com>, 2017. #zanata, 2020.
+# Piotr Drąg <piotrdrag@gmail.com>, 2018. #zanata, 2020.
+# Piotr Drąg <piotrdrag@gmail.com>, 2019. #zanata, 2020.
 # Piotr Drąg <piotrdrag@gmail.com>, 2020. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-03-23 10:53-0400\n"
+"PO-Revision-Date: 2020-08-22 11:18+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
-"Language-Team: Polish (http://www.transifex.com/rpm-team/rpm/language/pl/)\n"
+"Language-Team: Polish <https://translate.fedoraproject.org/projects/rpm/"
+"master/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -27,7 +28,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n"
 "%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n"
 "%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
-"X-Generator: Zanata 4.6.2\n"
+"X-Generator: Weblate 4.2.1\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -779,9 +780,9 @@ msgstr ""
 "Odnaleziono zainstalowane (ale niespakietowane) pliki:\n"
 "%s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s already exists\n"
-msgstr "%d. wiersz: %s: pakiet %s już istnieje\n"
+msgstr "pakiet %s już istnieje\n"
 
 #, c-format
 msgid "%s was mapped to multiple filenames"
@@ -1445,6 +1446,8 @@ msgstr "Konwertowanie bazy danych z mechanizmu %s do %s\n"
 #, c-format
 msgid "Found %s %s database while attempting %s backend: using %s backend.\n"
 msgstr ""
+"Odnaleziono bazę danych %2$s %1$s podczas próby użycia mechanizmu %s: "
+"używanie mechanizmu %s.\n"
 
 msgid "Detected outdated index databases\n"
 msgstr "Wykryto przestarzałe bazy danych indeksów\n"
@@ -1828,9 +1831,8 @@ msgstr "usunięcie (odinstalowanie) pakietu"
 msgid "<package>+"
 msgstr "<pakiet>+"
 
-#, fuzzy
 msgid "do not install artifacts"
-msgstr "bez instalacji dokumentacji"
+msgstr "bez instalacji artefaktów"
 
 msgid "do not install configuration files"
 msgstr "bez instalacji plików konfiguracyjnych"
@@ -2656,9 +2658,9 @@ msgstr "pakiet %s jest przeznaczony dla systemu operacyjnego %s"
 msgid "package %s is already installed"
 msgstr "pakiet %s jest już zainstalowany"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is not installed"
-msgstr "pakiet %s nie jest zainstalowany\n"
+msgstr "pakiet %s nie jest zainstalowany"
 
 #, c-format
 msgid "path %s in package %s is not relocatable"
@@ -2964,9 +2966,8 @@ msgstr "rozwinięty ciąg: %s\n"
 msgid "unterminated string in expression"
 msgstr "niezakończony ciąg w wyrażeniu"
 
-#, fuzzy
 msgid "invalid version"
-msgstr "(nieprawidłowy typ)"
+msgstr "nieprawidłowa wersja"
 
 msgid "bare words are no longer supported, please use \"...\""
 msgstr "same słowa nie są już obsługiwane, proszę użyć „...”"
@@ -3168,21 +3169,21 @@ msgstr "Nieobsługiwany algorytm mieszania PGP %u\n"
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr "Nieobsługiwany algorytm klucza publicznego PGP %u\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not create pipe for signing: %m\n"
-msgstr "Nie można utworzyć potoku dla %s: %m\n"
+msgstr "Nie można utworzyć potoku do podpisania: %m\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not set GPG_TTY to stdin: %m\n"
-msgstr "Nie można otworzyć pliku %s w %s: %m\n"
+msgstr "Nie można ustawić GPG_TTY na standardowe wejście: %m\n"
 
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Nie można wykonać %s: %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open pipe for writing: %m\n"
-msgstr "Nie można utworzyć potoku dla %s: %m\n"
+msgstr "Nie można otworzyć potoku do zapisania: %m\n"
 
 msgid "Could not write to pipe\n"
 msgstr "Nie można zapisać do potoku\n"
