@@ -451,7 +451,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
     }
 
     if (c < -1) {
-	rpmlog(RPMLOG_ERR, _("%s: %s: %s\n"), poptStrerror(c), 
+	rpmlog(RPMLOG_ERR, "%s: %s: %s\n", poptStrerror(c),
 		poptBadOption(optCon, POPT_BADOPTION_NOALIAS), line);
 	goto exit;
     }
