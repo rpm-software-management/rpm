@@ -45,6 +45,7 @@ RUN dnf -y install \
   pkgconfig \
   /usr/bin/gdb-add-index \
   dwz \
+  fsverity-utils fsverity-utils-devel \
   && dnf clean all
 
 COPY . .
@@ -57,6 +58,7 @@ RUN ./configure \
   --with-acl \
   --with-lua \
   --with-audit \
+  --with-fsverity \
   --enable-bdb \
   --enable-ndb \
   --enable-bdb-ro \
