@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-20 13:58+0300\n"
+"POT-Creation-Date: 2020-08-28 15:22+0300\n"
 "PO-Revision-Date: 2020-08-23 20:29+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/rpm/"
@@ -768,7 +768,8 @@ msgid "More than one file on a line: %s\n"
 msgstr "Декілька файлів у одному рядку: %s\n"
 
 msgid "Generating build-id links failed\n"
-msgstr "Не вдалося створити посилання для ідентифікаторів збирання (build-id)\n"
+msgstr ""
+"Не вдалося створити посилання для ідентифікаторів збирання (build-id)\n"
 
 #, c-format
 msgid "Bad file: %s: %s\n"
@@ -869,8 +870,8 @@ msgstr "Не вдалося створити назву файла виведе�
 #, c-format
 msgid "Finished binary package job, result %d, filename %s\n"
 msgstr ""
-"Завершено завдання з обробки бінарних пакунків. Результат — %d, назва файла —"
-" %s\n"
+"Завершено завдання з обробки бінарних пакунків. Результат — %d, назва файла "
+"— %s\n"
 
 #, c-format
 msgid "line %d: second %s\n"
@@ -1104,10 +1105,6 @@ msgstr "рядок %d: помилковий аргумент %%setup: %s\n"
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "рядок %d: помилковий параметр %%setup %s: %s\n"
-
-#, c-format
-msgid "%s: %s: %s\n"
-msgstr "%s: %s: %s\n"
 
 #, c-format
 msgid "Invalid patch number %s: %s\n"
@@ -1455,6 +1452,10 @@ msgid "error(%d) allocating new package instance\n"
 msgstr "помилка (%d) розподілу нового екземпляра пакунка\n"
 
 #, c-format
+msgid "invalid %%_db_backend: %s\n"
+msgstr ""
+
+#, c-format
 msgid "Converting database from %s to %s backend\n"
 msgstr "Перетворюємо базу даних з %s до модуля %s\n"
 
@@ -1523,13 +1524,6 @@ msgstr "(не є рядком)"
 msgid "(invalid type)"
 msgstr "(некоректний тип)"
 
-#, c-format
-msgid "%c"
-msgstr "%c"
-
-msgid "%a %b %d %Y"
-msgstr "%a %b %d %Y"
-
 msgid "(not base64)"
 msgstr "(не є base64)"
 
@@ -1584,7 +1578,8 @@ msgstr "файл"
 
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d len %d"
-msgstr "мітка[%d]: ПОМИЛКА, мітка %d, тип %d, зсув %d, лічильник %d, довжина %d"
+msgstr ""
+"мітка[%d]: ПОМИЛКА, мітка %d, тип %d, зсув %d, лічильник %d, довжина %d"
 
 msgid "hdr load: BAD"
 msgstr "завантаження заголовка: ПОМИЛКА"
@@ -3267,7 +3262,8 @@ msgid "sign_hash failed\n"
 msgstr "Помилка у sign_hash\n"
 
 msgid "File digest algorithm id is invalid"
-msgstr "Ідентифікатор алгоритму обчислення контрольної суми файла є некоректним"
+msgstr ""
+"Ідентифікатор алгоритму обчислення контрольної суми файла є некоректним"
 
 msgid "signFile failed\n"
 msgstr "Помилка у signFile\n"
@@ -3281,6 +3277,17 @@ msgstr "%s: помилка читання маніфесту: %s\n"
 
 msgid "don't verify header+payload signature"
 msgstr "не перевіряти підпис заголовка та вмісту"
+
+#, c-format
+#~ msgid "%s: %s: %s\n"
+#~ msgstr "%s: %s: %s\n"
+
+#, c-format
+#~ msgid "%c"
+#~ msgstr "%c"
+
+#~ msgid "%a %b %d %Y"
+#~ msgstr "%a %b %d %Y"
 
 #~ msgid "Failed to rename %s to %s: %m\n"
 #~ msgstr "Не вдалося перейменувати %s на %s: %m\n"

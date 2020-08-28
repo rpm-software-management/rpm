@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-20 13:58+0300\n"
+"POT-Creation-Date: 2020-08-28 15:22+0300\n"
 "PO-Revision-Date: 2020-03-23 08:38-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Korean (http://www.transifex.com/rpm-team/rpm/language/ko/)\n"
@@ -1052,10 +1052,6 @@ msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "%d 번째 행: %%setup에 잘못된 %s 옵션: %s\n"
 
 #, c-format
-msgid "%s: %s: %s\n"
-msgstr ""
-
-#, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr ""
 
@@ -1390,6 +1386,10 @@ msgid "error(%d) allocating new package instance\n"
 msgstr "새로운 패키지를 배치하는 도중 오류(%d)가 발생했습니다\n"
 
 #, c-format
+msgid "invalid %%_db_backend: %s\n"
+msgstr ""
+
+#, c-format
 msgid "Converting database from %s to %s backend\n"
 msgstr ""
 
@@ -1449,13 +1449,6 @@ msgstr ""
 
 msgid "(invalid type)"
 msgstr "(부적합한 타입)"
-
-#, c-format
-msgid "%c"
-msgstr ""
-
-msgid "%a %b %d %Y"
-msgstr ""
 
 msgid "(not base64)"
 msgstr "(base64가 아닙니다)"

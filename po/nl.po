@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-20 13:58+0300\n"
+"POT-Creation-Date: 2020-08-28 15:22+0300\n"
 "PO-Revision-Date: 2020-03-23 08:39-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/rpm-team/rpm/language/nl/)\n"
@@ -1042,10 +1042,6 @@ msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr ""
 
 #, c-format
-msgid "%s: %s: %s\n"
-msgstr "%s: %s: %s\n"
-
-#, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr ""
 
@@ -1379,6 +1375,10 @@ msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
 #, c-format
+msgid "invalid %%_db_backend: %s\n"
+msgstr ""
+
+#, c-format
 msgid "Converting database from %s to %s backend\n"
 msgstr ""
 
@@ -1438,13 +1438,6 @@ msgstr ""
 
 msgid "(invalid type)"
 msgstr ""
-
-#, c-format
-msgid "%c"
-msgstr "%c"
-
-msgid "%a %b %d %Y"
-msgstr "%a %b %d %Y"
 
 msgid "(not base64)"
 msgstr ""
@@ -3170,3 +3163,14 @@ msgstr ""
 
 msgid "don't verify header+payload signature"
 msgstr ""
+
+#, c-format
+#~ msgid "%s: %s: %s\n"
+#~ msgstr "%s: %s: %s\n"
+
+#, c-format
+#~ msgid "%c"
+#~ msgstr "%c"
+
+#~ msgid "%a %b %d %Y"
+#~ msgstr "%a %b %d %Y"

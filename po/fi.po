@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-20 13:58+0300\n"
+"POT-Creation-Date: 2020-08-28 15:22+0300\n"
 "PO-Revision-Date: 2020-03-23 08:38-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Finnish (http://www.transifex.com/rpm-team/rpm/language/fi/)\n"
@@ -1057,10 +1057,6 @@ msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "rivi %d: virheellinen %%setup valitsin %s: %s\n"
 
 #, c-format
-msgid "%s: %s: %s\n"
-msgstr "%s: %s: %s\n"
-
-#, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "Virheellinen patch-numero %s: %s\n"
 
@@ -1394,6 +1390,10 @@ msgid "error(%d) allocating new package instance\n"
 msgstr "virhe(%d) varattaessa uutta paketti-instanssia\n"
 
 #, c-format
+msgid "invalid %%_db_backend: %s\n"
+msgstr ""
+
+#, c-format
 msgid "Converting database from %s to %s backend\n"
 msgstr ""
 
@@ -1453,13 +1453,6 @@ msgstr "(ei ole merkkijono)"
 
 msgid "(invalid type)"
 msgstr "(virheellinen tyyppi)"
-
-#, c-format
-msgid "%c"
-msgstr ""
-
-msgid "%a %b %d %Y"
-msgstr ""
 
 msgid "(not base64)"
 msgstr "(ei ole base64)"
@@ -3202,6 +3195,10 @@ msgstr "%s: pakettilistan luku epäonnistui: %s\n"
 
 msgid "don't verify header+payload signature"
 msgstr "älä tarkista otsikon ja kuorman allekirjoitusta"
+
+#, c-format
+#~ msgid "%s: %s: %s\n"
+#~ msgstr "%s: %s: %s\n"
 
 #~ msgid "Failed to rename %s to %s: %m\n"
 #~ msgstr "Uudelleen nimeäminen %s -> %s epäonnistui: %m\n"

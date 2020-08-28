@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-20 13:58+0300\n"
+"POT-Creation-Date: 2020-08-28 15:22+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Chinese (Mandarin) (http://www.transifex.com/rpm-team/rpm/"
@@ -1055,10 +1055,6 @@ msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "第 %d 列：不當 %%setup 選項 %s：%s\n"
 
 #, c-format
-msgid "%s: %s: %s\n"
-msgstr "%s: %s: %s\n"
-
-#, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "無效的修補編號 %s：%s\n"
 
@@ -1392,6 +1388,10 @@ msgid "error(%d) allocating new package instance\n"
 msgstr "分配新套件實體時發生錯誤(%d)\n"
 
 #, c-format
+msgid "invalid %%_db_backend: %s\n"
+msgstr ""
+
+#, c-format
 msgid "Converting database from %s to %s backend\n"
 msgstr ""
 
@@ -1451,13 +1451,6 @@ msgstr "(不是字串)"
 
 msgid "(invalid type)"
 msgstr "(無效型態)"
-
-#, c-format
-msgid "%c"
-msgstr "%c"
-
-msgid "%a %b %d %Y"
-msgstr "%Y %b %d %a"
 
 msgid "(not base64)"
 msgstr "(不是 base64)"
@@ -3203,6 +3196,17 @@ msgstr "%s：讀取清單失敗：%s\n"
 
 msgid "don't verify header+payload signature"
 msgstr "不驗證標頭+酬載簽名"
+
+#, c-format
+#~ msgid "%s: %s: %s\n"
+#~ msgstr "%s: %s: %s\n"
+
+#, c-format
+#~ msgid "%c"
+#~ msgstr "%c"
+
+#~ msgid "%a %b %d %Y"
+#~ msgstr "%Y %b %d %a"
 
 #~ msgid "Failed to rename %s to %s: %m\n"
 #~ msgstr "無法將 %s 重新命名為 %s：%m\n"

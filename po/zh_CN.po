@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-20 13:58+0300\n"
+"POT-Creation-Date: 2020-08-28 15:22+0300\n"
 "PO-Revision-Date: 2020-03-23 08:40-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/rpm-team/rpm/"
@@ -1069,10 +1069,6 @@ msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "行 %d：错误的 %%setup 选项 %s：%s\n"
 
 #, c-format
-msgid "%s: %s: %s\n"
-msgstr "%s：%s：%s\n"
-
-#, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "无效的补丁编号 %s：%s\n"
 
@@ -1408,6 +1404,10 @@ msgid "error(%d) allocating new package instance\n"
 msgstr "在分配新软件包进程时出错 (%d)\n"
 
 #, c-format
+msgid "invalid %%_db_backend: %s\n"
+msgstr ""
+
+#, c-format
 msgid "Converting database from %s to %s backend\n"
 msgstr ""
 
@@ -1467,13 +1467,6 @@ msgstr "(不是字符串)"
 
 msgid "(invalid type)"
 msgstr "(无效类型)"
-
-#, c-format
-msgid "%c"
-msgstr "%c"
-
-msgid "%a %b %d %Y"
-msgstr "%a %b %d %Y"
 
 msgid "(not base64)"
 msgstr "(非base64)"
@@ -3210,6 +3203,17 @@ msgstr "%s：读取 manifest 文件失败：%s\n"
 
 msgid "don't verify header+payload signature"
 msgstr "不验证报头+净负荷签名"
+
+#, c-format
+#~ msgid "%s: %s: %s\n"
+#~ msgstr "%s：%s：%s\n"
+
+#, c-format
+#~ msgid "%c"
+#~ msgstr "%c"
+
+#~ msgid "%a %b %d %Y"
+#~ msgstr "%a %b %d %Y"
 
 #~ msgid "Failed to rename %s to %s: %m\n"
 #~ msgstr "重命名 %s 为 %s 时失败：%m\n"

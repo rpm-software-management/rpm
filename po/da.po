@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-20 13:58+0300\n"
+"POT-Creation-Date: 2020-08-28 15:22+0300\n"
 "PO-Revision-Date: 2020-03-23 08:37-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Danish (http://www.transifex.com/rpm-team/rpm/language/da/)\n"
@@ -1049,10 +1049,6 @@ msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "linie %d: Ugyldigt '%%setup'-tilvalg %s: %s\n"
 
 #, c-format
-msgid "%s: %s: %s\n"
-msgstr ""
-
-#, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr ""
 
@@ -1388,6 +1384,10 @@ msgid "error(%d) allocating new package instance\n"
 msgstr "fejl(%d) under allokering af ny pakkeinstans\n"
 
 #, c-format
+msgid "invalid %%_db_backend: %s\n"
+msgstr ""
+
+#, c-format
 msgid "Converting database from %s to %s backend\n"
 msgstr ""
 
@@ -1446,13 +1446,6 @@ msgid "(not a string)"
 msgstr ""
 
 msgid "(invalid type)"
-msgstr ""
-
-#, c-format
-msgid "%c"
-msgstr ""
-
-msgid "%a %b %d %Y"
 msgstr ""
 
 msgid "(not base64)"

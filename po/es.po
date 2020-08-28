@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-20 13:58+0300\n"
+"POT-Creation-Date: 2020-08-28 15:22+0300\n"
 "PO-Revision-Date: 2020-08-22 11:18+0000\n"
 "Last-Translator: Emilio Herrera <ehespinosa57@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/rpm/"
@@ -1107,10 +1107,6 @@ msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "línea %d: opción %%setup errónea %s: %s\n"
 
 #, c-format
-msgid "%s: %s: %s\n"
-msgstr "%s: %s %s\n"
-
-#, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "Número de parche %s inválido: %s\n"
 
@@ -1454,6 +1450,10 @@ msgid "error(%d) allocating new package instance\n"
 msgstr "error(%d) asignando nueva instancia de paquete\n"
 
 #, c-format
+msgid "invalid %%_db_backend: %s\n"
+msgstr ""
+
+#, c-format
 msgid "Converting database from %s to %s backend\n"
 msgstr ""
 
@@ -1513,13 +1513,6 @@ msgstr "(no es una cadena)"
 
 msgid "(invalid type)"
 msgstr "(tipo no válido)"
-
-#, c-format
-msgid "%c"
-msgstr "%c"
-
-msgid "%a %b %d %Y"
-msgstr "%a %b %d %Y"
 
 msgid "(not base64)"
 msgstr "(no base64)"
@@ -3284,6 +3277,17 @@ msgstr "%s: falló la lectura del manifiesto: %s\n"
 
 msgid "don't verify header+payload signature"
 msgstr "no verificar firma de encabezado+carga"
+
+#, c-format
+#~ msgid "%s: %s: %s\n"
+#~ msgstr "%s: %s %s\n"
+
+#, c-format
+#~ msgid "%c"
+#~ msgstr "%c"
+
+#~ msgid "%a %b %d %Y"
+#~ msgstr "%a %b %d %Y"
 
 #~ msgid "Failed to rename %s to %s: %m\n"
 #~ msgstr "Falló al renombrar %s to %s: %m\n"

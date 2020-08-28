@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-20 13:58+0300\n"
+"POT-Creation-Date: 2020-08-28 15:22+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Portuguese (http://www.transifex.com/rpm-team/rpm/language/"
@@ -1066,10 +1066,6 @@ msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "linha %d: Opção inválida do %%setup %s: %s\n"
 
 #, c-format
-msgid "%s: %s: %s\n"
-msgstr ""
-
-#, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr ""
 
@@ -1403,6 +1399,10 @@ msgid "error(%d) allocating new package instance\n"
 msgstr "erro(%d) ao criar uma nova instância do pacote\n"
 
 #, c-format
+msgid "invalid %%_db_backend: %s\n"
+msgstr ""
+
+#, c-format
 msgid "Converting database from %s to %s backend\n"
 msgstr ""
 
@@ -1462,13 +1462,6 @@ msgstr ""
 
 msgid "(invalid type)"
 msgstr "(tipo inválido)"
-
-#, c-format
-msgid "%c"
-msgstr ""
-
-msgid "%a %b %d %Y"
-msgstr ""
 
 msgid "(not base64)"
 msgstr "(não é um base64)"

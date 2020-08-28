@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-20 13:58+0300\n"
+"POT-Creation-Date: 2020-08-28 15:22+0300\n"
 "PO-Revision-Date: 2020-03-23 08:38-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Italian (http://www.transifex.com/rpm-team/rpm/language/it/)\n"
@@ -1096,10 +1096,6 @@ msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "riga %d: Opzione di %%setup errata %s: %s\n"
 
 #, c-format
-msgid "%s: %s: %s\n"
-msgstr "%s: %s: %s\n"
-
-#, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "Numero patch non valido %s: %s\n"
 
@@ -1440,6 +1436,10 @@ msgid "error(%d) allocating new package instance\n"
 msgstr "errore(%d) nell'allocazione di una nuova istanza del pacchetto\n"
 
 #, c-format
+msgid "invalid %%_db_backend: %s\n"
+msgstr ""
+
+#, c-format
 msgid "Converting database from %s to %s backend\n"
 msgstr ""
 
@@ -1499,13 +1499,6 @@ msgstr "(non è una stringa)"
 
 msgid "(invalid type)"
 msgstr "(tipo non valido)"
-
-#, c-format
-msgid "%c"
-msgstr "%c"
-
-msgid "%a %b %d %Y"
-msgstr "%a %b %d %Y"
 
 msgid "(not base64)"
 msgstr "(non base64)"
@@ -3273,6 +3266,17 @@ msgstr "%s: lettura manifesto fallita: %s\n"
 
 msgid "don't verify header+payload signature"
 msgstr "non verificare firma header+payload"
+
+#, c-format
+#~ msgid "%s: %s: %s\n"
+#~ msgstr "%s: %s: %s\n"
+
+#, c-format
+#~ msgid "%c"
+#~ msgstr "%c"
+
+#~ msgid "%a %b %d %Y"
+#~ msgstr "%a %b %d %Y"
 
 #~ msgid "Failed to rename %s to %s: %m\n"
 #~ msgstr "Impossibile rinominare %s in %s: %m\n"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-20 13:58+0300\n"
+"POT-Creation-Date: 2020-08-28 15:22+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Serbian (Latin) (http://www.transifex.com/rpm-team/rpm/"
@@ -1065,10 +1065,6 @@ msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "red %d: Loša %%setup opcija %s: %s\n"
 
 #, c-format
-msgid "%s: %s: %s\n"
-msgstr "%s: %s: %s\n"
-
-#, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "Neispravan broj zakrpe %s: %s\n"
 
@@ -1402,6 +1398,10 @@ msgid "error(%d) allocating new package instance\n"
 msgstr "greška(%d) pri zauzimanju novog primerka paketa\n"
 
 #, c-format
+msgid "invalid %%_db_backend: %s\n"
+msgstr ""
+
+#, c-format
 msgid "Converting database from %s to %s backend\n"
 msgstr ""
 
@@ -1461,13 +1461,6 @@ msgstr ""
 
 msgid "(invalid type)"
 msgstr "(neispravna vrsta)"
-
-#, c-format
-msgid "%c"
-msgstr "%c"
-
-msgid "%a %b %d %Y"
-msgstr "%a %b %d %Y"
 
 msgid "(not base64)"
 msgstr "(nije base64)"
@@ -3221,6 +3214,17 @@ msgstr "%s: neuspelo čitanje manifesta: %s\n"
 
 msgid "don't verify header+payload signature"
 msgstr "nemoj proveravati potpis zaglavlja+tovara"
+
+#, c-format
+#~ msgid "%s: %s: %s\n"
+#~ msgstr "%s: %s: %s\n"
+
+#, c-format
+#~ msgid "%c"
+#~ msgstr "%c"
+
+#~ msgid "%a %b %d %Y"
+#~ msgstr "%a %b %d %Y"
 
 #~ msgid "Failed to rename %s to %s: %m\n"
 #~ msgstr "Neuspela promena imena %s u %s: %m\n"

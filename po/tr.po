@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-20 13:58+0300\n"
+"POT-Creation-Date: 2020-08-28 15:22+0300\n"
 "PO-Revision-Date: 2020-03-23 08:40-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Turkish (http://www.transifex.com/rpm-team/rpm/language/tr/)\n"
@@ -1070,10 +1070,6 @@ msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "satır %d: %%setup seçeneği %s hatalı: %s\n"
 
 #, c-format
-msgid "%s: %s: %s\n"
-msgstr "%s: %s: %s\n"
-
-#, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "Geçersiz yama numarası %s: %s\n"
 
@@ -1407,6 +1403,10 @@ msgid "error(%d) allocating new package instance\n"
 msgstr "yeni paket örneğini tutma hatası(%d)\n"
 
 #, c-format
+msgid "invalid %%_db_backend: %s\n"
+msgstr ""
+
+#, c-format
 msgid "Converting database from %s to %s backend\n"
 msgstr ""
 
@@ -1466,13 +1466,6 @@ msgstr "(dizge değil)"
 
 msgid "(invalid type)"
 msgstr "(geçersiz tür)"
-
-#, c-format
-msgid "%c"
-msgstr "%c"
-
-msgid "%a %b %d %Y"
-msgstr "%a %d %b %Y"
 
 msgid "(not base64)"
 msgstr "(base64 değil)"
@@ -3213,6 +3206,17 @@ msgstr ""
 
 msgid "don't verify header+payload signature"
 msgstr ""
+
+#, c-format
+#~ msgid "%s: %s: %s\n"
+#~ msgstr "%s: %s: %s\n"
+
+#, c-format
+#~ msgid "%c"
+#~ msgstr "%c"
+
+#~ msgid "%a %b %d %Y"
+#~ msgstr "%a %d %b %Y"
 
 #~ msgid "Failed to rename %s to %s: %m\n"
 #~ msgstr "%s %s olarak değiştirilemedi: %m\n"

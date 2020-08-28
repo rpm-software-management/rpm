@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-20 13:58+0300\n"
+"POT-Creation-Date: 2020-08-28 15:22+0300\n"
 "PO-Revision-Date: 2020-03-23 08:40-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/rpm-team/rpm/language/"
@@ -1106,10 +1106,6 @@ msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "dòng %d: Tùy chọn thiết lập (%%setup) sai %s: %s\n"
 
 #, c-format
-msgid "%s: %s: %s\n"
-msgstr "%s: %s: %s\n"
-
-#, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "Miếng và sô %s không hợp lệ: %s\n"
 
@@ -1448,6 +1444,10 @@ msgid "error(%d) allocating new package instance\n"
 msgstr "lỗi (%d) phân bỏ minh dụ gói mới\n"
 
 #, c-format
+msgid "invalid %%_db_backend: %s\n"
+msgstr ""
+
+#, c-format
 msgid "Converting database from %s to %s backend\n"
 msgstr ""
 
@@ -1507,13 +1507,6 @@ msgstr "(không phải chuỗi)"
 
 msgid "(invalid type)"
 msgstr "(kiểu không hợp lệ)"
-
-#, c-format
-msgid "%c"
-msgstr "%c"
-
-msgid "%a %b %d %Y"
-msgstr "%a %d %b %Y"
 
 msgid "(not base64)"
 msgstr "(không phải base64)"
@@ -3267,6 +3260,17 @@ msgstr "%s: gặp lỗi khi đọc manifest: %s\n"
 
 msgid "don't verify header+payload signature"
 msgstr "không nên thẩm tra chữ ký phần_đầu+trọng_tải"
+
+#, c-format
+#~ msgid "%s: %s: %s\n"
+#~ msgstr "%s: %s: %s\n"
+
+#, c-format
+#~ msgid "%c"
+#~ msgstr "%c"
+
+#~ msgid "%a %b %d %Y"
+#~ msgstr "%a %d %b %Y"
 
 #~ msgid "Failed to rename %s to %s: %m\n"
 #~ msgstr "Lỗi thay đổi tên %s thành %s: %m\n"
