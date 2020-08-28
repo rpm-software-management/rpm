@@ -50,4 +50,4 @@ USE_MSGCTXT = no
 # Useful options are in particular:
 #   --previous            to keep previous msgids of translated messages,
 #   --quiet               to reduce the verbosity.
-MSGMERGE_OPTIONS =
+MSGMERGE_OPTIONS = --no-fuzzy-matching
