@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-06-24 10:42+0300\n"
+"POT-Creation-Date: 2020-08-31 11:27+0300\n"
 "PO-Revision-Date: 2017-10-13 05:51-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/rpm-team/rpm/language/"
@@ -1033,8 +1033,8 @@ msgstr "tiến trình tạo kho nén bị lỗi: %s\n"
 msgid "Unknown payload compression: %s\n"
 msgstr "Không thể nén phần trọng tải: %s\n"
 
-#: build/pack.c:375 sign/rpmgensig.c:287 sign/rpmgensig.c:643
-#: sign/rpmgensig.c:678
+#: build/pack.c:375 sign/rpmgensig.c:236 sign/rpmgensig.c:591
+#: sign/rpmgensig.c:626
 #, c-format
 msgid "Could not seek in file %s: %s\n"
 msgstr "Không thể di chuyển vị trí đọc trong tập tin %s: %s\n"
@@ -1108,37 +1108,37 @@ msgstr "dòng %d: %s thứ hai\n"
 msgid "bogus date in %%changelog: %s\n"
 msgstr "ngày tháng sai trong bản ghi thay đổi (%%changelog): %s\n"
 
-#: build/parseChangelog.c:216
+#: build/parseChangelog.c:224
 #, c-format
 msgid "%%changelog entries must start with *\n"
 msgstr "mục nhập bản ghi thay đổi (%%changelog) phải bắt đầu với dấu sao *\n"
 
-#: build/parseChangelog.c:224
+#: build/parseChangelog.c:232
 #, c-format
 msgid "incomplete %%changelog entry\n"
 msgstr "mục nhập bản ghi thay đổi (%%changelog) chưa hoàn tất\n"
 
-#: build/parseChangelog.c:235
+#: build/parseChangelog.c:243
 #, c-format
 msgid "bad date in %%changelog: %s\n"
 msgstr "ngày tháng sai trong bản ghi thay đổi (%%changelog): %s\n"
 
-#: build/parseChangelog.c:240
+#: build/parseChangelog.c:254
 #, c-format
 msgid "%%changelog not in descending chronological order\n"
 msgstr "bản ghi thay đổi (%%changelog) không theo thứ tự thời gian giảm dần\n"
 
-#: build/parseChangelog.c:252 build/parseChangelog.c:263
+#: build/parseChangelog.c:266 build/parseChangelog.c:277
 #, c-format
 msgid "missing name in %%changelog\n"
 msgstr "thiếu tên trong bản ghi thay đổi (%%changelog)\n"
 
-#: build/parseChangelog.c:270
+#: build/parseChangelog.c:284
 #, c-format
 msgid "no description in %%changelog\n"
 msgstr "không có mô tả trong bản ghi thay đổi (%%changelog)\n"
 
-#: build/parseChangelog.c:307
+#: build/parseChangelog.c:321
 #, c-format
 msgid "line %d: second %%changelog\n"
 msgstr "dòng %d: %%changelog thứ hai\n"
@@ -1823,12 +1823,17 @@ msgstr "lỗi (%d) khi gỡ bỏ bản ghi phần đầu #%d\n"
 msgid "error(%d) allocating new package instance\n"
 msgstr "lỗi (%d) phân bỏ minh dụ gói mới\n"
 
-#: lib/backend/dbi.c:93
+#: lib/backend/dbi.c:81
+#, fuzzy, c-format
+msgid "invalid %%_db_backend: %s\n"
+msgstr "Hiệu bài %s không hợp lệ: %s\n"
+
+#: lib/backend/dbi.c:98
 #, c-format
 msgid "Converting database from %s to %s backend\n"
 msgstr ""
 
-#: lib/backend/dbi.c:97
+#: lib/backend/dbi.c:102
 #, c-format
 msgid "Found %s %s database while attempting %s backend: using %s backend.\n"
 msgstr ""
@@ -2891,7 +2896,7 @@ msgstr "KHÔNG_ĐƯỢC"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmchecksig.c:294 sign/rpmgensig.c:136
+#: lib/rpmchecksig.c:294 sign/rpmgensig.c:73
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: gặp lỗi khi mở: %s\n"
@@ -4036,126 +4041,115 @@ msgstr "(không có)"
 msgid "exiting on signal %d from pid %d\n"
 msgstr ""
 
-#: sign/rpmgensig.c:56
-#, c-format
-msgid "error creating temp directory %s: %m\n"
-msgstr "gặp lỗi khi đang tạo tập tin tạm thời %s: %m\n"
-
-#: sign/rpmgensig.c:64
-#, c-format
-msgid "error creating fifo %s: %m\n"
-msgstr "lỗi tạo fifo %s: %m\n"
-
-#: sign/rpmgensig.c:85
-#, c-format
-msgid "error delete fifo %s: %m\n"
-msgstr "lỗi xóa fifo %s: %m\n"
-
-#: sign/rpmgensig.c:93
-#, c-format
-msgid "error delete directory %s: %m\n"
-msgstr "lỗi xóa thư  %s: %m\n"
-
-#: sign/rpmgensig.c:169
+#: sign/rpmgensig.c:106
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite bị lỗi: %s\n"
 
-#: sign/rpmgensig.c:175
+#: sign/rpmgensig.c:112
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread bị lỗi: %s\n"
 
-#: sign/rpmgensig.c:179
+#: sign/rpmgensig.c:116
 #, c-format
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush bị lỗi: %s\n"
 
-#: sign/rpmgensig.c:204
+#: sign/rpmgensig.c:141
 msgid "Unsupported PGP signature\n"
 msgstr "Không hỗ trợ ký bằng GPG\n"
 
-#: sign/rpmgensig.c:210
+#: sign/rpmgensig.c:147
 #, c-format
 msgid "Unsupported PGP hash algorithm %u\n"
 msgstr "Không hỗ trợ thuật toán băm PGP %u\n"
 
-#: sign/rpmgensig.c:223
+#: sign/rpmgensig.c:160
 #, c-format
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr "Không hỗ trợ thuật toán khóa công PGP %u\n"
 
-#: sign/rpmgensig.c:272
+#: sign/rpmgensig.c:191
+#, fuzzy, c-format
+msgid "Could not create pipe for signing: %m\n"
+msgstr "Không thể tạo ống dẫn cho %s: %m\n"
+
+#: sign/rpmgensig.c:205
+#, fuzzy, c-format
+msgid "Could not set GPG_TTY to stdin: %m\n"
+msgstr "Không thể mở tập tin %%files %s: %m\n"
+
+#: sign/rpmgensig.c:220
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Không thể thực hiện %s: %s\n"
 
-#: sign/rpmgensig.c:282
-msgid "Fopen failed\n"
-msgstr ""
-"Fopen gặp lỗi\n"
-"\n"
+#: sign/rpmgensig.c:231
+#, fuzzy, c-format
+msgid "Could not open pipe for writing: %m\n"
+msgstr "Không thể tạo ống dẫn cho %s: %m\n"
 
-#: sign/rpmgensig.c:297
+#: sign/rpmgensig.c:246
 msgid "Could not write to pipe\n"
 msgstr "Không thể ghi ra đường ống\n"
 
-#: sign/rpmgensig.c:304
+#: sign/rpmgensig.c:253
 #, c-format
 msgid "Could not read from file %s: %s\n"
 msgstr "Không thể đọc từ tập tin %s: %s\n"
 
-#: sign/rpmgensig.c:314
+#: sign/rpmgensig.c:268
 #, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "lỗi thực hiện gpg (%d)\n"
 
-#: sign/rpmgensig.c:356
+#: sign/rpmgensig.c:296
 msgid "gpg failed to write signature\n"
 msgstr "gpg không ghi được chữ ký\n"
 
-#: sign/rpmgensig.c:373
+#: sign/rpmgensig.c:313
 msgid "unable to read the signature\n"
 msgstr "không thể đọc chữ ký\n"
 
-#: sign/rpmgensig.c:492
+#: sign/rpmgensig.c:440
 msgid "file signing support not built in\n"
 msgstr ""
 
-#: sign/rpmgensig.c:566
+#: sign/rpmgensig.c:514
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature gặp lỗi: %s"
 
-#: sign/rpmgensig.c:573
+#: sign/rpmgensig.c:521
 #, c-format
 msgid "%s: headerRead failed: %s\n"
 msgstr "%s: gặp lỗi khi headerRead: %s\n"
 
-#: sign/rpmgensig.c:578
+#: sign/rpmgensig.c:526
 msgid "Cannot sign RPM v3 packages\n"
 msgstr "Không thể ký gói RPM v3\n"
 
-#: sign/rpmgensig.c:614
+#: sign/rpmgensig.c:562
 #, c-format
 msgid "%s already contains identical signature, skipping\n"
 msgstr "%s đã sẵn chứa chữ ký định danh nên bỏ qua\n"
 
-#: sign/rpmgensig.c:649 sign/rpmgensig.c:672
+#: sign/rpmgensig.c:597 sign/rpmgensig.c:620
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: gặp lỗi khi rpmWriteSignature: %s\n"
 
-#: sign/rpmgensig.c:659
+#: sign/rpmgensig.c:607
 msgid "rpmMkTemp failed\n"
 msgstr "gặp lỗi khi rpmMkTemp\n"
 
-#: sign/rpmgensig.c:666
+#: sign/rpmgensig.c:614
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: Gặp lỗi khi writeLead: %s\n"
 
-#: sign/rpmgensig.c:691
+#: sign/rpmgensig.c:639
 #, c-format
 msgid "replacing %s failed: %s\n"
 msgstr "gặp lỗi khi thay thế %s: %s\n"
@@ -4184,6 +4178,27 @@ msgstr "%s: gặp lỗi khi đọc manifest: %s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr "không nên thẩm tra chữ ký phần_đầu+trọng_tải"
+
+#, c-format
+#~ msgid "error creating temp directory %s: %m\n"
+#~ msgstr "gặp lỗi khi đang tạo tập tin tạm thời %s: %m\n"
+
+#, c-format
+#~ msgid "error creating fifo %s: %m\n"
+#~ msgstr "lỗi tạo fifo %s: %m\n"
+
+#, c-format
+#~ msgid "error delete fifo %s: %m\n"
+#~ msgstr "lỗi xóa fifo %s: %m\n"
+
+#, c-format
+#~ msgid "error delete directory %s: %m\n"
+#~ msgstr "lỗi xóa thư  %s: %m\n"
+
+#~ msgid "Fopen failed\n"
+#~ msgstr ""
+#~ "Fopen gặp lỗi\n"
+#~ "\n"
 
 #, fuzzy, c-format
 #~ msgid "%s generator %s failed: %s\n"
