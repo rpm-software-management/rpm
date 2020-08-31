@@ -503,7 +503,8 @@ msgstr ""
 "linha de comando com --fskpath\n"
 
 msgid "--fskpath may only be specified when signing files"
-msgstr "--fskpath deve ser especificado apenas durante a assinatura de arquivos"
+msgstr ""
+"--fskpath deve ser especificado apenas durante a assinatura de arquivos"
 
 msgid "parse spec file(s) to stdout"
 msgstr "analisar arquivo(s) spec para stdout"
