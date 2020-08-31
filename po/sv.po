@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-08-27 10:59+0000\n"
+"PO-Revision-Date: 2020-08-29 08:29+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/rpm/"
 "master/sv/>\n"
@@ -97,7 +97,8 @@ msgstr "bygg endast källpaket från <specfil>"
 
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "bygg källpaket endast från <spec-fil> – beräkna dynamiska byggberoenden"
+msgstr ""
+"bygg källpaket endast från <spec-fil> – beräkna dynamiska byggberoenden"
 
 #, c-format
 msgid ""
@@ -166,7 +167,8 @@ msgstr "bygg endast källpaket från <tar-arkiv>"
 
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "bygg källpaket endast från <tar-boll> – beräkna dynamiska byggberoenden"
+msgstr ""
+"bygg källpaket endast från <tar-boll> – beräkna dynamiska byggberoenden"
 
 msgid "build binary package from <source package>"
 msgstr "bygg binärpaket från <källpaket>"
@@ -1183,11 +1185,11 @@ msgstr "%s: rad %d: %s utan %%if\n"
 
 #, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr ""
+msgstr "%s: rad %d: %s efter %s\n"
 
 #, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr ""
+msgstr "%s:%d: felaktigt %s-villkor: %s\n"
 
 #, c-format
 msgid "%s:%d: malformed %%include statement\n"
@@ -1280,7 +1282,7 @@ msgstr "Ignorerar ogiltigt reguttr %s\n"
 
 #, c-format
 msgid "%s: mime and magic supplied, only mime will be used\n"
-msgstr ""
+msgstr "%s: mime och magiskt tal givet, endast mime kommer användas\n"
 
 #, c-format
 msgid "Couldn't create pipe for %s: %m\n"
@@ -1407,38 +1409,39 @@ msgstr "fel(%d) vid allokering av ny paketinstans\n"
 
 #, c-format
 msgid "Converting database from %s to %s backend\n"
-msgstr ""
+msgstr "Konverterar databaser från %s- till %s-bakände\n"
 
 #, c-format
 msgid "Found %s %s database while attempting %s backend: using %s backend.\n"
-msgstr ""
+msgstr "Hittade %s %s-databas när %s-bakände försöktes: använder %s-bakände.\n"
 
-#, fuzzy
 msgid "Detected outdated index databases\n"
-msgstr "kunde inte radera den gamla databasen på %s\n"
+msgstr "Upptäckte föråldrade indexdatabaser\n"
 
-#, fuzzy
 msgid "Rebuilding outdated index databases\n"
-msgstr "kunde inte radera den gamla databasen på %s\n"
+msgstr "Bygger om föråldrade indexdatabaser\n"
 
 #, c-format
 msgid "rpmidx: Version mismatch. Expected version: %u. Found version: %u\n"
 msgstr ""
+"rpmidx: Versioner stämmer inte. Förväntad version: %u. Hittad version: %u\n"
 
 #, c-format
 msgid "rpmpkg: Version mismatch. Expected version: %u. Found version: %u\n"
 msgstr ""
+"rpmpkg: Versioner stämmer inte. Förväntad version: %u. Hittad version: %u\n"
 
 msgid "rpmpkg: detected non-zero blob, trying auto repair\n"
-msgstr ""
+msgstr "rpmpkg: upptäckte nollskild blob, försöker automatisk lagning\n"
 
 #, c-format
 msgid "rpmxdb: Version mismatch. Expected version: %u. Found version: %u\n"
 msgstr ""
+"rpmxdb: Versioner stämmer inte. Förväntad version: %u. Hittad version: %u\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open sqlite database %s: %s\n"
-msgstr "Kan inte öppna specfilen %s: %s\n"
+msgstr "Kan inte öppna sqlite-databasen %s: %s\n"
 
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
@@ -1555,7 +1558,7 @@ msgstr "region %d storlek: FEL, ril %d il %d rdl %d dl %d"
 
 #, c-format
 msgid "region %d: tag number mismatch il %d ril %d dl %d rdl %d\n"
-msgstr ""
+msgstr "region %d: taggnumret stämmer inte il %d ril %d dl %d rdl %d\n"
 
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d"
@@ -1618,7 +1621,7 @@ msgid "unexpected }"
 msgstr "oväntad }"
 
 msgid "escaped char expected after \\"
-msgstr ""
+msgstr "specialtecken förväntades efter \\"
 
 msgid "? expected in expression"
 msgstr "? förväntades i uttryck"
@@ -1641,17 +1644,17 @@ msgstr "| förväntades vid slutet på uttryck"
 msgid "array iterator used with different sized arrays"
 msgstr "vektoriterator använd med vektor av annan storlek"
 
-#, fuzzy, c-format
+#, c-format
 msgid "RPM v3 packages are deprecated: %s\n"
-msgstr "rad %d: %s är föråldrad: %s\n"
+msgstr "RPM v3-paket är föråldrade: %s\n"
 
 #, c-format
 msgid "failed to load macro file %s\n"
-msgstr ""
+msgstr "misslyckades att läsa in makrofilen %s\n"
 
 #, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr ""
+msgstr "argumenten till --dbpath måste börja med ”/”\n"
 
 #, c-format
 msgid ""
@@ -1692,10 +1695,10 @@ msgid "<FILE:...>"
 msgstr "<FIL:...>"
 
 msgid "load a single macro file"
-msgstr ""
+msgstr "läs in en enstaka makrofil"
 
 msgid "<FILE>"
-msgstr ""
+msgstr "<FIL>"
 
 msgid "don't enable any plugins"
 msgstr "aktivera inga insticksmoduler"
@@ -1749,7 +1752,7 @@ msgid "debug rpmio I/O"
 msgstr "felsök rpmio I/O"
 
 msgid "disable user namespace support"
-msgstr ""
+msgstr "avaktivera stöd för användarnamnrymder"
 
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
@@ -1790,9 +1793,8 @@ msgstr "radera (avinstallera) paket"
 msgid "<package>+"
 msgstr "<paket>+"
 
-#, fuzzy
 msgid "do not install artifacts"
-msgstr "installera inte dokumentation"
+msgstr "installera inte artifakter"
 
 msgid "do not install configuration files"
 msgstr "installera inte konfigurationsfiler"
@@ -1829,7 +1831,7 @@ msgid "don't check disk space before installing"
 msgstr "kontrollera inte diskutrymme före installation"
 
 msgid "short hand for --ignorepayload --ignoresignature"
-msgstr ""
+msgstr "kortform för --ignorepayload --ignoresignature"
 
 msgid "install documentation"
 msgstr "installera dokumentation"
@@ -1981,7 +1983,7 @@ msgid "query/verify the package(s) which require a dependency"
 msgstr "fråga/verifiera paket som behöver ett beroende"
 
 msgid "query/verify the package(s) which obsolete a dependency"
-msgstr ""
+msgstr "fråga/verifiera paket som fasar ut ett beroende"
 
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "fråga/verifiera paket som tillhandahåller ett beroende"
@@ -2005,28 +2007,28 @@ msgid "do not process non-package files as manifests"
 msgstr "behandla inte icke-paket-filer som förteckningar"
 
 msgid "only include configuration files"
-msgstr ""
+msgstr "inkludera endast konfigurationsfiler"
 
 msgid "only include documentation files"
-msgstr ""
+msgstr "inkludera endast dokumentationsfiler"
 
 msgid "only include license files"
-msgstr ""
+msgstr "inkludera endast licensfiler"
 
 msgid "only include artifact files"
-msgstr ""
+msgstr "inkludera endast artifaktfiler"
 
 #, c-format
 msgid "exclude %%ghost files"
-msgstr ""
+msgstr "uteslut %%ghost-filer"
 
 #, c-format
 msgid "exclude %%config files"
-msgstr ""
+msgstr "uteslut %%config-filer"
 
 #, c-format
 msgid "exclude %%artifact files"
-msgstr ""
+msgstr "uteslut %%artifact-filer"
 
 msgid "dump basic file information"
 msgstr "visa filinformation"
@@ -2140,11 +2142,11 @@ msgstr "inga paket matchar %s: %s\n"
 
 #, c-format
 msgid "no package conflicts %s\n"
-msgstr ""
+msgstr "inget paket står i konflikt med %s\n"
 
 #, c-format
 msgid "no package obsoletes %s\n"
-msgstr ""
+msgstr "inget paket fasar ut %s\n"
 
 #, c-format
 msgid "no package requires %s\n"
@@ -2380,7 +2382,7 @@ msgid "dependency comparison supports versions with tilde."
 msgstr "beroendejämförelser stödjer versioner med tilde."
 
 msgid "dependency comparison supports versions with caret."
-msgstr ""
+msgstr "beroendejämförelser stödjer versioner med tak."
 
 msgid "support files larger than 4GB"
 msgstr "stöd filer större än 4 GB"
@@ -2389,7 +2391,7 @@ msgid "support for rich dependencies."
 msgstr "stöd för rika beroenden."
 
 msgid "support for dynamic buildrequires."
-msgstr ""
+msgstr "stöd för dynamiska byggberoenden."
 
 msgid "package payload can be compressed using zstd."
 msgstr "paketets nyttolast kan komprimeras med zstd."
@@ -2402,13 +2404,13 @@ msgid "Name required"
 msgstr "Namn behövs"
 
 msgid "Illegal ops in with/without"
-msgstr ""
+msgstr "Otillåten operator i with/without"
 
 msgid "Illegal context for 'unless', please use 'or' instead"
-msgstr ""
+msgstr "Otillåtet sammanhang för ”unless”, använd ”or” istället"
 
 msgid "Illegal context for 'if', please use 'and' instead"
-msgstr ""
+msgstr "Otillåtet sammanhang för ”if”, använd ”and” istället"
 
 msgid "Rich dependency does not start with '('"
 msgstr "Rikt beroende börjar inte med ”(”"
@@ -2427,7 +2429,7 @@ msgid "Cannot chain different ops"
 msgstr "Kan inte kedja olika operatorer"
 
 msgid "Can only chain and/or/with ops"
-msgstr ""
+msgstr "Kan endast kedja and/or/with-operatorer"
 
 msgid "Junk after rich dependency"
 msgstr "Skräp efter rikt beroende"
@@ -2510,13 +2512,13 @@ msgid "Preparing..."
 msgstr "Förbereder..."
 
 msgid "Verifying..."
-msgstr ""
+msgstr "Verifierar …"
 
 msgid "Preparing packages..."
 msgstr "Förbereder paket …"
 
 msgid "Verifying packages..."
-msgstr ""
+msgstr "Verifierar paket …"
 
 msgid "Failed dependencies:\n"
 msgstr "Ouppfyllda beroenden:\n"
@@ -2632,14 +2634,17 @@ msgstr "fil %s från installation av %s står i konflikt med filen från paket %
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "paket %s (som är nyare än %s) är redan installerat"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "installing package %s needs %<PRIu64>%cB more space on the %s filesystem"
-msgstr "installation av paket %s kräver %<PRIu64> %cB på filsystemet %s"
+msgstr ""
+"installation av paketet %s behöver %<PRIu64> %cB mer utrymme på filsystemet "
+"%s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %<PRIu64> more inodes on the %s filesystem"
-msgstr "installation av paket %s kräver %<PRIu64> inoder på filsystem %s"
+msgstr ""
+"installation av paketet %s behöver %<PRIu64> fler inoder på filsystemet %s"
 
 #, c-format
 msgid "%s is needed by %s%s"

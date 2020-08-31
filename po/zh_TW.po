@@ -9,21 +9,22 @@
 # byStarTW <pan93412@gmail.com>, 2019. #zanata
 # byStarTW <pan93412@gmail.com>, 2020. #zanata
 # zerng07 <pswo10680@gmail.com>, 2020. #zanata
+# Yi-Jyun Pan <pan93412@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-05-24 07:57-0400\n"
-"Last-Translator: byStarTW <pan93412@gmail.com>\n"
-"Language-Team: Chinese (Taiwan) (http://www.transifex.com/rpm-team/rpm/"
-"language/zh_TW/)\n"
+"PO-Revision-Date: 2020-08-29 08:29+0000\n"
+"Last-Translator: Yi-Jyun Pan <pan93412@gmail.com>\n"
+"Language-Team: Chinese (Traditional) <https://translate.fedoraproject.org/"
+"projects/rpm/master/zh_TW/>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Zanata 4.6.2\n"
+"X-Generator: Weblate 4.2.1\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -44,7 +45,7 @@ msgstr "此程式允許在遵守 GNU GPL 條款的前提下自由散布\n"
 
 #, c-format
 msgid "creating a pipe for --pipe failed: %m\n"
-msgstr "為 --pipe 建立 pipe 時失敗：%m\n"
+msgstr "--pipe 的管線建立失敗：%m\n"
 
 #, c-format
 msgid "exec failed\n"
@@ -72,108 +73,108 @@ msgstr "buildroot 已被指定，忽略 %s\n"
 
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
-msgstr "從 <specfile> 透過 %prep (解包源碼並套用修補程式) 來建置"
+msgstr "從 <specfile> 透過 %prep (解包源碼並套用修補程式) 來組建"
 
 msgid "<specfile>"
 msgstr "<specfile>"
 
 msgid "build through %build (%prep, then compile) from <specfile>"
-msgstr "從 <specfile> 透過 %build (%prep，然後編譯) 來建置"
+msgstr "從 <specfile> 透過 %build (%prep，然後組建) 來組建"
 
 msgid "build through %install (%prep, %build, then install) from <specfile>"
-msgstr "從 <specfile> 透過 %install (%prep，%build，然後安裝) 來建置"
+msgstr "從 <specfile> 透過 %install (%prep，%build，然後安裝) 來組建"
 
 #, c-format
 msgid "verify %files section from <specfile>"
-msgstr "從 <specfile> 驗證 %files 區段"
+msgstr "從 <specfile> 核驗 %files 區段"
 
 msgid "build source and binary packages from <specfile>"
-msgstr "根據 <specfile> 建置源碼軟體包與二進位軟體包"
+msgstr "根據 <specfile> 組建源碼軟體包與二進位軟體包"
 
 msgid "build binary package only from <specfile>"
-msgstr "根據 <specfile> 只建置二進位軟體包"
+msgstr "只根據 <specfile> 組建二進位軟體包"
 
 msgid "build source package only from <specfile>"
-msgstr "根據 <specfile> 只建置源碼軟體包"
+msgstr "只根據 <specfile> 組建源碼軟體包"
 
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr ""
+msgstr "只從 <specfile> 組建來源軟體包 - 計算動態組建需求"
 
 #, c-format
 msgid ""
 "build through %prep (unpack sources and apply patches) from <source package>"
-msgstr "從 <source package> 透過 %prep 編譯（解開來源和套用補丁）"
+msgstr "從 <source package> 透過 %prep 組建（解開來源和套用補丁）"
 
 msgid "<source package>"
 msgstr "<source package>"
 
 msgid "build through %build (%prep, then compile) from <source package>"
-msgstr "從 <source package> 透過 %build 編譯（%prep，再編譯）"
+msgstr "從 <source package> 透過 %build 組建（%prep，再組建）"
 
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
-msgstr "從 <source package> 透過 %install (%prep，%build，然後安裝) 來建置"
+msgstr "從 <source package> 透過 %install (%prep，%build，然後安裝) 來組建"
 
 #, c-format
 msgid "verify %files section from <source package>"
-msgstr "從 <source package> 驗證 %files 區段"
+msgstr "從 <source package> 核驗 %files 區段"
 
 msgid "build source and binary packages from <source package>"
-msgstr "從 <source package> 編譯來源與二進制軟體包"
+msgstr "從 <source package> 組建來源與二進位軟體包"
 
 msgid "build binary package only from <source package>"
-msgstr "只從 <source package> 編譯二進制軟體包"
+msgstr "只從 <source package> 組建二進位軟體包"
 
 msgid "build source package only from <source package>"
-msgstr "只從 <source package> 編譯來源軟體包"
+msgstr "只從 <source package> 組建來源軟體包"
 
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr ""
+msgstr "只從 <source package> 組建來源軟體包 - 計算動態組建需求"
 
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
-msgstr "從 <tarball> 透過 %prep (解包源碼和套用修補檔) 來建置"
+msgstr "從 <tarball> 透過 %prep (解包源碼和套用修補檔) 來組建"
 
 msgid "<tarball>"
 msgstr "<tarball>"
 
 msgid "build through %build (%prep, then compile) from <tarball>"
-msgstr "從 <tarball> 透過 %build (%prep，然後編譯) 來建置"
+msgstr "從 <tarball> 透過 %build (%prep，然後組建) 來組建"
 
 msgid "build through %install (%prep, %build, then install) from <tarball>"
-msgstr "從 <tarball> 透過 %install (%prep，%build，然後安裝) 來建置"
+msgstr "從 <tarball> 透過 %install (%prep，%build，然後安裝) 來組建"
 
 #, c-format
 msgid "verify %files section from <tarball>"
-msgstr "從 <tarball> 驗證 %files 區段"
+msgstr "從 <tarball> 核驗 %files 區段"
 
 msgid "build source and binary packages from <tarball>"
-msgstr "從 <tarball> 中建置源碼軟體包與二進位軟體包"
+msgstr "從 <tarball> 中組建源碼軟體包與二進位軟體包"
 
 msgid "build binary package only from <tarball>"
-msgstr "從 <tarball> 中只建置二進位軟體包"
+msgstr "從 <tarball> 中只組建二進位軟體包"
 
 msgid "build source package only from <tarball>"
-msgstr "從 <tarball> 中只建置源碼軟體包"
+msgstr "從 <tarball> 中只組建源碼軟體包"
 
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr ""
+msgstr "只從 <tarball> 組建來源軟體包 - 計算動態組建需求"
 
 msgid "build binary package from <source package>"
-msgstr "從 <source package> 中建置二進位軟體包"
+msgstr "從 <source package> 中組建二進位軟體包"
 
 msgid "override build root"
-msgstr "強制覆寫建置根目錄"
+msgstr "強制覆寫組建根目錄"
 
 msgid "run build in current directory"
-msgstr "在目前位置上執行編譯"
+msgstr "在目前位置上執行組建"
 
 msgid "remove build tree when done"
-msgstr "完成後移除建置樹"
+msgstr "完成後移除組建樹"
 
 msgid "ignore ExcludeArch: directives from spec file"
 msgstr "忽略 ExcludeArch：根據規格檔的指示"
@@ -182,25 +183,25 @@ msgid "debug file state machine"
 msgstr "除錯檔案狀態機器"
 
 msgid "do not execute any stages of the build"
-msgstr "不執行建置程序裡的任何步驟"
+msgstr "不執行組建程序裡的任何步驟"
 
 msgid "do not verify build dependencies"
-msgstr "不校驗建置相依關係"
+msgstr "不核驗組建依賴關係"
 
 msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
 msgstr "生成相容於 (舊的) rpm v3 軟體包的軟體包標頭"
 
 #, c-format
 msgid "do not execute %clean stage of the build"
-msgstr "請勿在編譯階段執行 %clean 動作"
+msgstr "不在組建階段執行 %clean 動作"
 
 #, c-format
 msgid "do not execute %prep stage of the build"
-msgstr "請勿在編譯階段執行 %prep 動作"
+msgstr "不在組建階段執行 %prep 動作"
 
 #, c-format
 msgid "do not execute %check stage of the build"
-msgstr "請勿在編譯階段執行 %check 動作"
+msgstr "不在組建階段執行 %check 動作"
 
 msgid "do not accept i18N msgstr's from specfile"
 msgstr "不接受來自規格檔的 i18N msgstr"
@@ -229,7 +230,7 @@ msgstr "無法開啟 %s 規格檔：%s\n"
 
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
-msgstr "無法開啟 tar 導管：%m\n"
+msgstr "無法開啟 tar 管線：%m\n"
 
 #, c-format
 msgid "Found more than one spec file in %s\n"
@@ -253,11 +254,11 @@ msgstr "%s 似乎不是規格檔。\n"
 
 #, c-format
 msgid "Building target platforms: %s\n"
-msgstr "建置目標平台：%s\n"
+msgstr "組建目標平台：%s\n"
 
 #, c-format
 msgid "Building for target %s\n"
-msgstr "建置目標 %s\n"
+msgstr "組建目標 %s\n"
 
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) 的引數必須以「/」開頭"
@@ -269,7 +270,7 @@ msgid "rebuild database inverted lists from installed package headers"
 msgstr "從安裝的軟體包表頭重建資料庫的反相清單"
 
 msgid "verify database files"
-msgstr "驗證資料庫檔案"
+msgstr "核驗資料庫檔案"
 
 msgid "salvage database"
 msgstr "搶救資料庫"
@@ -287,13 +288,13 @@ msgid "only one major mode may be specified"
 msgstr "只能指定一個主要工作模式"
 
 msgid "verify package signature(s)"
-msgstr "校驗軟體包簽署"
+msgstr "核驗軟體包簽章"
 
 msgid "import an armored public key"
 msgstr "匯入一個受保護的公鑰"
 
 msgid "don't import, but tell if it would work or not"
-msgstr "請勿匯入，但回傳其是否能運作"
+msgstr "不匯入，但回傳其是否能運作"
 
 msgid "list keys from RPM keyring"
 msgstr "列出 RPM 鑰匙圈的金鑰"
@@ -305,22 +306,22 @@ msgid "no arguments given"
 msgstr "沒有指定引數"
 
 msgid "Query/Verify package selection options:"
-msgstr "查詢/驗證所選軟體包的選項："
+msgstr "查詢/核驗所選軟體包的選項："
 
 msgid "Query/Verify file selection options:"
-msgstr ""
+msgstr "查詢或核驗檔案選擇選項："
 
 msgid "Query options (with -q or --query):"
 msgstr "查詢選項 (使用 -q 或 --query)："
 
 msgid "Verify options (with -V or --verify):"
-msgstr "校驗選項 (使用 -V 或 --verify)："
+msgstr "核驗選項 (使用 -V 或 --verify)："
 
 msgid "Install/Upgrade/Erase options:"
 msgstr "安裝/升級/抹除選項："
 
 msgid "one type of query/verify may be performed at a time"
-msgstr "只有查詢/校驗兩種工作模式能被同時選用"
+msgstr "只有查詢/核驗兩種工作模式能被同時選用"
 
 msgid "unexpected query flags"
 msgstr "未預期的查詢旗標"
@@ -352,10 +353,10 @@ msgstr "--prefix 的引數必須以「/」開頭"
 
 msgid ""
 "--hash (-h) may only be specified during package installation and erasure"
-msgstr "--hash (-h) 可能只能在軟體包安裝或擦除時指定"
+msgstr "--hash (-h) 可能只能在軟體包安裝或抹除時指定"
 
 msgid "--percent may only be specified during package installation and erasure"
-msgstr "-- percent  可能只能在軟體包安裝或擦除時指定"
+msgstr "-- percent 只能在軟體包安裝或抹除時指定"
 
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs 或許只能在軟體包安裝時指定"
@@ -400,10 +401,10 @@ msgstr "與觸發停用有關的選項只能在軟體包安裝和抹除時指定
 msgid ""
 "--nodeps may only be specified during package installation, erasure, and "
 "verification"
-msgstr "--nodeps  可能只能在軟體包安裝、擦除或驗證時指定"
+msgstr "--nodeps 只能在軟體包安裝、抹除或核驗時指定"
 
 msgid "--test may only be specified during package installation and erasure"
-msgstr "--test  可能只能在軟體包安裝或擦除時指定"
+msgstr "--test 可能只能在軟體包安裝或抹除時指定"
 
 msgid "no packages given for erase"
 msgstr "沒有指定要抹除的軟體包名稱"
@@ -415,7 +416,7 @@ msgid "no arguments given for query"
 msgstr "沒有給定查詢引數"
 
 msgid "no arguments given for verify"
-msgstr "沒有給定校驗引數"
+msgstr "沒有給定核驗引數"
 
 msgid "sign package(s)"
 msgstr "簽署軟體包"
@@ -424,25 +425,25 @@ msgid "sign package(s) (identical to --addsign)"
 msgstr "簽署軟體包 (與 --addsign 含義相同)"
 
 msgid "delete package signatures"
-msgstr "刪除軟體包簽署"
+msgstr "刪除軟體包簽章"
 
 msgid "create rpm v3 header+payload signatures"
-msgstr "建立 RPM v3 表頭+酬載簽署"
+msgstr "建立 RPM v3 表頭+酬載簽章"
 
 msgid "sign package(s) files"
-msgstr "簽名軟體包檔案"
+msgstr "簽署軟體包檔案"
 
 msgid "use file signing key <key>"
-msgstr "使用檔案簽名金鑰 <key>"
+msgstr "使用檔案簽署金鑰 <key>"
 
 msgid "<key>"
 msgstr "<key>"
 
 msgid "prompt for file signing key password"
-msgstr "提示檔案簽名金鑰的密碼"
+msgstr "提示檔案簽署金鑰的密碼"
 
 msgid "Signature options:"
-msgstr "簽署選項："
+msgstr "簽章選項："
 
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
@@ -455,7 +456,7 @@ msgid ""
 msgstr "你必須在巨集或指令行上透過 --fskpath 設定 \"%%_file_signing_key\"\n"
 
 msgid "--fskpath may only be specified when signing files"
-msgstr "--fskpath 只能在簽名檔案時指定"
+msgstr "--fskpath 只能在簽署檔案時指定"
 
 msgid "parse spec file(s) to stdout"
 msgstr "解析 spec 檔案至標準輸出"
@@ -467,7 +468,7 @@ msgid "operate on binary rpms generated by spec (default)"
 msgstr "操作透過規格所建立的二進位 rpm (預設)"
 
 msgid "operate on binary rpms that would be built from spec"
-msgstr "在二進位 rpm 上執行，使他們能從 spec 編譯。"
+msgstr "在會從 spec 組建的二進位 rpm 上操作"
 
 msgid "operate on source rpm generated by spec"
 msgstr "操作透過規格所建立的源碼 rpm"
@@ -505,7 +506,7 @@ msgid "Bad exit status from %s (%s)\n"
 msgstr "來自 %s 不良的離開狀態 (%s)\n"
 
 msgid "Failed build dependencies:\n"
-msgstr "相依性建置失敗：\n"
+msgstr "依賴關係組建失敗：\n"
 
 #, c-format
 msgid "setting %s=%s\n"
@@ -518,7 +519,7 @@ msgid ""
 msgstr ""
 "\n"
 "\n"
-"RPM 建置錯誤：\n"
+"RPM 組建錯誤：\n"
 
 #, c-format
 msgid "Missing '(' in %s %s\n"
@@ -589,15 +590,15 @@ msgstr "讀取軟連結 %s 時錯誤：%s\n"
 
 #, c-format
 msgid "absolute symlink: %s -> %s\n"
-msgstr ""
+msgstr "絕對符號連結：%s -> %s\n"
 
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "指向 BuildRoot 的符號連結：%s -> %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Illegal character (0x%x) in filename: %s\n"
-msgstr "非法字符「%c」(0x%x)"
+msgstr "檔名中有不合規字元 (0x%x)：%s\n"
 
 #, c-format
 msgid "Path is outside buildroot: %s\n"
@@ -615,9 +616,9 @@ msgstr "找不到檔案：%s\n"
 msgid "Not a directory: %s\n"
 msgstr "不是一個目錄：%s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't read content of file: %s\n"
-msgstr "無法讀取策略檔案：%s\n"
+msgstr "無法讀取檔案內容：%s\n"
 
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
@@ -691,17 +692,17 @@ msgstr "無法透過 glob 找到資料夾：%s。嘗試以非 glob 方式搜尋�
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr "無法透過 glob 找到檔案：%s。嘗試以非 glob 方式搜尋。\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open %s file %s: %m\n"
-msgstr "無法開啟 %%files 檔案 %s：%m\n"
+msgstr "無法開啟 %s 檔案 %s：%m\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Empty %s file %s\n"
-msgstr "空的 %%files 檔案 %s\n"
+msgstr "空的 %s 檔案 %s\n"
 
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
-msgstr "illegal _docdir_fmt %s: %s\n"
+msgstr "無效的 _docdir_fmt %s: %s\n"
 
 #, c-format
 msgid "File not found by glob: %s\n"
@@ -724,7 +725,7 @@ msgstr "生成 build-id 連結時失敗\n"
 
 #, c-format
 msgid "Bad file: %s: %s\n"
-msgstr "不良檔案：%s：%s\n"
+msgstr "檔案損壞：%s：%s\n"
 
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
@@ -738,9 +739,9 @@ msgstr ""
 "找到已安裝 (但未打包) 的檔案：\n"
 "%s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s already exists\n"
-msgstr "第 %d 行：%s：軟體包 %s 已存在\n"
+msgstr "軟體包 %s 已存在\n"
 
 #, c-format
 msgid "%s was mapped to multiple filenames"
@@ -767,7 +768,7 @@ msgstr "建立封存檔案失敗：%s\n"
 
 #, c-format
 msgid "Unknown payload compression: %s\n"
-msgstr "未知的有效載荷壓縮：%s\n"
+msgstr "未知的酬載壓縮：%s\n"
 
 #, c-format
 msgid "Could not seek in file %s: %s\n"
@@ -775,7 +776,7 @@ msgstr "檔案無法尋找於檔案 %s: %s\n"
 
 #, c-format
 msgid "Failed to read %jd bytes in file %s: %s\n"
-msgstr ""
+msgstr "無法讀取 %jd 位元組 (於 %s 檔案)：%s\n"
 
 msgid "Unable to create immutable header region\n"
 msgstr "無法建立不可修改的標頭區段\n"
@@ -818,7 +819,7 @@ msgstr "無法產生軟體包 %s 的檔案名稱輸出：%s\n"
 
 #, c-format
 msgid "Finished binary package job, result %d, filename %s\n"
-msgstr ""
+msgstr "完成二進位軟體包工作，結果 %d，檔名 %s\n"
 
 #, c-format
 msgid "line %d: second %s\n"
@@ -886,11 +887,11 @@ msgstr "無法解析標籤欄位：%s\n"
 
 #, c-format
 msgid "line %d: Bad number: %s\n"
-msgstr "列 %d：錯誤的編號：%s\n"
+msgstr "列 %d：編號不良：%s\n"
 
 #, c-format
 msgid "line %d: Bad no%s number: %u\n"
-msgstr "第 %d 列：無效的第 %s 個號碼：%u\n"
+msgstr "第 %d 列：第 %s 個號碼不良：%u\n"
 
 #, c-format
 msgid "Downloading %s to %s\n"
@@ -958,13 +959,13 @@ msgstr "%s 在：%s\n"
 
 #, c-format
 msgid "Illegal char '%c' (0x%x)"
-msgstr "非法字符「%c」(0x%x)"
+msgstr "不合規字元「%c」(0x%x)"
 
 msgid "Possible unexpanded macro"
 msgstr "可能未展開的巨集"
 
 msgid "Illegal sequence \"..\""
-msgstr "非法序列「..」"
+msgstr "不合規序列「..」"
 
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
@@ -1015,7 +1016,7 @@ msgid "Bad package specification: %s\n"
 msgstr "不良軟體包規格：%s\n"
 
 msgid "Binary rpm package found. Expected spec file!\n"
-msgstr "找到二進位 rpm 軟體包。沒有期望的 spec 檔案！\n"
+msgstr "找到二進位 rpm 軟體包。沒有預期的 spec 檔案！\n"
 
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
@@ -1066,28 +1067,28 @@ msgid "line %d: second %%prep\n"
 msgstr "列 %d：第二個 %%prep\n"
 
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
-msgstr "相依性 Token 必須以字母或數字、'_' 或 '/' 為開頭"
+msgstr "依賴關係符記必須以字母或數字、'_' 或 '/' 為開頭"
 
 msgid "Versioned file name not permitted"
 msgstr "包含版本的檔案名稱不被允許"
 
 msgid "No rich dependencies allowed for this type"
-msgstr "此類型並沒有豐富的相依性。"
+msgstr "此類型並沒有豐富依賴關係"
 
 msgid "invalid dependency"
-msgstr "無效的相依性"
+msgstr "無效的依賴關係"
 
 msgid "Version required"
 msgstr "需要版本"
 
 msgid "Only package names are allowed in Obsoletes"
-msgstr ""
+msgstr "「棄用」中只允許軟體包名稱"
 
 msgid "It's not recommended to have unversioned Obsoletes"
-msgstr ""
+msgstr "不建議加入未標上版本的「棄用」"
 
 msgid "It's not recommended to use '>' in Obsoletes"
-msgstr ""
+msgstr "不建議在「棄用」中使用「>」"
 
 msgid "Only absolute paths are allowed in file triggers"
 msgstr "檔案觸發器中只允許絕對路徑"
@@ -1141,7 +1142,7 @@ msgstr "第 %d 列：「翻譯員」參數不允許在觸發器內：%s\n"
 
 #, c-format
 msgid "extra tokens at the end of %s directive in line %d:  %s\n"
-msgstr ""
+msgstr "%s 命令（在第 %d 列）的結尾有多餘的符記：%s\n"
 
 #, c-format
 msgid "Macro expanded in comment on line %d: %s\n"
@@ -1161,21 +1162,19 @@ msgstr "第 %d 行：未關閉的 %%if\n"
 
 #, c-format
 msgid "line %d: unclosed macro or bad line continuation\n"
-msgstr ""
-"第 %d 行：未關閉的巨集、或是錯誤的變數被繼續。\n"
-"\n"
+msgstr "第 %d 行：未閉合的巨集、或是不良的行延續。\n"
 
 #, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr ""
+msgstr "%s：第 %d 列：%s 沒有 %%if\n"
 
 #, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr ""
+msgstr "%s：第 %d 列：%s 在 %s 後\n"
 
 #, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr ""
+msgstr "%s:%d：不良的 %s 條件：%s\n"
 
 #, c-format
 msgid "%s:%d: malformed %%include statement\n"
@@ -1183,9 +1182,7 @@ msgstr "%s:%d：異常的 %%include 聲明\n"
 
 #, c-format
 msgid "encoding %s not supported by system\n"
-msgstr ""
-"系統不支援編碼 %s\n"
-"\n"
+msgstr "系統不支援編碼 %s\n"
 
 #, c-format
 msgid "Package %s: invalid %s encoding in %s: %s - %s\n"
@@ -1197,14 +1194,14 @@ msgstr "第 %d 行：%%end 沒有任何參數：%s\n"
 
 #, c-format
 msgid "line %d: %%end not expected here, no section to close: %s\n"
-msgstr "第 %d 行：非期望的 %%end，沒有區段供關閉：%s\n"
+msgstr "第 %d 行：未預期的 %%end，沒有區段供關閉：%s\n"
 
 #, c-format
 msgid "line %d doesn't belong to any section: %s\n"
 msgstr "第 %d 行並不屬於任何區段：%s\n"
 
 msgid "No compatible architectures found for build\n"
-msgstr "找不到可供建置的相容架構\n"
+msgstr "找不到可供組建的相容架構\n"
 
 #, c-format
 msgid "Package has no %%description: %s\n"
@@ -1241,9 +1238,7 @@ msgstr "無法決定策略名稱：%s\n"
 msgid ""
 "'%s' type given with other types in %%semodule %s. Compacting types to "
 "'%s'.\n"
-msgstr ""
-"「%s」類型以及其他類型給出了 %%semodule %s\n"
-"壓縮類型至「%s」\n"
+msgstr "「%s」類型以及其他類型提供了 %%semodule %s。壓縮類型成「%s」。\n"
 
 #, c-format
 msgid "Error parsing %s: %s\n"
@@ -1251,7 +1246,7 @@ msgstr "無法解析 %s：%s\n"
 
 #, c-format
 msgid "Expecting %%semodule tag: %s\n"
-msgstr "期望中的 %%semodule 標籤：%s\n"
+msgstr "預期 %%semodule 標籤：%s\n"
 
 #, c-format
 msgid "Missing module path in line: %s\n"
@@ -1271,11 +1266,11 @@ msgstr "忽略無效的正規表達式 %s\n"
 
 #, c-format
 msgid "%s: mime and magic supplied, only mime will be used\n"
-msgstr ""
+msgstr "%s：同時提供 mime 和 magic，只會使用 mine\n"
 
 #, c-format
 msgid "Couldn't create pipe for %s: %m\n"
-msgstr "無法為 %s 建立導管：%m\n"
+msgstr "無法為 %s 建立管線：%m\n"
 
 #, c-format
 msgid "Couldn't fork %s: %s\n"
@@ -1320,7 +1315,7 @@ msgid "Failed to find %s:\n"
 msgstr "找不到 %s：\n"
 
 msgid "Deprecated external dependency generator is used!\n"
-msgstr "不推薦使用外部的相依性生成器！\n"
+msgstr "不推薦使用外部的依賴關係生成器！\n"
 
 #, c-format
 msgid "line %d: %s: package %s does not exist\n"
@@ -1398,38 +1393,36 @@ msgstr "分配新軟體包實體時發生錯誤(%d)\n"
 
 #, c-format
 msgid "Converting database from %s to %s backend\n"
-msgstr ""
+msgstr "將資料庫從 %s 轉換至 %s 後端\n"
 
 #, c-format
 msgid "Found %s %s database while attempting %s backend: using %s backend.\n"
-msgstr ""
+msgstr "嘗試 %3$s 後端時發現 %1$s %2$s 資料庫：使用 %4$s 後端。\n"
 
-#, fuzzy
 msgid "Detected outdated index databases\n"
-msgstr "無法在 %s 移除舊的資料庫\n"
+msgstr "偵測到過時的索引資料庫\n"
 
-#, fuzzy
 msgid "Rebuilding outdated index databases\n"
-msgstr "無法在 %s 移除舊的資料庫\n"
+msgstr "正在重新組建過時的索引資料庫\n"
 
 #, c-format
 msgid "rpmidx: Version mismatch. Expected version: %u. Found version: %u\n"
-msgstr ""
+msgstr "rpmidx：版本不符。預期版本：%u。找到版本：%u\n"
 
 #, c-format
 msgid "rpmpkg: Version mismatch. Expected version: %u. Found version: %u\n"
-msgstr ""
+msgstr "rpmpkg：版本不符。預期版本：%u。找到版本：%u\n"
 
 msgid "rpmpkg: detected non-zero blob, trying auto repair\n"
-msgstr ""
+msgstr "rpmpkg：偵測到非 0 的 Blob，嘗試自動修復\n"
 
 #, c-format
 msgid "rpmxdb: Version mismatch. Expected version: %u. Found version: %u\n"
-msgstr ""
+msgstr "rpmxdb：版本不符。預期版本：%u。找到版本：%u\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open sqlite database %s: %s\n"
-msgstr "無法開啟 %s 規格檔：%s\n"
+msgstr "無法開啟 %s SQLite 資料庫：%s\n"
 
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
@@ -1437,7 +1430,7 @@ msgstr "%s 為增量 RPM 且不能直接安裝\n"
 
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
-msgstr "不支援的有效負荷 (%s) 於套件 %s\n"
+msgstr "有不支援的酬載 (%s) 在軟體包 %s 中\n"
 
 #, c-format
 msgid "package %s was already added, skipping %s\n"
@@ -1473,7 +1466,7 @@ msgid "(invalid xml type)"
 msgstr "(無效 xml 類型)"
 
 msgid "(not an OpenPGP signature)"
-msgstr "(不是個 OpenPGP 簽署)"
+msgstr "(不是個 OpenPGP 簽章)"
 
 #, c-format
 msgid "Invalid date %u"
@@ -1520,63 +1513,63 @@ msgstr "檔案"
 
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d len %d"
-msgstr "標籤 [%d]：壞的，標籤 %d 類型 %d  偏差 %d 數值 %d 長度 %d"
+msgstr "標籤 [%d]：不良，標籤 %d 類型 %d 偏移 %d 數值 %d 長度 %d"
 
 msgid "hdr load: BAD"
-msgstr "hdr_load：壞的"
+msgstr "hdr_load：不良"
 
 msgid "region: no tags"
 msgstr "區域：沒有標籤"
 
 #, c-format
 msgid "region tag: BAD, tag %d type %d offset %d count %d"
-msgstr "區域標籤：壞的，標籤 %d 類型 %d  偏差 %d 數值 %d"
+msgstr "區域標籤：不良，標籤 %d 類型 %d 偏移 %d 數值 %d"
 
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d"
-msgstr "區域偏差：壞的，標籤 %d 類型 %d  偏差 %d 數值 %d"
+msgstr "區域偏移：不良，標籤 %d 類型 %d 偏移 %d 數值 %d"
 
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d"
-msgstr "區域 trailer：壞的，標籤 %d 類型 %d  偏差 %d 數值 %d"
+msgstr "區域 trailer：不良，標籤 %d 類型 %d 偏移 %d 數值 %d"
 
 #, c-format
 msgid "region %d size: BAD, ril %d il %d rdl %d dl %d"
-msgstr "區域 %d 大小：壞的， ril %d il %d rdl %d dl %d"
+msgstr "區域 %d 大小：不良， ril %d il %d rdl %d dl %d"
 
 #, c-format
 msgid "region %d: tag number mismatch il %d ril %d dl %d rdl %d\n"
-msgstr ""
+msgstr "區域 %d：標籤號碼不符 il %d ril %d dl %d rdl %d\n"
 
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d"
-msgstr "hdr_size (%d)：壞的，讀取時回傳 %d"
+msgstr "hdr_size (%d)：不良，讀取時回傳 %d"
 
 msgid "hdr magic: BAD"
-msgstr "hdr_magic：壞的"
+msgstr "hdr_magic：不良"
 
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range"
-msgstr "hdr_tags：壞的，標籤 (%d) 的編號超出範圍"
+msgstr "hdr_tags：不良，標籤 (%d) 的編號超出範圍"
 
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range"
-msgstr "hdr_data：壞的，標籤 (%d) 的編號超出範圍"
+msgstr "hdr_data：不良，標籤 (%d) 的編號超出範圍"
 
 #, c-format
 msgid "hdr blob(%zd): BAD, read returned %d"
-msgstr "hdr_blob(%zd)：壞的，讀取時回傳 %d"
+msgstr "hdr_blob(%zd)：不良，讀取時回傳 %d"
 
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes"
-msgstr "sigh_pad(%zd)：壞的，讀取 %zd 位元組"
+msgstr "sigh_pad(%zd)：不良，讀取 %zd 位元組"
 
 msgid "signature "
-msgstr "簽名"
+msgstr "簽章 "
 
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
-msgstr "blob 大小 (%d)：差的，8 + 16 * il(%d) + dl(%d)"
+msgstr "blob 大小 (%d)：不良，8 + 16 * il(%d) + dl(%d)"
 
 msgid "invalid field width"
 msgstr "無效的欄位寬度"
@@ -1609,7 +1602,7 @@ msgid "unexpected }"
 msgstr "未預期的 }"
 
 msgid "escaped char expected after \\"
-msgstr ""
+msgstr "\\ 後應存在跳脫字元"
 
 msgid "? expected in expression"
 msgstr "? 預期於表述式中"
@@ -1632,17 +1625,17 @@ msgstr "| 預期於表述式的結尾"
 msgid "array iterator used with different sized arrays"
 msgstr "用於不同大小陣列的陣列迭代器"
 
-#, fuzzy, c-format
+#, c-format
 msgid "RPM v3 packages are deprecated: %s\n"
-msgstr "第 %d 行：%s 重複：%s\n"
+msgstr "RPM v3 軟體包已過時：%s\n"
 
 #, c-format
 msgid "failed to load macro file %s\n"
-msgstr ""
+msgstr "無法載入 %s 巨集檔案\n"
 
 #, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr ""
+msgstr "傳入 --dbpath 的引數開頭必須是「/」\n"
 
 #, c-format
 msgid ""
@@ -1683,22 +1676,22 @@ msgid "<FILE:...>"
 msgstr "<FILE:…>"
 
 msgid "load a single macro file"
-msgstr ""
+msgstr "載入單一個巨集檔案"
 
 msgid "<FILE>"
-msgstr ""
+msgstr "<FILE>"
 
 msgid "don't enable any plugins"
 msgstr "不啟用任何附加元件"
 
 msgid "don't verify package digest(s)"
-msgstr "不校驗軟體包摘要"
+msgstr "不核驗軟體包摘要"
 
 msgid "don't verify database header(s) when retrieved"
-msgstr "擷取時不校驗資料庫表頭"
+msgstr "擷取時不核驗資料庫表頭"
 
 msgid "don't verify package signature(s)"
-msgstr "不校驗軟體包簽署"
+msgstr "不核驗軟體包簽章"
 
 msgid "send stdout to CMD"
 msgstr "發送 stdout 至 CMD"
@@ -1740,7 +1733,7 @@ msgid "debug rpmio I/O"
 msgstr "除錯 rpmio I/O"
 
 msgid "disable user namespace support"
-msgstr ""
+msgstr "停用使用者命名空間支援"
 
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
@@ -1772,7 +1765,7 @@ msgid "relocate files in non-relocatable package"
 msgstr "對不可重新分配位置的軟體包重新分配檔案位置"
 
 msgid "print dependency loops as warning"
-msgstr "列印相依關係迴圈做為警告"
+msgstr "列印依賴關係迴圈做為警告"
 
 msgid "erase (uninstall) package"
 msgstr "抹除 (解除安裝) 軟體包"
@@ -1780,9 +1773,8 @@ msgstr "抹除 (解除安裝) 軟體包"
 msgid "<package>+"
 msgstr "<package>+"
 
-#, fuzzy
 msgid "do not install artifacts"
-msgstr "不安裝文件"
+msgstr "不安裝產物"
 
 msgid "do not install configuration files"
 msgstr "不安裝組態檔案"
@@ -1791,7 +1783,7 @@ msgid "do not install documentation"
 msgstr "不安裝文件"
 
 msgid "skip files with leading component <path> "
-msgstr "略過以 <path> 部件開頭的檔案"
+msgstr "略過以 <path> 組件開頭的檔案 "
 
 msgid "<path>"
 msgstr "<path>"
@@ -1809,16 +1801,16 @@ msgid "print hash marks as package installs (good with -v)"
 msgstr "軟體包安裝時列印 Hash 標記 (和 -v 一起用會更好)"
 
 msgid "don't verify package architecture"
-msgstr "不要校驗軟體包架構"
+msgstr "不要核驗軟體包架構"
 
 msgid "don't verify package operating system"
-msgstr "不要校驗套間作葉系統"
+msgstr "不要核驗套間作葉系統"
 
 msgid "don't check disk space before installing"
 msgstr "安裝前不檢查磁碟空間"
 
 msgid "short hand for --ignorepayload --ignoresignature"
-msgstr ""
+msgstr "--ignorepayload --ignoresignature 的縮寫"
 
 msgid "install documentation"
 msgstr "安裝文件"
@@ -1830,13 +1822,13 @@ msgid "update the database, but do not modify the filesystem"
 msgstr "更新資料庫，但不修改檔案系統"
 
 msgid "do not verify package dependencies"
-msgstr "不校驗軟體包相依性"
+msgstr "不核驗軟體包依賴關係"
 
 msgid "don't verify digest of files"
-msgstr "不要校驗檔案的摘要"
+msgstr "不要核驗檔案的摘要"
 
 msgid "don't verify digest of files (obsolete)"
-msgstr "不要驗證檔案的摘要 (棄用)"
+msgstr "不要核驗檔案的摘要 (棄用)"
 
 msgid "don't install file security contexts"
 msgstr "不安裝檔案安全情境資料"
@@ -1845,7 +1837,7 @@ msgid "don't install file capabilities"
 msgstr "不安裝檔案功能"
 
 msgid "do not reorder package installation to satisfy dependencies"
-msgstr "不重新排列軟體包安裝順序以滿足相依關係"
+msgstr "不重新排列軟體包安裝順序以滿足依賴關係"
 
 msgid "do not execute package scriptlet(s)"
 msgstr "不執行軟體包指令小稿片段"
@@ -1929,61 +1921,61 @@ msgid "reinstall package(s)"
 msgstr "重新安裝軟體包"
 
 msgid "query/verify all packages"
-msgstr "查詢/校驗所有軟體包"
+msgstr "查詢/核驗所有軟體包"
 
 msgid "rpm checksig mode"
 msgstr "rpm 檢查簽署模式"
 
 msgid "query/verify package(s) owning file"
-msgstr "查詢/校驗軟體包擁有的檔案"
+msgstr "查詢/核驗軟體包擁有的檔案"
 
 msgid "query/verify package(s) in group"
-msgstr "查詢/校驗軟體包所屬的群組"
+msgstr "查詢/核驗軟體包所屬的群組"
 
 msgid "query/verify a package file"
-msgstr "查詢/校驗一個軟體包檔案"
+msgstr "查詢/核驗一個軟體包檔案"
 
 msgid "query/verify package(s) with package identifier"
-msgstr "以軟體包的識別符查詢/校驗軟體包"
+msgstr "以軟體包的識別符查詢/核驗軟體包"
 
 msgid "query/verify package(s) with header identifier"
-msgstr "以表頭識別符查詢/校驗軟體包"
+msgstr "以表頭識別符查詢/核驗軟體包"
 
 msgid "rpm query mode"
 msgstr "rpm 查詢模式"
 
 msgid "query/verify a header instance"
-msgstr "查詢/驗證表頭實體"
+msgstr "查詢/核驗表頭實體"
 
 msgid "query/verify package(s) from install transaction"
-msgstr "從安裝處理事項查詢/驗證軟體包"
+msgstr "從安裝處理事項查詢/核驗軟體包"
 
 msgid "query the package(s) triggered by the package"
 msgstr "查詢軟體包所觸發的軟體包"
 
 msgid "rpm verify mode"
-msgstr "rpm 校驗模式"
+msgstr "rpm 核驗模式"
 
 msgid "query/verify the package(s) which require a dependency"
-msgstr "查詢/校驗需要某些相依軟體包的軟體包"
+msgstr "查詢/核驗需要某些依賴軟體包的軟體包"
 
 msgid "query/verify the package(s) which obsolete a dependency"
-msgstr ""
+msgstr "查詢或核驗棄用某個依賴關係的軟體包"
 
 msgid "query/verify the package(s) which provide a dependency"
-msgstr "查詢/校驗提供某些相依軟體包的軟體包"
+msgstr "查詢/核驗提供某些依賴軟體包的軟體包"
 
 msgid "query/verify the package(s) which recommends a dependency"
-msgstr "查詢 / 驗證軟體包，並推薦相依性"
+msgstr "查詢 / 核驗軟體包，並推薦依賴關係"
 
 msgid "query/verify the package(s) which suggests a dependency"
-msgstr "查詢、驗證軟體包，並建議相依性"
+msgstr "查詢、核驗軟體包，並建議依賴關係"
 
 msgid "query/verify the package(s) which supplements a dependency"
-msgstr "查詢、驗證軟體包，並補充相依性"
+msgstr "查詢、核驗軟體包，並補充依賴關係"
 
 msgid "query/verify the package(s) which enhances a dependency"
-msgstr "查詢、驗證軟體包，並增強相依性"
+msgstr "查詢、核驗軟體包，並增強依賴關係"
 
 msgid "do not glob arguments"
 msgstr "不以 glob 解析引數"
@@ -1992,28 +1984,28 @@ msgid "do not process non-package files as manifests"
 msgstr "不以 manifest 處理非軟體包檔案"
 
 msgid "only include configuration files"
-msgstr ""
+msgstr "只包含設定檔"
 
 msgid "only include documentation files"
-msgstr ""
+msgstr "只包含文件檔"
 
 msgid "only include license files"
-msgstr ""
+msgstr "只包含授權檔"
 
 msgid "only include artifact files"
-msgstr ""
+msgstr "只包含產物檔"
 
 #, c-format
 msgid "exclude %%ghost files"
-msgstr ""
+msgstr "排除 %%ghost 檔案"
 
 #, c-format
 msgid "exclude %%config files"
-msgstr ""
+msgstr "排除 %%config 檔案"
 
 #, c-format
 msgid "exclude %%artifact files"
-msgstr ""
+msgstr "排除 %%artifact 檔案"
 
 msgid "dump basic file information"
 msgstr "傾印基本檔案資訊"
@@ -2025,37 +2017,37 @@ msgid "display the states of the listed files"
 msgstr "顯示列出的檔案的狀態"
 
 msgid "don't verify size of files"
-msgstr "不校驗檔案大小"
+msgstr "不核驗檔案大小"
 
 msgid "don't verify symlink path of files"
-msgstr "不校驗檔案的符號連結路徑"
+msgstr "不核驗檔案的符號連結路徑"
 
 msgid "don't verify owner of files"
-msgstr "不校驗檔案的擁有者"
+msgstr "不核驗檔案的擁有者"
 
 msgid "don't verify group of files"
-msgstr "不校驗檔案的群組"
+msgstr "不核驗檔案的群組"
 
 msgid "don't verify modification time of files"
-msgstr "不校驗檔案的修改時間"
+msgstr "不核驗檔案的修改時間"
 
 msgid "don't verify mode of files"
-msgstr "不校驗檔案的模式"
+msgstr "不核驗檔案的模式"
 
 msgid "don't verify file security contexts"
-msgstr "不校驗檔案的安全情境"
+msgstr "不核驗檔案的安全情境"
 
 msgid "don't verify capabilities of files"
-msgstr "不驗證檔案功能"
+msgstr "不核驗檔案功能"
 
 msgid "don't verify files in package"
-msgstr "不校驗軟體包內的檔案"
+msgstr "不核驗軟體包內的檔案"
 
 msgid "don't verify package dependencies"
-msgstr "不校驗軟體包的相依關係"
+msgstr "不核驗軟體包的依賴關係"
 
 msgid "don't execute verify script(s)"
-msgstr "不執行校驗指令小稿"
+msgstr "不執行核驗指令小稿"
 
 #, c-format
 msgid "Missing rpmlib features for %s:\n"
@@ -2072,7 +2064,7 @@ msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "解包封存檔失敗 %s%s：%s\n"
 
 msgid " on file "
-msgstr "  於檔案 "
+msgstr " 於檔案 "
 
 #, c-format
 msgid "incorrect format: %s\n"
@@ -2127,11 +2119,11 @@ msgstr "沒有軟體包符合 %s：%s\n"
 
 #, c-format
 msgid "no package conflicts %s\n"
-msgstr ""
+msgstr "沒有與 %s 衝突的軟體包\n"
 
 #, c-format
 msgid "no package obsoletes %s\n"
-msgstr ""
+msgstr "沒有棄用 %s 的軟體包\n"
 
 #, c-format
 msgid "no package requires %s\n"
@@ -2201,13 +2193,13 @@ msgid "DIGESTS"
 msgstr "DIGESTS"
 
 msgid "digests"
-msgstr "digests"
+msgstr "摘要"
 
 msgid "SIGNATURES"
-msgstr "簽名"
+msgstr "SIGNATURES"
 
 msgid "signatures"
-msgstr "簽名"
+msgstr "簽章"
 
 msgid "NOT OK"
 msgstr "不正確"
@@ -2319,7 +2311,7 @@ msgid "YES"
 msgstr "是"
 
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
-msgstr "PreReq:、Provides:、以及 Obsoletes: 相依性支援版本。"
+msgstr "PreReq:、Provides:、以及 Obsoletes: 依賴關係支援版本。"
 
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "檔案名稱儲存為 (dirName、baseName、dirIndex) 字組，而非路徑。"
@@ -2328,10 +2320,10 @@ msgid "package payload can be compressed using bzip2."
 msgstr "軟體包酬載可以使用 bzip2 壓縮。"
 
 msgid "package payload can be compressed using xz."
-msgstr "軟體包有效負荷可以用 xz 壓縮"
+msgstr "軟體包酬載可以用 xz 壓縮。"
 
 msgid "package payload can be compressed using lzma."
-msgstr "軟體包有效負荷可以使用 lzma 壓縮。"
+msgstr "軟體包酬載可以使用 lzma 壓縮。"
 
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "軟體包酬載檔案有「./」前綴。"
@@ -2355,69 +2347,69 @@ msgid "internal support for lua scripts."
 msgstr "lua 指令小稿的內部支援。"
 
 msgid "file digest algorithm is per package configurable"
-msgstr "檔案 digest 算法為每個軟體包可設定"
+msgstr "每個軟體包皆可設定檔案摘要算法"
 
 msgid "support for POSIX.1e file capabilities"
 msgstr "支援 POSIX.1e 檔案功能"
 
 msgid "package scriptlets can be expanded at install time."
-msgstr "軟體包 指令小稿 可以在安裝時擴展"
+msgstr "軟體包指令小稿可以在安裝期間展開。"
 
 msgid "dependency comparison supports versions with tilde."
-msgstr "相依性比較支援包含代字號的版本。"
+msgstr "依賴關係比較支援包含代字號的版本。"
 
 msgid "dependency comparison supports versions with caret."
-msgstr ""
+msgstr "依賴關係比較支援包含插入號的版本。"
 
 msgid "support files larger than 4GB"
-msgstr "檔案支援大於 4GB"
+msgstr "支援大於 4GB 的檔案"
 
 msgid "support for rich dependencies."
-msgstr "支援富相依性"
+msgstr "支援豐富依賴關係。"
 
 msgid "support for dynamic buildrequires."
-msgstr ""
+msgstr "支援動態的組建需求。"
 
 msgid "package payload can be compressed using zstd."
-msgstr "軟體包有效負荷可以使用 zstd 壓縮。"
+msgstr "軟體包酬載可以使用 zstd 壓縮。"
 
 #, c-format
 msgid "Unknown rich dependency op '%.*s'"
-msgstr "未知的富相依性操作「%.*s」"
+msgstr "未知的豐富依賴關係操作「%.*s」"
 
 msgid "Name required"
 msgstr "需要名稱"
 
 msgid "Illegal ops in with/without"
-msgstr ""
+msgstr "with/without 中的動作無效"
 
 msgid "Illegal context for 'unless', please use 'or' instead"
-msgstr ""
+msgstr "「unless」的情境無效，請改用「or」"
 
 msgid "Illegal context for 'if', please use 'and' instead"
-msgstr ""
+msgstr "「if」的情境無效，請改用「and」"
 
 msgid "Rich dependency does not start with '('"
-msgstr "富相依性不能以「(」為開頭"
+msgstr "豐富依賴關係的開頭不是「(」"
 
 msgid "Missing argument to rich dependency op"
-msgstr "遺失富相依性操作的參數"
+msgstr "遺失豐富依賴關係操作的參數"
 
 msgid "Empty rich dependency"
-msgstr "空的富相依性"
+msgstr "空的豐富依賴關係"
 
 #, c-format
 msgid "Unterminated rich dependency: %s"
-msgstr "未終止的富相依性：%s"
+msgstr "未終止的豐富依賴關係：%s"
 
 msgid "Cannot chain different ops"
 msgstr "無法連結不同的動作"
 
 msgid "Can only chain and/or/with ops"
-msgstr ""
+msgstr "只能鏈結 and/or/with 動作"
 
 msgid "Junk after rich dependency"
-msgstr "富相依性後 Junk"
+msgstr "豐富依賴關係後 Junk"
 
 #, c-format
 msgid "user %s does not exist - using %s\n"
@@ -2496,16 +2488,16 @@ msgid "Preparing..."
 msgstr "正在準備…"
 
 msgid "Verifying..."
-msgstr ""
+msgstr "核驗中…"
 
 msgid "Preparing packages..."
 msgstr "準備軟體包中 …"
 
 msgid "Verifying packages..."
-msgstr ""
+msgstr "正在核驗軟體包…"
 
 msgid "Failed dependencies:\n"
-msgstr "相依關係失敗：\n"
+msgstr "依賴關係失敗：\n"
 
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
@@ -2547,7 +2539,7 @@ msgid "not an rpm package"
 msgstr "並非 rpm 軟體包"
 
 msgid "illegal signature type"
-msgstr "無效的簽署類型"
+msgstr "無效的簽章類型"
 
 msgid "unsupported RPM package version"
 msgstr "未支援的 RPM 軟體包版本"
@@ -2598,17 +2590,17 @@ msgstr "軟體包 %s 是針對 %s 作業系統"
 msgid "package %s is already installed"
 msgstr "軟體包 %s 已經安裝"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is not installed"
-msgstr "軟體包 %s 尚未安裝\n"
+msgstr "軟體包 %s 尚未安裝"
 
 #, c-format
 msgid "path %s in package %s is not relocatable"
-msgstr "在軟體包 %2$s 中的路徑 %1$s 無法重新分配位置"
+msgstr "無法重新定位 %2$s 軟體包的 %1$s 路徑"
 
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
-msgstr "在試圖安裝 %2$s 和 %3$s 之間產生檔案 %1$s 衝突"
+msgstr "在試圖安裝 %2$s 和 %3$s 時產生檔案 %1$s 衝突"
 
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
@@ -2618,14 +2610,14 @@ msgstr "從 %2$s 安裝的檔案 %1$s 與來自軟體包 %3$s 的檔案產生衝
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "軟體包 %s (比 %s 還新) 已經安裝"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "installing package %s needs %<PRIu64>%cB more space on the %s filesystem"
-msgstr "安裝軟體包 %s 需要 %<PRIu64>%cB 於 %s 檔案系統上"
+msgstr "安裝 %s 軟體包需要大於 %<PRIu64>%cB 於 %s 檔案系統的空間"
 
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %<PRIu64> more inodes on the %s filesystem"
-msgstr "安裝軟體包 %s 需要 %<PRIu64> inode 於 %s 檔案系統上"
+msgstr "安裝 %s 軟體包需要大於 %<PRIu64> inode 於 %s 檔案系統的空間"
 
 #, c-format
 msgid "%s is needed by %s%s"
@@ -2644,7 +2636,7 @@ msgstr "%s 已經廢棄自 %s%s"
 
 #, c-format
 msgid "package %s does not verify: %s"
-msgstr ""
+msgstr "%s 軟體包未核驗：%s"
 
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
@@ -2728,7 +2720,7 @@ msgstr "<lua> 指令小稿 不支援內建\n"
 
 #, c-format
 msgid "failed to exec scriptlet interpreter %s: %s\n"
-msgstr ""
+msgstr "無法執行指令小稿的 %s 直譯器：%s\n"
 
 #, c-format
 msgid "Couldn't create temporary file for %s: %s\n"
@@ -2764,7 +2756,7 @@ msgid "erase"
 msgstr "抹除"
 
 msgid "rpmdb"
-msgstr ""
+msgstr "rpmdb"
 
 #, c-format
 msgid "cannot open Packages database in %s\n"
@@ -2788,7 +2780,7 @@ msgstr "%s：讀取公鑰失敗。\n"
 
 #, c-format
 msgid "invalid package verify level %s\n"
-msgstr ""
+msgstr "無效的軟體包核驗級別 %s\n"
 
 msgid "transaction"
 msgstr "處理事項"
@@ -2799,7 +2791,7 @@ msgstr "%s 標籤 %u：無效的類型 %u"
 
 #, c-format
 msgid "%s: tag %u: invalid count %u"
-msgstr "%s 標籤 %u：無效的數字 %u"
+msgstr "%s 標籤 %u：無效的計數 %u"
 
 #, c-format
 msgid "%s tag %u: invalid data %p (%u)"
@@ -2811,25 +2803,25 @@ msgstr "%s 標籤 %u：無效的大小 %u"
 
 #, c-format
 msgid "%s tag %u: invalid OpenPGP signature"
-msgstr "%s 標籤 %u：無效的 OpenGPG 簽名"
+msgstr "%s 標籤 %u：無效的 OpenGPG 簽章"
 
 #, c-format
 msgid "%s: tag %u: invalid hex"
 msgstr "%s 標籤 %u：無效的十六進位碼"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s%s%s %s"
-msgstr "%s%s %s"
+msgstr "%s%s%s %s"
 
 msgid "digest"
-msgstr "digest"
+msgstr "摘要"
 
 #, c-format
 msgid "%s%s"
 msgstr "%s%s"
 
 msgid "signature"
-msgstr "簽名"
+msgstr "簽章"
 
 msgid "header"
 msgstr "標頭"
@@ -2841,16 +2833,16 @@ msgid "Header "
 msgstr "表頭 "
 
 msgid "Payload "
-msgstr "有效載荷"
+msgstr "酬載 "
 
 msgid "Unable to reload signature header.\n"
-msgstr "無法重新載入簽署表頭。\n"
+msgstr "無法重新載入簽章表頭。\n"
 
 msgid "no signature"
-msgstr ""
+msgstr "沒有簽章"
 
 msgid "no digest"
-msgstr ""
+msgstr "沒有摘要"
 
 msgid "skipped"
 msgstr "已跳過"
@@ -2870,7 +2862,7 @@ msgstr "遺漏      %c %s"
 
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
-msgstr "%s 的不滿足相依性：\n"
+msgstr "%s 不滿足依賴關係：\n"
 
 #, c-format
 msgid "Unable to reset nice value: %s"
@@ -2880,93 +2872,80 @@ msgstr "無法重設 nice 的值：%s"
 msgid "Unable to reset I/O priority: %s"
 msgstr "無法重設輸入與輸出的優先級：%s"
 
-#, fuzzy
 msgid "syntax error while parsing =="
-msgstr "解析 == 時有語法錯誤\n"
+msgstr "解析 == 時有語法錯誤"
 
-#, fuzzy
 msgid "syntax error while parsing &&"
-msgstr "解析 && 時有語法錯誤\n"
+msgstr "解析 && 時有語法錯誤"
 
-#, fuzzy
 msgid "syntax error while parsing ||"
-msgstr "解析 || 時有語法錯誤\n"
+msgstr "解析 || 時有語法錯誤"
 
 msgid "macro expansion returned a bare word, please use \"...\""
 msgstr ""
 
 msgid "macro expansion did not return an integer"
-msgstr ""
+msgstr "巨集展開未回傳整數"
 
-#, fuzzy, c-format
+#, c-format
 msgid "expanded string: %s\n"
-msgstr "第 %d 行：%s 在：%s\n"
+msgstr "展開的字串：%s\n"
 
-#, fuzzy
 msgid "unterminated string in expression"
-msgstr "{ 預期於表述式中的 ? 之後"
+msgstr "表述式中的字串未閉合"
 
-#, fuzzy
 msgid "invalid version"
-msgstr "(無效型態)"
+msgstr "版本無效"
 
 msgid "bare words are no longer supported, please use \"...\""
 msgstr ""
 
-#, fuzzy
 msgid "parse error in expression"
-msgstr "表述式解析錯誤\n"
+msgstr "表述式解析錯誤"
 
-#, fuzzy
 msgid "unmatched ("
-msgstr "不符合的 (\n"
+msgstr "不成對的 ("
 
-#, fuzzy
 msgid "- only on numbers"
-msgstr "- 只能用於數字\n"
+msgstr "- 只能用於數字"
 
-#, fuzzy
 msgid "unexpected end of expression"
-msgstr "| 預期於表述式的結尾"
+msgstr "表述式未預期結束"
 
-#, fuzzy
 msgid "syntax error in expression"
-msgstr "表述式中有語法錯誤\n"
+msgstr "表述式中有語法錯誤"
 
-#, fuzzy
 msgid "types must match"
-msgstr "類型必須符合\n"
+msgstr "類型必須符合"
 
 msgid "division by zero"
-msgstr ""
+msgstr "除以 0"
 
-#, fuzzy
 msgid "* and / not supported for strings"
-msgstr "字串不支援 *、/\n"
+msgstr "字串不支援 * 和 /"
 
-#, fuzzy
 msgid "- not supported for strings"
-msgstr "字串不支援 -\n"
+msgstr "字串不支援 -"
 
 #, c-format
 msgid "%3d>%*s(empty)\n"
-msgstr ""
+msgstr "%3d>%*s(空白)\n"
 
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(清空)\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open shell expansion pipe for command: %s: %m \n"
-msgstr "無法開啟 tar 導管：%m\n"
+msgstr "無法開啟命令的 Shell 展開管線：%s：%m \n"
 
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
-msgstr "巨集 %%%s 擁有非法名稱（%s）\n"
+msgstr "巨集 %%%s 擁有不合規名稱（%s）\n"
 
 #, c-format
 msgid "Macro %%%s is a built-in (%s)\n"
-msgstr ""
+msgstr "%%%s 巨集是內建巨集 (%s)\n"
 
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
@@ -2998,12 +2977,12 @@ msgstr "在 %2$s(%3$s) 中有未知的選項 %1$c\n"
 
 #, c-format
 msgid "no such macro: '%s'\n"
-msgstr ""
+msgstr "無此巨集：「%s」\n"
 
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
-msgstr "巨集附加元件中太多遞迴階級。這可能是因為遞迴巨集聲明而造成。\n"
+msgstr "巨集展開的遞迴階層過多。這可能是因為遞迴巨集聲明所導致的。\n"
 
 #, c-format
 msgid "Unterminated %c: %s\n"
@@ -3013,13 +2992,11 @@ msgstr "未終結的 %c：%s\n"
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "在無法解析的巨集之後跟著一個 %%\n"
 
-#, fuzzy
 msgid "argument expected"
-msgstr "未預期的 ]"
+msgstr "預期是引數"
 
-#, fuzzy
 msgid "unexpected argument"
-msgstr "未預期的 ]"
+msgstr "未預期引數"
 
 #, c-format
 msgid "======================== active %d empty %d\n"
@@ -3053,7 +3030,7 @@ msgid "warning: "
 msgstr "警告："
 
 msgid "Error writing to log"
-msgstr ""
+msgstr "寫入至紀錄檔時發生錯誤"
 
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
@@ -3107,7 +3084,7 @@ msgid "%s: Fflush failed: %s\n"
 msgstr "%s：Fflush 失敗： %s\n"
 
 msgid "Unsupported PGP signature\n"
-msgstr "不支援的 PGP 簽名\n"
+msgstr "不支援的 PGP 簽章\n"
 
 #, c-format
 msgid "Unsupported PGP hash algorithm %u\n"
@@ -3117,24 +3094,24 @@ msgstr "不支援的 PGP 雜湊值算法 %u\n"
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr "不支援的 PGP 公開密鑰算法 %u\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not create pipe for signing: %m\n"
-msgstr "無法為 %s 建立導管：%m\n"
+msgstr "無法建立簽署用管線：%m\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not set GPG_TTY to stdin: %m\n"
-msgstr "無法開啟 %%files 檔案 %s：%m\n"
+msgstr "無法將 GPG_TTY 設定至標準輸入：%m\n"
 
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "無法執行 %s：%s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open pipe for writing: %m\n"
-msgstr "無法為 %s 建立導管：%m\n"
+msgstr "無法建立寫入用管線：%m\n"
 
 msgid "Could not write to pipe\n"
-msgstr "無法寫入至 pipe\n"
+msgstr "無法寫入至管線\n"
 
 #, c-format
 msgid "Could not read from file %s: %s\n"
@@ -3145,13 +3122,13 @@ msgid "gpg exec failed (%d)\n"
 msgstr "gpg 執行失敗 (%d)\n"
 
 msgid "gpg failed to write signature\n"
-msgstr "寫入簽署時 gpg 失敗\n"
+msgstr "寫入簽章時 gpg 失敗\n"
 
 msgid "unable to read the signature\n"
-msgstr "無法讀取簽名\n"
+msgstr "無法讀取簽章\n"
 
 msgid "file signing support not built in\n"
-msgstr "檔案簽名不支援內建\n"
+msgstr "檔案簽署不支援內建\n"
 
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
@@ -3162,11 +3139,11 @@ msgid "%s: headerRead failed: %s\n"
 msgstr "%s: headerRead 失敗：%s\n"
 
 msgid "Cannot sign RPM v3 packages\n"
-msgstr "無法簽名 RPM v3 軟體包\n"
+msgstr "無法簽署 RPM v3 軟體包\n"
 
 #, c-format
 msgid "%s already contains identical signature, skipping\n"
-msgstr "%s 已經包含了相同的簽名，略過\n"
+msgstr "%s 已經包含了相同的簽章，略過\n"
 
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
@@ -3187,7 +3164,7 @@ msgid "sign_hash failed\n"
 msgstr "sign_hash 失敗\n"
 
 msgid "File digest algorithm id is invalid"
-msgstr "檔案 digest 的算法識別碼無效"
+msgstr "檔案摘要的算法識別碼無效"
 
 msgid "signFile failed\n"
 msgstr "signFile 失敗\n"
@@ -3200,7 +3177,7 @@ msgid "%s: read manifest failed: %s\n"
 msgstr "%s：讀取清單失敗：%s\n"
 
 msgid "don't verify header+payload signature"
-msgstr "不驗證表頭+酬載簽署"
+msgstr "不核驗表頭+酬載簽章"
 
 #~ msgid "Failed to rename %s to %s: %m\n"
 #~ msgstr "無法將 %s 重新命名為 %s：%m\n"
