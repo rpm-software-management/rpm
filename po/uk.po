@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-06-24 10:42+0300\n"
+"POT-Creation-Date: 2020-08-31 11:27+0300\n"
 "PO-Revision-Date: 2017-10-13 05:51-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Ukrainian (http://www.transifex.com/rpm-team/rpm/language/"
@@ -1020,8 +1020,8 @@ msgstr "спроба створення архіву зазнала невдач
 msgid "Unknown payload compression: %s\n"
 msgstr "Невідомий спосіб стиснення вмісту: %s\n"
 
-#: build/pack.c:375 sign/rpmgensig.c:287 sign/rpmgensig.c:643
-#: sign/rpmgensig.c:678
+#: build/pack.c:375 sign/rpmgensig.c:236 sign/rpmgensig.c:591
+#: sign/rpmgensig.c:626
 #, c-format
 msgid "Could not seek in file %s: %s\n"
 msgstr "Не вдалося виконати позиціювання у файлі %s: %s\n"
@@ -1095,37 +1095,37 @@ msgstr "рядок %d: друге %s\n"
 msgid "bogus date in %%changelog: %s\n"
 msgstr "зайва дата у %%changelog: %s\n"
 
-#: build/parseChangelog.c:216
+#: build/parseChangelog.c:224
 #, c-format
 msgid "%%changelog entries must start with *\n"
 msgstr "записи %%changelog мають починатися на *\n"
 
-#: build/parseChangelog.c:224
+#: build/parseChangelog.c:232
 #, c-format
 msgid "incomplete %%changelog entry\n"
 msgstr "неповний запис %%changelog\n"
 
-#: build/parseChangelog.c:235
+#: build/parseChangelog.c:243
 #, c-format
 msgid "bad date in %%changelog: %s\n"
 msgstr "помилкова дата у %%changelog: %s\n"
 
-#: build/parseChangelog.c:240
+#: build/parseChangelog.c:254
 #, c-format
 msgid "%%changelog not in descending chronological order\n"
 msgstr "%%changelog вказано не у порядку спадання дат\n"
 
-#: build/parseChangelog.c:252 build/parseChangelog.c:263
+#: build/parseChangelog.c:266 build/parseChangelog.c:277
 #, c-format
 msgid "missing name in %%changelog\n"
 msgstr "у %%changelog не вказано імені\n"
 
-#: build/parseChangelog.c:270
+#: build/parseChangelog.c:284
 #, c-format
 msgid "no description in %%changelog\n"
 msgstr "у %%changelog не вказано опису\n"
 
-#: build/parseChangelog.c:307
+#: build/parseChangelog.c:321
 #, c-format
 msgid "line %d: second %%changelog\n"
 msgstr "рядок %d: другий запис %%changelog\n"
@@ -1814,12 +1814,17 @@ msgstr "помилка (%d) під час вилучення запису заг
 msgid "error(%d) allocating new package instance\n"
 msgstr "помилка (%d) розподілу нового екземпляра пакунка\n"
 
-#: lib/backend/dbi.c:93
+#: lib/backend/dbi.c:81
+#, fuzzy, c-format
+msgid "invalid %%_db_backend: %s\n"
+msgstr "Некоректний елемент %s: %s\n"
+
+#: lib/backend/dbi.c:98
 #, c-format
 msgid "Converting database from %s to %s backend\n"
 msgstr ""
 
-#: lib/backend/dbi.c:97
+#: lib/backend/dbi.c:102
 #, c-format
 msgid "Found %s %s database while attempting %s backend: using %s backend.\n"
 msgstr ""
@@ -2886,7 +2891,7 @@ msgstr "ПОМИЛКА"
 msgid "OK"
 msgstr "Гаразд"
 
-#: lib/rpmchecksig.c:294 sign/rpmgensig.c:136
+#: lib/rpmchecksig.c:294 sign/rpmgensig.c:73
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: помилка відкриття: %s\n"
@@ -4034,124 +4039,115 @@ msgstr "(нічого)"
 msgid "exiting on signal %d from pid %d\n"
 msgstr ""
 
-#: sign/rpmgensig.c:56
-#, c-format
-msgid "error creating temp directory %s: %m\n"
-msgstr "помилка під час створення тимчасового каталогу %s: %m\n"
-
-#: sign/rpmgensig.c:64
-#, c-format
-msgid "error creating fifo %s: %m\n"
-msgstr "помилка під час створення fifo %s: %m\n"
-
-#: sign/rpmgensig.c:85
-#, c-format
-msgid "error delete fifo %s: %m\n"
-msgstr "помилка під час вилучення fifo %s: %m\n"
-
-#: sign/rpmgensig.c:93
-#, c-format
-msgid "error delete directory %s: %m\n"
-msgstr "помилка під час спроби вилучення каталогу %s: %m\n"
-
-#: sign/rpmgensig.c:169
+#: sign/rpmgensig.c:106
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: помилка Fwrite: %s\n"
 
-#: sign/rpmgensig.c:175
+#: sign/rpmgensig.c:112
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: помилка fread: %s\n"
 
-#: sign/rpmgensig.c:179
+#: sign/rpmgensig.c:116
 #, c-format
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s: помилка Fflush: %s\n"
 
-#: sign/rpmgensig.c:204
+#: sign/rpmgensig.c:141
 msgid "Unsupported PGP signature\n"
 msgstr "Непідтримуваний підпис PGP\n"
 
-#: sign/rpmgensig.c:210
+#: sign/rpmgensig.c:147
 #, c-format
 msgid "Unsupported PGP hash algorithm %u\n"
 msgstr "Непідтримуваний алгоритм хешування PGP, %u\n"
 
-#: sign/rpmgensig.c:223
+#: sign/rpmgensig.c:160
 #, c-format
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr "Непідтримуваний алгоритм обчислення відкритого ключа PGP, %u\n"
 
-#: sign/rpmgensig.c:272
+#: sign/rpmgensig.c:191
+#, fuzzy, c-format
+msgid "Could not create pipe for signing: %m\n"
+msgstr "Не вдалося створити канал для %s: %m\n"
+
+#: sign/rpmgensig.c:205
+#, fuzzy, c-format
+msgid "Could not set GPG_TTY to stdin: %m\n"
+msgstr "Не вдалося відкрити файл %%files %s: %m\n"
+
+#: sign/rpmgensig.c:220
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Не вдалося виконати %s: %s\n"
 
-#: sign/rpmgensig.c:282
-msgid "Fopen failed\n"
-msgstr "Помилка fopen\n"
+#: sign/rpmgensig.c:231
+#, fuzzy, c-format
+msgid "Could not open pipe for writing: %m\n"
+msgstr "Не вдалося створити канал для %s: %m\n"
 
-#: sign/rpmgensig.c:297
+#: sign/rpmgensig.c:246
 msgid "Could not write to pipe\n"
 msgstr "Не вдалося виконати запис до каналу\n"
 
-#: sign/rpmgensig.c:304
+#: sign/rpmgensig.c:253
 #, c-format
 msgid "Could not read from file %s: %s\n"
 msgstr "Не вдалося виконати читання з файла %s: %s\n"
 
-#: sign/rpmgensig.c:314
+#: sign/rpmgensig.c:268
 #, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "помилка виконання gpg (%d)\n"
 
-#: sign/rpmgensig.c:356
+#: sign/rpmgensig.c:296
 msgid "gpg failed to write signature\n"
 msgstr "gpg не вдалося записати підпис\n"
 
-#: sign/rpmgensig.c:373
+#: sign/rpmgensig.c:313
 msgid "unable to read the signature\n"
 msgstr "не вдалося прочитати підпис\n"
 
-#: sign/rpmgensig.c:492
+#: sign/rpmgensig.c:440
 msgid "file signing support not built in\n"
 msgstr ""
 
-#: sign/rpmgensig.c:566
+#: sign/rpmgensig.c:514
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: помилка rpmReadSignature: %s"
 
-#: sign/rpmgensig.c:573
+#: sign/rpmgensig.c:521
 #, c-format
 msgid "%s: headerRead failed: %s\n"
 msgstr "%s: помилка headerRead: %s\n"
 
-#: sign/rpmgensig.c:578
+#: sign/rpmgensig.c:526
 msgid "Cannot sign RPM v3 packages\n"
 msgstr "Підписування пакунків RPM версії 3 неможливе\n"
 
-#: sign/rpmgensig.c:614
+#: sign/rpmgensig.c:562
 #, c-format
 msgid "%s already contains identical signature, skipping\n"
 msgstr "%s вже містить ідентичний підпис, пропускаємо\n"
 
-#: sign/rpmgensig.c:649 sign/rpmgensig.c:672
+#: sign/rpmgensig.c:597 sign/rpmgensig.c:620
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: помилка rpmWriteSignature: %s\n"
 
-#: sign/rpmgensig.c:659
+#: sign/rpmgensig.c:607
 msgid "rpmMkTemp failed\n"
 msgstr "помилка rpmMkTemp\n"
 
-#: sign/rpmgensig.c:666
+#: sign/rpmgensig.c:614
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: помилка writeLead: %s\n"
 
-#: sign/rpmgensig.c:691
+#: sign/rpmgensig.c:639
 #, c-format
 msgid "replacing %s failed: %s\n"
 msgstr "спроба заміни %s зазнала невдачі: %s\n"
@@ -4180,6 +4176,25 @@ msgstr "%s: помилка читання маніфесту: %s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr "не перевіряти підпис заголовка та вмісту"
+
+#, c-format
+#~ msgid "error creating temp directory %s: %m\n"
+#~ msgstr "помилка під час створення тимчасового каталогу %s: %m\n"
+
+#, c-format
+#~ msgid "error creating fifo %s: %m\n"
+#~ msgstr "помилка під час створення fifo %s: %m\n"
+
+#, c-format
+#~ msgid "error delete fifo %s: %m\n"
+#~ msgstr "помилка під час вилучення fifo %s: %m\n"
+
+#, c-format
+#~ msgid "error delete directory %s: %m\n"
+#~ msgstr "помилка під час спроби вилучення каталогу %s: %m\n"
+
+#~ msgid "Fopen failed\n"
+#~ msgstr "Помилка fopen\n"
 
 #, fuzzy, c-format
 #~ msgid "%s generator %s failed: %s\n"

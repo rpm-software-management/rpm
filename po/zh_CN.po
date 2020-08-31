@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-06-24 10:42+0300\n"
+"POT-Creation-Date: 2020-08-31 11:27+0300\n"
 "PO-Revision-Date: 2018-11-08 09:09-0500\n"
 "Last-Translator: Taiki Akita <taiki_akita@163.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/rpm-team/rpm/"
@@ -997,8 +997,8 @@ msgstr "创建归档失败： %s\n"
 msgid "Unknown payload compression: %s\n"
 msgstr "未知的净负荷压缩：%s\n"
 
-#: build/pack.c:375 sign/rpmgensig.c:287 sign/rpmgensig.c:643
-#: sign/rpmgensig.c:678
+#: build/pack.c:375 sign/rpmgensig.c:236 sign/rpmgensig.c:591
+#: sign/rpmgensig.c:626
 #, c-format
 msgid "Could not seek in file %s: %s\n"
 msgstr "无法 seek 文件 %s：%s\n"
@@ -1072,37 +1072,37 @@ msgstr "行 %d：第二个 %s\n"
 msgid "bogus date in %%changelog: %s\n"
 msgstr "%%changelog （更新日志）中存在虚假的日期：%s\n"
 
-#: build/parseChangelog.c:216
+#: build/parseChangelog.c:224
 #, c-format
 msgid "%%changelog entries must start with *\n"
 msgstr "%%changelog 各条内容需要以 * 符号开头\n"
 
-#: build/parseChangelog.c:224
+#: build/parseChangelog.c:232
 #, c-format
 msgid "incomplete %%changelog entry\n"
 msgstr "不完整的 %%changelog 条目\n"
 
-#: build/parseChangelog.c:235
+#: build/parseChangelog.c:243
 #, c-format
 msgid "bad date in %%changelog: %s\n"
 msgstr "%%changelog 中存在错误的日期：%s\n"
 
-#: build/parseChangelog.c:240
+#: build/parseChangelog.c:254
 #, c-format
 msgid "%%changelog not in descending chronological order\n"
 msgstr "%%changelog 没有按照时间顺序降序排列\n"
 
-#: build/parseChangelog.c:252 build/parseChangelog.c:263
+#: build/parseChangelog.c:266 build/parseChangelog.c:277
 #, c-format
 msgid "missing name in %%changelog\n"
 msgstr "%%changelog 中没有名称\n"
 
-#: build/parseChangelog.c:270
+#: build/parseChangelog.c:284
 #, c-format
 msgid "no description in %%changelog\n"
 msgstr "%%changelog 中没有描述\n"
 
-#: build/parseChangelog.c:307
+#: build/parseChangelog.c:321
 #, c-format
 msgid "line %d: second %%changelog\n"
 msgstr "行 %d: 第二个 %%changelog\n"
@@ -1783,12 +1783,17 @@ msgstr "移除表头 #%d 记录时出错 (%d)\n"
 msgid "error(%d) allocating new package instance\n"
 msgstr "在分配新软件包进程时出错 (%d)\n"
 
-#: lib/backend/dbi.c:93
+#: lib/backend/dbi.c:81
+#, fuzzy, c-format
+msgid "invalid %%_db_backend: %s\n"
+msgstr "无效的 %s 令牌：%s\n"
+
+#: lib/backend/dbi.c:98
 #, c-format
 msgid "Converting database from %s to %s backend\n"
 msgstr ""
 
-#: lib/backend/dbi.c:97
+#: lib/backend/dbi.c:102
 #, c-format
 msgid "Found %s %s database while attempting %s backend: using %s backend.\n"
 msgstr ""
@@ -2845,7 +2850,7 @@ msgstr "不正确"
 msgid "OK"
 msgstr "确定"
 
-#: lib/rpmchecksig.c:294 sign/rpmgensig.c:136
+#: lib/rpmchecksig.c:294 sign/rpmgensig.c:73
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s：打开失败：%s\n"
@@ -3979,124 +3984,115 @@ msgstr "(无)"
 msgid "exiting on signal %d from pid %d\n"
 msgstr ""
 
-#: sign/rpmgensig.c:56
-#, c-format
-msgid "error creating temp directory %s: %m\n"
-msgstr "创建临时目录 %s 时出错：%m\n"
-
-#: sign/rpmgensig.c:64
-#, c-format
-msgid "error creating fifo %s: %m\n"
-msgstr "创建队列 %s 时出错：%m\n"
-
-#: sign/rpmgensig.c:85
-#, c-format
-msgid "error delete fifo %s: %m\n"
-msgstr "删除队列 %s 时出错：%m\n"
-
-#: sign/rpmgensig.c:93
-#, c-format
-msgid "error delete directory %s: %m\n"
-msgstr "删除目录 %s 时发生错误：%m\n"
-
-#: sign/rpmgensig.c:169
+#: sign/rpmgensig.c:106
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s：Fwrite 失败：%s\n"
 
-#: sign/rpmgensig.c:175
+#: sign/rpmgensig.c:112
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s：Fread 函数执行失败：%s\n"
 
-#: sign/rpmgensig.c:179
+#: sign/rpmgensig.c:116
 #, c-format
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush 失败：%s\n"
 
-#: sign/rpmgensig.c:204
+#: sign/rpmgensig.c:141
 msgid "Unsupported PGP signature\n"
 msgstr "不支持的 PGP 签名\n"
 
-#: sign/rpmgensig.c:210
+#: sign/rpmgensig.c:147
 #, c-format
 msgid "Unsupported PGP hash algorithm %u\n"
 msgstr "不支持的 PGP hash 算法 %u\n"
 
-#: sign/rpmgensig.c:223
+#: sign/rpmgensig.c:160
 #, c-format
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr "不支持的 PGP 公钥算法 %u\n"
 
-#: sign/rpmgensig.c:272
+#: sign/rpmgensig.c:191
+#, fuzzy, c-format
+msgid "Could not create pipe for signing: %m\n"
+msgstr "无法为 %s建立管道： %m\n"
+
+#: sign/rpmgensig.c:205
+#, fuzzy, c-format
+msgid "Could not set GPG_TTY to stdin: %m\n"
+msgstr "无法打开 %%files 文件 %s：%m\n"
+
+#: sign/rpmgensig.c:220
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "无法exec %s：%s\n"
 
-#: sign/rpmgensig.c:282
-msgid "Fopen failed\n"
-msgstr "fopen 失败\n"
+#: sign/rpmgensig.c:231
+#, fuzzy, c-format
+msgid "Could not open pipe for writing: %m\n"
+msgstr "无法为 %s建立管道： %m\n"
 
-#: sign/rpmgensig.c:297
+#: sign/rpmgensig.c:246
 msgid "Could not write to pipe\n"
 msgstr "无法写入到管道\n"
 
-#: sign/rpmgensig.c:304
+#: sign/rpmgensig.c:253
 #, c-format
 msgid "Could not read from file %s: %s\n"
 msgstr "无法从文件 %s 读取：%s\n"
 
-#: sign/rpmgensig.c:314
+#: sign/rpmgensig.c:268
 #, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "gpg 执行失败 (%d)\n"
 
-#: sign/rpmgensig.c:356
+#: sign/rpmgensig.c:296
 msgid "gpg failed to write signature\n"
 msgstr "写入签名时 gpg 验证失败\n"
 
-#: sign/rpmgensig.c:373
+#: sign/rpmgensig.c:313
 msgid "unable to read the signature\n"
 msgstr "无法读取签名\n"
 
-#: sign/rpmgensig.c:492
+#: sign/rpmgensig.c:440
 msgid "file signing support not built in\n"
 msgstr ""
 
-#: sign/rpmgensig.c:566
+#: sign/rpmgensig.c:514
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s：rpmReadSignature 函数执行失败：%s"
 
-#: sign/rpmgensig.c:573
+#: sign/rpmgensig.c:521
 #, c-format
 msgid "%s: headerRead failed: %s\n"
 msgstr "%s：headerRead 函数执行失败：%s\n"
 
-#: sign/rpmgensig.c:578
+#: sign/rpmgensig.c:526
 msgid "Cannot sign RPM v3 packages\n"
 msgstr "无法对 RPM v3 版本的软件包签名\n"
 
-#: sign/rpmgensig.c:614
+#: sign/rpmgensig.c:562
 #, c-format
 msgid "%s already contains identical signature, skipping\n"
 msgstr "%s 已经包含了相同的签名，跳过\n"
 
-#: sign/rpmgensig.c:649 sign/rpmgensig.c:672
+#: sign/rpmgensig.c:597 sign/rpmgensig.c:620
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s：rpmWriteSignature 失败：%s\n"
 
-#: sign/rpmgensig.c:659
+#: sign/rpmgensig.c:607
 msgid "rpmMkTemp failed\n"
 msgstr "rpmMkTemp 失败\n"
 
-#: sign/rpmgensig.c:666
+#: sign/rpmgensig.c:614
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s：writeLead 失败：%s\n"
 
-#: sign/rpmgensig.c:691
+#: sign/rpmgensig.c:639
 #, c-format
 msgid "replacing %s failed: %s\n"
 msgstr "替换 %s 失败：%s\n"
@@ -4125,6 +4121,25 @@ msgstr "%s：读取 manifest 文件失败：%s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr "不验证报头+净负荷签名"
+
+#, c-format
+#~ msgid "error creating temp directory %s: %m\n"
+#~ msgstr "创建临时目录 %s 时出错：%m\n"
+
+#, c-format
+#~ msgid "error creating fifo %s: %m\n"
+#~ msgstr "创建队列 %s 时出错：%m\n"
+
+#, c-format
+#~ msgid "error delete fifo %s: %m\n"
+#~ msgstr "删除队列 %s 时出错：%m\n"
+
+#, c-format
+#~ msgid "error delete directory %s: %m\n"
+#~ msgstr "删除目录 %s 时发生错误：%m\n"
+
+#~ msgid "Fopen failed\n"
+#~ msgstr "fopen 失败\n"
 
 #, fuzzy, c-format
 #~ msgid "%s generator %s failed: %s\n"

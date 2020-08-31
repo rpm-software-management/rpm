@@ -1,5 +1,5 @@
 AC_PREREQ(2.61)
-AC_INIT(rpm, 4.16.0-beta3, rpm-maint@lists.rpm.org)
+AC_INIT(rpm, 4.16.0-rc1, rpm-maint@lists.rpm.org)
 
 AC_CONFIG_SRCDIR([rpm.c])
 AC_CONFIG_HEADERS([config.h])

@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-06-24 10:42+0300\n"
+"POT-Creation-Date: 2020-08-31 11:27+0300\n"
 "PO-Revision-Date: 2019-11-10 07:23-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: German (http://www.transifex.com/rpm-team/rpm/language/de/)\n"
@@ -1034,8 +1034,8 @@ msgstr "Erstellen der Archivdatei fehlgeschlagen: %s\n"
 msgid "Unknown payload compression: %s\n"
 msgstr "Unbekannte Nutzdaten-Kompression: %s\n"
 
-#: build/pack.c:375 sign/rpmgensig.c:287 sign/rpmgensig.c:643
-#: sign/rpmgensig.c:678
+#: build/pack.c:375 sign/rpmgensig.c:236 sign/rpmgensig.c:591
+#: sign/rpmgensig.c:626
 #, c-format
 msgid "Could not seek in file %s: %s\n"
 msgstr "Datei %s kann nicht durchsucht werden: %s\n"
@@ -1110,37 +1110,37 @@ msgstr "Zeile %d: Zweites %s\n"
 msgid "bogus date in %%changelog: %s\n"
 msgstr "Ungültiges Datum in %%changelog: %s\n"
 
-#: build/parseChangelog.c:216
+#: build/parseChangelog.c:224
 #, c-format
 msgid "%%changelog entries must start with *\n"
 msgstr "%%changelog-Einträge müssen mit einem * beginnen\n"
 
-#: build/parseChangelog.c:224
+#: build/parseChangelog.c:232
 #, c-format
 msgid "incomplete %%changelog entry\n"
 msgstr "Unvollständiger %%changelog-Eintrag\n"
 
-#: build/parseChangelog.c:235
+#: build/parseChangelog.c:243
 #, c-format
 msgid "bad date in %%changelog: %s\n"
 msgstr "Ungültiges Datum im %%changelog: %s\n"
 
-#: build/parseChangelog.c:240
+#: build/parseChangelog.c:254
 #, c-format
 msgid "%%changelog not in descending chronological order\n"
 msgstr "%%changelog ist nicht in absteigender Reihenfolge\n"
 
-#: build/parseChangelog.c:252 build/parseChangelog.c:263
+#: build/parseChangelog.c:266 build/parseChangelog.c:277
 #, c-format
 msgid "missing name in %%changelog\n"
 msgstr "Name im %%changelog fehlt\n"
 
-#: build/parseChangelog.c:270
+#: build/parseChangelog.c:284
 #, c-format
 msgid "no description in %%changelog\n"
 msgstr "Keine Beschreibung im %%changelog\n"
 
-#: build/parseChangelog.c:307
+#: build/parseChangelog.c:321
 #, c-format
 msgid "line %d: second %%changelog\n"
 msgstr "Zeile %d: zweites %%changelog\n"
@@ -1835,12 +1835,17 @@ msgstr "Fehler(%d) beim Entfernen des Datensatzes für Header #%d\n"
 msgid "error(%d) allocating new package instance\n"
 msgstr "Fehler(%d) beim Reservieren einer neuen Paket-Instanz\n"
 
-#: lib/backend/dbi.c:93
+#: lib/backend/dbi.c:81
+#, fuzzy, c-format
+msgid "invalid %%_db_backend: %s\n"
+msgstr "Ungültiges %s-Zeichen: %s\n"
+
+#: lib/backend/dbi.c:98
 #, c-format
 msgid "Converting database from %s to %s backend\n"
 msgstr ""
 
-#: lib/backend/dbi.c:97
+#: lib/backend/dbi.c:102
 #, c-format
 msgid "Found %s %s database while attempting %s backend: using %s backend.\n"
 msgstr ""
@@ -2909,7 +2914,7 @@ msgstr "NICHT OK"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmchecksig.c:294 sign/rpmgensig.c:136
+#: lib/rpmchecksig.c:294 sign/rpmgensig.c:73
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: Öffnen fehlgeschlagen: %s\n"
@@ -4060,124 +4065,115 @@ msgstr "(keine)"
 msgid "exiting on signal %d from pid %d\n"
 msgstr "Abbruch durch Signal %d von PID %d\n"
 
-#: sign/rpmgensig.c:56
-#, c-format
-msgid "error creating temp directory %s: %m\n"
-msgstr "Fehler beim Anlegen des temporären Verzeichnisses %s: %m\n"
-
-#: sign/rpmgensig.c:64
-#, c-format
-msgid "error creating fifo %s: %m\n"
-msgstr "Fehler beim Erzeugen der FIFO %s: %m\n"
-
-#: sign/rpmgensig.c:85
-#, c-format
-msgid "error delete fifo %s: %m\n"
-msgstr "Fehler beim Löschen der FIFO %s: %m\n"
-
-#: sign/rpmgensig.c:93
-#, c-format
-msgid "error delete directory %s: %m\n"
-msgstr "Fehler beim Löschen des Verzeichnisses %s: %m\n"
-
-#: sign/rpmgensig.c:169
+#: sign/rpmgensig.c:106
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite fehlgeschlagen: %s\n"
 
-#: sign/rpmgensig.c:175
+#: sign/rpmgensig.c:112
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: »fread« fehlgeschlagen: %s\n"
 
-#: sign/rpmgensig.c:179
+#: sign/rpmgensig.c:116
 #, c-format
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush fehlgeschlagen: %s\n"
 
-#: sign/rpmgensig.c:204
+#: sign/rpmgensig.c:141
 msgid "Unsupported PGP signature\n"
 msgstr "Nicht unterstützte PGP-Signatur\n"
 
-#: sign/rpmgensig.c:210
+#: sign/rpmgensig.c:147
 #, c-format
 msgid "Unsupported PGP hash algorithm %u\n"
 msgstr "Nicht unterstützter PGP-Prüfsummenalgorithmus %u\n"
 
-#: sign/rpmgensig.c:223
+#: sign/rpmgensig.c:160
 #, c-format
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr "Nicht unterstützter PGP-Algorithmus %u für öffentlichen Schlüssel\n"
 
-#: sign/rpmgensig.c:272
+#: sign/rpmgensig.c:191
+#, fuzzy, c-format
+msgid "Could not create pipe for signing: %m\n"
+msgstr "Pipe für %s konnte nicht erzeugt werden: %m\n"
+
+#: sign/rpmgensig.c:205
+#, fuzzy, c-format
+msgid "Could not set GPG_TTY to stdin: %m\n"
+msgstr "Datei %s aus %%files konnte nicht geöffnet werden: %m\n"
+
+#: sign/rpmgensig.c:220
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "%s konnte nicht ausgeführt werden: %s\n"
 
-#: sign/rpmgensig.c:282
-msgid "Fopen failed\n"
-msgstr "Fopen fehlgeschlagen\n"
+#: sign/rpmgensig.c:231
+#, fuzzy, c-format
+msgid "Could not open pipe for writing: %m\n"
+msgstr "Pipe für %s konnte nicht erzeugt werden: %m\n"
 
-#: sign/rpmgensig.c:297
+#: sign/rpmgensig.c:246
 msgid "Could not write to pipe\n"
 msgstr "In die Pipe konnte nicht geschrieben werden\n"
 
-#: sign/rpmgensig.c:304
+#: sign/rpmgensig.c:253
 #, c-format
 msgid "Could not read from file %s: %s\n"
 msgstr "Aus Datei %s konnte nicht gelesen werden: %s\n"
 
-#: sign/rpmgensig.c:314
+#: sign/rpmgensig.c:268
 #, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "Ausführung von GPG fehlgeschlagen (%d)\n"
 
-#: sign/rpmgensig.c:356
+#: sign/rpmgensig.c:296
 msgid "gpg failed to write signature\n"
 msgstr "GPG konnte die Signatur nicht schreiben\n"
 
-#: sign/rpmgensig.c:373
+#: sign/rpmgensig.c:313
 msgid "unable to read the signature\n"
 msgstr "Signatur konnte nicht gelesen werden\n"
 
-#: sign/rpmgensig.c:492
+#: sign/rpmgensig.c:440
 msgid "file signing support not built in\n"
 msgstr "Unterstützung zum Signieren von Dateien ist nicht eingebaut\n"
 
-#: sign/rpmgensig.c:566
+#: sign/rpmgensig.c:514
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature fehlgeschlagen: %s"
 
-#: sign/rpmgensig.c:573
+#: sign/rpmgensig.c:521
 #, c-format
 msgid "%s: headerRead failed: %s\n"
 msgstr "%s: headerRead fehlgeschlagen: %s\n"
 
-#: sign/rpmgensig.c:578
+#: sign/rpmgensig.c:526
 msgid "Cannot sign RPM v3 packages\n"
 msgstr "RPM-Pakete der Version 3 können nicht signiert werden\n"
 
-#: sign/rpmgensig.c:614
+#: sign/rpmgensig.c:562
 #, c-format
 msgid "%s already contains identical signature, skipping\n"
 msgstr "%s enthält bereits eine identische Signatur, wird übersprungen\n"
 
-#: sign/rpmgensig.c:649 sign/rpmgensig.c:672
+#: sign/rpmgensig.c:597 sign/rpmgensig.c:620
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature fehlgeschlagen: %s\n"
 
-#: sign/rpmgensig.c:659
+#: sign/rpmgensig.c:607
 msgid "rpmMkTemp failed\n"
 msgstr "rpmMk Temp fehlgeschlagen\n"
 
-#: sign/rpmgensig.c:666
+#: sign/rpmgensig.c:614
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead fehlgeschlagen: %s\n"
 
-#: sign/rpmgensig.c:691
+#: sign/rpmgensig.c:639
 #, c-format
 msgid "replacing %s failed: %s\n"
 msgstr "Ersetzen von %s fehlgeschlagen: %s\n"
@@ -4206,6 +4202,25 @@ msgstr "%s: Lesen der Paket-Liste fehlgeschlagen: %s\n"
 #: tools/rpmgraph.c:219
 msgid "don't verify header+payload signature"
 msgstr "Keine Überprüfung der Header- und Nutzdaten-Signatur"
+
+#, c-format
+#~ msgid "error creating temp directory %s: %m\n"
+#~ msgstr "Fehler beim Anlegen des temporären Verzeichnisses %s: %m\n"
+
+#, c-format
+#~ msgid "error creating fifo %s: %m\n"
+#~ msgstr "Fehler beim Erzeugen der FIFO %s: %m\n"
+
+#, c-format
+#~ msgid "error delete fifo %s: %m\n"
+#~ msgstr "Fehler beim Löschen der FIFO %s: %m\n"
+
+#, c-format
+#~ msgid "error delete directory %s: %m\n"
+#~ msgstr "Fehler beim Löschen des Verzeichnisses %s: %m\n"
+
+#~ msgid "Fopen failed\n"
+#~ msgstr "Fopen fehlgeschlagen\n"
 
 #, fuzzy, c-format
 #~ msgid "%s generator %s failed: %s\n"
