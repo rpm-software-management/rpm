@@ -88,11 +88,12 @@ static inline unsigned int rstrnlenhash(const char * str, size_t n, size_t * len
     unsigned int hash = 0xe4721b68;
     const char * s = str;
 
-    while (*s != '\0' && n-- > 0) {
+    while (n > 0 && *s != '\0') {
       hash += *s;
       hash += (hash << 10);
       hash ^= (hash >> 6);
       s++;
+      n--;
     }
     hash += (hash << 3);
     hash ^= (hash >> 11);
