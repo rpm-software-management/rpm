@@ -2838,6 +2838,7 @@ static rpmTag copyTagsFromMainDebug[] = {
     RPMTAG_OS,
     RPMTAG_PLATFORM,
     RPMTAG_OPTFLAGS,
+    0
 };
 
 /* this is a hack: patch the summary and the description to include
