@@ -1007,7 +1007,7 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	source_date_epoch = strtol(srcdate, &endptr, 10);
 	if (srcdate == endptr || *endptr || errno != 0) {
 	    rpmlog(RPMLOG_ERR, _("unable to parse %s=%s\n"), "SOURCE_DATE_EPOCH", srcdate);
-	    exit(28);
+	    fl->processingFailed = 1;
 	}
     }
 
