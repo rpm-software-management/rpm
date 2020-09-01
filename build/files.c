@@ -994,8 +994,7 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
     uint32_t defaultalgo = PGPHASHALGO_MD5, digestalgo;
     rpm_loff_t totalFileSize = 0;
     Header h = pkg->header; /* just a shortcut */
-    int override_date = 0;
-    time_t source_date_epoch;
+    time_t source_date_epoch = 0;
     char *srcdate = getenv("SOURCE_DATE_EPOCH");
 
     /* Limit the maximum date to SOURCE_DATE_EPOCH if defined
@@ -1010,7 +1009,6 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	    rpmlog(RPMLOG_ERR, _("unable to parse %s=%s\n"), "SOURCE_DATE_EPOCH", srcdate);
 	    exit(28);
 	}
-	override_date = 1;
     }
 
     /*
@@ -1151,7 +1149,7 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	    }
 	}
 	
-	if (override_date && flp->fl_mtime > source_date_epoch) {
+	if (source_date_epoch && flp->fl_mtime > source_date_epoch) {
 	    flp->fl_mtime = source_date_epoch;
 	}
 	/*
