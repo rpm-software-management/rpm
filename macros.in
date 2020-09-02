@@ -748,7 +748,7 @@ package or when debugging this package.\
 %_pkgverify_flags 0x0
 
 # Minimize writes during transactions (at the cost of more reads) to
-# conserve eg SSD disks.
+# conserve eg SSD disks (EXPERIMENTAL).
 # 1			enable
 # 0 			disable
 # -1 (or undefined)	autodetect on platforms where supported, otherwise
