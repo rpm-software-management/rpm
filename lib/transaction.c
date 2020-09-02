@@ -1486,12 +1486,15 @@ static void ensureMacro(const char *name, const char *def)
 /* Enable / disable optimizations for solid state disks */
 static void setSSD(int enable)
 {
+    /* XXX _minimize_writes is not safe for mass-consumption yet */
+#if 0
     if (enable) {
 	rpmlog(RPMLOG_DEBUG, "optimizing for non-rotational disks\n");
 	ensureMacro("_minimize_writes", "1");
     } else {
 	rpmPopMacro(NULL, "_minimize_writes");
     }
+#endif
 }
 
 static int rpmtsFinish(rpmts ts)
