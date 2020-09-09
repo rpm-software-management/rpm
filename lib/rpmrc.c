@@ -71,7 +71,7 @@ struct rpmvarValue * next;
 };
 
 struct rpmOption {
-    char * name;
+    const char * name;
     int var;
     int archSpecific;
     int macroize;
@@ -100,7 +100,7 @@ typedef struct canonEntry_s {
  * for giggles, 'key'_canon, 'key'_compat, and 'key'_canon will also work
  */
 typedef struct tableType_s {
-    char * const key;
+    const char *key;
     const int hasCanon;
     const int hasTranslate;
     struct machEquivTable_s equiv;
