@@ -41,7 +41,7 @@ struct depinfo_s {
     rpmTagVal evrTag;
     rpmTagVal flagTag;
     rpmTagVal ixTag;
-    char *name;
+    const char *name;
     char abrev;
 };
 

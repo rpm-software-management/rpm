@@ -25,7 +25,7 @@ struct sprintfTag_s {
     rpmTagVal tag;
     int justOne;
     char * format;
-    char * type;
+    const char * type;
 };
 
 typedef enum {
