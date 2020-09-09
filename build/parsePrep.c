@@ -146,7 +146,8 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 
     tar = rpmGetPath("%{__tar}", NULL);
     if (compressed != COMPRESSED_NOT) {
-	char *zipper, *t = NULL;
+	char *zipper = NULL;
+	const char *t = NULL;
 	int needtar = 1;
 	int needgemspec = 0;
 

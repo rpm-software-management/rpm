@@ -2016,7 +2016,7 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 		    if (addsubdir)
 		       argvAddAttr(files, RPMFILE_DIR|RPMFILE_ARTIFACT, buildidsubdir);
 		    if (rc == 0) {
-			char *linkpattern, *targetpattern;
+			const char *linkpattern, *targetpattern;
 			char *linkpath, *targetpath;
 			int dups = 0;
 			if (isDbg) {
@@ -2904,7 +2904,8 @@ exit:
  * a (possibly new) debuginfo subpackage */
 static void filterDebuginfoPackage(rpmSpec spec, Package pkg,
 				   Package maindbg, Package dbgsrc,
-				   char *buildroot, char *uniquearch)
+				   const char *buildroot,
+				   const char *uniquearch)
 {
     rpmfi fi;
     ARGV_t files = NULL;
