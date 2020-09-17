@@ -69,6 +69,17 @@ rpmpsi rpmpsFreeIterator(rpmpsi psi)
     return NULL;
 }
 
+rpmpsi rpmpsiClone(rpmpsi psi)
+{
+    rpmpsi clonedPsi = NULL;
+    if (psi != NULL) {
+	clonedPsi = xcalloc(1, sizeof(*clonedPsi));
+	clonedPsi->ps = rpmpsLink(psi->ps);
+	clonedPsi->ix = psi->ix;
+    }
+    return clonedPsi;
+}
+
 rpmProblem rpmpsiNext(rpmpsi psi)
 {
     rpmProblem p = NULL;

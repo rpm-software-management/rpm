@@ -48,6 +48,13 @@ rpmpsi rpmpsInitIterator(rpmps ps);
 rpmpsi rpmpsFreeIterator(rpmpsi psi);
 
 /** \ingroup rpmps
+ * Clone problem set iterator.
+ * @param psi		problem set iterator
+ * @return		new (cloned) problem set iterator
+ */
+rpmpsi rpmpsiClone(rpmpsi psi);
+
+/** \ingroup rpmps
  * Return next problem from iterator
  * @param psi		problem set iterator
  * @return		next problem (weak ref), NULL on termination
