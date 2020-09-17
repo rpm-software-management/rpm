@@ -104,7 +104,7 @@ static rpmRC headerCheckPayloadFormat(Header h) {
  * @param depends	installed package of pair (or RPMAL_NOMATCH on erase)
  * @return		0 on success
  */
-static int removePackage(rpmts ts, Header h, rpmte depends)
+static int removePackage(rpmts ts, Header h, rpmte depends, fnpyKey key)
 {
     tsMembers tsmem = rpmtsMembers(ts);
     rpmte p, *pp;
@@ -120,7 +120,7 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
 	return 0;
     }
 
-    p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL, 0);
+    p = rpmteNew(ts, h, TR_REMOVED, key, NULL, 0);
     if (p == NULL)
 	return 1;
 
@@ -188,7 +188,7 @@ static int addSelfErasures(rpmts ts, rpm_color_t tscolor, int op,
 	    free(ohNEVRA);
 	}
 
-	if (removePackage(ts, oh, p)) {
+	if (removePackage(ts, oh, p, NULL)) {
 	    rc = 1;
 	    break;
 	}
@@ -231,7 +231,7 @@ static int addObsoleteErasures(rpmts ts, rpm_color_t tscolor, rpmte p)
 			rpmdsDNEVR(obsoletes)+2, ohNEVRA);
 		free(ohNEVRA);
 
-		if (removePackage(ts, oh, p)) {
+		if (removePackage(ts, oh, p, NULL)) {
 		    rc = 1;
 		    break;
 		}
@@ -487,9 +487,14 @@ int rpmtsAddReinstallElement(rpmts ts, Header h, fnpyKey key)
 
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 {
+    return rpmtsAddEraseElement2(ts, h, dboffset, NULL);
+}
+
+int rpmtsAddEraseElement2(rpmts ts, Header h, int dboffset, fnpyKey key)
+{
     if (rpmtsSetupTransactionPlugins(ts) == RPMRC_FAIL)
 	return 1;
-    return removePackage(ts, h, NULL);
+    return removePackage(ts, h, NULL, key);
 }
 
 /* Cached rpmdb provide lookup, returns 0 if satisfied, 1 otherwise */

@@ -628,6 +628,16 @@ int rpmtsAddReinstallElement(rpmts ts, Header h, const fnpyKey key);
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset);
 
 /** \ingroup rpmts
+ * Add package to be erased to transaction set.
+ * @param ts		transaction set
+ * @param h		header
+ * @param dboffset	ununsed
+ * @param key		pointer to user data
+ * @return		0 on success, 1 on error (not installed)
+ */
+int rpmtsAddEraseElement2(rpmts ts, Header h, int dboffset, const fnpyKey key);
+
+/** \ingroup rpmts
  * Create a transaction (lock) handle
  * @param ts		transaction set
  * @param flags		flags
