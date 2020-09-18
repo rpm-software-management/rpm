@@ -316,6 +316,20 @@ for e in ts:
 [adding upgrade to transaction failed]
 )
 
+RPMPY_TEST([transaction element userdata],[
+mydata = { 'foo': 'bar', 'capstest': 'lock' }
+ts = rpm.ts()
+ts.addInstall('${RPMDATA}/RPMS/foo-1.0-1.noarch.rpm', 'u')
+ts.addInstall('${RPMDATA}/RPMS/capstest-1.0-1.noarch.rpm', 'u')
+for e in ts:
+    e.SetPriv(mydata[e.N()])
+for e in ts:
+    myprint(e.Priv())
+],
+[bar
+lock]
+)
+
 AT_SETUP([database iterators])
 AT_KEYWORDS([python rpmdb])
 AT_CHECK([

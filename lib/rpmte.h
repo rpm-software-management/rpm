@@ -217,6 +217,20 @@ const char * rpmteNEVRA(rpmte te);
 fnpyKey rpmteKey(rpmte te);
 
 /** \ingroup rpmte
+ * Set private user data of transaction element.
+ * @param te		transaction element
+ * @param priv		pointer to private user data
+ */
+void rpmteSetPriv(rpmte te, void *priv);
+
+/** \ingroup rpmte
+ * Retrieve private user data of transaction element.
+ * @param te		transaction element
+ * @return		pointer to private user data
+ */
+void *rpmtePriv(rpmte te);
+
+/** \ingroup rpmte
  * Return failure status of transaction element.
  * If the element itself failed, this is 1, larger count means one of
  * it's parents failed.

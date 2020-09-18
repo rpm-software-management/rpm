@@ -29,6 +29,7 @@
 struct rpmte_s {
     rpmElementType type;	/*!< Package disposition (installed/removed). */
 
+    void *priv;			/*!< Private user data. */
     Header h;			/*!< Package header. */
     char * NEVR;		/*!< Package name-version-release. */
     char * NEVRA;		/*!< Package name-version-release.arch. */
@@ -424,6 +425,17 @@ FD_t rpmteSetFd(rpmte te, FD_t fd)
 fnpyKey rpmteKey(rpmte te)
 {
     return (te != NULL ? te->key : NULL);
+}
+
+void rpmteSetPriv(rpmte te, void *priv)
+{
+    if (te)
+	te->priv = priv;
+}
+
+void *rpmtePriv(rpmte te)
+{
+    return (te != NULL ? te->priv : NULL);
 }
 
 rpmds rpmteDS(rpmte te, rpmTagVal tag)

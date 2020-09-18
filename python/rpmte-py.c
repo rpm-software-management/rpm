@@ -153,6 +153,30 @@ rpmte_Key(rpmteObject * s, PyObject * unused)
 }
 
 static PyObject *
+rpmte_SetPriv(rpmteObject * s, PyObject *arg)
+{
+    /* XXX how to insure this is a PyObject??? */
+    PyObject *o = rpmtePriv(s->te);
+    rpmteSetPriv(s->te, arg);
+    Py_INCREF(arg);
+    Py_XDECREF(o);
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+rpmte_Priv(rpmteObject * s)
+{
+    PyObject *po = Py_None;
+    void *priv = rpmtePriv(s->te);
+
+    if (priv)
+	po = priv;
+
+    Py_INCREF(po);
+    return po;
+}
+
+static PyObject *
 rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 {
     rpmds ds;
@@ -233,8 +257,12 @@ static struct PyMethodDef rpmte_methods[] = {
     {"Failed",	(PyCFunction)rpmte_Failed,	METH_NOARGS,
      "te.Failed() -- Return if there are any related errors."},
     {"Key",	(PyCFunction)rpmte_Key,		METH_NOARGS,
-     "te.Key() -- Return the associated opaque key aka user data\n\
+     "te.Key() -- Return the associated opaque retrieval key\n\
 	as passed e.g. as data arg ts.addInstall()"},
+    {"Priv",	(PyCFunction)rpmte_Priv,	METH_NOARGS,
+     "te.Priv() -- Return associated user data (if any)\n"},
+    {"SetPriv",	(PyCFunction)rpmte_SetPriv,	METH_O,
+     "te.Priv() -- Set associated user data (if any)\n"},
     {"DS",	(PyCFunction)rpmte_DS,		METH_VARARGS|METH_KEYWORDS,
 "te.DS(TagN) -- Return the TagN dependency set (or None).\n\
 	TagN is one of 'Providename', 'Requirename', 'Obsoletename',\n\
