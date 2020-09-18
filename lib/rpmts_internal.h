@@ -50,6 +50,7 @@ struct rpmts_s {
 
     rpmCallbackFunction notify;	/*!< Callback function. */
     rpmCallbackData notifyData;	/*!< Callback private data. */
+    int notifyStyle;		/*!< Callback style (header vs rpmte) */
 
     rpmprobFilterFlags ignoreSet;
 				/*!< Bits to filter current problems. */

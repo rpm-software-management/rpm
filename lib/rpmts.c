@@ -925,13 +925,19 @@ void * rpmtsNotify(rpmts ts, rpmte te,
 {
     void * ptr = NULL;
     if (ts && ts->notify) {
+	void *arg = NULL;
 	Header h = NULL;
 	fnpyKey cbkey = NULL;
 	if (te) {
-	    h = rpmteHeader(te);
+	    if (ts->notifyStyle == 0) {
+		h = rpmteHeader(te);
+		arg = h;
+	    } else {
+		arg = te;
+	    }
 	    cbkey = rpmteKey(te);
 	}
-	ptr = ts->notify(h, what, amount, total, cbkey, ts->notifyData);
+	ptr = ts->notify(arg, what, amount, total, cbkey, ts->notifyData);
 
 	if (h) {
 	    headerFree(h); /* undo rpmteHeader() ref */
@@ -1040,6 +1046,21 @@ int rpmtsSetNotifyCallback(rpmts ts,
 	ts->notifyData = notifyData;
     }
     return 0;
+}
+
+int rpmtsSetNotifyStyle(rpmts ts, int style)
+{
+    if (ts != NULL)
+	ts->notifyStyle = style;
+    return 0;
+}
+
+int rpmtsGetNotifyStyle(rpmts ts)
+{
+    int style = 0;
+    if (ts != NULL)
+	style = ts->notifyStyle;
+    return style;
 }
 
 tsMembers rpmtsMembers(rpmts ts)

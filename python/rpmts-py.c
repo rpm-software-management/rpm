@@ -149,6 +149,7 @@ struct rpmtsObject_s {
 struct rpmtsCallbackType_s {
     PyObject * cb;
     PyObject * data;
+    int style;
     rpmtsObject * tso;
     PyThreadState *_save;
 };
@@ -510,11 +511,10 @@ static PyObject *rpmts_getKeyring(rpmtsObject *s, PyObject *args, PyObject *kwds
 }
 
 static void *
-rpmtsCallback(const void * hd, const rpmCallbackType what,
+rpmtsCallback(const void * arg, const rpmCallbackType what,
 		         const rpm_loff_t amount, const rpm_loff_t total,
 	                 const void * pkgKey, rpmCallbackData data)
 {
-    Header h = (Header) hd;
     struct rpmtsCallbackType_s * cbInfo = data;
     PyObject * pkgObj = (PyObject *) pkgKey;
     PyObject * args, * result;
@@ -524,21 +524,31 @@ rpmtsCallback(const void * hd, const rpmCallbackType what,
 
     PyEval_RestoreThread(cbInfo->_save);
 
-    /* Synthesize a python object for callback (if necessary). */
-    if (pkgObj == NULL) {
-	if (h) {
-	    pkgObj = utf8FromString(headerGetString(h, RPMTAG_NAME));
-	} else {
-	    pkgObj = Py_None;
-	    Py_INCREF(pkgObj);
-	}
-    } else
-	Py_INCREF(pkgObj);
 
-    args = Py_BuildValue("(iLLOO)", what, amount, total, pkgObj, cbInfo->data);
+    if (cbInfo->style == 0) {
+	/* Synthesize a python object for callback (if necessary). */
+	if (pkgObj == NULL) {
+	    if (arg) {
+		Header h = (Header) arg;
+		pkgObj = utf8FromString(headerGetString(h, RPMTAG_NAME));
+	    } else {
+		pkgObj = Py_None;
+		Py_INCREF(pkgObj);
+	    }
+	} else
+	    Py_INCREF(pkgObj);
+
+	args = Py_BuildValue("(iLLOO)", what, amount, total,
+				pkgObj, cbInfo->data);
+	Py_DECREF(pkgObj);
+    } else {
+	PyObject *te = rpmte_Wrap(&rpmte_Type, (rpmte) arg);
+	args = Py_BuildValue("(OiLLO)", te, what, amount, total, cbInfo->data);
+	Py_DECREF(te);
+    }
+
     result = PyEval_CallObject(cbInfo->cb, args);
     Py_DECREF(args);
-    Py_DECREF(pkgObj);
 
     if (!result) {
 	die(cbInfo->cb);
@@ -582,14 +592,16 @@ rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
     int rc;
     struct rpmtsCallbackType_s cbInfo;
+    int cbStyle = 0;
     rpmprobFilterFlags ignoreSet;
-    char * kwlist[] = {"callback", "data", "ignoreSet", NULL};
+    char * kwlist[] = {"callback", "data", "ignoreSet", "cbstyle", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OOi:Run", kwlist,
-	    &cbInfo.cb, &cbInfo.data, &ignoreSet))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OOii:Run", kwlist,
+	    &cbInfo.cb, &cbInfo.data, &ignoreSet, &cbStyle))
 	return NULL;
 
     cbInfo.tso = s;
+    cbInfo.style = cbStyle;
     cbInfo._save = PyEval_SaveThread();
 
     if (cbInfo.cb != NULL) {
@@ -598,6 +610,7 @@ rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	    return NULL;
 	}
 	(void) rpmtsSetNotifyCallback(s->ts, rpmtsCallback, (void *) &cbInfo);
+	(void) rpmtsSetNotifyStyle(s->ts, cbStyle);
     }
 
     rc = rpmtsRun(s->ts, NULL, ignoreSet);

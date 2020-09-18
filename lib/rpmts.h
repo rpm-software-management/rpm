@@ -586,6 +586,18 @@ int rpmtsSetNotifyCallback(rpmts ts,
 		rpmCallbackData notifyData);
 
 /** \ingroup rpmts
+ * Set transaction notify callback style.
+ *
+ * @param ts		transaction set
+ * @param style		0 (default) for header, 1 for transaction element
+ * 			as the first argument
+ * @return		0 on success
+ */
+int rpmtsSetNotifyStyle(rpmts ts, int style);
+
+int rpmtsGetNotifyStyle(rpmts ts);
+
+/** \ingroup rpmts
  * Create an empty transaction set.
  * @return		new transaction set
  */

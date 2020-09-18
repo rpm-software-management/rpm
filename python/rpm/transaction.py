@@ -108,8 +108,8 @@ class TransactionSet(TransactionSetCore):
             if not TransactionSetCore.addErase(self, h):
                 raise rpm.error("adding erasure to transaction failed")
 
-    def run(self, callback, data):
-        rc = TransactionSetCore.run(self, callback, data, self._probFilter)
+    def run(self, callback, data, cbstyle=0):
+        rc = TransactionSetCore.run(self, callback, data, self._probFilter, cbstyle)
 
         # crazy backwards compatibility goo: None for ok, list of problems
         # if transaction didn't complete and empty list if it completed
