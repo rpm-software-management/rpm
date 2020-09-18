@@ -50,6 +50,7 @@ struct rpmts_s {
 
     rpmCallbackFunction notify;	/*!< Callback function. */
     rpmCallbackData notifyData;	/*!< Callback private data. */
+    int notifyStyle;		/*!< Callback style (header vs rpmte) */
 
     rpmtsChangeFunction change;	/*!< Change callback function. */
     void *changeData;		/*!< Change callback private data. */
