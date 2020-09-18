@@ -95,7 +95,7 @@ void * rpmShowProgress(const void * arg,
 			fnpyKey key,
 			void * data)
 {
-    Header h = (Header) arg;
+    rpmte te = (rpmte) arg;
     int flags = (int) ((long)data);
     void * rc = NULL;
     const char * filename = (const char *)key;
@@ -143,21 +143,18 @@ void * rpmShowProgress(const void * arg,
 	}
 		
 	rpmcliHashesCurrent = 0;
-	if (h == NULL || !(flags & INSTALL_LABEL))
+	if (te == NULL || !(flags & INSTALL_LABEL))
 	    break;
 	if (flags & INSTALL_HASH) {
-	    char *s = headerGetAsString(h, RPMTAG_NEVR);
+	    const char *s = rpmteNEVR(te);
 	    if (isatty (STDOUT_FILENO))
 		fprintf(stdout, "%4d:%-33.33s", rpmcliProgressCurrent + 1, s);
 	    else
 		fprintf(stdout, "%-38.38s", s);
 	    (void) fflush(stdout);
-	    free(s);
 	} else {
-	    char *s = headerGetAsString(h, RPMTAG_NEVRA);
-	    fprintf(stdout, "%s\n", s);
+	    fprintf(stdout, "%s\n", rpmteNEVRA(te));
 	    (void) fflush(stdout);
-	    free(s);
 	}
 	break;
 
@@ -231,6 +228,7 @@ static void setNotifyFlag(struct rpmInstallArguments_s * ia,
 
     notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
     rpmtsSetNotifyCallback(ts, rpmShowProgress, (void *) ((long)notifyFlags));
+    rpmtsSetNotifyStyle(ts, 1);
 }
 
 struct rpmEIU {
