@@ -606,6 +606,24 @@ int rpmtsSetNotifyCallback(rpmts ts,
 		rpmCallbackData notifyData);
 
 /** \ingroup rpmts
+ * Set transaction notify callback style.
+ *
+ * @param ts		transaction set
+ * @param style		0 (default) for header, 1 for transaction element
+ * 			as the first argument
+ * @return		0 on success
+ */
+int rpmtsSetNotifyStyle(rpmts ts, int style);
+
+/** \ingroup rpmts
+ * Get transaction notify callback style.
+ *
+ * @param ts		transaction set
+ * @return		current callback style (see above)
+ */
+int rpmtsGetNotifyStyle(rpmts ts);
+
+/** \ingroup rpmts
  * Set transaction change callback function and argument.
  *
  * The change callback gets called when transaction elements are added,

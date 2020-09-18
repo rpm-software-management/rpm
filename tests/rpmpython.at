@@ -330,6 +330,43 @@ for e in ts:
 lock]
 )
 
+RPMPY_TEST([transaction callback 1],[
+def ocb(what, amount, total, key, data):
+    print(what, amount, total, type(key), data)
+    return -1
+
+def ncb(arg, what, amount, total, data):
+    print(type(arg), what, amount, total, data)
+    return -1
+
+cbd = "mine"
+ts = rpm.ts()
+ts.addInstall('${RPMDATA}/RPMS/foo-1.0-1.noarch.rpm', 'mykey', 'u')
+ts.setFlags(rpm.RPMTRANS_FLAG_TEST)
+print("- old -")
+ts.run(callback=ocb, data=cbd)
+ts.cbStyle = 1
+print("- new -")
+ts.run(callback=ncb, data=cbd)
+],
+[- old -
+2097152 0 1 <class 'NoneType'> mine
+1048576 0 1 <class 'str'> mine
+4 0 0 <class 'str'> mine
+4194304 1 1 <class 'NoneType'> mine
+32 6 1 <class 'NoneType'> mine
+16 0 1 <class 'NoneType'> mine
+64 6 1 <class 'NoneType'> mine
+- new -
+<class 'NoneType'> 2097152 0 1 mine
+<class 'rpm.te'> 1048576 0 1 mine
+<class 'rpm.te'> 4 0 0 mine
+<class 'NoneType'> 4194304 1 1 mine
+<class 'NoneType'> 32 6 1 mine
+<class 'NoneType'> 16 0 1 mine
+<class 'NoneType'> 64 6 1 mine]
+)
+
 AT_SETUP([database iterators])
 AT_KEYWORDS([python rpmdb])
 AT_CHECK([

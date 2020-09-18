@@ -150,6 +150,7 @@ struct rpmtsCallbackType_s {
     PyObject * cb;
     PyObject * data;
     rpmtsObject * tso;
+    int style;
     PyThreadState *_save;
 };
 
@@ -510,11 +511,10 @@ static PyObject *rpmts_getKeyring(rpmtsObject *s, PyObject *args, PyObject *kwds
 }
 
 static void *
-rpmtsCallback(const void * hd, const rpmCallbackType what,
+rpmtsCallback(const void * arg, const rpmCallbackType what,
 		         const rpm_loff_t amount, const rpm_loff_t total,
 	                 const void * pkgKey, rpmCallbackData data)
 {
-    Header h = (Header) hd;
     struct rpmtsCallbackType_s * cbInfo = data;
     PyObject * pkgObj = (PyObject *) pkgKey;
     PyObject * args, * result;
@@ -524,21 +524,37 @@ rpmtsCallback(const void * hd, const rpmCallbackType what,
 
     PyEval_RestoreThread(cbInfo->_save);
 
-    /* Synthesize a python object for callback (if necessary). */
-    if (pkgObj == NULL) {
-	if (h) {
-	    pkgObj = utf8FromString(headerGetString(h, RPMTAG_NAME));
-	} else {
-	    pkgObj = Py_None;
-	    Py_INCREF(pkgObj);
-	}
-    } else
-	Py_INCREF(pkgObj);
 
-    args = Py_BuildValue("(iLLOO)", what, amount, total, pkgObj, cbInfo->data);
+    if (cbInfo->style == 0) {
+	/* Synthesize a python object for callback (if necessary). */
+	if (pkgObj == NULL) {
+	    if (arg) {
+		Header h = (Header) arg;
+		pkgObj = utf8FromString(headerGetString(h, RPMTAG_NAME));
+	    } else {
+		pkgObj = Py_None;
+		Py_INCREF(pkgObj);
+	    }
+	} else
+	    Py_INCREF(pkgObj);
+
+	args = Py_BuildValue("(iLLOO)", what, amount, total,
+				pkgObj, cbInfo->data);
+	Py_DECREF(pkgObj);
+    } else {
+	PyObject *o;
+	if (arg) {
+	    o = rpmte_Wrap(&rpmte_Type, (rpmte) arg);
+	} else {
+	    o = Py_None;
+	    Py_INCREF(o);
+	}
+	args = Py_BuildValue("(OiLLO)", o, what, amount, total, cbInfo->data);
+	Py_DECREF(o);
+    }
+
     result = PyEval_CallObject(cbInfo->cb, args);
     Py_DECREF(args);
-    Py_DECREF(pkgObj);
 
     if (!result) {
 	die(cbInfo->cb);
@@ -590,6 +606,7 @@ rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
 
     cbInfo.tso = s;
+    cbInfo.style = rpmtsGetNotifyStyle(s->ts);
     cbInfo._save = PyEval_SaveThread();
 
     if (cbInfo.cb != NULL) {
@@ -878,6 +895,20 @@ static PyObject *rpmts_get_rootDir(rpmtsObject *s, void *closure)
     return utf8FromString(rpmtsRootDir(s->ts));
 }
 
+static PyObject *rpmts_get_cbstyle(rpmtsObject *s, void *closure)
+{
+    return Py_BuildValue("i", rpmtsGetNotifyStyle(s->ts));
+}
+
+static int rpmts_set_cbstyle(rpmtsObject *s, PyObject *value, void *closure)
+{
+    int cbstyle;
+    int rc = -1;
+    if (PyArg_Parse(value, "i", &cbstyle))
+	rc = rpmtsSetNotifyStyle(s->ts, cbstyle);
+    return rc;
+}
+
 static int rpmts_set_scriptFd(rpmtsObject *s, PyObject *value, void *closure)
 {
     rpmfdObject *fdo = NULL;
@@ -1010,6 +1041,8 @@ static char rpmts_doc[] =
   "The transaction set offers an read only iterable interface for the\ntransaction elements added by the .addInstall(), .addErase() and\n.addReinstall() methods.";
 
 static PyGetSetDef rpmts_getseters[] = {
+	{"cbStyle",	(getter)rpmts_get_cbstyle, (setter)rpmts_set_cbstyle,
+	 "progress callback style" },
 	/* only provide a setter until we have rpmfd wrappings */
 	{"scriptFd",	NULL,	(setter)rpmts_set_scriptFd,
 	 "write only, file descriptor the output of script gets written to." },
