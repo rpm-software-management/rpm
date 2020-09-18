@@ -1471,6 +1471,8 @@ static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet)
     return 0;
 }
 
+/* XXX _minimize_writes is not safe for mass-consumption yet */
+#if 0
 /* Push a macro with current value or default if no previous value exists */
 static void ensureMacro(const char *name, const char *def)
 {
@@ -1486,16 +1488,18 @@ static void ensureMacro(const char *name, const char *def)
 /* Enable / disable optimizations for solid state disks */
 static void setSSD(int enable)
 {
-    /* XXX _minimize_writes is not safe for mass-consumption yet */
-#if 0
     if (enable) {
 	rpmlog(RPMLOG_DEBUG, "optimizing for non-rotational disks\n");
 	ensureMacro("_minimize_writes", "1");
     } else {
 	rpmPopMacro(NULL, "_minimize_writes");
     }
-#endif
 }
+#else
+static void setSSD(int enable)
+{
+}
+#endif
 
 static int rpmtsFinish(rpmts ts)
 {
