@@ -707,6 +707,7 @@ void rpmtsEmpty(rpmts ts)
     rpmtsClean(ts);
 
     for (int oc = 0; oc < tsmem->orderCount; oc++) {
+	rpmtsNotifyChange(ts, RPMTS_EVENT_DEL, tsmem->order[oc], NULL);
 	tsmem->order[oc] = rpmteFree(tsmem->order[oc]);
     }
 
@@ -759,6 +760,8 @@ rpmts rpmtsFree(rpmts ts)
     if (ts->nrefs > 1)
 	return rpmtsUnlink(ts);
 
+    /* Don't issue element change callbacks when freeing */
+    rpmtsSetChangeCallback(ts, NULL, NULL);
     rpmtsEmpty(ts);
 
     (void) rpmtsCloseDB(ts);
@@ -940,6 +943,15 @@ void * rpmtsNotify(rpmts ts, rpmte te,
     return ptr;
 }
 
+int rpmtsNotifyChange(rpmts ts, int event, rpmte te, rpmte other)
+{
+    int rc = 0;
+    if (ts && ts->change) {
+	rc = ts->change(event, te, other, ts->changeData);
+    }
+    return rc;
+}
+
 int rpmtsNElements(rpmts ts)
 {
     int nelements = 0;
@@ -1038,6 +1050,15 @@ int rpmtsSetNotifyCallback(rpmts ts,
     if (ts != NULL) {
 	ts->notify = notify;
 	ts->notifyData = notifyData;
+    }
+    return 0;
+}
+
+int rpmtsSetChangeCallback(rpmts ts, rpmtsChangeFunction change, void *data)
+{
+    if (ts != NULL) {
+	ts->change = change;
+	ts->changeData = data;
     }
     return 0;
 }

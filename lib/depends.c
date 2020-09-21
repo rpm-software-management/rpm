@@ -135,6 +135,7 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
 
     tsmem->order[tsmem->orderCount] = p;
     tsmem->orderCount++;
+    rpmtsNotifyChange(ts, RPMTS_EVENT_ADD, p, depends);
 
     return 0;
 }
@@ -430,6 +431,7 @@ static int addPackage(rpmts ts, Header h,
 	oc = findPos(ts, tscolor, p, (op == RPMTE_UPGRADE));
 	/* If we're replacing a previously added element, free the old one */
 	if (oc >= 0 && oc < tsmem->orderCount) {
+	    rpmtsNotifyChange(ts, RPMTS_EVENT_DEL, tsmem->order[oc], p);
 	    rpmalDel(tsmem->addedPackages, tsmem->order[oc]);
 	    tsmem->order[oc] = rpmteFree(tsmem->order[oc]);
 	/* If newer NEVR was already added, we're done */
@@ -450,6 +452,8 @@ static int addPackage(rpmts ts, Header h,
     if (oc == tsmem->orderCount) {
 	tsmem->orderCount++;
     }
+    rpmtsNotifyChange(ts, RPMTS_EVENT_ADD, p, NULL);
+
     
     if (tsmem->addedPackages == NULL) {
 	tsmem->addedPackages = rpmalCreate(ts, 5);

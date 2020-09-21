@@ -179,6 +179,26 @@ enum rpmtxnFlags_e {
 };
 typedef rpmFlags rpmtxnFlags;
 
+typedef enum rpmtsEvent_e {
+    RPMTS_EVENT_ADD		= 1,
+    RPMTS_EVENT_DEL		= 2,
+} rpmtsEvent;
+
+/** \ingroup rpmts
+ * Transaction change callback type.
+ *
+ * On explicit install/erase add events, "other" is NULL, on implicit
+ * add events (erasures due to obsolete/upgrade, replaced by newer)
+ * it points to the replacing package.
+ *
+ * @param event		Change event (see rpmtsEvent enum)
+ * @param te		Transaction element
+ * @param other		Related transaction element (or NULL)
+ * @param data		Application private data from rpmtsSetChangeCallback()
+ */
+typedef int (*rpmtsChangeFunction)
+		(int event, rpmte te, rpmte other, void *data);
+
 /** \ingroup rpmts
  * Perform dependency resolution on the transaction set.
  *
@@ -584,6 +604,19 @@ rpmPlugins rpmtsPlugins(rpmts ts);
 int rpmtsSetNotifyCallback(rpmts ts,
 		rpmCallbackFunction notify,
 		rpmCallbackData notifyData);
+
+/** \ingroup rpmts
+ * Set transaction change callback function and argument.
+ *
+ * The change callback gets called when transaction elements are added,
+ * replaced or removed from a transaction set.
+ *
+ * @param ts		transaction set
+ * @param notify	element change callback
+ * @param data		element change callback private data
+ * @return		0 on success
+ */
+int rpmtsSetChangeCallback(rpmts ts, rpmtsChangeFunction notify, void *data);
 
 /** \ingroup rpmts
  * Create an empty transaction set.
