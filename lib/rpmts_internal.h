@@ -51,6 +51,9 @@ struct rpmts_s {
     rpmCallbackFunction notify;	/*!< Callback function. */
     rpmCallbackData notifyData;	/*!< Callback private data. */
 
+    rpmtsChangeFunction change;	/*!< Change callback function. */
+    void *changeData;		/*!< Change callback private data. */
+
     rpmprobFilterFlags ignoreSet;
 				/*!< Bits to filter current problems. */
 
@@ -122,6 +125,10 @@ rpmRC rpmtsSetupTransactionPlugins(rpmts ts);
 RPM_GNUC_INTERNAL
 rpmRC runScript(rpmts ts, rpmte te, Header h, ARGV_const_t prefixes,
 		       rpmScript script, int arg1, int arg2);
+
+
+RPM_GNUC_INTERNAL
+int rpmtsNotifyChange(rpmts ts, int event, rpmte te, rpmte other);
 
 #ifdef __cplusplus
 }
