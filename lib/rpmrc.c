@@ -81,7 +81,6 @@ struct rpmOption {
 static struct rpmat_s {
     const char *platform;
     uint64_t hwcap;
-    uint64_t hwcap2;
 } rpmat;
 
 typedef struct defaultEntry_s {
@@ -950,9 +949,6 @@ static int is_geode(void)
 
 
 #if defined(__linux__)
-#ifndef AT_HWCAP2 /* glibc < 2.18 */
-#define AT_HWCAP2 26
-#endif
 /**
  * Populate rpmat structure with auxv values
  */
@@ -966,7 +962,6 @@ static void read_auxv(void)
 	if (!rpmat.platform)
 	    rpmat.platform = "";
 	rpmat.hwcap = getauxval(AT_HWCAP);
-	rpmat.hwcap2 = getauxval(AT_HWCAP2);
 #else
 	rpmat.platform = "";
 	int fd = open("/proc/self/auxv", O_RDONLY);
@@ -988,9 +983,6 @@ static void read_auxv(void)
                     case AT_HWCAP:
                         rpmat.hwcap = auxv.a_un.a_val;
                         break;
-		    case AT_HWCAP2:
-			rpmat.hwcap2 = auxv.a_un.a_val;
-			break;
                 }
 	    }
 	    close(fd);
@@ -1224,27 +1216,16 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 #	if !defined(HWCAP_ARM_VFPv3)
 #	    define HWCAP_ARM_VFPv3	(1 << 13)
 #	endif
-#	if !defined(HWCAP2_AES)
-#	    define HWCAP2_AES		(1 << 0)
-#	endif
-	/*
-	 * un.machine is armvXE, where X is version number and E is
-	 * endianness (b or l)
-	 */
-	if (rstreqn(un.machine, "armv", 4)) {
-		char endian = un.machine[strlen(un.machine)-1];
-		char *modifier = un.machine + 5;
-		/* keep armv7, armv8, armv9, armv10, ... */
-		while(risdigit(*modifier)) 
-			modifier++;
-		if (rpmat.hwcap & HWCAP_ARM_VFPv3)
-			*modifier++ = 'h';
-		if (rpmat.hwcap2 & HWCAP2_AES)
-			*modifier++ = 'c';
+	if (rstreq(un.machine, "armv7l")) {
+	    if (rpmat.hwcap & HWCAP_ARM_VFPv3) {
 		if (rpmat.hwcap & HWCAP_ARM_NEON)
-			*modifier++ = 'n';
-		*modifier++ = endian;
-		*modifier++ = 0;
+		    strcpy(un.machine, "armv7hnl");
+		else
+		    strcpy(un.machine, "armv7hl");
+	    }
+	} else if (rstreq(un.machine, "armv6l")) {
+	    if (rpmat.hwcap & HWCAP_ARM_VFP)
+		strcpy(un.machine, "armv6hl");
 	}
 #	endif	/* arm*-linux */
 
