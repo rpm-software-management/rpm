@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-31 11:27+0300\n"
+"POT-Creation-Date: 2020-09-25 10:39+0300\n"
 "PO-Revision-Date: 2017-10-13 05:51-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Slovenian (http://www.transifex.com/rpm-team/rpm/language/"
@@ -3389,86 +3389,86 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/rpmrc.c:222
+#: lib/rpmrc.c:221
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:225
+#: lib/rpmrc.c:224
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:370
+#: lib/rpmrc.c:369
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:375
+#: lib/rpmrc.c:374
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:382
+#: lib/rpmrc.c:381
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr ""
 
-#: lib/rpmrc.c:413
+#: lib/rpmrc.c:412
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:418
+#: lib/rpmrc.c:417
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:523
+#: lib/rpmrc.c:522
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:540 lib/rpmrc.c:572
+#: lib/rpmrc.c:539 lib/rpmrc.c:571
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:551
+#: lib/rpmrc.c:550
 #, c-format
 msgid "cannot open %s at %s:%d: %m\n"
 msgstr ""
 
-#: lib/rpmrc.c:564
+#: lib/rpmrc.c:563
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:632
+#: lib/rpmrc.c:631
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:976
+#: lib/rpmrc.c:971
 msgid "Failed to read auxiliary vector, /proc not mounted?\n"
 msgstr ""
 
-#: lib/rpmrc.c:1487
+#: lib/rpmrc.c:1468
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Neznan sistem: %s\n"
 
-#: lib/rpmrc.c:1489
+#: lib/rpmrc.c:1470
 #, c-format
 msgid "Please contact %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1622
+#: lib/rpmrc.c:1603
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1640
+#: lib/rpmrc.c:1621
 msgid "failed to register exit handler"
 msgstr ""
 
@@ -3646,11 +3646,11 @@ msgstr ""
 msgid "no digest"
 msgstr ""
 
-#: lib/transaction.c:1626
+#: lib/transaction.c:1633
 msgid "skipped"
 msgstr ""
 
-#: lib/transaction.c:1626
+#: lib/transaction.c:1633
 msgid "failed"
 msgstr ""
 

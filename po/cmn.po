@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-31 11:27+0300\n"
+"POT-Creation-Date: 2020-09-25 10:39+0300\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Chinese (Mandarin) (http://www.transifex.com/rpm-team/rpm/"
@@ -3401,86 +3401,86 @@ msgstr "套件 %s 尚未安裝\n"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "遭遇不明錯誤 %d 於處理套件 %s 之時"
 
-#: lib/rpmrc.c:222
+#: lib/rpmrc.c:221
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "在 %s:%d 處遺漏第二個「:」\n"
 
-#: lib/rpmrc.c:225
+#: lib/rpmrc.c:224
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "在 %s:%d 處遺漏架構名稱\n"
 
-#: lib/rpmrc.c:370
+#: lib/rpmrc.c:369
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "不完整資料列位於 %s:%d\n"
 
-#: lib/rpmrc.c:375
+#: lib/rpmrc.c:374
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "在資料列的 %s:%d 中有過多引數\n"
 
-#: lib/rpmrc.c:382
+#: lib/rpmrc.c:381
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "不當架構/作業系統編號：%s (%s:%d)\n"
 
-#: lib/rpmrc.c:413
+#: lib/rpmrc.c:412
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "不完整預設列位於 %s:%d\n"
 
-#: lib/rpmrc.c:418
+#: lib/rpmrc.c:417
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "在預設列的 %s:%d 中有過多引數\n"
 
-#: lib/rpmrc.c:523
+#: lib/rpmrc.c:522
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "遺漏「:」(找到 0x%02x) 位於 %s:%d\n"
 
-#: lib/rpmrc.c:540 lib/rpmrc.c:572
+#: lib/rpmrc.c:539 lib/rpmrc.c:571
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "%s 遺漏引數位於 %s:%d\n"
 
-#: lib/rpmrc.c:551
+#: lib/rpmrc.c:550
 #, c-format
 msgid "cannot open %s at %s:%d: %m\n"
 msgstr "無法開啟 %s 於 %s:%d：%m\n"
 
-#: lib/rpmrc.c:564
+#: lib/rpmrc.c:563
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "%s 遺漏架構位於 %s:%d\n"
 
-#: lib/rpmrc.c:632
+#: lib/rpmrc.c:631
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "不當選項「%s」位於 %s:%d\n"
 
-#: lib/rpmrc.c:976
+#: lib/rpmrc.c:971
 msgid "Failed to read auxiliary vector, /proc not mounted?\n"
 msgstr "讀取輔助向量時失敗，/proc 未掛載？\n"
 
-#: lib/rpmrc.c:1487
+#: lib/rpmrc.c:1468
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "不明系統：%s\n"
 
-#: lib/rpmrc.c:1489
+#: lib/rpmrc.c:1470
 #, c-format
 msgid "Please contact %s\n"
 msgstr "請聯絡 %s\n"
 
-#: lib/rpmrc.c:1622
+#: lib/rpmrc.c:1603
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "無法開啟 %s 以供讀取：%m。\n"
 
-#: lib/rpmrc.c:1640
+#: lib/rpmrc.c:1621
 msgid "failed to register exit handler"
 msgstr ""
 
@@ -3659,11 +3659,11 @@ msgstr "(不是個 OpenPGP 簽名)"
 msgid "no digest"
 msgstr ""
 
-#: lib/transaction.c:1626
+#: lib/transaction.c:1633
 msgid "skipped"
 msgstr "已跳過"
 
-#: lib/transaction.c:1626
+#: lib/transaction.c:1633
 msgid "failed"
 msgstr "已失敗"
 
