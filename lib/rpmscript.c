@@ -132,7 +132,6 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
     rpmluaPop(lua);
 
     /* Lua scripts can change our cwd and umask, save and restore */
-    /* XXX TODO: use cwd from chroot state to save unnecessary open here */
     cwd = open(".", O_RDONLY);
     if (cwd != -1) {
 	mode_t oldmask = umask(0);
