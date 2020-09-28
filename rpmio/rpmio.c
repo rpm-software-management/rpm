@@ -382,7 +382,7 @@ static ssize_t fdWrite(FDSTACK_t fps, const void * buf, size_t count)
 
 static int fdSeek(FDSTACK_t fps, off_t pos, int whence)
 {
-    return lseek(fps->fdno, pos, whence);
+    return (lseek(fps->fdno, pos, whence) == -1) ? -1 : 0;
 }
 
 static int fdClose(FDSTACK_t fps)
