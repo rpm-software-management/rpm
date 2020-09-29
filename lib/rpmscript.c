@@ -48,37 +48,37 @@ struct scriptInfo_s {
 };
 
 static const struct scriptInfo_s scriptInfo[] = {
-    { RPMSCRIPT_PREIN, "%prein", 0,
+    { RPMSCRIPT_PREIN, "prein", 0,
 	RPMTAG_PREIN, RPMTAG_PREINPROG, RPMTAG_PREINFLAGS,
 	RPMSCRIPT_FLAG_CRITICAL, },
-    { RPMSCRIPT_PREUN, "%preun", 0,
+    { RPMSCRIPT_PREUN, "preun", 0,
 	RPMTAG_PREUN, RPMTAG_PREUNPROG, RPMTAG_PREUNFLAGS,
 	RPMSCRIPT_FLAG_CRITICAL, },
-    { RPMSCRIPT_POSTIN, "%post", 0,
+    { RPMSCRIPT_POSTIN, "post", 0,
 	RPMTAG_POSTIN, RPMTAG_POSTINPROG, RPMTAG_POSTINFLAGS,
 	0, },
-    { RPMSCRIPT_POSTUN, "%postun", 0,
+    { RPMSCRIPT_POSTUN, "postun", 0,
 	RPMTAG_POSTUN, RPMTAG_POSTUNPROG, RPMTAG_POSTUNFLAGS,
 	0, },
-    { RPMSCRIPT_PRETRANS, "%pretrans", 0,
+    { RPMSCRIPT_PRETRANS, "pretrans", 0,
 	RPMTAG_PRETRANS, RPMTAG_PRETRANSPROG, RPMTAG_PRETRANSFLAGS,
 	RPMSCRIPT_FLAG_CRITICAL, },
-    { RPMSCRIPT_POSTTRANS, "%posttrans", 0,
+    { RPMSCRIPT_POSTTRANS, "posttrans", 0,
 	RPMTAG_POSTTRANS, RPMTAG_POSTTRANSPROG, RPMTAG_POSTTRANSFLAGS,
 	0, },
-    { RPMSCRIPT_TRIGGERPREIN, "%triggerprein", RPMSENSE_TRIGGERPREIN,
+    { RPMSCRIPT_TRIGGERPREIN, "triggerprein", RPMSENSE_TRIGGERPREIN,
 	RPMTAG_TRIGGERPREIN, 0, 0,
 	0, },
-    { RPMSCRIPT_TRIGGERUN, "%triggerun", RPMSENSE_TRIGGERUN,
+    { RPMSCRIPT_TRIGGERUN, "triggerun", RPMSENSE_TRIGGERUN,
 	RPMTAG_TRIGGERUN, 0, 0,
 	0, },
-    { RPMSCRIPT_TRIGGERIN, "%triggerin", RPMSENSE_TRIGGERIN,
+    { RPMSCRIPT_TRIGGERIN, "triggerin", RPMSENSE_TRIGGERIN,
 	RPMTAG_TRIGGERIN, 0, 0,
 	0, },
-    { RPMSCRIPT_TRIGGERPOSTUN, "%triggerpostun", RPMSENSE_TRIGGERPOSTUN,
+    { RPMSCRIPT_TRIGGERPOSTUN, "triggerpostun", RPMSENSE_TRIGGERPOSTUN,
 	RPMTAG_TRIGGERPOSTUN, 0, 0,
 	0, },
-    { RPMSCRIPT_VERIFY, "%verify", 0,
+    { RPMSCRIPT_VERIFY, "verify", 0,
 	RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG, RPMTAG_VERIFYSCRIPTFLAGS,
 	RPMSCRIPT_FLAG_CRITICAL, },
     { 0, "unknown", 0,
@@ -471,7 +471,7 @@ static const char * tag2sln(rpmTagVal tag)
 }
 
 static rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
-			      rpmscriptFlags flags)
+			      rpmscriptFlags flags, const char *prefix)
 {
     char *nevra = headerGetAsString(h, RPMTAG_NEVRA);
     rpmScript script = xcalloc(1, sizeof(*script));
@@ -479,7 +479,7 @@ static rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
     script->type = getScriptType(tag);
     script->flags = getDefFlags(tag) | flags;
     script->body = (body != NULL) ? xstrdup(body) : NULL;
-    rasprintf(&script->descr, "%s(%s)", tag2sln(tag), nevra);
+    rasprintf(&script->descr, "%%%s%s(%s)", prefix, tag2sln(tag), nevra);
 
     /* macros need to be expanded before possible queryformat */
     if (script->body && (script->flags & RPMSCRIPT_FLAG_EXPAND)) {
@@ -570,6 +570,7 @@ rpmScript rpmScriptFromTriggerTag(Header h, rpmTagVal triggerTag,
     rpmScript script = NULL;
     struct rpmtd_s tscripts, tprogs, tflags;
     headerGetFlags hgflags = HEADERGET_MINMEM;
+    const char *prefix = "";
 
     switch (tm) {
 	case RPMSCRIPT_NORMALTRIGGER:
@@ -581,11 +582,13 @@ rpmScript rpmScriptFromTriggerTag(Header h, rpmTagVal triggerTag,
 	    headerGet(h, RPMTAG_FILETRIGGERSCRIPTS, &tscripts, hgflags);
 	    headerGet(h, RPMTAG_FILETRIGGERSCRIPTPROG, &tprogs, hgflags);
 	    headerGet(h, RPMTAG_FILETRIGGERSCRIPTFLAGS, &tflags, hgflags);
+	    prefix = "file";
 	    break;
 	case RPMSCRIPT_TRANSFILETRIGGER:
 	    headerGet(h, RPMTAG_TRANSFILETRIGGERSCRIPTS, &tscripts, hgflags);
 	    headerGet(h, RPMTAG_TRANSFILETRIGGERSCRIPTPROG, &tprogs, hgflags);
 	    headerGet(h, RPMTAG_TRANSFILETRIGGERSCRIPTFLAGS, &tflags, hgflags);
+	    prefix = "transfile";
 	    break;
     }
 
@@ -596,7 +599,8 @@ rpmScript rpmScriptFromTriggerTag(Header h, rpmTagVal triggerTag,
 	if (rpmtdSetIndex(&tflags, ix) >= 0)
 	    sflags = rpmtdGetNumber(&tflags);
 
-	script = rpmScriptNew(h, triggerTag, rpmtdGetString(&tscripts), sflags);
+	script = rpmScriptNew(h, triggerTag,
+				rpmtdGetString(&tscripts), sflags, prefix);
 
 	/* hack up a hge-style NULL-terminated array */
 	script->args = xmalloc(2 * sizeof(*script->args) + strlen(prog) + 1);
@@ -622,7 +626,7 @@ rpmScript rpmScriptFromTag(Header h, rpmTagVal scriptTag)
 
 	script = rpmScriptNew(h, scriptTag,
 			      headerGetString(h, scriptTag),
-			      headerGetNumber(h, getFlagTag(scriptTag)));
+			      headerGetNumber(h, getFlagTag(scriptTag)), "");
 
 	if (headerGet(h, progTag, &prog, (HEADERGET_ALLOC|HEADERGET_ARGV))) {
 	    script->args = prog.data;
