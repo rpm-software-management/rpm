@@ -8,6 +8,7 @@
 #include <utime.h>
 #include <errno.h>
 #include <dirent.h>
+#include <fcntl.h>
 
 #ifndef	DYING	/* XXX already in "system.h" */
 #include <fnmatch.h>
