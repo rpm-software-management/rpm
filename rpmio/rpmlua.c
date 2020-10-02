@@ -1074,6 +1074,120 @@ static int rpm_execute(lua_State *L)
 	return pushresult(L, status, NULL);
 }
 
+static int newinstance(lua_State *L, const char *name, void *p)
+{
+    if (p != NULL) {
+	intptr_t **pp = lua_newuserdata(L, sizeof(*pp));
+	*pp = p;
+	luaL_getmetatable(L, name);
+	lua_setmetatable(L, -2);
+    }
+    return (p != NULL) ? 1 : 0;
+}
+
+static int createclass(lua_State *L, const char *name, const luaL_Reg *methods)
+{
+    luaL_newmetatable(L, name);
+    lua_pushvalue(L, -1);
+    lua_setfield(L, -2, "__index");
+    luaL_setfuncs(L, methods, 0);
+    return 0;
+}
+
+static rpmver * checkver(lua_State *L, int ix)
+{
+    rpmver *vp = lua_touserdata(L, ix);
+    luaL_checkudata(L, ix, "rpm.ver");
+    return vp;
+}
+
+static int ver_index(lua_State *L)
+{
+    rpmver *vp = checkver(L, 1);
+    const char *key = luaL_checkstring(L, 2);
+    const char *s = NULL;
+
+    if (rstreq(key, "e"))
+	s = rpmverE(*vp);
+    else if (rstreq(key, "v"))
+	s = rpmverV(*vp);
+    else if (rstreq(key, "r"))
+	s = rpmverR(*vp);
+    else
+	return luaL_error(L, "invalid attribute: %s", key);
+
+    lua_pushstring(L, s);
+    return 1;
+}
+
+static int ver_tostring(lua_State *L)
+{
+    rpmver *vp = checkver(L, 1);
+    char *evr = rpmverEVR(*vp);
+    lua_pushstring(L, evr);
+    free(evr);
+    return 1;
+}
+
+static int ver_gc(lua_State *L)
+{
+    rpmver *vp = checkver(L, 1);
+    *vp = rpmverFree(*vp);
+    return 0;
+}
+
+static int ver_cmp(lua_State *L, int expect)
+{
+    rpmver *vp1 = checkver(L, 1);
+    rpmver *vp2 = checkver(L, 2);
+    return (rpmverCmp(*vp1, *vp2) == expect);
+}
+
+static int ver_eq(lua_State *L)
+{
+    return ver_cmp(L, 0);
+}
+
+static int ver_lt(lua_State *L)
+{
+    return ver_cmp(L, -1);
+}
+
+static int ver_le(lua_State *L)
+{
+    return ver_eq(L) || ver_lt(L);
+}
+
+static int rpm_ver_new(lua_State *L)
+{
+    int nargs = lua_gettop(L);
+    rpmver ver = NULL;
+
+    if (nargs == 1) {
+	const char *evr = lua_tostring(L, 1);
+	ver = rpmverParse(evr);
+    } else if (nargs == 3) {
+	const char *e = lua_tostring(L, 1);
+	const char *v = lua_tostring(L, 2);
+	const char *r = lua_tostring(L, 3);
+	ver = rpmverNew(e, v, r);
+    } else {
+	luaL_error(L, "invalid number of arguments: %d", nargs);
+    }
+
+    return newinstance(L, "rpm.ver", ver);
+}
+
+static const luaL_Reg ver_m[] = {
+    {"__index", ver_index},
+    {"__tostring", ver_tostring},
+    {"__eq", ver_eq},
+    {"__le", ver_le},
+    {"__lt", ver_lt},
+    {"__gc", ver_gc},
+    {NULL, NULL}
+};
+
 static const luaL_Reg rpmlib[] = {
     {"b64encode", rpm_b64encode},
     {"b64decode", rpm_b64decode},
@@ -1089,11 +1203,13 @@ static const luaL_Reg rpmlib[] = {
     {"execute", rpm_execute},
     {"redirect2null", rpm_redirect2null},
     {"vercmp", rpm_vercmp},
+    {"ver", rpm_ver_new},
     {NULL, NULL}
 };
 
 static int luaopen_rpm(lua_State *L)
 {
+    createclass(L, "rpm.ver", ver_m);
     luaL_newlib(L, rpmlib);
     return 1;
 }
