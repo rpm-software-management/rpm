@@ -585,6 +585,24 @@ rm -f ${f}
 ])
 AT_CLEANUP
 
+AT_SETUP([lua rpm version objects])
+AT_KEYWORDS([macros lua])
+AT_CHECK([
+AT_SKIP_IF([$LUA_DISABLED])
+runroot rpm \
+  --eval '%{lua: v1 = rpm.ver("1:4.16-5"); print(v1, v1.e, v1.v, v1.r)}' \
+  --eval '%{lua: v1 = rpm.ver("4.16-1"); print(v1, v1.e, v1.v, v1.r)}' \
+  --eval '%{lua: v1 = rpm.ver("4.16"); print(v1, v1.e, v1.v, v1.r)}' \
+  --eval '%{lua: v1 = rpm.ver("1:4.16-5"); v2 = rpm.ver("4.4-1"); print(v1 < v2, v1 == v2, v1 > v2, v1 == v1)}'
+],
+[0],
+[1:4.16-5	1	4.16	5
+4.16-1	nil	4.16	1
+4.16	nil	4.16	nil
+false	false	true	true
+])
+AT_CLEANUP
+
 AT_SETUP([%define + %undefine in nested levels 1])
 AT_KEYWORDS([macros define undefine])
 AT_CHECK([
