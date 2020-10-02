@@ -625,6 +625,23 @@ false	false	true	true
 ])
 AT_CLEANUP
 
+AT_SETUP([lua rpm io stream])
+AT_KEYWORDS([macros lua])
+AT_CHECK([
+AT_SKIP_IF([$LUA_DISABLED])
+RPMDB_INIT
+runroot rpm \
+  --eval '%{lua: local f = rpm.open("zzz", "w+"); f:write("gggg"); print(f:seek("cur")); f:close()}' \
+  --eval '%{lua: local f = rpm.open("zzz"); print(f:read()); f:close()}' \
+  --eval '%{lua: local f = rpm.open("/data/SOURCES/hello-2.0.tar.gz"); f:reopen("r.gzip"); f:seek("cur", 6); print(f:read(3)); f:close()}'
+],
+[0],
+[4
+gggg
+2.0
+])
+AT_CLEANUP
+
 AT_SETUP([%define + %undefine in nested levels 1])
 AT_KEYWORDS([macros define undefine])
 AT_CHECK([
