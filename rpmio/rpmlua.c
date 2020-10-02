@@ -1141,6 +1141,158 @@ static const luaL_Reg ver_m[] = {
     {NULL, NULL}
 };
 
+static FD_t * checkfd(lua_State *L, int ix)
+{
+    FD_t *fdp = lua_touserdata(L, ix);
+    luaL_checkudata(L, ix, "rpm.fd");
+    return fdp;
+}
+
+static int fd_tostring(lua_State *L)
+{
+    FD_t *fdp = checkfd(L, 1);
+    lua_pushstring(L, Fdescr(*fdp));
+    return 1;
+}
+
+static int fd_reopen(lua_State *L)
+{
+    FD_t *ofdp = checkfd(L, 1);
+    const char *mode = luaL_checkstring(L, 2);
+
+    FD_t fd = Fdopen(*ofdp, mode);
+
+    if (fd == NULL) {
+	return luaL_error(L, "%s stream reopen failed (invalid mode?)",
+			Fdescr(*ofdp));
+    }
+    *ofdp = fd;
+    lua_pushvalue(L, 1);
+
+    return 1;
+}
+
+static int fd_close(lua_State *L)
+{
+    FD_t *fdp = checkfd(L, 1);
+    int rc = -1;
+    if (*fdp) {
+	rc = Fclose(*fdp);
+	*fdp = NULL;
+    }
+    lua_pushinteger(L, rc);
+    return 1;
+}
+
+static int fd_read(lua_State *L)
+{
+    FD_t *fdp = checkfd(L, 1);
+    char buf[BUFSIZ];
+    ssize_t chunksize = sizeof(buf);
+    ssize_t left = luaL_optinteger(L, 2, -1);
+    ssize_t nb = 0;
+
+    lua_pushstring(L, "");
+
+    do {
+	if (left >= 0 && left < chunksize)
+	    chunksize = left;
+	nb = Fread(buf, 1, chunksize, *fdp);
+
+	if (Ferror(*fdp)) {
+	    return luaL_error(L, "error reading %s: %s",
+				Fdescr(*fdp), Fstrerror(*fdp));
+	}
+
+	if (nb > 0) {
+	    lua_pushlstring(L, buf, nb);
+	    lua_concat(L, 2);
+	    left -= nb;
+	}
+    } while (nb > 0);
+
+    return 1;
+}
+
+static int fd_write(lua_State *L)
+{
+    FD_t *fdp = checkfd(L, 1);
+    size_t len;
+    const char *buf = luaL_checklstring(L, 2, &len);
+    ssize_t size = luaL_optinteger(L, 3, len);
+
+    ssize_t wrote = Fwrite(buf, 1, size, *fdp);
+
+    if (Ferror(*fdp) || (size != wrote))
+	return luaL_error(L, "error writing %s: %s",
+			Fdescr(*fdp), Fstrerror(*fdp));
+
+    lua_pushinteger(L, wrote);
+    return 1;
+}
+
+static int fd_flush(lua_State *L)
+{
+    FD_t *fdp = checkfd(L, 1);
+    int rc = Fflush(*fdp);
+    lua_pushinteger(L, rc);
+    return 1;
+}
+
+static int fd_seek(lua_State *L)
+{
+    static const int mode[] = {SEEK_SET, SEEK_CUR, SEEK_END};
+    static const char *const modenames[] = {"set", "cur", "end", NULL};
+    FD_t *fdp = checkfd(L, 1);
+    int op = luaL_checkoption(L, 2, "cur", modenames);
+    off_t offset = luaL_optinteger(L, 3, 0);
+
+    op = Fseek(*fdp, offset, op);
+
+    if (op < 0 || Ferror(*fdp)) {
+	return luaL_error(L, "%s: seek failed: %s",
+			Fdescr(*fdp), Fstrerror(*fdp));
+    }
+
+    offset = Ftell(*fdp);
+    lua_pushinteger(L, offset);
+
+    return 1;
+}
+
+static int fd_gc(lua_State *L)
+{
+    fd_close(L);
+    lua_pop(L, 1);
+    return 0;
+}
+
+static int rpm_open(lua_State *L)
+{
+    const char *path = luaL_checkstring(L, 1);
+    const char *mode = luaL_optlstring(L, 2, "r", NULL);
+
+    FD_t fd = Fopen(path, mode);
+
+    if (fd == NULL) {
+	return luaL_error(L, "%s open failed: %s", path, strerror(errno));
+    }
+
+    return newinstance(L, "rpm.fd", fd);
+}
+
+static const luaL_Reg fd_m[] = {
+    {"read", fd_read},
+    {"write", fd_write},
+    {"flush", fd_flush},
+    {"close", fd_close},
+    {"seek", fd_seek},
+    {"reopen", fd_reopen},
+    {"__tostring", fd_tostring},
+    {"__gc", fd_gc},
+    {NULL, NULL}
+};
+
 static const luaL_Reg rpmlib[] = {
     {"b64encode", rpm_b64encode},
     {"b64decode", rpm_b64decode},
@@ -1157,12 +1309,14 @@ static const luaL_Reg rpmlib[] = {
     {"redirect2null", rpm_redirect2null},
     {"vercmp", rpm_vercmp},
     {"ver", rpm_ver_new},
+    {"open", rpm_open},
     {NULL, NULL}
 };
 
 static int luaopen_rpm(lua_State *L)
 {
     createclass(L, "rpm.ver", ver_m);
+    createclass(L, "rpm.fd", fd_m);
     luaL_newlib(L, rpmlib);
     return 1;
 }
