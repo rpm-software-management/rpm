@@ -11,6 +11,9 @@
 #include <rpm/rpmmacro.h>
 #include "debug.h"
 
+#define each(rec, ctx) \
+    (rpmlogRec rec = ctx->recs; rec < &(ctx->recs[ctx->nrecs]); rec++)
+
 typedef struct rpmlogCtx_s * rpmlogCtx;
 struct rpmlogCtx_s {
     pthread_rwlock_t lock;
@@ -108,8 +111,7 @@ void rpmlogPrint(FILE *f)
     if (f == NULL)
 	f = stderr;
 
-    for (int i = 0; i < ctx->nrecs; i++) {
-	rpmlogRec rec = ctx->recs + i;
+    for each(rec, ctx) {
 	if (rec->message && *rec->message)
 	    fprintf(f, "    %s", rec->message);
     }
@@ -124,8 +126,7 @@ void rpmlogClose (void)
     if (ctx == NULL)
 	return;
 
-    for (int i = 0; i < ctx->nrecs; i++) {
-	rpmlogRec rec = ctx->recs + i;
+    for each(rec, ctx) {
 	rec->message = _free(rec->message);
     }
     ctx->recs = _free(ctx->recs);
