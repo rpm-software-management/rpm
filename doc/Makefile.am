@@ -66,6 +66,7 @@ EXTRA_DIST += $(man_sk_man8_DATA)
 
 
 EXTRA_DIST += \
+manual/index.md \
 manual/builddependencies.md \
 manual/buildroot.md \
 manual/conditionalbuilds.md \
