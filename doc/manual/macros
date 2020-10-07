@@ -1,4 +1,4 @@
-/*! \page macros Macro syntax
+# Macro syntax
 
 RPM has fully recursive spec file macros.  Simple macros do straight text
 substitution. Parameterized macros include an options field, and perform
@@ -10,13 +10,13 @@ lists" (i.e. those read in using %files -f \<file\>).  In addition, macros
 can be nested, hiding the previous definition for the duration of the
 expansion of the macro which contains nested macros.
 
-\section macros_defining Defining a Macro
+## Defining a Macro
 
 To define a macro use:
 
-\verbatim
+```
 	%define <name>[(opts)] <body>
-\endverbatim
+```
 
 All whitespace surrounding \<body\> is removed.  Name may be composed
 of alphanumeric characters, and the character `_' and must be at least
@@ -27,19 +27,19 @@ exactly as is to getopt(3) for argc/argv processing at the beginning of
 a macro invocation.  While a parameterized macro is being expanded, the
 following shell-like macros are available:
 
-\verbatim
+```
 	%0	the name of the macro being invoked
 	%*	all arguments (unlike shell, not including any processed flags)
 	%#	the number of arguments
 	%{-f}	if present at invocation, the flag f itself
 	%{-f*}	if present at invocation, the argument to flag f
 	%1, %2	the arguments themselves (after getopt(3) processing)
-\endverbatim
+```
 
 At the end of invocation of a parameterized macro, the above macros are
 (at the moment, silently) discarded.
 
-\section macros_writing Writing a Macro
+## Writing a Macro
 
 Within the body of a macro, there are several constructs that permit
 testing for the presence of optional parameters. The simplest construct
@@ -52,12 +52,12 @@ expansion of) Y if -f was *not* present, is also supported.
 In addition to the "%{...}" form, shell expansion can be performed
 using "%(shell command)".
 
-\section macros_builtin Builtin Macros
+## Builtin Macros
 
 There are several builtin macros (with reserved names) that are needed
 to perform useful operations. The current list is
 
-\verbatim
+```
 	%trace		toggle print of debugging information before/after
 			expansion
 	%dump		print the active (i.e. non-covered) macro table
@@ -99,20 +99,20 @@ to perform useful operations. The current list is
 
 	%{S:...}	expand ... to <source> file name
 	%{P:...}	expand ... to <patch> file name
-\endverbatim
+```
 
 Macros may also be automatically included from /usr/lib/rpm/macros.
 In addition, rpm itself defines numerous macros. To display the current
 set, add "%dump" to the beginning of any spec file, process with rpm, and
 examine the output from stderr.
 
-\section conditionally_expanded_macros Conditionally Expanded Macros
+## Conditionally Expanded Macros
 
 Sometimes it is useful to test whether a macro is defined or not. Syntax
-\verbatim
+```
 %{?macro_name:value}
 %{?!macro_name:value}
-\endverbatim
+```
 can be used for this purpose. %{?macro_name:value} is expanded to "value"
 if "macro_name" is defined, otherwise it is expanded to the empty string.
 %{?!macro_name:value} is the negative variant. It is expanded to "value" if
@@ -120,17 +120,17 @@ if "macro_name" is defined, otherwise it is expanded to the empty string.
 
 Frequently used conditionally expanded macros are e.g.
 Define a macro if it is not defined:
-\verbatim
+```
 %{?!with_python3: %global with_python3 1}
-\endverbatim
+```
 A macro that is expanded to 1 if "with_python3" is defined and 0 otherwise:
-\verbatim
+```
 %{?with_python3:1}%{!?with_python3:0}
-\endverbatim
+```
 or shortly
-\verbatim
+```
 0%{!?with_python3:1}
-\endverbatim
+```
 
 %"{?macro_name}" is a shortcut for "%{?macro_name:%macro_name}".
 
@@ -139,9 +139,9 @@ behave differently. In such a case both macro "%{?builtin_macro:value}" and
 its negative version "%{?!builtin_macro:value}" are expanded exactly like
 the macro without exclamation mark and question mark "%{builtin_macro:value}".
 There is a special case among builtin macros:
-/verbatim
+```
 %{?load:file}
-/verbatim
+```
 it works like "%{load:file}" with the difference that the expansion does not
 emit an error if the file fails to load.
 
@@ -149,28 +149,28 @@ For more complex tests it is possible to use conditionals like %if, %ifarch or
 %ifos. But the conditionals are not macros thus they are not described here.
 For more information please refer to spec manual.
 
-\section macros_example Example of a Macro
+## Example of a Macro
 
 Here is an example %patch definition from /usr/lib/rpm/macros:
 
-\verbatim
+```
 	%patch(b:p:P:REz:) \
 	%define patch_file	%{P:%{-P:%{-P*}}%{!-P:%%PATCH0}} \
 	%define patch_suffix	%{!-z:%{-b:--suffix %{-b*}}}%{!-b:%{-z:--suffix %{-z*}}}%{!-z:%{!-b: }}%{-z:%{-b:%{error:Can't specify both -z(%{-z*}) and -b(%{-b*})}}} \
 		%{uncompress:%patch_file} | patch %{-p:-p%{-p*}} %patch_suffix %{-R} %{-E} \
 	...
-\endverbatim
+```
 
 
 The first line defines %patch with its options. The body of %patch is
 
-\verbatim
+```
 	%{uncompress:%patch_file} | patch %{-p:-p%{-p*}} %patch_suffix %{-R} %{-E}
-\endverbatim
+```
 
 The body contains 7 macros, which expand as follows
 
-\verbatim
+```
 	%{uncompress:...}	copy uncompressed patch to stdout
 	  %patch_file		... the name of the patch file
 	%{-p:...}		if "-p N" was present, (re-)generate "-pN" flag
@@ -178,28 +178,28 @@ The body contains 7 macros, which expand as follows
 	%patch_suffix		override (default) ".orig" suffix if desired
 	%{-R}			supply -R (reversed) flag if desired
 	%{-E}			supply -E (delete empty?) flag if desired
-\endverbatim
+```
 
 There are two "private" helper macros:
 
-\verbatim
+```
 	%patch_file	the gory details of generating the patch file name
 	%patch_suffix	the gory details of overriding the (default) ".orig"
-\endverbatim
+```
 
-\section macros_using Using a Macro
+## Using a Macro
 
 To use a macro, write:
 
-\verbatim
+```
 	%<name> ...
-\endverbatim
+```
 
 or
 
-\verbatim
+```
 	%{<name>}
-\endverbatim
+```
 
 The %{...} form allows you to place the expansion adjacent to other text.
 The %\<name\> form, if a parameterized macro, will do argc/argv processing
@@ -208,28 +208,28 @@ to invoke a parameterized macro by using the %\<name\> form so that
 parameters are expanded properly.
 
 Example:
-\verbatim
+```
 	%define mymacro() (echo -n "My arg is %1" ; sleep %1 ; echo done.)
-\endverbatim
+```
 
 Usage:
 
-\verbatim
+```
 	%mymacro 5
-\endverbatim
+```
 
 This expands to:
 
-\verbatim
+```
 	(echo -n "My arg is 5" ; sleep 5 ; echo done.)
-\endverbatim
+```
 
 This will cause all occurrences of %1 in the macro definition to be
 replaced by the first argument to the macro, but only if the macro
 is invoked as "%mymacro 5".  Invoking as "%{mymacro} 5" will not work
 as desired in this case.
 
-\section macros_shell_expansion Shell Expansion
+## Shell Expansion
 
 Shell expansion can be performed using "%(shell command)". The expansion
 of "%(...)" is the output of (the expansion of) ... fed to /bin/sh.
@@ -237,7 +237,7 @@ For example, "%(date +%%y%%m%%d)" expands to the string "YYMMDD" (final
 newline is deleted). Note the 2nd % needed to escape the arguments to
 /bin/date.
 
-\section macros_expression_expansion Expression Expansion
+## Expression Expansion
 
 Expression expansion can be performed using "%[expression]".  An
 expression consists of terms that can be combined using
@@ -258,9 +258,9 @@ Note that the "%[expression]" expansion is different to the
 "%{expr:expression}" macro.  With the latter, the macros in the
 expression are expanded first and then the expression is
 evaluated (without re-expanding the terms).  Thus
-\verbatim
+```
 	rpm --define 'foo 1 + 2' --eval '%{expr:%foo}'
-\endverbatim
+```
 will print "3".  Using '%[%foo]' instead will result in the
 error that "1 + 2" is not a number.
 
@@ -271,7 +271,7 @@ expansion result does not influence the expression parsing,
 e.g. '%["%file"] will even work if the "%file" macro expands
 to a string that contains a double quote.
 
-\section macros_commandline Command Line Options
+## Command Line Options
 
 When the command line option "--define 'macroname value'" allows the
 user to specify the value that a macro should have during the build.
@@ -281,16 +281,16 @@ relied upon.
 
 Evaluating a macro can be difficult outside of an rpm execution context. If
 you wish to see the expanded value of a macro, you may use the option
-\verbatim
+```
 	--eval '<macro expression>'
-\endverbatim
+```
 that will read rpm config files and print the macro expansion on stdout.
 
 Note: This works only macros defined in rpm configuration files, not for
 macros defined in specfiles. You can use %{echo: %{your_macro_here}} if
 you wish to see the expansion of a macro defined in a spec file.
  
-\section macros_configuration Configuration using Macros
+## Configuration using Macros
 
 Starting in rpm 3.0, macros rather than rpmrc lines are used to configure rpm.
 In general, all the rpmrc configuration lines documented in "Maximum RPM"
@@ -302,7 +302,7 @@ spec file parsing.
 
 Here's an example to illustrate configuration using macros:
 
-\verbatim
+```
    Old way:
 	In /etc/rpmrc and/or ~/.rpmrc you put
 		something:      some_value
@@ -310,11 +310,11 @@ Here's an example to illustrate configuration using macros:
    New way:
 	In /etc/rpm/macros and/or ~/.rpmmacros
 		%_something     some_value
-\endverbatim
+```
 
 Here are 2 common FAQ for experienced users of rpm:
 
-\verbatim
+```
   1) --rcfile works differently.
     Old way:	rpm --rcfile whatever
     New way:	rpm --rcfile /usr/lib/rpm/rpmrc:whatever
@@ -330,14 +330,14 @@ Here are 2 common FAQ for experienced users of rpm:
 		macrofiles:     /usr/lib/rpm/macros: ... :~/.rpmmacros
 	~/.rpmmacros contains
 		%_topdir        whatever
-\endverbatim
+```
 
-\section macros_autoconf Macro Analogues of Autoconf Variables
+## Macro Analogues of Autoconf Variables
 
 Several macro definitions provided by the default rpm macro set have uses in
 packaging similar to the autoconf variables that are used in building packages:
 
-\verbatim
+```
     %_prefix		/usr
     %_exec_prefix	%{_prefix}
     %_bindir		%{_exec_prefix}/bin
@@ -352,6 +352,4 @@ packaging similar to the autoconf variables that are used in building packages:
     %_oldincludedir	/usr/include
     %_infodir		%{_datadir}/info
     %_mandir		%{_datadir}/man
-\endverbatim
-
-*/
+```

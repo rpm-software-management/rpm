@@ -1,4 +1,4 @@
-/*! \page dependencies Dependencies
+# Dependencies
 
 Dependencies provide a way for a package builder to require other
 packages or capabilities to be installed before or simultaneously
@@ -6,20 +6,20 @@ with one another. These can be used to require a python interpreter
 for a python based application for example. RPM ensures dependencies
 are satisfied whenever packages are installed, erased, or upgraded.
 
-\section dependencies_package Requiring Packages
+## Requiring Packages
 
 To require the packages python and perl, use:
 
-\verbatim
+```
 	Requires: python perl
-\endverbatim
+```
 
 in the spec file. Note that "Requires python, perl" would work as well. If you
 needed to have a very recent version of python but any version of perl,
 
-\verbatim
+```
 	Requires: python >= 1.3, perl
-\endverbatim
+```
 
 would do the trick. Again, the ',' in the line is optional.  Instead of
 '>=', you may also use '<', '>', '<=', or '='.  Spaces are required
@@ -27,29 +27,29 @@ around the numeric operator to separate the operator from the package name.
 
 The full syntax for specifying a dependency on an epoch, version and release
 is
-\verbatim
+```
 	[epoch:]version[-release]
-\endverbatim
+```
 where
-\verbatim
+```
 	epoch	(optional) number, with assumed default of 0 if not supplied
 	version	(required) can contain any character except '-'
 	release	(optional) can contain any character except '-'
-\endverbatim
+```
 
 For example,
 
-\verbatim
+```
 	Requires: perl >= 9:5.00502-3
-\endverbatim
+```
 
 specifies
 
-\verbatim
+```
 	epoch=9
 	version=5.00502
 	release=3
-\endverbatim
+```
 
 The epoch (if present) is a monotonically increasing integer, neither the
 version or the release can contain the '-' hyphen character, and the dependency
@@ -89,16 +89,16 @@ upgraded can be broken if version format changes oddly, such as when the
 version segments cannot be meaningfully compared.
 
 Example of a bad format change: 2.1.7Ax to 19980531
-\verbatim
+```
   The date may be the older version, but it is numerically greater
   2 so it is considered newer :(
-\endverbatim
+```
 
 Example of a bad increment: 2.1.7a to 2.1.7A
-\verbatim
+```
   The 'a' (ASCII 97) is compared against 'A' (ASCII 65), making 2.1.7a
   the newer version.
-\endverbatim
+```
 
 Stick to major.minor.patchlevel using numbers for each if you can.
 Keeps life simple :-)
@@ -106,22 +106,22 @@ Keeps life simple :-)
 If a Requires: line needs to include an epoch in the comparison, then
 the line should be written like
 
-\verbatim
+```
 	Requires: somepackage = 23:version
-\endverbatim
+```
 
 You can't continue a "Requires: " line. If you have multiple
 "Requires: " lines then the package requires all packages mentioned on
 all of the lines to be installed.
 
-\section dependencies_prereqs Prereqs
+## Prereqs
 
 Prereqs are different from requires only in that a PreReq is guaranteed
 to be installed before the package that contains the PreReq.  PreReq's
 are used only to order packages, otherwise PreReq's are exactly the same
 as a Requires: dependency.
 
-\section dependencies_virtual Virtual Packages
+## Virtual Packages
 
 Sometimes you need to make sure the system your package is being installed 
 on has a package which provides a certain capability, even though you don't
@@ -129,28 +129,28 @@ care what specific package provides it. For example, sendmail won't work
 properly unless a local delivery agent (lda) is present. You can ensure that
 one is installed like this:
 
-\verbatim
+```
 	Requires: lda
-\endverbatim
+```
 
 This will match either a package called lda (as mentioned above), or any
 package which contains:
 
-\verbatim
+```
 	Provides: lda
-\endverbatim
+```
 
 in its .spec file. No version numbers may be used with virtual packages.
 
 Virtual packages are often used to supply file dependencies such as /bin/sh
 on machines that are only partly managed by rpm. A virtual package with
-\verbatim
+```
 	Provides: /bin/sh
-\endverbatim
+```
 differs from a package that has /bin/sh in the %files list in that the
 package can be safely removed without removing /bin/sh.
 
-\section dependencies_automatic Automatic Dependencies
+## Automatic Dependencies
 
 To reduce the amount of work required by the package builder, RPM scans
 the file list of a package when it is being built. Any files in the file
@@ -169,7 +169,7 @@ example, the libc-5.3.12 package has provides information added for
 libm.so.5 and libc.so.5. We expect this automatic dependency generation
 to eliminate the need for most packages to use explicit Requires: lines.
 
-\section dependencies_custom Custom Automatic Dependency
+## Custom Automatic Dependency
 
 The automatic dependency programs are found via macro expansion.  Thus
 sites can very the amount of dependency processing that are performed
@@ -185,28 +185,28 @@ the name of a program to exec. For each package, the program receives
 the glob'ed %files manifest on stdin and returns dependencies on stdout. The
 discovered dependencies are parsed exactly as if they were found after
 
-\verbatim
+```
 	Provides:
 	PreReq:
 	Requires:
 	Conflicts:
 	Obsoletes:
-\endverbatim
+```
 tokens in a spec file (i.e. the same parser is used), so items look like
 (comments added)
-\verbatim
+```
 	/bin/sh			# file existence
 	libc.so.6		# soname existence
 	foo <= 1:2.3-4		# versioned package
 	perl5(Apache) <= 1.2	# versioned namespace
-\endverbatim
+```
 
 The default rpm configuration has only
 	%__find_provides	/usr/lib/rpm/find-provides
 	%__find_requires	/usr/lib/rpm/find-requires
 which can be overridden (or even undefined) within a spec file.
 
-\section dependencies_interpreters Interpreters and Shells
+## Interpreters and Shells
 
 Modules for interpreted languages like perl and tcl impose additional
 dependency requirements on packages. A script written for an interpreter
@@ -217,35 +217,35 @@ module name collisions between interpreters, module names are enclosed within
 parentheses and a conventional interpreter specific identifier is prepended:
 
 
-\verbatim
+```
   Provides: perl(MIME-Base64), perl(Mail-Header)-1-09
 
   Requires: perl(Carp), perl(IO-Wrap) = 4.5
-\endverbatim
+```
 
 
 The output of a per-interpreter find-requires (notice in this example the
 first requirement is a package and the rest are language specific modules)
 
-\verbatim
+```
 	Mail-Header >= 1.01
 	perl(Carp) >= 3.2
 	perl(IO-Wrap) == 4.5 or perl(IO-Wrap)-4.5
-\endverbatim
+```
 
 the output from find-provides is
-\verbatim
+```
 	Foo-0.9
 	perl(Widget)-0-1
-\endverbatim
+```
 
 The per-interpreter automatic module detectors will normally be located in
-\verbatim
+```
 	/usr/lib/rpm/{perl,tcl}/find-{provides,requires}
 with appropriate per-interpreter hooks into
-\verbatim
+```
 	/usr/lib/rpm/find-{provides,requires}
-\endverbatim
+```
 
 @todo per-interpreter dependency generators are not located in subdirectories.
 
@@ -254,7 +254,7 @@ be processed by the find-requires. Since a shell script depends on all the
 programs which it runs.
 
 
-\section dependencies_installing Installing and Erasing Packages with Dependencies
+## Installing and Erasing Packages with Dependencies
 
 For the most part, dependencies should be transparent to the user. However,
 a few things will change.
@@ -262,19 +262,19 @@ a few things will change.
 First, when packages are added or upgraded, all of their dependencies
 must be satisfied. If they are not, an error message like this appears:
 
-\verbatim
+```
     failed dependencies:
 	    libICE.so.6  is needed by somepackage-2.11-1
 	    libSM.so.6  is needed by somepackage-2.11-1
 	    libc.so.5  is needed by somepackage-2.11-1
-\endverbatim
+```
 
 Similarly, when packages are removed, a check is made to ensure that 
 no installed packages will have their dependency conditions break due to
 the packages being removed. If you wish to turn off dependency checking for 
 a particular command, use the --nodeps flag.
 
-\section dependencies_conflicts Conflicts
+## Conflicts
 
 While conflicts were implemented in earlier versions of RPM they never 
 worked properly until RPM 2.3.4 (well, we hope they work properly now
@@ -285,14 +285,14 @@ virtual package) installed on the system. For example, qmail doesn't work
 (w/o custom setup) on machines with sendmail installed. The qmail spec file
 may codify this with a line like:
 
-\verbatim
+```
 	Conflicts: sendmail
-\endverbatim
+```
 
 The syntax of the "Conflicts" tag is identical to the syntax of the Requires
 tag and conflict checking may be overridden by using the --nodeps flag.
 
-\section dependencies_querying Querying for Dependencies
+## Querying for Dependencies
 
 Two new query information selection options are now available. The first, 
 --provides, prints a list of all of the capabilities a package provides. 
@@ -306,7 +306,7 @@ provide the \<item\> virtual package. Note that querying for package that
 provides "python" will not return anything, as python is a package, not
 a virtual package.
 
-\section dependencies_verifying Verifying Dependencies
+## Verifying Dependencies
 
 As of RPM 2.2.2, -V (aka --verify) verifies package dependencies
 by default. You can tell rpm to ignore dependencies during system
@@ -315,7 +315,7 @@ and not file attributes (including file existence), use the --nofiles
 flag. Note that "rpm -Va --nofiles --nodeps" will not verify anything at
 all, nor generate an error message.
 
-\section dependencies_branching Branching Version
+## Branching Version
 
 It is quite common to need to branch a set of sources in version
 control. It is not so obvious how those branches should be represented
@@ -325,21 +325,21 @@ You have a bag of features that are injected into a package in a
 non-ordered fashion, and you want to have the package
 name-version-release be able to:
 
-\verbatim
+```
 	1) identify the "root version" of the source code.
 	2) identify the handful of features that are in that
 	   branch of the package.
 	3) preserve sufficient ordering so that packages upgrade
 	   without the use of --oldpackage.
-\endverbatim
+```
 
 A simple (but possibly not adequate) scheme to achieve this is:
 
-\verbatim
+```
 	Name: foo
 	Version: <the "root version" of the source code>
 	Release: <release instance>.<branch>
-\endverbatim
+```
 
 where the release instance is something like YYYYMMDD or some linear
 record of the number of builds with the current tar file, it is used
@@ -347,24 +347,22 @@ to preserve ordering when necessary.
 
 Another alternative scheme might be:
 
-\verbatim
+```
 	Name: foo
 	Epoch: <branch>
 	Version: <the branch specific version of the code>
 	Release: <release instance>
-\endverbatim
+```
 
-\section dependencies_build Build dependencies
+## Build dependencies
 
 The following dependencies are available at build time.  These are
 similar to the install time version but these apply only during
 package creation and are specified in the specfile not in the binary
 package.
 
-\verbatim
+```
 	BuildRequires:
 	BuildConflicts:
 	BuildPreReq:
-\endverbatim
-
-*/
+```

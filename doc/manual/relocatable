@@ -1,4 +1,4 @@
-/*! \page relocatable Relocatable packages
+# Relocatable packages
 
 Relocatable packages are a way to give the user a little control
 over the installation location of a package.  For example, a vendor
@@ -6,7 +6,7 @@ may distribute their software to install in "/opt" but you'd like
 it to install in "/usr/opt".  If the vendor were distributing a
 relocatable RPM package, it would be easy.
 
-\section relocatable_building Building a Relocatable Package
+## Building a Relocatable Package
 
 Not all software can be "relocatable".  Before continuing you should
 think about how the program works, what files it accesses, what other
@@ -16,9 +16,9 @@ then it can probably be built as "relocatable".
 
 All you need to do to build a relocatable package is put one or more:
 
-\verbatim
+```
   Prefix: <dir>
-\endverbatim
+```
 
 in your spec file.  The "<dir>" will usually be something like "/usr",
 "/usr/local", or "/opt".  Every file in your %files list must start
@@ -26,16 +26,16 @@ with that prefix.  For example, if you have "Prefix: /usr" and your
 %files list contains "/etc/foo.conf", the build will fail. The fix for
 this is to put
 
-\verbatim
+```
   Prefix: /usr
   Prefix: /etc
-\endverbatim
+```
 
 into the spec file so that the /usr and /etc directories may be
 relocated separately when this package is installed.
 
 
-\section relocatable_installing Installing Relocatable Packages
+## Installing Relocatable Packages
 
 By default, RPM will install a relocatable package in the prefix
 directory listed in the spec file.  You can override this on the
@@ -47,11 +47,9 @@ package), you could install it "--prefix /usr/opt".
 If there is more then one Prefix you may relocate each prefix
 separately by using syntax like:
 
-\verbatim
+```
   rpm ... --relocate /opt=/usr/opt --relocate /etc=/usr/etc ...
-\endverbatim
+```
 
 If any of the Prefixes is not being relocated they can be skipped on
 the command line
-
-*/
