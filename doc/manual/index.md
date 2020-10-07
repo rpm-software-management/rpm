@@ -42,6 +42,7 @@
 * [Plugin API](plugins.md)
 
 ### Package Format
+* [RPM Tags](tags.md)
 * [Large File support](large_files.md)
 * [RPM v3 file format](format.md)
 * [RPM v4 header regions](hregions.md)

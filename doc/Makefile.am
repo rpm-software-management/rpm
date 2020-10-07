@@ -90,5 +90,6 @@ manual/relocatable.md \
 manual/signatures.md \
 manual/signatures_digests.md \
 manual/spec.md \
+manual/tags.md \
 manual/triggers.md \
 manual/tsort.md
