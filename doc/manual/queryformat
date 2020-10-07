@@ -1,10 +1,10 @@
-/*! \page queryformat Query formats
+# Query formats
 
 As it is impossible to please everyone with one style of query output, RPM
 allows you to specify what information should be printed during a query
 operation and how it should be formatted.
 
-\section queryformat_tags Tags
+## Tags
 
 All of the information a package contains, apart from signatures and the
 actual files, is in a part of the package called the header. Each piece
@@ -16,7 +16,7 @@ To get a list of all of the tags your version of RPM knows about, run the
 command 'rpm --querytags'. It will print out a list like (but much longer
 then) this:
 
-\verbatim
+```
     BUILDHOST
     BUILDTIME
     DESCRIPTION
@@ -27,7 +27,7 @@ then) this:
     SIZE
     SUMMARY
     VERSION
-\endverbatim
+```
 
 Each of these tags also has a version with a RPMTAG_ prefix, such as
 RPMTAG_NAME. You can use this tags with or without the RPMTAG_ prefix.
@@ -35,7 +35,7 @@ RPMTAG_NAME. You can use this tags with or without the RPMTAG_ prefix.
 A tag can consist of one element or an array of elements. Each element can
 be a string or number only.
 
-\section queryformat_format Query Formats
+## Query Formats
 
 A query format is passed to RPM after the --queryformat argument, and normally
 should be enclosed in quotes. This query format is then used to print
@@ -48,19 +48,19 @@ its place put the tag name you wish to print enclosed in curly braces
 ({}). For example, the following RPM command prints the names and sizes
 of all of the packages installed on a system:
 
-\verbatim
+```
     rpm -qa --queryformat "%{NAME} %{SIZE}\n"
-\endverbatim
+```
 
 If you want to use printf formatters, they go between the % and {. To
 change the above command to print the NAME in the first 30 bytes and
 right align the size to, use:
 
-\verbatim
+```
     rpm -qa --queryformat "%-30{NAME} %10{SIZE}\n"
-\endverbatim
+```
 
-\section queryformat_arrays Arrays
+## Arrays
 
 RPM uses many parallel arrays internally. For example, file sizes and 
 file names are kept as an array of numbers and an array of strings
@@ -72,9 +72,9 @@ to print each item in the array within square brackets ([]). For example,
 to print all of the files and their sizes in the slang-devel package
 followed by their sizes, with one file per line, use this command:
 
-\verbatim
+```
     rpm -q --queryformat "[%-50{FILENAMES} %10{FILESIZES}\n]" slang-devel
-\endverbatim
+```
 
 Note that since the trailing newline is inside of the square brackets, one
 newline is printed for each filename.
@@ -85,9 +85,9 @@ repeated for every file in the package. This query can be very useful
 for passing information to any program that's line oriented (such as
 grep or awk). If you try the obvious,
 
-\verbatim
+```
     rpm -q --queryformat "[%{NAME} %{FILENAMES}\n]" cdp
-\endverbatim
+```
 
 you'll see RPM complain about an "array iterator used with different
 sized arrays". Internally, all items in RPM are actually arrays, so the
@@ -99,19 +99,19 @@ To make this work properly, you need to tell RPM to always print the first
 item in the NAME element. You do this by placing a '=' before the tag
 name, like this:
 
-\verbatim
+```
     rpm -q --queryformat "[%{=NAME} %{FILENAMES}\n]" cdp
-\endverbatim
+```
 
 which will give you the expected output.
 
-\verbatim
+```
     cdp /usr/bin/cdp
     cdp /usr/bin/cdplay
     cdp /usr/man/man1/cdp.1
-\endverbatim
+```
 
-\section queryformat_formatting Formatting Tags
+## Formatting Tags
 
 One of the weaknesses with query formats is that it doesn't recognize
 that the INSTALLTIME tag (for example) should be printed as a date instead
@@ -119,13 +119,13 @@ of as a number. To compensate, you can specify one of a few different
 formats to use when printing tags by placing a colon followed the formatting 
 name after the tag name. Here are some examples:
 
-\verbatim
+```
     rpm -q --queryformat "%{NAME} %{INSTALLTIME:date}\n" fileutils
     rpm -q --queryformat "[%{FILEMODES:perms} %{FILENAMES}\n]" rpm
     rpm -q --queryformat \
 	"[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]" \
 	vlock
-\endverbatim
+```
 
 The :shescape may be used on plain strings to get a string which can pass
 through a single level of shell and give the original string.
@@ -138,7 +138,7 @@ humaniec uses 1K = 1024, 1M = 1048576, ...
 The formatting tags are documented in rpm (8) manual in the QUERY OPTIONS
 section.
 
-\section queryformat_expressions Query Expressions
+## Query Expressions
 
 Simple conditionals may be evaluated through query expressions. Expressions
 are delimited by %|...|. The only type of expression currently supported
@@ -146,15 +146,13 @@ is a C-like ternary conditional, which provides simple if/then/else
 conditions. For example, the following query format display "present" if
 the SOMETAG tag is present, and "missing" otherwise:
 
-\verbatim
+```
     %|SOMETAG?{present}:{missing}|
-\endverbatim
+```
 
 Notice that the subformats "present" and "missing" must be inside of curly
 braces.
 
-\verbatim
+```
     rpm -qa --queryformat "%-30{NAME} %|PREINPROG?{%{PREINPROG}}:{no}|\n"
-\endverbatim
-
-*/
+```
