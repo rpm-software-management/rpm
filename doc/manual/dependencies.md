@@ -1,368 +1,154 @@
 # Dependencies
 
-Dependencies provide a way for a package builder to require other
-packages or capabilities to be installed before or simultaneously
-with one another. These can be used to require a python interpreter
-for a python based application for example. RPM ensures dependencies
-are satisfied whenever packages are installed, erased, or upgraded.
+Dependencies provide a way for a package builder to require other packages or capabilities to be installed before or simultaneously with one another. For example, these can be used to require a python interpreter for a python-based application. RPM ensures dependencies are satisfied whenever packages are installed, erased, or upgraded. This page describes the basics. More topics can be found in More On Dependencies.
 
-## Requiring Packages
+## The Package name
+The package name is the most important way to refer to a package. Updates also follow the package name and packages with the same name constitute a line of updates of which only the newest is considered up-to-date. So if two versions of the same software are supposed to be installed at the same time, they have to go into packages with different names, which of course need to reside at different locations on disk). A typical way of doing this is to add the unchanging part of the version number as part of the name, e.g. `python3-3.2.1-1` and `python-2.3.4-5` could be installed at the same time.
+
+## Obsoletes
+Obsoletes alter the way updates work. This plays out a bit differently depending whether rpm is used directly on the command line or the update is performed by an updates/dependency solver.
+
+RPM removes all packages matching obsoletes of packages being installed, as it sees the obsoleting package as their updates. There does not have to be a one-to-one relationship between obsoleting and obsoleted packages. Note that `rpm -i` does not do updates and therefore treats Obsoletes: as Conflicts: (since rpm-4.10). For most cases `rpm -i` should be avoided and `rpm -U` should be used unless this specific behavior is desired (e.g. for kernels).
+
+Updaters have a slightly different view on Obsoletes: as they need to find out what packages to install as an update. As a result packages containing matching Obsoletes: are added as updates and replace the matching packages.
+
+## Provides
+Provides can be added to packages so they can be referred to by dependencies other than by their name. This is useful when you need to make sure that the system your package is being installed on has a package which provides a certain capability, even though you don't care what specific package provides it. For example, sendmail won't work properly unless a local delivery agent (lda) is present. You can ensure that one is installed like this:
+
+```
+    Requires: lda
+```
+
+This will match either a package called lda (as mentioned above), or any package which contains:
+
+```
+    Provides: lda
+```
+
+in its spec file. No version numbers may be used with virtual packages.
+
+Provides are often used to supply file dependencies such as /bin/sh on machines that are only partly managed by rpm. A virtual package with
+
+```
+    Provides: /bin/sh
+```
+
+differs from a package that has `/bin/sh` in the %files list in that the package can be safely removed without removing `/bin/sh`.
+
+## Requires
+With this tag a package can require another with the matching name or Provides to be installed (if the package containing the Requires: is going to be installed). This is checked when a new package is installed and if a package with a matching Provides: is removed.
 
 To require the packages python and perl, use:
 
 ```
-	Requires: python perl
+    Requires: python perl
 ```
 
-in the spec file. Note that "Requires python, perl" would work as well. If you
-needed to have a very recent version of python but any version of perl,
+in the spec file. Note that "Requires: python, perl" would work as well. If you needed to have a very recent version of python but any version of perl,
 
 ```
-	Requires: python >= 1.3, perl
+    Requires: python >= 1.3, perl
 ```
 
-would do the trick. Again, the ',' in the line is optional.  Instead of
-'>=', you may also use '<', '>', '<=', or '='.  Spaces are required
-around the numeric operator to separate the operator from the package name.
+would do the trick. Again, the ',' in the line is optional. Instead of '>=', you may also use '<', '>', '<=', or '='. Spaces are required around the numeric operator to separate the operator from the package name.
 
-The full syntax for specifying a dependency on an epoch, version and release
-is
+## Versioning
+The full syntax for specifying a dependency on an epoch, version and release is
+
 ```
-	[epoch:]version[-release]
+    [epoch:]version[-release]
 ```
+
 where
+
 ```
-	epoch	(optional) number, with assumed default of 0 if not supplied
-	version	(required) can contain any character except '-'
-	release	(optional) can contain any character except '-'
+    epoch   (optional) number, with assumed default of 0 if not supplied
+    version (required) can contain any character except '-'
+    release (optional) can contain any character except '-'
 ```
 
 For example,
 
 ```
-	Requires: perl >= 9:5.00502-3
+    Requires: perl >= 9:5.00502-3
 ```
 
 specifies
 
 ```
-	epoch=9
-	version=5.00502
-	release=3
+    epoch=9
+    version=5.00502
+    release=3
 ```
 
-The epoch (if present) is a monotonically increasing integer, neither the
-version or the release can contain the '-' hyphen character, and the dependency
-parser does not permit white space within a definition.  Unspecified epoch
-and releases are assumed to be zero, and are interpreted as "providing all"
-or "requiring any" value.
+The epoch (if present) is a monotonically increasing integer, neither the version or the release can contain the '-' hyphen character, and the dependency parser does not permit white space within a definition. Unspecified epoch and releases are assumed to be zero, and are interpreted as "providing all" or "requiring any" value.
 
-The release tag is usually incremented every time a package is rebuilt for
-any reason, even if the source code does not change. For example, changes
-to the specfile, compiler(s) used to build the package, and/or dependency
-changes should all be tracked by incrementing the release.  The version number,
-on the other hand, is usually set by the developer or upstream maintainer,
-and should not be casually modified by the packager.
+The release tag is usually incremented every time a package is rebuilt for any reason, even if the source code does not change. For example, changes to the specfile, compiler(s) used to build the package, and/or dependency changes should all be tracked by incrementing the release. The version number, on the other hand, is usually set by the developer or upstream maintainer, and should not be casually modified by the packager.
 
-Version numbering should be kept simple so that it is easy to determine the
-version ordering for any set of packages.  If the packager needs to separate
-a release from all other releases that came before it, then the epoch, the
-most significant part of package ordering, can be changed.
+Version numbering should be kept simple so that it is easy to determine the version ordering for any set of packages. If the packager needs to separate a release from all other releases that came before it, then the epoch, the most significant part of package ordering, can be changed.
 
-The algorithm that RPM uses to determine the version ordering of
-packages is simple and developers are encouraged not to rely on the
-details of its working.  Developers should keep their numbering scheme
-simple so any reasonable ordering algorithm would work.  The version
-comparison algorithm is in the routine rpmvercmp() and it is just a segmented
-strcmp(3).  First, the boundaries of the segments are found using
-isdigit(3)/isalpha(3).  Each segment is then compared in order with the
-right most segment being the least significant.  The alphabetical
-portions are compared using a lexical graphical ascii ordering, the
-digit segments strip leading zeroes and compare the strlen before
-doing a strcmp. If both numerical strings are equal, the longer string
-is larger.  Notice that the algorithm has no knowledge of decimal fractions,
-and perl-5.6 is "older" than perl-5.00503 because the number 6 is less than
-the number 503.
+The algorithm that RPM uses to determine the version ordering of packages is simple and developers are encouraged not to rely on the details of its working. Developers should keep their numbering scheme simple so any reasonable ordering algorithm would work. The version comparison algorithm is in the routine rpmvercmp() and it is just a segmented strcmp(3). First, the boundaries of the segments are found using isdigit(3)/isalpha(3). Each segment is then compared in order with the right most segment being the least significant. The alphabetical portions are compared using a lexicographical ascii ordering, the digit segments strip leading zeroes and compare the strlen before doing a strcmp. If both numerical strings are equal, the longer string is larger. Notice that the algorithm has no knowledge of decimal fractions, and perl-5.6 is "older" than perl-5.00503 because the number 6 is less than the number 503.
 
-The concept of "newer" used by rpm to determine when a package should be
-upgraded can be broken if version format changes oddly, such as when the
-version segments cannot be meaningfully compared.
+The concept of "newer" used by rpm to determine when a package should be upgraded can be broken if version format changes oddly, such as when the version segments cannot be meaningfully compared.
 
 Example of a bad format change: 2.1.7Ax to 19980531
+
 ```
   The date may be the older version, but it is numerically greater
   2 so it is considered newer :(
 ```
 
 Example of a bad increment: 2.1.7a to 2.1.7A
+
 ```
   The 'a' (ASCII 97) is compared against 'A' (ASCII 65), making 2.1.7a
   the newer version.
 ```
 
-Stick to major.minor.patchlevel using numbers for each if you can.
-Keeps life simple :-)
+Stick to major.minor.patchlevel using numbers for each if you can. Keeps life simple :-)
 
-If a Requires: line needs to include an epoch in the comparison, then
-the line should be written like
+If a Requires: line needs to include an epoch in the comparison, then the line should be written like
 
 ```
-	Requires: somepackage = 23:version
+    Requires: somepackage = 23:version
 ```
 
-You can't continue a "Requires: " line. If you have multiple
-"Requires: " lines then the package requires all packages mentioned on
-all of the lines to be installed.
-
-## Prereqs
-
-Prereqs are different from requires only in that a PreReq is guaranteed
-to be installed before the package that contains the PreReq.  PreReq's
-are used only to order packages, otherwise PreReq's are exactly the same
-as a Requires: dependency.
-
-## Virtual Packages
-
-Sometimes you need to make sure the system your package is being installed 
-on has a package which provides a certain capability, even though you don't
-care what specific package provides it. For example, sendmail won't work
-properly unless a local delivery agent (lda) is present. You can ensure that
-one is installed like this:
-
-```
-	Requires: lda
-```
-
-This will match either a package called lda (as mentioned above), or any
-package which contains:
-
-```
-	Provides: lda
-```
-
-in its .spec file. No version numbers may be used with virtual packages.
-
-Virtual packages are often used to supply file dependencies such as /bin/sh
-on machines that are only partly managed by rpm. A virtual package with
-```
-	Provides: /bin/sh
-```
-differs from a package that has /bin/sh in the %files list in that the
-package can be safely removed without removing /bin/sh.
-
-## Automatic Dependencies
-
-To reduce the amount of work required by the package builder, RPM scans
-the file list of a package when it is being built. Any files in the file
-list which require shared libraries to work (as determined by ldd) cause
-that package to require the shared library.
-
-For example, if your package contains /bin/vi, RPM will add dependencies 
-for both libtermcap.so.2 and libc.so.5. These are treated as virtual
-packages, so no version numbers are used.
-
-A similar process allows RPM to add Provides information automatically. Any
-shared library in the file list is examined for its soname (the part of
-the name which must match for two shared libraries to be considered
-equivalent) and that soname is automatically provided by the package. For
-example, the libc-5.3.12 package has provides information added for
-libm.so.5 and libc.so.5. We expect this automatic dependency generation
-to eliminate the need for most packages to use explicit Requires: lines.
-
-## Custom Automatic Dependency
-
-The automatic dependency programs are found via macro expansion.  Thus
-sites can very the amount of dependency processing that are performed
-locally, by changing the executable/script which is run.  Dependency
-processing can even be changed on a per-package basis if the macros are
-defined in the spec file. To allow for maximum configurability the
-dependency programs are shell scripts which can be duplicated and edited
-for site specific needs.
-
-The macros: %__find_provides, %__find_requires,
-%__find_conflicts, %__find_obsoletes, if they exist, are expanded to
-the name of a program to exec. For each package, the program receives
-the glob'ed %files manifest on stdin and returns dependencies on stdout. The
-discovered dependencies are parsed exactly as if they were found after
-
-```
-	Provides:
-	PreReq:
-	Requires:
-	Conflicts:
-	Obsoletes:
-```
-tokens in a spec file (i.e. the same parser is used), so items look like
-(comments added)
-```
-	/bin/sh			# file existence
-	libc.so.6		# soname existence
-	foo <= 1:2.3-4		# versioned package
-	perl5(Apache) <= 1.2	# versioned namespace
-```
-
-The default rpm configuration has only
-	%__find_provides	/usr/lib/rpm/find-provides
-	%__find_requires	/usr/lib/rpm/find-requires
-which can be overridden (or even undefined) within a spec file.
-
-## Interpreters and Shells
-
-Modules for interpreted languages like perl and tcl impose additional
-dependency requirements on packages. A script written for an interpreter
-often requires language specific modules to be installed in order to execute
-correctly. In order to automatically detect language specific modules, each
-interpreter may have its own find-provides and find-requires. To prevent
-module name collisions between interpreters, module names are enclosed within
-parentheses and a conventional interpreter specific identifier is prepended:
-
-
-```
-  Provides: perl(MIME-Base64), perl(Mail-Header)-1-09
-
-  Requires: perl(Carp), perl(IO-Wrap) = 4.5
-```
-
-
-The output of a per-interpreter find-requires (notice in this example the
-first requirement is a package and the rest are language specific modules)
-
-```
-	Mail-Header >= 1.01
-	perl(Carp) >= 3.2
-	perl(IO-Wrap) == 4.5 or perl(IO-Wrap)-4.5
-```
-
-the output from find-provides is
-```
-	Foo-0.9
-	perl(Widget)-0-1
-```
-
-The per-interpreter automatic module detectors will normally be located in
-```
-	/usr/lib/rpm/{perl,tcl}/find-{provides,requires}
-with appropriate per-interpreter hooks into
-```
-	/usr/lib/rpm/find-{provides,requires}
-```
-
-@todo per-interpreter dependency generators are not located in subdirectories.
-
-Notice that shell dependencies will require that all %post et al scriptlets
-be processed by the find-requires. Since a shell script depends on all the
-programs which it runs.
-
-
-## Installing and Erasing Packages with Dependencies
-
-For the most part, dependencies should be transparent to the user. However,
-a few things will change.
-
-First, when packages are added or upgraded, all of their dependencies
-must be satisfied. If they are not, an error message like this appears:
-
-```
-    failed dependencies:
-	    libICE.so.6  is needed by somepackage-2.11-1
-	    libSM.so.6  is needed by somepackage-2.11-1
-	    libc.so.5  is needed by somepackage-2.11-1
-```
-
-Similarly, when packages are removed, a check is made to ensure that 
-no installed packages will have their dependency conditions break due to
-the packages being removed. If you wish to turn off dependency checking for 
-a particular command, use the --nodeps flag.
+You can't continue a "Requires: " line. If you have multiple "Requires: " lines then the package requires all packages mentioned on all of the lines to be installed.
 
 ## Conflicts
+Conflicts are basically inverse Requires. If there is a matching package the package cannot be installed. It does not matter whether the Conflict: tag is on the already installed or to be installed package.
 
-While conflicts were implemented in earlier versions of RPM they never 
-worked properly until RPM 2.3.4 (well, we hope they work properly now
-anyway).
-
-Conflicts allow a package to say it won't work with another package (or
-virtual package) installed on the system. For example, qmail doesn't work
-(w/o custom setup) on machines with sendmail installed. The qmail spec file
-may codify this with a line like:
+The qmail spec file may codify this with a line like:
 
 ```
-	Conflicts: sendmail
+    Conflicts: sendmail
 ```
 
-The syntax of the "Conflicts" tag is identical to the syntax of the Requires
-tag and conflict checking may be overridden by using the --nodeps flag.
+Dependency checking (including checking for conflicts) may be overridden by using the --nodeps flag.
 
-## Querying for Dependencies
+## Weak dependencies
 
-Two new query information selection options are now available. The first, 
---provides, prints a list of all of the capabilities a package provides. 
-The second, --requires, shows the other packages that a package requires
-to be installed, along with any version number checking.
+In addition to the strong dependencies created by Requires, there are 4 dependencies that are completely ignored by rpm itself. Their purpose is to be used by dependency solvers to make choices about what packages to install. They come in two levels of strength:
 
-There are also two new ways to search for packages. Running a query with 
---whatrequires \<item\> queries all of the packages that require \<item\>. 
-Similarly, running --whatprovides \<item\> queries all of the packages that 
-provide the \<item\> virtual package. Note that querying for package that 
-provides "python" will not return anything, as python is a package, not
-a virtual package.
+* Weak: By default the dependency solver shall attempt to process the dependency 
+as though it were strong. If this is results in an error then they should be ignored and not trigger an error or warning.
 
-## Verifying Dependencies
+* Very weak: By default the dependency solver shall ignore them. But they may be used to show the matching packages as option to the user. 
 
-As of RPM 2.2.2, -V (aka --verify) verifies package dependencies
-by default. You can tell rpm to ignore dependencies during system
-verification with the --nodeps. If you want RPM to verify just dependencies
-and not file attributes (including file existence), use the --nofiles
-flag. Note that "rpm -Va --nofiles --nodeps" will not verify anything at
-all, nor generate an error message.
+The depsolver may offer to treat the weak like very weak relations or the other way round.
 
-## Branching Version
+In addition to normal, forward relations that behave the same way as Requires:, there are also two weak dependencies that work backwards. Instead of adding packages that match the relations of to-be-installed packages these Relations add packages that contain relations matching to-be-installed packages.
 
-It is quite common to need to branch a set of sources in version
-control. It is not so obvious how those branches should be represented
-in the package version numbers. Here is one solution.
+There are two dependency types at each level of strength. One is a forward relation, similar to Requires; the other is a reverse relation. For reverse relation the roles of the declaring and matching package(s) are switched out.
 
-You have a bag of features that are injected into a package in a
-non-ordered fashion, and you want to have the package
-name-version-release be able to:
+|           |Forward      |Reverse       |
+|-----------|-------------|--------------|
+|Weak       |Recommends:  |Supplements:  |
+|Very weak  |Suggests:    |Enhances:     |
 
-```
-	1) identify the "root version" of the source code.
-	2) identify the handful of features that are in that
-	   branch of the package.
-	3) preserve sufficient ordering so that packages upgrade
-	   without the use of --oldpackage.
-```
+So installing a package containing Recommends: foo should cause the dependency solver to also select a package that is named foo or that Provides: foo, assuming one exists and its selection does not lead to unresolvable dependencies.
 
-A simple (but possibly not adequate) scheme to achieve this is:
+On the other hand, if a package that is named foo or that Provides: foo is selected, and a package bar containing "Supplements: foo" exists, then bar is also selected as long as doing so does not lead to unresolvable dependencies.
 
-```
-	Name: foo
-	Version: <the "root version" of the source code>
-	Release: <release instance>.<branch>
-```
+In other words, if you have packages A and B and you want to declare a weak relation between them A -> B, you can either specify it as package A containing "Recommends: B" or package B containing "Supplements: A".
 
-where the release instance is something like YYYYMMDD or some linear
-record of the number of builds with the current tar file, it is used
-to preserve ordering when necessary.
-
-Another alternative scheme might be:
-
-```
-	Name: foo
-	Epoch: <branch>
-	Version: <the branch specific version of the code>
-	Release: <release instance>
-```
-
-## Build dependencies
-
-The following dependencies are available at build time.  These are
-similar to the install time version but these apply only during
-package creation and are specified in the specfile not in the binary
-package.
-
-```
-	BuildRequires:
-	BuildConflicts:
-	BuildPreReq:
-```
