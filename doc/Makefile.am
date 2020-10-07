@@ -70,6 +70,7 @@ manual/index.md \
 manual/arch_dependencies.md \
 manual/autosetup.md \
 manual/boolean_dependencies.md \
+manual/buildprocess.md \
 manual/file_triggers.md \
 manual/lua.md \
 manual/more_dependencies.md \
@@ -87,6 +88,7 @@ manual/plugins.md \
 manual/queryformat.md \
 manual/relocatable.md \
 manual/signatures.md \
+manual/signatures_digests.md \
 manual/spec.md \
 manual/triggers.md \
 manual/tsort.md
