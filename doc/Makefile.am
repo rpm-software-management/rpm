@@ -66,17 +66,17 @@ EXTRA_DIST += $(man_sk_man8_DATA)
 
 
 EXTRA_DIST += \
-manual/builddependencies \
-manual/buildroot \
-manual/conditionalbuilds \
-manual/dependencies \
-manual/format \
-manual/hregions \
-manual/macros \
-manual/multiplebuilds \
-manual/queryformat \
-manual/relocatable \
-manual/signatures \
-manual/spec \
-manual/triggers \
-manual/tsort
+manual/builddependencies.md \
+manual/buildroot.md \
+manual/conditionalbuilds.md \
+manual/dependencies.md \
+manual/format.md \
+manual/hregions.md \
+manual/macros.md \
+manual/multiplebuilds.md \
+manual/queryformat.md \
+manual/relocatable.md \
+manual/signatures.md \
+manual/spec.md \
+manual/triggers.md \
+manual/tsort.md
