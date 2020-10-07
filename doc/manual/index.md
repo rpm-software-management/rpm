@@ -14,16 +14,25 @@
 
 ## Macro subsystem
 * [Macro syntax](macros.md)
+* [Embedded Lua](lua.md)
 
 ## Package Building
 * [Spec Syntax](spec.md)
-* [Conditional Builds](conditionalbuilds.md)
-* [Dependencies](dependencies.md)
-* [Installation Order](tsort.md)
-* [Build Dependencies](builddependencies.md)
-* [Relocatable Packages](relocatable.md)
-* [Triggers](triggers.md)
-* [Buildroot](buildroot.md) and [Multiple build areas](multiplebuilds.md)
+  * [Autosetup](autosetup.md)
+  * [Dependencies](dependencies.md)
+    * [More on Dependencies](more_dependencies.md)
+    * [Boolean Dependencies](boolean_dependencies.md)
+    * [Build Dependencies](builddependencies.md)
+    * [Architecture Dependencies](arch_dependencies.md)
+    * [Installation Order](tsort.md)
+  * Install scriptlets
+    * [Triggers](triggers.md)
+    * [File Triggers](file_triggers.md)
+    * [Scriptlet Expansion](scriptlet_expansion.md)
+  * [Conditional Builds](conditionalbuilds.md)
+  * [Relocatable Packages](relocatable.md)
+  * [Buildroot](buildroot.md) and [Multiple build areas](multiplebuilds.md)
+* [Dependency Generation](dependency_generators.md)
 
 
 ## Developer Information
