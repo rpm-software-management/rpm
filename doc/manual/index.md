@@ -36,7 +36,12 @@
 
 
 ## Developer Information
+
+### API
+* [Plugin API](plugins.md)
+
 ### Package Format
+* [Large File support](large_files.md)
 * [RPM v3 file format](format.md)
 * [RPM v4 header regions](hregions.md)
 

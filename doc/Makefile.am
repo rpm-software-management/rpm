@@ -80,8 +80,10 @@ manual/conditionalbuilds.md \
 manual/dependencies.md \
 manual/format.md \
 manual/hregions.md \
+manual/large_files.md \
 manual/macros.md \
 manual/multiplebuilds.md \
+manual/plugins.md \
 manual/queryformat.md \
 manual/relocatable.md \
 manual/signatures.md \
