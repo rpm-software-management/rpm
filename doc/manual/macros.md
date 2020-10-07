@@ -24,8 +24,9 @@ of alphanumeric characters, and the character `_' and must be at least
 only recursive macro expansion is performed. A parameterized macro contains
 an (opts) field. The opts (i.e. string between parentheses) is passed
 exactly as is to getopt(3) for argc/argv processing at the beginning of
-a macro invocation.  While a parameterized macro is being expanded, the
-following shell-like macros are available:
+a macro invocation. "--" can be used to separate options from arguments.
+While a parameterized macro is being expanded, the following shell-like
+macros are available:
 
 ```
 	%0	the name of the macro being invoked
@@ -87,7 +88,7 @@ to perform useful operations. The current list is
 				bzip2 -dc <file>	# if bzip'ed
 
 	%{load:...}	load a macro file
-	%{lua:...}	expand using the embedded Lua interpreter
+	%{lua:...}	expand using the [embedded Lua interpreter](lua.md)
 	%{expand:...}	like eval, expand ... to <body> and (re-)expand <body>
 	%{expr:...}	evaluate an expression
 	%{shrink:...}	trim leading and trailing whitespace, reduce
@@ -109,10 +110,12 @@ examine the output from stderr.
 ## Conditionally Expanded Macros
 
 Sometimes it is useful to test whether a macro is defined or not. Syntax
+
 ```
 %{?macro_name:value}
 %{?!macro_name:value}
 ```
+
 can be used for this purpose. %{?macro_name:value} is expanded to "value"
 if "macro_name" is defined, otherwise it is expanded to the empty string.
 %{?!macro_name:value} is the negative variant. It is expanded to "value" if
@@ -120,14 +123,19 @@ if "macro_name" is defined, otherwise it is expanded to the empty string.
 
 Frequently used conditionally expanded macros are e.g.
 Define a macro if it is not defined:
+
 ```
 %{?!with_python3: %global with_python3 1}
 ```
+
 A macro that is expanded to 1 if "with_python3" is defined and 0 otherwise:
+
 ```
 %{?with_python3:1}%{!?with_python3:0}
 ```
+
 or shortly
+
 ```
 0%{!?with_python3:1}
 ```
@@ -139,9 +147,11 @@ behave differently. In such a case both macro "%{?builtin_macro:value}" and
 its negative version "%{?!builtin_macro:value}" are expanded exactly like
 the macro without exclamation mark and question mark "%{builtin_macro:value}".
 There is a special case among builtin macros:
+
 ```
 %{?load:file}
 ```
+
 it works like "%{load:file}" with the difference that the expansion does not
 emit an error if the file fails to load.
 
@@ -258,9 +268,11 @@ Note that the "%[expression]" expansion is different to the
 "%{expr:expression}" macro.  With the latter, the macros in the
 expression are expanded first and then the expression is
 evaluated (without re-expanding the terms).  Thus
+
 ```
 	rpm --define 'foo 1 + 2' --eval '%{expr:%foo}'
 ```
+
 will print "3".  Using '%[%foo]' instead will result in the
 error that "1 + 2" is not a number.
 
@@ -281,9 +293,11 @@ relied upon.
 
 Evaluating a macro can be difficult outside of an rpm execution context. If
 you wish to see the expanded value of a macro, you may use the option
+
 ```
 	--eval '<macro expression>'
 ```
+
 that will read rpm config files and print the macro expansion on stdout.
 
 Note: This works only macros defined in rpm configuration files, not for
@@ -292,45 +306,25 @@ you wish to see the expansion of a macro defined in a spec file.
  
 ## Configuration using Macros
 
-Starting in rpm 3.0, macros rather than rpmrc lines are used to configure rpm.
-In general, all the rpmrc configuration lines documented in "Maximum RPM"
-have been converted to macros, usually with a leading underscore, and the
-same name that was used in rpmrc files. In some cases, there is no leading
-underscore. Those macros existed in rpm-2.5.x and the underscore is omitted
-in order to preserve the meaning and usage of macros that are defined during
-spec file parsing.
+Most rpm configuration is done via macros. There are numerous places from
+which macros are read, in recent rpm versions the macro path can be seen
+with `rpm --showrc|grep "^Macro path"`. If there are multiple definitions
+of the same macro, the last one wins. User-level configuration goes
+to ~/.rpmmacros which is always the last one in the path.
 
-Here's an example to illustrate configuration using macros:
+The macro file syntax is simply:
 
 ```
-   Old way:
-	In /etc/rpmrc and/or ~/.rpmrc you put
-		something:      some_value
-
-   New way:
-	In /etc/rpm/macros and/or ~/.rpmmacros
-		%_something     some_value
+%<name>		 <body>
 ```
 
-Here are 2 common FAQ for experienced users of rpm:
+...where <name> is a legal macro name and <body> is the body of the macro.
+Multiline macros can be defined by shell-like line continuation, ie `\`
+at end of line.
 
-```
-  1) --rcfile works differently.
-    Old way:	rpm --rcfile whatever
-    New way:	rpm --rcfile /usr/lib/rpm/rpmrc:whatever
-
-  2) topdir (and other rpmrc configurables) work differently.
-
-    Old way:
-	~/.rpmrc contains
-		topdir:         whatever
-
-    New way:
-	/usr/lib/rpm/rpmrc contains
-		macrofiles:     /usr/lib/rpm/macros: ... :~/.rpmmacros
-	~/.rpmmacros contains
-		%_topdir        whatever
-```
+Note that the macro file syntax is strictly declarative, no conditionals
+are supported (except of course in the macro body) and no macros are
+expanded during macro file read.
 
 ## Macro Analogues of Autoconf Variables
 
