@@ -67,6 +67,13 @@ EXTRA_DIST += $(man_sk_man8_DATA)
 
 EXTRA_DIST += \
 manual/index.md \
+manual/arch_dependencies.md \
+manual/autosetup.md \
+manual/boolean_dependencies.md \
+manual/file_triggers.md \
+manual/lua.md \
+manual/more_dependencies.md \
+manual/scriptlet_expansion.md \
 manual/builddependencies.md \
 manual/buildroot.md \
 manual/conditionalbuilds.md \
