@@ -101,22 +101,34 @@ rpmlogLvl rpmlogRecPriority(rpmlogRec rec)
     return (rec != NULL) ? rec->pri : (rpmlogLvl)-1;
 }
 
-void rpmlogPrint(FILE *f)
+static void rpmlogRecPrint(rpmlogRec rec, void *data)
+{
+    fprintf((FILE *)data, "    %s", rec->message);
+}
+
+static void rpmlogForeach(void (*func) (rpmlogRec, void*), void *data,
+                          unsigned mask)
 {
     rpmlogCtx ctx = rpmlogCtxAcquire(0);
 
     if (ctx == NULL)
 	return;
 
-    if (f == NULL)
-	f = stderr;
-
     for each(rec, ctx) {
+	if (mask && ((RPMLOG_MASK(rec->pri) & mask) == 0))
+	    continue;
 	if (rec->message && *rec->message)
-	    fprintf(f, "    %s", rec->message);
+	    func(rec, data);
     }
 
     rpmlogCtxRelease(ctx);
+}
+
+void rpmlogPrint(FILE *f)
+{
+    if (f == NULL)
+	f = stderr;
+    rpmlogForeach(rpmlogRecPrint, f, 0);
 }
 
 void rpmlogClose (void)
