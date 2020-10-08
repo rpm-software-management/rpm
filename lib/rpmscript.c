@@ -138,7 +138,7 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	umask(oldmask);
 	pid_t pid = getpid();
 
-	if (chdir("/") == 0 && rpmluaRunScript(lua, script, sname) == 0) {
+	if (chdir("/") == 0 && rpmluaRunScript(lua, script, sname, NULL, NULL) == 0) {
 	    rc = RPMRC_OK;
 	}
 	if (pid != getpid()) {

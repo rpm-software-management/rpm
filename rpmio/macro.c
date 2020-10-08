@@ -1065,7 +1065,7 @@ static void doLua(MacroBuf mb, int chkexist, int negate, const char * f, size_t 
     rpmluaPushPrintBuffer(lua);
     mc->depth = mb->depth;
     mc->level = mb->level;
-    if (rpmluaRunScript(lua, scriptbuf, NULL) == -1)
+    if (rpmluaRunScript(lua, scriptbuf, NULL, NULL, NULL) == -1)
 	mb->error = 1;
     mc->depth = odepth;
     mc->level = olevel;
