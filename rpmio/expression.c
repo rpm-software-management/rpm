@@ -154,7 +154,11 @@ static void valueDump(const char *msg, Value v, FILE *fp)
   if (v) {
     if (v->type == VALUE_TYPE_INTEGER)
       fprintf(fp, "INTEGER %d\n", v->data.i);
-    else
+    else if (v->type == VALUE_TYPE_VERSION) {
+      char *evr = rpmverEVR(v->data.v);
+      fprintf(fp, "VERSION %s\n", evr);
+      free(evr);
+    } else
       fprintf(fp, "STRING '%s'\n", v->data.s);
   } else
     fprintf(fp, "NULL\n");
@@ -933,6 +937,9 @@ char *rpmExprStrFlags(const char *expr, int flags)
   } break;
   case VALUE_TYPE_STRING:
     result = xstrdup(v->data.s);
+    break;
+  case VALUE_TYPE_VERSION:
+    result = rpmverEVR(v->data.v);
     break;
   default:
     break;
