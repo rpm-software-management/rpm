@@ -589,13 +589,17 @@ int rpmluaRunScript(rpmlua _lua, const char *script, const char *name,
     INITSTATE(_lua, lua);
     lua_State *L = lua->L;
     int ret = -1;
+    static const char *lualocal =
+	"local opt = select(1, ...); local arg = select(2, ...);";
 
     if (name == NULL)
 	name = "<lua>";
     if (script == NULL)
 	script = "";
 
-    if (luaL_loadbuffer(L, script, strlen(script), name) != 0) {
+    char *buf = rstrscat(NULL, lualocal, script, NULL);
+
+    if (luaL_loadbuffer(L, buf, strlen(buf), name) != 0) {
 	rpmlog(RPMLOG_ERR, _("invalid syntax in lua script: %s\n"),
 		 lua_tostring(L, -1));
 	lua_pop(L, 1);
@@ -645,6 +649,7 @@ int rpmluaRunScript(rpmlua _lua, const char *script, const char *name,
     ret = 0;
 
 exit:
+    free(buf);
     return ret;
 }
 
