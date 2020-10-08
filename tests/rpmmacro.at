@@ -470,6 +470,8 @@ AT_CHECK([[
 runroot rpm --define "aaa hello" --eval '%[%aaa]'
 runroot rpm --eval '%[%{foo]'
 runroot rpm --eval '%[v""]'
+runroot rpm --eval '%[v"1" + v"2"]'
+runroot rpm --eval '%[v"1" / v"2"]'
 ]],
 [1],
 [],
@@ -479,6 +481,10 @@ error: expanded string: hello
 error: Unterminated {: {foo 
 error: invalid version: v""
 error:                    ^
+error: + and - not supported for versions: v"1" + v"2"
+error:                                          ^
+error: * and / not supported for versions: v"1" / v"2"
+error:                                          ^
 ])
 AT_CLEANUP
 

@@ -608,6 +608,9 @@ static Value doMultiplyDivide(ParseState state)
 	valueSetInteger(v1, i1 * i2);
       else
 	valueSetInteger(v1, i1 / i2);
+    } else if (valueIsVersion(v1)) {
+      exprErr(state, _("* and / not supported for versions"), p);
+      goto err;
     } else {
       exprErr(state, _("* and / not supported for strings"), p);
       goto err;
@@ -661,6 +664,9 @@ static Value doAddSubtract(ParseState state)
 	valueSetInteger(v1, i1 + i2);
       else
 	valueSetInteger(v1, i1 - i2);
+    } else if (valueIsVersion(v1)) {
+      exprErr(state, _("+ and - not supported for versions"), p);
+      goto err;
     } else {
       char *copy;
 
