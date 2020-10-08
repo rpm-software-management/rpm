@@ -111,6 +111,8 @@ typedef struct MacroBuf_s {
     int macro_trace;		/*!< Pre-print macro to expand? */
     int expand_trace;		/*!< Post-print macro expansion? */
     int flags;			/*!< Flags to control behavior */
+    rpmMacroEntry me;		/*!< Current macro (or NULL if anonymous) */
+    ARGV_t args;		/*!< Current macro arguments (or NULL) */
     rpmMacroContext mc;
 } * MacroBuf;
 
@@ -857,6 +859,8 @@ freeArgs(MacroBuf mb)
 	popMacro(mc, me->name);
     }
     mb->level--;
+    mb->args = argvFree(mb->args);
+    mb->me = NULL;
 }
 
 static void splitQuoted(ARGV_t *av, const char * str, const char * seps)
@@ -1010,7 +1014,8 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
     free(args);
 
 exit:
-    argvFree(argv);
+    mb->me = me;
+    mb->args = argv;
     return cont;
 }
 
@@ -1056,8 +1061,19 @@ static void doLua(MacroBuf mb, int chkexist, int negate, const char * f, size_t 
     char *scriptbuf = xmalloc(gn + 1);
     char *printbuf;
     rpmMacroContext mc = mb->mc;
+    rpmMacroEntry me = mb->me;
     int odepth = mc->depth;
     int olevel = mc->level;
+    const char *opts = NULL;
+    const char *name = NULL;
+    ARGV_t args = NULL;
+
+    if (me) {
+	opts = me->opts;
+	name = me->name;
+	if (mb->args)
+	    args = mb->args;
+    }
 
     if (g != NULL && gn > 0)
 	memcpy(scriptbuf, g, gn);
@@ -1065,7 +1081,7 @@ static void doLua(MacroBuf mb, int chkexist, int negate, const char * f, size_t 
     rpmluaPushPrintBuffer(lua);
     mc->depth = mb->depth;
     mc->level = mb->level;
-    if (rpmluaRunScript(lua, scriptbuf, NULL, NULL, NULL) == -1)
+    if (rpmluaRunScript(lua, scriptbuf, name, opts, args) == -1)
 	mb->error = 1;
     mc->depth = odepth;
     mc->level = olevel;
@@ -1540,6 +1556,8 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	}
 
 	/* Setup args for "%name " macros with opts */
+	rpmMacroEntry prevme = mb->me;
+	ARGV_t prevarg = mb->args;
 	if (me && me->opts != NULL) {
 	    const char *xe = grabArgs(mb, me, fe, lastc);
 	    if (xe != NULL)
@@ -1557,6 +1575,8 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	/* Free args for "%name " macros with opts */
 	if (me->opts != NULL)
 	    freeArgs(mb);
+	mb->args = prevarg;
+	mb->me = prevme;
 
 	s = se;
     }
