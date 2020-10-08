@@ -50,13 +50,10 @@
 ## Packages with files
 * Archivesize (1046) int32
 * Payloadcompressor (1125) string
-* Payloaddigest (5092) string array
-* Payloaddigestalgo (5093) int32
-* Payloaddigestalt (5097) string array
 * Payloadflags (1126) string
 * Payloadformat (1124) string
-* Longarchivesize (0) int64
-* Longsigsize (0) int64
+* Longarchivesize (271) int64
+* Longsigsize (270) int64
 * Longsize (5009) int64
 
 ## Per-file information
@@ -195,16 +192,19 @@
 * Transfiletriggerversion (5081) string array
 
 ## Signatures and digests
-* Dsaheader (0) bin
-* Rsaheader (0) bin
-* Sha1header (0) string
-* Sha256header (0) string
-* Siggpg (0) bin
-* Sigmd5 (0) bin
-* Sigpgp (0) bin
-* Sigsize (0) int32
-* Veritysignaturealgo (0) int32
-* Veritysignatures (0) string array
+* Dsaheader (267) bin
+* Payloaddigest (5092) string array
+* Payloaddigestalgo (5093) int32
+* Payloaddigestalt (5097) string array
+* Rsaheader (268) bin
+* Sha1header (269) string
+* Sha256header (273) string
+* Siggpg (262) bin
+* Sigmd5 (261) bin
+* Sigpgp (259) bin
+* Sigsize (257) int32
+* Veritysignaturealgo (277) int32
+* Veritysignatures (276) string array
 
 ## Installed packages
 * Installcolor (1127) int32
@@ -225,11 +225,8 @@
 * Sourcepackage (1106) int32
 
 ## Internal / special
-* Headeri18ntable (0) string array
-* Headerimage (0) NULL
-* Headerimmutable (0) NULL
-* Headerregions (0) NULL
-* Headersignatures (0) NULL
+* Headeri18ntable (100) string array
+* Headerimmutable (63) bin
 
 ## Deprecated / Obsolete
 * Oldenhancesname (1159) string array
@@ -242,7 +239,7 @@
 * Patchesflags (1134) int32 array
 * Patchesname (1133) string array
 * Patchesversion (1135) string array
-* Pubkeys (0) string array
+* Pubkeys (266) string array
 * Removetid (1129) int32
 
 ## Aliases
