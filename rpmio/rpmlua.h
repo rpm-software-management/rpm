@@ -24,7 +24,7 @@ void rpmluaRegister(rpmlua lua, const void *regfuncs, const char *lib);
 int rpmluaCheckScript(rpmlua lua, const char *script,
 		      const char *name);
 int rpmluaRunScript(rpmlua lua, const char *script,
-		    const char *name);
+		    const char *name, const char *opts, ARGV_t args);
 int rpmluaRunScriptFile(rpmlua lua, const char *filename);
 void rpmluaInteractive(rpmlua lua);
 
