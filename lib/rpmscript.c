@@ -103,33 +103,17 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 {
     rpmRC rc = RPMRC_FAIL;
 #ifdef WITH_LUA
-    ARGV_t argv = argvp ? *argvp : NULL;
     rpmlua lua = NULL; /* Global state. */
-    rpmluav var = rpmluavNew();
     int cwd = -1;
 
     rpmlog(RPMLOG_DEBUG, "%s: running <lua> scriptlet.\n", sname);
 
-    /* Create arg variable */
-    rpmluaPushTable(lua, "arg");
-    rpmluavSetListMode(var, 1);
     rpmluaSetNextFileFunc(nextFileFunc->func, nextFileFunc->param);
-    if (argv) {
-	char **p;
-	for (p = argv; *p; p++) {
-	    rpmluavSetValue(var, RPMLUAV_STRING, *p);
-	    rpmluaSetVar(lua, var);
-	}
-    }
-    if (arg1 >= 0) {
-	rpmluavSetValueNum(var, arg1);
-	rpmluaSetVar(lua, var);
-    }
-    if (arg2 >= 0) {
-	rpmluavSetValueNum(var, arg2);
-	rpmluaSetVar(lua, var);
-    }
-    rpmluaPop(lua);
+
+    if (arg1 >= 0)
+	argvAddNum(argvp, arg1);
+    if (arg2 >= 0)
+	argvAddNum(argvp, arg2);
 
     /* Lua scripts can change our cwd and umask, save and restore */
     cwd = open(".", O_RDONLY);
@@ -138,7 +122,8 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	umask(oldmask);
 	pid_t pid = getpid();
 
-	if (chdir("/") == 0 && rpmluaRunScript(lua, script, sname, NULL, NULL) == 0) {
+	if (chdir("/") == 0 &&
+		rpmluaRunScript(lua, script, sname, NULL, *argvp) == 0) {
 	    rc = RPMRC_OK;
 	}
 	if (pid != getpid()) {
@@ -154,10 +139,6 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	close(cwd);
 	umask(oldmask);
     }
-
-    rpmluaDelVar(lua, "arg");
-    rpmluavFree(var);
-
 #else
     rpmlog(lvl, _("<lua> scriptlet support not built in\n"));
 #endif

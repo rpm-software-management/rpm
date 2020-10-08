@@ -256,7 +256,7 @@ filetriggerin(/foo*)<lua>:
 filetriggerin(/usr/bin*): 0
 /usr/bin/hello
 
-filetriggerin(/usr/bin*)<lua>: 0.0
+filetriggerin(/usr/bin*)<lua>: 0
 /usr/bin/hello
 
 transfiletriggerin(/usr/bin*): 0
