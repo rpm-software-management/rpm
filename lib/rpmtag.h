@@ -324,8 +324,8 @@ typedef enum rpmTag_e {
     RPMTAG_RECOMMENDFLAGS	= 5048,	/* i[] */
     RPMTAG_SUGGESTNAME		= 5049,	/* s[] */
 #define	RPMTAG_SUGGESTS RPMTAG_SUGGESTNAME	/* s[] */
-    RPMTAG_SUGGESTVERSION	= 5050,	/* s[] extension */
-    RPMTAG_SUGGESTFLAGS		= 5051,	/* i[] extension */
+    RPMTAG_SUGGESTVERSION	= 5050,	/* s[] */
+    RPMTAG_SUGGESTFLAGS		= 5051,	/* i[] */
     RPMTAG_SUPPLEMENTNAME	= 5052,	/* s[] */
 #define	RPMTAG_SUPPLEMENTS RPMTAG_SUPPLEMENTNAME /* s[] */
     RPMTAG_SUPPLEMENTVERSION	= 5053,	/* s[] */
