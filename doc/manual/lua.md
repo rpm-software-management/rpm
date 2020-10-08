@@ -39,6 +39,32 @@ The above is a silly example and doesn't even begin to show how powerful a featu
 %sources %{lua: for i, s in ipairs(sources) do print(s.." ") end}
 ```
 
+Parametric Lua macros receive their options and arguments as two local
+tables "opt" and "arg", where "opt" holds processed option values keyed by
+the option character, and "arg" contains arguments numerically indexed.
+These tables are always present regardless of whether options or arguments
+were actually passed to simplify use.
+
+```
+%foo(a:b) %{lua:
+if opt.b then
+   print('do b')
+else
+   print('or not')
+end
+if opt.a == 's' then
+   print('do s')
+end
+if #arg == 0 then
+   print('no arguments :(')
+else
+   for i = 1, #arg do
+      print(arg[i])
+   end
+end
+}
+```
+
 ## Available Lua extensions in RPM
 
 In addition to all Lua standard libraries (subject to the Lua version rpm is linked to), a few custom extensions are available in the RPM internal Lua interpreter. These can be used in all contexts where the internal Lua can be used.
