@@ -17,6 +17,7 @@ struct rpmlogCtx_s {
     pthread_rwlock_t lock;
     unsigned mask;
     int nrecs;
+    int nrecsPri[RPMLOG_NPRIS];
     rpmlogRec recs;
     rpmlogCallback cbfunc;
     rpmlogCallbackData cbdata;
@@ -34,7 +35,7 @@ static rpmlogCtx rpmlogCtxAcquire(int write)
 {
     static struct rpmlogCtx_s _globalCtx = { PTHREAD_RWLOCK_INITIALIZER,
 					     RPMLOG_UPTO(RPMLOG_NOTICE),
-					     0, NULL, NULL, NULL, NULL };
+					     0, {0}, NULL, NULL, NULL, NULL };
     rpmlogCtx ctx = &_globalCtx;
     int xx;
 
@@ -55,14 +56,28 @@ static rpmlogCtx rpmlogCtxRelease(rpmlogCtx ctx)
     return NULL;
 }
 
-int rpmlogGetNrecs(void)
+int rpmlogGetNrecsByMask(unsigned mask)
 {
     rpmlogCtx ctx = rpmlogCtxAcquire(0);
-    int nrecs = -1;
-    if (ctx)
+    int nrecs = 0;
+
+    if (ctx == NULL)
+	return -1;
+
+    if (mask) {
+	for (int i = 0; i < RPMLOG_NPRIS; i++, mask >>= 1)
+	    if (mask & 1)
+	        nrecs += ctx->nrecsPri[i];
+    } else
 	nrecs = ctx->nrecs;
+
     rpmlogCtxRelease(ctx);
     return nrecs;
+}
+
+int rpmlogGetNrecs(void)
+{
+    return rpmlogGetNrecsByMask(0);
 }
 
 int rpmlogCode(void)
@@ -99,7 +114,7 @@ rpmlogLvl rpmlogRecPriority(rpmlogRec rec)
     return (rec != NULL) ? rec->pri : (rpmlogLvl)-1;
 }
 
-void rpmlogPrint(FILE *f)
+void rpmlogPrintByMask(FILE *f, unsigned mask)
 {
     rpmlogCtx ctx = rpmlogCtxAcquire(0);
 
@@ -111,11 +126,18 @@ void rpmlogPrint(FILE *f)
 
     for (int i = 0; i < ctx->nrecs; i++) {
 	rpmlogRec rec = ctx->recs + i;
+	if (mask && ((RPMLOG_MASK(rec->pri) & mask) == 0))
+	    continue;
 	if (rec->message && *rec->message)
 	    fprintf(f, "    %s", rec->message);
     }
 
     rpmlogCtxRelease(ctx);
+}
+
+void rpmlogPrint(FILE *f)
+{
+    rpmlogPrintByMask(f, 0);
 }
 
 void rpmlogClose (void)
@@ -131,6 +153,7 @@ void rpmlogClose (void)
     }
     ctx->recs = _free(ctx->recs);
     ctx->nrecs = 0;
+    memset(ctx->nrecsPri, 0, sizeof(ctx->nrecsPri));
 
     rpmlogCtxRelease(ctx);
 }
@@ -379,6 +402,7 @@ static void dolog(struct rpmlogRec_s *rec, int saverec)
 	ctx->recs[ctx->nrecs+1].code = 0;
 	ctx->recs[ctx->nrecs+1].message = NULL;
 	ctx->nrecs++;
+	ctx->nrecsPri[rec->pri]++;
     }
     cbfunc = ctx->cbfunc;
     cbdata = ctx->cbdata;

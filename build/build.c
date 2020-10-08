@@ -431,11 +431,21 @@ exit:
     freeStringBuf(sink);
     free(cookie);
     spec->rootDir = NULL;
-    if (rc != RPMRC_OK && rc != RPMRC_MISSINGBUILDREQUIRES &&
-	    rpmlogGetNrecs() > 0) {
-	rpmlog(RPMLOG_NOTICE, _("\n\nRPM build errors:\n"));
-	rpmlogPrint(NULL);
+
+    if (rc != RPMRC_OK && rc != RPMRC_MISSINGBUILDREQUIRES) {
+	unsigned maskWarn = RPMLOG_MASK(RPMLOG_WARNING);
+	unsigned maskErrs = RPMLOG_UPTO(RPMLOG_ERR);
+
+	if (rpmlogGetNrecsByMask(maskWarn)) {
+	    rpmlog(RPMLOG_NOTICE, _("\n\nRPM build warnings:\n"));
+	    rpmlogPrintByMask(NULL, maskWarn);
+	}
+	if (rpmlogGetNrecsByMask(maskErrs)) {
+	    rpmlog(RPMLOG_NOTICE, _("\n\nRPM build errors:\n"));
+	    rpmlogPrintByMask(NULL, maskErrs);
+	}
     }
+
     rpmugFree();
     if (missing_buildreqs && !rc) {
 	rc = RPMRC_MISSINGBUILDREQUIRES;
