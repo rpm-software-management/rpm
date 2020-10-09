@@ -744,6 +744,18 @@ static int rpm_b64decode(lua_State *L)
     return 1;
 }
 
+static int rpm_isdefined(lua_State *L)
+{
+    const char *str = luaL_checkstring(L, 1);
+    int parametric = 0;
+    int defined = rpmMacroIsDefined(NULL, str);
+    if (defined)
+	parametric = rpmMacroIsParametric(NULL, str);
+    lua_pushboolean(L, defined);
+    lua_pushboolean(L, parametric);
+    return 2;
+}
+
 static int rpm_expand(lua_State *L)
 {
     const char *str = luaL_checkstring(L, 1);
@@ -1299,6 +1311,7 @@ static const luaL_Reg rpmlib[] = {
     {"expand", rpm_expand},
     {"define", rpm_define},
     {"undefine", rpm_undefine},
+    {"isdefined", rpm_isdefined},
     {"load", rpm_load},
     {"register", rpm_register},
     {"unregister", rpm_unregister},

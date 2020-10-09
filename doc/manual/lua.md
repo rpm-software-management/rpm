@@ -50,6 +50,7 @@ The following RPM specific functions are available:
 | Function | Explanation | Example |
 |----------|-------------|---------|
 |define(arg) | Define a global macro. | rpm.define("foo 1") |
+|isdefined(arg) | Test whether a macro is defined and whether it's parametric, returned in two booleans. | if rpm.isdefined("_libdir") then ... end |
 |expand(arg)  |   Perform macro expansion.  |  rpm.expand("%{_libdir}")
 |register() | Register an RPM hook    |
 |unregister()  |  Unregister an RPM hook  |
