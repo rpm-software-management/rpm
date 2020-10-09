@@ -498,6 +498,7 @@ else
     wait
   )
   for f in "$temp"/res.*; do
+    test -f "$f" || continue
     res=$(< "$f")
     if [ "$res" !=  "0" ]; then
       exit 1
