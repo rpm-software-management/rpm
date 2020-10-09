@@ -80,7 +80,7 @@ static int cliDefine(const char *arg, int predefine)
     char *s, *t;
     /* XXX Convert '-' in macro name to underscore, skip leading %. */
     s = t = xstrdup(arg);
-    while (*t && !risspace(*t)) {
+    while (*t && !risspace(*t) && (*t != '(')) {
 	if (*t == '-') *t = '_';
 	t++;
     }
