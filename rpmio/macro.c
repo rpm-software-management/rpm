@@ -6,12 +6,6 @@
 #include <stdarg.h>
 #include <pthread.h>
 #include <errno.h>
-#ifdef HAVE_GETOPT_H
-#include <getopt.h>
-#else
-extern char *optarg;
-extern int optind;
-#endif
 #if HAVE_SCHED_GETAFFINITY
 #include <sched.h>
 #endif
@@ -895,6 +889,31 @@ static void splitQuoted(ARGV_t *av, const char * str, const char * seps)
     }
 }
 
+static int mbopt(int c, const char *oarg, int oint, void *data)
+{
+    MacroBuf mb = data;
+    rpmMacroEntry me = mb->me;
+    char *name = NULL, *body = NULL;
+
+    /* Define option macros. */
+    rasprintf(&name, "-%c", c);
+    if (oarg) {
+	rasprintf(&body, "-%c %s", c, oarg);
+    } else {
+	rasprintf(&body, "-%c", c);
+    }
+    pushMacro(mb->mc, name, NULL, body, mb->level, ME_AUTO | ME_LITERAL);
+    free(name);
+    free(body);
+
+    if (oarg) {
+	rasprintf(&name, "-%c*", c);
+	pushMacro(mb->mc, name, NULL, oarg, mb->level, ME_AUTO | ME_LITERAL);
+	free(name);
+    }
+    return 0;
+}
+
 /**
  * Parse arguments (to next new line) for parameterized macro.
  * @todo Use popt rather than getopt to parse args.
@@ -909,10 +928,10 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 		const char * lastc)
 {
     const char *cont = NULL;
-    const char *opts;
     char *args = NULL;
     ARGV_t argv = NULL;
     int argc = 0;
+    int ind = 0;
     int c;
 
     /* 
@@ -951,65 +970,34 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
     pushMacro(mb->mc, "**", NULL, args, mb->level, ME_AUTO | ME_LITERAL);
     free(args);
 
-    /*
-     * POSIX states optind must be 1 before any call but glibc uses 0
-     * to (re)initialize getopt structures, eww.
-     */
-#ifdef __GLIBC__
-    optind = 0;
-#else
-    optind = 1;
-#endif
-
-    opts = me->opts;
     argc = argvCount(argv);
+    ind = rgetopt(argc, argv, me->opts, mbopt, mb);
 
-    /* Define option macros. */
-    while ((c = getopt(argc, argv, opts)) != -1)
-    {
-	char *name = NULL, *body = NULL;
-	if (c == '?' || strchr(opts, c) == NULL) {
-	    mbErr(mb, 1, _("Unknown option %c in %s(%s)\n"),
-			(char)optopt, me->name, opts);
-	    goto exit;
-	}
-
-	rasprintf(&name, "-%c", c);
-	if (optarg) {
-	    rasprintf(&body, "-%c %s", c, optarg);
-	} else {
-	    rasprintf(&body, "-%c", c);
-	}
-	pushMacro(mb->mc, name, NULL, body, mb->level, ME_AUTO | ME_LITERAL);
-	free(name);
-	free(body);
-
-	if (optarg) {
-	    rasprintf(&name, "-%c*", c);
-	    pushMacro(mb->mc, name, NULL, optarg, mb->level, ME_AUTO | ME_LITERAL);
-	    free(name);
-	}
+    if (ind < 0) {
+	mbErr(mb, 1, _("Unknown option %c in %s(%s)\n"), -ind,
+		me->name, me->opts);
+	goto exit;
     }
 
     /* Add argument count (remaining non-option items) as macro. */
     {	char *ac = NULL;
-    	rasprintf(&ac, "%d", (argc - optind));
+	rasprintf(&ac, "%d", (argc - ind));
 	pushMacro(mb->mc, "#", NULL, ac, mb->level, ME_AUTO | ME_LITERAL);
 	free(ac);
     }
 
     /* Add macro for each argument */
-    if (argc - optind) {
-	for (c = optind; c < argc; c++) {
+    if (argc - ind) {
+	for (c = ind; c < argc; c++) {
 	    char *name = NULL;
-	    rasprintf(&name, "%d", (c - optind + 1));
+	    rasprintf(&name, "%d", (c - ind + 1));
 	    pushMacro(mb->mc, name, NULL, argv[c], mb->level, ME_AUTO | ME_LITERAL);
 	    free(name);
 	}
     }
 
     /* Add concatenated unexpanded arguments as yet another macro. */
-    args = argvJoin(argv + optind, " ");
+    args = argvJoin(argv + ind, " ");
     pushMacro(mb->mc, "*", NULL, args ? args : "", mb->level, ME_AUTO | ME_LITERAL);
     free(args);
 

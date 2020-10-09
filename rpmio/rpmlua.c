@@ -31,6 +31,7 @@
 
 #include "rpmio/rpmlua.h"
 #include "rpmio/rpmio_internal.h"
+#include "rpmio/rpmmacro_internal.h"
 
 #include "debug.h"
 
@@ -264,12 +265,23 @@ int rpmluaCheckScript(rpmlua _lua, const char *script, const char *name)
     return ret;
 }
 
+static int luaopt(int c, const char *oarg, int oint, void *data)
+{
+    lua_State *L = data;
+    char key[2] = { c, '\0' };
+
+    lua_pushstring(L, oarg ? oarg : "");
+    lua_setfield(L, -2, key);
+    return 0;
+}
+
 int rpmluaRunScript(rpmlua _lua, const char *script, const char *name,
 		    const char *opts, ARGV_t args)
 {
     INITSTATE(_lua, lua);
     lua_State *L = lua->L;
     int ret = -1;
+    int oind = 0;
     static const char *lualocal =
 	"local opt = select(1, ...); local arg = select(2, ...);";
 
@@ -287,35 +299,24 @@ int rpmluaRunScript(rpmlua _lua, const char *script, const char *name,
 	goto exit;
     }
 
-    optind = 0;
-
     lua_newtable(L);
     if (opts) {
-	int c, argc = argvCount(args);
+	int argc = argvCount(args);
 
-/* glibc uses optind 0 for (re)initializing internal structures, sigh */
-#ifdef __GLIBC__
-	optind = 0;
-#else
-	optind = 1;
-#endif
-	while ((c = getopt(argc, args, opts)) != -1) {
-	    char key[2] = { c, '\0' };
-	    if (c == '?' || strchr(opts, c) == NULL) {
-		rpmlog(RPMLOG_ERR, _("Unknown option %c in %s(%s)\n"),
-			(char)optopt, name, opts);
-		lua_pop(L, 2);
-		goto exit;
-	    }
-	    lua_pushstring(L, optarg ? optarg : "");
-	    lua_setfield(L, -2, key);
+	oind = rgetopt(argc, args, opts, luaopt, L);
+
+	if (oind < 0) {
+	    rpmlog(RPMLOG_ERR, _("Unknown option %c in %s(%s)\n"),
+		    -oind, name, opts);
+	    lua_pop(L, 2);
+	    goto exit;
 	}
     }
 
     lua_newtable(L);
     if (args) {
 	int i = 1;
-	for (ARGV_const_t arg = args + optind; arg && *arg; arg++) {
+	for (ARGV_const_t arg = args + oind; arg && *arg; arg++) {
 	    lua_pushstring(L, *arg);
 	    lua_rawseti(L, -2, i++);
 	}
