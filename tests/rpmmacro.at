@@ -551,8 +551,24 @@ runroot rpm --eval '%{lua: print(rpm.vercmp("1.0", "2.0"))}'
 [0],
 [-1
 ])
-
 AT_CLEANUP
+
+AT_SETUP([lua rpm isdefined])
+AT_KEYWORDS([macros lua])
+AT_CHECK([
+AT_SKIP_IF([$LUA_DISABLED])
+runroot rpm \
+	--eval '%{lua: print(rpm.isdefined("with"))}' \
+	--eval '%{lua: print(rpm.isdefined("nil"))}' \
+	--eval '%{lua: print(rpm.isdefined("ponies"))}'
+],
+[0],
+[true	true
+true	false
+false	false
+])
+AT_CLEANUP
+
 AT_SETUP([lua posix extensions])
 AT_KEYWORDS([macros lua])
 AT_CHECK([
