@@ -15,6 +15,10 @@ int rgetopt(int argc, char * const argv[], const char *opts,
     int rc = 0;
     int c;
 
+    /* If option processing is disabled, get out */
+    if (strcmp(opts, "-") == 0)
+	return 1;
+
     /*
      * POSIX states optind must be 1 before any call but glibc uses 0
      * to (re)initialize getopt structures, eww.
