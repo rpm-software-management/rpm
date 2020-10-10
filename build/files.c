@@ -3117,7 +3117,7 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 			int didInstall, int test)
 {
     Package pkg;
-    rpmRC rc = RPMRC_OK;
+    rpmRC res = RPMRC_OK;
     char *buildroot;
     char *uniquearch = NULL;
     Package maindbg = NULL;		/* the (existing) main debuginfo package */
@@ -3192,8 +3192,8 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	rpmlog(RPMLOG_NOTICE, _("Processing files: %s\n"), nvr);
 	free(nvr);
 
-	if ((rc = processPackageFiles(spec, pkgFlags, pkg, didInstall, test)) != RPMRC_OK)
-	    goto exit;
+	if ((processPackageFiles(spec, pkgFlags, pkg, didInstall, test)) != RPMRC_OK)
+	    res = RPMRC_FAIL;
 
 	if (maindbg)
 	    filterDebuginfoPackage(spec, pkg, maindbg, dbgsrcpkg,
@@ -3201,8 +3201,8 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	else if (deplink && pkg != deplink)
 	    addPackageDeps(pkg, deplink, RPMTAG_REQUIRENAME);
 
-        if ((rc = rpmfcGenerateDepends(spec, pkg)) != RPMRC_OK)
-	    goto exit;
+        if ((rpmfcGenerateDepends(spec, pkg)) != RPMRC_OK)
+	    res = RPMRC_FAIL;
 
 	a = headerGetString(pkg->header, RPMTAG_ARCH);
 	header_color = headerGetNumber(pkg->header, RPMTAG_HEADERCOLOR);
@@ -3219,8 +3219,7 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	    rpmlog(terminate ? RPMLOG_ERR : RPMLOG_WARNING, 
 		   _("Arch dependent binaries in noarch package\n"));
 	    if (terminate) {
-		rc = RPMRC_FAIL;
-		goto exit;
+		res = RPMRC_FAIL;
 	    }
 	}
     }
@@ -3232,12 +3231,12 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     
     
     if (checkFiles(spec->buildRoot, check_fileList) > 0) {
-	rc = RPMRC_FAIL;
+	res = RPMRC_FAIL;
     }
-exit:
+
     check_fileList = freeStringBuf(check_fileList);
     _free(buildroot);
     _free(uniquearch);
     
-    return rc;
+    return res;
 }
