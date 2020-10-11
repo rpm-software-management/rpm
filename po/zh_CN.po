@@ -22,21 +22,22 @@
 # Mingcong Bai <jeffbai@aosc.xyz>, 2015
 # Mingcong Bai <jeffbai@aosc.xyz>, 2015
 # Taiki Akita <taiki_akita@163.com>, 2018. #zanata
+# Charles Lee <lchopn@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-03-23 08:40-0400\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: Chinese (China) (http://www.transifex.com/rpm-team/rpm/"
-"language/zh_CN/)\n"
+"PO-Revision-Date: 2020-10-08 21:32+0000\n"
+"Last-Translator: Charles Lee <lchopn@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
+"projects/rpm/master/zh_CN/>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Zanata 4.6.2\n"
+"X-Generator: Weblate 4.2.2\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -77,7 +78,7 @@ msgstr "不能重新打开荷载：%s\n"
 
 #, c-format
 msgid "files over 4GB not supported by cpio, use rpm2archive instead\n"
-msgstr ""
+msgstr "cpio 不支持超过 4GB 的文件，请使用 rpm2archive 作为替代\n"
 
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
@@ -101,22 +102,22 @@ msgid "verify %files section from <specfile>"
 msgstr "依据 <specfile> 校验 %files 部分"
 
 msgid "build source and binary packages from <specfile>"
-msgstr "依据 <specfile> 构建源代码和二进制软件包"
+msgstr "依据 <specfile> 构建源代码和二进制包"
 
 msgid "build binary package only from <specfile>"
-msgstr "依据 <specfile> 构建二进制软件包"
+msgstr "依据 <specfile> 构建二进制包"
 
 msgid "build source package only from <specfile>"
 msgstr "依据 <specfile> 构建源代码软件包"
 
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr ""
+msgstr "仅从 <specfile> 构建源代码包 - 动态计算构建依赖"
 
 #, c-format
 msgid ""
 "build through %prep (unpack sources and apply patches) from <source package>"
-msgstr "仅执行 <source package> 的 %prep 部分(解压缩源代码并应用补丁) "
+msgstr "仅执行 <source package> 的 %prep 部分（解包源代码并应用补丁）"
 
 msgid "<source package>"
 msgstr "<source package>"
@@ -133,18 +134,18 @@ msgid "verify %files section from <source package>"
 msgstr "依据 <source package> 校验 %files 部分"
 
 msgid "build source and binary packages from <source package>"
-msgstr "从 <source package> 中构建二进制和源代码 RPM 包"
+msgstr "从 <source package> 中构建二进制和源代码包"
 
 msgid "build binary package only from <source package>"
-msgstr "仅从 <source package> 中构建二进制 RPM 包"
+msgstr "仅从 <source package> 中构建二进制包"
 
 msgid "build source package only from <source package>"
-msgstr "仅从 <source package> 中构建源代码 RPM 包"
+msgstr "仅从 <source package> 中构建源代码包"
 
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr ""
+msgstr "仅从 <source package> 构建源代码包 - 动态计算构建依赖"
 
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
@@ -164,20 +165,20 @@ msgid "verify %files section from <tarball>"
 msgstr "依据 <tarball> 校验 %files 部分"
 
 msgid "build source and binary packages from <tarball>"
-msgstr "依据 <tarball> 构建源代码和二进制软件包"
+msgstr "依据 <tarball> 构建源代码和二进制包"
 
 msgid "build binary package only from <tarball>"
-msgstr "依据 <tarball> 构建二进制软件包"
+msgstr "依据 <tarball> 构建二进制包"
 
 msgid "build source package only from <tarball>"
-msgstr "依据 <tarball> 构建源代码软件包"
+msgstr "依据 <tarball> 构建源代码包"
 
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr ""
+msgstr "仅从 <tarball> 构建源代码包 - 动态计算构建依赖"
 
 msgid "build binary package from <source package>"
-msgstr "依据 <source package> 构建二进制软件包"
+msgstr "依据 <source package> 构建二进制包"
 
 msgid "override build root"
 msgstr "重载构建根路径"
@@ -284,9 +285,8 @@ msgstr "从已安装软件包包头重建数据库反向列表"
 msgid "verify database files"
 msgstr "校验数据库文件"
 
-#, fuzzy
 msgid "salvage database"
-msgstr "初始化数据库"
+msgstr "抢救数据库"
 
 msgid "export database to stdout header list"
 msgstr "将数据库导出到标准输出头列表"
@@ -440,9 +440,8 @@ msgstr "签名包(同--addsign)"
 msgid "delete package signatures"
 msgstr "删除软件包签名"
 
-#, fuzzy
 msgid "create rpm v3 header+payload signatures"
-msgstr "不验证报头+净负荷签名"
+msgstr "建立 rpm v3 头+负载的签名"
 
 msgid "sign package(s) files"
 msgstr "签署一个或多个包文件"
@@ -497,7 +496,7 @@ msgid "no arguments given for parse"
 msgstr "没有给出参数用于分析"
 
 msgid "unable to parse SOURCE_DATE_EPOCH\n"
-msgstr ""
+msgstr "无法解析 SOURCE_DATE_EPOCH\n"
 
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
@@ -610,9 +609,9 @@ msgstr ""
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "符号链接指向了 BuildRoot：%s -> %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Illegal character (0x%x) in filename: %s\n"
-msgstr "无效字符 '%c' (0x%x)"
+msgstr "文件名中出现非法字符 (0x%x): %s\n"
 
 #, c-format
 msgid "Path is outside buildroot: %s\n"
@@ -630,9 +629,9 @@ msgstr "没有找到文件：%s\n"
 msgid "Not a directory: %s\n"
 msgstr "此路径不是一个目录：%s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't read content of file: %s\n"
-msgstr "无法读取策略文件：%s\n"
+msgstr "无法读取文件内容：%s\n"
 
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
@@ -706,13 +705,13 @@ msgstr ""
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open %s file %s: %m\n"
-msgstr "无法打开 %%files 文件 %s：%m\n"
+msgstr "无法打开 %s 文件 %s: %m\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Empty %s file %s\n"
-msgstr "空 %%file 文件 %s\n"
+msgstr "空 %s 文件 %s\n"
 
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
@@ -753,9 +752,9 @@ msgstr ""
 "发现已安装(但未打包的)文件：\n"
 "%s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s already exists\n"
-msgstr "软件包 %s 已经安装"
+msgstr "软件包 %s 已经存在\n"
 
 #, c-format
 msgid "%s was mapped to multiple filenames"
@@ -833,7 +832,7 @@ msgstr "无法为软件包 %s 生成输出文件名：%s\n"
 
 #, c-format
 msgid "Finished binary package job, result %d, filename %s\n"
-msgstr ""
+msgstr "已完成二进制包打包，返回 %d，文件名 %s\n"
 
 #, c-format
 msgid "line %d: second %s\n"
@@ -1030,7 +1029,7 @@ msgid "Bad package specification: %s\n"
 msgstr "有问题的软件包规范：%s\n"
 
 msgid "Binary rpm package found. Expected spec file!\n"
-msgstr ""
+msgstr "找到二进制 RPM 包。需要 spec 文件！\n"
 
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
@@ -1436,9 +1435,9 @@ msgstr ""
 msgid "rpmxdb: Version mismatch. Expected version: %u. Found version: %u\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open sqlite database %s: %s\n"
-msgstr "无法打开 spec 文件 %s：%s\n"
+msgstr "无法打开 sqlite 数据库 %s: %s\n"
 
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
@@ -1641,9 +1640,9 @@ msgstr "| 预期于表达式结尾"
 msgid "array iterator used with different sized arrays"
 msgstr "使用不同大小数组的数组的迭代器"
 
-#, fuzzy, c-format
+#, c-format
 msgid "RPM v3 packages are deprecated: %s\n"
-msgstr "行 %d： %s 不建议使用：%s\n"
+msgstr "RPM v3 软件包已被弃用：%s\n"
 
 #, c-format
 msgid "failed to load macro file %s\n"
@@ -2071,7 +2070,7 @@ msgid "Missing rpmlib features for %s:\n"
 msgstr " %s 缺失rpmlib的特性\n"
 
 msgid "source package expected, binary found\n"
-msgstr "期望源代码包，但找到二进制包\n"
+msgstr "需要源代码包，但找到二进制包\n"
 
 msgid "source package contains no .spec file\n"
 msgstr "源代码包中没有找到 .spec 文件\n"
@@ -2607,9 +2606,9 @@ msgstr "软件包 %s 是针对 %s 操作系统的"
 msgid "package %s is already installed"
 msgstr "软件包 %s 已经安装"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is not installed"
-msgstr "未安装软件包 %s \n"
+msgstr "软件包 %s 未安装"
 
 #, c-format
 msgid "path %s in package %s is not relocatable"
@@ -2889,17 +2888,14 @@ msgstr ""
 msgid "Unable to reset I/O priority: %s"
 msgstr ""
 
-#, fuzzy
 msgid "syntax error while parsing =="
-msgstr "== 语法解析错误\n"
+msgstr "解析 == 时出现语法错误"
 
-#, fuzzy
 msgid "syntax error while parsing &&"
-msgstr "&& 语法解析错误\n"
+msgstr "解析 && 时出现语法错误"
 
-#, fuzzy
 msgid "syntax error while parsing ||"
-msgstr "解析 || 时有语法错误\n"
+msgstr "解析 || 时出现语法错误"
 
 msgid "macro expansion returned a bare word, please use \"...\""
 msgstr ""
@@ -2907,55 +2903,45 @@ msgstr ""
 msgid "macro expansion did not return an integer"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "expanded string: %s\n"
-msgstr "行 %d：%s 位于：%s\n"
+msgstr "展开的字符串：%s\n"
 
-#, fuzzy
 msgid "unterminated string in expression"
-msgstr "表达式语法错误\n"
+msgstr "表达式中出现未结尾的字符串"
 
-#, fuzzy
 msgid "invalid version"
-msgstr "(无效类型)"
+msgstr "无效版本"
 
 msgid "bare words are no longer supported, please use \"...\""
 msgstr ""
 
-#, fuzzy
 msgid "parse error in expression"
-msgstr "表达式解析错误\n"
+msgstr "表达式解析错误"
 
-#, fuzzy
 msgid "unmatched ("
-msgstr "不匹配的 (\n"
+msgstr "不成对的 ("
 
-#, fuzzy
 msgid "- only on numbers"
-msgstr "- 只用于数字\n"
+msgstr "- 只能用于数字"
 
-#, fuzzy
 msgid "unexpected end of expression"
-msgstr "| 预期于表达式结尾"
+msgstr "未预料的表达式结尾"
 
-#, fuzzy
 msgid "syntax error in expression"
-msgstr "表达式语法错误\n"
+msgstr "表达式有语法错误"
 
-#, fuzzy
 msgid "types must match"
-msgstr "类型必须匹配\n"
+msgstr "类型必须匹配"
 
 msgid "division by zero"
 msgstr ""
 
-#, fuzzy
 msgid "* and / not supported for strings"
-msgstr "* / 不支持字符串\n"
+msgstr "字符串不支持 * 与 /"
 
-#, fuzzy
 msgid "- not supported for strings"
-msgstr "- 不支持字符串\n"
+msgstr "字符串不支持 -"
 
 #, c-format
 msgid "%3d>%*s(empty)\n"
@@ -2965,9 +2951,9 @@ msgstr ""
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(清空)\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open shell expansion pipe for command: %s: %m \n"
-msgstr "打开 tar 管道失败：%m\n"
+msgstr "为此命令打开 shell 展开管道失败：%s: %m \n"
 
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
@@ -3022,13 +3008,11 @@ msgstr "未结束的 %c：%s\n"
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "在一个不可解析的宏之之后跟着 %%\n"
 
-#, fuzzy
 msgid "argument expected"
-msgstr "未预期的 ]"
+msgstr "预期为参数"
 
-#, fuzzy
 msgid "unexpected argument"
-msgstr "未预期的 ]"
+msgstr "未预料的参数"
 
 #, c-format
 msgid "======================== active %d empty %d\n"
@@ -3126,21 +3110,21 @@ msgstr "不支持的 PGP hash 算法 %u\n"
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr "不支持的 PGP 公钥算法 %u\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not create pipe for signing: %m\n"
-msgstr "无法为 %s建立管道： %m\n"
+msgstr "无法为签名建立管道：%m\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not set GPG_TTY to stdin: %m\n"
-msgstr "无法打开 %%files 文件 %s：%m\n"
+msgstr "无法设置 GPG_TTY 为 stdin：%m\n"
 
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "无法exec %s：%s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open pipe for writing: %m\n"
-msgstr "无法为 %s建立管道： %m\n"
+msgstr "无法为写入建立管道： %m\n"
 
 msgid "Could not write to pipe\n"
 msgstr "无法写入到管道\n"
