@@ -5,21 +5,22 @@
 # Translators:
 # Trần Ngọc Quân <vnwildman@gmail.com>, 2015
 # Trần Ngọc Quân <vnwildman@gmail.com>, 2015
+# Phu Hung Nguyen <phuhnguyen@disroot.org>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-03-23 08:40-0400\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: Vietnamese (http://www.transifex.com/rpm-team/rpm/language/"
-"vi/)\n"
+"PO-Revision-Date: 2020-10-01 10:30+0000\n"
+"Last-Translator: Phu Hung Nguyen <phuhnguyen@disroot.org>\n"
+"Language-Team: Vietnamese <https://translate.fedoraproject.org/projects/rpm/"
+"master/vi/>\n"
 "Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Zanata 4.6.2\n"
+"X-Generator: Weblate 4.2.2\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -37,16 +38,16 @@ msgstr "Bản quyền (C) 1998-2002 - Red Hat, Inc.\n"
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr ""
-"Phần mềm này được phân phối lại một cách tự do như theo các điều khoản của "
-"giấy phép Công GNU\n"
+"Chương trình này có thể được tự do phân phối lại theo các điều khoản của GNU "
+"GPL\n"
 
 #, c-format
 msgid "creating a pipe for --pipe failed: %m\n"
-msgstr "lỗi tạo một ống dẫn cho “--pipe”: %m\n"
+msgstr "tạo một ống cho --pipe thất bại: %m\n"
 
 #, c-format
 msgid "exec failed\n"
-msgstr "gặp lỗi khi exec (thực thi lệnh)\n"
+msgstr "exec thất bại\n"
 
 #, c-format
 msgid "argument is not an RPM package\n"
@@ -63,124 +64,111 @@ msgstr "không thể mở lại phần trọng tải: %s\n"
 #, c-format
 msgid "files over 4GB not supported by cpio, use rpm2archive instead\n"
 msgstr ""
+"các tệp lớn hơn 4GB không được cpio hỗ trợ, hãy dùng rpm2archive để thay "
+"thế\n"
 
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
-msgstr "gốc-biên-dịch đã được chỉ ra rồi, bỏ qua %s\n"
+msgstr "buildroot đã được chỉ ra rồi, bỏ qua %s\n"
 
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
-msgstr ""
-"xây dựng qua %prep (chuẩn bị: mở gói nguồn và áp dụng những miếng vá) từ "
-"<tập_tin_đặc_tả>"
+msgstr "xây qua %prep (mở gói các nguồn và áp dụng các miếng vá) từ <tệp spec>"
 
 msgid "<specfile>"
-msgstr "<tập_tin_đặc_tả>"
+msgstr "<tệp spec>"
 
 msgid "build through %build (%prep, then compile) from <specfile>"
-msgstr ""
-"xây dựng qua %build (xây dựng: %prep [chuẳn bị], sau đó biên dịch) từ "
-"<tập_tin_đặc_tả>"
+msgstr "xây qua %build (%prep, rồi biên dịch) từ <tệp spec>"
 
 msgid "build through %install (%prep, %build, then install) from <specfile>"
-msgstr ""
-"xây dựng qua %install (cài đặt: %prep [chuẩn bị], %build [xây dựng], sau đó "
-"cài đặt) từ <tập_tin_đặc_tả>"
+msgstr "xây qua %install (%prep, %build, rồi cài đặt) từ <tệp spec>"
 
 #, c-format
 msgid "verify %files section from <specfile>"
-msgstr "thẩm tra phần tập tin (%files) từ <tập_tin_đặc_tả>"
+msgstr "thẩm tra phần %files ở <tệp spec>"
 
 msgid "build source and binary packages from <specfile>"
-msgstr "xây dựng các gói kiểu nguồn và nhị phân từ <tập_tin_đặc_tả>"
+msgstr "xây các gói nguồn và nhị phân từ <tệp spec>"
 
 msgid "build binary package only from <specfile>"
-msgstr "xây dựng gói chỉ gói nhị phân từ <tập_tin_đặc_tả>"
+msgstr "chỉ xây mỗi gói nhị phân từ <tệp spec>"
 
 msgid "build source package only from <specfile>"
-msgstr "xây dựng chỉ gói nguồn từ <tập_tin_đặc_tả>"
+msgstr "chỉ xây mỗi gói nguồn từ <tệp spec>"
 
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
 msgstr ""
+"chỉ xây mỗi gói nguồn từ <tệp spec> - tính toán các gói yêu cầu để xây động"
 
 #, c-format
 msgid ""
 "build through %prep (unpack sources and apply patches) from <source package>"
-msgstr ""
-"xây dựng qua %prep (chuẩn bị: mở gói nguồn và áp dụng những miếng vá) từ "
-"<gói nguồn>"
+msgstr "xây qua %prep (mở gói các nguồn và áp dụng các miếng vá) từ <gói nguồn>"
 
 msgid "<source package>"
 msgstr "<gói nguồn>"
 
 msgid "build through %build (%prep, then compile) from <source package>"
-msgstr ""
-"xây dựng qua %build (xây dựng: %prep [chuẳn bị], sau đó biên dịch) từ <gói "
-"nguồn>"
+msgstr "xây qua %build (%prep, rồi biên dịch) từ <gói nguồn>"
 
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
-msgstr ""
-"xây dựng qua %install (cài đặt: %prep [chuẩn bị], %build [xây dựng], sau đó "
-"cài đặt) từ <gói nguồn>"
+msgstr "xây qua %install (%prep, %build, rồi cài đặt) từ <gói nguồn>"
 
 #, c-format
 msgid "verify %files section from <source package>"
-msgstr "thẩm tra phần %files từ <gói nguồn>"
+msgstr "thẩm tra phần %files ở <gói nguồn>"
 
 msgid "build source and binary packages from <source package>"
-msgstr "xây dựng gói nguồn và nhị phân từ <gói nguồn>"
+msgstr "xây các gói nguồn và nhị phân từ <gói nguồn>"
 
 msgid "build binary package only from <source package>"
-msgstr "chỉ xây dựng gói nhị phân từ <gói nguồn>"
+msgstr "chỉ xây mỗi gói nhị phân từ <gói nguồn>"
 
 msgid "build source package only from <source package>"
-msgstr "chỉ xây dựng gói nguồn từ <gói nguồn>"
+msgstr "chỉ xây mỗi gói nguồn từ <gói nguồn>"
 
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
 msgstr ""
+"chỉ xây mỗi gói nguồn từ <gói nguồn> - tính toán các gói yêu cầu để xây động"
 
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
-msgstr ""
-"xây dựng qua %prep (chuẩn bị: giải nén các nguồn và áp dụng các đắp vá) từ "
-"<kho_tar>"
+msgstr "xây qua %prep (mở gói các nguồn và áp dụng các miếng vá) từ <kho tar>"
 
 msgid "<tarball>"
-msgstr "<kho_tar>"
+msgstr "<kho tar>"
 
 msgid "build through %build (%prep, then compile) from <tarball>"
-msgstr ""
-"xây dựng qua %build (xây dựng: %prep [chuẩn bị], sau đó biên dịch) từ "
-"<kho_tar>"
+msgstr "xây qua %build (%prep, rồi biên dịch) từ <kho tar>"
 
 msgid "build through %install (%prep, %build, then install) from <tarball>"
-msgstr ""
-"xây dựng qua %install (cài đặt: %prep [chuẩn bị], %build [xây dựng], sau đó "
-"cài đặt) từ <kho_tar>"
+msgstr "xây qua %install (%prep, %build, rồi cài đặt) từ <kho tar>"
 
 #, c-format
 msgid "verify %files section from <tarball>"
-msgstr "xác nhận phần tập tin (%files) từ <kho_tar>"
+msgstr "thẩm tra phần %files ở <kho tar>"
 
 msgid "build source and binary packages from <tarball>"
-msgstr "xây dựng các gói kiểu nguồn và nhị phân từ <kho_tar>"
+msgstr "xây các gói nguồn và nhị phân từ <kho tar>"
 
 msgid "build binary package only from <tarball>"
-msgstr "xây dựng chỉ gói nhị phân từ <kho_tar>"
+msgstr "chỉ xây mỗi gói nhị phân từ <kho tar>"
 
 msgid "build source package only from <tarball>"
-msgstr "xây dựng chỉ gói nguồn từ <kho_tar>"
+msgstr "chỉ xây mỗi gói nguồn từ <kho tar>"
 
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
 msgstr ""
+"chỉ xây mỗi gói nguồn từ <kho tar> - tính toán các gói yêu cầu để xây động"
 
 msgid "build binary package from <source package>"
-msgstr "xây dựng gói nhị phân từ <gói nguồn>"
+msgstr "xây gói nhị phân từ <gói nguồn>"
 
 msgid "override build root"
 msgstr "đè lên gốc biên dịch"
@@ -234,7 +222,7 @@ msgid "override target platform"
 msgstr "có quyền cao hơn nền tảng đích"
 
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
-msgstr "Tùy chọn xây dựng với [ <tập_tin_đặc_tả> | <kho_tar> | <gói nguồn> ]:"
+msgstr "Tùy chọn xây dựng với [ <tệp spec> | <kho_tar> | <gói nguồn> ]:"
 
 msgid "Common options for all rpm modes and executables:"
 msgstr "Các tùy chọn chung với mọi chế độ và tập tin thực hiện được kiểu rpm:"
@@ -1855,7 +1843,7 @@ msgid "upgrade package(s) if already installed"
 msgstr "nâng cấp gói đã cài đặt"
 
 msgid "<packagefile>+"
-msgstr "<tập_tin_gói>+"
+msgstr "<tệp_gói>+"
 
 msgid "print hash marks as package installs (good with -v)"
 msgstr "in những ký hiệu lộn xộn khi cài đặt gói (rất tốt với -v)"
@@ -3110,7 +3098,7 @@ msgid "(no error)"
 msgstr "(không có lỗi)"
 
 msgid "fatal error: "
-msgstr "lỗi nghiêm trọng:"
+msgstr "lỗi nghiêm trọng: "
 
 msgid "error: "
 msgstr "lỗi: "
