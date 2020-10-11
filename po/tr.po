@@ -5,6 +5,7 @@
 # Translators:
 # Muhammet Kara <muhammetk@gmail.com>, 2011-2012,2014
 # Muhammet Kara <muhammetk@gmail.com>, 2014
+# Oğuz Ersen <oguzersen@protonmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
