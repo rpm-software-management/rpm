@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-08-29 08:29+0000\n"
+"PO-Revision-Date: 2020-09-02 13:29+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/rpm/"
 "master/sv/>\n"
@@ -2663,7 +2663,7 @@ msgstr "%s är föråldrat av %s%s"
 
 #, c-format
 msgid "package %s does not verify: %s"
-msgstr ""
+msgstr "paketet %s verifierar inte: %s"
 
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
@@ -2747,7 +2747,7 @@ msgstr "<lua>-skriptstöd är inte inbyggt\n"
 
 #, c-format
 msgid "failed to exec scriptlet interpreter %s: %s\n"
-msgstr ""
+msgstr "misslyckades att köra skriptinterpretatorn %s: %s\n"
 
 #, c-format
 msgid "Couldn't create temporary file for %s: %s\n"
@@ -2783,7 +2783,7 @@ msgid "erase"
 msgstr "radera"
 
 msgid "rpmdb"
-msgstr ""
+msgstr "rpmdb"
 
 #, c-format
 msgid "cannot open Packages database in %s\n"
@@ -2807,7 +2807,7 @@ msgstr "%s: misslyckades att läsa publik nyckel.\n"
 
 #, c-format
 msgid "invalid package verify level %s\n"
-msgstr ""
+msgstr "felaktig nivå för paketverifiering %s\n"
 
 msgid "transaction"
 msgstr "transaktion"
@@ -2836,9 +2836,9 @@ msgstr "%stagg %u: felaktig OpenPGP-signatur"
 msgid "%s: tag %u: invalid hex"
 msgstr "%s: tagg %u: felakigt hextal"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s%s%s %s"
-msgstr "%s%s %s"
+msgstr "%s%s%s %s"
 
 msgid "digest"
 msgstr "kontrollsumma"
@@ -2866,10 +2866,10 @@ msgid "Unable to reload signature header.\n"
 msgstr "Kan inte läsa om signaturhuvud.\n"
 
 msgid "no signature"
-msgstr ""
+msgstr "ingen signatur"
 
 msgid "no digest"
-msgstr ""
+msgstr "ingen kontrollsumma"
 
 msgid "skipped"
 msgstr "hoppade över"
@@ -2899,85 +2899,72 @@ msgstr "Kan inte återställa nice-värde: %s"
 msgid "Unable to reset I/O priority: %s"
 msgstr "Kan inte återställa I/O-prioritet: %s"
 
-#, fuzzy
 msgid "syntax error while parsing =="
-msgstr "syntaxfel vid tolkning av ==\n"
+msgstr "syntaxfel vid tolkning av =="
 
-#, fuzzy
 msgid "syntax error while parsing &&"
-msgstr "syntaxfel vid tolkning av &&\n"
+msgstr "syntaxfel vid tolkning av &&"
 
-#, fuzzy
 msgid "syntax error while parsing ||"
-msgstr "syntaxfel vid tolkning av ||\n"
+msgstr "syntaxfel vid tolkning av ||"
 
 msgid "macro expansion returned a bare word, please use \"...\""
-msgstr ""
+msgstr "makroexpansionen returenerade ett ensamt ord, använd \"…\""
 
 msgid "macro expansion did not return an integer"
-msgstr ""
+msgstr "makroexpansionen returnerade inte ett heltal"
 
-#, fuzzy, c-format
+#, c-format
 msgid "expanded string: %s\n"
-msgstr "rad %d: %s i: %s\n"
+msgstr "expanderad sträng: %s\n"
 
-#, fuzzy
 msgid "unterminated string in expression"
-msgstr "{ förväntades efter ? i uttryck"
+msgstr "oavslutad sträng i uttryck"
 
-#, fuzzy
 msgid "invalid version"
-msgstr "(felaktig typ)"
+msgstr "felaktig version"
 
 msgid "bare words are no longer supported, please use \"...\""
-msgstr ""
+msgstr "ensamma ord stödjs inte längre, använd \"…\""
 
-#, fuzzy
 msgid "parse error in expression"
-msgstr "tolkningsfel i uttryck\n"
+msgstr "tolkningsfel i uttryck"
 
-#, fuzzy
 msgid "unmatched ("
-msgstr "ensam (\n"
+msgstr "ensam ("
 
-#, fuzzy
 msgid "- only on numbers"
-msgstr "- endast i tal\n"
+msgstr "- endast i tal"
 
-#, fuzzy
 msgid "unexpected end of expression"
-msgstr "| förväntades vid slutet på uttryck"
+msgstr "oväntat slut på uttrycket"
 
-#, fuzzy
 msgid "syntax error in expression"
-msgstr "syntaxfel i uttryck\n"
+msgstr "syntaxfel i uttryck"
 
-#, fuzzy
 msgid "types must match"
-msgstr "typer måste passa ihop\n"
+msgstr "typer måste passa ihop"
 
 msgid "division by zero"
-msgstr ""
+msgstr "division med noll"
 
-#, fuzzy
 msgid "* and / not supported for strings"
-msgstr "* / stöds inte för strängar\n"
+msgstr "* och / stödjs inte för strängar"
 
-#, fuzzy
 msgid "- not supported for strings"
-msgstr "- stöds inte för strängar\n"
+msgstr "- stödjs inte för strängar"
 
 #, c-format
 msgid "%3d>%*s(empty)\n"
-msgstr ""
+msgstr "%3d>%*s(empty)\n"
 
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(tom)\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open shell expansion pipe for command: %s: %m \n"
-msgstr "Kunde inte öppna ”tar”-rör: %m\n"
+msgstr "Kunde inte öppna skalexpansionsrör för kommandot: %s: %m \n"
 
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
@@ -2985,7 +2972,7 @@ msgstr "Makrot %%%s har ett otillåtet namn (%s)\n"
 
 #, c-format
 msgid "Macro %%%s is a built-in (%s)\n"
-msgstr ""
+msgstr "Makrot %%%s är inbyggt (%s)\n"
 
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
@@ -3017,13 +3004,13 @@ msgstr "Okänd flagga %c i %s(%s)\n"
 
 #, c-format
 msgid "no such macro: '%s'\n"
-msgstr ""
+msgstr "finns inget sådant makro: ”%s”\n"
 
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
 msgstr ""
-"Alltför många nivåer av rekursion i en makroexpansion.  Det beror sannolikt "
+"Alltför många nivåer av rekursion i en makroexpansion. Det beror sannolikt "
 "på en rekursiv makrodeklaration.\n"
 
 #, c-format
@@ -3034,13 +3021,11 @@ msgstr "Oavslutad %c: %s\n"
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Ett %% följs av ett makro som inte kan tolkas\n"
 
-#, fuzzy
 msgid "argument expected"
-msgstr "oväntad ]"
+msgstr "argument förväntades"
 
-#, fuzzy
 msgid "unexpected argument"
-msgstr "oväntad ]"
+msgstr "oväntat argument"
 
 #, c-format
 msgid "======================== active %d empty %d\n"
@@ -3074,7 +3059,7 @@ msgid "warning: "
 msgstr "varning: "
 
 msgid "Error writing to log"
-msgstr ""
+msgstr "Fel när det skrevs till loggen"
 
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
@@ -3138,21 +3123,21 @@ msgstr "PGP-hash-algoritm %u stödjs inte\n"
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr "PGP-publik nyckelalgoritm %u stödjs inte\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not create pipe for signing: %m\n"
-msgstr "Kunde inte öppna rör för %s: %m\n"
+msgstr "Kunde inte skapa ett rör för signering: %m\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not set GPG_TTY to stdin: %m\n"
-msgstr "Kunde inte öppna %%files-fil %s: %m\n"
+msgstr "Kunde inte sätta GPG_TTY till standard in: %m\n"
 
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Kunde inte köra %s: %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open pipe for writing: %m\n"
-msgstr "Kunde inte öppna rör för %s: %m\n"
+msgstr "Kunde inte öppna rör för skrivning: %m\n"
 
 msgid "Could not write to pipe\n"
 msgstr "Kunde inte skriva till ett rör\n"
