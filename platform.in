@@ -94,9 +94,11 @@
 %__brp_strip_comment_note %{_rpmconfigdir}/brp-strip-comment-note %{__strip} %{__objdump}
 %__brp_strip_shared %{_rpmconfigdir}/brp-strip-shared
 %__brp_strip_static_archive %{_rpmconfigdir}/brp-strip-static-archive %{__strip}
+%__brp_elfperms %{_rpmconfigdir}/brp-elfperms
 
 %__os_install_post    \
     %{?__brp_compress} \
+    %{?__brp_elfperms} \
     %{?__brp_strip} \
     %{?__brp_strip_static_archive} \
     %{?__brp_strip_comment_note} \

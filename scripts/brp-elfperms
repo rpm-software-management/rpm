@@ -1,0 +1,13 @@
+#!/bin/sh
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" ] || [ "$RPM_BUILD_ROOT" = "/" ]; then
+	exit 0
+fi
+
+ELFCLASSIFY=/usr/bin/eu-elfclassify
+
+[ -x ${ELFCLASSIFY} ] || exit 0
+
+# Strip executable bits from ELF DSO's which are not actually executable
+find "$RPM_BUILD_ROOT" -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 \) | ${ELFCLASSIFY} --shared --print0 --stdin | xargs -0 -r chmod a-x
+
