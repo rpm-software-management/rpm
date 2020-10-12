@@ -337,13 +337,17 @@ static int isSpecFile(const char * specfile)
 static char * getTarSpec(const char *arg)
 {
     char *specFile = NULL;
+    char *tmpSpecFile = NULL;
+    char *specDir;
+    char *specBase;
     const char **spec;
     char tarbuf[BUFSIZ];
-    int gotspec = 0;
+    int gotspec = 0, res;
     FD_t fd = NULL;
     static const char *tryspec[] = { "Specfile", "\\*.spec", NULL };
 
-    if (!(fd = rpmMkTempFile(NULL, &specFile)))
+    specDir = rpmGetPath("%{_tmppath}", NULL);
+    if (!(fd = rpmMkTempFile(NULL, &tmpSpecFile)))
        goto exit;
 
     for (spec = tryspec; *spec != NULL; spec++) {
@@ -353,7 +357,7 @@ static char * getTarSpec(const char *arg)
 
 	cmd = rpmExpand("%{uncompress: ", arg, "} | ",
 			"%{__tar} xOvof - --wildcards ", *spec,
-			" 2>&1 > ", specFile, NULL);
+			" 2>&1 > ", tmpSpecFile, NULL);
 
 	if (!(fp = popen(cmd, "r"))) {
 	    rpmlog(RPMLOG_ERR, _("Failed to open tar pipe: %m\n"));
@@ -369,7 +373,7 @@ static char * getTarSpec(const char *arg)
 		specfiles++;
 	    }
 	    pclose(fp);
-	    gotspec = (specfiles == 1) && isSpecFile(specFile);
+	    gotspec = (specfiles == 1) && isSpecFile(tmpSpecFile);
 	    if (specfiles > 1) {
 		rpmlog(RPMLOG_ERR, _("Found more than one spec file in %s\n"), arg);
 		goto exit;
@@ -377,16 +381,37 @@ static char * getTarSpec(const char *arg)
 	}
 
 	if (!gotspec)
-	    unlink(specFile);
+	    unlink(tmpSpecFile);
 	free(cmd);
     }
 
     if (!gotspec) {
     	rpmlog(RPMLOG_ERR, _("Failed to read spec file from %s\n"), arg);
-	specFile = NULL;
+	goto exit;
+    }
+
+    specBase = basename(tarbuf);
+    /* remove trailing \n */
+    specBase[strlen(specBase)-1] = '\0';
+
+    rasprintf(&specFile, "%s/%s", specDir, specBase);
+    res = rename(tmpSpecFile, specFile);
+
+    if (res) {
+       rpmlog(RPMLOG_ERR, _("Failed to rename %s to %s: %m\n"),
+               tmpSpecFile, specFile);
+       free(specFile);
+       specFile = NULL;
+    } else {
+       /* mkstemp() can give unnecessarily strict permissions, fixup */
+       mode_t mask;
+       umask(mask = umask(0));
+       (void) chmod(specFile, 0666 & ~mask);
     }
 
 exit:
+    (void) unlink(tmpSpecFile);
+    free(tmpSpecFile);
     Fclose(fd);
     return specFile;
 }
