@@ -593,6 +593,52 @@ runroot rpm \
 ])
 AT_CLEANUP
 
+AT_SETUP([lua macros table])
+AT_KEYWORDS([macros lua])
+AT_SKIP_IF([$LUA_DISABLED])
+AT_CHECK([[
+runroot rpm \
+	--define "qtst() %{lua:for i=1, #arg do print(' '..i..':'..arg[i]) end}"\
+	--eval "%{lua:print(macros.with('zap'), macros.without('zap'))}" \
+	--eval "%{lua:print(macros.aaa)}" \
+	--eval "%{lua:macros.aaa='bbb'; macros['yyy']='zzz'}" \
+	--eval "%{lua:print(macros['aaa'], macros.yyy)}" \
+	--eval "%{lua:macros.aaa=nil"} \
+	--eval "%{lua:print(macros.aaa)}" \
+	--eval "%{lua:print(macros.qtst('a c'))}" \
+	--eval "%{lua:print(macros.qtst({'a', '', 'c'}))}" \
+	--eval "%{lua:print(macros.qtst('%{?aaa} %{yyy}'))}" \
+	--eval "%{lua:print(macros.qtst({'%{?aaa}', '%{yyy}'}))}" \
+	--eval "%{lua:macros.define({'this', 'that'}); print(macros.this)}"
+]],
+[0],
+[0	1
+nil
+
+bbb	zzz
+
+nil
+ 1:a 2:c
+ 1:a 2: 3:c
+ 1:zzz
+ 1:%{?aaa} 2:%{yyy}
+that
+])
+AT_CLEANUP
+
+AT_SETUP([lua macros recursion])
+AT_KEYWORDS([macros lua])
+AT_SKIP_IF([$LUA_DISABLED])
+AT_CHECK([[
+runroot rpm \
+	--define "%recurse() %{lua:io.write(' '..#arg); if #arg < 16 then table.insert(arg, #arg); macros.recurse(arg) end;}" \
+	--eval "%recurse"
+]],
+[0],
+[ 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+])
+AT_CLEANUP
+
 AT_SETUP([lua rpm extensions 1])
 AT_KEYWORDS([macros lua])
 AT_CHECK([
