@@ -65,6 +65,19 @@ end
 }
 ```
 
+Macros can be accessed via a global `macros` table in the Lua environment.
+Lua makes no difference between index and field name syntax so
+`macros.foo` and `macros['foo']` are equivalent, use what better suits the
+purpose. Like any real Lua table, non-existent items are returned as `nil`,
+and assignment can be used to define or undefine macros.
+
+Parametric macros (including all built-in macros) can be called in a Lua
+native manner via the `macros` table. The argument can be either a
+single string (`macros.with('thing')`), in which case it's expanded
+and split with the macro-native rules, or it can be a table
+`macros.dostuff({'one', 'two', 'three'})` in which case the table contents
+are used as literal arguments that are not expanded in any way.
+
 ## Available Lua extensions in RPM
 
 In addition to all Lua standard libraries (subject to the Lua version rpm is linked to), a few custom extensions are available in the RPM internal Lua interpreter. These can be used in all contexts where the internal Lua can be used.

@@ -1034,6 +1034,104 @@ static const luaL_Reg fd_m[] = {
     {NULL, NULL}
 };
 
+static rpmMacroContext *checkmc(lua_State *L, int ix)
+{
+    rpmMacroContext *mc = lua_touserdata(L, ix);
+    luaL_checkudata(L, ix, "rpm.mc");
+    return mc;
+}
+
+static int mc_call(lua_State *L)
+{
+    rpmMacroContext *mc = checkmc(L, lua_upvalueindex(1));
+    const char *name = lua_tostring(L, lua_upvalueindex(2));
+    int rc = 0;
+
+    if (lua_gettop(L) > 1)
+	luaL_error(L, "too many arguments");
+
+    if (lua_isstring(L, 1)) {
+	lua_pushfstring(L, "%%{%s %s}", name, lua_tostring(L, 1));
+	/* throw out previous args and call expand() with our result string */
+	lua_rotate(L, 1, 1);
+	lua_settop(L, 1);
+	rc = rpm_expand(L);
+    } else if (lua_istable(L, 1)) {
+	ARGV_t argv = NULL;
+	char *buf = NULL;
+	int nitem = lua_rawlen(L, 1);
+
+	for (int i = 1; i <= nitem; i++) {
+	    lua_rawgeti(L, 1, i);
+	    argvAdd(&argv, lua_tostring(L, -1));
+	    lua_pop(L, 1);
+	}
+
+	if (rpmExpandThisMacro(*mc, name, argv, &buf, 0) >= 0) {
+	    rc = 1;
+	    lua_pushstring(L, buf);
+	    free(buf);
+	}
+	argvFree(argv);
+    } else {
+	luaL_argerror(L, 1, "string or table expected");
+    }
+
+    return rc;
+}
+
+static int mc_index(lua_State *L)
+{
+    rpmMacroContext *mc = checkmc(L, 1);
+    const char *a = luaL_checkstring(L, 2);
+    int rc = 0;
+
+    if (rpmMacroIsDefined(*mc, a)) {
+	if (rpmMacroIsParametric(*mc, a)) {;
+	    /* closure with the macro context and the name */
+	    lua_pushcclosure(L, &mc_call, 2);
+	    rc = 1;
+	} else {
+	    lua_pushfstring(L, "%%{%s}", a);
+	    lua_rotate(L, 1, 1);
+	    lua_settop(L, 1);
+	    rc = rpm_expand(L);
+	}
+    }
+    return rc;
+}
+
+static int mc_newindex(lua_State *L)
+{
+    rpmMacroContext *mc = checkmc(L, 1);
+    const char *name = luaL_checkstring(L, 2);
+    if (lua_isnil(L, 3)) {
+	if (rpmPopMacro(*mc, name))
+	    luaL_error(L, "error undefining macro %s", name);
+    } else {
+	const char *body = luaL_checkstring(L, 3);
+	char *s = rstrscat(NULL, name, " ", body, NULL);
+	if (rpmDefineMacro(*mc, s, 0))
+	    luaL_error(L, "error defining macro %s", name);
+	free(s);
+    }
+    return 0;
+}
+
+static const luaL_Reg mc_m[] = {
+    {"__index", mc_index},
+    {"__newindex", mc_newindex},
+    {NULL, NULL}
+};
+
+static void createmt(lua_State *L, const char *name, rpmMacroContext mc)
+{
+    lua_pushglobaltable(L);
+    newinstance(L, "rpm.mc", mc);
+    lua_setfield(L, -2, name);
+    lua_pop(L, 1);
+}
+
 static const luaL_Reg rpmlib[] = {
     {"b64encode", rpm_b64encode},
     {"b64decode", rpm_b64decode},
@@ -1059,6 +1157,10 @@ static int luaopen_rpm(lua_State *L)
 {
     createclass(L, "rpm.ver", ver_m);
     createclass(L, "rpm.fd", fd_m);
+    createclass(L, "rpm.mc", mc_m);
+
+    createmt(L, "macros", rpmGlobalMacroContext);
+
     luaL_newlib(L, rpmlib);
     return 1;
 }
