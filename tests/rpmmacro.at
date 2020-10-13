@@ -546,6 +546,33 @@ runroot rpm \
 ])
 AT_CLEANUP
 
+AT_SETUP([lua macros table])
+AT_KEYWORDS([macros lua])
+AT_SKIP_IF([$LUA_DISABLED])
+AT_CHECK([[
+runroot rpm \
+	--define "qtst() %{lua:for i=1, #arg do print(' '..i..':'..arg[i]) end}"\
+	--eval "%{lua:print(macros.with('zap'), macros.without('zap'))}" \
+	--eval "%{lua:print(macros.aaa)}" \
+	--eval "%{lua:macros.aaa='bbb'; macros['yyy']='zzz'}" \
+	--eval "%{lua:print(macros['aaa'], macros.yyy)}" \
+	--eval "%{lua:macros.aaa=nil"} \
+	--eval "%{lua:print(macros.aaa)}" \
+	--eval "%{lua:print(macros.qtst('a c'))}" \
+	--eval "%{lua:print(macros.qtst({'a', '', 'c'}))}"
+]],
+[0],
+[0	1
+nil
+
+bbb	zzz
+
+nil
+ 1:a 2:c
+ 1:a 2: 3:c
+])
+AT_CLEANUP
+
 AT_SETUP([lua rpm extensions 1])
 AT_KEYWORDS([macros lua])
 AT_CHECK([

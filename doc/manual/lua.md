@@ -65,6 +65,47 @@ end
 }
 ```
 
+Besides the generic `rpm.expand()` macro expansion function, named macros
+can be accessed (and also defined and undefined) via a global `macros`
+table in the Lua environment using normal table accessors. For example:
+
+```
+if macros._libdir == '/usr/lib64' then
+   print('64bit')
+end
+if not macros['zzz'] then
+   macro['zzz'] = 123
+end
+if macros.aaa then
+   macros.aaa = nil
+end
+```
+
+Parametric macros can also be called as native Lua functions via this
+facility, for example:
+
+```
+if macros.with('foo') == 0 then
+    macros.bcond_with('bar')
+end
+```
+
+When called this way, the argument is either a single string or a table.
+With a string argument, these two are equal:
+
+```
+r = macros.foo(args)
+r = rpm.expand('%foo'..' '..args)
+```
+
+If the macro function call argument is a table sequence, then the arguments
+are automatically wrapped with `%{quote:...}` so whitespace is preserved,
+eg macro foo would receive three arguments when called this way:
+
+```
+r = macros.foo({'a', '', 'c'})
+```
+
 ## Available Lua extensions in RPM
 
 In addition to all Lua standard libraries (subject to the Lua version rpm is linked to), a few custom extensions are available in the RPM internal Lua interpreter. These can be used in all contexts where the internal Lua can be used.
