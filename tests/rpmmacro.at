@@ -6,10 +6,13 @@ AT_BANNER([RPM macros])
 AT_SETUP([simple rpm --eval])
 AT_KEYWORDS([macros])
 AT_CHECK([
-runroot rpm --define "this that" --eval '%{this}'
+runroot rpm --define "this that" --eval '%{this}' --eval '%not_defined' --eval '%{not_defined}' --eval '%{}'
 ],
 [0],
 [that
+%not_defined
+%{not_defined}
+%{}
 ])
 AT_CLEANUP
 
