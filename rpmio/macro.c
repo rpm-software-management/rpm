@@ -1474,7 +1474,6 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    mbErr(mb, 1,
 		    _("A %% is followed by an unparseable macro\n"));
 #endif
-	    s = se;
 	    continue;
 	}
 
