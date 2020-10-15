@@ -13,7 +13,6 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
 
-#include "rpmio/rpmlua.h"
 #include "lib/rpmfi_internal.h"		/* rpmfiles stuff */
 #include "build/rpmbuild_internal.h"
 
@@ -251,15 +250,7 @@ rpmSpec newSpec(void)
     spec->pool = rpmstrPoolCreate();
     
 #ifdef WITH_LUA
-    /* make sure patches and sources tables always exist */
-    rpmlua lua = NULL; /* global state */
-    const char * luavars[] = { "patches", "sources",
-			       "patch_nums", "source_nums", NULL, };
-    for (const char **vp = luavars; vp && *vp; vp++) {
-	rpmluaDelVar(lua, *vp);
-	rpmluaPushTable(lua, *vp);
-	rpmluaPop(lua);
-    }
+    spec->lua = specLuaInit(spec);
 #endif
     return spec;
 }
@@ -310,9 +301,7 @@ rpmSpec rpmSpecFree(rpmSpec spec)
 #ifdef WITH_LUA
     // only destroy lua tables if there are no BASpecs left
     if (spec->recursing || spec->BACount == 0) {
-    rpmlua lua = NULL; /* global state */
-    rpmluaDelVar(lua, "patches");
-    rpmluaDelVar(lua, "sources");	
+	spec->lua = specLuaFini(spec);
     }
 #endif
 

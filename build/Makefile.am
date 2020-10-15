@@ -19,6 +19,10 @@ librpmbuild_la_SOURCES = \
 	parsePolicies.c policies.c \
 	rpmbuild_internal.h rpmbuild_misc.h
 
+if WITH_LUA
+librpmbuild_la_SOURCES += speclua.c
+endif
+
 librpmbuild_la_LDFLAGS = -version-info $(rpm_version_info)
 librpmbuild_la_LIBADD = \
 	$(top_builddir)/lib/librpm.la \
