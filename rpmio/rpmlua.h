@@ -1,6 +1,8 @@
 #ifndef RPMLUA_H
 #define RPMLUA_H
 
+#include <rpm/argv.h>
+
 typedef enum rpmluavType_e {
     RPMLUAV_NIL		= 0,
     RPMLUAV_STRING	= 1,
@@ -18,6 +20,7 @@ extern "C" {
 rpmlua rpmluaNew(void);
 rpmlua rpmluaFree(rpmlua lua);
 rpmlua rpmluaGetGlobalState(void);
+void *rpmluaGetLua(rpmlua lua);
 
 void rpmluaRegister(rpmlua lua, const void *regfuncs, const char *lib);
 
