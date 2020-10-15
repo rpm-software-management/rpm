@@ -5,6 +5,7 @@
 #include <rpm/rpmutil.h>
 #include <rpm/rpmstrpool.h>
 #include "build/rpmbuild_misc.h"
+#include "rpmio/rpmlua.h"
 
 #undef HASHTYPE
 #undef HTKEYTYPE
@@ -137,6 +138,7 @@ struct rpmSpec_s {
     Package sourcePackage;
 
     rpmMacroContext macros;
+    rpmlua lua;
     rpmstrPool pool;
 
     StringBuf prep;		/*!< %prep scriptlet. */
@@ -594,6 +596,15 @@ int specExpand(rpmSpec spec, int lineno, const char *sbuf,
 RPM_GNUC_INTERNAL
 int readManifest(rpmSpec spec, const char *path, const char *descr, int flags,
 		ARGV_t *avp, StringBuf *sbp);
+
+RPM_GNUC_INTERNAL
+void * specLuaInit(rpmSpec spec);
+
+RPM_GNUC_INTERNAL
+void * specLuaFini(rpmSpec spec);
+
+RPM_GNUC_INTERNAL
+void addLuaSource(rpmlua lua, const struct Source *p);
 #ifdef __cplusplus
 }
 #endif
