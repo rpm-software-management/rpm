@@ -181,6 +181,12 @@ rpmlua rpmluaFree(rpmlua lua)
     return NULL;
 }
 
+void * rpmluaGetLua(rpmlua _lua)
+{
+    INITSTATE(_lua, lua);
+    return lua->L;
+}
+
 void rpmluaRegister(rpmlua lua, const void *regfuncs, const char *lib)
 {
     const luaL_Reg *funcs = regfuncs;
