@@ -544,6 +544,12 @@ package or when debugging this package.\
 # Directories whose contents should be considered as documentation.
 %__docdir_path %{_datadir}/doc:%{_datadir}/man:%{_datadir}/info:%{_datadir}/gtk-doc/html:%{_datadir}/gnome/help:%{?_docdir}:%{?_mandir}:%{?_infodir}:%{?_javadocdir}:/usr/doc:/usr/man:/usr/info:/usr/X11R6/man
 
+# Directories whose contents should be considered man pages.
+%__mandir_path %{_datadir}/man:%{?_mandir}:/usr/man:/usr/X11R6/man
+
+# Directories whose contents should be considered info pages.
+%__infodir_path %{_datadir}/info:%{?_infodir}:/usr/info
+
 #
 # Path to scripts to autogenerate package dependencies,
 #

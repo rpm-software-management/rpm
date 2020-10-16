@@ -87,6 +87,8 @@ enum parseAttrs_e {
     RPMFILE_DOCDIR	= (1 << 17),	/*!< from %%docdir */
     RPMFILE_DIR		= (1 << 18),	/*!< from %%dir */
     RPMFILE_SPECIALDIR	= (1 << 19),	/*!< from special %%doc */
+    RPMFILE_MANDIR	= (1 << 20),	/*!< from %%mandir */
+    RPMFILE_INFODIR	= (1 << 21),	/*!< from %%infodir */
 };
 
 /* bits up to 15 (for now) reserved for exported rpmfileAttrs */
@@ -181,6 +183,8 @@ typedef struct FileList_s {
     int haveCaps;
     int largeFiles;
     ARGV_t docDirs;
+    ARGV_t manDirs;
+    ARGV_t infoDirs;
     rpmBuildPkgFlags pkgFlags;
     rpmstrPool pool;
 
@@ -859,6 +863,8 @@ static VFA_t const virtualAttrs[] = {
     { "%pubkey",	RPMFILE_PUBKEY },
     { "%missingok",	RPMFILE_MISSINGOK },
     { "%artifact",	RPMFILE_ARTIFACT },
+    { "%man",		RPMFILE_MAN },
+    { "%info",		RPMFILE_INFO },
     { NULL, 0 }
 };
 
@@ -910,17 +916,17 @@ static int compareFileListRecs(const void * ap, const void * bp)
 }
 
 /**
- * Test if file is located in a %docdir.
- * @param docDirs	doc dirs
+ * Test if file is located in a the dirs list.
+ * @param dirs		dir array
  * @param fileName	file path
- * @return		1 if doc file, 0 if not
+ * @return		1 if file dir is in dirs, 0 if not
  */
-static int isDoc(ARGV_const_t docDirs, const char * fileName)	
+static int isDirMatch(ARGV_const_t dirs, const char * fileName)
 {
     size_t k, l;
 
     k = strlen(fileName);
-    for (ARGV_const_t dd = docDirs; *dd; dd++) {
+    for (ARGV_const_t dd = dirs; *dd; dd++) {
 	l = strlen(*dd);
 	if (l < k && rstreqn(fileName, *dd, l) && fileName[l] == '/')
 	    return 1;
@@ -1225,11 +1231,15 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	}
 	headerPutUint32(h, RPMTAG_FILEVERIFYFLAGS, &(flp->verifyFlags),1);
 	
-	if (!isSrc && isDoc(fl->docDirs, flp->cpioPath))
+	if (!isSrc && isDirMatch(fl->docDirs, flp->cpioPath))
 	    flp->flags |= RPMFILE_DOC;
+	if (!isSrc && isDirMatch(fl->manDirs, flp->cpioPath))
+	    flp->flags |= RPMFILE_MAN;
+	if (!isSrc && isDirMatch(fl->infoDirs, flp->cpioPath))
+	    flp->flags |= RPMFILE_INFO;
 	/* XXX Should directories have %doc/%config attributes? (#14531) */
 	if (S_ISDIR(flp->fl_mode))
-	    flp->flags &= ~(RPMFILE_CONFIG|RPMFILE_DOC|RPMFILE_LICENSE);
+	    flp->flags &= ~(RPMFILE_CONFIG|RPMFILE_DOC|RPMFILE_LICENSE|RPMFILE_MAN|RPMFILE_INFO);
 	/* Strip internal parse data */
 	flp->flags &= PARSEATTR_MASK;
 
@@ -1294,6 +1304,8 @@ static void FileListFree(FileList fl)
     FileRecordsFree(&(fl->files));
     free(fl->buildRoot);
     argvFree(fl->docDirs);
+    argvFree(fl->manDirs);
+    argvFree(fl->infoDirs);
     rpmstrPoolFree(fl->pool);
 }
 
@@ -2559,6 +2571,10 @@ static void addPackageFileList (struct FileList_s *fl, Package pkg,
 
 	    if (fl->cur.attrFlags & RPMFILE_DOCDIR) {
 		argvAdd(&(fl->docDirs), *fn);
+	    } else if (fl->cur.attrFlags & RPMFILE_MANDIR) {
+		argvAdd(&(fl->manDirs), *fn);
+	    } else if (fl->cur.attrFlags & RPMFILE_INFODIR) {
+		argvAdd(&(fl->infoDirs), *fn);
 	    } else if (fl->cur.attrFlags & RPMFILE_PUBKEY) {
 		(void) processMetadataFile(pkg, fl, *fn, RPMTAG_PUBKEYS);
 	    } else {
@@ -2600,6 +2616,16 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     {	char *docs = rpmGetPath("%{?__docdir_path}", NULL);
 	argvSplit(&fl.docDirs, docs, ":");
 	free(docs);
+    }
+
+    {	char *mans = rpmGetPath("%{?__mandir_path}", NULL);
+	argvSplit(&fl.manDirs, mans, ":");
+	free(mans);
+    }
+
+    {	char *infos = rpmGetPath("%{?__infodir_path}", NULL);
+	argvSplit(&fl.infoDirs, infos, ":");
+	free(infos);
     }
 
     addPackageFileList (&fl, pkg, &pkg->fileList,

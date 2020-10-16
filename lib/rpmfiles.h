@@ -60,6 +60,8 @@ enum rpmfileAttrs_e {
     /* bits 9-10 unused */
     RPMFILE_PUBKEY	= (1 << 11),	/*!< from %%pubkey */
     RPMFILE_ARTIFACT	= (1 << 12),	/*!< from %%artifact */
+    RPMFILE_MAN	= (1 << 13),	/*!< from %%{_mandir} */
+    RPMFILE_INFO	= (1 << 14),	/*!< from %%{_infodir} */
 };
 
 typedef rpmFlags rpmfileAttrs;
