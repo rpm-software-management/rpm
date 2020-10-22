@@ -52,10 +52,14 @@ struct rpmMacroEntry_s {
     char arena[];   	/*!< String arena. */
 };
 
+typedef struct macroTable_s {
+    rpmMacroEntry *tab;		/*!< Macro entry table (array of pointers). */
+    int n;			/*!< No. of macros. */
+} *macroTable;
+
 /*! The structure used to store the set of macros in a context. */
 struct rpmMacroContext_s {
-    rpmMacroEntry *tab;  /*!< Macro entry table (array of pointers). */
-    int n;      /*!< No. of macros. */
+    struct macroTable_s tab;	/*!< Macro table */
     int depth;		 /*!< Depth tracking when recursing from Lua  */
     int level;		 /*!< Scope level tracking when recursing from Lua  */
     pthread_mutex_t lock;
@@ -127,6 +131,7 @@ typedef const char *(*parseFunc)(MacroBuf mb, const char * se);
 static int expandMacro(MacroBuf mb, const char *src, size_t slen);
 static void pushMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level, int flags);
+static void macroTablePop(macroTable mt, const char * n);
 static void popMacro(rpmMacroContext mc, const char * n);
 static int loadMacroFile(rpmMacroContext mc, const char * fn);
 static void doBody(MacroBuf mb, int chkexist, int negate,
@@ -173,23 +178,23 @@ static rpmMacroContext rpmmctxRelease(rpmMacroContext mc)
 
 /**
  * Find entry in macro table.
- * @param mc		macro context
+ * @param mt		macro table
  * @param name		macro name
  * @param namelen	no. of bytes
  * @param pos		found/insert position
  * @return		address of slot in macro table with name (or NULL)
  */
 static rpmMacroEntry *
-findEntry(rpmMacroContext mc, const char *name, size_t namelen, size_t *pos)
+macroTableFind(const struct macroTable_s *mt, const char *name, size_t namelen, size_t *pos)
 {
     /* bsearch */
     int cmp = 1;
     size_t l = 0;
-    size_t u = mc->n;
+    size_t u = mt->n;
     size_t i = 0;
     while (l < u) {
 	i = (l + u) / 2;
-	rpmMacroEntry me = mc->tab[i];
+	rpmMacroEntry me = mt->tab[i];
 	if (namelen == 0)
 	    cmp = strcmp(me->name, name);
 	else {
@@ -209,7 +214,23 @@ findEntry(rpmMacroContext mc, const char *name, size_t namelen, size_t *pos)
     if (pos)
 	*pos = (cmp < 0) ? i + 1 : i;
     if (cmp == 0)
-	return &mc->tab[i];
+	return &mt->tab[i];
+    return NULL;
+}
+
+static rpmMacroEntry *
+findEntry(rpmMacroContext mc, const char *name, size_t namelen, size_t *pos)
+{
+    return macroTableFind(&mc->tab, name, namelen, pos);
+}
+
+static macroTable macroTableFree(macroTable mt)
+{
+    while (mt->n > 0) {
+	/* remove from the end to avoid memmove */
+	rpmMacroEntry me = mt->tab[mt->n - 1];
+	macroTablePop(mt, me->name);
+    }
     return NULL;
 }
 
@@ -832,10 +853,11 @@ static void
 freeArgs(MacroBuf mb)
 {
     rpmMacroContext mc = mb->mc;
+    macroTable mt = &mc->tab;
 
     /* Delete dynamic macro definitions */
-    for (int i = 0; i < mc->n; i++) {
-	rpmMacroEntry me = mc->tab[i];
+    for (int i = 0; i < mt->n; i++) {
+	rpmMacroEntry me = mt->tab[i];
 	assert(me);
 	if (me->level < mb->level)
 	    continue;
@@ -850,7 +872,7 @@ freeArgs(MacroBuf mb)
 	/* compensate if the slot is to go away */
 	if (me->prev == NULL)
 	    i--;
-	popMacro(mc, me->name);
+	macroTablePop(mt, me->name);
     }
     mb->level--;
     mb->args = argvFree(mb->args);
@@ -1605,7 +1627,7 @@ static int doExpandMacros(rpmMacroContext mc, const char *src, int flags,
     return rc;
 }
 
-static void pushMacro(rpmMacroContext mc,
+static void macroTablePush(macroTable mt,
 	const char * n, const char * o, const char * b, int level, int flags)
 {
     /* new entry */
@@ -1618,7 +1640,7 @@ static void pushMacro(rpmMacroContext mc,
     size_t mesize = sizeof(*me) + blen + 1 + (olen ? olen + 1 : 0);
 
     size_t pos;
-    rpmMacroEntry *mep = findEntry(mc, n, 0, &pos);
+    rpmMacroEntry *mep = macroTableFind(mt, n, 0, &pos);
     if (mep) {
 	/* entry with shared name */
 	me = xmalloc(mesize);
@@ -1635,14 +1657,14 @@ static void pushMacro(rpmMacroContext mc,
     else {
 	/* extend macro table */
 	const int delta = 256;
-	if (mc->n % delta == 0)
-	    mc->tab = xrealloc(mc->tab, sizeof(me) * (mc->n + delta));
+	if (mt->n % delta == 0)
+	    mt->tab = xrealloc(mt->tab, sizeof(me) * (mt->n + delta));
 	/* shift pos+ entries to the right */
-	memmove(mc->tab + pos + 1, mc->tab + pos, sizeof(me) * (mc->n - pos));
-	mc->n++;
+	memmove(mt->tab + pos + 1, mt->tab + pos, sizeof(me) * (mt->n - pos));
+	mt->n++;
 	/* make slot */
-	mc->tab[pos] = NULL;
-	mep = &mc->tab[pos];
+	mt->tab[pos] = NULL;
+	mep = &mt->tab[pos];
 	/* entry with new name */
 	size_t nlen = strlen(n);
 	me = xmalloc(mesize + nlen + 1);
@@ -1672,28 +1694,39 @@ static void pushMacro(rpmMacroContext mc,
     *mep = me;
 }
 
-static void popMacro(rpmMacroContext mc, const char * n)
+static void pushMacro(rpmMacroContext mc,
+	const char * n, const char * o, const char * b, int level, int flags)
+{
+    macroTablePush(&mc->tab, n, o, b, level, flags);
+}
+
+static void macroTablePop(macroTable mt, const char * n)
 {
     size_t pos;
-    rpmMacroEntry *mep = findEntry(mc, n, 0, &pos);
+    rpmMacroEntry *mep = macroTableFind(mt, n, 0, &pos);
     if (mep == NULL)
 	return;
     /* parting entry */
     rpmMacroEntry me = *mep;
     assert(me);
     /* detach/pop definition */
-    mc->tab[pos] = me->prev;
+    mt->tab[pos] = me->prev;
     /* shrink macro table */
     if (me->prev == NULL) {
-	mc->n--;
-	/* move pos+ elements to the left */
-	memmove(mc->tab + pos, mc->tab + pos + 1, sizeof(me) * (mc->n - pos));
+	mt->n--;
 	/* deallocate */
-	if (mc->n == 0)
-	    mc->tab = _free(mc->tab);
+	if (mt->n == 0)
+	    mt->tab = _free(mt->tab);
+	/* move pos+ elements to the left */
+	memmove(mt->tab + pos, mt->tab + pos + 1, sizeof(me) * (mt->n - pos));
     }
     /* comes in a single chunk */
     free(me);
+}
+
+static void popMacro(rpmMacroContext mc, const char * n)
+{
+    macroTablePop(&mc->tab, n);
 }
 
 static int defineMacro(rpmMacroContext mc, const char * macro, int level)
@@ -1753,12 +1786,12 @@ exit:
     return rc;
 }
 
-static void copyMacros(rpmMacroContext src, rpmMacroContext dst, int level)
+static void copyMacros(macroTable src, macroTable dst, int level)
 {
     for (int i = 0; i < src->n; i++) {
 	rpmMacroEntry me = src->tab[i];
 	assert(me);
-	pushMacro(dst, me->name, me->opts, me->body, level, me->flags);
+	macroTablePush(dst, me->name, me->opts, me->body, level, me->flags);
     }
 }
 
@@ -1786,11 +1819,12 @@ void
 rpmDumpMacroTable(rpmMacroContext mc, FILE * fp)
 {
     mc = rpmmctxAcquire(mc);
+    macroTable mt = &mc->tab;
     if (fp == NULL) fp = stderr;
     
     fprintf(fp, "========================\n");
-    for (int i = 0; i < mc->n; i++) {
-	rpmMacroEntry me = mc->tab[i];
+    for (int i = 0; i < mt->n; i++) {
+	rpmMacroEntry me = mt->tab[i];
 	assert(me);
 	fprintf(fp, "%3d%c %s", me->level,
 		    ((me->flags & ME_USED) ? '=' : ':'), me->name);
@@ -1801,7 +1835,7 @@ rpmDumpMacroTable(rpmMacroContext mc, FILE * fp)
 	fprintf(fp, "\n");
     }
     fprintf(fp, _("======================== active %d empty %d\n"),
-		mc->n, 0);
+		mt->n, 0);
     rpmmctxRelease(mc);
 }
 
@@ -1872,7 +1906,7 @@ rpmLoadMacros(rpmMacroContext mc, int level)
     gmc = rpmmctxAcquire(NULL);
     mc = rpmmctxAcquire(mc);
 
-    copyMacros(mc, gmc, level);
+    copyMacros(&mc->tab, &gmc->tab, level);
 
     rpmmctxRelease(mc);
     rpmmctxRelease(gmc);
@@ -1924,7 +1958,7 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 
     /* Reload cmdline macros */
     climc = rpmmctxAcquire(rpmCLIMacroContext);
-    copyMacros(climc, mc, RMIL_CMDLINE);
+    copyMacros(&climc->tab, &mc->tab, RMIL_CMDLINE);
     rpmmctxRelease(climc);
 
     rpmmctxRelease(mc);
@@ -1934,11 +1968,7 @@ void
 rpmFreeMacros(rpmMacroContext mc)
 {
     mc = rpmmctxAcquire(mc);
-    while (mc->n > 0) {
-	/* remove from the end to avoid memmove */
-	rpmMacroEntry me = mc->tab[mc->n - 1];
-	popMacro(mc, me->name);
-    }
+    macroTableFree(&mc->tab);
     rpmmctxRelease(mc);
 }
 
