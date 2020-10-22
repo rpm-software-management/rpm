@@ -615,43 +615,40 @@ static unsigned int getncpus(void)
     return ncpus;
 }
 
-#define STR_AND_LEN(_str) (_str), sizeof((_str))-1
-
 static struct builtins_s {
     const char * name;
-    size_t len;
     void *func;
     int flags;
 } const builtinmacros[] = {
-    { STR_AND_LEN("P"),		doSP,		ME_ARGFUNC },
-    { STR_AND_LEN("S"),		doSP,		ME_ARGFUNC },
-    { STR_AND_LEN("basename"),	doFoo,		ME_ARGFUNC },
-    { STR_AND_LEN("define"),	doDef,		ME_PARSE },
-    { STR_AND_LEN("dirname"),	doFoo,		ME_ARGFUNC },
-    { STR_AND_LEN("dnl"),	doDnl,		ME_PARSE },
-    { STR_AND_LEN("dump"), 	doDump,		ME_PARSE },
-    { STR_AND_LEN("echo"),	doOutput,	ME_ARGFUNC },
-    { STR_AND_LEN("error"),	doOutput,	ME_ARGFUNC },
-    { STR_AND_LEN("expand"),	doExpand,	ME_ARGFUNC },
-    { STR_AND_LEN("expr"),	doFoo,		ME_ARGFUNC },
-    { STR_AND_LEN("getconfdir"),doFoo,		ME_FUNC },
-    { STR_AND_LEN("getenv"),	doFoo,		ME_ARGFUNC },
-    { STR_AND_LEN("getncpus"),	doFoo,		ME_FUNC },
-    { STR_AND_LEN("global"),	doGlobal,	ME_PARSE },
-    { STR_AND_LEN("load"),	doLoad,		ME_ARGFUNC },
-    { STR_AND_LEN("lua"),	doLua,		ME_ARGFUNC },
-    { STR_AND_LEN("macrobody"),	doBody,		ME_ARGFUNC },
-    { STR_AND_LEN("quote"),	doFoo,		ME_ARGFUNC },
-    { STR_AND_LEN("shrink"),	doFoo,		ME_ARGFUNC },
-    { STR_AND_LEN("suffix"),	doFoo,		ME_ARGFUNC },
-    { STR_AND_LEN("trace"),	doTrace,	ME_FUNC },
-    { STR_AND_LEN("u2p"),	doFoo,		ME_ARGFUNC },
-    { STR_AND_LEN("uncompress"),doUncompress,	ME_ARGFUNC },
-    { STR_AND_LEN("undefine"),	doUndefine,	ME_PARSE },
-    { STR_AND_LEN("url2path"),	doFoo,		ME_ARGFUNC },
-    { STR_AND_LEN("verbose"),	doVerbose,	ME_ARGFUNC },
-    { STR_AND_LEN("warn"),	doOutput,	ME_ARGFUNC },
-    { NULL,	0,		NULL,		0 }
+    { "P",		doSP,		ME_ARGFUNC },
+    { "S",		doSP,		ME_ARGFUNC },
+    { "basename",	doFoo,		ME_ARGFUNC },
+    { "define",		doDef,		ME_PARSE },
+    { "dirname",	doFoo,		ME_ARGFUNC },
+    { "dnl",		doDnl,		ME_PARSE },
+    { "dump", 		doDump,		ME_PARSE },
+    { "echo",		doOutput,	ME_ARGFUNC },
+    { "error",		doOutput,	ME_ARGFUNC },
+    { "expand",		doExpand,	ME_ARGFUNC },
+    { "expr",		doFoo,		ME_ARGFUNC },
+    { "getconfdir",	doFoo,		ME_FUNC },
+    { "getenv",		doFoo,		ME_ARGFUNC },
+    { "getncpus",	doFoo,		ME_FUNC },
+    { "global",		doGlobal,	ME_PARSE },
+    { "load",		doLoad,		ME_ARGFUNC },
+    { "lua",		doLua,		ME_ARGFUNC },
+    { "macrobody",	doBody,		ME_ARGFUNC },
+    { "quote",		doFoo,		ME_ARGFUNC },
+    { "shrink",		doFoo,		ME_ARGFUNC },
+    { "suffix",		doFoo,		ME_ARGFUNC },
+    { "trace",		doTrace,	ME_FUNC },
+    { "u2p",		doFoo,		ME_ARGFUNC },
+    { "uncompress",	doUncompress,	ME_ARGFUNC },
+    { "undefine",	doUndefine,	ME_PARSE },
+    { "url2path",	doFoo,		ME_ARGFUNC },
+    { "verbose",	doVerbose,	ME_ARGFUNC },
+    { "warn",		doOutput,	ME_ARGFUNC },
+    { NULL,		NULL,		0 }
 };
 
 static int
