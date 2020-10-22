@@ -2013,13 +2013,10 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 {
     ARGV_t pattern, globs = NULL;
     rpmMacroContext climc;
-
-    if (macrofiles == NULL)
-	return;
+    mc = rpmmctxAcquire(mc);
 
     argvSplit(&globs, macrofiles, ":");
-    mc = rpmmctxAcquire(mc);
-    for (pattern = globs; *pattern; pattern++) {
+    for (pattern = globs; pattern && *pattern; pattern++) {
 	ARGV_t path, files = NULL;
     
 	/* Glob expand the macro file path element, expanding ~ to $HOME. */
