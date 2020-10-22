@@ -39,7 +39,13 @@ enum macroFlags_e {
     ME_AUTO	= (1 << 0),
     ME_USED	= (1 << 1),
     ME_LITERAL	= (1 << 2),
+    ME_PARSE	= (1 << 3),
+    ME_FUNC	= (1 << 4),
+    ME_HAVEARG	= (1 << 5),
 };
+
+#define ME_BUILTIN (ME_PARSE|ME_FUNC)
+#define ME_ARGFUNC (ME_FUNC|ME_HAVEARG)
 
 /*! The structure used to store a macro. */
 struct rpmMacroEntry_s {
@@ -614,38 +620,37 @@ static unsigned int getncpus(void)
 static struct builtins_s {
     const char * name;
     size_t len;
-    macroFunc func;
-    parseFunc parse;
-    int havearg;
+    void *func;
+    int flags;
 } const builtinmacros[] = {
-    { STR_AND_LEN("P"),		doSP,		NULL,		1 },
-    { STR_AND_LEN("S"),		doSP,		NULL,		1 },
-    { STR_AND_LEN("basename"),	doFoo,		NULL,		1 },
-    { STR_AND_LEN("define"),	NULL,		doDef,		0 },
-    { STR_AND_LEN("dirname"),	doFoo,		NULL,		1 },
-    { STR_AND_LEN("dnl"),	NULL,		doDnl,		0 },
-    { STR_AND_LEN("dump"), 	NULL,		doDump,		0 },
-    { STR_AND_LEN("echo"),	doOutput,	NULL,		1 },
-    { STR_AND_LEN("error"),	doOutput,	NULL,		1 },
-    { STR_AND_LEN("expand"),	doExpand,	NULL,		1 },
-    { STR_AND_LEN("expr"),	doFoo,		NULL,		1 },
-    { STR_AND_LEN("getconfdir"),doFoo,		NULL,		0 },
-    { STR_AND_LEN("getenv"),	doFoo,		NULL,		1 },
-    { STR_AND_LEN("getncpus"),	doFoo,		NULL,		0 },
-    { STR_AND_LEN("global"),	NULL,		doGlobal,	0 },
-    { STR_AND_LEN("load"),	doLoad,		NULL,		1 },
-    { STR_AND_LEN("lua"),	doLua,		NULL,		1 },
-    { STR_AND_LEN("macrobody"),	doBody,		NULL,		1 },
-    { STR_AND_LEN("quote"),	doFoo,		NULL,		1 },
-    { STR_AND_LEN("shrink"),	doFoo,		NULL,		1 },
-    { STR_AND_LEN("suffix"),	doFoo,		NULL,		1 },
-    { STR_AND_LEN("trace"),	doTrace,	NULL,		0 },
-    { STR_AND_LEN("u2p"),	doFoo,		NULL,		1 },
-    { STR_AND_LEN("uncompress"),doUncompress,	NULL,		1 },
-    { STR_AND_LEN("undefine"),	NULL,		doUndefine,	0 },
-    { STR_AND_LEN("url2path"),	doFoo,		NULL,		1 },
-    { STR_AND_LEN("verbose"),	doVerbose,	NULL,		1 },
-    { STR_AND_LEN("warn"),	doOutput,	NULL,		1 },
+    { STR_AND_LEN("P"),		doSP,		ME_ARGFUNC },
+    { STR_AND_LEN("S"),		doSP,		ME_ARGFUNC },
+    { STR_AND_LEN("basename"),	doFoo,		ME_ARGFUNC },
+    { STR_AND_LEN("define"),	doDef,		ME_PARSE },
+    { STR_AND_LEN("dirname"),	doFoo,		ME_ARGFUNC },
+    { STR_AND_LEN("dnl"),	doDnl,		ME_PARSE },
+    { STR_AND_LEN("dump"), 	doDump,		ME_PARSE },
+    { STR_AND_LEN("echo"),	doOutput,	ME_ARGFUNC },
+    { STR_AND_LEN("error"),	doOutput,	ME_ARGFUNC },
+    { STR_AND_LEN("expand"),	doExpand,	ME_ARGFUNC },
+    { STR_AND_LEN("expr"),	doFoo,		ME_ARGFUNC },
+    { STR_AND_LEN("getconfdir"),doFoo,		ME_FUNC },
+    { STR_AND_LEN("getenv"),	doFoo,		ME_ARGFUNC },
+    { STR_AND_LEN("getncpus"),	doFoo,		ME_FUNC },
+    { STR_AND_LEN("global"),	doGlobal,	ME_PARSE },
+    { STR_AND_LEN("load"),	doLoad,		ME_ARGFUNC },
+    { STR_AND_LEN("lua"),	doLua,		ME_ARGFUNC },
+    { STR_AND_LEN("macrobody"),	doBody,		ME_ARGFUNC },
+    { STR_AND_LEN("quote"),	doFoo,		ME_ARGFUNC },
+    { STR_AND_LEN("shrink"),	doFoo,		ME_ARGFUNC },
+    { STR_AND_LEN("suffix"),	doFoo,		ME_ARGFUNC },
+    { STR_AND_LEN("trace"),	doTrace,	ME_FUNC },
+    { STR_AND_LEN("u2p"),	doFoo,		ME_ARGFUNC },
+    { STR_AND_LEN("uncompress"),doUncompress,	ME_ARGFUNC },
+    { STR_AND_LEN("undefine"),	doUndefine,	ME_PARSE },
+    { STR_AND_LEN("url2path"),	doFoo,		ME_ARGFUNC },
+    { STR_AND_LEN("verbose"),	doVerbose,	ME_ARGFUNC },
+    { STR_AND_LEN("warn"),	doOutput,	ME_ARGFUNC },
 };
 static const size_t numbuiltins = sizeof(builtinmacros)/sizeof(*builtinmacros);
 
@@ -1551,15 +1556,18 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 
 	/* Expand builtin macros */
 	if ((builtin = lookupBuiltin(f, fn))) {
-	    if (builtin->havearg != (g != NULL)) {
-		mbErr(mb, 1, "%%%s: %s\n", builtin->name, builtin->havearg ?
+	    int havearg = (builtin->flags & ME_HAVEARG) ? 1 : 0;
+	    if (havearg != (g != NULL)) {
+		mbErr(mb, 1, "%%%s: %s\n", builtin->name, havearg ?
 			_("argument expected") : _("unexpected argument"));
 		continue;
 	    }
-	    if (builtin->parse) {
-		s = builtin->parse(mb, se);
+	    if (builtin->flags & ME_PARSE) {
+		parseFunc parse = builtin->func;
+		s = parse(mb, se);
 	    } else {
-		builtin->func(mb, chkexist, negate, f, fn, g, gn);
+		macroFunc func = builtin->func;
+		func(mb, chkexist, negate, f, fn, g, gn);
 		s = se;
 	    }
 	    continue;
