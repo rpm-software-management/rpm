@@ -683,7 +683,7 @@ runroot rpm \
 ],
 [0],
 [1
-%xxx
+1
 .   .
 ])
 AT_CLEANUP
@@ -707,7 +707,6 @@ AT_CLEANUP
 AT_SETUP([%define + %undefine in nested levels 3])
 AT_KEYWORDS([macros define])
 AT_CHECK([
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 # %define macro twice in a nested scope
 runroot rpm \
     --define '%foo() %{expand:%define xxx 1} %{echo:%xxx} %{expand: %define xxx 2} %{echo:%xxx}' \
@@ -725,8 +724,6 @@ AT_CLEANUP
 AT_SETUP([%define + %undefine in nested levels 4])
 AT_KEYWORDS([macros define global])
 AT_CHECK([
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
-# %define in a nested level covered by %global
 runroot rpm \
     --define '%foo() %{expand:%define xxx 1} %{echo:%xxx} %{expand: %global xxx 2} %{echo:%xxx}' \
     --eval .'%foo'. \
@@ -736,11 +733,24 @@ runroot rpm \
 ],
 [0],
 [1
-2
+1
 .    .
 2
 ..
 %xxx
+])
+AT_CLEANUP
+
+AT_SETUP([%define + %undefine in nested levels 5])
+AT_KEYWORDS([macros define])
+AT_CHECK([
+runroot rpm \
+    --define "foo() %bar" \
+    --define "foo2() %{expand:%define bar hello}%{foo}" \
+    --eval "%foo2"
+],
+[0],
+[hello
 ])
 AT_CLEANUP
 

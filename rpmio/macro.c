@@ -19,6 +19,15 @@
 
 #define MACROBUFSIZ (BUFSIZ * 2)
 
+#define	_MAX_MACRO_DEPTH	64
+static int max_macro_depth = _MAX_MACRO_DEPTH;
+
+#define	_PRINT_MACRO_TRACE	0
+static int print_macro_trace = _PRINT_MACRO_TRACE;
+
+#define	_PRINT_EXPAND_TRACE	0
+static int print_expand_trace = _PRINT_EXPAND_TRACE;
+
 #include <rpm/rpmio.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmfileutil.h>
@@ -60,6 +69,7 @@ typedef struct macroTable_s {
 /*! The structure used to store the set of macros in a context. */
 struct rpmMacroContext_s {
     struct macroTable_s tab;	/*!< Macro table */
+    struct macroTable_s local[_MAX_MACRO_DEPTH]; /*!< Local macro tables */
     int depth;		 /*!< Depth tracking when recursing from Lua  */
     int level;		 /*!< Scope level tracking when recursing from Lua  */
     pthread_mutex_t lock;
@@ -104,7 +114,6 @@ typedef struct MacroBuf_s {
     size_t tpos;		/*!< Current position in expansion buffer */
     size_t nb;			/*!< No. bytes remaining in expansion buffer. */
     int depth;			/*!< Current expansion depth. */
-    int level;			/*!< Current scoping level */
     int error;			/*!< Errors encountered during expansion? */
     int macro_trace;		/*!< Pre-print macro to expand? */
     int expand_trace;		/*!< Post-print macro expansion? */
@@ -113,15 +122,6 @@ typedef struct MacroBuf_s {
     ARGV_t args;		/*!< Current macro arguments (or NULL) */
     rpmMacroContext mc;
 } * MacroBuf;
-
-#define	_MAX_MACRO_DEPTH	64
-static int max_macro_depth = _MAX_MACRO_DEPTH;
-
-#define	_PRINT_MACRO_TRACE	0
-static int print_macro_trace = _PRINT_MACRO_TRACE;
-
-#define	_PRINT_EXPAND_TRACE	0
-static int print_expand_trace = _PRINT_EXPAND_TRACE;
 
 typedef void (*macroFunc)(MacroBuf mb, int chkexist, int negate,
 			const char * f, size_t fn, const char * g, size_t gn);
@@ -221,7 +221,25 @@ macroTableFind(const struct macroTable_s *mt, const char *name, size_t namelen, 
 static rpmMacroEntry *
 findEntry(rpmMacroContext mc, const char *name, size_t namelen, size_t *pos)
 {
-    return macroTableFind(&mc->tab, name, namelen, pos);
+    rpmMacroEntry * mep = NULL;
+
+    if (namelen == 0)
+	namelen = strlen(name);
+
+    /* User-defined scoped macros are accessible from levels above */
+    for (int i = mc->level; mep == NULL && i >= 0; i--) {
+	mep = macroTableFind(&mc->local[i], name, namelen, pos);
+
+	/* Only look for automatic macros on the current level */
+	if (namelen < 3)
+	    break;
+    }
+
+    /* Finally, look at globals */
+    if (mep == NULL)
+	mep = macroTableFind(&mc->tab, name, namelen, pos);
+
+    return mep;
 }
 
 static macroTable macroTableFree(macroTable mt)
@@ -828,7 +846,7 @@ exit:
 
 static const char * doDef(MacroBuf mb, const char * se)
 {
-    return doDefine(mb, se, mb->level, 0);
+    return doDefine(mb, se, RMIL_LOCAL, 0);
 }
 
 static const char * doGlobal(MacroBuf mb, const char * se)
@@ -853,14 +871,11 @@ static void
 freeArgs(MacroBuf mb)
 {
     rpmMacroContext mc = mb->mc;
-    macroTable mt = &mc->tab;
+    macroTable mt = &mc->local[mc->level];
 
     /* Delete dynamic macro definitions */
     for (int i = 0; i < mt->n; i++) {
 	rpmMacroEntry me = mt->tab[i];
-	assert(me);
-	if (me->level < mb->level)
-	    continue;
 	/* Warn on defined but unused non-automatic, scoped macros */
 	if (!(me->flags & (ME_AUTO|ME_USED))) {
 	    mbErr(mb, 0, _("Macro %%%s defined but not used within scope\n"),
@@ -868,13 +883,9 @@ freeArgs(MacroBuf mb)
 	    /* Only whine once */
 	    me->flags |= ME_USED;
 	}
-
-	/* compensate if the slot is to go away */
-	if (me->prev == NULL)
-	    i--;
-	macroTablePop(mt, me->name);
     }
-    mb->level--;
+    macroTableFree(mt);
+    mc->level--;
     mb->args = argvFree(mb->args);
     mb->me = NULL;
 }
@@ -923,13 +934,13 @@ static int mbopt(int c, const char *oarg, int oint, void *data)
     } else {
 	rasprintf(&body, "-%c", c);
     }
-    pushMacro(mb->mc, name, NULL, body, mb->level, ME_AUTO | ME_LITERAL);
+    pushMacro(mb->mc, name, NULL, body, RMIL_LOCAL, ME_AUTO | ME_LITERAL);
     free(name);
     free(body);
 
     if (oarg) {
 	rasprintf(&name, "-%c*", c);
-	pushMacro(mb->mc, name, NULL, oarg, mb->level, ME_AUTO | ME_LITERAL);
+	pushMacro(mb->mc, name, NULL, oarg, RMIL_LOCAL, ME_AUTO | ME_LITERAL);
 	free(name);
     }
     return 0;
@@ -948,6 +959,7 @@ static const char *
 grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 		const char * lastc)
 {
+    rpmMacroContext mc = mb->mc;
     const char *cont = NULL;
     char *args = NULL;
     ARGV_t argv = NULL;
@@ -974,10 +986,10 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
     }
 
     /* Bump call depth on entry before first macro define */
-    mb->level++;
+    mc->level++;
 
     /* Setup macro name as %0 */
-    pushMacro(mb->mc, "0", NULL, me->name, mb->level, ME_AUTO | ME_LITERAL);
+    pushMacro(mb->mc, "0", NULL, me->name, RMIL_LOCAL, ME_AUTO | ME_LITERAL);
 
     /*
      * The macro %* analoguous to the shell's $* means "Pass all non-macro
@@ -988,7 +1000,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
      * This is the (potential) justification for %{**} ...
     */
     args = argvJoin(argv + 1, " ");
-    pushMacro(mb->mc, "**", NULL, args, mb->level, ME_AUTO | ME_LITERAL);
+    pushMacro(mb->mc, "**", NULL, args, RMIL_LOCAL, ME_AUTO | ME_LITERAL);
     free(args);
 
     argc = argvCount(argv);
@@ -1003,7 +1015,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
     /* Add argument count (remaining non-option items) as macro. */
     {	char *ac = NULL;
 	rasprintf(&ac, "%d", (argc - ind));
-	pushMacro(mb->mc, "#", NULL, ac, mb->level, ME_AUTO | ME_LITERAL);
+	pushMacro(mb->mc, "#", NULL, ac, RMIL_LOCAL, ME_AUTO | ME_LITERAL);
 	free(ac);
     }
 
@@ -1012,14 +1024,14 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 	for (c = ind; c < argc; c++) {
 	    char *name = NULL;
 	    rasprintf(&name, "%d", (c - ind + 1));
-	    pushMacro(mb->mc, name, NULL, argv[c], mb->level, ME_AUTO | ME_LITERAL);
+	    pushMacro(mb->mc, name, NULL, argv[c], RMIL_LOCAL, ME_AUTO | ME_LITERAL);
 	    free(name);
 	}
     }
 
     /* Add concatenated unexpanded arguments as yet another macro. */
     args = argvJoin(argv + ind, " ");
-    pushMacro(mb->mc, "*", NULL, args ? args : "", mb->level, ME_AUTO | ME_LITERAL);
+    pushMacro(mb->mc, "*", NULL, args ? args : "", RMIL_LOCAL, ME_AUTO | ME_LITERAL);
     free(args);
 
 exit:
@@ -1089,7 +1101,6 @@ static void doLua(MacroBuf mb, int chkexist, int negate, const char * f, size_t 
     scriptbuf[gn] = '\0';
     rpmluaPushPrintBuffer(lua);
     mc->depth = mb->depth;
-    mc->level = mb->level;
     if (rpmluaRunScript(lua, scriptbuf, name, opts, args) == -1)
 	mb->error = 1;
     mc->depth = odepth;
@@ -1526,13 +1537,8 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	me = (mep ? *mep : NULL);
 
 	if (me) {
-	    if ((me->flags & ME_AUTO) && mb->level > me->level) {
-		/* Ignore out-of-scope automatic macros */
-		me = NULL;
-	    } else {
-		/* If we looked up a macro, consider it used */
-		me->flags |= ME_USED;
-	    }
+	    /* If we looked up a macro, consider it used */
+	    me->flags |= ME_USED;
 	}
 
 	/* XXX Special processing for flags and existance test */
@@ -1611,7 +1617,6 @@ static int doExpandMacros(rpmMacroContext mc, const char *src, int flags,
 
     mb->buf = NULL;
     mb->depth = mc->depth;
-    mb->level = mc->level;
     mb->macro_trace = print_macro_trace;
     mb->expand_trace = print_expand_trace;
     mb->mc = mc;
@@ -1697,7 +1702,11 @@ static void macroTablePush(macroTable mt,
 static void pushMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level, int flags)
 {
-    macroTablePush(&mc->tab, n, o, b, level, flags);
+    if (flags & ME_AUTO || level > 0) {
+	macroTablePush(&mc->local[mc->level], n, o, b, mc->level, flags);
+    } else {
+	macroTablePush(&mc->tab, n, o, b, level, flags);
+    }
 }
 
 static void macroTablePop(macroTable mt, const char * n)

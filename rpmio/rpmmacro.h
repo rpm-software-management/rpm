@@ -44,6 +44,7 @@ extern const char * macrofiles;
 #define	RMIL_SPEC	-3
 #define	RMIL_OLDSPEC	-1
 #define	RMIL_GLOBAL	0
+#define RMIL_LOCAL	1
 
 /* Deprecated compatibility wrappers */
 #define addMacro(_mc, _n, _o, _b, _l) rpmPushMacro(_mc, _n, _o, _b, _l)

@@ -538,7 +538,7 @@ static ARGV_t runCall(const char *cmd,
 	rpmlog(RPMLOG_DEBUG, "Calling %s() on %s\n", cmd, fn);
 
     /* Hack to pass in the path as what looks like a macro argument */
-    rpmPushMacroFlags(NULL, "1", NULL, fn, 1, RPMMACRO_LITERAL);
+    rpmPushMacroFlags(NULL, "1", NULL, fn, RMIL_GLOBAL, RPMMACRO_LITERAL);
     char *exp = rpmExpand(cmd, NULL);
     rpmPopMacro(NULL, "1");
     if (*exp)
