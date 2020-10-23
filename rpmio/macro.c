@@ -997,35 +997,22 @@ exit:
  * @todo Use popt rather than getopt to parse args.
  * @param mb		macro expansion state
  * @param me		macro entry slot
+ * @param argvp		pointer to argv array to store the result
  * @param se		arguments to parse
  * @param lastc		stop parsing at lastc
  * @return		address to continue parsing
  */
 static const char *
-grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
+grabArgs(MacroBuf mb, ARGV_t *argvp, const char * se,
 		const char * lastc)
 {
-    const char *cont = NULL;
-    ARGV_t argv = NULL;
-    /* 
-     * Prepare list of call arguments, starting with macro name as argv[0].
-     * Make a copy of se up to lastc string that we can pass to argvSplit().
-     * Append the results to main argv. 
-     */
-    argvAdd(&argv, me->name);
-    if (lastc) {
-	char *s = NULL;
-
-	/* Expand possible macros in arguments */
-	expandThis(mb, se, lastc-se, &s);
-	splitQuoted(&argv, s, " \t");
-	free(s);
-
-	cont = (*lastc == '\0') || (*lastc == '\n' && *(lastc-1) != '\\') ?
-	       lastc : lastc + 1;
-    }
-    setupArgs(mb, me, argv);
-    return cont;
+    char *s = NULL;
+    /* Expand possible macros in arguments */
+    expandThis(mb, se, lastc-se, &s);
+    splitQuoted(argvp, s, " \t");
+    free(s);
+    return (*lastc == '\0') || (*lastc == '\n' && *(lastc-1) != '\\') ?
+	   lastc : lastc + 1;
 }
 
 static void doBody(MacroBuf mb, int chkexist, int negate,
@@ -1561,10 +1548,12 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	/* Setup args for "%name " macros with opts */
 	rpmMacroEntry prevme = mb->me;
 	ARGV_t prevarg = mb->args;
-	if (me && me->opts != NULL) {
-	    const char *xe = grabArgs(mb, me, fe, lastc);
-	    if (xe != NULL)
-		se = xe;
+	if (me->opts != NULL) {
+	    ARGV_t args = NULL;
+	    argvAdd(&args, me->name);
+	    if (lastc)
+		se = grabArgs(mb, &args, fe, lastc);
+	    setupArgs(mb, me, args);
 	}
 
 	/* Recursively expand body of macro */
