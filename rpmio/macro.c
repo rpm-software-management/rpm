@@ -892,7 +892,6 @@ static void splitQuoted(ARGV_t *av, const char * str, const char * seps)
 static int mbopt(int c, const char *oarg, int oint, void *data)
 {
     MacroBuf mb = data;
-    rpmMacroEntry me = mb->me;
     char *name = NULL, *body = NULL;
 
     /* Define option macros. */

@@ -988,7 +988,7 @@ static int fd_seek(lua_State *L)
     int op = luaL_checkoption(L, 2, "cur", modenames);
     off_t offset = luaL_optinteger(L, 3, 0);
 
-    op = Fseek(*fdp, offset, op);
+    op = Fseek(*fdp, offset, mode[op]);
 
     if (op < 0 || Ferror(*fdp)) {
 	return luaL_error(L, "%s: seek failed: %s",
