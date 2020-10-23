@@ -362,7 +362,7 @@ static void mbErr(MacroBuf mb, int error, const char *fmt, ...)
 	free(pfx);
     }
 
-    if (error)
+    if (error && mb)
 	mb->error = error;
 
     free(emsg);
@@ -871,20 +871,9 @@ static void
 freeArgs(MacroBuf mb)
 {
     rpmMacroContext mc = mb->mc;
-    macroTable mt = &mc->local[mc->level];
 
     /* Delete dynamic macro definitions */
-    for (int i = 0; i < mt->n; i++) {
-	rpmMacroEntry me = mt->tab[i];
-	/* Warn on defined but unused non-automatic, scoped macros */
-	if (!(me->flags & (ME_AUTO|ME_USED))) {
-	    mbErr(mb, 0, _("Macro %%%s defined but not used within scope\n"),
-			me->name);
-	    /* Only whine once */
-	    me->flags |= ME_USED;
-	}
-    }
-    macroTableFree(mt);
+    macroTableFree(&mc->local[mc->level]);
     mc->level--;
     mb->args = argvFree(mb->args);
     mb->me = NULL;
@@ -1718,6 +1707,11 @@ static void macroTablePop(macroTable mt, const char * n)
     /* parting entry */
     rpmMacroEntry me = *mep;
     assert(me);
+    /* Warn on defined but unused non-automatic, scoped macros */
+    if (me->level > 0 && !(me->flags & (ME_AUTO|ME_USED))) {
+	mbErr(NULL, 0, _("Macro %%%s defined but not used within scope\n"),
+		    me->name);
+    }
     /* detach/pop definition */
     mt->tab[pos] = me->prev;
     /* shrink macro table */

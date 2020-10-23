@@ -754,6 +754,20 @@ runroot rpm \
 ])
 AT_CLEANUP
 
+AT_SETUP([%define + %undefine in nested levels 6])
+AT_KEYWORDS([macros define])
+AT_CHECK([
+runroot rpm \
+    --define "foo() %{expand:%define bar hello}111" \
+    --eval "%foo"
+],
+[0],
+[111
+],
+[warning: Macro %bar defined but not used within scope
+])
+AT_CLEANUP
+
 AT_SETUP([%define in conditional macro])
 AT_KEYWORDS([macros])
 AT_CHECK([
