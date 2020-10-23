@@ -923,42 +923,20 @@ static int mbopt(int c, const char *oarg, int oint, void *data)
 }
 
 /**
- * Parse arguments (to next new line) for parameterized macro.
- * @todo Use popt rather than getopt to parse args.
+ * Setup arguments for parameterized macro.
  * @param mb		macro expansion state
  * @param me		macro entry slot
  * @param se		arguments to parse
- * @param lastc		stop parsing at lastc
- * @return		address to continue parsing
+ * @param argv		parsed arguments for the macro
+ * Note that the call takes ownership of the argv
  */
-static const char *
-grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
-		const char * lastc)
+static void
+setupArgs(MacroBuf mb, const rpmMacroEntry me, ARGV_t argv)
 {
-    const char *cont = NULL;
     char *args = NULL;
-    ARGV_t argv = NULL;
-    int argc = 0;
-    int ind = 0;
+    int argc;
+    int ind;
     int c;
-
-    /* 
-     * Prepare list of call arguments, starting with macro name as argv[0].
-     * Make a copy of se up to lastc string that we can pass to argvSplit().
-     * Append the results to main argv. 
-     */
-    argvAdd(&argv, me->name);
-    if (lastc) {
-	char *s = NULL;
-
-	/* Expand possible macros in arguments */
-	expandThis(mb, se, lastc-se, &s);
-	splitQuoted(&argv, s, " \t");
-	free(s);
-
-	cont = (*lastc == '\0') || (*lastc == '\n' && *(lastc-1) != '\\') ?
-	       lastc : lastc + 1;
-    }
 
     /* Bump call depth on entry before first macro define */
     mb->level++;
@@ -1012,6 +990,41 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 exit:
     mb->me = me;
     mb->args = argv;
+}
+
+/**
+ * Parse arguments (to next new line) for parameterized macro.
+ * @todo Use popt rather than getopt to parse args.
+ * @param mb		macro expansion state
+ * @param me		macro entry slot
+ * @param se		arguments to parse
+ * @param lastc		stop parsing at lastc
+ * @return		address to continue parsing
+ */
+static const char *
+grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
+		const char * lastc)
+{
+    const char *cont = NULL;
+    ARGV_t argv = NULL;
+    /* 
+     * Prepare list of call arguments, starting with macro name as argv[0].
+     * Make a copy of se up to lastc string that we can pass to argvSplit().
+     * Append the results to main argv. 
+     */
+    argvAdd(&argv, me->name);
+    if (lastc) {
+	char *s = NULL;
+
+	/* Expand possible macros in arguments */
+	expandThis(mb, se, lastc-se, &s);
+	splitQuoted(&argv, s, " \t");
+	free(s);
+
+	cont = (*lastc == '\0') || (*lastc == '\n' && *(lastc-1) != '\\') ?
+	       lastc : lastc + 1;
+    }
+    setupArgs(mb, me, argv);
     return cont;
 }
 
