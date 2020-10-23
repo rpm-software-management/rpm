@@ -947,7 +947,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 	splitQuoted(&argv, s, " \t");
 	free(s);
 
-	cont = ((*lastc == '\0' || *lastc == '\n') && *(lastc-1) != '\\') ?
+	cont = (*lastc == '\0') || (*lastc == '\n' && *(lastc-1) != '\\') ?
 	       lastc : lastc + 1;
     }
 
