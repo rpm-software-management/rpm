@@ -441,6 +441,15 @@ expandThis(MacroBuf mb, const char * src, size_t slen, char **target)
     return umb.error;
 }
 
+static void mbAllocBuf(MacroBuf mb, size_t slen)
+{
+    size_t blen = MACROBUFSIZ + slen;
+    mb->buf = xmalloc(blen + 1);
+    mb->buf[0] = '\0';
+    mb->tpos = 0;
+    mb->nb = blen;
+}
+
 static void mbAppend(MacroBuf mb, char c)
 {
     if (mb->nb < 1) {
@@ -1377,13 +1386,8 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     source[slen] = '\0';
     s = source;
 
-    if (mb->buf == NULL) {
-	size_t blen = MACROBUFSIZ + slen;
-	mb->buf = xmalloc(blen + 1);
-	mb->buf[0] = '\0';
-	mb->tpos = 0;
-	mb->nb = blen;
-    }
+    if (mb->buf == NULL)
+	mbAllocBuf(mb, slen);
     tpos = mb->tpos; /* save expansion pointer for printExpand */
     store_macro_trace = mb->macro_trace;
     store_expand_trace = mb->expand_trace;
