@@ -1546,15 +1546,17 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	}
 
 	/* Setup args for "%name " macros with opts */
-	rpmMacroEntry prevme = mb->me;
-	ARGV_t prevarg = mb->args;
+	ARGV_t args = NULL;
 	if (me->opts != NULL) {
-	    ARGV_t args = NULL;
 	    argvAdd(&args, me->name);
 	    if (lastc)
 		se = grabArgs(mb, &args, fe, lastc);
-	    setupArgs(mb, me, args);
 	}
+
+	rpmMacroEntry prevme = mb->me;
+	ARGV_t prevarg = mb->args;
+	if (args != NULL)
+	    setupArgs(mb, me, args);
 
 	/* Recursively expand body of macro */
 	if (me->body && *me->body) {
@@ -1565,7 +1567,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	}
 
 	/* Free args for "%name " macros with opts */
-	if (me->opts != NULL)
+	if (args != NULL)
 	    freeArgs(mb);
 	mb->args = prevarg;
 	mb->me = prevme;
