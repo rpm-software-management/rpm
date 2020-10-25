@@ -1,5 +1,6 @@
 #include "system.h"
 
+#include <fcntl.h>
 #include <stdarg.h>
 #include <pthread.h>
 
