@@ -924,9 +924,9 @@ static int mbopt(int c, const char *oarg, int oint, void *data)
 
 /**
  * Setup arguments for parameterized macro.
+ * @todo Use popt rather than getopt to parse args.
  * @param mb		macro expansion state
  * @param me		macro entry slot
- * @param se		arguments to parse
  * @param argv		parsed arguments for the macro
  * Note that the call takes ownership of the argv
  */
@@ -994,9 +994,7 @@ exit:
 
 /**
  * Parse arguments (to next new line) for parameterized macro.
- * @todo Use popt rather than getopt to parse args.
  * @param mb		macro expansion state
- * @param me		macro entry slot
  * @param argvp		pointer to argv array to store the result
  * @param se		arguments to parse
  * @param lastc		stop parsing at lastc
