@@ -1347,6 +1347,34 @@ const char *findMacroEnd(const char *str)
 }
 
 /**
+ * Expand a single macro entry
+ * @param mb		macro expansion state
+ * @param me		macro entry slot
+ * @param args		arguments for parametric macros
+ */
+static void
+doExpandThisMacro(MacroBuf mb, rpmMacroEntry me, ARGV_t args)
+{
+    rpmMacroEntry prevme = mb->me;
+    ARGV_t prevarg = mb->args;
+    /* Setup args for "%name " macros with opts */
+    if (args != NULL)
+	setupArgs(mb, me, args);
+    /* Recursively expand body of macro */
+    if (me->body && *me->body) {
+	if ((me->flags & ME_LITERAL) != 0)
+	    mbAppendStr(mb, me->body);
+	else
+	    expandMacro(mb, me->body, 0);
+    }
+    /* Free args for "%name " macros with opts */
+    if (args != NULL)
+	freeArgs(mb);
+    mb->args = prevarg;
+    mb->me = prevme;
+}
+
+/**
  * The main macro recursion loop.
  * @param mb		macro expansion state
  * @param src		string to expand
@@ -1524,13 +1552,9 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 
 	    if (g && g < ge) {		/* Expand X in %{...:X} */
 		expandMacro(mb, g, gn);
-	    } else
-		if (me && me->body && *me->body) {/* Expand macro body */
-		    if ((me->flags & ME_LITERAL) != 0)
-			mbAppendStr(mb, me->body);
-		    else
-			expandMacro(mb, me->body, 0);
-		}
+	    } else if (me) {
+		doExpandThisMacro(mb, me, NULL);
+	    }
 	    s = se;
 	    continue;
 	}
@@ -1542,35 +1566,16 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    continue;
 	}
 
-	/* Setup args for "%name " macros with opts */
+	/* Grab args for parametric macros */
 	ARGV_t args = NULL;
 	if (me->opts != NULL) {
 	    argvAdd(&args, me->name);
 	    if (lastc)
 		se = grabArgs(mb, &args, fe, lastc);
 	}
-
-	rpmMacroEntry prevme = mb->me;
-	ARGV_t prevarg = mb->args;
+	doExpandThisMacro(mb, me, args);
 	if (args != NULL)
-	    setupArgs(mb, me, args);
-
-	/* Recursively expand body of macro */
-	if (me->body && *me->body) {
-	    if ((me->flags & ME_LITERAL) != 0)
-		mbAppendStr(mb, me->body);
-	    else
-		expandMacro(mb, me->body, 0);
-	}
-
-	/* Free args for "%name " macros with opts */
-	if (args != NULL) {
-	    freeArgs(mb);
 	    argvFree(args);
-	}
-	mb->args = prevarg;
-	mb->me = prevme;
-
 	s = se;
     }
 
