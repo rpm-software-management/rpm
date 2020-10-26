@@ -441,6 +441,19 @@ expandThis(MacroBuf mb, const char * src, size_t slen, char **target)
     return umb.error;
 }
 
+static MacroBuf mbCreate(rpmMacroContext mc, int flags)
+{
+    MacroBuf mb = xcalloc(1, sizeof(*mb));
+    mb->buf = NULL;
+    mb->depth = mc->depth;
+    mb->level = mc->level;
+    mb->macro_trace = print_macro_trace;
+    mb->expand_trace = print_expand_trace;
+    mb->mc = mc;
+    mb->flags = flags;
+    return mb;
+}
+
 static void mbAllocBuf(MacroBuf mb, size_t slen)
 {
     size_t blen = MACROBUFSIZ + slen;
@@ -1596,16 +1609,8 @@ exit:
 static int doExpandMacros(rpmMacroContext mc, const char *src, int flags,
 			char **target)
 {
-    MacroBuf mb = xcalloc(1, sizeof(*mb));
+    MacroBuf mb = mbCreate(mc, flags);
     int rc = 0;
-
-    mb->buf = NULL;
-    mb->depth = mc->depth;
-    mb->level = mc->level;
-    mb->macro_trace = print_macro_trace;
-    mb->expand_trace = print_expand_trace;
-    mb->mc = mc;
-    mb->flags = flags;
 
     rc = expandMacro(mb, src, 0);
 
