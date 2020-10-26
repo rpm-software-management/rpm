@@ -833,71 +833,6 @@ static const char * doDump(MacroBuf mb, const char * se)
 }
 
 
-/**
- * Free parsed arguments for parameterized macro.
- * @param mb		macro expansion state
- */
-static void
-freeArgs(MacroBuf mb)
-{
-    rpmMacroContext mc = mb->mc;
-
-    /* Delete dynamic macro definitions */
-    for (int i = 0; i < mc->n; i++) {
-	rpmMacroEntry me = mc->tab[i];
-	assert(me);
-	if (me->level < mb->level)
-	    continue;
-	/* Warn on defined but unused non-automatic, scoped macros */
-	if (!(me->flags & (ME_AUTO|ME_USED))) {
-	    mbErr(mb, 0, _("Macro %%%s defined but not used within scope\n"),
-			me->name);
-	    /* Only whine once */
-	    me->flags |= ME_USED;
-	}
-
-	/* compensate if the slot is to go away */
-	if (me->prev == NULL)
-	    i--;
-	popMacro(mc, me->name);
-    }
-    mb->level--;
-    mb->args = argvFree(mb->args);
-    mb->me = NULL;
-}
-
-static void splitQuoted(ARGV_t *av, const char * str, const char * seps)
-{
-    const int qchar = 0x1f; /* ASCII unit separator */
-    const char *s = str;
-    const char *start = str;
-    int quoted = 0;
-
-    while (start != NULL) {
-	if (!quoted && strchr(seps, *s)) {
-	    size_t slen = s - start;
-	    /* quoted arguments are always kept, otherwise skip empty args */
-	    if (slen > 0) {
-		char *d, arg[slen + 1];
-		const char *t;
-		for (d = arg, t = start; t - start < slen; t++) {
-		    if (*t == qchar)
-			continue;
-		    *d++ = *t;
-		}
-		arg[d - arg] = '\0';
-		argvAdd(av, arg);
-	    }
-	    start = s + 1;
-	}
-	if (*s == qchar)
-	    quoted = !quoted;
-	else if (*s == '\0')
-	    start = NULL;
-	s++;
-    }
-}
-
 static int mbopt(int c, const char *oarg, int oint, void *data)
 {
     MacroBuf mb = data;
@@ -990,6 +925,71 @@ setupArgs(MacroBuf mb, const rpmMacroEntry me, ARGV_t argv)
 exit:
     mb->me = me;
     mb->args = argv;
+}
+
+/**
+ * Free parsed arguments for parameterized macro.
+ * @param mb		macro expansion state
+ */
+static void
+freeArgs(MacroBuf mb)
+{
+    rpmMacroContext mc = mb->mc;
+
+    /* Delete dynamic macro definitions */
+    for (int i = 0; i < mc->n; i++) {
+	rpmMacroEntry me = mc->tab[i];
+	assert(me);
+	if (me->level < mb->level)
+	    continue;
+	/* Warn on defined but unused non-automatic, scoped macros */
+	if (!(me->flags & (ME_AUTO|ME_USED))) {
+	    mbErr(mb, 0, _("Macro %%%s defined but not used within scope\n"),
+			me->name);
+	    /* Only whine once */
+	    me->flags |= ME_USED;
+	}
+
+	/* compensate if the slot is to go away */
+	if (me->prev == NULL)
+	    i--;
+	popMacro(mc, me->name);
+    }
+    mb->level--;
+    mb->args = argvFree(mb->args);
+    mb->me = NULL;
+}
+
+static void splitQuoted(ARGV_t *av, const char * str, const char * seps)
+{
+    const int qchar = 0x1f; /* ASCII unit separator */
+    const char *s = str;
+    const char *start = str;
+    int quoted = 0;
+
+    while (start != NULL) {
+	if (!quoted && strchr(seps, *s)) {
+	    size_t slen = s - start;
+	    /* quoted arguments are always kept, otherwise skip empty args */
+	    if (slen > 0) {
+		char *d, arg[slen + 1];
+		const char *t;
+		for (d = arg, t = start; t - start < slen; t++) {
+		    if (*t == qchar)
+			continue;
+		    *d++ = *t;
+		}
+		arg[d - arg] = '\0';
+		argvAdd(av, arg);
+	    }
+	    start = s + 1;
+	}
+	if (*s == qchar)
+	    quoted = !quoted;
+	else if (*s == '\0')
+	    start = NULL;
+	s++;
+    }
 }
 
 /**
