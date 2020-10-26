@@ -1603,6 +1603,75 @@ exit:
     return mb->error;
 }
 
+/**
+ * Expand a single macro
+ * @param mb		macro expansion state
+ * @param me		macro entry slot
+ * @param args		arguments for parametric macros
+ * @param flags		expandsion flags
+ * @return		0 on success, 1 on failure
+ */
+static int
+expandThisMacro(MacroBuf mb, rpmMacroEntry me, ARGV_const_t args, int flags)
+{
+    int store_macro_trace;
+    int store_expand_trace;
+    size_t tpos;
+    ARGV_t optargs = NULL;
+
+    if (mb->buf == NULL)
+	mbAllocBuf(mb, 0);
+
+    if (++mb->depth > max_macro_depth) {
+	mbErr(mb, 1,
+		_("Too many levels of recursion in macro expansion. It is likely caused by recursive macro declaration.\n"));
+	mb->depth--;
+	mb->expand_trace = 1;
+	goto exit;
+    }
+
+    if (mb->macro_trace) {
+	ARGV_const_t av = args;
+	fprintf(stderr, "%3d>%*s%%%s", mb->depth, (2 * mb->depth + 1), "", me->name);
+	for (av = args; av && *av; av++)
+	    fprintf(stderr, " %s", *av);
+	fprintf(stderr, "\n");
+    }
+
+    tpos = mb->tpos; /* save expansion pointer for printExpand */
+    store_macro_trace = mb->macro_trace;
+    store_expand_trace = mb->expand_trace;
+
+    /* prepare arguments for parametric macros */
+    if (me->opts) {
+	argvAdd(&optargs, me->name);
+	if ((flags & RPMEXPAND_EXPAND_ARGS) != 0) {
+	    ARGV_const_t av = args;
+	    for (av = args; av && *av; av++) {
+		char *s = NULL;
+		expandThis(mb, *av, 0, &s);
+		argvAdd(&optargs, s);
+		free(s);
+	    }
+	} else {
+	    argvAppend(&optargs, args);
+	}
+    }
+
+    doExpandThisMacro(mb, me, optargs);
+    if (optargs)
+	argvFree(optargs);
+
+    mb->buf[mb->tpos] = '\0';
+    mb->depth--;
+    if (mb->error != 0 || mb->expand_trace)
+	printExpansion(mb, mb->buf+tpos, mb->buf+mb->tpos);
+
+    mb->macro_trace = store_macro_trace;
+    mb->expand_trace = store_expand_trace;
+exit:
+    return mb->error;
+}
 
 /* =============================================================== */
 
@@ -1790,6 +1859,31 @@ int rpmExpandMacros(rpmMacroContext mc, const char * sbuf, char ** obuf, int fla
     rc = doExpandMacros(mc, sbuf, flags, &target);
     rpmmctxRelease(mc);
 
+    if (rc) {
+	free(target);
+	return -1;
+    } else {
+	*obuf = target;
+	return 1;
+    }
+}
+
+int rpmExpandThisMacro(rpmMacroContext mc, const char *n,  ARGV_const_t args, char ** obuf, int flags)
+{
+    rpmMacroEntry *mep;
+    char *target = NULL;
+    int rc = 1; /* assume failure */
+
+    mc = rpmmctxAcquire(mc);
+    mep = findEntry(mc, n, 0, NULL);
+    if (mep) {
+	MacroBuf mb = mbCreate(mc, flags);
+	rc = expandThisMacro(mb, *mep, args, flags);
+	mb->buf[mb->tpos] = '\0';	/* XXX just in case */
+	target = xrealloc(mb->buf, mb->tpos + 1);
+	_free(mb);
+    }
+    rpmmctxRelease(mc);
     if (rc) {
 	free(target);
 	return -1;
