@@ -863,7 +863,6 @@ static int mbopt(int c, const char *oarg, int oint, void *data)
  * @param mb		macro expansion state
  * @param me		macro entry slot
  * @param argv		parsed arguments for the macro
- * Note that the call takes ownership of the argv
  */
 static void
 setupArgs(MacroBuf mb, const rpmMacroEntry me, ARGV_t argv)
@@ -956,7 +955,7 @@ freeArgs(MacroBuf mb)
 	popMacro(mc, me->name);
     }
     mb->level--;
-    mb->args = argvFree(mb->args);
+    mb->args = NULL;
     mb->me = NULL;
 }
 
@@ -1565,8 +1564,10 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	}
 
 	/* Free args for "%name " macros with opts */
-	if (args != NULL)
+	if (args != NULL) {
 	    freeArgs(mb);
+	    argvFree(args);
+	}
 	mb->args = prevarg;
 	mb->me = prevme;
 
