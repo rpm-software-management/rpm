@@ -31,6 +31,8 @@ then) this:
 
 Each of these tags also has a version with a RPMTAG_ prefix, such as
 RPMTAG_NAME. You can use this tags with or without the RPMTAG_ prefix.
+More detailed documentation about the tags can be found in the
+[tag documentation](tags.md).
 
 A tag can consist of one element or an array of elements. Each element can
 be a string or number only.
