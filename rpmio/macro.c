@@ -110,6 +110,15 @@ typedef struct MacroBuf_s {
     rpmMacroContext mc;
 } * MacroBuf;
 
+/**
+  * Expansion data for a scoping level
+  */
+typedef struct MacroExpansionData_s {
+    size_t tpos;
+    int macro_trace;
+    int expand_trace;
+} MacroExpansionData;
+
 #define	_MAX_MACRO_DEPTH	64
 static int max_macro_depth = _MAX_MACRO_DEPTH;
 
@@ -461,6 +470,33 @@ static void mbAllocBuf(MacroBuf mb, size_t slen)
     mb->buf[0] = '\0';
     mb->tpos = 0;
     mb->nb = blen;
+}
+
+static int mbInit(MacroBuf mb, MacroExpansionData *med, size_t slen)
+{
+    if (mb->buf == NULL)
+	mbAllocBuf(mb, slen);
+    if (++mb->depth > max_macro_depth) {
+	mbErr(mb, 1,
+		_("Too many levels of recursion in macro expansion. It is likely caused by recursive macro declaration.\n"));
+	mb->depth--;
+	mb->expand_trace = 1;
+	return -1;
+    }
+    med->tpos = mb->tpos; /* save expansion pointer for printExpand */
+    med->macro_trace = mb->macro_trace;
+    med->expand_trace = mb->expand_trace;
+    return 0;
+}
+
+static void mbFini(MacroBuf mb, MacroExpansionData *med)
+{
+    mb->buf[mb->tpos] = '\0';
+    mb->depth--;
+    if (mb->error != 0 || mb->expand_trace)
+	printExpansion(mb, mb->buf + med->tpos, mb->buf + mb->tpos);
+    mb->macro_trace = med->macro_trace;
+    mb->expand_trace = med->expand_trace;
 }
 
 static void mbAppend(MacroBuf mb, char c)
@@ -1402,14 +1438,13 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     const char *s = src, *se;
     const char *f, *fe;
     const char *g, *ge;
-    size_t fn, gn, tpos;
+    size_t fn, gn;
     int c;
     int negate;
     const char * lastc;
     int chkexist;
     char *source = NULL;
-    int store_macro_trace;
-    int store_expand_trace;
+    MacroExpansionData med;
 
     /*
      * Always make a (terminated) copy of the source string.
@@ -1424,19 +1459,8 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     source[slen] = '\0';
     s = source;
 
-    if (mb->buf == NULL)
-	mbAllocBuf(mb, slen);
-    tpos = mb->tpos; /* save expansion pointer for printExpand */
-    store_macro_trace = mb->macro_trace;
-    store_expand_trace = mb->expand_trace;
-
-    if (++mb->depth > max_macro_depth) {
-	mbErr(mb, 1,
-		_("Too many levels of recursion in macro expansion. It is likely caused by recursive macro declaration.\n"));
-	mb->depth--;
-	mb->expand_trace = 1;
+    if (mbInit(mb, &med, slen) != 0)
 	goto exit;
-    }
 
     while (mb->error == 0 && (c = *s) != '\0') {
 	const struct builtins_s* builtin = NULL;
@@ -1459,7 +1483,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	f = fe = NULL;
 	g = ge = NULL;
 	if (mb->depth > 1)	/* XXX full expansion for outermost level */
-	    tpos = mb->tpos;	/* save expansion pointer for printExpand */
+	    med.tpos = mb->tpos;	/* save expansion pointer for printExpand */
 	lastc = NULL;
 	if ((se = findMacroEnd(s)) == NULL) {
 	    mbErr(mb, 1, _("Unterminated %c: %s\n"), (char)*s, s);
@@ -1592,12 +1616,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	s = se;
     }
 
-    mb->buf[mb->tpos] = '\0';
-    mb->depth--;
-    if (mb->error != 0 || mb->expand_trace)
-	printExpansion(mb, mb->buf+tpos, mb->buf+mb->tpos);
-    mb->macro_trace = store_macro_trace;
-    mb->expand_trace = store_expand_trace;
+    mbFini(mb, &med);
 exit:
     _free(source);
     return mb->error;
@@ -1614,21 +1633,11 @@ exit:
 static int
 expandThisMacro(MacroBuf mb, rpmMacroEntry me, ARGV_const_t args, int flags)
 {
-    int store_macro_trace;
-    int store_expand_trace;
-    size_t tpos;
+    MacroExpansionData med;
     ARGV_t optargs = NULL;
 
-    if (mb->buf == NULL)
-	mbAllocBuf(mb, 0);
-
-    if (++mb->depth > max_macro_depth) {
-	mbErr(mb, 1,
-		_("Too many levels of recursion in macro expansion. It is likely caused by recursive macro declaration.\n"));
-	mb->depth--;
-	mb->expand_trace = 1;
+    if (mbInit(mb, &med, 0) != 0)
 	goto exit;
-    }
 
     if (mb->macro_trace) {
 	ARGV_const_t av = args;
@@ -1637,10 +1646,6 @@ expandThisMacro(MacroBuf mb, rpmMacroEntry me, ARGV_const_t args, int flags)
 	    fprintf(stderr, " %s", *av);
 	fprintf(stderr, "\n");
     }
-
-    tpos = mb->tpos; /* save expansion pointer for printExpand */
-    store_macro_trace = mb->macro_trace;
-    store_expand_trace = mb->expand_trace;
 
     /* prepare arguments for parametric macros */
     if (me->opts) {
@@ -1662,13 +1667,7 @@ expandThisMacro(MacroBuf mb, rpmMacroEntry me, ARGV_const_t args, int flags)
     if (optargs)
 	argvFree(optargs);
 
-    mb->buf[mb->tpos] = '\0';
-    mb->depth--;
-    if (mb->error != 0 || mb->expand_trace)
-	printExpansion(mb, mb->buf+tpos, mb->buf+mb->tpos);
-
-    mb->macro_trace = store_macro_trace;
-    mb->expand_trace = store_expand_trace;
+    mbFini(mb, &med);
 exit:
     return mb->error;
 }
