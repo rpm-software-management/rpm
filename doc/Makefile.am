@@ -25,6 +25,9 @@ endif
 if IMA
 man_man8_DATA += rpm-plugin-ima.8
 endif
+if FAPOLICYD
+man_man8_DATA += rpm-plugin-fapolicyd.8
+endif
 if SELINUX
 man_man8_DATA += rpm-plugin-selinux.8
 endif
@@ -37,6 +40,8 @@ endif
 EXTRA_DIST += rpm-plugins.8 rpm-plugin-prioreset.8 rpm-plugin-syslog.8 
 EXTRA_DIST += rpm-plugin-audit.8 rpm-plugin-systemd-inhibit.8 
 EXTRA_DIST += rpm-plugin-ima.8 rpm-plugin-selinux.8 rpm2archive.8
+EXTRA_DIST += rpm-plugin-fapolicyd.8
+
 
 man_fr_man8dir = $(mandir)/fr/man8
 man_fr_man8_DATA = fr/rpm.8

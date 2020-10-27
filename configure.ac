@@ -846,6 +846,14 @@ AC_CHECK_HEADERS([linux/fsverity.h],[FSVERITY_IOCTL="yes"])
 AM_CONDITIONAL(FSVERITY_IOCTL,[test "x$FSVERITY_IOCTL" = xyes])
 
 #=================
+# Check for fapolicyd support
+AC_ARG_WITH(fapolicyd,
+AS_HELP_STRING([--with-fapolicyd],[build with File Access Policy Daemon support]),
+with_fapolicyd=$withval,
+with_fapolicyd=auto)
+AM_CONDITIONAL(FAPOLICYD,[test "$with_fapolicyd" = yes])
+
+#=================
 # Check for audit library.
 AC_ARG_WITH(audit,
 AS_HELP_STRING([--with-audit],[Linux audit plugin]),

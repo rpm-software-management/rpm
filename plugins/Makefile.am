@@ -43,6 +43,12 @@ ima_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la
 plugins_LTLIBRARIES += ima.la
 endif
 
+if FAPOLICYD
+fapolicyd_la_sources = fapolicyd.c
+fapolicyd_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la
+plugins_LTLIBRARIES += fapolicyd.la
+endif
+
 if FSVERITY_IOCTL
 fsverity_la_sources = fsverity.c
 fsverity_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la

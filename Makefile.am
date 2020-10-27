@@ -14,6 +14,7 @@ DISTCHECK_CONFIGURE_FLAGS = \
 	--with-audit \
 	--with-selinux \
 	--with-imaevm \
+	--with-fapolicyd \
 	--with-fsverity \
 	--disable-dependency-tracking
 
