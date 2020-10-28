@@ -245,7 +245,7 @@ rpmts_SolveCallback(rpmts ts, rpmds ds, const void * data)
     args = Py_BuildValue("(OiNNi)", cbInfo->tso,
 		rpmdsTagN(ds), utf8FromString(rpmdsN(ds)),
 		utf8FromString(rpmdsEVR(ds)), rpmdsFlags(ds));
-    result = PyEval_CallObject(cbInfo->cb, args);
+    result = PyObject_Call(cbInfo->cb, args, NULL);
     Py_DECREF(args);
 
     if (!result) {
@@ -553,7 +553,7 @@ rpmtsCallback(const void * arg, const rpmCallbackType what,
 	Py_DECREF(o);
     }
 
-    result = PyEval_CallObject(cbInfo->cb, args);
+    result = PyObject_Call(cbInfo->cb, args, NULL);
     Py_DECREF(args);
 
     if (!result) {
