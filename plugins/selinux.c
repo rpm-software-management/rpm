@@ -98,7 +98,7 @@ static rpmRC selinux_psm_pre(rpmPlugin plugin, rpmte te)
 static int setexecfilecon(const char *path, const char *fallback_type)
 {
     int rc = -1;
-    security_context_t mycon = NULL, fcon = NULL, newcon = NULL;
+    char *mycon = NULL, fcon = NULL, newcon = NULL;
     context_t con = NULL;
 
     /* Figure the context to for next exec() */
@@ -162,7 +162,7 @@ static rpmRC selinux_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
     rpmFileAction action = XFO_ACTION(op);
 
     if (sehandle && !XFA_SKIPPING(action)) {
-	security_context_t scon = NULL;
+	char *scon = NULL;
 	if (selabel_lookup_raw(sehandle, &scon, dest, file_mode) == 0) {
 	    int conrc = lsetfilecon(path, scon);
 
