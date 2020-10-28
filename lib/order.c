@@ -216,8 +216,8 @@ static inline int addRelation(rpmts ts,
 /**
  * Add element to list sorting by tsi_qcnt.
  * @param p		new element
- * @retval qp		address of first element
- * @retval rp		address of last element
+ * @param[out] qp		address of first element
+ * @param[out] rp		address of last element
  * @param prefcolor
  */
 static void addQ(tsortInfo p, tsortInfo * qp, tsortInfo * rp,

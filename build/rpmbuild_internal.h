@@ -282,8 +282,8 @@ int readLine(rpmSpec spec, int strip);
  * Read next line from spec file.
  * @param spec		spec file control structure
  * @param strip		truncate comments?
- * @retval avp		pointer to argv (optional, alloced)
- * @retval sbp		pointer to string buf (optional, alloced)
+ * @param[out] avp		pointer to argv (optional, alloced)
+ * @param[out] sbp		pointer to string buf (optional, alloced)
  * @return		next spec part or PART_ERROR on error
  */
 RPM_GNUC_INTERNAL
@@ -425,7 +425,7 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char * name,
  * @param spec		spec file control structure
  * @param name		(sub-)package name
  * @param flag		if PART_SUBNAME, then 1st package name is prepended
- * @retval pkg		package control structure
+ * @param[out] pkg		package control structure
  * @return		0 on success, 1 on failure
  */
 RPM_GNUC_INTERNAL
@@ -483,7 +483,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg);
  * Return helper output.
  * @param av		helper argv (with possible macros)
  * @param sb_stdin	helper input
- * @retval *sb_stdoutp	helper output
+ * @param[out] *sb_stdoutp	helper output
  * @param failnonzero	IS non-zero helper exit status a failure?
  * @param buildRoot	buildRoot directory (or NULL)
  */
@@ -522,7 +522,7 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating);
 /** \ingroup rpmbuild
  * Generate source package.
  * @param spec		spec file control structure
- * @retval cookie	build identifier "cookie" or NULL
+ * @param[out] cookie	build identifier "cookie" or NULL
  * @return		RPMRC_OK on success
  */
 RPM_GNUC_INTERNAL

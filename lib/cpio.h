@@ -53,9 +53,9 @@ ssize_t rpmcpioWrite(rpmcpio_t cpio, const void * buf, size_t size);
  * rpmcpioSetExpectedFileSize() needs to be called with the file size of the
  * payload content - with may be zero for hard links, directory or other
  * special files.
- * @retval fsm		file path and stat info
- * @retval path		path of the file
- * @retval fx		number in the header of the file read
+ * @param[out] fsm		file path and stat info
+ * @param[out] path		path of the file
+ * @param[out] fx		number in the header of the file read
  * @return		0 on success
  */
 RPM_GNUC_INTERNAL

@@ -35,7 +35,7 @@ static int sameDate(const struct tm *ot, const struct tm *nt)
  * accepted date formats are "Mon Jun 6 2016" (original one)
  * and "Thu Oct  6 06:48:39 CEST 2016" (extended one)
  * @param datestr	date string (e.g. 'Wed Jan 1 1997')
- * @retval secs		secs since the unix epoch
+ * @param[out] secs		secs since the unix epoch
  * @return 		0 on success, -1 on error
  */
 static int dateToTimet(const char * datestr, time_t * secs, int * date_words)

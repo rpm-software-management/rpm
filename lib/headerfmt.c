@@ -287,9 +287,9 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
  * Parse a headerSprintf term.
  * @param hsa		headerSprintf args
  * @param str
- * @retval *formatPtr
- * @retval *numTokensPtr
- * @retval *endPtr
+ * @param[out] *formatPtr
+ * @param[out] *numTokensPtr
+ * @param[out] *endPtr
  * @param state
  * @return		0 on success
  */
@@ -609,9 +609,9 @@ static rpmtd getCached(tagCache cache, rpmTagVal tag)
  * Do headerGet() just once for given tag, cache results.
  * @param hsa		headerSprintf args
  * @param tag
- * @retval *typeptr
- * @retval *data
- * @retval *countptr
+ * @param[out] *typeptr
+ * @param[out] *data
+ * @param[out] *countptr
  * @return		1 on success, 0 on failure
  */
 static rpmtd getData(headerSprintfArgs hsa, rpmTagVal tag)

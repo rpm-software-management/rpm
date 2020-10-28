@@ -866,7 +866,7 @@ static VFA_t const virtualAttrs[] = {
  * Parse simple attributes (e.g. %dir) from file manifest.
  * @param buf		current spec file line
  * @param cur		current file entry data
- * @retval *fileNames	file names
+ * @param[out] *fileNames	file names
  * @return		RPMRC_OK on success
  */
 static rpmRC parseForSimple(char * buf, FileEntry cur, ARGV_t * fileNames)

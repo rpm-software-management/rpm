@@ -34,7 +34,7 @@ struct headerTagFunc_s {
  * @param h		header
  * @param tagN		RPMTAG_BASENAMES | PMTAG_ORIGBASENAMES
  * @param withstate	take file state into account?
- * @retval td		tag data container
+ * @param[out] td		tag data container
  * @return		1 on success
  */
 static int fnTag(Header h, rpmTag tagN, int withstate, rpmtd td)
@@ -201,7 +201,7 @@ typedef enum tMode_e {
  * Retrieve trigger info.
  * @param mode		type of trigger (see tMode_e)
  * @param h		header
- * @retval td		tag data container
+ * @param[out] td		tag data container
  * @param hgflags	header get flags
  * @return		1 on success
  */
@@ -317,7 +317,7 @@ static int transfiletriggercondsTag(Header h, rpmtd td, headerGetFlags hgflags)
  * Retrieve trigger type info.
  * @param mode		type of trigger (see tMode_e)
  * @param h		header
- * @retval td		tag data container
+ * @param[out] td		tag data container
  * @param hgflags	header get flags
  * @return		1 on success
  */
@@ -408,7 +408,7 @@ static int transfiletriggertypeTag(Header h, rpmtd td, headerGetFlags hgflags)
 /**
  * Retrieve installed file paths.
  * @param h		header
- * @retval td		tag data container
+ * @param[out] td		tag data container
  * @param hgflags	header get flags
  * @return		1 on success
  */
@@ -420,7 +420,7 @@ static int instfilenamesTag(Header h, rpmtd td, headerGetFlags hgflags)
 /**
  * Retrieve file paths.
  * @param h		header
- * @retval td		tag data container
+ * @param[out] td		tag data container
  * @param hgflags	header get flags
  * @return		1 on success
  */
@@ -432,7 +432,7 @@ static int filenamesTag(Header h, rpmtd td, headerGetFlags hgflags)
 /**
  * Retrieve original file paths (wrt relocation).
  * @param h		header
- * @retval td		tag data container
+ * @param[out] td		tag data container
  * @param hgflags	header get flags
  * @return		1 on success
  */
@@ -483,7 +483,7 @@ static char *makeFClass(rpmfi fi)
 /**
  * Retrieve/generate file classes.
  * @param h		header
- * @retval td		tag data container
+ * @param[out] td		tag data container
  * @param hgflags	header get flags
  * @return		1 on success
  */
@@ -514,7 +514,7 @@ static int fileclassTag(Header h, rpmtd td, headerGetFlags hgflags)
 /**
  * Retrieve file provides.
  * @param h		header
- * @retval td		tag data container
+ * @param[out] td		tag data container
  * @param hgflags	header get flags
  * @return		1 on success
  */
@@ -526,7 +526,7 @@ static int fileprovideTag(Header h, rpmtd td, headerGetFlags hgflags)
 /**
  * Retrieve file requires.
  * @param h		header
- * @retval td		tag data container
+ * @param[out] td		tag data container
  * @param hgflags	header get flags
  * @return		1 on success
  */
@@ -548,7 +548,7 @@ static const char * const _macro_i18ndomains = "%{?_i18ndomains}";
  * Retrieve i18n text.
  * @param h		header
  * @param tag		tag
- * @retval td		tag data container
+ * @param[out] td		tag data container
  * @param hgflags	header get flags
  * @return		1 on success
  */
@@ -613,7 +613,7 @@ static int i18nTag(Header h, rpmTag tag, rpmtd td, headerGetFlags hgflags)
 /**
  * Retrieve summary text.
  * @param h		header
- * @retval td		tag data container
+ * @param[out] td		tag data container
  * @param hgflags	header get flags
  * @return		1 on success
  */
@@ -625,7 +625,7 @@ static int summaryTag(Header h, rpmtd td, headerGetFlags hgflags)
 /**
  * Retrieve description text.
  * @param h		header
- * @retval td		tag data container
+ * @param[out] td		tag data container
  * @param hgflags	header get flags
  * @return		1 on success
  */
@@ -637,7 +637,7 @@ static int descriptionTag(Header h, rpmtd td, headerGetFlags hgflags)
 /**
  * Retrieve group text.
  * @param h		header
- * @retval td		tag data container
+ * @param[out] td		tag data container
  * @param hgflags	header get flags
  * @return		1 on success
  */
@@ -684,7 +684,7 @@ static int get64(Header h, rpmtd td, rpmTag newtag, rpmTag oldtag)
 /**
  * Retrieve file sizes as 64bit regardless of how they're stored.
  * @param h		header
- * @retval td		tag data container
+ * @param[out] td		tag data container
  * @param hgflags	header get flags
  * @return		1 on success
  */

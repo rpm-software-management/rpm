@@ -20,7 +20,7 @@ typedef struct rpmpsm_s * rpmpsm;
  * @param te		transaction set element
  * @param files		transaction element file info
  * @param psm		owner psm (or NULL)
- * @retval failedFile	pointer to first file name that failed (malloced)
+ * @param[out] failedFile	pointer to first file name that failed (malloced)
  * @return		0 on success
  */
 

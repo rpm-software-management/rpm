@@ -48,7 +48,7 @@ static const char * fileActionString(rpmFileAction a);
  * Build path to file from file info, optionally ornamented with suffix.
  * @param fi		file info iterator
  * @param suffix	suffix to use (NULL disables)
- * @retval		path to file (malloced)
+ * @param[out]		path to file (malloced)
  */
 static char * fsmFsPath(rpmfi fi, const char * suffix)
 {
@@ -69,7 +69,7 @@ typedef struct dnli_s {
 /** \ingroup payload
  * Destroy directory name iterator.
  * @param dnli		directory name iterator
- * @retval		NULL always
+ * @param[out]		NULL always
  */
 static DNLI_t dnlFreeIterator(DNLI_t dnli)
 {

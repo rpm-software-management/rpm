@@ -34,8 +34,8 @@ DIGEST_CTX fdDupDigest(FD_t fd, int id);
 /**
  * Read an entire file into a buffer.
  * @param fn		file name to read
- * @retval *bp		(malloc'd) buffer address
- * @retval *blenp	(malloc'd) buffer length
+ * @param[out] *bp		(malloc'd) buffer address
+ * @param[out] *blenp	(malloc'd) buffer length
  * @return		0 on success
  */
 int rpmioSlurp(const char * fn,

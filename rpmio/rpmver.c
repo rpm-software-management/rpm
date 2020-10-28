@@ -16,9 +16,9 @@ struct rpmver_s {
 /**
  * Split EVR into epoch, version, and release components.
  * @param evr		[epoch:]version[-release] string
- * @retval *ep		pointer to epoch
- * @retval *vp		pointer to version
- * @retval *rp		pointer to release
+ * @param[out] *ep		pointer to epoch
+ * @param[out] *vp		pointer to version
+ * @param[out] *rp		pointer to release
  */
 static
 void parseEVR(char * evr,

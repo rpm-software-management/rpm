@@ -99,7 +99,7 @@ off_t rpmcpioTell(rpmcpio_t cpio)
 /**
  * Convert string to unsigned integer (with buffer size check).
  * @param str		input string
- * @retval endptr	address of 1st character not processed
+ * @param[out] endptr	address of 1st character not processed
  * @param base		numerical conversion base
  * @param num		max no. of bytes to read
  * @return		converted integer

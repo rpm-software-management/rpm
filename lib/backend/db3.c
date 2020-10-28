@@ -924,7 +924,7 @@ static int db3_dbiOpen(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flag
  * Convert retrieved data to index set.
  * @param dbi		index database handle
  * @param data		retrieved data
- * @retval setp		(malloc'ed) index set
+ * @param[out] setp		(malloc'ed) index set
  * @return		0 on success
  */
 static int dbt2set(dbiIndex dbi, DBT * data, dbiIndexSet * setp)

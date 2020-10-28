@@ -1242,7 +1242,7 @@ static int headerMatchLocale(const char *td, const char *l, const char *le)
  * Return i18n string from header that matches locale.
  * @param h		header
  * @param entry		i18n string data
- * @retval td		tag data container
+ * @param[out] td		tag data container
  * @param flags		flags to control allocation
  * @return		1 always
  */
@@ -1310,7 +1310,7 @@ exit:
 /**
  * Retrieve tag data from header.
  * @param h		header
- * @retval td		tag data container
+ * @param[out] td		tag data container
  * @param flags		flags to control retrieval
  * @return		1 on success, 0 on not found
  */
@@ -1391,7 +1391,7 @@ static void copyData(rpm_tagtype_t type, rpm_data_t dstPtr,
  * @param type		entry data type
  * @param p		entry data
  * @param c		entry item count
- * @retval lengthPtr	no. bytes in returned data
+ * @param[out] lengthPtr	no. bytes in returned data
  * @return 		(malloc'ed) copy of entry data, NULL on error
  */
 static void *
