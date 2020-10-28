@@ -11,15 +11,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-03-23 08:40-0400\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: Turkish (http://www.transifex.com/rpm-team/rpm/language/tr/)\n"
+"PO-Revision-Date: 2020-10-16 20:30+0000\n"
+"Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
+"Language-Team: Turkish <https://translate.fedoraproject.org/projects/rpm/"
+"master/tr/>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Zanata 4.6.2\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+"X-Generator: Weblate 4.2.2\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -62,6 +63,8 @@ msgstr "payload %s tekrar açılamıyor\n"
 #, c-format
 msgid "files over 4GB not supported by cpio, use rpm2archive instead\n"
 msgstr ""
+"4GB üzerindeki dosyalar cpio tarafından desteklenmez, bunun yerine "
+"rpm2archive kullanın\n"
 
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
@@ -70,8 +73,8 @@ msgstr "buildroot zaten belirtilmiş, %s yoksayılıyor\n"
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr ""
-"<specDosyası>ndan  %prep adımı sayesinde oluşturulur (kaynak paketi açılır "
-"ve yamalar uygulanır)"
+"<specDosyası>ndan %prep adımı sayesinde oluşturulur (kaynak paketi açılır ve "
+"yamalar uygulanır)"
 
 msgid "<specfile>"
 msgstr "<specDosyası>"
@@ -244,7 +247,7 @@ msgstr "tar veriyolu açılamadı: %m\n"
 
 #, c-format
 msgid "Found more than one spec file in %s\n"
-msgstr ""
+msgstr "%s içinde birden fazla spec dosyası bulundu\n"
 
 #, c-format
 msgid "Failed to read spec file from %s\n"
@@ -280,7 +283,7 @@ msgid "rebuild database inverted lists from installed package headers"
 msgstr "kurulu paket başlıklarından veritabanı listelerini yeniden oluşturur"
 
 msgid "verify database files"
-msgstr "veritabanı dosyaralını doğrular"
+msgstr "veri tabanı dosyalarını doğrular"
 
 #, fuzzy
 msgid "salvage database"
@@ -314,7 +317,7 @@ msgid "Keyring options:"
 msgstr "Anahtarlık seçenekleri:"
 
 msgid "no arguments given"
-msgstr ""
+msgstr "hiç argüman belirtilmedi"
 
 msgid "Query/Verify package selection options:"
 msgstr ""
@@ -323,10 +326,10 @@ msgid "Query/Verify file selection options:"
 msgstr ""
 
 msgid "Query options (with -q or --query):"
-msgstr "Sorgulama seçenekleri (-q ya da --query ile)"
+msgstr "Sorgulama seçenekleri (-q ya da --query ile):"
 
 msgid "Verify options (with -V or --verify):"
-msgstr "Denetleme seçenekleri (-V ya da --verify ile)"
+msgstr "Doğrulama seçenekleri (-V ya da --verify ile):"
 
 msgid "Install/Upgrade/Erase options:"
 msgstr "Kurma/Güncelleme/Kaldırma seçenekleri:"
@@ -634,9 +637,9 @@ msgstr "Dosya bulunamadı: %s\n"
 msgid "Not a directory: %s\n"
 msgstr "Dizin değil: %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't read content of file: %s\n"
-msgstr "dosyaların sahipleri doğrulanmaz"
+msgstr "Dosyanın içeriği okunamıyor: %s\n"
 
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
@@ -710,9 +713,9 @@ msgstr ""
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open %s file %s: %m\n"
-msgstr "%s açılamadı: %s\n"
+msgstr "%s dosyası açılamadı %s: %m\n"
 
 #, fuzzy, c-format
 msgid "Empty %s file %s\n"
@@ -755,9 +758,9 @@ msgid ""
 "%s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s already exists\n"
-msgstr "%s zaten kurulu"
+msgstr "%s paketi zaten var\n"
 
 #, c-format
 msgid "%s was mapped to multiple filenames"
@@ -1371,7 +1374,7 @@ msgstr "%s ya çok büyük ya da çok küçük 'integer' değer içeriyor, atlan
 
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
-msgstr "%s kilit  %s/%s'den alınamadı\n"
+msgstr "%s kilit %s/%s'den alınamadı\n"
 
 msgid "shared"
 msgstr "paylaşımlı"
@@ -1892,15 +1895,15 @@ msgstr "hiçbir %%triggerprein betiği çalıştırılmaz"
 
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
-msgstr "hiçbir %%triggerin betiği çalıştırılmaz."
+msgstr "hiçbir %%triggerin betiği çalıştırılmaz"
 
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
-msgstr "hiçbir %%triggerun betiği çalıştırılmaz."
+msgstr "hiçbir %%triggerun betiği çalıştırılmaz"
 
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
-msgstr "hiçbir %%triggerpostun betiği çalıştırılmaz."
+msgstr "hiçbir %%triggerpostun betiği çalıştırılmaz"
 
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
@@ -1982,7 +1985,7 @@ msgid "query/verify the package(s) which obsolete a dependency"
 msgstr ""
 
 msgid "query/verify the package(s) which provide a dependency"
-msgstr "bir bağımlılığı sağlayan  paketleri sorgular/denetler"
+msgstr "bir bağımlılığı sağlayan paketleri sorgular/denetler"
 
 msgid "query/verify the package(s) which recommends a dependency"
 msgstr ""
@@ -2112,7 +2115,7 @@ msgstr "(durumsuz)    "
 
 #, c-format
 msgid "(unknown %3d) "
-msgstr "(bilinmeyen %3d)"
+msgstr "(bilinmeyen %3d) "
 
 msgid "package has not file owner/group lists\n"
 msgstr ""
@@ -2319,8 +2322,8 @@ msgstr "kayıt özgün olarak %u e eklenemedi\n"
 
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
-"veritabanı yeniden oluşturulamadı: mevcut veritabanı değişmeden\n"
-"yerinde bırakıldı\n"
+"veri tabanı yeniden oluşturulamadı: mevcut veri tabanı\n"
+"değişmeden yerinde bırakıldı\n"
 
 msgid "failed to replace old database with new database!\n"
 msgstr "eski veritabanının yenisiyle değiştirilirmesi başarısız!\n"
@@ -2611,9 +2614,9 @@ msgstr ""
 msgid "package %s is already installed"
 msgstr "%s zaten kurulu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is not installed"
-msgstr "%s paketi kurulu değil\n"
+msgstr "%s paketi kurulu değil"
 
 #, c-format
 msgid "path %s in package %s is not relocatable"
@@ -2645,7 +2648,7 @@ msgid "%s is needed by %s%s"
 msgstr ""
 
 msgid "(installed) "
-msgstr "(kuruldu)"
+msgstr "(kuruldu) "
 
 #, c-format
 msgid "%s conflicts with %s%s"
@@ -2851,7 +2854,7 @@ msgid "package"
 msgstr ""
 
 msgid "Header "
-msgstr "Başlık"
+msgstr "Başlık "
 
 msgid "Payload "
 msgstr ""
@@ -2893,17 +2896,14 @@ msgstr ""
 msgid "Unable to reset I/O priority: %s"
 msgstr ""
 
-#, fuzzy
 msgid "syntax error while parsing =="
-msgstr "== çözümlenirken sözdizimi hatası bulundu\n"
+msgstr "== ayrıştırılırken söz dizimi hatası"
 
-#, fuzzy
 msgid "syntax error while parsing &&"
-msgstr "&& çözümlenirken sözdizimi hatası bulundu\n"
+msgstr "&& ayrıştırılırken söz dizimi hatası"
 
-#, fuzzy
 msgid "syntax error while parsing ||"
-msgstr "|| çözümlenirken sözdizimi hatası bulundu\n"
+msgstr "|| ayrıştırılırken söz dizimi hatası"
 
 msgid "macro expansion returned a bare word, please use \"...\""
 msgstr ""
@@ -2915,51 +2915,41 @@ msgstr ""
 msgid "expanded string: %s\n"
 msgstr ""
 
-#, fuzzy
 msgid "unterminated string in expression"
-msgstr "ifade içerisinde ? dan sonra { gerekli"
+msgstr "ifade içerisinde sonlandırılmamış dizge"
 
-#, fuzzy
 msgid "invalid version"
-msgstr "(geçersiz tür)"
+msgstr "geçersiz sürüm"
 
 msgid "bare words are no longer supported, please use \"...\""
 msgstr ""
 
-#, fuzzy
 msgid "parse error in expression"
-msgstr "ifadede çözümleme hatası\n"
+msgstr "ifadede ayrıştırma hatası"
 
-#, fuzzy
 msgid "unmatched ("
-msgstr "uyumsuz (\n"
+msgstr "uyumsuz ("
 
-#, fuzzy
 msgid "- only on numbers"
-msgstr "- sadece sayılarda\n"
+msgstr "- sadece sayılarda"
 
-#, fuzzy
 msgid "unexpected end of expression"
-msgstr "ifadenin sonunda | gerekli"
+msgstr "beklenmeyen ifade sonu"
 
-#, fuzzy
 msgid "syntax error in expression"
-msgstr "ifadede sözdizimi hatası\n"
+msgstr "ifadede söz dizimi hatası"
 
-#, fuzzy
 msgid "types must match"
-msgstr "türler eşleşmeli\n"
+msgstr "türler eşleşmeli"
 
 msgid "division by zero"
 msgstr ""
 
-#, fuzzy
 msgid "* and / not supported for strings"
-msgstr "* / dizgelerde desteklenmez\n"
+msgstr "* ve / dizgelerde desteklenmez"
 
-#, fuzzy
 msgid "- not supported for strings"
-msgstr "- dizgelerde desteklenmez\n"
+msgstr "- dizgelerde desteklenmez"
 
 #, c-format
 msgid "%3d>%*s(empty)\n"
@@ -2969,9 +2959,9 @@ msgstr ""
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(boş)\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open shell expansion pipe for command: %s: %m \n"
-msgstr "tar veriyolu açılamadı: %m\n"
+msgstr "Komut için kabuk genişletme veriyolu açılamadı: %s: %m \n"
 
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
@@ -3026,13 +3016,11 @@ msgstr "%c sonlandırılmamış: %s\n"
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Bir ayrıştırılamayan makro tarafından bir %% izlendi\n"
 
-#, fuzzy
 msgid "argument expected"
-msgstr "beklenmeyen ]"
+msgstr "argüman gerekli"
 
-#, fuzzy
 msgid "unexpected argument"
-msgstr "beklenmeyen ]"
+msgstr "beklenmeyen argüman"
 
 #, c-format
 msgid "======================== active %d empty %d\n"
@@ -3130,21 +3118,21 @@ msgstr ""
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not create pipe for signing: %m\n"
-msgstr "%s açılamadı: %s\n"
+msgstr "İmzalamak için veriyolu oluşturulamadı: %m\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not set GPG_TTY to stdin: %m\n"
-msgstr "%s açılamadı: %s\n"
+msgstr "GPG_TTY stdin olarak ayarlanamadı: %m\n"
 
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open pipe for writing: %m\n"
-msgstr "%s açılamadı: %s\n"
+msgstr "Yazmak için veriyolu açılamadı: %m\n"
 
 msgid "Could not write to pipe\n"
 msgstr ""
