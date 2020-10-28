@@ -71,7 +71,7 @@ dev_t fpEntryDev(fingerPrintCache cache, fingerPrint *fp);
  * @param cache		pointer to fingerprint cache
  * @param dirName	leading directory name of file path
  * @param baseName	base name of file path
- * @retval fp		pointer of fingerprint struct to fill out
+ * @param[out] fp		pointer of fingerprint struct to fill out
  * @return		0 on success
  */
 RPM_GNUC_INTERNAL
@@ -84,7 +84,7 @@ int fpLookup(fingerPrintCache cache,
  * @param cache		pointer to fingerprint cache
  * @param dirNameId	id of leading directory name of file path
  * @param baseNameId	id of base name of file path
- * @retval fp		pointer of fingerprint struct to fill out
+ * @param[out] fp		pointer of fingerprint struct to fill out
  * @return		0 on success
  */
 RPM_GNUC_INTERNAL

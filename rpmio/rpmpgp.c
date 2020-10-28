@@ -303,7 +303,7 @@ int pgpValTok(pgpValTbl vs, const char * s, const char * se)
  * new format packet headers and V4 signature subpackets.
  * @param s		pointer to length encoding buffer
  * @param slen		buffer size
- * @retval *lenp	decoded length
+ * @param[out] *lenp	decoded length
  * @return		no. of bytes used to encode the length, 0 on error
  */
 static inline

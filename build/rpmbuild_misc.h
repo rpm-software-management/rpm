@@ -60,7 +60,7 @@ void appendStringBufAux(StringBuf sb, const char * s, int nl);
 /** \ingroup rpmbuild
  * Parse an unsigned number.
  * @param		line from spec file
- * @retval res		pointer to uint32_t
+ * @param[out] res		pointer to uint32_t
  * @return		0 on success, -1 on failure
  */
 RPM_GNUC_INTERNAL

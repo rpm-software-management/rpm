@@ -30,7 +30,7 @@ rpmRC rpmLeadWrite(FD_t fd, Header h);
 /** \ingroup lead
  * Read lead from file handle.
  * @param fd		file handle
- * @retval emsg		failure message on error (malloced)
+ * @param[out] emsg		failure message on error (malloced)
  * @return		RPMRC_OK on success, RPMRC_FAIL/RPMRC_NOTFOUND on error
  */
 rpmRC rpmLeadRead(FD_t fd, char **emsg);

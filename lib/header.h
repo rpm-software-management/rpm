@@ -73,7 +73,7 @@ void * headerUnload(Header h);
 /** \ingroup header
  * Export header to on-disk representation.
  * @param h		header (with pointers)
- * @retval bsize	on-disk header blob size in bytes
+ * @param[out] bsize	on-disk header blob size in bytes
  * @return		on-disk header blob (i.e. with offsets)
  */
 void * headerExport(Header h, unsigned int * bsize);
@@ -175,7 +175,7 @@ typedef rpmFlags headerGetFlags;
  * Retrieve tag value.
  * @param h		header
  * @param tag		tag
- * @retval td		tag data container
+ * @param[out] td	tag data container
  * @param flags		retrieval modifier flags
  * @return		1 on success, 0 on failure
  */
@@ -281,7 +281,7 @@ int headerDel(Header h, rpmTagVal tag);
  *
  * @param h		header
  * @param fmt		format to use
- * @retval errmsg	error message (if any)
+ * @param[out] errmsg	error message (if any)
  * @return		formatted output string (malloc'ed)
  */
 char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg);
@@ -312,7 +312,7 @@ HeaderIterator headerInitIterator(Header h);
 /** \ingroup header
  * Return next tag contents from header.
  * @param hi		header tag iterator
- * @retval td		tag data container
+ * @param[out] td	tag data container
  * @return		1 on success, 0 on failure
  */
 int headerNext(HeaderIterator hi, rpmtd td);

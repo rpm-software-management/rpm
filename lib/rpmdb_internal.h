@@ -37,7 +37,7 @@ rpmdb rpmdbLink(rpmdb db);
 /** \ingroup rpmdb
  * Open rpm database.
  * @param prefix	path to top of install tree
- * @retval dbp		address of rpm database
+ * @param[out] dbp		address of rpm database
  * @param mode		open(2) flags:  O_RDWR or O_RDONLY (O_CREAT also)
  * @param perms		database permissions
  * @return		0 on success

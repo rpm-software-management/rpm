@@ -420,7 +420,7 @@ printExpansion(MacroBuf mb, const char * t, const char * te)
  * @param mb		macro expansion state
  * @param src		string to expand
  * @param slen		input string length (or 0 for strlen())
- * @retval target	pointer to expanded string (malloced)
+ * @param[out] target	pointer to expanded string (malloced)
  * @return		result of expansion
  */
 static int

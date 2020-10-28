@@ -531,7 +531,7 @@ rpmTagClass rpmTagTypeGetClass(rpmTagType type);
 
 /** \ingroup rpmtag
  * Return known rpm tag names, sorted by name.
- * @retval tagnames 	tag container of string array type
+ * @param[out] tagnames	tag container of string array type
  * @param fullname	return short or full name
  * @return		number of tag names, 0 on error
  */

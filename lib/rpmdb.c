@@ -108,7 +108,7 @@ static unsigned int uintId(unsigned int a)
 /** \ingroup dbi
  * Return (newly allocated) integer of the epoch.
  * @param s		version string optionally containing epoch number
- * @retval version	only the version part of s
+ * @param[out] version	only the version part of s
  * @return		epoch integer within the [0; UINT32_MAX] interval,
  *                      or -1 for no epoch
  */
@@ -599,7 +599,7 @@ Header rpmdbGetHeaderAt(rpmdb db, unsigned int offset)
  * @param dbi		index database handle (always RPMDBI_BASENAMES)
  * @param filespec
  * @param usestate	take file state into account?
- * @retval matches
+ * @param[out] matches
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
 static rpmRC rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
@@ -738,7 +738,7 @@ int rpmdbCountPackages(rpmdb db, const char * name)
  * @param version	package version (can be a pattern)
  * @param release	package release (can be a pattern)
  * @param arch		package arch (can be a pattern)
- * @retval matches	set of header instances that match
+ * @param[out] matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
 static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi,
@@ -832,7 +832,7 @@ exit:
  * @param arg		name[-[epoch:]version[-release]] string
  * @param arglen	length of arg
  * @param arch		possible arch string (or NULL)
- * @retval matches	set of header instances that match
+ * @param[out] matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
 static rpmRC dbiFindByLabelArch(rpmdb db, dbiIndex dbi,
@@ -1132,7 +1132,7 @@ static int mireCmp(const void * a, const void * b)
 /**
  * Copy pattern, escaping for appropriate mode.
  * @param tag		rpm tag
- * @retval modep	type of pattern match
+ * @param[out] modep	type of pattern match
  * @param pattern	pattern to duplicate
  * @return		duplicated pattern
  */
@@ -1813,7 +1813,7 @@ rpmdbMatchIterator rpmdbInitPrefixIterator(rpmdb db, rpmDbiTagVal rpmtag,
 /*
  * Convert current tag data to db key
  * @param tagdata	Tag data container
- * @retval keylen	Length of key
+ * @param[out] keylen	Length of key
  * @return 		Pointer to key value or NULL to signal skip 
  */
 static const void * td2key(rpmtd tagdata, unsigned int *keylen) 

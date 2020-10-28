@@ -15,8 +15,8 @@ extern "C" {
  * Read (and verify header+payload size) signature header.
  * If an old-style signature is found, we emulate a new style one.
  * @param fd		file handle
- * @retval sighp	address of (signature) header (or NULL)
- * @retval msg		failure msg
+ * @param[out] sighp	address of (signature) header (or NULL)
+ * @param[out] msg		failure msg
  * @return		rpmRC return code
  */
 rpmRC rpmReadSignature(FD_t fd, Header *sighp, char ** msg);
