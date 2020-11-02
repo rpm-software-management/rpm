@@ -299,6 +299,18 @@ int rpmluaRunScript(rpmlua _lua, const char *script, const char *name,
 	goto exit;
     }
 
+    /* Create new, private environment */
+    lua_newtable(L);
+
+    /* Set it to inherit global environment via a metatable */
+    lua_newtable(L);
+    lua_getglobal(L, "_G");
+    lua_setfield(L, -2, "__index");
+    lua_setmetatable(L, -2);
+
+    /* Set as _ENV in the loaded buffer */
+    lua_setupvalue(L, -2, 1);
+
     lua_newtable(L);
     if (opts) {
 	int argc = argvCount(args);

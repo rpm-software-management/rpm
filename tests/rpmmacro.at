@@ -568,6 +568,24 @@ runroot rpm --eval '%{lua:print(5*5)}'
 ])
 AT_CLEANUP
 
+AT_SETUP([lua environment])
+AT_KEYWORDS([macros lua])
+AT_CHECK([
+AT_SKIP_IF([$LUA_DISABLED])
+runroot rpm \
+	--eval '%{lua:r=5; print(r == nil)}' \
+	--eval '%{lua:     print(r == nil)}' \
+	--eval '%{lua:rpm=nil; print(rpm == nil)}' \
+	--eval '%{lua:         print(rpm == nil)}'
+],
+[0],
+[false
+true
+false
+false
+])
+AT_CLEANUP
+
 AT_SETUP([lua macro arguments])
 AT_KEYWORDS([macros lua])
 AT_CHECK([[
