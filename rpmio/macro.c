@@ -53,6 +53,7 @@ struct rpmMacroEntry_s {
     const char *name;  	/*!< Macro name. */
     const char *opts;  	/*!< Macro parameters (a la getopt) */
     const char *body;	/*!< Macro body. */
+    void *func;		/*!< Macro function (builtin macros) */
     int flags;		/*!< Macro state bits. */
     int level;          /*!< Scoping level. */
     char arena[];   	/*!< String arena. */
@@ -616,7 +617,6 @@ static unsigned int getncpus(void)
 
 #define STR_AND_LEN(_str) (_str), sizeof((_str))-1
 
-/* Names in the table must be in ASCII-code order */
 static struct builtins_s {
     const char * name;
     size_t len;
@@ -651,40 +651,13 @@ static struct builtins_s {
     { STR_AND_LEN("url2path"),	doFoo,		ME_ARGFUNC },
     { STR_AND_LEN("verbose"),	doVerbose,	ME_ARGFUNC },
     { STR_AND_LEN("warn"),	doOutput,	ME_ARGFUNC },
+    { NULL,	0,		NULL,		0 }
 };
-static const size_t numbuiltins = sizeof(builtinmacros)/sizeof(*builtinmacros);
-
-static int namecmp(const void *name1, const void *name2)
-{
-    struct builtins_s *n1 = (struct builtins_s *)name1;
-    struct builtins_s *n2 = (struct builtins_s *)name2;
-
-    int rc = strncmp(n1->name, n2->name, n1->len);
-    if (rc == 0)
-	rc = n1->len - n2->len;
-    return rc;
-}
-
-/**
- * Return a pointer to the built-in macro with the given name
- * @param name		macro name
- * @param nlen		name length
- * @return		pointer to the built-in macro or NULL if not found
- */
-static const struct builtins_s* lookupBuiltin(const char *name, size_t nlen)
-{
-    struct builtins_s macro = {
-	.name = name,
-	.len = nlen,
-    };
-
-    return bsearch(&macro, builtinmacros, numbuiltins, sizeof(*builtinmacros),
-		    namecmp);
-}
 
 static int
 validName(MacroBuf mb, const char *name, size_t namelen, const char *action)
 {
+    rpmMacroEntry *mep;
     int rc = 0;
     int c;
 
@@ -694,7 +667,8 @@ validName(MacroBuf mb, const char *name, size_t namelen, const char *action)
 	goto exit;
     }
 
-    if (lookupBuiltin(name, namelen)) {
+    mep = findEntry(mb->mc, name, namelen, NULL);
+    if (mep && (*mep)->flags & ME_BUILTIN) {
 	mbErr(mb, 1, _("Macro %%%s is a built-in (%s)\n"), name, action);
 	goto exit;
     }
@@ -1411,11 +1385,15 @@ doExpandThisMacro(MacroBuf mb, rpmMacroEntry me, ARGV_t args)
 {
     rpmMacroEntry prevme = mb->me;
     ARGV_t prevarg = mb->args;
+
     /* Setup args for "%name " macros with opts */
     if (args != NULL)
 	setupArgs(mb, me, args);
     /* Recursively expand body of macro */
-    if (me->body && *me->body) {
+    if (me->flags & ME_BUILTIN) {
+	/* XXX not yet */
+	mbErr(mb, 1, "tried to expand a builtin: %s\n", me->name);
+    } else if (me->body && *me->body) {
 	if ((me->flags & ME_LITERAL) != 0)
 	    mbAppendStr(mb, me->body);
 	else
@@ -1468,7 +1446,6 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	goto exit;
 
     while (mb->error == 0 && (c = *s) != '\0') {
-	const struct builtins_s* builtin = NULL;
 	s++;
 	/* Copy text until next macro */
 	switch (c) {
@@ -1554,25 +1531,6 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	if (mb->macro_trace)
 	    printMacro(mb, s, se);
 
-	/* Expand builtin macros */
-	if ((builtin = lookupBuiltin(f, fn))) {
-	    int havearg = (builtin->flags & ME_HAVEARG) ? 1 : 0;
-	    if (havearg != (g != NULL)) {
-		mbErr(mb, 1, "%%%s: %s\n", builtin->name, havearg ?
-			_("argument expected") : _("unexpected argument"));
-		continue;
-	    }
-	    if (builtin->flags & ME_PARSE) {
-		parseFunc parse = builtin->func;
-		s = parse(mb, se);
-	    } else {
-		macroFunc func = builtin->func;
-		func(mb, chkexist, negate, f, fn, g, gn);
-		s = se;
-	    }
-	    continue;
-	}
-
 	/* Expand defined macros */
 	mep = findEntry(mb->mc, f, fn, NULL);
 	me = (mep ? *mep : NULL);
@@ -1585,6 +1543,25 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 		/* If we looked up a macro, consider it used */
 		me->flags |= ME_USED;
 	    }
+	}
+
+	/* Expand builtin macros */
+	if (me && (me->flags & ME_BUILTIN)) {
+	    int havearg = (me->flags & ME_HAVEARG) ? 1 : 0;
+	    if (havearg != (g != NULL)) {
+		mbErr(mb, 1, "%%%s: %s\n", me->name, havearg ?
+			_("argument expected") : _("unexpected argument"));
+		continue;
+	    }
+	    if (me->flags & ME_PARSE) {
+		parseFunc parse = me->func;
+		s = parse(mb, se);
+	    } else {
+		macroFunc func = me->func;
+		func(mb, chkexist, negate, f, fn, g, gn);
+		s = se;
+	    }
+	    continue;
 	}
 
 	/* XXX Special processing for flags and existance test */
@@ -1698,8 +1675,9 @@ static int doExpandMacros(rpmMacroContext mc, const char *src, int flags,
     return rc;
 }
 
-static void pushMacro(rpmMacroContext mc,
-	const char * n, const char * o, const char * b, int level, int flags)
+static void pushMacroAny(rpmMacroContext mc,
+	const char * n, const char * o, const char * b, void * f,
+	int level, int flags)
 {
     /* new entry */
     rpmMacroEntry me;
@@ -1757,12 +1735,19 @@ static void pushMacro(rpmMacroContext mc,
     else
 	me->opts = o ? "" : NULL;
     /* initialize */
+    me->func = f;
     me->flags = flags;
     me->flags &= ~(ME_USED);
     me->level = level;
     /* push over previous definition */
     me->prev = *mep;
     *mep = me;
+}
+
+static void pushMacro(rpmMacroContext mc,
+	const char * n, const char * o, const char * b, int level, int flags)
+{
+    return pushMacroAny(mc, n, o, b, NULL, level, flags);
 }
 
 static void popMacro(rpmMacroContext mc, const char * n)
@@ -2014,6 +1999,12 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
     ARGV_t pattern, globs = NULL;
     rpmMacroContext climc;
     mc = rpmmctxAcquire(mc);
+
+    /* Define built-in macros */
+    for (const struct builtins_s *b = builtinmacros; b->name; b++) {
+	pushMacroAny(mc, b->name, NULL, "<builtin>", b->func,
+			RMIL_BUILTIN, b->flags);
+    }
 
     argvSplit(&globs, macrofiles, ":");
     for (pattern = globs; pattern && *pattern; pattern++) {
