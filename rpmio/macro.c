@@ -15,8 +15,6 @@
 #endif
 #define	iseol(_c)	((_c) == '\n' || (_c) == '\r')
 
-#define	STREQ(_t, _f, _fn)	((_fn) == (sizeof(_t)-1) && rstreqn((_t), (_f), (_fn)))
-
 #define MACROBUFSIZ (BUFSIZ * 2)
 
 #include <rpm/rpmio.h>
@@ -136,8 +134,8 @@ static int print_macro_trace = _PRINT_MACRO_TRACE;
 static int print_expand_trace = _PRINT_EXPAND_TRACE;
 
 typedef void (*macroFunc)(MacroBuf mb, int chkexist, int negate,
-			const char * f, size_t fn, const char * g, size_t gn);
-typedef const char *(*parseFunc)(MacroBuf mb, const char * se);
+			rpmMacroEntry me, const char * g, size_t gn);
+typedef const char *(*parseFunc)(MacroBuf mb, rpmMacroEntry me, const char * se);
 
 /* forward ref */
 static int expandMacro(MacroBuf mb, const char *src, size_t slen);
@@ -146,30 +144,30 @@ static void pushMacro(rpmMacroContext mc,
 static void popMacro(rpmMacroContext mc, const char * n);
 static int loadMacroFile(rpmMacroContext mc, const char * fn);
 static void doBody(MacroBuf mb, int chkexist, int negate,
-		const char * f, size_t fn, const char * g, size_t gn);
+		    rpmMacroEntry me, const char * g, size_t gn);
 static void doExpand(MacroBuf mb, int chkexist, int negate,
-		    const char * f, size_t fn, const char * g, size_t gn);
+		    rpmMacroEntry me, const char * g, size_t gn);
 static void doFoo(MacroBuf mb, int chkexist, int negate,
-		    const char * f, size_t fn, const char * g, size_t gn);
+		    rpmMacroEntry me, const char * g, size_t gn);
 static void doLoad(MacroBuf mb, int chkexist, int negate,
-		    const char * f, size_t fn, const char * g, size_t gn);
+		    rpmMacroEntry me, const char * g, size_t gn);
 static void doLua(MacroBuf mb, int chkexist, int negate,
-		    const char * f, size_t fn, const char * g, size_t gn);
+		    rpmMacroEntry me, const char * g, size_t gn);
 static void doOutput(MacroBuf mb, int chkexist, int negate,
-		    const char * f, size_t fn, const char * g, size_t gn);
+		    rpmMacroEntry me, const char * g, size_t gn);
 static void doSP(MacroBuf mb, int chkexist, int negate,
-		    const char * f, size_t fn, const char * g, size_t gn);
+		    rpmMacroEntry me, const char * g, size_t gn);
 static void doTrace(MacroBuf mb, int chkexist, int negate,
-		    const char * f, size_t fn, const char * g, size_t gn);
+		    rpmMacroEntry me, const char * g, size_t gn);
 static void doUncompress(MacroBuf mb, int chkexist, int negate,
-		    const char * f, size_t fn, const char * g, size_t gn);
+		    rpmMacroEntry me, const char * g, size_t gn);
 static void doVerbose(MacroBuf mb, int chkexist, int negate,
-		    const char * f, size_t fn, const char * g, size_t gn);
+		    rpmMacroEntry me, const char * g, size_t gn);
 
-static const char * doDef(MacroBuf mb, const char * se);
-static const char * doGlobal(MacroBuf mb, const char * se);
-static const char * doDump(MacroBuf mb, const char * se);
-static const char * doUndefine(MacroBuf mb, const char * se);
+static const char * doDef(MacroBuf mb, rpmMacroEntry me, const char * se);
+static const char * doGlobal(MacroBuf mb, rpmMacroEntry me, const char * se);
+static const char * doDump(MacroBuf mb, rpmMacroEntry me, const char * se);
+static const char * doUndefine(MacroBuf mb, rpmMacroEntry me, const char * se);
 /* =============================================================== */
 
 static rpmMacroContext rpmmctxAcquire(rpmMacroContext mc)
@@ -529,7 +527,7 @@ static void mbAppendStr(MacroBuf mb, const char *str)
     mb->nb -= len;
 }
 
-static const char * doDnl(MacroBuf mb, const char * se)
+static const char * doDnl(MacroBuf mb, rpmMacroEntry me, const char * se)
 {
     const char *s = se;
     while (*s && !iseol(*s))
@@ -813,7 +811,7 @@ exit:
  * @return		address to continue parsing
  */
 static const char *
-doUndefine(MacroBuf mb, const char * se)
+doUndefine(MacroBuf mb, rpmMacroEntry me, const char * se)
 {
     const char *s = se;
     char *buf = xmalloc(strlen(s) + 1);
@@ -839,17 +837,17 @@ exit:
     return se;
 }
 
-static const char * doDef(MacroBuf mb, const char * se)
+static const char * doDef(MacroBuf mb, rpmMacroEntry me, const char * se)
 {
     return doDefine(mb, se, mb->level, 0);
 }
 
-static const char * doGlobal(MacroBuf mb, const char * se)
+static const char * doGlobal(MacroBuf mb, rpmMacroEntry me, const char * se)
 {
     return doDefine(mb, se, RMIL_GLOBAL, 1);
 }
 
-static const char * doDump(MacroBuf mb, const char * se)
+static const char * doDump(MacroBuf mb, rpmMacroEntry me, const char * se)
 {
     rpmDumpMacroTable(mb->mc, NULL);
     while (iseol(*se))
@@ -1038,7 +1036,7 @@ grabArgs(MacroBuf mb, ARGV_t *argvp, const char * se,
 }
 
 static void doBody(MacroBuf mb, int chkexist, int negate,
-		const char * f, size_t fn, const char * g, size_t gn)
+		rpmMacroEntry me, const char * g, size_t gn)
 {
     if (gn > 0) {
 	char *buf = NULL;
@@ -1054,14 +1052,14 @@ static void doBody(MacroBuf mb, int chkexist, int negate,
     }
 }
 
-static void doOutput(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn, const char * g, size_t gn)
+static void doOutput(MacroBuf mb, int chkexist, int negate, rpmMacroEntry me, const char * g, size_t gn)
 {
     char *buf = NULL;
     int loglevel = RPMLOG_NOTICE; /* assume echo */
-    if (STREQ("error", f, fn)) {
+    if (rstreq("error", me->name)) {
 	loglevel = RPMLOG_ERR;
 	mb->error = 1;
-    } else if (STREQ("warn", f, fn)) {
+    } else if (rstreq("warn", me->name)) {
 	loglevel = RPMLOG_WARNING;
     }
     if (gn == 0)
@@ -1072,23 +1070,23 @@ static void doOutput(MacroBuf mb, int chkexist, int negate, const char * f, size
     _free(buf);
 }
 
-static void doLua(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn, const char * g, size_t gn)
+static void doLua(MacroBuf mb, int chkexist, int negate, rpmMacroEntry me, const char * g, size_t gn)
 {
 #ifdef WITH_LUA
     rpmlua lua = NULL; /* Global state. */
     char *scriptbuf = xmalloc(gn + 1);
     char *printbuf;
     rpmMacroContext mc = mb->mc;
-    rpmMacroEntry me = mb->me;
+    rpmMacroEntry mbme = mb->me;
     int odepth = mc->depth;
     int olevel = mc->level;
     const char *opts = NULL;
     const char *name = NULL;
     ARGV_t args = NULL;
 
-    if (me) {
-	opts = me->opts;
-	name = me->name;
+    if (mbme) {
+	opts = mbme->opts;
+	name = mbme->name;
 	if (mb->args)
 	    args = mb->args;
     }
@@ -1116,7 +1114,7 @@ static void doLua(MacroBuf mb, int chkexist, int negate, const char * f, size_t 
 
 static void
 doSP(MacroBuf mb, int chkexist, int negate,
-	    const char * f, size_t fn, const char * g, size_t gn)
+	    rpmMacroEntry me, const char * g, size_t gn)
 {
     const char *b = "";
     char *buf = NULL;
@@ -1127,14 +1125,14 @@ doSP(MacroBuf mb, int chkexist, int negate,
 	b = buf;
     }
 
-    s = rstrscat(NULL, (*f == 'S') ? "%SOURCE" : "%PATCH", b, NULL);
+    s = rstrscat(NULL, (*(me->name) == 'S') ? "%SOURCE" : "%PATCH", b, NULL);
     expandMacro(mb, s, 0);
     free(s);
     free(buf);
 }
 
 static void doUncompress(MacroBuf mb, int chkexist, int negate,
-		const char * f, size_t fn, const char * g, size_t gn)
+		rpmMacroEntry me, const char * g, size_t gn)
 {
     rpmCompressedMagic compressed = COMPRESSED_OTHER;
     char *b, *be, *buf = NULL;
@@ -1193,7 +1191,7 @@ exit:
 }
 
 static void doExpand(MacroBuf mb, int chkexist, int negate,
-		    const char * f, size_t fn, const char * g, size_t gn)
+		    rpmMacroEntry me, const char * g, size_t gn)
 {
     if (gn > 0) {
 	char *buf;
@@ -1204,7 +1202,7 @@ static void doExpand(MacroBuf mb, int chkexist, int negate,
 }
 
 static void doVerbose(MacroBuf mb, int chkexist, int negate,
-		const char * f, size_t fn, const char * g, size_t gn)
+		rpmMacroEntry me, const char * g, size_t gn)
 {
     int verbose = (rpmIsVerbose() != 0);
     /* Don't expand %{verbose:...} argument on false condition */
@@ -1221,13 +1219,11 @@ static void doVerbose(MacroBuf mb, int chkexist, int negate,
  * @param mb		macro expansion state
  * @param chkexist	unused
  * @param negate	should logic be inverted?
- * @param f		beginning of field f
- * @param fn		length of field f
  * @param g		beginning of field g
  * @param gn		length of field g
  */
 static void
-doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
+doFoo(MacroBuf mb, int chkexist, int negate, rpmMacroEntry me,
 		const char * g, size_t gn)
 {
     char *buf = NULL;
@@ -1237,19 +1233,19 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
     if (expand) {
 	(void) expandThis(mb, g, gn, &buf);
     } else {
-	buf = xmalloc(MACROBUFSIZ + fn + gn);
+	buf = xmalloc(MACROBUFSIZ + strlen(me->name) + gn);
 	buf[0] = '\0';
     }
-    if (STREQ("basename", f, fn)) {
+    if (rstreq("basename", me->name)) {
 	if ((b = strrchr(buf, '/')) == NULL)
 	    b = buf;
 	else
 	    b++;
-    } else if (STREQ("dirname", f, fn)) {
+    } else if (rstreq("dirname", me->name)) {
 	if ((b = strrchr(buf, '/')) != NULL)
 	    *b = '\0';
 	b = buf;
-    } else if (STREQ("shrink", f, fn)) {
+    } else if (rstreq("shrink", me->name)) {
 	/*
 	 * shrink body by removing all leading and trailing whitespaces and
 	 * reducing intermediate whitespaces to a single space character.
@@ -1271,15 +1267,15 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
 	}
 	buf[j] = '\0';
 	b = buf;
-    } else if (STREQ("quote", f, fn)) {
+    } else if (rstreq("quote", me->name)) {
 	char *quoted = NULL;
 	rasprintf(&quoted, "%c%s%c", 0x1f, buf, 0x1f);
 	free(buf);
 	b = buf = quoted;
-    } else if (STREQ("suffix", f, fn)) {
+    } else if (rstreq("suffix", me->name)) {
 	if ((b = strrchr(buf, '.')) != NULL)
 	    b++;
-    } else if (STREQ("expr", f, fn)) {
+    } else if (rstreq("expr", me->name)) {
 	char *expr = rpmExprStrFlags(buf, 0);
 	if (expr) {
 	    free(buf);
@@ -1287,15 +1283,15 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
 	} else {
 	    mb->error = 1;
 	}
-    } else if (STREQ("url2path", f, fn) || STREQ("u2p", f, fn)) {
+    } else if (rstreq("url2path", me->name) || rstreq("u2p", me->name)) {
 	(void)urlPath(buf, (const char **)&b);
 	if (*b == '\0') b = "/";
-    } else if (STREQ("getenv", f, fn)) {
+    } else if (rstreq("getenv", me->name)) {
 	b = getenv(buf);
-    } else if (STREQ("getconfdir", f, fn)) {
+    } else if (rstreq("getconfdir", me->name)) {
 	sprintf(buf, "%s", rpmConfigDir());
 	b = buf;
-    } else if (STREQ("getncpus", f, fn)) {
+    } else if (rstreq("getncpus", me->name)) {
 	sprintf(buf, "%u", getncpus());
 	b = buf;
     }
@@ -1307,7 +1303,7 @@ doFoo(MacroBuf mb, int chkexist, int negate, const char * f, size_t fn,
 }
 
 static void doLoad(MacroBuf mb, int chkexist, int negate,
-		    const char * f, size_t fn, const char * g, size_t gn)
+		    rpmMacroEntry me, const char * g, size_t gn)
 {
     char *arg = NULL;
     if (g && gn > 0 && expandThis(mb, g, gn, &arg) == 0) {
@@ -1320,7 +1316,7 @@ static void doLoad(MacroBuf mb, int chkexist, int negate,
 }
 
 static void doTrace(MacroBuf mb, int chkexist, int negate,
-		    const char * f, size_t fn, const char * g, size_t gn)
+		    rpmMacroEntry me, const char * g, size_t gn)
 {
     mb->expand_trace = mb->macro_trace = (negate ? 0 : mb->depth);
     if (mb->depth == 1) {
@@ -1552,10 +1548,10 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    }
 	    if (me->flags & ME_PARSE) {
 		parseFunc parse = me->func;
-		s = parse(mb, se);
+		s = parse(mb, me, se);
 	    } else {
 		macroFunc func = me->func;
-		func(mb, chkexist, negate, f, fn, g, gn);
+		func(mb, chkexist, negate, me, g, gn);
 		s = se;
 	    }
 	    continue;
