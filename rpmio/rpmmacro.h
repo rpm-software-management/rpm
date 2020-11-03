@@ -35,6 +35,7 @@ extern const char * macrofiles;
 /**
  * Markers for sources of macros added throughout rpm.
  */
+#define	RMIL_BUILTIN	-20
 #define	RMIL_DEFAULT	-15
 #define	RMIL_MACROFILES	-13
 #define	RMIL_RPMRC	-11
