@@ -67,4 +67,7 @@ RUN ./configure \
   --enable-silent-rules \
   --enable-werror
 
+# --enable-werror equivalent for Doxygen
+RUN sed -i -e "/^WARN_AS_ERROR/s/ NO/ YES/g" doc/librpm.doxy.in
+
 CMD make -j$(nproc) distcheck TESTSUITEFLAGS=-j$(nproc); rc=$?; find . -name rpmtests.log|xargs cat; exit $rc
