@@ -11,21 +11,85 @@
 # RPM python dependency generator, using .egg-info/.egg-link/.dist-info data
 #
 
-# Please know:
-# - Notes from an attempted rewrite from pkg_resources to importlib.metadata in
-#   2020 can be found in the message of the commit that added this line.
-
 from __future__ import print_function
 import argparse
-from os.path import basename, dirname, isdir, sep
-from sys import argv, stdin, version
 from distutils.sysconfig import get_python_lib
+from os.path import dirname, sep
+import re
+from sys import argv, stdin
 from warnings import warn
+
+from packaging.requirements import Requirement as Requirement_
+from packaging.version import parse
+
+try:
+    from importlib.metadata import PathDistribution
+except ImportError:
+    from importlib_metadata import PathDistribution
+
+try:
+    from pathlib import Path
+except ImportError:
+    from pathlib2 import Path
+
+
+def normalize_name(name):
+    """https://www.python.org/dev/peps/pep-0503/#normalized-names"""
+    return re.sub(r'[-_.]+', '-', name).lower()
+
+
+def legacy_normalize_name(name):
+    """Like pkg_resources Distribution.key property"""
+    return re.sub(r'[-_]+', '-', name).lower()
+
+
+class Requirement(Requirement_):
+    def __init__(self, requirement_string):
+        super(Requirement, self).__init__(requirement_string)
+        self.normalized_name = normalize_name(self.name)
+        self.legacy_normalized_name = legacy_normalize_name(self.name)
+
+
+class Distribution(PathDistribution):
+    def __init__(self, path):
+        super(Distribution, self).__init__(Path(path))
+        self.name = self.metadata['Name']
+        self.normalized_name = normalize_name(self.name)
+        self.legacy_normalized_name = legacy_normalize_name(self.name)
+        self.requirements = [Requirement(r) for r in self.requires or []]
+        self.extras = [
+            v for k, v in self.metadata.items() if k == 'Provides-Extra']
+        self.py_version = self._parse_py_version(path)
+
+    def _parse_py_version(self, path):
+        # Try to parse the Python version from the path the metadata
+        # resides at (e.g. /usr/lib/pythonX.Y/site-packages/...)
+        res = re.search(r"/python(?P<pyver>\d+\.\d+)/", path)
+        if res:
+            return res.group('pyver')
+        # If that hasn't worked, attempt to parse it from the metadata
+        # directory name
+        res = re.search(r"-py(?P<pyver>\d+.\d+)[.-]egg-info$", path)
+        if res:
+            return res.group('pyver')
+        return None
+
+    def requirements_for_extra(self, extra):
+        extra_deps = []
+        for req in self.requirements:
+            if not req.marker:
+                continue
+            if req.marker.evaluate(get_marker_env(self, extra)):
+                extra_deps.append(req)
+        return extra_deps
+
+    def __repr__(self):
+        return '{} from {}'.format(self.name, self._path)
 
 
 class RpmVersion():
     def __init__(self, version_id):
-        version = parse_version(version_id)
+        version = parse(version_id)
         if isinstance(version._version, str):
             self.version = version._version
         else:
@@ -141,10 +205,20 @@ def convert(name, operator, version_id):
                            format(version_id, name)) from exc
 
 
-def normalize_name(name):
-    """https://www.python.org/dev/peps/pep-0503/#normalized-names"""
-    import re
-    return re.sub(r'[-_.]+', '-', name).lower()
+def get_marker_env(dist, extra):
+    # packaging uses a default environment using
+    # platform.python_version to evaluate if a dependency is relevant
+    # based on environment markers [1],
+    # e.g. requirement `argparse;python_version<"2.7"`
+    #
+    # Since we're running this script on one Python version while
+    # possibly evaluating packages for different versions, we
+    # set up an environment with the version we want to evaluate.
+    #
+    # [1] https://www.python.org/dev/peps/pep-0508/#environment-markers
+    return {"python_full_version": dist.py_version,
+            "python_version": dist.py_version,
+            "extra": extra}
 
 
 if __name__ == "__main__":
@@ -224,49 +298,10 @@ if __name__ == "__main__":
         if lower.endswith('.egg') or \
                 lower.endswith('.egg-info') or \
                 lower.endswith('.dist-info'):
-            # This import is very slow, so only do it if needed
-            # - Notes from an attempted rewrite from pkg_resources to
-            #   importlib.metadata in 2020 can be found in the message of
-            #   the commit that added this line.
-            from pkg_resources import Distribution, FileMetadata, PathMetadata, Requirement, parse_version
-            dist_name = basename(f)
-            if isdir(f):
-                path_item = dirname(f)
-                metadata = PathMetadata(path_item, f)
-            else:
-                path_item = f
-                metadata = FileMetadata(f)
-            dist = Distribution.from_location(path_item, dist_name, metadata)
-            # Check if py_version is defined in the metadata file/directory name
+            dist = Distribution(f)
             if not dist.py_version:
-                # Try to parse the Python version from the path the metadata
-                # resides at (e.g. /usr/lib/pythonX.Y/site-packages/...)
-                import re
-                res = re.search(r"/python(?P<pyver>\d+\.\d+)/", path_item)
-                if res:
-                    dist.py_version = res.group('pyver')
-                else:
-                    warn("Version for {!r} has not been found".format(dist), RuntimeWarning)
-                    continue
-
-            # pkg_resources use platform.python_version to evaluate if a
-            # dependency is relevant based on environment markers [1],
-            # e.g. requirement `argparse;python_version<"2.7"`
-            #
-            # Since we're running this script on one Python version while
-            # possibly evaluating packages for different versions, we mock the
-            # platform.python_version function. Discussed upstream [2].
-            #
-            # [1] https://www.python.org/dev/peps/pep-0508/#environment-markers
-            # [2] https://github.com/pypa/setuptools/pull/1275
-            import platform
-            platform.python_version = lambda: dist.py_version
-            platform.python_version_tuple = lambda: tuple(dist.py_version.split('.'))
-
-            # This is the PEP 503 normalized name.
-            # It does also convert dots to dashes, unlike dist.key.
-            # See https://bugzilla.redhat.com/show_bug.cgi?id=1791530
-            normalized_name = normalize_name(dist.project_name)
+                warn("Version for {!r} has not been found".format(dist), RuntimeWarning)
+                continue
 
             if args.majorver_provides or args.majorver_provides_versions or \
                     args.majorver_only or args.legacy_provides or args.legacy:
@@ -274,32 +309,32 @@ if __name__ == "__main__":
                 pyver_major = dist.py_version.split('.')[0]
             if args.provides:
                 # If egg/dist metadata says package name is python, we provide python(abi)
-                if dist.key == 'python':
+                if dist.normalized_name == 'python':
                     name = 'python(abi)'
                     if name not in py_deps:
                         py_deps[name] = []
                     py_deps[name].append(('==', dist.py_version))
                 if not args.legacy or not args.majorver_only:
                     if normalized_names_provide_legacy:
-                        name = 'python{}dist({})'.format(dist.py_version, dist.key)
+                        name = 'python{}dist({})'.format(dist.py_version, dist.legacy_normalized_name)
                         if name not in py_deps:
                             py_deps[name] = []
                     if normalized_names_provide_pep503:
-                        name_ = 'python{}dist({})'.format(dist.py_version, normalized_name)
+                        name_ = 'python{}dist({})'.format(dist.py_version, dist.normalized_name)
                         if name_ not in py_deps:
                             py_deps[name_] = []
                 if args.majorver_provides or args.majorver_only or \
                         (args.majorver_provides_versions and dist.py_version in args.majorver_provides_versions):
                     if normalized_names_provide_legacy:
-                        pymajor_name = 'python{}dist({})'.format(pyver_major, dist.key)
+                        pymajor_name = 'python{}dist({})'.format(pyver_major, dist.legacy_normalized_name)
                         if pymajor_name not in py_deps:
                             py_deps[pymajor_name] = []
                     if normalized_names_provide_pep503:
-                        pymajor_name_ = 'python{}dist({})'.format(pyver_major, normalized_name)
+                        pymajor_name_ = 'python{}dist({})'.format(pyver_major, dist.normalized_name)
                         if pymajor_name_ not in py_deps:
                             py_deps[pymajor_name_] = []
                 if args.legacy or args.legacy_provides:
-                    legacy_name = 'pythonegg({})({})'.format(pyver_major, dist.key)
+                    legacy_name = 'pythonegg({})({})'.format(pyver_major, dist.legacy_normalized_name)
                     if legacy_name not in py_deps:
                         py_deps[legacy_name] = []
                 if dist.version:
@@ -324,7 +359,7 @@ if __name__ == "__main__":
             if args.requires or (args.recommends and dist.extras):
                 name = 'python(abi)'
                 # If egg/dist metadata says package name is python, we don't add dependency on python(abi)
-                if dist.key == 'python':
+                if dist.normalized_name == 'python':
                     py_abi = False
                     if name in py_deps:
                         py_deps.pop(name)
@@ -334,83 +369,69 @@ if __name__ == "__main__":
                     spec = ('==', dist.py_version)
                     if spec not in py_deps[name]:
                         py_deps[name].append(spec)
-                deps = dist.requires()
-                if args.recommends:
-                    depsextras = dist.requires(extras=dist.extras)
-                    if not args.requires:
-                        for dep in reversed(depsextras):
-                            if dep in deps:
-                                depsextras.remove(dep)
-                    deps = depsextras
+                deps = dist.requirements
                 # console_scripts/gui_scripts entry points need pkg_resources from setuptools
-                if ((dist.get_entry_map('console_scripts') or
-                    dist.get_entry_map('gui_scripts')) and
+                if (dist.entry_points and
                     (lower.endswith('.egg') or
                      lower.endswith('.egg-info'))):
-                    # stick them first so any more specific requirement overrides it
-                    deps.insert(0, Requirement.parse('setuptools'))
+                    groups = {ep.group for ep in dist.entry_points}
+                    if {"console_scripts", "gui_scripts"} & groups:
+                        # stick them first so any more specific requirement
+                        # overrides it
+                        deps.insert(0, Requirement('setuptools'))
                 # add requires/recommends based on egg/dist metadata
                 for dep in deps:
                     if normalized_names_require_pep503:
-                        dep_normalized_name = normalize_name(dep.project_name)
+                        dep_normalized_name = dep.normalized_name
                     else:
-                        dep_normalized_name = dep.key
+                        dep_normalized_name = dep.legacy_normalized_name
 
                     if args.legacy:
-                        name = 'pythonegg({})({})'.format(pyver_major, dep.key)
+                        name = 'pythonegg({})({})'.format(pyver_major, dep.legacy_normalized_name)
                     else:
                         if args.majorver_only:
                             name = 'python{}dist({})'.format(pyver_major, dep_normalized_name)
                         else:
                             name = 'python{}dist({})'.format(dist.py_version, dep_normalized_name)
-                    for spec in dep.specs:
-                        if name not in py_deps:
-                            py_deps[name] = []
-                        if spec not in py_deps[name]:
-                            py_deps[name].append(spec)
-                    if not dep.specs:
+                    if dep.marker and not args.recommends:
+                        if not dep.marker.evaluate(get_marker_env(dist, '')):
+                            continue
+                    if name not in py_deps:
                         py_deps[name] = []
+                    for spec in dep.specifier:
+                        if (spec.operator, spec.version) not in py_deps[name]:
+                            py_deps[name].append((spec.operator, spec.version))
             # Unused, for automatic sub-package generation based on 'extras' from egg/dist metadata
             # TODO: implement in rpm later, or...?
             if args.extras:
-                deps = dist.requires()
-                extras = dist.extras
-                print(extras)
-                for extra in extras:
+                print(dist.extras)
+                for extra in dist.extras:
                     print('%%package\textras-{}'.format(extra))
-                    print('Summary:\t{} extra for {} python package'.format(extra, dist.key))
+                    print('Summary:\t{} extra for {} python package'.format(extra, dist.legacy_normalized_name))
                     print('Group:\t\tDevelopment/Python')
-                    depsextras = dist.requires(extras=[extra])
-                    for dep in reversed(depsextras):
-                        if dep in deps:
-                            depsextras.remove(dep)
-                    deps = depsextras
-                    for dep in deps:
-                        for spec in dep.specs:
-                            if spec[0] == '!=':
-                                print('Conflicts:\t{} {} {}'.format(dep.key, '==', spec[1]))
+                    for dep in dist.requirements_for_extra(extra):
+                        for spec in dep.specifier:
+                            if spec.operator == '!=':
+                                print('Conflicts:\t{} {} {}'.format(dep.legacy_normalized_name, '==', spec.version))
                             else:
-                                print('Requires:\t{} {} {}'.format(dep.key, spec[0], spec[1]))
+                                print('Requires:\t{} {} {}'.format(dep.legacy_normalized_name, spec.operator, spec.version))
                     print('%%description\t{}'.format(extra))
-                    print('{} extra for {} python package'.format(extra, dist.key))
+                    print('{} extra for {} python package'.format(extra, dist.legacy_normalized_name))
                     print('%%files\t\textras-{}\n'.format(extra))
             if args.conflicts:
                 # Should we really add conflicts for extras?
                 # Creating a meta package per extra with recommends on, which has
                 # the requires/conflicts in stead might be a better solution...
-                for dep in dist.requires(extras=dist.extras):
-                    name = dep.key
-                    for spec in dep.specs:
-                        if spec[0] == '!=':
-                            if name not in py_deps:
-                                py_deps[name] = []
-                            spec = ('==', spec[1])
-                            if spec not in py_deps[name]:
-                                py_deps[name].append(spec)
+                for dep in dist.requirements:
+                    for spec in dep.specifier:
+                        if spec.operator == '!=':
+                            if dep.legacy_normalized_name not in py_deps:
+                                py_deps[dep.legacy_normalized_name] = []
+                            spec = ('==', spec.version)
+                            if spec not in py_deps[dep.legacy_normalized_name]:
+                                py_deps[dep.legacy_normalized_name].append(spec)
 
-    names = list(py_deps.keys())
-    names.sort()
-    for name in names:
+    for name in sorted(py_deps):
         if py_deps[name]:
             # Print out versioned provides, requires, recommends, conflicts
             spec_list = []
