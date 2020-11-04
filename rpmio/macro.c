@@ -1313,7 +1313,7 @@ static void doLoad(MacroBuf mb, int chkexist, int negate,
 static void doTrace(MacroBuf mb, int chkexist, int negate,
 		    rpmMacroEntry me, const char * g, size_t gn)
 {
-    mb->expand_trace = mb->macro_trace = (negate ? 0 : mb->depth);
+    mb->expand_trace = mb->macro_trace = mb->depth;
     if (mb->depth == 1) {
 	print_macro_trace = mb->macro_trace;
 	print_expand_trace = mb->expand_trace;
