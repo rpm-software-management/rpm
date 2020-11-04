@@ -1301,8 +1301,7 @@ static void doLoad(MacroBuf mb, int chkexist, int negate,
 {
     char *arg = NULL;
     if (g && gn > 0 && expandThis(mb, g, gn, &arg) == 0) {
-	/* Print failure iff %{load:...} or %{!?load:...} */
-	if (loadMacroFile(mb->mc, arg) && chkexist == negate) {
+	if (loadMacroFile(mb->mc, arg)) {
 	    mbErr(mb, 1, _("failed to load macro file %s\n"), arg);
 	}
     }
