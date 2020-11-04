@@ -526,6 +526,16 @@ runroot rpm \
 [])
 AT_CLEANUP
 
+AT_SETUP([test lua support])
+AT_KEYWORDS([macros lua])
+AT_CHECK([[
+lua_disabled=$(runroot rpm --eval '%[%{defined lua}?"0":"1"]'|tr -d '\n')
+test $lua_disabled = $LUA_DISABLED
+]],
+[1],
+[])
+AT_CLEANUP
+
 AT_SETUP([simple lua --eval])
 AT_KEYWORDS([macros lua])
 AT_CHECK([
