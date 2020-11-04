@@ -1007,9 +1007,9 @@ static void doOutput(MacroBuf mb,  rpmMacroEntry me, const char * g, size_t gn)
     _free(buf);
 }
 
+#ifdef WITH_LUA
 static void doLua(MacroBuf mb,  rpmMacroEntry me, const char * g, size_t gn)
 {
-#ifdef WITH_LUA
     rpmlua lua = NULL; /* Global state. */
     char *scriptbuf = xmalloc(gn + 1);
     char *printbuf;
@@ -1044,10 +1044,8 @@ static void doLua(MacroBuf mb,  rpmMacroEntry me, const char * g, size_t gn)
 	free(printbuf);
     }
     free(scriptbuf);
-#else
-    mbErr(mb, 1, _("<lua> scriptlet support not built in\n"));
-#endif
 }
+#endif
 
 static void
 doSP(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
@@ -1269,7 +1267,9 @@ static struct builtins_s {
     { "getncpus",	doFoo,		ME_FUNC },
     { "global",		doGlobal,	ME_PARSE },
     { "load",		doLoad,		ME_ARGFUNC },
+#ifdef WITH_LUA
     { "lua",		doLua,		ME_ARGFUNC },
+#endif
     { "macrobody",	doBody,		ME_ARGFUNC },
     { "quote",		doFoo,		ME_ARGFUNC },
     { "shrink",		doFoo,		ME_ARGFUNC },
