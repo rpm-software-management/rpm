@@ -130,6 +130,11 @@ int argiAdd(ARGI_t * argip, int ix, int val)
 
 int argvAdd(ARGV_t * argvp, const char *val)
 {
+    return argvAddN(argvp, val, strlen(val));
+}
+
+int argvAddN(ARGV_t * argvp, const char *val, size_t len)
+{
     ARGV_t argv;
     int argc;
 
@@ -138,8 +143,13 @@ int argvAdd(ARGV_t * argvp, const char *val)
     argc = argvCount(*argvp);
     *argvp = xrealloc(*argvp, (argc + 1 + 1) * sizeof(**argvp));
     argv = *argvp;
-    argv[argc++] = xstrdup(val);
-    argv[argc  ] = NULL;
+
+    char *newarg = xmalloc(len + 1);
+    strncpy(newarg, val, len);
+    newarg[len] = '\0';
+
+    argv[argc] = newarg;
+    argv[argc + 1] = NULL;
     return 0;
 }
 

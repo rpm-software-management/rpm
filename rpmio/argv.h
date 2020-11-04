@@ -126,6 +126,15 @@ int argiAdd(ARGI_t * argip, int ix, int val);
 int argvAdd(ARGV_t * argvp, const char *val);
 
 /** \ingroup rpmargv
+ * Add a string to an argv array, does not need to be nil-terminated.
+ * @param[out] *argvp	argv array
+ * @param val		string arg to append
+ * @paran len		string arg length
+ * @return		0 always
+ */
+int argvAddN(ARGV_t * argvp, const char *val, size_t len);
+
+/** \ingroup rpmargv
  * Add a number to an argv array (converting to a string).
  * @param[out] *argvp	argv array
  * @param val		numeric arg to append
