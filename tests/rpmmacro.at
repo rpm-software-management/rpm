@@ -782,6 +782,22 @@ runroot rpm --eval '%{verbose:zzz}'
 ])
 AT_CLEANUP
 
+AT_SETUP([%exists macro])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm \
+	--eval "%{exists:/data}" \
+	--eval "%{exists:/zzz}" \
+	--eval "%{exists}"
+],
+[1],
+[1
+0
+],
+[error: %exists: argument expected
+])
+AT_CLEANUP
+
 AT_SETUP([macro with a line starting by "{"])
 AT_KEYWORDS([macros])
 AT_CHECK([

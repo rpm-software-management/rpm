@@ -80,6 +80,7 @@ to perform useful operations. The current list is
 
 	%{basename:...}	basename(1) macro analogue
 	%{dirname:...}	dirname(1) macro analogue
+	%{exists:...}	test file existence, expands to 1/0
 	%{suffix:...}	expand to suffix part of a file name
 	%{url2path:...}	convert url to a local path
 	%{getenv:...}	getenv(3) macro analogue
