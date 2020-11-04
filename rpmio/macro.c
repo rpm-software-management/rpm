@@ -1512,25 +1512,6 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    }
 	}
 
-	/* Expand builtin macros */
-	if (me && (me->flags & ME_BUILTIN)) {
-	    int havearg = (me->flags & ME_HAVEARG) ? 1 : 0;
-	    if (havearg != (g != NULL)) {
-		mbErr(mb, 1, "%%%s: %s\n", me->name, havearg ?
-			_("argument expected") : _("unexpected argument"));
-		continue;
-	    }
-	    if (me->flags & ME_PARSE) {
-		parseFunc parse = me->func;
-		s = parse(mb, me, se);
-	    } else {
-		macroFunc func = me->func;
-		func(mb, me, g, gn);
-		s = se;
-	    }
-	    continue;
-	}
-
 	/* XXX Special processing for flags and existance test */
 	if (*f == '-' || chkexist) {
 	    if ((me == NULL && !negate) ||	/* Without existance, skip %{?...} */
@@ -1552,6 +1533,25 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    /* XXX hack to permit non-overloaded %foo to be passed */
 	    c = '%';	/* XXX only need to save % */
 	    mbAppend(mb, c);
+	    continue;
+	}
+
+	/* Expand builtin macros */
+	if (me->flags & ME_BUILTIN) {
+	    int havearg = (me->flags & ME_HAVEARG) ? 1 : 0;
+	    if (havearg != (g != NULL)) {
+		mbErr(mb, 1, "%%%s: %s\n", me->name, havearg ?
+			_("argument expected") : _("unexpected argument"));
+		continue;
+	    }
+	    if (me->flags & ME_PARSE) {
+		parseFunc parse = me->func;
+		s = parse(mb, me, se);
+	    } else {
+		macroFunc func = me->func;
+		func(mb, me, g, gn);
+		s = se;
+	    }
 	    continue;
 	}
 
