@@ -129,7 +129,7 @@ int argvAdd(ARGV_t * argvp, const char *val);
  * Add a string to an argv array, does not need to be nil-terminated.
  * @param[out] *argvp	argv array
  * @param val		string arg to append
- * @paran len		string arg length
+ * @param len		string arg length
  * @return		0 always
  */
 int argvAddN(ARGV_t * argvp, const char *val, size_t len);
