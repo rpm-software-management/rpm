@@ -142,21 +142,6 @@ static void pushMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level, int flags);
 static void popMacro(rpmMacroContext mc, const char * n);
 static int loadMacroFile(rpmMacroContext mc, const char * fn);
-static void doBody(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
-static void doExpand(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
-static void doFoo(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
-static void doLoad(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
-static void doLua(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
-static void doOutput(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
-static void doSP(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
-static void doTrace(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
-static void doUncompress(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
-static void doVerbose(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
-
-static const char * doDef(MacroBuf mb, rpmMacroEntry me, const char * se);
-static const char * doGlobal(MacroBuf mb, rpmMacroEntry me, const char * se);
-static const char * doDump(MacroBuf mb, rpmMacroEntry me, const char * se);
-static const char * doUndefine(MacroBuf mb, rpmMacroEntry me, const char * se);
 /* =============================================================== */
 
 static rpmMacroContext rpmmctxAcquire(rpmMacroContext mc)
@@ -601,43 +586,6 @@ static unsigned int getncpus(void)
 	ncpus = 1;
     return ncpus;
 }
-
-static struct builtins_s {
-    const char * name;
-    void *func;
-    int flags;
-} const builtinmacros[] = {
-    { "P",		doSP,		ME_ARGFUNC },
-    { "S",		doSP,		ME_ARGFUNC },
-    { "basename",	doFoo,		ME_ARGFUNC },
-    { "define",		doDef,		ME_PARSE },
-    { "dirname",	doFoo,		ME_ARGFUNC },
-    { "dnl",		doDnl,		ME_PARSE },
-    { "dump", 		doDump,		ME_PARSE },
-    { "echo",		doOutput,	ME_ARGFUNC },
-    { "error",		doOutput,	ME_ARGFUNC },
-    { "exists",		doFoo,		ME_ARGFUNC },
-    { "expand",		doExpand,	ME_ARGFUNC },
-    { "expr",		doFoo,		ME_ARGFUNC },
-    { "getconfdir",	doFoo,		ME_FUNC },
-    { "getenv",		doFoo,		ME_ARGFUNC },
-    { "getncpus",	doFoo,		ME_FUNC },
-    { "global",		doGlobal,	ME_PARSE },
-    { "load",		doLoad,		ME_ARGFUNC },
-    { "lua",		doLua,		ME_ARGFUNC },
-    { "macrobody",	doBody,		ME_ARGFUNC },
-    { "quote",		doFoo,		ME_ARGFUNC },
-    { "shrink",		doFoo,		ME_ARGFUNC },
-    { "suffix",		doFoo,		ME_ARGFUNC },
-    { "trace",		doTrace,	ME_FUNC },
-    { "u2p",		doFoo,		ME_ARGFUNC },
-    { "uncompress",	doUncompress,	ME_ARGFUNC },
-    { "undefine",	doUndefine,	ME_PARSE },
-    { "url2path",	doFoo,		ME_ARGFUNC },
-    { "verbose",	doVerbose,	ME_FUNC },
-    { "warn",		doOutput,	ME_ARGFUNC },
-    { NULL,		NULL,		0 }
-};
 
 static int
 validName(MacroBuf mb, const char *name, size_t namelen, const char *action)
@@ -1298,6 +1246,43 @@ static void doTrace(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
 	print_expand_trace = mb->expand_trace;
     }
 }
+
+static struct builtins_s {
+    const char * name;
+    void *func;
+    int flags;
+} const builtinmacros[] = {
+    { "P",		doSP,		ME_ARGFUNC },
+    { "S",		doSP,		ME_ARGFUNC },
+    { "basename",	doFoo,		ME_ARGFUNC },
+    { "define",		doDef,		ME_PARSE },
+    { "dirname",	doFoo,		ME_ARGFUNC },
+    { "dnl",		doDnl,		ME_PARSE },
+    { "dump", 		doDump,		ME_PARSE },
+    { "echo",		doOutput,	ME_ARGFUNC },
+    { "error",		doOutput,	ME_ARGFUNC },
+    { "exists",		doFoo,		ME_ARGFUNC },
+    { "expand",		doExpand,	ME_ARGFUNC },
+    { "expr",		doFoo,		ME_ARGFUNC },
+    { "getconfdir",	doFoo,		ME_FUNC },
+    { "getenv",		doFoo,		ME_ARGFUNC },
+    { "getncpus",	doFoo,		ME_FUNC },
+    { "global",		doGlobal,	ME_PARSE },
+    { "load",		doLoad,		ME_ARGFUNC },
+    { "lua",		doLua,		ME_ARGFUNC },
+    { "macrobody",	doBody,		ME_ARGFUNC },
+    { "quote",		doFoo,		ME_ARGFUNC },
+    { "shrink",		doFoo,		ME_ARGFUNC },
+    { "suffix",		doFoo,		ME_ARGFUNC },
+    { "trace",		doTrace,	ME_FUNC },
+    { "u2p",		doFoo,		ME_ARGFUNC },
+    { "uncompress",	doUncompress,	ME_ARGFUNC },
+    { "undefine",	doUndefine,	ME_PARSE },
+    { "url2path",	doFoo,		ME_ARGFUNC },
+    { "verbose",	doVerbose,	ME_FUNC },
+    { "warn",		doOutput,	ME_ARGFUNC },
+    { NULL,		NULL,		0 }
+};
 
 static const char *setNegateAndCheck(const char *str, int *pnegate, int *pchkexist) {
 
