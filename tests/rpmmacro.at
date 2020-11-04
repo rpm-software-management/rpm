@@ -767,39 +767,18 @@ bar
 ])
 AT_CLEANUP
 
-AT_SETUP([%verbose negative test])
+AT_SETUP([%verbose macro])
 AT_KEYWORDS([macros verbose])
 AT_CHECK([
-runroot rpm \
-  --eval '%{verbose:%{echo:is verbose}}' \
-  --eval '%{verbose:is verbose text}'\
-  --eval '%{!verbose:%{echo:is not verbose}}'\
-  --eval '%{!verbose:is not verbose text}'
+runroot rpm --eval '%{verbose}'
+runroot rpm -v --eval '%{verbose}'
+runroot rpm --eval '%{verbose:zzz}'
 ],
-[0],
-[
-
-is not verbose
-
-is not verbose text
-])
-AT_CLEANUP
-
-AT_SETUP([%verbose positive test])
-AT_KEYWORDS([macros verbose])
-AT_CHECK([
-runroot rpm -v \
-  --eval '%{!verbose:%{echo:is not verbose}}' \
-  --eval '%{!verbose:is not verbose text}'\
-  --eval '%{verbose:%{echo:is verbose}}'\
-  --eval '%{verbose:is verbose text}'
+[1],
+[0
+1
 ],
-[0],
-[
-
-is verbose
-
-is verbose text
+[error: %verbose: unexpected argument
 ])
 AT_CLEANUP
 
