@@ -625,6 +625,7 @@ static struct builtins_s {
     { "dump", 		doDump,		ME_PARSE },
     { "echo",		doOutput,	ME_ARGFUNC },
     { "error",		doOutput,	ME_ARGFUNC },
+    { "exists",		doFoo,		ME_ARGFUNC },
     { "expand",		doExpand,	ME_ARGFUNC },
     { "expr",		doFoo,		ME_ARGFUNC },
     { "getconfdir",	doFoo,		ME_FUNC },
@@ -1285,6 +1286,8 @@ doFoo(MacroBuf mb, int chkexist, int negate, rpmMacroEntry me,
     } else if (rstreq("getncpus", me->name)) {
 	sprintf(buf, "%u", getncpus());
 	b = buf;
+    } else if (rstreq("exists", me->name)) {
+	b = (access(buf, F_OK) == 0) ? "1" : "0";
     }
 
     if (b) {
