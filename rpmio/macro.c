@@ -133,8 +133,7 @@ static int print_macro_trace = _PRINT_MACRO_TRACE;
 #define	_PRINT_EXPAND_TRACE	0
 static int print_expand_trace = _PRINT_EXPAND_TRACE;
 
-typedef void (*macroFunc)(MacroBuf mb, int chkexist, int negate,
-			rpmMacroEntry me, const char * g, size_t gn);
+typedef void (*macroFunc)(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
 typedef const char *(*parseFunc)(MacroBuf mb, rpmMacroEntry me, const char * se);
 
 /* forward ref */
@@ -143,26 +142,16 @@ static void pushMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level, int flags);
 static void popMacro(rpmMacroContext mc, const char * n);
 static int loadMacroFile(rpmMacroContext mc, const char * fn);
-static void doBody(MacroBuf mb, int chkexist, int negate,
-		    rpmMacroEntry me, const char * g, size_t gn);
-static void doExpand(MacroBuf mb, int chkexist, int negate,
-		    rpmMacroEntry me, const char * g, size_t gn);
-static void doFoo(MacroBuf mb, int chkexist, int negate,
-		    rpmMacroEntry me, const char * g, size_t gn);
-static void doLoad(MacroBuf mb, int chkexist, int negate,
-		    rpmMacroEntry me, const char * g, size_t gn);
-static void doLua(MacroBuf mb, int chkexist, int negate,
-		    rpmMacroEntry me, const char * g, size_t gn);
-static void doOutput(MacroBuf mb, int chkexist, int negate,
-		    rpmMacroEntry me, const char * g, size_t gn);
-static void doSP(MacroBuf mb, int chkexist, int negate,
-		    rpmMacroEntry me, const char * g, size_t gn);
-static void doTrace(MacroBuf mb, int chkexist, int negate,
-		    rpmMacroEntry me, const char * g, size_t gn);
-static void doUncompress(MacroBuf mb, int chkexist, int negate,
-		    rpmMacroEntry me, const char * g, size_t gn);
-static void doVerbose(MacroBuf mb, int chkexist, int negate,
-		    rpmMacroEntry me, const char * g, size_t gn);
+static void doBody(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
+static void doExpand(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
+static void doFoo(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
+static void doLoad(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
+static void doLua(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
+static void doOutput(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
+static void doSP(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
+static void doTrace(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
+static void doUncompress(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
+static void doVerbose(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
 
 static const char * doDef(MacroBuf mb, rpmMacroEntry me, const char * se);
 static const char * doGlobal(MacroBuf mb, rpmMacroEntry me, const char * se);
@@ -1036,8 +1025,7 @@ grabArgs(MacroBuf mb, ARGV_t *argvp, const char * se,
 	   lastc : lastc + 1;
 }
 
-static void doBody(MacroBuf mb, int chkexist, int negate,
-		rpmMacroEntry me, const char * g, size_t gn)
+static void doBody(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
 {
     if (gn > 0) {
 	char *buf = NULL;
@@ -1053,7 +1041,7 @@ static void doBody(MacroBuf mb, int chkexist, int negate,
     }
 }
 
-static void doOutput(MacroBuf mb, int chkexist, int negate, rpmMacroEntry me, const char * g, size_t gn)
+static void doOutput(MacroBuf mb,  rpmMacroEntry me, const char * g, size_t gn)
 {
     char *buf = NULL;
     int loglevel = RPMLOG_NOTICE; /* assume echo */
@@ -1071,7 +1059,7 @@ static void doOutput(MacroBuf mb, int chkexist, int negate, rpmMacroEntry me, co
     _free(buf);
 }
 
-static void doLua(MacroBuf mb, int chkexist, int negate, rpmMacroEntry me, const char * g, size_t gn)
+static void doLua(MacroBuf mb,  rpmMacroEntry me, const char * g, size_t gn)
 {
 #ifdef WITH_LUA
     rpmlua lua = NULL; /* Global state. */
@@ -1114,8 +1102,7 @@ static void doLua(MacroBuf mb, int chkexist, int negate, rpmMacroEntry me, const
 }
 
 static void
-doSP(MacroBuf mb, int chkexist, int negate,
-	    rpmMacroEntry me, const char * g, size_t gn)
+doSP(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
 {
     const char *b = "";
     char *buf = NULL;
@@ -1132,8 +1119,7 @@ doSP(MacroBuf mb, int chkexist, int negate,
     free(buf);
 }
 
-static void doUncompress(MacroBuf mb, int chkexist, int negate,
-		rpmMacroEntry me, const char * g, size_t gn)
+static void doUncompress(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
 {
     rpmCompressedMagic compressed = COMPRESSED_OTHER;
     char *b, *be, *buf = NULL;
@@ -1191,8 +1177,7 @@ exit:
     free(buf);
 }
 
-static void doExpand(MacroBuf mb, int chkexist, int negate,
-		    rpmMacroEntry me, const char * g, size_t gn)
+static void doExpand(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
 {
     if (gn > 0) {
 	char *buf;
@@ -1202,8 +1187,7 @@ static void doExpand(MacroBuf mb, int chkexist, int negate,
     }
 }
 
-static void doVerbose(MacroBuf mb, int chkexist, int negate,
-		rpmMacroEntry me, const char * g, size_t gn)
+static void doVerbose(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
 {
     mbAppend(mb, rpmIsVerbose() ? '1' : '0');
 }
@@ -1211,14 +1195,11 @@ static void doVerbose(MacroBuf mb, int chkexist, int negate,
 /**
  * Execute macro primitives.
  * @param mb		macro expansion state
- * @param chkexist	unused
- * @param negate	should logic be inverted?
  * @param g		beginning of field g
  * @param gn		length of field g
  */
 static void
-doFoo(MacroBuf mb, int chkexist, int negate, rpmMacroEntry me,
-		const char * g, size_t gn)
+doFoo(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
 {
     char *buf = NULL;
     char *b = NULL;
@@ -1298,8 +1279,7 @@ doFoo(MacroBuf mb, int chkexist, int negate, rpmMacroEntry me,
     free(buf);
 }
 
-static void doLoad(MacroBuf mb, int chkexist, int negate,
-		    rpmMacroEntry me, const char * g, size_t gn)
+static void doLoad(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
 {
     char *arg = NULL;
     if (g && gn > 0 && expandThis(mb, g, gn, &arg) == 0) {
@@ -1310,8 +1290,7 @@ static void doLoad(MacroBuf mb, int chkexist, int negate,
     free(arg);
 }
 
-static void doTrace(MacroBuf mb, int chkexist, int negate,
-		    rpmMacroEntry me, const char * g, size_t gn)
+static void doTrace(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
 {
     mb->expand_trace = mb->macro_trace = mb->depth;
     if (mb->depth == 1) {
@@ -1546,7 +1525,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 		s = parse(mb, me, se);
 	    } else {
 		macroFunc func = me->func;
-		func(mb, chkexist, negate, me, g, gn);
+		func(mb, me, g, gn);
 		s = se;
 	    }
 	    continue;
