@@ -644,7 +644,7 @@ static struct builtins_s {
     { "uncompress",	doUncompress,	ME_ARGFUNC },
     { "undefine",	doUndefine,	ME_PARSE },
     { "url2path",	doFoo,		ME_ARGFUNC },
-    { "verbose",	doVerbose,	ME_ARGFUNC },
+    { "verbose",	doVerbose,	ME_FUNC },
     { "warn",		doOutput,	ME_ARGFUNC },
     { NULL,		NULL,		0 }
 };
@@ -1204,14 +1204,7 @@ static void doExpand(MacroBuf mb, int chkexist, int negate,
 static void doVerbose(MacroBuf mb, int chkexist, int negate,
 		rpmMacroEntry me, const char * g, size_t gn)
 {
-    int verbose = (rpmIsVerbose() != 0);
-    /* Don't expand %{verbose:...} argument on false condition */
-    if (verbose != negate) {
-	char *buf = NULL;
-	expandThis(mb, g, gn, &buf);
-	mbAppendStr(mb, buf);
-	free(buf);
-    }
+    mbAppend(mb, rpmIsVerbose() ? '1' : '0');
 }
 
 /**
