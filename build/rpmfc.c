@@ -508,13 +508,14 @@ static void rpmfcAddFileDep(rpmfcFileDeps *fileDeps, rpmds ds, int ix)
     fileDeps->data[fileDeps->size++].dep = ds;
 }
 
-static ARGV_t runCmd(const char *cmd,
-		     const char *buildRoot, const char *fn)
+static ARGV_t runCmd(const char *name, const char *buildRoot, const char *fn)
 {
     ARGV_t output = NULL;
     ARGV_t av = NULL;
     StringBuf sb_stdout = NULL;
     StringBuf sb_stdin = newStringBuf();
+    char *cmd = rstrscat(NULL, "%{", name, "} %{?", name, "_opts}", NULL);
+
     argvAdd(&av, cmd);
 
     appendLineStringBuf(sb_stdin, fn);
@@ -525,25 +526,31 @@ static ARGV_t runCmd(const char *cmd,
     argvFree(av);
     freeStringBuf(sb_stdin);
     freeStringBuf(sb_stdout);
+    free(cmd);
 
     return output;
 }
 
-static ARGV_t runCall(const char *cmd,
-		     const char *buildRoot, const char *fn)
+static ARGV_t runCall(const char *name, const char *buildRoot, const char *fn)
 {
     ARGV_t output = NULL;
+    ARGV_t args = NULL;
+    char *exp = NULL;
+    char *opt = rpmExpand("%{?", name, "_opts}", NULL);
+
+    if (*opt)
+	argvAdd(&args, opt);
+    argvAdd(&args, fn);
 
     if (_rpmfc_debug)
-	rpmlog(RPMLOG_DEBUG, "Calling %s() on %s\n", cmd, fn);
+	rpmlog(RPMLOG_DEBUG, "Calling %s(%s) on %s\n", name, opt, fn);
 
-    /* Hack to pass in the path as what looks like a macro argument */
-    rpmPushMacroFlags(NULL, "1", NULL, fn, 1, RPMMACRO_LITERAL);
-    char *exp = rpmExpand(cmd, NULL);
-    rpmPopMacro(NULL, "1");
-    if (*exp)
+    if (rpmExpandThisMacro(NULL, name, args, &exp, 0) >= 0)
 	argvSplit(&output, exp, "\n\r");
+
     free(exp);
+    free(opt);
+    argvFree(args);
 
     return output;
 }
@@ -594,7 +601,7 @@ static void exclFini(struct exclreg_s *excl)
 
 static int rpmfcHelper(rpmfc fc, int ix, const struct exclreg_s *excl,
 		       rpmsenseFlags dsContext, rpmTagVal tagN,
-		       const char *namespace, const char *cmd, int callable)
+		       const char *namespace, const char *mname)
 {
     ARGV_t pav = NULL;
     const char * fn = fc->fn[ix];
@@ -608,10 +615,10 @@ static int rpmfcHelper(rpmfc fc, int ix, const struct exclreg_s *excl,
     if (regMatch(excl->global_exclude_from, fn+fc->brlen))
 	goto exit;
 
-    if (callable) {
-	pav = runCall(cmd, fc->buildRoot, fn);
+    if (rpmMacroIsParametric(NULL, mname)) {
+	pav = runCall(mname, fc->buildRoot, fn);
     } else {
-	pav = runCmd(cmd, fc->buildRoot, fn);
+	pav = runCmd(mname, fc->buildRoot, fn);
     }
 
     if (pav == NULL)
@@ -1025,27 +1032,16 @@ static int applyAttr(rpmfc fc, int aix, const char *aname,
 
     if (fattrHashGetEntry(fc->fahash, aix, &ixs, &n, NULL)) {
 	char *mname = rstrscat(NULL, "__", aname, "_", dep->name, NULL);
-	char *cmd;
-	int callable = rpmMacroIsParametric(NULL, mname);
 
-	if (callable) {
-	    cmd = rstrscat(NULL, "%{", mname,
-				" %{?", mname, "_opts}", "}", NULL);
-	} else {
-	    cmd = rpmExpand("%{?", mname, ":%{", mname, "} %{?",
-				mname, "_opts}}", NULL);
-	}
-
-	if (!rstreq(cmd, "")) {
+	if (rpmMacroIsDefined(NULL, mname)) {
 	    char *ns = rpmfcAttrMacro(aname, "namespace", NULL);
 	    for (int i = 0; i < n; i++) {
 		if (rpmfcHelper(fc, ixs[i], excl, dep->type, dep->tag,
-				ns, cmd, callable))
+				ns, mname))
 		    rc = 1;
 	    }
 	    free(ns);
 	}
-	free(cmd);
 	free(mname);
     }
     return rc;
