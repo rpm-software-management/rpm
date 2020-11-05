@@ -144,11 +144,7 @@ int argvAddN(ARGV_t * argvp, const char *val, size_t len)
     *argvp = xrealloc(*argvp, (argc + 1 + 1) * sizeof(**argvp));
     argv = *argvp;
 
-    char *newarg = xmalloc(len + 1);
-    strncpy(newarg, val, len);
-    newarg[len] = '\0';
-
-    argv[argc] = newarg;
+    argv[argc] = rstrndup(val, len);
     argv[argc + 1] = NULL;
     return 0;
 }

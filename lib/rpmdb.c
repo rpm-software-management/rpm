@@ -618,8 +618,7 @@ static rpmRC rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 
     if ((baseName = strrchr(filespec, '/')) != NULL) {
 	size_t len = baseName - filespec + 1;
-	dirName = strncpy(xmalloc(len + 1), filespec, len);
-	dirName[len] = '\0';
+	dirName = rstrndup(filespec, len);
 	baseName++;
     } else {
 	dirName = xstrdup("");

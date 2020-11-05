@@ -581,10 +581,8 @@ exit:
  */
 static void doExpressionExpansion(MacroBuf mb, const char * expr, size_t len)
 {
-    char *buf = xmalloc(len + 1);
+    char *buf = rstrndup(expr, len);
     char *result;
-    strncpy(buf, expr, len);
-    buf[len] = 0;
     result = rpmExprStrFlags(buf, RPMEXPR_EXPAND);
     if (!result) {
 	mb->error = 1;
@@ -1430,9 +1428,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
      */
     if (!slen)
 	slen = strlen(src);
-    source = xmalloc(slen + 1);
-    strncpy(source, src, slen);
-    source[slen] = '\0';
+    source = rstrndup(src, slen);
     s = source;
 
     if (mbInit(mb, &med, slen) != 0)
