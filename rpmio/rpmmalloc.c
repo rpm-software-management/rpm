@@ -68,14 +68,20 @@ void * rrealloc (void *ptr, size_t size)
     return value;
 }
 
-char * rstrdup (const char *str)
+char * rstrndup(const char *str, size_t n)
 {
-    size_t size = strlen(str) + 1;
+    size_t size = n + 1;
     char *newstr = (char *) malloc (size);
     if (newstr == NULL)
 	newstr = (char *) vmefail(size);
-    strcpy (newstr, str);
+    strncpy(newstr, str, n);
+    newstr[n] = '\0';
     return newstr;
+}
+
+char * rstrdup (const char *str)
+{
+    return rstrndup(str, strlen(str));
 }
 
 void * rfree (void *ptr)
