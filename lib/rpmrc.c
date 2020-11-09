@@ -35,7 +35,6 @@
 #include "rpmio/rpmlua.h"
 #include "rpmio/rpmio_internal.h"	/* XXX for rpmioSlurp */
 #include "lib/misc.h"
-#include "lib/rpmug.h"
 
 #include "debug.h"
 
@@ -1631,10 +1630,6 @@ int rpmReadConfigFiles(const char * file, const char * target)
     rpmrcCtx ctx = rpmrcCtxAcquire(1);
 
     pthread_once(&atexit_registered, register_atexit);
-
-    /* Force preloading of dlopen()'ed libraries in case we go chrooting */
-    if (rpmugInit())
-	goto exit;
 
     if (rpmInitCrypto())
 	goto exit;

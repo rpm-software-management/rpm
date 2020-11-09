@@ -5,6 +5,7 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>
 #include "lib/rpmchroot.h"
+#include "lib/rpmug.h"
 #include "debug.h"
 
 int _rpm_nouserns = 0;
@@ -101,6 +102,10 @@ int rpmChrootSet(const char *rootDir)
 	    rpmlog(RPMLOG_ERR, _("Unable to open current directory: %m\n"));
 	    rc = -1;
 	}
+
+	/* Force preloading of dlopen()'ed libraries before chroot */
+	if (rpmugInit())
+	    rc = -1;
     }
 
     return rc;
