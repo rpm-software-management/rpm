@@ -139,6 +139,14 @@ typedef int (*rpmlogCallback) (rpmlogRec rec, rpmlogCallbackData data);
 int rpmlogGetNrecs(void)	;
 
 /** \ingroup rpmlog
+ * Print all rpmError() messages matching a log mask, possibly in color.
+ * @param f		file handle (NULL uses stderr)
+ * @param mask		log mask to filter by (0 is no filtering)
+ * @param color		should color be used if available?
+ */
+void rpmlogPrettyPrint(FILE *f, unsigned mask, int color);
+
+/** \ingroup rpmlog
  * Print all rpmError() messages.
  * @param f		file handle (NULL uses stderr)
  */

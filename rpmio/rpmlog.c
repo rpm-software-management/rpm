@@ -126,9 +126,14 @@ static void rpmlogForeach(void (*func) (rpmlogRec, void*), void *data,
 
 void rpmlogPrint(FILE *f)
 {
+    rpmlogPrettyPrint(f, 0, 0);
+}
+
+void rpmlogPrettyPrint(FILE *f, unsigned mask, int color)
+{
     if (f == NULL)
 	f = stderr;
-    rpmlogForeach(rpmlogRecPrint, f, 0);
+    rpmlogForeach(color ? rpmlogRecPrettyPrint : rpmlogRecPrint, f, mask);
 }
 
 void rpmlogClose (void)
@@ -364,6 +369,13 @@ static int rpmlogDefault(FILE *stdlog, rpmlogRec rec)
 	logerror();
 
     return (rec->pri <= RPMLOG_CRIT ? RPMLOG_EXIT : 0);
+}
+
+static void rpmlogRecPrettyPrint(rpmlogRec rec, void *data)
+{
+    FILE *f = (FILE *)data;
+    fprintf(f, "    ");
+    rpmlogDefault(f, rec);
 }
 
 /* FIX: rpmlogMsgPrefix[] dependent, not unqualified */
