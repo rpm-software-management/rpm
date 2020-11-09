@@ -174,7 +174,6 @@ static void loadLibs(void)
     endpwent();
     (void) getgrnam(GID_0_GROUP);
     endgrent();
-    (void) gethostbyname("localhost");
 }
 
 int rpmugInit(void)

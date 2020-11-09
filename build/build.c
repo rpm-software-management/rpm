@@ -7,6 +7,8 @@
 
 #include <errno.h>
 #include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 #include <netdb.h>
 #include <time.h>
 
@@ -42,21 +44,26 @@ static rpm_time_t getBuildTime(void)
 static char * buildHost(void)
 {
     char* hostname;
-    struct hostent *hbn;
     char *bhMacro;
 
     bhMacro = rpmExpand("%{?_buildhost}", NULL);
     if (strcmp(bhMacro, "") != 0) {
         rasprintf(&hostname, "%s", bhMacro);
     } else {
-        hostname = rcalloc(1024, sizeof(*hostname));
-        (void) gethostname(hostname, 1024);
-        hbn = gethostbyname(hostname);
-        if (hbn)
-            strcpy(hostname, hbn->h_name);
-        else
-            rpmlog(RPMLOG_WARNING,
+	hostname = rcalloc(NI_MAXHOST + 1, sizeof(*hostname));
+	if (gethostname(hostname, NI_MAXHOST) == 0) {
+	    struct addrinfo *ai, hints;
+	    memset(&hints, 0, sizeof(hints));
+	    hints.ai_flags = AI_CANONNAME;
+
+	    if (getaddrinfo(hostname, NULL, &hints, &ai) == 0) {
+		strcpy(hostname, ai->ai_canonname);
+	    } else {
+		rpmlog(RPMLOG_WARNING,
                     _("Could not canonicalize hostname: %s\n"), hostname);
+	    }
+	    freeaddrinfo(ai);
+	}
     }
     free(bhMacro);
     return(hostname);
