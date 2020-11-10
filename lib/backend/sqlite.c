@@ -145,6 +145,8 @@ static int sqlite_init(rpmdb rdb, const char * dbhome)
 	    xx = sqlite3_open_v2(dbfile, &sdb, flags, NULL);
 	    /* Attempt to create if missing, discarding OPEN_READONLY (!) */
 	    if (xx == SQLITE_CANTOPEN && (flags & SQLITE_OPEN_READONLY)) {
+		/* Sqlite allocates resources even on failure to open (!) */
+		sqlite3_close(sdb);
 		flags &= ~SQLITE_OPEN_READONLY;
 		flags |= (SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
 		retry_open++;
