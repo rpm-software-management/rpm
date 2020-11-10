@@ -175,11 +175,11 @@ AS_IF([test "x$ac_cv_prog_c_openmp" != x &&
   old_CFLAGS=$CFLAGS
   CFLAGS="$CFLAGS $OPENMP_CFLAGS"
   AC_MSG_CHECKING([OpenMP is at least version 4.5])
-  AC_RUN_IFELSE(
+  AC_COMPILE_IFELSE(
     [AC_LANG_PROGRAM(
       [#include <omp.h>],
       [#if _OPENMP < 201511
-       exit(1);
+       #error
        #endif
       ]
     )],
