@@ -35,6 +35,7 @@ typedef enum rpmlogLvl_e {
     RPMLOG_NOTICE	= 5,	/*!< normal but significant condition */
     RPMLOG_INFO		= 6,	/*!< informational */
     RPMLOG_DEBUG	= 7	/*!< debug-level messages */
+#define	RPMLOG_NPRIORITIES 8	/*!< current number of priorities */
 } rpmlogLvl;
 
 #define	RPMLOG_PRIMASK	0x07	/* mask to extract priority part (internal) */
@@ -131,6 +132,13 @@ typedef void * rpmlogCallbackData;
   * 			0 to return after callback
   */
 typedef int (*rpmlogCallback) (rpmlogRec rec, rpmlogCallbackData data);
+
+/** \ingroup rpmlog
+ * Return number of rpmError() messages matching a log mask.
+ * @param mask		log mask to filter by (0 is no filtering)
+ * @return		number of messages matching the mask
+ */
+int rpmlogGetNrecsByMask(unsigned mask);
 
 /** \ingroup rpmlog
  * Return number of rpmError() ressages.
