@@ -291,6 +291,11 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi, int strip)
 		spec->lbuf = realloc(spec->lbuf, spec->lbufSize);
 	    }
 	}
+	if (ch != '\n') {
+	    spec->lbuf[spec->lbufOff++] = '\n';
+	    if (spec->lbufOff == spec->lbufSize)
+		spec->lbuf = realloc(spec->lbuf, ++spec->lbufSize);
+	}
 	spec->lbuf[spec->lbufOff] = '\0';
 	ofi->readPtr = from;
 
