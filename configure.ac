@@ -188,7 +188,7 @@ AS_IF([test "x$ac_cv_prog_c_openmp" != x &&
     ],
     [AC_MSG_RESULT([no])
      if test "$enable_openmp" = "yes"; then
-       AC_MSG_ERROR([OpenMP too old])
+       AC_MSG_WARN([OpenMP too old (forcefully disabled)])
      fi
     ]
   )
