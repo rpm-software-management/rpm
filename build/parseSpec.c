@@ -282,6 +282,7 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi, int strip)
 	int pc = 0, bc = 0, xc = 0, nc = 0;
 	const char *from = ofi->readPtr;
 	char ch = ' ';
+
 	while (from && *from && ch != '\n') {
 	    ch = spec->lbuf[spec->lbufOff] = *from;
 	    spec->lbufOff++; from++;
@@ -291,6 +292,14 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi, int strip)
 		spec->lbuf = realloc(spec->lbuf, spec->lbufSize);
 	    }
 	}
+
+	/* Add trailing newline if missing */
+	if (ch != '\n') {
+	    spec->lbuf[spec->lbufOff++] = '\n';
+	    if (spec->lbufOff == spec->lbufSize)
+		spec->lbuf = realloc(spec->lbuf, ++spec->lbufSize);
+	}
+
 	spec->lbuf[spec->lbufOff] = '\0';
 	ofi->readPtr = from;
 
