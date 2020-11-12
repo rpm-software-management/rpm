@@ -302,26 +302,54 @@ AT_CHECK([
 runroot rpm --eval "%{dirname}"
 runroot rpm --eval "%{dirname:}"
 runroot rpm --eval "%{dirname:dir}"
+runroot rpm --eval "%{dirname dir}"
 runroot rpm --define '%xxx /hello/%%%%/world' --eval '%{dirname:%xxx}'
 runroot rpm --eval "%{uncompress}"
 runroot rpm --eval "%{uncompress:}"
 runroot rpm --eval "%{getncpus:}"
 runroot rpm --eval "%{getncpus:5}"
 runroot rpm --eval "%{define:}"
+runroot rpm --eval "%{define:foo}"
+runroot rpm --eval "%{define:foo bar}%{foo}"
 runroot rpm --eval "%{dump:foo}"
 ],
 [1],
 [
 dir
+dir
 /hello/%%
 
+bar
 ],
 [error: %dirname: argument expected
 error: %uncompress: argument expected
 error: %getncpus: unexpected argument
 error: %getncpus: unexpected argument
-error: %define: unexpected argument
+error: Macro % has illegal name (%define)
+error: Macro %foo has empty body
 error: %dump: unexpected argument
+])
+AT_CLEANUP
+
+AT_SETUP([macro arguments])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm \
+    --define 'zzz xxx' \
+    --eval '%{defined zzz}' \
+    --eval '%{defined:zzz}' \
+    --eval '%defined zzz' \
+    --eval '%{defined aaa}' \
+    --eval '%{defined:aaa}' \
+    --eval '%defined aaa'
+],
+[0],
+[1
+1
+1
+0
+0
+0
 ])
 AT_CLEANUP
 
