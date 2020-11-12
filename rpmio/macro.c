@@ -44,6 +44,7 @@ enum macroFlags_e {
 
 #define ME_BUILTIN (ME_PARSE|ME_FUNC)
 #define ME_ARGFUNC (ME_FUNC|ME_HAVEARG)
+#define ME_ARGPARSE (ME_PARSE|ME_HAVEARG)
 
 /*! The structure used to store a macro. */
 struct rpmMacroEntry_s {
@@ -1251,9 +1252,9 @@ static struct builtins_s {
     { "P",		doSP,		ME_ARGFUNC },
     { "S",		doSP,		ME_ARGFUNC },
     { "basename",	doFoo,		ME_ARGFUNC },
-    { "define",		doDef,		ME_PARSE },
+    { "define",		doDef,		ME_ARGPARSE },
     { "dirname",	doFoo,		ME_ARGFUNC },
-    { "dnl",		doDnl,		ME_PARSE },
+    { "dnl",		doDnl,		ME_ARGPARSE },
     { "dump", 		doDump,		ME_PARSE },
     { "echo",		doOutput,	ME_ARGFUNC },
     { "error",		doOutput,	ME_ARGFUNC },
@@ -1263,7 +1264,7 @@ static struct builtins_s {
     { "getconfdir",	doFoo,		ME_FUNC },
     { "getenv",		doFoo,		ME_ARGFUNC },
     { "getncpus",	doFoo,		ME_FUNC },
-    { "global",		doGlobal,	ME_PARSE },
+    { "global",		doGlobal,	ME_ARGPARSE },
     { "load",		doLoad,		ME_ARGFUNC },
 #ifdef WITH_LUA
     { "lua",		doLua,		ME_ARGFUNC },
@@ -1275,7 +1276,7 @@ static struct builtins_s {
     { "trace",		doTrace,	ME_FUNC },
     { "u2p",		doFoo,		ME_ARGFUNC },
     { "uncompress",	doUncompress,	ME_ARGFUNC },
-    { "undefine",	doUndefine,	ME_PARSE },
+    { "undefine",	doUndefine,	ME_ARGPARSE },
     { "url2path",	doFoo,		ME_ARGFUNC },
     { "verbose",	doVerbose,	ME_FUNC },
     { "warn",		doOutput,	ME_ARGFUNC },
@@ -1329,29 +1330,48 @@ const char *findMacroEnd(const char *str)
  * @param mb		macro expansion state
  * @param me		macro entry slot
  * @param args		arguments for parametric macros
+ * @param parsed	how many characters ME_PARSE parsed (or NULL)
  */
 static void
-doExpandThisMacro(MacroBuf mb, rpmMacroEntry me, ARGV_t args)
+doExpandThisMacro(MacroBuf mb, rpmMacroEntry me, ARGV_t args, size_t *parsed)
 {
     rpmMacroEntry prevme = mb->me;
     ARGV_t prevarg = mb->args;
 
-    /* Setup args for "%name " macros with opts */
-    if (args != NULL)
-	setupArgs(mb, me, args);
     /* Recursively expand body of macro */
     if (me->flags & ME_BUILTIN) {
-	/* XXX not yet */
-	mbErr(mb, 1, "tried to expand a builtin: %s\n", me->name);
+	int nargs = argvCount(args) - 1;
+	int needarg = (me->flags & ME_HAVEARG) ? 1 : 0;
+	int havearg = (nargs > 0);
+	if (needarg != havearg) {
+	    mbErr(mb, 1, "%%%s: %s\n", me->name, needarg ?
+		    _("argument expected") : _("unexpected argument"));
+	    goto exit;
+	}
+	const char *arg = havearg ? args[1] : NULL;
+	if (me->flags & ME_PARSE) {
+	    parseFunc parse = me->func;
+	    const char *s = parse(mb, me, arg);
+	    if (parsed)
+		*parsed = s-arg;
+	} else {
+	    macroFunc func = me->func;
+	    func(mb, me, arg, arg ? strlen(arg) : 0);
+	}
     } else if (me->body && *me->body) {
+	/* Setup args for "%name " macros with opts */
+	if (args != NULL)
+	    setupArgs(mb, me, args);
+
 	if ((me->flags & ME_LITERAL) != 0)
 	    mbAppendStr(mb, me->body);
 	else
 	    expandMacro(mb, me->body, 0);
+	/* Free args for "%name " macros with opts */
+	if (args != NULL)
+	    freeArgs(mb);
     }
-    /* Free args for "%name " macros with opts */
-    if (args != NULL)
-	freeArgs(mb);
+exit:
     mb->args = prevarg;
     mb->me = prevme;
 }
@@ -1504,7 +1524,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    if (g && g < ge) {		/* Expand X in %{...:X} */
 		expandMacro(mb, g, gn);
 	    } else if (me) {
-		doExpandThisMacro(mb, me, NULL);
+		doExpandThisMacro(mb, me, NULL, NULL);
 	    }
 	    s = se;
 	    continue;
@@ -1517,36 +1537,23 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    continue;
 	}
 
-	/* Expand builtin macros */
-	if (me->flags & ME_BUILTIN) {
-	    int havearg = (me->flags & ME_HAVEARG) ? 1 : 0;
-	    if (havearg != (g != NULL)) {
-		mbErr(mb, 1, "%%%s: %s\n", me->name, havearg ?
-			_("argument expected") : _("unexpected argument"));
-		continue;
-	    }
-	    if (me->flags & ME_PARSE) {
-		parseFunc parse = me->func;
-		s = parse(mb, me, se);
-	    } else {
-		macroFunc func = me->func;
-		func(mb, me, g, gn);
-		s = se;
-	    }
-	    continue;
-	}
-
 	/* Grab args for parametric macros */
 	ARGV_t args = NULL;
+	size_t fwd = 0;
 	if (me->opts != NULL) {
 	    argvAdd(&args, me->name);
-	    if (lastc)
-		se = grabArgs(mb, &args, fe, lastc);
+	    if (g) {
+		argvAddN(&args, g, gn);
+	    } else if (me->flags & ME_PARSE) {
+		argvAdd(&args, se);
+	    } else if (lastc) {
+		fwd = (grabArgs(mb, &args, fe, lastc) - se);
+	    }
 	}
-	doExpandThisMacro(mb, me, args);
+	doExpandThisMacro(mb, me, args, &fwd);
 	if (args != NULL)
 	    argvFree(args);
-	s = se;
+	s = se + (g ? 0 : fwd);
     }
 
     mbFini(mb, &med);
@@ -1596,7 +1603,7 @@ expandThisMacro(MacroBuf mb, rpmMacroEntry me, ARGV_const_t args, int flags)
 	}
     }
 
-    doExpandThisMacro(mb, me, optargs);
+    doExpandThisMacro(mb, me, optargs, NULL);
     if (optargs)
 	argvFree(optargs);
 
@@ -1950,7 +1957,7 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 
     /* Define built-in macros */
     for (const struct builtins_s *b = builtinmacros; b->name; b++) {
-	pushMacroAny(mc, b->name, NULL, "<builtin>", b->func,
+	pushMacroAny(mc, b->name, "", "<builtin>", b->func,
 			RMIL_BUILTIN, b->flags);
     }
 
