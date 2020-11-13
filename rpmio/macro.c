@@ -135,7 +135,7 @@ static int print_macro_trace = _PRINT_MACRO_TRACE;
 static int print_expand_trace = _PRINT_EXPAND_TRACE;
 
 typedef void (*macroFunc)(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
-typedef const char *(*parseFunc)(MacroBuf mb, rpmMacroEntry me, const char * se);
+typedef size_t (*parseFunc)(MacroBuf mb, rpmMacroEntry me, const char * se);
 
 /* forward ref */
 static int expandMacro(MacroBuf mb, const char *src, size_t slen);
@@ -502,12 +502,14 @@ static void mbAppendStr(MacroBuf mb, const char *str)
     mb->nb -= len;
 }
 
-static const char * doDnl(MacroBuf mb, rpmMacroEntry me, const char * se)
+static size_t doDnl(MacroBuf mb, rpmMacroEntry me, const char * se)
 {
+    const char *start = se, *end;
     const char *s = se;
     while (*s && !iseol(*s))
 	s++;
-    return (*s != '\0') ? s + 1 : s;
+    end = (*s != '\0') ? s + 1 : s;
+    return end - start;
 }
 
 /**
@@ -617,11 +619,12 @@ exit:
  * @param se		macro definition to parse
  * @param level		macro recursion level
  * @param expandbody	should body be expanded?
- * @return		address to continue parsing
+ * @return		number of consumed characters
  */
-static const char *
+static size_t
 doDefine(MacroBuf mb, const char * se, int level, int expandbody)
 {
+    const char *start = se;
     const char *s = se;
     char *buf = xmalloc(strlen(s) + 3); /* Some leeway for termination issues... */
     char *n = buf, *ne = n;
@@ -738,18 +741,19 @@ exit:
 	mb->error = 1;
     _free(buf);
     _free(ebody);
-    return se;
+    return se - start;
 }
 
 /**
  * Parse (and execute) macro undefinition.
  * @param mb		macro expansion state
  * @param se		macro name to undefine
- * @return		address to continue parsing
+ * @return		number of consumed characters
  */
-static const char *
+static size_t
 doUndefine(MacroBuf mb, rpmMacroEntry me, const char * se)
 {
+    const char *start = se;
     const char *s = se;
     char *buf = xmalloc(strlen(s) + 1);
     char *n = buf, *ne = n;
@@ -771,25 +775,26 @@ doUndefine(MacroBuf mb, rpmMacroEntry me, const char * se)
 
 exit:
     _free(buf);
-    return se;
+    return se - start;
 }
 
-static const char * doDef(MacroBuf mb, rpmMacroEntry me, const char * se)
+static size_t doDef(MacroBuf mb, rpmMacroEntry me, const char *se)
 {
     return doDefine(mb, se, mb->level, 0);
 }
 
-static const char * doGlobal(MacroBuf mb, rpmMacroEntry me, const char * se)
+static size_t doGlobal(MacroBuf mb, rpmMacroEntry me, const char * se)
 {
     return doDefine(mb, se, RMIL_GLOBAL, 1);
 }
 
-static const char * doDump(MacroBuf mb, rpmMacroEntry me, const char * se)
+static size_t doDump(MacroBuf mb, rpmMacroEntry me, const char * se)
 {
+    const char *start = se;
     rpmDumpMacroTable(mb->mc, NULL);
     while (iseol(*se))
 	se++;
-    return se;
+    return se - start;
 }
 
 
@@ -1351,9 +1356,9 @@ doExpandThisMacro(MacroBuf mb, rpmMacroEntry me, ARGV_t args, size_t *parsed)
 	const char *arg = havearg ? args[1] : NULL;
 	if (me->flags & ME_PARSE) {
 	    parseFunc parse = me->func;
-	    const char *s = parse(mb, me, arg);
+	    size_t np = parse(mb, me, arg);
 	    if (parsed)
-		*parsed = s-arg;
+		*parsed = np;
 	} else {
 	    macroFunc func = me->func;
 	    func(mb, me, arg, arg ? strlen(arg) : 0);
