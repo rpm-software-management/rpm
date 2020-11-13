@@ -46,13 +46,16 @@ enum macroFlags_e {
 #define ME_ARGFUNC (ME_FUNC|ME_HAVEARG)
 #define ME_ARGPARSE (ME_PARSE|ME_HAVEARG)
 
+typedef struct MacroBuf_s *MacroBuf;
+typedef size_t (*macroFunc)(MacroBuf mb, rpmMacroEntry me, ARGV_t argv);
+
 /*! The structure used to store a macro. */
 struct rpmMacroEntry_s {
     struct rpmMacroEntry_s *prev;/*!< Macro entry stack. */
     const char *name;  	/*!< Macro name. */
     const char *opts;  	/*!< Macro parameters (a la getopt) */
     const char *body;	/*!< Macro body. */
-    void *func;		/*!< Macro function (builtin macros) */
+    macroFunc func;	/*!< Macro function (builtin macros) */
     int flags;		/*!< Macro state bits. */
     int level;          /*!< Scoping level. */
     char arena[];   	/*!< String arena. */
@@ -101,7 +104,7 @@ static void initLocks(void)
 /**
  * Macro expansion state.
  */
-typedef struct MacroBuf_s {
+struct MacroBuf_s {
     char * buf;			/*!< Expansion buffer. */
     size_t tpos;		/*!< Current position in expansion buffer */
     size_t nb;			/*!< No. bytes remaining in expansion buffer. */
@@ -114,7 +117,7 @@ typedef struct MacroBuf_s {
     rpmMacroEntry me;		/*!< Current macro (or NULL if anonymous) */
     ARGV_t args;		/*!< Current macro arguments (or NULL) */
     rpmMacroContext mc;
-} * MacroBuf;
+};
 
 /**
   * Expansion data for a scoping level
@@ -133,9 +136,6 @@ static int print_macro_trace = _PRINT_MACRO_TRACE;
 
 #define	_PRINT_EXPAND_TRACE	0
 static int print_expand_trace = _PRINT_EXPAND_TRACE;
-
-typedef size_t (*macroFunc)(MacroBuf mb, rpmMacroEntry me, ARGV_t argv);
-typedef size_t (*parseFunc)(MacroBuf mb, rpmMacroEntry me, ARGV_t argv);
 
 /* forward ref */
 static int expandMacro(MacroBuf mb, const char *src, size_t slen);
@@ -1255,7 +1255,7 @@ static size_t doTrace(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 
 static struct builtins_s {
     const char * name;
-    void *func;
+    macroFunc func;
     int flags;
 } const builtinmacros[] = {
     { "P",		doSP,		ME_ARGFUNC },
@@ -1357,15 +1357,9 @@ doExpandThisMacro(MacroBuf mb, rpmMacroEntry me, ARGV_t args, size_t *parsed)
 		    _("argument expected") : _("unexpected argument"));
 	    goto exit;
 	}
-	if (me->flags & ME_PARSE) {
-	    parseFunc parse = me->func;
-	    size_t np = parse(mb, me, args);
-	    if (parsed)
-		*parsed = np;
-	} else {
-	    macroFunc func = me->func;
-	    func(mb, me, args);
-	}
+	size_t np = me->func(mb, me, args);
+	if (parsed)
+	    *parsed += np;
     } else if (me->body && *me->body) {
 	/* Setup args for "%name " macros with opts */
 	if (args != NULL)
@@ -1639,7 +1633,7 @@ static int doExpandMacros(rpmMacroContext mc, const char *src, int flags,
 }
 
 static void pushMacroAny(rpmMacroContext mc,
-	const char * n, const char * o, const char * b, void * f,
+	const char * n, const char * o, const char * b, macroFunc f,
 	int level, int flags)
 {
     /* new entry */

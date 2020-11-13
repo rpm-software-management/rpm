@@ -303,6 +303,8 @@ runroot rpm --eval "%{dirname}"
 runroot rpm --eval "%{dirname:}"
 runroot rpm --eval "%{dirname:dir}"
 runroot rpm --eval "%{dirname dir}"
+runroot rpm --eval "%dirname"
+runroot rpm --eval "%dirname dir"
 runroot rpm --define '%xxx /hello/%%%%/world' --eval '%{dirname:%xxx}'
 runroot rpm --eval "%{uncompress}"
 runroot rpm --eval "%{uncompress:}"
@@ -317,11 +319,13 @@ runroot rpm --eval "%{dump:foo}"
 [
 dir
 dir
+dir
 /hello/%%
 
 bar
 ],
 [error: %dirname: argument expected
+error: %dirname: argument expected
 error: %uncompress: argument expected
 error: %getncpus: unexpected argument
 error: %getncpus: unexpected argument
