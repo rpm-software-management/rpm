@@ -134,7 +134,7 @@ static int print_macro_trace = _PRINT_MACRO_TRACE;
 #define	_PRINT_EXPAND_TRACE	0
 static int print_expand_trace = _PRINT_EXPAND_TRACE;
 
-typedef void (*macroFunc)(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn);
+typedef void (*macroFunc)(MacroBuf mb, rpmMacroEntry me, ARGV_t argv);
 typedef size_t (*parseFunc)(MacroBuf mb, rpmMacroEntry me, const char * se);
 
 /* forward ref */
@@ -977,11 +977,11 @@ grabArgs(MacroBuf mb, ARGV_t *argvp, const char * se,
 	   lastc : lastc + 1;
 }
 
-static void doBody(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
+static void doBody(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
-    if (gn > 0) {
+    if (*argv[1]) {
 	char *buf = NULL;
-	if (expandThis(mb, g, gn, &buf) == 0) {
+	if (expandThis(mb, argv[1], 0, &buf) == 0) {
 	    rpmMacroEntry *mep = findEntry(mb->mc, buf, 0, NULL);
 	    if (mep) {
 		mbAppendStr(mb, (*mep)->body);
@@ -993,7 +993,7 @@ static void doBody(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
     }
 }
 
-static void doOutput(MacroBuf mb,  rpmMacroEntry me, const char * g, size_t gn)
+static void doOutput(MacroBuf mb,  rpmMacroEntry me, ARGV_t argv)
 {
     char *buf = NULL;
     int loglevel = RPMLOG_NOTICE; /* assume echo */
@@ -1003,19 +1003,17 @@ static void doOutput(MacroBuf mb,  rpmMacroEntry me, const char * g, size_t gn)
     } else if (rstreq("warn", me->name)) {
 	loglevel = RPMLOG_WARNING;
     }
-    if (gn == 0)
-	g = "";
 
-    (void) expandThis(mb, g, gn, &buf);
+    (void) expandThis(mb, argv[1], 0, &buf);
     rpmlog(loglevel, "%s\n", buf);
     _free(buf);
 }
 
 #ifdef WITH_LUA
-static void doLua(MacroBuf mb,  rpmMacroEntry me, const char * g, size_t gn)
+static void doLua(MacroBuf mb,  rpmMacroEntry me, ARGV_t argv)
 {
     rpmlua lua = NULL; /* Global state. */
-    char *scriptbuf = xmalloc(gn + 1);
+    const char *scriptbuf = argv[1];
     char *printbuf;
     rpmMacroContext mc = mb->mc;
     rpmMacroEntry mbme = mb->me;
@@ -1032,9 +1030,6 @@ static void doLua(MacroBuf mb,  rpmMacroEntry me, const char * g, size_t gn)
 	    args = mb->args;
     }
 
-    if (g != NULL && gn > 0)
-	memcpy(scriptbuf, g, gn);
-    scriptbuf[gn] = '\0';
     rpmluaPushPrintBuffer(lua);
     mc->depth = mb->depth;
     mc->level = mb->level;
@@ -1047,19 +1042,18 @@ static void doLua(MacroBuf mb,  rpmMacroEntry me, const char * g, size_t gn)
 	mbAppendStr(mb, printbuf);
 	free(printbuf);
     }
-    free(scriptbuf);
 }
 #endif
 
 static void
-doSP(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
+doSP(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
     const char *b = "";
     char *buf = NULL;
     char *s = NULL;
 
-    if (gn > 0) {
-	expandThis(mb, g, gn, &buf);
+    if (*argv[1]) {
+	expandThis(mb, argv[1], 0, &buf);
 	b = buf;
     }
 
@@ -1069,14 +1063,15 @@ doSP(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
     free(buf);
 }
 
-static void doUncompress(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
+static void doUncompress(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
     rpmCompressedMagic compressed = COMPRESSED_OTHER;
     char *b, *be, *buf = NULL;
+    size_t gn = strlen(argv[1]);
     int c;
 
     if (gn) {
-	expandThis(mb, g, gn, &buf);
+	expandThis(mb, argv[1], gn, &buf);
 	for (b = buf; (c = *b) && isblank(c);)
 	    b++;
 	for (be = b; (c = *be) && !isblank(c);)
@@ -1127,17 +1122,17 @@ exit:
     free(buf);
 }
 
-static void doExpand(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
+static void doExpand(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
-    if (gn > 0) {
+    if (*argv[1]) {
 	char *buf;
-	expandThis(mb, g, gn, &buf);
+	expandThis(mb, argv[1], 0, &buf);
 	expandMacro(mb, buf, 0);
 	free(buf);
     }
 }
 
-static void doVerbose(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
+static void doVerbose(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
     mbAppend(mb, rpmIsVerbose() ? '1' : '0');
 }
@@ -1149,16 +1144,16 @@ static void doVerbose(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
  * @param gn		length of field g
  */
 static void
-doFoo(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
+doFoo(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
     char *buf = NULL;
     char *b = NULL;
-    int expand = (g != NULL && gn > 0);
+    int expand = (argv[1] != NULL && *argv[1]);
 
     if (expand) {
-	(void) expandThis(mb, g, gn, &buf);
+	(void) expandThis(mb, argv[1], 0, &buf);
     } else {
-	buf = xmalloc(MACROBUFSIZ + strlen(me->name) + gn);
+	buf = xmalloc(MACROBUFSIZ + strlen(me->name));
 	buf[0] = '\0';
     }
     if (rstreq("basename", me->name)) {
@@ -1229,10 +1224,10 @@ doFoo(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
     free(buf);
 }
 
-static void doLoad(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
+static void doLoad(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
     char *arg = NULL;
-    if (g && gn > 0 && expandThis(mb, g, gn, &arg) == 0) {
+    if (expandThis(mb, argv[1], 0, &arg) == 0) {
 	if (loadMacroFile(mb->mc, arg)) {
 	    mbErr(mb, 1, _("failed to load macro file %s\n"), arg);
 	}
@@ -1240,7 +1235,7 @@ static void doLoad(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
     free(arg);
 }
 
-static void doTrace(MacroBuf mb, rpmMacroEntry me, const char * g, size_t gn)
+static void doTrace(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
     mb->expand_trace = mb->macro_trace = mb->depth;
     if (mb->depth == 1) {
@@ -1361,7 +1356,7 @@ doExpandThisMacro(MacroBuf mb, rpmMacroEntry me, ARGV_t args, size_t *parsed)
 		*parsed = np;
 	} else {
 	    macroFunc func = me->func;
-	    func(mb, me, arg, arg ? strlen(arg) : 0);
+	    func(mb, me, args);
 	}
     } else if (me->body && *me->body) {
 	/* Setup args for "%name " macros with opts */
