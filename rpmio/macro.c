@@ -135,7 +135,7 @@ static int print_macro_trace = _PRINT_MACRO_TRACE;
 static int print_expand_trace = _PRINT_EXPAND_TRACE;
 
 typedef void (*macroFunc)(MacroBuf mb, rpmMacroEntry me, ARGV_t argv);
-typedef size_t (*parseFunc)(MacroBuf mb, rpmMacroEntry me, const char * se);
+typedef size_t (*parseFunc)(MacroBuf mb, rpmMacroEntry me, ARGV_t argv);
 
 /* forward ref */
 static int expandMacro(MacroBuf mb, const char *src, size_t slen);
@@ -502,8 +502,9 @@ static void mbAppendStr(MacroBuf mb, const char *str)
     mb->nb -= len;
 }
 
-static size_t doDnl(MacroBuf mb, rpmMacroEntry me, const char * se)
+static size_t doDnl(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
+    const char *se = argv[1];
     const char *start = se, *end;
     const char *s = se;
     while (*s && !iseol(*s))
@@ -747,12 +748,13 @@ exit:
 /**
  * Parse (and execute) macro undefinition.
  * @param mb		macro expansion state
- * @param se		macro name to undefine
+ * @param argv		macro arguments
  * @return		number of consumed characters
  */
 static size_t
-doUndefine(MacroBuf mb, rpmMacroEntry me, const char * se)
+doUndefine(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
+    const char *se = argv[1];
     const char *start = se;
     const char *s = se;
     char *buf = xmalloc(strlen(s) + 1);
@@ -778,18 +780,21 @@ exit:
     return se - start;
 }
 
-static size_t doDef(MacroBuf mb, rpmMacroEntry me, const char *se)
+static size_t doDef(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
+    const char *se = argv[1];
     return doDefine(mb, se, mb->level, 0);
 }
 
-static size_t doGlobal(MacroBuf mb, rpmMacroEntry me, const char * se)
+static size_t doGlobal(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
+    const char *se = argv[1];
     return doDefine(mb, se, RMIL_GLOBAL, 1);
 }
 
-static size_t doDump(MacroBuf mb, rpmMacroEntry me, const char * se)
+static size_t doDump(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
+    const char *se = argv[1];
     const char *start = se;
     rpmDumpMacroTable(mb->mc, NULL);
     while (iseol(*se))
@@ -1348,10 +1353,9 @@ doExpandThisMacro(MacroBuf mb, rpmMacroEntry me, ARGV_t args, size_t *parsed)
 		    _("argument expected") : _("unexpected argument"));
 	    goto exit;
 	}
-	const char *arg = havearg ? args[1] : NULL;
 	if (me->flags & ME_PARSE) {
 	    parseFunc parse = me->func;
-	    size_t np = parse(mb, me, arg);
+	    size_t np = parse(mb, me, args);
 	    if (parsed)
 		*parsed = np;
 	} else {
