@@ -39,12 +39,9 @@ enum macroFlags_e {
     ME_LITERAL	= (1 << 2),
     ME_PARSE	= (1 << 3),
     ME_FUNC	= (1 << 4),
-    ME_HAVEARG	= (1 << 5),
 };
 
 #define ME_BUILTIN (ME_PARSE|ME_FUNC)
-#define ME_ARGFUNC (ME_FUNC|ME_HAVEARG)
-#define ME_ARGPARSE (ME_PARSE|ME_HAVEARG)
 
 typedef struct MacroBuf_s *MacroBuf;
 typedef size_t (*macroFunc)(MacroBuf mb, rpmMacroEntry me, ARGV_t argv);
@@ -56,6 +53,7 @@ struct rpmMacroEntry_s {
     const char *opts;  	/*!< Macro parameters (a la getopt) */
     const char *body;	/*!< Macro body. */
     macroFunc func;	/*!< Macro function (builtin macros) */
+    int nargs;		/*!< Number of required args */
     int flags;		/*!< Macro state bits. */
     int level;          /*!< Scoping level. */
     char arena[];   	/*!< String arena. */
@@ -1256,39 +1254,40 @@ static size_t doTrace(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 static struct builtins_s {
     const char * name;
     macroFunc func;
+    int nargs;
     int flags;
 } const builtinmacros[] = {
-    { "P",		doSP,		ME_ARGFUNC },
-    { "S",		doSP,		ME_ARGFUNC },
-    { "basename",	doFoo,		ME_ARGFUNC },
-    { "define",		doDef,		ME_ARGPARSE },
-    { "dirname",	doFoo,		ME_ARGFUNC },
-    { "dnl",		doDnl,		ME_ARGPARSE },
-    { "dump", 		doDump,		ME_PARSE },
-    { "echo",		doOutput,	ME_ARGFUNC },
-    { "error",		doOutput,	ME_ARGFUNC },
-    { "exists",		doFoo,		ME_ARGFUNC },
-    { "expand",		doExpand,	ME_ARGFUNC },
-    { "expr",		doFoo,		ME_ARGFUNC },
-    { "getconfdir",	doFoo,		ME_FUNC },
-    { "getenv",		doFoo,		ME_ARGFUNC },
-    { "getncpus",	doFoo,		ME_FUNC },
-    { "global",		doGlobal,	ME_ARGPARSE },
-    { "load",		doLoad,		ME_ARGFUNC },
+    { "P",		doSP,		1,	ME_FUNC },
+    { "S",		doSP,		1,	ME_FUNC },
+    { "basename",	doFoo,		1,	ME_FUNC },
+    { "define",		doDef,		-1,	ME_PARSE },
+    { "dirname",	doFoo,		1,	ME_FUNC },
+    { "dnl",		doDnl,		-1,	ME_PARSE },
+    { "dump", 		doDump,		0,	ME_PARSE },
+    { "echo",		doOutput,	1,	ME_FUNC },
+    { "error",		doOutput,	1,	ME_FUNC },
+    { "exists",		doFoo,		1,	ME_FUNC },
+    { "expand",		doExpand,	1,	ME_FUNC },
+    { "expr",		doFoo,		1,	ME_FUNC },
+    { "getconfdir",	doFoo,		0,	ME_FUNC },
+    { "getenv",		doFoo,		1,	ME_FUNC },
+    { "getncpus",	doFoo,		0,	ME_FUNC },
+    { "global",		doGlobal,	-1,	ME_PARSE },
+    { "load",		doLoad,		1,	ME_FUNC },
 #ifdef WITH_LUA
-    { "lua",		doLua,		ME_ARGFUNC },
+    { "lua",		doLua,		1,	ME_FUNC },
 #endif
-    { "macrobody",	doBody,		ME_ARGFUNC },
-    { "quote",		doFoo,		ME_ARGFUNC },
-    { "shrink",		doFoo,		ME_ARGFUNC },
-    { "suffix",		doFoo,		ME_ARGFUNC },
-    { "trace",		doTrace,	ME_FUNC },
-    { "u2p",		doFoo,		ME_ARGFUNC },
-    { "uncompress",	doUncompress,	ME_ARGFUNC },
-    { "undefine",	doUndefine,	ME_ARGPARSE },
-    { "url2path",	doFoo,		ME_ARGFUNC },
-    { "verbose",	doVerbose,	ME_FUNC },
-    { "warn",		doOutput,	ME_ARGFUNC },
+    { "macrobody",	doBody,		1,	ME_FUNC },
+    { "quote",		doFoo,		1,	ME_FUNC },
+    { "shrink",		doFoo,		1,	ME_FUNC },
+    { "suffix",		doFoo,		1,	ME_FUNC },
+    { "trace",		doTrace,	0,	ME_FUNC },
+    { "u2p",		doFoo,		1,	ME_FUNC },
+    { "uncompress",	doUncompress,	1,	ME_FUNC },
+    { "undefine",	doUndefine,	1,	ME_PARSE },
+    { "url2path",	doFoo,		1,	ME_FUNC },
+    { "verbose",	doVerbose,	0,	ME_FUNC },
+    { "warn",		doOutput,	1,	ME_FUNC },
     { NULL,		NULL,		0 }
 };
 
@@ -1350,7 +1349,7 @@ doExpandThisMacro(MacroBuf mb, rpmMacroEntry me, ARGV_t args, size_t *parsed)
     /* Recursively expand body of macro */
     if (me->flags & ME_BUILTIN) {
 	int nargs = argvCount(args) - 1;
-	int needarg = (me->flags & ME_HAVEARG) ? 1 : 0;
+	int needarg = (me->nargs != 0);
 	int havearg = (nargs > 0);
 	if (needarg != havearg) {
 	    mbErr(mb, 1, "%%%s: %s\n", me->name, needarg ?
@@ -1633,8 +1632,8 @@ static int doExpandMacros(rpmMacroContext mc, const char *src, int flags,
 }
 
 static void pushMacroAny(rpmMacroContext mc,
-	const char * n, const char * o, const char * b, macroFunc f,
-	int level, int flags)
+	const char * n, const char * o, const char * b,
+	macroFunc f, int nargs, int level, int flags)
 {
     /* new entry */
     rpmMacroEntry me;
@@ -1693,6 +1692,7 @@ static void pushMacroAny(rpmMacroContext mc,
 	me->opts = o ? "" : NULL;
     /* initialize */
     me->func = f;
+    me->nargs = nargs;
     me->flags = flags;
     me->flags &= ~(ME_USED);
     me->level = level;
@@ -1704,7 +1704,7 @@ static void pushMacroAny(rpmMacroContext mc,
 static void pushMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level, int flags)
 {
-    return pushMacroAny(mc, n, o, b, NULL, level, flags);
+    return pushMacroAny(mc, n, o, b, NULL, 0, level, flags);
 }
 
 static void popMacro(rpmMacroContext mc, const char * n)
@@ -1959,7 +1959,7 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 
     /* Define built-in macros */
     for (const struct builtins_s *b = builtinmacros; b->name; b++) {
-	pushMacroAny(mc, b->name, "", "<builtin>", b->func,
+	pushMacroAny(mc, b->name, "", "<builtin>", b->func, b->nargs,
 			RMIL_BUILTIN, b->flags);
     }
 
