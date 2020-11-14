@@ -2825,7 +2825,8 @@ main (int argc, char *argv[])
 	      fprintf (stderr, "Stabs debuginfo not supported: %s\n", file);
 	      break;
 	    }
-	  if (strcmp (name, ".debug_info") == 0)
+	  if (!(do_build_id && no_recompute_build_id && !base_dir && !dest_dir)
+	      && strcmp (name, ".debug_info") == 0)
 	    edit_dwarf2 (dso);
 
 	  break;
