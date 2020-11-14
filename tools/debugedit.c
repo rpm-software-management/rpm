@@ -1923,7 +1923,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
       const char *p = skip_dir_prefix (comp_dir, base_dir);
       if (p != NULL && p[0] != '\0')
         {
-	  size_t size = strlen (p) + 1;
+	  size_t size = strlen (p);
 	  while (size > 0)
 	    {
 	      ssize_t ret = write (list_file_fd, p, size);
@@ -1931,6 +1931,15 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 		break;
 	      size -= ret;
 	      p += ret;
+	    }
+	  /* Output trailing dir separator to distinguish them quickly from
+	     regular files. */
+	  if (size == 0)
+	    {
+	      if (*(p - 1) != '/')
+		write (list_file_fd, "/", 2);
+	      else
+		write (list_file_fd, "", 1);
 	    }
 	}
     }
