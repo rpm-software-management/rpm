@@ -128,9 +128,6 @@ typedef struct AttrRec_s {
     mode_t	ar_dmode;
 } * AttrRec;
 
-/* list of files */
-static StringBuf check_fileList = NULL;
-
 typedef struct FileEntry_s {
     rpmfileAttrs attrFlags;
     specfFlags specdFlags;
@@ -1491,12 +1488,6 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     if (fileGname == NULL)
 	fileGname = rpmugGname(getgid());
     
-    /* S_XXX macro must be consistent with type in find call at check-files script */
-    if (check_fileList && (S_ISREG(fileMode) || S_ISLNK(fileMode))) {
-	appendStringBuf(check_fileList, diskPath);
-	appendStringBuf(check_fileList, "\n");
-    }
-
     /* Add to the file list */
     if (fl->files.used == fl->files.alloced) {
 	fl->files.alloced += 128;
@@ -2793,12 +2784,13 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 /**
  * Check packaged file list against what's in the build root.
  * @param buildRoot	path of build root
- * @param fileList	packaged file list
+ * @param packages	spec package list
  * @return		-1 if skipped, 0 on OK, 1 on error
  */
-static int checkFiles(const char *buildRoot, StringBuf fileList)
+static int checkFiles(const char *buildRoot, Package packages)
 {
     static char * const av_ckfile[] = { "%{?__check_files}", NULL };
+    StringBuf fileList = newStringBuf();
     StringBuf sb_stdout = NULL;
     int rc = -1;
     char * s = rpmExpand(av_ckfile[0], NULL);
@@ -2807,6 +2799,20 @@ static int checkFiles(const char *buildRoot, StringBuf fileList)
 	goto exit;
 
     rpmlog(RPMLOG_NOTICE, _("Checking for unpackaged file(s): %s\n"), s);
+
+    for (Package pkg = packages; pkg != NULL; pkg = pkg->next) {
+	int fc = rpmfilesFC(pkg->cpioList);
+	for (int i = 0; i < fc; i++) {
+	    mode_t mode = rpmfilesFMode(pkg->cpioList, i);
+	    /* S_XXX macro must be consistent with type in find call at check-files script */
+	    if (S_ISREG(mode) || S_ISLNK(mode)) {
+		char *fn = rpmfilesFN(pkg->cpioList, i);
+		appendStringBuf(fileList, buildRoot);
+		appendLineStringBuf(fileList, fn);
+		free(fn);
+	    }
+	}
+    }
 
     rc = rpmfcExec(av_ckfile, fileList, &sb_stdout, 0, buildRoot);
     if (rc < 0)
@@ -2825,6 +2831,7 @@ static int checkFiles(const char *buildRoot, StringBuf fileList)
     
 exit:
     freeStringBuf(sb_stdout);
+    freeStringBuf(fileList);
     free(s);
     return rc;
 }
@@ -3129,7 +3136,6 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 #if HAVE_LIBDW
     elf_version (EV_CURRENT);
 #endif
-    check_fileList = newStringBuf();
     genSourceRpmName(spec);
     buildroot = rpmGenPath(spec->rootDir, spec->buildRoot, NULL);
     
@@ -3225,17 +3231,11 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	}
     }
 
-    /* Now we have in fileList list of files from all packages.
-     * We pass it to a script which does the work of finding missing
-     * and duplicated files.
-     */
-    
-    
-    if (checkFiles(spec->buildRoot, check_fileList) > 0) {
+    /* Check for missing and extraneous files */
+    if (checkFiles(spec->buildRoot, spec->packages) > 0) {
 	rc = RPMRC_FAIL;
     }
 exit:
-    check_fileList = freeStringBuf(check_fileList);
     _free(buildroot);
     _free(uniquearch);
     
