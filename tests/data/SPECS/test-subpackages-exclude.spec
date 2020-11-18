@@ -1,3 +1,5 @@
+%bcond_without test3
+
 Name:           test
 Version:        1.0
 Release:        1
@@ -13,6 +15,10 @@ Source:         hello.c
 %package test2
 Summary: Test2.
 %description test2
+
+%package test3
+Summary: Test3.
+%description test3
 
 %prep
 %autosetup -c -D -T
@@ -38,5 +44,10 @@ install -D -p -m 0755 -t %{buildroot}/bin hello3
 %files test2
 /bin/hello2
 %exclude /bin/hello3
+
+%if %{with test3}
+%files test3
+/bin/hello3
+%endif
 
 %changelog

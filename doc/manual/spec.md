@@ -242,6 +242,7 @@ places. For many simple packages this is just:
 ```
 
 `%install` required for creating packages that contain any files.
+All files installed in the buildroot must be packaged.
 
 ### %check
 
@@ -323,6 +324,19 @@ For example:
 	/opt/are\.you\|bob\?
 	/opt/bob\'s\*htdocs\*
 	"/opt/bob\'s htdocs"
+```
+
+With sub-packages it's common to end up with all but that one file in
+a single package and the one in a sub-package. This can be handled
+with `%exclude`, for example:
+
+```
+	%files
+	%{_bindir}/*
+	%exclude %{_bindir}/that-one-file
+
+	%files sub
+	%{_bindir}/that-one-file
 ```
 
 Names containing "%%" will be rpm macro expanded into "%".  When
