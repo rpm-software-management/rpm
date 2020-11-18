@@ -289,6 +289,24 @@ runroot rpmbuild \
 ])
 AT_CLEANUP
 
+AT_SETUP([rpmbuild unpackaged excludes])
+AT_KEYWORDS([build])
+RPMDB_INIT
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpmbuild \
+  -bb --quiet --with unpackaged_excludes /data/SPECS/hlinktest.spec
+],
+[1],
+[],
+[error: Installed (but unpackaged) file(s) found:
+   /teet
+    Installed (but unpackaged) file(s) found:
+   /teet
+])
+AT_CLEANUP
+
 # rpm doesn't detect unpackaged directories but should, really
 AT_SETUP([rpmbuild unpackaged directories])
 AT_KEYWORDS([build])
@@ -1421,7 +1439,7 @@ rundebug rpmbuild --quiet \
   --define "_debuginfo_subpackages 1" \
   -ba "${abs_srcdir}"/data/SPECS/test-subpackages-exclude.spec
 
-# Check that there are 2 debuginfo packages.
+# Check that there are 3 debuginfo packages.
 ls ${RPMTEST}/build/RPMS/*/*debuginfo*rpm | wc --lines
 
 # First contains hello.debug
@@ -1457,12 +1475,27 @@ if test -f ./usr/lib/debug/bin/hello3*; then
 else
   echo "No hello3 debug"
 fi
+#
+# Third contains hello3.debug
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-test3-1.0-1.*.rpm \
+  | cpio -diu --quiet
+# Extract the debug name from the exe (.gnu_debuglink section, first string)
+debug_name=$(readelf -p .gnu_debuglink ./bin/hello3 | grep hello | cut -c13-)
+
+rpm2cpio ${RPMTEST}/build/RPMS/*/test-test3-debuginfo-1.0-1.*.rpm \
+  | cpio -diu --quiet
+if test -f ./usr/lib/debug/bin/$debug_name; then
+  echo "hello3 debug exists"
+else
+  echo "No hello3: $debug_name"
+fi
 ],
 [0],
-[2
+[3
 hello debug exists
 hello2 debug exists
 No hello3 debug
+hello3 debug exists
 ],
 [ignore])
 AT_CLEANUP
