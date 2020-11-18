@@ -355,7 +355,7 @@ static int doOpen(rpmdb db, int justPkgs)
 {
     int rc = pkgdbOpen(db, db->db_flags, NULL);
     if (!justPkgs) {
-	for (int dbix = 0; dbix < db->db_ndbi; dbix++) {
+	for (int dbix = 0; rc == 0 && dbix < db->db_ndbi; dbix++) {
 	    rc += indexOpen(db, db->db_tags[dbix], db->db_flags, NULL);
 	}
     }
