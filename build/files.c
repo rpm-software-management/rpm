@@ -2794,21 +2794,50 @@ static int checkFiles(const char *buildRoot, Package packages)
     StringBuf sb_stdout = NULL;
     int rc = -1;
     char * s = rpmExpand(av_ckfile[0], NULL);
+    size_t brlen = strlen(buildRoot);
+    rpmstrPool dirs = rpmstrPoolCreate();
+    int prevcount = 0;
     
     if (!(s && *s))
 	goto exit;
 
     rpmlog(RPMLOG_NOTICE, _("Checking for unpackaged file(s): %s\n"), s);
 
+    /* This needs to match with the find call in check-files script */
     for (Package pkg = packages; pkg != NULL; pkg = pkg->next) {
 	int fc = rpmfilesFC(pkg->cpioList);
+	int prevdix = -1;
 	for (int i = 0; i < fc; i++) {
-	    mode_t mode = rpmfilesFMode(pkg->cpioList, i);
-	    /* This needs to match with the find call at check-files script */
-	    if (S_ISREG(mode) || S_ISLNK(mode))
-		appendLineStringBuf(fileList, pkg->dpaths[i]);
+	    const char *dp = pkg->dpaths[i];
+	    size_t dlen = strlen(dp);
+	    int dix = rpmfilesDI(pkg->cpioList, i);
+
+	    /* Add the disk path itself to the manifest */
+	    appendLineStringBuf(fileList, dp);
+
+	    /* If dirname is the same as last one, move on */
+	    if (dix == prevdix)
+		continue;
+
+	    /* Remember all intermediate directories in added files */
+	    for (const char *s = dp + dlen; s >= dp + brlen; s--) {
+		if (*s == '/') {
+		    rpmstrPoolIdn(dirs, dp, s-dp, 1);
+
+		    /* If we've already seen this dir, we can stop here */
+		    int n = rpmstrPoolNumStr(dirs);
+		    if (n == prevcount)
+			break;
+		    prevcount = n;
+		}
+	    }
+	    prevdix = dix;
 	}
     }
+
+    /* Add all intermediate directories to the manifest */
+    for (rpmsid id = 1; id <= rpmstrPoolNumStr(dirs); id++)
+	appendLineStringBuf(fileList, rpmstrPoolStr(dirs, id));
 
     rc = rpmfcExec(av_ckfile, fileList, &sb_stdout, 0, buildRoot);
     if (rc < 0)
@@ -2828,6 +2857,7 @@ static int checkFiles(const char *buildRoot, Package packages)
 exit:
     freeStringBuf(sb_stdout);
     freeStringBuf(fileList);
+    rpmstrPoolFree(dirs);
     free(s);
     return rc;
 }
