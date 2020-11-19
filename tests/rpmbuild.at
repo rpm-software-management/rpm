@@ -307,10 +307,8 @@ runroot rpmbuild \
 ])
 AT_CLEANUP
 
-# rpm doesn't detect unpackaged directories but should, really
 AT_SETUP([rpmbuild unpackaged directories])
 AT_KEYWORDS([build])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 RPMDB_INIT
 AT_CHECK([
 RPMDB_INIT
