@@ -25,6 +25,7 @@
 
 #define SKIPSPACE(s) { while (*(s) && risspace(*(s))) (s)++; }
 #define SKIPNONSPACE(s) { while (*(s) && !risspace(*(s))) (s)++; }
+#define NOEOL(s) strclen(s, '\n'), s
 #define ISMACRO(s,m,len) (rstreqn((s), (m), len) && !risalpha((s)[len]))
 #define ISMACROWITHARG(s,m,len) (rstreqn((s), (m), len) && (risblank((s)[len]) || !(s)[len]))
 
@@ -95,6 +96,18 @@ int isPart(const char *line)
     }
 
     return (p->token ? p->part : PART_NONE);
+}
+
+/* Calculate length of s until c, for use within printf(3) precision */
+static inline int strclen(const char *s, char c)
+{
+    char *p = strrchr(s, c);
+    if (!p)
+        return -1;
+    ptrdiff_t len = p - s;
+    if (len > INT_MAX)
+        return -1;
+    return (int)len;
 }
 
 /**
@@ -229,8 +242,8 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
 	SKIPSPACE(s);
 	if (s[0])
 	    rpmlog(RPMLOG_WARNING,
-		_("extra tokens at the end of %s directive in line %d:  %s\n"),
-		condition->text, spec->lineNum, lbuf);
+		_("extra tokens at the end of %s directive in line %d:  %.*s\n"),
+		condition->text, spec->lineNum, NOEOL(lbuf));
     }
 
     /* Don't expand macros after %elif (resp. %elifarch, %elifos) in a false branch */
@@ -263,8 +276,8 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
 
 	if (*bufA != '\0' || *bufB != '\0')
 	    rpmlog(RPMLOG_WARNING,
-		_("Macro expanded in comment on line %d: %s\n"),
-		spec->lineNum, bufA);
+		_("Macro expanded in comment on line %d: %.*s\n"),
+		spec->lineNum, NOEOL(bufA));
     }
 
     free(spec->lbuf);
@@ -514,8 +527,9 @@ retry:
 	    match = rpmExprBoolFlags(s, 0);
 	    if (match < 0) {
 		rpmlog(RPMLOG_ERR,
-			    _("%s:%d: bad %s condition: %s\n"),
-			    ofi->fileName, ofi->lineNum, lineType->text, s);
+			    _("%s:%d: bad %s condition: %.*s\n"),
+			    ofi->fileName, ofi->lineNum, lineType->text,
+			    NOEOL(s));
 		return PART_ERROR;
 	    }
 	}
@@ -846,15 +860,15 @@ static int parseEmpty(rpmSpec spec, int prevParsePart)
     SKIPSPACE(line);
     if (line[0] != '\0') {
 	rpmlog(RPMLOG_ERR,
-	    _("line %d: %%end doesn't take any arguments: %s\n"),
-	    spec->lineNum, spec->line);
+	    _("line %d: %%end doesn't take any arguments: %.*s\n"),
+	    spec->lineNum, NOEOL(spec->line));
 	goto exit;
     }
 
     if (prevParsePart == PART_EMPTY) {
 	rpmlog(RPMLOG_ERR,
-	    _("line %d: %%end not expected here, no section to close: %s\n"),
-	    spec->lineNum, spec->line);
+	    _("line %d: %%end not expected here, no section to close: %.*s\n"),
+	    spec->lineNum, NOEOL(spec->line));
 	goto exit;
     }
 
