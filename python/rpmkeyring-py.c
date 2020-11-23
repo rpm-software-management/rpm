@@ -27,10 +27,14 @@ static PyObject *rpmPubkey_new(PyTypeObject *subtype,
 	return NULL;
 
     if (pgpParsePkts(PyBytes_AsString(key), &pkt, &pktlen) <= 0) {
-	PyErr_SetString(PyExc_ValueError, "invalid pubkey");
+	PyErr_SetString(PyExc_ValueError, "invalid PGP armor");
 	return NULL;
     }
     pubkey = rpmPubkeyNew(pkt, pktlen);
+    if (pubkey == NULL) {
+	PyErr_SetString(PyExc_ValueError, "invalid pubkey");
+	return NULL;
+    }
 
     return rpmPubkey_Wrap(subtype, pubkey);
 }
