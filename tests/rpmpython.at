@@ -369,8 +369,8 @@ ts.run(callback=ncb, data=cbd)
 
 AT_SETUP([database iterators])
 AT_KEYWORDS([python rpmdb])
-AT_CHECK([
 RPMDB_INIT
+AT_CHECK([
 runroot rpm -i \
   --justdb --nodeps --ignorearch --ignoreos \
   /data/RPMS/foo-1.0-1.noarch.rpm \
@@ -467,8 +467,8 @@ AT_CLEANUP
 
 AT_SETUP([database cookies])
 AT_KEYWORDS([python rpmdb])
-AT_CHECK([
 RPMDB_INIT
+AT_CHECK([
 ],
 [0],
 [],

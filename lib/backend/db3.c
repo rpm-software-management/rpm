@@ -868,10 +868,9 @@ static int db3_dbiOpen(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flag
 	    rc = (db->open)(db, NULL, dbi->dbi_file, NULL,
 			    dbtype, oflags, rdb->db_perms);
 
-	    /* Attempt to create if missing, discarding DB_RDONLY (!) */
-	    if (rc == ENOENT) {
+	    /* Attempt to create if missing, if not read-only */
+	    if (rc == ENOENT && !(oflags & DB_RDONLY)) {
 		oflags |= DB_CREATE;
-		oflags &= ~DB_RDONLY;
 		dbtype = (rpmtag == RPMDBI_PACKAGES) ?  DB_HASH : DB_BTREE;
 		retry_open--;
 	    } else {
