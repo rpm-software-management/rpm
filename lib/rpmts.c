@@ -177,11 +177,11 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmDbiTagVal rpmtag,
     if (ts == NULL)
 	return NULL;
 
-    if (ts && ts->keyring == NULL)
-	loadKeyring(ts);
-
     if (ts->rdb == NULL && rpmtsOpenDB(ts, ts->dbmode))
 	return NULL;
+
+    if (ts->keyring == NULL)
+	loadKeyring(ts);
 
     /* Parse out "N(EVR)" tokens from a label key if present */
     if (rpmtag == RPMDBI_LABEL && keyp != NULL && strchr(keyp, '(')) {
