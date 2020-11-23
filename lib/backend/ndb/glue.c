@@ -133,8 +133,8 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 	    rc = rpmpkgOpen(&pkgdb, path, oflags, 0666);
 	else
 	    rc = rpmpkgSalvage(&pkgdb, path);
- 	if (rc && errno == ENOENT && (rdb->db_flags & RPMDB_FLAG_SALVAGE) == 0) {
-	    oflags = O_RDWR|O_CREAT;
+	if (rc && errno == ENOENT && (oflags == O_RDWR) && (rdb->db_flags & RPMDB_FLAG_SALVAGE) == 0) {
+	    oflags |= O_CREAT;
 	    dbi->dbi_flags |= DBI_CREATED;
 	    rc = rpmpkgOpen(&pkgdb, path, oflags, 0666);
 	}

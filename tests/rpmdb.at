@@ -42,6 +42,19 @@ runroot rpm \
 [0])
 AT_CLEANUP
 
+# Run rpm -qa on a non-existent rpmdb
+AT_SETUP([rpm -qa])
+AT_KEYWORDS([rpmdb query])
+AT_CHECK([
+RPMTEST_SETUP
+runroot rpm \
+  -qa
+],
+[1],
+[],
+[ignore])
+AT_CLEANUP
+
 # ------------------------------
 # Run rpm -q <package> where <package> exists in the db.
 AT_SETUP([rpm -q foo])
