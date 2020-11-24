@@ -424,11 +424,20 @@ exit:
     freeStringBuf(sink);
     free(cookie);
     spec->rootDir = NULL;
-    if (rc != RPMRC_OK && rc != RPMRC_MISSINGBUILDREQUIRES &&
-	    rpmlogGetNrecs() > 0) {
-	rpmlog(RPMLOG_NOTICE, _("\n\nRPM build errors:\n"));
-	rpmlogPrint(NULL);
+
+    /* Print a warning/error summary */
+    int nrecs = rpmlogGetNrecs();
+    if (nrecs && rc != RPMRC_MISSINGBUILDREQUIRES) {
+        int mkwarn = RPMLOG_MASK(RPMLOG_WARNING);
+        int mkerrs = RPMLOG_MASK(RPMLOG_ERR);
+        int nwarn = rpmlogGetNrecsByMask(mkwarn);
+	rpmlog(RPMLOG_NOTICE,
+               _("\n\nRPM build problems (%i warnings, %i errors):\n"),
+               nwarn, nrecs - nwarn);
+	rpmlogPrettyPrint(NULL, mkwarn, 1);
+	rpmlogPrettyPrint(NULL, mkerrs, 1);
     }
+
     rpmugFree();
     if (missing_buildreqs && !rc) {
 	rc = RPMRC_MISSINGBUILDREQUIRES;
