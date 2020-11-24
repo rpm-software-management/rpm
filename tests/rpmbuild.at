@@ -551,6 +551,67 @@ runroot rpm -qp --requires /build/RPMS/noarch/shebang-0.1-1.noarch.rpm|grep -v ^
 [])
 AT_CLEANUP
 
+AT_SETUP([elf dependencies])
+AT_KEYWORDS([build])
+RPMDB_INIT
+
+AT_CHECK([
+runroot_other chmod a-x /data/misc/libhello.so
+runroot_other ${RPM_CONFIGDIR}/elfdeps -R /data/misc/libhello.so
+runroot_other chmod a+x /data/misc/libhello.so
+runroot_other ${RPM_CONFIGDIR}/elfdeps -R /data/misc/libhello.so
+],
+[0],
+[libc.so.6(GLIBC_2.2.5)(64bit)
+libc.so.6()(64bit)
+rtld(GNU_HASH)
+libc.so.6(GLIBC_2.2.5)(64bit)
+libc.so.6()(64bit)
+rtld(GNU_HASH)
+],
+[])
+
+AT_CHECK([
+runroot_other chmod a-x /data/misc/libhello.so
+runroot_other ${RPM_CONFIGDIR}/elfdeps -P /data/misc/libhello.so
+runroot_other chmod a+x /data/misc/libhello.so
+runroot_other ${RPM_CONFIGDIR}/elfdeps -P /data/misc/libhello.so
+],
+[0],
+[libhello.so()(64bit)
+libhello.so()(64bit)
+],
+[])
+
+AT_CHECK([
+runroot_other chmod a-x /data/misc/helloexe
+runroot_other ${RPM_CONFIGDIR}/elfdeps -R /data/misc/helloexe
+runroot_other chmod a+x /data/misc/helloexe
+runroot_other ${RPM_CONFIGDIR}/elfdeps -R /data/misc/helloexe
+],
+[0],
+[libc.so.6(GLIBC_2.2.5)(64bit)
+libhello.so()(64bit)
+libc.so.6()(64bit)
+rtld(GNU_HASH)
+],
+[])
+
+AT_CHECK([
+runroot_other chmod a-x /data/misc/hellopie
+runroot_other ${RPM_CONFIGDIR}/elfdeps -R /data/misc/hellopie
+runroot_other chmod a+x /data/misc/hellopie
+runroot_other ${RPM_CONFIGDIR}/elfdeps -R /data/misc/hellopie
+],
+[0],
+[libc.so.6(GLIBC_2.2.5)(64bit)
+libhello.so()(64bit)
+libc.so.6()(64bit)
+rtld(GNU_HASH)
+],
+[])
+AT_CLEANUP
+
 # ------------------------------
 # Test spec query functionality
 AT_SETUP([rpmspec query 1])
