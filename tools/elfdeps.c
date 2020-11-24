@@ -73,6 +73,11 @@ static int skipSoname(const char *soname)
     return 0;
 }
 
+static int genRequires(elfInfo *ei)
+{
+    return !(ei->interp && ei->isExec == 0);
+}
+
 static const char *mkmarker(GElf_Ehdr *ehdr)
 {
     const char *marker = NULL;
@@ -177,7 +182,7 @@ static void processVerNeed(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		if (s == NULL)
 		    break;
 
-		if (ei->isExec && soname && !soname_only) {
+		if (genRequires(ei) && soname && !soname_only) {
 		    addDep(&ei->requires, soname, s, ei->marker);
 		}
 		auxoffset += aux->vna_next;
@@ -216,7 +221,7 @@ static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    ei->soname = rstrdup(s);
 		break;
 	    case DT_NEEDED:
-		if (ei->isExec) {
+		if (genRequires(ei)) {
 		    s = elf_strptr(ei->elf, shdr->sh_link, dyn->d_un.d_val);
 		    if (s)
 			addDep(&ei->requires, s, NULL, ei->marker);
@@ -304,7 +309,7 @@ static int processFile(const char *fn, int dtype)
      * For DSOs which use the .gnu_hash section and don't have a .hash
      * section, we need to ensure that we have a new enough glibc.
      */
-    if (ei->isExec && ei->gotGNUHASH && !ei->gotHASH && !soname_only) {
+    if (genRequires(ei) && ei->gotGNUHASH && !ei->gotHASH && !soname_only) {
 	argvAdd(&ei->requires, "rtld(GNU_HASH)");
     }
 

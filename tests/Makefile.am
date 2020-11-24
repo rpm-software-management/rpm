@@ -113,8 +113,12 @@ EXTRA_DIST += data/SOURCES/foo.c
 EXTRA_DIST += data/SOURCES/bar.c
 EXTRA_DIST += data/SOURCES/baz.c
 EXTRA_DIST += data/SOURCES/foobar.h
+EXTRA_DIST += data/SOURCES/libhello.c
 EXTRA_DIST += data/misc/hello.intro
 EXTRA_DIST += data/misc/hello.payload
+EXTRA_DIST += data/misc/helloexe
+EXTRA_DIST += data/misc/hellopie
+EXTRA_DIST += data/misc/libhello.so
 
 .PHONY: populate_testing
 
