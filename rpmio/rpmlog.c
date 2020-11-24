@@ -101,11 +101,6 @@ rpmlogLvl rpmlogRecPriority(rpmlogRec rec)
     return (rec != NULL) ? rec->pri : (rpmlogLvl)-1;
 }
 
-static void rpmlogRecPrint(rpmlogRec rec, void *data)
-{
-    fprintf((FILE *)data, "    %s", rec->message);
-}
-
 static void rpmlogForeach(void (*func) (rpmlogRec, void*), void *data,
                           unsigned mask)
 {
@@ -122,18 +117,6 @@ static void rpmlogForeach(void (*func) (rpmlogRec, void*), void *data,
     }
 
     rpmlogCtxRelease(ctx);
-}
-
-void rpmlogPrint(FILE *f)
-{
-    rpmlogPrettyPrint(f, 0, 0);
-}
-
-void rpmlogPrettyPrint(FILE *f, unsigned mask, int color)
-{
-    if (f == NULL)
-	f = stderr;
-    rpmlogForeach(color ? rpmlogRecPrettyPrint : rpmlogRecPrint, f, mask);
 }
 
 void rpmlogClose (void)
@@ -376,6 +359,23 @@ static void rpmlogRecPrettyPrint(rpmlogRec rec, void *data)
     FILE *f = (FILE *)data;
     fprintf(f, "    ");
     rpmlogDefault(f, rec);
+}
+
+static void rpmlogRecPrint(rpmlogRec rec, void *data)
+{
+    fprintf((FILE *)data, "    %s", rec->message);
+}
+
+void rpmlogPrettyPrint(FILE *f, unsigned mask, int color)
+{
+    if (f == NULL)
+	f = stderr;
+    rpmlogForeach(color ? rpmlogRecPrettyPrint : rpmlogRecPrint, f, mask);
+}
+
+void rpmlogPrint(FILE *f)
+{
+    rpmlogPrettyPrint(f, 0, 0);
 }
 
 /* FIX: rpmlogMsgPrefix[] dependent, not unqualified */
