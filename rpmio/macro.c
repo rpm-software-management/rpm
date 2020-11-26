@@ -776,12 +776,8 @@ static size_t doGlobal(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 
 static size_t doDump(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
-    const char *se = argv[1];
-    const char *start = se;
     rpmDumpMacroTable(mb->mc, NULL);
-    while (iseol(*se))
-	se++;
-    return se - start;
+    return 0;
 }
 
 
@@ -1247,7 +1243,7 @@ static struct builtins_s {
     { "define",		doDef,		-1,	ME_PARSE },
     { "dirname",	doFoo,		1,	ME_FUNC },
     { "dnl",		doDnl,		-1,	ME_PARSE },
-    { "dump", 		doDump,		0,	ME_PARSE },
+    { "dump", 		doDump,		0,	ME_FUNC },
     { "echo",		doOutput,	1,	ME_FUNC },
     { "error",		doOutput,	1,	ME_FUNC },
     { "exists",		doFoo,		1,	ME_FUNC },
