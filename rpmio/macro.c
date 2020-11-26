@@ -752,30 +752,14 @@ exit:
 static size_t
 doUndefine(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
-    const char *se = argv[1];
-    const char *start = se;
-    const char *s = se;
-    char *buf = xmalloc(strlen(s) + 1);
-    char *n = buf, *ne = n;
-    int c;
-
-    COPYNAME(ne, s, c);
-
-    /* Move scan over body */
-    while (iseol(*s))
-	s++;
-    se = s;
-
-    if (!validName(mb, n, ne - n, "%undefine")) {
+    const char *n = argv[1];
+    if (!validName(mb, n, strlen(n), "%undefine")) {
 	mb->error = 1;
-	goto exit;
+    } else {
+	popMacro(mb->mc, n);
     }
 
-    popMacro(mb->mc, n);
-
-exit:
-    _free(buf);
-    return se - start;
+    return 0;
 }
 
 static size_t doDef(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
@@ -1284,7 +1268,7 @@ static struct builtins_s {
     { "trace",		doTrace,	0,	ME_FUNC },
     { "u2p",		doFoo,		1,	ME_FUNC },
     { "uncompress",	doUncompress,	1,	ME_FUNC },
-    { "undefine",	doUndefine,	1,	ME_PARSE },
+    { "undefine",	doUndefine,	1,	ME_FUNC },
     { "url2path",	doFoo,		1,	ME_FUNC },
     { "verbose",	doVerbose,	0,	ME_FUNC },
     { "warn",		doOutput,	1,	ME_FUNC },
