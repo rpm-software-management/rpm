@@ -170,8 +170,10 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 	goto exit;
     }
     
-    buildTemplate = rpmExpand(mTemplate, NULL);
-    buildPost = rpmExpand(mPost, NULL);
+    if ((buildTemplate = rpmExpand(mTemplate, NULL)) == NULL)
+        goto exit;
+    if ((buildPost = rpmExpand(mPost, NULL)) == NULL)
+        goto exit;
 
     (void) fputs(buildTemplate, fp);
 
@@ -196,7 +198,8 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 	goto exit;
     }
 
-    buildCmd = rpmExpand(mCmd, " ", scriptName, NULL);
+    if ((buildCmd = rpmExpand(mCmd, " ", scriptName, NULL)) == NULL)
+        goto exit;
     (void) poptParseArgvString(buildCmd, &argc, &argv);
 
     rpmlog(RPMLOG_NOTICE, _("Executing(%s): %s\n"), name, buildCmd);

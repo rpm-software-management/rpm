@@ -2005,6 +2005,7 @@ rpmExpand(const char *arg, ...)
     const char *s;
     va_list ap;
     rpmMacroContext mc;
+    int rc = 1;
 
     if (arg == NULL) {
 	ret = xstrdup("");
@@ -2026,8 +2027,13 @@ rpmExpand(const char *arg, ...)
     va_end(ap);
 
     mc = rpmmctxAcquire(NULL);
-    (void) doExpandMacros(mc, buf, 0, &ret);
+    rc = doExpandMacros(mc, buf, 0, &ret);
     rpmmctxRelease(mc);
+
+    if (rc) {
+        free(ret);
+        ret = NULL;
+    }
 
     free(buf);
 exit:
