@@ -289,7 +289,29 @@ static void logerror(void)
     }
 }
 
-static int rpmlogDefault(FILE *stdlog, rpmlogRec rec)
+static int ifprint(FILE *f, const char *str, int indent, int lead)
+{
+    int total = 0;
+    int nprinted = 0;
+    const char *p = str;
+    int count = 0;
+    while (*str) {
+        p = strchr(str, '\n');
+        count = p ? p - str + 1 : -1;
+        nprinted = fprintf(f, "%*s%.*s",
+                           (lead || total) ? indent : 0, "",
+                           count, str);
+        if (nprinted < 0)
+            return nprinted;
+        total += nprinted;
+        if (count < 0)
+            break;
+        str = p + 1;
+    }
+    return total;
+}
+
+static int rpmlogDefault(FILE *stdlog, rpmlogRec rec, int indent, int bold)
 {
     FILE *msgout = (stdlog ? stdlog : stderr);
     static __thread int color = -1;
@@ -321,7 +343,7 @@ static int rpmlogDefault(FILE *stdlog, rpmlogRec rec)
 	break;
     }
 
-    if (fputs(rpmlogLevelPrefix(rec->pri), msgout) == EOF)
+    if (ifprint(msgout, rpmlogLevelPrefix(rec->pri), indent, 1) < 0)
 	logerror();
 
     switch (rec->pri) {
@@ -336,7 +358,7 @@ static int rpmlogDefault(FILE *stdlog, rpmlogRec rec)
 	if (colorOn && *colorOn) {
 	    if (fputs(ANSI_COLOR_RESET, msgout) == EOF)
 		logerror();
-	    if (fputs(ANSI_COLOR_BOLD, msgout) == EOF)
+	    if (bold && (fputs(ANSI_COLOR_BOLD, msgout) == EOF))
 		logerror();
 	}
     case RPMLOG_DEBUG:
@@ -345,8 +367,8 @@ static int rpmlogDefault(FILE *stdlog, rpmlogRec rec)
     }
 
     if (rec->message)
-	if (fputs(rec->message, msgout) == EOF)
-	    logerror();
+        if (ifprint(msgout, rec->message, indent, 0) < 0)
+            logerror();
 
     switch (rec->pri) {
     case RPMLOG_INFO:
@@ -375,8 +397,7 @@ static int rpmlogDefault(FILE *stdlog, rpmlogRec rec)
 static void rpmlogRecPrettyPrint(rpmlogRec rec, void *data)
 {
     FILE *f = (FILE *)data;
-    fprintf(f, "    ");
-    rpmlogDefault(f, rec);
+    rpmlogDefault(f, rec, 4, 0);
 }
 
 static void rpmlogRecPrint(rpmlogRec rec, void *data)
@@ -438,7 +459,7 @@ static void dolog(struct rpmlogRec_s *rec, int saverec)
 	}
 
 	if (cbrc & RPMLOG_DEFAULT) {
-	    cbrc = rpmlogDefault(clog, rec);
+	    cbrc = rpmlogDefault(clog, rec, 0, 1);
 	    needexit += cbrc & RPMLOG_EXIT;
 	}
 	pthread_mutex_unlock(&serialize);
