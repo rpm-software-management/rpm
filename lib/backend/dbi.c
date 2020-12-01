@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <stdlib.h>
+#include <fcntl.h>
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmmacro.h>
@@ -77,7 +78,7 @@ dbDetectBackend(rpmdb rdb)
 	}
     }
 
-    if (!cfg) {
+    if (!cfg && ((rdb->db_mode & O_ACCMODE) != O_RDONLY || (rdb->db_flags & RPMDB_FLAG_REBUILD) != 0)) {
 	rpmlog(RPMLOG_WARNING, _("invalid %%_db_backend: %s\n"), db_backend);
 	goto exit;
     }
@@ -93,15 +94,20 @@ dbDetectBackend(rpmdb rdb)
 
 	/* On-disk database differs from configuration */
 	if (ondisk && ondisk != cfg) {
-	    if (rdb->db_flags & RPMDB_FLAG_REBUILD) {
-		rpmlog(RPMLOG_WARNING,
-			_("Converting database from %s to %s backend\n"),
-			ondisk->name, cfg->name);
+	    if (*db_backend) {
+		if (rdb->db_flags & RPMDB_FLAG_REBUILD) {
+		    rpmlog(RPMLOG_WARNING,
+			    _("Converting database from %s to %s backend\n"),
+			    ondisk->name, db_backend);
+		} else {
+		    rpmlog(RPMLOG_WARNING,
+			_("Found %s %s database while attempting %s backend: "
+			"using %s backend.\n"),
+			ondisk->name, ondisk->path, db_backend, ondisk->name);
+		}
 	    } else {
-		rpmlog(RPMLOG_WARNING,
-		    _("Found %s %s database while attempting %s backend: "
-		    "using %s backend.\n"),
-		    ondisk->name, ondisk->path, db_backend, ondisk->name);
+		rpmlog(RPMLOG_DEBUG, "Found %s %s database: using %s backend.\n",
+		    ondisk->name, ondisk->path, ondisk->name);
 	    }
 	    rdb->db_ops = ondisk;
 	}
