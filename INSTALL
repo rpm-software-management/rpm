@@ -143,10 +143,9 @@ of GPG, available from
     http://www.gnupg.org/
 
 OpenMP multithreading support is automatically enabled if your C compiler has
-support for OpenMP version 4.5 or higher (to disable, pass the --disable-openmp
-option to configure).  For GCC, OpenMP 4.5 is fully supported since GCC 6.1,
-which is available from
-    http://www.gnu.org/
+support for OpenMP (to disable, pass the --disable-openmp option to configure).
+Suitable compilers are listed at
+    https://www.openmp.org/resources/openmp-compilers-tools/
 
 To compile RPM:
 --------------
