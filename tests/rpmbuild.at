@@ -91,6 +91,21 @@ runroot rpmbuild \
 ])
 AT_CLEANUP
 
+AT_SETUP([rpmbuild -ts <spec>])
+AT_KEYWORDS([build])
+RPMDB_INIT
+AT_CHECK([
+
+runroot rpmbuild --quiet -ts /data/SOURCES/hello-2.0.tar.gz
+runroot rpm -qpl /build/SRPMS/hello-2.0-1.src.rpm
+],
+[0],
+[hello-2.0.tar.gz
+hello.spec
+],
+[])
+AT_CLEANUP
+
 # weird filename survival test
 AT_SETUP([rpmbuild package with weird filenames])
 AT_KEYWORDS([build])
