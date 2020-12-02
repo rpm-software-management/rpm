@@ -337,14 +337,16 @@ static int isSpecFile(const char * specfile)
 static char * getTarSpec(const char *arg)
 {
     char *specFile = NULL;
+    char *specFinal = NULL;
     const char **spec;
     char tarbuf[BUFSIZ];
     int gotspec = 0;
     FD_t fd = NULL;
     static const char *tryspec[] = { "Specfile", "\\*.spec", NULL };
 
-    if (!(fd = rpmMkTempFile(NULL, &specFile)))
-       goto exit;
+    specFile = rpmGetPath("%{_specdir}/", "rpm-spec.XXXXXX", NULL);
+    if (!(fd = rpmMkTemp(specFile)))
+	goto exit;
 
     for (spec = tryspec; *spec != NULL; spec++) {
 	FILE *fp;
@@ -383,12 +385,22 @@ static char * getTarSpec(const char *arg)
 
     if (!gotspec) {
     	rpmlog(RPMLOG_ERR, _("Failed to read spec file from %s\n"), arg);
-	specFile = NULL;
+    } else {
+	/* remove trailing \n */
+	tarbuf[strlen(tarbuf)-1] = '\0';
+	specFinal = rpmExpand("%{_specdir}/%{basename:", tarbuf, "}", NULL);
+	if (rename(specFile, specFinal)) {
+	    rpmlog(RPMLOG_ERR, _("Failed to rename %s to %s: %m\n"),
+		    specFile, specFinal);
+	    unlink(specFile);
+	    specFinal = _free(specFinal);
+	}
     }
 
 exit:
+    free(specFile);
     Fclose(fd);
-    return specFile;
+    return specFinal;
 }
 
 static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
@@ -415,6 +427,8 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 
     if (buildMode == 't') {
     	char *srcdir = NULL, *dir;
+	if (rpmMkdirs(root, "%{_specdir}"))
+	    goto exit;
 
 	specFile = getTarSpec(arg);
 	if (!specFile)
