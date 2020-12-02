@@ -22,6 +22,10 @@
 
 #include "debug.h"
 
+#if _OPENMP < 201511
+#define priority(x)
+#endif
+
 static int rpmPackageFilesArchive(rpmfiles fi, int isSrc,
 				  FD_t cfd, ARGV_t dpaths,
 				  rpm_loff_t * archiveSize, char ** failedFile)
