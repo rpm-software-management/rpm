@@ -187,6 +187,7 @@ AS_IF([test "x$ac_cv_prog_c_openmp" != x &&
      AC_DEFINE(ENABLE_OPENMP, 1, [Enable multithreading support?])
     ],
     [AC_MSG_RESULT([no])
+     OPENMP_CFLAGS=
      if test "$enable_openmp" = "yes"; then
        AC_MSG_ERROR([OpenMP too old])
      fi
