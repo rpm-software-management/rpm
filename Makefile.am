@@ -21,7 +21,7 @@ include $(top_srcdir)/rpm.am
 AM_CFLAGS = @RPMCFLAGS@
 
 CLEANFILES =
-EXTRA_DIST = ChangeLog CREDITS INSTALL \
+EXTRA_DIST = ChangeLog CREDITS INSTALL HACKING \
 	autogen.sh db3/configure installplatform platform.in build-aux
 BUILT_SOURCES =
 
