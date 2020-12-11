@@ -58,11 +58,11 @@ static char * buildHost(void)
 
 	    if (getaddrinfo(hostname, NULL, &hints, &ai) == 0) {
 		strcpy(hostname, ai->ai_canonname);
+		freeaddrinfo(ai);
 	    } else {
 		rpmlog(RPMLOG_WARNING,
                     _("Could not canonicalize hostname: %s\n"), hostname);
 	    }
-	    freeaddrinfo(ai);
 	}
     }
     free(bhMacro);
