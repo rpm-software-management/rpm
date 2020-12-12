@@ -1039,6 +1039,8 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 	    strcpy(un.machine, "i386");
 #elif defined(__x86_64__)
 	    strcpy(un.machine, "x86_64");
+#elif defined(__aarch64__)
+	    strcpy(un.machine, "aarch64");
 #else
 	    #warning "No architecture defined! Automatic detection may not work!"
 #endif 
