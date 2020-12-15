@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-12-09 10:20+0200\n"
+"POT-Creation-Date: 2020-12-15 15:37+0200\n"
 "PO-Revision-Date: 2019-11-10 07:23-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: German (http://www.transifex.com/rpm-team/rpm/language/de/)\n"
@@ -680,7 +680,7 @@ msgstr "Keine Argumente zur Auswertung angegeben"
 msgid "unable to parse SOURCE_DATE_EPOCH\n"
 msgstr "SOURCE_DATE_EPOCH konnte nicht ausgewertet werden\n"
 
-#: build/build.c:63
+#: build/build.c:64
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Rechnername konnte nicht erkannt werden: %s\n"

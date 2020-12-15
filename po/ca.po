@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-12-09 10:20+0200\n"
+"POT-Creation-Date: 2020-12-15 15:37+0200\n"
 "PO-Revision-Date: 2018-02-15 09:14-0500\n"
 "Last-Translator: Robert Antoni Buj Gelonch <robert.buj@gmail.com>\n"
 "Language-Team: Catalan (http://www.transifex.com/rpm-team/rpm/language/ca/)\n"
@@ -690,7 +690,7 @@ msgstr "no s'ha proporcionat arguments per analitzar sintàcticament"
 msgid "unable to parse SOURCE_DATE_EPOCH\n"
 msgstr ""
 
-#: build/build.c:63
+#: build/build.c:64
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "El nom de màquina no es pot fer canònic: %s\n"

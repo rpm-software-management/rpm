@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-12-09 10:20+0200\n"
+"POT-Creation-Date: 2020-12-15 15:37+0200\n"
 "PO-Revision-Date: 2017-10-13 05:50-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Italian (http://www.transifex.com/rpm-team/rpm/language/it/)\n"
@@ -670,7 +670,7 @@ msgstr "nessun argomento passato per il parsing"
 msgid "unable to parse SOURCE_DATE_EPOCH\n"
 msgstr ""
 
-#: build/build.c:63
+#: build/build.c:64
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Impossibile regolarizzare l'hostname: %s\n"
