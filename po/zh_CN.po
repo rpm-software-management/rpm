@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-12-09 10:20+0200\n"
+"POT-Creation-Date: 2020-12-15 15:37+0200\n"
 "PO-Revision-Date: 2018-11-08 09:09-0500\n"
 "Last-Translator: Taiki Akita <taiki_akita@163.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/rpm-team/rpm/"
@@ -646,7 +646,7 @@ msgstr "没有给出参数用于分析"
 msgid "unable to parse SOURCE_DATE_EPOCH\n"
 msgstr ""
 
-#: build/build.c:63
+#: build/build.c:64
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "无法正规化主机名：%s\n"

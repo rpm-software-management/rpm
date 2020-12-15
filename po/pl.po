@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-12-09 10:20+0200\n"
+"POT-Creation-Date: 2020-12-15 15:37+0200\n"
 "PO-Revision-Date: 2019-06-06 09:42-0400\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish (http://www.transifex.com/rpm-team/rpm/language/pl/)\n"
@@ -669,7 +669,7 @@ msgstr "nie podano parametrów do przetworzenia"
 msgid "unable to parse SOURCE_DATE_EPOCH\n"
 msgstr "nie można przetworzyć SOURCE_DATE_EPOCH\n"
 
-#: build/build.c:63
+#: build/build.c:64
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Nie można ustalić kanonicznej nazwy komputera: %s\n"
