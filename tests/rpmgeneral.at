@@ -35,6 +35,21 @@ AT_CHECK([runroot rpmbuild --version],[0],
 ])
 AT_CLEANUP
 
+# Check that libtool versioning matches expectations, it's easy to screw up.
+AT_SETUP([rpm library version])
+AT_KEYWORDS([basic])
+AT_SKIP_IF(test -f "${RPMTEST}/${RPMLIBDIR}/librpm.a")
+AT_CHECK([
+cd ${RPMTEST}/${RPMLIBDIR}
+ls lib*.so.*.*
+],
+[0],
+[librpm.so.9.1.0
+librpmbuild.so.9.1.0
+librpmio.so.9.1.0
+librpmsign.so.9.1.0
+])
+AT_CLEANUP
 
 # ------------------------------
 AT_SETUP([rpm --showrc])
