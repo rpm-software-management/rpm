@@ -1,5 +1,7 @@
-LD_LIBRARY_PATH="${abs_builddir}/testing@usrlibdir@"
+RPMLIBDIR="@usrlibdir@"
+LD_LIBRARY_PATH="${abs_builddir}/testing/${RPMLIBDIR}"
 export LD_LIBRARY_PATH
+export RPMLIBDIR
 PATH="${abs_builddir}/testing@rpmbindir@:${abs_builddir}/testing@usrbindir@:${abs_builddir}/testing@usrlibexecdir@:$PATH"
 export PATH
 
