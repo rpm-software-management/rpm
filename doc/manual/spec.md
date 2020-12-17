@@ -69,7 +69,9 @@ if used in them.
 
 ## Preamble
 
-Name
+### Preamble tags
+
+#### Name
 
 The Name tag contains the proper name of the package. Names must not
 include whitespace and may include a hyphen '-' (unlike version and release
@@ -86,65 +88,75 @@ definition:
 	%package -n newname
 ```
 
-### Summary and description
+#### Version
 
-The Summary: tag should be use to give a short (50 char or so) summary
-of the package.  
+Version of the packaged content, typically software.
 
-%description is free form text, but there are two things to note.
-The first regards reformatting.  Lines that begin with white space
-are considered "pre-formatted" and will be left alone.  Adjacent
-lines without leading whitespace are considered a single paragraph
-and may be subject to formatting by glint or another RPM tool.
+The version string consists of alphanumeric characters, and can optionally
+be segmented with separators `.`, ```_``` and `+`.
 
-### URL: and Packager: Tags
+Tilde (`~`) can be used to force sorting lower than base (1.1~201601 < 1.1)
+Caret (`^`) can be used to force sorting higher than base (1.1^201601 > 1.1)
+These are useful for handling pre- and post-release versions, such as
+1.0~rc1 and 2.0^a.
 
-"URL:" is a place to put a URL for more information and/or documentation
-on the software contained in the package.
+#### Release
 
-Packager: tag is meant to contain the name and email
-address of the person who "maintains" the RPM package (which may be
-different from the person who actually maintains the program the
-package contains).
+Package release, used for distinguishing between different builds
+of the same software version.
 
-### BuildArchitectures: Tag
+See Version for allowed characters and modifiers.
 
-This tag specifies the architecture which the resulting binary package
-will run on.  Typically this is a CPU architecture like sparc,
-i386. The string 'noarch' is reserved for specifying that the
-resulting binary package is platform independent.  Typical platform
-independent packages are html, perl, python, java, and ps packages.
+#### Epoch
 
-### Dependencies
+Optional numerical value which can be used to override normal version-release
+sorting order. It's use should be avoided if at all possible.
 
-#### Fine Adjustment of Automatic Dependencies
+Non-existent epoch is exactly equal to zero epoch in all version comparisons.
 
-Rpm currently supports separate "Autoreq:" and "Autoprov:" tags in a
-spec file to independently control the running of find-requires and
-find-provides. A common problem occurs when packaging a large third
-party binary which has interfaces to other third party libraries you
-do not own.  RPM will require all the third party libraries be
-installed on the target machine even though their intended use was
-optional. To rectify the situation you may turn off requirements when
-building the package by putting
+#### License
 
+Short (< 70 characters) summary of the package license. For example:
 ```
-	Autoreq: 0 
+	License: GPLv3
 ```
 
-in your spec file. Any and all requirements should be added manually using the
+#### Group
+
+Optional, short (< 70 characters) group of the package.
+```
+	Group: Development/Libraries
+```
+
+#### Summary
+
+Short (< 70 characters) summary of the package.  
+```
+	Summary: Utility for converting mumbles into giggles
+```
+
+#### Source
+
+Used to declare source(s) used to build the package. All sources will
+will be packaged into source rpms.
+Arbitrary number of sources may be declared, for example:
 
 ```
-	Requires: depend1, ..., dependN
+	Source0: mysoft-1.0.tar.gz
+	Source1: mysoft-data-1.0.zip
 ```
 
-in this case.
+#### Patch
 
-Similarly there is an Autoprov tag to turn off the automatic provision
-generation and a Autoreqprov to turn off both the automatic provides and
-the automatic requires generation.
+Used to declare patches applied on top of sources. All patches declared
+will be packaged into source rpms.
 
-### NoSource: Tag
+#### Icon
+
+Used to attach an icon to an rpm package file. Obsolete.
+
+#### NoSource
+#### NoPatch
 
 Files ending in .nosrc.rpm are generally source RPM packages whose spec
 files have one or more NoSource: or NoPatch: directives in them.  Both
@@ -167,7 +179,109 @@ The end result of all this, though, is that you can't rebuild
 ``no-source'' RPM packages using `rpm --rebuild' unless you also have
 the sources or patches which are not included in the .nosrc.rpm.
 
-### BuildRequires: Tag
+#### URL
+
+URL supplying further information about the package, typically upstream
+website.
+
+#### BugURL
+
+Bug reporting URL for the package.
+
+#### ModularityLabel
+#### DistTag
+#### VCS
+
+#### Distribution
+#### Vendor
+#### Packager
+
+Optional package distribution/vendor/maintainer name / contact information.
+Rarely used in specs, typically filled in by buildsystem macros.
+
+#### BuildRoot
+
+Obsolete and unused in rpm >= 4.6.0, but permitted for compatibility
+with old packages that might still depend on it.
+
+Do not use in new packages.
+
+#### AutoReqProv
+#### AutoReq
+#### AutoProv
+
+Control per-package automatic dependency generation for provides and requires. 
+Accepted values are 1/0 or yes/no, default is always "yes". Autoreqprov is
+equal to specifying Autoreq and Autoprov separately.
+
+### Dependencies
+
+The following tags are used to supply package dependency information,
+all follow the same basic form. Can appear multiple times in the spec,
+multiple values accepted, a single value is of the form
+`capability [operator version]`. Capability names must
+start with alphanumerics or underscore. Optional version range can be
+supplied after capability name, accepted operators are `=`, `<`, `>`,
+`<=` and `>=`, version 
+
+#### Requires
+
+Capabilities this package requires to function at all. Besides ensuring
+required packages get installed, this is also used to order installs
+and erasures.
+
+Additional context can be supplied using `Requires(context)` syntax,
+accepted contextes are:
+* pre
+* post
+* preun
+* postun
+* pretrans
+* posttrans
+* verify
+* meta
+
+`meta` is used to denote a dependency which should not affect install
+ordering. The other contexes refer to scriptlets of the same
+name, meaning dependency must be present at the time of said scriptlet
+execution.  Multiple contexes can be supplied separated by comma.
+Note that combining `meta` with install-time scriptlet dependencies defies
+the purpose.
+
+#### Provides
+
+Capabilities provided by this package.
+
+`name = [epoch:]version-release` is automatically added to all packages.
+
+#### Conflicts
+
+Capabilities this package conflicts with, typically packages with
+conflicting paths or otherwise conflicting functionality.
+
+#### Obsoletes
+
+Packages obsoleted by this package. Used for replacing and renaming
+packages.
+
+#### Recommends
+#### Suggests
+#### Supplements
+#### Enhances
+
+#### OrderByRequires
+
+#### Prereq
+
+Obsolete, do not use.
+
+#### BuildPrereq
+
+Obsolete, do not use.
+
+#### BuildRequires
+
+Capabilities required to build the package.
 
 Build dependencies are identical to install dependencies except:
 
@@ -176,10 +290,10 @@ Build dependencies are identical to install dependencies except:
   2) they are resolved before building rather than before installing.
 ```
 
-So, if you were to write a specfile for a package that requires egcs to build,
+So, if you were to write a specfile for a package that requires gcc to build,
 you would add
 ```
-	BuildRequires: egcs
+	BuildRequires: gcc
 ```
 to your spec file.
 
@@ -189,11 +303,80 @@ the libraries to access an ext2 file system, you could express this as
 	BuildRequires: e2fsprofs-devel = 1.17-1
 ```
 
-Finally, if your package used C++ and could not be built with gcc-2.7.2.1, you
-can express this as
+#### BuildConflicts
+
+Capabilities which conflict, ie cannot be installed during the package
+package build.
+
+For example if somelib-devel presence causes the package to fail build,
+you would add
 ```
-	BuildConflicts: gcc <= 2.7.2.1
+	BuildConflicts: somelib-devel
 ```
+
+#### ExcludeArch
+
+Package is not buildable on architectures listed here.
+Used when software is portable across most architectures except some,
+for example due to endianess issues.
+
+#### ExclusiveArch
+
+Package is only buildable on architectures listed here.
+For example, it's probably not possible to build an i386-specific BIOS
+utility on ARM, and even if it was it probably would not make any sense.
+
+#### ExcludeOS
+
+Package is not buildable on specific OS'es listed here.
+
+#### ExclusiveOS
+
+Package is only buildable on OS'es listed here.
+
+#### BuildArch (or BuildArchitectures)
+
+Specifies the architecture which the resulting binary package
+will run on.  Typically this is a CPU architecture like sparc,
+i386. The string 'noarch' is reserved for specifying that the
+resulting binary package is platform independent.  Typical platform
+independent packages are html, perl, python, java, and ps packages.
+
+As a special case, `BuildArch: noarch` can be used on sub-package
+level to allow eg. documentation of otherwise arch-specific package
+to be shared across multiple architectures.
+
+#### Prefixes (or Prefix)
+
+Specify prefixes this package may be installed into, used to make
+packages relocatable. Very few packages are.
+
+#### DocDir
+
+Declare a non-default documentation directory for the package.
+Usually not needed.
+
+#### RemovePathPostfixes
+
+Colon separated lists of path postfixes that are removed from the end
+of file names when adding those files to the package. Used on sub-package
+level.
+
+Used for creating sub-packages with conflicting files, such as different
+variants of the same content (eg minimal and full versions of the same
+software). 
+
+### Sub-sections
+
+#### %description
+
+%description is free form text, but there are two things to note.
+The first regards reformatting.  Lines that begin with white space
+are considered "pre-formatted" and will be left alone.  Adjacent
+lines without leading whitespace are considered a single paragraph
+and may be subject to formatting by glint or another RPM tool.
+
+### Dependencies
 
 ## Build scriptlets
 
@@ -291,9 +474,20 @@ More information is available in [file trigger chapter](file_triggers.md).
 
 ### Virtual File Attribute(s)
 
+#### %artifact
+
+The %artifact attribute can be used to denote files that are more like
+side-effects of packaging than actual content the user would be interested
+in. Such files can be easily filtered out on queries and also left out
+of installations if space is tight.
+
+#### %ghost
+
 A %ghost tag on a file indicates that this file is not to be included
 in the package.  It is typically used when the attributes of the file
 are important while the contents is not (e.g. a log file).
+
+#### %config
 
 The %config(missingok) indicates that the file need not exist on the
 installed machine. The %config(missingok) is frequently used for files
@@ -306,12 +500,48 @@ The %config(noreplace) indicates that the file in the package should
 be installed with extension .rpmnew if there is already a modified file
 with the same name on the installed machine.
 
+#### %dir
+
+Used to explicitly own the directory itself but not it's contents.
+
+#### %doc
+
+Used to mark and/or install files as documentation. Can be used as a
+regular attribute on an absolute path, or in "special" form on a path
+relative to the build directory which causes the files to be installed
+and packaged as documentation.
+
+Can also be used to filter out documentation from installations where
+space is tight.
+
+#### %license
+
+Used to mark and/or install files as licenses. Same as %doc, but 
+cannot be filtered out as licenses must always be present in packages.
+
+#### %readme
+
+Obsolete.
+
+#### %verify
+
 The virtual file attribute token %verify tells `-V/--verify' to ignore
 certain features on files which may be modified by (say) a postinstall
 script so that false problems are not displayed during package verification.
 ```
 	%verify(not size filedigest mtime) %{prefix}/bin/javaswarm
 ```
+
+Supported modifiers are:
+* filedigest (or md5)
+* size
+* link
+* user (or owner)
+* group
+* mtime
+* mode
+* rdev
+* caps
 
 ### Shell Globbing
 
