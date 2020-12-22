@@ -16,7 +16,14 @@
 #include <sys/mman.h>
 #include <errno.h>
 
+#ifdef __APPLE__
+#include <machine/endian.h>
+#include <libkern/OSByteOrder.h>
+#define htole32(x) OSSwapHostToLittleInt32(x)
+#define le32toh(x) OSSwapLittleToHostInt32(x)
+#else
 #include <endian.h>
+#endif /* __APPLE__ */
 
 #include "rpmidx.h"
 #include "rpmxdb.h"
