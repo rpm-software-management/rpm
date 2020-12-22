@@ -20,6 +20,14 @@
 #include "build/rpmbuild_internal.h"
 #include "build/rpmbuild_misc.h"
 
+#ifdef ENABLE_OPENMP
+#include <omp.h>
+#endif
+
+#ifdef HAVE_ZSTD
+#include <zstd.h>
+#endif
+
 #include "debug.h"
 
 static int rpmPackageFilesArchive(rpmfiles fi, int isSrc,
@@ -762,6 +770,12 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
     }
     qsort(tasks, npkgs, sizeof(Package), compareBinaries);
 
+#if defined(HAVE_ZSTD) && ZSTD_VERSION_NUMBER >= 10407
+    zstd_thread_pool = ZSTD_createThreadPool (omp_get_max_threads ());
+    if (zstd_thread_pool == NULL)
+        rpmlog(RPMLOG_DEBUG, "zstd thread pool cannot be created\n");
+#endif
+
     #pragma omp parallel
     #pragma omp single
     for (int i = 0; i < npkgs; i++) {
@@ -780,6 +794,11 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 	if (rc)
 	    break;
     }
+
+#if ZSTD_VERSION_NUMBER >= 10407
+    ZSTD_freeThreadPool (zstd_thread_pool);
+    zstd_thread_pool = NULL;
+#endif
 
     /* Now check the package set if enabled */
     if (rc == RPMRC_OK)

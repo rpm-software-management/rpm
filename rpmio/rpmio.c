@@ -24,6 +24,9 @@
 
 #include "debug.h"
 
+/* Thread pool shared by all ZSTD contexts.  */
+void *zstd_thread_pool;
+
 typedef struct FDSTACK_s * FDSTACK_t;
 
 struct FDSTACK_s {
@@ -1135,6 +1138,14 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
 	if (threads > 0) {
 	    if (ZSTD_isError (ZSTD_CCtx_setParameter(_stream, ZSTD_c_nbWorkers, threads)))
 		rpmlog(RPMLOG_DEBUG, "zstd library does not support multi-threading\n");
+	    else {
+#if ZSTD_VERSION_NUMBER >= 10407
+		if (zstd_thread_pool != NULL) {
+		    if (ZSTD_CCtx_refThreadPool(_stream, zstd_thread_pool) != 0)
+			rpmlog(RPMLOG_DEBUG, "zstd thread pool cannot be used\n");
+		}
+#endif
+	    }
 	}
 
 	nb = ZSTD_CStreamOutSize();

@@ -7,6 +7,7 @@ AM_CFLAGS += @OPENMP_CFLAGS@
 AM_CPPFLAGS =  -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/
 AM_CPPFLAGS += @WITH_MAGIC_INCLUDE@
 AM_CPPFLAGS += @WITH_POPT_INCLUDE@
+AM_CPPFLAGS += $(ZSTD_CFLAGS) -DZSTD_STATIC_LINKING_ONLY=1
 AM_CPPFLAGS += -I$(top_srcdir)/misc
 
 usrlibdir = $(libdir)

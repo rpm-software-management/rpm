@@ -136,6 +136,8 @@ typedef enum fdOpX_e {
  */
 rpmop fdOp(FD_t fd, fdOpX opx);
 
+extern void *zstd_thread_pool;
+
 #ifdef __cplusplus
 }
 #endif
