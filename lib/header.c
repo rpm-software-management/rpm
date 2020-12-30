@@ -1840,7 +1840,8 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
     }
 
     /* Is the trailer within the data area? */
-    if (hdrchkRange(blob->dl, einfo.offset + REGION_TAG_COUNT)) {
+    if (__builtin_add_overflow(einfo.offset, REGION_TAG_COUNT, &blob->rdl) ||
+	hdrchkRange(blob->dl, blob->rdl)) {
 	rasprintf(buf,
 		_("region offset: BAD, tag %d type %d offset %d count %d"),
 		einfo.tag, einfo.type, einfo.offset, einfo.count);
@@ -1852,7 +1853,6 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
     regionEnd = blob->dataStart + einfo.offset;
     /* regionEnd is not guaranteed to be aligned */
     (void) memcpy(&trailer, regionEnd, REGION_TAG_COUNT);
-    blob->rdl = einfo.offset + REGION_TAG_COUNT;
 
     ei2h(&trailer, &einfo);
     /* Some old packages have HEADERIMAGE in signature region trailer, fix up */
@@ -1876,8 +1876,7 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
      */
     blob->ril = -(einfo.offset/sizeof(*blob->pe));
     /* Does the region actually fit within the header? */
-    if ((einfo.offset % sizeof(*blob->pe)) || hdrchkRange(blob->il, blob->ril) ||
-					hdrchkRange(blob->dl, blob->rdl)) {
+    if ((einfo.offset % sizeof(*blob->pe)) || hdrchkRange(blob->il, blob->ril)) {
 	rasprintf(buf, _("region %d size: BAD, ril %d il %d rdl %d dl %d"),
 			regionTag, blob->ril, blob->il, blob->rdl, blob->dl);
 	goto exit;
