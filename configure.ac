@@ -37,7 +37,7 @@ fi
 AS=${AS-as}
 AC_SUBST(AS)
 if test "$GCC" = yes; then
-    cflags_to_try="-fno-strict-aliasing -fstack-protector -Wempty-body"
+    cflags_to_try="-fno-strict-aliasing -fstack-protector -Wempty-body -fwrapv -fwrapv-pointer -fno-strict-overflow -fstack-protector-strong"
     AC_MSG_CHECKING([supported compiler flags])
     old_cflags=$CFLAGS
     echo
