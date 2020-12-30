@@ -412,10 +412,8 @@ static inline int strtaglen(const char *str, rpm_count_t c, const char *end)
     const char *s;
 
     if (end) {
-	if (str >= end)
-	    return -1;
-	while ((s = memchr(start, '\0', end-start))) {
-	    if (--c == 0 || s > end)
+	while (end > start && (s = memchr(start, '\0', end-start))) {
+	    if (--c == 0)
 		break;
 	    start = s + 1;
 	}
