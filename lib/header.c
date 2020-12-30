@@ -289,9 +289,13 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
 	/* Verify the data actually fits */
 	len = dataLength(info.type, ds + info.offset,
 			 info.count, 1, ds + blob->dl);
-	end = info.offset + len;
-	if (hdrchkRange(blob->dl, end) || len <= 0)
+	/*
+	 * We already checked that blob->dl >= info.offset, so this cannot
+	 * overflow
+	 */
+	if (hdrchkRange(blob->dl - info.offset, len))
 	    goto err;
+	end = info.offset + len;
     }
     return 0; /* Everything ok */
 
