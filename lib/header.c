@@ -1818,7 +1818,8 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
     }
 
     /* Is the trailer within the data area? */
-    if (hdrchkRange(blob->dl, einfo.offset + REGION_TAG_COUNT)) {
+    if (hdrchkData(einfo.offset) ||
+	    hdrchkRange(blob->dl, einfo.offset + REGION_TAG_COUNT)) {
 	rasprintf(buf,
 		_("region offset: BAD, tag %d type %d offset %d count %d"),
 		einfo.tag, einfo.type, einfo.offset, einfo.count);
