@@ -398,12 +398,27 @@ static inline int strtaglen(const char *str, rpm_count_t c, const char *end)
     const char *s;
 
     if (end) {
-	if (str >= end)
+	/*
+	 * Defensive programming.  Cast to uintptr_t to prevent unwanted
+	 * compiler optimizations.
+	 */
+	if ((uintptr_t)str >= (uintptr_t)end ||
+	    hdrchkData((uintptr_t)end - (uintptr_t)start))
 	    return -1;
 	while ((s = memchr(start, '\0', end-start))) {
-	    if (--c == 0 || s > end)
+	    if (--c == 0)
 		break;
+	    /*
+	     * This is only well-defined if end > start, but
+	     * memchr(start, '\0', 0) will always return NULL, ending the loop.
+	     */
 	    start = s + 1;
+	    /*
+	     * end might be a past-the-end pointer, so don't pass it to
+	     * memchr()
+	     */
+	    if (start >= end)
+		return -1;
 	}
     } else {
 	while ((s = strchr(start, '\0'))) {
