@@ -1968,12 +1968,42 @@ rpmRC hdrblobInit(const void *uh, size_t uc,
 		rpmTagVal regionTag, int exact_size,
 		struct hdrblob_s *blob, char **emsg)
 {
+    size_t nb;
     rpmRC rc = RPMRC_FAIL;
+    int32_t il_max = HEADER_TAGS_MAX;
+    int32_t dl_max = HEADER_DATA_MAX;
+
+    if (uc && uc < 2 * sizeof(blob->ei) + sizeof(struct entryInfo_s)) {
+	rasprintf(emsg, _("hdr len: BAD, hdr len %zu too short"), uc);
+	goto exit;
+    }
+
+    if (regionTag == RPMTAG_HEADERSIGNATURES) {
+	il_max = 32;
+	dl_max = 64 * 1024 * 1024;
+    }
 
     memset(blob, 0, sizeof(*blob));
     blob->ei = (int32_t *) uh; /* discards const */
+
     blob->il = ntohl(blob->ei[0]);
+    if (hdrchkRange(il_max, blob->il)) {
+	rasprintf(emsg, _("hdr tags: BAD, no. of tags(%d) out of range"), blob->il);
+	goto exit;
+    }
+
     blob->dl = ntohl(blob->ei[1]);
+    if (hdrchkRange(dl_max, blob->dl)) {
+	rasprintf(emsg, _("hdr data: BAD, no. of bytes(%d) out of range"), blob->dl);
+	goto exit;
+    }
+
+    nb = (blob->il * sizeof(struct entryInfo_s)) + blob->dl;
+    if (uc && uc < sizeof(blob->il) + sizeof(blob->dl) + nb) {
+	rasprintf(emsg, _("hdr len: BAD, hdr len %zu too short"), uc);
+	goto exit;
+    }
+
     blob->pe = (entryInfo) &(blob->ei[2]);
     blob->pvlen = sizeof(blob->il) + sizeof(blob->dl) +
 		  (blob->il * sizeof(*blob->pe)) + blob->dl;
