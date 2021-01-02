@@ -1851,8 +1851,6 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
     blob->rdl = regionEnd - blob->dataStart;
 
     ei2h(&trailer, &einfo);
-    /* Trailer offset is negative and has a special meaning */
-    einfo.offset = -einfo.offset;
     /* Some old packages have HEADERIMAGE in signature region trailer, fix up */
     if (regionTag == RPMTAG_HEADERSIGNATURES && einfo.tag == RPMTAG_HEADERIMAGE)
 	einfo.tag = RPMTAG_HEADERSIGNATURES;
@@ -1865,8 +1863,9 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
 	goto exit;
     }
 
+    /* Trailer offset is negative and has a special meaning */
+    blob->ril = -einfo.offset/sizeof(*blob->pe);
     /* Does the region actually fit within the header? */
-    blob->ril = einfo.offset/sizeof(*blob->pe);
     if ((einfo.offset % sizeof(*blob->pe)) || hdrchkRange(blob->il, blob->ril) ||
 					hdrchkRange(blob->dl, blob->rdl)) {
 	rasprintf(buf, _("region %d size: BAD, ril %d il %d rdl %d dl %d"),
