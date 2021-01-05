@@ -279,6 +279,8 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
 	    goto err;
 	if (hdrchkType(info.type))
 	    goto err;
+	if (hdrchkData(info.count))
+	    goto err;
 	if (hdrchkAlign(info.type, info.offset))
 	    goto err;
 	if (hdrchkRange(blob->dl, info.offset))
