@@ -1856,6 +1856,12 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
 	goto exit;
     }
 
+    /* Is the region empty?  That isn't allowed. */
+    if (blob->rdl < 1) {
+	rasprintf(buf, _("region %d: BAD, region is empty"), regionTag);
+	goto exit;
+    }
+
     /* In package files region size is expected to match header size. */
     if (exact_size && !(blob->il == blob->ril && blob->dl == blob->rdl)) {
 	rasprintf(buf,
