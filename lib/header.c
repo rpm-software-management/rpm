@@ -262,6 +262,7 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg, int exact_size)
     int i, len = 0;
     int32_t end = 0;
     const char *ds = (const char *) blob->dataStart;
+    int32_t dl = (exact_size && blob->regionTag) ? blob->rdl - REGION_TAG_COUNT : blob->dl;
     int32_t il = (blob->regionTag) ? blob->il-1 : blob->il;
     entryInfo pe = (blob->regionTag) ? blob->pe+1 : blob->pe;
     /* Can't typecheck signature header tags, sigh */
@@ -281,19 +282,19 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg, int exact_size)
 	    goto err;
 	if (hdrchkAlign(info.type, info.offset))
 	    goto err;
-	if (hdrchkRange(blob->dl, info.offset))
+	if (hdrchkRange(dl, info.offset))
 	    goto err;
 	if (typechk && hdrchkTagType(info.tag, info.type))
 	    goto err;
 
 	/* Verify the data actually fits */
 	len = dataLength(info.type, ds + info.offset,
-			 info.count, 1, ds + blob->dl);
+			 info.count, 1, ds + dl);
 	/*
 	 * We already checked that blob->dl >= info.offset, so this cannot
 	 * overflow
 	 */
-	if (hdrchkRange(blob->dl - info.offset, len))
+	if (hdrchkRange(dl - info.offset, len))
 	    goto err;
 	end = info.offset + len;
     }
