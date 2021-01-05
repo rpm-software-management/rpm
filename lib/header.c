@@ -256,7 +256,7 @@ Header headerNew(void)
     return headerCreate(NULL, 0);
 }
 
-static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
+static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg, int exact_size)
 {
     struct entryInfo_s info;
     int i, len = 0;
@@ -2021,7 +2021,7 @@ rpmRC hdrblobInit(const void *uh, size_t uc,
 	goto exit;
 
     /* Sanity check the rest of the header structure. */
-    if (hdrblobVerifyInfo(blob, emsg))
+    if (hdrblobVerifyInfo(blob, emsg, exact_size))
 	goto exit;
 
     rc = RPMRC_OK;
