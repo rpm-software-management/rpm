@@ -1828,9 +1828,9 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
     /* Is there an immutable header region tag trailer? */
     memset(&trailer, 0, sizeof(trailer));
     regionEnd = blob->dataStart + einfo.offset;
+    /* regionEnd is not guaranteed to be aligned */
     (void) memcpy(&trailer, regionEnd, REGION_TAG_COUNT);
-    regionEnd += REGION_TAG_COUNT;
-    blob->rdl = regionEnd - blob->dataStart;
+    blob->rdl = einfo.offset + REGION_TAG_COUNT;
 
     ei2h(&trailer, &einfo);
     /* Trailer offset is negative and has a special meaning */
