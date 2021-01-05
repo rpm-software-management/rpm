@@ -450,11 +450,15 @@ static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
 	}
 	break;
 
+#define NUM_TYPES (sizeof(typeSizes)/sizeof(typeSizes[0]))
+	STATIC_ASSERT(NUM_TYPES == 16);
+	STATIC_ASSERT(RPM_MAX_TYPE < NUM_TYPES);
+#undef NUM_TYPE
     default:
-	if (typeSizes[type] == -1)
+	if (type > RPM_MAX_TYPE || typeSizes[type] == -1)
 	    return -1;
-	length = typeSizes[(type & 0xf)] * count;
-	if (length < 0 || (se && (s + length) > se))
+	length = typeSizes[type] * count;
+	if (length < 0 || (se && (length > se - s)))
 	    return -1;
 	break;
     }
