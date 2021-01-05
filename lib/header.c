@@ -1839,7 +1839,7 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
 
     /* Is there an immutable header region tag? */
     if (!(einfo.tag == regionTag)) {
-	rc = RPMRC_NOTFOUND;
+	rc = exact_size ? RPMRC_FAIL : RPMRC_NOTFOUND;
 	goto exit;
     }
 
@@ -1898,6 +1898,12 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
     if (hdrchkRange(blob->il, blob->ril) || hdrchkRange(blob->dl, blob->rdl)) {
 	rasprintf(buf, _("region %d size: BAD, ril %d il %d rdl %d dl %d"),
 			regionTag, blob->ril, blob->il, blob->rdl, blob->dl);
+	goto exit;
+    }
+
+    /* Is the region empty?  That isn't allowed. */
+    if (blob->rdl < 1) {
+	rasprintf(buf, _("region %d: BAD, region is empty"), regionTag);
 	goto exit;
     }
 
