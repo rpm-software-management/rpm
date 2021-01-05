@@ -449,6 +449,9 @@ static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
     const char * se = pend;
     int length = 0;
 
+    if (hdrchkData(count))
+	return -1;
+
     switch (type) {
     case RPM_STRING_TYPE:
 	if (count != 1)
