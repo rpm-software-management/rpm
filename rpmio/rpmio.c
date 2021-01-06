@@ -772,6 +772,7 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 		 * should've processed
 		 * */
 		while (isdigit(*++mode));
+		--mode;
 	    }
 #ifdef HAVE_LZMA_MT
 	    else
