@@ -186,6 +186,7 @@ int rpmsqBlock(int op)
 	    sigdelset(&newMask, SIGILL);
 	    sigdelset(&newMask, SIGSEGV);
 	    sigdelset(&newMask, SIGTSTP);
+	    sigdelset(&newMask, SIGALRM);
 	    ret = pthread_sigmask(SIG_BLOCK, &newMask, &oldMask);
 	}
     } else if (op == SIG_UNBLOCK) {
