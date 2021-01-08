@@ -92,7 +92,6 @@
 %__brp_python_bytecompile %{_rpmconfigdir}/brp-python-bytecompile "" "%{?_python_bytecompile_errors_terminate_build}" "%{?_python_bytecompile_extra}"
 %__brp_strip %{_rpmconfigdir}/brp-strip %{__strip}
 %__brp_strip_comment_note %{_rpmconfigdir}/brp-strip-comment-note %{__strip} %{__objdump}
-%__brp_strip_shared %{_rpmconfigdir}/brp-strip-shared
 %__brp_strip_static_archive %{_rpmconfigdir}/brp-strip-static-archive %{__strip}
 %__brp_elfperms %{_rpmconfigdir}/brp-elfperms
 
