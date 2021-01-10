@@ -298,6 +298,15 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
 	end = info.offset + len;
 	if (hdrchkRange(blob->dl, end) || len <= 0)
 	    goto err;
+	if (blob->regionTag) {
+	    /*
+	     * Verify that the data does not overlap the region trailer.  The
+	     * region trailer is skipped by this loop, so the other checks
+	     * don’t catch this case.
+	     */
+	    if (end > blob->rdl - REGION_TAG_COUNT && info.offset < blob->rdl)
+		goto err;
+	}
     }
     return 0; /* Everything ok */
 
