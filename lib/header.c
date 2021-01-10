@@ -1970,6 +1970,11 @@ rpmRC hdrblobInit(const void *uh, size_t uc,
 {
     rpmRC rc = RPMRC_FAIL;
 
+    if (chkAlign(uh, uint64_t)) {
+	rasprintf(emsg, _("hdr align: BAD, header is not 8-byte aligned"));
+	goto exit;
+    }
+
     memset(blob, 0, sizeof(*blob));
     blob->ei = (int32_t *) uh; /* discards const */
     blob->il = ntohl(blob->ei[0]);

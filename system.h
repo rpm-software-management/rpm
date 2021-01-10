@@ -102,4 +102,11 @@ extern int fdatasync(int fildes);
 
 #include "misc/fnmatch.h"
 
+/* Check that pointer `x` is aligned enough for a variable of type `t` */
+#if __STDC_VERSION__ >= 201112L
+# define chkAlign(x, t) ((uintptr_t)(x) & (_Alignof(t) - 1))
+#else
+# define chkAlign(x, t) ((uintptr_t)(x) & (sizeof(t) - 1))
+#endif
+
 #endif	/* H_SYSTEM */
