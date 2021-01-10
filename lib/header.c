@@ -2071,6 +2071,11 @@ rpmRC hdrblobInit(const void *uh, size_t uc,
     int32_t il_max = HEADER_TAGS_MAX;
     int32_t dl_max = HEADER_DATA_MAX;
 
+    if ((uintptr_t)uh & 3) {
+	rasprintf(emsg, _("hdr align: BAD, header is not 4-byte aligned"));
+	goto exit;
+    }
+
     if (uc && uc < 2 * sizeof(blob->ei) + sizeof(struct entryInfo_s)) {
 	rasprintf(emsg, _("hdr len: BAD, hdr len %zu too short"), uc);
 	goto exit;
