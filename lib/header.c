@@ -18,6 +18,13 @@
 
 #include "debug.h"
 
+/* Static assertion macro */
+#if __STDC_VERSION__ < 201112L
+# define STATIC_ASSERT(x) ((void)sizeof(struct { int static_assertion_failed:(2 * !!(x) - 1);}))
+#else
+# define STATIC_ASSERT(x) _Static_assert((x), #x)
+#endif
+
 /** \ingroup header
  */
 const unsigned char rpm_header_magic[8] = {
@@ -397,6 +404,14 @@ unsigned headerSizeof(Header h, int magicp)
 }
 
 /*
+ * Same as memchr(3), but guards against `ptr` being a past-the-end pointer if
+ * `diff` is zero.
+ */
+static inline const void *safe_memchr(const void *ptr, int c, ptrdiff_t diff) {
+    return diff <= 0 ? NULL : memchr(ptr, c, (size_t)diff);
+}
+
+/*
  * Header string (array) size calculation, bounded if end is non-NULL.
  * Return length (including \0 termination) on success, -1 on error.
  */
@@ -406,27 +421,24 @@ static inline int strtaglen(const char *str, rpm_count_t c, const char *end)
     const char *s;
 
     if (end) {
+	/* this would already be undefined behavior */
+	if ((uintptr_t)str > (uintptr_t)end)
+	    abort();
 	/*
 	 * Defensive programming.  Cast to uintptr_t to prevent unwanted
 	 * compiler optimizations.
 	 */
-	if ((uintptr_t)str >= (uintptr_t)end ||
-	    hdrchkData((uintptr_t)end - (uintptr_t)start))
+	if (hdrchkData((uintptr_t)end - (uintptr_t)start))
 	    return -1;
-	while ((s = memchr(start, '\0', end-start))) {
+	while ((s = safe_memchr(start, '\0', end-start))) {
 	    if (--c == 0)
 		break;
 	    /*
 	     * This is only well-defined if end > start, but
-	     * memchr(start, '\0', 0) will always return NULL, ending the loop.
+	     * safe_memchr(start, '\0', 0) will always return NULL, ending the
+	     * loop.
 	     */
 	    start = s + 1;
-	    /*
-	     * end might be a past-the-end pointer, so don't pass it to
-	     * memchr()
-	     */
-	    if (start >= end)
-		return -1;
 	}
     } else {
 	while ((s = strchr(start, '\0'))) {
@@ -481,11 +493,6 @@ static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
 	break;
 
 #define NUM_TYPES (sizeof(typeSizes)/sizeof(typeSizes[0]))
-#if __STDC_VERSION__ < 201112L
-# define STATIC_ASSERT(x) ((void)sizeof(struct { int static_assertion_failed:(2 * !!(x) - 1);}))
-#else
-# define STATIC_ASSERT(x) _Static_assert((x), #x)
-#endif
 	STATIC_ASSERT(NUM_TYPES == 16);
 	STATIC_ASSERT(RPM_MAX_TYPE < NUM_TYPES);
 #undef NUM_TYPE
