@@ -299,6 +299,11 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg, int exact_size)
 	if (hdrchkRange(dl - info.offset, len))
 	    goto err;
 	end = info.offset + len;
+	if (blob->regionTag) {
+	    /* Verify that the data does not overlap the region trailer */
+	    if (end > blob->rdl - REGION_TAG_COUNT && info.offset < blob->rdl)
+		goto err;
+	}
     }
     return 0; /* Everything ok */
 
