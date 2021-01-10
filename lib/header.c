@@ -1815,6 +1815,53 @@ ssize_t Freadall(FD_t fd, void * buf, ssize_t size)
     return total;
 }
 
+#ifdef RPM_HEADER_LIBFUZZER
+int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size);
+int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
+    /*
+     * Why this mess?  Would it not be simpler to just check ‘Size’ for zero,
+     * and if ‘Size’ is nonzero, call ‘headerImport(Data, Size)’?
+     *
+     * It certainly would be simpler, but it would not produce results
+     * that are anywhere near as good.  The reason is that ‘hdrblobInit’
+     * does a LOT of checks very early on, including checking that ‘Size’
+     * is exactly correct.  If it is not, it bails out.  This makes the
+     * fuzzer’s job much harder, as it will waste time trying buffers of
+     * the wrong length.
+     *
+     * Instead, this code sets the ‘dl’ field of the header so that
+     * ‘Size’ (or rather ‘Size + 4’) is guaranteed to be correct.  This
+     * makes ‘hdrblobInit’ less likely to bail out before reaching the
+     * actually interesting code.  In fact, since the size checks are
+     * guaranteed to succeed, we can pass zero for the second argument
+     * of ‘headerImport’; this tells ‘headerImport’ to not do any bounds
+     * checks and blindly assume the input buffer is long enough.  That
+     * is virtually always a horrible idea, but here it is guaranteed to
+     * be safe.
+     *
+     * How much of a difference does this make?  A lot.  libfuzzer was
+     * able to obtain over 50% more coverage.
+     */
+    if (Size < 20 || Size > headerMaxbytes - 4)
+	return 0;
+    uint32_t *new_data = xmalloc(Size + 4);
+    memcpy(new_data, Data, 4);
+    const uint32_t il = ntohl(*new_data);
+    if (il >= (1U << 28) || sizeof(struct entryInfo_s) * il > Size - 4) {
+	free(new_data);
+	return 0;
+    }
+    memcpy(new_data + 2, Data + 4, Size - 4);
+    new_data[1] = ntohl(Size - 4 - il * sizeof(struct entryInfo_s));
+    Header h = headerImport(new_data, 0, 0);
+    if (!h)
+	free(new_data);
+    else
+	headerFree(h);
+    return 0;
+}
+#endif
+
 static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
 			hdrblob blob, char **buf)
 {
