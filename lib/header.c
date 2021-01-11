@@ -1819,11 +1819,14 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
     }
     memcpy(new_data + 2, Data + 4, Size - 4);
     new_data[1] = ntohl(Size - 4 - il * sizeof(struct entryInfo_s));
-    Header h = headerImport(new_data, 0, 0);
-    if (!h)
+    Header h = headerImport(new_data, 0, HEADERIMPORT_FAST);
+    if (!h) {
 	free(new_data);
-    else
-	headerFree(h);
+	return 0;
+    }
+    unsigned int export_len;
+    free(headerExport(h, &export_len));
+    headerFree(h);
     return 0;
 }
 #endif
