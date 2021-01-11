@@ -840,13 +840,15 @@ static int parseEmpty(rpmSpec spec, int prevParsePart)
     int nextPart, rc;
     char *line;
 
-    line = spec->line + sizeof("%end") - 1;
-    SKIPSPACE(line);
-    if (line[0] != '\0') {
-	rpmlog(RPMLOG_ERR,
-	    _("line %d: %%end doesn't take any arguments: %s\n"),
-	    spec->lineNum, spec->line);
-	goto exit;
+    if (prevParsePart != PART_NONE) {
+	line = spec->line + sizeof("%end") - 1;
+	SKIPSPACE(line);
+	if (line[0] != '\0') {
+	    rpmlog(RPMLOG_ERR,
+		   _("line %d: %%end doesn't take any arguments: %s\n"),
+		   spec->lineNum, spec->line);
+	    goto exit;
+	}
     }
 
     if (prevParsePart == PART_EMPTY) {
@@ -900,6 +902,7 @@ static rpmRC parseSpecSection(rpmSpec *specptr, int secondary)
     if (secondary) {
 	initialPackage = 0;
 	parsePart = PART_EMPTY;
+	prevParsePart = PART_NONE;
     }
 
     /* All the parse*() functions expect to have a line pre-read */
