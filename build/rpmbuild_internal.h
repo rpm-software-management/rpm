@@ -414,6 +414,15 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char * field, rpmTagVal tagN,
 		int index, rpmsenseFlags tagflags, addReqProvFunction cb, void *cbdata);
 
 /** \ingroup rpmbuild
+ * Parse spec piece generated during build
+ *
+ * @param spec		spec file control structure
+ * @return		RPMRC_OK on success
+ */
+RPM_GNUC_INTERNAL
+rpmRC parseGeneratedSpecs(rpmSpec spec);
+
+/** \ingroup rpmbuild
  * Run a build script, assembled from spec file scriptlet section.
  *
  * @param spec		spec file control structure

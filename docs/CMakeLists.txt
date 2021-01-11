@@ -20,6 +20,7 @@ set(refman
 	manual/dependencies.md
 	manual/dependency_generators.md
 	manual/devel_documentation.md
+	manual/dynamic_specs.md
 	manual/file_triggers.md
 	manual/format.md
 	manual/hregions.md
