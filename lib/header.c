@@ -1847,6 +1847,9 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
      * How much of a difference does this make?  A lot.  libfuzzer was
      * able to obtain over 50% more coverage.
      */
+    STATIC_ASSERT(sizeof(int32_t) == 4);
+    STATIC_ASSERT(sizeof(struct entryInfo_s) == 16);
+    STATIC_ASSERT(UINT32_MAX / sizeof(struct entryInfo_s) == (1U << 28) - 1);
     if (Size < 20 || Size > headerMaxbytes - 4)
 	return 0;
     uint32_t *new_data = xmalloc(Size + 4);
