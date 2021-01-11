@@ -424,6 +424,10 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 			   getStringBuf(spec->install), test, sbp)))
 		goto exit;
 
+	if (((what & RPMBUILD_INSTALL) || (what & RPMBUILD_PACKAGEBINARY)) &&
+	    (rc = parseGeneratedSpecs(spec)))
+		goto exit;
+
 	if ((what & RPMBUILD_CHECK) &&
 	    (rc = doScript(spec, RPMBUILD_CHECK, "%check",
 			   getStringBuf(spec->check), test, sbp)))

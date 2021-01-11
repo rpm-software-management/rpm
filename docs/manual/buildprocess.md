@@ -16,6 +16,7 @@ title: rpm.org - Package Build Process
   * %conf
   * %build
   * %install
+  * Read [dynamic spec parts](dynamic_specs.md)
   * %check - if present
  * Process files
    * Turn %files lines into actual files (evaluate globs)

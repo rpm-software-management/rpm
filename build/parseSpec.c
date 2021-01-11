@@ -1131,3 +1131,30 @@ rpmSpec rpmSpecParse(const char *specFile, rpmSpecFlags flags,
 {
     return parseSpec(specFile, flags, buildRoot, 0);
 }
+
+rpmRC parseGeneratedSpecs(rpmSpec spec)
+{
+    ARGV_t argv = NULL;
+    int argc = 0;
+    int i;
+    rpmRC rc = RPMRC_OK;
+
+    char * specPattern = rpmGenPath("%{specpartsdir}", NULL, "*.specpart");
+    /* rpmGlob returns files sorted */
+    if (rpmGlob(specPattern, &argc, &argv) == 0) {
+	for (i = 0; i < argc; i++) {
+	    rpmlog(RPMLOG_NOTICE, "Reading %s\n", argv[i]);
+	    pushOFI(spec, argv[i]);
+	    snprintf(spec->fileStack->readBuf, spec->fileStack->readBufLen,
+		     "# Spec part read from %s\n\n", argv[i]);
+	    if (parseSpecSection(&spec, 1) != RPMRC_OK) {
+		rpmlog(RPMLOG_ERR, "parsing failed\n");
+		rc = RPMRC_FAIL;
+		break;
+	    }
+	}
+	argvFree(argv);
+    }
+    free(specPattern);
+    return rc;
+}

@@ -33,7 +33,7 @@ title: rpm.org - RPM Reference Manual
   * [Conditional Builds](conditionalbuilds.md)
   * [Relocatable Packages](relocatable.md)
   * [Multiple build areas](multiplebuilds.md)
-
+* [Dynamic Spec Generation](dynamic_specs.md)
 
 ## Developer Information
 
