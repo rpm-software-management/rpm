@@ -102,4 +102,11 @@ extern int fdatasync(int fildes);
 
 #include "misc/fnmatch.h"
 
+/* Static assertion macro */
+#if __STDC_VERSION__ < 201112L
+# define STATIC_ASSERT(x) ((void)sizeof(struct { int static_assertion_failed:(2 * !!(x) - 1);}))
+#else
+# define STATIC_ASSERT(x) _Static_assert((x), #x)
+#endif
+
 #endif	/* H_SYSTEM */
