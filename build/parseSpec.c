@@ -1072,7 +1072,8 @@ exit:
     return spec;
 
 errxit:
-    rpmSpecFree(spec);
+    if (!secondary)
+	rpmSpecFree(spec);
     return NULL;
 }
 
@@ -1144,4 +1145,28 @@ rpmSpec rpmSpecParse(const char *specFile, rpmSpecFlags flags,
 		     const char *buildRoot)
 {
     return parseSpec(specFile, flags, buildRoot, 0);
+}
+
+rpmRC parseGeneratedSpecs(rpmSpec spec)
+{
+    
+    ARGV_t argv = NULL;
+    int argc = 0;
+    int i;
+
+    char * specPattern = rpmGenPath("%{u2p:%{_builddir}}", spec->buildSubdir, "__rpm/*.spec");
+    if (rpmGlob(specPattern, &argc, &argv) == 0) {
+	for (i = 0; i < argc; i++) {
+	    rpmlog(RPMLOG_NOTICE, "Reading %s\n", argv[i]);
+	    pushOFI(spec, argv[i]);
+	    if (parseSpecSection(spec, 1)) {
+		rpmlog(RPMLOG_ERR, "parsing failed\n");
+	    }
+	}
+	argvFree(argv);
+    } else {
+	rpmlog(RPMLOG_WARNING, "No generated spec files found\n");
+    }
+    free(specPattern);
+    return RPMRC_OK;
 }
