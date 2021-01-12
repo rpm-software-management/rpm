@@ -1164,8 +1164,6 @@ rpmRC parseGeneratedSpecs(rpmSpec spec)
 	    }
 	}
 	argvFree(argv);
-    } else {
-	rpmlog(RPMLOG_WARNING, "No generated spec files found\n");
     }
     free(specPattern);
     return RPMRC_OK;
