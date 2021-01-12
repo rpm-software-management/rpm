@@ -152,6 +152,11 @@ static void doScriptExec(ARGV_const_t argv, ARGV_const_t prefixes,
 			FD_t scriptFd, FD_t out)
 {
     int xx;
+    sigset_t set;
+
+    /* Unmask all signals, the scripts may need them */
+    sigfillset(&set);
+    sigprocmask(SIG_UNBLOCK, &set, NULL);
 
     /* SIGPIPE is ignored in rpm, reset to default for the scriptlet */
     (void) signal(SIGPIPE, SIG_DFL);
