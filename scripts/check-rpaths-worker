@@ -36,10 +36,10 @@ function showHint()
     cat <<EOF >&2
 *******************************************************************************
 *
-* WARNING: 'check-rpaths' detected a broken RPATH and will cause 'rpmbuild'
-*          to fail. To ignore these errors, you can set the '\$QA_RPATHS'
-*          environment variable which is a bitmask allowing the values
-*          below. The current value of QA_RPATHS is $(printf '0x%04x' $QA_RPATHS).
+* WARNING: 'check-rpaths' detected a broken RPATH OR RUNPATH and will cause
+*          'rpmbuild' to fail. To ignore these errors, you can set the
+*          '\$QA_RPATHS' environment variable which is a bitmask allowing the
+*          values below. The current value of QA_RPATHS is $(printf '0x%04x' $QA_RPATHS).
 *
 *    0x0001 ... standard RPATHs (e.g. /usr/lib); such RPATHs are a minor
 *               issue but are introducing redundant searchpaths without
@@ -92,13 +92,11 @@ function msg()
     test -z "$fail"
 }
 
-: ${QA_RPATHS:=0}
-old_IFS=$IFS
-
-for i; do
+function check_rpath() {
     pos=0
-    rpath=$(readelf -d "$i" 2>/dev/null | LANG=C grep '(RPATH).*:') || continue
-    rpath=$(echo "$rpath" | LANG=C sed -e 's!.*(RPATH).*: \[\(.*\)\]!\1!p;d')
+    rpath=$(readelf -d "$1" 2>/dev/null | LANG=C grep "($2).*:") || return 0
+    rpath=$(echo "$rpath" | LANG=C sed -e "s!.*($2).*: \[\(.*\)\]!\1!p;d")
+    lower=$(echo $2 | awk '{print tolower($0)}')
     tmp=aux:$rpath:/lib/aux || :
     IFS=:
     set -- $tmp
@@ -143,14 +141,22 @@ for i; do
 	allow_ORIGIN=$new_allow_ORIGIN
 
 	base=${i##$RPM_BUILD_ROOT}
-	msg "$badness"  1 "file '$base' contains a standard rpath '$j' in [$rpath]"  || fail=1
-	msg "$badness"  2 "file '$base' contains an invalid rpath '$j' in [$rpath]"  || fail=1
-	msg "$badness"  4 "file '$base' contains an insecure rpath '$j' in [$rpath]" || fail=1
-	msg "$badness"  8 "file '$base' contains the \$ORIGIN rpath specifier at the wrong position in [$rpath]" || fail=1
-	msg "$badness" 16 "file '$base' contains an empty rpath in [$rpath]"         || fail=1
-	msg "$badness" 32 "file '$base' contains an rpath referencing '..' of an absolute path [$rpath]" || fail=2
+	msg "$badness"  1 "file '$base' contains a standard $lower '$j' in [$rpath]"  || fail=1
+	msg "$badness"  2 "file '$base' contains an invalid $lower '$j' in [$rpath]"  || fail=1
+	msg "$badness"  4 "file '$base' contains an insecure $lower '$j' in [$rpath]" || fail=1
+	msg "$badness"  8 "file '$base' contains the \$ORIGIN $lower specifier at the wrong position in [$rpath]" || fail=1
+	msg "$badness" 16 "file '$base' contains an empty $lower in [$rpath]"         || fail=1
+	msg "$badness" 32 "file '$base' contains an $lower referencing '..' of an absolute path [$rpath]" || fail=2
 	let ++pos
     done
+}
+
+: ${QA_RPATHS:=0}
+old_IFS=$IFS
+
+for i; do
+    check_rpath $i "RPATH"
+    check_rpath $i "RUNPATH"
 done
 
 test -z "$fail"
