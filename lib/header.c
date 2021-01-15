@@ -263,7 +263,7 @@ Header headerNew(void)
     return headerCreate(NULL, 0);
 }
 
-static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
+static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg, int regionTag)
 {
     struct entryInfo_s info;
     int i, len = 0;
@@ -273,7 +273,8 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
     entryInfo pe = (blob->regionTag) ? blob->pe+1 : blob->pe;
     /* Can't typecheck signature header tags, sigh */
     int typechk = (blob->regionTag == RPMTAG_HEADERIMMUTABLE ||
-		   blob->regionTag == RPMTAG_HEADERIMAGE);
+		   blob->regionTag == RPMTAG_HEADERIMAGE ||
+		   regionTag == RPMTAG_HEADERIMMUTABLE);
 
     for (i = 0; i < il; i++) {
 	ei2h(&pe[i], &info);
@@ -294,6 +295,16 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
 	    goto err;
 	if (typechk && hdrchkTagType(info.tag, info.type))
 	    goto err;
+
+	/*
+	 * Check that the package isn’t sneaking a signature outside of a
+	 * signature header.  That can confuse clients which assume all
+	 * signatues have been checked.
+	 */
+	if (regionTag == RPMTAG_HEADERIMMUTABLE) {
+	    if (info.tag >= RPMTAG_SIG_BASE && info.tag < RPMSIGTAG_MAX)
+		goto err;
+	}
 
 	/* Verify the data actually fits */
 	len = dataLength(info.type, ds + info.offset,
@@ -1821,7 +1832,10 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
 	regionTag = einfo.tag;
     }
 
-    /* Is there an immutable header region tag? */
+    /*
+     * Is there an immutable header region tag?  Regions that are of the wrong
+     * type will be caught by hdrchkTag() in hdrblobVerifyInfo().
+     */
     if (!(einfo.tag == regionTag)) {
 	rc = RPMRC_NOTFOUND;
 	goto exit;
@@ -2009,7 +2023,7 @@ rpmRC hdrblobInit(const void *uh, size_t uc,
 	goto exit;
 
     /* Sanity check the rest of the header structure. */
-    if (hdrblobVerifyInfo(blob, emsg))
+    if (hdrblobVerifyInfo(blob, emsg, regionTag))
 	goto exit;
 
     rc = RPMRC_OK;

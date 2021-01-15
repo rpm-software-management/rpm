@@ -69,6 +69,7 @@ typedef enum rpmTag_e {
     /* RPMTAG_SIG_BASE+19 reserved for RPMSIGTAG_FILESIGNATURELENGTH */
     RPMTAG_VERITYSIGNATURES	= RPMTAG_SIG_BASE+20,	/* s[] */
     RPMTAG_VERITYSIGNATUREALGO	= RPMTAG_SIG_BASE+21,	/* i */
+    RPMTAG_SIGMAX,					/* internal */
 
     RPMTAG_NAME  		= 1000,	/* s */
 #define	RPMTAG_N	RPMTAG_NAME	/* s */
@@ -434,8 +435,13 @@ typedef enum rpmSigTag_e {
     RPMSIGTAG_FILESIGNATURELENGTH	= RPMTAG_SIG_BASE + 19,
     RPMSIGTAG_VERITYSIGNATURES		= RPMTAG_VERITYSIGNATURES,
     RPMSIGTAG_VERITYSIGNATUREALGO	= RPMTAG_VERITYSIGNATUREALGO,
+    RPMSIGTAG_MAX,
 } rpmSigTag;
 
+#if __STDC_VERSION__ >= 201112L
+_Static_assert(RPMSIGTAG_MAX == 1 + RPMSIGTAG_VERITYSIGNATUREALGO, "bug");
+_Static_assert(RPMSIGTAG_MAX == RPMTAG_SIGMAX, "bug");
+#endif
 
 /** \ingroup header
  * The basic types of data in tags from headers.
