@@ -10,6 +10,7 @@ enum modes {
     MODE_IMPORTKEY	= (1 << 1),
     MODE_DELKEY		= (1 << 2),
     MODE_LISTKEY	= (1 << 3),
+    MODE_VERIFYSIG	= (1 << 4),
 };
 
 static int mode = 0;
@@ -17,7 +18,9 @@ static int test = 0;
 
 static struct poptOption keyOptsTable[] = {
     { "checksig", 'K', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_CHECKSIG,
-	N_("verify package signature(s)"), NULL },
+	N_("verify any signature(s) a package may have (less secure than --verifysig)"), NULL },
+    { "verifysig", 'V', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_VERIFYSIG,
+	N_("check that a package has been signed by a trusted key (more secure than --checksig)"), NULL },
     { "import", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_IMPORTKEY,
 	N_("import an armored public key"), NULL },
     { "test", '\0', POPT_ARG_NONE, &test, 0,
@@ -67,6 +70,10 @@ int main(int argc, char *argv[])
     rpmtsSetRootDir(ts, rpmcliRootDir);
 
     switch (mode) {
+    case MODE_VERIFYSIG:
+	rpmtsSetFlags(ts, 0);
+	rpmtsSetVfyLevel(ts, RPMSIG_VERIFIABLE_TYPE);
+	/* FALLTHROUGH */
     case MODE_CHECKSIG:
 	ec = rpmcliVerifySignatures(ts, args);
 	break;
