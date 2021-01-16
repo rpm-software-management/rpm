@@ -263,7 +263,7 @@ Header headerNew(void)
     return headerCreate(NULL, 0);
 }
 
-static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
+static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg, int regionTag)
 {
     struct entryInfo_s info;
     int i, len = 0;
@@ -274,6 +274,13 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
     /* Can't typecheck signature header tags, sigh */
     int typechk = (blob->regionTag == RPMTAG_HEADERIMMUTABLE ||
 		   blob->regionTag == RPMTAG_HEADERIMAGE);
+
+    /* Packages must have at least one entry in the region */
+    if (regionTag && (blob->regionTag ? blob->ril : blob->il) < 1) {
+	if (emsg)
+	    rasprintf(emsg, _("package has empty header or region"));
+	return 1;
+    }
 
     for (i = 0; i < il; i++) {
 	ei2h(&pe[i], &info);
@@ -1809,9 +1816,9 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
     struct entryInfo_s trailer, einfo;
     unsigned char * regionEnd = NULL;
 
-    /* Check that we have at least on tag */
+    /* Check that packages have at least one tag */
     if (blob->il < 1) {
-	rasprintf(buf, _("region: no tags"));
+	rc = RPMRC_NOTFOUND;
 	goto exit;
     }
 
@@ -2017,7 +2024,7 @@ rpmRC hdrblobInit(const void *uh, size_t uc,
 	goto exit;
 
     /* Sanity check the rest of the header structure. */
-    if (hdrblobVerifyInfo(blob, emsg))
+    if (hdrblobVerifyInfo(blob, emsg, regionTag))
 	goto exit;
 
     rc = RPMRC_OK;
