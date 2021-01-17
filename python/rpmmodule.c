@@ -300,6 +300,7 @@ static int prepareInitModule(void)
 }
 static int initModule(PyObject *m);
 
+#if PY_MAJOR_VERSION >= 3
 static int rpmModuleTraverse(PyObject *m, visitproc visit, void *arg) {
     Py_VISIT(pyrpmError);
     return 0;
@@ -334,8 +335,21 @@ PyInit__rpm(void)
     initModule(m);
     return m;
 }
+#else
+void init_rpm(void);   /* XXX eliminate gcc warning */
+void init_rpm(void)
+{
+    PyObject * m;
 
-/* Module initialization: */
+    if (!prepareInitModule()) return;
+    m = Py_InitModule3("_rpm", rpmModuleMethods, rpm__doc__);
+    if (m == NULL)
+       return;
+    initModule(m);
+}
+#endif
+
+/* Shared python2/3 module initialization: */
 static int initModule(PyObject *m)
 {
     PyObject * d;

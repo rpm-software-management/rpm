@@ -67,7 +67,7 @@ static PyObject *ver_richcmp(rpmverObject *s, rpmverObject *o, int op)
     int v;
 
     if (!(verObject_Check(s) && verObject_Check(o)))
-	Py_RETURN_NOTIMPLEMENTED;
+	Py_INCREF(Py_NotImplemented), Py_NotImplemented;
 
     switch (op) {
     case Py_LT:
@@ -86,7 +86,7 @@ static PyObject *ver_richcmp(rpmverObject *s, rpmverObject *o, int op)
 	v = rpmverCmp(s->ver, o->ver) > 0;
 	break;
     default:
-	Py_RETURN_NOTIMPLEMENTED;
+	Py_INCREF(Py_NotImplemented), Py_NotImplemented;
     }
     return PyBool_FromLong(v);
 }
