@@ -4,13 +4,14 @@
 #
 # Translators:
 # José Lemos Neto <lemosjosex@protonmail.com>, 2020.
+# Fábio Rodrigues Ribeiro <farribeiro@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-11-14 17:35+0000\n"
-"Last-Translator: José Lemos Neto <lemosjosex@protonmail.com>\n"
+"PO-Revision-Date: 2021-01-18 17:37+0000\n"
+"Last-Translator: Fábio Rodrigues Ribeiro <farribeiro@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://translate.fedoraproject.org/"
 "projects/rpm/master/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -18,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.3.2\n"
+"X-Generator: Weblate 4.4.2\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -1670,7 +1671,7 @@ msgid "} expected in expression"
 msgstr "} esperado na expressão"
 
 msgid ": expected following ? subexpression"
-msgstr ": esperado após a subexpressão ?"
+msgstr ""
 
 msgid "{ expected after : in expression"
 msgstr "{ esperado após : na expressão"
@@ -2660,9 +2661,9 @@ msgstr "o pacote %s é destinado para o sistema operacional %s"
 msgid "package %s is already installed"
 msgstr "o pacote %s já está instalado"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is not installed"
-msgstr "o pacote %s não está instalado\n"
+msgstr "o pacote %s não está instalado"
 
 #, c-format
 msgid "path %s in package %s is not relocatable"
@@ -2945,17 +2946,14 @@ msgstr ""
 msgid "Unable to reset I/O priority: %s"
 msgstr ""
 
-#, fuzzy
 msgid "syntax error while parsing =="
-msgstr "erro de sintaxe ao analisar ==\n"
+msgstr "erro de sintaxe ao analisar =="
 
-#, fuzzy
 msgid "syntax error while parsing &&"
-msgstr "erro de sintaxe ao analisar &&\n"
+msgstr "erro de sintaxe ao analisar &&"
 
-#, fuzzy
 msgid "syntax error while parsing ||"
-msgstr "erro de sintaxe ao analisar ||\n"
+msgstr "erro de sintaxe ao analisar ||"
 
 msgid "macro expansion returned a bare word, please use \"...\""
 msgstr ""
@@ -2978,40 +2976,33 @@ msgstr "(tipo inválido)"
 msgid "bare words are no longer supported, please use \"...\""
 msgstr ""
 
-#, fuzzy
 msgid "parse error in expression"
-msgstr "erro de análise na expressão\n"
+msgstr "erro de análise na expressão"
 
-#, fuzzy
 msgid "unmatched ("
-msgstr "( sem correspondência\n"
+msgstr "sem correspondência ("
 
-#, fuzzy
 msgid "- only on numbers"
-msgstr "- somente em números\n"
+msgstr "- somente em números"
 
 #, fuzzy
 msgid "unexpected end of expression"
 msgstr "| esperado no fim da expressão"
 
-#, fuzzy
 msgid "syntax error in expression"
-msgstr "erro de sintaxe na expressão\n"
+msgstr "erro de sintaxe na expressão"
 
-#, fuzzy
 msgid "types must match"
-msgstr "os tipos devem corresponder\n"
+msgstr "os tipos devem corresponder"
 
 msgid "division by zero"
 msgstr ""
 
-#, fuzzy
 msgid "* and / not supported for strings"
-msgstr "* / não são suportados para strings\n"
+msgstr ""
 
-#, fuzzy
 msgid "- not supported for strings"
-msgstr "- não é suportado para strings\n"
+msgstr "- não é suportado para strings"
 
 #, c-format
 msgid "%3d>%*s(empty)\n"
@@ -3023,7 +3014,7 @@ msgstr "%3d<%*s(vazio)\n"
 
 #, fuzzy, c-format
 msgid "Failed to open shell expansion pipe for command: %s: %m \n"
-msgstr "Não foi possível abrir o pipe do tar: %m\n"
+msgstr "Não foi possível abrir o pipe do tar: %m \n"
 
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
