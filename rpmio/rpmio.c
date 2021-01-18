@@ -1057,6 +1057,8 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
     char *te = t + sizeof(stdio) - 2;
     int c;
     int threads = 0;
+    int windowlog = 27;
+    int longdist = 0;
 
     switch ((c = *s++)) {
     case 'a':
@@ -1094,6 +1096,22 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
 		  threads = -1;
 	    }
 	    continue;
+    case 'l':
+	    c = *s++;
+	    longdist = 1;
+	    if (c >= (int)'0' && c <= (int)'9') {
+		windowlog = strtol(s-1, (char **)&s, 10);
+		ZSTD_bounds bounds = ZSTD_cParam_getBounds(ZSTD_c_windowLog);
+		if (windowlog < bounds.lowerBound){
+		    windowlog = bounds.lowerBound;
+		    rpmlog(RPMLOG_WARNING, "Invalid long distance matching window log for zstd. Using %i instead.\n", bounds.lowerBound);
+		}
+		if (windowlog > bounds.upperBound) {
+		    windowlog = bounds.upperBound;
+		    rpmlog(RPMLOG_WARNING, "Invalid long distance matching window log for zstd. Using %i instead.\n", bounds.upperBound);
+		}
+   	    }
+	    continue;
 	default:
 	    if (c >= (int)'0' && c <= (int)'9') {
 		level = strtol(s-1, (char **)&s, 10);
@@ -1130,6 +1148,13 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
 	if ((_stream = (void *) ZSTD_createCCtx()) == NULL
 	 || ZSTD_isError(ZSTD_CCtx_setParameter(_stream, ZSTD_c_compressionLevel, level))) {
 	    goto err;
+	}
+
+	if (longdist) {
+	    if (ZSTD_isError(ZSTD_CCtx_setParameter(_stream, ZSTD_c_enableLongDistanceMatching, longdist))
+	     || ZSTD_isError(ZSTD_CCtx_setParameter(_stream, ZSTD_c_windowLog, windowlog))) {
+	        goto err;
+	    }
 	}
 
 	threads = get_compression_threads(threads);
