@@ -1097,13 +1097,14 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
 	default:
 	    if (c >= (int)'0' && c <= (int)'9') {
 		level = strtol(s-1, (char **)&s, 10);
-		if (level < 1){
-		    level = 1;
-		    rpmlog(RPMLOG_WARNING, "Invalid compression level for zstd. Using %i instead.\n", 1);
+		ZSTD_bounds bounds = ZSTD_cParam_getBounds(ZSTD_c_compressionLevel);
+		if (level < bounds.lowerBound){
+		    level = bounds.lowerBound;
+		    rpmlog(RPMLOG_WARNING, "Invalid compression level for zstd. Using %i instead.\n", bounds.lowerBound);
 		}
-		if (level > 19) {
-		    level = 19;
-		    rpmlog(RPMLOG_WARNING, "Invalid compression level for zstd. Using %i instead.\n", 19);
+		if (level > bounds.upperBound) {
+		    level = bounds.upperBound;
+		    rpmlog(RPMLOG_WARNING, "Invalid compression level for zstd. Using %i instead.\n", bounds.upperBound);
 		}
 	    }
 	    continue;
