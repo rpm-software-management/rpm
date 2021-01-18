@@ -228,25 +228,88 @@ supplied after capability name, accepted operators are `=`, `<`, `>`,
 
 Capabilities this package requires to function at all. Besides ensuring
 required packages get installed, this is also used to order installs
-and erasures.
+and erasures. 
 
-Additional context can be supplied using `Requires(context)` syntax,
-accepted contextes are:
-* pre
-* post
-* preun
-* postun
-* pretrans
-* posttrans
-* verify
-* meta
+Additional context can be supplied using `Requires(qualifier)` syntax,
+accepted qualifiers are:
 
-`meta` is used to denote a dependency which should not affect install
-ordering. The other contexes refer to scriptlets of the same
-name, meaning dependency must be present at the time of said scriptlet
-execution.  Multiple contexes can be supplied separated by comma.
-Note that combining `meta` with install-time scriptlet dependencies defies
-the purpose.
+* `pre`
+
+  Denotes the dependency must be present in before the package is
+  is installed, and is used a strong ordering hint to break possible
+  dependency loops. A pre-dependency is free to be removed
+  once the install-transaction completes.
+
+  Also relates to `%pre` scriptlet execution.
+
+* `post`
+
+  Denotes the dependency must be present right after the package is
+  is installed, and is used a strong ordering hint to break possible
+  dependency loops. A post-dependnecy is free to be removed
+  once the install-transaction completes.
+
+  Also relates to `%post` scriptlet execution.
+
+* `preun`
+
+  Denotes the dependency must be present in before the package is
+  is removed, and is used a strong ordering hint to break possible
+  dependency loops.
+
+  Also relates to `%preun` scriptlet execution.
+
+* `postun`
+
+  Denotes the dependency must be present right after the package is
+  is removed, and is used a strong ordering hint to break possible
+  dependency loops.
+
+  Also relates to `%postun` scriptlet execution.
+
+* `pretrans`
+
+  Denotes the dependency must be present before the transaction starts,
+  and cannot be satisified by added packages in a transaction. As such,
+  it does not affect transaction ordering. A pretrans-dependency is
+  free to be removed after the install-transaction completes.
+
+  Also relates to `%pretrans` scriptlet execution.
+
+* `posttrans`
+
+  Denotes the dependency must be present at the end of transaction, ie
+  cannot be removed during the transaction. As such, it does not affect
+  transaction ordering. A posttrans-dependency is free to be removed
+  after the the install-transaction completes.
+
+  Also relates to `%posttrans` scriptlet execution.
+
+* `verify`
+
+  Relates to `%verify` scriptlet execution. As `%verify` scriptlet is not
+  executed during install/erase, this does not affect transcation ordering.
+
+* `interp`
+
+  Denotes a scriptlet interpreter dependency, usually added automatically
+  by rpm. Used as a strong ordering hint for breaking dependency loops.
+
+* `meta` (since rpm >= 4.16)
+
+  Denotes a "meta" dependency, which must not affect transaction ordering.
+  Typical use-cases would be meta-packages and sub-package cross-dependencies
+  whose purpose is just to ensure the sub-packages stay on common version.
+
+Multiple qualifiers can be supplied separated by comma, as long as
+they're not semantically contradictory: `meta` qualifier contradicts any
+ordered qualifier, eg `meta` and `verify` can be combined, and `pre` and
+`verify` can be combined, but `pre` and `meta` can not.
+
+As noted above, dependencies qualified as install-time only (`pretrans`,
+`pre`, `post`, `posttrans` or combination of them) can be removed after the
+installation transaction completes if there are no other dependencies
+to prevent that. This is a common source of confusion.
 
 #### Provides
 
