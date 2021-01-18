@@ -988,6 +988,7 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
     FileListRec flp;
     char buf[BUFSIZ];
     int i, npaths = 0;
+    int fail_on_dupes = rpmExpandNumeric("%{?_duplicate_files_terminate_build}") > 0;
     uint32_t defaultalgo = PGPHASHALGO_MD5, digestalgo;
     rpm_loff_t totalFileSize = 0;
     Header h = pkg->header; /* just a shortcut */
@@ -1073,9 +1074,14 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	    /* file flags */
 	    flp[1].flags |= flp->flags;	
 
-	    if (!(flp[1].flags & RPMFILE_EXCLUDE))
-		rpmlog(RPMLOG_WARNING, _("File listed twice: %s\n"),
-			flp->cpioPath);
+	    if (!(flp[1].flags & RPMFILE_EXCLUDE)) {
+		int lvl = RPMLOG_WARNING;
+		if (fail_on_dupes) {
+		    lvl = RPMLOG_ERR;
+		    fl->processingFailed = 1;
+		}
+		rpmlog(lvl, _("File listed twice: %s\n"), flp->cpioPath);
+	    }
    
 	    /* file mode */
 	    if (S_ISDIR(flp->fl_mode)) {
