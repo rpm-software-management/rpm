@@ -18,7 +18,7 @@
 
 #define BUFSIZE (128*1024)
 
-static void fill_archive_entry(struct archive * a, struct archive_entry * entry, rpmfi fi)
+static void fill_archive_entry(struct archive_entry * entry, rpmfi fi)
 {
     archive_entry_clear(entry);
     const char * dn = rpmfiDN(fi);
@@ -150,7 +150,7 @@ static int process_package(rpmts ts, char * filename)
 	rpm_mode_t mode = rpmfiFMode(fi);
 	int nlink = rpmfiFNlink(fi);
 
-	fill_archive_entry(a, entry, fi);
+	fill_archive_entry(entry, fi);
 
 	if (nlink > 1) {
 	    if (rpmfiArchiveHasContent(fi)) {
