@@ -1154,7 +1154,7 @@ rpmRC parseGeneratedSpecs(rpmSpec spec)
     int argc = 0;
     int i;
 
-    char * specPattern = rpmGenPath("%{u2p:%{_builddir}}", spec->buildSubdir, "__rpm/*.spec");
+    char * specPattern = rpmGenPath("%{u2p:%{_builddir}}", spec->buildSubdir, "__rpmbuild_*.specpart");
     if (rpmGlob(specPattern, &argc, &argv) == 0) {
 	for (i = 0; i < argc; i++) {
 	    rpmlog(RPMLOG_NOTICE, "Reading %s\n", argv[i]);
