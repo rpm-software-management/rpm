@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-08-25 20:29+0000\n"
+"PO-Revision-Date: 2020-11-14 17:35+0000\n"
 "Last-Translator: José Lemos Neto <lemosjosex@protonmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://translate.fedoraproject.org/"
 "projects/rpm/master/pt_BR/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.2.1\n"
+"X-Generator: Weblate 4.3.2\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -485,7 +485,7 @@ msgid "<key>"
 msgstr "<chave>"
 
 msgid "prompt for file signing key password"
-msgstr ""
+msgstr "prompt para a senha do arquivo assinalador de chave"
 
 msgid "Signature options:"
 msgstr "Opções de assinatura:"
@@ -648,7 +648,7 @@ msgstr "Ligação simbólica aponta para BuildRoot: %s -> %s\n"
 
 #, c-format
 msgid "Illegal character (0x%x) in filename: %s\n"
-msgstr ""
+msgstr "Caractere ilegal (0x%x) no nome de arquivo: %s\n"
 
 #, c-format
 msgid "Path is outside buildroot: %s\n"
@@ -1012,13 +1012,13 @@ msgstr "%s em: %s\n"
 
 #, c-format
 msgid "Illegal char '%c' (0x%x)"
-msgstr ""
+msgstr "Caractere Ilegal '%c' (0x%x)"
 
 msgid "Possible unexpanded macro"
 msgstr "Possível macro não expandido"
 
 msgid "Illegal sequence \"..\""
-msgstr ""
+msgstr "Sequência ilegal \"..\""
 
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
@@ -1127,7 +1127,7 @@ msgid "Versioned file name not permitted"
 msgstr "nome de arquivo versionado não permitido"
 
 msgid "No rich dependencies allowed for this type"
-msgstr ""
+msgstr "Nenhuma dependência rica é permitida para esse tipo"
 
 msgid "invalid dependency"
 msgstr "dependência inválida"
