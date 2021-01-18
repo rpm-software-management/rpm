@@ -1086,12 +1086,11 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
 	    flags |= O_RDWR;
 	    continue;
 	case 'T':
-	    c = *s++;
-	    if (c >= (int)'0' && c <= (int)'9') {
-		threads = strtol(s-1, (char **)&s, 10);
+	    if (*s >= '0' && *s <= '9') {
+		threads = strtol(s, (char **)&s, 10);
 		/* T0 means automatic detection */
 		if (threads == 0)
-		  threads = -1;
+		    threads = -1;
 	    }
 	    continue;
 	default:
