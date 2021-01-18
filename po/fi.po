@@ -3,24 +3,26 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Ricky Tigg <ricky.tigg@gmail.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-03-23 08:38-0400\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: Finnish (http://www.transifex.com/rpm-team/rpm/language/fi/)\n"
+"PO-Revision-Date: 2020-12-02 13:35+0000\n"
+"Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
+"Language-Team: Finnish <https://translate.fedoraproject.org/projects/rpm/"
+"master/fi/>\n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.6.2\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.3.2\n"
 
 #, c-format
 msgid "%s: %s\n"
-msgstr ""
+msgstr "%s: %s\n"
 
 #, c-format
 msgid "RPM version %s\n"
@@ -28,7 +30,7 @@ msgstr "RPM versio %s\n"
 
 #, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
-msgstr ""
+msgstr "Tekijänoikeudet (C) 1998-2002 - Red Hat, Inc.\n"
 
 #, c-format
 msgid ""
@@ -57,7 +59,7 @@ msgstr "kuorman uudelleenavaus ei onnistu: %s\n"
 
 #, c-format
 msgid "files over 4GB not supported by cpio, use rpm2archive instead\n"
-msgstr ""
+msgstr "cpio ei tue yli 4 Gt:n tiedostoja, käytä sen sijaan rpm2archive:ta\n"
 
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
@@ -93,17 +95,20 @@ msgstr "käännä vain lähdepaketti spec-tiedostosta"
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
 msgstr ""
+"rakenna lähdepaketti vain <specfile>:sta - laske dynaaminen koontivaatimus"
 
 #, c-format
 msgid ""
 "build through %prep (unpack sources and apply patches) from <source package>"
 msgstr ""
+"rakenna %prep:n kautta (pura lähteet ja asenna korjaustiedostot) "
+"<lähdepaketti>:sta"
 
 msgid "<source package>"
 msgstr "<lähdepaketti>"
 
 msgid "build through %build (%prep, then compile) from <source package>"
-msgstr ""
+msgstr "rakenna %build:n kautta (%prep, sitten koota) <lähdepaketti>:sta"
 
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
@@ -114,10 +119,10 @@ msgid "verify %files section from <source package>"
 msgstr ""
 
 msgid "build source and binary packages from <source package>"
-msgstr ""
+msgstr "rakenna lähde - ja binaaripaketit <lähdepaketti>:sta"
 
 msgid "build binary package only from <source package>"
-msgstr ""
+msgstr "rakenna binaaripaketit vain <lähdepaketti>:sta"
 
 msgid "build source package only from <source package>"
 msgstr ""
@@ -165,7 +170,7 @@ msgid "override build root"
 msgstr "ohita käännösjuuri"
 
 msgid "run build in current directory"
-msgstr ""
+msgstr "Suorita käännöstä nykyisessä hakemistossa"
 
 msgid "remove build tree when done"
 msgstr "poista käännöspuu, kun valmis"
@@ -187,15 +192,15 @@ msgstr ""
 
 #, c-format
 msgid "do not execute %clean stage of the build"
-msgstr ""
+msgstr "älä suorita %clean:n rakennusvaihetta"
 
 #, c-format
 msgid "do not execute %prep stage of the build"
-msgstr ""
+msgstr "älä suorita %prep:n rakennusvaihetta"
 
 #, c-format
 msgid "do not execute %check stage of the build"
-msgstr ""
+msgstr "älä suorita %check:n rakennusvaihetta"
 
 msgid "do not accept i18N msgstr's from specfile"
 msgstr ""
@@ -266,9 +271,8 @@ msgstr "rakenna tietokanta uudestaan asennettujen pakettien tiedoista"
 msgid "verify database files"
 msgstr "tarkista tietokanta"
 
-#, fuzzy
 msgid "salvage database"
-msgstr "alusta tietokanta"
+msgstr "pelastustietokanta"
 
 msgid "export database to stdout header list"
 msgstr ""
@@ -289,7 +293,7 @@ msgid "import an armored public key"
 msgstr ""
 
 msgid "don't import, but tell if it would work or not"
-msgstr ""
+msgstr "älä tuot, mutta kerro, toimiiko se vai ei"
 
 msgid "list keys from RPM keyring"
 msgstr ""
@@ -301,16 +305,16 @@ msgid "no arguments given"
 msgstr "ei annettu parametrejä"
 
 msgid "Query/Verify package selection options:"
-msgstr "Kysely/tarkistus pakettivalitsimet"
+msgstr "Kysele/Tarkista paketin valintavaihtoehdot:"
 
 msgid "Query/Verify file selection options:"
-msgstr ""
+msgstr "Kysele/Tarkista tiedostovalinnat:"
 
 msgid "Query options (with -q or --query):"
-msgstr "Kyselyvalitsimet (-q tai --query yhteydessä)"
+msgstr "Kyselyvalitsimet ('--query|-q':n kanssa):"
 
 msgid "Verify options (with -V or --verify):"
-msgstr "Tarkistusvalitsimet (-V tai --verify yhteydessä)"
+msgstr "Tarkistusvalitsimet ('--verify|-V':n kanssa):"
 
 msgid "Install/Upgrade/Erase options:"
 msgstr "Asennus-, päivitys- ja poistovalitsimet:"
@@ -350,10 +354,10 @@ msgstr "--prefix parametrien pitää alkaa /-merkillä"
 
 msgid ""
 "--hash (-h) may only be specified during package installation and erasure"
-msgstr ""
+msgstr "'--hash|-h' voidaan määrittää vain paketin asennuksen ja poiston aikana"
 
 msgid "--percent may only be specified during package installation and erasure"
-msgstr ""
+msgstr "'--percent' voidaan määrittää vain paketin asennuksen ja poiston aikana"
 
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs: voidaan käyttää vain paketteja asennettaessa"
@@ -406,7 +410,7 @@ msgid ""
 msgstr ""
 
 msgid "--test may only be specified during package installation and erasure"
-msgstr ""
+msgstr "'--test' voidaan määrittää vain paketin asennuksen ja poiston aikana"
 
 msgid "no packages given for erase"
 msgstr "poistolle ei määritelty paketteja"
@@ -429,9 +433,8 @@ msgstr "allekirjoita paketti (hylkää nykyinen allekirjoitus)"
 msgid "delete package signatures"
 msgstr "poista paketin allekirjoitus"
 
-#, fuzzy
 msgid "create rpm v3 header+payload signatures"
-msgstr "älä tarkista otsikon ja kuorman allekirjoitusta"
+msgstr "luo rpm v3 -otsikko+hyötykuorman allekirjoitukset"
 
 msgid "sign package(s) files"
 msgstr ""
@@ -483,7 +486,7 @@ msgid "Spec options:"
 msgstr ""
 
 msgid "no arguments given for parse"
-msgstr ""
+msgstr "jäsentämiseen ei annettu argumentteja"
 
 msgid "unable to parse SOURCE_DATE_EPOCH\n"
 msgstr ""
@@ -521,7 +524,8 @@ msgid ""
 "RPM build errors:\n"
 msgstr ""
 "\n"
-"RPM käännösvirheitä:\n"
+"\n"
+"RPM-käännösvirheitä:\n"
 
 #, c-format
 msgid "Missing '(' in %s %s\n"
@@ -537,7 +541,7 @@ msgstr "Virheellinen %s merkki: %s\n"
 
 #, c-format
 msgid "Missing %s in %s(%s)\n"
-msgstr ""
+msgstr "Puuttuva %s %s(%s):ssa\n"
 
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
@@ -618,9 +622,9 @@ msgstr "Tiedostoa ei löytynyt: %s\n"
 msgid "Not a directory: %s\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't read content of file: %s\n"
-msgstr "%s: pakettilistan luku epäonnistui: %s\n"
+msgstr "Tiedoston sisältöä ei voi lukea: %s\n"
 
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
@@ -694,13 +698,13 @@ msgstr ""
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open %s file %s: %m\n"
-msgstr "%%files tiedostoa %s ei voitu avata: %m\n"
+msgstr "Ei voinut avata %s tiedostoa %s: %m\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Empty %s file %s\n"
-msgstr "%s:n avaus ei onnistunut: %s\n"
+msgstr "Tyhjennä %s tiedosto %s\n"
 
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
@@ -741,9 +745,9 @@ msgstr ""
 "Löytyi asennettuja (mutta paketoimattomia) tiedostoja:\n"
 "%s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s already exists\n"
-msgstr "paketti %s on jo asennettuna"
+msgstr "paketti %s on jo olemassa\n"
 
 #, c-format
 msgid "%s was mapped to multiple filenames"
@@ -829,7 +833,7 @@ msgstr "rivi %d: toinen %s\n"
 
 #, c-format
 msgid "bogus date in %%changelog: %s\n"
-msgstr ""
+msgstr "virheellinen päivämäärä %%changelog:ssa: %s\n"
 
 #, c-format
 msgid "%%changelog entries must start with *\n"
@@ -881,7 +885,7 @@ msgstr ""
 
 #, c-format
 msgid "line %d: Error parsing %%policies: %s\n"
-msgstr ""
+msgstr "rivi %d: virhe jäsennettäessä %%käytännöt: %s\n"
 
 #, c-format
 msgid "Error parsing tag field: %s\n"
@@ -905,7 +909,7 @@ msgstr ""
 
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
-msgstr ""
+msgstr "rivi %d: virheellinen %s numero: %s\n"
 
 #, c-format
 msgid "%s %d defined multiple times\n"
@@ -1244,7 +1248,7 @@ msgstr ""
 
 #, c-format
 msgid "Error parsing %s: %s\n"
-msgstr ""
+msgstr "Virhe jäsennettäessä %s: %s\n"
 
 #, c-format
 msgid "Expecting %%semodule tag: %s\n"
@@ -1422,9 +1426,9 @@ msgstr ""
 msgid "rpmxdb: Version mismatch. Expected version: %u. Found version: %u\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open sqlite database %s: %s\n"
-msgstr "En voi avata spec-tiedostoa %s: %s\n"
+msgstr "sqlite-tietokantaa %s ei voi avata: %s\n"
 
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
@@ -1508,10 +1512,10 @@ msgid "%s %s: remove failed: %s\n"
 msgstr ""
 
 msgid "directory"
-msgstr ""
+msgstr "hakemisto"
 
 msgid "file"
-msgstr ""
+msgstr "tiedosto"
 
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d len %d"
@@ -1592,7 +1596,7 @@ msgstr "tyhjä nimiön nimi"
 
 #, c-format
 msgid "unknown tag: \"%s\""
-msgstr ""
+msgstr "tuntematon tagi: \"%s\""
 
 msgid "] expected at end of array"
 msgstr "']' puuttuu taulukkomäärittelyn lopusta"
@@ -1616,10 +1620,10 @@ msgid "} expected in expression"
 msgstr "odotin '}'-merkkiä lausekkeessa"
 
 msgid ": expected following ? subexpression"
-msgstr "odotin ':' '?'-merkin jälkeen ali-lausekkeessa "
+msgstr ": odotetaan seuraavan ? alilauseke"
 
 msgid "{ expected after : in expression"
-msgstr "odotin '{' ':'-merkin jälkeen lausekkeessa "
+msgstr "'{ ' odotetaan ':':n jälkeen lausekkeessa"
 
 msgid "| expected at end of expression"
 msgstr "odotin '}'-merkkiä ilmauksen lopussa"
@@ -1761,7 +1765,7 @@ msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
 msgstr ""
-"poista kaikki paketit, joiden nimeä vastaa  <paketti> (tavallisesti, jos  "
+"poista kaikki paketit, joiden nimeä vastaa <paketti> (tavallisesti, jos "
 "<paketti> määrittää useita paketteja, tulee virhe)"
 
 msgid "relocate files in non-relocatable package"
@@ -1776,9 +1780,8 @@ msgstr "poista paketti"
 msgid "<package>+"
 msgstr ""
 
-#, fuzzy
 msgid "do not install artifacts"
-msgstr "älä asenna dokumentointia"
+msgstr "älä asenna esineitä"
 
 msgid "do not install configuration files"
 msgstr "älä asenna konfigurointiedostoja"
@@ -1787,7 +1790,7 @@ msgid "do not install documentation"
 msgstr "älä asenna dokumentointia"
 
 msgid "skip files with leading component <path> "
-msgstr "ohita <polku>-alkuiset tiedostot"
+msgstr "ohita <polku>-alkuiset tiedostot "
 
 msgid "<path>"
 msgstr "<polku>"
@@ -1864,11 +1867,11 @@ msgstr "älä suorita %%postun scriptiä"
 
 #, c-format
 msgid "do not execute %%pretrans scriptlet (if any)"
-msgstr ""
+msgstr "älä suorita %%pretrans-komentosarjaa (jos sellaista on)"
 
 #, c-format
 msgid "do not execute %%posttrans scriptlet (if any)"
-msgstr ""
+msgstr "älä suorita %%posttrans-komentosarjaa (jos sellaista on)"
 
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "älä suorita tämän paketin laukaisemia skriptejä"
@@ -1924,7 +1927,7 @@ msgid "upgrade package(s)"
 msgstr "päivitä paketteja"
 
 msgid "reinstall package(s)"
-msgstr ""
+msgstr "asenna paketteja uudelleen"
 
 msgid "query/verify all packages"
 msgstr "kysele/tarkista kaikki paketit"
@@ -1966,22 +1969,22 @@ msgid "query/verify the package(s) which require a dependency"
 msgstr "kysele/tarkista paketteja, jotka vaativat ominaisuutta"
 
 msgid "query/verify the package(s) which obsolete a dependency"
-msgstr ""
+msgstr "kysele/tarkista paketteja, jotka vanhentavat jotakin riippuvuutta"
 
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "kysele/tarkista paketteja, jotka tarjoavat ominaisuuden"
 
 msgid "query/verify the package(s) which recommends a dependency"
-msgstr ""
+msgstr "kysele/tarkista paketteja, jotka suosittelevat jotakin riippuvuutta"
 
 msgid "query/verify the package(s) which suggests a dependency"
-msgstr ""
+msgstr "kysele/tarkista paketteja, jotka ehdottavat jotakin riippuvuutta"
 
 msgid "query/verify the package(s) which supplements a dependency"
-msgstr ""
+msgstr "kysele/tarkista paketteja, jotka täydentävät jotakin riippuvuutta"
 
 msgid "query/verify the package(s) which enhances a dependency"
-msgstr ""
+msgstr "kysele/tarkista paketteja, jotka parantavat jotakin riippuvuutta"
 
 msgid "do not glob arguments"
 msgstr ""
@@ -2080,26 +2083,26 @@ msgid "(contains no files)\n"
 msgstr "(ei sisällä tiedostoja)\n"
 
 msgid "normal        "
-msgstr "normaali      "
+msgstr "normaali        "
 
 msgid "replaced      "
 msgstr "korvattu      "
 
 msgid "not installed "
-msgstr "ei asennettu  "
+msgstr "ei asennettu "
 
 msgid "net shared    "
-msgstr "verkkojaettu  "
+msgstr "verkkojaettu    "
 
 msgid "wrong color   "
-msgstr "väärä väri    "
+msgstr "väärä väri   "
 
 msgid "(no state)    "
 msgstr "(ei tilaa)    "
 
 #, c-format
 msgid "(unknown %3d) "
-msgstr "(tuntematon %3d)"
+msgstr "(tuntematon %3d) "
 
 msgid "package has not file owner/group lists\n"
 msgstr ""
@@ -2121,7 +2124,7 @@ msgstr "epämuodostunut %s: %s\n"
 
 #, c-format
 msgid "no package matches %s: %s\n"
-msgstr ""
+msgstr "mikään paketti ei vastaa %s: %s\n"
 
 #, c-format
 msgid "no package conflicts %s\n"
@@ -2185,7 +2188,7 @@ msgstr ""
 
 #, c-format
 msgid "%s: key %d not an armored public key.\n"
-msgstr ""
+msgstr "%s: %d-avain ei ole panssaroitu julkinen avain.\n"
 
 #, c-format
 msgid "%s: import read failed(%d).\n"
@@ -2193,7 +2196,7 @@ msgstr ""
 
 #, c-format
 msgid "Fread failed: %s"
-msgstr ""
+msgstr "Fread epäonnistui: %s"
 
 msgid "DIGESTS"
 msgstr ""
@@ -2211,7 +2214,7 @@ msgid "NOT OK"
 msgstr "EI OK"
 
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #, c-format
 msgid "%s: open failed: %s\n"
@@ -2315,7 +2318,7 @@ msgid "NO "
 msgstr "EI "
 
 msgid "YES"
-msgstr "KYLLÄ "
+msgstr "KYLLÄ"
 
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
@@ -2568,7 +2571,7 @@ msgstr "odotetaan %s-lukkoa %s\n"
 
 #, c-format
 msgid "Failed to dlopen %s %s\n"
-msgstr ""
+msgstr "Epäonnistui dlopen %s %s\n"
 
 #, c-format
 msgid "Failed to resolve symbol %s: %s\n"
@@ -2597,9 +2600,9 @@ msgstr "paketti %s on tarkoitettu %s-käyttöjärjestelmälle"
 msgid "package %s is already installed"
 msgstr "paketti %s on jo asennettuna"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is not installed"
-msgstr "paketti %s ei ole asennettu\n"
+msgstr "paketti %s ei ole asennettu"
 
 #, c-format
 msgid "path %s in package %s is not relocatable"
@@ -2617,16 +2620,18 @@ msgstr ""
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "paketti %s (joka on uudempi kuin %s) on jo asennettuna"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "installing package %s needs %<PRIu64>%cB more space on the %s filesystem"
 msgstr ""
-"paketin %s asennus tarvitsee %<PRIu64>%c tavua tiedostojärjestelmällä %s"
+"paketin %s asentaminen tarvitsee %<PRIu64>%cB enemmän tilaa "
+"%s-tiedostojärjestelmässä"
 
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %<PRIu64> more inodes on the %s filesystem"
 msgstr ""
-"paketin %s asennus tarvitsee %<PRIu64> inodea tiedostojärjestelmällä %s"
+"paketin %s asentaminen tarvitsee %<PRIu64> lisää inodeja "
+"%s-tiedostojärjestelmässä"
 
 #, c-format
 msgid "%s is needed by %s%s"
@@ -2693,7 +2698,7 @@ msgstr "en voi avata %s:aa %s:%d:ssä: %m\n"
 
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
-msgstr ""
+msgstr "puuttuva arkkitehtuuri %s:a varten %s:%d:ssa\n"
 
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
@@ -2722,7 +2727,7 @@ msgstr ""
 
 #, c-format
 msgid "Unable to restore current directory: %m"
-msgstr ""
+msgstr "Nykyisen hakemiston palautus ei onnistu: %m"
 
 msgid "<lua> scriptlet support not built in\n"
 msgstr ""
@@ -2741,7 +2746,7 @@ msgstr ""
 
 #, c-format
 msgid "Fwrite failed: %s"
-msgstr ""
+msgstr "Fwrite epäonnistui: %s"
 
 #, c-format
 msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
@@ -2759,10 +2764,10 @@ msgid "Unknown format"
 msgstr "Tuntematon formaatti"
 
 msgid "install"
-msgstr ""
+msgstr "asenna"
 
 msgid "erase"
-msgstr ""
+msgstr "poista"
 
 msgid "rpmdb"
 msgstr ""
@@ -2827,7 +2832,7 @@ msgstr ""
 
 #, c-format
 msgid "%s%s"
-msgstr ""
+msgstr "%s%s"
 
 msgid "signature"
 msgstr ""
@@ -2836,7 +2841,7 @@ msgid "header"
 msgstr ""
 
 msgid "package"
-msgstr ""
+msgstr "paketti"
 
 msgid "Header "
 msgstr "Otsikko "
@@ -2854,13 +2859,13 @@ msgid "no digest"
 msgstr ""
 
 msgid "skipped"
-msgstr ""
+msgstr "ohitettu"
 
 msgid "failed"
 msgstr "epäonnistui"
 
 msgid "no state"
-msgstr ""
+msgstr "ei tilaa"
 
 msgid "unknown state"
 msgstr ""
@@ -2881,17 +2886,14 @@ msgstr ""
 msgid "Unable to reset I/O priority: %s"
 msgstr ""
 
-#, fuzzy
 msgid "syntax error while parsing =="
-msgstr "syntaksivirhe jäsentäessä ==:aa\n"
+msgstr "syntaksivirhe jäsentäessä =="
 
-#, fuzzy
 msgid "syntax error while parsing &&"
-msgstr "syntaksivirhe jäsentäessä &&:aa\n"
+msgstr "syntaksivirhe jäsentäessä &&"
 
-#, fuzzy
 msgid "syntax error while parsing ||"
-msgstr "syntaksivirhe jäsentäessä ||:aa\n"
+msgstr "syntaksivirhe jäsentäessä ||"
 
 msgid "macro expansion returned a bare word, please use \"...\""
 msgstr ""
@@ -2903,63 +2905,54 @@ msgstr ""
 msgid "expanded string: %s\n"
 msgstr ""
 
-#, fuzzy
 msgid "unterminated string in expression"
-msgstr "odotin '{' '?'-merkin jälkeen lausekkeessa"
+msgstr "päättymätön merkkijono lausekkeessa"
 
-#, fuzzy
 msgid "invalid version"
-msgstr "(virheellinen tyyppi)"
+msgstr "virheellinen versio"
 
 msgid "bare words are no longer supported, please use \"...\""
 msgstr ""
 
-#, fuzzy
 msgid "parse error in expression"
-msgstr "jäsennysvirhe lausekkeessa\n"
+msgstr "jäsennysvirhe lausekkeessa"
 
-#, fuzzy
 msgid "unmatched ("
-msgstr "pariton (\n"
+msgstr "ei täsmää ("
 
-#, fuzzy
 msgid "- only on numbers"
-msgstr "- vain numeroissa\n"
+msgstr "- vain numeroissa"
 
-#, fuzzy
 msgid "unexpected end of expression"
-msgstr "odotin '}'-merkkiä ilmauksen lopussa"
+msgstr "lausekkeen odottamaton loppu"
 
-#, fuzzy
 msgid "syntax error in expression"
-msgstr "syntaksivirhe lausekkeessa\n"
+msgstr "syntaksivirhe lausekkeessa"
 
-#, fuzzy
 msgid "types must match"
-msgstr "tyyppien täytyy olla yhtenevät\n"
+msgstr "tyyppien täytyy olla yhtenevät"
 
 msgid "division by zero"
-msgstr ""
+msgstr "jako nollalla"
 
-#, fuzzy
 msgid "* and / not supported for strings"
-msgstr "* / ei tuettu merkkijonoille\n"
+msgstr "* ja / ei tuettu merkkijonoille"
 
-#, fuzzy
 msgid "- not supported for strings"
-msgstr "- ei tuettu merkkijoinoille\n"
+msgstr "- ei tuettu merkkijoinoille"
 
 #, c-format
 msgid "%3d>%*s(empty)\n"
-msgstr ""
+msgstr "%3d>%*s(empty)\n"
 
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(tyhjä)\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open shell expansion pipe for command: %s: %m \n"
-msgstr "tar-putken avaus epäonnistui: %m\n"
+msgstr ""
+"Komentotulkin laajennusputken avaaminen epäonnistui komennolle: %s: %m \n"
 
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
@@ -3014,13 +3007,11 @@ msgstr "Päättämätön %c: %s\n"
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "%% seuraa makro jota ei voida jäsentää\n"
 
-#, fuzzy
 msgid "argument expected"
-msgstr "odottamaton ']'"
+msgstr "argumentti odotettavissa"
 
-#, fuzzy
 msgid "unexpected argument"
-msgstr "odottamaton ']'"
+msgstr "odottamaton argumentti"
 
 #, c-format
 msgid "======================== active %d empty %d\n"
@@ -3118,21 +3109,21 @@ msgstr ""
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not create pipe for signing: %m\n"
-msgstr "Ei voitu luoda putkea %s:lle: %m\n"
+msgstr "Putkea ei voitu luoda allekirjoittamista varten: %m\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not set GPG_TTY to stdin: %m\n"
-msgstr "%%files tiedostoa %s ei voitu avata: %m\n"
+msgstr "Ei voitu asettaa GPG_TTY:ta stdin:iin: %m\n"
 
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "%s:ää ei voitu suorittaa: %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open pipe for writing: %m\n"
-msgstr "Ei voitu luoda putkea %s:lle: %m\n"
+msgstr "Putkea ei voitu avata kirjoittamista varten: %m\n"
 
 msgid "Could not write to pipe\n"
 msgstr ""
