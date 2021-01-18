@@ -406,6 +406,9 @@ package or when debugging this package.\
 # Note: The default value should be 0 for legacy compatibility.
 %_unpackaged_files_terminate_build	1
 
+# Should duplicate files in %files terminate a build?
+%_duplicate_files_terminate_build	0
+
 #
 # Should missing %doc files in the build directory terminate a build?
 #
