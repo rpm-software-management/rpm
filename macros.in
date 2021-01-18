@@ -189,6 +189,17 @@ package or when debugging this package.\
 %endif\
 %{nil}
 
+%_langpack_template() \
+%package langpack-%{1}\
+Summary:       %{2} language data for %{name}\
+BuildArch:     noarch\
+Requires:      %{name} = %{version}-%{release}\
+Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
+%description langpack-%{1}\
+%{2} language data for %{name}.\
+%files langpack-%{1}\
+%{nil}
+
 %_defaultdocdir		%{_datadir}/doc
 %_defaultlicensedir	%{_datadir}/licenses
 
