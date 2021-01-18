@@ -202,6 +202,34 @@ pl /usr/share/man/pl/man1/find-lang-test.1.gz
 [ignore])
 AT_CLEANUP
 
+AT_SETUP([rpmbuild -ba find-lang --generate-subpackages])
+AT_KEYWORDS([build])
+RPMDB_INIT
+AT_CHECK([
+runroot rpmbuild -D "langpacks 1"\
+  -ba /data/SPECS/find-lang-test.spec
+],
+[0],
+[ignore],
+[ignore])
+
+AT_CHECK([[
+runroot rpm -qp --qf '%{NVRA}\n[%{FILELANGS} %{FILENAMES}\n]' /build/RPMS/noarch/find-lang-test*-1.0-1.noarch.rpm
+]],
+[0],
+[find-lang-test-1.0-1.noarch
+ /usr/share/find-lang-test/empty.txt
+ /usr/share/man/man1/find-lang-test.1.gz
+find-lang-test-langpack-de-1.0-1.noarch
+de /usr/share/man/de_DE/man1/find-lang-test.1.gz
+find-lang-test-langpack-fi-1.0-1.noarch
+fi /usr/share/man/fi/man1/find-lang-test.1.gz
+find-lang-test-langpack-pl-1.0-1.noarch
+pl /usr/share/man/pl/man1/find-lang-test.1.gz
+],
+[ignore])
+AT_CLEANUP
+
 # ------------------------------
 # Check if rpmbuild --rebuild *.src.rpm works
 AT_SETUP([rpmbuild --rebuild])

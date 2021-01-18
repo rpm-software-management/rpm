@@ -27,7 +27,7 @@ done
 mkdir -p  $RPM_BUILD_ROOT/%{_datadir}/%{name}
 touch $RPM_BUILD_ROOT/%{_datadir}/%{name}/empty.txt
 
-%find_lang  %{name} --with-man --without-mo
+%find_lang  %{name} --with-man --without-mo %{?langpacks:--generate-subpackages}
 
 %files -f %{name}.lang
 %defattr(-,root,root,-)

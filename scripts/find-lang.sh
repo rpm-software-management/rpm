@@ -47,6 +47,7 @@ Additional options:
   --with-man		find localized man pages
   --all-name		match all package/domain names
   --without-mo		do not find locale files
+  --generate-subpackages move language files in one sub package per language
 EOF
 exit 1
 }
@@ -72,6 +73,7 @@ QT=#
 MAN=#
 HTML=#
 MO=
+SUBPKGS=NO
 MO_NAME=${NAMES[0]}.lang
 ALL_NAME=#
 NO_ALL_NAME=
@@ -108,6 +110,10 @@ while test $# -gt 0 ; do
 	--all-name )
 		ALL_NAME=
 		NO_ALL_NAME=#
+		shift
+		;;
+	--generate-subpackages )
+		SUBPKGS=YES
 		shift
 		;;
 	* )
@@ -281,4 +287,38 @@ if ! grep -q / $MO_NAME; then
 	echo "No translations found for ${NAME} in ${TOP_DIR}"
 	exit 1
 fi
+
+
+if [[ "$SUBPKGS" == "NO" ]]; then
+    exit 0
+fi
+
+sort -o $MO_NAME.tmp $MO_NAME
+
+OLDLANG=
+echo "" > $MO_NAME
+
+while IFS= read -r line
+do
+    LOCALE=`echo $line|sed 's/%lang(//'|sed 's/).*//'`
+    LANG=`echo $LOCALE|sed 's/_.*//'`
+    LANGNAME=$LANG
+    #LANGNAME=`locale -av | grep -m 1 -A 12 "locale: $LOCALE" | grep " language |" | cut "-d|" -f2`
+    if [ -z "$LANGNAME" ]; then
+	LANGNAME="$LANG"
+    fi
+    if [[ "$LANG" != "$OLDLANG" && "$LANG" !=  "en" ]]; then
+	echo "%_langpack_template $LANG \"$LANGNAME\" " >> $RPM_SPECPARTS_DIR/find-lang-$MO_NAME.specpart
+    fi
+    OLDLANG=$LANG
+
+    if [[ "$LANG" !=  "en" ]]; then
+	echo "$line" >> $RPM_SPECPARTS_DIR/find-lang-$MO_NAME.specpart
+    else
+	echo "$line" >> $MO_NAME
+    fi
+done < $MO_NAME.tmp
+
+rm $MO_NAME.tmp
+
 exit 0
