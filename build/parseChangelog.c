@@ -189,6 +189,39 @@ exit:
     return rc;
 }
 
+/*
+ * Ensure each changelog entry has a different, reproducable timestamp.
+ * We could ensure different at parse-time, but as the changelog is
+ * parsed newest first, creating reproducable stamps requires processing
+ * in the opposite order.
+ */
+static void monotonize(Header h)
+{
+    struct rpmtd_s td;
+
+    if (headerGet(h, RPMTAG_CHANGELOGTIME, &td, HEADERGET_ALLOC)) {
+	uint32_t *times = td.data;
+	uint32_t prevtime = 0;
+	int serial = 0;
+
+	for (int i = td.count; i >= 0; i--) {
+	    uint32_t t = times[i];
+	    if (prevtime) {
+		if (t == prevtime) {
+		    serial++;
+		    t += serial;
+		} else {
+		    serial = 0;
+		}
+	    }
+	    prevtime = times[i];
+	    times[i] = t;
+	}
+	headerMod(h, &td);
+	rpmtdFreeData(&td);
+    }
+}
+
 /**
  * Add %changelog section to header.
  * @param h		header
@@ -304,6 +337,8 @@ static rpmRC addChangelog(Header h, ARGV_const_t sb)
 	
 	s = next;
     }
+    monotonize(h);
+
     rc = RPMRC_OK;
 
 exit:
