@@ -1248,7 +1248,7 @@ package or when debugging this package.\
 %{__bzr} commit %{-q} -m %{-m*}
 
 # Single patch application
-%apply_patch(qp:m:)\
+%__apply_patch(qp:m:)\
 %{lua:\
 local file = rpm.expand("%{1}")\
 local num = rpm.expand("%{2}")\
@@ -1274,7 +1274,7 @@ for i, p in ipairs(patches) do\
     local inum = patch_nums[i]\
     if ((not low_limit or inum>=low_limit) and (not high_limit or inum<=high_limit)) \
     then\
-        print(rpm.expand("%apply_patch -m %{basename:"..p.."}  "..options..p.." "..i.."\\n")) \
+        print(rpm.expand("%__apply_patch -m %{basename:"..p.."}  "..options..p.." "..i.."\\n")) \
     end\
 end}
 
