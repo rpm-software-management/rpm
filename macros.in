@@ -389,7 +389,7 @@ package or when debugging this package.\
 
 #	Default patch flags
 #%_default_patch_flags	-s
-%_default_patch_flags --no-backup-if-mismatch
+%_default_patch_flags --no-backup-if-mismatch -f
 
 #==============================================================================
 # ---- Build configuration macros.
