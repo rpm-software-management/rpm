@@ -762,16 +762,29 @@ doUndefine(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
     return 0;
 }
 
+static size_t doArgvDefine(MacroBuf mb, ARGV_t argv, int level, int expand)
+{
+    char *args = NULL;
+    size_t ret;
+    const char *se = argv[1];
+
+    /* handle the "programmatic" case where macro name is arg1 and body arg2 */
+    if (argv[2])
+	se = args = rstrscat(NULL, argv[1], " ", argv[2], NULL);
+
+    ret = doDefine(mb, se, level, expand);
+    free(args);
+    return ret;
+}
+
 static size_t doDef(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
-    const char *se = argv[1];
-    return doDefine(mb, se, mb->level, 0);
+    return doArgvDefine(mb, argv, mb->level, 0);
 }
 
 static size_t doGlobal(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
-    const char *se = argv[1];
-    return doDefine(mb, se, RMIL_GLOBAL, 1);
+    return doArgvDefine(mb, argv, RMIL_GLOBAL, 1);
 }
 
 static size_t doDump(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
