@@ -8,6 +8,14 @@
     - \link rpmtd	querying \endlink,
     - or \link rpmts	(un)installing \endlink RPM packages.
 
+    Thread-safety: in general, data and object-like elements in the rpm
+    API are only safe to be accessed and disposed of from the originating
+    thread. Some central resources have rudimentary protection to support
+    concurrent access though:
+    - rpm configuration and macros
+    - rpmlog subsystem
+    - rpm string pool objects
+    - rpm keyring and public keys
  */
 /** \defgroup buildsign Building & signing packages:
  *
