@@ -355,10 +355,11 @@ printMacro(MacroBuf mb, const char * s, const char * se)
  * @param te		end of string
  */
 static void
-printExpansion(MacroBuf mb, const char * t, const char * te)
+printExpansion(MacroBuf mb, rpmMacroEntry me, const char * t, const char * te)
 {
+    const char *mname = me ? me->name : "";
     if (!(te > t)) {
-	fprintf(stderr, _("%3d<%*s(empty)\n"), mb->depth, (2 * mb->depth + 1), "");
+	fprintf(stderr, "%3d<%*s (%%%s)\n", mb->depth, (2 * mb->depth + 1), "", mname);
 	return;
     }
 
@@ -374,7 +375,7 @@ printExpansion(MacroBuf mb, const char * t, const char * te)
 
     }
 
-    fprintf(stderr, "%3d<%*s", mb->depth, (2 * mb->depth + 1), "");
+    fprintf(stderr, "%3d<%*s (%%%s)\n", mb->depth, (2 * mb->depth + 1), "", mname);
     if (te > t)
 	fprintf(stderr, "%.*s", (int)(te - t), t);
     fprintf(stderr, "\n");
@@ -466,14 +467,14 @@ static int mbInit(MacroBuf mb, MacroExpansionData *med, size_t slen)
     return 0;
 }
 
-static void mbFini(MacroBuf mb, MacroExpansionData *med)
+static void mbFini(MacroBuf mb, rpmMacroEntry me, MacroExpansionData *med)
 {
     mb->buf[mb->tpos] = '\0';
     mb->depth--;
     if (mb->error && rpmIsVerbose())
 	mb->expand_trace = 1;
     if (mb->expand_trace)
-	printExpansion(mb, mb->buf + med->tpos, mb->buf + mb->tpos);
+	printExpansion(mb, me, mb->buf + med->tpos, mb->buf + mb->tpos);
     mb->macro_trace = med->macro_trace;
     mb->expand_trace = med->expand_trace;
 }
@@ -1369,7 +1370,7 @@ static int
 expandMacro(MacroBuf mb, const char *src, size_t slen)
 {
     rpmMacroEntry *mep;
-    rpmMacroEntry me;
+    rpmMacroEntry me = NULL;
     const char *s = src, *se;
     const char *f, *fe;
     const char *g, *ge;
@@ -1538,7 +1539,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	s = se + (g ? 0 : fwd);
     }
 
-    mbFini(mb, &med);
+    mbFini(mb, me, &med);
 exit:
     _free(source);
     return mb->error;
@@ -1563,7 +1564,7 @@ expandThisMacro(MacroBuf mb, rpmMacroEntry me, ARGV_const_t args, int flags)
 
     if (mb->macro_trace) {
 	ARGV_const_t av = args;
-	fprintf(stderr, "%3d>%*s%%%s", mb->depth, (2 * mb->depth + 1), "", me->name);
+	fprintf(stderr, "%3d>%*s (%%%s)", mb->depth, (2 * mb->depth + 1), "", me->name);
 	for (av = args; av && *av; av++)
 	    fprintf(stderr, " %s", *av);
 	fprintf(stderr, "\n");
@@ -1589,7 +1590,7 @@ expandThisMacro(MacroBuf mb, rpmMacroEntry me, ARGV_const_t args, int flags)
     if (optargs)
 	argvFree(optargs);
 
-    mbFini(mb, &med);
+    mbFini(mb, me, &med);
 exit:
     return mb->error;
 }

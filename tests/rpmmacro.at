@@ -922,3 +922,25 @@ read
 [])
 AT_CLEANUP
 
+AT_SETUP([macro traceback])
+AT_KEYWORDS([macros])
+AT_CHECK([
+for o in "-v" ""; do
+    runroot rpm $o \
+	--define "err %{error:bad}" \
+	--define "bar %err" \
+	--define "foo %bar zz" \
+	--eval "xxx%{foo}yyy"
+done
+],
+[1],
+[],
+[error: bad
+  3<        (%error)
+  2<      (%err)
+  1<    (%bar)
+  0<  (%foo)
+xxx
+error: bad
+])
+AT_CLEANUP
