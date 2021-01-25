@@ -358,7 +358,7 @@ static void
 printExpansion(MacroBuf mb, const char * t, const char * te)
 {
     if (!(te > t)) {
-	rpmlog(RPMLOG_DEBUG, _("%3d<%*s(empty)\n"), mb->depth, (2 * mb->depth + 1), "");
+	fprintf(stderr, _("%3d<%*s(empty)\n"), mb->depth, (2 * mb->depth + 1), "");
 	return;
     }
 
@@ -374,10 +374,10 @@ printExpansion(MacroBuf mb, const char * t, const char * te)
 
     }
 
-    rpmlog(RPMLOG_DEBUG,"%3d<%*s", mb->depth, (2 * mb->depth + 1), "");
+    fprintf(stderr, "%3d<%*s", mb->depth, (2 * mb->depth + 1), "");
     if (te > t)
-	rpmlog(RPMLOG_DEBUG, "%.*s", (int)(te - t), t);
-    rpmlog(RPMLOG_DEBUG, "\n");
+	fprintf(stderr, "%.*s", (int)(te - t), t);
+    fprintf(stderr, "\n");
 }
 
 #define	SKIPBLANK(_s, _c)	\
