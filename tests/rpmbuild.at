@@ -1791,3 +1791,76 @@ runroot rpmbuild -ba --quiet      \
 [],
 [])
 AT_CLEANUP
+
+AT_SETUP([bcond macro])
+AT_KEYWORDS([bcond build])
+RPMDB_INIT
+
+# basic bcond behavior with --eval
+AT_CHECK([
+runroot rpm \
+	--eval "%bcond normally_on 1" \
+	--eval "%bcond normally_off 0" \
+	--eval "%bcond both_features %[[%{with normally_on} && %{with normally_off}]]" \
+	--eval "%{with normally_on}" \
+	--eval "%{with normally_off}" \
+	--eval "%{with both_features}"
+],
+[0],
+[
+
+
+1
+0
+0
+],
+[])
+
+# bcond behavior, without CLI options
+AT_CHECK([
+runroot rpmbuild -bb --quiet /data/SPECS/bcondtest.spec
+runroot rpm -q --provides -p /build/RPMS/noarch/bcondtest-1.0-1.noarch.rpm |
+    grep has_bcond | sort
+],
+[0],
+[has_bcond(normally_on)
+],
+[])
+
+# bcond behavior, --with
+AT_CHECK([
+runroot rpmbuild -bb --quiet --with normally_on --with normally_off \
+    /data/SPECS/bcondtest.spec
+runroot rpm -q --provides -p /build/RPMS/noarch/bcondtest-1.0-1.noarch.rpm |
+    grep has_bcond | sort
+],
+[0],
+[has_bcond(both_features)
+has_bcond(normally_off)
+has_bcond(normally_on)
+],
+[])
+
+# bcond behavior, --without
+AT_CHECK([
+runroot rpmbuild -bb --quiet --without normally_on --without normally_off \
+    /data/SPECS/bcondtest.spec
+runroot rpm -q --provides -p /build/RPMS/noarch/bcondtest-1.0-1.noarch.rpm |
+    grep has_bcond | sort
+],
+[0],
+[],
+[])
+
+# bcond behavior, CLI overriding a complex defailt
+AT_CHECK([
+runroot rpmbuild -bb --quiet --with both_features /data/SPECS/bcondtest.spec
+runroot rpm -q --provides -p /build/RPMS/noarch/bcondtest-1.0-1.noarch.rpm |
+    grep has_bcond | sort
+],
+[0],
+[has_bcond(both_features)
+has_bcond(normally_on)
+],
+[])
+AT_CLEANUP
