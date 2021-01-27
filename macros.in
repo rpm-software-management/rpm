@@ -78,47 +78,25 @@
 %defined()	%{expand:%%{?%{1}:1}%%{!?%{1}:0}}
 %undefined()	%{expand:%%{?%{1}:0}%%{!?%{1}:1}}
 
-# Shorthand for %{defined with_...}
+# Handle conditional builds.
+# (see 'conditionalbuilds' in the manual)
+#
+# Internally, the `--with foo` option defines the macro `_with_foo` and the
+# `--without foo` option defines the macro `_without_foo`.
+# Based on those and a default (used when neither is given), bcond macros
+# define the macro `with_foo`, which should later be checked:
+
+%bcond()	%[ (%2)\
+    ? "%{expand:%%{!?_without_%{1}:%%global with_%{1} 1}}"\
+    : "%{expand:%%{?_with_%{1}:%%global with_%{1} 1}}"\
+]
+%bcond_with()		%bcond %{1} 0
+%bcond_without()	%bcond %{1} 1
+
+# Shorthands for %{defined with_...}:
 %with()		%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 %without()	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
 
-# Handle conditional builds. %bcond_with is for case when feature is
-# default off and needs to be activated with --with ... command line
-# switch. %bcond_without is for the dual case.
-#
-# %bcond_with foo defines symbol with_foo if --with foo was specified on
-# command line.
-# %bcond_without foo defines symbol with_foo if --without foo was *not*
-# specified on command line.
-#
-# For example (spec file):
-#
-# (at the beginning)
-# %bcond_with extra_fonts
-# %bcond_without static
-# (and later)
-# %if %{with extra_fonts}
-# ...
-# %else
-# ...
-# %endif
-# %if ! %{with static}
-# ...
-# %endif
-# %if %{with static}
-# ...
-# %endif
-# %{?with_static: ... }
-# %{!?with_static: ... }
-# %{?with_extra_fonts: ... }
-# %{!?with_extra_fonts: ... }
-
-#
-# The bottom line: never use without_foo, _with_foo nor _without_foo, only
-# with_foo. This way changing default set of bconds for given spec is just
-# a matter of changing single line in it and syntax is more readable.
-%bcond_with()		%{expand:%%{?_with_%{1}:%%global with_%{1} 1}}
-%bcond_without()	%{expand:%%{!?_without_%{1}:%%global with_%{1} 1}}
 #
 #==============================================================================
 # ---- Required rpmrc macros.

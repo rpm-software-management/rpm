@@ -13,9 +13,38 @@ Here is an example of how to enable gnutls and disable openssl support:
 $ rpmbuild -ba newpackage.spec --with gnutls --without openssl
 ```
 
-## Enable `--with`/`--without` parameters
+## Enable build conditionals
 
-To use this feature in a spec file, add this to the beginning of the file:
+To enable a build conditional in a spec file, use the `%bcond` macro at the
+beginning of the file, specifying the name of the conditional and its default
+value:
+
+```
+# To build with "gnutls" by default:
+%bcond gnutls 1
+# To build without "gnutls" by default:
+%bcond gnutls 0
+```
+
+The default can be any numeric expression.
+To pass a complex expression as a single argument, you can enclose it in
+`%[...]` .
+
+```
+# Add `--with openssl` and `--without openssl`, with the default being the
+# inverse of the gnutls setting:
+%bcond openssl %{without gnutls}
+
+# Add `extra_tests` bcond, enabled by default if both of the other conditinals
+# are enabled:
+%bcond extra_tests %[%{with gnutls} && %{with sqlite}]
+```
+
+
+### Enabling using `%bcond_with` and `%bcond_without`
+
+Build conditionals can also be enabled using the macros `%bcond_with` and
+`%bcond_without`:
 
 ```
 # add --with gnutls option, i.e. disable gnutls by default
@@ -30,8 +59,9 @@ remainder of the spec file can be left unchanged.
 
 ## Check whether an option is enabled or disabled
 
-To define `BuildRequires` depending on the command-line switch, you can use the
-`%{with foo}` macro:
+To make parts of the spec file conditional depending on the command-line
+switch, you can use the `%{with foo}` macro or its counterpart,
+`%{without foo}`:
 
 ```
 %if %{with gnutls}
