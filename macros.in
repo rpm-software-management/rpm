@@ -79,66 +79,16 @@
 %undefined()	%{expand:%%{?%{1}:0}%%{!?%{1}:1}}
 
 # Handle conditional builds.
+# (see 'conditionalbuilds' in the manual)
 #
 # Shorthands for %{defined with_...}:
 %with()		%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
 %without()	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
 
-# When checking conditions: never use without_foo, _with_foo nor _without_foo,
-# only with_foo. This way changing default set of bconds for given spec is just
-# a matter of changing single line in it and syntax is more readable.
-
-# To define a build condition, use:
-#   %bcond <name> <default>
-# If <default> is true, %bcond defines the symbol `with_<name>` UNLESS the
-# `--without <name>` command line switch is given.
-# If <default> is false, %bcond defines the symbol `with_<name>` ONLY if the
-# `--with <name>` command line switch is given.
-#
-# For example, in the following spec file:
-# - "extra_fonts" is on, but can be deactivated by `--without extra_fonts`
-# - "static" is off, but can be activated by `--with static`
-# - "static_fonts" is on by default if both "extra_fonts" and "static" are,
-#   but can be overridden by `--with static_fonts`/`--without static_fonts`.
-#
-# (at the beginning)
-# %bcond extra_fonts 1
-# %bcond static 0
-# %bcond static_fonts %[%{with extra_fonts} && %{with static}]
-# (and later)
-# %if %{with extra_fonts}
-# ...
-# %else
-# ...
-# %endif
-# %if ! %{with static}
-# ...
-# %endif
-# %if %{with static}
-# ...
-# %endif
-# %if %{with static_fonts}
-# ...
-# %endif
-# %{?with_static: ... }
-# %{!?with_static: ... }
-# %{?with_extra_fonts: ... }
-# %{!?with_extra_fonts: ... }
-#
 %bcond()	%{expand:%[ (%2)
     ? "%{expand:%%{!?_without_%{1}:%%global with_%{1} 1}}"
     : "%{expand:%%{?_with_%{1}:%%global with_%{1} 1}}"
 ]}
-
-# Another way to define a bcond is %bcond_with and %bcond_without.
-# %bcond_with corresponds to `%bcond ... 0`: the feature is off by default
-# and needs to be activated with --with ... command line switch.
-# %bcond_without is for the dual case.
-#
-# %bcond_with foo defines symbol with_foo if --with foo was specified on
-# command line.
-# %bcond_without foo defines symbol with_foo if --without foo was *not*
-# specified on command line.
 %bcond_with()		%{expand:%%{?_with_%{1}:%%global with_%{1} 1}}
 %bcond_without()	%{expand:%%{!?_without_%{1}:%%global with_%{1} 1}}
 
