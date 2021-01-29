@@ -542,9 +542,9 @@ AM_CONDITIONAL([BDB_RO], [test "$enable_bdb_ro" = yes])
 # Check for SQLITE support
 AC_ARG_ENABLE([sqlite],
               [AS_HELP_STRING([--enable-sqlite=@<:@yes/no/auto@:>@)],
-                              [build with sqlite rpm database format support (default=auto)])],
+                              [build with sqlite rpm database format support (default=yes)])],
               [enable_sqlite="$enableval"],
-              [enable_sqlite=auto])
+              [enable_sqlite=yes])
 
 AS_IF([test "x$enable_sqlite" != "xno"], [
   PKG_CHECK_MODULES([SQLITE], [sqlite3 >= 3.22.0], [have_sqlite=yes], [have_sqlite=no])

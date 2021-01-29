@@ -595,7 +595,7 @@ package or when debugging this package.\
 # sqlite Sqlite database
 # dummy dummy backend (no actual functionality)
 #
-%_db_backend	      bdb
+%_db_backend	      sqlite
 
 #
 #	Macros used to configure Berkley db parameters.
