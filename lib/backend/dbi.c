@@ -20,9 +20,6 @@ const struct rpmdbOps_s *backends[] = {
 #ifdef ENABLE_NDB
     &ndb_dbops,
 #endif
-#if defined(WITH_BDB)
-    &db3_dbops,
-#endif
 #if defined(WITH_BDB_RO)
     &bdbro_dbops,
 #endif

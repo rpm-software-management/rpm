@@ -32,58 +32,14 @@ Debian: https://lists.debian.org/debian-legal/2002/10/msg00113.html
 
 The OpenSSL crypto library is available from https://www.openssl.org/
 
-RPM needs a database engine for normal operation. The main options are 
-"ndb" (--enable-ndb) and "sqlite" (--enable-sqlite), and the now
-deprecated "bdb" (--enable-bdb). Additionally standalone support for
-read-only BDB databases is available as "bdb_ro" (--enable-bdb-ro)
-to aid with migration from BDB.
+RPM needs a database engine for normal operation. The main options are
+"ndb" (--enable-ndb) and "sqlite" (--enable-sqlite).
+Additionally standalone support for read-only BDB databases is available as
+"bdb_ro" (--enable-bdb-ro) to aid with migration from BDB.
 
 The ndb and bdb_ro backends have no external dependencies.
 SQLite >= 3.22.0 is required for the sqlite database backend.
 SQLite is available from https://www.sqlite.org/
-
-The Berkeley DB >= 4.3.x (4.5.x or newer recommended) is required for the
-deprecated "bdb" database backend. BDB can be downloaded from
-http://www.oracle.com/technology/software/products/berkeley-db/index.html
-
-RPM supports two different ways to include it, both methods have their 
-distinct advantages and disadvantages:
-
-1) Building and using an internal copy of BDB
-   
-   This is the "safe" way: upgrades to system BDB can not affect your
-   rpmdb integrity and you have full control over how BDB is configured. 
-   On the other hand, any updates (security or bugfix) to BDB will require 
-   rebuilding RPM. 
-
-   To use this method, download a recent version of BDB from the URL above,
-   expand the tarball into rpm source directory root and create "db" symlink
-   to it, eg:
-   $ wget http://download.oracle.com/berkeley-db/db-4.5.20.tar.gz
-   $ tar xzf db-4.5.20.tar.gz
-   $ ln -s db-4.5.20 db
-   $ ./configure [other options...]
-
-2) Linking to external (system) BDB
-
-   If you can control when and how system BDB is upgraded, this option
-   saves space, removes the need to rebuild RPM in case of security etc
-   updates to BDB and also makes build rpm itself much faster. On the other
-   hand, major BDB upgrades can be disruptive, especially if
-   the on-disk format changes somehow. 
-
-   This method is the default if no "db" link exists in the top directory.
-   If the system BDB is installed outside compiler + linker default
-   paths, you can use CPPFLAGS and LDFLAGS to tell configure where to look,
-   for example:
-
-   $ ./configure CPPFLAGS=-I/usr/include/db45
-
-Minimal instructions for building BDB are 
-    cd build_unix 
-    ../dist/configure --with-posixmutexes
-    make
-    make install
 
 For embedded Lua scripting support (recommended and enabled by default),
 you'll need Lua >= 5.2 library + development environment installed.

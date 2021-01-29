@@ -28,7 +28,6 @@ RUN dnf -y install \
   file-devel \
   popt-devel \
   libarchive-devel \
-  libdb-devel \
   sqlite-devel \
   libselinux-devel \
   ima-evm-utils-devel \

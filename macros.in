@@ -590,56 +590,12 @@ package or when debugging this package.\
 # ---- Database configuration macros.
 #
 # Select backend database. The following values are supported:
-# bdb Berkeley DB
+# bdb_ro Berkeley DB (read-only)
 # ndb new data base format
 # sqlite Sqlite database
 # dummy dummy backend (no actual functionality)
 #
 %_db_backend	      sqlite
-
-#
-#	Macros used to configure Berkley db parameters.
-#
-# rpmdb macro configuration values are a colon (or white space) separated
-# list of tokens, with an optional '!' negation to explicitly disable bit
-# values, or a "=value" if a parameter. A per-tag value is used (e.g.
-# %_dbi_config_Packages) if defined, otherwise a per-rpmdb default
-# (e.g. %_dbi_config).
-#
-# Here's a short list of the tokens, with a guess of whether the option is
-# useful:
-#	(nothing)	currently used in rpm, known to work.
-#	"+++"		under development, will be supported in rpm eventually.
-#	"???"		I have no clue, you're mostly on your own.
-#
-# If you do find yourself inclined to fiddle, here's what I see (shrug):
-# 1) Only the value of mp_size has any serious impact on overall performance,
-#    and you will need ~256Kb to handle a typical machine install.
-# 2) Only the Packages hash, because of the size of the values (i.e. headers),
-#    will ever need tuning. Diddle the pagesize if you're interested, although
-#    I believe that you will find pagesize=512 "best".
-# 3) Adding nofsync increases speed, but risks total data loss. Fiddle shared
-#    and/or mp_size instead.
-#
-#   token	works?	Berkeley db flag or value
-#==================================================
-#---------------------- DBENV tunable values:
-#   mmapsize=16Mb	DBENV->set_mp_mmapsize
-#   cachesize=1Mb	DBENV->set_cachesize, DB->set_cachesize
-#---------------------- DB->open bits:
-#   nommap	???	DB_NOMMAP
-#----------------------- rpmdb specific configuration:
-#   lockdbfd		(always on for Packages) Use fcntl(2) locking ?
-#   nofsync		Disable fsync(2) call performed after db3 writes?
-#
-
-# Misc BDB tuning options
-%__dbi_other			mp_mmapsize=128Mb mp_size=1Mb
-
-%_dbi_config			%{?__dbi_other}
-
-# "Packages" should have shared/exclusive fcntl(2) lock using "lockdbfd".
-%_dbi_config_Packages		%{?_dbi_config} lockdbfd
 
 #==============================================================================
 # ---- GPG/PGP/PGP5 signature macros.
