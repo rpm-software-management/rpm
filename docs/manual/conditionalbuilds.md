@@ -83,16 +83,5 @@ macros which is nicer in other situations, e.g.:
 
 Always test for the `with`-condition, not the `without`-counterpart!
 
-## Pass it to `%configure`
-
-To pass options to configure or other scripts that understand a `--with-foo` or
-`--without-foo` parameter, you can use the `%{?_with_foo}` macro:
-
-```
-%configure \
-        %{?_with_gnutls} \
-        %{?_with_openssl}
-```
-
 ## References
 * [macros](https://github.com/rpm-software-management/rpm/blob/master/macros.in)
