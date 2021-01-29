@@ -81,9 +81,10 @@
 # Handle conditional builds.
 # (see 'conditionalbuilds' in the manual)
 #
-# Shorthands for %{defined with_...}:
-%with()		%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
-%without()	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
+# Internally, the `--with foo` option defines the macro `_with_foo` and the
+# `--without foo` option defines the macro `_without_foo`.
+# Based on those and a default (used when neither is given), bcond macros
+# define the macro `with_foo`, which should later be checked:
 
 %bcond()	%{expand:%[ (%2)
     ? "%{expand:%%{!?_without_%{1}:%%global with_%{1} 1}}"
@@ -91,6 +92,10 @@
 ]}
 %bcond_with()		%{expand:%%{?_with_%{1}:%%global with_%{1} 1}}
 %bcond_without()	%{expand:%%{!?_without_%{1}:%%global with_%{1} 1}}
+
+# Shorthands for %{defined with_...}:
+%with()		%{expand:%%{?with_%{1}:1}%%{!?with_%{1}:0}}
+%without()	%{expand:%%{?with_%{1}:0}%%{!?with_%{1}:1}}
 
 #
 #==============================================================================
