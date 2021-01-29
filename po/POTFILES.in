@@ -26,7 +26,6 @@ build/policies.c
 build/reqprov.c
 build/rpmfc.c
 build/spec.c
-lib/backend/db3.c
 lib/backend/dbi.c
 lib/backend/dummydb.c
 lib/backend/ndb/glue.c

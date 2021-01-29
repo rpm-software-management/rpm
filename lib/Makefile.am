@@ -50,15 +50,6 @@ librpm_la_LIBADD = \
 	@WITH_ACL_LIB@ \
 	@LIBINTL@
 
-if BDB
-librpm_la_SOURCES += backend/db3.c
-if WITH_INTERNAL_DB
-librpm_la_LIBADD += $(libdb_la)
-else
-librpm_la_LIBADD += @WITH_DB_LIB@
-endif
-endif
-
 if BDB_RO
 librpm_la_SOURCES += backend/bdb_ro.c
 endif
@@ -85,19 +76,5 @@ tagtbl.C: Makefile.am $(srcdir)/rpmtag.h gentagtbl.sh
 		    	     $(srcdir)/rpmtag.h > $@.new && \
 	 mv -f $@.new $@
 BUILT_SOURCES = tagtbl.C
-
-if WITH_INTERNAL_DB
-# XXX watchout, $(top_builddir)/db3/libdb.la created by this Makefile may surprise
-libdb_la = $(top_builddir)/db3/libdb.la
-
-# XXX grrr, force noinst libdb.la for db3.
-# there are more reliable ways to get the BDB version info, just a dirty
-# hack for now...
-BDBVER = $(shell grep ^LIBVERSION $(top_builddir)/db3/Makefile|cut -f2)
-$(libdb_la): $(top_builddir)/db3/libdb-$(BDBVER).la
-	sed -e"/^libdir=/s/^.*$$/libdir=''/" \
-	  < $(top_builddir)/db3/libdb-$(BDBVER).la > $(libdb_la)
-CLEANFILES += $(libdb_la)
-endif
 
 CLEANFILES += $(BUILT_SOURCES)

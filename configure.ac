@@ -468,49 +468,6 @@ AM_CONDITIONAL(LIBDW,[test "$WITH_LIBDW" = yes])
 AM_CONDITIONAL(HAVE_LIBDW_STRTAB,[test "$HAVE_LIBDW_STRTAB" = yes])
 
 #=================
-# Check for BDB support
-AC_ARG_ENABLE([bdb],
-              [AS_HELP_STRING([--enable-bdb=@<:@yes/no/auto@:>@ (DEPRECATED)],
-                              [build with Berkeley DB rpm database format support (default=yes)])],
-              [enable_bdb="$enableval"],
-              [enable_bdb=yes])
-
-have_bdb="no"
-AS_IF([test "x$enable_bdb" != "xno"], [
-  if [ test -x db/dist/configure ]; then
-    have_bdb="internal"
-  else
-    AC_CHECK_HEADERS([db.h],[
-      AC_PREPROC_IFELSE([
-        AC_LANG_SOURCE([
-	  #include <db.h>
-	  #if ((DB_VERSION_MAJOR < 4) || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR < 5))
-	  #error Berkeley DB too old
-	  #endif
-        ])
-      ],[ have_bdb="yes" ])
-    ])
-  fi
-  AC_MSG_CHECKING(for Berkeley DB >= 4.5)
-  AC_MSG_RESULT($have_bdb)
-  AS_IF([test "x$enable_bdb" = "xyes"], [
-    if test "x$have_bdb" = "xno"; then
-      AC_MSG_ERROR([--enable-bdb specified, but not available])
-    fi
-    AC_DEFINE([WITH_BDB], [1], [Define if BDB is available])
-    WITH_DB_LIB=-ldb
-    AC_SUBST([WITH_DB_LIB])
-  ])
-])
-
-AM_CONDITIONAL([BDB], [test "x$have_bdb" != "xno"])
-AM_CONDITIONAL([WITH_INTERNAL_DB],[test "x$have_bdb" = "xinternal"])
-if test "x$have_bdb" = "xinternal"; then
-    AC_CONFIG_SUBDIRS(db3)
-fi
-
-
-#=================
 # Process --enable-ndb
 AC_ARG_ENABLE([ndb], [AS_HELP_STRING([--enable-ndb],[enable the new rpm database format])],
 [case "$enable_ndb" in

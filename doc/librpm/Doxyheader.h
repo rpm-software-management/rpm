@@ -116,7 +116,7 @@
  * @{
  */
 /** \defgroup	rpmdb	Database API.
-    \brief Opening & accessing the RPM indices using Berkeley DB (the so called rpmdb)
+    \brief Opening & accessing the RPM database
  */
 /** \defgroup	rpmio	RPM IO API.
     \brief The RPM IO API (Fd_t is RPM equivalent to libc's FILE).

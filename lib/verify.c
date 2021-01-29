@@ -485,8 +485,8 @@ int rpmcliVerify(rpmts ts, QVA_t qva, char * const * argv)
     FD_t scriptFd = fdDup(STDOUT_FILENO);
 
     /* 
-     * Open the DB + indices explicitly before possible chroot,
-     * otherwises BDB is going to be unhappy...
+     * Open the DB + indices explicitly before possible chroot for
+     * consistency with how transactions operate.
      */
     rpmtsOpenDB(ts, O_RDONLY);
     rpmdbOpenAll(rpmtsGetRdb(ts));

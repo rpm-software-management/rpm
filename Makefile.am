@@ -23,13 +23,10 @@ AM_CFLAGS = @RPMCFLAGS@
 
 CLEANFILES =
 EXTRA_DIST = ChangeLog CREDITS INSTALL \
-	autogen.sh db3/configure installplatform platform.in build-aux
+	autogen.sh installplatform platform.in build-aux
 BUILT_SOURCES =
 
 SUBDIRS = po misc
-if WITH_INTERNAL_DB
-SUBDIRS += db3
-endif
 if WITH_LUA
 SUBDIRS += luaext
 endif
@@ -292,13 +289,6 @@ endif
 EXTRA_DIST += doc/librpm.doxy.in doc/librpm/Doxyheader.h
 EXTRA_DIST += doc/librpm/html
 
-if WITH_INTERNAL_DB
-db.h:	$(top_builddir)/db3/db.h
-	$(LN_S) $(top_builddir)/db3/db.h $@
-BUILT_SOURCES += db.h
-endif
-DISTCLEANFILES = db.h
-
 .PHONY: ci
 ci:
 	podman build -t rpm -f ci/Dockerfile .
@@ -316,7 +306,7 @@ clean-local:
 distclean-local:
 	rm -rf doc/librpm.doxy doc/librpm/html
 	rm -rf Doxytags
-	rm -f stamp-h.in db3/*.orig db3/db3lobjs
+	rm -f stamp-h.in
 
 $(top_srcdir)/preinstall.am: Makefile.am
 	rm -f $(top_srcdir)/preinstall.am
