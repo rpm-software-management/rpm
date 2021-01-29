@@ -40,10 +40,12 @@ size_t rpmDigestLength(int hashalgo)
 	return 20;
     case PGPHASHALGO_SHA224:
 	return 28;
+    case PGPHASHALGO_GOST12_256:
     case PGPHASHALGO_SHA256:
 	return 32;
     case PGPHASHALGO_SHA384:
 	return 48;
+    case PGPHASHALGO_GOST12_512:
     case PGPHASHALGO_SHA512:
 	return 64;
     default:
@@ -66,6 +68,10 @@ static int hashalgo2gcryalgo(int hashalgo)
 	return GCRY_MD_SHA384;
     case PGPHASHALGO_SHA512:
 	return GCRY_MD_SHA512;
+    case PGPHASHALGO_GOST12_256:
+	return GCRY_MD_STRIBOG256;
+    case PGPHASHALGO_GOST12_512:
+	return GCRY_MD_STRIBOG512;
     default:
 	return 0;
     }
