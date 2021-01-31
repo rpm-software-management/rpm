@@ -368,9 +368,9 @@ rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, rpmfi fi, const char *path,
 		rc = RPMRC_FAIL;
 	    } else if (hook_rc == RPMRC_PLUGIN_CONTENTS && rc != RPMRC_FAIL) {
 		if (rc == RPMRC_PLUGIN_CONTENTS) {
-		    /*
-		    Another plugin already said it'd handle contents. It's undefined how
-		    these would combine, so treat this as a failure condition.
+		    /* Another plugin already said it'd handle contents. It's
+		     * undefined how these would combine, so treat this as a
+		     * failure condition.
 		    */
 		    rc = RPMRC_FAIL;
 		} else {
