@@ -7,7 +7,6 @@
 
 #include <utime.h>
 #include <errno.h>
-#include <stdbool.h>
 #if WITH_CAP
 #include <sys/capability.h>
 #endif
@@ -854,10 +853,10 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     char *fpath = NULL;
     Header h = rpmteHeader(te);
     const char *payloadfmt = headerGetString(h, RPMTAG_PAYLOADFORMAT);
-    bool cpio = true;
+    int cpio = 1;
 
     if (payloadfmt && rstreq(payloadfmt, "clon")) {
-	cpio = false;
+	cpio = 0;
     }
     if (cpio) {
 	fi = rpmfiNewArchiveReader(payload, files, RPMFI_ITER_READ_ARCHIVE);
@@ -907,13 +906,13 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	rc = rpmpluginsCallFsmFilePre(plugins, fi, fpath,
 				      sb.st_mode, action);
 	skip = skip || rpmfiFFlags(fi) & RPMFILE_GHOST;
-	bool plugin_contents = false;
+	int plugin_contents = 0;
 	switch (rc) {
 	case RPMRC_OK:
 	    setFileState(fs, rpmfiFX(fi));
 	    break;
 	case RPMRC_PLUGIN_CONTENTS:
-	    plugin_contents = true;
+	    plugin_contents = 1;
 	    // reduce reads on cpio to this value. Could be zero if
 	    // this is from a hard link.
 	    rc = RPMRC_OK;
