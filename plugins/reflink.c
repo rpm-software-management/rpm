@@ -316,7 +316,7 @@ static rpmRC reflink_fsm_file_pre(rpmPlugin plugin, rpmfi fi, const char* path,
 		return RPMRC_FAIL;
 	    }
 	    rpmlog(RPMLOG_DEBUG,
-	           _("reflink: Reflinking %lu bytes at %lu to %s orig size=%lu, file=%ld\n"),
+	           _("reflink: Reflinking %llu bytes at %llu to %s orig size=%ld, file=%lld\n"),
 		   fcr.src_length, fcr.src_offset, path, size, fcr.src_fd);
 	    rc = ioctl(dst, FICLONERANGE, &fcr);
 	    if (rc) {
