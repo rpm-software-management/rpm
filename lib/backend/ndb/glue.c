@@ -130,13 +130,13 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 	char *path = rstrscat(NULL, dbhome, "/", rdb->db_ops->path, NULL);
 	rpmlog(RPMLOG_DEBUG, "opening  db index       %s mode=0x%x\n", path, rdb->db_mode);
 	if ((rdb->db_flags & RPMDB_FLAG_SALVAGE) == 0)
-	    rc = rpmpkgOpen(&pkgdb, path, oflags, 0666);
+	    rc = rpmpkgOpen(&pkgdb, path, oflags, rdb->db_perms);
 	else
 	    rc = rpmpkgSalvage(&pkgdb, path);
 	if (rc && errno == ENOENT && (oflags == O_RDWR) && (rdb->db_flags & RPMDB_FLAG_SALVAGE) == 0) {
 	    oflags |= O_CREAT;
 	    dbi->dbi_flags |= DBI_CREATED;
-	    rc = rpmpkgOpen(&pkgdb, path, oflags, 0666);
+	    rc = rpmpkgOpen(&pkgdb, path, oflags, rdb->db_perms);
 	}
 	if (rc) {
 	    perror("rpmpkgOpen");
@@ -161,16 +161,16 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 
 	    /* Open indexes readwrite if possible */
 	    ioflags = O_RDWR;
-	    rc = rpmxdbOpen(&ndbenv->xdb, rdb->db_pkgs->dbi_db, path, ioflags, 0666);
+	    rc = rpmxdbOpen(&ndbenv->xdb, rdb->db_pkgs->dbi_db, path, ioflags, rdb->db_perms);
 	    if (rc && (errno == EACCES || errno == EROFS)) {
 		/* If it is not asked for rw explicitly, try to open ro */
 		if (!(oflags & O_RDWR)) {
 		    ioflags = O_RDONLY;
-		    rc = rpmxdbOpen(&ndbenv->xdb, rdb->db_pkgs->dbi_db, path, ioflags, 0666);
+		    rc = rpmxdbOpen(&ndbenv->xdb, rdb->db_pkgs->dbi_db, path, ioflags, rdb->db_perms);
 		}
 	    } else if (rc && errno == ENOENT) {
 		ioflags = O_CREAT|O_RDWR;
-		rc = rpmxdbOpen(&ndbenv->xdb, rdb->db_pkgs->dbi_db, path, ioflags, 0666);
+		rc = rpmxdbOpen(&ndbenv->xdb, rdb->db_pkgs->dbi_db, path, ioflags, rdb->db_perms);
 		created = 1;
 	    }
 	    if (rc) {
