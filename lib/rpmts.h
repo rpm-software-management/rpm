@@ -272,12 +272,11 @@ int rpmtsOpenDB(rpmts ts, int dbmode);
 
 /** \ingroup rpmts
  * Initialize the database used by the transaction.
- * @deprecated An explicit rpmdbInit() is almost never needed.
  * @param ts		transaction set
- * @param dbmode	O_RDONLY or O_RDWR
+ * @param perms		database permissions (ie mode bits)
  * @return		0 on success
  */
-int rpmtsInitDB(rpmts ts, int dbmode);
+int rpmtsInitDB(rpmts ts, int perms);
 
 /** \ingroup rpmts
  * Return the transaction database mode

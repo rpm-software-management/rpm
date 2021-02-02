@@ -104,12 +104,12 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
     return rc;
 }
 
-int rpmtsInitDB(rpmts ts, int dbmode)
+int rpmtsInitDB(rpmts ts, int perms)
 {
     rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
     int rc = -1;
     if (txn)
-	    rc = rpmdbInit(ts->rootDir, dbmode);
+	    rc = rpmdbInit(ts->rootDir, perms);
     rpmtxnEnd(txn);
     return rc;
 }
