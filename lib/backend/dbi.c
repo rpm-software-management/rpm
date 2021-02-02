@@ -42,7 +42,6 @@ dbiIndex dbiNew(rpmdb rdb, rpmDbiTagVal rpmtag)
     dbi->dbi_rpmdb = rdb;
     dbi->dbi_file = rpmTagGetName(rpmtag);
     dbi->dbi_type = (rpmtag == RPMDBI_PACKAGES) ? DBI_PRIMARY : DBI_SECONDARY;
-    dbi->dbi_byteswapped = -1;	/* -1 unknown, 0 native order, 1 alien order */
     return dbi;
 }
 
