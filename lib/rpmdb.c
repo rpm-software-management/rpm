@@ -475,8 +475,6 @@ static rpmdb newRpmdb(const char * root, const char * home,
     db->db_home = db_home;
     db->db_root = rpmGetPath((root && *root) ? root : "/", NULL);
     db->db_fullpath = rpmGenPath(db->db_root, db->db_home, NULL);
-    /* XXX remove environment after chrooted operations, for now... */
-    db->db_remove_env = (!rstreq(db->db_root, "/") ? 1 : 0);
     db->db_tags = dbiTags;
     db->db_ndbi = sizeof(dbiTags) / sizeof(rpmDbiTag);
     db->db_indexes = xcalloc(db->db_ndbi, sizeof(*db->db_indexes));
