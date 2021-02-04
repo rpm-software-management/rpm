@@ -35,7 +35,6 @@ AT_CLEANUP
 
 AT_SETUP([rpmbuild -ba autosetup])
 AT_KEYWORDS([build])
-AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
 AT_CHECK([
 
@@ -1193,7 +1192,6 @@ AT_CLEANUP
 AT_SETUP([rpmbuild debugsource debugsourcefiles.list path])
 AT_KEYWORDS([build] [debuginfo] [debugsource])
 AT_CHECK([
-AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
 
 rundebug rpmbuild --quiet \
@@ -1218,7 +1216,6 @@ AT_CLEANUP
 AT_SETUP([rpmbuild debuginfo subpackages single])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
 AT_CHECK([
-AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
 
 rundebug rpmbuild --quiet \
@@ -1257,7 +1254,6 @@ AT_CLEANUP
 AT_SETUP([rpmbuild debuginfo subpackages multiple])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
 AT_CHECK([
-AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
 
 rundebug rpmbuild --quiet \
@@ -1338,7 +1334,6 @@ AT_CLEANUP
 AT_SETUP([rpmbuild debuginfo subpackages multiple unique])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
 AT_CHECK([
-AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
 
 rundebug rpmbuild --quiet \
@@ -1419,7 +1414,6 @@ AT_CLEANUP
 AT_SETUP([rpmbuild debuginfo subpackages multiple unique debugsource])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage] [debugsource])
 AT_CHECK([
-AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
 
 rundebug rpmbuild --quiet \
@@ -1503,7 +1497,6 @@ AT_CLEANUP
 AT_SETUP([rpmbuild debuginfo subpackages multiple excluded])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage] [debugsource])
 AT_CHECK([
-AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
 
 rundebug rpmbuild --quiet \
@@ -1579,7 +1572,6 @@ AT_CLEANUP
 AT_SETUP([rpmbuild debuginfo subpackages multiple excluded])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage] [debugsource])
 AT_CHECK([
-AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
 
 rundebug rpmbuild --quiet \

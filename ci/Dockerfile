@@ -55,7 +55,6 @@ RUN ./configure \
   --with-selinux \
   --with-cap \
   --with-acl \
-  --with-lua \
   --with-audit \
   --with-fsverity \
   --enable-bdb \

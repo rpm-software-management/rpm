@@ -8,7 +8,9 @@ AM_CPPFLAGS += @WITH_OPENSSL_INCLUDE@
 AM_CPPFLAGS += @WITH_LIBGCRYPT_INCLUDE@
 AM_CPPFLAGS += @WITH_POPT_INCLUDE@
 AM_CPPFLAGS += $(ZSTD_CFLAGS)
+AM_CPPFLAGS += @LUA_CFLAGS@
 AM_CPPFLAGS += -I$(top_srcdir)/misc
+AM_CPPFLAGS += -I$(top_srcdir)/luaext/
 AM_CPPFLAGS += -DRPMCONFIGDIR="\"@RPMCONFIGDIR@\""
 AM_CPPFLAGS += -DLOCALSTATEDIR="\"$(localstatedir)\""
 
@@ -20,7 +22,8 @@ librpmio_la_SOURCES = \
 	rpmpgp.c rpmsq.c rpmsw.c url.c \
 	rpmio_internal.h rpmhook.h rpmvercmp.c rpmver.c \
 	rpmstring.c rpmfileutil.c rpmglob.c \
-	rpmkeyring.c rpmstrpool.c rpmmacro_internal.h
+	rpmkeyring.c rpmstrpool.c rpmmacro_internal.h \
+	rpmlua.c rpmlua.h
 
 if WITH_OPENSSL
 librpmio_la_SOURCES += digest_openssl.c
@@ -39,16 +42,10 @@ librpmio_la_LIBADD = \
 	@WITH_ZLIB_LIB@ \
 	@WITH_POPT_LIB@ \
 	@WITH_LZMA_LIB@ \
+	@LUA_LIBS@ \
+	../luaext/libluaext.la \
 	$(ZSTD_LIBS) \
 	-lpthread
-
-if WITH_LUA
-AM_CPPFLAGS += -I$(top_srcdir)/luaext/
-AM_CPPFLAGS += @LUA_CFLAGS@
-librpmio_la_SOURCES += rpmlua.c rpmlua.h
-librpmio_la_LIBADD += @LUA_LIBS@
-librpmio_la_LIBADD += $(top_builddir)/luaext/libluaext.la
-endif
 
 check_PROGRAMS =
 

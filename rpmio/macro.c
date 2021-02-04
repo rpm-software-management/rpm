@@ -25,10 +25,7 @@
 #include <rpm/rpmmacro.h>
 #include <rpm/argv.h>
 
-#ifdef	WITH_LUA
 #include "rpmio/rpmlua.h"
-#endif
-
 #include "rpmio/rpmmacro_internal.h"
 #include "debug.h"
 
@@ -1009,7 +1006,6 @@ static size_t doOutput(MacroBuf mb,  rpmMacroEntry me, ARGV_t argv)
     return 0;
 }
 
-#ifdef WITH_LUA
 static size_t doLua(MacroBuf mb,  rpmMacroEntry me, ARGV_t argv)
 {
     rpmlua lua = NULL; /* Global state. */
@@ -1044,7 +1040,6 @@ static size_t doLua(MacroBuf mb,  rpmMacroEntry me, ARGV_t argv)
     }
     return 0;
 }
-#endif
 
 static size_t
 doSP(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
@@ -1269,9 +1264,7 @@ static struct builtins_s {
     { "getncpus",	doFoo,		0,	ME_FUNC },
     { "global",		doGlobal,	-1,	ME_PARSE },
     { "load",		doLoad,		1,	ME_FUNC },
-#ifdef WITH_LUA
     { "lua",		doLua,		1,	ME_FUNC },
-#endif
     { "macrobody",	doBody,		1,	ME_FUNC },
     { "quote",		doFoo,		1,	ME_FUNC },
     { "shrink",		doFoo,		1,	ME_FUNC },

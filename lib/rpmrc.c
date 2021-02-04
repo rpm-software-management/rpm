@@ -1661,10 +1661,8 @@ int rpmReadConfigFiles(const char * file, const char * target)
 	free(os);
     }
 
-#ifdef WITH_LUA
     /* Force Lua state initialization */
     rpmluaGetGlobalState();
-#endif
     rc = 0;
 
 exit:
@@ -1740,10 +1738,8 @@ void rpmFreeRpmrc(void)
 
     /* XXX doesn't really belong here but... */
     rpmFreeCrypto();
-#ifdef WITH_LUA
     rpmlua lua = rpmluaGetGlobalState();
     rpmluaFree(lua);
-#endif
 
     rpmrcCtxRelease(ctx);
     return;

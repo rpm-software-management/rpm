@@ -10,7 +10,6 @@ DISTCHECK_CONFIGURE_FLAGS = \
 	--with-cap \
 	--with-acl \
 	--with-archive \
-	--with-lua \
 	--with-audit \
 	--with-selinux \
 	--with-imaevm \
@@ -27,9 +26,7 @@ EXTRA_DIST = ChangeLog CREDITS INSTALL \
 BUILT_SOURCES =
 
 SUBDIRS = po misc
-if WITH_LUA
 SUBDIRS += luaext
-endif
 SUBDIRS += rpmio lib sign build scripts fileattrs doc .
 
 if ENABLE_PYTHON

@@ -223,7 +223,6 @@ AT_CLEANUP
 AT_SETUP([verifyscript failure])
 AT_KEYWORDS([verify])
 AT_CHECK([
-AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/verifyscript.spec
@@ -239,7 +238,6 @@ AT_CLEANUP
 AT_SETUP([verifyscript success])
 AT_KEYWORDS([verify])
 AT_CHECK([
-AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/verifyscript.spec

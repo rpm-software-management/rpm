@@ -360,16 +360,13 @@ int parseScript(rpmSpec spec, int parsePart)
 	p = getStringBuf(sb);
     }
 
-#ifdef WITH_LUA
     if (rstreq(progArgv[0], "<lua>")) {
 	rpmlua lua = NULL; /* Global state. */
 	if (rpmluaCheckScript(lua, p, partname) != RPMRC_OK) {
 	    goto exit;
 	}
 	(void) rpmlibNeedsFeature(pkg, "BuiltinLuaScripts", "4.2.2-1");
-    } else
-#endif
-    if (progArgv[0][0] == '<') {
+    } else if (progArgv[0][0] == '<') {
 	rpmlog(RPMLOG_ERR,
 		 _("line %d: unsupported internal script: %s\n"),
 		 spec->lineNum, progArgv[0]);

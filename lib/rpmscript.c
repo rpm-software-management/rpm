@@ -102,7 +102,6 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 		   scriptNextFileFunc nextFileFunc)
 {
     rpmRC rc = RPMRC_FAIL;
-#ifdef WITH_LUA
     rpmlua lua = NULL; /* Global state. */
     int cwd = -1;
 
@@ -139,9 +138,6 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	close(cwd);
 	umask(oldmask);
     }
-#else
-    rpmlog(lvl, _("<lua> scriptlet support not built in\n"));
-#endif
 
     return rc;
 }
