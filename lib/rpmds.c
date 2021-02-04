@@ -1110,11 +1110,9 @@ static const struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(ConcurrentAccess)",    "4.1-1",
 	(                RPMSENSE_EQUAL),
     N_("package scriptlets may access the rpm database while installing.") },
-#ifdef WITH_LUA
     { "rpmlib(BuiltinLuaScripts)",    "4.2.2-1",
 	(                RPMSENSE_EQUAL),
     N_("internal support for lua scripts.") },
-#endif
     { "rpmlib(FileDigests)", 		"4.6.0-1",
 	(		 RPMSENSE_EQUAL),
     N_("file digest algorithm is per package configurable") },

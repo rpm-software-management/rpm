@@ -17,11 +17,8 @@ librpmbuild_la_SOURCES = \
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
 	parseSpec.c parseList.c reqprov.c rpmfc.c spec.c \
 	parsePolicies.c policies.c \
-	rpmbuild_internal.h rpmbuild_misc.h
-
-if WITH_LUA
-librpmbuild_la_SOURCES += speclua.c
-endif
+	rpmbuild_internal.h rpmbuild_misc.h \
+	speclua.c
 
 librpmbuild_la_LDFLAGS = -version-info $(rpm_version_info)
 librpmbuild_la_LIBADD = \

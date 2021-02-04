@@ -753,19 +753,12 @@ AS_IF([test "$with_acl" = yes],[
 AC_SUBST(WITH_ACL_LIB)
 AM_CONDITIONAL(ACL,[test "$with_acl" = yes])
 
-AC_ARG_WITH([lua], [AS_HELP_STRING([--with-lua], [build with lua support])],
-            [],
-            [with_lua=yes])
-
-AS_IF([test "$with_lua" != no],[
-  PKG_CHECK_MODULES([LUA],
+PKG_CHECK_MODULES([LUA],
     [lua >= 5.2],
-    [AC_DEFINE(WITH_LUA, 1, [Build with lua support?])],
-    [AC_MSG_ERROR([lua not present or too old (--without-lua to disable)])])
-  AC_SUBST(LUA_CFLAGS)
-  AC_SUBST(LUA_LIBS)
-])
-AM_CONDITIONAL(WITH_LUA,[test "$with_lua" = yes])
+    [],
+    [AC_MSG_ERROR([lua not present or too old)])])
+AC_SUBST(LUA_CFLAGS)
+AC_SUBST(LUA_LIBS)
 
 AC_ARG_ENABLE(plugins, [AS_HELP_STRING([--disable-plugins],[build without plugin support])],,[enable_plugins=yes])
 AS_IF([test "$enable_plugins" = yes],[

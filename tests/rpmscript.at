@@ -4,7 +4,6 @@ AT_BANNER([RPM scriptlets])
 
 AT_SETUP([basic script failures 1])
 AT_KEYWORDS([script])
-AT_SKIP_IF([$LUA_DISABLED])
 AT_CHECK([
 RPMDB_INIT
 
@@ -217,7 +216,6 @@ AT_CLEANUP
 AT_SETUP([basic file trigger scripts])
 AT_KEYWORDS([file trigger script])
 AT_CHECK([
-AT_SKIP_IF([$LUA_DISABLED])
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec

@@ -249,9 +249,7 @@ rpmSpec newSpec(void)
     spec->macros = rpmGlobalMacroContext;
     spec->pool = rpmstrPoolCreate();
     
-#ifdef WITH_LUA
     spec->lua = specLuaInit(spec);
-#endif
     return spec;
 }
 

@@ -1190,7 +1190,6 @@ AT_SETUP([rpmbuild buildid attrs])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
 RPMDB_INIT
-AT_SKIP_IF([$LUA_DISABLED])
 
 # Build, contains one ELF which should have a buildid.
 rundebug rpmbuild \
@@ -1221,7 +1220,6 @@ AT_SETUP([rpmbuild buildid config attrs])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_CHECK([
 RPMDB_INIT
-AT_SKIP_IF([$LUA_DISABLED])
 
 # Build, contains one ELF which should have a buildid.
 rundebug rpmbuild \

@@ -34,11 +34,6 @@ unset SOURCE_DATE_EPOCH
 TOPDIR="${HOME}/build"
 
 RPM_XFAIL=${RPM_XFAIL-1}
-if grep -q 'WITH_LUA 1' "${abs_top_builddir}/config.h"; then
-    LUA_DISABLED=false;
-else
-    LUA_DISABLED=true;
-fi
 if test "${PYTHON}"; then
     PYTHON_DISABLED=false;
 else
