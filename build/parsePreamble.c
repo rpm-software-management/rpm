@@ -641,17 +641,17 @@ static void specLog(rpmSpec spec, int lvl, const char *line, const char *msg)
  * Check for inappropriate characters. All alphanums are considered sane.
  * @param spec		spec (or NULL)
  * @param field		string to check
- * @param whitelist	string of permitted characters
+ * @param allowedchars	string of permitted characters
  * @return		RPMRC_OK if OK
  */
-rpmRC rpmCharCheck(rpmSpec spec, const char *field, const char *whitelist)
+rpmRC rpmCharCheck(rpmSpec spec, const char *field, const char *allowedchars)
 {
     const char *ch;
     char *err = NULL;
     rpmRC rc = RPMRC_OK;
 
     for (ch=field; *ch; ch++) {
-	if (risalnum(*ch) || strchr(whitelist, *ch)) continue;
+	if (risalnum(*ch) || strchr(allowedchars, *ch)) continue;
 	rasprintf(&err, _("Illegal char '%c' (0x%x)"),
 		  isprint(*ch) ? *ch : '?', *ch);
     }
@@ -776,7 +776,7 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     switch (tag) {
     case RPMTAG_NAME:
 	SINGLE_TOKEN_ONLY;
-	if (rpmCharCheck(spec, field, WHITELIST_NAME))
+	if (rpmCharCheck(spec, field, ALLOWED_CHARS_NAME))
 	   goto exit;
 	headerPutString(pkg->header, tag, field);
 	/* Main pkg name is unknown at the start, populate as soon as we can */
@@ -786,7 +786,7 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     case RPMTAG_VERSION:
     case RPMTAG_RELEASE:
 	SINGLE_TOKEN_ONLY;
-	if (rpmCharCheck(spec, field, WHITELIST_VERREL))
+	if (rpmCharCheck(spec, field, ALLOWED_CHARS_VERREL))
 	   goto exit;
 	headerPutString(pkg->header, tag, field);
 	break;
@@ -1112,7 +1112,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	    goto exit;
 	}
 
-	if (rpmCharCheck(spec, name, WHITELIST_NAME))
+	if (rpmCharCheck(spec, name, ALLOWED_CHARS_NAME))
 	    goto exit;
 	
 	if (!lookupPackage(spec, name, flag, NULL))
