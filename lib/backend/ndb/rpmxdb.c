@@ -32,7 +32,7 @@
 #define RPMRC_FAIL 2
 
 typedef struct rpmxdb_s {
-    rpmpkgdb pkgdb;             /* master database */
+    rpmpkgdb pkgdb;             /* main database */
     char *filename;
     int fd;
     int flags;
@@ -484,7 +484,7 @@ static int rpmxdbInitInternal(rpmxdb xdb)
     return RPMRC_OK;
 }
 
-/* we use the master pdb for locking */
+/* we use the main pdb for locking */
 static int rpmxdbLockOnly(rpmxdb xdb, int excl)
 {
     int rc;

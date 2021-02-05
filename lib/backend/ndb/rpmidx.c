@@ -71,7 +71,7 @@
 
 
 typedef struct rpmidxdb_s {
-    rpmpkgdb pkgdb;		/* master database */
+    rpmpkgdb pkgdb;		/* main database */
 
     int flags;
     int mode;
