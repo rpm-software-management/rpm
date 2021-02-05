@@ -483,13 +483,10 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 	    break;
 	case PGPSUBTYPE_SIG_CREATE_TIME:
 	    impl = *p;
-	    if (!(_digp->saved & PGPDIG_SAVED_TIME))
-	    {
-		if (plen-1 != sizeof(_digp->time))
-		    break;
-		_digp->saved |= PGPDIG_SAVED_TIME;
-		_digp->time = pgpGrab(p+1, sizeof(_digp->time));
-	    }
+	    if (_digp->saved & PGPDIG_SAVED_TIME || plen-1 != sizeof(_digp->time))
+		return 1;
+	    _digp->saved |= PGPDIG_SAVED_TIME;
+	    _digp->time = pgpGrab(p+1, sizeof(_digp->time));
 	case PGPSUBTYPE_SIG_EXPIRE_TIME:
 	case PGPSUBTYPE_KEY_EXPIRE_TIME:
 	    pgpPrtTime(" ", p+1, plen-1);
