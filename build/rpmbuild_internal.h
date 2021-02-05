@@ -18,9 +18,9 @@
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
-#define WHITELIST_NAME ".-_+%{}"
-#define WHITELIST_VERREL "._+%{}~^"
-#define WHITELIST_EVR WHITELIST_VERREL "-:"
+#define ALLOWED_CHARS_NAME ".-_+%{}"
+#define ALLOWED_CHARS_VERREL "._+%{}~^"
+#define ALLOWED_CHARS_EVR ALLOWED_CHARS_VERREL "-:"
 #define LEN_AND_STR(_tag) (sizeof(_tag)-1), (_tag)
 
 struct TriggerFileEntry {
@@ -379,11 +379,11 @@ int parseList(rpmSpec spec, const char *name, int stype);
  * Check for inappropriate characters. All alphanums are considered sane.
  * @param spec          spec
  * @param field         string to check
- * @param whitelist     string of permitted characters
+ * @param allowedchars  string of permitted characters
  * @return              RPMRC_OK if OK
  */
 RPM_GNUC_INTERNAL
-rpmRC rpmCharCheck(rpmSpec spec, const char *field, const char *whitelist);
+rpmRC rpmCharCheck(rpmSpec spec, const char *field, const char *allowedchars);
 
 typedef rpmRC (*addReqProvFunction) (void *cbdata, rpmTagVal tagN,
 				     const char * N, const char * EVR, rpmsenseFlags Flags,
