@@ -334,8 +334,8 @@ AT_CLEANUP
 AT_SETUP([rpm2archive])
 AT_KEYWORDS([basic])
 AT_CHECK([
-runroot_other rpm2archive - < "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm | tar tz
-runroot_other rpm2archive - < "${RPMTEST}"/data/SRPMS/hello-1.0-1.src.rpm | tar tz
+runroot_other rpm2archive - < "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm | tar tzf -
+runroot_other rpm2archive - < "${RPMTEST}"/data/SRPMS/hello-1.0-1.src.rpm | tar tzf -
 ],
 [0],
 [./usr/bin/hello
