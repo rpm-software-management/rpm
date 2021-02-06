@@ -1,0 +1,96 @@
+#!/bin/sh
+
+#
+# Copyright (c) 2016  Bernhard M. Wiedemann <bernhard@zq1.de>
+# Copyright (c) 2016  Dennis Gilmore <dennis@ausil.us>
+# Copyright (c) 2016  Simon "HW42" Geiser <hw42@ipsumj.de>
+# Copyright (c) 2016  Wojciech Porczyk <woju@invisiblethingslab.com>
+# Copyright (c) 2019  Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+# Copyright (c) 2021  Frédéric Pierret <frederic.pierret@qubes-os.org>
+#
+# All rights reserved.
+# 
+# Permission to use, copy, modify, and distribute this software for any purpose
+# with or without fee is hereby granted, provided that the above copyright
+# notice and this permission notice appear in all copies.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN
+# NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+# DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+# OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+# OR OTHER DEALINGS IN THE SOFTWARE.
+# 
+# Except as contained in this notice, the name of a copyright holder shall not
+# be used in advertising or otherwise to promote the sale, use or other dealings
+# in this Software without prior written authorization of the copyright holder.
+#
+
+set -e
+
+RPM_BUILD_ROOT="$1"
+RPM_BUILD_DIR="$2"
+RPM_PACKAGE_EPOCH="${3:-0}"
+RPM_PACKAGE_NAME="$4"
+RPM_PACKAGE_VERSION="$5"
+RPM_PACKAGE_RELEASE="$6"
+RPM_ARCH="$7"
+
+getos() {
+    # shellcheck disable=SC1091
+    test -r /etc/os-release && . /etc/os-release
+    if test -n "$BUILD_ORIGIN"; then
+        ID="$BUILD_ORIGIN"
+    fi
+    if test -z "$ID"; then
+        ID=$(cat /etc/system-release)
+    fi
+    printf %s "$ID"
+}
+
+RPM_BUILD_NAME="${RPM_PACKAGE_NAME}-${RPM_PACKAGE_VERSION}-${RPM_PACKAGE_RELEASE}.${RPM_ARCH}"
+
+BUILDINFO_DIR="$RPM_BUILD_ROOT/usr/lib/src/buildinfo"
+BUILDINFO="${BUILDINFO_DIR}/${RPM_BUILD_NAME}.buildinfo"
+
+mkdir -p "$BUILDINFO_DIR"
+
+cat > "$BUILDINFO" <<EOF
+Format: 1.0-rpm
+Build-Architecture: $(uname -m)
+Source: $RPM_PACKAGE_NAME
+Epoch: $RPM_PACKAGE_EPOCH
+Version: ${RPM_PACKAGE_VERSION}
+Release: ${RPM_PACKAGE_RELEASE}
+Architecture: $RPM_ARCH
+Build-Origin: $(getos)
+Build-Path: $RPM_BUILD_DIR
+EOF
+
+printf 'Installed-Build-Depends:\n' >> "$BUILDINFO"
+rpm -qa --queryformat '%{epoch}:%{name}-%{version}-%{release}.%{arch}\n' \
+    | LC_ALL=C sort -t: -k2 \
+    | sed -e 's/^(none)://; /\.(none)$/d; s/^/ /' >> "$BUILDINFO"
+
+printf 'Environment:\n' >> "$BUILDINFO"
+
+# Whitelist from Debian's Dpkg:
+# https://anonscm.debian.org/git/dpkg/dpkg.git/tree/scripts/Dpkg/Build/Info.pm#n50
+ENV_WHITELIST=
+
+# Toolchain.
+ENV_WHITELIST="$ENV_WHITELIST CC CPP CXX OBJC OBJCXX PC FC M2C AS LD AR RANLIB MAKE AWK LEX YACC"
+# Toolchain flags.
+ENV_WHITELIST="$ENV_WHITELIST CFLAGS CPPFLAGS CXXFLAGS OBJCFLAGS OBJCXXFLAGS GCJFLAGS FFLAGS LDFLAGS ARFLAGS MAKEFLAGS"
+# Dynamic linker, see ld(1).
+ENV_WHITELIST="$ENV_WHITELIST LD_LIBRARY_PATH"
+# Locale, see locale(1).
+ENV_WHITELIST="$ENV_WHITELIST LANG LC_ALL LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT LC_IDENTIFICATION"
+ENV_WHITELIST="$ENV_WHITELIST SOURCE_DATE_EPOCH"
+for var in $ENV_WHITELIST
+do
+    eval value="\$$var"
+    # shellcheck disable=SC2154
+    test -n "$value" && printf ' %s="%s"\n' "$var" "$value" >> "$BUILDINFO"
+done
