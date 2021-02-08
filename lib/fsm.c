@@ -841,6 +841,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     struct stat sb;
     int saveerrno = errno;
     int rc = 0;
+    int fx = -1;
     int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST) ? 1 : 0;
     int nofcaps = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCAPS) ? 1 : 0;
     int firsthardlink = -1;
@@ -862,17 +863,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     /* Detect and create directories not explicitly in package. */
     rc = fsmMkdirs(files, fs, plugins);
 
-    while (!rc) {
-	/* Read next payload header. */
-	rc = rpmfiNext(fi);
-
-	if (rc < 0) {
-	    if (rc == RPMERR_ITER_END)
-		rc = 0;
-	    break;
-	}
-
-	action = rpmfsGetAction(fs, rpmfiFX(fi));
+    while (!rc && (fx = rpmfiNext(fi)) >= 0) {
+	action = rpmfsGetAction(fs, fx);
 	skip = XFA_SKIPPING(action);
 	if (action != FA_TOUCH) {
 	    suffix = S_ISDIR(rpmfiFMode(fi)) ? NULL : tid;
@@ -896,7 +888,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	if (rc) {
 	    skip = 1;
 	} else {
-	    setFileState(fs, rpmfiFX(fi));
+	    setFileState(fs, fx);
 	}
 
         if (!skip) {
@@ -1004,6 +996,9 @@ touch:
 				  sb.st_mode, action, rc);
 	fpath = _free(fpath);
     }
+
+    if (!rc && fx != RPMERR_ITER_END)
+	rc = fx;
 
     rpmswAdd(rpmtsOp(ts, RPMTS_OP_UNCOMPRESS), fdOp(payload, FDSTAT_READ));
     rpmswAdd(rpmtsOp(ts, RPMTS_OP_DIGEST), fdOp(payload, FDSTAT_DIGEST));
