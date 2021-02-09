@@ -407,5 +407,45 @@ exit:
     return rc;
 }
 
+rpmRC rpmReadPackageRaw(FD_t fd, Header * sigp, Header * hdrp)
+{
+    char *msg = NULL;
+    hdrblob sigblob = hdrblobCreate();
+    hdrblob blob = hdrblobCreate();
+    Header h = NULL;
+    Header sigh = NULL;
 
+    rpmRC rc = rpmLeadRead(fd, &msg);
+    if (rc != RPMRC_OK)
+	goto exit;
 
+    rc = hdrblobRead(fd, 1, 0, RPMTAG_HEADERSIGNATURES, sigblob, &msg);
+    if (rc != RPMRC_OK)
+	goto exit;
+
+    rc = hdrblobRead(fd, 1, 1, RPMTAG_HEADERIMMUTABLE, blob, &msg);
+    if (rc != RPMRC_OK)
+	goto exit;
+
+    rc = hdrblobImport(sigblob, 0, &sigh, &msg);
+    if (rc)
+	goto exit;
+
+    rc = hdrblobImport(blob, 0, &h, &msg);
+    if (rc)
+	goto exit;
+
+    *sigp = headerLink(sigh);
+    *hdrp = headerLink(h);
+
+exit:
+    if (rc != RPMRC_OK && msg)
+	rpmlog(RPMLOG_ERR, "%s: %s\n", Fdescr(fd), msg);
+    hdrblobFree(sigblob);
+    hdrblobFree(blob);
+    headerFree(sigh);
+    headerFree(h);
+    free(msg);
+
+    return rc;
+}

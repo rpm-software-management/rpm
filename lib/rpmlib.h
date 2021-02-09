@@ -156,6 +156,15 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg);
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd,
 		const char * fn, Header * hdrp);
 
+/** \ingroup header
+ * Return package signature, header from file handle, no verification.
+ * @param fd		file handle
+ * @param[out] sigp		address of header (or NULL)
+ * @param[out] hdrp		address of header (or NULL)
+ * @return		RPMRC_OK on success
+ */
+rpmRC rpmReadPackageRaw(FD_t fd, Header * sigp, Header * hdrp);
+
 /** \ingroup rpmtrans
  * Install source package.
  * @param ts		transaction set

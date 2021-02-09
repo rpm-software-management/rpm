@@ -298,6 +298,16 @@ int pgpValTok(pgpValTbl vs, const char * s, const char * se)
     return vs->val;
 }
 
+int pgpStringVal(pgpValType type, const char *str, uint8_t *val)
+{
+    pgpValTbl tbl = pgpValTable(type);
+    if (tbl == NULL) return -1;
+    int v = pgpValTok(tbl, str, str + strlen(str));
+    if (v == -1) return -1;
+    *val = (uint8_t)v;
+    return 0;
+}
+
 /** \ingroup rpmpgp
  * Decode length from 1, 2, or 5 octet body length encoding, used in
  * new format packet headers and V4 signature subpackets.

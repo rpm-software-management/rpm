@@ -33,6 +33,10 @@ prioreset_la_SOURCES = prioreset.c
 prioreset_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la
 plugins_LTLIBRARIES += prioreset.la
 
+reflink_la_SOURCES = reflink.c
+reflink_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la
+plugins_LTLIBRARIES += reflink.la
+
 syslog_la_SOURCES = syslog.c
 syslog_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la
 plugins_LTLIBRARIES += syslog.la

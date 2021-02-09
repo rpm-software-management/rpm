@@ -209,6 +209,8 @@ const char * rpmteNEVR(rpmte te);
  */
 const char * rpmteNEVRA(rpmte te);
 
+FD_t rpmteFd(rpmte te);
+
 /** \ingroup rpmte
  * Retrieve key from transaction element.
  * @param te		transaction element
