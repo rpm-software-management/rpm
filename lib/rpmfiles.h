@@ -121,6 +121,9 @@ typedef enum rpmFileAction_e {
 #define XFA_SKIPPING(_a)	\
     ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPCOLOR)
 
+#define XFA_CREATING(_a)	\
+    ((_a) == FA_CREATE || (_a) == FA_BACKUP || (_a) == FA_SAVE || (_a) == FA_ALTNAME)
+
 /**
  * We pass these around as an array with a sentinel.
  */

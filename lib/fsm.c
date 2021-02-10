@@ -876,11 +876,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	fp->action = rpmfsGetAction(fs, fx);
 	fp->skip = XFA_SKIPPING(fp->action);
 	fp->setmeta = 1;
-	if (fp->action != FA_TOUCH) {
+	if (XFA_CREATING(fp->action))
 	    fp->suffix = S_ISDIR(rpmfiFMode(fi)) ? NULL : tid;
-	} else {
-	    fp->suffix = NULL;
-	}
 	fp->fpath = fsmFsPath(fi, fp->suffix);
 
 	/* Remap file perms, owner, and group. */
