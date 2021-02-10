@@ -773,14 +773,16 @@ static int fsmCommit(char **path, rpmfi fi, rpmFileAction action, const char *su
 	/* Rename temporary to final file name if needed. */
 	if (dest != *path) {
 	    rc = fsmRename(*path, dest);
-	    if (!rc && nsuffix) {
-		char * opath = fsmFsPath(fi, NULL);
-		rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
-		       opath, dest);
-		free(opath);
+	    if (!rc) {
+		if (nsuffix) {
+		    char * opath = fsmFsPath(fi, NULL);
+		    rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
+			   opath, dest);
+		    free(opath);
+		}
+		free(*path);
+		*path = dest;
 	    }
-	    free(*path);
-	    *path = dest;
 	}
     }
 
