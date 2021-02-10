@@ -58,7 +58,7 @@ static rpmRC open_fifo(struct fapolicyd_data* state)
     return RPMRC_OK;
 
  bad:
-    if (fd > 0)
+    if (fd >= 0)
         close(fd);
     return RPMRC_FAIL;
 }
@@ -175,6 +175,8 @@ static rpmRC fapolicyd_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
 
     snprintf(buffer, 4096, "%s %lu %64s\n", dest, size, sha);
     (void) write_fifo(&fapolicyd_state, buffer);
+
+    free(sha);
 
  end:
     return RPMRC_OK;
