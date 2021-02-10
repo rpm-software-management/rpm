@@ -39,6 +39,7 @@ static int strict_erasures = 0;
 #define _filePerms 0644
 
 struct filedata_s {
+    int setmeta;
     int skip;
     rpmFileAction action;
     const char *suffix;
@@ -279,8 +280,8 @@ exit:
     return rc;
 }
 
-static int fsmMkfile(rpmfi fi, const char *dest, rpmfiles files,
-		     rpmpsm psm, int nodigest, int *setmeta,
+static int fsmMkfile(rpmfi fi, struct filedata_s *fp, rpmfiles files,
+		     rpmpsm psm, int nodigest,
 		     int * firsthardlink, FD_t *firstlinkfile)
 {
     int rc = 0;
@@ -290,11 +291,11 @@ static int fsmMkfile(rpmfi fi, const char *dest, rpmfiles files,
 	/* Create first hardlinked file empty */
 	if (*firsthardlink < 0) {
 	    *firsthardlink = rpmfiFX(fi);
-	    rc = wfd_open(firstlinkfile, dest);
+	    rc = wfd_open(firstlinkfile, fp->fpath);
 	} else {
 	    /* Create hard links for others */
 	    char *fn = rpmfilesFN(files, *firsthardlink);
-	    rc = link(fn, dest);
+	    rc = link(fn, fp->fpath);
 	    if (rc < 0) {
 		rc = RPMERR_LINK_FAILED;
 	    }
@@ -305,14 +306,14 @@ static int fsmMkfile(rpmfi fi, const char *dest, rpmfiles files,
        existing) file with content */
     if (numHardlinks<=1) {
 	if (!rc)
-	    rc = expandRegular(fi, dest, psm, nodigest);
+	    rc = expandRegular(fi, fp->fpath, psm, nodigest);
     } else if (rpmfiArchiveHasContent(fi)) {
 	if (!rc)
 	    rc = rpmfiArchiveReadToFilePsm(fi, *firstlinkfile, nodigest, psm);
 	wfd_close(firstlinkfile);
 	*firsthardlink = -1;
     } else {
-	*setmeta = 0;
+	fp->setmeta = 0;
     }
 
     return rc;
@@ -874,6 +875,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	struct filedata_s *fp = &fdata[fx];
 	fp->action = rpmfsGetAction(fs, fx);
 	fp->skip = XFA_SKIPPING(fp->action);
+	fp->setmeta = 1;
 	if (fp->action != FA_TOUCH) {
 	    fp->suffix = S_ISDIR(rpmfiFMode(fi)) ? NULL : tid;
 	} else {
@@ -900,8 +902,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	}
 
         if (!fp->skip) {
-	    int setmeta = 1;
-
 	    /* Directories replacing something need early backup */
 	    if (!fp->suffix) {
 		rc = fsmBackup(fi, fp->action);
@@ -927,8 +927,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 
             if (S_ISREG(fp->sb.st_mode)) {
 		if (rc == RPMERR_ENOENT) {
-		    rc = fsmMkfile(fi, fp->fpath, files, psm, nodigest,
-				   &setmeta, &firsthardlink, &firstlinkfile);
+		    rc = fsmMkfile(fi, fp, files, psm, nodigest,
+				   &firsthardlink, &firstlinkfile);
 		}
             } else if (S_ISDIR(fp->sb.st_mode)) {
                 if (rc == RPMERR_ENOENT) {
@@ -961,7 +961,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 
 touch:
 	    /* Set permissions, timestamps etc for non-hardlink entries */
-	    if (!rc && setmeta) {
+	    if (!rc && fp->setmeta) {
 		rc = fsmSetmeta(fp->fpath, fi, plugins, fp->action,
 				&fp->sb, nofcaps);
 	    }
