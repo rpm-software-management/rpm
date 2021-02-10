@@ -959,11 +959,9 @@ touch:
 	    /* On FA_TOUCH no hardlinks are created thus this is skipped. */
 	    /* we skip the hard linked file containing the content */
 	    /* write the content to the first used instead */
-	    char *fn = rpmfilesFN(files, firsthardlink);
 	    rc = rpmfiArchiveReadToFilePsm(fi, firstlinkfile, nodigest, psm);
 	    wfd_close(&firstlinkfile);
 	    firsthardlink = -1;
-	    free(fn);
 	}
 
         if (rc) {
