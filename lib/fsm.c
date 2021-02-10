@@ -38,6 +38,14 @@ static int strict_erasures = 0;
 #define _dirPerms 0755
 #define _filePerms 0644
 
+struct filedata_s {
+    int skip;
+    rpmFileAction action;
+    const char *suffix;
+    char *fpath;
+    struct stat sb;
+};
+
 /* 
  * XXX Forward declarations for previously exported functions to avoid moving 
  * things around needlessly 
@@ -840,19 +848,16 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     rpmfi fi = rpmfiNewArchiveReader(payload, files, RPMFI_ITER_READ_ARCHIVE);
     rpmfs fs = rpmteGetFileStates(te);
     rpmPlugins plugins = rpmtsPlugins(ts);
-    struct stat sb;
     int saveerrno = errno;
     int rc = 0;
     int fx = -1;
+    int fc = rpmfilesFC(files);
     int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST) ? 1 : 0;
     int nofcaps = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCAPS) ? 1 : 0;
     int firsthardlink = -1;
     FD_t firstlinkfile = NULL;
-    int skip;
-    rpmFileAction action;
     char *tid = NULL;
-    const char *suffix;
-    char *fpath = NULL;
+    struct filedata_s *fdata = xcalloc(fc, sizeof(*fdata));
 
     if (fi == NULL) {
 	rc = RPMERR_BAD_MAGIC;
@@ -866,96 +871,99 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     rc = fsmMkdirs(files, fs, plugins);
 
     while (!rc && (fx = rpmfiNext(fi)) >= 0) {
-	action = rpmfsGetAction(fs, fx);
-	skip = XFA_SKIPPING(action);
-	if (action != FA_TOUCH) {
-	    suffix = S_ISDIR(rpmfiFMode(fi)) ? NULL : tid;
+	struct filedata_s *fp = &fdata[fx];
+	fp->action = rpmfsGetAction(fs, fx);
+	fp->skip = XFA_SKIPPING(fp->action);
+	if (fp->action != FA_TOUCH) {
+	    fp->suffix = S_ISDIR(rpmfiFMode(fi)) ? NULL : tid;
 	} else {
-	    suffix = NULL;
+	    fp->suffix = NULL;
 	}
-	fpath = fsmFsPath(fi, suffix);
+	fp->fpath = fsmFsPath(fi, fp->suffix);
 
 	/* Remap file perms, owner, and group. */
-	rc = rpmfiStat(fi, 1, &sb);
+	rc = rpmfiStat(fi, 1, &fp->sb);
 
-	fsmDebug(fpath, action, &sb);
+	fsmDebug(fp->fpath, fp->action, &fp->sb);
 
         /* Exit on error. */
         if (rc)
             break;
 
 	/* Run fsm file pre hook for all plugins */
-	rc = rpmpluginsCallFsmFilePre(plugins, fi, fpath,
-				      sb.st_mode, action);
+	rc = rpmpluginsCallFsmFilePre(plugins, fi, fp->fpath,
+				      fp->sb.st_mode, fp->action);
 	if (rc) {
-	    skip = 1;
+	    fp->skip = 1;
 	} else {
 	    setFileState(fs, fx);
 	}
 
-        if (!skip) {
+        if (!fp->skip) {
 	    int setmeta = 1;
 
 	    /* Directories replacing something need early backup */
-	    if (!suffix) {
-		rc = fsmBackup(fi, action);
+	    if (!fp->suffix) {
+		rc = fsmBackup(fi, fp->action);
 	    }
 	    /* Assume file does't exist when tmp suffix is in use */
-	    if (!suffix) {
-		rc = fsmVerify(fpath, fi);
+	    if (!fp->suffix) {
+		rc = fsmVerify(fp->fpath, fi);
 	    } else {
 		rc = RPMERR_ENOENT;
 	    }
 
 	    /* See if the file was removed while our attention was elsewhere */
-	    if (rc == RPMERR_ENOENT && action == FA_TOUCH) {
-		rpmlog(RPMLOG_DEBUG, "file %s vanished unexpectedly\n", fpath);
-		action = FA_CREATE;
-		fsmDebug(fpath, action, &sb);
+	    if (rc == RPMERR_ENOENT && fp->action == FA_TOUCH) {
+		rpmlog(RPMLOG_DEBUG, "file %s vanished unexpectedly\n",
+			fp->fpath);
+		fp->action = FA_CREATE;
+		fsmDebug(fp->fpath, fp->action, &fp->sb);
 	    }
 
 	    /* When touching we don't need any of this... */
-	    if (action == FA_TOUCH)
+	    if (fp->action == FA_TOUCH)
 		goto touch;
 
-            if (S_ISREG(sb.st_mode)) {
+            if (S_ISREG(fp->sb.st_mode)) {
 		if (rc == RPMERR_ENOENT) {
-		    rc = fsmMkfile(fi, fpath, files, psm, nodigest,
+		    rc = fsmMkfile(fi, fp->fpath, files, psm, nodigest,
 				   &setmeta, &firsthardlink, &firstlinkfile);
 		}
-            } else if (S_ISDIR(sb.st_mode)) {
+            } else if (S_ISDIR(fp->sb.st_mode)) {
                 if (rc == RPMERR_ENOENT) {
-                    mode_t mode = sb.st_mode;
+                    mode_t mode = fp->sb.st_mode;
                     mode &= ~07777;
                     mode |=  00700;
-                    rc = fsmMkdir(fpath, mode);
+                    rc = fsmMkdir(fp->fpath, mode);
                 }
-            } else if (S_ISLNK(sb.st_mode)) {
+            } else if (S_ISLNK(fp->sb.st_mode)) {
 		if (rc == RPMERR_ENOENT) {
-		    rc = fsmSymlink(rpmfiFLink(fi), fpath);
+		    rc = fsmSymlink(rpmfiFLink(fi), fp->fpath);
 		}
-            } else if (S_ISFIFO(sb.st_mode)) {
+            } else if (S_ISFIFO(fp->sb.st_mode)) {
                 /* This mimics cpio S_ISSOCK() behavior but probably isn't right */
                 if (rc == RPMERR_ENOENT) {
-                    rc = fsmMkfifo(fpath, 0000);
+                    rc = fsmMkfifo(fp->fpath, 0000);
                 }
-            } else if (S_ISCHR(sb.st_mode) ||
-                       S_ISBLK(sb.st_mode) ||
-                       S_ISSOCK(sb.st_mode))
+            } else if (S_ISCHR(fp->sb.st_mode) ||
+                       S_ISBLK(fp->sb.st_mode) ||
+                       S_ISSOCK(fp->sb.st_mode))
             {
                 if (rc == RPMERR_ENOENT) {
-                    rc = fsmMknod(fpath, sb.st_mode, sb.st_rdev);
+                    rc = fsmMknod(fp->fpath, fp->sb.st_mode, fp->sb.st_rdev);
                 }
             } else {
                 /* XXX Special case /dev/log, which shouldn't be packaged anyways */
-                if (!IS_DEV_LOG(fpath))
+                if (!IS_DEV_LOG(fp->fpath))
                     rc = RPMERR_UNKNOWN_FILETYPE;
             }
 
 touch:
 	    /* Set permissions, timestamps etc for non-hardlink entries */
 	    if (!rc && setmeta) {
-		rc = fsmSetmeta(fpath, fi, plugins, action, &sb, nofcaps);
+		rc = fsmSetmeta(fp->fpath, fi, plugins, fp->action,
+				&fp->sb, nofcaps);
 	    }
         } else if (firsthardlink >= 0 && rpmfiArchiveHasContent(fi)) {
 	    /* On FA_TOUCH no hardlinks are created thus this is skipped. */
@@ -967,10 +975,10 @@ touch:
 	}
 
         if (rc) {
-            if (!skip) {
+            if (!fp->skip) {
                 /* XXX only erase if temp fn w suffix is in use */
-                if (suffix) {
-		    (void) fsmRemove(fpath, sb.st_mode);
+                if (fp->suffix) {
+		    (void) fsmRemove(fp->fpath, fp->sb.st_mode);
                 }
                 errno = saveerrno;
             }
@@ -978,23 +986,22 @@ touch:
 	    /* Notify on success. */
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmfiArchiveTell(fi));
 
-	    if (!skip) {
+	    if (!fp->skip) {
 		/* Backup file if needed. Directories are handled earlier */
-		if (suffix)
-		    rc = fsmBackup(fi, action);
+		if (fp->suffix)
+		    rc = fsmBackup(fi, fp->action);
 
 		if (!rc)
-		    rc = fsmCommit(&fpath, fi, action, suffix);
+		    rc = fsmCommit(&fp->fpath, fi, fp->action, fp->suffix);
 	    }
 	}
 
 	if (rc)
-	    *failedFile = xstrdup(fpath);
+	    *failedFile = xstrdup(fp->fpath);
 
 	/* Run fsm file post hook for all plugins */
-	rpmpluginsCallFsmFilePost(plugins, fi, fpath,
-				  sb.st_mode, action, rc);
-	fpath = _free(fpath);
+	rpmpluginsCallFsmFilePost(plugins, fi, fp->fpath,
+				  fp->sb.st_mode, fp->action, rc);
     }
 
     if (!rc && fx != RPMERR_ITER_END)
@@ -1010,7 +1017,9 @@ exit:
     rpmfiFree(fi);
     Fclose(payload);
     free(tid);
-    free(fpath);
+    for (int i = 0; i < fc; i++)
+	free(fdata[i].fpath);
+    free(fdata);
 
     return rc;
 }
@@ -1022,29 +1031,31 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
     rpmfi fi = rpmfilesIter(files, RPMFI_ITER_BACK);
     rpmfs fs = rpmteGetFileStates(te);
     rpmPlugins plugins = rpmtsPlugins(ts);
-    struct stat sb;
+    int fc = rpmfilesFC(files);
+    int fx = -1;
+    struct filedata_s *fdata = xcalloc(fc, sizeof(*fdata));
     int rc = 0;
-    char *fpath = NULL;
 
-    while (!rc && rpmfiNext(fi) >= 0) {
-	rpmFileAction action = rpmfsGetAction(fs, rpmfiFX(fi));
-	fpath = fsmFsPath(fi, NULL);
-	rc = fsmStat(fpath, 1, &sb);
+    while (!rc && (fx = rpmfiNext(fi)) >= 0) {
+	struct filedata_s *fp = &fdata[fx];
+	fp->action = rpmfsGetAction(fs, rpmfiFX(fi));
+	fp->fpath = fsmFsPath(fi, NULL);
+	rc = fsmStat(fp->fpath, 1, &fp->sb);
 
-	fsmDebug(fpath, action, &sb);
+	fsmDebug(fp->fpath, fp->action, &fp->sb);
 
 	/* Run fsm file pre hook for all plugins */
-	rc = rpmpluginsCallFsmFilePre(plugins, fi, fpath,
-				      sb.st_mode, action);
+	rc = rpmpluginsCallFsmFilePre(plugins, fi, fp->fpath,
+				      fp->sb.st_mode, fp->action);
 
-	if (!XFA_SKIPPING(action))
-	    rc = fsmBackup(fi, action);
+	if (!XFA_SKIPPING(fp->action))
+	    rc = fsmBackup(fi, fp->action);
 
         /* Remove erased files. */
-        if (action == FA_ERASE) {
+        if (fp->action == FA_ERASE) {
 	    int missingok = (rpmfiFFlags(fi) & (RPMFILE_MISSINGOK | RPMFILE_GHOST));
 
-	    rc = fsmRemove(fpath, sb.st_mode);
+	    rc = fsmRemove(fp->fpath, fp->sb.st_mode);
 
 	    /*
 	     * Missing %ghost or %missingok entries are not errors.
@@ -1069,20 +1080,20 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 	    if (rc) {
 		int lvl = strict_erasures ? RPMLOG_ERR : RPMLOG_WARNING;
 		rpmlog(lvl, _("%s %s: remove failed: %s\n"),
-			S_ISDIR(sb.st_mode) ? _("directory") : _("file"),
-			fpath, strerror(errno));
+			S_ISDIR(fp->sb.st_mode) ? _("directory") : _("file"),
+			fp->fpath, strerror(errno));
             }
         }
 
 	/* Run fsm file post hook for all plugins */
-	rpmpluginsCallFsmFilePost(plugins, fi, fpath,
-				  sb.st_mode, action, rc);
+	rpmpluginsCallFsmFilePost(plugins, fi, fp->fpath,
+				  fp->sb.st_mode, fp->action, rc);
 
         /* XXX Failure to remove is not (yet) cause for failure. */
         if (!strict_erasures) rc = 0;
 
 	if (rc)
-	    *failedFile = xstrdup(fpath);
+	    *failedFile = xstrdup(fp->fpath);
 
 	if (rc == 0) {
 	    /* Notify on success. */
@@ -1090,10 +1101,11 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 	    rpm_loff_t amount = rpmfiFC(fi) - rpmfiFX(fi);
 	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, amount);
 	}
-	fpath = _free(fpath);
     }
 
-    free(fpath);
+    for (int i = 0; i < fc; i++)
+	free(fdata[i].fpath);
+    free(fdata);
     rpmfiFree(fi);
 
     return rc;
