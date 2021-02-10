@@ -38,7 +38,17 @@ static int strict_erasures = 0;
 #define _dirPerms 0755
 #define _filePerms 0644
 
+enum filestage_e {
+    FILE_COMMIT = -1,
+    FILE_NONE   = 0,
+    FILE_PRE    = 1,
+    FILE_UNPACK = 2,
+    FILE_PREP   = 3,
+    FILE_POST   = 4,
+};
+
 struct filedata_s {
+    int stage;
     int setmeta;
     int skip;
     rpmFileAction action;
@@ -844,10 +854,9 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile)
 {
     FD_t payload = rpmtePayload(te);
-    rpmfi fi = rpmfiNewArchiveReader(payload, files, RPMFI_ITER_READ_ARCHIVE);
+    rpmfi fi = NULL;
     rpmfs fs = rpmteGetFileStates(te);
     rpmPlugins plugins = rpmtsPlugins(ts);
-    int saveerrno = errno;
     int rc = 0;
     int fx = -1;
     int fc = rpmfilesFC(files);
@@ -858,20 +867,17 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     struct filedata_s *fdata = xcalloc(fc, sizeof(*fdata));
     struct filedata_s *firstlink = NULL;
 
-    if (fi == NULL) {
-	rc = RPMERR_BAD_MAGIC;
-	goto exit;
-    }
-
     /* transaction id used for temporary path suffix while installing */
     rasprintf(&tid, ";%08x", (unsigned)rpmtsGetTid(ts));
 
-    /* Detect and create directories not explicitly in package. */
-    rc = fsmMkdirs(files, fs, plugins);
-
+    /* Collect state data for the whole operation */
+    fi = rpmfilesIter(files, RPMFI_ITER_FWD);
     while (!rc && (fx = rpmfiNext(fi)) >= 0) {
 	struct filedata_s *fp = &fdata[fx];
-	fp->action = rpmfsGetAction(fs, fx);
+	if (rpmfiFFlags(fi) & RPMFILE_GHOST)
+            fp->action = FA_SKIP;
+	else
+	    fp->action = rpmfsGetAction(fs, fx);
 	fp->skip = XFA_SKIPPING(fp->action);
 	fp->setmeta = 1;
 	if (XFA_CREATING(fp->action) && !S_ISDIR(rpmfiFMode(fi)))
@@ -881,20 +887,32 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	/* Remap file perms, owner, and group. */
 	rc = rpmfiStat(fi, 1, &fp->sb);
 
+	setFileState(fs, fx);
 	fsmDebug(fp->fpath, fp->action, &fp->sb);
-
-        /* Exit on error. */
-        if (rc)
-            break;
 
 	/* Run fsm file pre hook for all plugins */
 	rc = rpmpluginsCallFsmFilePre(plugins, fi, fp->fpath,
 				      fp->sb.st_mode, fp->action);
-	if (rc) {
-	    fp->skip = 1;
-	} else {
-	    setFileState(fs, fx);
-	}
+	fp->stage = FILE_PRE;
+    }
+    fi = rpmfiFree(fi);
+
+    if (rc)
+	goto exit;
+
+    fi = rpmfiNewArchiveReader(payload, files, RPMFI_ITER_READ_ARCHIVE);
+    if (fi == NULL) {
+        rc = RPMERR_BAD_MAGIC;
+        goto exit;
+    }
+
+    /* Detect and create directories not explicitly in package. */
+    if (!rc)
+	rc = fsmMkdirs(files, fs, plugins);
+
+    /* Process the payload */
+    while (!rc && (fx = rpmfiNext(fi)) >= 0) {
+	struct filedata_s *fp = &fdata[fx];
 
         if (!fp->skip) {
 	    /* Directories replacing something need early backup */
@@ -918,7 +936,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 
 	    /* When touching we don't need any of this... */
 	    if (fp->action == FA_TOUCH)
-		goto touch;
+		continue;
 
             if (S_ISREG(fp->sb.st_mode)) {
 		if (rc == RPMERR_ENOENT) {
@@ -954,12 +972,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
                     rc = RPMERR_UNKNOWN_FILETYPE;
             }
 
-touch:
-	    /* Set permissions, timestamps etc for non-hardlink entries */
-	    if (!rc && fp->setmeta) {
-		rc = fsmSetmeta(fp->fpath, fi, plugins, fp->action,
-				&fp->sb, nofcaps);
-	    }
         } else if (firstlink && rpmfiArchiveHasContent(fi)) {
 	    /* On FA_TOUCH no hardlinks are created thus this is skipped. */
 	    /* we skip the hard linked file containing the content */
@@ -969,47 +981,74 @@ touch:
 	    firstlink = NULL;
 	}
 
-        if (rc) {
-            if (!fp->skip) {
-                /* XXX only erase if temp fn w suffix is in use */
-                if (fp->suffix) {
-		    (void) fsmRemove(fp->fpath, fp->sb.st_mode);
-                }
-                errno = saveerrno;
-            }
-        } else {
-	    /* Notify on success. */
-	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmfiArchiveTell(fi));
-
-	    if (!fp->skip) {
-		/* Backup file if needed. Directories are handled earlier */
-		if (fp->suffix)
-		    rc = fsmBackup(fi, fp->action);
-
-		if (!rc)
-		    rc = fsmCommit(&fp->fpath, fi, fp->action, fp->suffix);
-	    }
-	}
-
+	/* Notify on success. */
 	if (rc)
 	    *failedFile = xstrdup(fp->fpath);
-
-	/* Run fsm file post hook for all plugins */
-	rpmpluginsCallFsmFilePost(plugins, fi, fp->fpath,
-				  fp->sb.st_mode, fp->action, rc);
+	else
+	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmfiArchiveTell(fi));
+	fp->stage = FILE_UNPACK;
     }
+    fi = rpmfiFree(fi);
 
-    if (!rc && fx != RPMERR_ITER_END)
+    if (!rc && fx < 0 && fx != RPMERR_ITER_END)
 	rc = fx;
+
+    /* Set permissions, timestamps etc for non-hardlink entries */
+    fi = rpmfilesIter(files, RPMFI_ITER_FWD);
+    while (!rc && (fx = rpmfiNext(fi)) >= 0) {
+	struct filedata_s *fp = &fdata[fx];
+	if (!fp->skip && fp->setmeta) {
+	    rc = fsmSetmeta(fp->fpath, fi, plugins, fp->action,
+			    &fp->sb, nofcaps);
+	}
+	if (rc)
+	    *failedFile = xstrdup(fp->fpath);
+	fp->stage = FILE_PREP;
+    }
+    fi = rpmfiFree(fi);
+
+    /* If all went well, commit files to final destination */
+    fi = rpmfilesIter(files, RPMFI_ITER_FWD);
+    while (!rc && (fx = rpmfiNext(fi)) >= 0) {
+	struct filedata_s *fp = &fdata[fx];
+
+	if (!fp->skip) {
+	    /* Backup file if needed. Directories are handled earlier */
+	    if (!rc && fp->suffix)
+		rc = fsmBackup(fi, fp->action);
+
+	    if (!rc)
+		rc = fsmCommit(&fp->fpath, fi, fp->action, fp->suffix);
+
+	    if (!rc)
+		fp->stage = FILE_COMMIT;
+	    else
+		*failedFile = xstrdup(fp->fpath);
+	}
+    }
+    fi = rpmfiFree(fi);
+
+    /* Walk backwards in case we need to erase */
+    fi = rpmfilesIter(files, RPMFI_ITER_BACK);
+    while ((fx = rpmfiNext(fi)) >= 0) {
+	struct filedata_s *fp = &fdata[fx];
+	/* Run fsm file post hook for all plugins for all processed files */
+	if (fp->stage) {
+	    rpmpluginsCallFsmFilePost(plugins, fi, fp->fpath,
+				      fp->sb.st_mode, fp->action, rc);
+	}
+
+	/* On failure, erase non-committed files */
+	if (rc && fp->stage > FILE_NONE && !fp->skip) {
+	    (void) fsmRemove(fp->fpath, fp->sb.st_mode);
+	}
+    }
 
     rpmswAdd(rpmtsOp(ts, RPMTS_OP_UNCOMPRESS), fdOp(payload, FDSTAT_READ));
     rpmswAdd(rpmtsOp(ts, RPMTS_OP_DIGEST), fdOp(payload, FDSTAT_DIGEST));
 
 exit:
-
-    /* No need to bother with close errors on read */
-    rpmfiArchiveClose(fi);
-    rpmfiFree(fi);
+    fi = rpmfiFree(fi);
     Fclose(payload);
     free(tid);
     for (int i = 0; i < fc; i++)

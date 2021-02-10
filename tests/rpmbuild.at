@@ -253,38 +253,6 @@ drwxrwxrwx zoot     zoot     /j/dir
 [])
 AT_CLEANUP
 
-# ------------------------------
-# hardlink tests
-AT_SETUP([rpmbuild hardlink])
-AT_KEYWORDS([build])
-RPMDB_INIT
-AT_CHECK([
-RPMDB_INIT
-
-runroot rpmbuild \
-  -bb --quiet /data/SPECS/hlinktest.spec
-
-runroot rpm -i /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
-
-runroot rpm -q --qf "[[%{filenlinks} %{filenames}\n]]%{longsize}\n" hlinktest
-runroot rpm -V --nouser --nogroup hlinktest
-ls -i "${RPMTEST}"/foo/hello* | awk {'print $1'} | sort -u | wc -l
-
-],
-[0],
-[2 /foo/aaaa
-1 /foo/copyllo
-4 /foo/hello
-4 /foo/hello-bar
-4 /foo/hello-foo
-4 /foo/hello-world
-2 /foo/zzzz
-87
-1
-],
-[])
-AT_CLEANUP
-
 AT_SETUP([rpmbuild unpackaged files])
 AT_KEYWORDS([build])
 RPMDB_INIT

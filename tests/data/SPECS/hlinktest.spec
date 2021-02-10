@@ -1,6 +1,7 @@
 %bcond_with unpackaged_dirs
 %bcond_with unpackaged_files
 %bcond_with unpackaged_excludes
+%bcond_with owned_dir
 
 Summary:          Testing hard link behavior
 Name:             hlinktest
@@ -43,6 +44,9 @@ touch $RPM_BUILD_ROOT/teet
 
 %files
 %defattr(-,root,root)
+%if %{with owned_dir}
+%dir /foo
+%endif
 /foo/*
 %if %{with unpackaged_excludes}
 %exclude /teet

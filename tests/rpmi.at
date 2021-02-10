@@ -722,3 +722,95 @@ runroot rpm -V --nouser --nogroup suicidal
 [],
 [])
 AT_CLEANUP
+
+# ------------------------------
+# hardlink tests
+AT_SETUP([rpm -i hardlinks])
+AT_KEYWORDS([build install])
+RPMDB_INIT
+
+# Need a reproducable test package
+runroot rpmbuild \
+  --define "%optflags -O2 -g" \
+  --define "%_target_platform noarch-linux" \
+  --define "%_binary_payload w.ufdio" \
+  --define "%_buildhost localhost" \
+  --define "%use_source_date_epoch_as_buildtime 1" \
+  --define "%source_date_epoch_from_changelog 1" \
+  --define "%clamp_mtime_to_source_date_epoch 1" \
+  --with owned_dir \
+  -bb --quiet /data/SPECS/hlinktest.spec
+
+pkg="/build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm"
+
+cp "${RPMTEST}/${pkg}" "${RPMTEST}/tmp/1.rpm"
+dd if=/dev/zero of="${RPMTEST}/tmp/1.rpm" \
+   conv=notrunc bs=1 seek=8180 count=6 2> /dev/null
+
+cp "${RPMTEST}/${pkg}" "${RPMTEST}/tmp/2.rpm"
+dd if=/dev/zero of="${RPMTEST}/tmp/2.rpm" \
+   conv=notrunc bs=1 seek=8150 count=6 2> /dev/null
+
+cp "${RPMTEST}/${pkg}" "${RPMTEST}/tmp/3.rpm"
+dd if=/dev/zero of="${RPMTEST}/tmp/3.rpm" \
+   conv=notrunc bs=1 seek=8050 count=6 2> /dev/null
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -i --noverify /tmp/1.rpm
+# test that nothing of the contents remains after failure
+test -d "${RPMTEST}/foo"
+],
+[1],
+[],
+[error: unpacking of archive failed: cpio: Archive file not in header
+error: hlinktest-1.0-1.noarch: install failed
+])
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -i --noverify /tmp/2.rpm
+# test that nothing of the contents remains after failure
+test -d "${RPMTEST}/foo"
+],
+[1],
+[],
+[error: unpacking of archive failed: cpio: Bad/unreadable  header
+error: hlinktest-1.0-1.noarch: install failed
+])
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -i --noverify /tmp/3.rpm 2>&1| sed 's/;.*:/:/g'
+# test that nothing of the contents remains after failure
+test -d "${RPMTEST}/foo"
+],
+[1],
+[error: unpacking of archive failed on file /foo/hello-world: Digest mismatch
+error: hlinktest-1.0-1.noarch: install failed
+],
+[])
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -i /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+runroot rpm -q --qf "[[%{filenlinks} %{filenames}\n]]%{longsize}\n" hlinktest
+ls -i "${RPMTEST}"/foo/hello* | awk {'print $1'} | sort -u | wc -l
+runroot rpm -e hlinktest
+
+],
+[0],
+[1 /foo
+2 /foo/aaaa
+1 /foo/copyllo
+4 /foo/hello
+4 /foo/hello-bar
+4 /foo/hello-foo
+4 /foo/hello-world
+2 /foo/zzzz
+87
+1
+],
+[])
+AT_CLEANUP
+
