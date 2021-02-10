@@ -282,24 +282,22 @@ exit:
 
 static int fsmMkfile(rpmfi fi, struct filedata_s *fp, rpmfiles files,
 		     rpmpsm psm, int nodigest,
-		     int * firsthardlink, FD_t *firstlinkfile)
+		     struct filedata_s ** firstlink, FD_t *firstlinkfile)
 {
     int rc = 0;
     int numHardlinks = rpmfiFNlink(fi);
 
     if (numHardlinks > 1) {
 	/* Create first hardlinked file empty */
-	if (*firsthardlink < 0) {
-	    *firsthardlink = rpmfiFX(fi);
+	if (*firstlink == NULL) {
+	    *firstlink = fp;
 	    rc = wfd_open(firstlinkfile, fp->fpath);
 	} else {
 	    /* Create hard links for others */
-	    char *fn = rpmfilesFN(files, *firsthardlink);
-	    rc = link(fn, fp->fpath);
+	    rc = link((*firstlink)->fpath, fp->fpath);
 	    if (rc < 0) {
 		rc = RPMERR_LINK_FAILED;
 	    }
-	    free(fn);
 	}
     }
     /* Write normal files or fill the last hardlinked (already
@@ -311,7 +309,7 @@ static int fsmMkfile(rpmfi fi, struct filedata_s *fp, rpmfiles files,
 	if (!rc)
 	    rc = rpmfiArchiveReadToFilePsm(fi, *firstlinkfile, nodigest, psm);
 	wfd_close(firstlinkfile);
-	*firsthardlink = -1;
+	*firstlink = NULL;
     } else {
 	fp->setmeta = 0;
     }
@@ -855,10 +853,10 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     int fc = rpmfilesFC(files);
     int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST) ? 1 : 0;
     int nofcaps = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCAPS) ? 1 : 0;
-    int firsthardlink = -1;
     FD_t firstlinkfile = NULL;
     char *tid = NULL;
     struct filedata_s *fdata = xcalloc(fc, sizeof(*fdata));
+    struct filedata_s *firstlink = NULL;
 
     if (fi == NULL) {
 	rc = RPMERR_BAD_MAGIC;
@@ -925,7 +923,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
             if (S_ISREG(fp->sb.st_mode)) {
 		if (rc == RPMERR_ENOENT) {
 		    rc = fsmMkfile(fi, fp, files, psm, nodigest,
-				   &firsthardlink, &firstlinkfile);
+				   &firstlink, &firstlinkfile);
 		}
             } else if (S_ISDIR(fp->sb.st_mode)) {
                 if (rc == RPMERR_ENOENT) {
@@ -962,13 +960,13 @@ touch:
 		rc = fsmSetmeta(fp->fpath, fi, plugins, fp->action,
 				&fp->sb, nofcaps);
 	    }
-        } else if (firsthardlink >= 0 && rpmfiArchiveHasContent(fi)) {
+        } else if (firstlink && rpmfiArchiveHasContent(fi)) {
 	    /* On FA_TOUCH no hardlinks are created thus this is skipped. */
 	    /* we skip the hard linked file containing the content */
 	    /* write the content to the first used instead */
 	    rc = rpmfiArchiveReadToFilePsm(fi, firstlinkfile, nodigest, psm);
 	    wfd_close(&firstlinkfile);
-	    firsthardlink = -1;
+	    firstlink = NULL;
 	}
 
         if (rc) {
