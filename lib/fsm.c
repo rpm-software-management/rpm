@@ -297,6 +297,17 @@ static int fsmOpen(FD_t *wfdp, const char *dest)
     return rc;
 }
 
+static int fsmUnpack(rpmfi fi, FD_t fd, rpmpsm psm, int nodigest)
+{
+    int rc = rpmfiArchiveReadToFilePsm(fi, fd, nodigest, psm);
+    if (_fsm_debug) {
+	rpmlog(RPMLOG_DEBUG, " %8s (%s %lu bytes [%d]) %s\n", __func__,
+	       rpmfiFN(fi), rpmfiFSize(fi), Fileno(fd),
+	       (rc < 0 ? strerror(errno) : ""));
+    }
+    return rc;
+}
+
 static int fsmMkfile(rpmfi fi, struct filedata_s *fp, rpmfiles files,
 		     rpmpsm psm, int nodigest,
 		     struct filedata_s ** firstlink, FD_t *firstlinkfile)
@@ -324,7 +335,7 @@ static int fsmMkfile(rpmfi fi, struct filedata_s *fp, rpmfiles files,
     /* If the file has content, unpack it */
     if (rpmfiArchiveHasContent(fi)) {
 	if (!rc)
-	    rc = rpmfiArchiveReadToFilePsm(fi, fd, nodigest, psm);
+	    rc = fsmUnpack(fi, fd, psm, nodigest);
 	/* Last file of hardlink set, ensure metadata gets set */
 	if (*firstlink) {
 	    (*firstlink)->setmeta = 1;
