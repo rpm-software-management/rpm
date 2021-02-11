@@ -812,5 +812,76 @@ runroot rpm -e hlinktest
 1
 ],
 [])
-AT_CLEANUP
 
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -i --excludepath=/foo/zzzz /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+runroot rpm -Vv --nogroup --nouser hlinktest
+runroot rpm -e hlinktest
+],
+[0],
+[.........    /foo
+.........    /foo/aaaa
+.........    /foo/copyllo
+.........    /foo/hello
+.........    /foo/hello-bar
+.........    /foo/hello-foo
+.........    /foo/hello-world
+.........    /foo/zzzz (not installed)
+],
+[])
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -i --excludepath=/foo/aaaa /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+runroot rpm -Vv --nogroup --nouser hlinktest
+runroot rpm -e hlinktest
+],
+[0],
+[.........    /foo
+.........    /foo/aaaa (not installed)
+.........    /foo/copyllo
+.........    /foo/hello
+.........    /foo/hello-bar
+.........    /foo/hello-foo
+.........    /foo/hello-world
+.........    /foo/zzzz
+],
+[])
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -i --excludepath=/foo/aaaa --excludepath=/foo/zzzz /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+runroot rpm -Vv --nogroup --nouser hlinktest
+runroot rpm -e hlinktest
+],
+[0],
+[.........    /foo
+.........    /foo/aaaa (not installed)
+.........    /foo/copyllo
+.........    /foo/hello
+.........    /foo/hello-bar
+.........    /foo/hello-foo
+.........    /foo/hello-world
+.........    /foo/zzzz (not installed)
+],
+[])
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -i --excludepath=/foo/hello-foo /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+runroot rpm -Vv --nogroup --nouser hlinktest
+runroot rpm -e hlinktest
+],
+[0],
+[.........    /foo
+.........    /foo/aaaa
+.........    /foo/copyllo
+.........    /foo/hello
+.........    /foo/hello-bar
+.........    /foo/hello-foo (not installed)
+.........    /foo/hello-world
+.........    /foo/zzzz
+],
+[])
+AT_CLEANUP

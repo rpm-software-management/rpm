@@ -297,55 +297,44 @@ static int fsmOpen(FD_t *wfdp, const char *dest)
     return rc;
 }
 
-/** \ingroup payload
- * Create file from payload stream.
- * @return		0 on success
- */
-static int expandRegular(rpmfi fi, const char *dest, rpmpsm psm, int nodigest)
-{
-    FD_t wfd = NULL;
-    int rc;
-
-    rc = fsmOpen(&wfd, dest);
-    if (rc != 0)
-        goto exit;
-
-    rc = rpmfiArchiveReadToFilePsm(fi, wfd, nodigest, psm);
-    fsmClose(&wfd);
-exit:
-    return rc;
-}
-
 static int fsmMkfile(rpmfi fi, struct filedata_s *fp, rpmfiles files,
 		     rpmpsm psm, int nodigest,
 		     struct filedata_s ** firstlink, FD_t *firstlinkfile)
 {
     int rc = 0;
-    int numHardlinks = rpmfiFNlink(fi);
+    FD_t fd = NULL;
 
-    if (numHardlinks > 1) {
-	/* Create first hardlinked file empty */
-	if (*firstlink == NULL) {
+    if (*firstlink == NULL) {
+	/* First encounter, open file for writing */
+	rc = fsmOpen(&fd, fp->fpath);
+	/* If it's a part of a hardlinked set, the content may come later */
+	if (fp->sb.st_nlink > 1) {
 	    *firstlink = fp;
-	    rc = fsmOpen(firstlinkfile, fp->fpath);
-	} else {
-	    /* Create hard links for others */
+	    *firstlinkfile = fd;
+	}
+    } else {
+	/* Create hard links for others and avoid redundant metadata setting */
+	if (*firstlink != fp) {
 	    rc = fsmLink((*firstlink)->fpath, fp->fpath);
+	    fp->setmeta = 0;
+	}
+	fd = *firstlinkfile;
+    }
+
+    /* If the file has content, unpack it */
+    if (rpmfiArchiveHasContent(fi)) {
+	if (!rc)
+	    rc = rpmfiArchiveReadToFilePsm(fi, fd, nodigest, psm);
+	/* Last file of hardlink set, ensure metadata gets set */
+	if (*firstlink) {
+	    (*firstlink)->setmeta = 1;
+	    *firstlink = NULL;
+	    *firstlinkfile = NULL;
 	}
     }
-    /* Write normal files or fill the last hardlinked (already
-       existing) file with content */
-    if (numHardlinks<=1) {
-	if (!rc)
-	    rc = expandRegular(fi, fp->fpath, psm, nodigest);
-    } else if (rpmfiArchiveHasContent(fi)) {
-	if (!rc)
-	    rc = rpmfiArchiveReadToFilePsm(fi, *firstlinkfile, nodigest, psm);
-	fsmClose(firstlinkfile);
-	*firstlink = NULL;
-    } else {
-	fp->setmeta = 0;
-    }
+
+    if (fd != *firstlinkfile)
+	fsmClose(&fd);
 
     return rc;
 }
@@ -994,14 +983,15 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
                 if (!IS_DEV_LOG(fp->fpath))
                     rc = RPMERR_UNKNOWN_FILETYPE;
             }
-
-        } else if (firstlink && rpmfiArchiveHasContent(fi)) {
-	    /* On FA_TOUCH no hardlinks are created thus this is skipped. */
-	    /* we skip the hard linked file containing the content */
-	    /* write the content to the first used instead */
-	    rc = rpmfiArchiveReadToFilePsm(fi, firstlinkfile, nodigest, psm);
-	    fsmClose(&firstlinkfile);
-	    firstlink = NULL;
+	} else if (firstlink && rpmfiArchiveHasContent(fi)) {
+	    /*
+	     * Tricksy case: this file is a being skipped, but it's part of
+	     * a hardlinked set and has the actual content linked with it.
+	     * Write the content to the first non-skipped file of the set
+	     * instead.
+	     */
+	    rc = fsmMkfile(fi, firstlink, files, psm, nodigest,
+			   &firstlink, &firstlinkfile);
 	}
 
 	/* Notify on success. */
