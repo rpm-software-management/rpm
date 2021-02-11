@@ -244,27 +244,36 @@ static int fsmSetFCaps(const char *path, const char *captxt)
     return rc;
 }
 
-static void wfd_close(FD_t *wfdp)
+static int fsmClose(FD_t *wfdp)
 {
+    int rc = 0;
     if (wfdp && *wfdp) {
 	int myerrno = errno;
 	static int oneshot = 0;
 	static int flush_io = 0;
+	int fdno = Fileno(*wfdp);
+
 	if (!oneshot) {
 	    flush_io = (rpmExpandNumeric("%{?_flush_io}") > 0);
 	    oneshot = 1;
 	}
 	if (flush_io) {
-	    int fdno = Fileno(*wfdp);
 	    fsync(fdno);
 	}
-	Fclose(*wfdp);
+	if (Fclose(*wfdp))
+	    rc = RPMERR_CLOSE_FAILED;
+
+	if (_fsm_debug) {
+	    rpmlog(RPMLOG_DEBUG, " %8s ([%d]) %s\n", __func__,
+		   fdno, (rc < 0 ? strerror(errno) : ""));
+	}
 	*wfdp = NULL;
 	errno = myerrno;
     }
+    return rc;
 }
 
-static int wfd_open(FD_t *wfdp, const char *dest)
+static int fsmOpen(FD_t *wfdp, const char *dest)
 {
     int rc = 0;
     /* Create the file with 0200 permissions (write by owner). */
@@ -273,15 +282,18 @@ static int wfd_open(FD_t *wfdp, const char *dest)
 	*wfdp = Fopen(dest, "wx.ufdio");
 	umask(old_umask);
     }
-    if (Ferror(*wfdp)) {
+
+    if (Ferror(*wfdp))
 	rc = RPMERR_OPEN_FAILED;
-	goto exit;
+
+    if (_fsm_debug) {
+	rpmlog(RPMLOG_DEBUG, " %8s (%s [%d]) %s\n", __func__,
+	       dest, Fileno(*wfdp), (rc < 0 ? strerror(errno) : ""));
     }
 
-    return 0;
+    if (rc)
+	fsmClose(wfdp);
 
-exit:
-    wfd_close(wfdp);
     return rc;
 }
 
@@ -294,12 +306,12 @@ static int expandRegular(rpmfi fi, const char *dest, rpmpsm psm, int nodigest)
     FD_t wfd = NULL;
     int rc;
 
-    rc = wfd_open(&wfd, dest);
+    rc = fsmOpen(&wfd, dest);
     if (rc != 0)
         goto exit;
 
     rc = rpmfiArchiveReadToFilePsm(fi, wfd, nodigest, psm);
-    wfd_close(&wfd);
+    fsmClose(&wfd);
 exit:
     return rc;
 }
@@ -315,7 +327,7 @@ static int fsmMkfile(rpmfi fi, struct filedata_s *fp, rpmfiles files,
 	/* Create first hardlinked file empty */
 	if (*firstlink == NULL) {
 	    *firstlink = fp;
-	    rc = wfd_open(firstlinkfile, fp->fpath);
+	    rc = fsmOpen(firstlinkfile, fp->fpath);
 	} else {
 	    /* Create hard links for others */
 	    rc = fsmLink((*firstlink)->fpath, fp->fpath);
@@ -329,7 +341,7 @@ static int fsmMkfile(rpmfi fi, struct filedata_s *fp, rpmfiles files,
     } else if (rpmfiArchiveHasContent(fi)) {
 	if (!rc)
 	    rc = rpmfiArchiveReadToFilePsm(fi, *firstlinkfile, nodigest, psm);
-	wfd_close(firstlinkfile);
+	fsmClose(firstlinkfile);
 	*firstlink = NULL;
     } else {
 	fp->setmeta = 0;
@@ -988,7 +1000,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	    /* we skip the hard linked file containing the content */
 	    /* write the content to the first used instead */
 	    rc = rpmfiArchiveReadToFilePsm(fi, firstlinkfile, nodigest, psm);
-	    wfd_close(&firstlinkfile);
+	    fsmClose(&firstlinkfile);
 	    firstlink = NULL;
 	}
 
