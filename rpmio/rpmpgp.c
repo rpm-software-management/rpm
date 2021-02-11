@@ -266,21 +266,6 @@ static void pgpPrtTime(const char * pre, const uint8_t *p, size_t plen)
 }
 
 /** \ingroup rpmpgp
- * Return hex formatted representation of a multiprecision integer.
- * @param p		bytes
- * @return		hex formatted string (malloc'ed)
- */
-static inline
-char * pgpMpiStr(const uint8_t *p)
-{
-    char *str = NULL;
-    char *hex = pgpHexStr(p+2, pgpMpiLen(p)-2);
-    rasprintf(&str, "[%4u]: %s", pgpGrab(p, (size_t) 2), hex);
-    free(hex);
-    return str;
-}
-
-/** \ingroup rpmpgp
  * Return value of an OpenPGP string.
  * @param vs		table of (string,value) pairs
  * @param s		string token to lookup
