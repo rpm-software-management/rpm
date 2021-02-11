@@ -650,7 +650,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	rc = pgpPrtSigParams(tag, v->pubkey_algo, v->sigtype, p, h, hlen, _digp);
     }	break;
     default:
-	rpmlog(RPMLOG_WARNING, _("Unsupported version of key: V%d\n"), version);
+	rpmlog(RPMLOG_WARNING, _("Unsupported version of signature: V%d\n"), version);
 	rc = 1;
 	break;
     }
