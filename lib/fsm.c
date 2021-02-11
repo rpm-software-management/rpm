@@ -211,6 +211,20 @@ const char * dnlNextIterator(DNLI_t dnli)
     return dn;
 }
 
+static int fsmLink(const char *opath, const char *path)
+{
+    int rc = link(opath, path);
+
+    if (_fsm_debug) {
+	rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", __func__,
+	       opath, path, (rc < 0 ? strerror(errno) : ""));
+    }
+
+    if (rc < 0)
+	rc = RPMERR_LINK_FAILED;
+    return rc;
+}
+
 static int fsmSetFCaps(const char *path, const char *captxt)
 {
     int rc = 0;
@@ -304,10 +318,7 @@ static int fsmMkfile(rpmfi fi, struct filedata_s *fp, rpmfiles files,
 	    rc = wfd_open(firstlinkfile, fp->fpath);
 	} else {
 	    /* Create hard links for others */
-	    rc = link((*firstlink)->fpath, fp->fpath);
-	    if (rc < 0) {
-		rc = RPMERR_LINK_FAILED;
-	    }
+	    rc = fsmLink((*firstlink)->fpath, fp->fpath);
 	}
     }
     /* Write normal files or fill the last hardlinked (already
