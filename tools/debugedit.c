@@ -453,6 +453,11 @@ static debug_section debug_sections[] =
 #define DEBUG_TYPES	11
 #define DEBUG_MACRO	12
 #define DEBUG_GDB_SCRIPT	13
+#define DEBUG_RNGLISTS	14
+#define DEBUG_LINE_STR	15
+#define DEBUG_ADDR	16
+#define DEBUG_STR_OFFSETS	17
+#define DEBUG_LOCLISTS	18
     { ".debug_info", NULL, NULL, 0, 0, 0 },
     { ".debug_abbrev", NULL, NULL, 0, 0, 0 },
     { ".debug_line", NULL, NULL, 0, 0, 0 },
@@ -467,6 +472,11 @@ static debug_section debug_sections[] =
     { ".debug_types", NULL, NULL, 0, 0, 0 },
     { ".debug_macro", NULL, NULL, 0, 0, 0 },
     { ".debug_gdb_scripts", NULL, NULL, 0, 0, 0 },
+    { ".debug_rnglists", NULL, NULL, 0, 0, 0 },
+    { ".debug_line_str", NULL, NULL, 0, 0, 0 },
+    { ".debug_addr", NULL, NULL, 0, 0, 0 },
+    { ".debug_str_offsets", NULL, NULL, 0, 0, 0 },
+    { ".debug_loclists", NULL, NULL, 0, 0, 0 },
     { NULL, NULL, NULL, 0, 0, 0 }
   };
 
@@ -755,11 +765,27 @@ no_memory:
 	    }
 	  form = read_uleb128 (ptr);
 	  if (form == 2
-	      || (form > DW_FORM_flag_present && form != DW_FORM_ref_sig8))
+	      || (form > DW_FORM_flag_present
+		  && !(form == DW_FORM_ref_sig8
+		       || form == DW_FORM_data16
+		       || form == DW_FORM_implicit_const
+		       || form == DW_FORM_addrx
+		       || form == DW_FORM_loclistx
+		       || form == DW_FORM_rnglistx
+		       || form == DW_FORM_addrx1
+		       || form == DW_FORM_addrx2
+		       || form == DW_FORM_addrx3
+		       || form == DW_FORM_addrx4)))
 	    {
-	      error (0, 0, "%s: Unknown DWARF DW_FORM_%d", dso->filename, form);
+	      error (0, 0, "%s: Unknown DWARF DW_FORM_0x%x", dso->filename,
+		     form);
 	      htab_delete (h);
 	      return NULL;
+	    }
+	  if (form == DW_FORM_implicit_const)
+	    {
+	      /* It is SLEB128 but the value is dropped anyway.  */
+	      read_uleb128 (ptr);
 	    }
 
 	  t->attr[t->nattr].attr = attr;
@@ -1505,6 +1531,7 @@ skip_form (DSO *dso, uint32_t *formp, unsigned char **ptrp)
 	*ptrp += 4;
       break;
     case DW_FORM_flag_present:
+    case DW_FORM_implicit_const:
       break;
     case DW_FORM_addr:
       *ptrp += ptr_size;
@@ -1512,14 +1539,24 @@ skip_form (DSO *dso, uint32_t *formp, unsigned char **ptrp)
     case DW_FORM_ref1:
     case DW_FORM_flag:
     case DW_FORM_data1:
+    case DW_FORM_strx1:
+    case DW_FORM_addrx1:
       ++*ptrp;
       break;
     case DW_FORM_ref2:
     case DW_FORM_data2:
+    case DW_FORM_strx2:
+    case DW_FORM_addrx2:
       *ptrp += 2;
+      break;
+    case DW_FORM_strx3:
+    case DW_FORM_addrx3:
+      *ptrp += 3;
       break;
     case DW_FORM_ref4:
     case DW_FORM_data4:
+    case DW_FORM_strx4:
+    case DW_FORM_addrx4:
     case DW_FORM_sec_offset:
       *ptrp += 4;
       break;
@@ -1528,12 +1565,20 @@ skip_form (DSO *dso, uint32_t *formp, unsigned char **ptrp)
     case DW_FORM_ref_sig8:
       *ptrp += 8;
       break;
+    case DW_FORM_data16:
+      *ptrp += 16;
+      break;
     case DW_FORM_sdata:
     case DW_FORM_ref_udata:
     case DW_FORM_udata:
+    case DW_FORM_strx:
+    case DW_FORM_loclistx:
+    case DW_FORM_rnglistx:
+    case DW_FORM_addrx:
       read_uleb128 (*ptrp);
       break;
     case DW_FORM_strp:
+    case DW_FORM_line_strp:
       *ptrp += 4;
       break;
     case DW_FORM_string:
@@ -1560,7 +1605,7 @@ skip_form (DSO *dso, uint32_t *formp, unsigned char **ptrp)
       assert (len < UINT_MAX);
       break;
     default:
-      error (0, 0, "%s: Unknown DWARF DW_FORM_%d", dso->filename, *formp);
+      error (0, 0, "%s: Unknown DWARF DW_FORM_0x%x", dso->filename, *formp);
       return FORM_ERROR;
     }
 
@@ -2030,7 +2075,10 @@ edit_info (DSO *dso, int phase, struct debug_section *sec)
   endsec = ptr + sec->size;
   while (ptr < endsec)
     {
-      if (ptr + (sec == &debug_sections[DEBUG_INFO] ? 11 : 23) > endsec)
+      unsigned char *cu_start = ptr;
+
+      /* header size, version, unit_type, ptr_size.  */
+      if (ptr + 4 + 2 + 1 + 1 > endsec)
 	{
 	  error (0, 0, "%s: %s CU header too small",
 		 dso->filename, sec->name);
@@ -2052,10 +2100,33 @@ edit_info (DSO *dso, int phase, struct debug_section *sec)
 	}
 
       cu_version = read_16 (ptr);
-      if (cu_version != 2 && cu_version != 3 && cu_version != 4)
+      if (cu_version != 2 && cu_version != 3 && cu_version != 4
+	  && cu_version != 5)
 	{
 	  error (0, 0, "%s: DWARF version %d unhandled", dso->filename,
 		 cu_version);
+	  return 1;
+	}
+
+      int cu_ptr_size = 0;
+
+      if (cu_version >= 5)
+	{
+	  uint8_t unit_type = read_8 (ptr);
+	  if (unit_type != DW_UT_compile && unit_type != DW_UT_partial)
+	    {
+	      error (0, 0, "%s: Unit type %u unhandled", dso->filename,
+		     unit_type);
+	      return 1;
+	    }
+
+	  cu_ptr_size = read_8 (ptr);
+	}
+
+      unsigned char *header_end = (cu_start + 23 + (cu_version < 5 ? 0 : 1));
+      if (header_end > endsec)
+	{
+	  error (0, 0, "%s: %s CU header too small", dso->filename, sec->name);
 	  return 1;
 	}
 
@@ -2070,9 +2141,12 @@ edit_info (DSO *dso, int phase, struct debug_section *sec)
 	  return 1;
 	}
 
+      if (cu_version < 5)
+	cu_ptr_size = read_8 (ptr);
+
       if (ptr_size == 0)
 	{
-	  ptr_size = read_8 (ptr);
+	  ptr_size = cu_ptr_size;
 	  if (ptr_size != 4 && ptr_size != 8)
 	    {
 	      error (0, 0, "%s: Invalid DWARF pointer size %d",
@@ -2080,7 +2154,7 @@ edit_info (DSO *dso, int phase, struct debug_section *sec)
 	      return 1;
 	    }
 	}
-      else if (read_8 (ptr) != ptr_size)
+      else if (cu_ptr_size != ptr_size)
 	{
 	  error (0, 0, "%s: DWARF pointer size differs between CUs",
 		 dso->filename);
