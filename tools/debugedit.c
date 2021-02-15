@@ -103,6 +103,8 @@ static bool need_string_replacement = false;
 /* Whether we need to do any updates of the string indexes (DW_FORM_strp)
    in debug_info for string indexes. */
 static bool need_strp_update = false;
+/* Likewise for DW_FORM_line_strp. */
+static bool need_line_strp_update = false;
 /* If the debug_line changes size we will need to update the
    DW_AT_stmt_list attributes indexes in the debug_info. */
 static bool need_stmt_update = false;
@@ -192,7 +194,7 @@ typedef struct
   const char *filename;
   int lastscn;
   size_t phnum;
-  struct strings strings;
+  struct strings debug_str, debug_line_str;
   struct debug_lines lines;
   GElf_Shdr shdr[0];
 } DSO;
@@ -553,10 +555,11 @@ setup_relbuf (DSO *dso, debug_section *sec, int *reltype)
       /* Relocations against section symbols are uninteresting in REL.  */
       if (dso->shdr[i].sh_type == SHT_REL && sym.st_value == 0)
 	continue;
-      /* Only consider relocations against .debug_str, .debug_line
-	 and .debug_abbrev.  */
+      /* Only consider relocations against .debug_str, .debug_line,
+	 .debug_line_str, and .debug_abbrev.  */
       if (sym.st_shndx != debug_sections[DEBUG_STR].sec
 	  && sym.st_shndx != debug_sections[DEBUG_LINE].sec
+	  && sym.st_shndx != debug_sections[DEBUG_LINE_STR].sec
 	  && sym.st_shndx != debug_sections[DEBUG_ABBREV].sec)
 	continue;
       rela.r_addend += sym.st_value;
@@ -768,6 +771,7 @@ no_memory:
 	      || (form > DW_FORM_flag_present
 		  && !(form == DW_FORM_ref_sig8
 		       || form == DW_FORM_data16
+		       || form == DW_FORM_line_strp
 		       || form == DW_FORM_implicit_const
 		       || form == DW_FORM_addrx
 		       || form == DW_FORM_loclistx
@@ -1049,17 +1053,20 @@ string_find_entry (struct strings *strings, size_t old_idx)
    a replacement file string has been recorded for it, otherwise
    returns false.  */
 static bool
-record_file_string_entry_idx (struct strings *strings, size_t old_idx)
+record_file_string_entry_idx (bool line_strp, DSO *dso, size_t old_idx)
 {
+  struct strings *strings = line_strp ? &dso->debug_line_str : &dso->debug_str;
   bool ret = false;
   struct stridxentry *entry = string_find_new_entry (strings, old_idx);
   if (entry != NULL)
     {
-      if (old_idx >= debug_sections[DEBUG_STR].size)
-	error (1, 0, "Bad string pointer index %zd", old_idx);
+      debug_section *sec = &debug_sections[line_strp
+					   ? DEBUG_LINE_STR : DEBUG_STR];
+      if (old_idx >= sec->size)
+	error (1, 0, "Bad string pointer index %zd (%s)", old_idx, sec->name);
 
       Strent *strent;
-      const char *old_str = (char *)debug_sections[DEBUG_STR].data + old_idx;
+      const char *old_str = (char *)sec->data + old_idx;
       const char *file = skip_dir_prefix (old_str, base_dir);
       if (file == NULL)
 	{
@@ -1103,15 +1110,18 @@ record_file_string_entry_idx (struct strings *strings, size_t old_idx)
    base_dir with dest_dir, just records the existing string associated
    with the index. */
 static void
-record_existing_string_entry_idx (struct strings *strings, size_t old_idx)
+record_existing_string_entry_idx (bool line_strp, DSO *dso, size_t old_idx)
 {
+  struct strings *strings = line_strp ? &dso->debug_line_str : &dso->debug_str;
   struct stridxentry *entry = string_find_new_entry (strings, old_idx);
   if (entry != NULL)
     {
-      if (old_idx >= debug_sections[DEBUG_STR].size)
-	error (1, 0, "Bad string pointer index %zd", old_idx);
+      debug_section *sec = &debug_sections[line_strp
+					   ? DEBUG_LINE_STR : DEBUG_STR];
+      if (old_idx >= sec->size)
+	error (1, 0, "Bad string pointer index %zd (%s)", old_idx, sec->name);
 
-      const char *str = (char *)debug_sections[DEBUG_STR].data + old_idx;
+      const char *str = (char *)sec->data + old_idx;
       Strent *strent = strtab_add_len (strings->str_tab,
 				       str, strlen (str) + 1);
       if (strent == NULL)
@@ -1244,11 +1254,26 @@ get_line_table (DSO *dso, size_t off, struct line_table **table)
 
   /* version */
   t->version = read_16 (ptr);
-  if (t->version != 2 && t->version != 3 && t->version != 4)
+  if (t->version != 2 && t->version != 3 && t->version != 4 && t->version != 5)
     {
       error (0, 0, "%s: DWARF version %d unhandled", dso->filename,
 	     t->version);
       return false;
+    }
+
+  if (t->version >= 5)
+    {
+      /* address_size */
+      assert (ptr_size != 0);
+      if (ptr_size != read_8 (ptr))
+	{
+	  error (0, 0, "%s: .debug_line address size differs from .debug_info",
+		 dso->filename);
+	  return false;
+	}
+
+      /* segment_selector_size */
+      (void) read_8 (ptr);
     }
 
   /* header_length */
@@ -1343,7 +1368,9 @@ edit_dwarf2_line (DSO *dso)
 
   linedata->d_size = dso->lines.debug_lines_len;
   linedata->d_buf = dso->lines.line_buf;
+  debug_sections[DEBUG_LINE].data = linedata->d_buf;
   debug_sections[DEBUG_LINE].size = linedata->d_size;
+  debug_sections[DEBUG_LINE].elf_data = linedata;
 
   /* Make sure the line tables are sorted on the old index. */
   qsort (dso->lines.table, dso->lines.used, sizeof (struct line_table),
@@ -1483,9 +1510,10 @@ edit_dwarf2_line (DSO *dso)
     }
 }
 
-/* Record or adjust (according to phase) DW_FORM_strp.  */
+/* Record or adjust (according to phase) DW_FORM_strp or DW_FORM_line_strp.  */
 static void
-edit_strp (DSO *dso, unsigned char *ptr, int phase, bool handled_strp)
+edit_strp (DSO *dso, bool line_strp, unsigned char *ptr, int phase,
+	   bool handled_strp)
 {
   unsigned char *ptr_orig = ptr;
 
@@ -1500,15 +1528,18 @@ edit_strp (DSO *dso, unsigned char *ptr, int phase, bool handled_strp)
       if (! handled_strp)
 	{
 	  size_t idx = do_read_32_relocated (ptr);
-	  record_existing_string_entry_idx (&dso->strings, idx);
+	  record_existing_string_entry_idx (line_strp, dso, idx);
 	}
     }
-  else if (need_strp_update) /* && phase == 1 */
+  else if (line_strp
+	   ? need_line_strp_update : need_strp_update) /* && phase == 1 */
     {
       struct stridxentry *entry;
       size_t idx, new_idx;
+      struct strings *strings = (line_strp
+				 ? &dso->debug_line_str : &dso->debug_str);
       idx = do_read_32_relocated (ptr);
-      entry = string_find_entry (&dso->strings, idx);
+      entry = string_find_entry (strings, idx);
       new_idx = strent_offset (entry->entry);
       do_write_32_relocated (ptr, new_idx);
     }
@@ -1759,6 +1790,254 @@ read_dwarf4_line (DSO *dso, unsigned char *ptr, char *comp_dir,
   return true;
 }
 
+/* Called by read_dwarf5_line first for directories and then file
+   names as they both have the same format.  */
+static bool
+read_dwarf5_line_entries (DSO *dso, unsigned char **ptrp,
+			  struct line_table *table, int phase,
+			  char ***dirs, int *ndir,
+			  const char *entry_name)
+{
+  /* directory_entry_format_count */
+  /* file_name_entry_format_count */
+  unsigned format_count = read_8 (*ptrp);
+
+  unsigned char *formats = *ptrp;
+
+  /* directory_entry_format */
+  /* file_name_entry_format */
+  for (unsigned formati = 0; formati < format_count; ++formati)
+    {
+      read_uleb128 (*ptrp);
+      read_uleb128 (*ptrp);
+    }
+
+  /* directories_count */
+  /* file_names_count */
+  unsigned entry_count = read_uleb128 (*ptrp);
+
+  bool collecting_dirs = dest_dir && phase == 0 && *dirs == NULL;
+  bool writing_files = dest_dir && phase == 0 && *dirs != NULL;
+  if (collecting_dirs)
+    {
+      *ndir = entry_count;
+      *dirs = malloc (entry_count * sizeof (char *));
+      if (*dirs == NULL)
+	error (1, errno, "%s: Could not allocate debug_line dirs",
+	       dso->filename);
+    }
+
+  /* directories */
+  /* file_names */
+  for (unsigned entryi = 0; entryi < entry_count; ++entryi)
+    {
+      char *dir = NULL;
+      char *file = NULL;;
+      unsigned char *format_ptr = formats;
+      for (unsigned formati = 0; formati < format_count; ++formati)
+	{
+	  unsigned lnct = read_uleb128 (format_ptr);
+	  unsigned form = read_uleb128 (format_ptr);
+	  bool handled_form = false;
+	  bool handled_strp = false;
+	  bool line_strp = form == DW_FORM_line_strp;
+	  if (lnct == DW_LNCT_path)
+	    {
+	      switch (form)
+		{
+		case DW_FORM_strp:
+		case DW_FORM_line_strp:
+		  if (dest_dir && phase == 0)
+		    {
+		      size_t idx = do_read_32_relocated (*ptrp);
+		      if (record_file_string_entry_idx (line_strp, dso, idx))
+			{
+			  if (line_strp)
+			    need_line_strp_update = true;
+			  else
+			    need_strp_update = true;
+			}
+		      handled_strp = true;
+		      if (collecting_dirs || writing_files)
+			{
+			  debug_section *sec = &debug_sections[line_strp
+                                           ? DEBUG_LINE_STR : DEBUG_STR];
+			  if (collecting_dirs)
+			    dir = (char *)sec->data + idx;
+			  if (writing_files)
+			    file = (char *)sec->data + idx;
+			}
+		    }
+		  break;
+		default:
+		  error (0, 0, "%s: Unsupported "
+			 ".debug_line %s %u path DW_FORM_0x%x",
+			 dso->filename, entry_name, entryi, form);
+		  return false;
+		}
+	    }
+	  if (writing_files && lnct == DW_LNCT_directory_index)
+	    {
+	      int dirndx;
+	      switch (form)
+		{
+		case DW_FORM_udata:
+		  handled_form = true;
+		  dirndx = read_uleb128 (*ptrp);
+		  break;
+		case DW_FORM_data1:
+		  dirndx = **ptrp;
+		  break;
+		case DW_FORM_data2:
+		  dirndx = do_read_16 (*ptrp);
+		  break;
+		case DW_FORM_data4:
+		  dirndx = do_read_32 (*ptrp);
+		  break;
+		default:
+		  error (0, 0, "%s: Unsupported "
+			 ".debug_line %s %u dirndx DW_FORM_0x%x",
+			 dso->filename, entry_name, entryi, form);
+		  return false;
+		}
+
+	      if (dirndx > *ndir)
+		{
+		  error (0, 0, "%s: Bad dir number %u in .debug_line %s",
+			 dso->filename, entryi, entry_name);
+		  return false;
+		}
+	      dir = (*dirs)[dirndx];
+	    }
+
+	  switch (form)
+	    {
+	    case DW_FORM_strp:
+	    case DW_FORM_line_strp:
+	      edit_strp (dso, line_strp, *ptrp, phase, handled_strp);
+	      break;
+	    }
+
+	  if (!handled_form)
+	    {
+	      switch (skip_form (dso, &form, ptrp))
+		{
+		case FORM_OK:
+		  break;
+		case FORM_ERROR:
+		  return false;
+		case FORM_INDIRECT:
+		  error (0, 0, "%s: Unsupported "
+			 ".debug_line %s %u DW_FORM_indirect",
+			 dso->filename, entry_name, entryi);
+		  return false;
+		}
+	    }
+	}
+
+      if (collecting_dirs)
+	(*dirs)[entryi] = dir;
+
+      if (writing_files)
+	{
+	  char *comp_dir = (*dirs)[0];
+	  size_t comp_dir_len = strlen(comp_dir);
+	  size_t file_len = strlen (file);
+	  size_t dir_len = strlen (dir);
+
+	  char *s = malloc (comp_dir_len + 1 + file_len + 1 + dir_len + 1);
+	  if (s == NULL)
+	    {
+	      error (0, ENOMEM, "%s: Reading file table", dso->filename);
+	      return false;
+	    }
+	  if (file[0] == '/')
+	    {
+	      memcpy (s, file, file_len + 1);
+	    }
+	  else if (dir[0] == '/')
+	    {
+	      memcpy (s, dir, dir_len);
+	      s[dir_len] = '/';
+	      memcpy (s + dir_len + 1, file, file_len + 1);
+	    }
+	  else
+	    {
+	      char *p = s;
+	      if (comp_dir_len != 0)
+		{
+		  memcpy (s, comp_dir, comp_dir_len);
+		  s[comp_dir_len] = '/';
+		  p += comp_dir_len + 1;
+		}
+	      memcpy (p, dir, dir_len);
+	      p[dir_len] = '/';
+	      memcpy (p + dir_len + 1, file, file_len + 1);
+	    }
+	  canonicalize_path (s, s);
+	  if (list_file_fd != -1)
+	    {
+	      const char *p = NULL;
+	      if (base_dir == NULL)
+		p = s;
+	      else
+		{
+		  p = skip_dir_prefix (s, base_dir);
+		  if (p == NULL && dest_dir != NULL)
+		    p = skip_dir_prefix (s, dest_dir);
+		}
+
+	      if (p)
+		{
+		  size_t size = strlen (p) + 1;
+		  while (size > 0)
+		    {
+		      ssize_t ret = write (list_file_fd, p, size);
+		      if (ret == -1)
+			break;
+		      size -= ret;
+		      p += ret;
+		    }
+		}
+	    }
+
+	  free (s);
+	}
+    }
+
+  return true;
+}
+
+/* Part of read_dwarf2_line processing DWARF-5.  */
+static bool
+read_dwarf5_line (DSO *dso, unsigned char *ptr, struct line_table *table,
+		  int phase)
+{
+  char **dirs = NULL;
+  int ndir;
+  /* Skip header.  */
+  ptr += (4 /* unit len */
+          + 2 /* version */
+          + (table->version < 5 ? 0 : 0
+             + 1 /* address_size */
+             + 1 /* segment_selector*/)
+          + 4 /* header len */
+          + 1 /* min instr len */
+          + (table->version >= 4) /* max op per instr, if version >= 4 */
+          + 1 /* default is stmt */
+          + 1 /* line base */
+          + 1 /* line range */
+          + 1 /* opcode base */
+          + table->opcode_base - 1); /* opcode len table */
+
+  bool retval = (read_dwarf5_line_entries (dso, &ptr, table, phase,
+					   &dirs, &ndir, "directory")
+		 && read_dwarf5_line_entries (dso, &ptr, table, phase,
+					      &dirs, &ndir, "file name"));
+  free (dirs);
+  return retval;
+}
+
 /* Called during phase zero for each debug_line table referenced from
    .debug_info.  Outputs all source files seen and records any
    adjustments needed in the debug_list data structures. Returns true
@@ -1778,6 +2057,9 @@ read_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir)
   ptr = debug_sections[DEBUG_LINE].data + off;
   ptr += (4 /* unit len */
 	  + 2 /* version */
+	  + (table->version < 5 ? 0 : 0
+	     + 1 /* address_size */
+	     + 1 /* segment_selector*/)
 	  + 4 /* header len */
 	  + 1 /* min instr len */
 	  + (table->version >= 4) /* max op per instr, if version >= 4 */
@@ -1787,8 +2069,13 @@ read_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir)
 	  + 1 /* opcode base */
 	  + table->opcode_base - 1); /* opcode len table */
 
-  if (! read_dwarf4_line (dso, ptr, comp_dir, table))
-   return false;
+  /* DWARF version 5 line tables won't change size. But they might need
+     [line]strp recording/updates. Handle that part later.  */
+  if (table->version < 5)
+    {
+      if (! read_dwarf4_line (dso, ptr, comp_dir, table))
+	return false;
+    }
 
   dso->lines.debug_lines_len += 4 + table->unit_length + table->size_diff;
   return table->replace_dirs || table->replace_files;
@@ -1807,20 +2094,22 @@ find_new_list_offs (struct debug_lines *lines, size_t idx)
   return table->new_idx;
 }
 
-/* Read DW_FORM_strp collecting compilation directory.  */
+/* Read DW_FORM_strp or DW_FORM_line_strp collecting compilation directory.  */
 static void
-edit_attributes_str_comp_dir (DSO *dso, unsigned char **ptrp, int phase,
-			      char **comp_dirp, bool *handled_strpp)
+edit_attributes_str_comp_dir (bool line_strp, DSO *dso, unsigned char **ptrp,
+			      int phase, char **comp_dirp, bool *handled_strpp)
 {
   const char *dir;
   size_t idx = do_read_32_relocated (*ptrp);
   /* In phase zero we collect the comp_dir.  */
   if (phase == 0)
     {
-      if (idx >= debug_sections[DEBUG_STR].size)
-	error (1, 0, "%s: Bad string pointer index %zd for comp_dir",
-	       dso->filename, idx);
-      dir = (char *) debug_sections[DEBUG_STR].data + idx;
+      debug_section *sec = &debug_sections[line_strp
+					   ? DEBUG_LINE_STR : DEBUG_STR];
+      if (sec->data == NULL || idx >= sec->size)
+	error (1, 0, "%s: Bad string pointer index %zd for comp_dir (%s)",
+	       dso->filename, idx, sec->name);
+      dir = (char *) sec->data + idx;
 
       free (*comp_dirp);
       *comp_dirp = strdup (dir);
@@ -1828,8 +2117,13 @@ edit_attributes_str_comp_dir (DSO *dso, unsigned char **ptrp, int phase,
 
   if (dest_dir != NULL && phase == 0)
     {
-      if (record_file_string_entry_idx (&dso->strings, idx))
-	need_strp_update = true;
+      if (record_file_string_entry_idx (line_strp, dso, idx))
+	{
+	  if (line_strp)
+	    need_line_strp_update = true;
+	  else
+	    need_strp_update = true;
+	}
       *handled_strpp = true;
     }
 }
@@ -1937,17 +2231,24 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 			}
 		    }
 		}
-	      else if (form == DW_FORM_strp &&
-		       debug_sections[DEBUG_STR].data)
-		edit_attributes_str_comp_dir (dso, &ptr, phase, &comp_dir,
+	      else if (form == DW_FORM_strp)
+		edit_attributes_str_comp_dir (false /* line_strp */, dso,
+					      &ptr, phase, &comp_dir,
 					      &handled_strp);
+	      else if (form == DW_FORM_line_strp)
+		edit_attributes_str_comp_dir (true /* line_strp */, dso, &ptr,
+					      phase, &comp_dir, &handled_strp);
 	    }
 	  else if ((t->tag == DW_TAG_compile_unit
 		    || t->tag == DW_TAG_partial_unit)
-		   && t->attr[i].attr == DW_AT_name
-		   && form == DW_FORM_strp
-		   && debug_sections[DEBUG_STR].data)
+		   && ((form == DW_FORM_strp
+			&& debug_sections[DEBUG_STR].data)
+		       || (form == DW_FORM_line_strp
+			   && debug_sections[DEBUG_LINE_STR].data))
+		   && t->attr[i].attr == DW_AT_name)
 	    {
+	      bool line_strp = form == DW_FORM_line_strp;
+
 	      /* DW_AT_name is the primary file for this compile
 		 unit. If starting with / it is a full path name.
 		 Note that we don't handle DW_FORM_string in this
@@ -1957,11 +2258,14 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	      /* In phase zero we will look for a comp_dir to use.  */
 	      if (phase == 0)
 		{
-		  if (idx >= debug_sections[DEBUG_STR].size)
+		  debug_section *sec = &debug_sections[line_strp
+						       ? DEBUG_LINE_STR
+						       : DEBUG_STR];
+		  if (idx >= sec->size)
 		    error (1, 0,
-			   "%s: Bad string pointer index %zd for unit name",
-			   dso->filename, idx);
-		  char *name = (char *) debug_sections[DEBUG_STR].data + idx;
+			   "%s: Bad string pointer index %zd for unit name (%s)",
+			   dso->filename, idx, sec->name);
+		  char *name = (char *) sec->data + idx;
 		  if (*name == '/' && comp_dir == NULL)
 		    {
 		      char *enddir = strrchr (name, '/');
@@ -1982,8 +2286,13 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 		 pass (1) stores it (the new index). */
 	      if (dest_dir && phase == 0)
 		{
-		  if (record_file_string_entry_idx (&dso->strings, idx))
-		    need_strp_update = true;
+		  if (record_file_string_entry_idx (line_strp, dso, idx))
+		    {
+		      if (line_strp)
+			need_line_strp_update = true;
+		      else
+			need_strp_update = true;
+		    }
 		  handled_strp = true;
 		}
 	    }
@@ -1991,7 +2300,10 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	  switch (form)
 	    {
 	    case DW_FORM_strp:
-	      edit_strp (dso, ptr, phase, handled_strp);
+	      edit_strp (dso, false /* line_strp */, ptr, phase, handled_strp);
+	      break;
+	    case DW_FORM_line_strp:
+	      edit_strp (dso, true /* line_strp */, ptr, phase, handled_strp);
 	      break;
 	    }
 
@@ -2205,11 +2517,11 @@ edit_info (DSO *dso, int phase, struct debug_section *sec)
 
 /* Rebuild .debug_str.  */
 static void
-edit_dwarf2_any_str (DSO *dso)
+edit_dwarf2_any_str (DSO *dso, struct strings *strings, debug_section *secp)
 {
-  Strtab *strtab = dso->strings.str_tab;
-  Elf_Data *strdata = debug_sections[DEBUG_STR].elf_data;
-  int strndx = debug_sections[DEBUG_STR].sec;
+  Strtab *strtab = strings->str_tab;
+  Elf_Data *strdata = secp->elf_data;
+  int strndx = secp->sec;
   Elf_Scn *strscn = dso->scn[strndx];
 
   /* Out with the old. */
@@ -2221,8 +2533,8 @@ edit_dwarf2_any_str (DSO *dso)
      but the old ebl version will just abort on out of
      memory... */
   strtab_finalize (strtab, strdata);
-  debug_sections[DEBUG_STR].size = strdata->d_size;
-  dso->strings.str_buf = strdata->d_buf;
+  secp->size = strdata->d_size;
+  strings->str_buf = strdata->d_buf;
 }
 
 static int
@@ -2368,12 +2680,14 @@ edit_dwarf2 (DSO *dso)
   bool info_rel_updated = false;
   bool types_rel_updated = false;
   bool macro_rel_updated = false;
+  bool line_rel_updated = false;
 
   for (phase = 0; phase < 2; phase++)
     {
       /* If we don't need to update anyhing, skip phase 1. */
       if (phase == 1
 	  && !need_strp_update
+	  && !need_line_strp_update
 	  && !need_string_replacement
 	  && !need_stmt_update)
 	break;
@@ -2591,15 +2905,14 @@ edit_dwarf2 (DSO *dso)
 		      if (phase == 0)
 			{
 			  size_t idx = read_32_relocated (ptr);
-			  record_existing_string_entry_idx (&dso->strings,
-							    idx);
+			  record_existing_string_entry_idx (false, dso, idx);
 			}
 		      else
 			{
 			  struct stridxentry *entry;
 			  size_t idx, new_idx;
 			  idx = do_read_32_relocated (ptr);
-			  entry = string_find_entry (&dso->strings, idx);
+			  entry = string_find_entry (&dso->debug_str, idx);
 			  new_idx = strent_offset (entry->entry);
 			  write_32_relocated (ptr, new_idx);
 			}
@@ -2619,24 +2932,50 @@ edit_dwarf2 (DSO *dso)
 	    }
 	}
 
-      /* Same for the debug_str section. Make sure everything is
-	 in place for phase 1 updating of debug_info
+
+      /* Now handle all the DWARF5 line tables, they contain strp
+	 and/or line_strp entries that need to be registered/rewritten.  */
+      setup_relbuf(dso, &debug_sections[DEBUG_LINE], &reltype);
+      rel_updated = false;
+
+      /* edit_dwarf2_line will have set this up, unless there are no
+	 moved/resized (DWARF4) lines. In which case we can just use
+	 the original section data. new_idx will have been setup
+	 correctly, even if it is the same as old_idx.  */
+      unsigned char *line_buf = (unsigned char *)dso->lines.line_buf;
+      if (line_buf == NULL)
+	line_buf = debug_sections[DEBUG_LINE].data;
+      for (int ldx = 0; ldx < dso->lines.used; ldx++)
+	{
+	  struct line_table *t = &dso->lines.table[ldx];
+	  if (t->version >= 5)
+	    read_dwarf5_line (dso, line_buf + t->new_idx, t, phase);
+	}
+      if (rel_updated)
+	line_rel_updated = true;
+
+      /* Same for the debug_str and debug_line_str sections.
+	 Make sure everything is in place for phase 1 updating of debug_info
 	 references. */
       if (phase == 0 && need_strp_update)
-	edit_dwarf2_any_str (dso);
-
+	edit_dwarf2_any_str (dso, &dso->debug_str,
+			     &debug_sections[DEBUG_STR]);
+      if (phase == 0 && need_line_strp_update)
+	edit_dwarf2_any_str (dso, &dso->debug_line_str,
+			     &debug_sections[DEBUG_LINE_STR]);
     }
 
   /* After phase 1 we might have rewritten the debug_info with
      new strp, strings and/or linep offsets.  */
-  if (need_strp_update || need_string_replacement || need_stmt_update) {
+  if (need_strp_update || need_line_strp_update
+      || need_string_replacement || need_stmt_update) {
     dirty_section (DEBUG_INFO);
     if (debug_sections[DEBUG_TYPES].data != NULL)
       dirty_section (DEBUG_TYPES);
   }
   if (need_strp_update || need_stmt_update)
     dirty_section (DEBUG_MACRO);
-  if (need_stmt_update)
+  if (need_stmt_update || need_line_strp_update)
     dirty_section (DEBUG_LINE);
 
   /* Update any relocations addends we might have touched. */
@@ -2661,6 +3000,9 @@ edit_dwarf2 (DSO *dso)
 	  macro_sec = macro_sec->next;
 	}
     }
+
+  if (line_rel_updated)
+    update_rela_data (dso, &debug_sections[DEBUG_LINE]);
 
   return 0;
 }
@@ -2754,7 +3096,8 @@ fdopen_dso (int fd, const char *name)
     }
 
   dso->filename = (const char *) strdup (name);
-  setup_strings (&dso->strings);
+  setup_strings (&dso->debug_str);
+  setup_strings (&dso->debug_line_str);
   setup_lines (&dso->lines);
   return dso;
 
@@ -2762,7 +3105,8 @@ error_out:
   if (dso)
     {
       free ((char *) dso->filename);
-      destroy_strings (&dso->strings);
+      destroy_strings (&dso->debug_str);
+      destroy_strings (&dso->debug_line_str);
       destroy_lines (&dso->lines);
       free (dso);
     }
@@ -3043,7 +3387,9 @@ main (int argc, char *argv[])
      in elfutils before 0.169 we will have to update and write out all
      section data if any data has changed (when ELF_F_LAYOUT was
      set). https://sourceware.org/bugzilla/show_bug.cgi?id=21199 */
-  bool need_update = need_strp_update || need_stmt_update;
+  bool need_update = (need_strp_update
+		      || need_line_strp_update
+		      || need_stmt_update);
 
 #if !_ELFUTILS_PREREQ (0, 169)
   /* string replacements or build_id updates don't change section size. */
@@ -3115,10 +3461,12 @@ main (int argc, char *argv[])
 	      GElf_Xword sec_size = shdr->sh_size;
 
 	      /* We might have changed the size (and content) of the
-		 debug_str or debug_line section. */
+		 debug_str, debug_line_str or debug_line section. */
 	      size_t secnum = elf_ndxscn (scn);
 	      if (secnum == debug_sections[DEBUG_STR].sec)
 		sec_size = debug_sections[DEBUG_STR].size;
+	      if (secnum == debug_sections[DEBUG_LINE_STR].sec)
+		sec_size = debug_sections[DEBUG_LINE_STR].size;
 	      if (secnum == debug_sections[DEBUG_LINE].sec)
 		sec_size = debug_sections[DEBUG_LINE].size;
 
@@ -3188,7 +3536,8 @@ main (int argc, char *argv[])
   chmod (file, stat_buf.st_mode);
 
   free ((char *) dso->filename);
-  destroy_strings (&dso->strings);
+  destroy_strings (&dso->debug_str);
+  destroy_strings (&dso->debug_line_str);
   destroy_lines (&dso->lines);
   free (dso);
 
