@@ -233,7 +233,7 @@ typedef struct
   int shift = 0;			\
   do					\
     {					\
-      c = *ptr++;			\
+      c = *(ptr)++;			\
       ret |= (c & 0x7f) << shift;	\
       shift += 7;			\
     } while (c & 0x80);			\
@@ -251,7 +251,7 @@ typedef struct
       valv >>= 7;			\
       if (valv)				\
 	c |= 0x80;			\
-      *ptr++ = c;			\
+      *(ptr)++ = c;			\
     }					\
   while (valv);				\
 })
@@ -311,7 +311,7 @@ strptr (DSO *dso, int sec, off_t offset)
 }
 
 
-#define read_8(ptr) *ptr++
+#define read_8(ptr) *(ptr)++
 
 #define read_16(ptr) ({					\
   uint16_t ret = do_read_16 (ptr);			\
@@ -328,13 +328,13 @@ strptr (DSO *dso, int sec, off_t offset)
 REL *relptr, *relend;
 int reltype;
 
-#define do_read_32_relocated(ptr) ({			\
-  uint32_t dret = do_read_32 (ptr);			\
+#define do_read_32_relocated(xptr) ({			\
+  uint32_t dret = do_read_32 (xptr);			\
   if (relptr)						\
     {							\
-      while (relptr < relend && relptr->ptr < ptr)	\
+      while (relptr < relend && relptr->ptr < (xptr))	\
 	++relptr;					\
-      if (relptr < relend && relptr->ptr == ptr)	\
+      if (relptr < relend && relptr->ptr == (xptr))	\
 	{						\
 	  if (reltype == SHT_REL)			\
 	    dret += relptr->addend;			\
