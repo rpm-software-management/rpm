@@ -1996,6 +1996,19 @@ exit:
     return rc;
 }
 
+#ifdef RPM_HEADER_LIBFUZZER
+const char *__llvm_profile_filename = "default.profraw";
+int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size);
+int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
+    char *emsg = NULL;
+    struct hdrblob_s blob;
+    if (Size)
+        hdrblobInit(Data, Size, 0, 0, &blob, &emsg);
+    free(emsg);
+    return 0;
+}
+#endif
+
 rpmRC hdrblobInit(const void *uh, size_t uc,
 		rpmTagVal regionTag, int exact_size,
 		struct hdrblob_s *blob, char **emsg)
