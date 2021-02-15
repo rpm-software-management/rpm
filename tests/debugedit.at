@@ -77,9 +77,9 @@ AT_CLEANUP
 # debugedit should at least replace the .debug_str directory paths
 # in the objects.
 # ===
-AT_SETUP([debugedit .debug_str objects])
+AT_SETUP([debugedit .debug_str objects DWARF4])
 AT_KEYWORDS([debuginfo] [debugedit])
-RPM_DEBUGEDIT_SETUP
+RPM_DEBUGEDIT_SETUP([-gdwarf-4])
 
 # Capture strings that start with the testdir (pwd) directory path
 # (and replace that textually with /foo/bar/baz)
@@ -105,12 +105,45 @@ readelf -p.debug_str foo.o subdir_bar/bar.o baz.o | cut -c13- \
 AT_CLEANUP
 
 # ===
+# debugedit should at least replace the .debug_str/line_str directory paths
+# in the objects.
+# ===
+AT_SETUP([debugedit .debug_str/line_str objects DWARF5])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP([-gdwarf-5])
+
+# Capture strings that start with the testdir (pwd) directory path
+# (and replace that textually with /foo/bar/baz)
+readelf -p.debug_str -p.debug_line_str foo.o subdir_bar/bar.o baz.o \
+        | cut -c13- \
+        | grep ^$(pwd) | sort | uniq \
+        | sed -e "s@$(pwd)@/foo/bar/baz@" > expout
+
+# Make sure there is at least some output
+expout_lines=$(wc --lines expout | cut -f1 -d\ )
+if test $expout_lines -lt 3; then
+  echo "Expecting at least 3 debug strings starting with ${testdir}" >> expout
+fi
+
+# Check the replaced strings are all there.
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foo.o]])
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./subdir_bar/bar.o]])
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./baz.o]])
+AT_CHECK([[
+readelf -p.debug_str -p.debug_line_str foo.o subdir_bar/bar.o baz.o \
+        | cut -c13- \
+        | grep ^/foo/bar/baz | sort | uniq
+]],[0],[expout],[ignore])
+
+AT_CLEANUP
+
+# ===
 # debugedit should at least replace the .debug_str directory paths
 # also in partially linked files.
 # ===
-AT_SETUP([debugedit .debug_str partial])
+AT_SETUP([debugedit .debug_str partial DWARF4])
 AT_KEYWORDS([debuginfo] [debugedit])
-RPM_DEBUGEDIT_SETUP
+RPM_DEBUGEDIT_SETUP([-gdwarf-4])
 
 # Capture strings that start with the testdir (pwd) directory path
 # (and replace that textually with /foo/bar/baz)
@@ -136,12 +169,43 @@ readelf -p.debug_str ./foobarbaz.part.o | cut -c13- \
 AT_CLEANUP
 
 # ===
+# debugedit should at least replace the .debug_str/line_str directory paths
+# also in partially linked files.
+# ===
+AT_SETUP([debugedit .debug_str/line_str partial DWARF5])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP([-gdwarf-5])
+
+# Capture strings that start with the testdir (pwd) directory path
+# (and replace that textually with /foo/bar/baz)
+# Note that partially linked files, might have multiple duplicate
+# strings, but debugedit will merge them. So use sort -u.
+readelf -p.debug_str -p.debug_line_str ./foobarbaz.part.o | cut -c13- \
+        | grep ^$(pwd) | sort -u | uniq \
+        | sed -e "s@$(pwd)@/foo/bar/baz@" > expout
+
+# Make sure there is at least some output
+expout_lines=$(wc --lines expout | cut -f1 -d\ )
+if test $expout_lines -lt 3; then
+  echo "Expecting at least 3 debug strings starting with ${testdir}" >> expout
+fi
+
+# Check the replaced strings are all there.
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.part.o]])
+AT_CHECK([[
+readelf -p.debug_str -p.debug_line_str ./foobarbaz.part.o | cut -c13- \
+        | grep ^/foo/bar/baz | sort | uniq
+]],[0],[expout],[ignore])
+
+AT_CLEANUP
+
+# ===
 # debugedit should at least replace the .debug_str directory paths
 # and in the executable.
 # ===
-AT_SETUP([debugedit .debug_str exe])
+AT_SETUP([debugedit .debug_str exe DWARF4])
 AT_KEYWORDS([debuginfo] [debugedit])
-RPM_DEBUGEDIT_SETUP
+RPM_DEBUGEDIT_SETUP([-gdwarf-4])
 
 # Capture strings that start with the testdir (pwd) directory path
 # (and replace that textually with /foo/bar/baz)
@@ -162,6 +226,36 @@ AT_CHECK([[
 readelf -p.debug_str foobarbaz.exe | cut -c13- \
         | grep ^/foo/bar/baz | sort
 ]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# debugedit should at least replace the .debug_str/line_str directory paths
+# and in the executable.
+# ===
+AT_SETUP([debugedit .debug_str/line_str exe DWARF5])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP([-gdwarf-5])
+
+# Capture strings that start with the testdir (pwd) directory path
+# (and replace that textually with /foo/bar/baz)
+readelf -p.debug_str -p.debug_line_str foobarbaz.exe | cut -c13- \
+        | grep ^$(pwd) | sort | uniq \
+        | sed -e "s@$(pwd)@/foo/bar/baz@" > expout
+
+# Make sure there is at least some output
+# The linker will have merged unique strings, so no need for sort -u.
+expout_lines=$(wc --lines expout | cut -f1 -d\ )
+if test $expout_lines -lt 3; then
+  echo "Expecting at least 3 debug strings starting with ${testdir}" >> expout
+fi
+
+# Check the replaced strings are all there.
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.exe]])
+AT_CHECK([[
+readelf -p.debug_str -p.debug_line_str foobarbaz.exe | cut -c13- \
+        | grep ^/foo/bar/baz | sort | uniq
+]],[0],[expout],[ignore])
 
 AT_CLEANUP
 
@@ -252,10 +346,11 @@ AT_CLEANUP
 
 # ===
 # Make sure -fdebug-types-section has updated strings in objects.
+# Currently only works with DWARF4
 # ===
 AT_SETUP([debugedit .debug_types objects])
 AT_KEYWORDS([debugtypes] [debugedit])
-RPM_DEBUGEDIT_SETUP([-fdebug-types-section])
+RPM_DEBUGEDIT_SETUP([-fdebug-types-section -gdwarf-4])
 
 AT_DATA([expout],
 [st1
@@ -288,10 +383,11 @@ AT_CLEANUP
 
 # ===
 # Make sure -fdebug-types-section has updated strings in partial linked object.
+# Currently only works with DWARF4
 # ===
 AT_SETUP([debugedit .debug_types partial])
 AT_KEYWORDS([debugtypes] [debugedit])
-RPM_DEBUGEDIT_SETUP([-fdebug-types-section])
+RPM_DEBUGEDIT_SETUP([-fdebug-types-section -gdwarf-4])
 
 AT_DATA([expout],
 [st1
@@ -316,10 +412,11 @@ AT_CLEANUP
 
 # ===
 # Make sure -fdebug-types-section has updated strings in executable.
+# Currently only works with DWARF4
 # ===
 AT_SETUP([debugedit .debug_types exe])
 AT_KEYWORDS([debugtypes] [debugedit])
-RPM_DEBUGEDIT_SETUP([-fdebug-types-section])
+RPM_DEBUGEDIT_SETUP([-fdebug-types-section -gdwarf-4])
 
 AT_DATA([expout],
 [st1
@@ -351,9 +448,9 @@ AT_CLEANUP
 # Make sure .debug_line Directory Table entries are replaced
 # in objects.
 # ===
-AT_SETUP([debugedit .debug_line objects])
+AT_SETUP([debugedit .debug_line objects DWARF4])
 AT_KEYWORDS([debuginfo] [debugedit])
-RPM_DEBUGEDIT_SETUP
+RPM_DEBUGEDIT_SETUP([-gdwarf-4])
 
 AT_DATA([expout],
 [/foo/bar/baz
@@ -373,11 +470,35 @@ AT_CLEANUP
 
 # ===
 # Make sure .debug_line Directory Table entries are replaced
+# in objects.
+# ===
+AT_SETUP([debugedit .debug_line objects DWARF5])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP([-gdwarf-5])
+
+AT_DATA([expout],
+[foo/bar/baz
+foo/bar/baz/subdir_headers
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foo.o]])
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./subdir_bar/bar.o]])
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./baz.o]])
+AT_CHECK([[
+readelf --debug-dump=line foo.o subdir_bar/bar.o baz.o \
+        | grep -A5 "The Directory Table" | grep "^  [123]" \
+	| cut -f2- -d/ | grep ^foo/ | sort
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# Make sure .debug_line Directory Table entries are replaced
 # in partial linked object.
 # ===
-AT_SETUP([debugedit .debug_line partial])
+AT_SETUP([debugedit .debug_line partial DWARF4])
 AT_KEYWORDS([debuginfo] [debugedit])
-RPM_DEBUGEDIT_SETUP
+RPM_DEBUGEDIT_SETUP([-gdwarf-4])
 
 AT_DATA([expout],
 [/foo/bar/baz
@@ -395,11 +516,33 @@ AT_CLEANUP
 
 # ===
 # Make sure .debug_line Directory Table entries are replaced
+# in partial linked object.
+# ===
+AT_SETUP([debugedit .debug_line partial DWARF5])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP([-gdwarf-5])
+
+AT_DATA([expout],
+[foo/bar/baz
+foo/bar/baz/subdir_headers
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.part.o]])
+AT_CHECK([[
+readelf --debug-dump=line ./foobarbaz.part.o \
+        | grep -A5 "The Directory Table" | grep "^  [123]" \
+	| cut -f2- -d/ | grep ^foo/ | sort
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# Make sure .debug_line Directory Table entries are replaced
 # in executable.
 # ===
-AT_SETUP([debugedit .debug_line exe])
+AT_SETUP([debugedit .debug_line exe DWARF4])
 AT_KEYWORDS([debuginfo] [debugedit])
-RPM_DEBUGEDIT_SETUP
+RPM_DEBUGEDIT_SETUP([-gdwarf-4])
 
 AT_DATA([expout],
 [/foo/bar/baz
@@ -411,6 +554,28 @@ AT_CHECK([[
 readelf --debug-dump=line ./foobarbaz.exe \
         | grep -A3 "The Directory Table" | grep "^  [123]" \
 	| grep /foo/ | cut -c5- | sort
+]],[0],[expout])
+
+AT_CLEANUP
+
+# ===
+# Make sure .debug_line Directory Table entries are replaced
+# in executable.
+# ===
+AT_SETUP([debugedit .debug_line exe DWARF5])
+AT_KEYWORDS([debuginfo] [debugedit])
+RPM_DEBUGEDIT_SETUP([-gdwarf-5])
+
+AT_DATA([expout],
+[foo/bar/baz
+foo/bar/baz/subdir_headers
+])
+
+AT_CHECK([[debugedit -b $(pwd) -d /foo/bar/baz ./foobarbaz.exe]])
+AT_CHECK([[
+readelf --debug-dump=line ./foobarbaz.exe \
+        | grep -A5 "The Directory Table" | grep "^  [123]" \
+	| cut -f2- -d/ | grep ^foo/ | sort
 ]],[0],[expout])
 
 AT_CLEANUP
