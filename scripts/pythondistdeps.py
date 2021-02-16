@@ -235,7 +235,7 @@ if __name__ == "__main__":
     group.add_argument('-R', '--requires', action='store_true', help='Print Requires')
     group.add_argument('-r', '--recommends', action='store_true', help='Print Recommends')
     group.add_argument('-C', '--conflicts', action='store_true', help='Print Conflicts')
-    group.add_argument('-E', '--extras', action='store_true', help='Print Extras')
+    group.add_argument('-E', '--extras', action='store_true', help='[Unused] Generate spec file snippets for extras subpackages')
     group_majorver = parser.add_mutually_exclusive_group()
     group_majorver.add_argument('-M', '--majorver-provides', action='store_true', help='Print extra Provides with Python major version only')
     group_majorver.add_argument('--majorver-provides-versions', action='append',
@@ -249,7 +249,10 @@ if __name__ == "__main__":
                         help='Provide both `pep503` and `legacy-dots` format of normalized names (useful for a transition period)')
     parser.add_argument('-L', '--legacy-provides', action='store_true', help='Print extra legacy pythonegg Provides')
     parser.add_argument('-l', '--legacy', action='store_true', help='Print legacy pythonegg Provides/Requires instead')
-    parser.add_argument('files', nargs=argparse.REMAINDER)
+    parser.add_argument('--require-extras-subpackages', action='store_true',
+                        help="If there is a dependency on a package with extras functionality, require the extras subpackage")
+    parser.add_argument('--package-name', action='store', help="Name of the RPM package that's being inspected. Required for extras requires/provides to work.")
+    parser.add_argument('files', nargs=argparse.REMAINDER, help="Files from the RPM package that are to be inspected, can also be supplied on stdin")
     args = parser.parse_args()
 
     py_abi = args.requires
@@ -274,6 +277,19 @@ if __name__ == "__main__":
 
     # At least one type of normalization must be provided
     assert normalized_names_provide_pep503 or normalized_names_provide_legacy
+
+    # Is this script being run for an extras subpackage?
+    extras_subpackage = None
+    if args.package_name and '+' in args.package_name:
+        # The extras names are encoded in the package names after the + sign.
+        # We take the part after the rightmost +, ignoring when empty,
+        # this allows packages like nicotine+ or c++ to work fine.
+        # While packages with names like +spam or foo+bar would break,
+        # names started with the plus sign are not very common
+        # and pluses in the middle can be easily replaced with dashes.
+        # Python extras names don't contain pluses according to PEP 508.
+        package_name_parts = args.package_name.rpartition('+')
+        extras_subpackage = package_name_parts[2] or None
 
     for f in (args.files or stdin.readlines()):
         f = f.strip()
@@ -307,11 +323,21 @@ if __name__ == "__main__":
                 warn("Version for {!r} has not been found".format(dist), RuntimeWarning)
                 continue
 
+            # If processing an extras subpackage:
+            #   Check that the extras name is declared in the metadata, or
+            #   that there are some dependencies associated with the extras name
+            if extras_subpackage and extras_subpackage not in dist.extras and not dist.requirements_for_extra(extras_subpackage):
+                print("*** PYTHON_EXTRAS_NOT_FOUND_ERROR___SEE_STDERR ***")
+                print(f"\nError: The package name contains an extras name `{extras_subpackage}` that was not found in the metadata.\n"
+                      "Check if the extras were removed from the project. If so, consider removing the subpackage and obsoleting it from another.\n", file=stderr)
+                exit(65)  # os.EX_DATAERR
+
             if args.majorver_provides or args.majorver_provides_versions or \
                     args.majorver_only or args.legacy_provides or args.legacy:
                 # Get the Python major version
                 pyver_major = dist.py_version.split('.')[0]
             if args.provides:
+                extras_suffix = f"[{extras_subpackage}]" if extras_subpackage else ""
                 # If egg/dist metadata says package name is python, we provide python(abi)
                 if dist.normalized_name == 'python':
                     name = 'python(abi)'
@@ -320,21 +346,21 @@ if __name__ == "__main__":
                     py_deps[name].append(('==', dist.py_version))
                 if not args.legacy or not args.majorver_only:
                     if normalized_names_provide_legacy:
-                        name = 'python{}dist({})'.format(dist.py_version, dist.legacy_normalized_name)
+                        name = 'python{}dist({}{})'.format(dist.py_version, dist.legacy_normalized_name, extras_suffix)
                         if name not in py_deps:
                             py_deps[name] = []
                     if normalized_names_provide_pep503:
-                        name_ = 'python{}dist({})'.format(dist.py_version, dist.normalized_name)
+                        name_ = 'python{}dist({}{})'.format(dist.py_version, dist.normalized_name, extras_suffix)
                         if name_ not in py_deps:
                             py_deps[name_] = []
                 if args.majorver_provides or args.majorver_only or \
                         (args.majorver_provides_versions and dist.py_version in args.majorver_provides_versions):
                     if normalized_names_provide_legacy:
-                        pymajor_name = 'python{}dist({})'.format(pyver_major, dist.legacy_normalized_name)
+                        pymajor_name = 'python{}dist({}{})'.format(pyver_major, dist.legacy_normalized_name, extras_suffix)
                         if pymajor_name not in py_deps:
                             py_deps[pymajor_name] = []
                     if normalized_names_provide_pep503:
-                        pymajor_name_ = 'python{}dist({})'.format(pyver_major, dist.normalized_name)
+                        pymajor_name_ = 'python{}dist({}{})'.format(pyver_major, dist.normalized_name, extras_suffix)
                         if pymajor_name_ not in py_deps:
                             py_deps[pymajor_name_] = []
                 if args.legacy or args.legacy_provides:
@@ -373,7 +399,12 @@ if __name__ == "__main__":
                     spec = ('==', dist.py_version)
                     if spec not in py_deps[name]:
                         py_deps[name].append(spec)
-                deps = dist.requirements
+
+                if extras_subpackage:
+                    deps = [d for d in dist.requirements_for_extra(extras_subpackage)]
+                else:
+                    deps = dist.requirements
+
                 # console_scripts/gui_scripts entry points need pkg_resources from setuptools
                 if (dist.entry_points and
                     (lower.endswith('.egg') or
@@ -385,26 +416,39 @@ if __name__ == "__main__":
                         deps.insert(0, Requirement('setuptools'))
                 # add requires/recommends based on egg/dist metadata
                 for dep in deps:
-                    if normalized_names_require_pep503:
-                        dep_normalized_name = dep.normalized_name
-                    else:
-                        dep_normalized_name = dep.legacy_normalized_name
+                    # Even if we're requiring `foo[bar]`, also require `foo`
+                    # to be safe, and to make it discoverable through
+                    # `repoquery --whatrequires`
+                    extras_suffixes = [""]
+                    if args.require_extras_subpackages and dep.extras:
+                        # A dependency can have more than one extras,
+                        # i.e. foo[bar,baz], so let's go through all of them
+                        extras_suffixes += [f"[{e}]" for e in dep.extras]
 
-                    if args.legacy:
-                        name = 'pythonegg({})({})'.format(pyver_major, dep.legacy_normalized_name)
-                    else:
-                        if args.majorver_only:
-                            name = 'python{}dist({})'.format(pyver_major, dep_normalized_name)
+                    for extras_suffix in extras_suffixes:
+                        if normalized_names_require_pep503:
+                            dep_normalized_name = dep.normalized_name
                         else:
-                            name = 'python{}dist({})'.format(dist.py_version, dep_normalized_name)
-                    if dep.marker and not args.recommends:
-                        if not dep.marker.evaluate(get_marker_env(dist, '')):
-                            continue
-                    if name not in py_deps:
-                        py_deps[name] = []
-                    for spec in dep.specifier:
-                        if (spec.operator, spec.version) not in py_deps[name]:
-                            py_deps[name].append((spec.operator, spec.version))
+                            dep_normalized_name = dep.legacy_normalized_name
+
+                        if args.legacy:
+                            name = 'pythonegg({})({})'.format(pyver_major, dep.legacy_normalized_name)
+                        else:
+                            if args.majorver_only:
+                                name = 'python{}dist({}{})'.format(pyver_major, dep_normalized_name, extras_suffix)
+                            else:
+                                name = 'python{}dist({}{})'.format(dist.py_version, dep_normalized_name, extras_suffix)
+
+                        if dep.marker and not args.recommends and not extras_subpackage:
+                            if not dep.marker.evaluate(get_marker_env(dist, '')):
+                                continue
+
+                        if name not in py_deps:
+                            py_deps[name] = []
+                        for spec in dep.specifier:
+                            if (spec.operator, spec.version) not in py_deps[name]:
+                                py_deps[name].append((spec.operator, spec.version))
+
             # Unused, for automatic sub-package generation based on 'extras' from egg/dist metadata
             # TODO: implement in rpm later, or...?
             if args.extras:
