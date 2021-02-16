@@ -221,6 +221,7 @@ def get_marker_env(dist, extra):
     # [1] https://www.python.org/dev/peps/pep-0508/#environment-markers
     return {"python_full_version": dist.py_version,
             "python_version": dist.py_version,
+            "python_version_tuple": lambda: tuple(dist.py_version.split('.')),
             "extra": extra}
 
 
