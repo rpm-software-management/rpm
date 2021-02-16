@@ -1864,7 +1864,7 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
     }
 
     /* Trailer offset is negative and has a special meaning */
-    blob->ril = -einfo.offset/sizeof(*blob->pe);
+    blob->ril = -(einfo.offset/sizeof(*blob->pe));
     /* Does the region actually fit within the header? */
     if ((einfo.offset % sizeof(*blob->pe)) || hdrchkRange(blob->il, blob->ril) ||
 					hdrchkRange(blob->dl, blob->rdl)) {
