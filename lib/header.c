@@ -1863,7 +1863,13 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
 	goto exit;
     }
 
-    /* Trailer offset is negative and has a special meaning */
+    /*
+     * Trailer offset is negative and has a special meaning.  Be sure to negate
+     * *after* the division, so the negation cannot overflow.  The parentheses
+     * around the division are required!
+     *
+     * Thankfully, the modulus operator works fine on negative numbers.
+     */
     blob->ril = -(einfo.offset/sizeof(*blob->pe));
     /* Does the region actually fit within the header? */
     if ((einfo.offset % sizeof(*blob->pe)) || hdrchkRange(blob->il, blob->ril) ||
