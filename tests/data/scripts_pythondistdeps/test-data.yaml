@@ -1216,6 +1216,15 @@
                 python3dist(backports-range) = 3.7.2
                 python3dist(backports.range) = 3.7.2
             requires: python(abi) = 3.7
+--requires --normalized-names-format pep503 --package-name python3-setuptools+certs:
+    --provides --majorver-provides --normalized-names-format pep503 --package-name python3-setuptools+certs:
+        usr/lib/python3.9/site-packages/setuptools-41.6.0.dist-info:
+            provides: |-
+                python3.9dist(setuptools[certs]) = 41.6
+                python3dist(setuptools[certs]) = 41.6
+            requires: |-
+                python(abi) = 3.9
+                python3.9dist(certifi) = 2016.9.26
 --requires --normalized-names-format pep503 --package-name python3-zope-component+testing:
     --provides --majorver-provides --normalized-names-format pep503 --package-name python3-zope-component+testing:
         usr/lib/python3.9/site-packages/zope.component-4.3.0-py3.9.egg-info:
