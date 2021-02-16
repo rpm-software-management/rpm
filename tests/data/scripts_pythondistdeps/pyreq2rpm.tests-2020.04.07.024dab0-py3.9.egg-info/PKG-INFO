@@ -1,0 +1,21 @@
+Metadata-Version: 2.1
+Name: pyreq2rpm.tests
+Version: 2020.04.07.024dab0
+Summary: Test package to verify conversion of dependencies from pip/python to rpm format, data taken from pyreq2rpm
+Author: Tomas Orsava (author of this metapackage)
+Home-page: https://github.com/gordonmessmer/pyreq2rpm
+License: MIT
+Description: This dist-info is mock metadata for a fictional package pyreq2rpm.tests
+        The important part of its contents is the requires.txt that contains
+        different formats of Python requirements taken from
+        https://github.com/gordonmessmer/pyreq2rpm, that are numbered as to be
+        unique. The metadata is then processed through
+        scripts/pythondistdeps.py and the resulting RPM requires compared to
+        expected results.
+
+        The version of the package contains the date when I converted the test
+        data from upstream to this metapackage, as well as the short hash of
+        the last git commit.
+
+        From the requirements I have omitted those that are incorrect, as they
+        crash the pythondistdeps.py script.
