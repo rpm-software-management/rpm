@@ -423,7 +423,8 @@ unsigned headerSizeof(Header h, int magicp)
 static inline int strtaglen(const char *str, rpm_count_t c, const char *end)
 {
     const char *start = str;
-    const char *s;
+    const char *s = NULL;
+    int len = -1; /* assume failure */
 
     if (end) {
 	while (end > start && (s = memchr(start, '\0', end-start))) {
@@ -438,7 +439,11 @@ static inline int strtaglen(const char *str, rpm_count_t c, const char *end)
 	    start = s + 1;
 	}
     }
-    return (c > 0) ? -1 : (s - str + 1);
+
+    if (s != NULL && c == 0)
+	len = s - str + 1;
+
+    return len;
 }
 
 /**
