@@ -1838,8 +1838,8 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
 	goto exit;
     }
 
-    /* Is the trailer within the data area? */
-    if (hdrchkRange(blob->dl, einfo.offset + REGION_TAG_COUNT)) {
+    /* Is the trailer within the data area?  Watch out for overflow! */
+    if (einfo.offset < 0 || einfo.offset + REGION_TAG_COUNT > blob->dl) {
 	rasprintf(buf,
 		_("region offset: BAD, tag %d type %d offset %d count %d"),
 		einfo.tag, einfo.type, einfo.offset, einfo.count);
@@ -1848,7 +1848,6 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
 
     RPM_STATIC_ASSERT(sizeof(trailer) == REGION_TAG_COUNT);
     /* Is there an immutable header region tag trailer? */
-    memset(&trailer, 0, sizeof(trailer));
     regionEnd = blob->dataStart + einfo.offset;
     /* regionEnd is not guaranteed to be aligned */
     (void) memcpy(&trailer, regionEnd, REGION_TAG_COUNT);
