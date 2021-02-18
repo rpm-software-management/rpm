@@ -49,7 +49,7 @@ static const int typeAlign[16] =  {
 /** \ingroup header
  * Size of header data types.
  */
-static const int typeSizes[16] =  { 
+static const int32_t typeSizes[16] =  {
     0,	/*!< RPM_NULL_TYPE */
     1,	/*!< RPM_CHAR_TYPE */
     1,	/*!< RPM_INT8_TYPE */
@@ -130,10 +130,11 @@ static const size_t headerMaxbytes = (256*1024*1024);
 
 /**
  * Reasonableness check on count values.
- * Catches nasty stuff like negative or zero counts, which would cause
- * integer underflows in strtaglen().
+ * Catches nasty stuff like zero counts, which would cause
+ * integer underflows in strtaglen(), and excessive counts, which could cause
+ * integer overflows in dataLength().
  */
-#define hdrchkCount(_count) ((_count) == 0)
+#define hdrchkCount(_count) ((_count) <= 0 || (_count) > HEADER_DATA_MAX)
 
 /**
  * Sanity check on type values.
@@ -286,8 +287,6 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
 	    goto err;
 	if (hdrchkType(info.type))
 	    goto err;
-	if (hdrchkCount(info.count))
-	    goto err;
 	if (hdrchkAlign(info.type, info.offset))
 	    goto err;
 	if (hdrchkRange(blob->dl, info.offset))
@@ -406,7 +405,7 @@ unsigned headerSizeof(Header h, int magicp)
  * Header string (array) size calculation, bounded if end is non-NULL.
  * Return length (including \0 termination) on success, -1 on error.
  */
-static inline int strtaglen(const char *str, rpm_count_t c, const char *end)
+static inline int64_t strtaglen(const char *str, rpm_count_t c, const char *end)
 {
     const char *start = str;
     const char *s = NULL;
@@ -441,12 +440,19 @@ static inline int strtaglen(const char *str, rpm_count_t c, const char *end)
  * @param pend		pointer to end of data (or NULL)
  * @return		no. bytes in data, -1 on failure
  */
-static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
-			 int onDisk, rpm_constdata_t pend)
+static int32_t dataLength(rpm_tagtype_t type, rpm_constdata_t p,
+			  rpm_count_t count, int onDisk, rpm_constdata_t pend)
 {
     const char * s = p;
     const char * se = pend;
-    int length = 0;
+    int32_t length = 0;
+
+    RPM_STATIC_ASSERT(HEADER_DATA_MAX == UINT32_MAX >> 4);
+    RPM_STATIC_ASSERT(hdrchkCount(HEADER_DATA_MAX + 1));
+    RPM_STATIC_ASSERT(HEADER_DATA_MAX * 8 < INT32_MAX);
+
+    if (hdrchkCount(count))
+	return -1;
 
     switch (type) {
     case RPM_STRING_TYPE:
@@ -472,10 +478,9 @@ static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
 	break;
 
     default:
-	if (typeSizes[type] == -1)
-	    return -1;
-	length = typeSizes[(type & 0xf)] * count;
-	if (length < 0 || (se && (s + length) > se))
+	/* ‘count’ already checked above */
+	length = typeSizes[type] * count;
+	if (length <= 0 || (se && length > se - s))
 	    return -1;
 	break;
     }

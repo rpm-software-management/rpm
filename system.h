@@ -11,6 +11,17 @@
 #include "config.h"
 #endif
 
+#if defined HAVE_STATIC_ASSERT && 0
+# include <assert.h>
+# define RPM_STATIC_ASSERT(s) do { static_assert(s, #s); } while (0)
+#else
+# define RPM_STATIC_ASSERT(s) do { \
+    struct rpm_static_assert { \
+	int rpm_static_assertion_failed: (int)(2 * !!(s)) - 1; \
+    }; \
+} while (0)
+#endif
+
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
 #endif
