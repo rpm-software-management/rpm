@@ -89,7 +89,7 @@ enum rpmVerifyAttrs_e {
     RPMVERIFY_READLINKFAIL= (1 << 28),	/*!< readlink failed */
     RPMVERIFY_READFAIL	= (1 << 29),	/*!< file read failed */
     RPMVERIFY_LSTATFAIL	= (1 << 30),	/*!< lstat failed */
-    RPMVERIFY_LGETFILECONFAIL	= (1 << 31)	/*!< lgetfilecon failed */
+    RPMVERIFY_LGETFILECONFAIL	= (1UL << 31)	/*!< lgetfilecon failed */
 };
 
 typedef rpmFlags rpmVerifyAttrs;
