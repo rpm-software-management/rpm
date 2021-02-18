@@ -22,7 +22,7 @@ typedef enum rpmScriptletExecutionFlow_e {
  */
 enum rpmFileActionFlags_e {
     /* bits 0-15 reserved for actions */
-    FAF_UNOWNED		= (1 << 31)
+    FAF_UNOWNED		= (1UL << 31)
 };
 typedef rpmFlags rpmFileActionFlags;
 
