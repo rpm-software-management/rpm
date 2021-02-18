@@ -40,7 +40,7 @@ enum rpmBuildFlags_e {
     RPMBUILD_DUMPBUILDREQUIRES	= (1 <<  21), /*!< Write buildrequires.nosrc.rpm. */
     RPMBUILD_CONF	= (1 << 22),	/*!< Execute %%conf. */
 
-    RPMBUILD_NOBUILD	= (1 << 31)	/*!< Don't execute or package. */
+    RPMBUILD_NOBUILD	= (1UL << 31)	/*!< Don't execute or package. */
 };
 
 typedef rpmFlags rpmBuildFlags;

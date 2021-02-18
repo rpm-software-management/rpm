@@ -54,7 +54,7 @@ enum rpmtransFlags_e {
     /* bit 28 unused */
     RPMTRANS_FLAG_NOARTIFACTS	= (1 << 29),	/*!< from --noartifacts */
     RPMTRANS_FLAG_NOCONFIGS	= (1 << 30),	/*!< from --noconfigs */
-    RPMTRANS_FLAG_DEPLOOPS	= (1 << 31)	/*!< from --deploops */
+    RPMTRANS_FLAG_DEPLOOPS	= (1UL << 31)	/*!< from --deploops */
 };
 
 typedef rpmFlags rpmtransFlags;
