@@ -15,6 +15,16 @@
 #include <sys/param.h>
 #endif
 
+#if CHAR_BIT != 8
+#error RPM requires 8 bit bytes
+#endif
+
+#if __STDC_VERSION__ >= 201112L
+#define RPM_STATIC_ASSERT(x) do { _Static_assert(x, #x); } while (0)
+#else
+#define RPM_STATIC_ASSERT(x) do {} while (!(sizeof(struct { int j: 2 * !!(x) - 1; })))
+#endif
+
 /* <unistd.h> should be included before any preprocessor test
    of _POSIX_VERSION.  */
 #ifdef HAVE_UNISTD_H

@@ -1846,6 +1846,7 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
 	goto exit;
     }
 
+    RPM_STATIC_ASSERT(sizeof(trailer) == REGION_TAG_COUNT);
     /* Is there an immutable header region tag trailer? */
     memset(&trailer, 0, sizeof(trailer));
     regionEnd = blob->dataStart + einfo.offset;
