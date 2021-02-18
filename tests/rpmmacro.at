@@ -967,3 +967,25 @@ xxx
 error: bad
 ])
 AT_CLEANUP
+
+AT_SETUP([bcond macro])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm \
+	--eval "%bcond normally_on 1" \
+	--eval "%bcond normally_off 0" \
+	--eval "%bcond both_features %[[%{with normally_on} && %{with normally_off}]]" \
+	--eval "%{with normally_on}" \
+	--eval "%{with normally_off}" \
+	--eval "%{with both_features}"
+],
+[0],
+[
+
+
+1
+0
+0
+],
+[])
+AT_CLEANUP
