@@ -896,3 +896,42 @@ runroot rpm \
 ],
 )
 AT_CLEANUP
+
+AT_SETUP([query format iteration])
+AT_KEYWORDS([query])
+RPMDB_INIT
+
+AT_CHECK([
+runroot rpmspec -q --qf "[[%{*:tagnum}\n]]" --srpm /data/SPECS/mini.spec
+],
+[0],
+[100
+1000
+1001
+1002
+1004
+1005
+1014
+1016
+1021
+1022
+],
+[])
+
+AT_CHECK([
+runroot rpmspec -q --qf "[[%{*:tagname}\n]]" --srpm /data/SPECS/mini.spec
+],
+[0],
+[Headeri18ntable
+Name
+Version
+Release
+Summary
+Description
+License
+Group
+Os
+Arch
+],
+[])
+AT_CLEANUP
