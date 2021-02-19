@@ -493,6 +493,18 @@ static char * humaniecFormat(rpmtd td, char **emsg)
     return humanFormat(td, emsg, 1024);
 }
 
+static char *tagnameFormat(rpmtd td, char **emsg)
+{
+    return xstrdup(rpmTagGetName(td->tag));
+}
+
+static char *tagnumFormat(rpmtd td, char **emsg)
+{
+    char *num = NULL;
+    rasprintf(&num, "%u", td->tag);
+    return num;
+}
+
 static const struct headerFmt_s rpmHeaderFormats[] = {
     { RPMTD_FORMAT_STRING,	"string",
 	RPM_ANY_CLASS,		stringFormat },
@@ -540,6 +552,10 @@ static const struct headerFmt_s rpmHeaderFormats[] = {
 	RPM_NUMERIC_CLASS,	humansiFormat },
     { RPMTD_FORMAT_HUMANIEC,	"humaniec",
 	RPM_NUMERIC_CLASS,	humaniecFormat },
+    { RPMTD_FORMAT_TAGNAME,	"tagname",
+	RPM_ANY_CLASS,		tagnameFormat },
+    { RPMTD_FORMAT_TAGNUM,	"tagnum",
+	RPM_ANY_CLASS,		tagnumFormat },
     { -1,			NULL, 		0,	NULL }
 };
 
