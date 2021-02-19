@@ -379,12 +379,11 @@ static void loadKeyring(rpmts ts)
     if ((rpmtsVSFlags(ts) & RPMVSF_MASK_NOSIGNATURES) !=
 	RPMVSF_MASK_NOSIGNATURES) {
 	ts->keyring = rpmKeyringNew();
-	if (loadKeyringFromFiles(ts) == 0) {
-	    if (loadKeyringFromDB(ts) > 0) {
-		/* XXX make this a warning someday... */
-		rpmlog(RPMLOG_DEBUG, "Using legacy gpg-pubkey(s) from rpmdb\n");
-	    }
-	}
+	loadKeyringFromFiles(ts);
+        if (loadKeyringFromDB(ts) > 0) {
+          /* XXX make this a warning someday... */
+          rpmlog(RPMLOG_DEBUG, "Using legacy gpg-pubkey(s) from rpmdb\n");
+        }
     }
 }
 
