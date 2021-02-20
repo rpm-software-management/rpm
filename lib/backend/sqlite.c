@@ -1,4 +1,5 @@
 #include "system.h"
+#include <assert.h>
 
 #include <sqlite3.h>
 #include <fcntl.h>
@@ -142,16 +143,18 @@ static int sqlite_init(rpmdb rdb, const char * dbhome)
 	    flags |= (SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
 
 	while (retry_open--) {
+	    sqlite3_close(sdb);
 	    xx = sqlite3_open_v2(dbfile, &sdb, flags, NULL);
-	    if (xx == SQLITE_CANTOPEN) {
-		/* Sqlite allocates resources even on failure to open (!) */
-		sqlite3_close(sdb);
-	    }
+	    if (xx == SQLITE_OK)
+		break;
 	}
 
 	if (xx != SQLITE_OK) {
+	    assert(xx != SQLITE_MISUSE && "Invalid parameter passed to SQLite???");
 	    rpmlog(RPMLOG_ERR, _("Unable to open sqlite database %s: %s\n"),
 		    dbfile, sqlite3_errmsg(sdb));
+	    sqlite3_close(sdb);
+	    sdb = NULL;
 	    rc = 1;
 	    goto exit;
 	}
