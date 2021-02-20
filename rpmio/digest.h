@@ -35,6 +35,7 @@ struct pgpDigParams_s {
     uint8_t sigtype;
     uint8_t hashlen;
     uint8_t signhash16[2];
+    uint8_t low_fpr[12];
     pgpKeyID_t signid;
     uint8_t saved;
 #define	PGPDIG_SAVED_TIME	(1 << 0)

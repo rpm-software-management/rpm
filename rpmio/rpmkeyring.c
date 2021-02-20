@@ -282,7 +282,9 @@ static rpmPubkey findbySig(rpmKeyring keyring, pgpDigParams sig)
 	    pgpDigParams pub = key->pgpkey;
 	    /* Do the parameters match the signature? */
 	    if ((sig->pubkey_algo != pub->pubkey_algo) ||
-		    memcmp(sig->signid, pub->signid, sizeof(sig->signid))) {
+		memcmp(sig->signid, pub->signid, sizeof(sig->signid)) ||
+		((sig->saved & PGPDIG_SAVED_FPR) &&
+		 memcmp(sig->low_fpr, pub->low_fpr, sizeof(sig->low_fpr)))) {
 		key = NULL;
 	    }
 	}

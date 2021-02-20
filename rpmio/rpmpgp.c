@@ -497,6 +497,7 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 	    _Static_assert(sizeof(_digp->signid) == 8, "bug");
 	    if (plen != 22 || p[1] != 4 || pgpSetKeyId(_digp, p + 14, PGPDIG_SAVED_FPR))
 		return 1;
+	    memcpy(_digp->low_fpr, p + 2, sizeof(_digp->low_fpr));
 	    pgpPrtHex("", p+2, plen-2);
 	    break;
 	case PGPSUBTYPE_ISSUER_KEYID:	/* issuer key ID */
@@ -903,15 +904,19 @@ int pgpPubkeyFingerprint(const uint8_t *h, size_t hlen,
     return rc;
 }
 
-static int getKeyID(const uint8_t *h, size_t hlen, pgpKeyID_t keyid)
+static int getKeyID(const uint8_t *h, size_t hlen, pgpKeyID_t keyid,
+		    uint8_t buf[12])
 {
     uint8_t *fp = NULL;
     size_t fplen = 0;
     int rc = pgpPubkeyFingerprint(h, hlen, &fp, &fplen);
-    if (fp && fplen > 8) {
+    if (!rc && fp && fplen == 20) {
 	memcpy(keyid, (fp + (fplen-8)), 8);
+	if (buf)
+	    memcpy(buf, fp, 12);
 	free(fp);
-    }
+    } else
+	rc = 1;
     return rc;
 }
 
@@ -922,7 +927,7 @@ int pgpPubkeyKeyID(const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid)
     if (decodePkt(pkt, pktlen, &p))
 	return -1;
     
-    return getKeyID(p.body, p.blen, keyid);
+    return getKeyID(p.body, p.blen, keyid, NULL);
 }
 
 static int pgpPrtPkt(struct pgpPkt *p, pgpDigParams _digp)
@@ -934,9 +939,9 @@ static int pgpPrtPkt(struct pgpPkt *p, pgpDigParams _digp)
 	rc = pgpPrtSig(p->tag, p->body, p->blen, _digp);
 	break;
     case PGPTAG_PUBLIC_KEY:
-	/* Get the public key Key ID. */
-	if (!getKeyID(p->body, p->blen, _digp->signid))
-	    _digp->saved |= PGPDIG_SAVED_ID;
+	/* Get the public key fingerprint . */
+	if (!getKeyID(p->body, p->blen, _digp->signid, _digp->low_fpr))
+	    _digp->saved |= PGPDIG_SAVED_ID | PGPDIG_SAVED_FPR;
 	else
 	    memset(_digp->signid, 0, sizeof(_digp->signid));
 	rc = pgpPrtKey(p->tag, p->body, p->blen, _digp);
@@ -1146,7 +1151,7 @@ int pgpPrtParamsSubkeys(const uint8_t *pkts, size_t pktlen,
 	    /* Copy UID from main key to subkey */
 	    digps[count]->userid = xstrdup(mainkey->userid);
 
-	    if (getKeyID(pkt.body, pkt.blen, digps[count]->signid)) {
+	    if (getKeyID(pkt.body, pkt.blen, digps[count]->signid, digps[count]->low_fpr)) {
 		pgpDigParamsFree(digps[count]);
 		continue;
 	    }
