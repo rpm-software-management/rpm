@@ -53,13 +53,21 @@ class Requirement(Requirement_):
 class Distribution(PathDistribution):
     def __init__(self, path):
         super(Distribution, self).__init__(Path(path))
-        self.name = self.metadata['Name']
         self.normalized_name = normalize_name(self.name)
         self.legacy_normalized_name = legacy_normalize_name(self.name)
         self.requirements = [Requirement(r) for r in self.requires or []]
         self.extras = [
             v for k, v in self.metadata.items() if k == 'Provides-Extra']
         self.py_version = self._parse_py_version(path)
+
+    # `name` is defined as a property exactly like this in Python 3.10 in the
+    # PathDistribution class. Due to that we can't redefine `name` as a normal
+    # attribute. So we copied the Python 3.10 definition here into the code so
+    # that it works also on previous Python/importlib_metadata versions.
+    @property
+    def name(self):
+        """Return the 'Name' metadata for the distribution package."""
+        return self.metadata['Name']
 
     def _parse_py_version(self, path):
         # Try to parse the Python version from the path the metadata
