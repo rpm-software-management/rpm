@@ -265,19 +265,24 @@ Header headerNew(void)
     return headerCreate(NULL, 0);
 }
 
-static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
+static rpmRC hdrblobVerifyInfo(const hdrblob blob, char **emsg)
 {
     struct entryInfo_s info;
-    int i, len = 0;
+    int32_t i = 0, len = 0;
     int32_t end = 0;
     const char *ds = (const char *) blob->dataStart;
-    int32_t il = (blob->regionTag) ? blob->il-1 : blob->il;
-    entryInfo pe = (blob->regionTag) ? blob->pe+1 : blob->pe;
+    const uint32_t region_start = (blob->regionTag) ? blob->rdl - REGION_TAG_COUNT : 0;
+    const uint32_t il = (blob->regionTag) ? blob->il-1 : blob->il;
+    const entryInfo pe = (blob->regionTag) ? blob->pe+1 : blob->pe;
     /* Can't typecheck signature header tags, sigh */
-    int typechk = (blob->regionTag == RPMTAG_HEADERIMMUTABLE ||
+    const int typechk = (blob->regionTag == RPMTAG_HEADERIMMUTABLE ||
 		   blob->regionTag == RPMTAG_HEADERIMAGE);
 
-    for (i = 0; i < il; i++) {
+    /* There must be at least one entry */
+    if (!il)
+	return RPMRC_FAIL;
+
+    for (; i < il; i++) {
 	ei2h(&pe[i], &info);
 
 	/* Previous data must not overlap */
@@ -292,26 +297,33 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
 	    goto err;
 	if (hdrchkRange(blob->dl, info.offset))
 	    goto err;
+	/* Padding must be minimal */
+	if (info.offset - end > typeAlign[info.type] - 1)
+	    goto err;
 	if (typechk && hdrchkTagType(info.tag, info.type))
 	    goto err;
 
 	/* Verify the data actually fits */
 	len = dataLength(info.type, ds + info.offset,
 			 info.count, 1, ds + blob->dl);
-	if (hdrchkRange(blob->dl - info.offset, len))
+	if (len < 0)
 	    goto err;
+	assert(len <= blob->dl - info.offset);
 	end = info.offset + len;
-	if (blob->regionTag) {
+	if (blob->regionTag && end >= region_start) {
 	    /*
 	     * Verify that the data does not overlap the region trailer.  The
 	     * region trailer is skipped by this loop, so the other checks
 	     * don’t catch this case.
 	     */
-	    if (end > blob->rdl - REGION_TAG_COUNT && info.offset < blob->rdl)
+	    if (region_start == end)
+		end = blob->rdl;
+	    else if (info.offset < blob->rdl)
 		goto err;
 	}
     }
-    return 0; /* Everything ok */
+    if (end == blob->dl)
+	return RPMRC_OK; /* Everything ok */
 
 err:
     if (emsg) {
@@ -319,7 +331,7 @@ err:
 		  _("tag[%d]: BAD, tag %d type %d offset %d count %d len %d"),
 		    i, info.tag, info.type, info.offset, info.count, len);
     }
-    return i + 1;
+    return RPMRC_FAIL;
 }
 
 static int indexCmp(const void * avp, const void * bvp)
@@ -511,26 +523,22 @@ static int regionSwab(indexEntry entry, int il, int dl,
 		const unsigned char * dataEnd,
 		int regionid, int fast)
 {
-    if ((entry != NULL && regionid >= 0) || (entry == NULL && regionid != 0))
-	return -1;
+    if (entry)
+	assert(regionid < 0);
+    else
+	assert(regionid == 0);
 
     for (; il > 0; il--, pe++) {
 	struct indexEntry_s ie;
 
 	ei2h(pe, &ie.info);
 
-	if (hdrchkType(ie.info.type))
-	    return -1;
-	if (hdrchkData(ie.info.count))
-	    return -1;
-	if (hdrchkData(ie.info.offset))
-	    return -1;
-	if (hdrchkAlign(ie.info.type, ie.info.offset))
-	    return -1;
-
+	assert(!hdrchkType(ie.info.type));
+	assert(!hdrchkCount(ie.info.count));
+	assert(!hdrchkData(ie.info.offset));
+	assert(!hdrchkAlign(ie.info.type, ie.info.offset));
 	ie.data = dataStart + ie.info.offset;
-	if (dataEnd && (unsigned char *)ie.data >= dataEnd)
-	    return -1;
+	assert(!dataEnd || (unsigned char *)ie.data < dataEnd);
 
 	/* The offset optimization is only relevant for string types */
 	if (fast && il > 1 && typeSizes[ie.info.type] == -1) {
@@ -539,8 +547,7 @@ static int regionSwab(indexEntry entry, int il, int dl,
 	    ie.length = dataLength(ie.info.type, ie.data, ie.info.count,
 				   1, dataEnd);
 	}
-	if (ie.length < 0 || hdrchkData(ie.length))
-	    return -1;
+	assert(ie.length >= 0 && !hdrchkData(ie.length));
 
 	ie.rdlen = 0;
 
@@ -558,24 +565,21 @@ static int regionSwab(indexEntry entry, int il, int dl,
 	case RPM_INT64_TYPE:
 	{   uint64_t * it = ie.data;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
-		if (dataEnd && ((unsigned char *)it) >= dataEnd)
-		    return -1;
+		assert(!dataEnd || ((unsigned char *)it) <= dataEnd - sizeof(*it));
 		*it = htonll(*it);
 	    }
 	}   break;
 	case RPM_INT32_TYPE:
-	{   int32_t * it = ie.data;
+	{   uint32_t * it = ie.data;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
-		if (dataEnd && ((unsigned char *)it) >= dataEnd)
-		    return -1;
+		assert(!dataEnd || ((unsigned char *)it) <= dataEnd - sizeof(*it));
 		*it = htonl(*it);
 	    }
 	}   break;
 	case RPM_INT16_TYPE:
-	{   int16_t * it = ie.data;
+	{   uint16_t * it = ie.data;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
-		if (dataEnd && ((unsigned char *)it) >= dataEnd)
-		    return -1;
+		assert(!dataEnd || ((unsigned char *)it) <= dataEnd - sizeof(*it));
 		*it = htons(*it);
 	    }
 	}   break;
@@ -898,7 +902,7 @@ int headerDel(Header h, rpmTagVal tag)
     return 0;
 }
 
-rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg)
+void hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg)
 {
     Header h = NULL;
     indexEntry entry; 
@@ -907,7 +911,7 @@ rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg)
     h = headerCreate(blob->ei, blob->il);
 
     entry = h->index;
-    if (!(htonl(blob->pe->tag) < RPMTAG_HEADERI18NTABLE)) {
+    if (!(htonl((uint32_t)blob->pe->tag) < RPMTAG_HEADERI18NTABLE)) {
 	/* An original v3 header, create a legacy region entry for it */
 	h->flags |= HEADERFLAG_LEGACY;
 	entry->info.type = REGION_TAG_TYPE;
@@ -920,8 +924,7 @@ rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg)
 	rdlen = regionSwab(entry+1, blob->il, 0, blob->pe,
 			   blob->dataStart, blob->dataEnd,
 			   entry->info.offset, fast);
-	if (rdlen != blob->dl)
-	    goto errxit;
+	assert(rdlen == blob->dl);
 	entry->rdlen = rdlen;
 	h->indexUsed++;
     } else {
@@ -938,8 +941,7 @@ rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg)
 	rdlen = regionSwab(entry+1, ril-1, 0, blob->pe+1,
 			   blob->dataStart, blob->dataEnd,
 			   entry->info.offset, fast);
-	if (rdlen < 0)
-	    goto errxit;
+	assert(rdlen >= 0);
 	entry->rdlen = rdlen;
 
 	if (ril < h->indexUsed) {
@@ -950,8 +952,7 @@ rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg)
 	    /* Load dribble entries from region. */
 	    rdlen = regionSwab(newEntry, ne, rdlen, blob->pe+ril,
 				blob->dataStart, blob->dataEnd, rid, fast);
-	    if (rdlen < 0)
-		goto errxit;
+	    assert(rdlen >= 0);
 
 	  { indexEntry firstEntry = newEntry;
 	    int save = h->indexUsed;
@@ -976,8 +977,7 @@ rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg)
 
 	rdlen += REGION_TAG_COUNT;
 
-	if (rdlen != blob->dl)
-	    goto errxit;
+	assert(rdlen == blob->dl);
     }
 
     /* Force sorting, dribble lookups can cause early sort on partial header */
@@ -988,16 +988,6 @@ rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg)
 
     /* We own the memory now, avoid double-frees */
     blob->ei = NULL;
-
-    return RPMRC_OK;
-
-errxit:
-    if (h) {
-	free(h->index);
-	free(h);
-	rasprintf(emsg, _("hdr load: BAD"));
-    }
-    return RPMRC_FAIL;
 }
 
 Header headerReload(Header h, rpmTagVal tag)
@@ -1074,7 +1064,7 @@ int headerIsEntry(Header h, rpmTagVal tag)
    	
 }
 
-/* simple heuristic to find out if the header is from * a source rpm
+/* simple heuristic to find out if the header is from a source rpm
  * or not: source rpms contain at least the spec file and have all
  * files in one directory with an empty name.
  */
@@ -1845,7 +1835,7 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
     }
 
     /* Is the trailer within the data area? */
-    if (hdrchkRange(blob->dl, einfo.offset + REGION_TAG_COUNT)) {
+    if (einfo.offset < 0 || blob->dl < einfo.offset + REGION_TAG_COUNT) {
 	rasprintf(buf,
 		_("region offset: BAD, tag %d type %d offset %d count %d"),
 		einfo.tag, einfo.type, einfo.offset, einfo.count);
@@ -1873,14 +1863,16 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
     }
 
     /* Negate after division to avoid overflow.  Watch out for precedence! */
-    blob->ril = -(einfo.offset/sizeof(*blob->pe));
+    int32_t ril = -(einfo.offset/(int32_t)sizeof(*blob->pe));
     /* Does the region actually fit within the header? */
-    if ((einfo.offset % sizeof(*blob->pe)) || hdrchkRange(blob->il, blob->ril) ||
-					hdrchkRange(blob->dl, blob->rdl)) {
+    if ((einfo.offset % (int32_t)sizeof(*blob->pe)) ||
+	hdrchkRange(blob->il, ril) ||
+	hdrchkRange(blob->dl, blob->rdl)) {
 	rasprintf(buf, _("region %d size: BAD, ril %d il %d rdl %d dl %d"),
 			regionTag, blob->ril, blob->il, blob->rdl, blob->dl);
 	goto exit;
     }
+    blob->ril = ril;
 
     /* In package files region size is expected to match header size. */
     if (exact_size && !(blob->il == blob->ril && blob->dl == blob->rdl)) {
@@ -2001,9 +1993,16 @@ const char *__llvm_profile_filename = "default.profraw";
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size);
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
     char *emsg = NULL;
-    struct hdrblob_s blob;
-    if (Size)
-        hdrblobInit(Data, Size, 0, 0, &blob, &emsg);
+    struct hdrblob_s hblob;
+    Header h = NULL;
+    if (!Size)
+	return 0;
+    uint8_t *b = memcpy(rmalloc(Size), Data, Size);
+    if (hdrblobInit(b, Size, 0, 0, &hblob, &emsg) == RPMRC_OK)
+	hdrblobImport(&hblob, 0, &h, &emsg);
+    if (!h)
+	free(b);
+    headerFree(h);
     free(emsg);
     return 0;
 }

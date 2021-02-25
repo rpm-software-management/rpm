@@ -258,8 +258,9 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
 	goto exit;
 
     /* OK, blob looks sane, load the header. */
-    rc = hdrblobImport(&blob, 0, &h, &buf);
-    
+    hdrblobImport(&blob, 0, &h, &buf);
+    rc = RPMRC_OK;
+
 exit:
     if (hdrp && h && rc == RPMRC_OK)
 	*hdrp = headerLink(h);
@@ -374,10 +375,8 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     if (!rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, handleHdrVS, &pkgdata)) {
 	/* Finally import the headers and do whatever required retrofits etc */
 	if (hdrp) {
-	    if (hdrblobImport(sigblob, 0, &sigh, &msg))
-		goto exit;
-	    if (hdrblobImport(blob, 0, &h, &msg))
-		goto exit;
+	    hdrblobImport(sigblob, 0, &sigh, &msg);
+	    hdrblobImport(blob, 0, &h, &msg);
 
 	    /* Append (and remap) signature tags to the metadata. */
 	    headerMergeLegacySigs(h, sigh);

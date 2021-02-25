@@ -22,16 +22,16 @@ struct entryInfo_s {
 typedef struct hdrblob_s * hdrblob;
 struct hdrblob_s {
     int32_t *ei;
-    int32_t il;
-    int32_t dl;
+    uint32_t il;
+    uint32_t dl;
     entryInfo pe;
-    int32_t pvlen;
+    uint32_t pvlen;
     uint8_t *dataStart;
     uint8_t *dataEnd;
 
     rpmTagVal regionTag;
-    int32_t ril;
-    int32_t rdl;
+    uint32_t ril;
+    uint32_t rdl;
 };
 
 #ifdef __cplusplus
@@ -41,9 +41,9 @@ extern "C" {
 /* convert entry info to host endianess */
 static inline void ei2h(const struct entryInfo_s *pe, struct entryInfo_s *info)
 {
-    info->tag = ntohl(pe->tag);
+    info->tag = (rpm_tag_t)ntohl((uint32_t)pe->tag);
     info->type = ntohl(pe->type);
-    info->offset = ntohl(pe->offset);
+    info->offset = (int32_t)ntohl((uint32_t)pe->offset);
     info->count = ntohl(pe->count);
 }
 
@@ -75,7 +75,7 @@ RPM_GNUC_INTERNAL
 rpmRC hdrblobRead(FD_t fd, int magic, int exact_size, rpmTagVal regionTag, hdrblob blob, char **emsg);
 
 RPM_GNUC_INTERNAL
-rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg);
+void hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg);
 
 RPM_GNUC_INTERNAL
 rpmRC hdrblobGet(hdrblob blob, uint32_t tag, rpmtd td);
