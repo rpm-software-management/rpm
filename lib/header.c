@@ -50,7 +50,7 @@ static const int typeAlign[16] =  {
 /** \ingroup header
  * Size of header data types.
  */
-static const int32_t typeSizes[16] =  {
+static const int64_t typeSizes[16] =  {
     0,	/*!< RPM_NULL_TYPE */
     1,	/*!< RPM_CHAR_TYPE */
     1,	/*!< RPM_INT8_TYPE */
@@ -445,7 +445,7 @@ static inline int64_t strtaglen(const char *str, rpm_count_t c, const char *end)
 }
 
 /**
- * Return length of entry data.
+ * Return length of entry data.  64-bit types are used for defense-in-depth.
  * @param type		entry data type
  * @param p		entry data
  * @param count		entry item count
@@ -458,7 +458,7 @@ static int32_t dataLength(rpm_tagtype_t type, rpm_constdata_t p,
 {
     const char * s = p;
     const char * se = pend;
-    int32_t length = 0;
+    int64_t length = 0;
 
     RPM_STATIC_ASSERT(HEADER_DATA_MAX == UINT32_MAX >> 4);
     RPM_STATIC_ASSERT(hdrchkCount(HEADER_DATA_MAX + 1));
@@ -498,7 +498,7 @@ static int32_t dataLength(rpm_tagtype_t type, rpm_constdata_t p,
 	break;
     }
 
-    return length;
+    return length > INT32_MAX ? -1 : length;
 }
 
 /** \ingroup header
