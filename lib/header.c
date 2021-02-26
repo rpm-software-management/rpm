@@ -9,6 +9,7 @@
 /* network byte order and is converted on the fly to host order. */
 
 #include "system.h"
+#include <inttypes.h>
 #include <netdb.h>
 #include <errno.h>
 #include <inttypes.h>
@@ -278,9 +279,12 @@ static rpmRC hdrblobVerifyInfo(const hdrblob blob, char **emsg)
     const int typechk = (blob->regionTag == RPMTAG_HEADERIMMUTABLE ||
 		   blob->regionTag == RPMTAG_HEADERIMAGE);
 
-    /* There must be at least one entry */
-    if (!il)
+    /* Package headers must have at least one entry */
+    if (!il) {
+	if (emsg)
+	    rasprintf(emsg, _("BAD: package has no tags outside region "));
 	return RPMRC_FAIL;
+    }
 
     for (; i < il; i++) {
 	ei2h(&pe[i], &info);
@@ -322,8 +326,16 @@ static rpmRC hdrblobVerifyInfo(const hdrblob blob, char **emsg)
 		goto err;
 	}
     }
-    if (end == blob->dl)
-	return RPMRC_OK; /* Everything ok */
+    assert(end <= blob->dl);
+    if (end != blob->dl) {
+	if (emsg) {
+	    rasprintf(emsg,
+		      _("BAD: offset %" PRIi32 ": %" PRIi64 " bytes of trailing junk"),
+		      end, (int64_t)blob->dl - (int64_t)end);
+	}
+	return RPMRC_FAIL;
+    }
+    return RPMRC_OK; /* Everything ok */
 
 err:
     if (emsg) {
@@ -1807,7 +1819,7 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
 
     /* Check that we have at least on tag */
     if (blob->il < 1) {
-	rasprintf(buf, _("region: no tags"));
+	rc = RPMRC_NOTFOUND;
 	goto exit;
     }
 
