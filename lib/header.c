@@ -310,9 +310,9 @@ static rpmRC hdrblobVerifyInfo(const hdrblob blob, char **emsg)
 	/* Verify the data actually fits */
 	len = dataLength(info.type, ds + info.offset,
 			 info.count, 1, ds + blob->dl);
-	if (len < 0)
+	assert(len && (int64_t)len <= blob->dl - info.offset);
+	if (len <= 0)
 	    goto err;
-	assert(len <= blob->dl - info.offset);
 	end = info.offset + len;
 	if (blob->regionTag && end >= region_start) {
 	    /*
