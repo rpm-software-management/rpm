@@ -1889,9 +1889,11 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
 
     /* Negate after division to avoid overflow.  Watch out for precedence! */
     int32_t ril = -(einfo.offset/(int32_t)sizeof(*blob->pe));
+
     /* Does the region actually fit within the header? */
+    /* The region must contain at least two entries to be valid */
     if ((einfo.offset % (int32_t)sizeof(*blob->pe)) ||
-	ril <= 0 || ril > blob->il ||
+	ril < 2 || ril > blob->il ||
 	hdrchkRange(blob->dl, blob->rdl)) {
 	rasprintf(buf, _("region %d size: BAD, ril %d il %u rdl %u dl %u"),
 			regionTag, ril, blob->il, blob->rdl, blob->dl);
