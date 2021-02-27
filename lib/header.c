@@ -266,11 +266,11 @@ Header headerNew(void)
     return headerCreate(NULL, 0);
 }
 
-static rpmRC hdrblobVerifyInfo(const hdrblob blob, char **emsg)
+static rpmRC hdrblobVerifyInfo(const struct hdrblob_s *const blob, char **const emsg)
 {
     struct entryInfo_s info;
     int32_t i = 0, len = 0;
-    int32_t end = 0;
+    uint32_t end = 0;
     const char *ds = (const char *) blob->dataStart;
     const uint32_t region_start = (blob->regionTag) ? blob->rdl - REGION_TAG_COUNT : 0;
     const uint32_t il = (blob->regionTag) ? blob->il-1 : blob->il;
@@ -287,10 +287,10 @@ static rpmRC hdrblobVerifyInfo(const hdrblob blob, char **emsg)
     }
 
     for (; i < il; i++) {
-	ei2h(&pe[i], &info);
+	ei2h(pe + i, &info);
 
 	/* Previous data must not overlap */
-	if (end > info.offset)
+	if ((int64_t)end > info.offset)
 	    goto err;
 
 	if (hdrchkTag(info.tag))
@@ -315,14 +315,27 @@ static rpmRC hdrblobVerifyInfo(const hdrblob blob, char **emsg)
 	    goto err;
 	end = info.offset + len;
 	if (blob->regionTag && end >= region_start) {
+	    if (region_start == end) {
+		/*
+		 * Check that the region is internally consistent.  Note that
+		 * ‘i’ starts at 0 for a region of length 2.
+		 */
+		if (blob->ril != i + 2) {
+		    if (emsg)
+			rasprintf(emsg,
+				  _("BAD: inconsistent region: ril %" PRIi32 " i %" PRIi32),
+				  blob->ril, i);
+		    return RPMRC_FAIL;
+		}
+		end = blob->rdl;
+		continue;
+	    }
 	    /*
 	     * Verify that the data does not overlap the region trailer.  The
 	     * region trailer is skipped by this loop, so the other checks
 	     * don’t catch this case.
 	     */
-	    if (region_start == end)
-		end = blob->rdl;
-	    else if (info.offset < blob->rdl)
+	    if (info.offset < blob->rdl)
 		goto err;
 	}
     }
@@ -1878,10 +1891,10 @@ static rpmRC hdrblobVerifyRegion(rpmTagVal regionTag, int exact_size,
     int32_t ril = -(einfo.offset/(int32_t)sizeof(*blob->pe));
     /* Does the region actually fit within the header? */
     if ((einfo.offset % (int32_t)sizeof(*blob->pe)) ||
-	hdrchkRange(blob->il, ril) ||
+	ril <= 0 || ril > blob->il ||
 	hdrchkRange(blob->dl, blob->rdl)) {
-	rasprintf(buf, _("region %d size: BAD, ril %d il %d rdl %d dl %d"),
-			regionTag, blob->ril, blob->il, blob->rdl, blob->dl);
+	rasprintf(buf, _("region %d size: BAD, ril %d il %u rdl %u dl %u"),
+			regionTag, ril, blob->il, blob->rdl, blob->dl);
 	goto exit;
     }
     blob->ril = ril;
