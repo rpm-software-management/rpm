@@ -967,3 +967,14 @@ xxx
 error: bad
 ])
 AT_CLEANUP
+
+AT_SETUP([no space left on stdout])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm --eval 1 >/dev/full
+],
+[1],
+[],
+[Error writing to stdout: No space left on device
+])
+AT_CLEANUP
