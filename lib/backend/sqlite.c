@@ -134,24 +134,17 @@ static int sqlite_init(rpmdb rdb, const char * dbhome)
     if (rdb->db_dbenv == NULL) {
 	dbfile = rpmGenPath(dbhome, rdb->db_ops->path, NULL);
 	sqlite3 *sdb = NULL;
-	int xx, flags = 0;
-	int retry_open = 1;
+	int flags = 0;
 	if ((rdb->db_mode & O_ACCMODE) == O_RDONLY)
 	    flags |= SQLITE_OPEN_READONLY;
 	else
 	    flags |= (SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
 
-	while (retry_open--) {
-	    xx = sqlite3_open_v2(dbfile, &sdb, flags, NULL);
-	    if (xx == SQLITE_CANTOPEN) {
-		/* Sqlite allocates resources even on failure to open (!) */
-		sqlite3_close(sdb);
-	    }
-	}
-
-	if (xx != SQLITE_OK) {
+	if (sqlite3_open_v2(dbfile, &sdb, flags, NULL) != SQLITE_OK ) {
 	    rpmlog(RPMLOG_ERR, _("Unable to open sqlite database %s: %s\n"),
 		    dbfile, sqlite3_errmsg(sdb));
+	    /* Sqlite allocates resources even on failure to open (!) */
+	    sqlite3_close(sdb);
 	    rc = 1;
 	    goto exit;
 	}
