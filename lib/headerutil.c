@@ -333,8 +333,10 @@ static void providePackageNVR(Header h)
     rpmds hds, nvrds;
 
     /* Generate provides for this package name-version-release. */
-    if (!(name && pEVR))
+    if (!(name && pEVR)) {
+	free(pEVR);
 	return;
+    }
 
     /*
      * Rpm prior to 3.0.3 does not have versioned provides.
