@@ -3,15 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Ricky Tigg <ricky.tigg@gmail.com>, 2020.
+# Ricky Tigg <ricky.tigg@gmail.com>, 2020, 2021.
 # Jan Kuparinen <copper_fin@hotmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2021-02-12 06:47+0000\n"
-"Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
+"PO-Revision-Date: 2021-03-03 13:40+0000\n"
+"Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/rpm/"
 "master/fi/>\n"
 "Language: fi\n"
@@ -293,16 +293,16 @@ msgid "verify package signature(s)"
 msgstr "tarkista paketin allekirjoitus"
 
 msgid "import an armored public key"
-msgstr ""
+msgstr "tuo panssaroitu julkinen avain"
 
 msgid "don't import, but tell if it would work or not"
 msgstr "älä tuot, mutta kerro, toimiiko se vai ei"
 
 msgid "list keys from RPM keyring"
-msgstr ""
+msgstr "avainten luettelo RPM-avaimenperästä"
 
 msgid "Keyring options:"
-msgstr ""
+msgstr "Avaimenperävaihtoehdot:"
 
 msgid "no arguments given"
 msgstr "ei annettu parametrejä"
@@ -443,13 +443,13 @@ msgid "sign package(s) files"
 msgstr ""
 
 msgid "use file signing key <key>"
-msgstr ""
+msgstr "käytä tiedoston allekirjoitusavainta <key>"
 
 msgid "<key>"
-msgstr ""
+msgstr "<avain>"
 
 msgid "prompt for file signing key password"
-msgstr ""
+msgstr "pyytää tiedoston allekirjoitusavaimen salasanaa"
 
 msgid "Signature options:"
 msgstr "Allekirjoitusvalitsimet:"
@@ -463,6 +463,8 @@ msgid ""
 "You must set \"%%_file_signing_key\" in your macro file or on the command "
 "line with --fskpath\n"
 msgstr ""
+"Sinun on määritettävä \"%% _ file_signing_key\" makrotiedostoon tai "
+"komentoriville '--fskpath':lla\n"
 
 msgid "--fskpath may only be specified when signing files"
 msgstr ""
@@ -496,7 +498,7 @@ msgstr ""
 
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
-msgstr ""
+msgstr "Isäntänimeä ei voitu kanonisoida: %s\n"
 
 #, c-format
 msgid "Unable to open temp file: %s\n"
@@ -607,7 +609,7 @@ msgstr "Symbolinen linkki osoittaa BuildRoot:iin: %s -> %s\n"
 
 #, c-format
 msgid "Illegal character (0x%x) in filename: %s\n"
-msgstr ""
+msgstr "Laiton merkki (0x%x) tiedostonimessä: %s\n"
 
 #, c-format
 msgid "Path is outside buildroot: %s\n"
@@ -754,7 +756,7 @@ msgstr "paketti %s on jo olemassa\n"
 
 #, c-format
 msgid "%s was mapped to multiple filenames"
-msgstr ""
+msgstr "%s kartoitettiin useisiin tiedostonimiin"
 
 #, c-format
 msgid "Processing files: %s\n"
@@ -828,7 +830,7 @@ msgstr "Tiedostonimen muodostus paketille %s ei onnistu: %s\n"
 
 #, c-format
 msgid "Finished binary package job, result %d, filename %s\n"
-msgstr ""
+msgstr "Binaaripakettityö valmis, tulos %d, tiedostonimi %s\n"
 
 #, c-format
 msgid "line %d: second %s\n"
@@ -1079,7 +1081,7 @@ msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr ""
 
 msgid "Versioned file name not permitted"
-msgstr ""
+msgstr "Versioitua tiedostonimeä ei sallita"
 
 msgid "No rich dependencies allowed for this type"
 msgstr ""
@@ -1088,13 +1090,13 @@ msgid "invalid dependency"
 msgstr ""
 
 msgid "Version required"
-msgstr ""
+msgstr "Versio pakollinen"
 
 msgid "Only package names are allowed in Obsoletes"
-msgstr ""
+msgstr "Ainoastaan pakettien nimet ovat sallittuja Obsoletes:ssa"
 
 msgid "It's not recommended to have unversioned Obsoletes"
-msgstr ""
+msgstr "Ei ole suositeltavaa käyttää versiottomia Obsoletes:ja"
 
 msgid "It's not recommended to use '>' in Obsoletes"
 msgstr ""
@@ -1241,7 +1243,7 @@ msgstr ""
 
 #, c-format
 msgid "Failed to determine a policy name: %s\n"
-msgstr ""
+msgstr "Käytännön nimen määrittäminen epäonnistui: %s\n"
 
 #, c-format
 msgid ""
@@ -1416,18 +1418,18 @@ msgstr ""
 
 #, c-format
 msgid "rpmidx: Version mismatch. Expected version: %u. Found version: %u\n"
-msgstr ""
+msgstr "rpmidx: Versio ei täsmää. Odotettu versio: %u. Löydetty versio: %u\n"
 
 #, c-format
 msgid "rpmpkg: Version mismatch. Expected version: %u. Found version: %u\n"
-msgstr ""
+msgstr "rpmpkg: Versio ei täsmää. Odotettu versio: %u. Löydetty versio: %u\n"
 
 msgid "rpmpkg: detected non-zero blob, trying auto repair\n"
 msgstr ""
 
 #, c-format
 msgid "rpmxdb: Version mismatch. Expected version: %u. Found version: %u\n"
-msgstr ""
+msgstr "rpmxdb: Versio ei täsmää. Odotettu versio: %u. Löydetty versio: %u\n"
 
 #, c-format
 msgid "Unable to open sqlite database %s: %s\n"
@@ -1544,7 +1546,7 @@ msgstr ""
 
 #, c-format
 msgid "region %d size: BAD, ril %d il %d rdl %d dl %d"
-msgstr ""
+msgstr "alue %d size: HUONO, ril %d il %d rdl %d dl %d"
 
 #, c-format
 msgid "region %d: tag number mismatch il %d ril %d dl %d rdl %d\n"
@@ -1552,7 +1554,7 @@ msgstr ""
 
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d"
-msgstr ""
+msgstr "hdr size(%d): BAD, luku palautti %d"
 
 msgid "hdr magic: BAD"
 msgstr ""
@@ -1578,7 +1580,7 @@ msgstr "allekirjoitus "
 
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
-msgstr ""
+msgstr "blob size(%d): HUONO, 8 + 16 * il(%d) + dl(%d)"
 
 msgid "invalid field width"
 msgstr ""
@@ -1632,7 +1634,7 @@ msgid "| expected at end of expression"
 msgstr "odotin '}'-merkkiä ilmauksen lopussa"
 
 msgid "array iterator used with different sized arrays"
-msgstr ""
+msgstr "matriisi iteraattori, jota käytetään erikokoisilla matriiseilla"
 
 #, c-format
 msgid "RPM v3 packages are deprecated: %s\n"
@@ -1733,7 +1735,7 @@ msgid "provide more detailed output"
 msgstr "tulosta enemmän yksityiskohtia"
 
 msgid "print the version of rpm being used"
-msgstr "tulosta käytetyn rpm:n versio"
+msgstr "tulosta käytetyn rpm versio"
 
 msgid "debug payload file state machine"
 msgstr ""
@@ -1742,7 +1744,7 @@ msgid "debug rpmio I/O"
 msgstr ""
 
 msgid "disable user namespace support"
-msgstr ""
+msgstr "poista käyttäjän nimitilan tuki käytöstä"
 
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
@@ -1820,7 +1822,7 @@ msgid "don't check disk space before installing"
 msgstr "älä tarkista levytilaa ennen asennusta"
 
 msgid "short hand for --ignorepayload --ignoresignature"
-msgstr ""
+msgstr "lyhenne '--ignorepayload --ignoresignature':lle"
 
 msgid "install documentation"
 msgstr "asenna dokumentaatio"
@@ -2187,7 +2189,7 @@ msgstr "tuntematon nimiö: \"%s\"\n"
 
 #, c-format
 msgid "%s: key %d import failed.\n"
-msgstr ""
+msgstr "%s:avaimen %d tuonti epäonnistui.\n"
 
 #, c-format
 msgid "%s: key %d not an armored public key.\n"
@@ -2208,7 +2210,7 @@ msgid "digests"
 msgstr ""
 
 msgid "SIGNATURES"
-msgstr ""
+msgstr "ALLEKIRJOITUKSET"
 
 msgid "signatures"
 msgstr "allekirjoitukset"
@@ -2289,7 +2291,7 @@ msgstr ""
 
 #, c-format
 msgid "Could not get public keys from %s\n"
-msgstr ""
+msgstr "Julkisia avaimia ei voitu saada %s:sta\n"
 
 #, c-format
 msgid "could not delete old database at %s\n"
@@ -2324,10 +2326,12 @@ msgid "YES"
 msgstr "KYLLÄ"
 
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
-msgstr ""
+msgstr "PreReq:, Provides:, ja Obsoletes: riippuvuuksien tukiversiot."
 
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
+"tiedostonimet tallennetaan nimellä (dirName,baseName,dirIndex) "
+"kaksinkertainen, eikä polkuina."
 
 msgid "package payload can be compressed using bzip2."
 msgstr ""
@@ -2342,7 +2346,7 @@ msgid "package payload file(s) have \"./\" prefix."
 msgstr ""
 
 msgid "package name-version-release is not implicitly provided."
-msgstr ""
+msgstr "paketin nimi-versio-julkaisu ei ole epäsuorasti toimitettu."
 
 msgid "header tags are always sorted after being loaded."
 msgstr ""
@@ -2369,10 +2373,10 @@ msgid "package scriptlets can be expanded at install time."
 msgstr ""
 
 msgid "dependency comparison supports versions with tilde."
-msgstr ""
+msgstr "riippuvuuksien vertailu tukee versioita, joissa on tilde."
 
 msgid "dependency comparison supports versions with caret."
-msgstr ""
+msgstr "riippuvuuksien vertailu tukee versioita, joissa on caret."
 
 msgid "support files larger than 4GB"
 msgstr ""
@@ -2391,7 +2395,7 @@ msgid "Unknown rich dependency op '%.*s'"
 msgstr ""
 
 msgid "Name required"
-msgstr ""
+msgstr "Nimi pakollinen"
 
 msgid "Illegal ops in with/without"
 msgstr ""
@@ -2816,11 +2820,11 @@ msgstr ""
 
 #, c-format
 msgid "%s tag %u: invalid size %u"
-msgstr ""
+msgstr "%s tag %u: ei kelvollinen koko %u"
 
 #, c-format
 msgid "%s tag %u: invalid OpenPGP signature"
-msgstr ""
+msgstr "%s tag %u: ei kelvollinen OpenPGP-allekirjoitus"
 
 #, c-format
 msgid "%s: tag %u: invalid hex"
@@ -2856,7 +2860,7 @@ msgid "Unable to reload signature header.\n"
 msgstr "Allekirjoitusotsikon uudelleenlataus ei onnistu\n"
 
 msgid "no signature"
-msgstr ""
+msgstr "ei allekirjoitusta"
 
 msgid "no digest"
 msgstr ""
@@ -2912,7 +2916,7 @@ msgid "unterminated string in expression"
 msgstr "päättymätön merkkijono lausekkeessa"
 
 msgid "invalid version"
-msgstr "virheellinen versio"
+msgstr "epäkelpo versio"
 
 msgid "bare words are no longer supported, please use \"...\""
 msgstr ""
@@ -2959,7 +2963,7 @@ msgstr ""
 
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
-msgstr ""
+msgstr "Makrossa %%%s on laiton nimi (%s)\n"
 
 #, c-format
 msgid "Macro %%%s is a built-in (%s)\n"
@@ -3076,11 +3080,11 @@ msgstr "muistin varaus (%u tavua) palautti NULL:in.\n"
 
 #, c-format
 msgid "Unsupported version of key: V%d\n"
-msgstr ""
+msgstr "Avaimen versiota, jota ei tueta: V%d\n"
 
 #, c-format
 msgid "V%d %s/%s %s, key ID %s"
-msgstr ""
+msgstr "V%d %s/%s %s, avaimen tunnus %s"
 
 msgid "(none)"
 msgstr "(ei mitään)"
@@ -3102,15 +3106,15 @@ msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush epäonnistui: %s\n"
 
 msgid "Unsupported PGP signature\n"
-msgstr ""
+msgstr "PGP-allekirjoitusta ei tueta\n"
 
 #, c-format
 msgid "Unsupported PGP hash algorithm %u\n"
-msgstr ""
+msgstr "Ei tuettu PGP-hajautusalgoritmi %u\n"
 
 #, c-format
 msgid "Unsupported PGP pubkey algorithm %u\n"
-msgstr ""
+msgstr "PGP-pubkey-algoritmi %u, jota ei tueta\n"
 
 #, c-format
 msgid "Could not create pipe for signing: %m\n"
@@ -3143,7 +3147,7 @@ msgid "gpg failed to write signature\n"
 msgstr "gpg ei voinut kirjoittaa allekirjoitusta\n"
 
 msgid "unable to read the signature\n"
-msgstr "en voinut lukea allekirjoitusta\n"
+msgstr "ei voinut lukea allekirjoitusta\n"
 
 msgid "file signing support not built in\n"
 msgstr ""
@@ -3161,7 +3165,7 @@ msgstr ""
 
 #, c-format
 msgid "%s already contains identical signature, skipping\n"
-msgstr ""
+msgstr "%s sisältää jo samanlaisen allekirjoituksen, ohitetaan\n"
 
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
