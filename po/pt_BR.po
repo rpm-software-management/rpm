@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2021-01-18 17:37+0000\n"
+"PO-Revision-Date: 2021-02-22 12:40+0000\n"
 "Last-Translator: Fábio Rodrigues Ribeiro <farribeiro@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://translate.fedoraproject.org/"
 "projects/rpm/master/pt_BR/>\n"
@@ -1562,11 +1562,13 @@ msgstr "%s criado como %s\n"
 msgid "%s %s: remove failed: %s\n"
 msgstr ""
 
+#, fuzzy
 msgid "directory"
-msgstr ""
+msgstr "diretório"
 
+#, fuzzy
 msgid "file"
-msgstr ""
+msgstr "arquivo"
 
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d len %d"
@@ -1621,8 +1623,9 @@ msgstr ""
 msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr ""
 
+#, fuzzy
 msgid "signature "
-msgstr ""
+msgstr "assinatura "
 
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
@@ -1671,7 +1674,7 @@ msgid "} expected in expression"
 msgstr "} esperado na expressão"
 
 msgid ": expected following ? subexpression"
-msgstr ""
+msgstr ": esperado ? após a subexpressão"
 
 msgid "{ expected after : in expression"
 msgstr "{ esperado após : na expressão"
@@ -1684,7 +1687,7 @@ msgstr "iterador da matriz utilizado com diferentes tamanhos de matrizes"
 
 #, fuzzy, c-format
 msgid "RPM v3 packages are deprecated: %s\n"
-msgstr "linha %d: %s é obsoleto: %s\n"
+msgstr "Os pacotes RPM v3 estão obsoletos: %s\n"
 
 #, c-format
 msgid "failed to load macro file %s\n"
@@ -2999,7 +3002,7 @@ msgid "division by zero"
 msgstr ""
 
 msgid "* and / not supported for strings"
-msgstr ""
+msgstr "* e / não são suportados para strings"
 
 msgid "- not supported for strings"
 msgstr "- não é suportado para strings"
@@ -3014,7 +3017,7 @@ msgstr "%3d<%*s(vazio)\n"
 
 #, fuzzy, c-format
 msgid "Failed to open shell expansion pipe for command: %s: %m \n"
-msgstr "Não foi possível abrir o pipe do tar: %m \n"
+msgstr "Falha ao abrir o pipe de expansão do shell para o comando: %s: %m \n"
 
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
@@ -3175,11 +3178,11 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not create pipe for signing: %m\n"
-msgstr "Não foi possível criar um pipe para %s: %m\n"
+msgstr "Não foi possível criar um pipe para assinatura: %m\n"
 
 #, fuzzy, c-format
 msgid "Could not set GPG_TTY to stdin: %m\n"
-msgstr "Não foi possível abrir %%files arquivo %s: %m\n"
+msgstr "Não foi possível definir GPG_TTY para stdin: %m\n"
 
 #, c-format
 msgid "Could not exec %s: %s\n"
@@ -3187,7 +3190,7 @@ msgstr "Não foi possível executar %s: %s\n"
 
 #, fuzzy, c-format
 msgid "Could not open pipe for writing: %m\n"
-msgstr "Não foi possível criar um pipe para %s: %m\n"
+msgstr "Não foi possível abrir o pipe para gravação: %m\n"
 
 msgid "Could not write to pipe\n"
 msgstr ""
