@@ -5,20 +5,22 @@
 # Translators:
 # 趙惟倫 <bluebat@member.fsf.org>, 2013
 # 趙惟倫 <bluebat@member.fsf.org>, 2013
+# Izumo Nobuse <yumexyume@outlook.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2017-08-10 07:39+0000\n"
-"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
-"Language-Team: Chinese (Mandarin) (http://www.transifex.com/rpm-team/rpm/"
-"language/cmn/)\n"
+"PO-Revision-Date: 2021-02-09 04:40+0000\n"
+"Last-Translator: Izumo Nobuse <yumexyume@outlook.com>\n"
+"Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
+"projects/rpm/master/zh_Hans/>\n"
 "Language: cmn\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.4.2\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -59,7 +61,7 @@ msgstr "無法重新開啟酬載：%s\n"
 
 #, c-format
 msgid "files over 4GB not supported by cpio, use rpm2archive instead\n"
-msgstr ""
+msgstr "超过 4GB 的文件不收 cpio 支持，请改为使用 rpm2archive\n"
 
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
