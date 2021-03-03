@@ -4,13 +4,14 @@
 #
 # Translators:
 # Ricky Tigg <ricky.tigg@gmail.com>, 2020.
+# Jan Kuparinen <copper_fin@hotmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-12-02 13:35+0000\n"
-"Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
+"PO-Revision-Date: 2021-02-12 06:47+0000\n"
+"Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/rpm/"
 "master/fi/>\n"
 "Language: fi\n"
@@ -18,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.3.2\n"
+"X-Generator: Weblate 4.4.2\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -125,12 +126,13 @@ msgid "build binary package only from <source package>"
 msgstr "rakenna binaaripaketit vain <lähdepaketti>:sta"
 
 msgid "build source package only from <source package>"
-msgstr ""
+msgstr "käännä lähdepaketti vain <lähdepaketista>"
 
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
 msgstr ""
+"käännä lähdepaketti vain <lähdepaketista> - laske dynaaminen käännösvaatimus"
 
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
@@ -162,6 +164,7 @@ msgstr "käännä vain lähdepaketti tar-tiedostosta"
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
 msgstr ""
+"käännä lähdepaketti vain <tar-tiedostosta> - laske dynaaminen käännösvaatimus"
 
 msgid "build binary package from <source package>"
 msgstr "käännä binääripaketti lähdepaketista"
@@ -501,7 +504,7 @@ msgstr ""
 
 #, c-format
 msgid "Unable to open stream: %s\n"
-msgstr ""
+msgstr "Virtaa: %s ei voida avata\n"
 
 #, c-format
 msgid "Executing(%s): %s\n"
@@ -580,7 +583,7 @@ msgstr "Tiedostojen täytyy alkaa \"/\": %s\n"
 
 #, c-format
 msgid "unable to parse %s=%s\n"
-msgstr ""
+msgstr "%s=%s:n jäsentäminen ei onnistu\n"
 
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
@@ -897,7 +900,7 @@ msgstr "rivi %d: virheellinen numero: %s\n"
 
 #, c-format
 msgid "line %d: Bad no%s number: %u\n"
-msgstr ""
+msgstr "rivi %d: virheellinen no%s numero: %u\n"
 
 #, c-format
 msgid "Downloading %s to %s\n"
@@ -1571,7 +1574,7 @@ msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr ""
 
 msgid "signature "
-msgstr ""
+msgstr "allekirjoitus "
 
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
@@ -2208,7 +2211,7 @@ msgid "SIGNATURES"
 msgstr ""
 
 msgid "signatures"
-msgstr ""
+msgstr "allekirjoitukset"
 
 msgid "NOT OK"
 msgstr "EI OK"
@@ -2222,7 +2225,7 @@ msgstr "%s: avaus epäonnistui: %s\n"
 
 #, c-format
 msgid "Unable to open current directory: %m\n"
-msgstr ""
+msgstr "Nykyisen hakemiston avaaminen ei onnistu: %m\n"
 
 #, c-format
 msgid "%s: chroot directory not set\n"
@@ -2835,7 +2838,7 @@ msgid "%s%s"
 msgstr "%s%s"
 
 msgid "signature"
-msgstr ""
+msgstr "allekirjoitus"
 
 msgid "header"
 msgstr ""
