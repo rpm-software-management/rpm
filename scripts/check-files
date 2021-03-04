@@ -19,7 +19,7 @@ if [ ! -d "${RPM_BUILD_ROOT}" ] ; then
 fi
 
 # Create temporary file listing files in the manifest
-[ -n "$TMPDIR" ] || TMPDIR="/tmp"
+[ -n "$TMPDIR" ] && [ -d "$TMPDIR" ] || TMPDIR="/tmp"
 FILES_DISK=`mktemp "${TMPDIR}/rpmXXXXXX"`
 
 # Ensure temporary file is cleaned up when we exit
