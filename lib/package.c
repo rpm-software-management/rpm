@@ -31,84 +31,71 @@ struct pkgdata_s {
     rpmRC rc;
 };
 
+struct taglate_s {
+    rpmTagVal stag;
+    rpmTagVal xtag;
+    rpm_count_t count;
+} const xlateTags[] = {
+    { RPMSIGTAG_SIZE, RPMTAG_SIGSIZE, 1 },
+    { RPMSIGTAG_PGP, RPMTAG_SIGPGP, 0 },
+    { RPMSIGTAG_MD5, RPMTAG_SIGMD5, 16 },
+    { RPMSIGTAG_GPG, RPMTAG_SIGGPG, 0 },
+    /* { RPMSIGTAG_PGP5, RPMTAG_SIGPGP5, 0 }, */ /* long obsolete, dont use */
+    { RPMSIGTAG_PAYLOADSIZE, RPMTAG_ARCHIVESIZE, 1 },
+    { RPMSIGTAG_FILESIGNATURES, RPMTAG_FILESIGNATURES, 0 },
+    { RPMSIGTAG_FILESIGNATURELENGTH, RPMTAG_FILESIGNATURELENGTH, 1 },
+    { RPMSIGTAG_VERITYSIGNATURES, RPMTAG_VERITYSIGNATURES, 0 },
+    { RPMSIGTAG_VERITYSIGNATUREALGO, RPMTAG_VERITYSIGNATUREALGO, 1 },
+    { RPMSIGTAG_SHA1, RPMTAG_SHA1HEADER, 1 },
+    { RPMSIGTAG_SHA256, RPMTAG_SHA256HEADER, 1 },
+    { RPMSIGTAG_DSA, RPMTAG_DSAHEADER, 0 },
+    { RPMSIGTAG_RSA, RPMTAG_RSAHEADER, 0 },
+    { RPMSIGTAG_LONGSIZE, RPMTAG_LONGSIGSIZE, 1 },
+    { RPMSIGTAG_LONGARCHIVESIZE, RPMTAG_LONGARCHIVESIZE, 1 },
+    { 0 }
+};
+
 /** \ingroup header
  * Translate and merge legacy signature tags into header.
  * @param h		header (dest)
  * @param sigh		signature header (src)
+ * @return		failing tag number, 0 on success
  */
 static
-void headerMergeLegacySigs(Header h, Header sigh)
+rpmTagVal headerMergeLegacySigs(Header h, Header sigh, char **msg)
 {
-    HeaderIterator hi;
+    const struct taglate_s *xl;
     struct rpmtd_s td;
 
-    hi = headerInitIterator(sigh);
-    for (; headerNext(hi, &td); rpmtdFreeData(&td))
-    {
-	switch (td.tag) {
-	/* XXX Translate legacy signature tag values. */
-	case RPMSIGTAG_SIZE:
-	    td.tag = RPMTAG_SIGSIZE;
+    rpmtdReset(&td);
+    for (xl = xlateTags; xl->stag; xl++) {
+	/* There mustn't be one in the main header */
+	if (headerIsEntry(h, xl->xtag))
 	    break;
-	case RPMSIGTAG_PGP:
-	    td.tag = RPMTAG_SIGPGP;
-	    break;
-	case RPMSIGTAG_MD5:
-	    td.tag = RPMTAG_SIGMD5;
-	    break;
-	case RPMSIGTAG_GPG:
-	    td.tag = RPMTAG_SIGGPG;
-	    break;
-	case RPMSIGTAG_PGP5:
-	    td.tag = RPMTAG_SIGPGP5;
-	    break;
-	case RPMSIGTAG_PAYLOADSIZE:
-	    td.tag = RPMTAG_ARCHIVESIZE;
-	    break;
-	case RPMSIGTAG_FILESIGNATURES:
-	    td.tag = RPMTAG_FILESIGNATURES;
-	    break;
-	case RPMSIGTAG_FILESIGNATURELENGTH:
-	    td.tag = RPMTAG_FILESIGNATURELENGTH;
-	    break;
-	case RPMSIGTAG_VERITYSIGNATURES:
-	case RPMSIGTAG_VERITYSIGNATUREALGO:
-	case RPMSIGTAG_SHA1:
-	case RPMSIGTAG_SHA256:
-	case RPMSIGTAG_DSA:
-	case RPMSIGTAG_RSA:
-	default:
-	    if (!(td.tag >= HEADER_SIGBASE && td.tag < HEADER_TAGBASE))
-		continue;
-	    break;
-	}
-	if (!headerIsEntry(h, td.tag)) {
-	    switch (td.type) {
-	    case RPM_NULL_TYPE:
-		continue;
+	if (headerGet(sigh, xl->stag, &td, HEADERGET_RAW|HEADERGET_MINMEM)) {
+	    /* Translate legacy tags */
+	    if (xl->stag != xl->xtag)
+		td.tag = xl->xtag;
+	    /* Ensure type and tag size match expectations */
+	    if (td.type != rpmTagGetTagType(td.tag))
 		break;
-	    case RPM_CHAR_TYPE:
-	    case RPM_INT8_TYPE:
-	    case RPM_INT16_TYPE:
-	    case RPM_INT32_TYPE:
-	    case RPM_INT64_TYPE:
-		if (td.count != 1)
-		    continue;
+	    if (td.count < 1 || td.count > 16*1024*1024)
 		break;
-	    case RPM_STRING_TYPE:
-	    case RPM_STRING_ARRAY_TYPE:
-	    case RPM_BIN_TYPE:
-		if (td.count >= 16*1024)
-		    continue;
+	    if (xl->count && td.count != xl->count)
 		break;
-	    case RPM_I18NSTRING_TYPE:
-		continue;
+	    if (!headerPut(h, &td, HEADERPUT_DEFAULT))
 		break;
-	    }
-	    (void) headerPut(h, &td, HEADERPUT_DEFAULT);
+	    rpmtdFreeData(&td);
 	}
     }
-    headerFreeIterator(hi);
+    rpmtdFreeData(&td);
+
+    if (xl->stag) {
+	rasprintf(msg, "invalid signature tag %s (%d)",
+			rpmTagGetName(xl->xtag), xl->xtag);
+    }
+
+    return xl->stag;
 }
 
 /**
@@ -380,7 +367,8 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 		goto exit;
 
 	    /* Append (and remap) signature tags to the metadata. */
-	    headerMergeLegacySigs(h, sigh);
+	    if (headerMergeLegacySigs(h, sigh, &msg))
+		goto exit;
 	    applyRetrofits(h);
 
 	    /* Bump reference count for return. */
