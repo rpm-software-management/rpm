@@ -155,6 +155,7 @@ static rpmtd makeSigTag(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
     pubkey_algo = pgpDigParamsAlgo(sigp, PGPVAL_PUBKEYALGO);
     switch (pubkey_algo) {
     case PGPPUBKEYALGO_DSA:
+    case PGPPUBKEYALGO_EDDSA:
 	sigtag = ishdr ? RPMSIGTAG_DSA : RPMSIGTAG_GPG;
 	break;
     case PGPPUBKEYALGO_RSA:
