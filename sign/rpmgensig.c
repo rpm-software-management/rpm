@@ -414,7 +414,7 @@ static void unloadImmutableRegion(Header *hdrp, rpmTagVal tag)
     Header oh = NULL;
 
     if (headerGet(*hdrp, tag, &td, HEADERGET_DEFAULT)) {
-	oh = headerCopyLoad(td.data);
+	oh = headerImport(td.data, td.count, HEADERIMPORT_COPY);
 	rpmtdFreeData(&td);
     } else {
 	/* XXX should we warn if the immutable region is corrupt/missing? */
