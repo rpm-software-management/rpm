@@ -68,6 +68,7 @@ unsigned int headerSizeof(Header h, int magicp);
  * @param h		header (with pointers)
  * @return		on-disk header blob (i.e. with offsets)
  */
+RPM_GNUC_DEPRECATED
 void * headerUnload(Header h);
 
 /** \ingroup header
@@ -100,6 +101,7 @@ Header headerCopy(Header h);
  * @param uh		on-disk header blob (i.e. with offsets)
  * @return		header
  */
+RPM_GNUC_DEPRECATED
 Header headerLoad(void * uh);
 
 /** \ingroup header
@@ -108,6 +110,7 @@ Header headerLoad(void * uh);
  * @param uh		on-disk header blob (i.e. with offsets)
  * @return		header
  */
+RPM_GNUC_DEPRECATED
 Header headerCopyLoad(const void * uh);
 
 enum headerImportFlags_e {
