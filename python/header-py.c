@@ -381,7 +381,10 @@ static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
     } else if (hdrObject_Check(obj)) {
 	h = headerCopy(((hdrObject*) obj)->h);
     } else if (PyBytes_Check(obj)) {
-	h = headerCopyLoad(PyBytes_AsString(obj));
+	Py_ssize_t len = 0;
+	char *blob = NULL;
+	if (PyBytes_AsStringAndSize(obj, &blob, &len) == 0)
+	    h = headerImport(blob, len, HEADERIMPORT_COPY);
     } else if (rpmfdFromPyObject(obj, &fdo)) {
 	Py_BEGIN_ALLOW_THREADS;
 	h = headerRead(rpmfdGetFd(fdo), HEADER_MAGIC_YES);
