@@ -143,6 +143,11 @@
 #	The location of the rpm database file(s) after "rpm --rebuilddb".
 %_dbpath_rebuild	%{_dbpath}
 
+# 	Keyring type to use
+# 	rpmdb		gpg-pubkey "packages" in rpmdb (default)
+# 	fs		gpg-pubkey files at %_keyringpath
+%_keyring		rpmdb
+
 %_keyringpath		%{_dbpath}/pubkeys/
 
 #
