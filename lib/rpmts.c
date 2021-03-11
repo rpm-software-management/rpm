@@ -378,13 +378,18 @@ static void loadKeyring(rpmts ts)
     /* Never load the keyring if signature checking is disabled */
     if ((rpmtsVSFlags(ts) & RPMVSF_MASK_NOSIGNATURES) !=
 	RPMVSF_MASK_NOSIGNATURES) {
+	char *krtype = rpmExpand("%{?_keyring}", NULL);
 	ts->keyring = rpmKeyringNew();
-	if (loadKeyringFromFiles(ts) == 0) {
-	    if (loadKeyringFromDB(ts) > 0) {
-		/* XXX make this a warning someday... */
-		rpmlog(RPMLOG_DEBUG, "Using legacy gpg-pubkey(s) from rpmdb\n");
-	    }
+	if (rstreq(krtype, "fs")) {
+	    loadKeyringFromFiles(ts);
+	} else {
+	    /* Fall back to using rpmdb if unknown, for now at least */
+	    if (!(rstreq(krtype, "") || rstreq(krtype, "rpmdb")))
+		rpmlog(RPMLOG_WARNING,
+			_("unknown keyring type: %s, using rpmdb\n"), krtype);
+	    loadKeyringFromDB(ts);
 	}
+	free(krtype);
     }
 }
 
