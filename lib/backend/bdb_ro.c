@@ -160,8 +160,7 @@ static struct bdb_db *bdb_open(const char *name)
     struct bdb_db *db;
 
     fd = open(name, O_RDONLY);
-    if (!fd) {
-	rpmlog(RPMLOG_ERR, "%s: %s\n", name, strerror(errno));
+    if (fd == -1) {
 	return NULL;
     }
     db = xcalloc(1, sizeof(*db));
