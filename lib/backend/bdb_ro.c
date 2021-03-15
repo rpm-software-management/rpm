@@ -608,10 +608,13 @@ static int bdbro_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags
     rpmlog(RPMLOG_DEBUG, "opening  db index       %s\n", path);
     dbi->dbi_db = bdb_open(path);
     if (!dbi->dbi_db) {
-	rpmlog(RPMLOG_ERR, "could not open %s: %s\n", path, strerror(errno));
-	free(path);
-	dbiFree(dbi);
-	return 1;
+	int lvl = (dbi->dbi_type == DBI_PRIMARY) ? RPMLOG_ERR : RPMLOG_WARNING;
+	rpmlog(lvl, "could not open %s: %s\n", path, strerror(errno));
+	if (dbi->dbi_type == DBI_PRIMARY) {
+	    free(path);
+	    dbiFree(dbi);
+	    return 1;
+	}
     }
     free(path);
     dbi->dbi_flags |= DBI_RDONLY;
@@ -646,7 +649,8 @@ static int bdbro_Ctrl(rpmdb rdb, dbCtrlOp ctrl)
 
 static dbiCursor bdbro_CursorInit(dbiIndex dbi, unsigned int flags)
 {
-    return dbi ? (void *)cur_open(dbi->dbi_db) : NULL;
+    /* Secondary indexes may be missing */
+    return (dbi && dbi->dbi_db) ? (void *)cur_open(dbi->dbi_db) : NULL;
 }
 
 static dbiCursor bdbro_CursorFree(dbiIndex dbi, dbiCursor dbc)
