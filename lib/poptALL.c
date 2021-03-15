@@ -132,9 +132,11 @@ static void rpmcliAllArgCallback( poptContext con,
 	{   char *val = NULL;
 	    if (rpmExpandMacros(NULL, arg, &val, 0) < 0)
 		exit(EXIT_FAILURE);
-	    fprintf(stdout, "%s\n", val);
-	    if (fflush(stdout) == EOF) {
+	    if (fprintf(stdout, "%s\n", val) < 0 ||
+		fflush(stdout) == EOF ||
+		ferror(stdout)) {
 	        perror(_("Error writing to stdout"));
+		free(val);
 	        exit(EXIT_FAILURE);
 	    }
 	    free(val);
