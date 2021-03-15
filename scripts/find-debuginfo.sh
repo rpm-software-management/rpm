@@ -10,6 +10,7 @@
 #	 		   [-S debugsourcefiles.list]
 #			   [--run-dwz] [--dwz-low-mem-die-limit N]
 #			   [--dwz-max-die-limit N]
+#			   [--dwz-single-file-mode]
 #			   [--build-id-seed SEED]
 #			   [--unique-debug-suffix SUFFIX]
 #			   [--unique-debug-src-base BASE]
@@ -45,6 +46,8 @@
 # The --run-dwz flag instructs find-debuginfo.sh to run the dwz utility
 # if available, and --dwz-low-mem-die-limit and --dwz-max-die-limit
 # provide detailed limits.  See dwz(1) -l and -L option for details.
+# Use --dwz-single-file-mode to disable multi-file mode, see -m
+# for more details.
 #
 # If --build-id-seed SEED is given then debugedit is called to
 # update the build-ids it finds adding the SEED as seed to recalculate
@@ -96,6 +99,7 @@ no_recompute_build_id=false
 run_dwz=false
 dwz_low_mem_die_limit=
 dwz_max_die_limit=
+dwz_single_file_mode=false
 
 # build id seed given by the --build-id-seed option
 build_id_seed=
@@ -128,6 +132,9 @@ while [ $# -gt 0 ]; do
   --dwz-max-die-limit)
     dwz_max_die_limit=$2
     shift
+    ;;
+  --dwz-single-file-mode)
+    dwz_single_file_mode=true
     ;;
   --build-id-seed)
     build_id_seed=$2
@@ -523,7 +530,7 @@ if $run_dwz \
     done
     dwz_multifile_name="${dwz_multifile_name}${dwz_multifile_suffix}"
     dwz_opts="-h -q -r"
-    [ ${#dwz_files[@]} -gt 1 ] \
+    [ ${#dwz_files[@]} -gt 1 ] && [ "$dwz_single_file_mode" = "false" ] \
       && dwz_opts="${dwz_opts} -m .dwz/${dwz_multifile_name}"
     mkdir -p "${RPM_BUILD_ROOT}/usr/lib/debug/.dwz"
     [ -n "${dwz_low_mem_die_limit}" ] \
