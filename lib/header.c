@@ -132,9 +132,10 @@ static const size_t headerMaxbytes = (256*1024*1024);
 /**
  * Reasonableness check on count values.
  * Catches nasty stuff like negative or zero counts, which would cause
- * integer underflows in strtaglen().
+ * integer underflows in strtaglen(), and excessive counts, which would
+ * cause integer overflows in dataLength().
  */
-#define hdrchkCount(_count) ((_count) == 0)
+#define hdrchkCount(_count) ((_count) == 0 || hdrchkData(_count))
 
 /**
  * Sanity check on type values.
