@@ -67,11 +67,14 @@ rpmTagVal headerMergeLegacySigs(Header h, Header sigh, char **msg)
     const struct taglate_s *xl;
     struct rpmtd_s td;
 
-    rpmtdReset(&td);
     for (xl = xlateTags; xl->stag; xl++) {
 	/* There mustn't be one in the main header */
 	if (headerIsEntry(h, xl->xtag))
-	    break;
+	    goto exit;
+    }
+
+    rpmtdReset(&td);
+    for (xl = xlateTags; xl->stag; xl++) {
 	if (headerGet(sigh, xl->stag, &td, HEADERGET_RAW|HEADERGET_MINMEM)) {
 	    /* Translate legacy tags */
 	    if (xl->stag != xl->xtag)
@@ -90,6 +93,7 @@ rpmTagVal headerMergeLegacySigs(Header h, Header sigh, char **msg)
     }
     rpmtdFreeData(&td);
 
+exit:
     if (xl->stag) {
 	rasprintf(msg, "invalid signature tag %s (%d)",
 			rpmTagGetName(xl->xtag), xl->xtag);
