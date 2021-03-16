@@ -69,8 +69,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, char ** msg)
 	goto exit;
     
     /* OK, blob looks sane, load the header. */
-    if (hdrblobImport(&blob, 0, &sigh, &buf) != RPMRC_OK)
-	goto exit;
+    hdrblobImport(&blob, 0, &sigh, &buf);
 
     printSize(fd, sigh);
     rc = RPMRC_OK;

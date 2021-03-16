@@ -195,7 +195,18 @@ AS_IF([test "x$ac_cv_prog_c_openmp" != x &&
   )
   CFLAGS=$old_CFLAGS
 ])
-AC_SUBST(OPENMP_CFLAGS)
+AC_SUBST([OPENMP_CFLAGS])
+
+AC_CACHE_CHECK([[for static_assert]],
+	       [[rpm_cv_has_static_assert]],
+	       [AC_COMPILE_IFELSE(
+		   [AC_LANG_PROGRAM(#include <assert.h>
+,[[static_assert(1 == 1, "bug");]])],
+  [[rpm_cv_has_static_assert=yes]],
+  [[rpm_cv_has_static_assert=no]])])
+[if [ "$rpm_cv_has_static_assert" = yes ]; then
+   ]AC_DEFINE([[HAVE_STATIC_ASSERT]], 1, [Static assertions supported])[
+fi]
 
 #=================
 # Check for zstd.
