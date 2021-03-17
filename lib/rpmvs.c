@@ -451,7 +451,7 @@ int rpmvsVerify(struct rpmvs_s *sis, int type,
 {
     int failed = 0;
     int cont = 1;
-    int range = 0;
+    int range = 0, vfylevel = sis->vfylevel;
     int verified[3] = { 0, 0, 0 };
 
     /* sort for consistency and rough "better comes first" semantics*/
@@ -478,6 +478,14 @@ int rpmvsVerify(struct rpmvs_s *sis, int type,
 	}
     }
 
+    /* Unconditionally reject partially signed packages */
+    if (verified[RPMSIG_SIGNATURE_TYPE])
+	vfylevel |= RPMSIG_SIGNATURE_TYPE;
+
+    /* Cannot verify payload if RPMVSF_NEEDPAYLOAD is set */
+    if (sis->vsflags & RPMVSF_NEEDPAYLOAD)
+	range &= ~RPMSIG_PAYLOAD;
+
     for (int i = 0; i < sis->nsigs && cont; i++) {
 	struct rpmsinfo_s *sinfo = &sis->sigs[i];
 	int strength = (sinfo->type | sinfo->strength);
@@ -490,11 +498,11 @@ int rpmvsVerify(struct rpmvs_s *sis, int type,
 		sinfo->rc = RPMRC_NOTFOUND;
 	}
 
-	if (sis->vfylevel & strength & RPMSIG_DIGEST_TYPE) {
+	if (vfylevel & strength & RPMSIG_DIGEST_TYPE) {
 	    int missing = (range & ~verified[RPMSIG_DIGEST_TYPE]);
 	    required |= (missing & sinfo->range);
 	}
-	if (sis->vfylevel & strength & RPMSIG_SIGNATURE_TYPE) {
+	if (vfylevel & strength & RPMSIG_SIGNATURE_TYPE) {
 	    int missing = (range & ~verified[RPMSIG_SIGNATURE_TYPE]);
 	    required |= (missing & sinfo->range);
 	}
