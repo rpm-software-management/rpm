@@ -37,7 +37,7 @@ fi
 AS=${AS-as}
 AC_SUBST(AS)
 if test "$GCC" = yes; then
-    cflags_to_try="-fno-strict-aliasing -fstack-protector -Wempty-body"
+    cflags_to_try="-fno-strict-aliasing -Wempty-body"
     AC_MSG_CHECKING([supported compiler flags])
     old_cflags=$CFLAGS
     echo
@@ -50,7 +50,7 @@ if test "$GCC" = yes; then
         ],[])
         CFLAGS=$old_cflags
     done
-    RPMCFLAGS="-D_REENTRANT -Wall -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes $RPMCFLAGS"
+    RPMCFLAGS="-Wall -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes $RPMCFLAGS"
 fi
 AC_ARG_ENABLE(werror, [AS_HELP_STRING([--enable-werror], [build with -Werror])],
 		[RPMCFLAGS="$RPMCFLAGS -Werror"], [])
