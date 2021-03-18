@@ -131,10 +131,9 @@ static const size_t headerMaxbytes = (256*1024*1024);
 
 /**
  * Reasonableness check on count values.
- * Catches nasty stuff like negative or zero counts, which would cause
- * integer underflows in strtaglen().
+ * Most types have further restrictions, these are just the outer perimeter.
  */
-#define hdrchkCount(_count) ((_count) == 0)
+#define hdrchkCount(_dl, _count) ((_count) < 1 || (_count) > (_dl))
 
 /**
  * Sanity check on type values.
@@ -287,7 +286,7 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
 	    goto err;
 	if (hdrchkType(info.type))
 	    goto err;
-	if (hdrchkCount(info.count))
+	if (hdrchkCount(blob->dl, info.count))
 	    goto err;
 	if (hdrchkAlign(info.type, info.offset))
 	    goto err;
