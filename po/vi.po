@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2019-11-13 10:23+0200\n"
+"POT-Creation-Date: 2021-03-19 13:28+0200\n"
 "PO-Revision-Date: 2017-10-13 05:51+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/rpm-team/rpm/language/"
@@ -1951,78 +1951,83 @@ msgstr "thư mục"
 msgid "file"
 msgstr "tập tin"
 
-#: lib/header.c:307
+#: lib/header.c:325
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d len %d"
 msgstr ""
 
-#: lib/header.c:974
+#: lib/header.c:995
 msgid "hdr load: BAD"
 msgstr "tải hdr: SAI"
 
-#: lib/header.c:1796
+#: lib/header.c:1817
 msgid "region: no tags"
 msgstr ""
 
-#: lib/header.c:1818
+#: lib/header.c:1839
 #, c-format
 msgid "region tag: BAD, tag %d type %d offset %d count %d"
 msgstr "thẻ vùng: SAI, thẻ %d kiểu %d bù %d số lượng %d"
 
-#: lib/header.c:1826
+#: lib/header.c:1847
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d"
 msgstr "bù vùng: SAI, thẻ %d kiểu %d bù %d số lượng %d"
 
-#: lib/header.c:1848
+#: lib/header.c:1869
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d"
 msgstr "vùng theo đuôi: SAI, thẻ %d kiểu %d bù %d số lượng %d"
 
-#: lib/header.c:1857
+#: lib/header.c:1878
 #, c-format
 msgid "region %d size: BAD, ril %d il %d rdl %d dl %d"
 msgstr ""
 
-#: lib/header.c:1865
+#: lib/header.c:1886
 #, c-format
 msgid "region %d: tag number mismatch il %d ril %d dl %d rdl %d\n"
 msgstr ""
 
-#: lib/header.c:1915
+#: lib/header.c:1922
+#, fuzzy, c-format
+msgid "hdr tags: BAD, no. of tags(%<PRIu32>) out of range"
+msgstr "thẻ hdr: SAI, tổng số thẻ (%d) ở ngoài phạm vi"
+
+#: lib/header.c:1926
+#, fuzzy, c-format
+msgid "hdr data: BAD, no. of bytes(%<PRIu32>) out of range"
+msgstr "dữ liệu hdr: SAI, tổng số byte (%d) ở ngoài phạm vi"
+
+#: lib/header.c:1948
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d"
 msgstr "kích cỡ hdr (%d): SAI, hàm đọc đã trả về %d"
 
-#: lib/header.c:1919
+#: lib/header.c:1952
 msgid "hdr magic: BAD"
 msgstr "ma thuật hdr: SAI"
 
-#: lib/header.c:1924
-#, c-format
-msgid "hdr tags: BAD, no. of tags(%d) out of range"
-msgstr "thẻ hdr: SAI, tổng số thẻ (%d) ở ngoài phạm vi"
-
-#: lib/header.c:1929
-#, c-format
-msgid "hdr data: BAD, no. of bytes(%d) out of range"
-msgstr "dữ liệu hdr: SAI, tổng số byte (%d) ở ngoài phạm vi"
-
-#: lib/header.c:1939
+#: lib/header.c:1966
 #, c-format
 msgid "hdr blob(%zd): BAD, read returned %d"
 msgstr "hdr blob(%zd): SAI, việc đọc trả về %d"
 
-#: lib/header.c:1948
+#: lib/header.c:1975
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr "đệm sigh(%zd): SAI, đọc %zd byte"
 
-#: lib/header.c:1961
+#: lib/header.c:1988
 msgid "signature "
 msgstr ""
 
-#: lib/header.c:1988
+#: lib/header.c:2004
+#, fuzzy
+msgid "hdr length: BAD"
+msgstr "tải hdr: SAI"
+
+#: lib/header.c:2022
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
 msgstr "kích cỡ blob (%d): SAI, 8 + 16 * il(%d) + dl(%d)"
