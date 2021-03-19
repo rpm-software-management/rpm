@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2019-11-13 10:23+0200\n"
+"POT-Creation-Date: 2021-03-19 13:28+0200\n"
 "PO-Revision-Date: 2018-04-23 12:38+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Chinese (Taiwan) (http://www.transifex.com/rpm-team/rpm/"
@@ -1899,78 +1899,83 @@ msgstr "目錄"
 msgid "file"
 msgstr "檔案"
 
-#: lib/header.c:307
+#: lib/header.c:325
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d len %d"
 msgstr "標籤 [%d]：壞的，標籤 %d 類型 %d  偏差 %d 數值 %d 長度 %d"
 
-#: lib/header.c:974
+#: lib/header.c:995
 msgid "hdr load: BAD"
 msgstr "hdr_load：壞的"
 
-#: lib/header.c:1796
+#: lib/header.c:1817
 msgid "region: no tags"
 msgstr "區域：沒有標籤"
 
-#: lib/header.c:1818
+#: lib/header.c:1839
 #, c-format
 msgid "region tag: BAD, tag %d type %d offset %d count %d"
 msgstr "區域標籤：壞的，標籤 %d 類型 %d  偏差 %d 數值 %d"
 
-#: lib/header.c:1826
+#: lib/header.c:1847
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d"
 msgstr "區域偏差：壞的，標籤 %d 類型 %d  偏差 %d 數值 %d"
 
-#: lib/header.c:1848
+#: lib/header.c:1869
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d"
 msgstr "區域 trailer：壞的，標籤 %d 類型 %d  偏差 %d 數值 %d"
 
-#: lib/header.c:1857
+#: lib/header.c:1878
 #, c-format
 msgid "region %d size: BAD, ril %d il %d rdl %d dl %d"
 msgstr "區域 %d 大小：壞的， ril %d il %d rdl %d dl %d"
 
-#: lib/header.c:1865
+#: lib/header.c:1886
 #, c-format
 msgid "region %d: tag number mismatch il %d ril %d dl %d rdl %d\n"
 msgstr ""
 
-#: lib/header.c:1915
+#: lib/header.c:1922
+#, fuzzy, c-format
+msgid "hdr tags: BAD, no. of tags(%<PRIu32>) out of range"
+msgstr "hdr_tags：壞的，標籤 (%d) 的編號超出範圍"
+
+#: lib/header.c:1926
+#, fuzzy, c-format
+msgid "hdr data: BAD, no. of bytes(%<PRIu32>) out of range"
+msgstr "hdr_data：壞的，標籤 (%d) 的編號超出範圍"
+
+#: lib/header.c:1948
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d"
 msgstr "hdr_size (%d)：壞的，讀取時回傳 %d"
 
-#: lib/header.c:1919
+#: lib/header.c:1952
 msgid "hdr magic: BAD"
 msgstr "hdr_magic：壞的"
 
-#: lib/header.c:1924
-#, c-format
-msgid "hdr tags: BAD, no. of tags(%d) out of range"
-msgstr "hdr_tags：壞的，標籤 (%d) 的編號超出範圍"
-
-#: lib/header.c:1929
-#, c-format
-msgid "hdr data: BAD, no. of bytes(%d) out of range"
-msgstr "hdr_data：壞的，標籤 (%d) 的編號超出範圍"
-
-#: lib/header.c:1939
+#: lib/header.c:1966
 #, c-format
 msgid "hdr blob(%zd): BAD, read returned %d"
 msgstr "hdr_blob(%zd)：壞的，讀取時回傳 %d"
 
-#: lib/header.c:1948
+#: lib/header.c:1975
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr "sigh_pad(%zd)：壞的，讀取 %zd 位元組"
 
-#: lib/header.c:1961
+#: lib/header.c:1988
 msgid "signature "
 msgstr "簽名"
 
-#: lib/header.c:1988
+#: lib/header.c:2004
+#, fuzzy
+msgid "hdr length: BAD"
+msgstr "hdr_load：壞的"
+
+#: lib/header.c:2022
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
 msgstr "blob 大小 (%d)：差的，8 + 16 * il(%d) + dl(%d)"

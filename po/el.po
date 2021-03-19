@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2019-11-13 10:23+0200\n"
+"POT-Creation-Date: 2021-03-19 13:28+0200\n"
 "PO-Revision-Date: 2017-10-13 05:50+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Greek (http://www.transifex.com/rpm-team/rpm/language/el/)\n"
@@ -1887,78 +1887,82 @@ msgstr ""
 msgid "file"
 msgstr ""
 
-#: lib/header.c:307
+#: lib/header.c:325
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d len %d"
 msgstr ""
 
-#: lib/header.c:974
+#: lib/header.c:995
 msgid "hdr load: BAD"
 msgstr ""
 
-#: lib/header.c:1796
+#: lib/header.c:1817
 msgid "region: no tags"
 msgstr ""
 
-#: lib/header.c:1818
+#: lib/header.c:1839
 #, c-format
 msgid "region tag: BAD, tag %d type %d offset %d count %d"
 msgstr ""
 
-#: lib/header.c:1826
+#: lib/header.c:1847
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d"
 msgstr ""
 
-#: lib/header.c:1848
+#: lib/header.c:1869
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d"
 msgstr ""
 
-#: lib/header.c:1857
+#: lib/header.c:1878
 #, c-format
 msgid "region %d size: BAD, ril %d il %d rdl %d dl %d"
 msgstr ""
 
-#: lib/header.c:1865
+#: lib/header.c:1886
 #, c-format
 msgid "region %d: tag number mismatch il %d ril %d dl %d rdl %d\n"
 msgstr ""
 
-#: lib/header.c:1915
+#: lib/header.c:1922
 #, c-format
-msgid "hdr size(%d): BAD, read returned %d"
+msgid "hdr tags: BAD, no. of tags(%<PRIu32>) out of range"
 msgstr ""
 
-#: lib/header.c:1919
-msgid "hdr magic: BAD"
-msgstr ""
-
-#: lib/header.c:1924
+#: lib/header.c:1926
 #, c-format
-msgid "hdr tags: BAD, no. of tags(%d) out of range"
-msgstr ""
-
-#: lib/header.c:1929
-#, c-format
-msgid "hdr data: BAD, no. of bytes(%d) out of range"
-msgstr ""
-
-#: lib/header.c:1939
-#, c-format
-msgid "hdr blob(%zd): BAD, read returned %d"
+msgid "hdr data: BAD, no. of bytes(%<PRIu32>) out of range"
 msgstr ""
 
 #: lib/header.c:1948
 #, c-format
+msgid "hdr size(%d): BAD, read returned %d"
+msgstr ""
+
+#: lib/header.c:1952
+msgid "hdr magic: BAD"
+msgstr ""
+
+#: lib/header.c:1966
+#, c-format
+msgid "hdr blob(%zd): BAD, read returned %d"
+msgstr ""
+
+#: lib/header.c:1975
+#, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr ""
 
-#: lib/header.c:1961
+#: lib/header.c:1988
 msgid "signature "
 msgstr ""
 
-#: lib/header.c:1988
+#: lib/header.c:2004
+msgid "hdr length: BAD"
+msgstr ""
+
+#: lib/header.c:2022
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
 msgstr ""
