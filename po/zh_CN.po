@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-12-16 13:27+0200\n"
+"POT-Creation-Date: 2021-03-19 11:01+0200\n"
 "PO-Revision-Date: 2018-11-08 09:09-0500\n"
 "Last-Translator: Taiki Akita <taiki_akita@163.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/rpm-team/rpm/"
@@ -1934,78 +1934,83 @@ msgstr "目录"
 msgid "file"
 msgstr "文件"
 
-#: lib/header.c:301
+#: lib/header.c:319
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d len %d"
 msgstr ""
 
-#: lib/header.c:971
+#: lib/header.c:992
 msgid "hdr load: BAD"
 msgstr "头部载入：不当"
 
-#: lib/header.c:1793
+#: lib/header.c:1814
 msgid "region: no tags"
 msgstr ""
 
-#: lib/header.c:1815
+#: lib/header.c:1836
 #, c-format
 msgid "region tag: BAD, tag %d type %d offset %d count %d"
 msgstr "区域标签：不当，标记 %d 类型 %d 偏移 %d 计数 %d"
 
-#: lib/header.c:1823
+#: lib/header.c:1844
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d"
 msgstr "区域偏移：不当，标记 %d 类型 %d 偏移 %d 计数 %d"
 
-#: lib/header.c:1845
+#: lib/header.c:1866
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d"
 msgstr "区域结尾：不当，标记 %d 类型 %d 偏移 %d 计数 %d"
 
-#: lib/header.c:1854
+#: lib/header.c:1875
 #, c-format
 msgid "region %d size: BAD, ril %d il %d rdl %d dl %d"
 msgstr ""
 
-#: lib/header.c:1862
+#: lib/header.c:1883
 #, c-format
 msgid "region %d: tag number mismatch il %d ril %d dl %d rdl %d\n"
 msgstr ""
 
-#: lib/header.c:1912
+#: lib/header.c:1919
+#, fuzzy, c-format
+msgid "hdr tags: BAD, no. of tags(%<PRIu32>) out of range"
+msgstr "头部标记：不当，标记(%d)的号码超出范围"
+
+#: lib/header.c:1923
+#, fuzzy, c-format
+msgid "hdr data: BAD, no. of bytes(%<PRIu32>) out of range"
+msgstr "头部数据：不当，字节(%d)的号码超出范围"
+
+#: lib/header.c:1945
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d"
 msgstr "头部大小(%d)：不当，读取返回 %d"
 
-#: lib/header.c:1916
+#: lib/header.c:1949
 msgid "hdr magic: BAD"
 msgstr "头部幻数：不当"
 
-#: lib/header.c:1921
-#, c-format
-msgid "hdr tags: BAD, no. of tags(%d) out of range"
-msgstr "头部标记：不当，标记(%d)的号码超出范围"
-
-#: lib/header.c:1926
-#, c-format
-msgid "hdr data: BAD, no. of bytes(%d) out of range"
-msgstr "头部数据：不当，字节(%d)的号码超出范围"
-
-#: lib/header.c:1936
+#: lib/header.c:1963
 #, c-format
 msgid "hdr blob(%zd): BAD, read returned %d"
 msgstr "头部 blob(%zd)：不当，读取返回 %d"
 
-#: lib/header.c:1945
+#: lib/header.c:1972
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr "sigh 填充(%zd)：不当，读取 %zd 字节"
 
-#: lib/header.c:1958
+#: lib/header.c:1985
 msgid "signature "
 msgstr ""
 
-#: lib/header.c:1985
+#: lib/header.c:2001
+#, fuzzy
+msgid "hdr length: BAD"
+msgstr "头部载入：不当"
+
+#: lib/header.c:2019
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
 msgstr "blob 大小(%d)：不当，8 + 16 * il(%d) + dl(%d)"
@@ -2081,7 +2086,7 @@ msgstr "| 预期于表达式结尾"
 msgid "array iterator used with different sized arrays"
 msgstr "使用不同大小数组的数组的迭代器"
 
-#: lib/package.c:315
+#: lib/package.c:306
 #, fuzzy, c-format
 msgid "RPM v3 packages are deprecated: %s\n"
 msgstr "行 %d： %s 不建议使用：%s\n"

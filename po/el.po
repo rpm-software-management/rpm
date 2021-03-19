@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-12-16 13:27+0200\n"
+"POT-Creation-Date: 2021-03-19 11:01+0200\n"
 "PO-Revision-Date: 2017-10-13 05:50-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Greek (http://www.transifex.com/rpm-team/rpm/language/el/)\n"
@@ -1908,78 +1908,82 @@ msgstr ""
 msgid "file"
 msgstr ""
 
-#: lib/header.c:301
+#: lib/header.c:319
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d len %d"
 msgstr ""
 
-#: lib/header.c:971
+#: lib/header.c:992
 msgid "hdr load: BAD"
 msgstr ""
 
-#: lib/header.c:1793
+#: lib/header.c:1814
 msgid "region: no tags"
 msgstr ""
 
-#: lib/header.c:1815
+#: lib/header.c:1836
 #, c-format
 msgid "region tag: BAD, tag %d type %d offset %d count %d"
 msgstr ""
 
-#: lib/header.c:1823
+#: lib/header.c:1844
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d"
 msgstr ""
 
-#: lib/header.c:1845
+#: lib/header.c:1866
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d"
 msgstr ""
 
-#: lib/header.c:1854
+#: lib/header.c:1875
 #, c-format
 msgid "region %d size: BAD, ril %d il %d rdl %d dl %d"
 msgstr ""
 
-#: lib/header.c:1862
+#: lib/header.c:1883
 #, c-format
 msgid "region %d: tag number mismatch il %d ril %d dl %d rdl %d\n"
 msgstr ""
 
-#: lib/header.c:1912
+#: lib/header.c:1919
 #, c-format
-msgid "hdr size(%d): BAD, read returned %d"
+msgid "hdr tags: BAD, no. of tags(%<PRIu32>) out of range"
 msgstr ""
 
-#: lib/header.c:1916
-msgid "hdr magic: BAD"
-msgstr ""
-
-#: lib/header.c:1921
+#: lib/header.c:1923
 #, c-format
-msgid "hdr tags: BAD, no. of tags(%d) out of range"
-msgstr ""
-
-#: lib/header.c:1926
-#, c-format
-msgid "hdr data: BAD, no. of bytes(%d) out of range"
-msgstr ""
-
-#: lib/header.c:1936
-#, c-format
-msgid "hdr blob(%zd): BAD, read returned %d"
+msgid "hdr data: BAD, no. of bytes(%<PRIu32>) out of range"
 msgstr ""
 
 #: lib/header.c:1945
 #, c-format
+msgid "hdr size(%d): BAD, read returned %d"
+msgstr ""
+
+#: lib/header.c:1949
+msgid "hdr magic: BAD"
+msgstr ""
+
+#: lib/header.c:1963
+#, c-format
+msgid "hdr blob(%zd): BAD, read returned %d"
+msgstr ""
+
+#: lib/header.c:1972
+#, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr ""
 
-#: lib/header.c:1958
+#: lib/header.c:1985
 msgid "signature "
 msgstr ""
 
-#: lib/header.c:1985
+#: lib/header.c:2001
+msgid "hdr length: BAD"
+msgstr ""
+
+#: lib/header.c:2019
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
 msgstr ""
@@ -2055,7 +2059,7 @@ msgstr ""
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: lib/package.c:315
+#: lib/package.c:306
 #, c-format
 msgid "RPM v3 packages are deprecated: %s\n"
 msgstr ""
