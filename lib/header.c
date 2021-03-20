@@ -138,14 +138,14 @@ static const size_t headerMaxbytes = (256*1024*1024);
 /**
  * Sanity check on type values.
  */
-#define hdrchkType(_type) ((_type) < RPM_MIN_TYPE || (_type) > RPM_MAX_TYPE)
+#define hdrchkType(_type) ((_type) <= RPM_MIN_TYPE || (_type) > RPM_MAX_TYPE)
 
 /**
  * Sanity check on data size and/or offset and/or count.
  * This check imposes a limit of 256 MB -- file signatures
  * may require a lot of space in the header.
  */
-#define HEADER_DATA_MAX 0x0fffffff
+#define HEADER_DATA_MAX 0x0fffffffU
 #define hdrchkData(_nbytes) ((_nbytes) & (~HEADER_DATA_MAX))
 
 /**
@@ -472,10 +472,11 @@ static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
 	break;
 
     default:
+	assert(type <= RPM_MAX_TYPE);
 	if (typeSizes[type] == -1)
 	    return -1;
 	length = typeSizes[(type & 0xf)] * count;
-	if (length < 0 || (se && (s + length) > se))
+	if (length <= 0 || (se && length > se - s))
 	    return -1;
 	break;
     }
