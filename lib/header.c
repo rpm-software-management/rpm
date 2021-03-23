@@ -138,7 +138,7 @@ static const size_t headerMaxbytes = (256*1024*1024);
 /**
  * Sanity check on type values.
  */
-#define hdrchkType(_type) ((_type) < RPM_MIN_TYPE || (_type) > RPM_MAX_TYPE)
+#define hdrchkType(_type) ((_type) <= RPM_MIN_TYPE || (_type) > RPM_MAX_TYPE)
 
 /**
  * Sanity check on data size and/or offset and/or count.
@@ -298,7 +298,7 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
 	/* Verify the data actually fits */
 	len = dataLength(info.type, ds + info.offset,
 			 info.count, 1, ds + blob->dl);
-	if (hdrchkRange(blob->dl - info.offset, len))
+	if (len <= 0 || len > blob->dl - info.offset)
 	    goto err;
 	end = info.offset + len;
 	if (blob->regionTag) {
@@ -475,7 +475,7 @@ static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
 	if (typeSizes[type] == -1)
 	    return -1;
 	length = typeSizes[(type & 0xf)] * count;
-	if (length < 0 || (se && (s + length) > se))
+	if (length <= 0 || (se && (s + length) > se))
 	    return -1;
 	break;
     }
