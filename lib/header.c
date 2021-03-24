@@ -298,9 +298,9 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
 	/* Verify the data actually fits */
 	len = dataLength(info.type, ds + info.offset,
 			 info.count, 1, ds + blob->dl);
-	if (hdrchkRange(blob->dl - info.offset, len))
-	    goto err;
 	end = info.offset + len;
+	if (hdrchkRange(blob->dl, end) || len <= 0)
+	    goto err;
 	if (blob->regionTag) {
 	    /*
 	     * Verify that the data does not overlap the region trailer.  The
