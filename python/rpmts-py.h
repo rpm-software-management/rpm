@@ -7,7 +7,7 @@ typedef struct rpmtsObject_s rpmtsObject;
 
 extern PyTypeObject rpmts_Type;
 
-#define rpmtsObject_Check(v)	((v)->ob_type == &rpmts_Type)
+#define rpmtsObject_Check(v)	PyObject_TypeCheck(v, &rpmts_Type)
 
 int rpmtsFromPyObject(PyObject *item, rpmts *ts);
 

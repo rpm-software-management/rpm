@@ -292,7 +292,7 @@ static PyObject * spec_doBuild(specObject *self, PyObject *args, PyObject *kwds)
     struct rpmBuildArguments_s ba = { 0 };
     rpmts ts;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "o&i|i:spec_doBuild",
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&i|i:spec_doBuild",
 	       kwlist, rpmtsFromPyObject, &ts, &ba.buildAmount, &ba.pkgFlags))
 	return NULL;
     return PyBool_FromLong(rpmSpecBuild(ts, self->spec, &ba) == RPMRC_OK);
