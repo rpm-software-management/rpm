@@ -1510,7 +1510,7 @@ static void cvtfmode (const char *m,
 
     *stdio = *other = '\0';
     if (end != NULL)
-	*end = (*m != '\0' ? m : NULL);
+	*end = (c != '\0' && *m != '\0' ? m : NULL);
     if (f != NULL)
 	*f = flags;
 }
