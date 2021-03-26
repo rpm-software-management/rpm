@@ -82,14 +82,11 @@
 #
 
 %__arch_install_post   @ARCH_INSTALL_POST@
-%_python_bytecompile_errors_terminate_build 0
-%_python_bytecompile_extra   1
 
 # Standard brp-macro naming:
 # convert all '-' in basename to '_', add two leading underscores.
 %__brp_compress %{_rpmconfigdir}/brp-compress %{?_prefix}
 %__brp_java_gcjcompile %{_rpmconfigdir}/brp-java-bytecompile
-%__brp_python_bytecompile %{_rpmconfigdir}/brp-python-bytecompile "" "%{?_python_bytecompile_errors_terminate_build}" "%{?_python_bytecompile_extra}"
 %__brp_strip %{_rpmconfigdir}/brp-strip %{__strip}
 %__brp_strip_comment_note %{_rpmconfigdir}/brp-strip-comment-note %{__strip} %{__objdump}
 %__brp_strip_static_archive %{_rpmconfigdir}/brp-strip-static-archive %{__strip}
