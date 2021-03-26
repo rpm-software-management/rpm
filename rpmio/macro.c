@@ -209,24 +209,24 @@ findEntry(rpmMacroContext mc, const char *name, size_t namelen, size_t *pos)
 static int
 rdcl(char * buf, size_t size, FILE *f)
 {
-    char *q = buf - 1;		/* initialize just before buffer. */
     size_t nb = 0;
-    size_t nread = 0;
     int pc = 0, bc = 0, xc = 0;
     int nlines = 0;
     char *p = buf;
+    char *q = buf;
 
     if (f != NULL)
     do {
-	*(++q) = '\0';			/* terminate and move forward. */
+	*q = '\0';			/* terminate */
 	if (fgets(q, size, f) == NULL)	/* read next line. */
 	    break;
 	nlines++;
 	nb = strlen(q);
-	nread += nb;			/* trim trailing \r and \n */
-	for (q += nb - 1; nb > 0 && iseol(*q); q--)
+	for (q += nb; nb > 0 && iseol(q[-1]); q--)
 	    nb--;
-	for (; p <= q; p++) {
+	if (*q == 0)
+	    break;			/* no newline found, EOF */
+	for (; p < q; p++) {
 	    switch (*p) {
 		case '\\':
 		    switch (*(p+1)) {
@@ -250,14 +250,14 @@ rdcl(char * buf, size_t size, FILE *f)
 		case ']': if (xc > 0) xc--; break;
 	    }
 	}
-	if (nb == 0 || (*q != '\\' && !bc && !pc && !xc) || *(q+1) == '\0') {
-	    *(++q) = '\0';		/* trim trailing \r, \n */
+	if ((nb == 0 || q[-1] != '\\') && !bc && !pc && !xc) {
+	    *q = '\0';		/* trim trailing \r, \n */
 	    break;
 	}
 	q++; nb++;			/* copy newline too */
 	size -= nb;
-	if (*q == '\r')			/* XXX avoid \r madness */
-	    *q = '\n';
+	if (q[-1] == '\r')			/* XXX avoid \r madness */
+	    q[-1] = '\n';
     } while (size > 0);
     return nlines;
 }
