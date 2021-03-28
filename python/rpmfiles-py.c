@@ -470,8 +470,6 @@ static PyObject *rpmfiles_subscript(rpmfilesObject *s, PyObject *item)
     /* treat numbers as sequence accesses */
     if (PyLong_Check(item)) {
 	return rpmfiles_getitem(s, PyLong_AsSsize_t(item));
-    } else if (PyLong_Check(item)) {
-	return rpmfiles_getitem(s, PyLong_AsSsize_t(item));
     }
 
     /* handle slices by returning tuples of rpm.file items */

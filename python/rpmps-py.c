@@ -30,7 +30,7 @@ static PyObject *rpmprob_get_key(rpmProblemObject *s, void *closure)
 {
     fnpyKey key = rpmProblemGetKey(s->prob);
     if (key) {
-    	return Py_BuildValue("O", rpmProblemGetKey(s->prob));
+	return Py_BuildValue("O", key);
     } else {
 	Py_RETURN_NONE;
     }

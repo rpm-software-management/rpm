@@ -493,7 +493,7 @@ static int validItem(rpmTagClass tclass, PyObject *item)
 
     switch (tclass) {
     case RPM_NUMERIC_CLASS:
-	rc = (PyLong_Check(item) || PyLong_Check(item));
+	rc = PyLong_Check(item);
 	break;
     case RPM_STRING_CLASS:
 	rc = (PyBytes_Check(item) || PyUnicode_Check(item));
