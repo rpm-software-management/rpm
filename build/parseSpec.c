@@ -229,7 +229,7 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
 	SKIPSPACE(s);
 	if (s[0])
 	    rpmlog(RPMLOG_WARNING,
-		_("extra tokens at the end of %s directive in line %d:  %s\n"),
+		_("extra tokens at the end of %s directive in line %d:  %s"),
 		condition->text, spec->lineNum, lbuf);
     }
 
@@ -263,7 +263,7 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
 
 	if (*bufA != '\0' || *bufB != '\0')
 	    rpmlog(RPMLOG_WARNING,
-		_("Macro expanded in comment on line %d: %s\n"),
+		_("Macro expanded in comment on line %d: %s"),
 		spec->lineNum, bufA);
     }
 
@@ -282,6 +282,7 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi, int strip)
 	int pc = 0, bc = 0, xc = 0, nc = 0;
 	const char *from = ofi->readPtr;
 	char ch = ' ';
+
 	while (from && *from && ch != '\n') {
 	    ch = spec->lbuf[spec->lbufOff] = *from;
 	    spec->lbufOff++; from++;
@@ -291,6 +292,14 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi, int strip)
 		spec->lbuf = realloc(spec->lbuf, spec->lbufSize);
 	    }
 	}
+
+	/* Add trailing newline if missing */
+	if (ch != '\n') {
+	    spec->lbuf[spec->lbufOff++] = '\n';
+	    if (spec->lbufOff == spec->lbufSize)
+		spec->lbuf = realloc(spec->lbuf, ++spec->lbufSize);
+	}
+
 	spec->lbuf[spec->lbufOff] = '\0';
 	ofi->readPtr = from;
 
@@ -509,7 +518,7 @@ retry:
 	    match = rpmExprBoolFlags(s, 0);
 	    if (match < 0) {
 		rpmlog(RPMLOG_ERR,
-			    _("%s:%d: bad %s condition: %s\n"),
+			    _("%s:%d: bad %s condition: %s"),
 			    ofi->fileName, ofi->lineNum, lineType->text, s);
 		return PART_ERROR;
 	    }
@@ -841,14 +850,14 @@ static int parseEmpty(rpmSpec spec, int prevParsePart)
     SKIPSPACE(line);
     if (line[0] != '\0') {
 	rpmlog(RPMLOG_ERR,
-	    _("line %d: %%end doesn't take any arguments: %s\n"),
+	    _("line %d: %%end doesn't take any arguments: %s"),
 	    spec->lineNum, spec->line);
 	goto exit;
     }
 
     if (prevParsePart == PART_EMPTY) {
 	rpmlog(RPMLOG_ERR,
-	    _("line %d: %%end not expected here, no section to close: %s\n"),
+	    _("line %d: %%end not expected here, no section to close: %s"),
 	    spec->lineNum, spec->line);
 	goto exit;
     }
@@ -864,7 +873,7 @@ static int parseEmpty(rpmSpec spec, int prevParsePart)
 
 	    if (line[0] != '\0') {
 		rpmlog(RPMLOG_ERR,
-		    _("line %d doesn't belong to any section: %s\n"),
+		    _("line %d doesn't belong to any section: %s"),
 		    spec->lineNum, spec->line);
 		goto exit;
 	    }
