@@ -158,7 +158,7 @@ static PyObject *rpmarchive_writeto(rpmarchiveObject *s,
     int rc;
     char *kwlist[] = { "fd", NULL };
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&|i", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&", kwlist,
 				 rpmfdFromPyObject, &fdo)) {
 	return NULL;
     }
