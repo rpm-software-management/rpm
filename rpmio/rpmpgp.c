@@ -550,7 +550,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 		     pgpDigParams _digp)
 {
     uint8_t version = 0;
-    uint8_t * p;
+    const uint8_t * p;
     unsigned int plen;
     int rc = 1;
 
