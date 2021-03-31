@@ -3,7 +3,7 @@
 include $(top_srcdir)/rpm.am
 AM_CFLAGS = @RPMCFLAGS@
 
-EXTRA_DIST = rpm/__init__.py rpm/transaction.py
+EXTRA_DIST = rpm/__init__.py rpm/transaction.py rpm/rpmEnum.py 
 
 AM_CPPFLAGS = -I$(top_builddir)/include/
 AM_CPPFLAGS += -I$(top_srcdir)/python
