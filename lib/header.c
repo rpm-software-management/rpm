@@ -29,7 +29,7 @@ const unsigned char rpm_header_magic[8] = {
  * Alignment needed for header data types.
  */
 static const int typeAlign[16] =  {
-    1,	/*!< RPM_NULL_TYPE */
+    0,	/*!< RPM_NULL_TYPE */
     1,	/*!< RPM_CHAR_TYPE */
     1,	/*!< RPM_INT8_TYPE */
     2,	/*!< RPM_INT16_TYPE */
@@ -276,6 +276,13 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
 		   blob->regionTag == RPMTAG_HEADERIMAGE);
 
     for (i = 0; i < il; i++) {
+	if (i + 1 == blob->ril && blob->regionTag) {
+	    /* Bump the end past the region trailer */
+	    end += REGION_TAG_COUNT;
+	    /* Check that the region is internally consistent */
+	    if (end != blob->rdl)
+		goto err;
+	}
 	ei2h(&pe[i], &info);
 
 	/* Previous data must not overlap */
@@ -294,6 +301,11 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
 	    goto err;
 	if (typechk && hdrchkTagType(info.tag, info.type))
 	    goto err;
+	const size_t padding = info.offset - end;
+	/* Check that the padding is zeroed and minimum-length */
+	if (padding >= typeAlign[info.type] ||
+	    memcmp(ds + end, "\0\0\0\0\0\0\0\0", padding))
+	    goto err;
 
 	/* Verify the data actually fits */
 	len = dataLength(info.type, ds + info.offset,
@@ -301,15 +313,6 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
 	end = info.offset + len;
 	if (hdrchkRange(blob->dl, end) || len <= 0)
 	    goto err;
-	if (blob->regionTag) {
-	    /*
-	     * Verify that the data does not overlap the region trailer.  The
-	     * region trailer is skipped by this loop, so the other checks
-	     * don’t catch this case.
-	     */
-	    if (end > blob->rdl - REGION_TAG_COUNT && info.offset < blob->rdl)
-		goto err;
-	}
     }
     return 0; /* Everything ok */
 
