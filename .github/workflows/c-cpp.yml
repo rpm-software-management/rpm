@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: setup
-      run:  apt install automake
+      run:  sudo apt install automake
     - name: configure
       run: ./autogen.sh
     - name: make
