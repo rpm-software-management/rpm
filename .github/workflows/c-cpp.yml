@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: setup
-      run:  sudo apt install autoconf automake autopoint libgcrypt-dev libpopt-dev
+      run:  sudo apt install autoconf automake autopoint libgcrypt-dev libpopt-dev libarchive-dev
     - name: configure
       run: ./autogen.sh
     - name: make
