@@ -3,14 +3,14 @@
 include $(top_srcdir)/rpm.am
 AM_CFLAGS = @RPMCFLAGS@
 
-EXTRA_DIST = rpm/__init__.py rpm/transaction.py
+EXTRA_DIST = rpm/__init__.py rpm/transaction.py rpm/_rpm.pyi
 
 AM_CPPFLAGS = -I$(top_builddir)/include/
 AM_CPPFLAGS += -I$(top_srcdir)/python
 AM_CPPFLAGS += @PYTHON_CFLAGS@
 
 pkgpyexec_LTLIBRARIES = _rpm.la
-pkgpyexec_DATA = rpm/__init__.py rpm/transaction.py
+pkgpyexec_DATA = rpm/__init__.py rpm/transaction.py rpm/_rpm.pyi
 
 _rpm_la_LDFLAGS = -module -avoid-version -shared
 _rpm_la_LIBADD = \
