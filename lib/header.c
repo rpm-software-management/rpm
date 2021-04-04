@@ -275,7 +275,7 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
     int typechk = (blob->regionTag == RPMTAG_HEADERIMMUTABLE ||
 		   blob->regionTag == RPMTAG_HEADERIMAGE);
 
-    for (i = 0; i < il; i++) {
+    for (i = 0;; i++) {
 	if (i + 1 == blob->ril && blob->regionTag) {
 	    /* Bump the end past the region trailer */
 	    end += REGION_TAG_COUNT;
@@ -283,6 +283,8 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
 	    if (end != blob->rdl)
 		goto err;
 	}
+	if (i >= il)
+	    break;
 	ei2h(&pe[i], &info);
 
 	/* Previous data must not overlap */
@@ -314,7 +316,8 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
 	if (hdrchkRange(blob->dl, end) || len <= 0)
 	    goto err;
     }
-    return 0; /* Everything ok */
+    if (end == blob->dl)
+	return 0; /* Everything ok */
 
 err:
     if (emsg) {
