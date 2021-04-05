@@ -1832,4 +1832,13 @@ runroot rpmbuild -ba --quiet      \
 [0],
 [],
 [])
+
+# multiline %if test (inside of unexpanded macro)
+AT_CHECK([
+runroot rpmbuild -ba --quiet      \
+ data/SPECS/ifmultiline-macro.spec
+],
+[0],
+[],
+[])
 AT_CLEANUP

@@ -354,12 +354,16 @@ static parsedSpecLine copyNextLineFinish(rpmSpec spec, int strip)
     lineType = parseLineType(s);
 
     while (*spec->nextline && ch != '\n') {
-	/* for conditionals and %include trim trailing '\' */
+	/* Interpret line-continuation markers. Unexpanded %define or %global
+	 * that spans multiple lines and thus could interfere with the parser
+	 * is also collapsed here.
+	 */
 	if (lineType && (*spec->nextline == '\\') &&
 	    (*spec->nextline+1) && (*(spec->nextline+1) == '\n')) {
 	    *spec->nextline = ' ';
 	    *(spec->nextline+1) = ' ';
 	}
+
 	ch = *spec->nextline++;
 	if (!risspace(ch))
 	    last = spec->nextline;
