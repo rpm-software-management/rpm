@@ -11,13 +11,13 @@
 # Daniel Cabrera <logan@fedoraproject.org>, 2011
 # beckerde <domingobecker@gmail.com>, 2012
 # Daniel Cabrera <logan@fedoraproject.org>, 2011
-# Emilio Herrera <ehespinosa57@gmail.com>, 2020.
+# Emilio Herrera <ehespinosa57@gmail.com>, 2020, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-08-22 11:18+0000\n"
+"PO-Revision-Date: 2021-03-29 17:02+0000\n"
 "Last-Translator: Emilio Herrera <ehespinosa57@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/rpm/"
 "master/es/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.2.1\n"
+"X-Generator: Weblate 4.5.2\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -110,17 +110,22 @@ msgstr "construir paquete fuente únicamente desde <specfile>"
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
 msgstr ""
+"compilar el paquete fuente solo desde <specfile> - calcular los requisitos "
+"de compilación dinámica"
 
 #, c-format
 msgid ""
 "build through %prep (unpack sources and apply patches) from <source package>"
 msgstr ""
+"compilar a través de %prep (desempaquetar fuentes y aplicar parches) desde "
+"<source package>"
 
 msgid "<source package>"
 msgstr "<paquete fuente>"
 
 msgid "build through %build (%prep, then compile) from <source package>"
 msgstr ""
+"compilar a través de %build (%prep, después compilar) desde <source package>"
 
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
@@ -130,10 +135,10 @@ msgstr ""
 
 #, c-format
 msgid "verify %files section from <source package>"
-msgstr ""
+msgstr "verificar la sección %files del <source package>"
 
 msgid "build source and binary packages from <source package>"
-msgstr ""
+msgstr "compilar los paquetes fuente y binario desde <source package>"
 
 msgid "build binary package only from <source package>"
 msgstr ""
