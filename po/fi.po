@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2021-03-03 13:40+0000\n"
+"PO-Revision-Date: 2021-03-05 06:42+0000\n"
 "Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/rpm/"
 "master/fi/>\n"
@@ -570,7 +570,7 @@ msgstr ""
 
 #, c-format
 msgid "Duplicate locale %s in %%lang(%s)\n"
-msgstr ""
+msgstr "Tee kielestä %s kaksoiskappale %%lang(%s):een\n"
 
 #, c-format
 msgid "Invalid capability: %s\n"
@@ -652,11 +652,11 @@ msgstr ""
 
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
-msgstr ""
+msgstr "Tee build-id:sta kaksoiskappale, stat %s: %m\n"
 
 #, c-format
 msgid "Duplicate build-ids %s and %s\n"
-msgstr ""
+msgstr "Tee build-ids:sta %s ja %s:sta kaksoiskappale\n"
 
 msgid "_build_id_links macro not set, assuming 'compat'\n"
 msgstr ""
@@ -942,7 +942,7 @@ msgstr "kenttä %s on vaadittu kenttä paketissa: %s\n"
 
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
-msgstr "Useita %s-merkintöjä paketissa: %s\n"
+msgstr "Tee paketin %s tietueista kaksoiskappale: %s\n"
 
 #, c-format
 msgid "Unable to open icon %s: %s\n"
@@ -1008,7 +1008,7 @@ msgstr "rivi %d: virheellinen käännösarkkitehtuurin muoto: %s\n"
 
 #, c-format
 msgid "line %d: Duplicate BuildArch entry: %s\n"
-msgstr ""
+msgstr "linja %d: Tee BuildArch:n tietueesta kaksoiskappale: %s\n"
 
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
@@ -1221,6 +1221,7 @@ msgstr "Paketissa ei ole %%description-osiota: %s\n"
 #, c-format
 msgid "Policy module '%s' duplicated with overlapping types\n"
 msgstr ""
+"Käytäntömoduulista '%s' tehty kaksoiskappale päällekkäisillä tyypeillä\n"
 
 #, c-format
 msgid "Base modules '%s' and '%s' have overlapping types\n"
@@ -2749,7 +2750,7 @@ msgstr "Ei voitu luoda tilapäistiedostoa %s:lle: %s\n"
 
 #, c-format
 msgid "Couldn't duplicate file descriptor: %s: %s\n"
-msgstr ""
+msgstr "Tiedoston kuvauksesta ei voitu tehdä kaksoiskappale: %s: %s\n"
 
 #, c-format
 msgid "Fwrite failed: %s"
@@ -2887,11 +2888,11 @@ msgstr "Tyydyttämättömiä riippuvuuksia %s:lle:\n"
 
 #, c-format
 msgid "Unable to reset nice value: %s"
-msgstr ""
+msgstr "nice-arvoa ei voi nollata: %s"
 
 #, c-format
 msgid "Unable to reset I/O priority: %s"
-msgstr ""
+msgstr "I/O-prioriteettia ei voi nollata: %s"
 
 msgid "syntax error while parsing =="
 msgstr "syntaksivirhe jäsentäessä =="
