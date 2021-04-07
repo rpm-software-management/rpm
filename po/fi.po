@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2021-03-05 06:42+0000\n"
-"Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
+"PO-Revision-Date: 2021-04-01 06:02+0000\n"
+"Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/rpm/"
 "master/fi/>\n"
 "Language: fi\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.4.2\n"
+"X-Generator: Weblate 4.5.2\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -117,7 +117,7 @@ msgstr "käännä %install-osioon asti (%prep, %build ja %install) lähdepaketis
 
 #, c-format
 msgid "verify %files section from <source package>"
-msgstr ""
+msgstr "tarkista %files osio <lähdepaketista>"
 
 msgid "build source and binary packages from <source package>"
 msgstr "rakenna lähde - ja binaaripaketit <lähdepaketti>:sta"
@@ -182,7 +182,7 @@ msgid "ignore ExcludeArch: directives from spec file"
 msgstr "jätä ExcludeArch-directiivit huomioimatta"
 
 msgid "debug file state machine"
-msgstr ""
+msgstr "vianselvitä tiedoston tilakone"
 
 msgid "do not execute any stages of the build"
 msgstr "älä suorita mitään käännöksen vaiheita"
@@ -236,7 +236,7 @@ msgstr "tar-putken avaus epäonnistui: %m\n"
 
 #, c-format
 msgid "Found more than one spec file in %s\n"
-msgstr ""
+msgstr "Löytyi useampi kuin yksi spec-tiedosto kohteesta %s\n"
 
 #, c-format
 msgid "Failed to read spec file from %s\n"
@@ -278,10 +278,10 @@ msgid "salvage database"
 msgstr "pelastustietokanta"
 
 msgid "export database to stdout header list"
-msgstr ""
+msgstr "vie tietokanta vakiotulosteen otsakelistaan"
 
 msgid "import database from stdin header list"
-msgstr ""
+msgstr "tuo tietokanta vakiosyötteen otsakelistasta"
 
 msgid "Database options:"
 msgstr "Tietokantavalitsimet:"
