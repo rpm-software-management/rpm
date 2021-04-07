@@ -512,7 +512,8 @@ All files installed in the buildroot must be packaged.
 ### %check
 
 If the packaged software has accomppanying tests, this is where they
-should be executed.
+should be executed. Executes before `%install` to prevent it from
+affecting buildroot contents.
 
 ## Runtime scriptlets
 

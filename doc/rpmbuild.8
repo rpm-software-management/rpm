@@ -157,9 +157,9 @@ Compile the sources - executes up to and including the %build stage.
 This generally involves the equivalent of a "make".
 .TP
 \fB-bi\fR
-Install the binaries into the build root - executes up to and including the
-%check stage.
-This generally involves the equivalent of a "make install" and "make check".
+Install the binaries into the build root - executes up to %install stage,
+including preceding %check.
+This generally involves the equivalent of a "make check" and "make install".
 .TP
 \fB-bl\fR
 Do a "list check" - the %files section from the spec file is macro expanded,

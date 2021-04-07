@@ -379,14 +379,14 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 			   getStringBuf(spec->build), test, sbp)))
 		goto exit;
 
-	if ((what & RPMBUILD_INSTALL) &&
-	    (rc = doScript(spec, RPMBUILD_INSTALL, "%install",
-			   getStringBuf(spec->install), test, sbp)))
-		goto exit;
-
 	if ((what & RPMBUILD_CHECK) &&
 	    (rc = doScript(spec, RPMBUILD_CHECK, "%check",
 			   getStringBuf(spec->check), test, sbp)))
+		goto exit;
+
+	if ((what & RPMBUILD_INSTALL) &&
+	    (rc = doScript(spec, RPMBUILD_INSTALL, "%install",
+			   getStringBuf(spec->install), test, sbp)))
 		goto exit;
 
 	if ((what & RPMBUILD_PACKAGESOURCE) &&
