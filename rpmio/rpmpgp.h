@@ -17,6 +17,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmstring.h>
 
@@ -982,7 +983,8 @@ const char * pgpValString(pgpValType type, uint8_t val);
 static inline
 unsigned int pgpGrab(const uint8_t *s, size_t nbytes)
 {
-    size_t i = 0;
+    unsigned int i = 0;
+    assert(nbytes <= sizeof(unsigned int));
     size_t nb = (nbytes <= sizeof(i) ? nbytes : sizeof(i));
     while (nb--)
 	i = (i << 8) | *s++;
