@@ -181,10 +181,14 @@ static void rpmcliAllArgCallback( poptContext con,
 	break;
     case RPMCLI_POPT_NODIGEST:
 	rpmcliVSFlags |= RPMVSF_MASK_NODIGESTS;
+	/* FALLTHROUGH */
+    case RPMCLI_POPT_ALLOW_NODIGEST:
 	rpmcliVfyLevelMask |= RPMSIG_DIGEST_TYPE;
 	break;
     case RPMCLI_POPT_NOSIGNATURE:
 	rpmcliVSFlags |= RPMVSF_MASK_NOSIGNATURES;
+	/* FALLTHROUGH */
+    case RPMCLI_POPT_ALLOW_UNSIGNED:
 	rpmcliVfyLevelMask |= RPMSIG_SIGNATURE_TYPE;
 	break;
     case RPMCLI_POPT_NOHDRCHK:
@@ -233,11 +237,14 @@ struct poptOption rpmcliAllPoptTable[] = {
 
  { "nodigest", '\0', 0, 0, RPMCLI_POPT_NODIGEST,
         N_("don't verify package digest(s)"), NULL },
+ { "no-require-digest", '\0', 0, 0, RPMCLI_POPT_ALLOW_NODIGEST,
+        N_("don't require package digest(s) (useful for old signed packages)"), NULL },
  { "nohdrchk", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOHDRCHK,
         N_("don't verify database header(s) when retrieved"), NULL },
  { "nosignature", '\0', 0, 0, RPMCLI_POPT_NOSIGNATURE,
-        N_("don't verify package signature(s)"), NULL },
-
+        N_("INSECURE: don't verify package signature(s)"), NULL },
+ { "allow-unsigned", '\0', 0, 0, RPMCLI_POPT_ALLOW_UNSIGNED,
+        N_("INSECURE: don't require package signature(s)"), NULL },
  { "pipe", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_PIPE,
 	N_("send stdout to CMD"),
 	N_("CMD") },

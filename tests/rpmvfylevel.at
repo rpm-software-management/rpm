@@ -3,18 +3,25 @@ AT_BANNER([RPM signature/digest verifylevel])
 AT_SETUP([rpmkeys -K <unsigned 1> verifylevel])
 AT_KEYWORDS([rpmkeys digest])
 AT_CHECK([
-RPMDB_INIT
+RPMDB_INIT[
 
 for lvl in none digest signature all; do
     echo "LEVEL ${lvl}"
+    case $lvl in
+    (none) flags='--allow-unsigned --no-require-digest';;
+    (digest) flags='--allow-unsigned';;
+    (signature) flags='--no-require-digest';;
+    (all) flags='';;
+    (*) exit 1;;
+    esac
     for dis in "" "--nodigest" "--nosignature" "--nodigest --nosignature"; do
 	    echo "${dis}"
 	    runroot rpmkeys -K ${dis} \
-		--define "_pkgverify_level ${lvl}" \
+		--define '_pkgverify_level all' $flags \
 		/data/RPMS/hello-2.0-1.x86_64.rpm; echo $?
     done
 done
-],
+]],
 [0],
 [LEVEL none
 
@@ -75,7 +82,7 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -K <unsigned 2> verifylevel])
 AT_KEYWORDS([rpmkeys digest])
 AT_CHECK([
-RPMDB_INIT
+RPMDB_INIT[
 
 nomd5="0x20000"
 nopld="0x10000"
@@ -85,16 +92,16 @@ nosha2="0x200"
 nosha="0x300"
 nohdr="0x20300"
 
-lvl="digest"
 for dis in nomd5 nopld nopl nosha1 nosha2 nosha nohdr; do
-    vsf="$(eval echo \$${dis})"
+    eval "vsf=\$$dis"
     echo ${dis}
     runroot rpmkeys -Kv \
-	--define "_pkgverify_level ${lvl}" \
+	--define "_pkgverify_level all" \
+	--allow-unsigned \
 	--define "_pkgverify_flags ${vsf}" \
 	/data/RPMS/hello-2.0-1.x86_64.rpm; echo $?
 done
-],
+]],
 [0],
 [nomd5
 /data/RPMS/hello-2.0-1.x86_64.rpm:
@@ -147,18 +154,25 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -K <signed 1> verifylevel])
 AT_KEYWORDS([rpmkeys digest])
 AT_CHECK([
-RPMDB_INIT
+RPMDB_INIT[
 
 for lvl in none digest signature all; do
     echo "LEVEL ${lvl}"
+    case $lvl in
+    (none) flags='--allow-unsigned --no-require-digest';;
+    (digest) flags='--allow-unsigned';;
+    (signature) flags='--no-require-digest';;
+    (all) flags='';;
+    (*) exit 1;;
+    esac
     for dis in "" "--nodigest" "--nosignature" "--nodigest --nosignature"; do
 	    echo "${dis}"
 	    runroot rpmkeys -K ${dis} \
-		--define "_pkgverify_level ${lvl}" \
+		--define "_pkgverify_level all" $flags \
 		/data/RPMS/hello-2.0-1.x86_64-signed.rpm; echo $?
     done
 done
-],
+]],
 [0],
 [LEVEL none
 

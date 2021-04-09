@@ -17,7 +17,7 @@ static int test = 0;
 
 static struct poptOption keyOptsTable[] = {
     { "checksig", 'K', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_CHECKSIG,
-	N_("verify package signature(s)"), NULL },
+	N_("check that a package has been signed by a trusted key"), NULL },
     { "import", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_IMPORTKEY,
 	N_("import an armored public key"), NULL },
     { "test", '\0', POPT_ARG_NONE, &test, 0,
@@ -68,6 +68,8 @@ int main(int argc, char *argv[])
 
     switch (mode) {
     case MODE_CHECKSIG:
+	rpmtsSetFlags(ts, 0);
+	rpmtsSetVfyLevel(ts, RPMSIG_VERIFIABLE_TYPE);
 	ec = rpmcliVerifySignatures(ts, args);
 	break;
     case MODE_IMPORTKEY:

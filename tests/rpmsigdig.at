@@ -7,46 +7,62 @@ AT_BANNER([RPM signatures and digests])
 AT_SETUP([rpmkeys -Kv <unsigned> 1])
 AT_KEYWORDS([rpmkeys digest])
 AT_CHECK([
-RPMDB_INIT
+RPMDB_INIT[
 
 runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64.rpm /data/RPMS/hello-1.0-1.i386.rpm
-],
-[0],
-[/data/RPMS/hello-2.0-1.x86_64.rpm:
+]],
+[2],
+[[/data/RPMS/hello-2.0-1.x86_64.rpm:
+    Header RSA signature: NOTFOUND
+    Header DSA signature: NOTFOUND
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: OK
+    RSA signature: NOTFOUND
+    DSA signature: NOTFOUND
     MD5 digest: OK
 /data/RPMS/hello-1.0-1.i386.rpm:
+    Header RSA signature: NOTFOUND
+    Header DSA signature: NOTFOUND
     Header SHA1 digest: OK
+    RSA signature: NOTFOUND
+    DSA signature: NOTFOUND
     MD5 digest: OK
-],
+]],
 [])
 AT_CLEANUP
 
 AT_SETUP([rpmkeys -Kv <reconstructed> 1])
 AT_KEYWORDS([rpmkeys digest])
 AT_CHECK([
-RPMDB_INIT
+RPMDB_INIT[
 
 cp "${RPMTEST}"/data/misc/hello.intro "${RPMTEST}"/data/misc/hello.payload .
 gzip -cd < hello.payload > hello.uc-payload
 cat hello.intro hello.payload > "${RPMTEST}"/tmp/hello-c.rpm
 cat hello.intro hello.uc-payload > "${RPMTEST}"/tmp/hello-uc.rpm
 runroot rpmkeys -Kv /tmp/hello-c.rpm /tmp/hello-uc.rpm
-],
-[1],
-[/tmp/hello-c.rpm:
+]],
+[2],
+[[/tmp/hello-c.rpm:
+    Header RSA signature: NOTFOUND
+    Header DSA signature: NOTFOUND
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: OK
+    RSA signature: NOTFOUND
+    DSA signature: NOTFOUND
     MD5 digest: OK
 /tmp/hello-uc.rpm:
+    Header RSA signature: NOTFOUND
+    Header DSA signature: NOTFOUND
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 ALT digest: OK
+    RSA signature: NOTFOUND
+    DSA signature: NOTFOUND
     MD5 digest: BAD (Expected 055607c4dee6464b9415ae726e7d81a7 != 839d24c30e5188e0b83599fbe3865919)
-],
+]],
 [])
 AT_CLEANUP
 
@@ -55,7 +71,7 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -Kv <corrupted unsigned> 1])
 AT_KEYWORDS([rpmkeys digest])
 AT_CHECK([
-RPMDB_INIT
+RPMDB_INIT[
 
 pkg="hello-2.0-1.x86_64.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
@@ -63,14 +79,18 @@ cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=333 count=4 2> /dev/null
 runroot rpmkeys -Kv /tmp/${pkg}
-],
+]],
 [1],
-[/tmp/hello-2.0-1.x86_64.rpm:
+[[/tmp/hello-2.0-1.x86_64.rpm:
+    Header RSA signature: NOTFOUND
+    Header DSA signature: NOTFOUND
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: OK
+    RSA signature: NOTFOUND
+    DSA signature: NOTFOUND
     MD5 digest: BAD (Expected 007ca1d8b35cca02a1854ba301c5432e != 137ca1d8b35cca02a1854ba301c5432e)
-],
+]],
 [])
 AT_CLEANUP
 # ------------------------------
@@ -78,21 +98,25 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -Kv <corrupted unsigned> 2])
 AT_KEYWORDS([rpmkeys digest])
 AT_CHECK([
-RPMDB_INIT
+RPMDB_INIT[
 
 pkg="hello-2.0-1.x86_64.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=5555 count=6 2> /dev/null
 runroot rpmkeys -Kv /tmp/${pkg}
-],
+]],
 [1],
-[/tmp/hello-2.0-1.x86_64.rpm:
+[[/tmp/hello-2.0-1.x86_64.rpm:
+    Header RSA signature: NOTFOUND
+    Header DSA signature: NOTFOUND
     Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 29fdfe92782fb0470a9a164a6c94af87d3b138c63b39d4c30e0223ca1202ba82)
     Header SHA1 digest: BAD (Expected 5cd9874c510b67b44483f9e382a1649ef7743bac != 4261b2c1eb861a4152c2239bce20bfbcaa8971ba)
     Payload SHA256 digest: OK
+    RSA signature: NOTFOUND
+    DSA signature: NOTFOUND
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != de65519eeb4ab52eb076ec054d42e34e)
-],
+]],
 [])
 AT_CLEANUP
 
@@ -101,22 +125,26 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -Kv <corrupted unsigned> 3])
 AT_KEYWORDS([rpmkeys digest])
 AT_CHECK([
-RPMDB_INIT
+RPMDB_INIT[
 
 pkg="hello-2.0-1.x86_64.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=7777 count=6 2> /dev/null
 runroot rpmkeys -Kv /tmp/${pkg}
-],
+]],
 [1],
-[/tmp/hello-2.0-1.x86_64.rpm:
+[[/tmp/hello-2.0-1.x86_64.rpm:
+    Header RSA signature: NOTFOUND
+    Header DSA signature: NOTFOUND
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
     Payload SHA256 ALT digest: NOTFOUND
+    RSA signature: NOTFOUND
+    DSA signature: NOTFOUND
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != d662cd0d81601a7107312684ad1ddf38)
-],
+]],
 [])
 AT_CLEANUP
 
@@ -144,7 +172,7 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -Kv <unsigned> 2])
 AT_KEYWORDS([rpmkeys digest])
 AT_CHECK([
-RPMDB_INIT
+RPMDB_INIT[
 
 runroot rpmbuild -bb --quiet \
 	--define "%optflags -O2 -g" \
@@ -159,20 +187,24 @@ for v in SHA256HEADER SHA1HEADER SIGMD5 PAYLOADDIGEST PAYLOADDIGESTALT; do
     runroot rpm -q --qf "${v}: %{${v}}\n" /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm
 done
 runroot rpmkeys -Kv /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm
-],
-[0],
-[SHA256HEADER: ecdd12545e76512430e4e54f5aedbf5373f45e5ad1bd7235ffc2c30f40a607ca
+]],
+[1],
+[[SHA256HEADER: ecdd12545e76512430e4e54f5aedbf5373f45e5ad1bd7235ffc2c30f40a607ca
 SHA1HEADER: be3a99867782903e25814dd88ea5b78c622f6ff0
 SIGMD5: 774288509de3b5cff29562557b9efdd9
 PAYLOADDIGEST: ba951e9327654ed94e5261315ef8a74269ccf7ae93412ce9627d02e34247f9bc
 PAYLOADDIGESTALT: ba951e9327654ed94e5261315ef8a74269ccf7ae93412ce9627d02e34247f9bc
 /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm:
+    Header RSA signature: NOTFOUND
+    Header DSA signature: NOTFOUND
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 ALT digest: OK
     Payload SHA256 digest: OK
+    RSA signature: NOTFOUND
+    DSA signature: NOTFOUND
     MD5 digest: OK
-],
+]],
 [])
 AT_CLEANUP
 
@@ -245,12 +277,12 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -K <signed> 1])
 AT_KEYWORDS([rpmkeys digest signature])
 AT_CHECK([
-RPMDB_INIT
+RPMDB_INIT[
 
 runroot rpmkeys -K /data/RPMS/hello-2.0-1.x86_64-signed.rpm
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
 runroot rpmkeys -K /data/RPMS/hello-2.0-1.x86_64-signed.rpm
-],
+]],
 [0],
 [[/data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests SIGNATURES NOT OK
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests signatures OK
@@ -263,21 +295,23 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -Kv <signed> 1])
 AT_KEYWORDS([rpmkeys digest signature])
 AT_CHECK([
-RPMDB_INIT
+RPMDB_INIT[
 
 runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed.rpm; echo $?
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub; echo $?
 runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed.rpm; echo $?
 runroot rpmkeys -Kv --nodigest /data/RPMS/hello-2.0-1.x86_64-signed.rpm; echo $?
 runroot rpmkeys -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed.rpm; echo $?
-],
+]],
 [0],
-[/data/RPMS/hello-2.0-1.x86_64-signed.rpm:
+[[/data/RPMS/hello-2.0-1.x86_64-signed.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+    Header DSA signature: NOTFOUND
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: OK
     V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+    DSA signature: NOTFOUND
     MD5 digest: OK
 1
 0
@@ -299,7 +333,7 @@ runroot rpmkeys -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed.rpm; echo
     Payload SHA256 digest: OK
     MD5 digest: OK
 0
-],
+]],
 [])
 AT_CLEANUP
 
@@ -308,7 +342,7 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -Kv <corrupted signed> 1])
 AT_KEYWORDS([rpmkeys digest signature])
 AT_CHECK([
-RPMDB_INIT
+RPMDB_INIT[
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
@@ -318,14 +352,16 @@ dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
 runroot rpmkeys -Kv /tmp/${pkg}
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
 runroot rpmkeys -Kv /tmp/${pkg}
-],
+]],
 [1],
-[/tmp/hello-2.0-1.x86_64-signed.rpm:
+[[/tmp/hello-2.0-1.x86_64-signed.rpm:
     Header RSA signature: BAD (package tag 268: invalid OpenPGP signature)
+    Header DSA signature: NOTFOUND
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: OK
     V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+    DSA signature: NOTFOUND
     MD5 digest: OK
 /tmp/hello-2.0-1.x86_64-signed.rpm:
     Header RSA signature: BAD (package tag 268: invalid OpenPGP signature)
@@ -334,7 +370,7 @@ runroot rpmkeys -Kv /tmp/${pkg}
     Payload SHA256 digest: OK
     V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
     MD5 digest: OK
-],
+]],
 [])
 AT_CLEANUP
 # ------------------------------
@@ -342,7 +378,7 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -Kv <corrupted signed> 2])
 AT_KEYWORDS([rpmkeys digest signature])
 AT_CHECK([
-RPMDB_INIT
+RPMDB_INIT[
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
@@ -352,23 +388,27 @@ dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
 runroot rpmkeys -Kv /tmp/${pkg}
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
 runroot rpmkeys -Kv /tmp/${pkg}
-],
+]],
 [1],
-[/tmp/hello-2.0-1.x86_64-signed.rpm:
+[[/tmp/hello-2.0-1.x86_64-signed.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
+    Header DSA signature: NOTFOUND
     Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 29fdfe92782fb0470a9a164a6c94af87d3b138c63b39d4c30e0223ca1202ba82)
     Header SHA1 digest: BAD (Expected 5cd9874c510b67b44483f9e382a1649ef7743bac != 4261b2c1eb861a4152c2239bce20bfbcaa8971ba)
     Payload SHA256 digest: OK
     V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
+    DSA signature: NOTFOUND
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != de65519eeb4ab52eb076ec054d42e34e)
 /tmp/hello-2.0-1.x86_64-signed.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
+    Header DSA signature: NOTFOUND
     Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 29fdfe92782fb0470a9a164a6c94af87d3b138c63b39d4c30e0223ca1202ba82)
     Header SHA1 digest: BAD (Expected 5cd9874c510b67b44483f9e382a1649ef7743bac != 4261b2c1eb861a4152c2239bce20bfbcaa8971ba)
     Payload SHA256 digest: OK
     V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
+    DSA signature: NOTFOUND
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != de65519eeb4ab52eb076ec054d42e34e)
-],
+]],
 [])
 AT_CLEANUP
 
@@ -377,7 +417,7 @@ AT_CLEANUP
 AT_SETUP([rpmkeys -Kv <corrupted signed> 3])
 AT_KEYWORDS([rpmkeys digest signature])
 AT_CHECK([
-RPMDB_INIT
+RPMDB_INIT[
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
@@ -387,15 +427,17 @@ dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
 runroot rpmkeys -Kv /tmp/${pkg}
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
 runroot rpmkeys -Kv /tmp/${pkg}
-],
+]],
 [1],
-[/tmp/hello-2.0-1.x86_64-signed.rpm:
+[[/tmp/hello-2.0-1.x86_64-signed.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+    Header DSA signature: NOTFOUND
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
     Payload SHA256 ALT digest: NOTFOUND
     V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
+    DSA signature: NOTFOUND
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != d662cd0d81601a7107312684ad1ddf38)
 /tmp/hello-2.0-1.x86_64-signed.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
@@ -404,8 +446,9 @@ runroot rpmkeys -Kv /tmp/${pkg}
     Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
     Payload SHA256 ALT digest: NOTFOUND
     V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
+    DSA signature: NOTFOUND
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != d662cd0d81601a7107312684ad1ddf38)
-],
+]],
 [])
 AT_CLEANUP
 
@@ -420,7 +463,7 @@ export GPG_TTY=""
 
 # rpmsign --addsign --rpmv3 <unsigned>
 AT_CHECK([
-RPMDB_INIT
+RPMDB_INIT[
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
 run rpmsign --key-id 1964C5FC --rpmv3 --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
@@ -432,24 +475,30 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
 run rpmsign --delsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
 echo POST-DELSIGN
 runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
-],
+]],
 [0],
-[PRE-IMPORT
+[[PRE-IMPORT
 /tmp/hello-2.0-1.x86_64.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+    Header DSA signature: NOTFOUND
     V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+    DSA signature: NOTFOUND
 POST-IMPORT
 /tmp/hello-2.0-1.x86_64.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
     V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
 POST-DELSIGN
 /tmp/hello-2.0-1.x86_64.rpm:
-],
+    Header RSA signature: NOTFOUND
+    Header DSA signature: NOTFOUND
+    RSA signature: NOTFOUND
+    DSA signature: NOTFOUND
+]],
 [])
 
 # rpmsign --addsign <unsigned>
 AT_CHECK([
-RPMDB_INIT
+RPMDB_INIT[
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
 run rpmsign --key-id 1964C5FC --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
@@ -461,17 +510,24 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
 run rpmsign --delsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
 echo POST-DELSIGN
 runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
-],
+]],
 [0],
-[PRE-IMPORT
+[[PRE-IMPORT
 /tmp/hello-2.0-1.x86_64.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+    Header DSA signature: NOTFOUND
+    RSA signature: NOTFOUND
+    DSA signature: NOTFOUND
 POST-IMPORT
 /tmp/hello-2.0-1.x86_64.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
 POST-DELSIGN
 /tmp/hello-2.0-1.x86_64.rpm:
-],
+    Header RSA signature: NOTFOUND
+    Header DSA signature: NOTFOUND
+    RSA signature: NOTFOUND
+    DSA signature: NOTFOUND
+]],
 [])
 
 # rpmsign --addsign <signed>
@@ -503,9 +559,13 @@ echo $?
 [1
 1
 /tmp/hello-2.0-1.x86_64.rpm:
+    Header RSA signature: NOTFOUND
+    Header DSA signature: NOTFOUND
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: OK
+    RSA signature: NOTFOUND
+    DSA signature: NOTFOUND
     MD5 digest: BAD (Expected 007ca1d8b35cca02a1854ba301c5432e != 137ca1d8b35cca02a1854ba301c5432e)
 1
 ],
@@ -518,7 +578,7 @@ AT_CLEANUP
 AT_SETUP([rpmsign --delsign])
 AT_KEYWORDS([rpmsign signature])
 AT_CHECK([
-RPMDB_INIT
+RPMDB_INIT[
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64-signed.rpm "${RPMTEST}"/tmp/
 echo PRE-DELSIGN
@@ -526,14 +586,20 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64-signed.rpm|grep -v digest
 echo POST-DELSIGN
 run rpmsign --delsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64-signed.rpm > /dev/null
 runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64-signed.rpm|grep -v digest
-],
+]],
 [0],
-[PRE-DELSIGN
+[[PRE-DELSIGN
 /tmp/hello-2.0-1.x86_64-signed.rpm:
     Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+    Header DSA signature: NOTFOUND
     V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+    DSA signature: NOTFOUND
 POST-DELSIGN
 /tmp/hello-2.0-1.x86_64-signed.rpm:
-],
+    Header RSA signature: NOTFOUND
+    Header DSA signature: NOTFOUND
+    RSA signature: NOTFOUND
+    DSA signature: NOTFOUND
+]],
 [])
 AT_CLEANUP

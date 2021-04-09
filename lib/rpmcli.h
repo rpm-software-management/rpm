@@ -70,6 +70,8 @@ rpmcliFini(poptContext optCon);
 #define	RPMCLI_POPT_NOCONTEXTS		-1032
 #define	RPMCLI_POPT_NOCAPS		-1033
 #define	RPMCLI_POPT_TARGETPLATFORM	-1034
+#define	RPMCLI_POPT_ALLOW_UNSIGNED	-1035
+#define	RPMCLI_POPT_ALLOW_NODIGEST	-1036
 
 /* ==================================================================== */
 /** \name RPMQV */
