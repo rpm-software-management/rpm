@@ -166,7 +166,11 @@ int rpmlogSetMask (int mask);
 /** \ingroup rpmlog
  * Generate a log message using FMT string and option arguments.
  */
+#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
+RPM_GNUC_PRINTF(2, 3) static inline void rpmlog (int code, const char *fmt, ...) {}
+#else
 void rpmlog (int code, const char *fmt, ...) RPM_GNUC_PRINTF(2, 3);
+#endif
 
 /** \ingroup rpmlog
  * Return text of last rpmError() message.

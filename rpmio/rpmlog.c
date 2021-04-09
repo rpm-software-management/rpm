@@ -405,6 +405,7 @@ static void dolog(struct rpmlogRec_s *rec, int saverec)
 
 }
 
+#ifndef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
 void rpmlog (int code, const char *fmt, ...)
 {
     int saved_errno = errno;
@@ -441,3 +442,4 @@ void rpmlog (int code, const char *fmt, ...)
 exit:
     errno = saved_errno;
 }
+#endif

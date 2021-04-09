@@ -266,21 +266,6 @@ static void pgpPrtTime(const char * pre, const uint8_t *p, size_t plen)
 }
 
 /** \ingroup rpmpgp
- * Return hex formatted representation of a multiprecision integer.
- * @param p		bytes
- * @return		hex formatted string (malloc'ed)
- */
-static inline
-char * pgpMpiStr(const uint8_t *p)
-{
-    char *str = NULL;
-    char *hex = pgpHexStr(p+2, pgpMpiLen(p)-2);
-    rasprintf(&str, "[%4u]: %s", pgpGrab(p, (size_t) 2), hex);
-    free(hex);
-    return str;
-}
-
-/** \ingroup rpmpgp
  * Return value of an OpenPGP string.
  * @param vs		table of (string,value) pairs
  * @param s		string token to lookup
@@ -340,6 +325,26 @@ size_t pgpLen(const uint8_t *s, size_t slen, size_t * lenp)
 
     return lenlen;
 }
+
+#ifdef RPM_OPENPGP_LIBFUZZER
+# ifndef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
+#  error fuzz targets are only useful when fuzzing
+# endif
+int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size);
+int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
+    if (Size > 256 * 1024 * 1024)
+	return 0;
+    uint8_t *ptr = malloc(Size + 32);
+    if (!ptr)
+	return 0;
+    Data = memcpy(ptr, Data, Size);
+    pgpDigParams p = NULL;
+    pgpPrtParams(Data, Size, 0, &p);
+    p = pgpDigParamsFree(p);
+    free(ptr);
+    return 0;
+}
+#endif
 
 struct pgpPkt {
     uint8_t tag;		/* decoded PGP tag */

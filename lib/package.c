@@ -335,6 +335,45 @@ static void loghdrmsg(struct rpmsinfo_s *sinfo, struct pkgdata_s *pkgdata,
     rpmlog(lvl, "%s: %s\n", pkgdata->fn, msg);
 }
 
+#ifdef RPM_FUZZ_READPACKAGEFILE
+# ifndef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
+#  error are you fuzzing?
+# endif
+# include <sys/types.h>
+# include <sys/mman.h>
+# include <unistd.h>
+int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size);
+int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
+    static rpmts ts = NULL;
+    static int f = -1;
+    if (!ts) {
+	rpmReadConfigFiles(NULL, NULL);
+	ts = rpmtsCreate();
+	if (ts == NULL)
+	    return 0;
+	rpmlogSetMask(INT_MIN);
+	rpmtsSetVSFlags(ts, RPMVSF_MASK_NOHEADER | RPMVSF_MASK_NOPAYLOAD);
+    }
+    if (f < 0 && (f = memfd_create("fuzz-test", MFD_CLOEXEC)) < 0)
+	return 0;
+    FD_t fd = NULL;
+    Header h = NULL;
+    if (ftruncate(f, Size) || pwrite(f, Data, Size, 0) != Size || lseek(f, 0, SEEK_SET) == (off_t)-1)
+	goto exit;
+    if ((fd = fdDup(f)) == NULL)
+	goto exit;
+    rpmReadPackageFile(ts, fd, "test", &h);
+    free(headerExport(h, NULL));
+    if ((h = headerReload(h, RPMTAG_HEADERIMMUTABLE)))
+	free(headerExport(h, NULL));
+exit:
+    if (fd)
+	Fclose(fd);
+    headerFree(h);
+    return 0;
+}
+# endif
+
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 {
     char *msg = NULL;
