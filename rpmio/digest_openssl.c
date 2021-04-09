@@ -288,12 +288,10 @@ done:
 /* Key */
 
 struct pgpDigKeyRSA_s {
-    size_t nbytes; /* Size of modulus */
-
     BIGNUM *n; /* Common Modulus */
     BIGNUM *e; /* Public Exponent */
-
     EVP_PKEY *evp_pkey; /* Fully constructed key */
+    unsigned int poison: 1; /* if set, this key cannot be mutated */
 };
 
 static int constructRSASigningKey(struct pgpDigKeyRSA_s *key)
@@ -301,33 +299,34 @@ static int constructRSASigningKey(struct pgpDigKeyRSA_s *key)
     if (key->evp_pkey) {
         /* We've already constructed it, so just reuse it */
         return 1;
-    }
+    } else if (key->poison)
+	return 0;
 
     /* Create the RSA key */
     RSA *rsa = RSA_new();
     if (!rsa) return 0;
 
-    if (!RSA_set0_key(rsa, key->n, key->e, NULL)) {
-        RSA_free(rsa);
-        return 0;
-    }
+    if (RSA_set0_key(rsa, key->n, key->e, NULL) <= 0)
+	goto exit;
+    key->poison = 1;
+    key->n = key->e = NULL;
 
     /* Create an EVP_PKEY container to abstract the key-type. */
-    key->evp_pkey = EVP_PKEY_new();
-    if (!key->evp_pkey) {
-        RSA_free(rsa);
-        return 0;
-    }
+    if (!(key->evp_pkey = EVP_PKEY_new()))
+	goto exit;
 
     /* Assign the RSA key to the EVP_PKEY structure.
        This will take over memory management of the RSA key */
     if (!EVP_PKEY_assign_RSA(key->evp_pkey, rsa)) {
         EVP_PKEY_free(key->evp_pkey);
         key->evp_pkey = NULL;
-        RSA_free(rsa);
+	goto exit;
     }
 
     return 1;
+exit:
+    RSA_free(rsa);
+    return 0;
 }
 
 static int pgpSetKeyMpiRSA(pgpDigAlg pgpkey, int num, const uint8_t *p)
@@ -335,9 +334,10 @@ static int pgpSetKeyMpiRSA(pgpDigAlg pgpkey, int num, const uint8_t *p)
     size_t mlen = pgpMpiLen(p) - 2;
     struct pgpDigKeyRSA_s *key = pgpkey->data;
 
-    if (!key) {
+    if (!key)
         key = pgpkey->data = xcalloc(1, sizeof(*key));
-    }
+    else if (key->poison)
+	return 1;
 
     switch (num) {
     case 0:
@@ -347,7 +347,6 @@ static int pgpSetKeyMpiRSA(pgpDigAlg pgpkey, int num, const uint8_t *p)
             return 1;
         }
 
-        key->nbytes = mlen;
         /* Create a BIGNUM from the pointer.
            Note: this assumes big-endian data as required by PGP */
         key->n = BN_bin2bn(p+2, mlen, NULL);
