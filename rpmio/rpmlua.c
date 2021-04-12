@@ -521,6 +521,9 @@ static int rpm_load(lua_State *L)
 
 static int rpm_interactive(lua_State *L)
 {
+    if (!(isatty(STDOUT_FILENO) && isatty(STDIN_FILENO)))
+	return luaL_error(L, "not a tty");
+
     _rpmluaInteractive(L);
     return 0;
 }
