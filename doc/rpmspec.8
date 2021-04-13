@@ -12,6 +12,8 @@ rpmspec \- RPM Spec Tool
 
 \fBrpmspec\fR {\fB-P|--parse\fR} \fB\fISPEC_FILE\fB\fR\fI ...\fR
 
+\fBrpmspec\fR {\fB--shell\fR}\fR
+
 .SH DESCRIPTION
 .PP
 \fBrpmspec\fR is a tool for querying a spec file. More specifically for querying hypothetical packages which would be created from the given spec file. So querying a spec file with \fBrpmspec\fR is similar to querying a package built from that spec file. But is is not identical. With \fBrpmspec\fR you can't query all fields which you can query from a built package. E. g. you can't query BUILDTIME with \fBrpmspec\fR for obvious reasons. You also cannot query other fields automatically generated during a build of a package like auto generated dependencies.
@@ -95,6 +97,29 @@ Parse the rpm spec file to stdout:
  Name: rpm
  Version: 4.14.0
  ...
+.RE
+.PP
+Run interactive macro shell for debugging macros
+.RS 4
+.nf
+ $ rpmspec --shell
+ > %define foo bar
+ > %foo
+ bar
+ > %(date)
+ Tue Apr 13 03:55:37 PM EEST 2021
+ >
+.RE
+.PP
+Run interactive macro shell in spec context
+.RS 4
+.nf
+ $ rpmspec --shell popt.spec
+> %name
+popt
+> %version
+1.18
+>
 .RE
 .SH "SEE ALSO"
 .nf

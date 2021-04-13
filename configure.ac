@@ -827,6 +827,19 @@ AS_IF([test "$enable_plugins" != no],[
 AC_SUBST(WITH_AUDIT_LIB)
 AM_CONDITIONAL(AUDIT,[test "$with_audit" = yes])
 
+AC_ARG_WITH([readline], [AS_HELP_STRING([--with-readline],
+	[build with readline support])], [], [with_readline=auto])
+AS_IF([test "$with_readline" != no],[
+  PKG_CHECK_MODULES(
+      [READLINE],
+      [readline >= 8],
+      [AC_DEFINE(WITH_READLINE, 1, [Build with readline support?])],
+      []
+  )
+  AC_SUBST(READLINE_CFLAGS)
+  AC_SUBST(READLINE_LIBS)
+])
+
 user_with_uid0=$(awk -F: '$3==0 {print $1;exit}' /etc/passwd)
 group_with_gid0=$(awk -F: '$3==0 {print $1;exit}' /etc/group)
 AC_DEFINE_UNQUOTED([UID_0_USER],["$user_with_uid0"],[Get the user name having userid 0])

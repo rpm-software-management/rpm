@@ -147,7 +147,7 @@ rpmspec_SOURCES =	rpmspec.c debug.h system.h
 rpmspec_CPPFLAGS =	$(AM_CPPFLAGS)
 rpmspec_LDADD =		libcliutils.la
 rpmspec_LDADD +=	build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
-rpmspec_LDADD +=	@WITH_POPT_LIB@
+rpmspec_LDADD +=	@WITH_POPT_LIB@ @READLINE_LIBS@
 
 rpm2cpio_SOURCES =	rpm2cpio.c debug.h system.h
 rpm2cpio_LDADD =	lib/librpm.la rpmio/librpmio.la
