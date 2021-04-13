@@ -23,6 +23,11 @@ PARSING SPEC FILES TO STDOUT:
 
 **rpmspec** {**-P\|\--parse**} *SPEC\_FILE \...*
 
+INVOKING MACRO SHELL:
+---------------------
+
+**rpmspec** {**--shell**} \[*SPEC_FILE \...*\]
+
 DESCRIPTION
 ===========
 
@@ -83,7 +88,9 @@ file:
 >      rpm-build-libs-4.11.3-3.fc20.x86_64
 >      ...
 >
->     Get summary infos for single binary packages generated from the rpm spec file:
+
+Get summary infos for single binary packages generated from the rpm spec file:
+
 >
 >      $ rpmspec -q --qf "%{name}: %{summary}\n" rpm.spec
 >      rpm: The RPM package management system
@@ -91,18 +98,40 @@ file:
 >      rpm-build-libs: Libraries for building and signing RPM packages
 >      ...
 >
->     Get the source package which would be generated from the rpm spec file:
+
+Get the source package which would be generated from the rpm spec file:
+
 >
 >      $ rpmspec -q --srpm rpm.spec
 >      rpm-4.11.3-3.fc20.x86_64
 >
->     Parse the rpm spec file to stdout:
->
+
+Parse the rpm spec file to stdout:
+
 >      $ rpmspec -P rpm.spec
 >      Summary: The RPM package management system
 >      Name: rpm
 >      Version: 4.14.0
 >      ...
+
+Run interactive macro shell for debugging macros:
+
+>      $ rpmspec --shell
+>      > %define foo bar
+>      > %foo
+>      bar
+>      > %(date)
+>      Tue Apr 13 03:55:37 PM EEST 2021
+>      > %getncpus
+>      8
+
+Run interactive macros shell in spec context:
+
+>      $ rpmspec --shell popt.spec
+>      %name
+>      popt
+>      %version
+>      1.18
 
 SEE ALSO
 ========
