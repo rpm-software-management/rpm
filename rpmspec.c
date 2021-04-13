@@ -50,6 +50,37 @@ static struct poptOption optionsTable[] = {
    POPT_TABLEEND
 };
 
+typedef int (*parsecb)(rpmSpec spec);
+
+static int dumpSpec(rpmSpec spec)
+{
+    fprintf(stdout, "%s", rpmSpecGetSection(spec, RPMBUILD_NONE));
+    return 0;
+}
+
+static int doSpec(poptContext optCon, parsecb cb)
+{
+    int ec = 0;
+    const char * spath;
+    char *target = rpmExpand("%{_target}", NULL);
+    if (!poptPeekArg(optCon))
+	argerror(_("no arguments given for parse"));
+
+    while ((spath = poptGetArg(optCon)) != NULL) {
+	rpmSpec spec = rpmSpecParse(spath, (RPMSPEC_ANYARCH|RPMSPEC_FORCE), NULL);
+	if (spec) {
+	    ec += cb(spec);
+	    rpmSpecFree(spec);
+	} else {
+	    ec++;
+	}
+	rpmFreeMacros(NULL);
+	rpmReadConfigFiles(rpmcliRcfile, target);
+    }
+    free(target);
+    return ec;
+}
+
 int main(int argc, char *argv[])
 {
     rpmts ts = NULL;
@@ -79,23 +110,7 @@ int main(int argc, char *argv[])
 	break;
 
     case MODE_PARSE: {
-	const char * spath;
-	char *target = rpmExpand("%{_target}", NULL);
-	if (!poptPeekArg(optCon))
-	    argerror(_("no arguments given for parse"));
-
-	while ((spath = poptGetArg(optCon)) != NULL) {
-	    rpmSpec spec = rpmSpecParse(spath, (RPMSPEC_ANYARCH|RPMSPEC_FORCE), NULL);
-	    if (spec) {
-		fprintf(stdout, "%s", rpmSpecGetSection(spec, RPMBUILD_NONE));
-		rpmSpecFree(spec);
-	    } else {
-		ec++;
-	    }
-	    rpmFreeMacros(NULL);
-	    rpmReadConfigFiles(rpmcliRcfile, target);
-	}
-	free(target);
+	ec = doSpec(optCon, dumpSpec);
 	break;
     }
 
