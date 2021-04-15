@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2021-04-07 07:02+0000\n"
+"PO-Revision-Date: 2021-04-15 16:02+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/rpm/"
 "master/ko/>\n"
@@ -26,7 +26,7 @@ msgstr "%s: %s\n"
 
 #, c-format
 msgid "RPM version %s\n"
-msgstr "RPM 상태번호 - %s\n"
+msgstr "RPM 버전 - %s\n"
 
 #, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
@@ -261,19 +261,19 @@ msgid "initialize database"
 msgstr "데이터베이스를 초기화 합니다"
 
 msgid "rebuild database inverted lists from installed package headers"
-msgstr "설치된 꾸러미(package) 헤더에서 상반된 목록(inverted lists)의 자료저장소(database)를 재구축 합니다"
+msgstr "설치된 꾸러미 헤더에서 상반된 목록의 데이타베이스를 재구축 합니다"
 
 msgid "verify database files"
 msgstr "데이터베이스 파일을 검사합니다"
 
 msgid "salvage database"
-msgstr "자료저장소(database)를 초기화함"
+msgstr "데이타비이스 초기화함"
 
 msgid "export database to stdout header list"
-msgstr "자료저장소를 stdout 헤더 목록에 내보냅니다"
+msgstr "데이타베이스를 stdout 헤더 목록에 내보냅니다"
 
 msgid "import database from stdin header list"
-msgstr "stdin 헤더 목록에서 자료저장소로 가져옵니다"
+msgstr "stdin 헤더 목록에서 데이타베이스로 가져옵니다"
 
 msgid "Database options:"
 msgstr "데이터베이스 옵션:"
@@ -747,10 +747,10 @@ msgstr "처리 파일: %s\n"
 
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
-msgstr "이진법 arch (%d)가 꾸리미(package) arch(%d)와 일치하지 않습니다.\n"
+msgstr "바이너리 arch (%d)가 꾸러미 arch(%d)와 일치하지 않습니다.\n"
 
 msgid "Arch dependent binaries in noarch package\n"
-msgstr "noarch 꾸러미(package)에서 아치 종속 이진법\n"
+msgstr "noarch 꾸러미에서 아치 종속 바이너리\n"
 
 #, c-format
 msgid "create archive failed on file %s: %s\n"
@@ -813,7 +813,7 @@ msgstr "%s 꾸러미(package) 출력 파일명을 생성 할 수 없음: %s\n"
 
 #, c-format
 msgid "Finished binary package job, result %d, filename %s\n"
-msgstr "종료된 이진 꾸러미(package)작업, 결과 %d, 파일이름 %s\n"
+msgstr "종료된 바이너리 꾸러미 작업, 결과 %d, 파일이름 %s\n"
 
 #, c-format
 msgid "line %d: second %s\n"
@@ -1010,7 +1010,7 @@ msgid "Bad package specification: %s\n"
 msgstr "잘못된 꾸러미(package) 지정: %s\n"
 
 msgid "Binary rpm package found. Expected spec file!\n"
-msgstr "이진 rpm 꾸러미를 찾았습니다. 예상된 지정 파일!\n"
+msgstr "바이너리 rpm 꾸러미를 찾았습니다. 예상된 지정 파일!\n"
 
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
@@ -1064,7 +1064,7 @@ msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr "종속 토큰은 alpha-numeric, '_' 또는 '/'와 함께 시작해야 합니다"
 
 msgid "Versioned file name not permitted"
-msgstr "상태번호된 파일 이름을 허용하지 않습니다"
+msgstr "버전된 파일 이름을 허용하지 않습니다"
 
 msgid "No rich dependencies allowed for this type"
 msgstr "풍부한 의존성은 이 유형에 허용하지 않습니다"
@@ -1073,13 +1073,13 @@ msgid "invalid dependency"
 msgstr "잘못된 의존성"
 
 msgid "Version required"
-msgstr "필요한 상태번호"
+msgstr "필요한 버전"
 
 msgid "Only package names are allowed in Obsoletes"
 msgstr "구식에는 꾸러미(package) 이름만 허용합니다"
 
 msgid "It's not recommended to have unversioned Obsoletes"
-msgstr "상태번호가 없는 구식에 사용하지 않기를 추천합니다"
+msgstr "버전이 없는 구식에 사용하지 않기를 추천합니다"
 
 msgid "It's not recommended to use '>' in Obsoletes"
 msgstr "구식에 '>' 을 사용하지 않기를 추천합니다"
@@ -1388,36 +1388,36 @@ msgstr "새로운 꾸러미(package)를 배치하는 도중 오류(%d)가 발생
 
 #, c-format
 msgid "Converting database from %s to %s backend\n"
-msgstr "%s에서 %s 벡엔드로 자료저장소를 전환합니다\n"
+msgstr "%s에서 %s 벡엔드로 데이타베이스를 전환합니다\n"
 
 #, c-format
 msgid "Found %s %s database while attempting %s backend: using %s backend.\n"
 msgstr "Found %s %s database while attempting %s backend: using %s backend.\n"
 
 msgid "Detected outdated index databases\n"
-msgstr "오래된 색인 자료저장소가 검출되었습니다\n"
+msgstr "오래된 색인 데이타베이스가 검출되었습니다\n"
 
 msgid "Rebuilding outdated index databases\n"
-msgstr "오래된 색인 자료저장소가 재구성되었습니다\n"
+msgstr "오래된 색인 데이타베이스가 재구성되었습니다\n"
 
 #, c-format
 msgid "rpmidx: Version mismatch. Expected version: %u. Found version: %u\n"
-msgstr "rpmidx: 상태번호 불일치. 예상 상태번호: %u. 찾은 상태번호: %u\n"
+msgstr "rpmidx: 버전 불일치. 예상 버전: %u. 찾은 버전: %u\n"
 
 #, c-format
 msgid "rpmpkg: Version mismatch. Expected version: %u. Found version: %u\n"
-msgstr "rpmpkg: 상태번호 불일치. 예상 상태번호: %u. 찾은 상태번호: %u\n"
+msgstr "rpmpkg: 버전 불일치. 예상 버전: %u. 찾은 버전: %u\n"
 
 msgid "rpmpkg: detected non-zero blob, trying auto repair\n"
 msgstr "rpmpkg: 검출된 o이 아닌 blob, 자동 복구 시도하기\n"
 
 #, c-format
 msgid "rpmxdb: Version mismatch. Expected version: %u. Found version: %u\n"
-msgstr "rpmxdb: 상태번호 불일치. 예상 상태번호: %u. 검색 상태번호: %u\n"
+msgstr "rpmxdb: 버전 불일치. 예상 버전: %u. 검색 버전: %u\n"
 
 #, c-format
 msgid "Unable to open sqlite database %s: %s\n"
-msgstr "sqlite 자료저장소 %s: %s 를 열 수 없습니다\n"
+msgstr "sqlite 데이타베이스 %s: %s 를 열 수 없습니다\n"
 
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
@@ -1683,7 +1683,7 @@ msgid "don't verify package digest(s)"
 msgstr "꾸러미 간소화(s)를 확인하지 않습니다"
 
 msgid "don't verify database header(s) when retrieved"
-msgstr "검색 할 때에 자료저장소 헤더(s)를 확인하지 않습니다"
+msgstr "검색 할 때에 데이타베이스 헤더(s)를 확인하지 않습니다"
 
 msgid "don't verify package signature(s)"
 msgstr "꾸러미 서명(s)를 확인하지 않습니다"
@@ -1701,7 +1701,7 @@ msgid "ROOT"
 msgstr "루트"
 
 msgid "use database in DIRECTORY"
-msgstr "디렉토리에 자료저장소가 사용됩니다"
+msgstr "디렉토리에 데이타베이스가 사용됩니다"
 
 msgid "DIRECTORY"
 msgstr "디렉토리"
@@ -1719,7 +1719,7 @@ msgid "provide more detailed output"
 msgstr "아주 상세한 출력을 제공합니다"
 
 msgid "print the version of rpm being used"
-msgstr "현재 사용되고 있는 rpm 상태번호를 표시합니다"
+msgstr "현재 사용되고 있는 rpm 버전를 표시합니다"
 
 msgid "debug payload file state machine"
 msgstr "유효 파일 상태 장비를 디버그합니다"
@@ -1883,7 +1883,7 @@ msgstr "어떠한 %%triggerpostun 스크립틀릿(scriptlet)도 실행하지 않
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
-msgstr "이전 상태번호의 꾸러미로 하향설치 합니다 (--force 선택을 사용시에는 이 선택은 자동으로 적용됩니다)"
+msgstr "이전 버전의 꾸러미로 다운그레이드 합니다 (업그레이드에서 --force 는 자동으로 적용됩니다)"
 
 msgid "print percentages as package installs"
 msgstr "꾸러미(package) 설치를 퍼센트(%)로 표시합니다"
@@ -2260,11 +2260,11 @@ msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 0x%x의 헤더를 읽을 수 없습니다\n"
 
 msgid "could not move new database in place\n"
-msgstr "장소에 새로운 자료저장소로 이동 할 수 없습니다\n"
+msgstr "장소에 새로운 데이타베이스로 이동 할 수 없습니다\n"
 
 #, c-format
 msgid "could also not restore old database from %s\n"
-msgstr "%s에서 또한 오래된 자료저장소를 복구 할 수 없습니다\n"
+msgstr "%s에서 또한 오래된 데이타베이스를 복구 할 수 없습니다\n"
 
 #, c-format
 msgid "replace files in %s with files from %s to recover\n"
@@ -2276,7 +2276,7 @@ msgstr "%s에서 공용 키를 가져 올 수 없습니다\n"
 
 #, c-format
 msgid "could not delete old database at %s\n"
-msgstr "%s에서 오래된 자료저장소를 지울 수 없습니다\n"
+msgstr "%s에서 오래된 데이타베이스를 지울 수 없습니다\n"
 
 msgid "no dbpath has been set"
 msgstr "db경로가 설정되어 있지 않습니다"
@@ -2287,7 +2287,7 @@ msgstr "디렉터리 %s: %s 생성에 실패하였습니다\n"
 
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
-msgstr "자료저장소에 있는 헤더 #%u는 잘못된 --skipping입니다.\n"
+msgstr "데이타베이스 있는 헤더 #%u는 잘못된 --skipping입니다.\n"
 
 #, c-format
 msgid "cannot add record originally at %u\n"
@@ -2307,7 +2307,7 @@ msgid "YES"
 msgstr "예"
 
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
-msgstr "PreReq:, Provides:, and Obsoletes:의존성 지원 상태번호."
+msgstr "PreReq:, Provides:, and Obsoletes: 의존성 지원 버전."
 
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "(dirName,baseName,dirindex) 튜플로서 저장된 파일 이름(s),경로가 아닙니다."
@@ -2322,7 +2322,7 @@ msgid "package payload can be compressed using lzma."
 msgstr "꾸러미 유효량은 lzma를 사용하여 압축 될 수 있습니다."
 
 msgid "package payload file(s) have \"./\" prefix."
-msgstr "꾸러미 유효량 파일(s) \"./\" 접두사를 가집니다."
+msgstr "꾸러미 유효량 파일(s) \"./\" 프리픽스를 가집니다."
 
 msgid "package name-version-release is not implicitly provided."
 msgstr "꾸러미 name-version-release는 암묵적으로 제공되지 않습니다."
@@ -2337,7 +2337,7 @@ msgid "a hardlink file set may be installed without being complete."
 msgstr "하드링크 파일 구성은 완료 하지 않고 설치 될 수 있습니다."
 
 msgid "package scriptlets may access the rpm database while installing."
-msgstr "꾸러미 스크립트릿은 설치 할 때에 rpm 자료저장소를 접근 할 수 있습니다."
+msgstr "꾸러미 스크립트릿은 설치 할 때에 rpm 데이타베이스를 접근 할 수 있습니다."
 
 msgid "internal support for lua scripts."
 msgstr "lua 스크립트를 위한 내부지원."
@@ -2355,7 +2355,7 @@ msgid "dependency comparison supports versions with tilde."
 msgstr "의존성 비교는 ~와 함께 지원합니다."
 
 msgid "dependency comparison supports versions with caret."
-msgstr "의존성 비교는 카렛 상태번호를 지원합니다."
+msgstr "의존성 비교는 카렛 버전를 지원합니다."
 
 msgid "support files larger than 4GB"
 msgstr "4GB 보다 큰 파일을 지원합니다"
@@ -2538,7 +2538,7 @@ msgid "illegal signature type"
 msgstr "잘못된 서명 유형"
 
 msgid "unsupported RPM package version"
-msgstr "RPM 꾸러미 상태번호을 지원하지 않습니다"
+msgstr "RPM 꾸러미 버전을 지원하지 않습니다"
 
 #, c-format
 msgid "read failed: %s (%d)\n"
@@ -2756,7 +2756,7 @@ msgstr "rpmdb"
 
 #, c-format
 msgid "cannot open Packages database in %s\n"
-msgstr "%s 안의 꾸러미(package) 자료저장소를 열 수 없습니다\n"
+msgstr "%s 안의 꾸러미 데이타베이스를 열 수 없습니다\n"
 
 #, c-format
 msgid "extra '(' in package label: %s\n"
@@ -2891,7 +2891,7 @@ msgid "unterminated string in expression"
 msgstr "표신식에 끝나지 않는 문자열"
 
 msgid "invalid version"
-msgstr "잘못된 상태번호"
+msgstr "잘못된 버전"
 
 msgid "bare words are no longer supported, please use \"...\""
 msgstr "빈 말은 더 이상 지원되지 않습니다, \"...\"를 사용해주세요"
@@ -3054,7 +3054,7 @@ msgstr "메모리 할당 값 (%u 바이트)이 NULL을 반환하였습니다.\n"
 
 #, c-format
 msgid "Unsupported version of key: V%d\n"
-msgstr "지원하지 않는 키 상태번호: V%d\n"
+msgstr "지원하지 않는 키 버전: V%d\n"
 
 #, c-format
 msgid "V%d %s/%s %s, key ID %s"
