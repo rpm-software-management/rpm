@@ -441,7 +441,7 @@ typedef enum rpmSigTag_e {
  * The basic types of data in tags from headers.
  */
 typedef enum rpmTagType_e {
-#define	RPM_MIN_TYPE		0
+#define	RPM_MIN_TYPE		1
     RPM_NULL_TYPE		=  0,
     RPM_CHAR_TYPE		=  1,
     RPM_INT8_TYPE		=  2,
