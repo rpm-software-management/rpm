@@ -517,7 +517,7 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
 	if (matchFunc(ts, te, pfx, sense)) {
 	    for (i = 0; i < rpmdbIndexIteratorNumPkgs(ii); i++) {
 		struct rpmtd_s priorities;
-		unsigned int priority;
+		unsigned int *priority;
 		unsigned int offset = rpmdbIndexIteratorPkgOffset(ii, i);
 		unsigned int tix = rpmdbIndexIteratorTagNum(ii, i);
 
@@ -535,11 +535,17 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
 		trigH = rpmdbGetHeaderAt(rpmtsGetRdb(ts), offset);
 		headerGet(trigH, priorityTag, &priorities, HEADERGET_MINMEM);
 		rpmtdSetIndex(&priorities, tix);
-		priority = *rpmtdGetUint32(&priorities);
+		priority = rpmtdGetUint32(&priorities);
 		headerFree(trigH);
 
-		/* Store file trigger in array */
-		rpmtriggersAdd(triggers, offset, tix, priority);
+		if (priority == NULL) {
+			fprintf(stderr, "DB may be destroyed, some filetriggers will not run. Please reinstall the packages");
+			return RPMRC_FAIL;
+		} else {
+			/* Store file trigger in array */
+			rpmtriggersAdd(triggers, offset, tix, *priority);
+		}
+
 	    }
 	}
 	free(pfx);
