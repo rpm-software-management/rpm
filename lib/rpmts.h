@@ -320,6 +320,15 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmDbiTagVal rpmtag,
 			const void * keyp, size_t keylen);
 
 /** \ingroup rpmts
+ * Return transaction database index iterator.
+ * @param ts		transaction set
+ * @param tag		database index tag
+ * @param it		iterator type (0 for index values, 1 for keys)
+ * @return		NULL on failure
+ */
+rpmdbIndexIterator rpmtsInitIndexIterator(rpmts ts, rpmDbiTagVal tag, int it);
+
+/** \ingroup rpmts
  * Import a header into the rpmdb
  * @param txn		transaction handle
  * @param h		header

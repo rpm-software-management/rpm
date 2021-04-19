@@ -167,6 +167,28 @@ int rpmtsVerifyDB(rpmts ts)
     return rc;
 }
 
+static int lazyOpen(rpmts ts)
+{
+    if (ts == NULL || (ts->rdb == NULL && rpmtsOpenDB(ts, ts->dbmode)))
+	return 1;
+    return (ts->rdb == NULL);
+}
+
+rpmdbIndexIterator rpmtsInitIndexIterator(rpmts ts, rpmDbiTagVal tag, int it)
+{
+    rpmdbIndexIterator ii = NULL;
+
+    if (lazyOpen(ts))
+	return NULL;
+
+    if (it == 1)
+	ii = rpmdbIndexKeyIteratorInit(ts->rdb, tag);
+    else
+	ii = rpmdbIndexIteratorInit(ts->rdb, tag);
+
+    return ii;
+}
+
 /* keyp might no be defined. */
 rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmDbiTagVal rpmtag,
 			const void * keyp, size_t keylen)
@@ -174,10 +196,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmDbiTagVal rpmtag,
     rpmdbMatchIterator mi = NULL;
     char *tmp = NULL;
 
-    if (ts == NULL)
-	return NULL;
-
-    if (ts->rdb == NULL && rpmtsOpenDB(ts, ts->dbmode))
+    if (lazyOpen(ts))
 	return NULL;
 
     if (ts->keyring == NULL)
