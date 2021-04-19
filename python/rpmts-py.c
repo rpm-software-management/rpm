@@ -683,16 +683,6 @@ rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	if (PyErr_Occurred()) goto exit;
     }
 
-    /* XXX If not already opened, open the database O_RDONLY now. */
-    /* XXX FIXME: lazy default rdonly open also done by rpmtsInitIterator(). */
-    if (rpmtsGetRdb(s->ts) == NULL) {
-	int rc = rpmtsOpenDB(s->ts, O_RDONLY);
-	if (rc || rpmtsGetRdb(s->ts) == NULL) {
-	    PyErr_SetString(pyrpmError, "rpmdb open failed");
-	    goto exit;
-	}
-    }
-
     mio = rpmmi_Wrap(&rpmmi_Type, rpmtsInitIterator(s->ts, tag, key, len), (PyObject*)s);
 
 exit:
@@ -710,16 +700,7 @@ rpmts_index(rpmtsObject * s, PyObject * args, PyObject * kwds)
               tagNumFromPyObject, &tag))
 	return NULL;
 
-    /* XXX If not already opened, open the database O_RDONLY now. */
-    if (rpmtsGetRdb(s->ts) == NULL) {
-	int rc = rpmtsOpenDB(s->ts, O_RDONLY);
-	if (rc || rpmtsGetRdb(s->ts) == NULL) {
-	    PyErr_SetString(pyrpmError, "rpmdb open failed");
-	    goto exit;
-	}
-    }
-
-    rpmdbIndexIterator ii = rpmdbIndexIteratorInit(rpmtsGetRdb(s->ts), tag);
+    rpmdbIndexIterator ii = rpmtsInitIndexIterator(s->ts, tag, 0);
     if (ii == NULL) {
         PyErr_SetString(PyExc_KeyError, "No index for this tag");
         return NULL;
