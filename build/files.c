@@ -531,6 +531,11 @@ static rpmRC parseForAttr(rpmstrPool pool, char * buf, int def, FileEntry entry)
     for (p = pe; *pe && *pe != ')'; pe++)
 	{};
 
+    if (*pe == '\0') {
+	rpmlog(RPMLOG_ERR, _("Missing ')' in %s(%s\n"), name, p);
+	goto exit;
+    }
+
     if (def) {	/* %defattr */
 	char *r = pe;
 	r++;
