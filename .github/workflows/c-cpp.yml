@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: setup
-      run:  sudo apt install autoconf automake autopoint libgcrypt-dev libpopt-dev libarchive-dev liblua5.3-dev && dpkg -L liblua5.3-dev && /usr/bin/pkg-config 'lua >= 5.2'
+      run:  sudo apt install autoconf automake autopoint libgcrypt-dev libpopt-dev libarchive-dev liblua5.3-dev && dpkg -L liblua5.3-dev && /usr/bin/pkg-config 'lua53 >= 5.2'
     - name: configure
       run: sh -x autogen.sh --noconfigure && sh -x configure
     - name: make
