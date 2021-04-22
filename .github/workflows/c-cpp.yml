@@ -16,7 +16,7 @@ jobs:
     - name: setup
       run:  sudo apt install autoconf automake autopoint libgcrypt-dev libpopt-dev libarchive-dev lua5.3
     - name: configure
-      run: sh -x autogen.sh --rpmconfigure || cat configure.log
+      run: sh -x autogen.sh --noconfigure && sh -x configure
     - name: make
       run: make
     - name: make check
