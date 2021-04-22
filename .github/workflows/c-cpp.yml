@@ -9,14 +9,13 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-21.04
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
     - name: setup
       run:  |
-        apt search verity &&
-        sudo apt install libfsverity-dev ima-evm-utils libzstd-dev doxygen gettext autoconf automake autopoint libgcrypt-dev libpopt-dev libarchive-dev liblua5.3-dev &&
+        sudo apt install ima-evm-utils libzstd-dev doxygen gettext autoconf automake autopoint libgcrypt-dev libpopt-dev libarchive-dev liblua5.3-dev &&
         sudo ln -T /usr/lib/x86_64-linux-gnu/pkgconfig/lua53.pc /usr/lib/x86_64-linux-gnu/pkgconfig/lua.pc &&
         /usr/bin/pkg-config 'lua >= 5.2'
     - name: configure
