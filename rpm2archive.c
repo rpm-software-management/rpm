@@ -10,6 +10,8 @@
 #include <rpm/rpmurl.h>
 #include <rpm/rpmts.h>
 
+#include <popt.h>
+
 #include <archive.h>
 #include <archive_entry.h>
 #include <unistd.h>
@@ -17,6 +19,16 @@
 #include "debug.h"
 
 #define BUFSIZE (128*1024)
+
+int compress = 1;
+
+static struct poptOption optionsTable[] = {
+    { "nocompression", 'n', POPT_ARG_VAL, &compress, 0,
+        N_("create uncompressed tar file"),
+        NULL },
+    POPT_AUTOHELP
+    POPT_TABLEEND
+};
 
 static void fill_archive_entry(struct archive_entry * entry, rpmfi fi)
 {
@@ -60,7 +72,7 @@ static void write_file_content(struct archive * a, char * buf, rpmfi fi)
     }
 }
 
-static int process_package(rpmts ts, char * filename)
+static int process_package(rpmts ts, const char * filename)
 {
     FD_t fdi;
     FD_t gzdi;
@@ -119,9 +131,11 @@ static int process_package(rpmts ts, char * filename)
 
     /* create archive */
     a = archive_write_new();
-    if (archive_write_add_filter_gzip(a) != ARCHIVE_OK) {
-	fprintf(stderr, "Error: Could not create gzip output filter\n");
-	exit(EXIT_FAILURE);
+    if (compress) {
+	if (archive_write_add_filter_gzip(a) != ARCHIVE_OK) {
+	    fprintf(stderr, "%s\n", archive_error_string(a));
+	    exit(EXIT_FAILURE);
+	}
     }
     if (archive_write_set_format_pax_restricted(a) != ARCHIVE_OK) {
 	fprintf(stderr, "Error: Format pax restricted is not supported\n");
@@ -142,9 +156,14 @@ static int process_package(rpmts ts, char * filename)
 	    } else {
 		fname = filename;
 	    }
-	    outname = rstrscat(NULL, fname, ".tgz", NULL);
+	    outname = rstrscat(NULL, fname, NULL);
 	} else {
-	    outname = rstrscat(NULL, filename, ".tgz", NULL);
+	    outname = rstrscat(NULL, filename, NULL);
+	}
+	if (compress) {
+	    outname = rstrscat(&outname, ".tgz", NULL);
+	} else {
+	    outname = rstrscat(&outname, ".tar", NULL);
 	}
 	if (archive_write_open_filename(a, outname) != ARCHIVE_OK) {
 	    fprintf(stderr, "Error: Can't open output file: %s\n", outname);
@@ -203,20 +222,21 @@ static int process_package(rpmts ts, char * filename)
     return rc;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
-    int rc = 0, i;
+    int rc = 0;
+    poptContext optCon;
+    const char *fn;
 
     xsetprogname(argv[0]);	/* Portability call -- see system.h */
     rpmReadConfigFiles(NULL, NULL);
 
-    if (argc > 1 && (rstreq(argv[1], "-h") || rstreq(argv[1], "--help"))) {
-	fprintf(stderr, "Usage: %s [file.rpm ...]\n", argv[0]);
+    optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
+    poptSetOtherOptionHelp(optCon, "[OPTIONS]* <FILES>");
+    if (argc < 2 || poptGetNextOpt(optCon) == 0) {
+	poptPrintUsage(optCon, stderr, 0);
 	exit(EXIT_FAILURE);
     }
-
-    if (argc == 1)
-	argv[argc++] = "-";	/* abuse NULL pointer at the end of argv */
 
     rpmts ts = rpmtsCreate();
     rpmVSFlags vsflags = 0;
@@ -227,13 +247,21 @@ int main(int argc, char *argv[])
     vsflags |= RPMVSF_NOHDRCHK;
     (void) rpmtsSetVSFlags(ts, vsflags);
 
-    for (i = 1; i < argc; i++) {
-
-	rc = process_package(ts, argv[i]);
+    /* if no file name is given use stdin/stdout */
+    if (!poptPeekArg(optCon)) {
+	rc = process_package(ts, "-");
 	if (rc != 0)
-	    return rc;
+	    goto exit;
     }
 
+    while ((fn = poptGetArg(optCon)) != NULL) {
+	rc = process_package(ts, fn);
+	if (rc != 0)
+	    goto exit;
+    }
+
+ exit:
+    poptFreeContext(optCon);
     (void) rpmtsFree(ts);
     return rc;
 }
