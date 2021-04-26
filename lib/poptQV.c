@@ -91,8 +91,6 @@ struct poptOption rpmQVSourcePoptTable[] = {
  { "hdrid", '\0', 0, 0, POPT_QUERYBYHDRID,
 	N_("query/verify package(s) with header identifier"), "SHA1" },
 
- { "query", 'q', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'q',
-	N_("rpm query mode"), NULL },
  { "querybynumber", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYNUMBER,
 	N_("query/verify a header instance"), "HDRNUM" },
  { "tid", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYTID,
@@ -219,6 +217,8 @@ struct poptOption rpmQVFilePoptTable[] = {
 struct poptOption rpmQueryPoptTable[] = {
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
 	queryArgCallback, 0, NULL, NULL },
+ { "query", 'q', 0, 0, 'q',
+	N_("query information about packages, in particular:"), NULL },
  { "dump", '\0', 0, 0, POPT_DUMP,
 	N_("dump basic file information"), NULL },
  { NULL, 'i', POPT_ARGFLAG_DOC_HIDDEN, 0, 'i',
