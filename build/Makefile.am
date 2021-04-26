@@ -8,6 +8,7 @@ AM_CFLAGS += @LUA_CFLAGS@
 AM_CPPFLAGS =  -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/
 AM_CPPFLAGS += @WITH_MAGIC_INCLUDE@
 AM_CPPFLAGS += @WITH_POPT_INCLUDE@
+AM_CPPFLAGS += @LUA_CFLAGS@
 AM_CPPFLAGS += -I$(top_srcdir)/misc
 
 usrlibdir = $(libdir)
@@ -27,6 +28,7 @@ librpmbuild_la_LIBADD = \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/misc/libmisc.la \
 	@LTLIBICONV@ \
+	@LUA_LIBS@ \
 	@WITH_POPT_LIB@ \
 	@WITH_MAGIC_LIB@
 

@@ -373,6 +373,7 @@ static int rpmluaReadline(lua_State *L, const char *prompt)
 /* Based on lua.c */
 static void _rpmluaInteractive(lua_State *L)
 {
+   rpmlua lua = getdata(L, "lua");
    (void) fputs("\n", stdout);
    printf("RPM Interactive %s Interpreter\n", LUA_VERSION);
    for (;;) {
@@ -403,6 +404,12 @@ static void _rpmluaInteractive(lua_State *L)
       if (rc != 0) {
 	 fprintf(stderr, "%s\n", lua_tostring(L, -1));
 	 lua_pop(L, 1);
+      } else {
+	 char *s = rpmluaPopPrintBuffer(lua);
+	 if (s) {
+	    fprintf(stdout, "%s\n", s);
+	    free(s);
+	 }
       }
       lua_pop(L, 1); /* Remove line */
    }
@@ -521,6 +528,9 @@ static int rpm_load(lua_State *L)
 
 static int rpm_interactive(lua_State *L)
 {
+    if (!(isatty(STDOUT_FILENO) && isatty(STDIN_FILENO)))
+	return luaL_error(L, "not a tty");
+
     _rpmluaInteractive(L);
     return 0;
 }

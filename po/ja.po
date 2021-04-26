@@ -8,21 +8,22 @@
 # Tadashi Jokagi <elf@elf.no-ip.org>, 2011
 # Tadashi Jokagi <elf@poyo.jp>, 2012
 # Tomoyuki KATO <inactive+katomo@transifex.com>, 2012-2013
+# Tomohiro KATO <tomop@teamgedoh.net>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-03-23 08:38-0400\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: Japanese (http://www.transifex.com/rpm-team/rpm/language/"
-"ja/)\n"
+"PO-Revision-Date: 2021-04-11 03:40+0000\n"
+"Last-Translator: Tomohiro KATO <tomop@teamgedoh.net>\n"
+"Language-Team: Japanese <https://translate.fedoraproject.org/projects/rpm/"
+"master/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Zanata 4.6.2\n"
+"X-Generator: Weblate 4.5.3\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -39,7 +40,7 @@ msgstr "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 #, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
-msgstr "このプログラムは GNU GPL の下で自由に配布できます。\n"
+msgstr "このプログラムは GNU GPL の下で自由に配布できます\n"
 
 #, c-format
 msgid "creating a pipe for --pipe failed: %m\n"
@@ -51,11 +52,11 @@ msgstr "実行失敗\n"
 
 #, c-format
 msgid "argument is not an RPM package\n"
-msgstr "引数は RPM パッケージではありません。\n"
+msgstr "引数は RPM パッケージではありません\n"
 
 #, c-format
 msgid "error reading header from package\n"
-msgstr "パッケージのヘッダー読み込み中にエラー\n"
+msgstr "パッケージのヘッダー読み込み中にエラーが発生しました\n"
 
 #, c-format
 msgid "cannot re-open payload: %s\n"
@@ -63,37 +64,37 @@ msgstr "ペイロードを再度開けません: %s\n"
 
 #, c-format
 msgid "files over 4GB not supported by cpio, use rpm2archive instead\n"
-msgstr ""
+msgstr "4GB超のファイルは cpio ではサポートしていません, 代わりに rpm2archive を使ってください\n"
 
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
-msgstr "BuildRoot は既に指定されています。%s を無視します\n"
+msgstr "BuildRoot は既に指定されています、%s を無視します\n"
 
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
-msgstr "<specfile> の %prep (ソース展開と patch の適用) まで実行"
+msgstr "<specfile> の %prep (ソース展開と patch の適用) まで実行します"
 
 msgid "<specfile>"
 msgstr "<specfile>"
 
 msgid "build through %build (%prep, then compile) from <specfile>"
-msgstr "<specfile> の %build (%prep とコンパイル) まで実行"
+msgstr "<specfile> の %build (%prep とコンパイル) まで実行します"
 
 msgid "build through %install (%prep, %build, then install) from <specfile>"
-msgstr "<specfile> の %install (%prep, %build, インストール) まで実行"
+msgstr "<specfile> の %install (%prep, %build, インストール) まで実行します"
 
 #, c-format
 msgid "verify %files section from <specfile>"
-msgstr "<specfile> の %files セクションを検証"
+msgstr "<specfile> の %files セクションを検証します"
 
 msgid "build source and binary packages from <specfile>"
-msgstr "<specfile> を元に、バイナリ/ソースパッケージ作成"
+msgstr "<specfile> を元に、 ソースとバイナリパッケージを作成します"
 
 msgid "build binary package only from <specfile>"
-msgstr "<specfile> を元に、バイナリパッケージのみ作成"
+msgstr "<specfile> を元に、 バイナリパッケージのみを作成します"
 
 msgid "build source package only from <specfile>"
-msgstr "<specfile> を元に、ソースパッケージのみ作成"
+msgstr "<specfile> を元に、 ソースパッケージのみを作成します"
 
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
@@ -102,30 +103,30 @@ msgstr ""
 #, c-format
 msgid ""
 "build through %prep (unpack sources and apply patches) from <source package>"
-msgstr ""
+msgstr "<source package> から %prep (ソース展開と patch の適用) まで実行します"
 
 msgid "<source package>"
 msgstr "<source package>"
 
 msgid "build through %build (%prep, then compile) from <source package>"
-msgstr ""
+msgstr "<source package> から %build (%prep, コンパイル) まで実行します"
 
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
-msgstr "<source package> から %install (%prep, %build, インストール) まで実行"
+msgstr "<source package> から %install (%prep, %build, インストール) まで実行します"
 
 #, c-format
 msgid "verify %files section from <source package>"
-msgstr ""
+msgstr "<source package> の %files セクションを検証します"
 
 msgid "build source and binary packages from <source package>"
-msgstr ""
+msgstr "<source package> から ソースとバイナリパッケージを作成します"
 
 msgid "build binary package only from <source package>"
-msgstr ""
+msgstr "<source package> から バイナリパッケージのみを作成します"
 
 msgid "build source package only from <source package>"
-msgstr ""
+msgstr "<source package> から ソースパッケージのみを作成します"
 
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
@@ -134,88 +135,87 @@ msgstr ""
 
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
-msgstr "<tarball> から %prep (ソース展開とパッチ適用) まで実行"
+msgstr "<tarball> から %prep (ソース展開とパッチ適用) まで実行します"
 
 msgid "<tarball>"
 msgstr "<tarball>"
 
 msgid "build through %build (%prep, then compile) from <tarball>"
-msgstr "<tarball> から %build (%prep とコンパイル) まで実行"
+msgstr "<tarball> から %build (%prep とコンパイル) まで実行します"
 
 msgid "build through %install (%prep, %build, then install) from <tarball>"
-msgstr "<tarball> から %install (%prep, %build, インストール) まで実行"
+msgstr "<tarball> から %install (%prep, %build, インストール) まで実行します"
 
 #, c-format
 msgid "verify %files section from <tarball>"
-msgstr "<tarball> から %files セクションを検証"
+msgstr "<tarball> から %files セクションを検証します"
 
 msgid "build source and binary packages from <tarball>"
-msgstr "<tarball> を元に、バイナリ/ソースパッケージを作成"
+msgstr "<tarball> を元に、 ソースとバイナリパッケージを作成します"
 
 msgid "build binary package only from <tarball>"
-msgstr "<tarball> を元に、バイナリパッケージのみを作成"
+msgstr "<tarball> を元に、 バイナリパッケージのみを作成します"
 
 msgid "build source package only from <tarball>"
-msgstr "<tarball> を元に、ソースパッケージのみを作成"
+msgstr "<tarball> を元に、 ソースパッケージのみを作成します"
 
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
 msgstr ""
 
 msgid "build binary package from <source package>"
-msgstr "<source package> を元にバイナリパッケージを作成"
+msgstr "<source package> を元に、 バイナリパッケージを作成します"
 
 msgid "override build root"
-msgstr "build root を強制指定"
+msgstr "build root を強制的に指定します"
 
 msgid "run build in current directory"
-msgstr ""
+msgstr "現在のディレクトリーでビルドを実行します"
 
 msgid "remove build tree when done"
-msgstr "パッケージ作成後ツリーを削除"
+msgstr "パッケージ作成後ツリーを削除します"
 
 msgid "ignore ExcludeArch: directives from spec file"
-msgstr "spec ファイルの ExcludeArch: を無視"
+msgstr "spec ファイルの ExcludeArch: を無視します"
 
 msgid "debug file state machine"
-msgstr "ファイル状態マシーンのデバッグ"
+msgstr "ファイル状態マシンのデバッグ"
 
 msgid "do not execute any stages of the build"
-msgstr "ビルドのどの段階も実行しない"
+msgstr "ビルドのどの段階も実行しません"
 
 msgid "do not verify build dependencies"
-msgstr "ビルド依存性を検証しない"
+msgstr "ビルド依存性を検証しません"
 
 msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
-msgstr ""
-"レガシーなRPM v3のパッケージングと互換性のあるパッケージのヘッダーの生成"
+msgstr "レガシーな RPM v3 のパッケージングと互換性のあるパッケージのヘッダーを生成します"
 
 #, c-format
 msgid "do not execute %clean stage of the build"
-msgstr "ビルドの %clean 段階を実行しない"
+msgstr "ビルドの %clean 段階を実行しません"
 
 #, c-format
 msgid "do not execute %prep stage of the build"
-msgstr ""
+msgstr "ビルドの %prep 段階を実行しません"
 
 #, c-format
 msgid "do not execute %check stage of the build"
-msgstr "ビルドの %check 段階を実行しない"
+msgstr "ビルドの %check 段階を実行しません"
 
 msgid "do not accept i18N msgstr's from specfile"
-msgstr "specfile から i18N msgstr を受け付けない"
+msgstr "specfile からの i18N msgstr を受け付けません"
 
 msgid "remove sources when done"
-msgstr "終了後ソースを削除します。"
+msgstr "終了後ソースを削除します"
 
 msgid "remove specfile when done"
-msgstr "終了時に spec ファイルを削除"
+msgstr "終了時に spec ファイルを削除します"
 
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "指定した過程までスキップします (c, i でのみ有効)"
 
 msgid "override target platform"
-msgstr "ターゲットプラットフォームを強制指定"
+msgstr "ターゲットプラットフォームを強制的に指定します"
 
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr "[ <specfile> | <tarball> | <source package> ] とのビルドオプション:"
@@ -233,11 +233,11 @@ msgstr "tar パイプのオープンに失敗しました: %m\n"
 
 #, c-format
 msgid "Found more than one spec file in %s\n"
-msgstr ""
+msgstr "%s 中に複数の spec ファイルを発見しました\n"
 
 #, c-format
 msgid "Failed to read spec file from %s\n"
-msgstr "%s から spec ファイルの読み込みに失敗しました。\n"
+msgstr "%s から spec ファイルの読み込みに失敗しました\n"
 
 #, c-format
 msgid "failed to stat %s: %m\n"
@@ -260,28 +260,25 @@ msgid "Building for target %s\n"
 msgstr "ターゲット %s 用にビルド中\n"
 
 msgid "arguments to --root (-r) must begin with a /"
-msgstr "--root (-r) の引数は / から始まらなければなりません。"
+msgstr "--root (-r) の引数は / から始まらなければなりません"
 
 msgid "initialize database"
-msgstr "データベースを初期化します。"
+msgstr "データベースを初期化します"
 
 msgid "rebuild database inverted lists from installed package headers"
-msgstr ""
-"インストールされたパッケージヘッダーから、データベースのインデックスを再構築"
-"します。"
+msgstr "インストール済のパッケージヘッダーから、 データベースのインデックスを再構築します"
 
 msgid "verify database files"
-msgstr "データベースの検証を行います。"
+msgstr "データベースの検証を行います"
 
-#, fuzzy
 msgid "salvage database"
-msgstr "データベースを初期化します。"
+msgstr "データベースを回復します"
 
 msgid "export database to stdout header list"
-msgstr ""
+msgstr "データベースのヘッダー一覧を標準出力にエクスポートします"
 
 msgid "import database from stdin header list"
-msgstr ""
+msgstr "データベースのヘッダー一覧を標準入力からインポートします"
 
 msgid "Database options:"
 msgstr "データベース オプション:"
@@ -290,28 +287,28 @@ msgid "only one major mode may be specified"
 msgstr "一つのメジャーモードのみを指定して下さい"
 
 msgid "verify package signature(s)"
-msgstr "署名の検証を行います。"
+msgstr "署名の検証を行います"
 
 msgid "import an armored public key"
-msgstr "ASCII 化された公開鍵を取り込みます。"
+msgstr "ASCII 化された公開鍵を取り込みます"
 
 msgid "don't import, but tell if it would work or not"
-msgstr "インポートしませんが、動作するかしないかを通知します"
+msgstr "インポートしませんが、 動作するかしないかを通知します"
 
 msgid "list keys from RPM keyring"
-msgstr "RPMキーリングからキーを一覧表示する。"
+msgstr "RPM キーリングから鍵を一覧表示します"
 
 msgid "Keyring options:"
 msgstr "キーリングのオプション:"
 
 msgid "no arguments given"
-msgstr "引数が指定されていません。"
+msgstr "引数が指定されていません"
 
 msgid "Query/Verify package selection options:"
-msgstr "パッケージセレクションを問い合わせ/検証するオプション:"
+msgstr "パッケージセレクションの問い合わせ/検証オプション:"
 
 msgid "Query/Verify file selection options:"
-msgstr ""
+msgstr "ファイルセレクションの問い合わせ/検証オプション:"
 
 msgid "Query options (with -q or --query):"
 msgstr "問い合わせオプション (-q または --query):"
@@ -323,177 +320,171 @@ msgid "Install/Upgrade/Erase options:"
 msgstr "インストール/アップグレード/アンインストールオプション:"
 
 msgid "one type of query/verify may be performed at a time"
-msgstr "問い合わせ/検証は一度に一つしか実行できません。"
+msgstr "問い合わせ/検証は一度に一つしか実行できません"
 
 msgid "unexpected query flags"
-msgstr "予期せぬ問い合わせのフラグ"
+msgstr "予期せぬ問い合わせのフラグです"
 
 msgid "unexpected query format"
-msgstr "予期せぬ問い合わせのフォーマット"
+msgstr "予期せぬ問い合わせのフォーマットです"
 
 msgid "unexpected query source"
-msgstr "予期せぬ問い合わせのソース"
+msgstr "予期せぬ問い合わせのソースです"
 
 msgid "only installation and upgrading may be forced"
-msgstr "インストールとアップグレードのみを余儀なくされる可能性があります。"
+msgstr "インストールとアップグレードのみを余儀なくされる可能性があります"
 
 msgid "files may only be relocated during package installation"
-msgstr "ファイルはパッケージのインストール時にのみ再配置できます。"
+msgstr "ファイルはパッケージのインストール時にのみ再配置できます"
 
 msgid "cannot use --prefix with --relocate or --excludepath"
-msgstr "--prefix は --relocate や --excludepath とは同時には使用できません。"
+msgstr "--prefix は --relocate や --excludepath とは同時には使用できません"
 
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
-msgstr ""
-"--relocate と --excludepath は新しいパッケージをインストールする時のみ使用で"
-"きます。"
+msgstr "--relocate と --excludepath は新しいパッケージをインストールする時のみ使用できます"
 
 msgid "--prefix may only be used when installing new packages"
-msgstr "--prefix は新規パッケージのインストール時のみ使用できます。"
+msgstr "--prefix は新規パッケージのインストール時のみ使用できます"
 
 msgid "arguments to --prefix must begin with a /"
-msgstr "--prefix の引数は / から始まらなければなりません。"
+msgstr "--prefix の引数は / から始まらなければなりません"
 
 msgid ""
 "--hash (-h) may only be specified during package installation and erasure"
-msgstr "--hash (-h) はパッケージのインストール時または削除時のみ指定できます。"
+msgstr "--hash (-h) はパッケージのインストール時または削除時のみ指定できます"
 
 msgid "--percent may only be specified during package installation and erasure"
-msgstr "--percent はパッケージのインストール時または削除時のみ指定できます。"
+msgstr "--percent はパッケージのインストール時または削除時のみ指定できます"
 
 msgid "--replacepkgs may only be specified during package installation"
-msgstr "--replacepkgs はパッケージのインストール時のみ指定できます。"
+msgstr "--replacepkgs はパッケージのインストール時のみ指定できます"
 
 msgid "--excludedocs may only be specified during package installation"
-msgstr "--excludedocs はパッケージのインストール時のみ指定できます。"
+msgstr "--excludedocs はパッケージのインストール時のみ指定できます"
 
 msgid "--includedocs may only be specified during package installation"
-msgstr "--includedocs はパッケージのインストール時のみ指定できます。"
+msgstr "--includedocs はパッケージのインストール時のみ指定できます"
 
 msgid "only one of --excludedocs and --includedocs may be specified"
-msgstr "--excludedocs と --includedocs は同時には指定できません。"
+msgstr "--excludedocs と --includedocs は同時には指定できません"
 
 msgid "--ignorearch may only be specified during package installation"
-msgstr "--ignorearch はパッケージのインストール時のみ指定できます。"
+msgstr "--ignorearch はパッケージのインストール時のみ指定できます"
 
 msgid "--ignoreos may only be specified during package installation"
-msgstr "--ignoreos はパッケージのインストール時のみ指定できます。"
+msgstr "--ignoreos はパッケージのインストール時のみ指定できます"
 
 msgid "--ignoresize may only be specified during package installation"
-msgstr "--ignoresize はパッケージのインストール時のみ指定できます。"
+msgstr "--ignoresize はパッケージのインストール時のみ指定できます"
 
 msgid "--allmatches may only be specified during package erasure"
-msgstr "--allmatches はパッケージ削除時のみ指定できます。"
+msgstr "--allmatches はパッケージ削除時のみ指定できます"
 
 msgid "--allfiles may only be specified during package installation"
-msgstr "--allfiles はパッケージのインストール時のみ指定できます。"
+msgstr "--allfiles はパッケージのインストール時のみ指定できます"
 
 msgid "--justdb may only be specified during package installation and erasure"
-msgstr "--justdb はパッケージ インストール・削除時のみ指定できます。"
+msgstr "--justdb はパッケージ インストール・削除時のみ指定できます"
 
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
-msgstr ""
-"スクリプトを無効にするようなオプションは、パッケージのインストール、削除時の"
-"み指定できます。"
+msgstr "スクリプトを無効にするようなオプションは、パッケージのインストール、削除時のみ指定できます"
 
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
-msgstr ""
-"トリガーを無効にするようなオプションはパッケージのインストール、削除時のみ指"
-"定できます。"
+msgstr "トリガーを無効にするようなオプションはパッケージのインストール、削除時のみ指定できます"
 
 msgid ""
 "--nodeps may only be specified during package installation, erasure, and "
 "verification"
-msgstr ""
-"--nodeps はパッケージのインストール時、削除時および検証時のみ指定できます。"
+msgstr "--nodeps はパッケージのインストール時、削除時および検証時のみ指定できます"
 
 msgid "--test may only be specified during package installation and erasure"
-msgstr "--test はパッケージのインストール時および削除時のみ指定できます。"
+msgstr "--test はパッケージのインストール時および削除時のみ指定できます"
 
 msgid "no packages given for erase"
-msgstr "アンインストールするパッケージが指定されていません。"
+msgstr "アンインストールするパッケージが指定されていません"
 
 msgid "no packages given for install"
-msgstr "インストールするパッケージが指定されていません。"
+msgstr "インストールするパッケージが指定されていません"
 
 msgid "no arguments given for query"
-msgstr "問い合わせのための引数が指定されていません。"
+msgstr "問い合わせのための引数が指定されていません"
 
 msgid "no arguments given for verify"
-msgstr "検証のための引数が指定されていません。"
+msgstr "検証のための引数が指定されていません"
 
 msgid "sign package(s)"
-msgstr "署名パッケージ"
+msgstr "パッケージに署名します"
 
 msgid "sign package(s) (identical to --addsign)"
-msgstr "パッケージに署名する (--addsign と同一です)"
+msgstr "パッケージに署名します (--addsign と同一です)"
 
 msgid "delete package signatures"
-msgstr "パッケージの署名を削除する"
+msgstr "パッケージの署名を削除します"
 
-#, fuzzy
 msgid "create rpm v3 header+payload signatures"
-msgstr "ヘッダーとペイロード署名を検証しません。"
+msgstr "v3ヘッダーとペイロード署名を作成します"
 
 msgid "sign package(s) files"
-msgstr ""
+msgstr "パッケージファイルに署名します"
 
 msgid "use file signing key <key>"
-msgstr ""
+msgstr "ファイル署名鍵 <key> を使用します"
 
 msgid "<key>"
-msgstr ""
+msgstr "<key>"
 
 msgid "prompt for file signing key password"
-msgstr ""
+msgstr "ファイル署名鍵のパスワードプロンプトを表示します"
 
 msgid "Signature options:"
 msgstr "署名オプション:"
 
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
-msgstr "マクロファイル内で \"%%_gpg_name\" を設定しなければなりません。\n"
+msgstr "マクロファイル内に \"%%_gpg_name\" を記述しなければなりません\n"
 
 #, c-format
 msgid ""
 "You must set \"%%_file_signing_key\" in your macro file or on the command "
 "line with --fskpath\n"
 msgstr ""
+"マクロファイル内に \"%%_file_signing_key\" を記述するか、コマンドラインにて --fskpath "
+"オプションを指定する必要があります\n"
 
 msgid "--fskpath may only be specified when signing files"
-msgstr ""
+msgstr "--fskpath はファイルへの署名時にのみ指示されます"
 
 msgid "parse spec file(s) to stdout"
-msgstr "SPEC ファイルを標準出力に構文解析します"
+msgstr "SPEC ファイルを構文解析し 標準出力に出力します"
 
 msgid "query spec file(s)"
-msgstr "specファイルの問い合わせ"
+msgstr "spec ファイルの問い合わせを行います"
 
 msgid "operate on binary rpms generated by spec (default)"
-msgstr "specファイルによって生成されたバイナリRPMを操作する（デフォルト）。"
+msgstr "spec ファイルによって生成されたバイナリ RPM を操作します（デフォルト）"
 
 msgid "operate on binary rpms that would be built from spec"
-msgstr ""
+msgstr "spec ファイルによって生成されるであろうバイナリ RPM を操作します"
 
 msgid "operate on source rpm generated by spec"
-msgstr "specファイルによって生成されたソースRPMを操作する。"
+msgstr "spec ファイルによって生成されたソース RPM を操作します"
 
 msgid "use the following query format"
-msgstr "以下の問い合わせ書式を使用します。"
+msgstr "以下の問い合わせ書式を使用します"
 
 msgid "Spec options:"
-msgstr "specのオプション:"
+msgstr "spec のオプション:"
 
 msgid "no arguments given for parse"
 msgstr "構文解析する引数がありません"
 
 msgid "unable to parse SOURCE_DATE_EPOCH\n"
-msgstr ""
+msgstr "SOURCE_DATE_EPOCH を解析できません\n"
 
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
@@ -561,7 +552,7 @@ msgstr "不正なモード指定: %s(%s)\n"
 
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
-msgstr "不正なディレクトリモード指定: %s(%s)\n"
+msgstr "不正なディレクトリーモード指定: %s(%s)\n"
 
 #, c-format
 msgid "Unusual locale length: \"%s\" in %%lang(%s)\n"
@@ -573,7 +564,7 @@ msgstr "重複する位置 %s が %%lang(%s) にあります\n"
 
 #, c-format
 msgid "Invalid capability: %s\n"
-msgstr "不正なケーパビリティです: %s\n"
+msgstr "無効なケーパビリティです: %s\n"
 
 msgid "File capability support not built in\n"
 msgstr "ファイル ケーパビリティのサポートが組み込まれていません\n"
@@ -584,13 +575,11 @@ msgstr "ファイルは \"/\" から始まらなければなりません: %s\n"
 
 #, c-format
 msgid "unable to parse %s=%s\n"
-msgstr ""
+msgstr "%s=%s を解析できません\n"
 
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
-msgstr ""
-"不明なファイルのダイジェスト アルゴリズム %u です。MD5 にフォールバックしま"
-"す。\n"
+msgstr "不明なファイルのダイジェスト アルゴリズム %u です、MD5 にフォールバックします\n"
 
 #, c-format
 msgid "File listed twice: %s\n"
@@ -602,7 +591,7 @@ msgstr "シンボリックリンク %s の読み込みに失敗しました: %s\
 
 #, c-format
 msgid "absolute symlink: %s -> %s\n"
-msgstr ""
+msgstr "絶対パスのシンボリックリンク: %s -> %s\n"
 
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
@@ -610,11 +599,11 @@ msgstr "シンボリックリンクが BuildRoot を指しています: %s -> %s
 
 #, c-format
 msgid "Illegal character (0x%x) in filename: %s\n"
-msgstr ""
+msgstr "ファイル名に不正な文字 (0x%x): %s\n"
 
 #, c-format
 msgid "Path is outside buildroot: %s\n"
-msgstr ""
+msgstr "パスは buildroot の外側にあります: %s\n"
 
 #, c-format
 msgid "Directory not found: %s\n"
@@ -626,11 +615,11 @@ msgstr "ファイルが見つかりません: %s\n"
 
 #, c-format
 msgid "Not a directory: %s\n"
-msgstr ""
+msgstr "ディレクトリーではありません: %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't read content of file: %s\n"
-msgstr "ポリシーファイルの読み込みに失敗しました。: %s\n"
+msgstr "ファイルの内容を読み込めません: %s\n"
 
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
@@ -649,7 +638,7 @@ msgid "%s: failed to encode\n"
 msgstr "%s: エンコードに失敗\n"
 
 msgid "failed symlink"
-msgstr ""
+msgstr "シンボリックリンク作成に失敗しました"
 
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
@@ -657,30 +646,30 @@ msgstr ""
 
 #, c-format
 msgid "Duplicate build-ids %s and %s\n"
-msgstr ""
+msgstr "%s と %s の間でビルドIDが重複しています\n"
 
 msgid "_build_id_links macro not set, assuming 'compat'\n"
-msgstr ""
+msgstr "_build_id_links マクロが設定されていません、'compat' であると仮定します\n"
 
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
-msgstr ""
+msgstr "_build_id_links マクロが不明な値 '%s' に設定されています\n"
 
 #, c-format
 msgid "error reading build-id in %s: %s\n"
-msgstr ""
+msgstr "%s からのビルドIDの読み込み中にエラーが発生しました: %s\n"
 
 #, c-format
 msgid "Missing build-id in %s\n"
-msgstr ""
+msgstr "%s にビルドIDがありません\n"
 
 #, c-format
 msgid "build-id found in %s too small\n"
-msgstr ""
+msgstr "%s 中のビルドIDが小さすぎます\n"
 
 #, c-format
 msgid "build-id found in %s too large\n"
-msgstr ""
+msgstr "%s 中のビルドIDが大きすぎます\n"
 
 msgid "failed to create directory"
 msgstr "ディレクトリーの作成に失敗しました"
@@ -704,13 +693,13 @@ msgstr ""
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open %s file %s: %m\n"
-msgstr "%%files のファイル %s を開けません: %m\n"
+msgstr "%s ファイル %s を開けません: %m\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Empty %s file %s\n"
-msgstr "空のファイル分類子\n"
+msgstr "%s ファイル %s が空です\n"
 
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
@@ -733,7 +722,7 @@ msgid "More than one file on a line: %s\n"
 msgstr "１ 行に複数のファイル: %s\n"
 
 msgid "Generating build-id links failed\n"
-msgstr ""
+msgstr "ビルド ID のリンク作成に失敗しました\n"
 
 #, c-format
 msgid "Bad file: %s: %s\n"
@@ -751,13 +740,13 @@ msgstr ""
 "インストール済み(ただしパッケージに含まれない)ファイルが見つかりました:\n"
 "%s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s already exists\n"
-msgstr "パッケージ %s は既にインストールされています。"
+msgstr "パッケージ %s は既に存在します\n"
 
 #, c-format
 msgid "%s was mapped to multiple filenames"
-msgstr ""
+msgstr "%s は複数のファイル名にマップされています"
 
 #, c-format
 msgid "Processing files: %s\n"
@@ -770,7 +759,7 @@ msgstr ""
 "ません。\n"
 
 msgid "Arch dependent binaries in noarch package\n"
-msgstr "noarch パッケージ内にアーキテクチャ依存のバイナリー\n"
+msgstr "noarch パッケージ内にアーキテクチャ依存のバイナリーがあります\n"
 
 #, c-format
 msgid "create archive failed on file %s: %s\n"
@@ -782,34 +771,34 @@ msgstr "アーカイブの作成に失敗しました: %s\n"
 
 #, c-format
 msgid "Unknown payload compression: %s\n"
-msgstr "不明なペイロード圧縮: %s\n"
+msgstr "不明なペイロード圧縮です: %s\n"
 
 #, c-format
 msgid "Could not seek in file %s: %s\n"
-msgstr ""
+msgstr "ファイル %s をシークできません: %s\n"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to read %jd bytes in file %s: %s\n"
-msgstr ""
+msgstr "ファイル %2$s から %1$jd バイトの読み出しに失敗しました: %3$s\n"
 
 msgid "Unable to create immutable header region\n"
 msgstr ""
 
 #, c-format
 msgid "Unable to write header to %s: %s\n"
-msgstr ""
+msgstr "ヘッダーを %s へ書き込めません: %s\n"
 
 #, c-format
 msgid "Could not open %s: %s\n"
-msgstr "%s のオープンに失敗: %s\n"
+msgstr "%s のオープンに失敗しました: %s\n"
 
 #, c-format
 msgid "Unable to write package: %s\n"
-msgstr "パッケージの書き込みに失敗: %s\n"
+msgstr "パッケージの書き込みに失敗しました: %s\n"
 
 #, c-format
 msgid "Wrote: %s\n"
-msgstr "書き込み完了: %s\n"
+msgstr "書き込みが完了しました: %s\n"
 
 #, c-format
 msgid "Executing \"%s\":\n"
@@ -833,7 +822,7 @@ msgstr "パッケージ %s の出力ファイル名を生成できませんで�
 
 #, c-format
 msgid "Finished binary package job, result %d, filename %s\n"
-msgstr ""
+msgstr "バイナリパッケージのジョブが終了しました、結果 %d、ファイル名 %s\n"
 
 #, c-format
 msgid "line %d: second %s\n"
@@ -845,11 +834,11 @@ msgstr "%%changelog に偽の日付: %s\n"
 
 #, c-format
 msgid "%%changelog entries must start with *\n"
-msgstr "%%changelog エントリは * で始まらなければなりません\n"
+msgstr "%%changelog エントリーは * で始まらなければなりません\n"
 
 #, c-format
 msgid "incomplete %%changelog entry\n"
-msgstr "不完全な %%changelog エントリ\n"
+msgstr "不完全な %%changelog エントリー\n"
 
 #, c-format
 msgid "bad date in %%changelog: %s\n"
@@ -869,7 +858,7 @@ msgstr "%%changelog 中に説明がありません\n"
 
 #, c-format
 msgid "line %d: second %%changelog\n"
-msgstr ""
+msgstr "%d 行目: 2番目の %%changelog\n"
 
 #, c-format
 msgid "line %d: Error parsing %%description: %s\n"
@@ -889,7 +878,7 @@ msgstr "%d 行目: %%files の構文解析エラー: %s\n"
 
 #, c-format
 msgid "line %d: multiple %%files for package '%s'\n"
-msgstr ""
+msgstr "%d 行目: 複数の %%files がパッケージ '%s' に存在します\n"
 
 #, c-format
 msgid "line %d: Error parsing %%policies: %s\n"
@@ -945,7 +934,7 @@ msgstr "%s フィールドがパッケージ中に必要です: %s\n"
 
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
-msgstr "パッケージ中に %s エントリが重複しています: %s\n"
+msgstr "パッケージ中に %s エントリーが重複しています: %s\n"
 
 #, c-format
 msgid "Unable to open icon %s: %s\n"
@@ -965,7 +954,7 @@ msgstr "%d 行目: タグはトークンを 1つしかとりません: %s\n"
 
 #, c-format
 msgid "line %d: %s in: %s\n"
-msgstr ""
+msgstr "%d 行目: %s: %s\n"
 
 #, c-format
 msgid "%s in: %s\n"
@@ -973,7 +962,7 @@ msgstr ""
 
 #, c-format
 msgid "Illegal char '%c' (0x%x)"
-msgstr ""
+msgstr "'%c' (0x%x) は不正な文字です"
 
 msgid "Possible unexpanded macro"
 msgstr ""
@@ -1011,7 +1000,7 @@ msgstr "%d 行目: 不正な BuildArchtecture フォーマット: %s\n"
 
 #, c-format
 msgid "line %d: Duplicate BuildArch entry: %s\n"
-msgstr ""
+msgstr "%d 行目: BuildArch エントリーが重複しています: %s\n"
 
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
@@ -1023,7 +1012,7 @@ msgstr "内部エラー: にせのタグ %d\n"
 
 #, c-format
 msgid "line %d: %s is deprecated: %s\n"
-msgstr "%d 行目: %s は非推奨: %s\n"
+msgstr "%d 行目: %s は非推奨です: %s\n"
 
 #, c-format
 msgid "Bad package specification: %s\n"
@@ -1081,8 +1070,7 @@ msgid "line %d: second %%prep\n"
 msgstr "%d 行目: ふたつ目の %%prep\n"
 
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
-msgstr ""
-"依存関係トークンは、英数字、'_' または '/' で始まらなければいけません。"
+msgstr "依存関係トークンは、英数字、'_' または '/' で始まらなければいけません"
 
 msgid "Versioned file name not permitted"
 msgstr "バージョン付きファイル名は許可されません"
@@ -1097,19 +1085,19 @@ msgid "Version required"
 msgstr "バージョン要件"
 
 msgid "Only package names are allowed in Obsoletes"
-msgstr ""
+msgstr "Obsoletes にはパッケージ名だけが許可されています"
 
 msgid "It's not recommended to have unversioned Obsoletes"
-msgstr ""
+msgstr "バージョン指定のない Obsoletes は推奨されていません"
 
 msgid "It's not recommended to use '>' in Obsoletes"
-msgstr ""
+msgstr "'>' を使用した Obsoletes は推奨されていません"
 
 msgid "Only absolute paths are allowed in file triggers"
-msgstr ""
+msgstr "ファイルトリガーには絶対パスだけが許可されています"
 
 msgid "Trigger fired by the same package is already defined in spec file"
-msgstr ""
+msgstr "同一パッケージによるトリガーが spec ファイル中で既に定義されています"
 
 #, c-format
 msgid "line %d: %s: %s\n"
@@ -1121,7 +1109,7 @@ msgstr "%d 行目: トリガーには -- がなければなりません: %s\n"
 
 #, c-format
 msgid "line %d: missing trigger condition: %s\n"
-msgstr ""
+msgstr "%d 行目: トリガー条件がありません: %s\n"
 
 #, c-format
 msgid "line %d: Error parsing %s: %s\n"
@@ -1137,7 +1125,7 @@ msgstr "%d 行目: スクリプトプログラムは '/' で始まらなけれ�
 
 #, c-format
 msgid "line %d: Priorities are allowed only for file triggers : %s\n"
-msgstr ""
+msgstr "%d 行目: 優先度はファイルトリガーにだけ許されています : %s\n"
 
 #, c-format
 msgid "line %d: Second %s\n"
@@ -1149,19 +1137,19 @@ msgstr "%d 行目: 未サポートの内部スクリプト: %s\n"
 
 #, c-format
 msgid "line %d: file trigger condition must begin with '/': %s"
-msgstr ""
+msgstr "%d 行目: ファイルトリガーは '/' で始まらなければなりません: %s"
 
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
 msgstr "%d 行目: インタープリター引数はトリガーにおいて許可されません: %s\n"
 
-#, c-format
+#, c-format, fuzzy
 msgid "extra tokens at the end of %s directive in line %d:  %s\n"
-msgstr ""
+msgstr "%2$d 行目: %1$s ディレクティブの末尾に余分な文字列があります: %3$s\n"
 
 #, c-format
 msgid "Macro expanded in comment on line %d: %s\n"
-msgstr ""
+msgstr "%d 行目: コメント中でのマクロ展開: %s\n"
 
 #, c-format
 msgid "Unable to open %s: %s\n"
@@ -1181,15 +1169,15 @@ msgstr "%d 行目: 終了していないマクロまたは行の不正な継続\
 
 #, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr ""
+msgstr "%s: %d行目: %%if のない %s\n"
 
-#, c-format
+#, c-format, fuzzy
 msgid "%s: line %d: %s after %s\n"
-msgstr ""
+msgstr "%1$s: %2$d行目: %4$s の後の %3$s\n"
 
 #, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr ""
+msgstr "%s: %d 行目: 不正な %s 条件: %s\n"
 
 #, c-format
 msgid "%s:%d: malformed %%include statement\n"
@@ -1197,23 +1185,23 @@ msgstr "%s:%d: 不正な形式の %%include 文\n"
 
 #, c-format
 msgid "encoding %s not supported by system\n"
-msgstr ""
+msgstr "エンコーディング %s はシステムでサポートされていません\n"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Package %s: invalid %s encoding in %s: %s - %s\n"
-msgstr ""
+msgstr "パッケージ %1$s: %3$s 中に無効な %2$s エンコーディング: %4$s - %5$s\n"
 
 #, c-format
 msgid "line %d: %%end doesn't take any arguments: %s\n"
-msgstr ""
+msgstr "%d 行目: %%end は引数をとりません: %s\n"
 
 #, c-format
 msgid "line %d: %%end not expected here, no section to close: %s\n"
-msgstr ""
+msgstr "%d 行目: 期待されていない %%end です、閉じられるセクションがありません: %s\n"
 
 #, c-format
 msgid "line %d doesn't belong to any section: %s\n"
-msgstr ""
+msgstr "%d 行目: どのセクションにも属していません: %s\n"
 
 msgid "No compatible architectures found for build\n"
 msgstr "作成(build)可能な互換アーキテクチャはありません\n"
@@ -1224,32 +1212,30 @@ msgstr "パッケージには %%description がありません: %s\n"
 
 #, c-format
 msgid "Policy module '%s' duplicated with overlapping types\n"
-msgstr "ポリシーモジュール '%s' がオーバーラッピングタイプと重複しています。\n"
+msgstr "ポリシーモジュール '%s' がオーバーラッピングタイプと重複しています\n"
 
 #, c-format
 msgid "Base modules '%s' and '%s' have overlapping types\n"
-msgstr ""
-"ベースモジュール '%s' と '%s' がオーバーラッピングタイプを持っています。\n"
-"\n"
+msgstr "ベースモジュール '%s' と '%s' がオーバーラッピングタイプを持っています\n"
 
 msgid "Failed to get policies from header\n"
-msgstr "ヘッダーからのポリシーの取得に失敗しました。\n"
+msgstr "ヘッダーからのポリシーの取得に失敗しました\n"
 
 #, c-format
 msgid "%%semodule requires a file path\n"
-msgstr "%%semodule はファイルパスを要求します。\n"
+msgstr "%%semodule はファイルパスを要求します\n"
 
 #, c-format
 msgid "Failed to read  policy file: %s\n"
-msgstr "ポリシーファイルの読み込みに失敗しました。: %s\n"
+msgstr "ポリシーファイルの読み込みに失敗しました: %s\n"
 
 #, c-format
 msgid "Failed to encode policy file: %s\n"
-msgstr "ポリシーファイルのエンコードに失敗しました。: %s\n"
+msgstr "ポリシーファイルのエンコードに失敗しました: %s\n"
 
 #, c-format
 msgid "Failed to determine a policy name: %s\n"
-msgstr "ポリシー名 %s の定義に失敗しました。\n"
+msgstr "ポリシー名の定義に失敗しました: %s\n"
 
 #, c-format
 msgid ""
@@ -1261,7 +1247,7 @@ msgstr ""
 
 #, c-format
 msgid "Error parsing %s: %s\n"
-msgstr "%s の興奮解析エラーが発生しました。: %s\n"
+msgstr "%s の興奮解析エラーが発生しました: %s\n"
 
 #, c-format
 msgid "Expecting %%semodule tag: %s\n"
@@ -1281,7 +1267,7 @@ msgstr "ポリシーの処理中: %s\n"
 
 #, c-format
 msgid "Ignoring invalid regex %s\n"
-msgstr "不正な正規表現 %s を無視します\n"
+msgstr "無効な正規表現 %s を無視します\n"
 
 #, c-format
 msgid "%s: mime and magic supplied, only mime will be used\n"
@@ -1301,7 +1287,7 @@ msgstr "%s を実行できませんでした: %s\n"
 
 #, c-format
 msgid "%s failed: %x\n"
-msgstr "%s は失敗しました。 %x\n"
+msgstr "%s が失敗しました %x\n"
 
 #, c-format
 msgid "failed to write all data to %s: %s\n"
@@ -1311,7 +1297,7 @@ msgid "Empty file classifier\n"
 msgstr "空のファイル分類子\n"
 
 msgid "No file attributes configured\n"
-msgstr "構成すべきファイル属性がありません。\n"
+msgstr "構成すべきファイル属性がありません\n"
 
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
@@ -1334,19 +1320,19 @@ msgid "Failed to find %s:\n"
 msgstr "%s の検索に失敗しました:\n"
 
 msgid "Deprecated external dependency generator is used!\n"
-msgstr ""
+msgstr "非推奨の外部依存関係検出器が使用されています!\n"
 
 #, c-format
 msgid "line %d: %s: package %s does not exist\n"
-msgstr ""
+msgstr "%d 行目: %s: パッケージ %s は存在しません\n"
 
 #, c-format
 msgid "line %d: %s: package %s already exists\n"
-msgstr ""
+msgstr "%d 行目: %s: パッケージ %s は既に存在します\n"
 
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
-msgstr "スペックファイル %s の問い合わせに失敗しました。解析できません。\n"
+msgstr "スペックファイル %s の問い合わせに失敗しました、解析できません\n"
 
 #, c-format
 msgid "%s error(%d) from %s: %s\n"
@@ -1362,15 +1348,15 @@ msgstr "不明なデータベースオプション: \"%s\" は無視します。
 
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
-msgstr "%s には不正な数値があります。スキップします\n"
+msgstr "%s には無効な数値があります、スキップします\n"
 
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
-msgstr "%s には大き/小さ過ぎるlong値があります。スキップします\n"
+msgstr "%s には大き/小さ過ぎるlong値があります、スキップします\n"
 
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
-msgstr "%s には大き/小さ過ぎる整数値があります。スキップします\n"
+msgstr "%s には大き/小さ過ぎる整数値があります、スキップします\n"
 
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
@@ -1384,7 +1370,7 @@ msgstr "排他"
 
 #, c-format
 msgid "invalid index type %x on %s/%s\n"
-msgstr "不正なインデックス形式 %x が %s/%s にあります\n"
+msgstr "無効なインデックス形式 %x が %s/%s にあります\n"
 
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index: %s\n"
@@ -1412,52 +1398,52 @@ msgstr "エラー(%d) - 新しいパッケージインスタンスの割り当�
 
 #, c-format
 msgid "Converting database from %s to %s backend\n"
-msgstr ""
+msgstr "%s から %s バックエンドにデータベースを変換しています\n"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Found %s %s database while attempting %s backend: using %s backend.\n"
-msgstr ""
+msgstr "%3$s バックエンドの試行中に %1$s データベース %2$s を発見しました: %4$s バックエンドを使用します。\n"
 
 msgid "Detected outdated index databases\n"
-msgstr ""
+msgstr "旧式のインデックスデータベースを検出しました\n"
 
 msgid "Rebuilding outdated index databases\n"
-msgstr ""
+msgstr "旧式のインデックスデータベースを再構築しています\n"
 
 #, c-format
 msgid "rpmidx: Version mismatch. Expected version: %u. Found version: %u\n"
-msgstr ""
+msgstr "rpmidx: バージョンが一致しません。期待されるバージョン: %u。発見されたバージョン: %u\n"
 
 #, c-format
 msgid "rpmpkg: Version mismatch. Expected version: %u. Found version: %u\n"
-msgstr ""
+msgstr "rpmpkg: バージョンが一致しません。期待されるバージョン: %u。発見されたバージョン: %u\n"
 
 msgid "rpmpkg: detected non-zero blob, trying auto repair\n"
 msgstr ""
 
 #, c-format
 msgid "rpmxdb: Version mismatch. Expected version: %u. Found version: %u\n"
-msgstr ""
+msgstr "rpmxdb: バージョンが一致しません。期待されるバージョン: %u。発見されたバージョン: %u\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open sqlite database %s: %s\n"
-msgstr "spec ファイル %s を開けません: %s\n"
+msgstr "sqliteデータベース %s を開けません: %s\n"
 
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
-msgstr "%s はデルタ RPM で、直接インストールできません。\n"
+msgstr "%s はデルタ RPM で、直接インストールできません\n"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Unsupported payload (%s) in package %s\n"
-msgstr "パッケージ %s 内にサポートしていないペイロード (%s) です。\n"
+msgstr "パッケージ %2$s 内にサポートしていないペイロード (%1$s) です\n"
 
 #, c-format
 msgid "package %s was already added, skipping %s\n"
-msgstr "パッケージ %s は既に追加されています。%s を飛ばします。\n"
+msgstr "パッケージ %s は既に追加されています、%s を飛ばします\n"
 
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
-msgstr "パッケージ %s は既に追加されています。 %s と置換します。\n"
+msgstr "パッケージ %s は既に追加されています、 %s と置換します\n"
 
 msgid "(not a blob)"
 msgstr "(blob ではありません)"
@@ -1469,7 +1455,7 @@ msgid "(not a string)"
 msgstr "(文字列でない)"
 
 msgid "(invalid type)"
-msgstr "(不正なタイプ)"
+msgstr "(無効なタイプ)"
 
 #, c-format
 msgid "%c"
@@ -1482,7 +1468,7 @@ msgid "(not base64)"
 msgstr "(base64 ではありません)"
 
 msgid "(invalid xml type)"
-msgstr "(不正な XML タイプ)"
+msgstr "(無効な XML タイプです)"
 
 msgid "(not an OpenPGP signature)"
 msgstr "(OpenPGP 署名ではありません)"
@@ -1510,15 +1496,15 @@ msgid "missing"
 msgstr "見つかりません"
 
 msgid "(unknown)"
-msgstr "(不明)  "
+msgstr "(不明)"
 
 #, c-format
 msgid "%s saved as %s\n"
-msgstr "%s は %s として保存されました。\n"
+msgstr "%s は %s として保存されました\n"
 
 #, c-format
 msgid "%s created as %s\n"
-msgstr "%s は %s として作成されました。\n"
+msgstr "%s は %s として作成されました\n"
 
 #, c-format
 msgid "%s %s: remove failed: %s\n"
@@ -1584,7 +1570,7 @@ msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr ""
 
 msgid "signature "
-msgstr ""
+msgstr "署名 "
 
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
@@ -1595,11 +1581,11 @@ msgstr "無効なフィールド幅"
 
 #, c-format
 msgid "missing { after %%"
-msgstr ""
+msgstr "%% の後に { がありません"
 
 #, c-format
 msgid "missing } after %%{"
-msgstr ""
+msgstr "%%{ の後に } がありません"
 
 msgid "empty tag format"
 msgstr "空のタグフォーマット"
@@ -1609,10 +1595,10 @@ msgstr "空のタグ名"
 
 #, c-format
 msgid "unknown tag: \"%s\""
-msgstr ""
+msgstr "不明なタグ: \"%s\""
 
 msgid "] expected at end of array"
-msgstr "配列の後に ] が期待されます。"
+msgstr "配列の後に ] が期待されます"
 
 msgid "unexpected ]"
 msgstr "予期せぬ ]"
@@ -1621,129 +1607,129 @@ msgid "unexpected }"
 msgstr "予期せぬ }"
 
 msgid "escaped char expected after \\"
-msgstr ""
+msgstr "\\ の後にはエスケープされる文字が期待されます"
 
 msgid "? expected in expression"
-msgstr "式中で ? が期待されます。"
+msgstr "式中で ? が期待されます"
 
 msgid "{ expected after ? in expression"
-msgstr "式中で ? の後に { が期待されます。"
+msgstr "式中で ? の後に { が期待されます"
 
 msgid "} expected in expression"
-msgstr "式中に } が期待されます。"
+msgstr "式中に } が期待されます"
 
 msgid ": expected following ? subexpression"
-msgstr "? サブ式の後に : が期待されます。"
+msgstr "? サブ式の後に : が期待されます"
 
 msgid "{ expected after : in expression"
-msgstr "式中で : の後に { が期待されます。"
+msgstr "式中で : の後に { が期待されます"
 
 msgid "| expected at end of expression"
-msgstr "式の終わりに | が期待されます。"
+msgstr "式の終わりに | が期待されます"
 
 msgid "array iterator used with different sized arrays"
 msgstr "配列の繰り返し指定が、サイズが異なる配列の間で使用されています"
 
-#, fuzzy, c-format
+#, c-format
 msgid "RPM v3 packages are deprecated: %s\n"
-msgstr "%d 行目: %s は非推奨: %s\n"
+msgstr "RPM v3 パッケージは非推奨です: %s\n"
 
 #, c-format
 msgid "failed to load macro file %s\n"
-msgstr ""
+msgstr "マクロファイル %s のロードに失敗しました\n"
 
 #, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr ""
+msgstr "--dbpath は / で始まらなければなりません\n"
 
 #, c-format
 msgid ""
 "%s: error: more than one --pipe specified (incompatible popt aliases?)\n"
-msgstr ""
+msgstr "%s: エラー: 複数の --pipe が指示されました (非互換の popt エイリアス?)\n"
 
 msgid "predefine MACRO with value EXPR"
-msgstr "値 EXPR を持つマクロを予め定義します。"
+msgstr "値 EXPR を持つマクロを予め定義します"
 
 msgid "'MACRO EXPR'"
 msgstr "'MACRO EXPR'"
 
 msgid "define MACRO with value EXPR"
-msgstr "値 EXPR を持つ MACRO を定義します。"
+msgstr "値 EXPR を持つ MACRO を定義します"
 
 msgid "undefine MACRO"
-msgstr ""
+msgstr "MACRO を未定義にします"
 
 msgid "MACRO"
-msgstr ""
+msgstr "MACRO"
 
 msgid "print macro expansion of EXPR"
-msgstr "EXPR のマクロを展開した結果を表示します。"
+msgstr "EXPR のマクロを展開した結果を表示します"
 
 msgid "'EXPR'"
 msgstr "'EXPR'"
 
 msgid "Specify target platform"
-msgstr ""
+msgstr "ターゲットプラットフォームを指示します"
 
 msgid "CPU-VENDOR-OS"
-msgstr ""
+msgstr "CPU-VENDOR-OS"
 
 msgid "read <FILE:...> instead of default file(s)"
-msgstr "デフォルトファイルの代わりに <FILE:...> を読み込みます。"
+msgstr "デフォルトファイルの代わりに <FILE:...> を読み込みます"
 
 msgid "<FILE:...>"
 msgstr "<FILE:...>"
 
 msgid "load a single macro file"
-msgstr ""
+msgstr "1つのマクロファイルを読み込みます"
 
 msgid "<FILE>"
-msgstr ""
+msgstr "<FILE>"
 
 msgid "don't enable any plugins"
-msgstr ""
+msgstr "全てのプラグインを無効化します"
 
 msgid "don't verify package digest(s)"
-msgstr "パッケージダイジェストの検証をしません。"
+msgstr "パッケージダイジェストの検証をしません"
 
 msgid "don't verify database header(s) when retrieved"
-msgstr "取得したデータベースヘッダーを検証しません。"
+msgstr "取得したデータベースヘッダーを検証しません"
 
 msgid "don't verify package signature(s)"
-msgstr "パッケージ署名の検証をしません。"
+msgstr "パッケージ署名の検証をしません"
 
 msgid "send stdout to CMD"
-msgstr "標準出力を CMD に送信します。"
+msgstr "標準出力を CMD に送信します"
 
 msgid "CMD"
 msgstr "CMD"
 
 msgid "use ROOT as top level directory"
-msgstr "ROOT をトップ ディレクトリーとして使用します。"
+msgstr "ROOT をトップ ディレクトリーとして使用します"
 
 msgid "ROOT"
 msgstr "ROOT"
 
 msgid "use database in DIRECTORY"
-msgstr "DIRECTORY 内のデータベースを使用します。"
+msgstr "DIRECTORY 内のデータベースを使用します"
 
 msgid "DIRECTORY"
 msgstr "DIRECTORY"
 
 msgid "display known query tags"
-msgstr "全問い合わせタグを表示します。"
+msgstr "全問い合わせタグを表示します"
 
 msgid "display final rpmrc and macro configuration"
-msgstr "最終的な rpmrc とマクロの設定を表示します。"
+msgstr "最終的な rpmrc とマクロの設定を表示します"
 
 msgid "provide less detailed output"
-msgstr "詳細でない出力を提供します。"
+msgstr "詳細でない出力を提供します"
 
 msgid "provide more detailed output"
-msgstr "より詳細な出力を提供します。"
+msgstr "より詳細な出力を提供します"
 
 msgid "print the version of rpm being used"
-msgstr "使用している rpm のバージョンを表示します。"
+msgstr "使用している rpm のバージョンを表示します"
 
 msgid "debug payload file state machine"
 msgstr "ペイロードのファイル状態マシンのデバッグ"
@@ -1759,57 +1745,54 @@ msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: オプション テーブルの設定が正しくありません (%d)\n"
 
 msgid "exclude paths must begin with a /"
-msgstr "除外するパスは / から始まらなければなりません。"
+msgstr "除外するパスは / から始まらなければなりません"
 
 msgid "relocations must begin with a /"
-msgstr "再配置は / から始まらなければなりません。"
+msgstr "再配置は / から始まらなければなりません"
 
 msgid "relocations must contain a ="
-msgstr "再配置は = を含んでいなければなりません。"
+msgstr "再配置は = を含んでいなければなりません"
 
 msgid "relocations must have a / following the ="
-msgstr "再配置は = の次に / でなければなりません。"
+msgstr "再配置は = の次に / でなければなりません"
 
 msgid "install all files, even configurations which might otherwise be skipped"
-msgstr "設定がスキップを指示していても、全ファイルをインストールします。"
+msgstr "設定がスキップを指示していても、全ファイルをインストールします"
 
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
-msgstr ""
-"<package> と一致するパッケージ全てを削除します(通常は <package> が複数のパッ"
-"ケージを指す場合はエラーになります)"
+msgstr "<package> と一致するパッケージ全てを削除します (通常は <package> が複数のパッケージを指す場合はエラーになります)"
 
 msgid "relocate files in non-relocatable package"
-msgstr "再配置不可能なパッケージのファイルを再配置します。"
+msgstr "再配置不可能なパッケージのファイルを再配置します"
 
 msgid "print dependency loops as warning"
-msgstr "依存のループを警告として表示します。"
+msgstr "依存のループを警告として表示します"
 
 msgid "erase (uninstall) package"
-msgstr "パッケージを削除 (アンインストール) します。"
+msgstr "パッケージを削除 (アンインストール) します"
 
 msgid "<package>+"
 msgstr "<package>+"
 
-#, fuzzy
 msgid "do not install artifacts"
-msgstr "ドキュメントをインストールしません。"
+msgstr "アーティファクトをインストールしません"
 
 msgid "do not install configuration files"
-msgstr "設定ファイルをインストールしません。"
+msgstr "設定ファイルをインストールしません"
 
 msgid "do not install documentation"
-msgstr "ドキュメントをインストールしません。"
+msgstr "ドキュメントをインストールしません"
 
 msgid "skip files with leading component <path> "
-msgstr "パス <path> 中のファイルをスキップします。"
+msgstr "パス <path> 中のファイルをスキップします "
 
 msgid "<path>"
 msgstr "<path>"
 
 msgid "short hand for --replacepkgs --replacefiles"
-msgstr "--replacepkgs と --replacefiles を短縮したもの"
+msgstr "--replacepkgs と --replacefiles の短縮形"
 
 msgid "upgrade package(s) if already installed"
 msgstr "既にインストール済みの場合のみアップグレード"
@@ -1822,89 +1805,89 @@ msgstr ""
 "パッケージをインストールにつれて '#' を表示します (-v と使用すると良い)"
 
 msgid "don't verify package architecture"
-msgstr "パッケージの対象アーキテクチャを検証しません。"
+msgstr "パッケージの対象アーキテクチャを検証しません"
 
 msgid "don't verify package operating system"
-msgstr "パッケージ対象 OS の検証を行いません。"
+msgstr "パッケージ対象 OS の検証を行いません"
 
 msgid "don't check disk space before installing"
-msgstr "インストール前のディスク容量チェックを行いません。"
+msgstr "インストール前のディスク容量チェックを行いません"
 
 msgid "short hand for --ignorepayload --ignoresignature"
-msgstr ""
+msgstr "--ignorepayload と --ignoresignature の短縮形"
 
 msgid "install documentation"
-msgstr "ドキュメントをインストールします。"
+msgstr "ドキュメントをインストールします"
 
 msgid "install package(s)"
-msgstr "パッケージをインストールします。"
+msgstr "パッケージをインストールします"
 
 msgid "update the database, but do not modify the filesystem"
-msgstr "データベースを更新しますが、ファイルシステムの変更は行いません。"
+msgstr "データベースを更新しますが、ファイルシステムの変更は行いません"
 
 msgid "do not verify package dependencies"
-msgstr "パッケージの依存関係の検証を行いません。"
+msgstr "パッケージの依存関係の検証を行いません"
 
 msgid "don't verify digest of files"
-msgstr "ファイルのダイジェストを検証しません。"
+msgstr "ファイルのダイジェストを検証しません"
 
 msgid "don't verify digest of files (obsolete)"
-msgstr "ファイルのダイジェストを検証しません (旧式)。"
+msgstr "ファイルのダイジェストを検証しません (旧式)"
 
 msgid "don't install file security contexts"
-msgstr "ファイルのセキュリティ コンテキストをインストールしません。"
+msgstr "ファイルのセキュリティ コンテキストをインストールしません"
 
 msgid "don't install file capabilities"
-msgstr ""
+msgstr "ファイルのケーパビリティをインストールしません"
 
 msgid "do not reorder package installation to satisfy dependencies"
-msgstr "依存性を満たす為のパッケージのインストール順序を変更しません。"
+msgstr "依存性を満たす為のパッケージのインストール順序を変更しません"
 
 msgid "do not execute package scriptlet(s)"
-msgstr "パッケージ指定のスクリプトを実行しません。"
+msgstr "パッケージのスクリプトを実行しません"
 
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
-msgstr "%%pre スクリプトを実行しません。"
+msgstr "%%pre スクリプトを実行しません"
 
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
-msgstr "%%post スクリプトを実行しません。"
+msgstr "%%post スクリプトを実行しません"
 
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
-msgstr "%%preun スクリプトを実行しません。"
+msgstr "%%preun スクリプトを実行しません"
 
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
-msgstr "%%postun スクリプトを実行しません。"
+msgstr "%%postun スクリプトを実行しません"
 
 #, c-format
 msgid "do not execute %%pretrans scriptlet (if any)"
-msgstr ""
+msgstr "%%pretrans スクリプトを実行しません"
 
 #, c-format
 msgid "do not execute %%posttrans scriptlet (if any)"
-msgstr ""
+msgstr "%%posttrans スクリプトを実行しません"
 
 msgid "do not execute any scriptlet(s) triggered by this package"
-msgstr "このパッケージによってトリガーされるスクリプトを実行しません。"
+msgstr "このパッケージによってトリガーされるスクリプトを実行しません"
 
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
-msgstr "%%triggerprein スクリプトを実行しません。"
+msgstr "%%triggerprein スクリプトを実行しません"
 
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
-msgstr "%%triggerin スクリプトを実行しません。"
+msgstr "%%triggerin スクリプトを実行しません"
 
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
-msgstr "%%triggerun スクリプトを実行しません。"
+msgstr "%%triggerun スクリプトを実行しません"
 
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
-msgstr "%%triggerpostun スクリプトを実行しません。"
+msgstr "%%triggerpostun スクリプトを実行しません"
 
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
@@ -1914,164 +1897,163 @@ msgstr ""
 "はこれを自動的に行います)"
 
 msgid "print percentages as package installs"
-msgstr "インストールする際にパーセント表示を行います。"
+msgstr "インストールする際にパーセント表示を行います"
 
 msgid "relocate the package to <dir>, if relocatable"
-msgstr "パッケージが再配置可能ならば、 <dir> に再配置します。"
+msgstr "パッケージが再配置可能ならば、 <dir> に再配置します"
 
 msgid "<dir>"
 msgstr "<dir>"
 
 msgid "relocate files from path <old> to <new>"
-msgstr "パス <old> からパス <new> にファイルを再配置させます。"
+msgstr "パス <old> からパス <new> にファイルを再配置させます"
 
 msgid "<old>=<new>"
 msgstr "<old>=<new>"
 
 msgid "ignore file conflicts between packages"
-msgstr "パッケージ間のファイルの競合を無視します。"
+msgstr "パッケージ間のファイルの競合を無視します"
 
 msgid "reinstall if the package is already present"
-msgstr "既に存在するパッケージでも再インストールします。"
+msgstr "既に存在するパッケージでも再インストールします"
 
 msgid "don't install, but tell if it would work or not"
-msgstr "インストールせずに、テストのみを行います。"
+msgstr "インストールせずに、テストのみを行います"
 
 msgid "upgrade package(s)"
-msgstr "パッケージをアップグレードします。"
+msgstr "パッケージをアップグレードします"
 
 msgid "reinstall package(s)"
-msgstr ""
+msgstr "パッケージを再インストールします"
 
 msgid "query/verify all packages"
-msgstr "すべてのパッケージについて問い合わせ/検証します。"
+msgstr "すべてのパッケージについて問い合わせ/検証を行います"
 
 msgid "rpm checksig mode"
 msgstr "rpm の署名検査モード"
 
 msgid "query/verify package(s) owning file"
-msgstr "<file> を所有しているパッケージを問い合わせ/検証します。"
+msgstr "<file> を所有しているパッケージの問い合わせ/検証を行います"
 
 msgid "query/verify package(s) in group"
-msgstr "グループに所属するパッケージを問い合わせ/検証します。"
+msgstr "グループに所属するパッケージの問い合わせ/検証を行います"
 
 msgid "query/verify a package file"
-msgstr "パッケージファイルの問い合わせ/検証をします。"
+msgstr "パッケージファイルの問い合わせ/検証を行います"
 
 msgid "query/verify package(s) with package identifier"
-msgstr "パッケージ ID で問い合わせ/検証します。"
+msgstr "パッケージ ID で問い合わせ/検証を行います"
 
 msgid "query/verify package(s) with header identifier"
-msgstr "ヘッダー ID でパッケージを問い合わせ/検証します。"
+msgstr "ヘッダー ID でパッケージの問い合わせ/検証を行います"
 
 msgid "rpm query mode"
 msgstr "rpm 問い合わせモード"
 
 msgid "query/verify a header instance"
-msgstr "ヘッダー インスタンスの問い合わせ/検証をします。"
+msgstr "ヘッダー インスタンスの問い合わせ/検証を行います"
 
 msgid "query/verify package(s) from install transaction"
-msgstr ""
-"インストール トランザクションからのパッケージの問い合わせ/検証をします。"
+msgstr "インストール トランザクションからのパッケージの問い合わせ/検証を行います"
 
 msgid "query the package(s) triggered by the package"
-msgstr "パッケージによってトリガーされるパッケージを問い合わせます。"
+msgstr "パッケージによってトリガーされるパッケージを問い合わせます"
 
 msgid "rpm verify mode"
 msgstr "RPM 検証モード"
 
 msgid "query/verify the package(s) which require a dependency"
-msgstr "依存性を要求するパッケージの問い合わせ/検証をします。"
+msgstr "依存性を要求するパッケージの問い合わせ/検証を行います"
 
 msgid "query/verify the package(s) which obsolete a dependency"
-msgstr ""
+msgstr "置換を要求するパッケージの問い合わせ/検証を行います"
 
 msgid "query/verify the package(s) which provide a dependency"
-msgstr "依存性を提供するパッケージの問い合わせ/検証をします。"
+msgstr "依存性を提供するパッケージの問い合わせ/検証を行います"
 
 msgid "query/verify the package(s) which recommends a dependency"
-msgstr ""
+msgstr "依存性を推奨 (Recommends:) するパッケージの問い合わせ/検証を行います"
 
 msgid "query/verify the package(s) which suggests a dependency"
-msgstr ""
+msgstr "依存性を提案 (Suggests:) するパッケージの問い合わせ/検証を行います"
 
 msgid "query/verify the package(s) which supplements a dependency"
-msgstr ""
+msgstr "依存性を補足 (Supplements:) するパッケージの問い合わせ/検証を行います"
 
 msgid "query/verify the package(s) which enhances a dependency"
-msgstr ""
+msgstr "依存性を拡張 (Enhances:) するパッケージの問い合わせ/検証を行います"
 
 msgid "do not glob arguments"
-msgstr "引数を glob パターンとしてみなしません。"
+msgstr "引数を glob パターンとしてみなしません"
 
 msgid "do not process non-package files as manifests"
-msgstr "リスト内の非パッケージファイルを処理しません。"
+msgstr "リスト内の非パッケージファイルを処理しません"
 
 msgid "only include configuration files"
-msgstr ""
+msgstr "設定ファイルのみを含めます"
 
 msgid "only include documentation files"
-msgstr ""
+msgstr "ドキュメントのみを含めます"
 
 msgid "only include license files"
-msgstr ""
+msgstr "ライセンスファイルのみを含めます"
 
 msgid "only include artifact files"
-msgstr ""
+msgstr "アーティファクトファイルのみを含めます"
 
 #, c-format
 msgid "exclude %%ghost files"
-msgstr ""
+msgstr "%%ghost ファイルを除外します"
 
 #, c-format
 msgid "exclude %%config files"
-msgstr ""
+msgstr "%%config ファイルを除外します"
 
 #, c-format
 msgid "exclude %%artifact files"
-msgstr ""
+msgstr "%%artifact ファイルを除外します"
 
 msgid "dump basic file information"
-msgstr "基本的なファイル情報をダンプします。"
+msgstr "基本的なファイル情報をダンプします"
 
 msgid "list files in package"
-msgstr "パッケージ中のファイルを列挙します。"
+msgstr "パッケージ中のファイルを列挙します"
 
 msgid "display the states of the listed files"
-msgstr "列挙したファイルの状態を表示します。"
+msgstr "列挙したファイルの状態を表示します"
 
 msgid "don't verify size of files"
-msgstr "ファイル容量を検証しません。"
+msgstr "ファイル容量を検証しません"
 
 msgid "don't verify symlink path of files"
-msgstr "ファイルのシンボリックリンクを検証しません。"
+msgstr "ファイルのシンボリックリンクを検証しません"
 
 msgid "don't verify owner of files"
-msgstr "ファイルの所有者を検証しません。"
+msgstr "ファイルの所有者を検証しません"
 
 msgid "don't verify group of files"
-msgstr "ファイルの所有グループを検証しません。"
+msgstr "ファイルの所有グループを検証しません"
 
 msgid "don't verify modification time of files"
-msgstr "ファイルの最終更新日を検証しません。"
+msgstr "ファイルの最終更新日を検証しません"
 
 msgid "don't verify mode of files"
-msgstr "ファイルのモードを検証しません。"
+msgstr "ファイルのモードを検証しません"
 
 msgid "don't verify file security contexts"
-msgstr "ファイルのセキュリティ コンテキストを検証しません。"
+msgstr "ファイルのセキュリティ コンテキストを検証しません"
 
 msgid "don't verify capabilities of files"
-msgstr "ファイルのケーパビリティ (capability) を検証しません。"
+msgstr "ファイルのケーパビリティ (capability) を検証しません"
 
 msgid "don't verify files in package"
-msgstr "パッケージ中のファイルを検証しません。"
+msgstr "パッケージ中のファイルを検証しません"
 
 msgid "don't verify package dependencies"
-msgstr "パッケージの依存関係を検証しません。"
+msgstr "パッケージの依存関係を検証しません"
 
 msgid "don't execute verify script(s)"
-msgstr "検証スクリプトを実行しません。"
+msgstr "検証スクリプトを実行しません"
 
 #, c-format
 msgid "Missing rpmlib features for %s:\n"
@@ -2088,11 +2070,11 @@ msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "アーカイブの伸長に失敗%s%s: %s\n"
 
 msgid " on file "
-msgstr ": ファイル "
+msgstr " : ファイル "
 
 #, c-format
 msgid "incorrect format: %s\n"
-msgstr "不正な書式: %s\n"
+msgstr "不正な書式です: %s\n"
 
 msgid "(contains no files)\n"
 msgstr "(ファイルが含まれていません)\n"
@@ -2104,7 +2086,7 @@ msgid "replaced      "
 msgstr "置換          "
 
 msgid "not installed "
-msgstr "未インストール"
+msgstr "未インストール "
 
 msgid "net shared    "
 msgstr "ネット共有    "
@@ -2120,18 +2102,18 @@ msgid "(unknown %3d) "
 msgstr "(未知の %3d)  "
 
 msgid "package has not file owner/group lists\n"
-msgstr "パッケージはファイル所有者/グループ一覧を持っていません。\n"
+msgstr "パッケージはファイル所有者/グループ一覧を持っていません\n"
 
 msgid "package has neither file owner or id lists\n"
 msgstr "パッケージはファイル所有者も id リストも持っていません\n"
 
 #, c-format
 msgid "group %s does not contain any packages\n"
-msgstr "グループ %s に属するパッケージは存在しません。\n"
+msgstr "グループ %s に属するパッケージは存在しません\n"
 
 #, c-format
 msgid "no package triggers %s\n"
-msgstr "%s をトリガーするパッケージが存在しません。\n"
+msgstr "%s をトリガーするパッケージが存在しません\n"
 
 #, c-format
 msgid "malformed %s: %s\n"
@@ -2143,35 +2125,35 @@ msgstr "%s に一致するパッケージは存在しません: %s\n"
 
 #, c-format
 msgid "no package conflicts %s\n"
-msgstr ""
+msgstr "%s と衝突するパッケージは存在しません\n"
 
 #, c-format
 msgid "no package obsoletes %s\n"
-msgstr ""
+msgstr "%s を置換するパッケージは存在しません\n"
 
 #, c-format
 msgid "no package requires %s\n"
-msgstr "%s を必要とするパッケージは存在しません。\n"
+msgstr "%s を必要とするパッケージは存在しません\n"
 
 #, c-format
 msgid "no package recommends %s\n"
-msgstr ""
+msgstr "%s を推奨 (Recommends:) するパッケージはありません\n"
 
 #, c-format
 msgid "no package suggests %s\n"
-msgstr ""
+msgstr "%s を提案 (Suggests:) するパッケージはありません\n"
 
 #, c-format
 msgid "no package supplements %s\n"
-msgstr ""
+msgstr "%s を補足 (Supplements:) するパッケージはありません\n"
 
 #, c-format
 msgid "no package enhances %s\n"
-msgstr ""
+msgstr "%s を拡張 (Enhances:) するパッケージはありません\n"
 
 #, c-format
 msgid "no package provides %s\n"
-msgstr "%s を提供するパッケージは存在しません。\n"
+msgstr "%s を提供するパッケージは存在しません\n"
 
 #, c-format
 msgid "file %s: %s\n"
@@ -2179,11 +2161,11 @@ msgstr "ファイル %s: %s\n"
 
 #, c-format
 msgid "file %s is not owned by any package\n"
-msgstr "ファイル %s はどのパッケージにも属していません。\n"
+msgstr "ファイル %s はどのパッケージにも属していません\n"
 
 #, c-format
 msgid "invalid package number: %s\n"
-msgstr "無効なパッケージ番号: %s\n"
+msgstr "無効なパッケージ番号です: %s\n"
 
 #, c-format
 msgid "record %u could not be read\n"
@@ -2191,7 +2173,7 @@ msgstr "レコード %u は読み込めませんでした\n"
 
 #, c-format
 msgid "package %s is not installed\n"
-msgstr "パッケージ %s はインストールされていません。\n"
+msgstr "パッケージ %s はインストールされていません\n"
 
 #, c-format
 msgid "unknown tag: \"%s\"\n"
@@ -2211,22 +2193,22 @@ msgstr "%s: インポート読み込みに失敗しました(%d)。\n"
 
 #, c-format
 msgid "Fread failed: %s"
-msgstr ""
+msgstr "fread に失敗しました: %s"
 
 msgid "DIGESTS"
-msgstr ""
+msgstr "DIGESTS"
 
 msgid "digests"
-msgstr ""
+msgstr "ダイジェスト"
 
 msgid "SIGNATURES"
-msgstr ""
+msgstr "SIGNATURES"
 
 msgid "signatures"
-msgstr ""
+msgstr "署名"
 
 msgid "NOT OK"
-msgstr "OK ではありません。"
+msgstr "OK ではありません"
 
 msgid "OK"
 msgstr "OK"
@@ -2241,7 +2223,7 @@ msgstr "カレントディレクトリーを開けません: %m\n"
 
 #, c-format
 msgid "%s: chroot directory not set\n"
-msgstr "%s: chroot ディレクトリーが設定されていません。\n"
+msgstr "%s: chroot ディレクトリーが設定されていません\n"
 
 #, c-format
 msgid "Unable to change root directory: %m\n"
@@ -2253,17 +2235,17 @@ msgstr "ルート ディレクトリーの復元に失敗しました: %m\n"
 
 #, c-format
 msgid "Generating %d missing index(es), please wait...\n"
-msgstr "失われたインデックス %d を生成しています、お待ちください...\n"
+msgstr "失われた %d 個のインデックスを生成しています、お待ちください...\n"
 
 #, c-format
 msgid "cannot open %s index using %s - %s (%d)\n"
-msgstr ""
+msgstr "%s のインデックスを %s - %s (%d) を使用してオープンできません\n"
 
 msgid "no dbpath has been set\n"
 msgstr "dbpath が設定されていません\n"
 
 msgid "miFreeHeader: skipping"
-msgstr "miFreeHeader: スキップします。"
+msgstr "miFreeHeader: スキップします"
 
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
@@ -2271,19 +2253,18 @@ msgstr "エラー(%d) - レコード #%d を %s に格納時\n"
 
 #, c-format
 msgid "%s: regexec failed: %s\n"
-msgstr "%s: 正規表現に失敗しました: %s\n"
+msgstr "%s: regexec に失敗しました: %s\n"
 
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: regcomp に失敗しました: %s\n"
 
 msgid "rpmdbNextIterator: skipping"
-msgstr "rpmdbNextIterator: スキップします。"
+msgstr "rpmdbNextIterator: スキップします"
 
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
-msgstr ""
-"rpmdb: 破損したヘッダーインスタンス #%u を取得しました。スキップします。\n"
+msgstr "rpmdb: 破損したヘッダーインスタンス #%u を読み込みました -- スキップします。\n"
 
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
@@ -2298,18 +2279,18 @@ msgstr ""
 
 #, c-format
 msgid "replace files in %s with files from %s to recover\n"
-msgstr ""
+msgstr "修復のため %s 内のファイルを %s からのファイルで置換します\n"
 
 #, c-format
 msgid "Could not get public keys from %s\n"
-msgstr ""
+msgstr "%s から公開鍵を取得できません\n"
 
 #, c-format
 msgid "could not delete old database at %s\n"
-msgstr ""
+msgstr "%s にある古いデータベースを削除できません\n"
 
 msgid "no dbpath has been set"
-msgstr "dbpath が設定されていません。"
+msgstr "dbpath が設定されていません"
 
 #, c-format
 msgid "failed to create directory %s: %s\n"
@@ -2321,13 +2302,13 @@ msgstr "データベース中のヘッダー #%u は不正です -- スキップ
 
 #, c-format
 msgid "cannot add record originally at %u\n"
-msgstr "元々 %u にあったレコードを追加できません。\n"
+msgstr "元々 %u にあったレコードを追加できません\n"
 
 msgid "failed to rebuild database: original database remains in place\n"
-msgstr "データベースの再構築に失敗: オリジナルのデータベースは残っています。\n"
+msgstr "データベースの再構築に失敗: オリジナルのデータベースは残っています\n"
 
 msgid "failed to replace old database with new database!\n"
-msgstr "古いデータベースを新しいデータベースで置き換えるのに失敗!\n"
+msgstr "新しいデータベースによる古いデータベースの置換に失敗しました!\n"
 
 msgid "NO "
 msgstr "NO "
@@ -2336,33 +2317,31 @@ msgid "YES"
 msgstr "YES"
 
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
-msgstr ""
-"「PreReq:」「Provides:」「Obsoletes:」の依存関係をサポートしたバージョン。"
+msgstr "PreReq:、Provides:、Obsoletes: の依存関係をサポートしたバージョンです。"
 
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
-msgstr ""
-"ファイル名が、パスではなく (dirName, baseName, dirIndex) の組で格納されます。"
+msgstr "ファイル名が、パスではなく (dirName、baseName、dirIndex) の組で格納されます。"
 
 msgid "package payload can be compressed using bzip2."
-msgstr "パッケージ ペイロードが bzip2 を用いて圧縮できます。"
+msgstr "パッケージ ペイロードは bzip2 を用いて圧縮できます。"
 
 msgid "package payload can be compressed using xz."
-msgstr "パッケージ ペイロードが xz を用いて圧縮できます。"
+msgstr "パッケージ ペイロードは xz を用いて圧縮できます。"
 
 msgid "package payload can be compressed using lzma."
-msgstr "パッケージ ペイロードが lzma を用いて圧縮できます。"
+msgstr "パッケージ ペイロードは lzma を用いて圧縮できます。"
 
 msgid "package payload file(s) have \"./\" prefix."
-msgstr "パッケージ ペイロード ファイルが「./」接頭語を持っています。"
+msgstr "パッケージ ペイロード ファイルが \"./\" 接頭語を持っています。"
 
 msgid "package name-version-release is not implicitly provided."
-msgstr "「パッケージ名-バージョン-リリース」が暗黙で提供されません。"
+msgstr "「パッケージ名-バージョン-リリース」が暗黙的に提供されません。"
 
 msgid "header tags are always sorted after being loaded."
 msgstr "ヘッダー タグが読み込まれた後、常にソートされます。"
 
 msgid "the scriptlet interpreter can use arguments from header."
-msgstr "スクリプト インタプリターがヘッダーから引数を使用できます。"
+msgstr "スクリプト インタープリターはヘッダーからの引数を使用できます。"
 
 msgid "a hardlink file set may be installed without being complete."
 msgstr "ハードリンク ファイル群が完全でなくてもインストールできます。"
@@ -2372,44 +2351,44 @@ msgstr ""
 "インストール中に、パッケージスクリプトが rpm データベースにアクセスできます。"
 
 msgid "internal support for lua scripts."
-msgstr "lua スクリプトの内部サポート。"
+msgstr "lua スクリプトを内部的にサポートします。"
 
 msgid "file digest algorithm is per package configurable"
 msgstr "ファイルのダイジェストアルゴリズムはパッケージ毎の設定です"
 
 msgid "support for POSIX.1e file capabilities"
-msgstr "POSIX..1e ファイル ケーパビリティ (capability) のためのサポート"
+msgstr "POSIX.1e ファイル ケーパビリティ (capability) をサポートします"
 
 msgid "package scriptlets can be expanded at install time."
 msgstr "パッケージのスクリプトはインストール時間を長くすることができます。"
 
 msgid "dependency comparison supports versions with tilde."
-msgstr "依存性の比較はチルダを持つバージョンをサポートします"
+msgstr "依存性の比較においてチルダを持つバージョンをサポートします。"
 
 msgid "dependency comparison supports versions with caret."
-msgstr ""
+msgstr "依存性の比較においてカレット付きのバージョンをサポートします。"
 
 msgid "support files larger than 4GB"
-msgstr ""
+msgstr "4GB以上のファイルをサポートします"
 
 msgid "support for rich dependencies."
-msgstr ""
+msgstr "リッチ依存関係をサポートします。"
 
 msgid "support for dynamic buildrequires."
-msgstr ""
+msgstr "動的なビルド依存をサポートします。"
 
 msgid "package payload can be compressed using zstd."
-msgstr ""
+msgstr "パッケージペイロードを zstd を用いて圧縮できます。"
 
 #, c-format
 msgid "Unknown rich dependency op '%.*s'"
-msgstr ""
+msgstr "不明なリッチ依存関係演算子 '%.*s' です"
 
 msgid "Name required"
-msgstr ""
+msgstr "名前が必要です"
 
 msgid "Illegal ops in with/without"
-msgstr ""
+msgstr "with/without における不正な演算子です"
 
 msgid "Illegal context for 'unless', please use 'or' instead"
 msgstr ""
@@ -2418,17 +2397,17 @@ msgid "Illegal context for 'if', please use 'and' instead"
 msgstr ""
 
 msgid "Rich dependency does not start with '('"
-msgstr ""
+msgstr "リッチ依存関係が '(' で始まっていません"
 
 msgid "Missing argument to rich dependency op"
-msgstr ""
+msgstr "リッチ依存関係に引数がありません"
 
 msgid "Empty rich dependency"
-msgstr ""
+msgstr "空のリッチ依存関係です"
 
 #, c-format
 msgid "Unterminated rich dependency: %s"
-msgstr ""
+msgstr "リッチ依存関係が終端されていません: %s"
 
 msgid "Cannot chain different ops"
 msgstr ""
@@ -2441,60 +2420,60 @@ msgstr ""
 
 #, c-format
 msgid "user %s does not exist - using %s\n"
-msgstr ""
+msgstr "ユーザー %s は存在しません - %s を使用します\n"
 
 #, c-format
 msgid "group %s does not exist - using %s\n"
-msgstr ""
+msgstr "グループ %s は存在しません - %s を使用します\n"
 
 #, c-format
 msgid "Wrong number of entries for tag %s: %u found but %u expected.\n"
-msgstr ""
+msgstr "タグ %s の正しくない数のエントリー: %u 個発見されましたが %u 個が期待されています。\n"
 
 #, c-format
 msgid "Malformed data for tag %s: %u bytes found but %lu expected.\n"
-msgstr ""
+msgstr "タグ %s の間違ったデータ: %u バイト発見されましたが %lu バイトが期待されています。\n"
 
 msgid "Bad magic"
-msgstr "不正なマジック"
+msgstr "不正なマジックナンバーです"
 
 msgid "Bad/unreadable  header"
-msgstr "不正な/不可読なヘッダー"
+msgstr "不正な/不可読なヘッダーです"
 
 msgid "Header size too big"
-msgstr "ヘッダーサイズが大きすぎます。"
+msgstr "ヘッダーサイズが大きすぎます"
 
 msgid "File too large for archive"
 msgstr "ファイルがアーカイブのために大きすぎます"
 
 msgid "Unknown file type"
-msgstr "不明なファイルタイプ"
+msgstr "不明なファイルタイプです"
 
 msgid "Missing file(s)"
-msgstr ""
+msgstr "ファイルがありません"
 
 msgid "Digest mismatch"
 msgstr "ダイジェストが適合しません"
 
 msgid "Internal error"
-msgstr "内部エラー"
+msgstr "内部エラーが発生しました"
 
 msgid "Archive file not in header"
-msgstr "アーカイブファイルがヘッダーにありません。"
+msgstr "アーカイブファイルがヘッダーにありません"
 
 msgid "File from package already exists as a directory in system"
-msgstr ""
+msgstr "パッケージからのファイルは既にディレクトリーとしてシステム上に存在します"
 
 msgid " failed - "
-msgstr "失敗 - "
+msgstr " 失敗 - "
 
 #, c-format
 msgid "%s: (error 0x%x)"
-msgstr ""
+msgstr "%s: (エラー 0x%x)"
 
 #, c-format
 msgid "open of %s failed: %s\n"
-msgstr "%s のオープンに失敗: %s\n"
+msgstr "%s のオープンに失敗しました: %s\n"
 
 #, c-format
 msgid "Max level of manifest recursion exceeded: %s\n"
@@ -2502,7 +2481,7 @@ msgstr ""
 
 #, c-format
 msgid "%s: not an rpm package (or package manifest)\n"
-msgstr "%s: RPM パッケージ(またはパッケージのリスト)ではありません。\n"
+msgstr "%s: RPM パッケージ(またはパッケージのリスト)ではありません\n"
 
 #, c-format
 msgid "Updating / installing...\n"
@@ -2516,28 +2495,28 @@ msgid "Preparing..."
 msgstr "準備しています..."
 
 msgid "Verifying..."
-msgstr ""
+msgstr "検証しています..."
 
 msgid "Preparing packages..."
 msgstr "パッケージの準備中..."
 
 msgid "Verifying packages..."
-msgstr ""
+msgstr "パッケージを検証中..."
 
 msgid "Failed dependencies:\n"
 msgstr "依存性の欠如:\n"
 
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
-msgstr "%s: RPM パッケージ(またはパッケージのリスト)ではありません: %s\n"
+msgstr "%s: RPM パッケージ (またはパッケージのリスト) ではありません: %s\n"
 
 #, c-format
 msgid "%s cannot be installed\n"
-msgstr "%s をインストールできません。\n"
+msgstr "%s をインストールできません\n"
 
 #, c-format
 msgid "Retrieving %s\n"
-msgstr "%s を取得中\n"
+msgstr "%s を取得中です\n"
 
 #, c-format
 msgid "skipping %s - transfer failed\n"
@@ -2545,7 +2524,7 @@ msgstr "%s をスキップします - 転送に失敗しました\n"
 
 #, c-format
 msgid "package %s is not relocatable\n"
-msgstr "パッケージ %s は再配置できません。\n"
+msgstr "パッケージ %s は再配置できません\n"
 
 #, c-format
 msgid "error reading from file %s\n"
@@ -2561,47 +2540,47 @@ msgstr "%s を開けません: %s\n"
 
 #, c-format
 msgid "Installing %s\n"
-msgstr "%s をインストール中です。\n"
+msgstr "%s をインストール中です\n"
 
 msgid "not an rpm package"
-msgstr "rpm パッケージではありません。"
+msgstr "rpm パッケージではありません"
 
 msgid "illegal signature type"
-msgstr "署名の種類が正しくありません。"
+msgstr "署名の種類が正しくありません"
 
 msgid "unsupported RPM package version"
-msgstr "サポートしていない RPM パッケージのバージョンです。"
+msgstr "サポートしていない RPM パッケージのバージョンです"
 
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "読み込みの失敗: %s (%d)\n"
 
 msgid "not an rpm package\n"
-msgstr "rpm パッケージではありません。\n"
+msgstr "rpm パッケージではありません\n"
 
 #, c-format
 msgid "can't create %s lock on %s (%s)\n"
-msgstr "%s ロックを（%s 上に）作成できません。(%s)\n"
+msgstr "%s ロックを（%s 上に）作成できません (%s)\n"
 
 #, c-format
 msgid "waiting for %s lock on %s\n"
-msgstr "%s ロックを待っています。(%s 上)\n"
+msgstr "%s ロックを待っています (%s 上)\n"
 
 #, c-format
 msgid "Failed to dlopen %s %s\n"
-msgstr "%s のdlopenに失敗しました。%s\n"
+msgstr "%s の dlopen に失敗しました %s\n"
 
 #, c-format
 msgid "Failed to resolve symbol %s: %s\n"
-msgstr "シンボル %s の解決に失敗: %s\n"
+msgstr "シンボル %s の解決に失敗しました: %s\n"
 
 #, c-format
 msgid "Plugin %%__%s_%s not configured\n"
-msgstr ""
+msgstr "プラグイン %%__%s_%s が構成されていません\n"
 
 #, c-format
 msgid "Plugin %s not loaded\n"
-msgstr "%s プラグインは読み込まれていません。\n"
+msgstr "%s プラグインは読み込まれていません\n"
 
 msgid "different"
 msgstr "異なる"
@@ -2616,53 +2595,47 @@ msgstr "パッケージ %s は %s OS 向けです"
 
 #, c-format
 msgid "package %s is already installed"
-msgstr "パッケージ %s は既にインストールされています。"
+msgstr "パッケージ %s は既にインストールされています"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is not installed"
-msgstr "パッケージ %s はインストールされていません。\n"
+msgstr "パッケージ %s はインストールされていません"
 
 #, c-format
 msgid "path %s in package %s is not relocatable"
-msgstr "パス %s (%s パッケージ) は再配置できません。"
+msgstr "パス %s (%s パッケージ) は再配置できません"
 
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
-msgstr "ファイル %s は %s と %s のインストールで競合しています。"
+msgstr "ファイル %s は %s と %s のインストールで競合しています"
 
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
-msgstr ""
-"ファイル %s (パッケージ %s から) は、パッケージ %s からのファイルと競合してい"
-"ます。"
+msgstr "ファイル %s (パッケージ %s から) は、パッケージ %s からのファイルと競合しています"
 
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
-msgstr "パッケージ %s (%s より新しいもの) は既にインストールされています。"
+msgstr "パッケージ %s (%s より新しいもの) は既にインストールされています"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "installing package %s needs %<PRIu64>%cB more space on the %s filesystem"
-msgstr ""
-"パッケージ %s のインストールには %<PRIu64>%cB の領域が %s ファイルシステム上"
-"に必要です。"
+msgstr "パッケージ %s のインストールには %<PRIu64>%cB 以上の領域が %s ファイルシステム上に必要です"
 
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %<PRIu64> more inodes on the %s filesystem"
-msgstr ""
-"パッケージ %s のインストールには %<PRIu64> の inode が %s ファイルシステム上"
-"に必要です。"
+msgstr "パッケージ %s のインストールには %<PRIu64> 以上の inode が %s ファイルシステム上に必要です"
 
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s は %s%s に必要とされています"
 
 msgid "(installed) "
-msgstr "(インストール済み)"
+msgstr "(インストール済) "
 
 #, c-format
 msgid "%s conflicts with %s%s"
-msgstr "%s は %s%s と競合します。"
+msgstr "%s は %s%s と競合します"
 
 #, c-format
 msgid "%s is obsoleted by %s%s"
@@ -2670,7 +2643,7 @@ msgstr "%s は %s%s によって不要とされています"
 
 #, c-format
 msgid "package %s does not verify: %s"
-msgstr ""
+msgstr "パッケージ %s は検証を行いません: %s"
 
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
@@ -2725,8 +2698,7 @@ msgid "bad option '%s' at %s:%d\n"
 msgstr "不正なオプションです: '%s' (%s:%d)\n"
 
 msgid "Failed to read auxiliary vector, /proc not mounted?\n"
-msgstr ""
-"補助ベクトルの読み込みに失敗しました、/proc がマウントされていないですか?\n"
+msgstr "補助ベクトルの読み込みに失敗しました、/proc はマウントされています?\n"
 
 #, c-format
 msgid "Unknown system: %s\n"
@@ -2734,28 +2706,28 @@ msgstr "不明なシステム: %s\n"
 
 #, c-format
 msgid "Please contact %s\n"
-msgstr "%s に連絡してください。\n"
+msgstr "%s へ連絡してください\n"
 
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "%s を読み込み用に開けません: %m。\n"
 
 msgid "failed to register exit handler"
-msgstr ""
+msgstr "exit ハンドラーの登録に失敗しました"
 
 msgid "No exec() called after fork() in lua scriptlet\n"
-msgstr ""
+msgstr "lua スクリプト中で fork() の後に exec() が呼ばれていません\n"
 
 #, c-format
 msgid "Unable to restore current directory: %m"
-msgstr "カレントディレクトリを戻せません: %m"
+msgstr "カレントディレクトリーを戻せません: %m"
 
 msgid "<lua> scriptlet support not built in\n"
 msgstr "<lua> スクリプトは組み込みでサポートしていません\n"
 
 #, c-format
 msgid "failed to exec scriptlet interpreter %s: %s\n"
-msgstr ""
+msgstr "スクリプトインタープリター %s の実行に失敗しました: %s\n"
 
 #, c-format
 msgid "Couldn't create temporary file for %s: %s\n"
@@ -2767,19 +2739,19 @@ msgstr "ファイル ディスクリプターの複製ができません: %s: %s
 
 #, c-format
 msgid "Fwrite failed: %s"
-msgstr ""
+msgstr "書き込みに失敗しました: %s"
 
 #, c-format
 msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
-msgstr "%s スクリプトの実行に失敗しました。waitpid (%d) rc %d: %s\n"
+msgstr "%s スクリプトの実行に失敗しました、waitpid (%d) rc %d: %s\n"
 
 #, c-format
 msgid "%s scriptlet failed, signal %d\n"
-msgstr "%s スクリプトの実行に失敗しました。シグナル %d\n"
+msgstr "%s スクリプトの実行に失敗しました、シグナル %d\n"
 
 #, c-format
 msgid "%s scriptlet failed, exit status %d\n"
-msgstr "%s スクリプトの実行に失敗しました。終了ステータス %d\n"
+msgstr "%s スクリプトの実行に失敗しました、終了ステータス %d\n"
 
 msgid "Unknown format"
 msgstr "不明な書式"
@@ -2795,7 +2767,7 @@ msgstr ""
 
 #, c-format
 msgid "cannot open Packages database in %s\n"
-msgstr "%s にある Package データベースを開けません。\n"
+msgstr "%s にある Package データベースを開けません\n"
 
 #, c-format
 msgid "extra '(' in package label: %s\n"
@@ -2815,69 +2787,69 @@ msgstr "%s: 公開鍵の読み込みに失敗しました。\n"
 
 #, c-format
 msgid "invalid package verify level %s\n"
-msgstr ""
+msgstr "無効なパッケージ検証レベル %s\n"
 
 msgid "transaction"
 msgstr "トランザクション"
 
 #, c-format
 msgid "%s tag %u: invalid type %u"
-msgstr ""
+msgstr "%s: タグ %u: 無効な種別 %u"
 
 #, c-format
 msgid "%s: tag %u: invalid count %u"
-msgstr ""
+msgstr "%s: タグ %u: 無効なカウント %u"
 
 #, c-format
 msgid "%s tag %u: invalid data %p (%u)"
-msgstr ""
+msgstr "%s: タグ %u: 無効なデータ %p (%u)"
 
 #, c-format
 msgid "%s tag %u: invalid size %u"
-msgstr ""
+msgstr "%s: タグ %u: 無効なサイズ %u"
 
 #, c-format
 msgid "%s tag %u: invalid OpenPGP signature"
-msgstr ""
+msgstr "%s: タグ %u: 無効な OpenPGP 署名"
 
 #, c-format
 msgid "%s: tag %u: invalid hex"
-msgstr ""
+msgstr "%s: タグ %u: 無効な16進値"
 
 #, c-format
 msgid "%s%s%s %s"
 msgstr ""
 
 msgid "digest"
-msgstr ""
+msgstr "ダイジェスト"
 
 #, c-format
 msgid "%s%s"
 msgstr ""
 
 msgid "signature"
-msgstr ""
+msgstr "署名"
 
 msgid "header"
-msgstr ""
+msgstr "ヘッダー"
 
 msgid "package"
-msgstr ""
+msgstr "パッケージ"
 
 msgid "Header "
 msgstr "ヘッダー "
 
 msgid "Payload "
-msgstr ""
+msgstr "ペイロード "
 
 msgid "Unable to reload signature header.\n"
 msgstr "署名ヘッダーの再読み込みができません。\n"
 
 msgid "no signature"
-msgstr ""
+msgstr "署名なし"
 
 msgid "no digest"
-msgstr ""
+msgstr "ダイジェストなし"
 
 msgid "skipped"
 msgstr "スキップした"
@@ -2886,138 +2858,125 @@ msgid "failed"
 msgstr "失敗"
 
 msgid "no state"
-msgstr ""
+msgstr "状態なし"
 
 msgid "unknown state"
-msgstr ""
+msgstr "状態不明"
 
 #, c-format
 msgid "missing   %c %s"
-msgstr "%c %s が見つかりません。"
+msgstr "%c %s が見つかりません"
 
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
-msgstr "%s のための依存性を満たしていません。\n"
+msgstr "%s のための依存性を満たしていません\n"
 
 #, c-format
 msgid "Unable to reset nice value: %s"
-msgstr ""
+msgstr "nice 値をリセットできません: %s"
 
 #, c-format
 msgid "Unable to reset I/O priority: %s"
-msgstr ""
+msgstr "I/O 優先度をリセットできません: %s"
 
-#, fuzzy
 msgid "syntax error while parsing =="
-msgstr "構文解析中の文法エラー ==\n"
+msgstr "構文解析中の文法エラー =="
 
-#, fuzzy
 msgid "syntax error while parsing &&"
-msgstr "構文解析中の文法エラー &&\n"
+msgstr "構文解析中の文法エラー &&"
 
-#, fuzzy
 msgid "syntax error while parsing ||"
-msgstr "構文解析中の文法エラー ||\n"
+msgstr "構文解析中の文法エラー ||"
 
 msgid "macro expansion returned a bare word, please use \"...\""
-msgstr ""
+msgstr "マクロ展開が引用符のない単語を返しました、\"...\" を使用してください"
 
 msgid "macro expansion did not return an integer"
-msgstr ""
+msgstr "マクロ展開が整数値以外を返しました"
 
 #, c-format
 msgid "expanded string: %s\n"
-msgstr ""
+msgstr "展開された文字列: %s\n"
 
-#, fuzzy
 msgid "unterminated string in expression"
-msgstr "式中で ? の後に { が期待されます。"
+msgstr "式中に終端されていない文字列があります"
 
-#, fuzzy
 msgid "invalid version"
-msgstr "(不正なタイプ)"
+msgstr "無効なバージョン"
 
 msgid "bare words are no longer supported, please use \"...\""
-msgstr ""
+msgstr "引用符なしの単語はサポートされていません、\"...\" を使用してください"
 
-#, fuzzy
 msgid "parse error in expression"
-msgstr "式中で構文解析エラー\n"
+msgstr "式中で構文解析エラー"
 
-#, fuzzy
 msgid "unmatched ("
-msgstr "( が一致しません\n"
+msgstr "( が一致しません"
 
-#, fuzzy
 msgid "- only on numbers"
-msgstr "- は数のみ使用可能です\n"
+msgstr "- は数のみ使用可能です"
 
-#, fuzzy
 msgid "unexpected end of expression"
-msgstr "式の終わりに | が期待されます。"
+msgstr "予期しない式の終わりに到達しました"
 
-#, fuzzy
 msgid "syntax error in expression"
-msgstr "式中で文法エラー\n"
+msgstr "式中で文法エラー"
 
-#, fuzzy
 msgid "types must match"
-msgstr "型は一致していなければなりません\n"
+msgstr "型は一致していなければなりません"
 
 msgid "division by zero"
-msgstr ""
+msgstr "ゼロ除算"
 
-#, fuzzy
 msgid "* and / not supported for strings"
-msgstr "* / は文字列には使えません\n"
+msgstr "* / は文字列には使えません"
 
-#, fuzzy
 msgid "- not supported for strings"
-msgstr "- は文字列には使えません\n"
+msgstr "- は文字列には使えません"
 
 #, c-format
 msgid "%3d>%*s(empty)\n"
-msgstr ""
+msgstr "%3d>%*s(空)\n"
 
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(空)\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open shell expansion pipe for command: %s: %m \n"
-msgstr "tar パイプのオープンに失敗しました: %m\n"
+msgstr "コマンドへのパイプのオープンに失敗しました: %s: %m \n"
 
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
-msgstr ""
+msgstr "マクロ %%%s は不正な名前です (%s)\n"
 
 #, c-format
 msgid "Macro %%%s is a built-in (%s)\n"
-msgstr ""
+msgstr "マクロ %%%s は組み込みです (%s)\n"
 
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
-msgstr "マクロ %%%s はオプションが終端されていません。\n"
+msgstr "マクロ %%%s はオプションが終端されていません\n"
 
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
-msgstr "マクロ %%%s はボディが終端していません。\n"
+msgstr "マクロ %%%s はボディが終端していません\n"
 
 #, c-format
 msgid "Macro %%%s has empty body\n"
-msgstr "マクロ %%%s のボディは空です。\n"
+msgstr "マクロ %%%s のボディは空です\n"
 
 #, c-format
 msgid "Macro %%%s needs whitespace before body\n"
-msgstr ""
+msgstr "マクロ %%%s の本体の前に空白が必要です\n"
 
 #, c-format
 msgid "Macro %%%s failed to expand\n"
-msgstr "マクロ %%%s の展開に失敗しました。\n"
+msgstr "マクロ %%%s の展開に失敗しました\n"
 
 #, c-format
 msgid "Macro %%%s defined but not used within scope\n"
-msgstr ""
+msgstr "マクロ %%%s が定義されましたがスコープ内では使用されません\n"
 
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
@@ -3025,7 +2984,7 @@ msgstr "不明なオプション %c (%s(%s)中に)\n"
 
 #, c-format
 msgid "no such macro: '%s'\n"
-msgstr ""
+msgstr "'%s' というマクロはありません\n"
 
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
@@ -3040,15 +2999,13 @@ msgstr "終端されていない %c: %s\n"
 
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
-msgstr "%% の後ろに構文解析できないマクロが続いています。\n"
+msgstr "%% の後に構文解析できないマクロが続いています\n"
 
-#, fuzzy
 msgid "argument expected"
-msgstr "予期せぬ ]"
+msgstr "期待される引数"
 
-#, fuzzy
 msgid "unexpected argument"
-msgstr "予期せぬ ]"
+msgstr "予期せぬ引数"
 
 #, c-format
 msgid "======================== active %d empty %d\n"
@@ -3064,7 +3021,7 @@ msgstr "ファイル %s: %s\n"
 
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
-msgstr "ファイル %s は %u バイトより小さくなっています。\n"
+msgstr "ファイル %s は %u バイトより小さくなっています\n"
 
 msgid "[none]"
 msgstr "[なし]"
@@ -3082,15 +3039,15 @@ msgid "warning: "
 msgstr "警告: "
 
 msgid "Error writing to log"
-msgstr ""
+msgstr "ログへの書き込みエラーが発生しました"
 
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
-msgstr "lua スクリプトで不正な文法がありました: %s\n"
+msgstr "lua スクリプトで無効な文法がありました: %s\n"
 
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
-msgstr "lua スクリプトで不正な文法がありました: %s\n"
+msgstr "lua スクリプトで無効な文法がありました: %s\n"
 
 #, c-format
 msgid "lua script failed: %s\n"
@@ -3098,7 +3055,7 @@ msgstr "lua スクリプトに失敗しました: %s\n"
 
 #, c-format
 msgid "invalid syntax in lua file: %s\n"
-msgstr "lua ファイルに不正な文法がありました: %s\n"
+msgstr "lua ファイルに無効な文法がありました: %s\n"
 
 #, c-format
 msgid "lua hook failed: %s\n"
@@ -3110,7 +3067,7 @@ msgstr "メモリ割り当て (%u バイト) が NULL を返しました。\n"
 
 #, c-format
 msgid "Unsupported version of key: V%d\n"
-msgstr ""
+msgstr "サポートされていない鍵のバージョンです: V%d\n"
 
 #, c-format
 msgid "V%d %s/%s %s, key ID %s"
@@ -3119,9 +3076,9 @@ msgstr "V%d %s/%s %s、鍵 ID %s"
 msgid "(none)"
 msgstr "(なし)"
 
-#, c-format
+#, c-format, fuzzy
 msgid "exiting on signal %d from pid %d\n"
-msgstr ""
+msgstr "pid %2$d からのシグナル %1$d により終了します\n"
 
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
@@ -3146,41 +3103,41 @@ msgstr "サポートされない PGP ハッシュアルゴリズム %u\n"
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr "サポートされない PGP 公開鍵アルゴリズム %u\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not create pipe for signing: %m\n"
-msgstr "%s のためのパイプ作成ができません: %m\n"
+msgstr "署名のためのパイプ作成ができません: %m\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not set GPG_TTY to stdin: %m\n"
-msgstr "%%files のファイル %s を開けません: %m\n"
+msgstr "標準入力に GPG_TTY を設定できません: %m\n"
 
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "%s を実行できませんでした: %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open pipe for writing: %m\n"
-msgstr "%s のためのパイプ作成ができません: %m\n"
+msgstr "書き込みのためのパイプが作成できません: %m\n"
 
 msgid "Could not write to pipe\n"
-msgstr ""
+msgstr "パイプに書き込めません\n"
 
 #, c-format
 msgid "Could not read from file %s: %s\n"
-msgstr ""
+msgstr "ファイル %s から読み込めません: %s\n"
 
 #, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "gpg の実行に失敗しました (%d)\n"
 
 msgid "gpg failed to write signature\n"
-msgstr "gpg が署名を書き込むのに失敗しました。\n"
+msgstr "gpg が署名を書き込むのに失敗しました\n"
 
 msgid "unable to read the signature\n"
-msgstr "署名を読み込めませんでした。\n"
+msgstr "署名を読み込めませんでした\n"
 
 msgid "file signing support not built in\n"
-msgstr ""
+msgstr "ファイル署名機能は組み込まれていません\n"
 
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
@@ -3202,7 +3159,7 @@ msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature に失敗しました: %s\n"
 
 msgid "rpmMkTemp failed\n"
-msgstr "rpmMkTemp に失敗しました。\n"
+msgstr "rpmMkTemp に失敗しました\n"
 
 #, c-format
 msgid "%s: writeLead failed: %s\n"
@@ -3210,26 +3167,26 @@ msgstr "%s: writeLead に失敗しました: %s\n"
 
 #, c-format
 msgid "replacing %s failed: %s\n"
-msgstr "%s の置換に失敗: %s\n"
+msgstr "%s の置換に失敗しました: %s\n"
 
 msgid "sign_hash failed\n"
-msgstr ""
+msgstr "sign_hash に失敗しました\n"
 
 msgid "File digest algorithm id is invalid"
-msgstr ""
+msgstr "ファイルダイジェストのアルゴリズムIDが無効です"
 
 msgid "signFile failed\n"
-msgstr ""
+msgstr "signFile に失敗しました\n"
 
 msgid "headerPutString failed\n"
-msgstr ""
+msgstr "headerPutString に失敗しました\n"
 
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: manifest の読み込みに失敗: %s\n"
 
 msgid "don't verify header+payload signature"
-msgstr "ヘッダーとペイロード署名を検証しません。"
+msgstr "ヘッダーとペイロード署名を検証しません"
 
 #~ msgid "Failed to rename %s to %s: %m\n"
 #~ msgstr "%s を %s に名前を変更できませんでした: %m\n"

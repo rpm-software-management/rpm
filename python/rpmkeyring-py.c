@@ -17,7 +17,7 @@ static void rpmPubkey_dealloc(rpmPubkeyObject * s)
 static PyObject *rpmPubkey_new(PyTypeObject *subtype, 
 			   PyObject *args, PyObject *kwds)
 {
-    PyObject *key;
+    PyObject *key, *ret;
     char *kwlist[] = { "key", NULL };
     rpmPubkey pubkey = NULL;
     uint8_t *pkt;
@@ -33,10 +33,12 @@ static PyObject *rpmPubkey_new(PyTypeObject *subtype,
     pubkey = rpmPubkeyNew(pkt, pktlen);
     if (pubkey == NULL) {
 	PyErr_SetString(PyExc_ValueError, "invalid pubkey");
-	return NULL;
-    }
+	ret = NULL;
+    } else
+	ret = rpmPubkey_Wrap(subtype, pubkey);
 
-    return rpmPubkey_Wrap(subtype, pubkey);
+    free(pkt);
+    return ret;
 }
 
 static PyObject * rpmPubkey_Base64(rpmPubkeyObject *s)

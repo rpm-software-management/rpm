@@ -478,8 +478,6 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
     const char * license = "pubkey";
     const char * buildhost = "localhost";
     uint32_t zero = 0;
-    pgpDig dig = NULL;
-    pgpDigParams pubp = NULL;
     struct pgpdata_s kd;
     char * d = NULL;
     char * enc = NULL;
@@ -489,13 +487,9 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
 
     if ((enc = rpmPubkeyBase64(key)) == NULL)
 	goto exit;
-    if ((dig = rpmPubkeyDig(key)) == NULL)
-	goto exit;
-    if ((pubp = pgpDigGetParams(dig, PGPTAG_PUBLIC_KEY)) == NULL)
-	goto exit;
 
     /* Build header elements. */
-    initPgpData(pubp, &kd);
+    initPgpData(rpmPubkeyPgpDigParams(key), &kd);
 
     rasprintf(&s, "%s public key", kd.userid);
     headerPutString(h, RPMTAG_PUBKEYS, enc);
@@ -538,7 +532,6 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
 
 exit:
     headerFree(h);
-    pgpFreeDig(dig);
     finiPgpData(&kd);
     free(enc);
     free(d);

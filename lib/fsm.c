@@ -5,6 +5,7 @@
 
 #include "system.h"
 
+#include <inttypes.h>
 #include <utime.h>
 #include <errno.h>
 #if WITH_CAP
@@ -301,7 +302,7 @@ static int fsmUnpack(rpmfi fi, FD_t fd, rpmpsm psm, int nodigest)
 {
     int rc = rpmfiArchiveReadToFilePsm(fi, fd, nodigest, psm);
     if (_fsm_debug) {
-	rpmlog(RPMLOG_DEBUG, " %8s (%s %lu bytes [%d]) %s\n", __func__,
+	rpmlog(RPMLOG_DEBUG, " %8s (%s %" PRIu64 " bytes [%d]) %s\n", __func__,
 	       rpmfiFN(fi), rpmfiFSize(fi), Fileno(fd),
 	       (rc < 0 ? strerror(errno) : ""));
     }
