@@ -5,6 +5,7 @@ AM_CFLAGS = @RPMCFLAGS@
 
 AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/
 AM_CPPFLAGS += @WITH_POPT_INCLUDE@
+AM_CPPFLAGS += @LUA_CFLAGS@
 AM_CPPFLAGS += -I$(top_srcdir)/misc
 AM_CPPFLAGS += -DLOCALEDIR="\"$(localedir)\""
 AM_CPPFLAGS += -DSYSCONFDIR="\"$(sysconfdir)\""
@@ -48,6 +49,7 @@ librpm_la_LIBADD = \
 	@WITH_POPT_LIB@ \
 	@WITH_CAP_LIB@ \
 	@WITH_ACL_LIB@ \
+	@LUA_LIBS@ \
 	@LIBINTL@
 
 if BDB_RO
