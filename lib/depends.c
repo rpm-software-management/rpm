@@ -4,8 +4,6 @@
 
 #include "system.h"
 
-#include <fcntl.h>
-
 #include <rpm/rpmlib.h>		/* rpmVersionCompare, rpmlib provides */
 #include <rpm/rpmtag.h>
 #include <rpm/rpmlog.h>
@@ -415,10 +413,6 @@ static int addPackage(rpmts ts, Header h,
     /* Source packages are never "upgraded" */
     if (isSource)
 	op = RPMTE_INSTALL;
-
-    /* Ensure database creation on initial installs */
-    if (!isSource && rpmtsGetDBMode(ts) == O_RDONLY)
-	rpmtsSetDBMode(ts, (O_RDWR|O_CREAT));
 
     /* Do lazy (readonly?) open of rpm database for upgrades. */
     if (op != RPMTE_INSTALL && rpmtsGetRdb(ts) == NULL && rpmtsGetDBMode(ts) != -1) {

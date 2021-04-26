@@ -50,7 +50,7 @@ RPMTEST_SETUP
 runroot rpm \
   -qa
 ],
-[1],
+[0],
 [],
 [ignore])
 AT_CLEANUP
