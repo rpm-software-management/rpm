@@ -296,12 +296,10 @@ rpmSpec rpmSpecFree(rpmSpec spec)
     }
     spec->BANames = _free(spec->BANames);
 
-#ifdef WITH_LUA
     // only destroy lua tables if there are no BASpecs left
     if (spec->recursing || spec->BACount == 0) {
 	spec->lua = specLuaFini(spec);
     }
-#endif
 
     spec->sources = freeSources(spec->sources);
     spec->packages = freePackages(spec->packages);
