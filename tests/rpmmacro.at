@@ -945,6 +945,23 @@ read
 [])
 AT_CLEANUP
 
+AT_SETUP([macro file empty lines])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm \
+	--macros /data/macros.testfile \
+	--eval "%{empty0}"
+],
+[0],
+[
+some
+
+thing
+
+],
+[])
+AT_CLEANUP
+
 AT_SETUP([macro traceback])
 AT_KEYWORDS([macros])
 AT_CHECK([

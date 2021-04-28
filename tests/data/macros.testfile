@@ -5,6 +5,13 @@
 }
 %second %{?def:macro_2}
 
+# empty lines inside a %{ block
+%empty0 %{expand:
+some
+
+thing
+}
+
 %comment1 %{expand:
 read
 %dnl comment
