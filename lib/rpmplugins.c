@@ -62,7 +62,7 @@ static rpmPlugin rpmPluginNew(const char *name, const char *path,
     char *error;
     char *hooks_name = NULL;
 
-    void *handle = dlopen(path, RTLD_LAZY);
+    void *handle = dlopen(path, RTLD_LAZY|RTLD_DEEPBIND);
     if (!handle) {
 	rpmlog(RPMLOG_ERR, _("Failed to dlopen %s %s\n"), path, dlerror());
 	return NULL;
