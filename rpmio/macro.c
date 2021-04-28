@@ -226,6 +226,14 @@ rdcl(char * buf, size_t size, FILE *f)
 	    nb--;
 	if (*q == 0)
 	    break;			/* no newline found, EOF */
+	if (p == buf) {
+            while (*p && isblank(*p))
+                p++;
+            if (*p != '%') {		/* only parse actual macro */
+                *q = '\0';		/* trim trailing \r, \n */
+                break;
+            }
+        }
 	for (; p < q; p++) {
 	    switch (*p) {
 		case '\\':
