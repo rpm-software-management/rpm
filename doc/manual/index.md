@@ -23,7 +23,6 @@
   * [Dependencies](dependencies.md)
     * [More on Dependencies](more_dependencies.md)
     * [Boolean Dependencies](boolean_dependencies.md)
-    * [Build Dependencies](builddependencies.md)
     * [Architecture Dependencies](arch_dependencies.md)
     * [Installation Order](tsort.md)
   * Install scriptlets
