@@ -3,7 +3,7 @@
 include $(top_srcdir)/rpm.am
 AM_CFLAGS = @RPMCFLAGS@
 
-EXTRA_DIST =
+EXTRA_DIST = README.md
 CLEANFILES =
 
 ##
