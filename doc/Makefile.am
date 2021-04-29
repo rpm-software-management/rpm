@@ -84,6 +84,7 @@ manual/builddependencies.md \
 manual/buildroot.md \
 manual/conditionalbuilds.md \
 manual/dependencies.md \
+manual/dependency_generators.md \
 manual/format.md \
 manual/hregions.md \
 manual/large_files.md \
