@@ -307,22 +307,6 @@ static rpmdb rpmdbRock;
 static rpmdbMatchIterator rpmmiRock;
 static rpmdbIndexIterator rpmiiRock;
 
-void rpmAtExit(void)
-{
-    rpmdb db;
-    rpmdbMatchIterator mi;
-    rpmdbIndexIterator ii;
-
-    while ((mi = rpmmiRock) != NULL)
-	rpmdbFreeIterator(mi);
-
-    while ((ii = rpmiiRock) != NULL)
-	rpmdbIndexIteratorFree(ii);
-
-    while ((db = rpmdbRock) != NULL)
-	(void) rpmdbClose(db);
-}
-
 rpmop rpmdbOp(rpmdb rpmdb, rpmdbOpX opx)
 {
     rpmop op = NULL;
