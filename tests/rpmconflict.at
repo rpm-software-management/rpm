@@ -366,6 +366,59 @@ runroot rpm -U /build/RPMS/noarch/symlinktest-1.0-2.noarch.rpm
 AT_CLEANUP
 
 # ------------------------------
+# Replace symlink with a directory using a %pretrans scriptlet
+AT_SETUP([replacing symlink with directory with pretrans])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_INIT
+rm -rf "${RPMTEST}"/usr/{share,lib}/symlinktest-pretrans*
+
+runroot rpmbuild --quiet -bb \
+    --define "rel 1" \
+    --with symlink \
+    /data/SPECS/symlinktest-pretrans.spec
+runroot rpmbuild --quiet -bb \
+    --define "rel 2" \
+    --without symlink \
+    /data/SPECS/symlinktest-pretrans.spec
+
+runroot rpm -U /build/RPMS/noarch/symlinktest-pretrans-1.0-1.noarch.rpm
+runroot rpm -U --test /build/RPMS/noarch/symlinktest-pretrans-1.0-2.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/symlinktest-pretrans-1.0-2.noarch.rpm
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# Replace symlink with a populated directory using a %pretrans scriptlet
+AT_SETUP([replacing symlink with populated directory with pretrans])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_INIT
+rm -rf "${RPMTEST}"/usr/{share,lib}/symlinktest-pretrans*
+
+runroot rpmbuild --quiet -bb \
+    --define "rel 1" \
+    --with symlink \
+    --with file \
+    /data/SPECS/symlinktest-pretrans.spec
+runroot rpmbuild --quiet -bb \
+    --define "rel 2" \
+    --without symlink \
+    --with file \
+    /data/SPECS/symlinktest-pretrans.spec
+
+runroot rpm -U /build/RPMS/noarch/symlinktest-pretrans-1.0-1.noarch.rpm
+runroot rpm -U --test /build/RPMS/noarch/symlinktest-pretrans-1.0-2.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/symlinktest-pretrans-1.0-2.noarch.rpm
+],
+[0],
+[],
+[])
+AT_CLEANUP
+# ------------------------------
 # Regular file shared with a ghost, does not conflict
 # Regular file should be created and not removed when the ghost is removed
 AT_SETUP([real file with shared ghost])
