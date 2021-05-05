@@ -1230,11 +1230,23 @@ end}
 # not by their number!
 # -m<min>       Apply patches with number >= min only
 # -M<max>       Apply patches with number <= max only
-%autopatch(vp:m:M:)\
+# -n<number>    Apply only patch with the given number,
+#               cannot be used together with the other options
+%autopatch(vp:m:M:n:)\
 %{lua:\
 local options = rpm.expand("%{!-v:-q} %{-p:-p%{-p*}} ")\
 local low_limit = tonumber(rpm.expand("%{-m:%{-m*}}"))\
 local high_limit = tonumber(rpm.expand("%{-M:%{-M*}}"))\
+local patch_number = tonumber(rpm.expand("%{-n:%{-n*}}"))\
+if patch_number\
+then\
+    if (low_limit or high_limit)\
+    then\
+        macros.error("Cannot use %%autopatch with -n and -m/-M at the same time.")\
+    end\
+    low_limit, high_limit = patch_number, patch_number\
++end\
+
 for i, p in ipairs(patches) do\
     local inum = patch_nums[i]\
     if ((not low_limit or inum>=low_limit) and (not high_limit or inum<=high_limit)) \
