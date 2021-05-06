@@ -1192,6 +1192,14 @@ rpmRC pgpVerifySignature(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx)
     if (sig->hash != NULL)
 	rpmDigestUpdate(ctx, sig->hash, sig->hashlen);
 
+    /*
+     * Signatures of type 0xFF hash the same fifth-from-last byte
+     * whether they are v3 or v4.  This could potentially be exploited
+     * for an existential forgery attack, so reject them outright.
+     */
+    if (sig->sigtype == 0xFF)
+	goto exit;
+
     if (sig->version == 4) {
 	/* V4 trailer is six octets long (rfc4880) */
 	uint8_t trailer[6];
