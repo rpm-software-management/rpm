@@ -623,10 +623,9 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	pgpPrtVal(" ", pgpSigTypeTbl, v->sigtype);
 	pgpPrtNL();
 
-	p = &v->hashlen[0];
 	if (pgpGet(v->hashlen, sizeof(v->hashlen), hend, &plen))
 	    return 1;
-	p += sizeof(v->hashlen);
+	p = h + sizeof(*v);
 
 	if (_digp->pubkey_algo == 0) {
 	    _digp->hashlen = sizeof(*v) + plen;
