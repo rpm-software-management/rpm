@@ -895,6 +895,7 @@ AC_CONFIG_FILES([Makefile
 	po/Makefile.in scripts/Makefile fileattrs/Makefile
 	misc/Makefile 
 	docs/Makefile
+	docs/man/Makefile
 	python/Makefile
  	luaext/Makefile
  	tests/Makefile
