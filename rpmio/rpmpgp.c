@@ -612,6 +612,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
     }	break;
     case 4:
     {   pgpPktSigV4 v = (pgpPktSigV4)h;
+	const uint8_t *const hend = h + hlen;
 
 	if (hlen <= sizeof(*v))
 	    return 1;
@@ -623,7 +624,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	pgpPrtNL();
 
 	p = &v->hashlen[0];
-	if (pgpGet(v->hashlen, sizeof(v->hashlen), h + hlen, &plen))
+	if (pgpGet(v->hashlen, sizeof(v->hashlen), hend, &plen))
 	    return 1;
 	p += sizeof(v->hashlen);
 
@@ -635,7 +636,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	    return 1;
 	p += plen;
 
-	if (pgpGet(p, 2, h + hlen, &plen))
+	if (pgpGet(p, 2, hend, &plen))
 	    return 1;
 	p += 2;
 
@@ -643,7 +644,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	    return 1;
 	p += plen;
 
-	if (h + hlen - p < 2)
+	if (hend - p < 2)
 	    return 1;
 	pgpPrtHex(" signhash16", p, 2);
 	pgpPrtNL();
@@ -657,7 +658,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	}
 
 	p += 2;
-	if (p > (h + hlen))
+	if (p > hend)
 	    return 1;
 
 	rc = pgpPrtSigParams(tag, v->pubkey_algo, v->sigtype, p, h, hlen, _digp);
