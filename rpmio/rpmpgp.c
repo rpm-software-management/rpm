@@ -811,28 +811,28 @@ int pgpPubkeyFingerprint(const uint8_t *h, size_t hlen,
 	int mpis = -1;
 
 	/* Packet must be larger than v to have room for the required MPIs */
-	if (hlen > sizeof(*v)) {
-	    switch (v->pubkey_algo) {
-	    case PGPPUBKEYALGO_RSA:
-		mpis = 2;
-		break;
-	    case PGPPUBKEYALGO_DSA:
-		mpis = 4;
-		break;
-	    case PGPPUBKEYALGO_EDDSA:
-		mpis = 1;
-		break;
-	    }
+	if (hlen <= sizeof(*v))
+	    return rc;
+	se = h + sizeof(*v);
+
+	switch (v->pubkey_algo) {
+	case PGPPUBKEYALGO_RSA:
+	    mpis = 2;
+	    break;
+	case PGPPUBKEYALGO_DSA:
+	    mpis = 4;
+	    break;
+	case PGPPUBKEYALGO_EDDSA:
+	    mpis = 1;
+	    /* EdDSA has a curve id before the MPIs */
+	    if (se[0] == 0x00 || se[0] == 0xff || pend - se <= se[0])
+		return rc;
+	    se += 1 + se[0];
+	    break;
+	default:
+	    return rc;
 	}
 
-	se = (uint8_t *)(v + 1);
-	/* EdDSA has a curve id before the MPIs */
-	if (v->pubkey_algo == PGPPUBKEYALGO_EDDSA) {
-	    if (se < pend && se[0] != 0x00 && se[0] != 0xff)
-		se += 1 + se[0];
-	    else
-		se = pend;      /* error out when reading the MPI */
-	}
 	while (se < pend && mpis-- > 0)
 	    se += pgpMpiLen(se);
 
