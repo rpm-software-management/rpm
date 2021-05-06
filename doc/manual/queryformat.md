@@ -156,5 +156,5 @@ Notice that the subformats "present" and "missing" must be inside of curly
 braces.
 
 ```
-    rpm -qa --queryformat "%-30{NAME} %|PREINPROG?{%{PREINPROG}}:{no}|\n"
+    rpm -qa --queryformat "%-30{NAME} %|PREINPROG?{ %{PREINPROG\}}:{no}|\n"
 ```
