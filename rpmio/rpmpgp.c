@@ -833,8 +833,12 @@ int pgpPubkeyFingerprint(const uint8_t *h, size_t hlen,
 	    return rc;
 	}
 
-	while (se < pend && mpis-- > 0)
-	    se += pgpMpiLen(se);
+	while (pend - se >= 2 && mpis-- > 0) {
+	    const int i = pgpMpiLen(se);
+	    if (pend - se < i)
+		return rc;
+	    se += i;
+	}
 
 	/* Does the size and number of MPI's match our expectations? */
 	if (se == pend && mpis == 0) {
