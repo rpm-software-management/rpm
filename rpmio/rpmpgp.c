@@ -627,9 +627,6 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	    return 1;
 	p += sizeof(v->hashlen);
 
-	if ((p + plen) > (h + hlen))
-	    return 1;
-
 	if (_digp->pubkey_algo == 0) {
 	    _digp->hashlen = sizeof(*v) + plen;
 	    _digp->hash = memcpy(xmalloc(_digp->hashlen), v, _digp->hashlen);
@@ -641,9 +638,6 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	if (pgpGet(p, 2, h + hlen, &plen))
 	    return 1;
 	p += 2;
-
-	if ((p + plen) > (h + hlen))
-	    return 1;
 
 	if (pgpPrtSubType(p, plen, v->sigtype, _digp))
 	    return 1;
