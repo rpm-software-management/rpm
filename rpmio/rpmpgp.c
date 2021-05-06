@@ -330,6 +330,34 @@ struct pgpPkt {
     size_t blen;		/* length of body in bytes */
 };
 
+/** \ingroup rpmpgp
+ * Read a length field `nbytes` long.  Checks that the buffer is big enough to
+ * hold `nbytes + *valp` bytes.
+ * @param s		pointer to read from
+ * @param nbytes	length of length field
+ * @param send		pointer past end of buffer
+ * @param[out] *valp	decoded length
+ * @return		0 if buffer can hold `nbytes + *valp` of data,
+ * 			otherwise -1.
+ */
+static int pgpGet(const uint8_t *s, size_t nbytes, const uint8_t *send,
+		  size_t *valp)
+{
+    int rc = -1;
+
+    if (nbytes <= send - s &&
+	nbytes <= sizeof(size_t) &&
+	nbytes <= sizeof(unsigned int)) {
+	unsigned int val = pgpGrab(s, nbytes);
+	if (val <= send - s - nbytes) {
+	    rc = 0;
+	    *valp = val;
+	}
+    }
+
+    return rc;
+}
+
 static int decodePkt(const uint8_t *p, size_t plen, struct pgpPkt *pkt)
 {
     int rc = -1; /* assume failure */
@@ -537,19 +565,6 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
     return rc;
 }
 
-static int pgpGet(const uint8_t *s, size_t nbytes, const uint8_t *send,
-		  unsigned int *valp)
-{
-    int rc = -1;
-
-    if (s + nbytes <= send) {
-	*valp = pgpGrab(s, nbytes);
-	rc = 0;
-    }
-
-    return rc;
-}
-
 static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 		     pgpDigParams _digp)
 {
@@ -634,7 +649,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	    return 1;
 	p += plen;
 
-	if (pgpGet(p, 2, h + hlen, &plen))
+	if (h + hlen - p < 2)
 	    return 1;
 	pgpPrtHex(" signhash16", p, 2);
 	pgpPrtNL();
