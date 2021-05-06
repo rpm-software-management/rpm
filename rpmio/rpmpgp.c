@@ -1056,6 +1056,8 @@ int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
 	    break;
 
 	p += (pkt.body - pkt.head) + pkt.blen;
+	if (pkttype == PGPTAG_SIGNATURE)
+	    break;
     }
 
     rc = (digp && (p == pend)) ? 0 : -1;
