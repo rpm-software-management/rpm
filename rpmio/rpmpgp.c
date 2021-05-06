@@ -717,9 +717,9 @@ static int pgpPrtPubkeyParams(uint8_t pubkey_algo,
 	p += len + 1;
     }
     keyalg = pgpPubkeyNew(pubkey_algo, curve);
-    for (i = 0; i < keyalg->mpis && p + 2 <= pend; i++) {
-	int mpil = pgpMpiLen(p);
-	if (p + mpil > pend)
+    for (i = 0; i < keyalg->mpis && 2 < pend - p; i++) {
+	const int mpil = pgpMpiLen(p);
+	if (mpil > pend - p)
 	    break;
 	if (keyalg->setmpi(keyalg, i, p))
 	    break;
