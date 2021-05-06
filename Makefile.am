@@ -27,7 +27,7 @@ BUILT_SOURCES =
 
 SUBDIRS = po misc
 SUBDIRS += luaext
-SUBDIRS += rpmio lib sign build scripts fileattrs doc .
+SUBDIRS += rpmio lib sign build scripts fileattrs docs .
 
 if ENABLE_PYTHON
 SUBDIRS += python
@@ -41,7 +41,7 @@ if HAVE_FAKECHROOT
 SUBDIRS += tests
 endif
 
-DIST_SUBDIRS = po misc luaext rpmio lib sign build python scripts fileattrs doc tests plugins
+DIST_SUBDIRS = po misc luaext rpmio lib sign build python scripts fileattrs docs tests plugins
 
 pkgconfigdir = $(libdir)/pkgconfig
 
@@ -270,21 +270,21 @@ MAINTAINERCLEANFILES = ChangeLog
 
 # Always build librpm docs
 if DOXYGEN
-doc/librpm.doxy: doc/librpm.doxy.in doc/librpm/Doxyheader.h Makefile.am configure.ac $(pkginclude_HEADERS)
+docs/librpm.doxy: docs/librpm.doxy.in docs/librpm/Doxyheader.h Makefile.am configure.ac $(pkginclude_HEADERS)
 	files=`echo " $(pkginclude_HEADERS)" | $(SED) -e "s, , \@top_srcdir\@/,g"`; \
 	$(SED) -e "s,[@]pkginclude_HEADERS[@],$$files," \
 	  -e "s,\@top_srcdir\@/,$(top_srcdir)/,g" \
 	  -e "s,[@]HAVE_DOT[@],$(HAVE_DOT)," \
 	  -e "s,[@]PACKAGE[@],$(PACKAGE)," \
 	  -e "s,[@]VERSION[@],$(VERSION)," \
-	< $(top_srcdir)/doc/librpm.doxy.in > doc/librpm.doxy
+	< $(top_srcdir)/docs/librpm.doxy.in > docs/librpm.doxy
 
-doc/librpm/html: doc/librpm.doxy
-	@DOXYGEN@ doc/librpm.doxy
-noinst_DATA += doc/librpm/html
+docs/librpm/html: docs/librpm.doxy
+	@DOXYGEN@ docs/librpm.doxy
+noinst_DATA += docs/librpm/html
 endif
-EXTRA_DIST += doc/librpm.doxy.in doc/librpm/Doxyheader.h
-EXTRA_DIST += doc/librpm/html
+EXTRA_DIST += docs/librpm.doxy.in docs/librpm/Doxyheader.h
+EXTRA_DIST += docs/librpm/html
 
 .PHONY: ci
 ci:
@@ -301,7 +301,7 @@ clean-local:
 	rm -rf include
 
 distclean-local:
-	rm -rf doc/librpm.doxy doc/librpm/html
+	rm -rf docs/librpm.doxy docs/librpm/html
 	rm -rf Doxytags
 	rm -f stamp-h.in
 
