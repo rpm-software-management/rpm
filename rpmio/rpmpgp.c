@@ -374,15 +374,15 @@ static int decodePkt(const uint8_t *p, size_t plen, struct pgpPkt *pkt)
 	} else {
 	    /* Old format packet, body length encoding in tag byte */
 	    lenlen = (1 << (p[0] & 0x3));
-	    if (plen > lenlen) {
-		pkt->blen = pgpGrab(p+1, lenlen);
-	    }
+	    /* Reject indefinite length packets and check bounds */
+	    if (lenlen > 4 || pgpGet(p + 1, lenlen, p + plen, &pkt->blen))
+		return rc;
 	    pkt->tag = (p[0] >> 2) & 0xf;
 	}
 	hlen = lenlen + 1;
 
 	/* Does the packet header and its body fit in our boundaries? */
-	if (lenlen && (hlen + pkt->blen <= plen)) {
+	if (lenlen) {
 	    pkt->head = p;
 	    pkt->body = pkt->head + hlen;
 	    rc = 0;
