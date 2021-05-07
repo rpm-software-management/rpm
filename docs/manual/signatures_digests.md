@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - Signatures and Digests
+---
 # Signatures and Digests
 
 Table describing signatures and digests used in RPM:

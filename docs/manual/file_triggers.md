@@ -1,3 +1,8 @@
+---
+layout: default
+title: rpm.org - File triggers
+---
+
 ## File triggers
 
 File triggers are kind of rpm scriptlets. They could be defined in spec file of a package. Syntax of file trigger is following:

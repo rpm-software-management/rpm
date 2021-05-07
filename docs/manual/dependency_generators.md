@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - RPM Dependency Generator
+---
 # RPM Dependency Generator
 
 One basic design goal of RPM is to be able to check if a package really is going to work on the system it is being installed. To achive this RPM does not (only) rely on requiring packages as stated by the packagers but auto detects executables and libraries that are used. To make this work RPM also examines the packages for libraries that could be used by other packages and creates "Provides:" for them.

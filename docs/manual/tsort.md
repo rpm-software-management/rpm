@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - Package ordering
+---
 # Package ordering in rpm-4.0.1 and later
 
 The package ordering algorithm in rpm-4.0.1 has changed.

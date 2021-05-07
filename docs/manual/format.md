@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - RPM Package format
+---
 # Package format
 
 This document describes the RPM file format version 3.0, which is used

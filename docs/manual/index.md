@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - RPM Reference Manual
+---
 # RPM Reference Manual
 
 ## Package Management

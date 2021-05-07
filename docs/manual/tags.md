@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - RPM Tags
+---
 # RPM Tag Listing
 
 ## Base package tags

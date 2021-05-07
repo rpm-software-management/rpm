@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - Multiple build areas
+---
 # Multiple build areas
 
 It is possible to run several RPM builds on the same machine using

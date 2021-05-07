@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - Immutable header regions
+---
 # Immutable header regions in rpm-4.0.1 and later
 
 The header data structure has changed in rpm-4.0.[12] to preserve the

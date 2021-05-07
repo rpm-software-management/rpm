@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - Using a build root
+---
 # Using a build root
 
 The build root is very similar to Root: (which is now legacy).

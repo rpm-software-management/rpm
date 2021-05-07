@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - Conditional Builds
+---
 # Conditional Builds
 
 Rpmbuild supports conditional package builds with the command line switches
