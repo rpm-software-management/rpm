@@ -426,6 +426,13 @@ static int pgpVersion(const uint8_t *h, size_t hlen, uint8_t *version)
     return 0;
 }
 
+int pgpSignatureType(pgpDigParams _digp) {
+    if (!_digp || _digp->tag != PGPTAG_SIGNATURE)
+	return -1;
+
+    return _digp->sigtype;
+}
+
 static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype, 
 			 pgpDigParams _digp)
 {
