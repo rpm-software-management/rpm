@@ -9,6 +9,7 @@ EXTRA_DIST = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-python-hardlink \
 	brp-strip-static-archive brp-elfperms \
+	brp-remove-la-files \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-debuginfo.sh find-lang.sh \
@@ -26,6 +27,7 @@ rpmconfig_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note brp-python-hardlink \
 	brp-strip-static-archive brp-elfperms \
+	brp-remove-la-files \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-lang.sh find-requires find-provides \

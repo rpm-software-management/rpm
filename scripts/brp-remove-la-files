@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" ] || [ "$RPM_BUILD_ROOT" = "/" ]; then
+  exit 0
+fi
+
+find "$RPM_BUILD_ROOT" -name "*.la" -type f -delete
