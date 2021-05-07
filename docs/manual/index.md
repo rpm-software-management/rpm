@@ -6,11 +6,9 @@ title: rpm.org - RPM Reference Manual
 
 ## Package Management
 
-### Transactions
-
-### Verification
-
-### Queries
+### Queries and RPM Meta Data
+* [RPM Tags](tags.md)
+* [Large File support](large_files.md)
 * [Query formatting](queryformat.md)
 
 ### Signatures
@@ -24,11 +22,13 @@ title: rpm.org - RPM Reference Manual
 * [Build Process](buildprocess.md)
 * [Spec Syntax](spec.md)
   * [Autosetup](autosetup.md)
-  * [Dependencies](dependencies.md)
+  * Dependencies
+    * [Dependencies Basics](dependencies.md)
     * [More on Dependencies](more_dependencies.md)
     * [Boolean Dependencies](boolean_dependencies.md)
     * [Architecture Dependencies](arch_dependencies.md)
     * [Installation Order](tsort.md)
+    * [Automatic Dependency Generation](dependency_generators.md)
   * Install scriptlets
     * [Triggers](triggers.md)
     * [File Triggers](file_triggers.md)
@@ -36,7 +36,6 @@ title: rpm.org - RPM Reference Manual
   * [Conditional Builds](conditionalbuilds.md)
   * [Relocatable Packages](relocatable.md)
   * [Buildroot](buildroot.md) and [Multiple build areas](multiplebuilds.md)
-* [Dependency Generation](dependency_generators.md)
 
 
 ## Developer Information
@@ -45,8 +44,6 @@ title: rpm.org - RPM Reference Manual
 * [Plugin API](plugins.md)
 
 ### Package Format
-* [RPM Tags](tags.md)
-* [Large File support](large_files.md)
 * [RPM v3 file format](format.md)
 * [RPM v4 header regions](hregions.md)
 * [RPM v4 signatures and digests](signatures_digests.md)
