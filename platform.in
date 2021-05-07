@@ -90,6 +90,7 @@
 %__brp_strip_comment_note %{_rpmconfigdir}/brp-strip-comment-note %{__strip} %{__objdump}
 %__brp_strip_static_archive %{_rpmconfigdir}/brp-strip-static-archive %{__strip}
 %__brp_elfperms %{_rpmconfigdir}/brp-elfperms
+%__brp_remove_la_files %{_rpmconfigdir}/brp-remove-la-files
 
 %__os_install_post    \
     %{?__brp_compress} \
@@ -97,6 +98,7 @@
     %{?__brp_strip} \
     %{?__brp_strip_static_archive} \
     %{?__brp_strip_comment_note} \
+    %{?__brp_remove_la_files} \
 %{nil}
 
 %__spec_install_post\
