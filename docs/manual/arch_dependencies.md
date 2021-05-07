@@ -1,3 +1,9 @@
+---
+layout: default
+title: rpm.org - Architecture-specific Dependencies
+---
+
+
 # Architecture-specific Dependencies
 
 On multiarch systems such as x86_64 it would be often desireable to express that a package of compatible architecture is

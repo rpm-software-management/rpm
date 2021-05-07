@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - Boolean Dependencies
+---
 ## Boolean Dependencies
 
 Starting with rpm-4.13, RPM is able to process boolean expressions in all dependencies (Requires, Recommends, Suggests, Supplements, Enhances, Conflicts). Boolean Expressions are always enclosed with parenthesis. They are build out of "normal" dependencies: either name only or name, comparison and version description.

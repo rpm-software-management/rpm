@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - Spec file format
+---
 # Spec file format
 
 ## Generic syntax

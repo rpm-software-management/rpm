@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - More on Dependencies
+---
 # More on Dependencies
 
 ## Boolean Dependencies

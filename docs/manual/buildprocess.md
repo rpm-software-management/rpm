@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - Package Build Process
+---
 # Package Build Process
 
 * Unpack srpm/tar (optional)

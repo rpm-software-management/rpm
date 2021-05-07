@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - Embedded Lua interpreter
+---
 # Lua in RPM
 
 A fairly unknown feature of RPM is that it comes with an embedded Lua interpreter. This page attempts to document the possibilities of the embedded Lua. Note that Lua-support is a compile-time option, the following assumes that your RPM is was built using --with-lua option.

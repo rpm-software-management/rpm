@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - Runtime scriptlet expansion
+---
 # Runtime scriptlet expansion (DRAFT)
 
 Traditionally rpm scriptlets are macro-expanded at build-time like everything else in specs, but beyond that they are "static". Usually this is just what you want, but there are some cases where one would rather leave some decisions until install-time. For example a noarch package might want to interact with an arch-specific package in its scriptlets, which can involve determining the correct value of %{_libdir}. Or one might want to only perform some actions depending on macros defined on the system. Macros can be evaluated at runtime by using the built-in Lua-interpreter (ie -p <lua> scriptlets) with rpm.expand() but rewriting scriptlets in Lua is not always feasible. Starting with version 4.9.0, rpm supports two generic runtime scriptlet expansion mechanisms that are available to all scriptlets regardless of the language they are written in: macro- and queryformat-expansion.

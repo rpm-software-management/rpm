@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - Automating patch application in specs
+---
 # Automating patch application in specs
 
 ## %autosetup description

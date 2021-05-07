@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - Signature header format
+---
 # Signature header
 
 The 2.1 release of RPM had a few improvements in the area of

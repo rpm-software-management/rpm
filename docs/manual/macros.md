@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - Macro syntax
+---
 # Macro syntax
 
 RPM has fully recursive spec file macros.  Simple macros do straight text

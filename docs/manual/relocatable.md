@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - Relocatable packages
+---
 # Relocatable packages
 
 Relocatable packages are a way to give the user a little control

@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - Trigger scriptlets
+---
 # Trigger scriptlets
 
 Triggers provide a well-defined method for packages to interact with one

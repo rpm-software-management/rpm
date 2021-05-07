@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - Dependencies
+---
 # Dependencies
 
 Dependencies provide a way for a package builder to require other packages or capabilities to be installed before or simultaneously with one another. For example, these can be used to require a python interpreter for a python-based application. RPM ensures dependencies are satisfied whenever packages are installed, erased, or upgraded. This page describes the basics. More topics can be found in More On Dependencies.

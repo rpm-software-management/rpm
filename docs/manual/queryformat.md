@@ -1,3 +1,7 @@
+---
+layout: default
+title: rpm.org - Query formats
+---
 # Query formats
 
 As it is impossible to please everyone with one style of query output, RPM
