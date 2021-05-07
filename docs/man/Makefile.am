@@ -1,6 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
 EXTRA_DIST =
+EXTRA_DIST += index.md
 
 man_man1dir = $(mandir)/man1
 man_man1_DATA = gendiff.1
