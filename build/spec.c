@@ -249,7 +249,7 @@ rpmSpec newSpec(void)
     spec->macros = rpmGlobalMacroContext;
     spec->pool = rpmstrPoolCreate();
     
-    spec->lua = specLuaInit(spec);
+    specLuaInit(spec);
     return spec;
 }
 
@@ -298,7 +298,7 @@ rpmSpec rpmSpecFree(rpmSpec spec)
 
     // only destroy lua tables if there are no BASpecs left
     if (spec->recursing || spec->BACount == 0) {
-	spec->lua = specLuaFini(spec);
+	specLuaFini(spec);
     }
 
     spec->sources = freeSources(spec->sources);

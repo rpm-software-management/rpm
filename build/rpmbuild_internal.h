@@ -138,7 +138,6 @@ struct rpmSpec_s {
     Package sourcePackage;
 
     rpmMacroContext macros;
-    rpmlua lua;
     rpmstrPool pool;
 
     StringBuf prep;		/*!< %prep scriptlet. */

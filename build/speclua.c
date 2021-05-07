@@ -25,7 +25,7 @@ void * specLuaInit(rpmSpec spec)
 
 void * specLuaFini(rpmSpec spec)
 {
-    rpmlua lua = spec->lua;
+    rpmlua lua = rpmluaGetGlobalState();
     lua_State *L = rpmluaGetLua(lua);
     for (const char **vp = luavars; vp && *vp; vp++) {
 	lua_pushnil(L);
