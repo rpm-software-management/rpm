@@ -321,7 +321,8 @@ int addSource(rpmSpec spec, int specline, const char *srcname, rpmTagVal tag)
     rpmPushMacro(spec->macros, buf, NULL, p->fullSource, RMIL_SPEC);
     free(buf);
 
-    addLuaSource(spec->lua, p);
+    rpmlua lua = rpmluaGetGlobalState();
+    addLuaSource(lua, p);
 
     if (!nofetch && tryDownload(p))
 	return RPMRC_FAIL;

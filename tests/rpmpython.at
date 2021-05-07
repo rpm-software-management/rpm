@@ -67,7 +67,7 @@ for iot in [ 'fpio', 'fdio', 'ufdio', 'gzdio' ]:
 ],
 [])
 
-RPMPY_TEST([spec parse],[
+RPMPY_TEST([spec parse 1],[
 # TODO: add a better test spec with sub-packages etc
 spec = rpm.spec('${RPMDATA}/SPECS/hello.spec')
 for (name, num, flags) in spec.sources:
@@ -80,6 +80,11 @@ myprint(spec.sourceHeader.format('%{nvr}'))
 src hello-1.0.tar.gz 0 1
 hello-1.0-1
 hello-1.0-1
+])
+
+RPMPY_TEST([spec parse 2],[
+spec = rpm.spec('${RPMDATA}/SPECS/mini.spec')
+rpm.reloadConfig()
 ])
 
 RPMPY_TEST([basic header manipulation],[
