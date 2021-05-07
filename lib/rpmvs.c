@@ -566,7 +566,9 @@ exit:
 static rpmRC
 verifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo)
 {
-    rpmRC res = rpmKeyringVerifySig(keyring, sinfo->sig, sinfo->ctx);
+    rpmRC res = RPMRC_FAIL;
+    if (sinfo->sig && sinfo->sig->sigtype == PGPSIGTYPE_BINARY)
+	res = rpmKeyringVerifySig(keyring, sinfo->sig, sinfo->ctx);
 
     return res;
 }
