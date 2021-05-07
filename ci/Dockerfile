@@ -45,6 +45,7 @@ RUN dnf -y install \
   /usr/bin/gdb-add-index \
   dwz \
   fsverity-utils fsverity-utils-devel \
+  pandoc \
   && dnf clean all
 
 COPY . .
