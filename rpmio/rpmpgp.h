@@ -1161,6 +1161,15 @@ rpmRC pgpVerifySignature(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx)
 rpmRC pgpVerifySig(pgpDig dig, DIGEST_CTX hashctx);
 
 /** \ingroup rpmpgp
+ * Return the type of a PGP signature. If `sig` is NULL, or is not a signature,
+ * returns -1.
+ *
+ * @param sig		signature
+ * @return 		type of the signature
+ */
+int pgpSignatureType(pgpDigParams sig);
+
+/** \ingroup rpmpgp
  * Return a string identification of a PGP signature/pubkey.
  * @param digp		signature/pubkey container
  * @return		string describing the item and parameters
