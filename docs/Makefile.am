@@ -5,6 +5,7 @@ SUBDIRS = man
 EXTRA_DIST =
 
 EXTRA_DIST += \
+index.md \
 manual/index.md \
 manual/arch_dependencies.md \
 manual/autosetup.md \
