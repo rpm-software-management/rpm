@@ -35,23 +35,24 @@ struct taglate_s {
     rpmTagVal stag;
     rpmTagVal xtag;
     rpm_count_t count;
+    unsigned char allow_in_main_header;
 } const xlateTags[] = {
-    { RPMSIGTAG_SIZE, RPMTAG_SIGSIZE, 1 },
-    { RPMSIGTAG_PGP, RPMTAG_SIGPGP, 0 },
-    { RPMSIGTAG_MD5, RPMTAG_SIGMD5, 16 },
-    { RPMSIGTAG_GPG, RPMTAG_SIGGPG, 0 },
-    /* { RPMSIGTAG_PGP5, RPMTAG_SIGPGP5, 0 }, */ /* long obsolete, dont use */
-    { RPMSIGTAG_PAYLOADSIZE, RPMTAG_ARCHIVESIZE, 1 },
-    { RPMSIGTAG_FILESIGNATURES, RPMTAG_FILESIGNATURES, 0 },
-    { RPMSIGTAG_FILESIGNATURELENGTH, RPMTAG_FILESIGNATURELENGTH, 1 },
-    { RPMSIGTAG_VERITYSIGNATURES, RPMTAG_VERITYSIGNATURES, 0 },
-    { RPMSIGTAG_VERITYSIGNATUREALGO, RPMTAG_VERITYSIGNATUREALGO, 1 },
-    { RPMSIGTAG_SHA1, RPMTAG_SHA1HEADER, 1 },
-    { RPMSIGTAG_SHA256, RPMTAG_SHA256HEADER, 1 },
-    { RPMSIGTAG_DSA, RPMTAG_DSAHEADER, 0 },
-    { RPMSIGTAG_RSA, RPMTAG_RSAHEADER, 0 },
-    { RPMSIGTAG_LONGSIZE, RPMTAG_LONGSIGSIZE, 1 },
-    { RPMSIGTAG_LONGARCHIVESIZE, RPMTAG_LONGARCHIVESIZE, 1 },
+    { RPMSIGTAG_SIZE, RPMTAG_SIGSIZE, 1, 1 },
+    { RPMSIGTAG_PGP, RPMTAG_SIGPGP, 0, 0 },
+    { RPMSIGTAG_MD5, RPMTAG_SIGMD5, 16, 0 },
+    { RPMSIGTAG_GPG, RPMTAG_SIGGPG, 0, 0 },
+    /* { RPMSIGTAG_PGP5, RPMTAG_SIGPGP5, 0, 0 }, */ /* long obsolete, dont use */
+    { RPMSIGTAG_PAYLOADSIZE, RPMTAG_ARCHIVESIZE, 1, 1 },
+    { RPMSIGTAG_FILESIGNATURES, RPMTAG_FILESIGNATURES, 0, 1 },
+    { RPMSIGTAG_FILESIGNATURELENGTH, RPMTAG_FILESIGNATURELENGTH, 1, 1 },
+    { RPMSIGTAG_VERITYSIGNATURES, RPMTAG_VERITYSIGNATURES, 0, 1 },
+    { RPMSIGTAG_VERITYSIGNATUREALGO, RPMTAG_VERITYSIGNATUREALGO, 1, 1 },
+    { RPMSIGTAG_SHA1, RPMTAG_SHA1HEADER, 1, 0 },
+    { RPMSIGTAG_SHA256, RPMTAG_SHA256HEADER, 1, 0 },
+    { RPMSIGTAG_DSA, RPMTAG_DSAHEADER, 0, 0 },
+    { RPMSIGTAG_RSA, RPMTAG_RSAHEADER, 0, 0 },
+    { RPMSIGTAG_LONGSIZE, RPMTAG_LONGSIGSIZE, 1, 1 },
+    { RPMSIGTAG_LONGARCHIVESIZE, RPMTAG_LONGARCHIVESIZE, 1, 1 },
     { 0 }
 };
 
@@ -68,6 +69,13 @@ rpmTagVal headerMergeLegacySigs(Header h, Header sigh, char **msg)
     struct rpmtd_s td;
 
     for (xl = xlateTags; xl->stag; xl++) {
+	/*
+	 * Work around install4j bug:
+	 * https://github.com/rpm-software-management/rpm/issues/1635
+	 */
+	if (xl->allow_in_main_header)
+	    continue;
+
 	/* There mustn't be one in the main header */
 	if (headerIsEntry(h, xl->xtag))
 	    goto exit;
