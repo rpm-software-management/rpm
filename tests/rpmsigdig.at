@@ -24,6 +24,19 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64.rpm /data/RPMS/hello-1.0-1.i38
 [])
 AT_CLEANUP
 
+# ------------------------------
+# Test rpmkeys write errors
+AT_SETUP([[rpmkeys -K no space left on stdout]])
+AT_KEYWORDS([rpmkeys digest])
+AT_CHECK([
+RPMDB_INIT[
+
+runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64.rpm /data/RPMS/hello-1.0-1.i386.rpm >/dev/full
+]],255,,[[Error writing to log: No space left on device
+]])
+AT_CLEANUP
+
+
 AT_SETUP([rpmkeys -Kv <reconstructed> 1])
 AT_KEYWORDS([rpmkeys digest])
 AT_CHECK([
