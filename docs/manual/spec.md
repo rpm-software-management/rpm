@@ -292,7 +292,7 @@ accepted qualifiers are:
 * `verify`
 
   Relates to `%verify` scriptlet execution. As `%verify` scriptlet is not
-  executed during install/erase, this does not affect transcation ordering.
+  executed during install/erase, this does not affect transaction ordering.
 
 * `interp`
 
