@@ -5,6 +5,8 @@ SUBDIRS = man
 EXTRA_DIST =
 
 EXTRA_DIST += \
+_layouts/default.html \
+_layouts/favicon.ico \
 index.md \
 manual/index.md \
 manual/arch_dependencies.md \
