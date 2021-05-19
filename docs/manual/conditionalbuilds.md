@@ -65,5 +65,4 @@ To pass options to configure or other scripts that understand a `--with-foo` or
 ```
 
 ## References
-* [doc/manual/conditionalbuilds](https://github.com/rpm-software-management/rpm/blob/master/doc/manual/conditionalbuilds)
 * [macros](https://github.com/rpm-software-management/rpm/blob/master/macros.in)
