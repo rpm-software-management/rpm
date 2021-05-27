@@ -37,6 +37,8 @@ While not technically a type on its own there are several mappings. These consis
 
 ## Base package tags
 
+Tag Name    | Value| Type       | Description
+------------|------|------------|------------
 Name        | 1000 | string     | Package name.
 Version     | 1001 | string     | Package version.
 Release     | 1002 | string     | Package release.
