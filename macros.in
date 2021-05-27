@@ -68,6 +68,8 @@
 %__objdump		@__OBJDUMP@
 %__strip		@__STRIP@
 
+%__find_debuginfo	%{_rpmconfigdir}/find-debuginfo.sh
+
 #==============================================================================
 # Conditional build stuff.
 
@@ -158,7 +160,7 @@
 #	the script.  See the script for details.
 #
 %__debug_install_post   \
-    %{_rpmconfigdir}/find-debuginfo.sh \\\
+    %{__find_debuginfo} \\\
     %{?_smp_build_ncpus:-j%{_smp_build_ncpus}} \\\
     %{?_missing_build_ids_terminate_build:--strict-build-id} \\\
     %{?_no_recompute_build_ids:-n} \\\
