@@ -6,7 +6,7 @@ AM_CFLAGS = @RPMCFLAGS@
 fattrsdir = $(rpmconfigdir)/fileattrs
 
 fattrs_DATA = \
-	debuginfo.attr desktop.attr elf.attr font.attr libtool.attr metainfo.attr \
+	debuginfo.attr desktop.attr elf.attr font.attr metainfo.attr \
 	perl.attr perllib.attr pkgconfig.attr ocaml.attr \
 	script.attr
 

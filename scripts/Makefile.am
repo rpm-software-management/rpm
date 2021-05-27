@@ -18,7 +18,7 @@ EXTRA_DIST = \
 	tgpg vpkg-provides.sh \
 	find-requires find-provides \
 	ocamldeps.sh \
-	pkgconfigdeps.sh libtooldeps.sh \
+	pkgconfigdeps.sh \
 	fontconfig.prov script.req
 
 rpmconfig_SCRIPTS = \
@@ -29,7 +29,7 @@ rpmconfig_SCRIPTS = \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-lang.sh find-requires find-provides \
 	perl.prov perl.req \
-	pkgconfigdeps.sh libtooldeps.sh \
+	pkgconfigdeps.sh \
 	ocamldeps.sh \
 	fontconfig.prov script.req \
 	rpmdb_dump rpmdb_load \
