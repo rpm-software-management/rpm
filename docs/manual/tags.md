@@ -226,7 +226,7 @@ Verifyscriptprog  | 1091 | string array
 
 ### Triggers
 
-Triggers are stored in a combination of dependency and scriptlet tags.
+[Triggers](triggers.md) are stored in a combination of dependency and scriptlet tags.
 
 Triggerscripts, Triggerscriptflags and Triggerscriptprog form a scriptlet
 triplet, and Triggername, Triggerflags, Triggerversion form a dependency
@@ -243,10 +243,10 @@ Triggerversion     | 1067 | string array
 
 ### File triggers
 
-File trigger tags are like normal trigger tags, with an additional
-priority tag to affect trigger running order. File triggers in
-Filetrigger-tags run once per triggered package, whereas triggers in
-Transfiletrigger-tags run once per transaction.
+[File trigger](file_triggers.md) tags are like normal trigger tags,
+with an additional priority tag to affect trigger running order. File
+triggers in Filetrigger-tags run once per triggered package, whereas
+triggers in Transfiletrigger-tags run once per transaction.
 
 Filetriggerflags       | 5072 | int32 array
 Filetriggerindex       | 5070 | int32 array
@@ -267,6 +267,8 @@ Transfiletriggerscripts     | 5076 | string array
 Transfiletriggerversion     | 5081 | string array
 
 ## Signatures and digests
+
+[Signatures](signatures.md) allow to verify the origin of a package.
 
 Dsaheader         | 267  | bin          | OpenPGP DSA signature of the header (if thus signed)
 Longsigsize       | 270  | int64        | Header+payload size if > 4GB.
