@@ -17,7 +17,6 @@ EXTRA_DIST = \
 	rpm.daily rpm.log rpm.supp rpm2cpio.sh \
 	tgpg vpkg-provides.sh \
 	find-requires find-provides \
-	find-requires.php find-provides.php \
 	ocamldeps.sh \
 	pkgconfigdeps.sh libtooldeps.sh \
 	fontconfig.prov script.req
