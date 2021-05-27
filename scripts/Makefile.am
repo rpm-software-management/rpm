@@ -6,7 +6,7 @@ AM_CFLAGS = @RPMCFLAGS@
 CLEANFILES =
 
 EXTRA_DIST = \
-	brp-compress brp-java-gcjcompile \
+	brp-compress \
 	brp-strip brp-strip-comment-note \
 	brp-strip-static-archive brp-elfperms \
 	check-files check-prereqs \
@@ -22,7 +22,7 @@ EXTRA_DIST = \
 	fontconfig.prov script.req
 
 rpmconfig_SCRIPTS = \
-	brp-compress brp-java-gcjcompile \
+	brp-compress \
 	brp-strip brp-strip-comment-note \
 	brp-strip-static-archive brp-elfperms \
 	check-files check-prereqs \
