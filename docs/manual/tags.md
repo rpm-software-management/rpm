@@ -2,7 +2,36 @@
 layout: default
 title: rpm.org - RPM Tags
 ---
-# RPM Tag Listing
+# RPM Tags
+
+The package's meta data in stored in the RPM header. The header is a binary data structure that stores the single pieces of data in tags. Each tag has a pre-defined meaning and data type. These are not stored in the header itselfs but need to be known by the code reading the header. In the header the tags are only refered by their number.
+
+## Tag types
+
+### Scalar types
+
+There are four unsigned integer types for RPM tags:
+
+* `int8`
+* `int16`
+* `int32`
+* `int64`
+
+Additionally there is a `char` datatype that is also only used once.
+
+There is a `bin` datatype for arbitrary data that is basically an `char` array.
+
+There are two string types: Plain `string` with is zero terminated and of arbitary length (within the header size restriction).
+
+`i18nstring`s are translated to the requested locale when queried.
+
+### Arrays
+
+Each tag is either of a plain scalar type or is an array of one of these types. While not enforced by the type system the RPM code assumes that tags belonging together have the same number of entries e.g. one for each file.
+
+### Mappings
+
+While not technically a type on its own there are several mappings. These consists of two or more tags working together. One array (called dictionary, often named `*dict`) contains a list of values while another tag (called an index) contains integers referencing a position in the first one. The index can either be a plain integer or an integer array.
 
 ## Base package tags
 
@@ -149,29 +178,43 @@ denotes the scriptlet interpreter and possible arguments, and flags tag
 contains additional processing information such as whether to macro
 expand the scriptlet body.
 
+`%postin` script are run right after the package got installed
+
 Postin      | 1024 | string
 Postinflags | 5021 | int32
 Postinprog  | 1086 | string array
+
+`%posttrans` are run at the end of the transaction that installed the package
 
 Posttrans      | 1152 | string
 Posttransflags | 5025 | int32
 Posttransprog  | 1154 | string array
 
+`%postun` in run after the package was removed
+
 Postun      | 1026 | string
 Postunflags | 5023 | int32
 Postunprog  | 1088 | string array
+
+`%prein` in run right before the package is installed
 
 Prein      | 1023 | string
 Preinflags | 5020 | int32
 Preinprog  | 1085 | string array
 
+`%pretrans` is run for to be installed packages before any packages are installed
+
 Pretrans      | 1151 | string
 Pretransflags | 5024 | int32
 Pretransprog  | 1153 | string array
 
+`%preun` is run before the package gets removed
+
 Preun      | 1025 | string
 Preunflags | 5022 | int32
 Preunprog  | 1087 | string array
+
+`%verify` script is executed when the package is verified (e.g. with `rpm -V`)
 
 Verifyscript      | 1079 | string
 Verifyscriptflags | 5026 | int32
@@ -179,7 +222,7 @@ Verifyscriptprog  | 1091 | string array
 
 ### Triggers
 
-Triggers are stored in a combination of dependency and scriptlet tags.
+[Triggers](triggers.md) are stored in a combination of dependency and scriptlet tags.
 
 Triggerscripts, Triggerscriptflags and Triggerscriptprog form a scriptlet
 triplet, and Triggername, Triggerflags, Triggerversion form a dependency
@@ -196,10 +239,10 @@ Triggerversion     | 1067 | string array
 
 ### File triggers
 
-File trigger tags are like normal trigger tags, with an additional
-priority tag to affect trigger running order. File triggers in
-Filetrigger-tags run once per triggered package, whereas triggers in
-Transfiletrigger-tags run once per transaction.
+[File trigger](file_triggers.md) tags are like normal trigger tags,
+with an additional priority tag to affect trigger running order. File
+triggers in Filetrigger-tags run once per triggered package, whereas
+triggers in Transfiletrigger-tags run once per transaction.
 
 Filetriggerflags       | 5072 | int32 array
 Filetriggerindex       | 5070 | int32 array
@@ -221,6 +264,8 @@ Transfiletriggerversion     | 5081 | string array
 
 ## Signatures and digests
 
+[Signatures](signatures.md) allow to verify the origin of a package.
+
 Dsaheader         | 267  | bin          | OpenPGP DSA signature of the header (if thus signed)
 Longsigsize       | 270  | int64        | Header+payload size if > 4GB.
 Payloaddigest     | 5092 | string array | Cryptographic digest of the compressed payload.
@@ -234,7 +279,11 @@ Sigmd5            | 261  | bin          | MD5 digest of the header+payload.
 Sigpgp            | 259  | bin          | OpenPGP RSA signature of the header+payload (if thus signed).
 Sigsize           | 257  | int32        | Header+payload size.
 
-## Installed packages
+## Installed package headers only
+
+The following tags are added to the headers during installation and do not
+exist in RPM package files.
+
 
 Filestates     | 1029 | char array   | Per-file installed status information (installed/skipped/forced etc)
 Installcolor   | 1127 | int32        | "Color" of transaction in which the package was installed.
@@ -265,6 +314,9 @@ Headeri18ntable | 100 | string array | Locales for which the header has translat
 Headerimmutable | 63  | bin          | Special tag to return the unmodified, original image of the header even after data has been added to it in eg installation.
 
 ## Deprecated / Obsolete
+
+These tags are not longer in active use. If encountered in packages
+they are ignored.
 
 Filecontexts       | 1147 | string array
 Fscontexts         | 1148 | string array
@@ -332,10 +384,13 @@ Fileprovide   | 5001 | string array | Per file dependency capabilities provided 
 Filerequire   | 5002 | string array | Per file dependency capabilities required by the corresponding files.
 Instfilenames | 5040 | string array | Per file paths installed from the package, calculated from the path triplet and file status info.
 
-Longfilesizes | Per file sizes in 64bit format regardless of underlying storage size. Note overlap with the concrete Longfilesizes tag. Always use this to access file sizes.
-Longarchivesize | Archive size in 64bit format regardless of underlying storage size. Note overlap with the concrete Longarchivesize tag. Always use this to access archive size.
-Longsize | Uncompressed size in 64bit format regardless of underlying storage size. Note overlap with the concrete Longsize tag. Always use this to access uncompressed size.
-Longsigsize | Header+payload size in 64bit format regardless of underlying storage size. Note overlap with the concrete Longsigsize tag. Always use this to access header+payload size.
+
+These tags provide 64bit values regardless of underlying storage size. They return the value of the concrete tag if present or the value of the corresponding  32bit tag as an 64bit value. Always use these to access the sizes. See [Large File support](large_files.md) for details.
+
+Longfilesizes | Per file sizes in 64bit format
+Longarchivesize | Archive size in 64bit format
+Longsize | Uncompressed size in 64bit format
+Longsigsize | Header+payload size in 64bit format
 
 Origfilenames         | 5007 | string array | Original Filenames in relocated packages.
 Providenevrs          | 5042 | string array | Formatted `name [op version]` provide dependency strings.
