@@ -285,6 +285,10 @@ Sigsize           | 257  | int32        | Header+payload size.
 
 ## Installed packages
 
+Some information on how exactly a package got installed can not be
+known before hand. RPM though adds a few tags to the header during
+installation before adding it to the rpmdb.
+
 Filestates     | 1029 | char array   | Per-file installed status information (installed/skipped/forced etc)
 Installcolor   | 1127 | int32        | "Color" of transaction in which the package was installed.
 Installtid     | 1128 | int32        | ID of transaction in which the package was installed.
@@ -314,6 +318,9 @@ Headeri18ntable | 100 | string array | Locales for which the header has translat
 Headerimmutable | 63  | bin          | Special tag to return the unmodified, original image of the header even after data has been added to it in eg installation.
 
 ## Deprecated / Obsolete
+
+These tags are not longer in active use. If encountered in packages
+they are ignored.
 
 Filecontexts       | 1147 | string array
 Fscontexts         | 1148 | string array
