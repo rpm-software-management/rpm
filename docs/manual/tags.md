@@ -2,7 +2,38 @@
 layout: default
 title: rpm.org - RPM Tags
 ---
-# RPM Tag Listing
+# RPM Tags
+
+The package's meta data in stored in the RPM header. The header is a binary data structure that stores the single pieces of data in tags. Each tag has a pre-defined meaning and data type. These are not stored in the header itselfs but need to be known by the code reading the header. In the header the tags are only refered by their number.
+
+## Tag types
+
+### Scalar types
+
+There are four unsigned integer types for RPM tags:
+
+* `int8`
+* `int16`
+* `int32`
+* `int64`
+
+`int8` and `int16` are rarely used. Most integer tags are `int32` with a few `int64` replacements where 32 bits were just not enough. These being unsigned limits time stamps to 1970-01-01 and later.
+
+Additionally there is a `char` datatype that is also only used once.
+
+There is a `bin` datatype for arbitrary data that is basically an `char` array.
+
+There are two string types: Plain `string` with is zero terminated and of arbitary length (within the header size restriction).
+
+`i18nstring`s are translated to the requested local when queried.
+
+### Arrays
+
+Each tag is either of a plain scalar type or is an array of one of these types. While not enforced by the type system the RPM code assumes that tags belonging together have the same number of entries e.g. one for each file.
+
+### Mappings
+
+While not technically a type on its own there are several mappings. These consists of two or more tags working together. One array (called dictionary, often named `*dict`) contains a list of values while another tag (called an index) contains integers referencing a position in the first one. The index can either be a plain integer or an integer array.
 
 ## Base package tags
 
