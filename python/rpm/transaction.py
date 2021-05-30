@@ -1,51 +1,58 @@
+from __future__ import annotations
+from collections.abc import Iterable
+from typing import Any, cast, List, Literal, Optional, Tuple, Union
 import sys
 import rpm
 from rpm._rpm import ts as TransactionSetCore
 
+HdrOrFD = Union[rpm.hdr, rpm.AnyFD]
+RunRes = List[Tuple[str, Tuple[rpm.rpmProblemType, Optional[str], int]]]
+CheckRes = List[Tuple[Tuple[str, str, str], Tuple[str, str], int, int, Any]]
+
 # TODO: migrate relevant documentation from C-side
 class TransactionSet(TransactionSetCore):
-    _probFilter = 0
+    _probFilter: int = 0
 
-    def _wrapSetGet(self, attr, val):
+    def _wrapSetGet(self, attr: str, val: int) -> int:
         oval = getattr(self, attr)
         setattr(self, attr, val)
-        return oval
+        return cast(int, oval)
 
-    def setVSFlags(self, flags):
+    def setVSFlags(self, flags: int) -> int:
         return self._wrapSetGet('_vsflags', flags)
 
-    def getVSFlags(self):
+    def getVSFlags(self) -> int:
         return self._vsflags
 
-    def setVfyFlags(self, flags):
+    def setVfyFlags(self, flags: int) -> int:
         return self._wrapSetGet('_vfyflags', flags)
 
-    def getVfyFlags(self):
+    def getVfyFlags(self) -> int:
         return self._vfyflags
 
-    def getVfyLevel(self):
+    def getVfyLevel(self) -> int:
         return self._vfylevel
 
-    def setVfyLevel(self, flags):
+    def setVfyLevel(self, flags: int) -> int:
         return self._wrapSetGet('_vfylevel', flags)
 
-    def setColor(self, color):
+    def setColor(self, color: int) -> int:
         return self._wrapSetGet('_color', color)
 
-    def setPrefColor(self, color):
+    def setPrefColor(self, color: int) -> int:
         return self._wrapSetGet('_prefcolor', color)
 
-    def setFlags(self, flags):
+    def setFlags(self, flags: int) -> int:
         return self._wrapSetGet('_flags', flags)
 
-    def setProbFilter(self, ignoreSet):
+    def setProbFilter(self, ignoreSet: int) -> int:
         return self._wrapSetGet('_probFilter', ignoreSet)
 
-    def parseSpec(self, specfile):
+    def parseSpec(self, specfile: str) -> rpm.spec:
         return rpm.spec(specfile)
 
-    def getKeys(self):
-        keys = []
+    def getKeys(self) -> Optional[Tuple[Any, ...]]:
+        keys: List[Any] = []
         for te in self:
             keys.append(te.Key())
         # Backwards compatibility goo - WTH does this return a *tuple* ?!
@@ -54,7 +61,7 @@ class TransactionSet(TransactionSetCore):
         else:
             return tuple(keys)
 
-    def _f2hdr(self, item):
+    def _f2hdr(self, item: HdrOrFD) -> rpm.hdr:
         if isinstance(item, str):
             with open(item) as f:
                 header = self.hdrFromFdno(f)
@@ -64,7 +71,7 @@ class TransactionSet(TransactionSetCore):
             header = self.hdrFromFdno(item)
         return header
 
-    def addInstall(self, item, key, how="u"):
+    def addInstall(self, item: HdrOrFD, key: Any, how: Literal['u', 'i'] = "u") -> None:
         header = self._f2hdr(item)
 
         if how not in ['u', 'i']:
@@ -77,30 +84,33 @@ class TransactionSet(TransactionSetCore):
             else:
                 raise rpm.error("adding install to transaction failed")
 
-    def addReinstall(self, item, key):
+    def addReinstall(self, item: HdrOrFD, key: Any) -> None:
         header = self._f2hdr(item)
 
         if not TransactionSetCore.addReinstall(self, header, key):
             raise rpm.error("adding reinstall to transaction failed")
 
-    def addErase(self, item):
-        hdrs = []
+    def addErase(self, item: Union[rpm.mi, rpm.hdr, int, str]) -> None:
+        hdrs: Iterable[rpm.hdr]
+
         # match iterators are passed on as-is
         if isinstance(item, rpm.mi):
             hdrs = item
         elif isinstance(item, rpm.hdr):
-            hdrs.append(item)
+            hdrs = [item]
         elif isinstance(item, (int, str)):
+            hdrlist: List[rpm.hdr] = []
             if isinstance(item, int):
                 dbi = rpm.RPMDBI_PACKAGES
             else:
                 dbi = rpm.RPMDBI_LABEL
 
             for h in self.dbMatch(dbi, item):
-                hdrs.append(h)
+                hdrlist.append(h)
 
-            if not hdrs:
+            if not hdrlist:
                 raise rpm.error("package not installed")
+            hdrs = hdrlist
         else:
             raise TypeError("invalid type %s" % type(item))
 
@@ -108,7 +118,7 @@ class TransactionSet(TransactionSetCore):
             if not TransactionSetCore.addErase(self, h):
                 raise rpm.error("adding erasure to transaction failed")
 
-    def run(self, callback, data):
+    def run(self, callback: rpm.tsRunCb, data: Any) -> Optional[RunRes]:
         rc = TransactionSetCore.run(self, callback, data, self._probFilter)
 
         # crazy backwards compatibility goo: None for ok, list of problems
@@ -117,18 +127,18 @@ class TransactionSet(TransactionSetCore):
         if rc == 0:
             return None
 
-        res = []
+        res: RunRes = []
         if rc > 0:
             for prob in self.problems():
                 item = ("%s" % prob, (prob.type, prob._str, prob._num))
                 res.append(item)
         return res
 
-    def check(self, *args, **kwds):
+    def check(self, *args: rpm.tsCheckCb, **kwds: rpm.tsCheckCb) -> CheckRes:
         TransactionSetCore.check(self, *args, **kwds)
 
         # compatibility: munge problem strings into dependency tuples of doom
-        res = []
+        res: CheckRes = []
         for p in self.problems():
             # is it anything we need to care about?
             if p.type == rpm.RPMPROB_CONFLICT:
@@ -139,7 +149,10 @@ class TransactionSet(TransactionSetCore):
                 continue
 
             # strip arch, split to name, version, release
-            nevr = p.altNEVR.rsplit('.', 1)[0]
+            altnevr: Optional[str] = p.altNEVR
+            if not altnevr:
+                continue
+            nevr = altnevr.rsplit('.', 1)[0]
             n, v, r = nevr.rsplit('-', 2)
 
             # extract the dependency information
@@ -163,7 +176,7 @@ class TransactionSet(TransactionSetCore):
 
         return res
 
-    def hdrCheck(self, blob):
+    def hdrCheck(self, blob: bytes) -> None:
         res, msg = TransactionSetCore.hdrCheck(self, blob)
         # generate backwards compatibly broken exceptions
         if res == rpm.RPMRC_NOKEY:
@@ -173,7 +186,7 @@ class TransactionSet(TransactionSetCore):
         elif res != rpm.RPMRC_OK:
             raise rpm.error(msg)
 
-    def hdrFromFdno(self, fd):
+    def hdrFromFdno(self, fd: rpm.AnyFD) -> rpm.hdr:
         res, h = TransactionSetCore.hdrFromFdno(self, fd)
         # generate backwards compatibly broken exceptions
         if res == rpm.RPMRC_NOKEY:
