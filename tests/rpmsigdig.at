@@ -404,8 +404,48 @@ runroot rpmkeys -Kv /tmp/${pkg}
     Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
     Payload SHA256 ALT digest: NOTFOUND
     V4 RSA/SHA256 Signature, key ID 1964c5fc: BAD
+    DSA signature: NOTFOUND
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != d662cd0d81601a7107312684ad1ddf38)
 ],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# Test pre-built corrupted package verification (corrupted payload)
+AT_SETUP([rpmkeys -Kv <corrupted signed> 4])
+AT_KEYWORDS([rpmkeys digest signature])
+AT_CHECK([
+RPMDB_INIT[(
+
+dorpm () {
+    runroot rpmkeys --define '_pkgverify_level digest' \
+	--define '_pkgverify_flags 0x10000' "$1" \
+	/data/RPMS/hello-2.0-1.x86_64-corrupted.rpm
+    [ "$?" -eq 1 ] || exit 1
+}
+
+dorpm -K
+dorpm -Kv
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+dorpm -K
+dorpm -Kv
+)]],
+[0],
+[[/data/RPMS/hello-2.0-1.x86_64-corrupted.rpm: digests SIGNATURES NOT OK
+/data/RPMS/hello-2.0-1.x86_64-corrupted.rpm:
+    Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
+    Header SHA256 digest: OK
+    MD5 digest: OK
+/data/RPMS/hello-2.0-1.x86_64-corrupted.rpm: DIGESTS SIGNATURES NOT OK
+/data/RPMS/hello-2.0-1.x86_64-corrupted.rpm:
+    Header V4 RSA/SHA256 Signature, key ID 1964c5fc: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: NOTFOUND
+    Payload SHA256 ALT digest: NOTFOUND
+    RSA signature: NOTFOUND
+    DSA signature: NOTFOUND
+    MD5 digest: OK
+]],
 [])
 AT_CLEANUP
 
