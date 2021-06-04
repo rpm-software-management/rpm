@@ -850,7 +850,7 @@ static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
 	rpmdsSetIx(ds, rpmdbGetIteratorFileNum(mi));
 
 	/* Is it in our range at all? (but file deps have no range) */
-	if (depds)
+	if (depds && !rpmdsIsRich(ds))
 	    match = rpmdsCompare(ds, depds);
 
 	if (match && unsatisfiedDepend(ts, dcache, ds) == is_problem) {
