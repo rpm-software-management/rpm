@@ -732,3 +732,102 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 [],
 [])
 AT_CLEANUP
+
+# ------------------------------
+#
+AT_SETUP([install to break installed rich dependency])
+AT_KEYWORDS([install, boolean])
+RPMDB_INIT
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "cfls (deptest-three or deptest-five)" \
+	  /data/SPECS/deptest.spec
+runroot rpmbuild --quiet -bb \
+	--define "pkg two" \
+	--define "reqs (deptest-five if deptest-four)" \
+	  /data/SPECS/deptest.spec
+runroot rpmbuild --quiet -bb \
+	--define "pkg three" \
+	  /data/SPECS/deptest.spec
+runroot rpmbuild --quiet -bb \
+	--define "pkg four" \
+	  /data/SPECS/deptest.spec
+
+# installed conflict with "or" clause
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
+],
+[1],
+[],
+[error: Failed dependencies:
+	(deptest-three or deptest-five) conflicts with (installed) deptest-one-1.0-1.noarch
+])
+
+# installed requires with "if" clause
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/deptest-four-1.0-1.noarch.rpm
+],
+[1],
+[],
+[error: Failed dependencies:
+	(deptest-five if deptest-four) is needed by (installed) deptest-two-1.0-1.noarch
+])
+AT_CLEANUP
+
+# ------------------------------
+#
+AT_SETUP([erase to break installed rich dependency])
+AT_KEYWORDS([install, boolean])
+RPMDB_INIT
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "reqs (deptest-three or deptest-five)" \
+	  /data/SPECS/deptest.spec
+runroot rpmbuild --quiet -bb \
+	--define "pkg two" \
+	--define "cfls (deptest-five unless deptest-four)" \
+	  /data/SPECS/deptest.spec
+runroot rpmbuild --quiet -bb \
+	--define "pkg three" \
+	  /data/SPECS/deptest.spec
+runroot rpmbuild --quiet -bb \
+	--define "pkg four" \
+	  /data/SPECS/deptest.spec
+runroot rpmbuild --quiet -bb \
+	--define "pkg five" \
+	  /data/SPECS/deptest.spec
+
+# installed requires with "or" clause
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
+runroot rpm -e deptest-three
+],
+[1],
+[],
+[error: Failed dependencies:
+	(deptest-three or deptest-five) is needed by (installed) deptest-one-1.0-1.noarch
+])
+
+# installed conflicts with "unless" clause
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-four-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-five-1.0-1.noarch.rpm
+runroot rpm -e deptest-four
+],
+[1],
+[],
+[error: Failed dependencies:
+	(deptest-five unless deptest-four) conflicts with (installed) deptest-two-1.0-1.noarch
+])
+AT_CLEANUP
