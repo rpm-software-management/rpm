@@ -1225,23 +1225,39 @@ else\
     print("echo 'Cannot read "..file.."'; exit 1;".."\\n")\
 end}
 
-# Automatically apply all patches
-# Patches are applied in the order they are listed in the spec file
-# not by their number!
-# -m<min>       Apply patches with number >= min only
-# -M<max>       Apply patches with number <= max only
-%autopatch(vp:m:M:)\
-%{lua:\
-local options = rpm.expand("%{!-v:-q} %{-p:-p%{-p*}} ")\
-local low_limit = tonumber(rpm.expand("%{-m:%{-m*}}"))\
-local high_limit = tonumber(rpm.expand("%{-M:%{-M*}}"))\
-for i, p in ipairs(patches) do\
-    local inum = patch_nums[i]\
-    if ((not low_limit or inum>=low_limit) and (not high_limit or inum<=high_limit)) \
-    then\
-        print(rpm.expand("%__apply_patch -m %{basename:"..p.."}  "..options..p.." "..i.."\\n")) \
-    end\
-end}
+# Apply patches using %autosetup configured SCM.
+# Typically used with no arguments to apply all patches in the order
+# introduced in the spec, but alternatively can be used to apply indvidual
+# patches in arbitrary order by passing them as arguments.
+# -v		Verbose
+# -p<N>		Prefix strip (ie patch -p argument)
+# -m<min>       Apply patches with number >= min only (if no arguments)
+# -M<max>       Apply patches with number <= max only (if no arguments)
+%autopatch(vp:m:M:) %{lua:
+if #arg == 0 then
+    local lo = tonumber(rpm.expand("%{-m:%{-m*}}"))
+    local hi = tonumber(rpm.expand("%{-M:%{-M*}}"))
+    for i, n in ipairs(patch_nums) do
+        if ((not lo or n >= lo) and (not hi or n <= hi)) then
+            table.insert(arg, n)
+        end
+    end
+end
+local options = rpm.expand("%{!-v:-q} %{-p:-p%{-p*}} ")
+local bynum = {}
+for i, p in ipairs(patches) do
+    bynum[patch_nums[i]] = p
+end
+for i, a in ipairs(arg) do
+    local p = bynum[a]
+    if p then
+        print(rpm.expand("%__apply_patch -m %{basename:"..p.."}  "..options..p.." "..i.."\\n"))
+    else
+        macros.error({"no such patch "..a})
+    end
+end
+}
+
 
 # One macro to (optionally) do it all.
 # -S<scm name>	Sets the used patch application style, eg '-S git' enables
