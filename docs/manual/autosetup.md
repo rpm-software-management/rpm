@@ -69,6 +69,31 @@ Note that the exact behavior of `-S` option depends on the used VCS: for
 example quilt only controls patches whereas git and mercurial control the
 entire source repository.
 
+## %autopatch
+
+Sometimes you need more control than just "apply all", in which case you
+can call `%autopatch` directly. By default it simply applies all patches
+in the order declared in the spec, but you can additionally control the
+range with options, or pass patch numbers as arguments.  The supported
+options are
+
+* `-v` verbose operation
+* `-p<number>` argument to control patch prefix stripping (same as
+  `-p` to `%patch`, normally passed down from `%autosetup`)
+* `-m<number>` Apply patches starting from `<number>` range
+* `-M<number>` Apply patches up to `<number>` range
+
+Some examples:
+
+# Apply patches with number >= 100
+`%autopatch -m 100`
+# Apply patches with number <= 400
+`%autopatch -M 400`
+# Apply patches 80 to 99
+`%autopatch -m 80 -99`
+# Apply patches 1, 4 and 6
+`%autopatch 1 4 6`
+
 ## Automating patch (and source) declarations
 
 While typically patch and source names tend to be descriptive for humans,
