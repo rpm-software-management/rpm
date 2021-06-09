@@ -233,6 +233,7 @@ static int sqlexec(sqlite3 *sdb, const char *fmt, ...)
 	rpmlog(RPMLOG_DEBUG, "%s: %d\n", cmd, rc);
 
     sqlite3_free(cmd);
+    sqlite3_free(err);
 
     return rc ? RPMRC_FAIL : RPMRC_OK;
 }
