@@ -276,7 +276,7 @@ static int hash_lookup(struct bdb_cur *cur, const unsigned char *key, unsigned i
     pg = hash_bucket_to_page(cur->db, bucket);
     if (bdb_getpage(cur->db, cur->page, pg))
 	return -1;
-    if (cur->page[25] != 8 && cur->page[25] != 13)
+    if (cur->page[25] != 8 && cur->page[25] != 13 && cur->page[25] != 2)
 	return -1;
     cur->idx = (unsigned int)-2;
     cur->numidx = *(uint16_t *)(cur->page + 20);
@@ -323,7 +323,7 @@ static int hash_next(struct bdb_cur *cur)
 	    }
 	    if (bdb_getpage(cur->db, cur->page, pg))
 		return -1;
-	    if (cur->page[25] != 8 && cur->page[25] != 13)
+	    if (cur->page[25] != 8 && cur->page[25] != 13 && cur->page[25] != 2)
 		return -1;
 	    cur->numidx = *(uint16_t *)(cur->page + 20);
 	    continue;
