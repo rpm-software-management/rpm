@@ -78,4 +78,4 @@ subdirs:
 	${PANDOC} -s -t man $(srcdir)/$@.md -o $@
 
 clean-local:
-	rm *.8 *.1 */*.8 */*.1
+	rm -f *.8 *.1 */*.8 */*.1
