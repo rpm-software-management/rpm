@@ -855,6 +855,7 @@ mem1:				saved_errno = errno;
 	     fts_safe_changedir(sp, cur->fts_parent, -1, ".."))) {
 		cur->fts_info = FTS_ERR;
 		SET(FTS_STOP);
+		fts_lfree(head);
 		return (NULL);
 	}
 
@@ -862,6 +863,7 @@ mem1:				saved_errno = errno;
 	if (!nitems) {
 		if (type == BREAD)
 			cur->fts_info = FTS_DP;
+		fts_lfree(head);
 		return (NULL);
 	}
 
