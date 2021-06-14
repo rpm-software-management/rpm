@@ -585,8 +585,10 @@ Fts_children(FTS * sp, int instr)
 	if ((fd = __open(".", O_RDONLY, 0)) < 0)
 		return (NULL);
 	sp->fts_child = fts_build(sp, instr);
-	if (__fchdir(fd))
+	if (__fchdir(fd)) {
+		(void)__close(fd);
 		return (NULL);
+	}
 	(void)__close(fd);
 	return (sp->fts_child);
 }
