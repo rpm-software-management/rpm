@@ -1371,9 +1371,13 @@ static pgpArmor decodePkts(uint8_t *b, uint8_t **pkt, size_t *pktlen)
 	    crc = pgpCRC(dec, declen);
 	    if (crcpkt != crc) {
 		ec = PGPARMOR_ERR_CRC_CHECK;
+		_free(dec);
 		goto exit;
 	    }
-	    if (pkt) *pkt = dec;
+	    if (pkt)
+		*pkt = dec;
+	    else
+		_free(dec);
 	    if (pktlen) *pktlen = declen;
 	    ec = PGPARMOR_PUBKEY;	/* XXX ASCII Pubkeys only, please. */
 	    goto exit;
