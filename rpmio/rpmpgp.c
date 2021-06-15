@@ -286,6 +286,7 @@ int pgpValTok(pgpValTbl vs, const char * s, const char * se)
 /** \ingroup rpmpgp
  * Decode length from 1, 2, or 5 octet body length encoding, used in
  * new format packet headers and V4 signature subpackets.
+ * Partial body lengths are (intentionally) not supported.
  * @param s		pointer to length encoding buffer
  * @param slen		buffer size
  * @param[out] *lenp	decoded length
@@ -305,10 +306,10 @@ size_t pgpLen(const uint8_t *s, size_t slen, size_t * lenp)
     if (*s < 192) {
 	lenlen = 1;
 	dlen = *s;
-    } else if (*s < 255 && slen > 2) {
+    } else if (*s < 224 && slen > 2) {
 	lenlen = 2;
 	dlen = (((s[0]) - 192) << 8) + s[1] + 192;
-    } else if (slen > 5) {
+    } else if (*s == 255 && slen > 5) {
 	lenlen = 5;
 	dlen = pgpGrab(s+1, 4);
     }
