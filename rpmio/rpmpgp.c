@@ -404,8 +404,9 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 {
     const uint8_t *p = h;
     size_t plen = 0, i;
+    int rc = 0;
 
-    while (hlen > 0) {
+    while (hlen > 0 && rc == 0) {
 	i = pgpLen(p, hlen, &plen);
 	if (i == 0 || plen < 1 || i + plen > hlen)
 	    break;
@@ -491,7 +492,11 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 	p += plen;
 	hlen -= plen;
     }
-    return (hlen != 0); /* non-zero hlen is an error */
+
+    if (hlen != 0)
+	rc = 1;
+
+    return rc;
 }
 
 pgpDigAlg pgpDigAlgFree(pgpDigAlg alg)
