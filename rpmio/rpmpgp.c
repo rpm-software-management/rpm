@@ -314,6 +314,9 @@ size_t pgpLen(const uint8_t *s, size_t slen, size_t * lenp)
 	dlen = pgpGrab(s+1, 4);
     }
 
+    if (slen - lenlen < dlen)
+	lenlen = 0;
+
     if (lenlen)
 	*lenp = dlen;
 
