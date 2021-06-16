@@ -5,13 +5,13 @@
 # Translators:
 # Muhammet Kara <muhammetk@gmail.com>, 2011-2012,2014
 # Muhammet Kara <muhammetk@gmail.com>, 2014
-# Oğuz Ersen <oguzersen@protonmail.com>, 2020.
+# Oğuz Ersen <oguzersen@protonmail.com>, 2020, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-10-16 20:30+0000\n"
+"PO-Revision-Date: 2021-05-06 19:02+0000\n"
 "Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
 "Language-Team: Turkish <https://translate.fedoraproject.org/projects/rpm/"
 "master/tr/>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n>1);\n"
-"X-Generator: Weblate 4.2.2\n"
+"X-Generator: Weblate 4.6.1\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -42,7 +42,7 @@ msgstr ""
 
 #, c-format
 msgid "creating a pipe for --pipe failed: %m\n"
-msgstr ""
+msgstr "--pipe için veri yolu oluşturma başarısız oldu: %m\n"
 
 #, c-format
 msgid "exec failed\n"
@@ -58,7 +58,7 @@ msgstr "paketten başlık okunması sırasında hata oluştu\n"
 
 #, c-format
 msgid "cannot re-open payload: %s\n"
-msgstr "payload %s tekrar açılamıyor\n"
+msgstr "yük yeniden açılamıyor: %s\n"
 
 #, c-format
 msgid "files over 4GB not supported by cpio, use rpm2archive instead\n"
@@ -68,54 +68,60 @@ msgstr ""
 
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
-msgstr "buildroot zaten belirtilmiş, %s yoksayılıyor\n"
+msgstr "buildroot zaten belirtilmiş, %s yok sayılıyor\n"
 
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr ""
-"<specDosyası>ndan %prep adımı sayesinde oluşturulur (kaynak paketi açılır ve "
-"yamalar uygulanır)"
+"<spec dosyası>ndan %prep adımı sayesinde oluşturulur (kaynak paketi açılır "
+"ve yamalar uygulanır)"
 
 msgid "<specfile>"
-msgstr "<specDosyası>"
+msgstr "<spec dosyası>"
 
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr ""
-"<specDosyası>ndan %build adımı sayesinde oluşturulur (%prep, sonra da "
+"<spec dosyası>ndan %build adımı sayesinde oluşturulur (%prep, sonra da "
 "derlenir)"
 
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr ""
-"<specDosyası>ndan %install adımı sayesinde oluşturulur (%prep, %build, sonra "
-"da kurulum)"
+"<spec dosyası>ndan %install adımı sayesinde oluşturulur (%prep, %build, "
+"sonra da kurulum)"
 
 #, c-format
 msgid "verify %files section from <specfile>"
-msgstr "<specDosyası>ndan %files bölümünü denetler"
+msgstr "<spec dosyası>ndan %files bölümünü doğrular"
 
 msgid "build source and binary packages from <specfile>"
-msgstr "kaynak ve çalıştırılabilir paketleri <specDosyası>ndan oluşturur"
+msgstr "kaynak ve çalıştırılabilir paketleri <spec dosyası>ndan oluşturur"
 
 msgid "build binary package only from <specfile>"
-msgstr "çalıştırılabilir paketi sadece <specDosyası>ndan oluşturur"
+msgstr "çalıştırılabilir paketi sadece <spec dosyası>ndan oluşturur"
 
 msgid "build source package only from <specfile>"
-msgstr "kaynak paketi sadece <specDosyası>ndan oluşturur"
+msgstr "kaynak paketi sadece <spec dosyası>ndan oluşturur"
 
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
 msgstr ""
+"kaynak paketi yalnızca <spec dosyası>ndan oluşturur - dinamik oluşturma "
+"gerekliliklerini hesaplar"
 
 #, c-format
 msgid ""
 "build through %prep (unpack sources and apply patches) from <source package>"
 msgstr ""
+"<kaynak paketi>nden %prep adımı sayesinde oluşturulur (kaynak paketi açılır "
+"ve yamalar uygulanır)"
 
 msgid "<source package>"
 msgstr "<kaynak paketi>"
 
 msgid "build through %build (%prep, then compile) from <source package>"
 msgstr ""
+"<kaynak paketi>nden %build adımı sayesinde oluşturulur (%prep, sonra da "
+"derlenir)"
 
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
@@ -125,56 +131,61 @@ msgstr ""
 
 #, c-format
 msgid "verify %files section from <source package>"
-msgstr ""
+msgstr "<kaynak paketi>nden %files bölümünü doğrular"
 
 msgid "build source and binary packages from <source package>"
-msgstr ""
+msgstr "kaynak ve çalıştırılabilir paketleri <kaynak paketi>nden oluşturur"
 
 msgid "build binary package only from <source package>"
-msgstr ""
+msgstr "ikili paketi yalnızca <kaynak paketi>nden oluşturur"
 
 msgid "build source package only from <source package>"
-msgstr ""
+msgstr "kaynak paketi yalnızca <kaynak paketi>nden oluşturur"
 
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
 msgstr ""
+"kaynak paketi yalnızca <kaynak paketi>nden oluşturur - dinamik oluşturma "
+"gerekliliklerini hesaplar"
 
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr ""
-"<tarpaketi>nden %prep adımı sayesinde oluşturulur (kaynak paketi açılır ve "
+"<tar paketi>nden %prep adımı sayesinde oluşturulur (kaynak paketi açılır ve "
 "yamalar uygulanır)"
 
 msgid "<tarball>"
-msgstr "<tarPaketi>"
+msgstr "<tar paketi>"
 
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr ""
-"<tarPaketi>nden %build adımı sayesinde oluşturulur (%prep, sonra da derleme)"
+"<tar paketi>nden %build adımı sayesinde oluşturulur (%prep, sonra da "
+"derlenir)"
 
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr ""
-"<tarpaketi>nden %install adımı sayesinde oluşturulur (%prep, %build, sonra "
+"<tar paketi>nden %install adımı sayesinde oluşturulur (%prep, %build, sonra "
 "da kurulur)"
 
 #, c-format
 msgid "verify %files section from <tarball>"
-msgstr "<tarpaketi>nden %files bölümünü denetler"
+msgstr "<tar paketi>nden %files bölümünü doğrular"
 
 msgid "build source and binary packages from <tarball>"
-msgstr "kaynak ve çalıştırılabilir paketleri <tarpaketi>nden oluşturur"
+msgstr "kaynak ve çalıştırılabilir paketleri <tar paketi>nden oluşturur"
 
 msgid "build binary package only from <tarball>"
-msgstr "çalıştırılabilir paketi sadece <tarpaketi>nden oluşturur"
+msgstr "çalıştırılabilir paketi yalnızca <tar paketi>nden oluşturur"
 
 msgid "build source package only from <tarball>"
-msgstr "kaynak paketi sadece <tarpaketi>nden oluşturur"
+msgstr "kaynak paketi yalnızca <tar paketi>nden oluşturur"
 
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
 msgstr ""
+"kaynak paketi yalnızca <tar paketi>nden oluşturur - dinamik oluşturma "
+"gerekliliklerini hesaplar"
 
 msgid "build binary package from <source package>"
 msgstr "çalıştırılabilir paketi <kaynak paketi>nden oluşturur"
@@ -183,7 +194,7 @@ msgid "override build root"
 msgstr "build root'a zorlar"
 
 msgid "run build in current directory"
-msgstr ""
+msgstr "geçerli dizinde derlemeyi çalıştırır"
 
 msgid "remove build tree when done"
 msgstr "işlem sonunda paket oluşturma ağacını siler"
@@ -198,22 +209,22 @@ msgid "do not execute any stages of the build"
 msgstr "oluşumun herhangi bir adımı icra edilmez"
 
 msgid "do not verify build dependencies"
-msgstr ""
+msgstr "oluşturma bağımlılıklarını doğrulamaz"
 
 msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
-msgstr ""
+msgstr "(eski) rpm sürüm 3 paketlemesi ile uyumlu paket başlık(lar)ı oluşturur"
 
 #, c-format
 msgid "do not execute %clean stage of the build"
-msgstr ""
+msgstr "oluşumun %clean adımı icra edilmez"
 
 #, c-format
 msgid "do not execute %prep stage of the build"
-msgstr ""
+msgstr "oluşumun %prep adımı icra edilmez"
 
 #, c-format
 msgid "do not execute %check stage of the build"
-msgstr ""
+msgstr "oluşumun %check adımı icra edilmez"
 
 msgid "do not accept i18N msgstr's from specfile"
 msgstr "spec dosyası içindeki i18n msgstr'leri kabul edilmez"
@@ -232,7 +243,8 @@ msgstr "hedef platforma zorlar"
 
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
-"[ <specDosyası> | <tarPaketi> | <kaynakPaketi> ] ile paketleme seçenekleri:"
+"[ <spec dosyası> | <tar paketi> | <kaynak paketi> ] ile paketleme "
+"seçenekleri:"
 
 msgid "Common options for all rpm modes and executables:"
 msgstr "Tüm rpm kipleri ve yürütülebilir dosyaları için ortak seçenekler:"
@@ -243,7 +255,7 @@ msgstr "%s spec dosyası açılamadı: %s\n"
 
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
-msgstr "tar veriyolu açılamadı: %m\n"
+msgstr "tar veri yolu açılamadı: %m\n"
 
 #, c-format
 msgid "Found more than one spec file in %s\n"
@@ -285,15 +297,14 @@ msgstr "kurulu paket başlıklarından veritabanı listelerini yeniden oluşturu
 msgid "verify database files"
 msgstr "veri tabanı dosyalarını doğrular"
 
-#, fuzzy
 msgid "salvage database"
-msgstr "veritabanını başlangıç durumuna getirir"
+msgstr "veri tabanını kurtarır"
 
 msgid "export database to stdout header list"
-msgstr ""
+msgstr "veri tabanını standart çıktı başlık listesine aktarır"
 
 msgid "import database from stdin header list"
-msgstr ""
+msgstr "veri tabanını standart girdi başlık listesinden içe aktarır"
 
 msgid "Database options:"
 msgstr "Veritabanı seçenekleri:"
@@ -305,13 +316,13 @@ msgid "verify package signature(s)"
 msgstr "paket imza(lar)ını doğrula"
 
 msgid "import an armored public key"
-msgstr ""
+msgstr "zırhlanmış bir ortak anahtarı içe aktarır"
 
 msgid "don't import, but tell if it would work or not"
-msgstr ""
+msgstr "içe aktarmaz, yalnızca çalışıp çalışmayacağını belirtir"
 
 msgid "list keys from RPM keyring"
-msgstr ""
+msgstr "RPM anahtarlığındaki anahtarları listeler"
 
 msgid "Keyring options:"
 msgstr "Anahtarlık seçenekleri:"
@@ -320,10 +331,10 @@ msgid "no arguments given"
 msgstr "hiç argüman belirtilmedi"
 
 msgid "Query/Verify package selection options:"
-msgstr ""
+msgstr "Sorgulama/Doğrulama paket seçimi seçenekleri:"
 
 msgid "Query/Verify file selection options:"
-msgstr ""
+msgstr "Sorgulama/Doğrulama dosya seçimi seçenekleri:"
 
 msgid "Query options (with -q or --query):"
 msgstr "Sorgulama seçenekleri (-q ya da --query ile):"
@@ -335,7 +346,7 @@ msgid "Install/Upgrade/Erase options:"
 msgstr "Kurma/Güncelleme/Kaldırma seçenekleri:"
 
 msgid "one type of query/verify may be performed at a time"
-msgstr "bir anda sadece bir tarz sorgulama/denetleme yapılabilir"
+msgstr "tek seferde yalnızca bir tür sorgulama/doğrulama yapılabilir"
 
 msgid "unexpected query flags"
 msgstr "beklenmeyen sorgulama bayrakları"
@@ -347,7 +358,7 @@ msgid "unexpected query source"
 msgstr "beklenmeyen sorgulama kaynağı"
 
 msgid "only installation and upgrading may be forced"
-msgstr ""
+msgstr "yalnızca kurulum ve yükseltme zorlanabilir"
 
 msgid "files may only be relocated during package installation"
 msgstr ""
@@ -355,6 +366,7 @@ msgstr ""
 
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr ""
+"--prefix seçeneği, --relocate veya --excludepath ile birlikte kullanılamıyor"
 
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
@@ -370,98 +382,102 @@ msgstr "--prefix ile belirtilenler '/' ile başlamalı"
 msgid ""
 "--hash (-h) may only be specified during package installation and erasure"
 msgstr ""
+"--hash (-h) yalnızca paket kurulması ve silinmesi sırasında kullanılabilir"
 
 msgid "--percent may only be specified during package installation and erasure"
 msgstr ""
+"--percent yalnızca paket kurulması ve silinmesi sırasında kullanılabilir"
 
 msgid "--replacepkgs may only be specified during package installation"
-msgstr "--replacepkgs sadece paket kurulumu sırasında kullanılabilir"
+msgstr "--replacepkgs yalnızca paket kurulması sırasında kullanılabilir"
 
 msgid "--excludedocs may only be specified during package installation"
-msgstr "--excludedocs sadece paket kurulumu sırasında kullanılabilir"
+msgstr "--excludedocs yalnızca paket kurulması sırasında kullanılabilir"
 
 msgid "--includedocs may only be specified during package installation"
-msgstr "--includedocs sadece paket kurulumu sırasında kullanılabilir"
+msgstr "--includedocs yalnızca paket kurulması sırasında kullanılabilir"
 
 msgid "only one of --excludedocs and --includedocs may be specified"
-msgstr "--excludedocs ve --includedocs bir arada kullanılamaz"
+msgstr ""
+"--excludedocs ve --includedocs seçeneklerinden yalnızca biri belirtilebilir"
 
 msgid "--ignorearch may only be specified during package installation"
-msgstr "--ignorearch sadece paket kurulumu sırasında kullanılabilir"
+msgstr "--ignorearch yalnızca paket kurulması sırasında kullanılabilir"
 
 msgid "--ignoreos may only be specified during package installation"
-msgstr "--ignoreos sadece paket kurulumu sırasında kullanılabilir"
+msgstr "--ignoreos yalnızca paket kurulması sırasında kullanılabilir"
 
 msgid "--ignoresize may only be specified during package installation"
-msgstr "--ignoresize sadece paket kurulumu sırasında kullanılabilir"
+msgstr "--ignoresize yalnızca paket kurulması sırasında kullanılabilir"
 
 msgid "--allmatches may only be specified during package erasure"
-msgstr "--allmatches sadece paket kurulumu sırasında kullanılabilir"
+msgstr "--allmatches yalnızca paket kurulması sırasında kullanılabilir"
 
 msgid "--allfiles may only be specified during package installation"
-msgstr "--allfiles sadece paket kurulumu sırasında kullanılabilir"
+msgstr "--allfiles yalnızca paket kurulması sırasında kullanılabilir"
 
 msgid "--justdb may only be specified during package installation and erasure"
-msgstr ""
-"--justdb sadece paket kurulumu ve kaldırılması sırasında kullanılabilir"
+msgstr "--justdb yalnızca paket kurulması ve silinmesi sırasında kullanılabilir"
 
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr ""
-"betik iptal etme seçenekleri sadece paketin kurulması ve silinmesi sırasında "
+"betik iptal etme seçenekleri yalnızca paket kurulması ve silinmesi sırasında "
 "kullanılabilir"
 
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr ""
-"tetikleme iptal seçenekleri sadece paketin kurulması ve silinmesi sırasında "
+"tetikleme iptal seçenekleri yalnızca paket kurulması ve silinmesi sırasında "
 "kullanılabilir"
 
 msgid ""
 "--nodeps may only be specified during package installation, erasure, and "
 "verification"
 msgstr ""
+"--nodeps yalnızca paket kurulması, silinmesi ve doğrulanması sırasında "
+"belirtilebilir"
 
 msgid "--test may only be specified during package installation and erasure"
-msgstr ""
+msgstr "--test yalnızca paket kurulması ve silinmesi sırasında kullanılabilir"
 
 msgid "no packages given for erase"
-msgstr ""
+msgstr "silmek için paket belirtilmedi"
 
 msgid "no packages given for install"
-msgstr "yüklenecek paket(ler) belirtilmedi"
+msgstr "kurulum için paket belirtilmedi"
 
 msgid "no arguments given for query"
 msgstr "sorgulama için hiç argüman belirtilmedi"
 
 msgid "no arguments given for verify"
-msgstr "denetleme için hiç argüman belirtilmedi"
+msgstr "doğrulama için hiç argüman belirtilmedi"
 
 msgid "sign package(s)"
 msgstr "paket(ler)i imzala"
 
 msgid "sign package(s) (identical to --addsign)"
-msgstr ""
+msgstr "paket(ler)i imzala (--addsign ile aynı)"
 
 msgid "delete package signatures"
 msgstr "paket imzalarını sil"
 
 msgid "create rpm v3 header+payload signatures"
-msgstr ""
+msgstr "rpm sürüm 3 başlık+yük imzaları oluştur"
 
 msgid "sign package(s) files"
-msgstr ""
+msgstr "paket(ler)in dosyalarını imzala"
 
 msgid "use file signing key <key>"
-msgstr ""
+msgstr "<anahtar> dosya imzalama anahtarını kullan"
 
 msgid "<key>"
-msgstr ""
+msgstr "<anahtar>"
 
 msgid "prompt for file signing key password"
-msgstr ""
+msgstr "dosya imzalama anahtarı parolası için sor"
 
 msgid "Signature options:"
 msgstr "İmza seçenekleri:"
@@ -475,24 +491,28 @@ msgid ""
 "You must set \"%%_file_signing_key\" in your macro file or on the command "
 "line with --fskpath\n"
 msgstr ""
+"Makro dosyanızda veya komut satırında --fskpath ile \"%%_file_signing_key\" "
+"tanımlanmış olmalı\n"
 
 msgid "--fskpath may only be specified when signing files"
-msgstr ""
+msgstr "--fskpath yalnızca dosyaları imzalarken kullanılabilir"
 
 msgid "parse spec file(s) to stdout"
-msgstr ""
+msgstr "spec dosya(lar)ını standart çıktıya ayrıştırır"
 
 msgid "query spec file(s)"
-msgstr "sorgu belirtim dosyaları"
+msgstr "spec dosya(lar)ını sorgular"
 
 msgid "operate on binary rpms generated by spec (default)"
 msgstr ""
+"spec tarafından oluşturulan çalıştırılabilir RPM'ler üzerinde çalışır "
+"(öntanımlı)"
 
 msgid "operate on binary rpms that would be built from spec"
-msgstr ""
+msgstr "spec ile oluşturulacak çalıştırılabilir RPM'ler üzerinde çalışır"
 
 msgid "operate on source rpm generated by spec"
-msgstr ""
+msgstr "spec tarafından oluşturulan kaynak RPM'ler üzerinde çalışır"
 
 msgid "use the following query format"
 msgstr "izleyen sorgulama biçimini kullanır"
@@ -501,10 +521,10 @@ msgid "Spec options:"
 msgstr "Belirtim seçenekleri:"
 
 msgid "no arguments given for parse"
-msgstr ""
+msgstr "ayrıştırma için hiç argüman belirtilmedi"
 
 msgid "unable to parse SOURCE_DATE_EPOCH\n"
-msgstr ""
+msgstr "SOURCE_DATE_EPOCH ayrıştırılamadı\n"
 
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
@@ -512,11 +532,11 @@ msgstr "Böyle bir makina yok: %s\n"
 
 #, c-format
 msgid "Unable to open temp file: %s\n"
-msgstr ""
+msgstr "Geçici dosya açılamadı: %s\n"
 
 #, c-format
 msgid "Unable to open stream: %s\n"
-msgstr ""
+msgstr "Akış açılamadı: %s\n"
 
 #, c-format
 msgid "Executing(%s): %s\n"
@@ -527,7 +547,7 @@ msgid "Bad exit status from %s (%s)\n"
 msgstr "%s çıkışında hata (%s)\n"
 
 msgid "Failed build dependencies:\n"
-msgstr ""
+msgstr "Başarısız oluşturma bağımlılıkları:\n"
 
 #, c-format
 msgid "setting %s=%s\n"
@@ -540,7 +560,7 @@ msgid ""
 msgstr ""
 "\n"
 "\n"
-"RPM derleme hataları:\n"
+"RPM oluşturma hataları:\n"
 
 #, c-format
 msgid "Missing '(' in %s %s\n"
@@ -552,7 +572,7 @@ msgstr "%s içinde ')' yok: (%s\n"
 
 #, c-format
 msgid "Invalid %s token: %s\n"
-msgstr "Andaç %s geçersiz: %s\n"
+msgstr "Belirteç %s geçersiz: %s\n"
 
 #, c-format
 msgid "Missing %s in %s(%s)\n"
@@ -587,7 +607,7 @@ msgid "Invalid capability: %s\n"
 msgstr "Geçersiz yeterlilik: %s\n"
 
 msgid "File capability support not built in\n"
-msgstr ""
+msgstr "Dosya yeterliliği için yerleşik destek yok\n"
 
 #, c-format
 msgid "File must begin with \"/\": %s\n"
@@ -595,11 +615,11 @@ msgstr "Dosya \"/\" ile başlamalı: %s\n"
 
 #, c-format
 msgid "unable to parse %s=%s\n"
-msgstr ""
+msgstr "%s=%s ayrıştırılamadı\n"
 
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
-msgstr ""
+msgstr "Bilinmeyen dosya özet algoritması %u, bunun yerine MD5 kullanılıyor\n"
 
 #, c-format
 msgid "File listed twice: %s\n"
@@ -607,27 +627,27 @@ msgstr "Dosya iki kere gösterildi: %s\n"
 
 #, c-format
 msgid "reading symlink %s failed: %s\n"
-msgstr ""
+msgstr "%s sembolik bağlantısı okunamadı: %s\n"
 
 #, c-format
 msgid "absolute symlink: %s -> %s\n"
-msgstr ""
+msgstr "mutlak sembolik bağlantı: %s -> %s\n"
 
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
-msgstr "Sembolik bağ BuildRoot gösteriyor: %s -> %s\n"
+msgstr "Sembolik bağlantı BuildRoot gösteriyor: %s -> %s\n"
 
 #, c-format
 msgid "Illegal character (0x%x) in filename: %s\n"
-msgstr ""
+msgstr "Dosya adında geçersiz karakter (0x%x): %s\n"
 
 #, c-format
 msgid "Path is outside buildroot: %s\n"
-msgstr ""
+msgstr "Yol, buildroot dışında: %s\n"
 
 #, c-format
 msgid "Directory not found: %s\n"
-msgstr ""
+msgstr "Dizin bulunamadı: %s\n"
 
 #, c-format
 msgid "File not found: %s\n"
@@ -643,22 +663,22 @@ msgstr "Dosyanın içeriği okunamıyor: %s\n"
 
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
-msgstr ""
+msgstr "%s: bilinmeyen etiket yüklenemiyor (%d).\n"
 
 #, c-format
 msgid "%s: public key read failed.\n"
-msgstr "%s: genel anahtar okuması başarısız oldu.\n"
+msgstr "%s: ortak anahtar okuması başarısız oldu.\n"
 
 #, c-format
 msgid "%s: not an armored public key.\n"
-msgstr ""
+msgstr "%s: zırhlanmış bir ortak anahtar değil.\n"
 
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s: kodlama başarısız oldu\n"
 
 msgid "failed symlink"
-msgstr ""
+msgstr "başarısız sembolik bağlantı"
 
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
@@ -669,11 +689,11 @@ msgid "Duplicate build-ids %s and %s\n"
 msgstr ""
 
 msgid "_build_id_links macro not set, assuming 'compat'\n"
-msgstr ""
+msgstr "_build_id_links makrosu ayarlanmamış, 'compat' varsayılıyor\n"
 
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
-msgstr ""
+msgstr "_build_id_links makrosu bilinmeyen '%s' değerine ayarlanmış\n"
 
 #, c-format
 msgid "error reading build-id in %s: %s\n"
@@ -692,7 +712,7 @@ msgid "build-id found in %s too large\n"
 msgstr ""
 
 msgid "failed to create directory"
-msgstr ""
+msgstr "dizin oluşturulamadı"
 
 msgid "Mixing main ELF and debug files in package"
 msgstr ""
@@ -966,7 +986,7 @@ msgstr "bilinmeyen kısayol simgesi türü: %s\n"
 
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
-msgstr "satır %d: Etiket sadece tek dizgecik alır: %s\n"
+msgstr "satır %d: Etiket yalnızca tek belirteç alır: %s\n"
 
 #, c-format
 msgid "line %d: %s in: %s\n"
@@ -1220,7 +1240,7 @@ msgid "line %d doesn't belong to any section: %s\n"
 msgstr ""
 
 msgid "No compatible architectures found for build\n"
-msgstr "Kurgulamak için uyumlu mimari yok\n"
+msgstr "Derleme için uyumlu mimariler bulunamadı\n"
 
 #, c-format
 msgid "Package has no %%description: %s\n"
@@ -1439,9 +1459,9 @@ msgstr ""
 msgid "rpmxdb: Version mismatch. Expected version: %u. Found version: %u\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open sqlite database %s: %s\n"
-msgstr "%s spec dosyası açılamadı: %s\n"
+msgstr "%s sqlite veri tabanı açılamadı: %s\n"
 
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
@@ -1821,7 +1841,7 @@ msgid "print hash marks as package installs (good with -v)"
 msgstr "paketin kurulma sürecini gösteren imler basar (-v ile)"
 
 msgid "don't verify package architecture"
-msgstr "paket mimarisi denetlenmez"
+msgstr "paket mimarisini doğrulamaz"
 
 msgid "don't verify package operating system"
 msgstr "paketin ait olduğu işletim sistemini doğrulamaz"
@@ -1842,7 +1862,7 @@ msgid "update the database, but do not modify the filesystem"
 msgstr "veri tabanını günceller, ama dosya sistemini değiştirmez"
 
 msgid "do not verify package dependencies"
-msgstr "paket bağımlılıklarını denetlemez"
+msgstr "paket bağımlılıklarını doğrulamaz"
 
 msgid "don't verify digest of files"
 msgstr ""
@@ -1949,10 +1969,10 @@ msgid "rpm checksig mode"
 msgstr ""
 
 msgid "query/verify package(s) owning file"
-msgstr "dosyayı içeren paketleri sorgular/denetler"
+msgstr "dosyanın sahibi olan paket(ler)i sorgular/doğrular"
 
 msgid "query/verify package(s) in group"
-msgstr "gruptaki paketleri sorgular/denetler"
+msgstr "gruptaki paket(ler)i sorgular/doğrular"
 
 msgid "query/verify a package file"
 msgstr ""
@@ -1976,16 +1996,16 @@ msgid "query the package(s) triggered by the package"
 msgstr "paket tarafından tetiklenen paketleri sorgular"
 
 msgid "rpm verify mode"
-msgstr "rpm denetleme kipi"
+msgstr "rpm doğrulama kipi"
 
 msgid "query/verify the package(s) which require a dependency"
-msgstr "bir bağımlılık gerektiren paketleri sorgular/denetler"
+msgstr "bir bağımlılık gerektiren paket(ler)i sorgular/doğrular"
 
 msgid "query/verify the package(s) which obsolete a dependency"
 msgstr ""
 
 msgid "query/verify the package(s) which provide a dependency"
-msgstr "bir bağımlılığı sağlayan paketleri sorgular/denetler"
+msgstr "bir bağımlılığı sağlayan paket(ler)i sorgular/doğrular"
 
 msgid "query/verify the package(s) which recommends a dependency"
 msgstr ""
@@ -2042,7 +2062,7 @@ msgid "don't verify size of files"
 msgstr "dosyaların uzunlukları doğrulanmaz"
 
 msgid "don't verify symlink path of files"
-msgstr "dosyaların sembolik bağ dosya yolları doğrulanmaz"
+msgstr "dosyaların sembolik bağlantı yolları doğrulanmaz"
 
 msgid "don't verify owner of files"
 msgstr "dosyaların sahipleri doğrulanmaz"
@@ -2108,7 +2128,7 @@ msgid "net shared    "
 msgstr "ağ paylaşımlı "
 
 msgid "wrong color   "
-msgstr "yanlış renk"
+msgstr "yanlış renk   "
 
 msgid "(no state)    "
 msgstr "(durumsuz)    "
@@ -2239,7 +2259,7 @@ msgstr ""
 
 #, c-format
 msgid "%s: chroot directory not set\n"
-msgstr "%s: chroot dizini belirlenmemiş\n"
+msgstr "%s: chroot dizini ayarlanmadı\n"
 
 #, c-format
 msgid "Unable to change root directory: %m\n"
@@ -2961,7 +2981,7 @@ msgstr "%3d<%*s(boş)\n"
 
 #, c-format
 msgid "Failed to open shell expansion pipe for command: %s: %m \n"
-msgstr "Komut için kabuk genişletme veriyolu açılamadı: %s: %m \n"
+msgstr "Komut için kabuk genişletme veri yolu açılamadı: %s: %m \n"
 
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
@@ -3120,7 +3140,7 @@ msgstr ""
 
 #, c-format
 msgid "Could not create pipe for signing: %m\n"
-msgstr "İmzalamak için veriyolu oluşturulamadı: %m\n"
+msgstr "İmzalamak için veri yolu oluşturulamadı: %m\n"
 
 #, c-format
 msgid "Could not set GPG_TTY to stdin: %m\n"
@@ -3132,7 +3152,7 @@ msgstr ""
 
 #, c-format
 msgid "Could not open pipe for writing: %m\n"
-msgstr "Yazmak için veriyolu açılamadı: %m\n"
+msgstr "Yazmak için veri yolu açılamadı: %m\n"
 
 msgid "Could not write to pipe\n"
 msgstr ""
