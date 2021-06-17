@@ -21,7 +21,7 @@ manually specify each patch to be applied, eg
 ```
 
 This can get rather tedious when the number of patches is large. The new
-%autosetup macro allows taking care of all this in a single step: the
+`%autosetup` macro allows taking care of all this in a single step: the
 following applies all the patches declared in the spec, ordered by the patch
 number:
 
@@ -30,7 +30,7 @@ number:
 %autosetup
 ```
 
-In addition to automating plain old "patch" command invocations, %autosetup
+In addition to automating plain old `patch` command invocations, `%autosetup`
 allows utilizing various version control systems such as git, mercurial (aka
 hg), quilt and bzr for managing the build directory source. For example this
 unpacks the vanilla source, initializes a git repository in the build
@@ -47,24 +47,25 @@ natural than with gendiff.
 
 ## %autosetup options
 
-Generally %autosetup accepts the same arguments as %setup does. The notable
+Generally `%autosetup` accepts the same arguments as %setup does. The notable
 exceptions are
 
-* %autosetup defaults to quiet operation, so -q is not needed or accepted.
-  Use -v to enable verbose source unpacking if needed.
-* -N disables automatic patch application if necessary for some reason. If
-  %autosetup is called with -N, the patch-application phase can be manually
-  invoked with %autopatch macro.
-* -S<vcs> specifies the VCS to use. Currently supported VCSes are: "git",
-  "hg" (for mercurial), "bzr", "quilt" and "patch", "git_am" (rpm >= 4.12)
-  and "gendiff" (rpm >= 4.14). If -S is omitted, %autosetup defaults to
-  "patch"
-* -p<number> argument to control patch prefix stripping (same as -p to %patch)
-* -b (for creating patch backups) is accepted but currently ignored - this is
-  not meaningful for a full-blown VCS anyway. If you need backups for gendiff
-  use, use "gendiff" backend.
+* `%autosetup` defaults to quiet operation, so `-q` is not needed or accepted.
+  Use `-v` to enable verbose source unpacking if needed.
+* `-N` disables automatic patch application if necessary for some reason. If
+  `%autosetup` is called with `-N`, the patch-application phase can be
+   manually invoked with `%autopatch` macro.
+* `-S<vcs>` specifies the VCS to use. Currently supported VCSes are: `git`,
+  `hg` (for mercurial), `bzr`, `quilt`, `patch`, `git_am` (rpm >= 4.12)
+  and `gendiff` (rpm >= 4.14). If `S` is omitted, `%autosetup` defaults to
+  `patch`
+* `-p<number>` argument to control patch prefix stripping (same as
+  `-p` to `%patch`)
+* `-b` (for creating patch backups) is accepted but currently ignored -
+  this is not meaningful for a full-blown VCS anyway. If you need backups
+  for `gendiff` use, use `gendiff` backend.
 
-Note that the exact behavior of -S option depends on the used VCS: for
+Note that the exact behavior of `-S` option depends on the used VCS: for
 example quilt only controls patches whereas git and mercurial control the
 entire source repository.
 
@@ -95,5 +96,5 @@ Patch4: bash42-004
 Patch45: bash42-045
 ```
 
-Combined with %autosetup, this can eliminate a very large number of
+Combined with `%autosetup`, this can eliminate a very large number of
 repetitive spec lines, making package maintenance that little bit easier. 
