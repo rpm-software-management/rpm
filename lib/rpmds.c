@@ -1223,6 +1223,7 @@ rpmsenseFlags rpmSanitizeDSFlags(rpmTagVal tagN, rpmsenseFlags Flags)
     case RPMTAG_SUPPLEMENTNAME:
     case RPMTAG_ENHANCENAME:
     case RPMTAG_REQUIRENAME:
+    case RPMTAG_ORDERNAME:
 	extra = Flags & (_ALL_REQUIRES_MASK);
 	break;
     case RPMTAG_CONFLICTNAME:
