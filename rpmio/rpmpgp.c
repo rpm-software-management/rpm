@@ -525,9 +525,9 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
     int i;
     pgpDigAlg sigalg = pgpSignatureNew(pubkey_algo);
 
-    for (i = 0; i < sigalg->mpis && p + 2 <= pend; i++) {
+    for (i = 0; i < sigalg->mpis && pend - p >= 2; i++) {
 	int mpil = pgpMpiLen(p);
-	if (p + mpil > pend)
+	if (pend - p < mpil)
 	    break;
 	if (sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT) {
 	    if (sigalg->setmpi(sigalg, i, p))
