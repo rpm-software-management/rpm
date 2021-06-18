@@ -12,7 +12,7 @@ EXTRA_DIST = \
 	brp-remove-la-files \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
-	find-debuginfo.sh find-lang.sh \
+	find-lang.sh \
 	perl.prov perl.req \
 	rpmdb_dump rpmdb_load \
 	rpm.daily rpm.log rpm.supp rpm2cpio.sh \

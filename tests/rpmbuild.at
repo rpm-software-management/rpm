@@ -620,6 +620,7 @@ AT_CLEANUP
 # Check if rpmbuild creates the minisymtab section in the main hello binary
 AT_SETUP([rpmbuild debuginfo minisymtab])
 AT_KEYWORDS([build] [debuginfo])
+AT_SKIP_IF([$DEBUGINFO_DISABLED])
 AT_CHECK([
 RPMDB_INIT
 
@@ -657,6 +658,7 @@ AT_CLEANUP
 # but the debug symbols/info in the debuginfo package.
 AT_SETUP([rpmbuild debuginfo minisymtab strip -g])
 AT_KEYWORDS([build] [debuginfo])
+AT_SKIP_IF([$DEBUGINFO_DISABLED])
 AT_CHECK([
 RPMDB_INIT
 
@@ -696,6 +698,7 @@ AT_CLEANUP
 # Test the case without unique debug file names.
 AT_SETUP([rpmbuild debuginfo dwz])
 AT_KEYWORDS([build] [debuginfo] [dwz])
+AT_SKIP_IF([$DEBUGINFO_DISABLED])
 AT_CHECK([
 RPMDB_INIT
 
@@ -782,6 +785,7 @@ AT_CLEANUP
 # Check that rpmbuild creates no debuginfo when --nodebuginfo is passed
 AT_SETUP([rpmbuild no debuginfo])
 AT_KEYWORDS([build] [debuginfo])
+AT_SKIP_IF([$DEBUGINFO_DISABLED])
 AT_CHECK([
 RPMDB_INIT
 
@@ -815,6 +819,7 @@ AT_CLEANUP
 # Test with unique debug file names.
 AT_SETUP([rpmbuild debuginfo dwz unique debug names])
 AT_KEYWORDS([build] [debuginfo] [dwz])
+AT_SKIP_IF([$DEBUGINFO_DISABLED])
 AT_CHECK([
 RPMDB_INIT
 
@@ -897,40 +902,11 @@ test "$canonmultiref" = "$canonmultifile" \
 AT_CLEANUP
 
 # ------------------------------
-# Check that old style gnu_debuglink CRC checksums are correct even after
-# using dwz to compress the debuginfo files.
-AT_SETUP([rpmbuild debuginfo dwz gnu_debuglink crc])
-AT_KEYWORDS([build] [debuginfo])
-AT_CHECK([
-RPMDB_INIT
-
-rundebug rpmbuild --quiet \
-  -ba "${abs_srcdir}"/data/SPECS/hello2.spec
-
-# Unpack the main and debuginfo rpms so we can check binaries and .debug files.
-rpm2cpio ${RPMTEST}/build/RPMS/*/hello2-debuginfo-1.0-1.*.rpm \
-  | cpio -diu
-rpm2cpio ${RPMTEST}/build/RPMS/*/hello2-1.0-1.*.rpm \
-  | cpio -diu
-
-# Check that dwz has ran and a multi file has been produced
-test -f ./usr/lib/debug/.dwz/hello2-1.0-1.* || exit 1
-
-# Run sepdbugcrcfix on the binaries, both should have correct CRC already.
-${abs_top_builddir}/sepdebugcrcfix ./usr/lib/debug \
-  ./usr/local/bin/hello ./usr/local/bin/hello2 | grep CRC32 | cut -f2 -d:
-],
-[0],
-[ Updated 0 CRC32s, 2 CRC32s did match.
-],
-[ignore])
-AT_CLEANUP
-
-# ------------------------------
 # Check that an implicit suid binary get included with the suid bit set.
 # We explicitly build with all debug.macros to test those helpers.
 AT_SETUP([rpmbuild implicit suid binary])
 AT_KEYWORDS([build] [debuginfo] [dwz] [suid])
+AT_SKIP_IF([$DEBUGINFO_DISABLED])
 AT_CHECK([
 RPMDB_INIT
 
@@ -962,6 +938,7 @@ AT_CLEANUP
 # Check that a GDB index is included when requested.
 AT_SETUP([rpmbuild debuginfo gdb index included])
 AT_KEYWORDS([build] [debuginfo] [gdb])
+AT_SKIP_IF([$DEBUGINFO_DISABLED])
 AT_CHECK([
 RPMDB_INIT
 
@@ -988,6 +965,7 @@ AT_CLEANUP
 # Check that a GDB index is NOT included when not requested.
 AT_SETUP([rpmbuild debuginfo no gdb index included])
 AT_KEYWORDS([build] [debuginfo] [gdb])
+AT_SKIP_IF([$DEBUGINFO_DISABLED])
 AT_CHECK([
 RPMDB_INIT
 
@@ -1013,6 +991,7 @@ AT_CLEANUP
 # Check that a -g3 (macros) build creates a valid .debug file.
 AT_SETUP([rpmbuild debuginfo -g3 .debug_macro])
 AT_KEYWORDS([build] [debuginfo] [gdb])
+AT_SKIP_IF([$DEBUGINFO_DISABLED])
 AT_CHECK([
 RPMDB_INIT
 
@@ -1043,6 +1022,7 @@ AT_CLEANUP
 # Check that a debug source is in a "unique" directory when requested.
 AT_SETUP([rpmbuild debuginfo unique debug src dir])
 AT_KEYWORDS([build] [debuginfo])
+AT_SKIP_IF([$DEBUGINFO_DISABLED])
 AT_CHECK([
 RPMDB_INIT
 
@@ -1079,6 +1059,7 @@ AT_CLEANUP
 # It will be in the "build directory" name under /usr/src/debug.
 AT_SETUP([rpmbuild debuginfo no unique debug src dir])
 AT_KEYWORDS([build] [debuginfo])
+AT_SKIP_IF([$DEBUGINFO_DISABLED])
 AT_CHECK([
 RPMDB_INIT
 
@@ -1112,6 +1093,7 @@ AT_CLEANUP
 # Check that defining _debugsource_packages creates -debugsource package
 AT_SETUP([rpmbuild debugsource])
 AT_KEYWORDS([build] [debuginfo] [debugsource])
+AT_SKIP_IF([$DEBUGINFO_DISABLED])
 AT_CHECK([
 RPMDB_INIT
 
@@ -1143,6 +1125,7 @@ AT_CLEANUP
 # should be in expected build dir).
 AT_SETUP([rpmbuild debugsource debugsourcefiles.list path])
 AT_KEYWORDS([build] [debuginfo] [debugsource])
+AT_SKIP_IF([$DEBUGINFO_DISABLED])
 AT_CHECK([
 RPMDB_INIT
 
@@ -1167,6 +1150,7 @@ AT_CLEANUP
 # Check that undefining _debuginfo_subpackages creates one single -debuginfo.
 AT_SETUP([rpmbuild debuginfo subpackages single])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
+AT_SKIP_IF([$DEBUGINFO_DISABLED])
 AT_CHECK([
 RPMDB_INIT
 
@@ -1205,6 +1189,7 @@ AT_CLEANUP
 # Check that defining _debuginfo_subpackages creates multiple -debuginfos.
 AT_SETUP([rpmbuild debuginfo subpackages multiple])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
+AT_SKIP_IF([$DEBUGINFO_DISABLED])
 AT_CHECK([
 RPMDB_INIT
 
@@ -1285,6 +1270,7 @@ AT_CLEANUP
 # With unique debug and source names
 AT_SETUP([rpmbuild debuginfo subpackages multiple unique])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
+AT_SKIP_IF([$DEBUGINFO_DISABLED])
 AT_CHECK([
 RPMDB_INIT
 
@@ -1365,6 +1351,7 @@ AT_CLEANUP
 # Unique with debugsources.
 AT_SETUP([rpmbuild debuginfo subpackages multiple unique debugsource])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage] [debugsource])
+AT_SKIP_IF([$DEBUGINFO_DISABLED])
 AT_CHECK([
 RPMDB_INIT
 
@@ -1448,6 +1435,7 @@ AT_CLEANUP
 # Check that defining _debuginfo_subpackages works with excluded files.
 AT_SETUP([rpmbuild debuginfo subpackages multiple excluded])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage] [debugsource])
+AT_SKIP_IF([$DEBUGINFO_DISABLED])
 AT_CHECK([
 RPMDB_INIT
 
@@ -1508,6 +1496,7 @@ AT_CLEANUP
 # Check that defining _debuginfo_subpackages works with RemovePathPostfixes.
 AT_SETUP([rpmbuild debuginfo subpackages multiple excluded])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage] [debugsource])
+AT_SKIP_IF([$DEBUGINFO_DISABLED])
 AT_CHECK([
 RPMDB_INIT
 

@@ -18,7 +18,6 @@ TESTSUITE_AT += rpmverify.at
 TESTSUITE_AT += rpmdb.at
 TESTSUITE_AT += rpmbuild.at
 TESTSUITE_AT += rpmbuildid.at
-TESTSUITE_AT += debugedit.at
 TESTSUITE_AT += rpmi.at
 TESTSUITE_AT += rpmvercmp.at
 TESTSUITE_AT += rpmdeps.at
@@ -152,6 +151,7 @@ atlocal:	atlocal.in Makefile
 	  -e "s,[@]usrlibexecdir[@],$(rpmlibexecdir),g" \
 	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir)," \
 	  -e "s,[@]PYTHON[@],$(PYTHON)," \
+	  -e "s,[@]__FIND_DEBUGINFO[@],$(__FIND_DEBUGINFO)," \
 	< $(srcdir)/atlocal.in > atlocal
 DISTCLEANFILES = atlocal
 EXTRA_DIST += atlocal.in

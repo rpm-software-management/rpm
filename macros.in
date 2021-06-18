@@ -68,7 +68,7 @@
 %__objdump		@__OBJDUMP@
 %__strip		@__STRIP@
 
-%__find_debuginfo	%{_rpmconfigdir}/find-debuginfo.sh
+%__find_debuginfo	@__FIND_DEBUGINFO@
 
 #==============================================================================
 # Conditional build stuff.
