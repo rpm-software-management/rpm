@@ -105,6 +105,7 @@ AC_PATH_PROG(__ZSTD, zstd, /usr/bin/zstd, $MYPATH)
 AC_PATH_PROG(__LD, ld, /usr/bin/ld, $MYPATH)
 AC_PATH_PROG(__OBJDUMP, objdump, /usr/bin/objdump, $MYPATH)
 AC_PATH_PROG(__STRIP, strip, /usr/bin/strip, $MYPATH)
+AC_PATH_PROG(__FIND_DEBUGINFO, find-debuginfo, /usr/bin/find-debuginfo, $MYPATH)
 
 AC_PATH_PROG(__GIT, git, /usr/bin/git, $MYPATH)
 AC_PATH_PROG(__HG, hg, /usr/bin/hg, $MYPATH)
@@ -258,11 +259,6 @@ AC_CHECK_HEADERS([gelf.h], [
 ])
 AC_SUBST(WITH_LIBELF_LIB)
 AM_CONDITIONAL(LIBELF,[test "$WITH_LIBELF" = yes])
-
-AC_CHECK_HEADERS([dwarf.h], [
-  WITH_LIBDWARF=yes
-])
-AM_CONDITIONAL(LIBDWARF,[test "$WITH_LIBDWARF" = yes])
 
 #=================
 # Select crypto library
@@ -444,7 +440,6 @@ AM_CONDITIONAL(WITH_ARCHIVE,[test "$with_archive" = yes])
 #=================
 # Check for elfutils libdw library with dwelf_elf_gnu_build_id.
 WITH_LIBDW_LIB=
-HAVE_LIBDW_STRTAB=
 AS_IF([test "$WITH_LIBELF" = yes],[
   AC_CHECK_HEADERS([elfutils/libdwelf.h],[
     # dwelf_elf_gnu_build_id was introduced in elfutils 0.159
@@ -453,9 +448,6 @@ AS_IF([test "$WITH_LIBELF" = yes],[
                 [Define to 1 if you have elfutils libdw library])
       WITH_LIBDW_LIB="-ldw"
       WITH_LIBDW=yes
-      # If possible we also want the strtab functions from elfutils 0.167.
-      # But we can fall back on the (unsupported) ebl alternatives if not.
-      AC_CHECK_LIB(dw, dwelf_strtab_init, [HAVE_LIBDW_STRTAB=yes])
       # whether libdw supports compressed ELF objects
       AC_CHECK_LIB(dw, dwelf_elf_begin, [
                    AC_DEFINE(HAVE_DWELF_ELF_BEGIN, 1, [Have dwelf_elf_begin?])
@@ -465,7 +457,6 @@ AS_IF([test "$WITH_LIBELF" = yes],[
 ])
 AC_SUBST(WITH_LIBDW_LIB)
 AM_CONDITIONAL(LIBDW,[test "$WITH_LIBDW" = yes])
-AM_CONDITIONAL(HAVE_LIBDW_STRTAB,[test "$HAVE_LIBDW_STRTAB" = yes])
 
 #=================
 # Process --enable-ndb
