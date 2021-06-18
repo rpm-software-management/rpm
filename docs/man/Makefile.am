@@ -71,10 +71,8 @@ man_sk_man8dir	= $(mandir)/sk/man8
 man_sk_man8_DATA = sk/rpm.8
 EXTRA_DIST += sk/rpm.8.md
 
-subdirs:
-	@$(MKDIR_P) fr ja ko pl ru sk
-
-%: $(srcdir)/%.md subdirs
+%: $(srcdir)/%.md fr ja ko pl ru sk
+	@$(MKDIR_P) `dirname $@`
 	${PANDOC} -s -t man $(srcdir)/$@.md -o $@
 
 clean-local:
