@@ -94,7 +94,7 @@ function msg()
 
 function check_rpath() {
     pos=0
-    rpath=$(readelf -d "$1" 2>/dev/null | LANG=C grep "($2).*:") || return 0
+    rpath=$(readelf -W -d "$1" 2>/dev/null | LANG=C grep "($2).*:") || return 0
     rpath=$(echo "$rpath" | LANG=C sed -e "s!.*($2).*: \[\(.*\)\]!\1!p;d")
     lower=$(echo $2 | awk '{print tolower($0)}')
     tmp=aux:$rpath:/lib/aux || :
