@@ -94,9 +94,9 @@ function msg()
 
 function check_rpath() {
     pos=0
-    rpath=$(readelf -W -d "$1" 2>/dev/null | LANG=C grep "($2).*:") || return 0
-    rpath=$(echo "$rpath" | LANG=C sed -e "s!.*($2).*: \[\(.*\)\]!\1!p;d")
-    lower=$(echo $2 | awk '{print tolower($0)}')
+    rpath=$(readelf -W -d "$1" 2>/dev/null | LANG=C grep -E "\((RPATH|RUNPATH)\).*:") || return 0
+    rpath=$(echo "$rpath" | LANG=C sed -e "s!.*\(RPATH\|RUNPATH\).*: \[\(.*\)\]!\2!p;d")
+
     tmp=aux:$rpath:/lib/aux || :
     IFS=:
     set -- $tmp
@@ -105,6 +105,7 @@ function check_rpath() {
 
     allow_ORIGIN=1
     for j; do
+	lower=$(echo $j | grep -E -o "RPATH|RUNPATH" | awk '{print tolower($0)}')
 	new_allow_ORIGIN=0
 
 	if test -z "$j"; then
@@ -155,8 +156,7 @@ function check_rpath() {
 old_IFS=$IFS
 
 for i; do
-    check_rpath $i "RPATH"
-    check_rpath $i "RUNPATH"
+    check_rpath $i
 done
 
 test -z "$fail"
