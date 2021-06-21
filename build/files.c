@@ -777,6 +777,8 @@ static rpmRC parseForLang(char * buf, FileEntry cur)
 
 	if (*pe == ',') pe++;	/* skip , if present */
     }
+
+    q = _free(q);
   }
 
     rc = RPMRC_OK;
