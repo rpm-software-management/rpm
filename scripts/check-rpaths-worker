@@ -118,6 +118,8 @@ function check_rpath() {
 		    badness=0;;
 	        (/lib64/*|/usr/lib64/*|/usr/X11R6/lib64/*|/usr/local/lib64/*)
 		    badness=0;;
+	        (/usr/libexec/*)
+		    badness=0;;
 
 		(\$ORIGIN|\${ORIGINX}|\$ORIGIN/*|\${ORIGINX}/*)
 		    test $allow_ORIGIN -eq 0 && badness=8 || {
