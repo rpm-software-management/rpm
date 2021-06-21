@@ -25,4 +25,6 @@ if [ -z "$RPM_BUILD_ROOT" ] || [ "$RPM_BUILD_ROOT" = "/" ]; then
         exit 0
 fi
 
-find "$RPM_BUILD_ROOT" -type f -print0 | xargs -0r /usr/lib/rpm/check-rpaths-worker
+NCPUS=${RPM_BUILD_NCPUS:-1}
+
+find "$RPM_BUILD_ROOT" -type f -print0 | xargs -0 -r -P$NCPUS -n32 /usr/lib/rpm/check-rpaths-worker
