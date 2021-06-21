@@ -543,30 +543,37 @@ pgpDigAlg pgpDigAlgFree(pgpDigAlg alg)
     return NULL;
 }
 
+static int processMpis(const int mpis, pgpDigAlg sigalg,
+		       const uint8_t *p, const uint8_t *const pend) {
+    int i = 0, rc = 1; /* assume failure */
+    for (; i < mpis && pend - p >= 2; i++) {
+	unsigned int mpil = pgpMpiLen(p);
+	if (pend - p < mpil)
+	    return rc;
+	if (sigalg && sigalg->setmpi(sigalg, i, p))
+	    return rc;
+	p += mpil;
+    }
+
+    /* Does the size and number of MPI's match our expectations? */
+    if (p == pend && i == mpis)
+	rc = 0;
+    return rc;
+}
+
 static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
 		const uint8_t *p, const uint8_t *h, size_t hlen,
 		pgpDigParams sigp)
 {
     int rc = 1; /* assume failure */
     const uint8_t * pend = h + hlen;
-    int i;
     pgpDigAlg sigalg = pgpSignatureNew(pubkey_algo);
 
-    for (i = 0; i < sigalg->mpis && pend - p >= 2; i++) {
-	int mpil = pgpMpiLen(p);
-	if (pend - p < mpil)
-	    break;
-	if (sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT) {
-	    if (sigalg->setmpi(sigalg, i, p))
-		break;
-	}
-	p += mpil;
-    }
+    if (sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT)
+	rc = processMpis(sigalg->mpis, sigalg, p, pend);
+    else
+	rc = processMpis(sigalg->mpis, NULL, p, pend);
 
-    /* Does the size and number of MPI's match our expectations? */
-    if (p == pend && i == sigalg->mpis)
-	rc = 0;
-    
     /* We can't handle more than one sig at a time */
     if (rc == 0 && sigp->alg == NULL && sigp->tag == PGPTAG_SIGNATURE)
 	sigp->alg = sigalg;
@@ -729,8 +736,7 @@ static int pgpPrtPubkeyParams(uint8_t pubkey_algo,
 {
     int rc = 1;
     const uint8_t *pend = h + hlen;
-    int i, curve = 0;
-    pgpDigAlg keyalg;
+    int curve = 0;
     if (pubkey_algo == PGPPUBKEYALGO_EDDSA) {
 	int len = p + 1 < pend ? p[0] : 0;
 	if (len == 0 || len == 0xff || p + 1 + len > pend)
@@ -738,19 +744,8 @@ static int pgpPrtPubkeyParams(uint8_t pubkey_algo,
 	curve = pgpCurveByOid(p + 1, len);
 	p += len + 1;
     }
-    keyalg = pgpPubkeyNew(pubkey_algo, curve);
-    for (i = 0; i < keyalg->mpis && p + 2 <= pend; i++) {
-	int mpil = pgpMpiLen(p);
-	if (p + mpil > pend)
-	    break;
-	if (keyalg->setmpi(keyalg, i, p))
-	    break;
-	p += mpil;
-    }
-
-    /* Does the size and number of MPI's match our expectations? */
-    if (p == pend && i == keyalg->mpis)
-	rc = 0;
+    pgpDigAlg keyalg = pgpPubkeyNew(pubkey_algo, curve);
+    rc = processMpis(keyalg->mpis, keyalg, p, pend);
 
     /* We can't handle more than one key at a time */
     if (rc == 0 && keyp->alg == NULL && (keyp->tag == PGPTAG_PUBLIC_KEY ||
@@ -855,19 +850,16 @@ int pgpPubkeyFingerprint(const uint8_t *h, size_t hlen,
 	    else
 		se = pend;      /* error out when reading the MPI */
 	}
-	while (se < pend && mpis-- > 0)
-	    se += pgpMpiLen(se);
 
 	/* Does the size and number of MPI's match our expectations? */
-	if (se == pend && mpis == 0) {
+	if (!processMpis(mpis, NULL, se, pend)) {
 	    DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	    uint8_t *d = NULL;
 	    size_t dlen = 0;
-	    int i = se - h;
-	    uint8_t in[3] = { 0x99, (i >> 8), i };
+	    uint8_t in[3] = { 0x99, (uint8_t)(hlen >> 8), (uint8_t)hlen };
 
 	    (void) rpmDigestUpdate(ctx, in, 3);
-	    (void) rpmDigestUpdate(ctx, h, i);
+	    (void) rpmDigestUpdate(ctx, h, hlen);
 	    (void) rpmDigestFinal(ctx, (void **)&d, &dlen, 0);
 
 	    if (dlen == 20) {
