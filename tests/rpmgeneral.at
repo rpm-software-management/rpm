@@ -44,10 +44,10 @@ cd ${RPMTEST}/${RPMLIBDIR}
 ls lib*.so.*.*
 ],
 [0],
-[librpm.so.9.1.0
-librpmbuild.so.9.1.0
-librpmio.so.9.1.0
-librpmsign.so.9.1.0
+[librpm.so.9.2.0
+librpmbuild.so.9.2.0
+librpmio.so.9.2.0
+librpmsign.so.9.2.0
 ])
 AT_CLEANUP
 
