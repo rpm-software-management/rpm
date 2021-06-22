@@ -729,19 +729,7 @@ AT_SETUP([rpm -i hardlinks])
 AT_KEYWORDS([build install])
 RPMDB_INIT
 
-# Need a reproducable test package
-runroot rpmbuild \
-  --define "%optflags -O2 -g" \
-  --define "%_target_platform noarch-linux" \
-  --define "%_binary_payload w.ufdio" \
-  --define "%_buildhost localhost" \
-  --define "%use_source_date_epoch_as_buildtime 1" \
-  --define "%source_date_epoch_from_changelog 1" \
-  --define "%clamp_mtime_to_source_date_epoch 1" \
-  --with owned_dir \
-  -bb --quiet /data/SPECS/hlinktest.spec
-
-pkg="/build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm"
+pkg="/data/RPMS/hlinktest-1.0-1.noarch.rpm"
 
 cp "${RPMTEST}/${pkg}" "${RPMTEST}/tmp/1.rpm"
 dd if=/dev/zero of="${RPMTEST}/tmp/1.rpm" \
@@ -793,7 +781,7 @@ error: hlinktest-1.0-1.noarch: install failed
 
 AT_CHECK([
 RPMDB_INIT
-runroot rpm -i /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+runroot rpm -i "${pkg}"
 runroot rpm -q --qf "[[%{filenlinks} %{filenames}\n]]%{longsize}\n" hlinktest
 ls -i "${RPMTEST}"/foo/hello* | awk {'print $1'} | sort -u | wc -l
 runroot rpm -e hlinktest
@@ -815,7 +803,7 @@ runroot rpm -e hlinktest
 
 AT_CHECK([
 RPMDB_INIT
-runroot rpm -i --excludepath=/foo/zzzz /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+runroot rpm -i --excludepath=/foo/zzzz "${pkg}"
 runroot rpm -Vv --nogroup --nouser hlinktest
 runroot rpm -e hlinktest
 ],
@@ -833,7 +821,7 @@ runroot rpm -e hlinktest
 
 AT_CHECK([
 RPMDB_INIT
-runroot rpm -i --excludepath=/foo/aaaa /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+runroot rpm -i --excludepath=/foo/aaaa "${pkg}"
 runroot rpm -Vv --nogroup --nouser hlinktest
 runroot rpm -e hlinktest
 ],
@@ -851,7 +839,7 @@ runroot rpm -e hlinktest
 
 AT_CHECK([
 RPMDB_INIT
-runroot rpm -i --excludepath=/foo/aaaa --excludepath=/foo/zzzz /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+runroot rpm -i --excludepath=/foo/aaaa --excludepath=/foo/zzzz "${pkg}"
 runroot rpm -Vv --nogroup --nouser hlinktest
 runroot rpm -e hlinktest
 ],
@@ -869,7 +857,7 @@ runroot rpm -e hlinktest
 
 AT_CHECK([
 RPMDB_INIT
-runroot rpm -i --excludepath=/foo/hello-foo /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+runroot rpm -i --excludepath=/foo/hello-foo "${pkg}"
 runroot rpm -Vv --nogroup --nouser hlinktest
 runroot rpm -e hlinktest
 ],
