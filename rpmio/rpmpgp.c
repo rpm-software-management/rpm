@@ -129,6 +129,7 @@ static struct pgpValTbl_s const pgpSubTypeTbl[] = {
     { PGPSUBTYPE_REVOKE_REASON,	"reason for revocation" },
     { PGPSUBTYPE_FEATURES,	"features" },
     { PGPSUBTYPE_EMBEDDED_SIG,	"embedded signature" },
+    { PGPSUBTYPE_ISSUER_FPR,	"issuer fingerprint" },
 
     { PGPSUBTYPE_INTERNAL_100,	"internal subpkt type 100" },
     { PGPSUBTYPE_INTERNAL_101,	"internal subpkt type 101" },
@@ -426,6 +427,23 @@ static int pgpVersion(const uint8_t *h, size_t hlen, uint8_t *version)
     return 0;
 }
 
+static int pgpSetKeyId(pgpDigParams _digp,
+	               const uint8_t p[static sizeof(_digp->signid)],
+		       uint8_t flag) {
+    /* Reject duplicate entries */
+    if (_digp->saved & flag)
+	return 1;
+
+    if (_digp->saved & (PGPDIG_SAVED_ID | PGPDIG_SAVED_FPR)) {
+	/* Check entries for consistency */
+	if (memcmp(_digp->signid, p, sizeof(_digp->signid)))
+	    return 1;
+    } else
+	memcpy(_digp->signid, p, sizeof(_digp->signid));
+    _digp->saved |= flag;
+    return 0;
+}
+
 static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype, 
 			 pgpDigParams _digp)
 {
@@ -477,15 +495,19 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 	    pgpPrtTime(" ", p+1, plen-1);
 	    break;
 
+	case PGPSUBTYPE_ISSUER_FPR:	/* issuer key fingerprint */
+	    impl = *p;
+	    _Static_assert(sizeof(_digp->signid) == 8, "bug");
+	    if (plen != 22 || p[1] != 4 || pgpSetKeyId(_digp, p + 14, PGPDIG_SAVED_FPR))
+		return 1;
+	    pgpPrtHex("", p+2, plen-2);
+	    break;
 	case PGPSUBTYPE_ISSUER_KEYID:	/* issuer key ID */
 	    impl = *p;
-	    if (!(_digp->saved & PGPDIG_SAVED_ID))
-	    {
-		if (plen-1 != sizeof(_digp->signid))
-		    break;
-		_digp->saved |= PGPDIG_SAVED_ID;
-		memcpy(_digp->signid, p+1, sizeof(_digp->signid));
-	    }
+	    if (plen-1 != sizeof(_digp->signid) || pgpSetKeyId(_digp, p+1, PGPDIG_SAVED_ID))
+		return 1;
+	    pgpPrtHex("", p+1, plen-1);
+	    break;
 	case PGPSUBTYPE_EXPORTABLE_CERT:
 	case PGPSUBTYPE_TRUST_SIG:
 	case PGPSUBTYPE_REGEX:
