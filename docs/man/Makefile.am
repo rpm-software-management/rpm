@@ -63,6 +63,7 @@ EXTRA_DIST += fr/rpm.8
 man_ja_man8dir = $(mandir)/ja/man8
 man_ja_man8_DATA = ja/rpm.8 ja/rpm2cpio.8 ja/rpmbuild.8 ja/rpmgraph.8
 EXTRA_DIST += ja/rpm.8.md ja/rpm2cpio.8.md ja/rpmbuild.8.md ja/rpmgraph.8.md
+EXTRA_DIST += ja/rpm.8 ja/rpm2cpio.8 ja/rpmbuild.8 ja/rpmgraph.8
 
 man_ko_man8dir = $(mandir)/ko/man8
 man_ko_man8_DATA = ko/rpm.8 ko/rpm2cpio.8
