@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-20 13:58+0300\n"
+"POT-Creation-Date: 2021-06-22 13:30+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: cliutils.c:21 lib/poptI.c:29
+#: cliutils.c:21
 #, c-format
 msgid "%s: %s\n"
 msgstr ""
@@ -46,17 +46,21 @@ msgstr ""
 msgid "exec failed\n"
 msgstr ""
 
-#: rpm2archive.c:93 rpm2cpio.c:68
+#: rpm2archive.c:27
+msgid "create uncompressed tar file"
+msgstr ""
+
+#: rpm2archive.c:105 rpm2cpio.c:68
 #, c-format
 msgid "argument is not an RPM package\n"
 msgstr ""
 
-#: rpm2archive.c:98 rpm2cpio.c:73
+#: rpm2archive.c:110 rpm2cpio.c:73
 #, c-format
 msgid "error reading header from package\n"
 msgstr ""
 
-#: rpm2archive.c:113 rpm2cpio.c:93
+#: rpm2archive.c:125 rpm2cpio.c:93
 #, c-format
 msgid "cannot re-open payload: %s\n"
 msgstr ""
@@ -269,7 +273,7 @@ msgstr ""
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 
-#: rpmbuild.c:282 rpmdb.c:43 rpmkeys.c:38 rpm.c:53 rpmsign.c:55 rpmspec.c:46
+#: rpmbuild.c:282 rpmdb.c:43 rpmkeys.c:38 rpm.c:53 rpmsign.c:77 rpmspec.c:46
 #: tools/rpmdeps.c:45 tools/rpmgraph.c:221
 msgid "Common options for all rpm modes and executables:"
 msgstr ""
@@ -279,47 +283,52 @@ msgstr ""
 msgid "Unable to open spec file %s: %s\n"
 msgstr ""
 
-#: rpmbuild.c:359
+#: rpmbuild.c:361
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr ""
 
-#: rpmbuild.c:374
+#: rpmbuild.c:376
 #, c-format
 msgid "Found more than one spec file in %s\n"
 msgstr ""
 
-#: rpmbuild.c:385
+#: rpmbuild.c:387
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr ""
 
-#: rpmbuild.c:449
+#: rpmbuild.c:393
+#, c-format
+msgid "Failed to rename %s to %s: %m\n"
+msgstr ""
+
+#: rpmbuild.c:463
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr ""
 
-#: rpmbuild.c:453
+#: rpmbuild.c:467
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr ""
 
-#: rpmbuild.c:460
+#: rpmbuild.c:474
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr ""
 
-#: rpmbuild.c:520
+#: rpmbuild.c:534
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: rpmbuild.c:528
+#: rpmbuild.c:542
 #, c-format
 msgid "Building for target %s\n"
 msgstr ""
 
-#: rpmbuild.c:583 rpm.c:212
+#: rpmbuild.c:597 rpm.c:212
 msgid "arguments to --root (-r) must begin with a /"
 msgstr ""
 
@@ -351,7 +360,7 @@ msgstr ""
 msgid "Database options:"
 msgstr ""
 
-#: rpmdb.c:132 rpmkeys.c:83 rpm.c:118 rpmsign.c:191
+#: rpmdb.c:132 rpmkeys.c:83 rpm.c:118 rpmsign.c:233
 msgid "only one major mode may be specified"
 msgstr ""
 
@@ -375,7 +384,7 @@ msgstr ""
 msgid "Keyring options:"
 msgstr ""
 
-#: rpmkeys.c:64 rpmsign.c:166
+#: rpmkeys.c:64 rpmsign.c:201
 msgid "no arguments given"
 msgstr ""
 
@@ -527,55 +536,79 @@ msgstr ""
 msgid "no arguments given for verify"
 msgstr ""
 
-#: rpmsign.c:30
+#: rpmsign.c:35
 msgid "sign package(s)"
 msgstr ""
 
-#: rpmsign.c:32
+#: rpmsign.c:37
 msgid "sign package(s) (identical to --addsign)"
 msgstr ""
 
-#: rpmsign.c:34
+#: rpmsign.c:39
 msgid "delete package signatures"
 msgstr ""
 
-#: rpmsign.c:37
-msgid "create rpm v3 header+payload signatures"
-msgstr ""
-
-#: rpmsign.c:41
-msgid "sign package(s) files"
-msgstr ""
-
-#: rpmsign.c:43
-msgid "use file signing key <key>"
-msgstr ""
-
-#: rpmsign.c:44
-msgid "<key>"
+#: rpmsign.c:42
+msgid "delete IMA and fsverity file signatures"
 msgstr ""
 
 #: rpmsign.c:46
+msgid "create rpm v3 header+payload signatures"
+msgstr ""
+
+#: rpmsign.c:50
+msgid "sign package(s) files"
+msgstr ""
+
+#: rpmsign.c:55
+msgid "generate fsverity signatures for package(s) files"
+msgstr ""
+
+#: rpmsign.c:57
+msgid "algorithm to use for verity signatures, default sha256"
+msgstr ""
+
+#: rpmsign.c:58
+msgid "<algorithm>"
+msgstr ""
+
+#: rpmsign.c:60
+msgid "use file signing cert <cert>"
+msgstr ""
+
+#: rpmsign.c:61
+msgid "<cert>"
+msgstr ""
+
+#: rpmsign.c:65
+msgid "use file signing key <key>"
+msgstr ""
+
+#: rpmsign.c:66
+msgid "<key>"
+msgstr ""
+
+#: rpmsign.c:68
 msgid "prompt for file signing key password"
 msgstr ""
 
-#: rpmsign.c:53
+#: rpmsign.c:75
 msgid "Signature options:"
 msgstr ""
 
-#: rpmsign.c:105
+#: rpmsign.c:132
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr ""
 
-#: rpmsign.c:118
+#: rpmsign.c:154
 #, c-format
 msgid ""
 "You must set \"%%_file_signing_key\" in your macro file or on the command "
 "line with --fskpath\n"
 msgstr ""
 
-#: rpmsign.c:171
+#: rpmsign.c:206
 msgid "--fskpath may only be specified when signing files"
 msgstr ""
 
@@ -611,62 +644,63 @@ msgstr ""
 msgid "no arguments given for parse"
 msgstr ""
 
-#: build/build.c:33
+#: build/build.c:35
 msgid "unable to parse SOURCE_DATE_EPOCH\n"
 msgstr ""
 
-#: build/build.c:59
+#: build/build.c:64
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
 
-#: build/build.c:164
+#: build/build.c:171
 #, c-format
 msgid "Unable to open temp file: %s\n"
 msgstr ""
 
-#: build/build.c:169
+#: build/build.c:176
 #, c-format
 msgid "Unable to open stream: %s\n"
 msgstr ""
 
-#: build/build.c:202
+#: build/build.c:209
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr ""
 
-#: build/build.c:205
+#: build/build.c:212
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr ""
 
-#: build/build.c:272
+#: build/build.c:279
 msgid "Failed build dependencies:\n"
 msgstr ""
 
-#: build/build.c:303
+#: build/build.c:310
 #, c-format
 msgid "setting %s=%s\n"
 msgstr ""
 
-#: build/build.c:429
+#: build/build.c:436
 msgid ""
 "\n"
 "\n"
 "RPM build errors:\n"
 msgstr ""
 
-#: build/files.c:344 build/files.c:525 build/files.c:744
+#: build/files.c:344 build/files.c:525 build/files.c:749
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr ""
 
-#: build/files.c:354 build/files.c:666 build/files.c:754 build/files.c:813
+#: build/files.c:354 build/files.c:535 build/files.c:671 build/files.c:759
+#: build/files.c:818
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr ""
 
-#: build/files.c:379 build/files.c:685
+#: build/files.c:379 build/files.c:690
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr ""
@@ -676,278 +710,278 @@ msgstr ""
 msgid "Missing %s in %s(%s)\n"
 msgstr ""
 
-#: build/files.c:540
+#: build/files.c:545
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr ""
 
-#: build/files.c:580
+#: build/files.c:585
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:589
+#: build/files.c:594
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:601
+#: build/files.c:606
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:706
+#: build/files.c:711
 #, c-format
 msgid "Unusual locale length: \"%s\" in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:713
+#: build/files.c:718
 #, c-format
 msgid "Duplicate locale %s in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:828
+#: build/files.c:833
 #, c-format
 msgid "Invalid capability: %s\n"
 msgstr ""
 
-#: build/files.c:838
+#: build/files.c:843
 msgid "File capability support not built in\n"
 msgstr ""
 
-#: build/files.c:889
+#: build/files.c:894
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1010
+#: build/files.c:1015
 #, c-format
 msgid "unable to parse %s=%s\n"
 msgstr ""
 
-#: build/files.c:1028
+#: build/files.c:1032
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr ""
 
-#: build/files.c:1082
+#: build/files.c:1091
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr ""
 
-#: build/files.c:1204
+#: build/files.c:1213
 #, c-format
 msgid "reading symlink %s failed: %s\n"
 msgstr ""
 
-#: build/files.c:1210
+#: build/files.c:1219
 #, c-format
 msgid "absolute symlink: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1216
+#: build/files.c:1225
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1337
+#: build/files.c:1346
 #, c-format
 msgid "Illegal character (0x%x) in filename: %s\n"
 msgstr ""
 
-#: build/files.c:1374
+#: build/files.c:1383
 #, c-format
 msgid "Path is outside buildroot: %s\n"
 msgstr ""
 
-#: build/files.c:1418
+#: build/files.c:1427
 #, c-format
 msgid "Directory not found: %s\n"
 msgstr ""
 
-#: build/files.c:1419 lib/rpminstall.c:459
+#: build/files.c:1428 lib/rpminstall.c:459
 #, c-format
 msgid "File not found: %s\n"
 msgstr ""
 
-#: build/files.c:1440
+#: build/files.c:1449
 #, c-format
 msgid "Not a directory: %s\n"
 msgstr ""
 
-#: build/files.c:1594
+#: build/files.c:1603
 #, c-format
 msgid "Can't read content of file: %s\n"
 msgstr ""
 
-#: build/files.c:1635
+#: build/files.c:1644
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:1641
+#: build/files.c:1650
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr ""
 
-#: build/files.c:1645
+#: build/files.c:1654
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:1654
+#: build/files.c:1663
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr ""
 
-#: build/files.c:1700
+#: build/files.c:1709
 msgid "failed symlink"
 msgstr ""
 
-#: build/files.c:1756 build/files.c:1759
+#: build/files.c:1765 build/files.c:1768
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
 msgstr ""
 
-#: build/files.c:1766
+#: build/files.c:1775
 #, c-format
 msgid "Duplicate build-ids %s and %s\n"
 msgstr ""
 
-#: build/files.c:1820
+#: build/files.c:1829
 msgid "_build_id_links macro not set, assuming 'compat'\n"
 msgstr ""
 
-#: build/files.c:1833
+#: build/files.c:1842
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
 msgstr ""
 
-#: build/files.c:1922
+#: build/files.c:1931
 #, c-format
 msgid "error reading build-id in %s: %s\n"
 msgstr ""
 
-#: build/files.c:1926
+#: build/files.c:1935
 #, c-format
 msgid "Missing build-id in %s\n"
 msgstr ""
 
-#: build/files.c:1931
+#: build/files.c:1940
 #, c-format
 msgid "build-id found in %s too small\n"
 msgstr ""
 
-#: build/files.c:1932
+#: build/files.c:1941
 #, c-format
 msgid "build-id found in %s too large\n"
 msgstr ""
 
-#: build/files.c:1947 rpmio/rpmfileutil.c:445
+#: build/files.c:1956 rpmio/rpmfileutil.c:445
 msgid "failed to create directory"
 msgstr ""
 
-#: build/files.c:1965
+#: build/files.c:1974
 msgid "Mixing main ELF and debug files in package"
 msgstr ""
 
-#: build/files.c:2166
+#: build/files.c:2175
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:2190
+#: build/files.c:2199
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr ""
 
-#: build/files.c:2202
+#: build/files.c:2211
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2204
+#: build/files.c:2213
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2239
+#: build/files.c:2248
 #, c-format
 msgid "Could not open %s file %s: %m\n"
 msgstr ""
 
-#: build/files.c:2264
+#: build/files.c:2273
 #, c-format
 msgid "Empty %s file %s\n"
 msgstr ""
 
-#: build/files.c:2309
+#: build/files.c:2318
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr ""
 
-#: build/files.c:2430 lib/rpminstall.c:461
+#: build/files.c:2439 lib/rpminstall.c:461
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:2517
+#: build/files.c:2526
 #, c-format
 msgid "Special file in generated file list: %s\n"
 msgstr ""
 
-#: build/files.c:2541
+#: build/files.c:2550
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:2557
+#: build/files.c:2566
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr ""
 
-#: build/files.c:2626
+#: build/files.c:2635
 msgid "Generating build-id links failed\n"
 msgstr ""
 
-#: build/files.c:2743
+#: build/files.c:2752
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr ""
 
-#: build/files.c:2811
+#: build/files.c:2820
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr ""
 
-#: build/files.c:2824
+#: build/files.c:2833
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2879
+#: build/files.c:2889
 #, c-format
 msgid "package %s already exists\n"
 msgstr ""
 
-#: build/files.c:2943
+#: build/files.c:2954
 #, c-format
 msgid "%s was mapped to multiple filenames"
 msgstr ""
 
-#: build/files.c:3192
+#: build/files.c:3203
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
 
-#: build/files.c:3214
+#: build/files.c:3225
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 
-#: build/files.c:3220
+#: build/files.c:3231
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 
@@ -966,8 +1000,8 @@ msgstr ""
 msgid "Unknown payload compression: %s\n"
 msgstr ""
 
-#: build/pack.c:375 sign/rpmgensig.c:236 sign/rpmgensig.c:591
-#: sign/rpmgensig.c:626
+#: build/pack.c:375 sign/rpmgensig.c:241 sign/rpmgensig.c:655
+#: sign/rpmgensig.c:690
 #, c-format
 msgid "Could not seek in file %s: %s\n"
 msgstr ""
@@ -1031,7 +1065,7 @@ msgstr ""
 msgid "Finished binary package job, result %d, filename %s\n"
 msgstr ""
 
-#: build/parseSimpleScript.c:17 build/parsePreamble.c:746
+#: build/parseSimpleScript.c:17 build/parsePreamble.c:722
 #, c-format
 msgid "line %d: second %s\n"
 msgstr ""
@@ -1108,189 +1142,189 @@ msgstr ""
 msgid "line %d: Error parsing %%policies: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:70
+#: build/parsePreamble.c:69
 #, c-format
 msgid "Error parsing tag field: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:182
+#: build/parsePreamble.c:181
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:188
+#: build/parsePreamble.c:187
 #, c-format
 msgid "line %d: Bad no%s number: %u\n"
 msgstr ""
 
-#: build/parsePreamble.c:240
+#: build/parsePreamble.c:215
 #, c-format
 msgid "Downloading %s to %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:242
+#: build/parsePreamble.c:217
 #, c-format
 msgid "Couldn't download %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:312
+#: build/parsePreamble.c:287
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:330
+#: build/parsePreamble.c:305
 #, c-format
 msgid "%s %d defined multiple times\n"
 msgstr ""
 
-#: build/parsePreamble.c:474
+#: build/parsePreamble.c:450
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:479
+#: build/parsePreamble.c:455
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:484
+#: build/parsePreamble.c:460
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:489
+#: build/parsePreamble.c:465
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:515
+#: build/parsePreamble.c:491
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:538
+#: build/parsePreamble.c:514
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:609
+#: build/parsePreamble.c:585
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:625
+#: build/parsePreamble.c:601
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:635
+#: build/parsePreamble.c:611
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:649
+#: build/parsePreamble.c:625
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:657
+#: build/parsePreamble.c:633
 #, c-format
 msgid "line %d: %s in: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:659
+#: build/parsePreamble.c:635
 #, c-format
 msgid "%s in: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:678
+#: build/parsePreamble.c:654
 #, c-format
 msgid "Illegal char '%c' (0x%x)"
 msgstr ""
 
-#: build/parsePreamble.c:684
+#: build/parsePreamble.c:660
 msgid "Possible unexpanded macro"
 msgstr ""
 
-#: build/parsePreamble.c:690
+#: build/parsePreamble.c:666
 msgid "Illegal sequence \"..\""
 msgstr ""
 
-#: build/parsePreamble.c:778
+#: build/parsePreamble.c:754
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:786
+#: build/parsePreamble.c:762
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:847
+#: build/parsePreamble.c:823
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:859
+#: build/parsePreamble.c:835
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:871
+#: build/parsePreamble.c:847
 #, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:908
+#: build/parsePreamble.c:884
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:942
+#: build/parsePreamble.c:918
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:949
+#: build/parsePreamble.c:925
 #, c-format
 msgid "line %d: Duplicate BuildArch entry: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:959
+#: build/parsePreamble.c:935
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:974
+#: build/parsePreamble.c:950
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr ""
 
-#: build/parsePreamble.c:1072
+#: build/parsePreamble.c:1048
 #, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:1133
+#: build/parsePreamble.c:1109
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:1178
+#: build/parsePreamble.c:1154
 msgid "Binary rpm package found. Expected spec file!\n"
 msgstr ""
 
-#: build/parsePreamble.c:1181
+#: build/parsePreamble.c:1157
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:1216
+#: build/parsePreamble.c:1192
 #, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr ""
 
-#: build/parsePreamble.c:1220
+#: build/parsePreamble.c:1196
 #, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr ""
@@ -1310,32 +1344,27 @@ msgstr ""
 msgid "No source number %u\n"
 msgstr ""
 
-#: build/parsePrep.c:259
+#: build/parsePrep.c:260
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:275
+#: build/parsePrep.c:276
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:291
+#: build/parsePrep.c:292
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:454
-#, c-format
-msgid "%s: %s: %s\n"
-msgstr ""
-
-#: build/parsePrep.c:467
+#: build/parsePrep.c:468
 #, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:497
+#: build/parsePrep.c:498
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr ""
@@ -1356,7 +1385,7 @@ msgstr ""
 msgid "invalid dependency"
 msgstr ""
 
-#: build/parseReqs.c:267 lib/rpmds.c:1360
+#: build/parseReqs.c:267 lib/rpmds.c:1359
 msgid "Version required"
 msgstr ""
 
@@ -1420,17 +1449,17 @@ msgstr ""
 msgid "line %d: Second %s\n"
 msgstr ""
 
-#: build/parseScript.c:374
+#: build/parseScript.c:371
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr ""
 
-#: build/parseScript.c:392
+#: build/parseScript.c:389
 #, c-format
 msgid "line %d: file trigger condition must begin with '/': %s"
 msgstr ""
 
-#: build/parseScript.c:398
+#: build/parseScript.c:395
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
 msgstr ""
@@ -1600,7 +1629,7 @@ msgstr ""
 msgid "Couldn't create pipe for %s: %m\n"
 msgstr ""
 
-#: build/rpmfc.c:296 lib/rpmscript.c:323
+#: build/rpmfc.c:296 lib/rpmscript.c:304
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr ""
@@ -1620,142 +1649,69 @@ msgstr ""
 msgid "failed to write all data to %s: %s\n"
 msgstr ""
 
-#: build/rpmfc.c:1174
+#: build/rpmfc.c:1170
 msgid "Empty file classifier\n"
 msgstr ""
 
-#: build/rpmfc.c:1183
+#: build/rpmfc.c:1179
 msgid "No file attributes configured\n"
 msgstr ""
 
-#: build/rpmfc.c:1209
+#: build/rpmfc.c:1205
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr ""
 
-#: build/rpmfc.c:1215 build/rpmfc.c:1219
+#: build/rpmfc.c:1211 build/rpmfc.c:1215
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr ""
 
-#: build/rpmfc.c:1266 build/rpmfc.c:1285
+#: build/rpmfc.c:1262 build/rpmfc.c:1281
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr ""
 
-#: build/rpmfc.c:1493
+#: build/rpmfc.c:1489
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr ""
 
-#: build/rpmfc.c:1502 build/rpmfc.c:1511
+#: build/rpmfc.c:1498 build/rpmfc.c:1507
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr ""
 
-#: build/rpmfc.c:1550
+#: build/rpmfc.c:1546
 msgid "Deprecated external dependency generator is used!\n"
 msgstr ""
 
-#: build/spec.c:88
+#: build/spec.c:87
 #, c-format
 msgid "line %d: %s: package %s does not exist\n"
 msgstr ""
 
-#: build/spec.c:91
+#: build/spec.c:90
 #, c-format
 msgid "line %d: %s: package %s already exists\n"
 msgstr ""
 
-#: build/spec.c:471
+#: build/spec.c:456
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/backend/db3.c:98
+#: lib/backend/dbi.c:78
 #, c-format
-msgid "%s error(%d) from %s: %s\n"
+msgid "invalid %%_db_backend: %s\n"
 msgstr ""
 
-#: lib/backend/db3.c:101
-#, c-format
-msgid "%s error(%d): %s\n"
-msgstr ""
-
-#: lib/backend/db3.c:289
-#, c-format
-msgid "unrecognized db option: \"%s\" ignored.\n"
-msgstr ""
-
-#: lib/backend/db3.c:326
-#, c-format
-msgid "%s has invalid numeric value, skipped\n"
-msgstr ""
-
-#: lib/backend/db3.c:335
-#, c-format
-msgid "%s has too large or too small long value, skipped\n"
-msgstr ""
-
-#: lib/backend/db3.c:344
-#, c-format
-msgid "%s has too large or too small integer value, skipped\n"
-msgstr ""
-
-#: lib/backend/db3.c:805
-#, c-format
-msgid "cannot get %s lock on %s/%s\n"
-msgstr ""
-
-#: lib/backend/db3.c:807
-msgid "shared"
-msgstr ""
-
-#: lib/backend/db3.c:807
-msgid "exclusive"
-msgstr ""
-
-#: lib/backend/db3.c:889
-#, c-format
-msgid "invalid index type %x on %s/%s\n"
-msgstr ""
-
-#: lib/backend/db3.c:1067
-#, c-format
-msgid "error(%d) getting \"%s\" records from %s index: %s\n"
-msgstr ""
-
-#: lib/backend/db3.c:1097
-#, c-format
-msgid "error(%d) storing record \"%s\" into %s\n"
-msgstr ""
-
-#: lib/backend/db3.c:1105
-#, c-format
-msgid "error(%d) removing record \"%s\" from %s\n"
-msgstr ""
-
-#: lib/backend/db3.c:1217
-#, c-format
-msgid "error(%d) adding header #%d record\n"
-msgstr ""
-
-#: lib/backend/db3.c:1226
-#, c-format
-msgid "error(%d) removing header #%d record\n"
-msgstr ""
-
-#: lib/backend/db3.c:1281
-#, c-format
-msgid "error(%d) allocating new package instance\n"
-msgstr ""
-
-#: lib/backend/dbi.c:93
+#: lib/backend/dbi.c:96
 #, c-format
 msgid "Converting database from %s to %s backend\n"
 msgstr ""
 
-#: lib/backend/dbi.c:97
+#: lib/backend/dbi.c:100
 #, c-format
 msgid "Found %s %s database while attempting %s backend: using %s backend.\n"
 msgstr ""
@@ -1768,7 +1724,7 @@ msgstr ""
 msgid "Rebuilding outdated index databases\n"
 msgstr ""
 
-#: lib/backend/ndb/rpmidx.c:204
+#: lib/backend/ndb/rpmidx.c:211
 #, c-format
 msgid "rpmidx: Version mismatch. Expected version: %u. Found version: %u\n"
 msgstr ""
@@ -1782,12 +1738,12 @@ msgstr ""
 msgid "rpmpkg: detected non-zero blob, trying auto repair\n"
 msgstr ""
 
-#: lib/backend/ndb/rpmxdb.c:241
+#: lib/backend/ndb/rpmxdb.c:248
 #, c-format
 msgid "rpmxdb: Version mismatch. Expected version: %u. Found version: %u\n"
 msgstr ""
 
-#: lib/backend/sqlite.c:155
+#: lib/backend/sqlite.c:157
 #, c-format
 msgid "Unable to open sqlite database %s: %s\n"
 msgstr ""
@@ -1802,12 +1758,12 @@ msgstr ""
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
 
-#: lib/depends.c:361
+#: lib/depends.c:362
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:362
+#: lib/depends.c:363
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr ""
@@ -1826,15 +1782,6 @@ msgstr ""
 
 #: lib/formats.c:47 lib/formats.c:151 lib/formats.c:269
 msgid "(invalid type)"
-msgstr ""
-
-#: lib/formats.c:116
-#, c-format
-msgid "%c"
-msgstr ""
-
-#: lib/formats.c:122
-msgid "%a %b %d %Y"
 msgstr ""
 
 #: lib/formats.c:255
@@ -1882,101 +1829,105 @@ msgstr ""
 msgid "(unknown)"
 msgstr ""
 
-#: lib/fsm.c:725
+#: lib/fsm.c:766
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/fsm.c:778
+#: lib/fsm.c:820
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
 
-#: lib/fsm.c:1069
+#: lib/fsm.c:1141
 #, c-format
 msgid "%s %s: remove failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1070
+#: lib/fsm.c:1142
 msgid "directory"
 msgstr ""
 
-#: lib/fsm.c:1070
+#: lib/fsm.c:1142
 msgid "file"
 msgstr ""
 
-#: lib/header.c:301
+#: lib/header.c:319
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d len %d"
 msgstr ""
 
-#: lib/header.c:971
+#: lib/header.c:992
 msgid "hdr load: BAD"
 msgstr ""
 
-#: lib/header.c:1793
+#: lib/header.c:1814
 msgid "region: no tags"
 msgstr ""
 
-#: lib/header.c:1815
+#: lib/header.c:1836
 #, c-format
 msgid "region tag: BAD, tag %d type %d offset %d count %d"
 msgstr ""
 
-#: lib/header.c:1823
+#: lib/header.c:1844
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d"
 msgstr ""
 
-#: lib/header.c:1845
+#: lib/header.c:1866
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d"
 msgstr ""
 
-#: lib/header.c:1854
+#: lib/header.c:1875
 #, c-format
 msgid "region %d size: BAD, ril %d il %d rdl %d dl %d"
 msgstr ""
 
-#: lib/header.c:1862
+#: lib/header.c:1883
 #, c-format
 msgid "region %d: tag number mismatch il %d ril %d dl %d rdl %d\n"
 msgstr ""
 
-#: lib/header.c:1912
+#: lib/header.c:1919
 #, c-format
-msgid "hdr size(%d): BAD, read returned %d"
+msgid "hdr tags: BAD, no. of tags(%<PRIu32>) out of range"
 msgstr ""
 
-#: lib/header.c:1916
-msgid "hdr magic: BAD"
-msgstr ""
-
-#: lib/header.c:1921
+#: lib/header.c:1923
 #, c-format
-msgid "hdr tags: BAD, no. of tags(%d) out of range"
-msgstr ""
-
-#: lib/header.c:1926
-#, c-format
-msgid "hdr data: BAD, no. of bytes(%d) out of range"
-msgstr ""
-
-#: lib/header.c:1936
-#, c-format
-msgid "hdr blob(%zd): BAD, read returned %d"
+msgid "hdr data: BAD, no. of bytes(%<PRIu32>) out of range"
 msgstr ""
 
 #: lib/header.c:1945
 #, c-format
+msgid "hdr size(%d): BAD, read returned %d"
+msgstr ""
+
+#: lib/header.c:1949
+msgid "hdr magic: BAD"
+msgstr ""
+
+#: lib/header.c:1963
+#, c-format
+msgid "hdr blob(%zd): BAD, read returned %d"
+msgstr ""
+
+#: lib/header.c:1972
+#, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr ""
 
-#: lib/header.c:1958
+#: lib/header.c:1985
 msgid "signature "
 msgstr ""
 
-#: lib/header.c:1985
+#: lib/header.c:2001
+msgid "hdr length: BAD"
+msgstr ""
+
+#: lib/header.c:2019
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
 msgstr ""
@@ -2052,152 +2003,156 @@ msgstr ""
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: lib/package.c:315
+#: lib/package.c:313
 #, c-format
 msgid "RPM v3 packages are deprecated: %s\n"
 msgstr ""
 
-#: lib/poptALL.c:142 rpmio/macro.c:1282
+#: lib/poptALL.c:138
+msgid "Error writing to stdout"
+msgstr ""
+
+#: lib/poptALL.c:148 rpmio/macro.c:1235
 #, c-format
 msgid "failed to load macro file %s\n"
 msgstr ""
 
-#: lib/poptALL.c:149
+#: lib/poptALL.c:155
 #, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
 msgstr ""
 
-#: lib/poptALL.c:170
+#: lib/poptALL.c:176
 #, c-format
 msgid ""
 "%s: error: more than one --pipe specified (incompatible popt aliases?)\n"
 msgstr ""
 
-#: lib/poptALL.c:203
+#: lib/poptALL.c:209
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:204 lib/poptALL.c:207
+#: lib/poptALL.c:210 lib/poptALL.c:213
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:206
+#: lib/poptALL.c:212
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:209
+#: lib/poptALL.c:215
 msgid "undefine MACRO"
 msgstr ""
 
-#: lib/poptALL.c:210
+#: lib/poptALL.c:216
 msgid "MACRO"
 msgstr ""
 
-#: lib/poptALL.c:212
+#: lib/poptALL.c:218
 msgid "print macro expansion of EXPR"
 msgstr ""
 
-#: lib/poptALL.c:213
+#: lib/poptALL.c:219
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:215
+#: lib/poptALL.c:221
 msgid "Specify target platform"
 msgstr ""
 
-#: lib/poptALL.c:215
+#: lib/poptALL.c:221
 msgid "CPU-VENDOR-OS"
 msgstr ""
 
-#: lib/poptALL.c:217 lib/poptALL.c:239
+#: lib/poptALL.c:223 lib/poptALL.c:245
 msgid "read <FILE:...> instead of default file(s)"
 msgstr ""
 
-#: lib/poptALL.c:218 lib/poptALL.c:240
+#: lib/poptALL.c:224 lib/poptALL.c:246
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:220
+#: lib/poptALL.c:226
 msgid "load a single macro file"
 msgstr ""
 
-#: lib/poptALL.c:221
+#: lib/poptALL.c:227
 msgid "<FILE>"
 msgstr ""
 
-#: lib/poptALL.c:226
+#: lib/poptALL.c:232
 msgid "don't enable any plugins"
 msgstr ""
 
-#: lib/poptALL.c:229
+#: lib/poptALL.c:235
 msgid "don't verify package digest(s)"
 msgstr ""
 
-#: lib/poptALL.c:231
+#: lib/poptALL.c:237
 msgid "don't verify database header(s) when retrieved"
 msgstr ""
 
-#: lib/poptALL.c:233
+#: lib/poptALL.c:239
 msgid "don't verify package signature(s)"
 msgstr ""
 
-#: lib/poptALL.c:236
+#: lib/poptALL.c:242
 msgid "send stdout to CMD"
 msgstr ""
 
-#: lib/poptALL.c:237
+#: lib/poptALL.c:243
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:242
+#: lib/poptALL.c:248
 msgid "use ROOT as top level directory"
 msgstr ""
 
-#: lib/poptALL.c:243
+#: lib/poptALL.c:249
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:245
+#: lib/poptALL.c:251
 msgid "use database in DIRECTORY"
 msgstr ""
 
-#: lib/poptALL.c:246
+#: lib/poptALL.c:252
 msgid "DIRECTORY"
 msgstr ""
 
-#: lib/poptALL.c:249
+#: lib/poptALL.c:255
 msgid "display known query tags"
 msgstr ""
 
-#: lib/poptALL.c:251
+#: lib/poptALL.c:257
 msgid "display final rpmrc and macro configuration"
 msgstr ""
 
-#: lib/poptALL.c:253
+#: lib/poptALL.c:259
 msgid "provide less detailed output"
 msgstr ""
 
-#: lib/poptALL.c:255
+#: lib/poptALL.c:261
 msgid "provide more detailed output"
 msgstr ""
 
-#: lib/poptALL.c:257
+#: lib/poptALL.c:263
 msgid "print the version of rpm being used"
 msgstr ""
 
-#: lib/poptALL.c:260
+#: lib/poptALL.c:266
 msgid "debug payload file state machine"
 msgstr ""
 
-#: lib/poptALL.c:266
+#: lib/poptALL.c:272
 msgid "debug rpmio I/O"
 msgstr ""
 
-#: lib/poptALL.c:268
+#: lib/poptALL.c:274
 msgid "disable user namespace support"
 msgstr ""
 
-#: lib/poptALL.c:327
+#: lib/poptALL.c:333
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -2809,126 +2764,126 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:294 sign/rpmgensig.c:73
+#: lib/rpmchecksig.c:294 sign/rpmgensig.c:77
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr ""
 
-#: lib/rpmchroot.c:101
+#: lib/rpmchroot.c:102
 #, c-format
 msgid "Unable to open current directory: %m\n"
 msgstr ""
 
-#: lib/rpmchroot.c:117 lib/rpmchroot.c:146
+#: lib/rpmchroot.c:122 lib/rpmchroot.c:151
 #, c-format
 msgid "%s: chroot directory not set\n"
 msgstr ""
 
-#: lib/rpmchroot.c:132
+#: lib/rpmchroot.c:137
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr ""
 
-#: lib/rpmchroot.c:158
+#: lib/rpmchroot.c:163
 #, c-format
 msgid "Unable to restore root directory: %m\n"
 msgstr ""
 
-#: lib/rpmdb.c:66
+#: lib/rpmdb.c:67
 #, c-format
 msgid "Generating %d missing index(es), please wait...\n"
 msgstr ""
 
-#: lib/rpmdb.c:161 lib/rpmdb.c:207
+#: lib/rpmdb.c:162 lib/rpmdb.c:208
 #, c-format
 msgid "cannot open %s index using %s - %s (%d)\n"
 msgstr ""
 
-#: lib/rpmdb.c:461
+#: lib/rpmdb.c:462
 msgid "no dbpath has been set\n"
 msgstr ""
 
-#: lib/rpmdb.c:972
+#: lib/rpmdb.c:970
 msgid "miFreeHeader: skipping"
 msgstr ""
 
-#: lib/rpmdb.c:988
+#: lib/rpmdb.c:986
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1100
+#: lib/rpmdb.c:1098
 #, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1281
+#: lib/rpmdb.c:1279
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1444
+#: lib/rpmdb.c:1442
 msgid "rpmdbNextIterator: skipping"
 msgstr ""
 
-#: lib/rpmdb.c:1531
+#: lib/rpmdb.c:1529
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2066
+#: lib/rpmdb.c:2064
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: lib/rpmdb.c:2409
+#: lib/rpmdb.c:2407
 msgid "could not move new database in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2412
+#: lib/rpmdb.c:2410
 #, c-format
 msgid "could also not restore old database from %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2414 lib/rpmdb.c:2601
+#: lib/rpmdb.c:2412 lib/rpmdb.c:2599
 #, c-format
 msgid "replace files in %s with files from %s to recover\n"
 msgstr ""
 
-#: lib/rpmdb.c:2423
+#: lib/rpmdb.c:2421
 #, c-format
 msgid "Could not get public keys from %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2430
+#: lib/rpmdb.c:2428
 #, c-format
 msgid "could not delete old database at %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2501
+#: lib/rpmdb.c:2499
 msgid "no dbpath has been set"
 msgstr ""
 
-#: lib/rpmdb.c:2519
+#: lib/rpmdb.c:2517
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2554
+#: lib/rpmdb.c:2552
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2569
+#: lib/rpmdb.c:2567
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: lib/rpmdb.c:2586
+#: lib/rpmdb.c:2584
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2599
+#: lib/rpmdb.c:2597
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
@@ -2984,161 +2939,171 @@ msgstr ""
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 
-#: lib/rpmds.c:1116
+#: lib/rpmds.c:1115
 msgid "internal support for lua scripts."
 msgstr ""
 
-#: lib/rpmds.c:1120
+#: lib/rpmds.c:1118
 msgid "file digest algorithm is per package configurable"
 msgstr ""
 
-#: lib/rpmds.c:1124
+#: lib/rpmds.c:1122
 msgid "support for POSIX.1e file capabilities"
 msgstr ""
 
-#: lib/rpmds.c:1128
+#: lib/rpmds.c:1126
 msgid "package scriptlets can be expanded at install time."
 msgstr ""
 
-#: lib/rpmds.c:1131
+#: lib/rpmds.c:1129
 msgid "dependency comparison supports versions with tilde."
 msgstr ""
 
-#: lib/rpmds.c:1134
+#: lib/rpmds.c:1132
 msgid "dependency comparison supports versions with caret."
 msgstr ""
 
-#: lib/rpmds.c:1137
+#: lib/rpmds.c:1135
 msgid "support files larger than 4GB"
 msgstr ""
 
-#: lib/rpmds.c:1140
+#: lib/rpmds.c:1138
 msgid "support for rich dependencies."
 msgstr ""
 
-#: lib/rpmds.c:1143
+#: lib/rpmds.c:1141
 msgid "support for dynamic buildrequires."
 msgstr ""
 
-#: lib/rpmds.c:1147
+#: lib/rpmds.c:1145
 msgid "package payload can be compressed using zstd."
 msgstr ""
 
-#: lib/rpmds.c:1300
+#: lib/rpmds.c:1299
 #, c-format
 msgid "Unknown rich dependency op '%.*s'"
 msgstr ""
 
-#: lib/rpmds.c:1341
+#: lib/rpmds.c:1340
 msgid "Name required"
 msgstr ""
 
-#: lib/rpmds.c:1378
+#: lib/rpmds.c:1377
 msgid "Illegal ops in with/without"
 msgstr ""
 
-#: lib/rpmds.c:1385
+#: lib/rpmds.c:1384
 msgid "Illegal context for 'unless', please use 'or' instead"
 msgstr ""
 
-#: lib/rpmds.c:1390
+#: lib/rpmds.c:1389
 msgid "Illegal context for 'if', please use 'and' instead"
 msgstr ""
 
-#: lib/rpmds.c:1406
+#: lib/rpmds.c:1405
 msgid "Rich dependency does not start with '('"
 msgstr ""
 
-#: lib/rpmds.c:1414
+#: lib/rpmds.c:1413
 msgid "Missing argument to rich dependency op"
 msgstr ""
 
-#: lib/rpmds.c:1416
+#: lib/rpmds.c:1415
 msgid "Empty rich dependency"
 msgstr ""
 
-#: lib/rpmds.c:1434
+#: lib/rpmds.c:1433
 #, c-format
 msgid "Unterminated rich dependency: %s"
 msgstr ""
 
-#: lib/rpmds.c:1449
+#: lib/rpmds.c:1448
 msgid "Cannot chain different ops"
 msgstr ""
 
-#: lib/rpmds.c:1454
+#: lib/rpmds.c:1453
 msgid "Can only chain and/or/with ops"
 msgstr ""
 
-#: lib/rpmds.c:1585
+#: lib/rpmds.c:1584
 msgid "Junk after rich dependency"
 msgstr ""
 
-#: lib/rpmfi.c:800
+#: lib/rpmfi.c:820
 #, c-format
 msgid "user %s does not exist - using %s\n"
 msgstr ""
 
-#: lib/rpmfi.c:807
+#: lib/rpmfi.c:827
 #, c-format
 msgid "group %s does not exist - using %s\n"
 msgstr ""
 
-#: lib/rpmfi.c:1364
+#: lib/rpmfi.c:1385
 #, c-format
 msgid "Wrong number of entries for tag %s: %u found but %u expected.\n"
 msgstr ""
 
-#: lib/rpmfi.c:1369
+#: lib/rpmfi.c:1390
 #, c-format
 msgid "Malformed data for tag %s: %u bytes found but %lu expected.\n"
 msgstr ""
 
-#: lib/rpmfi.c:2348
+#: lib/rpmfi.c:1563
+#, c-format
+msgid "%s: base64 decode failed, len %li\n"
+msgstr ""
+
+#: lib/rpmfi.c:1571
+#, c-format
+msgid "%s: base64 decode success, len %li\n"
+msgstr ""
+
+#: lib/rpmfi.c:2438
 msgid "Bad magic"
 msgstr ""
 
-#: lib/rpmfi.c:2349
+#: lib/rpmfi.c:2439
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/rpmfi.c:2372
+#: lib/rpmfi.c:2462
 msgid "Header size too big"
 msgstr ""
 
-#: lib/rpmfi.c:2373
+#: lib/rpmfi.c:2463
 msgid "File too large for archive"
 msgstr ""
 
-#: lib/rpmfi.c:2374
+#: lib/rpmfi.c:2464
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/rpmfi.c:2375
+#: lib/rpmfi.c:2465
 msgid "Missing file(s)"
 msgstr ""
 
-#: lib/rpmfi.c:2376
+#: lib/rpmfi.c:2466
 msgid "Digest mismatch"
 msgstr ""
 
-#: lib/rpmfi.c:2377
+#: lib/rpmfi.c:2467
 msgid "Internal error"
 msgstr ""
 
-#: lib/rpmfi.c:2378
+#: lib/rpmfi.c:2468
 msgid "Archive file not in header"
 msgstr ""
 
-#: lib/rpmfi.c:2382
+#: lib/rpmfi.c:2472
 msgid "File from package already exists as a directory in system"
 msgstr ""
 
-#: lib/rpmfi.c:2389
+#: lib/rpmfi.c:2479
 msgid " failed - "
 msgstr ""
 
-#: lib/rpmfi.c:2392
+#: lib/rpmfi.c:2482
 #, c-format
 msgid "%s: (error 0x%x)"
 msgstr ""
@@ -3369,133 +3334,129 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/rpmrc.c:222
+#: lib/rpmrc.c:221
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:225
+#: lib/rpmrc.c:224
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:370
+#: lib/rpmrc.c:369
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:375
+#: lib/rpmrc.c:374
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:382
+#: lib/rpmrc.c:381
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr ""
 
-#: lib/rpmrc.c:413
+#: lib/rpmrc.c:412
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:418
+#: lib/rpmrc.c:417
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:523
+#: lib/rpmrc.c:522
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:540 lib/rpmrc.c:572
+#: lib/rpmrc.c:539 lib/rpmrc.c:571
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:551
+#: lib/rpmrc.c:550
 #, c-format
 msgid "cannot open %s at %s:%d: %m\n"
 msgstr ""
 
-#: lib/rpmrc.c:564
+#: lib/rpmrc.c:563
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:632
+#: lib/rpmrc.c:631
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:976
+#: lib/rpmrc.c:971
 msgid "Failed to read auxiliary vector, /proc not mounted?\n"
 msgstr ""
 
-#: lib/rpmrc.c:1487
+#: lib/rpmrc.c:1470
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1489
+#: lib/rpmrc.c:1472
 #, c-format
 msgid "Please contact %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1622
+#: lib/rpmrc.c:1605
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1640
+#: lib/rpmrc.c:1623
 msgid "failed to register exit handler"
 msgstr ""
 
-#: lib/rpmscript.c:147
+#: lib/rpmscript.c:130
 msgid "No exec() called after fork() in lua scriptlet\n"
 msgstr ""
 
-#: lib/rpmscript.c:152
+#: lib/rpmscript.c:135
 #, c-format
 msgid "Unable to restore current directory: %m"
 msgstr ""
 
-#: lib/rpmscript.c:163 rpmio/macro.c:1079
-msgid "<lua> scriptlet support not built in\n"
-msgstr ""
-
-#: lib/rpmscript.c:226
+#: lib/rpmscript.c:207
 #, c-format
 msgid "failed to exec scriptlet interpreter %s: %s\n"
 msgstr ""
 
-#: lib/rpmscript.c:281
+#: lib/rpmscript.c:262
 #, c-format
 msgid "Couldn't create temporary file for %s: %s\n"
 msgstr ""
 
-#: lib/rpmscript.c:316
+#: lib/rpmscript.c:297
 #, c-format
 msgid "Couldn't duplicate file descriptor: %s: %s\n"
 msgstr ""
 
-#: lib/rpmscript.c:356
+#: lib/rpmscript.c:337
 #, c-format
 msgid "Fwrite failed: %s"
 msgstr ""
 
-#: lib/rpmscript.c:374
+#: lib/rpmscript.c:355
 #, c-format
 msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr ""
 
-#: lib/rpmscript.c:378
+#: lib/rpmscript.c:359
 #, c-format
 msgid "%s scriptlet failed, signal %d\n"
 msgstr ""
 
-#: lib/rpmscript.c:381
+#: lib/rpmscript.c:362
 #, c-format
 msgid "%s scriptlet failed, exit status %d\n"
 msgstr ""
@@ -3504,15 +3465,15 @@ msgstr ""
 msgid "Unknown format"
 msgstr ""
 
-#: lib/rpmte.c:757
+#: lib/rpmte.c:769
 msgid "install"
 msgstr ""
 
-#: lib/rpmte.c:758
+#: lib/rpmte.c:770
 msgid "erase"
 msgstr ""
 
-#: lib/rpmte.c:759
+#: lib/rpmte.c:771
 msgid "rpmdb"
 msgstr ""
 
@@ -3541,12 +3502,17 @@ msgstr ""
 msgid "%s: reading of public key failed.\n"
 msgstr ""
 
-#: lib/rpmts.c:1077
+#: lib/rpmts.c:389
+#, c-format
+msgid "unknown keyring type: %s, using rpmdb\n"
+msgstr ""
+
+#: lib/rpmts.c:1117
 #, c-format
 msgid "invalid package verify level %s\n"
 msgstr ""
 
-#: lib/rpmts.c:1234
+#: lib/rpmts.c:1274
 msgid "transaction"
 msgstr ""
 
@@ -3626,11 +3592,11 @@ msgstr ""
 msgid "no digest"
 msgstr ""
 
-#: lib/transaction.c:1626
+#: lib/transaction.c:1633
 msgid "skipped"
 msgstr ""
 
-#: lib/transaction.c:1626
+#: lib/transaction.c:1633
 msgid "failed"
 msgstr ""
 
@@ -3662,171 +3628,174 @@ msgstr ""
 msgid "Unable to reset I/O priority: %s"
 msgstr ""
 
-#: rpmio/expression.c:343
+#: rpmio/expression.c:347
 msgid "syntax error while parsing =="
 msgstr ""
 
-#: rpmio/expression.c:373
+#: rpmio/expression.c:377
 msgid "syntax error while parsing &&"
 msgstr ""
 
-#: rpmio/expression.c:382
+#: rpmio/expression.c:386
 msgid "syntax error while parsing ||"
 msgstr ""
 
-#: rpmio/expression.c:410
+#: rpmio/expression.c:414
 msgid "macro expansion returned a bare word, please use \"...\""
 msgstr ""
 
-#: rpmio/expression.c:412
+#: rpmio/expression.c:416
 msgid "macro expansion did not return an integer"
 msgstr ""
 
-#: rpmio/expression.c:413
+#: rpmio/expression.c:417
 #, c-format
 msgid "expanded string: %s\n"
 msgstr ""
 
-#: rpmio/expression.c:442
+#: rpmio/expression.c:446
 msgid "unterminated string in expression"
 msgstr ""
 
-#: rpmio/expression.c:456
+#: rpmio/expression.c:460
 msgid "invalid version"
 msgstr ""
 
-#: rpmio/expression.c:461
+#: rpmio/expression.c:465
 msgid "bare words are no longer supported, please use \"...\""
 msgstr ""
 
-#: rpmio/expression.c:465
+#: rpmio/expression.c:469
 msgid "parse error in expression"
 msgstr ""
 
-#: rpmio/expression.c:503
+#: rpmio/expression.c:507
 msgid "unmatched ("
 msgstr ""
 
-#: rpmio/expression.c:526
+#: rpmio/expression.c:530
 msgid "- only on numbers"
 msgstr ""
 
-#: rpmio/expression.c:545
+#: rpmio/expression.c:549
 msgid "unexpected end of expression"
 msgstr ""
 
-#: rpmio/expression.c:549 rpmio/expression.c:833 rpmio/expression.c:887
-#: rpmio/expression.c:924
+#: rpmio/expression.c:553 rpmio/expression.c:843 rpmio/expression.c:897
+#: rpmio/expression.c:934
 msgid "syntax error in expression"
 msgstr ""
 
-#: rpmio/expression.c:590 rpmio/expression.c:649 rpmio/expression.c:712
-#: rpmio/expression.c:789 rpmio/expression.c:848
+#: rpmio/expression.c:594 rpmio/expression.c:656 rpmio/expression.c:722
+#: rpmio/expression.c:799 rpmio/expression.c:858
 msgid "types must match"
 msgstr ""
 
-#: rpmio/expression.c:600
+#: rpmio/expression.c:604
 msgid "division by zero"
 msgstr ""
 
-#: rpmio/expression.c:608
+#: rpmio/expression.c:612
+msgid "* and / not supported for versions"
+msgstr ""
+
+#: rpmio/expression.c:615
 msgid "* and / not supported for strings"
 msgstr ""
 
-#: rpmio/expression.c:664
+#: rpmio/expression.c:668
+msgid "+ and - not supported for versions"
+msgstr ""
+
+#: rpmio/expression.c:674
 msgid "- not supported for strings"
 msgstr ""
 
-#: rpmio/macro.c:348
+#: rpmio/macro.c:336
 #, c-format
 msgid "%3d>%*s(empty)\n"
 msgstr ""
 
-#: rpmio/macro.c:378
-#, c-format
-msgid "%3d<%*s(empty)\n"
-msgstr ""
-
-#: rpmio/macro.c:496
-#, c-format
-msgid "Failed to open shell expansion pipe for command: %s: %m \n"
-msgstr ""
-
-#: rpmio/macro.c:634
-#, c-format
-msgid "Macro %%%s has illegal name (%s)\n"
-msgstr ""
-
-#: rpmio/macro.c:639
-#, c-format
-msgid "Macro %%%s is a built-in (%s)\n"
-msgstr ""
-
-#: rpmio/macro.c:683
-#, c-format
-msgid "Macro %%%s has unterminated opts\n"
-msgstr ""
-
-#: rpmio/macro.c:694 rpmio/macro.c:733
-#, c-format
-msgid "Macro %%%s has unterminated body\n"
-msgstr ""
-
-#: rpmio/macro.c:753
-#, c-format
-msgid "Macro %%%s has empty body\n"
-msgstr ""
-
-#: rpmio/macro.c:758
-#, c-format
-msgid "Macro %%%s needs whitespace before body\n"
-msgstr ""
-
-#: rpmio/macro.c:762
-#, c-format
-msgid "Macro %%%s failed to expand\n"
-msgstr ""
-
-#: rpmio/macro.c:848
-#, c-format
-msgid "Macro %%%s defined but not used within scope\n"
-msgstr ""
-
-#: rpmio/macro.c:968
-#, c-format
-msgid "Unknown option %c in %s(%s)\n"
-msgstr ""
-
-#: rpmio/macro.c:1027
-#, c-format
-msgid "no such macro: '%s'\n"
-msgstr ""
-
-#: rpmio/macro.c:1390
+#: rpmio/macro.c:465
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
 msgstr ""
 
-#: rpmio/macro.c:1420
+#: rpmio/macro.c:538
+#, c-format
+msgid "Failed to open shell expansion pipe for command: %s: %m \n"
+msgstr ""
+
+#: rpmio/macro.c:606
+#, c-format
+msgid "Macro %%%s has illegal name (%s)\n"
+msgstr ""
+
+#: rpmio/macro.c:612
+#, c-format
+msgid "Macro %%%s is a built-in (%s)\n"
+msgstr ""
+
+#: rpmio/macro.c:657
+#, c-format
+msgid "Macro %%%s has unterminated opts\n"
+msgstr ""
+
+#: rpmio/macro.c:668 rpmio/macro.c:707
+#, c-format
+msgid "Macro %%%s has unterminated body\n"
+msgstr ""
+
+#: rpmio/macro.c:727
+#, c-format
+msgid "Macro %%%s has empty body\n"
+msgstr ""
+
+#: rpmio/macro.c:732
+#, c-format
+msgid "Macro %%%s needs whitespace before body\n"
+msgstr ""
+
+#: rpmio/macro.c:736
+#, c-format
+msgid "Macro %%%s failed to expand\n"
+msgstr ""
+
+#: rpmio/macro.c:865 rpmio/rpmlua.c:309
+#, c-format
+msgid "Unknown option %c in %s(%s)\n"
+msgstr ""
+
+#: rpmio/macro.c:914
+#, c-format
+msgid "Macro %%%s defined but not used within scope\n"
+msgstr ""
+
+#: rpmio/macro.c:992
+#, c-format
+msgid "no such macro: '%s'\n"
+msgstr ""
+
+#: rpmio/macro.c:1352
+msgid "argument expected"
+msgstr ""
+
+#: rpmio/macro.c:1352
+msgid "unexpected argument"
+msgstr ""
+
+#: rpmio/macro.c:1436
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr ""
 
-#: rpmio/macro.c:1475
+#: rpmio/macro.c:1491
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr ""
 
-#: rpmio/macro.c:1488
-msgid "argument expected"
-msgstr ""
-
-#: rpmio/macro.c:1488
-msgid "unexpected argument"
-msgstr ""
-
-#: rpmio/macro.c:1797
+#: rpmio/macro.c:1859
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr ""
@@ -3870,27 +3839,27 @@ msgstr ""
 msgid "Error writing to log"
 msgstr ""
 
-#: rpmio/rpmlua.c:578
+#: rpmio/rpmlua.c:260
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:596
+#: rpmio/rpmlua.c:296
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:601 rpmio/rpmlua.c:620
+#: rpmio/rpmlua.c:326 rpmio/rpmlua.c:349
 #, c-format
 msgid "lua script failed: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:615
+#: rpmio/rpmlua.c:344
 #, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:836
+#: rpmio/rpmlua.c:587
 #, c-format
 msgid "lua hook failed: %s\n"
 msgstr ""
@@ -3900,17 +3869,22 @@ msgstr ""
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr ""
 
-#: rpmio/rpmpgp.c:668 rpmio/rpmpgp.c:784 rpmio/rpmpgp.c:868
+#: rpmio/rpmpgp.c:684
+#, c-format
+msgid "Unsupported version of signature: V%d\n"
+msgstr ""
+
+#: rpmio/rpmpgp.c:800 rpmio/rpmpgp.c:884
 #, c-format
 msgid "Unsupported version of key: V%d\n"
 msgstr ""
 
-#: rpmio/rpmpgp.c:1169
+#: rpmio/rpmpgp.c:1187
 #, c-format
 msgid "V%d %s/%s %s, key ID %s"
 msgstr ""
 
-#: rpmio/rpmpgp.c:1177
+#: rpmio/rpmpgp.c:1195
 msgid "(none)"
 msgstr ""
 
@@ -3919,115 +3893,133 @@ msgstr ""
 msgid "exiting on signal %d from pid %d\n"
 msgstr ""
 
-#: sign/rpmgensig.c:106
+#: sign/rpmgensig.c:110
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr ""
 
-#: sign/rpmgensig.c:112
+#: sign/rpmgensig.c:116
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr ""
 
-#: sign/rpmgensig.c:116
+#: sign/rpmgensig.c:120
 #, c-format
 msgid "%s: Fflush failed: %s\n"
 msgstr ""
 
-#: sign/rpmgensig.c:141
+#: sign/rpmgensig.c:145
 msgid "Unsupported PGP signature\n"
 msgstr ""
 
-#: sign/rpmgensig.c:147
+#: sign/rpmgensig.c:151
 #, c-format
 msgid "Unsupported PGP hash algorithm %u\n"
 msgstr ""
 
-#: sign/rpmgensig.c:160
+#: sign/rpmgensig.c:165
 #, c-format
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr ""
 
-#: sign/rpmgensig.c:191
+#: sign/rpmgensig.c:196
 #, c-format
 msgid "Could not create pipe for signing: %m\n"
 msgstr ""
 
-#: sign/rpmgensig.c:205
+#: sign/rpmgensig.c:210
 #, c-format
 msgid "Could not set GPG_TTY to stdin: %m\n"
 msgstr ""
 
-#: sign/rpmgensig.c:220
+#: sign/rpmgensig.c:225
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr ""
 
-#: sign/rpmgensig.c:231
+#: sign/rpmgensig.c:236
 #, c-format
 msgid "Could not open pipe for writing: %m\n"
 msgstr ""
 
-#: sign/rpmgensig.c:246
+#: sign/rpmgensig.c:251
 msgid "Could not write to pipe\n"
 msgstr ""
 
-#: sign/rpmgensig.c:253
+#: sign/rpmgensig.c:258
 #, c-format
 msgid "Could not read from file %s: %s\n"
 msgstr ""
 
-#: sign/rpmgensig.c:268
+#: sign/rpmgensig.c:273
 #, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr ""
 
-#: sign/rpmgensig.c:296
+#: sign/rpmgensig.c:301
 msgid "gpg failed to write signature\n"
 msgstr ""
 
-#: sign/rpmgensig.c:313
+#: sign/rpmgensig.c:318
 msgid "unable to read the signature\n"
 msgstr ""
 
-#: sign/rpmgensig.c:440
+#: sign/rpmgensig.c:453
 msgid "file signing support not built in\n"
 msgstr ""
 
-#: sign/rpmgensig.c:514
+#: sign/rpmgensig.c:475
+#, c-format
+msgid "Searching for algorithm %s got %i\n"
+msgstr ""
+
+#: sign/rpmgensig.c:478
+#, c-format
+msgid "Unsupported fsverity algorithm %s\n"
+msgstr ""
+
+#: sign/rpmgensig.c:487
+msgid "fsverity signatures requires a key and a cert\n"
+msgstr ""
+
+#: sign/rpmgensig.c:497
+msgid "fsverity signing support not built in\n"
+msgstr ""
+
+#: sign/rpmgensig.c:571
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr ""
 
-#: sign/rpmgensig.c:521
+#: sign/rpmgensig.c:578
 #, c-format
 msgid "%s: headerRead failed: %s\n"
 msgstr ""
 
-#: sign/rpmgensig.c:526
+#: sign/rpmgensig.c:583
 msgid "Cannot sign RPM v3 packages\n"
 msgstr ""
 
-#: sign/rpmgensig.c:562
+#: sign/rpmgensig.c:626
 #, c-format
 msgid "%s already contains identical signature, skipping\n"
 msgstr ""
 
-#: sign/rpmgensig.c:597 sign/rpmgensig.c:620
+#: sign/rpmgensig.c:661 sign/rpmgensig.c:684
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr ""
 
-#: sign/rpmgensig.c:607
+#: sign/rpmgensig.c:671
 msgid "rpmMkTemp failed\n"
 msgstr ""
 
-#: sign/rpmgensig.c:614
+#: sign/rpmgensig.c:678
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr ""
 
-#: sign/rpmgensig.c:639
+#: sign/rpmgensig.c:703
 #, c-format
 msgid "replacing %s failed: %s\n"
 msgstr ""
