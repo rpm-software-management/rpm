@@ -742,20 +742,18 @@ runroot rpmbuild \
   -bb --quiet /data/SPECS/hlinktest.spec
 
 pkg="/build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm"
-# the offsets in the file depend on the version string length
-vlen=$(runroot rpm -qp --qf "%{rpmversion}\n" "${pkg}" | wc -c)
 
 cp "${RPMTEST}/${pkg}" "${RPMTEST}/tmp/1.rpm"
 dd if=/dev/zero of="${RPMTEST}/tmp/1.rpm" \
-   conv=notrunc bs=1 seek=$(expr 8172 + $vlen) count=6 2> /dev/null
+   conv=notrunc bs=1 seek=8180 count=6 2> /dev/null
 
 cp "${RPMTEST}/${pkg}" "${RPMTEST}/tmp/2.rpm"
 dd if=/dev/zero of="${RPMTEST}/tmp/2.rpm" \
-   conv=notrunc bs=1 seek=$(expr 8142 + $vlen) count=6 2> /dev/null
+   conv=notrunc bs=1 seek=8150 count=6 2> /dev/null
 
 cp "${RPMTEST}/${pkg}" "${RPMTEST}/tmp/3.rpm"
 dd if=/dev/zero of="${RPMTEST}/tmp/3.rpm" \
-   conv=notrunc bs=1 seek=$(expr 8042 + $vlen) count=6 2> /dev/null
+   conv=notrunc bs=1 seek=8050 count=6 2> /dev/null
 
 AT_CHECK([
 RPMDB_INIT
