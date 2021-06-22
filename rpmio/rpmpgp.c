@@ -771,7 +771,7 @@ static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
     const uint8_t * p = NULL;
     int rc = 1;
 
-    if (pgpVersion(h, hlen, &version))
+    if (hlen > 0xFFFF || pgpVersion(h, hlen, &version))
 	return rc;
 
     /* We only permit V4 keys, V3 keys are long long since deprecated */
@@ -823,7 +823,7 @@ int pgpPubkeyFingerprint(const uint8_t *h, size_t hlen,
     const uint8_t *pend = h + hlen;
     uint8_t version = 0;
 
-    if (pgpVersion(h, hlen, &version))
+    if (hlen > 0xFFFF || pgpVersion(h, hlen, &version))
 	return rc;
 
     /* We only permit V4 keys, V3 keys are long long since deprecated */
