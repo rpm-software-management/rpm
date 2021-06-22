@@ -86,7 +86,7 @@ man_sk_man8_DATA = sk/rpm.8
 EXTRA_DIST += sk/rpm.8.md
 EXTRA_DIST += sk/rpm.8
 
-%: $(srcdir)/%.md fr ja ko pl ru sk
+%: %.md fr ja ko pl ru sk
 	@$(MKDIR_P) `dirname $@`
 	${PANDOC} -s -t man $(srcdir)/$@.md -o $@
 
