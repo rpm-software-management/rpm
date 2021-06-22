@@ -745,8 +745,8 @@ static int pgpPrtPubkeyParams(uint8_t pubkey_algo,
     const uint8_t *pend = h + hlen;
     int curve = 0;
     if (pubkey_algo == PGPPUBKEYALGO_EDDSA) {
-	int len = p + 1 < pend ? p[0] : 0;
-	if (len == 0 || len == 0xff || p + 1 + len > pend)
+	int len = (hlen > 1) ? p[0] : 0;
+	if (len == 0 || len == 0xff || len >= hlen)
 	    goto exit;
 	curve = pgpCurveByOid(p + 1, len);
 	p += len + 1;
