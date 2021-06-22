@@ -465,8 +465,7 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 	    break;
 	case PGPSUBTYPE_SIG_CREATE_TIME:
 	    impl = *p;
-	    if (!(_digp->saved & PGPDIG_SAVED_TIME) &&
-		(sigtype == PGPSIGTYPE_POSITIVE_CERT || sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT || sigtype == PGPSIGTYPE_STANDALONE))
+	    if (!(_digp->saved & PGPDIG_SAVED_TIME))
 	    {
 		if (plen-1 != sizeof(_digp->time))
 		    break;
@@ -480,8 +479,7 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 
 	case PGPSUBTYPE_ISSUER_KEYID:	/* issuer key ID */
 	    impl = *p;
-	    if (!(_digp->saved & PGPDIG_SAVED_ID) &&
-		(sigtype == PGPSIGTYPE_POSITIVE_CERT || sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT || sigtype == PGPSIGTYPE_STANDALONE))
+	    if (!(_digp->saved & PGPDIG_SAVED_ID))
 	    {
 		if (plen-1 != sizeof(_digp->signid))
 		    break;
