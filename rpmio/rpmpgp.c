@@ -913,7 +913,8 @@ static int getKeyID(const uint8_t *h, size_t hlen, pgpKeyID_t keyid,
 	if (digp)
 	    memcpy(digp->v4_fpr, fp, fplen);
 	free(fp);
-    }
+    } else
+	rc = 1;
     return rc;
 }
 
