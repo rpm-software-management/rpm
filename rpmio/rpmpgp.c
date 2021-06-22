@@ -491,8 +491,7 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 
 	case PGPSUBTYPE_ISSUER_KEYID:	/* issuer key ID */
 	    impl = *p;
-	    if (!(_digp->saved & PGPDIG_SAVED_ID) &&
-		(sigtype == PGPSIGTYPE_POSITIVE_CERT || sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT || sigtype == PGPSIGTYPE_STANDALONE))
+	    if (!(_digp->saved & PGPDIG_SAVED_ID))
 	    {
 		if (plen-1 != sizeof(_digp->signid))
 		    break;
