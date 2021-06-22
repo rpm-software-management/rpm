@@ -36,12 +36,15 @@ struct pgpDigParams_s {
     uint8_t sigtype;
     uint32_t hashlen;
     uint8_t signhash16[2];
+    uint8_t v4_fpr[20];		/*!< fingerprint */
     pgpKeyID_t signid;
     uint8_t saved;		/*!< Various flags.  `PGPDIG_SAVED_*` are never reset.
 				 * `PGPDIG_SIG_HAS_*` are reset for each signature. */
 #define	PGPDIG_SAVED_RELEASE	(1 << 0)
 #define	PGPDIG_SAVED_ID		(1 << 1)
 #define	PGPDIG_SIG_HAS_CREATION_TIME	(1 << 2)
+#define	PGPDIG_SAVED_V4_FPR	(1 << 3)
+#define	PGPDIG_SIG_HAS_V4_FPR	(1 << 4)
 
     pgpDigAlg alg;
 };

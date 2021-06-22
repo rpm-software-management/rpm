@@ -437,7 +437,8 @@ typedef enum pgpSubType_e {
     PGPSUBTYPE_SIGNER_USERID	=  28, /*!< signer's user id */
     PGPSUBTYPE_REVOKE_REASON	=  29, /*!< reason for revocation */
     PGPSUBTYPE_FEATURES		=  30, /*!< feature flags (gpg) */
-    PGPSUBTYPE_EMBEDDED_SIG	=  32, /*!< embedded signature (gpg) */
+    PGPSUBTYPE_EMBEDDED_SIG	=  32, /*!< embedded signature */
+    PGPSUBTYPE_ISSUER_FPR	=  33, /*!< issuer fingerprint */
 
     PGPSUBTYPE_INTERNAL_100	= 100, /*!< internal or user-defined */
     PGPSUBTYPE_INTERNAL_101	= 101, /*!< internal or user-defined */

@@ -129,6 +129,7 @@ static struct pgpValTbl_s const pgpSubTypeTbl[] = {
     { PGPSUBTYPE_REVOKE_REASON,	"reason for revocation" },
     { PGPSUBTYPE_FEATURES,	"features" },
     { PGPSUBTYPE_EMBEDDED_SIG,	"embedded signature" },
+    { PGPSUBTYPE_ISSUER_FPR,	"issuer fingerprint" },
 
     { PGPSUBTYPE_INTERNAL_100,	"internal subpkt type 100" },
     { PGPSUBTYPE_INTERNAL_101,	"internal subpkt type 101" },
@@ -489,6 +490,25 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 	    pgpPrtTime(" ", p+1, plen-1);
 	    break;
 
+	case PGPSUBTYPE_ISSUER_FPR:	/* issuer key fingerprint */
+	    impl = *p;
+	    if (plen < 2)
+		return 1;
+	    switch (p[1]) {
+	    case 4:
+		if (plen != sizeof(_digp->v4_fpr) + 2 ||
+		    (_digp->saved & PGPDIG_SIG_HAS_V4_FPR))
+		    return 1;
+		if (!(_digp->saved & PGPDIG_SAVED_V4_FPR))
+		    memcpy(_digp->v4_fpr, p + 2, plen - 2);
+		_digp->saved |= PGPDIG_SIG_HAS_V4_FPR | PGPDIG_SAVED_V4_FPR;
+		break;
+	    default:
+		/* unsupported fingerprint version; ignore */
+		break;
+	    }
+	    pgpPrtHex("", p+2, plen-2);
+	    break;
 	case PGPSUBTYPE_ISSUER_KEYID:	/* issuer key ID */
 	    impl = *p;
 	    if (!(_digp->saved & PGPDIG_SAVED_ID))
@@ -603,6 +623,9 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 
     if (pgpVersion(h, hlen, &version))
 	return rc;
+
+    /* Reset the saved flags */
+    _digp->saved &= PGPDIG_SAVED_RELEASE | PGPDIG_SAVED_ID | PGPDIG_SAVED_V4_FPR;
 
     switch (version) {
     case 3:
@@ -879,13 +902,16 @@ int pgpPubkeyFingerprint(const uint8_t *h, size_t hlen,
     return rc;
 }
 
-static int getKeyID(const uint8_t *h, size_t hlen, pgpKeyID_t keyid)
+static int getKeyID(const uint8_t *h, size_t hlen, pgpKeyID_t keyid,
+		    pgpDigParams digp)
 {
     uint8_t *fp = NULL;
     size_t fplen = 0;
     int rc = pgpPubkeyFingerprint(h, hlen, &fp, &fplen);
-    if (fp && fplen > 8) {
+    if (!rc && fp && fplen == sizeof(digp->v4_fpr)) {
 	memcpy(keyid, (fp + (fplen-8)), 8);
+	if (digp)
+	    memcpy(digp->v4_fpr, fp, fplen);
 	free(fp);
     }
     return rc;
@@ -898,7 +924,7 @@ int pgpPubkeyKeyID(const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid)
     if (decodePkt(pkt, pktlen, &p))
 	return -1;
     
-    return getKeyID(p.body, p.blen, keyid);
+    return getKeyID(p.body, p.blen, keyid, NULL);
 }
 
 static int pgpPrtPkt(struct pgpPkt *p, pgpDigParams _digp)
@@ -910,12 +936,12 @@ static int pgpPrtPkt(struct pgpPkt *p, pgpDigParams _digp)
 	rc = pgpPrtSig(p->tag, p->body, p->blen, _digp);
 	break;
     case PGPTAG_PUBLIC_KEY:
-	/* Get the public key Key ID. */
-	rc = getKeyID(p->body, p->blen, _digp->signid);
+	/* Get the public key fingerprint. */
+	rc = getKeyID(p->body, p->blen, _digp->signid, _digp);
 	if (rc)
 	    memset(_digp->signid, 0, sizeof(_digp->signid));
 	else {
-	    _digp->saved |= PGPDIG_SAVED_ID;
+	    _digp->saved |= PGPDIG_SAVED_ID | PGPDIG_SAVED_V4_FPR;
 	    rc = pgpPrtKey(p->tag, p->body, p->blen, _digp);
 	}
 	break;
@@ -1211,7 +1237,8 @@ int pgpPrtParamsSubkeys(const uint8_t *pkts, size_t pktlen,
 	    /* Copy UID from main key to subkey */
 	    digps[count]->userid = xstrdup(mainkey->userid);
 
-	    if (getKeyID(pkt.body, pkt.blen, digps[count]->signid)) {
+	    if (getKeyID(pkt.body, pkt.blen,
+			 digps[count]->signid, digps[count])) {
 		pgpDigParamsFree(digps[count]);
 		continue;
 	    }
