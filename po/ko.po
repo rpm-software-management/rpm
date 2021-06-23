@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2021-04-15 16:02+0000\n"
+"PO-Revision-Date: 2021-06-23 04:04+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/rpm/"
 "master/ko/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.5.3\n"
+"X-Generator: Weblate 4.7\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -2501,7 +2501,7 @@ msgstr "%s: rpm 꾸러미가 아닙니다 (또는 꾸러미 명세서): %s\n"
 
 #, c-format
 msgid "%s cannot be installed\n"
-msgstr "%s(은)는 설치할 수 없습니다\n"
+msgstr "%s는 설치 할 수 없습니다\n"
 
 #, c-format
 msgid "Retrieving %s\n"
