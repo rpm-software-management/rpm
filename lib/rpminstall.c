@@ -461,6 +461,7 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 		rpmlog(RPMLOG_ERR, _("File not found by glob: %s\n"), *eiu->fnp);
 	    }
 	    eiu->numFailed++;
+	    argvFree(av);
 	    continue;
 	}
 
