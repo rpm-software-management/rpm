@@ -17,6 +17,8 @@ int soname_only = 0;
 int fake_soname = 1;
 int filter_soname = 1;
 int require_interp = 0;
+int add_arch = 0;
+int add_nonarch = 1;
 
 typedef struct elfInfo_s {
     Elf *elf;
@@ -29,6 +31,7 @@ typedef struct elfInfo_s {
     char *soname;
     char *interp;
     const char *marker;		/* elf class marker or NULL */
+    const char *archmarker;     /* e.g. "aarch64" for EM_AARCH64 */
 
     ARGV_t requires;
     ARGV_t provides;
@@ -96,6 +99,75 @@ static const char *mkmarker(GElf_Ehdr *ehdr)
     return marker;
 }
 
+static const char *mkarchmarker(GElf_Ehdr *ehdr)
+{
+    const char *marker = NULL;
+    int is64 = ehdr->e_ident[EI_CLASS] == ELFCLASS64;
+    int isle = ehdr->e_ident[EI_DATA] == ELFDATA2LSB;
+
+    switch (ehdr->e_machine) {
+    case EM_386:
+	marker = "(i386)";
+	break;
+    case EM_68K:
+	marker = "(m68k)";
+	break;
+#if defined(EM_AARCH64)
+    case EM_AARCH64:
+	marker = isle ? "(aarch64)" : "(aarch64_be)";
+	break;
+#endif
+    case EM_ALPHA:
+    case EM_FAKE_ALPHA:
+	marker = "(alpha)";
+	break;
+    case EM_ARM:
+	marker = isle ? "(arm)" : "armeb";
+	break;
+    case EM_IA_64:
+	marker = "(ia64)";
+	break;
+    case EM_MIPS:
+	marker = is64 && isle ? "(mips64le)"
+	         : is64 ? "(mips64)"
+	         : isle ? "(mipsel)"
+		 : "(mips)";
+	break;
+    case EM_PARISC:
+	marker = is64 ? "(hppa64)" : "hppa";
+	break;
+    case EM_PPC:
+	marker = isle ? "(ppcle)" : "(ppc)";
+	break;
+    case EM_PPC64:
+	marker = isle ? "(ppc64le)" : "(ppc64)";
+	break;
+#if defined(EM_RISCV) && defined(R_RISCV_32)
+    case EM_RISCV:
+	marker = is64 ? "(riscv64)" : "(riscv32)";
+	break;
+#endif
+    case EM_S390:
+	marker = is64 ? "(s390x)" : "(s390)";
+	break;
+    case EM_SH:
+	marker = isle ? "(shl)" : "(sh)";
+	break;
+    case EM_SPARC:
+    case EM_SPARC32PLUS:
+    case EM_SPARCV9:
+	marker = is64 ? "(sparc64)" : "(sparc)";
+	break;
+    case EM_X86_64:
+	marker = "(x86_64)";
+	break;
+    default:
+	marker = is64 ? "(unknown64)" : "(unknown)";
+	break;
+    }
+    return marker;
+}
+
 static void addDep(ARGV_t *deps,
 		   const char *soname, const char *ver, const char *marker)
 {
@@ -144,7 +216,10 @@ static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    auxoffset += aux->vda_next;
 		    continue;
 		} else if (soname && !soname_only) {
-		    addDep(&ei->provides, soname, s, ei->marker);
+		    if (add_nonarch)
+		      addDep(&ei->provides, soname, s, ei->marker);
+		    if (add_arch)
+		      addDep(&ei->provides, soname, s, ei->archmarker);
 		}
 	    }
 		    
@@ -183,7 +258,10 @@ static void processVerNeed(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    break;
 
 		if (genRequires(ei) && soname && !soname_only) {
-		    addDep(&ei->requires, soname, s, ei->marker);
+		    if (add_nonarch)
+		      addDep(&ei->requires, soname, s, ei->marker);
+		    if (add_arch)
+		      addDep(&ei->requires, soname, s, ei->archmarker);
 		}
 		auxoffset += aux->vna_next;
 	    }
@@ -223,8 +301,12 @@ static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 	    case DT_NEEDED:
 		if (genRequires(ei)) {
 		    s = elf_strptr(ei->elf, shdr->sh_link, dyn->d_un.d_val);
-		    if (s)
-			addDep(&ei->requires, s, NULL, ei->marker);
+		    if (s) {
+			if (add_nonarch)
+			  addDep(&ei->requires, s, NULL, ei->marker);
+			if (add_arch)
+			  addDep(&ei->requires, s, NULL, ei->archmarker);
+		    }
 		}
 		break;
 	    }
@@ -298,6 +380,7 @@ static int processFile(const char *fn, int dtype)
 
     if (ehdr->e_type == ET_DYN || ehdr->e_type == ET_EXEC) {
 	ei->marker = mkmarker(ehdr);
+	ei->archmarker = mkarchmarker(ehdr);
     	ei->isDSO = (ehdr->e_type == ET_DYN);
 	ei->isExec = (st.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
 
@@ -323,8 +406,12 @@ static int processFile(const char *fn, int dtype)
 	    const char *bn = strrchr(fn, '/');
 	    ei->soname = rstrdup(bn ? bn + 1 : fn);
 	}
-	if (ei->soname)
-	    addDep(&ei->provides, ei->soname, NULL, ei->marker);
+	if (ei->soname) {
+	    if (add_nonarch)
+	      addDep(&ei->provides, ei->soname, NULL, ei->marker);
+	    if (add_arch)
+	      addDep(&ei->provides, ei->soname, NULL, ei->archmarker);
+	}
     }
 
     /* If requested and present, add dep for interpreter (ie dynamic linker) */
@@ -360,9 +447,11 @@ int main(int argc, char *argv[])
     struct poptOption opts[] = {
 	{ "provides", 'P', POPT_ARG_VAL, &provides, -1, NULL, NULL },
 	{ "requires", 'R', POPT_ARG_VAL, &requires, -1, NULL, NULL },
+	{ "add-arch", 0, POPT_ARG_VAL, &add_arch, -1, NULL, NULL },
 	{ "soname-only", 0, POPT_ARG_VAL, &soname_only, -1, NULL, NULL },
 	{ "no-fake-soname", 0, POPT_ARG_VAL, &fake_soname, 0, NULL, NULL },
 	{ "no-filter-soname", 0, POPT_ARG_VAL, &filter_soname, 0, NULL, NULL },
+	{ "no-nonarch", 0, POPT_ARG_VAL, &add_nonarch, 0, NULL, NULL },
 	{ "require-interp", 0, POPT_ARG_VAL, &require_interp, -1, NULL, NULL },
 	POPT_AUTOHELP 
 	POPT_TABLEEND
