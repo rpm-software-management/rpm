@@ -31,7 +31,7 @@ struct pkgdata_s {
     rpmRC rc;
 };
 
-struct taglate_s {
+static struct taglate_s {
     rpmTagVal stag;
     rpmTagVal xtag;
     rpm_count_t count;
