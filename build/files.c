@@ -1363,6 +1363,8 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 {
     size_t plen = strlen(diskPath);
     char buf[plen + 1];
+    char linkPath[PATH_MAX];
+    ssize_t linkLen;
     const char *cpioPath;
     struct stat statbuf;
     mode_t fileMode;
@@ -1458,6 +1460,20 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     fileMode = statp->st_mode;
     fileUid = statp->st_uid;
     fileGid = statp->st_gid;
+
+    if (S_ISLNK(fileMode)) {
+        /* stat's man page states that statp->st_size should equal the length of
+           the pointed-to path. On some filesystem a wrong size is reported.
+           So, explicitly get the length here. */
+        linkLen = readlink(diskPath, linkPath, sizeof(linkPath));
+        if ((linkLen < 0) || (linkLen >= sizeof(linkPath))) {
+            rpmlog(RPMLOG_ERR,
+               "Symbolic link too long or corrupt: %s\n",
+               diskPath);
+            goto exit;
+        }
+        statp->st_size = linkLen;
+    }
 
     /* Explicit %attr() always wins */
     if (fl->cur.ar.ar_fmodestr) {
