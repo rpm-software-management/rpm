@@ -164,7 +164,11 @@ static int sqlite_init(rpmdb rdb, const char * dbhome)
 				(SQLITE_UTF8|SQLITE_DETERMINISTIC),
 				NULL, rpm_match3, NULL, NULL);
 
-	sqlite3_busy_timeout(sdb, sleep_ms);
+	/*
+	 * Set an extremely high timeout because we must avoid
+	 * the "database is locked" errors at every cost
+	 */
+	sqlite3_busy_timeout(sdb, 10000);
 	sqlite3_config(SQLITE_CONFIG_LOG, errCb, rdb);
 
 	sqlexec(sdb, "PRAGMA secure_delete = OFF");
