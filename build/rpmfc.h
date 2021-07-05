@@ -32,7 +32,7 @@ enum FCOLOR_e {
 
     RPMFC_WHITE			= (1 << 29),
     RPMFC_INCLUDE		= (1 << 30),
-    RPMFC_ERROR			= (1 << 31)
+    RPMFC_ERROR			= (1UL << 31)
 };
 
 /** \ingroup rpmfc
