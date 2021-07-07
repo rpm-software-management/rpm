@@ -727,13 +727,15 @@ int rpmdbCountPackages(rpmdb db, const char * name)
 }
 
 /**
- * Attempt partial matches on name[-version[-release]][.arch] strings.
+ * Attempt partial matches on name[-version[-release[:disttag]]][.arch] strings.
  * @param db		rpmdb handle
  * @param dbi		index database
  * @param name		package name
  * @param epoch 	package epoch (-1 for any epoch)
  * @param version	package version (can be a pattern)
  * @param release	package release (can be a pattern)
+ * @param disttag	package disttag (can be a pattern)
+ * @param buildtime	package buildtime (can be a pattern)
  * @param arch		package arch (can be a pattern)
  * @param[out] matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
@@ -743,6 +745,8 @@ static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi,
 		int64_t epoch,
 		const char * version,
 		const char * release,
+		const char * disttag,
+		long long buildtime,
 		const char * arch,
 		dbiIndexSet * matches)
 {
@@ -755,9 +759,9 @@ static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi,
     /* No matches on the name, anything else wont match either */
     if (rc != RPMRC_OK)
 	goto exit;
-    
+
     /* If we got matches on name and nothing else was specified, we're done */
-    if (epoch < 0 && version == NULL && release == NULL && arch == NULL)
+    if (epoch < 0 && version == NULL && release == NULL && disttag == NULL && arch == NULL)
 	goto exit;
 
     /* Make sure the version and release match. */
@@ -784,6 +788,12 @@ static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi,
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
+	if (disttag &&
+	    rpmdbSetIteratorRE(mi, RPMTAG_DISTTAG, RPMMIRE_DEFAULT, disttag))
+	{
+	    rc = RPMRC_FAIL;
+	    goto exit;
+	}
 	if (arch &&
 	    rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_DEFAULT, arch))
 	{
@@ -800,6 +810,15 @@ static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi,
 		h = NULL;
 	    rpmtdFreeData(&td);
 	}
+
+	if (buildtime >= 0 && h) {
+	    struct rpmtd_s td;
+	    headerGet(h, RPMTAG_BUILDTIME, &td, HEADERGET_MINMEM);
+	    if (buildtime != rpmtdGetNumber(&td))
+		h = NULL;
+	    rpmtdFreeData(&td);
+	}
+
 	if (h)
 	    (*matches)->recs[gotMatches++] = (*matches)->recs[i];
 	else
@@ -826,7 +845,7 @@ exit:
  * @todo Name must be an exact match, as name is a db key.
  * @param db		rpmdb handle
  * @param dbi		index database handle (always RPMDBI_NAME)
- * @param arg		name[-[epoch:]version[-release]] string
+ * @param arg		name[-[epoch:]version[-release[:disttag]]]] string
  * @param arglen	length of arg
  * @param arch		possible arch string (or NULL)
  * @param[out] matches	set of header instances that match
@@ -840,6 +859,8 @@ static rpmRC dbiFindByLabelArch(rpmdb db, dbiIndex dbi,
     int64_t epoch;
     const char * version;
     const char * release;
+    char * disttag;
+    long long buildtime = -1;
     char * s;
     char c;
     int brackets;
@@ -850,8 +871,25 @@ static rpmRC dbiFindByLabelArch(rpmdb db, dbiIndex dbi,
     strncpy(localarg, arg, arglen);
     localarg[arglen] = '\0';
 
+    /* '@' is illegal symbol in name, version and release,
+       so it unambiguously separates buildtime */
+    {
+        char *bts = strchr(localarg, '@');
+        if (bts) {
+	    char *end;
+	    *bts = '\0';
+	    bts++;
+
+	    buildtime = strtoll(bts, &end, 10);
+	    if (*end != '\0' || *bts == '\0') {
+	        rc = RPMRC_NOTFOUND;
+	        goto exit;
+	    }
+        }
+    }
+
     /* did they give us just a name? */
-    rc = dbiFindMatches(db, dbi, localarg, -1, NULL, NULL, arch, matches);
+    rc = dbiFindMatches(db, dbi, localarg, -1, NULL, NULL, NULL, buildtime, arch, matches);
     if (rc != RPMRC_NOTFOUND)
 	goto exit;
 
@@ -886,15 +924,21 @@ static rpmRC dbiFindByLabelArch(rpmdb db, dbiIndex dbi,
     *s = '\0';
 
     epoch = splitEpoch(s + 1, &version);
-    rc = dbiFindMatches(db, dbi, localarg, epoch, version, NULL, arch, matches);
+    rc = dbiFindMatches(db, dbi, localarg, epoch, version, NULL, NULL, buildtime, arch, matches);
     if (rc != RPMRC_NOTFOUND) goto exit;
 
     /* FIX: double indirection */
     *matches = dbiIndexSetFree(*matches);
 
-    /* how about name-[epoch:]version-release? */
+    /* how about name-[epoch:]version-release[:disttag]? */
 
     release = s + 1;
+
+    disttag = strchr(release, ':');
+    if (disttag) {
+	*disttag = '\0';
+	disttag++;
+    }
 
     c = '\0';
     brackets = 0;
@@ -920,7 +964,8 @@ static rpmRC dbiFindByLabelArch(rpmdb db, dbiIndex dbi,
     *s = '\0';
    	/* FIX: *matches may be NULL. */
     epoch = splitEpoch(s + 1, &version);
-    rc = dbiFindMatches(db, dbi, localarg, epoch, version, release, arch, matches);
+    rc = dbiFindMatches(db, dbi, localarg, epoch, version, release, disttag, buildtime, arch, matches);
+
 exit:
     return rc;
 }
