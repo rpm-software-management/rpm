@@ -13,5 +13,5 @@ Darwin*) exit 0 ;;
 esac
 
 # Strip ELF binaries
-find "$RPM_BUILD_ROOT" -type f \! -regex "${RPM_BUILD_ROOT}/*usr/lib/debug.*" -print0 | \
+find "$RPM_BUILD_ROOT" -type f \! -regex "${RPM_BUILD_ROOT}/*usr/lib/debug.*" \! -name "*.ko" -print0 | \
     xargs -0 -r -P$NCPUS -n32 sh -c "file \"\$@\" | sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped.*/\1/p' | xargs -I\{\} $STRIP -g \{\}" ARG0
