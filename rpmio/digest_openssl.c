@@ -288,12 +288,10 @@ done:
 /* Key */
 
 struct pgpDigKeyRSA_s {
-    size_t nbytes; /* Size of modulus */
-
     BIGNUM *n; /* Common Modulus */
     BIGNUM *e; /* Public Exponent */
-
     EVP_PKEY *evp_pkey; /* Fully constructed key */
+    unsigned int poison: 1; /* if set, this key cannot be mutated */
 };
 
 static int constructRSASigningKey(struct pgpDigKeyRSA_s *key)
@@ -301,33 +299,34 @@ static int constructRSASigningKey(struct pgpDigKeyRSA_s *key)
     if (key->evp_pkey) {
         /* We've already constructed it, so just reuse it */
         return 1;
-    }
+    } else if (key->poison)
+	return 0;
 
     /* Create the RSA key */
     RSA *rsa = RSA_new();
     if (!rsa) return 0;
 
-    if (!RSA_set0_key(rsa, key->n, key->e, NULL)) {
-        RSA_free(rsa);
-        return 0;
-    }
+    if (RSA_set0_key(rsa, key->n, key->e, NULL) <= 0)
+	goto exit;
+    key->poison = 1;
+    key->n = key->e = NULL;
 
     /* Create an EVP_PKEY container to abstract the key-type. */
-    key->evp_pkey = EVP_PKEY_new();
-    if (!key->evp_pkey) {
-        RSA_free(rsa);
-        return 0;
-    }
+    if (!(key->evp_pkey = EVP_PKEY_new()))
+	goto exit;
 
     /* Assign the RSA key to the EVP_PKEY structure.
        This will take over memory management of the RSA key */
     if (!EVP_PKEY_assign_RSA(key->evp_pkey, rsa)) {
         EVP_PKEY_free(key->evp_pkey);
         key->evp_pkey = NULL;
-        RSA_free(rsa);
+	goto exit;
     }
 
     return 1;
+exit:
+    RSA_free(rsa);
+    return 0;
 }
 
 static int pgpSetKeyMpiRSA(pgpDigAlg pgpkey, int num, const uint8_t *p)
@@ -335,9 +334,10 @@ static int pgpSetKeyMpiRSA(pgpDigAlg pgpkey, int num, const uint8_t *p)
     size_t mlen = pgpMpiLen(p) - 2;
     struct pgpDigKeyRSA_s *key = pgpkey->data;
 
-    if (!key) {
+    if (!key)
         key = pgpkey->data = xcalloc(1, sizeof(*key));
-    }
+    else if (key->poison)
+	return 1;
 
     switch (num) {
     case 0:
@@ -347,7 +347,6 @@ static int pgpSetKeyMpiRSA(pgpDigAlg pgpkey, int num, const uint8_t *p)
             return 1;
         }
 
-        key->nbytes = mlen;
         /* Create a BIGNUM from the pointer.
            Note: this assumes big-endian data as required by PGP */
         key->n = BN_bin2bn(p+2, mlen, NULL);
@@ -450,7 +449,7 @@ static void pgpFreeSigRSA(pgpDigAlg pgpsig)
 static int pgpVerifySigRSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig,
                            uint8_t *hash, size_t hashlen, int hash_algo)
 {
-    int rc, ret;
+    int rc = 1;
     EVP_PKEY_CTX *pkey_ctx = NULL;
     struct pgpDigSigRSA_s *sig = pgpsig->data;
 
@@ -458,52 +457,31 @@ static int pgpVerifySigRSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig,
 
     struct pgpDigKeyRSA_s *key = pgpkey->data;
 
-    if (!constructRSASigningKey(key)) {
-        rc = 1;
+    if (!constructRSASigningKey(key))
         goto done;
-    }
 
     pkey_ctx = EVP_PKEY_CTX_new(key->evp_pkey, NULL);
-    if (!pkey_ctx) {
-        rc = 1;
+    if (!pkey_ctx)
         goto done;
-    }
 
-    ret = EVP_PKEY_verify_init(pkey_ctx);
-    if (ret < 0) {
-        rc = 1;
+    if (EVP_PKEY_verify_init(pkey_ctx) <= 0)
         goto done;
-    }
 
-    ret = EVP_PKEY_CTX_set_rsa_padding(pkey_ctx, RSA_PKCS1_PADDING);
-    if (ret < 0) {
-        rc = 1;
+    if (EVP_PKEY_CTX_set_rsa_padding(pkey_ctx, RSA_PKCS1_PADDING) <= 0)
         goto done;
-    }
 
-    ret = EVP_PKEY_CTX_set_signature_md(pkey_ctx, getEVPMD(hash_algo));
-    if (ret < 0) {
-        rc = 1;
+    if (EVP_PKEY_CTX_set_signature_md(pkey_ctx, getEVPMD(hash_algo)) <= 0)
         goto done;
-    }
 
     int pkey_len = EVP_PKEY_size(key->evp_pkey);
     padded_sig = xcalloc(1, pkey_len);
-    if (!BN_bn2binpad(sig->bn, padded_sig, pkey_len)) {
-        rc = 1;
+    if (BN_bn2binpad(sig->bn, padded_sig, pkey_len) <= 0)
         goto done;
-    }
 
-    ret = EVP_PKEY_verify(pkey_ctx, padded_sig, pkey_len, hash, hashlen);
-    if (ret == 1)
+    if (EVP_PKEY_verify(pkey_ctx, padded_sig, pkey_len, hash, hashlen) == 1)
     {
         /* Success */
         rc = 0;
-    }
-    else
-    {
-        /* Failure */
-        rc = 1;
     }
 
 done:
@@ -735,31 +713,21 @@ static void pgpFreeSigDSA(pgpDigAlg pgpsig)
 static int pgpVerifySigDSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig,
                            uint8_t *hash, size_t hashlen, int hash_algo)
 {
-    int rc, ret;
+    int rc = 1;
     struct pgpDigSigDSA_s *sig = pgpsig->data;
 
     struct pgpDigKeyDSA_s *key = pgpkey->data;
 
-    if (!constructDSASigningKey(key)) {
-        rc = 1;
+    if (!constructDSASigningKey(key))
         goto done;
-    }
 
-    if (!constructDSASignature(sig)) {
-        rc = 1;
+    if (!constructDSASignature(sig))
         goto done;
-    }
 
-    ret = DSA_do_verify(hash, hashlen, sig->dsa_sig, key->dsa_key);
-    if (ret == 1)
+    if (DSA_do_verify(hash, hashlen, sig->dsa_sig, key->dsa_key) == 1)
     {
         /* Success */
         rc = 0;
-    }
-    else
-    {
-        /* Failure */
-        rc = 1;
     }
 
 done:
