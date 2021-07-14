@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2021-06-16 18:04+0000\n"
+"PO-Revision-Date: 2021-07-12 19:04+0000\n"
 "Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/rpm/"
 "master/fi/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.6.2\n"
+"X-Generator: Weblate 4.7.1\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -701,11 +701,11 @@ msgstr "%%dev glob ei ole sallittu: %s\n"
 
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
-msgstr ""
+msgstr "Hakemistoa ei löytynyt käyttäen glob: %s. Yritetään ilman globia.\n"
 
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
-msgstr ""
+msgstr "Tiedostoa ei löytynyt käyttäen glob: %s. Yritetään ilman globia.\n"
 
 #, c-format
 msgid "Could not open %s file %s: %m\n"
@@ -717,7 +717,7 @@ msgstr "Tyhjennä %s tiedosto %s\n"
 
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
-msgstr ""
+msgstr "virheellinen _docdir_fmt %s: %s\n"
 
 #, c-format
 msgid "File not found by glob: %s\n"
@@ -725,18 +725,18 @@ msgstr "Tiedostoa ei löytynyt täydennyksellä: %s\n"
 
 #, c-format
 msgid "Special file in generated file list: %s\n"
-msgstr ""
+msgstr "Erityistiedosto luotujen tiedostojen luettelossa: %s\n"
 
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
-msgstr ""
+msgstr "Erityismuotoa %s ei voi sekoittaa muihin muotoihin: %s\n"
 
 #, c-format
 msgid "More than one file on a line: %s\n"
-msgstr ""
+msgstr "Useampi kuin yksi tiedosto rivillä: %s\n"
 
 msgid "Generating build-id links failed\n"
-msgstr ""
+msgstr "Koonti-ID-linkkien luominen epäonnistui\n"
 
 #, c-format
 msgid "Bad file: %s: %s\n"
@@ -768,18 +768,18 @@ msgstr "Käsitellään tiedostoja: %s\n"
 
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
-msgstr ""
+msgstr "Binääriarkktehtuuri (%d) ei vastaa pakettiarkkitehtuuria (%d).\n"
 
 msgid "Arch dependent binaries in noarch package\n"
-msgstr ""
+msgstr "Arkkitehtuuririippuvaiset binäärit arkkitehtuurittomassa paketissa\n"
 
 #, c-format
 msgid "create archive failed on file %s: %s\n"
-msgstr ""
+msgstr "arkiston luominen epäonnistui tiedostossa %s: %s\n"
 
 #, c-format
 msgid "create archive failed: %s\n"
-msgstr ""
+msgstr "arkiston luominen epäonnistui: %s\n"
 
 #, c-format
 msgid "Unknown payload compression: %s\n"
@@ -791,14 +791,14 @@ msgstr "Ei voinut etsiä tiedostosta %s: %s\n"
 
 #, c-format
 msgid "Failed to read %jd bytes in file %s: %s\n"
-msgstr ""
+msgstr "%jd tavun lukeminen tiedostosta %s:%s epäonnistui\n"
 
 msgid "Unable to create immutable header region\n"
-msgstr ""
+msgstr "Muuttamatonta otsikkoaluetta ei voida luoda\n"
 
 #, c-format
 msgid "Unable to write header to %s: %s\n"
-msgstr ""
+msgstr "Otsikkoa ei voi kirjoittaa kohteeseen %s:%s\n"
 
 #, c-format
 msgid "Could not open %s: %s\n"
@@ -870,7 +870,7 @@ msgstr "ei kuvausta %%changelog:issa\n"
 
 #, c-format
 msgid "line %d: second %%changelog\n"
-msgstr ""
+msgstr "rivi %d: toinen %%muutoslogi\n"
 
 #, c-format
 msgid "line %d: Error parsing %%description: %s\n"
@@ -890,7 +890,7 @@ msgstr "rivi %d: virhe jäsennettäessä %%files-osiota: %s\n"
 
 #, c-format
 msgid "line %d: multiple %%files for package '%s'\n"
-msgstr ""
+msgstr "rivi %d: useita %%files paketille '%s'\n"
 
 #, c-format
 msgid "line %d: Error parsing %%policies: %s\n"
@@ -898,7 +898,7 @@ msgstr "rivi %d: virhe jäsennettäessä %%käytännöt: %s\n"
 
 #, c-format
 msgid "Error parsing tag field: %s\n"
-msgstr ""
+msgstr "Virhe tagikentän jäsentämisessä: %s\n"
 
 #, c-format
 msgid "line %d: Bad number: %s\n"
@@ -910,11 +910,11 @@ msgstr "rivi %d: virheellinen no%s numero: %u\n"
 
 #, c-format
 msgid "Downloading %s to %s\n"
-msgstr ""
+msgstr "Ladataan %s kohteeseen %s\n"
 
 #, c-format
 msgid "Couldn't download %s\n"
-msgstr ""
+msgstr "Lataaminen epäonnistui %s\n"
 
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
@@ -962,33 +962,33 @@ msgstr "Tuntematon ikonityyppi: %s\n"
 
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
-msgstr ""
+msgstr "rivi %d: Tunniste ottaa vain yhden tokenin: %s\n"
 
 #, c-format
 msgid "line %d: %s in: %s\n"
-msgstr ""
+msgstr "rivi %d: %s kohteessa: %s\n"
 
 #, c-format
 msgid "%s in: %s\n"
-msgstr ""
+msgstr "%s kohteessa: %s\n"
 
 #, c-format
 msgid "Illegal char '%c' (0x%x)"
-msgstr ""
+msgstr "Virheellinen merkki '%c' (0x%x)"
 
 msgid "Possible unexpanded macro"
-msgstr ""
+msgstr "Mahdollinen laajentamaton makro"
 
 msgid "Illegal sequence \"..\""
-msgstr ""
+msgstr "Virheellinen järjestys \"..\""
 
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
-msgstr ""
+msgstr "rivi %d: Epämuodostunut tagi: %s\n"
 
 #, c-format
 msgid "line %d: Empty tag: %s\n"
-msgstr ""
+msgstr "rivi %d: Tyhjä tagi: %s\n"
 
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"

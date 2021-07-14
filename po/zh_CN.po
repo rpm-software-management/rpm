@@ -22,13 +22,13 @@
 # Mingcong Bai <jeffbai@aosc.xyz>, 2015
 # Mingcong Bai <jeffbai@aosc.xyz>, 2015
 # Taiki Akita <taiki_akita@163.com>, 2018. #zanata
-# Charles Lee <lchopn@gmail.com>, 2020.
+# Charles Lee <lchopn@gmail.com>, 2020, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-10-08 21:32+0000\n"
+"PO-Revision-Date: 2021-06-30 11:04+0000\n"
 "Last-Translator: Charles Lee <lchopn@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/rpm/master/zh_CN/>\n"
@@ -37,7 +37,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.2.2\n"
+"X-Generator: Weblate 4.7\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -196,7 +196,7 @@ msgid "debug file state machine"
 msgstr "除错文件状态机"
 
 msgid "do not execute any stages of the build"
-msgstr "不执行任何构建步骤 "
+msgstr "不执行任何构建步骤"
 
 msgid "do not verify build dependencies"
 msgstr "不检验构建依赖"
@@ -322,7 +322,7 @@ msgid "Query/Verify package selection options:"
 msgstr "查询/验证软件包选项："
 
 msgid "Query/Verify file selection options:"
-msgstr ""
+msgstr "查询/验证文件选项："
 
 msgid "Query options (with -q or --query):"
 msgstr "查询选项（用 -q 或 --query）："
@@ -334,7 +334,7 @@ msgid "Install/Upgrade/Erase options:"
 msgstr "安装/升级/擦除选项："
 
 msgid "one type of query/verify may be performed at a time"
-msgstr "每次仅能执行一种类型的查询/检验"
+msgstr "每次仅能执行一种类型的查询/验证"
 
 msgid "unexpected query flags"
 msgstr "意外查询标志"
@@ -816,7 +816,7 @@ msgstr "正在执行 \"%s\"：\n"
 
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
-msgstr " \"%s\" 执行失败。\n"
+msgstr "\"%s\" 执行失败。\n"
 
 #, c-format
 msgid "Package check \"%s\" failed.\n"
@@ -1394,9 +1394,7 @@ msgstr ""
 
 #, c-format
 msgid "error(%d) adding header #%d record\n"
-msgstr ""
-"添加表头 #%d 记录时出错 (%d)\n"
-"\n"
+msgstr "添加表头 #%d 记录时出错 (%d)\n"
 
 #, c-format
 msgid "error(%d) removing header #%d record\n"
@@ -1580,7 +1578,7 @@ msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr "sigh 填充(%zd)：不当，读取 %zd 字节"
 
 msgid "signature "
-msgstr ""
+msgstr "签名 "
 
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
@@ -1605,7 +1603,7 @@ msgstr "空白标签名称"
 
 #, c-format
 msgid "unknown tag: \"%s\""
-msgstr ""
+msgstr "未知标签：“%s”"
 
 msgid "] expected at end of array"
 msgstr "] 预期于数组结尾"
@@ -1767,7 +1765,7 @@ msgid "relocations must have a / following the ="
 msgstr "重定位必须有 / 跟在 = 之后"
 
 msgid "install all files, even configurations which might otherwise be skipped"
-msgstr "安装全部文件，包含配置文件，否则配置文件会被跳过。"
+msgstr "安装全部文件，甚至包含那些可能被跳过的配置文件"
 
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
@@ -1788,9 +1786,8 @@ msgstr "清除 (卸载) 软件包"
 msgid "<package>+"
 msgstr "<package>+"
 
-#, fuzzy
 msgid "do not install artifacts"
-msgstr "不安装程序文档"
+msgstr "不安装附加物"
 
 msgid "do not install configuration files"
 msgstr "不安装配置文件"
@@ -1799,7 +1796,7 @@ msgid "do not install documentation"
 msgstr "不安装程序文档"
 
 msgid "skip files with leading component <path> "
-msgstr "略过以 <path> 开头的文件"
+msgstr "略过以 <path> 开头的文件 "
 
 msgid "<path>"
 msgstr "<path>"
@@ -1943,19 +1940,19 @@ msgid "rpm checksig mode"
 msgstr "rpm 检查签名模式"
 
 msgid "query/verify package(s) owning file"
-msgstr "查询/验证文件属于的软件包"
+msgstr "查询/验证软件包拥有的文件"
 
 msgid "query/verify package(s) in group"
 msgstr "查询/验证组中的软件包"
 
 msgid "query/verify a package file"
-msgstr "查询/验证一个软件包"
+msgstr "查询/验证一个软件包文件"
 
 msgid "query/verify package(s) with package identifier"
-msgstr "根据软件包标识符查找/校验软件包"
+msgstr "根据软件包标识符查询/验证软件包"
 
 msgid "query/verify package(s) with header identifier"
-msgstr "根据头部标识符查找/校验软件包"
+msgstr "根据头部标识符查询/验证软件包"
 
 msgid "rpm query mode"
 msgstr "rpm 查询模式"
@@ -1964,7 +1961,7 @@ msgid "query/verify a header instance"
 msgstr "查询/验证头的实例"
 
 msgid "query/verify package(s) from install transaction"
-msgstr "从安装事务查找/验证软件包"
+msgstr "从安装事务查询/验证软件包"
 
 msgid "query the package(s) triggered by the package"
 msgstr "查找由软件包所触发的软件包"
@@ -1973,25 +1970,25 @@ msgid "rpm verify mode"
 msgstr "rpm 校验模式"
 
 msgid "query/verify the package(s) which require a dependency"
-msgstr "查找/校验需要某个依赖对象的软件包"
+msgstr "查询/验证需要某个依赖对象的软件包"
 
 msgid "query/verify the package(s) which obsolete a dependency"
-msgstr ""
+msgstr "查询/验证废弃依赖的软件包"
 
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "查询/验证提供相关依赖的软件包"
 
 msgid "query/verify the package(s) which recommends a dependency"
-msgstr ""
+msgstr "查询/验证推荐依赖的软件包"
 
 msgid "query/verify the package(s) which suggests a dependency"
-msgstr ""
+msgstr "查询/验证建议依赖的软件包"
 
 msgid "query/verify the package(s) which supplements a dependency"
-msgstr ""
+msgstr "查询/验证补充依赖的软件包"
 
 msgid "query/verify the package(s) which enhances a dependency"
-msgstr ""
+msgstr "查询/验证增强依赖的软件包"
 
 msgid "do not glob arguments"
 msgstr "不使用 glob 参数"
@@ -2067,7 +2064,7 @@ msgstr "不执行验证脚本"
 
 #, c-format
 msgid "Missing rpmlib features for %s:\n"
-msgstr " %s 缺失rpmlib的特性\n"
+msgstr "%s 缺失rpmlib的特性\n"
 
 msgid "source package expected, binary found\n"
 msgstr "需要源代码包，但找到二进制包\n"
@@ -2080,7 +2077,7 @@ msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "解压压缩文件 %s%s 失败：%s\n"
 
 msgid " on file "
-msgstr "  在文件"
+msgstr " 在文件 "
 
 #, c-format
 msgid "incorrect format: %s\n"
@@ -2090,19 +2087,19 @@ msgid "(contains no files)\n"
 msgstr "(没有包含文件)\n"
 
 msgid "normal        "
-msgstr "正常"
+msgstr "正常        "
 
 msgid "replaced      "
-msgstr "替换"
+msgstr "替换      "
 
 msgid "not installed "
-msgstr "未安装"
+msgstr "未安装 "
 
 msgid "net shared    "
-msgstr "网络共享"
+msgstr "网络共享    "
 
 msgid "wrong color   "
-msgstr "不对的颜色"
+msgstr "不对的颜色   "
 
 msgid "(no state)    "
 msgstr "(无状态)    "
@@ -2195,7 +2192,7 @@ msgstr "%s：导入密钥 %d 失败。\n"
 
 #, c-format
 msgid "%s: key %d not an armored public key.\n"
-msgstr "%s：公钥 %d  不受到保护。\n"
+msgstr "%s：公钥 %d 不受到保护。\n"
 
 #, c-format
 msgid "%s: import read failed(%d).\n"
@@ -2203,7 +2200,7 @@ msgstr "%s：导入读取时失败(%d)。\n"
 
 #, c-format
 msgid "Fread failed: %s"
-msgstr ""
+msgstr "Fread 失败：%s"
 
 msgid "DIGESTS"
 msgstr ""
@@ -2215,7 +2212,7 @@ msgid "SIGNATURES"
 msgstr ""
 
 msgid "signatures"
-msgstr ""
+msgstr "签名"
 
 msgid "NOT OK"
 msgstr "不正确"
@@ -2321,7 +2318,7 @@ msgid "failed to replace old database with new database!\n"
 msgstr "用新的数据库取代旧的数据库失败！\n"
 
 msgid "NO "
-msgstr "否"
+msgstr "否 "
 
 msgid "YES"
 msgstr "是"
@@ -2360,7 +2357,7 @@ msgid "package scriptlets may access the rpm database while installing."
 msgstr "软件包脚本在安装过程中允许访问 rpm 数据库。"
 
 msgid "internal support for lua scripts."
-msgstr "lua 脚本的内部支持"
+msgstr "lua 脚本的内部支持。"
 
 msgid "file digest algorithm is per package configurable"
 msgstr ""
@@ -2381,13 +2378,13 @@ msgid "support files larger than 4GB"
 msgstr "支持超过 4G 的文件"
 
 msgid "support for rich dependencies."
-msgstr "富依赖关系支持"
+msgstr "富依赖关系支持。"
 
 msgid "support for dynamic buildrequires."
 msgstr ""
 
 msgid "package payload can be compressed using zstd."
-msgstr ""
+msgstr "软件包负载可以使用 zstd 压缩。"
 
 #, c-format
 msgid "Unknown rich dependency op '%.*s'"
@@ -2444,7 +2441,7 @@ msgid "Malformed data for tag %s: %u bytes found but %lu expected.\n"
 msgstr ""
 
 msgid "Bad magic"
-msgstr "Bad magic"
+msgstr "错误的魔数"
 
 msgid "Bad/unreadable  header"
 msgstr "错误/不可读的  头部"
@@ -2700,7 +2697,7 @@ msgstr "不能打开 %s 在 %s:%d: %m\n"
 
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
-msgstr ""
+msgstr "缺失架构 %s 于 %s：%d\n"
 
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
@@ -2772,7 +2769,7 @@ msgid "erase"
 msgstr "删除"
 
 msgid "rpmdb"
-msgstr ""
+msgstr "rpmdb"
 
 #, c-format
 msgid "cannot open Packages database in %s\n"
@@ -2827,26 +2824,26 @@ msgstr ""
 
 #, c-format
 msgid "%s%s%s %s"
-msgstr ""
+msgstr "%s%s%s %s"
 
 msgid "digest"
-msgstr ""
+msgstr "摘要"
 
 #, c-format
 msgid "%s%s"
-msgstr ""
+msgstr "%s%s"
 
 msgid "signature"
-msgstr ""
+msgstr "签名"
 
 msgid "header"
 msgstr ""
 
 msgid "package"
-msgstr ""
+msgstr "软件包"
 
 msgid "Header "
-msgstr "头"
+msgstr "头 "
 
 msgid "Payload "
 msgstr ""
@@ -2935,7 +2932,7 @@ msgid "types must match"
 msgstr "类型必须匹配"
 
 msgid "division by zero"
-msgstr ""
+msgstr "除以零"
 
 msgid "* and / not supported for strings"
 msgstr "字符串不支持 * 与 /"
@@ -2945,7 +2942,7 @@ msgstr "字符串不支持 -"
 
 #, c-format
 msgid "%3d>%*s(empty)\n"
-msgstr ""
+msgstr "%3d>%*s（清空）\n"
 
 #, c-format
 msgid "%3d<%*s(empty)\n"

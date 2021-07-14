@@ -5,13 +5,14 @@
 # Translators:
 # José Lemos Neto <lemosjosex@protonmail.com>, 2020.
 # Fábio Rodrigues Ribeiro <farribeiro@gmail.com>, 2021.
+# Gustavo Costa <xfgusta@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2021-02-22 12:40+0000\n"
-"Last-Translator: Fábio Rodrigues Ribeiro <farribeiro@gmail.com>\n"
+"PO-Revision-Date: 2021-07-14 03:04+0000\n"
+"Last-Translator: Gustavo Costa <xfgusta@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://translate.fedoraproject.org/"
 "projects/rpm/master/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -19,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.4.2\n"
+"X-Generator: Weblate 4.7.1\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -1199,7 +1200,7 @@ msgstr ""
 
 #, c-format
 msgid "extra tokens at the end of %s directive in line %d:  %s\n"
-msgstr ""
+msgstr "tokens extras no final da diretiva %s na linha %d:  %s\n"
 
 #, c-format
 msgid "Macro expanded in comment on line %d: %s\n"
@@ -1239,23 +1240,23 @@ msgstr ""
 
 #, c-format
 msgid "encoding %s not supported by system\n"
-msgstr ""
+msgstr "codificação %s não suportada pelo sistema\n"
 
 #, c-format
 msgid "Package %s: invalid %s encoding in %s: %s - %s\n"
-msgstr ""
+msgstr "Pacote %s: codificação %s inválida em %s: %s - %s\n"
 
 #, c-format
 msgid "line %d: %%end doesn't take any arguments: %s\n"
-msgstr ""
+msgstr "linha %d: %%end não aceita nenhum argumento: %s\n"
 
 #, c-format
 msgid "line %d: %%end not expected here, no section to close: %s\n"
-msgstr ""
+msgstr "linha %d: %%end não esperado aqui, nenhuma seção para fechar: %s\n"
 
 #, c-format
 msgid "line %d doesn't belong to any section: %s\n"
-msgstr ""
+msgstr "a linha %d não pertence a nenhuma seção: %s\n"
 
 msgid "No compatible architectures found for build\n"
 msgstr "Nenhuma arquitetura compatível encontrada para a construção\n"
@@ -1299,7 +1300,7 @@ msgstr ""
 
 #, c-format
 msgid "Error parsing %s: %s\n"
-msgstr ""
+msgstr "Erro ao analisar %s: %s\n"
 
 #, c-format
 msgid "Expecting %%semodule tag: %s\n"
@@ -1562,11 +1563,9 @@ msgstr "%s criado como %s\n"
 msgid "%s %s: remove failed: %s\n"
 msgstr ""
 
-#, fuzzy
 msgid "directory"
 msgstr "diretório"
 
-#, fuzzy
 msgid "file"
 msgstr "arquivo"
 
@@ -1623,7 +1622,6 @@ msgstr ""
 msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr ""
 
-#, fuzzy
 msgid "signature "
 msgstr "assinatura "
 
@@ -1650,7 +1648,7 @@ msgstr "nome da etiqueta vazio"
 
 #, c-format
 msgid "unknown tag: \"%s\""
-msgstr ""
+msgstr "tag desconhecida: \"%s\""
 
 msgid "] expected at end of array"
 msgstr "] esperado no fim da matriz"
@@ -1685,7 +1683,7 @@ msgstr "| esperado no fim da expressão"
 msgid "array iterator used with different sized arrays"
 msgstr "iterador da matriz utilizado com diferentes tamanhos de matrizes"
 
-#, fuzzy, c-format
+#, c-format
 msgid "RPM v3 packages are deprecated: %s\n"
 msgstr "Os pacotes RPM v3 estão obsoletos: %s\n"
 
@@ -1769,7 +1767,7 @@ msgid "use database in DIRECTORY"
 msgstr ""
 
 msgid "DIRECTORY"
-msgstr ""
+msgstr "DIRETÓRIO"
 
 msgid "display known query tags"
 msgstr "exibir etiquetas de consulta conhecidas"
@@ -1922,11 +1920,11 @@ msgstr "não executar o scriptlet %%postun (se existir)"
 
 #, c-format
 msgid "do not execute %%pretrans scriptlet (if any)"
-msgstr ""
+msgstr "não executar o scriptlet %%pretrans (se existir)"
 
 #, c-format
 msgid "do not execute %%posttrans scriptlet (if any)"
-msgstr ""
+msgstr "não executar o scriptlet %%posttrans (se existir)"
 
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "não executar nenhum scriptlet disparado por este pacote"
@@ -1982,7 +1980,7 @@ msgid "upgrade package(s)"
 msgstr "atualizar pacote(s)"
 
 msgid "reinstall package(s)"
-msgstr ""
+msgstr "reinstalar pacote(s)"
 
 msgid "query/verify all packages"
 msgstr "consultar/verificar todos os pacotes"
@@ -2024,19 +2022,19 @@ msgid "query/verify the package(s) which require a dependency"
 msgstr "consultar/verificar pacotes que precisam de uma dependência"
 
 msgid "query/verify the package(s) which obsolete a dependency"
-msgstr ""
+msgstr "consultar/verificar o(s) pacote(s) que obsoleta uma dependência"
 
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "consultar/verificar pacote(s) que fornecem uma dependência"
 
 msgid "query/verify the package(s) which recommends a dependency"
-msgstr ""
+msgstr "consultar/verificar o(s) pacote(s) que recomenda uma dependência"
 
 msgid "query/verify the package(s) which suggests a dependency"
-msgstr ""
+msgstr "consultar/verificar o(s) pacote(s) que sugere uma dependência"
 
 msgid "query/verify the package(s) which supplements a dependency"
-msgstr ""
+msgstr "consultar/verificar o(s) pacote(s) que complementa uma dependência"
 
 msgid "query/verify the package(s) which enhances a dependency"
 msgstr ""
@@ -2251,7 +2249,7 @@ msgstr "%s: leitura de importação falhou (%d).\n"
 
 #, c-format
 msgid "Fread failed: %s"
-msgstr ""
+msgstr "Fread falhou: %s"
 
 msgid "DIGESTS"
 msgstr ""
@@ -2263,7 +2261,7 @@ msgid "SIGNATURES"
 msgstr ""
 
 msgid "signatures"
-msgstr ""
+msgstr "assinaturas"
 
 msgid "NOT OK"
 msgstr "Não está OK"
@@ -2445,7 +2443,7 @@ msgid "support for dynamic buildrequires."
 msgstr ""
 
 msgid "package payload can be compressed using zstd."
-msgstr ""
+msgstr "a carga útil do pacote pode ser compactada utilizando zstd."
 
 #, c-format
 msgid "Unknown rich dependency op '%.*s'"
@@ -2635,7 +2633,7 @@ msgstr "esperando pelo bloqueio de transação %s em %s\n"
 
 #, c-format
 msgid "Failed to dlopen %s %s\n"
-msgstr ""
+msgstr "Falha ao dlopen %s %s\n"
 
 #, c-format
 msgid "Failed to resolve symbol %s: %s\n"
@@ -2790,7 +2788,7 @@ msgstr ""
 
 #, c-format
 msgid "Unable to restore current directory: %m"
-msgstr ""
+msgstr "Não foi possível restaurar o diretório atual: %m"
 
 msgid "<lua> scriptlet support not built in\n"
 msgstr "suporte a scriptlet <lua> não embutido\n"
@@ -2809,7 +2807,7 @@ msgstr "Não foi possível duplicar o descritor do arquivo: %s: %s\n"
 
 #, c-format
 msgid "Fwrite failed: %s"
-msgstr ""
+msgstr "Fwrite falhou: %s"
 
 #, c-format
 msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
@@ -2888,23 +2886,23 @@ msgstr ""
 
 #, c-format
 msgid "%s%s%s %s"
-msgstr ""
+msgstr "%s%s%s %s"
 
 msgid "digest"
-msgstr ""
+msgstr "digest"
 
 #, c-format
 msgid "%s%s"
-msgstr ""
+msgstr "%s%s"
 
 msgid "signature"
-msgstr ""
+msgstr "assinatura"
 
 msgid "header"
 msgstr ""
 
 msgid "package"
-msgstr ""
+msgstr "pacote"
 
 msgid "Header "
 msgstr "Cabeçalho "
@@ -2928,7 +2926,7 @@ msgid "failed"
 msgstr "falhou"
 
 msgid "no state"
-msgstr ""
+msgstr "sem estado"
 
 msgid "unknown state"
 msgstr ""
@@ -2988,9 +2986,8 @@ msgstr "sem correspondência ("
 msgid "- only on numbers"
 msgstr "- somente em números"
 
-#, fuzzy
 msgid "unexpected end of expression"
-msgstr "| esperado no fim da expressão"
+msgstr "fim inesperado da expressão"
 
 msgid "syntax error in expression"
 msgstr "erro de sintaxe na expressão"
@@ -2999,7 +2996,7 @@ msgid "types must match"
 msgstr "os tipos devem corresponder"
 
 msgid "division by zero"
-msgstr ""
+msgstr "divisão por zero"
 
 msgid "* and / not supported for strings"
 msgstr "* e / não são suportados para strings"
@@ -3009,7 +3006,7 @@ msgstr "- não é suportado para strings"
 
 #, c-format
 msgid "%3d>%*s(empty)\n"
-msgstr ""
+msgstr "%3d>%*s(vazio)\n"
 
 #, c-format
 msgid "%3d<%*s(empty)\n"
@@ -3097,7 +3094,7 @@ msgid "File %s is smaller than %u bytes\n"
 msgstr "O arquivo %s tem menos de %u bytes\n"
 
 msgid "[none]"
-msgstr ""
+msgstr "[nenhum]"
 
 msgid "(no error)"
 msgstr "(sem erros)"
@@ -3176,11 +3173,11 @@ msgstr ""
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not create pipe for signing: %m\n"
 msgstr "Não foi possível criar um pipe para assinatura: %m\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not set GPG_TTY to stdin: %m\n"
 msgstr "Não foi possível definir GPG_TTY para stdin: %m\n"
 
@@ -3188,7 +3185,7 @@ msgstr "Não foi possível definir GPG_TTY para stdin: %m\n"
 msgid "Could not exec %s: %s\n"
 msgstr "Não foi possível executar %s: %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open pipe for writing: %m\n"
 msgstr "Não foi possível abrir o pipe para gravação: %m\n"
 

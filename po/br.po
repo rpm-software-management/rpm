@@ -3,26 +3,27 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Thierry Vignaud <thierry.vignaud@gmail.com>, 2012,2015,2017
-# Thierry Vignaud <thierry.vignaud@gmail.com>, 2020. #zanata
+# Thierry Vignaud <thierry.vignaud@gmail.com>, 2012,2015,2017, 2021.
+# Thierry Vignaud <thierry.vignaud@gmail.com>, 2020. #zanata, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-05-09 10:57-0400\n"
+"PO-Revision-Date: 2021-07-07 14:04+0000\n"
 "Last-Translator: Thierry Vignaud <thierry.vignaud@gmail.com>\n"
-"Language-Team: Breton (http://www.transifex.com/rpm-team/rpm/language/br/)\n"
+"Language-Team: Breton <https://translate.fedoraproject.org/projects/rpm/"
+"master/br/>\n"
 "Language: br\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Zanata 4.6.2\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.7.1\n"
 
 #, c-format
 msgid "%s: %s\n"
-msgstr "%s: %s\n"
+msgstr "%s : %s\n"
 
 #, c-format
 msgid "RPM version %s\n"
@@ -236,7 +237,7 @@ msgstr "Sac'het en ur lenn ar restr spec eus %s\n"
 
 #, c-format
 msgid "failed to stat %s: %m\n"
-msgstr "Sac'het eo bet stat %s :\n"
+msgstr "Sac'het eo bet stat %s : %m\n"
 
 #, c-format
 msgid "File %s is not a regular file.\n"
@@ -276,7 +277,7 @@ msgid "import database from stdin header list"
 msgstr ""
 
 msgid "Database options:"
-msgstr "Dibaboù ar stlennvon:"
+msgstr "Dibaboù ar stlennvon :"
 
 msgid "only one major mode may be specified"
 msgstr ""
@@ -437,7 +438,7 @@ msgid "prompt for file signing key password"
 msgstr ""
 
 msgid "Signature options:"
-msgstr "Dibaboù ar sinadur:"
+msgstr "Dibaboù ar sinadur :"
 
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
@@ -526,7 +527,7 @@ msgstr ""
 
 #, c-format
 msgid "Missing %s in %s(%s)\n"
-msgstr ""
+msgstr "Mankout a ra %s e %s(%s)\n"
 
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
@@ -601,11 +602,11 @@ msgstr "N'eo ket bet kavet ar renkell : %s\n"
 
 #, c-format
 msgid "File not found: %s\n"
-msgstr "N'eo ket bet kavet ar rstr : %s\n"
+msgstr "N'eo ket bet kavet ar restr : %s\n"
 
 #, c-format
 msgid "Not a directory: %s\n"
-msgstr "N'eo ket ur renkell: %s\n"
+msgstr "N'eo ket ur renkell : %s\n"
 
 #, c-format
 msgid "Can't read content of file: %s\n"
@@ -728,9 +729,9 @@ msgid ""
 "%s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s already exists\n"
-msgstr "Staliet eo dija ar pakad %s"
+msgstr "Bez ze eus dija eus ar pakad %s\n"
 
 #, c-format
 msgid "%s was mapped to multiple filenames"
@@ -780,11 +781,11 @@ msgstr "N'hell ket bet digoret ar restr %s : %s\n"
 
 #, c-format
 msgid "Unable to write package: %s\n"
-msgstr "N'hell ket bet skrivet ar pakad: %s\n"
+msgstr "N'hell ket bet skrivet ar pakad : %s\n"
 
 #, c-format
 msgid "Wrote: %s\n"
-msgstr "Skrivet: %s\n"
+msgstr "Skrivet : %s\n"
 
 #, c-format
 msgid "Executing \"%s\":\n"
@@ -924,7 +925,7 @@ msgstr ""
 
 #, c-format
 msgid "Unable to open icon %s: %s\n"
-msgstr ""
+msgstr "N'hell ket bet digoret an arlun %s : %s\n"
 
 #, c-format
 msgid "Unable to read icon %s: %s\n"
@@ -944,7 +945,7 @@ msgstr "linenn %d : %s e : %s\n"
 
 #, c-format
 msgid "%s in: %s\n"
-msgstr "%s e: %s\n"
+msgstr "%s e : %s\n"
 
 #, c-format
 msgid "Illegal char '%c' (0x%x)"
@@ -1045,7 +1046,7 @@ msgstr ""
 
 #, c-format
 msgid "%s: %s: %s\n"
-msgstr "%s : %s: %s\n"
+msgstr "%s : %s : %s\n"
 
 #, c-format
 msgid "Invalid patch number %s: %s\n"
@@ -1115,7 +1116,7 @@ msgstr ""
 
 #, c-format
 msgid "line %d: Second %s\n"
-msgstr ""
+msgstr "linenn %d : eil %s\n"
 
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
@@ -1267,7 +1268,7 @@ msgstr ""
 
 #, c-format
 msgid "Couldn't exec %s: %s\n"
-msgstr "N'hell bet bet sevenet %s : %s\n"
+msgstr "N'hell ket bet sevenet %s : %s\n"
 
 #, c-format
 msgid "%s failed: %x\n"
@@ -1680,7 +1681,7 @@ msgid "don't verify database header(s) when retrieved"
 msgstr ""
 
 msgid "don't verify package signature(s)"
-msgstr ""
+msgstr "na wirit ket sinadur(où) ar pakad(où)"
 
 msgid "send stdout to CMD"
 msgstr ""
@@ -1906,7 +1907,7 @@ msgid "upgrade package(s)"
 msgstr ""
 
 msgid "reinstall package(s)"
-msgstr ""
+msgstr "adstaliañ ar pakad(où)"
 
 msgid "query/verify all packages"
 msgstr ""
@@ -2062,13 +2063,13 @@ msgid "(contains no files)\n"
 msgstr ""
 
 msgid "normal        "
-msgstr "reizh         "
+msgstr "reizh        "
 
 msgid "replaced      "
-msgstr "erlec'hiet    "
+msgstr "erlec'hiet      "
 
 msgid "not installed "
-msgstr "ket staliet   "
+msgstr "ket staliet "
 
 msgid "net shared    "
 msgstr ""
@@ -2077,7 +2078,7 @@ msgid "wrong color   "
 msgstr ""
 
 msgid "(no state)    "
-msgstr "(stat ebet)   "
+msgstr "(stat ebet)    "
 
 #, c-format
 msgid "(unknown %3d) "
@@ -2139,7 +2140,7 @@ msgstr ""
 
 #, c-format
 msgid "file %s: %s\n"
-msgstr ""
+msgstr "restr %s : %s\n"
 
 #, c-format
 msgid "file %s is not owned by any package\n"
@@ -2293,7 +2294,7 @@ msgid "failed to replace old database with new database!\n"
 msgstr ""
 
 msgid "NO "
-msgstr "KET"
+msgstr "KET "
 
 msgid "YES"
 msgstr "YA"
@@ -2537,7 +2538,7 @@ msgid "read failed: %s (%d)\n"
 msgstr ""
 
 msgid "not an rpm package\n"
-msgstr ""
+msgstr "n'eo ket ur pakad rpm\n"
 
 #, c-format
 msgid "can't create %s lock on %s (%s)\n"
@@ -2578,9 +2579,9 @@ msgstr ""
 msgid "package %s is already installed"
 msgstr "Staliet eo dija ar pakad %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is not installed"
-msgstr "Staliet eo dija ar pakad %s"
+msgstr "N'eo ket staliet ar pakad %s"
 
 #, c-format
 msgid "path %s in package %s is not relocatable"
@@ -2612,7 +2613,7 @@ msgid "%s is needed by %s%s"
 msgstr "%s a zo un ezhomm eus %s%s"
 
 msgid "(installed) "
-msgstr "(staliet)"
+msgstr "(staliet) "
 
 #, c-format
 msgid "%s conflicts with %s%s"
@@ -3012,7 +3013,7 @@ msgid "fatal error: "
 msgstr "Fazi sac'hus : "
 
 msgid "error: "
-msgstr "fazi :"
+msgstr "fazi : "
 
 msgid "warning: "
 msgstr "hoc'h evezh : "
@@ -3082,21 +3083,21 @@ msgstr ""
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not create pipe for signing: %m\n"
-msgstr "N'hell ket bet lennet ar restr %s : %s\n"
+msgstr "N'hell ket bet krouet an tub evit sinañ : %m\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not set GPG_TTY to stdin: %m\n"
-msgstr "N'hell ket bet digoret ar restr %s : %m\n"
+msgstr "N'hell ket bet lakaet GPG_TTY da stdin : %m\n"
 
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "N'hell ket bet sevenet %s : %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open pipe for writing: %m\n"
-msgstr "N'hell ket bet digoret ar restr %s : %m\n"
+msgstr "N'hell ket bet digoret an tub evit skrivañ : %m\n"
 
 msgid "Could not write to pipe\n"
 msgstr ""
