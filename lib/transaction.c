@@ -633,7 +633,17 @@ assert(otherFi != NULL);
 		rConflicts = handleColorConflict(ts, fs, fi, i,
 						otherFs, otherFi, otherFileNum);
 
-		if (rConflicts && reportConflicts) {
+		/*
+		 * This may be a false positive (two separate files) if a
+		 * symlink is being replaced by a directory in one of these two
+		 * paths.  This check extends the one for removal conflicts in
+		 * handleInstInstalledFile().
+		 */
+		int reportThis = !(p == otherTe &&
+				   rpmtsFlags(ts) & RPMTRANS_FLAG_TEST &&
+				   rpmteHaveTransScript(p, RPMTAG_PRETRANS));
+
+		if (rConflicts && reportConflicts && reportThis) {
 		    char *fn = rpmfilesFN(fi, i);
 		    rpmteAddProblem(p, RPMPROB_NEW_FILE_CONFLICT,
 				    rpmteNEVRA(otherTe), fn, 0);
