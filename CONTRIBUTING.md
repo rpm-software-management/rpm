@@ -12,32 +12,52 @@ easy project to get into.
 
 ## Submitting Patches
 
-Patches should be submitted via GitHub pull requests (PRs) or via `git
-send-mail` to the rpm-maint@lists.rpm.org mailing list.  Each PR should be a
-single atomic change, meaning that it should be merged or rejected as a unit.
+Patches should be submitted via GitHub pull requests (PRs) or via
+`git send-email` to the rpm-maint@lists.rpm.org mailing list.  Each PR should be
+a single atomic change, meaning that it should be merged or rejected as a unit.
 It is okay for a PR to contain multiple commits if later commits are dependent
-on earlier ones.  If earlier commits do not depend on later ones, they
-(should/should not) be submitted separately.
+on earlier ones.  If later commits do not depend on earlier ones, they
+should be submitted separately.
 
 Pull requests should clearly state if the code is "ready for
 inclusion" or if further work is needed. Proof of concept or request
-for comment pull requests are fine but need to be labled as such.
+for comment pull requests are fine but must be labled as such.
 
 ## Comments and Commit Messages
 
-Information about the change should go into the commit message. This
-includes not only what is changed but also why. The commit message needs to
-be self contained. While references to GitHub tickets or external bug
-trackers are welcome the important information needs to be (also) in
+Information about the change should go into the commit message.  This
+includes not only what is changed, but also why.  The commit message needs to
+be self contained.  While references to GitHub tickets or external bug
+trackers are welcome, the important information needs to also be in
 the commit message itself.
-For many changes a justification why the change is needed should also
+For many changes, a justification why the change is needed should also
 be given in the commit message.
 
-Comments on the other hand should be used sparingly and for subtle and
-non-obvious things only. One-liners are prefered for in-line comments,
-unless there is something really special or complicated. Longer
-comments can go into the doc strings of functions. But back ground
-information should go into the commit message instead.
+Outside of public API documentation, comments should be used sparingly, and for
+subtle and non-obvious things only. One-liners are prefered for in-line
+comments, unless there is something really special or complicated. Longer
+comments can go into the doc strings of functions, but background information
+should go into the commit message instead.
+
+## Public APIs
+
+All new public APIs should have Doxygen API documentation.  Patches adding
+docuemntation to existing APIs are also welcome.
+
+## Security
+
+RPM must always validate its inputs.  A malformed package must be cleanly
+rejected, and must not cause RPM to read or write out of bounds, access freed
+memory, or otherwise invoke behavior that is undefined according to the C
+standard.  In particular, it must be safe to query a package (with `rpm -q`)
+or to verify its signature (with `rpmkeys -K`) even if the package was
+maliciously crafted.
+
+RPM does not currently use fuzz testing, but this will be changed in the future.
+
+If you think you have found a security vulnerability, please read
+[SECURITY.md](SECURITY.md) to determine if the bug needs to be handled
+privately.
 
 ## Code Style
 
