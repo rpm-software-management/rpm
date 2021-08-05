@@ -9,7 +9,7 @@ The debugedit >= 0.3 tools for producing debuginfo sub-packages.
 It is available from
    https://sourceware.org/debugedit/
 
-Lua >= 5.2 library + development environment.
+Lua >= 5.3 library + development environment.
 Note that only the library is needed at runtime, RPM never calls external
 Lua interpreter for anything. Lua is available from
     http://www.lua.org
