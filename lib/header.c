@@ -304,6 +304,8 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
 	if (typechk && hdrchkTagType(info.tag, info.type))
 	    goto err;
 	const size_t padding = info.offset - end;
+	assert(info.type < sizeof(typeAlign)/sizeof(typeAlign[0]) &&
+	       typeAlign[info.type] <= 8);
 	/* Check that the padding is zeroed and minimum-length */
 	if (padding >= typeAlign[info.type] ||
 	    memcmp(ds + end, "\0\0\0\0\0\0\0\0", padding))
