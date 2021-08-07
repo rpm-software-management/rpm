@@ -916,11 +916,13 @@ static int pgpPrtPkt(struct pgpPkt *p, pgpDigParams _digp)
 	break;
     case PGPTAG_PUBLIC_KEY:
 	/* Get the public key Key ID. */
-	if (!getKeyID(p->body, p->blen, _digp->signid))
-	    _digp->saved |= PGPDIG_SAVED_ID;
-	else
+	rc = getKeyID(p->body, p->blen, _digp->signid);
+	if (rc)
 	    memset(_digp->signid, 0, sizeof(_digp->signid));
-	rc = pgpPrtKey(p->tag, p->body, p->blen, _digp);
+	else {
+	    _digp->saved |= PGPDIG_SAVED_ID;
+	    rc = pgpPrtKey(p->tag, p->body, p->blen, _digp);
+	}
 	break;
     case PGPTAG_USER_ID:
 	rc = pgpPrtUserID(p->tag, p->body, p->blen, _digp);
