@@ -311,12 +311,13 @@ static void setdata(dbiCursor dbc,  unsigned int hdrNum, unsigned char *hdrBlob,
 
 static rpmRC ndb_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum, unsigned char *hdrBlob, unsigned int hdrLen)
 {
+    struct ndbEnv_s *ndbenv = dbc->dbi->dbi_rpmdb->db_dbenv;
     unsigned int hnum = *hdrNum;
     int rc = RPMRC_OK;
 
     if (hnum == 0) {
 	rc = rpmpkgNextPkgIdx(dbc->dbi->dbi_db, &hnum);
-	if (!rc)
+	if (!rc && ndbenv->hdrNum == hnum)
 	    setdata(dbc, hnum, 0, 0);
     }
 
@@ -325,7 +326,8 @@ static rpmRC ndb_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum, un
 
     if (!rc) {
 	dbc->hdrNum = hnum;
-	setdata(dbc, hnum, 0, 0);
+	if (ndbenv->hdrNum == hnum)
+	    setdata(dbc, hnum, 0, 0);
 	*hdrNum = hnum;
     }
     return rc;
@@ -333,8 +335,10 @@ static rpmRC ndb_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum, un
 
 static rpmRC ndb_pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
 {
+    struct ndbEnv_s *ndbenv = dbc->dbi->dbi_rpmdb->db_dbenv;
     dbc->hdrNum = 0;
-    setdata(dbc, 0, 0, 0);
+    if (ndbenv->hdrNum == hdrNum)
+	setdata(dbc, 0, 0, 0);
     return rpmpkgDel(dbc->dbi->dbi_db, hdrNum);
 }
 
