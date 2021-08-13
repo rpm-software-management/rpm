@@ -251,6 +251,29 @@ int rpmdbStat(const char *prefix, struct stat *statbuf);
  */
 int rpmdbFStat(rpmdb db, struct stat *statbuf);
 
+/** \ingroup rpmdb
+ * Recursively remove a directory
+ * @param path          directory path
+ * @return 		0 on success, -1 on error
+ */
+int removedir(const char *path);
+
+/** \ingroup rpmdb
+ * Copy file from source to destination
+ * @param src		source file name
+ * @param dst		destination file name
+ * @return 		0 on success, -1 on error
+ */
+int copy_file(const char *src, const char *dst);
+
+/** \ingroup rpmdb
+ * Rename/Move directory from source to destination
+ * @param src		source directory path
+ * @param dst		destination directory path
+ * @return 		0 on success, -1 on error
+ */
+int rename_dir(const char *src, const char *dst);
+
 #ifdef __cplusplus
 }
 #endif
