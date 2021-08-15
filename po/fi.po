@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2021-06-16 18:04+0000\n"
+"PO-Revision-Date: 2021-08-15 19:52+0000\n"
 "Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/rpm/"
 "master/fi/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.6.2\n"
+"X-Generator: Weblate 4.7.2\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -701,11 +701,11 @@ msgstr "%%dev glob ei ole sallittu: %s\n"
 
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
-msgstr ""
+msgstr "Hakemistoa ei löytynyt käyttäen glob: %s. Yritetään ilman globia.\n"
 
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
-msgstr ""
+msgstr "Tiedostoa ei löytynyt käyttäen glob: %s. Yritetään ilman globia.\n"
 
 #, c-format
 msgid "Could not open %s file %s: %m\n"
@@ -717,7 +717,7 @@ msgstr "Tyhjennä %s tiedosto %s\n"
 
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
-msgstr ""
+msgstr "virheellinen _docdir_fmt %s: %s\n"
 
 #, c-format
 msgid "File not found by glob: %s\n"
@@ -725,18 +725,18 @@ msgstr "Tiedostoa ei löytynyt täydennyksellä: %s\n"
 
 #, c-format
 msgid "Special file in generated file list: %s\n"
-msgstr ""
+msgstr "Erityistiedosto luotujen tiedostojen luettelossa: %s\n"
 
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
-msgstr ""
+msgstr "Erityismuotoa %s ei voi sekoittaa muihin muotoihin: %s\n"
 
 #, c-format
 msgid "More than one file on a line: %s\n"
-msgstr ""
+msgstr "Useampi kuin yksi tiedosto rivillä: %s\n"
 
 msgid "Generating build-id links failed\n"
-msgstr ""
+msgstr "Koonti-ID-linkkien luominen epäonnistui\n"
 
 #, c-format
 msgid "Bad file: %s: %s\n"
@@ -768,18 +768,18 @@ msgstr "Käsitellään tiedostoja: %s\n"
 
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
-msgstr ""
+msgstr "Binääriarkktehtuuri (%d) ei vastaa pakettiarkkitehtuuria (%d).\n"
 
 msgid "Arch dependent binaries in noarch package\n"
-msgstr ""
+msgstr "Arkkitehtuuririippuvaiset binäärit arkkitehtuurittomassa paketissa\n"
 
 #, c-format
 msgid "create archive failed on file %s: %s\n"
-msgstr ""
+msgstr "arkiston luominen epäonnistui tiedostossa %s: %s\n"
 
 #, c-format
 msgid "create archive failed: %s\n"
-msgstr ""
+msgstr "arkiston luominen epäonnistui: %s\n"
 
 #, c-format
 msgid "Unknown payload compression: %s\n"
@@ -791,14 +791,14 @@ msgstr "Ei voinut etsiä tiedostosta %s: %s\n"
 
 #, c-format
 msgid "Failed to read %jd bytes in file %s: %s\n"
-msgstr ""
+msgstr "%jd tavun lukeminen tiedostosta %s:%s epäonnistui\n"
 
 msgid "Unable to create immutable header region\n"
-msgstr ""
+msgstr "Muuttamatonta otsikkoaluetta ei voida luoda\n"
 
 #, c-format
 msgid "Unable to write header to %s: %s\n"
-msgstr ""
+msgstr "Otsikkoa ei voi kirjoittaa kohteeseen %s:%s\n"
 
 #, c-format
 msgid "Could not open %s: %s\n"
@@ -870,7 +870,7 @@ msgstr "ei kuvausta %%changelog:issa\n"
 
 #, c-format
 msgid "line %d: second %%changelog\n"
-msgstr ""
+msgstr "rivi %d: toinen %%muutoslogi\n"
 
 #, c-format
 msgid "line %d: Error parsing %%description: %s\n"
@@ -890,7 +890,7 @@ msgstr "rivi %d: virhe jäsennettäessä %%files-osiota: %s\n"
 
 #, c-format
 msgid "line %d: multiple %%files for package '%s'\n"
-msgstr ""
+msgstr "rivi %d: useita %%files paketille '%s'\n"
 
 #, c-format
 msgid "line %d: Error parsing %%policies: %s\n"
@@ -898,7 +898,7 @@ msgstr "rivi %d: virhe jäsennettäessä %%käytännöt: %s\n"
 
 #, c-format
 msgid "Error parsing tag field: %s\n"
-msgstr ""
+msgstr "Virhe tagikentän jäsentämisessä: %s\n"
 
 #, c-format
 msgid "line %d: Bad number: %s\n"
@@ -910,11 +910,11 @@ msgstr "rivi %d: virheellinen no%s numero: %u\n"
 
 #, c-format
 msgid "Downloading %s to %s\n"
-msgstr ""
+msgstr "Ladataan %s kohteeseen %s\n"
 
 #, c-format
 msgid "Couldn't download %s\n"
-msgstr ""
+msgstr "Lataaminen epäonnistui %s\n"
 
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
@@ -962,41 +962,41 @@ msgstr "Tuntematon ikonityyppi: %s\n"
 
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
-msgstr ""
+msgstr "rivi %d: Tunniste ottaa vain yhden tokenin: %s\n"
 
 #, c-format
 msgid "line %d: %s in: %s\n"
-msgstr ""
+msgstr "rivi %d: %s kohteessa: %s\n"
 
 #, c-format
 msgid "%s in: %s\n"
-msgstr ""
+msgstr "%s kohteessa: %s\n"
 
 #, c-format
 msgid "Illegal char '%c' (0x%x)"
-msgstr ""
+msgstr "Virheellinen merkki '%c' (0x%x)"
 
 msgid "Possible unexpanded macro"
-msgstr ""
+msgstr "Mahdollinen laajentamaton makro"
 
 msgid "Illegal sequence \"..\""
-msgstr ""
+msgstr "Virheellinen järjestys \"..\""
 
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
-msgstr ""
+msgstr "rivi %d: Epämuodostunut tagi: %s\n"
 
 #, c-format
 msgid "line %d: Empty tag: %s\n"
-msgstr ""
+msgstr "rivi %d: Tyhjä tagi: %s\n"
 
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
-msgstr ""
+msgstr "rivi %d: Etuliitteet eivät saa loppua merkkiin \"/\": %s\n"
 
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
-msgstr ""
+msgstr "rivi %d: Docdir täytyy alkaa merkillä '/': %s\n"
 
 #, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
@@ -1004,7 +1004,7 @@ msgstr "rivi %d: Epoch-kentän täytyy olla etumerkitön numero: %s\n"
 
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
-msgstr ""
+msgstr "rivi %d: Virheellinen %s: määreet: %s\n"
 
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
@@ -1016,22 +1016,22 @@ msgstr "linja %d: Tee BuildArch:n tietueesta kaksoiskappale: %s\n"
 
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
-msgstr ""
+msgstr "rivi %d: Vain noarch-alipaketteja tuetaan: %s\n"
 
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
-msgstr ""
+msgstr "Sisäinen virhe: Väärä tunniste %d\n"
 
 #, c-format
 msgid "line %d: %s is deprecated: %s\n"
-msgstr ""
+msgstr "rivi %d: %s on vanhentunut: %s\n"
 
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Virheellinen pakettimäärittely: %s\n"
 
 msgid "Binary rpm package found. Expected spec file!\n"
-msgstr ""
+msgstr "Binaarinen rpm-paketti löytyi. Odotettiin spec-tiedostoa!\n"
 
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
@@ -1083,15 +1083,16 @@ msgstr "rivi %d: toinen %%prep-osio\n"
 
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr ""
+"Riippuvuusmerkkien on alettava joko aakkosnumeerisella merkillä, '_' tai '/'"
 
 msgid "Versioned file name not permitted"
 msgstr "Versioitua tiedostonimeä ei sallita"
 
 msgid "No rich dependencies allowed for this type"
-msgstr ""
+msgstr "Tälle tyypille rikkaat riippuvuudet eivät ole sallittuja"
 
 msgid "invalid dependency"
-msgstr ""
+msgstr "virheellinen riippuvuus"
 
 msgid "Version required"
 msgstr "Versio pakollinen"
@@ -1103,17 +1104,17 @@ msgid "It's not recommended to have unversioned Obsoletes"
 msgstr "Ei ole suositeltavaa käyttää versiottomia Obsoletes:ja"
 
 msgid "It's not recommended to use '>' in Obsoletes"
-msgstr ""
+msgstr "Vanhentumisessa ei ole suositeltavaa käyttää '>' merkkiä"
 
 msgid "Only absolute paths are allowed in file triggers"
-msgstr ""
+msgstr "Vain absoluuttiset polut ovat sallittuja tiedoston laukaisimissa"
 
 msgid "Trigger fired by the same package is already defined in spec file"
-msgstr ""
+msgstr "Saman paketin laukaisema laukaisin on jo määritelty spec-tiedostossa"
 
 #, c-format
 msgid "line %d: %s: %s\n"
-msgstr ""
+msgstr "rivi %d: %s: %s\n"
 
 #, c-format
 msgid "line %d: triggers must have --: %s\n"
@@ -1121,7 +1122,7 @@ msgstr "rivi %d: laukaisimissa pitää olla --: %s\n"
 
 #, c-format
 msgid "line %d: missing trigger condition: %s\n"
-msgstr ""
+msgstr "rivi %d: puuttuu laukaisutila: %s\n"
 
 #, c-format
 msgid "line %d: Error parsing %s: %s\n"
@@ -1138,6 +1139,7 @@ msgstr "rivi %d: skriptitulkin täytyy alkaa '/':lla: %s\n"
 #, c-format
 msgid "line %d: Priorities are allowed only for file triggers : %s\n"
 msgstr ""
+"rivi %d: Prioriteetit ovat sallittuja vain tiedoston laukaisimille: %s\n"
 
 #, c-format
 msgid "line %d: Second %s\n"
@@ -1145,23 +1147,23 @@ msgstr "rivi %d: toinen %s\n"
 
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
-msgstr ""
+msgstr "rivi %d: sisäinen komentosarja, jota ei tueta: %s\n"
 
 #, c-format
 msgid "line %d: file trigger condition must begin with '/': %s"
-msgstr ""
+msgstr "rivi %d: tiedoston laukaisuehdon on alettava merkillä '/': %s"
 
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
-msgstr ""
+msgstr "rivi %d: tulkin argumentit eivät ole sallittuja triggereissä: %s\n"
 
 #, c-format
 msgid "extra tokens at the end of %s directive in line %d:  %s\n"
-msgstr ""
+msgstr "ylimääräisiä tunnuksia %s -direktiivin lopussa rivillä %d: %s\n"
 
 #, c-format
 msgid "Macro expanded in comment on line %d: %s\n"
-msgstr ""
+msgstr "Makro laajennettu kommentissa rivillä %d: %s\n"
 
 #, c-format
 msgid "Unable to open %s: %s\n"
@@ -1169,51 +1171,51 @@ msgstr "Ei voi avata %s:ää: %s\n"
 
 #, c-format
 msgid "%s:%d: Argument expected for %s\n"
-msgstr ""
+msgstr "%s:%d: Argumenttia odotetaan kohteelle %s\n"
 
 #, c-format
 msgid "line %d: Unclosed %%if\n"
-msgstr ""
+msgstr "rivi %d: Päättämätön %%if\n"
 
 #, c-format
 msgid "line %d: unclosed macro or bad line continuation\n"
-msgstr ""
+msgstr "rivi %d: päättämätön makro tai huono rivin jatko\n"
 
 #, c-format
 msgid "%s: line %d: %s with no %%if\n"
-msgstr ""
+msgstr "%s: rivi %d: %s puuttuu %%if\n"
 
 #, c-format
 msgid "%s: line %d: %s after %s\n"
-msgstr ""
+msgstr "%s: rivi %d: %s jälkeen %s\n"
 
 #, c-format
 msgid "%s:%d: bad %s condition: %s\n"
-msgstr ""
+msgstr "%s:%d: virheellinen %s tila: %s\n"
 
 #, c-format
 msgid "%s:%d: malformed %%include statement\n"
-msgstr ""
+msgstr "%s:%d: virheellisesti muotoiltu %%include lauseke\n"
 
 #, c-format
 msgid "encoding %s not supported by system\n"
-msgstr ""
+msgstr "järjestelmä ei tue koodausta %s\n"
 
 #, c-format
 msgid "Package %s: invalid %s encoding in %s: %s - %s\n"
-msgstr ""
+msgstr "Paketti %s: virheellinen %s koodaus kohteessa %s: %s - %s\n"
 
 #, c-format
 msgid "line %d: %%end doesn't take any arguments: %s\n"
-msgstr ""
+msgstr "rivi %d: %%end ei huoli yhtään argumenttia: %s\n"
 
 #, c-format
 msgid "line %d: %%end not expected here, no section to close: %s\n"
-msgstr ""
+msgstr "rivi %d: %%end ei odotettu täällä, ei suljettavaa lohkoa : %s\n"
 
 #, c-format
 msgid "line %d doesn't belong to any section: %s\n"
-msgstr ""
+msgstr "rivi %d ei kuulu millekään lohkolle: %s\n"
 
 msgid "No compatible architectures found for build\n"
 msgstr "Ei yhteensopivia arkkitehtureeja käännökselle\n"
@@ -1229,22 +1231,22 @@ msgstr ""
 
 #, c-format
 msgid "Base modules '%s' and '%s' have overlapping types\n"
-msgstr ""
+msgstr "Perusmoduuleissa '%s' ja '%s' on päällekkäisiä tyyppejä\n"
 
 msgid "Failed to get policies from header\n"
-msgstr ""
+msgstr "Käytäntöjen hakeminen ylätunnisteesta epäonnistui\n"
 
 #, c-format
 msgid "%%semodule requires a file path\n"
-msgstr ""
+msgstr "%%semodule vaatii tiedostopolun\n"
 
 #, c-format
 msgid "Failed to read  policy file: %s\n"
-msgstr ""
+msgstr "Käytäntötiedoston lukeminen epäonnistui: %s\n"
 
 #, c-format
 msgid "Failed to encode policy file: %s\n"
-msgstr ""
+msgstr "Käytäntötiedoston koodaus epäonnistui: %s\n"
 
 #, c-format
 msgid "Failed to determine a policy name: %s\n"
@@ -1255,6 +1257,8 @@ msgid ""
 "'%s' type given with other types in %%semodule %s. Compacting types to "
 "'%s'.\n"
 msgstr ""
+"annettu \" %s\" -tyyppi muiden tyyppien kanssa %%semodule %s:ssa. "
+"Tiivistetään tyyppejä '%s':ksi.\n"
 
 #, c-format
 msgid "Error parsing %s: %s\n"
@@ -1262,27 +1266,27 @@ msgstr "Virhe jäsennettäessä %s: %s\n"
 
 #, c-format
 msgid "Expecting %%semodule tag: %s\n"
-msgstr ""
+msgstr "Odotetaan %%semodule tägiä: %s\n"
 
 #, c-format
 msgid "Missing module path in line: %s\n"
-msgstr ""
+msgstr "Moduulin polku puuttuu rivistä: %s\n"
 
 #, c-format
 msgid "Too many arguments in line: %s\n"
-msgstr ""
+msgstr "Liian monta argumenttia rivillä: %s\n"
 
 #, c-format
 msgid "Processing policies: %s\n"
-msgstr ""
+msgstr "Käsitellään käytäntöjä: %s\n"
 
 #, c-format
 msgid "Ignoring invalid regex %s\n"
-msgstr ""
+msgstr "Virheellinen säännöllinen lauseke jätetään huomiotta %s\n"
 
 #, c-format
 msgid "%s: mime and magic supplied, only mime will be used\n"
-msgstr ""
+msgstr "%s: mime ja maaginen annettu, vain mimeä käytetään\n"
 
 #, c-format
 msgid "Couldn't create pipe for %s: %m\n"
@@ -1298,17 +1302,17 @@ msgstr "Ei voitu suorittaa %s:ää: %s\n"
 
 #, c-format
 msgid "%s failed: %x\n"
-msgstr ""
+msgstr "%s epäonnistui: %x\n"
 
 #, c-format
 msgid "failed to write all data to %s: %s\n"
-msgstr ""
+msgstr "epäonnistuttiin kirjoittamaan kaikki tiedot kohteeseen %s: %s\n"
 
 msgid "Empty file classifier\n"
-msgstr ""
+msgstr "Tyhjä tiedostoluokittelija\n"
 
 msgid "No file attributes configured\n"
-msgstr ""
+msgstr "Tiedostomääritteitä ei ole määritetty\n"
 
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
@@ -1331,15 +1335,15 @@ msgid "Failed to find %s:\n"
 msgstr "%s:ää ei löytynyt\n"
 
 msgid "Deprecated external dependency generator is used!\n"
-msgstr ""
+msgstr "Käytössä on vanhentunut ulkoinen riippuvuusgeneraattori!\n"
 
 #, c-format
 msgid "line %d: %s: package %s does not exist\n"
-msgstr ""
+msgstr "rivi %d: %s: pakettia %s ei ole olemassa\n"
 
 #, c-format
 msgid "line %d: %s: package %s already exists\n"
-msgstr ""
+msgstr "rivi %d: %s: paketti %s on jo olemassa\n"
 
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
@@ -1347,27 +1351,27 @@ msgstr "määrittelytiedoston %s kysely epäonnistui\n"
 
 #, c-format
 msgid "%s error(%d) from %s: %s\n"
-msgstr ""
+msgstr "%s virhe(%d) lähteestä %s: %s\n"
 
 #, c-format
 msgid "%s error(%d): %s\n"
-msgstr ""
+msgstr "%s virhe(%d): %s\n"
 
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
-msgstr ""
+msgstr "tunnistamaton db -vaihtoehto: \"%s\" ohitettu.\n"
 
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
-msgstr ""
+msgstr "%s:lla on virheellinen numeerinen arvo, ohitettu\n"
 
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
-msgstr ""
+msgstr "%s:lla on liian suuri tai liian pieni pitkä arvo, ohitettu\n"
 
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
-msgstr ""
+msgstr "%s:lla on liian suuri tai liian pieni integer arvo, ohitettu\n"
 
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
@@ -1381,11 +1385,11 @@ msgstr "poissulkevaa"
 
 #, c-format
 msgid "invalid index type %x on %s/%s\n"
-msgstr ""
+msgstr "virheellinen hakemistotyyppi %x kohteessa %s/%s\n"
 
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index: %s\n"
-msgstr ""
+msgstr "virhe (%d) \"%s\"-tietueiden hakeminen %s-hakemistosta: %s\n"
 
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
@@ -1409,17 +1413,19 @@ msgstr "virhe(%d) varattaessa uutta paketti-instanssia\n"
 
 #, c-format
 msgid "Converting database from %s to %s backend\n"
-msgstr ""
+msgstr "Tietokantaa muunnetaan kohteesta %s taustaohjelmaksi %s\n"
 
 #, c-format
 msgid "Found %s %s database while attempting %s backend: using %s backend.\n"
 msgstr ""
+"%s %s-tietokanta löydettiin yritettäessä %s taustaohjelmaa: käytetään %s "
+"taustaohjelmaa.\n"
 
 msgid "Detected outdated index databases\n"
-msgstr ""
+msgstr "Havaittiin vanhentuneet hakemistotietokannat\n"
 
 msgid "Rebuilding outdated index databases\n"
-msgstr ""
+msgstr "Rakennetaan uudelleen vanhentuneet hakemistotietokannat\n"
 
 #, c-format
 msgid "rpmidx: Version mismatch. Expected version: %u. Found version: %u\n"
@@ -1431,6 +1437,8 @@ msgstr "rpmpkg: Versio ei täsmää. Odotettu versio: %u. Löydetty versio: %u\n
 
 msgid "rpmpkg: detected non-zero blob, trying auto repair\n"
 msgstr ""
+"rpmpkg: havaittu nollasta poikkeava möykky, yritetään automaattista "
+"korjausta\n"
 
 #, c-format
 msgid "rpmxdb: Version mismatch. Expected version: %u. Found version: %u\n"
@@ -1470,10 +1478,10 @@ msgstr "(virheellinen tyyppi)"
 
 #, c-format
 msgid "%c"
-msgstr ""
+msgstr "%c"
 
 msgid "%a %b %d %Y"
-msgstr ""
+msgstr "%a %b %d %Y"
 
 msgid "(not base64)"
 msgstr "(ei ole base64)"
@@ -1486,7 +1494,7 @@ msgstr "(ei ole OpenPGP-allekirjoitus)"
 
 #, c-format
 msgid "Invalid date %u"
-msgstr ""
+msgstr "Väärä päivämäärä %u"
 
 msgid "normal"
 msgstr "normaali"
@@ -1504,7 +1512,7 @@ msgid "wrong color"
 msgstr "väärä väri"
 
 msgid "missing"
-msgstr ""
+msgstr "puuttuu"
 
 msgid "(unknown)"
 msgstr "(tuntematon)"
@@ -1519,7 +1527,7 @@ msgstr "%s luotu %s:na\n"
 
 #, c-format
 msgid "%s %s: remove failed: %s\n"
-msgstr ""
+msgstr "%s %s: poisto epäonnistui: %s\n"
 
 msgid "directory"
 msgstr "hakemisto"
@@ -1529,25 +1537,25 @@ msgstr "tiedosto"
 
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d len %d"
-msgstr ""
+msgstr "tagi[%d]: VIRHE, tag1 %d tyyppi %d paikka %d määrä %d pituus %d"
 
 msgid "hdr load: BAD"
-msgstr ""
+msgstr "hdr-kuorma: VIRHE"
 
 msgid "region: no tags"
-msgstr ""
+msgstr "alue: ei tageja"
 
 #, c-format
 msgid "region tag: BAD, tag %d type %d offset %d count %d"
-msgstr ""
+msgstr "aluetagi: VIRHE, tag1 %d tyyppi %d paikka %d määrä %d"
 
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d"
-msgstr ""
+msgstr "alueen paikka: VIRHE, tag1 %d tyyppi %d paikka %d määrä %d"
 
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d"
-msgstr ""
+msgstr "alueen traileri: VIRHE, tag1 %d tyyppi %d paikka %d määrä %d"
 
 #, c-format
 msgid "region %d size: BAD, ril %d il %d rdl %d dl %d"
@@ -1555,22 +1563,22 @@ msgstr "alue %d size: HUONO, ril %d il %d rdl %d dl %d"
 
 #, c-format
 msgid "region %d: tag number mismatch il %d ril %d dl %d rdl %d\n"
-msgstr ""
+msgstr "alue %d: taginumeron epäsuhta il %d ril %d dl %d rdl %d\n"
 
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d"
 msgstr "hdr size(%d): BAD, luku palautti %d"
 
 msgid "hdr magic: BAD"
-msgstr ""
+msgstr "hdr maagisuus: VIRHE"
 
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range"
-msgstr ""
+msgstr "hdr-tunnisteet: VIRHE, tunnistemäärä (%d) alueen ulkopuolella"
 
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range"
-msgstr ""
+msgstr "hdr-tiedot: VIRHE, tavumäärä (%d) alueen ulkopuolella"
 
 #, c-format
 msgid "hdr blob(%zd): BAD, read returned %d"
@@ -1578,7 +1586,7 @@ msgstr "hdr blob(%zd): VIRHE, luku palautti %d"
 
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes"
-msgstr ""
+msgstr "allekirjoitusotsikon tayttö(%zd): VIRHE, luettu %zd tavua"
 
 msgid "signature "
 msgstr "allekirjoitus "
@@ -1588,15 +1596,15 @@ msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
 msgstr "blob size(%d): HUONO, 8 + 16 * il(%d) + dl(%d)"
 
 msgid "invalid field width"
-msgstr ""
+msgstr "virheellinen kentän leveys"
 
 #, c-format
 msgid "missing { after %%"
-msgstr ""
+msgstr "puuttuu { %% jälkeen"
 
 #, c-format
 msgid "missing } after %%{"
-msgstr ""
+msgstr "puuttuu } %%{ jälkeen"
 
 msgid "empty tag format"
 msgstr "tyhjä nimiön formaatti"
@@ -1618,7 +1626,7 @@ msgid "unexpected }"
 msgstr "odottamaton '}'"
 
 msgid "escaped char expected after \\"
-msgstr ""
+msgstr "erikoismerkkiä odotetaan \\ jälkeen"
 
 msgid "? expected in expression"
 msgstr "odotin '?'-merkkiä ilmauksessa"
@@ -1643,47 +1651,49 @@ msgstr "matriisi iteraattori, jota käytetään erikokoisilla matriiseilla"
 
 #, c-format
 msgid "RPM v3 packages are deprecated: %s\n"
-msgstr ""
+msgstr "RPM v3 -paketit ovat vanhentuneet: %s\n"
 
 #, c-format
 msgid "failed to load macro file %s\n"
-msgstr ""
+msgstr "makrotiedoston %s lataaminen epäonnistui\n"
 
 #, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr ""
+msgstr "--dbpath parametrien pitää alkaa /-merkillä\n"
 
 #, c-format
 msgid ""
 "%s: error: more than one --pipe specified (incompatible popt aliases?)\n"
 msgstr ""
+"%s: virhe: useampi kuin yksi --pipe määritetty (yhteensopimattomat popt "
+"-aliakset?)\n"
 
 msgid "predefine MACRO with value EXPR"
-msgstr ""
+msgstr "ennalta määrittele MACRO arvolla EXPR"
 
 msgid "'MACRO EXPR'"
-msgstr ""
+msgstr "'MAKRO ILMAISU'"
 
 msgid "define MACRO with value EXPR"
-msgstr ""
+msgstr "määrittele MACRO arvolla ILMAISU"
 
 msgid "undefine MACRO"
-msgstr ""
+msgstr "poista MAKRO:n määrittely"
 
 msgid "MACRO"
-msgstr ""
+msgstr "MAKRO"
 
 msgid "print macro expansion of EXPR"
-msgstr ""
+msgstr "tulosta ILMAISUn makrolaajennus"
 
 msgid "'EXPR'"
-msgstr ""
+msgstr "'ILMAISU'"
 
 msgid "Specify target platform"
-msgstr ""
+msgstr "Määritä kohdealusta"
 
 msgid "CPU-VENDOR-OS"
-msgstr ""
+msgstr "CPU-MYYJÄ-OS"
 
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "lue <TIEDOSTO:...> vakiotiedostojen sijaan"
@@ -1692,13 +1702,13 @@ msgid "<FILE:...>"
 msgstr "<TIEDOSTO:...>"
 
 msgid "load a single macro file"
-msgstr ""
+msgstr "lataa yksittäinen makrotiedosto"
 
 msgid "<FILE>"
-msgstr ""
+msgstr "<TIEDOSTO>"
 
 msgid "don't enable any plugins"
-msgstr ""
+msgstr "älä ota mitään laajennuksia käyttöön"
 
 msgid "don't verify package digest(s)"
 msgstr "älä tarkista pakettien tarkistussummia"
@@ -1713,19 +1723,19 @@ msgid "send stdout to CMD"
 msgstr "lähetä vakiotuloste <komento>:lle"
 
 msgid "CMD"
-msgstr ""
+msgstr "CMD"
 
 msgid "use ROOT as top level directory"
 msgstr "käytä <hakem> ylimpänä hakemistona"
 
 msgid "ROOT"
-msgstr ""
+msgstr "ROOT"
 
 msgid "use database in DIRECTORY"
-msgstr ""
+msgstr "käytä tietokantaa HAKEMISTOSSA"
 
 msgid "DIRECTORY"
-msgstr ""
+msgstr "HAKEMISTO"
 
 msgid "display known query tags"
 msgstr "näytä tunnetut kyselymuodot"
@@ -1743,10 +1753,10 @@ msgid "print the version of rpm being used"
 msgstr "tulosta käytetyn rpm versio"
 
 msgid "debug payload file state machine"
-msgstr ""
+msgstr "korjaa virheet hytötykuormatiedoston koneen tilasta"
 
 msgid "debug rpmio I/O"
-msgstr ""
+msgstr "virheenkorjaa rpmio I/O"
 
 msgid "disable user namespace support"
 msgstr "poista käyttäjän nimitilan tuki käytöstä"
