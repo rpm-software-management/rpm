@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2021-06-23 04:04+0000\n"
+"PO-Revision-Date: 2021-07-10 19:04+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/rpm/"
 "master/ko/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.7\n"
+"X-Generator: Weblate 4.7.1\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -51,7 +51,7 @@ msgstr "인수 값으로 RPM 꾸러미(package)가 지정되어야 합니다\n"
 
 #, c-format
 msgid "error reading header from package\n"
-msgstr "꾸러미(package)의 헤더를 읽는 도중 오류가 발생했습니다\n"
+msgstr "꾸러미에서 머리글 읽기 중 오류\n"
 
 #, c-format
 msgid "cannot re-open payload: %s\n"
@@ -580,7 +580,7 @@ msgstr "파일 목록이 중복됨: %s\n"
 
 #, c-format
 msgid "reading symlink %s failed: %s\n"
-msgstr "심볼릭 링크%s 읽기에 실패하였습니다: %s\n"
+msgstr "심볼릭 링크%s 읽기에 실패: %s\n"
 
 #, c-format
 msgid "absolute symlink: %s -> %s\n"
@@ -2517,7 +2517,7 @@ msgstr "꾸러미 %s는 재배치 할 수 없습니다\n"
 
 #, c-format
 msgid "error reading from file %s\n"
-msgstr "%s 파일을 읽는 도중 오류가 발생했습니다\n"
+msgstr "파일 %s에서 읽기 중 오류\n"
 
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
@@ -2699,7 +2699,7 @@ msgstr "문의해주세요 %s\n"
 
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
-msgstr "읽기를 위해 %s 를 열 수 없습니다: %m.\n"
+msgstr "읽기를 위해 %s를 열 수 없습니다: %m.\n"
 
 msgid "failed to register exit handler"
 msgstr "종료 처리기 등록에 실패하였습니다"
@@ -2772,7 +2772,7 @@ msgstr "누락 ')' 꾸러미(package) 이름표 안에서: %s\n"
 
 #, c-format
 msgid "%s: reading of public key failed.\n"
-msgstr "%s: 공개 키 읽기에 실패했습니다.\n"
+msgstr "%s: 공개 키 읽기에 실패.\n"
 
 #, c-format
 msgid "invalid package verify level %s\n"
