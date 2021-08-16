@@ -57,7 +57,7 @@ select-options
 --------------
 
 \[*PACKAGE\_NAME*\] \[**-a,\--all \[***SELECTOR*\]\] \[**-f,\--file
-***FILE*\] \[**-g,\--group ***GROUP*\] \[**-p,\--package
+***FILE*\] \[**\--path ***PATH*\] \[**-g,\--group ***GROUP*\] \[**-p,\--package
 ***PACKAGE\_FILE*\] \[**\--hdrid ***SHA1*\] \[**\--pkgid ***MD5*\]
 \[**\--tid ***TID*\] \[**\--querybynumber ***HDRNUM*\]
 \[**\--triggeredby ***PACKAGE\_NAME*\] \[**\--whatprovides
@@ -620,7 +620,7 @@ name starts with \"b\".
 
 **-f, \--file ***FILE*
 
-:   Query package owning *FILE*.
+:   Query package owning installed *FILE*.
 
 **\--filecaps**
 
@@ -666,6 +666,12 @@ name starts with \"b\".
     including URL\'s, that will be expanded to paths that are
     substituted in place of the package manifest as additional
     *PACKAGE\_FILE* arguments to the query.
+
+**\--path ***PATH*
+
+:   Query package(s) owning *PATH*, whether the file is installed or not.
+    Multiple packages may own a *PATH*, but the file is only owned by the
+    package installed last.
 
 **\--pkgid ***MD5*
 
