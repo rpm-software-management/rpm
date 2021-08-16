@@ -27,6 +27,7 @@ struct rpmQVKArguments_s rpmQVKArgs;
 #define POPT_WHATENHANCES	-1014
 #define POPT_WHATOBSOLETES	-1015
 #define POPT_WHATCONFLICTS	-1016
+#define POPT_QUERYBYPATH	-1017
 
 /* ========== Query/Verify/Signature source args */
 static void rpmQVSourceArgCallback( poptContext con,
@@ -58,6 +59,7 @@ static void rpmQVSourceArgCallback( poptContext con,
     case POPT_WHATSUPPLEMENTS: qva->qva_source |= RPMQV_WHATSUPPLEMENTS; break;
     case POPT_WHATENHANCES: qva->qva_source |= RPMQV_WHATENHANCES; break;
     case POPT_TRIGGEREDBY: qva->qva_source |= RPMQV_TRIGGEREDBY; break;
+    case POPT_QUERYBYPATH: qva->qva_source |= RPMQV_PATH_ALL; break;
     case POPT_QUERYBYPKGID: qva->qva_source |= RPMQV_PKGID; break;
     case POPT_QUERYBYHDRID: qva->qva_source |= RPMQV_HDRID; break;
     case POPT_QUERYBYTID: qva->qva_source |= RPMQV_TID; break;
@@ -80,7 +82,9 @@ struct poptOption rpmQVSourcePoptTable[] = {
  { "checksig", 'K', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'K',
 	N_("rpm checksig mode"), NULL },
  { "file", 'f', 0, 0, 'f',
-	N_("query/verify package(s) owning file"), "FILE" },
+	N_("query/verify package(s) owning installed file"), "FILE" },
+ { "path", '\0', 0, 0, POPT_QUERYBYPATH,
+	N_("query/verify package(s) owning path, installed or not"), "PATH" },
  { "group", 'g', 0, 0, 'g',
 	N_("query/verify package(s) in group"), "GROUP" },
  { "package", 'p', 0, 0, 'p',

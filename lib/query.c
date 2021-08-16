@@ -445,6 +445,7 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
 	}
 	/* fallthrough on absolute and relative paths */
     case RPMQV_PATH:
+    case RPMQV_PATH_ALL:
     {   char * fn;
 
 	for (s = arg; *s != '\0'; s++)
@@ -463,8 +464,10 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
 	    fn = xstrdup(arg);
 	(void) rpmCleanPath(fn);
 
-	/* XXX Add a switch to enable former BASENAMES behavior? */
-	mi = rpmtsInitIterator(ts, RPMDBI_INSTFILENAMES, fn, 0);
+	rpmDbiTagVal tag = RPMDBI_INSTFILENAMES;
+	if (qva->qva_source == RPMQV_PATH_ALL)
+	    tag = RPMDBI_BASENAMES;
+	mi = rpmtsInitIterator(ts, tag, fn, 0);
 	if (mi == NULL)
 	    mi = rpmtsInitIterator(ts, RPMDBI_PROVIDENAME, fn, 0);
 
