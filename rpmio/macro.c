@@ -601,8 +601,8 @@ validName(MacroBuf mb, const char *name, size_t namelen, const char *action)
     int rc = 0;
     int c;
 
-    /* Names must start with alphabetic or _ and be at least 3 chars */
-    if (!((c = *name) && (risalpha(c) || c == '_') && (namelen) > 2)) {
+    /* Names must start with alphabetic, or _ and be at least 2 chars */
+    if (!((c = *name) && (risalpha(c) || (c == '_' && namelen > 1)))) {
 	mbErr(mb, 1, _("Macro %%%s has illegal name (%s)\n"), name, action);
 	goto exit;
     }

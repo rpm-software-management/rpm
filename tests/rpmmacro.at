@@ -891,7 +891,7 @@ AT_SETUP([macro file errors])
 AT_KEYWORDS([macros])
 AT_CHECK([
 cat << EOF > macros.bad
-%_i foo
+%1 foo
 
 %multi \\
 line\\
@@ -906,7 +906,7 @@ run rpm --macros "macros.bad" --eval "%foo"
 [0],
 [bar
 ],
-[error: macros.bad: line 1: Macro %_i has illegal name (%define)
+[error: macros.bad: line 1: Macro %1 has illegal name (%define)
 warning: macros.bad: line 8: Macro %bad needs whitespace before body
 ])
 AT_CLEANUP
