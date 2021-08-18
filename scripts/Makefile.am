@@ -16,6 +16,7 @@ EXTRA_DIST = \
 	perl.prov perl.req \
 	rpmdb_dump rpmdb_load \
 	rpm.daily rpm.log rpm.supp rpm2cpio.sh \
+	rpm_macros_provides.sh \
 	tgpg vpkg-provides.sh \
 	find-requires find-provides \
 	ocamldeps.sh \
@@ -34,6 +35,7 @@ rpmconfig_SCRIPTS = \
 	pkgconfigdeps.sh \
 	ocamldeps.sh \
 	fontconfig.prov script.req \
+	rpm_macros_provides.sh \
 	rpmdb_dump rpmdb_load \
 	rpm2cpio.sh tgpg
 
