@@ -608,7 +608,7 @@ validName(MacroBuf mb, const char *name, size_t namelen, const char *action)
     }
 
     mep = findEntry(mb->mc, name, namelen, NULL);
-    if (mep && (*mep)->flags & ME_BUILTIN) {
+    if (mep && (*mep)->flags & (ME_BUILTIN|ME_AUTO)) {
 	mbErr(mb, 1, _("Macro %%%s is a built-in (%s)\n"), name, action);
 	goto exit;
     }
