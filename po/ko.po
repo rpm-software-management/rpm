@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2021-06-22 13:30+0300\n"
+"POT-Creation-Date: 2021-08-18 16:20+0300\n"
 "PO-Revision-Date: 2021-04-15 16:02+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/rpm/"
@@ -732,7 +732,7 @@ msgid "Missing '(' in %s %s\n"
 msgstr "%s %s에 '(' 가 없습니다\n"
 
 #: build/files.c:354 build/files.c:535 build/files.c:671 build/files.c:759
-#: build/files.c:818
+#: build/files.c:820
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "%s(%s에 ')' 가 없습니다\n"
@@ -777,224 +777,224 @@ msgstr "비정상적인 로케일 길이: \"%s\" in %%lang(%s)\n"
 msgid "Duplicate locale %s in %%lang(%s)\n"
 msgstr "%%lang(%s)에서 중복 로케일 %s\n"
 
-#: build/files.c:833
+#: build/files.c:835
 #, c-format
 msgid "Invalid capability: %s\n"
 msgstr "잘못된 기능. %s\n"
 
-#: build/files.c:843
+#: build/files.c:845
 msgid "File capability support not built in\n"
 msgstr "내장 되지 않은 파일 기능 지원\n"
 
-#: build/files.c:894
+#: build/files.c:896
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "파일은 반드시 \"/\" 로 시작해야함: %s\n"
 
-#: build/files.c:1015
+#: build/files.c:1017
 #, c-format
 msgid "unable to parse %s=%s\n"
 msgstr "%s=%s 구문분석 할 수 없음\n"
 
-#: build/files.c:1032
+#: build/files.c:1034
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr "알지 못하는 파일 간소화 알고리즘 %u, MD5로 돌아가기\n"
 
-#: build/files.c:1091
+#: build/files.c:1093
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "파일 목록이 중복됨: %s\n"
 
-#: build/files.c:1213
+#: build/files.c:1215
 #, c-format
 msgid "reading symlink %s failed: %s\n"
 msgstr "심볼릭 링크%s 읽기에 실패하였습니다: %s\n"
 
-#: build/files.c:1219
+#: build/files.c:1221
 #, c-format
 msgid "absolute symlink: %s -> %s\n"
 msgstr "절대 심볼릭 링크: %s -> %s\n"
 
-#: build/files.c:1225
+#: build/files.c:1227
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "BuildRoot에 심볼릭링크함: %s -> %s\n"
 
-#: build/files.c:1346
+#: build/files.c:1348
 #, c-format
 msgid "Illegal character (0x%x) in filename: %s\n"
 msgstr "파일이름에서 불법 문자 (0x%x): %s\n"
 
-#: build/files.c:1383
+#: build/files.c:1385
 #, c-format
 msgid "Path is outside buildroot: %s\n"
 msgstr "경로는 buildroot 외부에 있습니다: %s\n"
 
-#: build/files.c:1427
+#: build/files.c:1429
 #, c-format
 msgid "Directory not found: %s\n"
 msgstr "디렉토리를 찾지 못했습니다: %s\n"
 
-#: build/files.c:1428 lib/rpminstall.c:459
+#: build/files.c:1430 lib/rpminstall.c:459
 #, c-format
 msgid "File not found: %s\n"
 msgstr "파일을 찾을 수 없음: %s\n"
 
-#: build/files.c:1449
+#: build/files.c:1451
 #, c-format
 msgid "Not a directory: %s\n"
 msgstr "디렉토리가 아닙니다.%s\n"
 
-#: build/files.c:1603
+#: build/files.c:1605
 #, c-format
 msgid "Can't read content of file: %s\n"
 msgstr "파일 내용을 읽을 수 없습니다: %s\n"
 
-#: build/files.c:1644
+#: build/files.c:1646
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: 알려지지 않은 tag(%d)를 적재 할 수 없습니다.\n"
 
-#: build/files.c:1650
+#: build/files.c:1652
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: 공공 키 읽기가 실패하였습니다.\n"
 
-#: build/files.c:1654
+#: build/files.c:1656
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: 강화된 공공 키가 없습니다.\n"
 
-#: build/files.c:1663
+#: build/files.c:1665
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s: 인코드에 실패하였습니다\n"
 
-#: build/files.c:1709
+#: build/files.c:1711
 msgid "failed symlink"
 msgstr "심볼릭 링크가 실패하였습니다"
 
-#: build/files.c:1765 build/files.c:1768
+#: build/files.c:1767 build/files.c:1770
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
 msgstr "build-id, stat %s: %m은 중복되었습니다\n"
 
-#: build/files.c:1775
+#: build/files.c:1777
 #, c-format
 msgid "Duplicate build-ids %s and %s\n"
 msgstr "build-ids %s 와 %s가 중복되었습니다\n"
 
-#: build/files.c:1829
+#: build/files.c:1831
 msgid "_build_id_links macro not set, assuming 'compat'\n"
 msgstr "_build_id_links 매크로 지정이 안되어 있으며, 'compat' 가정하기\n"
 
-#: build/files.c:1842
+#: build/files.c:1844
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
 msgstr "_bulid_id_links 매크로는 알려지지 않는 값 '%s'으로 설정합니다\n"
 
-#: build/files.c:1931
+#: build/files.c:1933
 #, c-format
 msgid "error reading build-id in %s: %s\n"
 msgstr "%s: %s 에서 build-id 읽기 오류\n"
 
-#: build/files.c:1935
+#: build/files.c:1937
 #, c-format
 msgid "Missing build-id in %s\n"
 msgstr "%s에서 build-id 누락\n"
 
-#: build/files.c:1940
+#: build/files.c:1942
 #, c-format
 msgid "build-id found in %s too small\n"
 msgstr "%s에 발견된 build-id가 너무 적습니다\n"
 
-#: build/files.c:1941
+#: build/files.c:1943
 #, c-format
 msgid "build-id found in %s too large\n"
 msgstr "%s에서 발견된 build-id가 너무 커요\n"
 
-#: build/files.c:1956 rpmio/rpmfileutil.c:445
+#: build/files.c:1958 rpmio/rpmfileutil.c:445
 msgid "failed to create directory"
 msgstr "디렉토리 생성에 실패하였습니다"
 
-#: build/files.c:1974
+#: build/files.c:1976
 msgid "Mixing main ELF and debug files in package"
 msgstr "꾸러미(package)에서 주요 ELF와 디버그 혼합"
 
-#: build/files.c:2175
+#: build/files.c:2177
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "파일은 \"/\" 로 시작해야함: %s\n"
 
-#: build/files.c:2199
+#: build/files.c:2201
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr "%%장치 글로브(glob)은 허용하지 않습니다: %s\n"
 
-#: build/files.c:2211
+#: build/files.c:2213
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 "글로브(glob): %s 에서 디렉토리를 찾을 수 없습니다. 글로빙(globbing) 없이 시도"
 "하기.\n"
 
-#: build/files.c:2213
+#: build/files.c:2215
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 "글로브(glob):%s에서 파일을 찾을 수 없습니다. 글로빙(globbing)없이 시도하기.\n"
 
-#: build/files.c:2248
+#: build/files.c:2250
 #, c-format
 msgid "Could not open %s file %s: %m\n"
 msgstr "%s 파일의 %s: %m 를 읽을 수 없습니다\n"
 
-#: build/files.c:2273
+#: build/files.c:2275
 #, c-format
 msgid "Empty %s file %s\n"
 msgstr "%s 파일에 %s 가 비었습니다\n"
 
-#: build/files.c:2318
+#: build/files.c:2320
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr "illegal _docdir_fmt %s: %s\n"
 
-#: build/files.c:2439 lib/rpminstall.c:461
+#: build/files.c:2441 lib/rpminstall.c:461
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "glob으로 파일을 찾을 수 없음: %s\n"
 
-#: build/files.c:2526
+#: build/files.c:2528
 #, c-format
 msgid "Special file in generated file list: %s\n"
 msgstr "생성 파일 목록: %s에 있는 특별 파일\n"
 
-#: build/files.c:2550
+#: build/files.c:2552
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr "다른 형식: %s와 함께 특별히 %s를 섞을 수 없습니다\n"
 
-#: build/files.c:2566
+#: build/files.c:2568
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr "한 줄: %s에서 하나 파일 보다 더\n"
 
-#: build/files.c:2635
+#: build/files.c:2637
 msgid "Generating build-id links failed\n"
 msgstr "build-id 연결 생성에 실패하였습니다\n"
 
-#: build/files.c:2752
+#: build/files.c:2754
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "잘못된 파일: %s: %s\n"
 
-#: build/files.c:2820
+#: build/files.c:2822
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "포장되지 않은(unpackaged): %s 파일 점검하기\n"
 
-#: build/files.c:2833
+#: build/files.c:2835
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -1003,27 +1003,27 @@ msgstr ""
 "설치된(그러나 포장되지 않은(unpackaged) 파일을 찾았습니다:\n"
 "%s"
 
-#: build/files.c:2889
+#: build/files.c:2891
 #, c-format
 msgid "package %s already exists\n"
 msgstr "꾸러미(package) %s 는 이미 설치되어 있습니다\n"
 
-#: build/files.c:2954
+#: build/files.c:2956
 #, c-format
 msgid "%s was mapped to multiple filenames"
 msgstr "%s는 다중 파일이름으로 대응(mapped)됩니다"
 
-#: build/files.c:3203
+#: build/files.c:3205
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "처리 파일: %s\n"
 
-#: build/files.c:3225
+#: build/files.c:3227
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr "바이너리 arch (%d)가 꾸러미 arch(%d)와 일치하지 않습니다.\n"
 
-#: build/files.c:3231
+#: build/files.c:3233
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "noarch 꾸러미에서 아치 종속 바이너리\n"
 
@@ -2769,7 +2769,7 @@ msgstr "부적합한 꾸러미(package) 번호: %s\n"
 msgid "record %u could not be read\n"
 msgstr "기록 %u는 읽을 수 없습니다\n"
 
-#: lib/query.c:504 lib/rpminstall.c:701
+#: lib/query.c:504 lib/rpminstall.c:702
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s 꾸러미(package)가 설치되어 있지 않습니다\n"
@@ -3221,42 +3221,42 @@ msgstr "실패한 의존성:\n"
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: rpm 꾸러미가 아닙니다 (또는 꾸러미 명세서): %s\n"
 
-#: lib/rpminstall.c:363 lib/rpminstall.c:763 tools/rpmgraph.c:111
+#: lib/rpminstall.c:363 lib/rpminstall.c:764 tools/rpmgraph.c:111
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s(은)는 설치할 수 없습니다\n"
 
-#: lib/rpminstall.c:500
+#: lib/rpminstall.c:501
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "%s(을)를 복구합니다\n"
 
-#: lib/rpminstall.c:512
+#: lib/rpminstall.c:513
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "건너띄기 %s -전송에 실패하였습니다\n"
 
-#: lib/rpminstall.c:582
+#: lib/rpminstall.c:583
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "꾸러미 %s는 재배치 할 수 없습니다\n"
 
-#: lib/rpminstall.c:613
+#: lib/rpminstall.c:614
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "%s 파일을 읽는 도중 오류가 발생했습니다\n"
 
-#: lib/rpminstall.c:708
+#: lib/rpminstall.c:709
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "\"%s\" 다중 꾸러미를 지정합니다:\n"
 
-#: lib/rpminstall.c:747
+#: lib/rpminstall.c:748
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s(을)를 열 수 없음: %s\n"
 
-#: lib/rpminstall.c:753
+#: lib/rpminstall.c:754
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s(을)를 설치합니다\n"

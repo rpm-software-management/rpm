@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2021-06-22 13:30+0300\n"
+"POT-Creation-Date: 2021-08-18 16:20+0300\n"
 "PO-Revision-Date: 2021-06-16 18:04+0000\n"
 "Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/rpm/"
@@ -729,7 +729,7 @@ msgid "Missing '(' in %s %s\n"
 msgstr "Puuttuva '(' %s %s:ssä\n"
 
 #: build/files.c:354 build/files.c:535 build/files.c:671 build/files.c:759
-#: build/files.c:818
+#: build/files.c:820
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "puuttuva ')' %s:(%s:ssä\n"
@@ -774,221 +774,221 @@ msgstr "Epätavallinen maa-asetuksen pituus: \"%s\" kohteessa %%lang(%s)\n"
 msgid "Duplicate locale %s in %%lang(%s)\n"
 msgstr "Tee kielestä %s kaksoiskappale %%lang(%s):een\n"
 
-#: build/files.c:833
+#: build/files.c:835
 #, c-format
 msgid "Invalid capability: %s\n"
 msgstr "Virheellinen ominaisuus: %s\n"
 
-#: build/files.c:843
+#: build/files.c:845
 msgid "File capability support not built in\n"
 msgstr "Tiedostotoimintojen tukea ei ole sisäänrakennettu\n"
 
-#: build/files.c:894
+#: build/files.c:896
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Tiedostojen täytyy alkaa \"/\": %s\n"
 
-#: build/files.c:1015
+#: build/files.c:1017
 #, c-format
 msgid "unable to parse %s=%s\n"
 msgstr "%s=%s:n jäsentäminen ei onnistu\n"
 
-#: build/files.c:1032
+#: build/files.c:1034
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr "Tuntematon tiedoston tiivistysalgoritmi %u, käytetään MD5:ttä\n"
 
-#: build/files.c:1091
+#: build/files.c:1093
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Tiedosto lueteltu kahdesti: %s\n"
 
-#: build/files.c:1213
+#: build/files.c:1215
 #, c-format
 msgid "reading symlink %s failed: %s\n"
 msgstr "symlinkin %s lukeminen epäonnistui: %s\n"
 
-#: build/files.c:1219
+#: build/files.c:1221
 #, c-format
 msgid "absolute symlink: %s -> %s\n"
 msgstr "absoluuttinen symlinkki: %s -> %s\n"
 
-#: build/files.c:1225
+#: build/files.c:1227
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolinen linkki osoittaa BuildRoot:iin: %s -> %s\n"
 
-#: build/files.c:1346
+#: build/files.c:1348
 #, c-format
 msgid "Illegal character (0x%x) in filename: %s\n"
 msgstr "Laiton merkki (0x%x) tiedostonimessä: %s\n"
 
-#: build/files.c:1383
+#: build/files.c:1385
 #, c-format
 msgid "Path is outside buildroot: %s\n"
 msgstr "Polku on buildrootin ulkopuolella: %s\n"
 
-#: build/files.c:1427
+#: build/files.c:1429
 #, c-format
 msgid "Directory not found: %s\n"
 msgstr "Hakemistoa ei löytynyt: %s\n"
 
-#: build/files.c:1428 lib/rpminstall.c:459
+#: build/files.c:1430 lib/rpminstall.c:459
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Tiedostoa ei löytynyt: %s\n"
 
-#: build/files.c:1449
+#: build/files.c:1451
 #, c-format
 msgid "Not a directory: %s\n"
 msgstr "Ei ole hakemisto: %s\n"
 
-#: build/files.c:1603
+#: build/files.c:1605
 #, c-format
 msgid "Can't read content of file: %s\n"
 msgstr "Tiedoston sisältöä ei voi lukea: %s\n"
 
-#: build/files.c:1644
+#: build/files.c:1646
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: tuntematonta tagia ei voi ladata (%d).\n"
 
-#: build/files.c:1650
+#: build/files.c:1652
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: julkisen avaimen luku epäonnistui\n"
 
-#: build/files.c:1654
+#: build/files.c:1656
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: ei ole panssaroitu julkinen avain.\n"
 
-#: build/files.c:1663
+#: build/files.c:1665
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s: koodaaminen epäonnistui\n"
 
-#: build/files.c:1709
+#: build/files.c:1711
 msgid "failed symlink"
 msgstr "epäonnistunut symlinkki"
 
-#: build/files.c:1765 build/files.c:1768
+#: build/files.c:1767 build/files.c:1770
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
 msgstr "Tee build-id:sta kaksoiskappale, stat %s: %m\n"
 
-#: build/files.c:1775
+#: build/files.c:1777
 #, c-format
 msgid "Duplicate build-ids %s and %s\n"
 msgstr "Tee build-ids:sta %s ja %s:sta kaksoiskappale\n"
 
-#: build/files.c:1829
+#: build/files.c:1831
 msgid "_build_id_links macro not set, assuming 'compat'\n"
 msgstr "_build_id_links-makroa ei ole asetettu, oletetaan 'compat'\n"
 
-#: build/files.c:1842
+#: build/files.c:1844
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
 msgstr "_build_id_links-makro asetettu tuntemattomaan arvoon '%s'\n"
 
-#: build/files.c:1931
+#: build/files.c:1933
 #, c-format
 msgid "error reading build-id in %s: %s\n"
 msgstr "virhe luettaessa build-id:tä kohteessa %s: %s\n"
 
-#: build/files.c:1935
+#: build/files.c:1937
 #, c-format
 msgid "Missing build-id in %s\n"
 msgstr "Koonti-id %s puuttuu\n"
 
-#: build/files.c:1940
+#: build/files.c:1942
 #, c-format
 msgid "build-id found in %s too small\n"
 msgstr "%s löydetty build-id on liian pieni\n"
 
-#: build/files.c:1941
+#: build/files.c:1943
 #, c-format
 msgid "build-id found in %s too large\n"
 msgstr "%s löydetty build-id on liian suuri\n"
 
-#: build/files.c:1956 rpmio/rpmfileutil.c:445
+#: build/files.c:1958 rpmio/rpmfileutil.c:445
 msgid "failed to create directory"
 msgstr "hakemiston luonti epäonnistui"
 
-#: build/files.c:1974
+#: build/files.c:1976
 msgid "Mixing main ELF and debug files in package"
 msgstr "Sekoitettu ELF- ja virheenkorjaustiedostoja paketissa"
 
-#: build/files.c:2175
+#: build/files.c:2177
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Tiedosto tarvitsee aloitusmerkin \"/\": %s\n"
 
-#: build/files.c:2199
+#: build/files.c:2201
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr "%%dev glob ei ole sallittu: %s\n"
 
-#: build/files.c:2211
+#: build/files.c:2213
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2213
+#: build/files.c:2215
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2248
+#: build/files.c:2250
 #, c-format
 msgid "Could not open %s file %s: %m\n"
 msgstr "Ei voinut avata %s tiedostoa %s: %m\n"
 
-#: build/files.c:2273
+#: build/files.c:2275
 #, c-format
 msgid "Empty %s file %s\n"
 msgstr "Tyhjennä %s tiedosto %s\n"
 
-#: build/files.c:2318
+#: build/files.c:2320
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr ""
 
-#: build/files.c:2439 lib/rpminstall.c:461
+#: build/files.c:2441 lib/rpminstall.c:461
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Tiedostoa ei löytynyt täydennyksellä: %s\n"
 
-#: build/files.c:2526
+#: build/files.c:2528
 #, c-format
 msgid "Special file in generated file list: %s\n"
 msgstr ""
 
-#: build/files.c:2550
+#: build/files.c:2552
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:2566
+#: build/files.c:2568
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr ""
 
-#: build/files.c:2635
+#: build/files.c:2637
 msgid "Generating build-id links failed\n"
 msgstr ""
 
-#: build/files.c:2752
+#: build/files.c:2754
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Virheellinen tiedosto: %s: %s\n"
 
-#: build/files.c:2820
+#: build/files.c:2822
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Tarkistetaan paketoimattomia tiedostoja: %s\n"
 
-#: build/files.c:2833
+#: build/files.c:2835
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -997,27 +997,27 @@ msgstr ""
 "Löytyi asennettuja (mutta paketoimattomia) tiedostoja:\n"
 "%s"
 
-#: build/files.c:2889
+#: build/files.c:2891
 #, c-format
 msgid "package %s already exists\n"
 msgstr "paketti %s on jo olemassa\n"
 
-#: build/files.c:2954
+#: build/files.c:2956
 #, c-format
 msgid "%s was mapped to multiple filenames"
 msgstr "%s kartoitettiin useisiin tiedostonimiin"
 
-#: build/files.c:3203
+#: build/files.c:3205
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Käsitellään tiedostoja: %s\n"
 
-#: build/files.c:3225
+#: build/files.c:3227
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 
-#: build/files.c:3231
+#: build/files.c:3233
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 
@@ -2752,7 +2752,7 @@ msgstr "virheellinen paketin numero: %s\n"
 msgid "record %u could not be read\n"
 msgstr "tietuetta %u ei voitu lukea\n"
 
-#: lib/query.c:504 lib/rpminstall.c:701
+#: lib/query.c:504 lib/rpminstall.c:702
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paketti %s ei ole asennettu\n"
@@ -3204,42 +3204,42 @@ msgstr "Puuttuvia riippuvuuksia:\n"
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: ei ole rpm paketti (tai pakettilista): %s\n"
 
-#: lib/rpminstall.c:363 lib/rpminstall.c:763 tools/rpmgraph.c:111
+#: lib/rpminstall.c:363 lib/rpminstall.c:764 tools/rpmgraph.c:111
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s:ää ei voida asentaa\n"
 
-#: lib/rpminstall.c:500
+#: lib/rpminstall.c:501
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Haetaan %s\n"
 
-#: lib/rpminstall.c:512
+#: lib/rpminstall.c:513
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "ohitetaan %s - siirto epäonnistui\n"
 
-#: lib/rpminstall.c:582
+#: lib/rpminstall.c:583
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "paketti %s ei ole uudelleensijoitettava\n"
 
-#: lib/rpminstall.c:613
+#: lib/rpminstall.c:614
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "virhe luettaessa tiedostosta %s\n"
 
-#: lib/rpminstall.c:708
+#: lib/rpminstall.c:709
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "\"%s\" määrittää useita paketteja:\n"
 
-#: lib/rpminstall.c:747
+#: lib/rpminstall.c:748
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "virhe: en voi avata %s: %s\n"
 
-#: lib/rpminstall.c:753
+#: lib/rpminstall.c:754
 #, c-format
 msgid "Installing %s\n"
 msgstr "Asennetaan %s\n"

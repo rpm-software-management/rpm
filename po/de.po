@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2021-06-22 13:30+0300\n"
+"POT-Creation-Date: 2021-08-18 16:20+0300\n"
 "PO-Revision-Date: 2020-03-23 08:40-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: German (http://www.transifex.com/rpm-team/rpm/language/de/)\n"
@@ -760,7 +760,7 @@ msgid "Missing '(' in %s %s\n"
 msgstr "Fehlende »(« bei %s %s\n"
 
 #: build/files.c:354 build/files.c:535 build/files.c:671 build/files.c:759
-#: build/files.c:818
+#: build/files.c:820
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "Fehlende »)« bei %s(%s\n"
@@ -805,222 +805,222 @@ msgstr "Ungültige Länge der Locale: »%s« in %%lang(%s)\n"
 msgid "Duplicate locale %s in %%lang(%s)\n"
 msgstr "Doppelte Locale %s in %%lang(%s)\n"
 
-#: build/files.c:833
+#: build/files.c:835
 #, c-format
 msgid "Invalid capability: %s\n"
 msgstr "Ungültige Fähigkeit: %s\n"
 
-#: build/files.c:843
+#: build/files.c:845
 msgid "File capability support not built in\n"
 msgstr "Dateifähigkeits-Unterstützung nicht eingebaut\n"
 
-#: build/files.c:894
+#: build/files.c:896
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Datei muss mit »/« beginnen: %s\n"
 
-#: build/files.c:1015
+#: build/files.c:1017
 #, c-format
 msgid "unable to parse %s=%s\n"
 msgstr "%s=%s kann nicht ausgewertet werden\n"
 
-#: build/files.c:1032
+#: build/files.c:1034
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr "Unbekannter Prüfsummen-Algorithmus %u, es wird auf MD5 ausgewichen\n"
 
-#: build/files.c:1091
+#: build/files.c:1093
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Datei doppelt aufgelistet: %s\n"
 
-#: build/files.c:1213
+#: build/files.c:1215
 #, c-format
 msgid "reading symlink %s failed: %s\n"
 msgstr "Lesen des symbolischen Links %s fehlgeschlagen: %s\n"
 
-#: build/files.c:1219
+#: build/files.c:1221
 #, c-format
 msgid "absolute symlink: %s -> %s\n"
 msgstr "Absoluter symbolischer Link: %s -> %s\n"
 
-#: build/files.c:1225
+#: build/files.c:1227
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolischer Link zeigt auf den BuildRoot: %s -> %s\n"
 
-#: build/files.c:1346
+#: build/files.c:1348
 #, fuzzy, c-format
 msgid "Illegal character (0x%x) in filename: %s\n"
 msgstr "Ungültiges Zeichen '%c' (0x%x)"
 
-#: build/files.c:1383
+#: build/files.c:1385
 #, c-format
 msgid "Path is outside buildroot: %s\n"
 msgstr "Pfad ist außerhalb von BuildRoot: %s\n"
 
-#: build/files.c:1427
+#: build/files.c:1429
 #, c-format
 msgid "Directory not found: %s\n"
 msgstr "Verzeichnis nicht gefunden: %s\n"
 
-#: build/files.c:1428 lib/rpminstall.c:459
+#: build/files.c:1430 lib/rpminstall.c:459
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Datei nicht gefunden: %s\n"
 
-#: build/files.c:1449
+#: build/files.c:1451
 #, c-format
 msgid "Not a directory: %s\n"
 msgstr "Kein Verzeichnis: %s\n"
 
-#: build/files.c:1603
+#: build/files.c:1605
 #, fuzzy, c-format
 msgid "Can't read content of file: %s\n"
 msgstr "Lesen der Richtlinien-Datei fehlgeschlagen: %s\n"
 
-#: build/files.c:1644
+#: build/files.c:1646
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: Unbekannter Tag (%d) kann nicht geladen werden.\n"
 
-#: build/files.c:1650
+#: build/files.c:1652
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: Lesen des öffentlichen Schlüssels fehlgeschlagen.\n"
 
-#: build/files.c:1654
+#: build/files.c:1656
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: Ist kein gepanzerter öffentlicher Schlüssel.\n"
 
-#: build/files.c:1663
+#: build/files.c:1665
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s: Verschlüsselung fehlgeschlagen\n"
 
-#: build/files.c:1709
+#: build/files.c:1711
 msgid "failed symlink"
 msgstr ""
 
-#: build/files.c:1765 build/files.c:1768
+#: build/files.c:1767 build/files.c:1770
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
 msgstr ""
 
-#: build/files.c:1775
+#: build/files.c:1777
 #, c-format
 msgid "Duplicate build-ids %s and %s\n"
 msgstr ""
 
-#: build/files.c:1829
+#: build/files.c:1831
 msgid "_build_id_links macro not set, assuming 'compat'\n"
 msgstr "Makro _build_id_links ist nicht gesetzt, »compat« wird angenommen\n"
 
-#: build/files.c:1842
+#: build/files.c:1844
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
 msgstr "Makro _build_id_links ist auf den unbekannten Wert »%s« gesetzt\n"
 
-#: build/files.c:1931
+#: build/files.c:1933
 #, c-format
 msgid "error reading build-id in %s: %s\n"
 msgstr "Fehler beim Lesen der build-id in %s: %s\n"
 
-#: build/files.c:1935
+#: build/files.c:1937
 #, c-format
 msgid "Missing build-id in %s\n"
 msgstr "build-id fehlt in %s\n"
 
-#: build/files.c:1940
+#: build/files.c:1942
 #, c-format
 msgid "build-id found in %s too small\n"
 msgstr "in %s gefundene build-id ist zu klein\n"
 
-#: build/files.c:1941
+#: build/files.c:1943
 #, c-format
 msgid "build-id found in %s too large\n"
 msgstr "in %s gefundene build-id ist zu groß\n"
 
-#: build/files.c:1956 rpmio/rpmfileutil.c:445
+#: build/files.c:1958 rpmio/rpmfileutil.c:445
 msgid "failed to create directory"
 msgstr "Erzeugen des Verzeichnisses fehlgeschlagen"
 
-#: build/files.c:1974
+#: build/files.c:1976
 msgid "Mixing main ELF and debug files in package"
 msgstr "ELF-Hauptdateien und Debug-Dateien im Paket vermischt"
 
-#: build/files.c:2175
+#: build/files.c:2177
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Datei benötigt führenden »/«: %s\n"
 
-#: build/files.c:2199
+#: build/files.c:2201
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr "%%dev-glob ist unzulässig: %s\n"
 
-#: build/files.c:2211
+#: build/files.c:2213
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 "Verzeichnis von »glob« nicht gefunden: %s. Wird ohne Globbing versucht.\n"
 
-#: build/files.c:2213
+#: build/files.c:2215
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr "Datei von »glob« nicht gefunden: %s. Wird ohne Globbing versucht.\n"
 
-#: build/files.c:2248
+#: build/files.c:2250
 #, fuzzy, c-format
 msgid "Could not open %s file %s: %m\n"
 msgstr "Datei %s aus %%files konnte nicht geöffnet werden: %m\n"
 
-#: build/files.c:2273
+#: build/files.c:2275
 #, fuzzy, c-format
 msgid "Empty %s file %s\n"
 msgstr "Leere Datei %s in %%files\n"
 
-#: build/files.c:2318
+#: build/files.c:2320
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr "Ungültiges _docdir_fmt %s: %s\n"
 
-#: build/files.c:2439 lib/rpminstall.c:461
+#: build/files.c:2441 lib/rpminstall.c:461
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datei von »glob« nicht gefunden: %s\n"
 
-#: build/files.c:2526
+#: build/files.c:2528
 #, c-format
 msgid "Special file in generated file list: %s\n"
 msgstr "Spezielle Datei in erzeugter Dateiliste: %s\n"
 
-#: build/files.c:2550
+#: build/files.c:2552
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr "Spezielles %s kann nicht mit anderen Formen gemischt werden: %s\n"
 
-#: build/files.c:2566
+#: build/files.c:2568
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr "Mehr als eine Datei in einer Zeile: %s\n"
 
-#: build/files.c:2635
+#: build/files.c:2637
 msgid "Generating build-id links failed\n"
 msgstr ""
 
-#: build/files.c:2752
+#: build/files.c:2754
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ungültige Datei: %s: %s\n"
 
-#: build/files.c:2820
+#: build/files.c:2822
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Auf nicht gepackte Datei(en) wird geprüft: %s\n"
 
-#: build/files.c:2833
+#: build/files.c:2835
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -1029,29 +1029,29 @@ msgstr ""
 "Installierte (aber nicht gepackte) Datei(en) gefunden:\n"
 "%s"
 
-#: build/files.c:2889
+#: build/files.c:2891
 #, fuzzy, c-format
 msgid "package %s already exists\n"
 msgstr "Zeile %d: %s: Paket %s existiert bereits\n"
 
-#: build/files.c:2954
+#: build/files.c:2956
 #, c-format
 msgid "%s was mapped to multiple filenames"
 msgstr "%s wurde mehreren Dateinamen zugewiesen"
 
-#: build/files.c:3203
+#: build/files.c:3205
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Dateien werden verarbeitet: %s\n"
 
-#: build/files.c:3225
+#: build/files.c:3227
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 "Architektur der Binärdateien (%d) entspricht nicht der Paketarchitektur "
 "(%d).\n"
 
-#: build/files.c:3231
+#: build/files.c:3233
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Architekturabhängige Binärdateien in »noarch«-Paket\n"
 
@@ -2810,7 +2810,7 @@ msgstr "Ungültige Paket-Nummer: %s\n"
 msgid "record %u could not be read\n"
 msgstr "Datensatz %u konnte nicht gelesen werden\n"
 
-#: lib/query.c:504 lib/rpminstall.c:701
+#: lib/query.c:504 lib/rpminstall.c:702
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "Das Paket %s ist nicht installiert\n"
@@ -3269,42 +3269,42 @@ msgstr "Fehlgeschlagene Abhängigkeiten:\n"
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: Kein RPM-Paket (oder Paket-Liste): %s\n"
 
-#: lib/rpminstall.c:363 lib/rpminstall.c:763 tools/rpmgraph.c:111
+#: lib/rpminstall.c:363 lib/rpminstall.c:764 tools/rpmgraph.c:111
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kann nicht installiert werden\n"
 
-#: lib/rpminstall.c:500
+#: lib/rpminstall.c:501
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "%s wird geholt\n"
 
-#: lib/rpminstall.c:512
+#: lib/rpminstall.c:513
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "%s wird übersprungen - Übertragung fehlgeschlagen\n"
 
-#: lib/rpminstall.c:582
+#: lib/rpminstall.c:583
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "Paket %s ist nicht verschiebbar\n"
 
-#: lib/rpminstall.c:613
+#: lib/rpminstall.c:614
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "Fehler beim Lesen von Datei %s\n"
 
-#: lib/rpminstall.c:708
+#: lib/rpminstall.c:709
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "»%s« bezeichnet mehrere Pakete:\n"
 
-#: lib/rpminstall.c:747
+#: lib/rpminstall.c:748
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s kann nicht geöffnet werden: %s\n"
 
-#: lib/rpminstall.c:753
+#: lib/rpminstall.c:754
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s wird installiert\n"

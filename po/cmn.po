@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2021-06-22 13:30+0300\n"
+"POT-Creation-Date: 2021-08-18 16:20+0300\n"
 "PO-Revision-Date: 2021-02-09 04:40+0000\n"
 "Last-Translator: Izumo Nobuse <yumexyume@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -712,7 +712,7 @@ msgid "Missing '(' in %s %s\n"
 msgstr "在 %s %s 中有遺漏的「(」\n"
 
 #: build/files.c:354 build/files.c:535 build/files.c:671 build/files.c:759
-#: build/files.c:818
+#: build/files.c:820
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "在 %s(%s 中有遺漏的「)」\n"
@@ -757,221 +757,221 @@ msgstr "不尋常的語區長度：「%s」於 %%lang(%s)\n"
 msgid "Duplicate locale %s in %%lang(%s)\n"
 msgstr "複製語區 %s 於 %%lang(%s)\n"
 
-#: build/files.c:833
+#: build/files.c:835
 #, c-format
 msgid "Invalid capability: %s\n"
 msgstr "無效的功能：%s\n"
 
-#: build/files.c:843
+#: build/files.c:845
 msgid "File capability support not built in\n"
 msgstr "檔案功能支援未內建於\n"
 
-#: build/files.c:894
+#: build/files.c:896
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "檔案必須以「/」開頭：%s\n"
 
-#: build/files.c:1015
+#: build/files.c:1017
 #, c-format
 msgid "unable to parse %s=%s\n"
 msgstr ""
 
-#: build/files.c:1032
+#: build/files.c:1034
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr "不明檔案摘要演算法 %u，權宜落回 MD5\n"
 
-#: build/files.c:1091
+#: build/files.c:1093
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "列出了兩次的檔案：%s\n"
 
-#: build/files.c:1213
+#: build/files.c:1215
 #, c-format
 msgid "reading symlink %s failed: %s\n"
 msgstr "讀取符號鏈結 %s 失敗：%s\n"
 
-#: build/files.c:1219
+#: build/files.c:1221
 #, c-format
 msgid "absolute symlink: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1225
+#: build/files.c:1227
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "指向 BuildRoot 的符號鏈結：%s -> %s\n"
 
-#: build/files.c:1346
+#: build/files.c:1348
 #, c-format
 msgid "Illegal character (0x%x) in filename: %s\n"
 msgstr ""
 
-#: build/files.c:1383
+#: build/files.c:1385
 #, c-format
 msgid "Path is outside buildroot: %s\n"
 msgstr ""
 
-#: build/files.c:1427
+#: build/files.c:1429
 #, c-format
 msgid "Directory not found: %s\n"
 msgstr "找不到目錄：%s\n"
 
-#: build/files.c:1428 lib/rpminstall.c:459
+#: build/files.c:1430 lib/rpminstall.c:459
 #, c-format
 msgid "File not found: %s\n"
 msgstr "找不到檔案：%s\n"
 
-#: build/files.c:1449
+#: build/files.c:1451
 #, c-format
 msgid "Not a directory: %s\n"
 msgstr ""
 
-#: build/files.c:1603
+#: build/files.c:1605
 #, fuzzy, c-format
 msgid "Can't read content of file: %s\n"
 msgstr "讀取策略檔案時失敗：%s\n"
 
-#: build/files.c:1644
+#: build/files.c:1646
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s：無法呼叫不明的標籤 (%d)。\n"
 
-#: build/files.c:1650
+#: build/files.c:1652
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s：公鑰讀入失敗。\n"
 
-#: build/files.c:1654
+#: build/files.c:1656
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s：不是一個受保護的公鑰。\n"
 
-#: build/files.c:1663
+#: build/files.c:1665
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s：編碼失敗\n"
 
-#: build/files.c:1709
+#: build/files.c:1711
 msgid "failed symlink"
 msgstr ""
 
-#: build/files.c:1765 build/files.c:1768
+#: build/files.c:1767 build/files.c:1770
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
 msgstr ""
 
-#: build/files.c:1775
+#: build/files.c:1777
 #, c-format
 msgid "Duplicate build-ids %s and %s\n"
 msgstr ""
 
-#: build/files.c:1829
+#: build/files.c:1831
 msgid "_build_id_links macro not set, assuming 'compat'\n"
 msgstr ""
 
-#: build/files.c:1842
+#: build/files.c:1844
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
 msgstr ""
 
-#: build/files.c:1931
+#: build/files.c:1933
 #, c-format
 msgid "error reading build-id in %s: %s\n"
 msgstr ""
 
-#: build/files.c:1935
+#: build/files.c:1937
 #, c-format
 msgid "Missing build-id in %s\n"
 msgstr ""
 
-#: build/files.c:1940
+#: build/files.c:1942
 #, c-format
 msgid "build-id found in %s too small\n"
 msgstr ""
 
-#: build/files.c:1941
+#: build/files.c:1943
 #, c-format
 msgid "build-id found in %s too large\n"
 msgstr ""
 
-#: build/files.c:1956 rpmio/rpmfileutil.c:445
+#: build/files.c:1958 rpmio/rpmfileutil.c:445
 msgid "failed to create directory"
 msgstr "無法建立目錄"
 
-#: build/files.c:1974
+#: build/files.c:1976
 msgid "Mixing main ELF and debug files in package"
 msgstr ""
 
-#: build/files.c:2175
+#: build/files.c:2177
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "檔案需要以「/」開頭：%s\n"
 
-#: build/files.c:2199
+#: build/files.c:2201
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr "%%dev 不允許透過 glob 解析：%s\n"
 
-#: build/files.c:2211
+#: build/files.c:2213
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2213
+#: build/files.c:2215
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr ""
 
-#: build/files.c:2248
+#: build/files.c:2250
 #, fuzzy, c-format
 msgid "Could not open %s file %s: %m\n"
 msgstr "無法開啟 %%files 檔案 %s：%m\n"
 
-#: build/files.c:2273
+#: build/files.c:2275
 #, fuzzy, c-format
 msgid "Empty %s file %s\n"
 msgstr "空的檔案分類器\n"
 
-#: build/files.c:2318
+#: build/files.c:2320
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr "不合法的 _docdir_fmt %s：%s\n"
 
-#: build/files.c:2439 lib/rpminstall.c:461
+#: build/files.c:2441 lib/rpminstall.c:461
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "透過 glob 解析找不到檔案：%s\n"
 
-#: build/files.c:2526
+#: build/files.c:2528
 #, c-format
 msgid "Special file in generated file list: %s\n"
 msgstr ""
 
-#: build/files.c:2550
+#: build/files.c:2552
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr "無法混合特殊 %s 與其他表單：%s\n"
 
-#: build/files.c:2566
+#: build/files.c:2568
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr "一列中超過一個檔案：%s\n"
 
-#: build/files.c:2635
+#: build/files.c:2637
 msgid "Generating build-id links failed\n"
 msgstr ""
 
-#: build/files.c:2752
+#: build/files.c:2754
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "不當檔案：%s：%s\n"
 
-#: build/files.c:2820
+#: build/files.c:2822
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "正在檢查未打包的檔案：%s\n"
 
-#: build/files.c:2833
+#: build/files.c:2835
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -980,27 +980,27 @@ msgstr ""
 "找到已安裝 (但未打包) 的檔案：\n"
 "%s"
 
-#: build/files.c:2889
+#: build/files.c:2891
 #, fuzzy, c-format
 msgid "package %s already exists\n"
 msgstr "套件 %s 已經安裝"
 
-#: build/files.c:2954
+#: build/files.c:2956
 #, c-format
 msgid "%s was mapped to multiple filenames"
 msgstr ""
 
-#: build/files.c:3203
+#: build/files.c:3205
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "正在處理檔案：%s\n"
 
-#: build/files.c:3225
+#: build/files.c:3227
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr "二進位架構 (%d) 無法匹配套件架構 (%d)。\n"
 
-#: build/files.c:3231
+#: build/files.c:3233
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "noarch 套件中有依賴架構的二進位檔\n"
 
@@ -2737,7 +2737,7 @@ msgstr "無效的套件編號：%s\n"
 msgid "record %u could not be read\n"
 msgstr "記錄 %u 無法讀取\n"
 
-#: lib/query.c:504 lib/rpminstall.c:701
+#: lib/query.c:504 lib/rpminstall.c:702
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "套件 %s 尚未安裝\n"
@@ -3189,42 +3189,42 @@ msgstr "相依關係失敗：\n"
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s：不是一個 rpm 套件 (或套件清單)：%s\n"
 
-#: lib/rpminstall.c:363 lib/rpminstall.c:763 tools/rpmgraph.c:111
+#: lib/rpminstall.c:363 lib/rpminstall.c:764 tools/rpmgraph.c:111
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s 無法安裝\n"
 
-#: lib/rpminstall.c:500
+#: lib/rpminstall.c:501
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "擷取 %s\n"
 
-#: lib/rpminstall.c:512
+#: lib/rpminstall.c:513
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "跳過 %s - 轉移失敗\n"
 
-#: lib/rpminstall.c:582
+#: lib/rpminstall.c:583
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "套件 %s 不能重新分配位置\n"
 
-#: lib/rpminstall.c:613
+#: lib/rpminstall.c:614
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "讀取檔案 %s 時發生錯誤\n"
 
-#: lib/rpminstall.c:708
+#: lib/rpminstall.c:709
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "「%s」指定多個套件：\n"
 
-#: lib/rpminstall.c:747
+#: lib/rpminstall.c:748
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "無法開啟 %s：%s\n"
 
-#: lib/rpminstall.c:753
+#: lib/rpminstall.c:754
 #, c-format
 msgid "Installing %s\n"
 msgstr "正在安裝 %s\n"

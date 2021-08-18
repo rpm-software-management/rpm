@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2021-06-22 13:30+0300\n"
+"POT-Creation-Date: 2021-08-18 16:20+0300\n"
 "PO-Revision-Date: 2020-09-02 13:29+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/rpm/"
@@ -727,7 +727,7 @@ msgid "Missing '(' in %s %s\n"
 msgstr "”(” saknas i %s %s\n"
 
 #: build/files.c:354 build/files.c:535 build/files.c:671 build/files.c:759
-#: build/files.c:818
+#: build/files.c:820
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "”)” saknas i %s(%s\n"
@@ -772,221 +772,221 @@ msgstr "Ovanlig lokallängd: ”%s” i %%lang(%s)\n"
 msgid "Duplicate locale %s in %%lang(%s)\n"
 msgstr "Duplicerad lokal %s i %%lang(%s)\n"
 
-#: build/files.c:833
+#: build/files.c:835
 #, c-format
 msgid "Invalid capability: %s\n"
 msgstr "Ogiltig förmåga (capability): %s\n"
 
-#: build/files.c:843
+#: build/files.c:845
 msgid "File capability support not built in\n"
 msgstr "Stöd för filförmågor (capability) är inte inbyggt\n"
 
-#: build/files.c:894
+#: build/files.c:896
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Filnamn måste börja med ”/”: %s\n"
 
-#: build/files.c:1015
+#: build/files.c:1017
 #, c-format
 msgid "unable to parse %s=%s\n"
 msgstr "kan inte tolka %s=%s\n"
 
-#: build/files.c:1032
+#: build/files.c:1034
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr "Okänd filkontrollsummealgoritm %u, faller tillbaka på MD5\n"
 
-#: build/files.c:1091
+#: build/files.c:1093
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Filen uppräknad två gånger: %s\n"
 
-#: build/files.c:1213
+#: build/files.c:1215
 #, c-format
 msgid "reading symlink %s failed: %s\n"
 msgstr "läsning av symlänk %s misslyckades: %s\n"
 
-#: build/files.c:1219
+#: build/files.c:1221
 #, c-format
 msgid "absolute symlink: %s -> %s\n"
 msgstr "absolut symbolisk länk %s → %s\n"
 
-#: build/files.c:1225
+#: build/files.c:1227
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolisk länk pekar på BuildRoot: %s → %s\n"
 
-#: build/files.c:1346
+#: build/files.c:1348
 #, c-format
 msgid "Illegal character (0x%x) in filename: %s\n"
 msgstr "Otillåtet tecken (0x%x) i filnamn: %s\n"
 
-#: build/files.c:1383
+#: build/files.c:1385
 #, c-format
 msgid "Path is outside buildroot: %s\n"
 msgstr "Sökvägen är utanför buildroot: %s\n"
 
-#: build/files.c:1427
+#: build/files.c:1429
 #, c-format
 msgid "Directory not found: %s\n"
 msgstr "Katalogen hittades inte: %s\n"
 
-#: build/files.c:1428 lib/rpminstall.c:459
+#: build/files.c:1430 lib/rpminstall.c:459
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Filen hittades inte: %s\n"
 
-#: build/files.c:1449
+#: build/files.c:1451
 #, c-format
 msgid "Not a directory: %s\n"
 msgstr "Inte en katalog: %s\n"
 
-#: build/files.c:1603
+#: build/files.c:1605
 #, c-format
 msgid "Can't read content of file: %s\n"
 msgstr "Kan inte läsa innehållet i filen: %s\n"
 
-#: build/files.c:1644
+#: build/files.c:1646
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: kan inte läsa okänd tagg (%d).\n"
 
-#: build/files.c:1650
+#: build/files.c:1652
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: läsning av publik nyckel misslyckades.\n"
 
-#: build/files.c:1654
+#: build/files.c:1656
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: inte en publik nyckel med skal.\n"
 
-#: build/files.c:1663
+#: build/files.c:1665
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s: misslyckades att koda\n"
 
-#: build/files.c:1709
+#: build/files.c:1711
 msgid "failed symlink"
 msgstr "misslyckad symlänk"
 
-#: build/files.c:1765 build/files.c:1768
+#: build/files.c:1767 build/files.c:1770
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
 msgstr "Dubblerat bygg-id, stat %s: %m\n"
 
-#: build/files.c:1775
+#: build/files.c:1777
 #, c-format
 msgid "Duplicate build-ids %s and %s\n"
 msgstr "Dubblerade bygg-id:n %s och %s\n"
 
-#: build/files.c:1829
+#: build/files.c:1831
 msgid "_build_id_links macro not set, assuming 'compat'\n"
 msgstr "makrot _build_id_links är inte satt, antar ”compat”\n"
 
-#: build/files.c:1842
+#: build/files.c:1844
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
 msgstr "makrot _build_id_links är satt till det okända värdet ”%s”\n"
 
-#: build/files.c:1931
+#: build/files.c:1933
 #, c-format
 msgid "error reading build-id in %s: %s\n"
 msgstr "fel när bygg-id lästes i %s: %s\n"
 
-#: build/files.c:1935
+#: build/files.c:1937
 #, c-format
 msgid "Missing build-id in %s\n"
 msgstr "Bygg-id saknas i %s\n"
 
-#: build/files.c:1940
+#: build/files.c:1942
 #, c-format
 msgid "build-id found in %s too small\n"
 msgstr "Bygg-id hittat i %s är för litet\n"
 
-#: build/files.c:1941
+#: build/files.c:1943
 #, c-format
 msgid "build-id found in %s too large\n"
 msgstr "Bygg-id hittat i %s är för stort\n"
 
-#: build/files.c:1956 rpmio/rpmfileutil.c:445
+#: build/files.c:1958 rpmio/rpmfileutil.c:445
 msgid "failed to create directory"
 msgstr "misslyckades att skapa katalog"
 
-#: build/files.c:1974
+#: build/files.c:1976
 msgid "Mixing main ELF and debug files in package"
 msgstr "Blandning av huvud-ELF och felsökningsfiler i paketet"
 
-#: build/files.c:2175
+#: build/files.c:2177
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Filen behöver inledande ”/”: %s\n"
 
-#: build/files.c:2199
+#: build/files.c:2201
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr "%%dev-matchning inte tillåten: %s\n"
 
-#: build/files.c:2211
+#: build/files.c:2213
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
 msgstr "Hittade ingen katalog vid matchningen: %s. Försöker utan att matcha.\n"
 
-#: build/files.c:2213
+#: build/files.c:2215
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
 msgstr "Hittade ingen fil vid matchningen: %s. Försöker utan att matcha.\n"
 
-#: build/files.c:2248
+#: build/files.c:2250
 #, c-format
 msgid "Could not open %s file %s: %m\n"
 msgstr "Kunde inte öppna %s-filen %s: %m\n"
 
-#: build/files.c:2273
+#: build/files.c:2275
 #, c-format
 msgid "Empty %s file %s\n"
 msgstr "Tom %s-fil %s\n"
 
-#: build/files.c:2318
+#: build/files.c:2320
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr "ogiltigt _docdir_fmt: %s: %s\n"
 
-#: build/files.c:2439 lib/rpminstall.c:461
+#: build/files.c:2441 lib/rpminstall.c:461
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Hittade ingen fil vid matchningen: %s\n"
 
-#: build/files.c:2526
+#: build/files.c:2528
 #, c-format
 msgid "Special file in generated file list: %s\n"
 msgstr "Specialfil i genererad fillista: %s\n"
 
-#: build/files.c:2550
+#: build/files.c:2552
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr "Kan inte blanda special %s med andra former: %s\n"
 
-#: build/files.c:2566
+#: build/files.c:2568
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr "Mer än en fil på en rad: %s\n"
 
-#: build/files.c:2635
+#: build/files.c:2637
 msgid "Generating build-id links failed\n"
 msgstr "Att generera bygg-id-länkar misslyckades\n"
 
-#: build/files.c:2752
+#: build/files.c:2754
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Felaktig fil: %s: %s\n"
 
-#: build/files.c:2820
+#: build/files.c:2822
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Letar efter opackade fil(er): %s\n"
 
-#: build/files.c:2833
+#: build/files.c:2835
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -995,27 +995,27 @@ msgstr ""
 "Installerade (men opaketerade) filer funna:\n"
 "%s"
 
-#: build/files.c:2889
+#: build/files.c:2891
 #, c-format
 msgid "package %s already exists\n"
 msgstr "peketet %s finns redan\n"
 
-#: build/files.c:2954
+#: build/files.c:2956
 #, c-format
 msgid "%s was mapped to multiple filenames"
 msgstr "%s mappades till flera filnamn"
 
-#: build/files.c:3203
+#: build/files.c:3205
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Bearbetar filer: %s\n"
 
-#: build/files.c:3225
+#: build/files.c:3227
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr "Binärers arkitektur (%d) matchar inte paketarkitekturen (%d).\n"
 
-#: build/files.c:3231
+#: build/files.c:3233
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Arkitekturberoende binärfiler i noarch-paket\n"
 
@@ -2756,7 +2756,7 @@ msgstr "felaktigt paketnummer: %s\n"
 msgid "record %u could not be read\n"
 msgstr "post %u kunde inte läsas\n"
 
-#: lib/query.c:504 lib/rpminstall.c:701
+#: lib/query.c:504 lib/rpminstall.c:702
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
@@ -3206,42 +3206,42 @@ msgstr "Ouppfyllda beroenden:\n"
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: inte ett rpm-paket (eller paketspecifikation): %s\n"
 
-#: lib/rpminstall.c:363 lib/rpminstall.c:763 tools/rpmgraph.c:111
+#: lib/rpminstall.c:363 lib/rpminstall.c:764 tools/rpmgraph.c:111
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kan inte installeras\n"
 
-#: lib/rpminstall.c:500
+#: lib/rpminstall.c:501
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Hämtar %s\n"
 
-#: lib/rpminstall.c:512
+#: lib/rpminstall.c:513
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "hoppar över %s - överföring misslyckades\n"
 
-#: lib/rpminstall.c:582
+#: lib/rpminstall.c:583
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "paket %s är inte relokerbart\n"
 
-#: lib/rpminstall.c:613
+#: lib/rpminstall.c:614
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "fel vid läsning från fil %s\n"
 
-#: lib/rpminstall.c:708
+#: lib/rpminstall.c:709
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "”%s” anger flera paket:\n"
 
-#: lib/rpminstall.c:747
+#: lib/rpminstall.c:748
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kan inte öppna %s: %s\n"
 
-#: lib/rpminstall.c:753
+#: lib/rpminstall.c:754
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installerar %s\n"
