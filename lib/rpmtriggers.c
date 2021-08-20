@@ -517,7 +517,8 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
 	if (matchFunc(ts, te, pfx, sense)) {
 	    for (i = 0; i < rpmdbIndexIteratorNumPkgs(ii); i++) {
 		struct rpmtd_s priorities;
-		unsigned int priority;
+		unsigned int priority = 0;
+		unsigned int *priority_ptr;
 		unsigned int offset = rpmdbIndexIteratorPkgOffset(ii, i);
 		unsigned int tix = rpmdbIndexIteratorTagNum(ii, i);
 
@@ -535,7 +536,9 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
 		trigH = rpmdbGetHeaderAt(rpmtsGetRdb(ts), offset);
 		headerGet(trigH, priorityTag, &priorities, HEADERGET_MINMEM);
 		rpmtdSetIndex(&priorities, tix);
-		priority = *rpmtdGetUint32(&priorities);
+		priority_ptr = rpmtdGetUint32(&priorities);
+		if (priority_ptr)
+		    priority = *priority_ptr;
 		headerFree(trigH);
 
 		/* Store file trigger in array */
