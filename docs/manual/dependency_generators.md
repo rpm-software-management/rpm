@@ -17,6 +17,7 @@ A file attribute is represented by a macro file in `%{_fileattrsdir}` (typically
 %__NAME_conflicts
 %__NAME_enhances
 %__NAME_obsoletes
+%__NAME_orderwithrequires
 %__NAME_provides
 %__NAME_requires
 %__NAME_recommends
@@ -50,6 +51,7 @@ This way the generator can be implemented in whatever language is preferred and 
 %__NAME_conflicts
 %__NAME_enhances
 %__NAME_obsoletes
+%__NAME_orderwithrequires
 %__NAME_provides
 %__NAME_requires
 %__NAME_recommends
@@ -57,12 +59,15 @@ This way the generator can be implemented in whatever language is preferred and 
 %__NAME_supplements
 ```
 
+Note that generating `OrderWithRequires` will appear only in rpm >= 4.17.
+
 The value is the command line of the generator script/executable and any arguments that should be passed to it. In addition to what's defined in the provides/requires macros, it's possible to pass additional arbitrary switches to generators by defining the following macros:
 
 ```
 %__NAME_conflicts_opts
 %__NAME_enhances_opts
 %__NAME_obsoletes_opts
+%__NAME_orderwithrequires_opts
 %__NAME_provides_opts
 %__NAME_requires_opts
 %__NAME_recommends_opts
