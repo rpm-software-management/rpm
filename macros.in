@@ -1058,6 +1058,32 @@ package or when debugging this package.\
 %sources %{lua: for i, s in ipairs(sources) do print(s.." ") end}
 
 #------------------------------------------------------------------------------
+# Convenient string manipulation macros:
+#
+# gsub takes 3 arguments: a subject string, a pattern, and a replacement string
+# If arguments are omitted, empty strings are assumed, as passing empty string is hard.
+# Its basic use is to substitute the replacement string for all occurrences of
+# the pattern inside the subject string.
+# An optional fourth parameter limits the number of substitutions to be made.
+# Lua pattern matching is used (in fact, the arguments are expanded and passed
+# directly to the Lua's string.gsub function, returning the first return value).
+# Examples:
+#  %%{gsub 3.1~~dev1 ~} -> 3.1dev1
+#  %%{gsub 2.3^post5 ^ -} -> 2.3-post5
+#  %%{gsub foo_bar [^%%%%w]+ -} -> foo-bar
+#  %%{gsub aaa a b 2} -> bba
+#  %%{gsub dummy} -> dummy
+#  %%{gsub} -> (empty string)
+%gsub() %{lua:\
+local subject = rpm.expand("%{?1}")\
+local pattern = rpm.expand("%{?2}")\
+local replacement = rpm.expand("%{?3}")\
+local limit = rpm.expand("%{?4}")\
+print((subject:gsub(pattern, replacement, limit ~= "" and limit or nil)))\
+}
+
+
+#------------------------------------------------------------------------------
 # arch macro for all Intel i?86 compatible processors
 #  (Note: This macro (and it's analogues) will probably be obsoleted when
 #   rpm can use regular expressions against target platforms in macro
