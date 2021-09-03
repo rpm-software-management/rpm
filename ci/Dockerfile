@@ -1,4 +1,4 @@
-FROM registry.fedoraproject.org/fedora:32
+FROM registry.fedoraproject.org/fedora:34
 MAINTAINER rpm-maint@lists.rpm.org
 
 WORKDIR /srv/rpm
@@ -13,6 +13,7 @@ RUN dnf -y install \
   automake \
   libtool \
   gettext-devel \
+  debugedit \
   doxygen \
   make \
   gcc \
@@ -58,7 +59,6 @@ RUN ./configure \
   --with-acl \
   --with-audit \
   --with-fsverity \
-  --enable-bdb \
   --enable-ndb \
   --enable-bdb-ro \
   --enable-sqlite \
