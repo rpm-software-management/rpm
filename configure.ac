@@ -248,14 +248,22 @@ AC_SEARCH_LIBS(dlopen, [dl])
 
 #=================
 # Check for libelf library. Prefer external, otherwise none.
-WITH_LIBELF_LIB=
-AC_CHECK_HEADER([libelf.h])
-AC_CHECK_HEADERS([gelf.h], [
-	AC_CHECK_LIB(elf, gelf_getvernaux, [
-	    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the 'elf' library (-lelf).])
-	    WITH_LIBELF_LIB="-lelf"
-	    WITH_LIBELF=yes
-	])
+AC_ARG_ENABLE([libelf],
+		[AS_HELP_STRING([--enable-libelf=@<:@yes/no/auto@:>@],
+				[build with libelf support (default=yes)])],
+		[enable_libelf="$enableval"],
+		[enable_libelf=yes])
+
+AS_IF([test "x$enable_libelf" != "xno"], [
+  WITH_LIBELF_LIB=
+  AC_CHECK_HEADER([libelf.h])
+  AC_CHECK_HEADERS([gelf.h], [
+    AC_CHECK_LIB(elf, gelf_getvernaux, [
+    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the 'elf' library (-lelf).])
+    WITH_LIBELF_LIB="-lelf"
+    WITH_LIBELF=yes
+    ])
+  ])
 ])
 AC_SUBST(WITH_LIBELF_LIB)
 AM_CONDITIONAL(LIBELF,[test "$WITH_LIBELF" = yes])
@@ -439,18 +447,20 @@ AM_CONDITIONAL(WITH_ARCHIVE,[test "$with_archive" = yes])
 
 #=================
 # Check for elfutils libdw library with dwelf_elf_gnu_build_id.
-WITH_LIBDW_LIB=
-AS_IF([test "$WITH_LIBELF" = yes],[
-  AC_CHECK_HEADERS([elfutils/libdwelf.h],[
-    # dwelf_elf_gnu_build_id was introduced in elfutils 0.159
-    AC_CHECK_LIB(dw, dwelf_elf_gnu_build_id, [
-      AC_DEFINE(HAVE_LIBDW, 1,
-                [Define to 1 if you have elfutils libdw library])
-      WITH_LIBDW_LIB="-ldw"
-      WITH_LIBDW=yes
-      # whether libdw supports compressed ELF objects
-      AC_CHECK_LIB(dw, dwelf_elf_begin, [
-                   AC_DEFINE(HAVE_DWELF_ELF_BEGIN, 1, [Have dwelf_elf_begin?])
+AS_IF([test "x$enable_libelf" != "xno"], [
+  WITH_LIBDW_LIB=
+  AS_IF([test "$WITH_LIBELF" = yes],[
+    AC_CHECK_HEADERS([elfutils/libdwelf.h],[
+      # dwelf_elf_gnu_build_id was introduced in elfutils 0.159
+      AC_CHECK_LIB(dw, dwelf_elf_gnu_build_id, [
+        AC_DEFINE(HAVE_LIBDW, 1,
+                  [Define to 1 if you have elfutils libdw library])
+        WITH_LIBDW_LIB="-ldw"
+        WITH_LIBDW=yes
+        # whether libdw supports compressed ELF objects
+        AC_CHECK_LIB(dw, dwelf_elf_begin, [
+                     AC_DEFINE(HAVE_DWELF_ELF_BEGIN, 1, [Have dwelf_elf_begin?])
+        ])
       ])
     ])
   ])
