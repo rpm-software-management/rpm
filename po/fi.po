@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2021-08-15 19:52+0000\n"
+"PO-Revision-Date: 2021-08-19 07:04+0000\n"
 "Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/rpm/"
 "master/fi/>\n"
@@ -1763,10 +1763,10 @@ msgstr "poista käyttäjän nimitilan tuki käytöstä"
 
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
-msgstr ""
+msgstr "%s: vaihtoehtotaulukko on väärin määritetty (%d)\n"
 
 msgid "exclude paths must begin with a /"
-msgstr ""
+msgstr "poissulkemispolut on aloitettava merkillä /"
 
 msgid "relocations must begin with a /"
 msgstr "siirtojen pitää alkaa /-merkillä"
@@ -1789,16 +1789,16 @@ msgstr ""
 "<paketti> määrittää useita paketteja, tulee virhe)"
 
 msgid "relocate files in non-relocatable package"
-msgstr ""
+msgstr "siirrä tiedostoja ei-siirrettävässä paketissa"
 
 msgid "print dependency loops as warning"
-msgstr ""
+msgstr "tulosta riippuvuussilmukat varoituksena"
 
 msgid "erase (uninstall) package"
 msgstr "poista paketti"
 
 msgid "<package>+"
-msgstr ""
+msgstr "<paketti>+"
 
 msgid "do not install artifacts"
 msgstr "älä asenna esineitä"
@@ -1965,10 +1965,10 @@ msgid "query/verify a package file"
 msgstr "kysele/tarkista pakettitiedostoa"
 
 msgid "query/verify package(s) with package identifier"
-msgstr ""
+msgstr "kysy/tarkista paketit pakettitunnisteella"
 
 msgid "query/verify package(s) with header identifier"
-msgstr ""
+msgstr "kysy/tarkista paketit otsaketunnisteella"
 
 msgid "rpm query mode"
 msgstr "rpm kyselytila"
