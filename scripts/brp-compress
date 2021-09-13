@@ -21,40 +21,40 @@ for d in .${PREFIX}/man/man* .${PREFIX}/man/*/man* .${PREFIX}/info \
 	.${PREFIX}/share/fish/man/man*
 do
     [ -d $d ] || continue
-    for f in `find $d -type f ! -name dir`
-    do
+	find $d -type f ! -name dir -print0 |
+    while IFS= read -r -d '' f; do
         [ -f "$f" ] || continue
 
 	case "$f" in
-	 *.gz|*.Z)    gunzip  -f $f; b=`echo $f | sed -e 's/\.\(gz\|Z\)$//'`;;
-	 *.bz2)       bunzip2 -f $f; b=`echo $f | sed -e 's/\.bz2$//'`;;
-	 *.xz|*.lzma) unxz    -f $f; b=`echo $f | sed -e 's/\.\(xz\|lzma\)$//'`;;
-	 *.zst|*.zstd) unzstd -f --rm $f; b=`echo $f | sed -e 's/\.\(zst\|zstd\)$//'`;;
-	 *) b=$f;;
+	 *.gz|*.Z)    gunzip  -f "$f"; b=`echo "$f" | sed -e 's/\.\(gz\|Z\)$//'`;;
+	 *.bz2)       bunzip2 -f "$f"; b=`echo "$f" | sed -e 's/\.bz2$//'`;;
+	 *.xz|*.lzma) unxz    -f "$f"; b=`echo "$f" | sed -e 's/\.\(xz\|lzma\)$//'`;;
+	 *.zst|*.zstd) unzstd -f --rm $f; b=`echo "$f" | sed -e 's/\.\(zst\|zstd\)$//'`;;
+	 *) b="$f";;
 	esac
 
-	$COMPRESS $b </dev/null 2>/dev/null || {
-	    inode=`ls -i $b | awk '{ print $1 }'`
-	    others=`find $d -type f -inum $inode`
+	$COMPRESS "$b" </dev/null 2>/dev/null || {
+	    inode=`ls -i "$b" | awk '{ print $1 }'`
+	    others="`find $d -type f -inum $inode`"
 	    if [ -n "$others" ]; then
 		for afile in $others ; do
 		    [ "$afile" != "$b" ] && rm -f $afile
 		done
-		$COMPRESS -f $b
+		$COMPRESS -f "$b"
 		for afile in $others ; do
-		    [ "$afile" != "$b" ] && ln $b$COMPRESS_EXT $afile$COMPRESS_EXT
+		    [ "$afile" != "$b" ] && ln "$b$COMPRESS_EXT" "$afile$COMPRESS_EXT"
 		done
 	    else
-		$COMPRESS -f $b
+		$COMPRESS -f "$b"
 	    fi
 	}
     done
 
-    for f in `find $d -type l`
+    for f in "`find $d -type l`"
     do
 	l=`ls -l $f | sed -e 's/.* -> //' -e 's/\.\(gz\|Z\|bz2\|xz\|lzma\|zst\|zstd\)$//'`
 	rm -f $f
 	b=`echo $f | sed -e 's/\.\(gz\|Z\|bz2\|xz\|lzma\|zst\|zstd\)$//'`
-	ln -sf $l$COMPRESS_EXT $b$COMPRESS_EXT
+	ln -sf "$l$COMPRESS_EXT" "$b$COMPRESS_EXT"
     done
 done
