@@ -6,6 +6,7 @@ fi
 
 STRIP=${1:-strip}
 OBJDUMP=${2:-objdump}
+NCPUS=${RPM_BUILD_NCPUS:-1}
 
 case `uname -a` in
 Darwin*) exit 0 ;;
@@ -14,9 +15,7 @@ esac
 
 # Strip .comment and .note sections (the latter only if it is not allocated)
 # for already stripped elf files in the build root
-for f in `find "$RPM_BUILD_ROOT" -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 \) -exec file {} \; | \
-        grep -v "^${RPM_BUILD_ROOT}/\?usr/lib/debug"  | \
-	sed -n -e 's/^\(.*\):[ 	]*ELF.*, stripped.*/\1/p'`; do
+for f in `find "$RPM_BUILD_ROOT" -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 \) -print0 | xargs -0 -r -P$NCPUS -n32 sh -c "file \"\\$@\" | grep -v \"^${RPM_BUILD_ROOT}/\?usr/lib/debug\" | sed -n -e 's/^\(.*\):[ 	]*ELF.*, stripped.*/\1/p'" ARG0`; do
 	note="-R .note"
 	if $OBJDUMP -h $f | grep '^[ 	]*[0-9]*[ 	]*.note[ 	]' -A 1 | \
 		grep ALLOC >/dev/null; then
