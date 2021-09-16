@@ -43,6 +43,7 @@ EXTRA_DIST += data/SPECS/buildrequires.spec
 EXTRA_DIST += data/SPECS/docmiss.spec
 EXTRA_DIST += data/SPECS/hello.spec
 EXTRA_DIST += data/SPECS/hello-auto.spec
+EXTRA_DIST += data/SPECS/hello-autopatch.spec
 EXTRA_DIST += data/SPECS/hello-r2.spec
 EXTRA_DIST += data/SPECS/hello-script.spec
 EXTRA_DIST += data/SPECS/hello2.spec
