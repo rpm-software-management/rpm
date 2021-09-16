@@ -1252,7 +1252,7 @@ for i, p in ipairs(patches) do
     bynum[patch_nums[i]] = p
 end
 for i, a in ipairs(arg) do
-    local p = bynum[a]
+    local p = bynum[tonumber(a)]
     if p then
         print(rpm.expand("%__apply_patch -m %{basename:"..p.."}  "..options..p.." "..i.."\\n"))
     else
