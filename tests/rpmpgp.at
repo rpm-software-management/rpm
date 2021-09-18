@@ -1,0 +1,11 @@
+# rpmpgp.at: rpm OpenPGP parsing test
+
+AT_BANNER([RPM OpenPGP parsing])
+
+# Test OpenPGP parsing
+AT_SETUP([[Running tests for malformed OpenPGP packages]])
+AT_KEYWORDS([[rpmkeys digest OpenPGP]])
+AT_CHECK([[
+../../rpmpgpcheck
+]],0,)
+AT_CLEANUP
