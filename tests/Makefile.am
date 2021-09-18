@@ -35,6 +35,7 @@ TESTSUITE_AT += rpmspec.at
 TESTSUITE_AT += rpmio.at
 TESTSUITE_AT += rpmorder.at
 TESTSUITE_AT += rpmvfylevel.at
+TESTSUITE_AT += rpmpgp.at
 EXTRA_DIST += $(TESTSUITE_AT)
 
 ## testsuite data
