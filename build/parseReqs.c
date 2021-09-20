@@ -57,7 +57,7 @@ static rpmRC checkDep(rpmSpec spec, char *N, char *EVR, char **emsg)
             rasprintf(emsg, _("Versioned file name not permitted"));
             return RPMRC_FAIL;
         }
-        if (rpmCharCheck(spec, EVR, ALLOWED_CHARS_EVR))
+        if (rpmCharCheck(spec, EVR, ALLOWED_CHARS_EVR, NULL))
             return RPMRC_FAIL;
 	if (checkSep(EVR, '-', emsg) != RPMRC_OK ||
 	    checkSep(EVR, ':', emsg) != RPMRC_OK ||
@@ -278,7 +278,8 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	    goto exit;
 
 	if (nametag == RPMTAG_OBSOLETENAME) {
-	    if (rpmCharCheck(spec, N, ALLOWED_CHARS_NAME)) {
+	    if (rpmCharCheck(spec, N,
+			     ALLOWED_CHARS_NAME, ALLOWED_FIRSTCHARS_NAME)) {
 		rasprintf(&emsg, _("Only package names are allowed in "
 				   "Obsoletes"));
 		goto exit;
