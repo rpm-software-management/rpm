@@ -643,17 +643,27 @@ static void specLog(rpmSpec spec, int lvl, const char *line, const char *msg)
  * @param allowedchars	string of permitted characters
  * @return		RPMRC_OK if OK
  */
-rpmRC rpmCharCheck(rpmSpec spec, const char *field, const char *allowedchars)
+rpmRC rpmCharCheck(rpmSpec spec, const char *field,
+		   const char *allowedchars,
+		   const char *allowedfirstchars)
 {
     const char *ch;
     char *err = NULL;
     rpmRC rc = RPMRC_OK;
 
+    if (allowedfirstchars && !(risalnum(*field) ||
+			       strchr(allowedfirstchars, *field))) {
+	rasprintf(&err, _("Illegal char '%c' (0x%x)"),
+		  isprint(*field) ? *field : '?', *field);
+    }
+
     for (ch=field; *ch; ch++) {
+	if (ch==field && allowedfirstchars) continue;
 	if (risalnum(*ch) || strchr(allowedchars, *ch)) continue;
 	rasprintf(&err, _("Illegal char '%c' (0x%x)"),
 		  isprint(*ch) ? *ch : '?', *ch);
     }
+
     for (ch=field; *ch; ch++) {
 	if (strchr("%{}", *ch)) {
 	    specLog(spec, RPMLOG_WARNING, field,
@@ -775,7 +785,8 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     switch (tag) {
     case RPMTAG_NAME:
 	SINGLE_TOKEN_ONLY;
-	if (rpmCharCheck(spec, field, ALLOWED_CHARS_NAME))
+	if (rpmCharCheck(spec, field,
+			 ALLOWED_CHARS_NAME, ALLOWED_FIRSTCHARS_NAME))
 	   goto exit;
 	headerPutString(pkg->header, tag, field);
 	/* Main pkg name is unknown at the start, populate as soon as we can */
@@ -785,7 +796,7 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     case RPMTAG_VERSION:
     case RPMTAG_RELEASE:
 	SINGLE_TOKEN_ONLY;
-	if (rpmCharCheck(spec, field, ALLOWED_CHARS_VERREL))
+	if (rpmCharCheck(spec, field, ALLOWED_CHARS_VERREL, NULL))
 	   goto exit;
 	headerPutString(pkg->header, tag, field);
 	break;
@@ -1111,7 +1122,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	    goto exit;
 	}
 
-	if (rpmCharCheck(spec, name, ALLOWED_CHARS_NAME))
+	if (rpmCharCheck(spec, name, ALLOWED_CHARS_NAME, flag == PART_SUBNAME ? NULL : ALLOWED_FIRSTCHARS_NAME))
 	    goto exit;
 	
 	if (!lookupPackage(spec, name, flag, NULL))

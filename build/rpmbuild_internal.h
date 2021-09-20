@@ -19,6 +19,7 @@
 #undef HTDATATYPE
 
 #define ALLOWED_CHARS_NAME ".-_+%{}"
+#define ALLOWED_FIRSTCHARS_NAME "_%"
 #define ALLOWED_CHARS_VERREL "._+%{}~^"
 #define ALLOWED_CHARS_EVR ALLOWED_CHARS_VERREL "-:"
 #define LEN_AND_STR(_tag) (sizeof(_tag)-1), (_tag)
@@ -382,7 +383,9 @@ int parseList(rpmSpec spec, const char *name, int stype);
  * @return              RPMRC_OK if OK
  */
 RPM_GNUC_INTERNAL
-rpmRC rpmCharCheck(rpmSpec spec, const char *field, const char *allowedchars);
+rpmRC rpmCharCheck(rpmSpec spec, const char *field,
+		   const char *allowedchars,
+		   const char *allowedcharsfirst);
 
 typedef rpmRC (*addReqProvFunction) (void *cbdata, rpmTagVal tagN,
 				     const char * N, const char * EVR, rpmsenseFlags Flags,
