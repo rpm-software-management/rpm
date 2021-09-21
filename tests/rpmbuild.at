@@ -2113,3 +2113,22 @@ foo
 ],
 [])
 AT_CLEANUP
+
+# ------------------------------
+# Check %sources and %patches with weird file names
+AT_SETUP([%sources and %patches])
+AT_KEYWORDS([build])
+RPMDB_INIT
+AT_CHECK([
+
+runroot rpmbuild \
+  -bp /data/SPECS/hello-sources.spec | grep -v Executing
+],
+[0],
+[/build/SOURCES/hello-1.0 %tar.gz
+/build/SOURCES/hello-addon ! tar\.gz
+/build/SOURCES/hello-1.0-m<o>dernize&renew.patch
+/build/SOURCES/hello-1.0-inst(a);;.patch
+],
+[ignore])
+AT_CLEANUP
