@@ -863,6 +863,18 @@ runroot rpm \
 ])
 AT_CLEANUP
 
+AT_SETUP([%shescape macro])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm \
+	--eval "%{shescape:foo's}"
+],
+[0],
+['foo'\''s'
+],
+[])
+AT_CLEANUP
+
 AT_SETUP([macro with a line starting by "{"])
 AT_KEYWORDS([macros])
 AT_CHECK([

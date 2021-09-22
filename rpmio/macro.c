@@ -1145,6 +1145,29 @@ static size_t doVerbose(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
     return 0;
 }
 
+static size_t doShescape(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
+{
+    char *result, *dst;
+    const char *src = argv[1];
+
+    result = dst = xmalloc(strlen(src) * 4 + 3);
+    *dst++ = '\'';
+    for (; *src != '\0'; src++) {
+	if (*src == '\'') {
+	    *dst++ = '\'';
+	    *dst++ = '\\';
+	    *dst++ = '\'';
+	    *dst++ = '\'';
+	} else {
+	    *dst++ = *src;
+	}
+    }
+    *dst++ = '\'';
+    *dst = '\0';
+    mbAppendStr(mb, result);
+    return 0;
+}
+
 static size_t
 doFoo(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
@@ -1279,6 +1302,7 @@ static struct builtins_s {
     { "suffix",		doFoo,		1,	ME_FUNC },
     { "trace",		doTrace,	0,	ME_FUNC },
     { "u2p",		doFoo,		1,	ME_FUNC },
+    { "shescape",	doShescape,	1,	ME_FUNC },
     { "uncompress",	doUncompress,	1,	ME_FUNC },
     { "undefine",	doUndefine,	1,	ME_FUNC },
     { "url2path",	doFoo,		1,	ME_FUNC },
