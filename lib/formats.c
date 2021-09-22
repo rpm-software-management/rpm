@@ -125,28 +125,13 @@ static char * dayFormat(rpmtd td, char **emsg)
 /* shell escape formatting */
 static char * shescapeFormat(rpmtd td, char **emsg)
 {
-    char * result = NULL, * dst, * src;
+    char *result = NULL;
 
     if (rpmtdClass(td) == RPM_NUMERIC_CLASS) {
 	rasprintf(&result, "%" PRIu64, rpmtdGetNumber(td));
     } else if (rpmtdClass(td) == RPM_STRING_CLASS) {
-	char *buf = xstrdup(rpmtdGetString(td));;
-
-	result = dst = xmalloc(strlen(buf) * 4 + 3);
-	*dst++ = '\'';
-	for (src = buf; *src != '\0'; src++) {
-	    if (*src == '\'') {
-		*dst++ = '\'';
-		*dst++ = '\\';
-		*dst++ = '\'';
-		*dst++ = '\'';
-	    } else {
-		*dst++ = *src;
-	    }
-	}
-	*dst++ = '\'';
-	*dst = '\0';
-	free(buf);
+	const char *args[] = { rpmtdGetString(td), NULL };
+	rpmExpandThisMacro(NULL, "shescape", (ARGV_const_t)args, &result, 0);
     } else {
 	*emsg = xstrdup(_("(invalid type)"));
     }
