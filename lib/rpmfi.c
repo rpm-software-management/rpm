@@ -735,7 +735,7 @@ uint32_t rpmfilesFLinks(rpmfiles fi, int ix, const int ** files)
 
 uint32_t rpmfiFLinks(rpmfi fi, const int ** files)
 {
-    return rpmfilesFLinks(fi->files, fi ? fi->i : -1, files);
+    return rpmfilesFLinks(fi ? fi->files : NULL, fi ? fi->i : -1, files);
 }
 
 uint32_t rpmfilesFNlink(rpmfiles fi, int ix)
@@ -1948,22 +1948,22 @@ const char * rpmfiOFN(rpmfi fi)
 
 const unsigned char * rpmfiFDigest(rpmfi fi, int *algo, size_t *len)
 {
-    return rpmfilesFDigest(fi->files, fi ? fi->i : -1, algo, len);
+    return rpmfilesFDigest(fi ? fi->files : NULL, fi ? fi->i : -1, algo, len);
 }
 
 const unsigned char * rpmfiFSignature(rpmfi fi, size_t *len)
 {
-    return rpmfilesFSignature(fi->files, fi ? fi->i : -1, len);
+    return rpmfilesFSignature(fi ? fi->files : NULL, fi ? fi->i : -1, len);
 }
 
 const unsigned char * rpmfiVSignature(rpmfi fi, size_t *len, uint16_t *algo)
 {
-    return rpmfilesVSignature(fi->files, fi ? fi->i : -1, len, algo);
+    return rpmfilesVSignature(fi ? fi->files : NULL, fi ? fi->i : -1, len, algo);
 }
 
 uint32_t rpmfiFDepends(rpmfi fi, const uint32_t ** fddictp)
 {
-    return rpmfilesFDepends(fi->files,  fi ? fi->i : -1, fddictp);
+    return rpmfilesFDepends(fi ? fi->files : NULL,  fi ? fi->i : -1, fddictp);
 }
 
 int rpmfiStat(rpmfi fi, int flags, struct stat *sb)
@@ -1983,7 +1983,8 @@ int rpmfiStat(rpmfi fi, int flags, struct stat *sb)
 
 int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
 {
-    return rpmfilesCompare(afi->files, afi ? afi->i : -1, bfi->files, bfi ? bfi->i : -1);
+    return rpmfilesCompare(afi ? afi->files : NULL, afi ? afi->i : -1,
+			   bfi ? bfi->files : NULL, bfi ? bfi->i : -1);
 }
 
 rpmVerifyAttrs rpmfiVerify(rpmfi fi, rpmVerifyAttrs omitMask)
