@@ -98,6 +98,7 @@ to perform useful operations. The current list is
 	%{lua:...}	expand using the [embedded Lua interpreter](lua.md)
 	%{expand:...}	like eval, expand ... to <body> and (re-)expand <body>
 	%{expr:...}	evaluate an expression
+	%{shescape:...}	single quote with escapes for use in shell
 	%{shrink:...}	trim leading and trailing whitespace, reduce
 			intermediate whitespace to a single space
 	%{quote:...}	quote a parametric macro argument, needed to pass
