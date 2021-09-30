@@ -1055,6 +1055,13 @@ unsigned int pgpDigParamsAlgo(pgpDigParams digp, unsigned int algotype)
     return algo;
 }
 
+static pgpDigParams pgpDigParamsNew(uint8_t tag)
+{
+    pgpDigParams digp = xcalloc(1, sizeof(*digp));
+    digp->tag = tag;
+    return digp;
+}
+
 int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
 		 pgpDigParams * ret)
 {
@@ -1072,8 +1079,7 @@ int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
 	    if (pkttype && pkt.tag != pkttype) {
 		break;
 	    } else {
-		digp = xcalloc(1, sizeof(*digp));
-		digp->tag = pkt.tag;
+		digp = pgpDigParamsNew(pkt.tag);
 	    }
 	}
 
@@ -1121,8 +1127,7 @@ int pgpPrtParamsSubkeys(const uint8_t *pkts, size_t pktlen,
 		digps = xrealloc(digps, alloced * sizeof(*digps));
 	    }
 
-	    digps[count] = xcalloc(1, sizeof(**digps));
-	    digps[count]->tag = PGPTAG_PUBLIC_SUBKEY;
+	    digps[count] = pgpDigParamsNew(PGPTAG_PUBLIC_SUBKEY);
 	    /* Copy UID from main key to subkey */
 	    digps[count]->userid = xstrdup(mainkey->userid);
 
