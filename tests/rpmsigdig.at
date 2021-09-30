@@ -240,6 +240,42 @@ gpg(185e6146f00650f8) = 4:185e6146f00650f8-58e63918
 [])
 AT_CLEANUP
 
+AT_SETUP([rpmkeys --import invalid keys])
+AT_KEYWORDS([rpmkeys import])
+RPMDB_INIT
+
+AT_CHECK([
+runroot rpmkeys --import /data/keys/CVE-2021-3521-badbind.asc
+],
+[1],
+[],
+[error: /data/keys/CVE-2021-3521-badbind.asc: key 1 import failed.]
+)
+AT_CHECK([
+runroot rpmkeys --import /data/keys/CVE-2021-3521-baduser.asc
+],
+[1],
+[],
+[error: /data/keys/CVE-2021-3521-baduser.asc: key 1 import failed.]
+)
+
+AT_CHECK([
+runroot rpmkeys --import /data/keys/CVE-2021-3521-nosubsig.asc
+],
+[1],
+[],
+[error: /data/keys/CVE-2021-3521-nosubsig.asc: key 1 import failed.]
+)
+
+AT_CHECK([
+runroot rpmkeys --import /data/keys/CVE-2021-3521-nosubsig-last.asc
+],
+[1],
+[],
+[error: /data/keys/CVE-2021-3521-nosubsig-last.asc: key 1 import failed.]
+)
+AT_CLEANUP
+
 # ------------------------------
 # Test pre-built package verification
 AT_SETUP([rpmkeys -K <signed> 1])
