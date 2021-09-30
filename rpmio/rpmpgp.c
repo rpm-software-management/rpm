@@ -543,7 +543,7 @@ pgpDigAlg pgpDigAlgFree(pgpDigAlg alg)
     return NULL;
 }
 
-static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
+static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo,
 		const uint8_t *p, const uint8_t *h, size_t hlen,
 		pgpDigParams sigp)
 {
@@ -556,10 +556,8 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
 	int mpil = pgpMpiLen(p);
 	if (pend - p < mpil)
 	    break;
-	if (sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT) {
-	    if (sigalg->setmpi(sigalg, i, p))
-		break;
-	}
+	if (sigalg->setmpi(sigalg, i, p))
+	    break;
 	p += mpil;
     }
 
@@ -619,7 +617,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	}
 
 	p = ((uint8_t *)v) + sizeof(*v);
-	rc = pgpPrtSigParams(tag, v->pubkey_algo, v->sigtype, p, h, hlen, _digp);
+	rc = pgpPrtSigParams(tag, v->pubkey_algo, p, h, hlen, _digp);
     }	break;
     case 4:
     {   pgpPktSigV4 v = (pgpPktSigV4)h;
@@ -678,7 +676,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	if (p > hend)
 	    return 1;
 
-	rc = pgpPrtSigParams(tag, v->pubkey_algo, v->sigtype, p, h, hlen, _digp);
+	rc = pgpPrtSigParams(tag, v->pubkey_algo, p, h, hlen, _digp);
     }	break;
     default:
 	rpmlog(RPMLOG_WARNING, _("Unsupported version of signature: V%d\n"), version);
