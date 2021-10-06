@@ -71,6 +71,8 @@ to perform useful operations. The current list is
 	%getconfdir	expand to rpm "home" directory (typically /usr/lib/rpm)
 	%dnl		discard to next line (without expanding)
 	%verbose	expand to 1 if rpm is in verbose mode, 0 if not
+	%{verbose:...}	expand to ... if rpm is in verbose mode, the
+			empty string if not
 
 	%{echo:...}	print ... to stdout
 	%{warn:...}	print warning: ... to stderr

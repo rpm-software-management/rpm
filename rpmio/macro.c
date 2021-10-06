@@ -1122,7 +1122,11 @@ static void doExpand(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 
 static void doVerbose(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 {
-    mbAppend(mb, rpmIsVerbose() ? '1' : '0');
+    if (parsed || !argv || !argv[1]) {
+	mbAppend(mb, rpmIsVerbose() ? '1' : '0');
+    } else if (rpmIsVerbose() && *argv[1]) {
+	expandMacro(mb, argv[1], 0);
+    }
 }
 
 static void doShescape(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
@@ -1242,9 +1246,9 @@ static struct builtins_s {
     { "P",		doSP,		1,	0 },
     { "S",		doSP,		1,	0 },
     { "basename",	doFoo,		1,	0 },
-    { "define",		doDef,		-1,	ME_PARSE },
+    { "define",		doDef,		1,	ME_PARSE },
     { "dirname",	doFoo,		1,	0 },
-    { "dnl",		doDnl,		-1,	ME_PARSE },
+    { "dnl",		doDnl,		1,	ME_PARSE },
     { "dump", 		doDump,		0,	0 },
     { "echo",		doOutput,	1,	0 },
     { "error",		doOutput,	1,	0 },
@@ -1254,9 +1258,9 @@ static struct builtins_s {
     { "getconfdir",	doFoo,		0,	0 },
     { "getenv",		doFoo,		1,	0 },
     { "getncpus",	doFoo,		0,	0 },
-    { "global",		doGlobal,	-1,	ME_PARSE },
+    { "global",		doGlobal,	1,	ME_PARSE },
     { "load",		doLoad,		1,	0 },
-    { "lua",		doLua,		-1,	ME_PARSE },
+    { "lua",		doLua,		1,	ME_PARSE },
     { "macrobody",	doBody,		1,	0 },
     { "quote",		doFoo,		1,	0 },
     { "shrink",		doFoo,		1,	0 },
@@ -1267,7 +1271,7 @@ static struct builtins_s {
     { "uncompress",	doUncompress,	1,	0 },
     { "undefine",	doUndefine,	1,	0 },
     { "url2path",	doFoo,		1,	0 },
-    { "verbose",	doVerbose,	0,	0 },
+    { "verbose",	doVerbose,	-1,	ME_PARSE },
     { "warn",		doOutput,	1,	0 },
     { NULL,		NULL,		0 }
 };
@@ -1332,7 +1336,7 @@ doMacro(MacroBuf mb, rpmMacroEntry me, ARGV_t args, size_t *parsed)
 	int nargs = args && args[0] ? (argvCount(args) - 1) : 0;
 	int needarg = (me->nargs != 0);
 	int havearg = (nargs > 0);
-	if (needarg != havearg) {
+	if (me->nargs >= 0 && needarg != havearg) {
 	    mbErr(mb, 1, "%%%s: %s\n", me->name, needarg ?
 		    _("argument expected") : _("unexpected argument"));
 	    goto exit;
