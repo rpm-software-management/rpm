@@ -850,12 +850,13 @@ AT_CHECK([
 runroot rpm --eval '%{verbose}'
 runroot rpm -v --eval '%{verbose}'
 runroot rpm --eval '%{verbose:zzz}'
+runroot rpm -v --eval '%{verbose:zzz}'
 ],
-[1],
+[0],
 [0
 1
-],
-[error: %verbose: unexpected argument
+
+zzz
 ])
 AT_CLEANUP
 
