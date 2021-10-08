@@ -1147,24 +1147,15 @@ static size_t doVerbose(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 
 static size_t doShescape(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
-    char *result, *dst;
-    const char *src = argv[1];
-
-    result = dst = xmalloc(strlen(src) * 4 + 3);
-    *dst++ = '\'';
-    for (; *src != '\0'; src++) {
-	if (*src == '\'') {
-	    *dst++ = '\'';
-	    *dst++ = '\\';
-	    *dst++ = '\'';
-	    *dst++ = '\'';
+    mbAppend(mb, '\'');
+    for (const char *s = argv[1]; *s != '\0'; s++) {
+	if (*s == '\'') {
+	    mbAppendStr(mb, "'\\''");
 	} else {
-	    *dst++ = *src;
+	    mbAppend(mb, *s);
 	}
     }
-    *dst++ = '\'';
-    *dst = '\0';
-    mbAppendStr(mb, result);
+    mbAppend(mb, '\'');
     return 0;
 }
 
