@@ -504,7 +504,7 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
 	mi = matchesIterator(ts, RPMDBI_LABEL, arg, 0);
 
 	if (mi == NULL && !rpmFileHasSuffix(arg, ".rpm"))
-	    rpmlog(RPMLOG_NOTICE, _("package %s is not installed\n"), arg);
+	    rpmlog(RPMLOG_ERR, _("package %s is not installed\n"), arg);
 	break;
     }
     default:
