@@ -350,7 +350,7 @@ Test file/directory accessibility. If mode is omitted then existence is
 tested, otherwise it is a combination of the following tests:
 
 | Flag | Explanation
-----------------------
+|---------------------
 | r    | Readable
 | w    | Writable
 | x    | Executable
@@ -683,7 +683,7 @@ Get information about current system. The following format directives are
 supported:
 
 |Format|Explanation
---------------------
+|-------------------
 | %m   | Name of the hardware type
 | %n   | Name of this node
 | %r   | Current release level of this implementation
