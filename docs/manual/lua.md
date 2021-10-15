@@ -47,7 +47,7 @@ Parametric Lua macros receive their options and arguments as two local
 tables "opt" and "arg", where "opt" holds processed option values keyed by
 the option character, and "arg" contains arguments numerically indexed.
 These tables are always present regardless of whether options or arguments
-were actually passed to simplify use.
+were actually passed to simplify use. (rpm >= 4.17)
 
 ```
 %foo(a:b) %{lua:
@@ -73,14 +73,14 @@ Macros can be accessed via a global `macros` table in the Lua environment.
 Lua makes no difference between index and field name syntax so
 `macros.foo` and `macros['foo']` are equivalent, use what better suits the
 purpose. Like any real Lua table, non-existent items are returned as `nil`,
-and assignment can be used to define or undefine macros.
+and assignment can be used to define or undefine macros. (rpm >= 4.17)
 
 Parametric macros (including all built-in macros) can be called in a Lua
 native manner via the `macros` table. The argument can be either a
 single string (`macros.with('thing')`), in which case it's expanded
 and split with the macro-native rules, or it can be a table
 `macros.dostuff({'one', 'two', 'three'})` in which case the table contents
-are used as literal arguments that are not expanded in any way.
+are used as literal arguments that are not expanded in any way. (rpm >= 4.17)
 
 ## Available Lua extensions in RPM
 
@@ -93,7 +93,7 @@ The following RPM specific functions are available:
 | Function | Explanation | Example |
 |----------|-------------|---------|
 |define(arg) | Define a global macro. | rpm.define("foo 1") |
-|isdefined(arg) | Test whether a macro is defined and whether it's parametric, returned in two booleans. | if rpm.isdefined("_libdir") then ... end |
+|isdefined(arg) | Test whether a macro is defined and whether it's parametric, returned in two booleans (rpm >= 4.17.0) | if rpm.isdefined("_libdir") then ... end |
 |expand(arg)  |   Perform macro expansion.  |  rpm.expand("%{_libdir}")
 |register() | Register an RPM hook    |
 |unregister()  |  Unregister an RPM hook  |
@@ -102,6 +102,9 @@ The following RPM specific functions are available:
 |vercmp()   | Perform RPM version comparison (rpm >= 4.7.0)  | rpm.vercmp("1.2-1", "2.0-1")|
 |b64encode() |    Perform base64 encoding (rpm >= 4.8.0)  |
 |b64decode()  |   Perform base64 decoding (rpm >= 4.8.0)   |
+|redirect2null() | Redirect file descriptor to /dev/null (rpm >= 4.16) | rpm.redirect2null(2) |
+|open() | Open a file stream using rpm IO facilities, eg compression support (rpm >= 4.17.0)| f = rpm.open('some.txt.gz', 'r.gzdio')
+|ver() | Create rpm version object (rpm >= 4.17.0) | v = rpm.ver('5:1.0-2) |
 
 ### posix extension
 
