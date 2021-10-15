@@ -132,7 +132,6 @@ by optional number of arguments to pass to the command.
 
 ```
 rpm.execute('ls', '-l', '/')
-
 ```
 
 #### expand(arg)
@@ -165,6 +164,10 @@ end
 #### load(path)
 
 Load a macro file from given path (same as built-in `%{load:...}` macro)
+
+```
+rpm.load('my.macros')
+```
 
 #### open(path, [mode])
 
@@ -283,7 +286,6 @@ if pid == 0 then
 elseif pid > 0 then
     posix.wait(pid)
 end
-
 ```
 
 #### undefine(name)
@@ -347,7 +349,7 @@ may more closely resemble the Lua API, eg `man 1 chmod`.
 Test file/directory accessibility. If mode is omitted then existence is
 tested, otherwise it is a combination of the following tests:
 
-| Flag | Explanation |
+| Flag | Explanation
 ----------------------
 | r    | Readable
 | w    | Writable
@@ -392,6 +394,10 @@ posix.chown('bb', 'nobody', 'nobody')
 #### ctermid()
 
 Get controlling terminal name.
+
+```
+print(posix.ctermid())
+```
 
 #### dir([path])
 
@@ -443,7 +449,6 @@ if pid == 0 then
 elseif pid > 0 then
     posix.wait(pid)
 end
-
 ```
 
 #### getcwd()
@@ -677,7 +682,7 @@ posix.umask('rw-rw-r--')
 Get information about current system. The following format directives are
 supported:
 
-|Format|Explanation|
+|Format|Explanation
 --------------------
 | %m   | Name of the hardware type
 | %n   | Name of this node
