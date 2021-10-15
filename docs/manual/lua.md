@@ -90,21 +90,247 @@ In addition to all Lua standard libraries (subject to the Lua version rpm is lin
 
 The following RPM specific functions are available:
 
-| Function | Explanation | Example |
-|----------|-------------|---------|
-|define(arg) | Define a global macro. | rpm.define("foo 1") |
-|isdefined(arg) | Test whether a macro is defined and whether it's parametric, returned in two booleans (rpm >= 4.17.0) | if rpm.isdefined("_libdir") then ... end |
-|expand(arg)  |   Perform macro expansion.  |  rpm.expand("%{_libdir}")
-|register() | Register an RPM hook    |
-|unregister()  |  Unregister an RPM hook  |
-|call()  |Call an RPM hook    |
-|interactive() |  Launch interactive session (only for testing + debugging) |  rpm --eval "%{lua: rpm.interactive()}"|
-|vercmp()   | Perform RPM version comparison (rpm >= 4.7.0)  | rpm.vercmp("1.2-1", "2.0-1")|
-|b64encode() |    Perform base64 encoding (rpm >= 4.8.0)  |
-|b64decode()  |   Perform base64 decoding (rpm >= 4.8.0)   |
-|redirect2null() | Redirect file descriptor to /dev/null (rpm >= 4.16) | rpm.redirect2null(2) |
-|open() | Open a file stream using rpm IO facilities, eg compression support (rpm >= 4.17.0)| f = rpm.open('some.txt.gz', 'r.gzdio')
-|ver() | Create rpm version object (rpm >= 4.17.0) | v = rpm.ver('5:1.0-2) |
+#### b64decode(arg)
+
+Perform base64 decoding on argument (rpm >= 4.8.0)
+
+```
+blob = 'binary data'
+print(blob)
+e = rpm.b64encode(blob)
+print(e)
+d = rpm.b64decode(e)
+print(d)
+```
+
+#### b64encode(arg [, linelen])
+
+Perform base64 encoding on argument (rpm >= 4.8.0)
+Line length may be optionally specified via second argument.
+
+See `b64decode()`
+
+#### define(name, body)
+
+Define a global macro `name` with `body`.
+Note that macros are stacked by name, so this is actually a push operation
+and any previous definitions of the same name remain underneath after
+a define.
+
+```
+rpm.define("foo 1")
+```
+
+See also `undefine()`
+
+#### execute(path [, arg1 [,...])
+
+Execute an external command (rpm >= 4.15.0)
+This is handy for executing external helper commands without depending
+on the shell. The first argument is the command to execute, followed
+by optional number of arguments to pass to the command.
+
+```
+rpm.execute('ls', '-l', '/')
+
+```
+
+#### expand(arg)
+
+Perform rpm macro expansion on argument string.
+
+```
+rpm.expand("/usr%{__lib}/mypath")
+rpm.expand("%{_libdir}")
+```
+
+#### interactive()
+
+Launch interactive session for testing and debugging.
+
+```
+rpm --eval "%{lua: rpm.interactive()}"
+```
+
+#### isdefined(name)
+
+Test whether a macro is defined and whether it's parametric, returned in two booleans (rpm >= 4.17.0)
+
+```
+if rpm.isdefined("_libdir") then
+    ...
+end
+```
+
+#### load(path)
+
+Load a macro file from given path (same as built-in `%{load:...}` macro)
+
+#### open(path, [mode])
+
+Open a file stream using rpm IO facilities, with support for transparent
+compression and decompression (rpm >= 4.17.0). Path is file name string,
+optionally followed with mode string to specify open behavior and possible
+compression in the form flags[.io] where the flags may be a combination of
+the following (but not all combinations are legal, and not all IO types
+support all flags):
+
+| Flag | Explanation
+|-------------------
+| a | Open for append
+| w | Open for writing, truncate
+| r | Open for reading
+| + | Open for reading and writing
+| x | Fail if file exists
+| T | Enable thread support (xzdio and zstdio)
+| ? | Enable IO debugging
+
+and optionally followed by IO type (aka compression) to use:
+| IO     | Explanation
+|---------------------
+| bzdio  | BZ2 compression
+| fdio   | Uncompressed IO (without URI parsing)
+| gzdio  | ZLIB and GZ compression
+| ufdio  | Uncompressed IO (default)
+| xzdio  | XZ compression
+| zstdio | ZSTD compression
+
+Read and print a gz compressed file:
+```
+f = rpm.open('some.txt.gz', 'r.gzdio')
+print(f:read())
+```
+
+The returned rpm.fd object has the following methods:
+
+##### close()
+
+Close the file stream.
+
+```
+f = rpm.open('file')
+f:close()
+```
+
+##### flush()
+
+Flush the file stream.
+
+```
+f = rpm.open('file', 'w')
+f:write('foo')
+f:flush()
+f:close()
+```
+
+##### read([len])
+
+Read data from the file stream up to `len` bytes or if not specified,
+the entire file.
+
+```
+f = rpm.open('/some/file')
+print(f:read())
+```
+
+##### seek(mode, offset)
+
+Reposition the file offset of the stream. Mode is one of `set`, `cur`
+and `end`, and offset is relative to the mode: absolute, relative to
+current or relative to end. Not all streams support seeking.
+
+Returns file offset after the operation.
+
+See also `man lseek`
+
+```
+f = rpm.open('newfile', 'w')
+f:seek('set', 555)
+f:close()
+```
+
+##### write(buf [, len])
+
+Write data in `buf` to the file stream, either in its entirety or up
+to `len` bytes if specified.
+
+```
+f = rpm.open('newfile', 'w')
+f:write('data data')
+f:close()
+```
+
+##### reopen(mode)
+
+Reopen a stream with a new mode (see `rpm.open()`).
+
+```
+rpm.open('some.txt.gz')
+f = f:reopen('r.gzdio')
+print(f:read())}
+```
+
+#### redirect2null(fdno)
+
+Redirect file descriptor fdno to /dev/null (rpm >= 4.16, in rpm 4.13-4.15
+this was known as posix.redirect2null())
+
+```
+pid = posix.fork()
+if pid == 0 then
+    posix.redirect2null(2)
+    assert(posix.exec("/bin/awk"))
+elseif pid > 0 then
+    posix.wait(pid)
+end
+
+```
+
+#### undefine(name)
+
+Undefine a macro (rpm >= 4.14.0)
+Note that this is only pops the most recent macro definition by the
+given name from stack, ie there may be still macro definitions by the
+same name after an undefine operation.
+
+```
+rpm.undefine('zzz')
+```
+
+See also `define()`
+
+#### vercmp(v1, v2)
+
+Perform RPM version comparison on argument strings (rpm >= 4.7.0).
+Returns -1, 0 or 1 if `v1` is smaller, equal or larger than `v2`.
+
+```
+rpm.vercmp("1.2-1", "2.0-1")
+```
+
+Note that in rpm < 4.16 this operated on version segments only, which
+does not produce correct results on full EVR strings.
+
+#### ver(evr), ver(e, v, r)
+
+Create rpm version object (rpm >= 4.17.0)
+This takes either an EVR string which is parsed to it's components,
+or epoch, version and release in separate arguments (which can be either
+strings or numbers). The object has three attributes: `e` for epoch,
+`v` for version and `r` for release, can be printed in it's EVR form and
+supports native comparison in Lua:
+
+```
+v1 = rpm.ver('5:1.0-2)
+v2 = rpm.ver(3, '5a', 1)
+if v1 < v2 then
+   ...
+end
+
+if v1.e then
+   ...
+end
+```
 
 ### posix extension
 
