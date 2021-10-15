@@ -334,48 +334,401 @@ end
 
 ### posix extension
 
-Lua standard library offers fairly limited set of io operations. The posix extension greatly enhances what can be done from Lua. The following functions are available in "posix" namespace, ie to call them use posix.function().
+Lua standard library offers fairly limited set of io operations.
+The posix extension greatly enhances what can be done from Lua.
+The following functions are available in "posix" namespace, ie to call
+them use posix.function(). This documentation concentrates on the Lua
+API conventions, for further information on the corresponding system
+calls refer to the system manual, eg `man 3 access` for `posix.access()`.
+Many but not all functions have also system utility counterparts which
+may more closely resemble the Lua API, eg `man 1 chmod`.
 
-| Function  |  Explanation  |   Example |
-|-----------|---------------|-----------|
-|access(path, [mode])   | Test file/directory accessibility  | if posix.access("/bin/rpm", "x") then ... end|
-|chdir(path)   |  Change directory  |  posix.chdir("/tmp")
-|chmod(path, modestring)   |  Change file/directory mode   |
-|chown(path, uid, gid)  | Change file/directory owner/group    |
-|ctermid()         |
-|dir([path])   |  Get directory contents - like readdir()   |  for i,p in pairs(posix.dir("/tmp")) do print(p.."\n") end|
-|errno()   |  Get errno value and message print(posix.errno())|
-|exec(path, [args...])  | Exec a program  |
-|files([path])  | Iterate over directory contents   |  for f in posix.files("/tmp") do print(f..'\n') end|
-|fork()  |Fork a new process  |
-|getcwd()   | Get current directory   |
-|getenv(name)  |  Get environment variable    |
-|getgroup(gid)  | Get group members (gid is number or string)     |
-|getlogin() | Get login name  |
-|getpasswd(uid, selector)  |  Get passwd information (username, uid, gid, shell, gecos...)  |  posix.getpasswd(posix.getlogin(), "shell")|
-|getprocessid(selector) | Get process ID information (gid, uid, pid, ppid...)   |  posix.getprocessid("pid")|
-|kill(pid, signal)  | Send a signal to a process  |
-|link(oldpath, newpath)  |Create a hard link  |
-|mkdir(path)   |  Create a new directory  |
-|mkfifo(path)   | Create a FIFO   |
-|pathconf() | Get pathconf values     |
-|putenv()   | Change or add an environment variable   |
-|readlink(path) | Read symlink value  |
-|rmdir(path)   |  Remove a directory  |posix.rmdir("/tmp")|
-|setgid(gid)   |  Set group identity  |
-|setuid(uid)   |  Set user identity   |
-|sleep(seconds) | Sleep for specified number of seconds  | posix.sleep(5)|
-|stat(path, selector)  |  Perform stat() on a file/directory (mode, ino, dev, nlink, uid, gid...) |    posix.stat("/tmp", "mode")|
-|symlink(oldpath, newpath)  | Create a symlink    |
-|sysconf(name)  | Access sysconf values  | posix.sysconf("open_max")|
-|times()   |  Get process times   |
-|ttyname() |  Get current tty name    |
-|umask()   |  Get current umask   |
-|uname([format])   |  Get information about current kernel  |  posix.uname("%r")|
-|utime()   |  Change access/modification time of an inode     |
-|wait() | Wait for a child process    |
-|setenv()   | Change or add an environment variable   |
-|unsetenv() | Remove a variable from environment  |
+#### access(path [, mode])
+Test file/directory accessibility. If mode is omitted then existence is
+tested, otherwise it is a combination of the following tests:
+
+| Flag | Explanation |
+----------------------
+| r    | Readable
+| w    | Writable
+| x    | Executable
+| f    | Existence
+
+```
+if posix.access("/bin/rpm", "x") then
+    ...
+end
+```
+
+#### chdir(path)
+
+Change current working directory.
+
+```
+posix.chdir("/tmp")
+```
+
+#### chmod(path, mode)
+
+Change file/directory mode. Mode can be either an octal number as for 
+chmod() system call, or a string presenation similar to chmod utility.
+
+```
+posix.chmod('aa', 600)
+posix.chmod('bb', 'rw-')
+posix.chmod('cc', 'u+x')
+```
+
+#### chown(path, user, group)
+
+Change file/directory owner/group. The user and group may be either numeric
+id values or user/groupnames. This is a privileged operation.
+
+```
+posix.chown('aa', 0, 0)
+posix.chown('bb', 'nobody', 'nobody')
+```
+
+#### ctermid()
+
+Get controlling terminal name.
+
+#### dir([path])
+
+Get directory contents - like readdir(). If path is omitted, current
+directory is used.
+
+```
+for i,p in pairs(posix.dir("/")) do
+    print(p.."\n")
+end
+```
+
+#### errno()
+Get strerror() message and the corresponding number for current `errno`.
+
+```
+f = '/zzz'
+if not posix.chmod(f, 100) then
+    s, n = posix.errno()
+    print(f, s)
+end
+```
+
+#### exec(path [, args...])
+
+Execute a program. This may only be performed after posix.fork().
+For executing external commands it's recommended to use `rpm.execute()` instead.
+
+#### files([path])
+
+Iterate over directory contents. If path is omitted, current directory
+is used.
+
+```
+for f in posix.files("/") do
+    print(f..'\n')
+end
+```
+
+#### fork()
+
+Fork a new process. 
+For executing external commands it's recommended to use `rpm.execute()` instead.
+
+```
+pid = posix.fork()
+if pid == 0 then
+    posix.exec("/foo/bar")
+elseif pid > 0 then
+    posix.wait(pid)
+end
+
+```
+
+#### getcwd()
+
+Get current directory.
+
+```
+if posix.getcwd() != '/' then
+    ...
+endif
+```
+
+#### getenv(name)
+
+Get environment variable
+
+```
+if posix.getenv('HOME') != posix.getcwd() then
+    print('not at home')
+end
+```
+
+#### getgroup(group)
+
+Get information about a group. The group may be either a numeric id or
+group name. Returns a table with fields `name` and `gid` set to group
+name and id respectively, and indexes from 1 onwards specifying group
+members.
+
+```
+print(posix.getgroup('wheel').gid)
+```
+
+#### getlogin()
+
+Get login name .
+
+```
+n = posix.getlogin()
+```
+
+#### getpasswd([user [, selector]])
+
+Get passwd information for a user account. User may be either a numeric id
+or user name (if nil, current user is used). The optional selector may be
+one of `name`, `uid`, `gid`, `dir`, `shell`, `gecos` and `passwd` and if
+omitted, a table with all these fields is returned.
+
+```
+pw = posix.getpasswd(posix.getlogin(), "shell")|
+```
+
+#### getprocessid([selector])
+
+Get information about current process. The optional selector may be one of
+`egid`, `euid`, `gid`, `uid`, `pgrp`, `pid` and `ppid` and if omitted,
+a table with all these fields is returned.
+
+```
+if posix.getprocessid('pid') == 1 then
+    ...
+end
+```
+
+#### kill(pid [, signal])
+
+Send a signal to a process. Signal must be a numeric value, eg 9 for SIGKILL.
+If omitted, SIGTERM is used.
+
+```
+posix.kill(posix.getprocessid('pid'))
+```
+
+#### link(oldpath, newpath)
+
+Create a new name for a file, aka hard link.
+
+```
+f = rpm.open('aaa', 'w')
+posix.link('aaa', 'bbb')
+```
+
+#### mkdir(path)
+
+Create a new directory.
+
+```
+posix.mkdir('/tmp')
+```
+
+#### mkfifo(path)
+
+Create a FIFO aka named pipe. 
+
+```
+posix.mkfifo('/tmp/badplace')
+```
+
+#### pathconf(path [, selector])
+
+Get `pathconf(3)` information. The optional selector may be one of
+`link_max`, `max_canon`, `max_input`, `name_max`, `path_max`, `pipe_buf`,
+`chown_restricted`, `no_trunc` and `vdisable`, and if omitted, a table
+with all these fields is returned.
+
+```
+posix.pathconf('/', 'path_max')
+```
+
+#### putenv(arg)
+
+Change or add an environment variable.
+
+```
+posix.putenv('HOME=/me')
+```
+
+#### readlink(path)
+
+Read symlink value
+
+```
+posix.mkdir('aaa')
+posix.symlink('aaa', 'bbb')
+print(posix.readlink('bbb'))
+```
+
+#### rmdir(path)
+
+Remove a directory
+
+```
+posix.rmdir("/tmp")|
+```
+
+#### setgid(group)
+
+Set group identity. Group may be specified either as a numeric id or
+group name. This is a privileged operation.
+
+#### setuid(user)
+
+Set user identity. Use may be specified either as a numeric id or
+user name. This is a privileged operation.
+
+```
+posix.setuid('nobody')
+```
+
+#### sleep(seconds)
+
+Sleep for specified number of seconds
+
+```
+posix.sleep(5)
+```
+
+#### stat(path [, selector])
+
+Get information about a file at path.
+The optional selector may be one of `mode`, `ino`, `dev`, `nlink`, `uid`,
+`gid`, `size`, `atime`, `mtime`, `ctime` and `type`, or if omitted a
+table with all these fields is returned.
+
+```
+print(posix.stat('/tmp', 'mode'))|
+
+s1 = posix.stat('f1')
+s2 = posix.stat('f2')
+if s1.ino == s2.ino and s1.dev == s2.dev then
+    ...
+end
+```
+
+#### symlink(oldpath, newpath)
+
+Create a symbolic link to a path.
+
+```
+posix.mkdir('aaa')
+posix.symlink('aaa', 'bbb')
+```
+
+#### sysconf(name [, selector])
+
+Get `sysconf(3)` information. The optional selector may be one of 
+`arg_max`, `child_max`, `clk_tck`, `ngroups_max`, `stream_max`, `tzname_max`,
+`open_max`, `job_control`, `saved_ids` and `version`. If omitted, a table
+with all these fields is returned.
+
+```
+posix.sysconf("open_max")|
+```
+
+#### times([selector])
+
+Get process and waited-for child process times. The optional selector may
+be one of `utime`, `stime`, `cutime`, `cstime` and `elapsed`. If omitted,
+a table with all these fields is returned.
+
+```
+t = posix.times()
+print(t.utime, t.stime)
+```
+
+#### ttyname([fd])
+
+Get name of a terminal associated with file descriptor fd. If fd is omitted,
+0 (aka stdin) is used.
+
+```
+if not posix.ttyname() then
+    ...
+endif
+```
+
+#### umask([mode])
+
+Get or set process umask. Mode may be specified as an octal number or
+mode string similarly to posix.chmod().
+
+```
+print(posix.umask())
+posix.umask(222)
+posix.umask('ug-w)
+posix.umask('rw-rw-r--')
+```
+
+#### uname(format)
+
+Get information about current system. The following format directives are
+supported:
+
+|Format|Explanation|
+--------------------
+| %m   | Name of the hardware type
+| %n   | Name of this node
+| %r   | Current release level of this implementation
+| %s   | Name of this operation system
+| %v   | Current version level of this implementation
+
+```
+print(posix.uname("%r"))
+```
+
+#### utime(path [, mtime] [, ctime])
+
+Change file last access and modification times. 
+mtime and ctime are expressed seconds since epoch.
+If mtime or ctime are omitted, current time is used (similar to `touch(1)`)
+
+```
+posix.mkdir('aaa')
+posix.utime('aaa', 0, 0)
+```
+
+#### wait([pid])
+
+Wait for a child process. If pid is specified wait for that particular child.
+
+```
+pid = posix.fork()
+if pid == 0 then
+    posix.exec("/bin/ls"))
+elseif pid > 0 then
+    posix.wait(pid)
+end
+```
+
+#### setenv(name, value [, overwrite])
+
+Change or add an environment variable. The optional overwrite is a boolean
+which defines behavior when a variable by the same name already exists.
+
+```
+posix.setenv('HOME', '/me', true)
+```
+
+#### unsetenv(name)
+
+Remove a variable from environment.
+
+```
+posix.unsetenv('HOME')
+```
 
 ### rex extension
 
