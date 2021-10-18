@@ -12,7 +12,7 @@ The internal Lua can be used as the interpreter of rpm any scriptlets (%pre, %po
 
 ```
 %pre -p <lua>
-print("Hello from Lua")
+print('Hello from Lua')
 ```
 
 The point? Remember, Lua is embedded in rpm. This means the Lua scriptlets run in the rpm process context, instead of forking a new process to execute something. This has a number of advantages over, say, using /bin/sh as scriptlet interpreter:
@@ -33,19 +33,19 @@ While scriptlets shouldn't be allowed to fail normally, you can signal scriptlet
 The internal Lua interpreter can be used for dynamic macro content creation:
 
 ```
-%{lua: print("Requires: foo >= 1.2")}
+%{lua: print('Requires: foo >= 1.2')}
 ```
 
 The above is a silly example and doesn't even begin to show how powerful a feature this is. For a slightly more complex example, RPM itself uses this to implement %patches and %sources macros (new in RPM 4.6.0):
 
 ```
-%patches %{lua: for i, p in ipairs(patches) do print(p.." ") end}
-%sources %{lua: for i, s in ipairs(sources) do print(s.." ") end}
+%patches %{lua: for i, p in ipairs(patches) do print(p..' ') end}
+%sources %{lua: for i, s in ipairs(sources) do print(s..' ') end}
 ```
 
 Parametric Lua macros receive their options and arguments as two local
-tables "opt" and "arg", where "opt" holds processed option values keyed by
-the option character, and "arg" contains arguments numerically indexed.
+tables `opt` and `arg`, where `opt` holds processed option values keyed by
+the option character, and `arg` contains arguments numerically indexed.
 These tables are always present regardless of whether options or arguments
 were actually passed to simplify use. (rpm >= 4.17)
 
@@ -118,7 +118,7 @@ and any previous definitions of the same name remain underneath after
 a define.
 
 ```
-rpm.define("foo 1")
+rpm.define('foo 1')
 ```
 
 See also `undefine()`
@@ -139,8 +139,8 @@ rpm.execute('ls', '-l', '/')
 Perform rpm macro expansion on argument string.
 
 ```
-rpm.expand("/usr%{__lib}/mypath")
-rpm.expand("%{_libdir}")
+rpm.expand('/usr%{__lib}/mypath')
+rpm.expand('%{_libdir}')
 ```
 
 #### interactive()
@@ -156,7 +156,7 @@ rpm --eval "%{lua: rpm.interactive()}"
 Test whether a macro is defined and whether it's parametric, returned in two booleans (rpm >= 4.17.0)
 
 ```
-if rpm.isdefined("_libdir") then
+if rpm.isdefined('_libdir') then
     ...
 end
 ```
@@ -282,7 +282,7 @@ this was known as posix.redirect2null())
 pid = posix.fork()
 if pid == 0 then
     posix.redirect2null(2)
-    assert(posix.exec("/bin/awk"))
+    assert(posix.exec('/bin/awk'))
 elseif pid > 0 then
     posix.wait(pid)
 end
@@ -307,7 +307,7 @@ Perform RPM version comparison on argument strings (rpm >= 4.7.0).
 Returns -1, 0 or 1 if `v1` is smaller, equal or larger than `v2`.
 
 ```
-rpm.vercmp("1.2-1", "2.0-1")
+rpm.vercmp('1.2-1', '2.0-1')
 ```
 
 Note that in rpm < 4.16 this operated on version segments only, which
@@ -338,7 +338,7 @@ end
 
 Lua standard library offers fairly limited set of io operations.
 The posix extension greatly enhances what can be done from Lua.
-The following functions are available in "posix" namespace, ie to call
+The following functions are available in `posix` namespace, ie to call
 them use posix.function(). This documentation concentrates on the Lua
 API conventions, for further information on the corresponding system
 calls refer to the system manual, eg `man 3 access` for `posix.access()`.
@@ -357,7 +357,7 @@ tested, otherwise it is a combination of the following tests:
 | f    | Existence
 
 ```
-if posix.access("/bin/rpm", "x") then
+if posix.access('/bin/rpm', 'x') then
     ...
 end
 ```
@@ -367,7 +367,7 @@ end
 Change current working directory.
 
 ```
-posix.chdir("/tmp")
+posix.chdir('/tmp')
 ```
 
 #### chmod(path, mode)
@@ -405,8 +405,8 @@ Get directory contents - like readdir(). If path is omitted, current
 directory is used.
 
 ```
-for i,p in pairs(posix.dir("/")) do
-    print(p.."\n")
+for i,p in pairs(posix.dir('/')) do
+    print(p..'\n')
 end
 ```
 
@@ -432,7 +432,7 @@ Iterate over directory contents. If path is omitted, current directory
 is used.
 
 ```
-for f in posix.files("/") do
+for f in posix.files('/') do
     print(f..'\n')
 end
 ```
@@ -445,7 +445,7 @@ For executing external commands it's recommended to use `rpm.execute()` instead.
 ```
 pid = posix.fork()
 if pid == 0 then
-    posix.exec("/foo/bar")
+    posix.exec('/foo/bar')
 elseif pid > 0 then
     posix.wait(pid)
 end
@@ -498,7 +498,7 @@ one of `name`, `uid`, `gid`, `dir`, `shell`, `gecos` and `passwd` and if
 omitted, a table with all these fields is returned.
 
 ```
-pw = posix.getpasswd(posix.getlogin(), "shell")|
+pw = posix.getpasswd(posix.getlogin(), 'shell')|
 ```
 
 #### getprocessid([selector])
@@ -581,7 +581,7 @@ print(posix.readlink('bbb'))
 Remove a directory
 
 ```
-posix.rmdir("/tmp")|
+posix.rmdir('/tmp')
 ```
 
 #### setgid(group)
@@ -640,7 +640,7 @@ Get `sysconf(3)` information. The optional selector may be one of
 with all these fields is returned.
 
 ```
-posix.sysconf("open_max")|
+posix.sysconf('open_max')|
 ```
 
 #### times([selector])
@@ -673,7 +673,7 @@ mode string similarly to posix.chmod().
 ```
 print(posix.umask())
 posix.umask(222)
-posix.umask('ug-w)
+posix.umask('ug-w')
 posix.umask('rw-rw-r--')
 ```
 
@@ -691,7 +691,7 @@ supported:
 | %v   | Current version level of this implementation
 
 ```
-print(posix.uname("%r"))
+print(posix.uname('%r'))
 ```
 
 #### utime(path [, mtime] [, ctime])
@@ -712,7 +712,7 @@ Wait for a child process. If pid is specified wait for that particular child.
 ```
 pid = posix.fork()
 if pid == 0 then
-    posix.exec("/bin/ls"))
+    posix.exec('/bin/ls'))
 elseif pid > 0 then
     posix.wait(pid)
 end
