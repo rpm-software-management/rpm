@@ -4,7 +4,6 @@
 #include <lualib.h>
 #include <lauxlib.h>
 #include <lposix.h>
-#include <lrexlib.h>
 
 #ifndef LUA_LOADED_TABLE
 /* feature introduced in Lua 5.3.4 */
@@ -118,7 +117,6 @@ rpmlua rpmluaNew()
 
     static const luaL_Reg extlibs[] = {
 	{"posix", luaopen_posix},
-	{"rex", luaopen_rex},
 	{"rpm", luaopen_rpm},
 	{NULL, NULL},
     };
