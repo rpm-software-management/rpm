@@ -9,6 +9,4 @@ libluaext_la_CPPFLAGS = $(AM_CPPFLAGS) -DWITH_POSIX @LUA_CFLAGS@
 libluaext_la_LIBADD = @LUA_LIBS@
 libluaext_la_SOURCES = \
 		lposix.h \
-		lposix.c \
-		lrexlib.h \
-		lrexlib.c
+		lposix.c

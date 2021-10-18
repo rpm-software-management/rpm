@@ -735,20 +735,6 @@ Remove a variable from environment.
 posix.unsetenv('HOME')
 ```
 
-### rex extension
-
-This extension adds regular expression matching to Lua.
-
-A simple example:
-```
-expr = rex.new(<regex<)
-if expr:match(<arg<) then
-    ... do stuff ...
-end
-```
-
-TODO: fully document
-
 ## Extending and customizing
 
 On initialization, RPM executes a global init.lua Lua initialization script, typically located in /usr/lib/rpm/init.lua. This can be used for performing custom runtime configuration of RPM and adding global functions and variables to the RPM Lua environment without recompiling rpm.
