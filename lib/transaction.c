@@ -690,7 +690,8 @@ assert(otherFi != NULL);
 	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
 		break;
 	    if (rpmfilesFState(fi, i) != RPMFILE_STATE_NORMAL) {
-		rpmfsSetAction(fs, i, FA_SKIP);
+		if (rpmfilesFState(fi, i) != RPMFILE_STATE_WRONGCOLOR)
+		    rpmfsSetAction(fs, i, FA_SKIP);
 		break;
 	    }
 		
