@@ -91,6 +91,10 @@ and friends. These never return NULL (they abort the process on failure),
 so do not check for it. Also ll "destructor" type functions in rpm accept
 NULL arguments, don't check for it separately.
 
+Avoid using assert(). Instead, handle the error gracefully. For instance,
+a function that verifies signatures should consider a NULL signature to be
+invalid, just like a malformed non-NULL signature.
+
 ### Miscellaneous
 
 While many details differ and lot of it does not apply at all, the [Linux
