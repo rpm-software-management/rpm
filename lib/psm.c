@@ -536,7 +536,7 @@ static void markReplacedInstance(rpmts ts, rpmte te)
 static rpmRC dbAdd(rpmts ts, rpmte te)
 {
     Header h = rpmteHeader(te);
-    rpm_time_t installTime = (rpm_time_t) time(NULL);
+    rpm_time_t installTime = rpmtsGetTime(ts, 1);
     rpmfs fs = rpmteGetFileStates(te);
     rpm_count_t fc = rpmfsFC(fs);
     rpm_fstate_t * fileStates = rpmfsGetStates(fs);

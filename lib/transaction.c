@@ -1442,7 +1442,7 @@ static int runTransScripts(rpmts ts, pkgGoal goal)
 
 static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet)
 {
-    rpm_tid_t tid = (rpm_tid_t) time(NULL);
+    rpm_tid_t tid = (rpm_tid_t) rpmtsGetTime(ts, 0);
     int dbmode = (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST) ?  O_RDONLY : (O_RDWR|O_CREAT);
 
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOSCRIPTS)
