@@ -88,7 +88,7 @@ before the exit label often works well and is widely used in the codebase.
 
 RPM uses custom allocator functions in place of standard library malloc()
 and friends. These never return NULL (they abort the process on failure),
-so do not check for it. Also ll "destructor" type functions in rpm accept
+so do not check for it. Also all "destructor" type functions in rpm accept
 NULL arguments, don't check for it separately.
 
 ### Miscellaneous
