@@ -88,13 +88,13 @@ before the exit label often works well and is widely used in the codebase.
 
 RPM uses custom allocator functions in place of standard library malloc()
 and friends. These never return NULL (they abort the process on failure),
-so do not check for it. Also ll "destructor" type functions in rpm accept
+so do not check for it. Also all "destructor" type functions in rpm accept
 NULL arguments, don't check for it separately.
 
 ### Miscellaneous
 
-While many details differ and lot of it does not apply at all, the [Linux
-kernel coding style document](https://www.gnu.org/software/libtool/manual/html_node/Libtool-versioning.html)
+While many details differ and lot of it does not apply at all, the
+[Linux kernel coding style document](https://www.kernel.org/doc/html/latest/process/coding-style.html)
 contains lots of excellent guidance on good C programming practises if you
 filter out what is kernel specific.
 
