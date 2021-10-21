@@ -1124,6 +1124,7 @@ rpmts rpmtsCreate(void)
 {
     rpmts ts;
     tsMembers tsmem;
+    char *source_date_epoch = NULL;
 
     ts = xcalloc(1, sizeof(*ts));
     memset(&ts->ops, 0, sizeof(ts->ops));
@@ -1136,8 +1137,15 @@ rpmts rpmtsCreate(void)
     ts->rdb = NULL;
     ts->dbmode = O_RDONLY;
 
+    source_date_epoch = getenv("SOURCE_DATE_EPOCH");
+    if (source_date_epoch != NULL) {
+	ts->overrideTime = (time_t)strtol(source_date_epoch, NULL, 10);
+    } else {
+	ts->overrideTime = (time_t)-1;
+    }
+
     ts->scriptFd = NULL;
-    ts->tid = (rpm_tid_t) time(NULL);
+    ts->tid = (rpm_tid_t) rpmtsGetTime(ts, 0);
 
     ts->color = rpmExpandNumeric("%{?_transaction_color}");
     ts->prefcolor = rpmExpandNumeric("%{?_prefer_color}")?:2;
@@ -1191,6 +1199,17 @@ rpmts rpmtsCreate(void)
     ts->min_writes = (rpmExpandNumeric("%{?_minimize_writes}") > 0);
 
     return rpmtsLink(ts);
+}
+
+rpm_time_t rpmtsGetTime(rpmts ts, time_t step)
+{
+    if (ts->overrideTime == -1) {
+	return (rpm_time_t)time(NULL);
+    }
+
+    time_t time = ts->overrideTime;
+    ts->overrideTime += step;
+    return (rpm_time_t)time;
 }
 
 rpmtsi rpmtsiFree(rpmtsi tsi)

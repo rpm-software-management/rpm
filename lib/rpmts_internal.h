@@ -91,6 +91,8 @@ struct rpmts_s {
     rpmtriggers trigs2run;   /*!< Transaction file triggers */
 
     int min_writes;             /*!< macro minimize_writes used */
+
+    time_t overrideTime;	/*!< Time value used when overriding system clock. */
 };
 
 #ifdef __cplusplus
@@ -130,6 +132,9 @@ rpmRC runScript(rpmts ts, rpmte te, Header h, ARGV_const_t prefixes,
 
 RPM_GNUC_INTERNAL
 int rpmtsNotifyChange(rpmts ts, int event, rpmte te, rpmte other);
+
+RPM_GNUC_INTERNAL
+rpm_time_t rpmtsGetTime(rpmts ts, time_t step);
 
 #ifdef __cplusplus
 }

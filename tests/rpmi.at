@@ -353,6 +353,63 @@ error: hello-2.0-1.x86_64: install failed
 AT_CLEANUP
 
 # ------------------------------
+# Test tid/time overrides using SOURCE_DATE_EPOCH
+AT_SETUP([rpm -i <overridden time>])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_INIT
+
+pkg="hello-2.0-1.x86_64"
+timestamp=97445
+
+runroot rpm -i --ignorearch --ignoreos --nodeps \
+	/data/RPMS/foo-1.0-1.noarch.rpm
+export SOURCE_DATE_EPOCH=$timestamp
+runroot rpm -i --ignorearch --ignoreos --nodeps \
+	/data/RPMS/hello-2.0-1.x86_64.rpm
+unset SOURCE_DATE_EPOCH
+runroot rpm -q --tid $timestamp
+runroot rpm -qi $pkg | grep "Install Date"
+runroot rpm -qa
+
+],
+[0],
+[hello-2.0-1.x86_64
+Install Date: Fri Jan  2 03:04:05 1970
+foo-1.0-1.noarch
+hello-2.0-1.x86_64
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# Test multiple installs using SOURCE_DATE_EPOCH
+AT_SETUP([rpm -i <overridden time keeps ticking>])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_INIT
+
+timestamp=1445412535
+
+export SOURCE_DATE_EPOCH=$timestamp
+runroot rpm -i --ignorearch --ignoreos --nodeps \
+	/data/RPMS/foo-1.0-1.noarch.rpm /data/RPMS/hello-2.0-1.x86_64.rpm
+unset SOURCE_DATE_EPOCH
+runroot rpm -q --tid $timestamp
+for pkg in `runroot rpm -q --tid $timestamp`; do
+	runroot rpm -qi $pkg | grep "Install Date"
+done
+],
+[0],
+[hello-2.0-1.x86_64
+foo-1.0-1.noarch
+Install Date: Wed Oct 21 07:28:55 2015
+Install Date: Wed Oct 21 07:28:56 2015
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
 # Check if rpm -U *.src.rpm works
 AT_SETUP([rpm -U *.src.rpm])
 AT_KEYWORDS([install])
