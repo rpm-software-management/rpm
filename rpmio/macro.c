@@ -38,8 +38,6 @@ enum macroFlags_e {
     ME_FUNC	= (1 << 4),
 };
 
-#define ME_BUILTIN (ME_PARSE|ME_FUNC)
-
 typedef struct MacroBuf_s *MacroBuf;
 typedef size_t (*macroFunc)(MacroBuf mb, rpmMacroEntry me, ARGV_t argv);
 
@@ -608,7 +606,7 @@ validName(MacroBuf mb, const char *name, size_t namelen, const char *action)
     }
 
     mep = findEntry(mb->mc, name, namelen, NULL);
-    if (mep && (*mep)->flags & (ME_BUILTIN|ME_AUTO)) {
+    if (mep && (*mep)->flags & (ME_FUNC|ME_AUTO)) {
 	mbErr(mb, 1, _("Macro %%%s is a built-in (%s)\n"), name, action);
 	goto exit;
     }
@@ -1269,36 +1267,36 @@ static struct builtins_s {
     int nargs;
     int flags;
 } const builtinmacros[] = {
-    { "P",		doSP,		1,	ME_FUNC },
-    { "S",		doSP,		1,	ME_FUNC },
-    { "basename",	doFoo,		1,	ME_FUNC },
+    { "P",		doSP,		1,	0 },
+    { "S",		doSP,		1,	0 },
+    { "basename",	doFoo,		1,	0 },
     { "define",		doDef,		-1,	ME_PARSE },
-    { "dirname",	doFoo,		1,	ME_FUNC },
+    { "dirname",	doFoo,		1,	0 },
     { "dnl",		doDnl,		-1,	ME_PARSE },
-    { "dump", 		doDump,		0,	ME_FUNC },
-    { "echo",		doOutput,	1,	ME_FUNC },
-    { "error",		doOutput,	1,	ME_FUNC },
-    { "exists",		doFoo,		1,	ME_FUNC },
-    { "expand",		doExpand,	1,	ME_FUNC },
-    { "expr",		doFoo,		1,	ME_FUNC },
-    { "getconfdir",	doFoo,		0,	ME_FUNC },
-    { "getenv",		doFoo,		1,	ME_FUNC },
-    { "getncpus",	doFoo,		0,	ME_FUNC },
+    { "dump", 		doDump,		0,	0 },
+    { "echo",		doOutput,	1,	0 },
+    { "error",		doOutput,	1,	0 },
+    { "exists",		doFoo,		1,	0 },
+    { "expand",		doExpand,	1,	0 },
+    { "expr",		doFoo,		1,	0 },
+    { "getconfdir",	doFoo,		0,	0 },
+    { "getenv",		doFoo,		1,	0 },
+    { "getncpus",	doFoo,		0,	0 },
     { "global",		doGlobal,	-1,	ME_PARSE },
-    { "load",		doLoad,		1,	ME_FUNC },
-    { "lua",		doLua,		1,	ME_FUNC },
-    { "macrobody",	doBody,		1,	ME_FUNC },
-    { "quote",		doFoo,		1,	ME_FUNC },
-    { "shrink",		doFoo,		1,	ME_FUNC },
-    { "suffix",		doFoo,		1,	ME_FUNC },
-    { "trace",		doTrace,	0,	ME_FUNC },
-    { "u2p",		doFoo,		1,	ME_FUNC },
-    { "shescape",	doShescape,	1,	ME_FUNC },
-    { "uncompress",	doUncompress,	1,	ME_FUNC },
-    { "undefine",	doUndefine,	1,	ME_FUNC },
-    { "url2path",	doFoo,		1,	ME_FUNC },
-    { "verbose",	doVerbose,	0,	ME_FUNC },
-    { "warn",		doOutput,	1,	ME_FUNC },
+    { "load",		doLoad,		1,	0 },
+    { "lua",		doLua,		1,	0 },
+    { "macrobody",	doBody,		1,	0 },
+    { "quote",		doFoo,		1,	0 },
+    { "shrink",		doFoo,		1,	0 },
+    { "suffix",		doFoo,		1,	0 },
+    { "trace",		doTrace,	0,	0 },
+    { "u2p",		doFoo,		1,	0 },
+    { "shescape",	doShescape,	1,	0 },
+    { "uncompress",	doUncompress,	1,	0 },
+    { "undefine",	doUndefine,	1,	0 },
+    { "url2path",	doFoo,		1,	0 },
+    { "verbose",	doVerbose,	0,	0 },
+    { "warn",		doOutput,	1,	0 },
     { NULL,		NULL,		0 }
 };
 
@@ -1358,7 +1356,7 @@ doExpandThisMacro(MacroBuf mb, rpmMacroEntry me, ARGV_t args, size_t *parsed)
     ARGV_t prevarg = mb->args;
 
     /* Recursively expand body of macro */
-    if (me->flags & ME_BUILTIN) {
+    if (me->flags & ME_FUNC) {
 	int nargs = argvCount(args) - 1;
 	int needarg = (me->nargs != 0);
 	int havearg = (nargs > 0);
@@ -1971,7 +1969,7 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
     /* Define built-in macros */
     for (const struct builtins_s *b = builtinmacros; b->name; b++) {
 	pushMacroAny(mc, b->name, "", "<builtin>", b->func, b->nargs,
-			RMIL_BUILTIN, b->flags);
+			RMIL_BUILTIN, b->flags | ME_FUNC);
     }
 
     argvSplit(&globs, macrofiles, ":");
