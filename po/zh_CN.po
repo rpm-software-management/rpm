@@ -1811,7 +1811,7 @@ msgid "<packagefile>+"
 msgstr "<packagefile>+"
 
 msgid "print hash marks as package installs (good with -v)"
-msgstr "软件包安装的时候列出哈希标记 (和 -v 一起使用效果更好)"
+msgstr "在软件包安装时显示由“#”符号组成的进度条 (和 -v 一起使用效果更好)"
 
 msgid "don't verify package architecture"
 msgstr "不验证软件包架构"
