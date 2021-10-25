@@ -1329,7 +1329,7 @@ doMacro(MacroBuf mb, rpmMacroEntry me, ARGV_t args, size_t *parsed)
 
     /* Recursively expand body of macro */
     if (me->flags & ME_FUNC) {
-	int nargs = argvCount(args) - 1;
+	int nargs = args && args[0] ? (argvCount(args) - 1) : 0;
 	int needarg = (me->nargs != 0);
 	int havearg = (nargs > 0);
 	if (needarg != havearg) {
@@ -1517,12 +1517,14 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    continue;
 	}
 
-	if (me->opts == NULL) {
+	if (me->opts == NULL && !(me->flags & ME_FUNC)) {
 	    /* Simple non-parametric macro */
 	    doMacro(mb, me, NULL, NULL);
 	    s = se;
 	    continue;
 	}
+	if (me->opts == NULL && fe == se)
+	    lastc = NULL;	/* do not parse arguments coming after %foo */
 
 	ARGV_t args = NULL;
 	argvAdd(&args, me->name);
@@ -1947,7 +1949,7 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 
     /* Define built-in macros */
     for (const struct builtins_s *b = builtinmacros; b->name; b++) {
-	pushMacroAny(mc, b->name, "", "<builtin>", b->func, b->nargs,
+	pushMacroAny(mc, b->name, b->nargs ? "" : NULL, "<builtin>", b->func, b->nargs,
 			RMIL_BUILTIN, b->flags | ME_FUNC);
     }
 

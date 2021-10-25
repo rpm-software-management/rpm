@@ -319,6 +319,7 @@ runroot rpm --eval "%{dump:foo}"
 runroot rpm --eval "%{shrink:%%%%}"
 runroot rpm --eval "%{shrink %%%%}"
 runroot rpm --eval "%shrink %%%%"
+runroot rpm --eval "%verbose foo"
 ],
 [0],
 [
@@ -332,6 +333,7 @@ bar baz\baz
 %%
 %%
 %%
+0 foo
 ],
 [error: %dirname: argument expected
 error: %dirname: argument expected
