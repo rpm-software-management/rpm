@@ -1513,23 +1513,31 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    continue;
 	}
 
-	/* Grab args for parametric macros */
-	ARGV_t args = NULL;
-	size_t fwd = 0;
-	if (me->opts != NULL) {
-	    argvAdd(&args, me->name);
-	    if (g) {
-		grabArgs(mb, me, &args, g, ge, 0);
-	    } else if (me->flags & ME_PARSE) {
-		argvAdd(&args, se);
-	    } else if (lastc) {
-		fwd = (grabArgs(mb, me, &args, fe, lastc, 1) - se);
-	    }
+	if (me->opts == NULL) {
+	    /* Simple non-parametric macro */
+	    doMacro(mb, me, NULL, NULL);
+	    s = se;
+	    continue;
 	}
-	doMacro(mb, me, args, &fwd);
-	if (args != NULL)
-	    argvFree(args);
-	s = se + (g ? 0 : fwd);
+
+	ARGV_t args = NULL;
+	argvAdd(&args, me->name);
+	if ((me->flags & ME_PARSE) != 0 && fe == se) {
+	    /* Special free-field macros define/global/dnl */
+	    size_t fwd = 0;
+	    argvAdd(&args, se);
+	    doMacro(mb, me, args, &fwd);
+	    se += fwd;
+	} else {
+	    /* Grab args for parametric macros */
+	    if (g)
+		se = grabArgs(mb, me, &args, g, ge, 0);
+	    else if (lastc)
+		se = grabArgs(mb, me, &args, fe, lastc, 1);
+	    doMacro(mb, me, args, NULL);
+	}
+	argvFree(args);
+	s = se;
     }
 
     mbFini(mb, me, &med);
