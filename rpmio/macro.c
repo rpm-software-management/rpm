@@ -1318,7 +1318,7 @@ const char *findMacroEnd(const char *str)
  * @param parsed	how many characters ME_PARSE parsed (or NULL)
  */
 static void
-doExpandThisMacro(MacroBuf mb, rpmMacroEntry me, ARGV_t args, size_t *parsed)
+doMacro(MacroBuf mb, rpmMacroEntry me, ARGV_t args, size_t *parsed)
 {
     rpmMacroEntry prevme = mb->me;
     ARGV_t prevarg = mb->args;
@@ -1500,7 +1500,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	    if (g && g < ge) {		/* Expand X in %{...:X} */
 		expandMacro(mb, g, gn);
 	    } else if (me) {
-		doExpandThisMacro(mb, me, NULL, NULL);
+		doMacro(mb, me, NULL, NULL);
 	    }
 	    s = se;
 	    continue;
@@ -1526,7 +1526,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 		fwd = (grabArgs(mb, me, &args, fe, lastc, 1) - se);
 	    }
 	}
-	doExpandThisMacro(mb, me, args, &fwd);
+	doMacro(mb, me, args, &fwd);
 	if (args != NULL)
 	    argvFree(args);
 	s = se + (g ? 0 : fwd);
@@ -1579,7 +1579,7 @@ expandThisMacro(MacroBuf mb, rpmMacroEntry me, ARGV_const_t args, int flags)
 	}
     }
 
-    doExpandThisMacro(mb, me, optargs, NULL);
+    doMacro(mb, me, optargs, NULL);
     if (optargs)
 	argvFree(optargs);
 
