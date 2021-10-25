@@ -313,6 +313,8 @@ runroot rpm --eval "%{getncpus:5}"
 runroot rpm --eval "%{define:}"
 runroot rpm --eval "%{define:foo}"
 runroot rpm --eval "%{define:foo bar}%{foo}"
+runroot rpm --eval "%{define foo}"
+runroot rpm --eval "%{define foo bar baz\baz}%{foo}"
 runroot rpm --eval "%{dump:foo}"
 runroot rpm --eval "%{shrink:%%%%}"
 runroot rpm --eval "%{shrink %%%%}"
@@ -326,6 +328,7 @@ dir
 /hello/%%
 
 bar
+bar baz\baz
 %%
 %%
 %%
@@ -336,6 +339,7 @@ error: %uncompress: argument expected
 error: %getncpus: unexpected argument
 error: %getncpus: unexpected argument
 error: Macro % has illegal name (%define)
+error: Macro %foo has empty body
 error: Macro %foo has empty body
 error: %dump: unexpected argument
 ])
