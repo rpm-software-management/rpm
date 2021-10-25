@@ -314,8 +314,11 @@ runroot rpm --eval "%{define:}"
 runroot rpm --eval "%{define:foo}"
 runroot rpm --eval "%{define:foo bar}%{foo}"
 runroot rpm --eval "%{dump:foo}"
+runroot rpm --eval "%{shrink:%%%%}"
+runroot rpm --eval "%{shrink %%%%}"
+runroot rpm --eval "%shrink %%%%"
 ],
-[1],
+[0],
 [
 dir
 dir
@@ -323,6 +326,9 @@ dir
 /hello/%%
 
 bar
+%%
+%%
+%%
 ],
 [error: %dirname: argument expected
 error: %dirname: argument expected

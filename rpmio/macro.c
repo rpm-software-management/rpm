@@ -960,20 +960,30 @@ static void splitQuoted(ARGV_t *av, const char * str, const char * seps)
 /**
  * Parse arguments (to next new line) for parameterized macro.
  * @param mb		macro expansion state
+ * @param me		macro entry slot
  * @param argvp		pointer to argv array to store the result
  * @param se		arguments to parse
  * @param lastc		stop parsing at lastc
+ * @param splitargs	split into words
  * @return		address to continue parsing
  */
 static const char *
-grabArgs(MacroBuf mb, ARGV_t *argvp, const char * se,
-		const char * lastc)
+grabArgs(MacroBuf mb, const rpmMacroEntry me, ARGV_t *argvp,
+		const char * se, const char * lastc, int splitargs)
 {
-    char *s = NULL;
-    /* Expand possible macros in arguments */
-    expandThis(mb, se, lastc-se, &s);
-    splitQuoted(argvp, s, " \t");
-    free(s);
+    if ((me->flags & ME_PARSE) != 0) {
+	/* Always unsplit and unexpanded */
+	argvAddN(argvp, se, lastc - se);
+    } else {
+	char *s = NULL;
+	/* Expand possible macros in arguments */
+	expandThis(mb, lastc == se ? "" : se, lastc - se, &s);
+	if (splitargs)
+	    splitQuoted(argvp, s, " \t");
+	else
+	    argvAdd(argvp, s);
+	free(s);
+    }
     return (*lastc == '\0') || (*lastc == '\n' && *(lastc-1) != '\\') ?
 	   lastc : lastc + 1;
 }
@@ -981,15 +991,11 @@ grabArgs(MacroBuf mb, ARGV_t *argvp, const char * se,
 static size_t doBody(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
     if (*argv[1]) {
-	char *buf = NULL;
-	if (expandThis(mb, argv[1], 0, &buf) == 0) {
-	    rpmMacroEntry *mep = findEntry(mb->mc, buf, 0, NULL);
-	    if (mep) {
-		mbAppendStr(mb, (*mep)->body);
-	    } else {
-		mbErr(mb, 1, _("no such macro: '%s'\n"), buf);
-	    }
-	    free(buf);
+	rpmMacroEntry *mep = findEntry(mb->mc, argv[1], 0, NULL);
+	if (mep) {
+	    mbAppendStr(mb, (*mep)->body);
+	} else {
+	    mbErr(mb, 1, _("no such macro: '%s'\n"), argv[1]);
 	}
     }
     return 0;
@@ -997,7 +1003,6 @@ static size_t doBody(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 
 static size_t doOutput(MacroBuf mb,  rpmMacroEntry me, ARGV_t argv)
 {
-    char *buf = NULL;
     int loglevel = RPMLOG_NOTICE; /* assume echo */
     if (rstreq("error", me->name)) {
 	loglevel = RPMLOG_ERR;
@@ -1006,9 +1011,7 @@ static size_t doOutput(MacroBuf mb,  rpmMacroEntry me, ARGV_t argv)
 	loglevel = RPMLOG_WARNING;
     }
 
-    (void) expandThis(mb, argv[1], 0, &buf);
-    rpmlog(loglevel, "%s\n", buf);
-    _free(buf);
+    rpmlog(loglevel, "%s\n", argv[1]);
     return 0;
 }
 
@@ -1050,19 +1053,11 @@ static size_t doLua(MacroBuf mb,  rpmMacroEntry me, ARGV_t argv)
 static size_t
 doSP(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
-    const char *b = "";
-    char *buf = NULL;
     char *s = NULL;
 
-    if (*argv[1]) {
-	expandThis(mb, argv[1], 0, &buf);
-	b = buf;
-    }
-
-    s = rstrscat(NULL, (*(me->name) == 'S') ? "%SOURCE" : "%PATCH", b, NULL);
+    s = rstrscat(NULL, (*(me->name) == 'S') ? "%SOURCE" : "%PATCH", argv[1], NULL);
     expandMacro(mb, s, 0);
     free(s);
-    free(buf);
     return 0;
 }
 
@@ -1070,19 +1065,18 @@ static size_t doUncompress(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
     rpmCompressedMagic compressed = COMPRESSED_OTHER;
     char *b, *be, *buf = NULL;
-    size_t gn = strlen(argv[1]);
     int c;
 
-    if (gn) {
-	expandThis(mb, argv[1], gn, &buf);
-	for (b = buf; (c = *b) && isblank(c);)
-	    b++;
-	for (be = b; (c = *be) && !isblank(c);)
-	    be++;
-	*be++ = '\0';
-    }
+    if (!*argv[1])
+	goto exit;
+    buf = xstrdup(argv[1]);
+    for (b = buf; (c = *b) && isblank(c);)
+	b++;
+    for (be = b; (c = *be) && !isblank(c);)
+	be++;
+    *be = '\0';
 
-    if (gn == 0 || *b == '\0')
+    if (*b == '\0')
 	goto exit;
 
     if (rpmFileIsCompressed(b, &compressed))
@@ -1128,12 +1122,8 @@ exit:
 
 static size_t doExpand(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
-    if (*argv[1]) {
-	char *buf;
-	expandThis(mb, argv[1], 0, &buf);
-	expandMacro(mb, buf, 0);
-	free(buf);
-    }
+    if (*argv[1])
+	expandMacro(mb, argv[1], 0);
     return 0;
 }
 
@@ -1162,14 +1152,9 @@ doFoo(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
     char *buf = NULL;
     char *b = NULL;
-    int expand = (argv[1] != NULL && *argv[1]);
 
-    if (expand) {
-	(void) expandThis(mb, argv[1], 0, &buf);
-    } else {
-	buf = xmalloc(MACROBUFSIZ + strlen(me->name));
-	buf[0] = '\0';
-    }
+    if (argv && argv[1])
+	buf = xstrdup(argv[1]);
     if (rstreq("basename", me->name)) {
 	if ((b = strrchr(buf, '/')) == NULL)
 	    b = buf;
@@ -1223,9 +1208,13 @@ doFoo(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
     } else if (rstreq("getenv", me->name)) {
 	b = getenv(buf);
     } else if (rstreq("getconfdir", me->name)) {
+	free(buf);
+	buf = xmalloc(MACROBUFSIZ);
 	sprintf(buf, "%s", rpmConfigDir());
 	b = buf;
     } else if (rstreq("getncpus", me->name)) {
+	free(buf);
+	buf = xmalloc(MACROBUFSIZ);
 	sprintf(buf, "%u", getncpus());
 	b = buf;
     } else if (rstreq("exists", me->name)) {
@@ -1241,13 +1230,9 @@ doFoo(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 
 static size_t doLoad(MacroBuf mb, rpmMacroEntry me, ARGV_t argv)
 {
-    char *arg = NULL;
-    if (expandThis(mb, argv[1], 0, &arg) == 0) {
-	if (loadMacroFile(mb->mc, arg)) {
-	    mbErr(mb, 1, _("failed to load macro file %s\n"), arg);
-	}
+    if (loadMacroFile(mb->mc, argv[1])) {
+	mbErr(mb, 1, _("failed to load macro file %s\n"), argv[1]);
     }
-    free(arg);
     return 0;
 }
 
@@ -1284,7 +1269,7 @@ static struct builtins_s {
     { "getncpus",	doFoo,		0,	0 },
     { "global",		doGlobal,	-1,	ME_PARSE },
     { "load",		doLoad,		1,	0 },
-    { "lua",		doLua,		1,	0 },
+    { "lua",		doLua,		-1,	ME_PARSE },
     { "macrobody",	doBody,		1,	0 },
     { "quote",		doFoo,		1,	0 },
     { "shrink",		doFoo,		1,	0 },
@@ -1553,11 +1538,11 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	if (me->opts != NULL) {
 	    argvAdd(&args, me->name);
 	    if (g) {
-		argvAddN(&args, g, gn);
+		grabArgs(mb, me, &args, g, ge, 0);
 	    } else if (me->flags & ME_PARSE) {
 		argvAdd(&args, se);
 	    } else if (lastc) {
-		fwd = (grabArgs(mb, &args, fe, lastc) - se);
+		fwd = (grabArgs(mb, me, &args, fe, lastc, 1) - se);
 	    }
 	}
 	doExpandThisMacro(mb, me, args, &fwd);
