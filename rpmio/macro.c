@@ -662,7 +662,11 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody, size_t *parsed
     b = be = oe + 1;
     sbody = s;
     SKIPBLANK(s, c);
-    if (c == '{') {	/* XXX permit silent {...} grouping */
+    if (!parsed) {
+	strcpy(b, s);
+	be = b + strlen(b);
+	s += strlen(s);
+    } else if (c == '{') {	/* XXX permit silent {...} grouping */
 	if ((se = matchchar(s, c, '}')) == NULL) {
 	    mbErr(mb, 1, _("Macro %%%s has unterminated body\n"), n);
 	    se = s;	/* XXX W2DO? */
@@ -1718,10 +1722,11 @@ static int defineMacro(rpmMacroContext mc, const char * macro, int level)
 {
     MacroBuf mb = xcalloc(1, sizeof(*mb));
     int rc;
+    size_t parsed = 0;
 
     /* XXX just enough to get by */
     mb->mc = mc;
-    doDefine(mb, macro, level, 0, NULL);
+    doDefine(mb, macro, level, 0, &parsed);
     rc = mb->error;
     _free(mb);
     return rc;
