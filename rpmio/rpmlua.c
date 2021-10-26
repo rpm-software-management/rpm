@@ -1063,7 +1063,7 @@ static int mc_call(lua_State *L)
     if (lua_isstring(L, 1)) {
 	lua_pushfstring(L, "%%{%s %s}", name, lua_tostring(L, 1));
 	/* throw out previous args and call expand() with our result string */
-	lua_rotate(L, 1, 1);
+	lua_replace(L, 1);
 	lua_settop(L, 1);
 	rc = rpm_expand(L);
     } else if (lua_istable(L, 1)) {
@@ -1103,7 +1103,7 @@ static int mc_index(lua_State *L)
 	    rc = 1;
 	} else {
 	    lua_pushfstring(L, "%%{%s}", a);
-	    lua_rotate(L, 1, 1);
+	    lua_replace(L, 1);
 	    lua_settop(L, 1);
 	    rc = rpm_expand(L);
 	}
