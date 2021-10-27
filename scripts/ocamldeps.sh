@@ -32,6 +32,10 @@
 #   Implementations imported:
 #     HASH NAME_FROM_OTHER_MODULE
 #
+# cmxs files are recoqnized, but need to be ignored.
+# They contain references of the interfaces and implementations
+# compiled into them.
+#
 # The hash may contain just '-', in which case it is ignored.
 #
 # Output:
@@ -236,7 +240,7 @@ do
   *.cmo)  parse "${filename}" ;;
   *.cmx)  parse "${filename}" ;;
   *.cmxa) parse "${filename}" ;;
-  *.cmxs) parse "${filename}" ;;
+  *.cmxs) ;;
   *) continue ;;
   esac
 done
