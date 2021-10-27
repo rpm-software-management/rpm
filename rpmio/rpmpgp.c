@@ -502,7 +502,6 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 	case PGPSUBTYPE_REVOCABLE:
 	case PGPSUBTYPE_ARR:
 	case PGPSUBTYPE_REVOKE_KEY:
-	case PGPSUBTYPE_NOTATION:
 	case PGPSUBTYPE_PREFER_KEYSERVER:
 	case PGPSUBTYPE_PRIMARY_USERID:
 	case PGPSUBTYPE_POLICY_URL:
@@ -513,6 +512,7 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 	case PGPSUBTYPE_EMBEDDED_SIG:
 	    pgpPrtHex("", p+1, plen-1);
 	    break;
+	case PGPSUBTYPE_NOTATION:
 	case PGPSUBTYPE_INTERNAL_100:
 	case PGPSUBTYPE_INTERNAL_101:
 	case PGPSUBTYPE_INTERNAL_102:
