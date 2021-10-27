@@ -444,7 +444,7 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
     int rc = 0;
 
     while (hlen > 0 && rc == 0) {
-	int impl = 0;
+	int recognized = 1;
 	i = pgpLen(p, hlen, &plen);
 	if (i == 0 || plen < 1 || i + plen > hlen)
 	    break;
@@ -474,7 +474,6 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 		pgpPrtVal(" ", pgpKeyServerPrefsTbl, p[i]);
 	    break;
 	case PGPSUBTYPE_SIG_CREATE_TIME:
-	    impl = *p;
 	    if (!(_digp->saved & PGPDIG_SAVED_TIME) &&
 		(sigtype == PGPSIGTYPE_POSITIVE_CERT || sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT || sigtype == PGPSIGTYPE_STANDALONE))
 	    {
@@ -489,7 +488,6 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 	    break;
 
 	case PGPSUBTYPE_ISSUER_KEYID:	/* issuer key ID */
-	    impl = *p;
 	    if (!(_digp->saved & PGPDIG_SAVED_ID) &&
 		(sigtype == PGPSIGTYPE_POSITIVE_CERT || sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT || sigtype == PGPSIGTYPE_STANDALONE))
 	    {
@@ -513,6 +511,8 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 	case PGPSUBTYPE_REVOKE_REASON:
 	case PGPSUBTYPE_FEATURES:
 	case PGPSUBTYPE_EMBEDDED_SIG:
+	    pgpPrtHex("", p+1, plen-1);
+	    break;
 	case PGPSUBTYPE_INTERNAL_100:
 	case PGPSUBTYPE_INTERNAL_101:
 	case PGPSUBTYPE_INTERNAL_102:
@@ -525,12 +525,13 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 	case PGPSUBTYPE_INTERNAL_109:
 	case PGPSUBTYPE_INTERNAL_110:
 	default:
+	    recognized = 0;
 	    pgpPrtHex("", p+1, plen-1);
 	    break;
 	}
 	pgpPrtNL();
 
-	if (!impl && (p[0] & PGPSUBTYPE_CRITICAL))
+	if (!recognized && (p[0] & PGPSUBTYPE_CRITICAL))
 	    rc = 1;
 
 	p += plen;
