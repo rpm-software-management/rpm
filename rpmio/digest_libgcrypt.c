@@ -422,8 +422,6 @@ static int pgpVerifySigEDDSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig, uint8_t *hash, 
 	return rc;
     if (pgpkey->curve != PGPCURVE_ED25519)
 	return rc;
-    if (hash_algo != PGPHASHALGO_SHA256)
-	return rc;
     if (ed25519_zero_extend(sig->r, buf_r, 32) || ed25519_zero_extend(sig->s, buf_s, 32))
 	return rc;
     gcry_sexp_build(&sexp_sig, NULL, "(sig-val (eddsa (r %b) (s %b)))", 32, (const char *)buf_r, 32, (const char *)buf_s, 32);
