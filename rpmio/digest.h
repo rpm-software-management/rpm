@@ -33,7 +33,7 @@ struct pgpDigParams_s {
 
     uint8_t hash_algo;
     uint8_t sigtype;
-    uint8_t hashlen;
+    uint32_t hashlen;
     uint8_t signhash16[2];
     pgpKeyID_t signid;
     uint8_t saved;
