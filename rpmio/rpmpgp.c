@@ -1311,6 +1311,7 @@ rpmRC pgpVerifySignature(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx)
     }
 
     rpmDigestFinal(ctx, (void **)&hash, &hashlen, 0);
+    ctx = NULL;
 
     /* Compare leading 16 bits of digest for quick check. */
     if (hash == NULL || memcmp(hash, sig->signhash16, 2) != 0)
@@ -1334,6 +1335,7 @@ rpmRC pgpVerifySignature(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx)
 
 exit:
     free(hash);
+    rpmDigestFinal(ctx, NULL, NULL, 0);
     return res;
 
 }
