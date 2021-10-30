@@ -206,9 +206,10 @@ package or when debugging this package.\
 #	Path to script that creates buildinfo in a /usr/lib/src/buildinfo
 #	shadow tree.
 #
-%__buildinfo_install_post   \
-    %{_rpmconfigdir}/rpmbuildinfo \\\
-    "%{buildroot}" "%{u2p:%{_builddir}}" "%{?epoch:%{epoch}}" "%{name}" "%{version}" "%{release}" "%{_arch}"\
+%__buildinfo_install_post \
+  %{set_build_flags}; \
+  %{_rpmconfigdir}/rpmbuildinfo \\\
+  "%{buildroot}" "%{u2p:%{_builddir}}" "%{?epoch:%{epoch}}" "%{name}" "%{version}" "%{release}" "%{_arch}"\
 %{nil}
 
 #	Template for buildinfo information sub-package.
