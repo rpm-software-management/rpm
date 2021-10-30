@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #
 # Copyright (c) 2016  Bernhard M. Wiedemann <bernhard@zq1.de>
@@ -27,15 +27,7 @@
 # in this Software without prior written authorization of the copyright holder.
 #
 
-set -e
-
-RPM_BUILD_ROOT="$1"
-RPM_BUILD_DIR="$2"
-RPM_PACKAGE_EPOCH="${3:-0}"
-RPM_PACKAGE_NAME="$4"
-RPM_PACKAGE_VERSION="$5"
-RPM_PACKAGE_RELEASE="$6"
-RPM_ARCH="$7"
+set -e -o pipefail
 
 getos() {
     # shellcheck disable=SC1091
@@ -49,48 +41,63 @@ getos() {
     printf %s "$ID"
 }
 
+RPM_BUILD_ROOT="$1"
+RPM_BUILD_DIR="$2"
+RPM_PACKAGE_EPOCH="${3:-0}"
+RPM_PACKAGE_NAME="$4"
+RPM_PACKAGE_VERSION="$5"
+RPM_PACKAGE_RELEASE="$6"
+RPM_ARCH="$7"
+
 RPM_BUILD_NAME="${RPM_PACKAGE_NAME}-${RPM_PACKAGE_VERSION}-${RPM_PACKAGE_RELEASE}.${RPM_ARCH}"
+RPM_BUILD_ARCH="$(uname -m)"
+RPM_BUILD_OS="$(getos)"
 
-BUILDINFO_DIR="$RPM_BUILD_ROOT/usr/lib/src/buildinfo"
-BUILDINFO="${BUILDINFO_DIR}/${RPM_BUILD_NAME}.buildinfo"
+BUILDINFO_DIR="${RPM_BUILD_ROOT}/usr/lib/src/buildinfo"
+BUILDINFO="${BUILDINFO_DIR}/${RPM_BUILD_NAME}.rpmbuildinfo"
 
-mkdir -p "$BUILDINFO_DIR"
+mkdir -p "${BUILDINFO_DIR}"
 
-cat > "$BUILDINFO" <<EOF
-Format: 1.0-rpm
-Build-Architecture: $(uname -m)
-Source: $RPM_PACKAGE_NAME
-Epoch: $RPM_PACKAGE_EPOCH
+printf '%s' "\
+Format: 1.0
+BuildArchitecture: ${RPM_BUILD_ARCH}
+Name: ${RPM_PACKAGE_NAME}
+Epoch: ${RPM_PACKAGE_EPOCH}
 Version: ${RPM_PACKAGE_VERSION}
 Release: ${RPM_PACKAGE_RELEASE}
-Architecture: $RPM_ARCH
-Build-Origin: $(getos)
-Build-Path: $RPM_BUILD_DIR
-EOF
+Architecture: ${RPM_ARCH}
+BuildOS: ${RPM_BUILD_OS}
+BuildDir: ${RPM_BUILD_DIR}
+" > "${BUILDINFO}"
 
-printf 'Installed-Build-Depends:\n' >> "$BUILDINFO"
+{ \
+printf 'EnvironmentRequires:\n'; \
 rpm -qa --queryformat '%{epoch}:%{name}-%{version}-%{release}.%{arch}\n' \
     | LC_ALL=C sort -t: -k2 \
-    | sed -e 's/^(none)://; /\.(none)$/d; s/^/ /' >> "$BUILDINFO"
-
-printf 'Environment:\n' >> "$BUILDINFO"
+    | sed -e 's/^(none)://; /\.(none)$/d; s/^/ /'; \
+printf 'Environment:\n'; \
+} >> "${BUILDINFO}"
 
 # Whitelist from Debian's Dpkg:
-# https://anonscm.debian.org/git/dpkg/dpkg.git/tree/scripts/Dpkg/Build/Info.pm#n50
+# https://salsa.debian.org/dpkg-team/dpkg/-/blob/main/scripts/Dpkg/Build/Info.pm#L51
 ENV_WHITELIST=
 
 # Toolchain.
-ENV_WHITELIST="$ENV_WHITELIST CC CPP CXX OBJC OBJCXX PC FC M2C AS LD AR RANLIB MAKE AWK LEX YACC"
+ENV_WHITELIST="${ENV_WHITELIST} CC CPP CXX OBJC OBJCXX PC FC M2C AS LD AR RANLIB MAKE AWK LEX YACC"
+
 # Toolchain flags.
-ENV_WHITELIST="$ENV_WHITELIST CFLAGS CPPFLAGS CXXFLAGS OBJCFLAGS OBJCXXFLAGS GCJFLAGS FFLAGS LDFLAGS ARFLAGS MAKEFLAGS"
+ENV_WHITELIST="${ENV_WHITELIST} CFLAGS CPPFLAGS CXXFLAGS OBJCFLAGS OBJCXXFLAGS GCJFLAGS FFLAGS LDFLAGS ARFLAGS MAKEFLAGS"
+
 # Dynamic linker, see ld(1).
-ENV_WHITELIST="$ENV_WHITELIST LD_LIBRARY_PATH"
+ENV_WHITELIST="${ENV_WHITELIST} LD_LIBRARY_PATH"
+
 # Locale, see locale(1).
-ENV_WHITELIST="$ENV_WHITELIST LANG LC_ALL LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT LC_IDENTIFICATION"
-ENV_WHITELIST="$ENV_WHITELIST SOURCE_DATE_EPOCH"
-for var in $ENV_WHITELIST
+ENV_WHITELIST="${ENV_WHITELIST} LANG LC_ALL LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT LC_IDENTIFICATION"
+ENV_WHITELIST="${ENV_WHITELIST} SOURCE_DATE_EPOCH"
+
+for var in ${ENV_WHITELIST}
 do
-    eval value="\$$var"
+    eval value="\$${var}"
     # shellcheck disable=SC2154
-    test -n "$value" && printf ' %s="%s"\n' "$var" "$value" >> "$BUILDINFO"
+    test -n "${value}" && printf ' %s="%s"\n' "${var}" "${value}" >> "${BUILDINFO}"
 done
