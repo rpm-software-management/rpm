@@ -32,13 +32,10 @@ set -e -o pipefail
 getos() {
     # shellcheck disable=SC1091
     test -r /etc/os-release && . /etc/os-release
-    if test -n "$BUILD_ORIGIN"; then
-        ID="$BUILD_ORIGIN"
+    if test -z "${ID}"; then
+        ID="$(cat /etc/system-release)"
     fi
-    if test -z "$ID"; then
-        ID=$(cat /etc/system-release)
-    fi
-    printf %s "$ID"
+    printf '%s' "${ID}"
 }
 
 RPM_BUILD_ROOT="$1"
