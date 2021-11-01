@@ -286,20 +286,7 @@ static PyObject *spec_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
     return spec_Wrap(subtype, spec);
 }
 
-static PyObject * spec_doBuild(specObject *self, PyObject *args, PyObject *kwds)
-{
-    char * kwlist[] = { "ts", "buildAmount", "pkgFlags", NULL };
-    struct rpmBuildArguments_s ba = { 0 };
-    rpmts ts;
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "o&i|i:spec_doBuild",
-	       kwlist, rpmtsFromPyObject, &ts, &ba.buildAmount, &ba.pkgFlags))
-	return NULL;
-    return PyBool_FromLong(rpmSpecBuild(ts, self->spec, &ba) == RPMRC_OK);
-}
-
 static struct PyMethodDef spec_methods[] = {
-    { "_doBuild", (PyCFunction)spec_doBuild, METH_VARARGS|METH_KEYWORDS, NULL },
     { NULL, NULL }
 };
 
