@@ -95,6 +95,7 @@ function msg()
 function check_rpath() {
     pos=0
     rpath=$(readelf -W -d "$1" 2>/dev/null | LANG=C grep -E "\((RPATH|RUNPATH)\).*:") || return 0
+    rpath_orig="$rpath"
     rpath=$(echo "$rpath" | LANG=C sed -e "s!.*\(RPATH\|RUNPATH\).*: \[\(.*\)\]!\2!p;d")
 
     tmp=aux:$rpath:/lib/aux || :
@@ -105,7 +106,7 @@ function check_rpath() {
 
     allow_ORIGIN=1
     for j; do
-	lower=$(echo $j | grep -E -o "RPATH|RUNPATH" | awk '{print tolower($0)}')
+	lower=$(echo $rpath_orig | grep -E -o "RPATH|RUNPATH" | awk '{print tolower($0)}')
 	new_allow_ORIGIN=0
 
 	if test -z "$j"; then
@@ -149,7 +150,7 @@ function check_rpath() {
 	msg "$badness"  4 "file '$base' contains an insecure $lower '$j' in [$rpath]" || fail=1
 	msg "$badness"  8 "file '$base' contains the \$ORIGIN $lower specifier at the wrong position in [$rpath]" || fail=1
 	msg "$badness" 16 "file '$base' contains an empty $lower in [$rpath]"         || fail=1
-	msg "$badness" 32 "file '$base' contains an $lower referencing '..' of an absolute path [$rpath]" || fail=2
+	msg "$badness" 32 "file '$base' contains a $lower referencing '..' of an absolute path [$rpath]" || fail=2
 	let ++pos
     done
 }
