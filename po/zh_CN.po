@@ -86,16 +86,16 @@ msgstr "buildroot 已经指定，忽略 %s\n"
 
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
-msgstr "依据 <specfile> 从 %prep (解压缩源代码并应用补丁) 开始构建"
+msgstr "仅执行 <specfile> 的 %prep 部分(解压缩源代码并应用补丁) "
 
 msgid "<specfile>"
 msgstr "<specfile>"
 
 msgid "build through %build (%prep, then compile) from <specfile>"
-msgstr "依据 <specfile> 从 %build (%prep 之后编译) 开始构建"
+msgstr "仅执行 <specfile> 的 %build 部分(先执行 %prep，然后执行 %build) "
 
 msgid "build through %install (%prep, %build, then install) from <specfile>"
-msgstr "依据 <specfile> 从 %install (%prep、%build 后安装) 开始构建"
+msgstr "仅执行 <specfile> 的 %install 部分(依次执行%prep、%build、%install) "
 
 #, c-format
 msgid "verify %files section from <specfile>"
@@ -123,11 +123,11 @@ msgid "<source package>"
 msgstr "<source package>"
 
 msgid "build through %build (%prep, then compile) from <source package>"
-msgstr "仅执行 <source package> 的 ％build 部分(先执行 %prep，然后 ％build)"
+msgstr "仅执行 <source package> 的 %build 部分(先执行 %prep，然后执行 %build)"
 
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
-msgstr "依据 <source package> 从 %install (%prep、%build 然后安装)开始构建"
+msgstr "仅执行 <source package> 的 %install 部分(依次执行%prep、%build、%install)"
 
 #, c-format
 msgid "verify %files section from <source package>"
