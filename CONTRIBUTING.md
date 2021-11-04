@@ -10,9 +10,9 @@ So while we invite contributions from all sides - especially from the
 multitude of RPM based distributions - RPM by its very nature is not an
 easy project to get into.
 
-When planning on non-trivial changes to RPM, please check with us first to
-avoid situations where significant work goes wasted because it's not in
-line with RPM design and goals.
+When planning on any non-trivial amount of work on RPM, please check with us
+first to avoid situations where efforts goes wasted because it's
+not in line with RPM design and goals.
 
 ## Submitting Patches
 
@@ -126,3 +126,8 @@ maintain consistency where another pre-existing prefix (eg `header`) is
 used for historical reasons.
 
 All public APIs must be documented using Doxygen annotation.
+
+## Translations
+
+Translations should be submitted through [Fedora Weblate](https://translate.fedoraproject.org/projects/rpm/),
+the upstream project cannot review translations.
