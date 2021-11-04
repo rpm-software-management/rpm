@@ -461,13 +461,54 @@ static rpmRC includeVeritySignatures(FD_t fd, Header *sigp, Header *hdrp)
     rpmRC rc = RPMRC_OK;
     char *key = rpmExpand("%{?_file_signing_key}", NULL);
     char *keypass = rpmExpand("%{?_file_signing_key_password}", NULL);
+    char *pkcs11_engine = rpmExpand("%{?_pkcs11_engine}", NULL);
+    char *pkcs11_module = rpmExpand("%{?_pkcs11_module}", NULL);
+    char *pkcs11_keyid = rpmExpand("%{?_pkcs11_keyid}", NULL);
     char *cert = rpmExpand("%{?_file_signing_cert}", NULL);
     char *algorithm = rpmExpand("%{?_verity_algorithm}", NULL);
     uint16_t algo = 0;
 
+    if (rstreq(key, "")) {
+	free(key);
+	key = NULL;
+    }
+
+    if (rstreq(pkcs11_engine, "")) {
+	free(pkcs11_engine);
+	pkcs11_engine = NULL;
+    }
+
+    if (rstreq(pkcs11_module, "")) {
+	free(pkcs11_module);
+	pkcs11_module = NULL;
+    }
+
+    if (rstreq(pkcs11_keyid, "")) {
+	free(pkcs11_keyid);
+	pkcs11_keyid = NULL;
+    }
+
     if (rstreq(keypass, "")) {
 	free(keypass);
 	keypass = NULL;
+    }
+
+    if (key) {
+        if (pkcs11_engine || pkcs11_module || pkcs11_keyid) {
+            rpmlog(
+                RPMLOG_ERR,
+                _("fsverity signatures require a key specified either by file or by PKCS#11 token, not both\n"));
+            rc = RPMRC_FAIL;
+            goto out;
+        }
+    } else {
+        if (!pkcs11_engine || !pkcs11_module) {
+            rpmlog(
+                RPMLOG_ERR,
+                _("fsverity signatures require both PKCS#11 engine and module to use PKCS#11 token\n"));
+            rc = RPMRC_FAIL;
+            goto out;
+        }
     }
 
     if (algorithm && strlen(algorithm) > 0) {
@@ -481,16 +522,16 @@ static rpmRC includeVeritySignatures(FD_t fd, Header *sigp, Header *hdrp)
 		    goto out;
 	    }
     }
-    if (key && cert) {
-	    rc = rpmSignVerity(fd, *sigp, *hdrp, key, keypass, cert, algo);
-    } else {
-	rpmlog(RPMLOG_ERR, _("fsverity signatures requires a key and a cert\n"));
-	rc = RPMRC_FAIL;
-    }
+
+    rc = rpmSignVerity(fd, *sigp, *hdrp, key, keypass,
+                pkcs11_engine, pkcs11_module, pkcs11_keyid, cert, algo);
 
  out:
     free(keypass);
     free(key);
+    free(pkcs11_engine);
+    free(pkcs11_module);
+    free(pkcs11_keyid);
     free(cert);
     return rc;
 #else

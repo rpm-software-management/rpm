@@ -22,12 +22,15 @@ extern "C" {
  * @param h		package header
  * @param key		signing key
  * @param keypass	signing key password
+ * @param pkcs11_engine		PKCS#11 engine to use PKCS#11 token support for signing key
+ * @param pkcs11_module		PKCS#11 module to use PKCS#11 token support for signing key
+ * @param pkcs11_keyid		PKCS#11 key identifier
  * @param cert		signing cert
  * @return		RPMRC_OK on success
  */
-RPM_GNUC_INTERNAL
-rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
-		    char *keypass, char *cert, uint16_t algo);
+rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key, char *keypass,
+		    char *pkcs11_engine, char *pkcs11_module, char *pkcs11_keyid,
+		    char *cert, uint16_t algo);
 
 #ifdef _cplusplus
 }

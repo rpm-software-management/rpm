@@ -34,8 +34,9 @@ static int rpmVerityRead(void *opaque, void *buf, size_t size)
 	return retval;
 }
 
-static char *rpmVeritySignFile(rpmfi fi, size_t *sig_size, char *key,
-			       char *keypass, char *cert, uint16_t algo)
+static char *rpmVeritySignFile(rpmfi fi, size_t *sig_size, char *key, char *keypass,
+			    char *pkcs11_engine, char *pkcs11_module, char *pkcs11_keyid,
+			    char *cert, uint16_t algo)
 {
     struct libfsverity_merkle_tree_params params;
     struct libfsverity_signature_params sig_params;
@@ -76,6 +77,9 @@ static char *rpmVeritySignFile(rpmfi fi, size_t *sig_size, char *key,
 
     memset(&sig_params, 0, sizeof(struct libfsverity_signature_params));
     sig_params.keyfile = key;
+    sig_params.pkcs11_engine = pkcs11_engine;
+    sig_params.pkcs11_module = pkcs11_module;
+    sig_params.pkcs11_keyid = pkcs11_keyid;
     sig_params.certfile = cert;
     if (libfsverity_sign_digest(digest, &sig_params, &sig, sig_size)) {
 	rpmlog(RPMLOG_DEBUG, _("failed to sign digest\n"));
@@ -94,8 +98,9 @@ static char *rpmVeritySignFile(rpmfi fi, size_t *sig_size, char *key,
     return sig_base64;
 }
 
-rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
-		    char *keypass, char *cert, uint16_t algo)
+rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key, char *keypass,
+	        char *pkcs11_engine, char *pkcs11_module, char *pkcs11_keyid,
+	        char *cert, uint16_t algo)
 {
     int rc;
     FD_t gzdi;
@@ -125,6 +130,9 @@ rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
     }
 
     rpmlog(RPMLOG_DEBUG, _("key: %s\n"), key);
+    rpmlog(RPMLOG_DEBUG, _("pkcs11_engine: %s\n"), pkcs11_engine);
+    rpmlog(RPMLOG_DEBUG, _("pkcs11_module: %s\n"), pkcs11_module);
+    rpmlog(RPMLOG_DEBUG, _("pkcs11_keyid: %s\n"), pkcs11_keyid);
     rpmlog(RPMLOG_DEBUG, _("cert: %s\n"), cert);
 
     compr = headerGetString(h, RPMTAG_PAYLOADCOMPRESSOR);
@@ -164,16 +172,16 @@ rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
     while (rpmfiNext(fi) >= 0) {
 	idx = rpmfiFX(fi);
 
-	signatures[idx] = rpmVeritySignFile(fi, &sig_size, key, keypass, cert,
-					    algo);
+	signatures[idx] = rpmVeritySignFile(fi, &sig_size, key, keypass, pkcs11_engine,
+					    pkcs11_module, pkcs11_keyid, cert, algo);
     }
 
     while (rpmfiNext(hfi) >= 0) {
 	idx = rpmfiFX(hfi);
 	if (signatures[idx])
 	    continue;
-	signatures[idx] = rpmVeritySignFile(hfi, &sig_size, key, keypass, cert,
-					    algo);
+	signatures[idx] = rpmVeritySignFile(fi, &sig_size, key, keypass, pkcs11_engine,
+					    pkcs11_module, pkcs11_keyid, cert, algo);
     }
 
     rpmtdReset(&td);

@@ -24,6 +24,9 @@ static int fskpass = 0;
 static char * fileSigningKey = NULL;
 #endif
 #ifdef WITH_FSVERITY
+static char * pkcs11Engine = NULL;
+static char * pkcs11Module = NULL;
+static char * pkcs11KeyId = NULL;
 static char * fileSigningCert = NULL;
 static char * verityAlgorithm = NULL;
 #endif
@@ -59,6 +62,15 @@ static struct poptOption signOptsTable[] = {
     { "certpath", '\0', POPT_ARG_STRING, &fileSigningCert, 0,
 	N_("use file signing cert <cert>"),
 	N_("<cert>") },
+    { "pkcs11_engine", '\0', POPT_ARG_STRING, &pkcs11Engine, 0,
+	N_("use pkcs#11 token for fsverity signing key with openssl engine <pkcs11_engine>"),
+	N_("<pkcs11_engine>") },
+    { "pkcs11_module", '\0', POPT_ARG_STRING, &pkcs11Module, 0,
+	N_("use pkcs#11 token for fsverity signing key with openssl module <pkcs11_module>"),
+	N_("<pkcs11_module>") },
+    { "pkcs11_keyid", '\0', POPT_ARG_STRING, &pkcs11KeyId, 0,
+	N_("use pkcs#11 token for fsverity signing key with keyid <pkcs11_keyid>"),
+	N_("<pkcs11_keyid>") },
 #endif
 #if defined(WITH_IMAEVM) || defined(WITH_FSVERITY)
     { "fskpath", '\0', POPT_ARG_STRING, &fileSigningKey, 0,
@@ -139,6 +151,15 @@ static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
     }
 
 #ifdef WITH_FSVERITY
+    if (pkcs11Engine) {
+    rpmPushMacro(NULL, "_pkcs11_engine", NULL, pkcs11Engine, RMIL_GLOBAL);
+    }
+    if (pkcs11Module) {
+    rpmPushMacro(NULL, "_pkcs11_module", NULL, pkcs11Module, RMIL_GLOBAL);
+    }
+    if (pkcs11KeyId) {
+    rpmPushMacro(NULL, "_pkcs11_keyid", NULL, pkcs11KeyId, RMIL_GLOBAL);
+    }
     if (fileSigningCert) {
 	rpmPushMacro(NULL, "_file_signing_cert", NULL, fileSigningCert, RMIL_GLOBAL);
     }
@@ -149,9 +170,9 @@ static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
 
     if (flags_sign_files(sargs->signflags)) {
 	char *fileSigningKeyPassword = NULL;
-	char *key = rpmExpand("%{?_file_signing_key}", NULL);
-	if (rstreq(key, "")) {
-	    fprintf(stderr, _("You must set \"%%_file_signing_key\" in your macro file or on the command line with --fskpath\n"));
+	char *cert = rpmExpand("%{?_file_signing_cert}", NULL);
+	if (rstreq(cert, "")) {
+	    fprintf(stderr, _("You must set \"%%_file_signing_cert\" in your macro file or on the command line with --certpath\n"));
 	    goto exit;
 	}
 
@@ -166,7 +187,7 @@ static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
 	    free(fileSigningKeyPassword);
 	}
 
-	free(key);
+	free(cert);
     }
 #endif
 
