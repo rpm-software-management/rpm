@@ -63,6 +63,18 @@ SIGN OPTIONS
 
 :   Used with **\--signfiles**, use file signing key *Key*.
 
+**\--pkcs11_engine ***PKCS11_ENGINE*
+
+:   Used with **\--signverity**, use pkcs#11 token with openssl pkcs#11 engine *Pkcs11Engine*.
+
+**\--pkcs11_module ***PKCS11_MODULE*
+
+:   Used with **\--signverity**, use pkcs#11 token with openssl pkcs#11 module *Pkcs11Module*.
+
+**\--pkcs11_keyid ***PKCS11_KEYID*
+
+:   Used with **\--signverity**, use pkcs#11 token with key id *Pkcs11KeyId*.
+
 **\--certpath ***CERT*
 
 :   Used with **\--signverity**, use file signing certificate *Cert*.
@@ -88,10 +100,12 @@ SIGN OPTIONS
 
 :   Sign package files with fsverity signatures. The file signing key
     (RSA private key) and the signing certificate must be set before
-    signing the package. The key can be configured on the command line
-    with **\--fskpath** or the macro %\_file\_signing\_key, and the cert
-    can be configured on the command line with **\--certpath** or the
-    macro %\_file\_signing\_cert.
+    signing the package. The key can be configured either on the command
+    line with **\--fskpath** or the macro %\_file\_signing\_key, or with
+    pkcs#11 token using **\--pkcs11_module** and **\--pkcs11_module**
+    or the macros %\_pkcs11\_engine and %\_pkcs11\_module. The cert can
+    be configured on the command line with **\--certpath** or the macro
+    %\_file\_signing\_cert.
 
 USING GPG TO SIGN PACKAGES
 --------------------------
