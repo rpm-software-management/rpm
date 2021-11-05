@@ -5,4 +5,6 @@ if [ -z "$RPM_BUILD_ROOT" ] || [ "$RPM_BUILD_ROOT" = "/" ]; then
   exit 0
 fi
 
-find "$RPM_BUILD_ROOT" -name "*.la" -type f -delete
+find "$RPM_BUILD_ROOT" -type f -name '*.la' 2>/dev/null -print0 |
+  xargs --null grep --fixed-strings '.la - a libtool library file' --files-with-matches --null |
+  xargs --null rm --force
