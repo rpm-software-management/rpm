@@ -1663,13 +1663,7 @@ static void pushMacroAny(rpmMacroContext mc,
     if (mep) {
 	/* entry with shared name */
 	me = xmalloc(mesize);
-	/* copy body */
-	me->body = p = me->arena;
-	if (blen)
-	    memcpy(p, b, blen + 1);
-	else
-	    *p = '\0';
-	p += blen + 1;
+	p = me->arena;
 	/* set name */
 	me->name = (*mep)->name;
     }
@@ -1678,18 +1672,19 @@ static void pushMacroAny(rpmMacroContext mc,
 	mep = newEntry(mc, pos);
 	size_t nlen = strlen(n);
 	me = xmalloc(mesize + nlen + 1);
-	/* copy body */
-	me->body = p = me->arena;
-	if (blen)
-	    memcpy(p, b, blen + 1);
-	else
-	    *p = '\0';
-	p += blen + 1;
+	p = me->arena;
 	/* copy name */
-	me->name = memcpy(p, n, nlen + 1);
+	me->name = p;
+	memcpy(p, n, nlen + 1);
 	p += nlen + 1;
     }
-
+    /* copy body */
+    me->body = p;
+    if (blen)
+	memcpy(p, b, blen + 1);
+    else
+	*p = '\0';
+    p += blen + 1;
     /* copy options */
     if (olen)
 	me->opts = memcpy(p, o, olen + 1);
