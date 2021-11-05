@@ -1363,15 +1363,14 @@ doMacro(MacroBuf mb, rpmMacroEntry me, ARGV_t args, size_t *parsed)
 	    goto exit;
 	}
 	me->func(mb, me, args, parsed);
+    } else if (me->flags & ME_LITERAL) {
+	if (me->body && *me->body)
+	    mbAppendStr(mb, me->body);
     } else if (me->body && *me->body) {
 	/* Setup args for "%name " macros with opts */
 	if (args != NULL)
 	    setupArgs(mb, me, args);
-
-	if ((me->flags & ME_LITERAL) != 0)
-	    mbAppendStr(mb, me->body);
-	else
-	    expandMacro(mb, me->body, 0);
+	expandMacro(mb, me->body, 0);
 	/* Free args for "%name " macros with opts */
 	if (args != NULL)
 	    freeArgs(mb);
