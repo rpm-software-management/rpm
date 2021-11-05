@@ -195,6 +195,27 @@ findEntry(rpmMacroContext mc, const char *name, size_t namelen, size_t *pos)
     return NULL;
 }
 
+/**
+ * Create a new entry in the macro table.
+ * @param mc		macro context
+ * @param pos		insert position
+ * @return		address of slot in macro table
+ */
+static rpmMacroEntry *
+newEntry(rpmMacroContext mc, size_t pos)
+{
+    /* extend macro table */
+    const int delta = 256;
+    if (mc->n % delta == 0)
+	mc->tab = xrealloc(mc->tab, sizeof(rpmMacroEntry) * (mc->n + delta));
+    /* shift pos+ entries to the right */
+    memmove(mc->tab + pos + 1, mc->tab + pos, sizeof(rpmMacroEntry) * (mc->n - pos));
+    mc->n++;
+    /* make slot */
+    mc->tab[pos] = NULL;
+    return &mc->tab[pos];
+}
+
 /* =============================================================== */
 
 /**
@@ -1653,17 +1674,8 @@ static void pushMacroAny(rpmMacroContext mc,
 	me->name = (*mep)->name;
     }
     else {
-	/* extend macro table */
-	const int delta = 256;
-	if (mc->n % delta == 0)
-	    mc->tab = xrealloc(mc->tab, sizeof(me) * (mc->n + delta));
-	/* shift pos+ entries to the right */
-	memmove(mc->tab + pos + 1, mc->tab + pos, sizeof(me) * (mc->n - pos));
-	mc->n++;
-	/* make slot */
-	mc->tab[pos] = NULL;
-	mep = &mc->tab[pos];
 	/* entry with new name */
+	mep = newEntry(mc, pos);
 	size_t nlen = strlen(n);
 	me = xmalloc(mesize + nlen + 1);
 	/* copy body */
