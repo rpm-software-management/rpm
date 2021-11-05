@@ -1168,14 +1168,14 @@ static void doFoo(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
     char *buf = NULL;
     char *b = NULL;
 
-    if (argv && argv[1])
-	buf = xstrdup(argv[1]);
     if (rstreq("basename", me->name)) {
+	buf = xstrdup(argv[1]);
 	if ((b = strrchr(buf, '/')) == NULL)
 	    b = buf;
 	else
 	    b++;
     } else if (rstreq("dirname", me->name)) {
+	buf = xstrdup(argv[1]);
 	if ((b = strrchr(buf, '/')) != NULL)
 	    *b = '\0';
 	b = buf;
@@ -1184,6 +1184,7 @@ static void doFoo(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 	 * shrink body by removing all leading and trailing whitespaces and
 	 * reducing intermediate whitespaces to a single space character.
 	 */
+	buf = xstrdup(argv[1]);
 	size_t i = 0, j = 0;
 	size_t buflen = strlen(buf);
 	int was_space = 0;
@@ -1202,38 +1203,29 @@ static void doFoo(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 	buf[j] = '\0';
 	b = buf;
     } else if (rstreq("quote", me->name)) {
-	char *quoted = NULL;
-	rasprintf(&quoted, "%c%s%c", 0x1f, buf, 0x1f);
-	free(buf);
-	b = buf = quoted;
+	rasprintf(&buf, "%c%s%c", 0x1f, argv[1], 0x1f);
+	b = buf;
     } else if (rstreq("suffix", me->name)) {
+	buf = xstrdup(argv[1]);
 	if ((b = strrchr(buf, '.')) != NULL)
 	    b++;
     } else if (rstreq("expr", me->name)) {
-	char *expr = rpmExprStrFlags(buf, 0);
-	if (expr) {
-	    free(buf);
-	    b = buf = expr;
-	} else {
+	b = buf = rpmExprStrFlags(argv[1], 0);
+	if (!b)
 	    mb->error = 1;
-	}
     } else if (rstreq("url2path", me->name) || rstreq("u2p", me->name)) {
+	buf = xstrdup(argv[1]);
 	(void)urlPath(buf, (const char **)&b);
 	if (*b == '\0') b = "/";
     } else if (rstreq("getenv", me->name)) {
-	b = getenv(buf);
+	b = getenv(argv[1]);
     } else if (rstreq("getconfdir", me->name)) {
-	free(buf);
-	buf = xmalloc(MACROBUFSIZ);
-	sprintf(buf, "%s", rpmConfigDir());
-	b = buf;
+	b = (char *)rpmConfigDir();
     } else if (rstreq("getncpus", me->name)) {
-	free(buf);
-	buf = xmalloc(MACROBUFSIZ);
+	b = buf = xmalloc(MACROBUFSIZ);
 	sprintf(buf, "%u", getncpus());
-	b = buf;
     } else if (rstreq("exists", me->name)) {
-	b = (access(buf, F_OK) == 0) ? "1" : "0";
+	b = (access(argv[1], F_OK) == 0) ? "1" : "0";
     }
 
     if (b) {
