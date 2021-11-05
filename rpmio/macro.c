@@ -1184,23 +1184,19 @@ static void doFoo(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 	 * shrink body by removing all leading and trailing whitespaces and
 	 * reducing intermediate whitespaces to a single space character.
 	 */
-	buf = xstrdup(argv[1]);
-	size_t i = 0, j = 0;
-	size_t buflen = strlen(buf);
-	int was_space = 0;
-	while (i < buflen) {
-	    if (risspace(buf[i])) {
-		was_space = 1;
-		i++;
-		continue;
-	    } else if (was_space) {
-		was_space = 0;
-		if (j > 0) /* remove leading blanks at all */
-		    buf[j++] = ' ';
+	char *p, c, last_c = ' ';
+	buf = b = p = xstrdup(argv[1]);
+	while ((c = *p++) != 0) {
+	    if (risspace(c)) {
+		if (last_c == ' ')
+		    continue;
+		c = ' ';
 	    }
-	    buf[j++] = buf[i++];
+	    *b++ = last_c = c;
 	}
-	buf[j] = '\0';
+	if (b != buf && b[-1] == ' ')
+	    b--;
+	*b = 0;
 	b = buf;
     } else if (rstreq("quote", me->name)) {
 	rasprintf(&buf, "%c%s%c", 0x1f, argv[1], 0x1f);
