@@ -1632,6 +1632,17 @@ static int doExpandMacros(rpmMacroContext mc, const char *src, int flags,
     return rc;
 }
 
+static int doExpandThisMacro(rpmMacroContext mc, rpmMacroEntry me, ARGV_const_t args,
+			 int flags, char **target)
+{
+    MacroBuf mb = mbCreate(mc, flags);
+    int rc = expandThisMacro(mb, me, args, flags);
+    mb->buf[mb->tpos] = '\0';	/* XXX just in case */
+    *target = xrealloc(mb->buf, mb->tpos + 1);
+    _free(mb);
+    return rc;
+}
+
 static void pushMacroAny(rpmMacroContext mc,
 	const char * n, const char * o, const char * b,
 	macroFunc f, int nargs, int level, int flags)
@@ -1809,17 +1820,11 @@ int rpmExpandThisMacro(rpmMacroContext mc, const char *n,  ARGV_const_t args, ch
 {
     rpmMacroEntry *mep;
     char *target = NULL;
-    int rc = 1; /* assume failure */
+    int rc;
 
     mc = rpmmctxAcquire(mc);
     mep = findEntry(mc, n, 0, NULL);
-    if (mep) {
-	MacroBuf mb = mbCreate(mc, flags);
-	rc = expandThisMacro(mb, *mep, args, flags);
-	mb->buf[mb->tpos] = '\0';	/* XXX just in case */
-	target = xrealloc(mb->buf, mb->tpos + 1);
-	_free(mb);
-    }
+    rc = mep ? doExpandThisMacro(mc, *mep, args, flags, &target) : 1;
     rpmmctxRelease(mc);
     if (rc) {
 	free(target);
