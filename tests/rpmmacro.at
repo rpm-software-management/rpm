@@ -1020,3 +1020,19 @@ runroot rpm --eval 1 >/dev/full
 [Error writing to stdout: No space left on device
 ])
 AT_CLEANUP
+
+AT_SETUP([macro objects])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm \
+	--eval "%define _strbuf__init(-) %nil" \
+	--eval "%define _strbuf_add(-) %{setobjectbody %1 %{quote:%{getobjectbody %1}%2}}" \
+	--eval "%{defineobject buf(strbuf)}%{buf add hello}%{buf add world}%buf"
+],
+[0],
+[
+
+helloworld
+],
+[])
+AT_CLEANUP

@@ -36,6 +36,7 @@ enum macroFlags_e {
     ME_LITERAL	= (1 << 2),
     ME_PARSE	= (1 << 3),
     ME_FUNC	= (1 << 4),
+    ME_OBJECT	= (1 << 5),
 };
 
 typedef struct MacroBuf_s *MacroBuf;
@@ -135,6 +136,8 @@ static int expandMacro(MacroBuf mb, const char *src, size_t slen);
 static void pushMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level, int flags);
 static void popMacro(rpmMacroContext mc, const char * n);
+static void updateMacro(rpmMacroContext mc, rpmMacroEntry *mep, const char *o, const char *b);
+static void doMethod(MacroBuf mb, rpmMacroEntry me, const char *method, ARGV_const_t args);
 static int loadMacroFile(rpmMacroContext mc, const char * fn);
 /* =============================================================== */
 
@@ -1230,6 +1233,82 @@ static void doFoo(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
     free(buf);
 }
 
+static int splitobjectname(MacroBuf mb, const char *nametype, char **namep, char **typep, const char *action) {
+    int rc = 0;
+    const char *ts, *te;
+
+    ts = strchr(nametype, '(');
+    if (!ts) {
+	mbErr(mb, 1, "No object class specified (%s)", action);
+	goto exit;
+    }
+    if (!validName(mb, nametype, ts - nametype, action))
+	goto exit;
+    te = strchr(ts + 1, ')');
+    if (!te || te[1]) {
+	mbErr(mb, 1, "Bad object class '%s' (%s)", ts, action);
+	goto exit;
+    }
+    *namep = rstrndup(nametype, ts - nametype);
+    *typep = rstrndup(ts + 1, te - (ts + 1));
+    rc = 1;
+exit:
+    return rc;
+}
+
+static void doDefineObject(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
+{
+    int isglobal = !strcmp(argv[0], "globalobject");
+    const char *action = isglobal ? "%globalobject" : "%defineobject";
+    char *name = NULL, *type = NULL;
+    char *initmethod = NULL;
+
+    if (!splitobjectname(mb, argv[1], &name, &type, action))
+	goto exit;
+    rasprintf(&initmethod, "_%s__init", type);
+    if (!findEntry(mb->mc, initmethod, 0, NULL)) {
+	mbErr(mb, 1, "Object class '%s' does not exist (%s)", type, action);
+	goto exit;
+    }
+    pushMacro(mb->mc, name, type, "", isglobal ? RMIL_GLOBAL : mb->level, ME_OBJECT);
+    /* pushMacro does not return the macro entry, so need to lookup */
+    rpmMacroEntry *mep = findEntry(mb->mc, name, 0, NULL);
+    if (mep && ((*mep)->flags & ME_OBJECT) != 0)
+	doMethod(mb, *mep, "_init", argv + 2);
+exit:
+    free(name);
+    free(type);
+    free(initmethod);
+}
+
+static void doObjectBody(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
+{
+    char *name = NULL, *type = NULL;
+    int isset = argv[0][0] == 's';
+    const char *action = isset ? "%setobjectbody" : "%getobjectbody";
+
+    if (!splitobjectname(mb, argv[1], &name, &type, action))
+	goto exit;
+    rpmMacroEntry *mep = findEntry(mb->mc, name, 0, NULL);
+    rpmMacroEntry ome = mep ? *mep : NULL;
+    if (!ome) {
+	mbErr(mb, 1, "No such object: '%s' (%s)\n", name, action);
+    } else if ((ome->flags & ME_OBJECT) == 0 || !ome->opts) {
+	mbErr(mb, 1, "Not an object: '%s' (%s)\n", name, action);
+    } else if (strcmp(ome->opts, type) != 0) {
+	mbErr(mb, 1, "Object '%s' has type '%s', expected '%s' (%s)\n", name, ome->opts, type, action);
+    } else {
+	if (isset) {
+	    updateMacro(mb->mc, mep, type, argv[2] ? argv[2] : "");
+	} else if (ome->body && *ome->body) {
+	    mbAppendStr(mb, ome->body);
+	}
+    }
+exit:
+    free(name);
+    free(type);
+}
+
 static void doLoad(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 {
     if (loadMacroFile(mb->mc, argv[1])) {
@@ -1256,6 +1335,7 @@ static struct builtins_s {
     { "S",		doSP,		1,	0 },
     { "basename",	doFoo,		1,	0 },
     { "define",		doDef,		1,	ME_PARSE },
+    { "defineobject",	doDefineObject,	1,	0 },
     { "dirname",	doFoo,		1,	0 },
     { "dnl",		doDnl,		1,	ME_PARSE },
     { "dump", 		doDump,		0,	0 },
@@ -1267,11 +1347,14 @@ static struct builtins_s {
     { "getconfdir",	doFoo,		0,	0 },
     { "getenv",		doFoo,		1,	0 },
     { "getncpus",	doFoo,		0,	0 },
+    { "getobjectbody",	doObjectBody,	1,	0 },
     { "global",		doGlobal,	1,	ME_PARSE },
+    { "globalobject",	doDefineObject,	1,	0 },
     { "load",		doLoad,		1,	0 },
     { "lua",		doLua,		1,	ME_PARSE },
     { "macrobody",	doBody,		1,	0 },
     { "quote",		doFoo,		1,	0 },
+    { "setobjectbody",	doObjectBody,	1,	0 },
     { "shrink",		doFoo,		1,	0 },
     { "suffix",		doFoo,		1,	0 },
     { "trace",		doTrace,	0,	0 },
@@ -1351,6 +1434,9 @@ doMacro(MacroBuf mb, rpmMacroEntry me, ARGV_t args, size_t *parsed)
 	    goto exit;
 	}
 	me->func(mb, me, args, parsed);
+    } else if (me->flags & ME_OBJECT) {
+	int nargs = args && args[0] ? (argvCount(args) - 1) : 0;
+	doMethod(mb, me, nargs ? args[1] : "_expand", nargs > 1 ? args + 2 : NULL);
     } else if (me->flags & ME_LITERAL) {
 	if (me->body && *me->body)
 	    mbAppendStr(mb, me->body);
@@ -1366,6 +1452,34 @@ doMacro(MacroBuf mb, rpmMacroEntry me, ARGV_t args, size_t *parsed)
 exit:
     mb->args = prevarg;
     mb->me = prevme;
+}
+
+static void
+doMethod(MacroBuf mb, rpmMacroEntry me, const char *method, ARGV_const_t args)
+{
+    char *methodname, *objectname;
+    ARGV_t methodargs = NULL;
+
+    rasprintf(&methodname, "_%s_%s", me->opts, method);
+    rasprintf(&objectname, "%s(%s)", me->name, me->opts);
+    argvAdd(&methodargs, methodname);
+    argvAdd(&methodargs, objectname);
+    if (args && *args)
+	argvAppend(&methodargs, args);
+    rpmMacroEntry *mep = findEntry(mb->mc, methodname, 0, NULL);
+    if (!mep) {
+	if (strcmp(method, "_expand") != 0)
+	    mbErr(mb, 1, "%%%s: class '%s' has no method '%s'\n", me->name, me->opts, method);
+	else if (me->body && *me->body)
+	    mbAppendStr(mb, me->body);
+    } else if ((*mep)->flags & ME_OBJECT) {
+	mbErr(mb, 1, "%%%s: %s must not be an object\n", me->name, methodname);
+    } else {
+	doMacro(mb, *mep, methodargs, NULL);
+    }
+    free(methodname);
+    free(objectname);
+    argvFree(methodargs);
 }
 
 /**
@@ -1716,6 +1830,37 @@ static void popMacro(rpmMacroContext mc, const char * n)
     }
     /* comes in a single chunk */
     free(me);
+}
+
+static void updateMacro(rpmMacroContext mc, rpmMacroEntry *mep, const char *o, const char *b)
+{
+    rpmMacroEntry me = *mep;
+    size_t olen = o ? strlen(o) : 0;
+    size_t blen = b ? strlen(b) : 0;
+    size_t mesize = sizeof(*me) + blen + 1 + (olen ? olen + 1 : 0);
+    char *p;
+    if (me->prev == NULL) {
+	size_t nlen = strlen(me->name);
+	me = xrealloc(me, mesize + nlen + 1);
+	me->name = me->arena;
+	p = me->arena + nlen + 1;
+    } else {
+	me = xrealloc(me, mesize);
+	p = me->arena;
+    }
+    /* copy body */
+    me->body = p;
+    if (blen)
+	memcpy(p, b, blen + 1);
+    else
+	*p = '\0';
+    p += blen + 1;
+    /* copy options */
+    if (olen)
+	me->opts = memcpy(p, o, olen + 1);
+    else
+	me->opts = o ? "" : NULL;
+    *mep = me;
 }
 
 static int defineMacro(rpmMacroContext mc, const char * macro, int level)
