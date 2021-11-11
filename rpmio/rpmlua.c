@@ -776,6 +776,42 @@ static int rpm_execute(lua_State *L)
 	return pushresult(L, status, NULL);
 }
 
+static int rpm_splitargs(lua_State *L)
+{
+    const char *str = luaL_checkstring(L, 1);
+    ARGV_t args = NULL;
+    int i;
+
+    splitQuoted(&args, str, " \t");
+    lua_newtable(L);
+    for (i = 0; args && args[i]; i++) {
+	lua_pushstring(L, args[i]);
+	lua_rawseti(L, -2, i + 1);
+    }
+    return 1;
+}
+
+static int rpm_unsplitargs(lua_State *L)
+{
+    char *str;
+    ARGV_t args = NULL;
+    int i;
+
+    luaL_checktype(L, 1, LUA_TTABLE);
+    for (i = 1; i; i++) {
+        lua_rawgeti(L, 1, i);
+        if (lua_type(L, -1) == LUA_TNIL)
+	    i = -1;
+	else
+	    argvAdd(&args, (char *)luaL_checkstring(L, -1));
+	lua_pop(L, 1);
+    }
+    str = args ? unsplitQuoted(args, " ") : NULL;
+    lua_pushstring(L, str ? str : "");
+    free(str);
+    return 1;
+}
+
 static int newinstance(lua_State *L, const char *name, void *p)
 {
     if (p != NULL) {
@@ -1158,6 +1194,8 @@ static const luaL_Reg rpmlib[] = {
     {"vercmp", rpm_vercmp},
     {"ver", rpm_ver_new},
     {"open", rpm_open},
+    {"splitargs", rpm_splitargs},
+    {"unsplitargs", rpm_unsplitargs},
     {NULL, NULL}
 };
 

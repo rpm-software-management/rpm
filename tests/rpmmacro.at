@@ -177,6 +177,7 @@ runroot rpm \
     --eval '%foo %{nil} xx' \
     --eval '%foo %{bar} xx' \
     --eval '%foo %{quote:   2 3  5} %{quote:%{nil}}' \
+    --eval '%foo %{quote 1 2}' \
     --eval '%foo x%{quote:y}z 123' \
     --eval '%foo x%{quote:%{nil}}z' \
     --eval '%foo 1 \
@@ -191,6 +192,7 @@ bar' \
 1:"xx"
 2:"zzz" "xx"
 2:"   2 3  5" ""
+2:"1" "2"
 2:"xyz" "123"
 1:"xz"
 2:"1" "\"bar
@@ -669,6 +671,18 @@ runroot rpm \
 [true	true
 true	false
 false	false
+])
+AT_CLEANUP
+
+AT_SETUP([lua rpm split/unsplitargs])
+AT_KEYWORDS([macros lua])
+AT_CHECK([[
+runroot rpm \
+	--eval '%{lua: local a=rpm.splitargs("1 2 3");a[2]=" " .. a[2] .. " ";print(rpm.unsplitargs(a))}' \
+| tr '\037' :
+]],
+[0],
+[:1: : 2 : :3:
 ])
 AT_CLEANUP
 

@@ -947,7 +947,8 @@ freeArgs(MacroBuf mb)
     mb->me = NULL;
 }
 
-static void splitQuoted(ARGV_t *av, const char * str, const char * seps)
+RPM_GNUC_INTERNAL
+void splitQuoted(ARGV_t *av, const char * str, const char * seps)
 {
     const int qchar = 0x1f; /* ASCII unit separator */
     const char *s = str;
@@ -977,6 +978,33 @@ static void splitQuoted(ARGV_t *av, const char * str, const char * seps)
 	    start = NULL;
 	s++;
     }
+}
+
+RPM_GNUC_INTERNAL
+char *unsplitQuoted(ARGV_const_t av, const char *sep)
+{
+    const int qchar = 0x1f; /* ASCII unit separator */
+    size_t len = 0, seplen;
+    char *b, *buf;
+    ARGV_const_t av2;
+    if (!av || !*av)
+	return xstrdup("");
+    seplen = av[1] ? strlen(sep) : 0;
+    for (av2 = av; *av2; av2++)
+	len += strlen(*av2) + 2 + seplen;
+    b = buf = xmalloc(len + 1 - seplen);
+    for (av2 = av; *av2; av2++) {
+	*b++ = qchar;
+	strcpy(b, *av2);
+	b += strlen(b);
+	*b++ = qchar;
+	if (av2[1]) {
+	    strcpy(b, sep);
+	    b += seplen;
+	}
+    }
+    *b = 0;
+    return buf;
 }
 
 /**
@@ -1199,8 +1227,7 @@ static void doFoo(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 	*b = 0;
 	b = buf;
     } else if (rstreq("quote", me->name)) {
-	rasprintf(&buf, "%c%s%c", 0x1f, argv[1], 0x1f);
-	b = buf;
+	b = buf = unsplitQuoted(argv + 1, " ");
     } else if (rstreq("suffix", me->name)) {
 	buf = xstrdup(argv[1]);
 	if ((b = strrchr(buf, '.')) != NULL)
