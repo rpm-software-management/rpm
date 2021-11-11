@@ -136,6 +136,8 @@ static void pushMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level, int flags);
 static void popMacro(rpmMacroContext mc, const char * n);
 static int loadMacroFile(rpmMacroContext mc, const char * fn);
+static int doExpandThisMacro(rpmMacroContext mc, rpmMacroEntry me, ARGV_const_t args,
+			 int flags, char **target);
 /* =============================================================== */
 
 static rpmMacroContext rpmmctxAcquire(rpmMacroContext mc)
@@ -1246,6 +1248,70 @@ static void doTrace(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
     }
 }
 
+static void doForeach(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
+{
+    const char *se = argv[1];
+    const char *s = se;
+    char *buf = xmalloc(strlen(se) + 2);
+    char *n = buf, *ne = n;
+    const char *loopbody;
+    int pos = 0;
+    char *iterbuf = NULL;
+    ARGV_t iterargs = NULL;
+    int niterargs;
+    int c;
+
+    /* Copy name */
+    COPYNAME(ne, s, c);
+    SKIPBLANK(s, c);
+    loopbody = s;
+    if (parsed) {
+	const char *lastc;
+	if ((lastc = strchr(s,'\n')) == NULL)
+	    lastc = strchr(s, '\0');
+	if (*lastc == '\n')
+	    lastc++;	/* always include newline in body */
+	memcpy(ne + 1, s, lastc - s);
+	ne[1 + (lastc - s)] = 0;
+	loopbody = ne + 1;
+	*parsed = lastc - se;
+    }
+    rpmMacroEntry *mep = findEntry(mb->mc, n, 0, NULL);
+    if (!mep) {
+	mbErr(mb, 1, "No such macro %%%s (%%foreach)", n);
+	goto exit;
+    }
+
+    /* expand iteration macro and split into args */
+    if (doExpandThisMacro(mb->mc, *mep, NULL, 0, &iterbuf)) {
+	mb->error = 1;
+	goto exit;
+    }
+    splitQuoted(&iterargs, iterbuf, " \t");
+
+    niterargs = iterargs ? argvCount(iterargs) : 0;
+    if (niterargs) {
+	char *ac = NULL;
+	rasprintf(&ac, "%d", niterargs);
+	pushMacro(mb->mc, "#", NULL, ac, mb->level, ME_AUTO | ME_LITERAL);
+	free(ac);
+	for (pos = 0; pos < niterargs; pos++) {
+	    rasprintf(&ac, "%d", pos);
+	    pushMacro(mb->mc, "0", NULL, ac, mb->level, ME_AUTO | ME_LITERAL);
+	    free(ac);
+	    pushMacro(mb->mc, "1", NULL, iterargs[pos], mb->level, ME_AUTO | ME_LITERAL);
+	    expandMacro(mb, loopbody, 0);
+	    popMacro(mb->mc, "1");
+	    popMacro(mb->mc, "0");
+	}
+	popMacro(mb->mc, "#");
+    }
+exit:
+    free(buf);
+    free(iterbuf);
+    argvFree(iterargs);
+}
+
 static struct builtins_s {
     const char * name;
     macroFunc func;
@@ -1264,6 +1330,7 @@ static struct builtins_s {
     { "exists",		doFoo,		1,	0 },
     { "expand",		doExpand,	1,	0 },
     { "expr",		doFoo,		1,	0 },
+    { "foreach",	doForeach,	1,	ME_PARSE },
     { "getconfdir",	doFoo,		0,	0 },
     { "getenv",		doFoo,		1,	0 },
     { "getncpus",	doFoo,		0,	0 },

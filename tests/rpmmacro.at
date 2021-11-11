@@ -1020,3 +1020,17 @@ runroot rpm --eval 1 >/dev/full
 [Error writing to stdout: No space left on device
 ])
 AT_CLEANUP
+
+
+AT_SETUP([foreach macro])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm \
+	--eval '%{define iter hello world %{quote:good bye}}' \
+	--eval '%{foreach iter >%1<}' \
+],
+[0],
+[
+>hello<>world<>good bye<
+])
+AT_CLEANUP
