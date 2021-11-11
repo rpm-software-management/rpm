@@ -25,6 +25,12 @@ RPM_GNUC_INTERNAL
 int rgetopt(int argc, char * const argv[], const char *opts,
 		rgetoptcb callback, void *data);
 
+RPM_GNUC_INTERNAL
+void splitQuoted(ARGV_t *av, const char * str, const char * seps);
+
+RPM_GNUC_INTERNAL
+char *unsplitQuoted(ARGV_const_t av, const char *sep);
+
 #ifdef __cplusplus
 }
 #endif
