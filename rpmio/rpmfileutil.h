@@ -8,7 +8,6 @@
 
 #include <rpm/rpmutil.h>
 #include <rpm/rpmio.h>
-#include <rpm/rpmpgp.h>
 #include <rpm/argv.h>
 
 #ifdef __cplusplus

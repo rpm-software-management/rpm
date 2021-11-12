@@ -5,6 +5,8 @@
 
 #include "system.h"
 
+#include <string.h>
+
 #include <rpm/rpmcli.h>
 
 #include "debug.h"

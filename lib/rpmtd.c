@@ -2,7 +2,6 @@
 
 #include <rpm/rpmtd.h>
 #include <rpm/rpmstring.h>
-#include <rpm/rpmpgp.h>
 #include <rpm/rpmstrpool.h>
 #include "lib/misc.h"		/* format function prototypes */
 

@@ -21,6 +21,7 @@
 #include <rpm/rpmts.h>
 #include <rpm/rpmdb.h>
 #include <rpm/rpmfileutil.h>
+#include <rpm/rpmstring.h>
 
 #include "lib/misc.h"
 #include "lib/rpmchroot.h"

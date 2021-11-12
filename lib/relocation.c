@@ -6,6 +6,7 @@
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmstring.h>
 
 #include "lib/rpmfs.h"
 #include "lib/misc.h"

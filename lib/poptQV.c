@@ -4,8 +4,10 @@
  */
 
 #include "system.h"
+#include <string.h>
 
 #include <rpm/rpmcli.h>
+#include <rpm/rpmstring.h>
 #include "lib/rpmgi.h"	/* XXX for giFlags */
 
 #include "debug.h"

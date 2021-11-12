@@ -12,7 +12,6 @@
 #include <rpm/rpmte.h>
 #include <rpm/rpmps.h>
 #include <rpm/rpmsw.h>
-#include <rpm/rpmpgp.h>
 #include <rpm/rpmfi.h>
 #include <rpm/rpmcallback.h>
 

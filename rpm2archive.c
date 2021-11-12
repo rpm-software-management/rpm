@@ -4,9 +4,9 @@
 
 #include <rpm/rpmlib.h>		/* rpmReadPackageFile .. */
 #include <rpm/rpmfi.h>
+#include <rpm/rpmstring.h>
 #include <rpm/rpmtag.h>
 #include <rpm/rpmio.h>
-#include <rpm/rpmpgp.h>
 #include <rpm/rpmurl.h>
 #include <rpm/rpmts.h>
 

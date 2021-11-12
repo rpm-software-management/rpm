@@ -4,9 +4,12 @@
 
 #include "system.h"
 
+#include <string.h>
+
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
 #include <rpm/argv.h>
+#include <rpm/rpmstring.h>
 
 #include "lib/manifest.h"
 

@@ -21,7 +21,6 @@
 #include <elfutils/libdwelf.h>
 #endif
 
-#include <rpm/rpmpgp.h>
 #include <rpm/argv.h>
 #include <rpm/rpmfc.h>
 #include <rpm/rpmfileutil.h>	/* rpmDoDigest() */

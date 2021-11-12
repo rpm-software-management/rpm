@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include <string.h>
+
 #include "system.h"
 #include "lib/rpmfs.h"
 #include "debug.h"

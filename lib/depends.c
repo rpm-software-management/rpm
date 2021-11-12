@@ -10,6 +10,7 @@
 #include <rpm/rpmdb.h>
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>
+#include <rpm/rpmstring.h>
 
 #include "lib/rpmts_internal.h"
 #include "lib/rpmte_internal.h"

@@ -1,5 +1,6 @@
 #include "system.h"
 
+#include <string.h>
 #include <errno.h>
 #include <sys/resource.h>
 #if defined(__linux__)

@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <rpm/rpmfileutil.h>	/* for rpmCleanPath */
+#include <rpm/rpmstring.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmsq.h>
 

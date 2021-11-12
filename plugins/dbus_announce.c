@@ -1,7 +1,10 @@
 #include "system.h"
 
+#include <stdlib.h>
+
 #include <dbus/dbus.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmstring.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmdb.h>
 #include "lib/rpmplugin.h"

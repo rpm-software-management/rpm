@@ -4,6 +4,7 @@
 #include "system.h"
 
 #include <errno.h>
+#include <string.h>
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>		/* rpmReadPackageFile */
