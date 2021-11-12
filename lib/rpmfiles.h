@@ -10,7 +10,6 @@
 #include <unistd.h>
 
 #include <rpm/rpmtypes.h>
-#include <rpm/rpmpgp.h>
 
 /** \ingroup rpmfiles
  * File types.

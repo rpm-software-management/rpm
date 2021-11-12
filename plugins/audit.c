@@ -1,7 +1,9 @@
 #include "system.h"
 
+#include <stdlib.h>
 #include <libaudit.h>
 
+#include <rpm/rpmstring.h>
 #include <rpm/rpmts.h>
 #include "lib/rpmplugin.h"
 

@@ -19,7 +19,6 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmurl.h>
 #include <rpm/rpmpgp.h>
-#include <rpm/rpmpgp.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmsq.h>
 #include <rpm/rpmstring.h>

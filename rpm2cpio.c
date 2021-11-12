@@ -3,9 +3,9 @@
 #include "system.h"
 
 #include <rpm/rpmlib.h>		/* rpmReadPackageFile .. */
+#include <rpm/rpmstring.h>
 #include <rpm/rpmtag.h>
 #include <rpm/rpmio.h>
-#include <rpm/rpmpgp.h>
 
 #include <rpm/rpmts.h>
 #include <unistd.h>

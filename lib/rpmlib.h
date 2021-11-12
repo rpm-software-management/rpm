@@ -12,7 +12,6 @@
 #include <rpm/header.h>
 #include <rpm/rpmtag.h>
 #include <rpm/rpmds.h>	/* XXX move rpmlib provides to rpmds instead */
-#include <rpm/rpmpgp.h>
 #include <rpm/rpmver.h>
 
 #ifdef _RPM_4_4_COMPAT

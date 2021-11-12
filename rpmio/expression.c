@@ -13,8 +13,11 @@
 
 #include "system.h"
 
+#include <string.h>
+
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
+#include <rpm/rpmstring.h>
 #include <rpm/rpmver.h>
 #include "rpmio/rpmmacro_internal.h"
 #include "debug.h"

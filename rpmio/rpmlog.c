@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
+#include <rpm/rpmstring.h>
 #include "debug.h"
 
 typedef struct rpmlogCtx_s * rpmlogCtx;

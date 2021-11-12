@@ -7,6 +7,7 @@
 
 #include <rpm/rpmte.h>
 #include <rpm/rpmfi.h>
+#include <rpm/rpmstring.h>
 #include <rpm/rpmstrpool.h>
 
 #include "lib/rpmal.h"

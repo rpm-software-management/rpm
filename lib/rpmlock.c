@@ -3,6 +3,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <string.h>
 
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>

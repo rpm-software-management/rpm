@@ -4,6 +4,7 @@
 #include <rpm/rpmlib.h>			/* RPMSIGTAG, rpmReadPackageFile .. */
 #include <rpm/rpmlog.h>
 #include <rpm/rpmps.h>
+#include <rpm/rpmstring.h>
 #include <rpm/rpmts.h>
 
 #include "cliutils.h"

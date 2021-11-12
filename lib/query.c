@@ -17,6 +17,7 @@
 #include <rpm/rpmsq.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>	/* rpmCleanPath */
+#include <rpm/rpmstring.h>
 
 #include "lib/rpmgi.h"
 #include "lib/manifest.h"

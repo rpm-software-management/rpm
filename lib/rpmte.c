@@ -9,6 +9,7 @@
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>
+#include <rpm/rpmstring.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmdb.h>
 #include <rpm/rpmlog.h>

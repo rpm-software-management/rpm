@@ -4,6 +4,8 @@
 
 #include "system.h"
 
+#include <string.h>
+
 #include <rpm/rpmcli.h>
 #include <rpm/rpmtag.h>
 #include <rpm/rpmlib.h>		/* rpmReadPackageFile, vercmp etc */
