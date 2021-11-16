@@ -97,19 +97,37 @@ static void rpmtriggersSortAndUniq(rpmtriggers trigs)
     }
 }
 
+static void addTriggers(rpmts ts, Header trigH, rpmsenseFlags filter)
+{
+    int tix = 0;
+    rpmds ds;
+    rpmds triggers = rpmdsNew(trigH, RPMTAG_TRANSFILETRIGGERNAME, 0);
+
+    while ((ds = rpmdsFilterTi(triggers, tix))) {
+	if ((rpmdsNext(ds) >= 0) && (rpmdsFlags(ds) & filter)) {
+	    struct rpmtd_s priorities;
+
+	    if (headerGet(trigH, RPMTAG_TRANSFILETRIGGERPRIORITIES,
+			&priorities, HEADERGET_MINMEM)) {
+		rpmtdSetIndex(&priorities, tix);
+		rpmtriggersAdd(ts->trigs2run, headerGetInstance(trigH),
+				tix, *rpmtdGetUint32(&priorities));
+	    }
+	}
+	rpmdsFree(ds);
+	tix++;
+    }
+    rpmdsFree(triggers);
+}
+
 void rpmtriggersPrepPostUnTransFileTrigs(rpmts ts, rpmte te)
 {
-    rpmdbMatchIterator mi;
     rpmdbIndexIterator ii;
-    Header trigH;
     const void *key;
     size_t keylen;
     rpmfiles files;
-    rpmds rpmdsTriggers;
-    rpmds rpmdsTrigger;
 
     ii = rpmdbIndexIteratorInit(rpmtsGetRdb(ts), RPMDBI_TRANSFILETRIGGERNAME);
-    mi = rpmdbNewIterator(rpmtsGetRdb(ts), RPMDBI_PACKAGES);
     files = rpmteFiles(te);
 
     /* Iterate over file triggers in rpmdb */
@@ -121,39 +139,19 @@ void rpmtriggersPrepPostUnTransFileTrigs(rpmts ts, rpmte te)
 	rpmfi fi = rpmfilesFindPrefix(files, pfx);
 	while (rpmfiNext(fi) >= 0) {
 	    if (RPMFILE_IS_INSTALLED(rpmfiFState(fi))) {
-		/* If yes then store it */
-		rpmdbAppendIterator(mi, rpmdbIndexIteratorPkgOffsets(ii),
-				rpmdbIndexIteratorNumPkgs(ii));
-		break;
+		unsigned int npkg = rpmdbIndexIteratorNumPkgs(ii);
+		const unsigned int *offs = rpmdbIndexIteratorPkgOffsets(ii);
+		/* Save any matching postun triggers */
+		for (int i = 0; i < npkg; i++) {
+		    Header h = rpmdbGetHeaderAt(rpmtsGetRdb(ts), offs[i]);
+		    addTriggers(ts, h, RPMSENSE_TRIGGERPOSTUN);
+		    headerFree(h);
+		}
 	    }
 	}
 	rpmfiFree(fi);
     }
     rpmdbIndexIteratorFree(ii);
-
-    if (rpmdbGetIteratorCount(mi)) {
-	/* Filter triggers and save only trans postun triggers into ts */
-	while ((trigH = rpmdbNextIterator(mi)) != NULL) {
-	    int tix = 0;
-	    rpmdsTriggers = rpmdsNew(trigH, RPMTAG_TRANSFILETRIGGERNAME, 0);
-	    while ((rpmdsTrigger = rpmdsFilterTi(rpmdsTriggers, tix))) {
-		if ((rpmdsNext(rpmdsTrigger) >= 0) &&
-		    (rpmdsFlags(rpmdsTrigger) & RPMSENSE_TRIGGERPOSTUN)) {
-		    struct rpmtd_s priorities;
-
-		    headerGet(trigH, RPMTAG_TRANSFILETRIGGERPRIORITIES,
-				&priorities, HEADERGET_MINMEM);
-		    rpmtdSetIndex(&priorities, tix);
-		    rpmtriggersAdd(ts->trigs2run, rpmdbGetIteratorOffset(mi),
-				    tix, *rpmtdGetUint32(&priorities));
-		}
-		rpmdsFree(rpmdsTrigger);
-		tix++;
-	    }
-	    rpmdsFree(rpmdsTriggers);
-	}
-    }
-    rpmdbFreeIterator(mi);
     rpmfilesFree(files);
 }
 
