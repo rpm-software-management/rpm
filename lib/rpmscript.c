@@ -101,6 +101,7 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 		   ARGV_t * argvp, const char *script, int arg1, int arg2,
 		   scriptNextFileFunc nextFileFunc)
 {
+    char *scriptbuf = NULL;
     rpmRC rc = RPMRC_FAIL;
     rpmlua lua = NULL; /* Global state. */
     int cwd = -1;
@@ -113,6 +114,15 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	argvAddNum(argvp, arg1);
     if (arg2 >= 0)
 	argvAddNum(argvp, arg2);
+
+    if (arg1 >= 0 || arg2 >= 0) {
+	/* Hack to convert arguments to numbers for backwards compat. Ugh. */
+	rstrscat(&scriptbuf,
+		arg1 >= 0 ? "arg[2] = tonumber(arg[2]);" : "",
+		arg2 >= 0 ? "arg[3] = tonumber(arg[3]);" : "",
+		script, NULL);
+        script = scriptbuf;
+    }
 
     /* Lua scripts can change our cwd and umask, save and restore */
     cwd = open(".", O_RDONLY);
@@ -138,6 +148,7 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	close(cwd);
 	umask(oldmask);
     }
+    free(scriptbuf);
 
     return rc;
 }
