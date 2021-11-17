@@ -17,6 +17,8 @@
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmver.h>
 #include "rpmio/rpmmacro_internal.h"
+#include "rpmio/rpmhook.h"
+#include "rpmio/rpmlua.h"
 #include "debug.h"
 
 /* #define DEBUG_PARSER 1 */
@@ -513,6 +515,46 @@ err:
 
 static Value doTernary(ParseState state);
 
+/* always returns a string for now */
+static Value doLuaFunction(ParseState state, const char *name, int argc, Value *argv)
+{
+    rpmlua lua = NULL; /* Global state. */
+    rpmhookArgs args = NULL;
+    Value v = NULL;
+    char *result = NULL;
+    char *argt = NULL;
+    int i;
+    
+    if (state->flags & RPMEXPR_DISCARD)
+	return valueMakeString(xstrdup(""));
+    args = rpmhookArgsNew(argc);
+    argt = xmalloc(argc + 1);
+    for (i = 0; i < argc; i++) {
+	switch (argv[i]->type) {
+	    case VALUE_TYPE_INTEGER:
+		argt[i] = 'i';
+		args->argv[i].i = argv[i]->data.i;
+		break;
+	    case VALUE_TYPE_STRING:
+		argt[i] = 's';
+		args->argv[i].s = argv[i]->data.s;
+		break;
+	    default:
+		exprErr(state, _("unsupported function argument type"), state->p);
+		goto exit;
+	}
+    }
+    argt[argc] = 0;
+    args->argt = argt;
+    result = rpmluaCallStringFunction(lua, name, args);
+    if (result)
+	v = valueMakeString(result);
+exit:
+    rpmhookArgsFree(args);
+    free(argt);
+    return v;
+}
+
 static Value doFunction(ParseState state)
 {
   Value vname = state->tokenValue;
@@ -544,8 +586,11 @@ static Value doFunction(ParseState state)
   if (rdToken(state))
     goto exit;
 
-  /* do the function call */
-  exprErr(state, _("unsupported funcion"), state->p);
+  /* do the call... */
+  if (!strncmp(vname->data.s, "lua:", 4))
+    v = doLuaFunction(state, vname->data.s + 4, narg, varg);
+  else
+    exprErr(state, _("unsupported funcion"), state->p);
 
 exit:
   for (i = 0; i < narg; i++)
