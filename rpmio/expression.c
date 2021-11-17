@@ -221,6 +221,8 @@ static void exprErr(const struct _parseState *state, const char *msg,
 #define TOK_TERNARY_COND 19
 #define TOK_TERNARY_ALT 20
 #define TOK_VERSION	21
+#define TOK_COMMA	22
+#define TOK_FUNCTION	23
 
 #if defined(DEBUG_PARSER)
 typedef struct exprTokTableEntry {
@@ -250,6 +252,8 @@ ETTE_t exprTokTable[] = {
     { "?",	TOK_TERNARY_COND },
     { ":",	TOK_TERNARY_ALT},
     { "V",	TOK_VERSION},
+    { ",",	TOK_COMMA},
+    { "f( ",	TOK_FUNCTION},
     { NULL, 0 }
 };
 
@@ -302,6 +306,17 @@ static int wellformedInteger(const char *p)
       return 0;
   return 1;
 }
+
+static const char *
+isFunctionCall(const char *p)
+{
+    if (!risalpha(*p++) && *p != '_')
+	return NULL;
+    while (risalpha(*p) || risdigit(*p) || *p == '_' || *p == '.' || *p == ':')
+	p++;
+    return *p == '(' ? p : NULL;
+}
+
 
 /**
  * @param state		expression parser state
@@ -393,6 +408,9 @@ static int rdToken(ParseState state)
   case ':':
     token = TOK_TERNARY_ALT;
     break;
+  case ',':
+    token = TOK_COMMA;
+    break;
 
   default:
     if (risdigit(*p) || (*p == '%' && expand)) {
@@ -462,6 +480,13 @@ static int rdToken(ParseState state)
 	}
       }
     } else if (risalpha(*p)) {
+      const char *pe = isFunctionCall(p);
+      if (pe && *pe == '(') {
+	v = valueMakeString(rstrndup(p, pe - p));
+	p = pe;
+	token = TOK_FUNCTION;
+	break;
+      } 
       exprErr(state, _("bare words are no longer supported, please use \"...\""), p+1);
       goto err;
 
@@ -469,6 +494,7 @@ static int rdToken(ParseState state)
       exprErr(state, _("parse error in expression"), p+1);
       goto err;
     }
+    break;
   }
 
   state->p = p + 1;
@@ -487,6 +513,47 @@ err:
 
 static Value doTernary(ParseState state);
 
+static Value doFunction(ParseState state)
+{
+  Value vname = state->tokenValue;
+  Value v = NULL, *varg = NULL;
+  int i, narg = 0;
+  if (rdToken(state))
+    goto exit;
+  /* gather args */
+  while (state->nextToken != TOK_CLOSE_P) {
+      varg = xrealloc(varg, (narg + 1) * sizeof(Value));
+      varg[narg] = doTernary(state);
+      if (!varg[narg])
+	goto exit;
+      narg++;
+      if (state->nextToken == TOK_CLOSE_P)
+	break;
+      if (state->nextToken != TOK_COMMA) {
+	exprErr(state, _("syntax error in expression"), state->p);
+	goto exit;
+      }
+      if (rdToken(state)) {
+	goto exit;
+      }
+      if (state->nextToken == TOK_CLOSE_P) {
+	exprErr(state, _("syntax error in expression"), state->p);
+	goto exit;
+      }
+  }
+  if (rdToken(state))
+    goto exit;
+
+  /* do the function call */
+  exprErr(state, _("unsupported funcion"), state->p);
+
+exit:
+  for (i = 0; i < narg; i++)
+    valueFree(varg[i]);
+  free(varg);
+  valueFree(vname);
+  return v;
+}
 
 /**
  * @param state		expression parser state
@@ -499,6 +566,12 @@ static Value doPrimary(ParseState state)
   DEBUG(printf("doPrimary()\n"));
 
   switch (state->nextToken) {
+  case TOK_FUNCTION:
+    v = doFunction(state);
+    if (v == NULL)
+      goto err;
+    break;
+
   case TOK_OPEN_P:
     if (rdToken(state))
       goto err;
