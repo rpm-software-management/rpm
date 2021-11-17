@@ -549,6 +549,62 @@ typedef struct rpmluaHookData_s {
     int dataRef;
 } * rpmluaHookData;
 
+static int rpmluaHookPushArg(lua_State *L, int argt, rpmhookArgv *arg)
+{
+    switch(argt) {
+	case 's':
+	    lua_pushstring(L, arg->s);
+	    break;
+	case 'i':
+	    lua_pushnumber(L, (lua_Number)arg->i);
+	    break;
+	case 'f':
+	    lua_pushnumber(L, (lua_Number)arg->f);
+	    break;
+	case 'p':
+	    lua_pushlightuserdata(L, arg->p);
+	    break;
+	default:
+	    return -1;
+    }
+    return 0;
+}
+
+static int rpmluaHookGetArg(lua_State *L, int idx, rpmhookArgv *arg)
+{
+    int argt = 0;
+    float f;
+    switch (lua_type(L, idx)) {
+	case LUA_TNIL:
+	    argt = 'p';
+	    arg->p = NULL;
+	    break;
+	case LUA_TNUMBER:
+	    f = (float)lua_tonumber(L, idx);
+	    if (f == (int)f) {
+		argt = 'i';
+		arg->i = (int)f;
+	    } else {
+		argt = 'f';
+		arg->f = f;
+	    }
+	    break;
+	case LUA_TSTRING:
+	    argt = 's';
+	    arg->s = lua_tostring(L, idx);
+	    break;
+	case LUA_TUSERDATA:
+	case LUA_TLIGHTUSERDATA:
+	    argt = 'p';
+	    arg->p = lua_touserdata(L, idx);
+	    break;
+	default:
+	    argt = 0;
+	    arg->p = NULL;
+    }
+    return argt;
+}
+
 static int rpmluaHookWrapper(rpmhookArgs args, void *data)
 {
     rpmluaHookData hookdata = (rpmluaHookData)data;
@@ -558,28 +614,12 @@ static int rpmluaHookWrapper(rpmhookArgs args, void *data)
     lua_rawgeti(L, LUA_REGISTRYINDEX, hookdata->funcRef);
     lua_newtable(L);
     for (i = 0; i != args->argc; i++) {
-	switch (args->argt[i]) {
-	    case 's':
-		lua_pushstring(L, args->argv[i].s);
-		lua_rawseti(L, -2, i+1);
-		break;
-	    case 'i':
-		lua_pushnumber(L, (lua_Number)args->argv[i].i);
-		lua_rawseti(L, -2, i+1);
-		break;
-	    case 'f':
-		lua_pushnumber(L, (lua_Number)args->argv[i].f);
-		lua_rawseti(L, -2, i+1);
-		break;
-	    case 'p':
-		lua_pushlightuserdata(L, args->argv[i].p);
-		lua_rawseti(L, -2, i+1);
-		break;
-	    default:
-                (void) luaL_error(L, "unsupported type '%c' as "
-                              "a hook argument\n", args->argt[i]);
-		break;
+	if (rpmluaHookPushArg(L, args->argt[i], args->argv + i)) {
+	    (void) luaL_error(L, "unsupported type '%c' as "
+			  "a hook argument\n", args->argt[i]);
+	    continue;
 	}
+	lua_rawseti(L, -2, i+1);
     }
     if (lua_pcall(L, 1, 1, 0) != 0) {
 	rpmlog(RPMLOG_ERR, _("lua hook failed: %s\n"),
@@ -592,7 +632,6 @@ static int rpmluaHookWrapper(rpmhookArgs args, void *data)
     }
     return ret;
 }
-
 static int rpm_register(lua_State *L)
 {
     if (!lua_isstring(L, 1)) {
@@ -638,35 +677,11 @@ static int rpm_call(lua_State *L)
 	char *argt = (char *)xmalloc(args->argc+1);
 	int i;
 	for (i = 0; i != args->argc; i++) {
-	    switch (lua_type(L, i+1)) {
-		case LUA_TNIL:
-		    argt[i] = 'p';
-		    args->argv[i].p = NULL;
-		    break;
-		case LUA_TNUMBER: {
-		    float f = (float)lua_tonumber(L, i+1);
-		    if (f == (int)f) {
-			argt[i] = 'i';
-			args->argv[i].i = (int)f;
-		    } else {
-			argt[i] = 'f';
-			args->argv[i].f = f;
-		    }
-		}   break;
-		case LUA_TSTRING:
-		    argt[i] = 's';
-		    args->argv[i].s = lua_tostring(L, i+1);
-		    break;
-		case LUA_TUSERDATA:
-		case LUA_TLIGHTUSERDATA:
-		    argt[i] = 'p';
-		    args->argv[i].p = lua_touserdata(L, i+1);
-		    break;
-		default:
-		    (void) luaL_error(L, "unsupported Lua type passed to hook");
-		    argt[i] = 'p';
-		    args->argv[i].p = NULL;
-		    break;
+	    argt[i] = rpmluaHookGetArg(L, i + 1, args->argv + i);
+	    if (!argt[i]) {
+		(void) luaL_error(L, "unsupported Lua type passed to hook");
+		argt[i] = 'p';
+		args->argv[i].p = NULL;
 	    }
 	}
 	args->argt = argt;
