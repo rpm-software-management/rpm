@@ -4,6 +4,7 @@
 #include <rpm/argv.h>
 
 typedef struct rpmlua_s * rpmlua;
+struct rpmhookArgs_s;
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,6 +31,8 @@ char *rpmluaPopPrintBuffer(rpmlua lua);
 void rpmluaPushPrintBuffer(rpmlua lua);
 
 void rpmluaSetNextFileFunc(char *(*func)(void *), void *funcParam);
+
+char *rpmluaCallStringFunction(rpmlua lua, const char *function, struct rpmhookArgs_s *args);
 
 #ifdef __cplusplus
 }

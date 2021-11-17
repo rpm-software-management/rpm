@@ -69,6 +69,9 @@ static int rpm_print(lua_State *L);
 static int rpm_exit(lua_State *L);
 static int rpm_redirect2null(lua_State *L);
 
+static int rpmluaHookPushArg(lua_State *L, int argt, rpmhookArgv *arg);
+static int rpmluaHookGetArg(lua_State *L, int idx, rpmhookArgv *arg);
+
 static int pusherror(lua_State *L, int code, const char *info)
 {
     lua_pushnil(L);
@@ -418,6 +421,76 @@ void rpmluaInteractive(rpmlua _lua)
 {
     INITSTATE(_lua, lua);
     _rpmluaInteractive(lua->L);
+}
+
+static int luaLookupFunction(lua_State *L, const char *function)
+{
+    char *func, *fp, *fp2;
+    int rc = -1;
+    fp = func = xstrdup(function);
+    lua_pushglobaltable(L);
+    while (fp) {
+	fp2 = strchr(fp, '.');
+	if (fp2)
+	    *fp2 = 0;
+	if (!*fp) {
+	    lua_pop(L, 1);
+	    goto exit;
+	}
+	lua_getfield(L, -1, fp);
+	if (lua_isnil(L, -1)) {
+	    lua_pop(L, 2);
+	    goto exit;
+	}
+	if (fp2)
+	    *fp2++ = '.';
+	fp = fp2;
+    }
+    rc = 0;
+exit:
+    free(func);
+    return rc;
+}
+
+char *rpmluaCallStringFunction(rpmlua _lua, const char *function, rpmhookArgs args)
+{
+    INITSTATE(_lua, lua);
+    lua_State *L = lua->L;
+    int i;
+    char *result = NULL;
+
+    /* lookup function */
+    if (luaLookupFunction(L, function)) {
+	rpmlog(RPMLOG_ERR, "no such function '%s'\n", function);
+	return NULL;
+    }
+    /* convert the arguments */
+    for (i = 0; i < args->argc; i++) {
+	if (rpmluaHookPushArg(L, args->argt[i], args->argv + i)) {
+	    rpmlog(RPMLOG_ERR, "%s: cannot convert argment type %c\n", function, args->argt[i]);
+	    lua_pop(L, i + 1);
+	    return NULL;
+	}
+    }
+    /* run the call */
+    if (lua_pcall(L, args->argc, 1, 0) != 0) {
+	rpmlog(RPMLOG_ERR, "%s: %s\n", function, lua_tostring(L, -1));
+	lua_pop(L, 1);
+	return NULL;
+    }
+    if (lua_isnil(L, -1)) {
+	result = xstrdup("");	/* tolstring will convert to "nil" */
+    } else {
+	result = (char *)luaL_tolstring(L, -1, NULL);
+	if (result) {
+	    result = xstrdup(result);
+	    lua_pop(L, 1);
+	}
+    }
+    lua_pop(L, 1);
+    if (!result)
+	rpmlog(RPMLOG_ERR, "%s: result can not be converted to a string", function);
+    return result;
 }
 
 /* ------------------------------------------------------------------ */
