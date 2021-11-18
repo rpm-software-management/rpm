@@ -688,16 +688,9 @@ static int rpm_print (lua_State *L)
     int n = lua_gettop(L);  /* number of arguments */
     int i;
     if (!lua) return 0;
-    lua_getglobal(L, "tostring");
     for (i = 1; i <= n; i++) {
-	const char *s;
 	size_t sl;
-	lua_pushvalue(L, -1);  /* function to be called */
-	lua_pushvalue(L, i);   /* value to print */
-	lua_call(L, 1, 1);
-	s = lua_tolstring(L, -1, &sl);  /* get result */
-	if (s == NULL)
-	    return luaL_error(L, "`tostring' must return a string to `print'");
+	const char *s = luaL_tolstring(L, i, &sl);
 	if (lua->printbuf) {
 	    rpmluapb prbuf = lua->printbuf;
 	    if (prbuf->used+sl+1 > prbuf->alloced) {
