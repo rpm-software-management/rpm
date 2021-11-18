@@ -736,6 +736,21 @@ rm -f ${f}
 ])
 AT_CLEANUP
 
+AT_SETUP([lua auto-print])
+AT_KEYWORDS([macros lua])
+RPMDB_INIT
+AT_CHECK([[
+runroot rpm \
+    --define 'foo() %{lua:return string.reverse(arg[1])}' \
+    --eval '%foo hello' \
+    --eval '%{lua:return 1, 2, 3}'
+]],
+[0],
+[olleh
+1	2	3
+])
+AT_CLEANUP
+
 AT_SETUP([lua rpm version objects])
 AT_KEYWORDS([macros lua])
 AT_CHECK([
