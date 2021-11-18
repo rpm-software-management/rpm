@@ -4,6 +4,7 @@
 #include <selinux/context.h>
 #include <selinux/label.h>
 #include <selinux/avc.h>
+#include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmts.h>
 #include "lib/rpmplugin.h"
