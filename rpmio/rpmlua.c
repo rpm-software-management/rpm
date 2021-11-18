@@ -131,14 +131,18 @@ rpmlua rpmluaNew()
 
     for (lib = extlibs; lib->name; lib++) {
 	luaL_requiref(L, lib->name, lib->func, 1);
+	lua_pop(L, 1);
     }
     lua_pushcfunction(L, rpm_print);
     lua_setglobal(L, "print");
 
     lua_getglobal(L, "os");
     luaL_setfuncs(L, os_overrides, 0);
+    lua_pop(L, 1);
+
     lua_getglobal(L, "posix");
     luaL_setfuncs(L, posix_overrides, 0);
+    lua_pop(L, 1);
 
     lua_getglobal(L, "package");
     lua_pushfstring(L, "%s/%s", rpmConfigDir(), "/lua/?.lua");
