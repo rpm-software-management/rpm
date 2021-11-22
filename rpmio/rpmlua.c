@@ -755,7 +755,7 @@ static int rpm_call(lua_State *L)
 	char *argt = (char *)xmalloc(args->argc+1);
 	int i;
 	for (i = 0; i != args->argc; i++) {
-	    argt[i] = rpmluaHookGetArg(L, i + 1, args->argv + i);
+	    argt[i] = rpmluaHookGetArg(L, i + 2, args->argv + i);
 	    if (!argt[i]) {
 		(void) luaL_error(L, "unsupported Lua type passed to hook");
 		argt[i] = 'p';
