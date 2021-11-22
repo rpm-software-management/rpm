@@ -4,7 +4,7 @@
 typedef union {
     const char * s;
     int i;
-    float f;
+    double f;
     void * p;
 } rpmhookArgv;
 

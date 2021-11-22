@@ -650,14 +650,14 @@ static int rpmluaHookPushArg(lua_State *L, int argt, rpmhookArgv *arg)
 static int rpmluaHookGetArg(lua_State *L, int idx, rpmhookArgv *arg)
 {
     int argt = 0;
-    float f;
+    double f;
     switch (lua_type(L, idx)) {
 	case LUA_TNIL:
 	    argt = 'p';
 	    arg->p = NULL;
 	    break;
 	case LUA_TNUMBER:
-	    f = (float)lua_tonumber(L, idx);
+	    f = (double)lua_tonumber(L, idx);
 	    if (f == (int)f) {
 		argt = 'i';
 		arg->i = (int)f;
@@ -709,6 +709,7 @@ static int rpmluaHookWrapper(rpmhookArgs args, void *data)
     }
     return ret;
 }
+
 static int rpm_register(lua_State *L)
 {
     if (!lua_isstring(L, 1)) {

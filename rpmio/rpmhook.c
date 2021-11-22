@@ -187,7 +187,7 @@ static rpmhookArgs rpmhookArgsParse(const char *argt, va_list ap)
 		args->argv[i].i = va_arg(ap, int);
 		break;
 	    case 'f':
-		args->argv[i].f = (float)va_arg(ap, double);
+		args->argv[i].f = va_arg(ap, double);
 		break;
 	    case 'p':
 		args->argv[i].p = va_arg(ap, void *);
