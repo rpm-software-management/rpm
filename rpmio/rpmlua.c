@@ -633,7 +633,7 @@ static int rpmluaHookPushArg(lua_State *L, int argt, rpmhookArgv *arg)
 	    lua_pushstring(L, arg->s);
 	    break;
 	case 'i':
-	    lua_pushnumber(L, (lua_Number)arg->i);
+	    lua_pushinteger(L, (lua_Integer)arg->i);
 	    break;
 	case 'f':
 	    lua_pushnumber(L, (lua_Number)arg->f);
