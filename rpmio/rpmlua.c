@@ -427,47 +427,29 @@ void rpmluaInteractive(rpmlua _lua)
     _rpmluaInteractive(lua->L);
 }
 
-static int luaLookupFunction(lua_State *L, const char *function)
-{
-    char *func, *fp, *fp2;
-    int rc = -1;
-    fp = func = xstrdup(function);
-    lua_pushglobaltable(L);
-    while (fp) {
-	fp2 = strchr(fp, '.');
-	if (fp2)
-	    *fp2 = 0;
-	if (!*fp) {
-	    lua_pop(L, 1);
-	    goto exit;
-	}
-	lua_getfield(L, -1, fp);
-	if (lua_isnil(L, -1)) {
-	    lua_pop(L, 2);
-	    goto exit;
-	}
-	if (fp2)
-	    *fp2++ = '.';
-	fp = fp2;
-    }
-    rc = 0;
-exit:
-    free(func);
-    return rc;
-}
-
 char *rpmluaCallStringFunction(rpmlua _lua, const char *function, rpmhookArgs args)
 {
     INITSTATE(_lua, lua);
     lua_State *L = lua->L;
     int i;
+    char *fcall = NULL;
     char *result = NULL;
 
-    /* lookup function */
-    if (luaLookupFunction(L, function)) {
-	rpmlog(RPMLOG_ERR, "no such function '%s'\n", function);
+    if (!lua_checkstack(L, args->argc + 1)) {
+	rpmlog(RPMLOG_ERR, "out of lua stack space\n");
 	return NULL;
     }
+
+    /* compile the call */
+    rasprintf(&fcall, "return (%s)(...)", function);
+    if (luaL_loadbuffer(L, fcall, strlen(fcall), function) != 0) {
+	rpmlog(RPMLOG_ERR, "%s: %s\n", function, lua_tostring(L, -1));
+	lua_pop(L, 1);
+	free(fcall);
+	return NULL;
+    }
+    free(fcall);
+
     /* convert the arguments */
     for (i = 0; i < args->argc; i++) {
 	if (rpmluaHookPushArg(L, args->argt[i], args->argv + i)) {
@@ -476,24 +458,30 @@ char *rpmluaCallStringFunction(rpmlua _lua, const char *function, rpmhookArgs ar
 	    return NULL;
 	}
     }
+
     /* run the call */
     if (lua_pcall(L, args->argc, 1, 0) != 0) {
 	rpmlog(RPMLOG_ERR, "%s: %s\n", function, lua_tostring(L, -1));
 	lua_pop(L, 1);
 	return NULL;
     }
+
+    /* convert result to a string */
     if (lua_isnil(L, -1)) {
 	result = xstrdup("");	/* tolstring will convert to "nil" */
+    } else if (lua_isboolean(L, -1)) {
+	result = xstrdup(lua_toboolean(L, -1) ? "1" : "");
     } else {
-	result = (char *)luaL_tolstring(L, -1, NULL);
-	if (result) {
-	    result = xstrdup(result);
+	lua_getglobal(L, "tostring");
+	lua_insert(L, -2);
+	if (lua_pcall(L, 1, 1, 0) != 0) {
+	    rpmlog(RPMLOG_ERR, "%s: %s\n", function, lua_tostring(L, -1));
 	    lua_pop(L, 1);
+	    return NULL;
 	}
+	result = xstrdup(lua_tostring(L, -1));
     }
     lua_pop(L, 1);
-    if (!result)
-	rpmlog(RPMLOG_ERR, "%s: result can not be converted to a string", function);
     return result;
 }
 
