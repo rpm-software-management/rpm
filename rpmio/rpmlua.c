@@ -259,8 +259,7 @@ int rpmluaRunScript(rpmlua lua, const char *script, const char *name,
     lua_State *L = lua->L;
     int ret = -1;
     int oind = 0;
-    static const char *lualocal =
-	"local opt = select(1, ...); local arg = select(2, ...);";
+    static const char *lualocal = "local opt, arg = ...;";
 
     if (name == NULL)
 	name = "<lua>";
