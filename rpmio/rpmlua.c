@@ -334,63 +334,63 @@ int rpmluaRunScriptFile(rpmlua lua, const char *filename)
 /* From lua.c */
 static int rpmluaReadline(lua_State *L, const char *prompt)
 {
-   static char buffer[1024];
-   if (prompt) {
-      (void) fputs(prompt, stdout);
-      (void) fflush(stdout);
-   }
-   if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
-      return 0;  /* read fails */
-   } else {
-      lua_pushstring(L, buffer);
-      return 1;
-   }
+    static char buffer[1024];
+    if (prompt) {
+	(void) fputs(prompt, stdout);
+	(void) fflush(stdout);
+    }
+    if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
+	return 0;  /* read fails */
+    } else {
+	lua_pushstring(L, buffer);
+	return 1;
+    }
 }
 
 /* Based on lua.c */
 static void _rpmluaInteractive(lua_State *L)
 {
-   rpmlua lua = getlua(L);
-   (void) fputs("\n", stdout);
-   printf("RPM Interactive %s Interpreter\n", LUA_VERSION);
-   for (;;) {
-      int rc = 0;
+    rpmlua lua = getlua(L);
+    (void) fputs("\n", stdout);
+    printf("RPM Interactive %s Interpreter\n", LUA_VERSION);
+    for (;;) {
+	int rc = 0;
 
-      if (rpmluaReadline(L, "> ") == 0)
-	 break;
-      if (lua_tostring(L, -1)[0] == '=') {
-	 (void) lua_pushfstring(L, "print(%s)", lua_tostring(L, -1)+1);
-	 lua_remove(L, -2);
-      }
-      for (;;) {
-         size_t len;
-	 const char *code = lua_tolstring(L, -1, &len);
-	 rc = luaL_loadbuffer(L, code, len, "<lua>");
-	 if (rc == LUA_ERRSYNTAX &&
-	     strstr(lua_tostring(L, -1), "near `<eof>'") != NULL) {
-	    if (rpmluaReadline(L, ">> ") == 0)
-	       break;
-	    lua_remove(L, -2); /* Remove error */
-	    lua_concat(L, 2);
-	    continue;
-	 }
-	 break;
-      }
-      if (rc == 0)
-	 rc = lua_pcall(L, 0, 0, 0);
-      if (rc != 0) {
-	 fprintf(stderr, "%s\n", lua_tostring(L, -1));
-	 lua_pop(L, 1);
-      } else {
-	 char *s = rpmluaPopPrintBuffer(lua);
-	 if (s) {
-	    fprintf(stdout, "%s\n", s);
-	    free(s);
-	 }
-      }
-      lua_pop(L, 1); /* Remove line */
-   }
-   (void) fputs("\n", stdout);
+	if (rpmluaReadline(L, "> ") == 0)
+	    break;
+	if (lua_tostring(L, -1)[0] == '=') {
+	    (void) lua_pushfstring(L, "print(%s)", lua_tostring(L, -1)+1);
+	    lua_remove(L, -2);
+	}
+	for (;;) {
+	    size_t len;
+	    const char *code = lua_tolstring(L, -1, &len);
+	    rc = luaL_loadbuffer(L, code, len, "<lua>");
+	    if (rc == LUA_ERRSYNTAX &&
+		strstr(lua_tostring(L, -1), "near `<eof>'") != NULL) {
+		if (rpmluaReadline(L, ">> ") == 0)
+		    break;
+		lua_remove(L, -2); /* Remove error */
+		lua_concat(L, 2);
+		continue;
+	   }
+	   break;
+	}
+	if (rc == 0)
+	    rc = lua_pcall(L, 0, 0, 0);
+	if (rc != 0) {
+	    fprintf(stderr, "%s\n", lua_tostring(L, -1));
+	    lua_pop(L, 1);
+	} else {
+	    char *s = rpmluaPopPrintBuffer(lua);
+	    if (s) {
+		fprintf(stdout, "%s\n", s);
+		free(s);
+	    }
+	}
+	lua_pop(L, 1); /* Remove line */
+    }
+    (void) fputs("\n", stdout);
 }
 
 void rpmluaInteractive(rpmlua lua)
