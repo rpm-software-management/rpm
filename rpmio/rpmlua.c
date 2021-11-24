@@ -386,6 +386,7 @@ static void _rpmluaInteractive(lua_State *L)
 	    if (s) {
 		fprintf(stdout, "%s\n", s);
 		free(s);
+		rpmluaPushPrintBuffer(lua);
 	    }
 	}
 	lua_pop(L, 1); /* Remove line */
