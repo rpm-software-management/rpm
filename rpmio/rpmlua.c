@@ -44,13 +44,13 @@ struct rpmlua_s {
     rpmluapb printbuf;
 };
 
-#define INITSTATE(_lua, lua) \
-    rpmlua lua = _lua ? _lua : \
+#define INITSTATE(lua) \
+    (lua = lua ? lua : \
 	    (globalLuaState ? globalLuaState : \
 			\
 			(globalLuaState = rpmluaNew()) \
 			\
-	    )
+	    ))
 
 struct rpmluapb_s {
     size_t alloced;
@@ -95,7 +95,8 @@ static int pushresult(lua_State *L, int result, const char *info)
 
 rpmlua rpmluaGetGlobalState(void)
 {
-    INITSTATE(NULL, lua);
+    rpmlua lua = NULL;
+    INITSTATE(lua);
     return lua;
 }
 
@@ -185,15 +186,15 @@ static rpmlua getlua(lua_State *L)
     return lua;
 }
 
-void * rpmluaGetLua(rpmlua _lua)
+void * rpmluaGetLua(rpmlua lua)
 {
-    INITSTATE(_lua, lua);
+    INITSTATE(lua);
     return lua->L;
 }
 
-void rpmluaPushPrintBuffer(rpmlua _lua)
+void rpmluaPushPrintBuffer(rpmlua lua)
 {
-    INITSTATE(_lua, lua);
+    INITSTATE(lua);
     rpmluapb prbuf = xcalloc(1, sizeof(*prbuf));
     prbuf->buf = NULL;
     prbuf->alloced = 0;
@@ -203,9 +204,9 @@ void rpmluaPushPrintBuffer(rpmlua _lua)
     lua->printbuf = prbuf;
 }
 
-char *rpmluaPopPrintBuffer(rpmlua _lua)
+char *rpmluaPopPrintBuffer(rpmlua lua)
 {
-    INITSTATE(_lua, lua);
+    INITSTATE(lua);
     rpmluapb prbuf = lua->printbuf;
     char *ret = NULL;
 
@@ -224,9 +225,9 @@ void rpmluaSetNextFileFunc(char *(*func)(void *), void *funcParam)
     nextFileFuncParam = funcParam;
 }
 
-int rpmluaCheckScript(rpmlua _lua, const char *script, const char *name)
+int rpmluaCheckScript(rpmlua lua, const char *script, const char *name)
 {
-    INITSTATE(_lua, lua);
+    INITSTATE(lua);
     lua_State *L = lua->L;
     int ret = 0;
     if (name == NULL)
@@ -251,10 +252,10 @@ static int luaopt(int c, const char *oarg, int oint, void *data)
     return 0;
 }
 
-int rpmluaRunScript(rpmlua _lua, const char *script, const char *name,
+int rpmluaRunScript(rpmlua lua, const char *script, const char *name,
 		    const char *opts, ARGV_t args)
 {
-    INITSTATE(_lua, lua);
+    INITSTATE(lua);
     lua_State *L = lua->L;
     int ret = -1;
     int oind = 0;
@@ -311,9 +312,9 @@ exit:
     return ret;
 }
 
-int rpmluaRunScriptFile(rpmlua _lua, const char *filename)
+int rpmluaRunScriptFile(rpmlua lua, const char *filename)
 {
-    INITSTATE(_lua, lua);
+    INITSTATE(lua);
     lua_State *L = lua->L;
     int ret = 0;
     if (luaL_loadfile(L, filename) != 0) {
@@ -392,9 +393,9 @@ static void _rpmluaInteractive(lua_State *L)
    (void) fputs("\n", stdout);
 }
 
-void rpmluaInteractive(rpmlua _lua)
+void rpmluaInteractive(rpmlua lua)
 {
-    INITSTATE(_lua, lua);
+    INITSTATE(lua);
     _rpmluaInteractive(lua->L);
 }
 
