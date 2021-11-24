@@ -145,7 +145,9 @@ rpmlua rpmluaNew()
     lua_setfield(L, -2, "path");
     lua_pop(L, 1);
 
-    rpmluaSetData(lua, "lua", lua);
+    lua_pushliteral(L, "rpm_lua");
+    lua_pushlightuserdata(L, (void *)lua);
+    lua_rawset(L, LUA_REGISTRYINDEX);
 
     initlua = rpmGenPath(rpmConfigDir(), "init.lua", NULL);
     if (stat(initlua, &st) != -1)
@@ -165,52 +167,21 @@ rpmlua rpmluaFree(rpmlua lua)
     return NULL;
 }
 
+static rpmlua getlua(lua_State *L)
+{
+    rpmlua lua = NULL;
+    lua_pushliteral(L, "rpm_lua");
+    lua_rawget(L, LUA_REGISTRYINDEX);
+    if (lua_islightuserdata(L, -1))
+       lua = (rpmlua)lua_touserdata(L, -1);
+    lua_pop(L, 1);
+    return lua;
+}
+
 void * rpmluaGetLua(rpmlua _lua)
 {
     INITSTATE(_lua, lua);
     return lua->L;
-}
-
-void rpmluaRegister(rpmlua lua, const void *regfuncs, const char *lib)
-{
-    const luaL_Reg *funcs = regfuncs;
-    lua_getfield(lua->L, LUA_REGISTRYINDEX, LUA_LOADED_TABLE);
-    lua_getfield(lua->L, -1, lib);
-    luaL_setfuncs(lua->L, funcs, 0);
-    lua_pop(lua->L, 2);
-}
-
-void rpmluaSetData(rpmlua _lua, const char *key, const void *data)
-{
-    INITSTATE(_lua, lua);
-    lua_State *L = lua->L;
-    lua_pushliteral(L, "rpm_");
-    lua_pushstring(L, key);
-    lua_concat(L, 2);
-    if (data == NULL)
-	lua_pushnil(L);
-    else
-	lua_pushlightuserdata(L, (void *)data);
-    lua_rawset(L, LUA_REGISTRYINDEX);
-}
-
-static void *getdata(lua_State *L, const char *key)
-{
-    void *ret = NULL;
-    lua_pushliteral(L, "rpm_");
-    lua_pushstring(L, key);
-    lua_concat(L, 2);
-    lua_rawget(L, LUA_REGISTRYINDEX);
-    if (lua_islightuserdata(L, -1))
-	ret = lua_touserdata(L, -1);
-    lua_pop(L, 1);
-    return ret;
-}
-
-void *rpmluaGetData(rpmlua _lua, const char *key)
-{
-    INITSTATE(_lua, lua);
-    return getdata(lua->L, key);
 }
 
 void rpmluaPushPrintBuffer(rpmlua _lua)
@@ -371,7 +342,7 @@ static int rpmluaReadline(lua_State *L, const char *prompt)
 /* Based on lua.c */
 static void _rpmluaInteractive(lua_State *L)
 {
-   rpmlua lua = getdata(L, "lua");
+   rpmlua lua = getlua(L);
    (void) fputs("\n", stdout);
    printf("RPM Interactive %s Interpreter\n", LUA_VERSION);
    for (;;) {
@@ -680,7 +651,7 @@ static int rpm_call(lua_State *L)
 /* Based on luaB_print. */
 static int rpm_print (lua_State *L)
 {
-    rpmlua lua = (rpmlua)getdata(L, "lua");
+    rpmlua lua = getlua(L);
     int n = lua_gettop(L);  /* number of arguments */
     int i;
     if (!lua) return 0;
