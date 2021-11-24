@@ -606,7 +606,7 @@ RPM_GNUC_INTERNAL
 void * specLuaFini(rpmSpec spec);
 
 RPM_GNUC_INTERNAL
-void addLuaSource(rpmlua lua, const struct Source *p);
+void addLuaSource(const struct Source *p);
 #ifdef __cplusplus
 }
 #endif

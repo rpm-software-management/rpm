@@ -34,8 +34,9 @@ void * specLuaFini(rpmSpec spec)
     return NULL;
 }
 
-void addLuaSource(rpmlua lua, const struct Source *p)
+void addLuaSource(const struct Source *p)
 {
+    rpmlua lua = rpmluaGetGlobalState();
     lua_State *L = rpmluaGetLua(lua);
     const char * what = (p->flags & RPMBUILD_ISPATCH) ? "patches" : "sources";
 
