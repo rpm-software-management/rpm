@@ -29,7 +29,7 @@ RPM_GNUC_INTERNAL
 rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
 		    char *keypass, char *cert, uint16_t algo);
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 
