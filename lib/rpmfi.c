@@ -116,7 +116,8 @@ struct rpmfiles_s {
     struct fingerPrint_s * fps;	/*!< File fingerprint(s). */
 
     int digestalgo;		/*!< File digest algorithm */
-    int signaturelength;	/*!< File signature length */
+    int *signaturelengths;	/*!< File signature lengths */
+    int signaturemaxlen;	/*!< Largest file signature length */
     int veritysiglength;	/*!< Verity signature length */
     uint16_t verityalgo;	/*!< Verity algorithm */
     unsigned char * digests;	/*!< File digests in binary. */
@@ -579,9 +580,9 @@ const unsigned char * rpmfilesFSignature(rpmfiles fi, int ix, size_t *len)
 
     if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	if (fi->signatures != NULL)
-	    signature = fi->signatures + (fi->signaturelength * ix);
+	    signature = fi->signatures + (fi->signaturemaxlen * ix);
 	if (len)
-	    *len = fi->signaturelength;
+	    *len = fi->signaturelengths[ix];
     }
     return signature;
 }
@@ -1277,6 +1278,7 @@ rpmfiles rpmfilesFree(rpmfiles fi)
 	fi->flangs = _free(fi->flangs);
 	fi->digests = _free(fi->digests);
 	fi->signatures = _free(fi->signatures);
+	fi->signaturelengths = _free(fi->signaturelengths);
 	fi->veritysigs = _free(fi->veritysigs);
 	fi->fcaps = _free(fi->fcaps);
 
@@ -1507,15 +1509,38 @@ err:
 }
 
 /* Convert a tag of hex strings to binary presentation */
-static uint8_t *hex2bin(Header h, rpmTagVal tag, rpm_count_t num, size_t len)
+/* If lengths is non-NULL, assume variable length strings */
+static uint8_t *hex2bin(Header h, rpmTagVal tag, rpm_count_t num, size_t len,
+			int **lengths, int *maxlen)
 {
     struct rpmtd_s td;
     uint8_t *bin = NULL;
 
     if (headerGet(h, tag, &td, HEADERGET_MINMEM) && rpmtdCount(&td) == num) {
-	uint8_t *t = bin = xmalloc(num * len);
 	const char *s;
 
+	/* Figure string sizes + max length for allocation purposes */
+	if (lengths) {
+	    int maxl = 0;
+	    int *lens = xmalloc(num * sizeof(*lens));
+	    int i = 0;
+
+	    while ((s = rpmtdNextString(&td))) {
+		lens[i] = strlen(s) / 2;
+		if (lens[i] > maxl)
+		    maxl = lens[i];
+		i++;
+	    }
+
+	    *lengths = lens;
+	    *maxlen = maxl;
+	    len = maxl;
+
+	    /* Reinitialize iterator for next round */
+	    rpmtdInit(&td);
+	}
+
+	uint8_t *t = bin = xmalloc(num * len);
 	while ((s = rpmtdNextString(&td))) {
 	    if (*s == '\0') {
 		memset(t, 0, len);
@@ -1648,15 +1673,15 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
     /* grab hex digests from header and store in binary format */
     if (!(flags & RPMFI_NOFILEDIGESTS)) {
 	size_t diglen = rpmDigestLength(fi->digestalgo);
-	fi->digests = hex2bin(h, RPMTAG_FILEDIGESTS, totalfc, diglen);
+	fi->digests = hex2bin(h, RPMTAG_FILEDIGESTS, totalfc, diglen,
+				NULL, NULL);
     }
 
     fi->signatures = NULL;
     /* grab hex signatures from header and store in binary format */
     if (!(flags & RPMFI_NOFILESIGNATURES)) {
-	fi->signaturelength = headerGetNumber(h, RPMTAG_FILESIGNATURELENGTH);
-	fi->signatures = hex2bin(h, RPMTAG_FILESIGNATURES,
-				 totalfc, fi->signaturelength);
+	fi->signatures = hex2bin(h, RPMTAG_FILESIGNATURES, totalfc, 0,
+				&fi->signaturelengths, &fi->signaturemaxlen);
     }
 
     fi->veritysigs = NULL;
