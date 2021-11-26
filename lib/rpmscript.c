@@ -4,6 +4,7 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <lua.h>
 
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmmacro.h>
@@ -93,6 +94,14 @@ static const struct scriptInfo_s * findTag(rpmTagVal tag)
 	si++;
     return si;
 }
+
+static int next_file(lua_State *L)
+{
+    scriptNextFileFunc nff = lua_touserdata(L, lua_upvalueindex(1));
+    lua_pushstring(L, nff->func(nff->param));
+    return 1;
+}
+
 /**
  * Run internal Lua script.
  */
@@ -103,12 +112,16 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 {
     char *scriptbuf = NULL;
     rpmRC rc = RPMRC_FAIL;
-    rpmlua lua = NULL; /* Global state. */
+    rpmlua lua = rpmluaGetGlobalState();
+    lua_State *L = rpmluaGetLua(lua);
     int cwd = -1;
 
     rpmlog(RPMLOG_DEBUG, "%s: running <lua> scriptlet.\n", sname);
 
-    rpmluaSetNextFileFunc(nextFileFunc->func, nextFileFunc->param);
+    lua_getglobal(L, "rpm");
+    lua_pushlightuserdata(L, nextFileFunc);
+    lua_pushcclosure(L, &next_file, 1);
+    lua_setfield(L, -2, "next_file");
 
     if (arg1 >= 0)
 	argvAddNum(argvp, arg1);
@@ -149,6 +162,10 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	umask(oldmask);
     }
     free(scriptbuf);
+
+    lua_pushnil(L);
+    lua_setfield(L, -2, "next_file");
+    lua_pop(L, 1); /* "rpm" global */
 
     return rc;
 }

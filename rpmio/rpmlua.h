@@ -25,8 +25,6 @@ void rpmluaInteractive(rpmlua lua);
 char *rpmluaPopPrintBuffer(rpmlua lua);
 void rpmluaPushPrintBuffer(rpmlua lua);
 
-void rpmluaSetNextFileFunc(char *(*func)(void *), void *funcParam);
-
 char *rpmluaCallStringFunction(rpmlua lua, const char *function, struct rpmhookArgs_s *args);
 
 #ifdef __cplusplus
