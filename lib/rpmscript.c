@@ -35,7 +35,7 @@ struct rpmScript_s {
     char *body;			/* script body */
     char *descr;		/* description for logging */
     rpmscriptFlags flags;	/* flags to control operation */
-    struct scriptNextFileFunc_s nextFileFunc;  /* input function */
+    struct scriptNextFileFunc_s *nextFileFunc;  /* input function */
 };
 
 struct scriptInfo_s {
@@ -349,7 +349,7 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
     close(inpipe[0]);
     inpipe[0] = 0;
 
-    if (nextFileFunc->func) {
+    if (nextFileFunc) {
 	while ((line = nextFileFunc->func(nextFileFunc->param)) != NULL) {
 	    size_t size = strlen(line);
 	    size_t ret_size;
@@ -441,9 +441,9 @@ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
 
     if (rc != RPMRC_FAIL) {
 	if (script_type & RPMSCRIPTLET_EXEC) {
-	    rc = runExtScript(plugins, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2, &script->nextFileFunc);
+	    rc = runExtScript(plugins, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2, script->nextFileFunc);
 	} else {
-	    rc = runLuaScript(plugins, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2, &script->nextFileFunc);
+	    rc = runLuaScript(plugins, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2, script->nextFileFunc);
 	}
     }
 
@@ -504,9 +504,6 @@ static rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
 	script->body = b;
     }
 
-    script->nextFileFunc.func = NULL;
-    script->nextFileFunc.param = NULL;
-
     free(nevra);
     return script;
 }
@@ -514,8 +511,9 @@ static rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
 void rpmScriptSetNextFileFunc(rpmScript script, char *(*func)(void *),
 			    void *param)
 {
-    script->nextFileFunc.func = func;
-    script->nextFileFunc.param = param;
+    script->nextFileFunc = xmalloc(sizeof(*script->nextFileFunc));
+    script->nextFileFunc->func = func;
+    script->nextFileFunc->param = param;
 }
 
 rpmTagVal triggerDsTag(rpmscriptTriggerModes tm)
@@ -651,6 +649,7 @@ rpmScript rpmScriptFree(rpmScript script)
 	free(script->args);
 	free(script->body);
 	free(script->descr);
+	free(script->nextFileFunc);
 	free(script);
     }
     return NULL;
