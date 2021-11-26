@@ -118,10 +118,12 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 
     rpmlog(RPMLOG_DEBUG, "%s: running <lua> scriptlet.\n", sname);
 
-    lua_getglobal(L, "rpm");
-    lua_pushlightuserdata(L, nextFileFunc);
-    lua_pushcclosure(L, &next_file, 1);
-    lua_setfield(L, -2, "next_file");
+    if (nextFileFunc) {
+	lua_getglobal(L, "rpm");
+	lua_pushlightuserdata(L, nextFileFunc);
+	lua_pushcclosure(L, &next_file, 1);
+	lua_setfield(L, -2, "next_file");
+    }
 
     if (arg1 >= 0)
 	argvAddNum(argvp, arg1);
@@ -163,9 +165,11 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
     }
     free(scriptbuf);
 
-    lua_pushnil(L);
-    lua_setfield(L, -2, "next_file");
-    lua_pop(L, 1); /* "rpm" global */
+    if (nextFileFunc) {
+	lua_pushnil(L);
+	lua_setfield(L, -2, "next_file");
+	lua_pop(L, 1); /* "rpm" global */
+    }
 
     return rc;
 }
