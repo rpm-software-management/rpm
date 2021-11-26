@@ -602,6 +602,17 @@ for f in fi:
 ],
 [])
 
+RPMPY_TEST([file sets 1],[
+ts = rpm.ts()
+h = ts.hdrFromFdno('${RPMDATA}/RPMS/imatest-1.0-1.fc34.noarch.rpm')
+files = rpm.files(h)
+for f in files:
+   myprint('%s: %s' % (f.name, f.imasig.hex()))
+],
+[/usr/share/example1: 030204a598255400483046022100e5117bdafa73baaeb1f1dc46ecaa46981a62d417745a33532572b63dc6d95d16022100c789107ac5b91e2d915e1df3c7b78414f6b3f50899d44c1de381d0e938dfc82b
+/usr/share/example2: 030204a598255400473045022100c10943795bff5d9c0db53dd4f8e4b845615fd08a2be295c30a80f5bdb4e6a41302203038840cc6abaab92acb56cb3e3ce520b17f22ff7444a8d5d0f703a44d5307a3
+],
+[])
 RPMPY_TEST([string pool 1],[
 p = rpm.strpool()
 for s in ['foo', 'bar', 'foo', 'zoo']:
