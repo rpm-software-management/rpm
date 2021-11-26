@@ -399,9 +399,9 @@ void rpmluaInteractive(rpmlua lua)
     _rpmluaInteractive(lua->L);
 }
 
-char *rpmluaCallStringFunction(rpmlua _lua, const char *function, rpmhookArgs args)
+char *rpmluaCallStringFunction(rpmlua lua, const char *function, rpmhookArgs args)
 {
-    INITSTATE(_lua, lua);
+    INITSTATE(lua);
     lua_State *L = lua->L;
     int i;
     char *fcall = NULL;
