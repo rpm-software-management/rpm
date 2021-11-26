@@ -19,7 +19,7 @@ extern "C" {
 RPM_GNUC_INTERNAL
 rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass);
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 
