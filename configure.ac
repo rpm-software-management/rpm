@@ -860,9 +860,17 @@ host_os_gnu=-gnu
 if echo "$host_os" | grep '.*-gnulibc1' > /dev/null ; then
 	host_os=`echo "${host_os}" | sed 's/-gnulibc1$//'`
 fi
+if echo "$host_os" | grep '.*-gnueabihf' > /dev/null ; then
+	host_os=`echo "${host_os}" | sed 's/-gnueabihf$//'`
+	host_os_gnu=-gnueabihf
+fi
 if echo "$host_os" | grep '.*-gnueabi' > /dev/null ; then
 	host_os=`echo "${host_os}" | sed 's/-gnueabi$//'`
 	host_os_gnu=-gnueabi
+fi
+if echo "$host_os" | grep '.*-gnuabi64' > /dev/null ; then
+	host_os=`echo "${host_os}" | sed 's/-gnuabi64$//'`
+	host_os_gnu=-gnuabi64
 fi
 if echo "$host_os" | grep '.*-gnu' > /dev/null ; then
 	host_os=`echo "${host_os}" | sed 's/-gnu$//'`
