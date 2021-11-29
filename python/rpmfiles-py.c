@@ -152,6 +152,29 @@ static PyObject *rpmfile_digest(rpmfileObject *s)
     Py_RETURN_NONE;
 }
 
+static PyObject *bytebuf(const unsigned char *buf, size_t len)
+{
+    if (buf) {
+	PyObject *o = PyBytes_FromStringAndSize((const char *)buf, len);
+	return o;
+    }
+    Py_RETURN_NONE;
+}
+
+static PyObject *rpmfile_imasig(rpmfileObject *s)
+{
+    size_t len = 0;
+    const unsigned char *sig = rpmfilesFSignature(s->files, s->ix, &len);
+    return bytebuf(sig, len);
+}
+
+static PyObject *rpmfile_veritysig(rpmfileObject *s)
+{
+    size_t len = 0;
+    const unsigned char *sig = rpmfilesVSignature(s->files, s->ix, &len, NULL);
+    return bytebuf(sig, len);
+}
+
 static PyObject *rpmfile_class(rpmfileObject *s)
 {
     return utf8FromString(rpmfilesFClass(s->files, s->ix));
@@ -278,6 +301,10 @@ static PyGetSetDef rpmfile_getseters[] = {
       "language the file provides (typically for doc files)" },
     { "caps",		(getter) rpmfile_caps,		NULL,
       "file capabilities" },
+    { "imasig",	(getter) rpmfile_imasig,	NULL,
+      "IMA signature" },
+    { "veritysig",	(getter) rpmfile_veritysig,	NULL,
+      "Verity signature" },
     { NULL, NULL, NULL, NULL }
 };
 
