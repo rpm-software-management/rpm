@@ -684,8 +684,11 @@ assert(otherFi != NULL);
 		    rpmfsSetAction(fs, i, FA_SKIP);
 		    break;
 		}
-		/* Here is an overlapped removed file: skip in previous. */
-		rpmfsSetAction(otherFs, otherFileNum, FA_SKIP);
+                if (rpmfilesFState(fi, i) == RPMFILE_STATE_NORMAL) {
+		    /* Here is an overlapped removed file: if the current
+                     * file is normal, skip in previous. */
+		    rpmfsSetAction(otherFs, otherFileNum, FA_SKIP);
+                }
 	    }
 	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
 		break;
