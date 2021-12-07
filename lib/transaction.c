@@ -678,8 +678,11 @@ assert(otherFi != NULL);
 	case TR_REMOVED:
 	    if (otherPkgNum >= 0) {
 		assert(otherFi != NULL);
-                /* Here is an overlapped added file we don't want to nuke. */
-		if (rpmfsGetAction(otherFs, otherFileNum) != FA_ERASE) {
+                rpmFileAction oaction = rpmfsGetAction(otherFs, otherFileNum);
+                /* Here is an overlapped added file we don't want to nuke. 
+                 * Don't set current file to FA_SKIP if other file is FA_SKIPCOLOR
+                 * because if current file is normal, it can be erased. */
+		if (oaction != FA_ERASE && oaction != FA_SKIPCOLOR) {
 		    /* On updates, don't remove files. */
 		    rpmfsSetAction(fs, i, FA_SKIP);
 		    break;
@@ -692,8 +695,11 @@ assert(otherFi != NULL);
 	    }
 	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
 		break;
-	    if (rpmfilesFState(fi, i) != RPMFILE_STATE_NORMAL) {
-		rpmfsSetAction(fs, i, FA_SKIP);
+ 	    if (rpmfilesFState(fi, i) == RPMFILE_STATE_WRONGCOLOR) {
+ 		rpmfsSetAction(fs, i, FA_SKIPCOLOR);
+ 		break;
+ 	    } else if (rpmfilesFState(fi, i) != RPMFILE_STATE_NORMAL) {
+        	rpmfsSetAction(fs, i, FA_SKIP);
 		break;
 	    }
 		
