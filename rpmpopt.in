@@ -44,6 +44,7 @@ rpm	alias --scripts --qf '\
 	--POPTdesc=$"list install/erase scriptlets from package(s)"
 
 rpm	alias --setperms -q --qf '[\[ -L %{FILENAMES:shescape} \] || \
+        \[ -n %{FILELINKTOS:shescape} \] || \
         ( \[ $((%{FILEFLAGS} & 2#1001000)) != 0 \] && \[ ! -e %{FILENAMES:shescape} \] ) || \
         chmod %7{FILEMODES:octal} %{FILENAMES:shescape}\n]' \
 		   --pipe "grep -v \(none\) | grep '^. -L ' | sed 's/chmod .../chmod /' | sh" \
