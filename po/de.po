@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Ettore Atalan <atalanttore@googlemail.com>, 2016
+# Ettore Atalan <atalanttore@googlemail.com>, 2016, 2021.
 # Roman Spirgi <bigant@fedoraproject.org>, 2012
 # Roman Spirgi <rspirgi@gmail.com>, 2011
 # Mario Blättermann <mario.blaettermann@gmail.com>, 2019. #zanata
@@ -12,15 +12,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2020-03-23 08:40-0400\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: German (http://www.transifex.com/rpm-team/rpm/language/de/)\n"
+"PO-Revision-Date: 2021-11-08 00:49+0000\n"
+"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
+"Language-Team: German <https://translate.fedoraproject.org/projects/rpm/"
+"master/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.6.2\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.8\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -685,7 +686,7 @@ msgid "%s: failed to encode\n"
 msgstr "%s: Verschlüsselung fehlgeschlagen\n"
 
 msgid "failed symlink"
-msgstr ""
+msgstr "fehlgeschlagener Symlink"
 
 #, c-format
 msgid "Duplicate build-id, stat %s: %m\n"
@@ -788,9 +789,9 @@ msgstr ""
 "Installierte (aber nicht gepackte) Datei(en) gefunden:\n"
 "%s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s already exists\n"
-msgstr "Zeile %d: %s: Paket %s existiert bereits\n"
+msgstr "Paket %s existiert bereits\n"
 
 #, c-format
 msgid "%s was mapped to multiple filenames"
@@ -1467,21 +1468,23 @@ msgstr ""
 msgid "Found %s %s database while attempting %s backend: using %s backend.\n"
 msgstr ""
 
-#, fuzzy
 msgid "Detected outdated index databases\n"
-msgstr "Alte Datenbank in %s konnte nicht gelöscht werden\n"
+msgstr "Veraltete Indexdatenbanken erkannt\n"
 
-#, fuzzy
 msgid "Rebuilding outdated index databases\n"
-msgstr "Alte Datenbank in %s konnte nicht gelöscht werden\n"
+msgstr "Veraltete Indexdatenbanken werden neu gebaut\n"
 
 #, c-format
 msgid "rpmidx: Version mismatch. Expected version: %u. Found version: %u\n"
 msgstr ""
+"rpmidx: Version stimmt nicht überein. Erwartete Version: %u. Gefundene "
+"Version: %u\n"
 
 #, c-format
 msgid "rpmpkg: Version mismatch. Expected version: %u. Found version: %u\n"
 msgstr ""
+"rpmpkg: Version stimmt nicht überein. Erwartete Version: %u. Gefundene "
+"Version: %u\n"
 
 msgid "rpmpkg: detected non-zero blob, trying auto repair\n"
 msgstr ""
@@ -1489,10 +1492,12 @@ msgstr ""
 #, c-format
 msgid "rpmxdb: Version mismatch. Expected version: %u. Found version: %u\n"
 msgstr ""
+"rpmxdb: Version stimmt nicht überein. Erwartete Version: %u. Gefundene "
+"Version: %u\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open sqlite database %s: %s\n"
-msgstr "Die Spec-Datei %s kann nicht geöffnet werden: %s\n"
+msgstr "sqlite-Datenbank %s kann nicht geöffnet werden: %s\n"
 
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
@@ -1695,9 +1700,9 @@ msgstr "| am Ende des Ausdrucks erwartet"
 msgid "array iterator used with different sized arrays"
 msgstr "Zählvariable wird mit ungleich großem Array benutzt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "RPM v3 packages are deprecated: %s\n"
-msgstr "Zeile %d: %s ist veraltet: %s\n"
+msgstr "RPM v3-Pakete sind veraltet: %s\n"
 
 #, c-format
 msgid "failed to load macro file %s\n"
@@ -1846,9 +1851,8 @@ msgstr "Paket löschen (deinstallieren)"
 msgid "<package>+"
 msgstr "<Paket>+"
 
-#, fuzzy
 msgid "do not install artifacts"
-msgstr "Keine Dokumentation installieren"
+msgstr "keine Artefakte installieren"
 
 msgid "do not install configuration files"
 msgstr "Keine Konfigurationsdateien installieren"
@@ -2679,9 +2683,9 @@ msgstr "Das Paket %s ist für das Betriebssystem %s vorgesehen"
 msgid "package %s is already installed"
 msgstr "Das Paket %s ist bereits installiert"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is not installed"
-msgstr "Das Paket %s ist nicht installiert\n"
+msgstr "Paket %s ist nicht installiert"
 
 #, c-format
 msgid "path %s in package %s is not relocatable"
@@ -2904,9 +2908,9 @@ msgstr "%s-Tag %u: ungültige OpenPGP-Signatur"
 msgid "%s: tag %u: invalid hex"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s%s%s %s"
-msgstr "%s%s %s"
+msgstr "%s%s%s %s"
 
 msgid "digest"
 msgstr "Prüfsumme"
@@ -2967,17 +2971,14 @@ msgstr "Nice-Wert konnte nicht zurückgesetzt werden: %s"
 msgid "Unable to reset I/O priority: %s"
 msgstr "E/A-Priorität könnte nicht zurückgesetzt werden: %s"
 
-#, fuzzy
 msgid "syntax error while parsing =="
-msgstr "Syntax-Fehler beim Auswerten von ==\n"
+msgstr "Syntax-Fehler beim Auswerten von =="
 
-#, fuzzy
 msgid "syntax error while parsing &&"
-msgstr "Syntax-Fehler beim Auswerten von &&\n"
+msgstr "Syntax-Fehler beim Auswerten von &&"
 
-#, fuzzy
 msgid "syntax error while parsing ||"
-msgstr "Syntax-Fehler beim Auswerten von ||\n"
+msgstr "Syntax-Fehler beim Auswerten von ||"
 
 msgid "macro expansion returned a bare word, please use \"...\""
 msgstr ""
@@ -2993,47 +2994,39 @@ msgstr "Zeile %d: %s in: %s\n"
 msgid "unterminated string in expression"
 msgstr "{ nach dem ? im Ausdruck erwartet"
 
-#, fuzzy
 msgid "invalid version"
-msgstr "(ungültiger Typ)"
+msgstr "ungültige Version"
 
 msgid "bare words are no longer supported, please use \"...\""
 msgstr ""
 
-#, fuzzy
 msgid "parse error in expression"
-msgstr "Fehler beim Auswerten des Ausdrucks\n"
+msgstr "Fehler beim Auswerten des Ausdrucks"
 
 #, fuzzy
 msgid "unmatched ("
 msgstr "Unerwartete (\n"
 
-#, fuzzy
 msgid "- only on numbers"
-msgstr "- nur bei Zahlen\n"
+msgstr "- nur bei Zahlen"
 
-#, fuzzy
 msgid "unexpected end of expression"
-msgstr "| am Ende des Ausdrucks erwartet"
+msgstr "unerwartetes Ende des Ausdrucks"
 
-#, fuzzy
 msgid "syntax error in expression"
-msgstr "Syntax-Fehler im Ausdruck\n"
+msgstr "Syntax-Fehler im Ausdruck"
 
-#, fuzzy
 msgid "types must match"
-msgstr "Typen müssen übereinstimmen\n"
+msgstr "Typen müssen übereinstimmen"
 
 msgid "division by zero"
-msgstr ""
+msgstr "Division durch Null"
 
-#, fuzzy
 msgid "* and / not supported for strings"
-msgstr "* / nicht unterstützt für Zeichenketten\n"
+msgstr "* und / werden für Zeichenketten nicht unterstützt"
 
-#, fuzzy
 msgid "- not supported for strings"
-msgstr "- nicht unterstützt für Zeichenketten\n"
+msgstr "- nicht unterstützt für Zeichenketten"
 
 #, c-format
 msgid "%3d>%*s(empty)\n"
@@ -3086,7 +3079,7 @@ msgstr "Unbekannte Option %c in %s (%s)\n"
 
 #, c-format
 msgid "no such macro: '%s'\n"
-msgstr ""
+msgstr "kein solches Makro: '%s'\n"
 
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
@@ -3103,13 +3096,11 @@ msgstr "Nicht terminiertes %c: %s\n"
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Auf %% folgt ein nicht auswertbares Makro\n"
 
-#, fuzzy
 msgid "argument expected"
-msgstr "Unerwartete ]"
+msgstr "Argument erwarted"
 
-#, fuzzy
 msgid "unexpected argument"
-msgstr "Unerwartete ]"
+msgstr "unerwartetes Argument"
 
 #, c-format
 msgid "======================== active %d empty %d\n"
