@@ -23,13 +23,14 @@
 # Mingcong Bai <jeffbai@aosc.xyz>, 2015
 # Taiki Akita <taiki_akita@163.com>, 2018. #zanata
 # Charles Lee <lchopn@gmail.com>, 2020, 2021.
+# weidong <weidongkl@sina.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2021-06-30 11:04+0000\n"
-"Last-Translator: Charles Lee <lchopn@gmail.com>\n"
+"PO-Revision-Date: 2021-12-04 02:16+0000\n"
+"Last-Translator: weidong <weidongkl@sina.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/rpm/master/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -37,7 +38,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.7\n"
+"X-Generator: Weblate 4.9.1\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -661,7 +662,7 @@ msgid "Duplicate build-ids %s and %s\n"
 msgstr ""
 
 msgid "_build_id_links macro not set, assuming 'compat'\n"
-msgstr ""
+msgstr "未设置build_id_links宏，“compat”\n"
 
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
@@ -734,7 +735,7 @@ msgid "More than one file on a line: %s\n"
 msgstr "一行中有多个文件： %s\n"
 
 msgid "Generating build-id links failed\n"
-msgstr ""
+msgstr "生成build-id 链接失败\n"
 
 #, c-format
 msgid "Bad file: %s: %s\n"
@@ -792,7 +793,7 @@ msgid "Failed to read %jd bytes in file %s: %s\n"
 msgstr ""
 
 msgid "Unable to create immutable header region\n"
-msgstr ""
+msgstr "无法创建不可变的标头区域\n"
 
 #, c-format
 msgid "Unable to write header to %s: %s\n"
