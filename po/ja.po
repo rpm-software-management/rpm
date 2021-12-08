@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2021-04-11 03:40+0000\n"
+"PO-Revision-Date: 2021-12-08 21:16+0000\n"
 "Last-Translator: Tomohiro KATO <tomop@teamgedoh.net>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/rpm/"
 "master/ja/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.5.3\n"
+"X-Generator: Weblate 4.9.1\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -536,7 +536,7 @@ msgstr "無効なトークン %s: %s\n"
 
 #, c-format
 msgid "Missing %s in %s(%s)\n"
-msgstr ""
+msgstr "%s が %s(%s) にありません\n"
 
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
@@ -1435,7 +1435,7 @@ msgstr "%s はデルタ RPM で、直接インストールできません\n"
 
 #, c-format, fuzzy
 msgid "Unsupported payload (%s) in package %s\n"
-msgstr "パッケージ %2$s 内にサポートしていないペイロード (%1$s) です\n"
+msgstr "パッケージ %2$s 内にサポートしていないペイロード (%1$s) があります\n"
 
 #, c-format
 msgid "package %s was already added, skipping %s\n"
@@ -2818,14 +2818,14 @@ msgstr "%s: タグ %u: 無効な16進値"
 
 #, c-format
 msgid "%s%s%s %s"
-msgstr ""
+msgstr "%s%s%s %s"
 
 msgid "digest"
 msgstr "ダイジェスト"
 
 #, c-format
 msgid "%s%s"
-msgstr ""
+msgstr "%s%s"
 
 msgid "signature"
 msgstr "署名"
