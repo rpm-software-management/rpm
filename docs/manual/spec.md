@@ -395,11 +395,11 @@ utility on ARM, and even if it was it probably would not make any sense.
 
 #### ExcludeOS
 
-Package is not buildable on specific OS'es listed here.
+Package is not buildable on specific OSes listed here.
 
 #### ExclusiveOS
 
-Package is only buildable on OS'es listed here.
+Package is only buildable on OSes listed here.
 
 #### BuildArch (or BuildArchitectures)
 
