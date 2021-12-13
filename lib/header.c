@@ -141,6 +141,13 @@ static const size_t headerMaxbytes = (256*1024*1024);
 #define hdrchkType(_type) ((_type) < RPM_MIN_TYPE || (_type) > RPM_MAX_TYPE)
 
 /**
+ * Sanity check on array sizes, mainly to put a cap on number of files. 
+ * A million files in a package still more than we're likely to really handle.
+ */
+#define HEADER_ARRAY_MAX 0x000fffff
+#define hdrchkArray(_type, _count) ((_type) != RPM_BIN_TYPE && (_count) & (~HEADER_ARRAY_MAX))
+
+/**
  * Sanity check on data size and/or offset and/or count.
  * This check imposes a limit of 256 MB -- file signatures
  * may require a lot of space in the header.
@@ -291,6 +298,8 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
 	if (hdrchkAlign(info.type, info.offset))
 	    goto err;
 	if (hdrchkRange(blob->dl, info.offset))
+	    goto err;
+	if (hdrchkArray(info.type, info.count))
 	    goto err;
 	if (typechk && hdrchkTagType(info.tag, info.type))
 	    goto err;
@@ -1445,6 +1454,8 @@ static int intAddEntry(Header h, rpmtd td)
     if (hdrchkType(td->type))
 	return 0;
     if (hdrchkData(td->count))
+	return 0;
+    if (hdrchkArray(td->type, td->count))
 	return 0;
 
     data = grabData(td->type, td->data, td->count, &length);
