@@ -582,7 +582,7 @@ const unsigned char * rpmfilesFSignature(rpmfiles fi, int ix, size_t *len)
 	if (fi->signatures != NULL)
 	    signature = fi->signatures + (fi->signaturemaxlen * ix);
 	if (len)
-	    *len = fi->signaturelengths[ix];
+	    *len = fi->signaturelengths ? fi->signaturelengths[ix] : 0;
     }
     return signature;
 }
@@ -1518,12 +1518,13 @@ static uint8_t *hex2bin(Header h, rpmTagVal tag, rpm_count_t num, size_t len,
 
     if (headerGet(h, tag, &td, HEADERGET_MINMEM) && rpmtdCount(&td) == num) {
 	const char *s;
+	int maxl = 0;
+	int *lens = NULL;
 
 	/* Figure string sizes + max length for allocation purposes */
 	if (lengths) {
-	    int maxl = 0;
-	    int *lens = xmalloc(num * sizeof(*lens));
 	    int i = 0;
+	    lens = xmalloc(num * sizeof(*lens));
 
 	    while ((s = rpmtdNextString(&td))) {
 		lens[i] = strlen(s) / 2;
@@ -1534,21 +1535,26 @@ static uint8_t *hex2bin(Header h, rpmTagVal tag, rpm_count_t num, size_t len,
 
 	    *lengths = lens;
 	    *maxlen = maxl;
-	    len = maxl;
 
 	    /* Reinitialize iterator for next round */
 	    rpmtdInit(&td);
+	} else {
+	    maxl = len;
 	}
 
-	uint8_t *t = bin = xmalloc(num * len);
+	uint8_t *t = bin = xmalloc(num * maxl);
+	int i = 0;
 	while ((s = rpmtdNextString(&td))) {
 	    if (*s == '\0') {
-		memset(t, 0, len);
-		t += len;
-		continue;
+		memset(t, 0, maxl);
+	    } else {
+		if (lens)
+		    len = lens[i];
+		for (int j = 0; j < len; j++, s += 2)
+		    t[j] = (rnibble(s[0]) << 4) | rnibble(s[1]);
 	    }
-	    for (int j = 0; j < len; j++, t++, s += 2)
-		*t = (rnibble(s[0]) << 4) | rnibble(s[1]);
+	    t += maxl;
+	    i++;
 	}
     }
     rpmtdFreeData(&td);
