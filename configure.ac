@@ -822,7 +822,7 @@ AM_CONDITIONAL(AUDIT,[test "$with_audit" = yes])
 user_with_uid0=$(awk -F: '$3==0 {print $1;exit}' /etc/passwd)
 group_with_gid0=$(awk -F: '$3==0 {print $1;exit}' /etc/group)
 if test -z "$user_with_uid0" ; then user_with_uid0=root ; fi
-if test -z "$group_with_uid0" ; then group_with_uid0=root ; fi
+if test -z "$group_with_gid0" ; then group_with_gid0=root ; fi
 AC_DEFINE_UNQUOTED([UID_0_USER],["$user_with_uid0"],[Get the user name having userid 0])
 AC_DEFINE_UNQUOTED([GID_0_GROUP],["$group_with_gid0"],[Get the group name having groupid 0])
 
