@@ -146,12 +146,12 @@ int rpmpsMerge(rpmps dest, rpmps src)
     int rc = 0;
     if (dest != NULL) {
 	rpmProblem p;
-	rpmpsi spi = rpmpsInitIterator(src);
-	while ((p = rpmpsiNext(spi)) != NULL) {
+	rpmpsi psi = rpmpsInitIterator(src);
+	while ((p = rpmpsiNext(psi)) != NULL) {
 	    rpmpsAppendProblem(dest, p);
 	    rc++;
 	}
-	rpmpsFreeIterator(spi);
+	rpmpsFreeIterator(psi);
     }
     return rc;
 }
