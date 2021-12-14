@@ -89,8 +89,8 @@ Some examples:
 `%autopatch -m 100`
 # Apply patches with number <= 400
 `%autopatch -M 400`
-# Apply patches 80 to 99
-`%autopatch -m 80 -99`
+# Apply patches 80 to 99, inclusive
+`%autopatch -m 80 -M 99`
 # Apply patches 1, 4 and 6
 `%autopatch 1 4 6`
 
