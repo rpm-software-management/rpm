@@ -432,17 +432,21 @@ exit:
     free(cookie);
     spec->rootDir = NULL;
 
-    if (rc != RPMRC_OK && rc != RPMRC_MISSINGBUILDREQUIRES) {
+    /* Suppress summaries on --quiet */
+    if (rpmIsNormal()) {
 	unsigned maskWarn = RPMLOG_MASK(RPMLOG_WARNING);
 	unsigned maskErrs = RPMLOG_UPTO(RPMLOG_ERR);
 
 	if (rpmlogGetNrecsByMask(maskWarn)) {
-	    rpmlog(RPMLOG_NOTICE, _("\n\nRPM build warnings:\n"));
+	    rpmlog(RPMLOG_NOTICE, _("\nRPM build warnings:\n"));
 	    rpmlogPrintByMask(NULL, maskWarn);
 	}
-	if (rpmlogGetNrecsByMask(maskErrs)) {
-	    rpmlog(RPMLOG_NOTICE, _("\n\nRPM build errors:\n"));
-	    rpmlogPrintByMask(NULL, maskErrs);
+
+	if (rc != RPMRC_OK && rc != RPMRC_MISSINGBUILDREQUIRES) {
+	    if (rpmlogGetNrecsByMask(maskErrs)) {
+		rpmlog(RPMLOG_NOTICE, _("\nRPM build errors:\n"));
+		rpmlogPrintByMask(NULL, maskErrs);
+	    }
 	}
     }
 

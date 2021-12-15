@@ -279,8 +279,6 @@ runroot rpmbuild \
 [],
 [error: Installed (but unpackaged) file(s) found:
    /toot
-    Installed (but unpackaged) file(s) found:
-   /toot
 ])
 AT_CLEANUP
 
@@ -493,7 +491,6 @@ runroot rpmbuild -bb --quiet \
 [1],
 [],
 [error: Illegal char '*' (0x2a) in: *
-    Illegal char '*' (0x2a) in: *
 ])
 AT_CLEANUP
 
