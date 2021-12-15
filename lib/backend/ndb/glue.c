@@ -77,7 +77,7 @@ static int ndb_Close(dbiIndex dbi, unsigned int flags)
     }
     if (rdb->db_dbenv)
 	closeEnv(rdb);
-    dbi->dbi_db = 0;
+    dbiFree(dbi);
     return 0;
 }
 
