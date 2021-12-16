@@ -154,6 +154,10 @@ For more complex tests, use [expressions](#expression-expansion) or [Lua](lua).
 Note that `%if`, `%ifarch` and the like are not macros, they are spec
 directives and only usable in that context.
 
+Note that in rpm >= 4.17, conditionals on built-in macros simply test for
+existence of that built-in, just like with any other macros.
+In older versions, the behavior of conditionals on built-ins is undefined.
+
 ## Example of a Macro
 
 Here is an example %patch definition from /usr/lib/rpm/macros:
