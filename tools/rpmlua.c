@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     args = (ARGV_t)poptGetArgs(optCon);
     if (execute) {
 	script = execute;
-    } else if (argc >= 1) {
+    } else if (argvCount(args) >= 1) {
 	if (rpmioSlurp(args[0], (uint8_t **) &buf, &blen)) {
 	    fprintf(stderr, "reading %s failed: %s\n",
 		args[0], strerror(errno));
