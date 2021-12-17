@@ -115,6 +115,7 @@ EXTRA_DIST += data/keys/CVE-2021-3521-nosubsig.asc
 EXTRA_DIST += data/keys/CVE-2021-3521-nosubsig-last.asc
 EXTRA_DIST += data/macros.testfile
 EXTRA_DIST += data/macros.debug
+EXTRA_DIST += data/t1.lua
 EXTRA_DIST += data/SOURCES/foo.c
 EXTRA_DIST += data/SOURCES/bar.c
 EXTRA_DIST += data/SOURCES/baz.c

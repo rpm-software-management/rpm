@@ -157,6 +157,11 @@ rpm2archive_SOURCES =	rpm2archive.c debug.h system.h
 rpm2archive_LDADD =	lib/librpm.la rpmio/librpmio.la
 rpm2archive_LDADD +=	@WITH_POPT_LIB@ @WITH_ARCHIVE_LIB@
 
+bin_PROGRAMS +=		rpmlua
+rpmspec_CPPFLAGS =	$(AM_CPPFLAGS)
+rpmlua_SOURCES =	tools/rpmlua.c debug.h system.h
+rpmlua_LDADD =		lib/librpm.la rpmio/librpmio.la
+rpmlua_LDADD +=		@WITH_POPT_LIB@
 
 if LIBELF
 rpmlibexec_PROGRAMS +=	elfdeps

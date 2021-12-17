@@ -9,10 +9,11 @@ EXTRA_DIST += gendiff.1.md
 
 man_man8dir = $(mandir)/man8
 man_man8_DATA = rpm.8 rpm-misc.8 rpmbuild.8 rpmdeps.8 rpmgraph.8 rpm2cpio.8
-man_man8_DATA += rpmdb.8 rpmkeys.8 rpmsign.8 rpmspec.8
+man_man8_DATA += rpmdb.8 rpmkeys.8 rpmsign.8 rpmspec.8 rpmlua.8
 
 EXTRA_DIST += rpm.8.md rpm-misc.8.md rpmbuild.8.md rpmdeps.8.md rpmgraph.8.md
 EXTRA_DIST += rpm2cpio.8.md rpmdb.8.md rpmkeys.8.md rpmsign.8.md rpmspec.8.md
+EXTRA_DIST += rpmlua.8.md
 
 # Package generated man pages
 EXTRA_DIST += $(man_man1_DATA)

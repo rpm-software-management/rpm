@@ -6,6 +6,9 @@ title: rpm.org - Embedded Lua interpreter
 
 A fairly unknown feature of RPM is that it comes with an embedded Lua interpreter. This page attempts to document the possibilities of the embedded Lua. Note that Lua-support is a compile-time option, the following assumes that your RPM is was built using --with-lua option.
 
+For testing and debugging you can run the RPM Lua interpreter in standalone
+mode with the rpmlua(8) command.
+
 ## Lua scriptlets
 
 The internal Lua can be used as the interpreter of rpm any scriptlets (%pre, %post etc):
