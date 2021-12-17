@@ -4,6 +4,10 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#ifdef HAVE_READLINE
+#include <readline/readline.h>
+#include <readline/history.h>
+#endif
 
 #include <rpm/rpmcli.h>
 #include "rpmio/rpmlua.h"
@@ -28,6 +32,16 @@ static struct poptOption optionsTable[] = {
     POPT_TABLEEND
 };
 
+#ifdef HAVE_READLINE
+static char *myreadline(char *prompt)
+{
+    char *line = readline(prompt);
+    if (line && *line)
+	add_history(line);
+    return line;
+}
+#endif
+
 int main(int argc, char *argv[])
 {
     int ec = EXIT_FAILURE;
@@ -35,6 +49,11 @@ int main(int argc, char *argv[])
     ARGV_t args = NULL;
     char *buf = NULL;
     ssize_t blen = 0;
+#ifdef HAVE_READLINE
+    rpmluarl rlcb = myreadline;
+#else
+    rpmluarl rlcb = NULL;
+#endif
 
     xsetprogname(argv[0]);
 
@@ -59,8 +78,9 @@ int main(int argc, char *argv[])
 	ec = rpmluaRunScript(NULL, buf, args[0], opts, args);
     }
 
-    if (interactive)
-	rpmluaInteractive(NULL);
+    if (interactive) {
+	rpmluaInteractive(NULL, rlcb);
+    }
 
 exit:
     free(buf);

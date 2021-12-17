@@ -6,6 +6,8 @@
 typedef struct rpmlua_s * rpmlua;
 struct rpmhookArgs_s;
 
+typedef char * (*rpmluarl)(char *);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -20,7 +22,7 @@ int rpmluaCheckScript(rpmlua lua, const char *script,
 int rpmluaRunScript(rpmlua lua, const char *script,
 		    const char *name, const char *opts, ARGV_t args);
 int rpmluaRunScriptFile(rpmlua lua, const char *filename);
-void rpmluaInteractive(rpmlua lua);
+void rpmluaInteractive(rpmlua lua, rpmluarl rlcb);
 
 char *rpmluaPopPrintBuffer(rpmlua lua);
 void rpmluaPushPrintBuffer(rpmlua lua);

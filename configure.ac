@@ -762,6 +762,23 @@ PKG_CHECK_MODULES([LUA],
 AC_SUBST(LUA_CFLAGS)
 AC_SUBST(LUA_LIBS)
 
+AC_ARG_WITH([readline],[AS_HELP_STRING([--with-readline=@<:@yes/no/auto@:>@], [build with readline support])], [with_readline="$withval"], [with_readline="auto"])
+AS_IF([test "$with_readline" != "no"],[
+  PKG_CHECK_MODULES([READLINE], [readline], [have_readline=yes], [have_readline=no])
+  AS_IF([test "$with_readline" = "yes"],[
+    if test "$have_readline" = "no"; then
+      AC_MSG_ERROR([readline support requested but not present])
+    fi
+  ])
+])
+if test "$have_readline" = "yes"; then
+  AC_DEFINE([HAVE_READLINE], [1], [Define if readline is available])
+  AC_SUBST(READLINE_CFLAGS)
+  AC_SUBST(READLINE_LIBS)
+fi
+AM_CONDITIONAL(WITH_READLINE, [test "$have_readline" = yes])
+
+
 AC_ARG_ENABLE(plugins, [AS_HELP_STRING([--disable-plugins],[build without plugin support])],,[enable_plugins=yes])
 AS_IF([test "$enable_plugins" = yes],[
   AC_DEFINE(ENABLE_PLUGINS, 1, [Build with plugin support?])

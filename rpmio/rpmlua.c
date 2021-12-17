@@ -335,32 +335,43 @@ int rpmluaRunScriptFile(rpmlua lua, const char *filename)
     return ret;
 }
 
-/* From lua.c */
-static int rpmluaReadline(lua_State *L, const char *prompt)
+static char *lamereadline(char *prompt)
 {
     static char buffer[1024];
     if (prompt) {
 	(void) fputs(prompt, stdout);
 	(void) fflush(stdout);
     }
-    if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
-	return 0;  /* read fails */
-    } else {
-	lua_pushstring(L, buffer);
+    if (fgets(buffer, sizeof(buffer), stdin) == NULL)
+	return NULL;
+
+    return xstrdup(buffer);
+}
+
+/* From lua.c */
+static int rpmluaReadline(lua_State *L, char *prompt, rpmluarl rlcb)
+{
+    char *line = rlcb(prompt);
+    if (line) {
+	lua_pushstring(L, line);
+	free(line);
 	return 1;
     }
+    return 0;
 }
 
 /* Based on lua.c */
-static void _rpmluaInteractive(lua_State *L)
+static void _rpmluaInteractive(lua_State *L, rpmluarl rlcb)
 {
+    if (rlcb == NULL)
+	rlcb = lamereadline;
     rpmlua lua = getlua(L);
     (void) fputs("\n", stdout);
     printf("RPM Interactive %s Interpreter\n", LUA_VERSION);
     for (;;) {
 	int rc = 0;
 
-	if (rpmluaReadline(L, "> ") == 0)
+	if (rpmluaReadline(L, "> ", rlcb) == 0)
 	    break;
 	if (lua_tostring(L, -1)[0] == '=') {
 	    (void) lua_pushfstring(L, "print(%s)", lua_tostring(L, -1)+1);
@@ -372,7 +383,7 @@ static void _rpmluaInteractive(lua_State *L)
 	    rc = luaL_loadbuffer(L, code, len, "<lua>");
 	    if (rc == LUA_ERRSYNTAX &&
 		strstr(lua_tostring(L, -1), "near `<eof>'") != NULL) {
-		if (rpmluaReadline(L, ">> ") == 0)
+		if (rpmluaReadline(L, ">> ", rlcb) == 0)
 		    break;
 		lua_remove(L, -2); /* Remove error */
 		lua_concat(L, 2);
@@ -398,10 +409,10 @@ static void _rpmluaInteractive(lua_State *L)
     (void) fputs("\n", stdout);
 }
 
-void rpmluaInteractive(rpmlua lua)
+void rpmluaInteractive(rpmlua lua, rpmluarl rl)
 {
     INITSTATE(lua);
-    _rpmluaInteractive(lua->L);
+    _rpmluaInteractive(lua->L, rl);
 }
 
 char *rpmluaCallStringFunction(rpmlua lua, const char *function, rpmhookArgs args)
@@ -571,7 +582,7 @@ static int rpm_interactive(lua_State *L)
     if (!(isatty(STDOUT_FILENO) && isatty(STDIN_FILENO)))
 	return luaL_error(L, "not a tty");
 
-    _rpmluaInteractive(L);
+    _rpmluaInteractive(L, NULL);
     return 0;
 }
 
