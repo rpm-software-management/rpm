@@ -98,3 +98,4 @@ sign/rpmgensig.c
 sign/rpmsignfiles.c
 tools/rpmdeps.c
 tools/rpmgraph.c
+tools/rpmlua.c

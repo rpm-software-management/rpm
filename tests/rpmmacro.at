@@ -1077,3 +1077,39 @@ runroot rpm --eval 1 >/dev/full
 [Error writing to stdout: No space left on device
 ])
 AT_CLEANUP
+
+AT_SETUP([rpmlua])
+AT_KEYWORDS([lua])
+AT_CHECK([
+runroot_other rpmlua /data/t1.lua a b
+],
+[0],
+[hello world
+opts:
+args:
+/data/t1.lua
+a
+b
+],
+[])
+
+AT_CHECK([
+runroot_other rpmlua --opts=ot: /data/t1.lua -- -t1 a
+],
+[0],
+[hello world
+opts:
+t	1
+args:
+a
+],
+[])
+
+AT_CHECK([
+runroot_other rpmlua -e "print(macros.basename('/some/thing'))"
+],
+[0],
+[thing
+],
+[])
+AT_CLEANUP
