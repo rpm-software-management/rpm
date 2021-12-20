@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
     int ec = EXIT_FAILURE;
     poptContext optCon = NULL;
     ARGV_t args = NULL;
+    int nargs = 0;
     char *buf = NULL;
     ssize_t blen = 0;
 #ifdef HAVE_READLINE
@@ -65,11 +66,12 @@ int main(int argc, char *argv[])
     }
 
     args = (ARGV_t)poptGetArgs(optCon);
+    nargs = argvCount(args);
 
     if (execute)
 	ec = rpmluaRunScript(NULL, execute, "<execute>", opts, args);
 
-    if (argvCount(args) >= 1) {
+    if (nargs >= 1) {
 	if (rpmioSlurp(args[0], (uint8_t **) &buf, &blen)) {
 	    fprintf(stderr, "reading %s failed: %s\n",
 		args[0], strerror(errno));
@@ -78,9 +80,9 @@ int main(int argc, char *argv[])
 	ec = rpmluaRunScript(NULL, buf, args[0], opts, args);
     }
 
-    if (interactive) {
+    /* Mimic Lua standalone interpreter behavior */
+    if (interactive || (nargs == 0 && execute == 0))
 	rpmluaInteractive(NULL, rlcb);
-    }
 
 exit:
     free(buf);
