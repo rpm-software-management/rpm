@@ -12,9 +12,7 @@ rpmlua - RPM Lua interpreter
 SYNOPSIS
 ========
 
-**rpmlua** {**-i\|\--interactive**} \[*SCRIPT_FILE* \[arg1 ...\]\]
-**rpmlua** \[**--opts=OPTSTRING**\] *SCRIPT_FILE* \[arg1 ...\]
-**rpmlua** {**-e\|\--execute**} "**STATEMENT**" \[arg1 ...\]
+**rpmlua** \[{**-e\|\--execute**} "**STATEMENT**"\] \[{**-i\|\--interactive**}\] \[*SCRIPT_FILE*\] \[arg1 ...\]
 
 DESCRIPTION
 ===========
@@ -32,7 +30,7 @@ Run RPM internal Lua interpreter.
 
 **-e\|\--execute**
 
-: Execute a Lua statement.
+: Execute a Lua statement before executing optional script.
 
 EXAMPLES
 ========

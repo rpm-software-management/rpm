@@ -35,8 +35,6 @@ int main(int argc, char *argv[])
     ARGV_t args = NULL;
     char *buf = NULL;
     ssize_t blen = 0;
-    const char *script = NULL;
-    const char *name = "<cli>"
 
     xsetprogname(argv[0]);
 
@@ -48,20 +46,18 @@ int main(int argc, char *argv[])
     }
 
     args = (ARGV_t)poptGetArgs(optCon);
-    if (execute) {
-	script = execute;
-    } else if (argvCount(args) >= 1) {
+
+    if (execute)
+	ec = rpmluaRunScript(NULL, execute, "<execute>", opts, args);
+
+    if (argvCount(args) >= 1) {
 	if (rpmioSlurp(args[0], (uint8_t **) &buf, &blen)) {
 	    fprintf(stderr, "reading %s failed: %s\n",
 		args[0], strerror(errno));
 	    goto exit;
 	}
-	script = buf;
-	name = args[0];
+	ec = rpmluaRunScript(NULL, buf, args[0], opts, args);
     }
-
-    if (script)
-	ec = rpmluaRunScript(NULL, script, name, opts, args);
 
     if (interactive)
 	rpmluaInteractive(NULL);
