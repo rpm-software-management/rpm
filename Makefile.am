@@ -145,7 +145,7 @@ rpmbuild_LDADD += 	@WITH_POPT_LIB@
 
 rpmspec_SOURCES =	rpmspec.c debug.h system.h
 rpmspec_CPPFLAGS =	$(AM_CPPFLAGS)
-rpmspec_CPPFLAGS =	@READLINE_CFLAGS@
+rpmspec_CPPFLAGS +=	@READLINE_CFLAGS@
 rpmspec_LDADD =		libcliutils.la
 rpmspec_LDADD +=	build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
 rpmspec_LDADD +=	@WITH_POPT_LIB@ @READLINE_LIBS@
