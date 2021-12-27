@@ -1168,7 +1168,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 
     if (fc == NULL) {
 	rpmlog(RPMLOG_ERR, _("Empty file classifier\n"));
-	goto exit;
+	return RPMRC_FAIL;
     }
 
     /* It is OK when we have no files to classify. */
