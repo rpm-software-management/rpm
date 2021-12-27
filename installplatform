@@ -185,6 +185,12 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
 	CANONCOLOR=0
 	FILTER="grep -v -E ^(%optflag|%__isa)"
 	;;
+    loongarch64)
+	ISANAME=loongarch64
+	ISABITS=64
+	CANONARCH=loongarch64
+	CANONCOLOR=3
+	;;
   esac
 
   # skip architectures for which we dont have full config parameters

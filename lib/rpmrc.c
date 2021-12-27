@@ -1112,6 +1112,11 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 #		endif
 #	endif
 
+#if defined(__loongarch64)
+	strcpy(un.machine, "loongarch64");
+#endif
+
+
 #if defined(__linux__)
 	/* in linux, lets rename parisc to hppa */
 	if (rstreq(un.machine, "parisc"))
