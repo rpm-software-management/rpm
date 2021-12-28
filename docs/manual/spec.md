@@ -594,7 +594,9 @@ Used to explicitly own the directory itself but not it's contents.
 Used to mark and/or install files as documentation. Can be used as a
 regular attribute on an absolute path, or in "special" form on a path
 relative to the build directory which causes the files to be installed
-and packaged as documentation.
+and packaged as documentation. The special form strips all but the last
+path component. Thus `%doc path/to/docfile` installs `docfile` in the
+documentation path.
 
 Can also be used to filter out documentation from installations where
 space is tight.
