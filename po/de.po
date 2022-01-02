@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Ettore Atalan <atalanttore@googlemail.com>, 2016, 2021.
+# Ettore Atalan <atalanttore@googlemail.com>, 2016, 2021, 2022.
 # Roman Spirgi <bigant@fedoraproject.org>, 2012
 # Roman Spirgi <rspirgi@gmail.com>, 2011
 # Mario Blättermann <mario.blaettermann@gmail.com>, 2019. #zanata
@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2021-11-08 00:49+0000\n"
+"PO-Revision-Date: 2022-01-02 21:16+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://translate.fedoraproject.org/projects/rpm/"
 "master/de/>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.8\n"
+"X-Generator: Weblate 4.10.1\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -294,7 +294,7 @@ msgstr "Datenbank-Dateien überprüfen"
 
 #, fuzzy
 msgid "salvage database"
-msgstr "Datenbank initialisieren"
+msgstr "Datenbank retten"
 
 msgid "export database to stdout header list"
 msgstr "Datenbank in die Header-Liste in der Standardeingabe exportieren"
@@ -469,9 +469,8 @@ msgstr "Paket(e) signieren (identisch mit --addsign)"
 msgid "delete package signatures"
 msgstr "Paket-Signatur(en) löschen"
 
-#, fuzzy
 msgid "create rpm v3 header+payload signatures"
-msgstr "Keine Überprüfung der Header- und Nutzdaten-Signatur"
+msgstr "rpm v3 Kopfdaten+Nutzdaten-Signaturen erstellen"
 
 msgid "sign package(s) files"
 msgstr "Paketdatei(en) signieren"
@@ -645,9 +644,9 @@ msgstr "Absoluter symbolischer Link: %s -> %s\n"
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolischer Link zeigt auf den BuildRoot: %s -> %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Illegal character (0x%x) in filename: %s\n"
-msgstr "Ungültiges Zeichen '%c' (0x%x)"
+msgstr "Ungültiges Zeichen (0x%x) in Dateiname: %s\n"
 
 #, c-format
 msgid "Path is outside buildroot: %s\n"
@@ -667,7 +666,7 @@ msgstr "Kein Verzeichnis: %s\n"
 
 #, fuzzy, c-format
 msgid "Can't read content of file: %s\n"
-msgstr "Lesen der Richtlinien-Datei fehlgeschlagen: %s\n"
+msgstr "\n"
 
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
@@ -746,9 +745,9 @@ msgstr "Datei von »glob« nicht gefunden: %s. Wird ohne Globbing versucht.\n"
 msgid "Could not open %s file %s: %m\n"
 msgstr "Datei %s aus %%files konnte nicht geöffnet werden: %m\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Empty %s file %s\n"
-msgstr "Leere Datei %s in %%files\n"
+msgstr "Leere %s Datei %s\n"
 
 #, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
@@ -1912,7 +1911,7 @@ msgid "don't install file security contexts"
 msgstr "Keine Sicherheitskontext-Dateien installieren"
 
 msgid "don't install file capabilities"
-msgstr ""
+msgstr "Dateifähigkeiten nicht installieren"
 
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
@@ -2076,7 +2075,7 @@ msgid "only include license files"
 msgstr "nur Lizenzdateien einbeziehen"
 
 msgid "only include artifact files"
-msgstr ""
+msgstr "nur Artefaktdateien einbeziehen"
 
 #, c-format
 msgid "exclude %%ghost files"
@@ -2350,7 +2349,7 @@ msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: Header bei 0x%x kann nicht gelesen werden\n"
 
 msgid "could not move new database in place\n"
-msgstr ""
+msgstr "neue Datenbank konnte nicht an ihren Platz verschoben werden\n"
 
 #, c-format
 msgid "could also not restore old database from %s\n"
@@ -2706,16 +2705,18 @@ msgstr ""
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "Paket %s (welches neuer als %s ist) ist bereits installiert"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "installing package %s needs %<PRIu64>%cB more space on the %s filesystem"
 msgstr ""
-"Installation des Pakets %s benötigt %<PRIu64>%cB auf dem %s-Dateisystem"
+"Die Installation des Pakets %s benötigt %<PRIu64>%cB mehr Platz auf dem "
+"Dateisystem %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %<PRIu64> more inodes on the %s filesystem"
 msgstr ""
-"Installation des Pakets %s benötigt %<PRIu64>-Inodes auf dem %s-Dateisystem"
+"Die Installation des Pakets %s benötigt %<PRIu64> mehr Inodes auf dem "
+"Dateisystem %s"
 
 #, c-format
 msgid "%s is needed by %s%s"
@@ -2986,13 +2987,12 @@ msgstr ""
 msgid "macro expansion did not return an integer"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "expanded string: %s\n"
-msgstr "Zeile %d: %s in: %s\n"
+msgstr "erweiterte Zeichenkette: %s\n"
 
-#, fuzzy
 msgid "unterminated string in expression"
-msgstr "{ nach dem ? im Ausdruck erwartet"
+msgstr "unterminierte Zeichenkette im Ausdruck"
 
 msgid "invalid version"
 msgstr "ungültige Version"
@@ -3038,7 +3038,7 @@ msgstr "%3d<%*s(leer)\n"
 
 #, fuzzy, c-format
 msgid "Failed to open shell expansion pipe for command: %s: %m \n"
-msgstr "Die Tar-Pipe konnte nicht geöffnet werden: %m\n"
+msgstr "\n"
 
 #, c-format
 msgid "Macro %%%s has illegal name (%s)\n"
@@ -3202,9 +3202,9 @@ msgstr "Nicht unterstützter PGP-Algorithmus %u für öffentlichen Schlüssel\n"
 msgid "Could not create pipe for signing: %m\n"
 msgstr "Pipe für %s konnte nicht erzeugt werden: %m\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not set GPG_TTY to stdin: %m\n"
-msgstr "Datei %s aus %%files konnte nicht geöffnet werden: %m\n"
+msgstr ""
 
 #, c-format
 msgid "Could not exec %s: %s\n"
