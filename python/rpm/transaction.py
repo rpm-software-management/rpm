@@ -159,7 +159,7 @@ class TransactionSet(TransactionSetCore):
                 needver = ""
 
             res.append(((n, v, r),
-                        (needname, needver), needflags, sense, p.key))
+                        (needname, needver), needflags, p.key, sense))
 
         return res
 
