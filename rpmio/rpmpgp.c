@@ -1147,12 +1147,11 @@ int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
 
 	if (selfsig) {
 	    /* subkeys must be followed by binding signature */
-	    if (prevtag == PGPTAG_PUBLIC_SUBKEY) {
-		if (selfsig->sigtype != PGPSIGTYPE_SUBKEY_BINDING)
-		    break;
-	    }
+	    int xx = 1; /* assume failure */
 
-	    int xx = pgpVerifySelf(digp, selfsig, all, i);
+	    if (!(prevtag == PGPTAG_PUBLIC_SUBKEY &&
+		  selfsig->sigtype != PGPSIGTYPE_SUBKEY_BINDING))
+		xx = pgpVerifySelf(digp, selfsig, all, i);
 
 	    selfsig = pgpDigParamsFree(selfsig);
 	    if (xx)
