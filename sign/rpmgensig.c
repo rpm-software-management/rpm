@@ -364,7 +364,7 @@ static int haveSignature(rpmtd sigtd, Header h)
 	pgpPrtParams(oldtd.data, oldtd.count, PGPTAG_SIGNATURE, &sig2);
 	if (pgpDigParamsCmp(sig1, sig2) == 0)
 	    rc = 1;
-	pgpDigParamsFree(sig2);
+	sig2 = pgpDigParamsFree(sig2);
     }
     pgpDigParamsFree(sig1);
     rpmtdFreeData(&oldtd);
