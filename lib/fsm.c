@@ -945,7 +945,12 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	    }
 	    /* Assume file does't exist when tmp suffix is in use */
 	    if (!fp->suffix) {
-		rc = fsmVerify(fp->fpath, fi);
+		if (fp->action == FA_TOUCH) {
+		    struct stat sb;
+		    rc = fsmStat(fp->fpath, 1, &sb);
+		} else {
+		    rc = fsmVerify(fp->fpath, fi);
+		}
 	    } else {
 		rc = RPMERR_ENOENT;
 	    }
