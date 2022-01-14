@@ -50,8 +50,8 @@ do
     }
     done
 
-    for f in "`find $d -type l`"
-    do
+    find $d -type l --print0 |
+    while IFS= read -r -d '' f; do
     l=`ls -l $f | sed -e 's/.* -> //' -e 's/\.\(gz\|Z\|bz2\|xz\|lzma\|zst\|zstd\)$//'`
     rm -f $f
     b=`echo $f | sed -e 's/\.\(gz\|Z\|bz2\|xz\|lzma\|zst\|zstd\)$//'`
