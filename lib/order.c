@@ -95,7 +95,7 @@ static inline int addSingleRelation(rpmte p,
     }
 
     /* Avoid loop-breaker inflation from weak dependencies for now */
-    if rpmdsIsWeak(dep)
+    if (rpmdsIsWeak(dep))
 	flags = 0;
 
     if (reversed) {
