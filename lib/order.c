@@ -94,6 +94,10 @@ static inline int addSingleRelation(rpmte p,
 	    RPMSENSE_SCRIPT_PRE : RPMSENSE_SCRIPT_PREUN;
     }
 
+    /* Avoid loop-breaker inflation from weak dependencies for now */
+    if rpmdsIsWeak(dep)
+	flags = 0;
+
     if (reversed) {
 	rpmte r = p;
 	p = q;
