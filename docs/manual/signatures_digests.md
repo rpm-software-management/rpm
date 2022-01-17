@@ -4,7 +4,8 @@ title: rpm.org - Signatures and Digests
 ---
 # Signatures and Digests
 
-Table describing signatures and digests used in RPM:
+Table describing signatures and digests which RPM uses to verify package
+contents:
 
 |   RPMSIGTAG_   |      RPMTAG_      | Version | Algorithm      | Location |  Range  |
 |     :---:      |    :-------:      |  :---:  |  :-----:       |   :--:   | :-----: |
