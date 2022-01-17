@@ -695,6 +695,10 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	if (copyFile(&fd, rpm, &ofd, trpm) == 0) {
 	    struct stat st;
 
+	    /* File must be closed before deletion due to different file locking in some file systems*/
+	    if (fd) (void) closeFile(&fd);
+	    if (ofd) (void) closeFile(&ofd);
+
 	    /* Move final target into place, restore file permissions. */
 	    if (stat(rpm, &st) == 0 && unlink(rpm) == 0 &&
 			rename(trpm, rpm) == 0 && chmod(rpm, st.st_mode) == 0) {
