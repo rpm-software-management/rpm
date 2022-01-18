@@ -191,7 +191,6 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
 	CANONCOLOR=0
 	FILTER="grep -v -E ^(%optflag|%__isa)"
 	;;
-
   esac
 
   # skip architectures for which we dont have full config parameters
