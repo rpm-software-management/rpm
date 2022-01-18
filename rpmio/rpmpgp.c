@@ -834,28 +834,26 @@ int pgpPubkeyFingerprint(const uint8_t *h, size_t hlen,
       {	pgpPktKeyV4 v = (pgpPktKeyV4) (h);
 	int mpis = -1;
 
-	/* Packet must be larger than v to have room for the required MPIs */
-	if (hlen > sizeof(*v)) {
-	    switch (v->pubkey_algo) {
-	    case PGPPUBKEYALGO_RSA:
-		mpis = 2;
-		break;
-	    case PGPPUBKEYALGO_DSA:
-		mpis = 4;
-		break;
-	    case PGPPUBKEYALGO_EDDSA:
-		mpis = 1;
-		break;
-	    }
-	}
+	/* Packet must be larger than v to have room for the required MPIs. */
+	if (hlen <= sizeof(*v))
+	    break;
+	se = h + sizeof(*v);
 
-	se = (uint8_t *)(v + 1);
-	/* EdDSA has a curve id before the MPIs */
-	if (v->pubkey_algo == PGPPUBKEYALGO_EDDSA) {
-	    if (se < pend && se[0] != 0x00 && se[0] != 0xff)
+	switch (v->pubkey_algo) {
+	case PGPPUBKEYALGO_RSA:
+	    mpis = 2;
+	    break;
+	case PGPPUBKEYALGO_DSA:
+	    mpis = 4;
+	    break;
+	case PGPPUBKEYALGO_EDDSA:
+	    /* EdDSA has a curve id before the MPIs */
+	    if (pend > se && se[0] > 0x00 && se[0] < 0xff &&
+		pend - se > se[0]) {
 		se += 1 + se[0];
-	    else
-		se = pend;      /* error out when reading the MPI */
+		mpis = 1;
+	    } /* else: error out when reading the MPIs */
+	    break;
 	}
 
 	/* Does the size and number of MPI's match our expectations? */
