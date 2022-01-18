@@ -1116,6 +1116,11 @@ package or when debugging this package.\
 %riscv128	riscv128
 %riscv		%{riscv32} %{riscv64} %{riscv128}
 
+
+#------------------------------------------------------------------------------
+# arch macro for 64-bit LOONGARCH processors
+%loongarch64	loongarch64
+
 #------------------------------------------------------------------------
 # Use in %install to generate locale specific file lists. For example,
 #

@@ -104,6 +104,8 @@ optflags: aarch64 -O2 -g
 
 optflags: riscv64 -O2 -g
 
+optflags: loongarch64 -O2 -g
+
 #############################################################
 # Architecture colors
 
@@ -154,6 +156,9 @@ archcolor: sh4 1
 archcolor: aarch64 2
 
 archcolor: riscv64 2
+
+
+archcolor: loongarch64 2
 
 #############################################################
 # Canonical arch names and numbers
@@ -256,6 +261,8 @@ arch_canon:	mips64r6el: mips64r6el	21
 
 arch_canon:	riscv: riscv64	22
 arch_canon:	riscv64: riscv64	22
+
+arch_canon:	loongarch64:	loongarch64	23
 
 #############################################################
 # Canonical OS names and numbers
@@ -387,6 +394,8 @@ buildarchtranslate: aarch64: aarch64
 
 buildarchtranslate: riscv: riscv64
 buildarchtranslate: riscv64: riscv64
+
+buildarchtranslate: loongarch64: loongarch64
 
 #############################################################
 # Architecture compatibility
@@ -528,6 +537,8 @@ os_compat: bsdi4.0: bsdi
 
 os_compat: Darwin: MacOSX
 
+arch_compat: loongarch64: noarch
+
 buildarch_compat: ia64: noarch
 
 buildarch_compat: aarch64: noarch
@@ -631,6 +642,9 @@ buildarch_compat: ia32e: x86_64
 buildarch_compat: sh3: noarch
 buildarch_compat: sh4: noarch
 buildarch_compat: sh4a: sh4
+
+
+buildarch_compat: loongarch64: noarch
 
 # \endverbatim
 #*/
