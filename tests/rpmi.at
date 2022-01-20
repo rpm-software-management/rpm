@@ -690,6 +690,37 @@ runroot rpm -U --test --ignoreos --badreloc --relocate /usr=/opt \
 [])
 AT_CLEANUP
 
+AT_SETUP([rpm -i relocatable package])
+AT_KEYWORDS([install relocate])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpmbuild --quiet -bb /data/SPECS/reloc.spec
+runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
+
+runroot rpm -U /build/RPMS/noarch/fakeshell-1.0-1.noarch.rpm
+runroot rpm -U \
+  /build/RPMS/noarch/reloc-1.0-1.noarch.rpm
+runroot rpm -e reloc
+runroot rpm -U --relocate /opt/bin=/bin \
+  /build/RPMS/noarch/reloc-1.0-1.noarch.rpm
+],
+[0],
+[1: /opt/bin
+2: /opt/etc
+3: /opt/lib
+0: /opt/bin
+1: /opt/etc
+2: /opt/lib
+1: /bin
+2: /opt/etc
+3: /opt/lib
+0: /bin
+1: /opt/etc
+2: /opt/lib
+],
+[])
+AT_CLEANUP
 AT_SETUP([rpm -i with/without --excludedocs])
 AT_KEYWORDS([install excludedocs])
 AT_CHECK([

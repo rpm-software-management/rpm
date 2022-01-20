@@ -125,6 +125,16 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	lua_setfield(L, -2, "next_file");
     }
 
+    if (prefixes) {
+	lua_newtable(L);
+	for (ARGV_const_t p = prefixes; p && *p; p++) {
+	    int i = p - prefixes + 1;
+	    lua_pushstring(L, *p);
+	    lua_rawseti(L, -2, i);
+	}
+	lua_setglobal(L, "RPM_INSTALL_PREFIX");
+    }
+
     if (arg1 >= 0)
 	argvAddNum(argvp, arg1);
     if (arg2 >= 0)
@@ -164,6 +174,11 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	umask(oldmask);
     }
     free(scriptbuf);
+
+    if (prefixes) {
+	lua_pushnil(L);
+	lua_setglobal(L, "RPM_INSTALL_PREFIX");
+    }
 
     if (nextFileFunc) {
 	lua_pushnil(L);
