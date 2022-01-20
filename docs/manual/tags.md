@@ -35,6 +35,8 @@ While not technically a type on its own there are several mappings. These consis
 
 ## Base package tags
 
+Tag Name    | Value| Type       | Description
+------------|------|------------|------------
 Name        | 1000 | string     | Package name.
 Version     | 1001 | string     | Package version.
 Release     | 1002 | string     | Package release.
@@ -47,6 +49,8 @@ Arch        | 1022 | string     | The architecture the package is for. `noarch` 
 
 ## Informative package tags
 
+Tag Name           | Value| Type         | Description
+-------------------|------|--------------|------------
 Buildhost          | 1007 | string       | Hostname of the system the package was built on.
 Buildtime          | 1006 | int32        | Unix timestamp of package build time.
 Bugurl             | 5012 | string       | URL to package bug tracker.
@@ -77,6 +81,8 @@ Vendor             | 1011 | string       | Package vendor contact information.
 
 ## Packages with files
 
+Tag Name          | Value| Type         | Description
+------------------|------|--------------|------------
 Archivesize       | 1046 | int32        | (Compressed) payload size.
 Dirnames          | 1118 | string array | dirname(3) components of contained paths
 Filedigestalgo    | 5011 | int32        | ID of file digest algorithm. If missing, considered `0` for `md5`.
@@ -90,6 +96,8 @@ Size              | 1009 | int32        | Installed package size.
 
 ## Per-file information
 
+Tag Name        | Value| Type         | Description
+----------------|------|--------------|------------
 Basenames       | 1117 | string array | basename(3) of the path.
 Dirindexes      | 1116 | int32 array  | Index into dirname(3) array of the pacakge (see Dirname tag).
 Filedevices     | 1095 | int32 array  | Abstract device ID (hardlink calculation only).
@@ -109,6 +117,8 @@ Longfilesizes   | 5008 | int64 array  | File size (when files > 4GB are present)
 
 ### Optional file information
 
+Tag Name            | Value| Type         | Description
+--------------------|------|--------------|------------
 Classdict           | 1142 | string array | File class (libmagic string) dictionary
 Dependsdict         | 1145 | int32 array  | File dependencies dictionary
 Filecaps            | 5010 | string array | `cap_to_text(3)` textual representation of file capabilities.
@@ -130,6 +140,8 @@ the range related to the version specified in the version tag.
 
 ### Hard dependencies
 
+Tag Name       | Value| Type
+---------------|------|--------------
 Providename    | 1047 | string array
 Provideversion | 1113 | string array
 Provideflags   | 1112 | int32 array
@@ -148,6 +160,8 @@ Obsoleteflags   | 1114 | int32 array
 
 ### Soft dependencies
 
+Tag Name       | Value| Type
+---------------|------|--------------
 Enhancename    | 5055 | string array
 Enhanceversion | 5056 | string array
 Enhanceflags   | 5057 | int32 array
@@ -180,6 +194,8 @@ expand the scriptlet body.
 
 `%postin` script are run right after the package got installed
 
+Tag Name    | Value| Type
+------------|------|--------------
 Postin      | 1024 | string
 Postinflags | 5021 | int32
 Postinprog  | 1086 | string array
@@ -229,6 +245,8 @@ triplet, and Triggername, Triggerflags, Triggerversion form a dependency
 triplet. Triggerindexes is a per dependency index into Triggerscripts,
 binding the two triplets together.
 
+Tag Name           | Value| Type
+-------------------|------|--------------
 Triggerflags       | 1068 | int32 array
 Triggerindex       | 1069 | int32 array
 Triggername        | 1066 | string array
@@ -244,6 +262,8 @@ with an additional priority tag to affect trigger running order. File
 triggers in Filetrigger-tags run once per triggered package, whereas
 triggers in Transfiletrigger-tags run once per transaction.
 
+Tag Name               | Value| Type
+-----------------------|------|--------------
 Filetriggerflags       | 5072 | int32 array
 Filetriggerindex       | 5070 | int32 array
 Filetriggername        | 5069 | string array
@@ -266,6 +286,8 @@ Transfiletriggerversion     | 5081 | string array
 
 [Signatures](signatures.md) allow to verify the origin of a package.
 
+Tag Name          | Value| Type         | Description
+------------------|------|--------------|------------
 Dsaheader         | 267  | bin          | OpenPGP DSA signature of the header (if thus signed)
 Longsigsize       | 270  | int64        | Header+payload size if > 4GB.
 Payloaddigest     | 5092 | string array | Cryptographic digest of the compressed payload.
@@ -285,6 +307,8 @@ The following tags are added to the headers during installation and do not
 exist in RPM package files.
 
 
+Tag Name       | Value| Type         | Description
+---------------|------|--------------|------------
 Filestates     | 1029 | char array   | Per-file installed status information (installed/skipped/forced etc)
 Installcolor   | 1127 | int32        | "Color" of transaction in which the package was installed.
 Installtid     | 1128 | int32        | ID of transaction in which the package was installed.
@@ -297,6 +321,8 @@ Origdirnames   | 1121 | string array | Original Dirnames (relocated packages onl
 
 ## Source packages
 
+Tag Name      | Value| Type         | Description
+--------------|------|--------------|------------
 Buildarchs    | 1089 | string array | If present, specifies the architectures the package may be built for.
 Excludearch   | 1059 | string array | If present, limits the architectures on which the package is buildable by excluding those specified.
 Excludeos     | 1060 | string array | If present, limits the operating systems on which the package is buildable by excluding those specified.
@@ -310,6 +336,8 @@ Sourcepackage | 1106 | int32        | Denotes a source rpm.
 
 ## Internal / special
 
+Tag Name        | Value| Type         | Description
+----------------|------|--------------|------------
 Headeri18ntable | 100 | string array | Locales for which the header has translations.
 Headerimmutable | 63  | bin          | Special tag to return the unmodified, original image of the header even after data has been added to it in eg installation.
 
@@ -318,6 +346,8 @@ Headerimmutable | 63  | bin          | Special tag to return the unmodified, ori
 These tags are not longer in active use. If encountered in packages
 they are ignored.
 
+Tag Name           | Value| Type         | Description
+-------------------|------|--------------|------------
 Filecontexts       | 1147 | string array
 Fscontexts         | 1148 | string array
 Gif                | 1012 | bin
@@ -341,6 +371,8 @@ Xpm                | 1013 | bin
 
 Aliases are simply shorthands or alternative names for other tags.
 
+Alias Name  | Tag             | Type         | Description
+------------|-----------------|--------------|------------
 C           | Conflictname    | string array
 Conflicts   | Conflictname    | string array
 E           | Epoch           | int32
@@ -362,13 +394,15 @@ Suggests    | Suggestname     | string array
 Supplements | Supplementname  | string array
 V           | Version         | string
 
-## Extension
+## Extensions
 
 Extension tags do not exist in concrete form anywhere, their data is
 constructed at query time based on other information in the headers
 or runtime environment. A few physical tags do have an extension format
 as well however, these exceptions noted below.
 
+Tag Name      | Value| Type         | Description
+--------------|------|--------------|------------
 Dbinstance    | 1195 | int32        | Header ID of installed package, 0 otherwise.
 Epochnum      | 5019 | int32        | Package epoch as numeric value (0 if not present).
 Evr           | 5013 | string       | Formatted `epoch:version-release` string of the package
@@ -392,6 +426,8 @@ Longarchivesize | Archive size in 64bit format
 Longsize | Uncompressed size in 64bit format
 Longsigsize | Header+payload size in 64bit format
 
+Tag Name              | Value| Type         | Description
+----------------------|------|--------------|------------
 Origfilenames         | 5007 | string array | Original Filenames in relocated packages.
 Providenevrs          | 5042 | string array | Formatted `name [op version]` provide dependency strings.
 Conflictnevrs         | 5044 | string array | Formatted `name [op version]` conflict dependency strings.
