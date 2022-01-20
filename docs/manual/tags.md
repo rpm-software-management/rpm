@@ -192,7 +192,7 @@ denotes the scriptlet interpreter and possible arguments, and flags tag
 contains additional processing information such as whether to macro
 expand the scriptlet body.
 
-`%postin` script are run right after the package got installed
+`%postin` script is executed right after the package got installed
 
 Tag Name    | Value| Type
 ------------|------|--------------
@@ -200,31 +200,31 @@ Postin      | 1024 | string
 Postinflags | 5021 | int32
 Postinprog  | 1086 | string array
 
-`%posttrans` are run at the end of the transaction that installed the package
+`%posttrans` scripts are all executed at the end of the transaction that installed their packages
 
 Posttrans      | 1152 | string
 Posttransflags | 5025 | int32
 Posttransprog  | 1154 | string array
 
-`%postun` in run after the package was removed
+`%postun` script is executed right after the package was removed
 
 Postun      | 1026 | string
 Postunflags | 5023 | int32
 Postunprog  | 1088 | string array
 
-`%prein` in run right before the package is installed
+`%prein` script is executed right before the package is installed
 
 Prein      | 1023 | string
 Preinflags | 5020 | int32
 Preinprog  | 1085 | string array
 
-`%pretrans` is run for to be installed packages before any packages are installed
+`%pretrans` scripts are executed for to be installed packages before any packages are installed
 
 Pretrans      | 1151 | string
 Pretransflags | 5024 | int32
 Pretransprog  | 1153 | string array
 
-`%preun` is run before the package gets removed
+`%preun` script is executed right before the package gets removed
 
 Preun      | 1025 | string
 Preunflags | 5022 | int32
