@@ -209,6 +209,7 @@ AT_CHECK([
 RPMDB_INIT
 runroot rpm \
   --nodeps \
+  --ignorearch \
   -i /data/RPMS/hello-1.0-1.i386.rpm
 runroot rpm \
   -qf /usr/local/bin/hello
@@ -226,6 +227,7 @@ RPMDB_INIT
 runroot rpm \
   --nodeps \
   --excludedocs \
+  --ignorearch \
   -i /data/RPMS/hello-1.0-1.i386.rpm
 runroot rpm \
   -qf /usr/share/doc/hello-1.0/FAQ
@@ -243,6 +245,7 @@ RPMDB_INIT
 runroot rpm \
   --nodeps \
   --excludedocs \
+  --ignorearch \
   -i /data/RPMS/hello-1.0-1.i386.rpm
 runroot rpm \
   -q --path /usr/share/doc/hello-1.0/FAQ
