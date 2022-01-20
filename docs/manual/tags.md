@@ -340,6 +340,7 @@ Tag Name        | Value| Type         | Description
 ----------------|------|--------------|------------
 Headeri18ntable | 100 | string array | Locales for which the header has translations.
 Headerimmutable | 63  | bin          | Special tag to return the unmodified, original image of the header even after data has been added to it in eg installation.
+Pubkeys         | 266  | string array | used in gpg-pubkey special packages in the RPM data base
 
 ## Deprecated / Obsolete
 
@@ -362,7 +363,6 @@ Oldsuggestsflags   | 1158 | int32 array
 Patchesflags       | 1134 | int32 array
 Patchesname        | 1133 | string array
 Patchesversion     | 1135 | string array
-Pubkeys            | 266  | string array
 Recontexts         | 1149 | string array
 Removetid          | 1129 | int32
 Xpm                | 1013 | bin
