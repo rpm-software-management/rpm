@@ -734,7 +734,7 @@ static int rpmpkgAddSlotPage(rpmpkgdb pkgdb)
 
 static int rpmpkgGetLock(rpmpkgdb pkgdb, int type)
 {
-    if (!pkgdb->fd)
+    if (pkgdb->fd < 0)
 	return RPMRC_FAIL;
     if (flock(pkgdb->fd, type))
 	return RPMRC_FAIL;
