@@ -29,6 +29,10 @@ The point? Remember, Lua is embedded in rpm. This means the Lua scriptlets run i
 
 Scriptlet arguments are accessible from a global 'arg' table. Note: in Lua, indexes customarily start at 1 (one) instead of 0 (zero), and for the better or worse, the rpm implementation follows this practise. Thus the scriptlet arg indexes are off by one from general expectation based on traditional scriptlet arguments. The argument containing number of installed package instances is arg[2] and the similar argument for trigger targets is arg[3], whereas traditionally they are 1 and 2 (eg $1 and $2 in shell scripts).
 
+Scriptlets of relocatable packages additionally carry a global
+`RPM_INSTALL_PREFIX` table containing all the possible prefixes of the
+package. (rpm >= 4.18.0)
+
 While scriptlets shouldn't be allowed to fail normally, you can signal scriptlet failure status by using Lua's error(msg, [level]) function if you need to. As <lua> scriptlets run within the rpm process itself, care needs to be taken within the scripts - eg os.exit() must not be called (see ticket #167). In newer rpm versions (>= 4.9.0) this is not an issue as rpm protects itself by returning errors on unsafe os.exit() and posix.exec().
 
 ## Lua macros
