@@ -488,6 +488,22 @@ int rpmtsAddReinstallElement(rpmts ts, Header h, fnpyKey key)
     return addPackage(ts, h, key, RPMTE_REINSTALL, NULL);
 }
 
+int rpmtsAddRestoreElement(rpmts ts, Header h)
+{
+    tsMembers tsmem = rpmtsMembers(ts);
+    if (rpmtsSetupTransactionPlugins(ts) == RPMRC_FAIL)
+	return 1;
+
+    rpmte p = rpmteNew(ts, h, TR_RESTORED, NULL, NULL, 0);
+    if (p == NULL)
+	return 1;
+
+    addElement(tsmem, p, tsmem->orderCount);
+    rpmtsNotifyChange(ts, RPMTS_EVENT_ADD, p, NULL);
+
+    return 0;
+}
+
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 {
     if (rpmtsSetupTransactionPlugins(ts) == RPMRC_FAIL)

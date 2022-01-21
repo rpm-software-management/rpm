@@ -305,6 +305,7 @@ enum rpmInstallFlags_e {
     INSTALL_ERASE	= (1 << 8),	/*!< from --erase */
     INSTALL_ALLMATCHES	= (1 << 9),	/*!< from --allmatches */
     INSTALL_REINSTALL	= (1 << 10),	/*!< from --reinstall */
+    INSTALL_RESTORE	= (1 << 11),	/*!< from --restore */
 };
 
 typedef rpmFlags rpmInstallFlags;
@@ -384,6 +385,15 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv);
  */
 
 int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv);
+
+/** \ingroup rpmcli
+ * Restore file metadata (perms etc) of installed package(s).
+ * @param ts		transaction set
+ * @param ia		control args/bits
+ * @param argv		array of package names (NULL terminated)
+ * @return		0 on success
+ */
+int rpmRestore(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv);
 
 /** \ingroup rpmcli
  */

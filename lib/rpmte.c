@@ -102,10 +102,17 @@ void rpmteCleanDS(rpmte te)
 
 static rpmfiles getFiles(rpmte p, Header h)
 {
-    /* TR_RPMDB handled as TR_ERASED for now, doesn't really matter */
-    rpmfiFlags fiflags;
-    fiflags = (p->type == TR_ADDED) ? (RPMFI_NOHEADER | RPMFI_FLAGS_INSTALL) :
-				      (RPMFI_NOHEADER | RPMFI_FLAGS_ERASE);
+    rpmfiFlags fiflags = RPMFI_NOHEADER;
+    switch (p->type) {
+    case TR_ADDED:
+    case TR_RESTORED:
+	fiflags |= RPMFI_FLAGS_INSTALL;
+	break;
+    case TR_REMOVED:
+    case TR_RPMDB:
+	fiflags |= RPMFI_FLAGS_ERASE;
+	break;
+    }
 
     /* relocate stuff in header if necessary */
     if (rpmteType(p) == TR_ADDED && rpmfsFC(p->fs) > 0) {
@@ -184,7 +191,8 @@ static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
 
     /* Relocation needs to know file count before rpmfiNew() */
     headerGet(h, RPMTAG_BASENAMES, &bnames, HEADERGET_MINMEM);
-    p->fs = rpmfsNew(rpmtdCount(&bnames), (p->type == TR_ADDED));
+    p->fs = rpmfsNew(rpmtdCount(&bnames),
+		    (p->type == TR_ADDED || p->type == TR_RESTORED));
     rpmtdFreeData(&bnames);
 
     p->files = getFiles(p, h);
@@ -597,6 +605,7 @@ static int rpmteOpen(rpmte te, int reload_fi)
 	break;
     case TR_REMOVED:
     case TR_RPMDB:
+    case TR_RESTORED:
 	h = rpmteDBHeader(te);
     	break;
     }
@@ -631,6 +640,7 @@ static int rpmteClose(rpmte te, int reset_fi)
 	break;
     case TR_REMOVED:
     case TR_RPMDB:
+    case TR_RESTORED:
 	/* eventually we'll want notifications for erase open too */
 	break;
     }
@@ -770,6 +780,7 @@ const char * rpmteTypeString(rpmte te)
     case TR_ADDED:	return _("install");
     case TR_REMOVED:	return _("erase");
     case TR_RPMDB:	return _("rpmdb");
+    case TR_RESTORED:	return _("restored");
     default:		return "???";
     }
 }
@@ -797,7 +808,7 @@ int rpmteAddOp(rpmte te)
 int rpmteProcess(rpmte te, pkgGoal goal, int num)
 {
     /* Only install/erase resets pkg file info */
-    int scriptstage = (goal != PKG_INSTALL && goal != PKG_ERASE);
+    int scriptstage = (goal != PKG_INSTALL && goal != PKG_ERASE && goal != PKG_RESTORE);
     int test = (rpmtsFlags(te->ts) & RPMTRANS_FLAG_TEST);
     int reset_fi = (scriptstage == 0 && test == 0);
     int failed = 1;

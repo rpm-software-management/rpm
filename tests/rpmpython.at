@@ -286,6 +286,28 @@ package not installed
 addErase mi]
 )
 
+RPMPY_TEST([add restore to transaction],[
+ts = rpm.ts()
+for i in ['foo', 1234]:
+    myprint('addRestore %s' % i)
+    try:
+        ts.addRestore(i)
+    except rpm.error as err:
+        myprint(err)
+myprint('addRestore mi')
+mi = ts.dbMatch('name', 'foo')
+try:
+    ts.addRestore(mi)
+except rpm.error as err:
+    myprint(err)
+],
+[addRestore foo
+package not installed
+addRestore 1234
+package not installed
+addRestore mi]
+)
+
 RPMPY_TEST([add bogus package to transaction 1],[
 ts = rpm.ts()
 h = rpm.hdr()

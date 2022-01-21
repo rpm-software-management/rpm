@@ -112,6 +112,13 @@ class TransactionSet(TransactionSetCore):
             if not TransactionSetCore.addErase(self, h):
                 raise rpm.error("adding erasure to transaction failed")
 
+    def addRestore(self, item):
+        hdrs = self._i2hdrs(item)
+
+        for h in hdrs:
+            if not TransactionSetCore.addErase(self, h):
+                raise rpm.error("adding restore to transaction failed")
+
     def run(self, callback, data):
         rc = TransactionSetCore.run(self, callback, data, self._probFilter)
 

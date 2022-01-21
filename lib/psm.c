@@ -826,11 +826,43 @@ static rpmRC rpmPackageErase(rpmts ts, rpmpsm psm)
     return rc;
 }
 
+static rpmRC rpmPackageRestore(rpmts ts, rpmpsm psm)
+{
+    rpmRC rc = RPMRC_OK;
+
+    rpmswEnter(rpmtsOp(psm->ts, RPMTS_OP_INSTALL), 0);
+    if ((rc = rpmChrootIn()) == 0) {
+	char *failedFile = NULL;
+	rpmpsmNotify(psm, RPMCALLBACK_INST_START, 0);
+	/* make sure first progress call gets made */
+	rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, 0);
+
+	if (!(rpmtsFlags(psm->ts) & RPMTRANS_FLAG_JUSTDB)) {
+	    if (rpmfilesFC(psm->files) > 0) {
+		int fsmrc = rpmPackageFilesInstall(psm->ts, psm->te, psm->files,
+					      psm, &failedFile);
+		rc = (fsmrc == 0) ? RPMRC_OK : RPMRC_FAIL;
+	    }
+	}
+
+	/* XXX make sure progress reaches 100% */
+	rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, psm->total);
+	rpmpsmNotify(psm, RPMCALLBACK_INST_STOP, psm->total);
+
+	free(failedFile);
+	rpmChrootOut();
+    }
+    rpmswExit(rpmtsOp(psm->ts, RPMTS_OP_INSTALL), 0);
+
+    return rc;
+}
+
 static const char * pkgGoalString(pkgGoal goal)
 {
     switch (goal) {
     case PKG_INSTALL:	return "  install";
     case PKG_ERASE:	return "    erase";
+    case PKG_RESTORE:	return "  restore";
     case PKG_VERIFY:	return "   verify";
     case PKG_PRETRANS:	return " pretrans";
     case PKG_POSTTRANS:	return "posttrans";
@@ -847,6 +879,9 @@ static rpmRC runGoal(rpmpsm psm, pkgGoal goal)
 	break;
     case PKG_ERASE:
 	rc = rpmPackageErase(psm->ts, psm);
+	break;
+    case PKG_RESTORE:
+	rc = rpmPackageRestore(psm->ts, psm);
 	break;
     case PKG_PRETRANS:
     case PKG_POSTTRANS:

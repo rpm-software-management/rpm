@@ -924,7 +924,10 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     if (rc)
 	goto exit;
 
-    fi = rpmfiNewArchiveReader(payload, files, RPMFI_ITER_READ_ARCHIVE);
+    if (rpmteType(te) == TR_ADDED)
+	fi = rpmfiNewArchiveReader(payload, files, RPMFI_ITER_READ_ARCHIVE);
+    else
+	fi = rpmfilesIter(files, RPMFI_ITER_FWD);
     if (fi == NULL) {
         rc = RPMERR_BAD_MAGIC;
         goto exit;

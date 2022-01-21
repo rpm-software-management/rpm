@@ -613,6 +613,14 @@ int rpmtsOrder(rpmts ts)
 
     rpmlog(RPMLOG_DEBUG, "========== tsorting packages (order, #predecessors, #succesors, depth)\n");
 
+    /* Restored items first (doesn't matter but is simple) */
+    for (int e = 0; e < nelem; e++) {
+	tsortInfo p = &sortInfo[e];
+	if (rpmteType(p->te) == TR_RESTORED) {
+	    newOrder[newOrderCount++] = p->te;
+	}
+    }
+
     for (int i = 0; i < 2; i++) {
 	/* Do two separate runs: installs first - then erases */
 	int oType = !i ? TR_ADDED : TR_REMOVED;
