@@ -19,6 +19,7 @@ enum modes {
 
     MODE_INSTALL	= (1 <<  1),
     MODE_ERASE		= (1 <<  2),
+    MODE_RESTORE	= (1 <<  4),
 #define	MODES_IE (MODE_INSTALL | MODE_ERASE)
 
     MODE_UNKNOWN	= 0
@@ -114,13 +115,16 @@ int main(int argc, char *argv[])
 			(INSTALL_UPGRADE|INSTALL_FRESHEN|
 			 INSTALL_INSTALL|INSTALL_REINSTALL));
 	int eflags = (ia->installInterfaceFlags & INSTALL_ERASE);
+	int rflags = (ia->installInterfaceFlags & INSTALL_RESTORE);
 
-	if (iflags & eflags)
+	if (iflags & eflags & rflags)
 	    argerror(_("only one major mode may be specified"));
 	else if (iflags)
 	    bigMode = MODE_INSTALL;
 	else if (eflags)
 	    bigMode = MODE_ERASE;
+	else if (rflags)
+	    bigMode = MODE_RESTORE;
     }
 
     if (!( bigMode == MODE_INSTALL ) &&
@@ -265,6 +269,10 @@ int main(int argc, char *argv[])
 	    /* FIX: ia->relocations[0].newPath undefined */
 	    ec += rpmInstall(ts, ia, (ARGV_t) poptGetArgs(optCon));
 	}
+	break;
+
+    case MODE_RESTORE:
+	ec += rpmRestore(ts, ia, (ARGV_const_t) poptGetArgs(optCon));
 	break;
 
     case MODE_QUERY:

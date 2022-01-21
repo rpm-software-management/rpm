@@ -230,6 +230,17 @@ rpmts_AddErase(rpmtsObject * s, PyObject * args)
     return PyBool_FromLong(rpmtsAddEraseElement(s->ts, h, -1) == 0);
 }
 
+static PyObject *
+rpmts_AddRestore(rpmtsObject * s, PyObject * args)
+{
+    Header h;
+
+    if (!PyArg_ParseTuple(args, "O&:AddRestore", hdrFromPyObject, &h))
+        return NULL;
+
+    return PyBool_FromLong(rpmtsAddRestoreElement(s->ts, h) == 0);
+}
+
 static int
 rpmts_SolveCallback(rpmts ts, rpmds ds, const void * data)
 {
@@ -740,6 +751,8 @@ static struct PyMethodDef rpmts_methods[] = {
   "  mode : optional argument that specifies if this package should be\n\t\tinstalled ('i'), upgraded ('u')"},
  {"addReinstall",	(PyCFunction) rpmts_AddReinstall,	METH_VARARGS,
   "ts.addReinstall(hdr, data) -- Adds transaction elements\nrepresenting a reinstall of an already installed package.\n\nSee addInstall for details."},
+ {"addRestore",	(PyCFunction) rpmts_AddRestore,			METH_VARARGS,
+  "ts.addRestore(hdr) -- Adds transaction elements\nrepresenting a restore of an already installed package."},
  {"addErase",	(PyCFunction) rpmts_AddErase,	METH_VARARGS|METH_KEYWORDS,
   "addErase(name) -- Add a transaction element representing an erase\nof an installed package.\n\n"
   "  name: the package name to be erased"},

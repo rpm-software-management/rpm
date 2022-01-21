@@ -611,3 +611,23 @@ runroot rpm -Va --nouser --nogroup --nodeps | grep "/bin/hello"
 [],
 [])
 AT_CLEANUP
+
+AT_SETUP([rpm --restore])
+AT_KEYWORDS([verify restore])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
+	/data/RPMS/hello-1.0-1.i386.rpm
+runroot_other touch /usr/share/doc/hello-1.0/FAQ
+runroot_other chmod a-x /usr/local/bin/hello
+runroot rpm -Va --nodeps --nouser --nogroup
+runroot rpm --restore hello
+runroot rpm -Va --nodeps --nouser --nogroup
+],
+[0],
+[.M.......    /usr/local/bin/hello
+.......T.  d /usr/share/doc/hello-1.0/FAQ
+],
+[])
+AT_CLEANUP

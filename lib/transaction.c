@@ -703,6 +703,15 @@ assert(otherFi != NULL);
 	    /* Otherwise, we can just erase. */
 	    rpmfsSetAction(fs, i, FA_ERASE);
 	    break;
+	case TR_RESTORED:
+	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
+		break;
+	    if (rpmfilesFState(fi, i) != RPMFILE_STATE_NORMAL) {
+		rpmfsSetAction(fs, i, FA_SKIP);
+		break;
+	    }
+	    rpmfsSetAction(fs, i, FA_TOUCH);
+	    break;
 	default:
 	    break;
 	}

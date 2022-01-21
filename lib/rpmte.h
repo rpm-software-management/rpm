@@ -20,6 +20,7 @@ typedef enum rpmElementType_e {
     TR_ADDED		= (1 << 0),	/*!< Package will be installed. */
     TR_REMOVED		= (1 << 1),	/*!< Package will be removed. */
     TR_RPMDB		= (1 << 2),	/*!< Package from the rpmdb. */
+    TR_RESTORED		= (1 << 3),	/*!< Package will be restored. */
 } rpmElementType;
 
 typedef rpmFlags rpmElementTypes;

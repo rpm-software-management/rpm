@@ -669,6 +669,14 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 int rpmtsAddReinstallElement(rpmts ts, Header h, const fnpyKey key);
 
 /** \ingroup rpmts
+ * Add package to be restored to transaction set.
+ * @param ts		transaction set
+ * @param h		header
+ * @return		0 on success, 1 on error (not installed)
+ */
+int rpmtsAddRestoreElement(rpmts ts, Header h);
+
+/** \ingroup rpmts
  * Add package to be erased to transaction set.
  * @param ts		transaction set
  * @param h		header

@@ -10,6 +10,7 @@ typedef enum pkgGoal_e {
     /* permit using rpmteType() for install + erase goals */
     PKG_INSTALL		= TR_ADDED,
     PKG_ERASE		= TR_REMOVED,
+    PKG_RESTORE		= TR_RESTORED,
     /* permit using scriptname for these for now... */
     PKG_VERIFY		= RPMTAG_VERIFYSCRIPT,
     PKG_PRETRANS	= RPMTAG_PRETRANS,
@@ -27,6 +28,7 @@ enum addOp_e {
   RPMTE_INSTALL       = 0,
   RPMTE_UPGRADE       = 1,
   RPMTE_REINSTALL     = 2,
+  RPMTE_RESTORE       = 3,
 };
 
 #ifdef __cplusplus

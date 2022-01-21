@@ -45,13 +45,7 @@ MISCELLANEOUS:
 
 **rpm** **\--showrc**
 
-**rpm** **\--setperms** *PACKAGE\_NAME \...*
-
-**rpm** **\--setugids** *PACKAGE\_NAME \...*
-
-**rpm** **\--setcaps** *PACKAGE\_NAME \...*
-
-**rpm** **\--restore** *PACKAGE\_NAME \...*
+**rpm** **\--restore** \[**select-options**\]
 
 select-options
 --------------
@@ -970,30 +964,14 @@ MISCELLANEOUS COMMANDS
 :   shows the values **rpm** will use for all of the options are
     currently set in *rpmrc* and *macros* configuration file(s).
 
-**rpm** **\--setperms** *PACKAGE\_NAME*
+**rpm** **\--setperms** | **\--setugids** | **\--setcaps** *PACKAGE\_NAME*
 
-:   sets permissions of files in the given package. Consider using
-    **\--restore** instead.
+:   obsolete aliases for **\--restore**
 
-**rpm** **\--setugids** *PACKAGE\_NAME*
+**rpm** **\--restore** \[**select-options**\]
 
-:   sets user/group ownership of files in the given package. This
-    command can change permissions and capabilities of files in that
-    package. In most cases it is better to use **\--restore** instead.
-
-**rpm** **\--setcaps** *PACKAGE\_NAME*
-
-:   sets capabilities of files in the given package. Consider using
-    **\--restore** instead.
-
-**rpm** **\--restore** *PACKAGE\_NAME*
-
-:   The option restores owner, group, permissions and capabilities of
-    files in the given package.
-
-Options **\--setperms**, **\--setugids**, **\--setcaps** and
-
-:   **\--restore** are mutually exclusive.
+:   The option restores file metadata such as timestamp, owner, group,
+    permissions and capabilities of files in packages.
 
 FTP/HTTP OPTIONS
 ----------------

@@ -287,8 +287,15 @@ static int rpmcliTransaction(rpmts ts, struct rpmInstallArguments_s * ia)
     }
 
     if (numPackages && !stop) {
-	rpmlog(RPMLOG_DEBUG, eflags ? "erasing packages\n" :
-				      "installing binary packages\n");
+	const char *msg;
+	if (ia->installInterfaceFlags & INSTALL_RESTORE)
+	    msg = "restoring packages";
+	else if (ia->installInterfaceFlags & INSTALL_ERASE)
+	    msg = "erasing packages";
+	else
+	    msg = "installing binary packages";
+
+	rpmlog(RPMLOG_DEBUG, "%s\n", msg);
 	rpmtsClean(ts);
 	rc = rpmtsRun(ts, NULL, ia->probFilter);
 
@@ -736,6 +743,35 @@ exit:
     rpmtsSetVSFlags(ts, ovsflags);
 
     return (numFailed < 0) ? numPackages : numFailed;
+}
+
+static int handleRestorePackage(QVA_t qva, rpmts ts, Header h)
+{
+    return rpmtsAddRestoreElement(ts, h);
+}
+
+int rpmRestore(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
+{
+    QVA_t qva = &rpmQVKArgs;
+    int rc;
+    rpmVSFlags vsflags = setvsFlags(ia);
+    rpmVSFlags ovsflags = rpmtsSetVSFlags(ts, vsflags);
+
+    rpmtsSetFlags(ts, ia->transFlags);
+    setNotifyFlag(ia, ts);
+
+    if (qva->qva_showPackage == NULL)
+	qva->qva_showPackage = handleRestorePackage;
+
+    rc = rpmcliArgIter(ts, qva, argv);
+    if (rc == 0) {
+	rc = rpmcliTransaction(ts, ia);
+    }
+
+    rpmtsEmpty(ts);
+    rpmtsSetVSFlags(ts, ovsflags);
+
+    return rc;
 }
 
 int rpmInstallSource(rpmts ts, const char * arg,
