@@ -1524,7 +1524,7 @@ static uint8_t *hex2bin(Header h, rpmTagVal tag, rpm_count_t num, size_t len,
 	/* Figure string sizes + max length for allocation purposes */
 	if (lengths) {
 	    int i = 0;
-	    lens = xmalloc(num * sizeof(*lens));
+	    lens = xcalloc(num, sizeof(*lens));
 
 	    while ((s = rpmtdNextString(&td))) {
 		lens[i] = strlen(s) / 2;
@@ -1542,7 +1542,7 @@ static uint8_t *hex2bin(Header h, rpmTagVal tag, rpm_count_t num, size_t len,
 	    maxl = len;
 	}
 
-	uint8_t *t = bin = xmalloc(num * maxl);
+	uint8_t *t = bin = rmallocarray(num, maxl);
 	int i = 0;
 	while ((s = rpmtdNextString(&td))) {
 	    if (*s == '\0') {
