@@ -432,6 +432,23 @@ runroot_other find /foo|sort
 [])
 
 AT_CLEANUP
+
+AT_SETUP([rpm -i --justdb])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpm \
+  -U --justdb /data/RPMS/hlinktest-1.0-1.noarch.rpm
+runroot rpm -qa
+runroot_other test -d /foo && find /foo|sort
+],
+[1],
+[hlinktest-1.0-1.noarch
+],
+[])
+AT_CLEANUP
+
 # ------------------------------
 # Check if rpm -U *.src.rpm works
 AT_SETUP([rpm -U *.src.rpm])
