@@ -31,8 +31,13 @@
 static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #endif /* LIBC_SCCS and not lint */
 
+/* Needed for _DARWIN_FEATURE_ONLY_64_BIT_INODE check below. */
+#if defined(__APPLE__)
+#include <sys/cdefs.h>
+#endif
+
 /* Conditional to set up proper fstat64 implementation */
-#if defined(hpux) || defined(sun) || defined(__APPLE__)
+#if defined(hpux) || defined(sun) || (defined(__APPLE__) && defined(_DARWIN_FEATURE_ONLY_64_BIT_INODE))
 #   define FTS_FSTAT64(_fd, _sbp)   fstat((_fd), (_sbp))
 #else
 #   define FTS_FSTAT64(_fd, _sbp)   fstat64((_fd), (_sbp))
@@ -63,7 +68,9 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #endif
 #if defined(__APPLE__)
 #   define __errno_location()	(__error())
-#   define stat64		stat
+#if defined(_DARWIN_FEATURE_ONLY_64_BIT_INODE)
+#		define stat64	stat
+#endif
 #endif
 
 #include "system.h"
