@@ -98,6 +98,21 @@ static rpmRC headerCheckPayloadFormat(Header h) {
     return rc;
 }
 
+static void addElement(tsMembers tsmem, rpmte te, int oc)
+{
+    if (oc >= tsmem->orderAlloced) {
+	tsmem->orderAlloced += (oc - tsmem->orderAlloced) + tsmem->delta;
+	tsmem->order = xrealloc(tsmem->order,
+	tsmem->orderAlloced * sizeof(*tsmem->order));
+    }
+
+    tsmem->order[oc] = te;
+    if (oc == tsmem->orderCount) {
+	tsmem->orderCount++;
+    }
+}
+
+
 /**
  * Add removed package instance to ordered transaction set.
  * @param ts		transaction set
@@ -126,16 +141,9 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
 	return 1;
 
     packageHashAddEntry(tsmem->removedPackages, dboffset, p);
-
-    if (tsmem->orderCount >= tsmem->orderAlloced) {
-	tsmem->orderAlloced += (tsmem->orderCount - tsmem->orderAlloced) + tsmem->delta;
-	tsmem->order = xrealloc(tsmem->order, sizeof(*tsmem->order) * tsmem->orderAlloced);
-    }
-
     rpmteSetDependsOn(p, depends);
 
-    tsmem->order[tsmem->orderCount] = p;
-    tsmem->orderCount++;
+    addElement(tsmem, p, tsmem->orderCount);
     rpmtsNotifyChange(ts, RPMTS_EVENT_ADD, p, depends);
 
     return 0;
@@ -442,17 +450,7 @@ static int addPackage(rpmts ts, Header h,
 	}
     }
 
-    if (oc >= tsmem->orderAlloced) {
-	tsmem->orderAlloced += (oc - tsmem->orderAlloced) + tsmem->delta;
-	tsmem->order = xrealloc(tsmem->order,
-			tsmem->orderAlloced * sizeof(*tsmem->order));
-    }
-
-
-    tsmem->order[oc] = p;
-    if (oc == tsmem->orderCount) {
-	tsmem->orderCount++;
-    }
+    addElement(tsmem, p, oc);
     rpmtsNotifyChange(ts, RPMTS_EVENT_ADD, p, NULL);
 
     
