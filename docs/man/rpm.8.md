@@ -36,8 +36,8 @@ INSTALLING, UPGRADING, AND REMOVING PACKAGES:
 
 **rpm** {**\--reinstall**} \[**install-options**\] *PACKAGE\_FILE \...*
 
-**rpm** {**-e\|\--erase**} \[**\--allmatches**\] \[**\--justdb\]
-\[\--nodeps**\] \[**\--noscripts**\] \[**\--notriggers**\]
+**rpm** {**-e\|\--erase**} \[**\--allmatches**\] \[**\--justdb**\]
+\[**\--nodb**\] \[**\--nodeps**\] \[**\--noscripts**\] \[**\--notriggers**\]
 \[**\--test**\] *PACKAGE\_NAME \...*
 
 MISCELLANEOUS:
@@ -102,7 +102,7 @@ install-options
 \[**\--allfiles**\] \[**\--badreloc**\] \[**\--excludepath ***OLDPATH*\]
 \[**\--excludedocs**\] \[**\--force**\] \[**-h,\--hash**\]
 \[**\--ignoresize**\] \[**\--ignorearch**\] \[**\--ignoreos**\]
-\[**\--includedocs**\] \[**\--justdb**\] \[**\--nodeps**\]
+\[**\--includedocs**\] \[**\--justdb**\] \[**--nodb**\] \[**\--nodeps**\]
 \[**\--nodigest**\] \[**\--noplugins**\] \[**\--nocaps**\]
 \[**\--noorder**\] \[**\--noverify**\] \[**\--nosignature**\]
 \[**\--noscripts**\] \[**\--notriggers**\] \[**\--oldpackage**\]
@@ -314,6 +314,10 @@ This reinstalls a previously installed package.
 **\--justdb**
 
 :   Update only the database, not the filesystem.
+
+**\--nodb**
+
+:   Update only the filesystem, not the database.
 
 **\--nodigest**
 
