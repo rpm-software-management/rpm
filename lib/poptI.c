@@ -177,6 +177,8 @@ struct poptOption rpmInstallPoptTable[] = {
 
  { "justdb", '\0', POPT_BIT_SET, &rpmIArgs.transFlags, RPMTRANS_FLAG_JUSTDB,
 	N_("update the database, but do not modify the filesystem"), NULL},
+ { "nodb", '\0', POPT_BIT_SET, &rpmIArgs.transFlags, RPMTRANS_FLAG_NODB,
+	N_("do not update the database, but modify the filesystem"), NULL},
 
  { "noconfigs", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_NOCONFIGS,

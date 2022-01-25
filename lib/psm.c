@@ -678,17 +678,19 @@ static rpmRC rpmPackageInstall(rpmts ts, rpmpsm psm)
 	}
 	if (rc) break;
 
-	/*
-	 * If this package has already been installed, remove it from
-	 * the database before adding the new one.
-	 */
-	if (rpmteDBInstance(psm->te)) {
-	    rc = dbRemove(ts, psm->te);
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NODB)) {
+	    /*
+	     * If this package has already been installed, remove it from
+	     * the database before adding the new one.
+	     */
+	    if (rpmteDBInstance(psm->te)) {
+		rc = dbRemove(ts, psm->te);
+		if (rc) break;
+	    }
+
+	    rc = dbAdd(ts, psm->te);
 	    if (rc) break;
 	}
-
-	rc = dbAdd(ts, psm->te);
-	if (rc) break;
 
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERIN)) {
 	    /* Run upper file triggers i. e. with higher priorities */
@@ -815,7 +817,8 @@ static rpmRC rpmPackageErase(rpmts ts, rpmpsm psm)
 	    rpmtriggersPrepPostUnTransFileTrigs(psm->ts, psm->te);
 	}
 
-	rc = dbRemove(ts, psm->te);
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NODB))
+	    rc = dbRemove(ts, psm->te);
     }
 
     rpmswExit(rpmtsOp(psm->ts, RPMTS_OP_ERASE), 0);

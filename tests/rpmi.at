@@ -409,6 +409,29 @@ Install Date: Wed Oct 21 07:28:56 2015
 [])
 AT_CLEANUP
 
+AT_SETUP([rpm -i --nodb])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpm \
+  -U --nodb /data/RPMS/hlinktest-1.0-1.noarch.rpm
+runroot rpm -qa
+runroot_other find /foo|sort
+],
+[0],
+[/foo
+/foo/aaaa
+/foo/copyllo
+/foo/hello
+/foo/hello-bar
+/foo/hello-foo
+/foo/hello-world
+/foo/zzzz
+],
+[])
+
+AT_CLEANUP
 # ------------------------------
 # Check if rpm -U *.src.rpm works
 AT_SETUP([rpm -U *.src.rpm])
