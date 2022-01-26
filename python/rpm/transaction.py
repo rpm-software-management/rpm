@@ -64,6 +64,28 @@ class TransactionSet(TransactionSetCore):
             header = self.hdrFromFdno(item)
         return header
 
+    def _i2hdrs(self, item):
+        hdrs = []
+        # match iterators are passed on as-is
+        if isinstance(item, rpm.mi):
+            hdrs = item
+        elif isinstance(item, rpm.hdr):
+            hdrs.append(item)
+        elif isinstance(item, (int, str)):
+            if isinstance(item, int):
+                dbi = rpm.RPMDBI_PACKAGES
+            else:
+                dbi = rpm.RPMDBI_LABEL
+
+            for h in self.dbMatch(dbi, item):
+                hdrs.append(h)
+
+            if not hdrs:
+                raise rpm.error("package not installed")
+        else:
+            raise TypeError("invalid type %s" % type(item))
+        return hdrs
+
     def addInstall(self, item, key, how="u"):
         header = self._f2hdr(item)
 
@@ -84,25 +106,7 @@ class TransactionSet(TransactionSetCore):
             raise rpm.error("adding reinstall to transaction failed")
 
     def addErase(self, item):
-        hdrs = []
-        # match iterators are passed on as-is
-        if isinstance(item, rpm.mi):
-            hdrs = item
-        elif isinstance(item, rpm.hdr):
-            hdrs.append(item)
-        elif isinstance(item, (int, str)):
-            if isinstance(item, int):
-                dbi = rpm.RPMDBI_PACKAGES
-            else:
-                dbi = rpm.RPMDBI_LABEL
-
-            for h in self.dbMatch(dbi, item):
-                hdrs.append(h)
-
-            if not hdrs:
-                raise rpm.error("package not installed")
-        else:
-            raise TypeError("invalid type %s" % type(item))
+        hdrs = self._i2hdrs(item)
 
         for h in hdrs:
             if not TransactionSetCore.addErase(self, h):
