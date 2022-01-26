@@ -164,7 +164,9 @@ static void rpmcliAllArgCallback( poptContext con,
     case POPT_SHOWRC:
 	rpmcliConfigured();
 	(void) rpmShowRC(stdout);
-	exit(EXIT_SUCCESS);
+	/* EXIT_FAILURE on any errors (during rpmcliConfigured()) */
+	exit(rpmlogGetNrecsByMask(RPMLOG_UPTO(RPMLOG_ERR)) ?
+	     EXIT_FAILURE : EXIT_SUCCESS);
 	break;
     case POPT_QUERYTAGS:
 	rpmDisplayQueryTags(stdout);
