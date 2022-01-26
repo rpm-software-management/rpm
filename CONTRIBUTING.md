@@ -10,9 +10,9 @@ So while we invite contributions from all sides - especially from the
 multitude of RPM based distributions - RPM by its very nature is not an
 easy project to get into.
 
-When planning on any non-trivial amount of work on RPM, please check with us
+**When planning on any non-trivial amount of work on RPM, please check with us
 first to avoid situations where efforts goes wasted because it's
-not in line with RPM design and goals.
+not in line with RPM design and goals.**
 
 ## Submitting Patches
 
