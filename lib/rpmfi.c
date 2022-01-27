@@ -1613,8 +1613,10 @@ static uint8_t *base2bin(Header h, rpmTagVal tag, rpm_count_t num, int *len)
 	t = bin = xcalloc(num, maxlen);
 
 	for (i = 0; i < num; i++) {
-	    memcpy(t, arr[i], lengths[i]);
-	    free(arr[i]);
+	    if (arr[i]) {
+		memcpy(t, arr[i], lengths[i]);
+		free(arr[i]);
+	    }
 	    t += maxlen;
 	}
 	*len = maxlen;
