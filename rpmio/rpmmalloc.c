@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdint.h>
 
 #include "debug.h"
 
@@ -53,6 +54,18 @@ void * rcalloc (size_t nmemb, size_t size)
     if (size == 0) size++;
     if (nmemb == 0) nmemb++;
     value = calloc (nmemb, size);
+    if (value == NULL)
+	value = vmefail(size);
+    return value;
+}
+
+void * rmallocarray (size_t nmemb, size_t size)
+{
+    register void *value = NULL;
+    if (size == 0) size++;
+    if (nmemb == 0) nmemb++;
+    if (nmemb < SIZE_MAX / size)
+	value = malloc (nmemb * size);
     if (value == NULL)
 	value = vmefail(size);
     return value;

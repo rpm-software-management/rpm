@@ -124,6 +124,9 @@ void * rmalloc(size_t size);
 RPM_GNUC_MALLOC RPM_GNUC_ALLOC_SIZE2(1,2)
 void * rcalloc(size_t nmemb, size_t size);
 
+RPM_GNUC_MALLOC RPM_GNUC_ALLOC_SIZE2(1,2)
+void * rmallocarray(size_t nmemb, size_t size);
+
 RPM_GNUC_ALLOC_SIZE(2)
 void * rrealloc(void *ptr, size_t size);
 
