@@ -477,7 +477,7 @@ in. To do this, you use the
 option, followed by the *QUERYFMT* format string. Query formats are
 modified versions of the standard **printf(3)** formatting. The format
 is made up of static strings (which may include standard C character
-escapes for newlines, tabs, and other special characters) and
+escapes for newlines, tabs, and other special characters (excluding \0)) and
 **printf(3)** type formatters. As **rpm** already knows the type to
 print, the type specifier must be omitted however, and replaced by the
 name of the header tag to be printed, enclosed by **{}** characters. Tag
