@@ -438,13 +438,16 @@ AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_INIT
 
+# avoid having to deal with non-existent /foo in the find below
+runroot_other mkdir /foo
 runroot rpm \
   -U --justdb /data/RPMS/hlinktest-1.0-1.noarch.rpm
 runroot rpm -qa
-runroot_other test -d /foo && find /foo|sort
+runroot_other find /foo|sort
 ],
-[1],
+[0],
 [hlinktest-1.0-1.noarch
+/foo
 ],
 [])
 AT_CLEANUP
