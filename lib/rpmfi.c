@@ -1508,6 +1508,11 @@ err:
     return;
 }
 
+enum {
+    /* Maximum amount of memory hex2bin() will allocate */
+    MAX_HEX2BIN_MEM = 64 * 1024 * 1024,
+};
+
 /* Convert a tag of hex strings to binary presentation */
 /* If lengths is non-NULL, assume variable length strings */
 static uint8_t *hex2bin(Header h, rpmTagVal tag, rpm_count_t num, size_t len,
@@ -1515,6 +1520,12 @@ static uint8_t *hex2bin(Header h, rpmTagVal tag, rpm_count_t num, size_t len,
 {
     struct rpmtd_s td;
     uint8_t *bin = NULL;
+
+    if (lengths)
+	*lengths = NULL; /* assume failure */
+
+    if (len > MAX_HEX2BIN_MEM)
+	return bin;
 
     if (headerGet(h, tag, &td, HEADERGET_MINMEM) && rpmtdCount(&td) == num) {
 	const char *s;
@@ -1542,6 +1553,14 @@ static uint8_t *hex2bin(Header h, rpmTagVal tag, rpm_count_t num, size_t len,
 	    maxl = len;
 	}
 
+	/* Refuse to allocate an absurd amount of memory */
+	if (maxl <= 0 || num <= 0 || maxl > MAX_HEX2BIN_MEM / num) {
+	    if (lengths) {
+		free(*lengths);
+		*lengths = lens = NULL;
+	    }
+	    goto fail;
+	}
 	uint8_t *t = bin = rmallocarray(num, maxl);
 	int i = 0;
 	while ((s = rpmtdNextString(&td))) {
@@ -1557,6 +1576,7 @@ static uint8_t *hex2bin(Header h, rpmTagVal tag, rpm_count_t num, size_t len,
 	    i++;
 	}
     }
+fail:
     rpmtdFreeData(&td);
 
     return bin;
