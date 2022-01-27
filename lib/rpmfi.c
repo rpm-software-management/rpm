@@ -1586,7 +1586,7 @@ static uint8_t *base2bin(Header h, rpmTagVal tag, rpm_count_t num, int *len)
     size_t *lengths = xcalloc(num, sizeof(size_t));
     const char *s;
 
-    if (headerGet(h, tag, &td, HEADERGET_MINMEM) && rpmtdCount(&td) != num)
+    if (!headerGet(h, tag, &td, HEADERGET_MINMEM) || rpmtdCount(&td) != num)
 	goto out;
 
     while ((s = rpmtdNextString(&td))) {
