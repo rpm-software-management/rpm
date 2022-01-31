@@ -822,6 +822,10 @@ static int nevraTag(Header h, rpmtd td, headerGetFlags hgflags)
     return getNEVRA(h, td, NEVRA_NAME|NEVRA_EPOCH|NEVRA_VERSION|NEVRA_RELEASE|NEVRA_ARCH);
 }
 
+static int srcarchTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return getNEVRA(h, td, NEVRA_SRCARCH);
+}
 static int nvrsTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     return getNEVRA(h, td, NEVRA_NAME|NEVRA_VERSION|NEVRA_RELEASE|NEVRA_SRCARCH);
@@ -998,6 +1002,7 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_NEVR,		nevrTag },
     { RPMTAG_NVRA,		nvraTag },
     { RPMTAG_NEVRA,		nevraTag },
+    { RPMTAG_SRCARCH,		srcarchTag },
     { RPMTAG_NVRS,		nvrsTag },
     { RPMTAG_NEVRS,		nevrsTag },
     { RPMTAG_HEADERCOLOR,	headercolorTag },

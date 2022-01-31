@@ -612,19 +612,11 @@ int rpmcliQuery(rpmts ts, QVA_t qva, char * const * argv)
     /* If --queryformat unspecified, then set default now. */
     if (!(qva->qva_flags & _QUERY_FOR_BITS) && !(qva->qva_incattr) &&
 					    qva->qva_queryFormat == NULL) {
-
-	char *fmt;
-
-	if (qva->qva_source == RPMQV_SPECSRPM) {
+	char * fmt = rpmExpand("%{?_query_all_fmt}\n", NULL);
+	if (fmt == NULL || strlen(fmt) <= 1) {
+	    free(fmt);
 	    fmt = xstrdup("%{nvrs}\n");
-	} else {
-	    fmt = rpmExpand("%{?_query_all_fmt}\n", NULL);
-	    if (fmt == NULL || strlen(fmt) <= 1) {
-		free(fmt);
-		fmt = xstrdup("%{nvra}\n");
-	    }
 	}
-
 	qva->qva_queryFormat = fmt;
     }
 
