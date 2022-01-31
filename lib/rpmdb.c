@@ -2643,7 +2643,7 @@ char *rpmdbCookie(rpmdb db)
     rpmdbIndexIterator ii = rpmdbIndexIteratorInit(db, RPMDBI_NAME);
 
     if (ii) {
-	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA256, RPMDIGEST_NONE);
 	const void *key = 0;
 	size_t keylen = 0;
 	while ((rpmdbIndexIteratorNext(ii, &key, &keylen)) == 0) {
