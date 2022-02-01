@@ -10,6 +10,7 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmlog.h>
+#include <rpm/header.h>
 #include "lib/rpmdb_internal.h"
 #include "debug.h"
 
@@ -43,6 +44,23 @@ dbiIndex dbiNew(rpmdb rdb, rpmDbiTagVal rpmtag)
     dbi->dbi_file = rpmTagGetName(rpmtag);
     dbi->dbi_type = (rpmtag == RPMDBI_PACKAGES) ? DBI_PRIMARY : DBI_SECONDARY;
     return dbi;
+}
+
+void dbShowRC(FILE* fp)
+{
+    const struct rpmdbOps_s **ops;
+    char *db_backend = rpmExpand("%{?_db_backend}", NULL);
+    fprintf(fp, "\nBACKEND:\n");
+    if (db_backend) {
+	fprintf(fp, "default backend       : %s\n", db_backend);
+	free(db_backend);
+    }
+    fprintf(fp, "available backends    :");
+    for (ops = backends; ops && *ops; ops++) {
+	fputc(' ', fp);
+	fputs((*ops)->name, fp);
+    }
+    fprintf(fp, "\n");
 }
 
 /* Test whether there's a database for this backend, return true/false */

@@ -35,6 +35,7 @@
 #include "rpmio/rpmlua.h"
 #include "rpmio/rpmio_internal.h"	/* XXX for rpmioSlurp */
 #include "lib/misc.h"
+#include "lib/backend/dbi.h"
 
 #include "debug.h"
 
@@ -1794,6 +1795,8 @@ int rpmShowRC(FILE * fp)
     for (i = 0; i < equivTable->count; i++)
 	fprintf(fp," %s", equivTable->list[i].name);
     fprintf(fp, "\n");
+
+    dbShowRC(fp);
 
     fprintf(fp, "\nRPMRC VALUES:\n");
     for (i = 0, opt = optionTable; i < optionTableSize; i++, opt++) {
