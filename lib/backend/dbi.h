@@ -1,6 +1,7 @@
 #ifndef _DBI_H
 #define _DBI_H
 
+#include <stdio.h>
 #include "dbiset.h"
 #include <rpm/rpmtag.h>
 
@@ -129,6 +130,9 @@ void dbSetFSync(rpmdb rdb, int enable);
 
 RPM_GNUC_INTERNAL
 int dbCtrl(rpmdb rdb, dbCtrlOp ctrl);
+
+RPM_GNUC_INTERNAL
+void dbShowRC(FILE* fp);
 
 /** \ingroup dbi
  * Return new configured index database handle instance.
