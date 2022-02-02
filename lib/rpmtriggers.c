@@ -97,14 +97,16 @@ static void rpmtriggersSortAndUniq(rpmtriggers trigs)
     }
 }
 
-static void addTriggers(rpmts ts, Header trigH, rpmsenseFlags filter)
+static void addTriggers(rpmts ts, Header trigH, rpmsenseFlags filter,
+			const char *prefix)
 {
     int tix = 0;
     rpmds ds;
     rpmds triggers = rpmdsNew(trigH, RPMTAG_TRANSFILETRIGGERNAME, 0);
 
     while ((ds = rpmdsFilterTi(triggers, tix))) {
-	if ((rpmdsNext(ds) >= 0) && (rpmdsFlags(ds) & filter)) {
+	if ((rpmdsNext(ds) >= 0) && (rpmdsFlags(ds) & filter) &&
+		strcmp(prefix, rpmdsN(ds)) == 0) {
 	    struct rpmtd_s priorities;
 
 	    if (headerGet(trigH, RPMTAG_TRANSFILETRIGGERPRIORITIES,
@@ -141,12 +143,13 @@ void rpmtriggersPrepPostUnTransFileTrigs(rpmts ts, rpmte te)
 	    if (RPMFILE_IS_INSTALLED(rpmfiFState(fi))) {
 		unsigned int npkg = rpmdbIndexIteratorNumPkgs(ii);
 		const unsigned int *offs = rpmdbIndexIteratorPkgOffsets(ii);
-		/* Save any matching postun triggers */
+		/* Save any postun triggers matching this prefix */
 		for (int i = 0; i < npkg; i++) {
 		    Header h = rpmdbGetHeaderAt(rpmtsGetRdb(ts), offs[i]);
-		    addTriggers(ts, h, RPMSENSE_TRIGGERPOSTUN);
+		    addTriggers(ts, h, RPMSENSE_TRIGGERPOSTUN, pfx);
 		    headerFree(h);
 		}
+		break;
 	    }
 	}
 	rpmfiFree(fi);
