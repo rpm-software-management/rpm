@@ -71,23 +71,23 @@ static int inhibit(void)
     return fd;
 }
 
-static rpmRC systemd_inhibit_init(rpmPlugin plugin, rpmts ts)
+static rpmPluginRC systemd_inhibit_init(rpmPlugin plugin, rpmts ts)
 {
     struct stat st;
 
     if (lstat("/run/systemd/system/", &st) == 0) {
         if (S_ISDIR(st.st_mode)) {
-            return RPMRC_OK;
+            return RPMPLUGINRC_OK;
         }
     }
 
-    return RPMRC_NOTFOUND;
+    return RPMPLUGINRC_NOTFOUND;
 }
 
-static rpmRC systemd_inhibit_tsm_pre(rpmPlugin plugin, rpmts ts)
+static rpmPluginRC systemd_inhibit_tsm_pre(rpmPlugin plugin, rpmts ts)
 {
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_BUILD_PROBS))
-	return RPMRC_OK;
+	return RPMPLUGINRC_OK;
 
     lock_fd = inhibit();
 
@@ -95,17 +95,17 @@ static rpmRC systemd_inhibit_tsm_pre(rpmPlugin plugin, rpmts ts)
 	rpmlog(RPMLOG_DEBUG, "System shutdown blocked (fd %d)\n", lock_fd);
     }
 
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
 }
 
-static rpmRC systemd_inhibit_tsm_post(rpmPlugin plugin, rpmts ts, int res)
+static rpmPluginRC systemd_inhibit_tsm_post(rpmPlugin plugin, rpmts ts, int res)
 {
     if (lock_fd >= 0) {
 	close(lock_fd);
 	lock_fd = -1;
 	rpmlog(RPMLOG_DEBUG, "System shutdown unblocked\n");
     }
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
 }
 
 struct rpmPluginHooks_s systemd_inhibit_hooks = {

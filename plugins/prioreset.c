@@ -22,7 +22,7 @@
  * because the it's not needed there, and the effect is counter-productive.
  */
 
-static rpmRC prioreset_scriptlet_fork_post(rpmPlugin plugin, const char *path, int type)
+static rpmPluginRC prioreset_scriptlet_fork_post(rpmPlugin plugin, const char *path, int type)
 {
         /* Call for resetting nice priority. */
         int ret = setpriority(PRIO_PROCESS, 0, 0);
@@ -43,7 +43,7 @@ static rpmRC prioreset_scriptlet_fork_post(rpmPlugin plugin, const char *path, i
         }
         #endif
 
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
 }
 
 struct rpmPluginHooks_s prioreset_hooks = {

@@ -13,11 +13,11 @@ struct dbus_announce_data {
     DBusConnection * bus;
 };
 
-static rpmRC dbus_announce_init(rpmPlugin plugin, rpmts ts)
+static rpmPluginRC dbus_announce_init(rpmPlugin plugin, rpmts ts)
 {
     struct dbus_announce_data * state = rcalloc(1, sizeof(*state));
     rpmPluginSetData(plugin, state);
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
 }
 
 static void dbus_announce_close_bus(struct dbus_announce_data * state)
@@ -29,7 +29,7 @@ static void dbus_announce_close_bus(struct dbus_announce_data * state)
     }
 }
 
-static rpmRC open_dbus(rpmPlugin plugin, rpmts ts)
+static rpmPluginRC open_dbus(rpmPlugin plugin, rpmts ts)
 {
     DBusError err;
     int rc = 0;
@@ -37,15 +37,15 @@ static rpmRC open_dbus(rpmPlugin plugin, rpmts ts)
 
     /* Already open */
     if (state->bus)
-	return RPMRC_OK;
+	return RPMPLUGINRC_OK;
 
     /* ...don't notify on test transactions */
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_BUILD_PROBS))
-	return RPMRC_OK;
+	return RPMPLUGINRC_OK;
 
     /* ...don't notify on chroot transactions */
     if (!rstreq(rpmtsRootDir(ts), "/"))
-	return RPMRC_OK;
+	return RPMPLUGINRC_OK;
 
     dbus_error_init(&err);
 
@@ -64,13 +64,13 @@ static rpmRC open_dbus(rpmPlugin plugin, rpmts ts)
 	dbus_announce_close_bus(state);
 	goto err;
     }
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
  err:
     rpmlog(RPMLOG_WARNING,
 	   "dbus_announce plugin: Error connecting to dbus (%s)\n",
 	   err.message);
     dbus_error_free(&err);
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
 }
 
 static void dbus_announce_cleanup(rpmPlugin plugin)
@@ -80,7 +80,7 @@ static void dbus_announce_cleanup(rpmPlugin plugin)
     free(state);
 }
 
-static rpmRC send_ts_message(rpmPlugin plugin,
+static rpmPluginRC send_ts_message(rpmPlugin plugin,
 			     const char * name,
 			     rpmts ts,
 			     int res)
@@ -90,7 +90,7 @@ static rpmRC send_ts_message(rpmPlugin plugin,
     char * dbcookie = NULL;
 
     if (!state->bus)
-	return RPMRC_OK;
+	return RPMPLUGINRC_OK;
 
     msg = dbus_message_new_signal("/org/rpm/Transaction", /* object name */
 				  "org.rpm.Transaction",  /* interface name */
@@ -112,17 +112,17 @@ static rpmRC send_ts_message(rpmPlugin plugin,
     dbus_connection_flush(state->bus);
     dbcookie = _free(dbcookie);
 
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
 
  err:
     rpmlog(RPMLOG_WARNING,
 	   "dbus_announce plugin: Error sending message (%s)\n",
 	   name);
     dbcookie = _free(dbcookie);
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
 }
 
-static rpmRC dbus_announce_tsm_pre(rpmPlugin plugin, rpmts ts)
+static rpmPluginRC dbus_announce_tsm_pre(rpmPlugin plugin, rpmts ts)
 {
     int rc;
 
@@ -132,7 +132,7 @@ static rpmRC dbus_announce_tsm_pre(rpmPlugin plugin, rpmts ts)
     return send_ts_message(plugin, "StartTransaction", ts, RPMRC_OK);
 }
 
-static rpmRC dbus_announce_tsm_post(rpmPlugin plugin, rpmts ts, int res)
+static rpmPluginRC dbus_announce_tsm_post(rpmPlugin plugin, rpmts ts, int res)
 {
     return send_ts_message(plugin, "EndTransaction", ts, res);
 }

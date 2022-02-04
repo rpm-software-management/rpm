@@ -361,7 +361,7 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	dup2(inpipe[0], STDIN_FILENO);
 
 	/* Run scriptlet post fork hook for all plugins */
-	if (rpmpluginsCallScriptletForkPost(plugins, *argvp[0], RPMSCRIPTLET_FORK | RPMSCRIPTLET_EXEC) != RPMRC_FAIL) {
+	if (rpmpluginsCallScriptletForkPost(plugins, *argvp[0], RPMSCRIPTLET_FORK | RPMSCRIPTLET_EXEC) != RPMPLUGINRC_FAIL) {
 	    doScriptExec(*argvp, prefixes, scriptFd, out);
 	} else {
 	    _exit(126); /* exit 126 for compatibility with bash(1) */

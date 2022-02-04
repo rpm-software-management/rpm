@@ -22,7 +22,7 @@ static struct fapolicyd_data fapolicyd_state = {
     .fifo_path = "/run/fapolicyd/fapolicyd.fifo",
 };
 
-static rpmRC open_fifo(struct fapolicyd_data* state)
+static rpmPluginRC open_fifo(struct fapolicyd_data* state)
 {
     int fd = -1;
     struct stat s;
@@ -56,15 +56,15 @@ static rpmRC open_fifo(struct fapolicyd_data* state)
 
     state->fd = fd;
     /* considering success */
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
 
  bad:
     if (fd >= 0)
         close(fd);
-    return RPMRC_FAIL;
+    return RPMPLUGINRC_FAIL;
 }
 
-static rpmRC write_fifo(struct fapolicyd_data* state, const char * str)
+static rpmPluginRC write_fifo(struct fapolicyd_data* state, const char * str)
 {
     ssize_t len = strlen(str);
     ssize_t written = 0;
@@ -80,13 +80,13 @@ static rpmRC write_fifo(struct fapolicyd_data* state, const char * str)
         written += n;
     }
 
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
 
  bad:
-    return RPMRC_FAIL;
+    return RPMPLUGINRC_FAIL;
 }
 
-static rpmRC fapolicyd_init(rpmPlugin plugin, rpmts ts)
+static rpmPluginRC fapolicyd_init(rpmPlugin plugin, rpmts ts)
 {
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_BUILD_PROBS))
         goto end;
@@ -97,7 +97,7 @@ static rpmRC fapolicyd_init(rpmPlugin plugin, rpmts ts)
     (void) open_fifo(&fapolicyd_state);
 
  end:
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
 }
 
 static void fapolicyd_cleanup(rpmPlugin plugin)
@@ -108,7 +108,7 @@ static void fapolicyd_cleanup(rpmPlugin plugin)
     fapolicyd_state.fd = -1;
 }
 
-static rpmRC fapolicyd_tsm_post(rpmPlugin plugin, rpmts ts, int res)
+static rpmPluginRC fapolicyd_tsm_post(rpmPlugin plugin, rpmts ts, int res)
 {
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_BUILD_PROBS))
         goto end;
@@ -122,10 +122,10 @@ static rpmRC fapolicyd_tsm_post(rpmPlugin plugin, rpmts ts, int res)
     }
 
  end:
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
 }
 
-static rpmRC fapolicyd_scriptlet_pre(rpmPlugin plugin, const char *s_name,
+static rpmPluginRC fapolicyd_scriptlet_pre(rpmPlugin plugin, const char *s_name,
                                      int type)
 {
     if (fapolicyd_state.fd == -1)
@@ -141,10 +141,10 @@ static rpmRC fapolicyd_scriptlet_pre(rpmPlugin plugin, const char *s_name,
     }
 
  end:
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
 }
 
-static rpmRC fapolicyd_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
+static rpmPluginRC fapolicyd_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
                                         int fd, const char *path,
 					const char *dest,
                                         mode_t file_mode, rpmFsmOp op)
@@ -181,7 +181,7 @@ static rpmRC fapolicyd_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
     free(sha);
 
  end:
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
 }
 
 struct rpmPluginHooks_s fapolicyd_hooks = {

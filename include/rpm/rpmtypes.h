@@ -109,6 +109,15 @@ typedef	enum rpmRC_e {
     RPMRC_NOKEY		= 4	/*!< Public key is unavailable. */
 } rpmRC;
 
+/** \ingroup rpmtypes
+ * Plugin hooks return codes.
+ */
+typedef enum rpmPluginRC_e {
+    RPMPLUGINRC_OK	    = 0,    /*!< Generic success code */
+    RPMPLUGINRC_NOTFOUND    = 1,    /*!< Generic not found code. */
+    RPMPLUGINRC_FAIL	    = 2	    /*!< Generic failure code. */
+} rpmPluginRC;
+
 #ifdef __cplusplus
 }
 #endif

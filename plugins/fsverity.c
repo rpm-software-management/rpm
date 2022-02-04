@@ -33,7 +33,7 @@ static int sign_config_files = 0;
  * but fails gracefully if the file system doesn't support it or the
  * verity feature flag isn't enabled in the file system (ext4).
  */
-static rpmRC fsverity_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
+static rpmPluginRC fsverity_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
 				       const char *path, const char *dest,
 				       mode_t file_mode, rpmFsmOp op)
 {
@@ -41,7 +41,7 @@ static rpmRC fsverity_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
     const unsigned char * signature = NULL;
     size_t len;
     uint16_t algo = 0;
-    int rc = RPMRC_OK;
+    int rc = RPMPLUGINRC_OK;
     rpmFileAction action = XFO_ACTION(op);
     char *buffer;
 
@@ -108,34 +108,34 @@ static rpmRC fsverity_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
 	switch(errno) {
 	case EBADMSG:
 	    rpmlog(RPMLOG_DEBUG, "invalid or malformed fsverity signature for %s\n", path);
-	    rc = RPMRC_FAIL;
+	    rc = RPMPLUGINRC_FAIL;
 	    break;
 	case EEXIST:
 	    rpmlog(RPMLOG_DEBUG, "fsverity signature already enabled %s\n",
 		   path);
-	    rc = RPMRC_FAIL;
+	    rc = RPMPLUGINRC_FAIL;
 	    break;
 	case EINVAL:
 	    rpmlog(RPMLOG_DEBUG, "invalid arguments for ioctl %s\n", path);
-	    rc = RPMRC_FAIL;
+	    rc = RPMPLUGINRC_FAIL;
 	    break;
 	case EKEYREJECTED:
 	    rpmlog(RPMLOG_DEBUG, "signature doesn't match file %s\n", path);
-	    rc = RPMRC_FAIL;
+	    rc = RPMPLUGINRC_FAIL;
 	    break;
 	case EMSGSIZE:
 	    rpmlog(RPMLOG_DEBUG, "invalid signature size for %s\n", path);
-	    rc = RPMRC_FAIL;
+	    rc = RPMPLUGINRC_FAIL;
 	    break;
 	case ENOPKG:
 	    rpmlog(RPMLOG_DEBUG, "unsupported signature algoritm (%i) for %s\n",
 		   arg.hash_algorithm, path);
-	    rc = RPMRC_FAIL;
+	    rc = RPMPLUGINRC_FAIL;
 	    break;
 	case ETXTBSY:
 	    rpmlog(RPMLOG_DEBUG, "file is open by other process %s\n",
 		   path);
-	    rc = RPMRC_FAIL;
+	    rc = RPMPLUGINRC_FAIL;
 	    break;
 	case ENOTTY:
 	    rpmlog(RPMLOG_DEBUG, "fsverity not supported by file system for %s\n",
@@ -148,7 +148,7 @@ static rpmRC fsverity_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
 	default:
 	    rpmlog(RPMLOG_DEBUG, "failed to enable verity (errno %i) for %s\n",
 		   errno, path);
-	    rc = RPMRC_FAIL;
+	    rc = RPMPLUGINRC_FAIL;
 	    break;
 	}
     }
@@ -159,13 +159,13 @@ exit:
     return rc;
 }
 
-static rpmRC fsverity_init(rpmPlugin plugin, rpmts ts)
+static rpmPluginRC fsverity_init(rpmPlugin plugin, rpmts ts)
 {
     sign_config_files = rpmExpandNumeric("%{?_fsverity_sign_config_files}");
 
     rpmlog(RPMLOG_DEBUG, "fsverity_init\n");
 
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
 }
 
 struct rpmPluginHooks_s fsverity_hooks = {

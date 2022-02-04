@@ -54,7 +54,7 @@ static void getAuditOps(rpmts ts, struct teop *ops, int nelem)
  * If enabled, log audit events for the operations in this transaction.
  * In the event values, 1 means true/success and 0 false/failure. Shockingly.
  */
-static rpmRC audit_tsm_post(rpmPlugin plugin, rpmts ts, int res)
+static rpmPluginRC audit_tsm_post(rpmPlugin plugin, rpmts ts, int res)
 {
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_BUILD_PROBS))
 	goto exit;
@@ -94,7 +94,7 @@ static rpmRC audit_tsm_post(rpmPlugin plugin, rpmts ts, int res)
     audit_close(auditFd);
 
 exit:
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
 }
 
 struct rpmPluginHooks_s audit_hooks = {

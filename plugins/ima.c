@@ -42,14 +42,14 @@ static int check_zero_hdr(const unsigned char *fsig, size_t siglen)
 	return (memcmp(fsig, &zero_hdr, sizeof(zero_hdr)) == 0);
 }
 
-static rpmRC ima_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
+static rpmPluginRC ima_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
                                   const char *path,
                                   const char *dest,
                                   mode_t file_mode, rpmFsmOp op)
 {
 	const unsigned char * fsig = NULL;
 	size_t len;
-	int rc = RPMRC_OK;
+	int rc = RPMPLUGINRC_OK;
 	rpmFileAction action = XFO_ACTION(op);
 
 	/* Ignore skipped files and unowned directories */
@@ -80,7 +80,7 @@ static rpmRC ima_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
 			"ima: could not apply signature on '%s': %s\n",
 			path, strerror(errno));
 		if (is_err) {
-		    rc = RPMRC_FAIL;
+		    rc = RPMPLUGINRC_FAIL;
 		}
 	    }
 	}
@@ -89,12 +89,12 @@ exit:
 	return rc;
 }
 
-static rpmRC ima_init(rpmPlugin plugin, rpmts ts)
+static rpmPluginRC ima_init(rpmPlugin plugin, rpmts ts)
 {
 	write_signatures_on_config_files =
 	    rpmExpandNumeric("%{?_ima_sign_config_files}");
 
-	return RPMRC_OK;
+	return RPMPLUGINRC_OK;
 }
 
 struct rpmPluginHooks_s ima_hooks = {

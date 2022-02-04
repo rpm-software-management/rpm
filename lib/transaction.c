@@ -1666,7 +1666,7 @@ rpmRC rpmtsSetupTransactionPlugins(rpmts ts)
 	for (int i = 0; i < nfiles; i++) {
 	    char *bn = basename(files[i]);
 	    bn[strlen(bn)-strlen(".so")] = '\0';
-	    if (rpmpluginsAddPlugin(tsplugins, "transaction", bn) == RPMRC_FAIL)
+	    if (rpmpluginsAddPlugin(tsplugins, "transaction", bn) == RPMPLUGINRC_FAIL)
 		rc = RPMRC_FAIL;
 	}
 	files = argvFree(files);
@@ -1803,7 +1803,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     /* Run pre transaction hook for all plugins */
     TsmPreDone = 1;
-    if (rpmpluginsCallTsmPre(rpmtsPlugins(ts), ts) == RPMRC_FAIL) {
+    if (rpmpluginsCallTsmPre(rpmtsPlugins(ts), ts) == RPMPLUGINRC_FAIL) {
 	goto exit;
     }
 

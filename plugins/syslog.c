@@ -13,7 +13,7 @@ struct logstat {
     unsigned int pkgfail;
 };
 
-static rpmRC syslog_init(rpmPlugin plugin, rpmts ts)
+static rpmPluginRC syslog_init(rpmPlugin plugin, rpmts ts)
 {
     /* XXX make this configurable? */
     const char * log_ident = "[RPM]";
@@ -21,7 +21,7 @@ static rpmRC syslog_init(rpmPlugin plugin, rpmts ts)
 
     rpmPluginSetData(plugin, state);
     openlog(log_ident, (LOG_PID), LOG_USER);
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
 }
 
 static void syslog_cleanup(rpmPlugin plugin)
@@ -31,7 +31,7 @@ static void syslog_cleanup(rpmPlugin plugin)
     closelog();
 }
 
-static rpmRC syslog_tsm_pre(rpmPlugin plugin, rpmts ts)
+static rpmPluginRC syslog_tsm_pre(rpmPlugin plugin, rpmts ts)
 {
     struct logstat * state = rpmPluginGetData(plugin);
     
@@ -54,10 +54,10 @@ static rpmRC syslog_tsm_pre(rpmPlugin plugin, rpmts ts)
 	syslog(LOG_NOTICE, "Transaction ID %x started", rpmtsGetTid(ts));
     }
 
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
 }
 
-static rpmRC syslog_tsm_post(rpmPlugin plugin, rpmts ts, int res)
+static rpmPluginRC syslog_tsm_post(rpmPlugin plugin, rpmts ts, int res)
 {
     struct logstat * state = rpmPluginGetData(plugin);
 
@@ -71,10 +71,10 @@ static rpmRC syslog_tsm_post(rpmPlugin plugin, rpmts ts, int res)
     }
 
     state->logging = 0;
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
 }
 
-static rpmRC syslog_psm_post(rpmPlugin plugin, rpmte te, int res)
+static rpmPluginRC syslog_psm_post(rpmPlugin plugin, rpmte te, int res)
 {
     struct logstat * state = rpmPluginGetData(plugin);
 
@@ -93,10 +93,10 @@ static rpmRC syslog_psm_post(rpmPlugin plugin, rpmte te, int res)
 
 	syslog(lvl, "%s %s: %s", op, pkg, outcome);
     }
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
 }
 
-static rpmRC syslog_scriptlet_post(rpmPlugin plugin,
+static rpmPluginRC syslog_scriptlet_post(rpmPlugin plugin,
 					const char *s_name, int type, int res)
 {
     struct logstat * state = rpmPluginGetData(plugin);
@@ -105,7 +105,7 @@ static rpmRC syslog_scriptlet_post(rpmPlugin plugin,
 	syslog(LOG_WARNING, "scriptlet %s failure: %d\n", s_name, res);
 	state->scriptfail++;
     }
-    return RPMRC_OK;
+    return RPMPLUGINRC_OK;
 }
 
 struct rpmPluginHooks_s syslog_hooks = {

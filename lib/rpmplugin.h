@@ -37,26 +37,26 @@ typedef rpmFlags rpmFsmOp;
 #define XFO_FLAGS(_a)	((_a) & XFAF_MASK)	/*!< File op flags part */
 
 /* plugin hook typedefs */
-typedef rpmRC (*plugin_init_func)(rpmPlugin plugin, rpmts ts);
+typedef rpmPluginRC (*plugin_init_func)(rpmPlugin plugin, rpmts ts);
 typedef void (*plugin_cleanup_func)(rpmPlugin plugin);
-typedef rpmRC (*plugin_tsm_pre_func)(rpmPlugin plugin, rpmts ts);
-typedef rpmRC (*plugin_tsm_post_func)(rpmPlugin plugin, rpmts ts, int res);
-typedef rpmRC (*plugin_psm_pre_func)(rpmPlugin plugin, rpmte te);
-typedef rpmRC (*plugin_psm_post_func)(rpmPlugin plugin, rpmte te, int res);
-typedef rpmRC (*plugin_scriptlet_pre_func)(rpmPlugin plugin,
+typedef rpmPluginRC (*plugin_tsm_pre_func)(rpmPlugin plugin, rpmts ts);
+typedef rpmPluginRC (*plugin_tsm_post_func)(rpmPlugin plugin, rpmts ts, int res);
+typedef rpmPluginRC (*plugin_psm_pre_func)(rpmPlugin plugin, rpmte te);
+typedef rpmPluginRC (*plugin_psm_post_func)(rpmPlugin plugin, rpmte te, int res);
+typedef rpmPluginRC (*plugin_scriptlet_pre_func)(rpmPlugin plugin,
 					   const char *s_name, int type);
-typedef rpmRC (*plugin_scriptlet_fork_post_func)(rpmPlugin plugin,
+typedef rpmPluginRC (*plugin_scriptlet_fork_post_func)(rpmPlugin plugin,
 					         const char *path, int type);
-typedef rpmRC (*plugin_scriptlet_post_func)(rpmPlugin plugin,
+typedef rpmPluginRC (*plugin_scriptlet_post_func)(rpmPlugin plugin,
 					    const char *s_name, int type,
 					    int res);
-typedef rpmRC (*plugin_fsm_file_pre_func)(rpmPlugin plugin, rpmfi fi,
+typedef rpmPluginRC (*plugin_fsm_file_pre_func)(rpmPlugin plugin, rpmfi fi,
 					  const char* path, mode_t file_mode,
 					  rpmFsmOp op);
-typedef rpmRC (*plugin_fsm_file_post_func)(rpmPlugin plugin, rpmfi fi,
+typedef rpmPluginRC (*plugin_fsm_file_post_func)(rpmPlugin plugin, rpmfi fi,
 					   const char* path, mode_t file_mode,
 					   rpmFsmOp op, int res);
-typedef rpmRC (*plugin_fsm_file_prepare_func)(rpmPlugin plugin, rpmfi fi,
+typedef rpmPluginRC (*plugin_fsm_file_prepare_func)(rpmPlugin plugin, rpmfi fi,
 					      int fd, const char* path,
 					      const char *dest,
 					      mode_t file_mode, rpmFsmOp op);
