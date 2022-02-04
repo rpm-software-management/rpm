@@ -256,20 +256,21 @@ static char *strtokWithQuotes(char *s, const char *delim)
     if (*s == '\0')
 	return NULL;
 
-    /* Find the end of the token.  */
-    token = s;
-    if (*token == '"') {
-	token++;
-	/* Find next " char */
-	s = strchr(token, '"');
-    } else {
-	s = strpbrk(token, delim);
+    /* Leading quote escapes original delim until next quote */
+    if (*s == '"') {
+	delim = "\"";
+	s++;
     }
 
+    /* Find the end of the token.  */
+    token = s;
+    while (!strchr(delim, *s))
+	s++;
+
     /* Terminate it */
-    if (s == NULL) {
+    if (*s == '\0') {
 	/* This token finishes the string */
-	olds = strchr(token, '\0');
+	olds = s;
     } else {
 	/* Terminate the token and make olds point past it */
 	*s = '\0';
