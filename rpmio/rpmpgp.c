@@ -1444,7 +1444,8 @@ static pgpArmor decodePkts(uint8_t *b, uint8_t **pkt, size_t *pktlen)
 
 	    crcdec = NULL;
 	    crclen = 0;
-	    if (rpmBase64Decode(crcenc, (void **)&crcdec, &crclen) != 0) {
+	    if (rpmBase64Decode(crcenc, (void **)&crcdec, &crclen) != 0 || crclen != 3) {
+		crcdec = _free(crcdec);
 		ec = PGPARMOR_ERR_CRC_DECODE;
 		goto exit;
 	    }
