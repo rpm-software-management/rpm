@@ -473,16 +473,16 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 	    for (i = 1; i < plen; i++)
 		pgpPrtVal(" ", pgpKeyServerPrefsTbl, p[i]);
 	    break;
-	case PGPSUBTYPE_SIG_CREATE_TIME:
+	case PGPSUBTYPE_SIG_CREATE_TIME:  /* signature creation time */
+	    if (plen-1 != sizeof(_digp->time))
+		break; /* other lengths not understood */
+	    if (_digp->saved & PGPDIG_SIG_HAS_CREATION_TIME)
+		return 1; /* duplicate timestamps not allowed */
 	    impl = *p;
-	    if (!(_digp->saved & PGPDIG_SAVED_TIME) &&
-		(sigtype == PGPSIGTYPE_POSITIVE_CERT || sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT || sigtype == PGPSIGTYPE_STANDALONE))
-	    {
-		if (plen-1 != sizeof(_digp->time))
-		    break;
-		_digp->saved |= PGPDIG_SAVED_TIME;
+	    if (!(_digp->saved & PGPDIG_SAVED_TIME))
 		_digp->time = pgpGrab(p+1, sizeof(_digp->time));
-	    }
+	    _digp->saved |= PGPDIG_SAVED_TIME | PGPDIG_SIG_HAS_CREATION_TIME;
+	    break;
 	case PGPSUBTYPE_SIG_EXPIRE_TIME:
 	case PGPSUBTYPE_KEY_EXPIRE_TIME:
 	    pgpPrtTime(" ", p+1, plen-1);
@@ -592,6 +592,9 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
     size_t plen;
     int rc = 1;
 
+    /* Reset the saved flags */
+    _digp->saved &= PGPDIG_SAVED_TIME | PGPDIG_SAVED_ID;
+
     if (pgpVersion(h, hlen, &version))
 	return rc;
 
@@ -619,8 +622,11 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	    _digp->hashlen = v->hashlen;
 	    _digp->sigtype = v->sigtype;
 	    _digp->hash = memcpy(xmalloc(v->hashlen), &v->sigtype, v->hashlen);
-	    _digp->time = pgpGrab(v->time, sizeof(v->time));
-	    memcpy(_digp->signid, v->signid, sizeof(_digp->signid));
+	    if (!(_digp->saved & PGPDIG_SAVED_TIME))
+		_digp->time = pgpGrab(v->time, sizeof(v->time));
+	    if (!(_digp->saved & PGPDIG_SAVED_ID))
+		memcpy(_digp->signid, v->signid, sizeof(_digp->signid));
+	    _digp->saved = PGPDIG_SAVED_TIME | PGPDIG_SIG_HAS_CREATION_TIME | PGPDIG_SAVED_ID;
 	    _digp->pubkey_algo = v->pubkey_algo;
 	    _digp->hash_algo = v->hash_algo;
 	    memcpy(_digp->signhash16, v->signhash16, sizeof(_digp->signhash16));
@@ -657,6 +663,9 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	if (pgpPrtSubType(p, plen, v->sigtype, _digp))
 	    return 1;
 	p += plen;
+
+	if (!(_digp->saved & PGPDIG_SIG_HAS_CREATION_TIME))
+	    return 1; /* RFC 4880 §5.2.3.4 creation time MUST be hashed */
 
 	if (pgpGet(p, 2, hend, &plen))
 	    return 1;
