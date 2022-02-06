@@ -36,9 +36,11 @@ struct pgpDigParams_s {
     uint32_t hashlen;
     uint8_t signhash16[2];
     pgpKeyID_t signid;
-    uint8_t saved;
+    uint8_t saved;		/*!< Various flags.  `PGPDIG_SAVED_*` are never reset.
+				 * `PGPDIG_SIG_HAS_*` are reset for each signature. */
 #define	PGPDIG_SAVED_TIME	(1 << 0)
 #define	PGPDIG_SAVED_ID		(1 << 1)
+#define	PGPDIG_SIG_HAS_CREATION_TIME	(1 << 2)
 
     pgpDigAlg alg;
 };
