@@ -116,7 +116,7 @@ struct rpmfiles_s {
     struct fingerPrint_s * fps;	/*!< File fingerprint(s). */
 
     int digestalgo;		/*!< File digest algorithm */
-    int signaturelength;	/*!< File signature length */
+    uint32_t *signatureoffs;	/*!< File signature offsets */
     int veritysiglength;	/*!< Verity signature length */
     uint16_t verityalgo;	/*!< Verity algorithm */
     unsigned char * digests;	/*!< File digests in binary. */
@@ -566,10 +566,15 @@ const unsigned char * rpmfilesFSignature(rpmfiles fi, int ix, size_t *len)
     const unsigned char *signature = NULL;
 
     if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
-	if (fi->signatures != NULL)
-	    signature = fi->signatures + (fi->signaturelength * ix);
+	size_t slen = 0;
+	if (fi->signatures != NULL && fi->signatureoffs != NULL) {
+	    uint32_t off = fi->signatureoffs[ix];
+	    slen = fi->signatureoffs[ix+1] - off;
+	    if (slen > 0)
+		signature = fi->signatures + off;
+	}
 	if (len)
-	    *len = fi->signaturelength;
+	    *len = slen;
     }
     return signature;
 }
@@ -1249,6 +1254,7 @@ rpmfiles rpmfilesFree(rpmfiles fi)
 	fi->flangs = _free(fi->flangs);
 	fi->digests = _free(fi->digests);
 	fi->signatures = _free(fi->signatures);
+	fi->signatureoffs = _free(fi->signatureoffs);
 	fi->veritysigs = _free(fi->veritysigs);
 	fi->fcaps = _free(fi->fcaps);
 
@@ -1478,6 +1484,48 @@ err:
     return;
 }
 
+/*
+ * Convert a tag of variable len hex strings to binary presentation,
+ * accessed via offsets to a contiguous binary blob. Empty values
+ * are represented by identical consequtive offsets. The offsets array
+ * always has one extra element to allow calculating the size of the
+ * last element.
+ */
+static uint8_t *hex2binv(Header h, rpmTagVal tag, rpm_count_t num,
+			uint32_t **offsetp)
+{
+    struct rpmtd_s td;
+    uint8_t *bin = NULL;
+    uint32_t *offs = NULL;
+
+    if (headerGet(h, tag, &td, HEADERGET_MINMEM) && rpmtdCount(&td) == num) {
+	const char *s;
+	int i = 0;
+	uint8_t *t = bin = xmalloc(((rpmtdSize(&td) / 2) + 1));
+	offs = xmalloc((num + 1) * sizeof(*offs));
+
+	while ((s = rpmtdNextString(&td))) {
+	    uint32_t slen = strlen(s);
+	    uint32_t len = slen / 2;
+	    if (slen % 2) {
+		bin = rfree(bin);
+		offs = rfree(offs);
+		goto exit;
+	    }
+	    offs[i] = t - bin;
+	    for (int j = 0; j < len; j++, t++, s += 2)
+		*t = (rnibble(s[0]) << 4) | rnibble(s[1]);
+	    i++;
+	}
+	offs[i] = t - bin;
+	*offsetp = offs;
+    }
+
+exit:
+    rpmtdFreeData(&td);
+    return bin;
+}
+
 /* Convert a tag of hex strings to binary presentation */
 static uint8_t *hex2bin(Header h, rpmTagVal tag, rpm_count_t num, size_t len)
 {
@@ -1630,9 +1678,8 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
     fi->signatures = NULL;
     /* grab hex signatures from header and store in binary format */
     if (!(flags & RPMFI_NOFILESIGNATURES)) {
-	fi->signaturelength = headerGetNumber(h, RPMTAG_FILESIGNATURELENGTH);
-	fi->signatures = hex2bin(h, RPMTAG_FILESIGNATURES,
-				 totalfc, fi->signaturelength);
+	fi->signatures = hex2binv(h, RPMTAG_FILESIGNATURES,
+				 totalfc, &fi->signatureoffs);
     }
 
     fi->veritysigs = NULL;
