@@ -1613,6 +1613,8 @@ static uint8_t *base2bin(Header h, rpmTagVal tag, rpm_count_t num, int *len)
 	if (status) {
 	    rpmlog(RPMLOG_DEBUG, _("%s: base64 decode failed, len %li\n"),
 		   __func__, lengths[i]);
+	    for (j = 0; j < i; j++)
+		free(arr[j]);
 	    goto out;
 	}
 	i++;
