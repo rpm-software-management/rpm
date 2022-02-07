@@ -98,9 +98,8 @@ rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass)
     td.count = 1;
 
     while (rpmfiNext(fi) >= 0) {
-	uint32_t slen;
 	digest = rpmfiFDigest(fi, NULL, NULL);
-	signature = signFile(algoname, digest, diglen, key, keypass, &slen);
+	signature = signFile(algoname, digest, diglen, key, keypass, &siglen);
 	if (!signature) {
 	    rpmlog(RPMLOG_ERR, _("signFile failed\n"));
 	    goto exit;
@@ -111,8 +110,6 @@ rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass)
 	    goto exit;
 	}
 	signature = _free(signature);
-	if (slen > siglen)
-	    siglen = slen;
     }
 
     if (siglen > 0) {
