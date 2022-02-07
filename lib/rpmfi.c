@@ -1593,8 +1593,8 @@ static uint8_t *base2bin(Header h, rpmTagVal tag, rpm_count_t num, int *len)
     struct rpmtd_s td;
     uint8_t *bin = NULL, *t = NULL;
     size_t maxlen = 0;
-    int status, i= 0;
-    void **arr = xmalloc(num * sizeof(void *));
+    int status, i= 0, j;
+    void **arr = xcalloc(num, sizeof(void *));
     size_t *lengths = xcalloc(num, sizeof(size_t));
     const char *s;
 
@@ -1621,6 +1621,14 @@ static uint8_t *base2bin(Header h, rpmTagVal tag, rpm_count_t num, int *len)
     if (maxlen) {
 	rpmlog(RPMLOG_DEBUG, _("%s: base64 decode success, len %li\n"),
 	       __func__, maxlen);
+	if (MAX_HEX2BIN_MEM / maxlen < num) {
+	    rpmlog(RPMLOG_WARNING, _("%s: refusing to allocate more than %d "
+				     "bytes of memory\n"),
+		   __func__, MAX_HEX2BIN_MEM);
+	    for (j = 0; j < i; j++)
+		free(arr[j]);
+	    goto out;
+	}
 
 	t = bin = xcalloc(num, maxlen);
 
