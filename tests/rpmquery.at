@@ -83,6 +83,24 @@ hello.spec
 [ignore])
 AT_CLEANUP
 
+AT_SETUP([rpm -qp --dump])
+AT_KEYWORDS([query])
+AT_CHECK([
+RPMDB_INIT
+runroot rpm \
+  -qp --dump \
+  /data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[0],
+[/usr/bin/hello 7120 1489670606 c89fa87aeb1143969c0b6be9334b21d932f77f74e8f60120b5de316406369cf0 0100751 root root 0 0 0 X
+/usr/share/doc/hello-2.0 4096 1489670606 0000000000000000000000000000000000000000000000000000000000000000 040755 root root 0 0 0 X
+/usr/share/doc/hello-2.0/COPYING 48 908894882 fac3b28492ecdc16da172a6f1a432ceed356ca4d9248157b2a962b395e37b3b0 0100644 root root 0 1 0 X
+/usr/share/doc/hello-2.0/FAQ 36 908895030 678b87e217a415f05e43460e2c7b668245b412e2b4f18a75aa7399d9774ed0b4 0100644 root root 0 1 0 X
+/usr/share/doc/hello-2.0/README 39 908884468 d63fdc6c986106f57230f217d36b2395d83ecf491d2b7187af714dc8db9629e9 0100644 root root 0 1 0 X
+],
+[])
+AT_CLEANUP
+
 # ------------------------------
 AT_SETUP([rpmspec -q])
 AT_KEYWORDS([query])
