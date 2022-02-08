@@ -124,6 +124,10 @@ void * rmalloc(size_t size);
 RPM_GNUC_MALLOC RPM_GNUC_ALLOC_SIZE2(1,2)
 void * rcalloc(size_t nmemb, size_t size);
 
+/* Like realloc() but with overflow protection */
+RPM_GNUC_MALLOC RPM_GNUC_ALLOC_SIZE2(2,3)
+void * rreallocn(void * ptr, size_t nmemb, size_t size);
+
 RPM_GNUC_ALLOC_SIZE(2)
 void * rrealloc(void *ptr, size_t size);
 

@@ -64,8 +64,10 @@ extern int fdatasync(int fildes);
 #include "rpmio/rpmutil.h"
 /* compatibility macros to avoid a mass-renaming all over the codebase */
 #define xmalloc(_size) rmalloc((_size))
+#define xmallocn(_nmemb, _size) rreallocn(NULL, (_nmemb), (_size))
 #define xcalloc(_nmemb, _size) rcalloc((_nmemb), (_size))
 #define xrealloc(_ptr, _size) rrealloc((_ptr), (_size))
+#define xreallocn(_ptr, _size) rreallocn((_ptr), (_nmemb), (_size))
 #define xstrdup(_str) rstrdup((_str))
 #define _free(_ptr) rfree((_ptr))
 
