@@ -14,6 +14,23 @@ extern "C" {
 #endif
 
 /** \ingroup rpmfi
+ * Callback on file iterator directory changes
+ * @param fi		file info
+ * @param data		caller private callback data
+ * @return		0 on success, < 0 on error (to stop iteration)
+ */
+typedef int (*rpmfiChdirCb)(rpmfi fi, void *data);
+
+/** \ingroup rpmfi
+ * Set a callback for directory changes during iteration.
+ * @param fi		file info
+ * @param cb		callback function
+ * @param data		caller private callback data
+ * @return		string pool handle (weak reference)
+ */
+int rpmfiSetOnChdir(rpmfi fi, rpmfiChdirCb cb, void *data);
+
+/** \ingroup rpmfi
  * Return file info set string pool handle
  * @param fi		file info
  * @return		string pool handle (weak reference)
