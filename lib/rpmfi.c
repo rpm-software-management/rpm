@@ -314,9 +314,9 @@ int rpmfiSetFX(rpmfi fi, int fx)
     int i = -1;
 
     if (fi != NULL && fx >= 0 && fx < rpmfilesFC(fi->files)) {
-	i = fi->i;
 	fi->i = fx;
 	fi->j = rpmfilesDI(fi->files, fi->i);
+	i = fi->i;
     }
     return i;
 }
