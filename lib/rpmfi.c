@@ -1494,6 +1494,10 @@ static uint8_t *hex2bin(Header h, rpmTagVal tag, rpm_count_t num, size_t len)
 		t += len;
 		continue;
 	    }
+	    if (strlen(s) != len * 2) {
+		bin = rfree(bin);
+		break;
+	    }
 	    for (int j = 0; j < len; j++, t++, s += 2)
 		*t = (rnibble(s[0]) << 4) | rnibble(s[1]);
 	}
