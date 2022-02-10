@@ -103,6 +103,8 @@ option to configure).  For GCC, OpenMP 4.5 is fully supported since GCC 6.1,
 which is available from
     http://www.gnu.org/
 
+Rpm requires a POSIX.1-2008 level operating system.
+
 To compile RPM:
 --------------
 
