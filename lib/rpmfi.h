@@ -39,7 +39,7 @@ int rpmfiFX(rpmfi fi);
  * Set current file index in file info set iterator.
  * @param fi		file info set iterator
  * @param fx		new file index
- * @return		current file index
+ * @return		new file index, -1 on error
  */
 int rpmfiSetFX(rpmfi fi, int fx);
 
