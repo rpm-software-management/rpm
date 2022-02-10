@@ -58,10 +58,10 @@ rpm_count_t rpmfiDC(rpmfi fi);
 int rpmfiDX(rpmfi fi);
 
 /** \ingroup rpmfi
- * Set current directory index in file info set iterator.
- * @param fi		file info set iterator
- * @param dx		new directory index
- * @return		current directory index
+ * Obsolete, do not use.
+ * @param fi		unused
+ * @param dx		unused
+ * @return		-1
  */
 int rpmfiSetDX(rpmfi fi, int dx);
 
@@ -335,17 +335,18 @@ int rpmfiNext(rpmfi fi);
 rpmfi rpmfiInit(rpmfi fi, int fx);
 
 /** \ingroup rpmfi
- * Return next directory iterator index.
- * @param fi		file info set iterator
- * @return		directory iterator index, -1 on termination
+ * Obsolete, do not use.
+ * @param fi		unused
+ * @return		-1
  */
 int rpmfiNextD(rpmfi fi);
 
 /** \ingroup rpmfi
  * Initialize directory iterator index.
- * @param fi		file info set iterator
- * @param dx		directory iterator index
- * @return		file info set iterator, NULL if dx is out of range
+ * Obsolete, do not use.
+ * @param fi		unused
+ * @param dx		unused
+ * @return		NULL
  */
 rpmfi rpmfiInitD(rpmfi fi, int dx);
 

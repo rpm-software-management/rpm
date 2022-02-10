@@ -304,12 +304,6 @@ rpm_count_t rpmfiDC(rpmfi fi)
     return (fi != NULL ? rpmfilesDC(fi->files) : 0);
 }
 
-#ifdef	NOTYET
-int rpmfiDI(rpmfi fi)
-{
-}
-#endif
-
 int rpmfiFX(rpmfi fi)
 {
     return (fi != NULL ? fi->i : -1);
@@ -334,13 +328,7 @@ int rpmfiDX(rpmfi fi)
 
 int rpmfiSetDX(rpmfi fi, int dx)
 {
-    int j = -1;
-
-    if (fi != NULL && dx >= 0 && dx < rpmfiDC(fi)) {
-	j = fi->j;
-	fi->j = dx;
-    }
-    return j;
+    return -1;
 }
 
 int rpmfilesDI(rpmfiles fi, int ix)
@@ -894,28 +882,12 @@ rpmfi rpmfiInit(rpmfi fi, int fx)
 
 int rpmfiNextD(rpmfi fi)
 {
-    int j = -1;
-
-    if (fi != NULL && ++fi->j >= 0) {
-	if (fi->j < rpmfilesDC(fi->files))
-	    j = fi->j;
-	else
-	    fi->j = -1;
-    }
-
-    return j;
+    return -1;
 }
 
 rpmfi rpmfiInitD(rpmfi fi, int dx)
 {
-    if (fi != NULL) {
-	if (dx >= 0 && dx < rpmfilesFC(fi->files))
-	    fi->j = dx - 1;
-	else
-	    fi = NULL;
-    }
-
-    return fi;
+    return NULL;
 }
 
 rpmFileTypes rpmfiWhatis(rpm_mode_t mode)
