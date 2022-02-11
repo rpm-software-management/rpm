@@ -77,13 +77,13 @@ static char * fsmFsPath(rpmfi fi, const char * suffix)
     return rstrscat(NULL, rpmfiDN(fi), rpmfiBN(fi), suffix ? suffix : "", NULL);
 }
 
-static int fsmLink(const char *opath, const char *path)
+static int fsmLink(int odirfd, const char *opath, int dirfd, const char *path)
 {
-    int rc = link(opath, path);
+    int rc = linkat(odirfd, opath, dirfd, path, 0);
 
     if (_fsm_debug) {
-	rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", __func__,
-	       opath, path, (rc < 0 ? strerror(errno) : ""));
+	rpmlog(RPMLOG_DEBUG, " %8s (%d %s, %d %s) %s\n", __func__,
+	       odirfd, opath, dirfd, path, (rc < 0 ? strerror(errno) : ""));
     }
 
     if (rc < 0)
@@ -139,17 +139,18 @@ static int fsmClose(FD_t *wfdp)
     return rc;
 }
 
-static int fsmOpen(FD_t *wfdp, const char *dest)
+static int fsmOpen(FD_t *wfdp, int dirfd, const char *dest)
 {
     int rc = 0;
     /* Create the file with 0200 permissions (write by owner). */
-    {
-	mode_t old_umask = umask(0577);
-	*wfdp = Fopen(dest, "wx.ufdio");
-	umask(old_umask);
+    int fd = openat(dirfd, dest, O_WRONLY|O_EXCL|O_CREAT, 0200);
+
+    if (fd >= 0) {
+	*wfdp = fdDup(fd);
+	close(fd);
     }
 
-    if (Ferror(*wfdp))
+    if (fd < 0 || Ferror(*wfdp))
 	rc = RPMERR_OPEN_FAILED;
 
     if (_fsm_debug) {
@@ -174,7 +175,7 @@ static int fsmUnpack(rpmfi fi, FD_t fd, rpmpsm psm, int nodigest)
     return rc;
 }
 
-static int fsmMkfile(rpmfi fi, struct filedata_s *fp, rpmfiles files,
+static int fsmMkfile(int dirfd, rpmfi fi, struct filedata_s *fp, rpmfiles files,
 		     rpmpsm psm, int nodigest,
 		     struct filedata_s ** firstlink, FD_t *firstlinkfile)
 {
@@ -183,7 +184,7 @@ static int fsmMkfile(rpmfi fi, struct filedata_s *fp, rpmfiles files,
 
     if (*firstlink == NULL) {
 	/* First encounter, open file for writing */
-	rc = fsmOpen(&fd, fp->fpath);
+	rc = fsmOpen(&fd, dirfd, fp->fpath);
 	/* If it's a part of a hardlinked set, the content may come later */
 	if (fp->sb.st_nlink > 1) {
 	    *firstlink = fp;
@@ -192,7 +193,7 @@ static int fsmMkfile(rpmfi fi, struct filedata_s *fp, rpmfiles files,
     } else {
 	/* Create hard links for others and avoid redundant metadata setting */
 	if (*firstlink != fp) {
-	    rc = fsmLink((*firstlink)->fpath, fp->fpath);
+	    rc = fsmLink(dirfd, (*firstlink)->fpath, dirfd, fp->fpath);
 	}
 	fd = *firstlinkfile;
     }
@@ -382,13 +383,13 @@ static int ensureDir(rpmPlugins plugins, const char *p, int owned, int create)
     return dirfd;
 }
 
-static int fsmMkfifo(const char *path, mode_t mode)
+static int fsmMkfifo(int dirfd, const char *path, mode_t mode)
 {
-    int rc = mkfifo(path, (mode & 07777));
+    int rc = mkfifoat(dirfd, path, (mode & 07777));
 
     if (_fsm_debug) {
-	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n",
-	       __func__, path, (unsigned)(mode & 07777),
+	rpmlog(RPMLOG_DEBUG, " %8s (%d %s, 0%04o) %s\n",
+	       __func__, dirfd, path, (unsigned)(mode & 07777),
 	       (rc < 0 ? strerror(errno) : ""));
     }
 
@@ -398,14 +399,14 @@ static int fsmMkfifo(const char *path, mode_t mode)
     return rc;
 }
 
-static int fsmMknod(const char *path, mode_t mode, dev_t dev)
+static int fsmMknod(int dirfd, const char *path, mode_t mode, dev_t dev)
 {
     /* FIX: check S_IFIFO or dev != 0 */
-    int rc = mknod(path, (mode & ~07777), dev);
+    int rc = mknodat(dirfd, path, (mode & ~07777), dev);
 
     if (_fsm_debug) {
-	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%o, 0x%x) %s\n",
-	       __func__, path, (unsigned)(mode & ~07777),
+	rpmlog(RPMLOG_DEBUG, " %8s (%d %s, 0%o, 0x%x) %s\n",
+	       __func__, dirfd, path, (unsigned)(mode & ~07777),
 	       (unsigned)dev, (rc < 0 ? strerror(errno) : ""));
     }
 
@@ -440,13 +441,13 @@ static void fsmDebug(const char *fpath, rpmFileAction action,
 	    (fpath ? fpath : ""));
 }
 
-static int fsmSymlink(const char *opath, const char *path)
+static int fsmSymlink(const char *opath, int dirfd, const char *path)
 {
-    int rc = symlink(opath, path);
+    int rc = symlinkat(opath, dirfd, path);
 
     if (_fsm_debug) {
-	rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", __func__,
-	       opath, path, (rc < 0 ? strerror(errno) : ""));
+	rpmlog(RPMLOG_DEBUG, " %8s (%s, %d %s) %s\n", __func__,
+	       opath, dirfd, path, (rc < 0 ? strerror(errno) : ""));
     }
 
     if (rc < 0)
@@ -884,7 +885,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 
             if (S_ISREG(fp->sb.st_mode)) {
 		if (rc == RPMERR_ENOENT) {
-		    rc = fsmMkfile(fi, fp, files, psm, nodigest,
+		    rc = fsmMkfile(di.dirfd, fi, fp, files, psm, nodigest,
 				   &firstlink, &firstlinkfile);
 		}
             } else if (S_ISDIR(fp->sb.st_mode)) {
@@ -896,19 +897,19 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
                 }
             } else if (S_ISLNK(fp->sb.st_mode)) {
 		if (rc == RPMERR_ENOENT) {
-		    rc = fsmSymlink(rpmfiFLink(fi), fp->fpath);
+		    rc = fsmSymlink(rpmfiFLink(fi), di.dirfd, fp->fpath);
 		}
             } else if (S_ISFIFO(fp->sb.st_mode)) {
                 /* This mimics cpio S_ISSOCK() behavior but probably isn't right */
                 if (rc == RPMERR_ENOENT) {
-                    rc = fsmMkfifo(fp->fpath, 0000);
+                    rc = fsmMkfifo(di.dirfd, fp->fpath, 0000);
                 }
             } else if (S_ISCHR(fp->sb.st_mode) ||
                        S_ISBLK(fp->sb.st_mode) ||
                        S_ISSOCK(fp->sb.st_mode))
             {
                 if (rc == RPMERR_ENOENT) {
-                    rc = fsmMknod(fp->fpath, fp->sb.st_mode, fp->sb.st_rdev);
+                    rc = fsmMknod(di.dirfd, fp->fpath, fp->sb.st_mode, fp->sb.st_rdev);
                 }
             } else {
                 /* XXX Special case /dev/log, which shouldn't be packaged anyways */
