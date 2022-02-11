@@ -832,9 +832,18 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     while (!rc && (fx = rpmfiNext(fi)) >= 0) {
 	struct filedata_s *fp = &fdata[fx];
 
+	/*
+	 * Tricksy case: this file is a being skipped, but it's part of
+	 * a hardlinked set and has the actual content linked with it.
+	 * Write the content to the first non-skipped file of the set
+	 * instead.
+	 */
+	if (fp->skip && firstlink && rpmfiArchiveHasContent(fi))
+	    fp = firstlink;
+
         if (!fp->skip) {
 	    /* Directories replacing something need early backup */
-	    if (!fp->suffix) {
+	    if (!fp->suffix && fp != firstlink) {
 		rc = fsmBackup(fi, fp->action);
 	    }
 
@@ -904,15 +913,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
                 if (!IS_DEV_LOG(fp->fpath))
                     rc = RPMERR_UNKNOWN_FILETYPE;
             }
-	} else if (firstlink && rpmfiArchiveHasContent(fi)) {
-	    /*
-	     * Tricksy case: this file is a being skipped, but it's part of
-	     * a hardlinked set and has the actual content linked with it.
-	     * Write the content to the first non-skipped file of the set
-	     * instead.
-	     */
-	    rc = fsmMkfile(fi, firstlink, files, psm, nodigest,
-			   &firstlink, &firstlinkfile);
 	}
 
 	/* Notify on success. */
