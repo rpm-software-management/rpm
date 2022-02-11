@@ -193,7 +193,6 @@ static int fsmMkfile(rpmfi fi, struct filedata_s *fp, rpmfiles files,
 	/* Create hard links for others and avoid redundant metadata setting */
 	if (*firstlink != fp) {
 	    rc = fsmLink((*firstlink)->fpath, fp->fpath);
-	    fp->setmeta = 0;
 	}
 	fd = *firstlinkfile;
     }
@@ -204,7 +203,7 @@ static int fsmMkfile(rpmfi fi, struct filedata_s *fp, rpmfiles files,
 	    rc = fsmUnpack(fi, fd, psm, nodigest);
 	/* Last file of hardlink set, ensure metadata gets set */
 	if (*firstlink) {
-	    (*firstlink)->setmeta = 1;
+	    fp->setmeta = 1;
 	    *firstlink = NULL;
 	    *firstlinkfile = NULL;
 	}
@@ -797,13 +796,16 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	else
 	    fp->action = rpmfsGetAction(fs, fx);
 	fp->skip = XFA_SKIPPING(fp->action);
-	fp->setmeta = 1;
 	if (XFA_CREATING(fp->action) && !S_ISDIR(rpmfiFMode(fi)))
 	    fp->suffix = tid;
 	fp->fpath = fsmFsPath(fi, fp->suffix);
 
 	/* Remap file perms, owner, and group. */
 	rc = rpmfiStat(fi, 1, &fp->sb);
+
+	/* Hardlinks are tricky and handled elsewhere for install */
+	fp->setmeta = (fp->skip == 0) &&
+		      (fp->sb.st_nlink == 1 || fp->action == FA_TOUCH);
 
 	setFileState(fs, fx);
 	fsmDebug(fp->fpath, fp->action, &fp->sb);
