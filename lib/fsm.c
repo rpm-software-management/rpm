@@ -880,7 +880,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 
 	    /* When touching we don't need any of this... */
 	    if (fp->action == FA_TOUCH)
-		continue;
+		goto setmeta;
 
             if (S_ISREG(fp->sb.st_mode)) {
 		if (rc == RPMERR_ENOENT) {
@@ -915,6 +915,12 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
                 if (!IS_DEV_LOG(fp->fpath))
                     rc = RPMERR_UNKNOWN_FILETYPE;
             }
+
+setmeta:
+	    if (!rc && fp->setmeta) {
+		rc = fsmSetmeta(fp->fpath, fi, plugins, fp->action,
+				&fp->sb, nofcaps);
+	    }
 	}
 
 	/* Notify on success. */
@@ -930,20 +936,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 
     if (!rc && fx < 0 && fx != RPMERR_ITER_END)
 	rc = fx;
-
-    /* Set permissions, timestamps etc for non-hardlink entries */
-    fi = rpmfilesIter(files, RPMFI_ITER_FWD);
-    while (!rc && (fx = rpmfiNext(fi)) >= 0) {
-	struct filedata_s *fp = &fdata[fx];
-	if (!fp->skip && fp->setmeta) {
-	    rc = fsmSetmeta(fp->fpath, fi, plugins, fp->action,
-			    &fp->sb, nofcaps);
-	}
-	if (rc)
-	    *failedFile = xstrdup(fp->fpath);
-	fp->stage = FILE_PREP;
-    }
-    fi = rpmfiFree(fi);
 
     /* If all went well, commit files to final destination */
     fi = rpmfilesIter(files, RPMFI_ITER_FWD);
