@@ -1311,7 +1311,7 @@ static int copyI18NEntry(Header h, indexEntry entry, rpmtd td,
 
 	/* For each entry in the header ... */
 	for (langNum = 0, t = table->data, ed = entry->data;
-	     langNum < entry->info.count;
+	     langNum < entry->info.count && langNum < table->info.count;
 	     langNum++, t += strlen(t) + 1, ed += strlen(ed) + 1) {
 
 	    int match = headerMatchLocale(t, l, le);
