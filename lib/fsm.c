@@ -441,16 +441,17 @@ static int fsmMknod(int dirfd, const char *path, mode_t mode, dev_t dev)
     return rc;
 }
 
-static void removeSBITS(const char *path)
+static void removeSBITS(int dirfd, const char *path)
 {
     struct stat stb;
-    if (lstat(path, &stb) == 0 && S_ISREG(stb.st_mode)) {
+    int flags = AT_SYMLINK_NOFOLLOW;
+    if (fstatat(dirfd, path, &stb, flags) == 0 && S_ISREG(stb.st_mode)) {
 	if ((stb.st_mode & 06000) != 0) {
-	    (void) chmod(path, stb.st_mode & 0777);
+	    (void) fchmodat(dirfd, path, stb.st_mode & 0777, flags);
 	}
 #if WITH_CAP
 	if (stb.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)) {
-	    (void) cap_set_file(path, NULL);
+	    (void) cap_set_fileat(dirfd, path, NULL);
 	}
 #endif
     }
@@ -483,7 +484,7 @@ static int fsmSymlink(const char *opath, int dirfd, const char *path)
 static int fsmUnlink(int dirfd, const char *path)
 {
     int rc = 0;
-    removeSBITS(path);
+    removeSBITS(dirfd, path);
     rc = unlinkat(dirfd, path, 0);
     if (_fsm_debug)
 	rpmlog(RPMLOG_DEBUG, " %8s (%d %s) %s\n", __func__,
@@ -495,7 +496,7 @@ static int fsmUnlink(int dirfd, const char *path)
 
 static int fsmRename(int odirfd, const char *opath, int dirfd, const char *path)
 {
-    removeSBITS(path);
+    removeSBITS(dirfd, path);
     int rc = renameat(odirfd, opath, dirfd, path);
 #if defined(ETXTBSY) && defined(__HPUX__)
     /* XXX HP-UX (and other os'es) don't permit rename to busy files. */
