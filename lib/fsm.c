@@ -836,9 +836,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	setFileState(fs, fx);
 	fsmDebug(fp->fpath, fp->action, &fp->sb);
 
-	/* Run fsm file pre hook for all plugins */
-	rc = rpmpluginsCallFsmFilePre(plugins, fi, fp->fpath,
-				      fp->sb.st_mode, fp->action);
 	fp->stage = FILE_PRE;
     }
     fi = rpmfiFree(fi);
@@ -878,6 +875,9 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 				(fp->action == FA_CREATE), &di.dirfd);
 	    }
 
+	    /* Run fsm file pre hook for all plugins */
+	    rc = rpmpluginsCallFsmFilePre(plugins, fi, fp->fpath,
+					  fp->sb.st_mode, fp->action);
 	    if (rc)
 		goto setmeta; /* for error notification */
 
