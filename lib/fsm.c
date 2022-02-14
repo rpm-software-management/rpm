@@ -339,12 +339,17 @@ static int fsmDoMkDir(rpmPlugins plugins, int dirfd, const char *dn,
     return rc;
 }
 
-static int ensureDir(rpmPlugins plugins, const char *p, int owned, int create)
+static int ensureDir(rpmPlugins plugins, const char *p, int owned, int create,
+		    int *dirfdp)
 {
     char *path = xstrdup(p);
     char *dp = path;
     char *sp = NULL, *bn;
     int oflags = O_RDONLY;
+    int rc = 0;
+
+    if (*dirfdp >= 0)
+	return rc;
 
     int dirfd = fsmOpenat(-1, "/", oflags);
     int fd = dirfd; /* special case of "/" */
@@ -355,32 +360,40 @@ static int ensureDir(rpmPlugins plugins, const char *p, int owned, int create)
 
 	if (fd < 0 && errno == ENOENT && create) {
 	    mode_t mode = S_IFDIR | (_dirPerms & 07777);
-	    if (fsmDoMkDir(plugins, dirfd, bn, owned, mode) == 0) {
+	    rc = fsmDoMkDir(plugins, dirfd, bn, owned, mode);
+	    if (!rc)
 		fd = fsmOpenat(dirfd, bn, oflags|O_NOFOLLOW);
-	    }
 	}
 
 	if (fd >= 0 && fstat(fd, &sb) == 0 && !S_ISDIR(sb.st_mode)) {
-	    close(fd);
-	    errno = ENOTDIR;
-	    fd = -1;
+	    rc = RPMERR_ENOTDIR;
+	    break;
 	}
 
 	close(dirfd);
 	if (fd >= 0) {
 	    dirfd = fd;
 	} else {
-	    dirfd = -1;
 	    rpmlog(RPMLOG_ERR, _("failed to open dir %s of %s: %s\n"),
 				bn, p, strerror(errno));
+	    rc = RPMERR_OPEN_FAILED;
 	    break;
 	}
 
 	dp = NULL;
     }
 
+    if (rc) {
+	close(fd);
+	close(dirfd);
+	dirfd = -1;
+    } else {
+	rc = 0;
+    }
+    *dirfdp = dirfd;
+
     free(path);
-    return dirfd;
+    return rc;
 }
 
 static int fsmMkfifo(int dirfd, const char *path, mode_t mode)
@@ -860,14 +873,13 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 		rc = fsmBackup(fi, fp->action);
 	    }
 
-	    if (di.dirfd == -1) {
-		di.dirfd = ensureDir(plugins, rpmfiDN(fi), 0,
-				    (fp->action == FA_CREATE));
-		if (di.dirfd == -1) {
-		    rc = RPMERR_OPEN_FAILED;
-		    break;
-		}
+	    if (!rc) {
+		rc = ensureDir(plugins, rpmfiDN(fi), 0,
+				(fp->action == FA_CREATE), &di.dirfd);
 	    }
+
+	    if (rc)
+		goto setmeta; /* for error notification */
 
 	    /* Assume file does't exist when tmp suffix is in use */
 	    if (!fp->suffix) {
