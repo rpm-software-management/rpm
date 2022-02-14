@@ -480,23 +480,24 @@ static int fsmUnlink(int dirfd, const char *path)
     return rc;
 }
 
-static int fsmRename(const char *opath, const char *path)
+static int fsmRename(int odirfd, const char *opath, int dirfd, const char *path)
 {
     removeSBITS(path);
-    int rc = rename(opath, path);
+    int rc = renameat(odirfd, opath, dirfd, path);
 #if defined(ETXTBSY) && defined(__HPUX__)
     /* XXX HP-UX (and other os'es) don't permit rename to busy files. */
     if (rc && errno == ETXTBSY) {
 	char *rmpath = NULL;
 	rstrscat(&rmpath, path, "-RPMDELETE", NULL);
-	rc = rename(path, rmpath);
-	if (!rc) rc = rename(opath, path);
+	/* Rename within the original directory */
+	rc = renameat(odirfd, path, odirfd, rmpath);
+	if (!rc) rc = renameat(odirfd, opath, dirfd, path);
 	free(rmpath);
     }
 #endif
     if (_fsm_debug)
-	rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", __func__,
-	       opath, path, (rc < 0 ? strerror(errno) : ""));
+	rpmlog(RPMLOG_DEBUG, " %8s (%d %s, %d %s) %s\n", __func__,
+	       odirfd, opath, dirfd, path, (rc < 0 ? strerror(errno) : ""));
     if (rc < 0)
 	rc = (errno == EISDIR ? RPMERR_EXIST_AS_DIR : RPMERR_RENAME_FAILED);
     return rc;
@@ -578,7 +579,7 @@ static int fsmVerify(int dirfd, const char *path, rpmfi fi)
     if (S_ISREG(mode)) {
 	/* HP-UX (and other os'es) don't permit unlink on busy files. */
 	char *rmpath = rstrscat(NULL, path, "-RPMDELETE", NULL);
-	rc = fsmRename(path, rmpath);
+	rc = fsmRename(dirfd, path, dirfd, rmpath);
 	/* XXX shouldn't we take unlink return code here? */
 	if (!rc)
 	    (void) fsmUnlink(dirfd, rmpath);
@@ -630,7 +631,7 @@ static int fsmVerify(int dirfd, const char *path, rpmfi fi)
 
 
 /* Rename pre-existing modified or unmanaged file. */
-static int fsmBackup(rpmfi fi, rpmFileAction action)
+static int fsmBackup(int dirfd, rpmfi fi, rpmFileAction action)
 {
     int rc = 0;
     const char *suffix = NULL;
@@ -651,7 +652,7 @@ static int fsmBackup(rpmfi fi, rpmFileAction action)
     if (suffix) {
 	char * opath = fsmFsPath(fi, NULL);
 	char * path = fsmFsPath(fi, suffix);
-	rc = fsmRename(opath, path);
+	rc = fsmRename(dirfd, opath, dirfd, path);
 	if (!rc) {
 	    rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"), opath, path);
 	}
@@ -689,7 +690,7 @@ static int fsmSetmeta(const char *path, rpmfi fi, rpmPlugins plugins,
     return rc;
 }
 
-static int fsmCommit(char **path, rpmfi fi, rpmFileAction action, const char *suffix)
+static int fsmCommit(int dirfd, char **path, rpmfi fi, rpmFileAction action, const char *suffix)
 {
     int rc = 0;
 
@@ -703,7 +704,7 @@ static int fsmCommit(char **path, rpmfi fi, rpmFileAction action, const char *su
 
 	/* Rename temporary to final file name if needed. */
 	if (dest != *path) {
-	    rc = fsmRename(*path, dest);
+	    rc = fsmRename(dirfd, *path, dirfd, dest);
 	    if (!rc) {
 		if (nsuffix) {
 		    char * opath = fsmFsPath(fi, NULL);
@@ -873,7 +874,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
         if (!fp->skip) {
 	    /* Directories replacing something need early backup */
 	    if (!fp->suffix && fp != firstlink) {
-		rc = fsmBackup(fi, fp->action);
+		rc = fsmBackup(di.dirfd, fi, fp->action);
 	    }
 
 	    if (!rc) {
@@ -975,10 +976,10 @@ setmeta:
 
 	    /* Backup file if needed. Directories are handled earlier */
 	    if (!rc && fp->suffix)
-		rc = fsmBackup(fi, fp->action);
+		rc = fsmBackup(di.dirfd, fi, fp->action);
 
 	    if (!rc)
-		rc = fsmCommit(&fp->fpath, fi, fp->action, fp->suffix);
+		rc = fsmCommit(di.dirfd, &fp->fpath, fi, fp->action, fp->suffix);
 
 	    if (!rc)
 		fp->stage = FILE_COMMIT;
@@ -1055,7 +1056,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 	rc = rpmpluginsCallFsmFilePre(plugins, fi, fp->fpath,
 				      fp->sb.st_mode, fp->action);
 
-	rc = fsmBackup(fi, fp->action);
+	rc = fsmBackup(di.dirfd, fi, fp->action);
 
         /* Remove erased files. */
         if (fp->action == FA_ERASE) {
