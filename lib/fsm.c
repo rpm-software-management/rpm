@@ -767,6 +767,18 @@ static int onChdir(rpmfi fi, void *data)
     return 0;
 }
 
+static rpmfi fsmIter(FD_t payload, rpmfiles files, rpmFileIter iter, void *data)
+{
+    rpmfi fi;
+    if (payload)
+	fi = rpmfiNewArchiveReader(payload, files, RPMFI_ITER_READ_ARCHIVE);
+    else
+	fi = rpmfilesIter(files, iter);
+    if (fi && data)
+	rpmfiSetOnChdir(fi, onChdir, data);
+    return fi;
+}
+
 int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile)
 {
@@ -821,15 +833,13 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     if (rc)
 	goto exit;
 
-    if (rpmteType(te) == TR_ADDED)
-	fi = rpmfiNewArchiveReader(payload, files, RPMFI_ITER_READ_ARCHIVE);
-    else
-	fi = rpmfilesIter(files, RPMFI_ITER_FWD);
+    fi = fsmIter(payload, files,
+		 payload ? RPMFI_ITER_READ_ARCHIVE : RPMFI_ITER_FWD, &di);
+
     if (fi == NULL) {
         rc = RPMERR_BAD_MAGIC;
         goto exit;
     }
-    rpmfiSetOnChdir(fi, onChdir, &di);
 
     /* Process the payload */
     while (!rc && (fx = rpmfiNext(fi)) >= 0) {
