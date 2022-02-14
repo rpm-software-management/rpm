@@ -172,7 +172,8 @@ static int fsmUnpack(rpmfi fi, int fdno, rpmpsm psm, int nodigest)
 
 static int fsmMkfile(int dirfd, rpmfi fi, struct filedata_s *fp, rpmfiles files,
 		     rpmpsm psm, int nodigest,
-		     struct filedata_s ** firstlink, int *firstlinkfile)
+		     struct filedata_s ** firstlink, int *firstlinkfile,
+		     int *fdp)
 {
     int rc = 0;
     int fd = -1;
@@ -204,9 +205,7 @@ static int fsmMkfile(int dirfd, rpmfi fi, struct filedata_s *fp, rpmfiles files,
 	    *firstlinkfile = -1;
 	}
     }
-
-    if (fd != *firstlinkfile)
-	fsmClose(&fd);
+    *fdp = fd;
 
     return rc;
 }
@@ -867,6 +866,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	    fp = firstlink;
 
         if (!fp->skip) {
+	    int fd = -1;
 	    /* Directories replacing something need early backup */
 	    if (!fp->suffix && fp != firstlink) {
 		rc = fsmBackup(di.dirfd, fi, fp->action);
@@ -910,7 +910,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
             if (S_ISREG(fp->sb.st_mode)) {
 		if (rc == RPMERR_ENOENT) {
 		    rc = fsmMkfile(di.dirfd, fi, fp, files, psm, nodigest,
-				   &firstlink, &firstlinkfile);
+				   &firstlink, &firstlinkfile, &fd);
 		}
             } else if (S_ISDIR(fp->sb.st_mode)) {
                 if (rc == RPMERR_ENOENT) {
@@ -946,6 +946,9 @@ setmeta:
 		rc = fsmSetmeta(fp->fpath, fi, plugins, fp->action,
 				&fp->sb, nofcaps);
 	    }
+
+	    if (fd != firstlinkfile)
+		fsmClose(&fd);
 	}
 
 	/* Notify on success. */
