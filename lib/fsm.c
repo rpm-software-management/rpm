@@ -340,7 +340,7 @@ static int fsmDoMkDir(rpmPlugins plugins, int dirfd, const char *dn,
 }
 
 static int ensureDir(rpmPlugins plugins, const char *p, int owned, int create,
-		    int *dirfdp)
+		    int quiet, int *dirfdp)
 {
     char *path = xstrdup(p);
     char *dp = path;
@@ -374,8 +374,10 @@ static int ensureDir(rpmPlugins plugins, const char *p, int owned, int create,
 	if (fd >= 0) {
 	    dirfd = fd;
 	} else {
-	    rpmlog(RPMLOG_ERR, _("failed to open dir %s of %s: %s\n"),
-				bn, p, strerror(errno));
+	    if (!quiet) {
+		rpmlog(RPMLOG_ERR, _("failed to open dir %s of %s: %s\n"),
+			bn, p, strerror(errno));
+	    }
 	    rc = RPMERR_OPEN_FAILED;
 	    break;
 	}
@@ -879,7 +881,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 
 	    if (!rc) {
 		rc = ensureDir(plugins, rpmfiDN(fi), 0,
-				(fp->action == FA_CREATE), &di.dirfd);
+				(fp->action == FA_CREATE), 0, &di.dirfd);
 	    }
 
 	    /* Run fsm file pre hook for all plugins */
@@ -966,11 +968,14 @@ setmeta:
 	rc = fx;
 
     /* If all went well, commit files to final destination */
-    fi = rpmfilesIter(files, RPMFI_ITER_FWD);
+    fi = fsmIter(NULL, files, RPMFI_ITER_FWD, &di);
     while (!rc && (fx = rpmfiNext(fi)) >= 0) {
 	struct filedata_s *fp = &fdata[fx];
 
 	if (!fp->skip) {
+	    if (!rc)
+		rc = ensureDir(NULL, rpmfiDN(fi), 0, 0, 0, &di.dirfd);
+
 	    /* Backup file if needed. Directories are handled earlier */
 	    if (!rc && fp->suffix)
 		rc = fsmBackup(fi, fp->action);
@@ -988,13 +993,17 @@ setmeta:
 				      fp->sb.st_mode, fp->action, rc);
 	}
     }
-    fi = rpmfiFree(fi);
+    fi = fsmIterFini(fi, &di);
 
     /* On failure, walk backwards and erase non-committed files */
     if (rc) {
-	fi = rpmfilesIter(files, RPMFI_ITER_BACK);
+	fi = fsmIter(NULL, files, RPMFI_ITER_BACK, &di);
 	while ((fx = rpmfiNext(fi)) >= 0) {
 	    struct filedata_s *fp = &fdata[fx];
+
+	    /* If the directory doesn't exist there's nothing to clean up */
+	    if (ensureDir(NULL, rpmfiDN(fi), 0, 0, 1, &di.dirfd))
+		continue;
 
 	    if (fp->stage > FILE_NONE && !fp->skip) {
 		(void) fsmRemove(fp->fpath, fp->sb.st_mode);
@@ -1006,7 +1015,7 @@ setmeta:
     rpmswAdd(rpmtsOp(ts, RPMTS_OP_DIGEST), fdOp(payload, FDSTAT_DIGEST));
 
 exit:
-    fi = rpmfiFree(fi);
+    fi = fsmIterFini(fi, &di);
     Fclose(payload);
     free(tid);
     for (int i = 0; i < fc; i++)
@@ -1020,7 +1029,8 @@ exit:
 int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile)
 {
-    rpmfi fi = rpmfilesIter(files, RPMFI_ITER_BACK);
+    struct diriter_s di = { -1 };
+    rpmfi fi = fsmIter(NULL, files, RPMFI_ITER_BACK, &di);
     rpmfs fs = rpmteGetFileStates(te);
     rpmPlugins plugins = rpmtsPlugins(ts);
     int fc = rpmfilesFC(files);
@@ -1031,7 +1041,15 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
     while (!rc && (fx = rpmfiNext(fi)) >= 0) {
 	struct filedata_s *fp = &fdata[fx];
 	fp->action = rpmfsGetAction(fs, rpmfiFX(fi));
+
+	if (XFA_SKIPPING(fp->action))
+	    continue;
+
 	fp->fpath = fsmFsPath(fi, NULL);
+	/* If the directory doesn't exist there's nothing to clean up */
+	if (ensureDir(NULL, rpmfiDN(fi), 0, 0, 1, &di.dirfd))
+	    continue;
+
 	rc = fsmStat(fp->fpath, 1, &fp->sb);
 
 	fsmDebug(fp->fpath, fp->action, &fp->sb);
@@ -1040,8 +1058,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 	rc = rpmpluginsCallFsmFilePre(plugins, fi, fp->fpath,
 				      fp->sb.st_mode, fp->action);
 
-	if (!XFA_SKIPPING(fp->action))
-	    rc = fsmBackup(fi, fp->action);
+	rc = fsmBackup(fi, fp->action);
 
         /* Remove erased files. */
         if (fp->action == FA_ERASE) {
@@ -1098,7 +1115,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
     for (int i = 0; i < fc; i++)
 	free(fdata[i].fpath);
     free(fdata);
-    rpmfiFree(fi);
+    fsmIterFini(fi, &di);
 
     return rc;
 }
