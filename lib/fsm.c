@@ -65,6 +65,7 @@ struct filedata_s {
  * things around needlessly 
  */ 
 static const char * fileActionString(rpmFileAction a);
+static int fsmOpenat(int dirfd, const char *path, int flags);
 
 /** \ingroup payload
  * Build path to file from file info, optionally ornamented with suffix.
@@ -91,23 +92,36 @@ static int fsmLink(int odirfd, const char *opath, int dirfd, const char *path)
     return rc;
 }
 
-static int fsmSetFCaps(int dirfd, const char *path, const char *captxt)
+static int cap_set_fileat(int dirfd, const char *path, cap_t fcaps)
+{
+    int rc = -1;
+    int fd = fsmOpenat(dirfd, path, O_RDONLY|O_NOFOLLOW);
+    if (fd >= 0) {
+	rc = cap_set_fd(fd, fcaps);
+	close(fd);
+    }
+    return rc;
+}
+
+static int fsmSetFCaps(int fd, int dirfd, const char *path, const char *captxt)
 {
     int rc = 0;
 
 #if WITH_CAP
     if (captxt && *captxt != '\0') {
 	cap_t fcaps = cap_from_text(captxt);
-	/* cap_set_file() doesn't support dirfd based operation */
-	if ((dirfd >= 0 && *path != '/') || fcaps == NULL)
-	    rc = RPMERR_SETCAP_FAILED;
 
-	if (!rc && cap_set_file(path, fcaps) != 0)
-	    rc = RPMERR_SETCAP_FAILED;
+	if (fd >= 0) {
+	    if (fcaps == NULL || cap_set_fd(fd, fcaps))
+		rc = RPMERR_SETCAP_FAILED;
+	} else {
+	    if (fcaps == NULL || cap_set_fileat(dirfd, path, fcaps))
+		rc = RPMERR_SETCAP_FAILED;
+	}
 
 	if (_fsm_debug) {
-	    rpmlog(RPMLOG_DEBUG, " %8s (%d %s, %s) %s\n", __func__,
-		   dirfd, path, captxt, (rc < 0 ? strerror(errno) : ""));
+	    rpmlog(RPMLOG_DEBUG, " %8s (%d - %d %s, %s) %s\n", __func__,
+		   fd, dirfd, path, captxt, (rc < 0 ? strerror(errno) : ""));
 	}
 	cap_free(fcaps);
     } 
@@ -507,44 +521,69 @@ static int fsmRemove(int dirfd, const char *path, mode_t mode)
     return S_ISDIR(mode) ? fsmRmdir(dirfd, path) : fsmUnlink(dirfd, path);
 }
 
-static int fsmChown(int dirfd, const char *path, mode_t mode, uid_t uid, gid_t gid)
+static int fsmChown(int fd, int dirfd, const char *path, mode_t mode, uid_t uid, gid_t gid)
 {
-    int flags = S_ISLNK(mode) ? AT_SYMLINK_NOFOLLOW : 0;
-    int rc = fchownat(dirfd, path, uid, gid, flags);
-    if (rc < 0) {
-	struct stat st;
-	if (fstatat(dirfd, path, &st, flags) == 0 &&
-		(st.st_uid == uid && st.st_gid == gid)) {
-	    rc = 0;
+    int rc;
+    struct stat st;
+
+    if (fd >= 0) {
+	rc = fchown(fd, uid, gid);
+	if (rc < 0) {
+	    if (fstat(fd, &st) == 0 && (st.st_uid == uid && st.st_gid == gid)) {
+		rc = 0;
+	    }
+	}
+    } else {
+	int flags = S_ISLNK(mode) ? AT_SYMLINK_NOFOLLOW : 0;
+	rc = fchownat(dirfd, path, uid, gid, flags);
+	if (rc < 0) {
+	    struct stat st;
+	    if (fstatat(dirfd, path, &st, flags) == 0 &&
+		    (st.st_uid == uid && st.st_gid == gid)) {
+		rc = 0;
+	    }
 	}
     }
-    if (_fsm_debug)
-	rpmlog(RPMLOG_DEBUG, " %8s (%d %s, %d, %d) %s\n", __func__,
-	       dirfd, path, (int)uid, (int)gid,
+    if (_fsm_debug) {
+	rpmlog(RPMLOG_DEBUG, " %8s (%d - %d %s, %d, %d) %s\n", __func__,
+	       fd, dirfd, path, (int)uid, (int)gid,
 	       (rc < 0 ? strerror(errno) : ""));
+    }
     if (rc < 0)	rc = RPMERR_CHOWN_FAILED;
     return rc;
 }
 
-static int fsmChmod(int dirfd, const char *path, mode_t mode)
+static int fsmChmod(int fd, int dirfd, const char *path, mode_t mode)
 {
-    int rc = fchmodat(dirfd, path, (mode & 07777), 0);
-    if (rc < 0) {
-	struct stat st;
-	if (fstatat(dirfd, path, &st, AT_SYMLINK_NOFOLLOW) == 0 &&
-		(st.st_mode & 07777) == (mode & 07777)) {
-	    rc = 0;
+    mode_t fmode = (mode & 07777);
+    int rc;
+    if (fd >= 0) {
+	rc = fchmod(fd, fmode);
+	if (rc < 0) {
+	    struct stat st;
+	    if (fstat(fd, &st) == 0 && (st.st_mode & 07777) == fmode) {
+		rc = 0;
+	    }
+	}
+    } else {
+	rc = fchmodat(dirfd, path, fmode, 0);
+	if (rc < 0) {
+	    struct stat st;
+	    if (fstatat(dirfd, path, &st, AT_SYMLINK_NOFOLLOW) == 0 &&
+		    (st.st_mode & 07777) == fmode) {
+		rc = 0;
+	    }
 	}
     }
     if (_fsm_debug)
-	rpmlog(RPMLOG_DEBUG, " %8s (%d %s, 0%04o) %s\n", __func__,
-	       dirfd, path, (unsigned)(mode & 07777),
+	rpmlog(RPMLOG_DEBUG, " %8s (%d - %d %s, 0%04o) %s\n", __func__,
+	       fd, dirfd, path, (unsigned)(mode & 07777),
 	       (rc < 0 ? strerror(errno) : ""));
     if (rc < 0)	rc = RPMERR_CHMOD_FAILED;
     return rc;
 }
 
-static int fsmUtime(int dirfd, const char *path, mode_t mode, time_t mtime)
+static int fsmUtime(int fd, int dirfd, const char *path, mode_t mode, time_t mtime)
 {
     int rc = 0;
     struct timespec stamps[2] = {
@@ -552,11 +591,14 @@ static int fsmUtime(int dirfd, const char *path, mode_t mode, time_t mtime)
 	{ .tv_sec = mtime, .tv_nsec = 0 },
     };
 
-    rc = utimensat(dirfd, path, stamps, AT_SYMLINK_NOFOLLOW);
+    if (fd >= 0)
+	rc = futimens(fd, stamps);
+    else
+	rc = utimensat(dirfd, path, stamps, AT_SYMLINK_NOFOLLOW);
     
     if (_fsm_debug)
-	rpmlog(RPMLOG_DEBUG, " %8s (%d %s, 0x%x) %s\n", __func__,
-	       dirfd, path, (unsigned)mtime, (rc < 0 ? strerror(errno) : ""));
+	rpmlog(RPMLOG_DEBUG, " %8s (%d - %d %s, 0x%x) %s\n", __func__,
+	       fd, dirfd, path, (unsigned)mtime, (rc < 0 ? strerror(errno) : ""));
     if (rc < 0)	rc = RPMERR_UTIME_FAILED;
     /* ...but utime error is not critical for directories */
     if (rc && S_ISDIR(mode))
@@ -661,7 +703,8 @@ static int fsmBackup(int dirfd, rpmfi fi, rpmFileAction action)
     return rc;
 }
 
-static int fsmSetmeta(int dirfd, const char *path, rpmfi fi, rpmPlugins plugins,
+static int fsmSetmeta(int fd, int dirfd, const char *path,
+		      rpmfi fi, rpmPlugins plugins,
 		      rpmFileAction action, const struct stat * st,
 		      int nofcaps)
 {
@@ -669,17 +712,17 @@ static int fsmSetmeta(int dirfd, const char *path, rpmfi fi, rpmPlugins plugins,
     const char *dest = rpmfiFN(fi);
 
     if (!rc && !getuid()) {
-	rc = fsmChown(dirfd, path, st->st_mode, st->st_uid, st->st_gid);
+	rc = fsmChown(fd, dirfd, path, st->st_mode, st->st_uid, st->st_gid);
     }
     if (!rc && !S_ISLNK(st->st_mode)) {
-	rc = fsmChmod(dirfd, path, st->st_mode);
+	rc = fsmChmod(fd, dirfd, path, st->st_mode);
     }
     /* Set file capabilities (if enabled) */
     if (!rc && !nofcaps && S_ISREG(st->st_mode) && !getuid()) {
-	rc = fsmSetFCaps(dirfd, path, rpmfiFCaps(fi));
+	rc = fsmSetFCaps(fd, dirfd, path, rpmfiFCaps(fi));
     }
     if (!rc) {
-	rc = fsmUtime(dirfd, path, st->st_mode, rpmfiFMtime(fi));
+	rc = fsmUtime(fd, dirfd, path, st->st_mode, rpmfiFMtime(fi));
     }
     if (!rc) {
 	rc = rpmpluginsCallFsmFilePrepare(plugins, fi,
@@ -949,7 +992,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 
 setmeta:
 	    if (!rc && fp->setmeta) {
-		rc = fsmSetmeta(di.dirfd, fp->fpath, fi, plugins, fp->action,
+		rc = fsmSetmeta(fd, di.dirfd, fp->fpath,
+				fi, plugins, fp->action,
 				&fp->sb, nofcaps);
 	    }
 
