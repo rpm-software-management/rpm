@@ -236,18 +236,15 @@ static int fsmReadLink(const char *path,
     return rc;
 }
 
-static int fsmStat(const char *path, int dolstat, struct stat *sb)
+static int fsmStat(int dirfd, const char *path, int dolstat, struct stat *sb)
 {
-    int rc;
-    if (dolstat){
-	rc = lstat(path, sb);
-    } else {
-        rc = stat(path, sb);
-    }
+    int flags = dolstat ? AT_SYMLINK_NOFOLLOW : 0;
+    int rc = fstatat(dirfd, path, sb, flags);
+
     if (_fsm_debug && rc && errno != ENOENT)
-        rpmlog(RPMLOG_DEBUG, " %8s (%s, ost) %s\n",
+        rpmlog(RPMLOG_DEBUG, " %8s (%d %s, ost) %s\n",
                __func__,
-               path, (rc < 0 ? strerror(errno) : ""));
+               dirfd, path, (rc < 0 ? strerror(errno) : ""));
     if (rc < 0) {
         rc = (errno == ENOENT ? RPMERR_ENOENT : RPMERR_LSTAT_FAILED);
 	/* Ensure consistent struct content on failure */
@@ -567,14 +564,14 @@ static int fsmUtime(const char *path, mode_t mode, time_t mtime)
     return rc;
 }
 
-static int fsmVerify(const char *path, rpmfi fi)
+static int fsmVerify(int dirfd, const char *path, rpmfi fi)
 {
     int rc;
     int saveerrno = errno;
     struct stat dsb;
     mode_t mode = rpmfiFMode(fi);
 
-    rc = fsmStat(path, 1, &dsb);
+    rc = fsmStat(dirfd, path, 1, &dsb);
     if (rc)
 	return rc;
 
@@ -593,7 +590,7 @@ static int fsmVerify(const char *path, rpmfi fi)
         if (S_ISDIR(dsb.st_mode)) return 0;
         if (S_ISLNK(dsb.st_mode)) {
 	    uid_t luid = dsb.st_uid;
-            rc = fsmStat(path, 0, &dsb);
+            rc = fsmStat(dirfd, path, 0, &dsb);
             if (rc == RPMERR_ENOENT) rc = 0;
             if (rc) return rc;
             errno = saveerrno;
@@ -894,9 +891,9 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	    if (!fp->suffix) {
 		if (fp->action == FA_TOUCH) {
 		    struct stat sb;
-		    rc = fsmStat(fp->fpath, 1, &sb);
+		    rc = fsmStat(di.dirfd, fp->fpath, 1, &sb);
 		} else {
-		    rc = fsmVerify(fp->fpath, fi);
+		    rc = fsmVerify(di.dirfd, fp->fpath, fi);
 		}
 	    } else {
 		rc = RPMERR_ENOENT;
@@ -1050,7 +1047,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 	if (ensureDir(NULL, rpmfiDN(fi), 0, 0, 1, &di.dirfd))
 	    continue;
 
-	rc = fsmStat(fp->fpath, 1, &fp->sb);
+	rc = fsmStat(di.dirfd, fp->fpath, 1, &fp->sb);
 
 	fsmDebug(fp->fpath, fp->action, &fp->sb);
 
