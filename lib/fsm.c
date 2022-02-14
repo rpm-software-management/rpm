@@ -110,14 +110,14 @@ static int fsmSetFCaps(const char *path, const char *captxt)
     return rc;
 }
 
-static int fsmClose(FD_t *wfdp)
+static int fsmClose(int *wfdp)
 {
     int rc = 0;
-    if (wfdp && *wfdp) {
+    if (wfdp && *wfdp >= 0) {
 	int myerrno = errno;
 	static int oneshot = 0;
 	static int flush_io = 0;
-	int fdno = Fileno(*wfdp);
+	int fdno = *wfdp;
 
 	if (!oneshot) {
 	    flush_io = (rpmExpandNumeric("%{?_flush_io}") > 0);
@@ -126,61 +126,56 @@ static int fsmClose(FD_t *wfdp)
 	if (flush_io) {
 	    fsync(fdno);
 	}
-	if (Fclose(*wfdp))
+	if (close(fdno))
 	    rc = RPMERR_CLOSE_FAILED;
 
 	if (_fsm_debug) {
 	    rpmlog(RPMLOG_DEBUG, " %8s ([%d]) %s\n", __func__,
 		   fdno, (rc < 0 ? strerror(errno) : ""));
 	}
-	*wfdp = NULL;
+	*wfdp = -1;
 	errno = myerrno;
     }
     return rc;
 }
 
-static int fsmOpen(FD_t *wfdp, int dirfd, const char *dest)
+static int fsmOpen(int *wfdp, int dirfd, const char *dest)
 {
     int rc = 0;
     /* Create the file with 0200 permissions (write by owner). */
     int fd = openat(dirfd, dest, O_WRONLY|O_EXCL|O_CREAT, 0200);
 
-    if (fd >= 0) {
-	*wfdp = fdDup(fd);
-	close(fd);
-    }
-
-    if (fd < 0 || Ferror(*wfdp))
+    if (fd < 0)
 	rc = RPMERR_OPEN_FAILED;
 
     if (_fsm_debug) {
 	rpmlog(RPMLOG_DEBUG, " %8s (%s [%d]) %s\n", __func__,
-	       dest, Fileno(*wfdp), (rc < 0 ? strerror(errno) : ""));
+	       dest, fd, (rc < 0 ? strerror(errno) : ""));
     }
-
-    if (rc)
-	fsmClose(wfdp);
+    *wfdp = fd;
 
     return rc;
 }
 
-static int fsmUnpack(rpmfi fi, FD_t fd, rpmpsm psm, int nodigest)
+static int fsmUnpack(rpmfi fi, int fdno, rpmpsm psm, int nodigest)
 {
+    FD_t fd = fdDup(fdno);
     int rc = rpmfiArchiveReadToFilePsm(fi, fd, nodigest, psm);
     if (_fsm_debug) {
 	rpmlog(RPMLOG_DEBUG, " %8s (%s %" PRIu64 " bytes [%d]) %s\n", __func__,
 	       rpmfiFN(fi), rpmfiFSize(fi), Fileno(fd),
 	       (rc < 0 ? strerror(errno) : ""));
     }
+    Fclose(fd);
     return rc;
 }
 
 static int fsmMkfile(int dirfd, rpmfi fi, struct filedata_s *fp, rpmfiles files,
 		     rpmpsm psm, int nodigest,
-		     struct filedata_s ** firstlink, FD_t *firstlinkfile)
+		     struct filedata_s ** firstlink, int *firstlinkfile)
 {
     int rc = 0;
-    FD_t fd = NULL;
+    int fd = -1;
 
     if (*firstlink == NULL) {
 	/* First encounter, open file for writing */
@@ -206,7 +201,7 @@ static int fsmMkfile(int dirfd, rpmfi fi, struct filedata_s *fp, rpmfiles files,
 	if (*firstlink) {
 	    fp->setmeta = 1;
 	    *firstlink = NULL;
-	    *firstlinkfile = NULL;
+	    *firstlinkfile = -1;
 	}
     }
 
@@ -811,7 +806,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     int fc = rpmfilesFC(files);
     int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST) ? 1 : 0;
     int nofcaps = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCAPS) ? 1 : 0;
-    FD_t firstlinkfile = NULL;
+    int firstlinkfile = -1;
     char *tid = NULL;
     struct filedata_s *fdata = xcalloc(fc, sizeof(*fdata));
     struct filedata_s *firstlink = NULL;
