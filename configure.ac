@@ -582,7 +582,7 @@ AC_CHECK_FUNCS(
    [mkstemp getcwd basename dirname realpath setenv unsetenv regcomp lchown \
     utimes getline localtime_r statvfs getaddrinfo \
     openat mkdirat fstatat linkat symlinkat mkfifoat mknodat unlinkat \
-    renameat ],
+    renameat utimensat fchmodat fchownat ],
    [], [AC_MSG_ERROR([function required by rpm])])
 
 AC_LIBOBJ(fnmatch)
