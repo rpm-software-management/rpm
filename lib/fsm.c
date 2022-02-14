@@ -990,6 +990,14 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
                     rc = RPMERR_UNKNOWN_FILETYPE;
             }
 
+	    if (!rc && fd == -1 && !S_ISLNK(fp->sb.st_mode)) {
+		/* Only follow safe symlinks, and never on temporary files */
+		fd = fsmOpenat(di.dirfd, fp->fpath,
+				fp->suffix ? AT_SYMLINK_NOFOLLOW : 0);
+		if (fd < 0)
+		    rc = RPMERR_OPEN_FAILED;
+	    }
+
 setmeta:
 	    if (!rc && fp->setmeta) {
 		rc = fsmSetmeta(fd, di.dirfd, fp->fpath,
