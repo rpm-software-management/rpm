@@ -977,23 +977,23 @@ setmeta:
 		fp->stage = FILE_COMMIT;
 	    else
 		*failedFile = xstrdup(fp->fpath);
+
+	    /* Run fsm file post hook for all plugins for all processed files */
+	    rpmpluginsCallFsmFilePost(plugins, fi, fp->fpath,
+				      fp->sb.st_mode, fp->action, rc);
 	}
     }
     fi = rpmfiFree(fi);
 
-    /* Walk backwards in case we need to erase */
-    fi = rpmfilesIter(files, RPMFI_ITER_BACK);
-    while ((fx = rpmfiNext(fi)) >= 0) {
-	struct filedata_s *fp = &fdata[fx];
-	/* Run fsm file post hook for all plugins for all processed files */
-	if (fp->stage) {
-	    rpmpluginsCallFsmFilePost(plugins, fi, fp->fpath,
-				      fp->sb.st_mode, fp->action, rc);
-	}
+    /* On failure, walk backwards and erase non-committed files */
+    if (rc) {
+	fi = rpmfilesIter(files, RPMFI_ITER_BACK);
+	while ((fx = rpmfiNext(fi)) >= 0) {
+	    struct filedata_s *fp = &fdata[fx];
 
-	/* On failure, erase non-committed files */
-	if (rc && fp->stage > FILE_NONE && !fp->skip) {
-	    (void) fsmRemove(fp->fpath, fp->sb.st_mode);
+	    if (fp->stage > FILE_NONE && !fp->skip) {
+		(void) fsmRemove(fp->fpath, fp->sb.st_mode);
+	    }
 	}
     }
 
