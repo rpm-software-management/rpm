@@ -792,6 +792,13 @@ static rpmfi fsmIter(FD_t payload, rpmfiles files, rpmFileIter iter, void *data)
     return fi;
 }
 
+static rpmfi fsmIterFini(rpmfi fi, struct diriter_s *di)
+{
+    close(di->dirfd);
+    di->dirfd = -1;
+    return rpmfiFree(fi);
+}
+
 int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile)
 {
@@ -953,9 +960,7 @@ setmeta:
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmfiArchiveTell(fi));
 	fp->stage = FILE_UNPACK;
     }
-    fi = rpmfiFree(fi);
-    close(di.dirfd);
-    di.dirfd = -1;
+    fi = fsmIterFini(fi, &di);
 
     if (!rc && fx < 0 && fx != RPMERR_ITER_END)
 	rc = fx;
