@@ -253,12 +253,12 @@ static int fsmStat(int dirfd, const char *path, int dolstat, struct stat *sb)
     return rc;
 }
 
-static int fsmRmdir(const char *path)
+static int fsmRmdir(int dirfd, const char *path)
 {
-    int rc = rmdir(path);
+    int rc = unlinkat(dirfd, path, AT_REMOVEDIR);
     if (_fsm_debug)
-	rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", __func__,
-	       path, (rc < 0 ? strerror(errno) : ""));
+	rpmlog(RPMLOG_DEBUG, " %8s (%d %s) %s\n", __func__,
+	       dirfd, path, (rc < 0 ? strerror(errno) : ""));
     if (rc < 0)
 	switch (errno) {
 	case ENOENT:        rc = RPMERR_ENOENT;    break;
@@ -467,14 +467,14 @@ static int fsmSymlink(const char *opath, int dirfd, const char *path)
     return rc;
 }
 
-static int fsmUnlink(const char *path)
+static int fsmUnlink(int dirfd, const char *path)
 {
     int rc = 0;
     removeSBITS(path);
-    rc = unlink(path);
+    rc = unlinkat(dirfd, path, 0);
     if (_fsm_debug)
-	rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", __func__,
-	       path, (rc < 0 ? strerror(errno) : ""));
+	rpmlog(RPMLOG_DEBUG, " %8s (%d %s) %s\n", __func__,
+	       dirfd, path, (rc < 0 ? strerror(errno) : ""));
     if (rc < 0)
 	rc = (errno == ENOENT ? RPMERR_ENOENT : RPMERR_UNLINK_FAILED);
     return rc;
@@ -502,9 +502,9 @@ static int fsmRename(const char *opath, const char *path)
     return rc;
 }
 
-static int fsmRemove(const char *path, mode_t mode)
+static int fsmRemove(int dirfd, const char *path, mode_t mode)
 {
-    return S_ISDIR(mode) ? fsmRmdir(path) : fsmUnlink(path);
+    return S_ISDIR(mode) ? fsmRmdir(dirfd, path) : fsmUnlink(dirfd, path);
 }
 
 static int fsmChown(const char *path, mode_t mode, uid_t uid, gid_t gid)
@@ -581,7 +581,7 @@ static int fsmVerify(int dirfd, const char *path, rpmfi fi)
 	rc = fsmRename(path, rmpath);
 	/* XXX shouldn't we take unlink return code here? */
 	if (!rc)
-	    (void) fsmUnlink(rmpath);
+	    (void) fsmUnlink(dirfd, rmpath);
 	else
 	    rc = RPMERR_UNLINK_FAILED;
 	free(rmpath);
@@ -616,7 +616,7 @@ static int fsmVerify(int dirfd, const char *path, rpmfi fi)
         if (S_ISSOCK(dsb.st_mode)) return 0;
     }
     /* XXX shouldn't do this with commit/undo. */
-    rc = fsmUnlink(path);
+    rc = fsmUnlink(dirfd, path);
     if (rc == 0)	rc = RPMERR_ENOENT;
     return (rc ? rc : RPMERR_ENOENT);	/* XXX HACK */
 }
@@ -1003,7 +1003,7 @@ setmeta:
 		continue;
 
 	    if (fp->stage > FILE_NONE && !fp->skip) {
-		(void) fsmRemove(fp->fpath, fp->sb.st_mode);
+		(void) fsmRemove(di.dirfd, fp->fpath, fp->sb.st_mode);
 	    }
 	}
     }
@@ -1061,7 +1061,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
         if (fp->action == FA_ERASE) {
 	    int missingok = (rpmfiFFlags(fi) & (RPMFILE_MISSINGOK | RPMFILE_GHOST));
 
-	    rc = fsmRemove(fp->fpath, fp->sb.st_mode);
+	    rc = fsmRemove(di.dirfd, fp->fpath, fp->sb.st_mode);
 
 	    /*
 	     * Missing %ghost or %missingok entries are not errors.
