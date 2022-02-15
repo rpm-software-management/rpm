@@ -1003,6 +1003,26 @@ runroot rpm -e hlinktest
 .........    /foo/zzzz
 ],
 [])
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpmbuild -bb --quiet --with crossdir_links /data/SPECS/hlinktest.spec
+runroot rpm -U /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+runroot rpm -Vav --nouser --nogroup
+],
+[0],
+[.........    /foo/aaaa
+.........    /foo/copyllo
+.........    /foo/hello
+.........    /foo/hello-bar
+.........    /foo/hello-foo
+.........    /foo/hello-world
+.........    /foo/zzzz
+.........    /xmark
+.........    /xmark/aaaa
+.........    /xmark/hello
+],
+[])
 AT_CLEANUP
 
 AT_SETUP([rpm -U filesystem])
