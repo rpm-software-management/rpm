@@ -350,21 +350,31 @@ rpmRC rpmpluginsCallScriptletPost(rpmPlugins plugins, const char *s_name, int ty
     return rc;
 }
 
+static char *abspath(rpmfi fi, const char *path)
+{
+    if (*path == '/')
+	return xstrdup(path);
+    else
+	return rstrscat(NULL, rpmfiDN(fi), path, NULL);
+}
+
 rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, rpmfi fi, const char *path,
 			       mode_t file_mode, rpmFsmOp op)
 {
     plugin_fsm_file_pre_func hookFunc;
     int i;
     rpmRC rc = RPMRC_OK;
+    char *apath = abspath(fi, path);
 
     for (i = 0; i < plugins->count; i++) {
 	rpmPlugin plugin = plugins->plugins[i];
 	RPMPLUGINS_SET_HOOK_FUNC(fsm_file_pre);
-	if (hookFunc && hookFunc(plugin, fi, path, file_mode, op) == RPMRC_FAIL) {
+	if (hookFunc && hookFunc(plugin, fi, apath, file_mode, op) == RPMRC_FAIL) {
 	    rpmlog(RPMLOG_ERR, "Plugin %s: hook fsm_file_pre failed\n", plugin->name);
 	    rc = RPMRC_FAIL;
 	}
     }
+    free(apath);
 
     return rc;
 }
@@ -375,14 +385,16 @@ rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, rpmfi fi, const char *path,
     plugin_fsm_file_post_func hookFunc;
     int i;
     rpmRC rc = RPMRC_OK;
+    char *apath = abspath(fi, path);
 
     for (i = 0; i < plugins->count; i++) {
 	rpmPlugin plugin = plugins->plugins[i];
 	RPMPLUGINS_SET_HOOK_FUNC(fsm_file_post);
-	if (hookFunc && hookFunc(plugin, fi, path, file_mode, op, res) == RPMRC_FAIL) {
+	if (hookFunc && hookFunc(plugin, fi, apath, file_mode, op, res) == RPMRC_FAIL) {
 	    rpmlog(RPMLOG_WARNING, "Plugin %s: hook fsm_file_post failed\n", plugin->name);
 	}
     }
+    free(apath);
 
     return rc;
 }
@@ -394,15 +406,17 @@ rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins, rpmfi fi,
     plugin_fsm_file_prepare_func hookFunc;
     int i;
     rpmRC rc = RPMRC_OK;
+    char *apath = abspath(fi, path);
 
     for (i = 0; i < plugins->count; i++) {
 	rpmPlugin plugin = plugins->plugins[i];
 	RPMPLUGINS_SET_HOOK_FUNC(fsm_file_prepare);
-	if (hookFunc && hookFunc(plugin, fi, fd, path, dest, file_mode, op) == RPMRC_FAIL) {
+	if (hookFunc && hookFunc(plugin, fi, fd, apath, dest, file_mode, op) == RPMRC_FAIL) {
 	    rpmlog(RPMLOG_ERR, "Plugin %s: hook fsm_file_prepare failed\n", plugin->name);
 	    rc = RPMRC_FAIL;
 	}
     }
+    free(apath);
 
     return rc;
 }
