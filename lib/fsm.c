@@ -192,7 +192,7 @@ static int fsmUnpack(rpmfi fi, int fdno, rpmpsm psm, int nodigest)
 static int fsmMkfile(int dirfd, rpmfi fi, struct filedata_s *fp, rpmfiles files,
 		     rpmpsm psm, int nodigest,
 		     struct filedata_s ** firstlink, int *firstlinkfile,
-		     int *fdp)
+		     int *firstdir, int *fdp)
 {
     int rc = 0;
     int fd = -1;
@@ -204,11 +204,12 @@ static int fsmMkfile(int dirfd, rpmfi fi, struct filedata_s *fp, rpmfiles files,
 	if (fp->sb.st_nlink > 1) {
 	    *firstlink = fp;
 	    *firstlinkfile = fd;
+	    *firstdir = dirfd;
 	}
     } else {
 	/* Create hard links for others and avoid redundant metadata setting */
 	if (*firstlink != fp) {
-	    rc = fsmLink(dirfd, (*firstlink)->fpath, dirfd, fp->fpath);
+	    rc = fsmLink(*firstdir, (*firstlink)->fpath, dirfd, fp->fpath);
 	}
 	fd = *firstlinkfile;
     }
@@ -222,6 +223,7 @@ static int fsmMkfile(int dirfd, rpmfi fi, struct filedata_s *fp, rpmfiles files,
 	    fp->setmeta = 1;
 	    *firstlink = NULL;
 	    *firstlinkfile = -1;
+	    *firstdir = -1;
 	}
     }
     *fdp = fd;
@@ -821,6 +823,7 @@ static void setFileState(rpmfs fs, int i)
 
 struct diriter_s {
     int dirfd;
+    int firstdir;
 };
 
 static int onChdir(rpmfi fi, void *data)
@@ -828,7 +831,8 @@ static int onChdir(rpmfi fi, void *data)
     struct diriter_s *di = data;
 
     if (di->dirfd >= 0) {
-	close(di->dirfd);
+	if (di->dirfd != di->firstdir)
+	    close(di->dirfd);
 	di->dirfd = -1;
     }
     return 0;
@@ -848,8 +852,14 @@ static rpmfi fsmIter(FD_t payload, rpmfiles files, rpmFileIter iter, void *data)
 
 static rpmfi fsmIterFini(rpmfi fi, struct diriter_s *di)
 {
-    close(di->dirfd);
-    di->dirfd = -1;
+    if (di->dirfd >= 0) {
+	close(di->dirfd);
+	di->dirfd = -1;
+    }
+    if (di->firstdir >= 0) {
+	close(di->firstdir);
+	di->firstdir = -1;
+    }
     return rpmfiFree(fi);
 }
 
@@ -869,7 +879,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     char *tid = NULL;
     struct filedata_s *fdata = xcalloc(fc, sizeof(*fdata));
     struct filedata_s *firstlink = NULL;
-    struct diriter_s di = { -1 };
+    struct diriter_s di = { -1, -1 };
 
     /* transaction id used for temporary path suffix while installing */
     rasprintf(&tid, ";%08x", (unsigned)rpmtsGetTid(ts));
@@ -969,7 +979,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
             if (S_ISREG(fp->sb.st_mode)) {
 		if (rc == RPMERR_ENOENT) {
 		    rc = fsmMkfile(di.dirfd, fi, fp, files, psm, nodigest,
-				   &firstlink, &firstlinkfile, &fd);
+				   &firstlink, &firstlinkfile, &di.firstdir,
+				   &fd);
 		}
             } else if (S_ISDIR(fp->sb.st_mode)) {
                 if (rc == RPMERR_ENOENT) {
@@ -1093,7 +1104,7 @@ exit:
 int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile)
 {
-    struct diriter_s di = { -1 };
+    struct diriter_s di = { -1, -1 };
     rpmfi fi = fsmIter(NULL, files, RPMFI_ITER_BACK, &di);
     rpmfs fs = rpmteGetFileStates(te);
     rpmPlugins plugins = rpmtsPlugins(ts);
