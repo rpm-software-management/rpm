@@ -404,6 +404,11 @@ static int ensureDir(rpmPlugins plugins, const char *p, int owned, int create,
     }
     *dirfdp = dirfd;
 
+    if (_fsm_debug) {
+	rpmlog(RPMLOG_DEBUG, " %8s (%s: %d) %s\n", __func__,
+		p, dirfd, (rc < 0 ? strerror(errno) : ""));
+    }
+
     free(path);
     return rc;
 }
