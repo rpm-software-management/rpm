@@ -155,7 +155,7 @@ static rpmRC selinux_scriptlet_fork_post(rpmPlugin plugin,
     return rc;
 }
 
-static rpmRC selinux_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
+static rpmRC selinux_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
 					const char *path, const char *dest,
 				        mode_t file_mode, rpmFsmOp op)
 {
@@ -165,13 +165,17 @@ static rpmRC selinux_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
     if (sehandle && !XFA_SKIPPING(action)) {
 	char *scon = NULL;
 	if (selabel_lookup_raw(sehandle, &scon, dest, file_mode) == 0) {
-	    int conrc = lsetfilecon(path, scon);
+	    int conrc;
+	    if (fd >= 0)
+		conrc = fsetfilecon(fd, scon);
+	    else
+		conrc = lsetfilecon(path, scon);
 
 	    if (conrc == 0 || (conrc < 0 && errno == EOPNOTSUPP))
 		rc = RPMRC_OK;
 
-	    rpmlog(loglvl(rc != RPMRC_OK), "lsetfilecon: (%s, %s) %s\n",
-		       path, scon, (conrc < 0 ? strerror(errno) : ""));
+	    rpmlog(loglvl(rc != RPMRC_OK), "lsetfilecon: (%d %s, %s) %s\n",
+		       fd, path, scon, (conrc < 0 ? strerror(errno) : ""));
 
 	    freecon(scon);
 	} else {

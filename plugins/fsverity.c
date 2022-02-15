@@ -33,7 +33,7 @@ static int sign_config_files = 0;
  * but fails gracefully if the file system doesn't support it or the
  * verity feature flag isn't enabled in the file system (ext4).
  */
-static rpmRC fsverity_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
+static rpmRC fsverity_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
 				       const char *path, const char *dest,
 				       mode_t file_mode, rpmFsmOp op)
 {
@@ -42,7 +42,6 @@ static rpmRC fsverity_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
     size_t len;
     uint16_t algo = 0;
     int rc = RPMRC_OK;
-    int fd;
     rpmFileAction action = XFO_ACTION(op);
     char *buffer;
 
@@ -97,12 +96,6 @@ static rpmRC fsverity_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
     buffer = pgpHexStr(signature, arg.sig_size);
     rpmlog(RPMLOG_DEBUG, "applying signature: %s\n", buffer);
     free(buffer);
-
-    fd = open(path, O_RDONLY);
-    if (fd < 0) {
-	rpmlog(RPMLOG_ERR, "failed to open path %s\n", path);
-	goto exit;
-    }
 
     /*
      * Enable fsverity on the file.
@@ -162,7 +155,6 @@ static rpmRC fsverity_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
 
     rpmlog(RPMLOG_DEBUG, "fsverity enabled signature for: path %s dest %s\n",
 	   path, dest);
-    close(fd);
 exit:
     return rc;
 }

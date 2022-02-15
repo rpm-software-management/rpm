@@ -156,6 +156,7 @@ rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, rpmfi fi, const char* path,
  * permissions etc, but before committing file to destination path.
  * @param plugins	plugins structure
  * @param fi		file info iterator (or NULL)
+ * @param fd		file descriptor (or -1 if not available)
  * @param path		file object current path
  * @param dest		file object destination path
  * @param mode		file object mode
@@ -164,7 +165,7 @@ rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, rpmfi fi, const char* path,
  */
 RPM_GNUC_INTERNAL
 rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins, rpmfi fi,
-                                   const char *path, const char *dest,
+                                   int fd, const char *path, const char *dest,
                                    mode_t mode, rpmFsmOp op);
 
 #ifdef __cplusplus

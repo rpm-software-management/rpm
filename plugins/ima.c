@@ -42,7 +42,7 @@ static int check_zero_hdr(const unsigned char *fsig, size_t siglen)
 	return (memcmp(fsig, &zero_hdr, sizeof(zero_hdr)) == 0);
 }
 
-static rpmRC ima_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
+static rpmRC ima_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
                                   const char *path,
                                   const char *dest,
                                   mode_t file_mode, rpmFsmOp op)
@@ -68,7 +68,12 @@ static rpmRC ima_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
 
 	fsig = rpmfiFSignature(fi, &len);
 	if (fsig && (check_zero_hdr(fsig, len) == 0)) {
-	    if (lsetxattr(path, XATTR_NAME_IMA, fsig, len, 0) < 0) {
+	    int xx;
+	    if (fd >= 0)
+		xx = fsetxattr(fd, XATTR_NAME_IMA, fsig, len, 0);
+	    else
+		xx = lsetxattr(path, XATTR_NAME_IMA, fsig, len, 0);
+	    if (xx < 0) {
 	        rpmlog(RPMLOG_ERR,
 			"ima: could not apply signature on '%s': %s\n",
 			path, strerror(errno));

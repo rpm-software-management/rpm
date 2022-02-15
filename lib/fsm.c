@@ -347,7 +347,7 @@ static int fsmDoMkDir(rpmPlugins plugins, int dirfd, const char *dn,
     }
 
     if (!rc) {
-	rc = rpmpluginsCallFsmFilePrepare(plugins, NULL, dn, dn, mode, op);
+	rc = rpmpluginsCallFsmFilePrepare(plugins, NULL, *fdp, dn, dn, mode, op);
     }
 
     /* Run fsm file post hook for all plugins */
@@ -737,7 +737,7 @@ static int fsmSetmeta(int fd, int dirfd, const char *path,
     }
     if (!rc) {
 	rc = rpmpluginsCallFsmFilePrepare(plugins, fi,
-					  path, dest,
+					  fd, path, dest,
 					  st->st_mode, action);
     }
 
