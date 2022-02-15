@@ -327,7 +327,7 @@ static int fsmOpenat(int dirfd, const char *path, int flags, int dir)
 }
 
 static int fsmDoMkDir(rpmPlugins plugins, int dirfd, const char *dn,
-			int owned, mode_t mode)
+			int owned, mode_t mode, int *fdp)
 {
     int rc;
     rpmFsmOp op = (FA_CREATE);
@@ -339,6 +339,12 @@ static int fsmDoMkDir(rpmPlugins plugins, int dirfd, const char *dn,
 
     if (!rc)
 	rc = fsmMkdir(dirfd, dn, mode);
+
+    if (!rc) {
+	*fdp = fsmOpenat(dirfd, dn, O_RDONLY|O_NOFOLLOW, 1);
+	if (*fdp == -1)
+	    rc = RPMERR_ENOTDIR;
+    }
 
     if (!rc) {
 	rc = rpmpluginsCallFsmFilePrepare(plugins, NULL, dn, dn, mode, op);
@@ -376,9 +382,7 @@ static int ensureDir(rpmPlugins plugins, const char *p, int owned, int create,
 
 	if (fd < 0 && errno == ENOENT && create) {
 	    mode_t mode = S_IFDIR | (_dirPerms & 07777);
-	    rc = fsmDoMkDir(plugins, dirfd, bn, owned, mode);
-	    if (!rc)
-		fd = fsmOpenat(dirfd, bn, oflags|O_NOFOLLOW, 1);
+	    rc = fsmDoMkDir(plugins, dirfd, bn, owned, mode, &fd);
 	}
 
 	close(dirfd);
