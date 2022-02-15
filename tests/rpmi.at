@@ -1004,3 +1004,19 @@ runroot rpm -e hlinktest
 ],
 [])
 AT_CLEANUP
+
+AT_SETUP([rpm -U filesystem])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpmbuild -bb --quiet /data/SPECS/fs.spec
+runroot rpm -U --ignoreos /build/RPMS/noarch/fs-1.0-1.noarch.rpm
+runroot rpm -Va --nouser --nogroup
+runroot rpm -q --whatprovides /
+],
+[0],
+[fs-1.0-1.noarch
+],
+[])
+AT_CLEANUP
