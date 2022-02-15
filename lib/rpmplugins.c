@@ -388,7 +388,7 @@ rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, rpmfi fi, const char *path,
 }
 
 rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins, rpmfi fi,
-				   const char *path, const char *dest,
+				   int fd, const char *path, const char *dest,
 				   mode_t file_mode, rpmFsmOp op)
 {
     plugin_fsm_file_prepare_func hookFunc;
@@ -398,7 +398,7 @@ rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins, rpmfi fi,
     for (i = 0; i < plugins->count; i++) {
 	rpmPlugin plugin = plugins->plugins[i];
 	RPMPLUGINS_SET_HOOK_FUNC(fsm_file_prepare);
-	if (hookFunc && hookFunc(plugin, fi, path, dest, file_mode, op) == RPMRC_FAIL) {
+	if (hookFunc && hookFunc(plugin, fi, fd, path, dest, file_mode, op) == RPMRC_FAIL) {
 	    rpmlog(RPMLOG_ERR, "Plugin %s: hook fsm_file_prepare failed\n", plugin->name);
 	    rc = RPMRC_FAIL;
 	}

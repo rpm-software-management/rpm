@@ -145,7 +145,8 @@ static rpmRC fapolicyd_scriptlet_pre(rpmPlugin plugin, const char *s_name,
 }
 
 static rpmRC fapolicyd_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
-                                        const char *path, const char *dest,
+                                        int fd, const char *path,
+					const char *dest,
                                         mode_t file_mode, rpmFsmOp op)
 {
     /* not ready  */

@@ -57,7 +57,7 @@ typedef rpmRC (*plugin_fsm_file_post_func)(rpmPlugin plugin, rpmfi fi,
 					   const char* path, mode_t file_mode,
 					   rpmFsmOp op, int res);
 typedef rpmRC (*plugin_fsm_file_prepare_func)(rpmPlugin plugin, rpmfi fi,
-					      const char* path,
+					      int fd, const char* path,
 					      const char *dest,
 					      mode_t file_mode, rpmFsmOp op);
 
