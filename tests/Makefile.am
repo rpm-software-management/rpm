@@ -43,6 +43,7 @@ EXTRA_DIST += data/SPECS/attrtest.spec
 EXTRA_DIST += data/SPECS/bcondtest.spec
 EXTRA_DIST += data/SPECS/buildrequires.spec
 EXTRA_DIST += data/SPECS/docmiss.spec
+EXTRA_DIST += data/SPECS/fs.spec
 EXTRA_DIST += data/SPECS/hello.spec
 EXTRA_DIST += data/SPECS/hello-auto.spec
 EXTRA_DIST += data/SPECS/hello-autopatch.spec
