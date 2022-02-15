@@ -65,7 +65,7 @@ struct filedata_s {
  * things around needlessly 
  */ 
 static const char * fileActionString(rpmFileAction a);
-static int fsmOpenat(int dirfd, const char *path, int flags);
+static int fsmOpenat(int dirfd, const char *path, int flags, int dir);
 
 /** \ingroup payload
  * Build path to file from file info, optionally ornamented with suffix.
@@ -95,7 +95,7 @@ static int fsmLink(int odirfd, const char *opath, int dirfd, const char *path)
 static int cap_set_fileat(int dirfd, const char *path, cap_t fcaps)
 {
     int rc = -1;
-    int fd = fsmOpenat(dirfd, path, O_RDONLY|O_NOFOLLOW);
+    int fd = fsmOpenat(dirfd, path, O_RDONLY|O_NOFOLLOW, 0);
     if (fd >= 0) {
 	rc = cap_set_fd(fd, fcaps);
 	close(fd);
@@ -292,7 +292,7 @@ static int fsmMkdir(int dirfd, const char *path, mode_t mode)
     return rc;
 }
 
-static int fsmOpenat(int dirfd, const char *path, int flags)
+static int fsmOpenat(int dirfd, const char *path, int flags, int dir)
 {
     struct stat lsb, sb;
     int sflags = flags | O_NOFOLLOW;
@@ -315,6 +315,13 @@ static int fsmOpenat(int dirfd, const char *path, int flags)
 		}
 	    }
 	}
+    }
+
+    /* O_DIRECTORY equivalent */
+    if (dir && fd >= 0 && fstat(fd, &sb) == 0 && !S_ISDIR(sb.st_mode)) {
+	errno = ENOTDIR;
+	close(fd);
+	fd = -1;
     }
     return fd;
 }
@@ -361,23 +368,17 @@ static int ensureDir(rpmPlugins plugins, const char *p, int owned, int create,
     if (*dirfdp >= 0)
 	return rc;
 
-    int dirfd = fsmOpenat(-1, "/", oflags);
+    int dirfd = fsmOpenat(-1, "/", oflags, 1);
     int fd = dirfd; /* special case of "/" */
 
     while ((bn = strtok_r(dp, "/", &sp)) != NULL) {
-	struct stat sb;
-	fd = fsmOpenat(dirfd, bn, oflags);
+	fd = fsmOpenat(dirfd, bn, oflags, 1);
 
 	if (fd < 0 && errno == ENOENT && create) {
 	    mode_t mode = S_IFDIR | (_dirPerms & 07777);
 	    rc = fsmDoMkDir(plugins, dirfd, bn, owned, mode);
 	    if (!rc)
-		fd = fsmOpenat(dirfd, bn, oflags|O_NOFOLLOW);
-	}
-
-	if (fd >= 0 && fstat(fd, &sb) == 0 && !S_ISDIR(sb.st_mode)) {
-	    rc = RPMERR_ENOTDIR;
-	    break;
+		fd = fsmOpenat(dirfd, bn, oflags|O_NOFOLLOW, 1);
 	}
 
 	close(dirfd);
@@ -998,7 +999,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	    if (!rc && fd == -1 && !S_ISLNK(fp->sb.st_mode)) {
 		/* Only follow safe symlinks, and never on temporary files */
 		fd = fsmOpenat(di.dirfd, fp->fpath,
-				fp->suffix ? AT_SYMLINK_NOFOLLOW : 0);
+				fp->suffix ? AT_SYMLINK_NOFOLLOW : 0, 0);
 		if (fd < 0)
 		    rc = RPMERR_OPEN_FAILED;
 	    }
