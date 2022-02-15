@@ -1,6 +1,7 @@
 %bcond_with unpackaged_dirs
 %bcond_with unpackaged_files
 %bcond_with owned_dir
+%bcond_with crossdir_links
 
 Summary:          Testing hard link behavior
 Name:             hlinktest
@@ -29,6 +30,12 @@ for f in foo bar world; do
     ln hello hello-${f}
 done
 
+%if %{with crossdir_links}
+mkdir -p $RPM_BUILD_ROOT/xmark
+ln $RPM_BUILD_ROOT/foo/aaaa $RPM_BUILD_ROOT/xmark/
+ln $RPM_BUILD_ROOT/foo/hello $RPM_BUILD_ROOT/xmark/
+%endif
+
 %if %{with unpackaged_dirs}
 mkdir -p $RPM_BUILD_ROOT/zoo/
 %endif
@@ -41,5 +48,8 @@ touch $RPM_BUILD_ROOT/toot
 %defattr(-,root,root)
 %if %{with owned_dir}
 %dir /foo
+%endif
+%if %{with crossdir_links}
+/xmark
 %endif
 /foo/*
