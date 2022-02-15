@@ -69,13 +69,15 @@ static int fsmOpenat(int dirfd, const char *path, int flags, int dir);
 
 /** \ingroup payload
  * Build path to file from file info, optionally ornamented with suffix.
+ * "/" needs special handling to avoid appearing as empty path.
  * @param fi		file info iterator
  * @param suffix	suffix to use (NULL disables)
  * @param[out]		path to file (malloced)
  */
 static char * fsmFsPath(rpmfi fi, const char * suffix)
 {
-    return rstrscat(NULL, rpmfiDN(fi), rpmfiBN(fi), suffix ? suffix : "", NULL);
+    const char *bn = rpmfiBN(fi);
+    return rstrscat(NULL, *bn ? bn : "/", suffix ? suffix : "", NULL);
 }
 
 static int fsmLink(int odirfd, const char *opath, int dirfd, const char *path)
@@ -329,6 +331,7 @@ static int fsmOpenat(int dirfd, const char *path, int flags, int dir)
 }
 
 static int fsmDoMkDir(rpmPlugins plugins, int dirfd, const char *dn,
+			const char *apath,
 			int owned, mode_t mode, int *fdp)
 {
     int rc;
@@ -337,7 +340,7 @@ static int fsmDoMkDir(rpmPlugins plugins, int dirfd, const char *dn,
 	op |= FAF_UNOWNED;
 
     /* Run fsm file pre hook for all plugins */
-    rc = rpmpluginsCallFsmFilePre(plugins, NULL, dn, mode, op);
+    rc = rpmpluginsCallFsmFilePre(plugins, NULL, apath, mode, op);
 
     if (!rc)
 	rc = fsmMkdir(dirfd, dn, mode);
@@ -349,7 +352,7 @@ static int fsmDoMkDir(rpmPlugins plugins, int dirfd, const char *dn,
     }
 
     if (!rc) {
-	rc = rpmpluginsCallFsmFilePrepare(plugins, NULL, *fdp, dn, dn, mode, op);
+	rc = rpmpluginsCallFsmFilePrepare(plugins, NULL, *fdp, apath, apath, mode, op);
     }
 
     /* Run fsm file post hook for all plugins */
@@ -358,7 +361,7 @@ static int fsmDoMkDir(rpmPlugins plugins, int dirfd, const char *dn,
     if (!rc) {
 	rpmlog(RPMLOG_DEBUG,
 		"%s directory created with perms %04o\n",
-		dn, (unsigned)(mode & 07777));
+		apath, (unsigned)(mode & 07777));
     }
 
     return rc;
@@ -370,6 +373,7 @@ static int ensureDir(rpmPlugins plugins, const char *p, int owned, int create,
     char *path = xstrdup(p);
     char *dp = path;
     char *sp = NULL, *bn;
+    char *apath = NULL;
     int oflags = O_RDONLY;
     int rc = 0;
 
@@ -381,10 +385,12 @@ static int ensureDir(rpmPlugins plugins, const char *p, int owned, int create,
 
     while ((bn = strtok_r(dp, "/", &sp)) != NULL) {
 	fd = fsmOpenat(dirfd, bn, oflags, 1);
+	/* assemble absolute path for plugins benefit, sigh */
+	apath = rstrscat(&apath, "/", bn, NULL);
 
 	if (fd < 0 && errno == ENOENT && create) {
 	    mode_t mode = S_IFDIR | (_dirPerms & 07777);
-	    rc = fsmDoMkDir(plugins, dirfd, bn, owned, mode, &fd);
+	    rc = fsmDoMkDir(plugins, dirfd, bn, apath, owned, mode, &fd);
 	}
 
 	close(dirfd);
@@ -417,6 +423,7 @@ static int ensureDir(rpmPlugins plugins, const char *p, int owned, int create,
     }
 
     free(path);
+    free(apath);
     return rc;
 }
 
@@ -708,7 +715,8 @@ static int fsmBackup(int dirfd, rpmfi fi, rpmFileAction action)
 	char * path = fsmFsPath(fi, suffix);
 	rc = fsmRename(dirfd, opath, dirfd, path);
 	if (!rc) {
-	    rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"), opath, path);
+	    rpmlog(RPMLOG_WARNING, _("%s%s saved as %s%s\n"),
+		   rpmfiDN(fi), opath, rpmfiDN(fi), path);
 	}
 	free(path);
 	free(opath);
@@ -764,8 +772,8 @@ static int fsmCommit(int dirfd, char **path, rpmfi fi, rpmFileAction action, con
 	    if (!rc) {
 		if (nsuffix) {
 		    char * opath = fsmFsPath(fi, NULL);
-		    rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
-			   opath, dest);
+		    rpmlog(RPMLOG_WARNING, _("%s%s created as %s%s\n"),
+			   rpmfiDN(fi), opath, rpmfiDN(fi), dest);
 		    free(opath);
 		}
 		free(*path);
@@ -1032,7 +1040,7 @@ setmeta:
 
 	/* Notify on success. */
 	if (rc)
-	    *failedFile = xstrdup(fp->fpath);
+	    *failedFile = rstrscat(NULL, rpmfiDN(fi), fp->fpath, NULL);
 	else
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmfiArchiveTell(fi));
 	fp->stage = FILE_UNPACK;
@@ -1061,7 +1069,7 @@ setmeta:
 	    if (!rc)
 		fp->stage = FILE_COMMIT;
 	    else
-		*failedFile = xstrdup(fp->fpath);
+		*failedFile = rstrscat(NULL, rpmfiDN(fi), fp->fpath, NULL);
 
 	    /* Run fsm file post hook for all plugins for all processed files */
 	    rpmpluginsCallFsmFilePost(plugins, fi, fp->fpath,
@@ -1177,7 +1185,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
         if (!strict_erasures) rc = 0;
 
 	if (rc)
-	    *failedFile = xstrdup(fp->fpath);
+	    *failedFile = rstrscat(NULL, rpmfiDN(fi), fp->fpath, NULL);
 
 	if (rc == 0) {
 	    /* Notify on success. */
