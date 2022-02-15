@@ -917,19 +917,18 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 
         if (!fp->skip) {
 	    int fd = -1;
+	    rc = ensureDir(plugins, rpmfiDN(fi), 0,
+			    (fp->action == FA_CREATE), 0, &di.dirfd);
+
 	    /* Directories replacing something need early backup */
-	    if (!fp->suffix && fp != firstlink) {
+	    if (!rc && !fp->suffix && fp != firstlink) {
 		rc = fsmBackup(di.dirfd, fi, fp->action);
 	    }
 
-	    if (!rc) {
-		rc = ensureDir(plugins, rpmfiDN(fi), 0,
-				(fp->action == FA_CREATE), 0, &di.dirfd);
-	    }
-
 	    /* Run fsm file pre hook for all plugins */
-	    rc = rpmpluginsCallFsmFilePre(plugins, fi, fp->fpath,
-					  fp->sb.st_mode, fp->action);
+	    if (!rc)
+		rc = rpmpluginsCallFsmFilePre(plugins, fi, fp->fpath,
+					      fp->sb.st_mode, fp->action);
 	    if (rc)
 		goto setmeta; /* for error notification */
 
