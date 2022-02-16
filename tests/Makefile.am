@@ -168,8 +168,10 @@ atlocal:	atlocal.in Makefile
 DISTCLEANFILES = atlocal
 EXTRA_DIST += atlocal.in
 
+check_DATA = atconfig atlocal $(TESTSUITE)
+
 # The chmod is needed when copying from read-only sources (eg in distcheck)
-populate_testing:
+populate_testing: $(check_DATA)
 	if [ -d testing ]; then chmod -R u+w testing/; fi
 	rm -rf testing
 	mkdir -p testing/$(bindir)
@@ -186,8 +188,6 @@ populate_testing:
 	for d in /proc /sys /selinux /etc/selinux; do if [ -d $${d} ]; then ln -s $${d} testing/$${d}; fi; done
 	(cd testing/magic && file -C)
 	chmod -R u-w testing/
-
-check_DATA = atconfig atlocal $(TESTSUITE)
 
 if HAVE_FAKECHROOT
 check-local: $(check_DATA) populate_testing
