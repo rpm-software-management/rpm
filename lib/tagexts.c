@@ -779,7 +779,8 @@ static int getNEVRA(Header h, rpmtd td, nevraFlags flags)
     }
     if ((flags & NEVRA_SRCARCH)) {
 	if (headerIsSource(h)) {
-	    if (headerIsEntry(h, RPMTAG_NOSOURCE))
+	    if ((headerIsEntry(h, RPMTAG_NOSOURCE)) ||
+		(headerIsEntry(h, RPMTAG_NOPATCH)))
 		val = "nosrc";
 	    else
 		val = "src";
