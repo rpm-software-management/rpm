@@ -26,6 +26,7 @@ make
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/usr/local/bin
 make DESTDIR=$RPM_BUILD_ROOT install
+touch -t 204205042355 FAQ
 
 %clean
 rm -rf $RPM_BUILD_ROOT

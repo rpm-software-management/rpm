@@ -131,6 +131,32 @@ runroot rpmbuild -bs /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 [])
 AT_CLEANUP
 
+# ------------------------------
+# Check if rpmbuild -ba *.spec works after 2038
+AT_SETUP([rpmbuild -ba *.spec after 2038])
+AT_KEYWORDS([build])
+RPMDB_INIT
+AT_CHECK([[
+touch -t 204205042355 ${RPMTEST}/data/SPECS/hello.spec
+touch -t 204205042355 ${RPMTEST}/data/SOURCES/hello-1.0.tar.gz
+touch -t 204205042355 ${RPMTEST}/data/SOURCES/hello-1.0-modernize.patch
+
+unset SOURCE_DATE_EPOCH
+run rpmbuild --quiet \
+  -ba  "${RPMTEST}"/data/SPECS/hello.spec
+
+run rpm -qp --qf '[%{FILENAMES} %{FILEMTIMES:date}\n]' "${RPMTEST}"/build/SRPMS/hello-1.0-1.src.rpm
+run rpm -qp --qf '[%{FILENAMES} %{FILEMTIMES:date}\n]' "${RPMTEST}"/build/RPMS/*/hello-1.0-1.*.rpm | grep FAQ
+]],
+[0],
+[hello-1.0-modernize.patch Sun May  4 23:55:00 2042
+hello-1.0.tar.gz Sun May  4 23:55:00 2042
+hello.spec Sun May  4 23:55:00 2042
+/usr/share/doc/hello-1.0/FAQ Sun May  4 23:55:00 2042
+],
+[])
+AT_CLEANUP
+
 AT_SETUP([rpmbuild -ba autosetup])
 AT_KEYWORDS([build])
 RPMDB_INIT
