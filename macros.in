@@ -685,7 +685,7 @@ package or when debugging this package.\
 # Default output format string for rpm -qa
 #
 # XXX	Note: escaped %% for use in headerFormat()
-%_query_all_fmt		%%{nvra}
+%_query_all_fmt		%%{nvr}.%%{archsuffix}
 
 #
 # Default for coloring output
