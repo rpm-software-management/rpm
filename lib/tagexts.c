@@ -740,6 +740,27 @@ static int headercolorTag(Header h, rpmtd td, headerGetFlags hgflags)
     return numberTag(td, hcolor);
 }
 
+static int archsuffixTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    char * val;
+
+    if (headerIsSource(h)) {
+	if (headerIsEntry(h, RPMTAG_NOSOURCE) ||
+	    headerIsEntry(h, RPMTAG_NOPATCH))
+	    val = xstrdup("nosrc");
+	else
+	    val = xstrdup("src");
+    } else {
+	val = xstrdup(headerGetString(h, RPMTAG_ARCH));
+    }
+    td->type = RPM_STRING_TYPE;
+    td->data = val;
+    td->count = 1;
+    td->flags = RPMTD_ALLOCED;
+
+    return 1;
+}
+
 enum nevraFlags_e {
     NEVRA_NAME		= (1 << 0),
     NEVRA_EPOCH		= (1 << 1),
@@ -977,6 +998,7 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_NEVR,		nevrTag },
     { RPMTAG_NVRA,		nvraTag },
     { RPMTAG_NEVRA,		nevraTag },
+    { RPMTAG_ARCHSUFFIX,	archsuffixTag},
     { RPMTAG_HEADERCOLOR,	headercolorTag },
     { RPMTAG_VERBOSE,		verboseTag },
     { RPMTAG_EPOCHNUM,		epochnumTag },
