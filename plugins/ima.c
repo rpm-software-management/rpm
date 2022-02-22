@@ -69,10 +69,14 @@ static rpmRC ima_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
 	fsig = rpmfiFSignature(fi, &len);
 	if (fsig && (check_zero_hdr(fsig, len) == 0)) {
 	    if (lsetxattr(path, XATTR_NAME_IMA, fsig, len, 0) < 0) {
-	        rpmlog(RPMLOG_ERR,
+		int is_err = errno != EOPNOTSUPP;
+
+	        rpmlog(is_err?RPMLOG_ERR:RPMLOG_DEBUG,
 			"ima: could not apply signature on '%s': %s\n",
 			path, strerror(errno));
-	        rc = RPMRC_FAIL;
+		if (is_err) {
+		    rc = RPMRC_FAIL;
+		}
 	    }
 	}
 
