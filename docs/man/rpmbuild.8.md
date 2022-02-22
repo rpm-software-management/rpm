@@ -15,13 +15,13 @@ SYNOPSIS
 BUILDING PACKAGES:
 ------------------
 
-**rpmbuild** {**-ba\|-bb\|-bp\|-bc\|-bi\|-bl\|-bs\|-br\|-bd**}
+**rpmbuild** {**-ba\|-bb\|-bp\|-bf|\-bc\|-bi\|-bl\|-bs\|-br\|-bd**}
 \[**rpmbuild-options**\] *SPECFILE \...*
 
-**rpmbuild** {**-ra\|-rb\|-rp\|-rc\|-ri\|-rl\|-rs\|-rr\|-rd**}
+**rpmbuild** {**-ra\|-rb\|-rp\|-rf\|-rc\|-ri\|-rl\|-rs\|-rr\|-rd**}
 \[**rpmbuild-options**\] *SOURCEPACKAGE \...*
 
-**rpmbuild** {**-ta\|-tb\|-tp\|-tc\|-ti\|-tl\|-ts\|-tr\|-td**}
+**rpmbuild** {**-ta\|-tb\|-tp\|-tf\|-tc\|-ti\|-tl\|-ts\|-tr\|-td**}
 \[**rpmbuild-options**\] *TARBALL \...*
 
 **rpmbuild** {**\--rebuild\|\--recompile**} *SOURCEPKG \...*
@@ -160,6 +160,11 @@ all the stages preceding it), and is one of:
 
 :   Unpack the sources and apply any patches - executes the %prep stage
     only.
+
+**-bf**
+
+:   Configure the sources - executes up to and including the %conf stage.
+    This generally involves the equivalent of a \"./configure\".
 
 **-bc**
 

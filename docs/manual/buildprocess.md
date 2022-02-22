@@ -13,6 +13,7 @@ title: rpm.org - Package Build Process
   * %prep
   * %generate_buildrequires if present
     * re-check build requires - stop build on errors
+  * %conf
   * %build
   * %install
   * %check - if present

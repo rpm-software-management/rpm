@@ -63,11 +63,21 @@ Executing(%generate_buildrequires)
 [])
 
 AT_CHECK([
+runroot rpmbuild -bf /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
+],
+[0],
+[Executing(%prep)
+Executing(%generate_buildrequires)
+Executing(%conf)
+],
+[])
+AT_CHECK([
 runroot rpmbuild -bc /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
 [Executing(%prep)
 Executing(%generate_buildrequires)
+Executing(%conf)
 Executing(%build)
 ],
 [])
@@ -78,6 +88,7 @@ runroot rpmbuild -bi /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 [0],
 [Executing(%prep)
 Executing(%generate_buildrequires)
+Executing(%conf)
 Executing(%build)
 Executing(%install)
 Executing(%check)
@@ -90,6 +101,7 @@ runroot rpmbuild -bb /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 [0],
 [Executing(%prep)
 Executing(%generate_buildrequires)
+Executing(%conf)
 Executing(%build)
 Executing(%install)
 Executing(%check)
@@ -103,6 +115,7 @@ runroot rpmbuild -ba /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 [0],
 [Executing(%prep)
 Executing(%generate_buildrequires)
+Executing(%conf)
 Executing(%build)
 Executing(%install)
 Executing(%check)
