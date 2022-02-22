@@ -94,6 +94,7 @@ static int fsmLink(int odirfd, const char *opath, int dirfd, const char *path)
     return rc;
 }
 
+#if WITH_CAP
 static int cap_set_fileat(int dirfd, const char *path, cap_t fcaps)
 {
     int rc = -1;
@@ -104,6 +105,7 @@ static int cap_set_fileat(int dirfd, const char *path, cap_t fcaps)
     }
     return rc;
 }
+#endif
 
 static int fsmSetFCaps(int fd, int dirfd, const char *path, const char *captxt)
 {
