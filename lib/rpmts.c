@@ -420,7 +420,7 @@ static void initPgpData(pgpDigParams pubp, struct pgpdata_s *pd)
     pd->signid = rpmhex(pubp->signid, sizeof(pubp->signid));
     pd->shortid = pd->signid + 8;
     pd->userid = pubp->userid ? pubp->userid : "none";
-    pd->time = pubp->time;
+    pd->time = pubp->release;
 
     rasprintf(&pd->timestr, "%x", pd->time);
     rasprintf(&pd->verid, "%d:%s-%s", pubp->version, pd->signid, pd->timestr);

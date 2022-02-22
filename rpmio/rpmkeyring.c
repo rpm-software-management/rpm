@@ -235,7 +235,7 @@ pgpDig rpmPubkeyDig(rpmPubkey key)
     if (rc == 0) {
 	pgpDigParams pubp = pgpDigGetParams(dig, PGPTAG_PUBLIC_KEY);
 	if (!pubp || !memcmp(pubp->signid, zeros, sizeof(pubp->signid)) ||
-		pubp->time == 0 || pubp->userid == NULL) {
+		pubp->release == 0 || pubp->userid == NULL) {
 	    rc = -1;
 	}
     }
