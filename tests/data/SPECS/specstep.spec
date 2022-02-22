@@ -11,6 +11,8 @@ License: GPL
 
 %generate_buildrequires
 
+%conf
+
 %build
 
 %install

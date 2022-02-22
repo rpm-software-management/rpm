@@ -35,6 +35,7 @@ static struct rpmBuildArguments_s rpmBTArgs;
 #define	POPT_BB			0x6262
 #define	POPT_BC			0x6263
 #define	POPT_BD			0x6264
+#define	POPT_BF			0x6266
 #define	POPT_BI			0x6269
 #define	POPT_BL			0x626c
 #define	POPT_BP			0x6270
@@ -44,6 +45,7 @@ static struct rpmBuildArguments_s rpmBTArgs;
 #define	POPT_RB			0x4262
 #define	POPT_RC			0x4263
 #define	POPT_RD			0x4264
+#define	POPT_RF			0x4266
 #define	POPT_RI			0x4269
 #define	POPT_RL			0x426c
 #define	POPT_RP			0x4270
@@ -53,6 +55,7 @@ static struct rpmBuildArguments_s rpmBTArgs;
 #define	POPT_TB			0x7462
 #define	POPT_TC			0x7463
 #define	POPT_TD			0x7464
+#define	POPT_TF			0x7466
 #define	POPT_TI			0x7469
 #define	POPT_TL			0x746c
 #define	POPT_TP			0x7470
@@ -65,7 +68,7 @@ static rpmSpecFlags spec_flags = 0;	/*!< Bit(s) to control spec parsing. */
 static int noDeps = 0;			/*!< from --nodeps */
 static int shortCircuit = 0;		/*!< from --short-circuit */
 static char buildMode = 0;		/*!< Build mode (one of "btBC") */
-static char buildChar = 0;		/*!< Build stage (one of "abcdilps ") */
+static char buildChar = 0;		/*!< Build stage (one of "abcdfilps ") */
 static rpmBuildFlags nobuildAmount = 0;	/*!< Build stage disablers */
 static ARGV_t build_targets = NULL;	/*!< Target platform(s) */
 static int buildInPlace = 0;		/*!< from --build-in-place */
@@ -84,6 +87,7 @@ static void buildArgCallback( poptContext con,
     case POPT_BB:
     case POPT_BC:
     case POPT_BD:
+    case POPT_BF:
     case POPT_BI:
     case POPT_BL:
     case POPT_BP:
@@ -93,6 +97,7 @@ static void buildArgCallback( poptContext con,
     /* case POPT_RB: same value as POPT_REBUILD */
     case POPT_RC:
     case POPT_RD:
+    case POPT_RF:
     case POPT_RI:
     case POPT_RL:
     case POPT_RP:
@@ -102,6 +107,7 @@ static void buildArgCallback( poptContext con,
     case POPT_TB:
     case POPT_TC:
     case POPT_TD:
+    case POPT_TF:
     case POPT_TI:
     case POPT_TL:
     case POPT_TP:
@@ -150,14 +156,17 @@ static struct poptOption rpmBuildPoptTable[] = {
  { "bp", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BP,
 	N_("build through %prep (unpack sources and apply patches) from <specfile>"),
 	N_("<specfile>") },
+ { "bf", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BF,
+	N_("build through %conf (%prep, then %conf) from <specfile>"),
+	N_("<specfile>") },
  { "bc", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BC,
-	N_("build through %build (%prep, then compile) from <specfile>"),
+	N_("build through %build (%prep, %conf, then compile) from <specfile>"),
 	N_("<specfile>") },
  { "bd", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BD,
 	N_("check build dependencies <specfile>"),
 	N_("<specfile>") },
  { "bi", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BI,
-	N_("build through %install (%prep, %build, then install) from <specfile>"),
+	N_("build through %install (%prep, %conf, %build, then install) from <specfile>"),
 	N_("<specfile>") },
  { "bl", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BL,
 	N_("verify %files section from <specfile>"),
@@ -178,14 +187,17 @@ static struct poptOption rpmBuildPoptTable[] = {
  { "rp", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_RP,
 	N_("build through %prep (unpack sources and apply patches) from <source package>"),
 	N_("<source package>") },
+ { "rf", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_RF,
+	N_("build through %conf (%prep, then %conf) from <specfile>"),
+	N_("<specfile>") },
  { "rc", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_RC,
-	N_("build through %build (%prep, then compile) from <source package>"),
+	N_("build through %build (%prep, %conf, then compile) from <source package>"),
 	N_("<source package>") },
  { "rd", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_RD,
 	N_("check build dependencies <source package>"),
 	N_("<source package>") },
  { "ri", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_RI,
-	N_("build through %install (%prep, %build, then install) from <source package>"),
+	N_("build through %install (%prep, %conf, %build, then install) from <source package>"),
 	N_("<source package>") },
  { "rl", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_RL,
 	N_("verify %files section from <source package>"),
@@ -206,14 +218,17 @@ static struct poptOption rpmBuildPoptTable[] = {
  { "tp", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TP,
 	N_("build through %prep (unpack sources and apply patches) from <tarball>"),
 	N_("<tarball>") },
+ { "tf", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TF,
+	N_("build through %conf (%prep, then %conf) from <specfile>"),
+	N_("<specfile>") },
  { "tc", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TC,
-	N_("build through %build (%prep, then compile) from <tarball>"),
+	N_("build through %build (%prep, %conf, then compile) from <tarball>"),
 	N_("<tarball>") },
  { "td", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TD,
 	N_("check build dependencies <tarball>"),
 	N_("<tarball>") },
  { "ti", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TI,
-	N_("build through %install (%prep, %build, then install) from <tarball>"),
+	N_("build through %install (%prep, %conf, %build, then install) from <tarball>"),
 	N_("<tarball>") },
  { "tl", 0, POPT_ARGFLAG_ONEDASH|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_TL,
 	N_("verify %files section from <tarball>"),
@@ -498,7 +513,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 
     /* Parse the spec file */
 #define	_anyarch(_f)	\
-(((_f)&(RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)) == 0)
+(((_f)&(RPMBUILD_PREP|RPMBUILD_CONF|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)) == 0)
     if (_anyarch(buildAmount))
 	specFlags |= RPMSPEC_ANYARCH;
 #undef	_anyarch
@@ -648,6 +663,11 @@ int main(int argc, char *argv[])
 	if ((buildChar == 'c') && shortCircuit)
 	    break;
 	/* fallthrough */
+    case 'f':
+	ba->buildAmount |= RPMBUILD_CONF;
+	if ((buildChar == 'f') && shortCircuit)
+	    break;
+	/* fallthrough */
     case 'r':
     case 'd':
 	ba->buildAmount |= RPMBUILD_BUILDREQUIRES;
@@ -675,6 +695,7 @@ int main(int argc, char *argv[])
     case MODE_RECOMPILE:
 	if (bigMode == MODE_REBUILD &&
 	    buildChar != 'p' &&
+	    buildChar != 'f' &&
 	    buildChar != 'c' &&
 	    buildChar != 'i' &&
 	    buildChar != 'l') {

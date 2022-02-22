@@ -38,6 +38,7 @@ enum rpmBuildFlags_e {
     RPMBUILD_CHECKBUILDREQUIRES	= (1 <<  19),	/*!< Check %%buildrequires. */
     RPMBUILD_BUILDREQUIRES	= (1 <<  20), /*!< Execute %%buildrequires. */
     RPMBUILD_DUMPBUILDREQUIRES	= (1 <<  21), /*!< Write buildrequires.nosrc.rpm. */
+    RPMBUILD_CONF	= (1 << 22),	/*!< Execute %%conf. */
 
     RPMBUILD_NOBUILD	= (1 << 31)	/*!< Don't execute or package. */
 };

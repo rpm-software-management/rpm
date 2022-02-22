@@ -485,16 +485,27 @@ package. As always they depend on the exact circumstance of the build
 and may be different when bulding based on other packages or even
 another architecture.
 
+### %conf
+
+In %conf, the unpacked sources are configured for building.
+
+Different build- and language ecosystems come with their
+own helper macros, but rpm has helpers for autotools based builds such as
+itself which typically look like this:
+
+%conf
+%configure
+
 ### %build
 
-In %build, the unpacked sources are compiled to binaries.
+In %build, the unpacked (and configured) sources are compiled to binaries.
+
 Different build- and language ecosystems come with their
 own helper macros, but rpm has helpers for autotools based builds such as
 itself which typically look like this:
 
 ```
 %build
-%configure
 %make_build
 ```
 

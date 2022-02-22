@@ -129,6 +129,11 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 	mPost = "%{__spec_buildrequires_post}";
 	mCmd = "%{__spec_buildrequires_cmd}";
 	break;
+    case RPMBUILD_CONF:
+	mTemplate = "%{__spec_conf_template}";
+	mPost = "%{__spec_conf_post}";
+	mCmd = "%{__spec_conf_cmd}";
+	break;
     case RPMBUILD_BUILD:
 	mTemplate = "%{__spec_build_template}";
 	mPost = "%{__spec_build_post}";
@@ -335,9 +340,9 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 	    }
 	}
     } else {
-	int didBuild = (what & (RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL));
+	int didBuild = (what & (RPMBUILD_PREP|RPMBUILD_CONF|RPMBUILD_BUILD|RPMBUILD_INSTALL));
 	int sourceOnly = ((what & RPMBUILD_PACKAGESOURCE) &&
-	   !(what & (RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)));
+	   !(what & (RPMBUILD_CONF|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)));
 
 	if (!spec->buildrequires && sourceOnly) {
 		/* don't run prep if not needed for source build */
@@ -377,6 +382,11 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 	} else if (rc) {
 	    goto exit;
 	}
+
+	if ((what & RPMBUILD_CONF) &&
+	    (rc = doScript(spec, RPMBUILD_BUILD, "%conf",
+			   getStringBuf(spec->conf), test, sbp)))
+		goto exit;
 
 	if ((what & RPMBUILD_BUILD) &&
 	    (rc = doScript(spec, RPMBUILD_BUILD, "%build",

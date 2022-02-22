@@ -218,6 +218,7 @@ rpmSpec newSpec(void)
 
     spec->rootDir = NULL;
     spec->prep = NULL;
+    spec->conf = NULL;
     spec->build = NULL;
     spec->install = NULL;
     spec->check = NULL;
@@ -258,6 +259,7 @@ rpmSpec rpmSpecFree(rpmSpec spec)
     if (spec == NULL) return NULL;
 
     spec->prep = freeStringBuf(spec->prep);
+    spec->conf = freeStringBuf(spec->conf);
     spec->build = freeStringBuf(spec->build);
     spec->install = freeStringBuf(spec->install);
     spec->check = freeStringBuf(spec->check);
@@ -431,6 +433,7 @@ const char * rpmSpecGetSection(rpmSpec spec, int section)
 	switch (section) {
 	case RPMBUILD_NONE:	return getStringBuf(spec->parsed);
 	case RPMBUILD_PREP:	return getStringBuf(spec->prep);
+	case RPMBUILD_CONF:	return getStringBuf(spec->conf);
 	case RPMBUILD_BUILD:	return getStringBuf(spec->build);
 	case RPMBUILD_INSTALL:	return getStringBuf(spec->install);
 	case RPMBUILD_CHECK:	return getStringBuf(spec->check);
