@@ -76,6 +76,7 @@ EXTRA_DIST += data/SPECS/scriptfail.spec
 EXTRA_DIST += data/SPECS/scriptfile.spec
 EXTRA_DIST += data/SPECS/selfconflict.spec
 EXTRA_DIST += data/SPECS/shebang.spec
+EXTRA_DIST += data/SPECS/specstep.spec
 EXTRA_DIST += data/SPECS/suicidal.spec
 EXTRA_DIST += data/SPECS/reloc.spec
 EXTRA_DIST += data/SPECS/replacetest.spec
