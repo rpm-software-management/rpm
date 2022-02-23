@@ -22,7 +22,7 @@ the macro with an extra percent sign (%):
 ```
 
 Another option is to use built-in macro %dnl that discards text to next
-line without expanding it.
+line without expanding it. (since rpm >= 4.15)
 
 ```
     %dnl make unversioned %__python an error unless explicitly overridden
@@ -331,12 +331,12 @@ conflicting paths or otherwise conflicting functionality.
 Packages obsoleted by this package. Used for replacing and renaming
 packages.
 
-#### Recommends
+#### Recommends (since rpm >= 4.13)
 #### Suggests
 #### Supplements
 #### Enhances
 
-#### OrderByRequires
+#### OrderWithRequires (sicne rpm >= 4.9)
 
 #### Prereq
 
@@ -465,8 +465,8 @@ In simple packages `%prep` is often just:
 %prep
 %autosetup
 ```
-
-### %generate_buildrequires
+ 
+### %generate_buildrequires (since rpm >= 4.15)
 
 This optional script can be used to determine `BuildRequires`
 dynamically. If present it is executed after %prep and can though
@@ -485,7 +485,7 @@ package. As always they depend on the exact circumstance of the build
 and may be different when bulding based on other packages or even
 another architecture.
 
-### %conf
+### %conf (since rpm >= 4.18)
 
 In %conf, the unpacked sources are configured for building.
 
@@ -555,7 +555,7 @@ for each scriptlet individually. Other supported operations include
 
 More information is available in [trigger chapter](triggers.md).
 
-### File triggers
+### File triggers (since rpm >= 4.13)
 
  * `%filetriggerin`
  * `%filetriggerun`
@@ -570,7 +570,7 @@ More information is available in [file trigger chapter](file_triggers.md).
 
 ### Virtual File Attribute(s)
 
-#### %artifact
+#### %artifact (since rpm >= 4.14.1)
 
 The %artifact attribute can be used to denote files that are more like
 side-effects of packaging than actual content the user would be interested
@@ -612,7 +612,7 @@ documentation path.
 Can also be used to filter out documentation from installations where
 space is tight.
 
-#### %license
+#### %license (since rpm >= 4.11)
 
 Used to mark and/or install files as licenses. Same as %doc, but 
 cannot be filtered out as licenses must always be present in packages.
