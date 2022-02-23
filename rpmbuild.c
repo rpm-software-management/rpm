@@ -626,43 +626,44 @@ int main(int argc, char *argv[])
     (void) rpmtsSetRootDir(ts, rpmcliRootDir);
     rpmtsSetFlags(ts, rpmtsFlags(ts) | RPMTRANS_FLAG_NOPLUGINS);
 
+    /* Mind the fallthrough order - it's the reverse of the build process */
     switch (buildChar) {
     case 'a':
 	ba->buildAmount |= RPMBUILD_PACKAGESOURCE;
+	/* fallthrough */
     case 'b':
 	ba->buildAmount |= RPMBUILD_PACKAGEBINARY;
 	ba->buildAmount |= RPMBUILD_CLEAN;
 	if ((buildChar == 'b') && shortCircuit)
 	    break;
+	/* fallthrough */
     case 'i':
 	ba->buildAmount |= RPMBUILD_INSTALL;
 	ba->buildAmount |= RPMBUILD_CHECK;
 	if ((buildChar == 'i') && shortCircuit)
 	    break;
+	/* fallthrough */
     case 'c':
 	ba->buildAmount |= RPMBUILD_BUILD;
-	ba->buildAmount |= RPMBUILD_BUILDREQUIRES;
-	if (!noDeps) {
-	    ba->buildAmount |= RPMBUILD_DUMPBUILDREQUIRES;
-	    ba->buildAmount |= RPMBUILD_CHECKBUILDREQUIRES;
-	}
 	if ((buildChar == 'c') && shortCircuit)
 	    break;
+	/* fallthrough */
+    case 'r':
+    case 'd':
+	ba->buildAmount |= RPMBUILD_BUILDREQUIRES;
+	ba->buildAmount |= RPMBUILD_DUMPBUILDREQUIRES;
+	if (!noDeps)
+	    ba->buildAmount |= RPMBUILD_DUMPBUILDREQUIRES;
+	    ba->buildAmount |= RPMBUILD_CHECKBUILDREQUIRES;
+	if ((buildChar == 'r' || buildChar == 'd') && shortCircuit)
+	    break;
+	/* fallthrough */
     case 'p':
 	ba->buildAmount |= RPMBUILD_PREP;
 	break;
     case 'l':
 	ba->buildAmount |= RPMBUILD_FILECHECK;
 	break;
-    case 'r':
-    case 'd':
-	ba->buildAmount |= RPMBUILD_PREP;
-	ba->buildAmount |= RPMBUILD_BUILDREQUIRES;
-	ba->buildAmount |= RPMBUILD_DUMPBUILDREQUIRES;
-	if (!noDeps)
-	    ba->buildAmount |= RPMBUILD_CHECKBUILDREQUIRES;
-	if (buildChar == 'd')
-	    break;
     case 's':
 	ba->buildAmount |= RPMBUILD_PACKAGESOURCE;
 	break;
