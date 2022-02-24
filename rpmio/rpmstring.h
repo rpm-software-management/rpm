@@ -193,6 +193,15 @@ unsigned int rstrhash(const char * string);
  * @param plen		no. of bytes
  * @return		hex formatted string (malloc'ed)
  */
+char * rpmhex(const uint8_t *p, size_t plen);
+
+/** \ingroup rpmstring
+ * Deprecated, do not use.
+ * @param p		bytes
+ * @param plen		no. of bytes
+ * @return		hex formatted string (malloc'ed)
+ */
+RPM_GNUC_DEPRECATED
 char * pgpHexStr(const uint8_t *p, size_t plen);
 
 #ifdef __cplusplus

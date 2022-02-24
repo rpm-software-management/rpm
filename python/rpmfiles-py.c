@@ -144,7 +144,7 @@ static PyObject *rpmfile_digest(rpmfileObject *s)
     const unsigned char *digest = rpmfilesFDigest(s->files, s->ix,
 						  NULL, &diglen);
     if (digest) {
-	char * hex = pgpHexStr(digest, diglen);
+	char * hex = rpmhex(digest, diglen);
 	PyObject *o = utf8FromString(hex);
 	free(hex);
 	return o;

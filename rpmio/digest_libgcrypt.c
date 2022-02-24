@@ -114,7 +114,7 @@ int rpmDigestFinal(DIGEST_CTX ctx, void ** datap, size_t *lenp, int asAscii)
 	if (lenp)
 	    *lenp = 2 * digestlen + 1;
 	if (datap) {
-	    *datap = pgpHexStr((const uint8_t *)digest, digestlen);
+	    *datap = rpmhex((const uint8_t *)digest, digestlen);
 	}
     }
     gcry_md_close(ctx->h);

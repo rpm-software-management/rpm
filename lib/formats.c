@@ -63,7 +63,7 @@ static char * stringFormat(rpmtd td, char **emsg)
 	    break;
 	}
 	case RPM_BINARY_CLASS:
-	    val = pgpHexStr(td->data, td->count);
+	    val = rpmhex(td->data, td->count);
 	    break;
 	default:
 	    *emsg = xstrdup("(unknown type)");
@@ -345,7 +345,7 @@ static char * pgpsigFormat(rpmtd td, char **emsg)
 	*emsg = xstrdup(_("(not an OpenPGP signature)"));
     } else {
 	char dbuf[BUFSIZ];
-	char *keyid = pgpHexStr(sigp->signid, sizeof(sigp->signid));
+	char *keyid = rpmhex(sigp->signid, sizeof(sigp->signid));
 	unsigned int dateint = sigp->time;
 	time_t date = dateint;
 	struct tm _tm, * tms = localtime_r(&date, &_tm);

@@ -202,7 +202,7 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
 	sinfo->keyid = pgpGrab(sinfo->sig->signid+4, 4);
     } else if (sinfo->type == RPMSIG_DIGEST_TYPE) {
 	if (td->type == RPM_BIN_TYPE) {
-	    sinfo->dig = pgpHexStr(data, dlen);
+	    sinfo->dig = rpmhex(data, dlen);
 	} else {
 	    if (!validHex(data, dlen)) {
 		rasprintf(&sinfo->msg,

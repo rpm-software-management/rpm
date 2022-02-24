@@ -417,7 +417,7 @@ struct pgpdata_s {
 static void initPgpData(pgpDigParams pubp, struct pgpdata_s *pd)
 {
     memset(pd, 0, sizeof(*pd));
-    pd->signid = pgpHexStr(pubp->signid, sizeof(pubp->signid));
+    pd->signid = rpmhex(pubp->signid, sizeof(pubp->signid));
     pd->shortid = pd->signid + 8;
     pd->userid = pubp->userid ? pubp->userid : "none";
     pd->time = pubp->time;
