@@ -1674,7 +1674,7 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 	fi->flangs = tag2pool(fi->pool, h, RPMTAG_FILELANGS, totalfc);
 
     /* See if the package has non-md5 file digests */
-    fi->digestalgo = PGPHASHALGO_MD5;
+    fi->digestalgo = RPM_HASH_MD5;
     if (headerGet(h, RPMTAG_FILEDIGESTALGO, &digalgo, HEADERGET_MINMEM)) {
 	uint32_t *algo = rpmtdGetUint32(&digalgo);
 	/* Hmm, what to do with unknown digest algorithms? */
@@ -2404,7 +2404,7 @@ int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm)
 
     rpm_loff_t left = rpmfiFSize(fi);
     const unsigned char * fidigest = NULL;
-    pgpHashAlgo digestalgo = 0;
+    rpmHashAlgo digestalgo = 0;
     int rc = 0;
     char buf[BUFSIZ*4];
 
@@ -2442,7 +2442,7 @@ int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm)
 		rc = RPMERR_DIGEST_MISMATCH;
 
 		/* ...but in old packages, empty files have zeros for digest */
-		if (rpmfiFSize(fi) == 0 && digestalgo == PGPHASHALGO_MD5) {
+		if (rpmfiFSize(fi) == 0 && digestalgo == RPM_HASH_MD5) {
 		    uint8_t zeros[diglen];
 		    memset(&zeros, 0, diglen);
 		    if (memcmp(zeros, fidigest, diglen) == 0)

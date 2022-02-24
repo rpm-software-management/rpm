@@ -1,6 +1,8 @@
 #ifndef _RPMCRYPTO_H
 #define _RPMCRYPTO_H
 
+#include <rpm/rpmtypes.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -9,6 +11,23 @@ extern "C" {
  */
 typedef struct DIGEST_CTX_s * DIGEST_CTX;
 typedef struct rpmDigestBundle_s * rpmDigestBundle;
+
+/** \ingroup rpmcrypto
+ * At this time these simply mirror PGPHASHALGO numbers. Once they
+ * start * growing apart we'll need converters.
+ */
+typedef enum rpmHashAlgo_e {
+    RPM_HASH_MD5		=  1,	/*!< MD5 */
+    RPM_HASH_SHA1		=  2,	/*!< SHA1 */
+    RPM_HASH_RIPEMD160		=  3,	/*!< RIPEMD160 */
+    RPM_HASH_MD2		=  5,	/*!< MD2 */
+    RPM_HASH_TIGER192		=  6,	/*!< TIGER192 */
+    RPM_HASH_HAVAL_5_160	=  7,	/*!< HAVAL-5-160 */
+    RPM_HASH_SHA256		=  8,	/*!< SHA256 */
+    RPM_HASH_SHA384		=  9,	/*!< SHA384 */
+    RPM_HASH_SHA512		= 10,	/*!< SHA512 */
+    RPM_HASH_SHA224		= 11,	/*!< SHA224 */
+} rpmHashAlgo;
 
 /** \ingroup rpmcrypto
  * Bit(s) to control digest operation.

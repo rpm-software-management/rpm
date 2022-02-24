@@ -3,7 +3,7 @@
 #include <openssl/evp.h>
 #include <openssl/rsa.h>
 #include <openssl/dsa.h>
-#include <rpm/rpmpgp.h>
+#include <rpm/rpmcrypto.h>
 
 #include "rpmio/digest.h"
 
@@ -166,22 +166,22 @@ static const EVP_MD *getEVPMD(int hashalgo)
 {
     switch (hashalgo) {
 
-    case PGPHASHALGO_MD5:
+    case RPM_HASH_MD5:
         return EVP_md5();
 
-    case PGPHASHALGO_SHA1:
+    case RPM_HASH_SHA1:
         return EVP_sha1();
 
-    case PGPHASHALGO_SHA256:
+    case RPM_HASH_SHA256:
         return EVP_sha256();
 
-    case PGPHASHALGO_SHA384:
+    case RPM_HASH_SHA384:
         return EVP_sha384();
 
-    case PGPHASHALGO_SHA512:
+    case RPM_HASH_SHA512:
         return EVP_sha512();
 
-    case PGPHASHALGO_SHA224:
+    case RPM_HASH_SHA224:
         return EVP_sha224();
 
     default:

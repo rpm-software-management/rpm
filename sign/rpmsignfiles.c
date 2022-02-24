@@ -7,9 +7,10 @@
 #include "system.h"
 #include "imaevm.h"
 
+#include <string.h>
 #include <rpm/rpmlog.h>		/* rpmlog */
 #include <rpm/rpmfi.h>
-#include <rpm/rpmpgp.h>		/* rpmDigestLength */
+#include <rpm/rpmcrypto.h>	/* rpmDigestLength */
 #include "lib/header.h"		/* HEADERGET_MINMEM */
 #include "lib/rpmtypes.h"	/* rpmRC */
 
@@ -18,16 +19,16 @@
 #define MAX_SIGNATURE_LENGTH 1024
 
 static const char *hash_algo_name[] = {
-    [PGPHASHALGO_MD5]          = "md5",
-    [PGPHASHALGO_SHA1]         = "sha1",
-    [PGPHASHALGO_RIPEMD160]    = "rmd160",
-    [PGPHASHALGO_MD2]          = "md2",
-    [PGPHASHALGO_TIGER192]     = "tgr192",
-    [PGPHASHALGO_HAVAL_5_160]  = "haval5160",
-    [PGPHASHALGO_SHA256]       = "sha256",
-    [PGPHASHALGO_SHA384]       = "sha384",
-    [PGPHASHALGO_SHA512]       = "sha512",
-    [PGPHASHALGO_SHA224]       = "sha224",
+    [RPM_HASH_MD5]          = "md5",
+    [RPM_HASH_SHA1]         = "sha1",
+    [RPM_HASH_RIPEMD160]    = "rmd160",
+    [RPM_HASH_MD2]          = "md2",
+    [RPM_HASH_TIGER192]     = "tgr192",
+    [RPM_HASH_HAVAL_5_160]  = "haval5160",
+    [RPM_HASH_SHA256]       = "sha256",
+    [RPM_HASH_SHA384]       = "sha384",
+    [RPM_HASH_SHA512]       = "sha512",
+    [RPM_HASH_SHA224]       = "sha224",
 };
 
 #define ARRAY_SIZE(a)  (sizeof(a) / sizeof(a[0]))

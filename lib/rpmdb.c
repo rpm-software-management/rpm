@@ -18,7 +18,7 @@
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmurl.h>
-#include <rpm/rpmpgp.h>
+#include <rpm/rpmcrypto.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmsq.h>
 #include <rpm/rpmstring.h>
@@ -2642,7 +2642,7 @@ char *rpmdbCookie(rpmdb db)
     rpmdbIndexIterator ii = rpmdbIndexIteratorInit(db, RPMDBI_NAME);
 
     if (ii) {
-	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA256, RPMDIGEST_NONE);
+	DIGEST_CTX ctx = rpmDigestInit(RPM_HASH_SHA256, RPMDIGEST_NONE);
 	const void *key = 0;
 	size_t keylen = 0;
 	while ((rpmdbIndexIteratorNext(ii, &key, &keylen)) == 0) {

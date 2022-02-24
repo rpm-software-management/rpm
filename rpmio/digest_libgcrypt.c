@@ -2,7 +2,7 @@
 
 #include <gcrypt.h>
 
-#include <rpm/rpmpgp.h>
+#include <rpm/rpmcrypto.h>
 #include "rpmio/digest.h"
 #include "rpmio/rpmio_internal.h"
 #include "debug.h"
@@ -34,17 +34,17 @@ int rpmFreeCrypto(void) {
 size_t rpmDigestLength(int hashalgo)
 {
     switch (hashalgo) {
-    case PGPHASHALGO_MD5:
+    case RPM_HASH_MD5:
 	return 16;
-    case PGPHASHALGO_SHA1:
+    case RPM_HASH_SHA1:
 	return 20;
-    case PGPHASHALGO_SHA224:
+    case RPM_HASH_SHA224:
 	return 28;
-    case PGPHASHALGO_SHA256:
+    case RPM_HASH_SHA256:
 	return 32;
-    case PGPHASHALGO_SHA384:
+    case RPM_HASH_SHA384:
 	return 48;
-    case PGPHASHALGO_SHA512:
+    case RPM_HASH_SHA512:
 	return 64;
     default:
 	return 0;
@@ -54,17 +54,17 @@ size_t rpmDigestLength(int hashalgo)
 static int hashalgo2gcryalgo(int hashalgo)
 {
     switch (hashalgo) {
-    case PGPHASHALGO_MD5:
+    case RPM_HASH_MD5:
 	return GCRY_MD_MD5;
-    case PGPHASHALGO_SHA1:
+    case RPM_HASH_SHA1:
 	return GCRY_MD_SHA1;
-    case PGPHASHALGO_SHA224:
+    case RPM_HASH_SHA224:
 	return GCRY_MD_SHA224;
-    case PGPHASHALGO_SHA256:
+    case RPM_HASH_SHA256:
 	return GCRY_MD_SHA256;
-    case PGPHASHALGO_SHA384:
+    case RPM_HASH_SHA384:
 	return GCRY_MD_SHA384;
-    case PGPHASHALGO_SHA512:
+    case RPM_HASH_SHA512:
 	return GCRY_MD_SHA512;
     default:
 	return 0;

@@ -998,7 +998,7 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
     char buf[BUFSIZ];
     int i, npaths = 0;
     int fail_on_dupes = rpmExpandNumeric("%{?_duplicate_files_terminate_build}") > 0;
-    uint32_t defaultalgo = PGPHASHALGO_MD5, digestalgo;
+    uint32_t defaultalgo = RPM_HASH_MD5, digestalgo;
     rpm_loff_t totalFileSize = 0;
     Header h = pkg->header; /* just a shortcut */
     time_t source_date_epoch = 0;

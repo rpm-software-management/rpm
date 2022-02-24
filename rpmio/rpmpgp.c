@@ -859,7 +859,7 @@ int pgpPubkeyFingerprint(const uint8_t *h, size_t hlen,
 
 	/* Does the size and number of MPI's match our expectations? */
 	if (processMpis(mpis, NULL, se, pend) == 0) {
-	    DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	    DIGEST_CTX ctx = rpmDigestInit(RPM_HASH_SHA1, RPMDIGEST_NONE);
 	    uint8_t *d = NULL;
 	    size_t dlen = 0;
 	    uint8_t in[3] = { 0x99, (hlen >> 8), hlen };

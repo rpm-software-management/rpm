@@ -445,14 +445,14 @@ static Header makeImmutable(Header h)
 
 	/* XXX FIXME: bah, this code is repeated in way too many places */
 	rpmDigestBundle bundle = rpmDigestBundleNew();
-	rpmDigestBundleAdd(bundle, PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	rpmDigestBundleAdd(bundle, PGPHASHALGO_SHA256, RPMDIGEST_NONE);
+	rpmDigestBundleAdd(bundle, RPM_HASH_SHA1, RPMDIGEST_NONE);
+	rpmDigestBundleAdd(bundle, RPM_HASH_SHA256, RPMDIGEST_NONE);
 
 	rpmDigestBundleUpdate(bundle, rpm_header_magic, sizeof(rpm_header_magic));
 	rpmDigestBundleUpdate(bundle, blob, blen);
 
-	rpmDigestBundleFinal(bundle, PGPHASHALGO_SHA1, (void **)&sha1, NULL, 1);
-	rpmDigestBundleFinal(bundle, PGPHASHALGO_SHA256, (void **)&sha256, NULL, 1);
+	rpmDigestBundleFinal(bundle, RPM_HASH_SHA1, (void **)&sha1, NULL, 1);
+	rpmDigestBundleFinal(bundle, RPM_HASH_SHA256, (void **)&sha256, NULL, 1);
 
 	if (sha1 && sha256) {
 	    headerPutString(h, RPMTAG_SHA1HEADER, sha1);
