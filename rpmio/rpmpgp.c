@@ -236,7 +236,7 @@ static void pgpPrtHex(const char *pre, const uint8_t *p, size_t plen)
     if (!_print) return;
     if (pre && *pre)
 	fprintf(stderr, "%s", pre);
-    hex = pgpHexStr(p, plen);
+    hex = rpmhex(p, plen);
     fprintf(stderr, " %s", hex);
     free(hex);
 }
@@ -1256,7 +1256,7 @@ char *pgpIdentItem(pgpDigParams digp)
     char *id = NULL;
     if (digp) {
 	
-	char *signid = pgpHexStr(digp->signid+4, sizeof(digp->signid)-4);
+	char *signid = rpmhex(digp->signid+4, sizeof(digp->signid)-4);
 	rasprintf(&id, _("V%d %s/%s %s, key ID %s"),
 			digp->version,
 			pgpValStr(pgpPubkeyTbl, digp->pubkey_algo),

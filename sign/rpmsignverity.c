@@ -63,7 +63,7 @@ static char *rpmVeritySignFile(rpmfi fi, size_t *sig_size, char *key,
 	goto out;
     }
 
-    digest_hex = pgpHexStr(digest->digest, digest->digest_size);
+    digest_hex = rpmhex(digest->digest, digest->digest_size);
     digest_base64 = rpmBase64Encode(digest->digest, digest->digest_size, -1);
     rpmlog(RPMLOG_DEBUG, _("file(size %li): %s: digest(%i): %s, idx %i\n"),
 	   file_size, rpmfiFN(fi), digest->digest_size, digest_hex,
@@ -82,7 +82,7 @@ static char *rpmVeritySignFile(rpmfi fi, size_t *sig_size, char *key,
 	goto out;
     }
 
-    sig_hex = pgpHexStr(sig, *sig_size);
+    sig_hex = rpmhex(sig, *sig_size);
     sig_base64 = rpmBase64Encode(sig, *sig_size, -1);
     rpmlog(RPMLOG_DEBUG, _("%s: sig_size(%li), base64_size(%li), idx %i: signature:\n%s\n"),
 	   rpmfiFN(fi), *sig_size, strlen(sig_base64), rpmfiFX(fi), sig_hex);

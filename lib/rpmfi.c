@@ -578,7 +578,7 @@ char * rpmfiFDigestHex(rpmfi fi, int *algo)
     char *fdigest = NULL;
     const unsigned char *digest = rpmfiFDigest(fi, algo, &diglen);
     if (digest) {
-	fdigest = pgpHexStr(digest, diglen);
+	fdigest = rpmhex(digest, diglen);
     }
     return fdigest;
 }

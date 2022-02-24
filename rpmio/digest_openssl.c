@@ -259,7 +259,7 @@ int rpmDigestFinal(DIGEST_CTX ctx, void ** datap, size_t *lenp, int asAscii)
         if (lenp) *lenp = (2*digestlen) + 1;
         if (datap) {
             const uint8_t * s = (const uint8_t *) digest;
-            *datap = pgpHexStr(s, digestlen);
+            *datap = rpmhex(s, digestlen);
         }
     }
 

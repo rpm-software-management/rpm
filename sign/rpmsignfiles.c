@@ -59,7 +59,7 @@ const char *key, char *keypass, uint32_t *siglenp)
 
     *siglenp = siglen + 1;
     /* convert file signature binary to hex */
-    fsignature = pgpHexStr(signature, siglen+1);
+    fsignature = rpmhex(signature, siglen+1);
     return fsignature;
 }
 
