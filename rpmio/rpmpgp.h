@@ -19,15 +19,11 @@
 #include <stdlib.h>
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmstring.h>
+#include <rpm/rpmcrypto.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/** \ingroup rpmpgp
- */
-typedef struct DIGEST_CTX_s * DIGEST_CTX;
-typedef struct rpmDigestBundle_s * rpmDigestBundle;
 
 /** \ingroup rpmpgp
  */
@@ -957,15 +953,6 @@ typedef enum pgpValType_e {
 } pgpValType;
 
 /** \ingroup rpmpgp
- * Bit(s) to control digest operation.
- */
-enum rpmDigestFlags_e {
-    RPMDIGEST_NONE	= 0
-};
-
-typedef rpmFlags rpmDigestFlags;
-
-/** \ingroup rpmpgp
  * Return string representation of am OpenPGP value.
  * @param type		type of value
  * @param val		byte value to lookup
@@ -1175,132 +1162,6 @@ int pgpSignatureType(pgpDigParams sig);
  * @return		string describing the item and parameters
  */
 char *pgpIdentItem(pgpDigParams digp);
-
-/** \ingroup rpmpgp
- * Perform cryptography initialization.
- * It must be called before any cryptography can be used within rpm.
- * It's not normally necessary to call it directly as it's called in
- * general rpm initialization routines.
- * @return		0 on success, -1 on failure
- */
-int rpmInitCrypto(void);
-
-/** \ingroup rpmpgp
- * Shutdown cryptography
- */
-int rpmFreeCrypto(void);
-
-/** \ingroup rpmpgp
- * Duplicate a digest context.
- * @param octx		existing digest context
- * @return		duplicated digest context
- */
-DIGEST_CTX rpmDigestDup(DIGEST_CTX octx);
-
-/** \ingroup rpmpgp
- * Obtain digest length in bytes.
- * @param hashalgo	type of digest
- * @return		digest length, zero on invalid algorithm
- */
-size_t rpmDigestLength(int hashalgo);
-
-/** \ingroup rpmpgp
- * Initialize digest.
- * Set bit count to 0 and buffer to mysterious initialization constants.
- * @param hashalgo	type of digest
- * @param flags		bit(s) to control digest operation
- * @return		digest context
- */
-DIGEST_CTX rpmDigestInit(int hashalgo, rpmDigestFlags flags);
-
-/** \ingroup rpmpgp
- * Update context with next plain text buffer.
- * @param ctx		digest context
- * @param data		next data buffer
- * @param len		no. bytes of data
- * @return		0 on success
- */
-int rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len);
-
-/** \ingroup rpmpgp
- * Return digest and destroy context.
- * Final wrapup - pad to 64-byte boundary with the bit pattern 
- * 1 0* (64-bit count of bits processed, MSB-first)
- *
- * @param ctx		digest context
- * @param[out] datap	address of returned digest
- * @param[out] lenp	address of digest length
- * @param asAscii	return digest as ascii string?
- * @return		0 on success
- */
-int rpmDigestFinal(DIGEST_CTX ctx,
-	void ** datap,
-	size_t * lenp, int asAscii);
-
-/** \ingroup rpmpgp
- * Create a new digest bundle.
- * @return		New digest bundle
- */
-rpmDigestBundle rpmDigestBundleNew(void);
-
-/** \ingroup rpmpgp
- * Free a digest bundle and all contained digest contexts.
- * @param bundle	digest bundle
- * @return		NULL always
- */
-rpmDigestBundle rpmDigestBundleFree(rpmDigestBundle bundle);
-
-/** \ingroup rpmpgp
- * Add a new type of digest to a bundle. Same as calling
- * rpmDigestBundleAddID() with algo == id value.
- * @param bundle	digest bundle
- * @param algo		type of digest
- * @param flags		bit(s) to control digest operation
- * @return		0 on success
- */
-int rpmDigestBundleAdd(rpmDigestBundle bundle, int algo,
-			rpmDigestFlags flags);
-
-/** \ingroup rpmpgp
- * Add a new type of digest to a bundle.
- * @param bundle	digest bundle
- * @param algo		type of digest
- * @param id		id of digest (arbitrary, must be > 0)
- * @param flags		bit(s) to control digest operation
- * @return		0 on success
- */
-int rpmDigestBundleAddID(rpmDigestBundle bundle, int algo, int id,
-			 rpmDigestFlags flags);
-
-/** \ingroup rpmpgp
- * Update contexts within bundle with next plain text buffer.
- * @param bundle	digest bundle
- * @param data		next data buffer
- * @param len		no. bytes of data
- * @return		0 on success
- */
-int rpmDigestBundleUpdate(rpmDigestBundle bundle, const void *data, size_t len);
-
-/** \ingroup rpmpgp
- * Return digest from a bundle and destroy context, see rpmDigestFinal().
- *
- * @param bundle	digest bundle
- * @param id		id of digest to return
- * @param[out] datap	address of returned digest
- * @param[out] lenp	address of digest length
- * @param asAscii	return digest as ascii string?
- * @return		0 on success
- */
-int rpmDigestBundleFinal(rpmDigestBundle bundle, int id,
-			 void ** datap, size_t * lenp, int asAscii);
-
-/** \ingroup rpmpgp
- * Duplicate a digest context from a bundle.
- * @param bundle	digest bundle
- * @param id		id of digest to dup
- * @return		duplicated digest context
- */
-DIGEST_CTX rpmDigestBundleDupCtx(rpmDigestBundle bundle, int id);
 
 #ifdef __cplusplus
 }
