@@ -9,6 +9,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <stdarg.h>
+#include <stdint.h>
 
 #include <rpm/rpmutil.h>
 
@@ -185,6 +186,14 @@ size_t rstrlcpy(char *dest, const char *src, size_t n);
  */
 RPM_GNUC_PURE
 unsigned int rstrhash(const char * string);
+
+/** \ingroup rpmstring
+ * Return hex formatted representation of bytes.
+ * @param p		bytes
+ * @param plen		no. of bytes
+ * @return		hex formatted string (malloc'ed)
+ */
+char * pgpHexStr(const uint8_t *p, size_t plen);
 
 #ifdef __cplusplus
 }
