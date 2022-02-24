@@ -50,6 +50,20 @@ else
     CAP_DISABLED=true;
 fi
 
+# Enable malloc-check as a cheap way to find some use-after-free and
+# uninitialized read problems when using glibc, and doesn't affect
+# normal operation or other libc.
+# Only for GLIBC >=2.34
+
+random="$(awk 'BEGIN{srand(); printf "%d\n",(rand()*255)}')"
+if _GLIBC_VERSION=$(getconf GNU_LIBC_VERSION 2>/dev/null)
+then
+	LD_PRELOAD="libc_malloc_debug.so.0"
+	GLIBC_TUNABLES="glibc.malloc.check=1:glibc.malloc.perturb=${random}"
+	export LD_PRELOAD
+	export GLIBC_TUNABLES
+fi
+
 function setup_env()
 {
     if [ -d testing ]; then
