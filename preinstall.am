@@ -2,6 +2,10 @@ include/rpm/argv.h: rpmio/argv.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/rpmio/argv.h include/rpm/argv.h
 BUILT_SOURCES += include/rpm/argv.h
 CLEANFILES += include/rpm/argv.h
+include/rpm/rpmcrypto.h: rpmio/rpmcrypto.h include/rpm/$(dirstamp)
+	$(INSTALL_DATA) $(top_srcdir)/rpmio/rpmcrypto.h include/rpm/rpmcrypto.h
+BUILT_SOURCES += include/rpm/rpmcrypto.h
+CLEANFILES += include/rpm/rpmcrypto.h
 include/rpm/rpmio.h: rpmio/rpmio.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/rpmio/rpmio.h include/rpm/rpmio.h
 BUILT_SOURCES += include/rpm/rpmio.h

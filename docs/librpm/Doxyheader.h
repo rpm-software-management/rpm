@@ -94,6 +94,9 @@
 /** \defgroup	rpmlog	Logging API.
     \brief RPM Logging facilities.
  */
+/** \defgroup	rpmcrypto	RPM crypto API.
+    \brief RPM cryptography related APIs and constants.
+ */
 /** \defgroup	rpmpgp	OpenPGP API.
     \brief OpenPGP constants and structures from RFC-2440.
  */

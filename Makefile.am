@@ -59,6 +59,7 @@ pkginclude_HEADERS =
 nodist_pkginclude_HEADERS =
 
 pkginclude_HEADERS += rpmio/argv.h
+pkginclude_HEADERS += rpmio/rpmcrypto.h
 pkginclude_HEADERS += rpmio/rpmio.h
 pkginclude_HEADERS += rpmio/rpmurl.h
 pkginclude_HEADERS += rpmio/rpmmacro.h
