@@ -702,21 +702,6 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
     return rc;
 }
 
-char * pgpHexStr(const uint8_t *p, size_t plen)
-{
-    char *t, *str;
-    str = t = xmalloc(plen * 2 + 1);
-    static char const hex[] = "0123456789abcdef";
-    while (plen-- > 0) {
-	size_t i;
-	i = *p++;
-	*t++ = hex[ (i >> 4) & 0xf ];
-	*t++ = hex[ (i     ) & 0xf ];
-    }
-    *t = '\0';
-    return str;
-}
-
 static uint8_t curve_oids[] = {
     PGPCURVE_NIST_P_256,	0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07,
     PGPCURVE_NIST_P_384,	0x05, 0x2b, 0x81, 0x04, 0x00, 0x22,

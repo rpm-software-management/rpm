@@ -977,14 +977,6 @@ unsigned int pgpGrab(const uint8_t *s, size_t nbytes)
 }
 
 /** \ingroup rpmpgp
- * Return hex formatted representation of bytes.
- * @param p		bytes
- * @param plen		no. of bytes
- * @return		hex formatted string (malloc'ed)
- */
-char * pgpHexStr(const uint8_t *p, size_t plen);
-
-/** \ingroup rpmpgp
  * Calculate OpenPGP public key fingerprint.
  * @param pkt		OpenPGP packet (i.e. PGPTAG_PUBLIC_KEY)
  * @param pktlen	OpenPGP packet length (no. of bytes)
