@@ -1104,6 +1104,8 @@ static int pgpVerifySelf(pgpDigParams key, pgpDigParams selfsig,
     return rc;
 }
 
+static const size_t RPM_MAX_OPENPGP_BYTES = 65535; /* max number of bytes in a key */
+
 int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
 		 pgpDigParams * ret)
 {
@@ -1113,11 +1115,14 @@ int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
     pgpDigParams selfsig = NULL;
     int i = 0;
     int alloced = 16; /* plenty for normal cases */
-    struct pgpPkt *all = xmalloc(alloced * sizeof(*all));
     int rc = -1; /* assume failure */
     int expect = 0;
     int prevtag = 0;
 
+    if (pktlen > RPM_MAX_OPENPGP_BYTES)
+	return rc; /* reject absurdly large data */
+
+    struct pgpPkt *all = xmalloc(alloced * sizeof(*all));
     while (p < pend) {
 	struct pgpPkt *pkt = &all[i];
 	if (decodePkt(p, (pend - p), pkt))
