@@ -32,7 +32,7 @@ AT_CLEANUP
 
 # ------------------------------
 # Run rpm -qa on an empty rpmdb
-AT_SETUP([rpm -qa])
+AT_SETUP([rpm -qa 1])
 AT_KEYWORDS([rpmdb query])
 AT_CHECK([
 RPMDB_INIT
@@ -43,7 +43,7 @@ runroot rpm \
 AT_CLEANUP
 
 # Run rpm -qa on a non-existent rpmdb
-AT_SETUP([rpm -qa])
+AT_SETUP([rpm -qa 2])
 AT_KEYWORDS([rpmdb query])
 AT_CHECK([
 RPMTEST_SETUP
@@ -53,6 +53,34 @@ runroot rpm \
 [0],
 [],
 [ignore])
+AT_CLEANUP
+
+AT_SETUP([rpm -qa 3])
+AT_KEYWORDS([rpmdb query])
+RPMDB_INIT
+
+AT_CHECK([
+runroot rpm -U --nodeps --ignorearch --ignoreos --nosignature \
+	/data/RPMS/foo-1.0-1.noarch.rpm \
+	/data/RPMS/hello-2.0-1.x86_64-signed.rpm
+runroot rpm -qa | sort
+],
+[0],
+[foo-1.0-1.noarch
+hello-2.0-1.x86_64
+],
+[])
+
+AT_CHECK([
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot rpm -qa | sort
+],
+[0],
+[foo-1.0-1.noarch
+gpg-pubkey-1964c5fc-58e63918
+hello-2.0-1.x86_64
+],
+[])
 AT_CLEANUP
 
 # ------------------------------

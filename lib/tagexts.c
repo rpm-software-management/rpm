@@ -742,17 +742,24 @@ static int headercolorTag(Header h, rpmtd td, headerGetFlags hgflags)
 
 static int archsuffixTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
+    const char *a = NULL;
     char * val;
 
     if (headerIsSource(h)) {
 	if (headerIsEntry(h, RPMTAG_NOSOURCE) ||
 	    headerIsEntry(h, RPMTAG_NOPATCH))
-	    val = xstrdup("nosrc");
+	    a = xstrdup("nosrc");
 	else
-	    val = xstrdup("src");
+	    a = xstrdup("src");
     } else {
-	val = xstrdup(headerGetString(h, RPMTAG_ARCH));
+	a = headerGetString(h, RPMTAG_ARCH);
     }
+
+    if (a)
+	val = rstrscat(NULL, ".", a, NULL);
+    else
+	val = xstrdup("");
+
     td->type = RPM_STRING_TYPE;
     td->data = val;
     td->count = 1;
