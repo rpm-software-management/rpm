@@ -147,12 +147,17 @@ run rpmbuild --quiet \
 
 run rpm -qp --qf '[%{FILENAMES} %{FILEMTIMES:date}\n]' "${RPMTEST}"/build/SRPMS/hello-1.0-1.src.rpm
 run rpm -qp --qf '[%{FILENAMES} %{FILEMTIMES:date}\n]' "${RPMTEST}"/build/RPMS/*/hello-1.0-1.*.rpm | grep FAQ
+runroot rpm -i --quiet --nodeps /build/RPMS/*/hello-1.0-1.*.rpm
+run rpm -q --qf '[%{FILENAMES} %{FILEMTIMES:date}\n]' hello-1.0-1 | grep FAQ
+ls -l "${RPMTEST}"/usr/share/doc/hello-1.0/FAQ | cut "-d " -f6-10
 ]],
 [0],
 [hello-1.0-modernize.patch Sun May  4 23:55:00 2042
 hello-1.0.tar.gz Sun May  4 23:55:00 2042
 hello.spec Sun May  4 23:55:00 2042
 /usr/share/doc/hello-1.0/FAQ Sun May  4 23:55:00 2042
+/usr/share/doc/hello-1.0/FAQ Sun May  4 23:55:00 2042
+May  4  2042
 ],
 [])
 AT_CLEANUP
