@@ -83,7 +83,16 @@ Old style generators, also known as "the external dependency generator", differ 
 ## Writing Dependency Generators
 Generally each type of dependency should be handled in one place. The idea is not that every package ships it's own generators but one central package is taking care. So generators should go either directly into RPM (talk to us on the rpm-maint list) or shipped in one central package dealing with the domain. This would be something like the interpreter of the language in question or the package containing a central reqistry or even just the directory where other packages are supposed to put their files into.
 
-In addition to globally defined macros, the following macros are exported to generators on per-package basis (rpm >= 4.15):
+Macros and other external data can be passed to generator scripts through the
+generator command line, for example to pass source package name and version
+to a generator:
+
+```
+%__foo_requires 	/some/script %{NAME} %{VERSION}
+```
+
+In addition to globally defined macros, the following macros are exported to
+generators on sub-package basis (rpm >= 4.15):
 - `%name`
 - `%epoch`
 - `%version`
