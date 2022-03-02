@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <dirent.h>
 #include <fcntl.h>
+#include <pthread.h>
 
 #ifndef	DYING	/* XXX already in "system.h" */
 #include <fnmatch.h>
@@ -302,9 +303,19 @@ struct rpmdbIndexIterator_s {
     int			ii_skipdata;
 };
 
+// Lock ordering: neither rpmmiLock nor rpmiiLock may be taken if rpmdbLock is
+// held, but rpmdbLock may be taken without holding rpmmiLock or rpmiiLock.
+static pthread_mutex_t rpmdbLock = PTHREAD_MUTEX_INITIALIZER;
 static rpmdb rpmdbRock;
+static pthread_mutex_t rpmmiLock = PTHREAD_MUTEX_INITIALIZER;
 static rpmdbMatchIterator rpmmiRock;
+static pthread_mutex_t rpmiiLock = PTHREAD_MUTEX_INITIALIZER;
 static rpmdbIndexIterator rpmiiRock;
+static rpmdbIndexIterator rpmdbIndexIteratorFreeInternal(rpmdbIndexIterator ii,
+							 int take_locks);
+static rpmdbMatchIterator rpmdbFreeIteratorInternal(rpmdbMatchIterator mi,
+						    int take_locks);
+static int rpmdbCloseInternal(rpmdb db, int take_locks);
 
 void rpmAtExit(void)
 {
@@ -312,14 +323,20 @@ void rpmAtExit(void)
     rpmdbMatchIterator mi;
     rpmdbIndexIterator ii;
 
+    pthread_mutex_lock(&rpmmiLock);
     while ((mi = rpmmiRock) != NULL)
-	rpmdbFreeIterator(mi);
+	rpmdbFreeIteratorInternal(mi, 0);
+    pthread_mutex_unlock(&rpmmiLock);
 
+    pthread_mutex_lock(&rpmiiLock);
     while ((ii = rpmiiRock) != NULL)
-	rpmdbIndexIteratorFree(ii);
+	rpmdbIndexIteratorFreeInternal(ii, 0);
+    pthread_mutex_unlock(&rpmiiLock);
 
+    pthread_mutex_lock(&rpmdbLock);
     while ((db = rpmdbRock) != NULL)
-	(void) rpmdbClose(db);
+	(void) rpmdbCloseInternal(db, 0);
+    pthread_mutex_unlock(&rpmdbLock);
 }
 
 rpmop rpmdbOp(rpmdb rpmdb, rpmdbOpX opx)
@@ -383,7 +400,7 @@ static int dbiForeach(dbiIndex *dbis, int ndbi,
     return rc;
 }
 
-int rpmdbClose(rpmdb db)
+static int rpmdbCloseInternal(rpmdb db, int take_locks)
 {
     rpmdb * prev, next;
     int rc = 0;
@@ -391,6 +408,8 @@ int rpmdbClose(rpmdb db)
     if (db == NULL)
 	goto exit;
 
+    if (take_locks)
+	pthread_mutex_lock(&rpmdbLock);
     prev = &rpmdbRock;
     while ((next = *prev) != NULL && next != db)
 	prev = &next->db_next;
@@ -427,7 +446,14 @@ int rpmdbClose(rpmdb db)
 	rpmsqActivate(0);
     }
 exit:
+    if (take_locks)
+	pthread_mutex_unlock(&rpmdbLock);
     return rc;
+}
+
+int rpmdbClose(rpmdb db)
+{
+    return rpmdbCloseInternal(db, 1);
 }
 
 static rpmdb newRpmdb(const char * root, const char * home,
@@ -498,8 +524,10 @@ static int openDatabase(const char * prefix,
     if (db == NULL)
 	return 1;
 
+    pthread_mutex_lock(&rpmdbLock);
     db->db_next = rpmdbRock;
     rpmdbRock = db;
+    pthread_mutex_unlock(&rpmdbLock);
 
     /* Try to ensure db home exists, error out if we can't even create */
     rc = rpmioMkpath(rpmdbHome(db), 0755, getuid(), getgid());
@@ -994,7 +1022,8 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
     return rc;
 }
 
-rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
+static rpmdbMatchIterator rpmdbFreeIteratorInternal(rpmdbMatchIterator mi,
+						    int take_locks)
 {
     rpmdbMatchIterator * prev, next;
     dbiIndex dbi = NULL;
@@ -1003,14 +1032,21 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
     if (mi == NULL)
 	return NULL;
 
+    if (take_locks)
+	pthread_mutex_lock(&rpmmiLock);
     prev = &rpmmiRock;
     while ((next = *prev) != NULL && next != mi)
 	prev = &next->mi_next;
     if (next) {
 	*prev = next->mi_next;
 	next->mi_next = NULL;
-    } else
+    } else {
+	if (take_locks)
+	    pthread_mutex_unlock(&rpmmiLock);
 	return NULL;
+    }
+    if (take_locks)
+	pthread_mutex_unlock(&rpmmiLock);
 
     pkgdbOpen(mi->mi_db, 0, &dbi);
 
@@ -1038,6 +1074,11 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
     (void) rpmsqPoll();
 
     return NULL;
+}
+
+rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
+{
+    return rpmdbFreeIteratorInternal(mi, 1);
 }
 
 unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi)
@@ -1682,8 +1723,10 @@ rpmdbMatchIterator rpmdbNewIterator(rpmdb db, rpmDbiTagVal dbitag)
     mi->mi_hdrchk = NULL;
 
     /* Chain cursors for teardown on abnormal exit. */
+    pthread_mutex_lock(&rpmmiLock);
     mi->mi_next = rpmmiRock;
     rpmmiRock = mi;
+    pthread_mutex_unlock(&rpmmiLock);
 
     return mi;
 };
@@ -2005,21 +2048,29 @@ unsigned int rpmdbIndexIteratorTagNum(rpmdbIndexIterator ii, unsigned int nr)
     return dbiIndexRecordFileNumber(ii->ii_set, nr);
 }
 
-rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii)
+static rpmdbIndexIterator rpmdbIndexIteratorFreeInternal(rpmdbIndexIterator ii,
+							 int take_locks)
 {
     rpmdbIndexIterator * prev, next;
 
     if (ii == NULL)
         return NULL;
 
+    if (take_locks)
+	pthread_mutex_lock(&rpmiiLock);
     prev = &rpmiiRock;
     while ((next = *prev) != NULL && next != ii)
         prev = &next->ii_next;
     if (next) {
         *prev = next->ii_next;
         next->ii_next = NULL;
-    } else
+    } else {
+	if (take_locks)
+	    pthread_mutex_unlock(&rpmiiLock);
 	return NULL;
+    }
+    if (take_locks)
+	pthread_mutex_unlock(&rpmiiLock);
 
     ii->ii_dbc = dbiCursorFree(ii->ii_dbi, ii->ii_dbc);
     ii->ii_dbi = NULL;
@@ -2031,6 +2082,11 @@ rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii)
 
     ii = _free(ii);
     return NULL;
+}
+
+rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii)
+{
+    return rpmdbIndexIteratorFreeInternal(ii, 1);
 }
 
 static void logAddRemove(const char *dbiname, int removing, rpmtd tagdata)
