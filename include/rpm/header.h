@@ -147,6 +147,14 @@ Header headerRead(FD_t fd, int magicp);
 int headerWrite(FD_t fd, Header h, int magicp);
 
 /** \ingroup header
+ * Write lead, signature header and immutable header to file
+ * @param fd		file handle
+ * @param h		header
+ * @return		0 on success, 1 on error
+ */
+int headerWriteAsPackage(FD_t fd, Header h);
+
+/** \ingroup header
  * Check if tag is in header.
  * @param h		header
  * @param tag		tag

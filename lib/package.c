@@ -14,6 +14,7 @@
 #include <rpm/rpmkeyring.h>
 
 #include "lib/rpmlead.h"
+#include "lib/signature.h"
 #include "rpmio/rpmio_internal.h"	/* fd digest bits */
 #include "lib/header_internal.h"	/* XXX headerCheck */
 #include "lib/rpmvs.h"
@@ -404,5 +405,26 @@ exit:
     return rc;
 }
 
+Header headerGetSigheader(Header h, Header ih) {
+  const struct taglate_s *xl;
+  Header sh = headerNew();
 
+  for (xl = xlateTags; xl->stag; xl++) {
+    if (!headerIsEntry(h, xl->xtag))
+      continue;
 
+    /* Some tags may exist in either header, but never both */
+    if (xl->quirk && headerIsEntry(ih, xl->xtag)) {
+      continue;
+    }
+
+    struct rpmtd_s td;
+    if (headerGet(h, xl->xtag, &td, HEADERGET_DEFAULT)) {
+      td.tag = xl->stag;
+      (void) headerPut(sh, &td, HEADERPUT_DEFAULT);
+      rpmtdFreeData(&td);
+    }
+  }
+
+  return headerReload(sh, RPMTAG_HEADERSIGNATURES);
+}

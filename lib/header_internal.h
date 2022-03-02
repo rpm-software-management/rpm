@@ -94,6 +94,11 @@ ssize_t Freadall(FD_t fd, void * buf, ssize_t size);
 
 RPM_GNUC_INTERNAL
 int headerIsSourceHeuristic(Header h);
+
+/* take signature tags from header and produce separate signature header.
+   Immutable original header needed to avoid duplicates */
+RPM_GNUC_INTERNAL
+Header headerGetSigheader(Header h, Header ih);
 #ifdef __cplusplus
 }   
 #endif

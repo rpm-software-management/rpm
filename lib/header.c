@@ -16,6 +16,8 @@
 #include <rpm/rpmstring.h>
 #include "lib/header_internal.h"
 #include "lib/misc.h"			/* tag function proto */
+#include "lib/rpmlead.h"
+#include "lib/signature.h"
 
 #include "debug.h"
 
@@ -2104,4 +2106,36 @@ exit:
     free(buf);
 
     return h;
+}
+
+int headerWriteAsPackage(FD_t fd, Header h)
+{
+    rpmRC rc = RPMRC_FAIL;
+    struct rpmtd_s td;
+    Header ih = NULL;
+    Header sh = NULL;
+
+    if (!headerGet(h, RPMTAG_HEADERIMMUTABLE, &td, HEADERGET_DEFAULT))
+	goto exit;
+
+    ih = headerImport(td.data, td.count, HEADERIMPORT_COPY);
+    rpmtdFreeData(&td);
+
+    rc = rpmLeadWrite(fd, h);
+    if (rc != RPMRC_OK)
+	goto exit;
+
+    sh = headerGetSigheader(h, ih);
+    if (rpmWriteSignature(fd, sh))
+	goto exit;
+
+    if (headerWrite(fd, ih, HEADER_MAGIC_YES))
+	goto exit;
+
+    rc = RPMRC_OK;
+
+exit:
+    ih = headerFree(ih);
+    sh = headerFree(sh);
+    return (rc == RPMRC_OK) ? 0 : 1;
 }
