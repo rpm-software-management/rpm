@@ -1774,7 +1774,10 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     int TsmPreDone = 0; /* TsmPre hook hasn't been called */
     int nelem = rpmtsNElements(ts);
     /* Ignore SIGPIPE for the duration of transaction */
-    rpmsqAction_t oact = rpmsqSetAction(SIGPIPE, RPMSQ_IGN);
+    struct sigaction act, oact;
+    memset(&act, 0, sizeof(act));
+    act.sa_handler = SIG_IGN;
+    sigaction(SIGPIPE, &act, &oact);
     
     /* Force default 022 umask during transaction for consistent results */
     mode_t oldmask = umask(022);
@@ -1887,6 +1890,6 @@ exit:
     rpmpsFree(tsprobs);
     rpmtxnEnd(txn);
     /* Restore SIGPIPE *after* unblocking signals in rpmtxnEnd() */
-    rpmsqSetAction(SIGPIPE, oact);
+    sigaction(SIGPIPE, &oact, NULL);
     return rc;
 }

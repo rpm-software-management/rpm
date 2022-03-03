@@ -4,7 +4,7 @@
 /** \ingroup rpmio
  * \file rpmio/rpmsq.h
  *
- * Signal Queue API
+ * Signal Queue API (obsolete, do not use)
  */
 #include <rpm/rpmsw.h>
 #include <signal.h>
