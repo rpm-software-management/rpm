@@ -580,7 +580,7 @@ package or when debugging this package.\
 # sqlite Sqlite database
 # dummy dummy backend (no actual functionality)
 #
-%_db_backend	      sqlite
+%_db_backend	      @DB_BACKEND@
 
 #==============================================================================
 # ---- GPG/PGP/PGP5 signature macros.
