@@ -299,7 +299,6 @@ int rpmcliVerifySignatures(rpmts ts, ARGV_const_t argv)
 	}
 
 	Fclose(fd);
-	rpmsqPoll();
     }
     rpmKeyringFree(keyring);
     return res;

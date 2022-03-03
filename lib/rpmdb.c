@@ -982,8 +982,6 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 
     mi = _free(mi);
 
-    (void) rpmsqPoll();
-
     return NULL;
 }
 
@@ -1704,8 +1702,6 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
     rpmdbMatchIterator mi = NULL;
 
     if (db != NULL) {
-	(void) rpmsqPoll();
-
 	if (rpmtag == RPMDBI_PACKAGES)
 	    mi = pkgdbIterInit(db, keyp, keylen);
 	else
@@ -1727,8 +1723,6 @@ rpmdbMatchIterator rpmdbInitPrefixIterator(rpmdb db, rpmDbiTagVal rpmtag,
 	return NULL;
 
     if (db != NULL && rpmtag != RPMDBI_PACKAGES) {
-	(void) rpmsqPoll();
-
 
 	if (indexOpen(db, dbtag, 0, &dbi) == 0) {
 	    int rc = 0;
@@ -1812,8 +1806,6 @@ rpmdbIndexIterator rpmdbIndexIteratorInit(rpmdb db, rpmDbiTag rpmtag)
 
     if (db == NULL)
 	return NULL;
-
-    (void) rpmsqPoll();
 
     if (indexOpen(db, rpmtag, 0, &dbi))
 	return NULL;
