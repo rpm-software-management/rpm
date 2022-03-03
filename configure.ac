@@ -468,6 +468,8 @@ AS_IF([test "x$enable_libelf" != "xno"], [
 AC_SUBST(WITH_LIBDW_LIB)
 AM_CONDITIONAL(LIBDW,[test "$WITH_LIBDW" = yes])
 
+DB_BACKEND='dummy'
+
 #=================
 # Process --enable-ndb
 AC_ARG_ENABLE([ndb], [AS_HELP_STRING([--enable-ndb],[enable the new rpm database format])],
@@ -480,6 +482,7 @@ esac],
 AS_IF([test "$enable_ndb" = yes],[
   AC_DEFINE(ENABLE_NDB, 1, [Enable new rpm database format?])
   AC_CHECK_FUNCS(mremap, [], [], [#include <sys/mman.h>])
+  DB_BACKEND='ndb'
 ])
 AM_CONDITIONAL([NDB], [test "$enable_ndb" = yes])
 
@@ -517,8 +520,10 @@ if test "x$have_sqlite" = "xyes"; then
   AC_DEFINE([WITH_SQLITE], [1], [Define if SQLITE is available])
   SQLITE_REQUIRES=sqlite
   AC_SUBST(SQLITE_REQUIRES)
+  DB_BACKEND='sqlite'
 fi
 AM_CONDITIONAL([SQLITE], [test "x$have_sqlite" = "xyes"])
+AC_SUBST(DB_BACKEND)
 
 AM_GNU_GETTEXT_VERSION([0.18.2])
 AM_GNU_GETTEXT([external])
