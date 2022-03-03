@@ -270,7 +270,6 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts, rpmgi gi)
     while ((h = rpmgiNext(gi)) != NULL) {
 	int rc;
 
-	rpmsqPoll();
 	if ((rc = qva->qva_showPackage(qva, ts, h)) != 0)
 	    ec = rc;
 	headerFree(h);
@@ -288,7 +287,6 @@ static int rpmcliShowMatches(QVA_t qva, rpmts ts, rpmdbMatchIterator mi)
 
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	int rc;
-	rpmsqPoll();
 	if ((rc = qva->qva_showPackage(qva, ts, h)) != 0)
 	    ec = rc;
     }
@@ -313,8 +311,6 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
     const char * s;
     int i;
     rpmdbMatchIterator mi = NULL;
-
-    (void) rpmsqPoll();
 
     if (qva->qva_showPackage == NULL)
 	goto exit;
