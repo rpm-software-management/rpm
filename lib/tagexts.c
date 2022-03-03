@@ -748,9 +748,9 @@ static int archsuffixTag(Header h, rpmtd td, headerGetFlags hgflags)
     if (headerIsSource(h)) {
 	if (headerIsEntry(h, RPMTAG_NOSOURCE) ||
 	    headerIsEntry(h, RPMTAG_NOPATCH))
-	    a = xstrdup("nosrc");
+	    a = "nosrc";
 	else
-	    a = xstrdup("src");
+	    a = "src";
     } else {
 	a = headerGetString(h, RPMTAG_ARCH);
     }
