@@ -423,9 +423,6 @@ int rpmdbClose(rpmdb db)
 
     db = _free(db);
 
-    if (rpmdbRock == NULL) {
-	rpmsqActivate(0);
-    }
 exit:
     return rc;
 }
@@ -507,11 +504,6 @@ static int openDatabase(const char * prefix,
 	/* Open just bare minimum when rebuilding a potentially damaged db */
 	int justPkgs = (db->db_flags & RPMDB_FLAG_REBUILD) &&
 		       ((db->db_mode & O_ACCMODE) == O_RDONLY);
-	/* Enable signal queue on the first db open */
-	if (db->db_next == NULL) {
-	    rpmsqActivate(1);
-	}
-
 	rc = doOpen(db, justPkgs);
 
 	if (!db->db_descr)
