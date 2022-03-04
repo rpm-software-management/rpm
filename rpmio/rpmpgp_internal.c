@@ -1228,7 +1228,7 @@ rpmRC pgpVerifySignature(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx)
     if (key && key->alg) {
 	pgpDigAlg sa = sig->alg;
 	pgpDigAlg ka = key->alg;
-	if (sa && sa->verify) {
+	if (sa && sa->verify && sig->pubkey_algo == key->pubkey_algo) {
 	    if (sa->verify(ka, sa, hash, hashlen, sig->hash_algo) == 0) {
 		res = RPMRC_OK;
 	    }
