@@ -627,6 +627,18 @@ gpg(a72b7d4f62837bea) = 4:a72b7d4f62837bea-62553e62
 [])
 AT_CLEANUP
 
+AT_SETUP([rpmkeys type confusion])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpmkeys --import /data/keys/type-confusion.asc
+],
+[1],
+[],
+[error: /data/keys/type-confusion.asc: key 1 import failed.]
+)
+AT_CLEANUP
+
 # ------------------------------
 # Test pre-built package verification
 AT_SETUP([rpmkeys -K <signed> 1])
