@@ -576,6 +576,11 @@ static int pgpCurveByOid(const uint8_t *p, int l)
     return 0;
 }
 
+static int isKey(pgpDigParams keyp)
+{
+    return keyp->tag == PGPTAG_PUBLIC_KEY || keyp->tag == PGPTAG_PUBLIC_SUBKEY;
+}
+
 static int pgpPrtPubkeyParams(uint8_t pubkey_algo,
 		const uint8_t *p, const uint8_t *h, size_t hlen,
 		pgpDigParams keyp)
@@ -594,9 +599,7 @@ static int pgpPrtPubkeyParams(uint8_t pubkey_algo,
     rc = processMpis(keyalg->mpis, keyalg, p, pend);
 
     /* We can't handle more than one key at a time */
-    if (rc == 0 && keyp->alg == NULL && (keyp->tag == PGPTAG_PUBLIC_KEY ||
-	keyp->tag == PGPTAG_PUBLIC_SUBKEY))
-
+    if (rc == 0 && keyp->alg == NULL && isKey(keyp))
 	keyp->alg = keyalg;
     else
 	pgpDigAlgFree(keyalg);
@@ -1200,6 +1203,9 @@ rpmRC pgpVerifySignature(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx)
     if (sig == NULL || ctx == NULL)
 	goto exit;
 
+    if (sig->tag != PGPTAG_SIGNATURE)
+	goto exit;
+
     if (sig->hash != NULL)
 	rpmDigestUpdate(ctx, sig->hash, sig->hashlen);
 
@@ -1226,6 +1232,8 @@ rpmRC pgpVerifySignature(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx)
      * done all we can, return NOKEY to indicate "looks okay but dunno."
      */
     if (key && key->alg) {
+	if (!isKey(key))
+	    goto exit;
 	pgpDigAlg sa = sig->alg;
 	pgpDigAlg ka = key->alg;
 	if (sa && sa->verify && sig->pubkey_algo == key->pubkey_algo) {
