@@ -129,6 +129,7 @@ EXTRA_DIST += data/keys/CVE-2021-3521-badbind.asc
 EXTRA_DIST += data/keys/CVE-2021-3521-nosubsig.asc
 EXTRA_DIST += data/keys/CVE-2021-3521-nosubsig-last.asc
 EXTRA_DIST += data/keys/different-creation-times.asc
+EXTRA_DIST += data/keys/type-confusion.asc
 EXTRA_DIST += data/keys/different-creation-times.secret
 EXTRA_DIST += data/keys/neal.pgp
 EXTRA_DIST += data/sigs/neal-hi.pgp
