@@ -75,6 +75,17 @@ int rpmvsVerify(struct rpmvs_s *sis, int type,
 rpmRC rpmpkgRead(struct rpmvs_s *vs, FD_t fd,
 		hdrblob *sigblobp, hdrblob *blobp, char **emsg);
 
+/** \ingroup header
+ * Return package header from file handle.
+ * @param vs		verify flags
+ * @param fd		file handle
+ * @param fn		file name
+ * @param[out] hdrp	address of header (or NULL)
+ * @return		RPMRC_OK on success
+ */
+rpmRC rpmReadPackageHeader(struct rpmvs_s * vs, FD_t fd,
+		const char * fn, Header * hdrp);
+
 #ifdef __cplusplus
 }
 #endif

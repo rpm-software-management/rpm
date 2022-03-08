@@ -145,7 +145,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg);
 rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg);
 
 /** \ingroup header
- * Return package header from file handle, verifying digests/signatures.
+ * Return package header from file handle, verifying digests/signatures of the whole file.
  * @param ts		transaction set
  * @param fd		file handle
  * @param fn		file name

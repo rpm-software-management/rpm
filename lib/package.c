@@ -343,14 +343,28 @@ static void loghdrmsg(struct rpmsinfo_s *sinfo, struct pkgdata_s *pkgdata,
 
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 {
+    Header h = NULL;
+    rpmVSFlags vsflags = rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD;
+    rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+
+    struct rpmvs_s *vs = rpmvsCreate(0, vsflags, keyring);
+
+    rpmRC rc = rpmReadPackageHeader(vs, fd, fn, &h);
+
+    *hdrp = h;
+
+    rpmKeyringFree(keyring);
+    rpmvsFree(vs);
+    return rc;
+}
+
+rpmRC rpmReadPackageHeader(struct rpmvs_s * vs, FD_t fd, const char * fn, Header * hdrp)
+{
     char *msg = NULL;
     Header h = NULL;
     Header sigh = NULL;
     hdrblob blob = NULL;
     hdrblob sigblob = NULL;
-    rpmVSFlags vsflags = rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD;
-    rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
-    struct rpmvs_s *vs = rpmvsCreate(0, vsflags, keyring);
     struct pkgdata_s pkgdata = {
 	.msgfunc = loghdrmsg,
 	.fn = fn ? fn : Fdescr(fd),
@@ -398,8 +412,6 @@ exit:
     hdrblobFree(blob);
     headerFree(sigh);
     headerFree(h);
-    rpmKeyringFree(keyring);
-    rpmvsFree(vs);
     free(msg);
 
     return rc;
