@@ -3,6 +3,7 @@
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmts.h> /* for rpmVSFlags */
+#include <rpm/rpmpgp.h> /* DIGEST_CTX */
 #include "lib/header_internal.h"
 
 /* siginfo range bits */
