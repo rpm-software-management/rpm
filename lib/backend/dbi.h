@@ -277,6 +277,9 @@ extern struct rpmdbOps_s sqlite_dbops;
 #endif
 
 RPM_GNUC_INTERNAL
+extern struct rpmdbOps_s filedb_dbops;
+
+RPM_GNUC_INTERNAL
 extern struct rpmdbOps_s dummydb_dbops;
 
 #ifdef __cplusplus

@@ -24,6 +24,7 @@ const struct rpmdbOps_s *backends[] = {
 #if defined(WITH_BDB_RO)
     &bdbro_dbops,
 #endif
+    &filedb_dbops,
     &dummydb_dbops,
     NULL
 };
@@ -130,6 +131,9 @@ dbDetectBackend(rpmdb rdb)
 		    ondisk->name, ondisk->path, ondisk->name);
 	    }
 	    rdb->db_ops = ondisk;
+	} else {
+	    rdb->db_ops = cfg;
+	    rpmlog(RPMLOG_INFO, "creating new database\n");
 	}
     }
 
