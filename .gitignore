@@ -4,11 +4,6 @@
 !.mailmap
 /config*
 !configure.ac
-/db3
-/db
-/db-4.5.20
-/lib/rpmdb_*
-!/lib/rpmdb_internal.h
 /po/*.gmo
 *.*~
 *.o
@@ -27,13 +22,9 @@ Makefile.in.in
 /aclocal.m4
 /autom4te.cache
 /build-aux
-/db.h
-/debugedit
 /doc/librpm.doxy
 /doc/librpm/html
 /elfdeps
-/include
-/lib/rpmints.h
 /lib/stamp-h2
 /lib/tagtbl.C
 /libtool
@@ -69,10 +60,6 @@ Makefile.in.in
 /rpmrc
 /rpmsign
 /rpmspec
-/scripts/macros.perl
-/scripts/macros.php
-/scripts/macros.python
-/sepdebugcrcfix
 /stamp-h1
 /tests/atconfig
 /tests/atlocal
