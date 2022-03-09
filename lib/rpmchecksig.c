@@ -90,19 +90,6 @@ int rpmcliImportPubkeys(rpmts ts, ARGV_const_t argv)
 	char *t = NULL;
 	int iorc;
 
-	/* If arg looks like a keyid, then attempt keyserver retrieve. */
-	if (rstreqn(fn, "0x", 2)) {
-	    const char * s = fn + 2;
-	    int i;
-	    for (i = 0; *s && isxdigit(*s); s++, i++)
-		{};
-	    if (i == 8 || i == 16) {
-		t = rpmExpand("%{_hkp_keyserver_query}", fn+2, NULL);
-		if (t && *t != '%')
-		    fn = t;
-	    }
-	}
-
 	/* Read the file and try to import all contained keys */
 	iorc = rpmioSlurp(fn, &buf, &blen);
 	if (iorc || buf == NULL || blen < 64) {
