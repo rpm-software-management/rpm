@@ -2,7 +2,7 @@
 #define _RPMPROB_H
 
 /** \ingroup rpmprob
- * \file lib/rpmprob.h
+ * \file rpmprob.h
  * Structures and prototypes used for an rpm problem item.
  */
 

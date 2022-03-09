@@ -2,7 +2,7 @@
  * by Chris Venter */
 
 /** \ingroup rpmio
- * \file rpmio/rpmbase64.h
+ * \file rpmbase64.h
  *
  * Base64 encoding and decoding API
  */

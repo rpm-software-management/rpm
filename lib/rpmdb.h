@@ -2,7 +2,7 @@
 #define H_RPMDB
 
 /** \ingroup rpmdb dbi
- * \file lib/rpmdb.h
+ * \file rpmdb.h
  * RPM database API.
  */
 

@@ -2,7 +2,7 @@
 #define	_H_ARGV_
 
 /** \ingroup rpmargv
- * \file rpmio/argv.h
+ * \file argv.h
  *
  * Argument Manipulation API.
  */

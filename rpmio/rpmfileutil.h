@@ -2,7 +2,7 @@
 #define _RPMFILEUTIL_H
 
 /** \ingroup rpmfileutil rpmio
- * \file rpmio/rpmfileutil.h
+ * \file rpmfileutil.h
  * File and path manipulation helper functions.
  */
 

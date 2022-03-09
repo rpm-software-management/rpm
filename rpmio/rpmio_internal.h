@@ -2,7 +2,7 @@
 #define	H_RPMIO_INTERNAL
 
 /** \ingroup rpmio
- * \file rpmio/rpmio_internal.h
+ * \file rpmio_internal.h
  */
 
 #include <rpm/rpmio.h>

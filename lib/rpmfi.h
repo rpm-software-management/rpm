@@ -2,7 +2,7 @@
 #define H_RPMFI
 
 /** \ingroup rpmfi
- * \file lib/rpmfi.h
+ * \file rpmfi.h
  * File info set iterator API.
  */
 

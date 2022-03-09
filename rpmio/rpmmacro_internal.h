@@ -2,7 +2,7 @@
 #define	_H_MACRO_INTERNAL
 
 /** \ingroup rpmio
- * \file rpmio/rpmmacro_internal.h
+ * \file rpmmacro_internal.h
  *
  * Internal Macro API
  */

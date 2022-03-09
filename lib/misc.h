@@ -2,7 +2,7 @@
 #define H_MISC
 
 /**
- * \file lib/misc.h
+ * \file misc.h
  *
  */
 

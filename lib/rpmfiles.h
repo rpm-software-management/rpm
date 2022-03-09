@@ -2,7 +2,7 @@
 #define _RPMFILES_H
 
 /** \ingroup rpmfilesles
- * \file lib/rpmfiles.h
+ * \file rpmfiles.h
  * File info set API.
  */
 #include <sys/types.h>

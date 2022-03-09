@@ -2,7 +2,7 @@
 #define H_RPMTE
 
 /** \ingroup rpmts rpmte
- * \file lib/rpmte.h
+ * \file rpmte.h
  * Structures used for an "rpmte" transaction element.
  */
 

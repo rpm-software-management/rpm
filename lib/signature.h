@@ -2,7 +2,7 @@
 #define	H_SIGNATURE
 
 /** \ingroup signature
- * \file lib/signature.h
+ * \file signature.h
  * Generate and verify signatures.
  */
 #include <rpm/rpmtypes.h>

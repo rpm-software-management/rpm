@@ -2,7 +2,7 @@
 #define _RPMSTRPOOL_H
 
 /** \ingroup rpmstrpool
- * \file rpmio/rpmstrpool.h
+ * \file rpmstrpool.h
  *
  * String pools manipulation helper functions
  *

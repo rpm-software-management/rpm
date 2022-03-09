@@ -2,7 +2,7 @@
 #define H_RPMDS
 
 /** \ingroup rpmdep rpmtrans
- * \file lib/rpmds.h
+ * \file rpmds.h
  * Structure(s) used for dependency tag sets.
  */
 

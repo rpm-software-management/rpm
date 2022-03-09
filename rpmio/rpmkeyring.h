@@ -2,7 +2,7 @@
 #define _RPMKEYRING_H
 
 /** \ingroup rpmkeyring
- * \file rpmio/rpmkeyring.h
+ * \file rpmkeyring.h
  *
  * RPM keyring API
  */

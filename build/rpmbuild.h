@@ -2,7 +2,7 @@
 #define	_H_RPMBUILD_
 
 /** \ingroup rpmbuild
- * \file build/rpmbuild.h
+ * \file rpmbuild.h
  *  This is the *only* module users of librpmbuild should need to include.
  */
 

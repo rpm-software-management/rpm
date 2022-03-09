@@ -2,7 +2,7 @@
 #define _RPMTYPES_H
 
 /** \ingroup rpmtypes
- * \file lib/rpmtypes.h
+ * \file rpmtypes.h
  *
  * Typedefs for RPM abstract data types.
  * @todo The grouping needs love to look sane...

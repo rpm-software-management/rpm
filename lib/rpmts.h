@@ -2,7 +2,7 @@
 #define H_RPMTS
 
 /** \ingroup rpmts
- * \file lib/rpmts.h
+ * \file rpmts.h
  * Structures and prototypes used for an "rpmts" transaction set.
  */
 

@@ -2,7 +2,7 @@
 #define H_RPMPS
 
 /** \ingroup rpmps
- * \file lib/rpmps.h
+ * \file rpmps.h
  * Structures and prototypes used for an "rpmps" problem set.
  */
 

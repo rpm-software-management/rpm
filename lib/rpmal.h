@@ -2,7 +2,7 @@
 #define H_RPMAL
 
 /** \ingroup rpmdep rpmtrans
- * \file lib/rpmal.h
+ * \file rpmal.h
  * Structures used for managing added/available package lists.
  */
 
