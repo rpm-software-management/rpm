@@ -45,7 +45,7 @@ DIST_SUBDIRS = po misc luaext rpmio lib sign build python scripts fileattrs docs
 
 pkgconfigdir = $(libdir)/pkgconfig
 
-AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/
+AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_srcdir)/include/
 AM_CPPFLAGS += -I$(top_srcdir)/build
 AM_CPPFLAGS += -I$(top_srcdir)/lib
 AM_CPPFLAGS += -I$(top_srcdir)/rpmio
@@ -58,46 +58,46 @@ AM_CPPFLAGS += -DLIBRPMALIAS_FILENAME="\"rpmpopt-${VERSION}\""
 pkginclude_HEADERS =
 nodist_pkginclude_HEADERS =
 
-pkginclude_HEADERS += rpmio/argv.h
-pkginclude_HEADERS += rpmio/rpmcrypto.h
-pkginclude_HEADERS += rpmio/rpmio.h
-pkginclude_HEADERS += rpmio/rpmurl.h
-pkginclude_HEADERS += rpmio/rpmmacro.h
-pkginclude_HEADERS += rpmio/rpmlog.h
-pkginclude_HEADERS += rpmio/rpmpgp.h
-pkginclude_HEADERS += rpmio/rpmsq.h
-pkginclude_HEADERS += rpmio/rpmstring.h
-pkginclude_HEADERS += rpmio/rpmstrpool.h
-pkginclude_HEADERS += rpmio/rpmsw.h
-pkginclude_HEADERS += rpmio/rpmfileutil.h
-pkginclude_HEADERS += rpmio/rpmutil.h
-pkginclude_HEADERS += rpmio/rpmkeyring.h
-pkginclude_HEADERS += rpmio/rpmbase64.h
-pkginclude_HEADERS += rpmio/rpmver.h
+pkginclude_HEADERS += include/rpm/argv.h
+pkginclude_HEADERS += include/rpm/rpmcrypto.h
+pkginclude_HEADERS += include/rpm/rpmio.h
+pkginclude_HEADERS += include/rpm/rpmurl.h
+pkginclude_HEADERS += include/rpm/rpmmacro.h
+pkginclude_HEADERS += include/rpm/rpmlog.h
+pkginclude_HEADERS += include/rpm/rpmpgp.h
+pkginclude_HEADERS += include/rpm/rpmsq.h
+pkginclude_HEADERS += include/rpm/rpmstring.h
+pkginclude_HEADERS += include/rpm/rpmstrpool.h
+pkginclude_HEADERS += include/rpm/rpmsw.h
+pkginclude_HEADERS += include/rpm/rpmfileutil.h
+pkginclude_HEADERS += include/rpm/rpmutil.h
+pkginclude_HEADERS += include/rpm/rpmkeyring.h
+pkginclude_HEADERS += include/rpm/rpmbase64.h
+pkginclude_HEADERS += include/rpm/rpmver.h
 
-pkginclude_HEADERS += lib/header.h
-pkginclude_HEADERS += lib/rpmdb.h
-pkginclude_HEADERS += lib/rpmcallback.h
-pkginclude_HEADERS += lib/rpmcli.h
-pkginclude_HEADERS += lib/rpmlib.h
-pkginclude_HEADERS += lib/rpmds.h
-pkginclude_HEADERS += lib/rpmfi.h
-pkginclude_HEADERS += lib/rpmfiles.h
-pkginclude_HEADERS += lib/rpmpol.h
-pkginclude_HEADERS += lib/rpmps.h
-pkginclude_HEADERS += lib/rpmprob.h
-pkginclude_HEADERS += lib/rpmtag.h
-pkginclude_HEADERS += lib/rpmtd.h
-pkginclude_HEADERS += lib/rpmte.h
-pkginclude_HEADERS += lib/rpmts.h
-pkginclude_HEADERS += lib/rpmtypes.h
-pkginclude_HEADERS += lib/rpmarchive.h
+pkginclude_HEADERS += include/rpm/header.h
+pkginclude_HEADERS += include/rpm/rpmdb.h
+pkginclude_HEADERS += include/rpm/rpmcallback.h
+pkginclude_HEADERS += include/rpm/rpmcli.h
+pkginclude_HEADERS += include/rpm/rpmlib.h
+pkginclude_HEADERS += include/rpm/rpmds.h
+pkginclude_HEADERS += include/rpm/rpmfi.h
+pkginclude_HEADERS += include/rpm/rpmfiles.h
+pkginclude_HEADERS += include/rpm/rpmpol.h
+pkginclude_HEADERS += include/rpm/rpmps.h
+pkginclude_HEADERS += include/rpm/rpmprob.h
+pkginclude_HEADERS += include/rpm/rpmtag.h
+pkginclude_HEADERS += include/rpm/rpmtd.h
+pkginclude_HEADERS += include/rpm/rpmte.h
+pkginclude_HEADERS += include/rpm/rpmts.h
+pkginclude_HEADERS += include/rpm/rpmtypes.h
+pkginclude_HEADERS += include/rpm/rpmarchive.h
 
-pkginclude_HEADERS += sign/rpmsign.h
+pkginclude_HEADERS += include/rpm/rpmsign.h
 
-pkginclude_HEADERS += build/rpmbuild.h
-pkginclude_HEADERS += build/rpmfc.h
-pkginclude_HEADERS += build/rpmspec.h
+pkginclude_HEADERS += include/rpm/rpmbuild.h
+pkginclude_HEADERS += include/rpm/rpmfc.h
+pkginclude_HEADERS += include/rpm/rpmspec.h
 
 
 bin_PROGRAMS =		rpm rpm2cpio rpmbuild rpmdb rpmkeys rpmsign rpmspec
@@ -295,18 +295,7 @@ distclean-local:
 	rm -rf Doxytags
 	rm -f stamp-h.in
 
-$(top_srcdir)/preinstall.am: Makefile.am
-	rm -f $(top_srcdir)/preinstall.am
-	@for f in $(HEADERS); do \
-	  b=`basename $$f`; \
-	  echo 'include/rpm/'$$b': '$$f' include/rpm/$$(dirstamp)' >> $(top_srcdir)/preinstall.am;\
-	  echo '	$$(INSTALL_DATA) $$(top_srcdir)/'$$f' include/rpm/'$$b >> $(top_srcdir)/preinstall.am; \
-	  echo 'BUILT_SOURCES += include/rpm/'$$b >> $(top_srcdir)/preinstall.am; \
-	  echo 'CLEANFILES += include/rpm/'$$b  >> $(top_srcdir)/preinstall.am; \
-	 done
-
 include/rpm/$(dirstamp):
 	@$(MKDIR_P) include/rpm
 	@: > include/rpm/$(dirstamp)
 
-include $(top_srcdir)/preinstall.am

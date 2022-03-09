@@ -3,7 +3,7 @@
 include $(top_srcdir)/rpm.am
 AM_CFLAGS = @RPMCFLAGS@
 
-AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/
+AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_srcdir)/include
 AM_CPPFLAGS += @WITH_POPT_INCLUDE@
 AM_CPPFLAGS += @LUA_CFLAGS@
 AM_CPPFLAGS += -I$(top_srcdir)/misc
@@ -73,9 +73,9 @@ librpm_la_LIBADD += $(SQLITE_LIBS)
 librpm_la_SOURCES += backend/sqlite.c
 endif
 
-tagtbl.C: Makefile.am $(srcdir)/rpmtag.h gentagtbl.sh
+tagtbl.C: Makefile.am $(top_srcdir)/include/rpm/rpmtag.h gentagtbl.sh
 	@AWK=${AWK} ${SHELL} $(srcdir)/gentagtbl.sh \
-		    	     $(srcdir)/rpmtag.h > $@.new && \
+		$(top_srcdir)/include/rpm/rpmtag.h > $@.new && \
 	 mv -f $@.new $@
 BUILT_SOURCES = tagtbl.C
 
