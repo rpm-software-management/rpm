@@ -1158,6 +1158,21 @@ static uint32_t getElfColor(const char *fn)
     return color;
 }
 
+struct skipped_extension_s {
+	const char *extension;
+	const char *magic_ftype;
+	const char *magic_fmime;
+};
+
+static const struct skipped_extension_s skipped_extensions[] = {
+	{ ".pm", "Perl5 module source text", "text/plain" },
+	{ ".c",  "C Code",                   "text/x-c"   },
+	{ ".h",  "C Header",                 "text/x-c"   },
+	{ ".la", "libtool library file",     "text/plain" },
+	{ ".pc", "pkgconfig file",           "text/plain" },
+	{ NULL, NULL, NULL }
+};
+
 rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 {
     int msflags = MAGIC_CHECK | MAGIC_COMPRESS | MAGIC_NO_CHECK_TOKENS | MAGIC_ERROR;
@@ -1217,10 +1232,11 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 
     #pragma omp for reduction(+:nerrors)
     for (int ix = 0; ix < fc->nfiles; ix++) {
-	const char * fmime;
-	const char * ftype;
+	const char * fmime = NULL;
+	const char * ftype = NULL;
 	const char * s = argv[ix];
 	size_t slen = strlen(s);
+	int extension_index = 0;
 	int fcolor = RPMFC_BLACK;
 	rpm_mode_t mode = (fmode ? fmode[ix] : 0);
 	int is_executable = (mode & (S_IXUSR|S_IXGRP|S_IXOTH));
@@ -1234,27 +1250,25 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	case S_IFLNK:
 	case S_IFREG:
 	default:
-	    /* XXX all files with extension ".pm" are perl modules for now. */
-	    if (rpmFileHasSuffix(s, ".pm"))
-		ftype = "Perl5 module source text";
-
-	    /* XXX all files with extension ".la" are libtool for now. */
-	    else if (rpmFileHasSuffix(s, ".la"))
-		ftype = "libtool library file";
-
-	    /* XXX all files with extension ".pc" are pkgconfig for now. */
-	    else if (rpmFileHasSuffix(s, ".pc"))
-		ftype = "pkgconfig file";
+	    /* Skip libmagic for some well known file extensions. To avoid the
+	       costly calculcation but also to have a stable output for some */
+	    for (; skipped_extensions[extension_index].extension; extension_index++) {
+		if (rpmFileHasSuffix(s, skipped_extensions[extension_index].extension)) {
+	            ftype = skipped_extensions[extension_index].magic_ftype;
+		    fmime = skipped_extensions[extension_index].magic_fmime;
+		    break;
+		}
+	    }
 
 	    /* XXX skip all files in /dev/ which are (or should be) %dev dummies. */
-	    else if (slen >= fc->brlen+sizeof("/dev/") && rstreqn(s+fc->brlen, "/dev/", sizeof("/dev/")-1))
+	    if (slen >= fc->brlen+sizeof("/dev/") && rstreqn(s+fc->brlen, "/dev/", sizeof("/dev/")-1))
 		ftype = "";
-	    else
+	    else if (ftype == NULL) {
 		ftype = magic_file(ms, s);
-
-	    /* Silence errors from immaterial %ghosts */
-	    if (ftype == NULL && errno == ENOENT)
-		ftype = "";
+		/* Silence errors from immaterial %ghosts */
+		if (ftype == NULL && errno == ENOENT)
+		    ftype = "";
+	    }
 
 	    if (ftype == NULL) {
 		rpmlog(is_executable ? RPMLOG_ERR : RPMLOG_WARNING, 
@@ -1269,15 +1283,15 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	    }
 	}
 
-	fmime = magic_file(mime, s);
-
-	/* Silence errors from immaterial %ghosts */
-	if (fmime == NULL && errno == ENOENT)
-	    fmime = "";
-
+	if (fmime == NULL) { /* not predefined */
+	    fmime = magic_file(mime, s);
+	    /* Silence errors from immaterial %ghosts */
+	    if (fmime == NULL && errno == ENOENT)
+		fmime = "";
+	}
 	if (fmime == NULL) {
 	    rpmlog(is_executable ? RPMLOG_ERR : RPMLOG_WARNING,
-		   _("Recognition of file \"%s\" failed: mode %06o %s\n"),
+		   _("Recognition of file mtype \"%s\" failed: mode %06o %s\n"),
 		   s, mode, magic_error(ms));
 	    /* only executable files are critical to dep extraction */
 	    if (is_executable) {
