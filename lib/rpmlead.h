@@ -2,7 +2,7 @@
 #define _H_RPMLEAD
 
 /** \ingroup lead
- * \file lib/rpmlead.h
+ * \file rpmlead.h
  * Routines to read and write an rpm lead structure for a a package.
  */
 #ifdef __cplusplus

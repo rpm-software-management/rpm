@@ -2,7 +2,7 @@
 #define	H_RPMIO
 
 /** \ingroup rpmio
- * \file rpmio/rpmio.h
+ * \file rpmio.h
  *
  * RPM I/O API (Fd_t is RPM equivalent to libc's FILE)
  */

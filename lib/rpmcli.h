@@ -2,7 +2,7 @@
 #define	H_RPMCLI
 
 /** \ingroup rpmcli rpmbuild
- * \file lib/rpmcli.h
+ * \file rpmcli.h
  *
  * Parsing RPM command line arguments
  */

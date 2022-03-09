@@ -2,7 +2,7 @@
 #define _RPMCALLBACK_H
 
 /** \ingroup rpmcallback
- *  \file lib/rpmcallback.h
+ *  \file rpmcallback.h
  *
  *  (un)install callbacks
  */

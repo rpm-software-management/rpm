@@ -2,7 +2,7 @@
 #define	H_RPMPGP
 
 /** \ingroup rpmpgp
- * \file rpmio/rpmpgp.h
+ * \file rpmpgp.h
  *
  * OpenPGP constants and structures from RFC-2440.
  *

@@ -2,7 +2,7 @@
 #define H_FSM
 
 /** \ingroup payload
- * \file lib/fsm.h
+ * \file fsm.h
  * File state machine to handle a payload within an rpm package.
  */
 

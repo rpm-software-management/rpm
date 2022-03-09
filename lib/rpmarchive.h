@@ -2,7 +2,7 @@
 #define H_ARCHIVE
 
 /** \ingroup payload
- * \file lib/rpmarchive.h
+ * \file rpmarchive.h
  * File archive (aka payload) API.
  */
 

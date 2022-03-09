@@ -2,7 +2,7 @@
 #define _RPMSTRING_H_
 
 /** \ingroup rpmstring
- * \file rpmio/rpmstring.h
+ * \file rpmstring.h
  * String manipulation helper functions
  */
 

@@ -2,7 +2,7 @@
 #define _RPMTAG_H
 
 /** \ingroup rpmtag
- *  \file lib/rpmtag.h
+ *  \file rpmtag.h
  *
  * Accessing RPM tags: values, types, ...
  */

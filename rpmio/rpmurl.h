@@ -2,7 +2,7 @@
 #define H_RPMURL
 
 /** \ingroup rpmio
- * \file rpmio/rpmurl.h
+ * \file rpmurl.h
  *
  * A couple utils for URL Manipulation
  */

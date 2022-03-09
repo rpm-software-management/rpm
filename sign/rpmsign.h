@@ -1,7 +1,7 @@
 #ifndef _RPMSIGN_H
 #define _RPMSIGN_H
 
-/** \file sign/rpmsign.h
+/** \file rpmsign.h
  *
  * Signature API
  */

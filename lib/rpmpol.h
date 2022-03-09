@@ -2,7 +2,7 @@
 #define H_RPMPOL
 
 /** \ingroup rpmpol
- * \file lib/rpmpol.h
+ * \file rpmpol.h
  * Structure(s) used for policy sets.
  */
 

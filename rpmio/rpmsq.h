@@ -2,7 +2,7 @@
 #define	H_RPMSQ
 
 /** \ingroup rpmio
- * \file rpmio/rpmsq.h
+ * \file rpmsq.h
  *
  * Signal Queue API (obsolete, do not use)
  */

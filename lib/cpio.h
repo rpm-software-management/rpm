@@ -2,7 +2,7 @@
 #define H_CPIO
 
 /** \ingroup payload
- * \file lib/cpio.h
+ * \file cpio.h
  *  Structures used to handle cpio payloads within rpm packages.
  *
  *  @warning Rpm's cpio implementation may be different than standard cpio.

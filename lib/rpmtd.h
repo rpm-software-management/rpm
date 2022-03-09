@@ -2,7 +2,7 @@
 #define _RPMTD_H
 
 /** \ingroup rpmtd
- *  \file lib/rpmtd.h
+ *  \file rpmtd.h
  *
  *  RPM Tag Data Container API
  */

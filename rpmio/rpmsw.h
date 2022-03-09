@@ -2,7 +2,7 @@
 #define	H_RPMSW
 
 /** \ingroup rpmio
- * \file rpmio/rpmsw.h
+ * \file rpmsw.h
  *
  * Statistics API
  */

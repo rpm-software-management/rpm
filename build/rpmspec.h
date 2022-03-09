@@ -2,7 +2,7 @@
 #define _H_SPEC_
 
 /** \ingroup rpmbuild
- * \file build/rpmspec.h
+ * \file rpmspec.h
  *  The rpmSpec and Package data structures used during build.
  */
 

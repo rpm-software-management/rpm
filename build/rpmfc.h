@@ -2,7 +2,7 @@
 #define _H_RPMFC_
 
 /** \ingroup rpmfc rpmbuild
- * \file build/rpmfc.h
+ * \file rpmfc.h
  * Structures and methods for build-time file classification.
  */
 

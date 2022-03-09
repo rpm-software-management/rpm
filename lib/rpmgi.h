@@ -2,7 +2,7 @@
 #define	H_RPMGI
 
 /** \ingroup rpmio
- * \file lib/rpmgi.h
+ * \file rpmgi.h
  */
 
 #include <rpm/rpmtypes.h>

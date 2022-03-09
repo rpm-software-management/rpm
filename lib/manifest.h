@@ -2,7 +2,7 @@
 #define H_MANIFEST
 
 /**
- * \file lib/manifest.h
+ * \file manifest.h
  * Routines to expand a manifest containing glob expressions into an argv list.
  */
 

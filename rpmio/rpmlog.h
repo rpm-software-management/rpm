@@ -2,7 +2,7 @@
 #define H_RPMLOG 1
 
 /** \ingroup rpmio
- * \file rpmio/rpmlog.h
+ * \file rpmlog.h
  * Yet Another syslog(3) API clone.
  * Used to unify rpmError() and rpmMessage() interfaces in rpm.
  */
