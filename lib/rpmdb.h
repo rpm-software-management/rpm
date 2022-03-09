@@ -6,7 +6,7 @@
  * RPM database API.
  */
 
-#include <rpm/rpmtypes.h>
+#include <rpm/rpmtag.h>
 #include <rpm/rpmsw.h>
 #include <sys/stat.h>
 
