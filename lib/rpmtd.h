@@ -7,7 +7,7 @@
  *  RPM Tag Data Container API
  */
 
-#include <rpm/rpmtypes.h>
+#include <rpm/rpmtag.h>
 #include <rpm/argv.h>
 
 #ifdef __cplusplus

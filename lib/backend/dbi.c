@@ -6,7 +6,6 @@
 
 #include <stdlib.h>
 #include <fcntl.h>
-#include <rpm/rpmtypes.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmlog.h>

@@ -1,6 +1,6 @@
 #include "rpmsystem-py.h"
 
-#include <rpm/rpmtypes.h>
+#include <rpm/rpmtag.h>
 
 #include "header-py.h"
 #include "rpmfi-py.h"

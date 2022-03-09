@@ -2,6 +2,7 @@
 #define _DBI_H
 
 #include "dbiset.h"
+#include <rpm/rpmtag.h>
 
 /* XXX: make this backend-specific, eliminate or something... */
 #define	_USE_COPY_LOAD
