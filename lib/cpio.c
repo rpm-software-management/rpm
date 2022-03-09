@@ -22,9 +22,9 @@
 #include <rpm/rpmio.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
+#include <rpm/rpmarchive.h>
 
 #include "lib/cpio.h"
-#include "lib/rpmarchive.h"
 
 #include "debug.h"
 

@@ -11,6 +11,7 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmmacro.h>	/* XXX rpmCleanPath */
 #include <rpm/rpmds.h>
+#include <rpm/rpmbase64.h>
 #include <errno.h>
 #include <fcntl.h>
 
@@ -20,7 +21,6 @@
 #include "lib/fsm.h"	/* rpmpsm stuff for now */
 #include "lib/rpmug.h"
 #include "rpmio/rpmio_internal.h"       /* fdInit/FiniDigest */
-#include "rpmio/rpmbase64.h"
 
 #include "debug.h"
 
