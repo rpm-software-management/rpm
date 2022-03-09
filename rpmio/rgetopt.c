@@ -7,7 +7,7 @@ extern char *optarg;
 extern int optind;
 #endif
 
-#include "rpmio/argv.h"
+#include <rpm/argv.h>
 #include "rpmio/rpmmacro_internal.h"
 
 int rgetopt(int argc, char * const argv[], const char *opts,

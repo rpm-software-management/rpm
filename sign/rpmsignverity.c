@@ -10,12 +10,12 @@
 #include <rpm/rpmlog.h>		/* rpmlog */
 #include <rpm/rpmfi.h>
 #include <rpm/rpmcrypto.h>		/* rpmDigestLength */
-#include "lib/header.h"		/* HEADERGET_MINMEM */
+#include <rpm/header.h>		/* HEADERGET_MINMEM */
+#include <rpm/rpmtypes.h>	/* rpmRC */
+#include <rpm/rpmbase64.h>
 #include "lib/header_internal.h"
-#include "lib/rpmtypes.h"	/* rpmRC */
 #include <libfsverity.h>
 #include "rpmio/rpmio_internal.h"
-#include "rpmio/rpmbase64.h"
 #include "lib/rpmvs.h"
 
 #include "sign/rpmsignverity.h"

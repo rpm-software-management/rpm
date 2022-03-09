@@ -16,9 +16,9 @@
 #include <rpm/rpmfiles.h>
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlog.h>
-#include <rpmio/rpmstring.h>
-#include <rpmio/rpmmacro.h>
-#include <rpmio/rpmpgp.h>
+#include <rpm/rpmstring.h>
+#include <rpm/rpmmacro.h>
+#include <rpm/rpmpgp.h>
 
 #include "lib/rpmfs.h"
 #include "lib/rpmplugin.h"

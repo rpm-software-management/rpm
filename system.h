@@ -61,7 +61,7 @@ char * stpncpy(char * dest, const char * src, size_t n);
 extern int fdatasync(int fildes);
 #endif
 
-#include "rpmio/rpmutil.h"
+#include <rpm/rpmutil.h>
 /* compatibility macros to avoid a mass-renaming all over the codebase */
 #define xmalloc(_size) rmalloc((_size))
 #define xmallocn(_nmemb, _size) rreallocn(NULL, (_nmemb), (_size))

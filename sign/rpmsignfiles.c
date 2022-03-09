@@ -12,8 +12,8 @@
 #include <rpm/rpmlog.h>		/* rpmlog */
 #include <rpm/rpmfi.h>
 #include <rpm/rpmcrypto.h>	/* rpmDigestLength */
-#include "lib/header.h"		/* HEADERGET_MINMEM */
-#include "lib/rpmtypes.h"	/* rpmRC */
+#include <rpm/header.h>		/* HEADERGET_MINMEM */
+#include <rpm/rpmtypes.h>	/* rpmRC */
 
 #include "sign/rpmsignfiles.h"
 
