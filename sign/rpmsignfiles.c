@@ -8,6 +8,7 @@
 #include "imaevm.h"
 
 #include <string.h>
+#include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>		/* rpmlog */
 #include <rpm/rpmfi.h>
 #include <rpm/rpmcrypto.h>	/* rpmDigestLength */

@@ -673,7 +673,6 @@ int main(int argc, char *argv[])
 	ba->buildAmount |= RPMBUILD_BUILDREQUIRES;
 	ba->buildAmount |= RPMBUILD_DUMPBUILDREQUIRES;
 	if (!noDeps)
-	    ba->buildAmount |= RPMBUILD_DUMPBUILDREQUIRES;
 	    ba->buildAmount |= RPMBUILD_CHECKBUILDREQUIRES;
 	if ((buildChar == 'r' || buildChar == 'd') && shortCircuit)
 	    break;

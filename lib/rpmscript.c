@@ -195,14 +195,19 @@ static void doScriptExec(ARGV_const_t argv, ARGV_const_t prefixes,
 			FD_t scriptFd, FD_t out)
 {
     int xx;
+    struct sigaction act;
     sigset_t set;
 
-    /* Unmask all signals, the scripts may need them */
+    /* Unmask most signals, the scripts may need them */
     sigfillset(&set);
+    sigdelset(&set, SIGINT);
+    sigdelset(&set, SIGQUIT);
     sigprocmask(SIG_UNBLOCK, &set, NULL);
 
     /* SIGPIPE is ignored in rpm, reset to default for the scriptlet */
-    (void) signal(SIGPIPE, SIG_DFL);
+    memset(&act, 0, sizeof(act));
+    act.sa_handler = SIG_DFL;
+    sigaction(SIGPIPE, &act, NULL);
 
     rpmSetCloseOnExec();
 

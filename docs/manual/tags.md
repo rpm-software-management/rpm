@@ -403,7 +403,7 @@ as well however, these exceptions noted below.
 
 Tag Name      | Value| Type         | Description
 --------------|------|--------------|------------
-Archsuffix    | 5098 | string       | "src", "nosrc" or `arch`
+Archsuffix    | 5098 | string       | Package file arch suffix (".src", ".nosrc" or .`arch`)
 Dbinstance    | 1195 | int32        | Header ID of installed package, 0 otherwise.
 Epochnum      | 5019 | int32        | Package epoch as numeric value (0 if not present).
 Evr           | 5013 | string       | Formatted `epoch:version-release` string of the package

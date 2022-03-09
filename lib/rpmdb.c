@@ -302,26 +302,6 @@ struct rpmdbIndexIterator_s {
     int			ii_skipdata;
 };
 
-static rpmdb rpmdbRock;
-static rpmdbMatchIterator rpmmiRock;
-static rpmdbIndexIterator rpmiiRock;
-
-void rpmAtExit(void)
-{
-    rpmdb db;
-    rpmdbMatchIterator mi;
-    rpmdbIndexIterator ii;
-
-    while ((mi = rpmmiRock) != NULL)
-	rpmdbFreeIterator(mi);
-
-    while ((ii = rpmiiRock) != NULL)
-	rpmdbIndexIteratorFree(ii);
-
-    while ((db = rpmdbRock) != NULL)
-	(void) rpmdbClose(db);
-}
-
 rpmop rpmdbOp(rpmdb rpmdb, rpmdbOpX opx)
 {
     rpmop op = NULL;
@@ -385,16 +365,9 @@ static int dbiForeach(dbiIndex *dbis, int ndbi,
 
 int rpmdbClose(rpmdb db)
 {
-    rpmdb * prev, next;
     int rc = 0;
 
     if (db == NULL)
-	goto exit;
-
-    prev = &rpmdbRock;
-    while ((next = *prev) != NULL && next != db)
-	prev = &next->db_next;
-    if (!next)
 	goto exit;
 
     (void) rpmdbUnlink(db);
@@ -416,16 +389,8 @@ int rpmdbClose(rpmdb db)
     db->db_checked = dbChkFree(db->db_checked);
     db->db_indexes = _free(db->db_indexes);
 
-    if (next) {
-        *prev = next->db_next;
-	next->db_next = NULL;
-    }
-
     db = _free(db);
 
-    if (rpmdbRock == NULL) {
-	rpmsqActivate(0);
-    }
 exit:
     return rc;
 }
@@ -498,20 +463,12 @@ static int openDatabase(const char * prefix,
     if (db == NULL)
 	return 1;
 
-    db->db_next = rpmdbRock;
-    rpmdbRock = db;
-
     /* Try to ensure db home exists, error out if we can't even create */
     rc = rpmioMkpath(rpmdbHome(db), 0755, getuid(), getgid());
     if (rc == 0) {
 	/* Open just bare minimum when rebuilding a potentially damaged db */
 	int justPkgs = (db->db_flags & RPMDB_FLAG_REBUILD) &&
 		       ((db->db_mode & O_ACCMODE) == O_RDONLY);
-	/* Enable signal queue on the first db open */
-	if (db->db_next == NULL) {
-	    rpmsqActivate(1);
-	}
-
 	rc = doOpen(db, justPkgs);
 
 	if (!db->db_descr)
@@ -996,20 +953,10 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 
 rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 {
-    rpmdbMatchIterator * prev, next;
     dbiIndex dbi = NULL;
     int i;
 
     if (mi == NULL)
-	return NULL;
-
-    prev = &rpmmiRock;
-    while ((next = *prev) != NULL && next != mi)
-	prev = &next->mi_next;
-    if (next) {
-	*prev = next->mi_next;
-	next->mi_next = NULL;
-    } else
 	return NULL;
 
     pkgdbOpen(mi->mi_db, 0, &dbi);
@@ -1034,8 +981,6 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
     mi->mi_ts = rpmtsFree(mi->mi_ts);
 
     mi = _free(mi);
-
-    (void) rpmsqPoll();
 
     return NULL;
 }
@@ -1681,10 +1626,6 @@ rpmdbMatchIterator rpmdbNewIterator(rpmdb db, rpmDbiTagVal dbitag)
     mi->mi_ts = NULL;
     mi->mi_hdrchk = NULL;
 
-    /* Chain cursors for teardown on abnormal exit. */
-    mi->mi_next = rpmmiRock;
-    rpmmiRock = mi;
-
     return mi;
 };
 
@@ -1761,8 +1702,6 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
     rpmdbMatchIterator mi = NULL;
 
     if (db != NULL) {
-	(void) rpmsqPoll();
-
 	if (rpmtag == RPMDBI_PACKAGES)
 	    mi = pkgdbIterInit(db, keyp, keylen);
 	else
@@ -1784,8 +1723,6 @@ rpmdbMatchIterator rpmdbInitPrefixIterator(rpmdb db, rpmDbiTagVal rpmtag,
 	return NULL;
 
     if (db != NULL && rpmtag != RPMDBI_PACKAGES) {
-	(void) rpmsqPoll();
-
 
 	if (indexOpen(db, dbtag, 0, &dbi) == 0) {
 	    int rc = 0;
@@ -1870,16 +1807,10 @@ rpmdbIndexIterator rpmdbIndexIteratorInit(rpmdb db, rpmDbiTag rpmtag)
     if (db == NULL)
 	return NULL;
 
-    (void) rpmsqPoll();
-
     if (indexOpen(db, rpmtag, 0, &dbi))
 	return NULL;
 
-    /* Chain cursors for teardown on abnormal exit. */
     ii = xcalloc(1, sizeof(*ii));
-    ii->ii_next = rpmiiRock;
-    rpmiiRock = ii;
-
     ii->ii_db = rpmdbLink(db);
     ii->ii_rpmtag = rpmtag;
     ii->ii_dbi = dbi;
@@ -2007,19 +1938,8 @@ unsigned int rpmdbIndexIteratorTagNum(rpmdbIndexIterator ii, unsigned int nr)
 
 rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii)
 {
-    rpmdbIndexIterator * prev, next;
-
     if (ii == NULL)
         return NULL;
-
-    prev = &rpmiiRock;
-    while ((next = *prev) != NULL && next != ii)
-        prev = &next->ii_next;
-    if (next) {
-        *prev = next->ii_next;
-        next->ii_next = NULL;
-    } else
-	return NULL;
 
     ii->ii_dbc = dbiCursorFree(ii->ii_dbi, ii->ii_dbc);
     ii->ii_dbi = NULL;

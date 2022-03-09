@@ -472,8 +472,6 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
     /* also create a hash of all symlinks in the new packages */
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	(void) rpmsqPoll();
-
 	if ((fi = rpmteFiles(p)) == NULL)
 	    continue;
 
@@ -512,7 +510,6 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	fingerPrint *fpList, *lastfp = NULL;
-	(void) rpmsqPoll();
 
 	if ((fi = rpmteFiles(p)) == NULL)
 	    continue;
