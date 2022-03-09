@@ -5,7 +5,7 @@ AM_CFLAGS = @RPMCFLAGS@
 
 EXTRA_DIST = rpm/__init__.py rpm/transaction.py
 
-AM_CPPFLAGS = -I$(top_builddir)/include/
+AM_CPPFLAGS = -I$(top_srcdir)/include/
 AM_CPPFLAGS += -I$(top_srcdir)/python
 AM_CPPFLAGS += @PYTHON_CFLAGS@
 

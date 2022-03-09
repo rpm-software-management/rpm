@@ -4,7 +4,7 @@ include $(top_srcdir)/rpm.am
 AM_CFLAGS = @RPMCFLAGS@
 AM_CFLAGS += @OPENMP_CFLAGS@
 
-AM_CPPFLAGS =  -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/
+AM_CPPFLAGS =  -I$(top_builddir) -I$(top_srcdir) -I$(top_srcdir)/include/
 AM_CPPFLAGS += @WITH_MAGIC_INCLUDE@
 AM_CPPFLAGS += @WITH_POPT_INCLUDE@
 AM_CPPFLAGS += @LUA_CFLAGS@
