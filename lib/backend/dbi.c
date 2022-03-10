@@ -11,6 +11,7 @@
 #include <rpm/rpmlog.h>
 #include <rpm/header.h>
 #include "lib/rpmdb_internal.h"
+#include "lib/rpmchroot.h"
 #include "debug.h"
 
 const struct rpmdbOps_s *backends[] = {
@@ -63,11 +64,18 @@ void dbShowRC(FILE* fp)
 }
 
 /* Test whether there's a database for this backend, return true/false */
-static int tryBackend(const char *dbhome, const struct rpmdbOps_s *be)
+static int tryBackend(rpmdb rdb, const struct rpmdbOps_s *be)
 {
     int rc = 0;
     if (be && be->path) {
-	char *path = rstrscat(NULL, dbhome, "/", be->path, NULL);
+	char *path = NULL;
+	if (be->path[0] == '/') {
+	    if (!rpmChrootDone())
+		path = rstrscat(NULL, rdb->db_root, "/", NULL);
+	} else {
+	    path = rstrscat(NULL, rpmdbHome(rdb), "/", NULL);
+	}
+	path = rstrscat(&path, be->path, NULL);
 	rc = (access(path, F_OK) == 0);
 	free(path);
     }
@@ -77,7 +85,6 @@ static int tryBackend(const char *dbhome, const struct rpmdbOps_s *be)
 static void
 dbDetectBackend(rpmdb rdb)
 {
-    const char *dbhome = rpmdbHome(rdb);
     char *db_backend = rpmExpand("%{?_db_backend}", NULL);
     const struct rpmdbOps_s **ops;
     const struct rpmdbOps_s *cfg = NULL;
@@ -97,9 +104,9 @@ dbDetectBackend(rpmdb rdb)
     }
 
     /* If configured database doesn't exist, try autodetection */
-    if (!tryBackend(dbhome, cfg)) {
+    if (!tryBackend(rdb, cfg)) {
 	for (ops = backends; ops && *ops; ops++) {
-	    if (tryBackend(dbhome, *ops)) {
+	    if (tryBackend(rdb, *ops)) {
 		ondisk = *ops;
 		break;
 	    }
