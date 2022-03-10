@@ -251,6 +251,14 @@ int rpmdbStat(const char *prefix, struct stat *statbuf);
  */
 int rpmdbFStat(rpmdb db, struct stat *statbuf);
 
+/** \ingroup rpmdb
+ * Return next unverified package header blob from iteration.
+ * @param mi           rpm database iterator
+ * @retval size         header blob size in bytes
+ * @return             NULL on end of iteration.
+ */
+const unsigned char *rpmdbNextIteratorHeaderBlob(rpmdbMatchIterator mi, unsigned int *size);
+
 #ifdef __cplusplus
 }
 #endif

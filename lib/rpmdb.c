@@ -2556,6 +2556,48 @@ int rpmdbCtrl(rpmdb db, rpmdbCtrlOp ctrl)
     return dbctrl ? dbCtrl(db, dbctrl) : 1;
 }
 
+const unsigned char *rpmdbNextIteratorHeaderBlob(rpmdbMatchIterator mi, unsigned int *size)
+{
+    dbiIndex dbi = NULL;
+    unsigned char * uh;
+    unsigned int uhlen;
+    int rc;
+    if (mi == NULL || mi->mi_re != NULL)
+	return NULL;
+    if (pkgdbOpen(mi->mi_db, 0, &dbi))
+	return NULL;
+    if (mi->mi_dbc == NULL)
+	mi->mi_dbc = dbiCursorInit(dbi, mi->mi_cflags);
+    miFreeHeader(mi, dbi);
+    uh = NULL;
+    uhlen = 0;
+    do {
+	if (mi->mi_set) {
+	    if (!(mi->mi_setx < mi->mi_set->count))
+		return NULL;
+	    mi->mi_offset = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
+	    mi->mi_filenum = dbiIndexRecordFileNumber(mi->mi_set, mi->mi_setx);
+	} else {
+	    rc = pkgdbGet(dbi, mi->mi_dbc, 0, &uh, &uhlen);
+	    if (rc == 0)
+		mi->mi_offset = pkgdbKey(dbi, mi->mi_dbc);
+
+	    /* Terminate on error or end of keys */
+	    if (rc || (mi->mi_setx && mi->mi_offset == 0))
+		return NULL;
+	}
+	mi->mi_setx++;
+    } while (mi->mi_offset == 0);
+    if (uh == NULL) {
+	rc = pkgdbGet(dbi, mi->mi_dbc, mi->mi_offset, &uh, &uhlen);
+	if (rc || uh == NULL)
+	    return NULL;
+    }
+    if (size)
+	*size = uhlen;
+    return uh;
+}
+
 char *rpmdbCookie(rpmdb db)
 {
     void *cookie = NULL;
