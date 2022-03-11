@@ -1802,6 +1802,9 @@ runroot rpmbuild \
 [1],
 [],
 [error: Bad source: /notthere/hello-1.0.tar.gz: No such file or directory
+error: /data/SPECS/hello.spec: line 19: setup -q  0<  (%setup)
+cd '/build/BUILD'
+rm -rf 'hello-1.0'
 ])
 AT_CLEANUP
 

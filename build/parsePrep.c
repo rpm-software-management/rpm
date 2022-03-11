@@ -13,21 +13,31 @@
 #include <rpm/rpmfileutil.h>
 #include "build/rpmbuild_internal.h"
 #include "build/rpmbuild_misc.h"
+#include "rpmio/rpmmacro_internal.h"
 #include "lib/rpmug.h"
 #include "debug.h"
+
+static void appendMb(MacroBuf mb, const char *s, int nl)
+{
+    mbAppendStr(mb, s);
+    if (nl)
+	mbAppend(mb, '\n');
+}
 
 /**
  * Check that file owner and group are known.
  * @param urlfn		file url
  * @return		RPMRC_OK on success
  */
-static rpmRC checkOwners(const char * urlfn)
+static rpmRC checkOwners(const char * urlfn, int flags)
 {
     struct stat sb;
 
     if (lstat(urlfn, &sb)) {
-	rpmlog(RPMLOG_ERR, _("Bad source: %s: %s\n"),
-		urlfn, strerror(errno));
+	if (!(flags && RPMSPEC_FORCE)) {
+	    rpmlog(RPMLOG_ERR, _("Bad source: %s: %s\n"),
+		    urlfn, strerror(errno));
+	}
 	return RPMRC_FAIL;
     }
 
@@ -71,7 +81,7 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
     const char *fn = sp->path;
 
     /* On non-build parse's, file cannot be stat'd or read. */
-    if ((spec->flags & RPMSPEC_FORCE) || checkOwners(fn) || rpmFileIsCompressed(fn, &compressed)) goto exit;
+    if (checkOwners(fn, spec->flags) || rpmFileIsCompressed(fn, &compressed)) goto exit;
 
     if (db) {
 	rasprintf(&arg_backup, "-b --suffix %s", db);
@@ -140,7 +150,7 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
     const char *fn = sp->path;
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
-    if (!(spec->flags & RPMSPEC_FORCE) && (checkOwners(fn) || rpmFileIsCompressed(fn, &compressed))) {
+    if (checkOwners(fn, spec->flags) || rpmFileIsCompressed(fn, &compressed)) {
 	goto exit;
     }
 
@@ -224,12 +234,11 @@ exit:
 
 /**
  * Parse %setup macro.
- * @param spec		build info
- * @param line		current line from spec file
- * @return		RPMRC_OK on success
  */
-static int doSetupMacro(rpmSpec spec, const char *line)
+static void doSetupMacro(MacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed)
 {
+    rpmSpec spec = me->priv;
+    char *line = argvJoin(margs, " ");
     char *buf = NULL;
     StringBuf before = newStringBuf();
     StringBuf after = newStringBuf();
@@ -254,10 +263,10 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 	    { 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
-    if (strstr(line+6, " -q")) quietly = 1;
+    if (strstr(line+5, " -q")) quietly = 1;
 
     if ((xx = poptParseArgvString(line, &argc, &argv))) {
-	rpmlog(RPMLOG_ERR, _("Error parsing %%setup: %s\n"), poptStrerror(xx));
+	mbErr(mb, 1, _("Error parsing %%setup: %s\n"), poptStrerror(xx));
 	goto exit;
     }
 
@@ -273,7 +282,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 	/* We only parse -a and -b here */
 
 	if (parseUnsignedNum(optArg, &num)) {
-	    rpmlog(RPMLOG_ERR, _("line %d: Bad arg to %%setup: %s\n"),
+	    mbErr(mb, 1, _("line %d: Bad arg to %%setup: %s\n"),
 		     spec->lineNum, (optArg ? optArg : "???"));
 	    goto exit;
 	}
@@ -289,7 +298,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     }
 
     if (arg < -1) {
-	rpmlog(RPMLOG_ERR, _("line %d: Bad %%setup option %s: %s\n"),
+	mbErr(mb, 1, _("line %d: Bad %%setup option %s: %s\n"),
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		 poptStrerror(arg));
@@ -311,7 +320,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     {	char * buildDir = rpmGenPath(spec->rootDir, "%{_builddir}", "");
 
 	rasprintf(&buf, "cd '%s'", buildDir);
-	appendLineStringBuf(spec->prep, buf);
+	appendMb(mb, buf, 1);
 	free(buf);
 	free(buildDir);
     }
@@ -319,32 +328,35 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     /* delete any old sources */
     if (!leaveDirs) {
 	buf = rpmExpand("rm -rf '%{buildsubdir}'", NULL);
-	appendLineStringBuf(spec->prep, buf);
+	appendMb(mb, buf, 1);
 	free(buf);
     }
 
-    appendStringBuf(spec->prep, getStringBuf(before));
+    appendMb(mb, getStringBuf(before), 0);
 
     /* if necessary, create and cd into the proper dir */
     if (createDir) {
 	buf = rpmExpand("%{__mkdir_p} '%{buildsubdir}'\n",
 			"cd '%{buildsubdir}'", NULL);
-	appendLineStringBuf(spec->prep, buf);
+	appendMb(mb, buf, 1);
 	free(buf);
     }
 
     /* do the default action */
    if (!createDir && !skipDefaultAction) {
 	char *chptr = doUntar(spec, 0, quietly);
-	if (!chptr)
+	if (!chptr) {
+	    if (spec->flags && RPMSPEC_FORCE)
+		rc = RPMRC_NOTFOUND;
 	    goto exit;
-	appendLineStringBuf(spec->prep, chptr);
+	}
+	appendMb(mb, chptr, 1);
 	free(chptr);
     }
 
     if (!createDir) {
 	buf = rpmExpand("cd '%{buildsubdir}'", NULL);
-	appendLineStringBuf(spec->prep, buf);
+	appendMb(mb, buf, 1);
 	free(buf);
     }
 
@@ -352,29 +364,30 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 	char *chptr = doUntar(spec, 0, quietly);
 	if (chptr == NULL)
 	    goto exit;
-	appendLineStringBuf(spec->prep, chptr);
+	appendMb(mb, chptr, 1);
 	free(chptr);
     }
     
-    appendStringBuf(spec->prep, getStringBuf(after));
+    appendMb(mb, getStringBuf(after), 0);
 
     /* Fix the permissions of the setup build tree */
     {	char *fix = rpmExpand("%{_fixperms} .", NULL);
 	if (fix && *fix != '%') {
-	    appendLineStringBuf(spec->prep, fix);
+	    appendMb(mb, fix, 1);
 	}
 	free(fix);
     }
     rc = RPMRC_OK;
 
 exit:
+    if (rc == RPMRC_FAIL)
+	mbErr(mb, 1, line);
     freeStringBuf(before);
     freeStringBuf(after);
     poptFreeContext(optCon);
     free(dirName);
     free(argv);
-
-    return rc;
+    free(line);
 }
 
 /**
@@ -387,14 +400,12 @@ exit:
  *   %patch is treated as "numberless patch" so that "%patch 1" actually tries
  *   to pull in numberless "Patch:" and numbered "Patch1:".
  *
- * @param spec		build info
- * @param line		current line from spec file
- * @return		RPMRC_OK on success
  */
-static rpmRC doPatchMacro(rpmSpec spec, const char *line)
+static void doPatchMacro(MacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed)
 {
+    rpmSpec spec = me->priv;
+    char *line = argvJoin(margs, " ");
     char *opt_b, *opt_d, *opt_o;
-    char *buf = NULL;
     int opt_p, opt_R, opt_E, opt_F, opt_Z;
     int argc, c;
     const char **argv = NULL;
@@ -420,19 +431,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
     opt_F = rpmExpandNumeric("%{_default_patch_fuzz}");		/* get default fuzz factor for %patch */
     opt_b = opt_d = opt_o = NULL;
 
-    /* Convert %patchN to %patch -PN to simplify further processing */
-    if (! strchr(" \t\n", line[6])) {
-	rasprintf(&buf, "%%patch -P %s", line + 6);
-    } else {
-	/* %patch without a number refers to patch 0 */
-	if (strstr(line+6, " -P") == NULL)
-	    rasprintf(&buf, "%%patch -P %d %s", 0, line + 6);
-	else
-	    buf = xstrdup(line);
-    }
-    poptParseArgvString(buf, &argc, &argv);
-    free(buf);
-
+    poptParseArgvString(line, &argc, &argv);
     /* 
      * Grab all -P<N> numbers for later processing. Stored as strings
      * at this point so we only have to worry about conversion in one place.
@@ -454,7 +453,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
     }
 
     if (c < -1) {
-	rpmlog(RPMLOG_ERR, "%s: %s: %s\n", poptStrerror(c),
+	mbErr(mb, 1, "%s: %s: %s\n", poptStrerror(c),
 		poptBadOption(optCon, POPT_BADOPTION_NOALIAS), line);
 	goto exit;
     }
@@ -467,63 +466,64 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 	uint32_t pnum;
 	char *s;
 	if (parseUnsignedNum(*patch, &pnum)) {
-	    rpmlog(RPMLOG_ERR, _("Invalid patch number %s: %s\n"),
+	    mbErr(mb, 1, _("Invalid patch number %s: %s\n"),
 		     *patch, line);
 	    goto exit;
 	}
 	s = doPatch(spec, pnum, opt_p, opt_b, opt_R, opt_E, opt_F, opt_d, opt_o, opt_Z);
 	if (s == NULL) {
+	    if (spec->flags && RPMSPEC_FORCE)
+		rc = RPMRC_NOTFOUND;
 	    goto exit;
 	}
-	appendLineStringBuf(spec->prep, s);
+	appendMb(mb, s, 1);
 	free(s);
     }
-	
     rc = RPMRC_OK;
 
 exit:
+    if (rc == RPMRC_FAIL)
+	mbErr(mb, 1, line);
     argvFree(patchnums);
     free(opt_b);
     free(opt_d);
     free(opt_o);
     free(argv);
+    free(line);
     poptFreeContext(optCon);
+}
+
+/* Convert %patchN to %patch -PN to allow macros to handle it */
+static int patchFixup(rpmSpec spec, const char *line, char **ret)
+{
+    int rc = 0;
+    char *buf = NULL;
+
+    if (strncmp(line, "%patch", 5))
+	return 0;
+
+    if (! strchr(" \t\n", line[6])) {
+	rasprintf(&buf, "%%patch -P %s", line + 6);
+    } else {
+	/* %patch without a number refers to patch 0 */
+	if (strstr(line+6, " -P") == NULL)
+	    rasprintf(&buf, "%%patch -P %d %s", 0, line + 6);
+    }
+    if (buf)
+	rc = specExpand(spec, 0, buf, ret);
+
     return rc;
 }
 
 int parsePrep(rpmSpec spec)
 {
-    int rc, res = PART_ERROR;
-    ARGV_t saveLines = NULL;
+    rpmPushMacroAux(NULL, "setup", "-", doSetupMacro, spec, -1, 0, 0);
+    rpmPushMacroAux(NULL, "patch", "-", doPatchMacro, spec, -1, 0, 0);
 
-    if (spec->prep != NULL) {
-	rpmlog(RPMLOG_ERR, _("line %d: second %%prep\n"), spec->lineNum);
-	goto exit;
-    }
+    int res = parseSimpleScript(spec, "prep", &(spec->prep), patchFixup);
 
-    spec->prep = newStringBuf();
-
-    /* There are no options to %prep */
-    if ((res = parseLines(spec, STRIP_NOTHING, &saveLines, NULL, NULL)) == PART_ERROR)
-	goto exit;
-    
-    for (ARGV_const_t lines = saveLines; lines && *lines; lines++) {
-	rc = RPMRC_OK;
-	if (rstreqn(*lines, "%setup", sizeof("%setup")-1)) {
-	    rc = doSetupMacro(spec, *lines);
-	} else if (rstreqn(*lines, "%patch", sizeof("%patch")-1)) {
-	    rc = doPatchMacro(spec, *lines);
-	} else {
-	    appendStringBuf(spec->prep, *lines);
-	}
-	if (rc != RPMRC_OK && !(spec->flags & RPMSPEC_FORCE)) {
-	    res = PART_ERROR;
-	    goto exit;
-	}
-    }
-
-exit:
-    argvFree(saveLines);
+    rpmPopMacro(NULL, "patch");
+    rpmPopMacro(NULL, "setup");
 
     return res;
 }
