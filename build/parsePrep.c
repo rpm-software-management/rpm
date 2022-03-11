@@ -504,7 +504,7 @@ int parsePrep(rpmSpec spec)
     spec->prep = newStringBuf();
 
     /* There are no options to %prep */
-    if ((res = parseLines(spec, STRIP_NOTHING, &saveLines, NULL)) == PART_ERROR)
+    if ((res = parseLines(spec, STRIP_NOTHING, &saveLines, NULL, NULL)) == PART_ERROR)
 	goto exit;
     
     for (ARGV_const_t lines = saveLines; lines && *lines; lines++) {

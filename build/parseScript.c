@@ -352,7 +352,7 @@ int parseScript(rpmSpec spec, int parsePart)
 	goto exit;
     }
 
-    if ((res = parseLines(spec, STRIP_NOTHING, NULL, &sb)) == PART_ERROR)
+    if ((res = parseLines(spec, STRIP_NOTHING, NULL, &sb, NULL)) == PART_ERROR)
 	goto exit;
 
     if (sb) {

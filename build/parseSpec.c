@@ -578,7 +578,8 @@ after_classification:
     return 0;
 }
 
-int parseLines(rpmSpec spec, int strip, ARGV_t *avp, StringBuf *sbp)
+int parseLines(rpmSpec spec, int strip, ARGV_t *avp, StringBuf *sbp,
+		parseCb cb)
 {
     int rc, nextPart = PART_ERROR;
     int nl = (strip & STRIP_TRAILINGSPACE);
@@ -594,10 +595,21 @@ int parseLines(rpmSpec spec, int strip, ARGV_t *avp, StringBuf *sbp)
 	*sbp = newStringBuf();
 
     while (! (nextPart = isPart(spec->line))) {
+	const char *line = spec->line;
+	char *buf = NULL;
+	if (cb) {
+	    if (cb(spec, line, &buf)) {
+		nextPart = PART_ERROR;
+		break;
+	    }
+	    if (buf)
+		line = buf;
+	}
 	if (avp)
-	    argvAdd(avp, spec->line);
+	    argvAdd(avp, line);
 	if (sbp)
-	    appendStringBufAux(*sbp, spec->line, nl);
+	    appendStringBufAux(*sbp, line, nl);
+	free(buf);
 	if ((rc = readLine(spec, strip)) > 0) {
 	    nextPart = PART_NONE;
 	    break;
@@ -938,23 +950,23 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 	    parsePart = parsePrep(spec);
 	    break;
 	case PART_CONF:
-	    parsePart = parseSimpleScript(spec, "%conf", &(spec->conf));
+	    parsePart = parseSimpleScript(spec, "%conf", &(spec->conf), NULL);
 	    break;
 	case PART_BUILDREQUIRES:
 	    parsePart = parseSimpleScript(spec, "%generate_buildrequires",
-					  &(spec->buildrequires));
+					  &(spec->buildrequires), NULL);
 	    break;
 	case PART_BUILD:
-	    parsePart = parseSimpleScript(spec, "%build", &(spec->build));
+	    parsePart = parseSimpleScript(spec, "%build", &(spec->build), NULL);
 	    break;
 	case PART_INSTALL:
-	    parsePart = parseSimpleScript(spec, "%install", &(spec->install));
+	    parsePart = parseSimpleScript(spec, "%install", &(spec->install), NULL);
 	    break;
 	case PART_CHECK:
-	    parsePart = parseSimpleScript(spec, "%check", &(spec->check));
+	    parsePart = parseSimpleScript(spec, "%check", &(spec->check), NULL);
 	    break;
 	case PART_CLEAN:
-	    parsePart = parseSimpleScript(spec, "%clean", &(spec->clean));
+	    parsePart = parseSimpleScript(spec, "%clean", &(spec->clean), NULL);
 	    break;
 	case PART_CHANGELOG:
 	    parsePart = parseChangelog(spec);

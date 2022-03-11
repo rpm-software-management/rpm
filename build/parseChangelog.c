@@ -322,7 +322,7 @@ int parseChangelog(rpmSpec spec)
 	goto exit;
     }
     
-    if ((res = parseLines(spec, STRIP_COMMENTS, &sb, NULL)) == PART_ERROR)
+    if ((res = parseLines(spec, STRIP_COMMENTS, &sb, NULL, NULL)) == PART_ERROR)
 	goto exit;
 
     if (sb && addChangelog(spec->packages->header, sb)) {

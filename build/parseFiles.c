@@ -84,7 +84,7 @@ int parseFiles(rpmSpec spec)
     }
 
     pkg->fileList = argvNew();
-    res = parseLines(spec, STRIP_COMMENTS, &(pkg->fileList), NULL);
+    res = parseLines(spec, STRIP_COMMENTS, &(pkg->fileList), NULL, NULL);
 
 exit:
     rpmPopMacro(NULL, "license");

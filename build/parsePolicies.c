@@ -62,7 +62,7 @@ int parsePolicies(rpmSpec spec)
 	goto exit;
 
     res = parseLines(spec, (STRIP_TRAILINGSPACE | STRIP_COMMENTS),
-		     &(pkg->policyList), NULL);
+		     &(pkg->policyList), NULL, NULL);
 
   exit:
     free(argv);

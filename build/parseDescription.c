@@ -65,7 +65,7 @@ int parseDescription(rpmSpec spec)
 	goto exit;
 
     if ((nextPart = parseLines(spec, (STRIP_TRAILINGSPACE |STRIP_COMMENTS),
-				NULL, &sb)) == PART_ERROR) {
+				NULL, &sb, NULL)) == PART_ERROR) {
 	goto exit;
     }
 

@@ -279,6 +279,8 @@ void closeSpec(rpmSpec spec);
 RPM_GNUC_INTERNAL
 int readLine(rpmSpec spec, int strip);
 
+typedef int (parseCb)(rpmSpec spec, const char *line, char **ret);
+
 /** \ingroup rpmbuild
  * Read next line from spec file.
  * @param spec		spec file control structure
@@ -288,7 +290,8 @@ int readLine(rpmSpec spec, int strip);
  * @return		next spec part or PART_ERROR on error
  */
 RPM_GNUC_INTERNAL
-int parseLines(rpmSpec spec, int strip, ARGV_t *avp, StringBuf *sbp);
+int parseLines(rpmSpec spec, int strip, ARGV_t *avp, StringBuf *sbp,
+		parseCb cb);
 
 /** \ingroup rpmbuild
  * Destroy source component chain.
@@ -313,7 +316,8 @@ int isPart(const char * line)	;
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 RPM_GNUC_INTERNAL
-int parseSimpleScript(rpmSpec spec, const char * name, StringBuf *sbp);
+int parseSimpleScript(rpmSpec spec, const char * name, StringBuf *sbp,
+			parseCb cb);
 
 /** \ingroup rpmbuild
  * Parse %%changelog section of a spec file.

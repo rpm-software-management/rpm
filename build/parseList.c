@@ -16,7 +16,7 @@ int parseList(rpmSpec spec, const char *name, rpmTagVal tag)
 
     /* There are no options to %patchlist and %sourcelist */
     if ((res = parseLines(spec, (STRIP_TRAILINGSPACE | STRIP_COMMENTS),
-			  &lst, NULL)) == PART_ERROR) {
+			  &lst, NULL, NULL)) == PART_ERROR) {
 	goto exit;
     }
 

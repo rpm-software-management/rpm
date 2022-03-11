@@ -9,7 +9,8 @@
 #include "debug.h"
 
 
-int parseSimpleScript(rpmSpec spec, const char * name, StringBuf *sbp)
+int parseSimpleScript(rpmSpec spec, const char * name, StringBuf *sbp,
+			parseCb cb)
 {
     int res = PART_ERROR;
     
@@ -20,7 +21,7 @@ int parseSimpleScript(rpmSpec spec, const char * name, StringBuf *sbp)
     }
     
     /* There are no options to %build, %install, %check, or %clean */
-    res = parseLines(spec, STRIP_NOTHING, NULL, sbp);
+    res = parseLines(spec, STRIP_NOTHING, NULL, sbp, cb);
     
 exit:
 
