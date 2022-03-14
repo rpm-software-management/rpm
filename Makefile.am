@@ -56,7 +56,6 @@ AM_CPPFLAGS += -DLOCALEDIR="\"$(localedir)\""
 AM_CPPFLAGS += -DLIBRPMALIAS_FILENAME="\"rpmpopt-${VERSION}\""
 
 pkginclude_HEADERS =
-nodist_pkginclude_HEADERS =
 
 pkginclude_HEADERS += include/rpm/argv.h
 pkginclude_HEADERS += include/rpm/rpmcrypto.h
@@ -287,15 +286,7 @@ ChangeLog:
 dist-hook:
 	if [ -d .git ] && [ -x $(command -v git) ]; then git log --no-merges > $(distdir)/ChangeLog; fi
 
-clean-local:
-	rm -rf include
-
 distclean-local:
 	rm -rf docs/librpm.doxy docs/librpm/html
 	rm -rf Doxytags
 	rm -f stamp-h.in
-
-include/rpm/$(dirstamp):
-	@$(MKDIR_P) include/rpm
-	@: > include/rpm/$(dirstamp)
-
