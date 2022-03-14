@@ -21,6 +21,8 @@
 extern "C" {
 #endif
 
+typedef struct rpmfs_s * rpmfs;
+
 /** \ingroup header 
  * Header magic value
  */ 
@@ -386,6 +388,17 @@ typedef enum headerConvOps_e {
  * @return		1 on success, 0 on failure
  */
 int headerConvert(Header h, int op);
+
+/** \ingroup header
+ * Add header tags for installed packages
+ * @param h		header
+ * @param tid		transcation id
+ * @param installTime	installation time
+ * @param tscolor	transaction color
+ * @param fs		file states
+ * @return		1 on success, 0 on failure
+ */
+void headerAddInstallTags(Header h, rpm_tid_t tid, rpm_time_t installTime, rpm_color_t tscolor, rpmfs fs);
 
 #ifdef __cplusplus
 }

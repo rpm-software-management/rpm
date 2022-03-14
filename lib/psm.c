@@ -538,19 +538,11 @@ static rpmRC dbAdd(rpmts ts, rpmte te)
     Header h = rpmteHeader(te);
     rpm_time_t installTime = rpmtsGetTime(ts, 1);
     rpmfs fs = rpmteGetFileStates(te);
-    rpm_count_t fc = rpmfsFC(fs);
-    rpm_fstate_t * fileStates = rpmfsGetStates(fs);
     rpm_color_t tscolor = rpmtsColor(ts);
     rpm_tid_t tid = rpmtsGetTid(ts);
     rpmRC rc;
 
-    if (fileStates != NULL && fc > 0) {
-	headerPutChar(h, RPMTAG_FILESTATES, fileStates, fc);
-    }
-
-    headerPutUint32(h, RPMTAG_INSTALLTID, &tid, 1);
-    headerPutUint32(h, RPMTAG_INSTALLTIME, &installTime, 1);
-    headerPutUint32(h, RPMTAG_INSTALLCOLOR, &tscolor, 1);
+    headerAddInstallTags(h, tid, installTime, tscolor, fs);
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
     rc = (rpmdbAdd(rpmtsGetRdb(ts), h) == 0) ? RPMRC_OK : RPMRC_FAIL;

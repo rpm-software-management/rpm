@@ -9,6 +9,7 @@
 #include <rpm/header.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmds.h>
+#include <lib/rpmfs.h>
 
 #include "debug.h"
 
@@ -438,4 +439,18 @@ int rpmVersionCompare(Header first, Header second)
 
     return rpmvercmp(headerGetString(first, RPMTAG_RELEASE),
 		     headerGetString(second, RPMTAG_RELEASE));
+}
+
+void headerAddInstallTags(Header h, rpm_tid_t tid, rpm_time_t installTime, rpm_color_t tscolor, rpmfs fs)
+{
+    rpm_count_t fc = rpmfsFC(fs);
+    rpm_fstate_t * fileStates = rpmfsGetStates(fs);
+
+    if (fileStates != NULL && fc > 0) {
+	headerPutChar(h, RPMTAG_FILESTATES, fileStates, fc);
+    }
+
+    headerPutUint32(h, RPMTAG_INSTALLTID, &tid, 1);
+    headerPutUint32(h, RPMTAG_INSTALLTIME, &installTime, 1);
+    headerPutUint32(h, RPMTAG_INSTALLCOLOR, &tscolor, 1);
 }
