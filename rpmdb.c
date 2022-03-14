@@ -1,8 +1,12 @@
 #include "system.h"
 
+#include <fcntl.h>
 #include <popt.h>
 #include <rpm/rpmcli.h>
 #include <rpm/rpmdb.h>
+#include <rpm/rpmlog.h>
+#include <lib/rpmfs.h>
+#include <lib/rpmvs.h>
 #include "cliutils.h"
 #include "debug.h"
 
@@ -13,6 +17,7 @@ enum modes {
     MODE_EXPORTDB	= (1 << 3),
     MODE_IMPORTDB	= (1 << 4),
     MODE_SALVAGEDB	= (1 << 5),
+    MODE_EXPORTPKGS	= (1 << 6),
 };
 
 static int mode = 0;
@@ -32,6 +37,10 @@ static struct poptOption dbOptsTable[] = {
 	NULL},
     { "importdb", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_IMPORTDB,
 	N_("import database from stdin header list"),
+	NULL},
+    { "exportpkgs", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR|POPT_ARGFLAG_DOC_HIDDEN),
+	&mode, MODE_EXPORTPKGS,
+	N_("export database package headers to directory"),
 	NULL},
     POPT_TABLEEND
 };
@@ -88,6 +97,50 @@ static int importDB(rpmts ts)
     return rc;
 }
 
+static int exportPackageHeaders(rpmts ts, poptContext optCon)
+{
+    rpmRC rc = 0;
+    struct stat sb = {0};
+    const char* path = poptGetArg(optCon);
+
+    if (!path || stat(path, &sb) || !S_ISDIR(sb.st_mode)) {
+	printUsage(optCon, stderr, 0);
+	return -1;
+    }
+
+    rpmtxn txn = rpmtxnBegin(ts, RPMTXN_READ);
+    if (!txn && getuid() == 0)
+          return -1;
+
+    Header h;
+    rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
+
+    while ((h = rpmdbNextIterator(mi))) {
+	char* fn;
+	char *nevra = headerGetAsString(h, RPMTAG_NEVRA);
+
+	rasprintf(&fn, "%s/%s.rpm", path, nevra);
+
+	FD_t fd = Fopen(fn, "w.ufdio");
+	if (Ferror(fd)) {
+	    rpmlog(RPMLOG_ERR, _("%s: open failed: %s\n"), fn, Fstrerror(fd));
+	    ++rc;
+	    continue;
+	}
+
+	rpmlog(RPMLOG_INFO, "writing %s\n", fn);
+	rc += headerWriteAsPackage(fd, h);
+
+	free(nevra);
+	free(fn);
+    }
+
+    rpmdbFreeIterator(mi);
+    rpmtxnEnd(txn);
+
+    return rc;
+}
+
 int main(int argc, char *argv[])
 {
     int ec = EXIT_FAILURE;
@@ -98,7 +151,7 @@ int main(int argc, char *argv[])
 
     optCon = rpmcliInit(argc, argv, optionsTable);
 
-    if (argc < 2 || poptPeekArg(optCon)) {
+    if (argc < 2 || (mode != MODE_EXPORTPKGS && poptPeekArg(optCon))) {
 	printUsage(optCon, stderr, 0);
 	goto exit;
     }
@@ -127,6 +180,9 @@ int main(int argc, char *argv[])
 	break;
     case MODE_IMPORTDB:
 	ec = importDB(ts);
+	break;
+    case MODE_EXPORTPKGS:
+	ec = exportPackageHeaders(ts, optCon);
 	break;
     default:
 	argerror(_("only one major mode may be specified"));
