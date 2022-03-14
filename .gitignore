@@ -15,6 +15,7 @@
 Makefile
 Makefile.in
 Makefile.in.in
+preinstall.am
 
 /ABOUT-NLS
 /ChangeLog
