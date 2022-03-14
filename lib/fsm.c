@@ -66,6 +66,7 @@ struct filedata_s {
  */ 
 static const char * fileActionString(rpmFileAction a);
 static int fsmOpenat(int dirfd, const char *path, int flags, int dir);
+static int fsmClose(int *wfdp);
 
 /** \ingroup payload
  * Build path to file from file info, optionally ornamented with suffix.
@@ -101,7 +102,7 @@ static int cap_set_fileat(int dirfd, const char *path, cap_t fcaps)
     int fd = fsmOpenat(dirfd, path, O_RDONLY|O_NOFOLLOW, 0);
     if (fd >= 0) {
 	rc = cap_set_fd(fd, fcaps);
-	close(fd);
+	fsmClose(&fd);
     }
     return rc;
 }
@@ -326,8 +327,7 @@ static int fsmOpenat(int dirfd, const char *path, int flags, int dir)
     /* O_DIRECTORY equivalent */
     if (dir && fd >= 0 && fstat(fd, &sb) == 0 && !S_ISDIR(sb.st_mode)) {
 	errno = ENOTDIR;
-	close(fd);
-	fd = -1;
+	fsmClose(&fd);
     }
     return fd;
 }
@@ -395,7 +395,7 @@ static int ensureDir(rpmPlugins plugins, const char *p, int owned, int create,
 	    rc = fsmDoMkDir(plugins, dirfd, bn, apath, owned, mode, &fd);
 	}
 
-	close(dirfd);
+	fsmClose(&dirfd);
 	if (fd >= 0) {
 	    dirfd = fd;
 	} else {
@@ -411,9 +411,8 @@ static int ensureDir(rpmPlugins plugins, const char *p, int owned, int create,
     }
 
     if (rc) {
-	close(fd);
-	close(dirfd);
-	dirfd = -1;
+	fsmClose(&fd);
+	fsmClose(&dirfd);
     } else {
 	rc = 0;
     }
@@ -840,10 +839,7 @@ static int onChdir(rpmfi fi, void *data)
 {
     struct diriter_s *di = data;
 
-    if (di->dirfd >= 0) {
-	close(di->dirfd);
-	di->dirfd = -1;
-    }
+    fsmClose(&(di->dirfd));
     return 0;
 }
 
@@ -861,14 +857,8 @@ static rpmfi fsmIter(FD_t payload, rpmfiles files, rpmFileIter iter, void *data)
 
 static rpmfi fsmIterFini(rpmfi fi, struct diriter_s *di)
 {
-    if (di->dirfd >= 0) {
-	close(di->dirfd);
-	di->dirfd = -1;
-    }
-    if (di->firstdir >= 0) {
-	close(di->firstdir);
-	di->firstdir = -1;
-    }
+    fsmClose(&(di->dirfd));
+    fsmClose(&(di->firstdir));
     return rpmfiFree(fi);
 }
 
