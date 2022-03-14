@@ -98,7 +98,7 @@ rpmfileState rpmfsGetState(rpmfs fs, unsigned int ix)
 
 rpm_fstate_t * rpmfsGetStates(rpmfs fs)
 {
-    return fs->states;
+    return (fs != NULL) ? fs->states : NULL;
 }
 
 rpmFileAction rpmfsGetAction(rpmfs fs, unsigned int ix)
