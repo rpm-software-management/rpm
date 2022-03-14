@@ -208,7 +208,7 @@ static int fsmMkfile(int dirfd, rpmfi fi, struct filedata_s *fp, rpmfiles files,
 	if (fp->sb.st_nlink > 1) {
 	    *firstlink = fp;
 	    *firstlinkfile = fd;
-	    *firstdir = dirfd;
+	    *firstdir = dup(dirfd);
 	}
     } else {
 	/* Create hard links for others and avoid redundant metadata setting */
@@ -227,7 +227,7 @@ static int fsmMkfile(int dirfd, rpmfi fi, struct filedata_s *fp, rpmfiles files,
 	    fp->setmeta = 1;
 	    *firstlink = NULL;
 	    *firstlinkfile = -1;
-	    *firstdir = -1;
+	    fsmClose(firstdir);
 	}
     }
     *fdp = fd;
@@ -841,8 +841,7 @@ static int onChdir(rpmfi fi, void *data)
     struct diriter_s *di = data;
 
     if (di->dirfd >= 0) {
-	if (di->dirfd != di->firstdir)
-	    close(di->dirfd);
+	close(di->dirfd);
 	di->dirfd = -1;
     }
     return 0;
