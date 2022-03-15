@@ -270,9 +270,14 @@ int rpmtsSetKeyring(rpmts ts, rpmKeyring keyring)
 static int loadKeyringFromFiles(rpmts ts)
 {
     ARGV_t files = NULL;
-    /* XXX TODO: deal with chroot path issues */
-    char *pkpath = rpmGetPath(ts->rootDir, "%{_keyringpath}/*.key", NULL);
+    char *pkpath = NULL;
     int nkeys = 0;
+    const char *rootDir = rpmtsRootDir(ts);
+
+    if (!rootDir || rpmChrootDone())
+	rootDir = "/";
+
+    pkpath = rpmGetPath(rootDir, "%{_keyringpath}/*.key", NULL);
 
     rpmlog(RPMLOG_DEBUG, "loading keyring from pubkeys in %s\n", pkpath);
     if (rpmGlob(pkpath, NULL, &files)) {
