@@ -213,7 +213,7 @@ static char * permsFormat(rpmtd td, char **emsg)
 /* file flags formatting */
 static char * fflagsFormat(rpmtd td, char **emsg)
 {
-    return rpmFFlagsString(rpmtdGetNumber(td), "");
+    return rpmFFlagsString(rpmtdGetNumber(td));
 }
 
 /* pubkey ascii armor formatting */

@@ -296,19 +296,29 @@ char * rpmVerifyString(uint32_t verifyResult, const char *pad)
 #undef aok
 #undef unknown
 
-char * rpmFFlagsString(uint32_t fflags, const char *pad)
+char * rpmFFlagsString(uint32_t fflags)
 {
-    char *fmt = NULL;
-    rasprintf(&fmt, "%s%s%s%s%s%s%s%s%s",
-		(fflags & RPMFILE_DOC) ? "d" : pad,
-		(fflags & RPMFILE_CONFIG) ? "c" : pad,
-		(fflags & RPMFILE_SPECFILE) ? "s" : pad,
-		(fflags & RPMFILE_MISSINGOK) ? "m" : pad,
-		(fflags & RPMFILE_NOREPLACE) ? "n" : pad,
-		(fflags & RPMFILE_GHOST) ? "g" : pad,
-		(fflags & RPMFILE_LICENSE) ? "l" : pad,
-		(fflags & RPMFILE_README) ? "r" : pad,
-		(fflags & RPMFILE_ARTIFACT) ? "a" : pad);
+    char *fmt, *p;
+    fmt = p = xmalloc(10);
+    if ((fflags & RPMFILE_DOC))
+        *p++ = 'd';
+    if ((fflags & RPMFILE_CONFIG))
+        *p++ = 'c';
+    if ((fflags & RPMFILE_SPECFILE))
+        *p++ = 's';
+    if ((fflags & RPMFILE_MISSINGOK))
+        *p++ = 'm';
+    if ((fflags & RPMFILE_NOREPLACE))
+        *p++ = 'n';
+    if ((fflags & RPMFILE_GHOST))
+        *p++ = 'g';
+    if ((fflags & RPMFILE_LICENSE))
+        *p++ = 'l';
+    if ((fflags & RPMFILE_README))
+        *p++ = 'r';
+    if ((fflags & RPMFILE_ARTIFACT))
+        *p++ = 'a';
+    *p++= '\0';
     return fmt;
 }
 
@@ -380,7 +390,7 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask,
 	if (headerGetInstance(h))
 	    fstate = stateStr(rpmfiFState(fi));
 
-	attrFormat = rpmFFlagsString(fileAttrs, "");
+	attrFormat = rpmFFlagsString(fileAttrs);
 	ac = rstreq(attrFormat, "") ? ' ' : attrFormat[0];
 	if (verifyResult & RPMVERIFY_LSTATFAIL) {
 	    if (!(fileAttrs & (RPMFILE_MISSINGOK|RPMFILE_GHOST)) || rpmIsVerbose()) {

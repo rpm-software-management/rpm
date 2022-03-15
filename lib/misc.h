@@ -25,7 +25,7 @@ RPM_GNUC_INTERNAL
 char * rpmVerifyString(uint32_t verifyResult, const char *pad);
 
 RPM_GNUC_INTERNAL
-char * rpmFFlagsString(uint32_t fflags, const char *pad);
+char * rpmFFlagsString(uint32_t fflags);
 
 typedef int (*headerTagTagFunction) (Header h, rpmtd td, headerGetFlags hgflags);
 
