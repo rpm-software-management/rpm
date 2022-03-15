@@ -566,9 +566,17 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     int subkeysCount = 0;
     rpmVSFlags oflags = rpmtsVSFlags(ts);
     rpmKeyring keyring;
-    rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
     int krc, i;
 
+    char *krtype = rpmExpand("%{?_keyring}", NULL);
+    if (rstreq(krtype, "fs")) {
+	rpmlog(RPMLOG_DEBUG, "%%_keyring fs does not support importing\n");
+	free(krtype);
+	return RPMRC_FAIL;
+    }
+    free(krtype);
+
+    rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
     if (txn == NULL)
 	return rc;
 
