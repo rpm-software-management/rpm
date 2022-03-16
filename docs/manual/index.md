@@ -35,7 +35,7 @@ title: rpm.org - RPM Reference Manual
     * [Scriptlet Expansion](scriptlet_expansion.md)
   * [Conditional Builds](conditionalbuilds.md)
   * [Relocatable Packages](relocatable.md)
-  * [Buildroot](buildroot.md) and [Multiple build areas](multiplebuilds.md)
+  * [Multiple build areas](multiplebuilds.md)
 
 
 ## Developer Information
