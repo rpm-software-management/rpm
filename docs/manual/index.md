@@ -11,9 +11,6 @@ title: rpm.org - RPM Reference Manual
 * [Large File support](large_files.md)
 * [Query formatting](queryformat.md)
 
-### Signatures
-* [Signatures](signatures.md)
-
 ## Macro subsystem
 * [Macro syntax](macros.md)
 * [Embedded Lua](lua.md)
