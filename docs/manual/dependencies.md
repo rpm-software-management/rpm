@@ -85,7 +85,7 @@ specifies
     release=3
 ```
 
-The epoch (if present) is a monotonically increasing integer, neither the version or the release can contain the '-' hyphen character, and the dependency parser does not permit white space within a definition. Unspecified epoch and releases are assumed to be zero, and are interpreted as "providing all" or "requiring any" value.
+The epoch (if present) is a monotonically increasing integer, neither the version or the release can contain the '-' hyphen character, and the dependency parser does not permit white space within a definition. Unspecified epoch is equal to epoch of 0.
 
 The release tag is usually incremented every time a package is rebuilt for any reason, even if the source code does not change. For example, changes to the specfile, compiler(s) used to build the package, and/or dependency changes should all be tracked by incrementing the release. The version number, on the other hand, is usually set by the developer or upstream maintainer, and should not be casually modified by the packager.
 
