@@ -250,26 +250,3 @@ could start at byte 589, byte that is an improper boundary for an INT32.
 As a result, 3 null bytes are inserted and the date for the SIZE actually
 starts at byte 592: "00 09 9b 31", which is 629553).
 
-## Tools
-
-The tools directory in the RPM sources contains a number of small
-programs that use the RPM library to pick apart packages.  These
-tools are mostly used for debugging, but can also be used to help
-you understand the internals of the RPM package format.
-
-```
-	rpmlead		- extracts the Lead from a package
-	rpmsignature	- extracts the Signature from a package
-	rpmheader	- extracts the Header from a package
-	rpmarchive	- extracts the Archive from a package
-	dump		- displays a header structure in readable format
-```
-
-Given a package foo.rpm you might try:
-
-```
-	rpmlead foo.rpm | od -x
-	rpmsignature foo.rpm | dump
-	rpmheader foo.rpm | dump
-	rpmarchive foo.rpm | zcat | cpio --list
-```
