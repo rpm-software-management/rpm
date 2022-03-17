@@ -10,6 +10,10 @@ CLEANFILES =
 TESTSUITE = $(srcdir)/rpmtests
 EXTRA_DIST += local.at $(TESTSUITE)
 
+AM_CPPFLAGS = -I$(top_srcdir)/include
+
+rpmpgpcheck_LDADD = ../rpmio/librpmio.la
+
 ## testsuite components
 TESTSUITE_AT = rpmtests.at
 TESTSUITE_AT += rpmgeneral.at
@@ -134,6 +138,8 @@ EXTRA_DIST += data/misc/hellopie
 EXTRA_DIST += data/misc/libhello.so
 
 .PHONY: populate_testing
+
+check_PROGRAMS = rpmpgpcheck
 
 # testsuite voodoo
 AUTOTEST = $(AUTOM4TE) --language=autotest
