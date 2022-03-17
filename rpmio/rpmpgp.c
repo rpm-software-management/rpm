@@ -1163,6 +1163,7 @@ int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
     rc = (digp && (p == pend) && expect == 0) ? 0 : -1;
 
     free(all);
+    selfsig = pgpDigParamsFree(selfsig);
     if (ret && rc == 0) {
 	*ret = digp;
     } else {
