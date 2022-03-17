@@ -1,3 +1,4 @@
+m4_include([rpmpgp.at])
 m4_include([rpmgeneral.at])
 m4_include([rpmvercmp.at])
 m4_include([rpmmacro.at])
