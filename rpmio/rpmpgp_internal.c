@@ -585,26 +585,29 @@ static int pgpPrtPubkeyParams(uint8_t pubkey_algo,
 		const uint8_t *p, const uint8_t *h, size_t hlen,
 		pgpDigParams keyp)
 {
-    int rc = 1;
+    int rc = 1; /* assume failure */
     const uint8_t *pend = h + hlen;
     int curve = 0;
+    if (!isKey(keyp))
+	return rc;
+    /* We can't handle more than one key at a time */
+    if (keyp->alg)
+	return rc;
     if (pubkey_algo == PGPPUBKEYALGO_EDDSA) {
 	int len = (hlen > 1) ? p[0] : 0;
 	if (len == 0 || len == 0xff || len >= hlen)
-	    goto exit;
+	    return rc;
 	curve = pgpCurveByOid(p + 1, len);
 	p += len + 1;
     }
     pgpDigAlg keyalg = pgpPubkeyNew(pubkey_algo, curve);
     rc = processMpis(keyalg->mpis, keyalg, p, pend);
-
-    /* We can't handle more than one key at a time */
-    if (rc == 0 && keyp->alg == NULL && isKey(keyp))
+    if (rc == 0) {
+	keyp->pubkey_algo = pubkey_algo;
 	keyp->alg = keyalg;
-    else
+    } else {
 	pgpDigAlgFree(keyalg);
-
-exit:
+    }
     return rc;
 }
 
@@ -634,7 +637,6 @@ static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
 		_digp->version = v->version;
 		if (!(_digp->saved & PGPDIG_SAVED_TIME))
 		    _digp->time = pgpGrab(v->time, sizeof(v->time));
-		_digp->pubkey_algo = v->pubkey_algo;
 		_digp->saved |= PGPDIG_SAVED_TIME | PGPDIG_SIG_HAS_CREATION_TIME;
 	    }
 
@@ -1040,7 +1042,8 @@ int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
 	    } else {
 		digp = pgpDigParamsNew(pkt->tag);
 	    }
-	}
+	} else if (pkt->tag == PGPTAG_PUBLIC_KEY)
+	    break;
 
 	if (expect) {
 	    if (pkt->tag != expect)
