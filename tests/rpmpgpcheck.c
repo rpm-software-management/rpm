@@ -1,5 +1,4 @@
 #include <stddef.h>
-#include <assert.h>
 #include <limits.h>
 #include <stdio.h>
 
@@ -25,28 +24,44 @@ static long data_eddsa_asc_len = 119;
 int main(void)
 {
     long s = sysconf(_SC_PAGE_SIZE);
-    assert(s > data_eddsa_asc_len && s < LONG_MAX / 2);
+    if (!(s > data_eddsa_asc_len && s < LONG_MAX / 2))
+	return 1;
 
-    void *addr = mmap(NULL, 2 * s, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+    uint8_t *addr = mmap(NULL, 2 * s, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     if (addr == MAP_FAILED) {
 	perror("mmap");
 	return 1;
     }
-    if (mprotect((unsigned char *)addr + s, (size_t)s, PROT_NONE)) {
+    if (mprotect(addr + s, (size_t)s, PROT_NONE)) {
 	perror("mprotect");
 	return 1;
     }
-    memcpy((unsigned char *)addr + (s - data_eddsa_asc_len), data_eddsa_asc, data_eddsa_asc_len);
+    memcpy(addr + (s - data_eddsa_asc_len), data_eddsa_asc, data_eddsa_asc_len);
     pgpDigParams params = NULL;
     addr += s - data_eddsa_asc_len;
     if (pgpPrtParams(addr, data_eddsa_asc_len, PGPTAG_SIGNATURE, &params)) {
-	fprintf(stderr, "Valid signature not properly accepted\n");
+	fprintf(stderr, "Valid old-format signature not properly accepted\n");
 	return 1;
     }
-    data_eddsa_asc[1] += 1;
-    if (pgpPrtParams(addr, data_eddsa_asc_len, PGPTAG_SIGNATURE, &params) != -1) {
-	fprintf(stderr, "Invalid signature not properly rejected\n");
+    params = pgpDigParamsFree(params);
+    addr[0] = 0xC2;
+    if (pgpPrtParams(addr, data_eddsa_asc_len, PGPTAG_SIGNATURE, &params)) {
+	fprintf(stderr, "Valid new-format signature not properly accepted\n");
 	return 1;
     }
+    params = pgpDigParamsFree(params);
+    addr[0] = 0x88;
+    addr[1] += 5;
+    if (pgpPrtParams(addr, data_eddsa_asc_len, 0, &params) != -1) {
+	fprintf(stderr, "Invalid old-format signature packet not properly rejected\n");
+	return 1;
+    }
+    params = pgpDigParamsFree(params);
+    addr[0] = 0xC2;
+    if (pgpPrtParams(addr, data_eddsa_asc_len, 0, &params) != -1) {
+	fprintf(stderr, "Invalid new-format signature packet not properly rejected\n");
+	return 1;
+    }
+    params = pgpDigParamsFree(params);
     return 0;
 }
