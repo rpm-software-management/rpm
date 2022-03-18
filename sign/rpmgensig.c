@@ -129,7 +129,7 @@ exit:
 
 /*
  * Validate generated signature and insert to header if it looks sane.
- * NSS doesn't support everything GPG does. Basic tests to see if the 
+ * RPM doesn't support everything GPG does. Basic tests to see if the
  * generated signature is something we can use.
  * Return generated signature tag data on success, NULL on failure.
  */
