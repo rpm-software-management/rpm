@@ -34,6 +34,11 @@
 
 #include "debug.h"
 
+enum {
+    KEYRING_RPMDB 	= 1,
+    KEYRING_FS		= 2,
+};
+
 /**
  * Iterator across transaction elements, forward on install, backward on erase.
  */
@@ -373,23 +378,36 @@ static int loadKeyringFromDB(rpmts ts)
     return nkeys;
 }
 
+static int getKeyringType(void)
+{
+    int kt = KEYRING_RPMDB;
+    char *krtype = rpmExpand("%{?_keyring}", NULL);
+
+    if (rstreq(krtype, "fs")) {
+	kt = KEYRING_FS;
+    } else if (*krtype && !rstreq(krtype, "rpmdb")) {
+	/* Fall back to using rpmdb if unknown, for now at least */
+	rpmlog(RPMLOG_WARNING,
+		_("unknown keyring type: %s, using rpmdb\n"), krtype);
+    }
+    free(krtype);
+
+    return kt;
+}
+
 static void loadKeyring(rpmts ts)
 {
     /* Never load the keyring if signature checking is disabled */
     if ((rpmtsVSFlags(ts) & RPMVSF_MASK_NOSIGNATURES) !=
 	RPMVSF_MASK_NOSIGNATURES) {
-	char *krtype = rpmExpand("%{?_keyring}", NULL);
 	ts->keyring = rpmKeyringNew();
-	if (rstreq(krtype, "fs")) {
+	if (!ts->keyringtype)
+	    ts->keyringtype = getKeyringType();
+	if (ts->keyringtype == KEYRING_FS) {
 	    loadKeyringFromFiles(ts);
 	} else {
-	    /* Fall back to using rpmdb if unknown, for now at least */
-	    if (!(rstreq(krtype, "") || rstreq(krtype, "rpmdb")))
-		rpmlog(RPMLOG_WARNING,
-			_("unknown keyring type: %s, using rpmdb\n"), krtype);
 	    loadKeyringFromDB(ts);
 	}
-	free(krtype);
     }
 }
 
@@ -1187,6 +1205,7 @@ rpmts rpmtsCreate(void)
 
     ts->rootDir = NULL;
     ts->keyring = NULL;
+    ts->keyringtype = 0;
     ts->vfyflags = rpmExpandNumeric("%{?_pkgverify_flags}");
     ts->vfylevel = vfylevel_init();
 

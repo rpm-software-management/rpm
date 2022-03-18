@@ -78,6 +78,7 @@ struct rpmts_s {
     rpmVSFlags vfyflags;	/*!< Package verification flags */
     int vfylevel;		/*!< Package verification level */
     rpmKeyring keyring;		/*!< Keyring in use. */
+    int keyringtype;		/*!< Keyring type */
 
     ARGV_t netsharedPaths;	/*!< From %{_netsharedpath} */
     ARGV_t installLangs;	/*!< From %{_install_langs} */
