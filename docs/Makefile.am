@@ -17,7 +17,6 @@ manual/file_triggers.md \
 manual/lua.md \
 manual/more_dependencies.md \
 manual/scriptlet_expansion.md \
-manual/buildroot.md \
 manual/conditionalbuilds.md \
 manual/dependencies.md \
 manual/dependency_generators.md \
@@ -29,7 +28,6 @@ manual/multiplebuilds.md \
 manual/plugins.md \
 manual/queryformat.md \
 manual/relocatable.md \
-manual/signatures.md \
 manual/signatures_digests.md \
 manual/spec.md \
 manual/tags.md \
