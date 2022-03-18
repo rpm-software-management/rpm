@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include <libgen.h>
 #include <fcntl.h>
+#include <errno.h>
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>			/* rpmReadPackage etc */
@@ -570,6 +571,32 @@ rpmRC rpmtsImportHeader(rpmtxn txn, Header h, rpmFlags flags)
     return rc;
 }
 
+static rpmRC rpmtsImportFSKey(rpmtxn txn, Header h, rpmFlags flags)
+{
+    rpmRC rc = RPMRC_FAIL;
+    char *keyfmt = headerFormat(h, "%{nvr}.key", NULL);
+    char *keyval = headerGetAsString(h, RPMTAG_DESCRIPTION);
+    char *path = rpmGenPath(rpmtsRootDir(txn->ts), "%{_keyringpath}/", keyfmt);
+
+    FD_t fd = Fopen(path, "wx");
+    if (fd) {
+	size_t keylen = strlen(keyval);
+	if (Fwrite(keyval, 1, keylen, fd) == keylen)
+	    rc = RPMRC_OK;
+	Fclose(fd);
+    }
+
+    if (rc) {
+	rpmlog(RPMLOG_ERR, _("failed to import key: %s: %s\n"),
+		path, strerror(errno));
+    }
+
+    free(path);
+    free(keyval);
+    free(keyfmt);
+    return rc;
+}
+
 rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen)
 {
     Header h = NULL;
@@ -612,7 +639,10 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
 
 	/* Add header to database. */
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
-	    rc = rpmtsImportHeader(txn, h, 0);
+	    if (ts->keyringtype == KEYRING_FS)
+		rc = rpmtsImportFSKey(txn, h, 0);
+	    else
+		rc = rpmtsImportHeader(txn, h, 0);
 	}
     }
     rc = RPMRC_OK;
