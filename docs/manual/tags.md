@@ -75,6 +75,7 @@ Policytypesindexes | 5032 | int32 array
 Rpmversion         | 1064 | string       | Version of rpm used to build the package.
 Sourcepkgid        | 1146 | bin
 Sourcerpm          | 1044 | string       | Package source rpm file name.
+Translationurl     | 5100 | string       | URL of upstream translation service/repository
 Url                | 1020 | string       | Package URL, typically project upstream website.
 Vcs                | 5034 | string       | (Public) upstream source code VCS location. Format `<vcs>:<address>` with `<vcs>` being the VCS command used (e.g. `git`, `svn`, `hg`, ...) and `<address>` being the location of the repository as used by the VCS tool to clone/checkout the repository (e.g. `https://github.com/rpm-software-management/rpm.git`).
 Vendor             | 1011 | string       | Package vendor contact information.
