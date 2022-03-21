@@ -97,6 +97,7 @@ Build Host  : %{BUILDHOST}\n\
 %|VENDOR?{Vendor      : %{VENDOR}\n}|\
 %|URL?{URL         : %{URL}\n}|\
 %|BUGURL?{Bug URL     : %{BUGURL}\n}|\
+%|TRANSLATIONURL?{Translation URL: %{TRANSLATIONURL}\n}|\
 Summary     : %{SUMMARY}\n\
 Description :\n%{DESCRIPTION}\n' \
 	--POPTdesc=$"list descriptive information from package(s)"
