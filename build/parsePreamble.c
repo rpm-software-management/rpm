@@ -41,6 +41,7 @@ static const rpmTagVal copyTagsDuringParse[] = {
     RPMTAG_PREFIXES,
     RPMTAG_DISTTAG,
     RPMTAG_BUGURL,
+    RPMTAG_TRANSLATIONURL,
     RPMTAG_GROUP,
     RPMTAG_MODULARITYLABEL,
     0
@@ -533,6 +534,7 @@ static struct optionalTag {
     { RPMTAG_DISTURL,		"%{disturl}" },
     { RPMTAG_DISTTAG,		"%{disttag}" },
     { RPMTAG_BUGURL,		"%{bugurl}" },
+    { RPMTAG_TRANSLATIONURL,	"%{translationurl}" },
     { RPMTAG_MODULARITYLABEL,	"%{modularitylabel}"},
     { -1, NULL }
 };
@@ -806,6 +808,8 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     /* XXX TODO: validate format somehow */
     case RPMTAG_VCS:
 	SINGLE_TOKEN_ONLY;
+	/* fallthrough */
+    case RPMTAG_TRANSLATIONURL:
 	headerPutString(pkg->header, tag, field);
 	break;
     case RPMTAG_GROUP:
@@ -1037,6 +1041,7 @@ static struct PreambleRec_s const preambleList[] = {
     {RPMTAG_DOCDIR,		0, 0, 0, LEN_AND_STR("docdir")},
     {RPMTAG_DISTTAG,		0, 0, 1, LEN_AND_STR("disttag")},
     {RPMTAG_BUGURL,		0, 0, 1, LEN_AND_STR("bugurl")},
+    {RPMTAG_TRANSLATIONURL,	0, 0, 1, LEN_AND_STR("translationurl")},
     {RPMTAG_ORDERNAME,		2, 0, 0, LEN_AND_STR("orderwithrequires")},
     {RPMTAG_REMOVEPATHPOSTFIXES,0, 0, 1, LEN_AND_STR("removepathpostfixes")},
     {RPMTAG_MODULARITYLABEL,	0, 0, 1, LEN_AND_STR("modularitylabel")},
