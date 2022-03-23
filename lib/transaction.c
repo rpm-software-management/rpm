@@ -434,6 +434,9 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfiles fi, int fx
     if (XFA_SKIPPING(rpmfsGetAction(fs, fx)))
 	return;
 
+    if (rpmfilesFState(otherFi, ofx) == RPMFILE_STATE_NOTINSTALLED)
+	return;
+
     if (rpmfilesCompare(otherFi, ofx, fi, fx)) {
 	int rConflicts = 1;
 	char rState = RPMFILE_STATE_REPLACED;
