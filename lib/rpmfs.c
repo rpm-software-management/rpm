@@ -17,8 +17,7 @@ rpmfs rpmfsNew(rpm_count_t fc, int initState)
 {
     rpmfs fs = xcalloc(1, sizeof(*fs));
     fs->fc = fc;
-    fs->actions = xmalloc(fs->fc * sizeof(*fs->actions));
-    rpmfsResetActions(fs);
+    fs->actions = xcalloc(fs->fc, sizeof(*fs->actions));
     if (initState) {
 	fs->states = xmalloc(sizeof(*fs->states) * fs->fc);
 	memset(fs->states, RPMFILE_STATE_NORMAL, fs->fc);
@@ -119,6 +118,10 @@ void rpmfsSetAction(rpmfs fs, unsigned int ix, rpmFileAction action)
 void rpmfsResetActions(rpmfs fs)
 {
     if (fs && fs->actions) {
-	memset(fs->actions, FA_UNKNOWN, fs->fc * sizeof(*fs->actions));
+	for (int i = 0; i < fs->fc; i++) {
+	    /* --excludepaths is processed early, avoid undoing that */
+	    if (fs->actions[i] != FA_SKIPNSTATE)
+		fs->actions[i] = FA_UNKNOWN;
+	}
     }
 }
