@@ -226,6 +226,23 @@ for p in a b; do
 done
 
 AT_CHECK([
+runroot rpm -U --ignoreos --excludepath=/usr/share /build/RPMS/noarch/conflicta-1.0-1.noarch.rpm
+runroot rpm -U --ignoreos /build/RPMS/noarch/conflictb-1.0-1.noarch.rpm
+runroot rpm -Vav --nogroup --nouser conflicta conflictb
+runroot rpm -e conflicta
+runroot rpm -Vav --nogroup --nouser conflictb
+runroot rpm -e conflictb
+runroot rpm -Vp --nogroup --nouser /build/RPMS/noarch/conflictb-1.0-1.noarch.rpm
+],
+[1],
+[.........    /usr/share/my.version (not installed)
+.........    /usr/share/my.version
+.........    /usr/share/my.version
+missing     /usr/share/my.version
+],
+[])
+
+AT_CHECK([
 runroot rpm -U --ignoreos /build/RPMS/noarch/conflicta-1.0-1.noarch.rpm 
 runroot rpm -U --ignoreos --force /build/RPMS/noarch/conflictb-1.0-1.noarch.rpm
 runroot rpm -Vav --nogroup --nouser conflicta conflictb
