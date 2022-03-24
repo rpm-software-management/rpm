@@ -167,7 +167,6 @@ AT_CLEANUP
 
 # Test that shared colored files actually get removed regardless of order 1
 AT_SETUP([rpm -e and verify colored files removed 2.1])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 AT_KEYWORDS([install erase rpmdb])
 RPMDB_INIT
 AT_CHECK([
@@ -192,7 +191,6 @@ AT_CLEANUP
 
 # Test that shared colored files actually get removed regardless of order 2
 AT_SETUP([rpm -e and verify colored files removed 2.2])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 AT_KEYWORDS([install erase rpmdb])
 RPMDB_INIT
 AT_CHECK([
