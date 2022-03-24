@@ -464,7 +464,7 @@ AT_CHECK([
 RPMDB_INIT
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
-run rpmsign --key-id 1964C5FC --rpmv3 --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
+run rpmsign --key-id 1964C5FC --rpmv3 --digest-algo sha256 --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
 echo PRE-IMPORT
 runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
 echo POST-IMPORT
