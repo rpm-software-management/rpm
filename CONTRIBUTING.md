@@ -61,6 +61,35 @@ In emacs use
 
 ```
 
+Conditions should be indented at a different level than the subsequent code
+block.  For instance, the following should be avoided:
+
+```c
+if (something ||
+    something_else) {
+    do_x();
+}
+```
+
+There are several ways to resolve this.  One is to indent the condition deeper:
+
+```c
+if ((something ||
+     something_else)) {
+    do_x();
+}
+```
+
+Another is to move the opening curly brace to a line of its own:
+
+```c
+if (something ||
+    something_else)
+{
+    do_x();
+}
+```
+
 ### Comments
 
 Comments should be used sparingly and for subtle and
