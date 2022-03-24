@@ -17,7 +17,7 @@ not in line with RPM design and goals.**
 ## Submitting Patches
 
 Patches should be submitted via GitHub pull requests (PRs) or via `git
-send-mail` to the rpm-maint@lists.rpm.org mailing list.  Each PR should be a
+send-email` to the rpm-maint@lists.rpm.org mailing list.  Each PR should be a
 single atomic change, meaning that it should be merged or rejected as a unit.
 It is okay for a PR to contain multiple commits if later commits are dependent
 on earlier ones.  If earlier commits do not depend on later ones, they
