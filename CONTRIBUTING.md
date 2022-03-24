@@ -20,8 +20,10 @@ Patches should be submitted via GitHub pull requests (PRs) or via `git
 send-mail` to the rpm-maint@lists.rpm.org mailing list.  Each PR should be a
 single atomic change, meaning that it should be merged or rejected as a unit.
 It is okay for a PR to contain multiple commits if later commits are dependent
-on earlier ones.  If earlier commits do not depend on later ones, they
-(should/should not) be submitted separately.
+on earlier ones.  This includes cases where merging later commits without
+earlier ones would result in a merge conflict, or if the functionality in
+earlier commits would be unused without the later commits.  If later commits do
+not depend on earlier ones, they should be submitted separately.
 
 Pull requests should clearly state if the code is "ready for
 inclusion" or if further work is needed. Proof of concept or request
