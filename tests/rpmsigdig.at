@@ -577,7 +577,7 @@ AT_CHECK([
 RPMDB_INIT
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
-run rpmsign --key-id 1964C5FC --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
+run rpmsign --key-id 1964C5FC --digest-algo sha256 --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
 echo PRE-IMPORT
 runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
 echo POST-IMPORT
@@ -604,7 +604,7 @@ AT_CHECK([
 RPMDB_INIT
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64-signed.rpm "${RPMTEST}"/tmp/
-run rpmsign --key-id 1964C5FC --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64-signed.rpm 2>&1 |grep -q "already contains identical signature, skipping"
+run rpmsign --key-id 1964C5FC --digest-algo sha256 --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64-signed.rpm 2>&1 |grep -q "already contains identical signature, skipping"
 ],
 [0],
 [],
@@ -618,7 +618,7 @@ pkg="hello-2.0-1.x86_64.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=333 count=4 2> /dev/null
-run rpmsign --key-id 1964C5FC --addsign "${RPMTEST}/tmp/${pkg}" >/dev/null 2> stderr
+run rpmsign --key-id 1964C5FC --digest-algo sha256 --addsign "${RPMTEST}/tmp/${pkg}" >/dev/null 2> stderr
 echo $?
 grep -c "error: not signing corrupt package " stderr
 runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
