@@ -46,13 +46,13 @@ RPM uses 8-space tabs.  Indentation is 4 spaces, with each group of 8 or more
 leading spaces replaced by a tab. If in doubt, 'indent -kr' generally
 produces acceptable formatting.
 
-In VIM, this can be achieved with
+In Vim, this can be achieved with
 
 ```vim
 set shiftwidth=4 tabstop=8 softtabstop=4
 ```
 
-In emacs use
+In Emacs use
 ```
 (setq-default c-basic-offset 4
               indent-tabs-mode t)
