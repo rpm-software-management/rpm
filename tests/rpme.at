@@ -1,0 +1,280 @@
+
+AT_SETUP([rpm -e and verify files removed])
+AT_KEYWORDS([install erase rpmdb])
+RPMDB_INIT
+
+AT_CHECK([
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+	/data/RPMS/hello-2.0-1.x86_64.rpm
+runroot rpm -Vv --nodeps --nogroup --nouser hello
+runroot rpm -e hello
+runroot rpm -Vv --nodeps --nogroup --nouser /data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[1],
+[.........    /usr/bin/hello
+.........    /usr/share/doc/hello-2.0
+.........  d /usr/share/doc/hello-2.0/COPYING
+.........  d /usr/share/doc/hello-2.0/FAQ
+.........  d /usr/share/doc/hello-2.0/README
+missing     /usr/bin/hello
+missing     /usr/share/doc/hello-2.0
+missing   d /usr/share/doc/hello-2.0/COPYING
+missing   d /usr/share/doc/hello-2.0/FAQ
+missing   d /usr/share/doc/hello-2.0/README
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpm -e and shared files removed 1.1])
+AT_KEYWORDS([install erase rpmdb])
+RPMDB_INIT
+AT_CHECK([
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+	--define "_transaction_color 3" \
+	--define "_prefer_color 2" \
+	--nodocs \
+	/data/RPMS/hello-2.0-1.x86_64.rpm
+runroot rpm -Vv --nodeps --nogroup --nouser hello
+
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+	--define "_transaction_color 3" \
+	--define "_prefer_color 2" \
+	/data/RPMS/hello-2.0-1.i686.rpm
+runroot rpm -Vv --nodeps --nogroup --nouser hello.x86_64 hello.i686
+
+runroot rpm -e hello.x86_64
+runroot rpm -Vv --nodeps --nogroup --nouser /data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[1],
+[.........    /usr/bin/hello
+.........    /usr/share/doc/hello-2.0 (not installed)
+.........  d /usr/share/doc/hello-2.0/COPYING (not installed)
+.........  d /usr/share/doc/hello-2.0/FAQ (not installed)
+.........  d /usr/share/doc/hello-2.0/README (not installed)
+.........    /usr/bin/hello
+.........    /usr/share/doc/hello-2.0 (not installed)
+.........  d /usr/share/doc/hello-2.0/COPYING (not installed)
+.........  d /usr/share/doc/hello-2.0/FAQ (not installed)
+.........  d /usr/share/doc/hello-2.0/README (not installed)
+.........    /usr/bin/hello (wrong color)
+.........    /usr/share/doc/hello-2.0
+.........  d /usr/share/doc/hello-2.0/COPYING
+.........  d /usr/share/doc/hello-2.0/FAQ
+.........  d /usr/share/doc/hello-2.0/README
+missing     /usr/bin/hello
+.........    /usr/share/doc/hello-2.0
+.........  d /usr/share/doc/hello-2.0/COPYING
+.........  d /usr/share/doc/hello-2.0/FAQ
+.........  d /usr/share/doc/hello-2.0/README
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpm -e and shared files removed 1.2])
+AT_KEYWORDS([install erase rpmdb])
+RPMDB_INIT
+AT_CHECK([
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+	--define "_transaction_color 3" \
+	--define "_prefer_color 2" \
+	--nodocs \
+	/data/RPMS/hello-2.0-1.x86_64.rpm
+runroot rpm -Vv --nodeps --nogroup --nouser hello
+
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+	--define "_transaction_color 3" \
+	--define "_prefer_color 2" \
+	/data/RPMS/hello-2.0-1.i686.rpm
+runroot rpm -Vv --nodeps --nogroup --nouser hello.x86_64 hello.i686
+
+runroot rpm -e hello.i686
+runroot rpm -Vv --nodeps --nogroup --nouser /data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[1],
+[.........    /usr/bin/hello
+.........    /usr/share/doc/hello-2.0 (not installed)
+.........  d /usr/share/doc/hello-2.0/COPYING (not installed)
+.........  d /usr/share/doc/hello-2.0/FAQ (not installed)
+.........  d /usr/share/doc/hello-2.0/README (not installed)
+.........    /usr/bin/hello
+.........    /usr/share/doc/hello-2.0 (not installed)
+.........  d /usr/share/doc/hello-2.0/COPYING (not installed)
+.........  d /usr/share/doc/hello-2.0/FAQ (not installed)
+.........  d /usr/share/doc/hello-2.0/README (not installed)
+.........    /usr/bin/hello (wrong color)
+.........    /usr/share/doc/hello-2.0
+.........  d /usr/share/doc/hello-2.0/COPYING
+.........  d /usr/share/doc/hello-2.0/FAQ
+.........  d /usr/share/doc/hello-2.0/README
+.........    /usr/bin/hello
+missing     /usr/share/doc/hello-2.0
+missing   d /usr/share/doc/hello-2.0/COPYING
+missing   d /usr/share/doc/hello-2.0/FAQ
+missing   d /usr/share/doc/hello-2.0/README
+],
+[])
+
+AT_CLEANUP
+# Test that removing shared or wrong colored files has no effect
+AT_SETUP([rpm -e and verify colored files removed 1.1])
+AT_KEYWORDS([install erase rpmdb])
+RPMDB_INIT
+AT_CHECK([
+
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+	--define "_transaction_color 3" \
+	--define "_prefer_color 2" \
+	/data/RPMS/hello-2.0-1.i686.rpm /data/RPMS/hello-2.0-1.x86_64.rpm
+runroot rpm -V --nodeps --nogroup --nouser hello.x86_64 hello.i686
+runroot rpm -e hello.i686
+runroot rpm -Vv --nodeps --nogroup --nouser hello
+],
+[0],
+[.........    /usr/bin/hello
+.........    /usr/share/doc/hello-2.0
+.........  d /usr/share/doc/hello-2.0/COPYING
+.........  d /usr/share/doc/hello-2.0/FAQ
+.........  d /usr/share/doc/hello-2.0/README
+],
+[])
+AT_CLEANUP
+
+# XXX This is wrong really, rpm shouldn't let the real provider of
+# a shared file get removed - and unforced action shouldn't result
+# in verify failure.
+AT_SETUP([rpm -e and verify colored files removed 1.2])
+AT_KEYWORDS([install erase rpmdb])
+RPMDB_INIT
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+	--define "_transaction_color 3" \
+	--define "_prefer_color 2" \
+	/data/RPMS/hello-2.0-1.i686.rpm /data/RPMS/hello-2.0-1.x86_64.rpm
+runroot rpm -e hello.x86_64
+runroot rpm -Vv --nodeps --nogroup --nouser hello
+],
+[1],
+[missing     /usr/bin/hello (wrong color)
+.........    /usr/share/doc/hello-2.0
+.........  d /usr/share/doc/hello-2.0/COPYING
+.........  d /usr/share/doc/hello-2.0/FAQ
+.........  d /usr/share/doc/hello-2.0/README
+],
+[])
+AT_CLEANUP
+
+# Test that shared colored files actually get removed regardless of order 1
+AT_SETUP([rpm -e and verify colored files removed 2.1])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+AT_KEYWORDS([install erase rpmdb])
+RPMDB_INIT
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+	--define "_transaction_color 2" \
+	--define "_prefer_color 2" \
+	/data/RPMS/hello-2.0-1.i686.rpm /data/RPMS/hello-2.0-1.x86_64.rpm
+runroot rpm -e hello.i686 hello.x86_64
+runroot rpm -Vp --nodeps --nogroup --nouser /data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[1],
+[missing     /usr/bin/hello
+missing     /usr/share/doc/hello-2.0
+missing   d /usr/share/doc/hello-2.0/COPYING
+missing   d /usr/share/doc/hello-2.0/FAQ
+missing   d /usr/share/doc/hello-2.0/README
+],
+[])
+AT_CLEANUP
+
+# Test that shared colored files actually get removed regardless of order 2
+AT_SETUP([rpm -e and verify colored files removed 2.2])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+AT_KEYWORDS([install erase rpmdb])
+RPMDB_INIT
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+	--define "_transaction_color 2" \
+	--define "_prefer_color 2" \
+	/data/RPMS/hello-2.0-1.i686.rpm /data/RPMS/hello-2.0-1.x86_64.rpm
+runroot rpm -e hello.x86_64 hello.i686
+runroot rpm -Vp --nodeps --nogroup --nouser /data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[1],
+[missing     /usr/bin/hello
+missing     /usr/share/doc/hello-2.0
+missing   d /usr/share/doc/hello-2.0/COPYING
+missing   d /usr/share/doc/hello-2.0/FAQ
+missing   d /usr/share/doc/hello-2.0/README
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpm -e and verify conflicting files removed 1])
+AT_KEYWORDS([install erase rpmdb])
+RPMDB_INIT
+for p in a b; do
+    runroot rpmbuild -bb --quiet \
+		--define "pkg ${p}" \
+		--define "filedata pkg-${p}" \
+		/data/SPECS/conflicttest.spec
+done
+
+AT_CHECK([
+runroot rpm -U --ignoreos /build/RPMS/noarch/conflicta-1.0-1.noarch.rpm 
+runroot rpm -U --ignoreos --force /build/RPMS/noarch/conflictb-1.0-1.noarch.rpm
+runroot rpm -Vav --nogroup --nouser conflicta conflictb
+runroot rpm -e conflicta
+runroot rpm -Vav --nogroup --nouser conflictb
+runroot rpm -e conflictb
+runroot rpm -Vp --nogroup --nouser /build/RPMS/noarch/conflictb-1.0-1.noarch.rpm
+],
+[1],
+[.........    /usr/share/my.version (replaced)
+.........    /usr/share/my.version
+.........    /usr/share/my.version
+missing     /usr/share/my.version
+],
+[])
+
+AT_CHECK([
+runroot rpm -U --ignoreos /build/RPMS/noarch/conflicta-1.0-1.noarch.rpm
+runroot rpm -U --ignoreos --force /build/RPMS/noarch/conflictb-1.0-1.noarch.rpm
+runroot rpm -Vav --nogroup --nouser conflicta conflictb
+runroot rpm -e conflictb
+runroot rpm -Vav --nogroup --nouser conflicta
+runroot rpm -e conflicta
+],
+[0],
+[.........    /usr/share/my.version (replaced)
+.........    /usr/share/my.version
+missing     /usr/share/my.version (replaced)
+],
+[])
+AT_CLEANUP
+
+# Test %_netsharedpath erasure. It's a bit weird as we're abusing verify
+# on non-installed package to see if files are there.
+AT_SETUP([rpm -e and verify netshared files not removed])
+AT_KEYWORDS([install erase rpmdb])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+	/data/RPMS/hello-2.0-1.x86_64.rpm
+runroot rpm -e \
+	--define "_netsharedpath /usr/share" \
+	hello
+runroot rpm -Vp --nodeps --nogroup --nouser /data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[1],
+[missing     /usr/bin/hello
+],
+[])
+AT_CLEANUP
+
