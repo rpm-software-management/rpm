@@ -56,8 +56,6 @@ int main(int argc, char *argv[])
     rpmluarl rlcb = NULL;
 #endif
 
-    xsetprogname(argv[0]);
-
     optCon = rpmcliInit(argc, argv, optionsTable);
 
     if (optCon == NULL) {

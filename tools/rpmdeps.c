@@ -80,8 +80,6 @@ main(int argc, char *argv[])
     int ec = 1;
     char buf[BUFSIZ];
 
-    xsetprogname(argv[0]); /* Portability call -- see system.h */
-
     optCon = rpmcliInit(argc, argv, optionsTable);
     if (optCon == NULL)
 	goto exit;

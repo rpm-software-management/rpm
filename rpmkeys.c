@@ -49,8 +49,6 @@ int main(int argc, char *argv[])
     rpmts ts = NULL;
     ARGV_const_t args = NULL;
 
-    xsetprogname(argv[0]); /* Portability call -- see system.h */
-    
     optCon = rpmcliInit(argc, argv, optionsTable);
 
     if (argc < 2) {

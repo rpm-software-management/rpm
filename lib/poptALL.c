@@ -300,6 +300,8 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     int rc;
     const char *ctx, *execPath;
 
+    xsetprogname(argv[0]);
+
 #if defined(ENABLE_NLS)
     (void) setlocale(LC_ALL, "" );
 

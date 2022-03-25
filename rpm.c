@@ -70,8 +70,6 @@ int main(int argc, char *argv[])
     int ec = 0;
     int i;
 
-    xsetprogname(argv[0]); /* Portability call -- see system.h */
-
     optCon = rpmcliInit(argc, argv, optionsTable);
 
     /* Set the major mode based on argv[0] */

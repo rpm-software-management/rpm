@@ -236,8 +236,6 @@ main(int argc, char *argv[])
     poptContext optCon;
     int ec = 0;
 
-    xsetprogname(argv[0]); /* Portability call -- see system.h */
-
     optCon = rpmcliInit(argc, argv, optionsTable);
     if (optCon == NULL)
 	exit(EXIT_FAILURE);
