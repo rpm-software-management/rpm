@@ -67,6 +67,7 @@
 %__ld			@__LD@
 %__objdump		@__OBJDUMP@
 %__strip		@__STRIP@
+%__rpmuncompress	%{_rpmconfigdir}/rpmuncompress
 
 %__find_debuginfo	@__FIND_DEBUGINFO@
 

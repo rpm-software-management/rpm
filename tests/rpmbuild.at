@@ -1792,16 +1792,32 @@ AT_CLEANUP
 # Check that rpmbuild aborts with missing Source
 AT_SETUP([rpmbuild -ba missing source])
 AT_KEYWORDS([build])
-AT_CHECK_UNQUOTED([
 RPMDB_INIT
 
+runroot_other sed -i -e 's/^%patch0.*//g' /data/SPECS/hello.spec
+
+AT_CHECK_UNQUOTED([
 runroot rpmbuild \
   --define "_sourcedir /notthere" \
-  -bb /data/SPECS/hello.spec
+  --quiet -bb /data/SPECS/hello.spec 2> cmd.err
+ec=$?
+grep "^error: File" cmd.err >&2
+exit ${ec}
 ],
 [1],
 [],
-[error: Bad source: /notthere/hello-1.0.tar.gz: No such file or directory
+[error: File /notthere/hello-1.0.tar.gz: No such file or directory
+])
+
+AT_CHECK_UNQUOTED([
+runroot rpmbuild \
+  --define "_sourcedir /notthere" \
+  --quiet -bs /data/SPECS/hello.spec
+],
+[1],
+[],
+[error: Bad file: /notthere/hello-1.0-modernize.patch: No such file or directory
+error: Bad file: /notthere/hello-1.0.tar.gz: No such file or directory
 ])
 AT_CLEANUP
 
