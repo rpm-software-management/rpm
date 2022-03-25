@@ -1794,8 +1794,6 @@ AT_SETUP([rpmbuild -ba missing source])
 AT_KEYWORDS([build])
 RPMDB_INIT
 
-runroot_other sed -i -e 's/^%patch0.*//g' /data/SPECS/hello.spec
-
 AT_CHECK_UNQUOTED([
 runroot rpmbuild \
   --define "_sourcedir /notthere" \

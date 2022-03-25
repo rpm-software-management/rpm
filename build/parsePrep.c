@@ -17,21 +17,19 @@
 #include "debug.h"
 
 /**
- * Check that file owner and group are known.
+ * Check if file can be determined non-compressed
  * @param urlfn		file url
- * @return		RPMRC_OK on success
+ * @return		1 if known uncompressed, 0 otherwise
  */
-static rpmRC checkOwners(const char * urlfn)
+static int notCompressed(const char * fn)
 {
+    rpmCompressedMagic compressed = -1;
     struct stat sb;
 
-    if (lstat(urlfn, &sb)) {
-	rpmlog(RPMLOG_ERR, _("Bad source: %s: %s\n"),
-		urlfn, strerror(errno));
-	return RPMRC_FAIL;
-    }
+    if (lstat(fn, &sb) == 0)
+	rpmFileIsCompressed(fn, &compressed);
 
-    return RPMRC_OK;
+    return (compressed == COMPRESSED_NOT);
 }
 
 /**
@@ -62,16 +60,12 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
     char *arg_patch_flags = rpmExpand("%{?_default_patch_flags}", NULL);
     struct Source *sp;
     char *patchcmd;
-    rpmCompressedMagic compressed = COMPRESSED_NOT;
 
     if ((sp = findSource(spec, c, RPMBUILD_ISPATCH)) == NULL) {
 	rpmlog(RPMLOG_ERR, _("No patch number %u\n"), c);
 	goto exit;
     }
     const char *fn = sp->path;
-
-    /* On non-build parse's, file cannot be stat'd or read. */
-    if ((spec->flags & RPMSPEC_FORCE) || checkOwners(fn) || rpmFileIsCompressed(fn, &compressed)) goto exit;
 
     if (db) {
 	rasprintf(&arg_backup, "-b --suffix %s", db);
@@ -95,11 +89,11 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 		setUtc ? " -Z" : "");
 
     /* Avoid the extra cost of fork and pipe for uncompressed patches */
-    if (compressed != COMPRESSED_NOT) {
-	patchcmd = rpmExpand("{ %{uncompress: ", fn, "} || echo patch_fail ; } | "
-                             "%{__patch} ", args, NULL);
-    } else {
+    if (notCompressed(fn)) {
 	patchcmd = rpmExpand("%{__patch} ", args, " < ", fn, NULL);
+    } else {
+	patchcmd = rpmExpand("{ %{__rpmuncompress} ", fn, " || echo patch_fail ; } | "
+                             "%{__patch} ", args, NULL);
     }
 
     free(arg_fuzz);
