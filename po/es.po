@@ -11,13 +11,13 @@
 # Daniel Cabrera <logan@fedoraproject.org>, 2011
 # beckerde <domingobecker@gmail.com>, 2012
 # Daniel Cabrera <logan@fedoraproject.org>, 2011
-# Emilio Herrera <ehespinosa57@gmail.com>, 2020, 2021.
+# Emilio Herrera <ehespinosa57@gmail.com>, 2020, 2021, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2021-03-29 17:02+0000\n"
+"PO-Revision-Date: 2022-03-26 12:16+0000\n"
 "Last-Translator: Emilio Herrera <ehespinosa57@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/rpm/"
 "master/es/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5.2\n"
+"X-Generator: Weblate 4.11.2\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -141,15 +141,17 @@ msgid "build source and binary packages from <source package>"
 msgstr "compilar los paquetes fuente y binario desde <source package>"
 
 msgid "build binary package only from <source package>"
-msgstr ""
+msgstr "construir paquete binario desde <source package>"
 
 msgid "build source package only from <source package>"
-msgstr ""
+msgstr "construir paquete fuente sólo desde <source package>"
 
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
 msgstr ""
+"construir paquete fuente solo desde <source package> - calcular lo que "
+"requiere la compilación dinámica"
 
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
@@ -184,6 +186,8 @@ msgstr "construir paquete fuente desde <tarball> "
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
 msgstr ""
+"compilar paquete fuente solo desde <tarball> - calcular los requerimientos "
+"de compilación dinámica"
 
 msgid "build binary package from <source package>"
 msgstr "construir paquete binario desde <source package>"
@@ -192,7 +196,7 @@ msgid "override build root"
 msgstr "sobreescribir construcción de root"
 
 msgid "run build in current directory"
-msgstr ""
+msgstr "ejecutar la compilación en el directorio actual"
 
 msgid "remove build tree when done"
 msgstr "remover árbol de construcción al finalizar"
@@ -220,7 +224,7 @@ msgstr "no ejecutar la fase %clean de la construcción"
 
 #, c-format
 msgid "do not execute %prep stage of the build"
-msgstr ""
+msgstr "no ejecutar el escenario %prep de la compilación"
 
 #, c-format
 msgid "do not execute %check stage of the build"
