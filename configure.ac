@@ -272,7 +272,7 @@ AM_CONDITIONAL(LIBELF,[test "$WITH_LIBELF" = yes])
 # Select crypto library
 AC_ARG_WITH(crypto,
             [AC_HELP_STRING([--with-crypto=CRYPTO_LIB],
-                            [The cryptographic library to use (openssl|libgcrypt). The default is libgcrypt.])
+                            [The cryptographic library to use (openssl|libgcrypt|sequoia). The default is libgcrypt.])
                             ],[],
                             [with_crypto=libgcrypt])
 
@@ -381,6 +381,24 @@ fi
 AM_CONDITIONAL([WITH_LIBGCRYPT],[test "$with_crypto" = libgcrypt])
 AC_SUBST(WITH_LIBGCRYPT_INCLUDE)
 AC_SUBST(WITH_LIBGCRYPT_LIB)
+
+#=================
+# Check for the rpm-sequoia backend.
+WITH_RPM_SEQUOIA_INCLUDE=
+WITH_RPM_SEQUOIA_LIB=
+if test "$with_crypto" = sequoia ; then
+  PKG_CHECK_MODULES([RPM_SEQUOIA], [rpm-sequoia], [have_rpm_sequoia=yes], [have_rpm_sequoia=no])
+  if test "$have_rpm_sequoia" = "yes"; then
+     WITH_RPM_SEQUOIA_INCLUDE="$RPM_SEQUOIA_CFLAGS"
+     WITH_RPM_SEQUOIA_LIB="$RPM_SEQUOIA_LIBS"
+  else
+     AC_MSG_ERROR([librpm-sequoia not found])
+  fi
+fi
+
+AM_CONDITIONAL([WITH_RPM_SEQUOIA],[test "$with_crypto" = sequoia])
+AC_SUBST(WITH_RPM_SEQUOIA_INCLUDE)
+AC_SUBST(WITH_RPM_SEQUOIA_LIB)
 
 #=================
 # Check for magic library.
