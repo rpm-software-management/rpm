@@ -22,10 +22,13 @@ The libmagic (aka file) library for file type detection (used by rpmbuild).
 The source for the file utility + library is available from
     ftp://ftp.astron.com/pub/file/
 
-You will need a cryptographic library to support digests and signatures.
-This library may be libgcrypt or OpenSSL, and can be specified with the
---with-crypto=[libgcrypt|openssl] argument to configure.
-libgcrypt is the default.
+You will need a cryptographic library to support digests and
+signatures.  This library may be libgcrypt, OpenSSL, or Sequoia PGP,
+and can be specified with the --with-crypto=[libgcrypt|openssl|sequoia]
+argument to configure.  libgcrypt is the default.
+
+Sequoia is used via the rpm-sequoia library, which is available from
+https://gitlab.com/sequoia-pgp/rpm-sequoia
 
 libgcrypt library is available from https://www.gnupg.org/software/libgcrypt/
 
