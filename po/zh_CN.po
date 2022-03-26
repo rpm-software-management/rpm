@@ -22,7 +22,7 @@
 # Mingcong Bai <jeffbai@aosc.xyz>, 2015
 # Mingcong Bai <jeffbai@aosc.xyz>, 2015
 # Taiki Akita <taiki_akita@163.com>, 2018. #zanata
-# Charles Lee <lchopn@gmail.com>, 2020, 2021.
+# Charles Lee <lchopn@gmail.com>, 2020, 2021, 2022.
 # weidong <weidongkl@sina.com>, 2021.
 # tsinglion <tsinglion@gmail.com>, 2021.
 msgid ""
@@ -30,8 +30,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2020-08-20 13:58+0300\n"
-"PO-Revision-Date: 2021-12-18 03:16+0000\n"
-"Last-Translator: tsinglion <tsinglion@gmail.com>\n"
+"PO-Revision-Date: 2022-03-21 09:17+0000\n"
+"Last-Translator: Charles Lee <lchopn@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/rpm/master/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -39,7 +39,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.10\n"
+"X-Generator: Weblate 4.11.2\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -671,7 +671,7 @@ msgstr "_build_id_links 宏设置为了未知值 '%s'\n"
 
 #, c-format
 msgid "error reading build-id in %s: %s\n"
-msgstr ""
+msgstr "读取 %s 中的 build-id 时发生错误：%s\n"
 
 #, c-format
 msgid "Missing build-id in %s\n"
@@ -679,11 +679,11 @@ msgstr "在%s中找不到 build-id\n"
 
 #, c-format
 msgid "build-id found in %s too small\n"
-msgstr ""
+msgstr "从 %s 中发现的 build-id 过小\n"
 
 #, c-format
 msgid "build-id found in %s too large\n"
-msgstr ""
+msgstr "从 %s 中发现的 build-id 过大\n"
 
 msgid "failed to create directory"
 msgstr "创建目录失败"
@@ -693,7 +693,7 @@ msgstr ""
 
 #, c-format
 msgid "File needs leading \"/\": %s\n"
-msgstr "文件需要 \"/\" 开头：%s\n"
+msgstr "文件需要以 \"/\" 开头：%s\n"
 
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
