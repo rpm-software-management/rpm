@@ -652,7 +652,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	}
 
 	p = ((uint8_t *)v) + sizeof(*v);
-	rc = pgpPrtSigParams(tag, v->pubkey_algo, p, h, hlen, _digp);
+	rc = tag ? pgpPrtSigParams(tag, v->pubkey_algo, p, h, hlen, _digp) : 0;
     }	break;
     case 4:
     {   pgpPktSigV4 v = (pgpPktSigV4)h;
@@ -714,7 +714,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	if (p > hend)
 	    return 1;
 
-	rc = pgpPrtSigParams(tag, v->pubkey_algo, p, h, hlen, _digp);
+	rc = tag ? pgpPrtSigParams(tag, v->pubkey_algo, p, h, hlen, _digp) : 0;
     }	break;
     default:
 	rpmlog(RPMLOG_WARNING, _("Unsupported version of signature: V%d\n"), version);
