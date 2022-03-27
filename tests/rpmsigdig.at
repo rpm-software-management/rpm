@@ -377,6 +377,163 @@ Checking package after importing key, no signature:
 AT_CLEANUP
 
 # -----------------------------------------
+# Import a public Ed25519 key with a subkey
+AT_SETUP([rpmkeys --import ed25519 with good and revoked subkeys 1])
+AT_KEYWORDS([rpmkeys import])
+RPMDB_INIT
+AT_CHECK([
+runroot rpmkeys --import /data/keys/rpm.org-ed25519-subkey-test.pub
+runroot rpm -qi gpg-pubkey-a0e0c1c7-623f5e80|grep -v Date|grep -v Version:
+runroot rpm -q --provides gpg-pubkey
+],
+[0],
+[[Name        : gpg-pubkey
+Version     : a0e0c1c7
+Release     : 623f5e80
+Architecture: (none)
+Group       : Public Keys
+Size        : 0
+License     : pubkey
+Signature   : (none)
+Source RPM  : (none)
+Build Host  : localhost
+Packager    : test rpm.org ed25519 key with valid signing and encryption subkeys and a revoked signing subkey <complex-ed25519@rpm.org>
+Summary     : test rpm.org ed25519 key with valid signing and encryption subkeys and a revoked signing subkey <complex-ed25519@rpm.org> public key
+Description :
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mDMEYj9egBYJKwYBBAHaRw8BAQdAqeaD3Smr6MJd1fzczVHdNcVnpGNO6fXPQ1W3
+Bir40C60eXRlc3QgcnBtLm9yZyBlZDI1NTE5IGtleSB3aXRoIHZhbGlkIHNpZ25p
+bmcgYW5kIGVuY3J5cHRpb24gc3Via2V5cyBhbmQgYSByZXZva2VkIHNpZ25pbmcg
+c3Via2V5IDxjb21wbGV4LWVkMjU1MTlAcnBtLm9yZz6IlAQTFgoAPAIbAwULCQgH
+AgMiAgEGFQoJCAsCBBYCAwECHgcCF4AWIQR7MsvDDTQjFicy3YWd1vA5oODBxwUC
+YlZOGgAKCRCd1vA5oODBx++/AP0Zl4hOg5eGuYovnK3RQ/brUG3yskQC9Cxfok75
+GgyQcgD/XTwIzxIFlJI7RRS3zxbKwvwYtc6fKSEfMrd4QJTEPw24OARiP16AEgor
+BgEEAZdVAQUBAQdAeHhEFfY5qU6cpSMQ/LgzayG+8Q/VBbO5X8B3R433zi4DAQgH
+iLYEKBYKAF4WIQR7MsvDDTQjFicy3YWd1vA5oODBxwUCYj+JTUAdAVJldm9rZWQg
+dG8gdGVzdCBob3cgUlBNIGhhbmRsZXMgdGhlIGZpcnN0IHN1YmtleSBiZWluZyBy
+ZXZva2VkAAoJEJ3W8Dmg4MHHL78A/2LHlQiy8DUaH0J9XobkuEGNQYfEe23oEZ38
+8bqKsKDGAQDA7M0RyiM+7PskRSYTKEU36o4wqh0ePJkdcW6KQDhGBYh4BBgWCgAg
+AhsMFiEEezLLww00IxYnMt2FndbwOaDgwccFAmI/iMUACgkQndbwOaDgwcd/RwD9
+HAZ8Jsvwthz+f10SsZAuNSP7x89VLO7mNVu1IF96VxQBAJodLZqehAsaHDw71wkA
+dLgnpPTpdQLf5MfjwKgPxC0NuDMEYj9enhYJKwYBBAHaRw8BAQdAioo3y5vRSJzP
+kTtTKiex1agJT0ETOzCPTUY9BLdd+XmI7wQYFgoAIBYhBHsyy8MNNCMWJzLdhZ3W
+8Dmg4MHHBQJiP16eAhsCAIEJEJ3W8Dmg4MHHdiAEGRYKAB0WIQQBtk+jjLwMTnHv
+1J6p7PJc9XVyRwUCYj9engAKCRCp7PJc9XVyR3KAAQC/vEsyeWSH7VsnljWv/a+n
+T3syIk+tpHuHFLP58yUVMwEA6HatEqVno0huk4BAZUei3EHfindIs0U7XG9N0Mi0
+PguqQwD/WcaD6pZ8nvw2NzoTXdVMauSW8itL3tecYtyGZUmJfBUBAJiXVbDIeV35
+E8OPf+Y5FwHWtdn2yj4G4M9BhfFOadkPuDMEYj9ethYJKwYBBAHaRw8BAQdAw3cf
+xFTkAo81xCnJU0DYTLudtw7ddNBmlgqa+OW3QjmIlAQoFgoAPBYhBHsyy8MNNCMW
+JzLdhZ3W8Dmg4MHHBQJiP17tHh0DVGVzdCBSUE0gcmV2b2NhdGlvbiBoYW5kbGlu
+ZwAKCRCd1vA5oODBxxDOAQCl+gCOa4oSQKOM7VL+yoYIg/y+pf33eRH5xB/hXfYa
+XQEAjLmobeeKtPZBcUMNkudpgOw/Smu37hMcqd6QMh8mqQ+I7wQYFgoAIBYhBHsy
+y8MNNCMWJzLdhZ3W8Dmg4MHHBQJiP162AhsCAIEJEJ3W8Dmg4MHHdiAEGRYKAB0W
+IQRO2qNgIg7sWTkLvjbb+ICPe6sQegUCYj9etgAKCRDb+ICPe6sQei5tAP4pRYKm
+QvLNW9C7MUTq4Ta/2U0Ty+blDx8T3tZui5KW8wEAlgNsHN2AusrIqV1B+2MpHhz0
+GuwjE/g+G5csEBaiEwYynAD/fV6NHcdOj60+LHDlOFtRhNju1QhKA6tiuDNgH2SY
+8ekBAJep9gWDfWfWQDkMaJJFYU04LnSCoFdEaPgnWO2AfkQCuQGNBGI/X2kBDACv
+y8pGSoYzAbVVkLq94YvvhSg28LYSg40G/SrCNBkym6QKMyOBum9tXQYkdDArgzzU
+vR8G/pOZXm+Nw0pZ2IA4M61jSuoZHDXsI3P7umvq4znkCl6rp/d4XlnTMbnC4Y9E
+ifHzsD9DxKYnJnhvn7LnrfKnbs0bxb+0eWKhxSXeRwDFg4Hw4pQND7ocp21jVGlF
+RFmGl9RdRe/GEOZSD64CrCafkaMtnUWrVHF3IM2r1Jtpr9GKULJiwTJBZbMIMcTu
+MLHzz9zDOV4zbizLT8zPAvVVPamK/RA22Y0eiSVsRffU4j3ljr0vuEegoBWc4aAK
+ZByzdCHuvYzfqQru46W53xM2fTvEJxmS446S21R+n1xWZLXLLDiDF/CVqNPP6dUg
+K/RV38xtYnN5e16btMAmILmQSZcQSkJPZL4Fp59L7XHnbF4XpMMLQhstsHZ3ZUVB
+4r6PEqLnld+oteNjQBUmIKZ+uzafpfN9RFQDoJLuStdf4yS3fOzqNxtezvrH1w0A
+EQEAAYh4BBgWCgAgFiEEezLLww00IxYnMt2FndbwOaDgwccFAmI/X2kCGwwACgkQ
+ndbwOaDgwcex0AD+K1FEH6u0I9zfDGQ/KxydAYWzaSLDS4Mb5bp/0lbo2iEBAM0c
+wefyPleuBRb1WbOIhWCW78KVxqYmbOml8UQWjhcP
+=L0Sp
+-----END PGP PUBLIC KEY BLOCK-----
+
+gpg(test rpm.org ed25519 key with valid signing and encryption subkeys and a revoked signing subkey <complex-ed25519@rpm.org>) = 4:9dd6f039a0e0c1c7-623f5e80
+gpg(a0e0c1c7) = 4:9dd6f039a0e0c1c7-623f5e80
+gpg(9dd6f039a0e0c1c7) = 4:9dd6f039a0e0c1c7-623f5e80
+gpg(f5757247) = 4:a9ecf25cf5757247-623f5e9e
+gpg(a9ecf25cf5757247) = 4:a9ecf25cf5757247-623f5e9e
+]],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpmkeys --import ed25519 with good and revoked subkeys 2])
+AT_KEYWORDS([rpmkeys import])
+RPMDB_INIT
+AT_CHECK([
+runroot rpmkeys --import /data/keys/rpm.org-ed25519-subkey-2-test.pub
+runroot rpm -qi gpg-pubkey-a0e0c1c7-623f5e80|grep -v Date|grep -v Version:
+runroot rpm -q --provides gpg-pubkey
+runroot rpm -e gpg-pubkey
+],
+[0],
+[[Name        : gpg-pubkey
+Version     : a0e0c1c7
+Release     : 623f5e80
+Architecture: (none)
+Group       : Public Keys
+Size        : 0
+License     : pubkey
+Signature   : (none)
+Source RPM  : (none)
+Build Host  : localhost
+Packager    : test rpm.org ed25519 key with valid signing and encryption subkeys and a revoked signing subkey <complex-ed25519@rpm.org>
+Summary     : test rpm.org ed25519 key with valid signing and encryption subkeys and a revoked signing subkey <complex-ed25519@rpm.org> public key
+Description :
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mDMEYj9egBYJKwYBBAHaRw8BAQdAqeaD3Smr6MJd1fzczVHdNcVnpGNO6fXPQ1W3
+Bir40C60eXRlc3QgcnBtLm9yZyBlZDI1NTE5IGtleSB3aXRoIHZhbGlkIHNpZ25p
+bmcgYW5kIGVuY3J5cHRpb24gc3Via2V5cyBhbmQgYSByZXZva2VkIHNpZ25pbmcg
+c3Via2V5IDxjb21wbGV4LWVkMjU1MTlAcnBtLm9yZz6ImgQTFgoAQhYhBHsyy8MN
+NCMWJzLdhZ3W8Dmg4MHHBQJiP2F3AhsDBQkDwmcABQsJCAcCAyICAQYVCgkICwIE
+FgIDAQIeBwIXgAAKCRCd1vA5oODBx1y0AQCC14V8ULAoBdQsoanET2beUJgkIdT6
+LBdncZx8loRLiAD+LEWLpAGBMEq+iblPTAHjApsik02eDawLdl66Yi69Xgi4OARi
+P16AEgorBgEEAZdVAQUBAQdAeHhEFfY5qU6cpSMQ/LgzayG+8Q/VBbO5X8B3R433
+zi4DAQgHiLYEKBYKAF4WIQR7MsvDDTQjFicy3YWd1vA5oODBxwUCYj+JTUAdAVJl
+dm9rZWQgdG8gdGVzdCBob3cgUlBNIGhhbmRsZXMgdGhlIGZpcnN0IHN1YmtleSBi
+ZWluZyByZXZva2VkAAoJEJ3W8Dmg4MHHL78A/2LHlQiy8DUaH0J9XobkuEGNQYfE
+e23oEZ388bqKsKDGAQDA7M0RyiM+7PskRSYTKEU36o4wqh0ePJkdcW6KQDhGBYh4
+BBgWCgAgAhsMFiEEezLLww00IxYnMt2FndbwOaDgwccFAmI/iMUACgkQndbwOaDg
+wcd/RwD9HAZ8Jsvwthz+f10SsZAuNSP7x89VLO7mNVu1IF96VxQBAJodLZqehAsa
+HDw71wkAdLgnpPTpdQLf5MfjwKgPxC0NuDMEYj9enhYJKwYBBAHaRw8BAQdAioo3
+y5vRSJzPkTtTKiex1agJT0ETOzCPTUY9BLdd+XmI7wQYFgoAIBYhBHsyy8MNNCMW
+JzLdhZ3W8Dmg4MHHBQJiP16eAhsCAIEJEJ3W8Dmg4MHHdiAEGRYKAB0WIQQBtk+j
+jLwMTnHv1J6p7PJc9XVyRwUCYj9engAKCRCp7PJc9XVyR3KAAQC/vEsyeWSH7Vsn
+ljWv/a+nT3syIk+tpHuHFLP58yUVMwEA6HatEqVno0huk4BAZUei3EHfindIs0U7
+XG9N0Mi0PguqQwD/WcaD6pZ8nvw2NzoTXdVMauSW8itL3tecYtyGZUmJfBUBAJiX
+VbDIeV35E8OPf+Y5FwHWtdn2yj4G4M9BhfFOadkPuDMEYj9ethYJKwYBBAHaRw8B
+AQdAw3cfxFTkAo81xCnJU0DYTLudtw7ddNBmlgqa+OW3QjmIlAQoFgoAPBYhBHsy
+y8MNNCMWJzLdhZ3W8Dmg4MHHBQJiP17tHh0DVGVzdCBSUE0gcmV2b2NhdGlvbiBo
+YW5kbGluZwAKCRCd1vA5oODBxxDOAQCl+gCOa4oSQKOM7VL+yoYIg/y+pf33eRH5
+xB/hXfYaXQEAjLmobeeKtPZBcUMNkudpgOw/Smu37hMcqd6QMh8mqQ+I7wQYFgoA
+IBYhBHsyy8MNNCMWJzLdhZ3W8Dmg4MHHBQJiP162AhsCAIEJEJ3W8Dmg4MHHdiAE
+GRYKAB0WIQRO2qNgIg7sWTkLvjbb+ICPe6sQegUCYj9etgAKCRDb+ICPe6sQei5t
+AP4pRYKmQvLNW9C7MUTq4Ta/2U0Ty+blDx8T3tZui5KW8wEAlgNsHN2AusrIqV1B
++2MpHhz0GuwjE/g+G5csEBaiEwYynAD/fV6NHcdOj60+LHDlOFtRhNju1QhKA6ti
+uDNgH2SY8ekBAJep9gWDfWfWQDkMaJJFYU04LnSCoFdEaPgnWO2AfkQCuQGNBGI/
+X2kBDACvy8pGSoYzAbVVkLq94YvvhSg28LYSg40G/SrCNBkym6QKMyOBum9tXQYk
+dDArgzzUvR8G/pOZXm+Nw0pZ2IA4M61jSuoZHDXsI3P7umvq4znkCl6rp/d4XlnT
+MbnC4Y9EifHzsD9DxKYnJnhvn7LnrfKnbs0bxb+0eWKhxSXeRwDFg4Hw4pQND7oc
+p21jVGlFRFmGl9RdRe/GEOZSD64CrCafkaMtnUWrVHF3IM2r1Jtpr9GKULJiwTJB
+ZbMIMcTuMLHzz9zDOV4zbizLT8zPAvVVPamK/RA22Y0eiSVsRffU4j3ljr0vuEeg
+oBWc4aAKZByzdCHuvYzfqQru46W53xM2fTvEJxmS446S21R+n1xWZLXLLDiDF/CV
+qNPP6dUgK/RV38xtYnN5e16btMAmILmQSZcQSkJPZL4Fp59L7XHnbF4XpMMLQhst
+sHZ3ZUVB4r6PEqLnld+oteNjQBUmIKZ+uzafpfN9RFQDoJLuStdf4yS3fOzqNxte
+zvrH1w0AEQEAAYh4BBgWCgAgFiEEezLLww00IxYnMt2FndbwOaDgwccFAmI/X2kC
+GwwACgkQndbwOaDgwcex0AD+K1FEH6u0I9zfDGQ/KxydAYWzaSLDS4Mb5bp/0lbo
+2iEBAM0cwefyPleuBRb1WbOIhWCW78KVxqYmbOml8UQWjhcP
+=GmPE
+-----END PGP PUBLIC KEY BLOCK-----
+
+gpg(test rpm.org ed25519 key with valid signing and encryption subkeys and a revoked signing subkey <complex-ed25519@rpm.org>) = 4:9dd6f039a0e0c1c7-623f5e80
+gpg(a0e0c1c7) = 4:9dd6f039a0e0c1c7-623f5e80
+gpg(9dd6f039a0e0c1c7) = 4:9dd6f039a0e0c1c7-623f5e80
+gpg(f5757247) = 4:a9ecf25cf5757247-623f5e9e
+gpg(a9ecf25cf5757247) = 4:a9ecf25cf5757247-623f5e9e
+]],
+[])
+AT_CLEANUP
+
+# -----------------------------------------
 # Check a package signed with an expired subkey
 # Note: the internal PGP implementation does not support expiry.
 AT_SETUP([rpmkeys --import, signed with an expired subkey])
@@ -508,6 +665,67 @@ Checking package after importing key, no signature:
 0
 ]],
 [])
+AT_CLEANUP
+
+# -----------------------------------------
+# Import a public Ed25519 key with a subkey
+AT_SETUP([rpmkeys --import ed25519 with good and revoked subkeys 3])
+AT_KEYWORDS([rpmkeys import])
+RPMDB_INIT
+AT_CHECK([
+runroot rpmkeys --import /data/keys/first-signing-key-revoked.asc
+runroot rpm -qi gpg-pubkey-ebddd264-623f8f42|grep -v Date|grep -v Version:
+runroot rpm -q --provides gpg-pubkey
+runroot rpm -e gpg-pubkey
+],
+[0],
+[[Name        : gpg-pubkey
+Version     : ebddd264
+Release     : 623f8f42
+Architecture: (none)
+Group       : Public Keys
+Size        : 0
+License     : pubkey
+Signature   : (none)
+Source RPM  : (none)
+Build Host  : localhost
+Packager    : Another complex test key <test@rpm.org>
+Summary     : Another complex test key <test@rpm.org> public key
+Description :
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mDMEYj+PQhYJKwYBBAHaRw8BAQdAP4QSxJCz09EVaKH6BUHYfWrZNlworVRa0W8H
+UQsp2AG0J0Fub3RoZXIgY29tcGxleCB0ZXN0IGtleSA8dGVzdEBycG0ub3JnPoia
+BBMWCgBCFiEEyeRYWl0CAamgd85g0RW+m+vd0mQFAmI/j0ICGwMFCQPCZwAFCwkI
+BwIDIgIBBhUKCQgLAgQWAgMBAh4HAheAAAoJENEVvpvr3dJkjjEBAMhVviHU9uTY
+6Qzk4MDNCk0Okz96j+tFHd9R/dCJu6jRAP4s3WRnv3QtRqfZNZY6UsAp/n+Fv8MP
+8fdQfN6la/V6CrgzBGI/j1sWCSsGAQQB2kcPAQEHQHv8VulNMB1K5gkm4lX1g5EA
+6ikbpqrne6lZ9RWlcTxjiKsEKBYKAFMWIQTJ5FhaXQIBqaB3zmDRFb6b693SZAUC
+Yj+PqDUdAVRlc3RpbmcgYSBjb3JuZXIgY2FzZSBpbiBSUE3igJlzIE9wZW5QR1Ag
+cHJvY2Vzc2luZwAKCRDRFb6b693SZDcaAP9ObjfoUbWoAZCk5YHDRJM46iIm3Rso
+7PM6YiQyZj+IsAD/Vy+GyFI6HSjseRRyv5CRYAFGrooE8zZiEKKYy36mpAWI7wQY
+FgoAIBYhBMnkWFpdAgGpoHfOYNEVvpvr3dJkBQJiP49bAhsCAIEJENEVvpvr3dJk
+diAEGRYKAB0WIQTOb01Xo6PinL6M2XkCZ0a0bI6plQUCYj+PWwAKCRACZ0a0bI6p
+lb06AQC9L1W6jk5afsbeqsVnmUeqFZOPoIXpRv4I4Weeset2RQEA65JuqlX2Rwnx
+O+Ks6i6ProtEJc9PJfurmqTkw9Husw3QmAEAy9wakg7Q/SCKaGCOEM/hk4dbvlWr
+dRKzP4R71bNh5mYBAOjg0WqQhhZpe2ocrT5Q0UnGFykd4W3Uw6vYuWRSbRgAuDME
+Yj+PqxYJKwYBBAHaRw8BAQdAiarMGXScnHY1b3kTHmKFEN8zZi/lCpp5rgFyYbCe
+sCeI7wQYFgoAIBYhBMnkWFpdAgGpoHfOYNEVvpvr3dJkBQJiP4+rAhsCAIEJENEV
+vpvr3dJkdiAEGRYKAB0WIQRXTUwdJeAh19V7FuDLLiTHrB+/PQUCYj+PqwAKCRDL
+LiTHrB+/PemvAQD98K824iCRReNI9fa6tKoJIOT++2ju/LaS6Ux4NiuQ6AEAsTZW
+Fz+SBgUEYUo/IG3DfYdE12QG8mosjwlSn++2iQGZCwEA75OsfeW4x8ltyduRAj5h
+5nFoswUnFC2C9SpJeiZDLSgBAO5h6mRI9iafOref8xhCf6qAtnXD3J195VMX1zCU
+chEM
+=MpKy
+-----END PGP PUBLIC KEY BLOCK-----
+
+gpg(Another complex test key <test@rpm.org>) = 4:d115be9bebddd264-623f8f42
+gpg(ebddd264) = 4:d115be9bebddd264-623f8f42
+gpg(d115be9bebddd264) = 4:d115be9bebddd264-623f8f42
+gpg(ac1fbf3d) = 4:cb2e24c7ac1fbf3d-623f8fab
+gpg(cb2e24c7ac1fbf3d) = 4:cb2e24c7ac1fbf3d-623f8fab
+]],)
+
 AT_CLEANUP
 
 AT_SETUP([rpmkeys --import invalid keys])
