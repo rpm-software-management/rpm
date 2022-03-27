@@ -437,7 +437,7 @@ int pgpSignatureType(pgpDigParams _digp)
 }
 
 static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype, 
-			 pgpDigParams _digp)
+			 pgpDigParams _digp, int hashed)
 {
     const uint8_t *p = h;
     size_t plen = 0, i;
@@ -474,6 +474,8 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 		pgpPrtVal(" ", pgpKeyServerPrefsTbl, p[i]);
 	    break;
 	case PGPSUBTYPE_SIG_CREATE_TIME:  /* signature creation time */
+	    if (!hashed)
+		break; /* RFC 4880 §5.2.3.4 creation time MUST be hashed */
 	    if (plen-1 != sizeof(_digp->time))
 		break; /* other lengths not understood */
 	    if (_digp->saved & PGPDIG_SIG_HAS_CREATION_TIME)
@@ -666,7 +668,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	    _digp->hashlen = sizeof(*v) + plen;
 	    _digp->hash = memcpy(xmalloc(_digp->hashlen), v, _digp->hashlen);
 	}
-	if (pgpPrtSubType(p, plen, v->sigtype, _digp))
+	if (pgpPrtSubType(p, plen, v->sigtype, _digp, 1))
 	    return 1;
 	p += plen;
 
@@ -680,7 +682,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	if ((p + plen) > hend)
 	    return 1;
 
-	if (pgpPrtSubType(p, plen, v->sigtype, _digp))
+	if (pgpPrtSubType(p, plen, v->sigtype, _digp, 0))
 	    return 1;
 	p += plen;
 
