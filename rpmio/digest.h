@@ -27,6 +27,7 @@ struct pgpDigParams_s {
     uint8_t * hash;
     uint8_t tag;
 
+    uint8_t key_flags;		/*!< key usage flags */
     uint8_t version;		/*!< version number. */
     uint32_t time;		/*!< key/signature creation time. */
     uint8_t pubkey_algo;		/*!< public key algorithm. */
@@ -41,6 +42,7 @@ struct pgpDigParams_s {
 #define	PGPDIG_SAVED_TIME	(1 << 0)
 #define	PGPDIG_SAVED_ID		(1 << 1)
 #define	PGPDIG_SIG_HAS_CREATION_TIME	(1 << 2)
+#define	PGPDIG_SIG_HAS_KEY_FLAGS	(1 << 3)
 
     pgpDigAlg alg;
 };

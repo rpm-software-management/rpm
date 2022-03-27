@@ -500,6 +500,17 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 		_digp->saved |= PGPDIG_SAVED_ID;
 		memcpy(_digp->signid, p+1, sizeof(_digp->signid));
 	    }
+	case PGPSUBTYPE_KEY_FLAGS: /* Key usage flags */
+	    /* Subpackets in the unhashed section cannot be trusted */
+	    if (!hashed)
+		break;
+	    /* Reject duplicate key usage flags */
+	    if (_digp->saved & PGPDIG_SIG_HAS_KEY_FLAGS)
+		return 1;
+	    impl = *p;
+	    _digp->saved |= PGPDIG_SIG_HAS_KEY_FLAGS;
+	    _digp->key_flags = plen >= 2 ? p[1] : 0;
+	    break;
 	case PGPSUBTYPE_EXPORTABLE_CERT:
 	case PGPSUBTYPE_TRUST_SIG:
 	case PGPSUBTYPE_REGEX:
@@ -510,7 +521,6 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 	case PGPSUBTYPE_PREFER_KEYSERVER:
 	case PGPSUBTYPE_PRIMARY_USERID:
 	case PGPSUBTYPE_POLICY_URL:
-	case PGPSUBTYPE_KEY_FLAGS:
 	case PGPSUBTYPE_SIGNER_USERID:
 	case PGPSUBTYPE_REVOKE_REASON:
 	case PGPSUBTYPE_FEATURES:
@@ -602,6 +612,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 
     /* Reset the saved flags */
     _digp->saved &= PGPDIG_SAVED_TIME | PGPDIG_SAVED_ID;
+    _digp->key_flags = 0;
 
     if (pgpVersion(h, hlen, &version))
 	return rc;
