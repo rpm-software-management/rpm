@@ -946,6 +946,20 @@ fail:
 
 static const size_t RPM_MAX_OPENPGP_BYTES = 65535; /* max number of bytes in a key */
 
+static int pgpTakesSelfSig(unsigned int pkttype)
+{
+    /* Is this something that can be followed by one or more signatures? */
+    switch (pkttype) {
+    case PGPTAG_USER_ID:
+    case PGPTAG_PUBLIC_KEY:
+    case PGPTAG_PHOTOID:
+    case PGPTAG_PUBLIC_SUBKEY:
+	return 1;
+    default:
+	return 0;
+    }
+}
+
 int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
 		 pgpDigParams * ret)
 {
@@ -1001,9 +1015,10 @@ int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
 
 	if (pkt->tag == PGPTAG_PUBLIC_SUBKEY)
 	    expect = PGPTAG_SIGNATURE;
-	prevtag = pkt->tag;
-
-	i++;
+	if (pgpTakesSelfSig(pkt->tag)) {
+	    prevtag = pkt->tag;
+	    i++;
+	}
 	p += (pkt->body - pkt->head) + pkt->blen;
 	if (pkttype == PGPTAG_SIGNATURE)
 	    break;
