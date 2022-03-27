@@ -1117,6 +1117,31 @@ static int pgpVerifySelf(pgpDigParams key, pgpDigParams selfsig,
     return rc;
 }
 
+static int parseSubkeySig(const struct pgpPkt *pkt, uint8_t tag,
+			  pgpDigParams *params_p) {
+    pgpDigParams params = *params_p = NULL; /* assume failure */
+
+    if (pkt->tag != PGPTAG_SIGNATURE)
+	goto fail;
+
+    params = pgpDigParamsNew(tag);
+
+    if (pgpPrtSig(tag, pkt->body, pkt->blen, params))
+	goto fail;
+
+    if (params->sigtype != PGPSIGTYPE_SUBKEY_BINDING &&
+	params->sigtype != PGPSIGTYPE_SUBKEY_REVOKE)
+    {
+	goto fail;
+    }
+
+    *params_p = params;
+    return 0;
+fail:
+    pgpDigParamsFree(params);
+    return -1;
+}
+
 static const size_t RPM_MAX_OPENPGP_BYTES = 65535; /* max number of bytes in a key */
 
 int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
@@ -1238,7 +1263,28 @@ int pgpPrtParamsSubkeys(const uint8_t *pkts, size_t pktlen,
 		pgpDigParamsFree(digps[count]);
 		continue;
 	    }
-	    count++;
+
+	    pgpDigParams subkey_sig = NULL;
+	    if (decodePkt(p, pend - p, &pkt) ||
+	        parseSubkeySig(&pkt, 0, &subkey_sig))
+	    {
+		pgpDigParamsFree(digps[count]);
+		break;
+	    }
+
+	    /* Is the subkey revoked or incapable of signing? */
+	    int ignore = subkey_sig->sigtype != PGPSIGTYPE_SUBKEY_BINDING ||
+			 !((subkey_sig->saved & PGPDIG_SIG_HAS_KEY_FLAGS) &&
+			   (subkey_sig->key_flags & 0x02));
+	    if (ignore) {
+		pgpDigParamsFree(digps[count]);
+	    } else {
+		digps[count]->key_flags = subkey_sig->key_flags;
+		digps[count]->saved |= PGPDIG_SIG_HAS_KEY_FLAGS;
+		count++;
+	    }
+	    p += (pkt.body - pkt.head) + pkt.blen;
+	    pgpDigParamsFree(subkey_sig);
 	}
     }
     rc = (p == pend) ? 0 : -1;
