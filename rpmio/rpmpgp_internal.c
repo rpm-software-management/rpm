@@ -1093,29 +1093,39 @@ int pgpPrtParamsSubkeys(const uint8_t *pkts, size_t pktlen,
 		continue;
 	    }
 
-	    pgpDigParams subkey_sig = NULL;
-	    if (decodePkt(p, pend - p, &pkt) ||
-	        parseSubkeySig(&pkt, 0, &subkey_sig))
-	    {
-		pgpDigParamsFree(digps[count]);
-		break;
-	    }
+	    int ignore = 0;
+	    do {
+		pgpDigParams subkey_sig = NULL;
+		if (decodePkt(p, pend - p, &pkt) ||
+		    parseSubkeySig(&pkt, 0, &subkey_sig))
+		{
+		    pgpDigParamsFree(digps[count]);
+		    goto exit;
+		}
 
-	    /* Is the subkey revoked or incapable of signing? */
-	    int ignore = subkey_sig->sigtype != PGPSIGTYPE_SUBKEY_BINDING ||
-			 !((subkey_sig->saved & PGPDIG_SIG_HAS_KEY_FLAGS) &&
-			   (subkey_sig->key_flags & 0x02));
+		/* if this is wrong this will be freed anyway */
+		digps[count]->saved |= PGPDIG_SIG_HAS_KEY_FLAGS;
+		digps[count]->key_flags = subkey_sig->key_flags;
+
+		/* Is the subkey revoked or incapable of signing? */
+		if (subkey_sig->sigtype != PGPSIGTYPE_SUBKEY_BINDING ||
+		    !((subkey_sig->saved & PGPDIG_SIG_HAS_KEY_FLAGS) &&
+		      (subkey_sig->key_flags & 0x02))) {
+		    ignore = 1;
+		}
+		p += (pkt.body - pkt.head) + pkt.blen;
+		pgpDigParamsFree(subkey_sig);
+		if (p >= pend || decodePkt(p, pend - p, &pkt))
+		    break; /* next iteration will catch any error */
+	    } while (pkt.tag != PGPTAG_PUBLIC_SUBKEY);
 	    if (ignore) {
 		pgpDigParamsFree(digps[count]);
 	    } else {
-		digps[count]->key_flags = subkey_sig->key_flags;
-		digps[count]->saved |= PGPDIG_SIG_HAS_KEY_FLAGS;
 		count++;
 	    }
-	    p += (pkt.body - pkt.head) + pkt.blen;
-	    pgpDigParamsFree(subkey_sig);
 	}
     }
+exit:
     rc = (p == pend) ? 0 : -1;
 
     if (rc == 0) {
