@@ -460,7 +460,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	pgpPrtHex(" signhash16", v->signhash16, sizeof(v->signhash16));
 	pgpPrtNL();
 
-	if (_digp->pubkey_algo == 0) {
+	if (_digp->alg == NULL) {
 	    _digp->version = v->version;
 	    _digp->hashlen = v->hashlen;
 	    _digp->sigtype = v->sigtype;
@@ -499,7 +499,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	if ((p + plen) > hend)
 	    return 1;
 
-	if (_digp->pubkey_algo == 0) {
+	if (_digp->alg == NULL) {
 	    _digp->hashlen = sizeof(*v) + plen;
 	    _digp->hash = memcpy(xmalloc(_digp->hashlen), v, _digp->hashlen);
 	}
@@ -526,7 +526,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	pgpPrtHex(" signhash16", p, 2);
 	pgpPrtNL();
 
-	if (_digp->pubkey_algo == 0) {
+	if (_digp->alg == NULL) {
 	    _digp->version = v->version;
 	    _digp->sigtype = v->sigtype;
 	    _digp->pubkey_algo = v->pubkey_algo;
@@ -618,8 +618,8 @@ static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
 	    pgpPrtTime(" ", v->time, sizeof(v->time));
 	    pgpPrtNL();
 
-	    /* If _digp->hash is not NULL then signature is already loaded */
-	    if (_digp->hash == NULL) {
+	    /* If _digp->alg is not NULL then key/signature is already loaded */
+	    if (_digp->alg == NULL) {
 		_digp->version = v->version;
 		if (!(_digp->saved & PGPDIG_SAVED_TIME))
 		    _digp->time = pgpGrab(v->time, sizeof(v->time));
