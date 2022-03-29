@@ -345,8 +345,8 @@ static char * pgpsigFormat(rpmtd td, char **emsg)
 	*emsg = xstrdup(_("(not an OpenPGP signature)"));
     } else {
 	char dbuf[BUFSIZ];
-	char *keyid = rpmhex(sigp->signid, sizeof(sigp->signid));
-	unsigned int dateint = sigp->time;
+	char *keyid = rpmhex(pgpDigParamsSignID(sigp), PGP_KEYID_LEN);
+	unsigned int dateint = pgpDigParamsCreationTime(sigp);
 	time_t date = dateint;
 	struct tm _tm, * tms = localtime_r(&date, &_tm);
 	unsigned int key_algo = pgpDigParamsAlgo(sigp, PGPVAL_PUBKEYALGO);

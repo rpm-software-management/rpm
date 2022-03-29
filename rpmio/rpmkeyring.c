@@ -178,7 +178,7 @@ rpmPubkey *rpmGetSubkeys(rpmPubkey mainkey, int *count)
 	    subkey->pktlen = 0;
 
 	    subkey->pgpkey = pgpsubkeys[i];
-	    memcpy(subkey->keyid, pgpsubkeys[i]->signid, sizeof(subkey->keyid));
+	    memcpy(subkey->keyid, pgpDigParamsSignID(pgpsubkeys[i]), PGP_KEYID_LEN);
 	    subkey->nrefs = 1;
 	    pthread_rwlock_init(&subkey->lock, NULL);
 	}
@@ -234,8 +234,9 @@ pgpDig rpmPubkeyDig(rpmPubkey key)
 
     if (rc == 0) {
 	pgpDigParams pubp = pgpDigGetParams(dig, PGPTAG_PUBLIC_KEY);
-	if (!pubp || !memcmp(pubp->signid, zeros, sizeof(pubp->signid)) ||
-		pubp->time == 0 || pubp->userid == NULL) {
+	if (!pubp || !memcmp(pgpDigParamsSignID(pubp), zeros, sizeof(zeros)) ||
+            pgpDigParamsCreationTime(pubp) == 0 ||
+            pgpDigParamsUserID(pubp) == NULL) {
 	    rc = -1;
 	}
     }
@@ -275,14 +276,16 @@ static rpmPubkey findbySig(rpmKeyring keyring, pgpDigParams sig)
     if (keyring && sig) {
 	struct rpmPubkey_s needle;
 	memset(&needle, 0, sizeof(needle));
-	memcpy(needle.keyid, sig->signid, sizeof(needle.keyid));
+	memcpy(needle.keyid, pgpDigParamsSignID(sig), PGP_KEYID_LEN);
 	
 	key = rpmKeyringFindKeyid(keyring, &needle);
 	if (key) {
 	    pgpDigParams pub = key->pgpkey;
 	    /* Do the parameters match the signature? */
-	    if ((sig->pubkey_algo != pub->pubkey_algo) ||
-		    memcmp(sig->signid, pub->signid, sizeof(sig->signid))) {
+	    if ((pgpDigParamsAlgo(sig, PGPVAL_PUBKEYALGO)
+                 != pgpDigParamsAlgo(pub, PGPVAL_PUBKEYALGO)) ||
+                memcmp(pgpDigParamsSignID(sig), pgpDigParamsSignID(pub),
+                       PGP_KEYID_LEN)) {
 		key = NULL;
 	    }
 	}

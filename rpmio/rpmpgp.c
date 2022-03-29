@@ -19,6 +19,34 @@
 static int _print = 0;
 
 /** \ingroup rpmio
+ * Values parsed from OpenPGP signature/pubkey packet(s).
+ */
+struct pgpDigParams_s {
+    char * userid;
+    uint8_t * hash;
+    uint8_t tag;
+
+    uint8_t key_flags;		/*!< key usage flags */
+    uint8_t version;		/*!< version number. */
+    uint32_t time;		/*!< key/signature creation time. */
+    uint8_t pubkey_algo;		/*!< public key algorithm. */
+
+    uint8_t hash_algo;
+    uint8_t sigtype;
+    uint32_t hashlen;
+    uint8_t signhash16[2];
+    pgpKeyID_t signid;
+    uint8_t saved;		/*!< Various flags.  `PGPDIG_SAVED_*` are never reset.
+				 * `PGPDIG_SIG_HAS_*` are reset for each signature. */
+#define	PGPDIG_SAVED_TIME	(1 << 0)
+#define	PGPDIG_SAVED_ID		(1 << 1)
+#define	PGPDIG_SIG_HAS_CREATION_TIME	(1 << 2)
+#define	PGPDIG_SIG_HAS_KEY_FLAGS	(1 << 3)
+
+    pgpDigAlg alg;
+};
+
+/** \ingroup rpmio
  * Container for values parsed from an OpenPGP signature and public key.
  */
 struct pgpDig_s {
@@ -1064,6 +1092,26 @@ unsigned int pgpDigParamsAlgo(pgpDigParams digp, unsigned int algotype)
     return algo;
 }
 
+const uint8_t *pgpDigParamsSignID(pgpDigParams digp)
+{
+    return digp->signid;
+}
+
+const char *pgpDigParamsUserID(pgpDigParams digp)
+{
+    return digp->userid;
+}
+
+int pgpDigParamsVersion(pgpDigParams digp)
+{
+    return digp->version;
+}
+
+uint32_t pgpDigParamsCreationTime(pgpDigParams digp)
+{
+    return digp->time;
+}
+
 static pgpDigParams pgpDigParamsNew(uint8_t tag)
 {
     pgpDigParams digp = xcalloc(1, sizeof(*digp));
@@ -1329,15 +1377,16 @@ char *pgpIdentItem(pgpDigParams digp)
 {
     char *id = NULL;
     if (digp) {
-	
-	char *signid = rpmhex(digp->signid+4, sizeof(digp->signid)-4);
+        char *signid = rpmhex(pgpDigParamsSignID(digp) + 4, PGP_KEYID_LEN - 4);
 	rasprintf(&id, _("V%d %s/%s %s, key ID %s"),
-			digp->version,
-			pgpValStr(pgpPubkeyTbl, digp->pubkey_algo),
-			pgpValStr(pgpHashTbl, digp->hash_algo),
-			pgpValStr(pgpTagTbl, digp->tag),
-			signid);
-	free(signid);
+                  pgpDigParamsVersion(digp),
+                  pgpValStr(pgpPubkeyTbl, pgpDigParamsAlgo(digp, PGPVAL_PUBKEYALGO)),
+                  pgpValStr(pgpHashTbl, pgpDigParamsAlgo(digp, PGPVAL_HASHALGO)),
+                  pgpValStr(pgpTagTbl,
+                            pgpSignatureType(digp) == -1
+                            ? PGPTAG_PUBLIC_KEY : PGPTAG_SIGNATURE),
+                  signid);
+        free(signid);
     } else {
 	id = xstrdup(_("(none)"));
     }
