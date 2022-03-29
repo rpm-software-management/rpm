@@ -1431,3 +1431,8 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
     return val;
 }
 
+rpmRC pgpPubKeyLint(const uint8_t *pkts, size_t pktslen, char **explanation)
+{
+    *explanation = NULL;
+    return RPMRC_OK;
+}

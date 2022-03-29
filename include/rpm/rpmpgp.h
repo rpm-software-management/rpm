@@ -1070,6 +1070,32 @@ pgpArmor pgpParsePkts(const char *armor, uint8_t ** pkt, size_t * pktlen);
 int pgpPubKeyCertLen(const uint8_t *pkts, size_t pktslen, size_t *certlen);
 
 /** \ingroup rpmpgp
+ * Lints the certificate.
+ *
+ * There are four cases:
+ *
+ * The packets do not describe a certificate: returns an error and
+ * sets *explanation to NULL.
+ *
+ * The packets describe a certificate and the certificate is
+ * completely unusable: returns an error and sets *explanation to a
+ * human readable explanation.
+ *
+ * The packets describe a certificate and some components are not
+ * usable: returns success, and sets *explanation to a human readable
+ * explanation.
+ *
+ * The packets describe a certificate and there are no lints: returns
+ * success, and sets *explanation to NULL.
+ *
+ * @param pkts	OpenPGP pointer to a buffer with certificates
+ * @param pktslen	length of the buffer with certificates
+ * @param[out] explanation	An optional lint to display to the user.
+ * @return 		RPMRC_OK on success
+ */
+rpmRC pgpPubKeyLint(const uint8_t *pkts, size_t pktslen, char **explanation);
+
+/** \ingroup rpmpgp
  * Wrap a OpenPGP packets in ascii armor for transport.
  * @param atype		type of armor
  * @param s		binary pkt data
