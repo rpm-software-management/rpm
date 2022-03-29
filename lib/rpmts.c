@@ -436,13 +436,16 @@ struct pgpdata_s {
 static void initPgpData(pgpDigParams pubp, struct pgpdata_s *pd)
 {
     memset(pd, 0, sizeof(*pd));
-    pd->signid = rpmhex(pubp->signid, sizeof(pubp->signid));
+    pd->signid = rpmhex(pgpDigParamsSignID(pubp), PGP_KEYID_LEN);
     pd->shortid = pd->signid + 8;
-    pd->userid = pubp->userid ? pubp->userid : "none";
-    pd->time = pubp->time;
+    pd->userid = pgpDigParamsUserID(pubp);
+    if (! pd->userid) {
+        pd->userid = "none";
+    }
+    pd->time = pgpDigParamsCreationTime(pubp);
 
     rasprintf(&pd->timestr, "%x", pd->time);
-    rasprintf(&pd->verid, "%d:%s-%s", pubp->version, pd->signid, pd->timestr);
+    rasprintf(&pd->verid, "%d:%s-%s", pgpDigParamsVersion(pubp), pd->signid, pd->timestr);
 }
 
 static void finiPgpData(struct pgpdata_s *pd)

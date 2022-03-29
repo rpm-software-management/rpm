@@ -199,7 +199,7 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
 	    goto exit;
 	}
 	sinfo->hashalgo = pgpDigParamsAlgo(sinfo->sig, PGPVAL_HASHALGO);
-	sinfo->keyid = pgpGrab(sinfo->sig->signid+4, 4);
+	sinfo->keyid = pgpGrab(pgpDigParamsSignID(sinfo->sig)+4, 4);
     } else if (sinfo->type == RPMSIG_DIGEST_TYPE) {
 	if (td->type == RPM_BIN_TYPE) {
 	    sinfo->dig = rpmhex(data, dlen);
