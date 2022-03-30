@@ -383,9 +383,7 @@ exit:
  * - %patchN is equal to %patch -P\<N\>
  * - -P\<N\> -P\<N+1\>... can be used to apply several patch on a single line
  * - Any trailing arguments are treated as patch numbers
- * - Any combination of the above, except unless at least one -P is specified,
- *   %patch is treated as "numberless patch" so that "%patch 1" actually tries
- *   to pull in numberless "Patch:" and numbered "Patch1:".
+ * - Any combination of the above
  *
  * @param spec		build info
  * @param line		current line from spec file
@@ -423,15 +421,8 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
     /* Convert %patchN to %patch -PN to simplify further processing */
     if (! strchr(" \t\n", line[6])) {
 	rasprintf(&buf, "%%patch -P %s", line + 6);
-    } else {
-	/* %patch without a number refers to patch 0 */
-	if (strstr(line+6, " -P") == NULL)
-	    rasprintf(&buf, "%%patch -P %d %s", 0, line + 6);
-	else
-	    buf = xstrdup(line);
     }
-    poptParseArgvString(buf, &argc, &argv);
-    free(buf);
+    poptParseArgvString(buf ? buf : line, &argc, &argv);
 
     /* 
      * Grab all -P<N> numbers for later processing. Stored as strings
@@ -462,6 +453,11 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
     /* Any trailing arguments are treated as patch numbers */
     argvAppend(&patchnums, (ARGV_const_t) poptGetArgs(optCon));
 
+    if (argvCount(patchnums) == 0) {
+	rpmlog(RPMLOG_WARNING, _("Patch number not specified: %s\n"), line);
+	argvAdd(&patchnums, "0");
+    }
+
     /* Convert to number, generate patch command and append to %prep script */
     for (patch = patchnums; *patch; patch++) {
 	uint32_t pnum;
@@ -487,6 +483,7 @@ exit:
     free(opt_d);
     free(opt_o);
     free(argv);
+    free(buf);
     poptFreeContext(optCon);
     return rc;
 }
