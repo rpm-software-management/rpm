@@ -900,7 +900,8 @@ static int pgpVerifySelf(pgpDigParams key, pgpDigParams selfsig,
     case PGPTAG_PUBLIC_SUBKEY:
 	if (i < 2)
 	    break;
-	if (selfsig->sigtype != PGPSIGTYPE_SUBKEY_BINDING)
+	if (selfsig->sigtype != PGPSIGTYPE_SUBKEY_BINDING &&
+	    selfsig->sigtype != PGPSIGTYPE_SUBKEY_REVOKE)
 	{
 	    break;
 	}
@@ -1006,7 +1007,7 @@ int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
 	    break;
 
 	if (selfsig) {
-	    /* subkeys must be followed by binding signature */
+	    /* subkeys must be followed by binding or revocation signature */
 	    int xx = pgpVerifySelf(digp, selfsig, all, i, prevtag);
 
 	    selfsig = pgpDigParamsFree(selfsig);
