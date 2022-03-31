@@ -902,13 +902,20 @@ static int hashKey(DIGEST_CTX hash, const struct pgpPkt *pkt, int exptag)
 }
 
 static int pgpVerifySelf(pgpDigParams key, pgpDigParams selfsig,
-			const struct pgpPkt *all, int i)
+			const struct pgpPkt *all, int i, uint8_t tag)
 {
     int rc = -1;
     DIGEST_CTX hash = NULL;
 
-    switch (selfsig->sigtype) {
-    case PGPSIGTYPE_SUBKEY_BINDING:
+    switch (tag) {
+    case PGPTAG_PUBLIC_SUBKEY:
+	if (i < 2)
+	    break;
+	if (selfsig->sigtype != PGPSIGTYPE_SUBKEY_BINDING &&
+	    selfsig->sigtype != PGPSIGTYPE_SUBKEY_REVOKE)
+	{
+	    break;
+	}
 	hash = rpmDigestInit(selfsig->hash_algo, 0);
 	if (hash) {
 	    rc = hashKey(hash, &all[0], PGPTAG_PUBLIC_KEY);
@@ -1011,12 +1018,8 @@ int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
 	    break;
 
 	if (selfsig) {
-	    /* subkeys must be followed by binding signature */
-	    int xx = 1; /* assume failure */
-
-	    if (!(prevtag == PGPTAG_PUBLIC_SUBKEY &&
-		  selfsig->sigtype != PGPSIGTYPE_SUBKEY_BINDING))
-		xx = pgpVerifySelf(digp, selfsig, all, i);
+	    /* subkeys must be followed by binding or revocation signature */
+	    int xx = pgpVerifySelf(digp, selfsig, all, i, prevtag);
 
 	    selfsig = pgpDigParamsFree(selfsig);
 	    if (xx)
