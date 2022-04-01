@@ -1107,60 +1107,10 @@ static void doSP(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 
 static void doUncompress(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 {
-    rpmCompressedMagic compressed = COMPRESSED_OTHER;
-    char *b, *be, *buf = NULL;
-    int c;
-
-    if (!*argv[1])
-	goto exit;
-    buf = xstrdup(argv[1]);
-    for (b = buf; (c = *b) && isblank(c);)
-	b++;
-    for (be = b; (c = *be) && !isblank(c);)
-	be++;
-    *be = '\0';
-
-    if (*b == '\0')
-	goto exit;
-
-    if (rpmFileIsCompressed(b, &compressed))
-	mb->error = 1;
-
-    switch (compressed) {
-    default:
-    case COMPRESSED_NOT:
-	expandMacro(mb, "%__cat ", 0);
-	break;
-    case COMPRESSED_OTHER:
-	expandMacro(mb, "%__gzip -dc ", 0);
-	break;
-    case COMPRESSED_BZIP2:
-	expandMacro(mb, "%__bzip2 -dc ", 0);
-	break;
-    case COMPRESSED_ZIP:
-	expandMacro(mb, "%__unzip ", 0);
-	break;
-    case COMPRESSED_LZMA:
-    case COMPRESSED_XZ:
-	expandMacro(mb, "%__xz -dc ", 0);
-	break;
-    case COMPRESSED_LZIP:
-	expandMacro(mb, "%__lzip -dc ", 0);
-	break;
-    case COMPRESSED_LRZIP:
-	expandMacro(mb, "%__lrzip -dqo- ", 0);
-	break;
-    case COMPRESSED_7ZIP:
-	expandMacro(mb, "%__7zip x ", 0);
-	break;
-    case COMPRESSED_ZSTD:
-	expandMacro(mb, "%__zstd -dc ", 0);
-	break;
+    if (*argv[1]) {
+	expandMacro(mb, "%__rpmuncompress ", 0);
+	mbAppendStr(mb, argv[1]);
     }
-    mbAppendStr(mb, buf);
-
-exit:
-    free(buf);
 }
 
 static void doExpand(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
