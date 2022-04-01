@@ -27,74 +27,76 @@ static struct poptOption optionsTable[] = {
     POPT_TABLEEND
 };
 
-/* XXX this is silly, merge with the doUntar() uncompress logic */
+struct archiveType_s {
+    int compressed;
+    int extractable;
+    const char *cmd;
+    const char *unpack;
+    const char *quiet;
+} archiveTypes[] = {
+    { COMPRESSED_NOT,	0,	"%{__cat}" ,	"",		"" },
+    { COMPRESSED_OTHER,	0,	"%{__gzip}",	"-dc",		""  },
+    { COMPRESSED_BZIP2,	0,	"%{__bzip2}",	"-dc",		"" },
+    { COMPRESSED_ZIP,	1,	"%{__unzip}",	"",		"-qq" },
+    { COMPRESSED_LZMA,	0,	"%{__xz}",	"-dc",		"" },
+    { COMPRESSED_XZ,	0,	"%{__xz}",	"-dc",		"" },
+    { COMPRESSED_LZIP,	0,	"%{__lzip}",	"-dc",		"" },
+    { COMPRESSED_LRZIP,	0,	"%{__lrzip",	"-dqo-",	"" },
+    { COMPRESSED_7ZIP,	1,	"%{__7zip",	"x",		"" },
+    { COMPRESSED_ZSTD,	0,	"%{__zstd",	"-dc",		"" },
+    { COMPRESSED_GEM,	1,	"%{__gem}",	"unpack",	"" },
+    { -1,		0,	NULL,		NULL,		NULL },
+};
+
+static const struct archiveType_s *getArchiver(const char *fn)
+{
+    const struct archiveType_s *archiver = NULL;
+    rpmCompressedMagic compressed = COMPRESSED_NOT;
+
+    if (rpmFileIsCompressed(fn, &compressed) == 0) {
+	for (const struct archiveType_s *at = archiveTypes; at->cmd; at++) {
+	    if (compressed == at->compressed) {
+		archiver = at;
+		break;
+	    }
+	}
+    }
+
+    return archiver;
+}
+
 static char *doUncompress(const char *fn)
 {
-    return rpmExpand("%{uncompress:", fn, "}", NULL);
+    char *cmd = NULL;
+    const struct archiveType_s *at = getArchiver(fn);
+    if (at) {
+	cmd = rpmExpand(at->cmd, " ", at->unpack, NULL);
+	/* path must not be expanded */
+	cmd = rstrscat(&cmd, " ", fn, NULL);
+    }
+    return cmd;
 }
 
 static char *doUntar(const char *fn)
 {
+    const struct archiveType_s *at = NULL;
     char *buf = NULL;
     char *tar = NULL;
     const char *taropts = verbose ? "-xvvof" : "-xof";
-    rpmCompressedMagic compressed = COMPRESSED_NOT;
 
-    /* XXX On non-build parse's, file cannot be stat'd or read */
-    if (rpmFileIsCompressed(fn, &compressed)) {
+    if ((at = getArchiver(fn)) == NULL)
 	goto exit;
-    }
 
     tar = rpmGetPath("%{__tar}", NULL);
-    if (compressed != COMPRESSED_NOT) {
+    if (at->compressed != COMPRESSED_NOT) {
 	char *zipper = NULL;
-	const char *t = NULL;
-	int needtar = 1;
-	int needgemspec = 0;
+	int needtar = (at->extractable == 0);
 
-	switch (compressed) {
-	case COMPRESSED_NOT:	/* XXX can't happen */
-	case COMPRESSED_OTHER:
-	    t = "%{__gzip} -dc";
-	    break;
-	case COMPRESSED_BZIP2:
-	    t = "%{__bzip2} -dc";
-	    break;
-	case COMPRESSED_ZIP:
-	    if (verbose)
-		t = "%{__unzip}";
-	    else
-		t = "%{__unzip} -qq";
-	    needtar = 0;
-	    break;
-	case COMPRESSED_LZMA:
-	case COMPRESSED_XZ:
-	    t = "%{__xz} -dc";
-	    break;
-	case COMPRESSED_LZIP:
-	    t = "%{__lzip} -dc";
-	    break;
-	case COMPRESSED_LRZIP:
-	    t = "%{__lrzip} -dqo-";
-	    break;
-	case COMPRESSED_7ZIP:
-	    t = "%{__7zip} x";
-	    needtar = 0;
-	    break;
-	case COMPRESSED_ZSTD:
-	    t = "%{__zstd} -dc";
-	    break;
-	case COMPRESSED_GEM:
-	    t = "%{__gem} unpack";
-	    needtar = 0;
-	    needgemspec = 1;
-	    break;
-	}
-
-	zipper = rpmGetPath(t, NULL);
+	zipper = rpmExpand(at->cmd, " ", at->unpack, " ",
+			   verbose ? "" : at->quiet, NULL);
 	if (needtar) {
 	    rasprintf(&buf, "%s '%s' | %s %s -", zipper, fn, tar, taropts);
-	} else if (needgemspec) {
+	} else if (at->compressed == COMPRESSED_GEM) {
 	    size_t nvlen = strlen(fn) - 3;
 	    char *gem = rpmGetPath("%{__gem}", NULL);
 	    char *gemspec = NULL;
