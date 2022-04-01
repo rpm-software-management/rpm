@@ -12,12 +12,15 @@
 
 static int verbose = 0;
 static int extract = 0;
+static int dryrun = 0;
 
 static struct poptOption optionsTable[] = {
     { "extract", 'x', POPT_ARG_VAL, &extract, 1,
 	N_("extract an archive"), NULL },
     { "verbose", 'v', POPT_ARG_VAL, &verbose, 1,
 	N_("provide more detailed output"), NULL },
+    { "dry-run", 'n', POPT_ARG_VAL, &dryrun, 1,
+	N_("only print what would be done"), NULL },
 
     POPT_AUTOALIAS
     POPT_AUTOHELP
@@ -135,8 +138,13 @@ int main(int argc, char *argv[])
     if (cmd) {
 	FILE *inp = NULL;
 
-	if (verbose)
+	if (verbose || dryrun)
 	    fprintf(stderr, "%s\n", cmd);
+
+	if (dryrun) {
+	    ec = EXIT_SUCCESS;
+	    goto exit;
+	}
 
 	inp = popen(cmd, "r");
 	if (inp) {
