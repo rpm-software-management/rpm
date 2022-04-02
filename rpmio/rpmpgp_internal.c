@@ -941,8 +941,12 @@ static int parseSubkeySig(const struct pgpPkt *pkt, uint8_t tag,
 			  pgpDigParams *params_p) {
     pgpDigParams params = *params_p = NULL; /* assume failure */
 
-    if (pkt->tag != PGPTAG_SIGNATURE)
+    if (pkt->tag != PGPTAG_SIGNATURE) {
+	rpmlog(RPMLOG_WARNING, "Key had an unexpected packet (type %u) "
+		               "where a subkey signature was expected",
+	       (unsigned int)pkt->tag);
 	goto fail;
+    }
 
     params = pgpDigParamsNew(tag);
 
@@ -952,6 +956,12 @@ static int parseSubkeySig(const struct pgpPkt *pkt, uint8_t tag,
     if (params->sigtype != PGPSIGTYPE_SUBKEY_BINDING &&
 	params->sigtype != PGPSIGTYPE_SUBKEY_REVOKE)
     {
+	/* It isn't safe to ignore this, because it could be a
+	 * revocation of a binding signature or something else that
+	 * should cause the subkey to be ignored.  Return an error
+	 * here, but log a warning so that users know what is going on. */
+	rpmlog(RPMLOG_WARNING, _("Unsupported subkey signature type %u\n"),
+	       (unsigned int)params->sigtype);
 	goto fail;
     }
 
@@ -984,7 +994,6 @@ int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
     const uint8_t *p = pkts;
     const uint8_t *pend = pkts + pktlen;
     pgpDigParams digp = NULL;
-    pgpDigParams selfsig = NULL;
     int i = 0;
     int alloced = 16; /* plenty for normal cases */
     int rc = -1; /* assume failure */
@@ -1008,24 +1017,25 @@ int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
 	    }
 	}
 
-	if (expect) {
-	    if (pkt->tag != expect)
-		break;
-	    selfsig = pgpDigParamsNew(pkt->tag);
-	}
-
-	if (pgpPrtPkt(pkt, selfsig ? selfsig : digp))
+	if (expect && pkt->tag != expect)
 	    break;
+	expect = 0;
 
-	if (selfsig) {
+	/* Do we need to verify a self-signature? */
+	if (prevtag == PGPTAG_PUBLIC_SUBKEY &&
+	    pkt->tag != PGPTAG_PUBLIC_SUBKEY)
+	{
+	    pgpDigParams selfsig = NULL;
+	    if (parseSubkeySig(pkt, pkt->tag, &selfsig))
+		break;
 	    /* subkeys must be followed by binding or revocation signature */
 	    int xx = pgpVerifySelf(digp, selfsig, all, i, prevtag);
 
 	    selfsig = pgpDigParamsFree(selfsig);
 	    if (xx)
 		break;
-	    expect = 0;
-	}
+	} else if (pgpPrtPkt(pkt, digp))
+	    break;
 
 	if (pkt->tag == PGPTAG_PUBLIC_SUBKEY)
 	    expect = PGPTAG_SIGNATURE;
@@ -1046,7 +1056,6 @@ int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
     rc = (digp && (p == pend) && expect == 0) ? 0 : -1;
 
     free(all);
-    selfsig = pgpDigParamsFree(selfsig);
     if (ret && rc == 0) {
 	*ret = digp;
     } else {
