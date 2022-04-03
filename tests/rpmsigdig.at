@@ -208,7 +208,7 @@ runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
 runroot rpm -qi gpg-pubkey-1964c5fc-58e63918|grep -v Date|grep -v Version:
 runroot rpm -q --provides gpg-pubkey-1964c5fc-58e63918],
 [0],
-[Name        : gpg-pubkey
+[[Name        : gpg-pubkey
 Version     : 1964c5fc
 Release     : 58e63918
 Architecture: (none)
@@ -253,13 +253,10 @@ UNW2iqnN3BA7guhOv6OMiROF1+I7Q5nWT63mQC7IgQ==
 
 gpg(rpm.org RSA testkey <rsa@rpm.org>) = 4:4344591e1964c5fc-58e63918
 gpg(1964c5fc) = 4:4344591e1964c5fc-58e63918
-gpg(4344591e1964c5fc) = 4:4344591e1964c5fc-58e63918\
-`if test x$PGP != xinternal; then
-  echo
-  echo 'gpg(f00650f8) = 4:185e6146f00650f8-58e63918'
-  echo 'gpg(185e6146f00650f8) = 4:185e6146f00650f8-58e63918'
-fi`
-],
+gpg(4344591e1964c5fc) = 4:4344591e1964c5fc-58e63918
+gpg(f00650f8) = 4:185e6146f00650f8-58e63918
+gpg(185e6146f00650f8) = 4:185e6146f00650f8-58e63918
+]],
 [])
 AT_CLEANUP
 
@@ -451,6 +448,10 @@ gpg(a0e0c1c7) = 4:9dd6f039a0e0c1c7-623f5e80
 gpg(9dd6f039a0e0c1c7) = 4:9dd6f039a0e0c1c7-623f5e80
 gpg(f5757247) = 4:a9ecf25cf5757247-623f5e9e
 gpg(a9ecf25cf5757247) = 4:a9ecf25cf5757247-623f5e9e
+gpg(7bab107a) = 4:dbf8808f7bab107a-623f5eb6
+gpg(dbf8808f7bab107a) = 4:dbf8808f7bab107a-623f5eb6
+gpg(63e4b138) = 4:511ed0d463e4b138-623f5f69
+gpg(511ed0d463e4b138) = 4:511ed0d463e4b138-623f5f69
 ]],
 [])
 AT_CLEANUP
@@ -529,8 +530,75 @@ gpg(a0e0c1c7) = 4:9dd6f039a0e0c1c7-623f5e80
 gpg(9dd6f039a0e0c1c7) = 4:9dd6f039a0e0c1c7-623f5e80
 gpg(f5757247) = 4:a9ecf25cf5757247-623f5e9e
 gpg(a9ecf25cf5757247) = 4:a9ecf25cf5757247-623f5e9e
+gpg(7bab107a) = 4:dbf8808f7bab107a-623f5eb6
+gpg(dbf8808f7bab107a) = 4:dbf8808f7bab107a-623f5eb6
+gpg(63e4b138) = 4:511ed0d463e4b138-623f5f69
+gpg(511ed0d463e4b138) = 4:511ed0d463e4b138-623f5f69
 ]],
 [])
+AT_CLEANUP
+
+# -----------------------------------------
+# Import a public Ed25519 key with a subkey
+AT_SETUP([rpmkeys --import ed25519 with good and revoked subkeys 3])
+AT_KEYWORDS([rpmkeys import])
+RPMDB_INIT
+AT_CHECK([
+runroot rpmkeys --import /data/keys/first-signing-key-revoked.asc
+runroot rpm -qi gpg-pubkey-ebddd264-623f8f42|grep -v Date|grep -v Version:
+runroot rpm -q --provides gpg-pubkey
+runroot rpm -e gpg-pubkey
+],
+[0],
+[[Name        : gpg-pubkey
+Version     : ebddd264
+Release     : 623f8f42
+Architecture: (none)
+Group       : Public Keys
+Size        : 0
+License     : pubkey
+Signature   : (none)
+Source RPM  : (none)
+Build Host  : localhost
+Packager    : Another complex test key <test@rpm.org>
+Summary     : Another complex test key <test@rpm.org> public key
+Description :
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mDMEYj+PQhYJKwYBBAHaRw8BAQdAP4QSxJCz09EVaKH6BUHYfWrZNlworVRa0W8H
+UQsp2AG0J0Fub3RoZXIgY29tcGxleCB0ZXN0IGtleSA8dGVzdEBycG0ub3JnPoia
+BBMWCgBCFiEEyeRYWl0CAamgd85g0RW+m+vd0mQFAmI/j0ICGwMFCQPCZwAFCwkI
+BwIDIgIBBhUKCQgLAgQWAgMBAh4HAheAAAoJENEVvpvr3dJkjjEBAMhVviHU9uTY
+6Qzk4MDNCk0Okz96j+tFHd9R/dCJu6jRAP4s3WRnv3QtRqfZNZY6UsAp/n+Fv8MP
+8fdQfN6la/V6CrgzBGI/j1sWCSsGAQQB2kcPAQEHQHv8VulNMB1K5gkm4lX1g5EA
+6ikbpqrne6lZ9RWlcTxjiKsEKBYKAFMWIQTJ5FhaXQIBqaB3zmDRFb6b693SZAUC
+Yj+PqDUdAVRlc3RpbmcgYSBjb3JuZXIgY2FzZSBpbiBSUE3igJlzIE9wZW5QR1Ag
+cHJvY2Vzc2luZwAKCRDRFb6b693SZDcaAP9ObjfoUbWoAZCk5YHDRJM46iIm3Rso
+7PM6YiQyZj+IsAD/Vy+GyFI6HSjseRRyv5CRYAFGrooE8zZiEKKYy36mpAWI7wQY
+FgoAIBYhBMnkWFpdAgGpoHfOYNEVvpvr3dJkBQJiP49bAhsCAIEJENEVvpvr3dJk
+diAEGRYKAB0WIQTOb01Xo6PinL6M2XkCZ0a0bI6plQUCYj+PWwAKCRACZ0a0bI6p
+lb06AQC9L1W6jk5afsbeqsVnmUeqFZOPoIXpRv4I4Weeset2RQEA65JuqlX2Rwnx
+O+Ks6i6ProtEJc9PJfurmqTkw9Husw3QmAEAy9wakg7Q/SCKaGCOEM/hk4dbvlWr
+dRKzP4R71bNh5mYBAOjg0WqQhhZpe2ocrT5Q0UnGFykd4W3Uw6vYuWRSbRgAuDME
+Yj+PqxYJKwYBBAHaRw8BAQdAiarMGXScnHY1b3kTHmKFEN8zZi/lCpp5rgFyYbCe
+sCeI7wQYFgoAIBYhBMnkWFpdAgGpoHfOYNEVvpvr3dJkBQJiP4+rAhsCAIEJENEV
+vpvr3dJkdiAEGRYKAB0WIQRXTUwdJeAh19V7FuDLLiTHrB+/PQUCYj+PqwAKCRDL
+LiTHrB+/PemvAQD98K824iCRReNI9fa6tKoJIOT++2ju/LaS6Ux4NiuQ6AEAsTZW
+Fz+SBgUEYUo/IG3DfYdE12QG8mosjwlSn++2iQGZCwEA75OsfeW4x8ltyduRAj5h
+5nFoswUnFC2C9SpJeiZDLSgBAO5h6mRI9iafOref8xhCf6qAtnXD3J195VMX1zCU
+chEM
+=MpKy
+-----END PGP PUBLIC KEY BLOCK-----
+
+gpg(Another complex test key <test@rpm.org>) = 4:d115be9bebddd264-623f8f42
+gpg(ebddd264) = 4:d115be9bebddd264-623f8f42
+gpg(d115be9bebddd264) = 4:d115be9bebddd264-623f8f42
+gpg(6c8ea995) = 4:026746b46c8ea995-623f8f5b
+gpg(026746b46c8ea995) = 4:026746b46c8ea995-623f8f5b
+gpg(ac1fbf3d) = 4:cb2e24c7ac1fbf3d-623f8fab
+gpg(cb2e24c7ac1fbf3d) = 4:cb2e24c7ac1fbf3d-623f8fab
+]],)
+
 AT_CLEANUP
 
 # -----------------------------------------
@@ -667,66 +735,6 @@ Checking package after importing key, no signature:
 [])
 AT_CLEANUP
 
-# -----------------------------------------
-# Import a public Ed25519 key with a subkey
-AT_SETUP([rpmkeys --import ed25519 with good and revoked subkeys 3])
-AT_KEYWORDS([rpmkeys import])
-RPMDB_INIT
-AT_CHECK([
-runroot rpmkeys --import /data/keys/first-signing-key-revoked.asc
-runroot rpm -qi gpg-pubkey-ebddd264-623f8f42|grep -v Date|grep -v Version:
-runroot rpm -q --provides gpg-pubkey
-runroot rpm -e gpg-pubkey
-],
-[0],
-[[Name        : gpg-pubkey
-Version     : ebddd264
-Release     : 623f8f42
-Architecture: (none)
-Group       : Public Keys
-Size        : 0
-License     : pubkey
-Signature   : (none)
-Source RPM  : (none)
-Build Host  : localhost
-Packager    : Another complex test key <test@rpm.org>
-Summary     : Another complex test key <test@rpm.org> public key
-Description :
------BEGIN PGP PUBLIC KEY BLOCK-----
-
-mDMEYj+PQhYJKwYBBAHaRw8BAQdAP4QSxJCz09EVaKH6BUHYfWrZNlworVRa0W8H
-UQsp2AG0J0Fub3RoZXIgY29tcGxleCB0ZXN0IGtleSA8dGVzdEBycG0ub3JnPoia
-BBMWCgBCFiEEyeRYWl0CAamgd85g0RW+m+vd0mQFAmI/j0ICGwMFCQPCZwAFCwkI
-BwIDIgIBBhUKCQgLAgQWAgMBAh4HAheAAAoJENEVvpvr3dJkjjEBAMhVviHU9uTY
-6Qzk4MDNCk0Okz96j+tFHd9R/dCJu6jRAP4s3WRnv3QtRqfZNZY6UsAp/n+Fv8MP
-8fdQfN6la/V6CrgzBGI/j1sWCSsGAQQB2kcPAQEHQHv8VulNMB1K5gkm4lX1g5EA
-6ikbpqrne6lZ9RWlcTxjiKsEKBYKAFMWIQTJ5FhaXQIBqaB3zmDRFb6b693SZAUC
-Yj+PqDUdAVRlc3RpbmcgYSBjb3JuZXIgY2FzZSBpbiBSUE3igJlzIE9wZW5QR1Ag
-cHJvY2Vzc2luZwAKCRDRFb6b693SZDcaAP9ObjfoUbWoAZCk5YHDRJM46iIm3Rso
-7PM6YiQyZj+IsAD/Vy+GyFI6HSjseRRyv5CRYAFGrooE8zZiEKKYy36mpAWI7wQY
-FgoAIBYhBMnkWFpdAgGpoHfOYNEVvpvr3dJkBQJiP49bAhsCAIEJENEVvpvr3dJk
-diAEGRYKAB0WIQTOb01Xo6PinL6M2XkCZ0a0bI6plQUCYj+PWwAKCRACZ0a0bI6p
-lb06AQC9L1W6jk5afsbeqsVnmUeqFZOPoIXpRv4I4Weeset2RQEA65JuqlX2Rwnx
-O+Ks6i6ProtEJc9PJfurmqTkw9Husw3QmAEAy9wakg7Q/SCKaGCOEM/hk4dbvlWr
-dRKzP4R71bNh5mYBAOjg0WqQhhZpe2ocrT5Q0UnGFykd4W3Uw6vYuWRSbRgAuDME
-Yj+PqxYJKwYBBAHaRw8BAQdAiarMGXScnHY1b3kTHmKFEN8zZi/lCpp5rgFyYbCe
-sCeI7wQYFgoAIBYhBMnkWFpdAgGpoHfOYNEVvpvr3dJkBQJiP4+rAhsCAIEJENEV
-vpvr3dJkdiAEGRYKAB0WIQRXTUwdJeAh19V7FuDLLiTHrB+/PQUCYj+PqwAKCRDL
-LiTHrB+/PemvAQD98K824iCRReNI9fa6tKoJIOT++2ju/LaS6Ux4NiuQ6AEAsTZW
-Fz+SBgUEYUo/IG3DfYdE12QG8mosjwlSn++2iQGZCwEA75OsfeW4x8ltyduRAj5h
-5nFoswUnFC2C9SpJeiZDLSgBAO5h6mRI9iafOref8xhCf6qAtnXD3J195VMX1zCU
-chEM
-=MpKy
------END PGP PUBLIC KEY BLOCK-----
-
-gpg(Another complex test key <test@rpm.org>) = 4:d115be9bebddd264-623f8f42
-gpg(ebddd264) = 4:d115be9bebddd264-623f8f42
-gpg(d115be9bebddd264) = 4:d115be9bebddd264-623f8f42
-gpg(ac1fbf3d) = 4:cb2e24c7ac1fbf3d-623f8fab
-gpg(cb2e24c7ac1fbf3d) = 4:cb2e24c7ac1fbf3d-623f8fab
-]],)
-
-AT_CLEANUP
 
 AT_SETUP([rpmkeys --import invalid keys])
 AT_KEYWORDS([rpmkeys import])
@@ -908,6 +916,56 @@ runroot rpmkeys -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed.rpm; echo
 [])
 AT_CLEANUP
 
+# ------------------------------
+# Test pre-built package verification (revoked subkey)
+AT_SETUP([rpmkeys -Kv <signed with revoked subkey> 1])
+AT_KEYWORDS([rpmkeys digest signature])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_64-signed-revoked.rpm; echo $?
+runroot rpmkeys --import /data/keys/rpm.org-ed25519-subkey-2-test.pub; echo $?
+runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_64-signed-revoked.rpm; echo $?
+runroot rpmkeys --define '_pkgverify_level all' -Kv --nodigest /data/RPMS/hello-2.0-1.x86_64-signed-revoked.rpm; echo $?
+runroot rpmkeys --define '_pkgverify_level all' -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed-revoked.rpm; echo $?
+],
+[0],
+[[/data/RPMS/hello-2.0-1.x86_64-signed-revoked.rpm:
+    Header V4 EdDSA/SHA512 Signature, key ID 7bab107a: NOKEY
+    Header RSA signature: NOTFOUND
+    Header SHA256 digest: OK
+    Header SHA1 digest: OK
+    Payload SHA256 digest: OK
+    RSA signature: NOTFOUND
+    DSA signature: NOTFOUND
+    MD5 digest: OK
+1
+0
+/data/RPMS/hello-2.0-1.x86_64-signed-revoked.rpm:
+    Header V4 EdDSA/SHA512 Signature, key ID 7bab107a: NOTTRUSTED
+    Header RSA signature: NOTFOUND
+    Header SHA256 digest: OK
+    Header SHA1 digest: OK
+    Payload SHA256 digest: OK
+    RSA signature: NOTFOUND
+    DSA signature: NOTFOUND
+    MD5 digest: OK
+1
+/data/RPMS/hello-2.0-1.x86_64-signed-revoked.rpm:
+    Header V4 EdDSA/SHA512 Signature, key ID 7bab107a: NOTTRUSTED
+    Header RSA signature: NOTFOUND
+    RSA signature: NOTFOUND
+    DSA signature: NOTFOUND
+1
+/data/RPMS/hello-2.0-1.x86_64-signed-revoked.rpm:
+    Header SHA256 digest: OK
+    Header SHA1 digest: OK
+    Payload SHA256 digest: OK
+    MD5 digest: OK
+0
+]],
+[])
+AT_CLEANUP
 # ------------------------------
 # Test pre-built corrupted package verification (corrupted signature)
 AT_SETUP([rpmkeys -Kv <corrupted signed> 1])
