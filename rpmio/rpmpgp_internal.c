@@ -38,11 +38,12 @@ struct pgpDigParams_s {
     uint8_t signhash16[2];
     pgpKeyID_t signid;
     uint8_t saved;		/*!< Various flags.  `PGPDIG_SAVED_*` are never reset.
-				 * `PGPDIG_SIG_HAS_*` are reset for each signature. */
+				 * Others are reset for each signature. */
 #define	PGPDIG_SAVED_TIME	(1 << 0)
 #define	PGPDIG_SAVED_ID		(1 << 1)
 #define	PGPDIG_SIG_HAS_CREATION_TIME	(1 << 2)
 #define	PGPDIG_SIG_HAS_KEY_FLAGS	(1 << 3)
+#define	PGPDIG_UNTRUSTED    (1 << 4)
 
     pgpDigAlg alg;
 };
@@ -947,7 +948,7 @@ static int parseSubkeySig(const struct pgpPkt *pkt, uint8_t tag,
     {
 	/* It isn't safe to ignore this, because it could be a
 	 * revocation of a binding signature or something else that
-	 * should cause the subkey to be ignored.  Return an error
+	 * should cause the subkey to be distrusted.  Return an error
 	 * here, but log a warning so that users know what is going on. */
 	rpmlog(RPMLOG_WARNING, _("Unsupported subkey signature type %u\n"),
 	       (unsigned int)params->sigtype);
@@ -1093,7 +1094,7 @@ int pgpPrtParamsSubkeys(const uint8_t *pkts, size_t pktlen,
 		continue;
 	    }
 
-	    int ignore = 0;
+	    int untrusted = 0;
 	    do {
 		pgpDigParams subkey_sig = NULL;
 		if (decodePkt(p, pend - p, &pkt) ||
@@ -1103,26 +1104,25 @@ int pgpPrtParamsSubkeys(const uint8_t *pkts, size_t pktlen,
 		    goto exit;
 		}
 
-		/* if this is wrong this will be freed anyway */
-		digps[count]->saved |= PGPDIG_SIG_HAS_KEY_FLAGS;
-		digps[count]->key_flags = subkey_sig->key_flags;
+		if (subkey_sig->saved & PGPDIG_SIG_HAS_KEY_FLAGS) {
+		    digps[count]->saved |= PGPDIG_SIG_HAS_KEY_FLAGS;
+		    digps[count]->key_flags = subkey_sig->key_flags;
+		}
 
 		/* Is the subkey revoked or incapable of signing? */
 		if (subkey_sig->sigtype != PGPSIGTYPE_SUBKEY_BINDING ||
 		    !((subkey_sig->saved & PGPDIG_SIG_HAS_KEY_FLAGS) &&
 		      (subkey_sig->key_flags & 0x02))) {
-		    ignore = 1;
+		    untrusted = 1;
 		}
 		p += (pkt.body - pkt.head) + pkt.blen;
 		pgpDigParamsFree(subkey_sig);
 		if (p >= pend || decodePkt(p, pend - p, &pkt))
 		    break; /* next iteration will catch any error */
 	    } while (pkt.tag != PGPTAG_PUBLIC_SUBKEY);
-	    if (ignore) {
-		pgpDigParamsFree(digps[count]);
-	    } else {
-		count++;
-	    }
+	    if (untrusted)
+		digps[count]->saved |= PGPDIG_UNTRUSTED;
+	    count++;
 	}
     }
 exit:
@@ -1180,7 +1180,11 @@ rpmRC pgpVerifySignature(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx)
 	pgpDigAlg ka = key->alg;
 	if (sa && sa->verify) {
 	    if (sa->verify(ka, sa, hash, hashlen, sig->hash_algo) == 0) {
-		res = RPMRC_OK;
+		if ((key->saved & PGPDIG_UNTRUSTED) ||
+		    (sig->saved & PGPDIG_UNTRUSTED))
+		    res = RPMRC_FAIL;
+		else
+		    res = RPMRC_OK;
 	    }
 	}
     } else {
