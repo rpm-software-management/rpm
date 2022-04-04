@@ -261,11 +261,10 @@ runroot rpmkeys \
 	--define "_keyringpath /tmp/kr" \
 	--define "_keyring fs" \
 	--import /data/keys/rpm.org-rsa-2048-test.pub
-runroot_other cat /tmp/kr/gpg-pubkey-1964c5fc-58e63918.key
+runroot_other cat /tmp/kr/gpg-pubkey-1964c5fc-58e63918.key | grep -v 'Version: '
 ],
 [0],
 [-----BEGIN PGP PUBLIC KEY BLOCK-----
-Version: rpm-4.17.90
 
 mQENBFjmORgBCAC7TMEk6wnjSs8Dr4yqSScWdU2pjcqrkTxuzdWvowcIUPZI0w/g
 HkRqGd4apjvY2V15kjL10gk3QhFP3pZ/9p7zh8o8NHX7aGdSGDK7NOq1eFaErPRY
