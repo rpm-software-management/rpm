@@ -9,6 +9,7 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmfiles.h>
 #include <rpm/rpmarchive.h>
+#include <rpm/rpmutil.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -63,6 +64,7 @@ int rpmfiDX(rpmfi fi);
  * @param dx		new directory index
  * @return		current directory index
  */
+RPM_GNUC_DEPRECATED
 int rpmfiSetDX(rpmfi fi, int dx);
 
 /** \ingroup rpmfi
@@ -339,6 +341,7 @@ rpmfi rpmfiInit(rpmfi fi, int fx);
  * @param fi		file info set iterator
  * @return		directory iterator index, -1 on termination
  */
+RPM_GNUC_DEPRECATED
 int rpmfiNextD(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -347,6 +350,7 @@ int rpmfiNextD(rpmfi fi);
  * @param dx		directory iterator index
  * @return		file info set iterator, NULL if dx is out of range
  */
+RPM_GNUC_DEPRECATED
 rpmfi rpmfiInitD(rpmfi fi, int dx);
 
 /** \ingroup rpmfi
