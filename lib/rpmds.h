@@ -9,6 +9,7 @@
 #include <time.h>
 
 #include <rpm/rpmtypes.h>
+#include <rpm/rpmutil.h>
 #include <rpm/rpmps.h>
 
 #ifdef __cplusplus
@@ -303,6 +304,7 @@ int rpmdsIsReverse(rpmds ds);
  * @param ds		unused
  * @return		1 always
  */
+RPM_GNUC_DEPRECATED
 int rpmdsNoPromote(const rpmds ds);
 
 /** \ingroup rpmds
@@ -311,6 +313,7 @@ int rpmdsNoPromote(const rpmds ds);
  * @param nopromote	unused
  * @return		1 always
  */
+RPM_GNUC_DEPRECATED
 int rpmdsSetNoPromote(rpmds ds, int nopromote);
 
 /** \ingroup rpmds
