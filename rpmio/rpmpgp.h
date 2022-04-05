@@ -1042,6 +1042,8 @@ int pgpPrtParamsSubkeys(const uint8_t *pkts, size_t pktlen,
 			int *subkeysCount);
 /** \ingroup rpmpgp
  * Print/parse a OpenPGP packet(s).
+ * @deprecated		Obsolete, do not use.
+ *
  * @param pkts		OpenPGP packet(s)
  * @param pktlen	OpenPGP packet(s) length (no. of bytes)
  * @param[out] dig	parsed output of signature/pubkey packet parameters
@@ -1093,18 +1095,24 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns);
 
 /** \ingroup rpmpgp
  * Create a container for parsed OpenPGP packet(s).
+ * @deprecated		Obsolete, do not use.
+ *
  * @return		container
  */
 pgpDig pgpNewDig(void);
 
 /** \ingroup rpmpgp
  * Release (malloc'd) data from container.
+ * @deprecated		Obsolete, do not use.
+ *
  * @param dig		container
  */
 void pgpCleanDig(pgpDig dig);
 
 /** \ingroup rpmpgp
  * Destroy a container for parsed OpenPGP packet(s).
+ * @deprecated		Obsolete, do not use.
+ *
  * @param dig		container
  * @return		NULL always
  */
