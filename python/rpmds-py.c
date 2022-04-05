@@ -208,8 +208,7 @@ static struct PyMethodDef rpmds_methods[] = {
  {"Color",	(PyCFunction)rpmds_Color,	METH_NOARGS,
 	"ds.Color -> Color -- Return current Color.\n" },
  {"SetNoPromote",(PyCFunction)rpmds_SetNoPromote, METH_VARARGS|METH_KEYWORDS,
-  "ds.SetNoPromote(noPromote) -- Set noPromote for this instance.\n\n"
-  "If True non existing epochs are no longer equal to an epoch of 0."},
+  "ds.SetNoPromote(noPromote) -- Obsolete, do not use.\n"},
  {"Sort",	(PyCFunction)rpmds_Sort,	METH_NOARGS,
 	NULL},
  {"Find",	(PyCFunction)rpmds_Find,	METH_O,
