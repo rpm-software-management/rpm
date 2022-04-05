@@ -9,6 +9,7 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmfiles.h>
 #include <rpm/rpmarchive.h>
+#include <rpm/rpmutil.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -63,6 +64,7 @@ int rpmfiDX(rpmfi fi);
  * @param dx		unused
  * @return		-1
  */
+RPM_GNUC_DEPRECATED
 int rpmfiSetDX(rpmfi fi, int dx);
 
 /** \ingroup rpmfi
@@ -339,6 +341,7 @@ rpmfi rpmfiInit(rpmfi fi, int fx);
  * @param fi		unused
  * @return		-1
  */
+RPM_GNUC_DEPRECATED
 int rpmfiNextD(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -348,6 +351,7 @@ int rpmfiNextD(rpmfi fi);
  * @param dx		unused
  * @return		NULL
  */
+RPM_GNUC_DEPRECATED
 rpmfi rpmfiInitD(rpmfi fi, int dx);
 
 /** \ingroup rpmfi
