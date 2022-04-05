@@ -81,7 +81,6 @@ rpmcliFini(poptContext optCon);
 enum rpmQVSources_e {
     RPMQV_PACKAGE = 0,	/*!< ... from package name db search. */
     RPMQV_PATH,		/*!< ... from file path db search. */
-    RPMQV_PATH_ALL,	/*!< ... from file path db search (all states). */
     RPMQV_ALL,		/*!< ... from each installed package. */
     RPMQV_RPM, 		/*!< ... from reading binary rpm package. */
     RPMQV_GROUP,	/*!< ... from group db search. */
@@ -102,6 +101,7 @@ enum rpmQVSources_e {
     RPMQV_SPECBUILTRPMS,	/*!< ... from pkgs which would be built from spec */
     RPMQV_WHATOBSOLETES,	/*!< ... from obsoletes db search. */
     RPMQV_WHATCONFLICTS,	/*!< ... from conflicts db search. */
+    RPMQV_PATH_ALL,	/*!< ... from file path db search (all states). */
 };
 
 typedef rpmFlags rpmQVSources;
