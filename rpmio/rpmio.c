@@ -1418,7 +1418,7 @@ int Fclose(FD_t fd)
 	}
 
 	/* Debugging stats for compresed types */
-	if ((_rpmio_debug || rpmIsDebug()) && fps->fdno == -1)
+	if (_rpmio_debug && fps->fdno == -1)
 	    fdstat_print(fd, fps->io->ioname, stderr);
 
 	/* Leave freeing the last one after stats */
