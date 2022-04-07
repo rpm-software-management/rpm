@@ -824,11 +824,6 @@ void * headerExport(Header h, unsigned int *bsize)
     return blob;
 }
 
-void * headerUnload(Header h)
-{
-    return headerExport(h, NULL);
-}
-
 /**
  * Find matching (tag,type) entry in header.
  * @param h		header
@@ -1022,17 +1017,6 @@ Header headerReload(Header h, rpmTagVal tag)
 	    nh->index[0].info.tag = tag;
     }
     return nh;
-}
-
-Header headerLoad(void * uh)
-{
-    return headerImport(uh, 0, 0);
-}
-
-Header headerCopyLoad(const void * uh)
-{
-    /* Discards const but that's ok as we'll take a copy */
-    return headerImport((void *)uh, 0, HEADERIMPORT_COPY);
 }
 
 Header headerRead(FD_t fd, int magicp)

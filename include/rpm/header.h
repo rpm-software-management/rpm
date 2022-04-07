@@ -63,15 +63,6 @@ Header headerLink(Header h);
 unsigned int headerSizeof(Header h, int magicp);
 
 /** \ingroup header
- * Convert header to on-disk representation.
- * @deprecated		Use headerExport() instead
- * @param h		header (with pointers)
- * @return		on-disk header blob (i.e. with offsets)
- */
-RPM_GNUC_DEPRECATED
-void * headerUnload(Header h);
-
-/** \ingroup header
  * Export header to on-disk representation.
  * @param h		header (with pointers)
  * @param[out] bsize	on-disk header blob size in bytes
@@ -94,24 +85,6 @@ Header headerReload(Header h, rpmTagVal tag);
  * @return		new header instance
  */
 Header headerCopy(Header h);
-
-/** \ingroup header
- * Convert header to in-memory representation.
- * @deprecated		Use headerImport() instead
- * @param uh		on-disk header blob (i.e. with offsets)
- * @return		header
- */
-RPM_GNUC_DEPRECATED
-Header headerLoad(void * uh);
-
-/** \ingroup header
- * Make a copy and convert header to in-memory representation.
- * @deprecated		Use headerImport() instead
- * @param uh		on-disk header blob (i.e. with offsets)
- * @return		header
- */
-RPM_GNUC_DEPRECATED
-Header headerCopyLoad(const void * uh);
 
 enum headerImportFlags_e {
     HEADERIMPORT_COPY		= (1 << 0), /* Make copy of blob on import? */
