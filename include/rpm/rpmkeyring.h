@@ -35,17 +35,6 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring);
 int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key);
 
 /** \ingroup rpmkeyring
- * Perform keyring lookup for a key matching a signature
- * @deprecated		Obsolete, do not use.
- *
- * @param keyring	keyring handle
- * @param sig		OpenPGP packet container of signature
- * @return		RPMRC_OK if found, RPMRC_NOKEY otherwise
- */
-RPM_GNUC_DEPRECATED
-rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig);
-
-/** \ingroup rpmkeyring
  * Perform combined keyring lookup and signature verification
  * @param keyring	keyring handle
  * @param sig		OpenPGP signature parameters
@@ -97,16 +86,6 @@ rpmPubkey rpmPubkeyFree(rpmPubkey key);
  * @return		new pubkey reference
  */
 rpmPubkey rpmPubkeyLink(rpmPubkey key);
-
-/** \ingroup rpmkeyring
- * Parse OpenPGP pubkey parameters.
- * @deprecated		Obsolete, do not use.
- *
- * @param key           Pubkey
- * @return              parsed output of pubkey packet parameters
- */
-RPM_GNUC_DEPRECATED
-pgpDig rpmPubkeyDig(rpmPubkey key);
 
 /** \ingroup rpmkeyring
  * Return base64 encoding of pubkey
