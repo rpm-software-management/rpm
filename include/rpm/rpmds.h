@@ -300,23 +300,6 @@ int rpmdsIsWeak(rpmds ds);
 int rpmdsIsReverse(rpmds ds);
 
 /** \ingroup rpmds
- * Obsolete, do not use.
- * @param ds		unused
- * @return		1 always
- */
-RPM_GNUC_DEPRECATED
-int rpmdsNoPromote(const rpmds ds);
-
-/** \ingroup rpmds
- * Obsolete, do not use.
- * @param ds		unused
- * @param nopromote	unused
- * @return		1 always
- */
-RPM_GNUC_DEPRECATED
-int rpmdsSetNoPromote(rpmds ds, int nopromote);
-
-/** \ingroup rpmds
  * Return current dependency color.
  * @param ds		dependency set
  * @return		current dependency color
