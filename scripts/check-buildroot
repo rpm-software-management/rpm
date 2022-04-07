@@ -22,8 +22,10 @@ if [ -z "$RPM_BUILD_ROOT" ] || [ "$RPM_BUILD_ROOT" = "/" ]; then
         exit 0
 fi
 
-tmp=$(mktemp ${TMPDIR:-/tmp}/cbr.XXXXXX)
-trap "rm -f $tmp" EXIT
+tmp="$(mktemp "${TMPDIR:-/tmp}"/cbr.XXXXXX)"
+[ -w "$tmp" ] || exit 1
+trap 'rm -f "$tmp"' EXIT
+
 NCPUS=${RPM_BUILD_NCPUS:-1}
 
 find "$RPM_BUILD_ROOT" \! \( \
