@@ -217,36 +217,6 @@ rpmPubkey rpmPubkeyLink(rpmPubkey key)
     return key;
 }
 
-pgpDig rpmPubkeyDig(rpmPubkey key)
-{
-    pgpDig dig = NULL;
-    static unsigned char zeros[] = 
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    int rc;
-    if (key == NULL)
-	return NULL;
-
-    dig = pgpNewDig();
-
-    pthread_rwlock_rdlock(&key->lock);
-    rc = pgpPrtPkts(key->pkt, key->pktlen, dig, _print_pkts);
-    pthread_rwlock_unlock(&key->lock);
-
-    if (rc == 0) {
-	pgpDigParams pubp = pgpDigGetParams(dig, PGPTAG_PUBLIC_KEY);
-	if (!pubp || !memcmp(pgpDigParamsSignID(pubp), zeros, sizeof(zeros)) ||
-            pgpDigParamsCreationTime(pubp) == 0 ||
-            pgpDigParamsUserID(pubp) == NULL) {
-	    rc = -1;
-	}
-    }
-
-    if (rc)
-	dig = pgpFreeDig(dig);
-
-    return dig;
-}
-
 char * rpmPubkeyBase64(rpmPubkey key)
 {
     char *enc = NULL;
@@ -291,28 +261,6 @@ static rpmPubkey findbySig(rpmKeyring keyring, pgpDigParams sig)
 	}
     }
     return key;
-}
-
-rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig)
-{
-    pthread_rwlock_rdlock(&keyring->lock);
-
-    rpmRC res = RPMRC_NOKEY;
-    pgpDigParams sigp = pgpDigGetParams(sig, PGPTAG_SIGNATURE);
-    rpmPubkey key = findbySig(keyring, sigp);
-
-    if (key) {
-	/*
- 	 * Callers expect sig to have the key data parsed into pgpDig
- 	 * on (successful) return, sigh. No need to check for return
- 	 * here as this is validated at rpmPubkeyNew() already.
- 	 */
-	pgpPrtPkts(key->pkt, key->pktlen, sig, _print_pkts);
-	res = RPMRC_OK;
-    }
-
-    pthread_rwlock_unlock(&keyring->lock);
-    return res;
 }
 
 rpmRC rpmKeyringVerifySig(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx)
