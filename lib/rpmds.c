@@ -655,16 +655,6 @@ unsigned int rpmdsInstance(rpmds ds)
     return (ds != NULL) ? ds->instance : 0;
 }
 
-int rpmdsNoPromote(const rpmds ds)
-{
-    return 1;
-}
-
-int rpmdsSetNoPromote(rpmds ds, int nopromote)
-{
-    return 1;
-}
-
 rpm_color_t rpmdsColor(const rpmds ds)
 {
     return (ds != NULL) ? rpmdsColorIndex(ds, ds->i) : 0;

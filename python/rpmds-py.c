@@ -102,19 +102,6 @@ rpmds_iternext(rpmdsObject * s)
     return result;
 }
 
-static PyObject *
-rpmds_SetNoPromote(rpmdsObject * s, PyObject * args, PyObject * kwds)
-{
-    int nopromote;
-    char * kwlist[] = {"noPromote", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:SetNoPromote", kwlist,
-	    &nopromote))
-	return NULL;
-
-    return Py_BuildValue("i", 0);
-}
-
 /* XXX rpmdsFind uses bsearch on s->ds, so a sort is needed. */
 static PyObject *
 rpmds_Sort(rpmdsObject * s)
@@ -207,8 +194,6 @@ static struct PyMethodDef rpmds_methods[] = {
   "the type of all dependencies in this set.\n" },
  {"Color",	(PyCFunction)rpmds_Color,	METH_NOARGS,
 	"ds.Color -> Color -- Return current Color.\n" },
- {"SetNoPromote",(PyCFunction)rpmds_SetNoPromote, METH_VARARGS|METH_KEYWORDS,
-  "ds.SetNoPromote(noPromote) -- Obsolete, do not use.\n"},
  {"Sort",	(PyCFunction)rpmds_Sort,	METH_NOARGS,
 	NULL},
  {"Find",	(PyCFunction)rpmds_Find,	METH_O,
