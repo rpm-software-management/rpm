@@ -67,15 +67,6 @@ rpmfc rpmfcFree(rpmfc fc);
 rpmfc rpmfcCreate(const char *rootDir, rpmFlags flags);
 
 /** \ingroup rpmfc
- * @deprecated
- * Create a file classifier.
- * @return		new file classifier
- */
-RPM_GNUC_DEPRECATED
-rpmfc rpmfcNew(void);
-
-
-/** \ingroup rpmfc
  * Build file class dictionary and mappings.
  * @param fc		file classifier
  * @param argv		files to classify

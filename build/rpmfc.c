@@ -872,11 +872,6 @@ rpmfc rpmfcCreate(const char *buildRoot, rpmFlags flags)
     return fc;
 }
 
-rpmfc rpmfcNew(void)
-{
-    return rpmfcCreate(NULL, 0);
-}
-
 rpmds rpmfcDependencies(rpmfc fc, rpmTagVal tag)
 {
     if (fc) {
