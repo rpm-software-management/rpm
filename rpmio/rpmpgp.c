@@ -993,13 +993,6 @@ static int pgpPrtPkt(struct pgpPkt *p, pgpDigParams _digp)
     return rc;
 }
 
-pgpDig pgpNewDig(void)
-{
-    pgpDig dig = xcalloc(1, sizeof(*dig));
-
-    return dig;
-}
-
 pgpDigParams pgpDigParamsFree(pgpDigParams digp)
 {
     if (digp) {
@@ -1010,43 +1003,6 @@ pgpDigParams pgpDigParamsFree(pgpDigParams digp)
 	free(digp);
     }
     return NULL;
-}
-
-void pgpCleanDig(pgpDig dig)
-{
-    if (dig != NULL) {
-	pgpDigParamsFree(dig->signature);
-	pgpDigParamsFree(dig->pubkey);
-	memset(dig, 0, sizeof(*dig));
-    }
-    return;
-}
-
-pgpDig pgpFreeDig(pgpDig dig)
-{
-    if (dig != NULL) {
-
-	/* DUmp the signature/pubkey data. */
-	pgpCleanDig(dig);
-	dig = _free(dig);
-    }
-    return dig;
-}
-
-pgpDigParams pgpDigGetParams(pgpDig dig, unsigned int pkttype)
-{
-    pgpDigParams params = NULL;
-    if (dig) {
-	switch (pkttype) {
-	case PGPTAG_SIGNATURE:
-	    params = dig->signature;
-	    break;
-	case PGPTAG_PUBLIC_KEY:
-	    params = dig->pubkey;
-	    break;
-	}
-    }
-    return params;
 }
 
 int pgpDigParamsCmp(pgpDigParams p1, pgpDigParams p2)
@@ -1349,30 +1305,6 @@ int pgpPrtParamsSubkeys(const uint8_t *pkts, size_t pktlen,
     return rc;
 }
 
-int pgpPrtPkts(const uint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
-{
-    int rc;
-    pgpDigParams digp = NULL;
-
-    _print = printing;
-
-    rc = pgpPrtParams(pkts, pktlen, 0, &digp);
-
-    if (dig && rc == 0) {
-	if (digp->tag == PGPTAG_SIGNATURE) {
-	    pgpDigParamsFree(dig->signature);
-	    dig->signature = digp;
-	} else {
-	    pgpDigParamsFree(dig->pubkey);
-	    dig->pubkey = digp;
-	}
-    } else {
-	pgpDigParamsFree(digp);
-    }
-
-    return rc;
-}
-
 char *pgpIdentItem(pgpDigParams digp)
 {
     char *id = NULL;
@@ -1445,15 +1377,6 @@ exit:
     rpmDigestFinal(ctx, NULL, NULL, 0);
     return res;
 
-}
-
-rpmRC pgpVerifySig(pgpDig dig, DIGEST_CTX hashctx)
-{
-    if (dig == NULL || hashctx == NULL)
-	return RPMRC_FAIL;
-
-    return pgpVerifySignature(pgpDigGetParams(dig, PGPTAG_PUBLIC_KEY),
-			      pgpDigGetParams(dig, PGPTAG_SIGNATURE), hashctx);
 }
 
 static pgpArmor decodePkts(uint8_t *b, uint8_t **pkt, size_t *pktlen)
