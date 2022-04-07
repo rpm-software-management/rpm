@@ -347,11 +347,6 @@ int rpmfiDX(rpmfi fi)
     return (fi != NULL ? fi->j : -1);
 }
 
-int rpmfiSetDX(rpmfi fi, int dx)
-{
-    return -1;
-}
-
 int rpmfilesDI(rpmfiles fi, int ix)
 {
     return (fi != NULL) ? rpmfnDI(&fi->fndata, ix) : -1;
@@ -897,16 +892,6 @@ rpmfi rpmfiInit(rpmfi fi, int fx)
     }
 
     return fi;
-}
-
-int rpmfiNextD(rpmfi fi)
-{
-    return -1;
-}
-
-rpmfi rpmfiInitD(rpmfi fi, int dx)
-{
-    return NULL;
 }
 
 rpmFileTypes rpmfiWhatis(rpm_mode_t mode)
