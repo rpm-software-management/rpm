@@ -452,26 +452,6 @@ rpmts_HdrCheck(rpmtsObject * s, PyObject *obj)
 }
 
 static PyObject *
-rpmts_PgpPrtPkts(rpmtsObject * s, PyObject * args, PyObject * kwds)
-{
-    PyObject * blob;
-    unsigned char * pkt;
-    unsigned int pktlen;
-    int rc;
-    char * kwlist[] = {"octets", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "S:PgpPrtPkts", kwlist, &blob))
-    	return NULL;
-
-    pkt = (unsigned char *)PyBytes_AsString(blob);
-    pktlen = PyBytes_Size(blob);
-
-    rc = pgpPrtPkts(pkt, pktlen, NULL, 1);
-
-    return Py_BuildValue("i", rc);
-}
-
-static PyObject *
 rpmts_PgpImportPubkey(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
     PyObject * blob;
@@ -834,8 +814,6 @@ Remove all elements from the transaction set\n" },
   "the digest or signature is verified.\n\n"
   "\thdrblob : unloaded header blob\n"
   "Return tuple (int status, message string)"},
- {"pgpPrtPkts",	(PyCFunction) rpmts_PgpPrtPkts,	METH_VARARGS|METH_KEYWORDS,
-  "pgpPrtPkts(octets) -- Print/parse a OpenPGP packet(s).\n\nReturn 0 on success." },
  {"pgpImportPubkey",	(PyCFunction) rpmts_PgpImportPubkey,	METH_VARARGS|METH_KEYWORDS,
   "pgpImportPubkey(pubkey) -- Import public key packet." },
  {"getKeyring",	(PyCFunction) rpmts_getKeyring,	METH_VARARGS|METH_KEYWORDS, 

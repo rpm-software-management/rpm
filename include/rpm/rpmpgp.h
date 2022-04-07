@@ -27,10 +27,6 @@ extern "C" {
 
 /** \ingroup rpmpgp
  */
-typedef struct pgpDig_s * pgpDig;
-
-/** \ingroup rpmpgp
- */
 typedef struct pgpDigParams_s * pgpDigParams;
 
 
@@ -1025,17 +1021,6 @@ int pgpPrtParams(const uint8_t *pkts, size_t pktlen, unsigned int pkttype,
 int pgpPrtParamsSubkeys(const uint8_t *pkts, size_t pktlen,
 			pgpDigParams mainkey, pgpDigParams **subkeys,
 			int *subkeysCount);
-/** \ingroup rpmpgp
- * Print/parse a OpenPGP packet(s).
- * @deprecated		Obsolete, do not use.
- *
- * @param pkts		OpenPGP packet(s)
- * @param pktlen	OpenPGP packet(s) length (no. of bytes)
- * @param[out] dig	parsed output of signature/pubkey packet parameters
- * @param printing	should packets be printed?
- * @return		-1 on error, 0 on success
- */
-int pgpPrtPkts(const uint8_t *pkts, size_t pktlen, pgpDig dig, int printing);
 
 /** \ingroup rpmpgp
  * Parse armored OpenPGP packets from a file.
@@ -1077,39 +1062,6 @@ int pgpPubKeyCertLen(const uint8_t *pkts, size_t pktslen, size_t *certlen);
  * @return		formatted string
  */
 char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns);
-
-/** \ingroup rpmpgp
- * Create a container for parsed OpenPGP packet(s).
- * @deprecated		Obsolete, do not use.
- *
- * @return		container
- */
-pgpDig pgpNewDig(void);
-
-/** \ingroup rpmpgp
- * Release (malloc'd) data from container.
- * @deprecated		Obsolete, do not use.
- *
- * @param dig		container
- */
-void pgpCleanDig(pgpDig dig);
-
-/** \ingroup rpmpgp
- * Destroy a container for parsed OpenPGP packet(s).
- * @deprecated		Obsolete, do not use.
- *
- * @param dig		container
- * @return		NULL always
- */
-pgpDig pgpFreeDig(pgpDig dig);
-
-/** \ingroup rpmpgp
- * Retrieve parameters for parsed OpenPGP packet(s).
- * @param dig		container
- * @param pkttype	type of params to retrieve (signature / pubkey)
- * @return		pointer to OpenPGP parameters, NULL on error/not found
- */
-pgpDigParams pgpDigGetParams(pgpDig dig, unsigned int pkttype);
 
 /** \ingroup rpmpgp
  * Compare OpenPGP packet parameters
@@ -1207,16 +1159,6 @@ pgpDigParams pgpDigParamsFree(pgpDigParams digp);
  * @return 		RPMRC_OK on success 
  */
 rpmRC pgpVerifySignature(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx);
-
-/** \ingroup rpmpgp
- * Verify a PGP signature.
- * @deprecated		use pgpVerifySignature() instead
- *
- * @param dig		container
- * @param hashctx	digest context
- * @return 		RPMRC_OK on success 
- */
-rpmRC pgpVerifySig(pgpDig dig, DIGEST_CTX hashctx);
 
 /** \ingroup rpmpgp
  * Return the type of a PGP signature. If `sig` is NULL, or is not a signature,
