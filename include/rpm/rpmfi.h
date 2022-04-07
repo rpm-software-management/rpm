@@ -59,15 +59,6 @@ rpm_count_t rpmfiDC(rpmfi fi);
 int rpmfiDX(rpmfi fi);
 
 /** \ingroup rpmfi
- * Obsolete, do not use.
- * @param fi		unused
- * @param dx		unused
- * @return		-1
- */
-RPM_GNUC_DEPRECATED
-int rpmfiSetDX(rpmfi fi, int dx);
-
-/** \ingroup rpmfi
  * Return current base name from file info set iterator.
  * @param fi		file info set iterator
  * @return		current base name, NULL on invalid
@@ -335,24 +326,6 @@ int rpmfiNext(rpmfi fi);
  * @return		file info set iterator
  */
 rpmfi rpmfiInit(rpmfi fi, int fx);
-
-/** \ingroup rpmfi
- * Obsolete, do not use.
- * @param fi		unused
- * @return		-1
- */
-RPM_GNUC_DEPRECATED
-int rpmfiNextD(rpmfi fi);
-
-/** \ingroup rpmfi
- * Initialize directory iterator index.
- * Obsolete, do not use.
- * @param fi		unused
- * @param dx		unused
- * @return		NULL
- */
-RPM_GNUC_DEPRECATED
-rpmfi rpmfiInitD(rpmfi fi, int dx);
 
 /** \ingroup rpmfi
  * Destroy a file info set iterator.
