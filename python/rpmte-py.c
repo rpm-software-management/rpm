@@ -195,20 +195,6 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 }
 
 static PyObject *
-rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
-{
-    rpmfi fi;
-
-    DEPRECATED_METHOD("use .Files() instead");
-
-    fi = rpmteFI(s->te);
-    if (fi == NULL) {
-	Py_RETURN_NONE;
-    }
-    return rpmfi_Wrap(&rpmfi_Type, rpmfiLink(fi));
-}
-
-static PyObject *
 rpmte_Files(rpmteObject * s, PyObject * args, PyObject * kwds)
 {
     rpmfiles files = rpmteFiles(s->te);
@@ -268,8 +254,6 @@ static struct PyMethodDef rpmte_methods[] = {
 	TagN is one of 'Providename', 'Requirename', 'Obsoletename',\n\
 	'Conflictname', 'Triggername', 'Recommendname', 'Suggestname',\n\
 	'Supplementname', 'Enhancename'" },
-    {"FI",	(PyCFunction)rpmte_FI,		METH_VARARGS|METH_KEYWORDS,
-"te.FI(TagN) -- Return file info iterator of element.\n\n DEPRECATED! Use .Files() instead.\n" },
     {"Files",	(PyCFunction)rpmte_Files,	METH_NOARGS,
 "te.Files() -- Return file info set of element.\n" },
     {"Verified",(PyCFunction)rpmte_Verified,	METH_NOARGS,

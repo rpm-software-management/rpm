@@ -256,14 +256,6 @@ rpmds rpmteDS(rpmte te, rpmTagVal tag);
 rpmfiles rpmteFiles(rpmte te);
 
 /** \ingroup rpmte
- * Retrieve file info iterator from transaction element.
- * @deprecated		use rpmteFiles() instead
- * @param te		transaction element
- * @return		file info tag set
- */
-rpmfi rpmteFI(rpmte te);
-
-/** \ingroup rpmte
  * Retrieve verification status from transaction element.
  * Returns RPMSIG_UNVERIFIED_TYPE if no verify has been attempted,
  * otherwise RPMSIG_SIGNATURE_TYPE and RPMSIG_DIGEST_TYPE bits will

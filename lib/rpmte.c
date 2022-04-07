@@ -476,17 +476,6 @@ void rpmteCleanFiles(rpmte te)
     }
 }
 
-rpmfi rpmteFI(rpmte te)
-{
-    if (te == NULL)
-	return NULL;
-
-    if (te->fi == NULL)
-	te->fi = rpmfilesIter(te->files, RPMFI_ITER_FWD);
-
-    return te->fi; /* XXX take fi reference here? */
-}
-
 rpmfiles rpmteFiles(rpmte te)
 {
     return (te != NULL) ? rpmfilesLink(te->files) : NULL;
