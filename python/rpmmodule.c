@@ -42,19 +42,6 @@ static PyObject * archScore(PyObject * self, PyObject * arg)
     return Py_BuildValue("i", rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch));
 }
 
-static PyObject * signalCaught(PyObject *self, PyObject *o)
-{
-    int signo;
-    if (!PyArg_Parse(o, "i", &signo)) return NULL;
-
-    return PyBool_FromLong(rpmsqIsCaught(signo));
-}
-
-static PyObject * checkSignals(PyObject * self)
-{
-    return Py_BuildValue("i", rpmsqPoll());
-}
-
 static PyObject * blockSignals(PyObject * self, PyObject *arg)
 {
     int block;
@@ -136,20 +123,6 @@ static PyObject * reloadConfig(PyObject * self, PyObject * args, PyObject *kwds)
     return PyBool_FromLong(rc == 0);
 }
 
-static PyObject * setInterruptSafety(PyObject * self, PyObject * args, PyObject *kwds)
-{
-    int on = 1;
-    PyObject * obj;
-    char * kwlist[] = { "on", NULL };
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O", kwlist, &obj))
-	return NULL;
-    if (obj) {
-	on = PyObject_IsTrue(obj);
-    }
-    rpmsqSetInterruptSafety(on);
-    Py_RETURN_NONE;
-}
-
 static int parseSignArgs(PyObject * args, PyObject *kwds,
 			const char **path, struct rpmSignArgs *sargs)
 {
@@ -197,10 +170,6 @@ static PyMethodDef rpmModuleMethods[] = {
       "archscore(archname) -- How well does an architecture fit on this machine\n\n"
       "0 for non matching arch names\n1 for best arch\nhigher numbers for less fitting arches\n(e.g. 2 for \"i586\" on an i686 machine)" },
 
-    { "signalCaught", (PyCFunction) signalCaught, METH_O, 
-	"signalCaught(signo) -- Returns True if signal was caught." },
-    { "checkSignals", (PyCFunction) checkSignals, METH_NOARGS,
-      "checkSignals() -- Check for and exit on termination signals."},
     { "blockSignals", (PyCFunction) blockSignals, METH_O,
       "blocksignals(True/False) -- Block/unblock signals, refcounted."},
 
@@ -228,17 +197,6 @@ static PyMethodDef rpmModuleMethods[] = {
     { "reloadConfig", (PyCFunction) reloadConfig, METH_VARARGS|METH_KEYWORDS,
       "reloadConfig(target=None) -- Reload config from files.\n\n"
       "Set all macros and settings accordingly."},
-
-    { "setInterruptSafety", (PyCFunction) setInterruptSafety,
-      METH_VARARGS|METH_KEYWORDS,
-      "setInterruptSafety(on=True) -- Set if various signals get intercepted.\n\n"
-      "By default, librpm will trap various unix signals (like SIGINT and\n"
-      "SIGTERM), in order to avoid process exit while locks are held or\n"
-      "a transaction is being performed.\n\n"
-      "If this is not the desired behaviour it's recommended to call this\n"
-      "once only at process startup because currently signal handlers will\n"
-      "not be retroactively applied if a database is open."
-    },
     { "addSign", (PyCFunction) addSign, METH_VARARGS|METH_KEYWORDS, NULL },
     { "delSign", (PyCFunction) delSign, METH_VARARGS|METH_KEYWORDS, NULL },
     { NULL }
