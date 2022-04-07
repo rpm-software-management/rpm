@@ -31,7 +31,7 @@ NCPUS=${RPM_BUILD_NCPUS:-1}
 find "$RPM_BUILD_ROOT" \! \( \
     -name '*.pyo' -o -name '*.pyc' -o -name '*.elc' -o -name '.packlist' \
     \) -type f -print0 | \
-    LANG=C xargs -0r -P$NCPUS -n16 grep -lF "$RPM_BUILD_ROOT" >>$tmp 2>&1
+    LANG=C xargs -0r "-P$NCPUS" -n16 grep -lF "$RPM_BUILD_ROOT" >>"$tmp" 2>&1
 
 if test -s "$tmp"; then
     cat "$tmp"
