@@ -25,11 +25,6 @@ char *rpmhex(const uint8_t *p, size_t plen)
     return str;
 }
 
-char *pgpHexStr(const uint8_t *p, size_t plen)
-{
-    return rpmhex(p, plen);
-}
-
 int rstrcasecmp(const char * s1, const char * s2)
 {
   const char * p1 = s1;
