@@ -493,8 +493,10 @@ Different build- and language ecosystems come with their
 own helper macros, but rpm has helpers for autotools based builds such as
 itself which typically look like this:
 
+```
 %conf
 %configure
+```
 
 ### %build
 
