@@ -1,9 +1,9 @@
 #include "rpmsystem-py.h"
 
 #include <rpm/rpmtypes.h>
+#include <rpm/rpmfi.h>
 
 #include "header-py.h"
-#include "rpmfi-py.h"
 #include "rpmfd-py.h"
 #include "rpmfiles-py.h"
 #include "rpmarchive-py.h"

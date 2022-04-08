@@ -25,7 +25,6 @@ _rpm_la_SOURCES = rpmmodule.c rpmsystem-py.h \
 	rpmarchive-py.c rpmarchive-py.h \
 	rpmds-py.c rpmds-py.h \
 	rpmfd-py.c rpmfd-py.h \
-	rpmfi-py.c rpmfi-py.h \
 	rpmfiles-py.c rpmfiles-py.h \
 	rpmkeyring-py.c rpmkeyring-py.h \
 	rpmmi-py.c rpmmi-py.h \

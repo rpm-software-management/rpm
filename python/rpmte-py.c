@@ -2,7 +2,6 @@
 
 #include "header-py.h"	/* XXX tagNumFromPyObject */
 #include "rpmds-py.h"
-#include "rpmfi-py.h"
 #include "rpmfiles-py.h"
 #include "rpmte-py.h"
 #include "rpmps-py.h"

@@ -610,10 +610,10 @@ S (foo if bar) True True True
 RPMPY_TEST([file info sets 1],[
 ts = rpm.ts()
 h = ts.hdrFromFdno('${RPMDATA}/RPMS/hello-2.0-1.i686.rpm')
-fi = rpm.fi(h)
-myprint(fi.FC())
+fi = rpm.files(h)
+myprint(len(fi))
 for f in fi:
-   myprint('%x: %s' % (fi.FFlags(), fi.FN()))
+   myprint('%x: %s' % (f.fflags, f.name))
 ],
 [5
 0: /usr/bin/hello
