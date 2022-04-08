@@ -248,26 +248,6 @@ static PyObject * hdrWrite(hdrObject *s, PyObject *args, PyObject *kwds)
     Py_RETURN_NONE;
 }
 
-/* Backwards compatibility. Flags argument is just a dummy and discarded. */
-static PyObject * hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
-{
-    rpmTagVal tag = RPMTAG_REQUIRENAME;
-    rpmsenseFlags flags = 0;
-    char * kwlist[] = {"to", "flags", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O&i:dsFromHeader", kwlist,
-            tagNumFromPyObject, &tag, &flags))
-        return NULL;
-
-    return PyObject_CallFunction((PyObject *) &rpmds_Type,
-                                 "(Oi)", s, tag);
-}
-
-static PyObject * hdr_dsOfHeader(PyObject * s)
-{
-    return PyObject_CallFunction((PyObject *) &rpmds_Type,
-                                 "(Oi)", s, RPMTAG_NEVR);
-}
-
 static long hdr_hash(PyObject * h)
 {
     return (long) h;
@@ -299,10 +279,6 @@ static struct PyMethodDef hdr_methods[] = {
      "hdr.isSource() -- Return if header describes a source package." },
     {"write",		(PyCFunction)hdrWrite,		METH_VARARGS|METH_KEYWORDS,
      "hdr.write(file, magic=True) -- Write header to file." },
-    {"dsOfHeader",	(PyCFunction)hdr_dsOfHeader,	METH_NOARGS,
-     "hdr.dsOfHeader() -- Return dependency set with the header's NEVR."},
-    {"dsFromHeader",	(PyCFunction)hdr_dsFromHeader,	METH_VARARGS|METH_KEYWORDS,
-     "hdr.dsFromHeader(to=RPMTAG_REQUIRENAME, flags=None)\nGet dependency set from header. to must be one of the NAME tags\nbelonging to a dependency:\n'Providename', 'Requirename', 'Obsoletename', 'Conflictname',\n'Triggername', 'Recommendname', 'Suggestname', 'Supplementname',\n'Enhancename' or one of the corresponding RPMTAG_*NAME constants." },
     {"__reduce__",	(PyCFunction)hdr_reduce,	METH_NOARGS,
 	NULL},
 
