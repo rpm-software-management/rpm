@@ -26,7 +26,6 @@ EXTRA_DIST = ChangeLog CREDITS INSTALL \
 BUILT_SOURCES =
 
 SUBDIRS = po misc
-SUBDIRS += luaext
 SUBDIRS += rpmio lib sign build scripts fileattrs docs .
 
 if ENABLE_PYTHON
@@ -41,7 +40,7 @@ if HAVE_FAKECHROOT
 SUBDIRS += tests
 endif
 
-DIST_SUBDIRS = po misc luaext rpmio lib sign build python scripts fileattrs docs tests plugins
+DIST_SUBDIRS = po misc rpmio lib sign build python scripts fileattrs docs tests plugins
 
 pkgconfigdir = $(libdir)/pkgconfig
 

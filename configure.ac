@@ -937,7 +937,6 @@ AC_CONFIG_FILES([Makefile
 	docs/Makefile
 	docs/man/Makefile
 	python/Makefile
- 	luaext/Makefile
  	tests/Makefile
  	plugins/Makefile
 	python/setup.py
