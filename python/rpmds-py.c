@@ -108,6 +108,7 @@ rpmds_SetNoPromote(rpmdsObject * s, PyObject * args, PyObject * kwds)
     int nopromote;
     char * kwlist[] = {"noPromote", NULL};
 
+    DEPRECATED_METHOD("method is obsolete");
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:SetNoPromote", kwlist,
 	    &nopromote))
 	return NULL;

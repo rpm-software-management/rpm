@@ -460,6 +460,7 @@ rpmts_PgpPrtPkts(rpmtsObject * s, PyObject * args, PyObject * kwds)
     int rc;
     char * kwlist[] = {"octets", NULL};
 
+    DEPRECATED_METHOD("obsolete method");
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "S:PgpPrtPkts", kwlist, &blob))
     	return NULL;
 
