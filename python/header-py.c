@@ -9,7 +9,6 @@
 #include "header-py.h"
 #include "rpmds-py.h"
 #include "rpmfd-py.h"
-#include "rpmfi-py.h"
 #include "rpmtd-py.h"
 #include "rpmver-py.h"
 
@@ -249,15 +248,6 @@ static PyObject * hdrWrite(hdrObject *s, PyObject *args, PyObject *kwds)
     Py_RETURN_NONE;
 }
 
-/*
- * Just a backwards-compatibility dummy, the arguments are not looked at
- * or used. TODO: push this over to python side...
- */
-static PyObject * hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
-{
-    return PyObject_CallFunctionObjArgs((PyObject *) &rpmfi_Type, s, NULL);
-}
-
 /* Backwards compatibility. Flags argument is just a dummy and discarded. */
 static PyObject * hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 {
@@ -313,8 +303,6 @@ static struct PyMethodDef hdr_methods[] = {
      "hdr.dsOfHeader() -- Return dependency set with the header's NEVR."},
     {"dsFromHeader",	(PyCFunction)hdr_dsFromHeader,	METH_VARARGS|METH_KEYWORDS,
      "hdr.dsFromHeader(to=RPMTAG_REQUIRENAME, flags=None)\nGet dependency set from header. to must be one of the NAME tags\nbelonging to a dependency:\n'Providename', 'Requirename', 'Obsoletename', 'Conflictname',\n'Triggername', 'Recommendname', 'Suggestname', 'Supplementname',\n'Enhancename' or one of the corresponding RPMTAG_*NAME constants." },
-    {"fiFromHeader",	(PyCFunction)hdr_fiFromHeader,	METH_VARARGS|METH_KEYWORDS,
-     "hdr.fiFromHeader() -- Return rpm.fi object containing the file\nmeta data from the header.\n\nDEPRECATED - Use rpm.files(hdr) instead."},
     {"__reduce__",	(PyCFunction)hdr_reduce,	METH_NOARGS,
 	NULL},
 

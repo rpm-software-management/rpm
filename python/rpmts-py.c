@@ -12,7 +12,6 @@
 #include "rpmds-py.h"	/* XXX for rpmdsNew */
 #include "rpmfd-py.h"
 #include "rpmkeyring-py.h"
-#include "rpmfi-py.h"	/* XXX for rpmfiNew */
 #include "rpmmi-py.h"
 #include "rpmii-py.h"
 #include "rpmps-py.h"
