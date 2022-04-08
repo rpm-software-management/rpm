@@ -14,6 +14,8 @@ extern "C" {
 #endif
 
 /** \ingroup rpmsq
+ * @deprecated		Obsolete, do not use.
+ *
  * Default signal handler prototype.
  * @param signum	signal number
  * @param info		(siginfo_t) signal info
@@ -29,11 +31,14 @@ typedef void (*rpmsqAction_t) (int signum, siginfo_t * info, void * context);
 #define RPMSQ_ERR	((rpmsqAction_t)-1)
 
 /** \ingroup rpmsq
+ * @deprecated		Obsolete, do not use.
+ *
  * Test if given signal has been caught (while signals blocked).
  * Similar to sigismember() but operates on internal signal queue.
  * @param signum	signal to test for
  * @return		1 if caught, 0 if not and -1 on error
  */
+RPM_GNUC_DEPRECATED
 int rpmsqIsCaught(int signum);
 
 /** \ingroup rpmsq
@@ -41,14 +46,18 @@ int rpmsqIsCaught(int signum);
  * @param state		1 to enable, 0 to disable
  * @return		0 on success, negative on error
  */
+RPM_GNUC_DEPRECATED
 int rpmsqActivate(int state);
 
 /** \ingroup rpmsq
+ * @deprecated		Obsolete, do not use.
+ *
  * Set or delete a signal handler for a signal.
  * @param signum	signal number
  * @param handler	signal handler or NULL to delete
  * @return		previous handler, RPMSQ_ERR on error
  */
+RPM_GNUC_DEPRECATED
 rpmsqAction_t rpmsqSetAction(int signum, rpmsqAction_t handler);
 
 /** \ingroup rpmsq
@@ -61,11 +70,18 @@ rpmsqAction_t rpmsqSetAction(int signum, rpmsqAction_t handler);
 int rpmsqBlock(int op);
 
 /** \ingroup rpmsq
+ * @deprecated		Obsolete, do not use.
+ *
  * Poll for caught signals, executing their handlers.
  * @return		no. active signals found
  */
+RPM_GNUC_DEPRECATED
 int rpmsqPoll(void);
 
+/** \ingroup rpmsq
+ * @deprecated		Obsolete, do not use.
+ */
+RPM_GNUC_DEPRECATED
 void rpmsqSetInterruptSafety(int on);
 
 #ifdef __cplusplus
