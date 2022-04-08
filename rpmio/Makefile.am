@@ -3,6 +3,8 @@
 include $(top_srcdir)/rpm.am
 AM_CFLAGS = @RPMCFLAGS@
 
+EXTRA_DIST = modemuncher.c
+
 AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_srcdir)/include/
 AM_CPPFLAGS += @WITH_OPENSSL_INCLUDE@
 AM_CPPFLAGS += @WITH_LIBGCRYPT_INCLUDE@
@@ -10,7 +12,6 @@ AM_CPPFLAGS += @WITH_POPT_INCLUDE@
 AM_CPPFLAGS += $(ZSTD_CFLAGS)
 AM_CPPFLAGS += @LUA_CFLAGS@
 AM_CPPFLAGS += -I$(top_srcdir)/misc
-AM_CPPFLAGS += -I$(top_srcdir)/luaext/
 AM_CPPFLAGS += -DRPMCONFIGDIR="\"@RPMCONFIGDIR@\""
 AM_CPPFLAGS += -DLOCALSTATEDIR="\"$(localstatedir)\""
 
@@ -23,7 +24,7 @@ librpmio_la_SOURCES = \
 	rpmio_internal.h rpmhook.h rpmvercmp.c rpmver.c \
 	rpmstring.c rpmfileutil.c rpmglob.c \
 	rpmkeyring.c rpmstrpool.c rpmmacro_internal.h \
-	rpmlua.c rpmlua.h
+	rpmlua.c rpmlua.h lposix.c lposix.h
 
 if WITH_OPENSSL
 librpmio_la_SOURCES += digest_openssl.c
@@ -43,7 +44,6 @@ librpmio_la_LIBADD = \
 	@WITH_POPT_LIB@ \
 	@WITH_LZMA_LIB@ \
 	@LUA_LIBS@ \
-	../luaext/libluaext.la \
 	$(ZSTD_LIBS) \
 	-lpthread
 

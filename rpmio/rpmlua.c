@@ -3,7 +3,7 @@
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
-#include <lposix.h>
+#include "lposix.h"
 
 #ifndef LUA_LOADED_TABLE
 /* feature introduced in Lua 5.3.4 */
