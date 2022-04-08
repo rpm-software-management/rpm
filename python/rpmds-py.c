@@ -358,6 +358,13 @@ static char rpmds_doc[] =
     "It can hold multiple entries of Name Flags and EVR.\n"
     "It typically represents all dependencies of one kind of a package\n"
     "e.g. all Requires or all Conflicts.\n"
+    "\n"
+    "A dependency set can be instantiated from a header or a tuple:\n"
+    "ds(hdr, tag, pool=None)\n"
+    "ds((e, v, r), tag, pool=None)\n\n"
+    "tag is the dependency type, eg 'requires', 'provides', 'obsoletes' etc"
+    "or the corresponding RPMTAG_* value. As a special case, 'nevr' returns"
+    "a provide of the header NEVR."
     ;
 
 PyTypeObject rpmds_Type = {
