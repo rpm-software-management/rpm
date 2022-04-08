@@ -48,13 +48,13 @@ static PyObject * signalCaught(PyObject *self, PyObject *o)
     DEPRECATED_METHOD("method is obsolete");
     if (!PyArg_Parse(o, "i", &signo)) return NULL;
 
-    return PyBool_FromLong(rpmsqIsCaught(signo));
+    return PyBool_FromLong(0);
 }
 
 static PyObject * checkSignals(PyObject * self)
 {
     DEPRECATED_METHOD("method is obsolete");
-    return Py_BuildValue("i", rpmsqPoll());
+    return Py_BuildValue("i", 0);
 }
 
 static PyObject * blockSignals(PyObject * self, PyObject *arg)
@@ -140,16 +140,11 @@ static PyObject * reloadConfig(PyObject * self, PyObject * args, PyObject *kwds)
 
 static PyObject * setInterruptSafety(PyObject * self, PyObject * args, PyObject *kwds)
 {
-    int on = 1;
     PyObject * obj;
     char * kwlist[] = { "on", NULL };
     DEPRECATED_METHOD("method is obsolete");
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O", kwlist, &obj))
 	return NULL;
-    if (obj) {
-	on = PyObject_IsTrue(obj);
-    }
-    rpmsqSetInterruptSafety(on);
     Py_RETURN_NONE;
 }
 
