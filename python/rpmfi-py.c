@@ -337,6 +337,8 @@ static PyObject * rpmfi_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
     rpmstrPool pool = NULL;
     char * kwlist[] = {"header", "tag", "flags", "pool", NULL};
 
+    DEPRECATED_METHOD("method is obsolete");
+
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&|OiO&:rpmfi_init", kwlist,
 				hdrFromPyObject, &h, &to, &flags,
 				poolFromPyObject, &pool))

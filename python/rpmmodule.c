@@ -45,6 +45,7 @@ static PyObject * archScore(PyObject * self, PyObject * arg)
 static PyObject * signalCaught(PyObject *self, PyObject *o)
 {
     int signo;
+    DEPRECATED_METHOD("method is obsolete");
     if (!PyArg_Parse(o, "i", &signo)) return NULL;
 
     return PyBool_FromLong(rpmsqIsCaught(signo));
@@ -52,6 +53,7 @@ static PyObject * signalCaught(PyObject *self, PyObject *o)
 
 static PyObject * checkSignals(PyObject * self)
 {
+    DEPRECATED_METHOD("method is obsolete");
     return Py_BuildValue("i", rpmsqPoll());
 }
 
@@ -141,6 +143,7 @@ static PyObject * setInterruptSafety(PyObject * self, PyObject * args, PyObject 
     int on = 1;
     PyObject * obj;
     char * kwlist[] = { "on", NULL };
+    DEPRECATED_METHOD("method is obsolete");
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O", kwlist, &obj))
 	return NULL;
     if (obj) {
@@ -198,14 +201,16 @@ static PyMethodDef rpmModuleMethods[] = {
       "0 for non matching arch names\n1 for best arch\nhigher numbers for less fitting arches\n(e.g. 2 for \"i586\" on an i686 machine)" },
 
     { "signalCaught", (PyCFunction) signalCaught, METH_O, 
-	"signalCaught(signo) -- Returns True if signal was caught." },
+	"signalCaught(signo) -- Returns True if signal was caught.\n" 
+      "OBSOLETE - this has no effect, do not use\n"},
     { "checkSignals", (PyCFunction) checkSignals, METH_NOARGS,
-      "checkSignals() -- Check for and exit on termination signals."},
+      "checkSignals() -- Check for and exit on termination signals.\n\n"
+      "OBSOLETE - this has no effect, do not use\n"},
     { "blockSignals", (PyCFunction) blockSignals, METH_O,
       "blocksignals(True/False) -- Block/unblock signals, refcounted."},
 
     { "mergeHeaderListFromFD", (PyCFunction) rpmMergeHeadersFromFD, METH_VARARGS|METH_KEYWORDS,
-	NULL },
+	"OBSOLETE - do not use" },
 
     { "log",		(PyCFunction) doLog, METH_VARARGS|METH_KEYWORDS,
 	"log(level, msg) -- Write msg to log if level is selected to be logged.\n\n"
@@ -237,7 +242,8 @@ static PyMethodDef rpmModuleMethods[] = {
       "a transaction is being performed.\n\n"
       "If this is not the desired behaviour it's recommended to call this\n"
       "once only at process startup because currently signal handlers will\n"
-      "not be retroactively applied if a database is open."
+      "not be retroactively applied if a database is open.\n\n"
+      "OBSOLETE - this has no effect, do not use\n"
     },
     { "addSign", (PyCFunction) addSign, METH_VARARGS|METH_KEYWORDS, NULL },
     { "delSign", (PyCFunction) delSign, METH_VARARGS|METH_KEYWORDS, NULL },

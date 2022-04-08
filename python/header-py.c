@@ -201,7 +201,7 @@ static PyObject * hdrFullFilelist(hdrObject * s)
     rpmtd fileNames = rpmtdNew();
     Header h = s->h;
 
-    DEPRECATED_METHOD("obsolete method");
+    DEPRECATED_METHOD("method is obsolete");
     if (!headerIsEntry (h, RPMTAG_BASENAMES)
 	|| !headerIsEntry (h, RPMTAG_DIRNAMES)
 	|| !headerIsEntry (h, RPMTAG_DIRINDEXES))
@@ -311,6 +311,7 @@ static PyObject * hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwd
 
 static PyObject * hdr_dsOfHeader(PyObject * s)
 {
+    DEPRECATED_METHOD("deprecated, use rpm.ds() instead");
     return PyObject_CallFunction((PyObject *) &rpmds_Type,
                                  "(Oi)", s, RPMTAG_NEVR);
 }
@@ -353,9 +354,9 @@ static struct PyMethodDef hdr_methods[] = {
     {"write",		(PyCFunction)hdrWrite,		METH_VARARGS|METH_KEYWORDS,
      "hdr.write(file, magic=True) -- Write header to file." },
     {"dsOfHeader",	(PyCFunction)hdr_dsOfHeader,	METH_NOARGS,
-     "hdr.dsOfHeader() -- Return dependency set with the header's NEVR."},
+     "hdr.dsOfHeader() -- Return dependency set with the header's NEVR.\n\nDEPRECATED - Use rpm.ds(hdr, 'NEVR') instead."},
     {"dsFromHeader",	(PyCFunction)hdr_dsFromHeader,	METH_VARARGS|METH_KEYWORDS,
-     "hdr.dsFromHeader(to=RPMTAG_REQUIRENAME, flags=None)\nGet dependency set from header. to must be one of the NAME tags\nbelonging to a dependency:\n'Providename', 'Requirename', 'Obsoletename', 'Conflictname',\n'Triggername', 'Recommendname', 'Suggestname', 'Supplementname',\n'Enhancename' or one of the corresponding RPMTAG_*NAME constants." },
+     "hdr.dsFromHeader(to=RPMTAG_REQUIRENAME, flags=None)\nGet dependency set from header. to must be one of the NAME tags\nbelonging to a dependency:\n'Providename', 'Requirename', 'Obsoletename', 'Conflictname',\n'Triggername', 'Recommendname', 'Suggestname', 'Supplementname',\n'Enhancename' or one of the corresponding RPMTAG_*NAME constants.\n\nDEPRECATED - Use rpm.ds(hdr, tag) instead." },
     {"fiFromHeader",	(PyCFunction)hdr_fiFromHeader,	METH_VARARGS|METH_KEYWORDS,
      "hdr.fiFromHeader() -- Return rpm.fi object containing the file\nmeta data from the header.\n\nDEPRECATED - Use rpm.files(hdr) instead."},
     {"__reduce__",	(PyCFunction)hdr_reduce,	METH_NOARGS,
@@ -860,6 +861,7 @@ rpmMergeHeadersFromFD(PyObject * self, PyObject * args, PyObject * kwds)
     int matchTag;
     char * kwlist[] = {"list", "fd", "matchTag", NULL};
 
+    DEPRECATED_METHOD("method is obsolete");
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "Oii", kwlist, &list,
 	    &fileno, &matchTag))
 	return NULL;
