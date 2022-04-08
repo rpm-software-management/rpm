@@ -179,43 +179,6 @@ static PyObject * hdrUnload(hdrObject * s)
     return hdrAsBytes(s);
 }
 
-static PyObject * hdrExpandFilelist(hdrObject * s)
-{
-    DEPRECATED_METHOD("use hdr.convert() instead");
-    headerConvert(s->h, HEADERCONV_EXPANDFILELIST);
-
-    Py_RETURN_NONE;
-}
-
-static PyObject * hdrCompressFilelist(hdrObject * s)
-{
-    DEPRECATED_METHOD("use hdr.convert() instead");
-    headerConvert(s->h, HEADERCONV_COMPRESSFILELIST);
-
-    Py_RETURN_NONE;
-}
-
-/* make a header with _all_ the tags we need */
-static PyObject * hdrFullFilelist(hdrObject * s)
-{
-    rpmtd fileNames = rpmtdNew();
-    Header h = s->h;
-
-    DEPRECATED_METHOD("obsolete method");
-    if (!headerIsEntry (h, RPMTAG_BASENAMES)
-	|| !headerIsEntry (h, RPMTAG_DIRNAMES)
-	|| !headerIsEntry (h, RPMTAG_DIRINDEXES))
-	headerConvert(h, HEADERCONV_COMPRESSFILELIST);
-
-    if (headerGet(h, RPMTAG_FILENAMES, fileNames, HEADERGET_EXT)) {
-	rpmtdSetTag(fileNames, RPMTAG_OLDFILENAMES);
-	headerPut(h, fileNames, HEADERPUT_DEFAULT);
-    }
-    rpmtdFree(fileNames);
-
-    Py_RETURN_NONE;
-}
-
 static PyObject * hdrFormat(hdrObject * s, PyObject * args, PyObject * kwds)
 {
     const char * fmt;
@@ -336,12 +299,6 @@ static struct PyMethodDef hdr_methods[] = {
      "hdr.keys() -- Return a list of the header's rpm tags (int RPMTAG_*)." },
     {"unload",		(PyCFunction) hdrUnload,	METH_NOARGS,
      "hdr.unload() -- Return binary representation\nof the header." },
-    {"expandFilelist",	(PyCFunction) hdrExpandFilelist,METH_NOARGS,
-     "DEPRECATED -- Use hdr.convert() instead." },
-    {"compressFilelist",(PyCFunction) hdrCompressFilelist,METH_NOARGS,
-     "DEPRECATED -- Use hdr.convert() instead." },
-    {"fullFilelist",	(PyCFunction) hdrFullFilelist,	METH_NOARGS,
-     "DEPRECATED -- Obsolete method."},
     {"convert",		(PyCFunction) hdrConvert,	METH_VARARGS|METH_KEYWORDS,
      "hdr.convert(op=-1) -- Convert header - See HEADERCONV_*\nfor possible values of op."},
     {"format",		(PyCFunction) hdrFormat,	METH_VARARGS|METH_KEYWORDS,
@@ -786,99 +743,6 @@ int hdrFromPyObject(PyObject *item, Header *hptr)
 	PyErr_SetString(PyExc_TypeError, "header object expected");
 	return 0;
     }
-}
-
-/**
- * This assumes the order of list matches the order of the new headers, and
- * throws an exception if that isn't true.
- */
-static int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
-{
-    Header h;
-    HeaderIterator hi;
-    rpmTagVal newMatch, oldMatch;
-    hdrObject * hdr;
-    rpm_count_t count = 0;
-    int rc = 1; /* assume failure */
-    rpmtd td = rpmtdNew();
-
-    Py_BEGIN_ALLOW_THREADS
-    h = headerRead(fd, HEADER_MAGIC_YES);
-    Py_END_ALLOW_THREADS
-
-    while (h) {
-	if (!headerGet(h, matchTag, td, HEADERGET_MINMEM)) {
-	    PyErr_SetString(pyrpmError, "match tag missing in new header");
-	    goto exit;
-	}
-	newMatch = rpmtdTag(td);
-	rpmtdFreeData(td);
-
-	hdr = (hdrObject *) PyList_GetItem(list, count++);
-	if (!hdr) goto exit;
-
-	if (!headerGet(hdr->h, matchTag, td, HEADERGET_MINMEM)) {
-	    PyErr_SetString(pyrpmError, "match tag missing in new header");
-	    goto exit;
-	}
-	oldMatch = rpmtdTag(td);
-	rpmtdFreeData(td);
-
-	if (newMatch != oldMatch) {
-	    PyErr_SetString(pyrpmError, "match tag mismatch");
-	    goto exit;
-	}
-
-	for (hi = headerInitIterator(h); headerNext(hi, td); rpmtdFreeData(td))
-	{
-	    /* could be dupes */
-	    headerDel(hdr->h, rpmtdTag(td));
-	    headerPut(hdr->h, td, HEADERPUT_DEFAULT);
-	}
-
-	headerFreeIterator(hi);
-	h = headerFree(h);
-
-	Py_BEGIN_ALLOW_THREADS
-	h = headerRead(fd, HEADER_MAGIC_YES);
-	Py_END_ALLOW_THREADS
-    }
-    rc = 0;
-
-exit:
-    rpmtdFree(td);
-    return rc;
-}
-
-PyObject *
-rpmMergeHeadersFromFD(PyObject * self, PyObject * args, PyObject * kwds)
-{
-    FD_t fd;
-    int fileno;
-    PyObject * list;
-    int rc;
-    int matchTag;
-    char * kwlist[] = {"list", "fd", "matchTag", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "Oii", kwlist, &list,
-	    &fileno, &matchTag))
-	return NULL;
-
-    if (!PyList_Check(list)) {
-	PyErr_SetString(PyExc_TypeError, "first parameter must be a list");
-	return NULL;
-    }
-
-    fd = fdDup(fileno);
-
-    rc = rpmMergeHeaders (list, fd, matchTag);
-    Fclose(fd);
-
-    if (rc) {
-	return NULL;
-    }
-
-    Py_RETURN_NONE;
 }
 
 PyObject * versionCompare (PyObject * self, PyObject * args, PyObject * kwds)

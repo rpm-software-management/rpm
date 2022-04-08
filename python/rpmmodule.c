@@ -173,9 +173,6 @@ static PyMethodDef rpmModuleMethods[] = {
     { "blockSignals", (PyCFunction) blockSignals, METH_O,
       "blocksignals(True/False) -- Block/unblock signals, refcounted."},
 
-    { "mergeHeaderListFromFD", (PyCFunction) rpmMergeHeadersFromFD, METH_VARARGS|METH_KEYWORDS,
-	NULL },
-
     { "log",		(PyCFunction) doLog, METH_VARARGS|METH_KEYWORDS,
 	"log(level, msg) -- Write msg to log if level is selected to be logged.\n\n"
     "level must be one of the RPMLOG_* constants."},
