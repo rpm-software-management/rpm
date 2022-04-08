@@ -586,15 +586,16 @@ package or when debugging this package.\
 #==============================================================================
 # ---- GPG/PGP/PGP5 signature macros.
 #	Macro(s) to hold the arguments passed to GPG/PGP for package
-#	signing and verification.
+#	signing.  Expansion result is parsed by popt, so be sure to use
+#	%{shescape} where needed.
 #
-
-%__gpg_sign_cmd			%{__gpg} \
-	gpg --no-verbose --no-armor \
-	%{?_gpg_digest_algo:--digest-algo %{_gpg_digest_algo}} \
-	--no-secmem-warning \
-	%{?_gpg_sign_cmd_extra_args:%{_gpg_sign_cmd_extra_args}} \
-	-u "%{_gpg_name}" -sbo %{__signature_filename} %{__plaintext_filename}
+%__gpg_sign_cmd			%{shescape:%{__gpg}} \
+	gpg --no-verbose --no-armor --no-secmem-warning \
+	%{?_gpg_digest_algo:--digest-algo=%{_gpg_digest_algo}} \
+	%{?_gpg_sign_cmd_extra_args} \
+	%{?_gpg_name:-u %{shescape:%{_gpg_name}}} \
+	-sbo %{shescape:%{?__signature_filename}} \
+	%{?__plaintext_filename:-- %{shescape:%{__plaintext_filename}}}
 
 #==============================================================================
 # ---- Transaction macros.
