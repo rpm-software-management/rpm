@@ -192,7 +192,6 @@ int rpmsqBlock(int op)
 	blocked--;
 	if (blocked == 0) {
 	    ret = pthread_sigmask(SIG_SETMASK, &oldMask, NULL);
-	    rpmsqPoll();
 	} else if (blocked < 0) {
 	    blocked = 0;
 	    ret = -1;
