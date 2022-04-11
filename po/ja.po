@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-20 13:58+0300\n"
+"POT-Creation-Date: 2022-04-07 13:03+0300\n"
 "PO-Revision-Date: 2021-12-08 21:16+0000\n"
 "Last-Translator: Tomohiro KATO <tomop@teamgedoh.net>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/rpm/"
@@ -50,6 +50,9 @@ msgstr "--pipe でのパイプ作成に失敗: %m\n"
 msgid "exec failed\n"
 msgstr "実行失敗\n"
 
+msgid "create uncompressed tar file"
+msgstr ""
+
 #, c-format
 msgid "argument is not an RPM package\n"
 msgstr "引数は RPM パッケージではありません\n"
@@ -64,7 +67,9 @@ msgstr "ペイロードを再度開けません: %s\n"
 
 #, c-format
 msgid "files over 4GB not supported by cpio, use rpm2archive instead\n"
-msgstr "4GB超のファイルは cpio ではサポートしていません, 代わりに rpm2archive を使ってください\n"
+msgstr ""
+"4GB超のファイルは cpio ではサポートしていません, 代わりに rpm2archive を使っ"
+"てください\n"
 
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
@@ -77,11 +82,19 @@ msgstr "<specfile> の %prep (ソース展開と patch の適用) まで実行�
 msgid "<specfile>"
 msgstr "<specfile>"
 
-msgid "build through %build (%prep, then compile) from <specfile>"
-msgstr "<specfile> の %build (%prep とコンパイル) まで実行します"
+#, c-format
+msgid "build through %conf (%prep, then %conf) from <specfile>"
+msgstr ""
 
-msgid "build through %install (%prep, %build, then install) from <specfile>"
-msgstr "<specfile> の %install (%prep, %build, インストール) まで実行します"
+msgid "build through %build (%prep, %conf, then compile) from <specfile>"
+msgstr ""
+
+msgid "check build dependencies <specfile>"
+msgstr ""
+
+msgid ""
+"build through %install (%prep, %conf, %build, then install) from <specfile>"
+msgstr ""
 
 #, c-format
 msgid "verify %files section from <specfile>"
@@ -108,12 +121,16 @@ msgstr "<source package> から %prep (ソース展開と patch の適用) ま�
 msgid "<source package>"
 msgstr "<source package>"
 
-msgid "build through %build (%prep, then compile) from <source package>"
-msgstr "<source package> から %build (%prep, コンパイル) まで実行します"
+msgid "build through %build (%prep, %conf, then compile) from <source package>"
+msgstr ""
+
+msgid "check build dependencies <source package>"
+msgstr ""
 
 msgid ""
-"build through %install (%prep, %build, then install) from <source package>"
-msgstr "<source package> から %install (%prep, %build, インストール) まで実行します"
+"build through %install (%prep, %conf, %build, then install) from <source "
+"package>"
+msgstr ""
 
 #, c-format
 msgid "verify %files section from <source package>"
@@ -140,11 +157,15 @@ msgstr "<tarball> から %prep (ソース展開とパッチ適用) まで実行�
 msgid "<tarball>"
 msgstr "<tarball>"
 
-msgid "build through %build (%prep, then compile) from <tarball>"
-msgstr "<tarball> から %build (%prep とコンパイル) まで実行します"
+msgid "build through %build (%prep, %conf, then compile) from <tarball>"
+msgstr ""
 
-msgid "build through %install (%prep, %build, then install) from <tarball>"
-msgstr "<tarball> から %install (%prep, %build, インストール) まで実行します"
+msgid "check build dependencies <tarball>"
+msgstr ""
+
+msgid ""
+"build through %install (%prep, %conf, %build, then install) from <tarball>"
+msgstr ""
 
 #, c-format
 msgid "verify %files section from <tarball>"
@@ -165,6 +186,11 @@ msgstr ""
 
 msgid "build binary package from <source package>"
 msgstr "<source package> を元に、 バイナリパッケージを作成します"
+
+msgid ""
+"build through %install (%prep, %build, then install) from <source package>"
+msgstr ""
+"<source package> から %install (%prep, %build, インストール) まで実行します"
 
 msgid "override build root"
 msgstr "build root を強制的に指定します"
@@ -188,7 +214,9 @@ msgid "do not verify build dependencies"
 msgstr "ビルド依存性を検証しません"
 
 msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
-msgstr "レガシーな RPM v3 のパッケージングと互換性のあるパッケージのヘッダーを生成します"
+msgstr ""
+"レガシーな RPM v3 のパッケージングと互換性のあるパッケージのヘッダーを生成し"
+"ます"
 
 #, c-format
 msgid "do not execute %clean stage of the build"
@@ -240,6 +268,10 @@ msgid "Failed to read spec file from %s\n"
 msgstr "%s から spec ファイルの読み込みに失敗しました\n"
 
 #, c-format
+msgid "Failed to rename %s to %s: %m\n"
+msgstr "%s を %s に名前を変更できませんでした: %m\n"
+
+#, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "stat %s に失敗しました: %m\n"
 
@@ -266,7 +298,9 @@ msgid "initialize database"
 msgstr "データベースを初期化します"
 
 msgid "rebuild database inverted lists from installed package headers"
-msgstr "インストール済のパッケージヘッダーから、 データベースのインデックスを再構築します"
+msgstr ""
+"インストール済のパッケージヘッダーから、 データベースのインデックスを再構築し"
+"ます"
 
 msgid "verify database files"
 msgstr "データベースの検証を行います"
@@ -342,7 +376,9 @@ msgstr "--prefix は --relocate や --excludepath とは同時には使用でき
 
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
-msgstr "--relocate と --excludepath は新しいパッケージをインストールする時のみ使用できます"
+msgstr ""
+"--relocate と --excludepath は新しいパッケージをインストールする時のみ使用で"
+"きます"
 
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix は新規パッケージのインストール時のみ使用できます"
@@ -390,17 +426,22 @@ msgstr "--justdb はパッケージ インストール・削除時のみ指定�
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
-msgstr "スクリプトを無効にするようなオプションは、パッケージのインストール、削除時のみ指定できます"
+msgstr ""
+"スクリプトを無効にするようなオプションは、パッケージのインストール、削除時の"
+"み指定できます"
 
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
-msgstr "トリガーを無効にするようなオプションはパッケージのインストール、削除時のみ指定できます"
+msgstr ""
+"トリガーを無効にするようなオプションはパッケージのインストール、削除時のみ指"
+"定できます"
 
 msgid ""
 "--nodeps may only be specified during package installation, erasure, and "
 "verification"
-msgstr "--nodeps はパッケージのインストール時、削除時および検証時のみ指定できます"
+msgstr ""
+"--nodeps はパッケージのインストール時、削除時および検証時のみ指定できます"
 
 msgid "--test may only be specified during package installation and erasure"
 msgstr "--test はパッケージのインストール時および削除時のみ指定できます"
@@ -426,11 +467,29 @@ msgstr "パッケージに署名します (--addsign と同一です)"
 msgid "delete package signatures"
 msgstr "パッケージの署名を削除します"
 
+msgid "delete IMA and fsverity file signatures"
+msgstr ""
+
 msgid "create rpm v3 header+payload signatures"
 msgstr "v3ヘッダーとペイロード署名を作成します"
 
 msgid "sign package(s) files"
 msgstr "パッケージファイルに署名します"
+
+msgid "generate fsverity signatures for package(s) files"
+msgstr ""
+
+msgid "algorithm to use for verity signatures, default sha256"
+msgstr ""
+
+msgid "<algorithm>"
+msgstr ""
+
+msgid "use file signing cert <cert>"
+msgstr ""
+
+msgid "<cert>"
+msgstr ""
 
 msgid "use file signing key <key>"
 msgstr "ファイル署名鍵 <key> を使用します"
@@ -453,8 +512,8 @@ msgid ""
 "You must set \"%%_file_signing_key\" in your macro file or on the command "
 "line with --fskpath\n"
 msgstr ""
-"マクロファイル内に \"%%_file_signing_key\" を記述するか、コマンドラインにて --fskpath "
-"オプションを指定する必要があります\n"
+"マクロファイル内に \"%%_file_signing_key\" を記述するか、コマンドラインにて "
+"--fskpath オプションを指定する必要があります\n"
 
 msgid "--fskpath may only be specified when signing files"
 msgstr "--fskpath はファイルへの署名時にのみ指示されます"
@@ -465,20 +524,27 @@ msgstr "SPEC ファイルを構文解析し 標準出力に出力します"
 msgid "query spec file(s)"
 msgstr "spec ファイルの問い合わせを行います"
 
+msgid "interactive macro shell"
+msgstr ""
+
 msgid "operate on binary rpms generated by spec (default)"
 msgstr "spec ファイルによって生成されたバイナリ RPM を操作します（デフォルト）"
 
-msgid "operate on binary rpms that would be built from spec"
-msgstr "spec ファイルによって生成されるであろうバイナリ RPM を操作します"
+msgid "operate on binary package header(s) that would be built from spec"
+msgstr ""
 
-msgid "operate on source rpm generated by spec"
-msgstr "spec ファイルによって生成されたソース RPM を操作します"
+msgid "operate on source package header generated by spec"
+msgstr ""
 
 msgid "use the following query format"
 msgstr "以下の問い合わせ書式を使用します"
 
 msgid "Spec options:"
 msgstr "spec のオプション:"
+
+#, c-format
+msgid "RPM version %s macro shell\n"
+msgstr ""
 
 msgid "no arguments given for parse"
 msgstr "構文解析する引数がありません"
@@ -513,14 +579,19 @@ msgstr "ビルド依存性の失敗:\n"
 msgid "setting %s=%s\n"
 msgstr ""
 
+#, c-format
+msgid "source_date_epoch_from_changelog set but %%changelog is missing\n"
+msgstr ""
+
 msgid ""
 "\n"
+"RPM build warnings:\n"
+msgstr ""
+
+msgid ""
 "\n"
 "RPM build errors:\n"
 msgstr ""
-"\n"
-"\n"
-"RPM ビルドのエラー:\n"
 
 #, c-format
 msgid "Missing '(' in %s %s\n"
@@ -579,7 +650,9 @@ msgstr "%s=%s を解析できません\n"
 
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
-msgstr "不明なファイルのダイジェスト アルゴリズム %u です、MD5 にフォールバックします\n"
+msgstr ""
+"不明なファイルのダイジェスト アルゴリズム %u です、MD5 にフォールバックしま"
+"す\n"
 
 #, c-format
 msgid "File listed twice: %s\n"
@@ -649,7 +722,8 @@ msgid "Duplicate build-ids %s and %s\n"
 msgstr "%s と %s の間でビルドIDが重複しています\n"
 
 msgid "_build_id_links macro not set, assuming 'compat'\n"
-msgstr "_build_id_links マクロが設定されていません、'compat' であると仮定します\n"
+msgstr ""
+"_build_id_links マクロが設定されていません、'compat' であると仮定します\n"
 
 #, c-format
 msgid "_build_id_links macro set to unknown value '%s'\n"
@@ -777,7 +851,7 @@ msgstr "不明なペイロード圧縮です: %s\n"
 msgid "Could not seek in file %s: %s\n"
 msgstr "ファイル %s をシークできません: %s\n"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Failed to read %jd bytes in file %s: %s\n"
 msgstr "ファイル %2$s から %1$jd バイトの読み出しに失敗しました: %3$s\n"
 
@@ -1034,10 +1108,6 @@ msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "%%{buildroot} を \"\" にすることができません\n"
 
 #, c-format
-msgid "Bad source: %s: %s\n"
-msgstr "不正なソース: %s: %s\n"
-
-#, c-format
 msgid "No patch number %u\n"
 msgstr "パッチ番号 %u はありません\n"
 
@@ -1058,8 +1128,8 @@ msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "%d 行目: 不正な %%setup オプション %s: %s\n"
 
 #, c-format
-msgid "%s: %s: %s\n"
-msgstr "%s: %s: %s\n"
+msgid "Patch number not specified: %s\n"
+msgstr ""
 
 #, c-format
 msgid "Invalid patch number %s: %s\n"
@@ -1143,7 +1213,7 @@ msgstr "%d 行目: ファイルトリガーは '/' で始まらなければな�
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
 msgstr "%d 行目: インタープリター引数はトリガーにおいて許可されません: %s\n"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "extra tokens at the end of %s directive in line %d:  %s\n"
 msgstr "%2$d 行目: %1$s ディレクティブの末尾に余分な文字列があります: %3$s\n"
 
@@ -1171,7 +1241,7 @@ msgstr "%d 行目: 終了していないマクロまたは行の不正な継続\
 msgid "%s: line %d: %s with no %%if\n"
 msgstr "%s: %d行目: %%if のない %s\n"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "%s: line %d: %s after %s\n"
 msgstr "%1$s: %2$d行目: %4$s の後の %3$s\n"
 
@@ -1187,7 +1257,7 @@ msgstr "%s:%d: 不正な形式の %%include 文\n"
 msgid "encoding %s not supported by system\n"
 msgstr "エンコーディング %s はシステムでサポートされていません\n"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Package %s: invalid %s encoding in %s: %s - %s\n"
 msgstr "パッケージ %1$s: %3$s 中に無効な %2$s エンコーディング: %4$s - %5$s\n"
 
@@ -1197,7 +1267,8 @@ msgstr "%d 行目: %%end は引数をとりません: %s\n"
 
 #, c-format
 msgid "line %d: %%end not expected here, no section to close: %s\n"
-msgstr "%d 行目: 期待されていない %%end です、閉じられるセクションがありません: %s\n"
+msgstr ""
+"%d 行目: 期待されていない %%end です、閉じられるセクションがありません: %s\n"
 
 #, c-format
 msgid "line %d doesn't belong to any section: %s\n"
@@ -1216,7 +1287,8 @@ msgstr "ポリシーモジュール '%s' がオーバーラッピングタイプ
 
 #, c-format
 msgid "Base modules '%s' and '%s' have overlapping types\n"
-msgstr "ベースモジュール '%s' と '%s' がオーバーラッピングタイプを持っています\n"
+msgstr ""
+"ベースモジュール '%s' と '%s' がオーバーラッピングタイプを持っています\n"
 
 msgid "Failed to get policies from header\n"
 msgstr "ヘッダーからのポリシーの取得に失敗しました\n"
@@ -1312,6 +1384,10 @@ msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "ファイル \"%s\" の承認に失敗しました: モード %06o %s\n"
 
 #, c-format
+msgid "Recognition of file mtype \"%s\" failed: mode %06o %s\n"
+msgstr ""
+
+#, c-format
 msgid "Finding  %s: %s\n"
 msgstr "%s を検索しています: %s\n"
 
@@ -1335,74 +1411,18 @@ msgid "query of specfile %s failed, can't parse\n"
 msgstr "スペックファイル %s の問い合わせに失敗しました、解析できません\n"
 
 #, c-format
-msgid "%s error(%d) from %s: %s\n"
+msgid "invalid %%_db_backend: %s\n"
 msgstr ""
-
-#, c-format
-msgid "%s error(%d): %s\n"
-msgstr ""
-
-#, c-format
-msgid "unrecognized db option: \"%s\" ignored.\n"
-msgstr "不明なデータベースオプション: \"%s\" は無視します。\n"
-
-#, c-format
-msgid "%s has invalid numeric value, skipped\n"
-msgstr "%s には無効な数値があります、スキップします\n"
-
-#, c-format
-msgid "%s has too large or too small long value, skipped\n"
-msgstr "%s には大き/小さ過ぎるlong値があります、スキップします\n"
-
-#, c-format
-msgid "%s has too large or too small integer value, skipped\n"
-msgstr "%s には大き/小さ過ぎる整数値があります、スキップします\n"
-
-#, c-format
-msgid "cannot get %s lock on %s/%s\n"
-msgstr "%sロックを獲得できません (%s/%s)\n"
-
-msgid "shared"
-msgstr "共有"
-
-msgid "exclusive"
-msgstr "排他"
-
-#, c-format
-msgid "invalid index type %x on %s/%s\n"
-msgstr "無効なインデックス形式 %x が %s/%s にあります\n"
-
-#, c-format
-msgid "error(%d) getting \"%s\" records from %s index: %s\n"
-msgstr "エラー(%d) \"%s\" レコードの %s インデックスから取得中: %s\n"
-
-#, c-format
-msgid "error(%d) storing record \"%s\" into %s\n"
-msgstr "エラー(%d) - レコード \"%s\" を %s に格納時\n"
-
-#, c-format
-msgid "error(%d) removing record \"%s\" from %s\n"
-msgstr "エラー(%d) - レコード \"%s\" を %s から削除時\n"
-
-#, c-format
-msgid "error(%d) adding header #%d record\n"
-msgstr "エラー(%d) - ヘッダー #%d レコードの追加時\n"
-
-#, c-format
-msgid "error(%d) removing header #%d record\n"
-msgstr "エラー(%d) - ヘッダー #%d レコードの削除時\n"
-
-#, c-format
-msgid "error(%d) allocating new package instance\n"
-msgstr "エラー(%d) - 新しいパッケージインスタンスの割り当て時\n"
 
 #, c-format
 msgid "Converting database from %s to %s backend\n"
 msgstr "%s から %s バックエンドにデータベースを変換しています\n"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Found %s %s database while attempting %s backend: using %s backend.\n"
-msgstr "%3$s バックエンドの試行中に %1$s データベース %2$s を発見しました: %4$s バックエンドを使用します。\n"
+msgstr ""
+"%3$s バックエンドの試行中に %1$s データベース %2$s を発見しました: %4$s バッ"
+"クエンドを使用します。\n"
 
 msgid "Detected outdated index databases\n"
 msgstr "旧式のインデックスデータベースを検出しました\n"
@@ -1412,18 +1432,24 @@ msgstr "旧式のインデックスデータベースを再構築しています
 
 #, c-format
 msgid "rpmidx: Version mismatch. Expected version: %u. Found version: %u\n"
-msgstr "rpmidx: バージョンが一致しません。期待されるバージョン: %u。発見されたバージョン: %u\n"
+msgstr ""
+"rpmidx: バージョンが一致しません。期待されるバージョン: %u。発見されたバー"
+"ジョン: %u\n"
 
 #, c-format
 msgid "rpmpkg: Version mismatch. Expected version: %u. Found version: %u\n"
-msgstr "rpmpkg: バージョンが一致しません。期待されるバージョン: %u。発見されたバージョン: %u\n"
+msgstr ""
+"rpmpkg: バージョンが一致しません。期待されるバージョン: %u。発見されたバー"
+"ジョン: %u\n"
 
 msgid "rpmpkg: detected non-zero blob, trying auto repair\n"
 msgstr ""
 
 #, c-format
 msgid "rpmxdb: Version mismatch. Expected version: %u. Found version: %u\n"
-msgstr "rpmxdb: バージョンが一致しません。期待されるバージョン: %u。発見されたバージョン: %u\n"
+msgstr ""
+"rpmxdb: バージョンが一致しません。期待されるバージョン: %u。発見されたバー"
+"ジョン: %u\n"
 
 #, c-format
 msgid "Unable to open sqlite database %s: %s\n"
@@ -1433,7 +1459,7 @@ msgstr "sqliteデータベース %s を開けません: %s\n"
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s はデルタ RPM で、直接インストールできません\n"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "パッケージ %2$s 内にサポートしていないペイロード (%1$s) があります\n"
 
@@ -1456,13 +1482,6 @@ msgstr "(文字列でない)"
 
 msgid "(invalid type)"
 msgstr "(無効なタイプ)"
-
-#, c-format
-msgid "%c"
-msgstr "%c"
-
-msgid "%a %b %d %Y"
-msgstr "%a %b %d %Y"
 
 msgid "(not base64)"
 msgstr "(base64 ではありません)"
@@ -1499,12 +1518,16 @@ msgid "(unknown)"
 msgstr "(不明)"
 
 #, c-format
-msgid "%s saved as %s\n"
-msgstr "%s は %s として保存されました\n"
+msgid "failed to open dir %s of %s: %s\n"
+msgstr ""
 
 #, c-format
-msgid "%s created as %s\n"
-msgstr "%s は %s として作成されました\n"
+msgid "%s%s saved as %s%s\n"
+msgstr ""
+
+#, c-format
+msgid "%s%s created as %s%s\n"
+msgstr ""
 
 #, c-format
 msgid "%s %s: remove failed: %s\n"
@@ -1547,18 +1570,18 @@ msgid "region %d: tag number mismatch il %d ril %d dl %d rdl %d\n"
 msgstr ""
 
 #, c-format
+msgid "hdr tags: BAD, no. of tags(%<PRIu32>) out of range"
+msgstr ""
+
+#, c-format
+msgid "hdr data: BAD, no. of bytes(%<PRIu32>) out of range"
+msgstr ""
+
+#, c-format
 msgid "hdr size(%d): BAD, read returned %d"
 msgstr ""
 
 msgid "hdr magic: BAD"
-msgstr ""
-
-#, c-format
-msgid "hdr tags: BAD, no. of tags(%d) out of range"
-msgstr ""
-
-#, c-format
-msgid "hdr data: BAD, no. of bytes(%d) out of range"
 msgstr ""
 
 #, c-format
@@ -1571,6 +1594,9 @@ msgstr ""
 
 msgid "signature "
 msgstr "署名 "
+
+msgid "hdr length: BAD"
+msgstr ""
 
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
@@ -1634,6 +1660,9 @@ msgstr "配列の繰り返し指定が、サイズが異なる配列の間で使
 msgid "RPM v3 packages are deprecated: %s\n"
 msgstr "RPM v3 パッケージは非推奨です: %s\n"
 
+msgid "Error writing to stdout"
+msgstr ""
+
 #, c-format
 msgid "failed to load macro file %s\n"
 msgstr "マクロファイル %s のロードに失敗しました\n"
@@ -1645,7 +1674,8 @@ msgstr "--dbpath は / で始まらなければなりません\n"
 #, c-format
 msgid ""
 "%s: error: more than one --pipe specified (incompatible popt aliases?)\n"
-msgstr "%s: エラー: 複数の --pipe が指示されました (非互換の popt エイリアス?)\n"
+msgstr ""
+"%s: エラー: 複数の --pipe が指示されました (非互換の popt エイリアス?)\n"
 
 msgid "predefine MACRO with value EXPR"
 msgstr "値 EXPR を持つマクロを予め定義します"
@@ -1762,7 +1792,9 @@ msgstr "設定がスキップを指示していても、全ファイルをイン
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
-msgstr "<package> と一致するパッケージ全てを削除します (通常は <package> が複数のパッケージを指す場合はエラーになります)"
+msgstr ""
+"<package> と一致するパッケージ全てを削除します (通常は <package> が複数のパッ"
+"ケージを指す場合はエラーになります)"
 
 msgid "relocate files in non-relocatable package"
 msgstr "再配置不可能なパッケージのファイルを再配置します"
@@ -1824,6 +1856,9 @@ msgstr "パッケージをインストールします"
 
 msgid "update the database, but do not modify the filesystem"
 msgstr "データベースを更新しますが、ファイルシステムの変更は行いません"
+
+msgid "do not update the database, but modify the filesystem"
+msgstr ""
 
 msgid "do not verify package dependencies"
 msgstr "パッケージの依存関係の検証を行いません"
@@ -1926,14 +1961,20 @@ msgstr "パッケージをアップグレードします"
 msgid "reinstall package(s)"
 msgstr "パッケージを再インストールします"
 
+msgid "restore package(s)"
+msgstr ""
+
 msgid "query/verify all packages"
 msgstr "すべてのパッケージについて問い合わせ/検証を行います"
 
 msgid "rpm checksig mode"
 msgstr "rpm の署名検査モード"
 
-msgid "query/verify package(s) owning file"
-msgstr "<file> を所有しているパッケージの問い合わせ/検証を行います"
+msgid "query/verify package(s) owning installed file"
+msgstr ""
+
+msgid "query/verify package(s) owning path, installed or not"
+msgstr ""
 
 msgid "query/verify package(s) in group"
 msgstr "グループに所属するパッケージの問い合わせ/検証を行います"
@@ -1954,7 +1995,8 @@ msgid "query/verify a header instance"
 msgstr "ヘッダー インスタンスの問い合わせ/検証を行います"
 
 msgid "query/verify package(s) from install transaction"
-msgstr "インストール トランザクションからのパッケージの問い合わせ/検証を行います"
+msgstr ""
+"インストール トランザクションからのパッケージの問い合わせ/検証を行います"
 
 msgid "query the package(s) triggered by the package"
 msgstr "パッケージによってトリガーされるパッケージを問い合わせます"
@@ -2264,7 +2306,9 @@ msgstr "rpmdbNextIterator: スキップします"
 
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
-msgstr "rpmdb: 破損したヘッダーインスタンス #%u を読み込みました -- スキップします。\n"
+msgstr ""
+"rpmdb: 破損したヘッダーインスタンス #%u を読み込みました -- スキップしま"
+"す。\n"
 
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
@@ -2317,10 +2361,12 @@ msgid "YES"
 msgstr "YES"
 
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
-msgstr "PreReq:、Provides:、Obsoletes: の依存関係をサポートしたバージョンです。"
+msgstr ""
+"PreReq:、Provides:、Obsoletes: の依存関係をサポートしたバージョンです。"
 
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
-msgstr "ファイル名が、パスではなく (dirName、baseName、dirIndex) の組で格納されます。"
+msgstr ""
+"ファイル名が、パスではなく (dirName、baseName、dirIndex) の組で格納されます。"
 
 msgid "package payload can be compressed using bzip2."
 msgstr "パッケージ ペイロードは bzip2 を用いて圧縮できます。"
@@ -2428,11 +2474,23 @@ msgstr "グループ %s は存在しません - %s を使用します\n"
 
 #, c-format
 msgid "Wrong number of entries for tag %s: %u found but %u expected.\n"
-msgstr "タグ %s の正しくない数のエントリー: %u 個発見されましたが %u 個が期待されています。\n"
+msgstr ""
+"タグ %s の正しくない数のエントリー: %u 個発見されましたが %u 個が期待されてい"
+"ます。\n"
 
 #, c-format
 msgid "Malformed data for tag %s: %u bytes found but %lu expected.\n"
-msgstr "タグ %s の間違ったデータ: %u バイト発見されましたが %lu バイトが期待されています。\n"
+msgstr ""
+"タグ %s の間違ったデータ: %u バイト発見されましたが %lu バイトが期待されてい"
+"ます。\n"
+
+#, c-format
+msgid "%s: base64 decode failed, len %li\n"
+msgstr ""
+
+#, c-format
+msgid "%s: base64 decode success, len %li\n"
+msgstr ""
 
 msgid "Bad magic"
 msgstr "不正なマジックナンバーです"
@@ -2461,8 +2519,12 @@ msgstr "内部エラーが発生しました"
 msgid "Archive file not in header"
 msgstr "アーカイブファイルがヘッダーにありません"
 
+msgid "Invalid symlink"
+msgstr ""
+
 msgid "File from package already exists as a directory in system"
-msgstr "パッケージからのファイルは既にディレクトリーとしてシステム上に存在します"
+msgstr ""
+"パッケージからのファイルは既にディレクトリーとしてシステム上に存在します"
 
 msgid " failed - "
 msgstr " 失敗 - "
@@ -2611,7 +2673,9 @@ msgstr "ファイル %s は %s と %s のインストールで競合していま
 
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
-msgstr "ファイル %s (パッケージ %s から) は、パッケージ %s からのファイルと競合しています"
+msgstr ""
+"ファイル %s (パッケージ %s から) は、パッケージ %s からのファイルと競合してい"
+"ます"
 
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
@@ -2620,11 +2684,15 @@ msgstr "パッケージ %s (%s より新しいもの) は既にインストー�
 #, c-format
 msgid ""
 "installing package %s needs %<PRIu64>%cB more space on the %s filesystem"
-msgstr "パッケージ %s のインストールには %<PRIu64>%cB 以上の領域が %s ファイルシステム上に必要です"
+msgstr ""
+"パッケージ %s のインストールには %<PRIu64>%cB 以上の領域が %s ファイルシステ"
+"ム上に必要です"
 
 #, c-format
 msgid "installing package %s needs %<PRIu64> more inodes on the %s filesystem"
-msgstr "パッケージ %s のインストールには %<PRIu64> 以上の inode が %s ファイルシステム上に必要です"
+msgstr ""
+"パッケージ %s のインストールには %<PRIu64> 以上の inode が %s ファイルシステ"
+"ム上に必要です"
 
 #, c-format
 msgid "%s is needed by %s%s"
@@ -2712,18 +2780,12 @@ msgstr "%s へ連絡してください\n"
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "%s を読み込み用に開けません: %m。\n"
 
-msgid "failed to register exit handler"
-msgstr "exit ハンドラーの登録に失敗しました"
-
 msgid "No exec() called after fork() in lua scriptlet\n"
 msgstr "lua スクリプト中で fork() の後に exec() が呼ばれていません\n"
 
 #, c-format
 msgid "Unable to restore current directory: %m"
 msgstr "カレントディレクトリーを戻せません: %m"
-
-msgid "<lua> scriptlet support not built in\n"
-msgstr "<lua> スクリプトは組み込みでサポートしていません\n"
 
 #, c-format
 msgid "failed to exec scriptlet interpreter %s: %s\n"
@@ -2765,6 +2827,9 @@ msgstr "削除"
 msgid "rpmdb"
 msgstr ""
 
+msgid "restored"
+msgstr ""
+
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s にある Package データベースを開けません\n"
@@ -2784,6 +2849,14 @@ msgstr "パッケージラベル中に「)」がありません: %s\n"
 #, c-format
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: 公開鍵の読み込みに失敗しました。\n"
+
+#, c-format
+msgid "unknown keyring type: %s, using rpmdb\n"
+msgstr ""
+
+#, c-format
+msgid "failed to import key: %s: %s\n"
+msgstr ""
 
 #, c-format
 msgid "invalid package verify level %s\n"
@@ -2910,6 +2983,15 @@ msgstr "引用符なしの単語はサポートされていません、\"...\" �
 msgid "parse error in expression"
 msgstr "式中で構文解析エラー"
 
+msgid "unsupported function argument type"
+msgstr ""
+
+msgid "syntax error in expression"
+msgstr "式中で文法エラー"
+
+msgid "unsupported funcion"
+msgstr ""
+
 msgid "unmatched ("
 msgstr "( が一致しません"
 
@@ -2919,17 +3001,20 @@ msgstr "- は数のみ使用可能です"
 msgid "unexpected end of expression"
 msgstr "予期しない式の終わりに到達しました"
 
-msgid "syntax error in expression"
-msgstr "式中で文法エラー"
-
 msgid "types must match"
 msgstr "型は一致していなければなりません"
 
 msgid "division by zero"
 msgstr "ゼロ除算"
 
+msgid "* and / not supported for versions"
+msgstr ""
+
 msgid "* and / not supported for strings"
 msgstr "* / は文字列には使えません"
+
+msgid "+ and - not supported for versions"
+msgstr ""
 
 msgid "- not supported for strings"
 msgstr "- は文字列には使えません"
@@ -2938,9 +3023,12 @@ msgstr "- は文字列には使えません"
 msgid "%3d>%*s(empty)\n"
 msgstr "%3d>%*s(空)\n"
 
-#, c-format
-msgid "%3d<%*s(empty)\n"
-msgstr "%3d<%*s(空)\n"
+msgid ""
+"Too many levels of recursion in macro expansion. It is likely caused by "
+"recursive macro declaration.\n"
+msgstr ""
+"マクロ展開の再帰呼び出しが深すぎます。これは再帰的マクロ定義が原因で発生して"
+"いる可能性があります。\n"
 
 #, c-format
 msgid "Failed to open shell expansion pipe for command: %s: %m \n"
@@ -2975,23 +3063,22 @@ msgid "Macro %%%s failed to expand\n"
 msgstr "マクロ %%%s の展開に失敗しました\n"
 
 #, c-format
-msgid "Macro %%%s defined but not used within scope\n"
-msgstr "マクロ %%%s が定義されましたがスコープ内では使用されません\n"
-
-#, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "不明なオプション %c (%s(%s)中に)\n"
+
+#, c-format
+msgid "Macro %%%s defined but not used within scope\n"
+msgstr "マクロ %%%s が定義されましたがスコープ内では使用されません\n"
 
 #, c-format
 msgid "no such macro: '%s'\n"
 msgstr "'%s' というマクロはありません\n"
 
-msgid ""
-"Too many levels of recursion in macro expansion. It is likely caused by "
-"recursive macro declaration.\n"
-msgstr ""
-"マクロ展開の再帰呼び出しが深すぎます。これは再帰的マクロ定義が原因で発生して"
-"いる可能性があります。\n"
+msgid "argument expected"
+msgstr "期待される引数"
+
+msgid "unexpected argument"
+msgstr "予期せぬ引数"
 
 #, c-format
 msgid "Unterminated %c: %s\n"
@@ -3000,12 +3087,6 @@ msgstr "終端されていない %c: %s\n"
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "%% の後に構文解析できないマクロが続いています\n"
-
-msgid "argument expected"
-msgstr "期待される引数"
-
-msgid "unexpected argument"
-msgstr "予期せぬ引数"
 
 #, c-format
 msgid "======================== active %d empty %d\n"
@@ -3054,6 +3135,10 @@ msgid "lua script failed: %s\n"
 msgstr "lua スクリプトに失敗しました: %s\n"
 
 #, c-format
+msgid "result print failed: %s\n"
+msgstr ""
+
+#, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "lua ファイルに無効な文法がありました: %s\n"
 
@@ -3066,6 +3151,10 @@ msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "メモリ割り当て (%u バイト) が NULL を返しました。\n"
 
 #, c-format
+msgid "Unsupported version of signature: V%d\n"
+msgstr ""
+
+#, c-format
 msgid "Unsupported version of key: V%d\n"
 msgstr "サポートされていない鍵のバージョンです: V%d\n"
 
@@ -3076,7 +3165,7 @@ msgstr "V%d %s/%s %s、鍵 ID %s"
 msgid "(none)"
 msgstr "(なし)"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "exiting on signal %d from pid %d\n"
 msgstr "pid %2$d からのシグナル %1$d により終了します\n"
 
@@ -3140,6 +3229,20 @@ msgid "file signing support not built in\n"
 msgstr "ファイル署名機能は組み込まれていません\n"
 
 #, c-format
+msgid "Searching for algorithm %s got %i\n"
+msgstr ""
+
+#, c-format
+msgid "Unsupported fsverity algorithm %s\n"
+msgstr ""
+
+msgid "fsverity signatures requires a key and a cert\n"
+msgstr ""
+
+msgid "fsverity signing support not built in\n"
+msgstr ""
+
+#, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature に失敗しました: %s"
 
@@ -3188,5 +3291,120 @@ msgstr "%s: manifest の読み込みに失敗: %s\n"
 msgid "don't verify header+payload signature"
 msgstr "ヘッダーとペイロード署名を検証しません"
 
-#~ msgid "Failed to rename %s to %s: %m\n"
-#~ msgstr "%s を %s に名前を変更できませんでした: %m\n"
+msgid "getopt string for scripts options"
+msgstr ""
+
+msgid "execute statement"
+msgstr ""
+
+msgid "interactive session"
+msgstr ""
+
+msgid "extract an archive"
+msgstr ""
+
+msgid "only print what would be done"
+msgstr ""
+
+#~ msgid "build through %build (%prep, then compile) from <specfile>"
+#~ msgstr "<specfile> の %build (%prep とコンパイル) まで実行します"
+
+#~ msgid "build through %install (%prep, %build, then install) from <specfile>"
+#~ msgstr "<specfile> の %install (%prep, %build, インストール) まで実行します"
+
+#~ msgid "build through %build (%prep, then compile) from <source package>"
+#~ msgstr "<source package> から %build (%prep, コンパイル) まで実行します"
+
+#~ msgid "build through %build (%prep, then compile) from <tarball>"
+#~ msgstr "<tarball> から %build (%prep とコンパイル) まで実行します"
+
+#~ msgid "build through %install (%prep, %build, then install) from <tarball>"
+#~ msgstr ""
+#~ "<tarball> から %install (%prep, %build, インストール) まで実行します"
+
+#~ msgid "operate on binary rpms that would be built from spec"
+#~ msgstr "spec ファイルによって生成されるであろうバイナリ RPM を操作します"
+
+#~ msgid "operate on source rpm generated by spec"
+#~ msgstr "spec ファイルによって生成されたソース RPM を操作します"
+
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ "RPM build errors:\n"
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ "RPM ビルドのエラー:\n"
+
+#~ msgid "Bad source: %s: %s\n"
+#~ msgstr "不正なソース: %s: %s\n"
+
+#~ msgid "%s: %s: %s\n"
+#~ msgstr "%s: %s: %s\n"
+
+#~ msgid "unrecognized db option: \"%s\" ignored.\n"
+#~ msgstr "不明なデータベースオプション: \"%s\" は無視します。\n"
+
+#~ msgid "%s has invalid numeric value, skipped\n"
+#~ msgstr "%s には無効な数値があります、スキップします\n"
+
+#~ msgid "%s has too large or too small long value, skipped\n"
+#~ msgstr "%s には大き/小さ過ぎるlong値があります、スキップします\n"
+
+#~ msgid "%s has too large or too small integer value, skipped\n"
+#~ msgstr "%s には大き/小さ過ぎる整数値があります、スキップします\n"
+
+#~ msgid "cannot get %s lock on %s/%s\n"
+#~ msgstr "%sロックを獲得できません (%s/%s)\n"
+
+#~ msgid "shared"
+#~ msgstr "共有"
+
+#~ msgid "exclusive"
+#~ msgstr "排他"
+
+#~ msgid "invalid index type %x on %s/%s\n"
+#~ msgstr "無効なインデックス形式 %x が %s/%s にあります\n"
+
+#~ msgid "error(%d) getting \"%s\" records from %s index: %s\n"
+#~ msgstr "エラー(%d) \"%s\" レコードの %s インデックスから取得中: %s\n"
+
+#~ msgid "error(%d) storing record \"%s\" into %s\n"
+#~ msgstr "エラー(%d) - レコード \"%s\" を %s に格納時\n"
+
+#~ msgid "error(%d) removing record \"%s\" from %s\n"
+#~ msgstr "エラー(%d) - レコード \"%s\" を %s から削除時\n"
+
+#~ msgid "error(%d) adding header #%d record\n"
+#~ msgstr "エラー(%d) - ヘッダー #%d レコードの追加時\n"
+
+#~ msgid "error(%d) removing header #%d record\n"
+#~ msgstr "エラー(%d) - ヘッダー #%d レコードの削除時\n"
+
+#~ msgid "error(%d) allocating new package instance\n"
+#~ msgstr "エラー(%d) - 新しいパッケージインスタンスの割り当て時\n"
+
+#~ msgid "%c"
+#~ msgstr "%c"
+
+#~ msgid "%a %b %d %Y"
+#~ msgstr "%a %b %d %Y"
+
+#~ msgid "%s saved as %s\n"
+#~ msgstr "%s は %s として保存されました\n"
+
+#~ msgid "%s created as %s\n"
+#~ msgstr "%s は %s として作成されました\n"
+
+#~ msgid "query/verify package(s) owning file"
+#~ msgstr "<file> を所有しているパッケージの問い合わせ/検証を行います"
+
+#~ msgid "failed to register exit handler"
+#~ msgstr "exit ハンドラーの登録に失敗しました"
+
+#~ msgid "<lua> scriptlet support not built in\n"
+#~ msgstr "<lua> スクリプトは組み込みでサポートしていません\n"
+
+#~ msgid "%3d<%*s(empty)\n"
+#~ msgstr "%3d<%*s(空)\n"

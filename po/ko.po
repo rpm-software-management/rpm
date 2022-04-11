@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-20 13:58+0300\n"
+"POT-Creation-Date: 2022-04-07 13:03+0300\n"
 "PO-Revision-Date: 2021-07-10 19:04+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/rpm/"
@@ -45,6 +45,9 @@ msgstr "--pipe 실패 %m 를 위하여 파이브 생성하기\n"
 msgid "exec failed\n"
 msgstr "실행에 실패했습니다\n"
 
+msgid "create uncompressed tar file"
+msgstr ""
+
 #, c-format
 msgid "argument is not an RPM package\n"
 msgstr "인수 값으로 RPM 꾸러미(package)가 지정되어야 합니다\n"
@@ -59,7 +62,9 @@ msgstr "payload를 다시 열 수 없음: %s\n"
 
 #, c-format
 msgid "files over 4GB not supported by cpio, use rpm2archive instead\n"
-msgstr "cpio에 의해 4GB이상의 파일은 지원하지 않으며, 대신에 rpm2archive를 사용합니다\n"
+msgstr ""
+"cpio에 의해 4GB이상의 파일은 지원하지 않으며, 대신에 rpm2archive를 사용합니"
+"다\n"
 
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
@@ -72,11 +77,19 @@ msgstr "<spec파일>의 %prep (소스를 풀고 패치를 적용하는 과정)�
 msgid "<specfile>"
 msgstr "<spec파일>"
 
-msgid "build through %build (%prep, then compile) from <specfile>"
-msgstr "<spec파일>의 %build (%prep과 컴파일하는 과정)으로 제작합니다"
+#, c-format
+msgid "build through %conf (%prep, then %conf) from <specfile>"
+msgstr ""
 
-msgid "build through %install (%prep, %build, then install) from <specfile>"
-msgstr "<spec파일>의 %install (%prep, %build와 설치하는 과정)으로 제작합니다"
+msgid "build through %build (%prep, %conf, then compile) from <specfile>"
+msgstr ""
+
+msgid "check build dependencies <specfile>"
+msgstr ""
+
+msgid ""
+"build through %install (%prep, %conf, %build, then install) from <specfile>"
+msgstr ""
 
 #, c-format
 msgid "verify %files section from <specfile>"
@@ -93,7 +106,9 @@ msgstr "<spec파일>로 소스 꾸러미(package)만을 제작합니다"
 
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "<지정파일> 에서 소스 꾸러미(package)만 제작합니다 - 동적 제작 요구 사항을 계산합니다"
+msgstr ""
+"<지정파일> 에서 소스 꾸러미(package)만 제작합니다 - 동적 제작 요구 사항을 계"
+"산합니다"
 
 #, c-format
 msgid ""
@@ -103,12 +118,16 @@ msgstr "<spec파일>의 %prep (소스를 풀고 패치를 적용하는 과정)�
 msgid "<source package>"
 msgstr "<소스 꾸러미(package)>"
 
-msgid "build through %build (%prep, then compile) from <source package>"
-msgstr "<spec파일>의 %build (%prep과 컴파일하는 과정)으로 제작합니다"
+msgid "build through %build (%prep, %conf, then compile) from <source package>"
+msgstr ""
+
+msgid "check build dependencies <source package>"
+msgstr ""
 
 msgid ""
-"build through %install (%prep, %build, then install) from <source package>"
-msgstr "<소스 꾸러미(package)>를 %install (%prep, %build와 설치하는 과정)으로 제작합니다"
+"build through %install (%prep, %conf, %build, then install) from <source "
+"package>"
+msgstr ""
 
 #, c-format
 msgid "verify %files section from <source package>"
@@ -126,7 +145,9 @@ msgstr "<소스 꾸러미(package)> 에서 소스 꾸러미(package)만 제작�
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr "< 소스 꾸러미(package)> 에서 소스 꾸러미(package)만 제작합니다 - 동적 제작 요구 사항을 계산합니다"
+msgstr ""
+"< 소스 꾸러미(package)> 에서 소스 꾸러미(package)만 제작합니다 - 동적 제작 요"
+"구 사항을 계산합니다"
 
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
@@ -135,11 +156,15 @@ msgstr "<tar파일>을 %prep (소스를 풀고 패치를 적용하는 과정)으
 msgid "<tarball>"
 msgstr "<tar파일>"
 
-msgid "build through %build (%prep, then compile) from <tarball>"
-msgstr "<tar파일>을 %build (%prep과 컴파일하는 과정)으로 제작합니다"
+msgid "build through %build (%prep, %conf, then compile) from <tarball>"
+msgstr ""
 
-msgid "build through %install (%prep, %build, then install) from <tarball>"
-msgstr "<tar파일>을 %install (%prep, %build와 설치하는 과정)으로 제작합니다"
+msgid "check build dependencies <tarball>"
+msgstr ""
+
+msgid ""
+"build through %install (%prep, %conf, %build, then install) from <tarball>"
+msgstr ""
 
 #, c-format
 msgid "verify %files section from <tarball>"
@@ -156,10 +181,18 @@ msgstr "<tar파일>로 소스 꾸러미(package)만을 제작합니다"
 
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "<tarball> 에서 소스 꾸러미(package)만 제작합니다 - 동적 제작 요구 사항을 계산합니다"
+msgstr ""
+"<tarball> 에서 소스 꾸러미(package)만 제작합니다 - 동적 제작 요구 사항을 계산"
+"합니다"
 
 msgid "build binary package from <source package>"
 msgstr "<소스 꾸러미(package)>로 바이너리 꾸러미(package)를 제작합니다"
+
+msgid ""
+"build through %install (%prep, %build, then install) from <source package>"
+msgstr ""
+"<소스 꾸러미(package)>를 %install (%prep, %build와 설치하는 과정)으로 제작합"
+"니다"
 
 msgid "override build root"
 msgstr "buildroot를 교체(override)합니다"
@@ -168,7 +201,9 @@ msgid "run build in current directory"
 msgstr "현재 디렉토리에서 build를 동작합니다"
 
 msgid "remove build tree when done"
-msgstr "꾸러미(package) 제작 후에 소스 파일을 풀고 작업한 꾸러미(package)를 삭제합니다"
+msgstr ""
+"꾸러미(package) 제작 후에 소스 파일을 풀고 작업한 꾸러미(package)를 삭제합니"
+"다"
 
 msgid "ignore ExcludeArch: directives from spec file"
 msgstr "ExcludeArch를 무시함: spec 파일에서 지정(directive)됩니다"
@@ -213,7 +248,9 @@ msgid "override target platform"
 msgstr "목표대상(target) 플랫폼을 교체(override)합니다"
 
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
-msgstr "다음과 함께 사용하는 제작 선택 [ <spec파일> | <tar파일> | <소스 꾸러미(package)> ]:"
+msgstr ""
+"다음과 함께 사용하는 제작 선택 [ <spec파일> | <tar파일> | <소스 꾸러미"
+"(package)> ]:"
 
 msgid "Common options for all rpm modes and executables:"
 msgstr "모든 rpm 선택과 실행 파일에 대한 공통 선택:"
@@ -233,6 +270,10 @@ msgstr "%s에 있는 하나의 지정 파일보다 더 찾았습니다\n"
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "%s에서 spec 파일을 읽는데 실패했습니다\n"
+
+#, c-format
+msgid "Failed to rename %s to %s: %m\n"
+msgstr "%s의 이름을 %s(으)로 변경하는데 실패함: %m\n"
 
 #, c-format
 msgid "failed to stat %s: %m\n"
@@ -337,20 +378,26 @@ msgstr "--prefix with --relocate 또는 --excludepath 사용 할 수 없습니�
 
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
-msgstr "--relocate 와 --excludepath 옵션은 최신의 꾸러미(package)를 설치 할 때에만 사용 할 수 있습니다"
+msgstr ""
+"--relocate 와 --excludepath 옵션은 최신의 꾸러미(package)를 설치 할 때에만 사"
+"용 할 수 있습니다"
 
 msgid "--prefix may only be used when installing new packages"
-msgstr "--prefix 선택은 최신의 꾸러미(package)를 설치할 때에만 사용 할 수 있습니다"
+msgstr ""
+"--prefix 선택은 최신의 꾸러미(package)를 설치할 때에만 사용 할 수 있습니다"
 
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix 옵션의 인수는 반드시 '/' 로 시작해야 합니다"
 
 msgid ""
 "--hash (-h) may only be specified during package installation and erasure"
-msgstr "--hash (-h)는 꾸러미(package) 설치와 지워 없애는 동안에만 지정되어 질 수 있습니다"
+msgstr ""
+"--hash (-h)는 꾸러미(package) 설치와 지워 없애는 동안에만 지정되어 질 수 있습"
+"니다"
 
 msgid "--percent may only be specified during package installation and erasure"
-msgstr "--percent는 꾸러미(package)설치와 지워 없애는 동안에만 지정 될 수 있습니다"
+msgstr ""
+"--percent는 꾸러미(package)설치와 지워 없애는 동안에만 지정 될 수 있습니다"
 
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs 선택은 꾸러미(package) 설치시에만 지정 할 수 있습니다"
@@ -385,17 +432,21 @@ msgstr "--justdb 선택은 꾸러미(package) 설치와 삭제시에만 지정 �
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
-msgstr "스크립트 해제 선택은 꾸러미(package) 설치와 삭제시에만 지정 할 수 있습니다"
+msgstr ""
+"스크립트 해제 선택은 꾸러미(package) 설치와 삭제시에만 지정 할 수 있습니다"
 
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
-msgstr "트리거 해제 선택은 꾸러미(package) 설치와 삭제시에만 지정 할 수 있습니다"
+msgstr ""
+"트리거 해제 선택은 꾸러미(package) 설치와 삭제시에만 지정 할 수 있습니다"
 
 msgid ""
 "--nodeps may only be specified during package installation, erasure, and "
 "verification"
-msgstr "--nodeps는 꾸러미(package) 설치와, 지워 없앨 때, 그리고 증명하는 동안에만 지정 할 수 있습니다"
+msgstr ""
+"--nodeps는 꾸러미(package) 설치와, 지워 없앨 때, 그리고 증명하는 동안에만 지"
+"정 할 수 있습니다"
 
 msgid "--test may only be specified during package installation and erasure"
 msgstr "--test는 설치와 지워 없앨 때에만 지정 될 수 있습니다"
@@ -421,11 +472,29 @@ msgstr "서명 꾸러미(package) (-- addsign와 동일한)"
 msgid "delete package signatures"
 msgstr "꾸러미(package) 서명을 삭제합니다"
 
+msgid "delete IMA and fsverity file signatures"
+msgstr ""
+
 msgid "create rpm v3 header+payload signatures"
 msgstr "rpm v3 header+payload 사인을 생성합니다"
 
 msgid "sign package(s) files"
 msgstr "서명 꾸러미(package) 파일"
+
+msgid "generate fsverity signatures for package(s) files"
+msgstr ""
+
+msgid "algorithm to use for verity signatures, default sha256"
+msgstr ""
+
+msgid "<algorithm>"
+msgstr ""
+
+msgid "use file signing cert <cert>"
+msgstr ""
+
+msgid "<cert>"
+msgstr ""
 
 msgid "use file signing key <key>"
 msgstr "파일 서명 키 <key>를 사용합니다"
@@ -447,7 +516,9 @@ msgstr "매크로 파일 안에 반드시 \"%%_gpg_name\"을 설정해야 합니
 msgid ""
 "You must set \"%%_file_signing_key\" in your macro file or on the command "
 "line with --fskpath\n"
-msgstr "매크로 파일 또는 --fskpath와 함께 명령줄에 \"%%_file_signing_key\" 설정을 해야 합니다\n"
+msgstr ""
+"매크로 파일 또는 --fskpath와 함께 명령줄에 \"%%_file_signing_key\" 설정을 해"
+"야 합니다\n"
 
 msgid "--fskpath may only be specified when signing files"
 msgstr "--fskpath는 파일에 서명 할 때에만 지정될 수 있습니다"
@@ -458,20 +529,27 @@ msgstr "사양 파일을 표준출력으로 구분 분석"
 msgid "query spec file(s)"
 msgstr "지정한 파일(s) 문의합니다"
 
+msgid "interactive macro shell"
+msgstr ""
+
 msgid "operate on binary rpms generated by spec (default)"
 msgstr "지정(기본)에 의해 생성한 바이너리 rpms를 작동합니다"
 
-msgid "operate on binary rpms that would be built from spec"
-msgstr "특정하게 구성되어진 바이너리 rpms를 작동합니다"
+msgid "operate on binary package header(s) that would be built from spec"
+msgstr ""
 
-msgid "operate on source rpm generated by spec"
-msgstr "지정에 의해 생성한 소스 rpm에서 동작합니다"
+msgid "operate on source package header generated by spec"
+msgstr ""
 
 msgid "use the following query format"
 msgstr "다음의 질의 형식을 사용하십시요"
 
 msgid "Spec options:"
 msgstr "지정 선택:"
+
+#, c-format
+msgid "RPM version %s macro shell\n"
+msgstr ""
 
 msgid "no arguments given for parse"
 msgstr "구문 분석을 위해 제공된 인수가 없습니다"
@@ -506,14 +584,19 @@ msgstr "실패한 build 의존성:\n"
 msgid "setting %s=%s\n"
 msgstr "설정 %s=%s\n"
 
+#, c-format
+msgid "source_date_epoch_from_changelog set but %%changelog is missing\n"
+msgstr ""
+
 msgid ""
 "\n"
+"RPM build warnings:\n"
+msgstr ""
+
+msgid ""
 "\n"
 "RPM build errors:\n"
 msgstr ""
-"\n"
-"\n"
-"RPM 제작 오류:\n"
 
 #, c-format
 msgid "Missing '(' in %s %s\n"
@@ -680,11 +763,14 @@ msgstr "%%장치 글로브(glob)은 허용하지 않습니다: %s\n"
 
 #, c-format
 msgid "Directory not found by glob: %s. Trying without globbing.\n"
-msgstr "글로브(glob): %s 에서 디렉토리를 찾을 수 없습니다. 글로빙(globbing) 없이 시도하기.\n"
+msgstr ""
+"글로브(glob): %s 에서 디렉토리를 찾을 수 없습니다. 글로빙(globbing) 없이 시도"
+"하기.\n"
 
 #, c-format
 msgid "File not found by glob: %s. Trying without globbing.\n"
-msgstr "글로브(glob):%s에서 파일을 찾을 수 없습니다. 글로빙(globbing)없이 시도하기.\n"
+msgstr ""
+"글로브(glob):%s에서 파일을 찾을 수 없습니다. 글로빙(globbing)없이 시도하기.\n"
 
 #, c-format
 msgid "Could not open %s file %s: %m\n"
@@ -1025,10 +1111,6 @@ msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "%%{buildroot}은 \"/\" 될 수 없습니다\n"
 
 #, c-format
-msgid "Bad source: %s: %s\n"
-msgstr "잘못된 소스: %s: %s\n"
-
-#, c-format
 msgid "No patch number %u\n"
 msgstr "패치 번호가 없습니다 %u\n"
 
@@ -1049,8 +1131,8 @@ msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "%d 번째 행: %%setup에 잘못된 %s 옵션: %s\n"
 
 #, c-format
-msgid "%s: %s: %s\n"
-msgstr "%s: %s: %s\n"
+msgid "Patch number not specified: %s\n"
+msgstr ""
 
 #, c-format
 msgid "Invalid patch number %s: %s\n"
@@ -1232,7 +1314,8 @@ msgstr "정책 이름을 결정에 실패했습니다: %s\n"
 msgid ""
 "'%s' type given with other types in %%semodule %s. Compacting types to "
 "'%s'.\n"
-msgstr "'%s' 유형은 %%semodule %s에서 다른 유형을 제공합니다. %s에서 압축 유형.\n"
+msgstr ""
+"'%s' 유형은 %%semodule %s에서 다른 유형을 제공합니다. %s에서 압축 유형.\n"
 
 #, c-format
 msgid "Error parsing %s: %s\n"
@@ -1301,6 +1384,10 @@ msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "파일 \"%s\" 인식이 실패하였습니다: mode %06o %s\n"
 
 #, c-format
+msgid "Recognition of file mtype \"%s\" failed: mode %06o %s\n"
+msgstr ""
+
+#, c-format
 msgid "Finding  %s: %s\n"
 msgstr "찾기 %s: %s\n"
 
@@ -1325,66 +1412,8 @@ msgstr ""
 "%s spec 파일을 질의하는데 실패했습니다, 파일을 처리(parse)할 수 없습니다\n"
 
 #, c-format
-msgid "%s error(%d) from %s: %s\n"
-msgstr "%s 오류(%d) from %s: %s\n"
-
-#, c-format
-msgid "%s error(%d): %s\n"
-msgstr "%s 오류(%d): %s\n"
-
-#, c-format
-msgid "unrecognized db option: \"%s\" ignored.\n"
-msgstr "인증되지 않은 db 옵션: \"%s\"(을)를 무시합니다.\n"
-
-#, c-format
-msgid "%s has invalid numeric value, skipped\n"
-msgstr "%s(은)는 부적합한 수치 값입니다, 생략합니다\n"
-
-#, c-format
-msgid "%s has too large or too small long value, skipped\n"
-msgstr "%s(은)는 너무 크거나 너무 적은 정수(long) 값입니다, 생략합니다\n"
-
-#, c-format
-msgid "%s has too large or too small integer value, skipped\n"
-msgstr "%s(은)는 너무 크거나 너무 적은 정수(int) 값입니다, 생략합니다\n"
-
-#, c-format
-msgid "cannot get %s lock on %s/%s\n"
-msgstr "%s/%s의 잠금된 %s를 얻을 수 없습니다\n"
-
-msgid "shared"
-msgstr "공유됨"
-
-msgid "exclusive"
-msgstr "폐쇄적(exclusive)"
-
-#, c-format
-msgid "invalid index type %x on %s/%s\n"
-msgstr "잘못된 색인 유형 %x on %s/%s\n"
-
-#, c-format
-msgid "error(%d) getting \"%s\" records from %s index: %s\n"
-msgstr "오류(%d) getting \"%s\" records from %s index: %s\n"
-
-#, c-format
-msgid "error(%d) storing record \"%s\" into %s\n"
-msgstr "오류(%d) 저장 기록 \"%s\" into %s\n"
-
-#, c-format
-msgid "error(%d) removing record \"%s\" from %s\n"
-msgstr "오류(%d) 제거 기록 \"%s\" from %s\n"
-
-#, c-format
-msgid "error(%d) adding header #%d record\n"
-msgstr "오류(%d) 헤더 추가하기 #%d 기록\n"
-
-#, c-format
-msgid "error(%d) removing header #%d record\n"
-msgstr "오류(%d) 헤더 제거하기 #%d 기록\n"
-
-#, c-format
-msgid "error(%d) allocating new package instance\n"
-msgstr "새로운 꾸러미(package)를 배치하는 도중 오류(%d)가 발생했습니다\n"
+msgid "invalid %%_db_backend: %s\n"
+msgstr ""
 
 #, c-format
 msgid "Converting database from %s to %s backend\n"
@@ -1447,13 +1476,6 @@ msgstr "(문자열 아님)"
 msgid "(invalid type)"
 msgstr "(부적합한 타입)"
 
-#, c-format
-msgid "%c"
-msgstr "%c"
-
-msgid "%a %b %d %Y"
-msgstr "%a %b %d %Y"
-
 msgid "(not base64)"
 msgstr "(base64가 아닙니다)"
 
@@ -1489,12 +1511,16 @@ msgid "(unknown)"
 msgstr "(알지 못함)"
 
 #, c-format
-msgid "%s saved as %s\n"
-msgstr "%s(이)가 %s(으)로 저장되었습니다\n"
+msgid "failed to open dir %s of %s: %s\n"
+msgstr ""
 
 #, c-format
-msgid "%s created as %s\n"
-msgstr "%s(이)가 %s(으)로 생성되었습니다\n"
+msgid "%s%s saved as %s%s\n"
+msgstr ""
+
+#, c-format
+msgid "%s%s created as %s%s\n"
+msgstr ""
 
 #, c-format
 msgid "%s %s: remove failed: %s\n"
@@ -1537,19 +1563,19 @@ msgid "region %d: tag number mismatch il %d ril %d dl %d rdl %d\n"
 msgstr "지역 %d: 태그 번호 불일치 il %d ril %d dl %d rdl %d\n"
 
 #, c-format
+msgid "hdr tags: BAD, no. of tags(%<PRIu32>) out of range"
+msgstr ""
+
+#, c-format
+msgid "hdr data: BAD, no. of bytes(%<PRIu32>) out of range"
+msgstr ""
+
+#, c-format
 msgid "hdr size(%d): BAD, read returned %d"
 msgstr "hdr 크기(%d): 잘못됨, 읽기 반환됨 %d"
 
 msgid "hdr magic: BAD"
 msgstr "hdr magic: 나쁨"
-
-#, c-format
-msgid "hdr tags: BAD, no. of tags(%d) out of range"
-msgstr "hdr 태그: 잘못됨, 범위 밖의 태그 번호(%d)"
-
-#, c-format
-msgid "hdr data: BAD, no. of bytes(%d) out of range"
-msgstr "hdr 자료: 잘못됨, 범위 밖의 태그번호(%d)"
 
 #, c-format
 msgid "hdr blob(%zd): BAD, read returned %d"
@@ -1561,6 +1587,9 @@ msgstr "sigh pad(%zd): 잘못됨, 읽기 %zd bytes"
 
 msgid "signature "
 msgstr "서명 "
+
+msgid "hdr length: BAD"
+msgstr ""
 
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
@@ -1623,6 +1652,9 @@ msgstr "배열 반복자는 다른 크기의 배열과 함께 사용됩니다"
 #, c-format
 msgid "RPM v3 packages are deprecated: %s\n"
 msgstr "RPM v3 꾸러미는 더 이상 사용되지 않습니다: %s\n"
+
+msgid "Error writing to stdout"
+msgstr ""
 
 #, c-format
 msgid "failed to load macro file %s\n"
@@ -1747,14 +1779,16 @@ msgid "relocations must have a / following the ="
 msgstr "재배치시에는 반드시 '=' 뒤에 '/' 가 와야 합니다"
 
 msgid "install all files, even configurations which might otherwise be skipped"
-msgstr "특정 파일을 생략하기 위한 설정이 적용된 경우에도, 꾸러미(package) 안의 모든 파일을 설치합니다"
+msgstr ""
+"특정 파일을 생략하기 위한 설정이 적용된 경우에도, 꾸러미(package) 안의 모든 "
+"파일을 설치합니다"
 
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
 msgstr ""
-"<꾸러미(package)> 이름과 일치하는 꾸러미는 모두 제거합니다 (<꾸러미(package)>에 여러 개의 꾸러미(package)를 "
-"동시에 지정할 경우에는 오류가 발생합니다)"
+"<꾸러미(package)> 이름과 일치하는 꾸러미는 모두 제거합니다 (<꾸러미(package)>"
+"에 여러 개의 꾸러미(package)를 동시에 지정할 경우에는 오류가 발생합니다)"
 
 msgid "relocate files in non-relocatable package"
 msgstr "재배치 할 수 없는 꾸러미에서 파일을 재배치합니다"
@@ -1793,7 +1827,9 @@ msgid "<packagefile>+"
 msgstr "<꾸러미(package)파일>+"
 
 msgid "print hash marks as package installs (good with -v)"
-msgstr "꾸러미(package) 설치를 해시마크(#)로 표시합니다 (-v 옵션과 함께 사용하는게 좋음)"
+msgstr ""
+"꾸러미(package) 설치를 해시마크(#)로 표시합니다 (-v 옵션과 함께 사용하는게 좋"
+"음)"
 
 msgid "don't verify package architecture"
 msgstr "꾸러미(package)의 구성을 검사하지 않습니다"
@@ -1815,6 +1851,9 @@ msgstr "설치 꾸러미(package)(s)"
 
 msgid "update the database, but do not modify the filesystem"
 msgstr "파일시스템을 변경하지 않고, 데이터베이스를 갱신합니다"
+
+msgid "do not update the database, but modify the filesystem"
+msgstr ""
 
 msgid "do not verify package dependencies"
 msgstr "꾸러미(package) 의존성을 검사하지 않습니다"
@@ -1862,7 +1901,9 @@ msgid "do not execute %%posttrans scriptlet (if any)"
 msgstr "%%posttrans 스크립트릿(scriptlet)를 실행하지 않습니다 (가능한 경우)"
 
 msgid "do not execute any scriptlet(s) triggered by this package"
-msgstr "이 꾸러미(package)에 의해 생성되는triggered 어떠한 scriptlet도 실행하지 않습니다"
+msgstr ""
+"이 꾸러미(package)에 의해 생성되는triggered 어떠한 scriptlet도 실행하지 않습"
+"니다"
 
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
@@ -1883,13 +1924,17 @@ msgstr "어떠한 %%triggerpostun 스크립틀릿(scriptlet)도 실행하지 않
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
-msgstr "이전 버전의 꾸러미로 다운그레이드 합니다 (업그레이드에서 --force 는 자동으로 적용됩니다)"
+msgstr ""
+"이전 버전의 꾸러미로 다운그레이드 합니다 (업그레이드에서 --force 는 자동으로 "
+"적용됩니다)"
 
 msgid "print percentages as package installs"
 msgstr "꾸러미(package) 설치를 퍼센트(%)로 표시합니다"
 
 msgid "relocate the package to <dir>, if relocatable"
-msgstr "재배치 기능이 있는 꾸러미(package)의 경우, 지정한 <디렉토리>로 재배치하여 설치합니다"
+msgstr ""
+"재배치 기능이 있는 꾸러미(package)의 경우, 지정한 <디렉토리>로 재배치하여 설"
+"치합니다"
 
 msgid "<dir>"
 msgstr "<디렉토리>"
@@ -1915,14 +1960,20 @@ msgstr "꾸러미(package)를 최신화합니다"
 msgid "reinstall package(s)"
 msgstr "재설치 꾸러미(package)(s)"
 
+msgid "restore package(s)"
+msgstr ""
+
 msgid "query/verify all packages"
 msgstr "모든 꾸러미(package)에 대해 질의/검증합니다"
 
 msgid "rpm checksig mode"
 msgstr "rpm checksig 방법"
 
-msgid "query/verify package(s) owning file"
-msgstr "파일이 들어있는 꾸러미(package)에 대해 질의/검증 합니다"
+msgid "query/verify package(s) owning installed file"
+msgstr ""
+
+msgid "query/verify package(s) owning path, installed or not"
+msgstr ""
 
 msgid "query/verify package(s) in group"
 msgstr "그룹 안의 꾸러미(package)를 질의/검증 합니다"
@@ -1946,7 +1997,8 @@ msgid "query/verify package(s) from install transaction"
 msgstr "설치 내용을 통해 꾸러미(package)를 질의/검증 합니다"
 
 msgid "query the package(s) triggered by the package"
-msgstr "꾸러미(package)로 인해 생성되는triggered 꾸러미(package)에 대해 질의합니다"
+msgstr ""
+"꾸러미(package)로 인해 생성되는triggered 꾸러미(package)에 대해 질의합니다"
 
 msgid "rpm verify mode"
 msgstr "rpm 검증 모드"
@@ -2310,7 +2362,8 @@ msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, and Obsoletes: 의존성 지원 버전."
 
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
-msgstr "(dirName,baseName,dirindex) 튜플로서 저장된 파일 이름(s),경로가 아닙니다."
+msgstr ""
+"(dirName,baseName,dirindex) 튜플로서 저장된 파일 이름(s),경로가 아닙니다."
 
 msgid "package payload can be compressed using bzip2."
 msgstr "꾸러미 유효량은 bzip2를 사용하여 압축 될 수 있습니다."
@@ -2337,7 +2390,8 @@ msgid "a hardlink file set may be installed without being complete."
 msgstr "하드링크 파일 구성은 완료 하지 않고 설치 될 수 있습니다."
 
 msgid "package scriptlets may access the rpm database while installing."
-msgstr "꾸러미 스크립트릿은 설치 할 때에 rpm 데이타베이스를 접근 할 수 있습니다."
+msgstr ""
+"꾸러미 스크립트릿은 설치 할 때에 rpm 데이타베이스를 접근 할 수 있습니다."
 
 msgid "internal support for lua scripts."
 msgstr "lua 스크립트를 위한 내부지원."
@@ -2423,6 +2477,14 @@ msgstr "태그%s: %u 를 위한 잘못된 항목 번호를 찾았으며 %u를 �
 msgid "Malformed data for tag %s: %u bytes found but %lu expected.\n"
 msgstr "태그를 위한 잘못된 자료 %s: %u bytes 찾았으나 %lu 가 예상됩니다.\n"
 
+#, c-format
+msgid "%s: base64 decode failed, len %li\n"
+msgstr ""
+
+#, c-format
+msgid "%s: base64 decode success, len %li\n"
+msgstr ""
+
 msgid "Bad magic"
 msgstr "잘못된 magic 입니다"
 
@@ -2449,6 +2511,9 @@ msgstr "내부 오류"
 
 msgid "Archive file not in header"
 msgstr "헤더에 아카이브 파일이 없습니다"
+
+msgid "Invalid symlink"
+msgstr ""
 
 msgid "File from package already exists as a directory in system"
 msgstr "꾸러미에서 파일은 이미 시스템에서 디렉토리로 존재합니다"
@@ -2701,18 +2766,12 @@ msgstr "문의해주세요 %s\n"
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "읽기를 위해 %s를 열 수 없습니다: %m.\n"
 
-msgid "failed to register exit handler"
-msgstr "종료 처리기 등록에 실패하였습니다"
-
 msgid "No exec() called after fork() in lua scriptlet\n"
 msgstr "lua 스크리플릿에서 fork() 후에 호출된 exec()가 없습니다\n"
 
 #, c-format
 msgid "Unable to restore current directory: %m"
 msgstr "현재 디렉토리를 복구 할 수 없습니다: %m"
-
-msgid "<lua> scriptlet support not built in\n"
-msgstr "<lua> 스크립트릿 지원은 구성되지 않습니다\n"
 
 #, c-format
 msgid "failed to exec scriptlet interpreter %s: %s\n"
@@ -2754,6 +2813,9 @@ msgstr "제거"
 msgid "rpmdb"
 msgstr "rpmdb"
 
+msgid "restored"
+msgstr ""
+
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s 안의 꾸러미 데이타베이스를 열 수 없습니다\n"
@@ -2773,6 +2835,14 @@ msgstr "누락 ')' 꾸러미(package) 이름표 안에서: %s\n"
 #, c-format
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: 공개 키 읽기에 실패.\n"
+
+#, c-format
+msgid "unknown keyring type: %s, using rpmdb\n"
+msgstr ""
+
+#, c-format
+msgid "failed to import key: %s: %s\n"
+msgstr ""
 
 #, c-format
 msgid "invalid package verify level %s\n"
@@ -2899,6 +2969,15 @@ msgstr "빈 말은 더 이상 지원되지 않습니다, \"...\"를 사용해주
 msgid "parse error in expression"
 msgstr "표현식에서 오류가 발생했습니다"
 
+msgid "unsupported function argument type"
+msgstr ""
+
+msgid "syntax error in expression"
+msgstr "표현식에서 구문오류(syntax error) 발생"
+
+msgid "unsupported funcion"
+msgstr ""
+
 msgid "unmatched ("
 msgstr "( 가 일치하지 않음"
 
@@ -2908,17 +2987,20 @@ msgstr "- 숫자만 사용"
 msgid "unexpected end of expression"
 msgstr "예상치 못한 표현의 끝"
 
-msgid "syntax error in expression"
-msgstr "표현식에서 구문오류(syntax error) 발생"
-
 msgid "types must match"
 msgstr "유형은 반드시 일치해야 합니다"
 
 msgid "division by zero"
 msgstr "0으로 나누기"
 
+msgid "* and / not supported for versions"
+msgstr ""
+
 msgid "* and / not supported for strings"
 msgstr "문자열은 * 과 / 를 지원하지 않습니다"
+
+msgid "+ and - not supported for versions"
+msgstr ""
 
 msgid "- not supported for strings"
 msgstr "- 는 문자열에서 지원하지 않습니다"
@@ -2927,9 +3009,12 @@ msgstr "- 는 문자열에서 지원하지 않습니다"
 msgid "%3d>%*s(empty)\n"
 msgstr "%3d<%*s(비어있음)\n"
 
-#, c-format
-msgid "%3d<%*s(empty)\n"
-msgstr "%3d<%*s(비어있음)\n"
+msgid ""
+"Too many levels of recursion in macro expansion. It is likely caused by "
+"recursive macro declaration.\n"
+msgstr ""
+"매크로 확장에 너무 많은 재귀 수준. 이는 재귀적인 매크로 선언에 의해 발생 되"
+"어 질 수 있습니다.\n"
 
 #, c-format
 msgid "Failed to open shell expansion pipe for command: %s: %m \n"
@@ -2964,21 +3049,22 @@ msgid "Macro %%%s failed to expand\n"
 msgstr "매크로 %%%s(을)를 확장(expand)하는데 실패했습니다\n"
 
 #, c-format
-msgid "Macro %%%s defined but not used within scope\n"
-msgstr "매크로 %%%s는 정의되었으나 범위 내에서는 사용되지 않습니다\n"
-
-#, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "%c in %s(%s) 알지 못하는 선택\n"
+
+#, c-format
+msgid "Macro %%%s defined but not used within scope\n"
+msgstr "매크로 %%%s는 정의되었으나 범위 내에서는 사용되지 않습니다\n"
 
 #, c-format
 msgid "no such macro: '%s'\n"
 msgstr "그런 매크로가 없습니다: '%s'\n"
 
-msgid ""
-"Too many levels of recursion in macro expansion. It is likely caused by "
-"recursive macro declaration.\n"
-msgstr "매크로 확장에 너무 많은 재귀 수준. 이는 재귀적인 매크로 선언에 의해 발생 되어 질 수 있습니다.\n"
+msgid "argument expected"
+msgstr "예상되는 인수"
+
+msgid "unexpected argument"
+msgstr "예상치 못한 인수"
 
 #, c-format
 msgid "Unterminated %c: %s\n"
@@ -2987,12 +3073,6 @@ msgstr "%c(이)가 종료되지 않음: %s\n"
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "'%%' 다음에 처리할 수 없는(unparseable) 매크로가 있습니다\n"
-
-msgid "argument expected"
-msgstr "예상되는 인수"
-
-msgid "unexpected argument"
-msgstr "예상치 못한 인수"
 
 #, c-format
 msgid "======================== active %d empty %d\n"
@@ -3041,6 +3121,10 @@ msgid "lua script failed: %s\n"
 msgstr "lua 스크립트가 실패했습니다: %s\n"
 
 #, c-format
+msgid "result print failed: %s\n"
+msgstr ""
+
+#, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "lua 파일에서 잘못된 구문: %s\n"
 
@@ -3051,6 +3135,10 @@ msgstr "lua hook 실패하였습니다: %s\n"
 #, c-format
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "메모리 할당 값 (%u 바이트)이 NULL을 반환하였습니다.\n"
+
+#, c-format
+msgid "Unsupported version of signature: V%d\n"
+msgstr ""
 
 #, c-format
 msgid "Unsupported version of key: V%d\n"
@@ -3127,6 +3215,20 @@ msgid "file signing support not built in\n"
 msgstr "파일 서명 지원은 구성되지 않습니다\n"
 
 #, c-format
+msgid "Searching for algorithm %s got %i\n"
+msgstr ""
+
+#, c-format
+msgid "Unsupported fsverity algorithm %s\n"
+msgstr ""
+
+msgid "fsverity signatures requires a key and a cert\n"
+msgstr ""
+
+msgid "fsverity signing support not built in\n"
+msgstr ""
+
+#, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpm읽기서명에 실패하였습니다: %s"
 
@@ -3175,5 +3277,132 @@ msgstr "%s: 읽는데 실패했습니다: %s\n"
 msgid "don't verify header+payload signature"
 msgstr "헤더+유효적재량 서명을 확인하지 않습니다"
 
-#~ msgid "Failed to rename %s to %s: %m\n"
-#~ msgstr "%s의 이름을 %s(으)로 변경하는데 실패함: %m\n"
+msgid "getopt string for scripts options"
+msgstr ""
+
+msgid "execute statement"
+msgstr ""
+
+msgid "interactive session"
+msgstr ""
+
+msgid "extract an archive"
+msgstr ""
+
+msgid "only print what would be done"
+msgstr ""
+
+#~ msgid "build through %build (%prep, then compile) from <specfile>"
+#~ msgstr "<spec파일>의 %build (%prep과 컴파일하는 과정)으로 제작합니다"
+
+#~ msgid "build through %install (%prep, %build, then install) from <specfile>"
+#~ msgstr ""
+#~ "<spec파일>의 %install (%prep, %build와 설치하는 과정)으로 제작합니다"
+
+#~ msgid "build through %build (%prep, then compile) from <source package>"
+#~ msgstr "<spec파일>의 %build (%prep과 컴파일하는 과정)으로 제작합니다"
+
+#~ msgid "build through %build (%prep, then compile) from <tarball>"
+#~ msgstr "<tar파일>을 %build (%prep과 컴파일하는 과정)으로 제작합니다"
+
+#~ msgid "build through %install (%prep, %build, then install) from <tarball>"
+#~ msgstr "<tar파일>을 %install (%prep, %build와 설치하는 과정)으로 제작합니다"
+
+#~ msgid "operate on binary rpms that would be built from spec"
+#~ msgstr "특정하게 구성되어진 바이너리 rpms를 작동합니다"
+
+#~ msgid "operate on source rpm generated by spec"
+#~ msgstr "지정에 의해 생성한 소스 rpm에서 동작합니다"
+
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ "RPM build errors:\n"
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ "RPM 제작 오류:\n"
+
+#~ msgid "Bad source: %s: %s\n"
+#~ msgstr "잘못된 소스: %s: %s\n"
+
+#~ msgid "%s: %s: %s\n"
+#~ msgstr "%s: %s: %s\n"
+
+#~ msgid "%s error(%d) from %s: %s\n"
+#~ msgstr "%s 오류(%d) from %s: %s\n"
+
+#~ msgid "%s error(%d): %s\n"
+#~ msgstr "%s 오류(%d): %s\n"
+
+#~ msgid "unrecognized db option: \"%s\" ignored.\n"
+#~ msgstr "인증되지 않은 db 옵션: \"%s\"(을)를 무시합니다.\n"
+
+#~ msgid "%s has invalid numeric value, skipped\n"
+#~ msgstr "%s(은)는 부적합한 수치 값입니다, 생략합니다\n"
+
+#~ msgid "%s has too large or too small long value, skipped\n"
+#~ msgstr "%s(은)는 너무 크거나 너무 적은 정수(long) 값입니다, 생략합니다\n"
+
+#~ msgid "%s has too large or too small integer value, skipped\n"
+#~ msgstr "%s(은)는 너무 크거나 너무 적은 정수(int) 값입니다, 생략합니다\n"
+
+#~ msgid "cannot get %s lock on %s/%s\n"
+#~ msgstr "%s/%s의 잠금된 %s를 얻을 수 없습니다\n"
+
+#~ msgid "shared"
+#~ msgstr "공유됨"
+
+#~ msgid "exclusive"
+#~ msgstr "폐쇄적(exclusive)"
+
+#~ msgid "invalid index type %x on %s/%s\n"
+#~ msgstr "잘못된 색인 유형 %x on %s/%s\n"
+
+#~ msgid "error(%d) getting \"%s\" records from %s index: %s\n"
+#~ msgstr "오류(%d) getting \"%s\" records from %s index: %s\n"
+
+#~ msgid "error(%d) storing record \"%s\" into %s\n"
+#~ msgstr "오류(%d) 저장 기록 \"%s\" into %s\n"
+
+#~ msgid "error(%d) removing record \"%s\" from %s\n"
+#~ msgstr "오류(%d) 제거 기록 \"%s\" from %s\n"
+
+#~ msgid "error(%d) adding header #%d record\n"
+#~ msgstr "오류(%d) 헤더 추가하기 #%d 기록\n"
+
+#~ msgid "error(%d) removing header #%d record\n"
+#~ msgstr "오류(%d) 헤더 제거하기 #%d 기록\n"
+
+#~ msgid "error(%d) allocating new package instance\n"
+#~ msgstr "새로운 꾸러미(package)를 배치하는 도중 오류(%d)가 발생했습니다\n"
+
+#~ msgid "%c"
+#~ msgstr "%c"
+
+#~ msgid "%a %b %d %Y"
+#~ msgstr "%a %b %d %Y"
+
+#~ msgid "%s saved as %s\n"
+#~ msgstr "%s(이)가 %s(으)로 저장되었습니다\n"
+
+#~ msgid "%s created as %s\n"
+#~ msgstr "%s(이)가 %s(으)로 생성되었습니다\n"
+
+#~ msgid "hdr tags: BAD, no. of tags(%d) out of range"
+#~ msgstr "hdr 태그: 잘못됨, 범위 밖의 태그 번호(%d)"
+
+#~ msgid "hdr data: BAD, no. of bytes(%d) out of range"
+#~ msgstr "hdr 자료: 잘못됨, 범위 밖의 태그번호(%d)"
+
+#~ msgid "query/verify package(s) owning file"
+#~ msgstr "파일이 들어있는 꾸러미(package)에 대해 질의/검증 합니다"
+
+#~ msgid "failed to register exit handler"
+#~ msgstr "종료 처리기 등록에 실패하였습니다"
+
+#~ msgid "<lua> scriptlet support not built in\n"
+#~ msgstr "<lua> 스크립트릿 지원은 구성되지 않습니다\n"
+
+#~ msgid "%3d<%*s(empty)\n"
+#~ msgstr "%3d<%*s(비어있음)\n"
