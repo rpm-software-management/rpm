@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-20 13:58+0300\n"
+"POT-Creation-Date: 2022-04-07 13:03+0300\n"
 "PO-Revision-Date: 2021-08-25 11:04+0000\n"
 "Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/rpm/"
@@ -46,6 +46,9 @@ msgstr "putken luominen --pipe:lle epäonnistui: %m\n"
 msgid "exec failed\n"
 msgstr "suoritus epäonnistui\n"
 
+msgid "create uncompressed tar file"
+msgstr ""
+
 #, c-format
 msgid "argument is not an RPM package\n"
 msgstr "parametri ei ole RPM paketti\n"
@@ -73,12 +76,19 @@ msgstr "käännä %prep-osioon asti spec-tiedostosta"
 msgid "<specfile>"
 msgstr "<spec-tiedosto>"
 
-msgid "build through %build (%prep, then compile) from <specfile>"
-msgstr "käännä %build-osioon asti (%prep ja %build) spec-tiedostosta"
-
-msgid "build through %install (%prep, %build, then install) from <specfile>"
+#, c-format
+msgid "build through %conf (%prep, then %conf) from <specfile>"
 msgstr ""
-"käännä %install-osioon asti (%prep, %build ja %install) spec-tiedostosta"
+
+msgid "build through %build (%prep, %conf, then compile) from <specfile>"
+msgstr ""
+
+msgid "check build dependencies <specfile>"
+msgstr ""
+
+msgid ""
+"build through %install (%prep, %conf, %build, then install) from <specfile>"
+msgstr ""
 
 #, c-format
 msgid "verify %files section from <specfile>"
@@ -108,12 +118,16 @@ msgstr ""
 msgid "<source package>"
 msgstr "<lähdepaketti>"
 
-msgid "build through %build (%prep, then compile) from <source package>"
-msgstr "rakenna %build:n kautta (%prep, sitten koota) <lähdepaketti>:sta"
+msgid "build through %build (%prep, %conf, then compile) from <source package>"
+msgstr ""
+
+msgid "check build dependencies <source package>"
+msgstr ""
 
 msgid ""
-"build through %install (%prep, %build, then install) from <source package>"
-msgstr "käännä %install-osioon asti (%prep, %build ja %install) lähdepaketista"
+"build through %install (%prep, %conf, %build, then install) from <source "
+"package>"
+msgstr ""
 
 #, c-format
 msgid "verify %files section from <source package>"
@@ -141,12 +155,15 @@ msgstr "käännä %prep-osioon asti tar-tiedostosta"
 msgid "<tarball>"
 msgstr "<tar-tiedosto>"
 
-msgid "build through %build (%prep, then compile) from <tarball>"
-msgstr "käännä %build-osioon asti (%prep ja %build) tar-tiedostosta"
-
-msgid "build through %install (%prep, %build, then install) from <tarball>"
+msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr ""
-"käännä %install-osioon asti (%prep, %build ja %install) tar-tiedostosta"
+
+msgid "check build dependencies <tarball>"
+msgstr ""
+
+msgid ""
+"build through %install (%prep, %conf, %build, then install) from <tarball>"
+msgstr ""
 
 #, c-format
 msgid "verify %files section from <tarball>"
@@ -168,6 +185,10 @@ msgstr ""
 
 msgid "build binary package from <source package>"
 msgstr "käännä binääripaketti lähdepaketista"
+
+msgid ""
+"build through %install (%prep, %build, then install) from <source package>"
+msgstr "käännä %install-osioon asti (%prep, %build ja %install) lähdepaketista"
 
 msgid "override build root"
 msgstr "ohita käännösjuuri"
@@ -243,6 +264,10 @@ msgstr "Löytyi useampi kuin yksi spec-tiedosto kohteesta %s\n"
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Spec-tiedoston avaaminen %s:sta epäonnistui\n"
+
+#, c-format
+msgid "Failed to rename %s to %s: %m\n"
+msgstr "Uudelleen nimeäminen %s -> %s epäonnistui: %m\n"
 
 #, c-format
 msgid "failed to stat %s: %m\n"
@@ -359,10 +384,12 @@ msgstr "--prefix parametrien pitää alkaa /-merkillä"
 
 msgid ""
 "--hash (-h) may only be specified during package installation and erasure"
-msgstr "'--hash|-h' voidaan määrittää vain paketin asennuksen ja poiston aikana"
+msgstr ""
+"'--hash|-h' voidaan määrittää vain paketin asennuksen ja poiston aikana"
 
 msgid "--percent may only be specified during package installation and erasure"
-msgstr "'--percent' voidaan määrittää vain paketin asennuksen ja poiston aikana"
+msgstr ""
+"'--percent' voidaan määrittää vain paketin asennuksen ja poiston aikana"
 
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs: voidaan käyttää vain paketteja asennettaessa"
@@ -440,11 +467,29 @@ msgstr "allekirjoita paketti (hylkää nykyinen allekirjoitus)"
 msgid "delete package signatures"
 msgstr "poista paketin allekirjoitus"
 
+msgid "delete IMA and fsverity file signatures"
+msgstr ""
+
 msgid "create rpm v3 header+payload signatures"
 msgstr "luo rpm v3 -otsikko+hyötykuorman allekirjoitukset"
 
 msgid "sign package(s) files"
 msgstr "allekirjoita pakettitiedostot"
+
+msgid "generate fsverity signatures for package(s) files"
+msgstr ""
+
+msgid "algorithm to use for verity signatures, default sha256"
+msgstr ""
+
+msgid "<algorithm>"
+msgstr ""
+
+msgid "use file signing cert <cert>"
+msgstr ""
+
+msgid "<cert>"
+msgstr ""
 
 msgid "use file signing key <key>"
 msgstr "käytä tiedoston allekirjoitusavainta <key>"
@@ -479,20 +524,27 @@ msgstr "jäsennä spec-tiedosto(t) vakiotulosteeseen"
 msgid "query spec file(s)"
 msgstr "kysy spec-tiedosto(i)sta"
 
+msgid "interactive macro shell"
+msgstr ""
+
 msgid "operate on binary rpms generated by spec (default)"
 msgstr "operoi spesifikaatioiden tuottamilla binäärisillä rpm:llä (oletus)"
 
-msgid "operate on binary rpms that would be built from spec"
-msgstr "operoi binäärisillä rpm:llä, jotka rakennettaisiin spec-tiedostosta"
+msgid "operate on binary package header(s) that would be built from spec"
+msgstr ""
 
-msgid "operate on source rpm generated by spec"
-msgstr "operoi spec-tiedoston tuottamilla lähde rpm:llä"
+msgid "operate on source package header generated by spec"
+msgstr ""
 
 msgid "use the following query format"
 msgstr "käytä seuraava kyselyformaattia"
 
 msgid "Spec options:"
 msgstr "Spec vaihtoehtoja:"
+
+#, c-format
+msgid "RPM version %s macro shell\n"
+msgstr ""
 
 msgid "no arguments given for parse"
 msgstr "jäsentämiseen ei annettu argumentteja"
@@ -527,14 +579,19 @@ msgstr "Puuttuvia käännösriippuvuuksia:\n"
 msgid "setting %s=%s\n"
 msgstr "asettaa %s=%s\n"
 
+#, c-format
+msgid "source_date_epoch_from_changelog set but %%changelog is missing\n"
+msgstr ""
+
 msgid ""
 "\n"
+"RPM build warnings:\n"
+msgstr ""
+
+msgid ""
 "\n"
 "RPM build errors:\n"
 msgstr ""
-"\n"
-"\n"
-"RPM-käännösvirheitä:\n"
 
 #, c-format
 msgid "Missing '(' in %s %s\n"
@@ -1046,10 +1103,6 @@ msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "%%{buildroot} ei voi olla \"/\"\n"
 
 #, c-format
-msgid "Bad source: %s: %s\n"
-msgstr "Virheellinen lähde: %s: %s\n"
-
-#, c-format
 msgid "No patch number %u\n"
 msgstr "Ei patchia numero %u\n"
 
@@ -1070,8 +1123,8 @@ msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "rivi %d: virheellinen %%setup valitsin %s: %s\n"
 
 #, c-format
-msgid "%s: %s: %s\n"
-msgstr "%s: %s: %s\n"
+msgid "Patch number not specified: %s\n"
+msgstr ""
 
 #, c-format
 msgid "Invalid patch number %s: %s\n"
@@ -1327,6 +1380,10 @@ msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Tiedoston \"%s\" tunnistaminen epäonnistui: moodi %06o %s\n"
 
 #, c-format
+msgid "Recognition of file mtype \"%s\" failed: mode %06o %s\n"
+msgstr ""
+
+#, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Etsitään %s:ää: %s\n"
 
@@ -1350,66 +1407,8 @@ msgid "query of specfile %s failed, can't parse\n"
 msgstr "määrittelytiedoston %s kysely epäonnistui\n"
 
 #, c-format
-msgid "%s error(%d) from %s: %s\n"
-msgstr "%s virhe(%d) lähteestä %s: %s\n"
-
-#, c-format
-msgid "%s error(%d): %s\n"
-msgstr "%s virhe(%d): %s\n"
-
-#, c-format
-msgid "unrecognized db option: \"%s\" ignored.\n"
-msgstr "tunnistamaton db -vaihtoehto: \"%s\" ohitettu.\n"
-
-#, c-format
-msgid "%s has invalid numeric value, skipped\n"
-msgstr "%s:lla on virheellinen numeerinen arvo, ohitettu\n"
-
-#, c-format
-msgid "%s has too large or too small long value, skipped\n"
-msgstr "%s:lla on liian suuri tai liian pieni pitkä arvo, ohitettu\n"
-
-#, c-format
-msgid "%s has too large or too small integer value, skipped\n"
-msgstr "%s:lla on liian suuri tai liian pieni integer arvo, ohitettu\n"
-
-#, c-format
-msgid "cannot get %s lock on %s/%s\n"
-msgstr "en saa %s lukitusta tietokantaan %s/%s\n"
-
-msgid "shared"
-msgstr "jaettua"
-
-msgid "exclusive"
-msgstr "poissulkevaa"
-
-#, c-format
-msgid "invalid index type %x on %s/%s\n"
-msgstr "virheellinen hakemistotyyppi %x kohteessa %s/%s\n"
-
-#, c-format
-msgid "error(%d) getting \"%s\" records from %s index: %s\n"
-msgstr "virhe (%d) \"%s\"-tietueiden hakeminen %s-hakemistosta: %s\n"
-
-#, c-format
-msgid "error(%d) storing record \"%s\" into %s\n"
-msgstr "virhe(%d) tallennettaessa tietuetta %s %s:ään\n"
-
-#, c-format
-msgid "error(%d) removing record \"%s\" from %s\n"
-msgstr "virhe(%d) poistettaessa tietuetta %s %s:stä\n"
-
-#, c-format
-msgid "error(%d) adding header #%d record\n"
-msgstr "virhe(%d) lisättäessä otsikkon #%d tietuetta\n"
-
-#, c-format
-msgid "error(%d) removing header #%d record\n"
-msgstr "virhe(%d) poistettaessa otsikon #%d tietuetta\n"
-
-#, c-format
-msgid "error(%d) allocating new package instance\n"
-msgstr "virhe(%d) varattaessa uutta paketti-instanssia\n"
+msgid "invalid %%_db_backend: %s\n"
+msgstr ""
 
 #, c-format
 msgid "Converting database from %s to %s backend\n"
@@ -1476,13 +1475,6 @@ msgstr "(ei ole merkkijono)"
 msgid "(invalid type)"
 msgstr "(virheellinen tyyppi)"
 
-#, c-format
-msgid "%c"
-msgstr "%c"
-
-msgid "%a %b %d %Y"
-msgstr "%a %b %d %Y"
-
 msgid "(not base64)"
 msgstr "(ei ole base64)"
 
@@ -1518,12 +1510,16 @@ msgid "(unknown)"
 msgstr "(tuntematon)"
 
 #, c-format
-msgid "%s saved as %s\n"
-msgstr "%s talletettiin %s:nä\n"
+msgid "failed to open dir %s of %s: %s\n"
+msgstr ""
 
 #, c-format
-msgid "%s created as %s\n"
-msgstr "%s luotu %s:na\n"
+msgid "%s%s saved as %s%s\n"
+msgstr ""
+
+#, c-format
+msgid "%s%s created as %s%s\n"
+msgstr ""
 
 #, c-format
 msgid "%s %s: remove failed: %s\n"
@@ -1566,19 +1562,19 @@ msgid "region %d: tag number mismatch il %d ril %d dl %d rdl %d\n"
 msgstr "alue %d: taginumeron epäsuhta il %d ril %d dl %d rdl %d\n"
 
 #, c-format
+msgid "hdr tags: BAD, no. of tags(%<PRIu32>) out of range"
+msgstr ""
+
+#, c-format
+msgid "hdr data: BAD, no. of bytes(%<PRIu32>) out of range"
+msgstr ""
+
+#, c-format
 msgid "hdr size(%d): BAD, read returned %d"
 msgstr "hdr size(%d): BAD, luku palautti %d"
 
 msgid "hdr magic: BAD"
 msgstr "hdr maagisuus: VIRHE"
-
-#, c-format
-msgid "hdr tags: BAD, no. of tags(%d) out of range"
-msgstr "hdr-tunnisteet: VIRHE, tunnistemäärä (%d) alueen ulkopuolella"
-
-#, c-format
-msgid "hdr data: BAD, no. of bytes(%d) out of range"
-msgstr "hdr-tiedot: VIRHE, tavumäärä (%d) alueen ulkopuolella"
 
 #, c-format
 msgid "hdr blob(%zd): BAD, read returned %d"
@@ -1590,6 +1586,9 @@ msgstr "allekirjoitusotsikon tayttö(%zd): VIRHE, luettu %zd tavua"
 
 msgid "signature "
 msgstr "allekirjoitus "
+
+msgid "hdr length: BAD"
+msgstr ""
 
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
@@ -1653,6 +1652,9 @@ msgstr "matriisi iteraattori, jota käytetään erikokoisilla matriiseilla"
 msgid "RPM v3 packages are deprecated: %s\n"
 msgstr "RPM v3 -paketit ovat vanhentuneet: %s\n"
 
+msgid "Error writing to stdout"
+msgstr ""
+
 #, c-format
 msgid "failed to load macro file %s\n"
 msgstr "makrotiedoston %s lataaminen epäonnistui\n"
@@ -1665,8 +1667,8 @@ msgstr "--dbpath parametrien pitää alkaa /-merkillä\n"
 msgid ""
 "%s: error: more than one --pipe specified (incompatible popt aliases?)\n"
 msgstr ""
-"%s: virhe: useampi kuin yksi --pipe määritetty (yhteensopimattomat popt "
-"-aliakset?)\n"
+"%s: virhe: useampi kuin yksi --pipe määritetty (yhteensopimattomat popt -"
+"aliakset?)\n"
 
 msgid "predefine MACRO with value EXPR"
 msgstr "ennalta määrittele MACRO arvolla EXPR"
@@ -1848,6 +1850,9 @@ msgstr "asenna paketteja"
 msgid "update the database, but do not modify the filesystem"
 msgstr "päivitä tietokanta, mutta älä muuta tiedostojärjestelmää"
 
+msgid "do not update the database, but modify the filesystem"
+msgstr ""
+
 msgid "do not verify package dependencies"
 msgstr "älä tarkista paketin riippuvuuksia"
 
@@ -1949,14 +1954,20 @@ msgstr "päivitä paketteja"
 msgid "reinstall package(s)"
 msgstr "asenna paketteja uudelleen"
 
+msgid "restore package(s)"
+msgstr ""
+
 msgid "query/verify all packages"
 msgstr "kysele/tarkista kaikki paketit"
 
 msgid "rpm checksig mode"
 msgstr "rpm allekirjoituksen tarkistustila"
 
-msgid "query/verify package(s) owning file"
-msgstr "kysele/tarkista pakettia, jonka omistuksessa <tiedosto> on"
+msgid "query/verify package(s) owning installed file"
+msgstr ""
+
+msgid "query/verify package(s) owning path, installed or not"
+msgstr ""
 
 msgid "query/verify package(s) in group"
 msgstr "kysele/tarkista paketteja ryhmässä"
@@ -2373,7 +2384,8 @@ msgid "a hardlink file set may be installed without being complete."
 msgstr "hardlink -tiedostojoukko voidaan asentaa olematta valmis."
 
 msgid "package scriptlets may access the rpm database while installing."
-msgstr "paketin komentosarjat voivat käyttää rpm-tietokantaa asennuksen aikana."
+msgstr ""
+"paketin komentosarjat voivat käyttää rpm-tietokantaa asennuksen aikana."
 
 msgid "internal support for lua scripts."
 msgstr "sisäinen tuki lua-komentosarjoille."
@@ -2462,6 +2474,14 @@ msgstr ""
 "Väärinmuotoiltua tietoa tunnisteelle %s: %u tavua löytyi, mutta %lu "
 "odotettiin.\n"
 
+#, c-format
+msgid "%s: base64 decode failed, len %li\n"
+msgstr ""
+
+#, c-format
+msgid "%s: base64 decode success, len %li\n"
+msgstr ""
+
 msgid "Bad magic"
 msgstr "Virheellinen maaginen numero"
 
@@ -2488,6 +2508,9 @@ msgstr "Sisäinen virhe"
 
 msgid "Archive file not in header"
 msgstr "Arkistotiedosto ei ole otsikossa"
+
+msgid "Invalid symlink"
+msgstr ""
 
 msgid "File from package already exists as a directory in system"
 msgstr "Paketista tuleva tiedosto on jo järjestelmässä hakemistona"
@@ -2650,14 +2673,14 @@ msgstr "paketti %s (joka on uudempi kuin %s) on jo asennettuna"
 msgid ""
 "installing package %s needs %<PRIu64>%cB more space on the %s filesystem"
 msgstr ""
-"paketin %s asentaminen tarvitsee %<PRIu64>%cB enemmän tilaa "
-"%s-tiedostojärjestelmässä"
+"paketin %s asentaminen tarvitsee %<PRIu64>%cB enemmän tilaa %s-"
+"tiedostojärjestelmässä"
 
 #, c-format
 msgid "installing package %s needs %<PRIu64> more inodes on the %s filesystem"
 msgstr ""
-"paketin %s asentaminen tarvitsee %<PRIu64> lisää inodeja "
-"%s-tiedostojärjestelmässä"
+"paketin %s asentaminen tarvitsee %<PRIu64> lisää inodeja %s-"
+"tiedostojärjestelmässä"
 
 #, c-format
 msgid "%s is needed by %s%s"
@@ -2745,18 +2768,12 @@ msgstr "Ota yhteyttä %s\n"
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "En voi avata %s luettavaksi: %m.\n"
 
-msgid "failed to register exit handler"
-msgstr "poistumiskäsittelijän rekisteröinti epäonnistui"
-
 msgid "No exec() called after fork() in lua scriptlet\n"
 msgstr "exec() ei kutsuttu fork() jälkeen lua-komentosarjassa\n"
 
 #, c-format
 msgid "Unable to restore current directory: %m"
 msgstr "Nykyisen hakemiston palautus ei onnistu: %m"
-
-msgid "<lua> scriptlet support not built in\n"
-msgstr "<lua> komentosarjojen tuki ei ole sisäänrakennettu\n"
 
 #, c-format
 msgid "failed to exec scriptlet interpreter %s: %s\n"
@@ -2798,6 +2815,9 @@ msgstr "poista"
 msgid "rpmdb"
 msgstr "rpmdb"
 
+msgid "restored"
+msgstr ""
+
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "Pakettitietokantaa %s ei voida avata\n"
@@ -2817,6 +2837,14 @@ msgstr "puuttuu ')' pakkauksen etiketistä: %s\n"
 #, c-format
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: julkisen avaimen luku epäonnistui.\n"
+
+#, c-format
+msgid "unknown keyring type: %s, using rpmdb\n"
+msgstr ""
+
+#, c-format
+msgid "failed to import key: %s: %s\n"
+msgstr ""
 
 #, c-format
 msgid "invalid package verify level %s\n"
@@ -2943,6 +2971,15 @@ msgstr "yksittäisiä sanoja ei enää tueta, käytä \"...\""
 msgid "parse error in expression"
 msgstr "jäsennysvirhe lausekkeessa"
 
+msgid "unsupported function argument type"
+msgstr ""
+
+msgid "syntax error in expression"
+msgstr "syntaksivirhe lausekkeessa"
+
+msgid "unsupported funcion"
+msgstr ""
+
 msgid "unmatched ("
 msgstr "ei täsmää ("
 
@@ -2952,17 +2989,20 @@ msgstr "- vain numeroissa"
 msgid "unexpected end of expression"
 msgstr "lausekkeen odottamaton loppu"
 
-msgid "syntax error in expression"
-msgstr "syntaksivirhe lausekkeessa"
-
 msgid "types must match"
 msgstr "tyyppien täytyy olla yhtenevät"
 
 msgid "division by zero"
 msgstr "jako nollalla"
 
+msgid "* and / not supported for versions"
+msgstr ""
+
 msgid "* and / not supported for strings"
 msgstr "* ja / ei tuettu merkkijonoille"
+
+msgid "+ and - not supported for versions"
+msgstr ""
 
 msgid "- not supported for strings"
 msgstr "- ei tuettu merkkijoinoille"
@@ -2971,9 +3011,12 @@ msgstr "- ei tuettu merkkijoinoille"
 msgid "%3d>%*s(empty)\n"
 msgstr "%3d>%*s(empty)\n"
 
-#, c-format
-msgid "%3d<%*s(empty)\n"
-msgstr "%3d<%*s(tyhjä)\n"
+msgid ""
+"Too many levels of recursion in macro expansion. It is likely caused by "
+"recursive macro declaration.\n"
+msgstr ""
+"Liian monta rekursiotasoa makrolaajennuksessa. Se johtuu todennäköisesti "
+"rekursiivisesta makromäärityksestä.\n"
 
 #, c-format
 msgid "Failed to open shell expansion pipe for command: %s: %m \n"
@@ -3009,23 +3052,22 @@ msgid "Macro %%%s failed to expand\n"
 msgstr "Makron %%%s laajennos ei onnistunut\n"
 
 #, c-format
-msgid "Macro %%%s defined but not used within scope\n"
-msgstr "Makro %%%s määritetty, mutta ei käytössä piirin sisällä\n"
-
-#, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Tuntematon valitsin %c %s(%s):ssä\n"
+
+#, c-format
+msgid "Macro %%%s defined but not used within scope\n"
+msgstr "Makro %%%s määritetty, mutta ei käytössä piirin sisällä\n"
 
 #, c-format
 msgid "no such macro: '%s'\n"
 msgstr "ei sellaista makroa: '%s'\n"
 
-msgid ""
-"Too many levels of recursion in macro expansion. It is likely caused by "
-"recursive macro declaration.\n"
-msgstr ""
-"Liian monta rekursiotasoa makrolaajennuksessa. Se johtuu todennäköisesti "
-"rekursiivisesta makromäärityksestä.\n"
+msgid "argument expected"
+msgstr "argumentti odotettavissa"
+
+msgid "unexpected argument"
+msgstr "odottamaton argumentti"
 
 #, c-format
 msgid "Unterminated %c: %s\n"
@@ -3034,12 +3076,6 @@ msgstr "Päättämätön %c: %s\n"
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "%% seuraa makro jota ei voida jäsentää\n"
-
-msgid "argument expected"
-msgstr "argumentti odotettavissa"
-
-msgid "unexpected argument"
-msgstr "odottamaton argumentti"
 
 #, c-format
 msgid "======================== active %d empty %d\n"
@@ -3088,6 +3124,10 @@ msgid "lua script failed: %s\n"
 msgstr "lua-skripti epäonnistui: %s\n"
 
 #, c-format
+msgid "result print failed: %s\n"
+msgstr ""
+
+#, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "virheellinen syntaksi lua-tiedostossa: %s\n"
 
@@ -3098,6 +3138,10 @@ msgstr "lua-koukku epäonnistui: %s\n"
 #, c-format
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "muistin varaus (%u tavua) palautti NULL:in.\n"
+
+#, c-format
+msgid "Unsupported version of signature: V%d\n"
+msgstr ""
 
 #, c-format
 msgid "Unsupported version of key: V%d\n"
@@ -3174,6 +3218,20 @@ msgid "file signing support not built in\n"
 msgstr "tiedostojen allekirjoitustukea ei ole sisäänrakennettu\n"
 
 #, c-format
+msgid "Searching for algorithm %s got %i\n"
+msgstr ""
+
+#, c-format
+msgid "Unsupported fsverity algorithm %s\n"
+msgstr ""
+
+msgid "fsverity signatures requires a key and a cert\n"
+msgstr ""
+
+msgid "fsverity signing support not built in\n"
+msgstr ""
+
+#, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature epäonnistui: %s"
 
@@ -3222,5 +3280,133 @@ msgstr "%s: pakettilistan luku epäonnistui: %s\n"
 msgid "don't verify header+payload signature"
 msgstr "älä tarkista otsikon ja kuorman allekirjoitusta"
 
-#~ msgid "Failed to rename %s to %s: %m\n"
-#~ msgstr "Uudelleen nimeäminen %s -> %s epäonnistui: %m\n"
+msgid "getopt string for scripts options"
+msgstr ""
+
+msgid "execute statement"
+msgstr ""
+
+msgid "interactive session"
+msgstr ""
+
+msgid "extract an archive"
+msgstr ""
+
+msgid "only print what would be done"
+msgstr ""
+
+#~ msgid "build through %build (%prep, then compile) from <specfile>"
+#~ msgstr "käännä %build-osioon asti (%prep ja %build) spec-tiedostosta"
+
+#~ msgid "build through %install (%prep, %build, then install) from <specfile>"
+#~ msgstr ""
+#~ "käännä %install-osioon asti (%prep, %build ja %install) spec-tiedostosta"
+
+#~ msgid "build through %build (%prep, then compile) from <source package>"
+#~ msgstr "rakenna %build:n kautta (%prep, sitten koota) <lähdepaketti>:sta"
+
+#~ msgid "build through %build (%prep, then compile) from <tarball>"
+#~ msgstr "käännä %build-osioon asti (%prep ja %build) tar-tiedostosta"
+
+#~ msgid "build through %install (%prep, %build, then install) from <tarball>"
+#~ msgstr ""
+#~ "käännä %install-osioon asti (%prep, %build ja %install) tar-tiedostosta"
+
+#~ msgid "operate on binary rpms that would be built from spec"
+#~ msgstr "operoi binäärisillä rpm:llä, jotka rakennettaisiin spec-tiedostosta"
+
+#~ msgid "operate on source rpm generated by spec"
+#~ msgstr "operoi spec-tiedoston tuottamilla lähde rpm:llä"
+
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ "RPM build errors:\n"
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ "RPM-käännösvirheitä:\n"
+
+#~ msgid "Bad source: %s: %s\n"
+#~ msgstr "Virheellinen lähde: %s: %s\n"
+
+#~ msgid "%s: %s: %s\n"
+#~ msgstr "%s: %s: %s\n"
+
+#~ msgid "%s error(%d) from %s: %s\n"
+#~ msgstr "%s virhe(%d) lähteestä %s: %s\n"
+
+#~ msgid "%s error(%d): %s\n"
+#~ msgstr "%s virhe(%d): %s\n"
+
+#~ msgid "unrecognized db option: \"%s\" ignored.\n"
+#~ msgstr "tunnistamaton db -vaihtoehto: \"%s\" ohitettu.\n"
+
+#~ msgid "%s has invalid numeric value, skipped\n"
+#~ msgstr "%s:lla on virheellinen numeerinen arvo, ohitettu\n"
+
+#~ msgid "%s has too large or too small long value, skipped\n"
+#~ msgstr "%s:lla on liian suuri tai liian pieni pitkä arvo, ohitettu\n"
+
+#~ msgid "%s has too large or too small integer value, skipped\n"
+#~ msgstr "%s:lla on liian suuri tai liian pieni integer arvo, ohitettu\n"
+
+#~ msgid "cannot get %s lock on %s/%s\n"
+#~ msgstr "en saa %s lukitusta tietokantaan %s/%s\n"
+
+#~ msgid "shared"
+#~ msgstr "jaettua"
+
+#~ msgid "exclusive"
+#~ msgstr "poissulkevaa"
+
+#~ msgid "invalid index type %x on %s/%s\n"
+#~ msgstr "virheellinen hakemistotyyppi %x kohteessa %s/%s\n"
+
+#~ msgid "error(%d) getting \"%s\" records from %s index: %s\n"
+#~ msgstr "virhe (%d) \"%s\"-tietueiden hakeminen %s-hakemistosta: %s\n"
+
+#~ msgid "error(%d) storing record \"%s\" into %s\n"
+#~ msgstr "virhe(%d) tallennettaessa tietuetta %s %s:ään\n"
+
+#~ msgid "error(%d) removing record \"%s\" from %s\n"
+#~ msgstr "virhe(%d) poistettaessa tietuetta %s %s:stä\n"
+
+#~ msgid "error(%d) adding header #%d record\n"
+#~ msgstr "virhe(%d) lisättäessä otsikkon #%d tietuetta\n"
+
+#~ msgid "error(%d) removing header #%d record\n"
+#~ msgstr "virhe(%d) poistettaessa otsikon #%d tietuetta\n"
+
+#~ msgid "error(%d) allocating new package instance\n"
+#~ msgstr "virhe(%d) varattaessa uutta paketti-instanssia\n"
+
+#~ msgid "%c"
+#~ msgstr "%c"
+
+#~ msgid "%a %b %d %Y"
+#~ msgstr "%a %b %d %Y"
+
+#~ msgid "%s saved as %s\n"
+#~ msgstr "%s talletettiin %s:nä\n"
+
+#~ msgid "%s created as %s\n"
+#~ msgstr "%s luotu %s:na\n"
+
+#~ msgid "hdr tags: BAD, no. of tags(%d) out of range"
+#~ msgstr "hdr-tunnisteet: VIRHE, tunnistemäärä (%d) alueen ulkopuolella"
+
+#~ msgid "hdr data: BAD, no. of bytes(%d) out of range"
+#~ msgstr "hdr-tiedot: VIRHE, tavumäärä (%d) alueen ulkopuolella"
+
+#~ msgid "query/verify package(s) owning file"
+#~ msgstr "kysele/tarkista pakettia, jonka omistuksessa <tiedosto> on"
+
+#~ msgid "failed to register exit handler"
+#~ msgstr "poistumiskäsittelijän rekisteröinti epäonnistui"
+
+#~ msgid "<lua> scriptlet support not built in\n"
+#~ msgstr "<lua> komentosarjojen tuki ei ole sisäänrakennettu\n"
+
+#~ msgid "%3d<%*s(empty)\n"
+#~ msgstr "%3d<%*s(tyhjä)\n"

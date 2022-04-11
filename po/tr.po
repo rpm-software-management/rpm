@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-20 13:58+0300\n"
+"POT-Creation-Date: 2022-04-07 13:03+0300\n"
 "PO-Revision-Date: 2021-05-06 19:02+0000\n"
 "Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
 "Language-Team: Turkish <https://translate.fedoraproject.org/projects/rpm/"
@@ -48,6 +48,9 @@ msgstr "--pipe için veri yolu oluşturma başarısız oldu: %m\n"
 msgid "exec failed\n"
 msgstr "icra başarısız\n"
 
+msgid "create uncompressed tar file"
+msgstr ""
+
 #, c-format
 msgid "argument is not an RPM package\n"
 msgstr "argüman bir RPM paketi değil\n"
@@ -79,15 +82,19 @@ msgstr ""
 msgid "<specfile>"
 msgstr "<spec dosyası>"
 
-msgid "build through %build (%prep, then compile) from <specfile>"
+#, c-format
+msgid "build through %conf (%prep, then %conf) from <specfile>"
 msgstr ""
-"<spec dosyası>ndan %build adımı sayesinde oluşturulur (%prep, sonra da "
-"derlenir)"
 
-msgid "build through %install (%prep, %build, then install) from <specfile>"
+msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr ""
-"<spec dosyası>ndan %install adımı sayesinde oluşturulur (%prep, %build, "
-"sonra da kurulum)"
+
+msgid "check build dependencies <specfile>"
+msgstr ""
+
+msgid ""
+"build through %install (%prep, %conf, %build, then install) from <specfile>"
+msgstr ""
 
 #, c-format
 msgid "verify %files section from <specfile>"
@@ -118,16 +125,16 @@ msgstr ""
 msgid "<source package>"
 msgstr "<kaynak paketi>"
 
-msgid "build through %build (%prep, then compile) from <source package>"
+msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr ""
-"<kaynak paketi>nden %build adımı sayesinde oluşturulur (%prep, sonra da "
-"derlenir)"
+
+msgid "check build dependencies <source package>"
+msgstr ""
 
 msgid ""
-"build through %install (%prep, %build, then install) from <source package>"
+"build through %install (%prep, %conf, %build, then install) from <source "
+"package>"
 msgstr ""
-"<kaynak paketi>nden %install adımı sayesinde oluşturulur (%prep, %build, "
-"sonra da kurulur)"
 
 #, c-format
 msgid "verify %files section from <source package>"
@@ -158,15 +165,15 @@ msgstr ""
 msgid "<tarball>"
 msgstr "<tar paketi>"
 
-msgid "build through %build (%prep, then compile) from <tarball>"
+msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr ""
-"<tar paketi>nden %build adımı sayesinde oluşturulur (%prep, sonra da "
-"derlenir)"
 
-msgid "build through %install (%prep, %build, then install) from <tarball>"
+msgid "check build dependencies <tarball>"
 msgstr ""
-"<tar paketi>nden %install adımı sayesinde oluşturulur (%prep, %build, sonra "
-"da kurulur)"
+
+msgid ""
+"build through %install (%prep, %conf, %build, then install) from <tarball>"
+msgstr ""
 
 #, c-format
 msgid "verify %files section from <tarball>"
@@ -189,6 +196,12 @@ msgstr ""
 
 msgid "build binary package from <source package>"
 msgstr "çalıştırılabilir paketi <kaynak paketi>nden oluşturur"
+
+msgid ""
+"build through %install (%prep, %build, then install) from <source package>"
+msgstr ""
+"<kaynak paketi>nden %install adımı sayesinde oluşturulur (%prep, %build, "
+"sonra da kurulur)"
 
 msgid "override build root"
 msgstr "build root'a zorlar"
@@ -264,6 +277,10 @@ msgstr "%s içinde birden fazla spec dosyası bulundu\n"
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "%s paketinden spec dosyası okunamadı\n"
+
+#, c-format
+msgid "Failed to rename %s to %s: %m\n"
+msgstr "%s %s olarak değiştirilemedi: %m\n"
 
 #, c-format
 msgid "failed to stat %s: %m\n"
@@ -417,7 +434,8 @@ msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles yalnızca paket kurulması sırasında kullanılabilir"
 
 msgid "--justdb may only be specified during package installation and erasure"
-msgstr "--justdb yalnızca paket kurulması ve silinmesi sırasında kullanılabilir"
+msgstr ""
+"--justdb yalnızca paket kurulması ve silinmesi sırasında kullanılabilir"
 
 msgid ""
 "script disabling options may only be specified during package installation "
@@ -464,11 +482,29 @@ msgstr "paket(ler)i imzala (--addsign ile aynı)"
 msgid "delete package signatures"
 msgstr "paket imzalarını sil"
 
+msgid "delete IMA and fsverity file signatures"
+msgstr ""
+
 msgid "create rpm v3 header+payload signatures"
 msgstr "rpm sürüm 3 başlık+yük imzaları oluştur"
 
 msgid "sign package(s) files"
 msgstr "paket(ler)in dosyalarını imzala"
+
+msgid "generate fsverity signatures for package(s) files"
+msgstr ""
+
+msgid "algorithm to use for verity signatures, default sha256"
+msgstr ""
+
+msgid "<algorithm>"
+msgstr ""
+
+msgid "use file signing cert <cert>"
+msgstr ""
+
+msgid "<cert>"
+msgstr ""
 
 msgid "use file signing key <key>"
 msgstr "<anahtar> dosya imzalama anahtarını kullan"
@@ -503,22 +539,29 @@ msgstr "spec dosya(lar)ını standart çıktıya ayrıştırır"
 msgid "query spec file(s)"
 msgstr "spec dosya(lar)ını sorgular"
 
+msgid "interactive macro shell"
+msgstr ""
+
 msgid "operate on binary rpms generated by spec (default)"
 msgstr ""
 "spec tarafından oluşturulan çalıştırılabilir RPM'ler üzerinde çalışır "
 "(öntanımlı)"
 
-msgid "operate on binary rpms that would be built from spec"
-msgstr "spec ile oluşturulacak çalıştırılabilir RPM'ler üzerinde çalışır"
+msgid "operate on binary package header(s) that would be built from spec"
+msgstr ""
 
-msgid "operate on source rpm generated by spec"
-msgstr "spec tarafından oluşturulan kaynak RPM'ler üzerinde çalışır"
+msgid "operate on source package header generated by spec"
+msgstr ""
 
 msgid "use the following query format"
 msgstr "izleyen sorgulama biçimini kullanır"
 
 msgid "Spec options:"
 msgstr "Belirtim seçenekleri:"
+
+#, c-format
+msgid "RPM version %s macro shell\n"
+msgstr ""
 
 msgid "no arguments given for parse"
 msgstr "ayrıştırma için hiç argüman belirtilmedi"
@@ -553,14 +596,19 @@ msgstr "Başarısız oluşturma bağımlılıkları:\n"
 msgid "setting %s=%s\n"
 msgstr ""
 
+#, c-format
+msgid "source_date_epoch_from_changelog set but %%changelog is missing\n"
+msgstr ""
+
 msgid ""
 "\n"
+"RPM build warnings:\n"
+msgstr ""
+
+msgid ""
 "\n"
 "RPM build errors:\n"
 msgstr ""
-"\n"
-"\n"
-"RPM oluşturma hataları:\n"
 
 #, c-format
 msgid "Missing '(' in %s %s\n"
@@ -1070,10 +1118,6 @@ msgid "%%{buildroot} can not be \"/\"\n"
 msgstr ""
 
 #, c-format
-msgid "Bad source: %s: %s\n"
-msgstr "Kaynak hatalı: %s: %s\n"
-
-#, c-format
 msgid "No patch number %u\n"
 msgstr ""
 
@@ -1094,8 +1138,8 @@ msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "satır %d: %%setup seçeneği %s hatalı: %s\n"
 
 #, c-format
-msgid "%s: %s: %s\n"
-msgstr "%s: %s: %s\n"
+msgid "Patch number not specified: %s\n"
+msgstr ""
 
 #, c-format
 msgid "Invalid patch number %s: %s\n"
@@ -1346,6 +1390,10 @@ msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr ""
 
 #, c-format
+msgid "Recognition of file mtype \"%s\" failed: mode %06o %s\n"
+msgstr ""
+
+#, c-format
 msgid "Finding  %s: %s\n"
 msgstr ""
 
@@ -1369,66 +1417,8 @@ msgid "query of specfile %s failed, can't parse\n"
 msgstr "%s spec dosyasının sorgulanması başarısız, çözümlenemiyor\n"
 
 #, c-format
-msgid "%s error(%d) from %s: %s\n"
+msgid "invalid %%_db_backend: %s\n"
 msgstr ""
-
-#, c-format
-msgid "%s error(%d): %s\n"
-msgstr ""
-
-#, c-format
-msgid "unrecognized db option: \"%s\" ignored.\n"
-msgstr "tanınmayan db seçeneği: \"%s\" yoksayıldı\n"
-
-#, c-format
-msgid "%s has invalid numeric value, skipped\n"
-msgstr "%s geçersiz sayısal değer içeriyor, atlandı\n"
-
-#, c-format
-msgid "%s has too large or too small long value, skipped\n"
-msgstr "%s ya çok büyük ya da çok küçük 'long' değer içeriyor, atlandı\n"
-
-#, c-format
-msgid "%s has too large or too small integer value, skipped\n"
-msgstr "%s ya çok büyük ya da çok küçük 'integer' değer içeriyor, atlandı\n"
-
-#, c-format
-msgid "cannot get %s lock on %s/%s\n"
-msgstr "%s kilit %s/%s'den alınamadı\n"
-
-msgid "shared"
-msgstr "paylaşımlı"
-
-msgid "exclusive"
-msgstr "bağdaşık"
-
-#, c-format
-msgid "invalid index type %x on %s/%s\n"
-msgstr ""
-
-#, c-format
-msgid "error(%d) getting \"%s\" records from %s index: %s\n"
-msgstr ""
-
-#, c-format
-msgid "error(%d) storing record \"%s\" into %s\n"
-msgstr ""
-
-#, c-format
-msgid "error(%d) removing record \"%s\" from %s\n"
-msgstr ""
-
-#, c-format
-msgid "error(%d) adding header #%d record\n"
-msgstr ""
-
-#, c-format
-msgid "error(%d) removing header #%d record\n"
-msgstr ""
-
-#, c-format
-msgid "error(%d) allocating new package instance\n"
-msgstr "yeni paket örneğini tutma hatası(%d)\n"
 
 #, c-format
 msgid "Converting database from %s to %s backend\n"
@@ -1491,13 +1481,6 @@ msgstr "(dizge değil)"
 msgid "(invalid type)"
 msgstr "(geçersiz tür)"
 
-#, c-format
-msgid "%c"
-msgstr "%c"
-
-msgid "%a %b %d %Y"
-msgstr "%a %d %b %Y"
-
 msgid "(not base64)"
 msgstr "(base64 değil)"
 
@@ -1533,12 +1516,16 @@ msgid "(unknown)"
 msgstr "(bilinmiyor)"
 
 #, c-format
-msgid "%s saved as %s\n"
-msgstr "%s %s olarak kaydedildi\n"
+msgid "failed to open dir %s of %s: %s\n"
+msgstr ""
 
 #, c-format
-msgid "%s created as %s\n"
-msgstr "%s %s olarak oluşturuldu\n"
+msgid "%s%s saved as %s%s\n"
+msgstr ""
+
+#, c-format
+msgid "%s%s created as %s%s\n"
+msgstr ""
 
 #, c-format
 msgid "%s %s: remove failed: %s\n"
@@ -1581,18 +1568,18 @@ msgid "region %d: tag number mismatch il %d ril %d dl %d rdl %d\n"
 msgstr ""
 
 #, c-format
+msgid "hdr tags: BAD, no. of tags(%<PRIu32>) out of range"
+msgstr ""
+
+#, c-format
+msgid "hdr data: BAD, no. of bytes(%<PRIu32>) out of range"
+msgstr ""
+
+#, c-format
 msgid "hdr size(%d): BAD, read returned %d"
 msgstr ""
 
 msgid "hdr magic: BAD"
-msgstr ""
-
-#, c-format
-msgid "hdr tags: BAD, no. of tags(%d) out of range"
-msgstr ""
-
-#, c-format
-msgid "hdr data: BAD, no. of bytes(%d) out of range"
 msgstr ""
 
 #, c-format
@@ -1604,6 +1591,9 @@ msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr ""
 
 msgid "signature "
+msgstr ""
+
+msgid "hdr length: BAD"
 msgstr ""
 
 #, c-format
@@ -1666,6 +1656,9 @@ msgstr ""
 
 #, c-format
 msgid "RPM v3 packages are deprecated: %s\n"
+msgstr ""
+
+msgid "Error writing to stdout"
 msgstr ""
 
 #, c-format
@@ -1861,6 +1854,9 @@ msgstr "paket(ler)i kur"
 msgid "update the database, but do not modify the filesystem"
 msgstr "veri tabanını günceller, ama dosya sistemini değiştirmez"
 
+msgid "do not update the database, but modify the filesystem"
+msgstr ""
+
 msgid "do not verify package dependencies"
 msgstr "paket bağımlılıklarını doğrulamaz"
 
@@ -1962,14 +1958,20 @@ msgstr "paket günceller"
 msgid "reinstall package(s)"
 msgstr ""
 
+msgid "restore package(s)"
+msgstr ""
+
 msgid "query/verify all packages"
 msgstr "tüm paketleri sorgular/doğrular"
 
 msgid "rpm checksig mode"
 msgstr ""
 
-msgid "query/verify package(s) owning file"
-msgstr "dosyanın sahibi olan paket(ler)i sorgular/doğrular"
+msgid "query/verify package(s) owning installed file"
+msgstr ""
+
+msgid "query/verify package(s) owning path, installed or not"
+msgstr ""
 
 msgid "query/verify package(s) in group"
 msgstr "gruptaki paket(ler)i sorgular/doğrular"
@@ -2471,6 +2473,14 @@ msgstr ""
 msgid "Malformed data for tag %s: %u bytes found but %lu expected.\n"
 msgstr ""
 
+#, c-format
+msgid "%s: base64 decode failed, len %li\n"
+msgstr ""
+
+#, c-format
+msgid "%s: base64 decode success, len %li\n"
+msgstr ""
+
 msgid "Bad magic"
 msgstr "Magic hatalı"
 
@@ -2496,6 +2506,9 @@ msgid "Internal error"
 msgstr "İç hata"
 
 msgid "Archive file not in header"
+msgstr ""
+
+msgid "Invalid symlink"
 msgstr ""
 
 msgid "File from package already exists as a directory in system"
@@ -2749,17 +2762,11 @@ msgstr ""
 msgid "Unable to open %s for reading: %m.\n"
 msgstr ""
 
-msgid "failed to register exit handler"
-msgstr ""
-
 msgid "No exec() called after fork() in lua scriptlet\n"
 msgstr ""
 
 #, c-format
 msgid "Unable to restore current directory: %m"
-msgstr ""
-
-msgid "<lua> scriptlet support not built in\n"
 msgstr ""
 
 #, c-format
@@ -2802,6 +2809,9 @@ msgstr "sil"
 msgid "rpmdb"
 msgstr ""
 
+msgid "restored"
+msgstr ""
+
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s de Paket veritabanı açılamadı\n"
@@ -2820,6 +2830,14 @@ msgstr ""
 
 #, c-format
 msgid "%s: reading of public key failed.\n"
+msgstr ""
+
+#, c-format
+msgid "unknown keyring type: %s, using rpmdb\n"
+msgstr ""
+
+#, c-format
+msgid "failed to import key: %s: %s\n"
 msgstr ""
 
 #, c-format
@@ -2947,6 +2965,15 @@ msgstr ""
 msgid "parse error in expression"
 msgstr "ifadede ayrıştırma hatası"
 
+msgid "unsupported function argument type"
+msgstr ""
+
+msgid "syntax error in expression"
+msgstr "ifadede söz dizimi hatası"
+
+msgid "unsupported funcion"
+msgstr ""
+
 msgid "unmatched ("
 msgstr "uyumsuz ("
 
@@ -2956,17 +2983,20 @@ msgstr "- sadece sayılarda"
 msgid "unexpected end of expression"
 msgstr "beklenmeyen ifade sonu"
 
-msgid "syntax error in expression"
-msgstr "ifadede söz dizimi hatası"
-
 msgid "types must match"
 msgstr "türler eşleşmeli"
 
 msgid "division by zero"
 msgstr ""
 
+msgid "* and / not supported for versions"
+msgstr ""
+
 msgid "* and / not supported for strings"
 msgstr "* ve / dizgelerde desteklenmez"
+
+msgid "+ and - not supported for versions"
+msgstr ""
 
 msgid "- not supported for strings"
 msgstr "- dizgelerde desteklenmez"
@@ -2975,9 +3005,10 @@ msgstr "- dizgelerde desteklenmez"
 msgid "%3d>%*s(empty)\n"
 msgstr ""
 
-#, c-format
-msgid "%3d<%*s(empty)\n"
-msgstr "%3d<%*s(boş)\n"
+msgid ""
+"Too many levels of recursion in macro expansion. It is likely caused by "
+"recursive macro declaration.\n"
+msgstr ""
 
 #, c-format
 msgid "Failed to open shell expansion pipe for command: %s: %m \n"
@@ -3012,21 +3043,22 @@ msgid "Macro %%%s failed to expand\n"
 msgstr "%%%s makrosu genişletmede başarısız\n"
 
 #, c-format
-msgid "Macro %%%s defined but not used within scope\n"
-msgstr ""
-
-#, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "%c seçeneği %s(%s) de anlaşılamadı\n"
+
+#, c-format
+msgid "Macro %%%s defined but not used within scope\n"
+msgstr ""
 
 #, c-format
 msgid "no such macro: '%s'\n"
 msgstr ""
 
-msgid ""
-"Too many levels of recursion in macro expansion. It is likely caused by "
-"recursive macro declaration.\n"
-msgstr ""
+msgid "argument expected"
+msgstr "argüman gerekli"
+
+msgid "unexpected argument"
+msgstr "beklenmeyen argüman"
 
 #, c-format
 msgid "Unterminated %c: %s\n"
@@ -3035,12 +3067,6 @@ msgstr "%c sonlandırılmamış: %s\n"
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Bir ayrıştırılamayan makro tarafından bir %% izlendi\n"
-
-msgid "argument expected"
-msgstr "argüman gerekli"
-
-msgid "unexpected argument"
-msgstr "beklenmeyen argüman"
 
 #, c-format
 msgid "======================== active %d empty %d\n"
@@ -3089,6 +3115,10 @@ msgid "lua script failed: %s\n"
 msgstr ""
 
 #, c-format
+msgid "result print failed: %s\n"
+msgstr ""
+
+#, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr ""
 
@@ -3099,6 +3129,10 @@ msgstr ""
 #, c-format
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "bellek ayrılırken (%u bayt) NULL döndü.\n"
+
+#, c-format
+msgid "Unsupported version of signature: V%d\n"
+msgstr ""
 
 #, c-format
 msgid "Unsupported version of key: V%d\n"
@@ -3175,6 +3209,20 @@ msgid "file signing support not built in\n"
 msgstr ""
 
 #, c-format
+msgid "Searching for algorithm %s got %i\n"
+msgstr ""
+
+#, c-format
+msgid "Unsupported fsverity algorithm %s\n"
+msgstr ""
+
+msgid "fsverity signatures requires a key and a cert\n"
+msgstr ""
+
+msgid "fsverity signing support not built in\n"
+msgstr ""
+
+#, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr ""
 
@@ -3223,5 +3271,105 @@ msgstr ""
 msgid "don't verify header+payload signature"
 msgstr ""
 
-#~ msgid "Failed to rename %s to %s: %m\n"
-#~ msgstr "%s %s olarak değiştirilemedi: %m\n"
+msgid "getopt string for scripts options"
+msgstr ""
+
+msgid "execute statement"
+msgstr ""
+
+msgid "interactive session"
+msgstr ""
+
+msgid "extract an archive"
+msgstr ""
+
+msgid "only print what would be done"
+msgstr ""
+
+#~ msgid "build through %build (%prep, then compile) from <specfile>"
+#~ msgstr ""
+#~ "<spec dosyası>ndan %build adımı sayesinde oluşturulur (%prep, sonra da "
+#~ "derlenir)"
+
+#~ msgid "build through %install (%prep, %build, then install) from <specfile>"
+#~ msgstr ""
+#~ "<spec dosyası>ndan %install adımı sayesinde oluşturulur (%prep, %build, "
+#~ "sonra da kurulum)"
+
+#~ msgid "build through %build (%prep, then compile) from <source package>"
+#~ msgstr ""
+#~ "<kaynak paketi>nden %build adımı sayesinde oluşturulur (%prep, sonra da "
+#~ "derlenir)"
+
+#~ msgid "build through %build (%prep, then compile) from <tarball>"
+#~ msgstr ""
+#~ "<tar paketi>nden %build adımı sayesinde oluşturulur (%prep, sonra da "
+#~ "derlenir)"
+
+#~ msgid "build through %install (%prep, %build, then install) from <tarball>"
+#~ msgstr ""
+#~ "<tar paketi>nden %install adımı sayesinde oluşturulur (%prep, %build, "
+#~ "sonra da kurulur)"
+
+#~ msgid "operate on binary rpms that would be built from spec"
+#~ msgstr "spec ile oluşturulacak çalıştırılabilir RPM'ler üzerinde çalışır"
+
+#~ msgid "operate on source rpm generated by spec"
+#~ msgstr "spec tarafından oluşturulan kaynak RPM'ler üzerinde çalışır"
+
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ "RPM build errors:\n"
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ "RPM oluşturma hataları:\n"
+
+#~ msgid "Bad source: %s: %s\n"
+#~ msgstr "Kaynak hatalı: %s: %s\n"
+
+#~ msgid "%s: %s: %s\n"
+#~ msgstr "%s: %s: %s\n"
+
+#~ msgid "unrecognized db option: \"%s\" ignored.\n"
+#~ msgstr "tanınmayan db seçeneği: \"%s\" yoksayıldı\n"
+
+#~ msgid "%s has invalid numeric value, skipped\n"
+#~ msgstr "%s geçersiz sayısal değer içeriyor, atlandı\n"
+
+#~ msgid "%s has too large or too small long value, skipped\n"
+#~ msgstr "%s ya çok büyük ya da çok küçük 'long' değer içeriyor, atlandı\n"
+
+#~ msgid "%s has too large or too small integer value, skipped\n"
+#~ msgstr "%s ya çok büyük ya da çok küçük 'integer' değer içeriyor, atlandı\n"
+
+#~ msgid "cannot get %s lock on %s/%s\n"
+#~ msgstr "%s kilit %s/%s'den alınamadı\n"
+
+#~ msgid "shared"
+#~ msgstr "paylaşımlı"
+
+#~ msgid "exclusive"
+#~ msgstr "bağdaşık"
+
+#~ msgid "error(%d) allocating new package instance\n"
+#~ msgstr "yeni paket örneğini tutma hatası(%d)\n"
+
+#~ msgid "%c"
+#~ msgstr "%c"
+
+#~ msgid "%a %b %d %Y"
+#~ msgstr "%a %d %b %Y"
+
+#~ msgid "%s saved as %s\n"
+#~ msgstr "%s %s olarak kaydedildi\n"
+
+#~ msgid "%s created as %s\n"
+#~ msgstr "%s %s olarak oluşturuldu\n"
+
+#~ msgid "query/verify package(s) owning file"
+#~ msgstr "dosyanın sahibi olan paket(ler)i sorgular/doğrular"
+
+#~ msgid "%3d<%*s(empty)\n"
+#~ msgstr "%3d<%*s(boş)\n"
