@@ -596,12 +596,6 @@ package or when debugging this package.\
 	%{?_gpg_sign_cmd_extra_args:%{_gpg_sign_cmd_extra_args}} \
 	-u "%{_gpg_name}" -sbo %{__signature_filename} %{__plaintext_filename}
 
-# XXX rpm >= 4.1 verifies signatures internally
-#%__gpg_verify_cmd		%{__gpg} \
-#	gpg --batch --no-verbose --verify --no-secmem-warning \
-#	%{__signature_filename} %{__plaintext_filename}
-#
-
 #==============================================================================
 # ---- Transaction macros.
 #	Macro(s) used to parameterize transactions.
