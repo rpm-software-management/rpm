@@ -20,11 +20,11 @@ usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
 	argv.c base64.c digest.h digest.c expression.c macro.c \
 	rpmhook.c rpmio.c rpmlog.c rpmmalloc.c rgetopt.c \
-	rpmpgp.c rpmsq.c rpmsw.c url.c \
+	rpmpgp.c rpmpgp.h rpmsq.c rpmsw.c url.c \
 	rpmio_internal.h rpmhook.h rpmvercmp.c rpmver.c \
 	rpmstring.c rpmfileutil.c rpmglob.c \
 	rpmkeyring.c rpmstrpool.c rpmmacro_internal.h \
-	rpmlua.c rpmlua.h lposix.c lposix.h
+	rpmlua.c rpmlua.h lposix.c lposix.h rpmpgp_internal.c
 
 if WITH_OPENSSL
 librpmio_la_SOURCES += digest_openssl.c
