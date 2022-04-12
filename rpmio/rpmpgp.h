@@ -1,5 +1,5 @@
-#ifndef _RPMPGP_INTERNAL_H
-#define _RPMPGP_INTERNAL_H
+#ifndef _RPMPGP_H
+#define _RPMPGP_H
 
 #include <rpm/rpmpgp.h>
 
@@ -170,4 +170,4 @@ static struct pgpValTbl_s const pgpArmorKeyTbl[] = {
     { -1,			"Unknown armor key" }
 };
 
-#endif /* _RPMPGP_INTERNAL_H */
+#endif /* _RPMPGP_H */

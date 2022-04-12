@@ -24,7 +24,8 @@ librpmio_la_SOURCES = \
 	rpmio_internal.h rpmhook.h rpmvercmp.c rpmver.c \
 	rpmstring.c rpmfileutil.c rpmglob.c \
 	rpmkeyring.c rpmstrpool.c rpmmacro_internal.h \
-	rpmlua.c rpmlua.h lposix.c lposix.h rpmpgp_internal.c
+	rpmlua.c rpmlua.h lposix.c lposix.h \
+	rpmpgp_internal.c rpmpgp_internal.h
 
 if WITH_OPENSSL
 librpmio_la_SOURCES += digest_openssl.c

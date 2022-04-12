@@ -24,7 +24,7 @@
 #include <rpm/rpmsq.h>
 #include <rpm/rpmte.h>
 
-#include "rpmio/digest.h"
+#include "rpmio/rpmpgp.h"
 #include "lib/rpmal.h"
 #include "lib/rpmchroot.h"
 #include "lib/rpmplugins.h"

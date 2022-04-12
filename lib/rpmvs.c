@@ -5,7 +5,7 @@
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmlog.h>
 #include "lib/rpmvs.h"
-#include "rpmio/digest.h"
+#include "rpmio/rpmpgp.h"
 
 #include "debug.h"
 
