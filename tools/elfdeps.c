@@ -5,7 +5,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
-#include <error.h>
 #include <errno.h>
 #include <popt.h>
 #include <gelf.h>
