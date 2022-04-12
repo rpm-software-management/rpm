@@ -14,7 +14,7 @@
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmbase64.h>
 
-#include "rpmio/digest.h"
+#include "rpmio/rpmpgpval.h"
 #include "lib/manifest.h"
 #include "lib/misc.h"
 #include "lib/signature.h"
