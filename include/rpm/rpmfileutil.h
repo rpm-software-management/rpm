@@ -132,6 +132,13 @@ int rpmGlob(const char * patterns, int * argcPtr, ARGV_t * argvPtr);
 char * rpmEscapeSpaces(const char * s);
 
 /** \ingroup rpmfileutil
+ * Unescape each char listed in accept by removing a backslash preceding it.
+ * @param s		string
+ * @param accept	chars to escape (NULL for all)
+ */
+void rpmUnescape(char *s, const char *accept);
+
+/** \ingroup rpmfileutil
  * Return type of compression used in file.
  * @param file		name of file
  * @param[out] compressed	address of compression type

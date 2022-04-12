@@ -410,6 +410,22 @@ char * rpmEscapeSpaces(const char * s)
     return t;
 }
 
+void rpmUnescape(char *s, const char *accept)
+{
+    char *p, *q;
+    int esc = 0;
+    p = q = s;
+    while (*q != '\0') {
+	*p = *q++;
+	esc = (*p == '\\') && \
+	      (accept == NULL || ((*q != '\0') && strchr(accept, *q))) && \
+	      !esc;
+	if (!esc)
+	    p++;
+    }
+    *p = '\0';
+}
+
 int rpmFileHasSuffix(const char *path, const char *suffix)
 {
     size_t plen = strlen(path);
