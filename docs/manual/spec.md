@@ -653,9 +653,11 @@ Supported modifiers are:
 
 The usual rules for shell globbing apply (see `glob(7)`), including brace
 expansion.  Metacharacters can be escaped by prefixing them with a backslash
-(`\`).  A backslash or percent sign can be escaped with an extra `\` or `%`,
-respectively.  Spaces are used to separate file names and must be escaped by
-enclosing the file name in quotes.
+(`\`).  Spaces are used to separate file names and must also be escaped.
+Enclosing a file name in double quotes (`"`) preserves the literal value of all
+characters within the quotes, with the exception of `\` and the percent sign
+(`%`).  A `\` or `%` can be escaped with an extra `\` or `%`, respectively.  A
+double quote can be escaped with a `\`.
 
 For example:
 
@@ -678,7 +680,8 @@ a shell script like this:
 	rm -f filelist.txt
 	find %{buildroot} -type f -printf '/%%P\n' |	\
 	perl -pe 's/(%)/%$1/g;'				\
-	     -pe 's/([*?\[\]{}\\])/\\$1/g;'		\
+	     -pe 's/(["\\])/\\$1/g;'			\
+	     -pe 's/(^.*$)/"$1"/g;'			\
 	> filelist.txt
 
 	%files -f filelist.txt
