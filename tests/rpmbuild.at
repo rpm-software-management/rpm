@@ -449,6 +449,8 @@ runroot rpm -qpl /build/RPMS/noarch/globesctest-1.0-1.noarch.rpm
 /opt/foo" bar"
 /opt/foo"'baz"'
 /opt/foo"bar"
+/opt/foo%globesctest
+/opt/foo%name
 /opt/foo*
 /opt/foo-bar1
 /opt/foo-bar2
@@ -474,6 +476,7 @@ runroot rpm -qpl /build/RPMS/noarch/globesctest-1.0-1.noarch.rpm
 /opt/share/doc/globesctest-1.0
 /opt/share/doc/globesctest-1.0/bar
 /opt/share/doc/globesctest-1.0/baz
+/opt/share/doc/globesctest-1.0/doc%name
 /opt/share/doc/globesctest-1.0/foo a
 /opt/share/doc/globesctest-1.0/foo b
 /opt/share/doc/globesctest-1.0/foo bar

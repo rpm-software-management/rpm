@@ -2,6 +2,7 @@
 # filenames in the resulting package (with "rpm -qpl") against a static list in
 # tests/rpmbuild.at.
 %global _prefix /opt
+%global mymacro %%%name
 
 Name:           globesctest 
 Version:        1.0
@@ -16,7 +17,7 @@ BuildArch:	noarch
 
 
 %build
-touch 'foo[bar]' bar baz 'foo bar' 'foo b' 'foo a' 'foo r'
+touch 'foo[bar]' bar baz 'foo bar' 'foo b' 'foo a' 'foo r' doc%%name
 
 %install
 mkdir -p %{buildroot}/opt
@@ -40,6 +41,10 @@ touch '%{buildroot}/opt/foo b'
 touch '%{buildroot}/opt/foo a'
 touch '%{buildroot}/opt/foo r'
 
+# Macro escaping
+touch '%{buildroot}/opt/foo%%name'
+touch '%{buildroot}/opt/foo%mymacro'
+
 # Regression checks
 touch '%{buildroot}/opt/foo-bar1'
 touch '%{buildroot}/opt/foo-bar2'
@@ -58,7 +63,7 @@ touch '%{buildroot}/opt/foobawb'
 
 %files
 
-%doc foo\[bar\] ba* "foo bar" foo\ [bar]
+%doc foo\[bar\] ba* "foo bar" foo\ [bar] doc%%name
 
 # Glob escaping
 /opt/foo\[bar\]
@@ -76,6 +81,10 @@ touch '%{buildroot}/opt/foobawb'
 /opt/foo\ bar
 /opt/foo"\ bar"
 /opt/foo\ [bar]
+
+# Macro escaping
+/opt/foo%%name
+/opt/foo%mymacro
 
 # Regression checks
 /opt/foo-bar*
