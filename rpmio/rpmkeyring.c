@@ -9,8 +9,6 @@
 #include <rpm/rpmkeyring.h>
 #include <rpm/rpmbase64.h>
 
-#include "rpmio/digest.h"
-
 #include "debug.h"
 
 int _print_pkts = 0;

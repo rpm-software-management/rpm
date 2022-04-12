@@ -5,7 +5,7 @@
 #include <openssl/dsa.h>
 #include <rpm/rpmcrypto.h>
 
-#include "rpmio/digest.h"
+#include "rpmio/rpmpgp_internal.h"
 
 
 /* Compatibility functions for OpenSSL 1.0.2 */
