@@ -620,8 +620,10 @@ static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
 	    /* If _digp->hash is not NULL then signature is already loaded */
 	    if (_digp->hash == NULL) {
 		_digp->version = v->version;
-		_digp->time = pgpGrab(v->time, sizeof(v->time));
+		if (!(_digp->saved & PGPDIG_SAVED_TIME))
+		    _digp->time = pgpGrab(v->time, sizeof(v->time));
 		_digp->pubkey_algo = v->pubkey_algo;
+		_digp->saved |= PGPDIG_SAVED_TIME | PGPDIG_SIG_HAS_CREATION_TIME;
 	    }
 
 	    p = ((uint8_t *)v) + sizeof(*v);
