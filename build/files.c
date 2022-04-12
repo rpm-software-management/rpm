@@ -2152,13 +2152,14 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
  * Add a file to a binary package.
  * @param pkg
  * @param fl		package file tree walk data
- * @param fileName	file to add
+ * @param fn		file to add
  * @return		RPMRC_OK on success
  */
-static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
+static rpmRC processBinaryFile(Package pkg, FileList fl, const char *fn)
 {
     int quote = 1;	/* XXX permit quoted glob characters. */
     int doGlob;
+    char *fileName = xstrdup(fn);
     char *diskPath = NULL;
     rpmRC rc = RPMRC_OK;
     size_t fnlen = strlen(fileName);
@@ -2168,7 +2169,8 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
     if (trailing_slash && !fl->cur.isDir)
 	fl->cur.isDir = -1;
     
-    doGlob = rpmIsGlob(fileName, quote);
+    if (!(doGlob = rpmIsGlob(fileName, quote)))
+	rpmUnescape(fileName, NULL);
 
     /* Check that file starts with leading "/" */
     if (*fileName != '/') {
@@ -2220,6 +2222,7 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
     }
 
 exit:
+    free(fileName);
     free(diskPath);
     if (rc) {
 	fl->processingFailed = 1;
@@ -2416,7 +2419,7 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     fi = 0;
     while (*files != NULL) {
 	char *origfile = rpmGenPath(basepath, *files, NULL);
-	char *eorigfile = rpmEscapeSpaces(origfile);
+	char *eorigfile = NULL;
 	ARGV_t globFiles;
 	int globFilesCount, i;
 	char *newfile;
@@ -2426,7 +2429,17 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
 	copyFileEntry(&sd->entries[fi].curEntry, &fl->cur);
 	copyFileEntry(&sd->entries[fi].defEntry, &fl->def);
 	fi++;
+	files++;
 
+	if (!rpmIsGlob(origfile, 1)) {
+	    rasprintf(&newfile, "%s/%s", sd->dirname, basename(origfile));
+	    processBinaryFile(pkg, fl, newfile);
+	    free(newfile);
+	    free(origfile);
+	    continue;
+	}
+
+	eorigfile = rpmEscapeSpaces(origfile);
 	if (rpmGlob(eorigfile, &globFilesCount, &globFiles) == 0) {
 	    for (i = 0; i < globFilesCount; i++) {
 		rasprintf(&newfile, "%s/%s", sd->dirname, basename(globFiles[i]));
@@ -2440,7 +2453,6 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
 	}
 	free(eorigfile);
 	free(origfile);
-	files++;
     }
     free(basepath);
 
