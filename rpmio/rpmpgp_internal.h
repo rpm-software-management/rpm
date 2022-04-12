@@ -1,7 +1,7 @@
-#ifndef _RPMDIGEST_H
-#define _RPMDIGEST_H
+#ifndef _RPMPGP_INTERNAL_H
+#define _RPMPGP_INTERNAL_H
 
-#include <rpm/rpmpgp.h>
+#include "rpmio/rpmpgpval.h"
 
 typedef struct pgpDigAlg_s * pgpDigAlg;
 
@@ -23,7 +23,7 @@ pgpDigAlg pgpPubkeyNew(int algo, int curve);
 
 pgpDigAlg pgpSignatureNew(int algo);
 
-pgpDigAlg pgpDigAlgFree(pgpDigAlg da);
+pgpDigAlg pgpDigAlgFree(pgpDigAlg alg);
 
 /** \ingroup rpmpgp
  * Return no. of bits in a multiprecision integer.
@@ -46,5 +46,5 @@ size_t pgpMpiLen(const uint8_t *p)
 {
     return (2 + ((pgpMpiBits(p)+7)>>3));
 }
-	
-#endif /* _RPMDIGEST_H */
+
+#endif /* _RPMPGP_INTERNAL_H */
