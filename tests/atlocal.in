@@ -12,6 +12,22 @@ if test "${PYTHON}"; then
     export PYTHONPATH
 fi
 
+CRYPTO=@CRYPTO@
+export CRYPTO
+if test x$CRYPTO = xlibgcrypt
+then
+    PGP=internal
+elif test x$CRYPTO = xopenssl
+then
+    PGP=internal
+elif test x$CRYPTO = xsequoia
+then
+    PGP=sequoia
+else
+    echo "Unhandled crypto backend: $CRYPTO"
+    exit
+fi
+
 RPMTEST="${abs_builddir}/testing"
 RPMDATA="${abs_srcdir}/data/"
 
