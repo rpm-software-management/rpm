@@ -110,6 +110,7 @@ EXTRA_DIST += data/RPMS/hello-1.0-1.ppc64.rpm
 EXTRA_DIST += data/RPMS/hello-2.0-1.i686.rpm
 EXTRA_DIST += data/RPMS/hello-2.0-1.x86_64.rpm
 EXTRA_DIST += data/RPMS/hello-2.0-1.x86_64-signed.rpm
+EXTRA_DIST += data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm
 EXTRA_DIST += data/RPMS/hlinktest-1.0-1.noarch.rpm
 EXTRA_DIST += data/RPMS/imatest-1.0-1.fc34.noarch.rpm
 EXTRA_DIST += data/RPMS/hello-2.0-1.x86_64-corrupted.rpm
@@ -126,6 +127,10 @@ EXTRA_DIST += data/keys/CVE-2021-3521-nosubsig.asc
 EXTRA_DIST += data/keys/CVE-2021-3521-nosubsig-last.asc
 EXTRA_DIST += data/keys/different-creation-times.asc
 EXTRA_DIST += data/keys/different-creation-times.secret
+EXTRA_DIST += data/keys/alice.asc
+EXTRA_DIST += data/keys/alice-expired-subkey.asc
+EXTRA_DIST += data/keys/alice-revoked-subkey.asc
+EXTRA_DIST += data/keys/alice.secret
 EXTRA_DIST += data/macros.testfile
 EXTRA_DIST += data/macros.debug
 EXTRA_DIST += data/t1.lua
@@ -174,6 +179,7 @@ atlocal:	atlocal.in Makefile
 	  -e "s,[@]usrlibexecdir[@],$(rpmlibexecdir),g" \
 	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir)," \
 	  -e "s,[@]PYTHON[@],$(PYTHON)," \
+	  -e "s,[@]CRYPTO[@],$(CRYPTO)," \
 	  -e "s,[@]__FIND_DEBUGINFO[@],$(__FIND_DEBUGINFO)," \
 	< $(srcdir)/atlocal.in > atlocal
 DISTCLEANFILES = atlocal
