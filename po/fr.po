@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2020-08-20 13:58+0300\n"
+"POT-Creation-Date: 2022-04-13 10:58+0300\n"
 "PO-Revision-Date: 2021-03-27 10:01+0000\n"
 "Last-Translator: Guillaume Jacob <abun.lp@gmail.com>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/rpm/"
@@ -50,6 +50,9 @@ msgstr "la création d'un pipe pour --pipe est défaillant : %m\n"
 msgid "exec failed\n"
 msgstr "échec de l'exec\n"
 
+msgid "create uncompressed tar file"
+msgstr ""
+
 #, c-format
 msgid "argument is not an RPM package\n"
 msgstr "l'argument n'est pas un paquet RPM\n"
@@ -62,7 +65,7 @@ msgstr "erreur dans la lecteur de l'entête du paquet\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "impossible de rouvrir la charge utile : %s\n"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "files over 4GB not supported by cpio, use rpm2archive instead\n"
 msgstr ""
 "les fichier de plus de 4GO ne sont pas supportés par cpio, utiliser "
@@ -81,12 +84,25 @@ msgstr ""
 msgid "<specfile>"
 msgstr "<fichier_spec>"
 
-msgid "build through %build (%prep, then compile) from <specfile>"
+#, fuzzy, c-format
+msgid "build through %conf (%prep, then %conf) from <specfile>"
 msgstr ""
 "construction jusqu'à la section %build (%prep, et compilation) du "
 "<fichier_spec>"
 
-msgid "build through %install (%prep, %build, then install) from <specfile>"
+#, fuzzy
+msgid "build through %build (%prep, %conf, then compile) from <specfile>"
+msgstr ""
+"construction jusqu'à la section %build (%prep, et compilation) du "
+"<fichier_spec>"
+
+#, fuzzy
+msgid "check build dependencies <specfile>"
+msgstr "Dépendances de construction manquantes :\n"
+
+#, fuzzy
+msgid ""
+"build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr ""
 "construction jusqu'à la section %install (%prep, %build, et installation) du "
 "<fichier_spec>"
@@ -116,11 +132,20 @@ msgstr ""
 msgid "<source package>"
 msgstr "<paquet source>"
 
-msgid "build through %build (%prep, then compile) from <source package>"
+#, fuzzy
+msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr ""
+"construction jusqu'à la section %build (%prep, et compilation) du "
+"<fichier_spec>"
 
+#, fuzzy
+msgid "check build dependencies <source package>"
+msgstr "construire le paquet binaire à partir du <paquet source>"
+
+#, fuzzy
 msgid ""
-"build through %install (%prep, %build, then install) from <source package>"
+"build through %install (%prep, %conf, %build, then install) from <source "
+"package>"
 msgstr ""
 "construire jusqu'à la section %install (%prep, %build, et installation) à "
 "partir du <paquet source>"
@@ -152,12 +177,19 @@ msgstr ""
 msgid "<tarball>"
 msgstr "<tarball>"
 
-msgid "build through %build (%prep, then compile) from <tarball>"
+#, fuzzy
+msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr ""
 "construire jusqu'à la section %build (%prep, puis compilation) à partir du "
 "<tarball>"
 
-msgid "build through %install (%prep, %build, then install) from <tarball>"
+#, fuzzy
+msgid "check build dependencies <tarball>"
+msgstr "Dépendances de construction manquantes :\n"
+
+#, fuzzy
+msgid ""
+"build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr ""
 "construire jusqu'à la section %build (%prep, %build, puis installation) à "
 "partir du <tarball>"
@@ -181,6 +213,12 @@ msgstr ""
 
 msgid "build binary package from <source package>"
 msgstr "construire le paquet binaire à partir du <paquet source>"
+
+msgid ""
+"build through %install (%prep, %build, then install) from <source package>"
+msgstr ""
+"construire jusqu'à la section %install (%prep, %build, et installation) à "
+"partir du <paquet source>"
 
 msgid "override build root"
 msgstr "surcharger le buildroot"
@@ -258,6 +296,10 @@ msgstr ""
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Impossible de lire le fichier spec à %s\n"
+
+#, c-format
+msgid "Failed to rename %s to %s: %m\n"
+msgstr "Impossible de renommer %s en %s: %m\n"
 
 #, c-format
 msgid "failed to stat %s: %m\n"
@@ -465,10 +507,29 @@ msgid "delete package signatures"
 msgstr "supprimer les signatures de paquets"
 
 #, fuzzy
+msgid "delete IMA and fsverity file signatures"
+msgstr "supprimer les signatures de paquets"
+
+#, fuzzy
 msgid "create rpm v3 header+payload signatures"
 msgstr "ne pas vérifier la signature de l'entête+charge_utile"
 
 msgid "sign package(s) files"
+msgstr ""
+
+msgid "generate fsverity signatures for package(s) files"
+msgstr ""
+
+msgid "algorithm to use for verity signatures, default sha256"
+msgstr ""
+
+msgid "<algorithm>"
+msgstr ""
+
+msgid "use file signing cert <cert>"
+msgstr ""
+
+msgid "<cert>"
 msgstr ""
 
 msgid "use file signing key <key>"
@@ -504,13 +565,17 @@ msgstr "analyse du fichier(s) de spec sur stdout"
 msgid "query spec file(s)"
 msgstr "questionner le(s) fichier(s) de spec"
 
+msgid "interactive macro shell"
+msgstr ""
+
 msgid "operate on binary rpms generated by spec (default)"
 msgstr "opérer sur le(s) rpm(s) binaire(s) généré(s) par spec (défaut)"
 
-msgid "operate on binary rpms that would be built from spec"
+msgid "operate on binary package header(s) that would be built from spec"
 msgstr ""
 
-msgid "operate on source rpm generated by spec"
+#, fuzzy
+msgid "operate on source package header generated by spec"
 msgstr "opérer sur le rpm source généré par spec"
 
 msgid "use the following query format"
@@ -518,6 +583,10 @@ msgstr "utiliser le format de requête suivant"
 
 msgid "Spec options:"
 msgstr "Options spec :"
+
+#, fuzzy, c-format
+msgid "RPM version %s macro shell\n"
+msgstr "RPM version %s\n"
 
 msgid "no arguments given for parse"
 msgstr "pas d'arguments donnés pour analyser"
@@ -552,8 +621,21 @@ msgstr "Dépendances de construction manquantes :\n"
 msgid "setting %s=%s\n"
 msgstr ""
 
+#, c-format
+msgid "source_date_epoch_from_changelog set but %%changelog is missing\n"
+msgstr ""
+
+#, fuzzy
 msgid ""
 "\n"
+"RPM build warnings:\n"
+msgstr ""
+"\n"
+"\n"
+"Erreur de construction de RPM :\n"
+
+#, fuzzy
+msgid ""
 "\n"
 "RPM build errors:\n"
 msgstr ""
@@ -1072,10 +1154,6 @@ msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "%%{buildroot} ne peut pas être « / »\n"
 
 #, c-format
-msgid "Bad source: %s: %s\n"
-msgstr "Mauvaise source : %s : %s\n"
-
-#, c-format
 msgid "No patch number %u\n"
 msgstr "Pas de numéro de patch %u\n"
 
@@ -1095,9 +1173,9 @@ msgstr "ligne %d : mauvais argument à %%setup : %s\n"
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "ligne %d : mauvaise option à %%setup %s : %s\n"
 
-#, c-format
-msgid "%s: %s: %s\n"
-msgstr "%s : %s : %s\n"
+#, fuzzy, c-format
+msgid "Patch number not specified: %s\n"
+msgstr "Numéro du patch invalide %s :%s\n"
 
 #, c-format
 msgid "Invalid patch number %s: %s\n"
@@ -1353,6 +1431,10 @@ msgstr "magic_load a échoué : %s\n"
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "La reconnaissance du fichier « %s » a échoué : mode %06o %s\n"
 
+#, fuzzy, c-format
+msgid "Recognition of file mtype \"%s\" failed: mode %06o %s\n"
+msgstr "La reconnaissance du fichier « %s » a échoué : mode %06o %s\n"
+
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Trouver %s : %s\n"
@@ -1378,67 +1460,9 @@ msgstr ""
 "échec de la requête sur le fichier spec %s, impossible de faire l'analyser "
 "syntaxique\n"
 
-#, c-format
-msgid "%s error(%d) from %s: %s\n"
-msgstr "%s erreur (%d) de %s : %s\n"
-
-#, c-format
-msgid "%s error(%d): %s\n"
-msgstr "%s erreur (%d) : %s\n"
-
-#, c-format
-msgid "unrecognized db option: \"%s\" ignored.\n"
-msgstr "options de db inconnues : \"%s\" ignoré.\n"
-
-#, c-format
-msgid "%s has invalid numeric value, skipped\n"
-msgstr "%s est une valeur numérique invalide, ignoré\n"
-
-#, c-format
-msgid "%s has too large or too small long value, skipped\n"
-msgstr "%s est une valeur 'long' trop petite ou trop grande, ignoré\n"
-
-#, c-format
-msgid "%s has too large or too small integer value, skipped\n"
-msgstr "%s est une valeur entière trop petite ou trop grande, ignoré\n"
-
-#, c-format
-msgid "cannot get %s lock on %s/%s\n"
-msgstr "impossible d'avoir le verrou %s sur %s/%s\n"
-
-msgid "shared"
-msgstr "partagé"
-
-msgid "exclusive"
-msgstr "exclusif"
-
-#, c-format
-msgid "invalid index type %x on %s/%s\n"
-msgstr "type d'index %x invalide sur %s/%s\n"
-
-#, c-format
-msgid "error(%d) getting \"%s\" records from %s index: %s\n"
-msgstr "erreur(%d) en attrapant les articles « %s » de l'index %s : %s\n"
-
-#, c-format
-msgid "error(%d) storing record \"%s\" into %s\n"
-msgstr "erreur(%d) en stockant l'article « %s » dans %s\n"
-
-#, c-format
-msgid "error(%d) removing record \"%s\" from %s\n"
-msgstr "erreur(%d) en enlevant l'article « %s » de %s\n"
-
-#, c-format
-msgid "error(%d) adding header #%d record\n"
-msgstr "Erreur(%d) ajout de l'enregistrement de l'en-tête #%d\n"
-
-#, c-format
-msgid "error(%d) removing header #%d record\n"
-msgstr "Erreur (%d) suppression de l'enregistrement de l'en-tête #%d\n"
-
-#, c-format
-msgid "error(%d) allocating new package instance\n"
-msgstr "erreur(%d) en allouant une nouvelle instance de paquet\n"
+#, fuzzy, c-format
+msgid "invalid %%_db_backend: %s\n"
+msgstr "Lexème %s invalide : %s\n"
 
 #, c-format
 msgid "Converting database from %s to %s backend\n"
@@ -1501,13 +1525,6 @@ msgstr "(pas une chaîne)"
 msgid "(invalid type)"
 msgstr "(type invalide)"
 
-#, c-format
-msgid "%c"
-msgstr "%c"
-
-msgid "%a %b %d %Y"
-msgstr "%a %b %d %Y"
-
 msgid "(not base64)"
 msgstr "(pas base64)"
 
@@ -1542,12 +1559,16 @@ msgstr "manquant"
 msgid "(unknown)"
 msgstr "(inconnu)"
 
-#, c-format
-msgid "%s saved as %s\n"
+#, fuzzy, c-format
+msgid "failed to open dir %s of %s: %s\n"
+msgstr "Impossible d'ouvrir l'icône %s : %s\n"
+
+#, fuzzy, c-format
+msgid "%s%s saved as %s%s\n"
 msgstr "%s sauvé en tant que %s\n"
 
-#, c-format
-msgid "%s created as %s\n"
+#, fuzzy, c-format
+msgid "%s%s created as %s%s\n"
 msgstr "%s créé en tant que %s\n"
 
 #, c-format
@@ -1591,18 +1612,18 @@ msgid "region %d: tag number mismatch il %d ril %d dl %d rdl %d\n"
 msgstr ""
 
 #, c-format
+msgid "hdr tags: BAD, no. of tags(%<PRIu32>) out of range"
+msgstr ""
+
+#, c-format
+msgid "hdr data: BAD, no. of bytes(%<PRIu32>) out of range"
+msgstr ""
+
+#, c-format
 msgid "hdr size(%d): BAD, read returned %d"
 msgstr ""
 
 msgid "hdr magic: BAD"
-msgstr ""
-
-#, c-format
-msgid "hdr tags: BAD, no. of tags(%d) out of range"
-msgstr ""
-
-#, c-format
-msgid "hdr data: BAD, no. of bytes(%d) out of range"
 msgstr ""
 
 #, c-format
@@ -1614,6 +1635,9 @@ msgid "sigh pad(%zd): BAD, read %zd bytes"
 msgstr ""
 
 msgid "signature "
+msgstr ""
+
+msgid "hdr length: BAD"
 msgstr ""
 
 #, c-format
@@ -1677,6 +1701,9 @@ msgstr "itérateur de tableau utilisé avec des tableaux de tailles différentes
 #, fuzzy, c-format
 msgid "RPM v3 packages are deprecated: %s\n"
 msgstr "ligne %d : %s est obsolète : %s\n"
+
+msgid "Error writing to stdout"
+msgstr ""
 
 #, c-format
 msgid "failed to load macro file %s\n"
@@ -1875,6 +1902,11 @@ msgid "update the database, but do not modify the filesystem"
 msgstr ""
 "mettre à jour la base données, mais ne pas modifier le système de fichiers"
 
+#, fuzzy
+msgid "do not update the database, but modify the filesystem"
+msgstr ""
+"mettre à jour la base données, mais ne pas modifier le système de fichiers"
+
 msgid "do not verify package dependencies"
 msgstr "ne pas vérifier les dépendances du paquet"
 
@@ -1978,13 +2010,22 @@ msgstr "mises à jour des paquets"
 msgid "reinstall package(s)"
 msgstr "réinstaller le(s) paquet(s)"
 
+#, fuzzy
+msgid "restore package(s)"
+msgstr "réinstaller le(s) paquet(s)"
+
 msgid "query/verify all packages"
 msgstr "vérifier/demander à tous les paquets"
 
 msgid "rpm checksig mode"
 msgstr "mode rpm vérifsign"
 
-msgid "query/verify package(s) owning file"
+#, fuzzy
+msgid "query/verify package(s) owning installed file"
+msgstr "vérifier/demander un paquet possèdant un fichier"
+
+#, fuzzy
+msgid "query/verify package(s) owning path, installed or not"
 msgstr "vérifier/demander un paquet possèdant un fichier"
 
 msgid "query/verify package(s) in group"
@@ -2499,6 +2540,14 @@ msgstr ""
 msgid "Malformed data for tag %s: %u bytes found but %lu expected.\n"
 msgstr ""
 
+#, fuzzy, c-format
+msgid "%s: base64 decode failed, len %li\n"
+msgstr "%s %s : échec de la suppression : %s\n"
+
+#, c-format
+msgid "%s: base64 decode success, len %li\n"
+msgstr ""
+
 msgid "Bad magic"
 msgstr "Mauvaise magie, blah"
 
@@ -2525,6 +2574,10 @@ msgstr "Erreur interne"
 
 msgid "Archive file not in header"
 msgstr "L'entête ne contient pas le fichier archive"
+
+#, fuzzy
+msgid "Invalid symlink"
+msgstr "(type invalide)"
 
 msgid "File from package already exists as a directory in system"
 msgstr ""
@@ -2788,18 +2841,12 @@ msgstr ""
 "Impossible d'ouvrir %s en lecture : %m.\n"
 "\n"
 
-msgid "failed to register exit handler"
-msgstr ""
-
 msgid "No exec() called after fork() in lua scriptlet\n"
 msgstr ""
 
 #, c-format
 msgid "Unable to restore current directory: %m"
 msgstr "Impossible de restaurer le répertoire courant : %m"
-
-msgid "<lua> scriptlet support not built in\n"
-msgstr "le support du scriptlet <lua> n'est pas intégrer\n"
 
 #, c-format
 msgid "failed to exec scriptlet interpreter %s: %s\n"
@@ -2841,6 +2888,9 @@ msgstr "effacer"
 msgid "rpmdb"
 msgstr ""
 
+msgid "restored"
+msgstr ""
+
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "impossible d'ouvrir la base de données paquet dans %s\n"
@@ -2860,6 +2910,14 @@ msgstr "')' manquante dans le label du paquet : %s\n"
 #, c-format
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: la lecture de la clé publique a échoué.\n"
+
+#, fuzzy, c-format
+msgid "unknown keyring type: %s, using rpmdb\n"
+msgstr "Type d'icône inconnu : %s\n"
+
+#, fuzzy, c-format
+msgid "failed to import key: %s: %s\n"
+msgstr "Impossible de créer le répertoire %s : %s\n"
 
 #, c-format
 msgid "invalid package verify level %s\n"
@@ -2992,6 +3050,17 @@ msgstr ""
 msgid "parse error in expression"
 msgstr "erreur de syntaxe dans l'expression\n"
 
+msgid "unsupported function argument type"
+msgstr ""
+
+#, fuzzy
+msgid "syntax error in expression"
+msgstr "erreur de syntaxe dans l'expression\n"
+
+#, fuzzy
+msgid "unsupported funcion"
+msgstr "pas de prise en charge de la version du paquet RPM"
+
 #, fuzzy
 msgid "unmatched ("
 msgstr "( non fermée\n"
@@ -3005,10 +3074,6 @@ msgid "unexpected end of expression"
 msgstr "| attendu a la fin de l'expression"
 
 #, fuzzy
-msgid "syntax error in expression"
-msgstr "erreur de syntaxe dans l'expression\n"
-
-#, fuzzy
 msgid "types must match"
 msgstr "les types doivent correspondre\n"
 
@@ -3016,7 +3081,15 @@ msgid "division by zero"
 msgstr ""
 
 #, fuzzy
+msgid "* and / not supported for versions"
+msgstr "* / non supportés sur des chaînes de caractères\n"
+
+#, fuzzy
 msgid "* and / not supported for strings"
+msgstr "* / non supportés sur des chaînes de caractères\n"
+
+#, fuzzy
+msgid "+ and - not supported for versions"
 msgstr "* / non supportés sur des chaînes de caractères\n"
 
 #, fuzzy
@@ -3027,9 +3100,12 @@ msgstr "- non prix en charge sur des chaînes de caractères\n"
 msgid "%3d>%*s(empty)\n"
 msgstr ""
 
-#, c-format
-msgid "%3d<%*s(empty)\n"
-msgstr "%3d<%*s(vide)\n"
+msgid ""
+"Too many levels of recursion in macro expansion. It is likely caused by "
+"recursive macro declaration.\n"
+msgstr ""
+"Trop de niveaux de récursivité dans l'expansion de la macro. Il est "
+"probablement causée par une déclaration de macro récursive.\n"
 
 #, fuzzy, c-format
 msgid "Failed to open shell expansion pipe for command: %s: %m \n"
@@ -3064,31 +3140,16 @@ msgid "Macro %%%s failed to expand\n"
 msgstr "La macro %%%s ne peut être expansée\n"
 
 #, c-format
-msgid "Macro %%%s defined but not used within scope\n"
-msgstr "Macro %%%s définie mais non utilisée sans portée\n"
-
-#, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Option inconnue %c dans %s(%s)\n"
 
 #, c-format
+msgid "Macro %%%s defined but not used within scope\n"
+msgstr "Macro %%%s définie mais non utilisée sans portée\n"
+
+#, c-format
 msgid "no such macro: '%s'\n"
 msgstr ""
-
-msgid ""
-"Too many levels of recursion in macro expansion. It is likely caused by "
-"recursive macro declaration.\n"
-msgstr ""
-"Trop de niveaux de récursivité dans l'expansion de la macro. Il est "
-"probablement causée par une déclaration de macro récursive.\n"
-
-#, c-format
-msgid "Unterminated %c: %s\n"
-msgstr "%c non terminé: %s\n"
-
-#, c-format
-msgid "A %% is followed by an unparseable macro\n"
-msgstr "Un %% est suivi d'une macro in-analysable\n"
 
 #, fuzzy
 msgid "argument expected"
@@ -3097,6 +3158,14 @@ msgstr "] inattendu"
 #, fuzzy
 msgid "unexpected argument"
 msgstr "] inattendu"
+
+#, c-format
+msgid "Unterminated %c: %s\n"
+msgstr "%c non terminé: %s\n"
+
+#, c-format
+msgid "A %% is followed by an unparseable macro\n"
+msgstr "Un %% est suivi d'une macro in-analysable\n"
 
 #, c-format
 msgid "======================== active %d empty %d\n"
@@ -3144,6 +3213,10 @@ msgstr "syntaxe invalide dans le script lua : %s\n"
 msgid "lua script failed: %s\n"
 msgstr "script lua échoué : %s\n"
 
+#, fuzzy, c-format
+msgid "result print failed: %s\n"
+msgstr "script lua échoué : %s\n"
+
 #, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "syntaxe invalide dans le fichier lua : %s\n"
@@ -3155,6 +3228,10 @@ msgstr "crochet lua échoué : %s\n"
 #, c-format
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "l'allocation de mémoire (%u octets) a retourné NULL.\n"
+
+#, fuzzy, c-format
+msgid "Unsupported version of signature: V%d\n"
+msgstr "Signature PGP non supportée\n"
 
 #, c-format
 msgid "Unsupported version of key: V%d\n"
@@ -3231,6 +3308,21 @@ msgid "file signing support not built in\n"
 msgstr ""
 
 #, c-format
+msgid "Searching for algorithm %s got %i\n"
+msgstr ""
+
+#, fuzzy, c-format
+msgid "Unsupported fsverity algorithm %s\n"
+msgstr "Algorithme %u clé publique PGP non supporté\n"
+
+msgid "fsverity signatures requires a key and a cert\n"
+msgstr ""
+
+#, fuzzy
+msgid "fsverity signing support not built in\n"
+msgstr "Support de capacité du fichier non intégré\n"
+
+#, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s : échec de rpmReadSignature : %s"
 
@@ -3279,5 +3371,102 @@ msgstr "%s : échec de la lecture de la liste de paquetages : %s\n"
 msgid "don't verify header+payload signature"
 msgstr "ne pas vérifier la signature de l'entête+charge_utile"
 
-#~ msgid "Failed to rename %s to %s: %m\n"
-#~ msgstr "Impossible de renommer %s en %s: %m\n"
+msgid "getopt string for scripts options"
+msgstr ""
+
+#, fuzzy
+msgid "execute statement"
+msgstr "] inattendu"
+
+msgid "interactive session"
+msgstr ""
+
+msgid "extract an archive"
+msgstr ""
+
+msgid "only print what would be done"
+msgstr ""
+
+#, c-format
+#~ msgid "Bad source: %s: %s\n"
+#~ msgstr "Mauvaise source : %s : %s\n"
+
+#, c-format
+#~ msgid "%s: %s: %s\n"
+#~ msgstr "%s : %s : %s\n"
+
+#, c-format
+#~ msgid "%s error(%d) from %s: %s\n"
+#~ msgstr "%s erreur (%d) de %s : %s\n"
+
+#, c-format
+#~ msgid "%s error(%d): %s\n"
+#~ msgstr "%s erreur (%d) : %s\n"
+
+#, c-format
+#~ msgid "unrecognized db option: \"%s\" ignored.\n"
+#~ msgstr "options de db inconnues : \"%s\" ignoré.\n"
+
+#, c-format
+#~ msgid "%s has invalid numeric value, skipped\n"
+#~ msgstr "%s est une valeur numérique invalide, ignoré\n"
+
+#, c-format
+#~ msgid "%s has too large or too small long value, skipped\n"
+#~ msgstr "%s est une valeur 'long' trop petite ou trop grande, ignoré\n"
+
+#, c-format
+#~ msgid "%s has too large or too small integer value, skipped\n"
+#~ msgstr "%s est une valeur entière trop petite ou trop grande, ignoré\n"
+
+#, c-format
+#~ msgid "cannot get %s lock on %s/%s\n"
+#~ msgstr "impossible d'avoir le verrou %s sur %s/%s\n"
+
+#~ msgid "shared"
+#~ msgstr "partagé"
+
+#~ msgid "exclusive"
+#~ msgstr "exclusif"
+
+#, c-format
+#~ msgid "invalid index type %x on %s/%s\n"
+#~ msgstr "type d'index %x invalide sur %s/%s\n"
+
+#, c-format
+#~ msgid "error(%d) getting \"%s\" records from %s index: %s\n"
+#~ msgstr "erreur(%d) en attrapant les articles « %s » de l'index %s : %s\n"
+
+#, c-format
+#~ msgid "error(%d) storing record \"%s\" into %s\n"
+#~ msgstr "erreur(%d) en stockant l'article « %s » dans %s\n"
+
+#, c-format
+#~ msgid "error(%d) removing record \"%s\" from %s\n"
+#~ msgstr "erreur(%d) en enlevant l'article « %s » de %s\n"
+
+#, c-format
+#~ msgid "error(%d) adding header #%d record\n"
+#~ msgstr "Erreur(%d) ajout de l'enregistrement de l'en-tête #%d\n"
+
+#, c-format
+#~ msgid "error(%d) removing header #%d record\n"
+#~ msgstr "Erreur (%d) suppression de l'enregistrement de l'en-tête #%d\n"
+
+#, c-format
+#~ msgid "error(%d) allocating new package instance\n"
+#~ msgstr "erreur(%d) en allouant une nouvelle instance de paquet\n"
+
+#, c-format
+#~ msgid "%c"
+#~ msgstr "%c"
+
+#~ msgid "%a %b %d %Y"
+#~ msgstr "%a %b %d %Y"
+
+#~ msgid "<lua> scriptlet support not built in\n"
+#~ msgstr "le support du scriptlet <lua> n'est pas intégrer\n"
+
+#, c-format
+#~ msgid "%3d<%*s(empty)\n"
+#~ msgstr "%3d<%*s(vide)\n"
