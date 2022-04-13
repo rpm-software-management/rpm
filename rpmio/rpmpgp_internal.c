@@ -12,7 +12,7 @@
 #include <rpm/rpmbase64.h>
 
 #include "rpmio/digest.h"
-#include "rpmio/rpmpgp.h"
+#include "rpmio/rpmpgpval.h"
 #include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */
 
 #include "debug.h"
