@@ -26,7 +26,7 @@ if os.access('Makefile.am', os.F_OK):
 
 rpmmod = Extension('rpm._rpm',
                    sources = ['header-py.c', 'rpmds-py.c', 'rpmfd-py.c',
-                              'rpmfi-py.c', 'rpmii-py.c', 'rpmkeyring-py.c',
+                              'rpmii-py.c', 'rpmkeyring-py.c',
                               'rpmmacro-py.c', 'rpmmi-py.c', 'rpmps-py.c',
                               'rpmstrpool-py.c', 'rpmfiles-py.c',
                               'rpmarchive-py.c', 'rpmtd-py.c',
