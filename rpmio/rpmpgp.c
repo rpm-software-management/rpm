@@ -528,6 +528,7 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 		_digp->saved |= PGPDIG_SAVED_ID;
 		memcpy(_digp->signid, p+1, sizeof(_digp->signid));
 	    }
+	    break;
 	case PGPSUBTYPE_KEY_FLAGS: /* Key usage flags */
 	    /* Subpackets in the unhashed section cannot be trusted */
 	    if (!hashed)
