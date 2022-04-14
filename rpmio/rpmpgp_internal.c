@@ -293,10 +293,6 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 	    for (i = 1; i < plen; i++)
 		pgpPrtVal(" ", pgpCompressionTbl, p[i]);
 	    break;
-	case PGPSUBTYPE_KEYSERVER_PREFERS:/* key server preferences */
-	    for (i = 1; i < plen; i++)
-		pgpPrtVal(" ", pgpKeyServerPrefsTbl, p[i]);
-	    break;
 	case PGPSUBTYPE_SIG_CREATE_TIME:  /* signature creation time */
 	    if (!hashed)
 		break; /* RFC 4880 §5.2.3.4 creation time MUST be hashed */
@@ -325,7 +321,7 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 		memcpy(_digp->signid, p+1, sizeof(_digp->signid));
 	    }
 	    break;
-	case PGPSUBTYPE_KEY_FLAGS: /* Key usage flags */
+	case PGPSUBTYPE_KEY_FLAGS: /* RFC4880 §5.2.3.21 Key usage flags */
 	    /* Subpackets in the unhashed section cannot be trusted */
 	    if (!hashed)
 		break;
@@ -336,20 +332,42 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 	    _digp->saved |= PGPDIG_SIG_HAS_KEY_FLAGS;
 	    _digp->key_flags = plen >= 2 ? p[1] : 0;
 	    break;
-	case PGPSUBTYPE_EXPORTABLE_CERT:
-	case PGPSUBTYPE_TRUST_SIG:
-	case PGPSUBTYPE_REGEX:
+	case PGPSUBTYPE_SIGNER_USERID: /* RFC4880 §5.2.3.22 Signer's User ID */
+	    impl = *p;
+	    break;
+	case PGPSUBTYPE_EMBEDDED_SIG: /* embedded signature */
+	    impl = *p;
+	    break;
+	case PGPSUBTYPE_REVOKE_REASON: /* RFC4880 §5.2.3.23 Reason for Revocation */
+	    if (plen < 2)
+		return 1; /* missing reason code */
+	    if (sigtype == PGPSIGTYPE_SUBKEY_REVOKE)
+		impl = *p;
+	    break;
+	case PGPSUBTYPE_TRUST_SIG: /* RFC4880 §5.2.3.13 Trust Signature */
+	case PGPSUBTYPE_REGEX: /* RFC4880 §5.2.3.13 Regular Expression */
+	case PGPSUBTYPE_KEYSERVER_PREFERS: /* RFC4880 §5.2.3.17 Key Server Preferences */
+	case PGPSUBTYPE_PREFER_KEYSERVER: /* RFC4880 §5.2.3.18 Preferred Key Server */
+	case PGPSUBTYPE_PRIMARY_USERID: /* RFC4880 §5.2.3.19 Primary User ID */
+	case PGPSUBTYPE_FEATURES: /* RFC4880 §5.2.3.24 Features */
+	    switch (sigtype) {
+	    case PGPSIGTYPE_GENERIC_CERT:
+	    case PGPSIGTYPE_PERSONA_CERT:
+	    case PGPSIGTYPE_CASUAL_CERT:
+	    case PGPSIGTYPE_POSITIVE_CERT:
+	    case PGPSIGTYPE_SIGNED_KEY:
+		impl = *p;
+		break;
+	    default: /* not understood outside of self-signatures */
+		break;
+	    }
+	    break;
 	case PGPSUBTYPE_REVOCABLE:
+	case PGPSUBTYPE_EXPORTABLE_CERT:
 	case PGPSUBTYPE_ARR:
 	case PGPSUBTYPE_REVOKE_KEY:
 	case PGPSUBTYPE_NOTATION:
-	case PGPSUBTYPE_PREFER_KEYSERVER:
-	case PGPSUBTYPE_PRIMARY_USERID:
 	case PGPSUBTYPE_POLICY_URL:
-	case PGPSUBTYPE_SIGNER_USERID:
-	case PGPSUBTYPE_REVOKE_REASON:
-	case PGPSUBTYPE_FEATURES:
-	case PGPSUBTYPE_EMBEDDED_SIG:
 	case PGPSUBTYPE_INTERNAL_100:
 	case PGPSUBTYPE_INTERNAL_101:
 	case PGPSUBTYPE_INTERNAL_102:
