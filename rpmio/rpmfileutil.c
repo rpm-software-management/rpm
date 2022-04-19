@@ -380,7 +380,7 @@ char * rpmGetPath(const char *path, ...)
     return rpmCleanPath(res);
 }
 
-char * rpmEscapeSpaces(const char * s)
+static char * rpmEscapeChars(const char *s, const char *accept, int (*fn)(int))
 {
     const char * se;
     char * t;
@@ -388,7 +388,7 @@ char * rpmEscapeSpaces(const char * s)
     size_t nb = 0;
 
     for (se = s; *se; se++) {
-	if (isspace(*se))
+	if ((accept && strchr(accept, *se)) || (fn && fn(*se)))
 	    nb++;
 	nb++;
     }
@@ -396,12 +396,22 @@ char * rpmEscapeSpaces(const char * s)
 
     t = te = xmalloc(nb);
     for (se = s; *se; se++) {
-	if (isspace(*se))
+	if ((accept && strchr(accept, *se)) || (fn && fn(*se)))
 	    *te++ = '\\';
 	*te++ = *se;
     }
     *te = '\0';
     return t;
+}
+
+char * rpmEscapeSpaces(const char *s)
+{
+    return rpmEscapeChars(s, NULL, isspace);
+}
+
+char * rpmEscape(const char *s, const char *accept)
+{
+    return rpmEscapeChars(s, accept, NULL);
 }
 
 void rpmUnescape(char *s, const char *accept)
