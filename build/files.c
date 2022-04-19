@@ -926,8 +926,18 @@ static rpmRC parseForSimple(char * buf, FileEntry cur, ARGV_t * fileNames)
 	    if (cur->attrFlags & (RPMFILE_DOC | RPMFILE_LICENSE))
 		cur->attrFlags |= RPMFILE_SPECIALDIR;
 	}
-	rpmUnescape(s, delim);
+
+	if (!quotes)
+	    rpmUnescape(s, delim);
+	else {
+	    rpmUnescape(s, "\"");
+	    s = rpmEscape(s, "?*[]{}");
+	}
+
 	argvAdd(fileNames, s);
+
+	if (quotes)
+	    free(s);
     }
 
     return res;

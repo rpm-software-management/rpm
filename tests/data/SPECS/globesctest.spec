@@ -24,7 +24,6 @@ mkdir -p %{buildroot}/opt
 
 # Glob escaping
 touch '%{buildroot}/opt/foo[bar]'
-touch '%{buildroot}/opt/foo[bar baz]'
 touch '%{buildroot}/opt/foo\[bar\]'
 touch '%{buildroot}/opt/foo*'
 touch '%{buildroot}/opt/foo\bar'
@@ -46,6 +45,14 @@ touch '%{buildroot}/opt/foo" bar"'
 touch '%{buildroot}/opt/foo b'
 touch '%{buildroot}/opt/foo a'
 touch '%{buildroot}/opt/foo r'
+
+# Quoting
+touch '%{buildroot}/opt/foo bar.conf'
+touch '%{buildroot}/opt/foo [baz]'
+touch '%{buildroot}/opt/foo[bar baz]'
+touch '%{buildroot}/opt/foo\[baz\]'
+touch '%{buildroot}/opt/foo\bay'
+touch '%{buildroot}/opt/foo"baz"'
 
 # Regression checks
 touch '%{buildroot}/opt/foo-bar1'
@@ -72,7 +79,6 @@ touch '%{buildroot}/opt/foo[123]'
 %doc foo\[bar\]
 /opt/foo\[bar\]
 /opt/foo\*[bar]
-"/opt/foo\[bar baz\]"
 /opt/foo\\\[bar\\\]
 /opt/foo\*
 /opt/foo\\bar
@@ -91,6 +97,14 @@ touch '%{buildroot}/opt/foo[123]'
 /opt/foo\ bar
 /opt/foo"\ bar"
 /opt/foo\ [bar]
+
+# Quoting
+%config "/opt/foo bar.conf"
+"/opt/foo [baz]"
+"/opt/foo[bar baz]"
+"/opt/foo\\[baz\\]"
+"/opt/foo\\bay"
+"/opt/foo\"baz\""
 
 # Regression checks
 %doc ba* "foo bar"

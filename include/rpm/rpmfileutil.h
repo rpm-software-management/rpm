@@ -145,6 +145,14 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr);
 char * rpmEscapeSpaces(const char * s);
 
 /** \ingroup rpmfileutil
+ * Escape given characters in string.
+ * @param s             string
+ * @param accept        chars to escape
+ * @return              escaped string
+ */
+char * rpmEscape(const char *s, const char *accept);
+
+/** \ingroup rpmfileutil
  * Unescape each char listed in accept by removing a backslash preceding it.
  * @param s		string
  * @param accept	chars to unescape (NULL for all)
