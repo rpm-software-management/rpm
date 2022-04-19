@@ -238,10 +238,11 @@ static void FileEntryFree(FileEntry entry)
 
 /**
  * strtokWithQuotes.
- * @param s
- * @param delim
+ * @param s		string to tokenize
+ * @param delim		delimiter chars
+ * @param[out] quotes	0 if unquoted, 1 if missing quote, 2 if quoted
  */
-static char *strtokWithQuotes(char *s, const char *delim)
+static char *strtokWithQuotes(char *s, const char *delim, int *quotes)
 {
     static char *olds = NULL;
     char *token, *r;
@@ -257,9 +258,11 @@ static char *strtokWithQuotes(char *s, const char *delim)
     if (*s == '\0')
 	return NULL;
 
-    /* Leading quote escapes all of delim until next quote */
-    if (*s == '"') {
-	delim = "\"";
+    /* Leading quote escapes all of delim until next quote of same type */
+    *quotes = 0;
+    if (*s == '"' || *s == '\'') {
+	*quotes = 1;
+	delim = (*s == '"') ? "\"" : "'";
 	s++;
     }
 
@@ -275,6 +278,8 @@ static char *strtokWithQuotes(char *s, const char *delim)
 	/* This token finishes the string */
 	olds = s;
     } else {
+	if (*s == '"' || *s == '\'')
+	    *quotes = 2;
 	/* Terminate the token and make olds point past it */
 	*s = '\0';
 	olds = s+1;
@@ -883,14 +888,21 @@ static rpmRC parseForSimple(char * buf, FileEntry cur, ARGV_t * fileNames)
 {
     char *s, *t, *end;
     char *delim = " \t\n";
+    int quotes = 0;
     rpmRC res = RPMRC_OK;
     int allow_relative = (RPMFILE_PUBKEY|RPMFILE_DOC|RPMFILE_LICENSE);
 
     t = buf;
-    while ((s = strtokWithQuotes(t, delim)) != NULL) {
+    while ((s = strtokWithQuotes(t, delim, &quotes)) != NULL) {
 	t = NULL;
 	end = s + strlen(s) - 1;
 
+	/* Syntax checks */
+	if (quotes == 1) {
+	    rpmlog(RPMLOG_ERR, _("Missing quote: %s\n"), s);
+	    res = RPMRC_FAIL;
+	    break;
+	}
 	if (*end == '\n') {
 	    /* Newline escaping is not supported */
 	    rpmlog(RPMLOG_ERR, _("Trailing backslash: %s\n"), s);
@@ -913,8 +925,18 @@ static rpmRC parseForSimple(char * buf, FileEntry cur, ARGV_t * fileNames)
 	    if (cur->attrFlags & (RPMFILE_DOC | RPMFILE_LICENSE))
 		cur->attrFlags |= RPMFILE_SPECIALDIR;
 	}
-	rpmUnescape(s, delim);
+
+	if (quotes == 0)
+	    rpmUnescape(s, delim);
+	else {
+	    rpmUnescape(s, "\"'");
+	    s = rpmEscape(s, "?*[]{}");
+	}
+
 	argvAdd(fileNames, s);
+
+	if (quotes == 2)
+	    free(s);
     }
 
     return res;
