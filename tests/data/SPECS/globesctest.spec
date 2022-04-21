@@ -17,6 +17,7 @@ BuildArch:	noarch
 
 %build
 touch 'foo[bar]' bar baz 'foo bar' foo%%name 'docfb[123]' 'licfb[123]'
+touch 'foo b' 'foo a' 'foo r'
 
 %install
 mkdir -p %{buildroot}/opt
@@ -37,6 +38,14 @@ touch '%{buildroot}/opt/foo*r'
 
 # Macro escaping
 touch '%{buildroot}/opt/foo%%name'
+
+# Space escaping
+touch '%{buildroot}/opt/foo[bax bay]'
+touch '%{buildroot}/opt/foo bar'
+touch '%{buildroot}/opt/foo" bar"'
+touch '%{buildroot}/opt/foo b'
+touch '%{buildroot}/opt/foo a'
+touch '%{buildroot}/opt/foo r'
 
 # Regression checks
 touch '%{buildroot}/opt/foo-bar1'
@@ -75,6 +84,13 @@ touch '%{buildroot}/opt/foo[123]'
 # Macro escaping
 %doc foo%%name
 /opt/foo%%name
+
+# Space escaping
+%doc foo\ [bar]
+/opt/foo\[bax\ bay\]
+/opt/foo\ bar
+/opt/foo"\ bar"
+/opt/foo\ [bar]
 
 # Regression checks
 %doc ba* "foo bar"
