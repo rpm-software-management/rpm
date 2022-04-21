@@ -16,7 +16,7 @@ BuildArch:	noarch
 
 
 %build
-touch 'foo[bar]' bar baz 'foo bar'
+touch 'foo[bar]' bar baz 'foo bar' 'foo b' 'foo a' 'foo r'
 
 %install
 mkdir -p %{buildroot}/opt
@@ -31,6 +31,14 @@ touch %{buildroot}/opt/foo\\
 touch '%{buildroot}/opt/foo?bar'
 touch '%{buildroot}/opt/foo{bar,baz}'
 touch '%{buildroot}/opt/foo"bar"'
+
+# Space escaping
+touch '%{buildroot}/opt/foo[bax bay]'
+touch '%{buildroot}/opt/foo bar'
+touch '%{buildroot}/opt/foo" bar"'
+touch '%{buildroot}/opt/foo b'
+touch '%{buildroot}/opt/foo a'
+touch '%{buildroot}/opt/foo r'
 
 # Regression checks
 touch '%{buildroot}/opt/foo-bar1'
@@ -61,6 +69,13 @@ touch '%{buildroot}/opt/foobawb'
 /opt/foo\?bar
 /opt/foo\{bar,baz\}
 /opt/foo\"bar\"
+
+# Space escaping
+%doc foo\ [bar]
+/opt/foo\[bax\ bay\]
+/opt/foo\ bar
+/opt/foo"\ bar"
+/opt/foo\ [bar]
 
 # Regression checks
 %doc ba* "foo bar"
