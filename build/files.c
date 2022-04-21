@@ -264,8 +264,12 @@ static char *strtokWithQuotes(char *s, const char *delim)
 
     /* Find the end of the token.  */
     token = s;
-    while (!strchr(delim, *s))
-	s++;
+    while (!strchr(delim, *s)) {
+	if (*s == '\\')
+	    s++;
+	if (*s != '\0')
+	    s++;
+    }
 
     /* Terminate it */
     if (*s == '\0') {
@@ -878,13 +882,22 @@ static VFA_t const virtualAttrs[] = {
  */
 static rpmRC parseForSimple(char * buf, FileEntry cur, ARGV_t * fileNames)
 {
-    char *s, *t;
+    char *s, *t, *end;
+    char *delim = " \t\n";
     rpmRC res = RPMRC_OK;
     int allow_relative = (RPMFILE_PUBKEY|RPMFILE_DOC|RPMFILE_LICENSE);
 
     t = buf;
-    while ((s = strtokWithQuotes(t, " \t\n")) != NULL) {
+    while ((s = strtokWithQuotes(t, delim)) != NULL) {
 	t = NULL;
+	end = s + strlen(s) - 1;
+
+	if (*end == '\n') {
+	    /* Newline escaping is not supported */
+	    rpmlog(RPMLOG_ERR, _("Trailing backslash: %s\n"), s);
+	    res = RPMRC_FAIL;
+	    break;
+	}
 
     	/* Set flags for virtual file attributes */
 	if (vfaMatch(virtualAttrs, s, &(cur->attrFlags)))
@@ -901,6 +914,7 @@ static rpmRC parseForSimple(char * buf, FileEntry cur, ARGV_t * fileNames)
 	    if (cur->attrFlags & (RPMFILE_DOC | RPMFILE_LICENSE))
 		cur->attrFlags |= RPMFILE_SPECIALDIR;
 	}
+	rpmUnescape(s, delim);
 	argvAdd(fileNames, s);
     }
 
