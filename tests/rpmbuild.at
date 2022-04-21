@@ -442,7 +442,12 @@ runroot rpmbuild -bb --quiet /data/SPECS/globesctest.spec
 runroot rpm -qpl /build/RPMS/noarch/globesctest-1.0-1.noarch.rpm
 ],
 [0],
-[/opt/foo"'baz"'
+[/opt/foo a
+/opt/foo b
+/opt/foo bar
+/opt/foo r
+/opt/foo" bar"
+/opt/foo"'baz"'
 /opt/foo"bar"
 /opt/foo*
 /opt/foo-bar1
@@ -450,6 +455,7 @@ runroot rpm -qpl /build/RPMS/noarch/globesctest-1.0-1.noarch.rpm
 /opt/foo?bar
 /opt/foo[[bar baz]]
 /opt/foo[[bar]]
+/opt/foo[[bax bay]]
 /opt/foo\
 /opt/foo\[[bar\]]
 /opt/foo\bar
@@ -468,7 +474,10 @@ runroot rpm -qpl /build/RPMS/noarch/globesctest-1.0-1.noarch.rpm
 /opt/share/doc/globesctest-1.0
 /opt/share/doc/globesctest-1.0/bar
 /opt/share/doc/globesctest-1.0/baz
+/opt/share/doc/globesctest-1.0/foo a
+/opt/share/doc/globesctest-1.0/foo b
 /opt/share/doc/globesctest-1.0/foo bar
+/opt/share/doc/globesctest-1.0/foo r
 /opt/share/doc/globesctest-1.0/foo[[bar]]
 ],
 [],

@@ -244,7 +244,8 @@ static void FileEntryFree(FileEntry entry)
 static char *strtokWithQuotes(char *s, const char *delim)
 {
     static char *olds = NULL;
-    char *token;
+    char *token, *r;
+    int esc = 0;
 
     if (s == NULL)
 	s = olds;
@@ -263,9 +264,11 @@ static char *strtokWithQuotes(char *s, const char *delim)
     }
 
     /* Find the end of the token.  */
-    token = s;
-    while (!strchr(delim, *s))
-	s++;
+    token = r = s;
+    while (!strchr(delim, *s) || (esc && *s != '\0')) {
+	r = s++;
+	esc = (*r == '\\') && !esc;
+    }
 
     /* Terminate it */
     if (*s == '\0') {
@@ -878,13 +881,22 @@ static VFA_t const virtualAttrs[] = {
  */
 static rpmRC parseForSimple(char * buf, FileEntry cur, ARGV_t * fileNames)
 {
-    char *s, *t;
+    char *s, *t, *end;
+    char *delim = " \t\n";
     rpmRC res = RPMRC_OK;
     int allow_relative = (RPMFILE_PUBKEY|RPMFILE_DOC|RPMFILE_LICENSE);
 
     t = buf;
-    while ((s = strtokWithQuotes(t, " \t\n")) != NULL) {
+    while ((s = strtokWithQuotes(t, delim)) != NULL) {
 	t = NULL;
+	end = s + strlen(s) - 1;
+
+	if (*end == '\n') {
+	    /* Newline escaping is not supported */
+	    rpmlog(RPMLOG_ERR, _("Trailing backslash: %s\n"), s);
+	    res = RPMRC_FAIL;
+	    continue;
+	}
 
     	/* Set flags for virtual file attributes */
 	if (vfaMatch(virtualAttrs, s, &(cur->attrFlags)))
@@ -901,6 +913,7 @@ static rpmRC parseForSimple(char * buf, FileEntry cur, ARGV_t * fileNames)
 	    if (cur->attrFlags & (RPMFILE_DOC | RPMFILE_LICENSE))
 		cur->attrFlags |= RPMFILE_SPECIALDIR;
 	}
+	rpmUnescape(s, delim);
 	argvAdd(fileNames, s);
     }
 
@@ -2160,18 +2173,22 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char *fn)
 {
     int quote = 1;	/* XXX permit quoted glob characters. */
     int doGlob;
-    char *fileName = xstrdup(fn);
+    char *fileName = NULL;
     char *diskPath = NULL;
     rpmRC rc = RPMRC_OK;
-    size_t fnlen = strlen(fileName);
-    int trailing_slash = (fnlen > 0 && fileName[fnlen-1] == '/');
+    size_t fnlen = strlen(fn);
+    int trailing_slash = (fnlen > 0 && fn[fnlen-1] == '/');
 
     /* XXX differentiate other directories from explicit %dir */
     if (trailing_slash && !fl->cur.isDir)
 	fl->cur.isDir = -1;
     
-    if (!(doGlob = rpmIsGlob(fileName, quote)))
+    if ((doGlob = rpmIsGlob(fn, quote))) {
+	fileName = rpmEscapeSpaces(fn);
+    } else {
+	fileName = xstrdup(fn);
 	rpmUnescape(fileName, NULL);
+    }
 
     /* Check that file starts with leading "/" */
     if (*fileName != '/') {
