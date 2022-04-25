@@ -25,6 +25,49 @@ missing   d /usr/share/doc/hello-2.0/README
 [])
 AT_CLEANUP
 
+AT_SETUP([rpm reinstall with shared files])
+AT_KEYWORDS([install erase update rpmdb])
+RPMDB_INIT
+AT_CHECK([
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+	--define "_transaction_color 3" \
+	--define "_prefer_color 2" \
+	/data/RPMS/hello-2.0-1.x86_64.rpm \
+	/data/RPMS/hello-2.0-1.i686.rpm
+runroot rpm -Vv --nodeps --nogroup --nouser hello.i686 hello.x86_64
+
+runroot rpm --reinstall --ignoreos --ignorearch --nodeps \
+	--define "_transaction_color 3" \
+	--define "_prefer_color 2" \
+	/data/RPMS/hello-2.0-1.x86_64.rpm \
+	/data/RPMS/hello-2.0-1.i686.rpm
+runroot rpm -Vv --nodeps --nogroup --nouser hello.i686 hello.x86_64
+],
+[0],
+[.........    /usr/bin/hello (wrong color)
+.........    /usr/share/doc/hello-2.0
+.........  d /usr/share/doc/hello-2.0/COPYING
+.........  d /usr/share/doc/hello-2.0/FAQ
+.........  d /usr/share/doc/hello-2.0/README
+.........    /usr/bin/hello
+.........    /usr/share/doc/hello-2.0
+.........  d /usr/share/doc/hello-2.0/COPYING
+.........  d /usr/share/doc/hello-2.0/FAQ
+.........  d /usr/share/doc/hello-2.0/README
+.........    /usr/bin/hello (wrong color)
+.........    /usr/share/doc/hello-2.0
+.........  d /usr/share/doc/hello-2.0/COPYING
+.........  d /usr/share/doc/hello-2.0/FAQ
+.........  d /usr/share/doc/hello-2.0/README
+.........    /usr/bin/hello
+.........    /usr/share/doc/hello-2.0
+.........  d /usr/share/doc/hello-2.0/COPYING
+.........  d /usr/share/doc/hello-2.0/FAQ
+.........  d /usr/share/doc/hello-2.0/README
+],
+[])
+AT_CLEANUP
+
 AT_SETUP([rpm -e and shared files removed 1.1])
 AT_KEYWORDS([install erase rpmdb])
 RPMDB_INIT
