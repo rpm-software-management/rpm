@@ -442,6 +442,13 @@ runroot rpmbuild -bb --quiet /data/SPECS/globesctest.spec
 runroot rpm -qpl /build/RPMS/noarch/globesctest-1.0-1.noarch.rpm
 ],
 [0],
+[stdout],
+)
+AT_CHECK([
+grep -v "/opt/share/doc/globesctest" stdout > expout
+cat stdout
+],
+[0],
 [/opt/foo [[baz]]
 /opt/foo a
 /opt/foo b
@@ -492,6 +499,12 @@ runroot rpm -qpl /build/RPMS/noarch/globesctest-1.0-1.noarch.rpm
 /opt/share/doc/globesctest-1.0/foo[[bar]]
 ],
 [],
+)
+AT_CHECK([
+runroot rpm -qpl /build/RPMS/noarch/globesctest-auto-1.0-1.noarch.rpm
+],
+[0],
+[expout],
 )
 AT_CLEANUP
 

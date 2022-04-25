@@ -1105,6 +1105,24 @@ package or when debugging this package.\
 %loongarch64	loongarch64
 
 #------------------------------------------------------------------------
+# Use in %install to generate fully-quoted file lists. For example,
+#
+# %install
+# ...
+# %collect [-r <root>] %{name}
+# ...
+# %files -f %{name}.list
+#
+%collect(r:)\
+rm -f %{1}.list \
+find %{buildroot}%{_prefix}/%{-r*} -type f -print | \\\
+perl -pe 's!%{buildroot}!!g;'			    \\\
+     -pe 's/(%%)/%%$1/g;'			    \\\
+     -pe 's/(["\\\\])/\\\\$1/g;'		    \\\
+     -pe 's/(^.*$)/"$1"/g;'			    \\\
+> %{1}.list
+
+#------------------------------------------------------------------------
 # Use in %install to generate locale specific file lists. For example,
 #
 # %install

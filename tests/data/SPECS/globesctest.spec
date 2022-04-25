@@ -15,6 +15,11 @@ BuildArch:	noarch
 %description
 %{summary}.
 
+%package auto
+Summary:        Testing file glob escape behavior (%%collect)
+%description auto
+%{summary}.
+
 
 %build
 touch 'foo[bar]' bar baz 'foo bar' 'foo b' 'foo a' 'foo r' doc%%name
@@ -71,6 +76,8 @@ touch '%{buildroot}/opt/foobayb'
 touch '%{buildroot}/opt/foobawa'
 touch '%{buildroot}/opt/foobawb'
 
+%collect files
+
 %files
 
 %doc foo\[bar\] ba* "foo bar" foo\ [bar] doc%%name
@@ -113,3 +120,5 @@ touch '%{buildroot}/opt/foobawb'
 /opt/foo{bar,baz}
 /opt/foo{bar{a,b},baz{a,b}}
 /opt/foo{bay*,baw*}
+
+%files auto -f files.list

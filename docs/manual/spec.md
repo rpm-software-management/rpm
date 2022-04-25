@@ -673,18 +673,11 @@ undefined behavior, for example:
 
 When trying to escape a large number of file names, it is often best to create
 a file with a complete list of escaped file names.  This is easiest to do with
-a shell script like this:
+the following macro:
 
 ```
-	rm -f filelist.txt
-	find %{buildroot}%{_prefix} -type f -print | \
-	perl -pe 's!%{buildroot}!!g;'	\
-	     -pe 's/(%)/%$1/g;'		\
-	     -pe 's/(["\\])/\\$1/g;'	\
-	     -pe 's/(^.*$)/"$1"/g;'	\
-	> filelist.txt
-
-	%files -f filelist.txt
+	%collect files
+	%files -f files.list
 ```
 
 ## %changelog section
