@@ -516,28 +516,6 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfiles fi, int fx
     }
 }
 
-static rpmFileAction getSkipAction(rpmfiles files, int i)
-{
-    rpmFileAction action = FA_UNKNOWN;
-
-    switch (rpmfilesFState(files, i)) {
-    case RPMFILE_STATE_REPLACED:
-    case RPMFILE_STATE_NOTINSTALLED:
-	action = FA_SKIPNSTATE;
-	break;
-    case RPMFILE_STATE_NETSHARED:
-	action = FA_SKIPNETSHARED;
-	break;
-    case RPMFILE_STATE_WRONGCOLOR:
-	action = FA_SKIPCOLOR;
-	break;
-    default:
-	break;
-    }
-
-    return action;
-}
-
 /**
  * Update disk space needs on each partition for this package's files.
  */
@@ -706,22 +684,16 @@ assert(otherFi != NULL);
                 /* Here is an overlapped added file we don't want to nuke. */
 		if (rpmfsGetAction(otherFs, otherFileNum) != FA_ERASE) {
 		    /* On updates, don't remove files. */
-		    if (!getSkipAction(otherFi, otherFileNum)) {
-			rpmfsSetAction(fs, i, FA_SKIP);
-			break;
-		    }
+		    rpmfsSetAction(fs, i, FA_SKIP);
+		    break;
 		}
 		/* Here is an overlapped removed file: skip in previous. */
 		rpmfsSetAction(otherFs, otherFileNum, FA_SKIP);
 	    }
 	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
 		break;
-
 	    if (rpmfilesFState(fi, i) != RPMFILE_STATE_NORMAL) {
-		rpmFileAction skip = getSkipAction(fi, i);
-		if (skip) {
-		    rpmfsSetAction(fs, i, skip);
-		}
+		rpmfsSetAction(fs, i, FA_SKIP);
 		break;
 	    }
 		
