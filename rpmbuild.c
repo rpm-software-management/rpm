@@ -663,16 +663,12 @@ int main(int argc, char *argv[])
 	/* fallthrough */
     case 'f':
 	ba->buildAmount |= RPMBUILD_CONF;
-	if ((buildChar == 'f') && shortCircuit)
-	    break;
-	/* fallthrough */
-    case 'r':
-    case 'd':
 	ba->buildAmount |= RPMBUILD_BUILDREQUIRES;
-	ba->buildAmount |= RPMBUILD_DUMPBUILDREQUIRES;
-	if (!noDeps)
+	if (!noDeps) {
+	    ba->buildAmount |= RPMBUILD_DUMPBUILDREQUIRES;
 	    ba->buildAmount |= RPMBUILD_CHECKBUILDREQUIRES;
-	if ((buildChar == 'r' || buildChar == 'd') && shortCircuit)
+	}
+	if ((buildChar == 'f') && shortCircuit)
 	    break;
 	/* fallthrough */
     case 'p':
@@ -681,6 +677,18 @@ int main(int argc, char *argv[])
     case 'l':
 	ba->buildAmount |= RPMBUILD_FILECHECK;
 	break;
+    case 'r':
+	/* fallthrough */
+    case 'd':
+	if (!shortCircuit)
+	    ba->buildAmount |= RPMBUILD_PREP;
+	ba->buildAmount |= RPMBUILD_BUILDREQUIRES;
+	ba->buildAmount |= RPMBUILD_DUMPBUILDREQUIRES;
+	if (!noDeps)
+	    ba->buildAmount |= RPMBUILD_CHECKBUILDREQUIRES;
+	if (buildChar == 'd')
+	    break;
+	/* fallthrough */
     case 's':
 	ba->buildAmount |= RPMBUILD_PACKAGESOURCE;
 	break;
