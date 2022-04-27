@@ -130,7 +130,7 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
     }
 
     buf = rpmExpand("%{__rpmuncompress} -x ",
-		    quietly ? "" : "-v", sp->path, NULL);
+		    quietly ? "" : "-v ", sp->path, NULL);
     rstrcat(&buf,
 	"\nSTATUS=$?\n"
 	"if [ $STATUS -ne 0 ]; then\n"
