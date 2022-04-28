@@ -97,12 +97,13 @@ static char *doUntar(const char *fn)
 	if (needtar) {
 	    rasprintf(&buf, "%s '%s' | %s %s -", zipper, fn, tar, taropts);
 	} else if (at->compressed == COMPRESSED_GEM) {
-	    size_t nvlen = strlen(fn) - 3;
+	    const char *bn = basename(fn);
+	    size_t nvlen = strlen(bn) - 3;
 	    char *gem = rpmGetPath("%{__gem}", NULL);
 	    char *gemspec = NULL;
 	    char gemnameversion[nvlen];
 
-	    rstrlcpy(gemnameversion, fn, nvlen);
+	    rstrlcpy(gemnameversion, bn, nvlen);
 	    gemspec = rpmGetPath("", gemnameversion, ".gemspec", NULL);
 
 	    rasprintf(&buf, "%s '%s' && %s spec '%s' --ruby > '%s'",
