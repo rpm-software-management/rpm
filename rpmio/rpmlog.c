@@ -163,10 +163,6 @@ void rpmlogOpen (const char *ident, int option,
 {
 }
 
-#ifdef NOTYET
-static unsigned rpmlogFacility = RPMLOG_USER;
-#endif
-
 int rpmlogSetMask (int mask)
 {
     rpmlogCtx ctx = rpmlogCtxAcquire(mask ? 1 : 0);
