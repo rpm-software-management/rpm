@@ -6,19 +6,19 @@
 # Arkadiusz Miskiewicz <arekm@pld-linux.org>, 2003
 # Jakub Bogusz <qboosh@pld-linux.org>, 2002
 # Paweł Dziekoński <pdziekonski@mml.ch.pwr.wroc.pl>, 1999
-# Piotr Drąg <piotrdrag@gmail.com>, 2007,2011-2012,2014-2017, 2020.
+# Piotr Drąg <piotrdrag@gmail.com>, 2007,2011-2012,2014-2017, 2020, 2022.
 # Wojciech Drapiński <wojciech.drapinski@zie.pg.gda.pl>, 1999
-# Piotr Drąg <piotrdrag@gmail.com>, 2017. #zanata, 2020.
-# Piotr Drąg <piotrdrag@gmail.com>, 2018. #zanata, 2020.
-# Piotr Drąg <piotrdrag@gmail.com>, 2019. #zanata, 2020.
-# Piotr Drąg <piotrdrag@gmail.com>, 2020. #zanata
+# Piotr Drąg <piotrdrag@gmail.com>, 2017. #zanata, 2020, 2022.
+# Piotr Drąg <piotrdrag@gmail.com>, 2018. #zanata, 2020, 2022.
+# Piotr Drąg <piotrdrag@gmail.com>, 2019. #zanata, 2020, 2022.
+# Piotr Drąg <piotrdrag@gmail.com>, 2020. #zanata, 2022.
 # Panu Matilainen <pmatilai@redhat.com>, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2022-04-07 13:03+0300\n"
-"PO-Revision-Date: 2020-10-28 09:23+0000\n"
+"PO-Revision-Date: 2022-04-15 12:48+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <https://translate.fedoraproject.org/projects/rpm/"
 "master/pl/>\n"
@@ -29,7 +29,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n"
 "%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n"
 "%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
-"X-Generator: Weblate 4.3.2-dev\n"
+"X-Generator: Weblate 4.11.2\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -59,7 +59,7 @@ msgid "exec failed\n"
 msgstr "wykonanie się nie powiodło\n"
 
 msgid "create uncompressed tar file"
-msgstr ""
+msgstr "utworzenie nieskompresowanego pliku tar"
 
 #, c-format
 msgid "argument is not an RPM package\n"
@@ -93,17 +93,21 @@ msgstr "<plik-spec>"
 
 #, c-format
 msgid "build through %conf (%prep, then %conf) from <specfile>"
-msgstr ""
+msgstr "zbudowanie przez %conf (%prep, a następnie %conf) z <pliku-spec>"
 
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr ""
+"zbudowanie przez %build (%prep, %conf, a następnie skompilowanie) z <pliku-"
+"spec>"
 
 msgid "check build dependencies <specfile>"
-msgstr ""
+msgstr "sprawdzenie zależności budowania <pliku-spec>"
 
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr ""
+"zbudowanie przez %install (%prep, %conf, %build, a następnie zainstalowanie) "
+"z <pliku-spec>"
 
 #, c-format
 msgid "verify %files section from <specfile>"
@@ -136,14 +140,18 @@ msgstr "<pakiet-źródłowy>"
 
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr ""
+"zbudowanie przez %build (%prep, %conf, a następnie skompilowanie) z <pakietu-"
+"źródłowego>"
 
 msgid "check build dependencies <source package>"
-msgstr ""
+msgstr "sprawdzenie zależności budowania <pakietu-źródłowego>"
 
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
 msgstr ""
+"zbudowanie przez %install (%prep, %conf, %build, a następnie zainstalowanie) "
+"z <pakietu-źródłowego>"
 
 #, c-format
 msgid "verify %files section from <source package>"
@@ -175,13 +183,17 @@ msgstr "<plik-tar>"
 
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr ""
+"zbudowanie przez %build (%prep, %conf, a następnie skompilowanie) z <pliku-"
+"tar>"
 
 msgid "check build dependencies <tarball>"
-msgstr ""
+msgstr "sprawdzenie zależności budowania <pliku-tar>"
 
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr ""
+"zbudowanie przez %install (%prep, %conf, %build, a następnie zainstalowanie) "
+"z <pliku-tar>"
 
 #, c-format
 msgid "verify %files section from <tarball>"
@@ -208,8 +220,8 @@ msgstr "zbudowanie pakietu binarnego z <pakietu-źródłowego>"
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
-"zbudowanie przez %install (%prep, %build i zainstalowanie) z <pakietu-"
-"źródłowego>"
+"zbudowanie przez %install (%prep, %build, a następnie zainstalowanie) z "
+"<pakietu-źródłowego>"
 
 msgid "override build root"
 msgstr "zastąpienie build root"
@@ -487,7 +499,7 @@ msgid "delete package signatures"
 msgstr "usunięcie podpisów pakietów"
 
 msgid "delete IMA and fsverity file signatures"
-msgstr ""
+msgstr "usunięcie podpisów plików IMA i fsverity"
 
 msgid "create rpm v3 header+payload signatures"
 msgstr "utworzenie podpisów nagłówka+danych RPM v3"
@@ -496,19 +508,19 @@ msgid "sign package(s) files"
 msgstr "podpisanie plików pakietów"
 
 msgid "generate fsverity signatures for package(s) files"
-msgstr ""
+msgstr "utworzenie podpisów fsverity dla plików pakietów"
 
 msgid "algorithm to use for verity signatures, default sha256"
-msgstr ""
+msgstr "algorytm używany do podpisów wierności, domyślnie SHA256"
 
 msgid "<algorithm>"
-msgstr ""
+msgstr "<algorytm>"
 
 msgid "use file signing cert <cert>"
-msgstr ""
+msgstr "użycie <certyfikatu> podpisywania pakietów"
 
 msgid "<cert>"
-msgstr ""
+msgstr "<certyfikat>"
 
 msgid "use file signing key <key>"
 msgstr "użycie <klucza> podpisywania pakietów"
@@ -544,7 +556,7 @@ msgid "query spec file(s)"
 msgstr "odpytuje pliki spec"
 
 msgid "interactive macro shell"
-msgstr ""
+msgstr "interaktywna powłoka makr"
 
 msgid "operate on binary rpms generated by spec (default)"
 msgstr ""
@@ -552,9 +564,11 @@ msgstr ""
 
 msgid "operate on binary package header(s) that would be built from spec"
 msgstr ""
+"działa na nagłówkach binarnych pakietów, które zostałyby utworzone z pliku "
+"spec"
 
 msgid "operate on source package header generated by spec"
-msgstr ""
+msgstr "działa na nagłówku źródłowego pakietu utworzonego przez plik spec"
 
 msgid "use the following query format"
 msgstr "użycie następującego formatu zapytania"
@@ -564,7 +578,7 @@ msgstr "Opcje pliku spec:"
 
 #, c-format
 msgid "RPM version %s macro shell\n"
-msgstr ""
+msgstr "RPM %s powłoka makr\n"
 
 msgid "no arguments given for parse"
 msgstr "nie podano parametrów do przetworzenia"
@@ -601,17 +615,21 @@ msgstr "ustawianie %s=%s\n"
 
 #, c-format
 msgid "source_date_epoch_from_changelog set but %%changelog is missing\n"
-msgstr ""
+msgstr "Ustawiono source_date_epoch_from_changelog, ale brak %%changelog\n"
 
 msgid ""
 "\n"
 "RPM build warnings:\n"
 msgstr ""
+"\n"
+"Ostrzeżenia budowania pakietu RPM:\n"
 
 msgid ""
 "\n"
 "RPM build errors:\n"
 msgstr ""
+"\n"
+"Błędy budowania pakietu RPM:\n"
 
 #, c-format
 msgid "Missing '(' in %s %s\n"
@@ -1150,7 +1168,7 @@ msgstr "%d. wiersz: błędna opcja %%setup %s: %s\n"
 
 #, c-format
 msgid "Patch number not specified: %s\n"
-msgstr ""
+msgstr "Nie podano numeru łaty: %s\n"
 
 #, c-format
 msgid "Invalid patch number %s: %s\n"
@@ -1275,7 +1293,7 @@ msgstr "%s:%d: błędny warunek %s: %s\n"
 
 #, c-format
 msgid "%s:%d: malformed %%include statement\n"
-msgstr "%s:%d: błędnie sformatowany zwrot %%include\n"
+msgstr "%s:%d: błędnie sformatowane wyrażenie %%include\n"
 
 #, c-format
 msgid "encoding %s not supported by system\n"
@@ -1407,7 +1425,7 @@ msgstr "Rozpoznanie pliku „%s” się nie powiodło: tryb %06o %s\n"
 
 #, c-format
 msgid "Recognition of file mtype \"%s\" failed: mode %06o %s\n"
-msgstr ""
+msgstr "Rozpoznanie mtypu pliku „%s” się nie powiodło: tryb %06o %s\n"
 
 #, c-format
 msgid "Finding  %s: %s\n"
@@ -1434,7 +1452,7 @@ msgstr "odpytanie pliku spec %s się nie powiodło, nie można przetworzyć\n"
 
 #, c-format
 msgid "invalid %%_db_backend: %s\n"
-msgstr ""
+msgstr "nieprawidłowe %%_db_backend: %s\n"
 
 #, c-format
 msgid "Converting database from %s to %s backend\n"
@@ -1539,15 +1557,15 @@ msgstr "(nieznany)"
 
 #, c-format
 msgid "failed to open dir %s of %s: %s\n"
-msgstr ""
+msgstr "otwarcie %s. z %s katalogów się nie powiodło: %s\n"
 
 #, c-format
 msgid "%s%s saved as %s%s\n"
-msgstr ""
+msgstr "%s%s zapisano jako %s%s\n"
 
 #, c-format
 msgid "%s%s created as %s%s\n"
-msgstr ""
+msgstr "%s%s utworzono jako %s%s\n"
 
 #, c-format
 msgid "%s %s: remove failed: %s\n"
@@ -1591,11 +1609,11 @@ msgstr "region %d: numer znacznika się nie zgadza il %d ril %d dl %d rdl %d\n"
 
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%<PRIu32>) out of range"
-msgstr ""
+msgstr "znaczniki hdr: BŁĘDNE, liczba znaczników(%<PRIu32>) jest poza zakresem"
 
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%<PRIu32>) out of range"
-msgstr ""
+msgstr "dane hdr: BŁĘDNE, liczba bajtów(%<PRIu32>) jest poza zakresem"
 
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d"
@@ -1616,7 +1634,7 @@ msgid "signature "
 msgstr "podpis "
 
 msgid "hdr length: BAD"
-msgstr ""
+msgstr "długość hdr: BŁĘDNE"
 
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)"
@@ -1681,7 +1699,7 @@ msgid "RPM v3 packages are deprecated: %s\n"
 msgstr "Pakiety RPM v3 są przestarzałe: %s\n"
 
 msgid "Error writing to stdout"
-msgstr ""
+msgstr "Błąd podczas zapisywania do standardowego wyjścia"
 
 #, c-format
 msgid "failed to load macro file %s\n"
@@ -1880,7 +1898,7 @@ msgid "update the database, but do not modify the filesystem"
 msgstr "zaktualizowanie bazy danych, ale bez modyfikacji systemu plików"
 
 msgid "do not update the database, but modify the filesystem"
-msgstr ""
+msgstr "bez aktualizowania bazy danych, ale modyfikowanie systemu plików"
 
 msgid "do not verify package dependencies"
 msgstr "bez sprawdzania zależności pakietu"
@@ -1984,7 +2002,7 @@ msgid "reinstall package(s)"
 msgstr "ponowne zainstalowanie pakietów"
 
 msgid "restore package(s)"
-msgstr ""
+msgstr "przywrócenie pakietów"
 
 msgid "query/verify all packages"
 msgstr "odpytanie/sprawdzenie wszystkich pakietów"
@@ -1993,10 +2011,11 @@ msgid "rpm checksig mode"
 msgstr "tryb sprawdzania podpisów pakietów RPM"
 
 msgid "query/verify package(s) owning installed file"
-msgstr ""
+msgstr "odpytanie/sprawdzenie pakietów zawierających zainstalowany plik"
 
 msgid "query/verify package(s) owning path, installed or not"
 msgstr ""
+"odpytanie/sprawdzenie pakietów zawierających ścieżkę, zainstalowaną lub nie"
 
 msgid "query/verify package(s) in group"
 msgstr "odpytanie/sprawdzenie pakietów w grupie"
@@ -2506,11 +2525,11 @@ msgstr ""
 
 #, c-format
 msgid "%s: base64 decode failed, len %li\n"
-msgstr ""
+msgstr "%s: zdekodowanie base64 się nie powiodło, len %li\n"
 
 #, c-format
 msgid "%s: base64 decode success, len %li\n"
-msgstr ""
+msgstr "%s: pomyślnie zdekodowano base64, len %li\n"
 
 msgid "Bad magic"
 msgstr "Błędne magic"
@@ -2540,7 +2559,7 @@ msgid "Archive file not in header"
 msgstr "Plik archiwum nie znajduje się w nagłówku"
 
 msgid "Invalid symlink"
-msgstr ""
+msgstr "Nieprawidłowe dowiązanie symboliczne"
 
 msgid "File from package already exists as a directory in system"
 msgstr "Plik z pakietu już istnieje jako katalog w systemie"
@@ -2845,7 +2864,7 @@ msgid "rpmdb"
 msgstr "rpmdb"
 
 msgid "restored"
-msgstr ""
+msgstr "przywrócono"
 
 #, c-format
 msgid "cannot open Packages database in %s\n"
@@ -2869,11 +2888,11 @@ msgstr "%s: odczytanie klucza publicznego się nie powiodło.\n"
 
 #, c-format
 msgid "unknown keyring type: %s, using rpmdb\n"
-msgstr ""
+msgstr "nieznany typ bazy kluczy: %s, używanie rpmdb\n"
 
 #, c-format
 msgid "failed to import key: %s: %s\n"
-msgstr ""
+msgstr "zaimportowanie klucza się nie powiodło: %s: %s\n"
 
 #, c-format
 msgid "invalid package verify level %s\n"
@@ -3001,13 +3020,13 @@ msgid "parse error in expression"
 msgstr "błąd przetwarzania w wyrażeniu"
 
 msgid "unsupported function argument type"
-msgstr ""
+msgstr "typ parametru nieobsługiwanej funkcji"
 
 msgid "syntax error in expression"
 msgstr "błąd składni w wyrażeniu"
 
 msgid "unsupported funcion"
-msgstr ""
+msgstr "nieobsługiwana funkcja"
 
 msgid "unmatched ("
 msgstr "niesparowane ("
@@ -3025,13 +3044,13 @@ msgid "division by zero"
 msgstr "dzielenie przez zero"
 
 msgid "* and / not supported for versions"
-msgstr ""
+msgstr "* i / nie są obsługiwane dla wersji"
 
 msgid "* and / not supported for strings"
 msgstr "* i / nie są obsługiwane dla ciągów"
 
 msgid "+ and - not supported for versions"
-msgstr ""
+msgstr "+ i - nie są obsługiwane dla wersji"
 
 msgid "- not supported for strings"
 msgstr "- nie jest obsługiwane dla ciągów"
@@ -3154,7 +3173,7 @@ msgstr "skrypt Lua się nie powiódł: %s\n"
 
 #, c-format
 msgid "result print failed: %s\n"
-msgstr ""
+msgstr "wyświetlenie wyniku się nie powiodło: %s\n"
 
 #, c-format
 msgid "invalid syntax in lua file: %s\n"
@@ -3170,7 +3189,7 @@ msgstr "przydzielenie pamięci (%u B) zwróciło NULL.\n"
 
 #, c-format
 msgid "Unsupported version of signature: V%d\n"
-msgstr ""
+msgstr "Nieobsługiwana wersja podpisu: V%d\n"
 
 #, c-format
 msgid "Unsupported version of key: V%d\n"
@@ -3248,17 +3267,17 @@ msgstr "obsługa podpisywania plików nie jest wbudowana\n"
 
 #, c-format
 msgid "Searching for algorithm %s got %i\n"
-msgstr ""
+msgstr "Wyszukiwanie algorytmu %s, otrzymano %i\n"
 
 #, c-format
 msgid "Unsupported fsverity algorithm %s\n"
-msgstr ""
+msgstr "Nieobsługiwany algorytm fsverity %s\n"
 
 msgid "fsverity signatures requires a key and a cert\n"
-msgstr ""
+msgstr "podpisy fsverity wymagają klucza i certyfikatu\n"
 
 msgid "fsverity signing support not built in\n"
-msgstr ""
+msgstr "obsługa podpisywania fsverity nie jest wbudowana\n"
 
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
@@ -3310,19 +3329,19 @@ msgid "don't verify header+payload signature"
 msgstr "bez sprawdzania podpisu nagłówka+danych"
 
 msgid "getopt string for scripts options"
-msgstr ""
+msgstr "ciąg getopt dla opcji skryptów"
 
 msgid "execute statement"
-msgstr ""
+msgstr "wykonuje wyrażenie"
 
 msgid "interactive session"
-msgstr ""
+msgstr "sesja interaktywna"
 
 msgid "extract an archive"
-msgstr ""
+msgstr "rozpakowuje archiwum"
 
 msgid "only print what would be done"
-msgstr ""
+msgstr "tylko wyświetla, co zostałoby zrobione"
 
 #~ msgid "build through %build (%prep, then compile) from <specfile>"
 #~ msgstr "zbudowanie przez %build (%prep i skompilowanie) z <pliku-spec>"
