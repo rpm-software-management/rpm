@@ -3,14 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Thierry Vignaud <thierry.vignaud@gmail.com>, 2012,2015,2017, 2021.
-# Thierry Vignaud <thierry.vignaud@gmail.com>, 2020. #zanata, 2021.
+# Thierry Vignaud <thierry.vignaud@gmail.com>, 2012,2015,2017, 2021, 2022.
+# Thierry Vignaud <thierry.vignaud@gmail.com>, 2020. #zanata, 2021, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2022-04-07 13:03+0300\n"
-"PO-Revision-Date: 2021-07-07 14:04+0000\n"
+"PO-Revision-Date: 2022-04-28 14:17+0000\n"
 "Last-Translator: Thierry Vignaud <thierry.vignaud@gmail.com>\n"
 "Language-Team: Breton <https://translate.fedoraproject.org/projects/rpm/"
 "master/br/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.7.1\n"
+"X-Generator: Weblate 4.12\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -55,11 +55,11 @@ msgstr "an arguzenn n'eo ket ur pakad RPM\n"
 
 #, c-format
 msgid "error reading header from package\n"
-msgstr ""
+msgstr "fazi en ur lenn talbenn ar pakad\n"
 
 #, c-format
 msgid "cannot re-open payload: %s\n"
-msgstr ""
+msgstr "n'hell ket bet adigoret ar c'harg : %s\n"
 
 #, c-format
 msgid "files over 4GB not supported by cpio, use rpm2archive instead\n"
@@ -260,7 +260,7 @@ msgstr "Sac'het en ur lenn ar restr spec eus %s\n"
 
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
-msgstr "Fazi en un adenvel %s da %s: %m\n"
+msgstr "Fazi en un adenvel %s da %s : %m\n"
 
 #, c-format
 msgid "failed to stat %s: %m\n"
@@ -453,7 +453,7 @@ msgid "delete IMA and fsverity file signatures"
 msgstr ""
 
 msgid "create rpm v3 header+payload signatures"
-msgstr ""
+msgstr "krouiñ sinaduroù talbenn+karg rpm v3"
 
 msgid "sign package(s) files"
 msgstr ""
@@ -833,7 +833,7 @@ msgstr ""
 
 #, c-format
 msgid "Unable to write header to %s: %s\n"
-msgstr ""
+msgstr "N'hell ket bet skrivet an talbenn e %s : %s\n"
 
 #, c-format
 msgid "Could not open %s: %s\n"
@@ -989,7 +989,7 @@ msgstr "N'hell ket bet digoret an arlun %s : %s\n"
 
 #, c-format
 msgid "Unable to read icon %s: %s\n"
-msgstr ""
+msgstr "N'hell ket bet digoret an arlun %s : %s\n"
 
 #, c-format
 msgid "Unknown icon type: %s\n"
@@ -1320,7 +1320,7 @@ msgstr ""
 
 #, c-format
 msgid "Couldn't fork %s: %s\n"
-msgstr ""
+msgstr "N'hell ket bet sevenet %s : %s\n"
 
 #, c-format
 msgid "Couldn't exec %s: %s\n"
@@ -2170,7 +2170,7 @@ msgstr ""
 
 #, c-format
 msgid "package %s is not installed\n"
-msgstr ""
+msgstr "N'eo ket staliet ar pakad %s\n"
 
 #, c-format
 msgid "unknown tag: \"%s\"\n"
@@ -2265,7 +2265,7 @@ msgstr ""
 
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
-msgstr ""
+msgstr "%s : n'hell ket bet lennet an talbenn e 0x%x\n"
 
 msgid "could not move new database in place\n"
 msgstr ""
@@ -2320,13 +2320,13 @@ msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 
 msgid "package payload can be compressed using bzip2."
-msgstr ""
+msgstr "karg ar pakad a c'hell bezañ gwasket gant bzip2."
 
 msgid "package payload can be compressed using xz."
-msgstr ""
+msgstr "karg ar pakad a c'hell bezañ gwasket gant xz."
 
 msgid "package payload can be compressed using lzma."
-msgstr ""
+msgstr "karg ar pakad a c'hell bezañ gwasket gant lzma."
 
 msgid "package payload file(s) have \"./\" prefix."
 msgstr ""
@@ -2374,7 +2374,7 @@ msgid "support for dynamic buildrequires."
 msgstr ""
 
 msgid "package payload can be compressed using zstd."
-msgstr ""
+msgstr "karg ar pakad a c'hell bezañ gwasket gant zstd."
 
 #, c-format
 msgid "Unknown rich dependency op '%.*s'"
@@ -2445,7 +2445,7 @@ msgid "Bad/unreadable  header"
 msgstr ""
 
 msgid "Header size too big"
-msgstr ""
+msgstr "Re vras eo ment an talbenn"
 
 msgid "File too large for archive"
 msgstr ""
@@ -2846,16 +2846,16 @@ msgid "header"
 msgstr ""
 
 msgid "package"
-msgstr ""
+msgstr "pakad"
 
 msgid "Header "
 msgstr ""
 
 msgid "Payload "
-msgstr ""
+msgstr "Karg "
 
 msgid "Unable to reload signature header.\n"
-msgstr ""
+msgstr "N'hell ket bet adkarget an talbenn sinadurioù.\n"
 
 msgid "no signature"
 msgstr ""
