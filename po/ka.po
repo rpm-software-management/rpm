@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2022-04-07 13:03+0300\n"
-"PO-Revision-Date: 2022-03-24 08:16+0000\n"
+"PO-Revision-Date: 2022-04-30 13:44+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://translate.fedoraproject.org/projects/rpm/"
 "master/ka/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.11.2\n"
+"X-Generator: Weblate 4.12.1\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -24,11 +24,11 @@ msgstr "%s:%s\n"
 
 #, c-format
 msgid "RPM version %s\n"
-msgstr ""
+msgstr "RPM-ის ვერსია %s\n"
 
 #, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
-msgstr ""
+msgstr "ყველა უფლება დაცულია (C) 1998-2002 - Red Hat, Inc.\n"
 
 #, c-format
 msgid ""
@@ -462,13 +462,13 @@ msgid "algorithm to use for verity signatures, default sha256"
 msgstr ""
 
 msgid "<algorithm>"
-msgstr ""
+msgstr "<ალგორითმი>"
 
 msgid "use file signing cert <cert>"
 msgstr ""
 
 msgid "<cert>"
-msgstr ""
+msgstr "<სერტიფიკატი>"
 
 msgid "use file signing key <key>"
 msgstr ""
@@ -2769,7 +2769,7 @@ msgid "rpmdb"
 msgstr "rpmdb"
 
 msgid "restored"
-msgstr ""
+msgstr "აღდგენილია"
 
 #, c-format
 msgid "cannot open Packages database in %s\n"

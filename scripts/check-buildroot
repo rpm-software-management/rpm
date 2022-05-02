@@ -22,17 +22,20 @@ if [ -z "$RPM_BUILD_ROOT" ] || [ "$RPM_BUILD_ROOT" = "/" ]; then
         exit 0
 fi
 
-tmp=$(mktemp ${TMPDIR:-/tmp}/cbr.XXXXXX)
-trap "rm -f $tmp" EXIT
+tmp="$(mktemp "${TMPDIR:-/tmp}"/cbr.XXXXXX)"
+[ -w "$tmp" ] || exit 1
+trap 'rm -f "$tmp"' EXIT
+
 NCPUS=${RPM_BUILD_NCPUS:-1}
 
+export LANG=C
 find "$RPM_BUILD_ROOT" \! \( \
     -name '*.pyo' -o -name '*.pyc' -o -name '*.elc' -o -name '.packlist' \
     \) -type f -print0 | \
-    LANG=C xargs -0r -P$NCPUS -n16 grep -lF "$RPM_BUILD_ROOT" >>$tmp
+    xargs -0r "-P$NCPUS" -n16 grep -lF "$RPM_BUILD_ROOT" >>"$tmp" 2>&1
 
-test -s "$tmp" && {
+if test -s "$tmp"; then
     cat "$tmp"
     echo "Found '$RPM_BUILD_ROOT' in installed files; aborting"
     exit 1
-} || :
+fi
