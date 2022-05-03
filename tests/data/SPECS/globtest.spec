@@ -16,7 +16,7 @@ rm -rf $RPM_BUILD_ROOT
 
 mkdir -p $RPM_BUILD_ROOT/%{testdir}
 echo "foo" > $RPM_BUILD_ROOT/%{testdir}/weird%%name
-for f in bif baf zab zeb zib; do
+for f in bif baf zab zeb zib brace grace; do
     echo "$f" > $RPM_BUILD_ROOT/%{testdir}/$f
 done
 for f in bing bang bong; do
@@ -33,6 +33,7 @@ ln -s %{testdir}/zub $RPM_BUILD_ROOT/%{testdir}/linkbad
 %files
 %defattr(-,root,root,-)
 %{testdir}/b??
+%{testdir}/{brace,grace}
 %{testdir}/weird?name
 %{testdir}/z*
 %{testdir}/l*
