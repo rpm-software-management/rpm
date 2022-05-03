@@ -2057,3 +2057,48 @@ has_bcond(normally_on)
 ],
 [])
 AT_CLEANUP
+
+AT_SETUP([rpmbuild spec tag])
+AT_KEYWORDS([build])
+AT_CHECK([
+RPMTEST_SETUP
+runroot rpmbuild -bs --quiet /data/SPECS/foo.spec
+runroot rpm -qp --qf "%{spec}" /build/SRPMS/foo-1.0-1.src.rpm
+],
+[0],
+[
+
+Summary: foo
+Name: foo
+Version: 1.0
+Release: 1
+Source: hello-2.0.tar.gz
+Patch1: hello-1.0-modernize.patch
+Group: Testing
+License: GPLv2+
+BuildArch: noarch
+
+%description
+Simple rpm demonstration.
+
+%package sub
+Summary: foo
+Requires: foo = 1.0-1
+
+%description sub
+foo
+
+%package bus
+Summary: foo
+Requires: foo = 1.0-1
+
+%description bus
+foo
+
+%files
+
+%files sub
+
+],
+[])
+AT_CLEANUP
