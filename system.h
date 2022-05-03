@@ -100,8 +100,4 @@ extern int fdatasync(int fildes);
 
 #define N_(Text) Text
 
-/* ============== from misc/miscfn.h */
-
-#include "misc/fnmatch.h"
-
 #endif	/* H_SYSTEM */

@@ -613,8 +613,6 @@ AC_CHECK_FUNCS(
     renameat utimensat fchmodat fchownat ],
    [], [AC_MSG_ERROR([function required by rpm])])
 
-AC_LIBOBJ(fnmatch)
-
 dnl check if python is requested
 AC_ARG_ENABLE(python, [AS_HELP_STRING([--enable-python],[build rpm python bindings])],
 [case "$enable_python" in
