@@ -802,6 +802,9 @@ rpmRC packageSources(rpmSpec spec, char **cookie)
     headerPutUint32(sourcePkg->header, RPMTAG_BUILDTIME, &(spec->buildTime), 1);
     headerPutUint32(sourcePkg->header, RPMTAG_SOURCEPACKAGE, &one, 1);
 
+    /* Include spec in parsed and expanded form */
+    headerPutString(sourcePkg->header, RPMTAG_SPEC, getStringBuf(spec->parsed));
+
     if (spec->buildrequires) {
 	(void) rpmlibNeedsFeature(sourcePkg, "DynamicBuildRequires", "4.15.0-1");
     }
