@@ -333,6 +333,7 @@ Nosource      | 1051 | int32 array  | Denotes a source number for which source i
 Patch         | 1019 | string array | Patch file names.
 Source        | 1018 | string array | Source file names.
 Sourcepackage | 1106 | int32        | Denotes a source rpm.
+Spec          | 5099 | string       | Expanded and parsed spec contents.
 
 ## Internal / special
 
