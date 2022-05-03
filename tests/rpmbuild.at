@@ -417,10 +417,12 @@ drwxr-xr-x /opt/globtest/bang
 -rw-r--r-- /opt/globtest/bif
 drwxr-xr-x /opt/globtest/bing
 drwxr-xr-x /opt/globtest/bong
+-rw-r--r-- /opt/globtest/brace
 drwxr-xr-x /opt/globtest/foo
 -rw-r--r-- /opt/globtest/foo/one
 -rw-r--r-- /opt/globtest/foo/three
 -rw-r--r-- /opt/globtest/foo/two
+-rw-r--r-- /opt/globtest/grace
 lrwxrwxrwx /opt/globtest/linkbad
 lrwxrwxrwx /opt/globtest/linkgood
 -rw-r--r-- /opt/globtest/weird%name
