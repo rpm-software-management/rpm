@@ -13,8 +13,6 @@ RemovePathPostfixes: g:f
 %define testdir /opt/%{name}
 
 %install
-rm -rf $RPM_BUILD_ROOT
-
 mkdir -p $RPM_BUILD_ROOT/%{testdir}
 echo "foo" > $RPM_BUILD_ROOT/%{testdir}/weird%%name
 for f in bif baf zab zeb zib; do

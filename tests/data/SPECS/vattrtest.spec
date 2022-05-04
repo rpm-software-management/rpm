@@ -10,8 +10,6 @@ BuildArch:	noarch
 %{summary}
 
 %install
-rm -rf $RPM_BUILD_ROOT
-
 mkdir -p $RPM_BUILD_ROOT/opt/%{name}
 for x in a c cn d g l m r; do
     echo ${x} > $RPM_BUILD_ROOT/opt/%{name}/${x}

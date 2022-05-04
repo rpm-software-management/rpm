@@ -25,7 +25,6 @@ mv hello hello-g3
 make CFLAGS="-g3 -O2 -D_FORTIFY_SOURCE=2 %{?debug_flags}" CC=%{__cc}
 
 %install
-rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/usr/local/bin
 make DESTDIR=$RPM_BUILD_ROOT install
 cp hello-g3 $RPM_BUILD_ROOT/usr/local/bin/

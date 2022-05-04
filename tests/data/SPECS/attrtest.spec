@@ -10,8 +10,6 @@ BuildArch:	noarch
 %{summary}
 
 %install
-rm -rf $RPM_BUILD_ROOT
-
 for x in a b c d e f g h i j; do
     mkdir -p $RPM_BUILD_ROOT/${x}
     mkdir -p $RPM_BUILD_ROOT/${x}/dir

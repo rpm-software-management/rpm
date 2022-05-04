@@ -10,8 +10,6 @@ Summary: Test multiline if conditions
 %{summary}
 
 %install
-rm -rf $RPM_BUILD_ROOT
-
 mkdir -p $RPM_BUILD_ROOT/a
 echo "x" > $RPM_BUILD_ROOT/a/empty\
 Caps1
