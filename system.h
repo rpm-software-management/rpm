@@ -29,14 +29,6 @@ extern char ** environ;
 #endif
 #endif
 
-#if !defined(HAVE_STPCPY)
-char * stpcpy(char * dest, const char * src);
-#endif
-
-#if !defined(HAVE_STPNCPY)
-char * stpncpy(char * dest, const char * src, size_t n);
-#endif
-
 #if HAVE_SECURE_GETENV
 #define	getenv(_s)	secure_getenv(_s)
 #elif HAVE___SECURE_GETENV
