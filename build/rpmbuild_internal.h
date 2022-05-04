@@ -249,6 +249,7 @@ typedef enum rpmParseState_e {
 #define STRIP_NOTHING             0
 #define STRIP_TRAILINGSPACE (1 << 0)
 #define STRIP_COMMENTS      (1 << 1)
+#define STRIP_PARSED        (1 << 2) /* Avoid adding to spec->parsed (hack) */
 
 #define ALLOW_EMPTY         (1 << 16)
 
