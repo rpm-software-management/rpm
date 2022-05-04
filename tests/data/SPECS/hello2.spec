@@ -23,21 +23,9 @@ mv hello hello2
 make CFLAGS="-g -O2 -D_FORTIFY_SOURCE=2"
 
 %install
-rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/usr/local/bin
 make DESTDIR=$RPM_BUILD_ROOT install
 cp hello2 $RPM_BUILD_ROOT/usr/local/bin/
-
-%clean
-rm -rf $RPM_BUILD_ROOT
-
-%pre
-
-%post
-
-%preun
-
-%postun
 
 %files
 %defattr(-,root,root)

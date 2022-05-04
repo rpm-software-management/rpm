@@ -16,7 +16,6 @@ BuildArch:	noarch
 %{summary}
 
 %install
-rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}
 case %{filetype} in
 file)
@@ -29,9 +28,6 @@ dir)
     mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/my.conf
     ;;
 esac
-
-%clean
-rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)

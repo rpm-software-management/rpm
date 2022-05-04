@@ -23,22 +23,10 @@ mv hello hello2
 make CFLAGS="-g -O2 -D_FORTIFY_SOURCE=2"
 
 %install
-rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/usr/local/bin
 # Note explicit install hello as suid
 install -m 4755 hello $RPM_BUILD_ROOT/usr/local/bin
 install -m 755 hello2 $RPM_BUILD_ROOT/usr/local/bin
-
-%clean
-rm -rf $RPM_BUILD_ROOT
-
-%pre
-
-%post
-
-%preun
-
-%postun
 
 %files
 # Note we don't set any attrs. We expect the suid flag to have been picked up.
