@@ -5,9 +5,7 @@ Release: 2
 Group: Utilities
 License: GPL
 Distribution: RPM test suite.
-Vendor: Red Hat Software
-Packager: Red Hat Software <bugs@redhat.com>
-URL: http://www.redhat.com
+URL: http://rpm.org
 Source0: hello-1.0.tar.gz
 Patch0: hello-1.0-modernize.patch
 Prefix: /usr
