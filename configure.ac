@@ -602,15 +602,13 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([extern const char *__progname;],
 	   AC_MSG_RESULT([yes]),
 	   AC_MSG_RESULT([no]))
 
-AC_REPLACE_FUNCS(stpcpy stpncpy)
-
 AC_CHECK_FUNCS([secure_getenv __secure_getenv])
 
 AC_CHECK_FUNCS(
    [mkstemp getcwd basename dirname realpath setenv unsetenv regcomp lchown \
     utimes getline localtime_r statvfs getaddrinfo \
     openat mkdirat fstatat linkat symlinkat mkfifoat mknodat unlinkat \
-    renameat utimensat fchmodat fchownat ],
+    renameat utimensat fchmodat fchownat stpcpy stpncpy ],
    [], [AC_MSG_ERROR([function required by rpm])])
 
 dnl check if python is requested
