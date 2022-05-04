@@ -16,6 +16,12 @@
 #include "lib/rpmug.h"
 #include "debug.h"
 
+static void appendBuf(rpmSpec spec, const char *s, int nl)
+{
+    appendStringBufAux(spec->prep, s, nl);
+    appendStringBufAux(spec->parsed, s, nl);
+}
+
 /**
  * Check if file can be determined non-compressed
  * @param urlfn		file url
@@ -230,7 +236,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     {	char * buildDir = rpmGenPath(spec->rootDir, "%{_builddir}", "");
 
 	rasprintf(&buf, "cd '%s'", buildDir);
-	appendLineStringBuf(spec->prep, buf);
+	appendBuf(spec, buf, 1);
 	free(buf);
 	free(buildDir);
     }
@@ -238,17 +244,17 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     /* delete any old sources */
     if (!leaveDirs) {
 	buf = rpmExpand("rm -rf '%{buildsubdir}'", NULL);
-	appendLineStringBuf(spec->prep, buf);
+	appendBuf(spec, buf, 1);
 	free(buf);
     }
 
-    appendStringBuf(spec->prep, getStringBuf(before));
+    appendBuf(spec, getStringBuf(before), 0);
 
     /* if necessary, create and cd into the proper dir */
     if (createDir) {
 	buf = rpmExpand("%{__mkdir_p} '%{buildsubdir}'\n",
 			"cd '%{buildsubdir}'", NULL);
-	appendLineStringBuf(spec->prep, buf);
+	appendBuf(spec, buf, 1);
 	free(buf);
     }
 
@@ -257,13 +263,13 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 	char *chptr = doUntar(spec, 0, quietly);
 	if (!chptr)
 	    goto exit;
-	appendLineStringBuf(spec->prep, chptr);
+	appendBuf(spec, chptr, 1);
 	free(chptr);
     }
 
     if (!createDir) {
 	buf = rpmExpand("cd '%{buildsubdir}'", NULL);
-	appendLineStringBuf(spec->prep, buf);
+	appendBuf(spec, buf, 1);
 	free(buf);
     }
 
@@ -271,16 +277,16 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 	char *chptr = doUntar(spec, 0, quietly);
 	if (chptr == NULL)
 	    goto exit;
-	appendLineStringBuf(spec->prep, chptr);
+	appendBuf(spec, chptr, 1);
 	free(chptr);
     }
     
-    appendStringBuf(spec->prep, getStringBuf(after));
+    appendBuf(spec, getStringBuf(after), 0);
 
     /* Fix the permissions of the setup build tree */
     {	char *fix = rpmExpand("%{_fixperms} .", NULL);
 	if (fix && *fix != '%') {
-	    appendLineStringBuf(spec->prep, fix);
+	    appendBuf(spec, fix, 1);
 	}
 	free(fix);
     }
@@ -390,7 +396,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 	if (s == NULL) {
 	    goto exit;
 	}
-	appendLineStringBuf(spec->prep, s);
+	appendBuf(spec, s, 1);
 	free(s);
     }
 	
@@ -420,7 +426,8 @@ int parsePrep(rpmSpec spec)
     spec->prep = newStringBuf();
 
     /* There are no options to %prep */
-    if ((res = parseLines(spec, STRIP_NOTHING, &saveLines, NULL)) == PART_ERROR)
+    /* Handle spec->parsed addition locally due to %setup/%patch specialty */
+    if ((res = parseLines(spec, STRIP_PARSED, &saveLines, NULL)) == PART_ERROR)
 	goto exit;
     
     for (ARGV_const_t lines = saveLines; lines && *lines; lines++) {
@@ -430,7 +437,7 @@ int parsePrep(rpmSpec spec)
 	} else if (rstreqn(*lines, "%patch", sizeof("%patch")-1)) {
 	    rc = doPatchMacro(spec, *lines);
 	} else {
-	    appendStringBuf(spec->prep, *lines);
+	    appendBuf(spec, *lines, 0);
 	}
 	if (rc != RPMRC_OK && !(spec->flags & RPMSPEC_FORCE)) {
 	    res = PART_ERROR;

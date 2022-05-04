@@ -285,3 +285,66 @@ foo-bus = 1.0-1
 ],
 [])
 AT_CLEANUP
+
+AT_SETUP([rpmspec --parse])
+AT_KEYWORDS([rpmspec])
+AT_CHECK([
+RPMTEST_SETUP
+
+# ensure the macros expand to expected values
+# debug packages disabled for simplicity, we're not testing for that here
+runroot rpmspec --parse \
+	--define "__rpmuncompress /usr/lib/rpm/rpmuncompress" \
+	--define "__make /usr/bin/make" \
+	--define "__patch /usr/bin/patch" \
+	--define "__chmod /usr/bin/chmod" \
+	--define "debug_package %{nil}" \
+	/data/SPECS/hello.spec
+],
+[0],
+[[Summary: hello -- hello, world rpm
+Name: hello
+Version: 1.0
+Release: 1
+Group: Utilities
+License: GPL
+Distribution: RPM test suite.
+URL: http://rpm.org
+Source0: hello-1.0.tar.gz
+Patch0: hello-1.0-modernize.patch
+Prefix: /usr
+
+%description
+Simple rpm demonstration.
+
+%prep
+cd '/build/BUILD'
+rm -rf 'hello-1.0'
+/usr/lib/rpm/rpmuncompress -x /build/SOURCES/hello-1.0.tar.gz
+STATUS=$?
+if [ $STATUS -ne 0 ]; then
+  exit $STATUS
+fi
+cd 'hello-1.0'
+/usr/bin/chmod -Rf a+rX,u+w,g-w,o-w .
+echo "Patch #0 (hello-1.0-modernize.patch):"
+/usr/bin/patch --no-backup-if-mismatch -f -p1 -b --suffix .modernize --fuzz=0 < /build/SOURCES/hello-1.0-modernize.patch
+
+
+make
+
+%install
+mkdir -p $RPM_BUILD_ROOT/usr/local/bin
+make DESTDIR=$RPM_BUILD_ROOT install
+
+%files
+%defattr(-,root,root)
+%doc	FAQ
+%attr(0751,root,root)	/usr/local/bin/hello
+
+%changelog
+* Tue Oct 20 1998 Jeff Johnson <jbj@redhat.com>
+- create.
+]],
+[])
+AT_CLEANUP
