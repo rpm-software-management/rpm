@@ -14,7 +14,6 @@ Provides: /bin/sh
 %description
   
 %install
-rm -rf %{buildroot}
 mkdir -p $RPM_BUILD_ROOT/foo
 cat << EOF >> $RPM_BUILD_ROOT/foo/hello
 #!/bin/sh

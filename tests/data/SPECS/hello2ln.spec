@@ -21,27 +21,13 @@ Simple rpm demonstration.
 make CFLAGS="-g -O1"
 
 %install
-rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/usr/local/bin
 make DESTDIR=$RPM_BUILD_ROOT install
 ln $RPM_BUILD_ROOT/usr/local/bin/hello $RPM_BUILD_ROOT/usr/local/bin/hello2
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-
-%pre
-
-%post
-
-%preun
-
-%postun
-
 %files
 %defattr(-,root,root)
 %doc	FAQ
-#%readme README
-#%license COPYING
 %attr(0751,root,root)	/usr/local/bin/hello
 %attr(0751,root,root)	/usr/local/bin/hello2
 

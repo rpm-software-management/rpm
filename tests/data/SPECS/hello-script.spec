@@ -11,7 +11,6 @@ BuildArch:	noarch
 %{summary}
 
 %install
-rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/usr/bin
 mkdir -p $RPM_BUILD_ROOT/zoot
 cat << EOF > $RPM_BUILD_ROOT/usr/bin/hello

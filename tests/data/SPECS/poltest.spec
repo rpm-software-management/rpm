@@ -9,7 +9,6 @@ License: GPL
 Requires: poltest-policy
 Source0: poltest-%{version}.tar.bz2
 Source1: poltest-policy-%{version}.tar.bz2
-Buildroot: %{_tmppath}/%{name}-%{version}-root
 %description
 Example for installing policy included in a package header
 
@@ -22,11 +21,7 @@ make CFLAGS="$RPM_OPT_FLAGS"
 make -f /usr/share/selinux/devel/Makefile -C poltest-policy-%{version}
 
 %install
-rm -rf $RPM_BUILD_ROOT
 make DESTDIR=%{buildroot} prefix=%{_prefix} install
-
-%clean
-rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)

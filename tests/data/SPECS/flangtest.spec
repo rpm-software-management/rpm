@@ -13,16 +13,11 @@ BuildArch:	noarch
 %{summary}
 
 %install
-rm -rf $RPM_BUILD_ROOT
-
 mkdir -p  $RPM_BUILD_ROOT/%{_datadir}/%{name}
 for f in fi de en pl none; do
     echo "This is $f language" > $RPM_BUILD_ROOT/%{_datadir}/%{name}/$f.txt
 done
 touch $RPM_BUILD_ROOT/%{_datadir}/%{name}/empty.txt
-
-%clean
-rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)

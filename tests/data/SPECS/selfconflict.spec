@@ -11,7 +11,6 @@ BuildArch:	noarch
 %{summary}
 
 %install
-rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/opt/mydir/{one,two}
 echo "foo" > $RPM_BUILD_ROOT/opt/mydir/one/somefile
 echo "bar" > $RPM_BUILD_ROOT/opt/mydir/two/somefile

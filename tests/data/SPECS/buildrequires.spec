@@ -29,17 +29,6 @@ echo hello
 EOF
 chmod a+x $RPM_BUILD_ROOT/usr/local/bin/hello
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-
-%pre
-
-%post
-
-%preun
-
-%postun
-
 %files
 %defattr(-,root,root)
 %doc	FAQ

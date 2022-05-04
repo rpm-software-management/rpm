@@ -14,12 +14,8 @@ BuildArch:	noarch
 %{summary}
 
 %install
-rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/%{_datadir}
 echo "%{filedata}" > $RPM_BUILD_ROOT/%{_datadir}/my.version
-
-%clean
-rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
