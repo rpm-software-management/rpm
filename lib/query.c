@@ -450,9 +450,9 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
 		break;
 
 	if (*s == '\0') {
-	    char fnbuf[PATH_MAX];
-	    fn = realpath(arg, fnbuf);
-	    fn = xstrdup( (fn != NULL ? fn : arg) );
+	    fn = realpath(arg, NULL);
+	    if (!fn)
+		fn = xstrdup(arg);
 	} else if (*arg != '/') {
 	    char *curDir = rpmGetCwd();
 	    fn = (char *) rpmGetPath(curDir, "/", arg, NULL);
