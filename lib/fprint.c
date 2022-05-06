@@ -148,15 +148,11 @@ static char * canonDir(rpmstrPool pool, rpmsid dirNameId)
 	 * the result.
 	 */
 
-	/* if the current directory doesn't exist, we might fail. 
-	   oh well. likewise if it's too long.  */
+	/* if the current directory doesn't exist, we might fail. oh well. */
 	if ((cdnbuf = realpath(".", NULL)) != NULL) {
-	    char *end = cdnbuf + strlen(cdnbuf);
-	    if (end[-1] != '/')	*end++ = '/';
-	    end = stpncpy(end, dirName, PATH_MAX - (end - cdnbuf));
-	    *end = '\0';
+	    cdnbuf = rstrscat(&cdnbuf, "/", dirName, NULL);
 	    (void)rpmCleanPath(cdnbuf); /* XXX possible /../ from concatenation */
-	    end = cdnbuf + strlen(cdnbuf);
+	    char *end = cdnbuf + strlen(cdnbuf);
 	    if (end[-1] != '/')	*end++ = '/';
 	    *end = '\0';
 	}
