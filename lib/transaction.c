@@ -67,16 +67,13 @@ struct diskspaceInfo_s {
 
 static char *getMntPoint(const char *dirName, dev_t dev)
 {
-    char mntPoint[PATH_MAX];
-    char *resolved_path = realpath(dirName, mntPoint);
+    char *mntPoint = realpath(dirName, NULL);
     char *end = NULL;
     struct stat sb;
     char *res = NULL;
 
-    if (!resolved_path) {
-	strncpy(mntPoint, dirName, PATH_MAX);
-	mntPoint[PATH_MAX-1] = '\0';
-    }
+    if (!mntPoint)
+	mntPoint = xstrdup(dirName);
 
     while (end != mntPoint) {
 	end = strrchr(mntPoint, '/');
@@ -101,6 +98,7 @@ static char *getMntPoint(const char *dirName, dev_t dev)
 	    break;
 	}
     }
+    free(mntPoint);
     return res;
 }
 
