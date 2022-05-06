@@ -132,15 +132,10 @@ static const struct fprintCacheEntry_s * cacheContainsDirectory(
 static char * canonDir(rpmstrPool pool, rpmsid dirNameId)
 {
     const char * dirName = rpmstrPoolStr(pool, dirNameId);
-    size_t cdnl = rpmstrPoolStrlen(pool, dirNameId);;
     char *cdnbuf = NULL;
 
     if (*dirName == '/') {
 	cdnbuf = xstrdup(dirName);
-	cdnbuf = rpmCleanPath(cdnbuf);
-	/* leave my trailing slashes along you b**** */
-	if (cdnl > 1)
-	    cdnbuf = rstrcat(&cdnbuf, "/");
     } else {
 	/* Using realpath on the arg isn't correct if the arg is a symlink,
 	 * especially if the symlink is a dangling link.  What we 
@@ -149,12 +144,16 @@ static char * canonDir(rpmstrPool pool, rpmsid dirNameId)
 	 */
 
 	/* if the current directory doesn't exist, we might fail. oh well. */
-	if ((cdnbuf = realpath(".", NULL)) != NULL) {
+	if ((cdnbuf = realpath(".", NULL)) != NULL)
 	    cdnbuf = rstrscat(&cdnbuf, "/", dirName, NULL);
-	    (void)rpmCleanPath(cdnbuf); /* XXX possible /../ from concatenation */
-	    char *end = cdnbuf + strlen(cdnbuf);
-	    if (end[-1] != '/')	*end++ = '/';
-	    *end = '\0';
+    }
+
+    /* ensure canonical path with a trailing slash */
+    if (cdnbuf) {
+	size_t cdnl = strlen(cdnbuf);
+	if (cdnl > 1) {
+	    cdnbuf = rpmCleanPath(cdnbuf);
+	    cdnbuf = rstrcat(&cdnbuf, "/");
 	}
     }
     return cdnbuf;
