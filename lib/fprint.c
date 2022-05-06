@@ -150,11 +150,7 @@ static char * canonDir(rpmstrPool pool, rpmsid dirNameId)
 
 	/* if the current directory doesn't exist, we might fail. 
 	   oh well. likewise if it's too long.  */
-
-	/* XXX we should let realpath() allocate if it can */
-	cdnbuf = xmalloc(PATH_MAX);
-	cdnbuf[0] = '\0';
-	if (realpath(".", cdnbuf) != NULL) {
+	if ((cdnbuf = realpath(".", NULL)) != NULL) {
 	    char *end = cdnbuf + strlen(cdnbuf);
 	    if (end[-1] != '/')	*end++ = '/';
 	    end = stpncpy(end, dirName, PATH_MAX - (end - cdnbuf));
@@ -163,8 +159,6 @@ static char * canonDir(rpmstrPool pool, rpmsid dirNameId)
 	    end = cdnbuf + strlen(cdnbuf);
 	    if (end[-1] != '/')	*end++ = '/';
 	    *end = '\0';
-	} else {
-	    cdnbuf = _free(cdnbuf);
 	}
     }
     return cdnbuf;
