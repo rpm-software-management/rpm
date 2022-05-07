@@ -2414,7 +2414,6 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     fi = 0;
     while (*files != NULL) {
 	char *origfile = rpmGenPath(basepath, *files, NULL);
-	char *eorigfile = rpmEscapeSpaces(origfile);
 	ARGV_t globFiles = NULL;
 	int globFilesCount, i;
 	char *newfile;
@@ -2425,7 +2424,7 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
 	copyFileEntry(&sd->entries[fi].defEntry, &fl->def);
 	fi++;
 
-	if (rpmGlob(eorigfile, &globFilesCount, &globFiles) == 0) {
+	if (rpmGlob(origfile, &globFilesCount, &globFiles) == 0) {
 	    for (i = 0; i < globFilesCount; i++) {
 		rasprintf(&newfile, "%s/%s", sd->dirname, basename(globFiles[i]));
 		processBinaryFile(pkg, fl, newfile, 0);
@@ -2433,10 +2432,9 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
 	    }
 	    argvFree(globFiles);
 	} else {
-	    rpmlog(RPMLOG_ERR, _("File not found by glob: %s\n"), eorigfile);
+	    rpmlog(RPMLOG_ERR, _("File not found by glob: %s\n"), origfile);
 	    fl->processingFailed = 1;
 	}
-	free(eorigfile);
 	free(origfile);
 	files++;
     }
