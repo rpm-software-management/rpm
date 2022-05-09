@@ -1662,7 +1662,7 @@ rpmRC rpmtsSetupTransactionPlugins(rpmts ts)
 	return RPMRC_OK;
 
     dsoPath = rpmExpand("%{__plugindir}/*.so", NULL);
-    if (rpmGlob(dsoPath, &nfiles, &files) == 0) {
+    if (rpmGlob(dsoPath, 0, &nfiles, &files) == 0) {
 	rpmPlugins tsplugins = rpmtsPlugins(ts);
 	for (int i = 0; i < nfiles; i++) {
 	    char *bn = basename(files[i]);

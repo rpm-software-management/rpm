@@ -54,13 +54,12 @@ static inline const char *next_brace_sub(const char *begin)
 
 /* librpmio exported interfaces */
 
-int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
+int rpmGlob(const char * pattern, int flags, int * argcPtr, ARGV_t * argvPtr)
 {
     char * globRoot = NULL;
     char * globURL;
     const char *home = getenv("HOME");
     const char * path;
-    int flags = GLOB_NOMAGIC;
 #ifdef ENABLE_NLS
     char * old_collate = NULL;
     char * old_ctype = NULL;
@@ -74,6 +73,9 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
     size_t plen = strlen(path);
     int dir_only = (plen > 0 && path[plen-1] == '/');
     glob_t gl;
+
+    /* Only accept these two glob(3) flags from the caller */
+    flags = (flags & (GLOB_NOMAGIC | GLOB_NOCHECK)) ? flags : 0;
 
     flags |= GLOB_BRACE;
 

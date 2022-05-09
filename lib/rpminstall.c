@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <string.h>
+#include <glob.h>
 
 #include <rpm/rpmcli.h>
 #include <rpm/rpmtag.h>
@@ -459,7 +460,7 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 	if (giFlags & RPMGI_NOGLOB) {
 	    rc = rpmNoGlob(*eiu->fnp, &ac, &av);
 	} else {
-	    rc = rpmGlob(*eiu->fnp, &ac, &av);
+	    rc = rpmGlob(*eiu->fnp, GLOB_NOMAGIC, &ac, &av);
 	}
 	if (rc || ac == 0) {
 	    if (giFlags & RPMGI_NOGLOB) {

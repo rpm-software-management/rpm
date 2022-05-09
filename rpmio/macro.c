@@ -6,6 +6,7 @@
 #include <stdarg.h>
 #include <pthread.h>
 #include <errno.h>
+#include <glob.h>
 #if HAVE_SCHED_GETAFFINITY
 #include <sched.h>
 #endif
@@ -1933,7 +1934,7 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 	ARGV_t path, files = NULL;
     
 	/* Glob expand the macro file path element, expanding ~ to $HOME. */
-	if (rpmGlob(*pattern, NULL, &files) != 0) {
+	if (rpmGlob(*pattern, GLOB_NOMAGIC, NULL, &files) != 0) {
 	    continue;
 	}
 

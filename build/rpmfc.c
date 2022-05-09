@@ -1113,7 +1113,7 @@ static int initAttrs(rpmfc fc)
     int nattrs = 0;
 
     /* Discover known attributes from pathnames + initialize them */
-    if (rpmGlob(attrPath, NULL, &files) == 0) {
+    if (rpmGlob(attrPath, 0, NULL, &files) == 0) {
 	nattrs = argvCount(files);
 	fc->atypes = xcalloc(nattrs + 1, sizeof(*fc->atypes));
 	for (int i = 0; i < nattrs; i++) {
