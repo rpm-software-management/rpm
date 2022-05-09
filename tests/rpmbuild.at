@@ -488,9 +488,12 @@ runroot rpm -qpl /build/RPMS/noarch/globesctest-1.0-1.noarch.rpm
 /opt/share/doc/globesctest-1.0
 /opt/share/doc/globesctest-1.0/bar
 /opt/share/doc/globesctest-1.0/baz
+/opt/share/doc/globesctest-1.0/docfb[[123]]
 /opt/share/doc/globesctest-1.0/foo bar
 /opt/share/doc/globesctest-1.0/foo%name
 /opt/share/doc/globesctest-1.0/foo[[bar]]
+/opt/share/licenses/globesctest-1.0
+/opt/share/licenses/globesctest-1.0/licfb[[123]]
 ],
 [],
 )
@@ -1942,11 +1945,11 @@ error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/bar{a,b}
 cp: cannot stat 'INSTALL': No such file or directory
 cp: cannot stat 'README*': No such file or directory
 error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/share/doc/filemisstest-1.0/INSTALL
-error: File not found by glob: /build/BUILD/README*
+error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/share/doc/filemisstest-1.0/README*
 cp: cannot stat 'LICENSE': No such file or directory
 cp: cannot stat 'OTHERLICENSE?': No such file or directory
 error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/share/licenses/filemisstest-1.0/LICENSE
-error: File not found by glob: /build/BUILD/OTHERLICENSE?
+error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/share/licenses/filemisstest-1.0/OTHERLICENSE?
 ],
 )
 AT_CLEANUP

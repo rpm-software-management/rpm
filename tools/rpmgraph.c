@@ -48,7 +48,7 @@ rpmGraph(rpmts ts, struct rpmInstallArguments_s * ia, const char ** fileArgv)
     for (fnp = fileArgv; *fnp; fnp++) {
 	av = _free(av);
 	ac = 0;
-	rc = rpmGlob(*fnp, &ac, &av);
+	rc = rpmGlobPath(*fnp, RPMGLOB_NOCHECK, &ac, &av);
 	if (rc || ac == 0) continue;
 
 	argv = xrealloc(argv, (argc+2) * sizeof(*argv));

@@ -124,7 +124,7 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, char *** argvPtr)
 
     /* Glob manifest items. */
     for (p = sb; *p; p++) {
-	if (rpmGlob(*p, &ac, &av)) {
+	if (rpmGlobPath(*p, RPMGLOB_NOCHECK, &ac, &av)) {
 	    rpmrc = RPMRC_FAIL;
 	    goto exit;
 	}

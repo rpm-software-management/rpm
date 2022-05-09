@@ -31,6 +31,14 @@ typedef enum rpmCompressedMagic_e {
 } rpmCompressedMagic;
 
 /** \ingroup rpmfileutil
+ * RPM glob flags, largely modelled after glob(3) flags.
+ */
+typedef enum rpmglobFlags_e {
+    RPMGLOB_NONE		= 0,
+    RPMGLOB_NOCHECK		= (1 << 0), /*!< same as GLOB_NOCHECK */
+} rpmglobFlags;
+
+/** \ingroup rpmfileutil
  * Calculate a file digest and size.
  * @param algo		digest algorithm
  * @param fn		file name
@@ -108,7 +116,20 @@ char * rpmGenPath	(const char * urlroot,
 char * rpmGetPath (const char * path, ...) RPM_GNUC_NULL_TERMINATED;
 
 /** \ingroup rpmfileutil
- * Return URL path(s) from a (URL prefixed) pattern glob.
+ * Expand a glob pattern into matching paths.
+ * A pattern that is not a glob is returned as is.
+ * @param pattern	glob pattern
+ * @param flags		bit(s) to control glob operation
+ * @param[out] *argcPtr	no. of paths
+ * @param[out] *argvPtr	ARGV_t array of paths
+ * @return		0 on success
+ */
+int rpmGlobPath(const char * pattern, rpmglobFlags flags,
+		int * argcPtr, ARGV_t * argvPtr);
+
+/** \ingroup rpmfileutil
+ * Expand a glob pattern into matching paths, fail if nothing matches.
+ * A pattern that is not a glob is returned as is.
  * @param pattern	glob pattern
  * @param[out] *argcPtr	no. of paths
  * @param[out] *argvPtr	ARGV_t array of paths

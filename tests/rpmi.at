@@ -59,10 +59,9 @@ echo "/tmp/fallback-[[123]].0-1.i386.rpm" > ${RPMTEST}/tmp/test.mft
 runroot rpm -U --ignorearch --ignoreos --nodeps \
 	/tmp/test.mft
 ],
-[1],
+[0],
 [],
-[error: /tmp/test.mft: not an rpm package (or package manifest): @&t@
-])
+[])
 AT_CLEANUP
 
 AT_SETUP([rpm -U <manifest notfound 1>])
@@ -125,9 +124,11 @@ echo /data/RPMS/hello-not-there-2.0-1.x86_64.rpm >> ${RPMTEST}/tmp/test.mft
 runroot rpm -U --ignorearch --ignoreos --nodeps \
 	/tmp/test.mft
 ],
-[1],
+[3],
 [],
-[error: /tmp/test.mft: not an rpm package (or package manifest): @&t@
+[error: open of /data/RPMS/hello-not-there-*.x86_64.rpm failed: No such file or directory
+error: open of /data/RPMS/hello-not-there-1.0-1.x86_64.rpm failed: No such file or directory
+error: open of /data/RPMS/hello-not-there-2.0-1.x86_64.rpm failed: No such file or directory
 ])
 AT_CLEANUP
 
@@ -462,9 +463,11 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 	/data/RPMS/hello-not-there-1.0-1.x86_64.rpm \
 	/data/RPMS/hello-not-there-2.0-1.x86_64.rpm
 ],
-[1],
+[3],
 [],
-[error: File not found by glob: /data/RPMS/hello-not-there-*.x86_64.rpm
+[error: open of /data/RPMS/hello-not-there-*.x86_64.rpm failed: No such file or directory
+error: open of /data/RPMS/hello-not-there-1.0-1.x86_64.rpm failed: No such file or directory
+error: open of /data/RPMS/hello-not-there-2.0-1.x86_64.rpm failed: No such file or directory
 ])
 AT_CLEANUP
 
@@ -479,10 +482,9 @@ cp "${RPMTEST}/data/RPMS/hello-1.0-1.i386.rpm" \
 runroot rpm -U --ignorearch --ignoreos --nodeps \
 	"/tmp/fallback-[[123]].0-1.i386.rpm"
 ],
-[1],
+[0],
 [],
-[error: File not found by glob: /tmp/fallback-[[123]].0-1.i386.rpm
-])
+[])
 AT_CLEANUP
 
 # ------------------------------
