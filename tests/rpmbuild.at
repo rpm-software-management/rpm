@@ -448,6 +448,22 @@ warning: absolute symlink: /opt/globtest/linkgood -> /opt/globtest/zab
 ])
 AT_CLEANUP
 
+AT_SETUP([rpmbuild glob missing])
+AT_KEYWORDS([build])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpmbuild -bb --quiet /data/SPECS/globmisstest.spec
+],
+[1],
+[],
+[error: File not found: /build/BUILDROOT/globmisstest-1.0-1.x86_64/opt/foo*
+cp: cannot stat 'foo*': No such file or directory
+error: File not found: /build/BUILDROOT/globmisstest-1.0-1.x86_64/opt/share/doc/globmisstest-1.0/foo*
+],
+)
+AT_CLEANUP
+
 AT_SETUP([rpmbuild glob escape])
 AT_KEYWORDS([build])
 AT_CHECK([
@@ -467,6 +483,7 @@ runroot rpm -qpl /build/RPMS/noarch/globesctest-1.0-1.noarch.rpm
 /opt/foo-bar1
 /opt/foo-bar2
 /opt/foo?bar
+/opt/foo[[123]]
 /opt/foo[[bar baz]]
 /opt/foo[[bar]]
 /opt/foo\
@@ -489,6 +506,7 @@ runroot rpm -qpl /build/RPMS/noarch/globesctest-1.0-1.noarch.rpm
 /opt/share/doc/globesctest-1.0/baz
 /opt/share/doc/globesctest-1.0/foo bar
 /opt/share/doc/globesctest-1.0/foo%name
+/opt/share/doc/globesctest-1.0/foo[[123]]
 /opt/share/doc/globesctest-1.0/foo[[bar]]
 ],
 [],

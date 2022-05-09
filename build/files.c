@@ -2433,8 +2433,15 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
 	    }
 	    argvFree(globFiles);
 	} else {
-	    rpmlog(RPMLOG_ERR, _("File not found by glob: %s\n"), origfile);
-	    fl->processingFailed = 1;
+	    const char *msg = (fl->cur.isDir) ?
+				_("Directory not found by glob: %s. "
+				"Trying without globbing.\n") :
+				_("File not found by glob: %s. "
+				"Trying without globbing.\n");
+	    rpmlog(RPMLOG_DEBUG, msg, origfile);
+	    rasprintf(&newfile, "%s/%s", sd->dirname, basename(origfile));
+	    processBinaryFile(pkg, fl, newfile, 0);
+	    free(newfile);
 	}
 	free(origfile);
 	files++;

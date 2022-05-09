@@ -16,7 +16,7 @@ BuildArch:	noarch
 
 
 %build
-touch 'foo[bar]' bar baz 'foo bar' foo%%name
+touch 'foo[bar]' bar baz 'foo bar' foo%%name 'foo[123]'
 
 %install
 mkdir -p %{buildroot}/opt
@@ -54,6 +54,9 @@ touch '%{buildroot}/opt/foobayb'
 touch '%{buildroot}/opt/foobawa'
 touch '%{buildroot}/opt/foobawb'
 
+# Fallback
+touch '%{buildroot}/opt/foo[123]'
+
 %files
 
 # Glob escaping
@@ -81,3 +84,7 @@ touch '%{buildroot}/opt/foobawb'
 /opt/foo{bar,baz}
 /opt/foo{bar{a,b},baz{a,b}}
 /opt/foo{bay*,baw*}
+
+# Fallback
+%doc foo[123]
+/opt/foo[123]
