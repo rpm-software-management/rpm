@@ -51,7 +51,8 @@ static int ismagic(const char *pattern)
 
 /* librpmio exported interfaces */
 
-int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
+int rpmGlobPath(const char * pattern, rpmglobFlags flags,
+		int * argcPtr, ARGV_t * argvPtr)
 {
     int argc = 0;
     ARGV_t argv = NULL;
@@ -61,7 +62,7 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
     size_t plen = strlen(path);
     int dir_only = (plen > 0 && path[plen-1] == '/');
     glob_t gl;
-    int flags = 0;
+    int gflags = 0;
     int i;
     int rc = 0;
 
@@ -80,11 +81,13 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
 	goto exit;
     }
 
-    flags |= GLOB_BRACE;
+    gflags |= GLOB_BRACE;
     if (home != NULL && strlen(home) > 0) 
-	flags |= GLOB_TILDE;
+	gflags |= GLOB_TILDE;
     if (dir_only)
-	flags |= GLOB_ONLYDIR;
+	gflags |= GLOB_ONLYDIR;
+    if (flags & RPMGLOB_NOCHECK)
+	gflags |= GLOB_NOCHECK;
 
 #ifdef ENABLE_NLS
     t = setlocale(LC_COLLATE, NULL);
@@ -100,12 +103,12 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
     gl.gl_pathc = 0;
     gl.gl_pathv = NULL;
     
-    rc = glob(pattern, flags, NULL, &gl);
+    rc = glob(pattern, gflags, NULL, &gl);
     if (rc)
 	goto exit;
 
     for (i = 0; i < gl.gl_pathc; i++) {
-	if (dir_only) {
+	if (dir_only && !(flags & RPMGLOB_NOCHECK)) {
 	    struct stat sb;
 	    if (lstat(gl.gl_pathv[i], &sb) || !S_ISDIR(sb.st_mode))
 		continue;
@@ -134,4 +137,9 @@ exit:
 #endif
 
     return rc;
+}
+
+int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
+{
+    return rpmGlobPath(pattern, RPMGLOB_NONE, argcPtr, argvPtr);
 }

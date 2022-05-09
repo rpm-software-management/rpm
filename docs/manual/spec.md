@@ -666,6 +666,10 @@ For example:
 	"/opt/bob's htdocs"
 ```
 
+If a glob pattern has no matches, it is tried literally (as if all the
+metacharacters were escaped).  This is similar to how Bash works with the
+`failglob` option unset.
+
 When trying to escape a large number of file names, it is often best to create
 a file with a complete list of escaped file names.  This is easiest to do with
 a shell script like this:

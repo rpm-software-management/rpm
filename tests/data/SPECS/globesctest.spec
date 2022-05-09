@@ -16,7 +16,7 @@ BuildArch:	noarch
 
 
 %build
-touch 'foo[bar]' bar baz 'foo bar' foo%%name
+touch 'foo[bar]' bar baz 'foo bar' foo%%name 'docfb[123]' 'licfb[123]'
 
 %install
 mkdir -p %{buildroot}/opt
@@ -86,4 +86,6 @@ touch '%{buildroot}/opt/foo[123]'
 /opt/foo{bay*,baw*}
 
 # Fallback
+%doc docfb[123]
+%license licfb[123]
 /opt/foo[123]
