@@ -2417,7 +2417,7 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     while (*files != NULL) {
 	char *origfile = rpmGenPath(basepath, *files, NULL);
 	char *eorigfile = rpmEscapeSpaces(origfile);
-	ARGV_t globFiles;
+	ARGV_t globFiles = NULL;
 	int globFilesCount, i;
 	char *newfile;
 

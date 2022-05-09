@@ -85,12 +85,8 @@ static int __glob_pattern_p(const char *pattern, int quote)
 
 /* librpmio exported interfaces */
 
-int rpmGlob(const char * patterns, int * argcPtr, ARGV_t * argvPtr)
+int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
 {
-    int ac = 0;
-    const char ** av = NULL;
-    int argc = 0;
-    ARGV_t argv = NULL;
     char * globRoot = NULL;
     const char *home = getenv("HOME");
     int gflags = 0;
@@ -100,18 +96,13 @@ int rpmGlob(const char * patterns, int * argcPtr, ARGV_t * argvPtr)
     const char * t;
 #endif
     size_t maxb, nb;
-    int i, j;
-    int rc;
+    int i;
+    int rc = 0;
 
     gflags |= GLOB_BRACE;
 
     if (home != NULL && strlen(home) > 0) 
 	gflags |= GLOB_TILDE;
-
-    /* Can't use argvSplit() here, it doesn't handle whitespace etc escapes */
-    rc = poptParseArgvString(patterns, &ac, &av);
-    if (rc)
-	return rc;
 
 #ifdef ENABLE_NLS
     t = setlocale(LC_COLLATE, NULL);
@@ -124,20 +115,19 @@ int rpmGlob(const char * patterns, int * argcPtr, ARGV_t * argvPtr)
     (void) setlocale(LC_CTYPE, "C");
 #endif
 	
-    if (av != NULL)
-    for (j = 0; j < ac; j++) {
+    if (1) {
 	char * globURL;
 	const char * path;
-	int ut = urlPath(av[j], &path);
+	int ut = urlPath(pattern, &path);
 	int local = (ut == URL_IS_PATH) || (ut == URL_IS_UNKNOWN);
 	size_t plen = strlen(path);
 	int flags = gflags;
 	int dir_only = (plen > 0 && path[plen-1] == '/');
 	glob_t gl;
 
-	if (!local || (!rpmIsGlob(av[j], 0) && strchr(path, '~') == NULL)) {
-	    argvAdd(&argv, av[j]);
-	    continue;
+	if (!local || (!rpmIsGlob(pattern, 0) && strchr(path, '~') == NULL)) {
+	    argvAdd(argvPtr, pattern);
+	    goto exit;
 	}
 
 	if (dir_only)
@@ -146,7 +136,7 @@ int rpmGlob(const char * patterns, int * argcPtr, ARGV_t * argvPtr)
 	gl.gl_pathc = 0;
 	gl.gl_pathv = NULL;
 	
-	rc = glob(av[j], flags, NULL, &gl);
+	rc = glob(pattern, flags, NULL, &gl);
 	if (rc)
 	    goto exit;
 
@@ -157,7 +147,7 @@ int rpmGlob(const char * patterns, int * argcPtr, ARGV_t * argvPtr)
 		maxb = nb;
 	}
 	
-	nb = ((ut == URL_IS_PATH) ? (path - av[j]) : 0);
+	nb = ((ut == URL_IS_PATH) ? (path - pattern) : 0);
 	maxb += nb;
 	maxb += 1;
 	globURL = globRoot = xmalloc(maxb);
@@ -165,7 +155,7 @@ int rpmGlob(const char * patterns, int * argcPtr, ARGV_t * argvPtr)
 	switch (ut) {
 	case URL_IS_PATH:
 	case URL_IS_DASH:
-	    strncpy(globRoot, av[j], nb);
+	    strncpy(globRoot, pattern, nb);
 	    break;
 	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
@@ -190,24 +180,16 @@ int rpmGlob(const char * patterns, int * argcPtr, ARGV_t * argvPtr)
 	    if (globRoot > globURL && globRoot[-1] == '/')
 		while (*globFile == '/') globFile++;
 	    strcpy(globRoot, globFile);
-	    argvAdd(&argv, globURL);
+	    argvAdd(argvPtr, globURL);
 	}
 	globfree(&gl);
 	free(globURL);
     }
 
-    argc = argvCount(argv);
-    if (argc > 0) {
-	if (argvPtr)
-	    *argvPtr = argv;
-	if (argcPtr)
-	    *argcPtr = argc;
-	rc = 0;
-    } else
-	rc = 1;
-
-
 exit:
+    if (argcPtr)
+	*argcPtr = argvCount(*argvPtr);
+
 #ifdef ENABLE_NLS	
     if (old_collate) {
 	(void) setlocale(LC_COLLATE, old_collate);
@@ -218,10 +200,6 @@ exit:
 	free(old_ctype);
     }
 #endif
-    av = _free(av);
-    if (rc || argvPtr == NULL) {
-	argvFree(argv);
-    }
     return rc;
 }
 
