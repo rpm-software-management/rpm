@@ -90,68 +90,66 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
     (void) setlocale(LC_COLLATE, "C");
     (void) setlocale(LC_CTYPE, "C");
 #endif
-	
-    if (1) {
-	if (!local) {
-	    argvAdd(argvPtr, pattern);
-	    goto exit;
-	}
 
-	if (dir_only)
-	    flags |= GLOB_ONLYDIR;
-	
-	gl.gl_pathc = 0;
-	gl.gl_pathv = NULL;
-	
-	rc = glob(pattern, flags, NULL, &gl);
-	if (rc)
-	    goto exit;
-
-	/* XXX Prepend the URL leader for globs that have stripped it off */
-	maxb = 0;
-	for (i = 0; i < gl.gl_pathc; i++) {
-	    if ((nb = strlen(&(gl.gl_pathv[i][0]))) > maxb)
-		maxb = nb;
-	}
-	
-	nb = ((ut == URL_IS_PATH) ? (path - pattern) : 0);
-	maxb += nb;
-	maxb += 1;
-	globURL = globRoot = xmalloc(maxb);
-
-	switch (ut) {
-	case URL_IS_PATH:
-	case URL_IS_DASH:
-	    strncpy(globRoot, pattern, nb);
-	    break;
-	case URL_IS_HTTPS:
-	case URL_IS_HTTP:
-	case URL_IS_FTP:
-	case URL_IS_HKP:
-	case URL_IS_UNKNOWN:
-	default:
-	    break;
-	}
-	globRoot += nb;
-	*globRoot = '\0';
-
-	for (i = 0; i < gl.gl_pathc; i++) {
-	    const char * globFile = &(gl.gl_pathv[i][0]);
-
-	    if (dir_only) {
-		struct stat sb;
-		if (lstat(gl.gl_pathv[i], &sb) || !S_ISDIR(sb.st_mode))
-		    continue;
-	    }
-		
-	    if (globRoot > globURL && globRoot[-1] == '/')
-		while (*globFile == '/') globFile++;
-	    strcpy(globRoot, globFile);
-	    argvAdd(argvPtr, globURL);
-	}
-	globfree(&gl);
-	free(globURL);
+    if (!local) {
+	argvAdd(argvPtr, pattern);
+	goto exit;
     }
+
+    if (dir_only)
+	flags |= GLOB_ONLYDIR;
+    
+    gl.gl_pathc = 0;
+    gl.gl_pathv = NULL;
+    
+    rc = glob(pattern, flags, NULL, &gl);
+    if (rc)
+	goto exit;
+
+    /* XXX Prepend the URL leader for globs that have stripped it off */
+    maxb = 0;
+    for (i = 0; i < gl.gl_pathc; i++) {
+	if ((nb = strlen(&(gl.gl_pathv[i][0]))) > maxb)
+	    maxb = nb;
+    }
+    
+    nb = ((ut == URL_IS_PATH) ? (path - pattern) : 0);
+    maxb += nb;
+    maxb += 1;
+    globURL = globRoot = xmalloc(maxb);
+
+    switch (ut) {
+    case URL_IS_PATH:
+    case URL_IS_DASH:
+	strncpy(globRoot, pattern, nb);
+	break;
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+    case URL_IS_FTP:
+    case URL_IS_HKP:
+    case URL_IS_UNKNOWN:
+    default:
+	break;
+    }
+    globRoot += nb;
+    *globRoot = '\0';
+
+    for (i = 0; i < gl.gl_pathc; i++) {
+	const char * globFile = &(gl.gl_pathv[i][0]);
+
+	if (dir_only) {
+	    struct stat sb;
+	    if (lstat(gl.gl_pathv[i], &sb) || !S_ISDIR(sb.st_mode))
+		continue;
+	}
+	    
+	if (globRoot > globURL && globRoot[-1] == '/')
+	    while (*globFile == '/') globFile++;
+	strcpy(globRoot, globFile);
+	argvAdd(argvPtr, globURL);
+    }
+    globfree(&gl);
+    free(globURL);
 
 exit:
     if (argcPtr)
