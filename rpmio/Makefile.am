@@ -32,6 +32,10 @@ librpmio_la_SOURCES += digest_openssl.c rpmpgp_internal.c rpmpgp_internal.h
 else
 if WITH_LIBGCRYPT
 librpmio_la_SOURCES += digest_libgcrypt.c rpmpgp_internal.c rpmpgp_internal.h
+else
+if WITH_RPM_SEQUOIA
+librpmio_la_SOURCES += rpmpgp_sequoia.c
+endif
 endif
 endif
 
