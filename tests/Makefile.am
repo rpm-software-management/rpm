@@ -12,8 +12,7 @@ EXTRA_DIST += local.at $(TESTSUITE)
 
 AM_CPPFLAGS = -I$(top_srcdir)/include
 
-rpmpgpcheck_LDADD = ../rpmio/librpmio.la \
-	@WITH_RPM_SEQUOIA_LIB@
+rpmpgpcheck_LDADD = ../rpmio/librpmio.la
 
 ## testsuite components
 TESTSUITE_AT = rpmtests.at
