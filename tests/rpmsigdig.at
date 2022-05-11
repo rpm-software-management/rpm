@@ -191,15 +191,22 @@ AT_CLEANUP
 
 # ------------------------------
 # Import a public RSA key
+#
+# rpm.org-rsa-2048-test.pub contains an encryption-capable subkey.  In
+# general, all subkeys should be returned whether they are valid or
+# not.  Keys should only be rejected when verifying a signature.  This
+# is because a key's validity depends on the current time.  Thus, the
+# time to check for validity is when the key is used, not when it is
+# imported.  The internal OpenPGP implementation checks for validity
+# when the key is imported; other implementations should not do this.
 AT_SETUP([rpmkeys --import rsa (rpmdb)])
 AT_KEYWORDS([rpmkeys import])
-AT_CHECK([
+AT_CHECK_UNQUOTED([
 RPMDB_INIT
 
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
 runroot rpm -qi gpg-pubkey-1964c5fc-58e63918|grep -v Date|grep -v Version:
-runroot rpm -q --provides gpg-pubkey-1964c5fc-58e63918
-],
+runroot rpm -q --provides gpg-pubkey-1964c5fc-58e63918],
 [0],
 [Name        : gpg-pubkey
 Version     : 1964c5fc
@@ -246,7 +253,12 @@ UNW2iqnN3BA7guhOv6OMiROF1+I7Q5nWT63mQC7IgQ==
 
 gpg(rpm.org RSA testkey <rsa@rpm.org>) = 4:4344591e1964c5fc-58e63918
 gpg(1964c5fc) = 4:4344591e1964c5fc-58e63918
-gpg(4344591e1964c5fc) = 4:4344591e1964c5fc-58e63918
+gpg(4344591e1964c5fc) = 4:4344591e1964c5fc-58e63918\
+`if test x$PGP != xinternal; then
+  echo
+  echo 'gpg(f00650f8) = 4:185e6146f00650f8-58e63918'
+  echo 'gpg(185e6146f00650f8) = 4:185e6146f00650f8-58e63918'
+fi`
 ],
 [])
 AT_CLEANUP
@@ -301,27 +313,56 @@ AT_SETUP([rpmkeys --import invalid keys])
 AT_KEYWORDS([rpmkeys import])
 RPMDB_INIT
 
-AT_CHECK([
+# The following certificates include subkeys with errors.  In general,
+# all subkeys should be returned whether they are valid or not.  Keys
+# should only be rejected when verifying a signature.  This is because
+# a key's validity depends on the current time.  Thus, the time to
+# check for validity is when the key is used, not when it is imported.
+# The internal OpenPGP implementation checks for validity when the key
+# is imported; other implementations should not do this.
+AT_CHECK_UNQUOTED([
 runroot rpmkeys --import /data/keys/CVE-2021-3521-badbind.asc
+echo exit code: $? >&2
 ],
-[1],
+[ignore],
 [],
-[error: /data/keys/CVE-2021-3521-badbind.asc: key 1 import failed.]
-)
-AT_CHECK([
-runroot rpmkeys --import /data/keys/CVE-2021-3521-nosubsig.asc
-],
-[1],
-[],
-[error: /data/keys/CVE-2021-3521-nosubsig.asc: key 1 import failed.]
+[`if test x$PGP = xinternal;
+then
+    echo 'error: /data/keys/CVE-2021-3521-badbind.asc: key 1 import failed.'
+    echo exit code: 1
+else
+    echo exit code: 0
+fi`]
 )
 
-AT_CHECK([
-runroot rpmkeys --import /data/keys/CVE-2021-3521-nosubsig-last.asc
+AT_CHECK_UNQUOTED([
+runroot rpmkeys --import /data/keys/CVE-2021-3521-nosubsig.asc
+echo exit code: $? >&2
 ],
-[1],
+[ignore],
 [],
-[error: /data/keys/CVE-2021-3521-nosubsig-last.asc: key 1 import failed.]
+[`if test x$PGP = xinternal;
+then
+    echo 'error: /data/keys/CVE-2021-3521-nosubsig.asc: key 1 import failed.'
+    echo exit code: 1
+else
+    echo exit code: 0
+fi`]
+)
+
+AT_CHECK_UNQUOTED([
+runroot rpmkeys --import /data/keys/CVE-2021-3521-nosubsig-last.asc
+echo exit code: $? >&2
+],
+[ignore],
+[],
+[`if test x$PGP = xinternal;
+then
+    echo 'error: /data/keys/CVE-2021-3521-nosubsig-last.asc: key 1 import failed.'
+    echo exit code: 1
+else
+    echo exit code: 0
+fi`]
 )
 AT_CLEANUP
 
