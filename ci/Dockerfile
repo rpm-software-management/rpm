@@ -8,6 +8,8 @@ RUN rm -f /etc/yum.repos.d/*modular.repo
 # dummy for controlling per-repo gpgcheck via Semaphore setup
 RUN sed -i -e "s:^gpgcheck=.$:gpgcheck=1:g" /etc/yum.repos.d/*.repo
 RUN dnf -y update
+RUN dnf -y install dnf-plugins-core
+RUN dnf -y copr enable decathorpe/sequoia-test-builds
 RUN dnf -y install \
   autoconf \
   automake \
@@ -47,6 +49,7 @@ RUN dnf -y install \
   dwz \
   fsverity-utils fsverity-utils-devel \
   pandoc \
+  rpm-sequoia-devel \
   && dnf clean all
 
 COPY . .
@@ -69,4 +72,7 @@ RUN ./configure \
 # --enable-werror equivalent for Doxygen
 RUN sed -i -e "/^WARN_AS_ERROR/s/ NO/ YES/g" docs/librpm.doxy.in
 
-CMD make -j$(nproc) distcheck TESTSUITEFLAGS=-j$(nproc); rc=$?; find . -name rpmtests.log|xargs cat; exit $rc
+# CRYPTO = sequoia (default), libgcrypt or openssl
+CMD \
+  echo === Running make distcheck with a $CRYPTO-based backend ===; \
+  make -j$(nproc) distcheck DISTCHECK_CONFIGURE_FLAGS="--with-crypto=${CRYPTO:-sequoia}" TESTSUITEFLAGS=-j$(nproc); rc=$?; find . -name rpmtests.log|xargs cat; exit $rc

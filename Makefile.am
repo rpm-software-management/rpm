@@ -284,7 +284,8 @@ EXTRA_DIST += docs/librpm/html
 .PHONY: ci
 ci:
 	podman build -t rpm -f $(top_srcdir)/ci/Dockerfile $(top_srcdir)
-	podman run -t rpm
+	podman run -t --env CRYPTO=libgcrypt rpm
+	podman run -t --env CRYPTO=sequoia rpm
 
 ChangeLog:
 	touch ChangeLog
