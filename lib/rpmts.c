@@ -616,18 +616,23 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     if (txn == NULL)
 	return rc;
 
-    krc = pgpPubKeyLint(pkt, pktlen, &lints);
-    if (lints) {
-        if (krc != RPMRC_OK) {
-            rpmlog(RPMLOG_ERR, "%s\n", lints);
-        } else {
-            rpmlog(RPMLOG_WARNING, "%s\n", lints);
+    if ((rpmtsVSFlags(ts) & RPMVSF_NOLINT)) {
+        // Don't show lints when --nolint is provided.
+    } else {
+        krc = pgpPubKeyLint(pkt, pktlen, &lints);
+        if (lints) {
+            if (krc != RPMRC_OK) {
+                rpmlog(RPMLOG_ERR, "%s\n", lints);
+            } else {
+                rpmlog(RPMLOG_WARNING, "%s\n", lints);
+            }
         }
         free(lints);
-    }
-    if (krc != RPMRC_OK) {
-        rc = krc;
-        goto exit;
+
+        if (krc != RPMRC_OK) {
+            rc = krc;
+            goto exit;
+        }
     }
 
     /* XXX keyring wont load if sigcheck disabled, force it temporarily */

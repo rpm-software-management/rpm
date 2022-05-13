@@ -14,6 +14,7 @@ enum modes {
 
 static int mode = 0;
 static int test = 0;
+static int nolint = 0;
 
 static struct poptOption keyOptsTable[] = {
     { "checksig", 'K', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_CHECKSIG,
@@ -22,6 +23,8 @@ static struct poptOption keyOptsTable[] = {
 	N_("import an armored public key"), NULL },
     { "test", '\0', POPT_ARG_NONE, &test, 0,
 	N_("don't import, but tell if it would work or not"), NULL },
+    { "nolint", '\0', POPT_ARG_NONE, &nolint, 0,
+	N_("when importing a certificate, don't lint it"), NULL },
 #if 0
     { "delete-key", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_DELKEY,
 	N_("list keys from RPM keyring"), NULL },
@@ -71,6 +74,9 @@ int main(int argc, char *argv[])
     case MODE_IMPORTKEY:
 	if (test)
 	    rpmtsSetFlags(ts, (rpmtsFlags(ts)|RPMTRANS_FLAG_TEST));
+	if (nolint)
+            rpmtsSetVSFlags(ts, (rpmtsVSFlags(ts)|RPMVSF_NOLINT));
+
 	ec = rpmcliImportPubkeys(ts, args);
 	break;
     /* XXX TODO: actually implement these... */

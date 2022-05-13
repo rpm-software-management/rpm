@@ -105,7 +105,8 @@ enum rpmVSFlags_e {
     RPMVSF_NOPAYLOAD	= (1 << 16),
     RPMVSF_NOMD5	= (1 << 17),
     RPMVSF_NODSA	= (1 << 18),
-    RPMVSF_NORSA	= (1 << 19)
+    RPMVSF_NORSA	= (1 << 19),
+    RPMVSF_NOLINT	= (1 << 20)
     /* bit(s) 16-31 unused */
 };
 
