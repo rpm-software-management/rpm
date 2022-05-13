@@ -23,8 +23,8 @@ preinstall.am
 /aclocal.m4
 /autom4te.cache
 /build-aux
-/doc/librpm.doxy
-/doc/librpm/html
+/docs/librpm.doxy
+/docs/librpm/html
 /elfdeps
 /lib/stamp-h2
 /lib/tagtbl.C
