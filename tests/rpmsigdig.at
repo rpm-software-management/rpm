@@ -323,7 +323,7 @@ RPMDB_INIT
 echo Checking package before importing key:
 runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm; echo $?
 echo Importing key:
-runroot rpmkeys --import /data/keys/alice.asc; echo $?
+runroot rpmkeys --nolint --import /data/keys/alice.asc; echo $?
 echo Checking for key:
 runroot rpm -qi gpg-pubkey-eb04e625-* | grep Version | head -n1
 echo Checking package after importing key:
@@ -388,7 +388,7 @@ RPMDB_INIT
 echo Checking package before importing key:
 runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm; echo $?
 echo Importing key:
-runroot rpmkeys --import /data/keys/alice-expired-subkey.asc; echo $?
+runroot rpmkeys --nolint --import /data/keys/alice-expired-subkey.asc; echo $?
 echo Checking for key:
 runroot rpm -qi gpg-pubkey-eb04e625-* | grep Version | head -n1
 echo Checking package after importing key:
@@ -455,7 +455,7 @@ RPMDB_INIT
 echo Checking package before importing key:
 runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm; echo $?
 echo Importing key:
-runroot rpmkeys --import /data/keys/alice-revoked-subkey.asc; echo $?
+runroot rpmkeys --nolint --import /data/keys/alice-revoked-subkey.asc; echo $?
 echo Checking for key:
 runroot rpm -qi gpg-pubkey-eb04e625-* | grep Version | head -n1
 echo Checking package after importing key:
@@ -522,7 +522,7 @@ RPMDB_INIT
 # The internal OpenPGP implementation checks for validity when the key
 # is imported; other implementations should not do this.
 AT_CHECK_UNQUOTED([
-runroot rpmkeys --import /data/keys/CVE-2021-3521-badbind.asc
+runroot rpmkeys --nolint --import /data/keys/CVE-2021-3521-badbind.asc
 echo exit code: $? >&2
 ],
 [ignore],
@@ -537,7 +537,7 @@ fi`]
 )
 
 AT_CHECK_UNQUOTED([
-runroot rpmkeys --import /data/keys/CVE-2021-3521-nosubsig.asc
+runroot rpmkeys --nolint --import /data/keys/CVE-2021-3521-nosubsig.asc
 echo exit code: $? >&2
 ],
 [ignore],
@@ -552,7 +552,7 @@ fi`]
 )
 
 AT_CHECK_UNQUOTED([
-runroot rpmkeys --import /data/keys/CVE-2021-3521-nosubsig-last.asc
+runroot rpmkeys --nolint --import /data/keys/CVE-2021-3521-nosubsig-last.asc
 echo exit code: $? >&2
 ],
 [ignore],
