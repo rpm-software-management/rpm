@@ -2,7 +2,11 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-DISTCHECK_CONFIGURE_FLAGS = \
+# Set DISTCHECK_CONFIGURE_FLAGS to configure how 'make distcheck' is
+# run.  To select a different crypto backend, try:
+#
+#   make DISTCHECK_CONFIGURE_FLAGS=--with-crypto=sequoia distcheck
+AM_DISTCHECK_CONFIGURE_FLAGS = \
 	--enable-python \
 	--enable-bdb \
 	--enable-ndb \
