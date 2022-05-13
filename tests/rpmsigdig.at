@@ -321,7 +321,7 @@ RPMDB_INIT
 # The internal OpenPGP implementation checks for validity when the key
 # is imported; other implementations should not do this.
 AT_CHECK_UNQUOTED([
-runroot rpmkeys --import /data/keys/CVE-2021-3521-badbind.asc
+runroot rpmkeys --quiet --import /data/keys/CVE-2021-3521-badbind.asc
 echo exit code: $? >&2
 ],
 [ignore],
@@ -336,7 +336,7 @@ fi`]
 )
 
 AT_CHECK_UNQUOTED([
-runroot rpmkeys --import /data/keys/CVE-2021-3521-nosubsig.asc
+runroot rpmkeys --quiet --import /data/keys/CVE-2021-3521-nosubsig.asc
 echo exit code: $? >&2
 ],
 [ignore],
@@ -351,7 +351,7 @@ fi`]
 )
 
 AT_CHECK_UNQUOTED([
-runroot rpmkeys --import /data/keys/CVE-2021-3521-nosubsig-last.asc
+runroot rpmkeys --quiet --import /data/keys/CVE-2021-3521-nosubsig-last.asc
 echo exit code: $? >&2
 ],
 [ignore],
