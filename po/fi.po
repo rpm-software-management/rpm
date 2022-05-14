@@ -11,8 +11,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2022-04-07 13:03+0300\n"
-"PO-Revision-Date: 2022-05-12 03:41+0000\n"
-"Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
+"PO-Revision-Date: 2022-05-17 11:18+0000\n"
+"Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/rpm/"
 "master/fi/>\n"
 "Language: fi\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.12.1\n"
+"X-Generator: Weblate 4.12.2\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -1969,7 +1969,7 @@ msgid "reinstall package(s)"
 msgstr "asenna paketteja uudelleen"
 
 msgid "restore package(s)"
-msgstr ""
+msgstr "palauta paketit"
 
 msgid "query/verify all packages"
 msgstr "kysele/tarkista kaikki paketit"
@@ -1978,10 +1978,11 @@ msgid "rpm checksig mode"
 msgstr "rpm allekirjoituksen tarkistustila"
 
 msgid "query/verify package(s) owning installed file"
-msgstr ""
+msgstr "kysele/tarkista pakettia, jonka omistuksessa asennettu tiedosto on"
 
 msgid "query/verify package(s) owning path, installed or not"
 msgstr ""
+"kysele/tarkista pakettia, jonka omistuksessa polku, asennettu tai ei, on"
 
 msgid "query/verify package(s) in group"
 msgstr "kysele/tarkista paketteja ryhmässä"
@@ -2490,11 +2491,11 @@ msgstr ""
 
 #, c-format
 msgid "%s: base64 decode failed, len %li\n"
-msgstr ""
+msgstr "%s: base64-dekoodaus epäonnistui, len %li\n"
 
 #, c-format
 msgid "%s: base64 decode success, len %li\n"
-msgstr ""
+msgstr "%s: base64-dekoodaus onnistui, len %li\n"
 
 msgid "Bad magic"
 msgstr "Virheellinen maaginen numero"
@@ -2854,7 +2855,7 @@ msgstr "%s: julkisen avaimen luku epäonnistui.\n"
 
 #, c-format
 msgid "unknown keyring type: %s, using rpmdb\n"
-msgstr ""
+msgstr "tuntematon avainrengastyyppi: %s, käytetään rpmdb:tä\n"
 
 #, c-format
 msgid "failed to import key: %s: %s\n"
@@ -2986,13 +2987,13 @@ msgid "parse error in expression"
 msgstr "jäsennysvirhe lausekkeessa"
 
 msgid "unsupported function argument type"
-msgstr ""
+msgstr "ei-tuettu funktion argumenttityyppi"
 
 msgid "syntax error in expression"
 msgstr "syntaksivirhe lausekkeessa"
 
 msgid "unsupported funcion"
-msgstr ""
+msgstr "ei tuettu toiminto"
 
 msgid "unmatched ("
 msgstr "ei täsmää ("
@@ -3016,7 +3017,7 @@ msgid "* and / not supported for strings"
 msgstr "* ja / ei tuettu merkkijonoille"
 
 msgid "+ and - not supported for versions"
-msgstr ""
+msgstr "+ eikä - ei tueta versioissa"
 
 msgid "- not supported for strings"
 msgstr "- ei tuettu merkkijoinoille"
@@ -3139,7 +3140,7 @@ msgstr "lua-skripti epäonnistui: %s\n"
 
 #, c-format
 msgid "result print failed: %s\n"
-msgstr ""
+msgstr "tuloksen tulostus epäonnistui: %s\n"
 
 #, c-format
 msgid "invalid syntax in lua file: %s\n"
@@ -3155,7 +3156,7 @@ msgstr "muistin varaus (%u tavua) palautti NULL:in.\n"
 
 #, c-format
 msgid "Unsupported version of signature: V%d\n"
-msgstr ""
+msgstr "Allekirjoituksen versio, jota ei tueta: V%d\n"
 
 #, c-format
 msgid "Unsupported version of key: V%d\n"
@@ -3233,14 +3234,14 @@ msgstr "tiedostojen allekirjoitustukea ei ole sisäänrakennettu\n"
 
 #, c-format
 msgid "Searching for algorithm %s got %i\n"
-msgstr ""
+msgstr "Haettaessa algoritmia %s saatiin %i\n"
 
 #, c-format
 msgid "Unsupported fsverity algorithm %s\n"
-msgstr ""
+msgstr "Fsverity-algoritmia %s ei tueta\n"
 
 msgid "fsverity signatures requires a key and a cert\n"
-msgstr ""
+msgstr "fsverity signatures vaatii avaimen ja varmenteen\n"
 
 msgid "fsverity signing support not built in\n"
 msgstr "tiedostojen allekirjoitustukea ei ole sisäänrakennettu\n"
@@ -3295,10 +3296,10 @@ msgid "don't verify header+payload signature"
 msgstr "älä tarkista otsikon ja kuorman allekirjoitusta"
 
 msgid "getopt string for scripts options"
-msgstr ""
+msgstr "getopt-merkkijono komentosarjavaihtoehdoille"
 
 msgid "execute statement"
-msgstr ""
+msgstr "suorita lauseke"
 
 msgid "interactive session"
 msgstr "vuorovaikutteinen istunto"
@@ -3307,7 +3308,7 @@ msgid "extract an archive"
 msgstr "pura arkisto"
 
 msgid "only print what would be done"
-msgstr ""
+msgstr "tulosta vain se, mitä tehdään"
 
 #~ msgid "build through %build (%prep, then compile) from <specfile>"
 #~ msgstr "käännä %build-osioon asti (%prep ja %build) spec-tiedostosta"
