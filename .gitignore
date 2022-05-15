@@ -25,6 +25,7 @@ preinstall.am
 /build-aux
 /docs/librpm.doxy
 /docs/librpm/html
+/docs/_site
 /elfdeps
 /lib/stamp-h2
 /lib/tagtbl.C
