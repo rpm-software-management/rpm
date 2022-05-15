@@ -45,3 +45,5 @@ title: rpm.org - RPM Reference Manual
 * [RPM v4 header regions](hregions.md)
 * [RPM v4 signatures and digests](signatures_digests.md)
 
+### Documentation
+* [Write documentation](devel_documentation.md)
