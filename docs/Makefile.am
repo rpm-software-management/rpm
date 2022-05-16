@@ -5,6 +5,7 @@ SUBDIRS = man
 EXTRA_DIST =
 
 EXTRA_DIST += \
+_config.yml \
 _layouts/default.html \
 _layouts/favicon.ico \
 index.md \

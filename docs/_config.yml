@@ -1,0 +1,11 @@
+plugins:
+## all implicily added by github-pages
+#  - jekyll-coffeescript
+#  - jekyll-default-layout
+#  - jekyll-gist
+##  - jekyll-github-metadata # won't work without environment
+#  - jekyll-optional-front-matter
+#  - jekyll-paginate
+#  - jekyll-readme-index
+  - jekyll-titles-from-headings
+  - jekyll-relative-links
