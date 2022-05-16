@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2022-04-07 13:03+0300\n"
-"PO-Revision-Date: 2022-05-16 09:46+0000\n"
-"Last-Translator: Luna Jernberg <bittin@reimu.nl>\n"
+"PO-Revision-Date: 2022-05-17 11:18+0000\n"
+"Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/rpm/"
 "master/sv/>\n"
 "Language: sv\n"
@@ -597,7 +597,7 @@ msgid ""
 "RPM build errors:\n"
 msgstr ""
 "\n"
-"RPM byggfel:\n"
+"RPM-byggfel:\n"
 
 #, c-format
 msgid "Missing '(' in %s %s\n"
@@ -1512,15 +1512,15 @@ msgstr "(okänd)"
 
 #, c-format
 msgid "failed to open dir %s of %s: %s\n"
-msgstr "misslyckades med att öppna katalogen %s av %s: %s\n"
+msgstr "misslyckades med att öppna katalogen %s från %s: %s\n"
 
-#, c-format, fuzzy
+#, c-format
 msgid "%s%s saved as %s%s\n"
-msgstr "%s sparad som %s%s\n"
+msgstr "%s%s sparad som %s%s\n"
 
 #, c-format
 msgid "%s%s created as %s%s\n"
-msgstr "%s%sskapades som %s%s\n"
+msgstr "%s%s skapades som %s%s\n"
 
 #, c-format
 msgid "%s %s: remove failed: %s\n"
@@ -1564,11 +1564,11 @@ msgstr "region %d: taggnumret stämmer inte il %d ril %d dl %d rdl %d\n"
 
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%<PRIu32>) out of range"
-msgstr ""
+msgstr "hvdtaggar: FEL, antal taggar(%<PRIu32>) utanför intervallet"
 
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%<PRIu32>) out of range"
-msgstr ""
+msgstr "hvdtaggar: FEL, antal byte(%<PRIu32>) utanför intervallet"
 
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d"
@@ -1964,10 +1964,12 @@ msgid "rpm checksig mode"
 msgstr "rpm signaturkontrolläge"
 
 msgid "query/verify package(s) owning installed file"
-msgstr ""
+msgstr "fråga/verifiera paket som äger den installerade filen"
 
 msgid "query/verify package(s) owning path, installed or not"
 msgstr ""
+"fråga/verifiera paket som äger den installerade sökvägen, installerad eller "
+"inte"
 
 msgid "query/verify package(s) in group"
 msgstr "fråga/verifiera paket i grupp"
@@ -2474,7 +2476,7 @@ msgstr "%s: base64-avkodning misslyckades, len%li\n"
 
 #, c-format
 msgid "%s: base64 decode success, len %li\n"
-msgstr ""
+msgstr "%s: base64-avkodning lyckades, len%li\n"
 
 msgid "Bad magic"
 msgstr "Felaktigt magiskt tal"
@@ -3214,13 +3216,13 @@ msgstr "Söker efter algoritm %s fick%i\n"
 
 #, c-format
 msgid "Unsupported fsverity algorithm %s\n"
-msgstr ""
+msgstr "Ej stödd fsverity-algoritm %s\n"
 
 msgid "fsverity signatures requires a key and a cert\n"
 msgstr "fsverity signaturer kräver en nyckel och ett certifikat\n"
 
 msgid "fsverity signing support not built in\n"
-msgstr "fsverity signeringsstöd inte inbyggt\n"
+msgstr "fsverity-signeringsstöd inte inbyggt\n"
 
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
@@ -3275,7 +3277,7 @@ msgid "getopt string for scripts options"
 msgstr "getopt-sträng för skriptalternativ"
 
 msgid "execute statement"
-msgstr ""
+msgstr "kör sats"
 
 msgid "interactive session"
 msgstr "interaktiv session"
