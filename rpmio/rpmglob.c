@@ -52,44 +52,13 @@ static inline const char *next_brace_sub(const char *begin)
     return *cp != '\0' ? cp : NULL;
 }
 
-/* Return nonzero if PATTERN contains any metacharacters.
-   Metacharacters can be quoted with backslashes if QUOTE is nonzero.  */
-static int __glob_pattern_p(const char *pattern, int quote)
-{
-    register const char *p;
-    int openBrackets = 0;
-
-    for (p = pattern; *p != '\0'; ++p)
-	switch (*p) {
-	case '?':
-	case '*':
-	    return 1;
-
-	case '\\':
-	    if (quote && p[1] != '\0')
-		++p;
-	    break;
-
-	case '[':
-	    openBrackets = 1;
-	    break;
-
-	case ']':
-	    if (openBrackets)
-		return 1;
-	    break;
-	}
-
-    return 0;
-}
-
 /* librpmio exported interfaces */
 
 int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
 {
     char * globRoot = NULL;
     const char *home = getenv("HOME");
-    int gflags = 0;
+    int gflags = GLOB_NOMAGIC;
 #ifdef ENABLE_NLS
     char * old_collate = NULL;
     char * old_ctype = NULL;
@@ -125,7 +94,7 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
 	int dir_only = (plen > 0 && path[plen-1] == '/');
 	glob_t gl;
 
-	if (!local || (!rpmIsGlob(pattern, 0) && strchr(path, '~') == NULL)) {
+	if (!local) {
 	    argvAdd(argvPtr, pattern);
 	    goto exit;
 	}
@@ -201,36 +170,4 @@ exit:
     }
 #endif
     return rc;
-}
-
-int rpmIsGlob(const char * pattern, int quote)
-{
-    if (!__glob_pattern_p(pattern, quote)) {
-
-	const char *begin;
-	const char *next;
-	const char *rest;
-
-	begin = strchr(pattern, '{');
-	if (begin == NULL)
-	    return 0;
-	/*
-	 * Find the first sub-pattern and at the same time find the
-	 *  rest after the closing brace.
-	 */
-	next = next_brace_sub(begin + 1);
-	if (next == NULL)
-	    return 0;
-
-	/* Now find the end of the whole brace expression.  */
-	rest = next;
-	while (*rest != '}') {
-	    rest = next_brace_sub(rest + 1);
-	    if (rest == NULL)
-		return 0;
-	}
-	/* Now we can be sure that brace expression is well-foermed. */
-    }
-
-    return 1;
 }

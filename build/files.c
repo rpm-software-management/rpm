@@ -2153,12 +2153,12 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
  * @param pkg
  * @param fl		package file tree walk data
  * @param fileName	file to add
+ * @param doGlob	perform globbing on file
  * @return		RPMRC_OK on success
  */
-static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
+static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName,
+			       int doGlob)
 {
-    int quote = 1;	/* XXX permit quoted glob characters. */
-    int doGlob;
     char *diskPath = NULL;
     rpmRC rc = RPMRC_OK;
     size_t fnlen = strlen(fileName);
@@ -2168,8 +2168,6 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
     if (trailing_slash && !fl->cur.isDir)
 	fl->cur.isDir = -1;
     
-    doGlob = rpmIsGlob(fileName, quote);
-
     /* Check that file starts with leading "/" */
     if (*fileName != '/') {
 	rpmlog(RPMLOG_ERR, _("File needs leading \"/\": %s\n"), fileName);
@@ -2430,7 +2428,7 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
 	if (rpmGlob(eorigfile, &globFilesCount, &globFiles) == 0) {
 	    for (i = 0; i < globFilesCount; i++) {
 		rasprintf(&newfile, "%s/%s", sd->dirname, basename(globFiles[i]));
-		processBinaryFile(pkg, fl, newfile);
+		processBinaryFile(pkg, fl, newfile, 0);
 		free(newfile);
 	    }
 	    argvFree(globFiles);
@@ -2449,7 +2447,7 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     copyFileEntry(&sd->entries[0].defEntry, &fl->def);
     copyFileEntry(&sd->entries[0].curEntry, &fl->cur);
     fl->cur.isDir = 1;
-    (void) processBinaryFile(pkg, fl, sd->dirname);
+    (void) processBinaryFile(pkg, fl, sd->dirname, 1);
 
     freeStringBuf(docScript);
     free(mkdocdir);
@@ -2574,7 +2572,7 @@ static void addPackageFileList (struct FileList_s *fl, Package pkg,
 	    } else {
 		if (fl->cur.attrFlags & RPMFILE_DIR)
 		    fl->cur.isDir = 1;
-		(void) processBinaryFile(pkg, fl, *fn);
+		(void) processBinaryFile(pkg, fl, *fn, 1);
 	    }
 	}
 

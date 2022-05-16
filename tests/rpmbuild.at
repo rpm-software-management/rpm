@@ -435,6 +435,48 @@ warning: absolute symlink: /opt/globtest/linkgood -> /opt/globtest/zab
 ])
 AT_CLEANUP
 
+AT_SETUP([rpmbuild glob escape])
+AT_KEYWORDS([build])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpmbuild -bb --quiet /data/SPECS/globesctest.spec
+runroot rpm -qpl /build/RPMS/noarch/globesctest-1.0-1.noarch.rpm
+],
+[0],
+[/opt/foo"'baz"'
+/opt/foo"bar"
+/opt/foo*
+/opt/foo-bar1
+/opt/foo-bar2
+/opt/foo?bar
+/opt/foo[[bar baz]]
+/opt/foo[[bar]]
+/opt/foo\
+/opt/foo\[[bar\]]
+/opt/foo\bar
+/opt/foobar
+/opt/foobara
+/opt/foobarb
+/opt/foobawa
+/opt/foobawb
+/opt/foobaya
+/opt/foobayb
+/opt/foobaz
+/opt/foobaza
+/opt/foobazb
+/opt/fooxbarybaz
+/opt/foo{bar,baz}
+/opt/share/doc/globesctest-1.0
+/opt/share/doc/globesctest-1.0/bar
+/opt/share/doc/globesctest-1.0/baz
+/opt/share/doc/globesctest-1.0/foo bar
+/opt/share/doc/globesctest-1.0/foo[[bar]]
+],
+[],
+)
+AT_CLEANUP
+
 AT_SETUP([rpmbuild prefixpostfix])
 AT_KEYWORDS([build])
 AT_CHECK([

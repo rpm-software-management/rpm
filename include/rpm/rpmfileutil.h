@@ -108,14 +108,6 @@ char * rpmGenPath	(const char * urlroot,
 char * rpmGetPath (const char * path, ...) RPM_GNUC_NULL_TERMINATED;
 
 /** \ingroup rpmfileutil
- * Check whether pattern contains any glob metacharacters.
- * @param pattern	glob pattern
- * @param quote		allow backslash quoting of metacharacters?
- * @return		1 if pattern contains globs, 0 otherwise
- */
-int rpmIsGlob(const char * pattern, int quote);
-
-/** \ingroup rpmfileutil
  * Return URL path(s) from a (URL prefixed) pattern glob.
  * @param patterns	glob pattern
  * @param[out] *argcPtr	no. of paths
