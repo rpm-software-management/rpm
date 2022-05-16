@@ -5,13 +5,14 @@
 # Translators:
 # Ricky Tigg <ricky.tigg@gmail.com>, 2020, 2021.
 # Jan Kuparinen <copper_fin@hotmail.com>, 2021, 2022.
+# Jiri Grönroos <jiri.gronroos@iki.fi>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2022-04-07 13:03+0300\n"
 "PO-Revision-Date: 2022-05-12 03:41+0000\n"
-"Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
+"Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/rpm/"
 "master/fi/>\n"
 "Language: fi\n"
@@ -47,7 +48,7 @@ msgid "exec failed\n"
 msgstr "suoritus epäonnistui\n"
 
 msgid "create uncompressed tar file"
-msgstr ""
+msgstr "luo pakkaamaton tar-tiedosto"
 
 #, c-format
 msgid "argument is not an RPM package\n"
@@ -1666,7 +1667,7 @@ msgid "RPM v3 packages are deprecated: %s\n"
 msgstr "RPM v3 -paketit ovat vanhentuneet: %s\n"
 
 msgid "Error writing to stdout"
-msgstr ""
+msgstr "Virhe stdoutiin kirjoittaessa"
 
 #, c-format
 msgid "failed to load macro file %s\n"
@@ -2523,7 +2524,7 @@ msgid "Archive file not in header"
 msgstr "Arkistotiedosto ei ole otsikossa"
 
 msgid "Invalid symlink"
-msgstr ""
+msgstr "Virheellinen symbolinen linkki"
 
 msgid "File from package already exists as a directory in system"
 msgstr "Paketista tuleva tiedosto on jo järjestelmässä hakemistona"
@@ -2857,7 +2858,7 @@ msgstr ""
 
 #, c-format
 msgid "failed to import key: %s: %s\n"
-msgstr ""
+msgstr "avaimen tuonti epäonnistui: %s: %s\n"
 
 #, c-format
 msgid "invalid package verify level %s\n"
@@ -3300,10 +3301,10 @@ msgid "execute statement"
 msgstr ""
 
 msgid "interactive session"
-msgstr ""
+msgstr "vuorovaikutteinen istunto"
 
 msgid "extract an archive"
-msgstr ""
+msgstr "pura arkisto"
 
 msgid "only print what would be done"
 msgstr ""
