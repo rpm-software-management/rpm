@@ -6,13 +6,14 @@
 # Muhammet Kara <muhammetk@gmail.com>, 2011-2012,2014
 # Muhammet Kara <muhammetk@gmail.com>, 2014
 # Oğuz Ersen <oguzersen@protonmail.com>, 2020, 2021.
+# Ferhat Gecdogan <ferhatgectao@gmail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2022-04-07 13:03+0300\n"
-"PO-Revision-Date: 2021-05-06 19:02+0000\n"
-"Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
+"PO-Revision-Date: 2022-05-02 11:18+0000\n"
+"Last-Translator: Ferhat Gecdogan <ferhatgectao@gmail.com>\n"
 "Language-Team: Turkish <https://translate.fedoraproject.org/projects/rpm/"
 "master/tr/>\n"
 "Language: tr\n"
@@ -20,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n>1);\n"
-"X-Generator: Weblate 4.6.1\n"
+"X-Generator: Weblate 4.12.1\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -28,7 +29,7 @@ msgstr "dosya %s: %s\n"
 
 #, c-format
 msgid "RPM version %s\n"
-msgstr "RPM Sürüm %s\n"
+msgstr "RPM Sürümü %s\n"
 
 #, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
@@ -49,7 +50,7 @@ msgid "exec failed\n"
 msgstr "icra başarısız\n"
 
 msgid "create uncompressed tar file"
-msgstr ""
+msgstr "sıkıştırılmamış tar dosyası oluştur"
 
 #, c-format
 msgid "argument is not an RPM package\n"
@@ -90,7 +91,7 @@ msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr ""
 
 msgid "check build dependencies <specfile>"
-msgstr ""
+msgstr "<specfile> derleme bağımlılıklarını kontrol edin"
 
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
@@ -98,13 +99,13 @@ msgstr ""
 
 #, c-format
 msgid "verify %files section from <specfile>"
-msgstr "<spec dosyası>ndan %files bölümünü doğrular"
+msgstr "<specfile>ndan %files bölümünü doğrular"
 
 msgid "build source and binary packages from <specfile>"
-msgstr "kaynak ve çalıştırılabilir paketleri <spec dosyası>ndan oluşturur"
+msgstr "kaynak ve çalıştırılabilir paketleri <specfıle>ndan oluşturur"
 
 msgid "build binary package only from <specfile>"
-msgstr "çalıştırılabilir paketi sadece <spec dosyası>ndan oluşturur"
+msgstr "çalıştırılabilir paketi sadece <specfile>ndan oluşturur"
 
 msgid "build source package only from <specfile>"
 msgstr "kaynak paketi sadece <spec dosyası>ndan oluşturur"
@@ -1150,38 +1151,39 @@ msgid "line %d: second %%prep\n"
 msgstr "satır %d: %%prep saniye\n"
 
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
-msgstr ""
+msgstr "Bağımlılık belirteçleri alfanümerik, '_' veya '/' ile başlamalıdır"
 
 msgid "Versioned file name not permitted"
-msgstr ""
+msgstr "Sürümlü dosya adına izin verilmiyor"
 
 msgid "No rich dependencies allowed for this type"
-msgstr ""
+msgstr "Bu tür için zengin bağımlılığa izin verilmez"
 
 msgid "invalid dependency"
-msgstr ""
+msgstr "geçersiz bağımlılık"
 
 msgid "Version required"
-msgstr ""
+msgstr "Sürüm gerekli"
 
 msgid "Only package names are allowed in Obsoletes"
-msgstr ""
+msgstr "Obsoletes'de yalnızca paket adlarına izin verilir"
 
 msgid "It's not recommended to have unversioned Obsoletes"
-msgstr ""
+msgstr "Sürümlenmemiş Obsoletes'e sahip olmanız önerilmez"
 
 msgid "It's not recommended to use '>' in Obsoletes"
-msgstr ""
+msgstr "Obsoletes'te '>' kullanılması önerilmez"
 
 msgid "Only absolute paths are allowed in file triggers"
-msgstr ""
+msgstr "Dosya tetikleyicilerinde yalnızca mutlak yollara izin verilir"
 
 msgid "Trigger fired by the same package is already defined in spec file"
 msgstr ""
+"Aynı paket tarafından tetiklenen tetik, spec dosyasında zaten tanımlanmış"
 
 #, c-format
 msgid "line %d: %s: %s\n"
-msgstr ""
+msgstr "satır %d: %s: %s\n"
 
 #, c-format
 msgid "line %d: triggers must have --: %s\n"
@@ -2653,7 +2655,7 @@ msgstr "%s paketi kurulu değil"
 
 #, c-format
 msgid "path %s in package %s is not relocatable"
-msgstr ""
+msgstr "%s paketindeki %s yolu yeri değiştirilemez"
 
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
@@ -3143,11 +3145,11 @@ msgid "V%d %s/%s %s, key ID %s"
 msgstr ""
 
 msgid "(none)"
-msgstr ""
+msgstr "(yok)"
 
 #, c-format
 msgid "exiting on signal %d from pid %d\n"
-msgstr ""
+msgstr "%d pid'inden %d sinyalinde çıkılıyor\n"
 
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
@@ -3159,18 +3161,18 @@ msgstr "%s: Fread başarısız: %s\n"
 
 #, c-format
 msgid "%s: Fflush failed: %s\n"
-msgstr ""
+msgstr "%s: Fflush başarısız: %s\n"
 
 msgid "Unsupported PGP signature\n"
 msgstr "Desteklenmeyen PGP imzası\n"
 
 #, c-format
 msgid "Unsupported PGP hash algorithm %u\n"
-msgstr ""
+msgstr "Desteklenmeyen PGP algoritması %u\n"
 
 #, c-format
 msgid "Unsupported PGP pubkey algorithm %u\n"
-msgstr ""
+msgstr "Desteklenmeyen PGP yayın anahtarı algoritması %u\n"
 
 #, c-format
 msgid "Could not create pipe for signing: %m\n"
@@ -3217,10 +3219,10 @@ msgid "Unsupported fsverity algorithm %s\n"
 msgstr ""
 
 msgid "fsverity signatures requires a key and a cert\n"
-msgstr ""
+msgstr "fsverity imzaları bir anahtar ve bir sertifika gerektirir\n"
 
 msgid "fsverity signing support not built in\n"
-msgstr ""
+msgstr "fsverity imzalama desteği yerleşik değil\n"
 
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
@@ -3235,7 +3237,7 @@ msgstr "RPM v3 paketleri imzalanamıyor\n"
 
 #, c-format
 msgid "%s already contains identical signature, skipping\n"
-msgstr ""
+msgstr "%s zaten aynı imzayı içeriyor, geçiliyor\n"
 
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
@@ -3253,38 +3255,38 @@ msgid "replacing %s failed: %s\n"
 msgstr ""
 
 msgid "sign_hash failed\n"
-msgstr ""
+msgstr "sign_hash başarısız oldu\n"
 
 msgid "File digest algorithm id is invalid"
-msgstr ""
+msgstr "Dosya özeti algoritma kimliği geçersiz"
 
 msgid "signFile failed\n"
-msgstr ""
+msgstr "signFile başarısız oldu\n"
 
 msgid "headerPutString failed\n"
-msgstr ""
+msgstr "headerPutString başarısız oldu\n"
 
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr ""
 
 msgid "don't verify header+payload signature"
-msgstr ""
+msgstr "başlık + yük imzasını doğrulama"
 
 msgid "getopt string for scripts options"
 msgstr ""
 
 msgid "execute statement"
-msgstr ""
+msgstr "koşulu yürüt"
 
 msgid "interactive session"
-msgstr ""
+msgstr "etkileşimli oturum"
 
 msgid "extract an archive"
-msgstr ""
+msgstr "bir arşivi çıkar"
 
 msgid "only print what would be done"
-msgstr ""
+msgstr "sadece ne yapılacağını yazdır"
 
 #~ msgid "build through %build (%prep, then compile) from <specfile>"
 #~ msgstr ""
