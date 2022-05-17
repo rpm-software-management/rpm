@@ -2,160 +2,69 @@
 layout: default
 title: rpm.org - Package ordering
 ---
-# Package ordering in rpm-4.0.1 and later
+# Package ordering
 
-The package ordering algorithm in rpm-4.0.1 has changed.
+Rpm orders transactions solely based on package dependency information:
+dependencies are installed before the dependent, and erased after it.
+If the install/erase order is not right, then either the dependency
+information is incomplete, incorrect or there are unresolvable dependency
+loops.
 
-## The Problem
+The order is calculated by matching dependencies on `Provides` from the
+packages in the transaction. If package A `Requires` B, then a provider
+of B will be installed before A, and erased after it.
+In case of multiple providers, heuristics are used to pick the best match.
+Weak dependencies (`Recommends`, `Suggests`, `Supplements`, `Enhances`)
+and ordering hints (`OrderWithRequires`) are similarly considered, if the
+provider is present in the transaction.
+Note that `Supplements` and `Enhances` are reverse dependencies and are
+ordered thus.`Obsoletes` and `Conflicts` dependencies are not used for
+ordering.
 
-Here's a simple test to illustrate the need for the change (from
-bugzilla #12327):
+A dependency loop is generally a packaging bug as no correct ordering is
+possible to achieve in that situation. They are best solved at the source,
+by splitting packages to sub-packages to eliminate the loop.
+Sometimes this is not practical though, and also some dependencies are
+not relevant for ordering at all. Rpm supports various
+[dependency qualifiers](spec.md#Requires) to supply
+context that rpm uses for loop resolution.
 
-Assume the minimal 7.0 package manifest in /tmp/list
-```
-	/mnt/redhat/comps/dist/7.0/sparc/bash-2.04-11.sparc.rpm
-	/mnt/redhat/comps/dist/7.0.2/sparc/glibc-2.1.94-1.sparc.rpm
-	/mnt/redhat/comps/dist/7.0/sparc/mktemp-1.5-5.sparc.rpm
-	/mnt/redhat/comps/dist/7.0/noarch/basesystem-7.0-2.noarch.rpm
-	/mnt/redhat/comps/dist/7.0/noarch/setup-2.3.4-1.noarch.rpm
-	/mnt/redhat/comps/dist/7.0/noarch/filesystem-2.0.7-1.noarch.rpm
-	/mnt/redhat/comps/dist/7.0/sparc/libtermcap-2.0.8-25.sparc.rpm
-	/mnt/redhat/comps/dist/7.0/noarch/termcap-11.0.1-3.noarch.rpm
-```
+Qualifiers work in two ways, depending on the context and the qualifier:
+they can either *resolve* the loop, or *favor* loop cutting.
 
-with database initialization as
-```
-	mkdir -p /tmp/ROOT/var/lib/rpm
-	rpm --initdb /tmp/ROOT/var/lib/rpm
-```
+Normally, `Requires: A` and `Requires(pre): A` result in exactly the same
+install order but when a loop is detected, the latter is favored during
+installation. During erasure, the latter is ignored.
+In simple cases this is sufficient to nudge the loop resolution in the
+desired direction, but there is no guarantee. Also note that favoring
+is only used on hard `Requires` dependencies.
 
-This command "works"
-```
-	rpm -Uvh -r /tmp/ROOT `cat /tmp/list`
-```
-while this command
-```
-	rpm -Uvh -r /tmp/ROOT `tac /tmp/list`
-```
-fails with 
-```
-	loop in prerequisite chain: libtermcap bash libtermcap
-```
+`Requires(preun): A` declares the dependency is only needed during erasure,
+so it can resolve an install-time loop. Unordering qualifiers cause the
+dependency to be ignored entirely during ordering, so they resolve loops.
 
-\note The 2nd upgrade reverse orders the packages in the manifest.
+Install-order qualifiers:
+* `pre`
+* `post`
 
-The problem is that the previous ordering algorithm, basically a very clever
-implementation of tsort, was sensitive to initial conditions, and the first
-command "happens" to snip a loop, while the second does not.
+Erase-order qualifiers:
+* `preun`
+* `postun`
 
-## The Solution
+Unordering qualifiers:
+* `pretrans`
+* `posttrans`
+* `meta`
+* `verify`
 
-The current ordering algorithm is exactly tsort from Knuth V1, with one further
-twist. Since the only way out of a dependency loop is to snip the loop
-somewhere, rpm uses hints from Requires: dependencies to distinguish
-co-requisite (these are not needed to install, only to use, a package) from
-pre-requisite (these are guaranteed to be installed before the package that
-includes the dependency) relations.
+Packages belonging to a dependency loop are installed as a consecutive group,
+using the qualifier hints to try and cut the loop with least minimal
+disruption, but one should remember that there is no such thing as a
+correct order for a loop.
 
-There is now syntax in spec files to explicitly specify the source of a
-Requires: dependency.  If, for example, you use grep in %post, then you
-as a packager would normally add
-```
-	PreReq: grep
-```
-in order to insure that grep was installed before attempted use by the 
-%postun scriptlet.
-
-Now the same dependency can be expressed more precisely as
-```
-	Requires(post): grep
-```
-
-For completeness, here's the complete set of tokens that may be
-added to Requires: as in the example above:
-```
-    "interp",         RPMSENSE_INTERP
-    "prereq",         RPMSENSE_PREREQ
-    "preun",          RPMSENSE_SCRIPT_PREUN
-    "pre",            RPMSENSE_SCRIPT_PRE
-    "postun",         RPMSENSE_SCRIPT_POSTUN
-    "post",           RPMSENSE_SCRIPT_POST
-    "rpmlib",         RPMSENSE_RPMLIB
-    "verify",         RPMSENSE_SCRIPT_VERIFY
-```
-
-Ditto BuildRequires:
-```
-    "prep",           RPMSENSE_SCRIPT_PREP
-    "build",          RPMSENSE_SCRIPT_BUILD
-    "install",        RPMSENSE_SCRIPT_INSTALL
-    "clean",          RPMSENSE_SCRIPT_CLEAN
-```
-but let's not go there (yet).
-
-For giggles, you can also do stuff like
-```
-	Requires(pre,post): /bin/sh
-```
-
-By marking dependencies more precisely, rpm can distinguish between
-an upgrade context (like the use of grep in %post above) and an installed
-context (like the autogenerated Requires: in a package that includes a
-script with #!/bin/sh), and that permits rpm to differentiate pre-requisites
-from co-requisites while doing package ordering.
-
-Here's what cures the libtermcap <-> bash loop:
-```
-	Requires(postun): /bin/sh
-```
-which, since the dependency is clearly not useful or necessary in determining
-install ordering, is safely ignored.
-
-## Side Effects
-
-One of the side effects of changing the package install ordering, is that
-there are a handful of new loops that are detected. Here's what I found
-looking at supported Red Hat releases:
-
-```
-    ghostscript-fonts	ghostscript
-    /* 7.0 only */
-    pango-gtkbeta-devel	pango-gtkbeta
-    XFree86		Mesa
-    compat-glibc	db2
-    compat-glibc	db1
-    pam			initscripts
-    kernel		initscripts
-    initscripts		sysklogd
-    /* 6.2 */
-    egcs-c++		libstdc++
-    /* 6.1 */
-    pilot-link-devel	pilot-link
-    /* 5.2 */
-    pam			pamconfig
-```
-
-Why are there new loops? Because tsort is trying to use all of the
-dependency relations for ordering, while the previous tsort ignored all
-Requires: from added packages.
-
-Except for the "well known" libtermcap <-> bash loop (which is just wrong),
-all of the other dependencies are simply not needed in an upgrade context
-to perform package ordering. Please note that all of the known to cause
-loop dependencies listed above are, for now, explicitly ignored when
-determining package install ordering.
-
-## Summary
-
-So what does this all mean? Basically not much, unless you find yourself
-trying to specify dependencies amongst a set of packages correctly and
-happen to create a dependency loop.
-
-And, before you start adding the new-fangled syntax to packages, please
-remember that rpm will almost certainly be auto-generating fine-grained
-dependencies for %post et al scriptlets pretty soon. Truly, rpm needs to
-make packaging easier, not provide Yet More Complicated Syntax in spec files.
-
-With thanks to Ken Estes for doing the implementation in bash2 that makes
-it possible to auto-generate scriptlet dependencies, blame me for the long,
-slow deployment.
+Ordering issues and dependency loops can be difficult to analyze.
+To aid with this, rpm can print out transaction ordering diagnostics.
+These diagnostics can be enabled with the `--deploops` switch from the cli
+or the `RPMTRANS_FLAG_DEPLOOPS` transaction flag from the API. Installing
+to (and erasing from) an empty chroot is an effective way of discovering
+missing dependencies.
