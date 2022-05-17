@@ -91,7 +91,7 @@ struct poptOption rpmQVSourcePoptTable[] = {
  { "hdrid", '\0', 0, 0, POPT_QUERYBYHDRID,
 	N_("query/verify package(s) with header identifier"), "SHA1" },
 
- { "query", 'q', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'q',
+ { "query", 'q', 0, NULL, 'q',
 	N_("rpm query mode"), NULL },
  { "querybynumber", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYNUMBER,
 	N_("query/verify a header instance"), "HDRNUM" },
