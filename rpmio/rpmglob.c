@@ -57,8 +57,10 @@ static inline const char *next_brace_sub(const char *begin)
 int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
 {
     char * globRoot = NULL;
+    char * globURL;
     const char *home = getenv("HOME");
-    int gflags = GLOB_NOMAGIC;
+    const char * path;
+    int flags = GLOB_NOMAGIC;
 #ifdef ENABLE_NLS
     char * old_collate = NULL;
     char * old_ctype = NULL;
@@ -67,11 +69,16 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
     size_t maxb, nb;
     int i;
     int rc = 0;
+    int ut = urlPath(pattern, &path);
+    int local = (ut == URL_IS_PATH) || (ut == URL_IS_UNKNOWN);
+    size_t plen = strlen(path);
+    int dir_only = (plen > 0 && path[plen-1] == '/');
+    glob_t gl;
 
-    gflags |= GLOB_BRACE;
+    flags |= GLOB_BRACE;
 
     if (home != NULL && strlen(home) > 0) 
-	gflags |= GLOB_TILDE;
+	flags |= GLOB_TILDE;
 
 #ifdef ENABLE_NLS
     t = setlocale(LC_COLLATE, NULL);
@@ -85,15 +92,6 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
 #endif
 	
     if (1) {
-	char * globURL;
-	const char * path;
-	int ut = urlPath(pattern, &path);
-	int local = (ut == URL_IS_PATH) || (ut == URL_IS_UNKNOWN);
-	size_t plen = strlen(path);
-	int flags = gflags;
-	int dir_only = (plen > 0 && path[plen-1] == '/');
-	glob_t gl;
-
 	if (!local) {
 	    argvAdd(argvPtr, pattern);
 	    goto exit;
