@@ -2415,7 +2415,7 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     fi = 0;
     while (*files != NULL) {
 	char *origfile = rpmCleanPath(rstrscat(NULL, basepath, "/", *files, NULL));
-	ARGV_t globFiles;
+	ARGV_t globFiles = NULL;
 	int globFilesCount, i;
 	char *newfile;
 
