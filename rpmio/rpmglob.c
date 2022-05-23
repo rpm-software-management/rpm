@@ -74,6 +74,10 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
     int i;
     int rc = 0;
 
+    if (argvPtr == NULL)
+	/* We still want to count matches so use a scratch list */
+	argvPtr = &argv;
+
     flags |= GLOB_BRACE;
 
     if (home != NULL && strlen(home) > 0) 
@@ -91,7 +95,7 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
 #endif
 
     if (!local || !ismagic(pattern)) {
-	argvAdd(&argv, pattern);
+	argvAdd(argvPtr, pattern);
 	goto exit;
     }
 
@@ -145,16 +149,14 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
 	if (globRoot > globURL && globRoot[-1] == '/')
 	    while (*globFile == '/') globFile++;
 	strcpy(globRoot, globFile);
-	argvAdd(&argv, globURL);
+	argvAdd(argvPtr, globURL);
     }
     globfree(&gl);
     free(globURL);
 
 exit:
-    argc = argvCount(argv);
+    argc = argvCount(*argvPtr);
     if (argc > 0) {
-	if (argvPtr)
-	    *argvPtr = argv;
 	if (argcPtr)
 	    *argcPtr = argc;
 	rc = 0;
@@ -172,8 +174,6 @@ exit:
 	free(old_ctype);
     }
 #endif
-    if (rc || argvPtr == NULL) {
-	argvFree(argv);
-    }
+    argvFree(argv);
     return rc;
 }
