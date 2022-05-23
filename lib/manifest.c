@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include <popt.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
 #include <rpm/argv.h>
@@ -64,7 +65,7 @@ char * rpmPermsString(int mode)
 /**@todo Infinite loops through manifest files exist, operator error for now. */
 rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, char *** argvPtr)
 {
-    ARGV_t sb = NULL;
+    ARGV_t p, sb = NULL;
     char * s = NULL;
     char * se;
     int ac = 0;
@@ -78,6 +79,8 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, char *** argvPtr)
     if (f != NULL)
     while (1) {
 	char line[BUFSIZ];
+	int pac = 0;
+	const char ** pav = NULL;
 
 	/* Read next line. */
 	s = fgets(line, sizeof(line) - 1, f);
@@ -107,19 +110,31 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, char *** argvPtr)
 
 	/* Concatenate next line in buffer. */
 	*se = '\0';
-	argvAdd(&sb, s);
+
+	poptParseArgvString(s, &pac, &pav);
+	for (j = 0; j < pac; j++)
+	    argvAdd(&sb, pav[j]);
+	_free(pav);
     }
 
-    s = argvJoin(sb, " ");
-
-    if (!(s && *s)) {
+    if (sb == NULL) {
 	rpmrc = RPMRC_NOTFOUND;
 	goto exit;
     }
 
     /* Glob manifest items. */
-    rpmrc = (rpmGlob(s, &ac, &av) == 0 ? RPMRC_OK : RPMRC_FAIL);
-    if (rpmrc != RPMRC_OK) goto exit;
+    for (p = sb; *p; p++) {
+	int pac = 0;
+	ARGV_t pav = NULL;
+	if (rpmGlob(*p, &pac, &pav) == 0) {
+	    argvAppend(&av, pav);
+	    ac += pac;
+	    argvFree(pav);
+	} else {
+	    rpmrc = RPMRC_FAIL;
+	    goto exit;
+	}
+    }
 
     /* Sanity check: skip dash (for stdin) */
     for (i = 0; i < ac; i++) {
