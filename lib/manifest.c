@@ -123,18 +123,11 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, char *** argvPtr)
     }
 
     /* Glob manifest items. */
-    for (p = sb; *p; p++) {
-	int pac = 0;
-	ARGV_t pav = NULL;
-	if (rpmGlob(*p, &pac, &pav) == 0) {
-	    argvAppend(&av, pav);
-	    ac += pac;
-	    argvFree(pav);
-	} else {
+    for (p = sb; *p; p++)
+	if (rpmGlob(*p, &ac, &av)) {
 	    rpmrc = RPMRC_FAIL;
 	    goto exit;
 	}
-    }
 
     /* Sanity check: skip dash (for stdin) */
     for (i = 0; i < ac; i++) {
