@@ -193,7 +193,8 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 
     if (what == RPMBUILD_RMBUILD) {
 	if (buildSubdir[0] != '\0')
-	    fprintf(fp, "rm -rf '%s'\n", buildSubdir);
+	    fprintf(fp, "rm -rf '%s' '%s.gemspec'\n",
+		    buildSubdir, buildSubdir);
     } else if (sb != NULL)
 	fprintf(fp, "%s", sb);
 
