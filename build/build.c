@@ -432,7 +432,7 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 		goto exit;
 
 	if ((what & RPMBUILD_RMBUILD) &&
-	    (rc = doScript(spec, RPMBUILD_RMBUILD, "--clean", NULL, test, sbp)))
+	    (rc = doScript(spec, RPMBUILD_RMBUILD, "rmbuild", NULL, test, sbp)))
 		goto exit;
     }
 
