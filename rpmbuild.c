@@ -270,7 +270,7 @@ static struct poptOption rpmBuildPoptTable[] = {
 	N_("generate package header(s) compatible with (legacy) rpm v3 packaging"),
 	NULL},
 
- { "noclean", '\0', POPT_BIT_SET, &nobuildAmount, RPMBUILD_CLEAN,
+ { "noclean", '\0', POPT_BIT_SET, &nobuildAmount, RPMBUILD_CLEAN|RPMBUILD_RMBUILD,
 	N_("do not execute %clean stage of the build"), NULL },
  { "noprep", '\0', POPT_BIT_SET, &nobuildAmount, RPMBUILD_PREP,
 	N_("do not execute %prep stage of the build"), NULL },
@@ -649,6 +649,7 @@ int main(int argc, char *argv[])
 	ba->buildAmount |= RPMBUILD_CLEAN;
 	if ((buildChar == 'b') && shortCircuit)
 	    break;
+	ba->buildAmount |= RPMBUILD_RMBUILD;
 	/* fallthrough */
     case 'i':
 	ba->buildAmount |= RPMBUILD_INSTALL;
