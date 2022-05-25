@@ -155,6 +155,7 @@ all the stages preceding it), and is one of:
 
 :   Build just the binary packages - executes up to and including the
     assembly stage, but without creating the source package.
+    On success, the build directory is removed (as in **\--clean**).
 
 **-bp**
 
