@@ -106,6 +106,7 @@ Executing(%build)
 Executing(%install)
 Executing(%check)
 Executing(%clean)
+Executing(rmbuild)
 ],
 [])
 
@@ -120,6 +121,7 @@ Executing(%build)
 Executing(%install)
 Executing(%check)
 Executing(%clean)
+Executing(rmbuild)
 ],
 [])
 
