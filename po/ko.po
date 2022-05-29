@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2022-04-07 13:03+0300\n"
-"PO-Revision-Date: 2022-04-19 20:17+0000\n"
+"PO-Revision-Date: 2022-05-30 02:18+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/rpm/"
 "master/ko/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.11.2\n"
+"X-Generator: Weblate 4.12.2\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -94,7 +94,7 @@ msgstr "<specfile>에서 %install (%prep, %conf, %build 다음 설치)로 제작
 
 #, c-format
 msgid "verify %files section from <specfile>"
-msgstr "<spec파일>의 %files 항목(section)을 검사합니다"
+msgstr "<상세파일>에서 %files 부분을 확인합니다"
 
 msgid "build source and binary packages from <specfile>"
 msgstr "<specfile>에서 원천과 바이너리 꾸러미를 제작합니다"
@@ -130,7 +130,7 @@ msgstr "<원천 꾸러미>에서 %install (%prep, %conf, %build 다음 설치)�
 
 #, c-format
 msgid "verify %files section from <source package>"
-msgstr "<소스 꾸러미(package)> 에서 %files 부분을 확인합니다"
+msgstr "<원천 꾸러미>에서 %files 부분을 확인합니다"
 
 msgid "build source and binary packages from <source package>"
 msgstr "<원천 꾸러미>로 원천와 바이너리 꾸러미를 제작합니다"
@@ -182,7 +182,7 @@ msgid ""
 msgstr "<tarball>에서 원천 꾸러미만 제작합니다 - 동적 제작 요구 사항을 계산합니다"
 
 msgid "build binary package from <source package>"
-msgstr "<소스 꾸러미(package)>로 바이너리 꾸러미(package)를 제작합니다"
+msgstr "<소스 꾸러미>로 바이너리 꾸러미를 제작합니다"
 
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
@@ -231,7 +231,7 @@ msgid "remove sources when done"
 msgstr "완료되면 원천을 제거합니다"
 
 msgid "remove specfile when done"
-msgstr "꾸러미(package) 제작 후에 spec파일을 삭제합니다"
+msgstr "동작 후에 지정 파일을 제거합니다"
 
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "지정된 단계로 바로 진행합니다 (c,i 에서만 사용 가능)"
@@ -263,15 +263,15 @@ msgstr "%s에서 spec 파일을 읽는데 실패했습니다\n"
 
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
-msgstr "%s의 이름을 %s(으)로 변경하는데 실패함: %m\n"
+msgstr "%s에서 %s로 이름을 변경하는데 실패함: %m\n"
 
 #, c-format
 msgid "failed to stat %s: %m\n"
-msgstr "%s의 상태(stat)를 표시하는데 실패함: %m\n"
+msgstr "상태 %s로 실패함: %m\n"
 
 #, c-format
 msgid "File %s is not a regular file.\n"
-msgstr "%s 파일은 정규(regular) 파일이 아닙니다.\n"
+msgstr "%s 파일은 정규 파일이 아닙니다.\n"
 
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
@@ -313,7 +313,7 @@ msgid "only one major mode may be specified"
 msgstr "하나의 주(major) 모드만 지정할 수 있습니다"
 
 msgid "verify package signature(s)"
-msgstr "꾸러미(package) 서명(s)을 확인합니다"
+msgstr "꾸러미 서명을 확인합니다"
 
 msgid "import an armored public key"
 msgstr "강화된 공공 키를 가져옵니다"
@@ -361,7 +361,7 @@ msgid "only installation and upgrading may be forced"
 msgstr "설치와 향상만 강제합니다"
 
 msgid "files may only be relocated during package installation"
-msgstr "꾸러미(package) 설치시에만 파일을 재배치 할 수 있습니다"
+msgstr "꾸러미 설치시만 파일을 재배치 할 수 있습니다"
 
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr "--prefix with --relocate 또는 --excludepath 사용 할 수 없습니다"
@@ -379,61 +379,56 @@ msgstr "--prefix 옵션의 인수는 반드시 '/' 로 시작해야 합니다"
 
 msgid ""
 "--hash (-h) may only be specified during package installation and erasure"
-msgstr ""
-"--hash (-h)는 꾸러미(package) 설치와 지워 없애는 동안에만 지정되어 질 수 있습"
-"니다"
+msgstr "--hash (-h)는 꾸러미 설치와 제거하는 동안에만 지정되어 질 수 있습니다"
 
 msgid "--percent may only be specified during package installation and erasure"
-msgstr ""
-"--percent는 꾸러미(package)설치와 지워 없애는 동안에만 지정 될 수 있습니다"
+msgstr "--percent는 꾸러미 설치와 제거하는 동안에만 지정 될 수 있습니다"
 
 msgid "--replacepkgs may only be specified during package installation"
-msgstr "--replacepkgs 선택은 꾸러미(package) 설치시에만 지정 할 수 있습니다"
+msgstr "--replacepkgs 선택은 꾸러미 설치시만 지정 할 수 있습니다"
 
 msgid "--excludedocs may only be specified during package installation"
-msgstr "--excludedocs 선택은 꾸러미(package) 설치시에만 지정 할 수 있습니다"
+msgstr "--excludedocs 선택은 꾸러미 설치시만 지정 할 수 있습니다"
 
 msgid "--includedocs may only be specified during package installation"
-msgstr "--includedocs 선택은 꾸러미(package) 설치시에만 지정 할 수 있습니다"
+msgstr "--includedocs 선택은 꾸러미 설치시만 지정 할 수 있습니다"
 
 msgid "only one of --excludedocs and --includedocs may be specified"
-msgstr "--excludedocs 와 --includedocs 옵션만 지정할 수 있습니다"
+msgstr "--excludedocs 와 --includedocs 옵션만 지정 할 수 있습니다"
 
 msgid "--ignorearch may only be specified during package installation"
-msgstr "--ignorearch 선택은 꾸러미(package) 설치시에만 지정 할 수 있습니다"
+msgstr "--ignorearch 선택은 꾸러미 설치시만 지정 할 수 있습니다"
 
 msgid "--ignoreos may only be specified during package installation"
-msgstr "--ignoreos 선택은 꾸러미(package) 설치시에만 지정 할 수 있습니다"
+msgstr "--ignoreos 선택은 꾸러미 설치시만 지정 할 수 있습니다"
 
 msgid "--ignoresize may only be specified during package installation"
-msgstr "--ignoresize 선택은 꾸러미(package) 설치시에만 지정 할 수 있습니다"
+msgstr "--ignoresize 선택은 꾸러미 설치시만 지정 할 수 있습니다"
 
 msgid "--allmatches may only be specified during package erasure"
-msgstr "--allmatches 선택은 꾸러미(package) 삭제시에만 지정할 수 있습니다"
+msgstr "--allmatches 선택은 꾸러미 삭제시만 지정 할 수 있습니다"
 
 msgid "--allfiles may only be specified during package installation"
-msgstr "--allfiles 옵션은 꾸러미(package) 설치시에만 지정 할 수 있습니다"
+msgstr "--allfiles 옵션은 꾸러미 설치시만 지정 할 수 있습니다"
 
 msgid "--justdb may only be specified during package installation and erasure"
-msgstr "--justdb 선택은 꾸러미(package) 설치와 삭제시에만 지정 할 수 있습니다"
+msgstr "--justdb 선택은 꾸러미 설치와 삭제시만 지정 할 수 있습니다"
 
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
-msgstr "스크립트 해제 선택은 꾸러미 설치와 삭제시에만 지정 할 수 있습니다"
+msgstr "스크립트 해제 선택은 꾸러미 설치와 삭제시만 지정 할 수 있습니다"
 
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
-msgstr ""
-"트리거 해제 선택은 꾸러미(package) 설치와 삭제시에만 지정 할 수 있습니다"
+msgstr "트리거 해제 선택은 꾸러미 설치와 삭제시만 지정 할 수 있습니다"
 
 msgid ""
 "--nodeps may only be specified during package installation, erasure, and "
 "verification"
-msgstr ""
-"--nodeps는 꾸러미(package) 설치와, 지워 없앨 때, 그리고 증명하는 동안에만 지"
-"정 할 수 있습니다"
+msgstr "--nodeps는 꾸러미 설치와, 지워 없앨 때, 그리고 증명하는 동안에만 지정 할 수 "
+"있습니다"
 
 msgid "--test may only be specified during package installation and erasure"
 msgstr "--test는 설치와 지워 없앨 때에만 지정 될 수 있습니다"
@@ -466,7 +461,7 @@ msgid "create rpm v3 header+payload signatures"
 msgstr "rpm v3 header+payload 사인을 생성합니다"
 
 msgid "sign package(s) files"
-msgstr "서명 꾸러미(package) 파일"
+msgstr "서명 꾸러미 파일"
 
 msgid "generate fsverity signatures for package(s) files"
 msgstr "꾸러미 파일을 위해 fsverity 서명을 생성합니다"
@@ -742,7 +737,7 @@ msgid "failed to create directory"
 msgstr "디렉토리 생성에 실패하였습니다"
 
 msgid "Mixing main ELF and debug files in package"
-msgstr "꾸러미(package)에서 주요 ELF와 디버그 혼합"
+msgstr "꾸러미에서 주요 ELF와 디버그 혼합"
 
 #, c-format
 msgid "File needs leading \"/\": %s\n"
@@ -800,7 +795,7 @@ msgstr "잘못된 파일: %s: %s\n"
 
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
-msgstr "포장되지 않은(unpackaged): %s 파일 점검하기\n"
+msgstr "포장되지 않은 파일 점검하기: %s\n"
 
 #, c-format
 msgid ""
@@ -812,11 +807,11 @@ msgstr ""
 
 #, c-format
 msgid "package %s already exists\n"
-msgstr "꾸러미(package) %s 는 이미 설치되어 있습니다\n"
+msgstr "꾸러미 %s는 이미 설치되어 있습니다\n"
 
 #, c-format
 msgid "%s was mapped to multiple filenames"
-msgstr "%s는 다중 파일이름으로 대응(mapped)됩니다"
+msgstr "%s는 다중 파일이름으로 대응됩니다"
 
 #, c-format
 msgid "Processing files: %s\n"
@@ -882,11 +877,11 @@ msgstr "꾸러미(package) 점검 \"%s\"에 실패하였습니다.\n"
 
 #, c-format
 msgid "cannot create %s: %s\n"
-msgstr "%s(을)를 생성할 수 없음: %s\n"
+msgstr "%s를 생성 할 수 없음: %s\n"
 
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
-msgstr "%s 꾸러미(package) 출력 파일명을 생성 할 수 없음: %s\n"
+msgstr "%s 꾸러미 출력 파일명을 생성 할 수 없음: %s\n"
 
 #, c-format
 msgid "Finished binary package job, result %d, filename %s\n"
@@ -914,7 +909,7 @@ msgstr "%%changelog에 잘못된 날짜: %s\n"
 
 #, c-format
 msgid "%%changelog not in descending chronological order\n"
-msgstr "%%changelog가 날짜(chronological) 순으로 되어있지 않습니다\n"
+msgstr "%% 변경기록이 날짜 순으로 되어있지 않습니다\n"
 
 #, c-format
 msgid "missing name in %%changelog\n"
@@ -922,19 +917,19 @@ msgstr "%%changelog에 이름이 빠져있습니다\n"
 
 #, c-format
 msgid "no description in %%changelog\n"
-msgstr "%%changelog에 내용(description)이 없습니다\n"
+msgstr "%% 변경 기록에 설명이 없습니다\n"
 
 #, c-format
 msgid "line %d: second %%changelog\n"
-msgstr "행 %d: 초 %% 변화기록\n"
+msgstr "행 %d: 초 %% 변경기록\n"
 
 #, c-format
 msgid "line %d: Error parsing %%description: %s\n"
-msgstr "%d 번째 행: %%description에서 오류가 발생했습니다: %s\n"
+msgstr "%d 번째 행: %% 설명에서 오류가 발생했습니다: %s\n"
 
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
-msgstr "%d 번째 행: %s(은)는 잘못된 옵션입니다: %s\n"
+msgstr "%d 번째 행: %s은 잘못된 옵션입니다: %s\n"
 
 #, c-format
 msgid "line %d: Too many names: %s\n"
@@ -946,7 +941,7 @@ msgstr "%d 번째 행: %%files에서 오류가 발생했습니다: %s\n"
 
 #, c-format
 msgid "line %d: multiple %%files for package '%s'\n"
-msgstr "행 %d: 다중 %% 꾸러미(package)를 위한 파일 '%s'\n"
+msgstr "행 %d: 다중 %% 꾸러미를 위한 파일 '%s'\n"
 
 #, c-format
 msgid "line %d: Error parsing %%policies: %s\n"
@@ -974,7 +969,7 @@ msgstr "내려받기 할 수 없습니다 %s\n"
 
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
-msgstr "%d 번째 행: %s(은)는 잘못된 숫자입니다: %s\n"
+msgstr "%d 번째 행: %s은 잘못된 숫자입니다: %s\n"
 
 #, c-format
 msgid "%s %d defined multiple times\n"
@@ -998,11 +993,11 @@ msgstr "운영체제가 포함되어 있지 않음: %s\n"
 
 #, c-format
 msgid "%s field must be present in package: %s\n"
-msgstr "꾸러미(package)에 반드시 %s 항목(field)을 포함 해야함: %s\n"
+msgstr "꾸러미에 반드시 %s 항목을 포함해야 함: %s\n"
 
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
-msgstr "꾸러미(package)에 %s 항목(entry)이 중복되어 있음: %s\n"
+msgstr "꾸러미에 %s 항목이 중복되어 있음: %s\n"
 
 #, c-format
 msgid "Unable to open icon %s: %s\n"
@@ -1084,7 +1079,7 @@ msgstr "행 %d: %s이 포함되지 않습니다: %s\n"
 
 #, c-format
 msgid "Bad package specification: %s\n"
-msgstr "잘못된 꾸러미(package) 지정: %s\n"
+msgstr "잘못된 꾸러미 지정: %s\n"
 
 msgid "Binary rpm package found. Expected spec file!\n"
 msgstr "바이너리 rpm 꾸러미를 찾았습니다. 예상된 지정 파일!\n"
@@ -1149,7 +1144,7 @@ msgid "Version required"
 msgstr "필요한 버전"
 
 msgid "Only package names are allowed in Obsoletes"
-msgstr "구식에는 꾸러미(package) 이름만 허용합니다"
+msgstr "구식에는 꾸러미 이름만 허용합니다"
 
 msgid "It's not recommended to have unversioned Obsoletes"
 msgstr "버전이 없는 구식에 사용하지 않기를 추천합니다"
@@ -1217,7 +1212,7 @@ msgstr "행에서 언급 부분에서 확장된 매크로 %d:%s\n"
 
 #, c-format
 msgid "Unable to open %s: %s\n"
-msgstr "%s(을)를 열 수 없음: %s\n"
+msgstr "열 수 없음 %s: %s\n"
 
 #, c-format
 msgid "%s:%d: Argument expected for %s\n"
@@ -1268,11 +1263,11 @@ msgid "line %d doesn't belong to any section: %s\n"
 msgstr "행 %d는 어떤 부분에서도 속하지 않습니다: %s\n"
 
 msgid "No compatible architectures found for build\n"
-msgstr "꾸러미(package) 제작에 호환하는 구성를 찾을 수 없습니다\n"
+msgstr "꾸러미 제작에 호환하는 구성을 찾을 수 없습니다\n"
 
 #, c-format
 msgid "Package has no %%description: %s\n"
-msgstr "꾸러미(package)에 %% 설명이 없음: %s\n"
+msgstr "꾸러미는 %% 설명이 없음: %s\n"
 
 #, c-format
 msgid "Policy module '%s' duplicated with overlapping types\n"
@@ -1342,7 +1337,7 @@ msgstr "%s: %m를 위한 파이프를 생성 할 수 없습니다\n"
 
 #, c-format
 msgid "Couldn't fork %s: %s\n"
-msgstr "%s(을)를 fork 할 수 없음: %s\n"
+msgstr "fork 할 수 없음 %s: %s\n"
 
 #, c-format
 msgid "Couldn't exec %s: %s\n"
@@ -1399,8 +1394,7 @@ msgstr "행 %d: %s: 꾸러미 %s 가 이미 존재합니다\n"
 
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
-msgstr ""
-"%s spec 파일을 질의하는데 실패했습니다, 파일을 처리(parse)할 수 없습니다\n"
+msgstr "%s spec 파일을 질의하는데 실패했습니다, 파일을 구문 분석 할 수 없습니다\n"
 
 #, c-format
 msgid "invalid %%_db_backend: %s\n"
@@ -1777,8 +1771,8 @@ msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
 msgstr ""
-"<꾸러미(package)> 이름과 일치하는 꾸러미는 모두 제거합니다 (<꾸러미(package)>"
-"에 여러 개의 꾸러미(package)를 동시에 지정할 경우에는 오류가 발생합니다)"
+"<꾸러미> 이름과 일치하는 꾸러미는 모두 제거합니다 (<꾸러미>에 여러 개의 "
+"꾸러미를 동시에 지정 할 경우에는 오류가 발생합니다)"
 
 msgid "relocate files in non-relocatable package"
 msgstr "재배치 할 수 없는 꾸러미에서 파일을 재배치합니다"
@@ -1787,7 +1781,7 @@ msgid "print dependency loops as warning"
 msgstr "경고로서 의존성 루프를 출력합니다"
 
 msgid "erase (uninstall) package"
-msgstr "꾸러미(package)를 삭제합니다"
+msgstr "꾸러미를 삭제합니다"
 
 msgid "<package>+"
 msgstr "<꾸러미>+"
@@ -1826,7 +1820,7 @@ msgid "don't verify package operating system"
 msgstr "꾸러미의 운영체제를 검사하지 않습니다"
 
 msgid "don't check disk space before installing"
-msgstr "꾸러미(package)를 설치하기 전에 디스크 공간을 검사하지 않습니다"
+msgstr "꾸러미를 설치하기 전에 디스크 공간을 검사하지 않습니다"
 
 msgid "short hand for --ignorepayload --ignoresignature"
 msgstr "--ignorepayload --ignoresignature를 위한 약자"
@@ -1835,7 +1829,7 @@ msgid "install documentation"
 msgstr "꾸러미(package)에 포함된 문서 파일을 설치합니다"
 
 msgid "install package(s)"
-msgstr "설치 꾸러미(package)(s)"
+msgstr "설치 꾸러미(s)"
 
 msgid "update the database, but do not modify the filesystem"
 msgstr "파일시스템을 변경하지 않고, 데이터베이스를 갱신합니다"
@@ -1874,11 +1868,11 @@ msgstr "%%post 스크립트릿을 실행하지 않습니다 (있을 경우)"
 
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
-msgstr "%%preun 스크립틀릿(scriptlet)을 실행하지 않습니다 (있을 경우)"
+msgstr "%%preun 스크립틀릿을 실행하지 않습니다 (있을 경우)"
 
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
-msgstr "%%postun 스크립틀릿(scriptlet)을 실행하지 않습니다 (있을 경우)"
+msgstr "%%postun 스크립틀릿을 실행하지 않습니다 (있을 경우)"
 
 #, c-format
 msgid "do not execute %%pretrans scriptlet (if any)"
@@ -1895,7 +1889,7 @@ msgstr ""
 
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
-msgstr "어떠한 %%triggerprein 스크립틀릿(scriptlet)도 실행하지 않습니다"
+msgstr "어떠한 %%triggerprein 스크립틀릿도 실행하지 않습니다"
 
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
@@ -1937,10 +1931,10 @@ msgid "ignore file conflicts between packages"
 msgstr "꾸러미 사이에서 파일 충돌을 무시합니다"
 
 msgid "reinstall if the package is already present"
-msgstr "꾸러미(package)가 이미 설치되어 있는 경우에도 설치합니다"
+msgstr "꾸러미가 이미 설치되어 있는 경우에도 설치합니다"
 
 msgid "don't install, but tell if it would work or not"
-msgstr "꾸러미(package)를 설치하지 않고, 제대로 설치되는지만 확인합니다"
+msgstr "꾸러미를 설치하지 않고, 제대로 설치되는지만 확인합니다"
 
 msgid "upgrade package(s)"
 msgstr "꾸러미(package)를 최신화합니다"
@@ -1952,7 +1946,7 @@ msgid "restore package(s)"
 msgstr "꾸러미 복구"
 
 msgid "query/verify all packages"
-msgstr "모든 꾸러미(package)에 대해 질의/검증합니다"
+msgstr "모든 꾸러미에 대해 질의/검증합니다"
 
 msgid "rpm checksig mode"
 msgstr "rpm checksig 방법"
