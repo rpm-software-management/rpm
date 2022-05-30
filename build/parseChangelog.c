@@ -175,6 +175,7 @@ static int dateToTimet(const char * datestr, time_t * secs, int * date_words)
 	setenv("TZ", tz, 1);
 	free(tz);
     }
+    tzset();
 
     if (*secs == -1) goto exit;
 
