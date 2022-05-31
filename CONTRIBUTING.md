@@ -36,6 +36,17 @@ the commit message itself.
 The rationale behind the change is often *more* important than the
 accompanying code!
 
+When using GitHub pull requests enable "Allow edits from maintainers"
+to allow changes to your branch. Often changes are needed and allowing
+them in the branch in your repository keeps the discussion and changes
+within one place.
+
+Avoid updating the branch of the pull request if not necessary. On
+every change notifications are sent out to all maintainers and
+everyone contributing to the pull request. Keep your changes local or
+in another branch and only push to the branch of the pull request when
+you are ready for further feedback.
+
 This is a project with limited resources, please do not flood us.
 
 ## Coding Style
