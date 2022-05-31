@@ -34,7 +34,9 @@ trackers are welcome the important information needs to be in
 the commit message itself.
 
 The rationale behind the change is often *more* important than the
-accompanying code!
+accompanying code! When changing existing code, it's equally important
+to understand why the code is the way it is now. Always check for
+history when suggesting change of behavior.
 
 This is a project with limited resources, please do not flood us.
 
