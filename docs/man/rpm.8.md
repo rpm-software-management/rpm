@@ -205,6 +205,10 @@ These options can be used in all the different modes.
     installing, or **%prep** if building, a package) will be run after a
     chroot(2) to *DIRECTORY*.
 
+    Note that rpm assumes the environment inside the root is set up by
+    the caller, such as any mounts needed for the operation inside the
+    root directory.
+
 **-D, \--define=\'***MACRO EXPR***\'**
 
 :   Defines *MACRO* with value *EXPR*.

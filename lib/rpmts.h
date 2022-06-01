@@ -453,6 +453,11 @@ const char * rpmtsRootDir(rpmts ts);
 
 /** \ingroup rpmts
  * Set transaction rootDir, i.e. path to chroot(2).
+ *
+ * Note that rpm assumes the environment inside the root is set up by
+ * the caller, such as any mounts needed for the operation inside the
+ * root directory.
+ *
  * @param ts		transaction set
  * @param rootDir	new transaction rootDir (or NULL)
  * @return		0 on success, -1 on error (invalid rootDir)
