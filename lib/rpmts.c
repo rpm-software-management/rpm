@@ -609,7 +609,7 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     rpmPubkey *subkeys = NULL;
     int subkeysCount = 0;
     rpmVSFlags oflags = rpmtsVSFlags(ts);
-    rpmKeyring keyring;
+    rpmKeyring keyring = NULL;
     rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
     int krc, i;
 
