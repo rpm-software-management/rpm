@@ -267,7 +267,7 @@ AM_CONDITIONAL(LIBELF,[test "$WITH_LIBELF" = yes])
 #=================
 # Select crypto library
 AC_ARG_WITH(crypto,
-            [AC_HELP_STRING([--with-crypto=CRYPTO_LIB],
+            [AS_HELP_STRING([--with-crypto=CRYPTO_LIB],
                             [The cryptographic library to use (openssl|libgcrypt). The default is libgcrypt.])
                             ],[],
                             [with_crypto=libgcrypt])
