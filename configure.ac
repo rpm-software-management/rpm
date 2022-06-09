@@ -28,7 +28,8 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
 AC_SUBST(__CC, $CC)
-AC_PROG_CC_C99
+dnl Handled as part of AC_PROG_CC in autoconf 2.70
+m4_version_prereq([2.70], [], [AC_PROG_CC_C99])
 if test "$ac_cv_prog_cc_c99" = no; then
     AC_MSG_ERROR([ISO C99 capable compiler required])
 fi
