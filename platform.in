@@ -3,16 +3,16 @@
 #==============================================================================
 # ---- per-platform macros.
 #
-%_arch			@RPMCANONARCH@
-%_build_arch		@RPMCANONARCH@
+%_arch			=RPMCANONARCH=
+%_build_arch		=RPMCANONARCH=
 %_vendor		@RPMCANONVENDOR@
 %_os			@RPMCANONOS@
-%_gnu			@RPMRC_GNU@
+%_gnu			=RPMRC_GNU=
 %_target_platform	%{_target_cpu}-%{_vendor}-%{_target_os}
-%optflags		@RPMRC_OPTFLAGS@
+%optflags		=RPMRC_OPTFLAGS=
 
-%__isa_name		@ISANAME@
-%__isa_bits		@ISABITS@
+%__isa_name		=ISANAME=
+%__isa_bits		=ISABITS=
 %__isa			%{__isa_name}-%{__isa_bits}
 
 # The default transaction color. This value is a set of bits to
@@ -20,7 +20,7 @@
 #	0	uncolored (i.e. use only arch as install hint)
 #	1	Elf32 permitted
 #	2	Elf64 permitted
-%_transaction_color	@RPMCANONCOLOR@
+%_transaction_color	=RPMCANONCOLOR=
 
 #==============================================================================
 # ---- configure macros.
@@ -35,8 +35,8 @@
 %_sysconfdir		@sysconfdir@
 %_sharedstatedir	@sharedstatedir@
 %_localstatedir		@localstatedir@
-%_lib			@LIB@
-%_libdir		@exec_prefix@/@LIB@
+%_lib			=LIB=
+%_libdir		@exec_prefix@/=LIB=
 %_includedir		@includedir@
 %_oldincludedir		@oldincludedir@
 %_infodir		@infodir@
@@ -81,7 +81,7 @@
 #	Expanded at end of %install scriptlet.
 #
 
-%__arch_install_post   @ARCH_INSTALL_POST@
+%__arch_install_post   =ARCH_INSTALL_POST=
 
 # Standard brp-macro naming:
 # convert all '-' in basename to '_', add two leading underscores.
@@ -107,8 +107,8 @@
     %{__os_install_post}\
 %{nil}
 
-@apple@#---------------------------------------------------------------------
-@apple@#	Apple Darwin vendor specific macros
-@apple@#
-@apple@%_use_internal_dependency_generator     0
-@apple@%__so	dylib
+=apple=#---------------------------------------------------------------------
+=apple=#	Apple Darwin vendor specific macros
+=apple=#
+=apple=%_use_internal_dependency_generator     0
+=apple=%__so	dylib

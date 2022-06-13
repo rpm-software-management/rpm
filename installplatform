@@ -204,17 +204,17 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
   [ -d $PPD ] || mkdir -p $PPD
 
   cat $PLATFORM \
-  | sed -e "s,@RPMRC_OPTFLAGS@,$RPMRC_OPTFLAGS," \
-	-e "s,@RPMCANONARCH@,$CANONARCH,g" \
-	-e "s,@RPMCANONCOLOR@,$CANONCOLOR," \
-	-e "s,@RPMRC_GNU@,$RPMRC_GNU," \
-	-e "s,@LIB@,$LIB," \
-	-e "s,@ARCH_INSTALL_POST@,$ARCH_INSTALL_POST," \
+  | sed -e "s,=RPMRC_OPTFLAGS=,$RPMRC_OPTFLAGS," \
+	-e "s,=RPMCANONARCH=,$CANONARCH,g" \
+	-e "s,=RPMCANONCOLOR=,$CANONCOLOR," \
+	-e "s,=RPMRC_GNU=,$RPMRC_GNU," \
+	-e "s,=LIB=,$LIB," \
+	-e "s,=ARCH_INSTALL_POST=,$ARCH_INSTALL_POST," \
 	-e '/\${\w*:-/!s,\${,%{_,' \
-	-e "s,@ISANAME@,$ISANAME," \
-	-e "s,@ISABITS@,$ISABITS," \
-	-e "s,^@${VENDOR}@,," \
-  | grep -v '^@' \
+	-e "s,=ISANAME=,$ISANAME," \
+	-e "s,=ISABITS=,$ISABITS," \
+	-e "s,^=${VENDOR}=,," \
+  | grep -v '^=' \
   | ${FILTER} \
   > ${PPD}/macros
 
