@@ -195,7 +195,7 @@ populate_testing: $(check_DATA)
 	mkdir -p testing/usr
 	ln -s ../bin testing/usr/bin
 	(cd ${top_builddir} && \
-	          $(MAKE) DESTDIR=`pwd`/${subdir}/testing install)
+	          $(MAKE) DESTDIR=${abs_builddir}/testing install)
 	cp -r ${srcdir}/data/ testing/
 	for d in dev etc magic tmp var; do if [ ! -d testing/$${d} ]; then mkdir testing/$${d}; fi; done
 	for node in urandom stdin stderr stdout null full; do ln -s /dev/$${node} testing/dev/$${node}; done
