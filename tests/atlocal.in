@@ -7,8 +7,7 @@ export PATH
 
 PYTHON=@PYTHON@
 if test "${PYTHON}"; then
-    PYLIBDIR=$(${PYTHON} -c "import sysconfig, sys; sys.stdout.write(sysconfig.get_path('platlib', vars={'platbase':'@execprefix@'}))")
-    PYTHONPATH="${abs_builddir}/testing${PYLIBDIR}"
+    PYTHONPATH="${abs_builddir}/testing@pyexecdir@"
     export PYTHONPATH
 fi
 

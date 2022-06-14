@@ -170,6 +170,7 @@ atlocal:	atlocal.in Makefile
 	  -e "s,[@]usrbindir[@],$(bindir)," \
 	  -e "s,[@]usrlibdir[@],$(libdir)," \
 	  -e "s,[@]execprefix[@],$(exec_prefix)," \
+	  -e "s,[@]pyexecdir[@],$(pyexecdir)," \
 	  -e "s,[@]usrlibexecdir[@],$(rpmlibexecdir),g" \
 	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir)," \
 	  -e "s,[@]PYTHON[@],$(PYTHON)," \
