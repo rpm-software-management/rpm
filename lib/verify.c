@@ -7,10 +7,10 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#if WITH_CAP
+#ifdef WITH_CAP
 #include <sys/capability.h>
 #endif
-#if WITH_ACL
+#ifdef WITH_ACL
 #include <acl/libacl.h>
 #endif
 
@@ -33,7 +33,7 @@
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
 
 /* If cap_compare() (Linux extension) not available, do it the hard way */
-#if WITH_CAP && !defined(HAVE_CAP_COMPARE)
+#if defined(WITH_CAP) && !defined(HAVE_CAP_COMPARE)
 static int cap_compare(cap_t acap, cap_t bcap)
 {
     int rc = 0;
@@ -176,7 +176,7 @@ rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
 	if (metamode != filemode)
 	    vfy |= RPMVERIFY_MODE;
 
-#if WITH_ACL
+#ifdef WITH_ACL
 	/*
 	 * For now, any non-default acl's on a file is a difference as rpm
 	 * cannot have set them.
@@ -204,7 +204,7 @@ rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
 	} 
     }
 
-#if WITH_CAP
+#ifdef WITH_CAP
     if (flags & RPMVERIFY_CAPS) {
 	cap_t cap = NULL;
 	cap_t fcap = cap_get_file(fn);

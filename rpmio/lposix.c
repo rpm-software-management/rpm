@@ -388,7 +388,7 @@ static int Psleep(lua_State *L)			/** sleep(seconds) */
 
 static int Pputenv(lua_State *L)		/** putenv(string) */
 {
-#if HAVE_PUTENV
+#ifdef HAVE_PUTENV
 	size_t l;
 	const char *s=luaL_checklstring(L, 1, &l);
 	char *e=malloc(++l);

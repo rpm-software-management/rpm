@@ -1,5 +1,5 @@
 #include "system.h"
-#if HAVE_MCHECK_H
+#ifdef HAVE_MCHECK_H
 #include <mcheck.h>
 #endif
 #include <errno.h>

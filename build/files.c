@@ -12,11 +12,11 @@
 #include <stdlib.h>
 #include <regex.h>
 #include <fcntl.h>
-#if WITH_CAP
+#ifdef WITH_CAP
 #include <sys/capability.h>
 #endif
 
-#if HAVE_LIBDW
+#ifdef HAVE_LIBDW
 #include <libelf.h>
 #include <elfutils/libdwelf.h>
 #endif
@@ -826,7 +826,7 @@ static rpmRC parseForCaps(char * buf, FileEntry cur)
     while (p <= pe)
 	*p++ = ' ';
 
-#if WITH_CAP
+#ifdef WITH_CAP
     {
 	char *captxt = NULL;
 	cap_t fcaps = cap_from_text(q);
@@ -1695,7 +1695,7 @@ static void argvAddAttr(ARGV_t *filesp, rpmfileAttrs attrs, const char *path)
     free(line);
 }
 
-#if HAVE_LIBDW
+#ifdef HAVE_LIBDW
 /* How build id links are generated.  See macros.in for description.  */
 #define BUILD_IDS_NONE     0
 #define BUILD_IDS_ALLDEBUG 1
@@ -1878,7 +1878,7 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 		   kernel modules (ET_REL files with .modinfo section)
 		   should have build-ids. */
 		GElf_Ehdr ehdr;
-#if HAVE_DWELF_ELF_BEGIN
+#ifdef HAVE_DWELF_ELF_BEGIN
 		Elf *elf = dwelf_elf_begin(fd);
 #else
 		Elf *elf = elf_begin (fd, ELF_C_READ, NULL);
@@ -2624,7 +2624,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     if (fl.processingFailed)
 	goto exit;
 
-#if HAVE_LIBDW
+#ifdef HAVE_LIBDW
     /* Check build-ids and add build-ids links for files to package list. */
     const char *arch = headerGetString(pkg->header, RPMTAG_ARCH);
     if (!rstreq(arch, "noarch")) {
@@ -3136,7 +3136,7 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
        should Recommend.  */
     Package dbgsrcpkg = findDebugsourcePackage(spec);
     
-#if HAVE_LIBDW
+#ifdef HAVE_LIBDW
     elf_version (EV_CURRENT);
 #endif
     check_fileList = newStringBuf();

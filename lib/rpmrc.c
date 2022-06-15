@@ -10,12 +10,12 @@
 #endif
 
 
-#if HAVE_SYS_UTSNAME_H
+#ifdef HAVE_SYS_UTSNAME_H
 #include <sys/utsname.h>
 #endif
 #include <ctype.h>	/* XXX for /etc/rpm/platform contents */
 
-#if HAVE_SYS_SYSTEMCFG_H
+#ifdef HAVE_SYS_SYSTEMCFG_H
 #include <sys/systemcfg.h>
 #else
 #define __power_pc() 0

@@ -297,13 +297,13 @@ static char *getIOFlags(Package pkg)
 	    compr = NULL;
 	} else if (rstreq(s+1, "gzdio")) {
 	    compr = "gzip";
-#if HAVE_BZLIB_H
+#ifdef have_bzlib_h
 	} else if (rstreq(s+1, "bzdio")) {
 	    compr = "bzip2";
 	    /* Add prereq on rpm version that understands bzip2 payloads */
 	    (void) rpmlibNeedsFeature(pkg, "PayloadIsBzip2", "3.0.5-1");
 #endif
-#if HAVE_LZMA_H
+#ifdef HAVE_LZMA_H
 	} else if (rstreq(s+1, "xzdio")) {
 	    compr = "xz";
 	    (void) rpmlibNeedsFeature(pkg, "PayloadIsXz", "5.2-1");

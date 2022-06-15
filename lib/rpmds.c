@@ -1069,12 +1069,12 @@ static const struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(CompressedFileNames)",	"3.0.4-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path.")},
-#if HAVE_BZLIB_H
+#ifdef HAVE_BZLIB_H
     { "rpmlib(PayloadIsBzip2)",		"3.0.5-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload can be compressed using bzip2.") },
 #endif
-#if HAVE_LZMA_H
+#ifdef HAVE_LZMA_H
     { "rpmlib(PayloadIsXz)",		"5.2-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload can be compressed using xz.") },

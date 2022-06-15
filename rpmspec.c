@@ -30,7 +30,7 @@ static struct poptOption specOptsTable[] = {
 	N_("parse spec file(s) to stdout"), NULL },
     { "query", 'q', POPT_ARG_VAL, &mode, MODE_QUERY,
 	N_("query spec file(s)"), NULL },
-#if HAVE_READLINE
+#ifdef HAVE_READLINE
     { "shell", 0, POPT_ARG_VAL, &mode, MODE_SHELL,
 	N_("interactive macro shell"), NULL },
 #endif

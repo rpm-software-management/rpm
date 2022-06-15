@@ -9,7 +9,7 @@
 #include <utime.h>
 #include <errno.h>
 #include <fcntl.h>
-#if WITH_CAP
+#ifdef WITH_CAP
 #include <sys/capability.h>
 #endif
 
@@ -95,7 +95,7 @@ static int fsmLink(int odirfd, const char *opath, int dirfd, const char *path)
     return rc;
 }
 
-#if WITH_CAP
+#ifdef WITH_CAP
 static int cap_set_fileat(int dirfd, const char *path, cap_t fcaps)
 {
     int rc = -1;
@@ -112,7 +112,7 @@ static int fsmSetFCaps(int fd, int dirfd, const char *path, const char *captxt)
 {
     int rc = 0;
 
-#if WITH_CAP
+#ifdef WITH_CAP
     if (captxt && *captxt != '\0') {
 	cap_t fcaps = cap_from_text(captxt);
 
@@ -469,7 +469,7 @@ static void removeSBITS(int dirfd, const char *path)
 	if ((stb.st_mode & 06000) != 0) {
 	    (void) fchmodat(dirfd, path, stb.st_mode & 0777, flags);
 	}
-#if WITH_CAP
+#ifdef WITH_CAP
 	if (stb.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)) {
 	    (void) cap_set_fileat(dirfd, path, NULL);
 	}

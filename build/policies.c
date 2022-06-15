@@ -15,7 +15,7 @@
 
 #include "debug.h"
 
-#if WITH_SELINUX
+#ifdef WITH_SELINUX
 enum rpmpolFlags_e {
 	RPMPOL_FLAG_NONE = 0,
 	RPMPOL_FLAG_BASE = (1 << 0)
@@ -305,7 +305,7 @@ static rpmRC processPolicies(rpmSpec spec, Package pkg, int test)
 rpmRC processBinaryPolicies(rpmSpec spec, int test)
 {
     rpmRC rc = RPMRC_OK;
-#if WITH_SELINUX
+#ifdef WITH_SELINUX
     Package pkg;
     char *nvr;
 

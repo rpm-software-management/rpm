@@ -113,7 +113,7 @@ static inline void h2lea(unsigned int x, unsigned char *p)
 static void *mapmem(void *oldaddr, size_t oldsize, size_t newsize, int prot, int fd, off_t offset)
 {
     if (oldaddr) {
-#if HAVE_MREMAP
+#ifdef HAVE_MREMAP
 	return mremap(oldaddr, oldsize, newsize, MREMAP_MAYMOVE);
 #else
 	void *mapped = mmap(0, newsize, prot, MAP_SHARED, fd, offset);

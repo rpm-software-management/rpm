@@ -151,7 +151,7 @@ struct FDIO_s {
 static const FDIO_t fdio;
 static const FDIO_t ufdio;
 static const FDIO_t gzdio;
-#if HAVE_BZLIB_H
+#ifdef HAVE_BZLIB_H
 static const FDIO_t bzdio;
 #endif
 #ifdef HAVE_LZMA_H
@@ -617,7 +617,7 @@ static int gzdSeek(FDSTACK_t fps, off_t pos, int whence)
 {
     off_t p = pos;
     int rc;
-#if HAVE_GZSEEK
+#ifdef HAVE_GZSEEK
     gzFile gzfile = fps->fp;
 
     if (gzfile == NULL) return -2;	/* XXX can't happen */
@@ -649,7 +649,7 @@ static off_t gzdTell(FDSTACK_t fps)
     gzFile gzfile = fps->fp;
 
     if (gzfile != NULL) {
-#if HAVE_GZSEEK
+#ifdef HAVE_GZSEEK
 	pos = gztell(gzfile);
 	if (pos < 0)
 	    gzdSetError(fps);
@@ -668,7 +668,7 @@ static const FDIO_t gzdio = &gzdio_s ;
 
 /* =============================================================== */
 /* Support for BZIP2 library.  */
-#if HAVE_BZLIB_H
+#ifdef HAVE_BZLIB_H
 
 #include <bzlib.h>
 
@@ -1547,10 +1547,10 @@ static FDIO_t findIOT(const char *name)
 	&fdio_s,
 	&ufdio_s,
 	&gzdio_s,
-#if HAVE_BZLIB_H
+#ifdef HAVE_BZLIB_H
 	&bzdio_s,
 #endif
-#if HAVE_LZMA_H
+#ifdef HAVE_LZMA_H
 	&xzdio_s,
 	&lzdio_s,
 #endif

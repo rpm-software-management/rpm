@@ -768,7 +768,7 @@ static void addTargets(Package Pkgs)
 rpmRC checkForEncoding(Header h, int addtag)
 {
     rpmRC rc = RPMRC_OK;
-#if HAVE_ICONV
+#ifdef HAVE_ICONV
     const char *encoding = "utf-8";
     rpmTagVal tag;
     iconv_t ic;

@@ -29,13 +29,13 @@ extern char ** environ;
 #endif
 #endif
 
-#if HAVE_SECURE_GETENV
+#if defined(HAVE_SECURE_GETENV)
 #define	getenv(_s)	secure_getenv(_s)
-#elif HAVE___SECURE_GETENV
+#elif defined(HAVE___SECURE_GETENV)
 #define	getenv(_s)	__secure_getenv(_s)
 #endif
 
-#if HAVE_LIMITS_H
+#ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
 
@@ -82,7 +82,7 @@ extern int fdatasync(int fildes);
 #endif
 
 /* Take care of NLS matters.  */
-#if ENABLE_NLS
+#if defined(ENABLE_NLS)
 # include <locale.h>
 # include <libintl.h>
 # define _(Text) dgettext (PACKAGE, Text)

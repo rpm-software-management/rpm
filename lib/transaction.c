@@ -11,9 +11,9 @@
 #include <fcntl.h>
 
 /* duplicated from cpio.c */
-#if MAJOR_IN_MKDEV
+#if defined(MAJOR_IN_MKDEV)
 #include <sys/mkdev.h>
-#elif MAJOR_IN_SYSMACROS
+#elif defined(MAJOR_IN_SYSMACROS)
 #include <sys/sysmacros.h>
 #else
 #include <sys/types.h> /* already included from system.h */
@@ -1748,7 +1748,7 @@ static void rpmtsSync(rpmts ts)
     if (rpmChrootDone())
 	return;
 
-#if HAVE_SYNCFS
+#ifdef HAVE_SYNCFS
     for (rpmDiskSpaceInfo dsi = ts->dsi; dsi->bsize; dsi++) {
 	int fd = open(dsi->mntPoint, O_RDONLY);
 	if (fd != -1) {

@@ -6,7 +6,7 @@
 #include <stdarg.h>
 #include <pthread.h>
 #include <errno.h>
-#if HAVE_SCHED_GETAFFINITY
+#ifdef HAVE_SCHED_GETAFFINITY
 #include <sched.h>
 #endif
 
@@ -600,7 +600,7 @@ exit:
 static unsigned int getncpus(void)
 {
     unsigned int ncpus = 0;
-#if HAVE_SCHED_GETAFFINITY
+#ifdef HAVE_SCHED_GETAFFINITY
     cpu_set_t set;
     if (sched_getaffinity (0, sizeof(set), &set) == 0)
 	ncpus = CPU_COUNT(&set);
