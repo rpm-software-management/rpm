@@ -645,29 +645,35 @@ Supported modifiers are:
 
 ### Shell Globbing
 
-The usual rules for shell globbing apply.  Most special characters can
-be escaped by prefixing them with a '\'.  Spaces are used to separate
-file names and so must be escaped by enclosing the file name with quotes.
+The usual rules for shell globbing apply.  Metacharacters can be escaped by
+prefixing them with a backslash (`\`).  A backslash or percent sign can be
+escaped with an extra `\` or `%`, respectively.  Spaces are used to separate
+file names and must be escaped by enclosing the file name in quotes.
+
+The metacharacters supported are wildcards (`*` and `?`), square brackets
+(`[]`), and curly braces (`{}`).
+
 For example:
 
 ```
-	/opt/are\.you\|bob\?
-	/opt/bob\'s\*htdocs\*
-	"/opt/bob\'s htdocs"
+	/opt/are.you|bob\?
+	/opt/bob's\*htdocs\*
+	/opt/bob's%%htdocs%%
+	"/opt/bob's htdocs"
 ```
 
-Names containing "%%" will be rpm macro expanded into "%".  When
-trying to escape large number of file names, it is often best to
-create a file with the complete list of escaped file names.  This is 
-easiest to do with a shell script like this:
+When trying to escape a large number of file names, it is often best to create
+a file with a complete list of escaped file names.  This is easiest to do with
+a shell script like this:
 
 ```
-	rm -f filelist.txt 
-	find $RPM_BUILD_ROOT/%{_prefix} -type f -print | \
-	    sed "s!$RPM_BUILD_ROOT!!" |  perl -pe 's/([?|*.\'"])/\\$1/g' \
-		>> $RPM_BUILD_DIR/filelist.txt 
+	rm -f filelist.txt
+	find %{buildroot} -type f -printf '/%%P\n' |	\
+	perl -pe 's/(%)/%$1/g;'				\
+	     -pe 's/([*?\[\]{}\\])/\\$1/g;'		\
+	> filelist.txt
 
-	%files -f filelist.rpm
+	%files -f filelist.txt
 ```
 
 ## %changelog section
