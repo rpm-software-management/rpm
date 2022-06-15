@@ -81,7 +81,6 @@ pkginclude_HEADERS += include/rpm/rpmlib.h
 pkginclude_HEADERS += include/rpm/rpmds.h
 pkginclude_HEADERS += include/rpm/rpmfi.h
 pkginclude_HEADERS += include/rpm/rpmfiles.h
-pkginclude_HEADERS += include/rpm/rpmpol.h
 pkginclude_HEADERS += include/rpm/rpmps.h
 pkginclude_HEADERS += include/rpm/rpmprob.h
 pkginclude_HEADERS += include/rpm/rpmtag.h

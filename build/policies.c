@@ -8,7 +8,6 @@
 #include <rpm/rpmbuild.h>
 #include <rpm/argv.h>
 #include <rpm/rpmlog.h>
-#include <rpm/rpmpol.h>
 #include <rpm/rpmbase64.h>
 
 #include "rpmio/rpmio_internal.h"
@@ -17,6 +16,14 @@
 #include "debug.h"
 
 #if WITH_SELINUX
+enum rpmpolFlags_e {
+	RPMPOL_FLAG_NONE = 0,
+	RPMPOL_FLAG_BASE = (1 << 0)
+};
+
+typedef rpmFlags rpmpolFlags;
+
+#define RPMPOL_TYPE_DEFAULT "default"
 typedef struct ModuleRec_s {
     char *path;
     char *data;
