@@ -223,14 +223,9 @@ AC_CHECK_FUNC(gethostname, [], [
     AC_CHECK_LIB(nsl, gethostname)
 ])
 
+dnl XXX We should pass -pthread to the compiler instead
 AC_CHECK_HEADERS(pthread.h)
-
-AC_CHECK_LIB(pthread, pthread_mutex_trylock, [], [
-  dnl OSF 5.0 has the the symbols prefixed with __ in libpthread.
-  AC_CHECK_LIB(pthread, __pthread_mutex_trylock, [], [
-    AC_CHECK_LIB(thread, mutex_lock)
-  ])
-])
+AC_SEARCH_LIBS([pthread_mutex_init], [pthread])
 
 AC_SEARCH_LIBS(dlopen, [dl])
 
