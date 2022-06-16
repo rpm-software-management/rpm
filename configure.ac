@@ -281,63 +281,13 @@ else
   WITH_OPENSSL_LIB=-lcrypto
 fi
 
-AC_CHECK_HEADERS([openssl/evp.h], [], [
-  AC_MSG_ERROR([missing required OpenSSL header])
-])
-AC_CHECK_HEADERS([openssl/rsa.h], [], [
-  AC_MSG_ERROR([missing required OpenSSL header])
-])
-AC_CHECK_HEADERS([openssl/dsa.h], [], [
+AC_CHECK_HEADERS([openssl/evp.h openssl/rsa.h openssl/dsa.h], [], [
   AC_MSG_ERROR([missing required OpenSSL header])
 ])
 
-AC_CHECK_LIB(crypto, EVP_DigestInit_ex, [], [
+AC_CHECK_LIB(crypto, EVP_MD_CTX_new, [], [
   AC_MSG_ERROR([required OpenSSL library 'libcrypto' missing or too old])
 ])
-
-AC_CHECK_LIB(crypto, EVP_MD_CTX_new, [
-    AC_DEFINE(HAVE_EVP_MD_CTX_NEW, 1, [Define to 1 if OpenSSL has EVP_MD_CTX_new])
-    AC_SUBST(HAVE_EVP_MD_CTX_NEW, [1])
-  ], [
-  AC_CHECK_LIB(crypto, EVP_MD_CTX_create, [], [
-      AC_MSG_ERROR([required OpenSSL library 'libcrypto' missing or too old])
-  ])
-])
-
-AC_CHECK_LIB(crypto, EVP_PKEY_CTX_new, [], [
-  AC_MSG_ERROR([required OpenSSL library 'libcrypto' missing or too old])
-])
-
-AC_CHECK_LIB(crypto, DSA_set0_key, [
-    AC_DEFINE(HAVE_DSA_SET0_KEY, 1, [Define to 1 if OpenSSL has DSA_set0_key])
-    AC_SUBST(HAVE_DSA_SET0_KEY, [1])
-    ], []
-)
-
-AC_CHECK_LIB(crypto, DSA_set0_pqg, [
-    AC_DEFINE(HAVE_DSA_SET0_PQG, 1, [Define to 1 if OpenSSL has DSA_set0_pqg])
-    AC_SUBST(HAVE_DSA_SET0_PQG, [1])
-    ], []
-)
-
-AC_CHECK_LIB(crypto, DSA_SIG_set0, [
-    AC_DEFINE(HAVE_DSA_SIG_SET0, 1, [Define to 1 if OpenSSL has DSA_SIG_set0])
-    AC_SUBST(HAVE_DSA_SIG_SET0, [1])
-    ], []
-)
-
-AC_CHECK_LIB(crypto, RSA_set0_key, [
-    AC_DEFINE(HAVE_RSA_SET0_KEY, 1, [Define to 1 if OpenSSL has RSA_set0_key])
-    AC_SUBST(HAVE_RSA_SET0_KEY, [1])
-    ], []
-)
-
-AC_CHECK_LIB(crypto, BN_bn2binpad, [
-    AC_DEFINE(HAVE_BN2BINPAD, 1, [Define to 1 if OpenSSL has BN_bn2binpad])
-    AC_SUBST(HAVE_BN2BINPAD, [1])
-    ], []
-)
-
 fi
 
 AM_CONDITIONAL([WITH_OPENSSL],[test "$with_crypto" = openssl])
