@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <stdarg.h>
 #include <pthread.h>
+#include <glob.h>
 
 #if defined(__linux__)
 #include <elf.h>
@@ -1595,7 +1596,7 @@ static rpmRC rpmReadRC(rpmrcCtx ctx, const char * rcfiles)
     argvSplit(&globs, rcfiles, ":");
     for (p = globs; *p; p++) {
 	ARGV_t av = NULL;
-	if (rpmGlob(*p, NULL, &av) == 0) {
+	if (rpmGlob(*p, GLOB_NOMAGIC, NULL, &av) == 0) {
 	    argvAppend(&files, av);
 	    argvFree(av);
 	}

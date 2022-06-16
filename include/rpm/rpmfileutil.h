@@ -110,11 +110,12 @@ char * rpmGetPath (const char * path, ...) RPM_GNUC_NULL_TERMINATED;
 /** \ingroup rpmfileutil
  * Return URL path(s) from a (URL prefixed) pattern glob.
  * @param pattern	glob pattern
+ * @param flags		GNU glob(3) flags, supports: GLOB_NOMAGIC
  * @param[out] *argcPtr	no. of paths
  * @param[out] *argvPtr	ARGV_t array of paths
  * @return		0 on success
  */
-int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr);
+int rpmGlob(const char * pattern, int flags, int * argcPtr, ARGV_t * argvPtr);
 
 /** \ingroup rpmfileutil
  * Escape isspace(3) characters in string.

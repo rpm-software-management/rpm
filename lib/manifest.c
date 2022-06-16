@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <string.h>
+#include <glob.h>
 
 #include <popt.h>
 #include <rpm/rpmlog.h>
@@ -124,7 +125,7 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, char *** argvPtr)
 
     /* Glob manifest items. */
     for (p = sb; *p; p++)
-	if (rpmGlob(*p, &ac, &av)) {
+	if (rpmGlob(*p, GLOB_NOMAGIC, &ac, &av)) {
 	    rpmrc = RPMRC_FAIL;
 	    goto exit;
 	}

@@ -5,6 +5,7 @@
 
 #include <errno.h>
 #include <string.h>
+#include <glob.h>
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>		/* rpmReadPackageFile */
@@ -180,7 +181,7 @@ static void rpmgiGlobArgv(rpmgi gi, ARGV_const_t argv)
 	while ((arg = *argv++) != NULL) {
 	    char ** av = NULL;
 
-	    if (rpmGlob(arg, NULL, &av) == 0) {
+	    if (rpmGlob(arg, GLOB_NOMAGIC, NULL, &av) == 0) {
 		argvAppend(&gi->argv, av);
 		argvFree(av);
 	    }

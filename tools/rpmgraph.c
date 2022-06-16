@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <string.h>
+#include <glob.h>
 
 #include <rpm/rpmcli.h>
 #include <rpm/rpmlib.h>		/* rpmReadPackageFile */
@@ -48,7 +49,7 @@ rpmGraph(rpmts ts, struct rpmInstallArguments_s * ia, const char ** fileArgv)
     for (fnp = fileArgv; *fnp; fnp++) {
 	av = _free(av);
 	ac = 0;
-	rc = rpmGlob(*fnp, &ac, &av);
+	rc = rpmGlob(*fnp, GLOB_NOMAGIC, &ac, &av);
 	if (rc || ac == 0) continue;
 
 	argv = xrealloc(argv, (argc+2) * sizeof(*argv));

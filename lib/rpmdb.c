@@ -2281,7 +2281,7 @@ static int rpmdbRemoveFiles(char * pattern)
     int rc = 0;
     ARGV_t paths = NULL, p;
 
-    if (rpmGlob(pattern, NULL, &paths) == 0) {
+    if (rpmGlob(pattern, 0, NULL, &paths) == 0) {
 	for (p = paths; *p; p++) {
 	    rc += unlink(*p);
 	}

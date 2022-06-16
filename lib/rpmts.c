@@ -281,7 +281,7 @@ static int loadKeyringFromFiles(rpmts ts)
     int nkeys = 0;
 
     rpmlog(RPMLOG_DEBUG, "loading keyring from pubkeys in %s\n", pkpath);
-    if (rpmGlob(pkpath, NULL, &files)) {
+    if (rpmGlob(pkpath, 0, NULL, &files)) {
 	rpmlog(RPMLOG_DEBUG, "couldn't find any keys in %s\n", pkpath);
 	goto exit;
     }
