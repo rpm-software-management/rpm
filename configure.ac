@@ -636,10 +636,8 @@ esac],
 AS_IF([test "$with_selinux" = yes],[
   AC_CHECK_HEADER([selinux/selinux.h],[
     save_LIBS="$LIBS"
-    AC_CHECK_LIB([selinux],[is_selinux_enabled],[],[
-      AC_MSG_ERROR([--with-selinux given, but is_selinux_enabled not found in libselinux])])
-    AC_CHECK_LIB([selinux],[setexecfilecon],[
-      AC_DEFINE([HAVE_SETEXECFILECON],[1],[Define to 1 if SELinux setexecfilecon is present])])
+    AC_CHECK_LIB([selinux],[setexecfilecon],[],[
+      AC_MSG_ERROR([--with-selinux given, but setexecfilecon not found in libselinux])])
     LIBS="$save_LIBS"
   ],[
     AC_MSG_ERROR([--with-selinux given, but selinux/selinux.h not found])

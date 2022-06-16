@@ -95,43 +95,6 @@ static rpmRC selinux_psm_pre(rpmPlugin plugin, rpmte te)
     return rc;
 }
 
-#ifndef HAVE_SETEXECFILECON
-static int setexecfilecon(const char *path, const char *fallback_type)
-{
-    int rc = -1;
-    char *mycon = NULL, fcon = NULL, newcon = NULL;
-    context_t con = NULL;
-
-    /* Figure the context to for next exec() */
-    if (getcon(&mycon) < 0)
-	goto exit;
-    if (getfilecon(path, &fcon) < 0)
-	goto exit;
-    if (security_compute_create(mycon, fcon,
-			string_to_security_class("process"), &newcon) < 0)
-	goto exit;
-
-    if (rstreq(mycon, newcon)) {
-	con = context_new(mycon);
-	if (!con)
-	    goto exit;
-	if (context_type_set(con, fallback_type))
-	    goto exit;
-	freecon(newcon);
-	newcon = xstrdup(context_str(con));
-    }
-
-    rc = setexeccon(newcon);
-
-exit:
-    context_free(con);
-    freecon(newcon);
-    freecon(fcon);
-    freecon(mycon);
-    return rc;
-}
-#endif
-
 static rpmRC selinux_scriptlet_fork_post(rpmPlugin plugin,
 						 const char *path, int type)
 {
