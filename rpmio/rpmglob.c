@@ -117,11 +117,9 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
 
 exit:
     argc = argvCount(*argvPtr);
-    if (argc > 0) {
-	if (argcPtr)
-	    *argcPtr = argc;
-	rc = 0;
-    } else if (rc == 0)
+    if (argcPtr)
+	*argcPtr = argc;
+    if (argc == 0 && rc == 0)
 	rc = 1;
 
 
