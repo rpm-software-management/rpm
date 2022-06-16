@@ -219,9 +219,7 @@ dnl
 
 dnl Checks for libraries.
 
-AC_CHECK_FUNC(gethostname, [], [
-    AC_CHECK_LIB(nsl, gethostname)
-])
+AC_SEARCH_LIBS([gethostname], [nsl])
 
 dnl XXX We should pass -pthread to the compiler instead
 AC_CHECK_HEADERS(pthread.h)
