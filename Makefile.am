@@ -280,7 +280,7 @@ EXTRA_DIST += docs/librpm/html
 
 .PHONY: ci
 ci:
-	podman build -t rpm -f ci/Dockerfile .
+	podman build -t rpm -f $(top_srcdir)/ci/Dockerfile $(top_srcdir)
 	podman run -t rpm
 
 ChangeLog:
