@@ -450,7 +450,7 @@ yes|no) ;;
 esac],
 [enable_bdb_ro=no])
 AS_IF([test "$enable_bdb_ro" = yes],[
-  AC_DEFINE(WITH_BDB_RO, 1, [Build with read-only Berkeley DB])
+  AC_DEFINE(ENABLE_BDB_RO, 1, [Build with read-only Berkeley DB])
 ])
 AM_CONDITIONAL([BDB_RO], [test "$enable_bdb_ro" = yes])
 
@@ -471,7 +471,7 @@ AS_IF([test "x$enable_sqlite" != "xno"], [
 ])
 
 if test "x$have_sqlite" = "xyes"; then
-  AC_DEFINE([WITH_SQLITE], [1], [Define if SQLITE is available])
+  AC_DEFINE([ENABLE_SQLITE], [1], [Define if SQLITE is available])
   SQLITE_REQUIRES=sqlite
   AC_SUBST(SQLITE_REQUIRES)
   DB_BACKEND='sqlite'

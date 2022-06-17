@@ -14,13 +14,13 @@
 #include "debug.h"
 
 const struct rpmdbOps_s *backends[] = {
-#if defined(WITH_SQLITE)
+#if defined(ENABLE_SQLITE)
     &sqlite_dbops,
 #endif
 #ifdef ENABLE_NDB
     &ndb_dbops,
 #endif
-#if defined(WITH_BDB_RO)
+#if defined(ENABLE_BDB_RO)
     &bdbro_dbops,
 #endif
     &dummydb_dbops,

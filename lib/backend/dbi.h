@@ -261,7 +261,7 @@ struct rpmdbOps_s {
     const void * (*idxdbKey)(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen);
 };
 
-#if defined(WITH_BDB_RO)
+#if defined(ENABLE_BDB_RO)
 RPM_GNUC_INTERNAL
 extern struct rpmdbOps_s bdbro_dbops;
 #endif
@@ -271,7 +271,7 @@ RPM_GNUC_INTERNAL
 extern struct rpmdbOps_s ndb_dbops;
 #endif
 
-#if defined(WITH_SQLITE)
+#if defined(ENABLE_SQLITE)
 RPM_GNUC_INTERNAL
 extern struct rpmdbOps_s sqlite_dbops;
 #endif
