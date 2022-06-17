@@ -1,0 +1,51 @@
+set(plugins prioreset syslog)
+
+if(WITH_SELINUX)
+	set(selinux_libs ${SELINUX_LDFLAGS})
+	set(selinux_flags ${SELINUX_CFLAGS})
+	list(APPEND plugins selinux)
+endif()
+
+if(WITH_DBUS)
+	pkg_check_modules(DBUS dbus-1 REQUIRED)
+	set(systemd_inhibit_libs ${DBUS_LDFLAGS})
+	set(systemd_inhibit_flags ${DBUS_CFLAGS})
+	set(dbus_announce_libs ${DBUS_LDFLAGS})
+	set(dbus_announce_flags ${DBUS_CFLAGS})
+	list(APPEND plugins systemd_inhibit dbus_announce)
+endif()
+
+if(WITH_IMA)
+	set(ima_libs imaevm)
+	list(APPEND plugins ima)
+endif()
+
+if(WITH_FAPOLICYD)
+	list(APPEND plugins fapolicyd)
+endif()
+
+if(WITH_AUDIT)
+	set(audit_libs -laudit)
+	list(APPEND plugins audit)
+endif()
+
+if(FSVERITY_IOCTL)
+	set(fsverity_libs ${FSVERITY_LIBRARIES})
+	list(APPEND plugins fsverity)
+endif()
+
+set(plugindir ${CMAKE_INSTALL_FULL_LIBDIR}/rpm-plugins)
+
+foreach(plugin ${plugins})
+	add_library(${plugin} MODULE ${plugin}.c)
+	set(ln ${plugin}_libs)
+	if (${ln})
+		target_link_libraries(${plugin} PRIVATE ${${ln}})
+	endif()
+	set(fn ${plugin}_flags)
+	if (${fn})
+		target_compile_options(${plugin} PRIVATE ${${fn}})
+	endif()
+	install(TARGETS ${plugin} DESTINATION ${plugindir})
+endforeach()
+
