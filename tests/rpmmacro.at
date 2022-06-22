@@ -515,6 +515,7 @@ runroot rpm \
     --eval '%["%{aaa}"]' \
     --eval '%[%{?ccc}]' \
     --eval '%[v"1:2.3-4"]' \
+    --eval '%[v"0" && v"0"]' \
 ]],
 [0],
 [4096
@@ -524,6 +525,7 @@ runroot rpm \
 5
 0
 1:2.3-4
+0
 ],
 [])
 AT_CLEANUP
