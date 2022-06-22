@@ -454,7 +454,7 @@ static int rdToken(ParseState state)
       if (qtok == TOK_STRING) {
 	v = valueMakeString(temp);
       } else {
-	v = valueMakeVersion(temp);
+	v = valueMakeVersion(state->flags & RPMEXPR_DISCARD ? "0" : temp);
         free(temp); /* version doesn't take ownership of the string */
         if (v == 0) {
 	  exprErr(state, _("invalid version"), p+1);
