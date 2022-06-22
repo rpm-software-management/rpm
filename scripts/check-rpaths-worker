@@ -94,7 +94,7 @@ function msg()
 
 function check_rpath() {
     pos=0
-    rpath=$(readelf -W -d "$1" 2>/dev/null | LANG=C grep -E "\((RPATH|RUNPATH)\).*:") || return 0
+    rpath=$(DEBUGINFOD_URLS="" readelf -W -d "$1" 2>/dev/null | LANG=C grep -E "\((RPATH|RUNPATH)\).*:") || return 0
     rpath_orig="$rpath"
     rpath=$(echo "$rpath" | LANG=C sed -e "s!.*\(RPATH\|RUNPATH\).*: \[\(.*\)\]!\2!p;d")
 
