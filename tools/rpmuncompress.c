@@ -41,9 +41,9 @@ struct archiveType_s {
     { COMPRESSED_LZMA,	0,	"%{__xz}",	"-dc",		"" },
     { COMPRESSED_XZ,	0,	"%{__xz}",	"-dc",		"" },
     { COMPRESSED_LZIP,	0,	"%{__lzip}",	"-dc",		"" },
-    { COMPRESSED_LRZIP,	0,	"%{__lrzip",	"-dqo-",	"" },
-    { COMPRESSED_7ZIP,	1,	"%{__7zip",	"x",		"" },
-    { COMPRESSED_ZSTD,	0,	"%{__zstd",	"-dc",		"" },
+    { COMPRESSED_LRZIP,	0,	"%{__lrzip}",	"-dqo-",	"" },
+    { COMPRESSED_7ZIP,	1,	"%{__7zip}",	"x",		"" },
+    { COMPRESSED_ZSTD,	0,	"%{__zstd}",	"-dc",		"" },
     { COMPRESSED_GEM,	1,	"%{__gem}",	"unpack",	"" },
     { -1,		0,	NULL,		NULL,		NULL },
 };
