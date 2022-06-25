@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2022-04-07 13:03+0300\n"
-"PO-Revision-Date: 2022-05-30 02:18+0000\n"
+"PO-Revision-Date: 2022-06-25 13:18+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/rpm/"
 "master/ko/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.12.2\n"
+"X-Generator: Weblate 4.13\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -1880,7 +1880,7 @@ msgstr "%%pretrans 스크립트릿을 실행하지 않습니다 (가능한 경�
 
 #, c-format
 msgid "do not execute %%posttrans scriptlet (if any)"
-msgstr "%%posttrans 스크립트릿(scriptlet)를 실행하지 않습니다 (가능한 경우)"
+msgstr "%%posttrans 스크립트릿을 실행하지 않습니다 (가능한 경우)"
 
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr ""
