@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2022-04-07 13:03+0300\n"
-"PO-Revision-Date: 2022-04-30 13:44+0000\n"
+"PO-Revision-Date: 2022-06-24 06:18+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://translate.fedoraproject.org/projects/rpm/"
 "master/ka/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.12.1\n"
+"X-Generator: Weblate 4.13\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -473,7 +473,6 @@ msgstr "<სერტიფიკატი>"
 msgid "use file signing key <key>"
 msgstr ""
 
-#, fuzzy
 msgid "<key>"
 msgstr "<key>"
 
@@ -835,7 +834,7 @@ msgstr ""
 
 #, c-format
 msgid "Could not open %s: %s\n"
-msgstr ""
+msgstr "%s-ის გახსნის შეცდომა: %s\n"
 
 #, c-format
 msgid "Unable to write package: %s\n"
@@ -1286,7 +1285,7 @@ msgstr ""
 
 #, c-format
 msgid "Error parsing %s: %s\n"
-msgstr ""
+msgstr "'%s'-ის დამუშავების შეცდომა: %s\n"
 
 #, c-format
 msgid "Expecting %%semodule tag: %s\n"
@@ -1462,7 +1461,7 @@ msgid "replaced"
 msgstr "ჩანაცვლებული"
 
 msgid "not installed"
-msgstr ""
+msgstr "დაყენებული არაა"
 
 msgid "net shared"
 msgstr ""
@@ -1478,7 +1477,7 @@ msgstr "(უცნობი)"
 
 #, c-format
 msgid "failed to open dir %s of %s: %s\n"
-msgstr ""
+msgstr "%s საქაღალდის გახსნის შეცდომა %s-დან: %s\n"
 
 #, c-format
 msgid "%s%s saved as %s%s\n"
@@ -1659,14 +1658,12 @@ msgstr "\"გამოს\""
 msgid "Specify target platform"
 msgstr ""
 
-#, fuzzy
 msgid "CPU-VENDOR-OS"
 msgstr "CPU-VENDOR-OS"
 
 msgid "read <FILE:...> instead of default file(s)"
 msgstr ""
 
-#, fuzzy
 msgid "<FILE:...>"
 msgstr "<FILE:...>"
 
@@ -1691,14 +1688,12 @@ msgstr ""
 msgid "send stdout to CMD"
 msgstr ""
 
-#, fuzzy
 msgid "CMD"
 msgstr "CMD"
 
 msgid "use ROOT as top level directory"
 msgstr ""
 
-#, fuzzy
 msgid "ROOT"
 msgstr "ROOT"
 
@@ -1775,7 +1770,7 @@ msgid "do not install configuration files"
 msgstr ""
 
 msgid "do not install documentation"
-msgstr ""
+msgstr "არ დააყენო დოკუმენტაცია"
 
 msgid "skip files with leading component <path> "
 msgstr ""
@@ -2084,7 +2079,7 @@ msgid "replaced      "
 msgstr "ჩანაცვლებული      "
 
 msgid "not installed "
-msgstr ""
+msgstr "დაყენებული არაა "
 
 msgid "net shared    "
 msgstr ""
@@ -2171,7 +2166,7 @@ msgstr ""
 
 #, c-format
 msgid "package %s is not installed\n"
-msgstr ""
+msgstr "პაკეტი დაყენებული არაა: %s.\n"
 
 #, c-format
 msgid "unknown tag: \"%s\"\n"
@@ -2191,7 +2186,7 @@ msgstr ""
 
 #, c-format
 msgid "Fread failed: %s"
-msgstr ""
+msgstr "read() -ის შეცდომა: %s"
 
 msgid "DIGESTS"
 msgstr "საკონტროლო ჯამები"
@@ -2292,7 +2287,7 @@ msgstr ""
 
 #, c-format
 msgid "failed to create directory %s: %s\n"
-msgstr ""
+msgstr "საქაღალდის (%s) შექმნის შეცდომა: %s\n"
 
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
@@ -2461,7 +2456,7 @@ msgid "Digest mismatch"
 msgstr ""
 
 msgid "Internal error"
-msgstr ""
+msgstr "შიდა შეცდომა"
 
 msgid "Archive file not in header"
 msgstr ""
@@ -2544,7 +2539,7 @@ msgstr ""
 
 #, c-format
 msgid "cannot open %s: %s\n"
-msgstr ""
+msgstr "%s-ის გახსნის შეცდომა: %s\n"
 
 #, c-format
 msgid "Installing %s\n"
@@ -2576,7 +2571,7 @@ msgstr ""
 
 #, c-format
 msgid "Failed to dlopen %s %s\n"
-msgstr ""
+msgstr "%s-ის dlopen-ის შეცდომა %s\n"
 
 #, c-format
 msgid "Failed to resolve symbol %s: %s\n"
@@ -2603,11 +2598,11 @@ msgstr ""
 
 #, c-format
 msgid "package %s is already installed"
-msgstr ""
+msgstr "პაკეტი უკვე დაყენებულია: %s"
 
 #, c-format
 msgid "package %s is not installed"
-msgstr ""
+msgstr "პაკეტი დაყენებული არაა: %s"
 
 #, c-format
 msgid "path %s in package %s is not relocatable"
@@ -2741,7 +2736,7 @@ msgstr ""
 
 #, c-format
 msgid "Fwrite failed: %s"
-msgstr ""
+msgstr "write() -ის შეცდომა: %s"
 
 #, c-format
 msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
@@ -2764,7 +2759,6 @@ msgstr "დაყენება"
 msgid "erase"
 msgstr "წაშლა"
 
-#, fuzzy
 msgid "rpmdb"
 msgstr "rpmdb"
 
@@ -2869,10 +2863,10 @@ msgid "skipped"
 msgstr "გამოტოვებული"
 
 msgid "failed"
-msgstr "შეცდომით"
+msgstr "შეცდომა"
 
 msgid "no state"
-msgstr ""
+msgstr "მდგომარეობის გარეშე"
 
 msgid "unknown state"
 msgstr ""
@@ -3037,7 +3031,7 @@ msgstr ""
 
 #, c-format
 msgid "File %s: %s\n"
-msgstr ""
+msgstr "ფაილი %s: %s\n"
 
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
