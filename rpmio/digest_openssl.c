@@ -4,6 +4,7 @@
 #include <openssl/rsa.h>
 #include <openssl/dsa.h>
 #include <rpm/rpmcrypto.h>
+#include <rpm/rpmlog.h>
 
 #include "rpmio/rpmpgp_internal.h"
 
@@ -361,9 +362,10 @@ static int pgpVerifySigRSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig,
     if (EVP_PKEY_CTX_set_rsa_padding(pkey_ctx, RSA_PKCS1_PADDING) <= 0)
         goto done;
 
-    if (EVP_PKEY_CTX_set_signature_md(pkey_ctx, getEVPMD(hash_algo)) <= 0)
+    if (EVP_PKEY_CTX_set_signature_md(pkey_ctx, getEVPMD(hash_algo)) <= 0) {
+	rpmlog(RPMLOG_WARNING, "Signature not supported. Hash algorithm %s not available.\n", pgpValStr(pgpHashTbl, hash_algo));
         goto done;
-
+    }
     int pkey_len = EVP_PKEY_size(key->evp_pkey);
     padded_sig = xcalloc(1, pkey_len);
     if (BN_bn2binpad(sig->bn, padded_sig, pkey_len) <= 0)
