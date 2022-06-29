@@ -178,14 +178,12 @@ static void rpmgiGlobArgv(rpmgi gi, ARGV_const_t argv)
     } else {
 	const char * arg;
 	while ((arg = *argv++) != NULL) {
-	    char * t = rpmEscapeSpaces(arg);
 	    char ** av = NULL;
 
-	    if (rpmGlob(t, NULL, &av) == 0) {
+	    if (rpmGlob(arg, NULL, &av) == 0) {
 		argvAppend(&gi->argv, av);
 		argvFree(av);
 	    }
-	    free(t);
 	}
     }
     gi->argc = argvCount(gi->argv);

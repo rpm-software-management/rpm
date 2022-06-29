@@ -459,9 +459,7 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 	if (giFlags & RPMGI_NOGLOB) {
 	    rc = rpmNoGlob(*eiu->fnp, &ac, &av);
 	} else {
-	    char * fn = rpmEscapeSpaces(*eiu->fnp);
-	    rc = rpmGlob(fn, &ac, &av);
-	    fn = _free(fn);
+	    rc = rpmGlob(*eiu->fnp, &ac, &av);
 	}
 	if (rc || ac == 0) {
 	    if (giFlags & RPMGI_NOGLOB) {
