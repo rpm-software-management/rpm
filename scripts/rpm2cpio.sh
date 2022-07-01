@@ -27,7 +27,11 @@ calcsize() {
 
 	i=0
 	while [ $i -lt 8 ]; do
-		b="$(_dd $(($offset + $i)) bs=1 count=1)"
+		# add . to not loose \n
+		# strip \0 as it gets dropped with warning otherwise
+		b="$(_dd $(($offset + $i)) bs=1 count=1 | tr -d '\0' ; echo .)"
+		b=${b%.}    # strip . again
+
 		[ -z "$b" ] &&
 			b="0" ||
 			b="$(exec printf '%u\n' "'$b")"
