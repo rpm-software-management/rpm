@@ -43,7 +43,7 @@ calcsize() {
 	offset=$(($offset + $rsize))
 }
 
-case "$(_dd 0 bs=8 count=1)" in
+case "$(_dd 0 bs=8 count=1 | tr -d '\0')" in
 	"$(printf '\355\253\356\333')"*) ;; # '\xed\xab\xee\xdb'
 	*) fatal "File doesn't look like rpm: $pkg" ;;
 esac
@@ -54,7 +54,7 @@ sigsize=$rsize
 calcsize $(($offset + (8 - ($sigsize % 8)) % 8))
 hdrsize=$rsize
 
-case "$(_dd $offset bs=3 count=1)" in
+case "$(_dd $offset bs=3 count=1 | tr -d '\0')" in
 	"$(printf '\102\132')"*) _dd $offset | bunzip2 ;; # '\x42\x5a'
 	"$(printf '\037\213')"*) _dd $offset | gunzip  ;; # '\x1f\x8b'
 	"$(printf '\375\067')"*) _dd $offset | xzcat   ;; # '\xfd\x37'
