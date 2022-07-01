@@ -15,6 +15,12 @@ _dd() {
 }
 
 calcsize() {
+
+	case "$(_dd $1 bs=4 count=1 | tr -d '\0')" in
+		"$(printf '\216\255\350')"*) ;; # '\x8e\xad\xe8'
+		*) fatal "File doesn't look like rpm: $pkg" ;;
+	esac
+
 	offset=$(($1 + 8))
 
 	local i b b0 b1 b2 b3 b4 b5 b6 b7
