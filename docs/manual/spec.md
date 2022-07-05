@@ -125,6 +125,12 @@ Short (< 70 characters) summary of the package license. For example:
 	License: GPLv3
 ```
 
+#### SourceLicense
+
+If license of the sources differ from the main package the license tag
+of the source package can be set with this. If not given the license
+tag of the source and the main package are the same.
+
 #### Group
 
 Optional, short (< 70 characters) group of the package.
