@@ -824,6 +824,11 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	if (addLangTag(spec, pkg->header, tag, field, lang))
 	    goto exit;
 	break;
+    case RPMTAG_SOURCELICENSE:
+	if (addLangTag(spec, spec->sourcePackage->header,
+		       RPMTAG_LICENSE, field, lang))
+	    goto exit;
+	break;
     case RPMTAG_BUILDROOT:
 	/* just silently ignore BuildRoot */
 	break;
@@ -1005,6 +1010,7 @@ static struct PreambleRec_s const preambleList[] = {
     {RPMTAG_EPOCH,		0, 0, 1, LEN_AND_STR("epoch")},
     {RPMTAG_SUMMARY,		1, 0, 1, LEN_AND_STR("summary")},
     {RPMTAG_LICENSE,		0, 0, 1, LEN_AND_STR("license")},
+    {RPMTAG_SOURCELICENSE,	0, 0, 1, LEN_AND_STR("sourcelicense")},
     {RPMTAG_DISTRIBUTION,	0, 0, 1, LEN_AND_STR("distribution")},
     {RPMTAG_DISTURL,		0, 0, 1, LEN_AND_STR("disturl")},
     {RPMTAG_VENDOR,		0, 0, 1, LEN_AND_STR("vendor")},
