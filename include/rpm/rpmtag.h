@@ -380,6 +380,7 @@ typedef enum rpmTag_e {
     RPMTAG_SPEC			= 5099, /* s */
     RPMTAG_TRANSLATIONURL	= 5100, /* s */
     RPMTAG_UPSTREAMRELEASES	= 5101, /* s */
+    RPMTAG_SOURCELICENSE	= 5102, /* internal */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;

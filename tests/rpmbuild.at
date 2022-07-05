@@ -31,6 +31,17 @@ run rpmbuild \
 [0],
 [ignore],
 [ignore])
+
+AT_CHECK([
+
+runroot rpm -qp --qf "%{license}\n" /build/SRPMS/hello-1.0-1.src.rpm
+runroot rpm -qp --qf "%{license}\n" /build/RPMS/*/hello-1.0-1.*.rpm
+],
+[0],
+[GPL, ASL 1.0
+GPL
+],
+[])
 AT_CLEANUP
 
 AT_SETUP([rpmbuild -b steps])

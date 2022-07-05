@@ -308,6 +308,7 @@ Version: 1.0
 Release: 1
 Group: Utilities
 License: GPL
+SourceLicense: GPL, ASL 1.0
 Distribution: RPM test suite.
 URL: http://rpm.org
 Source0: hello-1.0.tar.gz
