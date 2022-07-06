@@ -14,6 +14,7 @@
 #include "rpmio/rpmpgpval.h"
 #include "rpmio/rpmpgp_internal.h"
 #include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */
+#include <errno.h>
 
 #include "debug.h"
 
@@ -1142,8 +1143,11 @@ rpmRC pgpVerifySignature(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx)
 	pgpDigAlg sa = sig->alg;
 	pgpDigAlg ka = key->alg;
 	if (sa && sa->verify) {
-	    if (sa->verify(ka, sa, hash, hashlen, sig->hash_algo) == 0) {
+	    int rc = sa->verify(ka, sa, hash, hashlen, sig->hash_algo);
+	    if (rc == 0) {
 		res = RPMRC_OK;
+	    } else if (rc == ENOTSUP) {
+		rpmlog(RPMLOG_ERR, _("Signature not supported. Hash algorithm %s not available.\n"), pgpValStr(pgpHashTbl, sig->hash_algo));
 	    }
 	}
     } else {
