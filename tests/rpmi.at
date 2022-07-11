@@ -652,6 +652,66 @@ runroot rpm -q versiontest
 ],
 [])
 # TODO: the same with epoch vs no epoch
+
+# Test freshen
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -U /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm
+runroot rpm -F /build/RPMS/noarch/versiontest-2.0-1.noarch.rpm
+runroot rpm -q versiontest
+],
+[0],
+[versiontest-2.0-1.noarch
+],
+[])
+
+# Test freshen on uninstalled package
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -F /build/RPMS/noarch/versiontest-2.0-1.noarch.rpm
+runroot rpm -q versiontest
+],
+[1],
+[package versiontest is not installed
+],
+[])
+
+# Test freshen with older package
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -U /build/RPMS/noarch/versiontest-2.0-1.noarch.rpm
+runroot rpm -F /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm
+runroot rpm -q versiontest
+],
+[0],
+[versiontest-2.0-1.noarch
+],
+[])
+
+# Test freshen --oldpackage
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -U /build/RPMS/noarch/versiontest-2.0-1.noarch.rpm
+runroot rpm -F --oldpackage /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm
+runroot rpm -q versiontest
+],
+[0],
+[versiontest-1.0-1.noarch
+],
+[])
+
+# Test freshen --oldpackage same version
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -U /build/RPMS/noarch/versiontest-2.0-1.noarch.rpm
+runroot rpm -F --oldpackage /build/RPMS/noarch/versiontest-2.0-1.noarch.rpm
+runroot rpm -q versiontest
+],
+[0],
+[versiontest-2.0-1.noarch
+],
+[])
+
 AT_CLEANUP
 
 AT_SETUP([rpm -U obsoleted packages])

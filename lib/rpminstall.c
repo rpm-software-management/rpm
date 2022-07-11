@@ -379,19 +379,21 @@ static int tryReadHeader(rpmts ts, struct rpmEIU * eiu, Header * hdrp)
 
 
 /* On --freshen, verify package is installed and newer */
-static int checkFreshenStatus(rpmts ts, Header h)
+static int checkFreshenStatus(rpmts ts, Header h, int allowOld)
 {
     rpmdbMatchIterator mi = NULL;
     const char * name = headerGetString(h, RPMTAG_NAME);
     const char *arch = headerGetString(h, RPMTAG_ARCH);
     Header oldH = NULL;
-
     if (name != NULL)
         mi = rpmtsInitIterator(ts, RPMDBI_NAME, name, 0);
     if (rpmtsColor(ts) && arch)
 	rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_DEFAULT, arch);
 
     while ((oldH = rpmdbNextIterator(mi)) != NULL) {
+	/* Package is older than those currently installed. */
+	if (allowOld && rpmVersionCompare(oldH, h) > 0)
+	    break;
 	/* Package is newer than those currently installed. */
         if (rpmVersionCompare(oldH, h) < 0)
 	    break;
@@ -597,7 +599,7 @@ restart:
 	}
 
 	if (ia->installInterfaceFlags & INSTALL_FRESHEN)
-	    if (checkFreshenStatus(ts, h) != 1) {
+	    if (checkFreshenStatus(ts, h, ia->probFilter & RPMPROB_FILTER_OLDPACKAGE) != 1) {
 		headerFree(h);
 	        continue;
 	    }
