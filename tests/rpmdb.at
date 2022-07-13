@@ -366,3 +366,44 @@ not installed /usr/share/flangtest/pl.txt
 [])
 AT_CLEANUP
 
+# ------------------------------
+AT_SETUP([rpmdb query special chars])
+AT_KEYWORDS([install rpmdb query])
+RPMDB_INIT
+for v in "1.0+2" "1.0^2" "1.0~2"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
+          /data/SPECS/versiontest.spec
+done
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -U '/build/RPMS/noarch/versiontest-1.0+2-1.noarch.rpm'
+runroot rpm -q 'versiontest-1.0+2-1'
+],
+[0],
+[versiontest-1.0+2-1.noarch
+],
+[])
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -U '/build/RPMS/noarch/versiontest-1.0^2-1.noarch.rpm'
+runroot rpm -q 'versiontest-1.0^2-1'
+],
+[0],
+[versiontest-1.0^2-1.noarch
+],
+[])
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -U '/build/RPMS/noarch/versiontest-1.0~2-1.noarch.rpm'
+runroot rpm -q 'versiontest-1.0~2-1'
+],
+[0],
+[versiontest-1.0~2-1.noarch
+],
+[])
+
+AT_CLEANUP
