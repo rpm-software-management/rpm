@@ -457,8 +457,10 @@ runroot rpmbuild -bb --quiet /data/SPECS/globmisstest.spec
 ],
 [1],
 [],
-[error: File not found: /build/BUILDROOT/globmisstest-1.0-1.x86_64/opt/foo*
+[warning: File not found by glob: /build/BUILDROOT/globmisstest-1.0-1.x86_64/opt/foo*. Trying without globbing.
+error: File not found: /build/BUILDROOT/globmisstest-1.0-1.x86_64/opt/foo*
 cp: cannot stat 'foo*': No such file or directory
+warning: File not found by glob: /build/BUILD/foo*. Trying without globbing.
 error: File not found: /build/BUILDROOT/globmisstest-1.0-1.x86_64/opt/share/doc/globmisstest-1.0/foo*
 ],
 )
@@ -509,7 +511,9 @@ runroot rpm -qpl /build/RPMS/noarch/globesctest-1.0-1.noarch.rpm
 /opt/share/doc/globesctest-1.0/foo[[123]]
 /opt/share/doc/globesctest-1.0/foo[[bar]]
 ],
-[],
+[warning: File not found by glob: /build/BUILDROOT/globesctest-1.0-1.x86_64/opt/foo[[123]]. Trying without globbing.
+warning: File not found by glob: /build/BUILD/foo[[123]]. Trying without globbing.
+],
 )
 AT_CLEANUP
 
