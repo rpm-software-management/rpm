@@ -33,22 +33,20 @@
 
 #include "debug.h"
 
-/* Find the end of the sub-pattern in a brace expression.  We define
-   this as an inline function if the compiler permits.  */
-static inline const char *next_brace_sub(const char *begin)
+/* Return 1 if pattern contains a magic char, see glob(7) for a list */
+static int ismagic(const char *pattern)
 {
-    unsigned int depth = 0;
-    const char *cp = begin;
-
-    while (*cp != '\0') {
-	if ((*cp == '}' && depth-- == 0) || (*cp == ',' && depth == 0))
-	    break;
-
-	if (*cp++ == '{')
-	    depth++;
-    }
-
-    return *cp != '\0' ? cp : NULL;
+    for (const char *p = pattern; *p != '\0'; p++)
+	switch (*p) {
+	case '?':
+	case '*':
+	case '[':
+	case '{':
+	case '\\':
+	case '~':
+	    return 1;
+	}
+    return 0;
 }
 
 /* librpmio exported interfaces */
@@ -66,7 +64,7 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
     size_t plen = strlen(path);
     int dir_only = (plen > 0 && path[plen-1] == '/');
     glob_t gl;
-    int flags = GLOB_NOMAGIC;
+    int flags = 0;
 #ifdef ENABLE_NLS
     char * old_collate = NULL;
     char * old_ctype = NULL;
@@ -92,7 +90,7 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
     (void) setlocale(LC_CTYPE, "C");
 #endif
 
-    if (!local) {
+    if (!local || !ismagic(pattern)) {
 	argvAdd(&argv, pattern);
 	goto exit;
     }
