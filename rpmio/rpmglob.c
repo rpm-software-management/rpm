@@ -51,6 +51,36 @@ static inline const char *next_brace_sub(const char *begin)
     return *cp != '\0' ? cp : NULL;
 }
 
+static int ismagic(const char *pattern)
+{
+    register const char *p, *q;
+    int openBrackets = 0;
+
+    for (p = pattern; *p != '\0'; p++)
+	switch (*p) {
+	case '?':
+	case '*':
+	case '\\':
+	case '~':
+	    return 1;
+	case '[':
+	    openBrackets = 1;
+	    break;
+	case ']':
+	    if (openBrackets)
+		return 1;
+	    break;
+	case '{':
+	    q = p;
+	    while (*q != '}')
+		if ((q = next_brace_sub(q + 1)) == NULL)
+		    return 0;
+	    return 1;
+	}
+
+    return 0;
+}
+
 /* librpmio exported interfaces */
 
 int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
@@ -66,7 +96,7 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
     size_t plen = strlen(path);
     int dir_only = (plen > 0 && path[plen-1] == '/');
     glob_t gl;
-    int flags = GLOB_NOMAGIC;
+    int flags = 0;
 #ifdef ENABLE_NLS
     char * old_collate = NULL;
     char * old_ctype = NULL;
@@ -92,7 +122,7 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
     (void) setlocale(LC_CTYPE, "C");
 #endif
 
-    if (!local) {
+    if (!local || !ismagic(pattern)) {
 	argvAdd(&argv, pattern);
 	goto exit;
     }
