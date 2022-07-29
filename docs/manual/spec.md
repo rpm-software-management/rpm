@@ -651,13 +651,11 @@ Supported modifiers are:
 
 ### Shell Globbing
 
-The usual rules for shell globbing apply.  Metacharacters can be escaped by
-prefixing them with a backslash (`\`).  A backslash or percent sign can be
-escaped with an extra `\` or `%`, respectively.  Spaces are used to separate
-file names and must be escaped by enclosing the file name in quotes.
-
-The metacharacters supported are wildcards (`*` and `?`), square brackets
-(`[]`), and curly braces (`{}`).
+The usual rules for shell globbing apply (see `glob(7)`), including brace
+expansion.  Metacharacters can be escaped by prefixing them with a backslash
+(`\`).  A backslash or percent sign can be escaped with an extra `\` or `%`,
+respectively.  Spaces are used to separate file names and must be escaped by
+enclosing the file name in quotes.
 
 For example:
 
