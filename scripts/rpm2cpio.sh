@@ -43,7 +43,7 @@ calcsize() {
 	offset=$(($offset + $rsize))
 }
 
-case "$(_dd 0 bs=8 count=1 | tr -d '\0')" in
+case "$(_dd 0 bs=4 count=1 | tr -d '\0')" in
 	"$(printf '\355\253\356\333')"*) ;; # '\xed\xab\xee\xdb'
 	*) fatal "File doesn't look like rpm: $pkg" ;;
 esac
