@@ -812,6 +812,10 @@ if echo "$host_os" | grep '.*-gnuabi64$' > /dev/null ; then
 	host_os=`echo "${host_os}" | sed 's/-gnuabi64$//'`
 	host_os_gnu=-gnuabi64
 fi
+if echo "$host_os" | grep '.*-gnux32$' > /dev/null ; then
+	host_os=`echo "${host_os}" | sed 's/-gnux32$//'`
+	host_os_gnu=-gnux32
+fi
 if echo "$host_os" | grep '.*-gnu$' > /dev/null ; then
 	host_os=`echo "${host_os}" | sed 's/-gnu$//'`
 fi
