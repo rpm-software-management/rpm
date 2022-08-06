@@ -9,3 +9,798 @@ AT_CHECK([[
 ../../rpmpgpcheck
 ]],0,)
 AT_CLEANUP
+
+# Test pgpPrtPkts printing
+AT_SETUP([[Running tests for pgpPrtPkts]])
+AT_KEYWORDS([[rpmkeys digest OpenPGP]])
+AT_CHECK([[
+../../rpmpgpprtpkts
+]],0,[],[rpm.org-rsa-2048-test.pgp:
+V4 Public Key(6) RSA(1)  Thu Apr  6 12:48:24 2017(0x58e63918)
+User ID(13) "rpm.org RSA testkey <rsa@rpm.org>"
+V4 Signature(2) RSA(1) SHA256(8) Positive certification of a User ID and Public Key(19)
+    signature creation time(2)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) 3DES(2)
+    preferred hash algorithms(21) SHA256(8) SHA384(9) SHA512(10) SHA224(11) SHA1(2)
+    preferred compression algorithms(22) ZLIB(2) BZIP2(3) ZIP(1)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    issuer key ID(16)
+ signhash16 cc71
+Public Subkey(14) 0458e63918010800a4faf0d9ac85d0b855c4613a195706f66adb736db2490aa0fbd6f9994cbb16d10c6e3ca4606dc618ce9e0ae255419c7845ac5f0c3943b127b91058825931916df810dca6d098bab6c3d87e16db1be75958a20be2f308ccf388c253eb5eb9b9e7cbe091d30cfc42d9f16233dcab73bd8b9b294936433fbdea53d76f09e50bf481151a41b1e242e4ba0e6ffe5919d47f1de2f3d495e269c1c5bfd36bddc656aa0e7225b0cd64a7c049d6600bce6fde492f853b7392797fff9c2a74031ec5bbb0888876c72c5b3be07faaacd916b566bb7b15d938f994b67ff69d6a02e10ced42db8b177f95df324e662f4386c194abf66e6cd7b557c5fb29814e6e81cf240497f30011010001
+V4 Signature(2) RSA(1) SHA256(8) Subkey Binding Signature(24)
+    signature creation time(2)
+    key flags(27)
+    issuer key ID(16)
+ signhash16 f00d
+rpm.org-rsa-2048-test-hi.pgp:
+V4 Signature(2) RSA(1) SHA512(10) Binary document signature(0)
+    signature creation time(2) *CRITICAL*
+    issuer key ID(16)
+    notation data(20) 00000000001e002073616c74406e6f746174696f6e732e736571756f69612d7067702e6f7267a201c36633ad68be3bd65143e4096aabf505a51165ea56d6c15003a21cc9886a
+    Unknown signature subkey type(33) 04771b18d3d7baa28734333c424344591e1964c5fc
+ signhash16 7f53
+rpm.org-rsa-2048-test.pgp/rpm.org-rsa-2048-test-hi.pgp: sig is good (expected)
+neal.pgp:
+V4 Public Key(6) RSA(1)  Tue Apr  7 08:52:57 2015(0x55239ae9)
+User ID(13) "Neal H. Walfield <neal@walfield.org>"
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    key expiration time(9)  Sun Dec 30 00:00:00 1979(0x12cc0300)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    signature creation time(2)
+    primary user id(25) 01
+    issuer key ID(16)
+ signhash16 f4f7
+V4 Signature(2) DSA(17) SHA1(2) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 0f4e
+V4 Signature(2) DSA(17) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 e0c4
+V4 Signature(2) RSA(1) SHA1(2) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 06fd
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 a9dc
+V4 Signature(2) RSA(1) SHA256(8) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 007e
+V4 Signature(2) RSA(1) SHA256(8) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 49db
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 f462
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 7df9
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 1741
+V4 Signature(2) RSA(1) SHA256(8) Positive certification of a User ID and Public Key(19)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 6b30
+V4 Signature(2) RSA(1) SHA256(8) Positive certification of a User ID and Public Key(19)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 094f
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    signature creation time(2)
+    key flags(27)
+    key expiration time(9)  Sun Dec 30 00:00:00 1979(0x12cc0300)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    issuer key ID(16)
+ signhash16 bd9b
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    primary user id(25) 01
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Mon Dec 31 08:57:54 1973(0x07854c12)
+    issuer key ID(16)
+ signhash16 83d8
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    Unknown signature subkey type(33) 04ebbb89210e768882e6ce9f12cdfde3090f11a850
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 2607
+V4 Signature(2) RSA(1) SHA256(8) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 ed08
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 ceaf
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    primary user id(25) 01
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Tue Jan  6 03:53:53 1976(0x0b4f54d1)
+    issuer key ID(16)
+ signhash16 efa6
+V4 Signature(2) RSA(1) SHA1(2) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    signature expiration time(3)  Thu Jan 15 00:00:00 1970(0x00127500)
+    issuer key ID(16)
+ signhash16 279c
+V4 Signature(2) RSA(1) SHA1(2) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    signature expiration time(3)  Thu Jan 15 00:00:00 1970(0x00127500)
+    issuer key ID(16)
+ signhash16 baec
+V4 Signature(2) RSA(1) SHA1(2) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    signature expiration time(3)  Thu Jan 15 00:00:00 1970(0x00127500)
+    issuer key ID(16)
+ signhash16 e3b5
+V4 Signature(2) DSA(17) SHA256(8) Generic certification of a User ID and Public Key(16)
+    Unknown signature subkey type(33) 04ad17a21ef8aed8f1cc02dbd9f7d5c9bf765c61e3
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 83d0
+V4 Signature(2) RSA(1) SHA256(8) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 25ab
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 1ee9
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 fd1c
+V4 Signature(2) RSA(1) SHA256(8) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 575f
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    primary user id(25) 01
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Fri Jul  2 15:07:09 1976(0x0c3a9d9d)
+    issuer key ID(16)
+ signhash16 c01a
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    primary user id(25) 01
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Sat Jan  1 15:07:57 1977(0x0d2be04d)
+    issuer key ID(16)
+ signhash16 28e7
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    primary user id(25) 01
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Sat Jul  2 15:07:19 1977(0x0e1bd127)
+    issuer key ID(16)
+ signhash16 619d
+User ID(13) "Neal H. Walfield <neal@gnupg.org>"
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    signature creation time(2)
+    key flags(27)
+    key expiration time(9)  Sun Dec 30 00:00:00 1979(0x12cc0300)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    issuer key ID(16)
+ signhash16 803a
+V4 Signature(2) DSA(17) SHA1(2) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 9f23
+V4 Signature(2) DSA(17) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 1418
+V4 Signature(2) RSA(1) SHA1(2) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 0648
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 521c
+V4 Signature(2) RSA(1) SHA256(8) Positive certification of a User ID and Public Key(19)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 8689
+V4 Signature(2) RSA(1) SHA256(8) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 4e2f
+V4 Signature(2) RSA(1) SHA256(8) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 84c0
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 5fb2
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 6238
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 821c
+V4 Signature(2) RSA(1) SHA256(8) Positive certification of a User ID and Public Key(19)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 aafd
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Mon Dec 31 08:57:54 1973(0x07854c12)
+    issuer key ID(16)
+ signhash16 b72d
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    Unknown signature subkey type(33) 04ebbb89210e768882e6ce9f12cdfde3090f11a850
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 eab4
+V4 Signature(2) RSA(1) SHA256(8) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 16f6
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 28ec
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Tue Jan  6 03:53:53 1976(0x0b4f54d1)
+    issuer key ID(16)
+ signhash16 62ab
+V4 Signature(2) DSA(17) SHA256(8) Generic certification of a User ID and Public Key(16)
+    Unknown signature subkey type(33) 04ad17a21ef8aed8f1cc02dbd9f7d5c9bf765c61e3
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 9594
+V4 Signature(2) RSA(1) SHA256(8) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 cce0
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 813d
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 b87e
+V4 Signature(2) RSA(1) SHA256(8) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 e694
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Fri Jul  2 15:07:09 1976(0x0c3a9d9d)
+    issuer key ID(16)
+ signhash16 1cb7
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Sat Jan  1 15:07:57 1977(0x0d2be04d)
+    issuer key ID(16)
+ signhash16 7358
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Sat Jul  2 15:07:19 1977(0x0e1bd127)
+    issuer key ID(16)
+ signhash16 a78f
+User ID(13) "Neal H. Walfield <neal@g10code.com>"
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    signature creation time(2)
+    key flags(27)
+    key expiration time(9)  Sun Dec 30 00:00:00 1979(0x12cc0300)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    issuer key ID(16)
+ signhash16 1646
+V4 Signature(2) DSA(17) SHA1(2) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 0041
+V4 Signature(2) DSA(17) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 6629
+V4 Signature(2) RSA(1) SHA1(2) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 f7f4
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 1075
+V4 Signature(2) RSA(1) SHA256(8) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 a2ac
+V4 Signature(2) RSA(1) SHA256(8) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 c30d
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 42dc
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 0e0d
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 0969
+V4 Signature(2) RSA(1) SHA256(8) Positive certification of a User ID and Public Key(19)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 5a78
+V4 Signature(2) RSA(1) SHA256(8) Positive certification of a User ID and Public Key(19)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 be13
+V4 Signature(2) RSA(1) SHA512(10) Certification revocation signature(48)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    reason for revocation(29) 20
+    issuer key ID(16)
+ signhash16 1d3c
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 2acd
+V4 Signature(2) RSA(1) SHA256(8) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 efd6
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 8428
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 88dd
+V4 Signature(2) RSA(1) SHA256(8) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 b859
+User ID(13) "Neal H. Walfield <neal@pep.foundation>"
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Mon Dec 31 08:57:54 1973(0x07854c12)
+    issuer key ID(16)
+ signhash16 f8ea
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    Unknown signature subkey type(33) 04ebbb89210e768882e6ce9f12cdfde3090f11a850
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 04e8
+V4 Signature(2) RSA(1) SHA256(8) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 6270
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Tue Jan  6 03:53:53 1976(0x0b4f54d1)
+    issuer key ID(16)
+ signhash16 5acc
+V4 Signature(2) DSA(17) SHA256(8) Generic certification of a User ID and Public Key(16)
+    Unknown signature subkey type(33) 04ad17a21ef8aed8f1cc02dbd9f7d5c9bf765c61e3
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 f0e2
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Fri Jul  2 15:07:09 1976(0x0c3a9d9d)
+    issuer key ID(16)
+ signhash16 b57c
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Sat Jan  1 15:07:57 1977(0x0d2be04d)
+    issuer key ID(16)
+ signhash16 e7fa
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Sat Jul  2 15:07:19 1977(0x0e1bd127)
+    issuer key ID(16)
+ signhash16 3ada
+User ID(13) "Neal H. Walfield <neal@pep-project.org>"
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Mon Dec 31 08:57:54 1973(0x07854c12)
+    issuer key ID(16)
+ signhash16 7f86
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    Unknown signature subkey type(33) 04ebbb89210e768882e6ce9f12cdfde3090f11a850
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 da23
+V4 Signature(2) RSA(1) SHA256(8) Generic certification of a User ID and Public Key(16)
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 953b
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Tue Jan  6 03:53:53 1976(0x0b4f54d1)
+    issuer key ID(16)
+ signhash16 4b3f
+V4 Signature(2) DSA(17) SHA256(8) Generic certification of a User ID and Public Key(16)
+    Unknown signature subkey type(33) 04ad17a21ef8aed8f1cc02dbd9f7d5c9bf765c61e3
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 a8ec
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Fri Jul  2 15:07:09 1976(0x0c3a9d9d)
+    issuer key ID(16)
+ signhash16 f552
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Sat Jan  1 15:07:57 1977(0x0d2be04d)
+    issuer key ID(16)
+ signhash16 abe4
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Sat Jul  2 15:07:19 1977(0x0e1bd127)
+    issuer key ID(16)
+ signhash16 1852
+User ID(13) "Neal H. Walfield <neal@sequoia-pgp.org>"
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key flags(27)
+    key expiration time(9)  Mon Dec 31 08:57:54 1973(0x07854c12)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    issuer key ID(16)
+ signhash16 7914
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Tue Jan  6 03:53:53 1976(0x0b4f54d1)
+    issuer key ID(16)
+ signhash16 6e4d
+V4 Signature(2) RSA(1) SHA512(10) Generic certification of a User ID and Public Key(16)
+    Unknown signature subkey type(33) 040e53808a4ab38df826792eebb8cf35a49840a6f7
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 5a88
+V4 Signature(2) EdDSA(22) SHA256(8) Positive certification of a User ID and Public Key(19)
+    signature creation time(2) *CRITICAL*
+    Unknown signature subkey type(33) 04ebfd54de739ed758651b267b013475e343740e58
+    issuer key ID(16)
+ signhash16 e829
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Fri Jul  2 15:07:09 1976(0x0c3a9d9d)
+    issuer key ID(16)
+ signhash16 13e0
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Sat Jan  1 15:07:57 1977(0x0d2be04d)
+    issuer key ID(16)
+ signhash16 7fc0
+V4 Signature(2) RSA(1) SHA512(10) Positive certification of a User ID and Public Key(19)
+    key flags(27)
+    preferred symmetric algorithms(11) AES(256-bit key)(9) AES(192-bit key)(8) AES(128-bit key)(7) Unknown symmetric key algorithm(13) Unknown symmetric key algorithm(12) Unknown symmetric key algorithm(11) TWOFISH(256-bit key)(10)
+    preferred hash algorithms(21) SHA512(10) SHA384(9) SHA256(8) SHA224(11)
+    features(30) 01
+    key server preferences(23) No-modify(128)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Sat Jul  2 15:07:19 1977(0x0e1bd127)
+    issuer key ID(16)
+ signhash16 4289
+Public Subkey(14) 045523a696010800a73551245feeb4ef8cef7c70a07ceba24378f554817319011e1ec6e86c735fa3790ef041864878986559f35ab876530532da6ad7105bd7b1e0c398969a3bf83f1ff6ac07827cece4d73482e0e325e4b6f2dfafc29a20e37091aa811d2da9788989fe01f3630180920d89b69b8861befa21d09bd926916495aae00cb2aed82324dd80075bb927790558a1d618eacc1ac1ec03327d1cc34826880ccff3b4a8dba839ec0ff73db45bcc40530c498cc67e471d503dc74cb071c9ed570f921abfd0063f928d32e624a3633f72729e9b1977288665a5c651f9a12b8f95395da3a13adfa4b805300ba45c2ed3cae1884e039b424def651ce0dd6e4fe4ec11975de490550011010001
+V4 Signature(2) RSA(1) SHA512(10) Subkey Binding Signature(24)
+    signature creation time(2)
+    key flags(27)
+    key expiration time(9)  Sat Jan  1 00:00:00 1972(0x03c26700)
+    issuer key ID(16)
+    embedded signature(32) 0419010a000605025523a696000a09107223b56678e02528a69407ff7904ce863eda48a02088c60adc968c5dde576bc6073e2d4e24acde60b584243438ff62d6e8a7b6af46b7e9b4e4b9524c5b8abbdd50d18dc0ac20c03406da803992ed155285b20d84f657ec8dc217f3bcf536f70ca0d309d68386e78eae64e9297e89dbd736a394c36d522319c8d532cbd043233fa3aff2ec35cff01764c88fdec1db04b7cba4f53e15a594c15758a0e3df7cd18cd16b2929605a0e9f42fe31771fffca240298ed31e8512333517a3613df4df0d51f177d020a0d6451183c105cef5e5526a2c3e67611b138a113a46392266a50feb0ae05627b319cae30dceef87c695809ddd0d9c0234927f2544a9c8f2b94a20e9681c99678a3310932d9a4ef
+ signhash16 2745
+V4 Signature(2) RSA(1) SHA512(10) Subkey Binding Signature(24)
+    key flags(27)
+    signature creation time(2)
+    key expiration time(9)  Mon Dec 31 01:34:24 1973(0x0784e420)
+    embedded signature(32) 0419010a000605025523a696000a09107223b56678e02528a69407ff7904ce863eda48a02088c60adc968c5dde576bc6073e2d4e24acde60b584243438ff62d6e8a7b6af46b7e9b4e4b9524c5b8abbdd50d18dc0ac20c03406da803992ed155285b20d84f657ec8dc217f3bcf536f70ca0d309d68386e78eae64e9297e89dbd736a394c36d522319c8d532cbd043233fa3aff2ec35cff01764c88fdec1db04b7cba4f53e15a594c15758a0e3df7cd18cd16b2929605a0e9f42fe31771fffca240298ed31e8512333517a3613df4df0d51f177d020a0d6451183c105cef5e5526a2c3e67611b138a113a46392266a50feb0ae05627b319cae30dceef87c695809ddd0d9c0234927f2544a9c8f2b94a20e9681c99678a3310932d9a4ef
+    issuer key ID(16)
+ signhash16 1fb9
+V4 Signature(2) RSA(1) SHA512(10) Subkey Binding Signature(24)
+    key flags(27)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Tue Jan  6 03:04:38 1976(0x0b4f4946)
+    embedded signature(32) 0419010a000605025523a696000a09107223b56678e02528a69407ff7904ce863eda48a02088c60adc968c5dde576bc6073e2d4e24acde60b584243438ff62d6e8a7b6af46b7e9b4e4b9524c5b8abbdd50d18dc0ac20c03406da803992ed155285b20d84f657ec8dc217f3bcf536f70ca0d309d68386e78eae64e9297e89dbd736a394c36d522319c8d532cbd043233fa3aff2ec35cff01764c88fdec1db04b7cba4f53e15a594c15758a0e3df7cd18cd16b2929605a0e9f42fe31771fffca240298ed31e8512333517a3613df4df0d51f177d020a0d6451183c105cef5e5526a2c3e67611b138a113a46392266a50feb0ae05627b319cae30dceef87c695809ddd0d9c0234927f2544a9c8f2b94a20e9681c99678a3310932d9a4ef
+    issuer key ID(16)
+ signhash16 659a
+V4 Signature(2) RSA(1) SHA512(10) Subkey Binding Signature(24)
+    key flags(27)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Fri Jul  2 14:17:34 1976(0x0c3a91fe)
+    embedded signature(32) 0419010a000605025523a696000a09107223b56678e02528a69407ff7904ce863eda48a02088c60adc968c5dde576bc6073e2d4e24acde60b584243438ff62d6e8a7b6af46b7e9b4e4b9524c5b8abbdd50d18dc0ac20c03406da803992ed155285b20d84f657ec8dc217f3bcf536f70ca0d309d68386e78eae64e9297e89dbd736a394c36d522319c8d532cbd043233fa3aff2ec35cff01764c88fdec1db04b7cba4f53e15a594c15758a0e3df7cd18cd16b2929605a0e9f42fe31771fffca240298ed31e8512333517a3613df4df0d51f177d020a0d6451183c105cef5e5526a2c3e67611b138a113a46392266a50feb0ae05627b319cae30dceef87c695809ddd0d9c0234927f2544a9c8f2b94a20e9681c99678a3310932d9a4ef
+    issuer key ID(16)
+ signhash16 043e
+V4 Signature(2) RSA(1) SHA512(10) Subkey Binding Signature(24)
+    key flags(27)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Sat Jan  1 14:17:43 1977(0x0d2bd487)
+    embedded signature(32) 0419010a000605025523a696000a09107223b56678e02528a69407ff7904ce863eda48a02088c60adc968c5dde576bc6073e2d4e24acde60b584243438ff62d6e8a7b6af46b7e9b4e4b9524c5b8abbdd50d18dc0ac20c03406da803992ed155285b20d84f657ec8dc217f3bcf536f70ca0d309d68386e78eae64e9297e89dbd736a394c36d522319c8d532cbd043233fa3aff2ec35cff01764c88fdec1db04b7cba4f53e15a594c15758a0e3df7cd18cd16b2929605a0e9f42fe31771fffca240298ed31e8512333517a3613df4df0d51f177d020a0d6451183c105cef5e5526a2c3e67611b138a113a46392266a50feb0ae05627b319cae30dceef87c695809ddd0d9c0234927f2544a9c8f2b94a20e9681c99678a3310932d9a4ef
+    issuer key ID(16)
+ signhash16 ab19
+V4 Signature(2) RSA(1) SHA512(10) Subkey Binding Signature(24)
+    key flags(27)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Sat Jul  2 14:17:52 1977(0x0e1bc590)
+    embedded signature(32) 0419010a000605025523a696000a09107223b56678e02528a69407ff7904ce863eda48a02088c60adc968c5dde576bc6073e2d4e24acde60b584243438ff62d6e8a7b6af46b7e9b4e4b9524c5b8abbdd50d18dc0ac20c03406da803992ed155285b20d84f657ec8dc217f3bcf536f70ca0d309d68386e78eae64e9297e89dbd736a394c36d522319c8d532cbd043233fa3aff2ec35cff01764c88fdec1db04b7cba4f53e15a594c15758a0e3df7cd18cd16b2929605a0e9f42fe31771fffca240298ed31e8512333517a3613df4df0d51f177d020a0d6451183c105cef5e5526a2c3e67611b138a113a46392266a50feb0ae05627b319cae30dceef87c695809ddd0d9c0234927f2544a9c8f2b94a20e9681c99678a3310932d9a4ef
+    issuer key ID(16)
+ signhash16 6a1f
+Public Subkey(14) 045523a6b8010800b495e35247e50eab574a1224792649a3a74dda8c129450bcd4e13da9b7abea002c0806c0737ae57afccbe8d9319c49507de7313ed6285413910e4f97d1bbdbc16e961ef965722fabf32608a4a533b8d419ff90e7135bc9035308634c545d820c7da49397340b2833ef46431027a83800c30104cb7d397d9fd342ce30c189d136fb3e10d8c029398f0da332ab1e225e3244b5578962ef8e79ace938a10f1188433a4d53d093646a6cdf8f0633a9abecb186f029d6e43e02bff83efa9dae0c537674d8b1b3e50575dce05690a0029ed0a2b2b91ce14212fc0c1b162305c23a2186ca6f38fddcef7c2f8327af4394a8aea9e1449dc20091a12d6028c666ca2daf330011010001
+V4 Signature(2) RSA(1) SHA512(10) Subkey Binding Signature(24)
+    signature creation time(2)
+    key flags(27)
+    key expiration time(9)  Sat Jan  1 00:00:00 1972(0x03c26700)
+    issuer key ID(16)
+ signhash16 855d
+V4 Signature(2) RSA(1) SHA512(10) Subkey Binding Signature(24)
+    key flags(27)
+    signature creation time(2)
+    key expiration time(9)  Mon Dec 31 01:34:27 1973(0x0784e423)
+    issuer key ID(16)
+ signhash16 5389
+V4 Signature(2) RSA(1) SHA512(10) Subkey Binding Signature(24)
+    key flags(27)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Tue Jan  6 03:04:37 1976(0x0b4f4945)
+    issuer key ID(16)
+ signhash16 c0d6
+V4 Signature(2) RSA(1) SHA512(10) Subkey Binding Signature(24)
+    key flags(27)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Fri Jul  2 14:17:00 1976(0x0c3a91dc)
+    issuer key ID(16)
+ signhash16 0fdc
+V4 Signature(2) RSA(1) SHA512(10) Subkey Binding Signature(24)
+    key flags(27)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Sat Jan  1 14:17:09 1977(0x0d2bd465)
+    issuer key ID(16)
+ signhash16 630a
+V4 Signature(2) RSA(1) SHA512(10) Subkey Binding Signature(24)
+    key flags(27)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Sat Jul  2 14:17:18 1977(0x0e1bc56e)
+    issuer key ID(16)
+ signhash16 6bea
+Public Subkey(14) 045523a6d4010800d6ad00d4ebdda323780c5b73f56054f840a1f449df0468a35a3e162d57e192f186703e2d0c4f14bcb6196bd0b5d1eb48e52941835a36c8e21b478c3ac13f44f3f1b30914502f3fde252bbf04e4912617658b8f5fde486f6e1431f91b7e2dff8886bbee573d58b4b08c662eb11079d6f03a1ca5361f64c91660b7e81ffaf870a06d310e6caa2b2a9e099d264eb65fd71a28056f6232df09760b7d2e8e5c54cbd06f18ae284dcc0d1c553aa33ac9fc186b3be8c6f6fb4c9bfe3c77925e574dbcf807ad4d1e04ca122d2a1c390e95360e8c6f674f8c7891087b2e0699cb570484093fe74f79a7ccda5cecc047ca5beb110c75ddffd08c31e28d46d81170c1073cad0011010001
+V4 Signature(2) RSA(1) SHA512(10) Subkey Binding Signature(24)
+    signature creation time(2)
+    key flags(27)
+    key expiration time(9)  Sat Jan  1 00:00:00 1972(0x03c26700)
+    issuer key ID(16)
+ signhash16 1b1f
+V4 Signature(2) RSA(1) SHA512(10) Subkey Binding Signature(24)
+    key flags(27)
+    signature creation time(2)
+    key expiration time(9)  Mon Dec 31 01:34:11 1973(0x0784e413)
+    issuer key ID(16)
+ signhash16 eba0
+V4 Signature(2) RSA(1) SHA512(10) Subkey Binding Signature(24)
+    key flags(27)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Tue Jan  6 03:03:58 1976(0x0b4f491e)
+    issuer key ID(16)
+ signhash16 b320
+V4 Signature(2) RSA(1) SHA512(10) Subkey Binding Signature(24)
+    key flags(27)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Fri Jul  2 14:16:32 1976(0x0c3a91c0)
+    issuer key ID(16)
+ signhash16 e887
+V4 Signature(2) RSA(1) SHA512(10) Subkey Binding Signature(24)
+    key flags(27)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Sat Jan  1 14:16:41 1977(0x0d2bd449)
+    issuer key ID(16)
+ signhash16 0bf4
+V4 Signature(2) RSA(1) SHA512(10) Subkey Binding Signature(24)
+    key flags(27)
+    Unknown signature subkey type(33) 048f17777118a33dda9ba48e62aacb3243630052d9
+    signature creation time(2)
+    key expiration time(9)  Sat Jul  2 14:16:50 1977(0x0e1bc552)
+    issuer key ID(16)
+ signhash16 e6ff
+neal-hi.pgp:
+V4 Signature(2) RSA(1) SHA512(10) Binary document signature(0)
+    Unknown signature subkey type(33) 04c03fa6411b03ae12576461187223b56678e02528
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 0a7b
+neal.pgp/neal-hi.pgp: sig is invalid (expected)
+<none>:
+neal-hi.pgp:
+V4 Signature(2) RSA(1) SHA512(10) Binary document signature(0)
+    Unknown signature subkey type(33) 04c03fa6411b03ae12576461187223b56678e02528
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 0a7b
+<none>/neal-hi.pgp: sig was not good (0); sig was supposed to be good (1)
+<none>:
+neal-hi.pgp:
+V4 Signature(2) RSA(1) SHA512(10) Binary document signature(0)
+    Unknown signature subkey type(33) 04c03fa6411b03ae12576461187223b56678e02528
+    signature creation time(2)
+    issuer key ID(16)
+ signhash16 0a7b
+<none>/neal-hi.pgp: sig is invalid (expected)
+])
+AT_CLEANUP
