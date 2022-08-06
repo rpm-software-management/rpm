@@ -70,3 +70,17 @@ W(int, rpmDigestUpdate, (DIGEST_CTX ctx, const void * data, size_t len),
 W(int, rpmDigestFinal,
   (DIGEST_CTX ctx, void ** datap, size_t *lenp, int asAscii),
   (ctx, datap, lenp, asAscii))
+
+// These functions are deprecated and scheduled for removal in 4.19.
+W(int, pgpPrtPkts,
+  (const uint8_t *pkts, size_t pktlen, pgpDig dig, int printing),
+  (pkts, pktlen, dig, printing))
+W(pgpDig, pgpNewDig, (), ())
+W(void, pgpCleanDig, (pgpDig dig), (dig))
+W(pgpDig, pgpFreeDig, (pgpDig dig), (dig))
+W(pgpDigParams, pgpDigGetParams,
+  (pgpDig dig, unsigned int pkttype),
+  (dig, pkttype))
+W(rpmRC, pgpVerifySig,
+  (pgpDig dig, DIGEST_CTX hashctx),
+  (dig, hashctx))
