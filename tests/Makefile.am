@@ -13,6 +13,7 @@ EXTRA_DIST += local.at $(TESTSUITE)
 AM_CPPFLAGS = -I$(top_srcdir)/include
 
 rpmpgpcheck_LDADD = ../rpmio/librpmio.la
+rpmpgpprtpkts_LDADD = ../rpmio/librpmio.la
 
 ## testsuite components
 TESTSUITE_AT = rpmtests.at
@@ -119,12 +120,16 @@ EXTRA_DIST += data/SPECS/hello-attr-buildid.spec
 EXTRA_DIST += data/SPECS/hello-config-buildid.spec
 EXTRA_DIST += data/SPECS/hello-cd.spec
 EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.pub
+EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.pgp
 EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.secret
 EXTRA_DIST += data/keys/CVE-2021-3521-badbind.asc
 EXTRA_DIST += data/keys/CVE-2021-3521-nosubsig.asc
 EXTRA_DIST += data/keys/CVE-2021-3521-nosubsig-last.asc
 EXTRA_DIST += data/keys/different-creation-times.asc
 EXTRA_DIST += data/keys/different-creation-times.secret
+EXTRA_DIST += data/keys/neal.pgp
+EXTRA_DIST += data/sigs/neal-hi.pgp
+EXTRA_DIST += data/sigs/rpm.org-rsa-2048-test-hi.pgp
 EXTRA_DIST += data/macros.testfile
 EXTRA_DIST += data/macros.debug
 EXTRA_DIST += data/t1.lua
@@ -141,7 +146,7 @@ EXTRA_DIST += data/misc/libhello.so
 
 .PHONY: populate_testing
 
-check_PROGRAMS = rpmpgpcheck
+check_PROGRAMS = rpmpgpcheck rpmpgpprtpkts
 
 # testsuite voodoo
 AUTOTEST = $(AUTOM4TE) --language=autotest
