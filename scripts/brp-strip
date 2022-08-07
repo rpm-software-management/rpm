@@ -1,4 +1,5 @@
 #!/bin/sh
+
 # If using normal root, avoid changing anything.
 if [ -z "$RPM_BUILD_ROOT" ] || [ "$RPM_BUILD_ROOT" = "/" ]; then
 	exit 0
@@ -7,11 +8,39 @@ fi
 STRIP=${1:-strip}
 NCPUS=${RPM_BUILD_NCPUS:-1}
 
+# 32 was chosen as a compromise between reducing the overhead of starting new
+# processes and distributing the work load evenly over as much processors as
+# possible
+MAX_ARGS=32
+
 case `uname -a` in
 Darwin*) exit 0 ;;
 *) ;;
 esac
 
 # Strip ELF binaries
-find "$RPM_BUILD_ROOT" -type f \! -regex "${RPM_BUILD_ROOT}/*usr/lib/debug.*" \! -name "*.go" -print0 | \
-    xargs -0 -r -P$NCPUS -n32 sh -c "file \"\$@\" | sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped.*/\1/p' | grep -v 'no machine' | xargs -I\{\} $STRIP -g \{\}" ARG0
+# Below is the explanation of commands in the order of their appearance
+# Ignore /usr/lib/debug entries
+# Ignore all go(guile objects & golang) files
+# Run the file command to find relevant non-stripped binaries, with bundle size of 32
+# Ignore all 'no machine' files
+# Only operate on non-stripped binaries
+# Get inode & file names to help eliminate hard links (%i %n)
+# Store the result into a temp buffer
+tmp_buf="$(find "$RPM_BUILD_ROOT" -type f \
+  ! -regex "${RPM_BUILD_ROOT}/?usr/lib/debug/.*" \
+  ! -name "*.go" -print0 | \
+  xargs -0 -r -P${NCPUS} -n${MAX_ARGS} sh -c "file \"\$@\" | \
+  sed -n -e 's/^\(.*\):[[:space:]]*ELF.*, not stripped.*/\1/p' | \
+  grep -v 'no machine' | \
+  xargs -r stat -c '%i %n'" ARG0)"
+
+# If tmp buf is not empty
+if [ -n "${tmp_buf}" ]; then
+  # Sort the first column (inode column) & ignore duplicate inode entries
+  tmp_buf="$(echo "${tmp_buf}" | sort --parallel=${NCPUS} -u -n -t' ' -k1,1)"
+
+  # Run strip command on the final list of files
+  echo "${tmp_buf}" | \
+    xargs -0 -r -P${NCPUS} -n${MAX_ARGS} sh -c "cut -d' ' -f2 | xargs -r $STRIP -g" ARG0
+fi
