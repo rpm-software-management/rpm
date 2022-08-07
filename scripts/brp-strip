@@ -1,4 +1,5 @@
 #!/bin/sh
+
 # If using normal root, avoid changing anything.
 if [ -z "$RPM_BUILD_ROOT" ] || [ "$RPM_BUILD_ROOT" = "/" ]; then
 	exit 0
@@ -7,11 +8,40 @@ fi
 STRIP=${1:-strip}
 NCPUS=${RPM_BUILD_NCPUS:-1}
 
+# 32 was chosen as a compromise between reducing the overhead of starting new
+# processes and distributing the work load evenly over as much processors as
+# possible
+MAX_ARGS=32
+
 case `uname -a` in
 Darwin*) exit 0 ;;
 *) ;;
 esac
 
-# Strip ELF binaries
-find "$RPM_BUILD_ROOT" -type f \! -regex "${RPM_BUILD_ROOT}/*usr/lib/debug.*" \! -name "*.go" -print0 | \
-    xargs -0 -r -P$NCPUS -n32 sh -c "file \"\$@\" | sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped.*/\1/p' | grep -v 'no machine' | xargs -I\{\} $STRIP -g \{\}" ARG0
+# Below is the explanation of commands in the order of their appearance
+# Ignore /usr/lib/debug entries
+# Ignore all go(guile objects & golang) files
+# Consider files with only single link
+# Run the file command to find relevant non-stripped binaries, with bundle size of 32
+# Ignore all 'no machine' files
+# Only operate on non-stripped binaries
+
+strip_elf_binaries()
+{
+  local nlinks="${1}"
+  local nprocs="${2}"
+
+  find "$RPM_BUILD_ROOT" -type f \
+    ! -regex "${RPM_BUILD_ROOT}/*usr/lib/debug.*" \
+    ! -name "*.go" -links "${nlinks}" -print0 | \
+    xargs -0 -r -P${nprocs} -n${MAX_ARGS} sh -c "file \"\$@\" | \
+    sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped.*/\1/p' | \
+    grep -v 'no machine' | \
+    xargs -I\{\} $STRIP -g \{\}" ARG0
+}
+
+# strip all binaries with single link
+strip_elf_binaries "1" "${NCPUS}"
+
+# strip all binaries with more than 1 link
+strip_elf_binaries "+1" "1"
