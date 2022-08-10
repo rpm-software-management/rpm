@@ -58,7 +58,6 @@ struct rpmte_s {
     rpmds supplements;		/*!< Supplements: dependencies. */
     rpmds enhances;		/*!< Enhances: dependencies. */
     rpmfiles files;		/*!< File information. */
-    rpmfi fi;			/*!< File iterator (backwards compat) */
     rpmps probs;		/*!< Problems (relocations) */
     rpmts ts;			/*!< Parent transaction */
 
@@ -243,7 +242,6 @@ rpmte rpmteFree(rpmte te)
 	free(te->NEVRA);
 
 	fdFree(te->fd);
-	rpmfiFree(te->fi);
 	rpmfilesFree(te->files);
 	headerFree(te->h);
 	rpmfsFree(te->fs);
@@ -471,7 +469,6 @@ rpmds rpmteDS(rpmte te, rpmTagVal tag)
 void rpmteCleanFiles(rpmte te)
 {
     if (te != NULL)  {
-	te->fi = rpmfiFree(te->fi);
 	te->files = rpmfilesFree(te->files);
     }
 }
