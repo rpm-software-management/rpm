@@ -32,6 +32,39 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 [])
 AT_CLEANUP
 
+AT_SETUP([rpm -U <manifest glob>])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_INIT
+
+echo "/data/RPMS/hello-2.0-1.{i686,x86_64}.rpm" > ${RPMTEST}/tmp/test.mft
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	/tmp/test.mft
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpm -U <manifest glob fallback>])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_INIT
+
+cp "${RPMTEST}/data/RPMS/hello-1.0-1.i386.rpm" \
+   "${RPMTEST}/tmp/fallback-[[123]].0-1.i386.rpm"
+
+echo "/tmp/fallback-[[123]].0-1.i386.rpm" > ${RPMTEST}/tmp/test.mft
+
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	/tmp/test.mft
+],
+[1],
+[],
+[error: /tmp/test.mft: not an rpm package (or package manifest): @&t@
+])
+AT_CLEANUP
+
 AT_SETUP([rpm -U <manifest notfound 1>])
 AT_KEYWORDS([install])
 AT_CHECK([
@@ -62,6 +95,42 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 ])
 AT_CLEANUP
 
+AT_SETUP([rpm -U <manifest notfound 3>])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_INIT
+
+echo /data/RPMS/hello-not-there-1.0-1.x86_64.rpm > ${RPMTEST}/tmp/test.mft
+echo /data/RPMS/hello-not-there-2.0-1.x86_64.rpm >> ${RPMTEST}/tmp/test.mft
+echo /data/RPMS/hello-not-there-3.0-1.x86_64.rpm >> ${RPMTEST}/tmp/test.mft
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	/tmp/test.mft
+],
+[3],
+[],
+[error: open of /data/RPMS/hello-not-there-1.0-1.x86_64.rpm failed: No such file or directory
+error: open of /data/RPMS/hello-not-there-2.0-1.x86_64.rpm failed: No such file or directory
+error: open of /data/RPMS/hello-not-there-3.0-1.x86_64.rpm failed: No such file or directory
+])
+AT_CLEANUP
+
+AT_SETUP([rpm -U <manifest notfound 4>])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_INIT
+
+echo "/data/RPMS/hello-not-there-*.x86_64.rpm" > ${RPMTEST}/tmp/test.mft
+echo /data/RPMS/hello-not-there-1.0-1.x86_64.rpm >> ${RPMTEST}/tmp/test.mft
+echo /data/RPMS/hello-not-there-2.0-1.x86_64.rpm >> ${RPMTEST}/tmp/test.mft
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	/tmp/test.mft
+],
+[1],
+[],
+[error: /tmp/test.mft: not an rpm package (or package manifest): @&t@
+])
+AT_CLEANUP
+
 AT_SETUP([rpm -U <notfound>])
 AT_KEYWORDS([install])
 AT_CHECK([
@@ -73,6 +142,24 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 [1],
 [],
 [error: open of /data/RPMS/hello-not-there-2.0-1.x86_64.rpm failed: No such file or directory
+])
+AT_CLEANUP
+
+AT_SETUP([rpm -U <notfound 2>])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	/data/RPMS/hello-not-there-1.0-1.x86_64.rpm \
+	/data/RPMS/hello-not-there-2.0-1.x86_64.rpm \
+	/data/RPMS/hello-not-there-3.0-1.x86_64.rpm
+],
+[3],
+[],
+[error: open of /data/RPMS/hello-not-there-1.0-1.x86_64.rpm failed: No such file or directory
+error: open of /data/RPMS/hello-not-there-2.0-1.x86_64.rpm failed: No such file or directory
+error: open of /data/RPMS/hello-not-there-3.0-1.x86_64.rpm failed: No such file or directory
 ])
 AT_CLEANUP
 
@@ -350,6 +437,52 @@ error: unpacking of archive failed: cpio: Bad magic
 error: hello-2.0-1.x86_64: install failed
 ],
 [])
+AT_CLEANUP
+
+AT_SETUP([rpm -U <glob>])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	"/data/RPMS/hello-2.0-1.{i686,x86_64}.rpm"
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpm -U <glob notfound>])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	"/data/RPMS/hello-not-there-*.x86_64.rpm" \
+	/data/RPMS/hello-not-there-1.0-1.x86_64.rpm \
+	/data/RPMS/hello-not-there-2.0-1.x86_64.rpm
+],
+[1],
+[],
+[error: File not found by glob: /data/RPMS/hello-not-there-*.x86_64.rpm
+])
+AT_CLEANUP
+
+AT_SETUP([rpm -U <glob fallback>])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_INIT
+
+cp "${RPMTEST}/data/RPMS/hello-1.0-1.i386.rpm" \
+   "${RPMTEST}/tmp/fallback-[[123]].0-1.i386.rpm"
+
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	"/tmp/fallback-[[123]].0-1.i386.rpm"
+],
+[1],
+[],
+[error: File not found by glob: /tmp/fallback-[[123]].0-1.i386.rpm
+])
 AT_CLEANUP
 
 # ------------------------------
