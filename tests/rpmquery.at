@@ -49,6 +49,70 @@ runroot rpm \
 AT_CLEANUP
 
 # ------------------------------
+AT_SETUP([rpm -qp <glob>])
+AT_KEYWORDS([query])
+AT_CHECK([
+RPMDB_INIT
+runroot rpm \
+  -qp "/data/RPMS/hello-2.0-1.{i686,x86_64}.rpm"
+],
+[0],
+[hello-2.0-1.i686
+hello-2.0-1.x86_64
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpm -qp <glob fallback>])
+AT_KEYWORDS([query])
+AT_CHECK([
+RPMDB_INIT
+
+cp "${RPMTEST}/data/RPMS/hello-1.0-1.i386.rpm" \
+   "${RPMTEST}/tmp/fallback-[[123]].0-1.i386.rpm"
+
+runroot rpm \
+  -qp "/tmp/fallback-[[123]].0-1.i386.rpm"
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpm -qp <notfound>])
+AT_KEYWORDS([query])
+AT_CHECK([
+RPMDB_INIT
+runroot rpm \
+  -qp /data/RPMS/hello-not-there-1.0-1.x86_64.rpm \
+      /data/RPMS/hello-not-there-2.0-1.x86_64.rpm \
+      /data/RPMS/hello-not-there-3.0-1.x86_64.rpm
+],
+[3],
+[],
+[error: open of /data/RPMS/hello-not-there-1.0-1.x86_64.rpm failed: No such file or directory
+error: open of /data/RPMS/hello-not-there-2.0-1.x86_64.rpm failed: No such file or directory
+error: open of /data/RPMS/hello-not-there-3.0-1.x86_64.rpm failed: No such file or directory
+])
+AT_CLEANUP
+
+AT_SETUP([rpm -qp <glob notfound>])
+AT_KEYWORDS([query])
+AT_CHECK([
+RPMDB_INIT
+runroot rpm \
+  -qp "/data/RPMS/hello-not-there-*.x86_64.rpm" \
+      /data/RPMS/hello-not-there-1.0-1.x86_64.rpm \
+      /data/RPMS/hello-not-there-2.0-1.x86_64.rpm
+],
+[2],
+[],
+[error: open of /data/RPMS/hello-not-there-1.0-1.x86_64.rpm failed: No such file or directory
+error: open of /data/RPMS/hello-not-there-2.0-1.x86_64.rpm failed: No such file or directory
+])
+AT_CLEANUP
+
+# ------------------------------
 AT_SETUP([rpm -ql -p *.src.rpm])
 AT_KEYWORDS([query])
 AT_CHECK([

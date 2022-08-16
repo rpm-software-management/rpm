@@ -48,6 +48,7 @@ EXTRA_DIST += $(TESTSUITE_AT)
 EXTRA_DIST += data/SPECS/attrtest.spec
 EXTRA_DIST += data/SPECS/bcondtest.spec
 EXTRA_DIST += data/SPECS/buildrequires.spec
+EXTRA_DIST += data/SPECS/filemiss.spec
 EXTRA_DIST += data/SPECS/docmiss.spec
 EXTRA_DIST += data/SPECS/fs.spec
 EXTRA_DIST += data/SPECS/hello.spec
