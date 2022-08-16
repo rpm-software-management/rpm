@@ -18,7 +18,7 @@
 #include "rpmio/rpmio_internal.h"
 
 #include "lib/rpmplugins.h"     /* rpm plugins hooks */
-
+#include "lib/rpmchroot.h" /* rpmChrootOut */
 #include "debug.h"
 
 struct scriptNextFileFunc_s {
