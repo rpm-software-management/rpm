@@ -1165,7 +1165,7 @@ package or when debugging this package.\
 
 # Git
 %__scm_setup_git(q)\
-%{__git} init %{-q} --initial-branch=main\
+%{__git} init %{-q}\
 %{__git} config user.name "%{__scm_username}"\
 %{__git} config user.email "%{__scm_usermail}"\
 %{__git} config gc.auto 0\
@@ -1174,7 +1174,7 @@ package or when debugging this package.\
 	--author "%{__scm_author}" -m "%{NAME}-%{VERSION} base"\
 %{__git} branch rpm-build \
 %{__git} checkout rpm-build \
-%{__git} branch --set-upstream-to=main
+%{__git} branch --set-upstream-to=master
 
 %__scm_apply_git(qp:m:)\
 %{__git} apply --index --reject %{-p:-p%{-p*}} -\
