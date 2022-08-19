@@ -1839,7 +1839,7 @@ msgid "update the database, but do not modify the filesystem"
 msgstr "更新数据库，但不修改文件系统"
 
 msgid "do not update the database, but modify the filesystem"
-msgstr ""
+msgstr "修改文件系统，但不更新数据库"
 
 msgid "do not verify package dependencies"
 msgstr "不验证软件包依赖"
