@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2022-04-07 13:03+0300\n"
-"PO-Revision-Date: 2022-06-25 13:18+0000\n"
+"PO-Revision-Date: 2022-07-21 16:19+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/rpm/"
 "master/ko/>\n"
@@ -107,7 +107,8 @@ msgstr "<specfile>에서 원천 꾸러미만 제작합니다"
 
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
-msgstr "<specfile>에서 원천 꾸러미만 제작합니다 - 동적 제작 요구 사항을 계산합니다"
+msgstr ""
+"<specfile>에서 원천 꾸러미만 제작합니다 - 동적 제작 요구 사항을 계산합니다"
 
 #, c-format
 msgid ""
@@ -126,7 +127,8 @@ msgstr "<원천 꾸러미>의 제작 의존성을 점검합니다"
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
-msgstr "<원천 꾸러미>에서 %install (%prep, %conf, %build 다음 설치)로 제작합니다"
+msgstr ""
+"<원천 꾸러미>에서 %install (%prep, %conf, %build 다음 설치)로 제작합니다"
 
 #, c-format
 msgid "verify %files section from <source package>"
@@ -144,8 +146,9 @@ msgstr "<원천 꾸러미>에서 원천 꾸러미만 제작합니다"
 msgid ""
 "build source package only from <source package> - calculate dynamic build "
 "requires"
-msgstr "< 원천 꾸러미>에서 원천 꾸러미만 제작합니다 - 동적 제작 요구 사항을 "
-"계산합니다"
+msgstr ""
+"< 원천 꾸러미>에서 원천 꾸러미만 제작합니다 - 동적 제작 요구 사항을 계산합니"
+"다"
 
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
@@ -179,14 +182,16 @@ msgstr "<tarball>에서 원천 꾸러미만을 제작합니다"
 
 msgid ""
 "build source package only from <tarball> - calculate dynamic build requires"
-msgstr "<tarball>에서 원천 꾸러미만 제작합니다 - 동적 제작 요구 사항을 계산합니다"
+msgstr ""
+"<tarball>에서 원천 꾸러미만 제작합니다 - 동적 제작 요구 사항을 계산합니다"
 
 msgid "build binary package from <source package>"
 msgstr "<소스 꾸러미>로 바이너리 꾸러미를 제작합니다"
 
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
-msgstr "<원천 꾸러미>를 %install (%prep, %build와 설치하는 과정)으로 제작합니다"
+msgstr ""
+"<원천 꾸러미>를 %install (%prep, %build와 설치하는 과정)으로 제작합니다"
 
 msgid "override build root"
 msgstr "build root를 재정의합니다"
@@ -240,7 +245,8 @@ msgid "override target platform"
 msgstr "대상 기술환경을 재정의합니다"
 
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
-msgstr "다음과 함께 사용하는 제작 선택 [ <specfile> | <tarball | <원천 꾸러미> ]:"
+msgstr ""
+"다음과 함께 사용하는 제작 선택 [ <specfile> | <tarball | <원천 꾸러미> ]:"
 
 msgid "Common options for all rpm modes and executables:"
 msgstr "모든 rpm 선택과 실행 파일에 대한 공통 선택:"
@@ -368,7 +374,8 @@ msgstr "--prefix with --relocate 또는 --excludepath 사용 할 수 없습니�
 
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
-msgstr "--relocate 와 --excludepath 옵션은 최신의 꾸러미를 설치 할 때에만 사용 할 수 "
+msgstr ""
+"--relocate 와 --excludepath 옵션은 최신의 꾸러미를 설치 할 때에만 사용 할 수 "
 "있습니다"
 
 msgid "--prefix may only be used when installing new packages"
@@ -427,7 +434,8 @@ msgstr "트리거 해제 선택은 꾸러미 설치와 삭제시만 지정 할 �
 msgid ""
 "--nodeps may only be specified during package installation, erasure, and "
 "verification"
-msgstr "--nodeps는 꾸러미 설치와, 지워 없앨 때, 그리고 증명하는 동안에만 지정 할 수 "
+msgstr ""
+"--nodeps는 꾸러미 설치와, 지워 없앨 때, 그리고 증명하는 동안에만 지정 할 수 "
 "있습니다"
 
 msgid "--test may only be specified during package installation and erasure"
@@ -568,7 +576,8 @@ msgstr "설정 %s=%s\n"
 
 #, c-format
 msgid "source_date_epoch_from_changelog set but %%changelog is missing\n"
-msgstr "source_date_epoch_from_changelog 설정되었지만 %%changelog가 누락되었습니다\n"
+msgstr ""
+"source_date_epoch_from_changelog 설정되었지만 %%changelog가 누락되었습니다\n"
 
 msgid ""
 "\n"
@@ -893,7 +902,7 @@ msgstr "%d 번째 행: 두번째 %s\n"
 
 #, c-format
 msgid "bogus date in %%changelog: %s\n"
-msgstr "%%changelog: %s에 잘못된 날자\n"
+msgstr "%% 변경기록에서 거짓 날짜: %s\n"
 
 #, c-format
 msgid "%%changelog entries must start with *\n"
@@ -1394,7 +1403,8 @@ msgstr "행 %d: %s: 꾸러미 %s 가 이미 존재합니다\n"
 
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
-msgstr "%s spec 파일을 질의하는데 실패했습니다, 파일을 구문 분석 할 수 없습니다\n"
+msgstr ""
+"%s spec 파일을 질의하는데 실패했습니다, 파일을 구문 분석 할 수 없습니다\n"
 
 #, c-format
 msgid "invalid %%_db_backend: %s\n"
@@ -1472,7 +1482,7 @@ msgstr "(OpenPGP 서명이 아님)"
 
 #, c-format
 msgid "Invalid date %u"
-msgstr "유효하지 않은 날자%u"
+msgstr "잘못된 날짜 %u"
 
 msgid "normal"
 msgstr "정상"
@@ -1764,15 +1774,16 @@ msgid "relocations must have a / following the ="
 msgstr "재배치시에는 반드시 '=' 뒤에 '/' 가 와야 합니다"
 
 msgid "install all files, even configurations which might otherwise be skipped"
-msgstr "특정 파일을 생략하기 위한 설정이 적용된 경우에도, 꾸러미 안의 모든 파일을 "
-"설치합니다"
+msgstr ""
+"특정 파일을 생략하기 위한 설정이 적용된 경우에도, 꾸러미 안의 모든 파일을 설"
+"치합니다"
 
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
 msgstr ""
-"<꾸러미> 이름과 일치하는 꾸러미는 모두 제거합니다 (<꾸러미>에 여러 개의 "
-"꾸러미를 동시에 지정 할 경우에는 오류가 발생합니다)"
+"<꾸러미> 이름과 일치하는 꾸러미는 모두 제거합니다 (<꾸러미>에 여러 개의 꾸러"
+"미를 동시에 지정 할 경우에는 오류가 발생합니다)"
 
 msgid "relocate files in non-relocatable package"
 msgstr "재배치 할 수 없는 꾸러미에서 파일을 재배치합니다"
@@ -2317,7 +2328,7 @@ msgstr "db경로가 설정되어 있지 않습니다"
 
 #, c-format
 msgid "failed to create directory %s: %s\n"
-msgstr "디렉터리 %s: %s 생성에 실패하였습니다\n"
+msgstr "디렉토리 생성에 실패함 %s: %s\n"
 
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
@@ -2552,7 +2563,7 @@ msgstr "%s는 설치 할 수 없습니다\n"
 
 #, c-format
 msgid "Retrieving %s\n"
-msgstr "%s(을)를 복구합니다\n"
+msgstr "%s을 복구합니다\n"
 
 #, c-format
 msgid "skipping %s - transfer failed\n"
@@ -2579,7 +2590,7 @@ msgid "Installing %s\n"
 msgstr "%s(을)를 설치합니다\n"
 
 msgid "not an rpm package"
-msgstr "rpm 꾸러미(package)가 아닙니다"
+msgstr "rpm 꾸러미가 아닙니다"
 
 msgid "illegal signature type"
 msgstr "잘못된 서명 유형"
@@ -2631,11 +2642,11 @@ msgstr "꾸러미 %s는 %s 운영체제를 위한 것입니다"
 
 #, c-format
 msgid "package %s is already installed"
-msgstr "%s 꾸러미(package)는 이미 설치되어 있습니다"
+msgstr "꾸러미 %s는 이미 설치되어 있습니다"
 
 #, c-format
 msgid "package %s is not installed"
-msgstr "꾸러미(package) %s 가 설치되어 있지 않습니다"
+msgstr "꾸러미 %s 가 설치되어 있지 않습니다"
 
 #, c-format
 msgid "path %s in package %s is not relocatable"
@@ -2647,20 +2658,21 @@ msgstr "%s(와)과 %s의 설치 과정에서 %s 파일이 서로 충돌합니다
 
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
-msgstr "%s의 설치에서 파일 %s 은 꾸러미(package) %s에서 파일과 충돌합니다"
+msgstr "%s의 설치에서 파일 %s는 꾸러미 %s에서 파일과 충돌합니다"
 
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
-msgstr "%s 꾸러미 (%s 보다 최신의 꾸러미(package))는 이미 설치되어 있습니다"
+msgstr "꾸러미 %s(%s 보다 최신의 것)는 이미 설치되어 있습니다"
 
 #, c-format
 msgid ""
 "installing package %s needs %<PRIu64>%cB more space on the %s filesystem"
-msgstr "설치 꾸러미 %s needs %<PRIu64>%cB more space on the %s 파일시스템"
+msgstr "설치하는 꾸러미 %s는 더 많은 공간 %<PRIu64>%cB가 필요합니다( %s "
+"파일시스템에서)"
 
 #, c-format
 msgid "installing package %s needs %<PRIu64> more inodes on the %s filesystem"
-msgstr "설치 꾸러미 %s needs %<PRIu64> more inodes on the %s 파일시스템"
+msgstr "설치하는 꾸러미 %s는 더 많은 inodes %<PRIu64> 필요합니다 (%s 파일시스템에서)"
 
 #, c-format
 msgid "%s is needed by %s%s"
