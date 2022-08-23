@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2022-04-07 13:03+0300\n"
-"PO-Revision-Date: 2022-06-24 06:18+0000\n"
+"PO-Revision-Date: 2022-07-21 16:19+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://translate.fedoraproject.org/projects/rpm/"
 "master/ka/>\n"
@@ -265,7 +265,7 @@ msgstr ""
 
 #, c-format
 msgid "File %s is not a regular file.\n"
-msgstr ""
+msgstr "ფაილი \"%s\" ჩვეულებრივი ფაილი არაა.\n"
 
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
@@ -273,11 +273,11 @@ msgstr ""
 
 #, c-format
 msgid "Building target platforms: %s\n"
-msgstr ""
+msgstr "აგება სამიზნე პლატფორმებისთვის: %s\n"
 
 #, c-format
 msgid "Building for target %s\n"
-msgstr ""
+msgstr "აგება სამიზნისთვის: %s\n"
 
 msgid "arguments to --root (-r) must begin with a /"
 msgstr ""
@@ -289,7 +289,7 @@ msgid "rebuild database inverted lists from installed package headers"
 msgstr ""
 
 msgid "verify database files"
-msgstr ""
+msgstr "ბაზის ფაილების შემოწმება"
 
 msgid "salvage database"
 msgstr "მონაცემთა ბაზის გადარჩენა"
@@ -438,13 +438,13 @@ msgid "no arguments given for verify"
 msgstr ""
 
 msgid "sign package(s)"
-msgstr ""
+msgstr "პაკეტების ხელმოწერა"
 
 msgid "sign package(s) (identical to --addsign)"
-msgstr ""
+msgstr "პაკეტების ხელმოწერა (იგივე, რაც --addsign)"
 
 msgid "delete package signatures"
-msgstr ""
+msgstr "პაკეტის ხელმოწერების წაშლა"
 
 msgid "delete IMA and fsverity file signatures"
 msgstr ""
@@ -453,7 +453,7 @@ msgid "create rpm v3 header+payload signatures"
 msgstr ""
 
 msgid "sign package(s) files"
-msgstr ""
+msgstr "პაკეტის ფაილების ხელმოწერა"
 
 msgid "generate fsverity signatures for package(s) files"
 msgstr ""
@@ -480,7 +480,7 @@ msgid "prompt for file signing key password"
 msgstr ""
 
 msgid "Signature options:"
-msgstr ""
+msgstr "ხელმოწერის პარამეტრები:"
 
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
@@ -535,26 +535,26 @@ msgstr ""
 
 #, c-format
 msgid "Unable to open temp file: %s\n"
-msgstr ""
+msgstr "დროებითი ფაილის გახსნის შეცდომა: %s\n"
 
 #, c-format
 msgid "Unable to open stream: %s\n"
-msgstr ""
+msgstr "ნაკადის გახსნის შეცდომა: %s\n"
 
 #, c-format
 msgid "Executing(%s): %s\n"
-msgstr ""
+msgstr "შესრულება(%s): %s\n"
 
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
-msgstr ""
+msgstr "%s-დან გამოსვლის ცუდი სტატუსი: %s\n"
 
 msgid "Failed build dependencies:\n"
-msgstr ""
+msgstr "აგების დამოკიდებულებების შეცდომა:\n"
 
 #, c-format
 msgid "setting %s=%s\n"
-msgstr ""
+msgstr "დაყენება %s=%s\n"
 
 #, c-format
 msgid "source_date_epoch_from_changelog set but %%changelog is missing\n"
@@ -564,19 +564,23 @@ msgid ""
 "\n"
 "RPM build warnings:\n"
 msgstr ""
+"\n"
+"RPM-ის აგების გაფრთხილებები:\n"
 
 msgid ""
 "\n"
 "RPM build errors:\n"
 msgstr ""
+"\n"
+"RPM-ის აგების შეცდომები:\n"
 
 #, c-format
 msgid "Missing '(' in %s %s\n"
-msgstr ""
+msgstr "%s-ში '(' აკლია %s\n"
 
 #, c-format
 msgid "Missing ')' in %s(%s\n"
-msgstr ""
+msgstr "%s-ში ')' აკლია %s\n"
 
 #, c-format
 msgid "Invalid %s token: %s\n"
@@ -592,7 +596,7 @@ msgstr ""
 
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
-msgstr ""
+msgstr "არასწორი სინტაქსი: %s(%s)\n"
 
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
@@ -659,15 +663,15 @@ msgstr ""
 
 #, c-format
 msgid "File not found: %s\n"
-msgstr ""
+msgstr "ფაილი არ არის ნაპოვნი: %s\n"
 
 #, c-format
 msgid "Not a directory: %s\n"
-msgstr ""
+msgstr "საქაღალდეს არ წარმოადგენს: %s\n"
 
 #, c-format
 msgid "Can't read content of file: %s\n"
-msgstr ""
+msgstr "ფაილის შემცველობის წაკითხვის შეცდომა: %s\n"
 
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
@@ -774,7 +778,7 @@ msgstr ""
 
 #, c-format
 msgid "Bad file: %s: %s\n"
-msgstr ""
+msgstr "არასწორი ფაილი: %s: %s\n"
 
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
@@ -788,7 +792,7 @@ msgstr ""
 
 #, c-format
 msgid "package %s already exists\n"
-msgstr ""
+msgstr "პაკეტი უკვე არსებობს: %s\n"
 
 #, c-format
 msgid "%s was mapped to multiple filenames"
@@ -796,7 +800,7 @@ msgstr ""
 
 #, c-format
 msgid "Processing files: %s\n"
-msgstr ""
+msgstr "ფაილების დამუშავება: %s\n"
 
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
@@ -811,7 +815,7 @@ msgstr ""
 
 #, c-format
 msgid "create archive failed: %s\n"
-msgstr ""
+msgstr "არქივის შექმნის შეცდომა: %s\n"
 
 #, c-format
 msgid "Unknown payload compression: %s\n"
@@ -830,7 +834,7 @@ msgstr ""
 
 #, c-format
 msgid "Unable to write header to %s: %s\n"
-msgstr ""
+msgstr "%s-ის თავსართის ჩაწერის შეცდომა: %s\n"
 
 #, c-format
 msgid "Could not open %s: %s\n"
@@ -838,27 +842,27 @@ msgstr "%s-ის გახსნის შეცდომა: %s\n"
 
 #, c-format
 msgid "Unable to write package: %s\n"
-msgstr ""
+msgstr "პაკეტის ჩაწერის შეცდომა: %s\n"
 
 #, c-format
 msgid "Wrote: %s\n"
-msgstr ""
+msgstr "ჩაწერილია: %s\n"
 
 #, c-format
 msgid "Executing \"%s\":\n"
-msgstr ""
+msgstr "გაშვება: %s:\n"
 
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
-msgstr ""
+msgstr "%s-ის გაშვების შეცდომა:\n"
 
 #, c-format
 msgid "Package check \"%s\" failed.\n"
-msgstr ""
+msgstr "პაკეტის შემოწმების შეცდომა: %s\n"
 
 #, c-format
 msgid "cannot create %s: %s\n"
-msgstr ""
+msgstr "%s-ის შექმნის შეცდომა: %s\n"
 
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
@@ -870,7 +874,7 @@ msgstr ""
 
 #, c-format
 msgid "line %d: second %s\n"
-msgstr ""
+msgstr "ხაზი %d: მეორე %s\n"
 
 #, c-format
 msgid "bogus date in %%changelog: %s\n"
@@ -942,11 +946,11 @@ msgstr ""
 
 #, c-format
 msgid "Downloading %s to %s\n"
-msgstr ""
+msgstr "%s-ის %s-ში გადმოწერა\n"
 
 #, c-format
 msgid "Couldn't download %s\n"
-msgstr ""
+msgstr "%s-ის გადმოწერის შეცდომა\n"
 
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
@@ -958,19 +962,19 @@ msgstr ""
 
 #, c-format
 msgid "Architecture is excluded: %s\n"
-msgstr ""
+msgstr "არქიტექტურა გამორიცხული არაა: %s\n"
 
 #, c-format
 msgid "Architecture is not included: %s\n"
-msgstr ""
+msgstr "არქიტექტურა ჩასმული არაა: %s\n"
 
 #, c-format
 msgid "OS is excluded: %s\n"
-msgstr ""
+msgstr "ოს-ი გამორიცხული არაა: %s\n"
 
 #, c-format
 msgid "OS is not included: %s\n"
-msgstr ""
+msgstr "ოს-ი ჩასმული არაა: %s\n"
 
 #, c-format
 msgid "%s field must be present in package: %s\n"
@@ -998,15 +1002,15 @@ msgstr ""
 
 #, c-format
 msgid "line %d: %s in: %s\n"
-msgstr ""
+msgstr "ხაზი %d: %s %s-ში\n"
 
 #, c-format
 msgid "%s in: %s\n"
-msgstr ""
+msgstr "%s: %s-ში\n"
 
 #, c-format
 msgid "Illegal char '%c' (0x%x)"
-msgstr ""
+msgstr "არასწორი სიმბოლო '%c' (0x%x)"
 
 msgid "Possible unexpanded macro"
 msgstr ""
@@ -1075,19 +1079,19 @@ msgstr ""
 
 #, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
-msgstr ""
+msgstr "%%{buildroot} \"/\" არ შეძლება იყოს\n"
 
 #, c-format
 msgid "No patch number %u\n"
-msgstr ""
+msgstr "პაჩი ნომრით %u არ არსებობს\n"
 
 #, c-format
 msgid "No source number %u\n"
-msgstr ""
+msgstr "წყარო ნომრით %u არ არსებობს\n"
 
 #, c-format
 msgid "Error parsing %%setup: %s\n"
-msgstr ""
+msgstr "%%setup-ის დამუშავების შეცდომა: %s\n"
 
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
@@ -1119,10 +1123,10 @@ msgid "No rich dependencies allowed for this type"
 msgstr ""
 
 msgid "invalid dependency"
-msgstr ""
+msgstr "არასწორი დამოკიდებულება"
 
 msgid "Version required"
-msgstr ""
+msgstr "ვერსია აუცილებელია"
 
 msgid "Only package names are allowed in Obsoletes"
 msgstr ""
@@ -1141,7 +1145,7 @@ msgstr ""
 
 #, c-format
 msgid "line %d: %s: %s\n"
-msgstr ""
+msgstr "ხაზი %d: %s: %s\n"
 
 #, c-format
 msgid "line %d: triggers must have --: %s\n"
@@ -1169,7 +1173,7 @@ msgstr ""
 
 #, c-format
 msgid "line %d: Second %s\n"
-msgstr ""
+msgstr "ხაზი %d: მეორე %s\n"
 
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
@@ -1193,7 +1197,7 @@ msgstr ""
 
 #, c-format
 msgid "Unable to open %s: %s\n"
-msgstr ""
+msgstr "%s-ის გახსნის შეცდომა: %s\n"
 
 #, c-format
 msgid "%s:%d: Argument expected for %s\n"
@@ -1259,7 +1263,7 @@ msgid "Base modules '%s' and '%s' have overlapping types\n"
 msgstr ""
 
 msgid "Failed to get policies from header\n"
-msgstr ""
+msgstr "თავსართიდან წესების მიღების შეცდომა\n"
 
 #, c-format
 msgid "%%semodule requires a file path\n"
@@ -1267,7 +1271,7 @@ msgstr ""
 
 #, c-format
 msgid "Failed to read  policy file: %s\n"
-msgstr ""
+msgstr "წესების ფაილის კითხვის შეცდომა: %s\n"
 
 #, c-format
 msgid "Failed to encode policy file: %s\n"
@@ -1301,7 +1305,7 @@ msgstr ""
 
 #, c-format
 msgid "Processing policies: %s\n"
-msgstr ""
+msgstr "წესების დამუშავება: %s\n"
 
 #, c-format
 msgid "Ignoring invalid regex %s\n"
@@ -1317,15 +1321,15 @@ msgstr ""
 
 #, c-format
 msgid "Couldn't fork %s: %s\n"
-msgstr ""
+msgstr "%s-ის ფორკის შეცდომა: %s\n"
 
 #, c-format
 msgid "Couldn't exec %s: %s\n"
-msgstr ""
+msgstr "%s-ის გაშვების შეცდომა: %s\n"
 
 #, c-format
 msgid "%s failed: %x\n"
-msgstr ""
+msgstr "%s -ის შეცდომა: %x\n"
 
 #, c-format
 msgid "failed to write all data to %s: %s\n"
@@ -1339,11 +1343,11 @@ msgstr ""
 
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
-msgstr ""
+msgstr "magic_open(0x%x) -ის შეცდომა: %s\n"
 
 #, c-format
 msgid "magic_load failed: %s\n"
-msgstr ""
+msgstr "magic_load -ის შეცდომა: %s\n"
 
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
@@ -1355,11 +1359,11 @@ msgstr ""
 
 #, c-format
 msgid "Finding  %s: %s\n"
-msgstr ""
+msgstr "ვეძებ  %s: %s\n"
 
 #, c-format
 msgid "Failed to find %s:\n"
-msgstr ""
+msgstr "%s ვერ ვიპოვე:\n"
 
 msgid "Deprecated external dependency generator is used!\n"
 msgstr ""
@@ -1430,29 +1434,29 @@ msgid "package %s was already added, replacing with %s\n"
 msgstr ""
 
 msgid "(not a blob)"
-msgstr ""
+msgstr "(ბლობს არ წარმოადგენს)"
 
 msgid "(not a number)"
-msgstr ""
+msgstr "(რიცხვს არ წარმოადგენს)"
 
 msgid "(not a string)"
-msgstr ""
+msgstr "(სტრიქონს არ წარმოადგენს)"
 
 msgid "(invalid type)"
-msgstr ""
+msgstr "(არასწორი ტიპი)"
 
 msgid "(not base64)"
-msgstr ""
+msgstr "(base64 არაა)"
 
 msgid "(invalid xml type)"
-msgstr ""
+msgstr "(xml-ის არასწორი ტიპი)"
 
 msgid "(not an OpenPGP signature)"
 msgstr ""
 
 #, c-format
 msgid "Invalid date %u"
-msgstr ""
+msgstr "არასწორი თარიღი: %u"
 
 msgid "normal"
 msgstr "ნორმალური"
@@ -1464,10 +1468,10 @@ msgid "not installed"
 msgstr "დაყენებული არაა"
 
 msgid "net shared"
-msgstr ""
+msgstr "გაზიარებული არაა"
 
 msgid "wrong color"
-msgstr ""
+msgstr "არასწორი ფერი"
 
 msgid "missing"
 msgstr "აკლია"
@@ -1481,15 +1485,15 @@ msgstr "%s საქაღალდის გახსნის შეცდო�
 
 #, c-format
 msgid "%s%s saved as %s%s\n"
-msgstr ""
+msgstr "%s%s შენახულია, როგორც %s%s\n"
 
 #, c-format
 msgid "%s%s created as %s%s\n"
-msgstr ""
+msgstr "%s%s შეიქმნა, როგორც %s%s\n"
 
 #, c-format
 msgid "%s %s: remove failed: %s\n"
-msgstr ""
+msgstr "%s %s: წაშლის შეცდომა: %s\n"
 
 msgid "directory"
 msgstr "საქაღალდე"
@@ -1505,7 +1509,7 @@ msgid "hdr load: BAD"
 msgstr ""
 
 msgid "region: no tags"
-msgstr ""
+msgstr "რეგიონი: ჭდეების გარეშე"
 
 #, c-format
 msgid "region tag: BAD, tag %d type %d offset %d count %d"
@@ -1572,23 +1576,23 @@ msgid "missing } after %%{"
 msgstr ""
 
 msgid "empty tag format"
-msgstr ""
+msgstr "ჭდეების ცარიელი ფორმატი"
 
 msgid "empty tag name"
-msgstr ""
+msgstr "ჭდის ცარიელი სახელი"
 
 #, c-format
 msgid "unknown tag: \"%s\""
-msgstr ""
+msgstr "უცნობი ჭდე: \"%s\""
 
 msgid "] expected at end of array"
 msgstr ""
 
 msgid "unexpected ]"
-msgstr ""
+msgstr "მოულოდნელი ]"
 
 msgid "unexpected }"
-msgstr ""
+msgstr "მოულოდნელი }"
 
 msgid "escaped char expected after \\"
 msgstr ""
@@ -1803,10 +1807,10 @@ msgid "short hand for --ignorepayload --ignoresignature"
 msgstr ""
 
 msgid "install documentation"
-msgstr ""
+msgstr "დოკუმენტაციის დაყენება"
 
 msgid "install package(s)"
-msgstr ""
+msgstr "პაკეტების დაყენება"
 
 msgid "update the database, but do not modify the filesystem"
 msgstr ""
@@ -1818,10 +1822,10 @@ msgid "do not verify package dependencies"
 msgstr ""
 
 msgid "don't verify digest of files"
-msgstr ""
+msgstr "ფაილების დაიჯესტი არ შემოწმდება"
 
 msgid "don't verify digest of files (obsolete)"
-msgstr ""
+msgstr "ფაილების დაიჯესტი არ შემოწმდება (მოძველებული)"
 
 msgid "don't install file security contexts"
 msgstr ""
@@ -1908,19 +1912,19 @@ msgid "don't install, but tell if it would work or not"
 msgstr ""
 
 msgid "upgrade package(s)"
-msgstr ""
+msgstr "პაკეტების განახლება"
 
 msgid "reinstall package(s)"
-msgstr ""
+msgstr "პაკეტების თავიდან დაყენება"
 
 msgid "restore package(s)"
-msgstr ""
+msgstr "პაკეტების აღდგენა"
 
 msgid "query/verify all packages"
 msgstr ""
 
 msgid "rpm checksig mode"
-msgstr ""
+msgstr "rpm checksig რეჟიმი"
 
 msgid "query/verify package(s) owning installed file"
 msgstr ""
@@ -2010,31 +2014,31 @@ msgid "dump basic file information"
 msgstr ""
 
 msgid "list files in package"
-msgstr ""
+msgstr "პაკეტში ფაილების ჩამონათვალი"
 
 msgid "display the states of the listed files"
 msgstr ""
 
 msgid "don't verify size of files"
-msgstr ""
+msgstr "ფაილის ზომები არ შემოწმდება"
 
 msgid "don't verify symlink path of files"
-msgstr ""
+msgstr "ფაილის სიმბმულების ბილიკი არ შემოწმდება"
 
 msgid "don't verify owner of files"
-msgstr ""
+msgstr "ფაილის მფლობელი არ შემოწმდება"
 
 msgid "don't verify group of files"
-msgstr ""
+msgstr "ფაილის ჯგუფი არ შემოწმდება"
 
 msgid "don't verify modification time of files"
-msgstr ""
+msgstr "ფაილების მოდიფიკაციის დრო არ შემოწმდება"
 
 msgid "don't verify mode of files"
-msgstr ""
+msgstr "ფაილების რეჟიმი არ შემოწმდება"
 
 msgid "don't verify file security contexts"
-msgstr ""
+msgstr "ფაილის უსაფრთხოების კონტექსტები არ შემოწმდება"
 
 msgid "don't verify capabilities of files"
 msgstr ""
@@ -2063,14 +2067,14 @@ msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
 msgid " on file "
-msgstr ""
+msgstr " ფაილზე "
 
 #, c-format
 msgid "incorrect format: %s\n"
-msgstr ""
+msgstr "არასწორი ფორმატი: %s\n"
 
 msgid "(contains no files)\n"
-msgstr ""
+msgstr "(ფაილებს არ შეიცავს)\n"
 
 msgid "normal        "
 msgstr "ნორმალური        "
@@ -2082,13 +2086,13 @@ msgid "not installed "
 msgstr "დაყენებული არაა "
 
 msgid "net shared    "
-msgstr ""
+msgstr "გაზიარებული არაა    "
 
 msgid "wrong color   "
-msgstr ""
+msgstr "არასწორი ფერი   "
 
 msgid "(no state)    "
-msgstr ""
+msgstr "(მდგომარეობის გარეშე)    "
 
 #, c-format
 msgid "(unknown %3d) "
@@ -2114,55 +2118,55 @@ msgstr ""
 
 #, c-format
 msgid "no package matches %s: %s\n"
-msgstr ""
+msgstr "არცერთი პაკეტი ემთხვევა %s: %s\n"
 
 #, c-format
 msgid "no package conflicts %s\n"
-msgstr ""
+msgstr "არცერთი პაკეტი კონფლიქტობს: %s\n"
 
 #, c-format
 msgid "no package obsoletes %s\n"
-msgstr ""
+msgstr "არცერთი პაკეტი არ აცხადებს მოძველებულად: %s\n"
 
 #, c-format
 msgid "no package requires %s\n"
-msgstr ""
+msgstr "არცერთ პაკეტს სჭირდება: %s\n"
 
 #, c-format
 msgid "no package recommends %s\n"
-msgstr ""
+msgstr "არცერთი პაკეტი უწევს რეკომენდაციას: %s\n"
 
 #, c-format
 msgid "no package suggests %s\n"
-msgstr ""
+msgstr "არცერთი პაკეტი ურჩევს: %s\n"
 
 #, c-format
 msgid "no package supplements %s\n"
-msgstr ""
+msgstr "არცერთი პაკეტი ჩაანაცვლებს: %s\n"
 
 #, c-format
 msgid "no package enhances %s\n"
-msgstr ""
+msgstr "არცერთი გააფართოვებს: %s\n"
 
 #, c-format
 msgid "no package provides %s\n"
-msgstr ""
+msgstr "არცერთი პაკეტი არ მიაწოდებს: %s\n"
 
 #, c-format
 msgid "file %s: %s\n"
-msgstr ""
+msgstr "ფაილი %s: %s\n"
 
 #, c-format
 msgid "file %s is not owned by any package\n"
-msgstr ""
+msgstr "ფაილი არცერთ პაკეტს არ ეკუთვნის: %s\n"
 
 #, c-format
 msgid "invalid package number: %s\n"
-msgstr ""
+msgstr "პაკეტის არასწორი ნომერი: %s\n"
 
 #, c-format
 msgid "record %u could not be read\n"
-msgstr ""
+msgstr "ჩანაწერის წაკითხვის შეცდომა: %u\n"
 
 #, c-format
 msgid "package %s is not installed\n"
@@ -2170,11 +2174,11 @@ msgstr "პაკეტი დაყენებული არაა: %s.\n"
 
 #, c-format
 msgid "unknown tag: \"%s\"\n"
-msgstr ""
+msgstr "უცნობი ჭდე: \"%s\"\n"
 
 #, c-format
 msgid "%s: key %d import failed.\n"
-msgstr ""
+msgstr "%s: გასაღების შემოტანის შეცდომა: %d\n"
 
 #, c-format
 msgid "%s: key %d not an armored public key.\n"
@@ -2186,7 +2190,7 @@ msgstr ""
 
 #, c-format
 msgid "Fread failed: %s"
-msgstr "read() -ის შეცდომა: %s"
+msgstr "Fread() -ის შეცდომა: %s"
 
 msgid "DIGESTS"
 msgstr "საკონტროლო ჯამები"
@@ -2208,7 +2212,7 @@ msgstr "დიახ"
 
 #, c-format
 msgid "%s: open failed: %s\n"
-msgstr ""
+msgstr "%s: გახსნის შეცდომა: %s\n"
 
 #, c-format
 msgid "Unable to open current directory: %m\n"
@@ -2246,11 +2250,11 @@ msgstr ""
 
 #, c-format
 msgid "%s: regexec failed: %s\n"
-msgstr ""
+msgstr "%s: regexec -ის შეცდომა: %s\n"
 
 #, c-format
 msgid "%s: regcomp failed: %s\n"
-msgstr ""
+msgstr "%s: regcomp -ის შეცდომა: %s\n"
 
 msgid "rpmdbNextIterator: skipping"
 msgstr ""
@@ -2283,7 +2287,7 @@ msgid "could not delete old database at %s\n"
 msgstr ""
 
 msgid "no dbpath has been set"
-msgstr ""
+msgstr "dbpath დაყენებული არაა"
 
 #, c-format
 msgid "failed to create directory %s: %s\n"
@@ -2343,7 +2347,7 @@ msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 
 msgid "internal support for lua scripts."
-msgstr ""
+msgstr "lua-ს სკრიპტების შიდა მხარდაჭერა."
 
 msgid "file digest algorithm is per package configurable"
 msgstr ""
@@ -2377,7 +2381,7 @@ msgid "Unknown rich dependency op '%.*s'"
 msgstr ""
 
 msgid "Name required"
-msgstr ""
+msgstr "სახელი აუცილებელია"
 
 msgid "Illegal ops in with/without"
 msgstr ""
@@ -2435,48 +2439,48 @@ msgid "%s: base64 decode success, len %li\n"
 msgstr ""
 
 msgid "Bad magic"
-msgstr ""
+msgstr "დაზიანებული მაგია"
 
 msgid "Bad/unreadable  header"
-msgstr ""
+msgstr "დაზიანეული/არასწორი თავსართი"
 
 msgid "Header size too big"
-msgstr ""
+msgstr "თავსართის ზომა ძალიან დიდია"
 
 msgid "File too large for archive"
-msgstr ""
+msgstr "ფაილი დაარქივებისთვის ძალიან დდია"
 
 msgid "Unknown file type"
-msgstr ""
+msgstr "ფაილის უცნობი ტიპი"
 
 msgid "Missing file(s)"
-msgstr ""
+msgstr "ფაილები აკლია"
 
 msgid "Digest mismatch"
-msgstr ""
+msgstr "დაიჯესტი არ ემთხვევა"
 
 msgid "Internal error"
 msgstr "შიდა შეცდომა"
 
 msgid "Archive file not in header"
-msgstr ""
+msgstr "არქივის ფაილი თავსართში არაა"
 
 msgid "Invalid symlink"
-msgstr ""
+msgstr "არასწორი სიმბმული"
 
 msgid "File from package already exists as a directory in system"
-msgstr ""
+msgstr "ფაილი ამ პაკეტიდან უკვე არსებობს, საქაღალდის სახით"
 
 msgid " failed - "
-msgstr ""
+msgstr " შეცდომა - "
 
 #, c-format
 msgid "%s: (error 0x%x)"
-msgstr ""
+msgstr "%s: (შეცდომა 0x%x)"
 
 #, c-format
 msgid "open of %s failed: %s\n"
-msgstr ""
+msgstr "%s -ის გახსნის შეცდომა: %s\n"
 
 #, c-format
 msgid "Max level of manifest recursion exceeded: %s\n"
@@ -2488,11 +2492,11 @@ msgstr ""
 
 #, c-format
 msgid "Updating / installing...\n"
-msgstr ""
+msgstr "განახლება / დაყენება...\n"
 
 #, c-format
 msgid "Cleaning up / removing...\n"
-msgstr ""
+msgstr "გასუფთავება / წაშლა...\n"
 
 msgid "Preparing..."
 msgstr "მომზადება..."
@@ -2501,13 +2505,13 @@ msgid "Verifying..."
 msgstr "შემოწმება..."
 
 msgid "Preparing packages..."
-msgstr ""
+msgstr "პაკეტების მომზადება..."
 
 msgid "Verifying packages..."
-msgstr ""
+msgstr "პაკეტების შემოწმება..."
 
 msgid "Failed dependencies:\n"
-msgstr ""
+msgstr "დამოკიდებულებების შეცდომა:\n"
 
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
@@ -2515,11 +2519,11 @@ msgstr ""
 
 #, c-format
 msgid "%s cannot be installed\n"
-msgstr ""
+msgstr "%s-ის დაყენება შეუძლებელია\n"
 
 #, c-format
 msgid "Retrieving %s\n"
-msgstr ""
+msgstr "%s-ის მიღება\n"
 
 #, c-format
 msgid "skipping %s - transfer failed\n"
@@ -2531,11 +2535,11 @@ msgstr ""
 
 #, c-format
 msgid "error reading from file %s\n"
-msgstr ""
+msgstr "ფაილიდან წაკითხვის შეცდომა: %s\n"
 
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
-msgstr ""
+msgstr "\"%s\" ერთზე მეტ პაკეტზე მიუთითებს:\n"
 
 #, c-format
 msgid "cannot open %s: %s\n"
@@ -2543,23 +2547,23 @@ msgstr "%s-ის გახსნის შეცდომა: %s\n"
 
 #, c-format
 msgid "Installing %s\n"
-msgstr ""
+msgstr "%s-ის დაყენება\n"
 
 msgid "not an rpm package"
-msgstr ""
+msgstr "rpm პაკეტს არ წარმოადგენს"
 
 msgid "illegal signature type"
-msgstr ""
+msgstr "ხელმოწერის არასწორი ტიპი"
 
 msgid "unsupported RPM package version"
 msgstr ""
 
 #, c-format
 msgid "read failed: %s (%d)\n"
-msgstr ""
+msgstr "წაკითხვის შეცდომა: %s (%d)\n"
 
 msgid "not an rpm package\n"
-msgstr ""
+msgstr "rpm პაკეტს არ წარმოადგენს\n"
 
 #, c-format
 msgid "can't create %s lock on %s (%s)\n"
@@ -2579,11 +2583,11 @@ msgstr ""
 
 #, c-format
 msgid "Plugin %%__%s_%s not configured\n"
-msgstr ""
+msgstr "დამატება %%__%s_%s მორგებული არაა\n"
 
 #, c-format
 msgid "Plugin %s not loaded\n"
-msgstr ""
+msgstr "დამატება არ ჩატვირთულა: \"%s\"\n"
 
 msgid "different"
 msgstr "განსხვავებული"
@@ -2705,11 +2709,11 @@ msgstr ""
 
 #, c-format
 msgid "Unknown system: %s\n"
-msgstr ""
+msgstr "უცნობი სისტემა: %s\n"
 
 #, c-format
 msgid "Please contact %s\n"
-msgstr ""
+msgstr "დაუკავშირდით %s\n"
 
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
@@ -2736,7 +2740,7 @@ msgstr ""
 
 #, c-format
 msgid "Fwrite failed: %s"
-msgstr "write() -ის შეცდომა: %s"
+msgstr "Fwrite() -ის შეცდომა: %s"
 
 #, c-format
 msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
@@ -2751,7 +2755,7 @@ msgid "%s scriptlet failed, exit status %d\n"
 msgstr ""
 
 msgid "Unknown format"
-msgstr ""
+msgstr "უცნობი ფორმატი"
 
 msgid "install"
 msgstr "დაყენება"
@@ -2826,7 +2830,7 @@ msgstr ""
 
 #, c-format
 msgid "%s%s%s %s"
-msgstr ""
+msgstr "%s%s%s %s"
 
 msgid "digest"
 msgstr "საკონტროლო ჯამი"
@@ -2854,10 +2858,10 @@ msgid "Unable to reload signature header.\n"
 msgstr ""
 
 msgid "no signature"
-msgstr ""
+msgstr "ხელმოწერის გარეშე"
 
 msgid "no digest"
-msgstr ""
+msgstr "დაიჯესტის გარეშე"
 
 msgid "skipped"
 msgstr "გამოტოვებული"
@@ -2869,11 +2873,11 @@ msgid "no state"
 msgstr "მდგომარეობის გარეშე"
 
 msgid "unknown state"
-msgstr ""
+msgstr "უცნობი მდგომარეობა"
 
 #, c-format
 msgid "missing   %c %s"
-msgstr ""
+msgstr "აკლია %c %s"
 
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
@@ -2910,7 +2914,7 @@ msgid "unterminated string in expression"
 msgstr ""
 
 msgid "invalid version"
-msgstr ""
+msgstr "არასწორი ვერსია"
 
 msgid "bare words are no longer supported, please use \"...\""
 msgstr ""
@@ -2922,25 +2926,25 @@ msgid "unsupported function argument type"
 msgstr ""
 
 msgid "syntax error in expression"
-msgstr ""
+msgstr "გამოსახულების სინტაქსის შეცდომმა"
 
 msgid "unsupported funcion"
-msgstr ""
+msgstr "მხარდაუჭერელი ფუნქცია"
 
 msgid "unmatched ("
-msgstr ""
+msgstr "( არ ემთხვევა"
 
 msgid "- only on numbers"
-msgstr ""
+msgstr "- მხოლოდ რიცხვებზე"
 
 msgid "unexpected end of expression"
 msgstr ""
 
 msgid "types must match"
-msgstr ""
+msgstr "ტიპები უნდა დაემთხვეს"
 
 msgid "division by zero"
-msgstr ""
+msgstr "ნულზე გაყოფა"
 
 msgid "* and / not supported for versions"
 msgstr ""
@@ -3041,10 +3045,10 @@ msgid "[none]"
 msgstr "[არცერთი]"
 
 msgid "(no error)"
-msgstr ""
+msgstr "(შეცდომის გარეშე)"
 
 msgid "fatal error: "
-msgstr ""
+msgstr "ფატალური შეცდომა: "
 
 msgid "error: "
 msgstr "შეცდომა: "
@@ -3053,7 +3057,7 @@ msgid "warning: "
 msgstr "გაფრთხილება: "
 
 msgid "Error writing to log"
-msgstr ""
+msgstr "ჟურნალში ჩაწერის შეცდომა"
 
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
@@ -3104,15 +3108,15 @@ msgstr ""
 
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
-msgstr ""
+msgstr "%s: Fwrite -ის შეცდომა: %s\n"
 
 #, c-format
 msgid "%s: Fread failed: %s\n"
-msgstr ""
+msgstr "%s: Fread -ის შეცდომა: %s\n"
 
 #, c-format
 msgid "%s: Fflush failed: %s\n"
-msgstr ""
+msgstr "%s: Fflush -ის შეცდომა: %s\n"
 
 msgid "Unsupported PGP signature\n"
 msgstr ""
@@ -3135,7 +3139,7 @@ msgstr ""
 
 #, c-format
 msgid "Could not exec %s: %s\n"
-msgstr ""
+msgstr "%s-ის გაშვების შეცდომა: %s\n"
 
 #, c-format
 msgid "Could not open pipe for writing: %m\n"
@@ -3177,11 +3181,11 @@ msgstr ""
 
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
-msgstr ""
+msgstr "%s: rpmReadSignature -ის შეცდომა: %s"
 
 #, c-format
 msgid "%s: headerRead failed: %s\n"
-msgstr ""
+msgstr "%s: headerRead -ის შეცდომა: %s\n"
 
 msgid "Cannot sign RPM v3 packages\n"
 msgstr ""
@@ -3192,30 +3196,30 @@ msgstr ""
 
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
-msgstr ""
+msgstr "%s: rpmWriteSignature -ის შეცდომა: %s\n"
 
 msgid "rpmMkTemp failed\n"
-msgstr ""
+msgstr "rpmMkTemp -ის შეცდომა\n"
 
 #, c-format
 msgid "%s: writeLead failed: %s\n"
-msgstr ""
+msgstr "%s: writeLead -ის შეცდომა: %s\n"
 
 #, c-format
 msgid "replacing %s failed: %s\n"
 msgstr ""
 
 msgid "sign_hash failed\n"
-msgstr ""
+msgstr "sign_hash -ის შეცდომა\n"
 
 msgid "File digest algorithm id is invalid"
 msgstr ""
 
 msgid "signFile failed\n"
-msgstr ""
+msgstr "signFile-ის შეცდომა\n"
 
 msgid "headerPutString failed\n"
-msgstr ""
+msgstr "headerPutString -ის შეცდომა\n"
 
 #, c-format
 msgid "%s: read manifest failed: %s\n"
