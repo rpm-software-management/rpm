@@ -5,14 +5,16 @@
 # Translators:
 # pbludov <pbludov@gmail.com>, 2017
 # pbludov <pbludov@gmail.com>, 2017
+# V I <xasertop@gmail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2022-04-07 13:03+0300\n"
-"PO-Revision-Date: 2020-03-23 08:39-0400\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: Russian (http://www.transifex.com/rpm-team/rpm/language/ru/)\n"
+"PO-Revision-Date: 2022-08-23 18:19+0000\n"
+"Last-Translator: V I <xasertop@gmail.com>\n"
+"Language-Team: Russian <https://translate.fedoraproject.org/projects/rpm/"
+"master/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,7 +22,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
-"X-Generator: Zanata 4.6.2\n"
+"X-Generator: Weblate 4.13\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -28,7 +30,7 @@ msgstr "%s: %s\n"
 
 #, c-format
 msgid "RPM version %s\n"
-msgstr "RPM версия %s\n"
+msgstr "Версия RPM %s\n"
 
 #, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
@@ -48,7 +50,7 @@ msgid "exec failed\n"
 msgstr "запуск не удался\n"
 
 msgid "create uncompressed tar file"
-msgstr ""
+msgstr "создать несжатый файл tar"
 
 #, c-format
 msgid "argument is not an RPM package\n"
@@ -65,6 +67,8 @@ msgstr "невозможно повторно открыть payload: %s\n"
 #, c-format
 msgid "files over 4GB not supported by cpio, use rpm2archive instead\n"
 msgstr ""
+"файлы размером более 4 ГБ не поддерживаются cpio, вместо этого используйте "
+"rpm2archive\n"
 
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
@@ -2868,28 +2872,28 @@ msgstr ""
 
 #, c-format
 msgid "%s%s"
-msgstr ""
+msgstr "%s%s"
 
 msgid "signature"
-msgstr ""
+msgstr "подпись"
 
 msgid "header"
-msgstr ""
+msgstr "заголовок"
 
 msgid "package"
-msgstr ""
+msgstr "пакет"
 
 msgid "Header "
 msgstr "Заголовок "
 
 msgid "Payload "
-msgstr ""
+msgstr "Нагрузка "
 
 msgid "Unable to reload signature header.\n"
 msgstr "Невозможно перезагрузить заголовок подписи.\n"
 
 msgid "no signature"
-msgstr ""
+msgstr "нет подписи"
 
 msgid "no digest"
 msgstr ""
@@ -2901,10 +2905,10 @@ msgid "failed"
 msgstr "не удалось"
 
 msgid "no state"
-msgstr ""
+msgstr "нет состояния"
 
 msgid "unknown state"
-msgstr ""
+msgstr "неизвестное состояние"
 
 #, c-format
 msgid "missing   %c %s"
@@ -2940,71 +2944,61 @@ msgstr ""
 msgid "macro expansion did not return an integer"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "expanded string: %s\n"
-msgstr "строка %d: %s в: %s\n"
+msgstr "расширенная строка: %s\n"
 
-#, fuzzy
 msgid "unterminated string in expression"
-msgstr "в выражении после \"?\" ожидалось \"{\""
+msgstr "незавершенная строка в выражении"
 
-#, fuzzy
 msgid "invalid version"
-msgstr "(неправильный тип)"
+msgstr "неверная версия"
 
 msgid "bare words are no longer supported, please use \"...\""
-msgstr ""
+msgstr "простые слова больше не поддерживаются, используйте \"...\""
 
-#, fuzzy
 msgid "parse error in expression"
-msgstr "ошибка анализа выражения\n"
+msgstr "ошибка анализа в выражении"
 
 msgid "unsupported function argument type"
-msgstr ""
+msgstr "неподдерживаемый тип аргумента функции"
 
-#, fuzzy
 msgid "syntax error in expression"
-msgstr "синтаксическая ошибка в выражении\n"
+msgstr "синтаксическая ошибка в выражении"
 
 msgid "unsupported funcion"
-msgstr ""
+msgstr "неподдерживаемая функция"
 
-#, fuzzy
 msgid "unmatched ("
-msgstr "незакрытая (\n"
+msgstr "незакрытая ("
 
-#, fuzzy
 msgid "- only on numbers"
-msgstr "- только для чисел\n"
+msgstr "- только числа"
 
-#, fuzzy
 msgid "unexpected end of expression"
-msgstr "в конце выражения ожидался \"|\""
+msgstr "неожиданный конец выражения"
 
-#, fuzzy
 msgid "types must match"
-msgstr "типы должны совпадать\n"
+msgstr "типы должны совпадать"
 
 msgid "division by zero"
-msgstr ""
+msgstr "деление на ноль"
 
 msgid "* and / not supported for versions"
-msgstr ""
+msgstr "* и / не поддерживаются для версий"
 
-#, fuzzy
 msgid "* and / not supported for strings"
-msgstr "* / не поддерживается для строк\n"
+msgstr "* и / не поддерживаются для строк"
 
 msgid "+ and - not supported for versions"
-msgstr ""
+msgstr "+ и - не поддерживаются для версий"
 
-#, fuzzy
 msgid "- not supported for strings"
-msgstr "- не поддерживается для строк\n"
+msgstr "- не поддерживаются для строк"
 
 #, c-format
 msgid "%3d>%*s(empty)\n"
-msgstr ""
+msgstr "%3d>%*s(пусто)\n"
 
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
@@ -3055,13 +3049,11 @@ msgstr ""
 msgid "no such macro: '%s'\n"
 msgstr ""
 
-#, fuzzy
 msgid "argument expected"
-msgstr "неожиданная \"]\""
+msgstr "ожидаемый аргумент"
 
-#, fuzzy
 msgid "unexpected argument"
-msgstr "неожиданная \"]\""
+msgstr "неожиданный аргумент"
 
 #, c-format
 msgid "Unterminated %c: %s\n"
@@ -3103,7 +3095,7 @@ msgid "warning: "
 msgstr "предупреждение: "
 
 msgid "Error writing to log"
-msgstr ""
+msgstr "Ошибка записи в лог"
 
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
@@ -3135,11 +3127,11 @@ msgstr "memory alloc (%u bytes) returned NULL.\n"
 
 #, c-format
 msgid "Unsupported version of signature: V%d\n"
-msgstr ""
+msgstr "Неподдерживаемая версия подписи: V%d\n"
 
 #, c-format
 msgid "Unsupported version of key: V%d\n"
-msgstr ""
+msgstr "Неподдерживаемая версия ключа: V%d\n"
 
 #, c-format
 msgid "V%d %s/%s %s, key ID %s"
@@ -3169,15 +3161,15 @@ msgstr "Неподдерживаемая подпись PGP\n"
 
 #, c-format
 msgid "Unsupported PGP hash algorithm %u\n"
-msgstr ""
+msgstr "Неподдерживаемый хеш-алгоритм PGP %u\n"
 
 #, c-format
 msgid "Unsupported PGP pubkey algorithm %u\n"
-msgstr ""
+msgstr "Неподдерживаемый алгоритм публичного ключа PGP %u\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not create pipe for signing: %m\n"
-msgstr "Невозможно открыть %s: %s\n"
+msgstr "Не удалось создать канал для подписи: %m\n"
 
 #, fuzzy, c-format
 msgid "Could not set GPG_TTY to stdin: %m\n"
@@ -3187,16 +3179,16 @@ msgstr "Невозможно открыть %s: %s\n"
 msgid "Could not exec %s: %s\n"
 msgstr "Невозможно выполнить %s: %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open pipe for writing: %m\n"
-msgstr "Невозможно открыть %s: %s\n"
+msgstr "Не удалось открыть канал для записи: %m\n"
 
 msgid "Could not write to pipe\n"
-msgstr ""
+msgstr "Не удалось записать в канал\n"
 
 #, c-format
 msgid "Could not read from file %s: %s\n"
-msgstr ""
+msgstr "Не удалось прочитать из файла %s: %s\n"
 
 #, c-format
 msgid "gpg exec failed (%d)\n"
@@ -3245,7 +3237,7 @@ msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: ошибка rpmWriteSignature: %s\n"
 
 msgid "rpmMkTemp failed\n"
-msgstr ""
+msgstr "Ошибка rpmMkTemp\n"
 
 #, c-format
 msgid "%s: writeLead failed: %s\n"
@@ -3253,7 +3245,7 @@ msgstr "%s: ошибка writeLead: %s\n"
 
 #, c-format
 msgid "replacing %s failed: %s\n"
-msgstr ""
+msgstr "замена %s не удалась: %s\n"
 
 msgid "sign_hash failed\n"
 msgstr ""
