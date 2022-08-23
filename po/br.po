@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2022-04-07 13:03+0300\n"
-"PO-Revision-Date: 2022-04-28 14:17+0000\n"
+"PO-Revision-Date: 2022-07-20 01:19+0000\n"
 "Last-Translator: Thierry Vignaud <thierry.vignaud@gmail.com>\n"
 "Language-Team: Breton <https://translate.fedoraproject.org/projects/rpm/"
 "master/br/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.12\n"
+"X-Generator: Weblate 4.13\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -3031,7 +3031,7 @@ msgstr ""
 
 #, c-format
 msgid "error creating temporary file %s: %m\n"
-msgstr ""
+msgstr "fazi en ur kroui ar restr padennek %s : %m\n"
 
 #, c-format
 msgid "File %s: %s\n"
@@ -3039,7 +3039,7 @@ msgstr "Restr %s : %s\n"
 
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
-msgstr ""
+msgstr "Ar restr %s a zo bihanoc'h evit %u oktet\n"
 
 msgid "[none]"
 msgstr "[hini ebet]"
@@ -3157,10 +3157,10 @@ msgid "gpg exec failed (%d)\n"
 msgstr "Sac'het eo bet seveniñ gpg (%d)\n"
 
 msgid "gpg failed to write signature\n"
-msgstr ""
+msgstr "gpg ne c'hell ket bet skrivañ ar sinadur\n"
 
 msgid "unable to read the signature\n"
-msgstr ""
+msgstr "n'hell ket bet lennet ar sinadur\n"
 
 msgid "file signing support not built in\n"
 msgstr ""
