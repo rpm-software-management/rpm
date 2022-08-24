@@ -13,17 +13,19 @@ Here is an example of how to enable gnutls and disable openssl support:
 $ rpmbuild -ba newpackage.spec --with gnutls --without openssl
 ```
 
-## Enable build conditionals
+## Creating build conditionals
 
-To enable a build conditional in a spec file, use the `%bcond` macro at the
+### Using `%bcond` (new in rpm 4.17.1)
+
+To create a build conditional in a spec file, use the `%bcond` macro at the
 beginning of the file, specifying the name of the conditional and its default
 value:
 
 ```
-# To build with "gnutls" by default:
+# Create a "gnutls" build conditional, enabled by default:
 %bcond gnutls 1
-# To build without "gnutls" by default:
-%bcond gnutls 0
+# Create a "bootstrap" build conditional, disabled by default:
+%bcond bootstrap 0
 ```
 
 The default can be any numeric expression.
@@ -31,31 +33,37 @@ To pass a complex expression as a single argument, you can enclose it in
 `%[...]` .
 
 ```
-# Add `--with openssl` and `--without openssl`, with the default being the
-# inverse of the gnutls setting:
+# Create `--with openssl` and `--without openssl` cli options, with the default
+# being the inverse of the gnutls setting:
 %bcond openssl %{without gnutls}
 
-# Add `extra_tests` bcond, enabled by default if both of the other conditinals
-# are enabled:
+# Create `extra_tests` bcond, enabled by default if both of the other
+# conditinals # are enabled:
 %bcond extra_tests %[%{with gnutls} && %{with sqlite}]
 ```
 
+### Using `%bcond_with` and `%bcond_without`
 
-### Enabling using `%bcond_with` and `%bcond_without`
+Build conditionals can also be created using the macros `%bcond_with` and
+`%bcond_without`. These macros *create command line options*. When you add
+an option to build with feature X, it implies that the default is to build
+without.
 
-Build conditionals can also be enabled using the macros `%bcond_with` and
-`%bcond_without`:
+These macros have historically confused a lot of people (which is why
+`%bcond` was added) but are not hard to use once you think in terms
+of adding command line switches:
 
 ```
-# add --with gnutls option, i.e. disable gnutls by default
+# Create an option to build with gnutls (`--with gnutls`), thus default to
+# building without it
 %bcond_with gnutls
-# add --without openssl option, i.e. enable openssl by default
+# Create an option to build without openssl (`--without openssl`), thus default
+# building with it
 %bcond_without openssl
 ```
 
-If you want to change whether or not an option is enabled by default, only
-change `%bcond_with` to `%bcond_without` or vice versa. In such a case, the
-remainder of the spec file can be left unchanged.
+To change the default, change the command line switch from `with` to `without`
+or vice versa. The remainder of the spec file can be left unchanged.
 
 ## Check whether an option is enabled or disabled
 

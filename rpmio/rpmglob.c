@@ -33,22 +33,20 @@
 
 #include "debug.h"
 
-/* Find the end of the sub-pattern in a brace expression.  We define
-   this as an inline function if the compiler permits.  */
-static inline const char *next_brace_sub(const char *begin)
+/* Return 1 if pattern contains a magic char, see glob(7) for a list */
+static int ismagic(const char *pattern)
 {
-    unsigned int depth = 0;
-    const char *cp = begin;
-
-    while (*cp != '\0') {
-	if ((*cp == '}' && depth-- == 0) || (*cp == ',' && depth == 0))
-	    break;
-
-	if (*cp++ == '{')
-	    depth++;
-    }
-
-    return *cp != '\0' ? cp : NULL;
+    for (const char *p = pattern; *p != '\0'; p++)
+	switch (*p) {
+	case '?':
+	case '*':
+	case '[':
+	case '{':
+	case '\\':
+	case '~':
+	    return 1;
+	}
+    return 0;
 }
 
 /* librpmio exported interfaces */
@@ -57,29 +55,36 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
 {
     int argc = 0;
     ARGV_t argv = NULL;
-    char * globRoot = NULL;
-    char * globURL;
     const char *home = getenv("HOME");
     const char *path;
-    int ut = urlPath(pattern, &path);
-    int local = (ut == URL_IS_PATH) || (ut == URL_IS_UNKNOWN);
+    int local = (urlPath(pattern, &path) == URL_IS_UNKNOWN);
     size_t plen = strlen(path);
     int dir_only = (plen > 0 && path[plen-1] == '/');
     glob_t gl;
-    int flags = GLOB_NOMAGIC;
+    int flags = 0;
+    int i;
+    int rc = 0;
+
 #ifdef ENABLE_NLS
     char * old_collate = NULL;
     char * old_ctype = NULL;
     const char * t;
 #endif
-    size_t maxb, nb;
-    int i;
-    int rc = 0;
+
+    if (argvPtr == NULL)
+	/* We still want to count matches so use a scratch list */
+	argvPtr = &argv;
+
+    if (!local || !ismagic(pattern)) {
+	argvAdd(argvPtr, pattern);
+	goto exit;
+    }
 
     flags |= GLOB_BRACE;
-
     if (home != NULL && strlen(home) > 0) 
 	flags |= GLOB_TILDE;
+    if (dir_only)
+	flags |= GLOB_ONLYDIR;
 
 #ifdef ENABLE_NLS
     t = setlocale(LC_COLLATE, NULL);
@@ -91,14 +96,6 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
     (void) setlocale(LC_COLLATE, "C");
     (void) setlocale(LC_CTYPE, "C");
 #endif
-
-    if (!local) {
-	argvAdd(&argv, pattern);
-	goto exit;
-    }
-
-    if (dir_only)
-	flags |= GLOB_ONLYDIR;
     
     gl.gl_pathc = 0;
     gl.gl_pathv = NULL;
@@ -107,62 +104,23 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr)
     if (rc)
 	goto exit;
 
-    /* XXX Prepend the URL leader for globs that have stripped it off */
-    maxb = 0;
     for (i = 0; i < gl.gl_pathc; i++) {
-	if ((nb = strlen(&(gl.gl_pathv[i][0]))) > maxb)
-	    maxb = nb;
-    }
-    
-    nb = ((ut == URL_IS_PATH) ? (path - pattern) : 0);
-    maxb += nb;
-    maxb += 1;
-    globURL = globRoot = xmalloc(maxb);
-
-    switch (ut) {
-    case URL_IS_PATH:
-    case URL_IS_DASH:
-	strncpy(globRoot, pattern, nb);
-	break;
-    case URL_IS_HTTPS:
-    case URL_IS_HTTP:
-    case URL_IS_FTP:
-    case URL_IS_HKP:
-    case URL_IS_UNKNOWN:
-    default:
-	break;
-    }
-    globRoot += nb;
-    *globRoot = '\0';
-
-    for (i = 0; i < gl.gl_pathc; i++) {
-	const char * globFile = &(gl.gl_pathv[i][0]);
-
 	if (dir_only) {
 	    struct stat sb;
 	    if (lstat(gl.gl_pathv[i], &sb) || !S_ISDIR(sb.st_mode))
 		continue;
 	}
-	    
-	if (globRoot > globURL && globRoot[-1] == '/')
-	    while (*globFile == '/') globFile++;
-	strcpy(globRoot, globFile);
-	argvAdd(&argv, globURL);
+	argvAdd(argvPtr, gl.gl_pathv[i]);
     }
     globfree(&gl);
-    free(globURL);
 
 exit:
-    argc = argvCount(argv);
-    if (argc > 0) {
-	if (argvPtr)
-	    *argvPtr = argv;
-	if (argcPtr)
-	    *argcPtr = argc;
-	rc = 0;
-    } else if (rc == 0)
-	rc = 1;
-
+    argc = argvCount(*argvPtr);
+    argvFree(argv);
+    if (argcPtr)
+	*argcPtr = argc;
+    if (argc == 0 && rc == 0)
+	rc = GLOB_NOMATCH;
 
 #ifdef ENABLE_NLS	
     if (old_collate) {
@@ -174,8 +132,6 @@ exit:
 	free(old_ctype);
     }
 #endif
-    if (rc || argvPtr == NULL) {
-	argvFree(argv);
-    }
+
     return rc;
 }
