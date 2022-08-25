@@ -27,7 +27,7 @@ static rpmRC open_fifo(struct fapolicyd_data* state)
     int fd = -1;
     struct stat s;
 
-    fd = open(state->fifo_path, O_RDWR);
+    fd = open(state->fifo_path, O_WRONLY|O_NONBLOCK);
     if (fd == -1) {
         rpmlog(RPMLOG_DEBUG, "Open: %s -> %s\n", state->fifo_path, strerror(errno));
         goto bad;
@@ -55,13 +55,24 @@ static rpmRC open_fifo(struct fapolicyd_data* state)
     }
 
     state->fd = fd;
+
     /* considering success */
     return RPMRC_OK;
 
  bad:
     if (fd >= 0)
         close(fd);
+
+    state->fd = -1;
     return RPMRC_FAIL;
+}
+
+static void close_fifo(struct fapolicyd_data* state)
+{
+    if (state->fd > 0)
+        (void) close(state->fd);
+
+    state->fd = -1;
 }
 
 static rpmRC write_fifo(struct fapolicyd_data* state, const char * str)
@@ -86,6 +97,54 @@ static rpmRC write_fifo(struct fapolicyd_data* state, const char * str)
     return RPMRC_FAIL;
 }
 
+static void try_to_write_to_fifo(struct fapolicyd_data* state, const char * str)
+{
+    int reload = 0;
+    int printed = 0;
+
+    /* 1min/60s */
+    const int timeout = 60;
+
+    /* wait up to X seconds */
+    for (int i = 0; i < timeout; i++) {
+
+        if (reload) {
+            if (!printed) {
+                rpmlog(RPMLOG_WARNING, "rpm-plugin-fapolicyd: waiting for the service connection to resume, it can take up to %d seconds\n", timeout);
+                printed = 1;
+            }
+
+            (void) close_fifo(state);
+            (void) open_fifo(state);
+        }
+
+        if (state->fd >= 0) {
+            if (write_fifo(state, str) == RPMRC_OK) {
+
+                /* write was successful after few reopens */
+                if (reload)
+                    rpmlog(RPMLOG_WARNING, "rpm-plugin-fapolicyd: the service connection has resumed\n");
+
+                break;
+            }
+        }
+
+        /* failed write or reopen */
+        reload = 1;
+        sleep(1);
+
+        /* the last iteration */
+        /* consider failure */
+        if (i == timeout-1) {
+            rpmlog(RPMLOG_WARNING, "rpm-plugin-fapolicyd: the service connection has not resumed\n");
+            rpmlog(RPMLOG_WARNING, "rpm-plugin-fapolicyd: continuing without the service\n");
+        }
+
+    }
+
+}
+
+
 static rpmRC fapolicyd_init(rpmPlugin plugin, rpmts ts)
 {
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_BUILD_PROBS))
@@ -102,10 +161,7 @@ static rpmRC fapolicyd_init(rpmPlugin plugin, rpmts ts)
 
 static void fapolicyd_cleanup(rpmPlugin plugin)
 {
-    if (fapolicyd_state.fd > 0)
-        (void) close(fapolicyd_state.fd);
-
-    fapolicyd_state.fd = -1;
+    (void) close_fifo(&fapolicyd_state);
 }
 
 static rpmRC fapolicyd_tsm_post(rpmPlugin plugin, rpmts ts, int res)
@@ -116,9 +172,9 @@ static rpmRC fapolicyd_tsm_post(rpmPlugin plugin, rpmts ts, int res)
     /* we are ready */
     if (fapolicyd_state.fd > 0) {
         /* send a signal that transaction is over */
-        (void) write_fifo(&fapolicyd_state, "1\n");
+        (void) try_to_write_to_fifo(&fapolicyd_state, "1\n");
         /* flush cache */
-        (void) write_fifo(&fapolicyd_state, "2\n");
+        (void) try_to_write_to_fifo(&fapolicyd_state, "2\n");
     }
 
  end:
@@ -133,7 +189,7 @@ static rpmRC fapolicyd_scriptlet_pre(rpmPlugin plugin, const char *s_name,
 
     if (fapolicyd_state.changed_files > 0) {
         /* send signal to flush cache */
-        (void) write_fifo(&fapolicyd_state, "2\n");
+        (void) try_to_write_to_fifo(&fapolicyd_state, "2\n");
 
         /* optimize flushing */
         /* flush only when there was an actual change */
@@ -176,7 +232,7 @@ static rpmRC fapolicyd_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
     char * sha = rpmfiFDigestHex(fi, NULL);
 
     snprintf(buffer, 4096, "%s %lu %64s\n", dest, size, sha);
-    (void) write_fifo(&fapolicyd_state, buffer);
+    (void) try_to_write_to_fifo(&fapolicyd_state, buffer);
 
     free(sha);
 
