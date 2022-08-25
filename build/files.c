@@ -1971,7 +1971,7 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 	    /* Supported, but questionable.  */
 	    if (needMain && needDbg)
 		rpmlog(RPMLOG_WARNING,
-		       _("Mixing main ELF and debug files in package"));
+		       _("Mixing main ELF and debug files in package\n"));
 
 	    if (needMain) {
 		if ((rc = rpmioMkpath(mainiddir, 0755, -1, -1)) != 0) {
