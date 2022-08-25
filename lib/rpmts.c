@@ -621,7 +621,9 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
         if (krc != RPMRC_OK) {
             rpmlog(RPMLOG_ERR, "%s\n", lints);
         } else {
-            rpmlog(RPMLOG_WARNING, "%s\n", lints);
+	    /* XXX Hack to ease testing between different backends */
+	    if (rpmIsNormal())
+		rpmlog(RPMLOG_WARNING, "%s\n", lints);
         }
         free(lints);
     }
