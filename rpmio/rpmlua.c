@@ -491,7 +491,7 @@ static int rpm_vercmp(lua_State *L)
 	} else {
 	    if (v1 == NULL)
 		luaL_argerror(L, 1, "invalid version ");
-	    if (v1 == NULL)
+	    if (v2 == NULL)
 		luaL_argerror(L, 2, "invalid version ");
 	}
 	rpmverFree(v1);
