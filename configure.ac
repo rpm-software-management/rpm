@@ -398,6 +398,11 @@ AC_SUBST(WITH_RPM_SEQUOIA_INCLUDE)
 AC_SUBST(WITH_RPM_SEQUOIA_LIB)
 
 #=================
+# Export the crypto backend, which the test suite needs.
+CRYPTO=$with_crypto
+AC_SUBST(CRYPTO)
+
+#=================
 # Check for magic library.
 WITH_MAGIC_INCLUDE=
 WITH_MAGIC_LIB=

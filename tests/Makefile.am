@@ -179,6 +179,7 @@ atlocal:	atlocal.in Makefile
 	  -e "s,[@]usrlibexecdir[@],$(rpmlibexecdir),g" \
 	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir)," \
 	  -e "s,[@]PYTHON[@],$(PYTHON)," \
+	  -e "s,[@]CRYPTO[@],$(CRYPTO)," \
 	  -e "s,[@]__FIND_DEBUGINFO[@],$(__FIND_DEBUGINFO)," \
 	< $(srcdir)/atlocal.in > atlocal
 DISTCLEANFILES = atlocal
