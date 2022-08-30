@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2022-06-28 10:23+0300\n"
+"POT-Creation-Date: 2022-08-30 11:44+0300\n"
 "PO-Revision-Date: 2020-03-23 08:38-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Greek (http://www.transifex.com/rpm-team/rpm/language/el/)\n"
@@ -725,7 +725,7 @@ msgstr ""
 msgid "failed to create directory"
 msgstr ""
 
-msgid "Mixing main ELF and debug files in package"
+msgid "Mixing main ELF and debug files in package\n"
 msgstr ""
 
 #, c-format
@@ -3084,14 +3084,6 @@ msgstr ""
 
 #, c-format
 msgid "memory alloc (%u bytes) returned NULL.\n"
-msgstr ""
-
-#, c-format
-msgid "Unsupported version of signature: V%d\n"
-msgstr ""
-
-#, c-format
-msgid "Unsupported version of key: V%d\n"
 msgstr ""
 
 #, c-format

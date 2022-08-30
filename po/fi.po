@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2022-06-28 10:23+0300\n"
+"POT-Creation-Date: 2022-08-30 11:44+0300\n"
 "PO-Revision-Date: 2021-08-25 11:04+0000\n"
 "Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/rpm/"
@@ -769,7 +769,8 @@ msgstr "%s löydetty build-id on liian suuri\n"
 msgid "failed to create directory"
 msgstr "hakemiston luonti epäonnistui"
 
-msgid "Mixing main ELF and debug files in package"
+#, fuzzy
+msgid "Mixing main ELF and debug files in package\n"
 msgstr "Sekoitettu ELF- ja virheenkorjaustiedostoja paketissa"
 
 #, c-format
@@ -3173,14 +3174,6 @@ msgstr "lua-koukku epäonnistui: %s\n"
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "muistin varaus (%u tavua) palautti NULL:in.\n"
 
-#, fuzzy, c-format
-msgid "Unsupported version of signature: V%d\n"
-msgstr "Avaimen versiota, jota ei tueta: V%d\n"
-
-#, c-format
-msgid "Unsupported version of key: V%d\n"
-msgstr "Avaimen versiota, jota ei tueta: V%d\n"
-
 #, c-format
 msgid "V%d %s/%s %s, key ID %s"
 msgstr "V%d %s/%s %s, avaimen tunnus %s"
@@ -3330,6 +3323,14 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#, fuzzy, c-format
+#~ msgid "Unsupported version of signature: V%d\n"
+#~ msgstr "Avaimen versiota, jota ei tueta: V%d\n"
+
+#, c-format
+#~ msgid "Unsupported version of key: V%d\n"
+#~ msgstr "Avaimen versiota, jota ei tueta: V%d\n"
 
 #, c-format
 #~ msgid "Bad source: %s: %s\n"
