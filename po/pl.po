@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2022-06-28 10:23+0300\n"
+"POT-Creation-Date: 2022-08-30 11:44+0300\n"
 "PO-Revision-Date: 2020-10-28 09:23+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <https://translate.fedoraproject.org/projects/rpm/"
@@ -792,7 +792,8 @@ msgstr "Identyfikator budowania odnaleziony w %s jest za duży\n"
 msgid "failed to create directory"
 msgstr "utworzenie katalogu się nie powiodło"
 
-msgid "Mixing main ELF and debug files in package"
+#, fuzzy
+msgid "Mixing main ELF and debug files in package\n"
 msgstr "Mieszanie głównych plików ELF i plików debugowania w pakiecie"
 
 #, c-format
@@ -3205,14 +3206,6 @@ msgstr "hak Lua się nie powiódł: %s\n"
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "przydzielenie pamięci (%u B) zwróciło NULL.\n"
 
-#, fuzzy, c-format
-msgid "Unsupported version of signature: V%d\n"
-msgstr "Nieobsługiwana wersja klucza: V%d\n"
-
-#, c-format
-msgid "Unsupported version of key: V%d\n"
-msgstr "Nieobsługiwana wersja klucza: V%d\n"
-
 #, c-format
 msgid "V%d %s/%s %s, key ID %s"
 msgstr "V%d %s/%s %s, identyfikator klucza %s"
@@ -3362,6 +3355,14 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#, fuzzy, c-format
+#~ msgid "Unsupported version of signature: V%d\n"
+#~ msgstr "Nieobsługiwana wersja klucza: V%d\n"
+
+#, c-format
+#~ msgid "Unsupported version of key: V%d\n"
+#~ msgstr "Nieobsługiwana wersja klucza: V%d\n"
 
 #, c-format
 #~ msgid "Bad source: %s: %s\n"

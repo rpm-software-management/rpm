@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2022-06-28 10:23+0300\n"
+"POT-Creation-Date: 2022-08-30 11:44+0300\n"
 "PO-Revision-Date: 2020-10-01 10:30+0000\n"
 "Last-Translator: Phu Hung Nguyen <phuhnguyen@disroot.org>\n"
 "Language-Team: Vietnamese <https://translate.fedoraproject.org/projects/rpm/"
@@ -788,7 +788,7 @@ msgstr ""
 msgid "failed to create directory"
 msgstr "gặp lỗi khi tạo thư mục"
 
-msgid "Mixing main ELF and debug files in package"
+msgid "Mixing main ELF and debug files in package\n"
 msgstr ""
 
 #, c-format
@@ -3201,14 +3201,6 @@ msgstr "Lỗi kích hoạt khả năng Lua: %s\n"
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "cấp phát bộ nhớ (%u byte) trở về VÔ GIÁ TRỊ.\n"
 
-#, fuzzy, c-format
-msgid "Unsupported version of signature: V%d\n"
-msgstr "Không hỗ trợ ký bằng GPG\n"
-
-#, c-format
-msgid "Unsupported version of key: V%d\n"
-msgstr ""
-
 #, c-format
 msgid "V%d %s/%s %s, key ID %s"
 msgstr "V%d %s/%s %s, Mã số khóa %s"
@@ -3358,6 +3350,10 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#, fuzzy, c-format
+#~ msgid "Unsupported version of signature: V%d\n"
+#~ msgstr "Không hỗ trợ ký bằng GPG\n"
 
 #, c-format
 #~ msgid "Bad source: %s: %s\n"
