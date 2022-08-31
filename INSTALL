@@ -28,7 +28,7 @@ and can be specified with the --with-crypto=[libgcrypt|openssl|sequoia]
 argument to configure.  libgcrypt is the default.
 
 Sequoia is used via the rpm-sequoia library, which is available from
-https://gitlab.com/sequoia-pgp/rpm-sequoia
+https://github.com/rpm-software-management/rpm-sequoia
 
 libgcrypt library is available from https://www.gnupg.org/software/libgcrypt/
 
