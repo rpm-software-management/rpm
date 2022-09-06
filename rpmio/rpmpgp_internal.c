@@ -650,7 +650,7 @@ static int pgpPrtUserID(pgpTag tag, const uint8_t *h, size_t hlen,
     return 0;
 }
 
-int pgpPubkeyFingerprint(const uint8_t *h, size_t hlen,
+static int getPubkeyFingerprint(const uint8_t *h, size_t hlen,
 			  uint8_t **fp, size_t *fplen)
 {
     int rc = -1; /* assume failure */
@@ -717,11 +717,22 @@ int pgpPubkeyFingerprint(const uint8_t *h, size_t hlen,
     return rc;
 }
 
+int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen,
+                         uint8_t **fp, size_t *fplen)
+{
+    struct pgpPkt p;
+
+    if (decodePkt(pkt, pktlen, &p))
+	return -1;
+
+    return getPubkeyFingerprint(p.body, p.blen, fp, fplen);
+}
+
 static int getKeyID(const uint8_t *h, size_t hlen, pgpKeyID_t keyid)
 {
     uint8_t *fp = NULL;
     size_t fplen = 0;
-    int rc = pgpPubkeyFingerprint(h, hlen, &fp, &fplen);
+    int rc = getPubkeyFingerprint(h, hlen, &fp, &fplen);
     if (fp && fplen > 8) {
 	memcpy(keyid, (fp + (fplen-8)), 8);
 	free(fp);
