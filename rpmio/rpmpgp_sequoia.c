@@ -39,6 +39,9 @@ W(rpmRC, pgpVerifySignature,
 W(int, pgpPubkeyKeyID,
   (const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid),
   (pkt, pktlen, keyid))
+W(int, pgpPubkeyFingerprint,
+  (const uint8_t * pkt, size_t pktlen, uint8_t **fp, size_t *fplen),
+  (pkt, pktlen, fp, fplen))
 W(char *, pgpArmorWrap,
   (int atype, const unsigned char * s, size_t ns),
   (atype, s, ns))
