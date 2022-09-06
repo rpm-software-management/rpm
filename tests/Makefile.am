@@ -13,6 +13,7 @@ EXTRA_DIST += local.at $(TESTSUITE)
 AM_CPPFLAGS = -I$(top_srcdir)/include
 
 rpmpgpcheck_LDADD = ../rpmio/librpmio.la
+rpmpgppubkeyfingerprint_LDADD = ../rpmio/librpmio.la
 
 ## testsuite components
 TESTSUITE_AT = rpmtests.at
@@ -148,7 +149,7 @@ EXTRA_DIST += data/misc/libhello.so
 
 .PHONY: populate_testing
 
-check_PROGRAMS = rpmpgpcheck
+check_PROGRAMS = rpmpgpcheck rpmpgppubkeyfingerprint
 
 # testsuite voodoo
 AUTOTEST = $(AUTOM4TE) --language=autotest
