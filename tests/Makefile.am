@@ -14,6 +14,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/include
 
 rpmpgpcheck_LDADD = ../rpmio/librpmio.la
 rpmpgpprtpkts_LDADD = ../rpmio/librpmio.la
+rpmpgppubkeyfingerprint_LDADD = ../rpmio/librpmio.la
 
 ## testsuite components
 TESTSUITE_AT = rpmtests.at
@@ -147,7 +148,7 @@ EXTRA_DIST += data/misc/libhello.so
 
 .PHONY: populate_testing
 
-check_PROGRAMS = rpmpgpcheck rpmpgpprtpkts
+check_PROGRAMS = rpmpgpcheck rpmpgpprtpkts rpmpgppubkeyfingerprint
 
 # testsuite voodoo
 AUTOTEST = $(AUTOM4TE) --language=autotest
