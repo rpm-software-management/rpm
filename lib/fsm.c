@@ -321,6 +321,8 @@ static int fsmOpenat(int dirfd, const char *path, int flags, int dir)
 		    close(ffd);
 		}
 	    }
+	} else {
+	    fsmClose(&ffd);
 	}
     }
 
