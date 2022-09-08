@@ -149,7 +149,7 @@ scripts-1.0-2 PRE 2
 scripts-1.0-2 POST 2
 scripts-1.0-1 PREUN 1
 scripts-1.0-1 POSTUN 1
-scripts-1.0-2 POSTTRANS 1
+scripts-1.0-2 POSTTRANS 2
 scripts-1.0-2 VERIFY 1
 scripts-1.0-2 PREUN 0
 scripts-1.0-2 POSTUN 0
@@ -199,7 +199,7 @@ triggers-1.0-1 TRIGGERUN 1 1
 scripts-1.0-1 PREUN 1
 scripts-1.0-1 POSTUN 1
 triggers-1.0-1 TRIGGERPOSTUN 1 1
-scripts-1.0-2 POSTTRANS 1
+scripts-1.0-2 POSTTRANS 2
 TRIGGERS 2
 triggers-1.0-2 TRIGGERPREIN 1 1
 triggers-1.0-2 TRIGGERIN 2 1
