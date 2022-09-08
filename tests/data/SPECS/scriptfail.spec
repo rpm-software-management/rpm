@@ -13,7 +13,7 @@ BuildArch:	noarch
 %{summary}
 
 %{lua:
-for i, s in ipairs({"pre","preun","pretrans","post","postun","posttrans"}) do
+for i, s in ipairs({"pre","preun","pretrans","post","postun","posttrans","preuntrans","postuntrans"}) do
    print('%'..s..' -e\n')
    print('%{!?exit'..s..':%global exit'..s..' 0}\n')
    print('exit %{exit'..s..'}\n\n')

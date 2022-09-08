@@ -208,6 +208,12 @@ Posttrans      | 1152 | string
 Posttransflags | 5025 | int32
 Posttransprog  | 1154 | string array
 
+`%postuntrans` scripts are all executed at the end of the transaction that removes their packages
+
+Postuntrans      | 5104 | string
+Postuntransflags | 5108 | int32
+Postuntransprog  | 5106 | string array
+
 `%postun` script is executed right after the package was removed
 
 Postun      | 1026 | string
@@ -220,11 +226,17 @@ Prein      | 1023 | string
 Preinflags | 5020 | int32
 Preinprog  | 1085 | string array
 
-`%pretrans` scripts are executed for to be installed packages before any packages are installed
+`%pretrans` scripts are executed for to be installed packages before any packages are installed/removed
 
 Pretrans      | 1151 | string
 Pretransflags | 5024 | int32
 Pretransprog  | 1153 | string array
+
+`%preuntrans` scripts are executed for to be removed packages before any packages are installed/removed
+
+Preuntrans      | 5103 | string
+Preuntransflags | 5107 | int32
+Preuntransprog  | 5105 | string array
 
 `%preun` script is executed right before the package gets removed
 

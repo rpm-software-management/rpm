@@ -1386,6 +1386,12 @@ static struct DepMsg_s depMsgs[] = {
   { "Requires(posttrans)",	{ NULL, "posttrans", NULL, NULL },
 	-1, -1, RPMTAG_REQUIREFLAGS,
 	RPMSENSE_POSTTRANS, 0 },
+  { "Requires(preuntrans)",	{ NULL, "preuntrans", NULL, NULL },
+	-1, -1, RPMTAG_REQUIREFLAGS,
+	RPMSENSE_PREUNTRANS, 0 },
+  { "Requires(postuntrans)",	{ NULL, "postuntrans", NULL, NULL },
+	-1, -1, RPMTAG_REQUIREFLAGS,
+	RPMSENSE_POSTUNTRANS, 0 },
   { "Requires",		{ "%{?__find_requires}", NULL, NULL, NULL },
 	-1, -1, RPMTAG_REQUIREFLAGS,	/* XXX inherit name/version arrays */
 	RPMSENSE_FIND_REQUIRES|RPMSENSE_TRIGGERIN|RPMSENSE_TRIGGERUN|RPMSENSE_TRIGGERPOSTUN|RPMSENSE_TRIGGERPREIN, 0 },

@@ -187,6 +187,10 @@ static char * deptypeFormat(rpmtd td, char **emsg)
 	argvAdd(&sdeps, "pretrans");
     if (item & RPMSENSE_POSTTRANS)
 	argvAdd(&sdeps, "posttrans");
+    if (item & RPMSENSE_PREUNTRANS)
+	argvAdd(&sdeps, "preuntrans");
+    if (item & RPMSENSE_POSTUNTRANS)
+	argvAdd(&sdeps, "postuntrans");
     if (item & RPMSENSE_CONFIG)
 	argvAdd(&sdeps, "config");
     if (item & RPMSENSE_MISSINGOK)

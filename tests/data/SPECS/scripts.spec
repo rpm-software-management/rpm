@@ -15,6 +15,9 @@ BuildArch:	noarch
 %pretrans
 echo %{name}-%{version}-%{release} PRETRANS $*
 
+%preuntrans
+echo %{name}-%{version}-%{release} PREUNTRANS $*
+
 %pre
 echo %{name}-%{version}-%{release} PRE $*
 
@@ -29,6 +32,9 @@ echo %{name}-%{version}-%{release} POSTUN $*
 
 %posttrans
 echo %{name}-%{version}-%{release} POSTTRANS $*
+
+%postuntrans
+echo %{name}-%{version}-%{release} POSTUNTRANS $*
 
 %verifyscript
 echo %{name}-%{version}-%{release} VERIFY $*

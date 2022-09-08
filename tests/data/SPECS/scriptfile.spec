@@ -10,7 +10,8 @@ BuildArch: noarch
 
 %build
 
-for s in pre pretrans post posttrans preun postun verifyscript \
+for s in verifyscript \
+         pre pretrans post posttrans preun preuntrans postun postuntrans \
          triggerprein triggerin triggerun triggerpostun \
 	 filetriggerin filetriggerun transfiletriggerin transfiletriggerun; do
     echo ${s} > ${s}.sh
@@ -26,7 +27,11 @@ done
 
 %preun -f preun.sh
 
+%preuntrans -f preuntrans.sh
+
 %postun -f postun.sh
+
+%postuntrans -f postuntrans.sh
 
 %verifyscript -f verifyscript.sh
 

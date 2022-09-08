@@ -349,6 +349,8 @@ static struct tokenBits_s const installScriptBits[] = {
     { "verify",		RPMSENSE_SCRIPT_VERIFY },
     { "pretrans",	RPMSENSE_PRETRANS },
     { "posttrans",	RPMSENSE_POSTTRANS },
+    { "preuntrans",	RPMSENSE_PREUNTRANS },
+    { "postuntrans",	RPMSENSE_POSTUNTRANS },
     { NULL, 0 }
 };
 

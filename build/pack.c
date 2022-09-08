@@ -169,6 +169,8 @@ static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
 	addFileToTag(spec, pkg->postInFile, h, RPMTAG_POSTIN, 1) ||
 	addFileToTag(spec, pkg->postUnFile, h, RPMTAG_POSTUN, 1) ||
 	addFileToTag(spec, pkg->postTransFile, h, RPMTAG_POSTTRANS, 1) ||
+	addFileToTag(spec, pkg->preunTransFile, h, RPMTAG_PREUNTRANS, 1) ||
+	addFileToTag(spec, pkg->postunTransFile, h, RPMTAG_POSTUNTRANS, 1) ||
 	addFileToTag(spec, pkg->verifyFile, h, RPMTAG_VERIFYSCRIPT, 1))
     {
 	goto exit;

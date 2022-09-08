@@ -470,6 +470,16 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal)
 	    psm->scriptArg = npkgs_installed + 1;
 	    psm->countCorrection = 0;
 	    break;
+	case PKG_PREUNTRANS:
+	    if (rpmteDependsOn(psm->te))
+		psm->scriptArg = npkgs_installed;
+	    else
+		psm->scriptArg = npkgs_installed - 1;
+	    psm->countCorrection = -1;
+	    break;
+	case PKG_POSTUNTRANS:
+	    psm->scriptArg = npkgs_installed;
+	    break;
 	case PKG_ERASE:
 	    psm->scriptArg = npkgs_installed - 1;
 	    psm->countCorrection = -1;
@@ -880,6 +890,8 @@ static const char * pkgGoalString(pkgGoal goal)
     case PKG_VERIFY:	return "   verify";
     case PKG_PRETRANS:	return " pretrans";
     case PKG_POSTTRANS:	return "posttrans";
+    case PKG_PREUNTRANS:	return " preuntrans";
+    case PKG_POSTUNTRANS:	return "postuntrans";
     default:		return "unknown";
     }
 }
@@ -899,6 +911,8 @@ static rpmRC runGoal(rpmpsm psm, pkgGoal goal)
 	break;
     case PKG_PRETRANS:
     case PKG_POSTTRANS:
+    case PKG_PREUNTRANS:
+    case PKG_POSTUNTRANS:
     case PKG_VERIFY:
 	rc = runInstScript(psm, goal);
 	break;

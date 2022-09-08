@@ -522,7 +522,7 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep, dbiIndexSet *matc
     Header h = NULL;
     int rc = 0;
     /* pretrans deps are provided by current packages, don't prune erasures */
-    int prune = (rpmdsFlags(dep) & RPMSENSE_PRETRANS) ? 0 : 1;
+    int prune = (rpmdsFlags(dep) & (RPMSENSE_PRETRANS|RPMSENSE_PREUNTRANS)) ? 0 : 1;
     unsigned int keyhash = 0;
 
     /* See if we already looked this up */
@@ -657,7 +657,7 @@ exit_rich:
     rpmdbProvides(ts, NULL, dep, &set1);
 
     /* Pretrans dependencies can't be satisfied by added packages. */
-    if (!(dsflags & RPMSENSE_PRETRANS)) {
+    if (!(dsflags & (RPMSENSE_PRETRANS|RPMSENSE_PREUNTRANS))) {
 	rpmte *matches = rpmalAllSatisfiesDepend(tsmem->addedPackages, dep);
 	if (matches) {
 	    for (rpmte *p = matches; *p; p++)
@@ -771,7 +771,7 @@ exitrich:
     }
 
     /* Pretrans dependencies can't be satisfied by added packages. */
-    if (!(dsflags & RPMSENSE_PRETRANS)) {
+    if (!(dsflags & (RPMSENSE_PRETRANS|RPMSENSE_PREUNTRANS))) {
 	rpmte *matches = rpmalAllSatisfiesDepend(tsmem->addedPackages, dep);
 	int match = matches && *matches;
 	_free(matches);
@@ -784,7 +784,7 @@ exitrich:
 	goto exit;
 
     /* Search for an unsatisfied dependency. */
-    if (adding && !retrying && !(dsflags & RPMSENSE_PRETRANS)) {
+    if (adding && !retrying && !(dsflags & (RPMSENSE_PRETRANS|RPMSENSE_PREUNTRANS))) {
 	int xx = rpmtsSolve(ts, dep);
 	if (xx == 0)
 	    goto exit;

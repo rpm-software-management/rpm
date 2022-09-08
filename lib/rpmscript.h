@@ -17,6 +17,8 @@ enum rpmscriptTypes_e {
     RPMSCRIPT_TRIGGERPOSTUN	= (1 << 7),
     RPMSCRIPT_PRETRANS		= (1 << 8),
     RPMSCRIPT_POSTTRANS		= (1 << 9),
+    RPMSCRIPT_PREUNTRANS	= (1 << 10),
+    RPMSCRIPT_POSTUNTRANS	= (1 << 11),
     /* ... */
     RPMSCRIPT_VERIFY		= (1 << 24),
 };
