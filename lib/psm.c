@@ -435,6 +435,21 @@ static rpmpsm rpmpsmFree(rpmpsm psm)
     return NULL;
 }
 
+static int isUpdate(rpmts ts, rpmte te)
+{
+    rpmtsi pi = rpmtsiInit(ts);
+    rpmte p;
+    int update = 0;
+    while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
+	if (rpmteDependsOn(p) == te) {
+	    update = 1;
+	    break;
+	}
+    }
+    rpmtsiFree(pi);
+    return update;
+}
+
 static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal)
 {
     rpmpsm psm = xcalloc(1, sizeof(*psm));
@@ -460,7 +475,7 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal)
 	    break;
 	case PKG_VERIFY:
 	case PKG_POSTTRANS:
-	    psm->scriptArg = npkgs_installed;
+	    psm->scriptArg = npkgs_installed + isUpdate(psm->ts, psm->te);
 	    psm->countCorrection = 0;
 	    break;
 	default:
