@@ -144,6 +144,7 @@ package upgrade:
 
 ```
   all-%pretrans
+  all-%preuntrans
   ...
   any-%triggerprein (%triggerprein from other packages set off by new install)
   new-%triggerprein
@@ -165,4 +166,5 @@ package upgrade:
 		install)
   ...
   all-%posttrans
+  all-%postuntrans
 ```

@@ -37,6 +37,14 @@ rpm	alias --scripts --qf '\
 %|POSTTRANSPROG?{ (using[ %{POSTTRANSPROG}])}|:\n%{POSTTRANS}\n}:\
 {%|POSTTRANSPROG?{posttrans program:[ %{POSTTRANSPROG}]\n}|}|\
 \
+%|PREUNTRANS?{preuntrans scriptlet\
+%|PREUNTRANSPROG?{ (using[ %{PREUNTRANSPROG}])}|:\n%{PREUNTRANS}\n}:\
+{%|PREUNTRANSPROG?{preuntrans program:[ %{PREUNTRANSPROG}]\n}|}|\
+\
+%|POSTUNTRANS?{postuntrans scriptlet\
+%|POSTUNTRANSPROG?{ (using[ %{POSTUNTRANSPROG}])}|:\n%{POSTUNTRANS}\n}:\
+{%|POSTUNTRANSPROG?{postuntrans program:[ %{POSTUNTRANSPROG}]\n}|}|\
+\
 %|VERIFYSCRIPT?{verify scriptlet\
 %|VERIFYSCRIPTPROG?{ (using[ %{VERIFYSCRIPTPROG}])}|:\n%{VERIFYSCRIPT}\n}:\
 {%|VERIFYSCRIPTPROG?{verify program:[ %{VERIFYSCRIPTPROG}]\n}|}|\

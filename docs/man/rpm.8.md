@@ -351,16 +351,17 @@ This reinstalls a previously installed package.
 
 :   Do not load and execute plugins.
 
-**\--noscripts**, **\--nopre**, **\--nopost**, **\--nopreun**, **\--nopostun**, **\--nopretrans**, **\--noposttrans**
+**\--noscripts**, **\--nopre**, **\--nopost**, **\--nopreun**, **\--nopostun**, **\--nopretrans**, **\--noposttrans**, **\--nopreuntrans**, **\--nopostuntrans**
 
 :   Don\'t execute the scriptlet of the same name. The **\--noscripts**
     option is equivalent to
 
 **\--nopre** **\--nopost** **\--nopreun** **\--nopostun**
-**\--nopretrans** **\--noposttrans**
+**\--nopretrans** **\--noposttrans** **\--nopreuntrans** **\--nopostuntrans**
 
 and turns off the execution of the corresponding **%pre**, **%post**,
-**%preun**, **%postun** **%pretrans**, and **%posttrans** scriptlet(s).
+**%preun**, **%postun** **%pretrans**, **%posttrans**, **%preuntrans**
+and **%postuntrans** scriptlet(s).
 
 **\--notriggers**, **\--notriggerin**, **\--notriggerun**, **\--notriggerprein**, **\--notriggerpostun**
 

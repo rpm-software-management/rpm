@@ -55,6 +55,8 @@ static const struct PartRec {
     { PART_POSTUN,        LEN_AND_STR("%postun")},
     { PART_PRETRANS,      LEN_AND_STR("%pretrans")},
     { PART_POSTTRANS,     LEN_AND_STR("%posttrans")},
+    { PART_PREUNTRANS,    LEN_AND_STR("%preuntrans")},
+    { PART_POSTUNTRANS,   LEN_AND_STR("%postuntrans")},
     { PART_PRE,           LEN_AND_STR("%pre")},
     { PART_POST,          LEN_AND_STR("%post")},
     { PART_FILES,         LEN_AND_STR("%files")},
@@ -972,6 +974,8 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 	case PART_POSTUN:
 	case PART_PRETRANS:
 	case PART_POSTTRANS:
+	case PART_PREUNTRANS:
+	case PART_POSTUNTRANS:
 	case PART_VERIFYSCRIPT:
 	case PART_TRIGGERPREIN:
 	case PART_TRIGGERIN:

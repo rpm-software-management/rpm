@@ -381,6 +381,12 @@ typedef enum rpmTag_e {
     RPMTAG_TRANSLATIONURL	= 5100, /* s */
     RPMTAG_UPSTREAMRELEASES	= 5101, /* s */
     RPMTAG_SOURCELICENSE	= 5102, /* internal */
+    RPMTAG_PREUNTRANS		= 5103,	/* s */
+    RPMTAG_POSTUNTRANS		= 5104,	/* s */
+    RPMTAG_PREUNTRANSPROG	= 5105,	/* s[] */
+    RPMTAG_POSTUNTRANSPROG	= 5106,	/* s[] */
+    RPMTAG_PREUNTRANSFLAGS	= 5107, /* i */
+    RPMTAG_POSTUNTRANSFLAGS	= 5108, /* i */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;

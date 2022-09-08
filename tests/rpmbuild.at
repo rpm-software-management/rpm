@@ -319,6 +319,12 @@ postun
 posttrans scriptlet (using /bin/sh):
 posttrans
 
+preuntrans scriptlet (using /bin/sh):
+preuntrans
+
+postuntrans scriptlet (using /bin/sh):
+postuntrans
+
 verify scriptlet (using /bin/sh):
 verifyscript
 
