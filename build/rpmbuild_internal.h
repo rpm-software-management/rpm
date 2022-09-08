@@ -178,6 +178,8 @@ struct Package_s {
     char * postUnFile;	/*!< %postun scriptlet. */
     char * preTransFile;	/*!< %pretrans scriptlet. */
     char * postTransFile;	/*!< %posttrans scriptlet. */
+    char * preunTransFile;	/*!< %preuntrans scriptlet. */
+    char * postunTransFile;	/*!< %postuntrans scriptlet. */
     char * verifyFile;	/*!< %verifyscript scriptlet. */
 
     struct TriggerFileEntry * triggerFiles;
@@ -242,7 +244,9 @@ typedef enum rpmParseState_e {
     PART_SOURCELIST		= 41+PART_BASE, /*!< */
     PART_BUILDREQUIRES		= 42+PART_BASE, /*!< */
     PART_CONF			= 43+PART_BASE, /*!< */
-    PART_LAST			= 44+PART_BASE  /*!< */
+    PART_PREUNTRANS		= 44+PART_BASE, /*!< */
+    PART_POSTUNTRANS		= 45+PART_BASE, /*!< */
+    PART_LAST			= 46+PART_BASE  /*!< */
 } rpmParseState; 
 
 

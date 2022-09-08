@@ -469,6 +469,17 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal)
 	    psm->scriptArg = npkgs_installed + 1;
 	    psm->countCorrection = 0;
 	    break;
+	case PKG_PREUNTRANS:
+	    if (rpmteDependsOn(psm->te))
+		psm->scriptArg = npkgs_installed;
+	    else
+		psm->scriptArg = npkgs_installed - 1;
+	    psm->countCorrection = -1;
+	    break;
+	case PKG_POSTUNTRANS:
+	    psm->scriptArg = npkgs_installed;
+	    psm->countCorrection = -1;
+	    break;
 	case PKG_ERASE:
 	    psm->scriptArg = npkgs_installed - 1;
 	    psm->countCorrection = -1;
@@ -899,6 +910,8 @@ static rpmRC runGoal(rpmpsm psm, pkgGoal goal)
 	break;
     case PKG_PRETRANS:
     case PKG_POSTTRANS:
+    case PKG_PREUNTRANS:
+    case PKG_POSTUNTRANS:
     case PKG_VERIFY:
 	rc = runInstScript(psm, goal);
 	break;

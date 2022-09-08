@@ -75,6 +75,8 @@ struct rpmte_s {
 
 #define RPMTE_HAVE_PRETRANS	(1 << 0)
 #define RPMTE_HAVE_POSTTRANS	(1 << 1)
+#define RPMTE_HAVE_PREUNTRANS	(1 << 2)
+#define RPMTE_HAVE_POSTUNTRANS	(1 << 3)
     int transscripts;		/*!< pre/posttrans script existence */
     int failed;			/*!< (parent) install/erase failed */
 
@@ -207,6 +209,12 @@ static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
     p->transscripts |= (headerIsEntry(h, RPMTAG_POSTTRANS) ||
 			 headerIsEntry(h, RPMTAG_POSTTRANSPROG)) ?
 			RPMTE_HAVE_POSTTRANS : 0;
+    p->transscripts |= (headerIsEntry(h, RPMTAG_PREUNTRANS) ||
+			 headerIsEntry(h, RPMTAG_PREUNTRANSPROG)) ?
+			RPMTE_HAVE_PREUNTRANS : 0;
+    p->transscripts |= (headerIsEntry(h, RPMTAG_POSTUNTRANS) ||
+			 headerIsEntry(h, RPMTAG_POSTUNTRANSPROG)) ?
+			RPMTE_HAVE_POSTUNTRANS : 0;
 
     rpmteColorDS(p, RPMTAG_PROVIDENAME);
     rpmteColorDS(p, RPMTAG_REQUIRENAME);
@@ -583,18 +591,21 @@ static int rpmteOpen(rpmte te, int reload_fi)
     if (te == NULL || te->ts == NULL || rpmteFailed(te))
 	goto exit;
 
-    rpmteSetHeader(te, NULL);
-
     switch (rpmteType(te)) {
     case TR_ADDED:
 	h = rpmteDBInstance(te) ? rpmteDBHeader(te) : rpmteFDHeader(te);
 	break;
     case TR_REMOVED:
+	if (te->h) {
+	    h = headerLink(te->h);
+	    break;
+	}
     case TR_RPMDB:
     case TR_RESTORED:
 	h = rpmteDBHeader(te);
     	break;
     }
+
     if (h != NULL) {
 	if (reload_fi) {
 	    /* This can fail if we get a different, bad header from callback */
@@ -614,6 +625,7 @@ exit:
 
 static int rpmteClose(rpmte te, int reset_fi)
 {
+    int keephdr = 0;
     if (te == NULL || te->ts == NULL)
 	return 0;
 
@@ -625,12 +637,15 @@ static int rpmteClose(rpmte te, int reset_fi)
 	}
 	break;
     case TR_REMOVED:
+	if (te->transscripts & RPMTE_HAVE_POSTUNTRANS)
+	    keephdr = 1;
     case TR_RPMDB:
     case TR_RESTORED:
 	/* eventually we'll want notifications for erase open too */
 	break;
     }
-    rpmteSetHeader(te, NULL);
+    if (!keephdr)
+	rpmteSetHeader(te, NULL);
     if (reset_fi) {
 	rpmteCleanFiles(te);
     }
@@ -676,11 +691,16 @@ int rpmteFailed(rpmte te)
 
 int rpmteHaveTransScript(rpmte te, rpmTagVal tag)
 {
-    int rc = 0;
+    /* We only filter pre/post transaction scripts */
+    int rc = 1;
     if (tag == RPMTAG_PRETRANS) {
 	rc = (te->transscripts & RPMTE_HAVE_PRETRANS);
     } else if (tag == RPMTAG_POSTTRANS) {
 	rc = (te->transscripts & RPMTE_HAVE_POSTTRANS);
+    } else if (tag == RPMTAG_PREUNTRANS) {
+	rc = (te->transscripts & RPMTE_HAVE_PREUNTRANS);
+    } else if (tag == RPMTAG_POSTUNTRANS) {
+	rc = (te->transscripts & RPMTE_HAVE_POSTUNTRANS);
     }
     return rc;
 }
@@ -800,11 +820,8 @@ int rpmteProcess(rpmte te, pkgGoal goal, int num)
     int failed = 1;
 
     /* Dont bother opening for elements without pre/posttrans scripts */
-    if (goal == PKG_PRETRANS || goal == PKG_POSTTRANS) {
-	if (!rpmteHaveTransScript(te, goal)) {
-	    return 0;
-	}
-    }
+    if (!rpmteHaveTransScript(te, goal))
+	return 0;
 
     if (rpmteOpen(te, reset_fi)) {
 	if (!scriptstage) {

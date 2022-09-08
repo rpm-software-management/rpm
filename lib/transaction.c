@@ -1436,10 +1436,19 @@ static int runTransScripts(rpmts ts, pkgGoal goal)
     int rc = 0;
     rpmte p;
     rpmtsi pi = rpmtsiInit(ts);
-    rpmElementTypes types = TR_ADDED;
+    rpmElementTypes types;
     int i = 0;
-    if (goal == PKG_TRANSFILETRIGGERUN)
+
+    switch (goal) {
+    case PKG_TRANSFILETRIGGERUN:
+    case PKG_PREUNTRANS:
+    case PKG_POSTUNTRANS:
 	types = TR_REMOVED;
+	break;
+    default:
+	types = TR_ADDED;
+	break;
+    }
 
     while ((p = rpmtsiNext(pi, types)) != NULL) {
 	rc += rpmteProcess(p, goal, i++);
@@ -1814,7 +1823,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
      */
     if (!((rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_NOPRETRANS))
      	  || (rpmpsNumProblems(tsprobs)))) {
-	rpmlog(RPMLOG_DEBUG, "running pre-transaction scripts\n");
+	rpmlog(RPMLOG_DEBUG, "running %%pretrans scripts\n");
 	runTransScripts(ts, PKG_PRETRANS);
     }
     tsprobs = rpmpsFree(tsprobs);
@@ -1844,6 +1853,11 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_BUILD_PROBS)))
 	tsmem->pool = rpmstrPoolFree(tsmem->pool);
 
+    /* Run %preuntrans scripts unless disabled */
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPRETRANS)) {
+	rpmlog(RPMLOG_DEBUG, "running %%preuntrans scripts\n");
+	runTransScripts(ts, PKG_PREUNTRANS);
+    }
     /* Run %transfiletriggerun scripts unless disabled */
     if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_NOPRETRANS|RPMTRANS_FLAG_NOTRIGGERUN))) {
 	runFileTriggers(ts, NULL, RPMSENSE_TRIGGERUN,
@@ -1856,8 +1870,13 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     /* Run %posttrans scripts unless disabled */
     if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_NOPOSTTRANS))) {
-	rpmlog(RPMLOG_DEBUG, "running post-transaction scripts\n");
+	rpmlog(RPMLOG_DEBUG, "running %%posttrans scripts\n");
 	runTransScripts(ts, PKG_POSTTRANS);
+    }
+    /* Run %postuntrans scripts unless disabled */
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOSTTRANS)) {
+	rpmlog(RPMLOG_DEBUG, "running %%postuntrans scripts\n");
+	runTransScripts(ts, PKG_POSTUNTRANS);
     }
 
     /* Run %transfiletriggerpostun scripts unless disabled */

@@ -36,6 +36,9 @@ runroot rpm -q ${pkgname} 2>&1
 echo PREUNFAIL
 runroot rpm -e --define "exitpreun 1" ${pkgname} 2>&1; echo $?
 runroot rpm -q ${pkgname} 2>&1
+echo PREUNTRANSFAIL
+runroot rpm -e --define "exitpreuntrans 1" ${pkgname} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
 echo PREUN
 runroot rpm -e --define "exitpreun 0" ${pkgname} 2>&1; echo $?
 runroot rpm -q ${pkgname} 2>&1
@@ -62,9 +65,19 @@ runroot rpm -U ${pkgfile1} 2>&1
 runroot rpm -U --define "exitpostun 1" ${pkgfile2} 2>&1; echo $?
 runroot rpm -q ${pkgname} 2>&1
 runroot rpm -e ${pkgname} 2>&1
+echo POSTUNTRANSFAIL
+runroot rpm -U ${pkgfile1} 2>&1
+runroot rpm -U --define "exitpostuntrans 1" ${pkgfile2} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+runroot rpm -e ${pkgname} 2>&1
 echo POSTUN
 runroot rpm -U ${pkgfile1} 2>&1
 runroot rpm -U --define "exitpostun 0" ${pkgfile2} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+runroot rpm -e ${pkgname} 2>&1
+echo POSTUNTRANS
+runroot rpm -U ${pkgfile1} 2>&1
+runroot rpm -U --define "exitpostuntrans 0" ${pkgfile2} 2>&1; echo $?
 runroot rpm -q ${pkgname} 2>&1
 runroot rpm -e ${pkgname} 2>&1
 
@@ -92,6 +105,11 @@ error: %preun(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 error: scriptfail-1.0-1.noarch: erase failed
 1
 scriptfail-1.0-1.noarch
+PREUNTRANSFAIL
+error: %preuntrans(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
+error: scriptfail-1.0-1.noarch: erase skipped
+1
+scriptfail-1.0-1.noarch
 PREUN
 0
 package scriptfail is not installed
@@ -113,7 +131,14 @@ POSTUNFAIL
 warning: %postun(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 0
 scriptfail-2.0-1.noarch
+POSTUNTRANSFAIL
+warning: %postuntrans(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
+0
+scriptfail-2.0-1.noarch
 POSTUN
+0
+scriptfail-2.0-1.noarch
+POSTUNTRANS
 0
 scriptfail-2.0-1.noarch
 ],
@@ -145,14 +170,18 @@ scripts-1.0-1 PRE 1
 scripts-1.0-1 POST 1
 scripts-1.0-1 POSTTRANS 1
 scripts-1.0-2 PRETRANS 2
+scripts-1.0-1 PREUNTRANS 1
 scripts-1.0-2 PRE 2
 scripts-1.0-2 POST 2
 scripts-1.0-1 PREUN 1
 scripts-1.0-1 POSTUN 1
 scripts-1.0-2 POSTTRANS 2
+scripts-1.0-1 POSTUNTRANS 1
 scripts-1.0-2 VERIFY 1
+scripts-1.0-2 PREUNTRANS 0
 scripts-1.0-2 PREUN 0
 scripts-1.0-2 POSTUN 0
+scripts-1.0-2 POSTUNTRANS 0
 ],
 [])
 AT_CLEANUP
@@ -191,6 +220,7 @@ triggers-1.0-1 TRIGGERIN 1 1
 scripts-1.0-1 POSTTRANS 1
 SCRIPTS 2
 scripts-1.0-2 PRETRANS 2
+scripts-1.0-1 PREUNTRANS 1
 triggers-1.0-1 TRIGGERPREIN 1 1
 scripts-1.0-2 PRE 2
 scripts-1.0-2 POST 2
@@ -200,15 +230,18 @@ scripts-1.0-1 PREUN 1
 scripts-1.0-1 POSTUN 1
 triggers-1.0-1 TRIGGERPOSTUN 1 1
 scripts-1.0-2 POSTTRANS 2
+scripts-1.0-1 POSTUNTRANS 1
 TRIGGERS 2
 triggers-1.0-2 TRIGGERPREIN 1 1
 triggers-1.0-2 TRIGGERIN 2 1
 triggers-1.0-1 TRIGGERUN 1 1
 ERASE
+scripts-1.0-2 PREUNTRANS 0
 triggers-1.0-2 TRIGGERUN 1 0
 scripts-1.0-2 PREUN 0
 scripts-1.0-2 POSTUN 0
 triggers-1.0-2 TRIGGERPOSTUN 1 0
+scripts-1.0-2 POSTUNTRANS 0
 ],
 [])
 AT_CLEANUP

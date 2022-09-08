@@ -159,6 +159,20 @@ int parseScript(rpmSpec spec, int parsePart)
 	flagtag = RPMTAG_POSTTRANSFLAGS;
 	partname = "%posttrans";
 	break;
+      case PART_PREUNTRANS:
+	tag = RPMTAG_PREUNTRANS;
+	tagflags = RPMSENSE_PRETRANS;
+	progtag = RPMTAG_PREUNTRANSPROG;
+	flagtag = RPMTAG_PREUNTRANSFLAGS;
+	partname = "%preuntrans";
+	break;
+      case PART_POSTUNTRANS:
+	tag = RPMTAG_POSTUNTRANS;
+	tagflags = RPMSENSE_POSTTRANS;
+	progtag = RPMTAG_POSTUNTRANSPROG;
+	flagtag = RPMTAG_POSTUNTRANSFLAGS;
+	partname = "%postuntrans";
+	break;
       case PART_VERIFYSCRIPT:
 	tag = RPMTAG_VERIFYSCRIPT;
 	tagflags = RPMSENSE_SCRIPT_VERIFY;
@@ -449,6 +463,12 @@ int parseScript(rpmSpec spec, int parsePart)
 		pkg->preTransFile = xstrdup(file);
 		break;
 	      case PART_POSTTRANS:
+		pkg->postTransFile = xstrdup(file);
+		break;
+	      case PART_PREUNTRANS:
+		pkg->preTransFile = xstrdup(file);
+		break;
+	      case PART_POSTUNTRANS:
 		pkg->postTransFile = xstrdup(file);
 		break;
 	      case PART_VERIFYSCRIPT:
