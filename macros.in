@@ -1260,5 +1260,22 @@ end
 %{expand:%__scm_setup_%{__scm} %{!-v:-q}}\
 %{!-N:%autopatch %{-v} %{-p:-p%{-p*}}}
 
+#------------------------------------------------------------------------------
+# Miscellaneous utility macros
+
+# expose lua's string.sub function
+# example usage:
+# %global commit      abc123abc123abc123abc123abc123abc123abc1
+# %global shortcommit %{substring %commit 1 7}
+%substring() %{lua:
+    local word = rpm.expand('%1')
+    local start = rpm.expand('%2')
+    local stop = rpm.expand('%3')
+    if (word == '%1' or start == '%2' or stop == '%3') then
+        rpm.expand('%{error:%%substring requries 3 arguments}')
+    end
+    print(string.sub(word, tonumber(start), tonumber(stop)))
+}
+
 # \endverbatim
 #*/
