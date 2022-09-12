@@ -3,7 +3,7 @@
 %{!?user: %global user root}
 %{!?grp: %global grp root}
 
-Name:		replacetest%{?sub:-%{sub}}
+Name:		replacetest%{?subpkg:-%{subpkg}}
 Version:	%{ver}
 Release:	1
 Summary:	Testing file replacement behavior

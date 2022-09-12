@@ -402,7 +402,7 @@ RPMDB_INIT
 for s in "A" "B"; do
     for v in "1.0" "2.0"; do
         runroot rpmbuild --quiet -bb \
-            --define "sub $s" \
+            --define "subpkg $s" \
             --define "ver $v" \
 	    --define "filedata foo" \
               /data/SPECS/configtest.spec
@@ -462,7 +462,7 @@ RPMDB_INIT
 for s in "A" "B"; do
     for v in "1.0" "2.0"; do
         runroot rpmbuild --quiet -bb \
-            --define "sub $s" \
+            --define "subpkg $s" \
             --define "ver $v" \
 	    --define "filedata foo-$v" \
               /data/SPECS/configtest.spec
@@ -552,7 +552,7 @@ RPMDB_INIT
 for s in "A" "B"; do
     for v in "1.0" "2.0"; do
         runroot rpmbuild --quiet -bb \
-            --define "sub $s" \
+            --define "subpkg $s" \
             --define "ver $v" \
 	    --define "filedata foo-$v" \
 	    --define "noreplace 1" \

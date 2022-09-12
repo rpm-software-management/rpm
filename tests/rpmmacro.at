@@ -387,6 +387,39 @@ runroot rpm \
 ])
 AT_CLEANUP
 
+AT_SETUP([string functions])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm \
+    --eval "%sub cd6317ba61e6c27b92d6bbdf2702094ff3c0c732 1 7" \
+    --eval "%sub cd6317ba61e6c27b92d6bbdf2702094ff3c0c732 7 -7" \
+    --eval "%sub cd6317ba61e6c27b92d6bbdf2702094ff3c0c732 -7" \
+    --eval "%len cd6317ba61e6c27b92d6bbdf2702094ff3c0c732" \
+    --eval "%upper abba" \
+    --eval "%lower Beatles" \
+    --eval "%rep ai 2" \
+    --eval "%reverse live" \
+    --eval "%reverse a'b" \
+    --eval "%reverse a\"b" \
+    --eval "%gsub aaa a b 2"
+],
+[0],
+[cd6317b
+ba61e6c27b92d6bbdf2702094ff3
+3c0c732
+40
+ABBA
+beatles
+aiai
+evil
+b'a
+b"a
+bba
+],
+[])
+AT_CLEANUP
+
+
 AT_SETUP([expr macro 1])
 AT_KEYWORDS([macros])
 AT_CHECK([

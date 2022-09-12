@@ -3,7 +3,7 @@
 
 %{!?filetype: %global filetype file}
 
-Name:		configtest%{?sub:-%{sub}}
+Name:		configtest%{?subpkg:-%{subpkg}}
 Version:	%{ver}
 Release:	1
 Summary:	Testing config file behavior
