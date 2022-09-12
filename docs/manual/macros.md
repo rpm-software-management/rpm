@@ -84,6 +84,15 @@ to perform useful operations. The current list is
 
 	%{macrobody:...}	literal body of a macro
 
+	%{gsub:...}	replace occurences of pattern in a string
+                        (see Lua `string.gsub()`)
+	%{len:...}	string length
+	%{lower:...}	lowercase a string
+	%{rep:...}	repeat a string (see Lua `string.rep()`)
+	%{reverse:...}	reverse a string
+	%{sub:...}	expand to substring (see Lua `string.sub()`)
+	%{upper:...}	uppercase a string
+
 	%{basename:...}	basename(1) macro analogue
 	%{dirname:...}	dirname(1) macro analogue
 	%{exists:...}	test file existence, expands to 1/0

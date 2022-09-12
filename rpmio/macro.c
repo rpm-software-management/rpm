@@ -1096,6 +1096,30 @@ static void doLua(MacroBuf mb,  rpmMacroEntry me, ARGV_t argv, size_t *parsed)
     }
 }
 
+/*
+ * Wrap a call to Lua string functions.
+ * Note extra parentheses to force only one result returned, multi-value
+ * returns such as from string.gsub() make no sense in this context.
+ */
+static void doString(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
+{
+    rpmlua lua = NULL; /* Global state. */
+    char *printbuf = NULL;
+    char *s = rstrscat(NULL,
+		"return (string.", argv[0], "(table.unpack(arg)))", NULL);
+
+    rpmluaPushPrintBuffer(lua);
+    if (rpmluaRunScript(lua, s, argv[0], NULL, argv+1) == -1)
+	mb->error = 1;
+    printbuf = rpmluaPopPrintBuffer(lua);
+
+    if (printbuf) {
+	mbAppendStr(mb, printbuf);
+	free(printbuf);
+    }
+    free(s);
+}
+
 static void doSP(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 {
     char *s = NULL;
@@ -1245,17 +1269,24 @@ static struct builtins_s {
     { "getenv",		doFoo,		1,	0 },
     { "getncpus",	doFoo,		0,	0 },
     { "global",		doGlobal,	1,	ME_PARSE },
+    { "gsub",		doString,	1,	0 },
+    { "len",		doString,	1,	0 },
     { "load",		doLoad,		1,	0 },
+    { "lower",		doString,	1,	0 },
     { "lua",		doLua,		1,	ME_PARSE },
     { "macrobody",	doBody,		1,	0 },
     { "quote",		doFoo,		1,	0 },
+    { "rep",		doString,	1,	0 },
+    { "reverse",	doString,	1,	0 },
     { "shrink",		doFoo,		1,	0 },
+    { "sub",		doString,	1,	0 },
     { "suffix",		doFoo,		1,	0 },
     { "trace",		doTrace,	0,	0 },
     { "u2p",		doFoo,		1,	0 },
     { "shescape",	doShescape,	1,	0 },
     { "uncompress",	doUncompress,	1,	0 },
     { "undefine",	doUndefine,	1,	0 },
+    { "upper",		doString,	1,	0 },
     { "url2path",	doFoo,		1,	0 },
     { "verbose",	doVerbose,	-1,	ME_PARSE },
     { "warn",		doOutput,	1,	0 },
