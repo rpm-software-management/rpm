@@ -122,6 +122,7 @@ EXTRA_DIST += data/SOURCES/hello.c
 EXTRA_DIST += data/SPECS/hello-attr-buildid.spec
 EXTRA_DIST += data/SPECS/hello-config-buildid.spec
 EXTRA_DIST += data/SPECS/hello-cd.spec
+EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.pgp
 EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.pub
 EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.secret
 EXTRA_DIST += data/keys/CVE-2021-3521-badbind.asc
