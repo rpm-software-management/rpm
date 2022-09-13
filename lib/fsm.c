@@ -313,14 +313,16 @@ static int fsmOpenat(int dirfd, const char *path, int flags, int dir)
      */
     if (fd < 0 && errno == ELOOP && flags != sflags) {
 	int ffd = openat(dirfd, path, flags);
-	if (ffd >= 0 && fstatat(dirfd, path, &lsb, AT_SYMLINK_NOFOLLOW) == 0) {
-	    if (fstat(ffd, &sb) == 0) {
-		if (lsb.st_uid == 0 || lsb.st_uid == sb.st_uid) {
-		    fd = ffd;
-		} else {
-		    close(ffd);
+	if (ffd >= 0) {
+	    if (fstatat(dirfd, path, &lsb, AT_SYMLINK_NOFOLLOW) == 0) {
+		if (fstat(ffd, &sb) == 0) {
+		    if (lsb.st_uid == 0 || lsb.st_uid == sb.st_uid) {
+			fd = ffd;
+		    }
 		}
 	    }
+	    if (ffd != fd)
+		close(ffd);
 	}
     }
 
