@@ -374,8 +374,6 @@ static int fsmDoMkDir(rpmPlugins plugins, int dirfd, const char *dn,
 static int ensureDir(rpmPlugins plugins, const char *p, int owned, int create,
 		    int quiet, int *dirfdp)
 {
-    char *path = xstrdup(p);
-    char *dp = path;
     char *sp = NULL, *bn;
     char *apath = NULL;
     int oflags = O_RDONLY;
@@ -386,6 +384,9 @@ static int ensureDir(rpmPlugins plugins, const char *p, int owned, int create,
 
     int dirfd = fsmOpenat(-1, "/", oflags, 1);
     int fd = dirfd; /* special case of "/" */
+
+    char *path = xstrdup(p);
+    char *dp = path;
 
     while ((bn = strtok_r(dp, "/", &sp)) != NULL) {
 	fd = fsmOpenat(dirfd, bn, oflags, 1);
