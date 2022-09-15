@@ -122,7 +122,6 @@ unsigned int rpmteDBInstance(rpmte te);
  * Set last instance installed to the database.
  * @param te		transaction element
  * @param instance	Database instance of last install element.
- * @return		last install instance.
  */
 void rpmteSetDBInstance(rpmte te, unsigned int instance);
 
