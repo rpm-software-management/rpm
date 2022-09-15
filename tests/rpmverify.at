@@ -91,7 +91,7 @@ AT_CLEANUP
 
 AT_SETUP([directory replaced with an invalid directory symlink])
 AT_KEYWORDS([verify])
-AT_XFAIL_IF([test `id -u` != 0 ])
+AT_SKIP_IF([test `id -u` != 0 ])
 AT_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
