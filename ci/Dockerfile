@@ -1,10 +1,11 @@
-FROM registry.fedoraproject.org/fedora:34
+FROM registry.fedoraproject.org/fedora:36
 MAINTAINER rpm-maint@lists.rpm.org
 
 WORKDIR /srv/rpm
 
 RUN echo -e "deltarpm=0\ninstall_weak_deps=0\ntsflags=nodocs" >> /etc/dnf/dnf.conf
-RUN rm -f /etc/yum.repos.d/*modular.repo
+RUN rpm -e fedora-repos-modular
+RUN sed -i -e "s:^enabled=.$:enabled=0:g" /etc/yum.repos.d/*openh264.repo
 # dummy for controlling per-repo gpgcheck via Semaphore setup
 RUN sed -i -e "s:^gpgcheck=.$:gpgcheck=1:g" /etc/yum.repos.d/*.repo
 RUN dnf -y update
@@ -18,6 +19,7 @@ RUN dnf -y install \
   make \
   gcc \
   git-core \
+  glibc-gconv-extra \
   zlib-devel \
   bzip2-devel \
   xz-devel \
