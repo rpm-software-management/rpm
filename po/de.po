@@ -7,13 +7,14 @@
 # Roman Spirgi <bigant@fedoraproject.org>, 2012
 # Roman Spirgi <rspirgi@gmail.com>, 2011
 # Mario Blättermann <mario.blaettermann@gmail.com>, 2019. #zanata
+# Joachim Philipp <joachim.philipp@gmail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2022-04-07 13:03+0300\n"
-"PO-Revision-Date: 2022-08-01 13:19+0000\n"
-"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
+"PO-Revision-Date: 2022-08-27 13:19+0000\n"
+"Last-Translator: Joachim Philipp <joachim.philipp@gmail.com>\n"
 "Language-Team: German <https://translate.fedoraproject.org/projects/rpm/"
 "master/de/>\n"
 "Language: de\n"
@@ -21,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.13\n"
+"X-Generator: Weblate 4.14\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -85,17 +86,20 @@ msgstr "<Spec-Datei>"
 
 #, c-format
 msgid "build through %conf (%prep, then %conf) from <specfile>"
-msgstr ""
+msgstr "build mithilfe von %conf (%prep, dann %conf) aus <specfile>"
 
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr ""
+"build mithilfe von %build (%prep, %conf, danach Kompilieren) aus <specfile>"
 
 msgid "check build dependencies <specfile>"
-msgstr ""
+msgstr "überprüfe Bau-Abhängigkeiten <specfile>"
 
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr ""
+"bauen durch %install (%prep, %conf, %build, anschliessend Installieren) aus "
+"<specfile>"
 
 #, c-format
 msgid "verify %files section from <specfile>"
@@ -120,6 +124,8 @@ msgstr ""
 msgid ""
 "build through %prep (unpack sources and apply patches) from <source package>"
 msgstr ""
+"bauen mithilfe von %prep (Quelldateien entpacken und Patches anwenden) aus "
+"<source package>"
 
 msgid "<source package>"
 msgstr "<Quellpaket>"
