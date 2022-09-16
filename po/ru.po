@@ -6,13 +6,14 @@
 # pbludov <pbludov@gmail.com>, 2017
 # pbludov <pbludov@gmail.com>, 2017
 # V I <xasertop@gmail.com>, 2022.
+# Olga Smirnova <mistresssilvara@hotmail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2022-04-07 13:03+0300\n"
 "PO-Revision-Date: 2022-09-16 16:39+0000\n"
-"Last-Translator: V I <xasertop@gmail.com>\n"
+"Last-Translator: Olga Smirnova <mistresssilvara@hotmail.com>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/rpm/"
 "master/ru/>\n"
 "Language: ru\n"
@@ -43,7 +44,7 @@ msgstr "Эту программу можно свободно распростр
 
 #, c-format
 msgid "creating a pipe for --pipe failed: %m\n"
-msgstr ""
+msgstr "не удалось создать канал для --pipe: %m\n"
 
 #, c-format
 msgid "exec failed\n"
@@ -85,17 +86,18 @@ msgstr "<файл спецификации>"
 
 #, c-format
 msgid "build through %conf (%prep, then %conf) from <specfile>"
-msgstr ""
+msgstr "собрать до %conf (%prep, затем %conf) из <файла спецификации>"
 
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
-msgstr ""
+msgstr "собрать до %build (%prep, %conf и компиляция) из <файла спецификации>"
 
 msgid "check build dependencies <specfile>"
-msgstr ""
+msgstr "проверить зависимости сборки <файла спецификации>"
 
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr ""
+"сборка до %install (%prep, %conf, %build, установка) из <файла спецификации>"
 
 #, c-format
 msgid "verify %files section from <specfile>"
@@ -113,20 +115,24 @@ msgstr "собрать исходный пакет по <файлу специф
 msgid ""
 "build source package only from <specfile> - calculate dynamic build requires"
 msgstr ""
+"сборка только исходного пакета по <файлу спецификации> - вычислить "
+"динамические зависимости сборки"
 
 #, c-format
 msgid ""
 "build through %prep (unpack sources and apply patches) from <source package>"
 msgstr ""
+"сборка до %prep (распаковать исходники и наложить патчи) из <файла "
+"спецификации>"
 
 msgid "<source package>"
 msgstr "<исходный пакет>"
 
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
-msgstr ""
+msgstr "сборка до %build (%prep, %conf и компиляция) из <исходного пакета>"
 
 msgid "check build dependencies <source package>"
-msgstr ""
+msgstr "проверка зависимостей сборки <исходного пакета>"
 
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
@@ -137,7 +143,7 @@ msgstr ""
 
 #, c-format
 msgid "verify %files section from <source package>"
-msgstr ""
+msgstr "проверить секцию %files <исходного пакета>"
 
 msgid "build source and binary packages from <source package>"
 msgstr "собрать исходный и двоичный пакеты по <файл спецификации>"
@@ -197,14 +203,14 @@ msgstr "собрать двоичный пакет из <исходный пак
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
-"выполнить по стадию %install (%prep, %build, затем установка)  из <исходный "
-"пакет>"
+"выполнить по стадию %install (%prep, %build, затем установка) <исходного "
+"пакета>"
 
 msgid "override build root"
 msgstr "переопределить build root"
 
 msgid "run build in current directory"
-msgstr ""
+msgstr "запустить сборку в текущем каталоге"
 
 msgid "remove build tree when done"
 msgstr "после завершения удалить дерево исходников"
@@ -222,19 +228,19 @@ msgid "do not verify build dependencies"
 msgstr "не проверять зависимости пакета перед сборкой"
 
 msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
-msgstr ""
+msgstr "генерация заголовков пакетов, совместимых с устаревшим форматом rpm v3"
 
 #, c-format
 msgid "do not execute %clean stage of the build"
-msgstr ""
+msgstr "не выполнять этап сборки %clean"
 
 #, c-format
 msgid "do not execute %prep stage of the build"
-msgstr ""
+msgstr "не выполнять этап сборки %prep"
 
 #, c-format
 msgid "do not execute %check stage of the build"
-msgstr ""
+msgstr "не выполнять этап сборки %check"
 
 msgid "do not accept i18N msgstr's from specfile"
 msgstr "игнорировать строки i18N из файла спецификации"
@@ -268,7 +274,7 @@ msgstr "Ошибка открытия канала tar: %m\n"
 
 #, c-format
 msgid "Found more than one spec file in %s\n"
-msgstr ""
+msgstr "В %s найдено несколько файлов спецификации\n"
 
 #, c-format
 msgid "Failed to read spec file from %s\n"
@@ -323,7 +329,7 @@ msgid "import database from stdin header list"
 msgstr ""
 
 msgid "Database options:"
-msgstr "Параметры базы данных"
+msgstr "Параметры базы данных:"
 
 msgid "only one major mode may be specified"
 msgstr "может быть указан только один из основных режимов"
@@ -374,7 +380,7 @@ msgid "unexpected query source"
 msgstr "неожиданный источник запроса"
 
 msgid "only installation and upgrading may be forced"
-msgstr ""
+msgstr "--force можно использовать только при установке или обновлении"
 
 msgid "files may only be relocated during package installation"
 msgstr "файлы могут быть перемещены только при установке пакета"
@@ -480,33 +486,32 @@ msgstr "удалить подписи пакета"
 msgid "delete IMA and fsverity file signatures"
 msgstr ""
 
-#, fuzzy
 msgid "create rpm v3 header+payload signatures"
-msgstr "не проверять подпись заголовока и содержимого"
+msgstr "создать заголовок и подписи содержимого в формате rpm v3"
 
 msgid "sign package(s) files"
-msgstr ""
+msgstr "подписать файлы пакетов"
 
 msgid "generate fsverity signatures for package(s) files"
 msgstr ""
 
 msgid "algorithm to use for verity signatures, default sha256"
-msgstr ""
+msgstr "алгоритм для проверки подписей, по умолчанию sha256"
 
 msgid "<algorithm>"
-msgstr ""
+msgstr "<алгоритм>"
 
 msgid "use file signing cert <cert>"
 msgstr ""
 
 msgid "<cert>"
-msgstr ""
+msgstr "<серт>"
 
 msgid "use file signing key <key>"
-msgstr ""
+msgstr "использовать <ключ> для подписи файлов"
 
 msgid "<key>"
-msgstr ""
+msgstr "<ключ>"
 
 msgid "prompt for file signing key password"
 msgstr ""
@@ -559,7 +564,7 @@ msgid "no arguments given for parse"
 msgstr ""
 
 msgid "unable to parse SOURCE_DATE_EPOCH\n"
-msgstr ""
+msgstr "невозможно проанализировать SOURCE_DATE_EPOCH\n"
 
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
@@ -677,9 +682,9 @@ msgstr ""
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Символическая ссылка указывает на BuildRoot: %s -> %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Illegal character (0x%x) in filename: %s\n"
-msgstr "Недопустимый символ '%c' (0x%x)"
+msgstr "Недопустимый символ (0x%x) в имени файла: %s\n"
 
 #, c-format
 msgid "Path is outside buildroot: %s\n"
@@ -697,9 +702,9 @@ msgstr "Файл не найден: %s\n"
 msgid "Not a directory: %s\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't read content of file: %s\n"
-msgstr "%s: ошибка чтения списка файлов: %s\n"
+msgstr "Не удалось прочитать содержимое файла: %s\n"
 
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
@@ -820,9 +825,9 @@ msgstr ""
 "Обнаружен(ы) установленный(е) (но не упакованный(е)) файл(ы):\n"
 "%s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s already exists\n"
-msgstr "пакет %s уже установлен"
+msgstr "пакет %s уже установлен\n"
 
 #, c-format
 msgid "%s was mapped to multiple filenames"
@@ -1603,7 +1608,7 @@ msgstr ""
 
 #, c-format
 msgid "missing } after %%{"
-msgstr ""
+msgstr "после %%{ отсутствует \"}\""
 
 msgid "empty tag format"
 msgstr "пустой формат тэга"
@@ -1646,22 +1651,22 @@ msgid "| expected at end of expression"
 msgstr "в конце выражения ожидался \"|\""
 
 msgid "array iterator used with different sized arrays"
-msgstr ""
+msgstr "итератор массива использован с массивами различного размера"
 
 #, c-format
 msgid "RPM v3 packages are deprecated: %s\n"
 msgstr ""
 
 msgid "Error writing to stdout"
-msgstr ""
+msgstr "Ошибка записи в stdout"
 
 #, c-format
 msgid "failed to load macro file %s\n"
-msgstr ""
+msgstr "не удалось загрузить файл макросов %s\n"
 
 #, c-format
 msgid "arguments to --dbpath must begin with '/'\n"
-msgstr ""
+msgstr "аргументы --dbpath должны начинаться с '/'\n"
 
 #, c-format
 msgid ""
@@ -1690,10 +1695,10 @@ msgid "'EXPR'"
 msgstr "'EXPR'"
 
 msgid "Specify target platform"
-msgstr ""
+msgstr "Указать целевую платформу"
 
 msgid "CPU-VENDOR-OS"
-msgstr ""
+msgstr "ЦП-ПОСТАВЩИК-ОС"
 
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "использовать <FILE:...> вместо файла(ов) по умолчанию"
@@ -1753,7 +1758,7 @@ msgid "print the version of rpm being used"
 msgstr "вывести номер версии этой прграммы"
 
 msgid "debug payload file state machine"
-msgstr "отладка машины состояния присоединенных файлов "
+msgstr "отладка машины состояния присоединенных файлов"
 
 msgid "debug rpmio I/O"
 msgstr "отладка процесса ввода/вывода rpmio"
@@ -1812,7 +1817,7 @@ msgid "do not install documentation"
 msgstr "не устанавливать документацию"
 
 msgid "skip files with leading component <path> "
-msgstr "пропустить файлы в пути <путь>"
+msgstr "пропустить файлы с начальным компонентом пути <путь> "
 
 msgid "<path>"
 msgstr "<путь>"
@@ -1876,7 +1881,7 @@ msgstr "не исполнять никаких сценариев пакета(�
 
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
-msgstr "не исполнять  %%pre сценариев (если есть)"
+msgstr "не исполнять сценарии %%pre (если есть)"
 
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
@@ -2642,9 +2647,9 @@ msgstr "пакет %s предназначен для операционной �
 msgid "package %s is already installed"
 msgstr "пакет %s уже установлен"
 
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is not installed"
-msgstr "пакет %s не установлен\n"
+msgstr "пакет %s не установлен"
 
 #, c-format
 msgid "path %s in package %s is not relocatable"
@@ -2677,7 +2682,7 @@ msgid "%s is needed by %s%s"
 msgstr "%s нужен для %s%s"
 
 msgid "(installed) "
-msgstr "(установлен)"
+msgstr "(установлен) "
 
 #, c-format
 msgid "%s conflicts with %s%s"
@@ -2930,17 +2935,14 @@ msgstr ""
 msgid "Unable to reset I/O priority: %s"
 msgstr ""
 
-#, fuzzy
 msgid "syntax error while parsing =="
-msgstr "синтаксическая ошибка при анализе ==\n"
+msgstr "синтаксическая ошибка при анализе =="
 
-#, fuzzy
 msgid "syntax error while parsing &&"
-msgstr "синтаксическая ошибка при анализе &&\n"
+msgstr "синтаксическая ошибка при анализе &&"
 
-#, fuzzy
 msgid "syntax error while parsing ||"
-msgstr "синтаксическая ошибка при анализе ||\n"
+msgstr "синтаксическая ошибка при анализе ||"
 
 msgid "macro expansion returned a bare word, please use \"...\""
 msgstr ""
@@ -3127,7 +3129,7 @@ msgstr ""
 
 #, c-format
 msgid "memory alloc (%u bytes) returned NULL.\n"
-msgstr "memory alloc (%u bytes) returned NULL.\n"
+msgstr "при выделении памяти (%u байт) получен NULL.\n"
 
 #, c-format
 msgid "Unsupported version of signature: V%d\n"
@@ -3261,7 +3263,7 @@ msgid "signFile failed\n"
 msgstr ""
 
 msgid "headerPutString failed\n"
-msgstr ""
+msgstr "ошибка headerPutString\n"
 
 #, c-format
 msgid "%s: read manifest failed: %s\n"
@@ -3280,7 +3282,7 @@ msgid "interactive session"
 msgstr ""
 
 msgid "extract an archive"
-msgstr ""
+msgstr "извлечь архив"
 
 msgid "only print what would be done"
 msgstr ""
