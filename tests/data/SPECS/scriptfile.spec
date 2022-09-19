@@ -9,30 +9,41 @@ BuildArch: noarch
 %description
 
 %build
-cat << EOF > one.sh
-#!/bin/sh
-echo one
-EOF
 
-cat << EOF > two.sh
-#!/bin/sh
-echo two
-EOF
+for s in pre pretrans post posttrans preun postun verifyscript \
+         triggerprein triggerin triggerun triggerpostun \
+	 filetriggerin filetriggerun transfiletriggerin transfiletriggerun; do
+    echo ${s} > ${s}.sh
+done
 
-%pre -f one.sh
+%pre -f pre.sh
 
-%postun -f two.sh
+%pretrans -f pretrans.sh
 
-%triggerin -f one.sh -- %{name}
+%post -f post.sh
 
-%triggerun -f two.sh -- %{name}
+%posttrans -f posttrans.sh
 
-%transfiletriggerin -f one.sh -- /path
+%preun -f preun.sh
 
-%transfiletriggerun -f two.sh -- /path
+%postun -f postun.sh
 
-%filetriggerin -f one.sh -- /path
+%verifyscript -f verifyscript.sh
 
-%filetriggerin -f two.sh -- /path
+%triggerprein -f triggerprein.sh -- %{name}
+
+%triggerin -f triggerin.sh -- %{name}
+
+%triggerun -f triggerun.sh -- %{name}
+
+%triggerpostun -f triggerpostun.sh -- %{name}
+
+%transfiletriggerin -f transfiletriggerin.sh -- /path
+
+%transfiletriggerun -f transfiletriggerun.sh -- /path
+
+%filetriggerin -f filetriggerin.sh -- /path
+
+%filetriggerun -f filetriggerun.sh -- /path
 
 %files

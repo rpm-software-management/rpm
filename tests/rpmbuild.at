@@ -301,37 +301,50 @@ runroot rpm -qp --scripts --triggers --filetriggers \
 	/build/RPMS/noarch/scriptfile-1-1.noarch.rpm
 ],
 [0],
-[preinstall scriptlet (using /bin/sh):
-#!/bin/sh
-echo one
+[pretrans scriptlet (using /bin/sh):
+pretrans
+
+preinstall scriptlet (using /bin/sh):
+pre
+
+postinstall scriptlet (using /bin/sh):
+post
+
+preuninstall scriptlet (using /bin/sh):
+preun
 
 postuninstall scriptlet (using /bin/sh):
-#!/bin/sh
-echo two
+postun
+
+posttrans scriptlet (using /bin/sh):
+posttrans
+
+verify scriptlet (using /bin/sh):
+verifyscript
+
+triggerprein scriptlet (using /bin/sh) -- scriptfile
+triggerprein
 
 triggerin scriptlet (using /bin/sh) -- scriptfile
-#!/bin/sh
-echo one
+triggerin
 
 triggerun scriptlet (using /bin/sh) -- scriptfile
-#!/bin/sh
-echo two
+triggerun
+
+triggerpostun scriptlet (using /bin/sh) -- scriptfile
+triggerpostun
 
 filetriggerin scriptlet (using /bin/sh) -- /path
-#!/bin/sh
-echo one
+filetriggerin
 
-filetriggerin scriptlet (using /bin/sh) -- /path
-#!/bin/sh
-echo two
+filetriggerun scriptlet (using /bin/sh) -- /path
+filetriggerun
 
 transfiletriggerin scriptlet (using /bin/sh) -- /path
-#!/bin/sh
-echo one
+transfiletriggerin
 
 transfiletriggerun scriptlet (using /bin/sh) -- /path
-#!/bin/sh
-echo two
+transfiletriggerun
 
 ],
 [])
