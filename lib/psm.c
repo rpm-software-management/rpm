@@ -460,7 +460,8 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal)
 	/*
 	 * When we run scripts, we pass an argument which is the number of
 	 * versions of this package that will be installed when we are
-	 * finished.
+	 * finished. countCorrection is only relevant for triggers
+	 * executing under PKG_INSTALL and PKG_ERASE.
 	 */
 	int npkgs_installed = rpmdbCountPackages(rpmtsGetRdb(ts), rpmteN(te));
 	switch (goal) {
@@ -476,7 +477,6 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal)
 	case PKG_VERIFY:
 	case PKG_POSTTRANS:
 	    psm->scriptArg = npkgs_installed + isUpdate(psm->ts, psm->te);
-	    psm->countCorrection = 0;
 	    break;
 	default:
 	    break;
