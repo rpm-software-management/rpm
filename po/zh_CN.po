@@ -25,13 +25,14 @@
 # Charles Lee <lchopn@gmail.com>, 2020, 2021, 2022.
 # weidong <weidongkl@sina.com>, 2021.
 # tsinglion <tsinglion@gmail.com>, 2021.
+# Yang Yulin <yylteam@icloud.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2022-04-07 13:03+0300\n"
-"PO-Revision-Date: 2022-03-21 09:17+0000\n"
-"Last-Translator: Charles Lee <lchopn@gmail.com>\n"
+"PO-Revision-Date: 2022-09-23 10:19+0000\n"
+"Last-Translator: Yang Yulin <yylteam@icloud.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/rpm/master/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -39,7 +40,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.11.2\n"
+"X-Generator: Weblate 4.14.1\n"
 
 #, c-format
 msgid "%s: %s\n"
@@ -67,7 +68,7 @@ msgid "exec failed\n"
 msgstr "执行失败\n"
 
 msgid "create uncompressed tar file"
-msgstr ""
+msgstr "创建未压缩的 tar 文件"
 
 #, c-format
 msgid "argument is not an RPM package\n"
@@ -98,13 +99,13 @@ msgstr "<specfile>"
 
 #, c-format
 msgid "build through %conf (%prep, then %conf) from <specfile>"
-msgstr ""
+msgstr "通过 %conf（%prep，然后 %conf）从 <specfile> 构建"
 
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr ""
 
 msgid "check build dependencies <specfile>"
-msgstr ""
+msgstr "检查构建依赖项<specfile>"
 
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
@@ -139,7 +140,7 @@ msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr ""
 
 msgid "check build dependencies <source package>"
-msgstr ""
+msgstr "检查构建依赖项 <源代码包>"
 
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
