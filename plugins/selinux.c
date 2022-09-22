@@ -18,6 +18,35 @@ static inline rpmlogLvl loglvl(int iserror)
     return iserror ? RPMLOG_ERR : RPMLOG_DEBUG;
 }
 
+static int logcb(int type, const char *fmt, ...)
+{
+    char *buf = NULL;
+    va_list ap;
+    int lvl;
+
+    switch (type) {
+    case SELINUX_ERROR:
+    case SELINUX_AVC:
+	lvl = RPMLOG_ERR;
+	break;
+    case SELINUX_WARNING:
+	lvl = RPMLOG_WARNING;
+	break;
+    default:
+	lvl = RPMLOG_DEBUG;
+	break;
+    }
+
+    va_start(ap, fmt);
+    rvasprintf(&buf, fmt, ap);
+    va_end(ap);
+
+    rpmlog(lvl, "libselinux: type %d: %s", type, buf);
+    free(buf);
+
+    return 0;
+}
+
 static void sehandle_fini(int close_status)
 {
     if (sehandle) {
@@ -44,6 +73,7 @@ static rpmRC sehandle_init(int open_status)
 	if (selinux_status_open(0) < 0) {
 	    return RPMRC_FAIL;
 	}
+	selinux_set_callback(SELINUX_CB_LOG, (union selinux_callback) &logcb);
     } else if (!selinux_status_updated() && sehandle) {
 	return RPMRC_OK;
     }
