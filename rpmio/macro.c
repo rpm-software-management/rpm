@@ -784,12 +784,31 @@ exit:
 static void
 doUndefine(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 {
-    const char *n = argv[1];
-    if (!validName(mb, n, strlen(n), "%undefine")) {
+    const char *se = argv[1];
+    const char *start = se;
+    const char *s = se;
+    char *buf = xmalloc(strlen(s) + 1);
+    char * n = buf, *ne = n;
+    int c;
+
+    COPYNAME(ne, s, c);
+
+    /* Move scane over body */
+    while (iseol(*s))
+	s++;
+    se = s;
+
+    if (!validName(mb, n, ne - n, "%undefine")) {
 	mb->error = 1;
-    } else {
-	popMacro(mb->mc, n);
+	goto exit;
     }
+
+    popMacro(mb->mc, n);
+
+exit:
+    _free(buf);
+    if (parsed)
+	*parsed += se - start;
 }
 
 static void doArgvDefine(MacroBuf mb, ARGV_t argv, int level, int expand, size_t *parsed)
@@ -1285,7 +1304,7 @@ static struct builtins_s {
     { "u2p",		doFoo,		1,	0 },
     { "shescape",	doShescape,	1,	0 },
     { "uncompress",	doUncompress,	1,	0 },
-    { "undefine",	doUndefine,	1,	0 },
+    { "undefine",	doUndefine,	1,	ME_PARSE },
     { "upper",		doString,	1,	0 },
     { "url2path",	doFoo,		1,	0 },
     { "verbose",	doVerbose,	-1,	ME_PARSE },
