@@ -934,6 +934,19 @@ runroot rpm \
 ])
 AT_CLEANUP
 
+AT_SETUP([%define + %undefine in nested levels 5])
+AT_KEYWORDS([macros define undefine])
+AT_CHECK([
+# %define in a nested level and %undefine in --eval
+runroot rpm \
+    --define '%foo() %{expand:%define xxx 1} %{echo:%xxx} %{echo:%xxx}' \
+    --eval +'%undefine xxx'- \
+],
+[0],
+[+-
+])
+AT_CLEANUP
+
 AT_SETUP([%define in conditional macro])
 AT_KEYWORDS([macros])
 AT_CHECK([
