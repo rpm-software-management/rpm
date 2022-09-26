@@ -542,6 +542,21 @@ runroot rpmbuild -bb --quiet /data/SPECS/badescape.spec
 )
 AT_CLEANUP
 
+AT_SETUP([rpmbuild bad quote])
+AT_KEYWORDS([build])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpmbuild -bb --quiet /data/SPECS/badquote.spec
+],
+[1],
+[],
+[error: Missing quote: /opt/foo
+
+],
+)
+AT_CLEANUP
+
 AT_SETUP([rpmbuild prefixpostfix])
 AT_KEYWORDS([build])
 AT_CHECK([

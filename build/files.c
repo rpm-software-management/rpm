@@ -238,10 +238,11 @@ static void FileEntryFree(FileEntry entry)
 
 /**
  * strtokWithQuotes.
- * @param s
- * @param delim
+ * @param s		string to tokenize
+ * @param delim		delimiter chars
+ * @param[out] quotes	0 if unquoted, 1 if missing quote, 2 if quoted
  */
-static char *strtokWithQuotes(char *s, const char *delim)
+static char *strtokWithQuotes(char *s, const char *delim, int *quotes)
 {
     static char *olds = NULL;
     char *token;
@@ -257,7 +258,9 @@ static char *strtokWithQuotes(char *s, const char *delim)
 	return NULL;
 
     /* Leading quote escapes original delim until next quote */
+    *quotes = 0;
     if (*s == '"') {
+	*quotes = 1;
 	delim = "\"";
 	s++;
     }
@@ -277,6 +280,8 @@ static char *strtokWithQuotes(char *s, const char *delim)
 	olds = s;
     } else {
 	/* Terminate the token and make olds point past it */
+	if (*s == '"' && *quotes)
+	    *quotes = 2;
 	*s = '\0';
 	olds = s+1;
     }
@@ -884,14 +889,21 @@ static rpmRC parseForSimple(char * buf, FileEntry cur, ARGV_t * fileNames)
 {
     char *s, *t, *end;
     char *delim = " \t\n";
+    int quotes = 0;
     rpmRC res = RPMRC_OK;
     int allow_relative = (RPMFILE_PUBKEY|RPMFILE_DOC|RPMFILE_LICENSE);
 
     t = buf;
-    while ((s = strtokWithQuotes(t, delim)) != NULL) {
+    while ((s = strtokWithQuotes(t, delim, &quotes)) != NULL) {
 	t = NULL;
 	end = s + strlen(s) - 1;
 
+	/* Syntax checks */
+	if (quotes == 1) {
+	    rpmlog(RPMLOG_ERR, _("Missing quote: %s\n"), s);
+	    res = RPMRC_FAIL;
+	    break;
+	}
 	if (*end == '\n') {
 	    /* Newline escaping is not supported */
 	    rpmlog(RPMLOG_ERR, _("Trailing backslash: %s\n"), s);

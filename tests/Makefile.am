@@ -66,6 +66,7 @@ EXTRA_DIST += data/SPECS/foo.spec
 EXTRA_DIST += data/SPECS/globtest.spec
 EXTRA_DIST += data/SPECS/globesctest.spec
 EXTRA_DIST += data/SPECS/badescape.spec
+EXTRA_DIST += data/SPECS/badquote.spec
 EXTRA_DIST += data/SPECS/versiontest.spec
 EXTRA_DIST += data/SPECS/conflicttest.spec
 EXTRA_DIST += data/SPECS/configtest.spec
