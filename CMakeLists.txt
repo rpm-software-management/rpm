@@ -30,7 +30,7 @@ option(WITH_SELINUX "Build with SELinux support" ON)
 option(WITH_DBUS "Build with DBUS support" ON)
 option(WITH_AUDIT "Build with audit support" ON)
 option(WITH_FSVERITY "Build with fsverity support" OFF)
-option(WITH_IMA "Build with IMA support" off)
+option(WITH_IMAEVM "Build with IMA support" OFF)
 
 set(RPMCONFIGDIR "${CMAKE_INSTALL_PREFIX}/lib/rpm" CACHE PATH "rpm home")
 set(RPMCANONVENDOR "vendor" CACHE STRING "rpm vendor string")
@@ -132,7 +132,6 @@ pkg_check_modules(READLINE readline)
 pkg_check_modules(ZSTD libzstd)
 pkg_check_modules(LIBELF libelf)
 pkg_check_modules(LIBDW libdw)
-pkg_check_modules(FSVERITY libfsverity)
 
 if (ENABLE_SQLITE)
 	pkg_check_modules(SQLITE sqlite3 REQUIRED)
@@ -152,6 +151,10 @@ endif()
 
 if (WITH_ARCHIVE)
 	pkg_check_modules(LIBARCHIVE libarchive REQUIRED)
+endif()
+
+if (WITH_FSVERITY)
+	pkg_check_modules(FSVERITY libfsverity)
 endif()
 
 function(chkdef func)

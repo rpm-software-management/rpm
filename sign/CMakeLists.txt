@@ -1,5 +1,5 @@
 set(librpmsign_SOURCES
-	rpmgensig.c rpmsignverity.c rpmsignfiles.c
+	rpmgensig.c
 )
 
 add_library(librpmsign SHARED)
@@ -9,10 +9,12 @@ set_target_properties(librpmsign PROPERTIES
 )
 target_sources(librpmsign PRIVATE ${librpmsign_SOURCES})
 target_link_libraries(librpmsign PUBLIC librpmio librpm)
-if (WITH_IMA)
+if (WITH_IMAEVM)
+	list(APPEND librpmsign_SOURCES rpmsignfiles.c)
 	target_link_libraries(librpmsign PRIVATE imaevm)
 endif()
 if (WITH_FSVERITY)
+	list(APPEND librpmsign_SOURCES rpmsignverity.c)
 	target_link_libraries(librpmsign PRIVATE ${FSVERITY_LIBRARIES})
 endif()
 
