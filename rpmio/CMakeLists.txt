@@ -23,9 +23,8 @@ if (WITH_INTERNAL_OPENPGP)
 		target_link_libraries(librpmio PRIVATE ${LIBGCRYPT_LIBRARIES})
 	endif()
 else()
-	find_library(RPMSEQUOIA librpm_sequoia.so.0 REQUIRED)
 	list(APPEND librpmio_SOURCES rpmpgp_sequoia.c)
-	target_link_libraries(librpmio PRIVATE ${RPMSEQUOIA})
+	target_link_libraries(librpmio PRIVATE ${RPMSEQUOIA_LIBRARIES})
 endif()
 
 set_target_properties(librpmio PROPERTIES

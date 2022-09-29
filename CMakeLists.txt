@@ -157,6 +157,10 @@ if (WITH_FSVERITY)
 	pkg_check_modules(FSVERITY libfsverity)
 endif()
 
+if (NOT WITH_INTERNAL_OPENPGP)
+	pkg_check_modules(RPMSEQUOIA rpm-sequoia REQUIRED)
+endif()
+
 function(chkdef func)
 	string(TOUPPER ${func} FUNC)
 	set(HAVENAME HAVE_${FUNC})
