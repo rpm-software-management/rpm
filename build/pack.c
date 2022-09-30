@@ -299,7 +299,7 @@ static char *getIOFlags(Package pkg)
 	    compr = NULL;
 	} else if (rstreq(s+1, "gzdio")) {
 	    compr = "gzip";
-#ifdef have_bzlib_h
+#ifdef HAVE_BZLIB_H
 	} else if (rstreq(s+1, "bzdio")) {
 	    compr = "bzip2";
 	    /* Add prereq on rpm version that understands bzip2 payloads */
