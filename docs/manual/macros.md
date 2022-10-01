@@ -157,7 +157,7 @@ or shortly
 0%{!?with_python3:1}
 ```
 
-%"{?macro_name}" is a shortcut for "%{?macro_name:%macro_name}".
+"%{?macro_name}" is a shortcut for "%{?macro_name:%macro_name}".
 
 For more complex tests, use [expressions](#expression-expansion) or [Lua](lua).
 Note that `%if`, `%ifarch` and the like are not macros, they are spec
