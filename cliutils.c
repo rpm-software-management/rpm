@@ -1,7 +1,4 @@
 #include "system.h"
-#ifdef HAVE_MCHECK_H
-#include <mcheck.h>
-#endif
 #include <errno.h>
 #include <sys/wait.h>
 
