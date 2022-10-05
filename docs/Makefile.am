@@ -1,6 +1,8 @@
 ## Process this file with automake to produce Makefile.in
 
+if PANDOC
 SUBDIRS = man
+endif
 
 EXTRA_DIST =
 
