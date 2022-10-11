@@ -1196,6 +1196,10 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTagVal tag,
 	free(t);
      }
 
+    /* Handle missing epoch, see mireSkip() */
+    if (tag == RPMTAG_EPOCH && pattern == NULL)
+	pattern = "0";
+
     if (mi == NULL || pattern == NULL)
 	return rc;
 
