@@ -651,7 +651,6 @@ runroot rpm -q versiontest
 [versiontest-1.0-1.noarch
 ],
 [])
-# TODO: the same with epoch vs no epoch
 
 # Test freshen
 AT_CHECK([
@@ -712,6 +711,146 @@ runroot rpm -q versiontest
 ],
 [])
 
+AT_CLEANUP
+
+AT_SETUP([rpm upgrade/downgrade epoch])
+RPMDB_INIT
+
+runroot rpmbuild --quiet -bb --define "ver 1.0" /data/SPECS/versiontest.spec
+runroot_other cp /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm /tmp/noepoch.rpm
+for e in 1 2; do
+    runroot rpmbuild --quiet -bb --define "ver 1.0" --define "epoch ${e}" /data/SPECS/versiontest.spec
+    runroot_other cp /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm /tmp/epoch${e}.rpm
+done
+# for testing sanity
+runroot_other echo '%_query_all_fmt %%{nevra}' > \
+    ${RPMTEST}/$(runroot rpm --eval '%_rpmmacrodir')/macros.epoch
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -U /tmp/noepoch.rpm
+runroot rpm -U /tmp/epoch1.rpm
+runroot rpm -q versiontest
+],
+[0],
+[versiontest-1:1.0-1.noarch
+],
+[])
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -U /tmp/epoch1.rpm
+runroot rpm -U /tmp/epoch2.rpm
+runroot rpm -q versiontest
+],
+[0],
+[versiontest-2:1.0-1.noarch
+],
+[])
+
+# XXX this should be FAIL, but don't want to fail all the test just because...
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -U /tmp/epoch1.rpm
+runroot rpm -U /tmp/noepoch.rpm
+],
+[2],
+[],
+[	package versiontest-1:1.0-1.noarch (which is newer than versiontest-1.0-1.noarch) is already installed
+	package versiontest-1.0-1.noarch is already installed
+])
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -U /tmp/epoch2.rpm
+runroot rpm -U /tmp/epoch1.rpm
+],
+[2],
+[],
+[	package versiontest-2:1.0-1.noarch (which is newer than versiontest-1:1.0-1.noarch) is already installed
+])
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -U /tmp/epoch2.rpm
+runroot rpm -U --oldpackage /tmp/epoch1.rpm
+runroot rpm -q versiontest
+],
+[0],
+[versiontest-1:1.0-1.noarch
+],
+[])
+
+# XXX this should be FAIL, but don't want to fail all the test just because...
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -U /tmp/epoch1.rpm
+runroot rpm -U --oldpackage /tmp/noepoch.rpm
+runroot rpm -q versiontest
+],
+[0],
+[versiontest-1:1.0-1.noarch
+],
+[	package versiontest-1.0-1.noarch is already installed
+])
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -U /tmp/noepoch.rpm
+runroot rpm -e versiontest-1.0-1
+],
+[0],
+[],
+[])
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -U /tmp/epoch1.rpm
+runroot rpm -e versiontest-1.0-1
+],
+[0],
+[],
+[])
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -i /tmp/noepoch.rpm
+runroot rpm -i /tmp/epoch1.rpm
+
+# gah, versions listed on stdout but error message on stderr
+runroot rpm -e versiontest 1>&2
+runroot rpm -e versiontest-1.0-1 1>&2
+runroot rpm -e versiontest-1:1.0-1 1>&2
+runroot rpm -q versiontest
+],
+[0],
+[versiontest-1.0-1.noarch
+],
+[error: "versiontest" specifies multiple packages:
+  versiontest-1.0-1.noarch
+  versiontest-1:1.0-1.noarch
+error: "versiontest-1.0-1" specifies multiple packages:
+  versiontest-1.0-1.noarch
+  versiontest-1:1.0-1.noarch
+])
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -U /tmp/noepoch.rpm
+runroot rpm -U --replacepkgs /tmp/noepoch.rpm
+],
+[0],
+[],
+[])
+
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -U /tmp/epoch1.rpm
+runroot rpm -U --replacepkgs /tmp/epoch1.rpm
+],
+[0],
+[],
+[])
 AT_CLEANUP
 
 AT_SETUP([rpm -U obsoleted packages])
