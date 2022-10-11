@@ -161,6 +161,19 @@ rpmdbMatchIterator rpmtsPrunedIterator(rpmts ts, rpmDbiTagVal tag,
     return mi;
 }
 
+rpmdbMatchIterator rpmtsTeIterator(rpmts ts, rpmte te, int prune)
+{
+    rpmdbMatchIterator mi = rpmtsPrunedIterator(ts, RPMDBI_NAME, rpmteN(te), prune);
+    rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP, rpmteE(te));
+    rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP, rpmteV(te));
+    rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP, rpmteR(te));
+    if (rpmtsColor(ts)) {
+	rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_STRCMP, rpmteA(te));
+	rpmdbSetIteratorRE(mi, RPMTAG_OS, RPMMIRE_STRCMP, rpmteO(te));
+    }
+    return mi;
+}
+
 /**
  * Decides whether to skip a package upgrade/obsoletion on TE color.
  *

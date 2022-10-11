@@ -540,16 +540,7 @@ void rpmpsmNotify(rpmpsm psm, int what, rpm_loff_t amount)
  */
 static void markReplacedInstance(rpmts ts, rpmte te)
 {
-    rpmdbMatchIterator mi = rpmtsPrunedIterator(ts, RPMDBI_NAME, rpmteN(te), 1);
-    rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP, rpmteE(te));
-    rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP, rpmteV(te));
-    rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP, rpmteR(te));
-    /* XXX shouldn't we also do this on colorless transactions? */
-    if (rpmtsColor(ts)) {
-	rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_STRCMP, rpmteA(te));
-	rpmdbSetIteratorRE(mi, RPMTAG_OS, RPMMIRE_STRCMP, rpmteO(te));
-    }
-
+    rpmdbMatchIterator mi = rpmtsTeIterator(ts, te, 1);
     while (rpmdbNextIterator(mi) != NULL) {
 	rpmteSetDBInstance(te, rpmdbGetIteratorOffset(mi));
 	break;

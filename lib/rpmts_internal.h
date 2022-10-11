@@ -116,6 +116,10 @@ RPM_GNUC_INTERNAL
 rpmdbMatchIterator rpmtsPrunedIterator(rpmts ts, rpmDbiTagVal tag,
 					      const char * key, int prune);
 
+/* Return rpmdb iterator locked to a single rpmte */
+RPM_GNUC_INTERNAL
+rpmdbMatchIterator rpmtsTeIterator(rpmts ts, rpmte te, int prune);
+
 RPM_GNUC_INTERNAL
 rpmal rpmtsCreateAl(rpmts ts, rpmElementTypes types);
 
