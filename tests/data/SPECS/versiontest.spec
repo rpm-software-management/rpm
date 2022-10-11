@@ -1,6 +1,9 @@
 Name:		versiontest
 Version:	%{ver}
 Release:	1
+%if %{defined:epoch}
+Epoch:		%{epoch}
+%endif
 Summary:	Testing version behavior
 
 Group:		Testing
