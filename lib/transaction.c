@@ -1344,15 +1344,7 @@ static void checkAdded(rpmts ts, rpmprobFilterFlags probFilter, rpmte p)
 
     if (!(probFilter & RPMPROB_FILTER_REPLACEPKG) && rpmteAddOp(p) != RPMTE_REINSTALL) {
 	Header h;
-	rpmdbMatchIterator mi;
-	mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(p), 0);
-	rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP, rpmteE(p));
-	rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP, rpmteV(p));
-	rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP, rpmteR(p));
-	if (rpmtsColor(ts)) {
-	    rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_STRCMP, rpmteA(p));
-	    rpmdbSetIteratorRE(mi, RPMTAG_OS, RPMMIRE_STRCMP, rpmteO(p));
-	}
+	rpmdbMatchIterator mi = rpmtsTeIterator(ts, p, 0);
 
 	if ((h = rpmdbNextIterator(mi)) != NULL) {
 	    rpmteAddProblem(p, RPMPROB_PKG_INSTALLED, NULL, NULL,
