@@ -891,7 +891,6 @@ runroot rpm -U /tmp/noepoch.rpm
 [2],
 [],
 [	package versiontest-1:1.0-1.noarch (which is newer than versiontest-1.0-1.noarch) is already installed
-	package versiontest-1.0-1.noarch is already installed
 ])
 
 AT_CHECK([
@@ -923,10 +922,9 @@ runroot rpm -U --oldpackage /tmp/noepoch.rpm
 runroot rpm -q versiontest
 ],
 [0],
-[versiontest-1:1.0-1.noarch
+[versiontest-1.0-1.noarch
 ],
-[	package versiontest-1.0-1.noarch is already installed
-])
+[])
 
 AT_CHECK([
 RPMDB_INIT
