@@ -873,6 +873,5 @@ AC_CONFIG_FILES([Makefile
 	python/Makefile
  	tests/Makefile
  	plugins/Makefile
-	python/setup.py
   ])
 AC_OUTPUT
