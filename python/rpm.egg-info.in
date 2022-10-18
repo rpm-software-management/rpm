@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: @PROJECT_NAME@
+Version: @PROJECT_VERSION@
+Summary: Python bindings for rpm
+Home-page: @PROJECT_HOMEPAGE_URL@
+Author: Rpm community
+Author-email: rpm-maint@lists.rpm.org
+License: GNU General Public License v2
+Description: Python bindings for rpm
+Platform: UNKNOWN
