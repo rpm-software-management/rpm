@@ -3,7 +3,7 @@
 include $(top_srcdir)/rpm.am
 AM_CFLAGS = @RPMCFLAGS@
 
-EXTRA_DIST = README.md
+EXTRA_DIST = README.md populate
 CLEANFILES =
 
 ##
@@ -194,24 +194,8 @@ EXTRA_DIST += atlocal.in
 
 check_DATA = atconfig atlocal $(TESTSUITE)
 
-# The chmod is needed when copying from read-only sources (eg in distcheck)
 populate_testing: $(check_DATA)
-	if [ -d testing ]; then chmod -R u+w testing/; fi
-	rm -rf testing
-	mkdir -p testing/$(bindir)
-	ln -s ./$(bindir) testing/bin
-	mkdir -p testing/usr
-	ln -s ../bin testing/usr/bin
-	(cd ${top_builddir} && \
-	          $(MAKE) DESTDIR=${abs_builddir}/testing install)
-	cp -r ${srcdir}/data/ testing/
-	for d in dev etc magic tmp var; do if [ ! -d testing/$${d} ]; then mkdir testing/$${d}; fi; done
-	for node in urandom stdin stderr stdout null full; do ln -s /dev/$${node} testing/dev/$${node}; done
-	for cf in hosts resolv.conf passwd shadow group gshadow mtab ; do [ -f /etc/$${cf} ] && ln -s /etc/$${cf} testing/etc/$${cf}; done
-	for prog in gzip cat cp patch tar sh ln chmod rm mkdir uname grep sed find file ionice mktemp nice cut sort diff touch install wc coreutils xargs; do p=`which $${prog}`; if [ "$${p}" != "" ]; then ln -s $${p} testing/$(bindir)/; fi; done
-	for d in /proc /sys /selinux /etc/selinux; do if [ -d $${d} ]; then ln -s $${d} testing/$${d}; fi; done
-	(cd testing/magic && file -C)
-	chmod -R u-w testing/
+	${srcdir}/populate "${top_builddir}" "${abs_builddir}" "$(srcdir)" "$(bindir)" "$(MAKE)"
 
 if HAVE_FAKECHROOT
 check-local: $(check_DATA) populate_testing
