@@ -108,6 +108,7 @@ function(makemacros)
 	configure_file(rpmrc.in rpmrc @ONLY)
 	configure_file(macros.in macros @ONLY)
 	configure_file(rpmpopt.in rpmpopt-${PROJECT_VERSION} @ONLY)
+	configure_file(rpm.pc.in rpm.pc)
 
 	install(CODE "execute_process(
 		COMMAND ${CMAKE_SOURCE_DIR}/installplatform
@@ -314,6 +315,7 @@ foreach(f macros rpmrc rpmpopt-${PROJECT_VERSION})
 	install(FILES ${CMAKE_BINARY_DIR}/${f} DESTINATION ${RPMCONFIGDIR})
 endforeach()
 
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rpm.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 install(DIRECTORY DESTINATION ${RPMCONFIGDIR}/lua)
 install(DIRECTORY DESTINATION ${RPMCONFIGDIR}/macros.d)
 install(FILES CONTRIBUTING.md COPYING CREDITS INSTALL README TYPE DOC)
