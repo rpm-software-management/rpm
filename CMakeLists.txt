@@ -13,6 +13,7 @@ project(rpm
 )
 
 # user configurable stuff
+option(ENABLE_NLS "Enable native language support" ON)
 option(ENABLE_PYTHON "Enable Python bindings" ON)
 option(ENABLE_PLUGINS "Enable plugin support" ON)
 option(ENABLE_WERROR "Stop build on warnings" OFF)
@@ -134,6 +135,11 @@ pkg_check_modules(ZSTD libzstd)
 pkg_check_modules(LIBELF libelf)
 pkg_check_modules(LIBDW libdw)
 
+if (ENABLE_NLS)
+	find_package(Intl REQUIRED)
+endif()
+
+find_package(Intl)
 if (ENABLE_SQLITE)
 	pkg_check_modules(SQLITE sqlite3 REQUIRED)
 endif()
