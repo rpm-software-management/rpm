@@ -161,10 +161,13 @@ if (NOT WITH_INTERNAL_OPENPGP)
 	pkg_check_modules(RPMSEQUOIA rpm-sequoia REQUIRED)
 endif()
 
-function(chkdef func)
+function(chkdef func req)
 	string(TOUPPER ${func} FUNC)
 	set(HAVENAME HAVE_${FUNC})
 	check_function_exists(${func} ${HAVENAME})
+	if (${req} AND NOT ${HAVENAME})
+		message(FATAL_ERROR "required function ${func} not found")
+	endif()
 endfunction()
 
 set(OPTFUNCS
@@ -172,14 +175,17 @@ set(OPTFUNCS
 	getauxval setprogname __progname syncfs sched_getaffinity unshare
 	secure_getenv __secure_getenv)
 foreach(f ${OPTFUNCS})
-    chkdef(${f})
+    chkdef(${f} FALSE)
 endforeach()
 
-function(chkhdr inc)
+function(chkhdr inc req)
 	string(MAKE_C_IDENTIFIER ${inc} ID)
 	string(TOUPPER ${ID} INC)
 	set(HAVENAME HAVE_${INC})
 	check_include_file(${inc} ${HAVENAME})
+	if (${req} AND NOT ${HAVENAME})
+		message(FATAL_ERROR "required include ${inc} not found")
+	endif()
 endfunction()
 
 set(OPTINCS
@@ -187,7 +193,7 @@ set(OPTINCS
 	sys/utsname.h sys/systemcfg.h sys/param.h sys/auxv.h
 )
 foreach(f ${OPTINCS})
-    chkhdr(${f})
+    chkhdr(${f} FALSE)
 endforeach()
 
 configure_file(cmconfig.h.in config.h)
