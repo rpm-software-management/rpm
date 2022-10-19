@@ -1,0 +1,6 @@
+# Signature of the current package.
+m4_define([AT_PACKAGE_NAME],      [@PROJECT_NAME@])
+m4_define([AT_PACKAGE_TARNAME],   [@PROJECT_NAME@])
+m4_define([AT_PACKAGE_VERSION],   [@PROJECT_VERSION@])
+m4_define([AT_PACKAGE_STRING],    [@PROJECT_NAME@ @PROJECT_VERSION@])
+m4_define([AT_PACKAGE_BUGREPORT], [@PROJECT_HOMEPAGE_URL@])
