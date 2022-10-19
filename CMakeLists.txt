@@ -178,6 +178,16 @@ foreach(f ${OPTFUNCS})
     chkdef(${f} FALSE)
 endforeach()
 
+set(REQFUNCS
+	mkstemp getcwd basename dirname realpath setenv unsetenv regcomp
+	utimes getline localtime_r statvfs getaddrinfo
+	openat mkdirat fstatat linkat symlinkat mkfifoat mknodat unlinkat
+	renameat utimensat fchmodat fchownat stpcpy stpncpy
+)
+foreach(f ${REQFUNCS})
+    chkdef(${f} TRUE)
+endforeach()
+
 function(chkhdr inc req)
 	string(MAKE_C_IDENTIFIER ${inc} ID)
 	string(TOUPPER ${ID} INC)
