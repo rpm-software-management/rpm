@@ -315,6 +315,12 @@ foreach(f macros rpmrc rpmpopt-${PROJECT_VERSION})
 	install(FILES ${CMAKE_BINARY_DIR}/${f} DESTINATION ${RPMCONFIGDIR})
 endforeach()
 
+find_program(AUTOM4TE autom4te)
+find_program(FAKECHROOT fakechroot)
+if (DEFINED AUTOM4TE AND DEFINED FAKECHROOT)
+	add_subdirectory(tests)
+endif()
+
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rpm.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 install(DIRECTORY DESTINATION ${RPMCONFIGDIR}/lua)
 install(DIRECTORY DESTINATION ${RPMCONFIGDIR}/macros.d)

@@ -1,0 +1,81 @@
+set(PYTHON ${Python3_EXECUTABLE})
+set(pyexecdir ${Python3_SITEARCH})
+set(usrbindir ${CMAKE_INSTALL_FULL_BINDIR})
+set(usrlibdir ${CMAKE_INSTALL_FULL_LIBDIR})
+if (${WITH_INTERNAL_OPENPGP})
+	if (${WITH_OPENSSL})
+		set(CRYPTO openssl)
+	else()
+		set(CRYPTO libgcrypt)
+	endif()
+else()
+	set(CRYPTO sequoia)
+endif()
+
+configure_file(atlocal.in atlocal @ONLY)
+configure_file(package.m4.in package.m4 @ONLY)
+
+set(TESTSUITE_AT
+	rpmtests.at
+	rpmgeneral.at
+	rpmquery.at
+	rpmverify.at
+	rpmdb.at
+	rpmbuild.at
+	rpmbuildid.at
+	rpmi.at
+	rpme.at
+	rpmvercmp.at
+	rpmdeps.at
+	rpmconflict.at
+	rpmconfig.at
+	rpmconfig2.at
+	rpmconfig3.at
+	rpmreplace.at
+	rpmmacro.at
+	rpmpython.at
+	rpmdepmatch.at
+	rpmscript.at
+	rpmsigdig.at
+	rpmspec.at
+	rpmio.at
+	rpmorder.at
+	rpmvfylevel.at
+	rpmpgp.at
+)
+
+set(AUTOTEST ${AUTOM4TE} --language=autotest)
+add_custom_target(rpmtests COMMAND
+	${AUTOTEST} -I ${CMAKE_CURRENT_SOURCE_DIR} -o rpmtests rpmtests.at
+	SOURCES ${TESTSUITE_AT}
+)
+add_custom_target(populate_testing COMMAND
+	${CMAKE_CURRENT_SOURCE_DIR}/populate
+		${CMAKE_BINARY_DIR}
+		${CMAKE_CURRENT_BINARY_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}
+		${CMAKE_INSTALL_FULL_BINDIR}
+		${CMAKE_MAKE_PROGRAM}
+	SOURCES populate
+)
+
+include(ProcessorCount)
+ProcessorCount(nproc)
+if (nproc GREATER 1)
+	set(jobs -j${nproc})
+endif()
+
+add_custom_target(check ${CMAKE_COMMAND} -E env
+	"abs_builddir=${CMAKE_CURRENT_BINARY_DIR}"
+	"abs_srcdir=${CMAKE_CURRENT_SOURCE_DIR}"
+	"abs_top_builddir=${CMAKE_BINARY_DIR}"
+	./rpmtests ${jobs}
+	DEPENDS populate_testing
+	DEPENDS rpmtests
+)
+
+set (testprogs rpmpgpcheck rpmpgppubkeyfingerprint)
+foreach(prg ${testprogs})
+	add_executable(${prg} ${prg}.c)
+	target_link_libraries(${prg} PRIVATE librpmio)
+endforeach()
