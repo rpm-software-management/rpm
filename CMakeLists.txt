@@ -200,7 +200,7 @@ function(chkhdr inc req)
 endfunction()
 
 set(OPTINCS
-	limits.h getopt.h
+	unistd.h limits.h getopt.h
 	sys/utsname.h sys/systemcfg.h sys/param.h sys/auxv.h
 )
 foreach(f ${OPTINCS})
