@@ -174,7 +174,7 @@ endfunction()
 set(OPTFUNCS
 	stpcpy stpncpy putenv mempcpy fdatasync lutimes mergesort
 	getauxval setprogname __progname syncfs sched_getaffinity unshare
-	secure_getenv __secure_getenv)
+	secure_getenv __secure_getenv mremap)
 foreach(f ${OPTFUNCS})
     chkdef(${f} FALSE)
 endforeach()
@@ -231,6 +231,9 @@ if (${ZSTD_FOUND})
 endif()
 if (${ICONV_FOUND})
 	add_compile_definitions(HAVE_ICONV)
+endif()
+if (${READLINE_FOUND})
+	add_compile_definitions(HAVE_READLINE)
 endif()
 
 if (ENABLE_WERROR)
