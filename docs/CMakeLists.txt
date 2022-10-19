@@ -2,6 +2,15 @@ find_program(PANDOC NAMES pandoc)
 
 add_subdirectory(man)
 
+find_package(Doxygen)
+if (DEFINED DOXYGEN_FOUND)
+	# XXX API docs should be pre-built in tarballs
+	file(GLOB headers ${CMAKE_SOURCE_DIR}/include/rpm/*.h)
+	doxygen_add_docs(apidoc librpm/Doxyheader.h ${headers}
+			ALL USE_STAMP_FILE)
+	install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html TYPE DOC)
+endif()
+
 set(refman
 	manual/arch_dependencies.md
 	manual/autosetup.md
