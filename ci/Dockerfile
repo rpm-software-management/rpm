@@ -11,8 +11,7 @@ RUN sed -i -e "s:^gpgcheck=.$:gpgcheck=1:g" /etc/yum.repos.d/*.repo
 RUN dnf -y update
 RUN dnf -y install \
   autoconf \
-  automake \
-  libtool \
+  cmake \
   gettext-devel \
   debugedit \
   doxygen \
@@ -53,22 +52,12 @@ RUN dnf -y install \
 
 COPY . .
 
-RUN autoreconf -vfi
-RUN ./configure \
-  --with-crypto=libgcrypt \
-  --with-selinux \
-  --with-cap \
-  --with-acl \
-  --with-audit \
-  --with-fsverity \
-  --enable-ndb \
-  --enable-bdb-ro \
-  --enable-sqlite \
-  --enable-python \
-  --enable-silent-rules \
-  --enable-werror
+WORKDIR /srv/rpm/_build
+RUN cmake \
+	-DENABLE_WERROR=ON \
+	-DENABLE_BDB_RO=ON \
+	-DWITH_FSVERITY=ON \
+	-DWITH_IMAEVM=ON \
+	..
 
-# --enable-werror equivalent for Doxygen
-RUN sed -i -e "/^WARN_AS_ERROR/s/ NO/ YES/g" docs/librpm.doxy.in
-
-CMD make -j$(nproc) distcheck TESTSUITEFLAGS=-j$(nproc); rc=$?; find . -name rpmtests.log|xargs cat; exit $rc
+CMD make -j$(nproc) check; rc=$?; find . -name rpmtests.log|xargs cat; exit $rc
