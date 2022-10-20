@@ -164,7 +164,7 @@ if (WITH_ARCHIVE)
 endif()
 
 if (WITH_FSVERITY)
-	pkg_check_modules(FSVERITY libfsverity)
+	pkg_check_modules(FSVERITY libfsverity REQUIRED)
 endif()
 
 if (NOT WITH_INTERNAL_OPENPGP)
