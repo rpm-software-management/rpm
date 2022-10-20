@@ -1,4 +1,0 @@
-include Makefile
-
-snapshot:
-	@$(MAKE) dist VERSION=$(VERSION)-git`git rev-list --count HEAD`
