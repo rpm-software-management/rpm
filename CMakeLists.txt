@@ -111,8 +111,9 @@ function(makemacros)
 	configure_file(rpmpopt.in rpmpopt-${PROJECT_VERSION} @ONLY)
 	configure_file(rpm.pc.in rpm.pc)
 
-	install(CODE "execute_process(
-		COMMAND ${CMAKE_SOURCE_DIR}/installplatform
+	install(CODE "execute_process(COMMAND
+		${CMAKE_COMMAND} -E env pkglibdir=${RPMCONFIGDIR}
+			${CMAKE_SOURCE_DIR}/installplatform
 			rpmrc platform macros
 			${RPMCANONVENDOR} ${RPMCANONOS} ${RPMCANONGNU})"
 	)
