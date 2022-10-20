@@ -62,7 +62,21 @@ set(GID_0_GROUP root)
 function(makemacros)
 	set(prefix ${CMAKE_INSTALL_PREFIX})
 	set(exec_prefix "\${prefix}")
-	set(CMAKE_INSTALL_PREFIX "\${prefix}")
+	set(bindir "\${exec_prefix}/${CMAKE_INSTALL_BINDIR}")
+	set(sbindir "\${exec_prefix}/${CMAKE_INSTALL_SBINDIR}")
+	set(libexecdir "\${exec_prefix}/${CMAKE_INSTALL_LIBEXECDIR}")
+	set(datarootdir "\${prefix}/${CMAKE_INSTALL_DATAROOTDIR}")
+	set(datadir "\${datarootdir}")
+	set(sysconfdir "${CMAKE_INSTALL_FULL_SYSCONFDIR}")
+	set(sharedstatedir "${CMAKE_INSTALL_FULL_SHAREDSTATEDIR}")
+	set(localstatedir "${CMAKE_INSTALL_FULL_LOCALSTATEDIR}")
+	set(libdir "\${prefix}/=LIB=")
+	set(includedir "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
+	set(oldincludedir "${CMAKE_INSTALL_FULL_OLDINCLUDEDIR}")
+	set(infodir "\${datarootdir}/${CMAKE_INSTALL_INFODIR}")
+	set(mandir "\${datarootdir}/${CMAKE_INSTALL_MANDIR}")
+	set(RUNDIR /run)
+
 	set(acutils
 		awk ar as cpp cxx
 	)
@@ -79,21 +93,9 @@ function(makemacros)
 		string(TOUPPER ${V} n)
 		set(__${n} /usr/bin/${V})
 	endforeach()
-	set(macrodirs
-		BINDIR SBINDIR LIBEXECDIR SYSCONFDIR RUNSTATEDIR
-		SHAREDSTATEDIR LOCALSTATEDIR RUNSTATEDIR LIB LIBDIR
-		INCLUDEDIR OLDINCLUDEDIR DATADIR DATAROOTDIR MANDIR
-		DOCDIR INFODIR
-	)
-	foreach (V ${macrodirs})
-		string(TOLOWER ${V} n)
-		set(${n} ${CMAKE_INSTALL_FULL_${V}})
-	endforeach()
 
 	set(DB_BACKEND sqlite)
 	set(__FIND_DEBUGINFO /usr/bin/find-debuginfo)
-	set(RUNDIR /run)
-	set(localstatedir /var)
 
 	set(host_cpu ${CMAKE_HOST_SYSTEM_PROCESSOR})
 	string(TOLOWER ${CMAKE_HOST_SYSTEM_NAME} host_os)
