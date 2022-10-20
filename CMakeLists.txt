@@ -95,7 +95,6 @@ function(makemacros)
 	endforeach()
 
 	set(DB_BACKEND sqlite)
-	set(__FIND_DEBUGINFO /usr/bin/find-debuginfo)
 
 	set(host_cpu ${CMAKE_HOST_SYSTEM_PROCESSOR})
 	string(TOLOWER ${CMAKE_HOST_SYSTEM_NAME} host_os)
@@ -170,6 +169,8 @@ endif()
 if (NOT WITH_INTERNAL_OPENPGP)
 	pkg_check_modules(RPMSEQUOIA rpm-sequoia REQUIRED)
 endif()
+
+find_program(__FIND_DEBUGINFO find-debuginfo)
 
 function(chkdef func req)
 	string(TOUPPER ${func} FUNC)
