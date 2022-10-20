@@ -1,6 +1,10 @@
 To build RPM you will need several other packages:
 --------------------------------------------------
 
+The cmake build system, version 3.10 (or thereabouts) or later.
+It is available from
+    https://cmake.org/
+
 The popt library for option parsing, must be version 1.13 or later.
 It is available from
     http://ftp.rpm.org/popt/
@@ -23,9 +27,11 @@ The source for the file utility + library is available from
     ftp://ftp.astron.com/pub/file/
 
 You will need a cryptographic library to support digests and
-signatures.  This library may be libgcrypt, OpenSSL, or Sequoia PGP,
-and can be specified with the --with-crypto=[libgcrypt|openssl|sequoia]
-argument to configure.  libgcrypt is the default.
+signatures. This depends on the OpenPGP parser used: if using the deprecated
+internal parser (-DWITH_INTERNAL_OPENPGP=ON), the default is libgcrypt,
+but alternatively OpenSSL can be used by specifying -DWITH_OPENSSL=ON.
+If -DWITH_INTERNAL_OPENPGP=OFF is specified, Sequoia will be used for
+all cryptography.
 
 Sequoia is used via the rpm-sequoia library, which is available from
 https://github.com/rpm-software-management/rpm-sequoia
@@ -45,17 +51,18 @@ Debian: https://lists.debian.org/debian-legal/2002/10/msg00113.html
 The OpenSSL crypto library is available from https://www.openssl.org/
 
 RPM needs a database engine for normal operation. The main options are
-"ndb" (--enable-ndb) and "sqlite" (--enable-sqlite).
+"ndb" and "sqlite", both enabled by default but can be disabled with
+-DENABLE_NDB=OFF and -DENABLE_SQLITE=OFF respetively.
+
 Additionally standalone support for read-only BDB databases is available as
-"bdb_ro" (--enable-bdb-ro) to aid with migration from BDB.
+"bdb_ro" (-DENABLE_BDB_RO=ON) to aid with migration from BDB.
 
 The ndb and bdb_ro backends have no external dependencies.
 SQLite >= 3.22.0 is required for the sqlite database backend.
 SQLite is available from https://www.sqlite.org/
 
-If SELinux support is desired, it can be enabled with --with-selinux option
-to configure and libselinux development environment installed. SELinux
-is available from
+SELinux support is enabled by default but can be disabled with
+-DWITH_SELINUX=OFF. libselinux is is available from
     http://www.nsa.gov/selinux/
 
 It may be desired to install bzip2, gzip, and xz/lzma so that RPM can use these
@@ -66,18 +73,19 @@ These are available from
     http://www.bzip.org
     http://tukaani.org/xz/
 
-If you want to build the Python bindings to RPM library, it can be enabled
-with --enable-python option to configure. You'll need to have Python >= 3.1
+Python bindings to RPM library are built by default, but it can be disabled
+with -DENABLE_PYTHON=OFF. You'll need to have Python >= 3.1
 runtime and C API development environment installed.
 Python is available from:
     http://www.python.org/
 
-To enable POSIX.1e draft 15 file capabilities support, configure with
---with-cap. You'll also need recent libcap, available from:
+POSIX.1e draft 15 file capabilities support is enabled by default, to
+disable use -DWITH_CAP=OFF. You'll also need recent libcap, available from:
     http://ftp.kernel.org/pub/linux/libs/security/linux-privs/libcap2/
 
-To enable POSIX 1003.1e draft 17 ACL verification support, configure with
---with-acl. You'll also need the ACL library, available from:
+POSIX 1003.1e draft 17 ACL verification support is enabled by default,
+to disable use -DWITH_ACL=OFF. You'll also need the ACL library,
+available from:
     ftp://oss.sgi.com/projects/xfs/cmd_tars/
 
 For best results you should compile with GCC and GNU Make.  Users have
@@ -101,8 +109,8 @@ of GPG, available from
     http://www.gnupg.org/
 
 OpenMP multithreading support is automatically enabled if your C compiler has
-support for OpenMP version 4.5 or higher (to disable, pass the --disable-openmp
-option to configure).  For GCC, OpenMP 4.5 is fully supported since GCC 6.1,
+support for OpenMP version 4.5 or higher (to disable, use -DENABLE_OPENMP=OFF
+option).  For GCC, OpenMP 4.5 is fully supported since GCC 6.1,
 which is available from
     http://www.gnu.org/
 
@@ -115,36 +123,17 @@ Rpm requires a POSIX.1-2008 level operating system.
 To compile RPM:
 --------------
 
-RPM uses a small shell script to run: libtool, autoconf,
-automake. This step should not be necessary if you are running a
-released version of rpm, however if you have gotten the rpm sources
-directly from the source code repository, you need to generate
-intermediate files by running the autogen.sh script.
+    mkdir _build
+    cd _build
+    cmake ..
 
-The autogen.sh script checks that the required tools are installed.
-The autogen.sh script also runs configure for you and passes the command line
-arguments to configure.  To run it without configure type:
+You can view the various cmake compile options with:
+    cmake -L ..
 
-    ./autogen.sh --noconfigure
+and fine tune the built components + features, eg:
+    cmake -DENABLE_PYTHON=OFF ..
 
-If your libraries are not in a standard place you will need to change
-configures environment.  These options can be passed directly to
-configure or to autogen.sh which will pass them through to configure.
-
-Here is an example:
-    LIBS='-L/opt/libz/ -L/opt/BerkeleyDB/lib/' \
-    CPPFLAGS='-I/opt/libz/ -I/opt/BerkeleyDB/include' \
-    ./configure
-
-If you have build tools stored in non standard places you should check
-the resulting Makefile to be sure that the tools you wish to use have
-been correctly identified.  The configure script will modify your path
-before looking for the build tools and it may find versions of these
-tools that you do not want.  It uses the following search path
-
-    MYPATH="/bin:/usr/bin:/usr/local/bin:$PATH:/opt/gnu/bin"
-
-now build the system with:
+Now build the system with:
 
     make
 
@@ -153,8 +142,9 @@ and then install with:
     make install
 
 Rpm comes with an automated self-test suite. The test-suite relies heavily
-on fakechroot (https://github.com/dex4er/fakechroot/) and cannot be executed
-without it. Provided that fakechroot was found during configure,
+on autom4te from autoconf (https://www.gnu.org/software/autoconf/),
+fakechroot (https://github.com/dex4er/fakechroot/) and cannot be executed
+without them. Provided that both were found during configuration,
 it can be executed after a successful build with:
 
     make check
