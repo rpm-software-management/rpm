@@ -612,12 +612,10 @@ static ssize_t gzdWrite(FDSTACK_t fps, const void * buf, size_t count)
     return rc;
 }
 
-/* XXX zlib-1.0.4 has not */
 static int gzdSeek(FDSTACK_t fps, off_t pos, int whence)
 {
     off_t p = pos;
     int rc;
-#ifdef HAVE_GZSEEK
     gzFile gzfile = fps->fp;
 
     if (gzfile == NULL) return -2;	/* XXX can't happen */
@@ -625,9 +623,6 @@ static int gzdSeek(FDSTACK_t fps, off_t pos, int whence)
     rc = gzseek(gzfile, p, whence);
     if (rc < 0)
 	gzdSetError(fps);
-#else
-    rc = -2;
-#endif
     return rc;
 }
 

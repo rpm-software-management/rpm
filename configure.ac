@@ -127,9 +127,6 @@ AC_CHECK_HEADERS([zlib.h],[
       AC_CHECK_LIB(${zlib}, gzread, 
 	[WITH_ZLIB_LIB="-l${zlib}"; break])
     done
-
-dnl zlib-1.0.4 has not gzseek
-    AC_CHECK_LIB(${zlib}, gzseek, [AC_DEFINE(HAVE_GZSEEK, 1, [Define as 1 if your zlib has gzseek()])])
   ])
 ],[
   AC_MSG_ERROR([missing required header zlib.h])
