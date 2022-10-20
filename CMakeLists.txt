@@ -14,6 +14,7 @@ project(rpm
 
 # user configurable stuff
 option(ENABLE_NLS "Enable native language support" ON)
+option(ENABLE_OPENMP "Enable OpenMP threading support" ON)
 option(ENABLE_PYTHON "Enable Python bindings" ON)
 option(ENABLE_PLUGINS "Enable plugin support" ON)
 option(ENABLE_WERROR "Stop build on warnings" OFF)
@@ -124,7 +125,6 @@ include(CheckFunctionExists)
 include(CheckIncludeFile)
 
 find_package(PkgConfig REQUIRED)
-find_package(OpenMP)
 find_package(ZLIB REQUIRED)
 find_package(BZip2)
 find_package(LibLZMA)
@@ -137,6 +137,10 @@ pkg_check_modules(READLINE readline)
 pkg_check_modules(ZSTD libzstd)
 pkg_check_modules(LIBELF libelf)
 pkg_check_modules(LIBDW libdw)
+
+if (ENABLE_OPENMP)
+	find_package(OpenMP REQUIRED)
+endif()
 
 if (ENABLE_NLS)
 	find_package(Intl REQUIRED)
