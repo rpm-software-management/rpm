@@ -45,13 +45,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 include(GNUInstallDirs)
 add_compile_definitions(_GNU_SOURCE)
 
-# autotools compat stuff
-set(PACKAGE "${PROJECT_NAME}")
-set(PACKAGE_NAME "${PROJECT_NAME}")
-set(VERSION "${PROJECT_VERSION}")
-set(PACKAGE_VERSION "${PROJECT_VERSION}")
-set(PACKAGE_BUGREPORT "${PROJECT_HOMEPAGE_URL}")
-
 function(makemacros)
 	set(prefix ${CMAKE_INSTALL_PREFIX})
 	set(exec_prefix "\${prefix}")
@@ -252,7 +245,7 @@ add_compile_definitions(RPMCONFIGDIR="${RPMCONFIGDIR}")
 add_compile_definitions(LOCALEDIR="${CMAKE_INSTALL_FULL_LOCALEDIR}")
 add_compile_definitions(LOCALSTATEDIR="${CMAKE_INSTALL_FULL_LOCALSTATEDIR}")
 add_compile_definitions(SYSCONFDIR="${CMAKE_INSTALL_FULL_SYSCONFDIR}")
-add_compile_definitions(LIBRPMALIAS_FILENAME="rpmpopt-${VERSION}")
+add_compile_definitions(LIBRPMALIAS_FILENAME="rpmpopt-${PROJECT_VERSION}")
 add_compile_definitions(LIBRPMALIAS_EXECPATH="${CMAKE_INSTALL_FULL_BINDIR}")
 
 if (ENABLE_WERROR)
