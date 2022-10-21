@@ -227,7 +227,7 @@ endfunction()
 id0name(UID_0_USER /etc/passwd)
 id0name(GID_0_GROUP /etc/group)
 
-configure_file(cmconfig.h.in config.h)
+configure_file(config.h.in config.h)
 add_compile_definitions(HAVE_CONFIG_H)
 
 add_compile_definitions(MAJOR_IN_SYSMACROS)
