@@ -324,6 +324,11 @@ find_program(AUTOM4TE autom4te)
 find_program(FAKECHROOT fakechroot)
 if (DEFINED AUTOM4TE AND DEFINED FAKECHROOT)
 	add_subdirectory(tests)
+	find_program(PODMAN podman docker)
+	if (DEFINED PODMAN)
+		add_subdirectory(ci)
+	endif()
+
 endif()
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rpm.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

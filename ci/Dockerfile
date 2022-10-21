@@ -52,7 +52,7 @@ RUN dnf -y install \
 
 COPY . .
 
-WORKDIR /srv/rpm/_build
+WORKDIR /srv/rpm/_ci_
 RUN cmake \
 	-DENABLE_WERROR=ON \
 	-DENABLE_BDB_RO=ON \
