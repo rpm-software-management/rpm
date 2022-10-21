@@ -112,9 +112,6 @@
 #cmakedefine WITH_SELINUX @WITH_SELINUX@
 #cmakedefine ENABLE_SQLITE @ENABLE_SQLITE@
 
-#cmakedefine UID_0_USER "@UID_0_USER@"
-#cmakedefine GID_0_GROUP "@GID_0_GROUP@"
-
 #cmakedefine PACKAGE "@PACKAGE@"
 #cmakedefine VERSION "@VERSION@"
 #cmakedefine PACKAGE_BUGREPORT "@PACKAGE_BUGREPORT@"
