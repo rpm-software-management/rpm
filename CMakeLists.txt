@@ -335,3 +335,16 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rpm.pc DESTINATION ${CMAKE_INSTALL_LIB
 install(DIRECTORY DESTINATION ${RPMCONFIGDIR}/lua)
 install(DIRECTORY DESTINATION ${RPMCONFIGDIR}/macros.d)
 install(FILES CONTRIBUTING.md COPYING CREDITS INSTALL README TYPE DOC)
+
+set(namever ${PROJECT_NAME}-${PROJECT_VERSION})
+set(distfmt tar.gz)
+set(distname ${namever}.${distfmt})
+add_custom_command(OUTPUT ${distname}
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+	COMMAND git archive
+		--format=${distfmt}
+		--output=${CMAKE_BINARY_DIR}/${distname}
+		--prefix=${namever}/
+		HEAD
+)
+add_custom_target(dist DEPENDS ${distname})
