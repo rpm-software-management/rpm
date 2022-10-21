@@ -138,7 +138,6 @@ if (ENABLE_NLS)
 	find_package(Intl REQUIRED)
 endif()
 
-find_package(Intl)
 if (ENABLE_SQLITE)
 	pkg_check_modules(SQLITE sqlite3 REQUIRED)
 endif()
