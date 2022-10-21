@@ -102,7 +102,7 @@ function(makemacros)
 	configure_file(rpmrc.in rpmrc @ONLY)
 	configure_file(macros.in macros @ONLY)
 	configure_file(rpmpopt.in rpmpopt-${PROJECT_VERSION} @ONLY)
-	configure_file(rpm.pc.in rpm.pc)
+	configure_file(rpm.pc.in rpm.pc @ONLY)
 
 	install(CODE "execute_process(COMMAND
 		${CMAKE_COMMAND} -E env pkglibdir=${RPMCONFIGDIR}
