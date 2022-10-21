@@ -52,9 +52,6 @@ set(VERSION "${PROJECT_VERSION}")
 set(PACKAGE_VERSION "${PROJECT_VERSION}")
 set(PACKAGE_BUGREPORT "${PROJECT_HOMEPAGE_URL}")
 
-set(UID_0_USER root)
-set(GID_0_GROUP root)
-
 function(makemacros)
 	set(prefix ${CMAKE_INSTALL_PREFIX})
 	set(exec_prefix "\${prefix}")
@@ -216,6 +213,19 @@ set(OPTINCS
 foreach(f ${OPTINCS})
     chkhdr(${f} FALSE)
 endforeach()
+
+function(id0name var file)
+	execute_process(COMMAND awk -F: "$3==0 {print $1;exit}" ${file}
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+			OUTPUT_VARIABLE name)
+	if ("${name}" STREQUAL "")
+		set(name foor)
+	endif()
+	set(${var} ${name} PARENT_SCOPE)
+endfunction()
+
+id0name(UID_0_USER /etc/passwd)
+id0name(GID_0_GROUP /etc/group)
 
 configure_file(cmconfig.h.in config.h)
 add_compile_definitions(HAVE_CONFIG_H)
