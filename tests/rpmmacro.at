@@ -929,7 +929,7 @@ runroot rpm \
 2
 .    .
 2
-..
+.
 %xxx
 ])
 AT_CLEANUP
