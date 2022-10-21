@@ -229,11 +229,6 @@ add_compile_definitions(SYSCONFDIR="${CMAKE_INSTALL_FULL_SYSCONFDIR}")
 add_compile_definitions(LIBRPMALIAS_FILENAME="rpmpopt-${VERSION}")
 add_compile_definitions(LIBRPMALIAS_EXECPATH="${CMAKE_INSTALL_FULL_BINDIR}")
 
-execute_process(COMMAND awk -F: "$3==0 {print $1;exit}" /etc/passwd
-		OUTPUT_VARIABLE UID_0_USER)
-execute_process(COMMAND awk -F: "$3==0 {print $1;exit}" /etc/group
-		OUTPUT_VARIABLE GID_0_GROUP)
-
 # map module/package findings to autoconf tests
 if (${BZIP2_FOUND})
 	add_compile_definitions(HAVE_BZLIB_H)
