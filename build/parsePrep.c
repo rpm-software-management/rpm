@@ -259,7 +259,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     }
 
     /* do the default action */
-   if (!createDir && !skipDefaultAction) {
+   if (!skipDefaultAction) {
 	char *chptr = doUntar(spec, 0, quietly);
 	if (!chptr)
 	    goto exit;
@@ -273,14 +273,6 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 	free(buf);
     }
 
-    if (createDir && !skipDefaultAction) {
-	char *chptr = doUntar(spec, 0, quietly);
-	if (chptr == NULL)
-	    goto exit;
-	appendBuf(spec, chptr, 1);
-	free(chptr);
-    }
-    
     appendBuf(spec, getStringBuf(after), 0);
 
     /* Fix the permissions of the setup build tree */
