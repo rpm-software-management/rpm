@@ -13,6 +13,7 @@ else()
 endif()
 
 configure_file(atlocal.in atlocal @ONLY)
+configure_file(atconfig.in atconfig @ONLY)
 configure_file(package.m4.in package.m4 @ONLY)
 
 set(TESTSUITE_AT
@@ -65,10 +66,7 @@ if (nproc GREATER 1)
 	set(jobs -j${nproc})
 endif()
 
-add_custom_target(check ${CMAKE_COMMAND} -E env
-	"abs_builddir=${CMAKE_CURRENT_BINARY_DIR}"
-	"abs_srcdir=${CMAKE_CURRENT_SOURCE_DIR}"
-	"abs_top_builddir=${CMAKE_BINARY_DIR}"
+add_custom_target(check COMMAND
 	./rpmtests ${jobs}
 	DEPENDS populate_testing
 	DEPENDS rpmtests
