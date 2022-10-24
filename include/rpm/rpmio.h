@@ -60,11 +60,63 @@ off_t Ftell(FD_t fd);
 int Fclose( FD_t fd);
 
 /** \ingroup rpmio
+ * fdopen(3) clone.
+ *
+ * See Fopen() for details.
  */
 FD_t	Fdopen(FD_t ofd, const char * fmode);
 
 /** \ingroup rpmio
  * fopen(3) clone.
+ *
+ * Supports compression.
+ *
+ * The `fmode` parameter is based on that of `fopen(3)`, but may also include a
+ * compression method (`type` and `flags`) to use when opening the stream, and
+ * has the following format:
+ *
+ * ```
+ * <mode>[flags].<type>
+ * ```
+ *
+ * The compression `type` (compressor) is mandatory, determines the supported
+ * `mode` chars (also mandatory), and can be one of the following:
+ * 
+ * | Type	| Description	    | Mode chars    |
+ * |------------|-------------------|---------------|
+ * | `ufdio`	| uncompressed	    | `r,w,a,b,+,x` |
+ * | `gzdio`	| gzip		    | `r,w,a`	    |
+ * | `bzdio`	| bzip2             | `r,w,a`	    |
+ * | `xzdio`	| xz                | `r,w,a`	    |
+ * | `lzdio`	| lzma (legacy)     | `r,w,a`	    |
+ * | `zstdio`	| zstd              | `r,w,a`	    |
+ *
+ * Compression `flags` must be listed in the following order and can be any of:
+ * 
+ * | Flag	| Description				    | Types		    |
+ * |------------|-------------------------------------------|-----------------------|
+ * | `0-9`	| compression level			    | all except `ufdio`    |
+ * | `T<0-N>`	| no. of threads (0 = autodetect)	    | `xzdio` and `zstdio`  |
+ * | `L<0-9>`	| window size (see `--long` in `zstd(1)`)   | `zstdio`		    |
+ *
+ * If a flag is omitted, the compressor's default value will be used.
+ *
+ * \anchor example-mode-strings
+ * Example mode strings:
+ * 
+ * | Mode	    | Description				|
+ * |----------------|-------------------------------------------|
+ * |`w9.gzdio`	    | gzip level 9, default for package payload	|
+ * |`w9.bzdio`	    | bzip2 level 9, bzip2's default		|
+ * |`w6.xzdio`	    | xz level 6, xz's default			|
+ * |`w.xzdio`	    | xz level 6, xz's default			|
+ * |`w7T16.xzdio`   | xz level 7 using 16 threads		|
+ * |`w7T0.xzdio`    | xz level 7, autodetect no. of threads	|
+ * |`w6.lzdio`	    | lzma (legacy) level 6, lzma's default	|
+ * |`w3.zstdio`	    | zstd level 3, zstd's default		|
+ * |`w19T8.zstdio`  | zstd level 19 using 8 threads		|
+ * |`w7T0.zstdio`   | zstd level 7, autodetect no. of threads   |
+ * |`w.ufdio`	    | uncompressed				|
  */
 FD_t	Fopen(const char * path,
 			const char * fmode);
