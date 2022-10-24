@@ -138,8 +138,14 @@ in the RPM sources.
 
 ## Payload
 
-The Payload is currently a gzipped cpio archive.  The cpio
-archive type used is SVR4 with a CRC checksum.
+The Payload is currently a cpio archive, gzipped by default.  The cpio archive
+type used is SVR4 with a CRC checksum.
+
+To use a different compression method when building new packages with
+`rpmbuild(8)`, define the `%_binary_payload` or `%_source_payload` macros for
+the binary or source packages, respectively.  These macros accept an
+[RPM IO mode string](https://ftp.osuosl.org/pub/rpm/api/4.17.0/group__rpmio.html#example-mode-strings)
+(only `w` mode).
 
 ## The Header Structure
 
