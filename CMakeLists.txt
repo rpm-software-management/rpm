@@ -296,7 +296,7 @@ endforeach()
 install(TARGETS ${rpmcli})
 
 foreach(cmd rpmverify rpmquery)
-	add_custom_command(OUTPUT ${cmd} ALL COMMAND
+	add_custom_target(${cmd} ALL COMMAND
 			${CMAKE_COMMAND} -E create_symlink rpm ${cmd})
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${cmd} TYPE BIN)
 endforeach()
