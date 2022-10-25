@@ -17,12 +17,13 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpm2archive** converts the .rpm files specified as arguments to tar
-files. By default they are gzip compressed and saved with postfix
-\".tgz\".
+**rpm2archive** converts the .rpm files specified as arguments to tar archives
+on standard out.
 
-If \'-\' is given as argument, an rpm stream is read from standard in
-and written to standard out.
+If a \'-\' argument is given, an rpm stream is read from standard in.
+
+If standard out is connected to a terminal, the output is written to tar files
+with a \".tgz\" suffix, gzip compressed by default.
 
 In opposite to **rpm2cpio** **rpm2archive** also works with RPM packages
 containing files greater than 4GB which are not supported by cpio.
@@ -41,8 +42,8 @@ EXAMPLES
 ========
 
 \
-***rpm2archive glint-1.0-1.i386.rpm ; tar -xvz
-glint-1.0-1.i386.rpm.tgz***\
+***rpm2archive glint-1.0-1.i386.rpm \| tar -xvz***\
+***rpm2archive glint-1.0-1.i386.rpm ; tar -xvz glint-1.0-1.i386.rpm.tgz***\
 ***cat glint-1.0-1.i386.rpm \| rpm2archive - \| tar -tvz***
 
 SEE ALSO
