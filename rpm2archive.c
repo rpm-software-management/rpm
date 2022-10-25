@@ -141,13 +141,13 @@ static int process_package(rpmts ts, const char * filename)
 	fprintf(stderr, "Error: Format pax restricted is not supported\n");
 	exit(EXIT_FAILURE);
     }
-    if (!strcmp(filename, "-")) {
-	if (isatty(STDOUT_FILENO)) {
+    if (!isatty(STDOUT_FILENO)) {
+	archive_write_open_fd(a, STDOUT_FILENO);
+    } else {
+        if (!strcmp(filename, "-")) {
 	    fprintf(stderr, "Error: refusing to output archive data to a terminal.\n");
 	    exit(EXIT_FAILURE);
 	}
-	archive_write_open_fd(a, STDOUT_FILENO);
-    } else {
 	char * outname;
 	if (urlIsURL(filename)) {
 	    const char * fname = strrchr(filename, '/');
