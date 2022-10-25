@@ -40,9 +40,12 @@ OPTIONS
 EXAMPLES
 ========
 
-\
+
 ***rpm2archive glint-1.0-1.i386.rpm ; tar -xvz
-glint-1.0-1.i386.rpm.tgz***\
+glint-1.0-1.i386.rpm.tgz***
+
+***rpm2archivh glint-1.0-1.i386.rpm \| tar -xvz***
+
 ***cat glint-1.0-1.i386.rpm \| rpm2archive - \| tar -tvz***
 
 SEE ALSO

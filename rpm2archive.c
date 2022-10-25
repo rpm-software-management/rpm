@@ -141,35 +141,36 @@ static int process_package(rpmts ts, const char * filename)
 	fprintf(stderr, "Error: Format pax restricted is not supported\n");
 	exit(EXIT_FAILURE);
     }
-    if (!strcmp(filename, "-")) {
-	if (isatty(STDOUT_FILENO)) {
-	    fprintf(stderr, "Error: refusing to output archive data to a terminal.\n");
-	    exit(EXIT_FAILURE);
-	}
-	archive_write_open_fd(a, STDOUT_FILENO);
+    if (!isatty(STDOUT_FILENO)) {
+        archive_write_open_fd(a, STDOUT_FILENO);
     } else {
-	char * outname;
-	if (urlIsURL(filename)) {
-	    const char * fname = strrchr(filename, '/');
-	    if (fname != NULL) {
-		fname++;
+        if (!strcmp(filename, "-")) {
+	        fprintf(stderr, "Error: refusing to output archive data to a terminal.\n");
+	        exit(EXIT_FAILURE);
+        } else {
+	    char * outname;
+	    if (urlIsURL(filename)) {
+	        const char * fname = strrchr(filename, '/');
+	        if (fname != NULL) {
+		    fname++;
+	        } else {
+		    fname = filename;
+	        }
+	        outname = rstrscat(NULL, fname, NULL);
 	    } else {
-		fname = filename;
+	        outname = rstrscat(NULL, filename, NULL);
 	    }
-	    outname = rstrscat(NULL, fname, NULL);
-	} else {
-	    outname = rstrscat(NULL, filename, NULL);
-	}
-	if (compress) {
-	    outname = rstrscat(&outname, ".tgz", NULL);
-	} else {
-	    outname = rstrscat(&outname, ".tar", NULL);
-	}
-	if (archive_write_open_filename(a, outname) != ARCHIVE_OK) {
-	    fprintf(stderr, "Error: Can't open output file: %s\n", outname);
-	    exit(EXIT_FAILURE);
-	}
-	_free(outname);
+        if (compress) {
+            outname = rstrscat(&outname, ".tgz", NULL);
+        } else {
+            outname = rstrscat(&outname, ".tar", NULL);
+        }
+        if (archive_write_open_filename(a, outname) != ARCHIVE_OK) {
+            fprintf(stderr, "Error: Can't open output file: %s\n", outname);
+            exit(EXIT_FAILURE);
+        }
+	    _free(outname);
+        }
     }
 
     entry = archive_entry_new();
