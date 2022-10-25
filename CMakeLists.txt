@@ -211,7 +211,7 @@ function(id0name var file)
 			OUTPUT_STRIP_TRAILING_WHITESPACE
 			OUTPUT_VARIABLE name)
 	if ("${name}" STREQUAL "")
-		set(name foor)
+		set(name root)
 	endif()
 	set(${var} ${name} PARENT_SCOPE)
 endfunction()
