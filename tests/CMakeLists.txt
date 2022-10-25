@@ -46,9 +46,9 @@ set(TESTSUITE_AT
 )
 
 set(AUTOTEST ${AUTOM4TE} --language=autotest)
-add_custom_target(rpmtests COMMAND
+add_custom_command(OUTPUT rpmtests COMMAND
 	${AUTOTEST} -I ${CMAKE_CURRENT_SOURCE_DIR} -o rpmtests rpmtests.at
-	SOURCES ${TESTSUITE_AT}
+	DEPENDS ${TESTSUITE_AT}
 )
 add_custom_target(populate_testing COMMAND
 	${CMAKE_CURRENT_SOURCE_DIR}/populate
