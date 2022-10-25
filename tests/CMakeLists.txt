@@ -60,6 +60,12 @@ add_custom_target(populate_testing COMMAND
 	SOURCES populate
 )
 
+set (testprogs rpmpgpcheck rpmpgppubkeyfingerprint)
+foreach(prg ${testprogs})
+	add_executable(${prg} EXCLUDE_FROM_ALL ${prg}.c)
+	target_link_libraries(${prg} PRIVATE librpmio)
+endforeach()
+
 include(ProcessorCount)
 ProcessorCount(nproc)
 if (nproc GREATER 1)
@@ -70,10 +76,6 @@ add_custom_target(check COMMAND
 	./rpmtests ${jobs} $(TESTOPTS)
 	DEPENDS populate_testing
 	DEPENDS rpmtests
+	DEPENDS ${testprogs}
 )
 
-set (testprogs rpmpgpcheck rpmpgppubkeyfingerprint)
-foreach(prg ${testprogs})
-	add_executable(${prg} ${prg}.c)
-	target_link_libraries(${prg} PRIVATE librpmio)
-endforeach()
