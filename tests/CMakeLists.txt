@@ -67,7 +67,7 @@ if (nproc GREATER 1)
 endif()
 
 add_custom_target(check COMMAND
-	./rpmtests ${jobs}
+	./rpmtests ${jobs} $(TESTOPTS)
 	DEPENDS populate_testing
 	DEPENDS rpmtests
 )

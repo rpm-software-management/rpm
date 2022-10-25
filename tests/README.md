@@ -14,24 +14,20 @@ See also the [INSTALL](../INSTALL) file for more information.
 
 To run *single tests*, you can run the commands:
 
-    make populate_testing && ./rpmtests $NNN $MMM ...
+    make check TESTOPTS="$NNN $MMM"
 
 where _NNN_ and _MMM_ are the numbers of the tests to be run.
 
-To get the *list of available tests*, use the command:
-
-      ./rpmtests -l
-
 You can also select *tests by keywords* used in their description by using the command:
 
-     ./rpmtests -k $KEYWORD
+     make check TESTOPTS="-k $KEYWORD"
 
 Use multiple `-k` parameters to have tests with different keywords run.
 Use `-k $KEYWORD1,$KEYWORD2` to execute tests matching both _KEYWORD1_ and _KEYWORD2_.
 
-See the output of the command:
+For all available options, see the output of the command:
 
 	./rpmtests --help
 
-for more options. But be aware some (like `-j`) need not work properly with
-the test suite unless a very restricted set of test is run.
+By default, tests are executed in parallel using all available cores, pass
+a specific -jN value to limit.
