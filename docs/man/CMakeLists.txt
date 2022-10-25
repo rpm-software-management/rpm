@@ -33,8 +33,11 @@ endif()
 foreach(man ${manuals})
 	# XXX manuals should be pre-built in tarballs
 	if (DEFINED PANDOC)
-		add_custom_target(${man} ALL COMMAND ${PANDOC}
-				${CMAKE_CURRENT_SOURCE_DIR}/${man}.md -o ${man})
+		add_custom_command(OUTPUT ${man} COMMAND ${PANDOC}
+				${CMAKE_CURRENT_SOURCE_DIR}/${man}.md -o ${man}
+				DEPENDS ${man}.md)
 		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${man} TYPE MAN)
 	endif()
 endforeach()
+
+add_custom_target(man ALL DEPENDS ${manuals})
