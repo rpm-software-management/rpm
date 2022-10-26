@@ -1,3 +1,9 @@
+# To whom it may concern:
+# DO NOT COPY THIS SPEC or its derivates to your testcase. That is,
+# unless your test-case actually requires running a compiler and
+# inspecting it's output. Everybody else should use a simple noarch
+# package which can be built under runroot in the test-suite.
+
 Summary: hello -- hello, world rpm
 Name: hello
 Version: 1.0
