@@ -321,7 +321,7 @@ endforeach()
 
 set(rpmdeps_libs librpmbuild)
 set(rpmlua_libs ${READLINE_LIBRARIES})
-set(rpmtools rpmdeps rpmgraph rpmlua rpmuncompress)
+set(rpmtools rpmdeps rpmgraph rpmlua rpmsort rpmuncompress)
 if (${LIBELF_FOUND})
 	set(elfdeps_libs ${LIBELF_LIBRARIES})
 	list(APPEND rpmtools elfdeps)
