@@ -2,7 +2,7 @@
 set(manuals
 	gendiff.1 rpm2cpio.8
 	rpm.8 rpmbuild.8 rpmdb.8 rpmkeys.8 rpmsign.8 rpmspec.8
-	rpmdeps.8 rpmgraph.8 rpmlua.8 rpm-misc.8
+	rpmdeps.8 rpmgraph.8 rpmlua.8 rpm-misc.8 rpmsort.8
 )
 
 if (WITH_ARCHIVE)

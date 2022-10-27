@@ -15,6 +15,7 @@ title: rpm.org - RPM Manual Pages
 * [rpmdb (8)](rpmdb.8.md)
 * [rpmkeys (8)](rpmkeys.8.md)
 * [rpmsign (8)](rpmsign.8.md)
+* [rpmsort (8)](rpmsort.8.md)
 * [rpmspec (8)](rpmspec.8.md)
 * [gendiff (1)](gendiff.1.md)
 
