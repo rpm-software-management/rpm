@@ -26,13 +26,14 @@
 # weidong <weidongkl@sina.com>, 2021.
 # tsinglion <tsinglion@gmail.com>, 2021.
 # Yang Yulin <yylteam@icloud.com>, 2022.
+# Jingge Chen <mariocanfly@hotmail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2022-04-07 13:03+0300\n"
-"PO-Revision-Date: 2022-10-04 01:19+0000\n"
-"Last-Translator: Yang Yulin <yylteam@icloud.com>\n"
+"PO-Revision-Date: 2022-10-30 14:19+0000\n"
+"Last-Translator: Jingge Chen <mariocanfly@hotmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/rpm/master/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -109,7 +110,7 @@ msgstr "检查构建依赖项<specfile>"
 
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
-msgstr ""
+msgstr "通过 %install (%prep, %conf, %build,然后安装) 从 <specfile> 构建"
 
 #, c-format
 msgid "verify %files section from <specfile>"
