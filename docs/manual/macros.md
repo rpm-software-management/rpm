@@ -328,7 +328,7 @@ The macro file syntax is simply:
 ```
 
 ...where `<name>` is a legal macro name and `<body>` is the body of the macro.
-Multiline macros can be defined by shell-like line continuation, ie `\`
+Multiline macros can be defined by shell-like line continuation, ie ``\``
 at end of line.
 
 Note that the macro file syntax is strictly declarative, no conditionals
