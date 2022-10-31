@@ -302,7 +302,13 @@ runroot rpmspec --parse \
 	/data/SPECS/hello.spec
 ],
 [0],
-[[Summary: hello -- hello, world rpm
+[[
+
+
+
+
+
+Summary: hello -- hello, world rpm
 Name: hello
 Version: 1.0
 Release: 1
