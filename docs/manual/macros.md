@@ -10,7 +10,7 @@ argc/argv processing on white space separated tokens to the next newline.
 During macro expansion, both flags and arguments are available as macros
 which are deleted at the end of macro expansion.  Macros can be used
 (almost) anywhere in a spec file, and, in particular, in "included file
-lists" (i.e. those read in using %files -f \<file\>).  In addition, macros
+lists" (i.e. those read in using `%files -f <file>`).  In addition, macros
 can be nested, hiding the previous definition for the duration of the
 expansion of the macro which contains nested macros.
 
@@ -22,14 +22,14 @@ To define a macro use:
 	%define <name>[(opts)] <body>
 ```
 
-All whitespace surrounding \<body\> is removed.  Name may be composed
-of alphanumeric characters, and the character `_' and must be at least
-3 characters in length. A macro without an (opts) field is "simple" in that
-only recursive macro expansion is performed. A parameterized macro contains
-an (opts) field. "-" as opts disables all option processing, otherwise
-the opts (i.e. string between parentheses) are passed
+All whitespace surrounding `<body>` is removed.  Name may be composed
+of alphanumeric characters and the character `_`, and must be at least
+3 characters in length. A macro without an `(opts)` field is "simple"
+in that only recursive macro expansion is performed. A parameterized
+macro contains an `(opts)` field. `-` as opts disables all option
+processing, otherwise the opts (i.e. string between parentheses) are passed
 exactly as is to getopt(3) for argc/argv processing at the beginning of
-a macro invocation. "--" can be used to separate options from arguments.
+a macro invocation. `--` can be used to separate options from arguments.
 While a parameterized macro is being expanded, the following shell-like
 macros are available:
 
@@ -49,14 +49,14 @@ At the end of invocation of a parameterized macro, the above macros are
 
 Within the body of a macro, there are several constructs that permit
 testing for the presence of optional parameters. The simplest construct
-is "%{-f}" which expands (literally) to "-f" if -f was mentioned when the
-macro was invoked. There are also provisions for including text if flag
-was present using "%{-f:X}". This macro expands to (the expansion of) X
-if the flag was present. The negative form, "%{!-f:Y}", expanding to (the
+is `%{-f}` which expands (literally) to "-f" if -f was mentioned when the
+macro was invoked. There are also provisions for including text if a flag
+was present using `%{-f:X}`. This macro expands to (the expansion of) X
+if the flag was present. The negative form, `%{!-f:Y}`, expanding to (the
 expansion of) Y if -f was *not* present, is also supported.
 
-In addition to the "%{...}" form, shell expansion can be performed
-using "%(shell command)".
+In addition to the `%{...}` form, shell expansion can be performed
+using `%(shell command)`.
 
 ## Builtin Macros
 
@@ -121,7 +121,7 @@ to perform useful operations. The current list is
 
 Macros may also be automatically included from /usr/lib/rpm/macros.
 In addition, rpm itself defines numerous macros. To display the current
-set, add "%dump" to the beginning of any spec file, process with rpm, and
+set, add `%dump` to the beginning of any spec file, process with rpm, and
 examine the output from stderr.
 
 ## Conditionally Expanded Macros
@@ -133,10 +133,10 @@ Sometimes it is useful to test whether a macro is defined or not. Syntax
 %{?!macro_name:value}
 ```
 
-can be used for this purpose. %{?macro_name:value} is expanded to "value"
+can be used for this purpose. `%{?macro_name:value}` is expanded to "value"
 if "macro_name" is defined, otherwise it is expanded to the empty string.
-%{?!macro_name:value} is the negative variant. It is expanded to "value" if
-"macro_name" not is defined. Otherwise it is expanded to the empty string.
+`%{?!macro_name:value}` is the negative variant. It is expanded to "value"
+if "macro_name" not is defined. Otherwise it is expanded to the empty string.
 
 Frequently used conditionally expanded macros are e.g.
 Define a macro if it is not defined:
@@ -157,7 +157,7 @@ or shortly
 0%{!?with_python3:1}
 ```
 
-"%{?macro_name}" is a shortcut for "%{?macro_name:%macro_name}".
+`%{?macro_name}` is a shortcut for `%{?macro_name:%macro_name}`.
 
 For more complex tests, use [expressions](#expression-expansion) or [Lua](lua).
 Note that `%if`, `%ifarch` and the like are not macros, they are spec
@@ -169,7 +169,7 @@ In older versions, the behavior of conditionals on built-ins is undefined.
 
 ## Example of a Macro
 
-Here is an example %patch definition from /usr/lib/rpm/macros:
+Here is an example `%patch` definition from /usr/lib/rpm/macros:
 
 ```
 	%patch(b:p:P:REz:) \
@@ -219,10 +219,10 @@ or
 	%{<name>}
 ```
 
-The %{...} form allows you to place the expansion adjacent to other text.
-The %\<name\> form, if a parameterized macro, will do argc/argv processing
+The `%{...}` form allows you to place the expansion adjacent to other text.
+The `%<name>` form, if a parameterized macro, will do argc/argv processing
 of the rest of the line as described above.  Normally you will likely want
-to invoke a parameterized macro by using the %\<name\> form so that
+to invoke a parameterized macro by using the `%<name>` form so that
 parameters are expanded properly.
 
 Example:
@@ -242,38 +242,39 @@ This expands to:
 	(echo -n "My arg is 5" ; sleep 5 ; echo done.)
 ```
 
-This will cause all occurrences of %1 in the macro definition to be
+This will cause all occurrences of `%1` in the macro definition to be
 replaced by the first argument to the macro, but only if the macro
-is invoked as "%mymacro 5".  Invoking as "%{mymacro} 5" will not work
+is invoked as `%mymacro 5`.  Invoking as `%{mymacro} 5` will not work
 as desired in this case.
 
 ## Shell Expansion
 
-Shell expansion can be performed using "%(shell command)". The expansion
-of "%(...)" is the output of (the expansion of) ... fed to /bin/sh.
-For example, "%(date +%%y%%m%%d)" expands to the string "YYMMDD" (final
-newline is deleted). Note the 2nd % needed to escape the arguments to
+Shell expansion can be performed using `%(shell command)`. The expansion
+of `%(...)` is the output of (the expansion of) ... fed to /bin/sh.
+For example, `%(date +%%y%%m%%d)` expands to the string "YYMMDD" (final
+newline is deleted). Note the 2nd `%` needed to escape the arguments to
 /bin/date.
 
 ## Expression Expansion
 
-Expression expansion can be performed using "%[expression]".  An
+Expression expansion can be performed using `%[expression]`.  An
 expression consists of terms that can be combined using
 operators.  Rpm supports three kinds of terms, numbers made up
-from digits, strings enclosed in double quotes (eg "somestring") and
-versions enclosed in double quotes preceded by v (eg v"3:1.2-1").
+from digits, strings enclosed in double quotes (eg `"somestring"`) and
+versions enclosed in double quotes preceded by v (eg `v"3:1.2-1"`).
 Rpm will expand macros when evaluating terms.
 
 You can use the standard operators to combine terms: logical
-operators &&, ||, !, relational operators !=, ==, <, > , <=, >=,
-arithmetic operators +, -, /, *, the ternary operator ? :, and
-parentheses.  For example, "%[ 3 + 4 * (1 + %two) ]" will expand
-to "15" if "%two" expands to "2". Version terms are compared using
+operators `&&`, `||`, `!`, relational operators `!=`, `==`, `<`,
+`>`, `<=`, `>=`, arithmetic operators `+`, `-`, `/`, `*`,
+the ternary operator `? :`, and parentheses.
+For example, `%[ 3 + 4 * (1 + %two) ]` will expand
+to "15" if `%two` expands to "2". Version terms are compared using
 rpm version ([epoch:]version[-release]) comparison algorithm,
 rather than regular string comparison.
 
-Note that the "%[expression]" expansion is different to the
-"%{expr:expression}" macro.  With the latter, the macros in the
+Note that the `%[expression]` expansion is different to the
+`%{expr:expression}` macro.  With the latter, the macros in the
 expression are expanded first and then the expression is
 evaluated (without re-expanding the terms).  Thus
 
@@ -281,22 +282,22 @@ evaluated (without re-expanding the terms).  Thus
 	rpm --define 'foo 1 + 2' --eval '%{expr:%foo}'
 ```
 
-will print "3".  Using '%[%foo]' instead will result in the
+will print "3".  Using `%[%foo]` instead will result in the
 error that "1 + 2" is not a number.
 
 Doing the macro expansion when evaluating the terms has two
 advantages.  First, it allows rpm to do correct short-circuit 
 processing when evaluation logical operators.  Second, the
 expansion result does not influence the expression parsing,
-e.g. '%["%file"] will even work if the "%file" macro expands
+e.g. `%["%file"]` will even work if the `%file` macro expands
 to a string that contains a double quote.
 
 ## Command Line Options
 
-When the command line option "--define 'macroname value'" allows the
+When the command line option `--define 'macroname value'` allows the
 user to specify the value that a macro should have during the build.
-Note lack of leading % for the macro name.  We will try to support
-users who accidentally type the leading % but this should not be
+Note lack of leading `%` for the macro name.  We will try to support
+users who accidentally type the leading `%` but this should not be
 relied upon.
 
 Evaluating a macro can be difficult outside of an rpm execution context. If
@@ -309,7 +310,7 @@ you wish to see the expanded value of a macro, you may use the option
 that will read rpm config files and print the macro expansion on stdout.
 
 Note: This works only macros defined in rpm configuration files, not for
-macros defined in specfiles. You can use %{echo: %{your_macro_here}} if
+macros defined in specfiles. You can use `%{echo: %{your_macro_here}}` if
 you wish to see the expansion of a macro defined in a spec file.
  
 ## Configuration using Macros
@@ -326,7 +327,7 @@ The macro file syntax is simply:
 %<name>		 <body>
 ```
 
-...where <name> is a legal macro name and <body> is the body of the macro.
+...where `<name>` is a legal macro name and `<body>` is the body of the macro.
 Multiline macros can be defined by shell-like line continuation, ie `\`
 at end of line.
 
