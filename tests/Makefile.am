@@ -121,6 +121,7 @@ EXTRA_DIST += data/SOURCES/hello.c
 EXTRA_DIST += data/SPECS/hello-attr-buildid.spec
 EXTRA_DIST += data/SPECS/hello-config-buildid.spec
 EXTRA_DIST += data/SPECS/hello-cd.spec
+EXTRA_DIST += data/SPECS/verifyfiles.spec
 EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.pgp
 EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.pub
 EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.pgp
