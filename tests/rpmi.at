@@ -1371,3 +1371,23 @@ runroot rpm -q --whatprovides /
 ],
 [])
 AT_CLEANUP
+
+AT_SETUP([rpm -U with Obsoletes])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpmbuild -bb --quiet --define "pkg obsoletes" \
+  /data/SPECS/deptest.spec
+runroot rpmbuild -bb --quiet --define "pkg test-obsoletes" \
+  --define "obs deptest-obsoletes \< 2.0" /data/SPECS/deptest.spec
+runroot rpm -i /build/RPMS/noarch/deptest-obsoletes-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/deptest-test-obsoletes-1.0-1.noarch.rpm
+runroot rpm -q deptest-obsoletes deptest-test-obsoletes
+],
+[1],
+[package deptest-obsoletes is not installed
+deptest-test-obsoletes-1.0-1.noarch
+],
+[])
+AT_CLEANUP
