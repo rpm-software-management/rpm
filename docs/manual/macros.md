@@ -49,7 +49,7 @@ At the end of invocation of a parameterized macro, the above macros are
 
 Within the body of a macro, there are several constructs that permit
 testing for the presence of optional parameters. The simplest construct
-is `%{-f}` which expands (literally) to "-f" if -f was mentioned when the
+is `%{-f}` which expands (literally) to "-f" if `-f` was mentioned when the
 macro was invoked. There are also provisions for including text if a flag
 was present using `%{-f:X}`. This macro expands to (the expansion of) X
 if the flag was present. The negative form, `%{!-f:Y}`, expanding to (the
@@ -127,7 +127,7 @@ Sometimes it is useful to test whether a macro is defined or not. Syntax
 can be used for this purpose. `%{?macro_name:value}` is expanded to "value"
 if "macro_name" is defined, otherwise it is expanded to the empty string.
 `%{?!macro_name:value}` is the negative variant. It is expanded to "value"
-if "macro_name" not is defined. Otherwise it is expanded to the empty string.
+if `macro_name` is not defined. Otherwise it is expanded to the empty string.
 
 Frequently used conditionally expanded macros are e.g.
 Define a macro if it is not defined:
