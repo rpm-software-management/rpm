@@ -262,7 +262,10 @@ add_subdirectory(rpmio)
 add_subdirectory(lib)
 add_subdirectory(build)
 add_subdirectory(sign)
-add_subdirectory(po)
+
+if (EXISTS po/rpm.pot)
+	add_subdirectory(po)
+endif()
 
 if (ENABLE_PYTHON)
 	add_subdirectory(python)
