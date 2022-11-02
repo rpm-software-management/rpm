@@ -631,3 +631,20 @@ runroot rpm -Va --nodeps --nouser --nogroup
 ],
 [])
 AT_CLEANUP
+
+AT_SETUP([test for %verify in %files])
+AT_KEYWORDS([verify])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpmbuild --quiet -bb /data/SPECS/verifyfiles.spec
+runroot rpm -i /build/RPMS/noarch/verifyfiles-1.0-1.noarch.rpm
+chmod -w "${RPMTEST}"/test-verify*
+runroot rpm -Vv verifyfiles
+],
+[1],
+[.M.......    /test-verify1
+.........    /test-verify2
+],
+[])
+AT_CLEANUP
