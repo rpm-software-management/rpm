@@ -995,6 +995,23 @@ runroot rpmbuild --quiet -bb \
 runroot rpmbuild --quiet -bb \
 	--define "pkg two" \
 	/data/SPECS/deptest.spec
+runroot rpmbuild --quiet -bb \
+	--define "obs deptest-two < 2.0" \
+	--define "pkg obsoletes" \
+	/data/SPECS/deptest.spec
+
+# Test package obsoleting another
+AT_CHECK([
+RPMDB_INIT
+runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/deptest-obsoletes-1.0-1.noarch.rpm
+runroot rpm -q deptest-two deptest-obsoletes
+],
+[1],
+[package deptest-two is not installed
+deptest-obsoletes-1.0-1.noarch
+],
+[])
 
 # Test upgrade of obsoleted package in same transaction
 AT_CHECK([
@@ -1368,6 +1385,26 @@ runroot rpm -q --whatprovides /
 ],
 [0],
 [fs-1.0-1.noarch
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpm -U with Obsoletes])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpmbuild -bb --quiet --define "pkg obsoletes" \
+  /data/SPECS/deptest.spec
+runroot rpmbuild -bb --quiet --define "pkg test-obsoletes" \
+  --define "obs deptest-obsoletes \< 2.0" /data/SPECS/deptest.spec
+runroot rpm -i /build/RPMS/noarch/deptest-obsoletes-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/deptest-test-obsoletes-1.0-1.noarch.rpm
+runroot rpm -q deptest-obsoletes deptest-test-obsoletes
+],
+[1],
+[package deptest-obsoletes is not installed
+deptest-test-obsoletes-1.0-1.noarch
 ],
 [])
 AT_CLEANUP
