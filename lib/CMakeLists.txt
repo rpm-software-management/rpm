@@ -60,6 +60,7 @@ add_custom_command(OUTPUT tagtbl.C
 )
 
 target_sources(librpm PRIVATE ${librpm_SOURCES} tagtbl.C)
+target_include_directories(librpm PRIVATE ${LUA_INCLUDE_DIRS})
 target_link_libraries(librpm PUBLIC librpmio)
 target_link_libraries(librpm PRIVATE ${POPT_LIBRARIES} ${LUA_LIBRARIES})
 

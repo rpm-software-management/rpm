@@ -32,6 +32,7 @@ set_target_properties(librpmio PROPERTIES
 	SOVERSION ${RPM_SOVERSION}
 )
 target_sources(librpmio PRIVATE ${librpmio_SOURCES})
+target_include_directories(librpmio PRIVATE ${LUA_INCLUDE_DIRS})
 target_link_libraries(librpmio PRIVATE ${POPT_LIBRARIES} ${LUA_LIBRARIES})
 
 set(iolibs ZLIB BZIP2 LIBLZMA ZSTD)
