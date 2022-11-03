@@ -29,8 +29,8 @@ if(WITH_AUDIT)
 	list(APPEND plugins audit)
 endif()
 
-if(FSVERITY_IOCTL)
-	set(fsverity_libs ${FSVERITY_LIBRARIES})
+if(WITH_FSVERITY)
+	set(fsverity_libs ${FSVERITY_LDFLAGS})
 	list(APPEND plugins fsverity)
 endif()
 
