@@ -143,6 +143,14 @@ if (WITH_CAP)
 	pkg_check_modules(LIBCAP libcap REQUIRED)
 endif()
 
+if (WITH_ACL)
+	pkg_check_modules(LIBACL libacl REQUIRED)
+endif()
+
+if (WITH_AUDIT)
+	pkg_check_modules(AUDIT audit REQUIRED)
+endif()
+
 if (WITH_SELINUX)
 	pkg_check_modules(SELINUX libselinux REQUIRED)
 endif()

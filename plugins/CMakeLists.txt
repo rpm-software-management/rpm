@@ -25,7 +25,7 @@ if(WITH_FAPOLICYD)
 endif()
 
 if(WITH_AUDIT)
-	set(audit_libs -laudit)
+	set(audit_libs ${AUDIT_LDFLAGS})
 	list(APPEND plugins audit)
 endif()
 

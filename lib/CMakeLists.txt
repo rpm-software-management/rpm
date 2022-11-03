@@ -46,7 +46,7 @@ if(ENABLE_BDB_RO)
 endif()
 
 if(WITH_ACL)
-	target_link_libraries(librpm PRIVATE acl)
+	target_link_libraries(librpm PRIVATE ${LIBACL_LIBRARIES})
 endif()
 
 if(WITH_CAP)
