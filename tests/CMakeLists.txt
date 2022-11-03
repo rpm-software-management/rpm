@@ -79,3 +79,9 @@ add_custom_target(check COMMAND
 	DEPENDS ${testprogs}
 )
 
+add_custom_command(TARGET populate_testing POST_BUILD
+	COMMAND chmod -R u-w testing
+)
+add_custom_command(TARGET check POST_BUILD
+	COMMAND chmod -R u+w testing
+)

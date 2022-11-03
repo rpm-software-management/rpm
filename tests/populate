@@ -44,4 +44,3 @@ for d in /proc /sys /selinux /etc/selinux; do
 	fi
 done
 (cd testing/magic && file -C)
-chmod -R u-w testing/
