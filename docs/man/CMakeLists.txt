@@ -32,7 +32,7 @@ endif()
 
 foreach(man ${manuals})
 	# XXX manuals should be pre-built in tarballs
-	if (DEFINED PANDOC)
+	if (EXISTS ${PANDOC})
 		add_custom_command(OUTPUT ${man} COMMAND ${PANDOC}
 				${CMAKE_CURRENT_SOURCE_DIR}/${man}.md -o ${man}
 				DEPENDS ${man}.md)

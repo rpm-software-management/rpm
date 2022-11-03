@@ -3,7 +3,7 @@ find_program(PANDOC NAMES pandoc)
 add_subdirectory(man)
 
 find_package(Doxygen)
-if (DEFINED DOXYGEN_FOUND)
+if (${DOXYGEN_FOUND})
 	# XXX API docs should be pre-built in tarballs
 	file(GLOB headers ${CMAKE_SOURCE_DIR}/include/rpm/*.h)
 	doxygen_add_docs(apidoc librpm/Doxyheader.h ${headers}

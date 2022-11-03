@@ -325,10 +325,10 @@ endforeach()
 
 find_program(AUTOM4TE autom4te)
 find_program(FAKECHROOT fakechroot)
-if (DEFINED AUTOM4TE AND DEFINED FAKECHROOT)
+if (EXISTS ${AUTOM4TE} AND EXISTS ${FAKECHROOT})
 	add_subdirectory(tests)
 	find_program(PODMAN podman docker)
-	if (DEFINED PODMAN)
+	if (EXISTS ${PODMAN})
 		add_subdirectory(ci)
 	endif()
 
