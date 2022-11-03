@@ -1015,8 +1015,13 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 
 	    if (!rc && fd == -1 && !S_ISLNK(fp->sb.st_mode)) {
 		/* Only follow safe symlinks, and never on temporary files */
-		fd = fsmOpenat(di.dirfd, fp->fpath,
-				fp->suffix ? AT_SYMLINK_NOFOLLOW : 0, 0);
+		int flags = fp->suffix ? AT_SYMLINK_NOFOLLOW : 0;
+
+		/* Open the FIFO file in O_RDWR mode to prevent process blocking */
+		if (S_ISFIFO(fp->sb.st_mode))
+		    flags |= O_RDWR;
+
+		fd = fsmOpenat(di.dirfd, fp->fpath, flags, 0);
 		if (fd < 0)
 		    rc = RPMERR_OPEN_FAILED;
 	    }
