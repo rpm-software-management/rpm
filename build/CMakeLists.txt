@@ -14,6 +14,7 @@ set_target_properties(librpmbuild PROPERTIES
 	SOVERSION ${RPM_SOVERSION}
 )
 target_sources(librpmbuild PRIVATE ${librpmbuild_SOURCES})
+target_include_directories(librpmbuild PRIVATE ${LUA_INCLUDE_DIRS})
 target_link_libraries(librpmbuild PUBLIC librpmio librpm)
 target_link_libraries(librpmbuild PRIVATE
 	libmisc
