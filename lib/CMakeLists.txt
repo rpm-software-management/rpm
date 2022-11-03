@@ -43,7 +43,6 @@ endif()
 
 if(ENABLE_BDB_RO)
 	list(APPEND librpm_SOURCES backend/bdb_ro.c)
-	target_link_libraries(librpm PRIVATE ${SQLITE_LIBRARIES})
 endif()
 
 if(WITH_ACL)
