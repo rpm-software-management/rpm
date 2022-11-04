@@ -45,4 +45,4 @@ for d in /proc /sys /selinux /etc/selinux; do
 		ln -s ${d} testing/${d}
 	fi
 done
-(cd testing/magic && file -C)
+(cd testing/magic && cp /usr/share/misc/magic.mgc . || file -C)
