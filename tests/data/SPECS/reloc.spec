@@ -11,7 +11,9 @@ BuildArch:	noarch
 %{summary}
 
 %install
-mkdir -p $RPM_BUILD_ROOT/opt/{bin,lib,etc}
+mkdir -p $RPM_BUILD_ROOT/opt/bin
+mkdir -p $RPM_BUILD_ROOT/opt/lib
+mkdir -p $RPM_BUILD_ROOT/opt/etc
 touch $RPM_BUILD_ROOT/opt/bin/typo
 touch $RPM_BUILD_ROOT/opt/lib/notlib
 touch $RPM_BUILD_ROOT/opt/etc/conf
