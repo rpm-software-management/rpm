@@ -75,9 +75,13 @@ function(makemacros)
 		install lrzip lzip xz make mkdir mv patch rm sed tar unzip
 		zstd gem git hg bzr quilt ld objdump strip
 	)
-	foreach (V ${extutils})
-		string(TOUPPER ${V} n)
-		set(__${n} /usr/bin/${V})
+	foreach (util ${extutils})
+		string(TOUPPER ${util} UTIL)
+		find_program(__${UTIL} ${util})
+		if (NOT EXISTS ${__${UTIL}})
+			message(WARNING "${util} not found, assuming /usr/bin")
+			set(__${UTIL} /usr/bin/${util})
+		endif()
 	endforeach()
 
 	set(DB_BACKEND sqlite)
