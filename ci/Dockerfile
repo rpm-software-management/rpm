@@ -54,6 +54,7 @@ RUN chmod -R a-w .
 
 WORKDIR /srv/build
 RUN cmake \
+	-DCMAKE_INSTALL_PREFIX=$(mktemp -d) \
 	-DENABLE_WERROR=ON \
 	-DENABLE_BDB_RO=ON \
 	-DWITH_FSVERITY=ON \
