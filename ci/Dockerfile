@@ -1,8 +1,6 @@
 FROM registry.fedoraproject.org/fedora:36
 MAINTAINER rpm-maint@lists.rpm.org
 
-WORKDIR /srv/rpm
-
 RUN echo -e "deltarpm=0\ninstall_weak_deps=0\ntsflags=nodocs" >> /etc/dnf/dnf.conf
 RUN rpm -e fedora-repos-modular
 RUN sed -i -e "s:^enabled=.$:enabled=0:g" /etc/yum.repos.d/*openh264.repo
@@ -50,14 +48,15 @@ RUN dnf -y install \
   pandoc \
   && dnf clean all
 
+WORKDIR /srv/rpm
 COPY . .
 
-WORKDIR /srv/rpm/_ci_
+WORKDIR /srv/build
 RUN cmake \
 	-DENABLE_WERROR=ON \
 	-DENABLE_BDB_RO=ON \
 	-DWITH_FSVERITY=ON \
 	-DWITH_IMAEVM=ON \
-	..
+	../rpm
 
 CMD make -j$(nproc) check; rc=$?; find . -name rpmtests.log|xargs cat; exit $rc
