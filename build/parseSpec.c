@@ -6,9 +6,6 @@
 #include "system.h"
 
 #include <errno.h>
-#ifdef ENABLE_OPENMP
-#include <omp.h>
-#endif
 #ifdef HAVE_ICONV
 #include <iconv.h>
 #endif
@@ -1059,27 +1056,6 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 	    goto exit;
 	}
     }
-
-#ifdef ENABLE_OPENMP
-    /* Set number of OMP threads centrally */
-    int nthreads = rpmExpandNumeric("%{?_smp_build_nthreads}");
-    int nthreads_max = rpmExpandNumeric("%{?_smp_nthreads_max}");
-    if (nthreads <= 0)
-        nthreads = omp_get_max_threads();
-    if (nthreads_max > 0 && nthreads > nthreads_max)
-	nthreads = nthreads_max;
-#if __WORDSIZE == 32
-    /* On 32bit platforms, address space shortage is an issue. Play safe. */
-    int platlimit = 4;
-    if (nthreads > platlimit) {
-	nthreads = platlimit;
-	rpmlog(RPMLOG_DEBUG,
-	    "limiting number of threads to %d due to platform\n", platlimit);
-    }
-#endif
-    if (nthreads > 0)
-	omp_set_num_threads(nthreads);
-#endif
 
     if (spec->clean == NULL) {
 	char *body = rpmExpand("%{?buildroot: %{__rm} -rf %{buildroot}}", NULL);
