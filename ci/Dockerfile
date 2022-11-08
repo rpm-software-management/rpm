@@ -50,6 +50,7 @@ RUN dnf -y install \
 
 WORKDIR /srv/rpm
 COPY . .
+RUN chmod -R a-w .
 
 WORKDIR /srv/build
 RUN cmake \
