@@ -11,6 +11,9 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <time.h>
+#ifdef ENABLE_OPENMP
+#include <omp.h>
+#endif
 
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
@@ -302,6 +305,28 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
     StringBuf sink = NULL;
     StringBuf *sbp = rpmIsVerbose() ? NULL : &sink;
 
+#ifdef ENABLE_OPENMP
+    /* Set number of OMP threads centrally */
+    int prev_threads = omp_get_num_threads();
+    int nthreads = rpmExpandNumeric("%{?_smp_build_nthreads}");
+    int nthreads_max = rpmExpandNumeric("%{?_smp_nthreads_max}");
+    if (nthreads <= 0)
+        nthreads = omp_get_max_threads();
+    if (nthreads_max > 0 && nthreads > nthreads_max)
+	nthreads = nthreads_max;
+#if __WORDSIZE == 32
+    /* On 32bit platforms, address space shortage is an issue. Play safe. */
+    int platlimit = 4;
+    if (nthreads > platlimit) {
+	nthreads = platlimit;
+	rpmlog(RPMLOG_DEBUG,
+	    "limiting number of threads to %d due to platform\n", platlimit);
+    }
+#endif
+    if (nthreads > 0)
+	omp_set_num_threads(nthreads);
+#endif
+
     if (rpmExpandNumeric("%{?source_date_epoch_from_changelog}") &&
 	getenv("SOURCE_DATE_EPOCH") == NULL) {
 	/* Use date of first (== latest) changelog entry */
@@ -443,6 +468,9 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 	(void) unlink(spec->specFile);
 
 exit:
+#if WITH_OPENMP
+    omp_set_num_threads(prev_threads);
+#endif
     freeStringBuf(sink);
     free(cookie);
     spec->rootDir = NULL;
