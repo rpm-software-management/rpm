@@ -674,6 +674,9 @@ int main(int argc, char *argv[])
 	/* fallthrough */
     case 'p':
 	ba->buildAmount |= RPMBUILD_PREP;
+	if (!noDeps) {
+	    ba->buildAmount |= RPMBUILD_CHECKBUILDREQUIRES;
+	}
 	break;
     case 'l':
 	ba->buildAmount |= RPMBUILD_FILECHECK;
