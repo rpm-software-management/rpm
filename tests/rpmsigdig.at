@@ -627,7 +627,11 @@ gpg(a72b7d4f62837bea) = 4:a72b7d4f62837bea-62553e62
 [])
 AT_CLEANUP
 
+# The internal OpenPGP parser rejects the key.  The Sequoia parser
+# just ignores the invalid components and imports the rest.  This test
+# checks the behavior of the internal parser.
 AT_SETUP([rpmkeys type confusion])
+AT_SKIP_IF([test x$PGP != xinternal])
 AT_CHECK([
 RPMDB_INIT
 
