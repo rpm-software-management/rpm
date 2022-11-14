@@ -888,7 +888,7 @@ runroot rpm \
     --define '%foo() %{expand:%define xxx 1} %{echo:%xxx} %{expand: %global xxx 2} %{echo:%xxx}' \
     --eval .'%foo'. \
     --eval '%xxx' \
-    --eval .'%undefine xxx'. \
+    --eval '%undefine xxx' \
     --eval '%xxx'
 ],
 [0],
@@ -896,7 +896,7 @@ runroot rpm \
 2
 .    .
 2
-..
+
 %xxx
 ])
 AT_CLEANUP
