@@ -56,6 +56,14 @@ runroot rpmbuild -bp /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 [])
 
 AT_CHECK([
+runroot rpmbuild -bp -D "preamble BuildRequires:foo" /data/SPECS/specstep.spec 2>&1|grep ^error:
+],
+[0],
+[error: Failed build dependencies:
+],
+[])
+
+AT_CHECK([
 runroot rpmbuild -br /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
