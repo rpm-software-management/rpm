@@ -29,3 +29,6 @@ testing but one needs to be careful that the spec syntax is not
 already parsed when the spec file is read. Avoid Spec directives or
 sections starting right at the beginning of the line as they will be
 interpreted right away.
+
+[Example](https://github.com/rpm-software-management/rpm/blob/master/tests/data/SPECS/dynamic.spec)
+from our tests set.
