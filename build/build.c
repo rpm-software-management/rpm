@@ -472,7 +472,7 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 	(void) unlink(spec->specFile);
 
 exit:
-#if WITH_OPENMP
+#ifdef ENABLE_OPENMP
     omp_set_num_threads(prev_threads);
 #endif
     freeStringBuf(sink);

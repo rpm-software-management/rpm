@@ -30,7 +30,8 @@ if(WITH_CAP)
 endif()
 
 if(OpenMP_C_FOUND)
-    target_link_libraries(librpmbuild PRIVATE ${OpenMP_C_LIBRARIES})
+	target_compile_options(librpmbuild PRIVATE ${OpenMP_C_FLAGS})
+	target_link_libraries(librpmbuild PRIVATE ${OpenMP_C_LIBRARIES})
 endif()
 
 
