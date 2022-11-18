@@ -260,6 +260,7 @@ add_compile_definitions(SYSCONFDIR="${CMAKE_INSTALL_FULL_SYSCONFDIR}")
 add_compile_definitions(LIBRPMALIAS_FILENAME="rpmpopt-${PROJECT_VERSION}")
 add_compile_definitions(LIBRPMALIAS_EXECPATH="${CMAKE_INSTALL_FULL_BINDIR}")
 
+add_compile_options(-Wall -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wempty-body)
 if (ENABLE_WERROR)
 	add_compile_options(-Werror)
 endif()
