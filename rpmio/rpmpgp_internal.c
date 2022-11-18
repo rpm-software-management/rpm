@@ -570,7 +570,7 @@ static int pgpCurveByOid(const uint8_t *p, int l)
 
 static int isKey(pgpDigParams keyp)
 {
-    return keyp->tag == PGPTAG_PUBLIC_KEY || keyp->tag == PGPTAG_PUBLIC_SUBKEY;
+    return keyp->tag == PGPTAG_PUBLIC_KEY;
 }
 
 static int pgpPrtPubkeyParams(uint8_t pubkey_algo,
@@ -889,77 +889,6 @@ static pgpDigParams pgpDigParamsNew(uint8_t tag)
     return digp;
 }
 
-static int hashKey(DIGEST_CTX hash, const struct pgpPkt *pkt, int exptag)
-{
-    int rc = -1;
-    if (pkt->tag == exptag) {
-	uint8_t head[] = {
-	    0x99,
-	    (pkt->blen >> 8),
-	    (pkt->blen     ),
-	};
-
-	rpmDigestUpdate(hash, head, 3);
-	rpmDigestUpdate(hash, pkt->body, pkt->blen);
-	rc = 0;
-    }
-    return rc;
-}
-
-static int pgpVerifySelf(pgpDigParams key, pgpDigParams selfsig,
-			const struct pgpPkt *all, int i)
-{
-    int rc = -1;
-    DIGEST_CTX hash = NULL;
-
-    switch (selfsig->sigtype) {
-    case PGPSIGTYPE_SUBKEY_BINDING:
-	hash = rpmDigestInit(selfsig->hash_algo, 0);
-	if (hash) {
-	    rc = hashKey(hash, &all[0], PGPTAG_PUBLIC_KEY);
-	    if (!rc)
-		rc = hashKey(hash, &all[i-1], PGPTAG_PUBLIC_SUBKEY);
-	}
-	break;
-    default:
-	/* ignore types we can't handle */
-	rc = 0;
-	break;
-    }
-
-    if (hash && rc == 0)
-	rc = pgpVerifySignature(key, selfsig, hash);
-
-    rpmDigestFinal(hash, NULL, NULL, 0);
-
-    return rc;
-}
-
-static int parseSubkeySig(const struct pgpPkt *pkt, uint8_t tag,
-			  pgpDigParams *params_p) {
-    pgpDigParams params = *params_p = NULL; /* assume failure */
-
-    if (pkt->tag != PGPTAG_SIGNATURE)
-	goto fail;
-
-    params = pgpDigParamsNew(tag);
-
-    if (pgpPrtSig(tag, pkt->body, pkt->blen, params))
-	goto fail;
-
-    if (params->sigtype != PGPSIGTYPE_SUBKEY_BINDING &&
-	params->sigtype != PGPSIGTYPE_SUBKEY_REVOKE)
-    {
-	goto fail;
-    }
-
-    *params_p = params;
-    return 0;
-fail:
-    pgpDigParamsFree(params);
-    return -1;
-}
-
 static const size_t RPM_MAX_OPENPGP_BYTES = 65535; /* max number of bytes in a key */
 
 int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
@@ -968,19 +897,13 @@ int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
     const uint8_t *p = pkts;
     const uint8_t *pend = pkts + pktlen;
     pgpDigParams digp = NULL;
-    pgpDigParams selfsig = NULL;
-    int i = 0;
-    int alloced = 16; /* plenty for normal cases */
+    struct pgpPkt _pkt, *pkt = &_pkt;
     int rc = -1; /* assume failure */
-    int expect = 0;
-    int prevtag = 0;
 
     if (pktlen > RPM_MAX_OPENPGP_BYTES)
 	return rc; /* reject absurdly large data */
 
-    struct pgpPkt *all = xmalloc(alloced * sizeof(*all));
     while (p < pend) {
-	struct pgpPkt *pkt = &all[i];
 	if (decodePkt(p, (pend - p), pkt))
 	    break;
 
@@ -993,48 +916,16 @@ int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
 	} else if (pkt->tag == PGPTAG_PUBLIC_KEY)
 	    break;
 
-	if (expect) {
-	    if (pkt->tag != expect)
-		break;
-	    selfsig = pgpDigParamsNew(pkt->tag);
-	}
-
-	if (pgpPrtPkt(pkt, selfsig ? selfsig : digp))
+	if (pgpPrtPkt(pkt, digp))
 	    break;
 
-	if (selfsig) {
-	    /* subkeys must be followed by binding signature */
-	    int xx = 1; /* assume failure */
-
-	    if (!(prevtag == PGPTAG_PUBLIC_SUBKEY &&
-		  selfsig->sigtype != PGPSIGTYPE_SUBKEY_BINDING))
-		xx = pgpVerifySelf(digp, selfsig, all, i);
-
-	    selfsig = pgpDigParamsFree(selfsig);
-	    if (xx)
-		break;
-	    expect = 0;
-	}
-
-	if (pkt->tag == PGPTAG_PUBLIC_SUBKEY)
-	    expect = PGPTAG_SIGNATURE;
-	prevtag = pkt->tag;
-
-	i++;
 	p += (pkt->body - pkt->head) + pkt->blen;
 	if (pkttype == PGPTAG_SIGNATURE)
 	    break;
-
-	if (alloced <= i) {
-	    alloced *= 2;
-	    all = xrealloc(all, alloced * sizeof(*all));
-	}
     }
 
-    rc = (digp && (p == pend) && expect == 0) ? 0 : -1;
+    rc = (digp && (p == pend)) ? 0 : -1;
 
-    free(all);
-    selfsig = pgpDigParamsFree(selfsig);
     if (ret && rc == 0) {
 	*ret = digp;
     } else {
@@ -1047,77 +938,10 @@ int pgpPrtParamsSubkeys(const uint8_t *pkts, size_t pktlen,
 			pgpDigParams mainkey, pgpDigParams **subkeys,
 			int *subkeysCount)
 {
-    const uint8_t *p = pkts;
-    const uint8_t *pend = pkts + pktlen;
-    pgpDigParams *digps = NULL;
-    int count = 0;
-    int alloced = 10;
-    struct pgpPkt pkt;
-    int rc, i;
-
-    digps = xmalloc(alloced * sizeof(*digps));
-
-    while (p < pend) {
-	if (decodePkt(p, (pend - p), &pkt))
-	    break;
-
-	p += (pkt.body - pkt.head) + pkt.blen;
-
-	if (pkt.tag == PGPTAG_PUBLIC_SUBKEY) {
-	    if (count == alloced) {
-		alloced <<= 1;
-		digps = xrealloc(digps, alloced * sizeof(*digps));
-	    }
-
-	    digps[count] = pgpDigParamsNew(PGPTAG_PUBLIC_SUBKEY);
-	    /* Copy UID from main key to subkey */
-	    digps[count]->userid = xstrdup(mainkey->userid);
-
-	    if (getKeyID(pkt.body, pkt.blen, digps[count]->signid)) {
-		pgpDigParamsFree(digps[count]);
-		continue;
-	    }
-
-	    if (pgpPrtKey(pkt.tag, pkt.body, pkt.blen, digps[count])) {
-		pgpDigParamsFree(digps[count]);
-		continue;
-	    }
-
-	    pgpDigParams subkey_sig = NULL;
-	    if (decodePkt(p, pend - p, &pkt) ||
-	        parseSubkeySig(&pkt, 0, &subkey_sig))
-	    {
-		pgpDigParamsFree(digps[count]);
-		break;
-	    }
-
-	    /* Is the subkey revoked or incapable of signing? */
-	    int ignore = subkey_sig->sigtype != PGPSIGTYPE_SUBKEY_BINDING ||
-			 !((subkey_sig->saved & PGPDIG_SIG_HAS_KEY_FLAGS) &&
-			   (subkey_sig->key_flags & 0x02));
-	    if (ignore) {
-		pgpDigParamsFree(digps[count]);
-	    } else {
-		digps[count]->key_flags = subkey_sig->key_flags;
-		digps[count]->saved |= PGPDIG_SIG_HAS_KEY_FLAGS;
-		count++;
-	    }
-	    p += (pkt.body - pkt.head) + pkt.blen;
-	    pgpDigParamsFree(subkey_sig);
-	}
-    }
-    rc = (p == pend) ? 0 : -1;
-
-    if (rc == 0) {
-	*subkeys = xrealloc(digps, count * sizeof(*digps));
-	*subkeysCount = count;
-    } else {
-	for (i = 0; i < count; i++)
-	    pgpDigParamsFree(digps[i]);
-	free(digps);
-    }
-
-    return rc;
+    /* We don't support subkeys due their complexities. Just ignore any. */
+    *subkeys = NULL;
+    *subkeysCount = 0;
+    return 0;
 }
 
 rpmRC pgpVerifySignature(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx)

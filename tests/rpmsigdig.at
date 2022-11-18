@@ -510,61 +510,35 @@ Checking package after importing key, no signature:
 [])
 AT_CLEANUP
 
-AT_SETUP([rpmkeys --import invalid keys])
-AT_KEYWORDS([rpmkeys import])
-RPMDB_INIT
-
 # The following certificates include subkeys with errors.  In general,
 # all subkeys should be returned whether they are valid or not.  Keys
 # should only be rejected when verifying a signature.  This is because
 # a key's validity depends on the current time.  Thus, the time to
 # check for validity is when the key is used, not when it is imported.
-# The internal OpenPGP implementation checks for validity when the key
-# is imported; other implementations should not do this.
+AT_SETUP([rpmkeys --import invalid keys])
+AT_KEYWORDS([rpmkeys import])
+RPMDB_INIT
+
 AT_CHECK_UNQUOTED([
 runroot rpmkeys --quiet --import /data/keys/CVE-2021-3521-badbind.asc
-echo exit code: $? >&2
 ],
-[ignore],
+[0],
 [],
-[`if test x$PGP = xinternal;
-then
-    echo 'error: /data/keys/CVE-2021-3521-badbind.asc: key 1 import failed.'
-    echo exit code: 1
-else
-    echo exit code: 0
-fi`]
-)
+[])
 
 AT_CHECK_UNQUOTED([
 runroot rpmkeys --quiet --import /data/keys/CVE-2021-3521-nosubsig.asc
-echo exit code: $? >&2
 ],
-[ignore],
+[0],
 [],
-[`if test x$PGP = xinternal;
-then
-    echo 'error: /data/keys/CVE-2021-3521-nosubsig.asc: key 1 import failed.'
-    echo exit code: 1
-else
-    echo exit code: 0
-fi`]
-)
+[])
 
 AT_CHECK_UNQUOTED([
 runroot rpmkeys --quiet --import /data/keys/CVE-2021-3521-nosubsig-last.asc
-echo exit code: $? >&2
 ],
-[ignore],
+[0],
 [],
-[`if test x$PGP = xinternal;
-then
-    echo 'error: /data/keys/CVE-2021-3521-nosubsig-last.asc: key 1 import failed.'
-    echo exit code: 1
-else
-    echo exit code: 0
-fi`]
-)
+[])
 AT_CLEANUP
 
 # -----------------------------------------
@@ -627,20 +601,16 @@ gpg(a72b7d4f62837bea) = 4:a72b7d4f62837bea-62553e62
 [])
 AT_CLEANUP
 
-# The internal OpenPGP parser rejects the key.  The Sequoia parser
-# just ignores the invalid components and imports the rest.  This test
-# checks the behavior of the internal parser.
+# The key has invalid components but those should be just ignored.
 AT_SETUP([rpmkeys type confusion])
-AT_SKIP_IF([test x$PGP != xinternal])
 AT_CHECK([
 RPMDB_INIT
 
 runroot rpmkeys --import /data/keys/type-confusion.asc
 ],
-[1],
+[0],
 [],
-[error: /data/keys/type-confusion.asc: key 1 import failed.]
-)
+[])
 AT_CLEANUP
 
 # ------------------------------
