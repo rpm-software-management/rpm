@@ -527,6 +527,7 @@ runroot rpm -qpl /build/RPMS/noarch/globesctest-1.0-1.noarch.rpm
 /opt/share/doc/globesctest-1.0/bar
 /opt/share/doc/globesctest-1.0/baz
 /opt/share/doc/globesctest-1.0/docfb[[123]]
+/opt/share/doc/globesctest-1.0/foo & bar !
 /opt/share/doc/globesctest-1.0/foo a
 /opt/share/doc/globesctest-1.0/foo b
 /opt/share/doc/globesctest-1.0/foo bar
@@ -2013,12 +2014,12 @@ runroot rpmbuild -bb --quiet /data/SPECS/filemiss.spec
 [error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/share/doc/filemisstest-1.0/CREDITS
 error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/foo
 error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/bar{a,b}
-cp: cannot stat 'INSTALL': No such file or directory
-cp: cannot stat 'README*': No such file or directory
+cp: cannot stat '/build/BUILD/INSTALL': No such file or directory
+cp: cannot stat '/build/BUILD/README*': No such file or directory
 error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/share/doc/filemisstest-1.0/INSTALL
 error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/share/doc/filemisstest-1.0/README*
-cp: cannot stat 'LICENSE': No such file or directory
-cp: cannot stat 'OTHERLICENSE?': No such file or directory
+cp: cannot stat '/build/BUILD/LICENSE': No such file or directory
+cp: cannot stat '/build/BUILD/OTHERLICENSE?': No such file or directory
 error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/share/licenses/filemisstest-1.0/LICENSE
 error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/share/licenses/filemisstest-1.0/OTHERLICENSE?
 ],
