@@ -18,6 +18,7 @@ BuildArch:	noarch
 %build
 touch 'foo[bar]' bar baz 'foo bar' foo%%name 'docfb[123]' 'licfb[123]'
 touch 'foo b' 'foo a' 'foo r'
+touch 'foo & bar !'
 
 %install
 mkdir -p %{buildroot}/opt
@@ -119,3 +120,6 @@ touch '%{buildroot}/opt/foo[123]'
 %doc docfb[123]
 %license licfb[123]
 /opt/foo[123]
+
+# Shell control chars (#1294)
+%doc "foo & bar !"

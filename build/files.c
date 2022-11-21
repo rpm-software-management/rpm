@@ -2410,7 +2410,9 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     const char *sdname = (sd->sdtype == RPMFILE_DOC) ? "%doc" : "%license";
     char *mkdocdir = rpmExpand("%{__mkdir_p} $", sdenv, NULL);
     StringBuf docScript = newStringBuf();
-    char *basepath, **files;
+    char *basepath;
+    ARGV_t *files;
+    int count = sd->entriesCount;
     int fi;
 
     appendStringBuf(docScript, sdenv);
@@ -2421,16 +2423,27 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     appendLineStringBuf(docScript, sdenv);
     appendLineStringBuf(docScript, mkdocdir);
 
+    basepath = rpmGenPath(spec->rootDir, "%{_builddir}", "%{?buildsubdir}");
+    files = xmalloc(sizeof(*files) * count);
+    fi = 0;
     for (ARGV_const_t fn = sd->files; fn && *fn; fn++) {
-	/* Quotes would break globs, escape spaces instead */
-	char *efn = rpmEscapeSpaces(*fn);
-	appendStringBuf(docScript, "cp -pr ");
-	appendStringBuf(docScript, efn);
-	appendStringBuf(docScript, " $");
-	appendStringBuf(docScript, sdenv);
-	appendLineStringBuf(docScript, " ||:");
-	free(efn);
+	char *origfile = rpmCleanPath(rstrscat(NULL, basepath, "/", *fn, NULL));
+	ARGV_t globFiles = NULL;
+	int globFilesCount, i;
+	if (rpmGlobPath(origfile, RPMGLOB_NOCHECK,
+			&globFilesCount, &globFiles) == 0) {
+	    for (i = 0; i < globFilesCount; i++) {
+		appendStringBuf(docScript, "cp -pr '");
+		appendStringBuf(docScript, globFiles[i]);
+		appendStringBuf(docScript, "' $");
+		appendStringBuf(docScript, sdenv);
+		appendLineStringBuf(docScript, " ||:");
+	    }
+	}
+	free(origfile);
+	files[fi++] = globFiles;
     }
+    free(basepath);
 
     if (install) {
 	if (doScript(spec, RPMBUILD_STRINGBUF, sdname,
@@ -2439,13 +2452,8 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
 	}
     }
 
-    basepath = rpmGenPath(spec->rootDir, "%{_builddir}", "%{?buildsubdir}");
-    files = sd->files;
     fi = 0;
-    while (*files != NULL) {
-	char *origfile = rpmCleanPath(rstrscat(NULL, basepath, "/", *files, NULL));
-	ARGV_t globFiles = NULL;
-	int globFilesCount, i;
+    for (int i = 0; i < count; i++) {
 	char *newfile;
 
 	FileEntryFree(&fl->cur);
@@ -2454,19 +2462,14 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
 	copyFileEntry(&sd->entries[fi].defEntry, &fl->def);
 	fi++;
 
-	if (rpmGlobPath(origfile, RPMGLOB_NOCHECK,
-			&globFilesCount, &globFiles) == 0) {
-	    for (i = 0; i < globFilesCount; i++) {
-		rasprintf(&newfile, "%s/%s", sd->dirname, basename(globFiles[i]));
-		processBinaryFile(pkg, fl, newfile, 0);
-		free(newfile);
-	    }
-	    argvFree(globFiles);
+	for (ARGV_const_t fn = files[i]; fn && *fn; fn++) {
+	    rasprintf(&newfile, "%s/%s", sd->dirname, basename(*fn));
+	    processBinaryFile(pkg, fl, newfile, 0);
+	    free(newfile);
 	}
-	free(origfile);
-	files++;
+	argvFree(files[i]);
     }
-    free(basepath);
+    free(files);
 
     FileEntryFree(&fl->cur);
     FileEntryFree(&fl->def);
