@@ -142,13 +142,13 @@ static rpmtd makeSigTag(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
     unsigned int pubkey_algo;
 
     if (pgpPrtParams(pkt, pktlen, PGPTAG_SIGNATURE, &sigp)) {
-	rpmlog(RPMLOG_ERR, _("Unsupported PGP signature\n"));
+	rpmlog(RPMLOG_ERR, _("Unsupported OpenPGP signature\n"));
 	goto exit;
     }
 
     hash_algo = pgpDigParamsAlgo(sigp, PGPVAL_HASHALGO);
     if (rpmDigestLength(hash_algo) == 0) {
-	rpmlog(RPMLOG_ERR, _("Unsupported PGP hash algorithm %u\n"), hash_algo);
+	rpmlog(RPMLOG_ERR, _("Unsupported OpenPGP hash algorithm %u\n"), hash_algo);
 	goto exit;
     }
 
@@ -162,7 +162,7 @@ static rpmtd makeSigTag(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
 	sigtag = ishdr ? RPMSIGTAG_RSA : RPMSIGTAG_PGP;
 	break;
     default:
-	rpmlog(RPMLOG_ERR, _("Unsupported PGP pubkey algorithm %u\n"),
+	rpmlog(RPMLOG_ERR, _("Unsupported OpenPGP pubkey algorithm %u\n"),
 		pubkey_algo);
 	goto exit;
 	break;
