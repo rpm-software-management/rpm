@@ -140,6 +140,7 @@ static rpmtd makeSigTag(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
     rpmtd sigtd = NULL;
     unsigned int hash_algo;
     unsigned int pubkey_algo;
+    int ver;
 
     if (pgpPrtParams(pkt, pktlen, PGPTAG_SIGNATURE, &sigp)) {
 	rpmlog(RPMLOG_ERR, _("Unsupported OpenPGP signature\n"));
@@ -166,6 +167,12 @@ static rpmtd makeSigTag(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
 		pubkey_algo);
 	goto exit;
 	break;
+    }
+
+    ver = pgpDigParamsVersion(sigp);
+    if (ver < 4) {
+	rpmlog(RPMLOG_WARNING, _("Deprecated OpenPGP signature version %d\n"),
+		ver);
     }
 
     /* Looks sane, create the tag data */
