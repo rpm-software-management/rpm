@@ -241,6 +241,7 @@ Header headerFree(Header h)
 	}
 	h->index = _free(h->index);
     }
+    h->blob = _free(h->blob);
 
     h = _free(h);
     return NULL;
