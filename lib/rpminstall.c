@@ -561,13 +561,14 @@ restart:
 	    rc = tryReadManifest(eiu);
 	    if (rc == RPMRC_OK) {
 	        eiu->prevx++;
+		headerFree(h);
 	        goto restart;
 	    }
 	}
 
 	if (headerIsSource(h)) {
+	    headerFree(h);
 	    if (ia->installInterfaceFlags & INSTALL_FRESHEN) {
-		headerFree(h);
 	        continue;
 	    }
 	    rpmlog(RPMLOG_DEBUG, "\tadded source package [%d]\n",
@@ -592,6 +593,7 @@ restart:
 		rpmlog(RPMLOG_ERR, _("package %s is not relocatable\n"),
 		       headerGetString(h, RPMTAG_NAME));
 		eiu->numFailed++;
+		headerFree(h);
 		goto exit;
 	    }
 	}
