@@ -675,8 +675,12 @@ exit:
 	}
     }
     if (eiu->sourceURL != NULL) {
-        for (i = 0; i < eiu->numSRPMS; i++)
+        for (i = 0; i < eiu->numSRPMS; i++) {
+	    if (eiu->sourceURL[i] == NULL) continue;
+	    if (eiu->pkgState[i] == 1)
+	        (void) unlink(eiu->sourceURL[i]);
 	    eiu->sourceURL[i] = _free(eiu->sourceURL[i]);
+	}
     }
     eiu->pkgState = _free(eiu->pkgState);
     eiu->pkgURL = _free(eiu->pkgURL);
