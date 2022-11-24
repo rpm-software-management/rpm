@@ -112,6 +112,7 @@ EXTRA_DIST += data/RPMS/hello-1.0-1.ppc64.rpm
 EXTRA_DIST += data/RPMS/hello-2.0-1.i686.rpm
 EXTRA_DIST += data/RPMS/hello-2.0-1.x86_64.rpm
 EXTRA_DIST += data/RPMS/hello-2.0-1.x86_64-signed.rpm
+EXTRA_DIST += data/RPMS/hello-2.0-1.x86_64-v3-signed.rpm
 EXTRA_DIST += data/RPMS/hlinktest-1.0-1.noarch.rpm
 EXTRA_DIST += data/RPMS/imatest-1.0-1.fc34.noarch.rpm
 EXTRA_DIST += data/RPMS/hello-2.0-1.x86_64-corrupted.rpm
