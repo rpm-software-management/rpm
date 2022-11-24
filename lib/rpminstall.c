@@ -672,8 +672,13 @@ exit:
 	    eiu->pkgURL[i] = _free(eiu->pkgURL[i]);
 	}
     }
+    if (eiu->sourceURL != NULL) {
+        for (i = 0; i < eiu->numSRPMS; i++)
+	    eiu->sourceURL[i] = _free(eiu->sourceURL[i]);
+    }
     eiu->pkgState = _free(eiu->pkgState);
     eiu->pkgURL = _free(eiu->pkgURL);
+    eiu->sourceURL = _free(eiu->sourceURL);
     eiu->argv = _free(eiu->argv);
     rc = eiu->numFailed;
     free(eiu);
