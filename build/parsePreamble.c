@@ -959,6 +959,7 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 		BANames = _free(BANames);
 		goto exit;
 	    }
+	    BANames = _free(BANames);
 	    headerPutString(pkg->header, RPMTAG_ARCH, "noarch");
 	}
 	if (!BACount)
