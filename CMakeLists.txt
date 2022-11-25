@@ -128,6 +128,7 @@ pkg_check_modules(READLINE readline)
 pkg_check_modules(ZSTD libzstd)
 pkg_check_modules(LIBELF libelf)
 pkg_check_modules(LIBDW libdw)
+pkg_check_modules(PANDOC pandoc REQUIRED)
 
 if (ENABLE_OPENMP)
 	find_package(OpenMP REQUIRED)
