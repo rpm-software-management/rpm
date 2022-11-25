@@ -141,11 +141,11 @@ and then install with:
 
     make install
 
-Rpm comes with an automated self-test suite. The test-suite relies heavily
-on autom4te from autoconf (https://www.gnu.org/software/autoconf/),
-fakechroot (https://github.com/dex4er/fakechroot/) and cannot be executed
-without them. Provided that both were found during configuration,
-it can be executed after a successful build with:
+Rpm comes with an automated self-test suite. The test-suite requires
+autom4te from autoconf (https://www.gnu.org/software/autoconf/) and
+fakechroot (https://github.com/dex4er/fakechroot/). It is enabled by
+default but can be disabled with -DENABLE_TESTSUITE=OFF to avoid the
+dependencies.  The test-suite can be executed with:
 
     make check
 
