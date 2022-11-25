@@ -2410,11 +2410,12 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     const char *sdname = (sd->sdtype == RPMFILE_DOC) ? "%doc" : "%license";
     char *mkdocdir = rpmExpand("%{__mkdir_p} $", sdenv, NULL);
     StringBuf docScript = newStringBuf();
-    char *basepath;
-    ARGV_t *files;
     int count = sd->entriesCount;
-    int fi;
+    char *basepath = rpmGenPath(spec->rootDir, "%{_builddir}", "%{?buildsubdir}");
+    ARGV_t *files = xmalloc(sizeof(*files) * count);
+    int i, j;
 
+    /* Glob and copy file entries from builddir to buildroot */
     appendStringBuf(docScript, sdenv);
     appendStringBuf(docScript, "=$RPM_BUILD_ROOT");
     appendLineStringBuf(docScript, sd->dirname);
@@ -2422,29 +2423,24 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     appendStringBuf(docScript, "export ");
     appendLineStringBuf(docScript, sdenv);
     appendLineStringBuf(docScript, mkdocdir);
-
-    basepath = rpmGenPath(spec->rootDir, "%{_builddir}", "%{?buildsubdir}");
-    files = xmalloc(sizeof(*files) * count);
-    fi = 0;
-    for (ARGV_const_t fn = sd->files; fn && *fn; fn++) {
-	char *origfile = rpmCleanPath(rstrscat(NULL, basepath, "/", *fn, NULL));
-	ARGV_t globFiles = NULL;
-	int globFilesCount, i;
-	if (rpmGlobPath(origfile, RPMGLOB_NOCHECK,
-			&globFilesCount, &globFiles) == 0) {
-	    for (i = 0; i < globFilesCount; i++) {
+    for (i = 0; i < count; i++) {
+	char *origfile = rpmCleanPath(rstrscat(NULL, basepath, "/",
+					       sd->files[i], NULL));
+	ARGV_t argv = NULL;
+	int argc = 0;
+	if (rpmGlobPath(origfile, RPMGLOB_NOCHECK, &argc, &argv) == 0) {
+	    for (j = 0; j < argc; j++) {
 		appendStringBuf(docScript, "cp -pr '");
-		appendStringBuf(docScript, globFiles[i]);
+		appendStringBuf(docScript, argv[j]);
 		appendStringBuf(docScript, "' $");
 		appendStringBuf(docScript, sdenv);
 		appendLineStringBuf(docScript, " ||:");
 	    }
 	}
 	free(origfile);
-	files[fi++] = globFiles;
+	files[i] = argv;
     }
     free(basepath);
-
     if (install) {
 	if (doScript(spec, RPMBUILD_STRINGBUF, sdname,
 			    getStringBuf(docScript), test, NULL)) {
@@ -2452,15 +2448,14 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
 	}
     }
 
-    fi = 0;
-    for (int i = 0; i < count; i++) {
+    /* Add copied files in buildroot to file list */
+    for (i = 0; i < count; i++) {
 	char *newfile;
 
 	FileEntryFree(&fl->cur);
 	FileEntryFree(&fl->def);
-	copyFileEntry(&sd->entries[fi].curEntry, &fl->cur);
-	copyFileEntry(&sd->entries[fi].defEntry, &fl->def);
-	fi++;
+	copyFileEntry(&sd->entries[i].curEntry, &fl->cur);
+	copyFileEntry(&sd->entries[i].defEntry, &fl->def);
 
 	for (ARGV_const_t fn = files[i]; fn && *fn; fn++) {
 	    rasprintf(&newfile, "%s/%s", sd->dirname, basename(*fn));
