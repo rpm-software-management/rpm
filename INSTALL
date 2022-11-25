@@ -149,6 +149,12 @@ dependencies.  The test-suite can be executed with:
 
     make check
 
+Additionally, when podman or docker is available, rpm supports executing
+the test-suite in a local container similar to how the project CI is set up.
+You can enable this with -DENABLE_CI=ON and execute it with:
+
+    make ci
+
 Finally, if you wish to prepare an rpm source tar ball, you should do
 
     make dist
