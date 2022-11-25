@@ -1145,8 +1145,9 @@ static uint32_t getElfColor(const char *fn)
 		color = RPMFC_ELF32;
 		break;
 	    }
-	    elf_end(elf);
 	}
+	if (elf)
+	    elf_end(elf);
 	close(fd);
     }
 #endif
