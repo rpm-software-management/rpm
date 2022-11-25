@@ -14,7 +14,7 @@ if (WITH_IMAEVM)
 endif()
 if (WITH_FSVERITY)
 	list(APPEND librpmsign_SOURCES rpmsignverity.c)
-	target_link_libraries(librpmsign PRIVATE ${FSVERITY_LDFLAGS})
+	target_link_libraries(librpmsign PRIVATE PkgConfig::FSVERITY)
 endif()
 target_sources(librpmsign PRIVATE ${librpmsign_SOURCES})
 

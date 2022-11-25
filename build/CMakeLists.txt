@@ -14,24 +14,22 @@ set_target_properties(librpmbuild PROPERTIES
 	SOVERSION ${RPM_SOVERSION}
 )
 target_sources(librpmbuild PRIVATE ${librpmbuild_SOURCES})
-target_include_directories(librpmbuild PRIVATE ${LUA_INCLUDE_DIRS})
 target_link_libraries(librpmbuild PUBLIC librpmio librpm)
 target_link_libraries(librpmbuild PRIVATE
 	libmisc
-	${LUA_LIBRARIES}
-	${POPT_LIBRARIES}
-	${MAGIC_LIBRARIES}
-	${LIBELF_LIBRARIES}
-	${LIBDW_LIBRARIES}
+	PkgConfig::LUA
+	PkgConfig::POPT
+	PkgConfig::MAGIC
+	PkgConfig::LIBELF
+	PkgConfig::LIBDW
 )
 
 if(WITH_CAP)
-	target_link_libraries(librpmbuild PRIVATE ${LIBCAP_LIBRARIES})
+	target_link_libraries(librpmbuild PRIVATE PkgConfig::LIBCAP)
 endif()
 
 if(OpenMP_C_FOUND)
-	target_compile_options(librpmbuild PRIVATE ${OpenMP_C_FLAGS})
-	target_link_libraries(librpmbuild PRIVATE ${OpenMP_C_LIBRARIES})
+	target_link_libraries(librpmbuild PRIVATE OpenMP::OpenMP_C)
 endif()
 
 

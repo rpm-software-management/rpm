@@ -12,19 +12,16 @@ if (WITH_INTERNAL_OPENPGP)
 	if (WITH_OPENSSL)
 		find_package(OpenSSL REQUIRED)
 		list(APPEND librpmio_SOURCES digest_openssl.c)
-		target_include_directories(librpmio PRIVATE
-					${OPENSSL_INCLUDE_DIRS})
-		target_link_libraries(librpmio PRIVATE ${OPENSSL_LIBRARIES})
+		target_link_libraries(librpmio PRIVATE OpenSSL:Crypto)
 	else()
-		pkg_check_modules(LIBGCRYPT libgcrypt REQUIRED)
+		pkg_check_modules(LIBGCRYPT REQUIRED IMPORTED_TARGET libgcrypt)
 		list(APPEND librpmio_SOURCES digest_libgcrypt.c)
-		target_include_directories(librpmio PRIVATE
-					${LIBGCRYPT_INCLUDE_DIRS})
-		target_link_libraries(librpmio PRIVATE ${LIBGCRYPT_LIBRARIES})
+		target_link_libraries(librpmio PRIVATE PkgConfig::LIBGCRYPT)
 	endif()
 else()
+	pkg_check_modules(RPMSEQUOIA REQUIRED IMPORTED_TARGET rpm-sequoia)
 	list(APPEND librpmio_SOURCES rpmpgp_sequoia.c)
-	target_link_libraries(librpmio PRIVATE ${RPMSEQUOIA_LIBRARIES})
+	target_link_libraries(librpmio PRIVATE PkgConfig::RPMSEQUOIA)
 endif()
 
 set_target_properties(librpmio PROPERTIES
@@ -32,17 +29,20 @@ set_target_properties(librpmio PROPERTIES
 	SOVERSION ${RPM_SOVERSION}
 )
 target_sources(librpmio PRIVATE ${librpmio_SOURCES})
-target_include_directories(librpmio PRIVATE ${LUA_INCLUDE_DIRS})
-target_link_libraries(librpmio PRIVATE ${POPT_LIBRARIES} ${LUA_LIBRARIES})
+target_link_libraries(librpmio PRIVATE
+			PkgConfig::POPT
+			PkgConfig::LUA
+			ZLIB::ZLIB)
 
-set(iolibs ZLIB BZIP2 LIBLZMA ZSTD)
-foreach(lib ${iolibs})
-	if (${${lib}_FOUND})
-		target_include_directories(librpmio PRIVATE
-					${${lib}_INCLUDE_DIRS})
-		target_link_libraries(librpmio PRIVATE ${${lib}_LIBRARIES})
-	endif()
-endforeach()
+if (ZSTD_FOUND)
+	target_link_libraries(librpmio PRIVATE PkgConfig::ZSTD)
+endif()
+if (LIBLZMA_FOUND)
+	target_link_libraries(librpmio PRIVATE PkgConfig::LIBLZMA)
+endif()
+if (BZIP2_FOUND)
+	target_link_libraries(librpmio PRIVATE BZip2::BZip2)
+endif()
 
 install(TARGETS librpmio
 )
