@@ -102,6 +102,7 @@ int parseScript(rpmSpec spec, int parsePart)
     poptContext optCon = NULL;
     char *name = NULL;
     char *prog = xstrdup("/bin/sh");
+    char *origprog = prog;
     char *file = NULL;
     int priority = 1000000;
     struct poptOption optionsTable[] = {
@@ -482,6 +483,8 @@ exit:
     free(reqargs);
     freeStringBuf(sb);
     free(progArgv);
+    if (origprog != prog)
+	free(origprog);
     free(prog);
     free(name);
     free(file);
