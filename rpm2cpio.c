@@ -96,6 +96,8 @@ int main(int argc, char *argv[])
 
     rc = (ufdCopy(gzdi, fdo) == payload_size) ? EXIT_SUCCESS : EXIT_FAILURE;
 
+    headerFree(h);
+
     Fclose(fdo);
 
     Fclose(gzdi);	/* XXX gzdi == fdi */
