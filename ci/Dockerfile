@@ -1,4 +1,4 @@
-FROM registry.fedoraproject.org/fedora:36
+FROM registry.fedoraproject.org/fedora:37
 MAINTAINER rpm-maint@lists.rpm.org
 
 WORKDIR /srv/rpm
