@@ -28,8 +28,7 @@ set(librpm_SOURCES
 
 if(ENABLE_SQLITE)
 	list(APPEND librpm_SOURCES backend/sqlite.c)
-	target_include_directories(librpm PRIVATE ${SQLITE_INCLUDE_DIRS})
-	target_link_libraries(librpm PRIVATE ${SQLITE_LIBRARIES})
+	target_link_libraries(librpm PRIVATE PkgConfig::SQLITE)
 endif()
 
 if(ENABLE_NDB)
@@ -46,11 +45,11 @@ if(ENABLE_BDB_RO)
 endif()
 
 if(WITH_ACL)
-	target_link_libraries(librpm PRIVATE ${LIBACL_LIBRARIES})
+	target_link_libraries(librpm PRIVATE PkgConfig::LIBACL)
 endif()
 
 if(WITH_CAP)
-	target_link_libraries(librpm PRIVATE ${LIBCAP_LIBRARIES})
+	target_link_libraries(librpm PRIVATE PkgConfig::LIBCAP)
 endif()
 
 add_custom_command(OUTPUT tagtbl.C
@@ -59,8 +58,7 @@ add_custom_command(OUTPUT tagtbl.C
 )
 
 target_sources(librpm PRIVATE ${librpm_SOURCES} tagtbl.C)
-target_include_directories(librpm PRIVATE ${LUA_INCLUDE_DIRS})
 target_link_libraries(librpm PUBLIC librpmio)
-target_link_libraries(librpm PRIVATE ${POPT_LIBRARIES} ${LUA_LIBRARIES})
+target_link_libraries(librpm PRIVATE PkgConfig::POPT PkgConfig::LUA)
 
 install(TARGETS librpm)
