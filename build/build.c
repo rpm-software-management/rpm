@@ -213,6 +213,9 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
     buildCmd = rpmExpand(mCmd, " ", scriptName, NULL);
     (void) poptParseArgvString(buildCmd, &argc, &argv);
 
+    if (sb_stdoutp && *sb_stdoutp)
+	*sb_stdoutp = freeStringBuf(*sb_stdoutp);
+
     rpmlog(RPMLOG_NOTICE, _("Executing(%s): %s\n"), name, buildCmd);
     if (rpmfcExec((ARGV_const_t)argv, NULL, sb_stdoutp, 1, buildSubdir)) {
 	rpmlog(RPMLOG_ERR, _("Bad exit status from %s (%s)\n"),
