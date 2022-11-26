@@ -178,6 +178,30 @@ run rpmbuild \
 [ignore])
 AT_CLEANUP
 
+AT_SETUP([rpmbuild -ba find-lang])
+AT_KEYWORDS([build])
+RPMDB_INIT
+AT_CHECK([
+runroot rpmbuild \
+  -ba /data/SPECS/find-lang-test.spec
+],
+[0],
+[ignore],
+[ignore])
+
+AT_CHECK([[
+runroot rpm -qp --qf '[%{FILELANGS} %{FILENAMES}\n]' /build/RPMS/noarch/find-lang-test-1.0-1.noarch.rpm
+]],
+[0],
+[ /usr/share/find-lang-test/empty.txt
+de /usr/share/man/de_DE/man1/find-lang-test.1.gz
+fi /usr/share/man/fi/man1/find-lang-test.1.gz
+ /usr/share/man/man1/find-lang-test.1.gz
+pl /usr/share/man/pl/man1/find-lang-test.1.gz
+],
+[ignore])
+AT_CLEANUP
+
 # ------------------------------
 # Check if rpmbuild --rebuild *.src.rpm works
 AT_SETUP([rpmbuild --rebuild])
