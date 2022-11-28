@@ -1,4 +1,9 @@
-set(librpmbuild_SOURCES 
+add_library(librpmbuild SHARED)
+set_target_properties(librpmbuild PROPERTIES
+	VERSION ${RPM_LIBVERSION}
+	SOVERSION ${RPM_SOVERSION}
+)
+target_sources(librpmbuild PRIVATE
 	build.c files.c misc.c pack.c
 	parseSimpleScript.c parseChangelog.c parseDescription.c
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c
@@ -8,12 +13,6 @@ set(librpmbuild_SOURCES
 	speclua.c
 )
 
-add_library(librpmbuild SHARED)
-set_target_properties(librpmbuild PROPERTIES
-	VERSION ${RPM_LIBVERSION}
-	SOVERSION ${RPM_SOVERSION}
-)
-target_sources(librpmbuild PRIVATE ${librpmbuild_SOURCES})
 target_link_libraries(librpmbuild PUBLIC librpmio librpm)
 target_link_libraries(librpmbuild PRIVATE
 	libmisc

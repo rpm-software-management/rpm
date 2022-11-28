@@ -4,12 +4,12 @@ set_target_properties(librpm PROPERTIES
 	SOVERSION ${RPM_SOVERSION}
 )
 
-set(librpm_SOURCES
+target_sources(librpm PRIVATE
 	backend/dbi.c backend/dbi.h backend/dummydb.c
 	backend/dbiset.c backend/dbiset.h
 	headerutil.c header.c headerfmt.c header_internal.h
 	rpmdb.c rpmdb_internal.h
-	fprint.c fprint.h tagname.c rpmtd.c
+	fprint.c fprint.h tagname.c rpmtd.c tagtbl.C
 	cpio.c cpio.h depends.c order.c formats.c tagexts.c fsm.c fsm.h
 	manifest.c manifest.h package.c
 	poptALL.c poptI.c poptQV.c psm.c query.c
@@ -27,12 +27,12 @@ set(librpm_SOURCES
 )
 
 if(ENABLE_SQLITE)
-	list(APPEND librpm_SOURCES backend/sqlite.c)
+	target_sources(librpm PRIVATE backend/sqlite.c)
 	target_link_libraries(librpm PRIVATE PkgConfig::SQLITE)
 endif()
 
 if(ENABLE_NDB)
-	list(APPEND librpm_SOURCES
+	target_sources(librpm PRIVATE
 		backend/ndb/glue.c
 		backend/ndb/rpmpkg.c backend/ndb/rpmpkg.h
 		backend/ndb/rpmidx.c backend/ndb/rpmidx.h
@@ -41,7 +41,7 @@ if(ENABLE_NDB)
 endif()
 
 if(ENABLE_BDB_RO)
-	list(APPEND librpm_SOURCES backend/bdb_ro.c)
+	target_sources(librpm PRIVATE backend/bdb_ro.c)
 endif()
 
 if(WITH_ACL)
@@ -57,7 +57,6 @@ add_custom_command(OUTPUT tagtbl.C
 	DEPENDS ${CMAKE_SOURCE_DIR}/include/rpm/rpmtag.h gentagtbl.sh
 )
 
-target_sources(librpm PRIVATE ${librpm_SOURCES} tagtbl.C)
 target_link_libraries(librpm PUBLIC librpmio)
 target_link_libraries(librpm PRIVATE PkgConfig::POPT PkgConfig::LUA)
 

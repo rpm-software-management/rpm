@@ -1,4 +1,4 @@
-set(_rpm_SOURCES
+Python3_add_library(_rpm
 	rpmmodule.c rpmsystem-py.h
 	header-py.c header-py.h
 	rpmarchive-py.c rpmarchive-py.h
@@ -18,7 +18,6 @@ set(_rpm_SOURCES
 	spec-py.c spec-py.h
 )
 	
-Python3_add_library(_rpm ${_rpm_SOURCES})
 target_link_libraries(_rpm PRIVATE librpmio librpm librpmbuild librpmsign)
 
 install(TARGETS _rpm
