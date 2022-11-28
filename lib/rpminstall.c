@@ -520,7 +520,10 @@ restart:
 			_("skipping %s - transfer failed\n"), fileURL);
 		eiu->numFailed++;
 		eiu->pkgURL[eiu->pkgx] = NULL;
-		tfn = _free(tfn);
+		if (tfn) {
+		    (void) unlink(tfn);
+		    tfn = _free(tfn);
+		}
 		break;
 	    }
 	    eiu->pkgState[eiu->pkgx] = 1;
