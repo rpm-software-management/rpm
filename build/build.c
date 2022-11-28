@@ -276,7 +276,7 @@ static int doBuildRequires(rpmSpec spec, int test)
 
  exit:
     freeStringBuf(sb_stdout);
-    free(output);
+    argvFree(output);
     return rc;
 }
 
