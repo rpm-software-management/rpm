@@ -1,4 +1,4 @@
-set(rpm_HEADERS
+install(FILES
        argv.h rpmbase64.h rpmcrypto.h rpmfileutil.h rpmio.h
        rpmkeyring.h rpmlog.h rpmmacro.h rpmpgp.h rpmsq.h rpmstring.h
        rpmstrpool.h rpmsw.h rpmurl.h rpmutil.h rpmver.h
@@ -11,6 +11,5 @@ set(rpm_HEADERS
 	rpmbuild.h rpmspec.h rpmfc.h
 
 	rpmsign.h
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rpm
 )
-
-install(FILES ${rpm_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rpm )
