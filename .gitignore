@@ -5,4 +5,5 @@
 *.*~
 *.tmp
 
+/_build
 /docs/_site
