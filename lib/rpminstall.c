@@ -355,7 +355,6 @@ static int tryReadHeader(rpmts ts, struct rpmEIU * eiu, Header * hdrp)
 	   fd = NULL;
        }
        eiu->numFailed++;
-       *eiu->fnp = NULL;
        return RPMRC_FAIL;
    }
 
@@ -371,7 +370,6 @@ static int tryReadHeader(rpmts ts, struct rpmEIU * eiu, Header * hdrp)
    if (eiu->rpmrc == RPMRC_FAIL) {
        rpmlog(RPMLOG_ERR, _("%s cannot be installed\n"), *eiu->fnp);
        eiu->numFailed++;
-       *eiu->fnp = NULL;
    }
 
    return RPMRC_OK;
@@ -554,8 +552,12 @@ restart:
 	rpmlog(RPMLOG_DEBUG, "============== %s\n", *eiu->fnp);
 	(void) urlPath(*eiu->fnp, &fileName);
 
-	if (tryReadHeader(ts, eiu, &h) == RPMRC_FAIL)
+	if (tryReadHeader(ts, eiu, &h) == RPMRC_FAIL) {
+	    if (eiu->pkgState[eiu->fnp - eiu->pkgURL] == 1)
+		(void) unlink(*eiu->fnp);
+	    *eiu->fnp = _free(*eiu->fnp);
 	    continue;
+	}
 
 	if (eiu->rpmrc == RPMRC_NOTFOUND) {
 	    rc = tryReadManifest(eiu);
@@ -564,6 +566,10 @@ restart:
 		headerFree(h);
 	        goto restart;
 	    }
+	} else if (eiu->rpmrc == RPMRC_FAIL) {
+	    if (eiu->pkgState[eiu->fnp - eiu->pkgURL] == 1)
+		(void) unlink(*eiu->fnp);
+	    *eiu->fnp = _free(*eiu->fnp);
 	}
 
 	if (headerIsSource(h)) {
