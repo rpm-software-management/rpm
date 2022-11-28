@@ -11,7 +11,7 @@ if (${DOXYGEN_FOUND})
 	install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html TYPE DOC)
 endif()
 
-set(refman
+install(FILES
 	manual/arch_dependencies.md
 	manual/autosetup.md
 	manual/boolean_dependencies.md
@@ -39,5 +39,5 @@ set(refman
 	manual/tags.md
 	manual/triggers.md
 	manual/tsort.md
+	TYPE DOC
 )
-install(FILES ${refman} TYPE DOC)

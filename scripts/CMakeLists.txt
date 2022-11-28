@@ -1,4 +1,5 @@
-set(rpmconfig_SCRIPTS
+install(PROGRAMS gendiff TYPE BIN)
+install(PROGRAMS
 	brp-compress brp-strip brp-strip-comment-note
 	brp-strip-static-archive brp-elfperms brp-remove-la-files
 	check-files check-prereqs
@@ -11,12 +12,9 @@ set(rpmconfig_SCRIPTS
 	rpm_macros_provides.sh
 	rpmdb_dump rpmdb_load
 	rpm2cpio.sh tgpg
+	DESTINATION ${RPMCONFIGDIR}
 )
-
-set(rpmconfig_DATA
+install(FILES
 	rpm.daily rpm.log rpm.supp
+	DESTINATION ${RPMCONFIGDIR}
 )
-
-install(PROGRAMS gendiff TYPE BIN)
-install(PROGRAMS ${rpmconfig_SCRIPTS} DESTINATION ${RPMCONFIGDIR})
-install(FILES ${rpmconfig_DATA} DESTINATION ${RPMCONFIGDIR})
