@@ -782,7 +782,8 @@ static int fsmCommit(int dirfd, char **path, rpmfi fi, rpmFileAction action, con
 		}
 		free(*path);
 		*path = dest;
-	    }
+	    } else
+		free(dest);
 	}
     }
 
