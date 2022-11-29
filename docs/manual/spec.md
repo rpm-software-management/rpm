@@ -96,13 +96,13 @@ definition:
 
 Version of the packaged content, typically software.
 
-The version string consists of alphanumeric characters, and can optionally
-be segmented with separators `.`, ```_``` and `+`.
+The version string consists of alphanumeric characters, which can optionally
+be segmented with the separators `.`, `_` and `+`, plus `~` and `^` (see below).
 
-Tilde (`~`) can be used to force sorting lower than base (1.1~201601 < 1.1)
-Caret (`^`) can be used to force sorting higher than base (1.1^201601 > 1.1)
+Tilde (`~`) can be used to force sorting lower than base (1.1\~201601 < 1.1)
+Caret (`^`) can be used to force sorting higher than base (1.1^201601 > 1.1).
 These are useful for handling pre- and post-release versions, such as
-1.0~rc1 and 2.0^a.
+1.0\~rc1 and 2.0^a.
 
 #### Release
 
