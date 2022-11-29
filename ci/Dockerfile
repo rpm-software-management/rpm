@@ -25,6 +25,7 @@ RUN dnf -y install \
   elfutils-devel \
   openssl-devel \
   libgcrypt-devel \
+  rpm-sequoia-devel \
   file-devel \
   popt-devel \
   libarchive-devel \
