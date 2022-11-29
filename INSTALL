@@ -27,14 +27,13 @@ The source for the file utility + library is available from
     ftp://ftp.astron.com/pub/file/
 
 You will need a cryptographic library to support digests and
-signatures. This depends on the OpenPGP parser used: if using the deprecated
-internal parser (-DWITH_INTERNAL_OPENPGP=ON), the default is libgcrypt,
-but alternatively OpenSSL can be used by specifying -DWITH_OPENSSL=ON.
-If -DWITH_INTERNAL_OPENPGP=OFF is specified, Sequoia will be used for
-all cryptography.
+signatures. This depends on the OpenPGP parser used: the default is
+rpm-sequoia library, which is available from
+    https://github.com/rpm-software-management/rpm-sequoia
 
-Sequoia is used via the rpm-sequoia library, which is available from
-https://github.com/rpm-software-management/rpm-sequoia
+If using the deprecated internal parser (-DWITH_INTERNAL_OPENPGP=ON),
+the default is libgcrypt, but alternatively OpenSSL can be used by
+additionally specifying -DWITH_OPENSSL=ON.
 
 libgcrypt library is available from https://www.gnupg.org/software/libgcrypt/
 
