@@ -462,7 +462,7 @@ in a separate shell.
 unpacked and possible patches applied, and other similar activies
 could be performed.
 
-Typically (%autosetup)[autosetup.md] is used to automatically handle
+Typically [%autosetup](autosetup.md) is used to automatically handle
 it all, but for more advanced cases there are lower level `%setup`
 and `%patch` builtin-macros available in this slot.
 
