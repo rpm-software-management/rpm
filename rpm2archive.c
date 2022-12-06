@@ -233,7 +233,21 @@ int main(int argc, const char *argv[])
 
     optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
     poptSetOtherOptionHelp(optCon, "[OPTIONS]* <FILES>");
-    if (argc < 2 || poptGetNextOpt(optCon) == 0) {
+    /* Process all options, whine if unknown. */
+    while ((rc = poptGetNextOpt(optCon)) > 0) {
+	fprintf(stderr, _("%s: option table misconfigured (%d)\n"),
+		xgetprogname(), rc);
+	exit(EXIT_FAILURE);
+    }
+
+    if (rc < -1) {
+	fprintf(stderr, "%s: %s: %s\n", xgetprogname(),
+		poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
+		poptStrerror(rc));
+	exit(EXIT_FAILURE);
+    }
+
+    if (argc < 2 || rc == 0) {
 	poptPrintUsage(optCon, stderr, 0);
 	exit(EXIT_FAILURE);
     }
