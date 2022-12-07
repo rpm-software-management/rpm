@@ -333,7 +333,8 @@ endforeach()
 
 foreach(cmd rpmverify rpmquery)
 	add_custom_target(${cmd} ALL COMMAND
-			${CMAKE_COMMAND} -E create_symlink rpm ${cmd})
+			${CMAKE_COMMAND} -E create_symlink rpm ${cmd}
+			BYPRODUCTS ${cmd})
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${cmd} TYPE BIN)
 endforeach()
 install(TARGETS
