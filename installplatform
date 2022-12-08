@@ -78,7 +78,7 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
 	CANONARCH=i386
 	CANONCOLOR=0
 	;;
-    x86_64|amd64|ia32e)
+    x86_64*|amd64|ia32e)
 	ISANAME=x86
 	ISABITS=64
 	CANONARCH=x86_64
