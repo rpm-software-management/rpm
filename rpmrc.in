@@ -22,6 +22,9 @@ optflags: athlon -O2 -g -march=athlon
 optflags: geode -Os -g -m32 -march=geode
 optflags: ia64 -O2 -g
 optflags: x86_64 -O2 -g
+optflags: x86_64_v2 -O2 -g -march=x86-64-v2
+optflags: x86_64_v3 -O2 -g -march=x86-64-v3
+optflags: x86_64_v4 -O2 -g -march=x86-64-v4
 optflags: amd64 -O2 -g
 optflags: ia32e -O2 -g
 
@@ -149,6 +152,9 @@ archcolor: s390x 2
 archcolor: ia64 2
 
 archcolor: x86_64 2
+archcolor: x86_64_v2 2
+archcolor: x86_64_v3 2
+archcolor: x86_64_v4 2
 
 archcolor: sh3 1
 archcolor: sh4 1
@@ -172,6 +178,9 @@ arch_canon:	i586:	i586	1
 arch_canon:	i486:	i486	1
 arch_canon:	i386:	i386	1
 arch_canon:	x86_64:	x86_64	1
+arch_canon:	x86_64_v2:	x86_64_v2	1
+arch_canon:	x86_64_v3:	x86_64_v3	1
+arch_canon:	x86_64_v4:	x86_64_v4	1
 arch_canon:	amd64:	amd64	1
 arch_canon:	ia32e:	ia32e	1
 arch_canon:	em64t:	em64t	1
@@ -383,6 +392,9 @@ buildarchtranslate: s390x: s390x
 buildarchtranslate: ia64: ia64
 
 buildarchtranslate: x86_64: x86_64
+buildarchtranslate: x86_64_v2: x86_64
+buildarchtranslate: x86_64_v3: x86_64
+buildarchtranslate: x86_64_v4: x86_64
 buildarchtranslate: amd64: x86_64
 buildarchtranslate: ia32e: x86_64
 
@@ -498,6 +510,9 @@ arch_compat: ia64: noarch
 arch_compat: x86_64: amd64 em64t athlon noarch
 arch_compat: amd64: x86_64 em64t athlon noarch
 arch_compat: ia32e: x86_64 em64t athlon noarch
+arch_compat: x86_64_v2: x86_64 amd64 em64t athlon noarch
+arch_compat: x86_64_v3: x86_64_v2 x86_64 amd64 em64t athlon noarch
+arch_compat: x86_64_v4: x86_64_v3 x86_64_v2 x86_64 amd64 em64t athlon noarch
 
 arch_compat: sh3: noarch
 arch_compat: sh4: noarch
@@ -635,6 +650,9 @@ buildarch_compat: s390x: noarch
 
 buildarch_compat: ia64: noarch
 
+buildarch_compat: x86_64_v4: x86_64_v3
+buildarch_compat: x86_64_v3: x86_64_v2
+buildarch_compat: x86_64_v2: x86_64
 buildarch_compat: x86_64: noarch
 buildarch_compat: amd64: x86_64
 buildarch_compat: ia32e: x86_64
