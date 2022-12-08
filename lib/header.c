@@ -568,7 +568,7 @@ static int regionSwab(indexEntry entry, int il, int dl,
 	    }
 	}   break;
 	case RPM_INT32_TYPE:
-	{   int32_t * it = ie.data;
+	{   uint32_t * it = ie.data;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
 		if (dataEnd && ((unsigned char *)it) >= dataEnd)
 		    return -1;
@@ -576,7 +576,7 @@ static int regionSwab(indexEntry entry, int il, int dl,
 	    }
 	}   break;
 	case RPM_INT16_TYPE:
-	{   int16_t * it = ie.data;
+	{   uint16_t * it = ie.data;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
 		if (dataEnd && ((unsigned char *)it) >= dataEnd)
 		    return -1;
@@ -772,9 +772,9 @@ static void * doExport(const struct indexEntry_s *hindex, int indexUsed,
 	    count = entry->info.count;
 	    src = entry->data;
 	    while (count--) {
-		*((int32_t *)te) = htonl(*((int32_t *)src));
-		te += sizeof(int32_t);
-		src += sizeof(int32_t);
+		*((uint32_t *)te) = htonl(*((uint32_t *)src));
+		te += sizeof(uint32_t);
+		src += sizeof(uint32_t);
 	    }
 	    break;
 
@@ -782,9 +782,9 @@ static void * doExport(const struct indexEntry_s *hindex, int indexUsed,
 	    count = entry->info.count;
 	    src = entry->data;
 	    while (count--) {
-		*((int16_t *)te) = htons(*((int16_t *)src));
-		te += sizeof(int16_t);
-		src += sizeof(int16_t);
+		*((uint16_t *)te) = htons(*((uint16_t *)src));
+		te += sizeof(uint16_t);
+		src += sizeof(uint16_t);
 	    }
 	    break;
 
