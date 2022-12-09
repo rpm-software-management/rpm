@@ -319,7 +319,7 @@ static struct poptOption optionsTable[] = {
 
 static int isSpecFile(const char * specfile)
 {
-    char buf[256];
+    char buf[256]= {0};
     const char * s;
     FILE * f;
     int count;
