@@ -86,7 +86,7 @@ function(makemacros)
 		endif()
 	endforeach()
 
-	set(DB_BACKEND sqlite)
+	list(GET db_backends 0 DB_BACKEND)
 
 	set(host_cpu ${CMAKE_HOST_SYSTEM_PROCESSOR})
 	string(TOLOWER ${CMAKE_HOST_SYSTEM_NAME} host_os)
@@ -139,7 +139,17 @@ endif()
 
 if (ENABLE_SQLITE)
 	pkg_check_modules(SQLITE REQUIRED IMPORTED_TARGET sqlite3)
+	list(APPEND db_backends sqlite)
 endif()
+
+if (ENABLE_NDB)
+	list(APPEND db_backends ndb)
+endif()
+
+if (ENABLE_BDB_RO)
+	list(APPEND db_backends bdb_ro)
+endif()
+list(APPEND db_backends dummy)
 
 if (ENABLE_PYTHON)
 	find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
