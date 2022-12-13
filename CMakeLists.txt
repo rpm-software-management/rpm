@@ -114,6 +114,7 @@ endfunction()
 include(CheckLibraryExists)
 include(CheckFunctionExists)
 include(CheckIncludeFile)
+include(CheckCCompilerFlag)
 
 set(OPTFUNCS
 	stpcpy stpncpy putenv mempcpy fdatasync lutimes mergesort
@@ -283,6 +284,15 @@ add_compile_options(-Wall -Wpointer-arith -Wmissing-prototypes -Wstrict-prototyp
 if (ENABLE_WERROR)
 	add_compile_options(-Werror)
 endif()
+
+# try to ensure some compiler sanity
+foreach (flag -fno-strict-overflow -fno-delete-null-pointer-checks)
+	check_c_compiler_flag(${flag} found)
+	if (found)
+		add_compile_options(${flag})
+	endif()
+	unset(found)
+endforeach()
 
 include_directories(${CMAKE_BINARY_DIR})
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/include)
