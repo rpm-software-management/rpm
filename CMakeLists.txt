@@ -191,6 +191,15 @@ if (WITH_FSVERITY)
 	pkg_check_modules(FSVERITY REQUIRED IMPORTED_TARGET libfsverity)
 endif()
 
+if (WITH_IMAEVM)
+	list(APPEND REQFUNCS lsetxattr)
+	find_path(IMA_INCLUDE_DIR NAMES imaevm.h)
+	find_library(IMA_LIBRARY NAMES imaevm)
+	if (NOT (IMA_INCLUDE_DIR AND IMA_LIBRARY))
+		message(FATAL_ERROR "imaevm enabled but library not present")
+	endif()
+endif()
+
 find_program(__FIND_DEBUGINFO find-debuginfo)
 
 function(chkdef func req)

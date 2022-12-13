@@ -16,7 +16,6 @@ endif()
 
 if(WITH_IMAEVM)
 	add_library(ima MODULE ima.c)
-	target_link_libraries(ima PRIVATE imaevm)
 endif()
 
 if(WITH_FAPOLICYD)
