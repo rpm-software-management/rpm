@@ -115,6 +115,18 @@ include(CheckLibraryExists)
 include(CheckFunctionExists)
 include(CheckIncludeFile)
 
+set(OPTFUNCS
+	stpcpy stpncpy putenv mempcpy fdatasync lutimes mergesort
+	getauxval setprogname __progname syncfs sched_getaffinity unshare
+	secure_getenv __secure_getenv mremap
+)
+set(REQFUNCS
+	mkstemp getcwd basename dirname realpath setenv unsetenv regcomp
+	utimes getline localtime_r statvfs getaddrinfo
+	openat mkdirat fstatat linkat symlinkat mkfifoat mknodat unlinkat
+	renameat utimensat fchmodat fchownat stpcpy stpncpy
+)
+
 find_package(PkgConfig REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(BZip2)
@@ -190,20 +202,10 @@ function(chkdef func req)
 	endif()
 endfunction()
 
-set(OPTFUNCS
-	stpcpy stpncpy putenv mempcpy fdatasync lutimes mergesort
-	getauxval setprogname __progname syncfs sched_getaffinity unshare
-	secure_getenv __secure_getenv mremap)
 foreach(f ${OPTFUNCS})
     chkdef(${f} FALSE)
 endforeach()
 
-set(REQFUNCS
-	mkstemp getcwd basename dirname realpath setenv unsetenv regcomp
-	utimes getline localtime_r statvfs getaddrinfo
-	openat mkdirat fstatat linkat symlinkat mkfifoat mknodat unlinkat
-	renameat utimensat fchmodat fchownat stpcpy stpncpy
-)
 foreach(f ${REQFUNCS})
     chkdef(${f} TRUE)
 endforeach()
