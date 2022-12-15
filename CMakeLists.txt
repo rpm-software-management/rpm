@@ -267,12 +267,14 @@ foreach(found ZSTD READLINE LIBELF LIBDW)
 	endif()
 endforeach()
 
+check_symbol_exists(major "sys/sysmacros.h" MAJOR_IN_SYSMACROS)
+if (NOT MAJOR_IN_SYSMACROS)
+	check_symbol_exists(major "sys/mkdev.h" MAJOR_IN_MKDEV)
+endif()
+
 configure_file(config.h.in config.h)
 
 add_compile_definitions(HAVE_CONFIG_H)
-
-add_compile_definitions(MAJOR_IN_SYSMACROS)
-
 
 add_compile_options(-Wall -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wempty-body)
 if (ENABLE_WERROR)
