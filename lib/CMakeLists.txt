@@ -4,6 +4,14 @@ set_target_properties(librpm PROPERTIES
 	SOVERSION ${RPM_SOVERSION}
 )
 
+target_compile_definitions(librpm PRIVATE
+	LOCALEDIR="${CMAKE_INSTALL_FULL_LOCALEDIR}"
+	LOCALSTATEDIR="${CMAKE_INSTALL_FULL_LOCALSTATEDIR}"
+	SYSCONFDIR="${CMAKE_INSTALL_FULL_SYSCONFDIR}"
+	LIBRPMALIAS_FILENAME="rpmpopt-${PROJECT_VERSION}"
+	LIBRPMALIAS_EXECPATH="${CMAKE_INSTALL_FULL_BINDIR}"
+)
+
 target_sources(librpm PRIVATE
 	backend/dbi.c backend/dbi.h backend/dummydb.c
 	backend/dbiset.c backend/dbiset.h

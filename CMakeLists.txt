@@ -273,12 +273,6 @@ add_compile_definitions(HAVE_CONFIG_H)
 
 add_compile_definitions(MAJOR_IN_SYSMACROS)
 
-add_compile_definitions(RPMCONFIGDIR="${RPMCONFIGDIR}")
-add_compile_definitions(LOCALEDIR="${CMAKE_INSTALL_FULL_LOCALEDIR}")
-add_compile_definitions(LOCALSTATEDIR="${CMAKE_INSTALL_FULL_LOCALSTATEDIR}")
-add_compile_definitions(SYSCONFDIR="${CMAKE_INSTALL_FULL_SYSCONFDIR}")
-add_compile_definitions(LIBRPMALIAS_FILENAME="rpmpopt-${PROJECT_VERSION}")
-add_compile_definitions(LIBRPMALIAS_EXECPATH="${CMAKE_INSTALL_FULL_BINDIR}")
 
 add_compile_options(-Wall -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wempty-body)
 if (ENABLE_WERROR)
