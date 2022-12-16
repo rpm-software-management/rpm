@@ -241,10 +241,6 @@ int main(int argc, const char *argv[])
 	    exit(EXIT_FAILURE);
 	}
     }
-    if (argc < 2 || poptGetNextOpt(optCon) == 0) {
-	poptPrintUsage(optCon, stderr, 0);
-	exit(EXIT_FAILURE);
-    }
 
     rpmts ts = rpmtsCreate();
     rpmVSFlags vsflags = 0;
