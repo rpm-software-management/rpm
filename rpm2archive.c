@@ -233,6 +233,14 @@ int main(int argc, const char *argv[])
 
     optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
     poptSetOtherOptionHelp(optCon, "[OPTIONS]* <FILES>");
+    while ((rc = poptGetNextOpt(optCon)) != -1) {
+	if (rc < 0) {
+	    fprintf(stderr, "%s: %s\n",
+		    poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
+		    poptStrerror(rc));
+	    exit(EXIT_FAILURE);
+	}
+    }
     if (argc < 2 || poptGetNextOpt(optCon) == 0) {
 	poptPrintUsage(optCon, stderr, 0);
 	exit(EXIT_FAILURE);
