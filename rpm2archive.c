@@ -83,6 +83,10 @@ static int process_package(rpmts ts, const char * filename)
     struct archive_entry *entry;
 
     if (!strcmp(filename, "-")) {
+        if(isatty(STDIN_FILENO)) {
+            fprintf(stderr, "Error: missing input RPM package\n");
+            exit(EXIT_FAILURE);
+        }
 	fdi = fdDup(STDIN_FILENO);
     } else {
 	fdi = Fopen(filename, "r.ufdio");
