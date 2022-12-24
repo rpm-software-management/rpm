@@ -192,7 +192,7 @@ package or when debugging this package.\
 %_defaultlicensedir	%{_datadir}/licenses
 
 # Following macros for filtering auto deps must not be used in spec files.
-# Their purpouse is to set up global filtering for all packages. If you need
+# Their purpose is to set up global filtering for all packages. If you need
 # to set up specific filtering for your package use %__requires_exclude_from
 # and %__provides_exclude_from instead.
 %__global_requires_exclude_from		%{?_docdir:%{_docdir}}
