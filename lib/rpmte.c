@@ -81,6 +81,9 @@ struct rpmte_s {
     int failed;			/*!< (parent) install/erase failed */
 
     rpmfs fs;
+
+    rpmPlugin customArchiveReader;
+    rpmPlugin customFileInstaller;
 };
 
 /* forward declarations */
@@ -221,6 +224,9 @@ static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
 
     if (p->type == TR_ADDED)
 	p->pkgFileSize = headerGetNumber(h, RPMTAG_LONGSIGSIZE) + 96 + 256;
+
+    p->customArchiveReader = NULL;
+    p->customFileInstaller = NULL;
 
     rc = 0;
 
@@ -843,4 +849,24 @@ int rpmteProcess(rpmte te, pkgGoal goal, int num)
     }
 
     return failed;
+}
+
+void rpmteSetCustomArchiveReader(rpmte te, rpmPlugin plugin) {
+    if (!te) return;
+    te->customArchiveReader = plugin;
+}
+
+rpmPlugin rpmteCustomArchiveReader(rpmte te) {
+    if (!te) return NULL;
+    return te->customArchiveReader;
+}
+
+void rpmteSetCustomFileInstaller(rpmte te, rpmPlugin plugin) {
+    if (!te) return;
+    te->customFileInstaller = plugin;
+}
+
+rpmPlugin rpmteCustomFileInstaller(rpmte te) {
+    if (!te) return NULL;
+    return te->customFileInstaller;
 }

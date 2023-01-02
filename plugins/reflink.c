@@ -162,6 +162,8 @@ static rpmRC reflink_psm_pre(rpmPlugin plugin, rpmte te) {
     }
     rpmlog(RPMLOG_DEBUG, _("reflink: *is* transcoded\n"));
     state->transcoded = 1;
+    rpmteSetCustomArchiveReader(te, plugin);
+    rpmteSetCustomFileInstaller(te, plugin);
 
     state->files = rpmteFiles(te);
     /* tail of file contains offset_table, offset_checksums then magic */
@@ -385,9 +387,9 @@ static rpmRC reflink_fsm_file_archive_reader(rpmPlugin plugin, FD_t payload,
     reflink_state state = rpmPluginGetData(plugin);
     if(state->transcoded) {
 	*fi = rpmfilesIter(files, RPMFI_ITER_FWD);
-	return RPMRC_PLUGIN_CONTENTS;
+	return RPMRC_OK;
     }
-    return RPMRC_OK;
+    return RPMRC_FAIL;
 }
 
 struct rpmPluginHooks_s reflink_hooks = {

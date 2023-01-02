@@ -266,6 +266,34 @@ rpmfiles rpmteFiles(rpmte te);
  */
 int rpmteVerified(rpmte te);
 
+/** \ingroup rpmte
+ * Set custom archive reader.
+ * @param te		transaction element
+ * @param plugin	plugin providing custom archive reader
+ */
+void rpmteSetCustomArchiveReader(rpmte te, rpmPlugin plugin);
+
+/** \ingroup rpmte
+ * Retrieve custom archive reader.
+ * @param te		transaction element
+ * @return          plugin providing custom archive reader
+ */
+rpmPlugin rpmteCustomArchiveReader(rpmte te);
+
+/** \ingroup rpmte
+ * Set custom file installer.
+ * @param te		transaction element
+ * @param plugin	plugin providing custom file installer
+ */
+void rpmteSetCustomFileInstaller(rpmte te, rpmPlugin plugin);
+
+/** \ingroup rpmte
+ * Retrieve custom file installer.
+ * @param te		transaction element
+ * @return          plugin providing custom file installer
+ */
+rpmPlugin rpmteCustomFileInstaller(rpmte te);
+
 #ifdef __cplusplus
 }
 #endif

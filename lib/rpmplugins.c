@@ -365,28 +365,13 @@ rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, rpmfi fi, const char *path,
     int i;
     rpmRC rc = RPMRC_OK;
     char *apath = abspath(fi, path);
-    rpmRC hook_rc;
 
     for (i = 0; i < plugins->count; i++) {
 	rpmPlugin plugin = plugins->plugins[i];
 	RPMPLUGINS_SET_HOOK_FUNC(fsm_file_pre);
-	if (hookFunc) {
-	    hook_rc = hookFunc(plugin, fi, apath, file_mode, op);
-	    if (hook_rc == RPMRC_FAIL) {
-		rpmlog(RPMLOG_ERR, "Plugin %s: hook fsm_file_pre failed\n", plugin->name);
-		rc = RPMRC_FAIL;
-	    } else if (hook_rc == RPMRC_PLUGIN_CONTENTS && rc != RPMRC_FAIL) {
-		if (rc == RPMRC_PLUGIN_CONTENTS) {
-		    /* Another plugin already said it'd handle contents. It's
-		     * undefined how these would combine, so treat this as a
-		     * failure condition.
-		    */
-		    rc = RPMRC_FAIL;
-		} else {
-		    /* Plugin will handle content */
-		    rc = RPMRC_PLUGIN_CONTENTS;
-		}
-	    }
+	if (hookFunc && hookFunc(plugin, fi, apath, file_mode, op) == RPMRC_FAIL) {
+	    rpmlog(RPMLOG_ERR, "Plugin %s: hook fsm_file_pre failed\n", plugin->name);
+	    rc = RPMRC_FAIL;
 	}
     }
     free(apath);
@@ -436,73 +421,50 @@ rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins, rpmfi fi,
     return rc;
 }
 
-rpmRC rpmpluginsCallFsmFileInstall(rpmPlugins plugins, rpmfi fi,
+rpmRC rpmpluginsCallFsmFileInstall(rpmPlugins plugins, rpmte te, rpmfi fi,
 				   const char *path, mode_t file_mode,
 				   rpmFsmOp op)
 {
     plugin_fsm_file_install_func hookFunc;
-    int i;
-    rpmRC rc = RPMRC_OK;
-    rpmRC hook_rc;
-    char *apath = abspath(fi, path);
+    rpmRC rc = RPMRC_FAIL;
 
-    for (i = 0; i < plugins->count; i++) {
-	rpmPlugin plugin = plugins->plugins[i];
-	RPMPLUGINS_SET_HOOK_FUNC(fsm_file_install);
-	if (hookFunc) {
-	    hook_rc = hookFunc(plugin, fi, apath, file_mode, op);
-	    if (hook_rc == RPMRC_FAIL) {
-		rpmlog(RPMLOG_ERR, "Plugin %s: hook fsm_file_install failed\n", plugin->name);
-		rc = RPMRC_FAIL;
-	    } else if (hook_rc == RPMRC_PLUGIN_CONTENTS && rc != RPMRC_FAIL) {
-		if (rc == RPMRC_PLUGIN_CONTENTS) {
-		    /* Another plugin already said it'd handle contents. It's
-		     * undefined how these would combine, so treat this as a
-		     * failure condition.
-		    */
-		    rc = RPMRC_FAIL;
-		} else {
-		    /* Plugin will handle content */
-		    rc = RPMRC_PLUGIN_CONTENTS;
-		}
-	    }
-	}
+    rpmPlugin plugin = rpmteCustomFileInstaller(te);
+    if (!plugin) {
+	rpmlog(RPMLOG_ERR, "No plugin for hook fsm_file_install\n");
+	return rc;
     }
-    free(apath);
+
+    RPMPLUGINS_SET_HOOK_FUNC(fsm_file_install);
+    if (hookFunc) {
+	char *apath = abspath(fi, path);
+	rc = hookFunc(plugin, fi, apath, file_mode, op);
+	free(apath);
+    }
+
+    if (rc == RPMRC_FAIL)
+	rpmlog(RPMLOG_ERR, "Plugin %s: hook fsm_file_install failed\n", plugin->name);
 
     return rc;
 }
 
 rpmRC rpmpluginsCallFsmFileArchiveReader(rpmPlugins plugins, FD_t payload,
-				   rpmfiles files, rpmfi *fi)
+				   rpmfiles files, rpmte te, rpmfi *fi)
 {
     plugin_fsm_file_archive_reader_func hookFunc;
-    int i;
-    rpmRC rc = RPMRC_OK;
-    rpmRC hook_rc;
+    rpmRC rc = RPMRC_FAIL;
 
-    for (i = 0; i < plugins->count; i++) {
-	rpmPlugin plugin = plugins->plugins[i];
-	RPMPLUGINS_SET_HOOK_FUNC(fsm_file_archive_reader);
-	if (hookFunc) {
-	    hook_rc = hookFunc(plugin, payload, files, fi);
-	    if (hook_rc == RPMRC_FAIL) {
-		rpmlog(RPMLOG_ERR, "Plugin %s: hook fsm_file_archive_reader failed\n", plugin->name);
-		rc = RPMRC_FAIL;
-	    } else if (hook_rc == RPMRC_PLUGIN_CONTENTS && rc != RPMRC_FAIL) {
-		if (rc == RPMRC_PLUGIN_CONTENTS) {
-		    /* Another plugin already said it'd handle contents. It's
-		     * undefined how these would combine, so treat this as a
-		     * failure condition.
-		    */
-		    rc = RPMRC_FAIL;
-		} else {
-		    /* Plugin will handle content */
-		    rc = RPMRC_PLUGIN_CONTENTS;
-		}
-	    }
-	}
+    rpmPlugin plugin = rpmteCustomArchiveReader(te);
+    if (!plugin) {
+	rpmlog(RPMLOG_ERR, "No plugin for hook fsm_file_archive_reader\n");
+	return rc;
     }
+
+    RPMPLUGINS_SET_HOOK_FUNC(fsm_file_archive_reader);
+    if (hookFunc)
+        rc = hookFunc(plugin, payload, files, fi);
+
+    if (rc == RPMRC_FAIL)
+	rpmlog(RPMLOG_ERR, "Plugin %s: hook fsm_file_archive_reader failed\n", plugin->name);
 
     return rc;
 }

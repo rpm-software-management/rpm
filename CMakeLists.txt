@@ -119,7 +119,6 @@ find_package(PkgConfig REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(BZip2)
 find_package(Iconv)
-find_package(LibLZMA)
 
 pkg_check_modules(LUA REQUIRED IMPORTED_TARGET lua)
 pkg_check_modules(POPT REQUIRED IMPORTED_TARGET popt)

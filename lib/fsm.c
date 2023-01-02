@@ -846,32 +846,37 @@ static int onChdir(rpmfi fi, void *data)
     return 0;
 }
 
-static rpmRC fsmIter(FD_t payload, rpmfiles files, rpmFileIter iter, void *data, rpmPlugins plugins, rpmfi *ret)
+static rpmRC fsmCallArchiveReader(FD_t payload, rpmfiles files, rpmPlugins plugins, rpmte te, rpmfi *ret)
 {
     rpmfi fi;
     rpmRC rc = RPMRC_OK;
 
-    if (payload) {
-	rpmRC plugin_rc = rpmpluginsCallFsmFileArchiveReader(plugins, payload, files, &fi);
-	switch(plugin_rc) {
-	case RPMRC_PLUGIN_CONTENTS:
-	    if(fi == NULL) {
-	    rc = RPMERR_BAD_MAGIC;
-	    }
-	    break;
-	case RPMRC_OK:
-	    fi = rpmfiNewArchiveReader(payload, files, RPMFI_ITER_READ_ARCHIVE);
-	    if (fi == NULL) {
-	    rc = RPMERR_BAD_MAGIC;
-	    }
-	    break;
-	default:
-	    rc = RPMRC_FAIL;
-	}
-    } else
+    if (rpmteCustomArchiveReader(te))
+        rc = rpmpluginsCallFsmFileArchiveReader(plugins, payload, files, te, &fi);
+    else
+        fi = rpmfiNewArchiveReader(payload, files, RPMFI_ITER_READ_ARCHIVE);
+
+    if (rc == RPMRC_OK && fi == NULL)
+        rc = RPMERR_BAD_MAGIC;
+
+    *ret = fi;
+
+    return rc;
+}
+
+static rpmRC fsmIter(FD_t payload, rpmfiles files, rpmFileIter iter, void *data, rpmPlugins plugins, rpmte te, rpmfi *ret)
+{
+    rpmfi fi;
+    rpmRC rc = RPMRC_OK;
+
+    if (payload)
+	rc = fsmCallArchiveReader(payload, files, plugins, te, &fi);
+    else
 	fi = rpmfilesIter(files, iter);
+
     if (fi && data)
 	rpmfiSetOnChdir(fi, onChdir, data);
+
     *ret = fi;
 
     return rc;
@@ -882,6 +887,61 @@ static rpmfi fsmIterFini(rpmfi fi, struct diriter_s *di)
     fsmClose(&(di->dirfd));
     fsmClose(&(di->firstdir));
     return rpmfiFree(fi);
+}
+
+static int fsmFileInstall(rpmfi fi, struct filedata_s *fp, rpmfiles files, rpmpsm psm, int nodigest, struct filedata_s ** firstlink, int *firstlinkfile, struct diriter_s *di, int *fdp, int rc)
+{
+    if (S_ISREG(fp->sb.st_mode)) {
+	if (rc == RPMERR_ENOENT)
+	    rc = fsmMkfile(di->dirfd, fi, fp, files, psm, nodigest, firstlink,
+		           firstlinkfile, &di->firstdir, fdp);
+    } else if (S_ISDIR(fp->sb.st_mode)) {
+	if (rc == RPMERR_ENOENT) {
+	    mode_t mode = fp->sb.st_mode;
+	    mode &= ~07777;
+	    mode |=  00700;
+	    rc = fsmMkdir(di->dirfd, fp->fpath, mode);
+	}
+    } else if (S_ISLNK(fp->sb.st_mode)) {
+	if (rc == RPMERR_ENOENT)
+	    rc = fsmSymlink(rpmfiFLink(fi), di->dirfd, fp->fpath);
+    } else if (S_ISFIFO(fp->sb.st_mode)) {
+	/* This mimics cpio S_ISSOCK() behavior but probably isn't right */
+	if (rc == RPMERR_ENOENT)
+	    rc = fsmMkfifo(di->dirfd, fp->fpath, 0000);
+    } else if (S_ISCHR(fp->sb.st_mode) ||
+               S_ISBLK(fp->sb.st_mode) ||
+               S_ISSOCK(fp->sb.st_mode)) {
+	if (rc == RPMERR_ENOENT)
+	    rc = fsmMknod(di->dirfd, fp->fpath, fp->sb.st_mode, fp->sb.st_rdev);
+    } else {
+	/* XXX Special case /dev/log, which shouldn't be packaged anyways */
+	if (!IS_DEV_LOG(fp->fpath))
+	    rc = RPMERR_UNKNOWN_FILETYPE;
+    }
+
+    return rc;
+}
+
+static int fsmCallFileInstall(rpmPlugins plugins, rpmte te, rpmfi fi, struct filedata_s *fp, rpmfiles files, rpmpsm psm, int nodigest, struct filedata_s ** firstlink, int *firstlinkfile, struct diriter_s *di, int *fdp, int rc)
+{
+    if (rpmteCustomFileInstaller(te)) {
+	rpmRC plugin_rc = rpmpluginsCallFsmFileInstall(plugins, te, fi, fp->fpath, fp->sb.st_mode, fp->action);
+    	switch(plugin_rc) {
+    	case RPMRC_PLUGIN_CONTENTS:
+    	    rc = RPMRC_OK;
+    	    break;
+    	case RPMRC_OK:
+    	    rc = fsmFileInstall(fi, fp, files, psm,  nodigest, firstlink, firstlinkfile, di, fdp, rc);
+    	    break;
+    	default:
+    	    rc = plugin_rc;
+    	}
+    } else {
+	rc = fsmFileInstall(fi, fp, files, psm,  nodigest, firstlink, firstlinkfile, di, fdp, rc);
+    }
+
+    return rc;
 }
 
 int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
@@ -936,7 +996,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	goto exit;
 
     rc = fsmIter(payload, files,
-		 payload ? RPMFI_ITER_READ_ARCHIVE : RPMFI_ITER_FWD, &di, plugins, &fi);
+		 payload ? RPMFI_ITER_READ_ARCHIVE : RPMFI_ITER_FWD, &di, plugins, te, &fi);
 
     if (rc)
 	goto exit;
@@ -995,45 +1055,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	    if (fp->action == FA_TOUCH)
 		goto setmeta;
 
-	    rpmRC plugin_rc = rpmpluginsCallFsmFileInstall(plugins, fi, fp->fpath, fp->sb.st_mode, fp->action);
-	    if(!(plugin_rc == RPMRC_PLUGIN_CONTENTS || plugin_rc == RPMRC_OK)){
-		rc = plugin_rc;
-	    } else if(plugin_rc == RPMRC_PLUGIN_CONTENTS){
-		rc = RPMRC_OK;
-	    } else if (S_ISREG(fp->sb.st_mode)) {
-		if (rc == RPMERR_ENOENT) {
-		    rc = fsmMkfile(di.dirfd, fi, fp, files, psm, nodigest,
-				   &firstlink, &firstlinkfile, &di.firstdir,
-				   &fd);
-		}
-            } else if (S_ISDIR(fp->sb.st_mode)) {
-                if (rc == RPMERR_ENOENT) {
-                    mode_t mode = fp->sb.st_mode;
-                    mode &= ~07777;
-                    mode |=  00700;
-                    rc = fsmMkdir(di.dirfd, fp->fpath, mode);
-                }
-            } else if (S_ISLNK(fp->sb.st_mode)) {
-		if (rc == RPMERR_ENOENT) {
-		    rc = fsmSymlink(rpmfiFLink(fi), di.dirfd, fp->fpath);
-		}
-            } else if (S_ISFIFO(fp->sb.st_mode)) {
-                /* This mimics cpio S_ISSOCK() behavior but probably isn't right */
-                if (rc == RPMERR_ENOENT) {
-                    rc = fsmMkfifo(di.dirfd, fp->fpath, 0000);
-                }
-            } else if (S_ISCHR(fp->sb.st_mode) ||
-                       S_ISBLK(fp->sb.st_mode) ||
-                       S_ISSOCK(fp->sb.st_mode))
-            {
-                if (rc == RPMERR_ENOENT) {
-                    rc = fsmMknod(di.dirfd, fp->fpath, fp->sb.st_mode, fp->sb.st_rdev);
-                }
-            } else {
-                /* XXX Special case /dev/log, which shouldn't be packaged anyways */
-                if (!IS_DEV_LOG(fp->fpath))
-                    rc = RPMERR_UNKNOWN_FILETYPE;
-            }
+        rc = fsmCallFileInstall(plugins, te, fi, fp, files, psm, nodigest, &firstlink, &firstlinkfile, &di, &fd, rc);
 
 	    if (!rc && fd == -1 && !S_ISLNK(fp->sb.st_mode)) {
 		/* Only follow safe symlinks, and never on temporary files */
@@ -1067,7 +1089,7 @@ setmeta:
 	rc = fx;
 
     /* If all went well, commit files to final destination */
-    fsmIter(NULL, files, RPMFI_ITER_FWD, &di, plugins, &fi);
+    fsmIter(NULL, files, RPMFI_ITER_FWD, &di, plugins, te, &fi);
     while (!rc && (fx = rpmfiNext(fi)) >= 0) {
 	struct filedata_s *fp = &fdata[fx];
 
@@ -1096,7 +1118,7 @@ setmeta:
 
     /* On failure, walk backwards and erase non-committed files */
     if (rc) {
-	fsmIter(NULL, files, RPMFI_ITER_BACK, &di, plugins, &fi);
+	fsmIter(NULL, files, RPMFI_ITER_BACK, &di, plugins, te, &fi);
 	while ((fx = rpmfiNext(fi)) >= 0) {
 	    struct filedata_s *fp = &fdata[fx];
 
@@ -1137,7 +1159,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
     struct filedata_s *fdata = xcalloc(fc, sizeof(*fdata));
     int rc = 0;
 
-    fsmIter(NULL, files, RPMFI_ITER_BACK, &di, plugins, &fi);
+    fsmIter(NULL, files, RPMFI_ITER_BACK, &di, plugins, te, &fi);
 
     while (!rc && (fx = rpmfiNext(fi)) >= 0) {
 	struct filedata_s *fp = &fdata[fx];
