@@ -327,7 +327,7 @@ Simple rpm demonstration.
 %prep
 cd '/build/BUILD'
 rm -rf 'hello-1.0'
-/usr/lib/rpm/rpmuncompress -x /build/SOURCES/hello-1.0.tar.gz
+/usr/lib/rpm/rpmuncompress -x '/build/SOURCES/hello-1.0.tar.gz'
 STATUS=$?
 if [ $STATUS -ne 0 ]; then
   exit $STATUS
