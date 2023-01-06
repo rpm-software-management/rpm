@@ -2324,3 +2324,17 @@ error: parsing failed
 ])
 
 AT_CLEANUP
+
+# ------------------------------
+# Check source name with space
+AT_SETUP([rpmbuild source name with space])
+AT_KEYWORDS([build])
+RPMDB_INIT
+AT_CHECK([
+
+runroot rpmbuild -bp --quiet /data/SPECS/source_space.spec
+],
+[0],
+[],
+[])
+AT_CLEANUP
