@@ -2140,3 +2140,19 @@ runroot rpmbuild \
 ],
 [ignore])
 AT_CLEANUP
+
+# ------------------------------
+# Check source name with space
+AT_SETUP([rpmbuild source name with space])
+AT_KEYWORDS([build])
+RPMDB_INIT
+AT_CHECK([
+
+# EXTRA_DIST entries in tests/Makefile.am can't contain spaces
+cp ${RPMTEST}/data/SOURCES/source_space.tar.gz "${RPMTEST}/data/SOURCES/source space.tar.gz"
+runroot rpmbuild -bp --quiet /data/SPECS/source_space.spec
+],
+[0],
+[],
+[])
+AT_CLEANUP
