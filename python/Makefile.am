@@ -3,14 +3,21 @@
 include $(top_srcdir)/rpm.am
 AM_CFLAGS = @RPMCFLAGS@
 
-EXTRA_DIST = rpm/__init__.py rpm/transaction.py
+CLEANFILES =
+EXTRA_DIST = rpm/__init__.py rpm/transaction.py rpm.egg-info.in
 
 AM_CPPFLAGS = -I$(top_srcdir)/include/
 AM_CPPFLAGS += -I$(top_srcdir)/python
 AM_CPPFLAGS += @PYTHON_CFLAGS@
 
+egginfo = $(PACKAGE_NAME)-$(PACKAGE_VERSION)-py$(PYTHON_VERSION).egg-info
+$(egginfo):
+	cat rpm.egg-info > $(egginfo)
+CLEANFILES += $(egginfo)
+
 pkgpyexec_LTLIBRARIES = _rpm.la
 pkgpyexec_DATA = rpm/__init__.py rpm/transaction.py
+pyexec_DATA = $(egginfo)
 
 _rpm_la_LDFLAGS = -module -avoid-version -shared
 _rpm_la_LIBADD = \

@@ -964,5 +964,6 @@ AC_CONFIG_FILES([Makefile
  	tests/Makefile
  	plugins/Makefile
 	python/setup.py
+	python/rpm.egg-info
   ])
 AC_OUTPUT
