@@ -121,19 +121,19 @@ Sometimes it is useful to test whether a macro is defined or not. Syntax
 
 ```
 %{?macro_name:value}
-%{?!macro_name:value}
+%{!?macro_name:value}
 ```
 
 can be used for this purpose. `%{?macro_name:value}` is expanded to "value"
 if "macro_name" is defined, otherwise it is expanded to the empty string.
-`%{?!macro_name:value}` is the negative variant. It is expanded to "value"
+`%{!?macro_name:value}` negates the test. It is expanded to "value"
 if `macro_name` is not defined. Otherwise it is expanded to the empty string.
 
 Frequently used conditionally expanded macros are e.g.
 Define a macro if it is not defined:
 
 ```
-%{?!with_python3: %global with_python3 1}
+%{!?with_python3: %global with_python3 1}
 ```
 
 A macro that is expanded to 1 if "with_python3" is defined and 0 otherwise:
