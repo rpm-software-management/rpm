@@ -67,7 +67,8 @@ static PyObject *rpmprob_str(rpmProblemObject *s)
 static void rpmprob_dealloc(rpmProblemObject *s)
 {
     s->prob = rpmProblemFree(s->prob);
-    Py_TYPE(s)->tp_free((PyObject *)s);
+    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    free(s);
 }
 
 PyTypeObject rpmProblem_Type = {

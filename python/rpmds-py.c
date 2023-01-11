@@ -225,7 +225,8 @@ static void
 rpmds_dealloc(rpmdsObject * s)
 {
     s->ds = rpmdsFree(s->ds);
-    Py_TYPE(s)->tp_free((PyObject *)s);
+    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    free(s);
 }
 
 static Py_ssize_t rpmds_length(rpmdsObject * s)

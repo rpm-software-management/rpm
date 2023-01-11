@@ -20,7 +20,8 @@ struct rpmfileObject_s {
 static void rpmfile_dealloc(rpmfileObject * s)
 {
     s->files = rpmfilesFree(s->files);
-    Py_TYPE(s)->tp_free((PyObject *)s);
+    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    free(s);
 }
 
 static char rpmfile_doc[] =
@@ -379,7 +380,8 @@ struct rpmfilesObject_s {
 static void rpmfiles_dealloc(rpmfilesObject * s)
 {
     s->files = rpmfilesFree(s->files);
-    Py_TYPE(s)->tp_free((PyObject *)s);
+    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    free(s);
 }
 
 static PyObject * rpmfiles_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
