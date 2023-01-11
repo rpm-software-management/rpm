@@ -71,48 +71,21 @@ static void rpmprob_dealloc(rpmProblemObject *s)
     free(s);
 }
 
-PyTypeObject rpmProblem_Type = {
-	PyVarObject_HEAD_INIT(&PyType_Type, 0)
-	"rpm.prob",			/* tp_name */
-	sizeof(rpmProblemObject),		/* tp_basicsize */
-	0,				/* tp_itemsize */
-	/* methods */
-	(destructor)rpmprob_dealloc,	/* tp_dealloc */
-	0,				/* tp_print */
-	(getattrfunc)0,			/* tp_getattr */
-	(setattrfunc)0,			/* tp_setattr */
-	0,				/* tp_compare */
-	(reprfunc)0,			/* tp_repr */
-	0,				/* tp_as_number */
-	0,				/* tp_as_sequence */
-	0,				/* tp_as_mapping */
-	(hashfunc)0,			/* tp_hash */
-	(ternaryfunc)0,			/* tp_call */
-	(reprfunc)rpmprob_str,		/* tp_str */
-	PyObject_GenericGetAttr,	/* tp_getattro */
-	PyObject_GenericSetAttr,	/* tp_setattro */
-	0,				/* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,	/* tp_flags */
-	rpmprob_doc,			/* tp_doc */
-	0,				/* tp_traverse */
-	0,				/* tp_clear */
-	(richcmpfunc)0,			/* tp_richcompare */
-	0,				/* tp_weaklistoffset */
-	0,				/* tp_iter */
-	0,				/* tp_iternext */
-	0,				/* tp_methods */
-	0,				/* tp_members */
-	rpmprob_getseters,		/* tp_getset */
-	0,				/* tp_base */
-	0,				/* tp_dict */
-	0,				/* tp_descr_get */
-	0,				/* tp_descr_set */
-	0,				/* tp_dictoffset */
-	0,				/* tp_init */
-	0,				/* tp_alloc */
-	(newfunc)0,			/* tp_new */
-	0,				/* tp_free */
-	0,				/* tp_is_gc */
+static PyType_Slot rpmProblem_Type_Slots[] = {
+    {Py_tp_dealloc, rpmprob_dealloc},
+    {Py_tp_str, rpmprob_str},
+    {Py_tp_getattro, PyObject_GenericGetAttr},
+    {Py_tp_setattro, PyObject_GenericSetAttr},
+    {Py_tp_doc, rpmprob_doc},
+    {Py_tp_getset, rpmprob_getseters},
+    {0, NULL},
+};
+
+PyType_Spec rpmProblem_Type_Spec = {
+    .name = "rpm.prob",
+    .basicsize = sizeof(rpmProblemObject),
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE | Py_TPFLAGS_DISALLOW_INSTANTIATION,
+    .slots = rpmProblem_Type_Slots,
 };
 
 PyObject *rpmprob_Wrap(PyTypeObject *subtype, rpmProblem prob)

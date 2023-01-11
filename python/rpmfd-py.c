@@ -344,46 +344,21 @@ static PyGetSetDef rpmfd_getseters[] = {
     { NULL },
 };
 
-PyTypeObject rpmfd_Type = {
-	PyVarObject_HEAD_INIT(&PyType_Type, 0)
-	"rpm.fd",			/* tp_name */
-	sizeof(rpmfdObject),		/* tp_size */
-	0,				/* tp_itemsize */
-	/* methods */
-	(destructor) rpmfd_dealloc, 	/* tp_dealloc */
-	0,				/* tp_print */
-	(getattrfunc)0, 		/* tp_getattr */
-	(setattrfunc)0,			/* tp_setattr */
-	0,				/* tp_compare */
-	(reprfunc)0,			/* tp_repr */
-	0,				/* tp_as_number */
-	0,				/* tp_as_sequence */
-	0,				/* tp_as_mapping */
-	(hashfunc)0,			/* tp_hash */
-	(ternaryfunc)0,			/* tp_call */
-	(reprfunc)0,			/* tp_str */
-	PyObject_GenericGetAttr,	/* tp_getattro */
-	PyObject_GenericSetAttr,	/* tp_setattro */
-	0,				/* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,	/* tp_flags */
-	rpmfd_doc,			/* tp_doc */
-	0,				/* tp_traverse */
-	0,				/* tp_clear */
-	0,				/* tp_richcompare */
-	0,				/* tp_weaklistoffset */
-	0,				/* tp_iter */
-	0,				/* tp_iternext */
-	rpmfd_methods,			/* tp_methods */
-	0,				/* tp_members */
-	rpmfd_getseters,		/* tp_getset */
-	0,				/* tp_base */
-	0,				/* tp_dict */
-	0,				/* tp_descr_get */
-	0,				/* tp_descr_set */
-	0,				/* tp_dictoffset */
-	(initproc)rpmfd_init,		/* tp_init */
-	(allocfunc)0,			/* tp_alloc */
-	PyType_GenericNew,		/* tp_new */
-	(freefunc)0,			/* tp_free */
-	0,				/* tp_is_gc */
+static PyType_Slot rpmfd_Type_Slots[] = {
+    {Py_tp_dealloc, rpmfd_dealloc},
+    {Py_tp_getattro, PyObject_GenericGetAttr},
+    {Py_tp_setattro, PyObject_GenericSetAttr},
+    {Py_tp_doc, rpmfd_doc},
+    {Py_tp_methods, rpmfd_methods},
+    {Py_tp_getset, rpmfd_getseters},
+    {Py_tp_init, rpmfd_init},
+    {Py_tp_new, PyType_GenericNew},
+    {0, NULL},
+};
+
+PyType_Spec rpmfd_Type_Spec = {
+    .name = "rpm.fd",
+    .basicsize = sizeof(rpmfdObject),
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .slots = rpmfd_Type_Slots,
 };

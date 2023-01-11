@@ -249,11 +249,6 @@ rpmds_subscript(rpmdsObject * s, PyObject * key)
     return utf8FromString(rpmdsDNEVR(s->ds));
 }
 
-static PyMappingMethods rpmds_as_mapping = {
-        (lenfunc) rpmds_length,		/* mp_length */
-        (binaryfunc) rpmds_subscript,	/* mp_subscript */
-        (objobjargproc)0,		/* mp_ass_subscript */
-};
 
 static int rpmds_init(rpmdsObject * s, PyObject *args, PyObject *kwds)
 {
@@ -353,48 +348,26 @@ static char rpmds_doc[] =
     "a provide of the header NEVR."
     ;
 
-PyTypeObject rpmds_Type = {
-	PyVarObject_HEAD_INIT(&PyType_Type, 0)
-	"rpm.ds",			/* tp_name */
-	sizeof(rpmdsObject),		/* tp_basicsize */
-	0,				/* tp_itemsize */
-	/* methods */
-	(destructor) rpmds_dealloc,	/* tp_dealloc */
-	0,				/* tp_print */
-	(getattrfunc)0,			/* tp_getattr */
-	(setattrfunc)0,			/* tp_setattr */
-	0,				/* tp_compare */
-	(reprfunc)0,			/* tp_repr */
-	0,				/* tp_as_number */
-	0,				/* tp_as_sequence */
-	&rpmds_as_mapping,		/* tp_as_mapping */
-	(hashfunc)0,			/* tp_hash */
-	(ternaryfunc)0,			/* tp_call */
-	(reprfunc)0,			/* tp_str */
-	PyObject_GenericGetAttr,	/* tp_getattro */
-	PyObject_GenericSetAttr,	/* tp_setattro */
-	0,				/* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /* tp_flags */
-	rpmds_doc,			/* tp_doc */
-	0,				/* tp_traverse */
-	0,				/* tp_clear */
-	0,				/* tp_richcompare */
-	0,				/* tp_weaklistoffset */
-	PyObject_SelfIter,		/* tp_iter */
-	(iternextfunc) rpmds_iternext,	/* tp_iternext */
-	rpmds_methods,			/* tp_methods */
-	0,				/* tp_members */
-	0,				/* tp_getset */
-	0,				/* tp_base */
-	0,				/* tp_dict */
-	0,				/* tp_descr_get */
-	0,				/* tp_descr_set */
-	0,				/* tp_dictoffset */
-	(initproc) rpmds_init,		/* tp_init */
-	0,				/* tp_alloc */
-	(newfunc) rpmds_new,		/* tp_new */
-	0,				/* tp_free */
-	0,				/* tp_is_gc */
+static PyType_Slot rpmds_Type_Slots[] = {
+    {Py_tp_dealloc, rpmds_dealloc},
+    {Py_mp_length, rpmds_length},
+    {Py_mp_subscript, rpmds_subscript},
+    {Py_tp_getattro, PyObject_GenericGetAttr},
+    {Py_tp_setattro, PyObject_GenericSetAttr},
+    {Py_tp_doc, rpmds_doc},
+    {Py_tp_iter, PyObject_SelfIter},
+    {Py_tp_iternext, rpmds_iternext},
+    {Py_tp_methods, rpmds_methods},
+    {Py_tp_init, rpmds_init},
+    {Py_tp_new, rpmds_new},
+    {0, NULL},
+};
+
+PyType_Spec rpmds_Type_Spec = {
+    .name = "rpm.ds",
+    .basicsize = sizeof(rpmdsObject),
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .slots = rpmds_Type_Slots,
 };
 
 /* ---------- */

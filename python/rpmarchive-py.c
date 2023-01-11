@@ -218,47 +218,22 @@ static PyObject *rpmarchive_iternext(rpmarchiveObject *s)
     return next;
 }
 
-PyTypeObject rpmarchive_Type = {
-	PyVarObject_HEAD_INIT(&PyType_Type, 0)
-	"rpm.archive",			/* tp_name */
-	sizeof(rpmarchiveObject),		/* tp_basicsize */
-	0,				/* tp_itemsize */
-	(destructor) rpmarchive_dealloc,	/* tp_dealloc */
-	0,				/* tp_print */
-	0,				/* tp_getattr */
-	0,				/* tp_setattr */
-	0,				/* tp_compare */
-	0,				/* tp_repr */
-	0,				/* tp_as_number */
-	0,		/* tp_as_sequence */
-	0,		/* tp_as_mapping */
-	0,				/* tp_hash */
-	0,				/* tp_call */
-	0,				/* tp_str */
-	PyObject_GenericGetAttr,	/* tp_getattro */
-	PyObject_GenericSetAttr,	/* tp_setattro */
-	0,				/* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,	/* tp_flags */
-	rpmarchive_doc,			/* tp_doc */
-	0,				/* tp_traverse */
-	0,				/* tp_clear */
-	0,				/* tp_richcompare */
-	0,				/* tp_weaklistoffset */
-	PyObject_SelfIter,		/* tp_iter */
-	(iternextfunc) rpmarchive_iternext,		/* tp_iternext */
-	rpmarchive_methods,		/* tp_methods */
-	0,				/* tp_members */
-	0,				/* tp_getset */
-	0,				/* tp_base */
-	0,				/* tp_dict */
-	0,				/* tp_descr_get */
-	0,				/* tp_descr_set */
-	0,				/* tp_dictoffset */
-	0,				/* tp_init */
-	0,				/* tp_alloc */
-	0,				/* tp_new */
-	0,				/* tp_free */
-	0,				/* tp_is_gc */
+static PyType_Slot rpmarchive_Type_Slots[] = {
+    {Py_tp_dealloc, rpmarchive_dealloc},
+    {Py_tp_getattro, PyObject_GenericGetAttr},
+    {Py_tp_setattro, PyObject_GenericSetAttr},
+    {Py_tp_doc, rpmarchive_doc},
+    {Py_tp_iter, PyObject_SelfIter},
+    {Py_tp_iternext, rpmarchive_iternext},
+    {Py_tp_methods, rpmarchive_methods},
+    {0, NULL},
+};
+
+PyType_Spec rpmarchive_Type_Spec = {
+    .name = "rpm.archive",
+    .basicsize = sizeof(rpmarchiveObject),
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE | Py_TPFLAGS_DISALLOW_INSTANTIATION,
+    .slots = rpmarchive_Type_Slots,
 };
 
 PyObject * rpmarchive_Wrap(PyTypeObject *subtype,

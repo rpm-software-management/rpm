@@ -265,47 +265,19 @@ static struct PyMethodDef rpmte_methods[] = {
 static char rpmte_doc[] =
 "";
 
-PyTypeObject rpmte_Type = {
-	PyVarObject_HEAD_INIT(&PyType_Type, 0)
-	"rpm.te",			/* tp_name */
-	sizeof(rpmteObject),		/* tp_size */
-	0,				/* tp_itemsize */
-	(destructor)0,		 	/* tp_dealloc */
-	0,				/* tp_print */
-	(getattrfunc)0,		 	/* tp_getattr */
-	(setattrfunc)0,			/* tp_setattr */
-	0,				/* tp_compare */
-	0,				/* tp_repr */
-	0,				/* tp_as_number */
-	0,				/* tp_as_sequence */
-	0,				/* tp_as_mapping */
-	0,				/* tp_hash */
-	0,				/* tp_call */
-	0,				/* tp_str */
-	PyObject_GenericGetAttr,	/* tp_getattro */
-	PyObject_GenericSetAttr,	/* tp_setattro */
-	0,				/* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,	/* tp_flags */
-	rpmte_doc,			/* tp_doc */
-	0,				/* tp_traverse */
-	0,				/* tp_clear */
-	0,				/* tp_richcompare */
-	0,				/* tp_weaklistoffset */
-	0,				/* tp_iter */
-	0,				/* tp_iternext */
-	rpmte_methods,			/* tp_methods */
-	0,				/* tp_members */
-	0,				/* tp_getset */
-	0,				/* tp_base */
-	0,				/* tp_dict */
-	0,				/* tp_descr_get */
-	0,				/* tp_descr_set */
-	0,				/* tp_dictoffset */
-	0,				/* tp_init */
-	0,				/* tp_alloc */
-	0,				/* tp_new */
-	0,				/* tp_free */
-	0,				/* tp_is_gc */
+static PyType_Slot rpmte_Type_Slots[] = {
+    {Py_tp_getattro, PyObject_GenericGetAttr},
+    {Py_tp_setattro, PyObject_GenericSetAttr},
+    {Py_tp_doc, rpmte_doc},
+    {Py_tp_methods, rpmte_methods},
+    {0, NULL},
+};
+
+PyType_Spec rpmte_Type_Spec = {
+    .name = "rpm.te",
+    .basicsize = sizeof(rpmteObject),
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE | Py_TPFLAGS_DISALLOW_INSTANTIATION,
+    .slots = rpmte_Type_Slots,
 };
 
 PyObject * rpmte_Wrap(PyTypeObject *subtype, rpmte te)
