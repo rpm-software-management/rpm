@@ -611,7 +611,8 @@ PyTypeObject rpmfiles_Type = {
 
 PyObject * rpmfiles_Wrap(PyTypeObject *subtype, rpmfiles files)
 {
-    rpmfilesObject *s = (rpmfilesObject *)subtype->tp_alloc(subtype, 0);
+    allocfunc subtype_alloc = (allocfunc)PyType_GetSlot(subtype, Py_tp_alloc);
+    rpmfilesObject *s = (rpmfilesObject *)subtype_alloc(subtype, 0);
     if (s == NULL) return NULL;
 
     s->files = files;

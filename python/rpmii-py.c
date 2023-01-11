@@ -156,7 +156,8 @@ PyTypeObject rpmii_Type = {
 
 PyObject * rpmii_Wrap(PyTypeObject *subtype, rpmdbIndexIterator ii, PyObject *s)
 {
-    rpmiiObject * iio = (rpmiiObject *)subtype->tp_alloc(subtype, 0);
+    allocfunc subtype_alloc = (allocfunc)PyType_GetSlot(subtype, Py_tp_alloc);
+    rpmiiObject *iio = (rpmiiObject *)subtype_alloc(subtype, 0);
     if (iio == NULL) return NULL;
 
     iio->ii = ii;

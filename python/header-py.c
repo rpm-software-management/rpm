@@ -693,7 +693,8 @@ PyTypeObject hdr_Type = {
 
 PyObject * hdr_Wrap(PyTypeObject *subtype, Header h)
 {
-    hdrObject * hdr = (hdrObject *)subtype->tp_alloc(subtype, 0);
+    allocfunc subtype_alloc = (allocfunc)PyType_GetSlot(subtype, Py_tp_alloc);
+    hdrObject *hdr = (hdrObject *)subtype_alloc(subtype, 0);
     if (hdr == NULL) return NULL;
     hdr->h = h;
     return (PyObject *) hdr;
