@@ -202,8 +202,8 @@ package or when debugging this package.\
 #	relative to newest existing entry. Unix timestamp format.
 %_changelog_trimage	0
 
-#	The Unix time of the latest kept changelog entry in binary packages.
-#	DEPRACATED, use %_changelog_trimage instead.
+#	An alternative strategy for changelog trimming:
+#	the Unix time of the latest kept changelog entry in binary packages
 %_changelog_trimtime	0
 
 #	If true, set the SOURCE_DATE_EPOCH environment variable
