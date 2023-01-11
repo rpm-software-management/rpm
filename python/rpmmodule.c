@@ -301,55 +301,72 @@ static int initModule(PyObject *m)
     if (pyrpmError != NULL)
 	PyDict_SetItemString(d, "error", pyrpmError);
 
-    Py_INCREF(&hdr_Type);
-    PyModule_AddObject(m, "hdr", (PyObject *) &hdr_Type);
+    if (!initAndAddType(m, &hdr_Type, &hdr_Type_Spec, "hdr")) {
+	return 0;
+    }
 
-    Py_INCREF(&rpmarchive_Type);
-    PyModule_AddObject(m, "archive", (PyObject *) &rpmarchive_Type);
+    if (!initAndAddType(m, &rpmarchive_Type, &rpmarchive_Type_Spec, "archive")) {
+	return 0;
+    }
 
-    Py_INCREF(&rpmds_Type);
-    PyModule_AddObject(m, "ds", (PyObject *) &rpmds_Type);
+    if (!initAndAddType(m, &rpmds_Type, &rpmds_Type_Spec, "ds")) {
+	return 0;
+    }
 
-    Py_INCREF(&rpmfd_Type);
-    PyModule_AddObject(m, "fd", (PyObject *) &rpmfd_Type);
+    if (!initAndAddType(m, &rpmfd_Type, &rpmfd_Type_Spec, "fd")) {
+	return 0;
+    }
 
-    Py_INCREF(&rpmfile_Type);
-    PyModule_AddObject(m, "file", (PyObject *) &rpmfile_Type);
+    if (!initAndAddType(m, &rpmfile_Type, &rpmfile_Type_Spec, "file")) {
+	return 0;
+    }
 
-    Py_INCREF(&rpmfiles_Type);
-    PyModule_AddObject(m, "files", (PyObject *) &rpmfiles_Type);
+    if (!initAndAddType(m, &rpmfiles_Type, &rpmfiles_Type_Spec, "files")) {
+	return 0;
+    }
 
-    Py_INCREF(&rpmKeyring_Type);
-    PyModule_AddObject(m, "keyring", (PyObject *) &rpmKeyring_Type);
+    if (!initAndAddType(m, &rpmKeyring_Type, &rpmKeyring_Type_Spec, "keyring")) {
+	return 0;
+    }
 
-    Py_INCREF(&rpmmi_Type);
-    PyModule_AddObject(m, "mi", (PyObject *) &rpmmi_Type);
+    if (!initAndAddType(m, &rpmmi_Type, &rpmmi_Type_Spec, "mi")) {
+	return 0;
+    }
 
-    Py_INCREF(&rpmii_Type);
-    PyModule_AddObject(m, "ii", (PyObject *) &rpmii_Type);
+    if (!initAndAddType(m, &rpmii_Type, &rpmii_Type_Spec, "ii")) {
+	return 0;
+    }
 
-    Py_INCREF(&rpmProblem_Type);
-    PyModule_AddObject(m, "prob", (PyObject *) &rpmProblem_Type);
+    if (!initAndAddType(m, &rpmProblem_Type, &rpmProblem_Type_Spec, "prob")) {
+	return 0;
+    }
 
-    Py_INCREF(&rpmPubkey_Type);
-    PyModule_AddObject(m, "pubkey", (PyObject *) &rpmPubkey_Type);
+    if (!initAndAddType(m, &rpmPubkey_Type, &rpmPubkey_Type_Spec, "pubkey")) {
+	return 0;
+    }
 
-    Py_INCREF(&rpmstrPool_Type);
-    PyModule_AddObject(m, "strpool", (PyObject *) &rpmstrPool_Type);
+    if (!initAndAddType(m, &rpmstrPool_Type, &rpmstrPool_Type_Spec, "strpool")) {
+	return 0;
+    }
 
-    Py_INCREF(&rpmte_Type);
-    PyModule_AddObject(m, "te", (PyObject *) &rpmte_Type);
+    if (!initAndAddType(m, &rpmte_Type, &rpmte_Type_Spec, "te")) {
+	return 0;
+    }
 
-    Py_INCREF(&rpmts_Type);
-    PyModule_AddObject(m, "ts", (PyObject *) &rpmts_Type);
+    if (!initAndAddType(m, &rpmts_Type, &rpmts_Type_Spec, "ts")) {
+	return 0;
+    }
 
-    Py_INCREF(&rpmver_Type);
-    PyModule_AddObject(m, "ver", (PyObject *) &rpmver_Type);
+    if (!initAndAddType(m, &rpmver_Type, &rpmver_Type_Spec, "ver")) {
+	return 0;
+    }
 
-    Py_INCREF(&spec_Type);
-    PyModule_AddObject(m, "spec", (PyObject *) &spec_Type);
-    Py_INCREF(&specPkg_Type);
-    PyModule_AddObject(m, "specPkg", (PyObject *) &specPkg_Type);
+    if (!initAndAddType(m, &spec_Type, &spec_Type_Spec, "spec")) {
+	return 0;
+    }
+    if (!initAndAddType(m, &specPkg_Type, &specPkg_Type_Spec, "specPkg")) {
+	return 0;
+    }
 
     addRpmTags(m);
 
