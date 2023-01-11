@@ -226,31 +226,6 @@ static void addRpmTags(PyObject *module)
     rpmtdFree(names);
 }
 
-/*
-  Do any common preliminary work before python 2 vs python 3 module creation:
-*/
-static int prepareInitModule(void)
-{
-    if (PyType_Ready(&hdr_Type) < 0) return 0;
-    if (PyType_Ready(&rpmarchive_Type) < 0) return 0;
-    if (PyType_Ready(&rpmds_Type) < 0) return 0;
-    if (PyType_Ready(&rpmfd_Type) < 0) return 0;
-    if (PyType_Ready(&rpmfile_Type) < 0) return 0;
-    if (PyType_Ready(&rpmfiles_Type) < 0) return 0;
-    if (PyType_Ready(&rpmKeyring_Type) < 0) return 0;
-    if (PyType_Ready(&rpmmi_Type) < 0) return 0;
-    if (PyType_Ready(&rpmii_Type) < 0) return 0;
-    if (PyType_Ready(&rpmProblem_Type) < 0) return 0;
-    if (PyType_Ready(&rpmPubkey_Type) < 0) return 0;
-    if (PyType_Ready(&rpmstrPool_Type) < 0) return 0;
-    if (PyType_Ready(&rpmte_Type) < 0) return 0;
-    if (PyType_Ready(&rpmts_Type) < 0) return 0;
-    if (PyType_Ready(&rpmver_Type) < 0) return 0;
-    if (PyType_Ready(&spec_Type) < 0) return 0;
-    if (PyType_Ready(&specPkg_Type) < 0) return 0;
-
-    return 1;
-}
 static int initModule(PyObject *m);
 
 static int rpmModuleTraverse(PyObject *m, visitproc visit, void *arg) {
@@ -282,7 +257,6 @@ PyObject *
 PyInit__rpm(void)
 {
     PyObject * m;
-    if (!prepareInitModule()) return NULL;
     m = PyModule_Create(&moduledef);
     initModule(m);
     return m;
