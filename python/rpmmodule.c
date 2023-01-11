@@ -262,6 +262,30 @@ PyInit__rpm(void)
     return m;
 }
 
+/* Create a type object based on a Spec, and add it to the module. */
+static int initAndAddType(PyObject *m, PyTypeObject **type, PyType_Spec *spec,
+                          char *name)
+{
+    if (!*type) {
+        *type = (PyTypeObject *)PyType_FromSpec(spec);
+        if (!*type) return 0;
+    }
+    /* We intentionally leak a reference to `type` (only once per type per
+     * process).
+     */
+    Py_INCREF(*type);
+    /* Reference counting for PyModule_AddObject is tricky (see
+     * PyModule_AddObject docs). But let's do it right, as if we haven't just
+     * leaked.
+     * (Simpler API, `PyModule_AddObjectRef`, is only in Python 3.10+.)
+     */
+    if (PyModule_AddObject(m, name, (PyObject *) *type) < 0) {
+        Py_DECREF(*type);
+        return 0;
+    }
+    return 1;
+}
+
 /* Module initialization: */
 static int initModule(PyObject *m)
 {
