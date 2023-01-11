@@ -253,9 +253,30 @@ static struct PyModuleDef moduledef = {
 PyObject *
 PyInit__rpm(void);
 
+static int moduleInitialized = 0;
+
 PyObject *
 PyInit__rpm(void)
 {
+    /* We store pointers to our Python type objects in global variables,
+     * which would get clobbered if the initialization code could run
+     * several times. Explicitly disallow that.
+     *
+     * This means the extension cannot be unloaded and reloaded, nor used
+     * in multiple Python interpreters. The limitation could be lifted
+     * in the future by:
+     * - storing *_Type in module state rather than C static variables.
+     * - implementing traverse, clear & dealloc slots for proper reference
+     *   counting (right now the types are treated as immortal).
+     */
+
+    if (moduleInitialized) {
+        PyErr_SetString(PyExc_ImportError,
+                        "cannot load rpm module more than once per process");
+        return NULL;
+    }
+    moduleInitialized = 1;
+
     PyObject * m;
     m = PyModule_Create(&moduledef);
     initModule(m);
