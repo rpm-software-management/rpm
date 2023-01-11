@@ -25,7 +25,7 @@ int rpmfdFromPyObject(PyObject *obj, rpmfdObject **fdop)
 	Py_INCREF(obj);
 	fdo = (rpmfdObject *) obj;
     } else {
-	fdo = (rpmfdObject *) PyObject_CallFunctionObjArgs((PyObject *)&rpmfd_Type,
+	fdo = (rpmfdObject *) PyObject_CallFunctionObjArgs((PyObject *)rpmfd_Type,
                                                            obj, NULL);
     }
     if (fdo == NULL) return 0;
@@ -356,6 +356,7 @@ static PyType_Slot rpmfd_Type_Slots[] = {
     {0, NULL},
 };
 
+PyTypeObject* rpmfd_Type;
 PyType_Spec rpmfd_Type_Spec = {
     .name = "rpm.fd",
     .basicsize = sizeof(rpmfdObject),

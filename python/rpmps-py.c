@@ -81,6 +81,7 @@ static PyType_Slot rpmProblem_Type_Slots[] = {
     {0, NULL},
 };
 
+PyTypeObject* rpmProblem_Type;
 PyType_Spec rpmProblem_Type_Spec = {
     .name = "rpm.prob",
     .basicsize = sizeof(rpmProblemObject),
@@ -112,7 +113,7 @@ PyObject *rpmps_AsList(rpmps ps)
     psi = rpmpsInitIterator(ps);
 
     while ((prob = rpmpsiNext(psi))) {
-        PyObject *pyprob = rpmprob_Wrap(&rpmProblem_Type, prob);
+        PyObject *pyprob = rpmprob_Wrap(rpmProblem_Type, prob);
         if (!pyprob) {
             Py_DECREF(problems);
             rpmpsFreeIterator(psi);

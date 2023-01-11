@@ -67,6 +67,7 @@ static PyType_Slot rpmPubkey_Type_Slots[] = {
     {0, NULL},
 };
 
+PyTypeObject* rpmPubkey_Type;
 PyType_Spec rpmPubkey_Type_Spec = {
     .name = "rpm.pubkey",
     .basicsize = sizeof(rpmPubkeyObject),
@@ -98,7 +99,7 @@ static PyObject *rpmKeyring_addKey(rpmKeyringObject *s, PyObject *arg)
 {
     rpmPubkeyObject *pubkey = NULL;
 
-    if (!PyArg_Parse(arg, "O!", &rpmPubkey_Type, &pubkey))
+    if (!PyArg_Parse(arg, "O!", rpmPubkey_Type, &pubkey))
 	return NULL;
 
     return Py_BuildValue("i", rpmKeyringAddKey(s->keyring, pubkey->pubkey));
@@ -123,6 +124,7 @@ static PyType_Slot rpmKeyring_Type_Slots[] = {
     {0, NULL},
 };
 
+PyTypeObject* rpmKeyring_Type;
 PyType_Spec rpmKeyring_Type_Spec = {
     .name = "rpm.keyring",
     .basicsize = sizeof(rpmKeyringObject),
@@ -153,7 +155,7 @@ PyObject * rpmKeyring_Wrap(PyTypeObject *subtype, rpmKeyring keyring)
 int rpmKeyringFromPyObject(PyObject *item, rpmKeyring *keyring)
 {
     rpmKeyringObject *kro;
-    if (!PyArg_Parse(item, "O!", &rpmKeyring_Type, &kro))
+    if (!PyArg_Parse(item, "O!", rpmKeyring_Type, &kro))
 	return 0;
     *keyring = kro->keyring;
     return 1;

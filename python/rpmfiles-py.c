@@ -327,6 +327,7 @@ static PyType_Slot rpmfile_Type_Slots[] = {
     {0, NULL},
 };
 
+PyTypeObject* rpmfile_Type;
 PyType_Spec rpmfile_Type_Spec = {
     .name = "rpm.file",
     .basicsize = sizeof(rpmfileObject),
@@ -336,7 +337,7 @@ PyType_Spec rpmfile_Type_Spec = {
 
 PyObject * rpmfile_Wrap(rpmfiles files, int ix)
 {
-    rpmfileObject *s = PyObject_New(rpmfileObject, &rpmfile_Type);
+    rpmfileObject *s = PyObject_New(rpmfileObject, rpmfile_Type);
     if (s == NULL) return NULL;
 
     s->files = rpmfilesLink(files);
@@ -450,7 +451,7 @@ static PyObject *rpmfiles_archive(rpmfilesObject *s,
 	archive = rpmfiNewArchiveReader(fd, s->files, RPMFI_ITER_READ_ARCHIVE);
     }
 
-    return rpmarchive_Wrap(&rpmarchive_Type, s->files, archive);
+    return rpmarchive_Wrap(rpmarchive_Type, s->files, archive);
 }
 
 static PyObject *rpmfiles_subscript(rpmfilesObject *s, PyObject *item)
@@ -537,6 +538,7 @@ static PyType_Slot rpmfiles_Type_Slots[] = {
     {0, NULL},
 };
 
+PyTypeObject* rpmfiles_Type;
 PyType_Spec rpmfiles_Type_Spec = {
     .name = "rpm.files",
     .basicsize = sizeof(rpmfilesObject),

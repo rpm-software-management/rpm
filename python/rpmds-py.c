@@ -115,7 +115,7 @@ rpmds_Find(rpmdsObject * s, PyObject * arg)
 {
     rpmdsObject * o;
 
-    if (!PyArg_Parse(arg, "O!:Find", &rpmds_Type, &o))
+    if (!PyArg_Parse(arg, "O!:Find", rpmds_Type, &o))
 	return NULL;
 
     /* XXX make sure ods index is valid, real fix in lib/rpmds.c. */
@@ -129,7 +129,7 @@ rpmds_Merge(rpmdsObject * s, PyObject * arg)
 {
     rpmdsObject * o;
 
-    if (!PyArg_Parse(arg, "O!:Merge", &rpmds_Type, &o))
+    if (!PyArg_Parse(arg, "O!:Merge", rpmds_Type, &o))
 	return NULL;
 
     return Py_BuildValue("i", rpmdsMerge(&s->ds, o->ds));
@@ -139,7 +139,7 @@ rpmds_Search(rpmdsObject * s, PyObject * arg)
 {
     rpmdsObject * o;
 
-    if (!PyArg_Parse(arg, "O!:Merge", &rpmds_Type, &o))
+    if (!PyArg_Parse(arg, "O!:Merge", rpmds_Type, &o))
         return NULL;
 
     return Py_BuildValue("i", rpmdsSearch(s->ds, o->ds));
@@ -149,7 +149,7 @@ static PyObject *rpmds_Compare(rpmdsObject * s, PyObject * o)
 {
     rpmdsObject * ods;
 
-    if (!PyArg_Parse(o, "O!:Compare", &rpmds_Type, &ods))
+    if (!PyArg_Parse(o, "O!:Compare", rpmds_Type, &ods))
 	return NULL;
 
     return PyBool_FromLong(rpmdsCompare(s->ds, ods->ds));
@@ -173,7 +173,7 @@ static PyObject * rpmds_Rpmlib(rpmdsObject * s, PyObject *args, PyObject *kwds)
     /* XXX check return code, permit arg (NULL uses system default). */
     rpmdsRpmlibPool(pool, &ds, NULL);
 
-    return rpmds_Wrap(&rpmds_Type, ds);
+    return rpmds_Wrap(rpmds_Type, ds);
 }
 
 static struct PyMethodDef rpmds_methods[] = {
@@ -363,6 +363,7 @@ static PyType_Slot rpmds_Type_Slots[] = {
     {0, NULL},
 };
 
+PyTypeObject* rpmds_Type;
 PyType_Spec rpmds_Type_Spec = {
     .name = "rpm.ds",
     .basicsize = sizeof(rpmdsObject),

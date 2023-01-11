@@ -5,9 +5,10 @@
 
 typedef struct rpmarchiveObject_s rpmarchiveObject;
 
-extern PyTypeObject rpmarchive_Type;
+extern PyTypeObject* rpmarchive_Type;
+extern PyType_Spec rpmarchive_Type_Spec;
 
-#define rpmarchiveObject_Check(v)	((v)->ob_type == &rpmarchive_Type)
+#define rpmarchiveObject_Check(v)	((v)->ob_type == rpmarchive_Type)
 
 PyObject * rpmarchive_Wrap(PyTypeObject *subtype,
 			   rpmfiles files, rpmfi archive);

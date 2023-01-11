@@ -647,6 +647,7 @@ static PyType_Slot hdr_Type_Slots[] = {
     {0, NULL},
 };
 
+PyTypeObject* hdr_Type;
 PyType_Spec hdr_Type_Spec = {
     .name = "rpm.hdr",
     .basicsize = sizeof(hdrObject),
@@ -679,8 +680,8 @@ PyObject * versionCompare (PyObject * self, PyObject * args, PyObject * kwds)
     hdrObject * h1, * h2;
     char * kwlist[] = {"version0", "version1", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!O!", kwlist, &hdr_Type,
-	    &h1, &hdr_Type, &h2))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!O!", kwlist, hdr_Type,
+	    &h1, hdr_Type, &h2))
 	return NULL;
 
     return Py_BuildValue("i", rpmVersionCompare(h1->h, h2->h));
