@@ -14,7 +14,8 @@ static char ver_doc[] = "";
 static void ver_dealloc(rpmverObject *s)
 {
     s->ver = rpmverFree(s->ver);
-    Py_TYPE(s)->tp_free((PyObject *)s);
+    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    free(s);
 }
 
 int verFromPyObject(PyObject *o, rpmver *ver)

@@ -144,7 +144,8 @@ spec_dealloc(specObject * s)
     if (s->spec) {
 	s->spec=rpmSpecFree(s->spec);
     }
-    Py_TYPE(s)->tp_free((PyObject *)s);
+    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    free(s);
 }
 
 static PyObject * getSection(rpmSpec spec, int section)

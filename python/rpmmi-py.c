@@ -129,7 +129,8 @@ static void rpmmi_dealloc(rpmmiObject * s)
 {
     s->mi = rpmdbFreeIterator(s->mi);
     Py_DECREF(s->ref);
-    Py_TYPE(s)->tp_free((PyObject *)s);
+    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    free(s);
 }
 
 static Py_ssize_t rpmmi_length(rpmmiObject * s)

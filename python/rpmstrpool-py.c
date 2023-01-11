@@ -13,7 +13,8 @@ static char strpool_doc[] = "";
 static void strpool_dealloc(rpmstrPoolObject *s)
 {
     s->pool = rpmstrPoolFree(s->pool);
-    Py_TYPE(s)->tp_free((PyObject *)s);
+    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    free(s);
 }
 
 static PyObject *strpool_new(PyTypeObject *subtype,

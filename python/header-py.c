@@ -327,7 +327,8 @@ static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
 static void hdr_dealloc(hdrObject * s)
 {
     if (s->h) headerFree(s->h);
-    Py_TYPE(s)->tp_free((PyObject *)s);
+    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    free(s);
 }
 
 static PyObject * hdr_iternext(hdrObject *s)
