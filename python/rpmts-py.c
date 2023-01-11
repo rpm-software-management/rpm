@@ -844,7 +844,8 @@ static void rpmts_dealloc(rpmtsObject * s)
 
 static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
-    rpmtsObject * s = (rpmtsObject *)subtype->tp_alloc(subtype, 0);
+    allocfunc subtype_alloc = (allocfunc)PyType_GetSlot(subtype, Py_tp_alloc);
+    rpmtsObject *s = (rpmtsObject *)subtype_alloc(subtype, 0);
     if (s == NULL) return NULL;
 
     s->ts = rpmtsCreate();

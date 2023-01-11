@@ -184,7 +184,8 @@ PyTypeObject rpmKeyring_Type = {
 
 PyObject * rpmPubkey_Wrap(PyTypeObject *subtype, rpmPubkey pubkey)
 {
-    rpmPubkeyObject *s = (rpmPubkeyObject *)subtype->tp_alloc(subtype, 0);
+    allocfunc subtype_alloc = (allocfunc)PyType_GetSlot(subtype, Py_tp_alloc);
+    rpmPubkeyObject *s = (rpmPubkeyObject *)subtype_alloc(subtype, 0);
     if (s == NULL) return NULL;
 
     s->pubkey = pubkey;
@@ -193,7 +194,8 @@ PyObject * rpmPubkey_Wrap(PyTypeObject *subtype, rpmPubkey pubkey)
 
 PyObject * rpmKeyring_Wrap(PyTypeObject *subtype, rpmKeyring keyring)
 {
-    rpmKeyringObject *s = (rpmKeyringObject *)subtype->tp_alloc(subtype, 0);
+    allocfunc subtype_alloc = (allocfunc)PyType_GetSlot(subtype, Py_tp_alloc);
+    rpmKeyringObject *s = (rpmKeyringObject *)subtype_alloc(subtype, 0);
     if (s == NULL) return NULL;
 
     s->keyring = keyring;

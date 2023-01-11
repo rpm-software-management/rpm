@@ -406,7 +406,8 @@ rpmds dsFromDs(rpmdsObject * s)
 
 PyObject * rpmds_Wrap(PyTypeObject *subtype, rpmds ds)
 {
-    rpmdsObject * s = (rpmdsObject *)subtype->tp_alloc(subtype, 0);
+    allocfunc subtype_alloc = (allocfunc)PyType_GetSlot(subtype, Py_tp_alloc);
+    rpmdsObject *s = (rpmdsObject *)subtype_alloc(subtype, 0);
     if (s == NULL) return NULL;
 
     s->ds = ds;

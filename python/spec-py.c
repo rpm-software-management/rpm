@@ -337,7 +337,8 @@ PyTypeObject spec_Type = {
 PyObject *
 spec_Wrap(PyTypeObject *subtype, rpmSpec spec) 
 {
-    specObject * s = (specObject *)subtype->tp_alloc(subtype, 0);
+    allocfunc subtype_alloc = (allocfunc)PyType_GetSlot(subtype, Py_tp_alloc);
+    specObject *s = (specObject *)subtype_alloc(subtype, 0);
     if (s == NULL) return NULL;
 
     s->spec = spec; 
@@ -346,7 +347,8 @@ spec_Wrap(PyTypeObject *subtype, rpmSpec spec)
 
 PyObject * specPkg_Wrap(PyTypeObject *subtype, rpmSpecPkg pkg, specObject *source)
 {
-    specPkgObject * s = (specPkgObject *)subtype->tp_alloc(subtype, 0);
+    allocfunc subtype_alloc = (allocfunc)PyType_GetSlot(subtype, Py_tp_alloc);
+    specPkgObject *s = (specPkgObject *)subtype_alloc(subtype, 0);
     if (s == NULL) return NULL;
 
     s->pkg = pkg;

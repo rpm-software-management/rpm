@@ -117,7 +117,8 @@ PyTypeObject rpmProblem_Type = {
 
 PyObject *rpmprob_Wrap(PyTypeObject *subtype, rpmProblem prob)
 {
-    rpmProblemObject * s = (rpmProblemObject *)subtype->tp_alloc(subtype, 0);
+    allocfunc subtype_alloc = (allocfunc)PyType_GetSlot(subtype, Py_tp_alloc);
+    rpmProblemObject *s = (rpmProblemObject *)subtype_alloc(subtype, 0);
     if (s == NULL) return NULL;
 
     s->prob = rpmProblemLink(prob);

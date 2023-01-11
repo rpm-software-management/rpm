@@ -171,7 +171,9 @@ PyObject * rpmver_Wrap(PyTypeObject *subtype, rpmver ver)
     rpmverObject *s = NULL;
 
     if (ver) {
-	s = (rpmverObject *)subtype->tp_alloc(subtype, 0);
+	allocfunc subtype_alloc = (allocfunc)PyType_GetSlot(subtype,
+                                                            Py_tp_alloc);
+	s = (rpmverObject *)subtype_alloc(subtype, 0);
 	if (s == NULL) return NULL;
 	s->ver = ver;
     }

@@ -264,7 +264,8 @@ PyTypeObject rpmarchive_Type = {
 PyObject * rpmarchive_Wrap(PyTypeObject *subtype,
 			   rpmfiles files, rpmfi archive)
 {
-    rpmarchiveObject *s = (rpmarchiveObject *)subtype->tp_alloc(subtype, 0);
+    allocfunc subtype_alloc = (allocfunc)PyType_GetSlot(subtype, Py_tp_alloc);
+    rpmarchiveObject *s = (rpmarchiveObject *)subtype_alloc(subtype, 0);
     if (s == NULL) return NULL;
 
     s->files = rpmfilesLink(files);

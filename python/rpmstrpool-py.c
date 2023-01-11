@@ -139,7 +139,8 @@ PyTypeObject rpmstrPool_Type = {
 
 PyObject * rpmstrPool_Wrap(PyTypeObject *subtype, rpmstrPool pool)
 {
-    rpmstrPoolObject *s = (rpmstrPoolObject *)subtype->tp_alloc(subtype, 0);
+    allocfunc subtype_alloc = (allocfunc)PyType_GetSlot(subtype, Py_tp_alloc);
+    rpmstrPoolObject *s = (rpmstrPoolObject *)subtype_alloc(subtype, 0);
     if (s == NULL) return NULL;
 
     /* permit referencing a pre-existing pool as well */
