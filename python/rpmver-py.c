@@ -123,47 +123,23 @@ static PyGetSetDef ver_getseters[] = {
     { NULL },
 };
 
-PyTypeObject rpmver_Type = {
-	PyVarObject_HEAD_INIT(&PyType_Type, 0)
-	"rpm.ver",			/* tp_name */
-	sizeof(rpmverObject),	/* tp_size */
-	0,				/* tp_itemsize */
-	(destructor) ver_dealloc,	/* tp_dealloc */
-	0,				/* tp_print */
-	(getattrfunc)0, 		/* tp_getattr */
-	0,				/* tp_setattr */
-	0,				/* tp_compare */
-	(reprfunc)ver_get_evr,		/* tp_repr */
-	0,				/* tp_as_number */
-	0,				/* tp_as_sequence */
-	0,				/* tp_as_mapping */
-	0,				/* tp_hash */
-	0,				/* tp_call */
-	0,				/* tp_str */
-	PyObject_GenericGetAttr,	/* tp_getattro */
-	PyObject_GenericSetAttr,	/* tp_setattro */
-	0,				/* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,	/* tp_flags */
-	ver_doc,			/* tp_doc */
-	0,				/* tp_traverse */
-	0,				/* tp_clear */
-	(richcmpfunc)ver_richcmp,	/* tp_richcompare */
-	0,				/* tp_weaklistoffset */
-	0,				/* tp_iter */
-	0,				/* tp_iternext */
-	0,				/* tp_methods */
-	0,				/* tp_members */
-	ver_getseters,			/* tp_getset */
-	0,				/* tp_base */
-	0,				/* tp_dict */
-	0,				/* tp_descr_get */
-	0,				/* tp_descr_set */
-	0,				/* tp_dictoffset */
-	0,				/* tp_init */
-	0,				/* tp_alloc */
-	ver_new,			/* tp_new */
-	0,				/* tp_free */
-	0,				/* tp_is_gc */
+static PyType_Slot rpmver_Type_Slots[] = {
+    {Py_tp_dealloc, ver_dealloc},
+    {Py_tp_repr, ver_get_evr},
+    {Py_tp_getattro, PyObject_GenericGetAttr},
+    {Py_tp_setattro, PyObject_GenericSetAttr},
+    {Py_tp_doc, ver_doc},
+    {Py_tp_richcompare, ver_richcmp},
+    {Py_tp_getset, ver_getseters},
+    {Py_tp_new, ver_new},
+    {0, NULL},
+};
+
+PyType_Spec rpmver_Type_Spec = {
+    .name = "rpm.ver",
+    .basicsize = sizeof(rpmverObject),
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .slots = rpmver_Type_Slots,
 };
 
 PyObject * rpmver_Wrap(PyTypeObject *subtype, rpmver ver)

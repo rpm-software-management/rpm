@@ -316,48 +316,22 @@ static struct PyMethodDef rpmfile_methods[] = {
     { NULL, NULL, 0, NULL }
 };
 
-PyTypeObject rpmfile_Type = {
-	PyVarObject_HEAD_INIT(&PyType_Type, 0)
-	"rpm.file",			/* tp_name */
-	sizeof(rpmfileObject),		/* tp_basicsize */
-	0,				/* tp_itemsize */
-	/* methods */
-	(destructor) rpmfile_dealloc,	/* tp_dealloc */
-	0,				/* tp_print */
-	0,				/* tp_getattr */
-	0,				/* tp_setattr */
-	0,				/* tp_compare */
-	0,				/* tp_repr */
-	0,				/* tp_as_number */
-	0,				/* tp_as_sequence */
-	0,				/* tp_as_mapping */
-	0,				/* tp_hash */
-	0,				/* tp_call */
-	(reprfunc)rpmfile_name,		/* tp_str */
-	PyObject_GenericGetAttr,	/* tp_getattro */
-	PyObject_GenericSetAttr,	/* tp_setattro */
-	0,				/* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,	/* tp_flags */
-	rpmfile_doc,			/* tp_doc */
-	0,				/* tp_traverse */
-	0,				/* tp_clear */
-	0,				/* tp_richcompare */
-	0,				/* tp_weaklistoffset */
-	0,				/* tp_iter */
-	0,				/* tp_iternext */
-	rpmfile_methods,		/* tp_methods */
-	0,				/* tp_members */
-	rpmfile_getseters,		/* tp_getset */
-	0,				/* tp_base */
-	0,				/* tp_dict */
-	0,				/* tp_descr_get */
-	0,				/* tp_descr_set */
-	0,				/* tp_dictoffset */
-	0,				/* tp_init */
-	0,				/* tp_alloc */
-	0,				/* tp_new */
-	0,				/* tp_free */
-	0,				/* tp_is_gc */
+static PyType_Slot rpmfile_Type_Slots[] = {
+    {Py_tp_dealloc, rpmfile_dealloc},
+    {Py_tp_str, rpmfile_name},
+    {Py_tp_getattro, PyObject_GenericGetAttr},
+    {Py_tp_setattro, PyObject_GenericSetAttr},
+    {Py_tp_doc, rpmfile_doc},
+    {Py_tp_methods, rpmfile_methods},
+    {Py_tp_getset, rpmfile_getseters},
+    {0, NULL},
+};
+
+PyType_Spec rpmfile_Type_Spec = {
+    .name = "rpm.file",
+    .basicsize = sizeof(rpmfileObject),
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE | Py_TPFLAGS_DISALLOW_INSTANTIATION,
+    .slots = rpmfile_Type_Slots,
 };
 
 PyObject * rpmfile_Wrap(rpmfiles files, int ix)
@@ -433,18 +407,6 @@ static int rpmfiles_contains(rpmfilesObject *s, PyObject *value)
     return (rpmfilesFindFN(s->files, fn) >= 0) ? 1 : 0;
 }
 
-static PySequenceMethods rpmfiles_as_sequence = {
-    (lenfunc)rpmfiles_length,		/* sq_length */
-    0,					/* sq_concat */
-    0,					/* sq_repeat */
-    (ssizeargfunc) rpmfiles_getitem,	/* sq_item */
-    0,					/* sq_slice */
-    0,					/* sq_ass_item */
-    0,					/* sq_ass_slice */
-    (objobjproc)rpmfiles_contains,	/* sq_contains */
-    0,					/* sq_inplace_concat */
-    0,					/* sq_inplace_repeat */
-};
 
 static PyObject * rpmfiles_find(rpmfileObject *s,
 				PyObject *args, PyObject *kwds)
@@ -536,11 +498,6 @@ static PyObject *rpmfiles_subscript(rpmfilesObject *s, PyObject *item)
     return NULL;
 }
 
-static PyMappingMethods rpmfiles_as_mapping = {
-    (lenfunc) rpmfiles_length,		/* mp_length */
-    (binaryfunc) rpmfiles_subscript,	/* mp_subscript */
-    0,					/* mp_ass_subscript */
-};
 
 static struct PyMethodDef rpmfiles_methods[] = {
     { "archive", (PyCFunction) rpmfiles_archive, METH_VARARGS|METH_KEYWORDS,
@@ -565,48 +522,26 @@ static char rpmfiles_doc[] =
     "\ttag : Obsolete. Leave alone!\n\n"
     "rpm.files is basically a sequence of rpm.file objects.\nNote that this is a read only data structure. To write file data you\nhave to write it directly into aheader object.";
 
-PyTypeObject rpmfiles_Type = {
-	PyVarObject_HEAD_INIT(&PyType_Type, 0)
-	"rpm.files",			/* tp_name */
-	sizeof(rpmfilesObject),		/* tp_basicsize */
-	0,				/* tp_itemsize */
-	/* methods */
-	(destructor) rpmfiles_dealloc,	/* tp_dealloc */
-	0,				/* tp_print */
-	0,				/* tp_getattr */
-	0,				/* tp_setattr */
-	0,				/* tp_compare */
-	0,				/* tp_repr */
-	0,				/* tp_as_number */
-	&rpmfiles_as_sequence,		/* tp_as_sequence */
-	&rpmfiles_as_mapping,		/* tp_as_mapping */
-	0,				/* tp_hash */
-	0,				/* tp_call */
-	0,				/* tp_str */
-	PyObject_GenericGetAttr,	/* tp_getattro */
-	PyObject_GenericSetAttr,	/* tp_setattro */
-	0,				/* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,	/* tp_flags */
-	rpmfiles_doc,			/* tp_doc */
-	0,				/* tp_traverse */
-	0,				/* tp_clear */
-	0,				/* tp_richcompare */
-	0,				/* tp_weaklistoffset */
-	0,				/* tp_iter */
-	0,				/* tp_iternext */
-	rpmfiles_methods,		/* tp_methods */
-	0,				/* tp_members */
-	0,				/* tp_getset */
-	0,				/* tp_base */
-	0,				/* tp_dict */
-	0,				/* tp_descr_get */
-	0,				/* tp_descr_set */
-	0,				/* tp_dictoffset */
-	0,				/* tp_init */
-	0,				/* tp_alloc */
-	(newfunc) rpmfiles_new,		/* tp_new */
-	0,				/* tp_free */
-	0,				/* tp_is_gc */
+static PyType_Slot rpmfiles_Type_Slots[] = {
+    {Py_tp_dealloc, rpmfiles_dealloc},
+    {Py_sq_length, rpmfiles_length},
+    {Py_sq_item, rpmfiles_getitem},
+    {Py_sq_contains, rpmfiles_contains},
+    {Py_mp_length, rpmfiles_length},
+    {Py_mp_subscript, rpmfiles_subscript},
+    {Py_tp_getattro, PyObject_GenericGetAttr},
+    {Py_tp_setattro, PyObject_GenericSetAttr},
+    {Py_tp_doc, rpmfiles_doc},
+    {Py_tp_methods, rpmfiles_methods},
+    {Py_tp_new, rpmfiles_new},
+    {0, NULL},
+};
+
+PyType_Spec rpmfiles_Type_Spec = {
+    .name = "rpm.files",
+    .basicsize = sizeof(rpmfilesObject),
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .slots = rpmfiles_Type_Slots,
 };
 
 PyObject * rpmfiles_Wrap(PyTypeObject *subtype, rpmfiles files)

@@ -577,24 +577,7 @@ static int hdr_setattro(PyObject * o, PyObject * n, PyObject * v)
     return PyObject_GenericSetAttr(o, n, v);
 }
 
-static PyMappingMethods hdr_as_mapping = {
-	(lenfunc) 0,			/* mp_length */
-	(binaryfunc) hdr_subscript,	/* mp_subscript */
-	(objobjargproc)hdr_ass_subscript,/* mp_ass_subscript */
-};
 
-static PySequenceMethods hdr_as_sequence = {
-    0,				/* sq_length */
-    0,				/* sq_concat */
-    0,				/* sq_repeat */
-    0,				/* sq_item */
-    0,				/* sq_slice */
-    0,				/* sq_ass_item */
-    0,				/* sq_ass_slice */
-    (objobjproc)hdrContains,	/* sq_contains */
-    0,				/* sq_inplace_concat */
-    0,				/* sq_inplace_repeat */
-};
 
 static char hdr_doc[] =
   "A header object represents an RPM package header.\n"
@@ -648,47 +631,27 @@ static char hdr_doc[] =
   "the strings in header lookups don't get translated, or the lookups\n"
   "will fail.\n";
 
-PyTypeObject hdr_Type = {
-	PyVarObject_HEAD_INIT(&PyType_Type, 0)
-	"rpm.hdr",			/* tp_name */
-	sizeof(hdrObject),		/* tp_size */
-	0,				/* tp_itemsize */
-	(destructor) hdr_dealloc, 	/* tp_dealloc */
-	0,				/* tp_print */
-	(getattrfunc) 0, 		/* tp_getattr */
-	0,				/* tp_setattr */
-	0,				/* tp_compare */
-	0,				/* tp_repr */
-	0,				/* tp_as_number */
-	&hdr_as_sequence,		/* tp_as_sequence */
-	&hdr_as_mapping,		/* tp_as_mapping */
-	hdr_hash,			/* tp_hash */
-	0,				/* tp_call */
-	0,				/* tp_str */
-	(getattrofunc) hdr_getattro,	/* tp_getattro */
-	(setattrofunc) hdr_setattro,	/* tp_setattro */
-	0,				/* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,	/* tp_flags */
-	hdr_doc,			/* tp_doc */
-	0,				/* tp_traverse */
-	0,				/* tp_clear */
-	0,				/* tp_richcompare */
-	0,				/* tp_weaklistoffset */
-	PyObject_SelfIter,		/* tp_iter */
-	(iternextfunc)hdr_iternext,	/* tp_iternext */
-	hdr_methods,			/* tp_methods */
-	0,				/* tp_members */
-	0,				/* tp_getset */
-	0,				/* tp_base */
-	0,				/* tp_dict */
-	0,				/* tp_descr_get */
-	0,				/* tp_descr_set */
-	0,				/* tp_dictoffset */
-	0,				/* tp_init */
-	0,				/* tp_alloc */
-	hdr_new,			/* tp_new */
-	0,				/* tp_free */
-	0,				/* tp_is_gc */
+static PyType_Slot hdr_Type_Slots[] = {
+    {Py_tp_dealloc, hdr_dealloc},
+    {Py_sq_contains, hdrContains},
+    {Py_mp_subscript, hdr_subscript},
+    {Py_mp_ass_subscript, hdr_ass_subscript},
+    {Py_tp_hash, hdr_hash},
+    {Py_tp_getattro, hdr_getattro},
+    {Py_tp_setattro, hdr_setattro},
+    {Py_tp_doc, hdr_doc},
+    {Py_tp_iter, PyObject_SelfIter},
+    {Py_tp_iternext, hdr_iternext},
+    {Py_tp_methods, hdr_methods},
+    {Py_tp_new, hdr_new},
+    {0, NULL},
+};
+
+PyType_Spec hdr_Type_Spec = {
+    .name = "rpm.hdr",
+    .basicsize = sizeof(hdrObject),
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .slots = hdr_Type_Slots,
 };
 
 PyObject * hdr_Wrap(PyTypeObject *subtype, Header h)
