@@ -101,6 +101,7 @@ static PyType_Slot rpmstrPool_Type_Slots[] = {
     {0, NULL},
 };
 
+PyTypeObject* rpmstrPool_Type;
 PyType_Spec rpmstrPool_Type_Spec = {
     .name = "rpm.strpool",
     .basicsize = sizeof(rpmstrPoolObject),
@@ -123,7 +124,7 @@ PyObject * rpmstrPool_Wrap(PyTypeObject *subtype, rpmstrPool pool)
 int poolFromPyObject(PyObject *item, rpmstrPool *pool)
 {
     rpmstrPoolObject *p = NULL;
-    if (PyArg_Parse(item, "O!", &rpmstrPool_Type, &p))
+    if (PyArg_Parse(item, "O!", rpmstrPool_Type, &p))
 	*pool = p->pool;
     return (p != NULL);
 }

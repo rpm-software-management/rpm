@@ -116,7 +116,7 @@ rpmte_Parent(rpmteObject * s, PyObject * unused)
 {
     rpmte parent = rpmteParent(s->te);
     if (parent)
-	return rpmte_Wrap(&rpmte_Type, parent);
+	return rpmte_Wrap(rpmte_Type, parent);
 
     Py_RETURN_NONE;
 }
@@ -190,7 +190,7 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
     if (ds == NULL) {
 	Py_RETURN_NONE;
     }
-    return rpmds_Wrap(&rpmds_Type, rpmdsLink(ds));
+    return rpmds_Wrap(rpmds_Type, rpmdsLink(ds));
 }
 
 static PyObject *
@@ -200,7 +200,7 @@ rpmte_Files(rpmteObject * s, PyObject * args, PyObject * kwds)
     if (files == NULL) {
 	Py_RETURN_NONE;
     }
-    return rpmfiles_Wrap(&rpmfiles_Type, files);
+    return rpmfiles_Wrap(rpmfiles_Type, files);
 }
 
 static PyObject *
@@ -273,6 +273,7 @@ static PyType_Slot rpmte_Type_Slots[] = {
     {0, NULL},
 };
 
+PyTypeObject* rpmte_Type;
 PyType_Spec rpmte_Type_Spec = {
     .name = "rpm.te",
     .basicsize = sizeof(rpmteObject),

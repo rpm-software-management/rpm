@@ -76,7 +76,7 @@ rpmmi_iternext(rpmmiObject * s)
 	return NULL;
     }
     headerLink(h);
-    return hdr_Wrap(&hdr_Type, h);
+    return hdr_Wrap(hdr_Type, h);
 }
 
 static PyObject *
@@ -194,6 +194,7 @@ static PyType_Slot rpmmi_Type_Slots[] = {
     {0, NULL},
 };
 
+PyTypeObject* rpmmi_Type;
 PyType_Spec rpmmi_Type_Spec = {
     .name = "rpm.mi",
     .basicsize = sizeof(rpmmiObject),
