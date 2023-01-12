@@ -38,3 +38,5 @@ ln -s %{testdir}/zub $RPM_BUILD_ROOT/%{testdir}/linkbad
 %{testdir}/b*g/
 %dir %{testdir}/foo
 %{testdir}/foo/*
+# Regression test for #2347
+%dev(b 1 2) /test-block
