@@ -469,6 +469,7 @@ lrwxrwxrwx /opt/globtest/linkgood
 -rw-r--r-- /opt/globtest/zab
 -rw-r--r-- /opt/globtest/zeb
 -rw-r--r-- /opt/globtest/zib
+b--------- /test-block
 ],
 [warning: absolute symlink: /opt/globtest/linkbad -> /opt/globtest/zub
 warning: absolute symlink: /opt/globtest/linkgood -> /opt/globtest/zab

@@ -2229,14 +2229,11 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName,
     if (fl->cur.isDir)
 	diskPath = rstrcat(&diskPath, "/");
 
+    if (fl->cur.devtype)
+	doGlob = 0;
+
     if (!doGlob) {
 	rc = addFile(fl, diskPath, NULL);
-	goto exit;
-    }
-
-    if (fl->cur.devtype) {
-	rpmlog(RPMLOG_ERR, _("%%dev glob not permitted: %s\n"), diskPath);
-	rc = RPMRC_FAIL;
 	goto exit;
     }
 
