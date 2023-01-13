@@ -558,7 +558,7 @@ static int fsmChown(int fd, int dirfd, const char *path, mode_t mode, uid_t uid,
 	    }
 	}
     } else {
-	int flags = S_ISLNK(mode) ? AT_SYMLINK_NOFOLLOW : 0;
+	int flags = AT_SYMLINK_NOFOLLOW;
 	rc = fchownat(dirfd, path, uid, gid, flags);
 	if (rc < 0) {
 	    struct stat st;
