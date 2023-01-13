@@ -1022,7 +1022,8 @@ setmeta:
 		/* Only follow safe symlinks, and never on temporary files */
 		if (fp->suffix)
 		    flags |= AT_SYMLINK_NOFOLLOW;
-		fd = fsmOpenat(di.dirfd, fp->fpath, flags, 0);
+		fd = fsmOpenat(di.dirfd, fp->fpath, flags,
+				S_ISDIR(fp->sb.st_mode));
 		if (fd < 0)
 		    rc = RPMERR_OPEN_FAILED;
 	    }
