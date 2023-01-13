@@ -64,6 +64,12 @@ if grep -q '#define WITH_CAP 1' "${abs_top_builddir}/config.h"; then
 else
     CAP_DISABLED=true;
 fi
+if mknod foodev c 123 123; then
+   MKNOD_DISABLED=false
+   rm -f foodev
+else
+   MKNOD_DISABLED=true
+fi
 
 MALLOC_DEBUG=libc_malloc_debug.so.0
 if ! LD_PRELOAD=${MALLOC_DEBUG} /bin/true 2>&1 | grep -q ERROR; then

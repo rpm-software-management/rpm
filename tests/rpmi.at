@@ -1404,6 +1404,23 @@ runroot rpm -Vv --nouser --nogroup fifo
 [])
 AT_CLEANUP
 
+AT_SETUP([rpm -U dev])
+AT_KEYWORDS([install])
+AT_SKIP_IF([$MKNOD_DISABLED])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpmbuild -bb --quiet /data/SPECS/dev.spec
+runroot rpm -U --ignoreos /build/RPMS/noarch/dev-1.0-1.noarch.rpm
+runroot rpm -Vv --nouser --nogroup dev
+],
+[0],
+[.........    /test-block
+.........    /test-char
+],
+[])
+AT_CLEANUP
+
 AT_SETUP([rpm -U with Obsoletes])
 AT_KEYWORDS([install])
 AT_CHECK([
