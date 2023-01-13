@@ -1018,9 +1018,11 @@ setmeta:
 	    /* Special files require path-based ops */
 	    int mayopen = S_ISREG(fp->sb.st_mode) || S_ISDIR(fp->sb.st_mode);
 	    if (!rc && fd == -1 && mayopen) {
+		int flags = O_RDONLY;
 		/* Only follow safe symlinks, and never on temporary files */
-		fd = fsmOpenat(di.dirfd, fp->fpath,
-				fp->suffix ? AT_SYMLINK_NOFOLLOW : 0, 0);
+		if (fp->suffix)
+		    flags |= AT_SYMLINK_NOFOLLOW;
+		fd = fsmOpenat(di.dirfd, fp->fpath, flags, 0);
 		if (fd < 0)
 		    rc = RPMERR_OPEN_FAILED;
 	    }
