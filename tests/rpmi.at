@@ -1255,6 +1255,21 @@ runroot rpm -q --whatprovides /
 [])
 AT_CLEANUP
 
+AT_SETUP([rpm -U fifo])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpmbuild -bb --quiet /data/SPECS/fifo.spec
+runroot rpm -U --ignoreos /build/RPMS/noarch/fifo-1.0-1.noarch.rpm
+runroot rpm -Vv --nouser --nogroup fifo
+],
+[0],
+[.........    /test-fifo
+],
+[])
+AT_CLEANUP
+
 AT_SETUP([rpm -U with Obsoletes])
 AT_KEYWORDS([install])
 AT_CHECK([
