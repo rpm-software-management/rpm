@@ -1014,6 +1014,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
                     rc = RPMERR_UNKNOWN_FILETYPE;
             }
 
+setmeta:
 	    /* Special files require path-based ops */
 	    int mayopen = S_ISREG(fp->sb.st_mode) || S_ISDIR(fp->sb.st_mode);
 	    if (!rc && fd == -1 && mayopen) {
@@ -1024,7 +1025,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 		    rc = RPMERR_OPEN_FAILED;
 	    }
 
-setmeta:
 	    if (!rc && fp->setmeta) {
 		rc = fsmSetmeta(fd, di.dirfd, fp->fpath,
 				fi, plugins, fp->action,
