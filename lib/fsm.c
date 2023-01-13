@@ -1014,7 +1014,9 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
                     rc = RPMERR_UNKNOWN_FILETYPE;
             }
 
-	    if (!rc && fd == -1 && !S_ISLNK(fp->sb.st_mode)) {
+	    /* Special files require path-based ops */
+	    int mayopen = S_ISREG(fp->sb.st_mode) || S_ISDIR(fp->sb.st_mode);
+	    if (!rc && fd == -1 && mayopen) {
 		/* Only follow safe symlinks, and never on temporary files */
 		fd = fsmOpenat(di.dirfd, fp->fpath,
 				fp->suffix ? AT_SYMLINK_NOFOLLOW : 0, 0);
