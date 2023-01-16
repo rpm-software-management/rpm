@@ -12,7 +12,7 @@ Simple rpm demonstration.
 
 %prep
 %setup -q -n hello-1.0
-%patch0 -p1 -b .modernize
+%patch -p1 -b .modernize 0
 
 %build
 

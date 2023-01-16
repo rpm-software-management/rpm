@@ -15,7 +15,7 @@ Simple rpm demonstration.
 
 %prep
 %setup -q
-%patch0 -p1 -b .modernize
+%patch -p1 -b .modernize 0
 
 %build
 make
