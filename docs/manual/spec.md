@@ -471,6 +471,60 @@ In simple packages `%prep` is often just:
 %prep
 %autosetup
 ```
+
+#### %setup
+
+`%setup [options]`
+
+The primary function of `%setup` is to set up the build directory for the
+package, typically unpacking the package's sources but optionally it
+can just create the directory. It accepts a number of options:
+
+```
+-a N        unpack source N after changing to the build directory
+-b N        unpack source N before changing to the build directory
+-c          create the build directory (and change to it) before unpacking
+-D          do not delete the build directory prior to unpacking (used
+            when more than one source is to be unpacked with `-a` or `-b`)
+-n DIR      set the name of build directory (default is `%{name}-%{version}`)
+-T          skip the default unpacking of the first source (used with
+            `-a` or `-b`)
+-q          operate quietly
+```
+
+#### %patch
+
+`%patch [options] [arguments]`
+
+`%patch` is used to apply patches on top of the just unpacked pristine sources.
+Historically it supported multiple strange syntaxes and buggy behaviors,
+which are no longer maintained.  To apply patch number 1, the following
+are recognized:
+
+1. `%patch 1` (since rpm >= 4.18)
+2. `%patch -P1` (all rpm versions)
+3. `%patch1` (deprecated, do not use)
+
+For new packages, the positional argument form 1) is preferred. For maximal
+compatibility use 2). Both forms can be used to apply several patches at once,
+in the order they appear on the line. The third form where the number is
+a part of the directive is deprecated and should not be used anymore.
+
+It accepts a number of options. With the exception of `-P`, they are merely
+passed down to the `patch` command.
+```
+-b SUF      backup patched files with suffix SUF
+-d DIR      change to directory DIR before doing anything else
+-E          remove files emptied by patching
+-F N        maximum fuzz factor (on context patches)
+-p N        strip N leading slashes from paths
+-R          assume reversed patch
+-o FILE     send output to FILE instead of patching in place 
+-z SUF      same as -b
+-Z          set mtime and atime from context diff headers using UTC
+
+-P N        apply patch number N, same as passing N as a positional argument
+```
  
 ### %generate_buildrequires (since rpm >= 4.15)
 
