@@ -13,11 +13,11 @@ manually specify each patch to be applied, eg
 ```
 %prep
 %setup -q
-%patch0
-%patch1
-%patch2
+%patch 0
+%patch 1
+%patch 2
 ...
-%patch149
+%patch 149
 ```
 
 This can get rather tedious when the number of patches is large. The new
