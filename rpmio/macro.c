@@ -58,8 +58,8 @@ struct rpmMacroEntry_s {
 struct rpmMacroContext_s {
     rpmMacroEntry *tab;  /*!< Macro entry table (array of pointers). */
     int n;      /*!< No. of macros. */
-    int depth;		 /*!< Depth tracking when recursing from Lua  */
-    int level;		 /*!< Scope level tracking when recursing from Lua  */
+    int depth;		 /*!< Depth tracking on external recursion */
+    int level;		 /*!< Scope level tracking when on external recursion */
     pthread_mutex_t lock;
     pthread_mutexattr_t lockattr;
 };
@@ -586,7 +586,16 @@ static void doExpressionExpansion(MacroBuf mb, const char * expr, size_t len)
 {
     char *buf = rstrndup(expr, len);
     char *result;
+    rpmMacroContext mc = mb->mc;
+    int odepth = mc->depth;
+    int olevel = mc->level;
+
+    mc->depth = mb->depth;
+    mc->level = mb->level;
     result = rpmExprStrFlags(buf, RPMEXPR_EXPAND);
+    mc->depth = odepth;
+    mc->level = olevel;
+
     if (!result) {
 	mb->error = 1;
 	goto exit;
