@@ -526,6 +526,43 @@ runroot rpm \
 [])
 AT_CLEANUP
 
+AT_SETUP([expression macro level])
+AT_KEYWORDS([macros])
+AT_CHECK([[
+runroot rpm \
+	--define 'expopt(r) %[%{undefined yyy} ? "aa " : "bb "]%{-r:the -r option was set}%{!-r:the -r option was not set}' \
+	--eval '%expopt' \
+	--eval '%expopt -r' \
+	--define 'yyy 1' \
+	--eval '%expopt' \
+	--eval '%expopt -r'
+]],
+[0],
+[aa the -r option was not set
+aa the -r option was set
+bb the -r option was not set
+bb the -r option was set
+],
+[])
+
+AT_CHECK([[
+runroot rpm \
+	--define 'expopt(r) %{expr:%{undefined yyy} ? "aa " : "bb "}%{-r:the -r option was set}%{!-r:the -r option was not set}' \
+	--eval '%expopt' \
+	--eval '%expopt -r' \
+	--define 'yyy 1' \
+	--eval '%expopt' \
+	--eval '%expopt -r'
+]],
+[0],
+[aa the -r option was not set
+aa the -r option was set
+bb the -r option was not set
+bb the -r option was set
+],
+[])
+AT_CLEANUP
+
 AT_SETUP([short circuiting])
 AT_KEYWORDS([macros])
 AT_CHECK([
