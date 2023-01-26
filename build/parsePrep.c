@@ -383,8 +383,8 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
     argvAppend(&patchnums, (ARGV_const_t) poptGetArgs(optCon));
 
     if (argvCount(patchnums) == 0) {
-	rpmlog(RPMLOG_WARNING, _("Patch number not specified: %s\n"), line);
-	argvAdd(&patchnums, "0");
+	rpmlog(RPMLOG_ERR, _("Patch number not specified: %s\n"), line);
+	goto exit;
     }
 
     /* Convert to number, generate patch command and append to %prep script */
