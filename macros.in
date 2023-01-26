@@ -723,7 +723,7 @@ package or when debugging this package.\
 %___build_shell		%{?_buildshell:%{_buildshell}}%{!?_buildshell:/bin/sh}
 %___build_args		-e
 %___build_cmd		%{?_sudo:%{_sudo} }%{?_remsh:%{_remsh} %{_remhost} }%{?_remsudo:%{_remsudo} }%{?_remchroot:%{_remchroot} %{_remroot} }%{___build_shell} %{___build_args}
-%___build_pre	\
+%___build_pre_env \
   RPM_SOURCE_DIR=\"%{_sourcedir}\"\
   RPM_BUILD_DIR=\"%{_builddir}\"\
   RPM_OPT_FLAGS=\"%{optflags}\"\
@@ -745,8 +745,10 @@ package or when debugging this package.\
   %{?_javaclasspath:CLASSPATH=\"%{_javaclasspath}\"\
   export CLASSPATH}\
   PKG_CONFIG_PATH=\"${PKG_CONFIG_PATH}:%{_libdir}/pkgconfig:%{_datadir}/pkgconfig\"\
-  export PKG_CONFIG_PATH\
-  \
+  export PKG_CONFIG_PATH
+
+%___build_pre	\
+  %{___build_pre_env} \
   %[%{verbose}?"set -x":""]\
   umask 022\
   cd \"%{_builddir}\"\
