@@ -28,6 +28,7 @@ int rgetopt(int argc, char * const argv[], const char *opts,
     optind = 0;
 #else
     optind = 1;
+    optarg = NULL;
 #endif
 
     while ((c = getopt(argc, argv, opts)) != -1) {
@@ -39,6 +40,7 @@ int rgetopt(int argc, char * const argv[], const char *opts,
 	    rc = -1;
 	    break;
 	}
+	optarg = NULL;
     }
     return (rc < 0) ? -optopt : optind;
 }
