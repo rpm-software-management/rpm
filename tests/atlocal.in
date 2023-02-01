@@ -50,6 +50,11 @@ if [ "@WITH_IMAEVM@" == "ON" ]; then
 else
     IMA_DISABLED=true;
 fi
+if [ "@HAVE_DLINFO@" == 1 ] && [ "@HAVE_DLMOPEN@" == 1 ]; then
+    HAVE_GNU_DLFCN=true;
+else
+    HAVE_GNU_DLFCN=false;
+fi
 if mknod foodev c 123 123 2>/dev/null; then
    MKNOD_DISABLED=false
    rm -f foodev

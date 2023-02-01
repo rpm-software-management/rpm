@@ -190,7 +190,7 @@ include(CheckVariableExists)
 set(OPTFUNCS
 	stpcpy stpncpy putenv mempcpy fdatasync lutimes mergesort
 	getauxval setprogname __progname syncfs sched_getaffinity unshare
-	secure_getenv __secure_getenv mremap strchrnul
+	secure_getenv __secure_getenv mremap strchrnul dlmopen dlinfo
 )
 set(REQFUNCS
 	mkstemp getcwd basename dirname realpath setenv unsetenv regcomp
