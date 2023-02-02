@@ -523,14 +523,11 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
     return fd;
 }
 
-/* Return number of threads ought to be used for compression based
-   on a parsed value threads (e.g. from w7T0.xzdio or w7T16.xzdio).
-   Value -1 means automatic detection. */
-
-static int
-get_compression_threads(int threads)
+/* Parse thread enablement string. T or T0 means autodetection */
+static int parsethreadn(const char *s, char **end)
 {
-    if (threads == -1)
+    int threads = strtol(s, end, 10);
+    if (threads == 0)
 	threads = rpmExpandNumeric("%{getncpus}");
 
 #if __WORDSIZE == 32
@@ -541,15 +538,6 @@ get_compression_threads(int threads)
     }
 #endif
 
-    return threads;
-}
-
-static int parsethreadn(const char *s, char **end)
-{
-    int threads = strtol(s, end, 10);
-    /* T or T0 means automatic detection */
-    if (threads == 0)
-	threads = -1;
     return threads;
 }
 
@@ -804,7 +792,6 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 	    if (!threads) {
 		ret = lzma_easy_encoder(&lzfile->strm, level, LZMA_CHECK_SHA256);
 	    } else {
-		threads = get_compression_threads(threads);
 		lzma_mt mt_options = {
 		    .flags = 0,
 		    .threads = threads,
@@ -1133,7 +1120,6 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
 	    }
 	}
 
-	threads = get_compression_threads(threads);
 	if (threads > 0) {
 	    if (ZSTD_isError (ZSTD_CCtx_setParameter(_stream, ZSTD_c_nbWorkers, threads)))
 		rpmlog(RPMLOG_DEBUG, "zstd library does not support multi-threading\n");
