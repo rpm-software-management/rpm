@@ -140,7 +140,7 @@ pkg_check_modules(READLINE IMPORTED_TARGET readline)
 pkg_check_modules(ZSTD IMPORTED_TARGET libzstd)
 pkg_check_modules(LIBELF IMPORTED_TARGET libelf)
 pkg_check_modules(LIBDW IMPORTED_TARGET libdw)
-pkg_check_modules(LIBLZMA IMPORTED_TARGET liblzma)
+pkg_check_modules(LIBLZMA IMPORTED_TARGET liblzma>=5.2.0)
 
 if (ENABLE_OPENMP)
 	find_package(OpenMP REQUIRED)
