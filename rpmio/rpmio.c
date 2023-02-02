@@ -544,6 +544,15 @@ get_compression_threads(int threads)
     return threads;
 }
 
+static int parsethreadn(const char *s, char **end)
+{
+    int threads = strtol(s, end, 10);
+    /* T or T0 means automatic detection */
+    if (threads == 0)
+	threads = -1;
+    return threads;
+}
+
 static const struct FDIO_s ufdio_s = {
   "ufdio", NULL,
   fdRead, fdWrite, fdSeek, fdClose,
@@ -777,19 +786,9 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 	else if (*mode >= '0' && *mode <= '9')
 	    level = *mode - '0';
 	else if (*mode == 'T') {
-	    if (isdigit(*(mode+1))) {
-		threads = atoi(++mode);
-		/* T0 means automatic detection */
-		if (threads == 0)
-		    threads = -1;
-		/* skip past rest of digits in string that atoi()
-		 * should've processed
-		 * */
-		while (isdigit(*++mode));
-		--mode;
-	    } else {
-		threads = -1;
-	    }
+	    char *end = NULL;
+	    threads = parsethreadn(mode+1, &end);
+	    mode = end-1;
 	}
     }
     fp = fdopen(fd, encoding ? "w" : "r");
@@ -1071,11 +1070,7 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
 	    flags |= O_RDWR;
 	    continue;
 	case 'T':
-	    if (*s >= '0' && *s <= '9')
-		threads = strtol(s, (char **)&s, 10);
-	    /* T0 means automatic detection */
-	    if (threads == 0)
-		threads = -1;
+	    threads = parsethreadn(s, (char **)&s);
 	    continue;
     case 'L':
 	    c = *s++;
