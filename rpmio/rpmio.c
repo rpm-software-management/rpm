@@ -523,12 +523,19 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
     return fd;
 }
 
+#if !ENABLE_OPENMP
+#define omp_in_parallel() 0
+#endif
+
 /* Parse thread enablement string. T or T0 means autodetection */
 static int parsethreadn(const char *s, char **end)
 {
     int threads = strtol(s, end, 10);
-    if (threads == 0)
-	threads = rpmExpandNumeric("%{getncpus}");
+    if (threads == 0) {
+	/* Disable autodetection inside OpenMP parallel regions */
+	if (!omp_in_parallel())
+	    threads = rpmExpandNumeric("%{getncpus}");
+    }
 
 #if __WORDSIZE == 32
     /* Limit threads up to 4 for 32-bit systems.  */
