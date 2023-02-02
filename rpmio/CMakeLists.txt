@@ -44,6 +44,9 @@ endif()
 if (BZIP2_FOUND)
 	target_link_libraries(librpmio PRIVATE BZip2::BZip2)
 endif()
+if (OpenMP_C_FOUND)
+        target_link_libraries(librpmio PRIVATE OpenMP::OpenMP_C)
+endif()
 
 install(TARGETS librpmio
 )
