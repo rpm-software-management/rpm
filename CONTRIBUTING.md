@@ -84,6 +84,18 @@ Always prefer self-explanatory code over comments! Many times well-named
 helper variables can make even complicated code read almost like plain
 English.
 
+Comments are always in `/* ... */`, never `//`. The two comment styles
+in rpm codebase are:
+
+`/* Short and sweet */`
+
+```
+/*
+ * Multi-line comments should be formatted
+ * like this.
+ */
+```
+
 ### Error handling
 
 Avoid multiple exit points from functions, these are an invitation to
