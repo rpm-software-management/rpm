@@ -342,7 +342,7 @@ packages.
 #### Supplements
 #### Enhances
 
-#### OrderWithRequires (sicne rpm >= 4.9)
+#### OrderWithRequires (since rpm >= 4.9)
 
 #### Prereq
 
