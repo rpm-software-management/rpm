@@ -529,7 +529,7 @@ static int regionSwab(indexEntry entry, uint32_t il, uint32_t dl,
 		entryInfo pe,
 		unsigned char * dataStart,
 		const unsigned char * dataEnd,
-		int regionid, int fast, int *nbytes)
+		int regionid, int fast, uint32_t *nbytes)
 {
     if ((entry != NULL && regionid >= 0) || (entry == NULL && regionid != 0))
 	return -1;
@@ -693,8 +693,8 @@ static void * doExport(const struct indexEntry_s *hindex, int indexUsed,
     for (i = 0, entry = index; i < indexUsed; i++, entry++) {
 	const char * src;
 	unsigned char *t;
-	int count;
-	int rdlen;
+	uint32_t count;
+	uint32_t rdlen;
 	unsigned int diff;
 
 	if (entry->data == NULL || entry->length <= 0)
@@ -923,7 +923,7 @@ rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg)
 {
     Header h = NULL;
     indexEntry entry; 
-    int rdlen;
+    uint32_t rdlen;
 
     h = headerCreate(blob->ei, blob->il);
 
