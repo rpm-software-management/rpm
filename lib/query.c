@@ -37,7 +37,7 @@ static void printFileInfo(const char * name,
     char sizefield[21];
     char ownerfield[8+1], groupfield[8+1];
     char timefield[100];
-    time_t when = mtime;  /* important if sizeof(int32_t) ! sizeof(time_t) */
+    time_t when = mtime;  /* important if sizeof(uint32_t) ! sizeof(time_t) */
     struct tm * tm, _tm;
     char * perms = rpmPermsString(mode);
     char *link = NULL;
