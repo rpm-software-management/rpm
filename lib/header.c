@@ -286,7 +286,7 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
     int i, len = 0;
     int32_t end = 0;
     const char *ds = (const char *) blob->dataStart;
-    int32_t il = (blob->regionTag) ? blob->il-1 : blob->il;
+    uint32_t il = (blob->regionTag) ? blob->il-1 : blob->il;
     entryInfo pe = (blob->regionTag) ? blob->pe+1 : blob->pe;
     /* Can't typecheck signature header tags, sigh */
     int typechk = (blob->regionTag == RPMTAG_HEADERIMMUTABLE ||
@@ -518,7 +518,7 @@ static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
  * @param fast		use offsets for data sizes if possible
  * @return		no. bytes of data in region, -1 on error
  */
-static int regionSwab(indexEntry entry, int il, int dl,
+static int regionSwab(indexEntry entry, uint32_t il, uint32_t dl,
 		entryInfo pe,
 		unsigned char * dataStart,
 		const unsigned char * dataEnd,
@@ -608,8 +608,8 @@ static void * doExport(const struct indexEntry_s *hindex, int indexUsed,
     char * dataStart;
     char * te;
     unsigned len, diff;
-    int32_t il = 0;
-    int32_t dl = 0;
+    uint32_t il = 0;
+    uint32_t dl = 0;
     indexEntry entry; 
     int i;
     int drlen, ndribbles;
@@ -1936,8 +1936,8 @@ rpmRC hdrblobRead(FD_t fd, int magic, int exact_size, rpmTagVal regionTag, hdrbl
     uint32_t block[4];
     uint32_t *bs = (magic != 0) ? &block[0] : &block[2];
     int blen = (magic != 0) ? sizeof(block) : sizeof(block) / 2;
-    int32_t il;
-    int32_t dl;
+    uint32_t il;
+    uint32_t dl;
     uint32_t * ei = NULL;
     size_t uc;
     size_t nb;
