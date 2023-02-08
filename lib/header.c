@@ -175,7 +175,7 @@ static inline void ei2h(const struct entryInfo_s *pe, struct entryInfo_s *info)
 }
 
 static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
-			 int onDisk, rpm_constdata_t pend);
+			 int onDisk, rpm_constdata_t pend, int *length);
 
 /* Check tag type matches our definition */
 static int hdrchkTagType(rpm_tag_t tag, rpm_tagtype_t type)
@@ -315,8 +315,10 @@ static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
 	    goto err;
 
 	/* Verify the data actually fits */
-	len = dataLength(info.type, ds + info.offset,
-			 info.count, 1, ds + blob->dl);
+	if (dataLength(info.type, ds + info.offset,
+			 info.count, 1, ds + blob->dl, &len)) {
+	    goto err;
+	}
 	end = info.offset + len;
 	if (hdrchkRange(blob->dl, end) || len <= 0)
 	    goto err;
@@ -458,10 +460,11 @@ static inline int strtaglen(const char *str, rpm_count_t c, const char *end)
  * @param count		entry item count
  * @param onDisk	data is concatenated strings (with NUL's))?
  * @param pend		pointer to end of data (or NULL)
- * @return		no. bytes in data, -1 on failure
+ * @retval len		data length
+ * @return		0 on success, -1 on failure
  */
 static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
-			 int onDisk, rpm_constdata_t pend)
+			 int onDisk, rpm_constdata_t pend, int *len)
 {
     const char * s = p;
     const char * se = pend;
@@ -499,7 +502,10 @@ static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
 	break;
     }
 
-    return length;
+    if (len)
+	*len = length;
+
+    return 0;
 }
 
 /** \ingroup header
@@ -550,8 +556,10 @@ static int regionSwab(indexEntry entry, uint32_t il, uint32_t dl,
 	if (fast && il > 1 && typeSizes[ie.info.type] == -1) {
 	    ie.length = ntohl(pe[1].offset) - ie.info.offset;
 	} else {
-	    ie.length = dataLength(ie.info.type, ie.data, ie.info.count,
-				   1, dataEnd);
+	    if (dataLength(ie.info.type, ie.data, ie.info.count,
+				   1, dataEnd, &ie.length)) {
+		return -1;
+	    }
 	}
 	if (ie.length < 0 || hdrchkData(ie.length))
 	    return -1;
@@ -1435,7 +1443,9 @@ grabData(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t c, int * lengthPtr)
     rpm_data_t data = NULL;
     int length;
 
-    length = dataLength(type, p, c, 0, NULL);
+    if (dataLength(type, p, c, 0, NULL, &length))
+	return NULL;
+
     if (length > 0) {
 	data = xmalloc(length);
 	copyData(type, data, p, c, length);
@@ -1504,8 +1514,7 @@ static int intAppendEntry(Header h, rpmtd td)
     if (!entry)
 	return 0;
 
-    length = dataLength(td->type, td->data, td->count, 0, NULL);
-    if (length < 0)
+    if (dataLength(td->type, td->data, td->count, 0, NULL, &length))
 	return 0;
 
     if (ENTRY_IN_REGION(entry)) {
@@ -2074,8 +2083,10 @@ rpmRC hdrblobGet(hdrblob blob, uint32_t tag, rpmtd td)
 
 	entry.info = einfo; /* struct assignment */
 	entry.data = blob->dataStart + einfo.offset;
-	entry.length = dataLength(einfo.type, blob->dataStart + einfo.offset,
-			 einfo.count, 1, blob->dataEnd);
+	if (dataLength(einfo.type, blob->dataStart + einfo.offset,
+			 einfo.count, 1, blob->dataEnd, &entry.length)) {
+	    return RPMRC_FAIL;
+	}
 	entry.rdlen = 0;
 	td->tag = einfo.tag;
 	rc = copyTdEntry(&entry, td, HEADERGET_MINMEM) ? RPMRC_OK : RPMRC_FAIL;
