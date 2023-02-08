@@ -47,19 +47,6 @@ static inline void ei2h(const struct entryInfo_s *pe, struct entryInfo_s *info)
     info->count = ntohl(pe->count);
 }
 
-static inline void ei2td(const struct entryInfo_s *info,
-		  unsigned char * dataStart, size_t len,
-		  struct rpmtd_s *td)
-{
-    td->tag = info->tag;
-    td->type = info->type;
-    td->count = info->count;
-    td->size = len;
-    td->data = dataStart + info->offset;
-    td->ix = -1;
-    td->flags = RPMTD_IMMUTABLE;
-}
-
 RPM_GNUC_INTERNAL
 hdrblob hdrblobCreate(void);
 
