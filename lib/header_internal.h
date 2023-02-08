@@ -29,8 +29,8 @@ struct hdrblob_s {
     uint8_t *dataEnd;
 
     rpmTagVal regionTag;
-    int32_t ril;
-    int32_t rdl;
+    uint32_t ril;
+    uint32_t rdl;
 };
 
 #ifdef __cplusplus

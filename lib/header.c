@@ -623,8 +623,8 @@ static void * doExport(const struct indexEntry_s *hindex, int indexUsed,
     drlen = ndribbles = 0;
     for (i = 0, entry = index; i < indexUsed; i++, entry++) {
 	if (ENTRY_IS_REGION(entry)) {
-	    int32_t rdl = -entry->info.offset;	/* negative offset */
-	    int32_t ril = rdl/sizeof(*pe);
+	    uint32_t rdl = -entry->info.offset;	/* negative offset */
+	    uint32_t ril = rdl/sizeof(*pe);
 	    int rid = entry->info.offset;
 
 	    il += ril;
@@ -695,8 +695,8 @@ static void * doExport(const struct indexEntry_s *hindex, int indexUsed,
 	pe->count = htonl(entry->info.count);
 
 	if (ENTRY_IS_REGION(entry)) {
-	    int32_t rdl = -entry->info.offset;	/* negative offset */
-	    int32_t ril = rdl/sizeof(*pe) + ndribbles;
+	    uint32_t rdl = -entry->info.offset;	/* negative offset */
+	    uint32_t ril = rdl/sizeof(*pe) + ndribbles;
 	    int rid = entry->info.offset;
 
 	    src = (char *)entry->data;
@@ -934,13 +934,16 @@ rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg)
 	h->indexUsed++;
     } else {
 	/* Either a v4 header or an "upgraded" v3 header with a legacy region */
-	int32_t ril;
+	uint32_t ril, offset;
 
 	h->flags &= ~HEADERFLAG_LEGACY;
 	ei2h(blob->pe, &entry->info);
 	ril = (entry->info.offset != 0) ? blob->ril : blob->il;
 
-	entry->info.offset = -(ril * sizeof(*blob->pe)); /* negative offset */
+	offset = ril * sizeof(*blob->pe);
+	if (offset >= INT32_MAX)
+	    goto errxit;
+	entry->info.offset = -offset; /* negative offset */
 	entry->data = blob->pe;
 	entry->length = blob->pvlen - sizeof(blob->il) - sizeof(blob->dl);
 	rdlen = regionSwab(entry+1, ril-1, 0, blob->pe+1,
@@ -1117,8 +1120,8 @@ static int copyTdEntry(const indexEntry entry, rpmtd td, headerGetFlags flags)
 	    uint32_t * ei = ((uint32_t *)entry->data) - 2;
 	    entryInfo pe = (entryInfo) (ei + 2);
 	    unsigned char * dataStart = (unsigned char *) (pe + ntohl(ei[0]));
-	    int32_t rdl = -entry->info.offset;	/* negative offset */
-	    int32_t ril = rdl/sizeof(*pe);
+	    uint32_t rdl = -entry->info.offset;	/* negative offset */
+	    uint32_t ril = rdl/sizeof(*pe);
 
 	    rdl = entry->rdlen;
 	    count = 2 * sizeof(*ei) + (ril * sizeof(*pe)) + rdl;
