@@ -239,7 +239,7 @@ Header headerFree(Header h)
 	for (i = 0; i < h->indexUsed; i++, entry++) {
 	    if ((h->flags & HEADERFLAG_ALLOCATED) && ENTRY_IS_REGION(entry)) {
 		if (entry->length > 0) {
-		    int32_t * ei = entry->data;
+		    uint32_t * ei = entry->data;
 		    if ((ei - 2) == h->blob) h->blob = _free(h->blob);
 		    entry->data = NULL;
 		}
@@ -603,7 +603,7 @@ static int regionSwab(indexEntry entry, int il, int dl,
 static void * doExport(const struct indexEntry_s *hindex, int indexUsed,
 			headerFlags flags, unsigned int *bsize)
 {
-    int32_t * ei = NULL;
+    uint32_t * ei = NULL;
     entryInfo pe;
     char * dataStart;
     char * te;
@@ -1114,7 +1114,7 @@ static int copyTdEntry(const indexEntry entry, rpmtd td, headerGetFlags flags)
 	 * XXX a legacy header freshly read, but not yet unloaded to the rpmdb).
 	 */
 	if (ENTRY_IS_REGION(entry)) {
-	    int32_t * ei = ((int32_t *)entry->data) - 2;
+	    uint32_t * ei = ((uint32_t *)entry->data) - 2;
 	    entryInfo pe = (entryInfo) (ei + 2);
 	    unsigned char * dataStart = (unsigned char *) (pe + ntohl(ei[0]));
 	    int32_t rdl = -entry->info.offset;	/* negative offset */
@@ -1131,7 +1131,7 @@ static int copyTdEntry(const indexEntry entry, rpmtd td, headerGetFlags flags)
 	    }
 
 	    td->data = xmalloc(count);
-	    ei = (int32_t *) td->data;
+	    ei = (uint32_t *) td->data;
 	    ei[0] = htonl(ril);
 	    ei[1] = htonl(rdl);
 
@@ -1933,12 +1933,12 @@ static rpmRC hdrblobVerifyLengths(rpmTagVal regionTag, uint32_t il, uint32_t dl,
 
 rpmRC hdrblobRead(FD_t fd, int magic, int exact_size, rpmTagVal regionTag, hdrblob blob, char **emsg)
 {
-    int32_t block[4];
-    int32_t *bs = (magic != 0) ? &block[0] : &block[2];
+    uint32_t block[4];
+    uint32_t *bs = (magic != 0) ? &block[0] : &block[2];
     int blen = (magic != 0) ? sizeof(block) : sizeof(block) / 2;
     int32_t il;
     int32_t dl;
-    int32_t * ei = NULL;
+    uint32_t * ei = NULL;
     size_t uc;
     size_t nb;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
@@ -2007,9 +2007,9 @@ rpmRC hdrblobInit(const void *uh, size_t uc,
 	goto exit;
     }
 
-    blob->ei = (int32_t *) uh; /* discards const */
-    blob->il = ntohl((uint32_t)(blob->ei[0]));
-    blob->dl = ntohl((uint32_t)(blob->ei[1]));
+    blob->ei = (uint32_t *) uh; /* discards const */
+    blob->il = ntohl(blob->ei[0]);
+    blob->dl = ntohl(blob->ei[1]);
     if (hdrblobVerifyLengths(regionTag, blob->il, blob->dl, emsg) != RPMRC_OK)
 	goto exit;
 
