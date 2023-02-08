@@ -516,13 +516,14 @@ static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
  * @param dataEnd	header data end
  * @param regionid	region offset
  * @param fast		use offsets for data sizes if possible
- * @return		no. bytes of data in region, -1 on error
+ * @retval nbytes	no. bytes of data in region
+ * @return		0 on success, -1 on error
  */
 static int regionSwab(indexEntry entry, uint32_t il, uint32_t dl,
 		entryInfo pe,
 		unsigned char * dataStart,
 		const unsigned char * dataEnd,
-		int regionid, int fast)
+		int regionid, int fast, int *nbytes)
 {
     if ((entry != NULL && regionid >= 0) || (entry == NULL && regionid != 0))
 	return -1;
@@ -597,7 +598,9 @@ static int regionSwab(indexEntry entry, uint32_t il, uint32_t dl,
 	dl += ie.length;
     }
 
-    return dl;
+    if (nbytes)
+	*nbytes = dl;
+    return 0;
 }
 
 static void * doExport(const struct indexEntry_s *hindex, int indexUsed,
@@ -720,7 +723,8 @@ static void * doExport(const struct indexEntry_s *hindex, int indexUsed,
 		ril++;
 		rdlen += entry->info.count;
 
-		count = regionSwab(NULL, ril, 0, pe, t, NULL, 0, 0);
+		if (regionSwab(NULL, ril, 0, pe, t, NULL, 0, 0, &count))
+		    goto errxit;
 		if (count != rdlen)
 		    goto errxit;
 
@@ -736,7 +740,8 @@ static void * doExport(const struct indexEntry_s *hindex, int indexUsed,
 		}
 		te += entry->info.count + drlen;
 
-		count = regionSwab(NULL, ril, 0, pe, t, NULL, 0, 0);
+		if (regionSwab(NULL, ril, 0, pe, t, NULL, 0, 0, &count))
+		    goto errxit;
 		if (count != (rdlen + entry->info.count + drlen))
 		    goto errxit;
 	    }
@@ -925,9 +930,11 @@ rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg)
 
 	entry->data = blob->pe;
 	entry->length = blob->pvlen - sizeof(blob->il) - sizeof(blob->dl);
-	rdlen = regionSwab(entry+1, blob->il, 0, blob->pe,
+	if (regionSwab(entry+1, blob->il, 0, blob->pe,
 			   blob->dataStart, blob->dataEnd,
-			   entry->info.offset, fast);
+			   entry->info.offset, fast, &rdlen)) {
+	    goto errxit;
+	}
 	if (rdlen != blob->dl)
 	    goto errxit;
 	entry->rdlen = rdlen;
@@ -946,11 +953,11 @@ rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg)
 	entry->info.offset = -offset; /* negative offset */
 	entry->data = blob->pe;
 	entry->length = blob->pvlen - sizeof(blob->il) - sizeof(blob->dl);
-	rdlen = regionSwab(entry+1, ril-1, 0, blob->pe+1,
+	if (regionSwab(entry+1, ril-1, 0, blob->pe+1,
 			   blob->dataStart, blob->dataEnd,
-			   entry->info.offset, fast);
-	if (rdlen < 0)
+			   entry->info.offset, fast, &rdlen)) {
 	    goto errxit;
+	}
 	entry->rdlen = rdlen;
 
 	if (ril < h->indexUsed) {
@@ -959,10 +966,10 @@ rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg)
 	    int rid = entry->info.offset+1;
 
 	    /* Load dribble entries from region. */
-	    rdlen = regionSwab(newEntry, ne, rdlen, blob->pe+ril,
-				blob->dataStart, blob->dataEnd, rid, fast);
-	    if (rdlen < 0)
+	    if (regionSwab(newEntry, ne, rdlen, blob->pe+ril,
+			blob->dataStart, blob->dataEnd, rid, fast, &rdlen)) {
 		goto errxit;
+	    }
 
 	  { indexEntry firstEntry = newEntry;
 	    int save = h->indexUsed;
@@ -1142,7 +1149,8 @@ static int copyTdEntry(const indexEntry entry, rpmtd td, headerGetFlags flags)
 
 	    dataStart = (unsigned char *) memcpy(pe + ril, dataStart, rdl);
 
-	    rc = regionSwab(NULL, ril, 0, pe, dataStart, dataStart + rdl, 0, 0);
+	    rc = regionSwab(NULL, ril, 0, pe, dataStart, dataStart + rdl,
+			    0, 0, NULL);
 	    /* don't return data on failure */
 	    if (rc < 0) {
 		td->data = _free(td->data);
