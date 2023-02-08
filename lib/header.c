@@ -84,8 +84,8 @@ typedef struct indexEntry_s * indexEntry;
 struct indexEntry_s {
     struct entryInfo_s info;	/*!< Description of tag data. */
     rpm_data_t data; 		/*!< Location of tag data. */
-    int length;			/*!< No. bytes of data. */
-    int rdlen;			/*!< No. bytes of data in region. */
+    uint32_t length;		/*!< No. bytes of data. */
+    uint32_t rdlen;		/*!< No. bytes of data in region. */
 };
 
 /** \ingroup header
@@ -175,7 +175,7 @@ static inline void ei2h(const struct entryInfo_s *pe, struct entryInfo_s *info)
 }
 
 static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
-			 int onDisk, rpm_constdata_t pend, int *length);
+			 int onDisk, rpm_constdata_t pend, uint32_t *length);
 
 /* Check tag type matches our definition */
 static int hdrchkTagType(rpm_tag_t tag, rpm_tagtype_t type)
@@ -283,8 +283,8 @@ Header headerNew(void)
 static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
 {
     struct entryInfo_s info;
-    int i, len = 0;
-    int32_t end = 0;
+    uint32_t i, len = 0;
+    uint32_t end = 0;
     const char *ds = (const char *) blob->dataStart;
     uint32_t il = (blob->regionTag) ? blob->il-1 : blob->il;
     entryInfo pe = (blob->regionTag) ? blob->pe+1 : blob->pe;
@@ -428,7 +428,7 @@ unsigned headerSizeof(Header h, int magicp)
  * Length is returned via *lenp, return zero on success, -1 on error.
  */
 static inline int strtaglen(const char *str, rpm_count_t c, const char *end,
-			    int *lenp)
+			    uint32_t *lenp)
 {
     const char *start = str;
     const char *s = NULL;
@@ -468,11 +468,11 @@ static inline int strtaglen(const char *str, rpm_count_t c, const char *end,
  * @return		0 on success, -1 on failure
  */
 static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
-			 int onDisk, rpm_constdata_t pend, int *len)
+			 int onDisk, rpm_constdata_t pend, uint32_t *len)
 {
     const char * s = p;
     const char * se = pend;
-    int length = 0;
+    uint32_t length = 0;
 
     switch (type) {
     case RPM_STRING_TYPE:
@@ -1444,10 +1444,10 @@ static void copyData(rpm_tagtype_t type, rpm_data_t dstPtr,
  * @return 		(malloc'ed) copy of entry data, NULL on error
  */
 static void *
-grabData(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t c, int * lengthPtr)
+grabData(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t c, uint32_t * lengthPtr)
 {
     rpm_data_t data = NULL;
-    int length;
+    uint32_t length;
 
     if (dataLength(type, p, c, 0, NULL, &length))
 	return NULL;
@@ -1466,7 +1466,7 @@ static int intAddEntry(Header h, rpmtd td)
 {
     indexEntry entry;
     rpm_data_t data;
-    int length = 0;
+    uint32_t length = 0;
 
     /* Count must always be >= 1 for headerAddEntry. */
     if (td->count <= 0)
@@ -1508,7 +1508,7 @@ static int intAddEntry(Header h, rpmtd td)
 static int intAppendEntry(Header h, rpmtd td)
 {
     indexEntry entry;
-    int length;
+    uint32_t length;
 
     if (td->type == RPM_STRING_TYPE || td->type == RPM_I18NSTRING_TYPE) {
 	/* we can't do this */
@@ -1561,7 +1561,7 @@ int headerAddI18NString(Header h, rpmTagVal tag, const char * string,
 {
     indexEntry table, entry;
     const char ** strArray;
-    int length;
+    uint32_t length;
     int ghosts;
     rpm_count_t i, langNum;
     char * buf;
@@ -1699,7 +1699,7 @@ int headerMod(Header h, rpmtd td)
     indexEntry entry;
     rpm_data_t oldData;
     rpm_data_t data;
-    int length = 0;
+    uint32_t length = 0;
 
     /* First find the tag */
     entry = findEntry(h, td->tag, td->type);
