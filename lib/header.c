@@ -396,7 +396,7 @@ unsigned headerSizeof(Header h, int magicp)
     if (magicp == HEADER_MAGIC_YES)
 	size += sizeof(rpm_header_magic);
 
-    size += 2 * sizeof(int32_t);	/* count of index entries */
+    size += 2 * sizeof(uint32_t);	/* count of index entries */
 
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
 	/* Regions go in as is ... */
@@ -503,7 +503,7 @@ static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
 }
 
 /** \ingroup header
- * Swap int32_t and int16_t arrays within header region.
+ * Swap uint32_t and uint16_t arrays within header region.
  *
  * If a header region tag is in the set to be swabbed, as the data for a
  * a header region is located after all other tag data.
