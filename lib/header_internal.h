@@ -6,7 +6,6 @@
  */
 
 #include <rpm/header.h>
-#include <netinet/in.h>
 
 /** \ingroup header
  * Description of tag data.
@@ -37,15 +36,6 @@ struct hdrblob_s {
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* convert entry info to host endianess */
-static inline void ei2h(const struct entryInfo_s *pe, struct entryInfo_s *info)
-{
-    info->tag = ntohl(pe->tag);
-    info->type = ntohl(pe->type);
-    info->offset = ntohl(pe->offset);
-    info->count = ntohl(pe->count);
-}
 
 RPM_GNUC_INTERNAL
 hdrblob hdrblobCreate(void);

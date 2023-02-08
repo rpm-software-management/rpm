@@ -165,6 +165,15 @@ static const size_t headerMaxbytes = (256*1024*1024);
  */
 #define hdrchkRange(_dl, _off)		((_off) < 0 || (_off) > (_dl))
 
+/* convert entry info to host endianess */
+static inline void ei2h(const struct entryInfo_s *pe, struct entryInfo_s *info)
+{
+    info->tag = ntohl(pe->tag);
+    info->type = ntohl(pe->type);
+    info->offset = ntohl(pe->offset);
+    info->count = ntohl(pe->count);
+}
+
 static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
 			 int onDisk, rpm_constdata_t pend);
 
