@@ -21,10 +21,10 @@ struct entryInfo_s {
 typedef struct hdrblob_s * hdrblob;
 struct hdrblob_s {
     uint32_t *ei;
-    int32_t il;
-    int32_t dl;
+    uint32_t il;
+    uint32_t dl;
     entryInfo pe;
-    int32_t pvlen;
+    uint32_t pvlen;
     uint8_t *dataStart;
     uint8_t *dataEnd;
 

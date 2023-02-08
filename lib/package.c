@@ -183,7 +183,7 @@ static void appendhdrmsg(struct rpmsinfo_s *sinfo, struct pkgdata_s *pkgdata,
 
 static void updateHdrDigests(rpmDigestBundle bundle, struct hdrblob_s *blob)
 {
-    int32_t ildl[2] = { htonl(blob->ril), htonl(blob->rdl) };
+    uint32_t ildl[2] = { htonl(blob->ril), htonl(blob->rdl) };
 
     rpmDigestBundleUpdate(bundle, rpm_header_magic, sizeof(rpm_header_magic));
     rpmDigestBundleUpdate(bundle, ildl, sizeof(ildl));
