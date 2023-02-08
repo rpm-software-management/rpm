@@ -425,13 +425,14 @@ unsigned headerSizeof(Header h, int magicp)
 
 /*
  * Header string (array) size calculation, bounded if end is non-NULL.
- * Return length (including \0 termination) on success, -1 on error.
+ * Length is returned via *lenp, return zero on success, -1 on error.
  */
-static inline int strtaglen(const char *str, rpm_count_t c, const char *end)
+static inline int strtaglen(const char *str, rpm_count_t c, const char *end,
+			    int *lenp)
 {
     const char *start = str;
     const char *s = NULL;
-    int len = -1; /* assume failure */
+    int rc = -1; /* assume failure */
 
     if (end) {
 	while (end > start && (s = memchr(start, '\0', end-start))) {
@@ -447,10 +448,13 @@ static inline int strtaglen(const char *str, rpm_count_t c, const char *end)
 	}
     }
 
-    if (s != NULL && c == 0)
-	len = s - str + 1;
+    if (s != NULL && c == 0) {
+	if (lenp)
+	    *lenp = s - str + 1;
+	rc = 0;
+    }
 
-    return len;
+    return rc;
 }
 
 /**
@@ -474,7 +478,8 @@ static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
     case RPM_STRING_TYPE:
 	if (count != 1)
 	    return -1;
-	length = strtaglen(s, 1, se);
+	if (strtaglen(s, 1, se, &length))
+	    return -1;
 	break;
 
     case RPM_STRING_ARRAY_TYPE:
@@ -483,7 +488,8 @@ static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
 	/* Compute sum of length of all strings, including nul terminators */
 
 	if (onDisk) {
-	    length = strtaglen(s, count, se);
+	    if (strtaglen(s, count, se, &length))
+		return -1;
 	} else {
 	    const char ** av = (const char **)p;
 	    while (count--) {
