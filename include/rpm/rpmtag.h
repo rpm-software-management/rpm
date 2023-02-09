@@ -528,7 +528,7 @@ rpmTagClass rpmTagGetClass(rpmTagVal tag);
 /** \ingroup rpmtag
  * Return tag value from name.
  * @param tagstr	name of tag
- * @return		tag value, -1 on not found
+ * @return		tag value, RPMTAG_NOT_FOUND on not found
  */
 rpmTagVal rpmTagGetValue(const char * tagstr);
 
