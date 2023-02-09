@@ -2858,7 +2858,7 @@ exit:
     return rc;
 }
 
-static rpmTag copyTagsFromMainDebug[] = {
+static rpmTagVal copyTagsFromMainDebug[] = {
     RPMTAG_ARCH,
     RPMTAG_SUMMARY,
     RPMTAG_DESCRIPTION,
