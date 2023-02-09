@@ -396,7 +396,7 @@ typedef enum rpmTag_e {
  * Rpm database index tags.
  */
 typedef enum rpmDbiTag_e {
-    RPMDBI_PACKAGES		= 0,	/* Installed package headers. */
+    RPMDBI_PACKAGES		= 1,	/* Installed package headers. */
     RPMDBI_LABEL		= 2,	/* NEVRA label pseudo index */
     RPMDBI_NAME			= RPMTAG_NAME,
     RPMDBI_BASENAMES		= RPMTAG_BASENAMES,
