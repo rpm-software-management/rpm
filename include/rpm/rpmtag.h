@@ -389,7 +389,7 @@ typedef enum rpmTag_e {
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;
 
-#define RPMTAG_NOT_FOUND		-1
+#define RPMTAG_NOT_FOUND		((uint32_t)-1)
 #define	RPMTAG_EXTERNAL_TAG		1000000
 
 /** \ingroup rpmtag
