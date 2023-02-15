@@ -649,7 +649,7 @@ static void * doExport(const struct indexEntry_s *hindex, int indexUsed,
     uint32_t dl = 0;
     indexEntry entry; 
     int i;
-    int drlen, ndribbles;
+    uint32_t drlen, ndribbles;
     size_t ilen = indexUsed * sizeof(struct indexEntry_s);
     indexEntry index = memcpy(xmalloc(ilen), hindex, ilen);
 
@@ -1431,7 +1431,7 @@ int headerGet(Header h, rpmTagVal tag, rpmtd td, headerGetFlags flags)
 /**
  */
 static void copyData(rpm_tagtype_t type, rpm_data_t dstPtr, 
-		rpm_constdata_t srcPtr, rpm_count_t cnt, int dataLength)
+		rpm_constdata_t srcPtr, rpm_count_t cnt, uint32_t dataLength)
 {
     switch (type) {
     case RPM_STRING_ARRAY_TYPE:
@@ -1981,7 +1981,7 @@ rpmRC hdrblobRead(FD_t fd, int magic, int exact_size, rpmTagVal regionTag, hdrbl
 {
     uint32_t block[4];
     uint32_t *bs = (magic != 0) ? &block[0] : &block[2];
-    int blen = (magic != 0) ? sizeof(block) : sizeof(block) / 2;
+    uint32_t blen = (magic != 0) ? sizeof(block) : sizeof(block) / 2;
     uint32_t il;
     uint32_t dl;
     uint32_t * ei = NULL;
