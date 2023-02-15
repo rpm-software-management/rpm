@@ -384,7 +384,7 @@ static int offsetCmp(const void * avp, const void * bvp)
 
     if (rc == 0) {
 	/* Within a region, entries sort by address. Added drips sort by tag. */
-	if (ap->info.offset < 0)
+	if (ENTRY_IN_REGION(ap))
 	    rc = (((char *)ap->data) - ((char *)bp->data));
 	else
 	    rc = (ap->info.tag - bp->info.tag);
@@ -431,7 +431,7 @@ unsigned headerSizeof(Header h, int magicp)
         }
 
 	/* ... and region elements are skipped. */
-	if (entry->info.offset < 0)
+	if (ENTRY_IN_REGION(entry))
 	    continue;
 
 	/* Alignment */
