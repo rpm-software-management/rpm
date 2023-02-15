@@ -8,17 +8,7 @@
 #include <rpm/header.h>
 #include <rpm/rpmcrypto.h>
 
-/** \ingroup header
- * Description of tag data.
- */
 typedef struct entryInfo_s * entryInfo;
-struct entryInfo_s {
-    rpm_tag_t tag;		/*!< Tag identifier. */
-    rpm_tagtype_t type;		/*!< Tag data type. */
-    int32_t offset;		/*!< Offset into data segment (ondisk only). */
-    rpm_count_t count;		/*!< Number of tag elements. */
-};
-
 typedef struct hdrblob_s * hdrblob;
 struct hdrblob_s {
     uint32_t *ei;
