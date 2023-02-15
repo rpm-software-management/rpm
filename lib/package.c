@@ -181,16 +181,6 @@ static void appendhdrmsg(struct rpmsinfo_s *sinfo, struct pkgdata_s *pkgdata,
     pkgdata->msg = rstrscat(&pkgdata->msg, "\n", msg, NULL);
 }
 
-static void updateHdrDigests(rpmDigestBundle bundle, struct hdrblob_s *blob)
-{
-    uint32_t ildl[2] = { htonl(blob->ril), htonl(blob->rdl) };
-
-    rpmDigestBundleUpdate(bundle, rpm_header_magic, sizeof(rpm_header_magic));
-    rpmDigestBundleUpdate(bundle, ildl, sizeof(ildl));
-    rpmDigestBundleUpdate(bundle, blob->pe, (blob->ril * sizeof(*blob->pe)));
-    rpmDigestBundleUpdate(bundle, blob->dataStart, blob->rdl);
-}
-
 rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 {
     rpmRC rc = RPMRC_FAIL;
@@ -212,7 +202,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 
 	rpmvsInit(vs, &blob, bundle);
 	rpmvsInitRange(vs, RPMSIG_HEADER);
-	updateHdrDigests(bundle, &blob);
+	hdrblobDigestUpdate(bundle, &blob);
 	rpmvsFiniRange(vs, RPMSIG_HEADER);
 
 	rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, handleHdrVS, &pkgdata);

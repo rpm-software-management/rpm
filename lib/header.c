@@ -177,6 +177,16 @@ static inline void ei2h(const struct entryInfo_s *pe, struct entryInfo_s *info)
 static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
 			 int onDisk, rpm_constdata_t pend, uint32_t *length);
 
+void hdrblobDigestUpdate(rpmDigestBundle bundle, struct hdrblob_s *blob)
+{
+    uint32_t ildl[2] = { htonl(blob->ril), htonl(blob->rdl) };
+
+    rpmDigestBundleUpdate(bundle, rpm_header_magic, sizeof(rpm_header_magic));
+    rpmDigestBundleUpdate(bundle, ildl, sizeof(ildl));
+    rpmDigestBundleUpdate(bundle, blob->pe, (blob->ril * sizeof(*blob->pe)));
+    rpmDigestBundleUpdate(bundle, blob->dataStart, blob->rdl);
+}
+
 /* Check tag type matches our definition */
 static int hdrchkTagType(rpm_tag_t tag, rpm_tagtype_t type)
 {

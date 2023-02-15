@@ -6,6 +6,7 @@
  */
 
 #include <rpm/header.h>
+#include <rpm/rpmcrypto.h>
 
 /** \ingroup header
  * Description of tag data.
@@ -56,6 +57,9 @@ rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg);
 
 RPM_GNUC_INTERNAL
 rpmRC hdrblobGet(hdrblob blob, uint32_t tag, rpmtd td);
+
+RPM_GNUC_INTERNAL
+void hdrblobDigestUpdate(rpmDigestBundle bundle, struct hdrblob_s *blob);
 
 /** \ingroup header
  * Set header instance (rpmdb record number)
