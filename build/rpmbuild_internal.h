@@ -379,7 +379,7 @@ RPM_GNUC_INTERNAL
 int parseScript(rpmSpec spec, int parsePart);
 
 RPM_GNUC_INTERNAL
-int parseList(rpmSpec spec, const char *name, int stype);
+int parseList(rpmSpec spec, const char *name, rpmTagVal stype);
 
 /** \ingroup rpmbuild
  * Check for inappropriate characters. All alphanums are considered sane.
