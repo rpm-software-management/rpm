@@ -316,6 +316,7 @@ static int getOutputFrom(ARGV_t argv,
 	rpmlog(RPMLOG_DEBUG, "\texecv(%s) pid %d\n",
                         argv[0], (unsigned)getpid());
 
+	unsetenv("DEBUGINFOD_URLS");
 	if (buildRoot)
 	    setenv("RPM_BUILD_ROOT", buildRoot, 1);
 
