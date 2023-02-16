@@ -740,6 +740,7 @@ package or when debugging this package.\
   LANG=C\
   export LANG\
   unset CDPATH DISPLAY ||:\
+  unset DEBUGINFOD_URLS ||:\
   %{?buildroot:RPM_BUILD_ROOT=\"%{buildroot}\"\
   export RPM_BUILD_ROOT}\
   %{?_javaclasspath:CLASSPATH=\"%{_javaclasspath}\"\
