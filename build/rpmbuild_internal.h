@@ -151,6 +151,8 @@ struct rpmSpec_s {
     StringBuf parsed;		/*!< parsed spec contents */
 
     Package packages;		/*!< Package list. */
+
+    int numConverted;		/*!< no. of automatic %patchN conversions */
 };
 
 #define PACKAGE_NUM_DEPS 12
