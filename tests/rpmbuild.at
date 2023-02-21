@@ -354,12 +354,11 @@ AT_SETUP([rpmbuild with deprecated patch])
 AT_KEYWORDS([build])
 RPMDB_INIT
 AT_CHECK([
-runroot rpmbuild -bp --quiet /data/SPECS/hello2-suid.spec
+runroot rpmbuild -bp --quiet /data/SPECS/hello-patch.spec
 ],
 [0],
 [ignore],
-[warning: %patchN is deprecated, use %patch N (or %patch -P N):
-%patch0 -p1 -b .modernize
+[warning: %patchN is deprecated (2 usages found), use %patch N (or %patch -P N)
 ])
 AT_CLEANUP
 
