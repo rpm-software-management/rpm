@@ -781,6 +781,25 @@ POST-DELSIGN
 ],
 [])
 
+# test --delsign restores the old package bit-per-bit
+AT_CHECK([
+RPMDB_INIT
+
+ORIG="${RPMTEST}/data/RPMS/hello-2.0-1.x86_64.rpm"
+NEW="${RPMTEST}/tmp/hello-2.0-1.x86_64.rpm"
+
+cp ${ORIG} "${RPMTEST}"/tmp/
+run rpmsign --key-id 1964C5FC --addsign ${NEW} > /dev/null
+cmp -s ${ORIG} ${NEW}; echo $?
+run rpmsign --delsign ${NEW} > /dev/null
+cmp -s ${ORIG} ${NEW}; echo $?
+],
+[ignore],
+[1
+0
+],
+[])
+
 # rpmsign --addsign <signed>
 AT_CHECK([
 RPMDB_INIT
