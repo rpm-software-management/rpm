@@ -639,14 +639,20 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	res = -1;
     }
 
-    /* Try to make new signature smaller to have size of original signature */
+    /* Adjust reserved size for added/removed signatures */
     if (headerGet(sigh, RPMSIGTAG_RESERVEDSPACE, &utd, HEADERGET_MINMEM)) {
 	int diff = headerSizeof(sigh, HEADER_MAGIC_YES) - origSigSize;
 
-	if (diff > 0 && diff < utd.count) {
+	/* diff can be zero if nothing was added or removed */
+	if (diff) {
 	    utd.count -= diff;
-	    headerMod(sigh, &utd);
-	    insSig = 1;
+	    if (utd.count > 0 && utd.count < origSigSize) {
+		char *zeros = xcalloc(utd.count, sizeof(*zeros));
+		utd.data = zeros;
+		headerMod(sigh, &utd);
+		insSig = 1;
+		free(zeros);
+	    }
 	}
     }
 
