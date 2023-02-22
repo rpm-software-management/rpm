@@ -661,14 +661,14 @@ static int rpmSign(const char *rpm, int deleting, int flags)
     if (sigh == NULL)	/* XXX can't happen */
 	goto exit;
 
+    if (Fseek(fd, insSig ? sigStart : 0, SEEK_SET) < 0) {
+	rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
+		rpm, Fstrerror(fd));
+	goto exit;
+    }
+
     if (insSig) {
 	/* Insert new signature into original rpm */
-	if (Fseek(fd, sigStart, SEEK_SET) < 0) {
-	    rpmlog(RPMLOG_ERR, _("Could not seek in file %s: %s\n"),
-		    rpm, Fstrerror(fd));
-	    goto exit;
-	}
-
 	if (rpmWriteSignature(fd, sigh)) {
 	    rpmlog(RPMLOG_ERR, _("%s: rpmWriteSignature failed: %s\n"), rpm,
 		Fstrerror(fd));
@@ -676,6 +676,7 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	}
 	res = 0;
     } else {
+	char lbuf[RPMLEAD_SIZE];
 	/* Replace orignal rpm with new rpm containing new signature */
 	rasprintf(&trpm, "%s.XXXXXX", rpm);
 	ofd = rpmMkTemp(trpm);
@@ -684,11 +685,12 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	    goto exit;
 	}
 
-	/* Write the lead/signature of the output rpm */
-	rc = rpmLeadWrite(ofd, h);
-	if (rc != RPMRC_OK) {
-	    rpmlog(RPMLOG_ERR, _("%s: writeLead failed: %s\n"), trpm,
-		Fstrerror(ofd));
+	/* Copy lead from original */
+	if (!(Fread(lbuf, 1, RPMLEAD_SIZE, fd) == RPMLEAD_SIZE &&
+	      Fwrite(lbuf, 1, RPMLEAD_SIZE, ofd) == RPMLEAD_SIZE))
+	{
+	    rpmlog(RPMLOG_ERR, _("%s: failed to copy rpm lead: %s\n"),
+				trpm, Fstrerror(ofd));
 	    goto exit;
 	}
 
