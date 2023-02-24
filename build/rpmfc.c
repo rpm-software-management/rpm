@@ -402,7 +402,21 @@ static int getOutputFrom(ARGV_t argv,
 
 reap:
     /* Collect status from prog */
-    reaped = waitpid(child, &status, 0);
+
+    do {
+	reaped = waitpid(child, &status, 0);
+    } while (reaped == -1 && errno == EINTR);
+
+    /*
+     * It's not allowed to call WIFEXITED or WEXITSTATUS if waitpid return -1.
+     * Note, all bits set, since -1 == 0xFFFFFFFF
+     */
+    if (reaped == -1) {
+	rpmlog(RPMLOG_DEBUG, _("Failed to wait for exit status of %s: %s\n"),
+		argv[0], strerror(errno));
+	goto exit;
+    }
+
     rpmlog(RPMLOG_DEBUG, "\twaitpid(%d) rc %d status %x\n",
         (unsigned)child, (unsigned)reaped, status);
 

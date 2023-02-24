@@ -273,8 +273,16 @@ exit:
     if (pipefd[1])
 	close(pipefd[1]);
 
-    (void) waitpid(pid, &status, 0);
-    pid = 0;
+    pid_t reaped;
+    do {
+        reaped = waitpid(pid, &status, 0);
+    } while (reaped == -1 && errno == EINTR);
+
+    if (reaped == -1) {
+	rpmlog(RPMLOG_ERR, _("gpg waitpid failed (%s)\n"), strerror(errno));
+	return rc;
+    }
+
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmlog(RPMLOG_ERR, _("gpg exec failed (%d)\n"), WEXITSTATUS(status));
     } else {
