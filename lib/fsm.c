@@ -50,16 +50,6 @@ enum filestage_e {
     FILE_POST   = 4,
 };
 
-struct filedata_s {
-    int stage;
-    int setmeta;
-    int skip;
-    rpmFileAction action;
-    const char *suffix;
-    char *fpath;
-    struct stat sb;
-};
-
 /* 
  * XXX Forward declarations for previously exported functions to avoid moving 
  * things around needlessly 
@@ -847,11 +837,11 @@ static int onChdir(rpmfi fi, void *data)
     return 0;
 }
 
-static rpmfi fsmIter(FD_t payload, rpmfiles files, rpmFileIter iter, void *data)
+static rpmfi fsmIter(rpmte te, FD_t payload, rpmfiles files, rpmFileIter iter, void *data)
 {
     rpmfi fi;
     if (payload)
-	fi = rpmfiNewArchiveReader(payload, files, RPMFI_ITER_READ_ARCHIVE);
+	fi = rpmteArchiveReader(te)(payload, files, RPMFI_ITER_READ_ARCHIVE, rpmteContentHandlerPlugin(te));
     else
 	fi = rpmfilesIter(files, iter);
     if (fi && data)
@@ -864,6 +854,50 @@ static rpmfi fsmIterFini(rpmfi fi, struct diriter_s *di)
     fsmClose(&(di->dirfd));
     fsmClose(&(di->firstdir));
     return rpmfiFree(fi);
+}
+
+rpmfi fsmArchiveReader(FD_t fd, rpmfiles files, int itype, rpmPlugin plugin) {
+    return rpmfiNewArchiveReader(fd, files, itype);
+}
+
+int fsmFileInstall(rpmte te, rpmfi fi, filedata fp, rpmfiles files, rpmpsm psm, int nodigest, filedata *firstlink, int *firstlinkfile, diriter di, int *fdp, int rc, rpmPlugin plugin)
+{
+    if (S_ISREG(fp->sb.st_mode)) {
+        if (rc == RPMERR_ENOENT) {
+            rc = fsmMkfile(di->dirfd, fi, fp, files, psm, nodigest,
+        		   firstlink, firstlinkfile, &di->firstdir,
+        		   fdp);
+        }
+    } else if (S_ISDIR(fp->sb.st_mode)) {
+        if (rc == RPMERR_ENOENT) {
+            mode_t mode = fp->sb.st_mode;
+            mode &= ~07777;
+            mode |=  00700;
+            rc = fsmMkdir(di->dirfd, fp->fpath, mode);
+        }
+    } else if (S_ISLNK(fp->sb.st_mode)) {
+        if (rc == RPMERR_ENOENT) {
+            rc = fsmSymlink(rpmfiFLink(fi), di->dirfd, fp->fpath);
+        }
+    } else if (S_ISFIFO(fp->sb.st_mode)) {
+        /* This mimics cpio S_ISSOCK() behavior but probably isn't right */
+        if (rc == RPMERR_ENOENT) {
+            rc = fsmMkfifo(di->dirfd, fp->fpath, 0000);
+        }
+    } else if (S_ISCHR(fp->sb.st_mode) ||
+               S_ISBLK(fp->sb.st_mode) ||
+               S_ISSOCK(fp->sb.st_mode))
+    {
+        if (rc == RPMERR_ENOENT) {
+            rc = fsmMknod(di->dirfd, fp->fpath, fp->sb.st_mode, fp->sb.st_rdev);
+        }
+    } else {
+        /* XXX Special case /dev/log, which shouldn't be packaged anyways */
+        if (!IS_DEV_LOG(fp->fpath))
+            rc = RPMERR_UNKNOWN_FILETYPE;
+    }
+
+    return rc;
 }
 
 int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
@@ -917,7 +951,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     if (rc)
 	goto exit;
 
-    fi = fsmIter(payload, files,
+    fi = fsmIter(te, payload, files,
 		 payload ? RPMFI_ITER_READ_ARCHIVE : RPMFI_ITER_FWD, &di);
 
     if (fi == NULL) {
@@ -979,40 +1013,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	    if (fp->action == FA_TOUCH)
 		goto setmeta;
 
-            if (S_ISREG(fp->sb.st_mode)) {
-		if (rc == RPMERR_ENOENT) {
-		    rc = fsmMkfile(di.dirfd, fi, fp, files, psm, nodigest,
-				   &firstlink, &firstlinkfile, &di.firstdir,
-				   &fd);
-		}
-            } else if (S_ISDIR(fp->sb.st_mode)) {
-                if (rc == RPMERR_ENOENT) {
-                    mode_t mode = fp->sb.st_mode;
-                    mode &= ~07777;
-                    mode |=  00700;
-                    rc = fsmMkdir(di.dirfd, fp->fpath, mode);
-                }
-            } else if (S_ISLNK(fp->sb.st_mode)) {
-		if (rc == RPMERR_ENOENT) {
-		    rc = fsmSymlink(rpmfiFLink(fi), di.dirfd, fp->fpath);
-		}
-            } else if (S_ISFIFO(fp->sb.st_mode)) {
-                /* This mimics cpio S_ISSOCK() behavior but probably isn't right */
-                if (rc == RPMERR_ENOENT) {
-                    rc = fsmMkfifo(di.dirfd, fp->fpath, 0000);
-                }
-            } else if (S_ISCHR(fp->sb.st_mode) ||
-                       S_ISBLK(fp->sb.st_mode) ||
-                       S_ISSOCK(fp->sb.st_mode))
-            {
-                if (rc == RPMERR_ENOENT) {
-                    rc = fsmMknod(di.dirfd, fp->fpath, fp->sb.st_mode, fp->sb.st_rdev);
-                }
-            } else {
-                /* XXX Special case /dev/log, which shouldn't be packaged anyways */
-                if (!IS_DEV_LOG(fp->fpath))
-                    rc = RPMERR_UNKNOWN_FILETYPE;
-            }
+	    rc = rpmteFileInstall(te)(te, fi, fp, files, psm, nodigest, &firstlink, &firstlinkfile, &di, &fd, rc, rpmteContentHandlerPlugin(te));
 
 setmeta:
 	    /* Special files require path-based ops */
@@ -1051,7 +1052,7 @@ setmeta:
 	rc = fx;
 
     /* If all went well, commit files to final destination */
-    fi = fsmIter(NULL, files, RPMFI_ITER_FWD, &di);
+    fi = fsmIter(te, NULL, files, RPMFI_ITER_FWD, &di);
     while (!rc && (fx = rpmfiNext(fi)) >= 0) {
 	struct filedata_s *fp = &fdata[fx];
 
@@ -1080,7 +1081,7 @@ setmeta:
 
     /* On failure, walk backwards and erase non-committed files */
     if (rc) {
-	fi = fsmIter(NULL, files, RPMFI_ITER_BACK, &di);
+	fi = fsmIter(te, NULL, files, RPMFI_ITER_BACK, &di);
 	while ((fx = rpmfiNext(fi)) >= 0) {
 	    struct filedata_s *fp = &fdata[fx];
 
@@ -1113,7 +1114,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile)
 {
     struct diriter_s di = { -1, -1 };
-    rpmfi fi = fsmIter(NULL, files, RPMFI_ITER_BACK, &di);
+    rpmfi fi = fsmIter(te, NULL, files, RPMFI_ITER_BACK, &di);
     rpmfs fs = rpmteGetFileStates(te);
     rpmPlugins plugins = rpmtsPlugins(ts);
     int fc = rpmfilesFC(files);

@@ -3,6 +3,7 @@
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmfi.h>
+#include <rpm/rpmte.h>
 
 /** \ingroup rpmplugin
  * Rpm plugin API 
@@ -36,6 +37,12 @@ typedef rpmFlags rpmFsmOp;
 #define XFO_ACTION(_a)	((_a) & XFA_MASK)	/*!< File op action part */
 #define XFO_FLAGS(_a)	((_a) & XFAF_MASK)	/*!< File op flags part */
 
+struct rpmPluginContentHandler_s {
+    rmpteFileInstallFunction fileInstall; /* File install function */
+    rpmteArchiveReaderFunction archiveReader; /* Archive reader */
+    rpmteVerifyFunction verify; /* Verify function */
+};
+
 /* plugin hook typedefs */
 typedef rpmRC (*plugin_init_func)(rpmPlugin plugin, rpmts ts);
 typedef void (*plugin_cleanup_func)(rpmPlugin plugin);
@@ -61,6 +68,9 @@ typedef rpmRC (*plugin_fsm_file_prepare_func)(rpmPlugin plugin, rpmfi fi,
 					      const char *dest,
 					      mode_t file_mode, rpmFsmOp op);
 
+typedef rpmRC (*plugin_content_handler_func)(rpmPlugin plugin, rpmte te,
+                                           rpmPluginContentHandler handler);
+
 typedef struct rpmPluginHooks_s * rpmPluginHooks;
 struct rpmPluginHooks_s {
     /* plugin constructor and destructor hooks */
@@ -80,6 +90,8 @@ struct rpmPluginHooks_s {
     plugin_fsm_file_pre_func		fsm_file_pre;
     plugin_fsm_file_post_func		fsm_file_post;
     plugin_fsm_file_prepare_func	fsm_file_prepare;
+    /* post rpmteNew plugin hooks */
+    plugin_content_handler_func		content_handler;
 };
 
 #ifdef __cplusplus

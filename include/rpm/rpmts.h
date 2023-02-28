@@ -731,6 +731,18 @@ rpmtsi rpmtsiInit(rpmts ts);
  */
 rpmte rpmtsiNext(rpmtsi tsi, rpmElementTypes types);
 
+/** \ingroup rpmts
+ * Verify package file.
+ * @param fd		file descriptor
+ * @param ts		transaction set
+ * @param p 		transaction element
+ * @param vs		pointer to rpmvs_s structure
+ * @param pvd		pointer to vfydata_s structure
+ * @param pverified	pointer to verified result
+ * @return		return code
+ */
+int verifyPackageFile(FD_t fd, rpmts ts, rpmte p, rpmvs vs, vfydata pvd, int *pverified);
+
 #ifdef __cplusplus
 }
 #endif

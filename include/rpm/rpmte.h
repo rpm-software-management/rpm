@@ -26,6 +26,30 @@ typedef enum rpmElementType_e {
 typedef rpmFlags rpmElementTypes;
 
 /** \ingroup rpmte
+ * Transaction element file install function type.
+ *
+ * This function is called to install the files of transaction element
+ *
+ */
+typedef int (*rmpteFileInstallFunction)(rpmte te, rpmfi fi, filedata fp, rpmfiles files, rpmpsm psm, int nodigest, filedata *firstlink, int *firstlinkfile, diriter di, int *fdp, int rc, rpmPlugin plugin);
+
+/** \ingroup rpmte
+ * Transaction element archive reader function type.
+ *
+ * This function is called to get an archive reader iterator
+ *
+ */
+typedef rpmfi (*rpmteArchiveReaderFunction)(FD_t fd, rpmfiles files, int itype, rpmPlugin plugin);
+
+/** \ingroup rpmte
+ * Transaction element verification function type.
+ *
+ * This function is called to verify a package
+ *
+ */
+typedef int (*rpmteVerifyFunction)(FD_t fd, rpmts ts, rpmte p, rpmvs vs, vfydata pvd, int *pverified);
+
+/** \ingroup rpmte
  * Retrieve header from transaction element.
  * @param te		transaction element
  * @return		header (new reference)
@@ -209,6 +233,8 @@ const char * rpmteNEVR(rpmte te);
  */
 const char * rpmteNEVRA(rpmte te);
 
+FD_t rpmteFd(rpmte te);
+
 /** \ingroup rpmte
  * Retrieve key from transaction element.
  * @param te		transaction element
@@ -263,6 +289,42 @@ rpmfiles rpmteFiles(rpmte te);
  * @return 		verification status
  */
 int rpmteVerified(rpmte te);
+
+/** \ingroup rpmte
+ * Get file install function
+ * @param   te		transaction element
+ * @return		pointer to install function
+ */
+rmpteFileInstallFunction rpmteFileInstall(rpmte te);
+
+/** \ingroup rpmte
+ * Get archive reader function
+ * @param   te		transaction element
+ * @return		pointer to archive reader function
+ */
+rpmteArchiveReaderFunction rpmteArchiveReader(rpmte te);
+
+/** \ingroup rpmte
+ * Get verify package function
+ * @param   te		transaction element
+ * @return		pointer to verify function
+ */
+rpmteVerifyFunction rpmteVerify(rpmte te);
+
+/** \ingroup rpmte
+ * Get content handler plugin
+ * @param   te		transaction element
+ * @return		content handler plugin
+ */
+rpmPlugin rpmteContentHandlerPlugin(rpmte te);
+
+/** \ingroup rpmte
+ * Set content handler functions
+ * @param   te		transaction element
+ * @param   handler	structure containing handling functions
+ * @param   plugin	plugin providing content handling functions
+ */
+void rpmteSetContentHandler(rpmte te, rpmPluginContentHandler handler, rpmPlugin plugin);
 
 #ifdef __cplusplus
 }

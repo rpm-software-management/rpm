@@ -85,6 +85,7 @@ typedef struct rpmstrPool_s * rpmstrPool;
 
 typedef struct rpmPlugin_s * rpmPlugin;
 typedef struct rpmPlugins_s * rpmPlugins;
+typedef struct rpmPluginContentHandler_s * rpmPluginContentHandler;
 
 typedef struct rpmgi_s * rpmgi;
 
@@ -92,6 +93,15 @@ typedef struct rpmSpec_s * rpmSpec;
 
 typedef struct rpmRelocation_s rpmRelocation;
 
+typedef struct rpmpsm_s * rpmpsm;
+
+typedef struct filedata_s * filedata;
+
+typedef struct diriter_s * diriter;
+
+typedef struct vfydata_s * vfydata;
+
+typedef struct rpmvs_s * rpmvs;
 
 /** \ingroup rpmtypes 
  * RPM IO file descriptor type

@@ -1267,6 +1267,26 @@ static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
     return (sinfo->rc == 0);
 }
 
+int verifyPackageFile(FD_t fd, rpmts ts, rpmte p, rpmvs vs, vfydata pvd, int *pverified) {
+    rpmRC prc = RPMRC_FAIL;
+
+    if (fd != NULL) {
+	prc = rpmpkgRead(vs, fd, NULL, NULL, &pvd->msg);
+    	rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
+    }
+
+    if (prc == RPMRC_OK)
+	prc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, vfyCb, pvd);
+
+    /* Record verify result */
+    if (pvd->type[RPMSIG_SIGNATURE_TYPE] == RPMRC_OK)
+	*pverified |= RPMSIG_SIGNATURE_TYPE;
+    if (pvd->type[RPMSIG_DIGEST_TYPE] == RPMRC_OK)
+	*pverified |= RPMSIG_DIGEST_TYPE;
+
+    return prc;
+}
+
 static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
 {
     int rc = 0;
@@ -1294,19 +1314,7 @@ static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
 
 	rpmtsNotify(ts, p, RPMCALLBACK_VERIFY_PROGRESS, oc++, total);
 	FD_t fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
-	if (fd != NULL) {
-	    prc = rpmpkgRead(vs, fd, NULL, NULL, &vd.msg);
-	    rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
-	}
-
-	if (prc == RPMRC_OK)
-	    prc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, vfyCb, &vd);
-
-	/* Record verify result */
-	if (vd.type[RPMSIG_SIGNATURE_TYPE] == RPMRC_OK)
-	    verified |= RPMSIG_SIGNATURE_TYPE;
-	if (vd.type[RPMSIG_DIGEST_TYPE] == RPMRC_OK)
-	    verified |= RPMSIG_DIGEST_TYPE;
+	prc = rpmteVerify(p)(fd, ts, p, vs, &vd, &verified);
 	rpmteSetVerified(p, verified);
 
 	if (prc)

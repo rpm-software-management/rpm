@@ -12,11 +12,13 @@
 #include <rpm/rpmfi.h>
 #include <rpm/rpmstring.h>
 
+#include "lib/rpmplugins.h"
 #include "lib/rpmts_internal.h"
 #include "lib/rpmte_internal.h"
 #include "lib/rpmds_internal.h"
 #include "lib/rpmfi_internal.h" /* rpmfiles stuff for now */
 #include "lib/misc.h"
+#include "lib/fsm.h"
 
 #include "lib/backend/dbiset.h"
 
@@ -446,6 +448,20 @@ static int addPackage(rpmts ts, Header h,
     if (p == NULL) {
 	ec = 1;
 	goto exit;
+    }
+
+    if (rpmpluginsCallContentHandler(rpmtsPlugins(ts), p) == RPMRC_FAIL) {
+	ec = 1;
+	goto exit;
+    }
+
+    if (!rpmteContentHandlerPlugin(p)) {
+	struct rpmPluginContentHandler_s handler = {
+	    .fileInstall = fsmFileInstall,
+	    .archiveReader = fsmArchiveReader,
+	    .verify = verifyPackageFile,
+	};
+	rpmteSetContentHandler(p, &handler, NULL);
     }
 
     /* Check binary packages for redundancies in the set */

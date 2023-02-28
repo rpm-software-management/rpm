@@ -420,3 +420,41 @@ rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins, rpmfi fi,
 
     return rc;
 }
+
+static int handler_is_valid(rpmPluginContentHandler handler) {
+    return handler->archiveReader && handler->fileInstall && handler->verify;
+}
+
+rpmRC rpmpluginsCallContentHandler(rpmPlugins plugins, rpmte te)
+{
+    plugin_content_handler_func hookFunc;
+    int i;
+    rpmRC rc = RPMRC_OK;
+    struct rpmPluginContentHandler_s handler = {};
+
+    for (i = 0; i < plugins->count; i++) {
+	rpmPlugin plugin = plugins->plugins[i];
+	RPMPLUGINS_SET_HOOK_FUNC(content_handler);
+	if (!hookFunc)
+	    continue;
+	int hrc = hookFunc(plugin, te, &handler);
+	if (hrc == RPMRC_FAIL) {
+	    rpmlog(RPMLOG_WARNING, "Plugin %s: hook content_handler failed\n", plugin->name);
+	    continue;
+	}
+	if (!handler_is_valid(&handler))
+	    continue;
+	if (rpmteContentHandlerPlugin(te)) {
+	    /* Another plugin already claimed the content */
+	    const char * filename = (const char *)rpmteKey(te);
+	    rpmlog(RPMLOG_ERR,
+		   "Plugins %s and %s both claimed the content of %s: hook content_handler failed\n",
+		   rpmteContentHandlerPlugin(te)->name, plugin->name, filename);
+	    rc = RPMRC_FAIL;
+	    break;
+	}
+	rpmteSetContentHandler(te, &handler, plugin);
+    }
+
+    return rc;
+}
