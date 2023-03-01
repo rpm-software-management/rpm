@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2022-09-16 14:27+0300\n"
+"POT-Creation-Date: 2023-03-09 11:22+0000\n"
 "PO-Revision-Date: 2020-03-23 08:39-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/rpm-team/rpm/language/te/)\n"
@@ -1119,6 +1119,11 @@ msgstr ""
 
 #, c-format
 msgid "line %d: second %%prep\n"
+msgstr ""
+
+#, c-format
+msgid ""
+"%%patchN is deprecated (%i usages found), use %%patch N (or %%patch -P N)\n"
 msgstr ""
 
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
@@ -3131,6 +3136,10 @@ msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr ""
 
 #, c-format
+msgid "Deprecated OpenPGP signature version %d\n"
+msgstr ""
+
+#, c-format
 msgid "Could not create pipe for signing: %m\n"
 msgstr ""
 
@@ -3202,9 +3211,9 @@ msgstr ""
 msgid "rpmMkTemp failed\n"
 msgstr ""
 
-#, c-format
-msgid "%s: writeLead failed: %s\n"
-msgstr ""
+#, fuzzy, c-format
+msgid "%s: failed to copy rpm lead: %s\n"
+msgstr "చెడ్డ వనరు: %s: %s\n"
 
 #, c-format
 msgid "replacing %s failed: %s\n"

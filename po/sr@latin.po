@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2022-09-16 14:27+0300\n"
+"POT-Creation-Date: 2023-03-09 11:22+0000\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Serbian (Latin) (http://www.transifex.com/rpm-team/rpm/"
@@ -1147,6 +1147,11 @@ msgstr "Neispravan broj zakrpe %s: %s\n"
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "red %d: drugi %%prep\n"
+
+#, c-format
+msgid ""
+"%%patchN is deprecated (%i usages found), use %%patch N (or %%patch -P N)\n"
+msgstr ""
 
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr ""
@@ -3199,6 +3204,10 @@ msgstr ""
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr ""
 
+#, c-format
+msgid "Deprecated OpenPGP signature version %d\n"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Could not create pipe for signing: %m\n"
 msgstr "Ne mogu da napravim cev za %s: %m\n"
@@ -3272,9 +3281,9 @@ msgstr "%s: rpmWriteSignature nije uspelo: %s\n"
 msgid "rpmMkTemp failed\n"
 msgstr "rpmMkTemp nije uspelo\n"
 
-#, c-format
-msgid "%s: writeLead failed: %s\n"
-msgstr "%s: writeLead nije uspelo: %s\n"
+#, fuzzy, c-format
+msgid "%s: failed to copy rpm lead: %s\n"
+msgstr "Neuspelo čitanje datoteke specifikacije iz %s\n"
 
 #, c-format
 msgid "replacing %s failed: %s\n"
@@ -3314,6 +3323,10 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#, c-format
+#~ msgid "%s: writeLead failed: %s\n"
+#~ msgstr "%s: writeLead nije uspelo: %s\n"
 
 #, c-format
 #~ msgid "Bad source: %s: %s\n"

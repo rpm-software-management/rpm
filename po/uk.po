@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2022-09-16 14:27+0300\n"
+"POT-Creation-Date: 2023-03-09 11:22+0000\n"
 "PO-Revision-Date: 2020-08-23 20:29+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/rpm/"
@@ -1198,6 +1198,11 @@ msgstr "Некоректний номер латки %s: %s\n"
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "рядок %d: друге %%prep\n"
+
+#, c-format
+msgid ""
+"%%patchN is deprecated (%i usages found), use %%patch N (or %%patch -P N)\n"
+msgstr ""
 
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr "записи залежностей мають починатися з букви, числа, «_» або «/»"
@@ -3269,6 +3274,10 @@ msgstr "Непідтримуваний алгоритм хешування PGP, 
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr "Непідтримуваний алгоритм обчислення відкритого ключа PGP, %u\n"
 
+#, fuzzy, c-format
+msgid "Deprecated OpenPGP signature version %d\n"
+msgstr "Непідтримуваний підпис PGP\n"
+
 #, c-format
 msgid "Could not create pipe for signing: %m\n"
 msgstr "Не вдалося створити канал для підписування: %m\n"
@@ -3342,9 +3351,9 @@ msgstr "%s: помилка rpmWriteSignature: %s\n"
 msgid "rpmMkTemp failed\n"
 msgstr "помилка rpmMkTemp\n"
 
-#, c-format
-msgid "%s: writeLead failed: %s\n"
-msgstr "%s: помилка writeLead: %s\n"
+#, fuzzy, c-format
+msgid "%s: failed to copy rpm lead: %s\n"
+msgstr "%s: не вдалося закодувати\n"
 
 #, c-format
 msgid "replacing %s failed: %s\n"
@@ -3385,6 +3394,10 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#, c-format
+#~ msgid "%s: writeLead failed: %s\n"
+#~ msgstr "%s: помилка writeLead: %s\n"
 
 #, fuzzy, c-format
 #~ msgid "Unsupported version of signature: V%d\n"

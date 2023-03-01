@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2022-09-16 14:27+0300\n"
+"POT-Creation-Date: 2023-03-09 11:22+0000\n"
 "PO-Revision-Date: 2020-03-23 08:40-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Slovenian (http://www.transifex.com/rpm-team/rpm/language/"
@@ -1109,6 +1109,11 @@ msgstr ""
 
 #, c-format
 msgid "line %d: second %%prep\n"
+msgstr ""
+
+#, c-format
+msgid ""
+"%%patchN is deprecated (%i usages found), use %%patch N (or %%patch -P N)\n"
 msgstr ""
 
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
@@ -3133,6 +3138,10 @@ msgstr ""
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr ""
 
+#, c-format
+msgid "Deprecated OpenPGP signature version %d\n"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Could not create pipe for signing: %m\n"
 msgstr "Ni možno odpreti %s: %s\n"
@@ -3205,9 +3214,9 @@ msgstr "%s: rpmWriteSignature je bilo neuspešno: %s\n"
 msgid "rpmMkTemp failed\n"
 msgstr ""
 
-#, c-format
-msgid "%s: writeLead failed: %s\n"
-msgstr "%s: writeLead je bil neuspešen: %s\n"
+#, fuzzy, c-format
+msgid "%s: failed to copy rpm lead: %s\n"
+msgstr "Datoteke s specifikacijami %s ni možno odpreti: %s\n"
 
 #, c-format
 msgid "replacing %s failed: %s\n"
@@ -3247,6 +3256,10 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#, c-format
+#~ msgid "%s: writeLead failed: %s\n"
+#~ msgstr "%s: writeLead je bil neuspešen: %s\n"
 
 #, c-format
 #~ msgid "%s has invalid numeric value, skipped\n"

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2022-09-16 14:27+0300\n"
+"POT-Creation-Date: 2023-03-09 11:22+0000\n"
 "PO-Revision-Date: 2021-08-01 04:04+0000\n"
 "Last-Translator: Gustavo Costa <xfgusta@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://translate.fedoraproject.org/"
@@ -1199,6 +1199,11 @@ msgstr "número da correção %s inválido: %s\n"
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "linha %d: segundo %%prep\n"
+
+#, c-format
+msgid ""
+"%%patchN is deprecated (%i usages found), use %%patch N (or %%patch -P N)\n"
+msgstr ""
 
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr ""
@@ -3246,6 +3251,10 @@ msgstr "Algoritmo de hash PGP não suportado %u\n"
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr "Algoritmo de pubkey PGP não suportado %u\n"
 
+#, fuzzy, c-format
+msgid "Deprecated OpenPGP signature version %d\n"
+msgstr "Assinatura PGP não suportada\n"
+
 #, c-format
 msgid "Could not create pipe for signing: %m\n"
 msgstr "Não foi possível criar um pipe para assinatura: %m\n"
@@ -3319,9 +3328,9 @@ msgstr "%s: rpmWriteSignature falhou: %s\n"
 msgid "rpmMkTemp failed\n"
 msgstr "o rpmMkTemp falhou\n"
 
-#, c-format
-msgid "%s: writeLead failed: %s\n"
-msgstr "%s: writeLead falhou: %s\n"
+#, fuzzy, c-format
+msgid "%s: failed to copy rpm lead: %s\n"
+msgstr "%s: falha ao codificar\n"
 
 #, c-format
 msgid "replacing %s failed: %s\n"
@@ -3361,6 +3370,10 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#, c-format
+#~ msgid "%s: writeLead failed: %s\n"
+#~ msgstr "%s: writeLead falhou: %s\n"
 
 #, fuzzy, c-format
 #~ msgid "Unsupported version of signature: V%d\n"
