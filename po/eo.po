@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2022-09-16 14:27+0300\n"
+"POT-Creation-Date: 2023-03-09 11:22+0000\n"
 "PO-Revision-Date: 2020-03-23 08:40-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Esperanto (http://www.transifex.com/rpm-team/rpm/language/"
@@ -1155,6 +1155,11 @@ msgstr "Nevalida flikaĵo-numero %s: %s\n"
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "linio %d: dua %%prep\n"
+
+#, c-format
+msgid ""
+"%%patchN is deprecated (%i usages found), use %%patch N (or %%patch -P N)\n"
+msgstr ""
 
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr "Dependaĵo-eroj devas komenciĝi per nombro, litero, '_' aŭ '/'"
@@ -3204,6 +3209,10 @@ msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr "Nekomprenita algoritmo publika-ŝlosila %u de PGP\n"
 
 #, fuzzy, c-format
+msgid "Deprecated OpenPGP signature version %d\n"
+msgstr "Nekomprenita PGP-pretendo\n"
+
+#, fuzzy, c-format
 msgid "Could not create pipe for signing: %m\n"
 msgstr "Ne eblis krei tubon por %s: %m\n"
 
@@ -3276,9 +3285,9 @@ msgstr "%s: rpmWriteSignature malsukcesis: %s\n"
 msgid "rpmMkTemp failed\n"
 msgstr "rpmMkTemp malsukcesis\n"
 
-#, c-format
-msgid "%s: writeLead failed: %s\n"
-msgstr "%s: writeLead malsukcesis: %s\n"
+#, fuzzy, c-format
+msgid "%s: failed to copy rpm lead: %s\n"
+msgstr "%s: malsukcesis kodiĝi\n"
 
 #, c-format
 msgid "replacing %s failed: %s\n"
@@ -3318,6 +3327,10 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#, c-format
+#~ msgid "%s: writeLead failed: %s\n"
+#~ msgstr "%s: writeLead malsukcesis: %s\n"
 
 #, fuzzy, c-format
 #~ msgid "Unsupported version of signature: V%d\n"

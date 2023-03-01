@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2022-09-16 14:27+0300\n"
+"POT-Creation-Date: 2023-03-09 11:22+0000\n"
 "PO-Revision-Date: 2021-02-09 04:40+0000\n"
 "Last-Translator: Izumo Nobuse <yumexyume@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -1139,6 +1139,11 @@ msgstr "無效的修補編號 %s：%s\n"
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "第 %d 列：第二個 %%prep\n"
+
+#, c-format
+msgid ""
+"%%patchN is deprecated (%i usages found), use %%patch N (or %%patch -P N)\n"
+msgstr ""
 
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr "依存字組必須以英數字、_ 或 / 開頭"
@@ -3184,6 +3189,10 @@ msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr "未支援的 PGP 公鑰演算法 %u\n"
 
 #, fuzzy, c-format
+msgid "Deprecated OpenPGP signature version %d\n"
+msgstr "未支援的 PGP 簽名\n"
+
+#, fuzzy, c-format
 msgid "Could not create pipe for signing: %m\n"
 msgstr "無法為 %s 建立管線：%m\n"
 
@@ -3256,9 +3265,9 @@ msgstr "%s：rpmWriteSignature 失敗：%s\n"
 msgid "rpmMkTemp failed\n"
 msgstr "rpmMkTemp 失敗\n"
 
-#, c-format
-msgid "%s: writeLead failed: %s\n"
-msgstr "%s：writeLead 失敗：%s\n"
+#, fuzzy, c-format
+msgid "%s: failed to copy rpm lead: %s\n"
+msgstr "%s：編碼失敗\n"
 
 #, c-format
 msgid "replacing %s failed: %s\n"
@@ -3298,6 +3307,10 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#, c-format
+#~ msgid "%s: writeLead failed: %s\n"
+#~ msgstr "%s：writeLead 失敗：%s\n"
 
 #, fuzzy, c-format
 #~ msgid "Unsupported version of signature: V%d\n"

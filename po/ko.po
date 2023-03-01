@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2022-09-16 14:27+0300\n"
+"POT-Creation-Date: 2023-03-09 11:22+0000\n"
 "PO-Revision-Date: 2021-07-10 19:04+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/rpm/"
@@ -1166,6 +1166,11 @@ msgstr "유효하지 않은 패치 번호입니다 %s: %s\n"
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "%d 번째 행: 두번째 %%prep\n"
+
+#, c-format
+msgid ""
+"%%patchN is deprecated (%i usages found), use %%patch N (or %%patch -P N)\n"
+msgstr ""
 
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr "종속 토큰은 alpha-numeric, '_' 또는 '/'와 함께 시작해야 합니다"
@@ -3205,6 +3210,10 @@ msgstr "지원하지 않는 PGP 해쉬 알고리즘 %u\n"
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr "지원하지 않는 PGP 공개키 알고리즘 %u\n"
 
+#, fuzzy, c-format
+msgid "Deprecated OpenPGP signature version %d\n"
+msgstr "지원하지 않는 PGP 서명\n"
+
 #, c-format
 msgid "Could not create pipe for signing: %m\n"
 msgstr "서명: %m 을 위한 파이프를 생성 할 수 없습니다\n"
@@ -3278,9 +3287,9 @@ msgstr "%s: rpmWriteSignature이 실패했습니다: %s\n"
 msgid "rpmMkTemp failed\n"
 msgstr "rpmMkTemp 실패하였습니다\n"
 
-#, c-format
-msgid "%s: writeLead failed: %s\n"
-msgstr "%s: writeLead이 실패했습니다: %s\n"
+#, fuzzy, c-format
+msgid "%s: failed to copy rpm lead: %s\n"
+msgstr "%s: 인코드에 실패하였습니다\n"
 
 #, c-format
 msgid "replacing %s failed: %s\n"
@@ -3320,6 +3329,10 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#, c-format
+#~ msgid "%s: writeLead failed: %s\n"
+#~ msgstr "%s: writeLead이 실패했습니다: %s\n"
 
 #, fuzzy, c-format
 #~ msgid "Unsupported version of signature: V%d\n"

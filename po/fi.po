@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2022-09-16 14:27+0300\n"
+"POT-Creation-Date: 2023-03-09 11:22+0000\n"
 "PO-Revision-Date: 2021-08-25 11:04+0000\n"
 "Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/rpm/"
@@ -1158,6 +1158,11 @@ msgstr "Virheellinen patch-numero %s: %s\n"
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "rivi %d: toinen %%prep-osio\n"
+
+#, c-format
+msgid ""
+"%%patchN is deprecated (%i usages found), use %%patch N (or %%patch -P N)\n"
+msgstr ""
 
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr ""
@@ -3208,6 +3213,10 @@ msgstr "Ei tuettu PGP-hajautusalgoritmi %u\n"
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr "PGP-pubkey-algoritmi %u, jota ei tueta\n"
 
+#, fuzzy, c-format
+msgid "Deprecated OpenPGP signature version %d\n"
+msgstr "PGP-allekirjoitusta ei tueta\n"
+
 #, c-format
 msgid "Could not create pipe for signing: %m\n"
 msgstr "Putkea ei voitu luoda allekirjoittamista varten: %m\n"
@@ -3281,9 +3290,9 @@ msgstr "%s: rpmWriteSignature epäonnistui: %s\n"
 msgid "rpmMkTemp failed\n"
 msgstr "rpmMkTemp epäonnistui\n"
 
-#, c-format
-msgid "%s: writeLead failed: %s\n"
-msgstr "%s: writeLead epäonnistui: %s\n"
+#, fuzzy, c-format
+msgid "%s: failed to copy rpm lead: %s\n"
+msgstr "%s: koodaaminen epäonnistui\n"
 
 #, c-format
 msgid "replacing %s failed: %s\n"
@@ -3323,6 +3332,10 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#, c-format
+#~ msgid "%s: writeLead failed: %s\n"
+#~ msgstr "%s: writeLead epäonnistui: %s\n"
 
 #, fuzzy, c-format
 #~ msgid "Unsupported version of signature: V%d\n"

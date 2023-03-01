@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2022-09-16 14:27+0300\n"
+"POT-Creation-Date: 2023-03-09 11:22+0000\n"
 "PO-Revision-Date: 2020-03-23 08:39-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Slovak (http://www.transifex.com/rpm-team/rpm/language/sk/)\n"
@@ -1153,6 +1153,11 @@ msgstr "Neplatné číslo záplaty %s: %s\n"
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "riadok %d: druhý %%prep\n"
+
+#, c-format
+msgid ""
+"%%patchN is deprecated (%i usages found), use %%patch N (or %%patch -P N)\n"
+msgstr ""
 
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr "Tokeny závislosti musia začínať alfa-numerickými znakmi, '_' alebo '/'"
@@ -3196,6 +3201,10 @@ msgstr ""
 msgid "Unsupported PGP pubkey algorithm %u\n"
 msgstr ""
 
+#, c-format
+msgid "Deprecated OpenPGP signature version %d\n"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Could not create pipe for signing: %m\n"
 msgstr "Nie je možné vytvoriť rúru pre %s: %m\n"
@@ -3269,9 +3278,9 @@ msgstr "%s: rpmWriteSignature zlyhalo: %s\n"
 msgid "rpmMkTemp failed\n"
 msgstr "rpmMkTemp zlyhal\n"
 
-#, c-format
-msgid "%s: writeLead failed: %s\n"
-msgstr "%s: writeLead zlyhalo: %s\n"
+#, fuzzy, c-format
+msgid "%s: failed to copy rpm lead: %s\n"
+msgstr "%s: zlyhalo kódovanie\n"
 
 #, c-format
 msgid "replacing %s failed: %s\n"
@@ -3311,6 +3320,10 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#, c-format
+#~ msgid "%s: writeLead failed: %s\n"
+#~ msgstr "%s: writeLead zlyhalo: %s\n"
 
 #, c-format
 #~ msgid "Bad source: %s: %s\n"
