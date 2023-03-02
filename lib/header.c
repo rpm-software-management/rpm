@@ -93,7 +93,7 @@ struct entryInfo_s {
 typedef struct indexEntry_s * indexEntry;
 struct indexEntry_s {
     struct entryInfo_s info;	/*!< Description of tag data. */
-    rpm_data_t data; 		/*!< Location of tag data. */
+    void * data; 		/*!< Location of tag data. */
     uint32_t length;		/*!< No. bytes of data. */
     uint32_t rdlen;		/*!< No. bytes of data in region. */
 };
@@ -184,8 +184,8 @@ static inline void ei2h(const struct entryInfo_s *pe, struct entryInfo_s *info)
     info->count = ntohl(pe->count);
 }
 
-static int dataLength(uint32_t type, rpm_constdata_t p, uint32_t count,
-			 int onDisk, rpm_constdata_t pend, uint32_t *length);
+static int dataLength(uint32_t type, const void * p, uint32_t count,
+			 int onDisk, const void * pend, uint32_t *length);
 
 void hdrblobDigestUpdate(rpmDigestBundle bundle, struct hdrblob_s *blob)
 {
@@ -487,8 +487,8 @@ static inline int strtaglen(const char *str, uint32_t c, const char *end,
  * @retval len		data length
  * @return		0 on success, -1 on failure
  */
-static int dataLength(uint32_t type, rpm_constdata_t p, uint32_t count,
-			 int onDisk, rpm_constdata_t pend, uint32_t *len)
+static int dataLength(uint32_t type, const void * p, uint32_t count,
+			 int onDisk, const void * pend, uint32_t *len)
 {
     const char * s = p;
     const char * se = pend;
@@ -923,7 +923,7 @@ int headerDel(Header h, rpmTagVal tag)
 
     /* Free data for tags being removed. */
     for (first = entry; first < last; first++) {
-	rpm_data_t data;
+	void * data;
 	if (first->info.tag != tag)
 	    break;
 	data = first->data;
@@ -1430,8 +1430,8 @@ int headerGet(Header h, rpmTagVal tag, rpmtd td, headerGetFlags flags)
 
 /**
  */
-static void copyData(uint32_t type, rpm_data_t dstPtr, 
-		rpm_constdata_t srcPtr, uint32_t cnt, uint32_t dataLength)
+static void copyData(uint32_t type, void * dstPtr,
+		const void * srcPtr, uint32_t cnt, uint32_t dataLength)
 {
     switch (type) {
     case RPM_STRING_ARRAY_TYPE:
@@ -1464,9 +1464,9 @@ static void copyData(uint32_t type, rpm_data_t dstPtr,
  * @return 		(malloc'ed) copy of entry data, NULL on error
  */
 static void *
-grabData(uint32_t type, rpm_constdata_t p, uint32_t c, uint32_t * lengthPtr)
+grabData(uint32_t type, const void * p, uint32_t c, uint32_t * lengthPtr)
 {
-    rpm_data_t data = NULL;
+    void * data = NULL;
     uint32_t length;
 
     if (dataLength(type, p, c, 0, NULL, &length))
@@ -1485,7 +1485,7 @@ grabData(uint32_t type, rpm_constdata_t p, uint32_t c, uint32_t * lengthPtr)
 static int intAddEntry(Header h, rpmtd td)
 {
     indexEntry entry;
-    rpm_data_t data;
+    void * data;
     uint32_t length = 0;
 
     /* Count must always be >= 1 for headerAddEntry. */
@@ -1717,8 +1717,8 @@ int headerAddI18NString(Header h, rpmTagVal tag, const char * string,
 int headerMod(Header h, rpmtd td)
 {
     indexEntry entry;
-    rpm_data_t oldData;
-    rpm_data_t data;
+    void * oldData;
+    void * data;
     uint32_t length = 0;
 
     /* First find the tag */
