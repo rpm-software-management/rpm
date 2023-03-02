@@ -96,7 +96,7 @@ struct headerToken_s {
     indexEntry index;		/*!< Array of tags. */
     int indexUsed;		/*!< Current size of tag array. */
     int indexAlloced;		/*!< Allocated size of tag array. */
-    unsigned int instance;	/*!< Rpmdb instance (offset) */
+    unsigned int instance;	/*!< Rpmdb instance */
     headerFlags flags;
     int sorted;			/*!< Current sort method */
     int nrefs;			/*!< Reference count. */
