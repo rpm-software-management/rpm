@@ -81,8 +81,8 @@ typedef rpmFlags headerFlags;
  * Description of tag data.
  */
 struct entryInfo_s {
-    rpm_tag_t tag;		/*!< Tag identifier. */
-    rpm_tagtype_t type;		/*!< Tag data type. */
+    uint32_t tag;		/*!< Tag identifier. */
+    uint32_t type;		/*!< Tag data type. */
     int32_t offset;		/*!< Offset into data segment (ondisk only). */
     rpm_count_t count;		/*!< Number of tag elements. */
 };
@@ -184,7 +184,7 @@ static inline void ei2h(const struct entryInfo_s *pe, struct entryInfo_s *info)
     info->count = ntohl(pe->count);
 }
 
-static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
+static int dataLength(uint32_t type, rpm_constdata_t p, rpm_count_t count,
 			 int onDisk, rpm_constdata_t pend, uint32_t *length);
 
 void hdrblobDigestUpdate(rpmDigestBundle bundle, struct hdrblob_s *blob)
@@ -198,7 +198,7 @@ void hdrblobDigestUpdate(rpmDigestBundle bundle, struct hdrblob_s *blob)
 }
 
 /* Check tag type matches our definition */
-static int hdrchkTagType(rpm_tag_t tag, rpm_tagtype_t type)
+static int hdrchkTagType(uint32_t tag, uint32_t type)
 {
     rpmTagType t = rpmTagGetTagType(tag);
     if (t == type)
@@ -392,7 +392,7 @@ static int offsetCmp(const void * avp, const void * bvp)
     return rc;
 }
 
-static inline unsigned int alignDiff(rpm_tagtype_t type, unsigned int alignsize)
+static inline unsigned int alignDiff(uint32_t type, unsigned int alignsize)
 {
     int typesize = typeSizes[type];
 
@@ -487,7 +487,7 @@ static inline int strtaglen(const char *str, rpm_count_t c, const char *end,
  * @retval len		data length
  * @return		0 on success, -1 on failure
  */
-static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
+static int dataLength(uint32_t type, rpm_constdata_t p, rpm_count_t count,
 			 int onDisk, rpm_constdata_t pend, uint32_t *len)
 {
     const char * s = p;
@@ -881,7 +881,7 @@ void * headerExport(Header h, unsigned int *bsize)
  * @return 		header entry
  */
 static
-indexEntry findEntry(Header h, rpmTagVal tag, rpm_tagtype_t type)
+indexEntry findEntry(Header h, rpmTagVal tag, uint32_t type)
 {
     indexEntry entry;
     struct indexEntry_s key;
@@ -1430,7 +1430,7 @@ int headerGet(Header h, rpmTagVal tag, rpmtd td, headerGetFlags flags)
 
 /**
  */
-static void copyData(rpm_tagtype_t type, rpm_data_t dstPtr, 
+static void copyData(uint32_t type, rpm_data_t dstPtr, 
 		rpm_constdata_t srcPtr, rpm_count_t cnt, uint32_t dataLength)
 {
     switch (type) {
@@ -1464,7 +1464,7 @@ static void copyData(rpm_tagtype_t type, rpm_data_t dstPtr,
  * @return 		(malloc'ed) copy of entry data, NULL on error
  */
 static void *
-grabData(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t c, uint32_t * lengthPtr)
+grabData(uint32_t type, rpm_constdata_t p, rpm_count_t c, uint32_t * lengthPtr)
 {
     rpm_data_t data = NULL;
     uint32_t length;
