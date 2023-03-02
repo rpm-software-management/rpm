@@ -84,7 +84,7 @@ struct entryInfo_s {
     uint32_t tag;		/*!< Tag identifier. */
     uint32_t type;		/*!< Tag data type. */
     int32_t offset;		/*!< Offset into data segment (ondisk only). */
-    rpm_count_t count;		/*!< Number of tag elements. */
+    uint32_t count;		/*!< Number of tag elements. */
 };
 
 /** \ingroup header
@@ -184,7 +184,7 @@ static inline void ei2h(const struct entryInfo_s *pe, struct entryInfo_s *info)
     info->count = ntohl(pe->count);
 }
 
-static int dataLength(uint32_t type, rpm_constdata_t p, rpm_count_t count,
+static int dataLength(uint32_t type, rpm_constdata_t p, uint32_t count,
 			 int onDisk, rpm_constdata_t pend, uint32_t *length);
 
 void hdrblobDigestUpdate(rpmDigestBundle bundle, struct hdrblob_s *blob)
@@ -447,7 +447,7 @@ unsigned headerSizeof(Header h, int magicp)
  * Header string (array) size calculation, bounded if end is non-NULL.
  * Length is returned via *lenp, return zero on success, -1 on error.
  */
-static inline int strtaglen(const char *str, rpm_count_t c, const char *end,
+static inline int strtaglen(const char *str, uint32_t c, const char *end,
 			    uint32_t *lenp)
 {
     const char *start = str;
@@ -487,7 +487,7 @@ static inline int strtaglen(const char *str, rpm_count_t c, const char *end,
  * @retval len		data length
  * @return		0 on success, -1 on failure
  */
-static int dataLength(uint32_t type, rpm_constdata_t p, rpm_count_t count,
+static int dataLength(uint32_t type, rpm_constdata_t p, uint32_t count,
 			 int onDisk, rpm_constdata_t pend, uint32_t *len)
 {
     const char * s = p;
@@ -1140,7 +1140,7 @@ int headerIsSourceHeuristic(Header h)
  */
 static int copyTdEntry(const indexEntry entry, rpmtd td, headerGetFlags flags)
 {
-    rpm_count_t count = entry->info.count;
+    uint32_t count = entry->info.count;
     int rc = 1;		/* XXX 1 on success. */
     /* ALLOC overrides MINMEM */
     int allocMem = flags & HEADERGET_ALLOC;
@@ -1431,7 +1431,7 @@ int headerGet(Header h, rpmTagVal tag, rpmtd td, headerGetFlags flags)
 /**
  */
 static void copyData(uint32_t type, rpm_data_t dstPtr, 
-		rpm_constdata_t srcPtr, rpm_count_t cnt, uint32_t dataLength)
+		rpm_constdata_t srcPtr, uint32_t cnt, uint32_t dataLength)
 {
     switch (type) {
     case RPM_STRING_ARRAY_TYPE:
@@ -1464,7 +1464,7 @@ static void copyData(uint32_t type, rpm_data_t dstPtr,
  * @return 		(malloc'ed) copy of entry data, NULL on error
  */
 static void *
-grabData(uint32_t type, rpm_constdata_t p, rpm_count_t c, uint32_t * lengthPtr)
+grabData(uint32_t type, rpm_constdata_t p, uint32_t c, uint32_t * lengthPtr)
 {
     rpm_data_t data = NULL;
     uint32_t length;
@@ -1583,7 +1583,7 @@ int headerAddI18NString(Header h, rpmTagVal tag, const char * string,
     const char ** strArray;
     uint32_t length;
     int ghosts;
-    rpm_count_t i, langNum;
+    uint32_t i, langNum;
     char * buf;
 
     table = findEntry(h, RPMTAG_HEADERI18NTABLE, RPM_STRING_ARRAY_TYPE);
@@ -1594,7 +1594,7 @@ int headerAddI18NString(Header h, rpmTagVal tag, const char * string,
 
     if (!table && !entry) {
 	const char * charArray[2];
-	rpm_count_t count = 0;
+	uint32_t count = 0;
 	struct rpmtd_s td;
 	if (!lang || (lang[0] == 'C' && lang[1] == '\0')) {
 	    charArray[count++] = "C";
