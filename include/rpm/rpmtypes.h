@@ -24,7 +24,7 @@ typedef const char *    errmsg_t;
 typedef struct headerToken_s * Header;
 typedef struct headerIterator_s * HeaderIterator;
 
-typedef int32_t		rpm_tag_t;
+typedef uint32_t	rpm_tag_t;
 typedef uint32_t	rpm_tagtype_t;
 typedef uint32_t	rpm_count_t;
 typedef rpm_tag_t	rpmTagVal;
