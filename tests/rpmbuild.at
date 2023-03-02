@@ -2438,7 +2438,7 @@ runroot rpm -q --provides -p /build/RPMS/noarch/bcondtest-1.0-1.noarch.rpm |
 [],
 [])
 
-# bcond behavior, CLI overriding a complex defailt
+# bcond behavior, CLI overriding a complex default
 RPMTEST_CHECK([
 runroot rpmbuild -bb --quiet --with both_features /data/SPECS/bcondtest.spec
 runroot rpm -q --provides -p /build/RPMS/noarch/bcondtest-1.0-1.noarch.rpm |
@@ -2447,6 +2447,101 @@ runroot rpm -q --provides -p /build/RPMS/noarch/bcondtest-1.0-1.noarch.rpm |
 [0],
 [has_bcond(both_features)
 has_bcond(normally_on)
+],
+[])
+RPMTEST_CLEANUP
+
+AT_SETUP([bcond_override_default macros])
+AT_KEYWORDS([bcond build])
+RPMDB_INIT
+
+# check bcond_override_default by defining
+RPMTEST_CHECK([
+runroot rpm \
+	--eval "%bcond_override_default normally_on 0" \
+	--eval "%bcond_override_default normally_off 1" \
+	--eval "%bcond normally_on 1" \
+	--eval "%bcond normally_off 0" \
+	--eval "%{with normally_on}" \
+	--eval "%{with normally_off}" \
+],
+[0],
+[
+
+
+
+0
+1
+],
+[])
+
+# check bcond_override_default via helper macro
+RPMTEST_CHECK([
+runroot rpm \
+	-D "%bcond_override_default_normally_on 0" \
+	-D "%bcond_override_default_normally_off 1" \
+	--eval "%bcond normally_on 1" \
+	--eval "%bcond normally_off 0" \
+	--eval "%{with normally_on}" \
+	--eval "%{with normally_off}" \
+],
+[0],
+[
+
+0
+1
+],
+[])
+
+# check bcond_override_default via macro file
+
+# bcond behavior, without CLI options
+RPMTEST_CHECK([
+echo '%bcond_override_default_normally_on 0' > ${RPMTEST}/${RPM_CONFIGDIR_PATH}/macros.d/macros.bcondtests
+echo '%bcond_override_default_normally_off 1' >> ${RPMTEST}/${RPM_CONFIGDIR_PATH}/macros.d/macros.bcondtests
+runroot rpmbuild -bb --quiet /data/SPECS/bcondtest.spec
+runroot rpm -q --provides -p /build/RPMS/noarch/bcondtest-1.0-1.noarch.rpm |
+    grep has_bcond | sort
+],
+[0],
+[has_bcond(normally_off)
+],
+[])
+
+# bcond behavior, --with
+RPMTEST_CHECK([
+runroot rpmbuild -bb --quiet --with normally_on --with normally_off \
+    /data/SPECS/bcondtest.spec
+runroot rpm -q --provides -p /build/RPMS/noarch/bcondtest-1.0-1.noarch.rpm |
+    grep has_bcond | sort
+],
+[0],
+[has_bcond(both_features)
+has_bcond(normally_off)
+has_bcond(normally_on)
+],
+[])
+
+# bcond behavior, --without
+RPMTEST_CHECK([
+runroot rpmbuild -bb --quiet --without normally_on --without normally_off \
+    /data/SPECS/bcondtest.spec
+runroot rpm -q --provides -p /build/RPMS/noarch/bcondtest-1.0-1.noarch.rpm |
+    grep has_bcond | sort
+],
+[0],
+[],
+[])
+
+# bcond behavior, CLI overriding a complex default
+RPMTEST_CHECK([
+runroot rpmbuild -bb --quiet --with both_features /data/SPECS/bcondtest.spec
+runroot rpm -q --provides -p /build/RPMS/noarch/bcondtest-1.0-1.noarch.rpm |
+    grep has_bcond | sort
+],
+[0],
+[has_bcond(both_features)
+has_bcond(normally_off)
 ],
 [])
 RPMTEST_CLEANUP

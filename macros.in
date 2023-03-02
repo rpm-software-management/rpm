@@ -88,7 +88,9 @@
 # Based on those and a default (used when neither is given), bcond macros
 # define the macro `with_foo`, which should later be checked:
 
-%bcond()	%[ (%2)\
+%bcond_override_default()   %{expand:%%global bcond_override_default_%{1} %{2}}
+%__bcond_override_default()	%{expand:%%["%%{?bcond_override_default_%{1}}"||"%%{2}"]}
+%bcond()	%[ %{__bcond_override_default %{1} %{2}}\
     ? "%{expand:%%{!?_without_%{1}:%%global with_%{1} 1}}"\
     : "%{expand:%%{?_with_%{1}:%%global with_%{1} 1}}"\
 ]
