@@ -317,15 +317,6 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
         nthreads = omp_get_max_threads();
     if (nthreads_max > 0 && nthreads > nthreads_max)
 	nthreads = nthreads_max;
-#if __WORDSIZE == 32
-    /* On 32bit platforms, address space shortage is an issue. Play safe. */
-    int platlimit = 4;
-    if (nthreads > platlimit) {
-	nthreads = platlimit;
-	rpmlog(RPMLOG_DEBUG,
-	    "limiting number of threads to %d due to platform\n", platlimit);
-    }
-#endif
     if (nthreads > 0)
 	omp_set_num_threads(nthreads);
 #endif
