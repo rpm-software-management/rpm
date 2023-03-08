@@ -727,6 +727,11 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 
 %_smp_build_nthreads %{_smp_build_ncpus}
 
+# Assumed task size of processes and threads in megabytes.
+# Used to limit the amount of parallelism based on available memory.
+%_smp_tasksize_proc 512
+%_smp_tasksize_thread %{_smp_tasksize_proc}
+
 #==============================================================================
 # ---- Scriptlet template templates.
 #	Global defaults used for building scriptlet templates.
