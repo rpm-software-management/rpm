@@ -8,10 +8,6 @@
 #include <ctype.h>
 #include <dirent.h>
 #include <fcntl.h>
-#if defined(__linux__)
-#include <sys/personality.h>
-#endif
-#include <sys/utsname.h>
 #include <sys/resource.h>
 
 #include <rpm/rpmlog.h>
