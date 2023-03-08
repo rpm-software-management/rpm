@@ -530,16 +530,8 @@ static int parsethreadn(const char *s, char **end)
     if (threads == 0) {
 	/* Disable autodetection inside OpenMP parallel regions */
 	if (!omp_in_parallel())
-	    threads = rpmExpandNumeric("%{getncpus}");
+	    threads = rpmExpandNumeric("%{getncpus:thread}");
     }
-
-#if __WORDSIZE == 32
-    /* Limit threads up to 4 for 32-bit systems.  */
-    if (threads > 4) {
-	threads = 4;
-	rpmlog(RPMLOG_DEBUG, "threading compression limited to 4 threads on 32-bit systems\n");
-    }
-#endif
 
     return threads;
 }
