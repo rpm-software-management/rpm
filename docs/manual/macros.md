@@ -68,7 +68,10 @@ to perform useful operations. The current list is
 	%trace		toggle print of debugging information before/after
 			expansion
 	%dump		print the active (i.e. non-covered) macro table
-	%getncpus	return the number of CPUs
+	%getncpus	expand to the number of available CPUs
+	%{getncpus:<total|proc|thread>} expand to the number of available CPUs,
+                "proc" and "thread" additionally accounting for available
+                memory (eg address space limitations for threads)
 	%getconfdir	expand to rpm "home" directory (typically /usr/lib/rpm)
 	%dnl		discard to next line (without expanding)
 	%verbose	expand to 1 if rpm is in verbose mode, 0 if not

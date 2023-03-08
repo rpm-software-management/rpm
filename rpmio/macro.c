@@ -9,6 +9,9 @@
 #ifdef HAVE_SCHED_GETAFFINITY
 #include <sched.h>
 #endif
+#if defined(__linux__)
+#include <sys/personality.h>
+#endif
 
 #if !defined(isblank)
 #define	isblank(_c)	((_c) == ' ' || (_c) == '\t')
@@ -1174,6 +1177,89 @@ static void doShescape(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parse
     mbAppend(mb, '\'');
 }
 
+static unsigned long getmem_total(void)
+{
+    unsigned long mem = 0;
+    long int pagesize = sysconf(_SC_PAGESIZE);
+    long int pages = sysconf(_SC_PHYS_PAGES);
+
+    if (pagesize < 0)
+	pagesize = 4096;
+    if (pages > 0)
+	mem = pages * pagesize;
+
+    return mem;
+}
+
+static unsigned long getmem_proc(int thread)
+{
+    unsigned long mem = getmem_total();
+    /*
+     * Conservative estimates for thread use on 32bit systems where address
+     * space is an issue: 2GB for bare metal, 3GB for a 32bit process
+     * on a 64bit system.
+     */
+    if (thread) {
+	unsigned long vmem = mem;
+#if __WORDSIZE == 32
+	vmem = UINT32_MAX / 2;
+#else
+#if defined(__linux__)
+	if ((personality(0xffffffff) & PER_MASK) == PER_LINUX32)
+	    vmem = (UINT32_MAX / 4) * 3;
+#endif
+#endif
+	if (vmem < mem)
+	    mem = vmem;
+    }
+    /* Fixup to get nice even numbers */
+    mem = mem / (1024*1024) + 1;
+
+    return mem;
+}
+
+static void doGetncpus(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
+{
+    const char *sizemacro = NULL;
+    const char *arg = argv[1] ? argv[1] : "total";
+    char buf[32];
+    unsigned int ncpus = getncpus();
+    unsigned long mem = 0;
+
+    if (rstreq(arg, "total")) {
+	/* nothing */
+    } else if (rstreq(arg, "proc")) {
+	mem = getmem_proc(0);
+	sizemacro = "%{?_smp_tasksize_proc}";
+    } else if (rstreq(arg, "thread")) {
+	mem = getmem_proc(1);
+	sizemacro = "%{?_smp_tasksize_thread}";
+    } else {
+	mbErr(mb, 1, _("invalid argument: %s\n"), arg);
+	return;
+    }
+
+    if (sizemacro) {
+	unsigned int mcpus;
+	unsigned long tasksize = rpmExpandNumeric(sizemacro);
+
+	if (tasksize == 0)
+	    tasksize = 512;
+
+	if (mem == 0) {
+	    mbErr(mb, 1, _("failed to get available memory for %s\n"), arg);
+	    return;
+	}
+
+	mcpus = mem / tasksize;
+	if (mcpus < ncpus)
+	    ncpus = mcpus;
+    }
+
+    sprintf(buf, "%u", ncpus);
+    mbAppendStr(mb, buf);
+}
+
 static void doFoo(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 {
     char *buf = NULL;
@@ -1227,9 +1313,6 @@ static void doFoo(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 	b = getenv(argv[1]);
     } else if (rstreq("getconfdir", me->name)) {
 	b = (char *)rpmConfigDir();
-    } else if (rstreq("getncpus", me->name)) {
-	b = buf = xmalloc(MACROBUFSIZ);
-	sprintf(buf, "%u", getncpus());
     } else if (rstreq("exists", me->name)) {
 	b = (access(argv[1], F_OK) == 0) ? "1" : "0";
     }
@@ -1276,7 +1359,7 @@ static struct builtins_s {
     { "expr",		doFoo,		1,	0 },
     { "getconfdir",	doFoo,		0,	0 },
     { "getenv",		doFoo,		1,	0 },
-    { "getncpus",	doFoo,		0,	0 },
+    { "getncpus",	doGetncpus,	-1,	0 },
     { "global",		doGlobal,	1,	ME_PARSE },
     { "gsub",		doString,	1,	0 },
     { "len",		doString,	1,	0 },

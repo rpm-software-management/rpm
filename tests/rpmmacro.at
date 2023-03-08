@@ -263,8 +263,26 @@ runroot_other ${RPM_CONFIGDIR}/rpmuncompress "/tmp/some%%ath"
 [0],
 [xxxxxxxxxxxxxxxxxxxxxxxxx
 ])
-
 AT_CLEANUP
+
+AT_SETUP([getncpus macro])
+AT_KEYWORDS([macros])
+# skip if nproc not available
+AT_SKIP_IF([test -z "$(nproc 2>/dev/null)"])
+AT_CHECK([
+mem=$(expr $(getconf PAGESIZE) \* $(getconf _PHYS_PAGES) / 1024 / 1024)
+expr $(runroot rpm --eval "%{getncpus}") = $(nproc)
+expr $(runroot rpm --define "_smp_tasksize_thread ${mem}" --eval "%{getncpus:thread}") = 1
+expr $(runroot rpm --define "_smp_tasksize_proc ${mem}" --eval "%{getncpus:proc}") = 1
+],
+[ignore],
+[1
+1
+1
+],
+[])
+AT_CLEANUP
+
 AT_SETUP([basename macro])
 AT_KEYWORDS([macros])
 AT_CHECK([
@@ -338,8 +356,8 @@ runroot rpm --eval "%dirname dir"
 runroot rpm --define '%xxx /hello/%%%%/world' --eval '%{dirname:%xxx}'
 runroot rpm --eval "%{uncompress}"
 runroot rpm --eval "%{uncompress:}"
-runroot rpm --eval "%{getncpus:}"
-runroot rpm --eval "%{getncpus:5}"
+runroot rpm --eval "%{getconfdir:}"
+runroot rpm --eval "%{getconfdir:5}"
 runroot rpm --eval "%{define:}"
 runroot rpm --eval "%{define:foo}"
 runroot rpm --eval "%{define:foo bar}%{foo}"
@@ -368,8 +386,8 @@ bar baz\baz
 [error: %dirname: argument expected
 error: %dirname: argument expected
 error: %uncompress: argument expected
-error: %getncpus: unexpected argument
-error: %getncpus: unexpected argument
+error: %getconfdir: unexpected argument
+error: %getconfdir: unexpected argument
 error: Macro % has illegal name (%define)
 error: Macro %foo has empty body
 error: Macro %foo has empty body
