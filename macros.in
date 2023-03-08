@@ -714,8 +714,8 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 # Maximum number of CPU's to use when building, 0 for unlimited.
 #%_smp_ncpus_max 0
 
-%_smp_build_ncpus %([ -z "$RPM_BUILD_NCPUS" ] \\\
-	&& RPM_BUILD_NCPUS="%{getncpus}"; \\\
+%_smp_build_ncpus() %([ -z "$RPM_BUILD_NCPUS" ] \\\
+	&& RPM_BUILD_NCPUS="%{getncpus %{?1}}"; \\\
         ncpus_max=%{?_smp_ncpus_max}; \\\
         if [ -n "$ncpus_max" ] && [ "$ncpus_max" -gt 0 ] && [ "$RPM_BUILD_NCPUS" -gt "$ncpus_max" ]; then RPM_BUILD_NCPUS="$ncpus_max"; fi; \\\
         echo "$RPM_BUILD_NCPUS";)
@@ -725,7 +725,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 # Maximum number of threads to use when building, 0 for unlimited
 #%_smp_nthreads_max 0
 
-%_smp_build_nthreads %{_smp_build_ncpus}
+%_smp_build_nthreads %{_smp_build_ncpus:thread}
 
 # Assumed task size of processes and threads in megabytes.
 # Used to limit the amount of parallelism based on available memory.
