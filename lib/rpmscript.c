@@ -160,16 +160,10 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
     if (cwd != -1) {
 	mode_t oldmask = umask(0);
 	umask(oldmask);
-	pid_t pid = getpid();
 
 	if (chdir("/") == 0 &&
 		rpmluaRunScript(lua, script, sname, NULL, *argvp) == 0) {
 	    rc = RPMRC_OK;
-	}
-	if (pid != getpid()) {
-	    /* Terminate child process forked in lua scriptlet */
-	    rpmlog(RPMLOG_ERR, _("No exec() called after fork() in lua scriptlet\n"));
-	    _exit(EXIT_FAILURE);
 	}
 	/* This failing would be fatal, return something different for it... */
 	if (fchdir(cwd)) {
