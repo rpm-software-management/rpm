@@ -243,6 +243,25 @@ static int luaopt(int c, const char *oarg, int oint, void *data)
     return 0;
 }
 
+static int rpm_pcall(lua_State *L, int nargs, int nresults, int errfunc)
+{
+    pid_t pid = getpid();
+    int status;
+
+    int rc = lua_pcall(L, nargs, nresults, errfunc);
+
+    /* Terminate unhandled fork from Lua script */
+    if (pid != getpid())
+	_exit(1);
+
+    if (waitpid(0, &status, WNOHANG) == 0) {
+	rpmlog(RPMLOG_WARNING,
+		_("runaway fork() in Lua script\n"));
+    }
+
+    return rc;
+}
+
 int rpmluaRunScript(rpmlua lua, const char *script, const char *name,
 		    const char *opts, ARGV_t args)
 {
@@ -290,7 +309,7 @@ int rpmluaRunScript(rpmlua lua, const char *script, const char *name,
 	}
     }
 
-    if (lua_pcall(L, 2, LUA_MULTRET, 0) != 0) {
+    if (rpm_pcall(L, 2, LUA_MULTRET, 0) != 0) {
 	rpmlog(RPMLOG_ERR, _("lua script failed: %s\n"),
 		 lua_tostring(L, -1));
 	lua_pop(L, 1);
@@ -301,7 +320,7 @@ int rpmluaRunScript(rpmlua lua, const char *script, const char *name,
     if (nret > 0 && lua->printbuf) {
 	lua_getglobal(L, "print");
 	lua_insert(L, -(nret + 1));
-	if (lua_pcall(L, nret, 0, 0) != 0) {
+	if (rpm_pcall(L, nret, 0, 0) != 0) {
 	    rpmlog(RPMLOG_ERR, _("result print failed: %s\n"),
 		    lua_tostring(L, -1));
 	    lua_pop(L, 1);
@@ -326,7 +345,7 @@ int rpmluaRunScriptFile(rpmlua lua, const char *filename)
 		 lua_tostring(L, -1));
 	lua_pop(L, 1);
 	ret = -1;
-    } else if (lua_pcall(L, 0, 0, 0) != 0) {
+    } else if (rpm_pcall(L, 0, 0, 0) != 0) {
 	rpmlog(RPMLOG_ERR, _("lua script failed: %s\n"),
 		 lua_tostring(L, -1));
 	lua_pop(L, 1);
@@ -392,7 +411,7 @@ static void _rpmluaInteractive(lua_State *L, rpmluarl rlcb)
 	   break;
 	}
 	if (rc == 0)
-	    rc = lua_pcall(L, 0, 0, 0);
+	    rc = rpm_pcall(L, 0, 0, 0);
 	if (rc != 0) {
 	    fprintf(stderr, "%s\n", lua_tostring(L, -1));
 	    lua_pop(L, 1);
@@ -448,7 +467,7 @@ char *rpmluaCallStringFunction(rpmlua lua, const char *function, rpmhookArgs arg
     }
 
     /* run the call */
-    if (lua_pcall(L, args->argc, 1, 0) != 0) {
+    if (rpm_pcall(L, args->argc, 1, 0) != 0) {
 	rpmlog(RPMLOG_ERR, "%s: %s\n", function, lua_tostring(L, -1));
 	lua_pop(L, 1);
 	return NULL;
@@ -462,7 +481,7 @@ char *rpmluaCallStringFunction(rpmlua lua, const char *function, rpmhookArgs arg
     } else {
 	lua_getglobal(L, "tostring");
 	lua_insert(L, -2);
-	if (lua_pcall(L, 1, 1, 0) != 0) {
+	if (rpm_pcall(L, 1, 1, 0) != 0) {
 	    rpmlog(RPMLOG_ERR, "%s: %s\n", function, lua_tostring(L, -1));
 	    lua_pop(L, 1);
 	    return NULL;
@@ -664,7 +683,7 @@ static int rpmluaHookWrapper(rpmhookArgs args, void *data)
 	}
 	lua_rawseti(L, -2, i+1);
     }
-    if (lua_pcall(L, 1, 1, 0) != 0) {
+    if (rpm_pcall(L, 1, 1, 0) != 0) {
 	rpmlog(RPMLOG_ERR, _("lua hook failed: %s\n"),
 		 lua_tostring(L, -1));
 	lua_pop(L, 1);
