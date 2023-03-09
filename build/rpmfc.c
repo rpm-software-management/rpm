@@ -313,17 +313,16 @@ static int getOutputFrom(ARGV_t argv,
 	dup2(fromProg[1], STDOUT_FILENO); /* Make stdout the out pipe */
 	close(fromProg[1]);
 
-	rpmlog(RPMLOG_DEBUG, "\texecv(%s) pid %d\n",
-                        argv[0], (unsigned)getpid());
-
 	unsetenv("DEBUGINFOD_URLS");
 	if (buildRoot)
 	    setenv("RPM_BUILD_ROOT", buildRoot, 1);
 
 	execvp(argv[0], (char *const *)argv);
-	rpmlog(RPMLOG_ERR, _("Couldn't exec %s: %s\n"),
+	fprintf(stderr, _("Couldn't exec %s: %s\n"),
 		argv[0], strerror(errno));
 	_exit(EXIT_FAILURE);
+    } else {
+	rpmlog(RPMLOG_DEBUG, "\texecv(%s) pid %d\n", argv[0], child);
     }
 
     if (!doio)
