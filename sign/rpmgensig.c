@@ -214,7 +214,7 @@ static int runGPG(sigTarget sigt, const char *sigfile)
 	const char *gpg_path = NULL;
 
 	if (!getenv("GPG_TTY") && (!tty || setenv("GPG_TTY", tty, 0)))
-	    rpmlog(RPMLOG_WARNING, _("Could not set GPG_TTY to stdin: %m\n"));
+	    fprintf(stderr, _("Could not set GPG_TTY to stdin: %m\n"));
 
 	gpg_path = rpmExpand("%{?_gpg_path}", NULL);
 	if (gpg_path && *gpg_path != '\0')
@@ -225,11 +225,14 @@ static int runGPG(sigTarget sigt, const char *sigfile)
 
 	cmd = rpmExpand("%{?__gpg_sign_cmd}", NULL);
 	rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
-	if (!rc)
+	if (rc) {
+	    fprintf(stderr, "%s: %s\n", poptStrerror(rc), cmd);
+	} else {
 	    rc = execve(av[0], av+1, environ);
+	    fprintf(stderr, _("Could not exec %s: %s\n"),
+			av[0], strerror(errno));
+	}
 
-	rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), "gpg",
-			strerror(errno));
 	_exit(EXIT_FAILURE);
     }
 
