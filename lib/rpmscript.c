@@ -258,7 +258,7 @@ static void doScriptExec(ARGV_const_t argv, ARGV_const_t prefixes,
     if (chdir("/") == 0) {
 	xx = execv(argv[0], argv);
 	if (xx) {
-	    rpmlog(RPMLOG_ERR,
+	    fprintf(stderr,
 		    _("failed to exec scriptlet interpreter %s: %s\n"),
 		    argv[0], strerror(errno));
 	}
@@ -360,9 +360,6 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
 		sname, strerror(errno));
 	goto exit;
     } else if (pid == 0) {/* Child */
-	rpmlog(RPMLOG_DEBUG, "%s: execv(%s) pid %d\n",
-	       sname, *argvp[0], (unsigned)getpid());
-
 	fclose(in);
 	dup2(inpipe[0], STDIN_FILENO);
 
@@ -372,6 +369,10 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	} else {
 	    _exit(126); /* exit 126 for compatibility with bash(1) */
 	}
+    } else { /* Parent */
+	rpmlog(RPMLOG_DEBUG, "%s: execv(%s) pid %d\n",
+	       sname, *argvp[0], pid);
+
     }
     close(inpipe[0]);
     inpipe[0] = 0;
