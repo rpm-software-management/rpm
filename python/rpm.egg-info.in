@@ -2,7 +2,7 @@ Metadata-Version: 1.0
 Name: @PACKAGE_NAME@
 Version: @PACKAGE_VERSION@
 Summary: Python bindings for rpm
-Home-page: @PACKAGE_URL@
+Home-page: http://www.rpm.org/
 Author: Rpm community
 Author-email: rpm-maint@lists.rpm.org
 License: GNU General Public License v2
