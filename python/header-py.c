@@ -248,9 +248,9 @@ static PyObject * hdrWrite(hdrObject *s, PyObject *args, PyObject *kwds)
     Py_RETURN_NONE;
 }
 
-static long hdr_hash(PyObject * h)
+static Py_hash_t hdr_hash(PyObject * h)
 {
-    return (long) h;
+    return (Py_hash_t) h;
 }
 
 static PyObject * hdr_reduce(hdrObject *s)
