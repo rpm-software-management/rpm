@@ -133,17 +133,17 @@ find_package(ZLIB REQUIRED)
 find_package(BZip2)
 find_package(Iconv)
 
-pkg_check_modules(LUA REQUIRED IMPORTED_TARGET lua)
+pkg_check_modules(LUA REQUIRED IMPORTED_TARGET lua>=5.2)
 pkg_check_modules(POPT REQUIRED IMPORTED_TARGET popt)
 pkg_check_modules(MAGIC REQUIRED IMPORTED_TARGET libmagic)
 pkg_check_modules(READLINE IMPORTED_TARGET readline)
-pkg_check_modules(ZSTD IMPORTED_TARGET libzstd)
+pkg_check_modules(ZSTD IMPORTED_TARGET libzstd>=1.3.8)
 pkg_check_modules(LIBELF IMPORTED_TARGET libelf)
 pkg_check_modules(LIBDW IMPORTED_TARGET libdw)
 pkg_check_modules(LIBLZMA IMPORTED_TARGET liblzma>=5.2.0)
 
 if (ENABLE_OPENMP)
-	find_package(OpenMP REQUIRED)
+	find_package(OpenMP 4.5 REQUIRED)
 endif()
 
 if (ENABLE_NLS)
@@ -151,7 +151,7 @@ if (ENABLE_NLS)
 endif()
 
 if (ENABLE_SQLITE)
-	pkg_check_modules(SQLITE REQUIRED IMPORTED_TARGET sqlite3)
+	pkg_check_modules(SQLITE REQUIRED IMPORTED_TARGET sqlite3>=3.22)
 	list(APPEND db_backends sqlite)
 endif()
 
@@ -165,7 +165,7 @@ endif()
 list(APPEND db_backends dummy)
 
 if (ENABLE_PYTHON)
-	find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+	find_package(Python3 3.2 COMPONENTS Interpreter Development REQUIRED)
 endif()
 
 if (WITH_CAP)
