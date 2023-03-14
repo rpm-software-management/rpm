@@ -1,6 +1,6 @@
 install(FILES
 	debuginfo.attr desktop.attr elf.attr font.attr metainfo.attr
 	perl.attr perllib.attr pkgconfig.attr ocaml.attr
-	rpm_macro.attr script.attr usergroup.attr
+	rpm_macro.attr script.attr sysusers.attr usergroup.attr
 	DESTINATION ${RPM_CONFIGDIR}/fileattrs
 )

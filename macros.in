@@ -947,6 +947,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 %_includedir		%{_prefix}/include
 %_infodir		%{_datadir}/info
 %_mandir		%{_datadir}/man
+%_sysusersdir		%{_prefix}/lib/sysusers.d
 
 #==============================================================================
 # ---- config.guess platform macros.
@@ -1294,6 +1295,42 @@ end
 %{-S:%global __scm %{-S*}}\
 %{expand:%__scm_setup_%{__scm} %{!-v:-q}}\
 %{!-N:%autopatch %{-v} %{-p:-p%{-p*}}}
+
+# Add a sysuser user/group to a package. Takes a sysusers.d(5) line as
+# arguments, eg `%add_sysuser g mygroup 515`.
+# -b option omits the "Provides: " to support formatting the entry outside
+# spec context.
+%add_sysuser(-) %{lua:
+    if arg[1] == '-b' then
+        prefix = ''
+        table.remove(arg, 1)
+    else
+        prefix = 'Provides: '
+    end
+    if #arg < 2 then
+        error('not enough arguments')
+    end
+    if arg[1] == 'g' then
+        type = 'group'
+    elseif arg[1] == 'u' then
+        type = 'user'
+    else
+        error('invalid sysuser type: '..arg[1])
+    end
+    name = arg[2]
+    line = table.concat(arg, ' ')
+    -- \0-pad source string to avoid '=' in the output
+    llen = line:len()
+    ulen = math.ceil(4 * (llen / 3))
+    plen = 4 * math.ceil(llen / 3)
+    pad = string.rep('\\0', plen-ulen)
+    enc = rpm.b64encode(line..pad, 0);
+
+    print(string.format('%s%s(%s) = %s\\n', prefix, type, name, enc))
+    if type == 'user' then
+        print(string.format('%s%s(%s)\\n', prefix, 'group', name))
+    end
+}
 
 # \endverbatim
 #*/
