@@ -19,6 +19,7 @@ enum rpmscriptTypes_e {
     RPMSCRIPT_POSTTRANS		= (1 << 9),
     RPMSCRIPT_PREUNTRANS	= (1 << 10),
     RPMSCRIPT_POSTUNTRANS	= (1 << 11),
+    RPMSCRIPT_SYSUSERS		= (1 << 12),
     /* ... */
     RPMSCRIPT_VERIFY		= (1 << 24),
 };
@@ -60,6 +61,9 @@ RPM_GNUC_INTERNAL
 rpmTagVal triggertag(rpmsenseFlags sense);
 
 RPM_GNUC_INTERNAL
+rpmScript rpmScriptFromArgv(Header h, rpmTagVal scriptTag, ARGV_t argv, rpmscriptFlags flags, int chroot);
+
+RPM_GNUC_INTERNAL
 rpmScript rpmScriptFromTag(Header h, rpmTagVal scriptTag);
 
 RPM_GNUC_INTERNAL
@@ -85,6 +89,13 @@ rpmscriptFlags rpmScriptFlags(rpmScript script);
 RPM_GNUC_INTERNAL
 void rpmScriptSetNextFileFunc(rpmScript script, nextfilefunc func,
 			    void *param);
+
+RPM_GNUC_INTERNAL
+int rpmScriptChrootIn(rpmScript script);
+
+RPM_GNUC_INTERNAL
+int rpmScriptChrootOut(rpmScript script);
+
 #ifdef __cplusplus
 }
 #endif
