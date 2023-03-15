@@ -44,7 +44,7 @@ typedef rpmFlags rpmscriptFlags;
 
 typedef struct rpmScript_s * rpmScript;
 
-typedef char *(*nextfilefunc)(void *);
+typedef const char *(*nextfilefunc)(void *);
 
 #ifdef __cplusplus
 extern "C" {
