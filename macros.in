@@ -132,6 +132,9 @@
 
 %_keyringpath		%{_dbpath}/pubkeys/
 
+# sysusers helper binary or script, uncomment to disable
+%__systemd_sysusers	%{_bindir}/systemd-sysusers
+
 #
 #	Path to script that creates debug symbols in a /usr/lib/debug
 #	shadow tree.

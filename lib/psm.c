@@ -16,6 +16,7 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
 #include <rpm/argv.h>
+#include <rpm/rpmbase64.h>
 
 #include "lib/fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
 #include "lib/rpmchroot.h"
@@ -257,6 +258,173 @@ static rpmRC runInstScript(rpmpsm psm, rpmTagVal scriptTag)
 
     rpmScriptFree(script);
     headerFree(h);
+
+    return rc;
+}
+
+struct ARGVi_s {
+    ARGV_t argv;
+    int argc;
+    int ix;
+};
+
+static const char *nextarg(void *data)
+{
+    const char *l = NULL;
+    struct ARGVi_s *avi = data;
+    if (avi->ix < avi->argc) {
+	l = avi->argv[avi->ix];
+	avi->ix++;
+    }
+    return l;
+}
+
+/* Execute all systemd-sysusers separately for all sources */
+static rpmRC execSysusers(rpmpsm psm, Header h, const char *cmd,
+			  ARGV_t *sysusers, int nsysusers)
+{
+    rpmRC rc = RPMRC_OK;
+
+    for (int i = 0; i < nsysusers; i++) {
+	const char *path = sysusers[i][0];
+	rpmScript script = NULL;
+	ARGV_t argv = NULL;
+
+	argvAdd(&argv, cmd);
+	if (*path) {
+	    argvAdd(&argv, "--replace");
+	    argvAdd(&argv, path);
+	}
+	if (!rstreq(rpmtsRootDir(psm->ts), "/")) {
+	    argvAdd(&argv, "--root");
+	    argvAdd(&argv, rpmtsRootDir(psm->ts));
+	}
+	argvAdd(&argv, "-");
+
+	script = rpmScriptFromArgv(h, RPMTAG_SYSUSERS, argv, 0, 0);
+	if (script) {
+	    struct rpmtd_s pfx;
+	    struct ARGVi_s avi = {
+		.argv = sysusers[i],
+		.argc = argvCount(sysusers[i]),
+		.ix = 1,
+	    };
+
+	    rpmScriptSetNextFileFunc(script, nextarg, &avi);
+	    headerGet(h, RPMTAG_INSTPREFIXES, &pfx,
+			HEADERGET_ALLOC|HEADERGET_ARGV);
+	    rc = runScript(psm->ts, psm->te, h, pfx.data, script,
+			psm->scriptArg, -1);
+	    rpmtdFreeData(&pfx);
+	}
+	rpmScriptFree(script);
+	argvFree(argv);
+
+	if (rc)
+	    break;
+    }
+    return rc;
+}
+
+/* Return providing file path for provides index px, "" on not found. */
+static char *findProviderFile(rpmfiles files, int px)
+{
+    int fc = rpmfilesFC(files);
+    char *fn = NULL;
+
+    for (int i = 0; i < fc; i++) {
+	const uint32_t *ddict = NULL;
+	uint32_t ndict = rpmfilesFDepends(files, i, &ddict);
+	for (int j = 0; j < ndict; j++) {
+	    unsigned int dict = ddict[j];
+	    unsigned int dt = (dict >> 24) & 0xff;
+	    unsigned int dx = dict & 0x00ffffff;
+	    if (dt == 'P' && dx == px) {
+		fn = rpmfilesFN(files, i);
+		goto exit;
+	    }
+	}
+    }
+
+exit:
+    return (fn != NULL) ? fn : xstrdup("");
+}
+
+static rpmRC runSysusers(rpmpsm psm)
+{
+    rpmRC rc = RPMRC_OK;
+    Header h = NULL;
+    rpmds provides = NULL;
+    ARGV_t *sysusers = NULL;
+    int nsysusers = 0;
+    int dx;
+    char *cmd = rpmExpand("%{?__systemd_sysusers}", NULL);
+
+    /* Skip all this if disabled */
+    if (*cmd == '\0')
+	goto exit;
+
+    h = rpmteHeader(psm->te);
+    provides = rpmdsNew(h, RPMTAG_PROVIDENAME, 0);
+
+    /*
+     * Decode sysusers provides from this header into per-source argv's, 
+     * providing file as the first element ("" for non-file based provides),
+     * followed by decoded sysusers lines.
+     */
+    while ((dx = rpmdsNext(provides)) >= 0) {
+	const char *name = rpmdsN(provides);
+	char *fn = NULL;
+	char *line = NULL;
+	size_t llen = 0;
+	int px = -1;
+
+	if (!(rstreqn(name, "user(", 5) || rstreqn(name, "group(", 6)))
+	    continue;
+	if (!(rpmdsFlags(provides) & RPMSENSE_EQUAL))
+	    continue;
+	if (rpmBase64Decode(rpmdsEVR(provides), (void **)&line, &llen))
+	    continue;
+
+	if (sysusers == NULL)
+	    sysusers = xcalloc(rpmdsCount(provides), sizeof(*sysusers));
+
+	/* Find the providing file (if any) */
+	fn = findProviderFile(psm->files, dx);
+
+	/* Do we already know this provider? */
+	for (int i = 0; i < nsysusers; i++) {
+	    if (rstreq(sysusers[i][0], fn)) {
+		px = i;
+		break;
+	    }
+	}
+
+	/* If not, allocate one */
+	if (px == -1) {
+	    px = nsysusers;
+	    argvAdd(&sysusers[px], fn);
+	    nsysusers++;
+	}
+
+	argvAddN(&sysusers[px], line, llen);
+
+	free(fn);
+	free(line);
+    }
+
+    if (sysusers) {
+	rc = execSysusers(psm, h, cmd, sysusers, nsysusers);
+
+	for (int i = 0; i < nsysusers; i++)
+	    argvFree(sysusers[i]);
+	free(sysusers);
+    }
+
+exit:
+    rpmdsFree(provides);
+    headerFree(h);
+    free(cmd);
 
     return rc;
 }
@@ -671,6 +839,11 @@ static rpmRC rpmPackageInstall(rpmts ts, rpmpsm psm)
 	if (rpmtsFilterFlags(psm->ts) & RPMPROB_FILTER_REPLACEPKG)
 	    markReplacedInstance(ts, psm->te);
 
+	/* Create sysusers.d(5) users and groups provided by this package */
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSYSUSERS)) {
+	    rc = runSysusers(psm);
+	    if (rc) break;
+	}
 
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPREIN)) {
 	    /* Run triggers in other package(s) this package sets off. */

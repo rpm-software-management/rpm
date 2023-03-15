@@ -374,6 +374,10 @@ and **%postuntrans** scriptlet(s).
 and turns off execution of the corresponding **%triggerprein**,
 **%triggerin**, **%triggerun**, and **%triggerpostun** scriptlet(s).
 
+**\--nosysusers**
+
+:   Don't create sysusers from packages
+
 **\--oldpackage**
 
 :   Allow an upgrade to replace a newer package with an older one.
