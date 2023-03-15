@@ -10,6 +10,7 @@
 #include <rpm/rpmfi.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmbase64.h>
 #include "lib/misc.h"		/* tag function proto */
 
 #include "debug.h"
@@ -974,6 +975,38 @@ static int filenlinksTag(Header h, rpmtd td, headerGetFlags hgflags)
     return (fc > 0);
 }
 
+static int sysusersTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    ARGV_t sysusers = NULL;
+    rpmds provides = rpmdsNew(h, RPMTAG_PROVIDENAME, 0);
+
+    while (rpmdsNext(provides) >= 0) {
+	size_t llen = 0;
+	char *line = NULL;
+	const char *name = rpmdsN(provides);
+
+	if (!(rstreqn(name, "user(", 5) || rstreqn(name, "group(", 6)))
+	    continue;
+	if (!(rpmdsFlags(provides) & RPMSENSE_EQUAL))
+	    continue;
+	if (rpmBase64Decode(rpmdsEVR(provides), (void **)&line, &llen))
+	    continue;
+
+	argvAddN(&sysusers, line, llen);
+	free(line);
+    }
+    rpmdsFree(provides);
+
+    if (sysusers) {
+	td->count = argvCount(sysusers);
+	td->data = sysusers;
+	td->flags = RPMTD_ALLOCED|RPMTD_PTR_ALLOCED;
+	td->type = RPM_STRING_ARRAY_TYPE;
+    }
+
+    return (td->count > 0);
+}
+
 static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_GROUP,		groupTag },
     { RPMTAG_DESCRIPTION,	descriptionTag },
@@ -1013,6 +1046,7 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_OBSOLETENEVRS,	obsoletenevrsTag },
     { RPMTAG_CONFLICTNEVRS,	conflictnevrsTag },
     { RPMTAG_FILENLINKS,	filenlinksTag },
+    { RPMTAG_SYSUSERS,		sysusersTag },
     { 0, 			NULL }
 };
 

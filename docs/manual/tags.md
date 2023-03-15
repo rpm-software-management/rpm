@@ -453,6 +453,7 @@ Recommendnevrs        | 5058 | string array | Formatted `name [op version]` reco
 Requirenevrs          | 5041 | string array | Formatted `name [op version]` require dependency strings.
 Suggestnevrs          | 5059 | string array | Formatted `name [op version]` suggest dependency strings.
 Supplementnevrs       | 5060 | string array | Formatted `name [op version]` supplement dependency strings.
+Sysusers              | 5109 | string array | Formatted systemd-sysusers lines for the package. |
 Filetriggerconds      | 5086 | string array | Formatted file trigger condition information.
 Filetriggertype       | 5087 | string array | Formatted file trigger type information.
 Transfiletriggerconds | 5088 | string array | Formatted transaction file trigger condition information.
