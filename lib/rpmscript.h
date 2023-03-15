@@ -44,6 +44,8 @@ typedef rpmFlags rpmscriptFlags;
 
 typedef struct rpmScript_s * rpmScript;
 
+typedef char *(*nextfilefunc)(void *);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -81,7 +83,7 @@ RPM_GNUC_INTERNAL
 rpmscriptFlags rpmScriptFlags(rpmScript script);
 
 RPM_GNUC_INTERNAL
-void rpmScriptSetNextFileFunc(rpmScript script, char *(*func)(void *),
+void rpmScriptSetNextFileFunc(rpmScript script, nextfilefunc func,
 			    void *param);
 #ifdef __cplusplus
 }

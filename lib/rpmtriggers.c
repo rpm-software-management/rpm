@@ -387,7 +387,7 @@ static int runHandleTriggersInPkg(rpmts ts, rpmte te, Header h,
     matchFilesIter mfi = NULL;
     rpmScript script;
     struct rpmtd_s installPrefixes;
-    char *(*inputFunc)(void *);
+    nextfilefunc inputFunc;
 
     rpmdsTriggers = rpmdsNew(h, triggerDsTag(tm), 0);
     rpmdsTrigger = rpmdsFilterTi(rpmdsTriggers, ti);
@@ -430,7 +430,7 @@ static int runHandleTriggersInPkg(rpmts ts, rpmte te, Header h,
 	     * that will be passed as stdin to trigger script. To get
 	     * these data from lua script function rpm.input() can be used.
 	     */
-	    inputFunc = (char *(*)(void *)) matchFilesNext;
+	    inputFunc = (nextfilefunc) matchFilesNext;
 	    rpmScriptSetNextFileFunc(script, inputFunc, mfi);
 
 	    nerrors += runScript(ts, NULL, h, installPrefixes.data,

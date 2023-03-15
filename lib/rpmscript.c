@@ -22,7 +22,7 @@
 #include "debug.h"
 
 struct scriptNextFileFunc_s {
-    char *(*func)(void *);	/* function producing input for script */
+    nextfilefunc func;		/* function producing input for script */
     void *param;		/* parameter for func */
 };
 
@@ -529,7 +529,7 @@ static rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
     return script;
 }
 
-void rpmScriptSetNextFileFunc(rpmScript script, char *(*func)(void *),
+void rpmScriptSetNextFileFunc(rpmScript script, nextfilefunc func,
 			    void *param)
 {
     script->nextFileFunc = xmalloc(sizeof(*script->nextFileFunc));
