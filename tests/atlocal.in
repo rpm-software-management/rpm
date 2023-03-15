@@ -69,6 +69,8 @@ if mknod foodev c 123 123; then
    rm -f foodev
 else
    MKNOD_DISABLED=true
+   # not related to mknod but close enough for a "am I privileged" test
+   VERIFYOPTS="--nouser --nogroup"
 fi
 
 MALLOC_DEBUG=libc_malloc_debug.so.0

@@ -1440,3 +1440,37 @@ deptest-test-obsoletes-1.0-1.noarch
 ],
 [])
 AT_CLEANUP
+
+AT_SETUP([rpm -i create user])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpmbuild -bb --quiet --define "pkg user" --define "provs %{add_sysuser u myuser 876 - /home/myuser /bin/sh}"\
+  /data/SPECS/deptest.spec
+runroot rpm -U /build/RPMS/noarch/deptest-user-1.0-1.noarch.rpm 2> /dev/null
+runroot_other tail -1 /etc/passwd
+runroot rpm -V ${VERIFYOPTS} deptest-user
+],
+[0],
+[myuser:x:876:876::/home/myuser:/bin/sh
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([rpm -i create group])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_INIT
+
+runroot rpmbuild -bb --quiet --define "pkg user" --define "provs %{add_sysuser g mygroup 678}"\
+  /data/SPECS/deptest.spec
+runroot rpm -i /build/RPMS/noarch/deptest-user-1.0-1.noarch.rpm 2> /dev/null
+runroot_other tail -1 /etc/group
+runroot rpm -V ${VERIFYOPTS} deptest-user
+],
+[0],
+[mygroup:x:678:
+],
+[])
+AT_CLEANUP

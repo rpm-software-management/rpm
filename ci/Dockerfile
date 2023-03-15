@@ -43,6 +43,7 @@ RUN dnf -y install \
   findutils sed grep gawk diffutils file patch \
   tar unzip gzip bzip2 cpio xz \
   pkgconfig \
+  /usr/bin/systemd-sysusers \
   /usr/bin/gdb-add-index \
   dwz \
   fsverity-utils fsverity-utils-devel \
