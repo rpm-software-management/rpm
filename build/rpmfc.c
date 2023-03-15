@@ -1172,6 +1172,9 @@ static const struct skipped_extension_s skipped_extensions[] = {
 	{ ".h",  "C Header",                 "text/x-c"   },
 	{ ".la", "libtool library file",     "text/plain" },
 	{ ".pc", "pkgconfig file",           "text/plain" },
+	{ ".html", "HTML document",                           "text/html" },
+	{ ".png",  "PNG image data",                          "image/png" },
+	{ ".svg",  "SVG Scalable Vector Graphics image",      "image/svg+xml" },
 	{ NULL, NULL, NULL }
 };
 
