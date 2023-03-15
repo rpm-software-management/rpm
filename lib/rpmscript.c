@@ -17,6 +17,7 @@
 #include "lib/rpmscript.h"
 #include "rpmio/rpmio_internal.h"
 
+#include "lib/rpmchroot.h"
 #include "lib/rpmplugins.h"     /* rpm plugins hooks */
 
 #include "debug.h"
@@ -35,6 +36,7 @@ struct rpmScript_s {
     char *body;			/* script body */
     char *descr;		/* description for logging */
     rpmscriptFlags flags;	/* flags to control operation */
+    int chroot;			/* chrooted script? */
     struct scriptNextFileFunc_s *nextFileFunc;  /* input function */
 };
 
@@ -108,6 +110,21 @@ static int next_file(lua_State *L)
     return 1;
 }
 
+int rpmScriptChrootIn(rpmScript script)
+{
+    int rc = 0;
+    if (script->chroot)
+	rc = rpmChrootIn();
+    return rc;
+}
+
+int rpmScriptChrootOut(rpmScript script)
+{
+    int rc = 0;
+    if (script->chroot)
+	rc = rpmChrootOut();
+    return rc;
+}
 /**
  * Run internal Lua script.
  */
@@ -510,6 +527,7 @@ static rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
     script->type = getScriptType(tag);
     script->flags = getDefFlags(tag) | flags;
     script->body = (body != NULL) ? xstrdup(body) : NULL;
+    script->chroot = 1;
     rasprintf(&script->descr, "%%%s%s(%s)", prefix, tag2sln(tag), nevra);
 
     /* macros need to be expanded before possible queryformat */
@@ -642,6 +660,19 @@ rpmScript rpmScriptFromTriggerTag(Header h, rpmTagVal triggerTag,
     rpmtdFreeData(&tprogs);
     rpmtdFreeData(&tflags);
 
+    return script;
+}
+
+rpmScript rpmScriptFromArgv(Header h, rpmTagVal scriptTag, ARGV_t argv, rpmscriptFlags flags, int chroot)
+{
+    rpmScript script = NULL;
+
+    if (h && argv) {
+	char *body = argvJoin(argv, " ");
+	script = rpmScriptNew(h, scriptTag, body, flags, "");
+	script->chroot = chroot;
+	free(body);
+    }
     return script;
 }
 
