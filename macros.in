@@ -548,7 +548,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #
 # Path to scripts to autogenerate package dependencies,
 #
-# Note: Used iff _use_internal_dependency_generator is zero.
+# Note: Used if _use_internal_dependency_generator is zero.
 #%__find_provides	%{_rpmconfigdir}/rpmdeps --provides
 #%__find_requires	%{_rpmconfigdir}/rpmdeps --requires
 %__find_provides	%{_rpmconfigdir}/find-provides
