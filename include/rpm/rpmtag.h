@@ -385,6 +385,7 @@ typedef enum rpmTag_e {
     RPMTAG_POSTUNTRANSPROG	= 5106,	/* s[] */
     RPMTAG_PREUNTRANSFLAGS	= 5107, /* i */
     RPMTAG_POSTUNTRANSFLAGS	= 5108, /* i */
+    RPMTAG_SYSUSERS		= 5109, /* s[] extension */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;
