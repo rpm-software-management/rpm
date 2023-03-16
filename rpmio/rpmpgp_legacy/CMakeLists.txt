@@ -10,7 +10,7 @@ target_sources(rpmpgp_legacy PRIVATE
 )
 target_include_directories(rpmpgp_legacy PRIVATE ..)
 if (WITH_OPENSSL)
-	find_package(OpenSSL 1.0.2 REQUIRED)
+	find_package(OpenSSL 3.0.0 REQUIRED)
 	target_sources(rpmpgp_legacy PRIVATE digest_openssl.c)
 	target_link_libraries(rpmpgp_legacy PRIVATE OpenSSL::Crypto)
 else()
