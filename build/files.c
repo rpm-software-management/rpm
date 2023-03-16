@@ -1271,8 +1271,7 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 
     /* rpmfiNew() only groks compressed filelists */
     headerConvert(h, HEADERCONV_COMPRESSFILELIST);
-    pkg->cpioList = rpmfilesNew(NULL, h, RPMTAG_BASENAMES,
-			    (RPMFI_NOFILEUSER|RPMFI_NOFILEGROUP));
+    pkg->cpioList = rpmfilesNew(NULL, h, RPMTAG_BASENAMES, 0);
 
     if (pkg->cpioList == NULL || rpmfilesFC(pkg->cpioList) != npaths) {
 	fl->processingFailed = 1;
