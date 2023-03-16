@@ -1014,8 +1014,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
                     rc = RPMERR_UNKNOWN_FILETYPE;
             }
 
-setmeta:
-			; /* Empty statement for label */
+setmeta:;
 	    /* Special files require path-based ops */
 	    int mayopen = S_ISREG(fp->sb.st_mode) || S_ISDIR(fp->sb.st_mode);
 	    if (!rc && fd == -1 && mayopen) {
