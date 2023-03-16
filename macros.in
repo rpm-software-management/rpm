@@ -235,6 +235,9 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #	Is ignored when SOURCE_DATE_EPOCH is not set.
 %clamp_mtime_to_source_date_epoch 0
 
+#	If enabled, dilute user() and group() requires into recommends
+#%__use_weak_usergroup_deps 1
+
 #	The directory where newly built binary packages will be written.
 %_rpmdir		%{_topdir}/RPMS
 

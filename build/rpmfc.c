@@ -21,6 +21,7 @@
 #include <rpm/rpmfi.h>
 #include <rpm/rpmstrpool.h>
 
+#include "lib/rpmug.h"
 #include "lib/rpmfi_internal.h"		/* rpmfiles stuff for now */
 #include "build/rpmbuild_internal.h"
 
@@ -1604,18 +1605,44 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     /* Extract absolute file paths in argv format. */
     fmode = xcalloc(ac+1, sizeof(*fmode));
 
-    fi = rpmfiInit(fi, 0);
-    while ((idx = rpmfiNext(fi)) >= 0) {
-	/* Does package have any %config files? */
-	genConfigDeps |= (rpmfiFFlags(fi) & RPMFILE_CONFIG);
-	fmode[idx] = rpmfiFMode(fi);
-    }
-
     fc = rpmfcCreate(spec->buildRoot, 0);
     freePackage(fc->pkg);
     fc->pkg = pkg;
     fc->skipProv = !pkg->autoProv;
     fc->skipReq = !pkg->autoReq;
+
+    fi = rpmfiInit(fi, 0);
+    while ((idx = rpmfiNext(fi)) >= 0) {
+	/* Does package have any %config files? */
+	genConfigDeps |= (rpmfiFFlags(fi) & RPMFILE_CONFIG);
+	fmode[idx] = rpmfiFMode(fi);
+
+	if (!fc->skipReq) {
+	    const char *user = rpmfiFUser(fi);
+	    const char *group = rpmfiFGroup(fi);
+	    rpmsenseFlags ugfl = (RPMSENSE_SCRIPT_PRE|RPMSENSE_SCRIPT_POSTUN);
+	    rpmTagVal deptag = RPMTAG_REQUIRENAME;
+
+	    if (rpmExpandNumeric("%{?_use_weak_usergroup_deps}"))
+		deptag = RPMTAG_RECOMMENDNAME;
+
+	    /* filter out root and current user/group */
+	    if (user && !rstreq(user, UID_0_USER) &&
+			!rstreq(user, rpmugUname(getuid()))) {
+		rpmds ds = rpmdsSingleNS(fc->pool, deptag, "user",
+					user, NULL, ugfl);
+		rpmdsMerge(packageDependencies(pkg, deptag), ds);
+		rpmdsFree(ds);
+	    }
+	    if (group && !rstreq(group, GID_0_GROUP) &&
+			 !rstreq(group, rpmugGname(getgid()))) {
+		rpmds ds = rpmdsSingleNS(fc->pool, deptag, "group",
+					group, NULL, ugfl);
+		rpmdsMerge(packageDependencies(pkg, deptag), ds);
+		rpmdsFree(ds);
+	    }
+	}
+    }
 
     if (!fc->skipProv && genConfigDeps) {
 	/* Add config dependency, Provides: config(N) = EVR */
