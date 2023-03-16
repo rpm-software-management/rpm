@@ -125,7 +125,7 @@ conditions becomes true (the , can be read as "or"). For example:
 
 Will put a trigger in package 'package' which runs when the installation
 status of either fileutils > 3.0 or perl < 1.2 is changed. The script will
-be run through /usr/bin/perl rather then /bin/sh (which is the default).
+be run through /usr/bin/perl rather than /bin/sh (which is the default).
 
 ## An Unusual Case
 
