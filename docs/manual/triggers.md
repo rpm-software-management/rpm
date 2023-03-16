@@ -7,7 +7,7 @@ title: rpm.org - Trigger scriptlets
 Triggers provide a well-defined method for packages to interact with one
 another at package install and uninstall time. They are an extension
 of the normal installation scripts (i.e. %pre) which allows one package
-(the "source" of the trigger package [which I often think of as the 
+(the "source" of the trigger package [which I often think of as the
 "triggered package"]) to execute an action when the installation status
 of another package (the "target" of the trigger) changes.
 
@@ -21,7 +21,7 @@ where the link points (realistically, sendmail and vmail should conflict
 with one another), while if neither package is installed the link should
 not exist at all.
 
-This can be accomplished by mymailer providing trigger scripts which 
+This can be accomplished by mymailer providing trigger scripts which
 move the symlink when any of the following occurs:
 
 ```
@@ -92,10 +92,10 @@ These trigger scripts get run when:
 ```
 
 The %postun insures that /etc/mymailer/mailer is removed when mymailer
-is removed (triggers get run at the same time as %preun scripts, so 
+is removed (triggers get run at the same time as %preun scripts, so
 doing this in the %postun is safe). Note that the triggers are testing
 $2 to see if any action should occur. Recall that the $1 passed to regular
-scripts contains the number of instances of the package which will be 
+scripts contains the number of instances of the package which will be
 installed when the operation has completed. $1 for triggers is exactly
 the same -- it is the number of instances of the source (or triggered)
 package which will remain when the trigger has completed. Similarly, $2
@@ -131,10 +131,10 @@ be run through /usr/bin/perl rather than /bin/sh (which is the default).
 
 There is one other type of trigger available -- %triggerpostun. These are
 triggers that are run after their target package has been removed; they will
-never be run when the package containing the trigger is removed. 
+never be run when the package containing the trigger is removed.
 
 While this type of trigger is almost never useful, they allow a package to
-fix errors introduced by the %postun of another package (or by an earlier 
+fix errors introduced by the %postun of another package (or by an earlier
 version of that package).
 
 ## Order of Script Execution
