@@ -362,11 +362,15 @@ AT_CLEANUP
 AT_SETUP([rpmbuild %attr and %defattr])
 AT_KEYWORDS([build])
 RPMDB_INIT
-AT_CHECK([[
 
+export SOURCE_DATE_EPOCH=1582222800
 runroot rpmbuild \
-  -bb --quiet /data/SPECS/attrtest.spec
+  -bb --quiet \
+  --define "use_source_date_epoch_as_buildtime 1" \
+  --define "clamp_mtime_to_source_date_epoch 1" \
+  /data/SPECS/attrtest.spec
 
+AT_CHECK([[
 runroot rpm -qp --qf \
   "\n[%{filemodes:perms} %-8{fileusername} %-8{filegroupname} %{filenames}\n]"\
   /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm
@@ -393,6 +397,33 @@ drwxr-x--- adm      root     /i/dir
 -rwsr-xr-x root     adm      /i/file
 drwxrwxrwx zoot     zoot     /j/dir
 --w--w--w- zoot     zoot     /j/file
+],
+[])
+
+AT_CHECK([[
+runroot rpm2cpio /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm | cpio -tv --quiet
+]],
+[0],
+[drwx------   1 root     root            0 Feb 20  2020 ./a/dir
+-r--------   1 root     root           15 Feb 20  2020 ./a/file
+drwx------   1 daemon   adm             0 Feb 20  2020 ./b/dir
+-r--------   1 daemon   adm            15 Feb 20  2020 ./b/file
+drwxr-x---   1 root     adm             0 Feb 20  2020 ./c/dir
+-rw-r-----   1 daemon   root           15 Feb 20  2020 ./c/file
+drwxr-x--x   1 daemon   bin             0 Feb 20  2020 ./d/dir
+-rw-r--r--   1 bin      daemon         15 Feb 20  2020 ./d/file
+drwx------   1 root     root            0 Feb 20  2020 ./e/dir
+-r--------   1 root     root           15 Feb 20  2020 ./e/file
+drwxrwx---   1 root     root            0 Feb 20  2020 ./f/dir
+-rw-rw----   1 root     root           15 Feb 20  2020 ./f/file
+drwx------   1 adm      root            0 Feb 20  2020 ./g/dir
+-r--------   1 root     adm            15 Feb 20  2020 ./g/file
+drwxr-xr-x   1 root     root            0 Feb 20  2020 ./h/dir
+-rw-r--r--   1 root     root           15 Feb 20  2020 ./h/file
+drwxr-x---   1 adm      root            0 Feb 20  2020 ./i/dir
+-rwsr-xr-x   1 root     adm            15 Feb 20  2020 ./i/file
+drwxrwxrwx   1 root     root            0 Feb 20  2020 ./j/dir
+--w--w--w-   1 root     root           15 Feb 20  2020 ./j/file
 ],
 [])
 AT_CLEANUP
