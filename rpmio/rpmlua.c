@@ -1178,8 +1178,13 @@ static int mc_call(lua_State *L)
 
 	for (int i = 1; i <= nitem; i++) {
 	    lua_rawgeti(L, 1, i);
-	    argvAdd(&argv, lua_tostring(L, -1));
-	    lua_pop(L, 1);
+	    const char *s= lua_tostring(L, -1);
+	    if (s) {
+		argvAdd(&argv, s);
+		lua_pop(L, 1);
+	    } else {
+		luaL_argerror(L, i, "cannot convert to string");
+	    }
 	}
 
 	if (rpmExpandThisMacro(*mc, name, argv, &buf, 0) >= 0) {
