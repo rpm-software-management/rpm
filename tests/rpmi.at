@@ -1474,3 +1474,46 @@ runroot rpm -V ${VERIFYOPTS} deptest-user
 ],
 [])
 AT_CLEANUP
+
+AT_SETUP([rpm -i sysusers])
+AT_KEYWORDS([install build sysusers])
+RPMDB_INIT
+
+runroot rpmbuild -bb --quiet /data/SPECS/klang.spec
+
+AT_CHECK([
+runroot rpm -U /build/RPMS/noarch/klang-client-1.0-1.noarch.rpm
+],
+[1],
+[],
+[error: Failed dependencies:
+	group(klang) is needed by klang-client-1.0-1.noarch
+])
+
+AT_CHECK([
+runroot rpm -U \
+	/build/RPMS/noarch/klang-client-1.0-1.noarch.rpm \
+	/build/RPMS/noarch/klang-common-1.0-1.noarch.rpm
+runroot_other grep ^klang /etc/group | cut -f1 -d:
+runroot rpm -V ${VERIFYOPTS} klang-client klang-common
+],
+[0],
+[klang
+],
+[ignore])
+
+AT_CHECK([
+runroot rpm -U /build/RPMS/noarch/klang-server-1.0-1.noarch.rpm
+runroot_other grep ^klangd /etc/passwd | cut -f1 -d:
+runroot_other grep ^klangd /etc/group | cut -f1 -d:
+runroot_other grep ^plong /etc/passwd | cut -f1 -d:
+runroot rpm -V ${VERIFYOPTS} klang-server
+],
+[0],
+[klangd
+klangd
+plong
+],
+[ignore])
+
+AT_CLEANUP
