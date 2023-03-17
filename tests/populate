@@ -31,9 +31,10 @@ done
 for node in urandom stdin stderr stdout null full; do
 	ln -s /dev/${node} testing/dev/${node}
 done
-for cf in hosts resolv.conf passwd shadow group gshadow mtab ; do
+for cf in hosts resolv.conf passwd group mtab ; do
 	[ -f /etc/${cf} ] && cp /etc/${cf} testing/etc/${cf}
 done
+touch testing/etc/{shadow,gshadow}
 for prog in gzip cat cp patch tar sh bash ln chmod rm mkdir uname grep sed find file ionice mktemp nice cut sort diff touch install wc coreutils xargs mknod locale; do
 	p=`which ${prog}`
 	if [ "${p}" != "" ]; then
