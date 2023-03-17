@@ -713,6 +713,15 @@ nil
  1:%{?aaa} 2:%{yyy}
 that
 ])
+
+AT_CHECK([[
+runroot rpm \
+	--eval "%{lua:macros.defined({1,2,{}})}"
+]],
+[1],
+[],
+[[error: lua script failed: [string "<lua>"]:1: bad argument #3 to 'defined' (cannot convert to string)
+]])
 AT_CLEANUP
 
 AT_SETUP([lua macros recursion])
