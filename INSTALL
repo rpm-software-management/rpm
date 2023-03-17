@@ -28,7 +28,7 @@ The source for the file utility + library is available from
 
 You will need a cryptographic library to support digests and
 signatures. This depends on the OpenPGP parser used: the default is
-rpm-sequoia library, which is available from
+rpm-sequoia library (>= 1.3.0 required), which is available from
     https://github.com/rpm-software-management/rpm-sequoia
 
 If using the deprecated internal parser (-DWITH_INTERNAL_OPENPGP=ON),

@@ -416,7 +416,7 @@ Checking for key:
 Version     : eb04e625
 Checking package after importing key:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
-    Header V4 RSA/SHA512 Signature, key ID 15217ee0: BAD
+    Header V4 RSA/SHA512 Signature, key ID 15217ee0: NOTTRUSTED
     Header DSA signature: NOTFOUND
     Header SHA256 digest: OK
     Header SHA1 digest: OK
@@ -427,7 +427,7 @@ Checking package after importing key:
 1
 Checking package after importing key, no digest:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
-    Header V4 RSA/SHA512 Signature, key ID 15217ee0: BAD
+    Header V4 RSA/SHA512 Signature, key ID 15217ee0: NOTTRUSTED
     Header DSA signature: NOTFOUND
     RSA signature: NOTFOUND
     DSA signature: NOTFOUND
@@ -483,7 +483,7 @@ Checking for key:
 Version     : eb04e625
 Checking package after importing key:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
-    Header V4 RSA/SHA512 Signature, key ID 15217ee0: BAD
+    Header V4 RSA/SHA512 Signature, key ID 15217ee0: NOTTRUSTED
     Header DSA signature: NOTFOUND
     Header SHA256 digest: OK
     Header SHA1 digest: OK
@@ -494,7 +494,7 @@ Checking package after importing key:
 1
 Checking package after importing key, no digest:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
-    Header V4 RSA/SHA512 Signature, key ID 15217ee0: BAD
+    Header V4 RSA/SHA512 Signature, key ID 15217ee0: NOTTRUSTED
     Header DSA signature: NOTFOUND
     RSA signature: NOTFOUND
     DSA signature: NOTFOUND
