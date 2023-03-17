@@ -879,7 +879,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST) ? 1 : 0;
     int nofcaps = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCAPS) ? 1 : 0;
     int firstlinkfile = -1;
-    int mayopen = 0;
     char *tid = NULL;
     struct filedata_s *fdata = xcalloc(fc, sizeof(*fdata));
     struct filedata_s *firstlink = NULL;
@@ -940,6 +939,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	    fp = firstlink;
 
         if (!fp->skip) {
+	    int mayopen = 0;
 	    int fd = -1;
 	    rc = ensureDir(plugins, rpmfiDN(fi), 0,
 			    (fp->action == FA_CREATE), 0, &di.dirfd);
