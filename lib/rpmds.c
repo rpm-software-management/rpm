@@ -691,12 +691,8 @@ int rpmdsNext(rpmds ds)
 {
     int i = -1;
 
-    if (ds != NULL && ++ds->i >= 0) {
-	if (ds->i < ds->Count) {
-	    i = ds->i;
-	    ds->DNEVR = _free(ds->DNEVR);
-	} else
-	    ds->i = -1;
+    if (ds != NULL)
+	i = rpmdsSetIx(ds, ds->i + 1);
 
     return i;
 }
