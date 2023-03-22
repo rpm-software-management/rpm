@@ -36,6 +36,7 @@ macros are available:
 ```
 	%0	the name of the macro being invoked
 	%*	all arguments (unlike shell, not including any processed flags)
+	%**	all arguments (including any processed flags)
 	%#	the number of arguments
 	%{-f}	if present at invocation, the flag f itself
 	%{-f*}	if present at invocation, the argument to flag f
