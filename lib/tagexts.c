@@ -147,12 +147,8 @@ static int filedepTag(Header h, rpmTag tagN, rpmtd td, headerGetFlags hgflags)
 	goto exit;
     }
 
-    if (tagN == RPMTAG_PROVIDENAME)
-	deptype = 'P';
-    else if (tagN == RPMTAG_REQUIRENAME)
-	deptype = 'R';
-
     ds = rpmdsNew(h, tagN, 0);
+    deptype = rpmdsD(ds);
     fdeps = xmalloc(numfiles * sizeof(*fdeps));
 
     while ((fileix = rpmfiNext(fi)) >= 0) {
