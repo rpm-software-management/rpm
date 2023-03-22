@@ -15,8 +15,6 @@
 
 int _rpmds_debug = 0;
 
-int _rpmds_nopromote = 1;
-
 /**
  * A package dependency set.
  */
