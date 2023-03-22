@@ -824,11 +824,9 @@ assert(fx < fc->fddictn->nvals);
 	    ix = fc->ddictx->vals[dx++];
 	    deptype = ((ix >> 24) & 0xff);
 	    ix &= 0x00ffffff;
-	    depval = NULL;
 	    ds = rpmfcDependencies(fc, rpmdsDToTagN(deptype));
-	    (void) rpmdsSetIx(ds, ix-1);
-	    if (rpmdsNext(ds) >= 0)
-		depval = rpmdsDNEVR(ds);
+	    (void) rpmdsSetIx(ds, ix);
+	    depval = rpmdsDNEVR(ds);
 	    if (depval)
 		fprintf(fp, "\t%s\n", depval);
 	}
