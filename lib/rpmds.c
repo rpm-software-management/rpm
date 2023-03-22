@@ -935,17 +935,13 @@ int rpmdsSearch(rpmds ds, rpmds ods)
     /* Check each member of [l,u) subset for ranges overlap. */
     i = -1;
     if (l < u) {
-	int save = rpmdsSetIx(ds, l-1);
-	while ((l = rpmdsNext(ds)) >= 0 && (l < u)) {
-	    if ((i = rpmdsCompare(ods, ds)) != 0)
+	int oix = rpmdsIx(ods);
+	while (l < u) {
+	    if (rpmdsCompareIndex(ods, oix, ds, l) != 0) {
+		i = l;
 		break;
-	}
-	/* Return element index that overlaps, or -1. */
-	if (i)
-	    i = rpmdsIx(ds);
-	else {
-	    (void) rpmdsSetIx(ds, save);
-	    i = -1;
+	    }
+	    l++;
 	}
     }
     return i;
