@@ -553,10 +553,10 @@ int rpmdsSetIx(rpmds ds, int ix)
 {
     int i = -1;
 
-    if (ds != NULL) {
-	i = ds->i;
+    if (ds != NULL && ix >= 0 && ix < ds->Count) {
 	ds->i = ix;
 	ds->DNEVR = _free(ds->DNEVR);
+	i = ds->i;
     }
     return i;
 }
