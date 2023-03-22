@@ -200,7 +200,7 @@ int rpmdsIx(const rpmds ds);
  * Set dependency set index.
  * @param ds		dependency set
  * @param ix		new index
- * @return		current index
+ * @return		new index, -1 on error
  */
 int rpmdsSetIx(rpmds ds, int ix);
 
