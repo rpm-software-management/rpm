@@ -163,9 +163,7 @@ static int filedepTag(Header h, rpmTag tagN, rpmtd td, headerGetFlags hgflags)
 		if (mydt != deptype)
 		    continue;
 		dix &= 0x00ffffff;
-		(void) rpmdsSetIx(ds, dix-1);
-		if (rpmdsNext(ds) < 0)
-		    continue;
+		(void) rpmdsSetIx(ds, dix);
 		DNEVR = rpmdsDNEVR(ds);
 		if (DNEVR != NULL) {
 		    argvAdd(&deps, DNEVR + 2);
