@@ -13,8 +13,6 @@
 
 #include "debug.h"
 
-int _rpmds_debug = 0;
-
 /**
  * A package dependency set.
  */
@@ -699,11 +697,6 @@ int rpmdsNext(rpmds ds)
 	    ds->DNEVR = _free(ds->DNEVR);
 	} else
 	    ds->i = -1;
-
-if (_rpmds_debug  < 0 && i != -1)
-fprintf(stderr, "*** ds %p\t%s[%d]: %s\n", ds, (ds->Type ? ds->Type : "?Type?"), i, (ds->DNEVR ? ds->DNEVR : "?DNEVR?"));
-
-    }
 
     return i;
 }
