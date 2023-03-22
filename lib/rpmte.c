@@ -490,7 +490,7 @@ static void rpmteColorDS(rpmte te, rpmTag tag)
 {
     rpmfi fi;
     rpmds ds = rpmteDS(te, tag);
-    char deptype = 'R';
+    char deptype = rpmdsD(ds);
     char mydt;
     const uint32_t * ddict;
     rpm_color_t * colors;
@@ -499,20 +499,8 @@ static void rpmteColorDS(rpmte te, rpmTag tag)
     unsigned ix;
     int ndx, i;
 
-    if (!(te && (Count = rpmdsCount(ds)) > 0 && rpmfilesFC(te->files) > 0))
+    if (!(te && deptype && (Count = rpmdsCount(ds)) > 0 && rpmfilesFC(te->files) > 0))
 	return;
-
-    switch (tag) {
-    default:
-	return;
-	break;
-    case RPMTAG_PROVIDENAME:
-	deptype = 'P';
-	break;
-    case RPMTAG_REQUIRENAME:
-	deptype = 'R';
-	break;
-    }
 
     colors = xcalloc(Count, sizeof(*colors));
 
