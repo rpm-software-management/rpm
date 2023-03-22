@@ -16,10 +16,6 @@
 extern "C" {
 #endif
 
-/**
- */
-extern int _rpmds_nopromote;
-
 /** \ingroup rpmds
  * Dependency Attributes.
  */
