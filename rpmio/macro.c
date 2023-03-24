@@ -849,7 +849,7 @@ static int mbopt(int c, const char *oarg, int oint, void *data)
     /* Define option macros. */
     rasprintf(&name, "-%c", c);
     if (oarg) {
-	rasprintf(&body, "-%c %s", c, oarg);
+	rasprintf(&body, "-%c%s%s", c, fill, oarg);
     } else {
 	rasprintf(&body, "-%c", c);
     }
