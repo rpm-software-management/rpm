@@ -119,6 +119,7 @@ enum rpmQueryFlags_e {
     QUERY_FOR_STATE	= (1 << 24),	/*!< query:  from --state */
 	/* bits 25-26 unused */
     QUERY_FOR_DUMPFILES	= (1 << 27),	/*!< query:  from --dump */
+    QUERY_FOR_CAPABILITY = (1 << 28),	/*!< query:  from --noresolve */
 };
 
 typedef rpmFlags rpmQueryFlags;

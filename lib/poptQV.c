@@ -282,6 +282,8 @@ struct poptOption rpmVerifyPoptTable[] = {
 	N_("don't verify files in package"), NULL},
  { "nodeps", '\0', 0, NULL, RPMCLI_POPT_NODEPS,
 	N_("don't verify package dependencies"), NULL },
+ { "noresolve", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, QUERY_FOR_CAPABILITY,
+	N_("don't resolve capabilities to packages in queries"), NULL},
 
  { "noscript", '\0', 0, NULL, RPMCLI_POPT_NOSCRIPTS,
         N_("don't execute verify script(s)"), NULL },

@@ -53,6 +53,8 @@ select-options
 \[*PACKAGE\_NAME*\] \[**-a,\--all \[***SELECTOR*\]\] \[**-f,\--file
 ***FILE*\] \[**\--path ***PATH*\] \[**-g,\--group ***GROUP*\] \[**-p,\--package
 ***PACKAGE\_FILE*\] \[**\--hdrid ***SHA1*\] \[**\--pkgid ***MD5*\]
+\[**--noresolve**]
+
 \[**\--tid ***TID*\] \[**\--querybynumber ***HDRNUM*\]
 \[**\--triggeredby ***PACKAGE\_NAME*\] \[**\--whatprovides
 ***CAPABILITY*\] \[**\--whatrequires ***CAPABILITY*\]
@@ -654,6 +656,11 @@ name starts with \"b\".
 
 :   Query package that contains a given header identifier, i.e. the
     *SHA1* digest of the immutable header region.
+
+**\--noresolve**
+
+:   Don't resolve --what query arguments to package labels, i.e. query
+    the literal capability.
 
 **-p, \--package ***PACKAGE\_FILE*
 

@@ -21,6 +21,7 @@
 
 #include "lib/rpmgi.h"
 #include "lib/manifest.h"
+#include "lib/rpmdb_internal.h"
 
 #include "debug.h"
 
@@ -306,6 +307,36 @@ static rpmdbMatchIterator matchesIterator(rpmts ts, rpmDbiTag dbi,
     return mi;
 }
 
+static rpmdbMatchIterator depIterator(rpmts ts, rpmTagVal depTag, const char *arg, rpmQueryFlags flags)
+{
+    rpmdbMatchIterator mi = NULL;
+
+    if (flags & QUERY_FOR_CAPABILITY) {
+	mi = rpmtsInitIterator(ts, depTag, arg, 0);
+    } else {
+	rpmdbMatchIterator pmi = rpmtsInitIterator(ts, RPMDBI_LABEL, arg, 0);
+	Header h;
+	while ((h = rpmdbNextIterator(pmi))) {
+	    rpmds ds = rpmdsNew(h, RPMTAG_PROVIDENAME, 0);
+	    while (rpmdsNext(ds) >= 0) {
+		Header dh;
+		const char *dep = rpmdsN(ds);
+		if (mi == NULL)
+		    mi = rpmtsInitIterator(ts, depTag, dep, 0);
+		rpmdbMatchIterator dmi = rpmtsInitIterator(ts, depTag, dep, 0);
+		while ((dh = rpmdbNextIterator(dmi))) {
+		    unsigned int hnum = headerGetInstance(dh);
+		    rpmdbAppendIterator(mi, &hnum, 1);
+		}
+		rpmdbFreeIterator(dmi);
+	    }
+	}
+	rpmdbUniqIterator(mi);
+	rpmdbFreeIterator(pmi);
+    }
+    return mi;
+}
+
 static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * arg)
 {
     const char * s;
@@ -384,49 +415,49 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
     }	break;
 
     case RPMQV_WHATCONFLICTS:
-	mi = rpmtsInitIterator(ts, RPMDBI_CONFLICTNAME, arg, 0);
+	mi = depIterator(ts, RPMDBI_CONFLICTNAME, arg, qva->qva_flags);
 	if (mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("no package conflicts %s\n"), arg);
 	}
 	break;
 
     case RPMQV_WHATOBSOLETES:
-	mi = rpmtsInitIterator(ts, RPMDBI_OBSOLETENAME, arg, 0);
+	mi = depIterator(ts, RPMDBI_OBSOLETENAME, arg, qva->qva_flags);
 	if (mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("no package obsoletes %s\n"), arg);
 	}
 	break;
 
     case RPMQV_WHATREQUIRES:
-	mi = rpmtsInitIterator(ts, RPMDBI_REQUIRENAME, arg, 0);
+	mi = depIterator(ts, RPMDBI_REQUIRENAME, arg, qva->qva_flags);
 	if (mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("no package requires %s\n"), arg);
 	}
 	break;
 
     case RPMQV_WHATRECOMMENDS:
-	mi = rpmtsInitIterator(ts, RPMDBI_RECOMMENDNAME, arg, 0);
+	mi = depIterator(ts, RPMDBI_RECOMMENDNAME, arg, qva->qva_flags);
 	if (mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("no package recommends %s\n"), arg);
 	}
 	break;
 
     case RPMQV_WHATSUGGESTS:
-	mi = rpmtsInitIterator(ts, RPMDBI_SUGGESTNAME, arg, 0);
+	mi = depIterator(ts, RPMDBI_SUGGESTNAME, arg, qva->qva_flags);
 	if (mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("no package suggests %s\n"), arg);
 	}
 	break;
 
     case RPMQV_WHATSUPPLEMENTS:
-	mi = rpmtsInitIterator(ts, RPMDBI_SUPPLEMENTNAME, arg, 0);
+	mi = depIterator(ts, RPMDBI_SUPPLEMENTNAME, arg, qva->qva_flags);
 	if (mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("no package supplements %s\n"), arg);
 	}
 	break;
 
     case RPMQV_WHATENHANCES:
-	mi = rpmtsInitIterator(ts, RPMDBI_ENHANCENAME, arg, 0);
+	mi = depIterator(ts, RPMDBI_ENHANCENAME, arg, qva->qva_flags);
 	if (mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("no package enhances %s\n"), arg);
 	}
