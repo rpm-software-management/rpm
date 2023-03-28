@@ -30,6 +30,7 @@ title: rpm.org - RPM Reference Manual
     * [Triggers](triggers.md)
     * [File Triggers](file_triggers.md)
     * [Scriptlet Expansion](scriptlet_expansion.md)
+  * [Users and Groups](users_and_groups.md)
   * [Conditional Builds](conditionalbuilds.md)
   * [Relocatable Packages](relocatable.md)
   * [Multiple build areas](multiplebuilds.md)
