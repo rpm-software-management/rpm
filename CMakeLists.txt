@@ -390,15 +390,27 @@ install(DIRECTORY DESTINATION ${RPMCONFIGDIR}/lua)
 install(DIRECTORY DESTINATION ${RPMCONFIGDIR}/macros.d)
 install(FILES CONTRIBUTING.md COPYING CREDITS INSTALL README TYPE DOC)
 
-set(namever ${PROJECT_NAME}-${PROJECT_VERSION})
-set(distfmt tar.gz)
-set(distname ${namever}.${distfmt})
-add_custom_command(OUTPUT ${distname}
-	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-	COMMAND git archive
-		--format=${distfmt}
-		--output=${CMAKE_BINARY_DIR}/${distname}
-		--prefix=${namever}/
-		HEAD
-)
-add_custom_target(dist DEPENDS ${distname})
+function(add_tarball targetname namever treeish)
+	set(distfmt tar.gz)
+	set(tarname ${namever}.${distfmt})
+	add_custom_command(OUTPUT ${tarname}
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+		COMMAND git archive
+			--format=${distfmt}
+			--output=${CMAKE_BINARY_DIR}/${tarname}
+			--prefix=${namever}/
+			${treeish}
+	)
+	add_custom_target(${targetname} DEPENDS ${tarname})
+endfunction()
+
+add_tarball(dist ${PROJECT_NAME}-${PROJECT_VERSION} HEAD)
+
+if (EXISTS ${CMAKE_SOURCE_DIR}/.git)
+	execute_process(COMMAND git rev-list --count HEAD
+			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+			OUTPUT_VARIABLE gitcount
+			OUTPUT_STRIP_TRAILING_WHITESPACE)
+	add_tarball(snapshot
+		    ${PROJECT_NAME}-${PROJECT_VERSION}-git${gitcount} HEAD)
+endif()
