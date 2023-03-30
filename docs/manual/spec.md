@@ -274,7 +274,7 @@ accepted qualifiers are:
   it does not affect transaction ordering. A pretrans-dependency is
   free to be removed after the install-transaction completes.
 
-  Also relates to `%pretrans` scriptlet execution.
+  Also relates to `%pretrans` and `%preuntrans` scriptlet execution.
 
 * `posttrans`
 
@@ -283,7 +283,7 @@ accepted qualifiers are:
   transaction ordering. A posttrans-dependency is free to be removed
   after the the install-transaction completes.
 
-  Also relates to `%posttrans` scriptlet execution.
+  Also relates to `%posttrans` and `%postuntrans` scriptlet execution.
 
 * `verify`
 
@@ -609,6 +609,8 @@ for each scriptlet individually. Other supported operations include
  * `%postun`
  * `%pretrans`
  * `%posttrans`
+ * `%preuntrans`
+ * `%postuntrans`
  * `%verify`
 
 ### Triggers
