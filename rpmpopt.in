@@ -1,4 +1,4 @@
-#/*! \page config_rpmpopt Default configuration: @RPMCONFIGDIR@/rpmpopt-@PROJECT_VERSION@
+#/*! \page config_rpmpopt Default configuration: @RPM_CONFIGDIR@/rpmpopt-@PROJECT_VERSION@
 # \verbatim
 #
 # This file *should not be modified*. Local customizations

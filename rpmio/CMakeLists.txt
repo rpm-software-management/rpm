@@ -7,7 +7,7 @@ target_sources(librpmio PRIVATE
 	rpmver.c rpmstring.c rpmfileutil.c rpmglob.c rpmkeyring.c
 	rpmstrpool.c rpmmacro_internal.h rpmlua.c rpmlua.h lposix.c
 )
-target_compile_definitions(librpmio PRIVATE RPMCONFIGDIR="${RPMCONFIGDIR}")
+target_compile_definitions(librpmio PRIVATE RPM_CONFIGDIR="${RPM_CONFIGDIR}")
 
 if (WITH_INTERNAL_OPENPGP)
 	target_sources(librpmio PRIVATE rpmpgp_internal.h rpmpgp_internal.c)

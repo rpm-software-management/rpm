@@ -1,4 +1,4 @@
-#/*! \page config_macros Default configuration: @RPMCONFIGDIR@/macros
+#/*! \page config_macros Default configuration: @RPMHOME@/macros
 # \verbatim
 #
 # This is a global RPM configuration file. All changes made here will

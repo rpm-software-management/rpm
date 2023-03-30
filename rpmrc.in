@@ -1,4 +1,4 @@
-#/*! \page config_rpmrc Default configuration: @RPMCONFIGDIR@/rpmrc
+#/*! \page config_rpmrc Default configuration: @RPM_CONFIGDIR@/rpmrc
 # \verbatim
 #
 # This is a global RPM configuration file. All changes made here will
