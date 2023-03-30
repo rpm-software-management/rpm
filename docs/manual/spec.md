@@ -630,6 +630,29 @@ More information is available in [file trigger chapter](file_triggers.md).
 
 ## %files section
 
+### Permissions and ownership
+
+By default, packaged files are owned by root:root and permission bits
+are taken directly from the on-disk files.
+
+There are two directives to override the default:
+
+#### `%attr(<mode>, <user>, <group>) <file|directory>`
+
+`%attr()` overrides the permissions for a single file. `<mode>` is
+an octal number such as you'd pass to `chmod`(1), `<user>` and `<group>`
+are user and group names. Any of the three can be specified as `-` to
+indicate use of current default value for that parameter.
+
+#### `%defattr(<mode>, <user>, <group>, <dirmode>)`
+
+`%defattr()` sets the default permissions of the following entries in
+up to the next `%defattr()` directive or the end of the `%files` section
+for that package, whichever comes first.
+
+The first three arguments are the same as for `%attr()` (see above),
+`<dirmode>` is the octal default mode for directories.
+
 ### Virtual File Attribute(s)
 
 #### %artifact (since rpm >= 4.14.1)
