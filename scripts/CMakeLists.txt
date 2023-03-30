@@ -12,9 +12,9 @@ install(PROGRAMS
 	rpm_macros_provides.sh
 	rpmdb_dump rpmdb_load
 	rpm2cpio.sh tgpg
-	DESTINATION ${RPMCONFIGDIR}
+	DESTINATION ${RPM_CONFIGDIR}
 )
 install(FILES
 	rpm.daily rpm.log rpm.supp
-	DESTINATION ${RPMCONFIGDIR}
+	DESTINATION ${RPM_CONFIGDIR}
 )

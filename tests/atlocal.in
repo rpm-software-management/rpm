@@ -30,7 +30,7 @@ fi
 RPMTEST="${abs_builddir}/testing"
 RPMDATA="${abs_srcdir}/data/"
 
-RPM_CONFIGDIR="${RPMTEST}/@RPMCONFIGDIR@"
+RPM_CONFIGDIR="${RPMTEST}/@RPM_CONFIGDIR@"
 RPM_POPTEXEC_PATH="${RPMTEST}/@usrbindir@"
 export RPM_CONFIGDIR RPM_POPTEXEC_PATH
 
@@ -84,7 +84,7 @@ function setup_env()
     if [ -d testing ]; then
         RPMTEST=${PWD}/testing
         HOME=${RPMTEST}
-        RPM_CONFIGDIR=${RPMTEST}/@RPMCONFIGDIR@
+        RPM_CONFIGDIR=${RPMTEST}/@RPM_CONFIGDIR@
         export RPMTEST HOME RPM_CONFIGDIR
     fi
 }

@@ -31,7 +31,7 @@ option(WITH_AUDIT "Build with audit support" ON)
 option(WITH_FSVERITY "Build with fsverity support" OFF)
 option(WITH_IMAEVM "Build with IMA support" OFF)
 
-set(RPMCONFIGDIR "${CMAKE_INSTALL_PREFIX}/lib/rpm" CACHE PATH "rpm home")
+set(RPM_CONFIGDIR "${CMAKE_INSTALL_PREFIX}/lib/rpm" CACHE PATH "rpm home")
 set(RPM_VENDOR "vendor" CACHE STRING "rpm vendor string")
 
 # emulate libtool versioning
@@ -104,7 +104,7 @@ function(makemacros)
 	configure_file(rpm.pc.in rpm.pc @ONLY)
 
 	install(CODE "execute_process(COMMAND
-		${CMAKE_COMMAND} -E env pkglibdir=${RPMCONFIGDIR}
+		${CMAKE_COMMAND} -E env pkglibdir=${RPM_CONFIGDIR}
 			${CMAKE_SOURCE_DIR}/installplatform
 			rpmrc platform macros
 			${RPMCANONVENDOR} ${RPMCANONOS} ${RPMCANONGNU})"
@@ -368,11 +368,11 @@ install(TARGETS
 	rpm rpmdb rpmkeys rpm2cpio rpmsign rpmbuild rpmspec
 	rpmlua rpmgraph rpmsort
 )
-install(TARGETS elfdeps rpmdeps rpmuncompress DESTINATION ${RPMCONFIGDIR})
+install(TARGETS elfdeps rpmdeps rpmuncompress DESTINATION ${RPM_CONFIGDIR})
 
 makemacros()
 foreach(f macros rpmrc rpmpopt-${PROJECT_VERSION})
-	install(FILES ${CMAKE_BINARY_DIR}/${f} DESTINATION ${RPMCONFIGDIR})
+	install(FILES ${CMAKE_BINARY_DIR}/${f} DESTINATION ${RPM_CONFIGDIR})
 endforeach()
 
 if (ENABLE_TESTSUITE)
@@ -386,8 +386,8 @@ if (ENABLE_TESTSUITE)
 endif()
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rpm.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
-install(DIRECTORY DESTINATION ${RPMCONFIGDIR}/lua)
-install(DIRECTORY DESTINATION ${RPMCONFIGDIR}/macros.d)
+install(DIRECTORY DESTINATION ${RPM_CONFIGDIR}/lua)
+install(DIRECTORY DESTINATION ${RPM_CONFIGDIR}/macros.d)
 install(FILES CONTRIBUTING.md COPYING CREDITS INSTALL README TYPE DOC)
 
 function(add_tarball targetname namever treeish)

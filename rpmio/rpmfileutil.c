@@ -482,7 +482,7 @@ int rpmMkdirs(const char *root, const char *pathstr)
 static void setConfigDir(void)
 {
     char *rpmenv = getenv("RPM_CONFIGDIR");
-    rpm_config_dir = rpmenv ? xstrdup(rpmenv) : RPMCONFIGDIR;
+    rpm_config_dir = rpmenv ? xstrdup(rpmenv) : RPM_CONFIGDIR;
 }
 
 const char *rpmConfigDir(void)
