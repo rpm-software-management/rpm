@@ -457,7 +457,7 @@ static void setDefaults(void)
     const char *confdir = rpmConfigDir();
     if (!defrcfiles) {
 	defrcfiles = rstrscat(NULL, confdir, "/rpmrc", ":",
-				confdir, "/" RPMCANONVENDOR "/rpmrc", ":",
+				confdir, "/" RPM_VENDOR "/rpmrc", ":",
 				SYSCONFDIR "/rpmrc", ":",
 			  	"~/.rpmrc", NULL);
     }
@@ -468,7 +468,7 @@ static void setDefaults(void)
 				confdir, "/macros.d/macros.*", ":",
 				confdir, "/platform/%{_target}/macros", ":",
 				confdir, "/fileattrs/*.attr", ":",
-  				confdir, "/" RPMCANONVENDOR "/macros", ":",
+  				confdir, "/" RPM_VENDOR "/macros", ":",
 				SYSCONFDIR "/rpm/macros.*", ":",
 				SYSCONFDIR "/rpm/macros", ":",
 				SYSCONFDIR "/rpm/%{_target}/macros", ":",

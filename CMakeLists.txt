@@ -32,7 +32,7 @@ option(WITH_FSVERITY "Build with fsverity support" OFF)
 option(WITH_IMAEVM "Build with IMA support" OFF)
 
 set(RPMCONFIGDIR "${CMAKE_INSTALL_PREFIX}/lib/rpm" CACHE PATH "rpm home")
-set(RPMCANONVENDOR "vendor" CACHE STRING "rpm vendor string")
+set(RPM_VENDOR "vendor" CACHE STRING "rpm vendor string")
 
 # emulate libtool versioning
 set(RPM_SOVERSION 9)
@@ -90,7 +90,7 @@ function(makemacros)
 
 	set(host_cpu ${CMAKE_HOST_SYSTEM_PROCESSOR})
 	string(TOLOWER ${CMAKE_HOST_SYSTEM_NAME} host_os)
-	set(host_vendor redhat)
+	set(host_vendor ${RPM_VENDOR})
 	set(host ${host_cpu}-${host_vendor}-${host_os})
 
 	set(RPMCANONVENDOR ${host_vendor})
