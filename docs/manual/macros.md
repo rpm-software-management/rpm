@@ -38,8 +38,8 @@ macros are available:
 	%*	all arguments (unlike shell, not including any processed flags)
 	%**	all arguments (including any processed flags)
 	%#	the number of arguments
-	%{-f}	if present at invocation, the flag f itself
-	%{-f*}	if present at invocation, the argument to flag f
+	%{-f}	if present at invocation, the last occurence of flag f (flag and argument)
+	%{-f*}	if present at invocation, the argument to the last occurence of flag f
 	%1, %2	the arguments themselves (after getopt(3) processing)
 ```
 
