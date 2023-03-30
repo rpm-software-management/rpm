@@ -82,16 +82,6 @@ include whitespace and may include a hyphen '-' (unlike version and release
 tags). Names should not include any numeric operators ('<', '>','=') as
 future versions of rpm may need to reserve characters other than '-'.
 
-By default subpackages are named by prepending `\<main package\>-' to
-the subpackage name(s). If you wish to change the name of a
-subpackage (most commonly this is to change the '-' to '.'), then you
-must specify the full name with the -n argument in the %package
-definition:
-
-```
-	%package -n newname
-```
-
 #### Version
 
 Version of the packaged content, typically software.
@@ -441,13 +431,26 @@ software).
 
 ### Sub-sections
 
-#### %description
+#### `%package [-n]<name>`
+
+`%package <name>` starts a preamble section for a new sub-package.
+Most preamble tags can are usable in sub-packages too, but there are
+exceptions such as Name, which is taken from the `%package` directive.
+
+By default subpackages are named by prepending the main package name
+followed by a dash to the subpackage name(s), ie `<mainname>-<subname>`.
+Using the `-n` option allows specifying an arbitrary (sub-)package name.
+
+#### `%description [-n][name]`
 
 %description is free form text, but there are two things to note.
 The first regards reformatting.  Lines that begin with white space
 are considered "pre-formatted" and will be left alone.  Adjacent
 lines without leading whitespace are considered a single paragraph
 and may be subject to formatting by glint or another RPM tool.
+
+The `-n` option and `<name>` are the same as for `%package`, except that
+when name is omitted, the description refers to the main package.
 
 ### Dependencies
 
