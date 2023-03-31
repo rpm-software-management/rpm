@@ -28,7 +28,7 @@ on user/group from another package.
 By default the dependencies are hard requirements, but as this can be
 problematic when upgrading an existing distribution to rpm 4.19, it's possible
 to weaken these into recommends-dependencies by setting 
-`%__use_weak_usergroup_deps` macro to `1` during package builds.
+`%_use_weak_usergroup_deps` macro to `1` during package builds.
 
 ## Limitations
 
