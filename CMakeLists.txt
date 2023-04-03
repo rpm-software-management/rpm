@@ -301,7 +301,7 @@ add_subdirectory(lib)
 add_subdirectory(build)
 add_subdirectory(sign)
 
-if (EXISTS po/rpm.pot)
+if (EXISTS ${CMAKE_SOURCE_DIR}/po/rpm.pot)
 	add_subdirectory(po)
 endif()
 
