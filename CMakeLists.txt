@@ -391,15 +391,19 @@ install(DIRECTORY DESTINATION ${RPM_CONFIGDIR}/macros.d)
 install(FILES CONTRIBUTING.md COPYING CREDITS INSTALL README TYPE DOC)
 
 function(add_tarball targetname namever treeish)
-	set(distfmt tar.gz)
+	set(distfmt tar)
 	set(tarname ${namever}.${distfmt})
-	add_custom_command(OUTPUT ${tarname}
+	add_custom_target(${tarname}
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+		VERBATIM
 		COMMAND git archive
 			--format=${distfmt}
 			--output=${CMAKE_BINARY_DIR}/${tarname}
 			--prefix=${namever}/
 			${treeish}
+		COMMAND git submodule foreach --recursive
+			"git archive --prefix=${namever}/$path/ --output=${CMAKE_BINARY_DIR}/$sha1.tar HEAD && tar --concatenate --file=${CMAKE_BINARY_DIR}/${tarname} ${CMAKE_BINARY_DIR}/$sha1.tar && rm -f ${CMAKE_BINARY_DIR}/$sha1.tar"
+		COMMAND bzip2 ${CMAKE_BINARY_DIR}/${tarname}
 	)
 	add_custom_target(${targetname} DEPENDS ${tarname})
 endfunction()
