@@ -401,9 +401,14 @@ function(add_tarball targetname namever treeish)
 			--output=${CMAKE_BINARY_DIR}/${tarname}
 			--prefix=${namever}/
 			${treeish}
-		COMMAND git submodule foreach --recursive
-			"git archive --prefix=${namever}/$path/ --output=${CMAKE_BINARY_DIR}/$sha1.tar HEAD && tar --concatenate --file=${CMAKE_BINARY_DIR}/${tarname} ${CMAKE_BINARY_DIR}/$sha1.tar && rm -f ${CMAKE_BINARY_DIR}/$sha1.tar"
-		COMMAND bzip2 ${CMAKE_BINARY_DIR}/${tarname}
+		COMMAND git submodule foreach --quiet
+			"git archive --prefix=${namever}/$sm_path/ \
+				--output=${CMAKE_BINARY_DIR}/$sha1.tar HEAD \
+			 && tar --concatenate \
+				--file=${CMAKE_BINARY_DIR}/${tarname} \
+				${CMAKE_BINARY_DIR}/$sha1.tar \
+			 && rm -f ${CMAKE_BINARY_DIR}/$sha1.tar"
+		COMMAND bzip2 -f ${CMAKE_BINARY_DIR}/${tarname}
 	)
 	add_custom_target(${targetname} DEPENDS ${tarname})
 endfunction()
