@@ -135,17 +135,23 @@ set(REQFUNCS
 )
 
 find_package(PkgConfig REQUIRED)
+find_package(Lua 5.2 REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(BZip2)
 find_package(Iconv)
 
-pkg_check_modules(LUA REQUIRED IMPORTED_TARGET lua>=5.2)
 pkg_check_modules(POPT REQUIRED IMPORTED_TARGET popt)
 pkg_check_modules(READLINE IMPORTED_TARGET readline)
 pkg_check_modules(ZSTD IMPORTED_TARGET libzstd>=1.3.8)
 pkg_check_modules(LIBELF IMPORTED_TARGET libelf)
 pkg_check_modules(LIBDW IMPORTED_TARGET libdw)
 pkg_check_modules(LIBLZMA IMPORTED_TARGET liblzma>=5.2.0)
+
+# Lua module does not ship an IMPORTED target, define our own
+add_library(LUA::LUA INTERFACE IMPORTED)
+set_target_properties(LUA::LUA PROPERTIES
+		      INTERFACE_LINK_LIBRARIES "${LUA_LIBRARIES}"
+		      INTERFACE_INCLUDE_DIRECTORIES "${LUA_INCLUDE_DIR}")
 
 # file >= 5.39 ships a pkg-config, may move to that later
 add_library(MAGIC::MAGIC UNKNOWN IMPORTED)
@@ -349,7 +355,7 @@ add_executable(rpmuncompress tools/rpmuncompress.c)
 add_executable(elfdeps tools/elfdeps.c)
 
 target_link_libraries(rpmsign PRIVATE librpmsign)
-target_link_libraries(rpmlua PRIVATE PkgConfig::LUA)
+target_link_libraries(rpmlua PRIVATE LUA::LUA)
 target_link_libraries(elfdeps PRIVATE PkgConfig::LIBELF)
 target_link_libraries(rpmbuild PRIVATE librpmbuild)
 target_link_libraries(rpmspec PRIVATE librpmbuild)
