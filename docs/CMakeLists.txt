@@ -8,8 +8,11 @@ if (${DOXYGEN_FOUND})
 	file(GLOB headers ${CMAKE_SOURCE_DIR}/include/rpm/*.h)
 	doxygen_add_docs(apidoc librpm/Doxyheader.h ${headers}
 			ALL USE_STAMP_FILE)
-	install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html TYPE DOC)
+	set(doxsrc ${CMAKE_CURRENT_BINARY_DIR})
+elseif (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/html/index.html)
+	set(doxsrc ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
+install(DIRECTORY ${doxsrc}/html/ DESTINATION ${CMAKE_INSTALL_DOCDIR}/API)
 
 install(FILES
 	manual/arch_dependencies.md
