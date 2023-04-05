@@ -31,13 +31,28 @@ if (ENABLE_PLUGINS)
 endif()
 
 foreach(man ${manuals})
-	# XXX manuals should be pre-built in tarballs
+	unset(fn)
 	if (EXISTS ${PANDOC})
 		add_custom_command(OUTPUT ${man} COMMAND ${PANDOC}
 				${CMAKE_CURRENT_SOURCE_DIR}/${man}.md
 				-s -t man -o ${man} DEPENDS ${man}.md)
-		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${man} TYPE MAN)
+		set(fn ${CMAKE_CURRENT_BINARY_DIR}/${man})
+	else()
+		# dist tarballs have pre-built manuals in the source dir
+		if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${man})
+			set(fn ${CMAKE_CURRENT_SOURCE_DIR}/${man})
+		endif()
+	endif()
+	if (fn)
+		get_filename_component(ext ${fn} EXT)
+		string(REPLACE "." "man" section ${ext})
+		install(FILES ${fn}
+			DESTINATION ${CMAKE_INSTALL_MANDIR}/${section})
 	endif()
 endforeach()
+if (fn)
+	add_custom_target(man ALL DEPENDS ${manuals})
+else()
+	message(WARNING "pandoc not available and not a dist tarball, man pages not available")
+endif()
 
-add_custom_target(man ALL DEPENDS ${manuals})

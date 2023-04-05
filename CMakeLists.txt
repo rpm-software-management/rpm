@@ -398,11 +398,21 @@ function(add_tarball targetname namever treeish)
 	set(distfmt tar)
 	set(tarname ${namever}.${distfmt})
 	set(distname ${tarname}.bz2)
+	set(docname ${namever}-doc.${distfmt})
+
+	add_custom_target(${docname}
+		DEPENDS man apidoc
+		COMMAND tar
+			-C ${CMAKE_BINARY_DIR}
+			--transform 's:^:${namever}/:'
+			-cf ${docname} docs/man/*.[1-8] docs/html/
+	)
 
 	add_custom_target(${distname}
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+		BYPRODUCTS ${distname} ${docname}
 		VERBATIM
-		DEPENDS ChangeLog
+		DEPENDS ChangeLog ${docname}
 		COMMAND git archive
 			--format=${distfmt}
 			--output=${CMAKE_BINARY_DIR}/${tarname}
@@ -416,6 +426,9 @@ function(add_tarball targetname namever treeish)
 				--file=${CMAKE_BINARY_DIR}/${tarname} \
 				${CMAKE_BINARY_DIR}/$sha1.tar \
 			 && rm -f ${CMAKE_BINARY_DIR}/$sha1.tar"
+		COMMAND tar --concatenate
+				--file=${CMAKE_BINARY_DIR}/${tarname}
+				${CMAKE_BINARY_DIR}/${docname}
 		COMMAND bzip2 -f ${CMAKE_BINARY_DIR}/${tarname}
 	)
 	add_custom_target(${targetname} DEPENDS ${distname})
