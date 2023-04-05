@@ -18,9 +18,9 @@ target_link_libraries(librpmbuild PRIVATE
 	libmisc
 	PkgConfig::LUA
 	PkgConfig::POPT
-	PkgConfig::MAGIC
 	PkgConfig::LIBELF
 	PkgConfig::LIBDW
+	MAGIC::MAGIC
 )
 
 if(WITH_CAP)
