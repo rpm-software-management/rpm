@@ -136,12 +136,19 @@ find_package(Iconv)
 
 pkg_check_modules(LUA REQUIRED IMPORTED_TARGET lua>=5.2)
 pkg_check_modules(POPT REQUIRED IMPORTED_TARGET popt)
-pkg_check_modules(MAGIC REQUIRED IMPORTED_TARGET libmagic)
 pkg_check_modules(READLINE IMPORTED_TARGET readline)
 pkg_check_modules(ZSTD IMPORTED_TARGET libzstd>=1.3.8)
 pkg_check_modules(LIBELF IMPORTED_TARGET libelf)
 pkg_check_modules(LIBDW IMPORTED_TARGET libdw)
 pkg_check_modules(LIBLZMA IMPORTED_TARGET liblzma>=5.2.0)
+
+# file >= 5.39 ships a pkg-config, may move to that later
+add_library(MAGIC::MAGIC UNKNOWN IMPORTED)
+find_library(MAGIC_LIBRARY NAMES magic REQUIRED)
+find_path(MAGIC_INCLUDE_DIR NAMES magic.h REQUIRED)
+set_target_properties(MAGIC::MAGIC PROPERTIES
+		      IMPORTED_LOCATION "${MAGIC_LIBRARY}")
+target_include_directories(MAGIC::MAGIC INTERFACE "${MAGIC_INCLUDE_DIR}")
 
 if (ENABLE_OPENMP)
 	find_package(OpenMP 4.5 REQUIRED)
