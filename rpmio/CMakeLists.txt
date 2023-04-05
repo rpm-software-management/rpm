@@ -32,7 +32,7 @@ set_target_properties(librpmio PROPERTIES
 )
 target_link_libraries(librpmio PRIVATE
 			PkgConfig::POPT
-			PkgConfig::LUA
+			LUA::LUA
 			ZLIB::ZLIB)
 
 if (ZSTD_FOUND)

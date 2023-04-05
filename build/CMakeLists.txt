@@ -16,10 +16,10 @@ target_sources(librpmbuild PRIVATE
 target_link_libraries(librpmbuild PUBLIC librpmio librpm)
 target_link_libraries(librpmbuild PRIVATE
 	libmisc
-	PkgConfig::LUA
 	PkgConfig::POPT
 	PkgConfig::LIBELF
 	PkgConfig::LIBDW
+	LUA::LUA
 	MAGIC::MAGIC
 )
 
