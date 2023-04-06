@@ -388,16 +388,25 @@ install(DIRECTORY DESTINATION ${RPM_CONFIGDIR}/lua)
 install(DIRECTORY DESTINATION ${RPM_CONFIGDIR}/macros.d)
 install(FILES CONTRIBUTING.md COPYING CREDITS INSTALL README TYPE DOC)
 
+add_custom_target(ChangeLog
+		   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+		   COMMAND git log --no-merges
+				--output=${CMAKE_BINARY_DIR}/ChangeLog
+)
+
 function(add_tarball targetname namever treeish)
 	set(distfmt tar)
 	set(tarname ${namever}.${distfmt})
+
 	add_custom_target(${tarname}
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 		VERBATIM
+		DEPENDS ChangeLog
 		COMMAND git archive
 			--format=${distfmt}
 			--output=${CMAKE_BINARY_DIR}/${tarname}
 			--prefix=${namever}/
+			--add-file=${CMAKE_BINARY_DIR}/ChangeLog
 			${treeish}
 		COMMAND git submodule foreach --quiet
 			"git archive --prefix=${namever}/$sm_path/ \
