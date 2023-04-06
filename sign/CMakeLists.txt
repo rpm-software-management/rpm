@@ -15,4 +15,4 @@ if (WITH_FSVERITY)
 	target_link_libraries(librpmsign PRIVATE PkgConfig::FSVERITY)
 endif()
 
-install(TARGETS librpmsign)
+install(TARGETS librpmsign EXPORT rpm-targets)
