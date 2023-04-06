@@ -32,4 +32,4 @@ if(OpenMP_C_FOUND)
 endif()
 
 
-install(TARGETS librpmbuild)
+install(TARGETS librpmbuild EXPORT rpm-targets)

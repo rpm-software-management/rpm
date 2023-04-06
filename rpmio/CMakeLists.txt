@@ -48,5 +48,4 @@ if (OpenMP_C_FOUND)
         target_link_libraries(librpmio PRIVATE OpenMP::OpenMP_C)
 endif()
 
-install(TARGETS librpmio
-)
+install(TARGETS librpmio EXPORT rpm-targets)
