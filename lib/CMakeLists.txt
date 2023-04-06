@@ -68,4 +68,4 @@ add_custom_command(OUTPUT tagtbl.C
 target_link_libraries(librpm PUBLIC librpmio)
 target_link_libraries(librpm PRIVATE PkgConfig::POPT LUA::LUA)
 
-install(TARGETS librpm)
+install(TARGETS librpm EXPORT rpm-targets)
