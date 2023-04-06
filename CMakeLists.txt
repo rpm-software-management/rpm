@@ -520,3 +520,29 @@ if (EXISTS ${CMAKE_SOURCE_DIR}/.git)
 	add_tarball(snapshot
 		    ${PROJECT_NAME}-${PROJECT_VERSION}-git${gitcount} HEAD)
 endif()
+
+# Voodoo rites to make our libraries cmake find_package() importable
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+	${CMAKE_CURRENT_SOURCE_DIR}/cmake/rpm-config.cmake.in
+	${CMAKE_CURRENT_BINARY_DIR}/rpm-config.cmake
+	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/rpm
+)
+write_basic_package_version_file(
+	${CMAKE_CURRENT_BINARY_DIR}/rpm-config-version.cmake
+	COMPATIBILITY SameMinorVersion
+)
+install(FILES
+	${CMAKE_CURRENT_BINARY_DIR}/rpm-config.cmake
+	${CMAKE_CURRENT_BINARY_DIR}/rpm-config-version.cmake
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/rpm
+)
+
+export(TARGETS librpm librpmio librpmbuild librpmsign
+	FILE rpm-targets.cmake
+	NAMESPACE rpm::
+)
+install(EXPORT rpm-targets
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CMAKE_PROJECT_NAME}
+	NAMESPACE rpm::
+)
