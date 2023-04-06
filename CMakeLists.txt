@@ -397,8 +397,9 @@ add_custom_target(ChangeLog
 function(add_tarball targetname namever treeish)
 	set(distfmt tar)
 	set(tarname ${namever}.${distfmt})
+	set(distname ${tarname}.bz2)
 
-	add_custom_target(${tarname}
+	add_custom_target(${distname}
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 		VERBATIM
 		DEPENDS ChangeLog
@@ -417,7 +418,7 @@ function(add_tarball targetname namever treeish)
 			 && rm -f ${CMAKE_BINARY_DIR}/$sha1.tar"
 		COMMAND bzip2 -f ${CMAKE_BINARY_DIR}/${tarname}
 	)
-	add_custom_target(${targetname} DEPENDS ${tarname})
+	add_custom_target(${targetname} DEPENDS ${distname})
 endfunction()
 
 add_tarball(dist ${PROJECT_NAME}-${PROJECT_VERSION} HEAD)
