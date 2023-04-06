@@ -194,11 +194,8 @@ endif()
 
 if (WITH_IMAEVM)
 	list(APPEND REQFUNCS lsetxattr)
-	find_path(IMA_INCLUDE_DIR NAMES imaevm.h)
-	find_library(IMA_LIBRARY NAMES imaevm)
-	if (NOT (IMA_INCLUDE_DIR AND IMA_LIBRARY))
-		message(FATAL_ERROR "imaevm enabled but library not present")
-	endif()
+	find_path(IMA_INCLUDE_DIR NAMES imaevm.h REQUIRED)
+	find_library(IMA_LIBRARY NAMES imaevm REQUIRED)
 endif()
 
 find_program(__FIND_DEBUGINFO find-debuginfo)
