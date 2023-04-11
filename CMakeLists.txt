@@ -202,8 +202,12 @@ endif()
 
 if (WITH_IMAEVM)
 	list(APPEND REQFUNCS lsetxattr)
+	add_library(IMA::IMA UNKNOWN IMPORTED)
 	find_path(IMA_INCLUDE_DIR NAMES imaevm.h REQUIRED)
 	find_library(IMA_LIBRARY NAMES imaevm REQUIRED)
+	set_target_properties(IMA::IMA PROPERTIES
+			      IMPORTED_LOCATION "${IMA_LIBRARY}")
+	target_include_directories(IMA::IMA INTERFACE "${IMA_INCLUDE_DIR}")
 endif()
 
 find_program(__FIND_DEBUGINFO find-debuginfo)
