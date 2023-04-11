@@ -32,7 +32,6 @@ install(FILES
 	manual/lua.md
 	manual/macros.md
 	manual/more_dependencies.md
-	manual/multiplebuilds.md
 	manual/plugins.md
 	manual/queryformat.md
 	manual/relocatable.md
