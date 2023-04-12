@@ -35,7 +35,12 @@ option(WITH_FAPOLICYD "Build with fapolicyd support" ON)
 set(RPM_CONFIGDIR "${CMAKE_INSTALL_PREFIX}/lib/rpm" CACHE PATH "rpm home")
 set(RPM_VENDOR "vendor" CACHE STRING "rpm vendor string")
 
-# emulate libtool versioning
+# Emulate libtool versioning. Before a public release:
+# - increment micro version whenever there are code changes
+# - increment minor version whenever there are added interfaces
+# - increment major version whenever there are removed interfaces
+# - incrementing a more significant version segment resets changes to
+#   any less significant segments
 set(RPM_SOVERSION 10)
 set(RPM_LIBVERSION ${RPM_SOVERSION}.0.0)
 
