@@ -1187,6 +1187,17 @@ pgpDigParams pgpDigParamsFree(pgpDigParams digp);
 rpmRC pgpVerifySignature(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx);
 
 /** \ingroup rpmpgp
+ * Verify a PGP signature and return a error message or lint.
+ * @param key		public key
+ * @param sig		signature
+ * @param hashctx	digest context
+ * @param lints	error messages and lints
+ * @return 		RPMRC_OK on success
+ */
+rpmRC pgpVerifySignature2(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx,
+                          char **lints);
+
+/** \ingroup rpmpgp
  * Return the type of a PGP signature. If `sig` is NULL, or is not a signature,
  * returns -1.
  *

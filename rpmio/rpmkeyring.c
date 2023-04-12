@@ -276,7 +276,16 @@ rpmRC rpmKeyringVerifySig(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx)
 	    pgpkey = key->pgpkey;
 
 	/* We call verify even if key not found for a signature sanity check */
-	rc = pgpVerifySignature(pgpkey, sig, ctx);
+        char *lints = NULL;
+	rc = pgpVerifySignature2(pgpkey, sig, ctx, &lints);
+        if (lints) {
+            if (rc) {
+                rpmlog(RPMLOG_ERR, "%s\n", lints);
+            } else {
+                rpmlog(RPMLOG_WARNING, "%s\n", lints);
+            }
+            free(lints);
+        }
     }
 
     if (keyring)

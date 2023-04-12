@@ -36,6 +36,9 @@ W(uint32_t, pgpDigParamsCreationTime, (pgpDigParams digp), (digp))
 W(rpmRC, pgpVerifySignature,
   (pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx),
   (key, sig, hashctx))
+W(rpmRC, pgpVerifySignature2,
+  (pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx, char **lints),
+  (key, sig, hashctx, lints))
 W(int, pgpPubkeyKeyID,
   (const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid),
   (pkt, pktlen, keyid))

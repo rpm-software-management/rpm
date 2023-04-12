@@ -1179,6 +1179,13 @@ exit:
 
 }
 
+rpmRC pgpVerifySignature2(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx, char **lints)
+{
+    if (lints)
+        *lints = NULL;
+    return pgpVerifySignature(key, sig, hashctx);
+}
+
 static pgpArmor decodePkts(uint8_t *b, uint8_t **pkt, size_t *pktlen)
 {
     const char * enc = NULL;
