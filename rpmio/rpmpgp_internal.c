@@ -1043,6 +1043,14 @@ int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
     return rc;
 }
 
+int pgpPrtParams2(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
+                  pgpDigParams * ret, char **lints)
+{
+    if (lints)
+        *lints = NULL;
+    return pgpPrtParams(pkts, pktlen, pkttype, ret);
+}
+
 int pgpPrtParamsSubkeys(const uint8_t *pkts, size_t pktlen,
 			pgpDigParams mainkey, pgpDigParams **subkeys,
 			int *subkeysCount)
@@ -1177,6 +1185,13 @@ exit:
     rpmDigestFinal(ctx, NULL, NULL, 0);
     return res;
 
+}
+
+rpmRC pgpVerifySignature2(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx, char **lints)
+{
+    if (lints)
+        *lints = NULL;
+    return pgpVerifySignature(key, sig, hashctx);
 }
 
 static pgpArmor decodePkts(uint8_t *b, uint8_t **pkt, size_t *pktlen)
