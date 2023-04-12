@@ -1010,6 +1010,18 @@ int pgpPrtParams(const uint8_t *pkts, size_t pktlen, unsigned int pkttype,
 		 pgpDigParams * ret);
 
 /** \ingroup rpmpgp
+ * Parse a OpenPGP packet(s).
+ * @param pkts		OpenPGP packet(s)
+ * @param pktlen	OpenPGP packet(s) length (no. of bytes)
+ * @param pkttype	Expected packet type (signature/key) or 0 for any
+ * @param[out] ret	signature/pubkey packet parameters on success (alloced)
+ * @param[out] lints	error messages and lints
+ * @return		-1 on error, 0 on success
+ */
+int pgpPrtParams2(const uint8_t *pkts, size_t pktlen, unsigned int pkttype,
+		 pgpDigParams * ret, char **lints);
+
+/** \ingroup rpmpgp
  * Parse subkey parameters from OpenPGP packet(s).
  * @param pkts		OpenPGP packet(s)
  * @param pktlen	OpenPGP packet(s) length (no. of bytes)
@@ -1185,6 +1197,17 @@ pgpDigParams pgpDigParamsFree(pgpDigParams digp);
  * @return 		RPMRC_OK on success 
  */
 rpmRC pgpVerifySignature(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx);
+
+/** \ingroup rpmpgp
+ * Verify a PGP signature and return a error message or lint.
+ * @param key		public key
+ * @param sig		signature
+ * @param hashctx	digest context
+ * @param lints	error messages and lints
+ * @return 		RPMRC_OK on success
+ */
+rpmRC pgpVerifySignature2(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx,
+                          char **lints);
 
 /** \ingroup rpmpgp
  * Return the type of a PGP signature. If `sig` is NULL, or is not a signature,
