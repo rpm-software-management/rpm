@@ -752,11 +752,12 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
   RPM_SOURCE_DIR=\"%{_sourcedir}\"\
   RPM_BUILD_DIR=\"%{_builddir}\"\
   RPM_OPT_FLAGS=\"%{optflags}\"\
+  RPM_LD_FLAGS=\"%{?build_ldflags}\"\
   RPM_ARCH=\"%{_arch}\"\
   RPM_OS=\"%{_os}\"\
   RPM_BUILD_NCPUS=\"%{_smp_build_ncpus}\"\
   RPM_SPECPARTS_DIR=\"%{specpartsdir}\"\
-  export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS RPM_BUILD_NCPUS RPM_SPECPARTS_DIR\
+  export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS RPM_BUILD_NCPUS RPM_SPECPARTS_DIR RPM_LD_FLAGS\
   RPM_DOC_DIR=\"%{_docdir}\"\
   export RPM_DOC_DIR\
   RPM_PACKAGE_NAME=\"%{NAME}\"\
