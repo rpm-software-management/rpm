@@ -1,5 +1,6 @@
 #include "system.h"
 
+#include <errno.h>
 #include <pthread.h>
 #include <pwd.h>
 #include <grp.h>
@@ -21,150 +22,99 @@
 
 int rpmugUid(const char * thisUname, uid_t * uid)
 {
-    static char * lastUname = NULL;
-    static size_t lastUnameLen = 0;
-    static size_t lastUnameAlloced;
-    static uid_t lastUid;
     struct passwd * pwent;
-    size_t thisUnameLen;
+    FILE * f;
 
     if (!thisUname) {
-	lastUnameLen = 0;
 	return -1;
     } else if (rstreq(thisUname, UID_0_USER)) {
 	*uid = 0;
 	return 0;
     }
 
-    thisUnameLen = strlen(thisUname);
-    if (lastUname == NULL || thisUnameLen != lastUnameLen ||
-	!rstreq(thisUname, lastUname))
-    {
-	if (lastUnameAlloced < thisUnameLen + 1) {
-	    lastUnameAlloced = thisUnameLen + 10;
-	    lastUname = xrealloc(lastUname, lastUnameAlloced);	/* XXX memory leak */
-	}
-	strcpy(lastUname, thisUname);
+    f = fopen("/etc/passwd", "r");
+    if (!f) return -1;
 
-	pwent = getpwnam(thisUname);
-	if (pwent == NULL) {
-	    /* FIX: shrug */
-	    endpwent();
-	    pwent = getpwnam(thisUname);
-	    if (pwent == NULL) return -1;
-	}
+    errno = 0;
+    while ((pwent = fgetpwent(f)))
+        if (rstreq(pwent->pw_name, thisUname)) break;
+    fclose(f);
+    if (pwent == NULL) return -1;
 
-	lastUid = pwent->pw_uid;
-    }
-
-    *uid = lastUid;
+    *uid = pwent->pw_uid;
 
     return 0;
 }
 
 int rpmugGid(const char * thisGname, gid_t * gid)
 {
-    static char * lastGname = NULL;
-    static size_t lastGnameLen = 0;
-    static size_t lastGnameAlloced;
-    static gid_t lastGid;
-    size_t thisGnameLen;
     struct group * grent;
+    FILE * f;
 
     if (thisGname == NULL) {
-	lastGnameLen = 0;
 	return -1;
     } else if (rstreq(thisGname, GID_0_GROUP)) {
 	*gid = 0;
 	return 0;
     }
 
-    thisGnameLen = strlen(thisGname);
-    if (lastGname == NULL || thisGnameLen != lastGnameLen ||
-	!rstreq(thisGname, lastGname))
-    {
-	if (lastGnameAlloced < thisGnameLen + 1) {
-	    lastGnameAlloced = thisGnameLen + 10;
-	    lastGname = xrealloc(lastGname, lastGnameAlloced);	/* XXX memory leak */
-	}
-	strcpy(lastGname, thisGname);
+    f = fopen("/etc/group", "r");
+    if (!f) return -1;
 
-	grent = getgrnam(thisGname);
-	if (grent == NULL) {
-	    /* FIX: shrug */
-	    endgrent();
-	    grent = getgrnam(thisGname);
-	    if (grent == NULL) {
-		return -1;
-	    }
-	}
-	lastGid = grent->gr_gid;
-    }
+    errno = 0;
+    while ((grent = fgetgrent(f)))
+        if (rstreq(grent->gr_name, thisGname)) break;
+    fclose(f);
+    if (grent == NULL) return -1;
 
-    *gid = lastGid;
+    *gid = grent->gr_gid;
 
     return 0;
 }
 
 const char * rpmugUname(uid_t uid)
 {
-    static uid_t lastUid = (uid_t) -1;
-    static char * lastUname = NULL;
-    static size_t lastUnameLen = 0;
-
     if (uid == (uid_t) -1) {
-	lastUid = (uid_t) -1;
 	return NULL;
     } else if (uid == (uid_t) 0) {
 	return UID_0_USER;
-    } else if (uid == lastUid) {
-	return lastUname;
     } else {
-	struct passwd * pwent = getpwuid(uid);
-	size_t len;
+	struct passwd * pwent;
+	FILE * f;
 
+	f = fopen("/etc/passwd", "r");
+	if (!f) return NULL;
+
+	errno = 0;
+	while ((pwent = fgetpwent(f)))
+	    if (pwent->pw_uid == uid) break;
+	fclose(f);
 	if (pwent == NULL) return NULL;
 
-	lastUid = uid;
-	len = strlen(pwent->pw_name);
-	if (lastUnameLen < len + 1) {
-	    lastUnameLen = len + 20;
-	    lastUname = xrealloc(lastUname, lastUnameLen);
-	}
-	strcpy(lastUname, pwent->pw_name);
-
-	return lastUname;
+	return pwent->pw_name;
     }
 }
 
 const char * rpmugGname(gid_t gid)
 {
-    static gid_t lastGid = (gid_t) -1;
-    static char * lastGname = NULL;
-    static size_t lastGnameLen = 0;
-
     if (gid == (gid_t) -1) {
-	lastGid = (gid_t) -1;
 	return NULL;
     } else if (gid == (gid_t) 0) {
 	return GID_0_GROUP;
-    } else if (gid == lastGid) {
-	return lastGname;
     } else {
-	struct group * grent = getgrgid(gid);
-	size_t len;
+	struct group * grent;
+	FILE * f;
 
+	f = fopen("/etc/group", "r");
+	if (!f) return NULL;
+
+	errno = 0;
+	while ((grent = fgetgrent(f)))
+	    if (grent->gr_gid == gid) break;
+	fclose(f);
 	if (grent == NULL) return NULL;
 
-	lastGid = gid;
-	len = strlen(grent->gr_name);
-	if (lastGnameLen < len + 1) {
-	    lastGnameLen = len + 20;
-	    lastGname = xrealloc(lastGname, lastGnameLen);
-	}
-	strcpy(lastGname, grent->gr_name);
-
-	return lastGname;
+	return grent->gr_name;
     }
 }
 
