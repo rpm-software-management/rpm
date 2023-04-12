@@ -386,17 +386,17 @@ AT_CHECK([
 RPMDB_INIT
 
 echo Checking package before importing key:
-runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm; echo $?
+runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm 2>&1; echo $?
 echo Importing key:
-runroot rpmkeys --quiet --import /data/keys/alice-expired-subkey.asc; echo $?
+runroot rpmkeys --quiet --import /data/keys/alice-expired-subkey.asc 2>&1; echo $?
 echo Checking for key:
 runroot rpm -qi gpg-pubkey-eb04e625-* | grep Version | head -n1
 echo Checking package after importing key:
-runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm; echo $?
+runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm 2>&1; echo $?
 echo Checking package after importing key, no digest:
-runroot rpmkeys --define '_pkgverify_level all' -Kv --nodigest /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm; echo $?
+runroot rpmkeys --define '_pkgverify_level all' -Kv --nodigest /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm 2>&1; echo $?
 echo Checking package after importing key, no signature:
-runroot rpmkeys --define '_pkgverify_level all' -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm; echo $?
+runroot rpmkeys --define '_pkgverify_level all' -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm 2>&1; echo $?
 ],
 [0],
 [[Checking package before importing key:
@@ -416,6 +416,10 @@ Checking for key:
 Version     : eb04e625
 Checking package after importing key:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
+error: Verifying a signature using certificate B6542F92F30650C36B6F41BCB3A771BFEB04E625 (Alice <alice@example.org>):
+  Key 1F71177215217EE0 invalid: key is not alive
+      because: The subkey is not live
+      because: Expired on 2022-04-12T00:00:15Z
     Header V4 RSA/SHA512 Signature, key ID 15217ee0: NOTTRUSTED
     Header DSA signature: NOTFOUND
     Header SHA256 digest: OK
@@ -427,6 +431,10 @@ Checking package after importing key:
 1
 Checking package after importing key, no digest:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
+error: Verifying a signature using certificate B6542F92F30650C36B6F41BCB3A771BFEB04E625 (Alice <alice@example.org>):
+  Key 1F71177215217EE0 invalid: key is not alive
+      because: The subkey is not live
+      because: Expired on 2022-04-12T00:00:15Z
     Header V4 RSA/SHA512 Signature, key ID 15217ee0: NOTTRUSTED
     Header DSA signature: NOTFOUND
     RSA signature: NOTFOUND
@@ -455,15 +463,15 @@ RPMDB_INIT
 echo Checking package before importing key:
 runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm; echo $?
 echo Importing key:
-runroot rpmkeys --quiet --import /data/keys/alice-revoked-subkey.asc; echo $?
+runroot rpmkeys --quiet --import /data/keys/alice-revoked-subkey.asc 2>&1; echo $?
 echo Checking for key:
 runroot rpm -qi gpg-pubkey-eb04e625-* | grep Version | head -n1
 echo Checking package after importing key:
-runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm; echo $?
+runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm 2>&1; echo $?
 echo Checking package after importing key, no digest:
-runroot rpmkeys --define '_pkgverify_level all' -Kv --nodigest /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm; echo $?
+runroot rpmkeys --define '_pkgverify_level all' -Kv --nodigest /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm 2>&1; echo $?
 echo Checking package after importing key, no signature:
-runroot rpmkeys --define '_pkgverify_level all' -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm; echo $?
+runroot rpmkeys --define '_pkgverify_level all' -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm 2>&1; echo $?
 ],
 [0],
 [[Checking package before importing key:
@@ -483,6 +491,8 @@ Checking for key:
 Version     : eb04e625
 Checking package after importing key:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
+error: Verifying a signature using certificate B6542F92F30650C36B6F41BCB3A771BFEB04E625 (Alice <alice@example.org>):
+  Key 1F71177215217EE0 is invalid: key is revoked
     Header V4 RSA/SHA512 Signature, key ID 15217ee0: NOTTRUSTED
     Header DSA signature: NOTFOUND
     Header SHA256 digest: OK
@@ -494,6 +504,8 @@ Checking package after importing key:
 1
 Checking package after importing key, no digest:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
+error: Verifying a signature using certificate B6542F92F30650C36B6F41BCB3A771BFEB04E625 (Alice <alice@example.org>):
+  Key 1F71177215217EE0 is invalid: key is revoked
     Header V4 RSA/SHA512 Signature, key ID 15217ee0: NOTTRUSTED
     Header DSA signature: NOTFOUND
     RSA signature: NOTFOUND
@@ -740,7 +752,7 @@ AT_CLEANUP
 # Test pre-built corrupted package verification (corrupted signature)
 AT_SETUP([rpmkeys -Kv <corrupted signed> 1])
 AT_KEYWORDS([rpmkeys digest signature])
-AT_CHECK([
+AT_CHECK_UNQUOTED([
 RPMDB_INIT
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
@@ -754,14 +766,28 @@ runroot rpmkeys -Kv /tmp/${pkg}
 ],
 [1],
 [/tmp/hello-2.0-1.x86_64-signed.rpm:
-    Header RSA signature: BAD (package tag 268: invalid OpenPGP signature)
+`if test x$PGP = xinternal; then
+    echo '    Header RSA signature: BAD (package tag 268: invalid OpenPGP signature)'
+else
+    echo '    Header RSA signature: BAD (package tag 268: invalid OpenPGP signature: Parsing an OpenPGP packet:'
+    echo '  Failed to parse Signature Packet'
+    echo '      because: Signature appears to be created by a non-conformant OpenPGP implementation, see <https://github.com/rpm-software-management/rpm/issues/2351>.'
+    echo '      because: Malformed MPI: leading bit is not set: expected bit 1 to be set in        0 (0))'
+fi`
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: OK
     V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
     MD5 digest: OK
 /tmp/hello-2.0-1.x86_64-signed.rpm:
-    Header RSA signature: BAD (package tag 268: invalid OpenPGP signature)
+`if test x$PGP = xinternal; then
+    echo '    Header RSA signature: BAD (package tag 268: invalid OpenPGP signature)'
+else
+    echo '    Header RSA signature: BAD (package tag 268: invalid OpenPGP signature: Parsing an OpenPGP packet:'
+    echo '  Failed to parse Signature Packet'
+    echo '      because: Signature appears to be created by a non-conformant OpenPGP implementation, see <https://github.com/rpm-software-management/rpm/issues/2351>.'
+    echo '      because: Malformed MPI: leading bit is not set: expected bit 1 to be set in        0 (0))'
+fi`
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: OK

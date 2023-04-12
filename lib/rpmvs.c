@@ -193,10 +193,23 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
     }
 
     if (sinfo->type == RPMSIG_SIGNATURE_TYPE) {
-	if (pgpPrtParams(data, dlen, PGPTAG_SIGNATURE, &sinfo->sig)) {
-	    rasprintf(&sinfo->msg, _("%s tag %u: invalid OpenPGP signature"),
-		    origin, td->tag);
+	char *lints = NULL;
+        int ec = pgpPrtParams2(data, dlen, PGPTAG_SIGNATURE, &sinfo->sig, &lints);
+	if (ec) {
+	    if (lints) {
+		rasprintf(&sinfo->msg,
+			("%s tag %u: invalid OpenPGP signature: %s"),
+			origin, td->tag, lints);
+		free(lints);
+	    } else {
+		rasprintf(&sinfo->msg,
+			_("%s tag %u: invalid OpenPGP signature"),
+			origin, td->tag);
+	    }
 	    goto exit;
+	} else if (lints) {
+	    rpmlog(RPMLOG_WARNING, "%s\n", lints);
+	    free(lints);
 	}
 	sinfo->hashalgo = pgpDigParamsAlgo(sinfo->sig, PGPVAL_HASHALGO);
 	sinfo->keyid = pgpGrab(pgpDigParamsSignID(sinfo->sig)+4, 4);
