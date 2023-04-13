@@ -410,6 +410,9 @@ add_custom_target(ChangeLog
 				--output=${CMAKE_BINARY_DIR}/ChangeLog
 )
 
+add_custom_command(OUTPUT po/rpm.pot
+		   COMMAND git submodule update --init)
+
 function(add_tarball targetname namever treeish)
 	set(distfmt tar)
 	set(tarname ${namever}.${distfmt})
@@ -428,7 +431,7 @@ function(add_tarball targetname namever treeish)
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 		BYPRODUCTS ${distname} ${docname}
 		VERBATIM
-		DEPENDS ChangeLog ${docname}
+		DEPENDS ChangeLog ${docname} po/rpm.pot
 		COMMAND git archive
 			--format=${distfmt}
 			--output=${CMAKE_BINARY_DIR}/${tarname}
