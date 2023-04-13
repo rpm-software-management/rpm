@@ -428,7 +428,7 @@ function(add_tarball targetname namever treeish)
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 		BYPRODUCTS ${distname} ${docname}
 		VERBATIM
-		DEPENDS ChangeLog ${docname}
+		DEPENDS ChangeLog ${docname} translations
 		COMMAND git archive
 			--format=${distfmt}
 			--output=${CMAKE_BINARY_DIR}/${tarname}
