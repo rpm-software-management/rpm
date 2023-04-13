@@ -1043,6 +1043,14 @@ int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
     return rc;
 }
 
+int pgpPrtParams2(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
+                  pgpDigParams * ret, char **lints)
+{
+    if (lints)
+        *lints = NULL;
+    return pgpPrtParams2(pkts, pktlen, pkttype, ret, lints);
+}
+
 int pgpPrtParamsSubkeys(const uint8_t *pkts, size_t pktlen,
 			pgpDigParams mainkey, pgpDigParams **subkeys,
 			int *subkeysCount)

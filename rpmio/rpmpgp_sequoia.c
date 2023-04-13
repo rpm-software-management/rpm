@@ -54,6 +54,10 @@ W(int, pgpPubKeyCertLen,
 W(int, pgpPrtParams,
   (const uint8_t *pkts, size_t pktlen, unsigned int pkttype, pgpDigParams *ret),
   (pkts, pktlen, pkttype, ret))
+W(int, pgpPrtParams2,
+  (const uint8_t *pkts, size_t pktlen, unsigned int pkttype, pgpDigParams *ret,
+   char **lints),
+  (pkts, pktlen, pkttype, ret, lints))
 W(int, pgpPrtParamsSubkeys,
   (const uint8_t *pkts, size_t pktlen,
    pgpDigParams mainkey, pgpDigParams **subkeys,
