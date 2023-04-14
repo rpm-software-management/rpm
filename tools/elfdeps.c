@@ -16,6 +16,7 @@ int soname_only = 0;
 int fake_soname = 1;
 int filter_soname = 1;
 int require_interp = 0;
+int multifile = 0;
 
 typedef struct elfInfo_s {
     Elf *elf;
@@ -332,8 +333,12 @@ static int processFile(const char *fn, int dtype)
 
     rc = 0;
     /* dump the requested dependencies for this file */
-    for (ARGV_t dep = dtype ? ei->requires : ei->provides; dep && *dep; dep++) {
-	fprintf(stdout, "%s\n", *dep);
+    ARGV_t dep = dtype ? ei->requires : ei->provides;
+    if (dep && *dep) {
+	if (multifile)
+	    fprintf(stdout, ";%s\n", fn);
+	for (; dep && *dep; dep++)
+	    fprintf(stdout, "%s\n", *dep);
     }
 
 exit:
@@ -363,6 +368,7 @@ int main(int argc, char *argv[])
 	{ "no-fake-soname", 0, POPT_ARG_VAL, &fake_soname, 0, NULL, NULL },
 	{ "no-filter-soname", 0, POPT_ARG_VAL, &filter_soname, 0, NULL, NULL },
 	{ "require-interp", 0, POPT_ARG_VAL, &require_interp, -1, NULL, NULL },
+	{ "multifile", 'm', POPT_ARG_VAL, &multifile, -1, NULL, NULL },
 	POPT_AUTOHELP 
 	POPT_TABLEEND
     };
