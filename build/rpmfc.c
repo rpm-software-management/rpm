@@ -614,46 +614,52 @@ static void exclFini(struct exclreg_s *excl)
     memset(excl, 0, sizeof(*excl));
 }
 
-static int rpmfcHelper(rpmfc fc, int ix, const struct exclreg_s *excl,
+static int rpmfcHelper(rpmfc fc, int *ixs, int n,
+		       const struct exclreg_s *excl,
 		       rpmsenseFlags dsContext, rpmTagVal tagN,
 		       const char *namespace, const char *mname)
 {
-    ARGV_t pav = NULL;
-    const char * fn = fc->fn[ix];
-    int pac;
     int rc = 0;
 
-    /* If the entire path is filtered out, there's nothing more to do */
-    if (regMatch(excl->exclude_from, fn+fc->brlen))
-	goto exit;
+    for (int i = 0; i < n; i++) {
+	ARGV_t pav = NULL;
+	int pac;
+	int fx = ixs[i];
+	const char * fn = fc->fn[fx];
 
-    if (regMatch(excl->global_exclude_from, fn+fc->brlen))
-	goto exit;
+	/* If the entire path is filtered out, there's nothing more to do */
+	if (regMatch(excl->exclude_from, fn+fc->brlen))
+	    continue;
 
-    if (rpmMacroIsParametric(NULL, mname)) {
-	pav = runCall(mname, fc->buildRoot, fn);
-    } else {
-	pav = runCmd(mname, fc->buildRoot, fn);
+	if (regMatch(excl->global_exclude_from, fn+fc->brlen))
+	    continue;
+
+	if (rpmMacroIsParametric(NULL, mname)) {
+	    pav = runCall(mname, fc->buildRoot, fn);
+	} else {
+	    pav = runCmd(mname, fc->buildRoot, fn);
+	}
+
+	if (pav == NULL)
+	    continue;
+
+	pac = argvCount(pav);
+
+	struct addReqProvDataFc data;
+	data.fc = fc;
+	data.namespace = namespace;
+	data.exclude = excl->exclude;
+
+	for (int dx = 0; dx < pac; dx++) {
+	    if (parseRCPOT(NULL, fc->pkg, pav[dx], tagN, fx, dsContext,
+			    addReqProvFc, &data)) {
+		rc++;
+	    }
+	}
+
+	argvFree(pav);
     }
 
-    if (pav == NULL)
-	goto exit;
-
-    pac = argvCount(pav);
-
-    struct addReqProvDataFc data;
-    data.fc = fc;
-    data.namespace = namespace;
-    data.exclude = excl->exclude;
-
-    for (int i = 0; i < pac; i++) {
-	if (parseRCPOT(NULL, fc->pkg, pav[i], tagN, ix, dsContext, addReqProvFc, &data))
-	    rc++;
-    }
-
-    argvFree(pav);
-
-exit:
     return rc;
 }
 
@@ -1043,11 +1049,8 @@ static int applyAttr(rpmfc fc, int aix, const char *aname,
 
 	if (rpmMacroIsDefined(NULL, mname)) {
 	    char *ns = rpmfcAttrMacro(aname, "namespace", NULL);
-	    for (int i = 0; i < n; i++) {
-		if (rpmfcHelper(fc, ixs[i], excl, dep->type, dep->tag,
-				ns, mname))
-		    rc = 1;
-	    }
+	    rc = rpmfcHelper(fc, ixs, n, excl, dep->type, dep->tag,
+				ns, mname);
 	    free(ns);
 	}
 	free(mname);
