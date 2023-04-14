@@ -1037,7 +1037,8 @@ static const struct applyDep_s applyDepTable[] = {
     { 0, 0, NULL },
 };
 
-static int applyAttr(rpmfc fc, int aix, const char *aname,
+static int applyAttr(rpmfc fc, int aix,
+			const struct rpmfcAttr_s *attr,
 			const struct exclreg_s *excl,
 			const struct applyDep_s *dep)
 {
@@ -1045,6 +1046,7 @@ static int applyAttr(rpmfc fc, int aix, const char *aname,
     int n, *ixs;
 
     if (fattrHashGetEntry(fc->fahash, aix, &ixs, &n, NULL)) {
+	const char *aname = attr->name;
 	char *mname = rstrscat(NULL, "__", aname, "_", dep->name, NULL);
 
 	if (rpmMacroIsDefined(NULL, mname)) {
@@ -1082,7 +1084,7 @@ static rpmRC rpmfcApplyInternal(rpmfc fc)
 	    continue;
 	exclInit(dep->name, &excl);
 	for (rpmfcAttr *attr = fc->atypes; attr && *attr; attr++, aix++) {
-	    if (applyAttr(fc, aix, (*attr)->name, &excl, dep))
+	    if (applyAttr(fc, aix, (*attr), &excl, dep))
 		rc = RPMRC_FAIL;
 	}
 	exclFini(&excl);
