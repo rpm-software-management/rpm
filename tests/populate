@@ -35,6 +35,7 @@ for cf in hosts resolv.conf passwd group mtab ; do
 	[ -f /etc/${cf} ] && cp /etc/${cf} testing/etc/${cf}
 done
 touch testing/etc/{shadow,gshadow}
+mkdir -p testing"${TMPDIR:-/tmp}"
 for prog in gzip cat cp patch tar sh bash ln chmod rm mkdir uname grep sed find file ionice mktemp nice cut sort diff touch install wc coreutils xargs mknod locale systemd-sysusers; do
 	p=`which ${prog}`
 	if [ "${p}" != "" ]; then
