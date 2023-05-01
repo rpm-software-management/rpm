@@ -296,6 +296,7 @@ RPMTEST_SETUP
 runroot rpmspec --parse \
 	--define "__rpmuncompress /usr/lib/rpm/rpmuncompress" \
 	--define "__make /usr/bin/make" \
+	--define "__mkdir /usr/bin/mkdir" \
 	--define "__patch /usr/bin/patch" \
 	--define "__chmod /usr/bin/chmod" \
 	--define "debug_package %{nil}" \
