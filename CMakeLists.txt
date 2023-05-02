@@ -67,8 +67,8 @@ function(makemacros)
 	set(libdir "\${prefix}/=LIB=")
 	set(includedir "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
 	set(oldincludedir "${CMAKE_INSTALL_FULL_OLDINCLUDEDIR}")
-	set(infodir "\${datarootdir}/${CMAKE_INSTALL_INFODIR}")
-	set(mandir "\${datarootdir}/${CMAKE_INSTALL_MANDIR}")
+	set(infodir "\${prefix}/${CMAKE_INSTALL_INFODIR}")
+	set(mandir "\${prefix}/${CMAKE_INSTALL_MANDIR}")
 	set(RUNDIR /run)
 
 	set(acutils
