@@ -85,10 +85,10 @@ Vendor             | 1011 | string       | Package vendor contact information.
 
 Tag Name          | Value| Type         | Description
 ------------------|------|--------------|------------
-Archivesize       | 1046 | int32        | (Compressed) payload size.
+Archivesize       | 1046 | int32        | (Uncompressed) payload size.
 Dirnames          | 1118 | string array | dirname(3) components of contained paths
 Filedigestalgo    | 5011 | int32        | ID of file digest algorithm. If missing, considered `0` for `md5`.
-Longarchivesize   | 271  | int64        | (Compressed) payload size when > 4GB.
+Longarchivesize   | 271  | int64        | (Uncompressed) payload size when > 4GB.
 Longsize          | 5009 | int64        | Installed package size when > 4GB.
 Payloadcompressor | 1125 | string       | Payload compressor name (as passed to rpmio `Fopen()`)
 Payloadflags      | 1126 | string       | Payload compressor level (as passed to rpmio `Fopen()`)
