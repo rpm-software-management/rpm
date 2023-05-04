@@ -646,6 +646,9 @@ are taken directly from the on-disk files. Refer to
 [users and groups](users_and_groups.md) for dealing with other users
 and groups.
 
+Note that rpm only uses information from the local passwd(5) and group(5)
+files.
+
 There are two directives to override the default:
 
 #### `%attr(<mode>, <user>, <group>) <file|directory>`

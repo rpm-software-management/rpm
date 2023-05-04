@@ -913,14 +913,6 @@ unique to verify mode are:
 
 :   
 
-**\--nouser**
-
-:   
-
-**\--nogroup**
-
-:   
-
 **\--nomtime**
 
 :   
@@ -932,6 +924,15 @@ unique to verify mode are:
 **\--nordev**
 
 :   Don\'t verify the corresponding file attribute.
+
+**\--nouser**
+
+:   
+
+**\--nogroup**
+
+:  Don\'t verify file user/group ownership. Note that only local
+   passwd(5) and group(5) databases are consulted.
 
 **\--nocaps**
 

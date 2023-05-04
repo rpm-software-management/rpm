@@ -132,6 +132,10 @@
 
 %_keyringpath		%{_dbpath}/pubkeys/
 
+# Location of passwd(5) and group(5)
+%_passwd_path		/etc/passwd
+%_group_path		/etc/group
+
 # sysusers helper binary or script, uncomment to disable
 %__systemd_sysusers	%{_bindir}/systemd-sysusers
 
