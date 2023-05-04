@@ -102,11 +102,10 @@ int rpmChrootSet(const char *rootDir)
 	    rpmlog(RPMLOG_ERR, _("Unable to open current directory: %m\n"));
 	    rc = -1;
 	}
-
-	/* Force preloading of dlopen()'ed libraries before chroot */
-	if (rpmugInit())
-	    rc = -1;
     }
+
+    /* Reset user and group caches */
+    rpmugFree();
 
     return rc;
 }
