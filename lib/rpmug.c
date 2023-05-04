@@ -130,33 +130,23 @@ static int lookup_str(const char *path, long val, int vcol, int rcol,
 int rpmugUid(const char * thisUname, uid_t * uid)
 {
     static char * lastUname = NULL;
-    static size_t lastUnameLen = 0;
-    static size_t lastUnameAlloced;
     static uid_t lastUid;
-    size_t thisUnameLen;
 
     if (!thisUname) {
-	lastUnameLen = 0;
+	lastUname = rfree(lastUname);
 	return -1;
     } else if (rstreq(thisUname, UID_0_USER)) {
 	*uid = 0;
 	return 0;
     }
 
-    thisUnameLen = strlen(thisUname);
-    if (lastUname == NULL || thisUnameLen != lastUnameLen ||
-	!rstreq(thisUname, lastUname))
-    {
-	if (lastUnameAlloced < thisUnameLen + 1) {
-	    lastUnameAlloced = thisUnameLen + 10;
-	    lastUname = xrealloc(lastUname, lastUnameAlloced);	/* XXX memory leak */
-	}
-	strcpy(lastUname, thisUname);
-
+    if (lastUname == NULL || !rstreq(thisUname, lastUname)) {
 	long id;
 	if (lookup_num(pwfile(), thisUname, 0, 2, &id))
 	    return -1;
 
+	free(lastUname);
+	lastUname = xstrdup(thisUname);
 	lastUid = id;
     }
 
@@ -168,32 +158,22 @@ int rpmugUid(const char * thisUname, uid_t * uid)
 int rpmugGid(const char * thisGname, gid_t * gid)
 {
     static char * lastGname = NULL;
-    static size_t lastGnameLen = 0;
-    static size_t lastGnameAlloced;
     static gid_t lastGid;
-    size_t thisGnameLen;
 
     if (thisGname == NULL) {
-	lastGnameLen = 0;
+	lastGname = rfree(lastGname);
 	return -1;
     } else if (rstreq(thisGname, GID_0_GROUP)) {
 	*gid = 0;
 	return 0;
     }
 
-    thisGnameLen = strlen(thisGname);
-    if (lastGname == NULL || thisGnameLen != lastGnameLen ||
-	!rstreq(thisGname, lastGname))
-    {
-	if (lastGnameAlloced < thisGnameLen + 1) {
-	    lastGnameAlloced = thisGnameLen + 10;
-	    lastGname = xrealloc(lastGname, lastGnameAlloced);	/* XXX memory leak */
-	}
-	strcpy(lastGname, thisGname);
-
+    if (lastGname == NULL || !rstreq(thisGname, lastGname)) {
 	long id;
 	if (lookup_num(grpfile(), thisGname, 0, 2, &id))
 	    return -1;
+	free(lastGname);
+	lastGname = xstrdup(thisGname);
 	lastGid = id;
     }
 
@@ -206,10 +186,10 @@ const char * rpmugUname(uid_t uid)
 {
     static uid_t lastUid = (uid_t) -1;
     static char * lastUname = NULL;
-    static size_t lastUnameLen = 0;
 
     if (uid == (uid_t) -1) {
 	lastUid = (uid_t) -1;
+	lastUname = rfree(lastUname);
 	return NULL;
     } else if (uid == (uid_t) 0) {
 	return UID_0_USER;
@@ -217,19 +197,13 @@ const char * rpmugUname(uid_t uid)
 	return lastUname;
     } else {
 	char *uname = NULL;
-	size_t len;
 
 	if (lookup_str(pwfile(), uid, 2, 0, &uname))
 	    return NULL;
 
 	lastUid = uid;
-	len = strlen(uname);
-	if (lastUnameLen < len + 1) {
-	    lastUnameLen = len + 20;
-	    lastUname = xrealloc(lastUname, lastUnameLen);
-	}
-	strcpy(lastUname, uname);
-	free(uname);
+	free(lastUname);
+	lastUname = uname;
 
 	return lastUname;
     }
@@ -239,10 +213,10 @@ const char * rpmugGname(gid_t gid)
 {
     static gid_t lastGid = (gid_t) -1;
     static char * lastGname = NULL;
-    static size_t lastGnameLen = 0;
 
     if (gid == (gid_t) -1) {
 	lastGid = (gid_t) -1;
+	lastGname = rfree(lastGname);
 	return NULL;
     } else if (gid == (gid_t) 0) {
 	return GID_0_GROUP;
@@ -250,19 +224,13 @@ const char * rpmugGname(gid_t gid)
 	return lastGname;
     } else {
 	char *gname = NULL;
-	size_t len;
 
 	if (lookup_str(grpfile(), gid, 2, 0, &gname))
 	    return NULL;
 
 	lastGid = gid;
-	len = strlen(gname);
-	if (lastGnameLen < len + 1) {
-	    lastGnameLen = len + 20;
-	    lastGname = xrealloc(lastGname, lastGnameLen);
-	}
-	strcpy(lastGname, gname);
-	free(gname);
+	free(lastGname);
+	lastGname = gname;
 
 	return lastGname;
     }
