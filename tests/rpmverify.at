@@ -107,10 +107,10 @@ runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 mv "${RPMTEST}"/opt/foo "${RPMTEST}"/opt/was
 ln -s was "${RPMTEST}"/opt/foo
 chown -h bin "${RPMTEST}"/opt/foo
-runroot rpm -Vv --nouser --nogroup replacetest
+runroot rpm -Vv replacetest
 ],
 [1],
-[....L....    /opt/foo
+[....LU...    /opt/foo
 .........    /opt/foo/README1
 .........    /opt/goo
 .........    /opt/zoo
