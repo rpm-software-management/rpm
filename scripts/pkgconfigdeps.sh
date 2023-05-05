@@ -31,7 +31,13 @@ case $1 in
 	    [ -n "$n" ] || continue
 	    # We have a dependency.  Make a note that we need the pkgconfig
 	    # tool for this package.
-	    echo -n "pkgconfig($n) "
+	    if [ "$DIR" != "${DIR/i686-w64-mingw//}" ] ; then
+		echo -n "mingw32-pkgconfig($n) "
+	    elif [ "$DIR" != "${DIR/x86_64-w64-mingw//}" ] ; then
+		echo -n "mingw64-pkgconfig($n) "
+	    else
+		echo -n "pkgconfig($n) "
+	    fi
 	    [ -n "$r" ] && [ -n "$v" ] && echo -n "$r" "$v"
 	    echo
 	done
@@ -49,7 +55,13 @@ case $1 in
 	export PKG_CONFIG_PATH="$DIR:$DIR/../../share/pkgconfig"
 	$pkgconfig --print-requires --print-requires-private "$filename" 2> /dev/null | while read n r v ; do
 	    [ -n "$n" ] || continue
-	    echo -n "pkgconfig($n) "
+	    if [ "$DIR" != "${DIR/i686-w64-mingw//}" ] ; then
+		echo -n "mingw32-pkgconfig($n) "
+	    elif [ "$DIR" != "${DIR/x86_64-w64-mingw//}" ] ; then
+		echo -n "mingw64-pkgconfig($n) "
+	    else
+		echo -n "pkgconfig($n) "
+	    fi
 	    [ -n "$r" ] && [ -n "$v" ] && echo -n "$r" "$v"
 	    echo
 	done
