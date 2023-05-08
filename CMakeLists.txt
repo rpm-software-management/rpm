@@ -266,7 +266,7 @@ id0name(UID_0_USER /etc/passwd)
 id0name(GID_0_GROUP /etc/group)
 
 # map module/package findings to config.h
-if (${Bzip2_FOUND})
+if (${BZIP2_FOUND})
 	set(HAVE_BZLIB_H 1)
 endif()
 if (${LIBLZMA_FOUND})
