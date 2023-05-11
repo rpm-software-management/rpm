@@ -135,7 +135,7 @@ static int sqlite_init(rpmdb rdb, const char * dbhome)
     if (rdb->db_dbenv == NULL) {
 	dbfile = rpmGenPath(dbhome, rdb->db_ops->path, NULL);
 	sqlite3 *sdb = NULL;
-	int xx, flags = 0;
+	int xx = SQLITE_CANTOPEN, flags = 0;
 	int retry_open = 1;
 	if ((rdb->db_mode & O_ACCMODE) == O_RDONLY)
 	    flags |= SQLITE_OPEN_READONLY;
