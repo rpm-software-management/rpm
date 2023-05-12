@@ -784,7 +784,8 @@ static int get_x86_64_level(void)
 {
     int level = 1;
 
-    unsigned int op_1_ecx = 0, op_80000001_ecx = 0, op_7_ebx = 0, unused;
+    unsigned int op_0_eax = 0, op_1_ecx = 0, op_80000001_ecx = 0, op_7_ebx = 0, unused;
+    cpuid(0, 0, &op_0_eax, &unused, &unused, &unused);
     cpuid(1, 0, &unused, &unused, &op_1_ecx, &unused);
     cpuid(0x80000001, 0, &unused, &unused, &op_80000001_ecx, &unused);
     cpuid(7, 0, &unused, &op_7_ebx, &unused, &unused);
@@ -801,7 +802,8 @@ static int get_x86_64_level(void)
 
     const unsigned int op_1_ecx_lv3 = bit_FMA | bit_MOVBE | bit_OSXSAVE | bit_AVX | bit_F16C;
     const unsigned int op_7_ebx_lv3 = bit_BMI | bit_AVX2 | bit_BMI2;
-    if (level == 2 && (op_1_ecx & op_1_ecx_lv3) == op_1_ecx_lv3 && (op_7_ebx & op_7_ebx_lv3) == op_7_ebx_lv3
+    if (level == 2 && (op_1_ecx & op_1_ecx_lv3) == op_1_ecx_lv3
+        && op_0_eax >= 7 && (op_7_ebx & op_7_ebx_lv3) == op_7_ebx_lv3
         && (op_80000001_ecx & bit_LZCNT)
         && __builtin_cpu_supports("avx2"))
     {
