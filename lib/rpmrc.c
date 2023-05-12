@@ -735,6 +735,12 @@ exit:
 }
 
 #	if defined(__linux__) && defined(__x86_64__)
+#           if defined(__has_builtin)
+#               if __has_builtin(__builtin_cpu_supports)
+#                   define HAS_BUILTIN_CPU_SUPPORTS
+#               endif
+#           endif
+#           if defined(HAS_BUILTIN_CPU_SUPPORTS)
 static inline void cpuid(uint32_t op, uint32_t op2, uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx)
 {
     asm volatile (
@@ -783,6 +789,12 @@ static int get_x86_64_level(void)
     cpuid(0x80000001, 0, &unused, &unused, &op_80000001_ecx, &unused);
     cpuid(7, 0, &unused, &op_7_ebx, &unused, &unused);
 
+    /* CPUID is unfortunately not quite enough: It indicates whether the hardware supports it,
+     * but software support (kernel/hypervisor) is also needed for register saving/restoring.
+     * For that we can ask the compiler's runtime lib through __builtin_cpu_supports. This is
+     * not usable as a complete replacement for the CPUID code though as not all extensions are
+     * supported (yet). */
+
     const unsigned int op_1_ecx_lv2 = bit_SSE3 | bit_SSSE3 | bit_CMPXCHG16B | bit_SSE4_1 | bit_SSE4_2 | bit_POPCNT;
     if ((op_1_ecx & op_1_ecx_lv2) == op_1_ecx_lv2 && (op_80000001_ecx & bit_LAHF_LM))
 	level = 2;
@@ -790,15 +802,27 @@ static int get_x86_64_level(void)
     const unsigned int op_1_ecx_lv3 = bit_FMA | bit_MOVBE | bit_OSXSAVE | bit_AVX | bit_F16C;
     const unsigned int op_7_ebx_lv3 = bit_BMI | bit_AVX2 | bit_BMI2;
     if (level == 2 && (op_1_ecx & op_1_ecx_lv3) == op_1_ecx_lv3 && (op_7_ebx & op_7_ebx_lv3) == op_7_ebx_lv3
-        && (op_80000001_ecx & bit_LZCNT))
+        && (op_80000001_ecx & bit_LZCNT)
+        && __builtin_cpu_supports("avx2"))
+    {
         level = 3;
+    }
 
     const unsigned int op_7_ebx_lv4 = bit_AVX512F | bit_AVX512DQ | bit_AVX512CD | bit_AVX512BW | bit_AVX512VL;
-    if (level == 3 && (op_7_ebx & op_7_ebx_lv4) == op_7_ebx_lv4)
+    if (level == 3 && (op_7_ebx & op_7_ebx_lv4) == op_7_ebx_lv4
+        && __builtin_cpu_supports("avx512f"))
+    {
         level = 4;
+    }
 
     return level;
 }
+#           else /* defined(HAS_BUILTIN_CPU_SUPPORTS) */
+static int get_x86_64_level(void)
+{
+    return 1;
+}
+#           endif
 #	endif
 
 #	if defined(__linux__) && defined(__i386__)
