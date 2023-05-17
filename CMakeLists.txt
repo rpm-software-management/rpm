@@ -52,6 +52,7 @@ set(CMAKE_SHARED_MODULE_PREFIX "")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 include(GNUInstallDirs)
 add_compile_definitions(_GNU_SOURCE)
+add_definitions(-D_FILE_OFFSET_BITS=64)
 
 function(makemacros)
 	set(prefix ${CMAKE_INSTALL_PREFIX})
