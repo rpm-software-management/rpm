@@ -274,7 +274,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     }
 
     /* mkdir for dynamic specparts */
-    buf = rpmExpand("%{__mkdir} SPECPARTS", NULL);
+    buf = rpmExpand("%{__mkdir_p} SPECPARTS", NULL);
     appendBuf(spec, buf, 1);
     free(buf);
 
