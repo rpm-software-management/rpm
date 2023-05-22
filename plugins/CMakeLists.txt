@@ -40,6 +40,7 @@ set(plugindir ${CMAKE_INSTALL_FULL_LIBDIR}/rpm-plugins)
 
 get_property(plugins DIRECTORY PROPERTY BUILDSYSTEM_TARGETS)
 foreach(plugin ${plugins})
+	target_link_libraries(${plugin} PRIVATE librpmio librpm)
 	install(TARGETS ${plugin} DESTINATION ${plugindir})
 endforeach()
 
