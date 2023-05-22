@@ -226,6 +226,7 @@ exit:
     if(msg) {
 	free(msg);
     }
+    rpmtsFree(ts);
     return rc;
 }
 
@@ -243,6 +244,7 @@ static void sanitizeSignatureHeader(Header * sigh)
 	*sigh = headerLink(nh);
 	headerFree(nh);
     }
+    rpmtdFreeData(&td);
 }
 
 static rpmRC process_package(FD_t fdi, FD_t digestori, FD_t validationi)
@@ -281,6 +283,8 @@ static rpmRC process_package(FD_t fdi, FD_t digestori, FD_t validationi)
     rpmfiles files = NULL;
     rpmfi fi = NULL;
     char *msg = NULL;
+    struct digestoffset *offsets = NULL;
+    digestSet ds = NULL;
 
     fdo = fdDup(STDOUT_FILENO);
 
@@ -357,10 +361,8 @@ static rpmRC process_package(FD_t fdi, FD_t digestori, FD_t validationi)
 	 * now?)
 	 */
 	diglen = (uint32_t) rpmDigestLength(rpmfiDigestAlgo(fi));
-	digestSet ds =
-	    digestSetCreate(rpmfiFC(fi), digestSetHash, digestSetCmp,
-			    NULL);
-	struct digestoffset offsets[rpmfiFC(fi)];
+	ds = digestSetCreate(rpmfiFC(fi), digestSetHash, digestSetCmp, NULL);
+	offsets = xcalloc(rpmfiFC(fi), sizeof(*offsets));
 	pos = RPMLEAD_SIZE + headerSizeof(sigh, HEADER_MAGIC_YES);
 
 	/* main headers are aligned to 8 byte boundry */
@@ -494,6 +496,10 @@ static rpmRC process_package(FD_t fdi, FD_t digestori, FD_t validationi)
     rpmfilesFree(files);
     rpmfiFree(fi);
     headerFree(h);
+    headerFree(sigh);
+    free(offsets);
+    Fclose(fdo);
+    digestSetFree(ds);
     return rc;
 }
 
@@ -693,6 +699,7 @@ int main(int argc, char *argv[]) {
 
     FD_t fdi = fdDup(STDIN_FILENO);
     rc = teeRpm(fdi, algos, nb_algos);
+    Fclose(fdi);
     if (rc != RPMRC_OK) {
 	/* translate rpmRC into generic failure return code. */
 	return EXIT_FAILURE;
