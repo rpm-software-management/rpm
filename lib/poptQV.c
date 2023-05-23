@@ -108,7 +108,7 @@ struct poptOption rpmQVSourcePoptTable[] = {
  { "verify", 'V', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'V',
 	N_("rpm verify mode"), NULL },
  { "whatconflicts", '\0', 0, 0, POPT_WHATCONFLICTS, 
-	N_("query/verify the package(s) which require a dependency"), "CAPABILITY" },
+	N_("query/verify the package(s) which conflict with a dependency"), "CAPABILITY" },
  { "whatrequires", '\0', 0, 0, POPT_WHATREQUIRES, 
 	N_("query/verify the package(s) which require a dependency"), "CAPABILITY" },
  { "whatobsoletes", '\0', 0, 0, POPT_WHATOBSOLETES,
