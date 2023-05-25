@@ -33,18 +33,18 @@ a macro invocation. `--` can be used to separate options from arguments.
 While a parameterized macro is being expanded, the following shell-like
 macros are available:
 
-```
-	%0	the name of the macro being invoked
-	%*	all arguments (unlike shell, not including any processed flags)
-	%**	all arguments (including any processed flags)
-	%#	the number of arguments
-	%{-f}	if present at invocation, the last occurence of flag f (flag and argument)
-	%{-f*}	if present at invocation, the argument to the last occurence of flag f
-	%1, %2	the arguments themselves (after getopt(3) processing)
-```
+| Macro  | Description
+| ------ | -----------
+| %0     | the name of the macro being invoked
+| %*	 | all arguments (unlike shell, not including any processed flags)
+| %**	 | all arguments (including any processed flags)
+| %#     | the number of arguments
+| %{-f}	 | if present at invocation, the last occurence of flag f (flag and argument)
+| %{-f*} |	if present at invocation, the argument to the last occurence of flag f
+| %1, %2, ...|	the arguments themselves (after getopt(3) processing)
 
 At the end of invocation of a parameterized macro, the above macros are
-(at the moment, silently) discarded.
+automatically discarded.
 
 ## Writing a Macro
 
@@ -61,67 +61,81 @@ using `%(shell command)`.
 
 ## Builtin Macros
 
-There are several builtin macros (with reserved names) that are needed
-to perform useful operations. The current list is
+There are several builtin macros (with reserved names) for performing
+various common operations.
 
-```
-	%trace		toggle print of debugging information before/after
-			expansion
-	%dump		print the active (i.e. non-covered) macro table
-	%getncpus	expand to the number of available CPUs
-	%{getncpus:<total|proc|thread>} expand to the number of available CPUs,
-                "proc" and "thread" additionally accounting for available
-                memory (eg address space limitations for threads)
-	%getconfdir	expand to rpm "home" directory (typically /usr/lib/rpm)
-	%dnl		discard to next line (without expanding)
-	%verbose	expand to 1 if rpm is in verbose mode, 0 if not
-	%{verbose:...}	expand to ... if rpm is in verbose mode, the
-			empty string if not
 
-	%{echo:...}	print ... to stdout
-	%{warn:...}	print warning: ... to stderr
-	%{error:...}	print error: ... to stderr and return an error
- 
-	%define ...	define a macro
-	%undefine ...	undefine a macro
-	%global ...	define a macro whose body is available in global context
+### Macro manipulation
 
-	%{macrobody:...}	literal body of a macro
+| Macro            | Description | Introduced
+| ---------------- | ----------- | ----------
+| %define ...	   | define a macro
+| %undefine ...	   | undefine a macro
+| %global ...	   | define a macro whose body is available in global context
+| %{load:...}	   | load a macro file | 4.12.0
+| %{expand:...}	   | like eval, expand ... to <body> and (re-)expand <body>
+| %{expr:...}	   | evaluate an [expression](#expression-expansion) | 4.15.0
+| %{lua:...}	   | expand using the [embedded Lua interpreter](lua.md)
+| %{macrobody:...} | literal body of a macro | 4.16.0
+| %{quote:...}     | quote a parametric macro argument, needed to pass empty strings or strings with whitespace | 4.14.0
 
-	%{gsub:...}	replace occurences of pattern in a string
-                        (see Lua `string.gsub()`)
-	%{len:...}	string length
-	%{lower:...}	lowercase a string
-	%{rep:...}	repeat a string (see Lua `string.rep()`)
-	%{reverse:...}	reverse a string
-	%{sub:...}	expand to substring (see Lua `string.sub()`)
-	%{upper:...}	uppercase a string
+### String operations
 
-	%{basename:...}	basename(1) macro analogue
-	%{dirname:...}	dirname(1) macro analogue
-	%{exists:...}	test file existence, expands to 1/0
-	%{suffix:...}	expand to suffix part of a file name
-	%{url2path:...}	convert url to a local path
-	%{getenv:...}	getenv(3) macro analogue
-	%{uncompress:...} expand ... to <file> and test to see if <file> is
-			compressed.  The expansion is
-				cat <file>		# if not compressed
-				gzip -dc <file>		# if gzip'ed
-				bzip2 -dc <file>	# if bzip'ed
+| Macro            | Description | Introduced
+| ---------------- | ----------- | ----------
+| %{gsub:...}	   | replace occurences of pattern in a string (see Lua `string.gsub()`) | 4.19.0
+| %{len:...}	   | string length | 4.19.0
+| %{lower:...}	   | lowercase a string | 4.19.0
+| %{rep:...}	   | repeat a string (see Lua `string.rep()`) | 4.19.0
+| %{reverse:...}   | reverse a string | 4.19.0
+| %{sub:...}	   | expand to substring (see Lua `string.sub()`) | 4.19.0
+| %{upper:...}	   | uppercase a string | 4.19.0
+| %{shescape:...}  | 	single quote with escapes for use in shell | 4.18.0
+| %{shrink:...}	   | trim leading and trailing whitespace, reduce intermediate whitespace to a single space | 4.14.0
 
-	%{load:...}	load a macro file
-	%{lua:...}	expand using the [embedded Lua interpreter](lua.md)
-	%{expand:...}	like eval, expand ... to <body> and (re-)expand <body>
-	%{expr:...}	evaluate an expression
-	%{shescape:...}	single quote with escapes for use in shell
-	%{shrink:...}	trim leading and trailing whitespace, reduce
-			intermediate whitespace to a single space
-	%{quote:...}	quote a parametric macro argument, needed to pass
-			empty strings or strings with whitespace
+### File and path operations
 
-	%{S:...}	expand ... to <source> file name
-	%{P:...}	expand ... to <patch> file name
-```
+| Macro             | Description | Introduced
+| ----------------- | ----------- | ----------
+| %{basename:...}   | basename(1) macro analogue
+| %{dirname:...}    | dirname(1) macro analogue | 4.11.0
+| %{exists:...}	    | test file existence, expands to 1/0 | 4.18.0
+| %{suffix:...}	    | expand to suffix part of a file name
+| %{url2path:...}   | convert url to a local path
+| %{uncompress:...} | expand to a command for outputting argument file to stdout, uncompressing as needed
+
+### Environment info
+
+| Macro            | Description | Introduced
+| ---------------- | ----------- | ----------
+| %getncpus	       | expand to the number of available CPUs | 4.15.0
+| %{getncpus:...}  | accepts arguments `total`, `proc` and `thread`, additionally accounting for available memory (eg address space limitations for threads| 4.19.0
+| %getconfdir	   | expand to rpm "home" directory (typically /usr/lib/rpm) | 4.7.0
+| %{getenv:...}	   | getenv(3) macro analogue | 4.7.0
+
+### Output
+
+| Macro            | Description | Introduced
+| ---------------- | ----------- | ----------
+| %{echo:...}	   | print ... to stdout
+| %{warn:...}	   | print warning: ... to stderr
+| %{error:...}	   | print error: ... to stderr and return an error
+| %verbose	       | expand to 1 if rpm is in verbose mode, 0 if not
+| %{verbose:...}   | expand to ... if rpm is in verbose mode, the empty string if not | 4.17.1
+
+### Spec specific macros
+
+| Macro            | Description
+| ---------------- | -----------
+| %{S:...}	       | expand ... to <source> file name
+| %{P:...}	       | expand ... to <patch> file name
+
+### Diagnostics
+
+| Macro            | Description
+| ---------------- | -----------
+| %trace		   | toggle print of debugging information before/after expansion
+| %dump		       | print the active (i.e. non-covered) macro table
 
 Macros may also be automatically included from /usr/lib/rpm/macros.
 In addition, rpm itself defines numerous macros. To display the current
@@ -344,19 +358,19 @@ expanded during macro file read.
 Several macro definitions provided by the default rpm macro set have uses in
 packaging similar to the autoconf variables that are used in building packages:
 
-```
-    %_prefix		/usr
-    %_exec_prefix	%{_prefix}
-    %_bindir		%{_exec_prefix}/bin
-    %_sbindir		%{_exec_prefix}/sbin
-    %_libexecdir	%{_exec_prefix}/libexec
-    %_datadir		%{_prefix}/share
-    %_sysconfdir	/etc
-    %_sharedstatedir	%{_prefix}/com
-    %_localstatedir	%{_prefix}/var
-    %_libdir		%{_exec_prefix}/lib
-    %_includedir	%{_prefix}/include
-    %_oldincludedir	/usr/include
-    %_infodir		%{_datadir}/info
-    %_mandir		%{_datadir}/man
-```
+| Macro            | Default value
+| ---------------- | -------------
+| %_prefix		   | /usr
+| %_exec_prefix	   | %{_prefix}
+| %_bindir		   | %{_exec_prefix}/bin
+| %_sbindir		   | %{_exec_prefix}/sbin
+| %_libexecdir	   | %{_exec_prefix}/libexec
+| %_datadir		   | %{_prefix}/share
+| %_sysconfdir	   | /etc
+| %_sharedstatedir | %{_prefix}/com
+| %_localstatedir  | %{_prefix}/var
+| %_libdir		   | %{_exec_prefix}/lib
+| %_includedir	   | %{_prefix}/include
+| %_oldincludedir  | /usr/include
+| %_infodir		   | %{_datadir}/info
+| %_mandir		   | %{_datadir}/man
