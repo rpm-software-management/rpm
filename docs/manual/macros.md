@@ -41,6 +41,7 @@ macros are available:
 | %#     | the number of arguments
 | %{-f}	 | if present at invocation, the last occurence of flag f (flag and argument)
 | %{-f*} |	if present at invocation, the argument to the last occurence of flag f
+| %{-f**} |	if present at invocation, all occurrences of flag f (flag and argument, space separated)
 | %1, %2, ...|	the arguments themselves (after getopt(3) processing)
 
 At the end of invocation of a parameterized macro, the above macros are
