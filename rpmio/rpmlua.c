@@ -883,6 +883,30 @@ static int rpm_unsplitargs(lua_State *L)
     return 1;
 }
 
+static int rpm_glob(lua_State *L)
+{
+    const char *pat = luaL_checkstring(L, 1);
+    rpmglobFlags flags = RPMGLOB_NONE;
+    int argc = 0;
+    ARGV_t argv = NULL;
+
+    if (luaL_optstring(L, 2, "c"))
+	flags |= RPMGLOB_NOCHECK;
+
+    if (rpmGlobPath(pat, flags, &argc, &argv) == 0) {
+	lua_createtable(L, 0, argc);
+	for (int i = 0; i < argc; i++) {
+	    lua_pushstring(L, argv[i]);
+	    lua_rawseti(L, -2, i + 1);
+	}
+	argvFree(argv);
+    } else {
+	luaL_error(L, "glob %s failed: %s", pat, strerror(errno));
+    }
+
+    return 1;
+}
+
 static int newinstance(lua_State *L, const char *name, void *p)
 {
     if (p != NULL) {
@@ -1271,6 +1295,7 @@ static const luaL_Reg rpmlib[] = {
     {"open", rpm_open},
     {"splitargs", rpm_splitargs},
     {"unsplitargs", rpm_unsplitargs},
+    {"glob", rpm_glob},
     {NULL, NULL}
 };
 
