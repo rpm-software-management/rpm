@@ -1232,6 +1232,11 @@ static void doTrace(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
     }
 }
 
+static void doRpmver(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
+{
+    mbAppendStr(mb, VERSION);
+}
+
 static struct builtins_s {
     const char * name;
     macroFunc func;
@@ -1258,6 +1263,7 @@ static struct builtins_s {
     { "lua",		doLua,		1,	ME_PARSE },
     { "macrobody",	doBody,		1,	0 },
     { "quote",		doFoo,		1,	0 },
+    { "rpmversion",	doRpmver,	0,	0 },
     { "shrink",		doFoo,		1,	0 },
     { "suffix",		doFoo,		1,	0 },
     { "trace",		doTrace,	0,	0 },

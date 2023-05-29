@@ -91,6 +91,7 @@ to perform useful operations. The current list is
 	%{suffix:...}	expand to suffix part of a file name
 	%{url2path:...}	convert url to a local path
 	%{getenv:...}	getenv(3) macro analogue
+	%rpmversion     expand to running rpm version
 	%{uncompress:...} expand ... to <file> and test to see if <file> is
 			compressed.  The expansion is
 				cat <file>		# if not compressed
