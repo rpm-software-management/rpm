@@ -344,6 +344,17 @@ runroot rpm \
 ])
 AT_CLEANUP
 
+AT_SETUP([rpmversion macro])
+AT_KEYWORDS([macros])
+AT_CHECK([
+runroot rpm --eval "%{rpmversion}"
+],
+[0],
+[AT_PACKAGE_VERSION
+],
+[])
+AT_CLEANUP
+
 AT_SETUP([builtin macro arguments])
 AT_KEYWORDS([macros])
 AT_CHECK([

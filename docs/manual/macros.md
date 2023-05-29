@@ -112,6 +112,7 @@ various common operations.
 | %{getncpus:...}  | accepts arguments `total`, `proc` and `thread`, additionally accounting for available memory (eg address space limitations for threads| 4.19.0
 | %getconfdir	   | expand to rpm "home" directory (typically /usr/lib/rpm) | 4.7.0
 | %{getenv:...}	   | getenv(3) macro analogue | 4.7.0
+| %rpmversion      | expand to running rpm version
 
 ### Output
 
