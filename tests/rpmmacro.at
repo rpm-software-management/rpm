@@ -711,6 +711,24 @@ runroot rpm --eval '%{lua:print(5*5)}'
 ])
 AT_CLEANUP
 
+AT_SETUP([lua glob])
+AT_CHECK([
+RPMDB_INIT
+runroot_other mkdir -p aaa/{123,223,323,322,321}
+runroot rpm --eval "%{lua:for i,p in ipairs(rpm.glob('aaa/3*')) do print(p..'\\n') end}"
+runroot rpm --eval "%{lua:for i,p in ipairs(rpm.glob('aaa/b*', 'c')) do print(p..'\\n') end}"
+],
+[0],
+[aaa/321
+aaa/322
+aaa/323
+
+aaa/b*
+
+],
+[])
+AT_CLEANUP
+
 AT_SETUP([lua macro arguments])
 AT_KEYWORDS([macros lua])
 AT_CHECK([[
