@@ -150,6 +150,17 @@ rpm.expand('/usr%{__lib}/mypath')
 rpm.expand('%{_libdir}')
 ```
 
+#### glob(pattern, [flags])
+
+Return pathnames matching pattern in a table.
+If flags contains "c", return the original pattern in case of no matches.
+
+```
+for i, p in ipairs(rpm.glob('*')) do
+    print(p)
+end
+```
+
 #### interactive()
 
 Launch interactive session for testing and debugging.
