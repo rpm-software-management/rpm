@@ -196,6 +196,7 @@ support all flags):
 | ? | Enable IO debugging
 
 and optionally followed by IO type (aka compression) to use:
+
 | IO     | Explanation
 |---------------------
 | bzdio  | BZ2 compression
