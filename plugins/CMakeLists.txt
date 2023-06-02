@@ -8,13 +8,14 @@ endif()
 
 if(WITH_DBUS)
 	pkg_check_modules(DBUS REQUIRED IMPORTED_TARGET dbus-1)
+	pkg_get_variable(dbus-1_DATADIR dbus-1 datadir)
 	add_library(systemd_inhibit MODULE systemd_inhibit.c)
 	target_link_libraries(systemd_inhibit PRIVATE PkgConfig::DBUS)
 	add_library(dbus_announce MODULE dbus_announce.c)
 	target_link_libraries(dbus_announce PRIVATE PkgConfig::DBUS)
 	install(FILES
 	  org.rpm.conf
-	  DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/dbus-1/system.d/
+	  DESTINATION ${dbus-1_DATADIR}/dbus-1/system.d/
 	)
 endif()
 
