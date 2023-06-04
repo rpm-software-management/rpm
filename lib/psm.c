@@ -104,7 +104,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 
 	if (!headerGet(h, RPMTAG_FILESTATES, &secStates, HEADERGET_MINMEM))
 	    continue;
-	
+
 	prev = rpmdbGetIteratorOffset(mi);
 	num = 0;
 	while (sfi && sfi->otherPkg == prev) {
@@ -368,7 +368,7 @@ static rpmRC runSysusers(rpmpsm psm)
     provides = rpmdsNew(h, RPMTAG_PROVIDENAME, 0);
 
     /*
-     * Decode sysusers provides from this header into per-source argv's, 
+     * Decode sysusers provides from this header into per-source argv's,
      * providing file as the first element ("" for non-file based provides),
      * followed by decoded sysusers lines.
      */
@@ -568,7 +568,7 @@ static rpmRC runImmedTriggers(rpmpsm psm, rpmsenseFlags sense)
 	    int i = rpmtdGetIndex(&tnames);
 
 	    if (triggersRun[triggerIndices[i]] != 0) continue;
-	
+
 	    mi = rpmtsInitIterator(ts, RPMDBI_NAME, trigName, 0);
 
 	    while ((sourceH = rpmdbNextIterator(mi)) != NULL) {
@@ -663,7 +663,7 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal)
 
     if (goal == PKG_INSTALL) {
 	Header h = rpmteHeader(te);
-	psm->total = headerGetNumber(h, RPMTAG_LONGARCHIVESIZE);
+	psm->total = headerGetNumber(h, RPMTAG_LONGSIZE);
 	headerFree(h);
     } else if (goal == PKG_ERASE) {
 	psm->total = rpmfilesFC(psm->files);
