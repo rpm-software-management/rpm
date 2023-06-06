@@ -933,6 +933,31 @@ static int is_athlon(void)
 	return 1;
 }
 
+static unsigned int x86_family(unsigned int processor_sig)
+{
+    unsigned int base_family = (processor_sig >> 8) & 0x0f;
+    unsigned int family;
+    if (base_family == 0x0f) {
+	unsigned int extended_family = (processor_sig >> 20) & 0x0ff;
+	family = base_family + extended_family;
+    } else
+	family = base_family;
+    return family;
+}
+
+static unsigned int x86_model(unsigned int processor_sig)
+{
+    unsigned int base_model = (processor_sig >> 4) & 0x0f;
+    unsigned int family = x86_family(processor_sig);
+    unsigned int model;
+    if (family >= 0x6) {
+	unsigned int extended_model = (processor_sig >> 16) & 0x0f;
+	model = (extended_model << 4) | base_model;
+    } else
+	model = base_model;
+    return model;
+}
+
 static int is_pentium3(void)
 {
     unsigned int eax, ebx, ecx, edx, family, model;
@@ -945,8 +970,8 @@ static int is_pentium3(void)
     if (!rstreqn(vendor, "GenuineIntel", 12))
 	return 0;
     cpuid(1, &eax, &ebx, &ecx, &edx);
-    family = (eax >> 8) & 0x0f;
-    model = (eax >> 4) & 0x0f;
+    family = x86_family(eax);
+    model = x86_model(eax);
     if (family == 6)
 	switch (model)
 	{
@@ -972,8 +997,8 @@ static int is_pentium4(void)
     if (!rstreqn(vendor, "GenuineIntel", 12))
 	return 0;
     cpuid(1, &eax, &ebx, &ecx, &edx);
-    family = (eax >> 8) & 0x0f;
-    model = (eax >> 4) & 0x0f;
+    family = x86_family(eax);
+    model = x86_model(eax);
     if (family == 15)
 	switch (model)
 	{
@@ -1002,8 +1027,8 @@ static int is_geode(void)
     if (!rstreqn(vendor, "AuthenticAMD", 12))
         return 0;
     cpuid(1, &eax, &ebx, &ecx, &edx);
-    family = (eax >> 8) & 0x0f;
-    model = (eax >> 4) & 0x0f;
+    family = x86_family(eax);
+    model = x86_model(eax);
     if (family == 5)
 	switch (model)
 	{
