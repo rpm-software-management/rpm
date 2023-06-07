@@ -333,7 +333,8 @@ if [ $STATUS -ne 0 ]; then
   exit $STATUS
 fi
 cd 'hello-1.0'
-/usr/bin/mkdir -p SPECPARTS
+rm -rf '/build/BUILD/hello-1.0-SPECPARTS'
+/usr/bin/mkdir -p '/build/BUILD/hello-1.0-SPECPARTS'
 /usr/bin/chmod -Rf a+rX,u+w,g-w,o-w .
 echo "Patch #0 (hello-1.0-modernize.patch):"
 /usr/bin/patch --no-backup-if-mismatch -f -p1 -b --suffix .modernize --fuzz=0 < /build/SOURCES/hello-1.0-modernize.patch
