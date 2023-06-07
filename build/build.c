@@ -195,6 +195,11 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 	fprintf(fp, "cd '%s'\n", buildSubdir);
 
     if (what == RPMBUILD_RMBUILD) {
+	if (rpmMacroIsDefined(spec->macros, "specpartsdir")) {
+	    char * buf = rpmExpand("%{specpartsdir}", NULL);
+	    fprintf(fp, "rm -rf '%s'\n", buf);
+	    free(buf);
+	}
 	if (buildSubdir[0] != '\0')
 	    fprintf(fp, "rm -rf '%s' '%s.gemspec'\n",
 		    buildSubdir, buildSubdir);
