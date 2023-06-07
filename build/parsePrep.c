@@ -274,11 +274,11 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     }
 
     /* mkdir for dynamic specparts */
-    buf = rpmExpand("%{__mkdir_p} SPECPARTS", NULL);
+    buf = rpmExpand("%{__mkdir_p} .SPECPARTS", NULL);
     appendBuf(spec, buf, 1);
     free(buf);
 
-    buf = rpmGenPath("%{_builddir}", "%{buildsubdir}", "SPECPARTS");
+    buf = rpmGenPath("%{_builddir}", "%{buildsubdir}", ".SPECPARTS");
     rpmPushMacro(spec->macros, "specpartsdir", NULL, buf, RMIL_SPEC);
     free(buf);
 
