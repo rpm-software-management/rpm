@@ -262,6 +262,9 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #	Build root path, where %install installs the package during build.
 %buildroot		%{_buildrootdir}/%{NAME}-%{VERSION}-%{RELEASE}.%{_arch}
 
+#	Path for spec file snippets generated during build
+%specpartsdir %{_builddir}/%{buildsubdir}-SPECPARTS
+
 #	Directory where temporaray files can be created.
 %_tmppath		%{_var}/tmp
 
