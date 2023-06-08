@@ -526,7 +526,7 @@ static void rpmfcAddFileDep(rpmfcFileDeps *fileDeps, rpmds ds, int ix)
     fileDeps->data[fileDeps->size++].dep = ds;
 }
 
-static ARGV_t runCmd(const char *name, const char *buildRoot, const char *fn)
+static ARGV_t runCmd(const char *name, const char *buildRoot, ARGV_t fns)
 {
     ARGV_t output = NULL;
     ARGV_t av = NULL;
@@ -536,7 +536,8 @@ static ARGV_t runCmd(const char *name, const char *buildRoot, const char *fn)
 
     argvAdd(&av, cmd);
 
-    appendLineStringBuf(sb_stdin, fn);
+    for (ARGV_t fn = fns; fn && *fn; fn++)
+	appendLineStringBuf(sb_stdin, *fn);
     if (rpmfcExec(av, sb_stdin, &sb_stdout, 0, buildRoot) == 0) {
 	argvSplit(&output, getStringBuf(sb_stdout), "\n\r");
     }
@@ -549,7 +550,7 @@ static ARGV_t runCmd(const char *name, const char *buildRoot, const char *fn)
     return output;
 }
 
-static ARGV_t runCall(const char *name, const char *buildRoot, const char *fn)
+static ARGV_t runCall(const char *name, const char *buildRoot, ARGV_t fns)
 {
     ARGV_t output = NULL;
     ARGV_t args = NULL;
@@ -558,10 +559,13 @@ static ARGV_t runCall(const char *name, const char *buildRoot, const char *fn)
 
     if (*opt)
 	argvAdd(&args, opt);
-    argvAdd(&args, fn);
+    argvAppend(&args, fns);
 
-    if (_rpmfc_debug)
-	rpmlog(RPMLOG_DEBUG, "Calling %s(%s) on %s\n", name, opt, fn);
+    if (_rpmfc_debug) {
+	char *paths = argvJoin(fns, "\n");
+	rpmlog(RPMLOG_DEBUG, "Calling %s(%s) on %s\n", name, opt, paths);
+	free(paths);
+    }
 
     if (rpmExpandThisMacro(NULL, name, args, &exp, 0) >= 0)
 	argvSplit(&output, exp, "\n\r");
@@ -619,16 +623,16 @@ static void exclFini(struct exclreg_s *excl)
 
 static int genDeps(const char *mname, rpmTagVal tagN,
 		rpmsenseFlags dsContext, struct addReqProvDataFc *data,
-		int *fnx, int fx, const char *fn)
+		int *fnx, int fx, ARGV_t paths)
 {
     rpmfc fc = data->fc;
     ARGV_t pav = NULL;
     int rc = 0;
 
     if (rpmMacroIsParametric(NULL, mname)) {
-	pav = runCall(mname, fc->buildRoot, fn);
+	pav = runCall(mname, fc->buildRoot, paths);
     } else {
-	pav = runCmd(mname, fc->buildRoot, fn);
+	pav = runCmd(mname, fc->buildRoot, paths);
     }
 
     for (int px = 0, pac = argvCount(pav); px < pac; px++) {
@@ -676,8 +680,9 @@ static int rpmfcHelper(rpmfc fc, int *ixs, int n, const char *proto,
     for (int i = 0; i < nfn; i++) {
 	int fx = fnx[i];
 	const char *fn = fc->fn[fx];
+	const char *paths[] = { fn, NULL };
 
-	rc += genDeps(mname, tagN, dsContext, &data, fnx, i, fn);
+	rc += genDeps(mname, tagN, dsContext, &data, fnx, i, (ARGV_t) paths);
     }
     free(fnx);
     free(paths);
