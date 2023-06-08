@@ -30,6 +30,7 @@ A file attribute is represented by a macro file in `%{_fileattrsdir}` (typically
 %__NAME_exclude_path
 %__NAME_exclude_magic
 %__NAME_exclude_flags
+%__NAME_protocol
 ```
 
 NAME needs to be replaced by the name choosen for the file attribute and needs to be the same as the file name of the macro file itself (without the `.attr` suffix). While technically all of them are optional, typically two or more of them are present to form a meaningul attribute. All the values are further macro-expanded on use, and additionally, the path and magic related values are interpreted as extended regular expressions.
@@ -114,6 +115,21 @@ shelling out to execute a script that calls `basename`:
 
 ```
 %__foo_provides()	%{basename:%{1}}
+```
+
+### Multifile protocol (rpm >= 4.20)
+
+Generators may optionally support an enhanced mode where all matching
+files are passed to the generator at once, and the generator is expected
+to output the processed filename prepended with `;` before outputing
+dependencies of that file. Files with no dependencies may be omitted.
+This is several orders of magnitude faster than the traditional behavior
+where a generator is launched separately for each and every file.
+Enabling the multifile mode is done by setting
+`%__NAME_protocol` to `multifile` in the attribute file, eg
+
+```
+%__foo_protocol multifile
 ```
 
 ## Tweaking Dependency Generators
