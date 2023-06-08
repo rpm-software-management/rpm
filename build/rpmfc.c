@@ -617,6 +617,31 @@ static void exclFini(struct exclreg_s *excl)
     memset(excl, 0, sizeof(*excl));
 }
 
+static int genDeps(const char *mname, rpmTagVal tagN,
+		rpmsenseFlags dsContext, struct addReqProvDataFc *data,
+		int *fnx, int fx, const char *fn)
+{
+    rpmfc fc = data->fc;
+    ARGV_t pav = NULL;
+    int rc = 0;
+
+    if (rpmMacroIsParametric(NULL, mname)) {
+	pav = runCall(mname, fc->buildRoot, fn);
+    } else {
+	pav = runCmd(mname, fc->buildRoot, fn);
+    }
+
+    for (int px = 0, pac = argvCount(pav); px < pac; px++) {
+	if (parseRCPOT(NULL, fc->pkg, pav[px], tagN, fnx[fx],
+			dsContext, addReqProvFc, data)) {
+	    rc++;
+	}
+    }
+    argvFree(pav);
+
+    return rc;
+}
+
 static int rpmfcHelper(rpmfc fc, int *ixs, int n, const char *proto,
 		       const struct exclreg_s *excl,
 		       rpmsenseFlags dsContext, rpmTagVal tagN,
@@ -643,35 +668,16 @@ static int rpmfcHelper(rpmfc fc, int *ixs, int n, const char *proto,
     }
     paths[nfn] = NULL;
 
+    struct addReqProvDataFc data;
+    data.fc = fc;
+    data.namespace = namespace;
+    data.exclude = excl->exclude;
+
     for (int i = 0; i < nfn; i++) {
-	ARGV_t pav = NULL;
 	int fx = fnx[i];
 	const char *fn = fc->fn[fx];
 
-	if (rpmMacroIsParametric(NULL, mname)) {
-	    pav = runCall(mname, fc->buildRoot, fn);
-	} else {
-	    pav = runCmd(mname, fc->buildRoot, fn);
-	}
-
-	if (pav == NULL)
-	    continue;
-
-	int pac = argvCount(pav);
-
-	struct addReqProvDataFc data;
-	data.fc = fc;
-	data.namespace = namespace;
-	data.exclude = excl->exclude;
-
-	for (int dx = 0; dx < pac; dx++) {
-	    if (parseRCPOT(NULL, fc->pkg, pav[dx], tagN, fnx[i], dsContext,
-			    addReqProvFc, &data)) {
-		rc++;
-	    }
-	}
-
-	argvFree(pav);
+	rc += genDeps(mname, tagN, dsContext, &data, fnx, i, fn);
     }
     free(fnx);
     free(paths);
