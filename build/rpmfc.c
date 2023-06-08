@@ -621,9 +621,9 @@ static void exclFini(struct exclreg_s *excl)
     memset(excl, 0, sizeof(*excl));
 }
 
-static int genDeps(const char *mname, rpmTagVal tagN,
+static int genDeps(const char *mname, int multifile, rpmTagVal tagN,
 		rpmsenseFlags dsContext, struct addReqProvDataFc *data,
-		int *fnx, int fx, ARGV_t paths)
+		int *fnx, int nfn, int fx, ARGV_t paths)
 {
     rpmfc fc = data->fc;
     ARGV_t pav = NULL;
@@ -636,6 +636,25 @@ static int genDeps(const char *mname, rpmTagVal tagN,
     }
 
     for (int px = 0, pac = argvCount(pav); px < pac; px++) {
+	if (multifile && *pav[px] == ';') {
+	    int found = 0;
+	    /* Look forward to allow generators to omit files without deps */
+	    do {
+		fx++;
+		if (rstreq(pav[px]+1, paths[fx]))
+		    found = 1;
+	    } while (!found && fx < nfn);
+
+	    if (!found) {
+		rpmlog(RPMLOG_ERR,
+			_("invalid or out of order path from generator: %s\n"),
+			pav[px]);
+		rc++;
+		break;
+	    }
+	    continue;
+	}
+
 	if (parseRCPOT(NULL, fc->pkg, pav[px], tagN, fnx[fx],
 			dsContext, addReqProvFc, data)) {
 	    rc++;
@@ -677,12 +696,17 @@ static int rpmfcHelper(rpmfc fc, int *ixs, int n, const char *proto,
     data.namespace = namespace;
     data.exclude = excl->exclude;
 
-    for (int i = 0; i < nfn; i++) {
-	int fx = fnx[i];
-	const char *fn = fc->fn[fx];
-	const char *paths[] = { fn, NULL };
+    if (proto && rstreq(proto, "multifile")) {
+	rc = genDeps(mname, 1, tagN, dsContext, &data,
+			fnx, nfn, -1, (ARGV_t) paths);
+    } else {
+	for (int i = 0; i < nfn; i++) {
+	    const char *fn = fc->fn[fnx[i]];
+	    const char *paths[] = { fn, NULL };
 
-	rc += genDeps(mname, tagN, dsContext, &data, fnx, i, (ARGV_t) paths);
+	    rc += genDeps(mname, 0, tagN, dsContext, &data,
+			fnx, nfn, i, (ARGV_t) paths);
+	}
     }
     free(fnx);
     free(paths);
