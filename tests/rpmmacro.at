@@ -1268,4 +1268,24 @@ runroot_other rpmlua -e "print(macros.basename('/some/thing'))"
 [thing
 ],
 [])
+
+AT_CHECK([
+runroot_other rpmlua -e "for i, v in ipairs({'true', 'false', 'grue'}) do print(rpm.execute('/bin/'..v)) end"
+],
+[0],
+[0.0
+nil	exit code	256.0
+nil	No such file or directory	2.0
+],
+[])
+
+# This uses io.stderr:write() because the grue from the previous test 
+# appears to have eaten stdout of the forked child, or something.
+AT_CHECK([
+runroot_other rpmlua -e 'pid = posix.fork(); if pid == 0 then a,b,c=rpm.redirect2null(-1); io.stderr:write(string.format("%s\t%s\t%s\n", a,b,c)) else posix.wait(pid) end'
+],
+[0],
+[],
+[nil	Bad file descriptor	9.0
+])
 AT_CLEANUP
