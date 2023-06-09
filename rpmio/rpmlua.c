@@ -72,22 +72,15 @@ static int rpmluaHookGetArg(lua_State *L, int idx, rpmhookArgv *arg);
 static int pusherror(lua_State *L, int code, const char *info)
 {
     lua_pushnil(L);
-    if (info == NULL)
-	lua_pushstring(L, strerror(code));
-    else
-	lua_pushfstring(L, "%s: %s", info, strerror(code));
+    lua_pushstring(L, info ? info : strerror(code));
     lua_pushnumber(L, code);
     return 3;
 }
 
-static int pushresult(lua_State *L, int result, const char *info)
+static int pushresult(lua_State *L, int result)
 {
-    if (result == 0) {
-	lua_pushnumber(L, result);
-	return 1;
-    }
-
-    return pusherror(L, result, info);
+    lua_pushnumber(L, result);
+    return 1;
 }
 
 rpmlua rpmluaGetGlobalState(void)
@@ -811,7 +804,10 @@ static int rpm_redirect2null(lua_State *L)
 	(void) close(fd);
 	errno = e;
     }
-    return pushresult(L, r, NULL);
+    if (r < 0)
+	return pusherror(L, errno, NULL);
+
+    return pushresult(L, r);
 }
 
 static int rpm_exit(lua_State *L)
@@ -840,11 +836,13 @@ static int rpm_execute(lua_State *L)
     status = posix_spawnp(&pid, file, NULL, NULL, argv, environ);
     free(argv);
     if (status != 0)
-	return pusherror(L, status, "posix_spawnp");
+	return pusherror(L, status, NULL);
     if (waitpid(pid, &status, 0) == -1)
-	return pusherror(L, 0, "waitpid");
-    else
-	return pushresult(L, status, NULL);
+	return pusherror(L, errno, NULL);
+    if (status != 0)
+	return pusherror(L, status, "exit code");
+
+    return pushresult(L, status);
 }
 
 static int rpm_splitargs(lua_State *L)
