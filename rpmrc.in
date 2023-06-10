@@ -105,6 +105,7 @@ optflags: sh4a -O2 -g -mieee
 
 optflags: aarch64 -O2 -g
 
+optflags: riscv32 -O2 -g
 optflags: riscv64 -O2 -g
 
 optflags: loongarch64 -O2 -g
@@ -268,7 +269,7 @@ arch_canon:	mipsr6el: mipsr6el	20
 arch_canon:	mips64r6: mips64r6	21
 arch_canon:	mips64r6el: mips64r6el	21
 
-arch_canon:	riscv: riscv64	22
+arch_canon:	riscv32: riscv64	22
 arch_canon:	riscv64: riscv64	22
 
 arch_canon:	loongarch64:	loongarch64	23
@@ -404,7 +405,7 @@ buildarchtranslate: sh4a: sh4
 
 buildarchtranslate: aarch64: aarch64
 
-buildarchtranslate: riscv: riscv64
+buildarchtranslate: riscv32: riscv64
 buildarchtranslate: riscv64: riscv64
 
 buildarchtranslate: loongarch64: loongarch64
@@ -520,7 +521,7 @@ arch_compat: sh4a: sh4
 
 arch_compat: aarch64: noarch
 
-arch_compat: riscv: noarch
+arch_compat: riscv32: noarch
 arch_compat: riscv64: noarch
 
 os_compat:   IRIX64: IRIX
@@ -558,7 +559,7 @@ buildarch_compat: ia64: noarch
 
 buildarch_compat: aarch64: noarch
 
-buildarch_compat: riscv: noarch
+buildarch_compat: riscv32: noarch
 buildarch_compat: riscv64: noarch
 
 buildarch_compat: athlon: i686
