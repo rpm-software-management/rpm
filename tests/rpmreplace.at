@@ -3,7 +3,7 @@ AT_BANNER([RPM file replacement])
 
 AT_SETUP([upgrade to/from regular file])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}" "${tf}".rpm*
@@ -33,7 +33,7 @@ bar
 foo
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([upgrade regular file to/from link])
 AT_KEYWORDS([install])
@@ -52,7 +52,7 @@ runroot rpmbuild --quiet -bb \
           /data/SPECS/replacetest.spec
 
 # upgrade regular file to/from broken link
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
@@ -71,7 +71,7 @@ foo
 ],
 [])
 
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
@@ -90,11 +90,11 @@ stuff
 foo
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([upgrade broken link to broken link])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
@@ -121,11 +121,11 @@ readlink "${tf}"
 stuff
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([upgrade file link to file link])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
@@ -152,11 +152,11 @@ readlink "${tf}"
 goo
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([upgrade directory link to directory link])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
@@ -183,11 +183,11 @@ readlink "${tf}"
 zoo
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([upgrade regular file to directory])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
@@ -212,11 +212,11 @@ test -d "${tf}"
 [foo
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([upgrade broken link to directory])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
@@ -241,11 +241,11 @@ test -d "${tf}"
 [other
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([upgrade file link to directory])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
@@ -270,11 +270,11 @@ test -d "${tf}"
 [goo
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([upgrade directory link to directory])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
@@ -299,11 +299,11 @@ runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 ],
 [	file /opt/foo from install of replacetest-2.0-1.noarch conflicts with file from package replacetest-1.0-1.noarch
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([upgrade empty directory to empty directory])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
@@ -325,11 +325,11 @@ test -d "${tf}"
 [0],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([upgrade empty directory to regular file])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
@@ -352,11 +352,11 @@ test -d "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rp
 [],
 [	file /opt/foo from install of replacetest-2.0-1.noarch conflicts with file from package replacetest-1.0-1.noarch
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([upgrade locally symlinked directory])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
@@ -386,11 +386,11 @@ test -L "${tf}" && test -d "${tf}"
 [0],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([upgrade invalid locally symlinked directory])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
@@ -416,7 +416,7 @@ test -d "${tf}"
 [0],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([upgrade empty directory to broken link])
 AT_KEYWORDS([install])
@@ -434,7 +434,7 @@ runroot rpmbuild --quiet -bb \
           /data/SPECS/replacetest.spec
 
 # upgrade empty directory to broken link
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
@@ -448,7 +448,7 @@ test -d "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rp
 ])
 
 # upgrade empty directory to file link
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
@@ -460,7 +460,7 @@ test -d "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rp
 [],
 [	file /opt/foo from install of replacetest-2.0-1.noarch conflicts with file from package replacetest-1.0-1.noarch
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([upgrade empty directory to file link])
 AT_KEYWORDS([install])
@@ -478,7 +478,7 @@ runroot rpmbuild --quiet -bb \
           /data/SPECS/replacetest.spec
 
 # upgrade removed empty directory to file link
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
@@ -493,7 +493,7 @@ readlink "${tf}"
 [])
 
 # upgrade replaced empty directory to file link
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
@@ -506,11 +506,11 @@ readlink "${tf}"
 [goo
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([upgrade empty directory to file link with pretrans])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
@@ -535,4 +535,4 @@ readlink "${tf}"
 [goo
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP

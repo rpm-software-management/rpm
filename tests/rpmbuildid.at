@@ -23,7 +23,7 @@ AT_BANNER([RPM buildid tests])
 AT_SETUP([rpmbuild buildid none])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 # Build, contains one ELF which should have a buildid.
@@ -46,7 +46,7 @@ runroot rpm -ql -p /build/RPMS/*/hello-debuginfo-1.0-1.*.rpm \
 hello debuginfo build-id files: 0
 ],
 [ignore])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Check if rpmbuild "alldebug" generates debuginfo buildid symlinks.
@@ -54,7 +54,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid alldebug])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 # Build, contains one ELF which should have a buildid.
@@ -135,7 +135,7 @@ test "$canon_debug_file" = "$canon_debug_id_file" \
 hello debuginfo build-id files: 3
 ],
 [ignore])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Check if rpmbuild "alldebug" generates debuginfo buildid symlinks.
@@ -143,7 +143,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid alldebug unique debug names])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 # Build, contains one ELF which should have a buildid.
@@ -223,7 +223,7 @@ test "$canon_debug_file" = "$canon_debug_id_file" \
 hello debuginfo build-id files: 3
 ],
 [ignore])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Check if rpmbuild "separate" generates main and debuginfo buildid symlinks
@@ -231,7 +231,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid separate])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 # Build, contains one ELF which should have a buildid.
@@ -311,7 +311,7 @@ test "$canon_debug_file" = "$canon_debug_id_file" \
 hello debuginfo build-id files: 2
 ],
 [ignore])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Check if rpmbuild "separate" generates main and debuginfo buildid symlinks
@@ -319,7 +319,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid separate unique debug names])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 # Build, contains one ELF which should have a buildid.
@@ -398,7 +398,7 @@ test "$canon_debug_file" = "$canon_debug_id_file" \
 hello debuginfo build-id files: 2
 ],
 [ignore])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Check if rpmbuild "compat" generates main and debuginfo buildid symlinks
@@ -406,7 +406,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid compat])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 # Build, contains one ELF which should have a buildid.
@@ -499,7 +499,7 @@ test "$canon_compat_file" = "$canon_main_file" \
 hello debuginfo build-id files: 3
 ],
 [ignore])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Check if rpmbuild "compat" generates main and debuginfo buildid symlinks
@@ -507,7 +507,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid compat unique debug names])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 # Build, contains one ELF which should have a buildid.
@@ -599,7 +599,7 @@ test "$canon_compat_file" = "$canon_main_file" \
 hello debuginfo build-id files: 3
 ],
 [ignore])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Check that (copied) files with duplicate build-ids are handled correctly.
@@ -608,7 +608,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid duplicate alldebug])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 # Should create two warnings
 rundebug rpmbuild --quiet \
@@ -663,7 +663,7 @@ debug id in debug package
 debug dup id in debug package
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Check that hard linked files are handled correctly.
@@ -673,7 +673,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid hardlink alldebug])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 # No warnings for hard links
 rundebug rpmbuild --quiet \
@@ -726,7 +726,7 @@ debug id in debug package
 debug dup id in debug package
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Check that (copied) files with duplicate build-ids are handled correctly.
@@ -735,7 +735,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid duplicate separate])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 # Should create two warnings
 rundebug rpmbuild --quiet \
@@ -787,7 +787,7 @@ debug id in debug package
 debug dup id in debug package
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Check that hard linked files are handled correctly.
@@ -797,7 +797,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid hardlink separate])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 # No warnings for hard links
 rundebug rpmbuild --quiet \
@@ -847,7 +847,7 @@ debug id in debug package
 debug dup id in debug package
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Check that (copied) files with duplicate build-ids are handled correctly.
@@ -856,7 +856,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid duplicate compat])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 # Should create two warnings
 rundebug rpmbuild --quiet \
@@ -920,7 +920,7 @@ debug id in debug package
 debug dup id in debug package
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Check that hard linked files are handled correctly.
@@ -930,7 +930,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid hardlink compat])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 # No warnings for hard links
 rundebug rpmbuild --quiet \
@@ -992,7 +992,7 @@ debug id in debug package
 debug dup id in debug package
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Check build-ids are recomputed with unique_build_ids,
@@ -1000,7 +1000,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid recompute])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 # Make sure we get debuginfo
 export CFLAGS="-g"
@@ -1103,7 +1103,7 @@ no-recompute unique unequal
 no-recomputes equal
 ],
 [ignore])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Check build-ids are unique between versions/releases
@@ -1111,7 +1111,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid unique r1 r2])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 # No warnings for hard links
 rundebug rpmbuild --quiet \
@@ -1148,7 +1148,7 @@ if test "$id1" == "$id2"; then echo "equal $id1"; else echo "unequal"; fi
 [unequal
 ],
 [ignore])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Check build-ids are non-unique between versions/releases
@@ -1156,7 +1156,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid non-unique r1 r2])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 # No warnings for hard links
 rundebug rpmbuild --quiet \
@@ -1197,7 +1197,7 @@ if test "$id1" == "$id2"; then echo "equal"; else echo "unequal $id1 $id2"; fi
 [equal
 ],
 [ignore])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Check that build-id directories are created with the right permissions
@@ -1205,7 +1205,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid attrs])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 # Build, contains one ELF which should have a buildid.
@@ -1228,7 +1228,7 @@ runroot rpm -qp --qf "[[%{filenames} %{filemodes:perms}\n]]" \
 /usr/lib/debug/.build-id drwxr-xr-x
 ],
 [ignore])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Check that build-id directories are created with the right attributes
@@ -1236,7 +1236,7 @@ AT_CLEANUP
 AT_SETUP([rpmbuild buildid config attrs])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 # Build, contains one ELF which should have a buildid.
@@ -1255,4 +1255,4 @@ runroot rpm -c -qp /build/RPMS/*/test-debuginfo-1.0-1*rpm
 [/etc/config.file
 ],
 [ignore])
-AT_CLEANUP
+RPMTEST_CLEANUP

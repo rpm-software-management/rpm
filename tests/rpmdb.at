@@ -22,30 +22,30 @@ AT_BANNER([RPM database access])
 # Attempt to initialize a rpmdb
 AT_SETUP([rpm --initdb])
 AT_KEYWORDS([rpmdb])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 ],
 [0],
 [ignore],
 [ignore])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Run rpm -qa on an empty rpmdb
 AT_SETUP([rpm -qa 1])
 AT_KEYWORDS([rpmdb query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   -qa
 ],
 [0])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # Run rpm -qa on a non-existent rpmdb
 AT_SETUP([rpm -qa 2])
 AT_KEYWORDS([rpmdb query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMTEST_SETUP
 runroot rpm \
   -qa
@@ -53,13 +53,13 @@ runroot rpm \
 [0],
 [],
 [ignore])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpm -qa 3])
 AT_KEYWORDS([rpmdb query])
 RPMDB_INIT
 
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpm -U --nodeps --ignorearch --ignoreos --nosignature \
 	/data/RPMS/foo-1.0-1.noarch.rpm \
 	/data/RPMS/hello-2.0-1.x86_64-signed.rpm
@@ -71,7 +71,7 @@ hello-2.0-1.x86_64
 ],
 [])
 
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
 runroot rpm -qa | sort
 ],
@@ -81,13 +81,13 @@ gpg-pubkey-1964c5fc-58e63918
 hello-2.0-1.x86_64
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Run rpm -q <package> where <package> exists in the db.
 AT_SETUP([rpm -q foo])
 AT_KEYWORDS([rpmdb query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -i \
@@ -100,13 +100,13 @@ runroot rpm -q foo
 [foo-1.0-1.noarch
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Run rpm -q <package>- where <package> exists in the db.
 AT_SETUP([rpm -q foo-])
 AT_KEYWORDS([rpmdb query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -i \
@@ -119,11 +119,11 @@ runroot rpm -q foo-
 [package foo- is not installed
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmdb header numbering])
 AT_KEYWORDS([rpmdb])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 for i in 1 2 3; do
@@ -139,11 +139,11 @@ done
 3 foo
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpm -q --querybynumber])
 AT_KEYWORDS([rpmdb query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -i \
@@ -154,7 +154,7 @@ runroot rpm -i \
 [],
 [])
 
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpm -q --querybynumber 1
 ],
 [0],
@@ -162,14 +162,14 @@ runroot rpm -q --querybynumber 1
 ],
 [])
 
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpm -q --querybynumber 999
 ],
 [1],
 [],
 [error: record 999 could not be read
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # install a noarch package into a local rpmdb without --relocate and --nodeps
@@ -177,7 +177,7 @@ AT_CLEANUP
 AT_SETUP([rpm -i *.noarch.rpm])
 AT_KEYWORDS([rpmdb install])
 
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -i \
@@ -185,14 +185,14 @@ runroot rpm -i \
 ],
 [0])
 
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # reinstall a noarch package (with no files)
 AT_SETUP([rpm -U --replacepkgs 1])
 AT_KEYWORDS([rpmdb install])
 
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 tpkg="/data/RPMS/foo-1.0-1.noarch.rpm"
@@ -206,14 +206,14 @@ runroot rpm -i "${tpkg}" &&
 ],
 [])
 
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # reinstall a package with different file policies
 AT_SETUP([rpm -U --replacepkgs 2])
 AT_KEYWORDS([rpmdb install])
 
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 tpkg="/data/RPMS/hello-2.0-1.i686.rpm"
@@ -226,14 +226,14 @@ test -d "${RPMTEST}"/usr/share/doc/hello-2.0
 [1],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # reinstall a package with different file policies
 AT_SETUP([rpm --reinstall 1])
 AT_KEYWORDS([rpmdb install])
 
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 tpkg="/data/RPMS/hello-2.0-1.i686.rpm"
@@ -246,7 +246,7 @@ test -d "${RPMTEST}"/usr/share/doc/hello-2.0
 [1],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # install a package into a local rpmdb
@@ -254,7 +254,7 @@ AT_CLEANUP
 # * Use --ignorearch because we don't know the arch
 AT_SETUP([rpm -i --relocate=.. *.i386.rpm])
 AT_KEYWORDS([rpmdb install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -i \
@@ -263,7 +263,7 @@ runroot rpm -i \
 ],
 [0])
 
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 
 # ------------------------------
@@ -272,7 +272,7 @@ AT_CLEANUP
 # * Use --ignorearch because we don't know the arch
 AT_SETUP([rpm -i --relocate=.. *.ppc64.rpm])
 AT_KEYWORDS([rpmdb install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -i \
@@ -283,11 +283,11 @@ runroot rpm -i \
 [ignore],
 [ignore])
 
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmdb --rebuilddb])
 AT_KEYWORDS([rpmdb])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U --noscripts --nodeps --ignorearch \
@@ -305,13 +305,13 @@ hello-2.0-1.i686 2
 hello-2.0-1.i686 1
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Attempt to initialize, rebuild and verify a db
 AT_SETUP([rpmdb --rebuilddb and verify empty database])
 AT_KEYWORDS([rpmdb])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpmdb --rebuilddb
 runroot rpmdb --verifydb
@@ -319,13 +319,13 @@ runroot rpmdb --verifydb
 [0],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Install and verify status
 AT_SETUP([rpm -U and verify status])
 AT_KEYWORDS([install rpmdb query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
@@ -340,13 +340,13 @@ runroot rpm -qls conflictstatus
 [normal        /usr/share/my.version
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Install and verify status
 AT_SETUP([rpm -U with _install_lang and verify status])
 AT_KEYWORDS([install rpmdb query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
@@ -364,7 +364,7 @@ normal        /usr/share/flangtest/none.txt
 not installed /usr/share/flangtest/pl.txt
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([rpmdb query special chars])
@@ -376,7 +376,7 @@ for v in "1.0+2" "1.0^2" "1.0~2"; do
           /data/SPECS/versiontest.spec
 done
 
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm -U '/build/RPMS/noarch/versiontest-1.0+2-1.noarch.rpm'
 runroot rpm -q 'versiontest-1.0+2-1'
@@ -386,7 +386,7 @@ runroot rpm -q 'versiontest-1.0+2-1'
 ],
 [])
 
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm -U '/build/RPMS/noarch/versiontest-1.0^2-1.noarch.rpm'
 runroot rpm -q 'versiontest-1.0^2-1'
@@ -396,7 +396,7 @@ runroot rpm -q 'versiontest-1.0^2-1'
 ],
 [])
 
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm -U '/build/RPMS/noarch/versiontest-1.0~2-1.noarch.rpm'
 runroot rpm -q 'versiontest-1.0~2-1'
@@ -406,4 +406,4 @@ runroot rpm -q 'versiontest-1.0~2-1'
 ],
 [])
 
-AT_CLEANUP
+RPMTEST_CLEANUP

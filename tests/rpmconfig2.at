@@ -15,7 +15,7 @@ for v in "1.0" "2.0"; do
 done
 
 # Install over existing config file
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -34,7 +34,7 @@ otherstuff
 )
 
 # Install over existing identical config link, no backup needed
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -53,7 +53,7 @@ foo
 [])
 
 # Erase unmodified config link, no backup here
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -69,7 +69,7 @@ test ! -L "${cf}"
 [])
 
 # Erase modified config link
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -88,7 +88,7 @@ otherstuff
 )
 
 # Upgrade package with config link, no backup here
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -106,7 +106,7 @@ foo
 
 #
 # Upgrade package with config link, no backup here
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -121,7 +121,7 @@ grep -c  "touch" output.txt
 [])
 
 # Upgrade package with modified config link, unchanged in pkg. No backup.
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -139,7 +139,7 @@ otherstuff
 otherstuff
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([changing config symlinks])
@@ -154,7 +154,7 @@ for v in "1.0" "2.0"; do
 done
 
 # Upgrade package with unmodified config link, changed in pkg
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -171,7 +171,7 @@ foo-2.0
 [])
 
 # Upgrade package with locally modified config link, changed in pkg
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -194,7 +194,7 @@ otherstuff
 )
 
 # Modified config link matches the content from new package.
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -212,7 +212,7 @@ foo-2.0
 foo-2.0
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # config(noreplace) variants of the same cases.
 #
@@ -230,7 +230,7 @@ for v in "1.0" "2.0"; do
 done
 
 # Upgrade package with config file, no backup here
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -247,7 +247,7 @@ foo
 [])
 
 # Upgrade package with locally modified config file, unchanged in pkg
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -265,7 +265,7 @@ otherstuff
 otherstuff
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([upgrade changing config(noreplace) links])
@@ -281,7 +281,7 @@ for v in "1.0" "2.0"; do
           /data/SPECS/configtest.spec
 done
 
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -299,7 +299,7 @@ foo-2.0
 [])
 
 # Upgrade package with locally modified config file, changed in pkg
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -322,7 +322,7 @@ foo-2.0
 )
 
 # Modified config link matches the content from new package.
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -341,7 +341,7 @@ foo-2.0
 foo-2.0
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # Shared config link variants of the same cases
 # ------------------------------
@@ -361,7 +361,7 @@ for s in "A" "B"; do
 done
 
 # Upgrade package with config file, no backup here
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -382,7 +382,7 @@ foo
 [])
 
 # Upgrade package with locally modified config file, unchanged in pkg
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -404,7 +404,7 @@ otherstuff
 otherstuff
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([upgrade changing shared config links])
@@ -423,7 +423,7 @@ for s in "A" "B"; do
 done
 
 # Upgrade package with unmodified config file, changed in pkg
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -444,7 +444,7 @@ foo-2.0
 [])
 
 # Upgrade package with locally modified config file, changed in pkg
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -471,7 +471,7 @@ otherstuff
 )
 
 # Modified config link matches the content from new package.
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -493,7 +493,7 @@ foo-2.0
 foo-2.0
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # Shared config(noreplace) variants of the more interesting cases
 # ------------------------------
@@ -514,7 +514,7 @@ for s in "A" "B"; do
 done
 
 # Upgrade package with locally modified config file, changed in pkg.
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -541,7 +541,7 @@ foo-2.0
 )
 
 # Modified config link matches the content from new package.
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -564,4 +564,4 @@ foo-2.0
 foo-2.0
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
