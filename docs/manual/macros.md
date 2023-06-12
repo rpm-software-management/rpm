@@ -26,7 +26,7 @@ All whitespace surrounding `<body>` is removed.  Name may be composed
 of alphanumeric characters and the character `_`, and must be at least
 3 characters in length. A macro without an `(opts)` field is "simple"
 in that only recursive macro expansion is performed. A parameterized
-macro contains an `(opts)` field. `-` as opts disables all option
+macro contains an `(opts)` field. Since rpm >= 4.17 `-` as opts disables all option
 processing, otherwise the opts (i.e. string between parentheses) are passed
 exactly as is to getopt(3) for argc/argv processing at the beginning of
 a macro invocation. `--` can be used to separate options from arguments.
@@ -42,6 +42,15 @@ macros are available:
 | %{-f}	 | if present at invocation, the last occurence of flag f (flag and argument)
 | %{-f*} |	if present at invocation, the argument to the last occurence of flag f
 | %1, %2, ...|	the arguments themselves (after getopt(3) processing)
+
+With rpm >= 4.17 and disabled option processing the mentioned macros are defined as:
+
+| Macro  | Description | Notes
+| ------ | ----------- | ------
+| %0     | the name of the macro being invoked
+| %*, %** | all arguments
+| %#     | the number of arguments
+| %1, %2, ...|	the arguments themselves
 
 At the end of invocation of a parameterized macro, the above macros are
 automatically discarded.
