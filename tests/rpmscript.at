@@ -4,7 +4,7 @@ AT_BANNER([RPM scriptlets])
 
 AT_SETUP([basic script failures 1])
 AT_KEYWORDS([script])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
@@ -143,13 +143,13 @@ POSTUNTRANS
 scriptfail-2.0-1.noarch
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # 
 AT_SETUP([basic scripts and arguments])
 AT_KEYWORDS([verify])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
@@ -184,11 +184,11 @@ scripts-1.0-2 POSTUN 0
 scripts-1.0-2 POSTUNTRANS 0
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([basic trigger scripts and arguments])
 AT_KEYWORDS([trigger script])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
@@ -244,11 +244,11 @@ triggers-1.0-2 TRIGGERPOSTUN 1 0
 scripts-1.0-2 POSTUNTRANS 0
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([basic file trigger scripts])
 AT_KEYWORDS([file trigger script])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
@@ -345,11 +345,11 @@ transfiletriggerpostun(/foo*):
 
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([basic file triggers 2])
 AT_KEYWORDS([filetrigger script])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
@@ -389,5 +389,5 @@ ERASE:
 36
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 

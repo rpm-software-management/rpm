@@ -18,7 +18,7 @@ runroot rpmbuild --quiet -bb \
 	  /data/SPECS/deptest.spec
 
 # missing dependency
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
@@ -30,7 +30,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 ])
 
 # cross-depending packages
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
@@ -38,13 +38,13 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 [0],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # 
 AT_SETUP([unsatisfied versioned require])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
@@ -72,13 +72,13 @@ echo $?
 [error: Failed dependencies:
 	deptest-two >= 2.0 is needed by deptest-one-1.0-1.noarch
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # 
 AT_SETUP([satisfied versioned require])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
@@ -96,7 +96,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 [0],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # 
@@ -114,7 +114,7 @@ runroot rpmbuild --quiet -bb \
 	  /data/SPECS/deptest.spec
 
 # versioned conflict in transaction
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
@@ -126,7 +126,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 ])
 
 # versioned conflict in database
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
@@ -137,11 +137,11 @@ runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 [error: Failed dependencies:
 	deptest-two < 2.0 conflicts with (installed) deptest-one-1.0-1.noarch
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([install and verify self-conflicting package])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
@@ -156,12 +156,12 @@ runroot rpm -V --nofiles deptest-one
 [0],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # explicit file conflicts
 AT_SETUP([explicit file conflicts])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
@@ -193,12 +193,12 @@ error: Failed dependencies:
 error: Failed dependencies:
 	/opt/bar conflicts with deptest-one-1.0-1.noarch
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 # ------------------------------
 # 
 AT_SETUP([erase to break dependencies])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
@@ -219,12 +219,12 @@ runroot rpm -e deptest-two
 [error: Failed dependencies:
 	deptest-foo >= 2.0 is needed by (installed) deptest-one-1.0-1.noarch
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([erase to break colored file dependency])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
@@ -246,12 +246,12 @@ runroot rpm -e hello.x86_64
 [error: Failed dependencies:
 	/usr/bin/hello is needed by (installed) deptest-hello-1.0-1.noarch
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([erase on wrong-colored file dependency])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
@@ -271,7 +271,7 @@ runroot rpm -e hello.i686
 [0],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 #
@@ -295,7 +295,7 @@ runroot rpmbuild --quiet -bb \
 	  /data/SPECS/deptest.spec
 
 # unsatisfied WITH require in transaction
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
@@ -307,7 +307,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 ])
 
 # unsatisfied WITH require in rpmdb
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
@@ -319,7 +319,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 [error: Failed dependencies:
 	(deptest-two with flavor = dekstop) is needed by deptest-one-1.0-1.noarch
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([satisfied WITH requires])
 AT_KEYWORDS([install, boolean])
@@ -336,7 +336,7 @@ runroot rpmbuild --quiet -bb \
 	  /data/SPECS/deptest.spec
 
 # satisfied WITH require in transaction
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 ],
@@ -345,7 +345,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 [])
 
 # satisfied WITH require in rpmdb
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
@@ -365,7 +365,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 [0],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 #
@@ -384,7 +384,7 @@ runroot rpmbuild --quiet -bb \
 	  /data/SPECS/deptest.spec
 
 # unsatisfied WITHOUT require in transaction
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
@@ -396,7 +396,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 ])
 
 # unsatisfied WITHOUT require in rpmdb
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
@@ -408,7 +408,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 [error: Failed dependencies:
 	(deptest-two without flavor) is needed by deptest-one-1.0-1.noarch
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([satisfied WITHOUT requires])
 AT_KEYWORDS([install, boolean])
@@ -424,7 +424,7 @@ runroot rpmbuild --quiet -bb \
 	  /data/SPECS/deptest.spec
 
 # satisfied WITHOUT require in transaction
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
@@ -434,7 +434,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 [])
 
 # satisfied WITHOUT require in rpmdb
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
@@ -444,7 +444,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 [0],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 #
@@ -463,7 +463,7 @@ for pkg in two three; do
 	  /data/SPECS/deptest.spec
 done
 
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 # unsatisfied AND require - all missing
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
@@ -475,7 +475,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 ])
 
 # unsatisfied AND require - first is missing
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
@@ -487,7 +487,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 ])
 
 # unsatisfied AND require - second is missing
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
@@ -499,7 +499,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 ])
 
 # satisfied AND require
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
@@ -507,7 +507,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 [0],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 #
@@ -527,7 +527,7 @@ for pkg in two three; do
 done
 
 # unsatisfied OR require - all missing
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 ],
@@ -538,7 +538,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 ])
 
 # satisfied OR require - first is missing
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
@@ -548,7 +548,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 [])
 
 # satisfied OR require - second is missing
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
@@ -558,7 +558,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 [])
 
 # satisfied OR require - both present
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
@@ -566,7 +566,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 [0],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 #
@@ -586,7 +586,7 @@ for pkg in two three; do
 done
 
 # unsatisfied IF require
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
@@ -598,7 +598,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 ])
 
 # satisfied IF require
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
@@ -606,7 +606,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 [0],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([IF-ELSE requires])
 AT_KEYWORDS([install, boolean])
@@ -624,7 +624,7 @@ for pkg in two three four; do
 done
 
 # unsatisfied IF-ELSE require
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
@@ -636,7 +636,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 ])
 
 # satisfied IF-ELSE require - right clause
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-four-1.0-1.noarch.rpm
@@ -646,7 +646,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 [])
 
 # satisfied IF-ELSE require - left clause
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
@@ -654,7 +654,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 [0],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 #
@@ -673,7 +673,7 @@ for pkg in two three; do
 	  /data/SPECS/deptest.spec
 done
 
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 # unsatisfied nested AND-OR require
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
@@ -685,7 +685,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 ])
 
 # satisfied nested AND-OR require
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
@@ -693,7 +693,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 [0],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 #
@@ -713,7 +713,7 @@ for pkg in two three four; do
 done
 
 # satisfied nested AND-IF require - without right clause
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
@@ -723,7 +723,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 [])
 
 # satisfied nested AND-IF require - with right clause
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-four-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
@@ -731,7 +731,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 [0],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 #
@@ -755,7 +755,7 @@ runroot rpmbuild --quiet -bb \
 	  /data/SPECS/deptest.spec
 
 # installed conflict with "or" clause
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
@@ -768,7 +768,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
 ])
 
 # installed requires with "if" clause
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
@@ -779,7 +779,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-four-1.0-1.noarch.rpm
 [error: Failed dependencies:
 	(deptest-five if deptest-four) is needed by (installed) deptest-two-1.0-1.noarch
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 #
@@ -806,7 +806,7 @@ runroot rpmbuild --quiet -bb \
 	  /data/SPECS/deptest.spec
 
 # installed requires with "or" clause
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
@@ -819,7 +819,7 @@ runroot rpm -e deptest-three
 ])
 
 # installed conflicts with "unless" clause
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-four-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-five-1.0-1.noarch.rpm
@@ -830,4 +830,4 @@ runroot rpm -e deptest-four
 [error: Failed dependencies:
 	(deptest-five unless deptest-four) conflicts with (installed) deptest-two-1.0-1.noarch
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP

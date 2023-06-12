@@ -21,7 +21,7 @@ AT_BANNER([RPM queries])
 # ------------------------------
 AT_SETUP([rpm --qf -p *.i386.rpm])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   -q --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n" \
@@ -31,12 +31,12 @@ runroot rpm \
 [hello-1.0-1.i386
 ],
 [ignore])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([rpm --qf -p *.src.rpm])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   -q --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n" \
@@ -46,12 +46,12 @@ runroot rpm \
 [hello-1.0-1.i386
 ],
 [ignore])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([rpm -qp <glob>])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   -qp "/data/RPMS/hello-2.0-1.{i686,x86_64}.rpm"
@@ -61,11 +61,11 @@ runroot rpm \
 hello-2.0-1.x86_64
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpm -qp <glob fallback>])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 cp "${RPMTEST}/data/RPMS/hello-1.0-1.i386.rpm" \
@@ -78,11 +78,11 @@ runroot rpm \
 [hello-1.0-1.i386
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpm -qp <notfound>])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   -qp /data/RPMS/hello-not-there-1.0-1.x86_64.rpm \
@@ -95,11 +95,11 @@ runroot rpm \
 error: open of /data/RPMS/hello-not-there-2.0-1.x86_64.rpm failed: No such file or directory
 error: open of /data/RPMS/hello-not-there-3.0-1.x86_64.rpm failed: No such file or directory
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpm -qp <glob notfound>])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   -qp "/data/RPMS/hello-not-there-*.x86_64.rpm" \
@@ -112,12 +112,12 @@ runroot rpm \
 error: open of /data/RPMS/hello-not-there-1.0-1.x86_64.rpm failed: No such file or directory
 error: open of /data/RPMS/hello-not-there-2.0-1.x86_64.rpm failed: No such file or directory
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([rpm -ql -p *.src.rpm])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   -ql \
@@ -128,12 +128,12 @@ runroot rpm \
 hello.spec
 ],
 [ignore])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([rpm -ql multiple *.rpm])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   -ql \
@@ -147,11 +147,11 @@ hello.spec
 /usr/share/doc/hello-1.0/FAQ
 ],
 [ignore])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpm -qp --dump])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   -qp --dump \
@@ -165,12 +165,12 @@ runroot rpm \
 /usr/share/doc/hello-2.0/README 39 908884468 d63fdc6c986106f57230f217d36b2395d83ecf491d2b7187af714dc8db9629e9 0100644 root root 0 1 0 X
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([rpmspec -q])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpmspec \
   -q --qf "%{name}" /data/SPECS/hello.spec
@@ -178,12 +178,12 @@ runroot rpmspec \
 [0],
 [hello],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([rpm -ql -p *.i386.rpm])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   -ql \
@@ -195,13 +195,13 @@ runroot rpm \
 /usr/share/doc/hello-1.0/FAQ
 ],
 [ignore])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Test query on manifest
 AT_SETUP([rpm -qp <manifest>])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cat << EOF > ${RPMTEST}/query.mft
 /data/RPMS/hello-1.0-1.i386.rpm
@@ -216,14 +216,14 @@ hello-1.0-1
 foo-1.0-1
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Try to check "scripts"
 # * Gets rpmpopt-$(VERSION) involved
 AT_SETUP([rpm -q --scripts -p *.i386.rpm])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   -q --scripts \
@@ -236,7 +236,7 @@ preuninstall program: /bin/sh
 postuninstall program: /bin/sh
 ],
 [ignore])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 
 # ------------------------------
@@ -246,7 +246,7 @@ AT_CLEANUP
 AT_SETUP([rpm -q on installed package])
 AT_KEYWORDS([rpmdb install query])
 
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm \
@@ -256,7 +256,7 @@ runroot rpm \
 [0])
 
 # check common NVRA combinations
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpm \
   -q hello hello-1.0 hello-1.0-1 \
      hello.ppc64 hello-1.0.ppc64 hello-1.0-1.ppc64 
@@ -272,7 +272,7 @@ hello-1.0-1.ppc64
 [ignore])
 
 
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpm \
   -ql hello
 ],
@@ -283,13 +283,13 @@ runroot rpm \
 ],
 [ignore])
 
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # query a package by a file
 AT_SETUP([rpm -qf])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --nodeps \
@@ -302,11 +302,11 @@ runroot rpm \
 [hello-1.0-1.i386
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpm -qf on non-installed file])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --nodeps \
@@ -320,11 +320,11 @@ runroot rpm \
 [],
 [error: file /usr/share/doc/hello-1.0/FAQ: No such file or directory
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpm -q --path on non-installed file])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --nodeps \
@@ -338,12 +338,12 @@ runroot rpm \
 [hello-1.0-1.i386
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([integer array query])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat="[[%{filemodes}\n]]" \
@@ -355,12 +355,12 @@ runroot rpm \
 33188
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([formatted filesbypkg query])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat="[[%-10{=NAME} %{FILENAMES}\n]]" \
@@ -372,12 +372,12 @@ hello      /usr/share/doc/hello-1.0
 hello      /usr/share/doc/hello-1.0/FAQ
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([hex formatted integer array extension query])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat="[[%5{longfilesizes:hex}\n]]" \
@@ -389,12 +389,12 @@ runroot rpm \
    24
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([base64 extension query])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat="%{pkgid:base64}" \
@@ -404,11 +404,11 @@ runroot rpm \
 [qt8W635v5FKy1pILrW+0uw==
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([pgpsig extension query])
 AT_KEYWORDS([query signature])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
     --queryformat="%{rsaheader:pgpsig}" \
@@ -418,12 +418,12 @@ runroot rpm \
 [RSA/SHA256, Thu Apr  6 13:02:33 2017, Key ID 4344591e1964c5fc],
 [warning: /data/RPMS/hello-2.0-1.x86_64-signed.rpm: Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([integer array perms format query])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat="[[%{filemodes:perms}\n]]" \
@@ -435,12 +435,12 @@ drwxr-xr-x
 -rw-r--r--
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([string array query])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat="[[%{basenames} ]]" \
@@ -449,12 +449,12 @@ runroot rpm \
 [0],
 [hello hello-1.0 FAQ ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([empty string array query])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat="[[%{basenames}]]" \
@@ -463,12 +463,12 @@ runroot rpm \
 [0],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([empty string array extension array format])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat="[[%{filenames}]]" \
@@ -477,12 +477,12 @@ runroot rpm \
 [0],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([empty string array extension query])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat="%{filenames}" \
@@ -491,12 +491,12 @@ runroot rpm \
 [0],
 [(none)],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([different sizes arrays query 1])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat="[[%{basenames} %{changelogname}]\n]" \
@@ -506,14 +506,14 @@ runroot rpm \
 [],
 [error: incorrect format: array iterator used with different sized arrays
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # This is succeeds because there happens to be exactly one changelog entry
 # so the size matches with name.
 AT_SETUP([different sizes arrays query 2])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat="[[%{name} %{changelogtime}]\n]" \
@@ -523,12 +523,12 @@ runroot rpm \
 [hello 908877600
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([different sizes arrays query 3])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat="[[%{name} %{basenames}]\n]" \
@@ -538,12 +538,12 @@ runroot rpm \
 [],
 [error: incorrect format: array iterator used with different sized arrays
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([different sizes arrays query 4])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat="[[%{=name} %{basenames}\n]]" \
@@ -556,11 +556,11 @@ hello FAQ
 ],
 [])
 
-AT_CLEANUP
+RPMTEST_CLEANUP
 # ------------------------------
 AT_SETUP([non-existent string tag])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat="%{vendor}" \
@@ -569,12 +569,12 @@ runroot rpm \
 [0],
 [(none)],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([non-existent integer tag query])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat="%{installcolor}" \
@@ -583,12 +583,12 @@ runroot rpm \
 [0],
 [(none)],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([conditional queryformat])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat="%|name?{%{name}}:{no}| %|installtime?{%{installtime}}:{(not installed)}|" \
@@ -597,12 +597,12 @@ runroot rpm \
 [0],
 [foo (not installed)],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([invalid tag query])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat="%{notag}" \
@@ -612,12 +612,12 @@ runroot rpm \
 [],
 [error: incorrect format: unknown tag: "notag"
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([invalid data for format query])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat="%{name:depflags}" \
@@ -626,12 +626,12 @@ runroot rpm \
 [0],
 [(not a number)],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([invalid format width query])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat="%ss{size}" \
@@ -641,11 +641,11 @@ runroot rpm \
 [],
 [error: incorrect format: invalid field width
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([xml format])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm -qp --xml  data/RPMS/hello-2.0-1.x86_64.rpm
 ],
@@ -941,11 +941,11 @@ runroot rpm -qp --xml  data/RPMS/hello-2.0-1.x86_64.rpm
 </rpmHeader>
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([query file attribute filtering])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpmbuild -bb --quiet \
   /data/SPECS/vattrtest.spec
@@ -995,12 +995,12 @@ done
 /opt/vattrtest/l
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([formatting name humansi, humaniec])
 AT_KEYWORDS([query, humansi, humaniec])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat '%{SIZE:humansi} %{SIZE:humaniec}\n' \
@@ -1018,12 +1018,12 @@ runroot rpm \
 355 355
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 AT_SETUP([incomplete escape sequence for format query])
 AT_KEYWORDS([query])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm \
   --queryformat='%{NAME}\n\' \
@@ -1034,13 +1034,13 @@ runroot rpm \
 [error: incorrect format: escaped char expected after \
 ],
 )
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([query format iteration])
 AT_KEYWORDS([query])
 RPMDB_INIT
 
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpmspec -q --qf "[[%{*:tagnum}\n]]" --srpm /data/SPECS/mini.spec
 ],
 [0],
@@ -1057,7 +1057,7 @@ runroot rpmspec -q --qf "[[%{*:tagnum}\n]]" --srpm /data/SPECS/mini.spec
 ],
 [])
 
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpmspec -q --qf "[[%{*:tagname}\n]]" --srpm /data/SPECS/mini.spec
 ],
 [0],
@@ -1073,4 +1073,4 @@ Os
 Arch
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
