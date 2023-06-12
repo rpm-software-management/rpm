@@ -397,7 +397,7 @@ ts.run(callback=ncb, data=cbd)
 AT_SETUP([database iterators])
 AT_KEYWORDS([python rpmdb])
 RPMDB_INIT
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpm -i \
   --justdb --nodeps --ignorearch --ignoreos \
   /data/RPMS/foo-1.0-1.noarch.rpm \
@@ -490,12 +490,12 @@ hello(x86-32)
 hi
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([database cookies])
 AT_KEYWORDS([python rpmdb])
 RPMDB_INIT
-AT_CHECK([
+RPMTEST_CHECK([
 ],
 [0],
 [],
@@ -515,7 +515,7 @@ open("dbcookie", "w+").write(c1)
 ],
 [])
 
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpm -i \
   --justdb --nodeps --ignorearch --ignoreos \
   /data/RPMS/foo-1.0-1.noarch.rpm \
@@ -537,7 +537,7 @@ open("dbcookie", "w+").write(c1)
 ],
 [])
 
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpm -i \
   --justdb --nodeps --ignorearch --ignoreos \
   --define "_transaction_color 3" \
@@ -558,7 +558,7 @@ myprint(c1 != c2)
 [True
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 RPMPY_TEST([dependency sets 1],[
 ts = rpm.ts()

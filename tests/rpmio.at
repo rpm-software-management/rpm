@@ -5,7 +5,7 @@ AT_BANNER([I/O])
 # test too unstable for production
 #AT_SETUP([SIGPIPE from --pipe])
 #AT_KEYWORDS([signals])
-#AT_CHECK([
+#RPMTEST_CHECK([
 #RPMDB_CLEAR
 #RPMDB_INIT
 #
@@ -16,11 +16,11 @@ AT_BANNER([I/O])
 #[/opt/sigpipe/data
 #],
 #[])
-#AT_CLEANUP
+#RPMTEST_CLEANUP
 
 AT_SETUP([SIGPIPE from install scriptlet])
 AT_KEYWORDS([signals])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/sigpipe.spec
@@ -29,14 +29,14 @@ runroot rpm -U --nodeps /build/RPMS/noarch/sigpipe-1.0-1.noarch.rpm
 [0],
 [],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # XXX TODO: test for RhBug:471591 too, but needs a simpler reproducer
 
 # test too unstable for production
 #AT_SETUP([SIGPIPE in build scriptlet])
 #AT_KEYWORDS([signals])
-#AT_CHECK([
+#RPMTEST_CHECK([
 #RPMDB_CLEAR
 #RPMDB_INIT
 #
@@ -45,11 +45,11 @@ AT_CLEANUP
 #[0],
 #[],
 #[])
-#AT_CLEANUP
+#RPMTEST_CLEANUP
 
 AT_SETUP([rpmlog error handling])
 AT_KEYWORDS([log])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -qpl /data/RPMS/hello-2.0-1.x86_64.rpm > /dev/full
@@ -58,4 +58,4 @@ runroot rpm -qpl /data/RPMS/hello-2.0-1.x86_64.rpm > /dev/full
 [],
 [Error writing to log: No space left on device
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
