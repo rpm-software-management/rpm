@@ -29,9 +29,9 @@ in that only recursive macro expansion is performed. A parameterized
 macro contains an `(opts)` field. Since rpm >= 4.17 `-` as opts disables all option
 processing, otherwise the opts (i.e. string between parentheses) are passed
 exactly as is to getopt(3) for argc/argv processing at the beginning of
-a macro invocation. `--` can be used to separate options from arguments.
-While a parameterized macro is being expanded, the following shell-like
-macros are available:
+a macro invocation (only short options are supported). `--` can be used
+to separate options from arguments. While a parameterized macro is being
+expanded, the following shell-like macros are available:
 
 ```
 	%0	the name of the macro being invoked
