@@ -2,7 +2,7 @@ AT_BANNER([RPM signature/digest verifylevel])
 
 AT_SETUP([rpmkeys -K <unsigned 1> verifylevel])
 AT_KEYWORDS([rpmkeys digest])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 for lvl in none digest signature all; do
@@ -70,11 +70,11 @@ LEVEL all
 0
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmkeys -K <unsigned 2> verifylevel])
 AT_KEYWORDS([rpmkeys digest])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 nomd5="0x20000"
@@ -142,11 +142,11 @@ nohdr
 1
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmkeys -K <signed 1> verifylevel])
 AT_KEYWORDS([rpmkeys digest])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 for lvl in none digest signature all; do
@@ -214,11 +214,11 @@ LEVEL all
 0
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmkeys -K <signed 2> verifylevel])
 AT_KEYWORDS([rpmkeys digest])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
@@ -287,11 +287,11 @@ LEVEL all
 0
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmkeys -K <signed 3> verifylevel])
 AT_KEYWORDS([rpmkeys digest])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 nomd5="0x20000"
@@ -355,4 +355,4 @@ nosig
 1
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
