@@ -27,6 +27,8 @@ rpm.addMacro('_dbpath', '${RPMTEST}%s' % dbpath)
 rpm.addMacro('_db_backend', os.getenv('DBFORMAT'))
 def myprint(msg = ''):
     sys.stdout.write('%s\n' % msg)
+ts = rpm.ts()
+ts.setFlags(rpm.RPMTRANS_FLAG_NOPLUGINS)
 $1
 EOF
 ${PYTHON} test.py
