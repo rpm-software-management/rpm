@@ -2,7 +2,7 @@ AT_BANNER([RPM install/erase ordering])
 
 AT_SETUP([basic install/erase order 1])
 AT_KEYWORDS([install erase order])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
@@ -42,12 +42,12 @@ deptest-two-1.0-1.noarch
 deptest-three-1.0-1.noarch
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # same as above but with weak dependencies
 AT_SETUP([basic install/erase order 2])
 AT_KEYWORDS([install erase order])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
@@ -87,12 +87,12 @@ deptest-two-1.0-1.noarch
 deptest-three-1.0-1.noarch
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # same as above but with weak reverse dependencies
 AT_SETUP([basic install/erase order 3])
 AT_KEYWORDS([install erase order])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
@@ -132,4 +132,4 @@ deptest-two-1.0-1.noarch
 deptest-three-1.0-1.noarch
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP

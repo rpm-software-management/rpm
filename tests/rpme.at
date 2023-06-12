@@ -3,7 +3,7 @@ AT_SETUP([rpm -e and verify files removed])
 AT_KEYWORDS([install erase rpmdb])
 RPMDB_INIT
 
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpm -U --ignoreos --ignorearch --nodeps \
 	/data/RPMS/hello-2.0-1.x86_64.rpm
 runroot rpm -Vv --nodeps --nogroup --nouser hello
@@ -23,12 +23,12 @@ missing   d /usr/share/doc/hello-2.0/FAQ
 missing   d /usr/share/doc/hello-2.0/README
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpm reinstall with shared files])
 AT_KEYWORDS([install erase update rpmdb])
 RPMDB_INIT
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpm -U --ignoreos --ignorearch --nodeps \
 	--define "_transaction_color 3" \
 	--define "_prefer_color 2" \
@@ -66,12 +66,12 @@ runroot rpm -Vv --nodeps --nogroup --nouser hello.i686 hello.x86_64
 .........  d /usr/share/doc/hello-2.0/README
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpm -e and shared files removed 1.1])
 AT_KEYWORDS([install erase rpmdb])
 RPMDB_INIT
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpm -U --ignoreos --ignorearch --nodeps \
 	--define "_transaction_color 3" \
 	--define "_prefer_color 2" \
@@ -111,12 +111,12 @@ missing     /usr/bin/hello
 .........  d /usr/share/doc/hello-2.0/README
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpm -e and shared files removed 1.2])
 AT_KEYWORDS([install erase rpmdb])
 RPMDB_INIT
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpm -U --ignoreos --ignorearch --nodeps \
 	--define "_transaction_color 3" \
 	--define "_prefer_color 2" \
@@ -157,12 +157,12 @@ missing   d /usr/share/doc/hello-2.0/README
 ],
 [])
 
-AT_CLEANUP
+RPMTEST_CLEANUP
 # Test that removing shared or wrong colored files has no effect
 AT_SETUP([rpm -e and verify colored files removed 1.1])
 AT_KEYWORDS([install erase rpmdb])
 RPMDB_INIT
-AT_CHECK([
+RPMTEST_CHECK([
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
 	--define "_transaction_color 3" \
@@ -180,7 +180,7 @@ runroot rpm -Vv --nodeps --nogroup --nouser hello
 .........  d /usr/share/doc/hello-2.0/README
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # XXX This is wrong really, rpm shouldn't let the real provider of
 # a shared file get removed - and unforced action shouldn't result
@@ -188,7 +188,7 @@ AT_CLEANUP
 AT_SETUP([rpm -e and verify colored files removed 1.2])
 AT_KEYWORDS([install erase rpmdb])
 RPMDB_INIT
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
@@ -206,14 +206,14 @@ runroot rpm -Vv --nodeps --nogroup --nouser hello
 .........  d /usr/share/doc/hello-2.0/README
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # Test that shared colored files actually get removed regardless of order 1
 AT_SETUP([rpm -e and verify colored files removed 2.1])
 AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 AT_KEYWORDS([install erase rpmdb])
 RPMDB_INIT
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
@@ -231,14 +231,14 @@ missing   d /usr/share/doc/hello-2.0/FAQ
 missing   d /usr/share/doc/hello-2.0/README
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # Test that shared colored files actually get removed regardless of order 2
 AT_SETUP([rpm -e and verify colored files removed 2.2])
 AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 AT_KEYWORDS([install erase rpmdb])
 RPMDB_INIT
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
@@ -256,7 +256,7 @@ missing   d /usr/share/doc/hello-2.0/FAQ
 missing   d /usr/share/doc/hello-2.0/README
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpm -e and verify conflicting files removed 1])
 AT_KEYWORDS([install erase rpmdb])
@@ -268,7 +268,7 @@ for p in a b; do
 		/data/SPECS/conflicttest.spec
 done
 
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpm -U --ignoreos /build/RPMS/noarch/conflicta-1.0-1.noarch.rpm
 runroot rpm -U --ignoreos --excludepath=/usr/share /build/RPMS/noarch/conflictb-1.0-1.noarch.rpm
 runroot rpm -Vav --nogroup --nouser conflicta conflictb
@@ -285,7 +285,7 @@ missing     /usr/share/my.version
 ],
 [])
 
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpm -U --ignoreos --excludepath=/usr/share /build/RPMS/noarch/conflicta-1.0-1.noarch.rpm
 runroot rpm -U --ignoreos /build/RPMS/noarch/conflictb-1.0-1.noarch.rpm
 runroot rpm -Vav --nogroup --nouser conflicta conflictb
@@ -302,7 +302,7 @@ missing     /usr/share/my.version
 ],
 [])
 
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpm -U --ignoreos /build/RPMS/noarch/conflicta-1.0-1.noarch.rpm 
 runroot rpm -U --ignoreos --force /build/RPMS/noarch/conflictb-1.0-1.noarch.rpm
 runroot rpm -Vav --nogroup --nouser conflicta conflictb
@@ -319,7 +319,7 @@ missing     /usr/share/my.version
 ],
 [])
 
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpm -U --ignoreos /build/RPMS/noarch/conflicta-1.0-1.noarch.rpm
 runroot rpm -U --ignoreos --force /build/RPMS/noarch/conflictb-1.0-1.noarch.rpm
 runroot rpm -Vav --nogroup --nouser conflicta conflictb
@@ -333,13 +333,13 @@ runroot rpm -e conflicta
 missing     /usr/share/my.version (replaced)
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # Test %_netsharedpath erasure. It's a bit weird as we're abusing verify
 # on non-installed package to see if files are there.
 AT_SETUP([rpm -e and verify netshared files not removed])
 AT_KEYWORDS([install erase rpmdb])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
@@ -353,5 +353,5 @@ runroot rpm -Vp --nodeps --nogroup --nouser /data/RPMS/hello-2.0-1.x86_64.rpm
 [missing     /usr/bin/hello
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 

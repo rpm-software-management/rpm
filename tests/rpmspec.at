@@ -11,7 +11,7 @@ AT_BANNER([RPM Spec Tool])
 
 AT_SETUP([rpmspec --query Requires])
 AT_KEYWORDS([rpmspec query])
-AT_CHECK([[
+RPMTEST_CHECK([[
 runroot rpmspec --query \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex}\n]' \
   /data/SPECS/test-parsebits.spec
@@ -32,11 +32,11 @@ good.8.1 8c
 good.9.1 22
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmspec --query Requires(,)])
 AT_KEYWORDS([rpmspec query])
-AT_CHECK([[
+RPMTEST_CHECK([[
 runroot rpmspec --query \
   --define 'extra Requires(,): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
@@ -47,11 +47,11 @@ runroot rpmspec --query \
 [error: line 9: Bad Requirename: qualifiers: Requires(,): bad
 error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmspec --query Requires(;)])
 AT_KEYWORDS([rpmspec query])
-AT_CHECK([[
+RPMTEST_CHECK([[
 runroot rpmspec --query \
   --define 'extra Requires(;): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
@@ -62,11 +62,11 @@ runroot rpmspec --query \
 [error: line 9: Bad Requirename: qualifiers: Requires(;): bad
 error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmspec --query Requires(junk)])
 AT_KEYWORDS([rpmspec query])
-AT_CHECK([[
+RPMTEST_CHECK([[
 runroot rpmspec --query \
   --define 'extra Requires(junk): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
@@ -77,11 +77,11 @@ runroot rpmspec --query \
 [error: line 9: Bad Requirename: qualifiers: Requires(junk): bad
 error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmspec --query Requires(pre,junk)])
 AT_KEYWORDS([rpmspec query])
-AT_CHECK([[
+RPMTEST_CHECK([[
 runroot rpmspec --query \
   --define 'extra Requires(pre,junk): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
@@ -92,11 +92,11 @@ runroot rpmspec --query \
 [error: line 9: Bad Requirename: qualifiers: Requires(pre,junk): bad
 error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmspec --query Requires(junk,pre)])
 AT_KEYWORDS([rpmspec query])
-AT_CHECK([[
+RPMTEST_CHECK([[
 runroot rpmspec --query \
   --define 'extra Requires(junk,pre): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
@@ -107,11 +107,11 @@ runroot rpmspec --query \
 [error: line 9: Bad Requirename: qualifiers: Requires(junk,pre): bad
 error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmspec --query Requires(,pre)])
 AT_KEYWORDS([rpmspec query])
-AT_CHECK([[
+RPMTEST_CHECK([[
 runroot rpmspec --query \
   --define 'extra Requires(,pre): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
@@ -122,11 +122,11 @@ runroot rpmspec --query \
 [error: line 9: Bad Requirename: qualifiers: Requires(,pre): bad
 error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmspec --query Requires(pre,)])
 AT_KEYWORDS([rpmspec query])
-AT_CHECK([[
+RPMTEST_CHECK([[
 runroot rpmspec --query \
   --define 'extra Requires(pre,): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
@@ -137,11 +137,11 @@ runroot rpmspec --query \
 [error: line 9: Bad Requirename: qualifiers: Requires(pre,): bad
 error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmspec --query Requires(pre,,postun)])
 AT_KEYWORDS([rpmspec query])
-AT_CHECK([[
+RPMTEST_CHECK([[
 runroot rpmspec --query \
   --define 'extra Requires(pre,,postun): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
@@ -152,11 +152,11 @@ runroot rpmspec --query \
 [error: line 9: Bad Requirename: qualifiers: Requires(pre,,postun): bad
 error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmspec --query Requires(pre,,junk)])
 AT_KEYWORDS([rpmspec query])
-AT_CHECK([[
+RPMTEST_CHECK([[
 runroot rpmspec --query \
   --define 'extra Requires(pre,,junk): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
@@ -167,11 +167,11 @@ runroot rpmspec --query \
 [error: line 9: Bad Requirename: qualifiers: Requires(pre,,junk): bad
 error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmspec --query Requires(;pre)])
 AT_KEYWORDS([rpmspec query])
-AT_CHECK([[
+RPMTEST_CHECK([[
 runroot rpmspec --query \
   --define 'extra Requires(;pre): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
@@ -182,11 +182,11 @@ runroot rpmspec --query \
 [error: line 9: Bad Requirename: qualifiers: Requires(;pre): bad
 error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmspec --query Requires(pre;)])
 AT_KEYWORDS([rpmspec query])
-AT_CHECK([[
+RPMTEST_CHECK([[
 runroot rpmspec --query \
   --define 'extra Requires(pre;): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
@@ -197,11 +197,11 @@ runroot rpmspec --query \
 [error: line 9: Bad Requirename: qualifiers: Requires(pre;): bad
 error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmspec --query Requires(pre;postun)])
 AT_KEYWORDS([rpmspec query])
-AT_CHECK([[
+RPMTEST_CHECK([[
 runroot rpmspec --query \
   --define 'extra Requires(pre;postun): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
@@ -212,11 +212,11 @@ runroot rpmspec --query \
 [error: line 9: Bad Requirename: qualifiers: Requires(pre;postun): bad
 error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmspec --query Requires(pre;junk)])
 AT_KEYWORDS([rpmspec query])
-AT_CHECK([[
+RPMTEST_CHECK([[
 runroot rpmspec --query \
   --define 'extra Requires(pre;junk): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
@@ -227,11 +227,11 @@ runroot rpmspec --query \
 [error: line 9: Bad Requirename: qualifiers: Requires(pre;junk): bad
 error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmspec --parse])
 AT_KEYWORDS([rpmspec])
-AT_CHECK([runroot rpmspec --parse /data/SPECS/foo.spec],
+RPMTEST_CHECK([runroot rpmspec --parse /data/SPECS/foo.spec],
 [0],
 [
 
@@ -268,11 +268,11 @@ foo
 
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmspec --srpm provides])
 AT_KEYWORDS([rpmspec])
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpmspec -q --srpm --provides /data/SPECS/foo.spec
 runroot rpmspec -q --srpm --provides --with bus /data/SPECS/foo.spec
 ],
@@ -284,11 +284,11 @@ foo-sub = 1.0-1
 foo-bus = 1.0-1
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmspec --parse])
 AT_KEYWORDS([rpmspec])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMTEST_SETUP
 
 # ensure the macros expand to expected values
@@ -356,4 +356,4 @@ make DESTDIR=$RPM_BUILD_ROOT install
 - create.
 ]],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP

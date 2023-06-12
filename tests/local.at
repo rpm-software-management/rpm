@@ -32,9 +32,21 @@ EOF
 ${PYTHON} test.py
 ]])
 
+m4_define([RPMTEST_CHECK],[
+AT_CHECK($@)
+])
+
+m4_define([RPMTEST_CHECK_UNQUOTED],[
+AT_CHECK_UNQUOTED($@)
+])
+
+m4_define([RPMTEST_CLEANUP],[
+AT_CLEANUP
+])
+
 m4_define([RPMPY_CHECK],[
 AT_SKIP_IF([$PYTHON_DISABLED])
-AT_CHECK([RPMPY_RUN([$1])], [], [$2], [$3])
+RPMTEST_CHECK([RPMPY_RUN([$1])], [], [$2], [$3])
 ])
 
 m4_define([RPMPY_TEST],[
@@ -42,7 +54,7 @@ AT_SETUP([$1])
 AT_KEYWORDS([python])
 RPMDB_INIT
 RPMPY_CHECK([$2], [$3], [$4])
-AT_CLEANUP
+RPMTEST_CLEANUP
 ])
 
 # Enable colored test output if available
