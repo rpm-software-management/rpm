@@ -6,7 +6,7 @@ AT_BANNER([RPM signatures and digests])
 # Test pre-built package verification
 AT_SETUP([rpmkeys -Kv <unsigned> 1])
 AT_KEYWORDS([rpmkeys digest])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64.rpm /data/RPMS/hello-1.0-1.i386.rpm
@@ -22,24 +22,24 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64.rpm /data/RPMS/hello-1.0-1.i38
     MD5 digest: OK
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Test rpmkeys write errors
 AT_SETUP([[rpmkeys -K no space left on stdout]])
 AT_KEYWORDS([rpmkeys digest])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT[
 
 runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64.rpm /data/RPMS/hello-1.0-1.i386.rpm >/dev/full
 ]],255,,[[Error writing to log: No space left on device
 ]])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 
 AT_SETUP([rpmkeys -Kv <reconstructed> 1])
 AT_KEYWORDS([rpmkeys digest])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 cp "${RPMTEST}"/data/misc/hello.intro "${RPMTEST}"/data/misc/hello.payload .
@@ -61,13 +61,13 @@ runroot rpmkeys -Kv /tmp/hello-c.rpm /tmp/hello-uc.rpm
     MD5 digest: BAD (Expected 055607c4dee6464b9415ae726e7d81a7 != 839d24c30e5188e0b83599fbe3865919)
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Test corrupted package verification (corrupted signature)
 AT_SETUP([rpmkeys -Kv <corrupted unsigned> 1])
 AT_KEYWORDS([rpmkeys digest])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 pkg="hello-2.0-1.x86_64.rpm"
@@ -85,12 +85,12 @@ runroot rpmkeys -Kv /tmp/${pkg}
     MD5 digest: BAD (Expected 007ca1d8b35cca02a1854ba301c5432e != 137ca1d8b35cca02a1854ba301c5432e)
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 # ------------------------------
 # Test corrupted package verification (corrupted header)
 AT_SETUP([rpmkeys -Kv <corrupted unsigned> 2])
 AT_KEYWORDS([rpmkeys digest])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 pkg="hello-2.0-1.x86_64.rpm"
@@ -107,13 +107,13 @@ runroot rpmkeys -Kv /tmp/${pkg}
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != de65519eeb4ab52eb076ec054d42e34e)
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Test corrupted package verification (corrupted payload)
 AT_SETUP([rpmkeys -Kv <corrupted unsigned> 3])
 AT_KEYWORDS([rpmkeys digest])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 pkg="hello-2.0-1.x86_64.rpm"
@@ -131,13 +131,13 @@ runroot rpmkeys -Kv /tmp/${pkg}
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != d662cd0d81601a7107312684ad1ddf38)
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Test corrupted package verification (corrupted header)
 AT_SETUP([rpmkeys -Kv <corrupted unsigned> 4])
 AT_KEYWORDS([rpmkeys digest])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 pkg="hello-2.0-1.x86_64.rpm"
@@ -151,12 +151,12 @@ runroot rpmkeys -Kv /tmp/${pkg}
 ],
 [error: /tmp/hello-2.0-1.x86_64.rpm: tag[[13]]: BAD, tag 1028 type 0 offset 116 count 5 len 7]
 )
-AT_CLEANUP
+RPMTEST_CLEANUP
 # ------------------------------
 # Reproducably build and verify a package
 AT_SETUP([rpmkeys -Kv <unsigned> 2])
 AT_KEYWORDS([rpmkeys digest])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild -bb --quiet \
@@ -188,7 +188,7 @@ PAYLOADDIGESTALT: 116ce41ebb72f1877cda3d7dedaf5b78770e202d6389ade4e415d78548d703
     MD5 digest: OK
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Import a public RSA key
@@ -202,7 +202,7 @@ AT_CLEANUP
 # when the key is imported; other implementations should not do this.
 AT_SETUP([rpmkeys --import rsa (rpmdb)])
 AT_KEYWORDS([rpmkeys import])
-AT_CHECK_UNQUOTED([
+RPMTEST_CHECK_UNQUOTED([
 RPMDB_INIT
 
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
@@ -262,11 +262,11 @@ gpg(4344591e1964c5fc) = 4:4344591e1964c5fc-58e63918\
 fi`
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmkeys --import rsa (fs)])
 AT_KEYWORDS([rpmkeys import])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot_other mkdir -p /tmp/kr
@@ -308,7 +308,7 @@ UNW2iqnN3BA7guhOv6OMiROF1+I7Q5nWT63mQC7IgQ==
 -----END PGP PUBLIC KEY BLOCK-----
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # -----------------------------------------
 # Check a package signed with a subkey
@@ -318,7 +318,7 @@ AT_CLEANUP
 AT_SETUP([rpmkeys --import, signed with a good subkey])
 AT_KEYWORDS([rpmkeys digest signature])
 AT_SKIP_IF([test x$PGP = xinternal])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 echo Checking package before importing key:
@@ -375,7 +375,7 @@ Checking package after importing key, no signature:
 0
 ]],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # -----------------------------------------
 # Check a package signed with an expired subkey
@@ -383,7 +383,7 @@ AT_CLEANUP
 AT_SETUP([rpmkeys --import, signed with an expired subkey])
 AT_KEYWORDS([rpmkeys digest signature])
 AT_SKIP_IF([test x$PGP = xinternal])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 echo Checking package before importing key:
@@ -450,7 +450,7 @@ Checking package after importing key, no signature:
 0
 ]],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # -----------------------------------------
 # Check a package signed with a revoked subkey
@@ -458,7 +458,7 @@ AT_CLEANUP
 AT_SETUP([rpmkeys --import, signed with a revoked subkey])
 AT_KEYWORDS([rpmkeys digest signature])
 AT_SKIP_IF([test x$PGP = xinternal])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 echo Checking package before importing key:
@@ -521,7 +521,7 @@ Checking package after importing key, no signature:
 0
 ]],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([rpmkeys --import invalid keys])
 AT_KEYWORDS([rpmkeys import])
@@ -534,7 +534,7 @@ RPMDB_INIT
 # check for validity is when the key is used, not when it is imported.
 # The internal OpenPGP implementation checks for validity when the key
 # is imported; other implementations should not do this.
-AT_CHECK_UNQUOTED([
+RPMTEST_CHECK_UNQUOTED([
 runroot rpmkeys --quiet --import /data/keys/CVE-2021-3521-badbind.asc
 echo exit code: $? >&2
 ],
@@ -549,7 +549,7 @@ else
 fi`]
 )
 
-AT_CHECK_UNQUOTED([
+RPMTEST_CHECK_UNQUOTED([
 runroot rpmkeys --quiet --import /data/keys/CVE-2021-3521-nosubsig.asc
 echo exit code: $? >&2
 ],
@@ -564,7 +564,7 @@ else
 fi`]
 )
 
-AT_CHECK_UNQUOTED([
+RPMTEST_CHECK_UNQUOTED([
 runroot rpmkeys --quiet --import /data/keys/CVE-2021-3521-nosubsig-last.asc
 echo exit code: $? >&2
 ],
@@ -578,7 +578,7 @@ else
     echo exit code: 0
 fi`]
 )
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # -----------------------------------------
 # Import a key where the binding signature's creation time is
@@ -590,7 +590,7 @@ AT_CLEANUP
 AT_SETUP([rpmkeys --import different-creation-times])
 AT_KEYWORDS([rpmkeys import])
 RPMDB_INIT
-AT_CHECK([
+RPMTEST_CHECK([
 runroot rpmkeys --import /data/keys/different-creation-times.asc
 runroot rpm -qi gpg-pubkey-62837bea-62553e62|grep -v Date|grep -v Version:
 runroot rpm -q --provides gpg-pubkey
@@ -638,14 +638,14 @@ gpg(62837bea) = 4:a72b7d4f62837bea-62553e62
 gpg(a72b7d4f62837bea) = 4:a72b7d4f62837bea-62553e62
 ]],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # The internal OpenPGP parser rejects the key.  The Sequoia parser
 # just ignores the invalid components and imports the rest.  This test
 # checks the behavior of the internal parser.
 AT_SETUP([rpmkeys type confusion])
 AT_SKIP_IF([test x$PGP != xinternal])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmkeys --import /data/keys/type-confusion.asc
@@ -654,13 +654,13 @@ runroot rpmkeys --import /data/keys/type-confusion.asc
 [],
 [error: /data/keys/type-confusion.asc: key 1 import failed.]
 )
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Test pre-built package verification
 AT_SETUP([rpmkeys -K <signed> 1])
 AT_KEYWORDS([rpmkeys digest signature])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmkeys -K /data/RPMS/hello-2.0-1.x86_64-signed.rpm
@@ -672,13 +672,13 @@ runroot rpmkeys -K /data/RPMS/hello-2.0-1.x86_64-signed.rpm
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm: digests signatures OK
 ]],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Test pre-built package verification
 AT_SETUP([rpmkeys -Kv <signed> 1])
 AT_KEYWORDS([rpmkeys digest signature])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-v3-signed.rpm; echo $?
@@ -747,13 +747,13 @@ runroot rpmkeys -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed.rpm; echo
 0
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Test pre-built corrupted package verification (corrupted signature)
 AT_SETUP([rpmkeys -Kv <corrupted signed> 1])
 AT_KEYWORDS([rpmkeys digest signature])
-AT_CHECK_UNQUOTED([
+RPMTEST_CHECK_UNQUOTED([
 RPMDB_INIT
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
@@ -796,13 +796,13 @@ fi`
     MD5 digest: OK
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Test pre-built corrupted package verification (corrupted header)
 AT_SETUP([rpmkeys -Kv <corrupted signed> 2.1])
 AT_KEYWORDS([rpmkeys digest signature])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 pkg="hello-2.0-1.x86_64-v3-signed.rpm"
@@ -831,12 +831,12 @@ runroot rpmkeys -Kv /tmp/${pkg}
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != b2981e215576c2142676d9b1e0902075)
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 # ------------------------------
 # Test pre-built corrupted package verification (corrupted header)
 AT_SETUP([rpmkeys -Kv <corrupted signed> 2.2])
 AT_KEYWORDS([rpmkeys digest signature])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
@@ -865,13 +865,13 @@ runroot rpmkeys -Kv /tmp/${pkg}
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != de65519eeb4ab52eb076ec054d42e34e)
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Test pre-built corrupted package verification (corrupted payload)
 AT_SETUP([rpmkeys -Kv <corrupted signed> 3])
 AT_KEYWORDS([rpmkeys digest signature])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
@@ -903,13 +903,13 @@ runroot rpmkeys -Kv /tmp/${pkg}
     MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != d662cd0d81601a7107312684ad1ddf38)
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Test pre-built corrupted package verification (corrupted payload)
 AT_SETUP([rpmkeys -Kv <corrupted signed> 4])
 AT_KEYWORDS([rpmkeys digest signature])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT[(
 
 dorpm () {
@@ -942,7 +942,7 @@ dorpm -Kv
     MD5 digest: OK
 ]],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Test --addsign
@@ -954,7 +954,7 @@ gpg2 --import ${RPMTEST}/data/keys/*.secret
 export GPG_TTY=""
 
 # rpmsign --addsign --rpmv3 <unsigned>
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
@@ -983,7 +983,7 @@ POST-DELSIGN
 [])
 
 # rpmsign --addsign <unsigned>
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
@@ -1010,7 +1010,7 @@ POST-DELSIGN
 [])
 
 # test --delsign restores the old package bit-per-bit
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 ORIG="${RPMTEST}/data/RPMS/hello-2.0-1.x86_64.rpm"
@@ -1029,7 +1029,7 @@ cmp -s ${ORIG} ${NEW}; echo $?
 [])
 
 # rpmsign --addsign <signed>
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64-signed.rpm "${RPMTEST}"/tmp/
@@ -1040,7 +1040,7 @@ run rpmsign --key-id 1964C5FC --digest-algo sha256 --addsign "${RPMTEST}"/tmp/he
 [])
 
 # rpmsign --addsign <corrupted>
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 pkg="hello-2.0-1.x86_64.rpm"
@@ -1065,13 +1065,13 @@ echo $?
 ],
 [])
 gpgconf --kill gpg-agent
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Test --delsign
 AT_SETUP([rpmsign --delsign])
 AT_KEYWORDS([rpmsign signature])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64-signed.rpm "${RPMTEST}"/tmp/
@@ -1090,4 +1090,4 @@ POST-DELSIGN
 /tmp/hello-2.0-1.x86_64-signed.rpm:
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP

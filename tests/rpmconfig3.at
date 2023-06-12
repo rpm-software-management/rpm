@@ -20,7 +20,7 @@ runroot rpmbuild --quiet -bb \
           /data/SPECS/configtest.spec
 
 # non-modified config changes to non-config and back, no backups
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
@@ -40,7 +40,7 @@ foo
 [])
 
 # modified config changes to non-config and back, back up on first upgrade
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -66,7 +66,7 @@ foo
 )
 
 # modified config changes to identical non-config and back, no backups
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -87,7 +87,7 @@ bar
 foo
 ],
 [])
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([upgrade config to/from config link])
 AT_KEYWORDS([install])
@@ -106,7 +106,7 @@ runroot rpmbuild --quiet -bb \
           /data/SPECS/configtest.spec
 
 # non-modified config file changes to config symlink and back, no backups
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
@@ -126,7 +126,7 @@ foo
 [])
 
 # Modified config changes to config symlink
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
@@ -147,12 +147,12 @@ otherstuff
 ],
 [warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
 )
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 # Modified config link changes to config file
 AT_SETUP([upgrade modified config link to config])
 AT_KEYWORDS([install])
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
@@ -185,7 +185,7 @@ otherstuff
 ],
 [warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
 )
-AT_CLEANUP
+RPMTEST_CLEANUP
 
 AT_SETUP([upgrade config to directory])
 AT_KEYWORDS([install])
@@ -203,7 +203,7 @@ runroot rpmbuild --quiet -bb \
           /data/SPECS/configtest.spec
 
 # Non-modified config file changes to directory.
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -219,7 +219,7 @@ test -d "${cf}"
 [])
 
 # Modified config changes to directory
-AT_CHECK([
+RPMTEST_CHECK([
 RPMDB_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
@@ -239,4 +239,4 @@ otherstuff
 ],
 [warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
 )
-AT_CLEANUP
+RPMTEST_CLEANUP
