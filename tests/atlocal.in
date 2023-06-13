@@ -59,7 +59,7 @@ if test "${PYTHON}"; then
 else
     PYTHON_DISABLED=true;
 fi
-if grep -q '#define WITH_CAP 1' "${abs_top_builddir}/config.h"; then
+if [ "@WITH_CAP@" == "ON" ]; then
     CAP_DISABLED=false;
 else
     CAP_DISABLED=true;
