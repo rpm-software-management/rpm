@@ -11,9 +11,7 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmmacro.h>
 
-#include "lib/rpmfs.h"
 #include "lib/rpmplugin.h"
-#include "lib/rpmte_internal.h"
 
 #define XATTR_NAME_IMA "security.ima"
 
