@@ -269,7 +269,7 @@ arch_canon:	mipsr6el: mipsr6el	20
 arch_canon:	mips64r6: mips64r6	21
 arch_canon:	mips64r6el: mips64r6el	21
 
-arch_canon:	riscv32: riscv64	22
+arch_canon:	riscv32: riscv32	22
 arch_canon:	riscv64: riscv64	22
 
 arch_canon:	loongarch64:	loongarch64	23
@@ -405,7 +405,7 @@ buildarchtranslate: sh4a: sh4
 
 buildarchtranslate: aarch64: aarch64
 
-buildarchtranslate: riscv32: riscv64
+buildarchtranslate: riscv32: riscv32
 buildarchtranslate: riscv64: riscv64
 
 buildarchtranslate: loongarch64: loongarch64
