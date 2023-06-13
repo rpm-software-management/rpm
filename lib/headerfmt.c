@@ -772,6 +772,12 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 
 	    if (isxml) {
 		const char * tagN = rpmTagGetName(spft->u.tag.tag);
+		char *tagval = NULL;
+
+		if (rstreq(tagN, "(unknown)")) {
+		    rasprintf(&tagval, "[%u]", spft->u.tag.tag);
+		    tagN = tagval;
+		}
 
 		need = sizeof("  <rpmTag name=\"\">\n") - 1;
 		if (tagN != NULL)
@@ -782,6 +788,8 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		    te = stpcpy(te, tagN);
 		te = stpcpy(te, "\">\n");
 		hsa->vallen += (te - t);
+
+		free(tagval);
 	    }
 
 	    t = hsaReserve(hsa, need);
