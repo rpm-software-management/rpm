@@ -1,13 +1,13 @@
-RPMLIBDIR="@usrlibdir@"
+RPMLIBDIR="@CMAKE_INSTALL_FULL_LIBDIR@"
 LD_LIBRARY_PATH="${abs_builddir}/testing/${RPMLIBDIR}${LD_LIBRARY_PATH+:${LD_LIBRARY_PATH}}"
 export LD_LIBRARY_PATH
 export RPMLIBDIR
-PATH="${abs_builddir}/testing@usrbindir@:$PATH"
+PATH="${abs_builddir}/testing@CMAKE_INSTALL_FULL_BINDIR@:$PATH"
 export PATH
 
 PYTHON=@PYTHON@
 if test "${PYTHON}"; then
-    PYTHONPATH="${abs_builddir}/testing@pyexecdir@"
+    PYTHONPATH="${abs_builddir}/testing@Python3_SITEARCH@"
     export PYTHONPATH
 fi
 
@@ -31,7 +31,7 @@ RPMTEST="${abs_builddir}/testing"
 RPMDATA="${abs_srcdir}/data/"
 
 RPM_CONFIGDIR="${RPMTEST}/@RPM_CONFIGDIR@"
-RPM_POPTEXEC_PATH="${RPMTEST}/@usrbindir@"
+RPM_POPTEXEC_PATH="${RPMTEST}/@CMAKE_INSTALL_FULL_BINDIR@"
 export RPM_CONFIGDIR RPM_POPTEXEC_PATH
 
 DBFORMAT=$(awk '/^%_db_backend/{print $2}' "${RPM_CONFIGDIR}/macros")
