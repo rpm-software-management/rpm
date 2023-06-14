@@ -91,7 +91,8 @@ function setup_env()
 
 function sandbox()
 {
-    (unset RPM_CONFIGDIR RPM_POPTEXEC_PATH; cd ${RPMTEST} && \
+    (unset RPM_CONFIGDIR RPM_POPTEXEC_PATH
+     cd ${RPMTEST} && \
      FAKECHROOT_BASE="${RPMTEST}" fakechroot "$@"
     )
 }
@@ -99,7 +100,11 @@ function sandbox()
 function run()
 {
     setup_env
-    "$@" --define "_buildhost testhost" --define "_tmppath ${RPMTEST}/tmp" --define "_topdir ${HOME}/build" --define "_db_backend ${DBFORMAT}" --dbpath="${RPMTEST}/var/lib/rpm/"
+    "$@" --define "_buildhost testhost" \
+         --define "_tmppath ${RPMTEST}/tmp" \
+         --define "_topdir ${HOME}/build" \
+         --define "_db_backend ${DBFORMAT}" \
+         --dbpath="${RPMTEST}/var/lib/rpm/"
 }
 
 function rundebug()
@@ -113,7 +118,10 @@ function rundebug()
 function runroot()
 {
     setup_env
-    sandbox env MAGIC="/magic/magic" "$@" --define "_buildhost testhost" --define "_topdir /build" --noplugins --nouserns
+    sandbox env MAGIC="/magic/magic" "$@" \
+            --define "_buildhost testhost" \
+            --define "_topdir /build" \
+            --noplugins --nouserns
 }
 
 function runroot_other()
