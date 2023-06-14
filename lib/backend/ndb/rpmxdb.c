@@ -757,7 +757,7 @@ static int moveblobstofront(rpmxdb xdb, struct xdb_slot *afterslot)
 	if (slot2 == xdb->slots)
 	    slot2 = 0;
     }
-    if (slot1->pagecnt < slot2->pagecnt) {
+    if (slot1 && slot2 && slot1->pagecnt < slot2->pagecnt) {
 	struct xdb_slot *tmp = slot1;
 	slot1 = slot2;
 	slot2 = tmp;
