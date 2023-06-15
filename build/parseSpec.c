@@ -742,6 +742,9 @@ static void addTargets(Package Pkgs)
     char *optflags = rpmExpand("%{optflags}", NULL);
 
     for (Package pkg = Pkgs; pkg != NULL; pkg = pkg->next) {
+	if (headerIsEntry(pkg->header, RPMTAG_OS)) {
+	    continue;
+	}
 	headerPutString(pkg->header, RPMTAG_OS, os);
 	/* noarch subpackages already have arch set here, leave it alone */
 	if (!headerIsEntry(pkg->header, RPMTAG_ARCH)) {
