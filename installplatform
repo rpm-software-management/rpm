@@ -178,7 +178,7 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
         ISANAME=riscv
         ISABITS=32
         CANONARCH=riscv32
-        CANONCOLOR=3
+        CANONCOLOR=0
         ;;
     riscv64)
 	ISANAME=riscv
