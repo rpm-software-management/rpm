@@ -409,6 +409,10 @@ As a special case, `BuildArch: noarch` can be used on sub-package
 level to allow eg. documentation of otherwise arch-specific package
 to be shared across multiple architectures.
 
+Note that `BuildArch` causes the spec parsing to recurse from the start,
+causing any macros before that line to be expanded twice. This can yield
+unexpected results, in particular with `%global`.
+
 #### Prefixes (or Prefix)
 
 Specify prefixes this package may be installed into, used to make
