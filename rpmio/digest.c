@@ -61,6 +61,10 @@ int rpmDigestBundleAddID(rpmDigestBundle bundle, int algo, int id,
 			rpmDigestFlags flags)
 {
     int rc = -1;
+	
+    if (!bundle) {
+        return rc;
+    }
     if (id > 0 && findID(bundle, id) < 0) {
 	int ix = findID(bundle, 0); /* Find first free slot */
 	if (ix >= 0) {
@@ -78,6 +82,10 @@ int rpmDigestBundleAddID(rpmDigestBundle bundle, int algo, int id,
 int rpmDigestBundleUpdate(rpmDigestBundle bundle, const void *data, size_t len)
 {
     int rc = 0;
+	
+    if (!bundle || !data || len == 0) {
+        return rc;
+    }
     if (bundle && data && len > 0) {
 	for (int i = 0; i <= bundle->index_max; i++) {
 	    if (bundle->ids[i] > 0)
@@ -93,7 +101,10 @@ int rpmDigestBundleFinal(rpmDigestBundle bundle, int id,
 {
     int rc = 0;
     int ix = findID(bundle, id);
-
+    
+    if (!bundle || !datap || !lenp) {
+        return rc;
+    }
     if (ix >= 0) {
 	rc = rpmDigestFinal(bundle->digests[ix], datap, lenp, asAscii);
 	bundle->digests[ix] = NULL;
