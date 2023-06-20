@@ -77,8 +77,9 @@ int rpmDigestBundleAddID(rpmDigestBundle bundle, int algo, int id,
 }
 int rpmDigestBundleUpdate(rpmDigestBundle bundle, const void *data, size_t len)
 {
-    int rc = 0;
+    int rc = -1;
     if (bundle && data && len > 0) {
+	rc = 0;
 	for (int i = 0; i <= bundle->index_max; i++) {
 	    if (bundle->ids[i] > 0)
 		rc += rpmDigestUpdate(bundle->digests[i], data, len);
@@ -91,7 +92,7 @@ int rpmDigestBundleUpdate(rpmDigestBundle bundle, const void *data, size_t len)
 int rpmDigestBundleFinal(rpmDigestBundle bundle, int id,
 			 void ** datap, size_t * lenp, int asAscii)
 {
-    int rc = 0;
+    int rc = -1;
     int ix = findID(bundle, id);
 
     if (ix >= 0) {
