@@ -360,7 +360,7 @@ static int fsmDoMkDir(rpmPlugins plugins, int dirfd, const char *dn,
     }
 
     /* Run fsm file post hook for all plugins */
-    rpmpluginsCallFsmFilePost(plugins, NULL, dn, mode, op, rc);
+    rpmpluginsCallFsmFilePost(plugins, NULL, apath, mode, op, rc);
 
     if (!rc) {
 	rpmlog(RPMLOG_DEBUG,
