@@ -1,4 +1,0 @@
-# communicate paths to autotest
-abs_builddir=@CMAKE_CURRENT_BINARY_DIR@
-abs_srcdir=@CMAKE_CURRENT_SOURCE_DIR@
-abs_top_builddir=@CMAKE_BINARY_DIR@
