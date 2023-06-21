@@ -53,7 +53,7 @@ add_custom_command(OUTPUT rpmtests COMMAND
 
 # Use our top-level targets as an ordering clue to cmake: the project
 # needs to be built before we can populate anything...
-get_property(top_targets DIRECTORY .. PROPERTY BUILDSYSTEM_TARGETS)
+get_property(TOP_TARGETS DIRECTORY .. PROPERTY BUILDSYSTEM_TARGETS)
 
 add_custom_target(populate_testing COMMAND
 	${CMAKE_CURRENT_SOURCE_DIR}/populate
@@ -63,11 +63,11 @@ add_custom_target(populate_testing COMMAND
 		${CMAKE_INSTALL_FULL_BINDIR}
 		${CMAKE_MAKE_PROGRAM}
 	SOURCES populate
-	DEPENDS ${top_targets}
+	DEPENDS ${TOP_TARGETS}
 )
 
-set (testprogs rpmpgpcheck rpmpgppubkeyfingerprint)
-foreach(prg ${testprogs})
+set(TESTPROGS rpmpgpcheck rpmpgppubkeyfingerprint)
+foreach(prg ${TESTPROGS})
 	add_executable(${prg} EXCLUDE_FROM_ALL ${prg}.c)
 	target_link_libraries(${prg} PRIVATE librpmio)
 endforeach()
@@ -75,14 +75,14 @@ endforeach()
 include(ProcessorCount)
 ProcessorCount(nproc)
 if (nproc GREATER 1)
-	set(jobs -j${nproc})
+	set(JOBS -j${nproc})
 endif()
 
 add_custom_target(check COMMAND
-	./rpmtests ${jobs} $(TESTOPTS)
+	./rpmtests ${JOBS} $(TESTOPTS)
 	DEPENDS populate_testing
 	DEPENDS rpmtests
-	DEPENDS ${testprogs}
+	DEPENDS ${TESTPROGS}
 )
 
 add_custom_command(TARGET populate_testing POST_BUILD
