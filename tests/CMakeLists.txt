@@ -1,3 +1,7 @@
+# Use our top-level targets as an ordering clue to cmake: the project
+# needs to be built before we can populate anything...
+get_property(TOP_TARGETS DIRECTORY .. PROPERTY BUILDSYSTEM_TARGETS)
+
 set(PYTHON ${Python3_EXECUTABLE})
 set(pyexecdir ${Python3_SITEARCH})
 set(usrbindir ${CMAKE_INSTALL_FULL_BINDIR})
@@ -46,25 +50,6 @@ set(TESTSUITE_AT
 )
 
 set(AUTOTEST ${AUTOM4TE} --language=autotest)
-add_custom_command(OUTPUT rpmtests COMMAND
-	${AUTOTEST} -I ${CMAKE_CURRENT_SOURCE_DIR} -o rpmtests rpmtests.at
-	DEPENDS ${TESTSUITE_AT}
-)
-
-# Use our top-level targets as an ordering clue to cmake: the project
-# needs to be built before we can populate anything...
-get_property(TOP_TARGETS DIRECTORY .. PROPERTY BUILDSYSTEM_TARGETS)
-
-add_custom_target(populate_testing COMMAND
-	${CMAKE_CURRENT_SOURCE_DIR}/populate
-		${CMAKE_BINARY_DIR}
-		${CMAKE_CURRENT_BINARY_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}
-		${CMAKE_INSTALL_FULL_BINDIR}
-		${CMAKE_MAKE_PROGRAM}
-	SOURCES populate
-	DEPENDS ${TOP_TARGETS}
-)
 
 set(TESTPROGS rpmpgpcheck rpmpgppubkeyfingerprint)
 foreach(prg ${TESTPROGS})
@@ -83,6 +68,22 @@ add_custom_target(check COMMAND
 	DEPENDS populate_testing
 	DEPENDS rpmtests
 	DEPENDS ${TESTPROGS}
+)
+
+add_custom_command(OUTPUT rpmtests COMMAND
+	${AUTOTEST} -I ${CMAKE_CURRENT_SOURCE_DIR} -o rpmtests rpmtests.at
+	DEPENDS ${TESTSUITE_AT}
+)
+
+add_custom_target(populate_testing COMMAND
+	${CMAKE_CURRENT_SOURCE_DIR}/populate
+		${CMAKE_BINARY_DIR}
+		${CMAKE_CURRENT_BINARY_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}
+		${CMAKE_INSTALL_FULL_BINDIR}
+		${CMAKE_MAKE_PROGRAM}
+	SOURCES populate
+	DEPENDS ${TOP_TARGETS}
 )
 
 add_custom_command(TARGET populate_testing POST_BUILD
