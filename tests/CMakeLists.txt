@@ -63,20 +63,21 @@ if (nproc GREATER 1)
 	set(JOBS -j${nproc})
 endif()
 
-add_custom_target(check COMMAND
-	./rpmtests ${JOBS} $(TESTOPTS)
+add_custom_target(check
+	COMMAND ./rpmtests ${JOBS} $(TESTOPTS)
 	DEPENDS populate_testing
 	DEPENDS rpmtests
 	DEPENDS ${TESTPROGS}
 )
 
-add_custom_command(OUTPUT rpmtests COMMAND
-	${AUTOTEST} -I ${CMAKE_CURRENT_SOURCE_DIR} -o rpmtests rpmtests.at
+add_custom_command(OUTPUT rpmtests
+	COMMAND ${AUTOTEST} -I ${CMAKE_CURRENT_SOURCE_DIR}
+		-o rpmtests rpmtests.at
 	DEPENDS ${TESTSUITE_AT}
 )
 
-add_custom_target(populate_testing COMMAND
-	${CMAKE_CURRENT_SOURCE_DIR}/populate
+add_custom_target(populate_testing
+	COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/populate
 		${CMAKE_BINARY_DIR}
 		${CMAKE_CURRENT_BINARY_DIR}
 		${CMAKE_CURRENT_SOURCE_DIR}
