@@ -1,11 +1,13 @@
 #!/bin/sh
 
-top_builddir="$1"
-abs_builddir="$2"
-srcdir="$3"
-bindir="$4"
-MAKE="$5"
-tree=tree
+CMD=$1; shift
+if [ "$CMD" == "check" ]; then
+    ./rpmtests "$@"
+    exit $?
+fi
+
+bindir=@CMAKE_INSTALL_FULL_BINDIR@
+tree=mktree.output/tree
 
 # The chmod is needed when copying from read-only sources (eg in distcheck)
 if [ -d ${tree} ]; then
@@ -20,10 +22,11 @@ if [ ! -d ${tree}/usr/bin ]; then
 	ln -s ../bin ${tree}/usr/bin
 fi
 
-(cd ${top_builddir} && \
-	  ${MAKE} DESTDIR=${abs_builddir}/${tree} install)
+(cd @CMAKE_BINARY_DIR@ && \
+	  @CMAKE_MAKE_PROGRAM@ \
+	  DESTDIR=@CMAKE_CURRENT_BINARY_DIR@/${tree} install)
 
-cp -r ${srcdir}/data/ ${tree}/
+cp -r @CMAKE_CURRENT_SOURCE_DIR@/data/ ${tree}/
 for d in dev etc magic tmp var; do
 	if [ ! -d ${tree}/${d} ]; then
 		mkdir ${tree}/${d}
