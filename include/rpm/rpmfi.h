@@ -164,6 +164,14 @@ int rpmfiDigestAlgo(rpmfi fi);
  */
 const unsigned char * rpmfiFDigest(rpmfi fi, int *algo, size_t *diglen);
 
+typedef struct {
+    int64_t src_fd;
+    uint64_t src_offset;
+    uint64_t src_length;
+} reflink_params_s;
+typedef reflink_params_s (*reflink_params_s_func)(rpmfi  fi);
+int rpmfilesSetReflinkFunc(rpmfiles fi, reflink_params_s_func func);
+
 /** \ingroup rpmfi
  * Return current file (hex) digest of file info set iterator.
  * The file info set iterator stores file digests in binary format to conserve

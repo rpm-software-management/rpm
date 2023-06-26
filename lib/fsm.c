@@ -181,10 +181,10 @@ static int fsmOpen(int *wfdp, int dirfd, const char *dest)
     return rc;
 }
 
-static int fsmUnpack(rpmfi fi, int fdno, rpmpsm psm, int nodigest)
+static int fsmUnpack(rpmfi fi, int fdno, rpmpsm psm, int nodigest, rpmFileAction action)
 {
     FD_t fd = fdDup(fdno);
-    int rc = rpmfiArchiveReadToFilePsm(fi, fd, nodigest, psm);
+    int rc = rpmfiArchiveReadToFilePsm(fi, fd, nodigest, psm, action);
     if (_fsm_debug) {
 	rpmlog(RPMLOG_DEBUG, " %8s (%s %" PRIu64 " bytes [%d]) %s\n", __func__,
 	       rpmfiFN(fi), rpmfiFSize(fi), Fileno(fd),
@@ -222,7 +222,7 @@ static int fsmMkfile(int dirfd, rpmfi fi, struct filedata_s *fp, rpmfiles files,
     /* If the file has content, unpack it */
     if (rpmfiArchiveHasContent(fi)) {
 	if (!rc)
-	    rc = fsmUnpack(fi, fd, psm, nodigest);
+	    rc = fsmUnpack(fi, fd, psm, nodigest, fp->action);
 	/* Last file of hardlink set, ensure metadata gets set */
 	if (*firstlink) {
 	    fp->setmeta = 1;
@@ -809,6 +809,7 @@ static const char * fileActionString(rpmFileAction a)
     case FA_SKIPNETSHARED: return "skipnetshared";
     case FA_SKIPCOLOR:	return "skipcolor";
     case FA_TOUCH:     return "touch";
+    case FA_REFLINK:	return "reflink";
     default:		return "???";
     }
 }
@@ -942,7 +943,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	    int mayopen = 0;
 	    int fd = -1;
 	    rc = ensureDir(plugins, rpmfiDN(fi), 0,
-			    (fp->action == FA_CREATE), 0, &di.dirfd);
+			    (fp->action == FA_CREATE || fp->action == FA_REFLINK), 0, &di.dirfd);
 
 	    /* Directories replacing something need early backup */
 	    if (!rc && !fp->suffix && fp != firstlink) {

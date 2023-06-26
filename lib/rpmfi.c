@@ -14,6 +14,10 @@
 #include <rpm/rpmbase64.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <sys/ioctl.h>
+#if defined(__linux__)
+#include <linux/fs.h>        /* For FICLONE */
+#endif
 
 #include "lib/rpmfi_internal.h"
 #include "lib/rpmte_internal.h"	/* relocations */
@@ -131,6 +135,8 @@ struct rpmfiles_s {
     rpm_loff_t * replacedLSizes;/*!< (TR_ADDED) */
     int magic;
     int nrefs;		/*!< Reference count. */
+
+    reflink_params_s_func getReflinkParams; /* Returns reflink params */
 };
 
 static int indexSane(rpmtd xd, rpmtd yd, rpmtd zd);
@@ -2384,9 +2390,9 @@ ssize_t rpmfiArchiveRead(rpmfi fi, void * buf, size_t size)
     return rpmcpioRead(fi->archive, buf, size);
 }
 
-int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm)
+int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm, rpmFileAction action)
 {
-    if (fi == NULL || fi->archive == NULL || fd == NULL)
+    if (fi == NULL || fd == NULL)
 	return -1;
 
     rpm_loff_t left = rpmfiFSize(fi);
@@ -2394,6 +2400,7 @@ int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm)
     rpmHashAlgo digestalgo = 0;
     int rc = 0;
     char buf[BUFSIZ*4];
+    FD_t srcfd = NULL;
 
     if (!nodigest) {
 	digestalgo = rpmfiDigestAlgo(fi);
@@ -2401,10 +2408,47 @@ int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm)
 	fdInitDigest(fd, digestalgo, 0);
     }
 
+    if (action == FA_REFLINK) {
+	reflink_params_s reflink_params = fi->files->getReflinkParams(fi);
+	struct file_clone_range fcr = {
+	    .src_fd = reflink_params.src_fd,
+	    .src_offset = reflink_params.src_offset,
+	    .src_length = reflink_params.src_length,
+	    .dest_offset = 0,
+	};
+	if (fcr.src_fd >= 0) {
+	    rc = ioctl(Fileno(fd), FICLONERANGE, &fcr);
+	    if (!rc) {
+		/* reflink worked, so truncate */
+		rc = ftruncate(Fileno(fd), rpmfiFSize(fi));
+		if (rc) {
+		    rpmlog(RPMLOG_ERR,
+			   _("reflink: Unable to truncate %s to %ld due to %s\n"),
+			   Fdescr(fd), rpmfiFSize(fi), strerror(errno));
+		     rc = RPMRC_FAIL;
+		}
+		goto exit;
+	    } else {
+		rpmlog(RPMLOG_WARNING, _("rpmfiArchiveReadToFilePsm: falling back to copying bits for %s due to %d, %d = %s\n"), Fdescr(fd), rc, errno, strerror(errno));
+		srcfd = fdDup(fcr.src_fd);
+		if (Fseek(srcfd, fcr.src_offset, SEEK_SET) < 0) {
+		    rpmlog(RPMLOG_ERR,
+			   _("reflink: unable to seek on copying bits\n"));
+		    rc = RPMRC_FAIL;
+		    goto exit;
+		}
+	    }
+	}
+    }
+
+    if (action != FA_REFLINK && fi->archive == NULL)
+	return -1;
+
     while (left) {
 	size_t len;
 	len = (left > sizeof(buf) ? sizeof(buf) : left);
-	if (rpmcpioRead(fi->archive, buf, len) != len) {
+	size_t rdlen = (action == FA_REFLINK) ? Fread(buf, len, 1, srcfd) : rpmcpioRead(fi->archive, buf, len);
+	if (rdlen != len) {
 	    rc = RPMERR_READ_FAILED;
 	    goto exit;
 	}
@@ -2448,7 +2492,7 @@ exit:
 
 int rpmfiArchiveReadToFile(rpmfi fi, FD_t fd, int nodigest)
 {
-    return rpmfiArchiveReadToFilePsm(fi, fd, nodigest, NULL);
+    return rpmfiArchiveReadToFilePsm(fi, fd, nodigest, NULL, FA_UNKNOWN);
 }
 
 char * rpmfileStrerror(int rc)
@@ -2511,4 +2555,16 @@ char * rpmfileStrerror(int rc)
     }
 
     return msg;
+}
+
+int rpmfilesSetReflinkFunc(rpmfiles fi, reflink_params_s_func func)
+{
+    int rc = -1;
+    if (fi == NULL)
+	return rc;
+
+    fi->getReflinkParams = func;
+    rc = 0;
+
+    return rc;
 }
