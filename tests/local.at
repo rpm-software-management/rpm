@@ -2,7 +2,7 @@ AT_TESTED([rpm rpmbuild rpmquery])
 
 m4_define([RPMTEST_SETUP],[[
 if ! [ -d testing/ ]; then
-    cp -aP "${RPMTEST}" .
+    cp -aP "${RPMTREE}" .
     chmod -R u+w testing/
     mkdir -p testing/build
     ln -s ../data/SOURCES testing/build/
