@@ -95,7 +95,7 @@ int parseScript(rpmSpec spec, int parsePart)
     int index;
     char * reqargs = NULL;
 
-    int res = PART_ERROR; /* assume failure */
+    int nextPart, res = PART_ERROR; /* assume failure */
     int rc, argc;
     int arg;
     const char **argv = NULL;
@@ -353,7 +353,7 @@ int parseScript(rpmSpec spec, int parsePart)
 	goto exit;
     }
 
-    if ((res = parseLines(spec, STRIP_NOTHING, NULL, &sb)) == PART_ERROR)
+    if ((nextPart = parseLines(spec, STRIP_NOTHING, NULL, &sb)) == PART_ERROR)
 	goto exit;
 
     if (sb) {
@@ -458,6 +458,8 @@ int parseScript(rpmSpec spec, int parsePart)
 	    }
 	}
     }
+
+    res = nextPart;
 
 exit:
     free(reqargs);
