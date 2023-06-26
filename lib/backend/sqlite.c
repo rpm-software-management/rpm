@@ -208,6 +208,7 @@ static int sqlite_fini(rpmdb rdb)
 	    }
 	    rdb->db_dbenv = NULL;
 	    int xx = sqlite3_close(sdb);
+	    sqlite3_config(SQLITE_CONFIG_LOG, NULL, NULL);
 	    rc = (xx != SQLITE_OK);
 	}
     }
