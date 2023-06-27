@@ -24,8 +24,9 @@ def unpack(h, fd):
                 # handle hardlinks
                 if f.nlink > 1:
                     for l in f.links:
-                        if l.inode != f.inode:
-                            os.link(fn, l.name)
+                        if l.name != f.name:
+                            ln = './%s' % l.name
+                            os.link(fn, ln)
         elif stat.S_ISDIR(f.mode):
             os.mkdir(fn)
         elif stat.S_ISLNK(f.mode):
