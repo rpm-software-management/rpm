@@ -17,11 +17,15 @@ not in line with RPM design and goals.**
 ## Submitting Patches
 
 Patches should be submitted via GitHub pull requests (PRs) or via `git
-send-email` to the rpm-maint@lists.rpm.org mailing list.  Each PR should be a
-single atomic change, meaning that it should be merged or rejected as a unit.
-It is okay for a PR to contain multiple commits if later commits are dependent
-on earlier ones.  If earlier commits do not depend on later ones, they
-(should/should not) be submitted separately.
+send-email` to the rpm-maint@lists.rpm.org mailing list. Use your real
+name as the commit author (git `user.name` config option) in a format
+suitable for the CREDITS file.
+Patches from pseudonyms or anonymous submitters will not be accepted.
+
+Each PR should be a single atomic change, meaning that it should be merged
+or rejected as a unit. It is okay for a PR to contain multiple commits if
+later commits are dependent on earlier ones.  If earlier commits do not
+depend on later ones, they (should/should not) be submitted separately.
 
 Pull requests should clearly state if the code is "ready for
 inclusion" or if further work is needed. Proof of concept or request
