@@ -63,6 +63,13 @@ As systemd-sysusers implicitly creates a matching group for any created
 users, the group provide does not have an EVR here, only explicitly
 created groups will have the encoded sysusers.d line as EVR.
 
+# Consider switching to DynamicUser where possible
+
+The invocation of `useradd` to create system users for system services
+has a long tradition.  But modern systemd supports [DynamicUser](https://www.freedesktop.org/software/systemd/man/systemd.exec.html#DynamicUser=); this is applicable for many use cases of "manual" system users and
+has significant advantages over both `sysusers.d` and traditional
+`useradd`.
+
 # Non-systemd operating systems
 
 On non-systemd platforms, it's possible to use either
