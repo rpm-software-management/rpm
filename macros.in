@@ -771,6 +771,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
   export LANG\
   unset CDPATH DISPLAY ||:\
   unset DEBUGINFOD_URLS ||:\
+  unset RPM_CONFIG_DIR ||:\
   %{?buildroot:RPM_BUILD_ROOT=\"%{buildroot}\"\
   export RPM_BUILD_ROOT}\
   %{?_javaclasspath:CLASSPATH=\"%{_javaclasspath}\"\
