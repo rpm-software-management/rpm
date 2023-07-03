@@ -17,6 +17,11 @@ simply takes a sysusers.d line as arguments, such as
 `%add_sysuser g mygroup 515`. Using this method is **not recommended** on
 native systemd distributions.
 
+Note that for certain types of systemd services (eg. transient and
+socket activated services) it may be possible to avoid package level
+user/group allocation altogether by using
+[dynamic users](https://0pointer.net/blog/dynamic-users-with-systemd.html).
+
 ## Dependencies
 
 Any non-root ownership in `%files` section (through `%attr()` or `%defattr()`)
