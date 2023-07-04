@@ -99,7 +99,7 @@ function rundebug()
 {
     setup_env
     cp ${RPMDATA}/macros.debug ${RPM_CONFIGDIR}/macros.d/
-    "$@" --define "_buildhost testhost" --define "_tmppath ${RPMTEST}/tmp" --define "_topdir ${HOME}/build" --define "_db_backend ${DBFORMAT}" --dbpath="${RPMTEST}/var/lib/rpm/"
+    run "$@"
     rm -f ${RPM_CONFIGDIR}/macros.d/macros.debug
 }
 
