@@ -82,10 +82,11 @@ function(makemacros)
 	set(extutils
 		7zip bzip2 cat chmod chown cp curl file gpg grep gzip id cc ln
 		install lrzip lzip xz make mkdir mv patch rm sed tar unzip
-		zstd gem git hg bzr quilt ld objdump strip
+		zstd gem git hg bzr quilt ld objdump strip systemd-sysusers
 	)
 	foreach (util ${extutils})
 		string(TOUPPER ${util} UTIL)
+		string(REPLACE "-" "_" UTIL ${UTIL})
 		find_program(__${UTIL} ${util})
 		if (NOT EXISTS ${__${UTIL}})
 			message(DEBUG "${util} not found, assuming /usr/bin")
