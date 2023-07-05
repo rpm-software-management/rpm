@@ -41,7 +41,7 @@ AT_KEYWORDS([basic])
 AT_SKIP_IF(test -f "${RPMTEST}/${RPMLIBDIR}/librpm.a")
 AT_CHECK([
 cd ${RPMTEST}/${RPMLIBDIR}
-ls lib*.so.*.*
+ls lib{rpm,rpmbuild,rpmio,rpmsign}.so.*.*
 ],
 [0],
 [librpm.so.10.0.0
