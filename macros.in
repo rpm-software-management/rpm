@@ -136,8 +136,8 @@
 %_passwd_path		/etc/passwd
 %_group_path		/etc/group
 
-# sysusers helper binary or script, uncomment to disable
-%__systemd_sysusers	%{_bindir}/systemd-sysusers
+# sysusers helper binary (or a replacement script), uncomment to disable
+%__systemd_sysusers	@__SYSTEMD_SYSUSERS@
 
 #
 #	Path to script that creates debug symbols in a /usr/lib/debug
