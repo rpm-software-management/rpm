@@ -46,8 +46,6 @@ export TZ
 
 unset SOURCE_DATE_EPOCH
 
-TOPDIR="${HOME}/build"
-
 RPM_XFAIL=${RPM_XFAIL-1}
 if test -x "@__FIND_DEBUGINFO@"; then
     DEBUGINFO_DISABLED=false;
@@ -94,14 +92,14 @@ function setup_env()
 function run()
 {
     setup_env
-    "$@" --define "_buildhost testhost" --define "_tmppath ${RPMTEST}/tmp" --define "_topdir ${TOPDIR}" --define "_db_backend ${DBFORMAT}" --dbpath="${RPMTEST}/var/lib/rpm/"
+    "$@" --define "_buildhost testhost" --define "_tmppath ${RPMTEST}/tmp" --define "_topdir ${HOME}/build" --define "_db_backend ${DBFORMAT}" --dbpath="${RPMTEST}/var/lib/rpm/"
 }
 
 function rundebug()
 {
     setup_env
     cp ${RPMDATA}/macros.debug ${RPM_CONFIGDIR}/macros.d/
-    "$@" --define "_buildhost testhost" --define "_tmppath ${RPMTEST}/tmp" --define "_topdir ${TOPDIR}" --define "_db_backend ${DBFORMAT}" --dbpath="${RPMTEST}/var/lib/rpm/"
+    "$@" --define "_buildhost testhost" --define "_tmppath ${RPMTEST}/tmp" --define "_topdir ${HOME}/build" --define "_db_backend ${DBFORMAT}" --dbpath="${RPMTEST}/var/lib/rpm/"
     rm -f ${RPM_CONFIGDIR}/macros.d/macros.debug
 }
 

@@ -8,7 +8,6 @@ if ! [ -d testing/ ]; then
     ln -s ../data/SOURCES testing/build/
 fi
 export RPMTEST="${PWD}/testing"
-export TOPDIR="${RPMTEST}/build"
 export HOME="${RPMTEST}"
 ]])
 
