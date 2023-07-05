@@ -3,7 +3,7 @@
 
 Name:		sigpipe
 Version:	1.0
-Release:	1%{?dist}
+Release:	1
 Summary:	Testing SIGPIPE behavior
 
 Group:		Testing
