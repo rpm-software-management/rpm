@@ -599,7 +599,6 @@ AT_SETUP([rpm -U *.src.rpm])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 
 runroot rpm \
   -U /data/SRPMS/hello-1.0-1.src.rpm
@@ -615,7 +614,6 @@ AT_SETUP([rpm -i *.src.rpm])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
-rm -rf ${TOPDIR}
 
 runroot rpm \
   -i /data/SRPMS/hello-1.0-1.src.rpm
