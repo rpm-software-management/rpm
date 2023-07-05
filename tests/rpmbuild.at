@@ -1341,6 +1341,7 @@ RPMDB_INIT
 # Specifically it uses -DDEBUG_DEFINE=1, which we want to see back
 # in the .debug_macro section of the .debug file.
 rundebug rpmbuild --quiet \
+  --define "__cc gcc" \
   --define "_include_gdb_index 1" \
   -ba "${abs_srcdir}"/data/SPECS/hello-g3.spec
 
