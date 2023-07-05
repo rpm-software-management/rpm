@@ -64,7 +64,7 @@ if grep -q '#define WITH_CAP 1' "${abs_top_builddir}/config.h"; then
 else
     CAP_DISABLED=true;
 fi
-if mknod foodev c 123 123; then
+if mknod foodev c 123 123 2>/dev/null; then
    MKNOD_DISABLED=false
    rm -f foodev
 else
