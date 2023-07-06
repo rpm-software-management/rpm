@@ -51,3 +51,6 @@ for d in /proc /sys /selinux /etc/selinux; do
 	fi
 done
 (cd ${tree}/magic && cp /usr/share/misc/magic.mgc . || file -C)
+
+mkdir -p ${tree}/build
+ln -s ../data/SOURCES ${tree}/build/
