@@ -72,24 +72,25 @@ function(makemacros)
 	set(mandir "\${prefix}/${CMAKE_INSTALL_MANDIR}")
 	set(RUNDIR /run)
 
-	set(acutils
-		awk ar as cpp cxx
-	)
-	foreach (V ${acutils})
-		string(TOUPPER ${V} n)
-		set(${n} /usr/bin/${V})
-	endforeach()
 	set(extutils
 		7zip bzip2 cat chmod chown cp curl file gpg grep gzip id cc ln
 		install lrzip lzip xz make mkdir mv patch rm sed tar unzip
 		zstd gem git hg bzr quilt ld objdump strip systemd-sysusers
+		awk ar as cpp c++
 	)
 	foreach (util ${extutils})
 		string(TOUPPER ${util} UTIL)
 		string(REPLACE "-" "_" UTIL ${UTIL})
-		find_program(__${UTIL} ${util})
+		string(REPLACE "+" "X" UTIL ${UTIL})
+		find_program(__${UTIL} ${util}
+			PATHS ENV MYPATH
+			PATHS /usr/local/bin /usr/bin /bin
+			PATHS /usr/local/sbin /usr/sbin /sbin
+			NO_DEFAULT_PATH
+		)
+		message(INFO ${util} " got " ${UTIL} ": " ${__${UTIL}})
 		if (NOT EXISTS ${__${UTIL}})
-			message(DEBUG "${util} not found, assuming /usr/bin")
+			message(WARNING "${util} not found, assuming /usr/bin")
 			set(__${UTIL} /usr/bin/${util})
 		endif()
 	endforeach()
