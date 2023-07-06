@@ -13,10 +13,6 @@ else()
 	set(CRYPTO sequoia)
 endif()
 
-configure_file(atlocal.in atlocal @ONLY)
-configure_file(package.m4.in package.m4 @ONLY)
-configure_file(mktree.in mktree @ONLY)
-
 set(TESTSUITE_AT
 	rpmtests.at
 	rpmgeneral.at
@@ -55,6 +51,10 @@ foreach(prg ${TESTPROGS})
 	add_executable(${prg} EXCLUDE_FROM_ALL ${prg}.c)
 	target_link_libraries(${prg} PRIVATE librpmio)
 endforeach()
+
+configure_file(atlocal.in atlocal @ONLY)
+configure_file(package.m4.in package.m4 @ONLY)
+configure_file(mktree.in mktree @ONLY)
 
 include(ProcessorCount)
 ProcessorCount(nproc)
