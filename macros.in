@@ -23,7 +23,7 @@
 # ---- Generally useful path macros.
 #
 %__7zip			@__7ZIP@
-%__awk			@AWK@
+%__awk			@__AWK@
 %__bzip2		@__BZIP2@
 %__cat			@__CAT@
 %__chmod		@__CHMOD@
@@ -60,11 +60,11 @@
 #==============================================================================
 # ---- Build system path macros.
 #
-%__ar			@AR@
-%__as			@AS@
+%__ar			@__AR@
+%__as			@__AS@
 %__cc			@__CC@
-%__cpp			@CPP@
-%__cxx			@CXX@
+%__cpp			@__CPP@
+%__cxx			@__CXX@
 %__ld			@__LD@
 %__objdump		@__OBJDUMP@
 %__strip		@__STRIP@
