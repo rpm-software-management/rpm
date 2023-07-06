@@ -1,4 +1,4 @@
-RPMTREE="@CMAKE_CURRENT_BINARY_DIR@/testing"
+RPMTREE="@CMAKE_CURRENT_BINARY_DIR@/tree"
 
 RPMLIBDIR="@CMAKE_INSTALL_FULL_LIBDIR@"
 LD_LIBRARY_PATH="${RPMTREE}/${RPMLIBDIR}${LD_LIBRARY_PATH+:${LD_LIBRARY_PATH}}"
@@ -83,8 +83,8 @@ fi
 
 function setup_env()
 {
-    if [ -d testing ]; then
-        RPMTEST=${PWD}/testing
+    if [ -d tree ]; then
+        RPMTEST=${PWD}/tree
         HOME=${RPMTEST}
         RPM_CONFIGDIR=${RPMTEST}/@RPM_CONFIGDIR@
         export RPMTEST HOME RPM_CONFIGDIR

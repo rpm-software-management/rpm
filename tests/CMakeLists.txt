@@ -87,8 +87,8 @@ add_custom_target(populate_testing
 )
 
 add_custom_command(TARGET populate_testing POST_BUILD
-	COMMAND chmod -R u-w testing
+	COMMAND chmod -R u-w tree
 )
 add_custom_command(TARGET check POST_BUILD
-	COMMAND chmod -R u+w testing
+	COMMAND chmod -R u+w tree
 )
