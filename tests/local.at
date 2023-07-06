@@ -1,13 +1,13 @@
 AT_TESTED([rpm rpmbuild rpmquery])
 
 m4_define([RPMTEST_SETUP],[[
-if ! [ -d testing/ ]; then
+if ! [ -d tree/ ]; then
     cp -aP "${RPMTREE}" .
-    chmod -R u+w testing/
-    mkdir -p testing/build
-    ln -s ../data/SOURCES testing/build/
+    chmod -R u+w tree/
+    mkdir -p tree/build
+    ln -s ../data/SOURCES tree/build/
 fi
-export RPMTEST="${PWD}/testing"
+export RPMTEST="${PWD}/tree"
 export HOME="${RPMTEST}"
 ]])
 

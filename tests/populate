@@ -5,45 +5,46 @@ abs_builddir="$2"
 srcdir="$3"
 bindir="$4"
 MAKE="$5"
+tree=tree
 
 # The chmod is needed when copying from read-only sources (eg in distcheck)
-if [ -d testing ]; then
-	chmod -R u+w testing/;
+if [ -d ${tree} ]; then
+	chmod -R u+w ${tree}/;
 fi
-rm -rf testing
+rm -rf ${tree}
 
-mkdir -p testing/${bindir}
-ln -s ./${bindir} testing/bin
-mkdir -p testing/usr
-if [ ! -d testing/usr/bin ]; then
-	ln -s ../bin testing/usr/bin
+mkdir -p ${tree}/${bindir}
+ln -s ./${bindir} ${tree}/bin
+mkdir -p ${tree}/usr
+if [ ! -d ${tree}/usr/bin ]; then
+	ln -s ../bin ${tree}/usr/bin
 fi
 
 (cd ${top_builddir} && \
-	  ${MAKE} DESTDIR=${abs_builddir}/testing install)
+	  ${MAKE} DESTDIR=${abs_builddir}/${tree} install)
 
-cp -r ${srcdir}/data/ testing/
+cp -r ${srcdir}/data/ ${tree}/
 for d in dev etc magic tmp var; do
-	if [ ! -d testing/${d} ]; then
-		mkdir testing/${d}
+	if [ ! -d ${tree}/${d} ]; then
+		mkdir ${tree}/${d}
 	fi
 done
 for node in urandom stdin stderr stdout null full; do
-	ln -s /dev/${node} testing/dev/${node}
+	ln -s /dev/${node} ${tree}/dev/${node}
 done
 for cf in hosts resolv.conf passwd group mtab ; do
-	[ -f /etc/${cf} ] && cp /etc/${cf} testing/etc/${cf}
+	[ -f /etc/${cf} ] && cp /etc/${cf} ${tree}/etc/${cf}
 done
-touch testing/etc/{shadow,gshadow}
+touch ${tree}/etc/{shadow,gshadow}
 for prog in gzip cat cp patch tar sh bash ln chmod rm mkdir uname grep sed find file ionice mktemp nice cut sort diff touch install wc coreutils xargs mknod locale systemd-sysusers true false; do
 	p=`which ${prog}`
 	if [ "${p}" != "" ]; then
-		ln -s ${p} testing/${bindir}/
+		ln -s ${p} ${tree}/${bindir}/
 	fi
 done
 for d in /proc /sys /selinux /etc/selinux; do
 	if [ -d ${d} ]; then
-		ln -s ${d} testing/${d}
+		ln -s ${d} ${tree}/${d}
 	fi
 done
-(cd testing/magic && cp /usr/share/misc/magic.mgc . || file -C)
+(cd ${tree}/magic && cp /usr/share/misc/magic.mgc . || file -C)
