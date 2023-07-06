@@ -13,8 +13,8 @@ struct test {
 static int test(struct test *test)
 {
     // This program is run from BUILDDIR/tests/rpmtests.dir/XXX.  The
-    // data is in BUILDDIR/tests/testing.
-    const char *dir = "../../testing/data/";
+    // data is in BUILDDIR/tests/tree.
+    const char *dir = "../../tree/data/";
 
     const char *filename = test->filename;
     const char *fpr = test->fingerprint;
