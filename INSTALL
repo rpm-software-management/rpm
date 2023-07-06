@@ -132,6 +132,9 @@ You can view the various cmake compile options with:
 and fine tune the built components + features, eg:
     cmake -DENABLE_PYTHON=OFF ..
 
+If you have tools outside the regular FHS paths that you need rpm to find,
+you can augment the search path via MYPATH environment variable to cmake.
+
 Now build the system with:
 
     make
