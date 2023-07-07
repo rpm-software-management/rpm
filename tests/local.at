@@ -1,12 +1,9 @@
 AT_TESTED([rpm rpmbuild rpmquery])
 
 m4_define([RPMTEST_SETUP],[[
-if ! [ -d tree/ ]; then
-    cp -aP "${RPMTREE}" .
-    chmod -R u+w tree/
-fi
 export RPMTEST="${PWD}/tree"
 export HOME="${RPMTEST}"
+[ -d tree/ ] || sandbox mount
 ]])
 
 m4_define([RPMDB_INIT],[

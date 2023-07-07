@@ -96,6 +96,10 @@ function sandbox()
     local cmd=$1
     shift
     case $cmd in
+        mount)
+            cp -aP "${RPMTREE}" "${RPMTEST}"
+            chmod -R u+w "${RPMTEST}"
+        ;;
         exec)
             (unset RPM_CONFIGDIR RPM_POPTEXEC_PATH
              cd ${RPMTEST} && \
