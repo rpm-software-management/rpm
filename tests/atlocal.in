@@ -36,7 +36,8 @@ RPM_CONFIGDIR="${RPMTEST}/@RPM_CONFIGDIR@"
 RPM_POPTEXEC_PATH="${RPMTEST}/@CMAKE_INSTALL_FULL_BINDIR@"
 export RPM_CONFIGDIR RPM_POPTEXEC_PATH
 
-DBFORMAT=$(awk '/^%_db_backend/{print $2}' "${RPM_CONFIGDIR}/macros")
+DBFORMAT=$(awk '/^%_db_backend/{print $2}' \
+           "${RPM_CONFIGDIR}/macros" 2>/dev/null)
 export DBFORMAT
 
 # Popt looks into $HOME
