@@ -58,11 +58,20 @@ RUN chmod -R a-w .
 
 WORKDIR /srv/build
 RUN cmake \
-	-DCMAKE_INSTALL_PREFIX=$(mktemp -d) \
 	-DENABLE_WERROR=ON \
 	-DENABLE_BDB_RO=ON \
 	-DWITH_FSVERITY=ON \
 	-DWITH_IMAEVM=ON \
 	../rpm
+RUN rpm -e --nodeps \
+	rpm \
+	rpm-libs \
+	rpm-build-libs \
+	rpm-sign-libs \
+	python3-rpm
+RUN make install DESTDIR=/
 
-CMD make -j$(nproc) check; rc=$?; find . -name rpmtests.log|xargs cat; exit $rc
+WORKDIR /
+RUN rm -rf /srv/{rpm,build}
+
+CMD /bin/bash
