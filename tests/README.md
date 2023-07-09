@@ -1,6 +1,6 @@
 To run these tests, you need at least these dependencies on the host:
 
-1.    [fakechroot](https://github.com/dex4er/fakechroot/wiki)
+1.    [bwrap](https://github.com/containers/bubblewrap/)
 1.    [gdb](https://www.gnu.org/software/gdb/)
 1.    [gnupg](https://www.gnupg.org/) >= 2.0
 
