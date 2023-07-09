@@ -145,7 +145,7 @@ and then install with:
 
 Rpm comes with an automated self-test suite. The test-suite requires
 autom4te from autoconf (https://www.gnu.org/software/autoconf/) and
-fakechroot (https://github.com/dex4er/fakechroot/). It is enabled by
+bwrap (https://github.com/containers/bubblewrap/). It is enabled by
 default but can be disabled with -DENABLE_TESTSUITE=OFF to avoid the
 dependencies.  The test-suite can be executed with:
 

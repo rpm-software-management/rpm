@@ -33,7 +33,7 @@ RPMTEST="$RPMTREE"
 RPMDATA="@CMAKE_CURRENT_SOURCE_DIR@/data/"
 
 RPM_CONFIGDIR="${RPMTEST}/@RPM_CONFIGDIR@"
-RPM_CONFIGDIR_PATH="${RPM_CONFIGDIR}"
+RPM_CONFIGDIR_PATH="@RPM_CONFIGDIR@"
 RPM_POPTEXEC_PATH="${RPMTEST}/@CMAKE_INSTALL_FULL_BINDIR@"
 export RPM_CONFIGDIR RPM_POPTEXEC_PATH
 
@@ -123,8 +123,9 @@ function snapshot()
         ;;
         exec)
             (unset RPM_CONFIGDIR RPM_POPTEXEC_PATH
-             cd ${RPMTEST} && \
-             FAKECHROOT_BASE="${RPMTEST}" fakechroot "$@"
+             @BWRAP@ --unshare-pid --dev-bind $RPMTEST / \
+                     --setenv PATH "@CMAKE_INSTALL_FULL_BINDIR@:/usr/bin" \
+                     --setenv HOME / --chdir / --dev /dev --proc /proc "$@"
             )
         ;;
     esac
