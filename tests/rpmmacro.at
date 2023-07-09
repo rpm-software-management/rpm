@@ -240,7 +240,7 @@ AT_SETUP([uncompress 1])
 AT_KEYWORDS([macros])
 RPMTEST_CHECK([
 RPMDB_INIT
-runroot_other ${RPM_CONFIGDIR}/rpmuncompress /data/SOURCES/hello-2.0.tar.gz | tar t
+runroot_other ${RPM_CONFIGDIR_PATH}/rpmuncompress /data/SOURCES/hello-2.0.tar.gz | tar t
 ],
 [0],
 [hello-2.0/
@@ -258,7 +258,7 @@ AT_KEYWORDS([macros])
 RPMTEST_CHECK([
 RPMDB_INIT
 echo xxxxxxxxxxxxxxxxxxxxxxxxx > ${RPMTEST}/tmp/"some%%ath"
-runroot_other ${RPM_CONFIGDIR}/rpmuncompress "/tmp/some%%ath"
+runroot_other ${RPM_CONFIGDIR_PATH}/rpmuncompress "/tmp/some%%ath"
 ],
 [0],
 [xxxxxxxxxxxxxxxxxxxxxxxxx
