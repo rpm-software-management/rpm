@@ -40,7 +40,7 @@ RUN dnf -y install \
   lua-devel readline-devel \
   python3-devel \
   dbus-devel \
-  fakechroot which \
+  which \
   elfutils binutils \
   findutils sed grep gawk diffutils file patch \
   tar unzip gzip bzip2 cpio xz \
