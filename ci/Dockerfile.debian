@@ -11,7 +11,6 @@ RUN apt-get -y install \
   gcc \
   pkg-config \
   debugedit \
-  fakechroot \
   gnupg2 \
   cpio \
   gawk \
