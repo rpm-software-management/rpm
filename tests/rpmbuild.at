@@ -434,8 +434,9 @@ AT_SETUP([rpmbuild %attr and %defattr])
 AT_KEYWORDS([build])
 RPMDB_INIT
 
-export SOURCE_DATE_EPOCH=1582222800
-runroot rpmbuild \
+runroot \
+  --setenv SOURCE_DATE_EPOCH 1582222800 \
+  rpmbuild \
   -bb --quiet \
   --define "use_source_date_epoch_as_buildtime 1" \
   --define "clamp_mtime_to_source_date_epoch 1" \
