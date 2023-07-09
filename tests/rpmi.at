@@ -505,10 +505,9 @@ timestamp=97445
 
 runroot rpm -i --ignorearch --ignoreos --nodeps \
 	/data/RPMS/foo-1.0-1.noarch.rpm
-export SOURCE_DATE_EPOCH=$timestamp
-runroot rpm -i --ignorearch --ignoreos --nodeps \
+runroot --setenv SOURCE_DATE_EPOCH $timestamp \
+	rpm -i --ignorearch --ignoreos --nodeps \
 	/data/RPMS/hello-2.0-1.x86_64.rpm
-unset SOURCE_DATE_EPOCH
 runroot rpm -q --tid $timestamp
 runroot rpm -qi $pkg | grep "Install Date"
 runroot rpm -qa
@@ -532,10 +531,9 @@ RPMDB_INIT
 
 timestamp=1445412535
 
-export SOURCE_DATE_EPOCH=$timestamp
-runroot rpm -i --ignorearch --ignoreos --nodeps \
+runroot --setenv SOURCE_DATE_EPOCH $timestamp \
+	rpm -i --ignorearch --ignoreos --nodeps \
 	/data/RPMS/foo-1.0-1.noarch.rpm /data/RPMS/hello-2.0-1.x86_64.rpm
-unset SOURCE_DATE_EPOCH
 runroot rpm -q --tid $timestamp
 for pkg in `runroot rpm -q --tid $timestamp`; do
 	runroot rpm -qi $pkg | grep "Install Date"
