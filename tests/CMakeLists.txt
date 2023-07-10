@@ -62,9 +62,18 @@ if (nproc GREATER 1)
 	set(JOBS -j${nproc})
 endif()
 
+add_custom_target(env
+	COMMAND ./mktree env
+	DEPENDS tree
+)
+
 add_custom_target(check
 	COMMAND ./mktree check ${JOBS} $(TESTOPTS)
 	DEPENDS tree
+)
+
+add_custom_target(reset
+	COMMAND ./mktree reset
 )
 
 add_custom_command(OUTPUT rpmtests
