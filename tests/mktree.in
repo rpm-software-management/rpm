@@ -5,8 +5,20 @@ OS_VERSION=$(grep ^VERSION_ID /etc/os-release | cut -d= -f2)
 OUT_DIR=$PWD/mktree.output
 BASE_DIR=$OUT_DIR/base
 INST_DIR=$OUT_DIR/inst
-TREE_DIR=$OUT_DIR/tree
+SANDBOX_DIR=$PWD/mktree.sandbox
 CACHE_DIR=$PWD/mktree.cache
+
+ENV_MOTD="
+Welcome to RPM test environment!
+
+This is like an interactive test but with
+full host integration.
+
+Your test tree is mounted at \$RPMTEST.
+You can use the usual test commands, e.g.
+
+  runroot rpm ...
+"
 
 CMD=$1; shift
 
@@ -24,6 +36,15 @@ make_install()
     cp -r @CMAKE_CURRENT_SOURCE_DIR@/data $DESTDIR/
     mkdir -p $DESTDIR/build
     ln -sf ../data/SOURCES $DESTDIR/build/
+}
+
+mount_tree()
+{
+    source ./atlocal
+    RPMTREE=$INST_DIR:$BASE_DIR
+    RPMTEST=${1:-$OUT_DIR}/tree
+    trap "snapshot umount" EXIT
+    snapshot mount $1
 }
 
 # Run CMD in a user namespace (if not root already)
@@ -105,12 +126,19 @@ case $CMD in
         # Point RPM to newly created database
         echo "%_dbpath $(rpm --eval '%_dbpath')" > $BASE_DIR/root/.rpmmacros
     ;;
+    env)
+        set -a
+        mount_tree
+        mount_tree $SANDBOX_DIR
+        echo "$ENV_MOTD"
+        $SHELL
+        exit 0
+    ;;
     check)
-        source ./atlocal
-        RPMTREE=$INST_DIR:$BASE_DIR
-        RPMTEST=$TREE_DIR
-        trap "snapshot umount" EXIT
-        snapshot mount
+        mount_tree
         ./rpmtests "$@"
+    ;;
+    reset)
+        rm -rf "$SANDBOX_DIR"
     ;;
 esac
