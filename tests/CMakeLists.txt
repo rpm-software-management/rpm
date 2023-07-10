@@ -67,6 +67,11 @@ add_custom_target(env
 	DEPENDS tree
 )
 
+add_custom_target(shell
+	COMMAND ./mktree shell
+	DEPENDS tree
+)
+
 add_custom_target(check
 	COMMAND ./mktree check ${JOBS} $(TESTOPTS)
 	DEPENDS tree
