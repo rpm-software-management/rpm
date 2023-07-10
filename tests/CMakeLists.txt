@@ -51,6 +51,7 @@ foreach(prg ${TESTPROGS})
 	add_executable(${prg} EXCLUDE_FROM_ALL ${prg}.c)
 	target_link_libraries(${prg} PRIVATE librpmio)
 endforeach()
+string(REPLACE ";" " " TESTPROG_NAMES "${TESTPROGS}")
 
 configure_file(atlocal.in atlocal @ONLY)
 configure_file(package.m4.in package.m4 @ONLY)
