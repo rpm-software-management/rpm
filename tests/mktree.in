@@ -125,6 +125,9 @@ case $CMD in
 
         # Point RPM to newly created database
         echo "%_dbpath $(rpm --eval '%_dbpath')" > $BASE_DIR/root/.rpmmacros
+
+        # Configure default shell for root user
+        cp -r $BASE_DIR/{etc/skel/.,/root}
     ;;
     env)
         set -a
@@ -132,6 +135,11 @@ case $CMD in
         mount_tree $SANDBOX_DIR
         echo "$ENV_MOTD"
         $SHELL
+        exit 0
+    ;;
+    shell)
+        mount_tree $SANDBOX_DIR
+        snapshot shell "$@"
         exit 0
     ;;
     check)
