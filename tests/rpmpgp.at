@@ -6,7 +6,7 @@ AT_BANNER([RPM OpenPGP parsing])
 AT_SETUP([[Running tests for malformed OpenPGP packages]])
 AT_KEYWORDS([[rpmkeys digest OpenPGP]])
 RPMTEST_CHECK([[
-../../rpmpgpcheck
+rpmpgpcheck
 ]],0,)
 RPMTEST_CLEANUP
 
@@ -16,7 +16,7 @@ AT_KEYWORDS([[rpmkeys digest OpenPGP]])
 # Note: the internal OpenPGP parser produces a warning when fed
 # bad data.  Don't force Sequoia to generate the same warning.
 RPMTEST_CHECK([[
-../../rpmpgppubkeyfingerprint 2>&1 | { grep -v 'warning: Unsupported version of key: '; true; }
+rpmpgppubkeyfingerprint 2>&1 | { grep -v 'warning: Unsupported version of key: '; true; }
 ]],0,[Exit code: 0
 ])
 RPMTEST_CLEANUP
