@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <popt.h>
+#include <libgen.h>
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
