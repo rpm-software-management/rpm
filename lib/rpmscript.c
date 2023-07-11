@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <lua.h>
+#include <signal.h>
 
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmmacro.h>
