@@ -12,6 +12,7 @@ install(PROGRAMS
 	rpm_macros_provides.sh
 	rpmdb_dump rpmdb_load
 	rpm2cpio.sh tgpg
+	sysusers.sh
 	DESTINATION ${RPM_CONFIGDIR}
 )
 install(FILES
