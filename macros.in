@@ -137,7 +137,8 @@
 %_group_path		/etc/group
 
 # sysusers helper binary (or a replacement script), uncomment to disable
-%__systemd_sysusers	@__SYSTEMD_SYSUSERS@
+#%__systemd_sysusers	@__SYSTEMD_SYSUSERS@
+%__systemd_sysusers	%{_rpmconfigdir}/sysusers.sh
 
 #
 #	Path to script that creates debug symbols in a /usr/lib/debug
