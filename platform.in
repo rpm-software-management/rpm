@@ -44,7 +44,7 @@
 %_initddir		%{_sysconfdir}/rc.d/init.d
 # Deprecated misspelling, present for backwards compatibility.
 %_initrddir		%{_initddir}
-%_rundir		@RUNDIR@
+%_rundir		@rundir@
 
 %_defaultdocdir		%{_datadir}/doc
 
