@@ -1,63 +1,116 @@
 #!/bin/bash
 
-TREE_DIR=$PWD/mktree.output/tree
+OS_VERSION=$(grep ^VERSION_ID /etc/os-release | cut -d= -f2)
+
+OUT_DIR=$PWD/mktree.output
+BASE_DIR=$OUT_DIR/base
+INST_DIR=$OUT_DIR/inst
+TREE_DIR=$OUT_DIR/tree
+CACHE_DIR=$PWD/mktree.cache
+
 CMD=$1; shift
 
 # Build and install RPM and the test-suite data into a directory
 make_install()
 {
     export DESTDIR=$1
+    local ld_conf_dir=$DESTDIR/@CMAKE_INSTALL_SYSCONFDIR@/ld.so.conf.d
+
     @CMAKE_MAKE_PROGRAM@ -C @CMAKE_BINARY_DIR@ install
+    mkdir -p $ld_conf_dir
+    echo @CMAKE_INSTALL_FULL_LIBDIR@ > $ld_conf_dir/rpm.conf
+    ldconfig -r $DESTDIR @CMAKE_INSTALL_FULL_LIBDIR@
+
     cp -r @CMAKE_CURRENT_SOURCE_DIR@/data $DESTDIR/
     mkdir -p $DESTDIR/build
     ln -sf ../data/SOURCES $DESTDIR/build/
 }
 
+# Run CMD in a user namespace (if not root already)
+if [ $(id -u) != 0 ]; then
+    if [ -f /run/.toolboxenv ]; then
+        # toolbox(1) support
+        UNSHARE="sudo --preserve-env"
+    else
+        UNSHARE="unshare -r --mount --map-auto"
+    fi
+    $UNSHARE $0 $CMD "$@"
+    exit
+fi
+
 case $CMD in
     build)
-        bindir=@CMAKE_INSTALL_FULL_BINDIR@
+        rm -rf "$INST_DIR"
+        make_install $INST_DIR
 
-        # The chmod is needed when copying from read-only sources (eg in distcheck)
-        if [ -d ${TREE_DIR} ]; then
-                chmod -R u+w ${TREE_DIR}/;
-        fi
-        rm -rf ${TREE_DIR}
+        [ -d "$BASE_DIR" ] && exit 0
+        mkdir -p $CACHE_DIR
+        echo '%_netsharedpath %nil' > $CACHE_DIR/.rpmmacros
+        HOME=$CACHE_DIR \
+        dnf install -y \
+            --installroot=$BASE_DIR \
+            --releasever=$OS_VERSION \
+            --setopt=cachedir=$CACHE_DIR/dnf \
+            --setopt=keepcache=1 \
+            --setopt=install_weak_deps=0 \
+            --disablerepo=\* --enablerepo=fedora,updates \
+            --exclude=rpm \
+            audit \
+            bash \
+            binutils \
+            bzip2 \
+            coreutils \
+            cpio \
+            curl \
+            debugedit \
+            diffutils \
+            elfutils-libelf \
+            elfutils-libs \
+            file \
+            file-libs \
+            findutils \
+            gawk \
+            gcc \
+            gdb-headless \
+            gdb-minimal \
+            glibc \
+            gpg \
+            grep \
+            gzip \
+            ima-evm-utils \
+            libacl \
+            libarchive \
+            libcap \
+            libfsverity \
+            libgomp \
+            libzstd \
+            lua-libs \
+            make \
+            openssl-libs \
+            patch \
+            pkgconf-pkg-config \
+            python3 \
+            rpm-sequoia \
+            sed \
+            sqlite-libs \
+            tar \
+            unzip \
+            util-linux-core \
+            which \
+            xz \
+            xz-libs \
+            zlib \
+            zstd
 
-        mkdir -p ${TREE_DIR}/${bindir}
-        ln -s ./${bindir} ${TREE_DIR}/bin
-        mkdir -p ${TREE_DIR}/usr
-        if [ ! -d ${TREE_DIR}/usr/bin ]; then
-                ln -s ../bin ${TREE_DIR}/usr/bin
-        fi
-
-        for d in dev etc magic tmp var; do
-                if [ ! -d ${TREE_DIR}/${d} ]; then
-                        mkdir ${TREE_DIR}/${d}
-                fi
-        done
-        for node in urandom stdin stderr stdout null full; do
-                ln -s /dev/${node} ${TREE_DIR}/dev/${node}
-        done
-        for cf in hosts resolv.conf passwd group mtab ; do
-                [ -f /etc/${cf} ] && cp /etc/${cf} ${TREE_DIR}/etc/${cf}
-        done
-        touch ${TREE_DIR}/etc/{shadow,gshadow}
-        for prog in gzip cat cp patch tar sh bash ln chmod rm mkdir uname grep sed find file ionice mktemp nice cut sort diff touch install wc coreutils xargs mknod locale systemd-sysusers true false; do
-                p=`which ${prog}`
-                if [ "${p}" != "" ]; then
-                        ln -s ${p} ${TREE_DIR}/${bindir}/
-                fi
-        done
-        for d in /proc /sys /selinux /etc/selinux; do
-                if [ -d ${d} ]; then
-                        ln -s ${d} ${TREE_DIR}/${d}
-                fi
-        done
-        (cd ${TREE_DIR}/magic && cp /usr/share/misc/magic.mgc . || file -C)
-
-        make_install ${TREE_DIR}
+        # Point RPM to newly created database
+        echo "%_dbpath $(rpm --eval '%_dbpath')" > $BASE_DIR/root/.rpmmacros
     ;;
     check)
+        source ./atlocal
+        RPMTREE=$INST_DIR:$BASE_DIR
+        RPMTEST=$TREE_DIR
+        trap "snapshot umount" EXIT
+        snapshot mount
         ./rpmtests "$@"
     ;;
 esac
