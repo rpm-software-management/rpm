@@ -102,7 +102,7 @@
 #cmakedefine HAVE___SECURE_GETENV @HAVE___SECURE_GETENV@
 #cmakedefine MAJOR_IN_MKDEV @MAJOR_IN_MKDEV@
 #cmakedefine MAJOR_IN_SYSMACROS @MAJOR_IN_SYSMACROS@
-#cmakedefine RUNDIR @RUNDIR@
+#cmakedefine RUNDIR @rundir@
 #cmakedefine WITH_ACL @WITH_ACL@
 #cmakedefine WITH_AUDIT @WITH_AUDIT@
 #cmakedefine ENABLE_BDB_RO @ENABLE_BDB_RO@
