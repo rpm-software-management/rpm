@@ -1,17 +1,9 @@
-RPMTREE="@CMAKE_CURRENT_BINARY_DIR@/mktree.output/tree"
+RPMTREE="$PWD/mktree.output/tree"
 
 RPMLIBDIR="@CMAKE_INSTALL_FULL_LIBDIR@"
-LD_LIBRARY_PATH="${RPMTREE}/${RPMLIBDIR}${LD_LIBRARY_PATH+:${LD_LIBRARY_PATH}}"
-export LD_LIBRARY_PATH
 export RPMLIBDIR
-PATH="${RPMTREE}@CMAKE_INSTALL_FULL_BINDIR@:$PATH"
-export PATH
 
 PYTHON=@PYTHON@
-if test "${PYTHON}"; then
-    PYTHONPATH="${RPMTREE}@Python3_SITEARCH@"
-    export PYTHONPATH
-fi
 
 CRYPTO=@CRYPTO@
 export CRYPTO
@@ -30,18 +22,14 @@ else
 fi
 
 RPMTEST="$RPMTREE"
-RPMDATA="@CMAKE_CURRENT_SOURCE_DIR@/data/"
+RPMDATA="/data/"
 
-RPM_CONFIGDIR="${RPMTEST}/@RPM_CONFIGDIR@"
 RPM_CONFIGDIR_PATH="@RPM_CONFIGDIR@"
-RPM_POPTEXEC_PATH="${RPMTEST}/@CMAKE_INSTALL_FULL_BINDIR@"
-export RPM_CONFIGDIR RPM_POPTEXEC_PATH
 
 DBFORMAT=$(awk '/^%_db_backend/{print $2}' \
-           "${RPM_CONFIGDIR}/macros" 2>/dev/null)
+           "${RPM_CONFIGDIR_PATH}/macros" 2>/dev/null)
 export DBFORMAT
 
-# Popt looks into $HOME
 HOME="${PWD}"
 export HOME
 
@@ -88,8 +76,7 @@ function setup_env()
     if [ -d tree ]; then
         RPMTEST=${PWD}/tree
         HOME=${RPMTEST}
-        RPM_CONFIGDIR=${RPMTEST}/@RPM_CONFIGDIR@
-        export RPMTEST HOME RPM_CONFIGDIR
+        export RPMTEST HOME
     fi
 }
 
@@ -155,9 +142,11 @@ function run()
 function rundebug()
 {
     setup_env
+    export RPM_CONFIGDIR=${RPMTEST}/@RPM_CONFIGDIR@
     cp ${RPMDATA}/macros.debug ${RPM_CONFIGDIR}/macros.d/
     run "$@"
     rm -f ${RPM_CONFIGDIR}/macros.d/macros.debug
+    unset RPM_CONFIGDIR
 }
 
 function runroot()
