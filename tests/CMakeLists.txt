@@ -80,10 +80,3 @@ add_custom_target(tree
 	DEPENDS ${TESTPROGS}
 	DEPENDS ${TOP_TARGETS}
 )
-
-add_custom_command(TARGET tree POST_BUILD
-	COMMAND chmod -R u-w mktree.output/tree
-)
-add_custom_command(TARGET check POST_BUILD
-	COMMAND chmod -R u+w mktree.output/tree
-)
