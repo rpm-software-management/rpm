@@ -882,10 +882,10 @@ AT_KEYWORDS([macros lua])
 RPMTEST_CHECK([
 RPMDB_INIT
 f=$(run rpm --eval "%{_rpmconfigdir}/lua/foo.lua")
-echo "bar = 'graak'" > ${f}
+echo "bar = 'graak'" > ${RPMTEST}/${f}
 runroot rpm \
   --eval '%{lua:require "foo"; print(bar)}'
-rm -f ${f}
+rm -f ${RPMTEST}/${f}
 ],
 [0],
 [graak
