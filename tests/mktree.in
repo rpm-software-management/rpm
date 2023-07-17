@@ -1,56 +1,63 @@
-#!/bin/sh
+#!/bin/bash
 
+TREE_DIR=$PWD/mktree.output/tree
 CMD=$1; shift
-if [ "$CMD" == "check" ]; then
-    ./rpmtests "$@"
-    exit $?
-fi
 
-bindir=@CMAKE_INSTALL_FULL_BINDIR@
-tree=mktree.output/tree
+# Build and install RPM and the test-suite data into a directory
+make_install()
+{
+    export DESTDIR=$1
+    @CMAKE_MAKE_PROGRAM@ -C @CMAKE_BINARY_DIR@ install
+    cp -r @CMAKE_CURRENT_SOURCE_DIR@/data $DESTDIR/
+    mkdir -p $DESTDIR/build
+    ln -sf ../data/SOURCES $DESTDIR/build/
+}
 
-# The chmod is needed when copying from read-only sources (eg in distcheck)
-if [ -d ${tree} ]; then
-	chmod -R u+w ${tree}/;
-fi
-rm -rf ${tree}
+case $CMD in
+    build)
+        bindir=@CMAKE_INSTALL_FULL_BINDIR@
 
-mkdir -p ${tree}/${bindir}
-ln -s ./${bindir} ${tree}/bin
-mkdir -p ${tree}/usr
-if [ ! -d ${tree}/usr/bin ]; then
-	ln -s ../bin ${tree}/usr/bin
-fi
+        # The chmod is needed when copying from read-only sources (eg in distcheck)
+        if [ -d ${TREE_DIR} ]; then
+                chmod -R u+w ${TREE_DIR}/;
+        fi
+        rm -rf ${TREE_DIR}
 
-(cd @CMAKE_BINARY_DIR@ && \
-	  @CMAKE_MAKE_PROGRAM@ \
-	  DESTDIR=@CMAKE_CURRENT_BINARY_DIR@/${tree} install)
+        mkdir -p ${TREE_DIR}/${bindir}
+        ln -s ./${bindir} ${TREE_DIR}/bin
+        mkdir -p ${TREE_DIR}/usr
+        if [ ! -d ${TREE_DIR}/usr/bin ]; then
+                ln -s ../bin ${TREE_DIR}/usr/bin
+        fi
 
-cp -r @CMAKE_CURRENT_SOURCE_DIR@/data/ ${tree}/
-for d in dev etc magic tmp var; do
-	if [ ! -d ${tree}/${d} ]; then
-		mkdir ${tree}/${d}
-	fi
-done
-for node in urandom stdin stderr stdout null full; do
-	ln -s /dev/${node} ${tree}/dev/${node}
-done
-for cf in hosts resolv.conf passwd group mtab ; do
-	[ -f /etc/${cf} ] && cp /etc/${cf} ${tree}/etc/${cf}
-done
-touch ${tree}/etc/{shadow,gshadow}
-for prog in gzip cat cp patch tar sh bash ln chmod rm mkdir uname grep sed find file ionice mktemp nice cut sort diff touch install wc coreutils xargs mknod locale systemd-sysusers true false; do
-	p=`which ${prog}`
-	if [ "${p}" != "" ]; then
-		ln -s ${p} ${tree}/${bindir}/
-	fi
-done
-for d in /proc /sys /selinux /etc/selinux; do
-	if [ -d ${d} ]; then
-		ln -s ${d} ${tree}/${d}
-	fi
-done
-(cd ${tree}/magic && cp /usr/share/misc/magic.mgc . || file -C)
+        for d in dev etc magic tmp var; do
+                if [ ! -d ${TREE_DIR}/${d} ]; then
+                        mkdir ${TREE_DIR}/${d}
+                fi
+        done
+        for node in urandom stdin stderr stdout null full; do
+                ln -s /dev/${node} ${TREE_DIR}/dev/${node}
+        done
+        for cf in hosts resolv.conf passwd group mtab ; do
+                [ -f /etc/${cf} ] && cp /etc/${cf} ${TREE_DIR}/etc/${cf}
+        done
+        touch ${TREE_DIR}/etc/{shadow,gshadow}
+        for prog in gzip cat cp patch tar sh bash ln chmod rm mkdir uname grep sed find file ionice mktemp nice cut sort diff touch install wc coreutils xargs mknod locale systemd-sysusers true false; do
+                p=`which ${prog}`
+                if [ "${p}" != "" ]; then
+                        ln -s ${p} ${TREE_DIR}/${bindir}/
+                fi
+        done
+        for d in /proc /sys /selinux /etc/selinux; do
+                if [ -d ${d} ]; then
+                        ln -s ${d} ${TREE_DIR}/${d}
+                fi
+        done
+        (cd ${TREE_DIR}/magic && cp /usr/share/misc/magic.mgc . || file -C)
 
-mkdir -p ${tree}/build
-ln -s ../data/SOURCES ${tree}/build/
+        make_install ${TREE_DIR}
+    ;;
+    check)
+        ./rpmtests "$@"
+    ;;
+esac
