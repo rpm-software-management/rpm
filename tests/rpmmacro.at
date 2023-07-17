@@ -1236,6 +1236,7 @@ RPMTEST_CLEANUP
 
 AT_SETUP([rpmlua])
 AT_KEYWORDS([lua])
+RPMTEST_SETUP
 RPMTEST_CHECK([
 runroot_other rpmlua /data/t1.lua a b
 ],
