@@ -98,8 +98,27 @@ function snapshot()
     shift
     case $cmd in
         mount)
-            cp -aP "${RPMTREE}" "${RPMTEST}"
-            chmod -R u+w "${RPMTEST}"
+            # No argument means mount as read-only
+            local opts
+            if [ $# != 0 ]; then
+                mkdir -p $1/diff $1/work
+                opts="-o upperdir=$1/diff,workdir=$1/work"
+            fi
+            [ ${ROOTLESS:-1} == 1 ] && opts+=" -o userxattr"
+            mkdir -p ${RPMTEST}
+            mount -t overlay sandbox \
+                  -o lowerdir="${RPMTREE}" \
+                  ${opts} ${RPMTEST}
+        ;;
+        umount)
+            umount -ql $RPMTEST
+        ;;
+        prune)
+            local dir
+            for dir in "$@"; do
+                [ -d "$dir" ] && umount -ql $dir
+            done
+            return 0
         ;;
         exec)
             (unset RPM_CONFIGDIR RPM_POPTEXEC_PATH
@@ -131,7 +150,7 @@ function rundebug()
 function runroot()
 {
     setup_env
-    snapshot exec env MAGIC="/magic/magic" "$@" \
+    snapshot exec "$@" \
              --define "_buildhost testhost" \
              --define "_topdir /build" \
              --noplugins --nouserns
@@ -142,3 +161,5 @@ function runroot_other()
     setup_env
     snapshot exec "$@"
 }
+
+snapshot prune rpmtests.dir/*/tree
