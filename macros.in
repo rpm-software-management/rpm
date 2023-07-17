@@ -956,6 +956,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #	Macro(s) slavishly copied from autoconf's config.status.
 #
 %_prefix		@prefix@
+%_root_prefix		@root_prefix@
 %_exec_prefix		%{_prefix}
 %_bindir		%{_exec_prefix}/bin
 %_sbindir		%{_exec_prefix}/sbin
@@ -969,7 +970,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 %_includedir		%{_prefix}/include
 %_infodir		%{_datadir}/info
 %_mandir		%{_datadir}/man
-%_sysusersdir		%{_prefix}/lib/sysusers.d
+%_sysusersdir		%{_root_prefix}/lib/sysusers.d
 
 #==============================================================================
 # ---- config.guess platform macros.
