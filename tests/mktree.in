@@ -79,6 +79,7 @@ case $CMD in
             audit \
             bash \
             binutils \
+            bubblewrap \
             bzip2 \
             coreutils \
             cpio \
@@ -144,7 +145,8 @@ case $CMD in
     ;;
     check)
         mount_tree
-        ./rpmtests "$@"
+        mount_tree $SANDBOX_DIR
+        snapshot shell --chdir /srv ./rpmtests "$@"
     ;;
     reset)
         rm -rf "$SANDBOX_DIR"
