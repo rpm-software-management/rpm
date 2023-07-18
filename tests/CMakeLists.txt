@@ -66,8 +66,11 @@ foreach(prg ${TESTPROGS})
 endforeach()
 string(REPLACE ";" " " TESTPROG_NAMES "${TESTPROGS}")
 
-configure_file(atlocal.in atlocal @ONLY)
-configure_file(package.m4.in package.m4 @ONLY)
+include(ProcessorCount)
+ProcessorCount(nproc)
+if (nproc GREATER 1)
+	set(JOBS -j${nproc})
+endif()
 
 # Detect suitable mktree backend
 if ("${MKTREE_BACKEND}" STREQUAL "")
@@ -85,11 +88,8 @@ configure_file(mktree.common mktree.common @ONLY)
 configure_file(mktree.native mktree.native @ONLY)
 configure_file(mktree.${MKTREE_BACKEND} mktree @ONLY)
 
-include(ProcessorCount)
-ProcessorCount(nproc)
-if (nproc GREATER 1)
-	set(JOBS -j${nproc})
-endif()
+configure_file(atlocal.in atlocal @ONLY)
+configure_file(package.m4.in package.m4 @ONLY)
 
 add_custom_target(env
 	COMMAND ./mktree env
