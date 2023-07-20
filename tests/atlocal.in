@@ -1,4 +1,4 @@
-RPMTREE="$PWD/mktree.output/tree"
+RPMTREE=/
 
 RPMLIBDIR="@CMAKE_INSTALL_FULL_LIBDIR@"
 export RPMLIBDIR
