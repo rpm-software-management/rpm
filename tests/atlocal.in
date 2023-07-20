@@ -92,7 +92,7 @@ function setup_env()
     fi
 }
 
-function sandbox()
+function snapshot()
 {
     local cmd=$1
     shift
@@ -131,14 +131,14 @@ function rundebug()
 function runroot()
 {
     setup_env
-    sandbox exec env MAGIC="/magic/magic" "$@" \
-            --define "_buildhost testhost" \
-            --define "_topdir /build" \
-            --noplugins --nouserns
+    snapshot exec env MAGIC="/magic/magic" "$@" \
+             --define "_buildhost testhost" \
+             --define "_topdir /build" \
+             --noplugins --nouserns
 }
 
 function runroot_other()
 {
     setup_env
-    sandbox exec "$@"
+    snapshot exec "$@"
 }
