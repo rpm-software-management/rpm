@@ -3,7 +3,7 @@ AT_TESTED([rpm rpmbuild rpmquery])
 m4_define([RPMTEST_SETUP],[[
 export RPMTEST="${PWD}/tree"
 export HOME="${RPMTEST}"
-[ -d tree/ ] || snapshot mount
+[ -d "$RPMTEST" ] || snapshot mount
 ]])
 
 m4_define([RPMDB_INIT],[
