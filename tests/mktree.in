@@ -132,7 +132,6 @@ case $CMD in
     ;;
     env)
         set -a
-        mount_tree
         mount_tree $SANDBOX_DIR
         echo "$ENV_MOTD"
         $SHELL
@@ -144,7 +143,6 @@ case $CMD in
         exit 0
     ;;
     check)
-        mount_tree
         mount_tree $SANDBOX_DIR
         snapshot shell --chdir /srv ./rpmtests "$@"
     ;;
