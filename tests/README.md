@@ -31,3 +31,17 @@ For all available options, see the output of the command:
 
 By default, tests are executed in parallel using all available cores, pass
 a specific -jN value to limit.
+
+To drop into a test-like shell, run:
+
+    make env
+
+See the printed help for details on how to use it.
+
+You can also run a containerized shell with your RPM checkout:
+
+    make shell
+
+To factory-reset the container, run:
+
+    make reset
