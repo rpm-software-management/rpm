@@ -55,7 +55,7 @@ string(REPLACE ";" " " TESTPROG_NAMES "${TESTPROGS}")
 
 configure_file(atlocal.in atlocal @ONLY)
 configure_file(package.m4.in package.m4 @ONLY)
-configure_file(mktree.in mktree @ONLY)
+configure_file(mktree.native mktree @ONLY)
 
 include(ProcessorCount)
 ProcessorCount(nproc)
