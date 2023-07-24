@@ -1,0 +1,19 @@
+# Build and install RPM and the test-suite data into a directory
+make_install()
+{
+    export DESTDIR=$1
+    local ld_conf_dir=$DESTDIR/@CMAKE_INSTALL_SYSCONFDIR@/ld.so.conf.d
+
+    @CMAKE_MAKE_PROGRAM@ -C @CMAKE_BINARY_DIR@ install
+    mkdir -p $ld_conf_dir
+    echo @CMAKE_INSTALL_FULL_LIBDIR@ > $ld_conf_dir/rpm.conf
+    ldconfig -r $DESTDIR @CMAKE_INSTALL_FULL_LIBDIR@
+
+    cp -r @CMAKE_CURRENT_SOURCE_DIR@/data $DESTDIR/
+
+    mkdir -p $DESTDIR/usr/bin
+    cp @TESTPROG_NAMES@ $DESTDIR/usr/bin/
+
+    mkdir -p $DESTDIR/build
+    ln -sf ../data/SOURCES $DESTDIR/build/
+}
