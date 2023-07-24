@@ -81,6 +81,7 @@ if ("${MKTREE_BACKEND}" STREQUAL "")
 	endif()
 endif()
 message(STATUS "Using mktree backend: ${MKTREE_BACKEND}")
+configure_file(mktree.common mktree.common @ONLY)
 configure_file(mktree.native mktree.native @ONLY)
 configure_file(mktree.${MKTREE_BACKEND} mktree @ONLY)
 
