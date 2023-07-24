@@ -55,7 +55,6 @@ set(TESTSUITE_AT
 	rpmpgp.at
 )
 
-find_program(BWRAP bwrap REQUIRED)
 find_program(AUTOM4TE autom4te REQUIRED)
 set(AUTOTEST ${AUTOM4TE} --language=autotest)
 
@@ -73,9 +72,13 @@ if (nproc GREATER 1)
 endif()
 
 # Detect suitable mktree backend
+find_program(BWRAP bwrap)
+find_program(PODMAN podman)
 if ("${MKTREE_BACKEND}" STREQUAL "")
-	if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/mktree.${OS_NAME})
+	if (BWRAP AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/mktree.${OS_NAME})
 		set(MKTREE_BACKEND ${OS_NAME})
+	elseif (PODMAN)
+		set(MKTREE_BACKEND podman)
 	else()
 		message(WARNING
 			"No suitable mktree backend found for this platform. "
@@ -84,8 +87,25 @@ if ("${MKTREE_BACKEND}" STREQUAL "")
 	endif()
 endif()
 message(STATUS "Using mktree backend: ${MKTREE_BACKEND}")
+
+# Set up mktree
+if ("${MKTREE_BACKEND}" STREQUAL "${OS_NAME}")
+	configure_file(mktree.native mktree.native @ONLY)
+endif()
+if ("${MKTREE_BACKEND}" STREQUAL "podman")
+	find_program(PODMAN podman REQUIRED)
+	configure_file(Dockerfile Dockerfile COPYONLY)
+else()
+	find_program(BWRAP bwrap REQUIRED)
+	if (PODMAN)
+		add_custom_target(ci
+			COMMAND ./mktree.podman build
+			COMMAND ./mktree.podman check ${JOBS} $(TESTOPTS)
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		)
+	endif()
+endif()
 configure_file(mktree.common mktree.common @ONLY)
-configure_file(mktree.native mktree.native @ONLY)
 configure_file(mktree.${MKTREE_BACKEND} mktree @ONLY)
 
 configure_file(atlocal.in atlocal @ONLY)
