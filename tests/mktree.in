@@ -18,6 +18,11 @@ Your test tree is mounted at \$RPMTEST.
 You can use the usual test commands, e.g.
 
   runroot rpm ...
+
+DNF is set to operate on the tree, use it
+simply like this:
+
+  dnf install ...
 "
 
 CMD=$1; shift
@@ -134,6 +139,9 @@ case $CMD in
         set -a
         mount_tree $SANDBOX_DIR
         echo "$ENV_MOTD"
+        function dnf() {
+            /usr/bin/dnf --installroot=$RPMTEST "$@"
+        }
         $SHELL
         exit 0
     ;;
