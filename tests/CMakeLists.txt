@@ -2,6 +2,19 @@
 # needs to be built before we can populate anything...
 get_property(TOP_TARGETS DIRECTORY .. PROPERTY BUILDSYSTEM_TARGETS)
 
+function(os_release var key)
+	execute_process(
+		COMMAND sh -c "grep ^${key} /etc/os-release | cut -d= -f2"
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+		OUTPUT_VARIABLE value
+	)
+	string(TOLOWER ${value} value)
+	set(${var} ${value} PARENT_SCOPE)
+endfunction()
+
+os_release(OS_NAME ID)
+os_release(OS_VERSION VERSION_ID)
+
 set(PYTHON ${Python3_EXECUTABLE})
 if (${WITH_INTERNAL_OPENPGP})
 	if (${WITH_OPENSSL})
@@ -55,7 +68,21 @@ string(REPLACE ";" " " TESTPROG_NAMES "${TESTPROGS}")
 
 configure_file(atlocal.in atlocal @ONLY)
 configure_file(package.m4.in package.m4 @ONLY)
-configure_file(mktree.native mktree @ONLY)
+
+# Detect suitable mktree backend
+if ("${MKTREE_BACKEND}" STREQUAL "")
+	if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/mktree.${OS_NAME})
+		set(MKTREE_BACKEND ${OS_NAME})
+	else()
+		message(WARNING
+			"No suitable mktree backend found for this platform. "
+			"Disabling test-suite.")
+		return()
+	endif()
+endif()
+message(STATUS "Using mktree backend: ${MKTREE_BACKEND}")
+configure_file(mktree.native mktree.native @ONLY)
+configure_file(mktree.${MKTREE_BACKEND} mktree @ONLY)
 
 include(ProcessorCount)
 ProcessorCount(nproc)

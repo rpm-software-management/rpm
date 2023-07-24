@@ -1,0 +1,82 @@
+#!/bin/bash
+#
+# Fedora-native mktree backend using DNF to bootstrap a minimal OS tree with
+# the RPM runtime and test dependencies but no stock RPM preinstalled.
+
+source ./mktree.native
+
+echo '%_netsharedpath %nil' > $CACHE_DIR/.rpmmacros
+HOME=$CACHE_DIR \
+dnf install -y \
+    --installroot=$BASE_DIR \
+    --releasever=$OS_VERSION \
+    --setopt=cachedir=$CACHE_DIR/dnf \
+    --setopt=keepcache=1 \
+    --setopt=install_weak_deps=0 \
+    --disablerepo=\* --enablerepo=fedora,updates \
+    --exclude=rpm \
+    audit \
+    bash \
+    binutils \
+    bubblewrap \
+    bzip2 \
+    coreutils \
+    cpio \
+    curl \
+    debugedit \
+    diffutils \
+    elfutils-libelf \
+    elfutils-libs \
+    file \
+    file-libs \
+    findutils \
+    gawk \
+    gcc \
+    gdb-headless \
+    gdb-minimal \
+    glibc \
+    gpg \
+    grep \
+    gzip \
+    ima-evm-utils \
+    libacl \
+    libarchive \
+    libcap \
+    libfsverity \
+    libgomp \
+    libzstd \
+    lua-libs \
+    make \
+    openssl-libs \
+    patch \
+    pkgconf-pkg-config \
+    python3 \
+    rpm-sequoia \
+    sed \
+    sqlite-libs \
+    tar \
+    unzip \
+    util-linux-core \
+    which \
+    xz \
+    xz-libs \
+    zlib \
+    zstd
+
+# Point RPM to newly created database
+echo "%_dbpath $(rpm --eval '%_dbpath')" > $BASE_DIR/root/.rpmmacros
+
+# Configure default shell for root user
+cp -r $BASE_DIR/{etc/skel/.,/root}
+
+cat >> $ENV_FILE << EOF
+echo "\
+DNF is set to operate on the tree, use it
+simply like this:
+
+  dnf install ...
+"
+function dnf() {
+    /usr/bin/dnf --installroot=\$RPMTEST "\$@"
+}
+EOF
