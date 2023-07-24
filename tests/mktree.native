@@ -3,6 +3,8 @@
 # Sourceable template for writing OS-native mktree backends.
 # Uses a lightweight snapshot feature from the test-suite for isolation.
 
+source ./mktree.common
+
 OS_VERSION=@OS_VERSION@
 
 OUT_DIR=$PWD/mktree.output
@@ -26,26 +28,6 @@ You can use the usual test commands, e.g.
 "
 
 CMD=$1; shift
-
-# Build and install RPM and the test-suite data into a directory
-make_install()
-{
-    export DESTDIR=$1
-    local ld_conf_dir=$DESTDIR/@CMAKE_INSTALL_SYSCONFDIR@/ld.so.conf.d
-
-    @CMAKE_MAKE_PROGRAM@ -C @CMAKE_BINARY_DIR@ install
-    mkdir -p $ld_conf_dir
-    echo @CMAKE_INSTALL_FULL_LIBDIR@ > $ld_conf_dir/rpm.conf
-    ldconfig -r $DESTDIR @CMAKE_INSTALL_FULL_LIBDIR@
-
-    cp -r @CMAKE_CURRENT_SOURCE_DIR@/data $DESTDIR/
-
-    mkdir -p $DESTDIR/usr/bin
-    cp @TESTPROG_NAMES@ $DESTDIR/usr/bin/
-
-    mkdir -p $DESTDIR/build
-    ln -sf ../data/SOURCES $DESTDIR/build/
-}
 
 mount_tree()
 {
