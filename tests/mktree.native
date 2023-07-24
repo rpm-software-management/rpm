@@ -1,13 +1,18 @@
 #!/bin/bash
+#
+# Sourceable template for writing OS-native mktree backends.
+# Uses a lightweight snapshot feature from the test-suite for isolation.
 
-OS_VERSION=$(grep ^VERSION_ID /etc/os-release | cut -d= -f2)
+OS_VERSION=@OS_VERSION@
 
 OUT_DIR=$PWD/mktree.output
 BASE_DIR=$OUT_DIR/base
 INST_DIR=$OUT_DIR/inst
 SANDBOX_DIR=$PWD/mktree.sandbox
 CACHE_DIR=$PWD/mktree.cache
+DATA_DIR=$BASE_DIR/usr/share/mktree
 
+ENV_FILE=$DATA_DIR/env.sh
 ENV_MOTD="
 Welcome to RPM test environment!
 
@@ -18,11 +23,6 @@ Your test tree is mounted at \$RPMTEST.
 You can use the usual test commands, e.g.
 
   runroot rpm ...
-
-DNF is set to operate on the tree, use it
-simply like this:
-
-  dnf install ...
 "
 
 CMD=$1; shift
@@ -74,78 +74,15 @@ case $CMD in
         make_install $INST_DIR
 
         [ -d "$BASE_DIR" ] && exit 0
-        mkdir -p $CACHE_DIR
-        echo '%_netsharedpath %nil' > $CACHE_DIR/.rpmmacros
-        HOME=$CACHE_DIR \
-        dnf install -y \
-            --installroot=$BASE_DIR \
-            --releasever=$OS_VERSION \
-            --setopt=cachedir=$CACHE_DIR/dnf \
-            --setopt=keepcache=1 \
-            --setopt=install_weak_deps=0 \
-            --disablerepo=\* --enablerepo=fedora,updates \
-            --exclude=rpm \
-            audit \
-            bash \
-            binutils \
-            bubblewrap \
-            bzip2 \
-            coreutils \
-            cpio \
-            curl \
-            debugedit \
-            diffutils \
-            elfutils-libelf \
-            elfutils-libs \
-            file \
-            file-libs \
-            findutils \
-            gawk \
-            gcc \
-            gdb-headless \
-            gdb-minimal \
-            glibc \
-            gpg \
-            grep \
-            gzip \
-            ima-evm-utils \
-            libacl \
-            libarchive \
-            libcap \
-            libfsverity \
-            libgomp \
-            libzstd \
-            lua-libs \
-            make \
-            openssl-libs \
-            patch \
-            pkgconf-pkg-config \
-            python3 \
-            rpm-sequoia \
-            sed \
-            sqlite-libs \
-            tar \
-            unzip \
-            util-linux-core \
-            which \
-            xz \
-            xz-libs \
-            zlib \
-            zstd
+        mkdir -p $CACHE_DIR $DATA_DIR
+        echo "echo '$ENV_MOTD'" > $ENV_FILE
 
-        # Point RPM to newly created database
-        echo "%_dbpath $(rpm --eval '%_dbpath')" > $BASE_DIR/root/.rpmmacros
-
-        # Configure default shell for root user
-        cp -r $BASE_DIR/{etc/skel/.,/root}
+        # OS-specific backend should run here
     ;;
     env)
         set -a
         mount_tree $SANDBOX_DIR
-        echo "$ENV_MOTD"
-        function dnf() {
-            /usr/bin/dnf --installroot=$RPMTEST "$@"
-        }
+        source $ENV_FILE
         $SHELL
         exit 0
     ;;
@@ -157,8 +94,10 @@ case $CMD in
     check)
         mount_tree $SANDBOX_DIR
         snapshot shell --chdir /srv ./rpmtests "$@"
+        exit
     ;;
     reset)
         rm -rf "$SANDBOX_DIR"
+        exit 0
     ;;
 esac
