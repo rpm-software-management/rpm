@@ -470,11 +470,13 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
 
 	if (mi == NULL) {
 	    struct stat sb;
-	    if (lstat(fn, &sb) != 0)
+	    char * full_fn = rpmGetPath(rpmtsRootDir(ts), fn, NULL);
+	    if (lstat(full_fn, &sb) != 0)
 		rpmlog(RPMLOG_ERR, _("file %s: %s\n"), fn, strerror(errno));
 	    else
 		rpmlog(RPMLOG_NOTICE,
 			_("file %s is not owned by any package\n"), fn);
+	    free(full_fn);
 	}
 
 	free(fn);
