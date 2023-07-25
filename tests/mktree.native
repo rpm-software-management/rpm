@@ -74,8 +74,8 @@ case $CMD in
         exit 0
     ;;
     check)
-        mount_tree $SANDBOX_DIR
-        snapshot shell --chdir /srv ./rpmtests "$@"
+        mount_tree
+        snapshot shell --tmpfs /tmp --chdir /srv ./rpmtests "$@"
         exit
     ;;
     reset)

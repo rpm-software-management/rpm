@@ -1,8 +1,11 @@
 #!/bin/bash
 #
-# Rootfs mktree backend for use on throwaway build systems (e.g. containers).
-# Installs RPM and the test-suite into / and runs it natively.
+# Rootfs mktree backend for use in throwaway build containers.
+# Installs RPM into / and runs the test-suite against the same.
+#
 # PWD must be host-mounted for OverlayFS mounts to work.
+# The / filesystem should be read-only to prevent parallel tests from altering
+# it (online changes to an underlying filesystem are disallowed in OverlayFS).
 
 DATA_DIR=/usr/share/mktree
 
