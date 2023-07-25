@@ -143,6 +143,38 @@ and then install with:
 
     make install
 
+By default, rpm installs a series of default platforms based on the CPU
+architecture names in subdirectories called
+
+    /usr/lib/platform/<arch>-linux
+
+This is enough for regular Linux distributions. However, some distributions
+may use more specific platform names that refer to particular computer
+systems, like SBCs or specific CPU tuning when compiling. Examples of such
+platform names are: "genericx86_64", "intel_skylake_64", "raspberrypi_armv7",
+"raspberrypi_armv8", etc.
+
+If the platform name is put into /etc/rpm/platform, then rpmbuild uses it
+and the only macros file rpmbuild looks for is
+
+    /usr/lib/platform/`cat /etc/rpm/platform`-linux/macros
+
+If this file does not exist, many rpm macros will not have their expected
+values set and e.g. %configure will fail when trying to run rpmbuild.
+
+To allow creating the macros file for such a custom platform, the shell
+variables listed below must be set. If RPM_CUSTOM_ARCH is not set, the rest
+is ignored.
+
+    export RPM_CUSTOM_ARCH=genericx86_64
+    export RPM_CUSTOM_ISANAME=x86
+    export RPM_CUSTOM_ISABITS=64
+    export RPM_CUSTOM_CANONARCH=x86_64
+    export RPM_CUSTOM_CANONCOLOR=0 # to use /usr/lib for %_libdir
+    export RPM_CUSTOM_CANONCOLOR=3 # to use /usr/lib64 for %_libdir
+
+    make install # this also installs /usr/lib/platform/genericx86_64-linux/macros
+
 Rpm comes with an automated self-test suite. The test-suite requires
 autom4te from autoconf (https://www.gnu.org/software/autoconf/) and
 bwrap (https://github.com/containers/bubblewrap/). It is enabled by
