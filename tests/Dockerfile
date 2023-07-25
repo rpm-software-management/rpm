@@ -11,6 +11,7 @@ RUN dnf -y update
 RUN dnf -y --enablerepo=updates-testing install "rpm-sequoia-devel >= 1.4.0"
 RUN dnf -y install \
   autoconf \
+  bubblewrap \
   cmake \
   gettext-devel \
   debugedit \
@@ -62,6 +63,7 @@ RUN cmake \
 	-DENABLE_BDB_RO=ON \
 	-DWITH_FSVERITY=ON \
 	-DWITH_IMAEVM=ON \
+	-DMKTREE_BACKEND=rootfs \
 	../rpm
 RUN rpm -e --nodeps \
 	rpm \
@@ -69,7 +71,7 @@ RUN rpm -e --nodeps \
 	rpm-build-libs \
 	rpm-sign-libs \
 	python3-rpm
-RUN make install DESTDIR=/
+RUN make tree
 
 WORKDIR /
 RUN rm -rf /srv/{rpm,build}
