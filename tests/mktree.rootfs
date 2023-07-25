@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+# Rootfs mktree backend for use on throwaway build systems (e.g. containers).
+# Installs RPM and the test-suite into / and runs it natively.
+# PWD must be host-mounted for OverlayFS mounts to work.
+
+DATA_DIR=/usr/share/mktree
+
+CMD=$1; shift
+case $CMD in
+    build)
+        source ./mktree.common
+        make_install /
+
+        mkdir -p $DATA_DIR
+        cp $0 /usr/bin/
+        cp rpmtests atlocal $DATA_DIR/
+    ;;
+    check)
+        ln -s $DATA_DIR/* .
+        ./rpmtests "$@"
+        RC=$?
+        cat rpmtests.log
+        exit $RC
+    ;;
+    *)
+        echo "Unsupported command." >&2
+        exit 1
+    ;;
+esac
