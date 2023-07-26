@@ -1,0 +1,224 @@
+#!/usr/bin/perl
+
+# RPM (and it's source code) is covered under two separate licenses.
+
+# The entire code base may be distributed under the terms of the GNU
+# General Public License (GPL), which appears immediately below.
+# Alternatively, all of the source code in the lib subdirectory of the
+# RPM source code distribution as well as any code derived from that
+# code may instead be distributed under the GNU Library General Public
+# License (LGPL), at the choice of the distributor. The complete text
+# of the LGPL appears at the bottom of this file.
+
+# This alternative is allowed to enable applications to be linked
+# against the RPM library (commonly called librpm) without forcing
+# such applications to be distributed under the GPL.
+
+# Any questions regarding the licensing of RPM should be addressed to
+# Erik Troan <ewt@redhat.com>.
+
+# a simple script to print the proper name for perl libraries.
+
+# To save development time I do not parse the perl grammar but
+# instead just lex it looking for what I want.  I take special care to
+# ignore comments and pod's.
+
+# it would be much better if perl could tell us the proper name of a
+# given script.
+
+# The filenames to scan are either passed on the command line or if
+# that is empty they are passed via stdin.
+
+# If there are lines in the file which match the pattern
+#      (m/^\s*\$VERSION\s*=\s+/)
+# then these are taken to be the version numbers of the modules.
+# Special care is taken with a few known idioms for specifying version
+# numbers of files under rcs/cvs control.
+
+# If there are strings in the file which match the pattern
+#     m/^\s*\$RPM_Provides\s*=\s*["'](.*)['"]/i
+# then these are treated as additional names which are provided by the
+# file and are printed as well.
+
+# I plan to rewrite this in C so that perl is not required by RPM at
+# build time.
+
+# by Ken Estes Mail.com kestes@staff.mail.com
+
+if ("@ARGV") {
+  foreach (@ARGV) {
+    next if !/\.pm$/;
+    process_file($_);
+  }
+} else {
+
+  # notice we are passed a list of filenames NOT as common in unix the
+  # contents of the file.
+
+  foreach (<>) {
+    next if !/\.pm$/;
+    process_file($_);
+  }
+}
+
+
+foreach $module (sort keys %require) {
+  if (length($require{$module}) == 0) {
+    print "perl($module)\n";
+  } else {
+
+    my $cpan_version = $require{$module};
+    my $version = version->parse($cpan_version)->normal;
+    # I am not using rpm3.0 so I do not want spaces around my
+    # operators. Also I will need to change the processing of the
+    # $RPM_* variable when I upgrade.
+
+    print "perl($module) = $version\n";
+  }
+}
+
+exit 0;
+
+
+
+sub process_file {
+
+  my ($file) = @_;
+  chomp $file;
+
+  if (!open(FILE, $file)) {
+    warn("$0: Warning: Could not open file '$file' for reading: $!\n");
+    return;
+  }
+
+  my ($package, $version, $incomment, $inover, $inheredoc) = ();
+
+  while (<FILE>) {
+
+    # Skip contents of HEREDOCs
+    if (! defined $inheredoc) {
+      # skip the documentation
+
+      # we should not need to have item in this if statement (it
+      # properly belongs in the over/back section) but people do not
+      # read the perldoc.
+
+      if (m/^=(head[1-4]|pod|for|item)/) {
+        $incomment = 1;
+      }
+
+      if (m/^=(cut)/) {
+        $incomment = 0;
+        $inover = 0;
+      }
+
+      if (m/^=(over)/) {
+        $inover = 1;
+      }
+
+      if (m/^=(back)/) {
+        $inover = 0;
+      }
+
+      if ($incomment || $inover || m/^\s*#/) {
+        next;
+      }
+
+      # skip the data section
+      if (m/^__(DATA|END)__$/) {
+        last;
+      }
+
+      # Find the start of a HEREDOC
+      if (m/<<\s*[\"\'](\w+)[\"\']\s*;\s*$/) {
+        $inheredoc = $1;
+      }
+    } else {
+      # We're in a HEREDOC; continue until the end of it
+      if (m/^$inheredoc\s*$/) {
+        $inheredoc = undef;
+      }
+      next;
+    }
+
+    # not everyone puts the package name of the file as the first
+    # package name so we report all namespaces except some common
+    # false positives as if they were provided packages (really ugly).
+
+    if (m/^\s*package\s+([_:a-zA-Z0-9]+)\s*(?:v?([0-9_.]+)\s*)?[;{]/) {
+      $package = $1;
+      $version = $2;
+      if ($package eq 'main') {
+        undef $package;
+      } else {
+        # If $package already exists in the $require hash, it means
+        # the package definition is broken up over multiple blocks.
+        # In that case, don't stomp a previous $VERSION we might have
+        # found.  (See BZ#214496.)
+        $require{$package} = $version unless (exists $require{$package});
+      }
+    }
+
+    # after we found the package name take the first assignment to
+    # $VERSION as the version number. Exporter requires that the
+    # variable be called VERSION so we are safe.
+
+    # here are examples of VERSION lines from the perl distribution
+
+    #FindBin.pm:$VERSION = $VERSION = sprintf("%d.%02d", q$Revision: 1.9 $ =~ /(\d+)\.(\d+)/);
+    #ExtUtils/Install.pm:$VERSION = substr q$Revision: 1.9 $, 10;
+    #CGI/Apache.pm:$VERSION = (qw$Revision: 1.9 $)[1];
+    #DynaLoader.pm:$VERSION = $VERSION = "1.03";     # avoid typo warning
+    #General.pm:$Config::General::VERSION = 2.33;
+    #
+    # or with the new "our" pragma you could (read will) see:
+    #
+    #    our $VERSION = '1.00'
+    if ($package && m/^\s*(our\s+)?\$(\Q$package\E::)?VERSION\s*=\s+/) {
+
+      # first see if the version string contains the string
+      # '$Revision' this often causes bizarre strings and is the most
+      # common method of non static numbering.
+
+      if (m/\$Revision: (\d+[.0-9]+)/) {
+        $version = $1;
+      } elsif (m/=\s*['"]?(\d+[._0-9]+)['"]?/) {
+
+        # look for a static number hard coded in the script
+
+        $version = $1;
+      }
+      $require{$package} = $version;
+    }
+
+    # Allow someone to have a variable that defines virtual packages
+    # The variable is called $RPM_Provides.  It must be scoped with
+    # "our", but not "local" or "my" (just would not make sense).
+    #
+    # For instance:
+    #
+    #     $RPM_Provides = "blah bleah"
+    #
+    # Will generate provides for "blah" and "bleah".
+    #
+    # Each keyword can appear multiple times.  Don't
+    #  bother with datastructures to store these strings,
+    #  if we need to print it print it now.
+
+    if (m/^\s*(our\s+)?\$RPM_Provides\s*=\s*["'](.*)['"]/i) {
+      foreach $_ (split(/\s+/, $2)) {
+        print "$_\n";
+      }
+    }
+
+  }
+
+  if (defined $inheredoc) {
+	  die "Unclosed HEREDOC [$inheredoc] in file: '$file'\n";
+  }
+
+  close(FILE) ||
+    die("$0: Could not close file: '$file' : $!\n");
+
+  return;
+}
