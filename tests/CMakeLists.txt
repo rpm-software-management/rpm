@@ -89,9 +89,6 @@ endif()
 message(STATUS "Using mktree backend: ${MKTREE_BACKEND}")
 
 # Set up mktree
-if ("${MKTREE_BACKEND}" STREQUAL "${OS_NAME}")
-	configure_file(mktree.native mktree.native @ONLY)
-endif()
 if ("${MKTREE_BACKEND}" STREQUAL "podman")
 	find_program(PODMAN podman REQUIRED)
 	configure_file(Dockerfile Dockerfile COPYONLY)
