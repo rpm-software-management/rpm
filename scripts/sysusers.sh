@@ -75,7 +75,7 @@ user() {
 
 	[ "$desc" = '-' ] && desc=
 	{ [ "$home" = '-' ] || [ "$home" = '' ]; } && home=/
-	{ [ "$shell" = '-' ] || [ "$shell" = '' ]; } && shell=/usr/sbin/nologin
+	{ [ "$shell" = '-' ] || [ "$shell" = '' ]; } && shell=/sbin/nologin
 
 	if [ "$uid" = '-' ] || [ "$uid" = '' ]; then
 		if ! hasuser "$user" ; then
