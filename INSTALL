@@ -143,12 +143,13 @@ and then install with:
 
     make install
 
+
 By default, rpm installs a series of default platforms based on the CPU
 architecture names in subdirectories called
 
-    /usr/lib/platform/<arch>-linux
+    /usr/lib/platform/<arch>-<os>
 
-This is enough for regular Linux distributions. However, some distributions
+This is enough for many distributions. However, some distributions
 may use more specific platform names that refer to particular computer
 systems, like SBCs or specific CPU tuning when compiling. Examples of such
 platform names are: "genericx86_64", "intel_skylake_64", "raspberrypi_armv7",
@@ -157,7 +158,7 @@ platform names are: "genericx86_64", "intel_skylake_64", "raspberrypi_armv7",
 If the platform name is put into /etc/rpm/platform, then rpmbuild uses it
 and the only macros file rpmbuild looks for is
 
-    /usr/lib/platform/`cat /etc/rpm/platform`-linux/macros
+    /usr/lib/platform/`cat /etc/rpm/platform`-<os>/macros
 
 If this file does not exist, many rpm macros will not have their expected
 values set and e.g. %configure will fail when trying to run rpmbuild.
@@ -173,7 +174,11 @@ is ignored.
     export RPM_CUSTOM_CANONCOLOR=0 # to use /usr/lib for %_libdir
     export RPM_CUSTOM_CANONCOLOR=3 # to use /usr/lib64 for %_libdir
 
-    make install # this also installs /usr/lib/platform/genericx86_64-linux/macros
+    make install 
+
+This also creates and installs the new platform file e.g.
+/usr/lib/platform/genericx86_64-linux/macros
+
 
 Rpm comes with an automated self-test suite. The test-suite requires
 autom4te from autoconf (https://www.gnu.org/software/autoconf/) and
