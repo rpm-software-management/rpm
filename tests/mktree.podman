@@ -35,7 +35,7 @@ case $CMD in
         exit 0
     ;;
     check)
-        $PODMAN run --privileged -it --rm --read-only --tmpfs /tmp \
+        $PODMAN run --privileged -t --rm --read-only --tmpfs /tmp \
                     -v /srv --workdir /srv -e ROOTLESS=$ROOTLESS \
                     $IMAGE mktree check "$@"
     ;;
