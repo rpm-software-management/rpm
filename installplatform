@@ -11,7 +11,7 @@ VENDOR="${4}"
 OS="${5}"
 RPMRC_GNU="${6}"
 
-for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
+for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2` ${RPM_CUSTOM_ARCH:+custom}; do
   RPMRC_OPTFLAGS="`sed -n 's/^optflags: '$ARCH' //p' $RPMRC`"
   RPMRC_OPTFLAGS="`echo $RPMRC_OPTFLAGS | sed -e 's, ,\ ,g'`"
   case $RPMRC_OPTFLAGS in
@@ -30,6 +30,13 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
   CANONCOLOR=
   FILTER=cat
   case "${ARCH}" in
+    custom)
+	ARCH=$RPM_CUSTOM_ARCH
+	ISANAME=$RPM_CUSTOM_ISANAME
+	ISABITS=$RPM_CUSTOM_ISABITS
+	CANONARCH=$RPM_CUSTOM_CANONARCH
+	CANONCOLOR=$RPM_CUSTOM_CANONCOLOR
+    ;;
     sparc64*) 
 	ISANAME=sparc
 	ISABITS=64
