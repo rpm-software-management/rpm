@@ -12,6 +12,11 @@ INST_DIR=$OUT_DIR/inst
 SANDBOX_DIR=$PWD/mktree.sandbox
 CACHE_DIR=$PWD/mktree.cache
 
+RPM_MACROS="
+%_netsharedpath %{nil}
+%__transaction_systemd_inhibit %{nil}
+"
+
 ENV_MOTD="
 Welcome to RPM test environment!
 
@@ -60,7 +65,7 @@ case $CMD in
         [ -d "$BASE_DIR" ] && exit 0
 
         mkdir -p $CACHE_DIR
-        echo '%_netsharedpath %nil' > $CACHE_DIR/.rpmmacros
+        echo "$RPM_MACROS" > $CACHE_DIR/.rpmmacros
 
         HOME=$CACHE_DIR \
         dnf install -y \
