@@ -75,8 +75,7 @@ case $CMD in
             --setopt=keepcache=1 \
             --setopt=install_weak_deps=0 \
             --disablerepo=\* --enablerepo=fedora,updates \
-            --exclude=rpm \
-            audit \
+            --exclude=rpm,systemd-udev \
             bash \
             binutils \
             bubblewrap \
@@ -93,13 +92,11 @@ case $CMD in
             findutils \
             gawk \
             gcc \
-            gdb-headless \
             gdb-minimal \
             glibc \
             gpg \
             grep \
             gzip \
-            ima-evm-utils \
             libacl \
             libarchive \
             libcap \
@@ -111,9 +108,11 @@ case $CMD in
             openssl-libs \
             patch \
             pkgconf-pkg-config \
+            popt \
             python3 \
             rpm-sequoia \
             sed \
+            shadow-utils \
             sqlite-libs \
             tar \
             unzip \
