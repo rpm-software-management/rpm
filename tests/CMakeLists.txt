@@ -73,7 +73,7 @@ endif()
 
 # Detect suitable mktree backend
 find_program(BWRAP bwrap)
-find_program(PODMAN podman)
+find_program(PODMAN NAMES podman docker)
 if ("${MKTREE_BACKEND}" STREQUAL "")
 	if (BWRAP AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/mktree.${OS_NAME})
 		set(MKTREE_BACKEND ${OS_NAME})
@@ -90,14 +90,15 @@ message(STATUS "Using mktree backend: ${MKTREE_BACKEND}")
 
 # Set up mktree
 if ("${MKTREE_BACKEND}" STREQUAL "podman")
-	find_program(PODMAN podman REQUIRED)
+	find_program(PODMAN NAMES podman docker REQUIRED)
 	configure_file(Dockerfile Dockerfile COPYONLY)
 else()
 	find_program(BWRAP bwrap REQUIRED)
 	if (PODMAN)
+		get_filename_component(PODMAN ${PODMAN} NAME)
 		add_custom_target(ci
-			COMMAND ./mktree.podman build
-			COMMAND ./mktree.podman check ${JOBS} $(TESTOPTS)
+			COMMAND ./mktree.${PODMAN} build
+			COMMAND ./mktree.${PODMAN} check ${JOBS} $(TESTOPTS)
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		)
 	endif()
