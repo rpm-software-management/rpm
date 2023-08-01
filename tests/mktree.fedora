@@ -97,6 +97,7 @@ case $CMD in
             gpg \
             grep \
             gzip \
+            ima-evm-utils \
             libacl \
             libarchive \
             libcap \
