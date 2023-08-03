@@ -220,6 +220,18 @@ rpmspec	alias --provides	--qf \
 rpmspec	alias --requires	--qf \
   "[%|VERBOSE?{%{REQUIREFLAGS:deptype}: }:{}|%{REQUIRENEVRS}\n]" \
 	--POPTdesc=$"list capabilities required by package(s)"
+rpmspec	alias --recommends	--qf \
+  "[%|VERBOSE?{%{RECOMMENDFLAGS:deptype}: }:{}|%{RECOMMENDNEVRS}\n]" \
+	--POPTdesc=$"list capabilities recommended by package(s)"
+rpmspec	alias --suggests	--qf \
+  "[%|VERBOSE?{%{SUGGESTFLAGS:deptype}: }:{}|%{SUGGESTNEVRS}\n]" \
+	--POPTdesc=$"list capabilities suggested by package(s)"
+rpmspec	alias --supplements	--qf \
+  "[%|VERBOSE?{%{SUPPLEMENTFLAGS:deptype}: }:{}|%{SUPPLEMENTNEVRS}\n]" \
+	--POPTdesc=$"list capabilities supplemented by package(s)"
+rpmspec	alias --enhances	--qf \
+  "[%|VERBOSE?{%{ENHANCEFLAGS:deptype}: }:{}|%{ENHANCENEVRS}\n]" \
+	--POPTdesc=$"list capabilities enhanced by package(s)"
 rpmspec	alias --buildconflicts	--srpm --conflicts \
 	--POPTdesc=$"list capabilities conflicting with build of this package"
 rpmspec	alias --buildrequires	--srpm --requires \
