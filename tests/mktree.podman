@@ -35,9 +35,15 @@ case $CMD in
         exit 0
     ;;
     check)
+        # Pass select options to $PODMAN
+        case "$1" in
+            # Useful for CI environments without a tty
+            --interactive=*) OPTS=$1; shift ;;
+            *) OPTS= ;;
+        esac
         $PODMAN run --privileged -it --rm --read-only --tmpfs /tmp \
                     -v /srv --workdir /srv -e ROOTLESS=$ROOTLESS \
-                    $IMAGE mktree check "$@"
+                    $OPTS $IMAGE mktree check "$@"
     ;;
     reset)
         $PODMAN stop $NAME >/dev/null &&
