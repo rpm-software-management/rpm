@@ -133,8 +133,8 @@ rpm	alias --filetriggerscripts --qf '\
 rpm	alias --filetriggers --filetriggerscripts \
 	--POPTdesc=$"list filetrigger scriptlets from package(s)"
 
-rpm	alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NVRA} %|INSTALLTIME?{%{INSTALLTIME:date}}:{(not installed)}|\n' \
-	--pipe "LC_NUMERIC=C sort -r -n | sed 's,^[0-9]\+ ,,' | awk '{printf(\"%-45s %-s\n\", $1, substr($0,length($1)+2))}' " \
+rpm	alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %-45{NVRA} %|INSTALLTIME?{%{INSTALLTIME:date}}:{(not installed)}|\n' \
+	--pipe "LC_NUMERIC=C sort -r -n | sed 's,^[0-9]\+ ,,' " \
 	--POPTdesc=$"list package(s) by install time, most recent first"
 
 rpm	alias --dupes   --qf '%|SOURCERPM?{%{name}.%{arch}}:{%|ARCH?{%{name}}:{%{name}-%{version}}|}|\n' --pipe "sort | uniq -d" \
