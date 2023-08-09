@@ -772,7 +772,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
   RPM_PACKAGE_VERSION=\"%{VERSION}\"\
   RPM_PACKAGE_RELEASE=\"%{RELEASE}\"\
   export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\
-  LANG=C\
+  LANG=C.utf8\
   export LANG\
   unset CDPATH DISPLAY ||:\
   unset DEBUGINFOD_URLS ||:\
