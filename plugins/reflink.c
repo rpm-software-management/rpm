@@ -234,6 +234,7 @@ static rpmRC reflink_psm_post(rpmPlugin plugin, rpmte te, int res)
 	inodeIndexHashFree(state->inodeIndexes);
 	state->inodeIndexes = NULL;
     }
+    state->transcoded = 0;
     return RPMRC_OK;
 }
 
