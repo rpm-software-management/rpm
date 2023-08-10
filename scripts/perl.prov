@@ -45,6 +45,19 @@
 
 # by Ken Estes Mail.com kestes@staff.mail.com
 
+my $normalversion = 0;
+my $perln = 0;
+
+while ("@ARGV") {
+  if ($ARGV[0] =~ /^--/) {
+    $normalversion = 1 if $ARGV[0] eq "--normalversion"; # use normal form in perl(xxx)
+    $perln = 1 if $ARGV[0] eq "--perln";                 # use perln(xxx) and perl(xxx)
+    shift @ARGV;
+  } else {
+    last;
+  }
+}
+
 if ("@ARGV") {
   foreach (@ARGV) {
     next if !/\.pm$/;
@@ -65,13 +78,22 @@ if ("@ARGV") {
 foreach $module (sort keys %require) {
   if (length($require{$module}) == 0) {
     print "perl($module)\n";
+    print "perln($module)\n" if !$perln;
   } else {
 
     # I am not using rpm3.0 so I do not want spaces around my
     # operators. Also I will need to change the processing of the
     # $RPM_* variable when I upgrade.
 
-    print "perl($module) = $require{$module}\n";
+    if($normalversion)
+    {
+      print "perl($module) = ".version->parse($require{$module})->normal."\n";
+    }
+    else
+    {
+      print "perl($module) = $require{$module}\n";
+    }
+    print "perln($module) = ".version->parse($require{$module})->normal."\n" if $perln;
   }
 }
 
