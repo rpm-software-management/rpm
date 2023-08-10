@@ -137,7 +137,7 @@ add_custom_command(OUTPUT rpmtests
 
 add_custom_target(tree
 	COMMAND ./mktree build
-	BYPRODUCTS mktree.output/base
+	BYPRODUCTS mktree.output
 	DEPENDS rpmtests
 	DEPENDS ${TESTPROGS}
 	DEPENDS ${TOP_TARGETS}
