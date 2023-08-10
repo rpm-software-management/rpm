@@ -145,9 +145,7 @@ case $CMD in
     env)
         set -a
         mount_tree $SANDBOX_DIR
-        function dnf() {
-            /usr/bin/dnf --installroot=$RPMTEST "$@"
-        }
+        dnf() { $(which dnf) --installroot=$RPMTEST "$@"; }
         echo "$ENV_MOTD"
         $SHELL
         exit 0
