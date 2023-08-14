@@ -53,6 +53,22 @@ include(GNUInstallDirs)
 add_compile_definitions(_GNU_SOURCE)
 add_definitions(-D_FILE_OFFSET_BITS=64)
 
+function(findutil UTIL TRY)
+	list(GET TRY 0 util)
+	find_program(${UTIL}
+		NAMES ${TRY}
+		PATHS ENV MYPATH
+		PATHS /usr/local/bin /usr/bin /bin
+		PATHS /usr/local/sbin /usr/sbin /sbin
+		NO_DEFAULT_PATH
+	)
+	if (NOT ${UTIL})
+		list(GET TRY 0 util)
+		message(DEBUG "${util} not found, assuming /usr/bin/${util}")
+		set(${UTIL} /usr/bin/${util} PARENT_SCOPE)
+	endif()
+endfunction()
+
 function(makemacros)
 	set(prefix ${CMAKE_INSTALL_PREFIX})
 	set(exec_prefix "\${prefix}")
@@ -72,28 +88,47 @@ function(makemacros)
 	set(rundir /run)
 	set(root_prefix /usr)
 
-	set(extutils
-		7zip bzip2 cat chmod chown cp curl file gpg grep gzip id cc ln
-		install lrzip lzip xz make mkdir mv patch rm sed tar unzip
-		zstd gem git hg bzr quilt ld objdump strip systemd-sysusers
-		awk ar as cpp c++
-	)
-	foreach (util ${extutils})
-		string(TOUPPER ${util} UTIL)
-		string(REPLACE "-" "_" UTIL ${UTIL})
-		string(REPLACE "+" "X" UTIL ${UTIL})
-		find_program(__${UTIL} ${util}
-			PATHS ENV MYPATH
-			PATHS /usr/local/bin /usr/bin /bin
-			PATHS /usr/local/sbin /usr/sbin /sbin
-			NO_DEFAULT_PATH
-		)
-		message(INFO ${util} " got " ${UTIL} ": " ${__${UTIL}})
-		if (NOT EXISTS ${__${UTIL}})
-			message(DEBUG "${util} not found, assuming /usr/bin")
-			set(__${UTIL} /usr/bin/${util})
-		endif()
-	endforeach()
+	findutil(__7ZIP 7zip)
+	findutil(__BZIP2 bzip2)
+	findutil(__CAT cat)
+	findutil(__CHMOD chmod)
+	findutil(__CHOWN chown)
+	findutil(__CP cp)
+	findutil(__CURL curl)
+	findutil(__FILE file)
+	findutil(__GPG gpg)
+	findutil(__GREP grep)
+	findutil(__GZIP gzip)
+	findutil(__ID id)
+	findutil(__CC cc)
+	findutil(__LN ln)
+	findutil(__INSTALL install)
+	findutil(__LRZIP lrzip)
+	findutil(__LZIP lzip)
+	findutil(__XZ xz)
+	findutil(__MAKE make)
+	findutil(__MKDIR mkdir)
+	findutil(__MV mv)
+	findutil(__PATCH patch)
+	findutil(__RM rm)
+	findutil(__SED sed)
+	findutil(__TAR tar)
+	findutil(__UNZIP unzip)
+	findutil(__ZSTD zstd)
+	findutil(__GEM gem)
+	findutil(__GIT git)
+	findutil(__HG hg)
+	findutil(__BZR bzr)
+	findutil(__QUILT quilt)
+	findutil(__LD ld)
+	findutil(__OBJDUMP objdump)
+	findutil(__STRIP strip)
+	findutil(__SYSTEMD_SYSUSERS systemd-sysusers)
+	findutil(__AWK awk)
+	findutil(__AR ar)
+	findutil(__AS as)
+	findutil(__CPP cpp)
+	findutil(__CXX c++)
 
 	list(GET db_backends 0 DB_BACKEND)
 
