@@ -73,7 +73,6 @@ static const struct PartRec {
     { PART_TRANSFILETRIGGERIN,	    LEN_AND_STR("%transfiletriggerin")},
     { PART_TRANSFILETRIGGERIN,	    LEN_AND_STR("%transfiletrigger")},
     { PART_TRANSFILETRIGGERUN,	    LEN_AND_STR("%transfiletriggerun")},
-    { PART_TRANSFILETRIGGERUN,	    LEN_AND_STR("%transfiletriggerun")},
     { PART_TRANSFILETRIGGERPOSTUN,  LEN_AND_STR("%transfiletriggerpostun")},
     { PART_EMPTY,		    LEN_AND_STR("%end")},
     { PART_PATCHLIST,               LEN_AND_STR("%patchlist")},
