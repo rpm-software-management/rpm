@@ -88,7 +88,7 @@ function(makemacros)
 	set(rundir /run)
 	set(root_prefix /usr)
 
-	findutil(__7ZIP 7zip)
+	findutil(__7ZIP "7zip;7za;7z")
 	findutil(__BZIP2 bzip2)
 	findutil(__CAT cat)
 	findutil(__CHMOD chmod)
