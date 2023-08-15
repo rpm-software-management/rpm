@@ -58,6 +58,23 @@ RPMTEST_CHECK([runroot rpm --showrc],[0],
 [ignore])
 RPMTEST_CLEANUP
 
+AT_SETUP([rpm --target])
+AT_KEYWORDS([basic])
+RPMTEST_CHECK([
+runroot rpm --target x86_64 --eval "x%{optflags}x"
+],
+[0],
+[x-O2 -gx]
+)
+
+RPMTEST_CHECK([
+runroot rpm --target noarch --eval "x%{optflags}x"
+],
+[0],
+[xx]
+)
+RPMTEST_CLEANUP
+
 
 # ------------------------------
 # Check rpm --querytags

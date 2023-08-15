@@ -9,6 +9,8 @@
 #############################################################
 # Values for RPM_OPT_FLAGS for various platforms
 
+optflags: noarch %{nil}
+
 # "fat" binary with both archs, for Darwin
 optflags: fat -O2 -g -arch i386 -arch ppc
 
