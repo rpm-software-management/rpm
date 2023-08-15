@@ -114,6 +114,7 @@
 
 #define UID_0_USER "@UID_0_USER@"
 #define GID_0_GROUP "@GID_0_GROUP@"
+#define C_LOCALE "@C_LOCALE@"
 
 #define PACKAGE "@PROJECT_NAME@"
 #define VERSION "@PROJECT_VERSION@"
