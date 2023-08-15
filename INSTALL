@@ -97,6 +97,10 @@ gettext (currently this is required to build rpm but we hope to
 lift this requirement soon), available from 
     http://www.gnu.org/
 
+By default, Rpm uses C.UTF-8 locale as it's default locale. If your
+environment does not support this, you can make rpm use the traditional
+C locale with -DENABLE_CUTF8=OFF.
+
 If you are going to hack the sources (or compile from source repository)
 you will need most of the GNU development tools including:
 autoconf, automake, gettext, libtool, makeinfo, perl, GNU m4, GNU tar

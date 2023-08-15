@@ -8,6 +8,7 @@ project(rpm
 )
 
 # user configurable stuff
+option(ENABLE_CUTF8 "Enable C.UTF-8 as default locale" ON)
 option(ENABLE_NLS "Enable native language support" ON)
 option(ENABLE_OPENMP "Enable OpenMP threading support" ON)
 option(ENABLE_PYTHON "Enable Python bindings" ON)
@@ -144,6 +145,13 @@ function(makemacros)
 	set(RPMCANONVENDOR ${host_vendor})
 	set(RPMCANONOS ${host_os})
 	set(RPMCANONGNU -gnu)
+
+	if (ENABLE_CUTF8)
+		set(C_LOCALE "C.UTF-8")
+	else()
+		set(C_LOCALE "C")
+	endif()
+	message(INFO " using ${C_LOCALE} as default locale")
 
 	configure_file(platform.in platform @ONLY)
 	configure_file(rpmrc.in rpmrc @ONLY)
