@@ -108,7 +108,8 @@ function snapshot()
         exec)
             @BWRAP@ --unshare-pid --dev-bind $RPMTEST / --clearenv \
                     --setenv PATH "@CMAKE_INSTALL_FULL_BINDIR@:/usr/bin" \
-                    --setenv HOME /root --chdir / --dev /dev --proc /proc "$@"
+                    --setenv HOME /root --chdir / --dev /dev --proc /proc \
+                    --die-with-parent "$@"
         ;;
         shell)
             local source=$(findmnt -no SOURCE --mountpoint $RPMTEST)
