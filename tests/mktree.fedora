@@ -32,18 +32,26 @@ RPM_MACROS="
 ENV_MOTD="
 Welcome to RPM test environment!
 
-This is like an interactive test but with
-full host integration.
+This is like an interactive test with a writable \$RPMTEST
+tree, but with full host integration so you can use your
+native tools to inspect or modify the tree.
 
-Your test tree is mounted at \$RPMTEST.
-You can use the usual test commands, e.g.
+The shell runs in a user namespace WITHOUT filesystem
+isolation so be mindful when using destructive commands.
+Treat it like any other shell on your host.
+
+The usual test commands are available, e.g.
 
   runroot rpm ...
 
-DNF is set to operate on the tree, use it
-simply like this:
+DNF is configured to operate on the tree, use it simply
+like this:
 
   dnf install ...
+
+To factory-reset the tree, leave this shell and run:
+
+  make reset
 "
 
 CMD=$1; shift
