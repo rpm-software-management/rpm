@@ -7,7 +7,7 @@
 source ./mktree.common
 
 # Obtain source dir (or common git-worktree(1) if one exists)
-git() { $(which git) -C "@CMAKE_SOURCE_DIR@" "$@"; }
+git() { command git -C "@CMAKE_SOURCE_DIR@" "$@"; }
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     SOURCE_DIR=$(git rev-parse --path-format=absolute --git-common-dir |
                  xargs dirname)
@@ -145,7 +145,7 @@ case $CMD in
     env)
         set -a
         mount_tree $SANDBOX_DIR
-        dnf() { $(which dnf) --installroot=$RPMTEST "$@"; }
+        dnf() { command dnf --installroot=$RPMTEST "$@"; }
         echo "$ENV_MOTD"
         $SHELL
         exit 0
