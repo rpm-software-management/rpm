@@ -10,6 +10,11 @@
 #include <sys/statvfs.h>
 #include <fcntl.h>
 
+#define _GNU_SOURCE
+#include <sched.h>
+#include <sys/mount.h>
+#include <stdbool.h>
+
 /* duplicated from cpio.c */
 #if defined(MAJOR_IN_MKDEV)
 #include <sys/mkdev.h>
@@ -64,6 +69,8 @@ struct diskspaceInfo_s {
 /* Adjust for root only reserved space. On linux e2fs, this is 5%. */
 #define	adj_fs_blocks(_nb)	(((_nb) * 21) / 20)
 #define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
+
+static bool unshared_namespace=false;
 
 static char *getMntPoint(const char *dirName, dev_t dev)
 {
@@ -1677,6 +1684,36 @@ rpmRC rpmtsSetupTransactionPlugins(rpmts ts)
 
     return rc;
 }
+
+static int setupPrivateTempDirectory( void )
+{
+    if (!unshared_namespace) {
+	if (unshare(CLONE_NEWNS) < 0) {
+	  rpmlog(RPMLOG_ERR, _("can't unshare mount namespace: %s\n"), strerror(errno));
+	  return -1;
+	}
+	if (mount("/", "/", NULL, MS_REC | MS_PRIVATE, NULL) == -1) {
+	  rpmlog(RPMLOG_ERR, _("can't change mount flags for /: %s\n"), strerror(errno));
+	  return -1;
+	}
+	unshared_namespace=true;
+    }
+    if (mount("none", "/tmp", "tmpfs", 0, NULL) == -1) {
+      rpmlog(RPMLOG_ERR, _("can't mount private tmp: %s\n"), strerror(errno));
+      return -1;
+    }
+    return 0;
+}
+
+static int teardownPrivateTempDirectory( void )
+{
+    if (umount("/tmp") == -1) {
+      rpmlog(RPMLOG_ERR, _("can't umount private tmp: %s\n"), strerror(errno));
+      return -1;
+    }
+    return 0;
+}
+
 /**
  * Run a scriptlet with args.
  *
@@ -1716,8 +1753,10 @@ rpmRC runScript(rpmts ts, rpmte te, Header h, ARGV_const_t prefixes,
 	sfd = rpmtsScriptFd(ts);
 
     rpmswEnter(rpmtsOp(ts, RPMTS_OP_SCRIPTLETS), 0);
+    setupPrivateTempDirectory();
     rc = rpmScriptRun(script, arg1, arg2, sfd,
 		      prefixes, rpmtsPlugins(ts));
+    teardownPrivateTempDirectory();
     rpmswExit(rpmtsOp(ts, RPMTS_OP_SCRIPTLETS), 0);
 
     /* Map warn-only errors to "notfound" for script stop callback */
