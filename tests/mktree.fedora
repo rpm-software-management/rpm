@@ -56,6 +56,18 @@ To factory-reset the tree, leave this shell and run:
 
 CMD=$1; shift
 
+dnf()
+{
+    HOME=$CACHE_DIR command dnf \
+        --installroot=$BASE_DIR \
+        --releasever=@OS_VERSION@ \
+        --setopt=cachedir=$CACHE_DIR/dnf \
+        --setopt=keepcache=1 \
+        --setopt=install_weak_deps=0 \
+        --disablerepo=\* --enablerepo=fedora,updates \
+        --exclude=rpm,systemd-udev "$@"
+}
+
 mount_tree()
 {
     source ./atlocal
@@ -87,15 +99,7 @@ case $CMD in
         mkdir -p $CACHE_DIR
         echo "$RPM_MACROS" > $CACHE_DIR/.rpmmacros
 
-        HOME=$CACHE_DIR \
         dnf install -y \
-            --installroot=$BASE_DIR \
-            --releasever=@OS_VERSION@ \
-            --setopt=cachedir=$CACHE_DIR/dnf \
-            --setopt=keepcache=1 \
-            --setopt=install_weak_deps=0 \
-            --disablerepo=\* --enablerepo=fedora,updates \
-            --exclude=rpm,systemd-udev \
             bash \
             binutils \
             bubblewrap \
@@ -153,7 +157,11 @@ case $CMD in
     env)
         set -a
         mount_tree $SANDBOX_DIR
-        dnf() { command dnf --installroot=$RPMTEST "$@"; }
+
+        export CACHE_DIR
+        export BASE_DIR=$RPMTEST
+        export -f dnf
+
         echo "$ENV_MOTD"
         $SHELL
         exit 0
