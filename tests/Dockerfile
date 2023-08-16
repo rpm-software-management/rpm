@@ -52,6 +52,7 @@ RUN dnf -y install \
   fsverity-utils fsverity-utils-devel \
   pandoc \
   && dnf clean all
+RUN echo "%_dbpath $(rpm --eval '%_dbpath')" > /root/.rpmmacros
 
 WORKDIR /srv/rpm
 COPY . .
