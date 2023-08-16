@@ -30,9 +30,6 @@ DBFORMAT=$(awk '/^%_db_backend/{print $2}' \
            "${RPM_CONFIGDIR_PATH}/macros" 2>/dev/null)
 export DBFORMAT
 
-HOME="${PWD}"
-export HOME
-
 TZ=UTC
 export TZ
 
@@ -75,7 +72,7 @@ function setup_env()
 {
     if [ -d tree ]; then
         RPMTEST=${PWD}/tree
-        HOME=${RPMTEST}
+        HOME=${RPMTEST}/root
         export RPMTEST HOME
     fi
 }
@@ -111,7 +108,7 @@ function snapshot()
         exec)
             @BWRAP@ --unshare-pid --dev-bind $RPMTEST / --clearenv \
                     --setenv PATH "@CMAKE_INSTALL_FULL_BINDIR@:/usr/bin" \
-                    --setenv HOME / --chdir / --dev /dev --proc /proc "$@"
+                    --setenv HOME /root --chdir / --dev /dev --proc /proc "$@"
         ;;
         shell)
             local source=$(findmnt -no SOURCE --mountpoint $RPMTEST)
@@ -123,8 +120,8 @@ function snapshot()
                     set -- sh
                 fi
             fi
-            snapshot exec --unshare-uts --hostname $source --clearenv \
-                          --setenv HOME /root --bind $PWD /srv "$@"
+            snapshot exec --unshare-uts --hostname $source \
+                          --bind $PWD /srv "$@"
         ;;
     esac
 }
@@ -134,7 +131,7 @@ function run()
     setup_env
     "$@" --define "_buildhost testhost" \
          --define "_tmppath ${RPMTEST}/tmp" \
-         --define "_topdir ${HOME}/build" \
+         --define "_topdir ${RPMTEST}/build" \
          --define "_db_backend ${DBFORMAT}" \
          --dbpath="${RPMTEST}/var/lib/rpm/"
 }
