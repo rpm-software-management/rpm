@@ -25,6 +25,8 @@
 #define ISMACRO(s,m,len) (rstreqn((s), (m), len) && !risalpha((s)[len]))
 #define ISMACROWITHARG(s,m,len) (rstreqn((s), (m), len) && (risblank((s)[len]) || !(s)[len]))
 
+static rpmRC parseSpecParts(rpmSpec spec, const char *pattern);
+
 typedef struct OpenFileInfo {
     char * fileName;
     FILE *fp;
@@ -891,6 +893,68 @@ exit:
     return res;
 }
 
+static rpmRC parseAutosect(rpmSpec spec,
+			const char *prefix, const char *section, StringBuf sb)
+{
+    rpmRC rc = RPMRC_OK;
+
+    if (sb == NULL) {
+	char *mn = rstrscat(NULL, "autobuild_", prefix, "_", section, NULL);
+	if (rpmMacroIsParametric(NULL, mn)) {
+	    char *path = NULL;
+	    FD_t fd = rpmMkTempFile(NULL, &path);
+	    if (fd) {
+		char *buf = rstrscat(NULL, "%", section, "\n",
+					   "%{", mn, "}", NULL);
+		size_t blen = strlen(buf);
+		if (Fwrite(buf, blen, 1, fd) < blen)
+		   rc = RPMRC_FAIL;
+		Fclose(fd);
+	    }
+	    if (fd == NULL || rc) {
+		rpmlog(RPMLOG_ERR, _("failed to write autobuild %%%s %s: %s\n"),
+			section, path, strerror(errno));
+	    } else {
+		rc = parseSpecParts(spec, path);
+	    }
+	    unlink(path);
+	    free(path);
+	}
+	free(mn);
+    }
+    return rc;
+}
+
+struct autosect_s {
+    const char *name;
+    StringBuf sb;
+};
+
+static rpmRC parseAutobuild(rpmSpec spec)
+{
+    rpmRC rc = RPMRC_OK;
+    char *autobuild = rpmExpand("%{?autobuild}", NULL);
+    if (*autobuild) {
+	/* XXX we should have APIs for this stuff */
+	struct autosect_s autosectList[] = {
+	    { "prep", spec->prep },
+	    { "conf", spec->conf },
+	    { "generate_depends", spec->buildrequires },
+	    { "build", spec->build },
+	    { "install", spec->install },
+	    { "check", spec->check },
+	    { "clean", spec->clean },
+	    { NULL, NULL }
+	};
+
+	for (struct autosect_s *as = autosectList; !rc && as->name; as++) {
+	    rc = parseAutosect(spec, autobuild, as->name, as->sb);
+	}
+    }
+    free(autobuild);
+    return rc;
+}
+
 static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 			 const char *buildRoot, int recursing);
 
@@ -1047,6 +1111,9 @@ static rpmRC parseSpecSection(rpmSpec *specptr, int secondary)
 	    goto exit;
 	}
     }
+
+    if (!secondary && parseAutobuild(spec))
+	goto errxit;
 
     /* Add arch for each package */
     addArch(spec);

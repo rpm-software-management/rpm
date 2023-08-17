@@ -44,6 +44,27 @@ GPL
 [])
 RPMTEST_CLEANUP
 
+AT_SETUP([rpmbuild -b autobuild])
+AT_KEYWORDS([build])
+RPMDB_INIT
+
+runroot rpmbuild -bb \
+	--define "_prefix /usr" \
+	--define "_docdir_fmt %%{NAME}" \
+	--quiet /data/SPECS/amhello.spec
+
+RPMTEST_CHECK([
+runroot rpm -qpl --noartifact /build/RPMS/*/amhello-1.0-1.*.rpm
+],
+[0],
+[/usr/bin/hello
+/usr/share/doc/amhello
+/usr/share/doc/amhello/README
+/usr/share/doc/amhello/README.distro
+],
+[ignore])
+RPMTEST_CLEANUP
+
 AT_SETUP([rpmbuild -b steps])
 AT_KEYWORDS([build])
 RPMDB_INIT

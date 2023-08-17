@@ -820,6 +820,14 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	multiToken = 1;
 
     switch (tag) {
+    case RPMTAG_AUTOBUILD:
+	SINGLE_TOKEN_ONLY;
+	if (rpmCharCheck(spec, field,
+			ALLOWED_CHARS_NAME, ALLOWED_FIRSTCHARS_NAME))
+	{
+	    goto exit;
+	}
+	break;
     case RPMTAG_NAME:
 	SINGLE_TOKEN_ONLY;
 	if (rpmCharCheck(spec, field,
@@ -1080,6 +1088,7 @@ static struct PreambleRec_s const preambleList[] = {
     {RPMTAG_BUILDPREREQ,	0, 1, 0, LEN_AND_STR("buildprereq")},
     {RPMTAG_BUILDREQUIRES,	0, 0, 0, LEN_AND_STR("buildrequires")},
     {RPMTAG_AUTOREQPROV,	0, 0, 0, LEN_AND_STR("autoreqprov")},
+    {RPMTAG_AUTOBUILD,		0, 0, 1, LEN_AND_STR("autobuild")},
     {RPMTAG_AUTOREQ,		0, 0, 0, LEN_AND_STR("autoreq")},
     {RPMTAG_AUTOPROV,		0, 0, 0, LEN_AND_STR("autoprov")},
     {RPMTAG_DOCDIR,		0, 0, 0, LEN_AND_STR("docdir")},
