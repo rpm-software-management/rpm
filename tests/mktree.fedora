@@ -183,7 +183,8 @@ case $CMD in
     ;;
     check)
         mount_tree
-        snapshot shell --tmpfs /tmp --chdir /srv ./rpmtests "$@"
+        snapshot shell --tmpfs /tmp sh -c 'cd /srv && exec ./rpmtests "$@"' \
+                                    rpmtests "$@"
     ;;
     reset)
         rm -rf "$SANDBOX_DIR"
