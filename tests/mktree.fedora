@@ -148,6 +148,9 @@ case $CMD in
             zlib \
             zstd
 
+        # Enable DNS resolution
+        cp /etc/resolv.conf $BASE_DIR/etc/
+
         # Point RPM to newly created database
         echo "%_dbpath $(rpm --eval '%_dbpath')" > $BASE_DIR/root/.rpmmacros
 
