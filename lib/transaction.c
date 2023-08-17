@@ -10,7 +10,6 @@
 #include <sys/statvfs.h>
 #include <fcntl.h>
 
-#define _GNU_SOURCE
 #include <sched.h>
 #include <sys/mount.h>
 #include <stdbool.h>
