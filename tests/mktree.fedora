@@ -79,6 +79,7 @@ mount_tree()
 clean_up()
 {
     [ -n "$RPMTEST" ] && snapshot umount
+    chmod -Rf u+rwX $BASE_DIR $SANDBOX_DIR rpmtests.dir
 }
 
 # Run CMD in a user namespace (if not root already)
