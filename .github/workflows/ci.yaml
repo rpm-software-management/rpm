@@ -1,0 +1,58 @@
+name: CI
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    container: fedora:38
+    steps:
+      - name: Install packages
+        run: sudo dnf -y install git mock mock-centos-sig-configs
+      - name: Check out repository code
+        uses: actions/checkout@v3
+        with:
+          path: src
+      - name: Check out centos rpm repo
+        run: git clone https://git.centos.org/rpms/rpm.git
+      - name: Check out centos-git-common repo
+        run: git clone https://git.centos.org/centos-git-common.git
+      - name: Create patch
+        working-directory: ./src
+        run: git format-patch --stdout HEAD~1..HEAD > new.patch
+      - name: Checkout c9 hyperscale branch
+        working-directory: ./rpm
+        run: git checkout c9s-sig-hyperscale
+      - name: Copy patch
+        working-directory: ./rpm
+        run: cp ../src/new.patch .
+      - name: Add patch to spec file
+        working-directory: ./rpm
+        run: |
+          last_patch=$(grep 'Patch[0-9]\+:' rpm.spec | tail -1)
+          declare -A patch_ids
+          for id in $(grep 'Patch[0-9]\+:' rpm.spec | sort | cut -d: -f1 | grep -o '[0-9]\+'); do
+              patch_ids[$id]=1
+          done
+          found=0
+          for id in $(seq 9999 -1 1); do
+              if [[ ! ${patch_ids[$id]} ]]; then
+                  break
+              fi
+          done
+          if (( found == 0 )); then
+              echo "No free patch number found"
+              exit 1
+          fi
+          sed -i -e "/$last_patch/ aPatch$id: new.patch" rpm.spec
+      - name: Get sources
+        working-directory: ./rpm
+        run: ../centos-git-common/get_sources.sh
+      - name: Build src rpm
+        working-directory: ./rpm
+        run: mock -r centos-stream-hyperscale-experimental-9-x86_64 --sources . --spec rpm.spec

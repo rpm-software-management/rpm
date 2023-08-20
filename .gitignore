@@ -2,6 +2,7 @@
 !.tx
 !.gitignore
 !.mailmap
+!.github
 *.*~
 *.tmp
 
