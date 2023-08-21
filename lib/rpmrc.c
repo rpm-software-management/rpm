@@ -1685,6 +1685,14 @@ static void rpmRebuildTargetVars(rpmrcCtx ctx,
  * XXX Make sure that per-arch optflags is initialized correctly.
  */
   { const char *optflags = rpmGetVarArch(ctx, RPMVAR_OPTFLAGS, ca);
+    /*
+     * If not defined for the target arch, fall back to current arch
+     * definitions, with buildarchtranslate applied. This is WRONG
+     * but it's what we've always done, except for buildarchtranslate.
+     */
+    if (optflags == NULL) {
+	optflags = rpmGetVarArch(ctx, RPMVAR_OPTFLAGS, NULL);
+    }
     if (optflags != NULL) {
 	rpmPopMacro(NULL, "optflags");
 	rpmPushMacro(NULL, "optflags", NULL, optflags, RMIL_RPMRC);
