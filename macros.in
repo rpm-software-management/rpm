@@ -136,6 +136,9 @@
 %_passwd_path		/etc/passwd
 %_group_path		/etc/group
 
+# location of sysusers.d(5) directory
+%_sysusersdir		@sysusersdir@
+
 # sysusers helper binary (or a replacement script), uncomment to disable
 #%__systemd_sysusers	@__SYSTEMD_SYSUSERS@
 %__systemd_sysusers	%{_rpmconfigdir}/sysusers.sh
@@ -970,7 +973,6 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 %_includedir		%{_prefix}/include
 %_infodir		%{_datadir}/info
 %_mandir		%{_datadir}/man
-%_sysusersdir		@sysusersdir@
 
 #==============================================================================
 # ---- config.guess platform macros.
