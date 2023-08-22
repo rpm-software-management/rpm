@@ -86,7 +86,11 @@ function(makemacros)
 	set(infodir "\${prefix}/${CMAKE_INSTALL_INFODIR}")
 	set(mandir "\${prefix}/${CMAKE_INSTALL_MANDIR}")
 	set(rundir /run)
-	set(root_prefix /usr)
+
+	pkg_get_variable(sysusersdir systemd sysusersdir)
+	if (NOT sysusersdir)
+		set(sysusersdir /usr/lib/sysusers.d)
+	endif()
 
 	findutil(__7ZIP "7za;7z")
 	findutil(__BZIP2 bzip2)
