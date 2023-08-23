@@ -90,6 +90,7 @@ EXTRA_DIST += data/SPECS/reloc.spec
 EXTRA_DIST += data/SPECS/replacetest.spec
 EXTRA_DIST += data/SPECS/triggers.spec
 EXTRA_DIST += data/SPECS/filetriggers.spec
+EXTRA_DIST += data/SPECS/badftrigger.spec
 EXTRA_DIST += data/SPECS/parallel.spec
 EXTRA_DIST += data/SPECS/prefixtest.spec
 EXTRA_DIST += data/SPECS/testdoc.spec
