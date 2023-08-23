@@ -273,6 +273,17 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	    }
 	}
 
+	/* needs to be checked before checkDep() */
+	if (nametag == RPMTAG_FILETRIGGERNAME ||
+	    nametag == RPMTAG_TRANSFILETRIGGERNAME)
+	{
+	    if (N[0] != '/') {
+		rasprintf(&emsg,
+		    _("file trigger conditions must begin with '/'"));
+		goto exit;
+	    }
+	}
+
 	/* check that dependency is well-formed */
 	if (checkDep(spec, N, EVR, &emsg))
 	    goto exit;
@@ -292,15 +303,6 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 				   "'>' in Obsoletes"));
 	    }
 	}
-
-	if (nametag == RPMTAG_FILETRIGGERNAME ||
-	    nametag == RPMTAG_TRANSFILETRIGGERNAME) {
-	    if (N[0] != '/') {
-		rasprintf(&emsg, _("Only absolute paths are allowed in "
-				    "file triggers"));
-	    }
-	}
-
 
 	/* Deny more "normal" triggers fired by the same pakage. File triggers are ok */
 	if (nametag == RPMTAG_TRIGGERNAME) {
@@ -333,8 +335,8 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 exit:
     if (emsg) {
 	int lvl = (rc == RPMRC_OK) ? RPMLOG_WARNING : RPMLOG_ERR;
-	/* Automatic dependencies don't relate to spec lines */
-	if (tagflags & (RPMSENSE_FIND_REQUIRES|RPMSENSE_FIND_PROVIDES)) {
+	/* Automatic dependencies and triggers don't relate to spec lines */
+	if (tagflags & (RPMSENSE_FIND_REQUIRES|RPMSENSE_FIND_PROVIDES|RPMSENSE_TRIGGER)) {
 	    rpmlog(lvl, "%s: %s\n", emsg, r);
 	} else {
 	    rpmlog(lvl, _("line %d: %s: %s\n"),

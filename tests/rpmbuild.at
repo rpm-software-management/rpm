@@ -2436,3 +2436,31 @@ runroot rpmbuild -bp --quiet /data/SPECS/source_space.spec
 [],
 [])
 RPMTEST_CLEANUP
+
+AT_SETUP([rpmbuild bad filetrigger condition])
+AT_KEYWORDS([build])
+RPMDB_INIT
+
+RPMTEST_CHECK([
+rpmspec --parse /data/SPECS/badftrigger.spec
+],
+[1],
+[],
+[error: file trigger conditions must begin with '/': %{nosuchmacro}
+])
+
+RPMTEST_CHECK([
+rpmspec --define "nosuchmacro aaa" --parse /data/SPECS/badftrigger.spec
+],
+[1],
+[],
+[error: file trigger conditions must begin with '/': aaa
+])
+
+RPMTEST_CHECK([
+rpmspec --define "nosuchmacro /bbb" --parse /data/SPECS/badftrigger.spec
+],
+[0],
+[ignore],
+[])
+RPMTEST_CLEANUP
