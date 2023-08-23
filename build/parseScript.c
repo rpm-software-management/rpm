@@ -385,12 +385,6 @@ int parseScript(rpmSpec spec, int parsePart)
     /* get the index right.                                   */
     if (tag == RPMTAG_TRIGGERSCRIPTS || tag == RPMTAG_FILETRIGGERSCRIPTS ||
 	tag == RPMTAG_TRANSFILETRIGGERSCRIPTS) {
-	if (tag != RPMTAG_TRIGGERSCRIPTS && *reqargs != '/') {
-	    rpmlog(RPMLOG_ERR,
-	       _("line %d: file trigger condition must begin with '/': %s"),
-		spec->lineNum, reqargs);
-	    goto exit;
-	}
 	if (progArgc > 1) {
 	    rpmlog(RPMLOG_ERR,
 	      _("line %d: interpreter arguments not allowed in triggers: %s\n"),
