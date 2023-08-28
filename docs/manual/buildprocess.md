@@ -4,26 +4,28 @@ title: rpm.org - Package Build Process
 ---
 # Package Build Process
 
+## Overview
+
 * Unpack srpm/tar (optional)
-* [Parse spec](https://github.com/rpm-software-management/rpm/blob/master/build/parseSpec.c)  - see also [build/parse*.c](https://github.com/rpm-software-management/rpm/blob/master/build/)
+* Parse the [spec](spec.md)
   * If  buildarch detected parse spec multiple times - once for each arch with `_target_cpu` macro set
   * Build will iterate over all the spec variants and build multiple versions
 * Check static build requires
-* Execute build scripts (see [doScript()](https://github.com/rpm-software-management/rpm/blob/master/build/build.c#L95)
-  * %prep
-  * %generate_buildrequires if present
+* Execute present [build scriptlets](spec.md#build-scriptlets)
+  * `%prep`
+  * `%generate_buildrequires`
     * re-check build requires - stop build on errors
-  * %conf
-  * %build
-  * %install
+  * `%conf`
+  * `%build`
+  * `%install`
   * Read [dynamic spec parts](dynamic_specs.md)
-  * %check - if present
- * Process files
-   * Turn %files lines into actual files (evaluate globs)
-     * Read from -f param
-   * Run [file classifiers](https://github.com/rpm-software-management/rpm/blob/master/build/rpmfc.c) 
-   * Generate automatic dependencies
-   * Check packaged files against install root 
- * Create packages
- * %clean
- * Clean up
+  * `%check`
+* Process files
+  * Turn [%files](spec.md#files-section) lines into actual files (evaluate globs)
+    * Read from -f param
+  * Run [file classifier](dependency_generators.md#file-attributes)
+  * Run [dependency generators](dependency_generators.md)
+  * Check packaged files against install root 
+* Create packages
+* Clean up
+  * %clean
