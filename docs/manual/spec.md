@@ -456,8 +456,6 @@ and may be subject to formatting by glint or another RPM tool.
 The `-n` option and `<name>` are the same as for `%package`, except that
 when name is omitted, the description refers to the main package.
 
-### Dependencies
-
 ## Build scriptlets
 
 Package build is divided into multiple separate steps, each executed
