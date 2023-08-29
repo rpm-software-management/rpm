@@ -31,6 +31,13 @@ signatures. This depends on the OpenPGP parser used: the default is
 rpm-sequoia library (>= 1.3.0 required), which is available from
     https://github.com/rpm-software-management/rpm-sequoia
 
+Use of rpm-sequoia is strongly recommended. Most importantly, the internal
+parser is considered insecure. It simply ignores various critical aspects of
+OpenPGP (such as sub-packet binding signatures) that are properly implemented
+in Sequoia. Some other Sequoia advantages include being implemented in a
+memory-safe language, configurable policy and user-relevant error messages.
+For more information, see https://sequoia-pgp.org/
+
 If using the deprecated internal parser (-DWITH_INTERNAL_OPENPGP=ON),
 the default is libgcrypt, but alternatively OpenSSL can be used by
 additionally specifying -DWITH_OPENSSL=ON.
