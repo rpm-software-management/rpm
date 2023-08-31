@@ -30,10 +30,6 @@ const char * const rpmEVR = VERSION;
 
 const int rpmFLAGS = RPMSENSE_EQUAL;
 
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
-
 #define HASHTYPE depCache
 #define HTKEYTYPE const char *
 #define HTDATATYPE int

@@ -18,19 +18,16 @@
 #include <libgen.h>
 
 /* Create new hash table type rpmFpEntryHash */
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
 #define HASHTYPE rpmFpEntryHash
 #define HTKEYTYPE rpmsid
 #define HTDATATYPE const struct fprintCacheEntry_s *
 #include "lib/rpmhash.H"
 #include "lib/rpmhash.C"
-
-/* Create by-fingerprint hash table */
 #undef HASHTYPE
 #undef HTKEYTYPE
 #undef HTDATATYPE
+
+/* Create by-fingerprint hash table */
 #define HASHTYPE rpmFpHash
 #define HTKEYTYPE const fingerPrint *
 #define HTDATATYPE struct rpmffi_s

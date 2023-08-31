@@ -7,9 +7,6 @@
 #include "build/rpmbuild_misc.h"
 #include "rpmio/rpmlua.h"
 
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
 #define HASHTYPE fileRenameHash
 #define HTKEYTYPE const char *
 #define HTDATATYPE const char *
