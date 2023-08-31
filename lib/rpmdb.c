@@ -38,9 +38,6 @@
 #include "lib/misc.h"
 #include "debug.h"
 
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
 #define HASHTYPE dbChk
 #define HTKEYTYPE unsigned int
 #define HTDATATYPE rpmRC

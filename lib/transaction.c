@@ -1001,14 +1001,12 @@ static void skipInstallFiles(const rpmts ts, rpmfiles files, rpmfs fs)
     rpmfiFree(fi);
 }
 
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
-
 #define HASHTYPE rpmStringSet
 #define HTKEYTYPE rpmsid
 #include "lib/rpmhash.H"
 #include "lib/rpmhash.C"
+#undef HASHTYPE
+#undef HTKEYTYPE
 
 static unsigned int sidHash(rpmsid sid)
 {

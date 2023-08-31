@@ -40,14 +40,14 @@ typedef struct availableIndexEntry_s {
     unsigned int entryIx;	/*!< Dependency index. */
 } * availableIndexEntry;
 
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
 #define HASHTYPE rpmalDepHash
 #define HTKEYTYPE rpmsid
 #define HTDATATYPE struct availableIndexEntry_s
 #include "lib/rpmhash.H"
 #include "lib/rpmhash.C"
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
 
 typedef struct availableIndexFileEntry_s {
     rpmsid dirName;
@@ -55,14 +55,14 @@ typedef struct availableIndexFileEntry_s {
     unsigned int entryIx;	/*!< Dependency index. */
 } * availableIndexFileEntry;
 
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
 #define HASHTYPE rpmalFileHash
 #define HTKEYTYPE rpmsid
 #define HTDATATYPE struct availableIndexFileEntry_s
 #include "lib/rpmhash.H"
 #include "lib/rpmhash.C"
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
 
 /** \ingroup rpmdep
  * Set of available packages, items, and directories.
