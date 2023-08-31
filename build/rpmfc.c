@@ -51,14 +51,14 @@ typedef struct {
     int alloced;
 } rpmfcFileDeps;
 
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
 #define HASHTYPE fattrHash
 #define HTKEYTYPE int
 #define HTDATATYPE int
 #include "lib/rpmhash.H"
 #include "lib/rpmhash.C"
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
 
 struct rpmfc_s {
     Package pkg;

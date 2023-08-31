@@ -31,9 +31,6 @@ struct hardlinks_s {
 
 typedef struct hardlinks_s * hardlinks_t;
 
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
 #define HASHTYPE nlinkHash
 #define HTKEYTYPE int
 #define HTDATATYPE struct hardlinks_s *
@@ -1383,9 +1380,6 @@ struct fileid_s {
     rpm_ino_t id_ino;
 };
 
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
 #define HASHTYPE fileidHash
 #define HTKEYTYPE struct fileid_s
 #define HTDATATYPE int

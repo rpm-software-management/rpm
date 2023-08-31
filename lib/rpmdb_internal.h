@@ -12,9 +12,6 @@
 extern "C" {
 #endif
 
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
 #define HASHTYPE packageHash
 #define HTKEYTYPE unsigned int
 #define HTDATATYPE struct rpmte_s *
