@@ -66,7 +66,9 @@ static rpmRC open_dbus(rpmPlugin plugin, rpmts ts)
     }
     return RPMRC_OK;
  err:
-    rpmlog(RPMLOG_WARNING,
+    int ignore = dbus_error_has_name(&err, DBUS_ERROR_NO_SERVER) ||
+		 dbus_error_has_name(&err, DBUS_ERROR_FILE_NOT_FOUND);
+    rpmlog(ignore ? RPMLOG_DEBUG : RPMLOG_WARNING,
 	   "dbus_announce plugin: Error connecting to dbus (%s)\n",
 	   err.message);
     dbus_error_free(&err);
