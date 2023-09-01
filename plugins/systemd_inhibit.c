@@ -53,13 +53,11 @@ static int inhibit(void)
     }
     
     if (dbus_error_is_set(&err)) {
-	if (!dbus_error_has_name(&err, DBUS_ERROR_NO_SERVER) &&
-	    !dbus_error_has_name(&err, DBUS_ERROR_FILE_NOT_FOUND))
-	{
-	    rpmlog(RPMLOG_WARNING,
+	int ignore = dbus_error_has_name(&err, DBUS_ERROR_NO_SERVER) ||
+		     dbus_error_has_name(&err, DBUS_ERROR_FILE_NOT_FOUND);
+	rpmlog(ignore ? RPMLOG_DEBUG : RPMLOG_WARNING,
 	       "Unable to get systemd shutdown inhibition lock: %s\n",
 		err.message);
-	}
 	dbus_error_free(&err);
     }
 
