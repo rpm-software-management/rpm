@@ -153,7 +153,7 @@ function runroot()
     snapshot exec "$@" \
              --define "_buildhost testhost" \
              --define "_topdir /build" \
-             --noplugins --nouserns
+             --nouserns
 }
 
 function runroot_other()
