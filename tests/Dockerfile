@@ -7,8 +7,6 @@ RUN sed -i -e "s:^enabled=.$:enabled=0:g" /etc/yum.repos.d/*openh264.repo
 # dummy for controlling per-repo gpgcheck via Semaphore setup
 RUN sed -i -e "s:^gpgcheck=.$:gpgcheck=1:g" /etc/yum.repos.d/*.repo
 RUN dnf -y update
-# until 1.4.0 lands in stable
-RUN dnf -y --enablerepo=updates-testing install "rpm-sequoia-devel >= 1.4.0"
 RUN dnf -y install \
   autoconf \
   bubblewrap \
