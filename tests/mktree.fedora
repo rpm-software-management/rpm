@@ -114,6 +114,7 @@ case $CMD in
             coreutils \
             cpio \
             curl \
+            dbus-libs \
             debugedit \
             diffutils \
             elfutils-libelf \
