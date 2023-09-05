@@ -621,6 +621,25 @@ void * specLuaFini(rpmSpec spec);
 
 RPM_GNUC_INTERNAL
 void addLuaSource(const struct Source *p);
+
+RPM_GNUC_INTERNAL
+int isMemberInEntry(Header h, const char *name, rpmTagVal tag);
+
+RPM_GNUC_INTERNAL
+rpmRC checkForValidArchitectures(rpmSpec spec);
+
+RPM_GNUC_INTERNAL
+int checkForRequired(Header h);
+
+RPM_GNUC_INTERNAL
+int checkForDuplicates(Header h);
+
+RPM_GNUC_INTERNAL
+void fillOutMainPackage(Header h);
+
+RPM_GNUC_INTERNAL
+void copyInheritedTags(Header h, Header fromh);
+
 #ifdef __cplusplus
 }
 #endif

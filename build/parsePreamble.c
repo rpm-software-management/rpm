@@ -415,7 +415,7 @@ static inline char * findLastChar(char * s)
 
 /**
  */
-static int isMemberInEntry(Header h, const char *name, rpmTagVal tag)
+int isMemberInEntry(Header h, const char *name, rpmTagVal tag)
 {
     struct rpmtd_s td;
     int found = 0;
@@ -437,7 +437,7 @@ static int isMemberInEntry(Header h, const char *name, rpmTagVal tag)
 
 /**
  */
-static rpmRC checkForValidArchitectures(rpmSpec spec)
+rpmRC checkForValidArchitectures(rpmSpec spec)
 {
     char *arch = rpmExpand("%{_target_cpu}", NULL);
     char *os = rpmExpand("%{_target_os}", NULL);
@@ -483,7 +483,7 @@ exit:
  * @param NVR		package name-version-release
  * @return		RPMRC_OK if OK
  */
-static int checkForRequired(Header h)
+int checkForRequired(Header h)
 {
     int res = RPMRC_OK;
     const rpmTagVal * p;
@@ -506,7 +506,7 @@ static int checkForRequired(Header h)
  * @param NVR		package name-version-release
  * @return		RPMRC_OK if OK
  */
-static int checkForDuplicates(Header h)
+int checkForDuplicates(Header h)
 {
     int res = RPMRC_OK;
     rpmTagVal tag, lastTag = RPMTAG_NOT_FOUND;
@@ -545,7 +545,7 @@ static struct optionalTag {
 
 /**
  */
-static void fillOutMainPackage(Header h)
+void fillOutMainPackage(Header h)
 {
     const struct optionalTag *ot;
 
