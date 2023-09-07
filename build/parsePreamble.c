@@ -483,7 +483,7 @@ exit:
  * @param NVR		package name-version-release
  * @return		RPMRC_OK if OK
  */
-static int checkForRequired(Header h, const char * NVR)
+static int checkForRequired(Header h)
 {
     int res = RPMRC_OK;
     const rpmTagVal * p;
@@ -492,7 +492,7 @@ static int checkForRequired(Header h, const char * NVR)
 	if (!headerIsEntry(h, *p)) {
 	    rpmlog(RPMLOG_ERR,
 			_("%s field must be present in package: %s\n"),
-			rpmTagGetName(*p), NVR);
+			rpmTagGetName(*p), headerGetString(h, RPMTAG_NAME));
 	    res = RPMRC_FAIL;
 	}
     }
@@ -506,7 +506,7 @@ static int checkForRequired(Header h, const char * NVR)
  * @param NVR		package name-version-release
  * @return		RPMRC_OK if OK
  */
-static int checkForDuplicates(Header h, const char * NVR)
+static int checkForDuplicates(Header h)
 {
     int res = RPMRC_OK;
     rpmTagVal tag, lastTag = RPMTAG_NOT_FOUND;
@@ -515,7 +515,7 @@ static int checkForDuplicates(Header h, const char * NVR)
     while ((tag = headerNextTag(hi)) != RPMTAG_NOT_FOUND) {
 	if (tag == lastTag) {
 	    rpmlog(RPMLOG_ERR, _("Duplicate %s entries in package: %s\n"),
-		     rpmTagGetName(tag), NVR);
+		     rpmTagGetName(tag), headerGetString(h, RPMTAG_NAME));
 	    res = RPMRC_FAIL;
 	}
 	lastTag = tag;
@@ -1240,7 +1240,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	}
     }
 
-    if (checkForDuplicates(pkg->header, NVR)) {
+    if (checkForDuplicates(pkg->header)) {
 	goto exit;
     }
 
@@ -1248,7 +1248,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	copyInheritedTags(pkg->header, spec->packages->header);
     }
 
-    if (checkForRequired(pkg->header, NVR)) {
+    if (checkForRequired(pkg->header)) {
 	goto exit;
     }
 
