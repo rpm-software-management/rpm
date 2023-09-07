@@ -652,6 +652,10 @@ static void initSourceHeader(rpmSpec spec)
     if (headerIsEntry(sourcePkg->header, RPMTAG_NAME))
 	return;
 
+    char *os = rpmExpand("%{_target_os}", NULL);
+    headerPutString(sourcePkg->header, RPMTAG_OS, os);
+    free(os);
+
     /* Only specific tags are added to the source package header */
     headerCopyTags(spec->packages->header, sourcePkg->header, sourceTags);
 
@@ -694,11 +698,17 @@ static void initSourceHeader(rpmSpec spec)
 	    }
 	}
     }
+}
+
+static void finalizeSourceHeader(rpmSpec spec)
+{
+    /* Only specific tags are added to the source package header */
+    headerCopyTags(spec->packages->header, spec->sourcePackage->header, sourceTags);
 
     /* Provide all package NEVRs that would be built */
     for (Package p = spec->packages; p != NULL; p = p->next) {
 	if (p->fileList) {
-	    Header h = sourcePkg->header;
+	    Header h = spec->sourcePackage->header;
 	    uint32_t dsflags = rpmdsFlags(p->ds);
 	    headerPutString(h, RPMTAG_PROVIDENAME, rpmdsN(p->ds));
 	    headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &dsflags, 1);
@@ -733,37 +743,17 @@ void addPackageProvides(Package pkg)
     free(evr);
 }
 
-static void addTargets(Package Pkgs)
+static void addArch(rpmSpec spec)
 {
-    char *platform = rpmExpand("%{_target_platform}", NULL);
     char *arch = rpmExpand("%{_target_cpu}", NULL);
-    char *os = rpmExpand("%{_target_os}", NULL);
-    char *optflags = rpmExpand("%{optflags}", NULL);
 
-    for (Package pkg = Pkgs; pkg != NULL; pkg = pkg->next) {
-	if (headerIsEntry(pkg->header, RPMTAG_OS)) {
-	    continue;
-	}
-	headerPutString(pkg->header, RPMTAG_OS, os);
+    for (Package pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	/* noarch subpackages already have arch set here, leave it alone */
 	if (!headerIsEntry(pkg->header, RPMTAG_ARCH)) {
 	    headerPutString(pkg->header, RPMTAG_ARCH, arch);
 	}
-	headerPutString(pkg->header, RPMTAG_PLATFORM, platform);
-	headerPutString(pkg->header, RPMTAG_OPTFLAGS, optflags);
-
-	/* Add manual dependencies early for rpmspec etc to look at */
-	addPackageProvides(pkg);
-	for (int i=0; i<PACKAGE_NUM_DEPS; i++) {
-	    rpmdsPutToHeader(pkg->dependencies[i], pkg->header);
-	}
-
-	pkg->ds = rpmdsThis(pkg->header, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
     }
-    free(platform);
     free(arch);
-    free(os);
-    free(optflags);
 }
 
 rpmRC checkForEncoding(Header h, int addtag)
@@ -1053,17 +1043,8 @@ static rpmRC parseSpecSection(rpmSpec *specptr, int secondary)
 	}
     }
 
-    /* Check for description in each package */
-    for (Package pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
-	    rpmlog(RPMLOG_ERR, _("Package has no %%description: %s\n"),
-		   headerGetString(pkg->header, RPMTAG_NAME));
-	    goto errxit;
-	}
-    }
-
-    /* Add arch, os and platform, self-provides etc for each package */
-    addTargets(spec->packages);
+    /* Add arch for each package */
+    addArch(spec);
 
     /* Check for encoding in each package unless disabled */
     if (!(spec->flags & RPMSPEC_NOUTF8)) {
@@ -1128,10 +1109,74 @@ errxit:
     return NULL;
 }
 
+static rpmRC finalizeSpec(rpmSpec spec)
+{
+    rpmRC rc = RPMRC_FAIL;
+
+    char *platform = rpmExpand("%{_target_platform}", NULL);
+    char *os = rpmExpand("%{_target_os}", NULL);
+    char *optflags = rpmExpand("%{optflags}", NULL);
+
+    /* XXX Skip valid arch check if not building binary package */
+    if (!(spec->flags & RPMSPEC_ANYARCH) && checkForValidArchitectures(spec)) {
+	goto exit;
+    }
+
+    fillOutMainPackage(spec->packages->header);
+    /* Define group tag to something when group is undefined in main package*/
+    if (!headerIsEntry(spec->packages->header, RPMTAG_GROUP)) {
+	headerPutString(spec->packages->header, RPMTAG_GROUP, "Unspecified");
+    }
+
+    for (Package pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+	headerPutString(pkg->header, RPMTAG_OS, os);
+	headerPutString(pkg->header, RPMTAG_PLATFORM, platform);
+	headerPutString(pkg->header, RPMTAG_OPTFLAGS, optflags);
+
+	if (pkg != spec->packages) {
+	    copyInheritedTags(pkg->header, spec->packages->header);
+	}
+
+	/* Add manual dependencies early for rpmspec etc to look at */
+	addPackageProvides(pkg);
+
+	for (int i=0; i<PACKAGE_NUM_DEPS; i++) {
+	    rpmdsPutToHeader(pkg->dependencies[i], pkg->header);
+	}
+
+	pkg->ds = rpmdsThis(pkg->header, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
+
+	if (checkForRequired(pkg->header)) {
+	    goto exit;
+	}
+	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
+	    rpmlog(RPMLOG_ERR, _("Package has no %%description: %s\n"),
+		   headerGetString(pkg->header, RPMTAG_NAME));
+	    goto exit;
+	}
+	if (checkForDuplicates(pkg->header)) {
+	    goto exit;
+	}
+    }
+
+    finalizeSourceHeader(spec);
+
+    rc = RPMRC_OK;
+ exit:
+    free(platform);
+    free(os);
+    free(optflags);
+    return rc;
+}
+
 rpmSpec rpmSpecParse(const char *specFile, rpmSpecFlags flags,
 		     const char *buildRoot)
 {
-    return parseSpec(specFile, flags, buildRoot, 0);
+    rpmSpec spec = parseSpec(specFile, flags, buildRoot, 0);
+    if (spec && !(flags & RPMSPEC_NOFINALIZE)) {
+	finalizeSpec(spec);
+    }
+    return spec;
 }
 
 rpmRC parseGeneratedSpecs(rpmSpec spec)
@@ -1158,5 +1203,11 @@ rpmRC parseGeneratedSpecs(rpmSpec spec)
 	argvFree(argv);
     }
     free(specPattern);
+    if (!rc) {
+	rc = finalizeSpec(spec);
+	if (rc != RPMRC_OK) {
+	    rpmlog(RPMLOG_ERR, "parsing failed\n");
+	}
+    }
     return rc;
 }
