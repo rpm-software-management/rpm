@@ -63,7 +63,7 @@ static struct rpmBuildArguments_s rpmBTArgs;
 
 extern int _fsm_debug;
 
-static rpmSpecFlags spec_flags = 0;	/*!< Bit(s) to control spec parsing. */
+static rpmSpecFlags spec_flags = RPMSPEC_NOFINALIZE; /*!< Bit(s) to control spec parsing. */
 static int noDeps = 0;			/*!< from --nodeps */
 static int shortCircuit = 0;		/*!< from --short-circuit */
 static char buildMode = 0;		/*!< Build mode (one of "btBC") */
