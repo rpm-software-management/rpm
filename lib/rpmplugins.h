@@ -168,6 +168,15 @@ rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins, rpmfi fi,
                                    int fd, const char *path, const char *dest,
                                    mode_t mode, rpmFsmOp op);
 
+/** \ingroup rpmplugins
+ * Call the content handler plugin hook
+ * @param plugins	plugins structure
+ * @param te		processed transaction element
+ * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
+ */
+RPM_GNUC_INTERNAL
+rpmRC rpmpluginsCallContentHandler(rpmPlugins plugins, rpmte te);
+
 #ifdef __cplusplus
 }
 #endif

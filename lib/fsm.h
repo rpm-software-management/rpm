@@ -12,7 +12,15 @@
 extern "C" {
 #endif
 
-typedef struct rpmpsm_s * rpmpsm;
+struct filedata_s {
+    int stage;
+    int setmeta;
+    int skip;
+    rpmFileAction action;
+    const char *suffix;
+    char *fpath;
+    struct stat sb;
+};
 
 /**
  * Execute a file actions for package
@@ -29,6 +37,10 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 
 int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile);
+
+int fsmFileInstall(rpmte te, rpmfi fi, filedata fp, rpmfiles files, rpmpsm psm, int nodigest, filedata *firstlink, int *firstlinkfile, diriter di, int *fdp, int rc, rpmPlugin plugin);
+
+rpmfi fsmArchiveReader(FD_t fd, rpmfiles files, int itype, rpmPlugin plugin);
 
 RPM_GNUC_INTERNAL
 int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm);
