@@ -162,7 +162,9 @@ function(makemacros)
 	install(CODE "execute_process(COMMAND
 		${CMAKE_COMMAND} -E env pkglibdir=${RPM_CONFIGDIR}
 			${CMAKE_SOURCE_DIR}/installplatform
-			rpmrc platform macros
+			${CMAKE_BINARY_DIR}/rpmrc
+			${CMAKE_BINARY_DIR}/platform
+			${CMAKE_BINARY_DIR}/macros
 			${RPMCANONVENDOR} ${RPMCANONOS} ${RPMCANONGNU})"
 	)
 endfunction()
