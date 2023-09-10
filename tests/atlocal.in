@@ -104,7 +104,7 @@ function snapshot()
             return 0
         ;;
         exec)
-            @BWRAP@ --unshare-pid --dev-bind $RPMTEST / --clearenv \
+            @BWRAP@ --unshare-pid --dev-bind $RPMTEST / \
                     --setenv PATH "@CMAKE_INSTALL_FULL_BINDIR@:/usr/bin" \
                     --setenv HOME /root --chdir / --dev /dev --proc /proc \
                     --die-with-parent "$@"
