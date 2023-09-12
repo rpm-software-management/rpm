@@ -80,7 +80,7 @@ These are available from
     http://tukaani.org/xz/
 
 Python bindings to RPM library are built by default, but it can be disabled
-with -DENABLE_PYTHON=OFF. You'll need to have Python >= 3.2
+with -DENABLE_PYTHON=OFF. You'll need to have Python >= 3.7
 runtime and C API development environment installed.
 Python is available from:
     http://www.python.org/

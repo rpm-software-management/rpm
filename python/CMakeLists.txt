@@ -17,7 +17,10 @@ Python3_add_library(_rpm
 	rpmver-py.c rpmver-py.h
 	spec-py.c spec-py.h
 )
-	
+
+# Select Python stable ABI
+target_compile_definitions(_rpm PRIVATE Py_LIMITED_API=0x03070000)
+
 target_link_libraries(_rpm PRIVATE librpmio librpm librpmbuild librpmsign)
 
 install(TARGETS _rpm
