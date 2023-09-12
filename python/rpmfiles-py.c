@@ -195,6 +195,7 @@ static PyObject *rpmfile_links(rpmfileObject *s)
     PyObject *result = NULL;
     const int * links = NULL;
     uint32_t nlinks = rpmfilesFLinks(s->files, s->ix, &links);
+    int res;
 
     if (nlinks == 0)
 	Py_RETURN_NONE;
@@ -215,7 +216,11 @@ static PyObject *rpmfile_links(rpmfileObject *s)
 		o = rpmfile_Wrap(s->files, lix);
 	    }
 
-	    PyTuple_SetItem(result, i, o);
+	    res = PyTuple_SetItem(result, i, o);
+	    if (res < 0) {
+		Py_DECREF(result);
+		return NULL;
+	    }
 	}
     }
     return result;
@@ -457,6 +462,7 @@ static PyObject *rpmfiles_archive(rpmfilesObject *s,
 static PyObject *rpmfiles_subscript(rpmfilesObject *s, PyObject *item)
 {
     PyObject *str = NULL;
+    int res;
 
     /* treat numbers as sequence accesses */
     if (PyLong_Check(item)) {
@@ -476,7 +482,16 @@ static PyObject *rpmfiles_subscript(rpmfilesObject *s, PyObject *item)
 	result = PyTuple_New(slicelength);
 	if (result) {
 	    for (cur = start, i = 0; i < slicelength; cur += step, i++) {
-		PyTuple_SetItem(result, i, rpmfiles_getitem(s, cur));
+		PyObject *item = rpmfiles_getitem(s, cur);
+		if (!item) {
+		    Py_DECREF(result);
+		    return NULL;
+		}
+		res = PyTuple_SetItem(result, i, item);
+		if (res < 0) {
+		    Py_DECREF(result);
+		    return NULL;
+		}
 	    }
 	}
 	return result;

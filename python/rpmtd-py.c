@@ -37,6 +37,7 @@ PyObject *rpmtd_AsPyobj(rpmtd td)
     PyObject *res = NULL;
     int array = (rpmTagGetReturnType(td->tag) == RPM_ARRAY_RETURN_TYPE);
     rpmTagClass tclass = rpmtdClass(td);
+    int r;
 
     if (!array && rpmtdCount(td) < 1) {
 	Py_RETURN_NONE;
@@ -54,7 +55,11 @@ PyObject *rpmtd_AsPyobj(rpmtd td)
                 Py_DECREF(res);
                 return NULL;
             }
-	    PyList_SetItem(res, ix, item);
+	    r = PyList_SetItem(res, ix, item);
+	    if (r < 0) {
+		Py_DECREF(res);
+		return NULL;
+	    }
 	}
     } else {
 	res = rpmtd_ItemAsPyobj(td, tclass);
