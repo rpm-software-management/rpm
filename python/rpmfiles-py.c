@@ -215,7 +215,7 @@ static PyObject *rpmfile_links(rpmfileObject *s)
 		o = rpmfile_Wrap(s->files, lix);
 	    }
 
-	    PyTuple_SET_ITEM(result, i, o);
+	    PyTuple_SetItem(result, i, o);
 	}
     }
     return result;
@@ -476,7 +476,7 @@ static PyObject *rpmfiles_subscript(rpmfilesObject *s, PyObject *item)
 	result = PyTuple_New(slicelength);
 	if (result) {
 	    for (cur = start, i = 0; i < slicelength; cur += step, i++) {
-		PyTuple_SET_ITEM(result, i, rpmfiles_getitem(s, cur));
+		PyTuple_SetItem(result, i, rpmfiles_getitem(s, cur));
 	    }
 	}
 	return result;
