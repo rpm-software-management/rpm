@@ -85,15 +85,17 @@ foreach $module (sort keys %require) {
     # operators. Also I will need to change the processing of the
     # $RPM_* variable when I upgrade.
 
+    my $normv = version->parse($require{$module})->normal;
+    $v =~ s/^v//;
     if($normalversion)
     {
-      print "perl($module) = ".version->parse($require{$module})->normal."\n";
+      print "perl($module) = $normv\n";
     }
     else
     {
       print "perl($module) = $require{$module}\n";
     }
-    print "perln($module) = ".version->parse($require{$module})->normal."\n" if $perln;
+    print "perln($module) = $normv\n" if $perln;
   }
 }
 
