@@ -67,11 +67,11 @@ rpmii_instances(rpmiiObject * s)
     PyObject * tuple;
     for (int i = 0; i < entries; i++) {
         tuple = PyTuple_New(2);
-        PyTuple_SET_ITEM(tuple, 0,
-                         PyLong_FromLong(rpmdbIndexIteratorPkgOffset(s->ii, i)));
-        PyTuple_SET_ITEM(tuple, 1,
-                         PyLong_FromLong(rpmdbIndexIteratorTagNum(s->ii, i)));
-	PyList_SET_ITEM(list, i, tuple);
+        PyTuple_SetItem(tuple, 0,
+                        PyLong_FromLong(rpmdbIndexIteratorPkgOffset(s->ii, i)));
+        PyTuple_SetItem(tuple, 1,
+                        PyLong_FromLong(rpmdbIndexIteratorTagNum(s->ii, i)));
+	PyList_SetItem(list, i, tuple);
     }
     return list;
 }

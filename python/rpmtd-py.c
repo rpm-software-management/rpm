@@ -54,7 +54,7 @@ PyObject *rpmtd_AsPyobj(rpmtd td)
                 Py_DECREF(res);
                 return NULL;
             }
-	    PyList_SET_ITEM(res, ix, item);
+	    PyList_SetItem(res, ix, item);
 	}
     } else {
 	res = rpmtd_ItemAsPyobj(td, tclass);
