@@ -367,8 +367,12 @@ foreach (flag -fno-strict-overflow -fno-delete-null-pointer-checks)
 	unset(found)
 endforeach()
 
+# generated config.h
 include_directories(${CMAKE_BINARY_DIR})
-include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/include)
+# private includes
+include_directories(${CMAKE_SOURCE_DIR})
+# public headers
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
 add_subdirectory(docs)
 add_subdirectory(include/rpm)
