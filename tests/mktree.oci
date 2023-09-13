@@ -1,0 +1,208 @@
+#!/bin/bash
+#
+# OCI image based mktree backend, works also standalone (outside of a build
+# directory).
+
+PROGRAM=$(basename $0)
+CMD=$1; shift
+
+if [ $(id -u) != 0 ]; then
+    podman unshare $0 $CMD "$@"
+    exit
+fi
+
+if [ "$PROGRAM" == "mktree" ]; then
+    # Running from build directory
+    NATIVE=@MKTREE_NATIVE@
+    CONTEXT=@CMAKE_SOURCE_DIR@
+else
+    # Running from source directory
+    NATIVE=OFF
+    CONTEXT=..
+fi
+
+TREE_DIR=${PWD}/mktree.dir
+TAGS_DIR=${TREE_DIR}/tags
+SNAP_DIR=${TREE_DIR}/snapshot
+
+IMAGE=rpm
+PODMAN_ARGS="-f Dockerfile $CONTEXT"
+
+SHELL_MOTD="
+Welcome to RPM @CMAKE_PROJECT_VERSION@ snapshot shell!
+
+This is a container running a minimal version of the host
+system in a writable snapshot, with the current RPM build
+installed and ready to experiment with.
+
+For any later RPM source changes to be reflected, re-enter
+this target.
+
+To throw away the snapshot and start over, run: make reset
+"
+
+ATSHELL_MOTD="
+Welcome to RPM @CMAKE_PROJECT_VERSION@ Autotest shell!
+
+This is like an interactive test with a writable snapshot
+mounted at \$RPMTEST, with full host integration allowing
+you to use your native tools to inspect and/or modify the
+snapshot.
+
+The usual test commands are available, e.g. runroot ...
+To throw away the snapshot and start over, run: make reset
+
+WARNING: The shell runs in a user namespace, without file
+system isolation, so be cautious when using destructive
+commands. Treat it like any other shell running on your
+host.
+"
+
+print_motd()
+{
+    case $CMD in
+        shell) echo "$SHELL_MOTD" ;;
+        atshell) echo "$ATSHELL_MOTD" ;;
+    esac
+    if [ $NEW_IMAGE == 1 ]; then
+        echo "WARNING: New image is available, reset to use it."
+    fi
+}
+
+# Manage local tags for Podman images
+tag()
+{
+    # Handle options
+    case $1 in
+        # Delete tag
+        -d) rm -f $TAGS_DIR/$2; return ;;
+        # Tag existence check
+        -e) test -f $TAGS_DIR/$2; return ;;
+        # Image existence check
+        -i) $(tag -e $2) && podman image exists $(tag $2); return ;;
+    esac
+
+    # Handle load/save
+    if [ $# == 1 ]; then
+        # Load tag
+        cat $TAGS_DIR/$1
+    else
+        # Save tag
+        mkdir -p $TAGS_DIR
+        podman image inspect --format '{{.Id}}' $1 > $TAGS_DIR/$2
+    fi
+}
+
+fix_perm()
+{
+    chmod -Rf u+rwX $SNAP_DIR rpmtests.dir
+}
+
+mount_image()
+{
+    tag -i full || $0 build
+
+    clean_up()
+    {
+        podman image umount $(tag full) >/dev/null
+        fix_perm
+    }
+    trap clean_up EXIT
+
+    RPMTEST=$(podman image mount $(tag full))
+}
+
+mount_snapshot()
+{
+    if [ $NATIVE == ON ]; then
+        tag=base
+    else
+        tag=full
+    fi
+
+    tag -i $tag || $0 build
+
+    if ! tag -e snap; then
+        tag $(tag $tag) snap
+    elif ! $(tag -i snap); then
+        {
+            echo
+            echo "Error: Image not found, fix with: make reset"
+            echo
+        } >&2
+        exit 1
+    fi
+
+    if [ "$(tag snap)" == "$(tag $tag)" ]; then
+        NEW_IMAGE=0
+    else
+        NEW_IMAGE=1
+    fi
+
+    clean_up()
+    {
+        snapshot umount
+        podman image umount $(tag snap) >/dev/null
+        fix_perm
+    }
+    trap clean_up EXIT
+
+    RPMTREE=$(podman image mount $(tag snap))
+    RPMTEST=$SNAP_DIR/tree
+    snapshot mount $SNAP_DIR
+
+    [ $NATIVE == ON ] && make_install $RPMTEST
+}
+
+source ./mktree.common
+
+case $CMD in
+    build)
+        # Build base image
+        podman build --target base -t $IMAGE/base $PODMAN_ARGS
+        tag $IMAGE/base base
+
+        # Force non-native mode?
+        [ "$1" == "--full" ] && NATIVE=OFF
+
+        # Build full image
+        tag -i full && podman rmi $(tag full)
+        if [ $NATIVE == ON ]; then
+            # Native RPM build
+            name=$(buildah from $IMAGE/base)
+            make_install $(buildah mount $name)
+            buildah commit -q --rm $name $IMAGE
+        else
+            # Containerized RPM build
+            podman build --target full -t $IMAGE $PODMAN_ARGS
+        fi
+        tag $IMAGE full
+
+        # Signal change to build system
+        mkdir -p $TREE_DIR
+        touch $TREE_DIR
+    ;;
+    check)
+        mount_image
+        snapshot exec --tmpfs /tmp --bind $PWD /srv --chdir /srv \
+                      mktree check "$@"
+    ;;
+    shell)
+        mount_snapshot
+        print_motd
+        snapshot shell "$@"
+    ;;
+    atshell)
+        set -a
+        source ./atlocal
+        mount_snapshot
+        print_motd
+        $SHELL
+    ;;
+    reset)
+        tag -d snap
+        rm -rf "$SNAP_DIR"
+    ;;
+    refresh)
+    ;;
+esac

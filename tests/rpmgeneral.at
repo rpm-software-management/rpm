@@ -328,8 +328,8 @@ RPMTEST_CLEANUP
 AT_SETUP([rpm2cpio])
 AT_KEYWORDS([basic])
 RPMTEST_CHECK([
-runroot_other rpm2cpio data/RPMS/hello-2.0-1.x86_64.rpm | cpio -t --quiet
-runroot_other rpm2cpio data/SRPMS/hello-1.0-1.src.rpm | cpio -t --quiet
+runroot_other rpm2cpio /data/RPMS/hello-2.0-1.x86_64.rpm | cpio -t --quiet
+runroot_other rpm2cpio /data/SRPMS/hello-1.0-1.src.rpm | cpio -t --quiet
 ],
 [0],
 [./usr/bin/hello

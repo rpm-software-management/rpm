@@ -1,6 +1,4 @@
-# Use our top-level targets as an ordering clue to cmake: the project
-# needs to be built before we can populate anything...
-get_property(TOP_TARGETS DIRECTORY .. PROPERTY BUILDSYSTEM_TARGETS)
+set(RPM_TARGETS librpm librpmio librpmbuild librpmsign)
 
 function(os_release var key)
 	execute_process(
@@ -71,61 +69,60 @@ if (nproc GREATER 1)
 	set(JOBS -j${nproc})
 endif()
 
-# Detect suitable mktree backend
-find_program(BWRAP bwrap)
-find_program(PODMAN NAMES podman docker)
-if ("${MKTREE_BACKEND}" STREQUAL "")
-	if (BWRAP AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/mktree.${OS_NAME})
-		set(MKTREE_BACKEND ${OS_NAME})
-	elseif (PODMAN)
-		set(MKTREE_BACKEND podman)
-	else()
-		message(WARNING
-			"No suitable mktree backend found for this platform. "
-			"Disabling test-suite.")
-		return()
-	endif()
-endif()
+find_program(BWRAP bwrap REQUIRED)
+
+set(MKTREE_BACKEND oci CACHE STRING "Mktree backend to use")
+set(MKTREE_NATIVE ON CACHE BOOL "Mktree native mode")
+
 message(STATUS "Using mktree backend: ${MKTREE_BACKEND}")
 
 # Set up mktree
-if ("${MKTREE_BACKEND}" STREQUAL "podman")
-	find_program(PODMAN NAMES podman docker REQUIRED)
-	configure_file(Dockerfile Dockerfile COPYONLY)
-else()
-	find_program(BWRAP bwrap REQUIRED)
-	if (PODMAN)
-		get_filename_component(PODMAN ${PODMAN} NAME)
-		add_custom_target(ci
-			COMMAND ./mktree.${PODMAN} build
-			COMMAND ./mktree.${PODMAN} check ${JOBS} $(TESTOPTS)
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		)
+if ("${MKTREE_BACKEND}" STREQUAL "oci")
+	find_program(PODMAN podman REQUIRED)
+	find_program(BUILDAH buildah REQUIRED)
+	if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Dockerfile.${OS_NAME})
+		# Native building supported
+		configure_file(Dockerfile.${OS_NAME} Dockerfile COPYONLY)
+	else()
+		# Fall back to containerized building
+		set(MKTREE_NATIVE OFF)
+		configure_file(Dockerfile Dockerfile COPYONLY)
 	endif()
+	message(STATUS "Native mktree mode: ${MKTREE_NATIVE}")
+	set(MKTREE_BUILD_DEPS Dockerfile)
+	add_custom_target(ci
+		COMMAND ./mktree build --full
+		COMMAND ./mktree check ${JOBS} $(TESTOPTS)
+	)
 endif()
-configure_file(mktree.common mktree.common @ONLY)
 configure_file(mktree.${MKTREE_BACKEND} mktree @ONLY)
+configure_file(mktree.common mktree.common @ONLY)
+configure_file(mktree.rootfs mktree.rootfs @ONLY)
 
 configure_file(atlocal.in atlocal @ONLY)
 configure_file(package.m4.in package.m4 @ONLY)
 
-add_custom_target(env
-	COMMAND ./mktree env
-	DEPENDS tree
+add_custom_target(check
+	COMMAND ./mktree check ${JOBS} $(TESTOPTS)
+	DEPENDS mktree.dir
 )
 
 add_custom_target(shell
-	COMMAND ./mktree shell
-	DEPENDS tree
+	COMMAND ./mktree shell ||:
+	DEPENDS mktree.dir
 )
 
-add_custom_target(check
-	COMMAND ./mktree check ${JOBS} $(TESTOPTS)
-	DEPENDS tree
+add_custom_target(atshell
+	COMMAND ./mktree atshell ||:
+	DEPENDS mktree.dir
 )
 
 add_custom_target(reset
 	COMMAND ./mktree reset
+)
+
+add_custom_target(tree
+	DEPENDS mktree.dir
 )
 
 add_custom_command(OUTPUT rpmtests
@@ -135,10 +132,10 @@ add_custom_command(OUTPUT rpmtests
 	DEPENDS local.at
 )
 
-add_custom_target(tree
+add_custom_command(OUTPUT mktree.dir
 	COMMAND ./mktree build
-	BYPRODUCTS mktree.output
 	DEPENDS rpmtests
 	DEPENDS ${TESTPROGS}
-	DEPENDS ${TOP_TARGETS}
+	DEPENDS ${RPM_TARGETS}
+	DEPENDS ${MKTREE_BUILD_DEPS}
 )
