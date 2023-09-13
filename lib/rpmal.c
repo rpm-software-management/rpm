@@ -10,12 +10,12 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmstrpool.h>
 
-#include "lib/rpmal.h"
-#include "lib/misc.h"
-#include "lib/rpmte_internal.h"
-#include "lib/rpmds_internal.h"
-#include "lib/rpmfi_internal.h"
-#include "lib/rpmts_internal.h"
+#include "rpmal.h"
+#include "misc.h"
+#include "rpmte_internal.h"
+#include "rpmds_internal.h"
+#include "rpmfi_internal.h"
+#include "rpmts_internal.h"
 
 #include "debug.h"
 

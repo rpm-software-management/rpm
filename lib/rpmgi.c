@@ -13,8 +13,8 @@
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmlog.h>
 
-#include "lib/rpmgi.h"
-#include "lib/manifest.h"
+#include "rpmgi.h"
+#include "manifest.h"
 
 #include "debug.h"
 

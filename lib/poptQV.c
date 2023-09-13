@@ -8,7 +8,7 @@
 
 #include <rpm/rpmcli.h>
 #include <rpm/rpmstring.h>
-#include "lib/rpmgi.h"	/* XXX for giFlags */
+#include "rpmgi.h"	/* XXX for giFlags */
 
 #include "debug.h"
 

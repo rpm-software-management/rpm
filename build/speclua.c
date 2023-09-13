@@ -3,8 +3,8 @@
 
 #include <lua.h>
 
-#include "rpmio/rpmlua.h"
-#include "build/rpmbuild_internal.h"
+#include "rpmlua.h"
+#include "rpmbuild_internal.h"
 
 #include "debug.h"
 

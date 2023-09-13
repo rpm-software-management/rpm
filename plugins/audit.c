@@ -5,7 +5,7 @@
 
 #include <rpm/rpmstring.h>
 #include <rpm/rpmts.h>
-#include "lib/rpmplugin.h"
+#include "rpmplugin.h"
 
 struct teop {
     rpmte te;

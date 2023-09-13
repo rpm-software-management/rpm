@@ -11,9 +11,9 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
 
-#include "lib/signature.h"
-#include "lib/header_internal.h"	/* Freadall() */
-#include "lib/rpmlead.h"
+#include "signature.h"
+#include "header_internal.h"	/* Freadall() */
+#include "rpmlead.h"
 
 #include "debug.h"
 

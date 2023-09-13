@@ -23,10 +23,10 @@
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmstring.h>
 
-#include "lib/misc.h"
-#include "lib/rpmchroot.h"
-#include "lib/rpmte_internal.h"	/* rpmteProcess() */
-#include "lib/rpmug.h"
+#include "misc.h"
+#include "rpmchroot.h"
+#include "rpmte_internal.h"	/* rpmteProcess() */
+#include "rpmug.h"
 
 #include "debug.h"
 

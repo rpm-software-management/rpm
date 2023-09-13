@@ -12,13 +12,13 @@
 #include <rpm/rpmfi.h>
 #include <rpm/rpmstring.h>
 
-#include "lib/rpmts_internal.h"
-#include "lib/rpmte_internal.h"
-#include "lib/rpmds_internal.h"
-#include "lib/rpmfi_internal.h" /* rpmfiles stuff for now */
-#include "lib/misc.h"
+#include "rpmts_internal.h"
+#include "rpmte_internal.h"
+#include "rpmds_internal.h"
+#include "rpmfi_internal.h" /* rpmfiles stuff for now */
+#include "misc.h"
 
-#include "lib/backend/dbiset.h"
+#include "backend/dbiset.h"
 
 #include "debug.h"
 

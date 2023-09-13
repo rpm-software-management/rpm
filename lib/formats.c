@@ -14,10 +14,10 @@
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmbase64.h>
 
-#include "rpmio/rpmpgpval.h"
-#include "lib/manifest.h"
-#include "lib/misc.h"
-#include "lib/signature.h"
+#include "rpmpgpval.h"
+#include "manifest.h"
+#include "misc.h"
+#include "signature.h"
 
 #include "debug.h"
 

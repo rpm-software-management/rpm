@@ -1,6 +1,6 @@
 #include "system.h"
 
-#include "lib/rpmdb_internal.h"
+#include "rpmdb_internal.h"
 
 #include "debug.h"
 

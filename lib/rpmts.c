@@ -24,14 +24,14 @@
 #include <rpm/rpmsq.h>
 #include <rpm/rpmte.h>
 
-#include "rpmio/rpmpgpval.h"
-#include "lib/rpmal.h"
-#include "lib/rpmchroot.h"
-#include "lib/rpmplugins.h"
-#include "lib/rpmts_internal.h"
-#include "lib/rpmte_internal.h"
-#include "lib/misc.h"
-#include "lib/rpmtriggers.h"
+#include "rpmpgpval.h"
+#include "rpmal.h"
+#include "rpmchroot.h"
+#include "rpmplugins.h"
+#include "rpmts_internal.h"
+#include "rpmte_internal.h"
+#include "misc.h"
+#include "rpmtriggers.h"
 
 #include "debug.h"
 

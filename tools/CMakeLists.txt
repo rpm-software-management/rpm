@@ -22,6 +22,9 @@ target_link_libraries(rpmbuild PRIVATE librpmbuild)
 target_link_libraries(rpmspec PRIVATE librpmbuild)
 target_link_libraries(rpmdeps PRIVATE librpmbuild)
 
+target_include_directories(rpmlua PRIVATE ${CMAKE_SOURCE_DIR}/rpmio)
+target_include_directories(rpmgraph PRIVATE ${CMAKE_SOURCE_DIR}/lib)
+
 if (READLINE_FOUND)
 	target_link_libraries(rpmspec PRIVATE PkgConfig::READLINE)
 	target_link_libraries(rpmlua PRIVATE PkgConfig::READLINE)

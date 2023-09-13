@@ -3,8 +3,8 @@
 #include <gcrypt.h>
 
 #include <rpm/rpmcrypto.h>
-#include "rpmio/rpmpgp_internal.h"
-#include "rpmio/rpmio_internal.h"
+#include "rpmpgp_internal.h"
+#include "rpmio_internal.h"
 #include "debug.h"
 
 /**

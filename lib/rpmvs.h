@@ -3,7 +3,7 @@
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmts.h> /* for rpmVSFlags */
-#include "lib/header_internal.h"
+#include "header_internal.h"
 
 /* siginfo range bits */
 enum {

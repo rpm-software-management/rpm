@@ -24,7 +24,7 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmarchive.h>
 
-#include "lib/cpio.h"
+#include "cpio.h"
 
 #include "debug.h"
 

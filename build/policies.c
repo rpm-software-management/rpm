@@ -10,8 +10,8 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmbase64.h>
 
-#include "rpmio/rpmio_internal.h"
-#include "build/rpmbuild_internal.h"
+#include "rpmio_internal.h"
+#include "rpmbuild_internal.h"
 
 #include "debug.h"
 

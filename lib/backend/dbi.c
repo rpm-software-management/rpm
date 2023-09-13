@@ -10,7 +10,7 @@
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmlog.h>
 #include <rpm/header.h>
-#include "lib/rpmdb_internal.h"
+#include "rpmdb_internal.h"
 #include "debug.h"
 
 const struct rpmdbOps_s *backends[] = {

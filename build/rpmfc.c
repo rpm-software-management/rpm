@@ -21,9 +21,9 @@
 #include <rpm/rpmfi.h>
 #include <rpm/rpmstrpool.h>
 
-#include "lib/rpmug.h"
-#include "lib/rpmfi_internal.h"		/* rpmfiles stuff for now */
-#include "build/rpmbuild_internal.h"
+#include "rpmug.h"
+#include "rpmfi_internal.h"		/* rpmfiles stuff for now */
+#include "rpmbuild_internal.h"
 
 #include "debug.h"
 

@@ -13,8 +13,8 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
 
-#include "lib/rpmfi_internal.h"		/* rpmfiles stuff */
-#include "build/rpmbuild_internal.h"
+#include "rpmfi_internal.h"		/* rpmfiles stuff */
+#include "rpmbuild_internal.h"
 
 #include "debug.h"
 

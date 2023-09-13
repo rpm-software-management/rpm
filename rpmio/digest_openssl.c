@@ -5,7 +5,7 @@
 #include <openssl/dsa.h>
 #include <rpm/rpmcrypto.h>
 
-#include "rpmio/rpmpgp_internal.h"
+#include "rpmpgp_internal.h"
 
 struct DIGEST_CTX_s {
     rpmDigestFlags flags;	/*!< Bit(s) to control digest operation. */
