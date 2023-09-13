@@ -28,7 +28,7 @@
 #include <rpm/rpmbase64.h>
 
 #include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */
-#include "misc/rpmfts.h"
+#include "rpmfts.h"
 #include "lib/rpmfi_internal.h"	/* XXX fi->apath */
 #include "lib/rpmug.h"
 #include "build/rpmbuild_internal.h"
