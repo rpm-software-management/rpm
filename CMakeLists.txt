@@ -370,7 +370,7 @@ endforeach()
 # generated config.h
 include_directories(${CMAKE_BINARY_DIR})
 # private includes
-include_directories(${CMAKE_SOURCE_DIR})
+include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/misc)
 # public headers
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
