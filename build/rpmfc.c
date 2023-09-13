@@ -55,8 +55,8 @@ typedef struct {
 #define HASHTYPE fattrHash
 #define HTKEYTYPE int
 #define HTDATATYPE int
-#include "lib/rpmhash.H"
-#include "lib/rpmhash.C"
+#include "rpmhash.H"
+#include "rpmhash.C"
 #undef HASHTYPE
 #undef HTKEYTYPE
 #undef HTDATATYPE
