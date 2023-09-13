@@ -18,12 +18,12 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
 
-#include "rpmio/rpmio_internal.h"	/* fdInit/FiniDigest */
-#include "lib/fsm.h"
-#include "lib/rpmte_internal.h"	/* XXX rpmfs */
-#include "lib/rpmfi_internal.h" /* rpmfiSetOnChdir */
-#include "lib/rpmplugins.h"	/* rpm plugins hooks */
-#include "lib/rpmug.h"
+#include "rpmio_internal.h"	/* fdInit/FiniDigest */
+#include "fsm.h"
+#include "rpmte_internal.h"	/* XXX rpmfs */
+#include "rpmfi_internal.h" /* rpmfiSetOnChdir */
+#include "rpmplugins.h"	/* rpm plugins hooks */
+#include "rpmug.h"
 
 #include "debug.h"
 

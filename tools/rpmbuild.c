@@ -12,7 +12,6 @@
 #include <rpm/rpmdb.h>
 #include <rpm/rpmps.h>
 #include <rpm/rpmts.h>
-#include "lib/signature.h"
 #include "cliutils.h"
 
 #include "debug.h"

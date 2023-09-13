@@ -14,12 +14,12 @@
 #include <rpm/header.h>
 #include <rpm/rpmds.h>
 
-#include "rpmio/rpmlua.h"
-#include "lib/rpmscript.h"
-#include "rpmio/rpmio_internal.h"
+#include "rpmlua.h"
+#include "rpmscript.h"
+#include "rpmio_internal.h"
 
-#include "lib/rpmchroot.h"
-#include "lib/rpmplugins.h"     /* rpm plugins hooks */
+#include "rpmchroot.h"
+#include "rpmplugins.h"     /* rpm plugins hooks */
 
 #include "debug.h"
 

@@ -8,7 +8,7 @@
 #include <rpm/header.h>
 #include <rpm/rpmtag.h>
 #include <rpm/rpmstring.h>
-#include "lib/misc.h"		/* format function protos */
+#include "misc.h"		/* format function protos */
 
 #include "debug.h"
 

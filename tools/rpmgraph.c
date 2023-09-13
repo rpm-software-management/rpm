@@ -13,7 +13,7 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
 
-#include "lib/manifest.h"
+#include "manifest.h"
 #include "debug.h"
 
 static int noDeps = 1;

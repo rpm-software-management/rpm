@@ -8,8 +8,8 @@
 #include <ctype.h>
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlog.h>
-#include "build/rpmbuild_internal.h"
-#include "build/rpmbuild_misc.h"
+#include "rpmbuild_internal.h"
+#include "rpmbuild_misc.h"
 #include "debug.h"
 
 

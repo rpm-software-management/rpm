@@ -11,9 +11,9 @@
 #include <rpm/header.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
-#include "build/rpmbuild_internal.h"
-#include "build/rpmbuild_misc.h"
-#include "lib/rpmug.h"
+#include "rpmbuild_internal.h"
+#include "rpmbuild_misc.h"
+#include "rpmug.h"
 #include "debug.h"
 
 static void appendBuf(rpmSpec spec, const char *s, int nl)

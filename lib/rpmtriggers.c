@@ -6,13 +6,13 @@
 #include <rpm/rpmfi.h>
 #include <stdlib.h>
 
-#include "lib/rpmtriggers.h"
-#include "lib/rpmts_internal.h"
-#include "lib/rpmdb_internal.h"
-#include "lib/rpmds_internal.h"
-#include "lib/rpmfi_internal.h"
-#include "lib/rpmte_internal.h"
-#include "lib/rpmchroot.h"
+#include "rpmtriggers.h"
+#include "rpmts_internal.h"
+#include "rpmdb_internal.h"
+#include "rpmds_internal.h"
+#include "rpmfi_internal.h"
+#include "rpmte_internal.h"
+#include "rpmchroot.h"
 
 #define TRIGGER_PRIORITY_BOUND 10000
 

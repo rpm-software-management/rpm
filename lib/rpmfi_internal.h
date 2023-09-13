@@ -4,8 +4,8 @@
 #include <rpm/header.h>
 #include <rpm/rpmfi.h>
 #include <rpm/rpmstrpool.h>
-#include "lib/fprint.h"
-#include "lib/cpio.h"
+#include "fprint.h"
+#include "cpio.h"
 
 #define	RPMFIMAGIC	0x09697923
 

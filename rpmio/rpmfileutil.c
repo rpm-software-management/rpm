@@ -14,7 +14,7 @@
 #include <rpm/rpmlog.h>
 #include <rpm/argv.h>
 
-#include "rpmio/rpmio_internal.h"
+#include "rpmio_internal.h"
 
 #include "debug.h"
 

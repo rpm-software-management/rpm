@@ -26,11 +26,11 @@
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmbase64.h>
 #include <rpm/rpmver.h>
-#include "rpmio/rpmhook.h"
+#include "rpmhook.h"
 
-#include "rpmio/rpmlua.h"
-#include "rpmio/rpmio_internal.h"
-#include "rpmio/rpmmacro_internal.h"
+#include "rpmlua.h"
+#include "rpmio_internal.h"
+#include "rpmmacro_internal.h"
 
 #include "debug.h"
 

@@ -19,8 +19,8 @@
 #include <rpm/rpmfileutil.h>	/* rpmCleanPath */
 #include <rpm/rpmstring.h>
 
-#include "lib/rpmgi.h"
-#include "lib/manifest.h"
+#include "rpmgi.h"
+#include "manifest.h"
 
 #include "debug.h"
 

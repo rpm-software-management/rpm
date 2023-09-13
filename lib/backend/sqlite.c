@@ -7,7 +7,7 @@
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmstring.h>
-#include "lib/rpmdb_internal.h"
+#include "rpmdb_internal.h"
 
 #include "debug.h"
 

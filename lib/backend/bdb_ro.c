@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#include "lib/rpmdb_internal.h"
+#include "rpmdb_internal.h"
 #include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>
 

@@ -6,7 +6,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <rpm/rpmstring.h>
-#include "build/rpmbuild_misc.h"
+#include "rpmbuild_misc.h"
 #include "debug.h"
 
 #define BUF_CHUNK 1024

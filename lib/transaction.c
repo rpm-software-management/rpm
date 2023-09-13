@@ -29,19 +29,19 @@
 #include <rpm/rpmsq.h>
 #include <rpm/rpmkeyring.h>
 
-#include "lib/fprint.h"
-#include "lib/misc.h"
-#include "lib/rpmchroot.h"
-#include "lib/rpmlock.h"
-#include "lib/rpmds_internal.h"
-#include "lib/rpmfi_internal.h"	/* only internal apis */
-#include "lib/rpmte_internal.h"	/* only internal apis */
-#include "lib/rpmts_internal.h"
-#include "lib/rpmvs.h"
-#include "rpmio/rpmhook.h"
-#include "lib/rpmtriggers.h"
+#include "fprint.h"
+#include "misc.h"
+#include "rpmchroot.h"
+#include "rpmlock.h"
+#include "rpmds_internal.h"
+#include "rpmfi_internal.h"	/* only internal apis */
+#include "rpmte_internal.h"	/* only internal apis */
+#include "rpmts_internal.h"
+#include "rpmvs.h"
+#include "rpmhook.h"
+#include "rpmtriggers.h"
 
-#include "lib/rpmplugins.h"
+#include "rpmplugins.h"
 
 #include "debug.h"
 

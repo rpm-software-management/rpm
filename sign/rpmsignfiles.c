@@ -15,7 +15,7 @@
 #include <rpm/header.h>		/* HEADERGET_MINMEM */
 #include <rpm/rpmtypes.h>	/* rpmRC */
 
-#include "sign/rpmsignfiles.h"
+#include "rpmsignfiles.h"
 
 #define MAX_SIGNATURE_LENGTH 1024
 

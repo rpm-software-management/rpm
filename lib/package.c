@@ -13,10 +13,10 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmkeyring.h>
 
-#include "lib/rpmlead.h"
-#include "rpmio/rpmio_internal.h"	/* fd digest bits */
-#include "lib/header_internal.h"	/* XXX headerCheck */
-#include "lib/rpmvs.h"
+#include "rpmlead.h"
+#include "rpmio_internal.h"	/* fd digest bits */
+#include "header_internal.h"	/* XXX headerCheck */
+#include "rpmvs.h"
 
 #include "debug.h"
 

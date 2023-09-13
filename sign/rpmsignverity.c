@@ -13,12 +13,12 @@
 #include <rpm/header.h>		/* HEADERGET_MINMEM */
 #include <rpm/rpmtypes.h>	/* rpmRC */
 #include <rpm/rpmbase64.h>
-#include "lib/header_internal.h"
+#include "header_internal.h"
 #include <libfsverity.h>
-#include "rpmio/rpmio_internal.h"
-#include "lib/rpmvs.h"
+#include "rpmio_internal.h"
+#include "rpmvs.h"
 
-#include "sign/rpmsignverity.h"
+#include "rpmsignverity.h"
 
 #define MAX_SIGNATURE_LENGTH 1024
 

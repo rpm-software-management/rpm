@@ -7,7 +7,7 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmts.h>
-#include "lib/rpmplugin.h"
+#include "rpmplugin.h"
 
 #include "debug.h"
 

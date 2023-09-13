@@ -9,7 +9,7 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstrpool.h>
 
-#include "lib/rpmds_internal.h"
+#include "rpmds_internal.h"
 
 #include "debug.h"
 

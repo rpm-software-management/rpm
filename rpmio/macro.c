@@ -28,8 +28,8 @@
 #include <rpm/rpmmacro.h>
 #include <rpm/argv.h>
 
-#include "rpmio/rpmlua.h"
-#include "rpmio/rpmmacro_internal.h"
+#include "rpmlua.h"
+#include "rpmmacro_internal.h"
 #include "debug.h"
 
 enum macroFlags_e {

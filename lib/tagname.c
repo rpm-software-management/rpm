@@ -23,7 +23,7 @@ struct headerTagTableEntry_s {
     int extension;		/*!< Extension or "real" tag */
 };
 
-#include "lib/tagtbl.C"
+#include "tagtbl.C"
 
 #define TABLESIZE (sizeof(rpmTagTable) / sizeof(rpmTagTable[0]) - 1)
 static const int rpmTagTableSize = TABLESIZE;
