@@ -33,6 +33,7 @@ static rpmRC open_dbus(rpmPlugin plugin, rpmts ts)
 {
     DBusError err;
     int rc = 0;
+    int ignore = 0;
     struct dbus_announce_data * state = rpmPluginGetData(plugin);
 
     /* Already open */
@@ -66,7 +67,7 @@ static rpmRC open_dbus(rpmPlugin plugin, rpmts ts)
     }
     return RPMRC_OK;
  err:
-    int ignore = dbus_error_has_name(&err, DBUS_ERROR_NO_SERVER) ||
+    ignore = dbus_error_has_name(&err, DBUS_ERROR_NO_SERVER) ||
 		 dbus_error_has_name(&err, DBUS_ERROR_FILE_NOT_FOUND);
     rpmlog(ignore ? RPMLOG_DEBUG : RPMLOG_WARNING,
 	   "dbus_announce plugin: Error connecting to dbus (%s)\n",
