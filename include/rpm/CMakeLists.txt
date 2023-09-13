@@ -6,7 +6,7 @@ install(FILES
         header.h rpmarchive.h rpmcallback.h rpmcli.h
         rpmdb.h rpmds.h rpmfi.h rpmfiles.h rpmlib.h
         rpmprob.h rpmps.h rpmtag.h rpmtd.h rpmte.h rpmte.h rpmts.h
-        rpmtypes.h
+        rpmtypes.h rpmplugin.h
 
 	rpmbuild.h rpmspec.h rpmfc.h
 

@@ -43,8 +43,6 @@ set(plugindir ${CMAKE_INSTALL_FULL_LIBDIR}/rpm-plugins)
 get_property(plugins DIRECTORY PROPERTY BUILDSYSTEM_TARGETS)
 foreach(plugin ${plugins})
 	target_link_libraries(${plugin} PRIVATE librpmio librpm)
-	# XX this is wrong, but required while rpmplugin.h is there
-	target_include_directories(${plugin} PRIVATE ${CMAKE_SOURCE_DIR}/lib)
 	install(TARGETS ${plugin} DESTINATION ${plugindir})
 endforeach()
 

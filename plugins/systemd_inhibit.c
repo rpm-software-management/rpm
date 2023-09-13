@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmts.h>
-#include "rpmplugin.h"
+#include <rpm/rpmplugin.h>
 
 static int lock_fd = -1;
 

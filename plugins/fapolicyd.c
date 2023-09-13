@@ -3,7 +3,7 @@
 #include <rpm/rpmts.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
-#include "rpmplugin.h"
+#include <rpm/rpmplugin.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <errno.h>
