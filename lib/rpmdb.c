@@ -41,8 +41,8 @@
 #define HASHTYPE dbChk
 #define HTKEYTYPE unsigned int
 #define HTDATATYPE rpmRC
-#include "lib/rpmhash.H"
-#include "lib/rpmhash.C"
+#include "rpmhash.H"
+#include "rpmhash.C"
 #undef HASHTYPE
 #undef HTKEYTYPE
 #undef HTDATATYPE
