@@ -43,8 +43,8 @@ typedef struct availableIndexEntry_s {
 #define HASHTYPE rpmalDepHash
 #define HTKEYTYPE rpmsid
 #define HTDATATYPE struct availableIndexEntry_s
-#include "lib/rpmhash.H"
-#include "lib/rpmhash.C"
+#include "rpmhash.H"
+#include "rpmhash.C"
 #undef HASHTYPE
 #undef HTKEYTYPE
 #undef HTDATATYPE
@@ -58,8 +58,8 @@ typedef struct availableIndexFileEntry_s {
 #define HASHTYPE rpmalFileHash
 #define HTKEYTYPE rpmsid
 #define HTDATATYPE struct availableIndexFileEntry_s
-#include "lib/rpmhash.H"
-#include "lib/rpmhash.C"
+#include "rpmhash.H"
+#include "rpmhash.C"
 #undef HASHTYPE
 #undef HTKEYTYPE
 #undef HTDATATYPE

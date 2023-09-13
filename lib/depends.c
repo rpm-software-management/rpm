@@ -33,8 +33,8 @@ const int rpmFLAGS = RPMSENSE_EQUAL;
 #define HASHTYPE depCache
 #define HTKEYTYPE const char *
 #define HTDATATYPE int
-#include "lib/rpmhash.H"
-#include "lib/rpmhash.C"
+#include "rpmhash.H"
+#include "rpmhash.C"
 #undef HASHTYPE
 #undef HTKEYTYPE
 #undef HTDATATYPE
@@ -58,8 +58,8 @@ const int rpmFLAGS = RPMSENSE_EQUAL;
 
 #define HASHTYPE depexistsHash
 #define HTKEYTYPE rpmsid
-#include "lib/rpmhash.H"
-#include "lib/rpmhash.C"
+#include "rpmhash.H"
+#include "rpmhash.C"
 #undef HASHTYPE
 #undef HTKEYTYPE
 

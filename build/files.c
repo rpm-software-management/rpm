@@ -54,7 +54,7 @@
 #define HASHTYPE fileRenameHash
 #define HTKEYTYPE const char *
 #define HTDATATYPE const char *
-#include "lib/rpmhash.C"
+#include "rpmhash.C"
 #undef HASHTYPE
 #undef HTKEYTYPE
 #undef HTDATATYPE
