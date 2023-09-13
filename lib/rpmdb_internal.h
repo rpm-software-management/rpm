@@ -6,7 +6,7 @@
 #include <rpm/rpmsw.h>
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmutil.h>
-#include "lib/backend/dbi.h"
+#include "backend/dbi.h"
 
 #ifdef __cplusplus
 extern "C" {

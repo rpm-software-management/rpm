@@ -3,7 +3,7 @@
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmfi.h>
-#include "lib/rpmplugin.h"
+#include "rpmplugin.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -9,7 +9,7 @@
 #include <rpm/rpmbuild.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
-#include "build/rpmbuild_internal.h"
+#include "rpmbuild_internal.h"
 #include "debug.h"
 
 int parsePolicies(rpmSpec spec)

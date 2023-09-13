@@ -10,8 +10,8 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>
 
-#include "rpmio/rpmpgpval.h"
-#include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */
+#include "rpmpgpval.h"
+#include "rpmio_internal.h"	/* XXX rpmioSlurp */
 
 #include "debug.h"
 

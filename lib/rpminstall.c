@@ -16,8 +16,8 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
 
-#include "lib/rpmgi.h"
-#include "lib/manifest.h"
+#include "rpmgi.h"
+#include "manifest.h"
 #include "debug.h"
 
 static int rpmcliPackagesTotal = 0;

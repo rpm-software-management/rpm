@@ -17,10 +17,10 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmkeyring.h>
 
-#include "rpmio/rpmio_internal.h" 	/* fdSetBundle() */
-#include "lib/rpmlead.h"
-#include "lib/header_internal.h"
-#include "lib/rpmvs.h"
+#include "rpmio_internal.h" 	/* fdSetBundle() */
+#include "rpmlead.h"
+#include "header_internal.h"
+#include "rpmvs.h"
 
 #include "debug.h"
 

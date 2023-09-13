@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include "rpmio/rpmpgp_internal.h"
+#include "rpmpgp_internal.h"
 
 #include "debug.h"
 

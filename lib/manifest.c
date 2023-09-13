@@ -12,7 +12,7 @@
 #include <rpm/argv.h>
 #include <rpm/rpmstring.h>
 
-#include "lib/manifest.h"
+#include "manifest.h"
 
 #include "debug.h"
 

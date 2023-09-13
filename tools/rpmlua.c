@@ -10,8 +10,8 @@
 #endif
 
 #include <rpm/rpmcli.h>
-#include "rpmio/rpmlua.h"
-#include "rpmio/rpmio_internal.h"
+#include "rpmlua.h"
+#include "rpmio_internal.h"
 #include "debug.h"
 
 static char *opts = NULL;

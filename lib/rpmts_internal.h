@@ -4,12 +4,12 @@
 #include <rpm/rpmts.h>
 #include <rpm/rpmstrpool.h>
 
-#include "lib/rpmal.h"		/* XXX availablePackage */
-#include "lib/fprint.h"
-#include "lib/rpmlock.h"
-#include "lib/rpmdb_internal.h"
-#include "lib/rpmscript.h"
-#include "lib/rpmtriggers.h"
+#include "rpmal.h"		/* XXX availablePackage */
+#include "fprint.h"
+#include "rpmlock.h"
+#include "rpmdb_internal.h"
+#include "rpmscript.h"
+#include "rpmtriggers.h"
 
 typedef struct diskspaceInfo_s * rpmDiskSpaceInfo;
 

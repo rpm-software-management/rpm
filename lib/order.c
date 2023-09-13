@@ -9,8 +9,8 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmds.h>
 
-#include "lib/rpmte_internal.h"	/* XXX tsortInfo_s */
-#include "lib/rpmts_internal.h"
+#include "rpmte_internal.h"	/* XXX tsortInfo_s */
+#include "rpmts_internal.h"
 
 #include "debug.h"
 

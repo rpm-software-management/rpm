@@ -6,7 +6,7 @@
 #include <stdarg.h>
 
 #include <rpm/rpmstring.h>
-#include "rpmio/rpmhook.h"
+#include "rpmhook.h"
 
 #include "debug.h"
 

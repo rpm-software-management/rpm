@@ -2,7 +2,7 @@
 #define _RPMTRIGGERS_H
 
 #include <rpm/rpmutil.h>
-#include "lib/rpmscript.h"
+#include "rpmscript.h"
 
 struct triggerInfo_s {
     unsigned int hdrNum;

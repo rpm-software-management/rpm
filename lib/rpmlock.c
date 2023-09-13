@@ -8,7 +8,7 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
 
-#include "lib/rpmlock.h"
+#include "rpmlock.h"
 
 #include "debug.h"
 

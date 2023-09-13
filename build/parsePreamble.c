@@ -12,8 +12,8 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmurl.h>
 #include <rpm/rpmfileutil.h>
-#include "build/rpmbuild_internal.h"
-#include "build/rpmbuild_misc.h"
+#include "rpmbuild_internal.h"
+#include "rpmbuild_misc.h"
 #include "debug.h"
 
 #define SKIPSPACE(s) { while (*(s) && risspace(*(s))) (s)++; }

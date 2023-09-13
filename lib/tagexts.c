@@ -11,7 +11,7 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmbase64.h>
-#include "lib/misc.h"		/* tag function proto */
+#include "misc.h"		/* tag function proto */
 
 #include "debug.h"
 

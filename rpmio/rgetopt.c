@@ -8,7 +8,7 @@ extern int optind;
 #endif
 
 #include <rpm/argv.h>
-#include "rpmio/rpmmacro_internal.h"
+#include "rpmmacro_internal.h"
 
 int rgetopt(int argc, char * const argv[], const char *opts,
 		rgetoptcb callback, void *data)

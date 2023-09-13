@@ -19,9 +19,9 @@
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmver.h>
-#include "rpmio/rpmmacro_internal.h"
-#include "rpmio/rpmhook.h"
-#include "rpmio/rpmlua.h"
+#include "rpmmacro_internal.h"
+#include "rpmhook.h"
+#include "rpmlua.h"
 #include "debug.h"
 
 /* #define DEBUG_PARSER 1 */

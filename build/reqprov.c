@@ -8,7 +8,7 @@
 #include <rpm/header.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>
-#include "build/rpmbuild_internal.h"
+#include "rpmbuild_internal.h"
 #include "debug.h"
 
 int addReqProv(Package pkg, rpmTagVal tagN,

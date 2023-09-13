@@ -3,7 +3,7 @@
 #include <rpm/rpmtd.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmstrpool.h>
-#include "lib/misc.h"		/* format function prototypes */
+#include "misc.h"		/* format function prototypes */
 
 #include "debug.h"
 

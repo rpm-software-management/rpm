@@ -8,10 +8,10 @@
 #include <rpm/header.h>
 #include <rpm/rpmlog.h>
 
-#include "rpmio/rpmlua.h"
-#include "lib/rpmscript.h"	/* script flags */
-#include "build/rpmbuild_internal.h"
-#include "build/rpmbuild_misc.h"
+#include "rpmlua.h"
+#include "rpmscript.h"	/* script flags */
+#include "rpmbuild_internal.h"
+#include "rpmbuild_misc.h"
 
 #include "debug.h"
 

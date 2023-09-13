@@ -4,13 +4,13 @@
 #include <stdlib.h>
 #include <fcntl.h>
 
-#include "lib/rpmdb_internal.h"
+#include "rpmdb_internal.h"
 #include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>
 
-#include "lib/backend/ndb/rpmpkg.h"
-#include "lib/backend/ndb/rpmxdb.h"
-#include "lib/backend/ndb/rpmidx.h"
+#include "backend/ndb/rpmpkg.h"
+#include "backend/ndb/rpmxdb.h"
+#include "backend/ndb/rpmidx.h"
 
 #include "debug.h"
 

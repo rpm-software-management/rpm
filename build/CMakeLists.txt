@@ -13,6 +13,12 @@ target_sources(librpmbuild PRIVATE
 	speclua.c
 )
 
+target_include_directories(librpmbuild PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_SOURCE_DIR}/rpmio
+	${CMAKE_SOURCE_DIR}/lib
+)
+
 target_link_libraries(librpmbuild PUBLIC librpmio librpm)
 target_link_libraries(librpmbuild PRIVATE
 	libmisc

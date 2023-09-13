@@ -367,10 +367,10 @@ foreach (flag -fno-strict-overflow -fno-delete-null-pointer-checks)
 	unset(found)
 endforeach()
 
-# generated config.h
+# generated sources
 include_directories(${CMAKE_BINARY_DIR})
-# private includes
-include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/misc)
+# global private includes
+include_directories(${CMAKE_SOURCE_DIR}/misc)
 # public headers
 include_directories(${CMAKE_SOURCE_DIR}/include)
 

@@ -5,8 +5,8 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmmacro.h>
 
-#include "lib/misc.h"
-#include "lib/rpmug.h"
+#include "misc.h"
+#include "rpmug.h"
 #include "debug.h"
 
 static char *pwpath = NULL;

@@ -32,10 +32,10 @@
 #include <rpm/rpmlog.h>
 #include <rpm/argv.h>
 
-#include "rpmio/rpmlua.h"
-#include "rpmio/rpmio_internal.h"	/* XXX for rpmioSlurp */
-#include "lib/misc.h"
-#include "lib/backend/dbi.h"
+#include "rpmlua.h"
+#include "rpmio_internal.h"	/* XXX for rpmioSlurp */
+#include "misc.h"
+#include "backend/dbi.h"
 
 #include "debug.h"
 
