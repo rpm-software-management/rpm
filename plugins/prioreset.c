@@ -8,7 +8,7 @@
 #endif
 
 #include <rpm/rpmlog.h>
-#include "rpmplugin.h"
+#include <rpm/rpmplugin.h>
 
 #include "debug.h"
 

@@ -10,8 +10,7 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmmacro.h>
-
-#include "rpmplugin.h"
+#include <rpm/rpmplugin.h>
 
 #define XATTR_NAME_IMA "security.ima"
 

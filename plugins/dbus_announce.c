@@ -7,7 +7,7 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmdb.h>
-#include "rpmplugin.h"
+#include <rpm/rpmplugin.h>
 
 struct dbus_announce_data {
     DBusConnection * bus;

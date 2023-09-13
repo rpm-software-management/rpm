@@ -35,7 +35,7 @@ target_sources(librpm PRIVATE
 	verify.c rpmlock.c rpmlock.h misc.h relocation.c
 	rpmscript.h rpmscript.c
 	rpmchroot.c rpmchroot.h
-	rpmplugins.c rpmplugins.h rpmplugin.h rpmug.c rpmug.h
+	rpmplugins.c rpmplugins.h rpmug.c rpmug.h
 	rpmtriggers.h rpmtriggers.c rpmvs.c rpmvs.h
 )
 
