@@ -111,6 +111,7 @@ case $CMD in
             binutils \
             bubblewrap \
             bzip2 \
+            cmake \
             coreutils \
             cpio \
             curl \
