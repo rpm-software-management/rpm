@@ -8,8 +8,8 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
 
-#include "lib/rpmfs.h"
-#include "lib/misc.h"
+#include "rpmfs.h"
+#include "misc.h"
 
 #include "debug.h"
 

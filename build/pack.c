@@ -13,12 +13,12 @@
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmlog.h>
 
-#include "rpmio/rpmio_internal.h"	/* fdInitDigest, fdFiniDigest */
-#include "lib/fsm.h"
-#include "lib/signature.h"
-#include "lib/rpmlead.h"
-#include "build/rpmbuild_internal.h"
-#include "build/rpmbuild_misc.h"
+#include "rpmio_internal.h"	/* fdInitDigest, fdFiniDigest */
+#include "fsm.h"
+#include "signature.h"
+#include "rpmlead.h"
+#include "rpmbuild_internal.h"
+#include "rpmbuild_misc.h"
 
 #include "debug.h"
 

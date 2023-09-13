@@ -4,8 +4,8 @@
 #include <rpm/rpmkeyring.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmlog.h>
-#include "lib/rpmvs.h"
-#include "rpmio/rpmpgpval.h"
+#include "rpmvs.h"
+#include "rpmpgpval.h"
 
 #include "debug.h"
 

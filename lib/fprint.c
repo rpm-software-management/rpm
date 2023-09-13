@@ -9,11 +9,11 @@
 #include <rpm/rpmts.h>
 #include <rpm/rpmsq.h>
 
-#include "lib/rpmdb_internal.h"
-#include "lib/rpmfi_internal.h"
-#include "lib/rpmte_internal.h"
-#include "lib/fprint.h"
-#include "lib/misc.h"
+#include "rpmdb_internal.h"
+#include "rpmfi_internal.h"
+#include "rpmte_internal.h"
+#include "fprint.h"
+#include "misc.h"
 #include "debug.h"
 #include <libgen.h>
 

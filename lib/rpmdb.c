@@ -29,13 +29,13 @@
 #include <rpm/rpmts.h>
 #include <rpm/argv.h>
 
-#include "lib/rpmchroot.h"
-#include "lib/rpmdb_internal.h"
-#include "lib/fprint.h"
-#include "lib/header_internal.h"	/* XXX for headerSetInstance() */
-#include "lib/backend/dbi.h"
-#include "lib/backend/dbiset.h"
-#include "lib/misc.h"
+#include "rpmchroot.h"
+#include "rpmdb_internal.h"
+#include "fprint.h"
+#include "header_internal.h"	/* XXX for headerSetInstance() */
+#include "backend/dbi.h"
+#include "backend/dbiset.h"
+#include "misc.h"
 #include "debug.h"
 
 #define HASHTYPE dbChk

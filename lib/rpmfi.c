@@ -15,12 +15,12 @@
 #include <errno.h>
 #include <fcntl.h>
 
-#include "lib/rpmfi_internal.h"
-#include "lib/rpmte_internal.h"	/* relocations */
-#include "lib/cpio.h"	/* XXX CPIO_FOO */
-#include "lib/fsm.h"	/* rpmpsm stuff for now */
-#include "lib/rpmug.h"
-#include "rpmio/rpmio_internal.h"       /* fdInit/FiniDigest */
+#include "rpmfi_internal.h"
+#include "rpmte_internal.h"	/* relocations */
+#include "cpio.h"	/* XXX CPIO_FOO */
+#include "fsm.h"	/* rpmpsm stuff for now */
+#include "rpmug.h"
+#include "rpmio_internal.h"       /* fdInit/FiniDigest */
 
 #include "debug.h"
 

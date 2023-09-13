@@ -13,9 +13,9 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
 
-#include "lib/rpmlead.h"
-#include "lib/header_internal.h"
-#include "lib/signature.h"
+#include "rpmlead.h"
+#include "header_internal.h"
+#include "signature.h"
 
 #include "debug.h"
 

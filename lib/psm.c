@@ -18,18 +18,18 @@
 #include <rpm/argv.h>
 #include <rpm/rpmbase64.h>
 
-#include "lib/fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
-#include "lib/rpmchroot.h"
-#include "lib/rpmfi_internal.h" /* XXX replaced/states... */
-#include "lib/rpmte_internal.h"	/* XXX internal apis */
-#include "lib/rpmdb_internal.h" /* rpmdbAdd/Remove */
-#include "lib/rpmts_internal.h" /* rpmtsPlugins() etc */
-#include "lib/rpmds_internal.h" /* rpmdsFilterTi() */
-#include "lib/rpmscript.h"
-#include "lib/misc.h"
-#include "lib/rpmtriggers.h"
+#include "fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
+#include "rpmchroot.h"
+#include "rpmfi_internal.h" /* XXX replaced/states... */
+#include "rpmte_internal.h"	/* XXX internal apis */
+#include "rpmdb_internal.h" /* rpmdbAdd/Remove */
+#include "rpmts_internal.h" /* rpmtsPlugins() etc */
+#include "rpmds_internal.h" /* rpmdsFilterTi() */
+#include "rpmscript.h"
+#include "misc.h"
+#include "rpmtriggers.h"
 
-#include "lib/rpmplugins.h"
+#include "rpmplugins.h"
 
 #include "debug.h"
 

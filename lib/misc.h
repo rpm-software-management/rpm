@@ -9,7 +9,7 @@
 #include <string.h>
 #include <rpm/rpmtypes.h>
 #include <rpm/header.h>		/* for headerGetFlags typedef, duh.. */
-#include "lib/rpmfs.h"
+#include "rpmfs.h"
 
 typedef const struct headerFmt_s * headerFmt;
 

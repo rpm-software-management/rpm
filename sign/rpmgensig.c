@@ -20,13 +20,13 @@
 #include <rpm/rpmfileutil.h>	/* rpmMkTemp() */
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
-#include <rpmio/rpmio_internal.h>
+#include "rpmio_internal.h"
 
-#include "lib/rpmlead.h"
-#include "lib/signature.h"
-#include "lib/rpmvs.h"
-#include "sign/rpmsignfiles.h"
-#include "sign/rpmsignverity.h"
+#include "rpmlead.h"
+#include "signature.h"
+#include "rpmvs.h"
+#include "rpmsignfiles.h"
+#include "rpmsignverity.h"
 
 #include "debug.h"
 

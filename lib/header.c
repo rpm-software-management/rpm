@@ -14,8 +14,8 @@
 #include <inttypes.h>
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmstring.h>
-#include "lib/header_internal.h"
-#include "lib/misc.h"			/* tag function proto */
+#include "header_internal.h"
+#include "misc.h"			/* tag function proto */
 
 #include "debug.h"
 

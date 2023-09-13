@@ -4,7 +4,7 @@
 #include <rpm/rpmte.h>
 #include <rpm/rpmds.h>
 #include <rpm/rpmtag.h>
-#include "lib/rpmfs.h"
+#include "rpmfs.h"
 
 typedef enum pkgGoal_e {
     PKG_NONE		= 0,

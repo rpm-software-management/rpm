@@ -7,7 +7,7 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmts.h>
 
-#include "lib/rpmplugins.h"
+#include "rpmplugins.h"
 #include <dlfcn.h>
 
 

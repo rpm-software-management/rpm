@@ -4,8 +4,8 @@
 #include <fcntl.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>
-#include "lib/rpmchroot.h"
-#include "lib/rpmug.h"
+#include "rpmchroot.h"
+#include "rpmug.h"
 #include "debug.h"
 
 int _rpm_nouserns = 0;

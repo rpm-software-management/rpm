@@ -16,7 +16,7 @@
 #include <rpm/rpmsw.h>
 #include <rpm/rpmurl.h>
 
-#include "rpmio/rpmio_internal.h"
+#include "rpmio_internal.h"
 
 #include "debug.h"
 
