@@ -391,3 +391,32 @@ ERASE:
 [])
 RPMTEST_CLEANUP
 
+AT_SETUP([script running environment])
+AT_KEYWORDS([script])
+AT_SKIP_IF([test ${HAVE_UNSHARE} = 0])
+RPMDB_INIT
+runroot rpmbuild -bb --quiet \
+	/data/SPECS/fakeshell.spec \
+	/data/SPECS/scriptwrite.spec
+
+RPMTEST_CHECK([
+RPMDB_INIT
+runroot_other rm -f /tmp/scriptwrite.log
+runroot rpm -U /build/RPMS/noarch/fakeshell-1.0-1.noarch.rpm /build/RPMS/noarch/scriptwrite-1.0-1.noarch.rpm
+runroot_other test -f /tmp/scriptwrite.log
+],
+[1],
+[],
+[])
+
+RPMTEST_CHECK([
+RPMDB_INIT
+runroot_other rm -f /tmp/scriptwrite.log
+runroot rpm -U --noplugins /build/RPMS/noarch/fakeshell-1.0-1.noarch.rpm /build/RPMS/noarch/scriptwrite-1.0-1.noarch.rpm
+runroot_other test -f /tmp/scriptwrite.log
+],
+[0],
+[],
+[])
+RPMTEST_CLEANUP
+

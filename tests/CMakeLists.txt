@@ -22,6 +22,7 @@ if (WITH_INTERNAL_OPENPGP)
 else()
 	set(PGP sequoia)
 endif()
+set(HAVE_UNSHARE ${HAVE_UNSHARE})
 
 set(TESTSUITE_AT
 	rpmtests.at

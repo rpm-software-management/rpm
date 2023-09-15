@@ -1,0 +1,3 @@
+%__transaction_unshare	%{__plugindir}/unshare.so
+%__transaction_unshare_paths /tmp:/home
+%__transaction_unshare_nonet 1
