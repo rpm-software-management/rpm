@@ -38,6 +38,10 @@ if(WITH_FSVERITY)
 	target_include_directories(fsverity PRIVATE ${CMAKE_SOURCE_DIR}/sign)
 endif()
 
+if (HAVE_UNSHARE)
+	add_library(unshare MODULE unshare.c)
+endif()
+
 set(RPM_PLUGINDIR ${CMAKE_INSTALL_FULL_LIBDIR}/rpm-plugins
 	CACHE PATH "rpm plugin directory")
 
