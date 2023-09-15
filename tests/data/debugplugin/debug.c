@@ -99,6 +99,20 @@ static rpmRC debug_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
     return RPMRC_OK;
 }
 
+static rpmRC debug_chroot_pre(rpmPlugin plugin, int direction)
+{
+    fprintf(stderr, "%s: %s\n", __func__,
+		(direction == RPMCHROOT_IN) ? "in" : "out");
+    return RPMRC_OK;
+}
+
+static rpmRC debug_chroot_post(rpmPlugin plugin, int direction, int res)
+{
+    fprintf(stderr, "%s: %s: %d\n", __func__,
+		(direction == RPMCHROOT_IN) ? "in" : "out", res);
+    return RPMRC_OK;
+}
+
 struct rpmPluginHooks_s debug_hooks = {
         .init = debug_init,
         .cleanup = debug_cleanup,
@@ -112,4 +126,6 @@ struct rpmPluginHooks_s debug_hooks = {
         .fsm_file_pre = debug_fsm_file_pre,
         .fsm_file_post = debug_fsm_file_post,
         .fsm_file_prepare = debug_fsm_file_prepare,
+	.chroot_pre = debug_chroot_pre,
+	.chroot_post = debug_chroot_post,
 };

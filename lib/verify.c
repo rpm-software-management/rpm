@@ -478,7 +478,7 @@ int rpmcliVerify(rpmts ts, QVA_t qva, char * const * argv)
      */
     rpmtsOpenDB(ts, O_RDONLY);
     rpmdbOpenAll(rpmtsGetRdb(ts));
-    if (rpmChrootSet(rpmtsRootDir(ts)) || rpmChrootIn()) {
+    if (rpmChrootSet(rpmtsRootDir(ts), rpmtsPlugins(ts)) || rpmChrootIn()) {
 	ec = 1;
 	goto exit;
     }
@@ -501,7 +501,7 @@ int rpmcliVerify(rpmts ts, QVA_t qva, char * const * argv)
 
     rpmtsEmpty(ts);
 
-    if (rpmChrootOut() || rpmChrootSet(NULL))
+    if (rpmChrootOut() || rpmChrootSet(NULL, NULL))
 	ec = 1;
 
 exit:

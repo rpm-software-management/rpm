@@ -27,6 +27,9 @@ struct rpmPluginHooks_s {
     plugin_fsm_file_pre_func            fsm_file_pre;
     plugin_fsm_file_post_func           fsm_file_post;
     plugin_fsm_file_prepare_func        fsm_file_prepare;
+    /* per chroot hooks */
+    plugin_chroot_pre_func              chroot_pre;
+    plugin_chroot_post_func             chroot_post;
 };
 ```
 
@@ -66,6 +69,15 @@ Post hook is is guaranteed to execute whenever pre hook was executed.
 
 Warning: The exact relations and semantics of these hooks is subject to change as there are plans to improve rpms ability to undo file operations in case of failure.
 
+## Per chroot hooks
+
+Hooks `chroot_pre` and `chroot_post` execute once per each chroot() call
+rpm does during a transaction. The pre-hook runs just before the actual
+chroot() call and the post-hook right after it, regardless of whether
+the call succeeded or not. The direction (in/out) of the operation is
+passed in the second argument.
+
+Post hook is guaranteed to execute whenever pre hook was executed.
 ## Examples
 
 For a few simple examples, see the plugins shipped with rpm itself: [https://github.com/rpm-software-management/rpm/tree/master/plugins](https://github.com/rpm-software-management/rpm/tree/master/plugins)

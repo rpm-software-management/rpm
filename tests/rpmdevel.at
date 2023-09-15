@@ -70,5 +70,44 @@ debug_psm_post: simple-1.0-1.noarch:0
 debug_tsm_post: 0
 debug_cleanup
 ])
+
+# there's no /bin/sh in the empty root so we need --nodeps and --noscripts
+RPMTEST_CHECK([
+runroot rpm -U --root /test --nodeps --noscripts -U /build/RPMS/noarch/simple-1.0-1.noarch.rpm
+],
+[0],
+[],
+[debug_init
+debug_tsm_pre
+debug_chroot_pre: in
+debug_chroot_post: in: 0
+debug_chroot_pre: out
+debug_chroot_post: out: 0
+debug_chroot_pre: in
+debug_chroot_post: in: 0
+debug_psm_pre: simple-1.0-1.noarch
+debug_chroot_pre: out
+debug_chroot_post: out: 0
+debug_chroot_pre: in
+debug_chroot_post: in: 0
+debug_fsm_file_pre:  /opt 40755 80000001
+debug_fsm_file_prepare:  1 /opt /opt 40755 80000001
+debug_fsm_file_post:  /opt 40755 80000001: 0
+debug_fsm_file_pre:  /opt/bin 40755 80000001
+debug_fsm_file_prepare:  1 /opt/bin /opt/bin 40755 80000001
+debug_fsm_file_post:  /opt/bin 40755 80000001: 0
+debug_fsm_file_pre: /opt/bin/simple /opt/bin/simple; 100755 1
+debug_fsm_file_prepare: /opt/bin/simple 1 /opt/bin/simple; /opt/bin/simple 100755 1
+debug_fsm_file_post: /opt/bin/simple /opt/bin/simple 100755 1: 0
+debug_chroot_pre: out
+debug_chroot_post: out: 0
+debug_chroot_pre: in
+debug_chroot_post: in: 0
+debug_psm_post: simple-1.0-1.noarch:0
+debug_chroot_pre: out
+debug_chroot_post: out: 0
+debug_tsm_post: 0
+debug_cleanup
+])
 RPMTEST_CLEANUP
 

@@ -1466,7 +1466,7 @@ static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet)
      * this ensures we can successfully perform open(".") which is
      * required to reliably restore cwd after Lua scripts.
      */ 
-    if (rpmtsOpenDB(ts, dbmode) || rpmChrootSet(rpmtsRootDir(ts)))
+    if (rpmtsOpenDB(ts, dbmode) || rpmChrootSet(rpmtsRootDir(ts), rpmtsPlugins(ts)))
 	return -1;
 
     ts->ignoreSet = ignoreSet;
@@ -1513,7 +1513,7 @@ static int rpmtsFinish(rpmts ts)
     if (rpmtsGetDSIRotational(ts) == 0)
 	setSSD(0);
     rpmtsFreeDSI(ts);
-    return rpmChrootSet(NULL);
+    return rpmChrootSet(NULL, NULL);
 }
 
 static int rpmtsPrepare(rpmts ts)

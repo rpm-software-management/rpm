@@ -420,3 +420,37 @@ rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins, rpmfi fi,
 
     return rc;
 }
+
+rpmRC rpmpluginsCallChrootPre(rpmPlugins plugins, int direction)
+{
+    plugin_chroot_pre_func hookFunc = NULL;
+    int i;
+    rpmRC rc = RPMRC_OK;
+
+    for (i = 0; i < plugins->count; i++) {
+	rpmPlugin plugin = plugins->plugins[i];
+	RPMPLUGINS_SET_HOOK_FUNC(chroot_pre);
+	if (hookFunc && hookFunc(plugin, direction) == RPMRC_FAIL) {
+	    rpmlog(RPMLOG_ERR, "Plugin %s: hook chroot_pre failed\n", plugin->name);
+	    rc = RPMRC_FAIL;
+	}
+    }
+    return rc;
+}
+
+rpmRC rpmpluginsCallChrootPost(rpmPlugins plugins, int direction, int res)
+{
+    plugin_chroot_post_func hookFunc = NULL;
+    int i;
+    rpmRC rc = RPMRC_OK;
+
+    for (i = 0; i < plugins->count; i++) {
+	rpmPlugin plugin = plugins->plugins[i];
+	RPMPLUGINS_SET_HOOK_FUNC(chroot_post);
+	if (hookFunc && hookFunc(plugin, direction, res) == RPMRC_FAIL) {
+	    rpmlog(RPMLOG_ERR, "Plugin %s: hook chroot_post failed\n", plugin->name);
+	    rc = RPMRC_FAIL;
+	}
+    }
+    return rc;
+}

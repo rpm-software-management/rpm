@@ -2,6 +2,7 @@
 #define _RPMCHROOT_H
 
 #include <rpm/rpmutil.h>
+#include <rpm/rpmtypes.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -14,7 +15,7 @@ extern "C" {
  * return		-1 on error, 0 on success
  */
 RPM_GNUC_INTERNAL
-int rpmChrootSet(const char *rootDir);
+int rpmChrootSet(const char *rootDir, rpmPlugins plugins);
 
 /** \ingroup rpmchroot
  * Enter chroot if necessary.

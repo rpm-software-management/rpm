@@ -168,6 +168,26 @@ rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins, rpmfi fi,
                                    int fd, const char *path, const char *dest,
                                    mode_t mode, rpmFsmOp op);
 
+/*
+ * Call the chroot pre plugin hook. Called just before chroot in or out.
+ * @param plugins	plugins structure
+ * @param direction	RPMCHROOT_IN/RPMCHROOT_OUT
+ * return		RPMRC_OK on success, RPMRC_FAIL otherwise
+ */
+RPM_GNUC_INTERNAL
+rpmRC rpmpluginsCallChrootPre(rpmPlugins plugins, int direction);
+
+/*
+ * Call the chroot post plugin hook. Called after chroot in or out,
+ * whether it succeeded or not.
+ * @param plugins	plugins structure
+ * @param direction	RPMCHROOT_IN/RPMCHROOT_OUT
+ * @param res		chroot code (0 on success)
+ * return		RPMRC_OK on success, RPMRC_FAIL otherwise
+ */
+RPM_GNUC_INTERNAL
+rpmRC rpmpluginsCallChrootPost(rpmPlugins plugins, int direction, int res);
+
 #ifdef __cplusplus
 }
 #endif

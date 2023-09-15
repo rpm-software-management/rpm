@@ -15,6 +15,10 @@ typedef enum rpmScriptletExecutionFlow_e {
     RPMSCRIPTLET_EXEC    = 1 << 1
 } rpmScriptletExecutionFlow;
 
+enum rpmChrootDirection_e {
+    RPMCHROOT_IN = 0,
+    RPMCHROOT_OUT = 1,
+};
 
 /** \ingroup rpmfi
  * File disposition flags during package install/erase transaction.
@@ -61,6 +65,10 @@ typedef rpmRC (*plugin_fsm_file_prepare_func)(rpmPlugin plugin, rpmfi fi,
 					      const char *dest,
 					      mode_t file_mode, rpmFsmOp op);
 
+typedef rpmRC (*plugin_chroot_pre_func)(rpmPlugin plugin, int direction);
+typedef rpmRC (*plugin_chroot_post_func)(rpmPlugin plugin, int direction,
+					int res);
+
 typedef struct rpmPluginHooks_s * rpmPluginHooks;
 struct rpmPluginHooks_s {
     /* plugin constructor and destructor hooks */
@@ -80,6 +88,9 @@ struct rpmPluginHooks_s {
     plugin_fsm_file_pre_func		fsm_file_pre;
     plugin_fsm_file_post_func		fsm_file_post;
     plugin_fsm_file_prepare_func	fsm_file_prepare;
+    /* per chroot hooks */
+    plugin_chroot_pre_func		chroot_pre;
+    plugin_chroot_post_func		chroot_post;
 };
 
 #ifdef __cplusplus
