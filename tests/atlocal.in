@@ -150,8 +150,7 @@ function runroot()
     setup_env
     snapshot exec "$@" \
              --define "_buildhost testhost" \
-             --define "_topdir /build" \
-             --nouserns
+             --define "_topdir /build"
 }
 
 function runroot_other()
