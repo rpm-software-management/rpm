@@ -1185,11 +1185,13 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	    NVR = xstrdup(name);
 	pkg = newPackage(NVR, spec->pool, &spec->packages);
 	headerPutString(pkg->header, RPMTAG_NAME, NVR);
+    } else if (spec->sourcePackage) {
+	NVR = xstrdup("(main package)");
+	pkg = spec->packages;
     } else {
 	NVR = xstrdup("(main package)");
 	pkg = newPackage(NULL, spec->pool, &spec->packages);
 	spec->sourcePackage = newPackage(NULL, spec->pool, NULL);
-	
     }
 
     if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {

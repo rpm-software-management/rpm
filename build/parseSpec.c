@@ -891,12 +891,6 @@ static rpmRC parseSpecSection(rpmSpec *specptr, int secondary)
     int storedParsePart;
     int initialPackage = 1;
 
-    if (secondary) {
-	initialPackage = 0;
-	parsePart = PART_EMPTY;
-	prevParsePart = PART_NONE;
-    }
-
     /* All the parse*() functions expect to have a line pre-read */
     /* in the spec's line buffer.  Except for parsePreamble(),   */
     /* which handles the initial entry into a spec file.         */
