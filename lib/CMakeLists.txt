@@ -15,6 +15,7 @@ target_compile_definitions(librpm PRIVATE
 target_include_directories(librpm PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_SOURCE_DIR}/rpmio
+	${CMAKE_CURRENT_BINARY_DIR}
 )
 
 target_sources(librpm PRIVATE
@@ -66,7 +67,7 @@ if(WITH_CAP)
 endif()
 
 add_custom_command(OUTPUT tagtbl.C
-	COMMAND AWK=gawk ${CMAKE_CURRENT_SOURCE_DIR}/gentagtbl.sh ${CMAKE_SOURCE_DIR}/include/rpm/rpmtag.h > ${CMAKE_BINARY_DIR}/tagtbl.C
+	COMMAND AWK=gawk ${CMAKE_CURRENT_SOURCE_DIR}/gentagtbl.sh ${CMAKE_SOURCE_DIR}/include/rpm/rpmtag.h > tagtbl.C
 	DEPENDS ${CMAKE_SOURCE_DIR}/include/rpm/rpmtag.h gentagtbl.sh
 )
 
