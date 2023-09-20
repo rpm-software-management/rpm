@@ -229,6 +229,7 @@ try:
     myprint(h['arch'])
 except rpm.error as e:
     myprint(e)
+sink.close()
 ],
 [public key not available
 ],
@@ -236,7 +237,8 @@ except rpm.error as e:
 
 RPMPY_TEST([reading a signed package file 2],[
 
-keydata = open('${RPMDATA}/keys/rpm.org-rsa-2048-test.pub', 'rb').read()
+with open('${RPMDATA}/keys/rpm.org-rsa-2048-test.pub', 'rb') as keydata_file:
+    keydata = keydata_file.read()
 pubkey = rpm.pubkey(keydata)
 keyring = rpm.keyring()
 keyring.addKey(pubkey)
@@ -509,7 +511,8 @@ ts.closeDB()
 ts.openDB()
 c2 = ts.dbCookie()
 myprint(c1 == c2 != None)
-open("dbcookie", "w+").write(c1)
+with open("dbcookie", "w+") as dbcookie_file:
+    dbcookie_file.write(c1)
 ],
 [True
 ],
@@ -529,9 +532,11 @@ RPMPY_CHECK([
 ts = rpm.ts()
 ts.openDB()
 c1 = ts.dbCookie()
-c2 = open("dbcookie", "r").read()
+with open("dbcookie", "r") as dbcookie_file:
+    c2 = dbcookie_file.read()
 myprint(c1 != c2)
-open("dbcookie", "w+").write(c1)
+with open("dbcookie", "w+") as dbcookie_file:
+    dbcookie_file.write(c1)
 ],
 [True
 ],
@@ -552,7 +557,8 @@ RPMPY_CHECK([
 ts = rpm.ts()
 ts.openDB()
 c1 = ts.dbCookie()
-c2 = open("dbcookie", "r").read()
+with open("dbcookie", "r") as dbcookie_file:
+    c2 = dbcookie_file.read()
 myprint(c1 != c2)
 ],
 [True
