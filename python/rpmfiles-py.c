@@ -321,7 +321,16 @@ static struct PyMethodDef rpmfile_methods[] = {
     { NULL, NULL, 0, NULL }
 };
 
+static PyObject *disabled_new(PyTypeObject *type,
+                              PyObject *args, PyObject *kwds)
+{
+    PyErr_SetString(PyExc_TypeError,
+                    "TypeError: cannot create 'rpm.file' instances");
+    return NULL;
+}
+
 static PyType_Slot rpmfile_Type_Slots[] = {
+    {Py_tp_new, disabled_new},
     {Py_tp_dealloc, rpmfile_dealloc},
     {Py_tp_str, rpmfile_name},
     {Py_tp_getattro, PyObject_GenericGetAttr},
@@ -336,7 +345,7 @@ PyTypeObject* rpmfile_Type;
 PyType_Spec rpmfile_Type_Spec = {
     .name = "rpm.file",
     .basicsize = sizeof(rpmfileObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE | Py_TPFLAGS_DISALLOW_INSTANTIATION,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmfile_Type_Slots,
 };
 

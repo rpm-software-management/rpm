@@ -218,7 +218,16 @@ static PyObject *rpmarchive_iternext(rpmarchiveObject *s)
     return next;
 }
 
+static PyObject *disabled_new(PyTypeObject *type,
+                              PyObject *args, PyObject *kwds)
+{
+    PyErr_SetString(PyExc_TypeError,
+                    "TypeError: cannot create 'rpm.archive' instances");
+    return NULL;
+}
+
 static PyType_Slot rpmarchive_Type_Slots[] = {
+    {Py_tp_new, disabled_new},
     {Py_tp_dealloc, rpmarchive_dealloc},
     {Py_tp_getattro, PyObject_GenericGetAttr},
     {Py_tp_setattro, PyObject_GenericSetAttr},
@@ -233,7 +242,7 @@ PyTypeObject* rpmarchive_Type;
 PyType_Spec rpmarchive_Type_Spec = {
     .name = "rpm.archive",
     .basicsize = sizeof(rpmarchiveObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE | Py_TPFLAGS_DISALLOW_INSTANTIATION,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmarchive_Type_Slots,
 };
 

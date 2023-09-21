@@ -89,7 +89,16 @@ static PyGetSetDef specpkg_getseters[] = {
     { NULL }   /* sentinel */
 };
 
+static PyObject *disabled_new(PyTypeObject *type,
+                              PyObject *args, PyObject *kwds)
+{
+    PyErr_SetString(PyExc_TypeError,
+                    "TypeError: cannot create 'rpm.specpkg' instances");
+    return NULL;
+}
+
 static PyType_Slot specPkg_Type_Slots[] = {
+    {Py_tp_new, disabled_new},
     {Py_tp_dealloc, specPkg_dealloc},
     {Py_tp_getattro, PyObject_GenericGetAttr},
     {Py_tp_setattro, PyObject_GenericSetAttr},
@@ -102,7 +111,7 @@ PyTypeObject* specPkg_Type;
 PyType_Spec specPkg_Type_Spec = {
     .name = "rpm.specpkg",
     .basicsize = sizeof(specPkgObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE | Py_TPFLAGS_DISALLOW_INSTANTIATION,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = specPkg_Type_Slots,
 };
 
