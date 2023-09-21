@@ -121,7 +121,16 @@ static int rpmii_bool(rpmiiObject *s)
 static char rpmii_doc[] =
 "";
 
+static PyObject *disabled_new(PyTypeObject *type,
+                              PyObject *args, PyObject *kwds)
+{
+    PyErr_SetString(PyExc_TypeError,
+                    "TypeError: cannot create 'rpm.ii' instances");
+    return NULL;
+}
+
 static PyType_Slot rpmii_Type_Slots[] = {
+    {Py_tp_new, disabled_new},
     {Py_tp_dealloc, rpmii_dealloc},
     {Py_nb_bool, rpmii_bool},
     {Py_tp_getattro, PyObject_GenericGetAttr},
@@ -137,7 +146,7 @@ PyTypeObject* rpmii_Type;
 PyType_Spec rpmii_Type_Spec = {
     .name = "rpm.ii",
     .basicsize = sizeof(rpmiiObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE | Py_TPFLAGS_DISALLOW_INSTANTIATION,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmii_Type_Slots,
 };
 

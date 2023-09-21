@@ -71,7 +71,16 @@ static void rpmprob_dealloc(rpmProblemObject *s)
     free(s);
 }
 
+static PyObject *disabled_new(PyTypeObject *type,
+                              PyObject *args, PyObject *kwds)
+{
+    PyErr_SetString(PyExc_TypeError,
+                    "TypeError: cannot create 'rpm.prob' instances");
+    return NULL;
+}
+
 static PyType_Slot rpmProblem_Type_Slots[] = {
+    {Py_tp_new, disabled_new},
     {Py_tp_dealloc, rpmprob_dealloc},
     {Py_tp_str, rpmprob_str},
     {Py_tp_getattro, PyObject_GenericGetAttr},
@@ -85,7 +94,7 @@ PyTypeObject* rpmProblem_Type;
 PyType_Spec rpmProblem_Type_Spec = {
     .name = "rpm.prob",
     .basicsize = sizeof(rpmProblemObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE | Py_TPFLAGS_DISALLOW_INSTANTIATION,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmProblem_Type_Slots,
 };
 

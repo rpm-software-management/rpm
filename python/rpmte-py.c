@@ -265,7 +265,16 @@ static struct PyMethodDef rpmte_methods[] = {
 static char rpmte_doc[] =
 "";
 
+static PyObject *disabled_new(PyTypeObject *type,
+                              PyObject *args, PyObject *kwds)
+{
+    PyErr_SetString(PyExc_TypeError,
+                    "TypeError: cannot create 'rpm.te' instances");
+    return NULL;
+}
+
 static PyType_Slot rpmte_Type_Slots[] = {
+    {Py_tp_new, disabled_new},
     {Py_tp_getattro, PyObject_GenericGetAttr},
     {Py_tp_setattro, PyObject_GenericSetAttr},
     {Py_tp_doc, rpmte_doc},
@@ -277,7 +286,7 @@ PyTypeObject* rpmte_Type;
 PyType_Spec rpmte_Type_Spec = {
     .name = "rpm.te",
     .basicsize = sizeof(rpmteObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE | Py_TPFLAGS_DISALLOW_INSTANTIATION,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmte_Type_Slots,
 };
 

@@ -181,7 +181,16 @@ static char rpmmi_doc[] =
   "	    print('%s-%s-%s' % (h['name'], h['version'], h['release']))\n"
 ;
 
+static PyObject *disabled_new(PyTypeObject *type,
+                              PyObject *args, PyObject *kwds)
+{
+    PyErr_SetString(PyExc_TypeError,
+                    "TypeError: cannot create 'rpm.mi' instances");
+    return NULL;
+}
+
 static PyType_Slot rpmmi_Type_Slots[] = {
+    {Py_tp_new, disabled_new},
     {Py_tp_dealloc, rpmmi_dealloc},
     {Py_nb_bool, rpmmi_bool},
     {Py_mp_length, rpmmi_length},
@@ -198,7 +207,7 @@ PyTypeObject* rpmmi_Type;
 PyType_Spec rpmmi_Type_Spec = {
     .name = "rpm.mi",
     .basicsize = sizeof(rpmmiObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE | Py_TPFLAGS_DISALLOW_INSTANTIATION,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmmi_Type_Slots,
 };
 
