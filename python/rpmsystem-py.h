@@ -11,4 +11,12 @@
 
 PyObject * utf8FromString(const char *s);
 
+#ifndef Py_TPFLAGS_IMMUTABLETYPE
+/*
+ * Flag was added in Python 3.10.
+ * If the current Python doesn't have it, rpm's type objects will be mutable.
+ */
+#define Py_TPFLAGS_IMMUTABLETYPE 0
+#endif
+
 #endif	/* H_SYSTEM_PYTHON */
