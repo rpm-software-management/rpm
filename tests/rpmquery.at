@@ -647,7 +647,7 @@ AT_SETUP([xml format])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
-runroot rpm -qp --xml  data/RPMS/hello-2.0-1.x86_64.rpm
+runroot rpm -qp --xml  /data/RPMS/hello-2.0-1.x86_64.rpm
 ],
 [0],
 [<rpmHeader>

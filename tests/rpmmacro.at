@@ -106,7 +106,7 @@ foo 4\\
 foo 5
 EOF
 
-runroot rpm --eval '%{load:mtest}%{foo}'
+runroot rpm --eval '%{load:/mtest}%{foo}'
 ],
 [0],
 [
