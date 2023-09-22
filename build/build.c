@@ -330,6 +330,29 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 	getenv("SOURCE_DATE_EPOCH") == NULL) {
 	/* Use date of first (== latest) changelog entry */
 	Header h = spec->packages->header;
+	long release_first_int = 0;
+	const char *releasestr = headerGetString(h, RPMTAG_RELEASE);
+	if (!releasestr) {
+	    rpmlog(RPMLOG_WARNING, _("source_date_epoch_from_changelog set but "
+		"Release is missing from spec. As new releases usually do not have changelog entries, "
+		"the number is needed to increase the mtime/date for rebuilds.\n"));
+	} else {
+	    const char *s;
+	    s = releasestr;
+	    while (*s && risdigit(*s)) s++;
+	    if (s - releasestr < 1) {
+		rpmlog(RPMLOG_WARNING, _("source_date_epoch_from_changelog set but "
+		    "Release does not start with a number. "
+		    "That is needed to increase the mtime/date for rebuilds.\n"));
+	    } else if (s - releasestr > 8) {
+		rpmlog(RPMLOG_WARNING, _("source_date_epoch_from_changelog set but "
+		    "Release is starting with a number longer than 8 digits. Please use a shorter one. "
+		    "Skipping increase of mtime/date for rebuilds to avoid date too much in the future.\n"));
+	    } else {
+		release_first_int = strtol(releasestr, NULL, 10);
+		rpmlog(RPMLOG_NOTICE, _("adding first number of release to SOURCE_DATE_EPOCH: %li\n"), release_first_int);
+	    }
+	}
 	struct rpmtd_s td;
 	if (headerGet(h, RPMTAG_CHANGELOGTIME, &td, (HEADERGET_MINMEM|HEADERGET_RAW))) {
 	    char sdestr[22];
@@ -337,6 +360,17 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 	    if (sdeint % 86400 == 43200) /* date was rounded to 12:00 */
 		/* make sure it is in the past, so that clamping times works */
 		sdeint -= 43200;
+	    if (sdeint >= LLONG_MAX - release_first_int - 24*60*60) {
+		sdeint = 0;
+	    } else {
+		/* substract a day to make it more likely date is in the past */
+		sdeint += release_first_int - 24*60*60;
+	    }
+	    time_t now = time(NULL);
+	    if (sdeint >= now) {
+		rpmlog(RPMLOG_WARNING, _("source_date_epoch_from_changelog set but "
+		    "the date we came up with is not in the past, if enabled clamping mtime will likely fail.\n"));
+	    }
 	    snprintf(sdestr, sizeof(sdestr), "%lli", sdeint);
 	    rpmlog(RPMLOG_NOTICE, _("setting %s=%s\n"), "SOURCE_DATE_EPOCH", sdestr);
 	    setenv("SOURCE_DATE_EPOCH", sdestr, 0);
