@@ -1493,7 +1493,7 @@ runroot rpm -U /build/RPMS/noarch/klang-client-1.0-1.noarch.rpm
 ])
 
 RPMTEST_CHECK([
-runroot_other mkdir -p etc/sysusers.d/
+runroot_other mkdir -p /etc/sysusers.d/
 runroot_other touch /etc/sysusers.d/klang.conf
 runroot rpm -U \
 	/build/RPMS/noarch/klang-common-1.0-1.noarch.rpm
