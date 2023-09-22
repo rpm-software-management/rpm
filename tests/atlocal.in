@@ -91,7 +91,7 @@ function snapshot()
         exec)
             @BWRAP@ --unshare-pid --dev-bind $RPMTEST / --clearenv \
                     --setenv PATH "@CMAKE_INSTALL_FULL_BINDIR@:/usr/bin" \
-                    --setenv HOME /root --chdir / --dev /dev --proc /proc \
+                    --setenv HOME /root --dev /dev --proc /proc \
                     --die-with-parent "$@"
         ;;
         shell)
@@ -105,7 +105,7 @@ function snapshot()
                 fi
             fi
             snapshot exec --unshare-uts --hostname $source \
-                          --bind $PWD /srv "$@"
+                          --bind $PWD /srv --chdir /srv "$@"
         ;;
     esac
 }
