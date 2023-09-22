@@ -2236,7 +2236,7 @@ error: /data/SPECS/eliftest.spec:40: bad %elif condition:  rubbish:4-3
 # multiline %if test
 RPMTEST_CHECK([
 runroot rpmbuild -ba --quiet      \
- data/SPECS/ifmultiline.spec
+ /data/SPECS/ifmultiline.spec
 ],
 [0],
 [],
