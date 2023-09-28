@@ -16,14 +16,10 @@ os_release(OS_NAME ID)
 os_release(OS_VERSION VERSION_ID)
 
 set(PYTHON ${Python3_EXECUTABLE})
-if (${WITH_INTERNAL_OPENPGP})
-	if (${WITH_OPENSSL})
-		set(CRYPTO openssl)
-	else()
-		set(CRYPTO libgcrypt)
-	endif()
+if (WITH_INTERNAL_OPENPGP)
+	set(PGP internal)
 else()
-	set(CRYPTO sequoia)
+	set(PGP sequoia)
 endif()
 
 set(TESTSUITE_AT
