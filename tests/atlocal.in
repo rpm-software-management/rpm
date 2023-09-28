@@ -4,22 +4,7 @@ RPMLIBDIR="@CMAKE_INSTALL_FULL_LIBDIR@"
 export RPMLIBDIR
 
 PYTHON=@PYTHON@
-
-CRYPTO=@CRYPTO@
-export CRYPTO
-if test x$CRYPTO = xlibgcrypt
-then
-    PGP=internal
-elif test x$CRYPTO = xopenssl
-then
-    PGP=internal
-elif test x$CRYPTO = xsequoia
-then
-    PGP=sequoia
-else
-    echo "Unhandled crypto backend: $CRYPTO"
-    exit
-fi
+PGP=@PGP@
 
 RPMTEST="$RPMTREE"
 RPMDATA="/data/"
