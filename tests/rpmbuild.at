@@ -2407,6 +2407,32 @@ runroot rpm -ql /build/RPMS/noarch/dynamic-docs-1.0-1.noarch.rpm
 RPMTEST_CLEANUP
 
 # ------------------------------
+# Check if dynamic spec generation works for main package, too
+AT_SETUP([rpmbuild with dynamic spec generation for main package])
+AT_KEYWORDS([build])
+RPMDB_INIT
+RPMTEST_CHECK([
+
+runroot rpmbuild --define "_prefix /usr/local" -D "FULLDYNAMIC 1" -ba /data/SPECS/dynamic.spec
+],
+[0],
+[ignore],
+[ignore])
+
+RPMTEST_CHECK([
+
+runroot rpm -qp --qf "%{Summary}\n" /build/RPMS/noarch/dynamic-docs-1.0-1.noarch.rpm
+runroot rpm -ql /build/RPMS/noarch/dynamic-docs-1.0-1.noarch.rpm
+],
+[0],
+[Documentation for dynamic spec
+/usr/local/share/doc/dynamic-docs-1.0
+/usr/local/share/doc/dynamic-docs-1.0/FAQ
+],
+[])
+RPMTEST_CLEANUP
+
+# ------------------------------
 # Check failing dynamic spec generation
 AT_SETUP([rpmbuild with dynamic spec generation fail])
 AT_KEYWORDS([build])

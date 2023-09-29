@@ -1,12 +1,14 @@
-Summary: dynamic hello -- hello, world rpm
 Name: dynamic
 Version: 1.0
 Release: 1
+BuildArch: noarch
+%{?!FULLDYNAMIC:
 Group: Utilities
 License: GPL
 Distribution: RPM test suite.
 URL: http://rpm.org
-BuildArch:	noarch
+Summary: dynamic hello -- hello, world rpm
+}
 
 %description
 Simple rpm demonstration.
@@ -21,6 +23,13 @@ echo "Q: Why?\nA: Because we can!" > FAQ
 mkdir -p $RPM_BUILD_ROOT/usr/local/bin
 echo " " > $RPM_BUILD_ROOT/usr/local/bin/hello
 
+%{?FULLDYNAMIC:
+echo "Group: Utilities" >> %{specpartsdir}/mainpkg.specpart
+echo "License: GPL" >> %{specpartsdir}/mainpkg.specpart
+echo "Distribution: RPM test suite." >> %{specpartsdir}/mainpkg.specpart
+echo "URL: http://rpm.org" >> %{specpartsdir}/mainpkg.specpart
+echo "Summary: dynamic hello -- hello, world rpm" >> %{specpartsdir}/mainpkg.specpart
+}
 
 echo "%package docs" >> %{specpartsdir}/docs.specpart
 %{?!FAIL:echo "Summary: Documentation for dynamic spec" >> %{specpartsdir}/docs.specpart}
