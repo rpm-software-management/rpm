@@ -56,6 +56,7 @@ set(TESTSUITE_AT
 )
 
 find_program(AUTOM4TE autom4te REQUIRED)
+mark_as_advanced(AUTOM4TE)
 set(AUTOTEST ${AUTOM4TE} --language=autotest)
 
 set(TESTPROGS rpmpgpcheck rpmpgppubkeyfingerprint)
@@ -73,7 +74,9 @@ endif()
 
 # Detect suitable mktree backend
 find_program(BWRAP bwrap)
+mark_as_advanced(BWRAP)
 find_program(PODMAN NAMES podman docker)
+mark_as_advanced(PODMAN)
 if ("${MKTREE_BACKEND}" STREQUAL "")
 	if (BWRAP AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/mktree.${OS_NAME})
 		set(MKTREE_BACKEND ${OS_NAME})

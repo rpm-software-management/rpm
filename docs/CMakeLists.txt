@@ -1,4 +1,5 @@
 find_program(PANDOC NAMES pandoc)
+mark_as_advanced(PANDOC)
 
 add_subdirectory(man)
 
