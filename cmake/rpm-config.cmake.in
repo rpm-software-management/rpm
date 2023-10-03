@@ -2,3 +2,5 @@
 
 include("${CMAKE_CURRENT_LIST_DIR}/rpm-targets.cmake")
 check_required_components(rpm)
+
+set(RPM_PLUGINDIR @RPM_PLUGINDIR@)

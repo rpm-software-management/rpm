@@ -1184,7 +1184,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 %_urlhelper             %{__urlhelpercmd} %{?__urlhelper_localopts} %{?__urlhelper_proxyopts} %{__urlhelperopts}
 
 # Transaction plugin macros
-%__plugindir		%{_libdir}/rpm-plugins
+%__plugindir		@RPM_PLUGINDIR@
 %__transaction_systemd_inhibit	%{__plugindir}/systemd_inhibit.so
 %__transaction_selinux		%{__plugindir}/selinux.so
 %__transaction_syslog		%{__plugindir}/syslog.so
