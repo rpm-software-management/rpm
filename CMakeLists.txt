@@ -68,6 +68,7 @@ function(findutil UTIL TRY)
 		message(DEBUG "${util} not found, assuming /usr/bin/${util}")
 		set(${UTIL} /usr/bin/${util} PARENT_SCOPE)
 	endif()
+	mark_as_advanced(${UTIL})
 endfunction()
 
 function(makemacros)
@@ -207,6 +208,8 @@ set_target_properties(LUA::LUA PROPERTIES
 add_library(MAGIC::MAGIC UNKNOWN IMPORTED)
 find_library(MAGIC_LIBRARY NAMES magic REQUIRED)
 find_path(MAGIC_INCLUDE_DIR NAMES magic.h REQUIRED)
+mark_as_advanced(MAGIC_LIBRARY)
+mark_as_advanced(MAGIC_INCLUDE_DIR)
 set_target_properties(MAGIC::MAGIC PROPERTIES
 		      IMPORTED_LOCATION "${MAGIC_LIBRARY}")
 target_include_directories(MAGIC::MAGIC INTERFACE "${MAGIC_INCLUDE_DIR}")
@@ -266,12 +269,15 @@ if (WITH_IMAEVM)
 	add_library(IMA::IMA UNKNOWN IMPORTED)
 	find_path(IMA_INCLUDE_DIR NAMES imaevm.h REQUIRED)
 	find_library(IMA_LIBRARY NAMES imaevm REQUIRED)
+	mark_as_advanced(IMA_INCLUDE_DIR)
+	mark_as_advanced(IMA_LIBRARY)
 	set_target_properties(IMA::IMA PROPERTIES
 			      IMPORTED_LOCATION "${IMA_LIBRARY}")
 	target_include_directories(IMA::IMA INTERFACE "${IMA_INCLUDE_DIR}")
 endif()
 
 find_program(__FIND_DEBUGINFO find-debuginfo)
+mark_as_advanced(__FIND_DEBUGINFO)
 
 function(chkdef func req)
 	string(TOUPPER ${func} FUNC)
