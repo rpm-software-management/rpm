@@ -32,9 +32,9 @@ For all available options, see the output of the command:
 By default, tests are executed in parallel using all available cores, pass
 a specific -jN value to limit.
 
-To drop into a test-like shell, run:
+To drop into an Autotest-like shell, run:
 
-    make env
+    make atshell
 
 See the printed help for details on how to use it.
 
