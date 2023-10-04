@@ -17,7 +17,7 @@ case $CMD in
 
         mkdir -p $DATA_DIR
         cp $0 /usr/bin/
-        cp rpmtests atlocal $DATA_DIR/
+        cp rpmtests atlocal mktree.common $DATA_DIR/
     ;;
     check)
         ln -s $DATA_DIR/* .
