@@ -109,8 +109,8 @@ configure_file(mktree.${MKTREE_BACKEND} mktree @ONLY)
 configure_file(atlocal.in atlocal @ONLY)
 configure_file(package.m4.in package.m4 @ONLY)
 
-add_custom_target(env
-	COMMAND ./mktree env
+add_custom_target(atshell
+	COMMAND ./mktree atshell
 	DEPENDS tree
 )
 

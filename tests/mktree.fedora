@@ -29,7 +29,7 @@ RPM_MACROS="
 %__transaction_systemd_inhibit %{nil}
 "
 
-ENV_MOTD="
+ATSHELL_MOTD="
 Welcome to RPM test environment!
 
 This is like an interactive test with a writable \$RPMTEST
@@ -166,7 +166,7 @@ case $CMD in
         # Configure default shell for root user
         cp -r $BASE_DIR/{etc/skel/.,/root}
     ;;
-    env)
+    atshell)
         set -a
         mount_tree $SANDBOX_DIR
 
@@ -174,7 +174,7 @@ case $CMD in
         export BASE_DIR=$RPMTEST
         export -f dnf
 
-        echo "$ENV_MOTD"
+        echo "$ATSHELL_MOTD"
         $SHELL
         exit 0
     ;;
