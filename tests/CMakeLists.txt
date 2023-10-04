@@ -1,6 +1,7 @@
-# Use our top-level targets as an ordering clue to cmake: the project
-# needs to be built before we can populate anything...
-get_property(TOP_TARGETS DIRECTORY .. PROPERTY BUILDSYSTEM_TARGETS)
+# Use our cli tools as an ordering clue to cmake: the project
+# needs to be built before we can populate anything. The tools depend
+# on all the libraries so we get a good coverage.
+get_property(TOOLPROGS DIRECTORY ../tools PROPERTY BUILDSYSTEM_TARGETS)
 
 function(os_release var key)
 	execute_process(
@@ -139,5 +140,5 @@ add_custom_target(tree
 	BYPRODUCTS mktree.output
 	DEPENDS rpmtests
 	DEPENDS ${TESTPROGS}
-	DEPENDS ${TOP_TARGETS}
+	DEPENDS ${TOOLPROGS}
 )
