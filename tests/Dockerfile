@@ -64,7 +64,7 @@ RUN cmake \
 	-DWITH_IMAEVM=ON \
 	-DMKTREE_BACKEND=rootfs \
 	../rpm
-RUN rpm -e --nodeps \
+RUN rpm -e --nodeps --nodb \
 	rpm \
 	rpm-libs \
 	rpm-build-libs \
