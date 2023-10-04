@@ -1,4 +1,4 @@
-FROM registry.fedoraproject.org/fedora:38
+FROM registry.fedoraproject.org/fedora:38 AS base
 MAINTAINER rpm-maint@lists.rpm.org
 
 RUN echo -e "deltarpm=0\ninstall_weak_deps=0\ntsflags=nodocs" >> /etc/dnf/dnf.conf
@@ -52,6 +52,23 @@ RUN dnf -y install \
   && dnf clean all
 RUN echo "%_dbpath $(rpm --eval '%_dbpath')" > /root/.rpmmacros
 
+# Workaround for pkgconf(1)'s unlisted dependency on rpm.
+# This is needed for cmake to work without an rpm installation.
+RUN ln -sf $(rpm --eval '%{_target_platform}%{?_gnu}')-pkg-config \
+           /usr/bin/pkg-config
+
+RUN rpm -e --nodeps --nodb \
+	rpm \
+	rpm-libs \
+	rpm-build-libs \
+	rpm-sign-libs \
+	python3-rpm
+
+WORKDIR /
+CMD /bin/bash
+
+FROM base AS full
+
 WORKDIR /srv/rpm
 COPY . .
 RUN chmod -R a-w .
@@ -64,15 +81,6 @@ RUN cmake \
 	-DWITH_IMAEVM=ON \
 	-DMKTREE_BACKEND=rootfs \
 	../rpm
-RUN rpm -e --nodeps --nodb \
-	rpm \
-	rpm-libs \
-	rpm-build-libs \
-	rpm-sign-libs \
-	python3-rpm
 RUN make tree
 
-WORKDIR /
 RUN rm -rf /srv/{rpm,build}
-
-CMD /bin/bash
