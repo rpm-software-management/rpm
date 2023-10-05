@@ -101,8 +101,6 @@ case $CMD in
         rm -rf "$INST_DIR"
         make_install $INST_DIR
 
-        [ -d "$BASE_DIR" ] && exit 0
-
         mkdir -p $CACHE_DIR
         echo "$RPM_MACROS" > $CACHE_DIR/.rpmmacros
 
