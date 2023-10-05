@@ -177,12 +177,10 @@ case $CMD in
 
         echo "$ATSHELL_MOTD"
         $SHELL
-        exit 0
     ;;
     shell)
         mount_tree $SANDBOX_DIR
         snapshot shell "$@"
-        exit 0
     ;;
     check)
         mount_tree
