@@ -1,0 +1,1 @@
+%__transaction_systemd_inhibit  %{__plugindir}/systemd_inhibit.so
