@@ -129,6 +129,10 @@ add_custom_target(reset
 	COMMAND ./mktree reset
 )
 
+add_custom_target(tree
+	DEPENDS mktree.output
+)
+
 add_custom_command(OUTPUT rpmtests
 	COMMAND ${AUTOTEST} -I ${CMAKE_CURRENT_SOURCE_DIR}
 		-o rpmtests rpmtests.at
@@ -136,9 +140,8 @@ add_custom_command(OUTPUT rpmtests
 	DEPENDS local.at
 )
 
-add_custom_target(tree
+add_custom_command(OUTPUT mktree.output
 	COMMAND ./mktree build
-	BYPRODUCTS mktree.output
 	DEPENDS rpmtests
 	DEPENDS ${TESTPROGS}
 	DEPENDS ${TOOLPROGS}
