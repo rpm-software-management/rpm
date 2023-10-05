@@ -111,12 +111,12 @@ configure_file(atlocal.in atlocal @ONLY)
 configure_file(package.m4.in package.m4 @ONLY)
 
 add_custom_target(atshell
-	COMMAND ./mktree atshell
+	COMMAND ./mktree atshell ||:
 	DEPENDS tree
 )
 
 add_custom_target(shell
-	COMMAND ./mktree shell
+	COMMAND ./mktree shell ||:
 	DEPENDS tree
 )
 
