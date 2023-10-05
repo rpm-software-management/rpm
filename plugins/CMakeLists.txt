@@ -45,6 +45,6 @@ get_property(plugins DIRECTORY PROPERTY BUILDSYSTEM_TARGETS)
 foreach(plugin ${plugins})
 	target_link_libraries(${plugin} PRIVATE librpmio librpm)
 	install(TARGETS ${plugin} DESTINATION ${RPM_PLUGINDIR})
-	install(FILES transaction_${plugin}.macros DESTINATION ${RPM_MACROSDIR})
+	install(FILES macros.transaction_${plugin} DESTINATION ${RPM_MACROSDIR})
 endforeach()
 
