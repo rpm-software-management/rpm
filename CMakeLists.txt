@@ -33,6 +33,7 @@ option(WITH_IMAEVM "Build with IMA support" OFF)
 option(WITH_FAPOLICYD "Build with fapolicyd support" ON)
 
 set(RPM_CONFIGDIR "${CMAKE_INSTALL_PREFIX}/lib/rpm" CACHE PATH "rpm home")
+set(RPM_MACROSDIR "${RPM_CONFIGDIR}/macros.d")
 set(RPM_VENDOR "vendor" CACHE STRING "rpm vendor string")
 
 # Emulate libtool versioning. Before a public release:

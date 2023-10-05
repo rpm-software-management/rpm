@@ -5,3 +5,4 @@ check_required_components(rpm)
 
 set(RPM_CONFIGDIR @RPM_CONFIGDIR@)
 set(RPM_PLUGINDIR @RPM_PLUGINDIR@)
+set(RPM_MACROSDIR @RPM_MACROSDIR@)
