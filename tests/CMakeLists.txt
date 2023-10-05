@@ -50,6 +50,7 @@ set(TESTSUITE_AT
 	rpmorder.at
 	rpmvfylevel.at
 	rpmpgp.at
+	rpmdevel.at
 )
 
 find_program(AUTOM4TE autom4te REQUIRED)
