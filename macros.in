@@ -1183,17 +1183,8 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 %__urlhelper_proxyopts   %{?_httpproxy:--proxy %{_httpproxy}%{?_httpport::%{_httpport}}}%{!?_httpproxy:%{nil}}
 %_urlhelper             %{__urlhelpercmd} %{?__urlhelper_localopts} %{?__urlhelper_proxyopts} %{__urlhelperopts}
 
-# Transaction plugin macros
+# Transaction plugin directory macros
 %__plugindir		@RPM_PLUGINDIR@
-%__transaction_systemd_inhibit	%{__plugindir}/systemd_inhibit.so
-%__transaction_selinux		%{__plugindir}/selinux.so
-%__transaction_syslog		%{__plugindir}/syslog.so
-%__transaction_ima		%{__plugindir}/ima.so
-%__transaction_fapolicyd	%{__plugindir}/fapolicyd.so
-%__transaction_fsverity		%{__plugindir}/fsverity.so
-%__transaction_prioreset	%{__plugindir}/prioreset.so
-%__transaction_audit		%{__plugindir}/audit.so
-%__transaction_dbus_announce	%{__plugindir}/dbus_announce.so
 
 #------------------------------------------------------------------------------
 # Macros for further automated spec %setup and patch application

@@ -1,0 +1,1 @@
+%__transaction_selinux          %{__plugindir}/selinux.so
