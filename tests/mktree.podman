@@ -32,7 +32,6 @@ case $CMD in
         fi
         $PODMAN run --privileged -it --name $NAME --hostname sandbox \
                     -e ROOTLESS=$ROOTLESS -v $PWD:/srv:z $IMAGE "$@"
-        exit 0
     ;;
     check)
         # Pass select options to $PODMAN
