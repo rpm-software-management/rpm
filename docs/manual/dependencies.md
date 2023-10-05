@@ -37,7 +37,7 @@ Provides are often used to supply file dependencies such as /bin/sh on machines 
     Provides: /bin/sh
 ```
 
-differs from a package that has `/bin/sh` in the %files list in that the package can be safely removed without removing `/bin/sh`.
+differs from a package that has `/bin/sh` in the %files list in that removing the package won't result in the removal of `/bin/sh`.
 
 ## Requires
 With this tag a package can require another with the matching name or Provides to be installed (if the package containing the Requires: is going to be installed). This is checked when a new package is installed and if a package with a matching Provides: is removed.
