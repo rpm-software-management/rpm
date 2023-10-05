@@ -163,6 +163,9 @@ case $CMD in
 
         # Configure default shell for root user
         cp -r $BASE_DIR/{etc/skel/.,/root}
+
+        # Signal change to build system
+        touch mktree.output
     ;;
     atshell)
         set -a
