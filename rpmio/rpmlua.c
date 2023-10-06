@@ -1189,6 +1189,8 @@ static int mc_call(lua_State *L)
 	    rc = 1;
 	    lua_pushstring(L, buf);
 	    free(buf);
+	} else {
+	    luaL_error(L, "error expanding macro");
 	}
 	argvFree(argv);
     } else {
