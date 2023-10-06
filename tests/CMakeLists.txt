@@ -5,7 +5,7 @@ get_property(TOOLPROGS DIRECTORY ../tools PROPERTY BUILDSYSTEM_TARGETS)
 
 function(os_release var key)
 	execute_process(
-		COMMAND sh -c "grep ^${key} /etc/os-release | cut -d= -f2"
+		COMMAND sh -c ". /etc/os-release; echo ${var}"
 		OUTPUT_STRIP_TRAILING_WHITESPACE
 		OUTPUT_VARIABLE value
 	)
