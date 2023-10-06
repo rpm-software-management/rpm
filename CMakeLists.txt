@@ -19,9 +19,6 @@ option(ENABLE_NDB "Enable ndb rpmdb support" ON)
 option(ENABLE_BDB_RO "Enable read-only Berkeley DB rpmdb support (EXPERIMENTAL)" OFF)
 option(ENABLE_TESTSUITE "Enable test-suite" ON)
 
-option(WITH_INTERNAL_OPENPGP "Use internal OpenPGP parse (DEPRECATED)" OFF)
-option(WITH_OPENSSL "Use openssl (instead of libgcrypt) for internal crypto" OFF)
-
 option(WITH_CAP "Build with capability support" ON)
 option(WITH_ACL "Build with ACL support" ON)
 option(WITH_ARCHIVE "Build with libarchive support" ON)
