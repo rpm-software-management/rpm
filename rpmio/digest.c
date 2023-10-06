@@ -4,7 +4,9 @@
 
 #include "system.h"
 
-#include "rpmpgp_internal.h"
+#include <string.h>
+#include <stdlib.h>
+#include <rpm/rpmcrypto.h>
 
 #include "debug.h"
 
