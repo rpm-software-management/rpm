@@ -4,7 +4,6 @@
 
 #include <rpm/rpmlib.h>	/* rpmReadPackageFile, headerCheck */
 #include <rpm/rpmtag.h>
-#include <rpm/rpmpgp.h>
 #include <rpm/rpmdb.h>
 #include <rpm/rpmbuild.h>
 
