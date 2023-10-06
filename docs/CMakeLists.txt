@@ -16,6 +16,7 @@ endif()
 install(DIRECTORY ${doxsrc}/html/ DESTINATION ${CMAKE_INSTALL_DOCDIR}/API)
 
 install(FILES
+	README.md
 	manual/arch_dependencies.md
 	manual/autosetup.md
 	manual/boolean_dependencies.md
