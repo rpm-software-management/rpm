@@ -165,7 +165,8 @@ function(makemacros)
 		${CMAKE_COMMAND} -E env pkglibdir=${RPM_CONFIGDIR}
 			${CMAKE_SOURCE_DIR}/installplatform
 			rpmrc platform macros
-			${RPMCANONVENDOR} ${RPMCANONOS} ${RPMCANONGNU})"
+			${RPMCANONVENDOR} ${RPMCANONOS} ${RPMCANONGNU}
+		WORKING_DIRECTORY ${CMAKE_BINARY_DIR})"
 	)
 endfunction()
 
