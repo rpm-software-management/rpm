@@ -9,6 +9,7 @@ EXTRA_DIST =
 EXTRA_DIST += \
 _layouts/default.html \
 _layouts/favicon.ico \
+README.md \
 index.md \
 manual/index.md \
 manual/arch_dependencies.md \
