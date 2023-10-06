@@ -1154,6 +1154,36 @@ error: bad
 ])
 RPMTEST_CLEANUP
 
+AT_SETUP([error macro return])
+AT_KEYWORDS([macros lua])
+
+RPMTEST_CHECK([
+runroot rpm --eval '%{error:fail}'
+],
+[1],
+[],
+[error: fail
+])
+
+RPMTEST_CHECK([
+runroot rpm --eval '%{lua:rpm.expand("%{error:fail}")}'
+],
+[1],
+[],
+[[error: fail
+error: lua script failed: [string "<lua>"]:1: error expanding macro
+]])
+
+RPMTEST_CHECK([
+runroot rpm --eval '%{lua:macros.error({"fail"})}'
+],
+[1],
+[],
+[[error: fail
+error: lua script failed: [string "<lua>"]:1: error expanding macro
+]])
+RPMTEST_CLEANUP
+
 AT_SETUP([no space left on stdout])
 AT_KEYWORDS([macros])
 RPMTEST_CHECK([
