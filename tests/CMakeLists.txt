@@ -5,7 +5,7 @@ get_property(TOOLPROGS DIRECTORY ../tools PROPERTY BUILDSYSTEM_TARGETS)
 
 function(os_release var key)
 	execute_process(
-		COMMAND sh -c ". /etc/os-release; echo ${var}"
+		COMMAND sh -c ". /etc/os-release; echo ${key}"
 		OUTPUT_STRIP_TRAILING_WHITESPACE
 		OUTPUT_VARIABLE value
 	)
