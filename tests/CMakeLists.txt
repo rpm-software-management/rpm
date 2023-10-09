@@ -145,4 +145,5 @@ add_custom_command(OUTPUT mktree.output
 	DEPENDS rpmtests
 	DEPENDS ${TESTPROGS}
 	DEPENDS ${TOOLPROGS}
+	DEPENDS mktree
 )
