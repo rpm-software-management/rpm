@@ -98,9 +98,6 @@ trap clean_up EXIT
 
 case $CMD in
     build)
-        rm -rf "$INST_DIR"
-        make_install $INST_DIR
-
         mkdir -p $CACHE_DIR
         echo "$RPM_MACROS" > $CACHE_DIR/.rpmmacros
 
@@ -163,6 +160,10 @@ case $CMD in
 
         # Configure default shell for root user
         cp -r $BASE_DIR/{etc/skel/.,/root}
+
+        # Add RPM installation layer
+        rm -rf "$INST_DIR"
+        make_install $INST_DIR
 
         # Signal change to build system
         touch mktree.output
