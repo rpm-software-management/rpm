@@ -184,8 +184,8 @@ case $CMD in
     ;;
     check)
         mount_tree
-        snapshot exec --tmpfs /tmp --bind $PWD /srv \
-                      sh -c 'cd /srv && exec ./rpmtests "$@"' rpmtests "$@"
+        snapshot exec --tmpfs /tmp --bind $PWD $PWD \
+                      sh -c 'cd '$PWD' && exec ./rpmtests "$@"' rpmtests "$@"
     ;;
     reset)
         rm -rf "$SANDBOX_DIR"
