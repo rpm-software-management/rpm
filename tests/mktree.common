@@ -62,8 +62,7 @@ snapshot()
                     set -- sh
                 fi
             fi
-            snapshot exec --unshare-uts --hostname $source \
-                          --bind $PWD /srv "$@"
+            snapshot exec --unshare-uts --hostname $source "$@"
         ;;
     esac
 }
