@@ -184,7 +184,7 @@ case $CMD in
     ;;
     check)
         mount_tree
-        snapshot exec --tmpfs /tmp --bind $PWD $PWD \
+        snapshot exec --tmpfs /tmp --bind $PWD $PWD --setenv RPMTREE $RPMTREE \
                       sh -c 'cd '$PWD' && exec ./rpmtests "$@"' rpmtests "$@"
     ;;
     reset)
