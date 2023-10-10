@@ -190,7 +190,7 @@ case $CMD in
     check)
         mount_tree --read-only
         snapshot exec --tmpfs /tmp --bind $PWD $PWD --setenv RPMTREE $RPMTREE \
-                      sh -c 'cd '$PWD' && exec ./rpmtests "$@"' rpmtests "$@"
+                      rpmtests -C $PWD "$@"
     ;;
     reset)
         rm -rf "$SANDBOX_DIR"
