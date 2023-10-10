@@ -42,7 +42,7 @@ case $CMD in
         esac
         $PODMAN run --privileged -it --rm --read-only --tmpfs /tmp \
                     -v /srv --workdir /srv -e ROOTLESS=$ROOTLESS \
-                    --env RPMTREE=/ $OPTS $IMAGE mktree check "$@"
+                    --env RPMTREE=/ $OPTS $IMAGE rpmtests --log "$@"
     ;;
     reset)
         $PODMAN stop $NAME >/dev/null &&
