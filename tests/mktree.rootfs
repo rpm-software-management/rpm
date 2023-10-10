@@ -7,24 +7,14 @@
 # The / filesystem should be read-only to prevent parallel tests from altering
 # it (online changes to an underlying filesystem are disallowed in OverlayFS).
 
-DATA_DIR=/usr/share/mktree
-
 CMD=$1; shift
 case $CMD in
     build)
         source ./mktree.common
         make_install /
-
-        mkdir -p $DATA_DIR
-        cp $0 /usr/bin/
-        cp rpmtests atlocal mktree.common $DATA_DIR/
     ;;
     check)
-        ln -s $DATA_DIR/* .
         ./rpmtests "$@"
-        RC=$?
-        cat rpmtests.log
-        exit $RC
     ;;
     *)
         echo "Unsupported command." >&2

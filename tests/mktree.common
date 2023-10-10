@@ -3,6 +3,7 @@ make_install()
 {
     export DESTDIR=$1
     local ld_conf_dir=$DESTDIR/@CMAKE_INSTALL_SYSCONFDIR@/ld.so.conf.d
+    local script_dir=/usr/share/mktree
 
     @CMAKE_MAKE_PROGRAM@ -C @CMAKE_BINARY_DIR@ install
     mkdir -p $ld_conf_dir
@@ -13,6 +14,11 @@ make_install()
 
     mkdir -p $DESTDIR/usr/bin
     cp @TESTPROG_NAMES@ $DESTDIR/usr/bin/
+    ln -s $script_dir/rpmtests.sh $DESTDIR/usr/bin/rpmtests
+
+    mkdir -p $DESTDIR/$script_dir
+    cp rpmtests atlocal mktree.common $DESTDIR/$script_dir/
+    cp @CMAKE_CURRENT_SOURCE_DIR@/rpmtests.sh $DESTDIR/$script_dir/
 
     mkdir -p $DESTDIR/build
     ln -sf ../data/SOURCES $DESTDIR/build/
