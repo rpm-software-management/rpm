@@ -82,6 +82,6 @@ RUN cmake \
 	-DWITH_IMAEVM=ON \
 	-DMKTREE_BACKEND=rootfs \
 	../rpm
-RUN make tree
+RUN make -j$(nproc) tree
 
 RUN rm -rf /srv/{rpm,build}
