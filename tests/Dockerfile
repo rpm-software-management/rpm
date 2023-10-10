@@ -74,6 +74,7 @@ COPY . .
 RUN chmod -R a-w .
 
 WORKDIR /srv/build
+ENV CFLAGS="-Og -g"
 RUN cmake \
 	-DENABLE_WERROR=ON \
 	-DENABLE_BDB_RO=ON \
