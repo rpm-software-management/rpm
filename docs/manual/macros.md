@@ -41,6 +41,7 @@ expanded, the following shell-like macros are available:
 | %#     | the number of arguments
 | %{-f}	 | if present at invocation, the last occurence of flag f (flag and argument)
 | %{-f*} |	if present at invocation, the argument to the last occurence of flag f
+| %f{-f**} | if present at invocation, all occurrences of flag f (flag and argument, space separated)
 | %1, %2, ...|	the arguments themselves (after getopt(3) processing)
 
 With rpm >= 4.17 and disabled option processing the mentioned macros are defined as:
