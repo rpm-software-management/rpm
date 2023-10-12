@@ -8,9 +8,6 @@ typedef const struct pgpValTbl_s {
     char const * const str;
 } * pgpValTbl;
 
-const char * pgpValStr(pgpValTbl vs, uint8_t val);
-
-
 static struct pgpValTbl_s const pgpSigTypeTbl[] = {
     { PGPSIGTYPE_BINARY,	"Binary document signature" },
     { PGPSIGTYPE_TEXT,		"Text document signature" },
