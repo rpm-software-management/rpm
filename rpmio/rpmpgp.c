@@ -15,7 +15,7 @@
 
 #include "debug.h"
 
-const char * pgpValStr(pgpValTbl vs, uint8_t val)
+static const char * pgpValStr(pgpValTbl vs, uint8_t val)
 {
     do {
 	if (vs->val == val)
