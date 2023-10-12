@@ -56,8 +56,10 @@ char *pgpIdentItem(pgpDigParams digp)
         char *signid = rpmhex(pgpDigParamsSignID(digp) + 4, PGP_KEYID_LEN - 4);
 	rasprintf(&id, _("V%d %s/%s %s, key ID %s"),
                   pgpDigParamsVersion(digp),
-                  pgpValStr(pgpPubkeyTbl, pgpDigParamsAlgo(digp, PGPVAL_PUBKEYALGO)),
-                  pgpValStr(pgpHashTbl, pgpDigParamsAlgo(digp, PGPVAL_HASHALGO)),
+                  pgpValString(PGPVAL_PUBKEYALGO,
+				pgpDigParamsAlgo(digp, PGPVAL_PUBKEYALGO)),
+                  pgpValString(PGPVAL_HASHALGO,
+				pgpDigParamsAlgo(digp, PGPVAL_HASHALGO)),
                   (pgpSignatureType(digp) == -1) ? "Public Key" : "Signature",
                   signid);
         free(signid);
