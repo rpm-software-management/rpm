@@ -18,6 +18,40 @@
 
 static int _print = 0;
 
+typedef uint8_t pgpTime_t[4];
+
+typedef struct pgpPktKeyV3_s {
+    uint8_t version;	/*!< version number (3). */
+    pgpTime_t time;	/*!< time that the key was created. */
+    uint8_t valid[2];	/*!< time in days that this key is valid. */
+    uint8_t pubkey_algo;	/*!< public key algorithm. */
+} * pgpPktKeyV3;
+
+typedef struct pgpPktKeyV4_s {
+    uint8_t version;	/*!< version number (4). */
+    pgpTime_t time;	/*!< time that the key was created. */
+    uint8_t pubkey_algo;	/*!< public key algorithm. */
+} * pgpPktKeyV4;
+
+typedef struct pgpPktSigV3_s {
+    uint8_t version;	/*!< version number (3). */
+    uint8_t hashlen;	/*!< length of following hashed material. MUST be 5. */
+    uint8_t sigtype;	/*!< signature type. */
+    pgpTime_t time;	/*!< 4 byte creation time. */
+    pgpKeyID_t signid;	/*!< key ID of signer. */
+    uint8_t pubkey_algo;	/*!< public key algorithm. */
+    uint8_t hash_algo;	/*!< hash algorithm. */
+    uint8_t signhash16[2];	/*!< left 16 bits of signed hash value. */
+} * pgpPktSigV3;
+
+typedef struct pgpPktSigV4_s {
+    uint8_t version;	/*!< version number (4). */
+    uint8_t sigtype;	/*!< signature type. */
+    uint8_t pubkey_algo;	/*!< public key algorithm. */
+    uint8_t hash_algo;	/*!< hash algorithm. */
+    uint8_t hashlen[2];	/*!< length of following hashed material. */
+} * pgpPktSigV4;
+
 /** \ingroup rpmio
  * Values parsed from OpenPGP signature/pubkey packet(s).
  */
