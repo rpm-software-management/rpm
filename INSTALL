@@ -191,17 +191,15 @@ This also creates and installs the new platform file e.g.
 /usr/lib/platform/genericx86_64-linux/macros
 
 
-Rpm comes with an automated self-test suite. The test-suite requires
-autom4te from autoconf (https://www.gnu.org/software/autoconf/) and
-bwrap (https://github.com/containers/bubblewrap/). It is enabled by
-default but can be disabled with -DENABLE_TESTSUITE=OFF to avoid the
-dependencies.  The test-suite can be executed with:
+Rpm comes with an automated self-test suite. The test-suite requires podman
+(https://github.com/containers/podman/) or docker (https://github.com/docker/).
+It is enabled by default but can be disabled with -DENABLE_TESTSUITE=OFF to
+avoid the dependencies.  The test-suite can be executed with:
 
     make check
 
-Additionally, when podman or docker is available, rpm supports executing
-the test-suite in a local container similar to how the project CI is set up.
-You can execute it with:
+Additionally, rpm supports executing the test-suite in a way that's similar to
+how the project CI is set up.  You can do that with:
 
     make ci
 

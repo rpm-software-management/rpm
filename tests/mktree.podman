@@ -1,7 +1,6 @@
 #!/bin/bash
 #
-# Podman-based mktree backend using an OCI image to build and run RPM.
-# Works standalone (outside of a build directory) too.
+# OCI-based mktree backend
 
 PROGRAM=$(basename $0)
 if [ "$PROGRAM" == "mktree" ]; then
