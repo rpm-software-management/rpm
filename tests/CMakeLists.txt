@@ -53,10 +53,6 @@ set(TESTSUITE_AT
 	rpmdevel.at
 )
 
-find_program(AUTOM4TE autom4te REQUIRED)
-mark_as_advanced(AUTOM4TE)
-set(AUTOTEST ${AUTOM4TE} --language=autotest)
-
 set(TESTPROGS rpmpgpcheck rpmpgppubkeyfingerprint)
 foreach(prg ${TESTPROGS})
 	add_executable(${prg} EXCLUDE_FROM_ALL ${prg}.c)
@@ -70,45 +66,60 @@ if (nproc GREATER 1)
 	set(JOBS -j${nproc})
 endif()
 
-# Detect suitable mktree backend
-find_program(BWRAP bwrap)
-mark_as_advanced(BWRAP)
-find_program(PODMAN NAMES podman docker)
-mark_as_advanced(PODMAN)
-if ("${MKTREE_BACKEND}" STREQUAL "")
-	if (BWRAP AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/mktree.${OS_NAME})
-		set(MKTREE_BACKEND ${OS_NAME})
-	elseif (PODMAN)
-		set(MKTREE_BACKEND podman)
-	else()
-		message(WARNING
-			"No suitable mktree backend found for this platform. "
-			"Disabling test-suite.")
-		return()
-	endif()
-endif()
-message(STATUS "Using mktree backend: ${MKTREE_BACKEND}")
-
 # Set up mktree
-if ("${MKTREE_BACKEND}" STREQUAL "podman")
-	find_program(PODMAN NAMES podman docker REQUIRED)
-	configure_file(Dockerfile Dockerfile COPYONLY)
-else()
-	find_program(BWRAP bwrap REQUIRED)
-	if (PODMAN)
-		get_filename_component(PODMAN ${PODMAN} NAME)
+set(MKTREE_BACKEND podman CACHE STRING "Mktree backend to use")
+set(DOCKERFILE ${CMAKE_CURRENT_SOURCE_DIR}/Dockerfile.${OS_NAME})
+if (MKTREE_BACKEND STREQUAL podman)
+	find_program(PODMAN podman)
+	find_program(DOCKER docker)
+	mark_as_advanced(PODMAN DOCKER)
+	if (PODMAN AND EXISTS ${DOCKERFILE})
+		set(MKTREE_NATIVE yes)
+		configure_file(${DOCKERFILE} Dockerfile COPYONLY)
 		add_custom_target(ci
-			COMMAND ./mktree.${PODMAN} build
-			COMMAND ./mktree.${PODMAN} check ${JOBS} $(TESTOPTS)
+			COMMAND ./mktree.podman build
+			COMMAND ./mktree.podman check ${JOBS} $(TESTOPTS)
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		)
+	else()
+		set(MKTREE_NATIVE no)
+		configure_file(Dockerfile Dockerfile COPYONLY)
 	endif()
+	find_program(PODMAN NAMES podman docker REQUIRED)
+elseif (MKTREE_BACKEND STREQUAL rootfs)
+	set(MKTREE_NATIVE yes)
+	find_program(BWRAP bwrap REQUIRED)
+	mark_as_advanced(BWRAP)
 endif()
+message(STATUS "Using mktree backend: ${MKTREE_BACKEND} "
+	       "(native: ${MKTREE_NATIVE})")
 configure_file(mktree.common mktree.common @ONLY)
 configure_file(mktree.${MKTREE_BACKEND} mktree @ONLY)
 
-configure_file(atlocal.in atlocal @ONLY)
-configure_file(package.m4.in package.m4 @ONLY)
+if (MKTREE_NATIVE)
+	find_program(AUTOM4TE autom4te REQUIRED)
+	mark_as_advanced(AUTOM4TE)
+	set(AUTOTEST ${AUTOM4TE} --language=autotest)
+
+	configure_file(atlocal.in atlocal @ONLY)
+	configure_file(package.m4.in package.m4 @ONLY)
+
+	add_custom_command(OUTPUT rpmtests
+		COMMAND ${AUTOTEST} -I ${CMAKE_CURRENT_SOURCE_DIR}
+			-o rpmtests rpmtests.at
+		DEPENDS ${TESTSUITE_AT}
+		DEPENDS local.at
+	)
+
+	add_custom_target(tree
+		COMMAND ./mktree build
+		DEPENDS rpmtests
+		DEPENDS ${TESTPROGS}
+		DEPENDS ${TOOLPROGS}
+	)
+else()
+	add_custom_target(tree COMMAND ./mktree build)
+endif()
 
 add_custom_target(atshell
 	COMMAND ./mktree atshell ||:
@@ -127,18 +138,4 @@ add_custom_target(check
 
 add_custom_target(reset
 	COMMAND ./mktree reset
-)
-
-add_custom_target(tree
-	COMMAND ./mktree build
-	DEPENDS rpmtests
-	DEPENDS ${TESTPROGS}
-	DEPENDS ${TOOLPROGS}
-)
-
-add_custom_command(OUTPUT rpmtests
-	COMMAND ${AUTOTEST} -I ${CMAKE_CURRENT_SOURCE_DIR}
-		-o rpmtests rpmtests.at
-	DEPENDS ${TESTSUITE_AT}
-	DEPENDS local.at
 )
