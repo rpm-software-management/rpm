@@ -58,9 +58,7 @@ char *pgpIdentItem(pgpDigParams digp)
                   pgpDigParamsVersion(digp),
                   pgpValStr(pgpPubkeyTbl, pgpDigParamsAlgo(digp, PGPVAL_PUBKEYALGO)),
                   pgpValStr(pgpHashTbl, pgpDigParamsAlgo(digp, PGPVAL_HASHALGO)),
-                  pgpValStr(pgpTagTbl,
-                            pgpSignatureType(digp) == -1
-                            ? PGPTAG_PUBLIC_KEY : PGPTAG_SIGNATURE),
+                  (pgpSignatureType(digp) == -1) ? "Public Key" : "Signature",
                   signid);
         free(signid);
     } else {
