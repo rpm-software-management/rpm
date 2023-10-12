@@ -13,7 +13,6 @@
 
 #include "rpmpgpval.h"
 #include "rpmpgp_internal.h"
-#include "rpmio_internal.h"	/* XXX rpmioSlurp */
 
 #include "debug.h"
 
