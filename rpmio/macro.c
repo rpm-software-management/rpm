@@ -637,6 +637,14 @@ validName(rpmMacroBuf mb, const char *name, size_t namelen, const char *action)
 	goto exit;
     }
 
+    /* The rest of the name can be alphanumerics or _ */
+    for (c = name+1; c-name < namelen; c++) {
+	if (!(risalnum(*c) || (*c == '_'))) {
+	    rpmMacroBufErr(mb, 1, _("Macro %%%s has illegal name (%s)\n"), name, action);
+	    goto exit;
+	}
+    }
+
     mep = findEntry(mb->mc, name, namelen, NULL);
     if (mep && (*mep)->flags & (ME_FUNC|ME_AUTO)) {
 	rpmMacroBufErr(mb, 1, _("Macro %%%s is a built-in (%s)\n"), name, action);
