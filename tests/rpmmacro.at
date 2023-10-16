@@ -57,6 +57,107 @@ runroot rpm --eval '1. %{this}' --define "this that" --eval '2. %{this}' --undef
 ])
 RPMTEST_CLEANUP
 
+AT_SETUP([macro alias])
+AT_KEYWORDS([macros])
+RPMTEST_CHECK([
+runroot rpm \
+	--define "this that" \
+	--eval "%alias clone this" \
+	--eval "%this" \
+	--eval "%clone" \
+	--define "this what" \
+	--eval "%this" \
+	--eval "%clone" \
+	--undefine clone \
+	--eval "%this" \
+	--eval "%clone"
+],
+[0],
+[
+that
+that
+what
+what
+what
+%clone
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm \
+	--define "this(a) that %{?-a:arg} %1" \
+	--eval "%alias clone this" \
+	--eval "%clone -a 123" \
+	--eval "%clone -b"
+],
+[1],
+[
+that arg 123
+],
+[this: invalid option -- 'b'
+error: Unknown option b in this(a)
+])
+
+RPMTEST_CHECK([
+runroot rpm \
+	--define "this that" \
+	--eval "%alias me this" \
+	--eval "%alias myself me" \
+	--eval "%myself"
+],
+[0],
+[
+
+that
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm \
+	--define "param() %{alias one 1}%{one}" \
+	--eval "%param 123" \
+	--eval "%one"
+],
+[0],
+[123
+%one
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm \
+	--define "this that" \
+	--eval "%alias what this" \
+	--eval "%alias what" \
+	--eval "%alias this"
+],
+[0],
+[
+this
+
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm \
+	--define "this that" \
+	--eval "%alias what() this"
+],
+[1],
+[],
+[error: Macro %what() has illegal name (%alias)
+])
+
+RPMTEST_CHECK([
+runroot rpm \
+	--eval "%alias iam notthere"
+],
+[1],
+[],
+[error: Invalid alias on %notthere
+])
+RPMTEST_CLEANUP
+
 AT_SETUP([simple true conditional rpm --eval])
 AT_KEYWORDS([macros])
 RPMTEST_CHECK([

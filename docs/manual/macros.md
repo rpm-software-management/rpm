@@ -81,6 +81,7 @@ various common operations.
 | %define ...	   | define a macro
 | %undefine ...	   | undefine a macro
 | %global ...	   | define a macro whose body is available in global context
+| %alias ...       | define an alias on another macro or get alias definition | 4.20.0
 | %{load:...}	   | load a macro file | 4.12.0
 | %{expand:...}	   | like eval, expand ... to <body> and (re-)expand <body>
 | %{expr:...}	   | evaluate an [expression](#expression-expansion) | 4.15.0
