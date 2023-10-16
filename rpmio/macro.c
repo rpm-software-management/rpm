@@ -629,10 +629,10 @@ validName(rpmMacroBuf mb, const char *name, size_t namelen, const char *action)
 {
     rpmMacroEntry *mep;
     int rc = 0;
-    int c;
+    const char *c = name;
 
     /* Names must start with alphabetic, or _ and be at least 2 chars */
-    if (!((c = *name) && (risalpha(c) || (c == '_' && namelen > 1)))) {
+    if (!(risalpha(*c) || (*c == '_' && namelen > 1))) {
 	rpmMacroBufErr(mb, 1, _("Macro %%%s has illegal name (%s)\n"), name, action);
 	goto exit;
     }
