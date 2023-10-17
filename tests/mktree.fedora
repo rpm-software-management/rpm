@@ -168,9 +168,6 @@ case $CMD in
         # Add RPM installation layer
         rm -rf "$INST_DIR"
         make_install $INST_DIR
-
-        # Signal change to build system
-        touch mktree.output
     ;;
     atshell)
         set -a
