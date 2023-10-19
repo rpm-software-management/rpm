@@ -7,18 +7,30 @@ PROGRAM=$(basename $0)
 if [ "$PROGRAM" == "mktree" ]; then
     # Running from build directory
     CMAKE=yes
+    NATIVE=@MKTREE_NATIVE@
     PODMAN=@PODMAN@
     CONTEXT=@CMAKE_SOURCE_DIR@
 else
     # Running from source directory
     CMAKE=no
+    NATIVE=no
     PODMAN=$(echo $PROGRAM | cut -d'.' -f2)
     CONTEXT=..
 fi
 
+if [ $NATIVE == yes ]; then
+    FROM="--from @OS_NAME@:@OS_VERSION@"
+else
+    FROM=
+fi
+
 IMAGE=rpm
-ARGS="-f Dockerfile $CONTEXT"
+ARGS="-f Dockerfile $FROM $CONTEXT"
 ROOTLESS=$([ $(id -u) == 0 ] && echo 0 || echo 1)
+CMD=$1; shift
+
+export ROOTLESS
+source mktree.common
 
 rpmtests()
 {
@@ -41,15 +53,31 @@ rpmtests()
                 --workdir /srv -e ROOTLESS=$ROOTLESS $opts $IMAGE rpmtests "$@"
 }
 
-CMD=$1; shift
+unshared()
+{
+    [ $(id -u) != 0 ] && [ $NATIVE == yes ] || return
+    $PODMAN unshare $0 $CMD "$@"
+    exit
+}
+
 case $CMD in
-    build)
+    build) unshared
         # Build base image
         $PODMAN build --target base -t $IMAGE/base $ARGS
 
         # Add RPM install on top
         [ -n "$($PODMAN images -q $IMAGE)" ] && $PODMAN rmi $IMAGE
-        $PODMAN build --target full -t $IMAGE $ARGS
+        if [ $NATIVE == yes ]; then
+            # Native build
+            id=$($PODMAN create $IMAGE/base)
+            trap : INT
+            make_install $($PODMAN mount $id)
+            $PODMAN commit -q $id $IMAGE
+            $PODMAN rm $id >/dev/null
+        else
+            # Standalone build
+            $PODMAN build --target full -t $IMAGE $ARGS
+        fi
     ;;
     check)
         rpmtests "$@"
