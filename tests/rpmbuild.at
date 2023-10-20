@@ -152,6 +152,24 @@ runroot rpmbuild -bs /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 [])
 RPMTEST_CLEANUP
 
+AT_SETUP([rpmbuild script prepend/append])
+AT_KEYWORDS([build])
+RPMDB_INIT
+RPMTEST_CHECK([
+runroot rpmbuild -bb --quiet ${RPMDATA}/SPECS/append.spec
+runroot_other rpm2cpio /build/RPMS/noarch/append-1.0-1.noarch.rpm | cpio -id 2> /dev/null
+cat opt/out
+],
+[0],
+[000
+AAA
+BBB
+CCC
+DDD
+],
+[])
+RPMTEST_CLEANUP
+
 AT_SETUP([rpmbuild -ba autosetup])
 AT_KEYWORDS([build])
 RPMDB_INIT
