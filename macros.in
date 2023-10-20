@@ -973,6 +973,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 %_includedir		%{_prefix}/include
 %_infodir		%{_datadir}/info
 %_mandir		%{_datadir}/man
+%_iconsdir		%{_datadir}/icons
 
 #==============================================================================
 # ---- config.guess platform macros.
