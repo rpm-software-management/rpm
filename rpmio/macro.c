@@ -318,7 +318,7 @@ matchchar(const char * p, char pl, char pr)
     return (const char *)NULL;
 }
 
-static void mbErr(rpmMacroBuf mb, int error, const char *fmt, ...)
+static void rpmMacroBufErr(rpmMacroBuf mb, int error, const char *fmt, ...)
 {
     char *emsg = NULL;
     int n;
@@ -483,7 +483,7 @@ static int mbInit(rpmMacroBuf mb, MacroExpansionData *med, size_t slen)
     if (mb->buf == NULL)
 	mbAllocBuf(mb, slen);
     if (++mb->depth > max_macro_depth) {
-	mbErr(mb, 1,
+	rpmMacroBufErr(mb, 1,
 		_("Too many levels of recursion in macro expansion. It is likely caused by recursive macro declaration.\n"));
 	mb->depth--;
 	return -1;
@@ -506,7 +506,7 @@ static void mbFini(rpmMacroBuf mb, rpmMacroEntry me, MacroExpansionData *med)
     mb->expand_trace = med->expand_trace;
 }
 
-static void mbAppend(rpmMacroBuf mb, char c)
+static void rpmMacroBufAppend(rpmMacroBuf mb, char c)
 {
     if (mb->nb < 1) {
 	mb->buf = xrealloc(mb->buf, mb->tpos + MACROBUFSIZ + 1);
@@ -517,7 +517,7 @@ static void mbAppend(rpmMacroBuf mb, char c)
     mb->nb--;
 }
 
-static void mbAppendStr(rpmMacroBuf mb, const char *str)
+static void rpmMacroBufAppendStr(rpmMacroBuf mb, const char *str)
 {
     size_t len = strlen(str);
     if (len > mb->nb) {
@@ -558,14 +558,14 @@ doShellEscape(rpmMacroBuf mb, const char * cmd, size_t clen)
 	goto exit;
 
     if ((shf = popen(buf, "r")) == NULL) {
-	mbErr(mb, 1, _("Failed to open shell expansion pipe for command: "
+	rpmMacroBufErr(mb, 1, _("Failed to open shell expansion pipe for command: "
 		"%s: %m \n"), buf);
 	goto exit;
     }
 
     size_t tpos = mb->tpos;
     while ((c = fgetc(shf)) != EOF) {
-	mbAppend(mb, c);
+	rpmMacroBufAppend(mb, c);
     }
     (void) pclose(shf);
 
@@ -603,7 +603,7 @@ static void doExpressionExpansion(rpmMacroBuf mb, const char * expr, size_t len)
 	mb->error = 1;
 	goto exit;
     }
-    mbAppendStr(mb, result);
+    rpmMacroBufAppendStr(mb, result);
     free(result);
 exit:
     _free(buf);
@@ -635,13 +635,13 @@ validName(rpmMacroBuf mb, const char *name, size_t namelen, const char *action)
 
     /* Names must start with alphabetic, or _ and be at least 2 chars */
     if (!((c = *name) && (risalpha(c) || (c == '_' && namelen > 1)))) {
-	mbErr(mb, 1, _("Macro %%%s has illegal name (%s)\n"), name, action);
+	rpmMacroBufErr(mb, 1, _("Macro %%%s has illegal name (%s)\n"), name, action);
 	goto exit;
     }
 
     mep = findEntry(mb->mc, name, namelen, NULL);
     if (mep && (*mep)->flags & (ME_FUNC|ME_AUTO)) {
-	mbErr(mb, 1, _("Macro %%%s is a built-in (%s)\n"), name, action);
+	rpmMacroBufErr(mb, 1, _("Macro %%%s is a built-in (%s)\n"), name, action);
 	goto exit;
     }
 
@@ -686,7 +686,7 @@ doDefine(rpmMacroBuf mb, const char * se, int level, int expandbody, size_t *par
 	    COPYOPTS(oe, s, oc);
 	    s++;	/* skip ) */
 	} else {
-	    mbErr(mb, 1, _("Macro %%%s has unterminated opts\n"), n);
+	    rpmMacroBufErr(mb, 1, _("Macro %%%s has unterminated opts\n"), n);
 	    goto exit;
 	}
     }
@@ -701,7 +701,7 @@ doDefine(rpmMacroBuf mb, const char * se, int level, int expandbody, size_t *par
 	s += strlen(s);
     } else if (c == '{') {	/* XXX permit silent {...} grouping */
 	if ((se = matchchar(s, c, '}')) == NULL) {
-	    mbErr(mb, 1, _("Macro %%%s has unterminated body\n"), n);
+	    rpmMacroBufErr(mb, 1, _("Macro %%%s has unterminated body\n"), n);
 	    se = s;	/* XXX W2DO? */
 	    goto exit;
 	}
@@ -740,7 +740,7 @@ doDefine(rpmMacroBuf mb, const char * se, int level, int expandbody, size_t *par
 	*be = '\0';
 
 	if (bc || pc || xc) {
-	    mbErr(mb, 1, _("Macro %%%s has unterminated body\n"), n);
+	    rpmMacroBufErr(mb, 1, _("Macro %%%s has unterminated body\n"), n);
 	    se = s;	/* XXX W2DO? */
 	    goto exit;
 	}
@@ -760,16 +760,16 @@ doDefine(rpmMacroBuf mb, const char * se, int level, int expandbody, size_t *par
 	goto exit;
 
     if ((be - b) < 1) {
-	mbErr(mb, 1, _("Macro %%%s has empty body\n"), n);
+	rpmMacroBufErr(mb, 1, _("Macro %%%s has empty body\n"), n);
 	goto exit;
     }
 
     if (!isblank(*sbody) && !(*sbody == '\\' && iseol(sbody[1])))
-	mbErr(mb, 0, _("Macro %%%s needs whitespace before body\n"), n);
+	rpmMacroBufErr(mb, 0, _("Macro %%%s needs whitespace before body\n"), n);
 
     if (expandbody) {
 	if (expandThis(mb, b, 0, &ebody)) {
-	    mbErr(mb, 1, _("Macro %%%s failed to expand\n"), n);
+	    rpmMacroBufErr(mb, 1, _("Macro %%%s failed to expand\n"), n);
 	    goto exit;
 	}
 	b = ebody;
@@ -894,7 +894,7 @@ setupArgs(rpmMacroBuf mb, const rpmMacroEntry me, ARGV_t argv)
     ind = rgetopt(argc, argv, me->opts, mbopt, mb);
 
     if (ind < 0) {
-	mbErr(mb, 1, _("Unknown option %c in %s(%s)\n"), -ind,
+	rpmMacroBufErr(mb, 1, _("Unknown option %c in %s(%s)\n"), -ind,
 		me->name, me->opts);
 	goto exit;
     }
@@ -943,7 +943,7 @@ freeArgs(rpmMacroBuf mb)
 	    continue;
 	/* Warn on defined but unused non-automatic, scoped macros */
 	if (!(me->flags & (ME_AUTO|ME_USED))) {
-	    mbErr(mb, 0, _("Macro %%%s defined but not used within scope\n"),
+	    rpmMacroBufErr(mb, 0, _("Macro %%%s defined but not used within scope\n"),
 			me->name);
 	    /* Only whine once */
 	    me->flags |= ME_USED;
@@ -1055,9 +1055,9 @@ static void doBody(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed
     if (*argv[1]) {
 	rpmMacroEntry *mep = findEntry(mb->mc, argv[1], 0, NULL);
 	if (mep) {
-	    mbAppendStr(mb, (*mep)->body);
+	    rpmMacroBufAppendStr(mb, (*mep)->body);
 	} else {
-	    mbErr(mb, 1, _("no such macro: '%s'\n"), argv[1]);
+	    rpmMacroBufErr(mb, 1, _("no such macro: '%s'\n"), argv[1]);
 	}
     }
 }
@@ -1103,7 +1103,7 @@ static void doLua(rpmMacroBuf mb,  rpmMacroEntry me, ARGV_t argv, size_t *parsed
     mc->level = olevel;
     printbuf = rpmluaPopPrintBuffer(lua);
     if (printbuf) {
-	mbAppendStr(mb, printbuf);
+	rpmMacroBufAppendStr(mb, printbuf);
 	free(printbuf);
     }
 }
@@ -1126,7 +1126,7 @@ static void doString(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *pars
     printbuf = rpmluaPopPrintBuffer(lua);
 
     if (printbuf) {
-	mbAppendStr(mb, printbuf);
+	rpmMacroBufAppendStr(mb, printbuf);
 	free(printbuf);
     }
     free(s);
@@ -1145,7 +1145,7 @@ static void doUncompress(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *
 {
     if (*argv[1]) {
 	expandMacro(mb, "%__rpmuncompress ", 0);
-	mbAppendStr(mb, argv[1]);
+	rpmMacroBufAppendStr(mb, argv[1]);
     }
 }
 
@@ -1158,7 +1158,7 @@ static void doExpand(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *pars
 static void doVerbose(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 {
     if (parsed || !argv || !argv[1]) {
-	mbAppend(mb, rpmIsVerbose() ? '1' : '0');
+	rpmMacroBufAppend(mb, rpmIsVerbose() ? '1' : '0');
     } else if (rpmIsVerbose() && *argv[1]) {
 	expandMacro(mb, argv[1], 0);
     }
@@ -1166,15 +1166,15 @@ static void doVerbose(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *par
 
 static void doShescape(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 {
-    mbAppend(mb, '\'');
+    rpmMacroBufAppend(mb, '\'');
     for (const char *s = argv[1]; *s != '\0'; s++) {
 	if (*s == '\'') {
-	    mbAppendStr(mb, "'\\''");
+	    rpmMacroBufAppendStr(mb, "'\\''");
 	} else {
-	    mbAppend(mb, *s);
+	    rpmMacroBufAppend(mb, *s);
 	}
     }
-    mbAppend(mb, '\'');
+    rpmMacroBufAppend(mb, '\'');
 }
 
 static unsigned long getmem_total(void)
@@ -1235,7 +1235,7 @@ static void doGetncpus(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *pa
 	mem = getmem_proc(1);
 	sizemacro = "%{?_smp_tasksize_thread}";
     } else {
-	mbErr(mb, 1, _("invalid argument: %s\n"), arg);
+	rpmMacroBufErr(mb, 1, _("invalid argument: %s\n"), arg);
 	return;
     }
 
@@ -1247,7 +1247,7 @@ static void doGetncpus(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *pa
 	    tasksize = 512;
 
 	if (mem == 0) {
-	    mbErr(mb, 1, _("failed to get available memory for %s\n"), arg);
+	    rpmMacroBufErr(mb, 1, _("failed to get available memory for %s\n"), arg);
 	    return;
 	}
 
@@ -1257,7 +1257,7 @@ static void doGetncpus(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *pa
     }
 
     sprintf(buf, "%u", ncpus);
-    mbAppendStr(mb, buf);
+    rpmMacroBufAppendStr(mb, buf);
 }
 
 static void doFoo(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
@@ -1318,7 +1318,7 @@ static void doFoo(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
     }
 
     if (b) {
-	mbAppendStr(mb, b);
+	rpmMacroBufAppendStr(mb, b);
     }
     free(buf);
 }
@@ -1326,7 +1326,7 @@ static void doFoo(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 static void doLoad(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 {
     if (loadMacroFile(mb->mc, argv[1])) {
-	mbErr(mb, 1, _("failed to load macro file %s\n"), argv[1]);
+	rpmMacroBufErr(mb, 1, _("failed to load macro file %s\n"), argv[1]);
     }
 }
 
@@ -1341,7 +1341,7 @@ static void doTrace(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parse
 
 static void doRpmver(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 {
-    mbAppendStr(mb, VERSION);
+    rpmMacroBufAppendStr(mb, VERSION);
 }
 
 static struct builtins_s {
@@ -1452,14 +1452,14 @@ doMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t args, size_t *parsed)
 	int needarg = (me->nargs != 0);
 	int havearg = (nargs > 0);
 	if (me->nargs >= 0 && needarg != havearg) {
-	    mbErr(mb, 1, "%%%s: %s\n", me->name, needarg ?
+	    rpmMacroBufErr(mb, 1, "%%%s: %s\n", me->name, needarg ?
 		    _("argument expected") : _("unexpected argument"));
 	    goto exit;
 	}
 	me->func(mb, me, args, parsed);
     } else if (me->flags & ME_LITERAL) {
 	if (me->body && *me->body)
-	    mbAppendStr(mb, me->body);
+	    rpmMacroBufAppendStr(mb, me->body);
     } else if (me->body && *me->body) {
 	/* Setup args for "%name " macros with opts */
 	if (args != NULL)
@@ -1522,7 +1522,7 @@ expandMacro(rpmMacroBuf mb, const char *src, size_t slen)
 		s++;	/* skip first % in %% */
 	    }
 	default:
-	    mbAppend(mb, c);
+	    rpmMacroBufAppend(mb, c);
 	    continue;
 	    break;
 	}
@@ -1534,7 +1534,7 @@ expandMacro(rpmMacroBuf mb, const char *src, size_t slen)
 	    med.tpos = mb->tpos;	/* save expansion pointer for printExpand */
 	lastc = NULL;
 	if ((se = findMacroEnd(s)) == NULL) {
-	    mbErr(mb, 1, _("Unterminated %c: %s\n"), (char)*s, s);
+	    rpmMacroBufErr(mb, 1, _("Unterminated %c: %s\n"), (char)*s, s);
 	    continue;
 	}
 
@@ -1586,9 +1586,9 @@ expandMacro(rpmMacroBuf mb, const char *src, size_t slen)
 	if ((fe - f) <= 0) {
 	    /* XXX Process % in unknown context */
 	    c = '%';	/* XXX only need to save % */
-	    mbAppend(mb, c);
+	    rpmMacroBufAppend(mb, c);
 #if 0
-	    mbErr(mb, 1,
+	    rpmMacroBufErr(mb, 1,
 		    _("A %% is followed by an unparseable macro\n"));
 #endif
 	    continue;
@@ -1631,7 +1631,7 @@ expandMacro(rpmMacroBuf mb, const char *src, size_t slen)
 	if (me == NULL) {	/* leave unknown %... as is */
 	    /* XXX hack to permit non-overloaded %foo to be passed */
 	    c = '%';	/* XXX only need to save % */
-	    mbAppend(mb, c);
+	    rpmMacroBufAppend(mb, c);
 	    continue;
 	}
 
