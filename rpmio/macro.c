@@ -41,9 +41,6 @@ enum macroFlags_e {
     ME_FUNC	= (1 << 4),
 };
 
-typedef struct rpmMacroBuf_s *rpmMacroBuf;
-typedef void (*macroFunc)(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed);
-
 /*! The structure used to store a macro. */
 struct rpmMacroEntry_s {
     struct rpmMacroEntry_s *prev;/*!< Macro entry stack. */
@@ -51,6 +48,7 @@ struct rpmMacroEntry_s {
     const char *opts;  	/*!< Macro parameters (a la getopt) */
     const char *body;	/*!< Macro body. */
     macroFunc func;	/*!< Macro function (builtin macros) */
+    void *priv;		/*!< Private user data (aux macros) */
     int nargs;		/*!< Number of required args */
     int flags;		/*!< Macro state bits. */
     int level;          /*!< Scoping level. */
@@ -318,7 +316,7 @@ matchchar(const char * p, char pl, char pr)
     return (const char *)NULL;
 }
 
-static void rpmMacroBufErr(rpmMacroBuf mb, int error, const char *fmt, ...)
+void rpmMacroBufErr(rpmMacroBuf mb, int error, const char *fmt, ...)
 {
     char *emsg = NULL;
     int n;
@@ -506,7 +504,7 @@ static void mbFini(rpmMacroBuf mb, rpmMacroEntry me, MacroExpansionData *med)
     mb->expand_trace = med->expand_trace;
 }
 
-static void rpmMacroBufAppend(rpmMacroBuf mb, char c)
+void rpmMacroBufAppend(rpmMacroBuf mb, char c)
 {
     if (mb->nb < 1) {
 	mb->buf = xrealloc(mb->buf, mb->tpos + MACROBUFSIZ + 1);
@@ -517,7 +515,7 @@ static void rpmMacroBufAppend(rpmMacroBuf mb, char c)
     mb->nb--;
 }
 
-static void rpmMacroBufAppendStr(rpmMacroBuf mb, const char *str)
+void rpmMacroBufAppendStr(rpmMacroBuf mb, const char *str)
 {
     size_t len = strlen(str);
     if (len > mb->nb) {
@@ -1740,7 +1738,7 @@ static int doExpandMacros(rpmMacroContext mc, const char *src, int flags,
 
 static void pushMacroAny(rpmMacroContext mc,
 	const char * n, const char * o, const char * b,
-	macroFunc f, int nargs, int level, int flags)
+	macroFunc f, void *priv, int nargs, int level, int flags)
 {
     /* new entry */
     rpmMacroEntry me;
@@ -1785,6 +1783,7 @@ static void pushMacroAny(rpmMacroContext mc,
 	me->opts = o ? "" : NULL;
     /* initialize */
     me->func = f;
+    me->priv = priv;
     me->nargs = nargs;
     me->flags = flags;
     me->flags &= ~(ME_USED);
@@ -1797,7 +1796,7 @@ static void pushMacroAny(rpmMacroContext mc,
 static void pushMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level, int flags)
 {
-    return pushMacroAny(mc, n, o, b, NULL, 0, level, flags);
+    return pushMacroAny(mc, n, o, b, NULL, NULL, 0, level, flags);
 }
 
 static void popMacro(rpmMacroContext mc, const char * n)
@@ -1975,6 +1974,18 @@ int rpmPushMacro(rpmMacroContext mc,
     return rpmPushMacroFlags(mc, n, o, b, level, RPMMACRO_DEFAULT);
 }
 
+int rpmPushMacroAux(rpmMacroContext mc,
+		const char * n, const char * o,
+		macroFunc f, void *priv, int nargs,
+		int level, rpmMacroFlags flags)
+{
+    mc = rpmmctxAcquire(mc);
+    pushMacroAny(mc, n, nargs ? "" : NULL, "<aux>", f, priv, nargs,
+		level, flags|ME_FUNC);
+    rpmmctxRelease(mc);
+    return 0;
+}
+
 int rpmPopMacro(rpmMacroContext mc, const char * n)
 {
     mc = rpmmctxAcquire(mc);
@@ -2016,6 +2027,11 @@ int rpmMacroIsParametric(rpmMacroContext mc, const char *n)
     return parametric;
 }
 
+void *rpmMacroEntryPriv(rpmMacroEntry me)
+{
+    return (me != NULL) ? me->priv : NULL;
+}
+
 void
 rpmLoadMacros(rpmMacroContext mc, int level)
 {
@@ -2053,8 +2069,8 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 
     /* Define built-in macros */
     for (const struct builtins_s *b = builtinmacros; b->name; b++) {
-	pushMacroAny(mc, b->name, b->nargs ? "" : NULL, "<builtin>", b->func, b->nargs,
-			RMIL_BUILTIN, b->flags | ME_FUNC);
+	pushMacroAny(mc, b->name, b->nargs ? "" : NULL, "<builtin>",
+		    b->func, NULL, b->nargs, RMIL_BUILTIN, b->flags | ME_FUNC);
     }
 
     argvSplit(&globs, macrofiles, ":");
