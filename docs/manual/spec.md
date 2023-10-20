@@ -458,8 +458,17 @@ when name is omitted, the description refers to the main package.
 
 ## Build scriptlets
 
-Package build is divided into multiple separate steps, each executed
-in a separate shell.
+Package build is divided into multiple separate steps, each executed in a
+separate shell: `%prep`, `%conf`, `%build`, `%install`, `%check`, `%clean`
+and `%generate_buildrequires`. Any unnecessary scriptlet sections can be
+omitted.
+
+Each section may be present only once, but in rpm >= 4.20 it is
+possible to augment them by appending or prepending to them using
+`-a` and `-p` options.
+If the main section exists, it must come first to avoid ambiguity.
+Otherwise, append and prepend can be used in any order and multiple
+times, even if the corresponding main section does not exist.
 
 ### %prep
 
