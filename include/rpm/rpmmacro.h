@@ -21,6 +21,10 @@ typedef struct rpmMacroEntry_s * rpmMacroEntry;
 
 typedef struct rpmMacroContext_s * rpmMacroContext;
 
+typedef struct rpmMacroBuf_s *rpmMacroBuf;
+
+typedef void (*macroFunc)(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed);
+
 extern rpmMacroContext rpmGlobalMacroContext;
 
 extern rpmMacroContext rpmCLIMacroContext;
@@ -120,6 +124,52 @@ int	rpmPushMacroFlags	(rpmMacroContext mc, const char * n,
 					const char * o,
 					const char * b, int level,
 					rpmMacroFlags flags);
+
+/** \ingroup rpmmacro
+ * Push an auxiliary macro to context.
+ * @param mc		macro context (NULL uses global context).
+ * @param n		macro name
+ * @param o		macro parameters (or NULL)
+ * @param f		macro function
+ * @param priv		private user data (or NULL)
+ * @param level		macro recursion level (0 is entry API)
+ * @param flags		macro flags
+ * @return		0 on success
+ */
+int rpmPushMacroAux(rpmMacroContext mc,
+		    const char * n, const char * o,
+		    macroFunc f, void *priv, int nargs,
+		    int level, rpmMacroFlags flags);
+
+/** \ingroup rpmmacro
+ * Return macro entry user data (in aux macro)
+ * @param me		macro entry
+ * @return		pointer to private data passed on define or NULL
+ */
+void *rpmMacroEntryPriv(rpmMacroEntry me);
+
+/** \ingroup rpmmacro
+ * Append a character to macro buffer (in aux macro)
+ * @param mb		macro buffer
+ * @param c		character to append
+ */
+void rpmMacroBufAppend(rpmMacroBuf mb, char c);
+
+/** \ingroup rpmmacro
+ * Append a string to macro buffer (in aux macro)
+ * @param mb		macro buffer
+ * @param str		string to append
+ */
+void rpmMacroBufAppendStr(rpmMacroBuf mb, const char *str);
+
+/** \ingroup rpmmacro
+ * Raise an error or warning in macro buffer (in aux macro)
+ * @param mb		macro buffer
+ * @param error		1 if error, 0 if warning
+ * @param fmt		j
+ */
+RPM_GNUC_PRINTF(3, 4)
+void rpmMacroBufErr(rpmMacroBuf mb, int error, const char *fmt, ...);
 
 /** \ingroup rpmmacro
  * Pop macro from context.
