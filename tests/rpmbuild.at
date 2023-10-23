@@ -356,9 +356,10 @@ RPMDB_INIT
 RPMTEST_CHECK([
 runroot rpmbuild -bp --quiet /data/SPECS/hello-patch.spec
 ],
-[0],
+[1],
 [ignore],
-[warning: %patchN is deprecated (2 usages found), use %patch N (or %patch -P N)
+[error: %patchN is obsolete, use %patch N (or %patch -P N): %patch0 -p1 -b .install
+
 ])
 RPMTEST_CLEANUP
 

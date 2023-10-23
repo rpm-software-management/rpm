@@ -231,7 +231,6 @@ rpmSpec newSpec(void)
     spec->numSources = 0;
     spec->autonum_patch = -1;
     spec->autonum_source = -1;
-    spec->numConverted = 0;
 
     spec->sourceRpmName = NULL;
     spec->sourcePkgId = NULL;
