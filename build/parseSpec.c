@@ -593,6 +593,18 @@ int parseLines(rpmSpec spec, int strip, ARGV_t *avp, StringBuf *sbp)
 	*sbp = newStringBuf();
 
     while (! (nextPart = isPart(spec->line))) {
+	/* HACK: Emit a legible error on the obsolete %patchN form for now */
+	if (sbp == &(spec->prep)) {
+	    size_t slen = strlen(spec->line);
+	    if (slen >= 7 && risdigit(spec->line[6]) &&
+		rstreqn(spec->line, "%patch", 6))
+	    {
+		rpmlog(RPMLOG_ERR, _("%%patchN is obsolete, "
+		    "use %%patch N (or %%patch -P N): %s\n"), spec->line);
+		nextPart = PART_ERROR;
+		break;
+	    }
+	}
 	if (avp)
 	    argvAdd(avp, spec->line);
 	if (sbp)
