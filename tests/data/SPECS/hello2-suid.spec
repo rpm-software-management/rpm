@@ -15,7 +15,7 @@ Simple rpm demonstration.
 
 %prep
 %setup -q -n hello-1.0
-%patch0 -p1 -b .modernize
+%patch 0 -p1 -b .modernize
 
 %build
 make CFLAGS="-g -O1"

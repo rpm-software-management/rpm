@@ -345,10 +345,12 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
     opt_F = rpmExpandNumeric("%{_default_patch_fuzz}");		/* get default fuzz factor for %patch */
     opt_b = opt_d = opt_o = NULL;
 
-    /* Convert %patchN to %patch -PN to simplify further processing */
+    /* Emit a legible error on the obsolete %patchN form for now */
     if (! strchr(" \t\n", line[6])) {
-	rasprintf(&buf, "%%patch -P %s", line + 6);
-	spec->numConverted++;
+	rpmlog(RPMLOG_ERR,
+	       _("%%patchN is obsolete, "
+	         "use %%patch N (or %%patch -P N): %s\n"), line);
+	goto exit;
     }
     poptParseArgvString(buf ? buf : line, &argc, &argv);
 
@@ -447,11 +449,6 @@ int parsePrep(rpmSpec spec)
 	    goto exit;
 	}
     }
-
-    if (spec->numConverted)
-	rpmlog(RPMLOG_WARNING,
-	       _("%%patchN is deprecated (%i usages found), "
-	         "use %%patch N (or %%patch -P N)\n"), spec->numConverted);
 
 exit:
     argvFree(saveLines);
