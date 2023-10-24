@@ -38,11 +38,9 @@ implemented.
 SEE ALSO
 ========
 
-**dot**(1),
+**dot**(1), **dotty**(1)
 
-**dotty**(1),
-
-** http://www.graphviz.org/ \<URL:http://www.graphviz.org/\>**
+**http://www.graphviz.org/ \<URL:http://www.graphviz.org/\>**
 
 AUTHORS
 =======

@@ -65,9 +65,7 @@ OPTIONS
 SEE ALSO
 ========
 
-**rpm**(8),
-
-**rpmbuild**(8),
+**rpm**(8), **rpmbuild**(8)
 
 AUTHORS
 =======

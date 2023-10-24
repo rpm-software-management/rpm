@@ -67,4 +67,4 @@ There are currently no options for this plugin in particular. See
 SEE ALSO
 ========
 
-*ausearch*(8) *rpm-plugins*(8)
+**ausearch**(8), **rpm-plugins**(8)

@@ -50,6 +50,6 @@ line.
 SEE ALSO
 ========
 
-*rpm*(8) *rpm-plugin-audit*(8) *rpm-plugin-ima*(8)
-*rpm-plugin-prioreset*(8) *rpm-plugin-selinux*(8) *rpm-plugin-syslog*(8)
-*rpm-plugin-systemd-inhibit*(8)
+**rpm**(8), **rpm-plugin-audit**(8), **rpm-plugin-ima**(8),
+**rpm-plugin-prioreset**(8), **rpm-plugin-selinux**(8),
+**rpm-plugin-syslog**(8), **rpm-plugin-systemd-inhibit**(8)
