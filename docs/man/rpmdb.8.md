@@ -29,13 +29,8 @@ the database indices from the installed package headers.
 SEE ALSO
 ========
 
-    popt(3),
-    rpm(8),
-    rpmkeys(8),
-    rpmsign(8),
-    rpm2cpio(8),
-    rpmbuild(8),
-    rpmspec(8),
+**popt**(3), **rpm**(8), **rpmkeys**(8), **rpmsign**(8), **rpm2cpio**(8),
+**rpmbuild**(8), **rpmspec**(8)
 
 **rpm \--help** - as rpm supports customizing the options via popt
 aliases it\'s impossible to guarantee that what\'s described in the

@@ -49,7 +49,7 @@ EXAMPLES
 SEE ALSO
 ========
 
-*rpm2cpio*(8) *rpm*(8)
+**rpm2cpio**(8), **rpm**(8)
 
 AUTHOR
 ======
