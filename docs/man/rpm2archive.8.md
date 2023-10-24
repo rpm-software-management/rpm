@@ -48,7 +48,7 @@ glint-1.0-1.i386.rpm.tgz***\
 SEE ALSO
 ========
 
-*rpm2cpio*(8) *rpm*(8)
+**rpm2cpio**(8), **rpm**(8)
 
 AUTHOR
 ======

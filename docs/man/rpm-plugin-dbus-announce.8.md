@@ -35,4 +35,4 @@ There are currently no options for this plugin in particular. See
 SEE ALSO
 ========
 
-*dbus-monitor*(1) *rpm-plugins*(8)
+**dbus-monitor**(1), **rpm-plugins**(8)

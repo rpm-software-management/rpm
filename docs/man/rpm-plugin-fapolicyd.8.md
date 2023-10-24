@@ -26,4 +26,4 @@ There are currently no options for this plugin in particular. See
 SEE ALSO
 ========
 
-*fapolicyd*(8) *rpm-plugins*(8)
+**fapolicyd**(8), **rpm-plugins**(8)
