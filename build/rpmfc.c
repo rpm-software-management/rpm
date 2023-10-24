@@ -1199,6 +1199,14 @@ static int initAttrs(rpmfc fc)
 	argvFree(files);
     }
 
+    /* Get file attributes from _local_file_attrs macro */
+    char * local_attr_names = rpmExpand("%{?_local_file_attrs}", NULL);
+    ARGV_t local_attrs = argvSplitString(local_attr_names, ":", ARGV_SKIPEMPTY);
+    int nlocals = argvCount(local_attrs);
+    for (int i = 0; i < nlocals; i++) {
+	argvAddUniq(&all_attrs, local_attrs[i]);
+    }
+
     /* Initialize attr objects */
     nattrs = argvCount(all_attrs);
     fc->atypes = xcalloc(nattrs + 1, sizeof(*fc->atypes));
@@ -1209,6 +1217,8 @@ static int initAttrs(rpmfc fc)
     fc->atypes[nattrs] = NULL;
 
     free(attrPath);
+    free(local_attr_names);
+    argvFree(local_attrs);
     argvFree(all_attrs);
     return nattrs;
 }

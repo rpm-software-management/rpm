@@ -995,6 +995,58 @@ runroot rpm -qp --requires /build/RPMS/noarch/shebang-0.1-1.noarch.rpm|grep -v ^
 [])
 RPMTEST_CLEANUP
 
+AT_SETUP([Local dependency generator])
+AT_KEYWORDS([build])
+RPMTEST_CHECK([
+RPMDB_INIT
+
+runroot rpmbuild -bb --quiet \
+		--define '_local_file_attrs my_test_attr' \
+		--define '__my_test_attr_provides() foo(%{basename:%{1}})' \
+		--define '__my_test_attr_path .*' \
+		/data/SPECS/shebang.spec
+runroot rpm -qp --provides /build/RPMS/noarch/shebang-0.1-1.noarch.rpm|grep -v ^rpmlib
+],
+[0],
+[foo(shebang)
+shebang = 0.1-1
+],
+[])
+
+RPMTEST_CHECK([
+RPMDB_INIT
+
+runroot rpmbuild -bb --quiet \
+		--define '_local_file_attrs script' \
+		--define '__script_provides() foobar(%{basename:%{1}})' \
+		/data/SPECS/shebang.spec
+runroot rpm -qp --provides /build/RPMS/noarch/shebang-0.1-1.noarch.rpm|grep -v ^rpmlib
+],
+[0],
+[foobar(shebang)
+shebang = 0.1-1
+],
+[])
+
+RPMTEST_CHECK([
+RPMDB_INIT
+
+runroot rpmbuild -bb --quiet \
+		--define '_local_file_attrs my_test_attr:script' \
+		--define '__my_test_attr_provides() foo(%{basename:%{1}})' \
+		--define '__my_test_attr_path .*' \
+		--define '__script_provides() foobar(%{basename:%{1}})' \
+		/data/SPECS/shebang.spec
+runroot rpm -qp --provides /build/RPMS/noarch/shebang-0.1-1.noarch.rpm|grep -v ^rpmlib
+],
+[0],
+[foo(shebang)
+foobar(shebang)
+shebang = 0.1-1
+],
+[])
+RPMTEST_CLEANUP
+
 AT_SETUP([elf dependencies])
 AT_KEYWORDS([build])
 RPMDB_INIT
