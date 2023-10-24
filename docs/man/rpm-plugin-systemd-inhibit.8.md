@@ -43,4 +43,4 @@ There are currently no options for this plugin in particular. See
 SEE ALSO
 ========
 
-*systemd-inhibit*(1) *rpm*(8) *rpm-plugins*(8)
+**systemd-inhibit**(1), **rpm**(8), **rpm-plugins**(8)
