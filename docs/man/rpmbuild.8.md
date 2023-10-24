@@ -351,13 +351,8 @@ Temporary
 SEE ALSO
 ========
 
-    gendiff(1),
-    popt(3),
-    rpm(8),
-    rpm2cpio(8),
-    rpmkeys(8)
-    rpmspec(8),
-    rpmsign(8),
+**gendiff**(1), **popt**(3), **rpm**(8), **rpm2cpio**(8), **rpmkeys**(8),
+**rpmspec**(8), **rpmsign**(8)
 
 **rpmbuild \--help** - as rpm supports customizing the options via popt
 aliases it\'s impossible to guarantee that what\'s described in the

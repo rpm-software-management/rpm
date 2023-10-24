@@ -28,7 +28,7 @@ stream is read from standard in.
 SEE ALSO
 ========
 
-*rpm*(8)
+**rpm**(8)
 
 AUTHOR
 ======

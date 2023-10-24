@@ -37,4 +37,4 @@ See **rpm-plugins**(8) on how to control plugins in general.
 SEE ALSO
 ========
 
-*dbus-monitor*(1) *rpm-plugins*(8)
+**dbus-monitor**(1), **rpm-plugins**(8)
