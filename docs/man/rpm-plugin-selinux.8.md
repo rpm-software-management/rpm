@@ -28,4 +28,4 @@ See **rpm-plugins**(8) on how to control plugins in general.
 SEE ALSO
 ========
 
-*rpm*(8) *rpm-plugins*(8)
+**rpm**(8), **rpm-plugins**(8)

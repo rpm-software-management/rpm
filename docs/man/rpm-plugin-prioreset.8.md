@@ -30,4 +30,4 @@ There are currently no options for this plugin in particular. See
 SEE ALSO
 ========
 
-*rpm*(8) *rpm-plugins*(8)
+**rpm**(8), **rpm-plugins**(8)
