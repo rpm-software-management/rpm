@@ -1184,22 +1184,42 @@ static rpmRC rpmfcApplyInternal(rpmfc fc)
 static int initAttrs(rpmfc fc)
 {
     ARGV_t files = NULL;
+    int nfiles = 0;
     char * attrPath = rpmExpand("%{_fileattrsdir}/*.attr", NULL);
-    int nattrs = 0;
+    ARGV_t all_attrs = argvNew();
 
-    /* Discover known attributes from pathnames + initialize them */
+    /* Discover known attributes from pathnames */
     if (rpmGlob(attrPath, NULL, &files) == 0) {
-	nattrs = argvCount(files);
-	fc->atypes = xcalloc(nattrs + 1, sizeof(*fc->atypes));
-	for (int i = 0; i < nattrs; i++) {
+	nfiles = argvCount(files);
+	for (int i = 0; i < nfiles; i++) {
 	    char *bn = basename(files[i]);
 	    bn[strlen(bn)-strlen(".attr")] = '\0';
-	    fc->atypes[i] = rpmfcAttrNew(bn);
+	    argvAdd(&all_attrs, bn);
 	}
-	fc->atypes[nattrs] = NULL;
-	argvFree(files);
     }
+
+    /* Get file attributes from _local_file_attrs macro */
+    char * local_attr_names = rpmExpand("%{?_local_file_attrs}", NULL);
+    ARGV_t local_attrs = argvSplitString(local_attr_names, ":", ARGV_SKIPEMPTY);
+    int nlocals = argvCount(local_attrs);
+    for (int i = 0; i < nlocals; i++) {
+	argvAddUniq(&all_attrs, local_attrs[i]);
+    }
+
+    /* Initialize attr objects */
+    int nattrs = argvCount(all_attrs);
+    fc->atypes = xcalloc(nattrs + 1, sizeof(*fc->atypes));
+
+    for (int i = 0; i < nattrs; i++) {
+	fc->atypes[i] = rpmfcAttrNew(all_attrs[i]);
+    }
+    fc->atypes[nattrs] = NULL;
+
     free(attrPath);
+    argvFree(files);
+    free(local_attr_names);
+    argvFree(local_attrs);
+    argvFree(all_attrs);
     return nattrs;
 }
 
