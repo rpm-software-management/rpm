@@ -132,6 +132,16 @@ Enabling the multifile mode is done by setting
 %__foo_protocol multifile
 ```
 
+## Using File Attributes in their own Package
+
+Normally file attributes and their dependency generators are shipped in separate packages that need to be installed before the package making use of them can be build.
+
+Since rpm 4.20 the names of file attributes from the package itself can be put into the *_local_file_attrs* macro separated by colons (:). The macros that normally go into the *\*.attr* files still need to be defined (the dependency generators typically pointing to some Source files or some files in the install root).
+
+This mechanism can be used for both file attributes the package ships to be installed but also for file attributes that are used during the own building process only.
+
+For the former packagers need to be aware that a previus version of the package might be installed on the system the package is build on. Thus the Spec file must set all macros used in the past and undefine the ones not longer being used.
+
 ## Tweaking Dependency Generators
 Technically, all aspects of file attributes and the generator helpers they use can be overridden from spec by (re)defining the related macros, but packagers should generally avoid this, as the attributes and their names are subject to change, depending on rpm version and which packages are present during build. Unwanted dependencies can be filtered with a separate set of macros which are intended primarily for use in spec files:
 
