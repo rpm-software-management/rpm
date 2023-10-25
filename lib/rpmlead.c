@@ -92,16 +92,8 @@ rpmRC rpmLeadWrite(FD_t fd, Header h)
 static rpmRC rpmLeadCheck(struct rpmlead_s *lead, char **msg)
 {
     if (memcmp(lead->magic, lead_magic, sizeof(lead_magic))) {
-	*msg = xstrdup(_("not an rpm package"));
-	return RPMRC_NOTFOUND;
-    }
-    if (lead->signature_type != RPMSIGTYPE_HEADERSIG) {
-	*msg = xstrdup(_("illegal signature type"));
-	return RPMRC_FAIL;
-    }
-    if (lead->major < 3 || lead->major > 4) {
-	*msg = xstrdup(_("unsupported RPM package version"));
-	return RPMRC_FAIL;
+        *msg = xstrdup(_("not an rpm package"));
+        return RPMRC_NOTFOUND;
     }
     return RPMRC_OK;
 }
