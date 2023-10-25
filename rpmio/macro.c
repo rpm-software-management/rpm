@@ -832,12 +832,20 @@ static void doDump(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
     rpmDumpMacroTable(mb->mc, NULL);
 }
 
+typedef struct {
+    MacroBuf mb;
+    char **argv;
+} MacroOptData;
 
 static int mbopt(int c, const char *oarg, int oint, void *data)
 {
-    MacroBuf mb = data;
-    char *name = NULL, *body = NULL;
+    MacroOptData *optData = (MacroOptData *)data;
+    MacroBuf mb = optData->mb;
+    char *name = NULL, *body = NULL, *fill = " ";
 
+    if (oint > 1 && optData->argv[oint-1] && optData->argv[oint-1][0] == '-') {
+        fill = "";
+    }
     /* Define option macros. */
     rasprintf(&name, "-%c", c);
     if (oarg) {
@@ -854,6 +862,21 @@ static int mbopt(int c, const char *oarg, int oint, void *data)
 	pushMacro(mb->mc, name, NULL, oarg, mb->level, ME_AUTO | ME_LITERAL);
 	free(name);
     }
+
+    rasprintf(&name, "-%c**", c);
+    rpmMacroEntry *mep = findEntry(mb->mc, name, 0, NULL);
+    if (mep && oarg)
+	rasprintf(&body, "%s -%c%s%s", (*mep)->body, c, fill, oarg);
+    else if (mep)
+	rasprintf(&body, "%s -%c", (*mep)->body, c);
+    else if (oarg)
+	rasprintf(&body, "-%c%s%s", c, fill, oarg);
+    else
+	rasprintf(&body, "-%c", c);
+    pushMacro(mb->mc, name, NULL, body, mb->level, ME_AUTO | ME_LITERAL);
+    free(name);
+    free(body);
+
     return 0;
 }
 
@@ -890,8 +913,9 @@ setupArgs(MacroBuf mb, const rpmMacroEntry me, ARGV_t argv)
     pushMacro(mb->mc, "**", NULL, args, mb->level, ME_AUTO | ME_LITERAL);
     free(args);
 
+    MacroOptData data = { mb, argv };
     argc = argvCount(argv);
-    ind = rgetopt(argc, argv, me->opts, mbopt, mb);
+    ind = rgetopt(argc, argv, me->opts, mbopt, &data);
 
     if (ind < 0) {
 	mbErr(mb, 1, _("Unknown option %c in %s(%s)\n"), -ind,
