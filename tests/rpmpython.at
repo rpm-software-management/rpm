@@ -601,11 +601,21 @@ R rtld(GNU_HASH)]
 )
 
 RPMPY_TEST([dependency sets 2],[
+import warnings
 h = ts.hdrFromFdno('${RPMDATA}/RPMS/hello-2.0-1.i686.rpm')
 ds = rpm.ds(h, 'provides')
-myprint('%d %d' % (ds.Instance(), ds.Count()))
+
+# ds.Count() is a deprecated alias for len(ds).
+# Ensure warnings are always emitted and check that one was emitted correctly.
+with warnings.catch_warnings(record=True) as warns:
+    warnings.simplefilter("always")
+    count = ds.Count()
+assert len(warns) == 1
+assert warns[0].category == PendingDeprecationWarning
+
+myprint('%d %d %d' % (ds.Instance(), count, len(ds)))
 ],
-[0 2
+[0 2 2
 ],
 [])
 
