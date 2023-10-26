@@ -29,6 +29,8 @@
  * \name Module: rpm
  */
 
+rpmmodule_state_t *modstate = NULL;
+
 static PyObject * archScore(PyObject * self, PyObject * arg)
 {
     const char * arch;
@@ -253,10 +255,10 @@ static struct PyModuleDef moduledef = {
     NULL               /* m_free */
 };
 
+static int moduleInitialized = 0;
+
 PyObject *
 PyInit__rpm(void);
-
-static int moduleInitialized = 0;
 
 PyObject *
 PyInit__rpm(void)
@@ -309,6 +311,13 @@ static int initModule(PyObject *m)
         return -1;
     }
     moduleInitialized = 1;
+
+    modstate = malloc(sizeof(rpmmodule_state_t));
+    if (!modstate) {
+        PyErr_NoMemory();
+        return -1;
+    }
+    memset(modstate, 0, sizeof(rpmmodule_state_t));
 
     PyObject * d;
 
