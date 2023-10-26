@@ -29,8 +29,6 @@
  * \name Module: rpm
  */
 
-PyObject * pyrpmError;
-
 static PyObject * archScore(PyObject * self, PyObject * arg)
 {
     const char * arch;

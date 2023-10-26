@@ -11,8 +11,6 @@ extern PyType_Spec hdr_Type_Spec;
 #define DEPRECATED_METHOD(_msg) \
     PyErr_WarnEx(PyExc_PendingDeprecationWarning, (_msg), 2);
 
-extern PyObject * pyrpmError;
-
 PyObject * hdr_Wrap(PyTypeObject *subtype, Header h);
 
 int hdrFromPyObject(PyObject *item, Header *h);
