@@ -101,7 +101,7 @@ snapshot()
     esac
 }
 
-function setup_env()
+setup_env()
 {
     if [ -d tree ]; then
         RPMTEST=${PWD}/tree
@@ -110,7 +110,7 @@ function setup_env()
     fi
 }
 
-function run()
+run()
 {
     setup_env
     "$@" --define "_buildhost testhost" \
@@ -120,7 +120,7 @@ function run()
          --dbpath="${RPMTEST}/var/lib/rpm/"
 }
 
-function rundebug()
+rundebug()
 {
     setup_env
     export RPM_CONFIGDIR=${RPMTEST}/@RPM_CONFIGDIR@
@@ -130,7 +130,7 @@ function rundebug()
     unset RPM_CONFIGDIR
 }
 
-function runroot()
+runroot()
 {
     setup_env
     snapshot exec "$@" \
@@ -138,7 +138,7 @@ function runroot()
              --define "_topdir /build"
 }
 
-function runroot_other()
+runroot_other()
 {
     setup_env
     snapshot exec "$@"
