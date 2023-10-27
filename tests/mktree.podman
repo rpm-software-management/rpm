@@ -22,6 +22,7 @@ ROOTLESS=$([ $(id -u) == 0 ] && echo 0 || echo 1)
 rpmtests()
 {
     local opts
+    local vol="$PWD:/srv:z"
 
     # Pass select options to $PODMAN
     case "$1" in
@@ -29,11 +30,13 @@ rpmtests()
         --interactive=*) opts=$1; shift ;;
     esac
 
+    # Don't keep the test artifacts around in non-cmake mode
     if [ $CMAKE == no ]; then
         set -- --log "$@"
+        vol=/srv
     fi
 
-    $PODMAN run --privileged -it --rm --read-only --tmpfs /tmp -v /srv \
+    $PODMAN run --privileged -it --rm --read-only --tmpfs /tmp -v $vol \
                 --workdir /srv -e ROOTLESS=$ROOTLESS $opts $IMAGE rpmtests "$@"
 }
 
