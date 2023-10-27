@@ -18,7 +18,7 @@ The mode is selected automatically during cmake configuration based on the host
 distribution and the container engine installed, with native mode being
 preferred whenever possible, and is reported in the cmake output as follows:
 
-    -- Using mktree backend: podman (native: <yes|no>)
+    -- Using mktree backend: oci (native: <yes|no>)
 
 Then run the command
 
