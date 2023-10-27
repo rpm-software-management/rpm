@@ -9,8 +9,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build the Fedora testing environment
-        run: sudo ./mktree.docker build
+        run: ./mktree.docker build
         working-directory: ./tests
       - name: Run the test suite
-        run: sudo ./mktree.docker check --interactive=false -j$(nproc)
+        run: ./mktree.docker check --interactive=false -j$(nproc)
         working-directory: ./tests
