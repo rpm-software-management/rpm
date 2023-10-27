@@ -51,6 +51,56 @@ if ! LD_PRELOAD=${MALLOC_DEBUG} /bin/true 2>&1 | grep -q ERROR; then
     export LD_PRELOAD GLIBC_TUNABLES
 fi
 
+# Manage lightweight Bubblewrap containers on top of OverlayFS
+snapshot()
+{
+    local cmd=$1
+    shift
+    case $cmd in
+        mount)
+            # No argument means mount as read-only
+            local opts
+            if [ $# != 0 ]; then
+                mkdir -p $1/diff $1/work
+                opts="-o upperdir=$1/diff,workdir=$1/work"
+            fi
+            [ ${ROOTLESS:-1} == 1 ] && opts+=" -o userxattr"
+            mkdir -p ${RPMTEST}
+            mount -t overlay sandbox \
+                  -o lowerdir="${RPMTREE}" \
+                  ${opts} ${RPMTEST}
+        ;;
+        umount)
+            umount -ql $RPMTEST
+        ;;
+        prune)
+            local dir
+            for dir in "$@"; do
+                [ -d "$dir" ] && umount -ql $dir
+            done
+            return 0
+        ;;
+        exec)
+            bwrap --unshare-pid --dev-bind $RPMTEST / --clearenv \
+                  --setenv PATH $(env -i sh -c 'echo $PATH') \
+                  --setenv HOME /root --chdir / --dev /dev --proc /proc \
+                  --die-with-parent "$@"
+        ;;
+        shell)
+            local source=$(findmnt -no SOURCE --mountpoint $RPMTEST)
+            local passwd=$RPMTEST/etc/passwd
+            if [ $# == 0 ]; then
+                if [ -f "$passwd" ]; then
+                    set -- $(grep ^root: $passwd | cut -d: -f7)
+                else
+                    set -- sh
+                fi
+            fi
+            snapshot exec --unshare-uts --hostname $source "$@"
+        ;;
+    esac
+}
+
 function setup_env()
 {
     if [ -d tree ]; then
@@ -94,5 +144,4 @@ function runroot_other()
     snapshot exec "$@"
 }
 
-source ./mktree.common
 snapshot prune rpmtests.dir/*/tree
