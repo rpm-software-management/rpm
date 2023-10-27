@@ -13,7 +13,7 @@ else
     # Running from source directory
     CMAKE=no
     NATIVE=no
-    PODMAN=$(echo $PROGRAM | cut -d'.' -f2)
+    PODMAN=${MKTREE_ENGINE:-podman}
     CONTEXT=..
 fi
 
