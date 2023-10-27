@@ -11,7 +11,6 @@
 #       delete the test created with --shell
 
 SCRIPT_DIR=$(dirname $(readlink -f $0))
-SCRIPT_FILES="atlocal mktree.common"
 SHELL_DIR=$PWD/rpmtests.dir/shell
 PRINT_LOG=0
 RUN_SHELL=0
@@ -45,10 +44,7 @@ while [ $# != 0 ]; do
     shift
 done
 
-# Symlink script files into $PWD, prefer local versions though
-for file in $SCRIPT_FILES; do
-    [ -f "$file" ] || ln -s $SCRIPT_DIR/$file .
-done
+[ -f atlocal ] || ln -s $SCRIPT_DIR/atlocal .
 
 # Run the test suite (or a shell)
 if [ $RUN_SHELL == 0 ]; then
@@ -71,9 +67,6 @@ else
     fixperms $SHELL_DIR
 fi
 
-# Clean up the symlinks
-for file in $SCRIPT_FILES; do
-    [ -L "$file" ] && rm "$file"
-done
+[ -L atlocal ] && rm atlocal
 
 exit $RC
