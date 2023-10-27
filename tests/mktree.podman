@@ -6,10 +6,12 @@
 PROGRAM=$(basename $0)
 if [ "$PROGRAM" == "mktree" ]; then
     # Running from build directory
+    CMAKE=yes
     PODMAN=@PODMAN@
     CONTEXT=@CMAKE_SOURCE_DIR@
 else
     # Running from source directory
+    CMAKE=no
     PODMAN=$(echo $PROGRAM | cut -d'.' -f2)
     CONTEXT=..
 fi
@@ -27,6 +29,10 @@ rpmtests()
         --interactive=*) opts=$1; shift ;;
     esac
 
+    if [ $CMAKE == no ]; then
+        set -- --log "$@"
+    fi
+
     $PODMAN run --privileged -it --rm --read-only --tmpfs /tmp -v /srv \
                 --workdir /srv -e ROOTLESS=$ROOTLESS $opts $IMAGE rpmtests "$@"
 }
@@ -38,7 +44,7 @@ case $CMD in
         $PODMAN build -t $IMAGE -f Dockerfile $CONTEXT
     ;;
     check)
-        rpmtests --log "$@"
+        rpmtests "$@"
     ;;
     atshell)
         rpmtests --shell
