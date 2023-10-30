@@ -30,6 +30,7 @@
  */
 
 rpmmodule_state_t *modstate = NULL;
+unsigned long python_version = 0;
 
 static PyObject * archScore(PyObject * self, PyObject * arg)
 {
@@ -294,6 +295,22 @@ static int initAndAddType(PyObject *m, PyTypeObject **type, PyType_Spec *spec,
     return 1;
 }
 
+static unsigned long _get_python_version(void) {
+    PyObject *python_version_tuple = PySys_GetObject("version_info");
+    if (python_version_tuple == NULL) {
+        PyErr_SetString(PyExc_SystemError, "could not get Python version");
+	return 0;
+    }
+    unsigned int major, minor, micro, serial;
+    PyObject *releaselevel;
+    if (!PyArg_ParseTuple(
+	    python_version_tuple, "IIIOI",
+	    &major, &minor, &micro, &releaselevel, &serial)) {
+	return 0;
+    }
+    return (major << 24) | (minor << 16) | (micro << 8);
+}
+
 /* Module initialization: */
 static int initModule(PyObject *m)
 {
@@ -330,6 +347,13 @@ static int initModule(PyObject *m)
 	return -1;
 
     d = PyModule_GetDict(m);
+
+    if (python_version == 0) {
+	python_version = _get_python_version();
+	if (python_version == 0) {
+	return -1;
+	}
+    }
 
     modstate->pyrpmError = PyErr_NewException("_rpm.error", NULL, NULL);
     if (modstate->pyrpmError != NULL)
