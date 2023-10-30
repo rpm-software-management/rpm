@@ -229,13 +229,49 @@ static void addRpmTags(PyObject *module)
 static int initModule(PyObject *m);
 
 static int rpmModuleTraverse(PyObject *m, visitproc visit, void *arg) {
+    Py_VISIT(modstate->hdr_Type);
+    Py_VISIT(modstate->rpmarchive_Type);
+    Py_VISIT(modstate->rpmds_Type);
+    Py_VISIT(modstate->rpmfd_Type);
+    Py_VISIT(modstate->rpmfile_Type);
+    Py_VISIT(modstate->rpmfiles_Type);
+    Py_VISIT(modstate->rpmii_Type);
+    Py_VISIT(modstate->rpmKeyring_Type);
+    Py_VISIT(modstate->rpmPubkey_Type);
+    Py_VISIT(modstate->rpmmi_Type);
+    Py_VISIT(modstate->rpmProblem_Type);
+    Py_VISIT(modstate->rpmstrPool_Type);
+    Py_VISIT(modstate->rpmte_Type);
+    Py_VISIT(modstate->rpmts_Type);
+    Py_VISIT(modstate->rpmver_Type);
+    Py_VISIT(modstate->spec_Type);
+    Py_VISIT(modstate->specPkg_Type);
     Py_VISIT(modstate->pyrpmError);
     return 0;
 }
 
-static int rpmModuleClear(PyObject *m) {
-    Py_CLEAR(modstate->pyrpmError);
+static int clearer(PyObject *object, void *) {
+    Py_CLEAR(object);
     return 0;
+}
+
+static int rpmModuleClear(PyObject *m) {
+    /* Do Py_CLEAR on all the types in the module state.
+     * rpmModuleTraverse's Py_VISIT calls the given 'visit' function;
+     * we essentially pass CLEAR as the function to call.
+     */
+    int result = rpmModuleTraverse(m, clearer, NULL);
+    free(modstate);
+    modstate = NULL;
+    return result;
+}
+
+static void rpmModuleFree(void *_state) {
+    if (modstate) {
+        rpmModuleTraverse(NULL, clearer, NULL);
+	free(modstate);
+        modstate = NULL;
+    }
 }
 
 static PyModuleDef_Slot module_slots[] = {
@@ -252,7 +288,7 @@ static struct PyModuleDef moduledef = {
     module_slots,      /* m_slots */
     rpmModuleTraverse,
     rpmModuleClear,
-    NULL               /* m_free */
+    rpmModuleFree
 };
 
 static int moduleInitialized = 0;
