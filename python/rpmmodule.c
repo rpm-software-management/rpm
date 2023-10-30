@@ -230,13 +230,53 @@ static void addRpmTags(PyObject *module)
 static int initModule(PyObject *m);
 
 static int rpmModuleTraverse(PyObject *m, visitproc visit, void *arg) {
+    rpmmodule_state_t *modstate = PyModule_GetState(m);
+    Py_VISIT(modstate->hdr_Type);
+    Py_VISIT(modstate->rpmarchive_Type);
+    Py_VISIT(modstate->rpmds_Type);
+    Py_VISIT(modstate->rpmfd_Type);
+    Py_VISIT(modstate->rpmfile_Type);
+    Py_VISIT(modstate->rpmfiles_Type);
+    Py_VISIT(modstate->rpmii_Type);
+    Py_VISIT(modstate->rpmKeyring_Type);
+    Py_VISIT(modstate->rpmPubkey_Type);
+    Py_VISIT(modstate->rpmmi_Type);
+    Py_VISIT(modstate->rpmProblem_Type);
+    Py_VISIT(modstate->rpmstrPool_Type);
+    Py_VISIT(modstate->rpmte_Type);
+    Py_VISIT(modstate->rpmts_Type);
+    Py_VISIT(modstate->rpmver_Type);
+    Py_VISIT(modstate->spec_Type);
+    Py_VISIT(modstate->specPkg_Type);
     Py_VISIT(modstate->pyrpmError);
     return 0;
 }
 
 static int rpmModuleClear(PyObject *m) {
+    rpmmodule_state_t *modstate = PyModule_GetState(m);
+    Py_CLEAR(modstate->hdr_Type);
+    Py_CLEAR(modstate->rpmarchive_Type);
+    Py_CLEAR(modstate->rpmds_Type);
+    Py_CLEAR(modstate->rpmfd_Type);
+    Py_CLEAR(modstate->rpmfile_Type);
+    Py_CLEAR(modstate->rpmfiles_Type);
+    Py_CLEAR(modstate->rpmii_Type);
+    Py_CLEAR(modstate->rpmKeyring_Type);
+    Py_CLEAR(modstate->rpmPubkey_Type);
+    Py_CLEAR(modstate->rpmmi_Type);
+    Py_CLEAR(modstate->rpmProblem_Type);
+    Py_CLEAR(modstate->rpmstrPool_Type);
+    Py_CLEAR(modstate->rpmte_Type);
+    Py_CLEAR(modstate->rpmts_Type);
+    Py_CLEAR(modstate->rpmver_Type);
+    Py_CLEAR(modstate->spec_Type);
+    Py_CLEAR(modstate->specPkg_Type);
     Py_CLEAR(modstate->pyrpmError);
     return 0;
+}
+
+static void rpmModuleFree(void *m) {
+    (void)rpmModuleClear(m);
 }
 
 static PyModuleDef_Slot module_slots[] = {
@@ -246,14 +286,14 @@ static PyModuleDef_Slot module_slots[] = {
 
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
-    "_rpm",            /* m_name */
-    rpm__doc__,        /* m_doc */
-    0,                 /* m_size */
+    "_rpm",			/* m_name */
+    rpm__doc__,			/* m_doc */
+    sizeof(rpmmodule_state_t),	/* m_size */
     rpmModuleMethods,
     module_slots,      /* m_slots */
     rpmModuleTraverse,
     rpmModuleClear,
-    NULL               /* m_free */
+    rpmModuleFree
 };
 
 /* The init function must be exported as it's called by Python, but it doesn't
@@ -262,8 +302,6 @@ static struct PyModuleDef moduledef = {
  */
 PyObject *
 PyInit__rpm(void);
-
-static int moduleInitialized = 0;
 
 PyObject *
 PyInit__rpm(void)
@@ -314,32 +352,6 @@ static unsigned long _get_python_version(void) {
 /* Module initialization: */
 static int initModule(PyObject *m)
 {
-    /* We store pointers to our Python type objects in global variables,
-     * which would get clobbered if the initialization code could run
-     * several times. Explicitly disallow that.
-     *
-     * This means the extension cannot be unloaded and reloaded, nor used
-     * in multiple Python interpreters. The limitation could be lifted
-     * in the future by:
-     * - storing *_Type in module state rather than C static variables.
-     * - implementing traverse, clear & dealloc slots for proper reference
-     *   counting (right now the types are treated as immortal).
-     */
-
-    if (moduleInitialized) {
-        PyErr_SetString(PyExc_ImportError,
-                        "cannot load rpm module more than once per process");
-        return -1;
-    }
-    moduleInitialized = 1;
-
-    modstate = malloc(sizeof(rpmmodule_state_t));
-    if (!modstate) {
-        PyErr_NoMemory();
-        return -1;
-    }
-    memset(modstate, 0, sizeof(rpmmodule_state_t));
-
     PyObject * d;
 
     /* failure to initialize rpm (crypto and all) is rather fatal too... */
@@ -353,6 +365,11 @@ static int initModule(PyObject *m)
 	if (python_version == 0) {
 	return -1;
 	}
+    }
+
+    modstate = PyModule_GetState(m);
+    if (!modstate) {
+	return -1;
     }
 
     modstate->pyrpmError = PyErr_NewException("_rpm.error", NULL, NULL);
