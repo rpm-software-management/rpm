@@ -33,6 +33,12 @@ typedef struct {
 
 extern rpmmodule_state_t *modstate;
 
+/* Replacement for Py_Version from Python 3.11+
+ * version of the Python runtime, packed into an int.
+ * For simplicity this only contains "x.y.z", the final byte is 0.
+ */
+extern unsigned long python_version;
+
 PyObject * utf8FromString(const char *s);
 
 #ifndef Py_TPFLAGS_IMMUTABLETYPE
