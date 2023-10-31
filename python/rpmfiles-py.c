@@ -349,7 +349,9 @@ PyType_Spec rpmfile_Type_Spec = {
 
 PyObject * rpmfile_Wrap(rpmfiles files, int ix)
 {
-    rpmfileObject *s = PyObject_New(rpmfileObject, modstate->rpmfile_Type);
+    PyTypeObject *type = modstate->rpmfile_Type;
+    allocfunc alloc = (allocfunc)PyType_GetSlot(type, Py_tp_alloc);
+    rpmfileObject *s = (rpmfileObject*)alloc(type, 0);
     if (s == NULL) return NULL;
 
     s->files = rpmfilesLink(files);
