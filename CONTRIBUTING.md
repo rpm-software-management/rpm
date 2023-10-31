@@ -29,7 +29,7 @@ depend on later ones, they (should/should not) be submitted separately.
 
 Pull requests should clearly state if the code is "ready for
 inclusion" or if further work is needed. Proof of concept or request
-for comment pull requests are fine but need to be labled as such.
+for comment pull requests are fine but need to be labeled as such.
 
 Information about the change should go into the commit message. This
 includes not only what is changed, but also why. The commit message needs to
@@ -125,7 +125,7 @@ NULL arguments, don't check for it separately.
 
 While many details differ and lot of it does not apply at all, the
 [Linux kernel coding style document](https://www.kernel.org/doc/html/latest/process/coding-style.html)
-contains lots of excellent guidance on good C programming practises if you
+contains lots of excellent guidance on good C programming practices if you
 filter out what is kernel specific.
 
 ## API/ABI considerations
