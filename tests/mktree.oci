@@ -2,6 +2,8 @@
 #
 # OCI-based mktree backend
 
+set -e
+
 PROGRAM=$(basename $0)
 if [ "$PROGRAM" == "mktree" ]; then
     # Running from build directory
@@ -54,7 +56,7 @@ rpmtests()
 
 unshared()
 {
-    [ $(id -u) != 0 ] && [ $NATIVE == yes ] || return
+    [ $(id -u) != 0 ] && [ $NATIVE == yes ] || return 0
     $PODMAN unshare $0 $CMD "$@"
     exit
 }
@@ -69,10 +71,9 @@ case $CMD in
         if [ $NATIVE == yes ]; then
             # Native build
             id=$($PODMAN create $IMAGE/base)
-            trap : INT
+            trap "$PODMAN rm $id >/dev/null" EXIT
             make_install $($PODMAN mount $id)
             $PODMAN commit -q $id $IMAGE
-            $PODMAN rm $id >/dev/null
         else
             # Standalone build
             $PODMAN build --target full -t $IMAGE $ARGS
