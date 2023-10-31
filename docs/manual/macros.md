@@ -205,7 +205,7 @@ A macro that is expanded to 1 if "with_python3" is defined and 0 otherwise:
 or shortly
 
 ```
-0%{!?with_python3:1}
+0%{?with_python3:1}
 ```
 
 `%{?macro_name}` is a shortcut for `%{?macro_name:%macro_name}`.
