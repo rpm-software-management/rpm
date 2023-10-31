@@ -157,6 +157,14 @@ used for historical reasons.
 
 All public APIs must be documented using Doxygen annotation.
 
+## Portability
+
+RPM aims to be portable within POSIX compliant systems, the exact version
+requirements are documented in INSTALL. However, the primary platform
+of RPM is Linux, and that is the only platform supported by the RPM main
+development team. Patches to support other OS'es within the POSIX version
+requirements are generally accepted though.
+
 ## Translations
 
 Translations should be submitted through [Fedora Weblate](https://translate.fedoraproject.org/projects/rpm/),
