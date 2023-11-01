@@ -939,7 +939,7 @@ static rpmRC parseAutobuild(rpmSpec spec)
 	struct autosect_s autosectList[] = {
 	    { "prep", spec->prep },
 	    { "conf", spec->conf },
-	    { "generate_depends", spec->buildrequires },
+	    { "generate_buildrequires", spec->buildrequires },
 	    { "build", spec->build },
 	    { "install", spec->install },
 	    { "check", spec->check },
