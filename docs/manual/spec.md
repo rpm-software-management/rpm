@@ -206,6 +206,12 @@ with old packages that might still depend on it.
 
 Do not use in new packages.
 
+#### Autobuild
+
+Automatically populate the spec build scripts for the given build system,
+such as `Autobuild: autotools". See [autobuild](autobuild.md) documentation
+for more details.
+
 #### AutoReqProv
 #### AutoReq
 #### AutoProv
