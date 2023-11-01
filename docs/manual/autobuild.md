@@ -34,6 +34,33 @@ this is why `%conf` is a separate section from the rest of the build, eg:
 
 ```
 %conf
-%autobuild_conf --enable-experimental
+%configure --enable-experimental
 ```
 
+3) Complex packages can have things like multiple build systems, in
+which case you might want to invoke the macros manually, eg.
+
+```
+%autobuild_autotools_build
+cd python
+%autobuild_python_build
+```
+
+## Supporting new build systems
+
+Supporting new build system types is just a matter of declaring a handful
+of macros, one for any relevant build scriptlets:
+
+Scriptlet                 | Autobuild macro
+-------------------------------------------
+`%prep`                   | `%autobuild_name_prep`
+`%conf`                   | `%autobuild_name_conf`
+`%generate_buildrequires` | `%autobuild_name_generate_buildrequires`
+`%build`                  | `%autobuild_name_build`
+`%install`                | `%autobuild_name_install`
+`%check`                  | `%autobuild_name_install`
+`%clean`                  | `%autobuiod_name_clean`
+
+Replace "name" with the buildsystem name, eg `%autobuild_cmake_build`.
+When Autobuild: tag is set, these automatically populate the corresponding
+spec section, unless the spec manually overrides it. 
