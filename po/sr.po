@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2023-03-09 11:22+0000\n"
+"POT-Creation-Date: 2023-11-13 10:59+0100\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Serbian (http://www.transifex.com/rpm-team/rpm/language/sr/)\n"
@@ -78,7 +78,7 @@ msgstr "<specfile>"
 msgid "build through %conf (%prep, then %conf) from <specfile>"
 msgstr "направи кроз %build (%prep, онда компилирај) из <specfile>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr "направи кроз %build (%prep, онда компилирај) из <specfile>"
 
@@ -86,7 +86,7 @@ msgstr "направи кроз %build (%prep, онда компилирај) и
 msgid "check build dependencies <specfile>"
 msgstr "Неуспело прављење зависности:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr "направи кроз %install (%prep, %build, затим инсталирај) из <specfile>"
@@ -117,7 +117,7 @@ msgstr ""
 msgid "<source package>"
 msgstr "<source package>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr "направи кроз %build (%prep, онда компилирај) из <specfile>"
 
@@ -125,7 +125,7 @@ msgstr "направи кроз %build (%prep, онда компилирај) и
 msgid "check build dependencies <source package>"
 msgstr "направи бинарни пакет из <source package>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
@@ -159,7 +159,7 @@ msgstr ""
 msgid "<tarball>"
 msgstr "<tarball>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr "направи кроз %build (%prep, онда компилирај) из <tarball>"
 
@@ -167,7 +167,7 @@ msgstr "направи кроз %build (%prep, онда компилирај) и
 msgid "check build dependencies <tarball>"
 msgstr "Неуспело прављење зависности:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr "направи кроз %install (%prep, %build, онда инсталирај) из <tarball>"
@@ -193,6 +193,7 @@ msgstr "направи изворне пакете само из <tarball>"
 msgid "build binary package from <source package>"
 msgstr "направи бинарни пакет из <source package>"
 
+#, c-format
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
@@ -305,7 +306,8 @@ msgid "rebuild database inverted lists from installed package headers"
 msgstr ""
 "поново направи обрнуте спискове базе података из заглавља инсталираних пакета"
 
-msgid "verify database files"
+#, fuzzy
+msgid "verify database"
 msgstr "провера датотека базе података"
 
 #, fuzzy
@@ -1166,6 +1168,10 @@ msgstr ""
 msgid "Version required"
 msgstr ""
 
+#, fuzzy
+msgid "file trigger conditions must begin with '/'"
+msgstr "премештања морају почети са /"
+
 msgid "Only package names are allowed in Obsoletes"
 msgstr ""
 
@@ -1173,9 +1179,6 @@ msgid "It's not recommended to have unversioned Obsoletes"
 msgstr ""
 
 msgid "It's not recommended to use '>' in Obsoletes"
-msgstr ""
-
-msgid "Only absolute paths are allowed in file triggers"
 msgstr ""
 
 msgid "Trigger fired by the same package is already defined in spec file"
@@ -1216,10 +1219,6 @@ msgstr "ред %d: Други %s\n"
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "ред %d: неподржана интерна скрипта: %s\n"
-
-#, c-format
-msgid "line %d: file trigger condition must begin with '/': %s"
-msgstr ""
 
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
@@ -2009,6 +2008,10 @@ msgstr "испитај пакет(е) које је активирао овај 
 msgid "rpm verify mode"
 msgstr "режим rpm провере"
 
+#, fuzzy
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr "испитај/провери пакет(е) који захтевају зависности"
+
 msgid "query/verify the package(s) which require a dependency"
 msgstr "испитај/провери пакет(е) који захтевају зависности"
 
@@ -2612,12 +2615,6 @@ msgstr "Инсталирам %s\n"
 msgid "not an rpm package"
 msgstr "није rpm пакет"
 
-msgid "illegal signature type"
-msgstr "неправилан тип потписа"
-
-msgid "unsupported RPM package version"
-msgstr "неподржана верзија RPM пакета"
-
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "неуспело читање: %s (%d)\n"
@@ -2779,9 +2776,6 @@ msgstr "Молим вас контактирајте %s\n"
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Не могу да отворим %s за читање: %m.\n"
-
-msgid "No exec() called after fork() in lua scriptlet\n"
-msgstr ""
 
 #, c-format
 msgid "Unable to restore current directory: %m"
@@ -3143,6 +3137,9 @@ msgstr ""
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "неправилна синтакса у lua скриптици: %s\n"
 
+msgid "runaway fork() in Lua script\n"
+msgstr ""
+
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "неправилна синтакса у lua скрипти: %s\n"
@@ -3320,6 +3317,12 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#~ msgid "illegal signature type"
+#~ msgstr "неправилан тип потписа"
+
+#~ msgid "unsupported RPM package version"
+#~ msgstr "неподржана верзија RPM пакета"
 
 #, c-format
 #~ msgid "%s: writeLead failed: %s\n"

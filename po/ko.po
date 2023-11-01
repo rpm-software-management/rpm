@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2023-03-09 11:22+0000\n"
+"POT-Creation-Date: 2023-11-13 10:59+0100\n"
 "PO-Revision-Date: 2021-07-10 19:04+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/rpm/"
@@ -81,7 +81,7 @@ msgstr "<spec파일>"
 msgid "build through %conf (%prep, then %conf) from <specfile>"
 msgstr "<spec파일>의 %build (%prep과 컴파일하는 과정)으로 제작합니다"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr "<spec파일>의 %build (%prep과 컴파일하는 과정)으로 제작합니다"
 
@@ -89,7 +89,7 @@ msgstr "<spec파일>의 %build (%prep과 컴파일하는 과정)으로 제작합
 msgid "check build dependencies <specfile>"
 msgstr "실패한 build 의존성:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr "<spec파일>의 %install (%prep, %build와 설치하는 과정)으로 제작합니다"
@@ -121,7 +121,7 @@ msgstr "<spec파일>의 %prep (소스를 풀고 패치를 적용하는 과정)�
 msgid "<source package>"
 msgstr "<소스 꾸러미(package)>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr "<spec파일>의 %build (%prep과 컴파일하는 과정)으로 제작합니다"
 
@@ -129,7 +129,7 @@ msgstr "<spec파일>의 %build (%prep과 컴파일하는 과정)으로 제작합
 msgid "check build dependencies <source package>"
 msgstr "<소스 꾸러미(package)>로 소스와 바이너리 꾸러미(package)를 제작합니다"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
@@ -164,7 +164,7 @@ msgstr "<tar파일>을 %prep (소스를 풀고 패치를 적용하는 과정)으
 msgid "<tarball>"
 msgstr "<tar파일>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr "<tar파일>을 %build (%prep과 컴파일하는 과정)으로 제작합니다"
 
@@ -172,7 +172,7 @@ msgstr "<tar파일>을 %build (%prep과 컴파일하는 과정)으로 제작합�
 msgid "check build dependencies <tarball>"
 msgstr "실패한 build 의존성:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr "<tar파일>을 %install (%prep, %build와 설치하는 과정)으로 제작합니다"
@@ -199,6 +199,7 @@ msgstr ""
 msgid "build binary package from <source package>"
 msgstr "<소스 꾸러미(package)>로 바이너리 꾸러미(package)를 제작합니다"
 
+#, c-format
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
@@ -315,7 +316,8 @@ msgstr "데이터베이스를 초기화 합니다"
 msgid "rebuild database inverted lists from installed package headers"
 msgstr "설치된 꾸러미 헤더에서 상반된 목록의 데이타베이스를 재구축 합니다"
 
-msgid "verify database files"
+#, fuzzy
+msgid "verify database"
 msgstr "데이터베이스 파일을 검사합니다"
 
 msgid "salvage database"
@@ -1187,6 +1189,10 @@ msgstr "잘못된 의존성"
 msgid "Version required"
 msgstr "필요한 버전"
 
+#, fuzzy
+msgid "file trigger conditions must begin with '/'"
+msgstr "행 %d: 파일 트리거 상태는 '/': %s와 함께 시작합니다"
+
 msgid "Only package names are allowed in Obsoletes"
 msgstr "구식에는 꾸러미(package) 이름만 허용합니다"
 
@@ -1195,9 +1201,6 @@ msgstr "버전이 없는 구식에 사용하지 않기를 추천합니다"
 
 msgid "It's not recommended to use '>' in Obsoletes"
 msgstr "구식에 '>' 을 사용하지 않기를 추천합니다"
-
-msgid "Only absolute paths are allowed in file triggers"
-msgstr "단지 절대 경로만 파일 트리거에서 허용합니다"
 
 msgid "Trigger fired by the same package is already defined in spec file"
 msgstr "동일 꾸러미에 의해 실행된 트리커는 지정된 파일에서 이미 정의되었습니다"
@@ -1237,10 +1240,6 @@ msgstr "%d 번째 행: 두번째 %s\n"
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "행 %d: 지원하지 않는 내부 스크립트: %s\n"
-
-#, c-format
-msgid "line %d: file trigger condition must begin with '/': %s"
-msgstr "행 %d: 파일 트리거 상태는 '/': %s와 함께 시작합니다"
 
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
@@ -2039,6 +2038,10 @@ msgstr ""
 msgid "rpm verify mode"
 msgstr "rpm 검증 모드"
 
+#, fuzzy
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr "의존성을 제공하는 꾸러미(packages)에 대해 질의/검증 합니다"
+
 msgid "query/verify the package(s) which require a dependency"
 msgstr "의존성을 필요로 하는 꾸러미(package)에 대해 질의/검증 합니다"
 
@@ -2636,12 +2639,6 @@ msgstr "%s(을)를 설치합니다\n"
 msgid "not an rpm package"
 msgstr "rpm 꾸러미(package)가 아닙니다"
 
-msgid "illegal signature type"
-msgstr "잘못된 서명 유형"
-
-msgid "unsupported RPM package version"
-msgstr "RPM 꾸러미 버전을 지원하지 않습니다"
-
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "읽는데 실패함: %s (%d)\n"
@@ -2802,9 +2799,6 @@ msgstr "문의해주세요 %s\n"
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "읽기를 위해 %s를 열 수 없습니다: %m.\n"
-
-msgid "No exec() called after fork() in lua scriptlet\n"
-msgstr "lua 스크리플릿에서 fork() 후에 호출된 exec()가 없습니다\n"
 
 #, c-format
 msgid "Unable to restore current directory: %m"
@@ -3152,6 +3146,10 @@ msgstr "기록에 쓰기 오류"
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "lua 스크립트릿에서 잘못된 구문: %s\n"
 
+#, fuzzy
+msgid "runaway fork() in Lua script\n"
+msgstr "lua 스크리플릿에서 fork() 후에 호출된 exec()가 없습니다\n"
+
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "lua 스크립트에서 잘못된 구문:%s\n"
@@ -3329,6 +3327,15 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#~ msgid "Only absolute paths are allowed in file triggers"
+#~ msgstr "단지 절대 경로만 파일 트리거에서 허용합니다"
+
+#~ msgid "illegal signature type"
+#~ msgstr "잘못된 서명 유형"
+
+#~ msgid "unsupported RPM package version"
+#~ msgstr "RPM 꾸러미 버전을 지원하지 않습니다"
 
 #, c-format
 #~ msgid "%s: writeLead failed: %s\n"

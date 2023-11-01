@@ -29,7 +29,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2023-03-09 11:22+0000\n"
+"POT-Creation-Date: 2023-11-13 10:59+0100\n"
 "PO-Revision-Date: 2022-03-21 09:17+0000\n"
 "Last-Translator: Charles Lee <lchopn@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -100,7 +100,7 @@ msgstr "<specfile>"
 msgid "build through %conf (%prep, then %conf) from <specfile>"
 msgstr "依据 <specfile> 从 %build (%prep 之后编译) 开始构建"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr "依据 <specfile> 从 %build (%prep 之后编译) 开始构建"
 
@@ -108,7 +108,7 @@ msgstr "依据 <specfile> 从 %build (%prep 之后编译) 开始构建"
 msgid "check build dependencies <specfile>"
 msgstr "构建依赖失败：\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr "依据 <specfile> 从 %install (%prep、%build 后安装) 开始构建"
@@ -138,7 +138,7 @@ msgstr "仅执行 <source package> 的 %prep 部分（解包源代码并应用�
 msgid "<source package>"
 msgstr "<source package>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr "仅执行 <source package> 的 ％build 部分(先执行 %prep，然后 ％build)"
 
@@ -146,7 +146,7 @@ msgstr "仅执行 <source package> 的 ％build 部分(先执行 %prep，然后 
 msgid "check build dependencies <source package>"
 msgstr "从 <source package> 中构建二进制和源代码包"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
@@ -177,7 +177,7 @@ msgstr "依据 <tarball> 从 %prep (解压源代码并应用补丁)开始构建"
 msgid "<tarball>"
 msgstr "<tarball>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr "依据 <tarball> 从 %build (%prep，之后编译)开始构建"
 
@@ -185,7 +185,7 @@ msgstr "依据 <tarball> 从 %build (%prep，之后编译)开始构建"
 msgid "check build dependencies <tarball>"
 msgstr "构建依赖失败：\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr "依据 <tarball> 从 %install (%prep、%build 然后安装)开始构建"
@@ -210,6 +210,7 @@ msgstr "仅从 <tarball> 构建源代码包 - 动态计算构建依赖"
 msgid "build binary package from <source package>"
 msgstr "依据 <source package> 构建二进制包"
 
+#, c-format
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr "依据 <source package> 从 %install (%prep、%build 然后安装)开始构建"
@@ -320,7 +321,8 @@ msgstr "初始化数据库"
 msgid "rebuild database inverted lists from installed package headers"
 msgstr "从已安装软件包包头重建数据库反向列表"
 
-msgid "verify database files"
+#, fuzzy
+msgid "verify database"
 msgstr "校验数据库文件"
 
 msgid "salvage database"
@@ -1176,6 +1178,10 @@ msgstr "无效的依赖"
 msgid "Version required"
 msgstr "版本要求"
 
+#, fuzzy
+msgid "file trigger conditions must begin with '/'"
+msgstr "重定位必须以 / 开头"
+
 msgid "Only package names are allowed in Obsoletes"
 msgstr ""
 
@@ -1184,9 +1190,6 @@ msgstr ""
 
 msgid "It's not recommended to use '>' in Obsoletes"
 msgstr ""
-
-msgid "Only absolute paths are allowed in file triggers"
-msgstr "文件触发器中仅允许使用绝对路径"
 
 msgid "Trigger fired by the same package is already defined in spec file"
 msgstr "同一个软件包的触发器已在 spec 文件中定义"
@@ -1226,10 +1229,6 @@ msgstr "列 %d：第二个 %s\n"
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "行 %d：不支持的内部脚本：%s\n"
-
-#, c-format
-msgid "line %d: file trigger condition must begin with '/': %s"
-msgstr ""
 
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
@@ -2014,6 +2013,10 @@ msgstr "查找由软件包所触发的软件包"
 msgid "rpm verify mode"
 msgstr "rpm 校验模式"
 
+#, fuzzy
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr "查询/验证废弃依赖的软件包"
+
 msgid "query/verify the package(s) which require a dependency"
 msgstr "查询/验证需要某个依赖对象的软件包"
 
@@ -2608,12 +2611,6 @@ msgstr "正在安装 %s\n"
 msgid "not an rpm package"
 msgstr "不是一个 rpm 软件包"
 
-msgid "illegal signature type"
-msgstr "非法的签名类型"
-
-msgid "unsupported RPM package version"
-msgstr "不支持的 RPM 软件包版本"
-
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "读取失败：%s (%d)\n"
@@ -2774,9 +2771,6 @@ msgstr "请联系 %s\n"
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "不能打开 %s 供读取：%m。\n"
-
-msgid "No exec() called after fork() in lua scriptlet\n"
-msgstr ""
 
 #, c-format
 msgid "Unable to restore current directory: %m"
@@ -3122,6 +3116,9 @@ msgstr ""
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "lua 脚本中存在无效的语法：%s\n"
 
+msgid "runaway fork() in Lua script\n"
+msgstr ""
+
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "Lua 脚本中存在无效的语法：%s\n"
@@ -3299,6 +3296,15 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#~ msgid "Only absolute paths are allowed in file triggers"
+#~ msgstr "文件触发器中仅允许使用绝对路径"
+
+#~ msgid "illegal signature type"
+#~ msgstr "非法的签名类型"
+
+#~ msgid "unsupported RPM package version"
+#~ msgstr "不支持的 RPM 软件包版本"
 
 #, c-format
 #~ msgid "%s: writeLead failed: %s\n"

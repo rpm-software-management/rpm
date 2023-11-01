@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2023-03-09 11:22+0000\n"
+"POT-Creation-Date: 2023-11-13 10:59+0100\n"
 "PO-Revision-Date: 2020-03-23 08:40-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Esperanto (http://www.transifex.com/rpm-team/rpm/language/"
@@ -82,7 +82,7 @@ msgstr "<spec-dosiero>"
 msgid "build through %conf (%prep, then %conf) from <specfile>"
 msgstr "munti per %build (%prep, tiam traduki) laŭ <spec-dosiero>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr "munti per %build (%prep, tiam traduki) laŭ <spec-dosiero>"
 
@@ -90,7 +90,7 @@ msgstr "munti per %build (%prep, tiam traduki) laŭ <spec-dosiero>"
 msgid "check build dependencies <specfile>"
 msgstr "Malsukcesintaj muntaj dependaĵoj:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr "munti per %install (%prep, %build, tiam instali) laŭ <spec-dosiero>"
@@ -122,7 +122,7 @@ msgstr ""
 msgid "<source package>"
 msgstr "<fontoteksta pakaĵo>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr "munti per %build (%prep, poste traduki) laŭ <fontoteskta pakaĵo>"
 
@@ -130,7 +130,7 @@ msgstr "munti per %build (%prep, poste traduki) laŭ <fontoteskta pakaĵo>"
 msgid "check build dependencies <source package>"
 msgstr "munti fontotekstajn kaj plenumeblajn pakaĵojn laŭ <fontoteksta pakaĵo>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
@@ -162,7 +162,7 @@ msgstr "munti per %prep (elpaki fontotekstojn kaj fliki) laŭ <tar-dosiero>"
 msgid "<tarball>"
 msgstr "<tar-dosiero>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr "munti per %build (%prep, tiam traduki) laŭ <tar-dosiero>"
 
@@ -170,7 +170,7 @@ msgstr "munti per %build (%prep, tiam traduki) laŭ <tar-dosiero>"
 msgid "check build dependencies <tarball>"
 msgstr "Malsukcesintaj muntaj dependaĵoj:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr "munti per %install (%prep, %build, tiam instali) laŭ <tar-dosiero>"
@@ -195,6 +195,7 @@ msgstr ""
 msgid "build binary package from <source package>"
 msgstr "munti plenumeblan pakaĵon laŭ <fontoteksta pakaĵo>"
 
+#, c-format
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
@@ -308,7 +309,8 @@ msgid "rebuild database inverted lists from installed package headers"
 msgstr ""
 "remunti listojn inversigitajn de la datumbazo el instalitaj pakaĵo-kapoj"
 
-msgid "verify database files"
+#, fuzzy
+msgid "verify database"
 msgstr "konstati datumbazajn dosierojn"
 
 #, fuzzy
@@ -1176,6 +1178,10 @@ msgstr "nevalida dependaĵo"
 msgid "Version required"
 msgstr "Eldono necesas"
 
+#, fuzzy
+msgid "file trigger conditions must begin with '/'"
+msgstr "relokiĝoj devas komenciĝi per /"
+
 msgid "Only package names are allowed in Obsoletes"
 msgstr ""
 
@@ -1184,9 +1190,6 @@ msgstr ""
 
 msgid "It's not recommended to use '>' in Obsoletes"
 msgstr ""
-
-msgid "Only absolute paths are allowed in file triggers"
-msgstr "Nur absolutaj vojoj estas permesataj en dosieraj instigiloj"
 
 msgid "Trigger fired by the same package is already defined in spec file"
 msgstr ""
@@ -1228,10 +1231,6 @@ msgstr "linio %d: Dua %s\n"
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "linio %d: ne rekonas internan skripton: %s\n"
-
-#, c-format
-msgid "line %d: file trigger condition must begin with '/': %s"
-msgstr ""
 
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
@@ -2023,6 +2022,10 @@ msgstr "mendi la pakaĵo(j)n okazigitaj de la pakaĵo"
 msgid "rpm verify mode"
 msgstr "rpm-konstata reĝimo"
 
+#, fuzzy
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr "mendi/konstati la pakaĵo(j)n, kiujn havigas dependaĵon"
+
 msgid "query/verify the package(s) which require a dependency"
 msgstr "mendi/konstati la pakaĵo(j)n, kiuj postulas dependaĵon"
 
@@ -2619,12 +2622,6 @@ msgstr "Instaliĝas %s\n"
 msgid "not an rpm package"
 msgstr "ne rpm-pakaĵo"
 
-msgid "illegal signature type"
-msgstr "nevalida pretenda tipo"
-
-msgid "unsupported RPM package version"
-msgstr "nekomprenata RPM-pakaĵa eldono"
-
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "malsukcesis legi: %s (%d)\n"
@@ -2785,9 +2782,6 @@ msgstr "Bonvolu kontakti %s\n"
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "%s ne malfermeblas por legiĝi: %m.\n"
-
-msgid "No exec() called after fork() in lua scriptlet\n"
-msgstr "Neniu exec() vokita post fork() en lua-skripteto\n"
 
 #, c-format
 msgid "Unable to restore current directory: %m"
@@ -3150,6 +3144,10 @@ msgstr ""
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "nevalida sintakso en lua-skripteto: %s\n"
 
+#, fuzzy
+msgid "runaway fork() in Lua script\n"
+msgstr "Neniu exec() vokita post fork() en lua-skripteto\n"
+
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "nevalida sintakso en lua-skripto: %s\n"
@@ -3327,6 +3325,15 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#~ msgid "Only absolute paths are allowed in file triggers"
+#~ msgstr "Nur absolutaj vojoj estas permesataj en dosieraj instigiloj"
+
+#~ msgid "illegal signature type"
+#~ msgstr "nevalida pretenda tipo"
+
+#~ msgid "unsupported RPM package version"
+#~ msgstr "nekomprenata RPM-pakaĵa eldono"
 
 #, c-format
 #~ msgid "%s: writeLead failed: %s\n"

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2023-03-09 11:22+0000\n"
+"POT-Creation-Date: 2023-11-13 10:59+0100\n"
 "PO-Revision-Date: 2022-01-02 21:16+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://translate.fedoraproject.org/projects/rpm/"
@@ -88,7 +88,7 @@ msgid "build through %conf (%prep, then %conf) from <specfile>"
 msgstr ""
 "%build (%prep, anschließendes Kompilieren) der <Spec-Datei> durchlaufen"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr ""
 "%build (%prep, anschließendes Kompilieren) der <Spec-Datei> durchlaufen"
@@ -97,7 +97,7 @@ msgstr ""
 msgid "check build dependencies <specfile>"
 msgstr "Fehlgeschlagene Paket-Abhängigkeiten:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr ""
@@ -131,7 +131,7 @@ msgstr ""
 msgid "<source package>"
 msgstr "<Quellpaket>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr ""
 "%build (%prep, anschließendes Kompilieren) der <Spec-Datei> durchlaufen"
@@ -140,7 +140,7 @@ msgstr ""
 msgid "check build dependencies <source package>"
 msgstr "Quell- und Binärpakete aus <Quellpaket> bauen"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
@@ -176,7 +176,7 @@ msgstr ""
 msgid "<tarball>"
 msgstr "<Tar-Archiv>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr ""
 "%build (%prep, anschließendes Kompilieren) des <Tar-Archivs> durchlaufen"
@@ -185,7 +185,7 @@ msgstr ""
 msgid "check build dependencies <tarball>"
 msgstr "Fehlgeschlagene Paket-Abhängigkeiten:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr ""
@@ -214,6 +214,7 @@ msgstr ""
 msgid "build binary package from <source package>"
 msgstr "Ein Quellpaket vom <Quellpaket> bauen"
 
+#, c-format
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
@@ -329,7 +330,8 @@ msgid "rebuild database inverted lists from installed package headers"
 msgstr ""
 "Invertierte Datenbank-Liste anhand der installierten Paket-Header erstellen"
 
-msgid "verify database files"
+#, fuzzy
+msgid "verify database"
 msgstr "Datenbank-Dateien überprüfen"
 
 #, fuzzy
@@ -1223,6 +1225,10 @@ msgstr "Ungültige Abhängigkeit"
 msgid "Version required"
 msgstr "Version wird benötigt"
 
+#, fuzzy
+msgid "file trigger conditions must begin with '/'"
+msgstr "Verschiebungen müssen mit einem / beginnen"
+
 msgid "Only package names are allowed in Obsoletes"
 msgstr "In »Obsoletes« sind nur Paketnamen erlaubt"
 
@@ -1231,9 +1237,6 @@ msgstr "Einträge in »Obsoletes« ohne Versionsnummer werden nicht empfohlen"
 
 msgid "It's not recommended to use '>' in Obsoletes"
 msgstr "Verwendung von »>« in »Obsoletes« wird nicht empfohlen"
-
-msgid "Only absolute paths are allowed in file triggers"
-msgstr "In Datei-Triggern sind nur absolute Pfade erlaubt"
 
 msgid "Trigger fired by the same package is already defined in spec file"
 msgstr ""
@@ -1273,10 +1276,6 @@ msgstr "Zeile %d: Zweites %s\n"
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "Zeile %d: Nicht unterstütztes internes Skript: %s\n"
-
-#, c-format
-msgid "line %d: file trigger condition must begin with '/': %s"
-msgstr ""
 
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
@@ -2085,6 +2084,10 @@ msgstr "Abfragen eines Pakets gesteuert vom Paket"
 msgid "rpm verify mode"
 msgstr "Überprüfungsmodus"
 
+#, fuzzy
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr "Abfrage nach Paketen, die die Fähigkeit bereitstellen"
+
 msgid "query/verify the package(s) which require a dependency"
 msgstr "Abfrage nach Paketen, die die Fähigkeit benötigen"
 
@@ -2689,12 +2692,6 @@ msgstr "%s wird installiert\n"
 msgid "not an rpm package"
 msgstr "ist kein RPM-Paket"
 
-msgid "illegal signature type"
-msgstr "Ungültiger Signatur-Typ"
-
-msgid "unsupported RPM package version"
-msgstr "nicht unterstützte RPM-Paket-Version"
-
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "Lesen fehlgeschlagen: %s (%d)\n"
@@ -2863,9 +2860,6 @@ msgstr "Bitte (in Englisch) %s kontaktieren\n"
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "%s kann nicht zum Lesen geöffnet werden: %m.\n"
-
-msgid "No exec() called after fork() in lua scriptlet\n"
-msgstr "Kein exec() nach fork() im Lua-Scriptlet aufgerufen\n"
 
 #, c-format
 msgid "Unable to restore current directory: %m"
@@ -3215,6 +3209,10 @@ msgstr "Fehler beim Schreiben in das Protokoll"
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "Ungültige Syntax in Lua-Scriptlet: %s\n"
 
+#, fuzzy
+msgid "runaway fork() in Lua script\n"
+msgstr "Kein exec() nach fork() im Lua-Scriptlet aufgerufen\n"
+
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "Ungültige Syntax in Lua-Script: %s\n"
@@ -3392,6 +3390,15 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#~ msgid "Only absolute paths are allowed in file triggers"
+#~ msgstr "In Datei-Triggern sind nur absolute Pfade erlaubt"
+
+#~ msgid "illegal signature type"
+#~ msgstr "Ungültiger Signatur-Typ"
+
+#~ msgid "unsupported RPM package version"
+#~ msgstr "nicht unterstützte RPM-Paket-Version"
 
 #, c-format
 #~ msgid "%s: writeLead failed: %s\n"

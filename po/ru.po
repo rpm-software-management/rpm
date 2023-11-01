@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2023-03-09 11:22+0000\n"
+"POT-Creation-Date: 2023-11-13 10:59+0100\n"
 "PO-Revision-Date: 2020-03-23 08:39-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Russian (http://www.transifex.com/rpm-team/rpm/language/ru/)\n"
@@ -84,7 +84,7 @@ msgid "build through %conf (%prep, then %conf) from <specfile>"
 msgstr ""
 "выполнить по стадию %build (%prep, затем компиляция) из <файл спецификации>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr ""
 "выполнить по стадию %build (%prep, затем компиляция) из <файл спецификации>"
@@ -93,7 +93,7 @@ msgstr ""
 msgid "check build dependencies <specfile>"
 msgstr "Неудовлетворенные зависимости сборки:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr ""
@@ -125,7 +125,7 @@ msgstr ""
 msgid "<source package>"
 msgstr "<исходный пакет>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr ""
 "выполнить по стадию %build (%prep, затем компиляция) из <файл спецификации>"
@@ -134,7 +134,7 @@ msgstr ""
 msgid "check build dependencies <source package>"
 msgstr "собрать двоичный пакет из <исходный пакет>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
@@ -169,7 +169,7 @@ msgstr ""
 msgid "<tarball>"
 msgstr "<архив tar>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr "выполнить по стадию %build (%prep, затем компиляция) из <архив tar>"
 
@@ -177,7 +177,7 @@ msgstr "выполнить по стадию %build (%prep, затем комп�
 msgid "check build dependencies <tarball>"
 msgstr "Неудовлетворенные зависимости сборки:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr ""
@@ -203,6 +203,7 @@ msgstr ""
 msgid "build binary package from <source package>"
 msgstr "собрать двоичный пакет из <исходный пакет>"
 
+#, c-format
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
@@ -318,7 +319,8 @@ msgstr ""
 "переиндексировать базу инвертированных списков из установленных заголовков "
 "пакетов"
 
-msgid "verify database files"
+#, fuzzy
+msgid "verify database"
 msgstr "проверить файлы базы данных"
 
 #, fuzzy
@@ -1181,6 +1183,10 @@ msgstr ""
 msgid "Version required"
 msgstr ""
 
+#, fuzzy
+msgid "file trigger conditions must begin with '/'"
+msgstr "перемещения должны начинаться с /"
+
 msgid "Only package names are allowed in Obsoletes"
 msgstr ""
 
@@ -1189,9 +1195,6 @@ msgstr ""
 
 msgid "It's not recommended to use '>' in Obsoletes"
 msgstr ""
-
-msgid "Only absolute paths are allowed in file triggers"
-msgstr "В триггерах файлов допустимы только абсолютные пути"
 
 msgid "Trigger fired by the same package is already defined in spec file"
 msgstr ""
@@ -1230,10 +1233,6 @@ msgstr "строка %d: Второе %s\n"
 
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
-msgstr ""
-
-#, c-format
-msgid "line %d: file trigger condition must begin with '/': %s"
 msgstr ""
 
 #, c-format
@@ -2023,6 +2022,10 @@ msgstr "запросить пакеты с триггер-сценариями �
 msgid "rpm verify mode"
 msgstr "режим проверки rpm"
 
+#, fuzzy
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr "найти/проверить пакеты, предоставляющие сервис"
+
 msgid "query/verify the package(s) which require a dependency"
 msgstr "найти/проверить пакеты, требующие сервис"
 
@@ -2618,12 +2621,6 @@ msgstr "Устанавливается %s\n"
 msgid "not an rpm package"
 msgstr "не rpm-пакет"
 
-msgid "illegal signature type"
-msgstr "неверный тип подписи"
-
-msgid "unsupported RPM package version"
-msgstr "неподдерживаемая версия пакета RPM"
-
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "ошибка чтения: %s (%d)\n"
@@ -2784,9 +2781,6 @@ msgstr ""
 
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
-msgstr ""
-
-msgid "No exec() called after fork() in lua scriptlet\n"
 msgstr ""
 
 #, c-format
@@ -3148,6 +3142,9 @@ msgstr ""
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr ""
 
+msgid "runaway fork() in Lua script\n"
+msgstr ""
+
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr ""
@@ -3324,6 +3321,15 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#~ msgid "Only absolute paths are allowed in file triggers"
+#~ msgstr "В триггерах файлов допустимы только абсолютные пути"
+
+#~ msgid "illegal signature type"
+#~ msgstr "неверный тип подписи"
+
+#~ msgid "unsupported RPM package version"
+#~ msgstr "неподдерживаемая версия пакета RPM"
 
 #, c-format
 #~ msgid "%s: writeLead failed: %s\n"

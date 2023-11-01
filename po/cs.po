@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2023-03-09 11:22+0000\n"
+"POT-Creation-Date: 2023-11-13 10:59+0100\n"
 "PO-Revision-Date: 2020-03-23 08:37-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Czech (http://www.transifex.com/rpm-team/rpm/language/cs/)\n"
@@ -79,7 +79,7 @@ msgstr "<spec_soubor>"
 msgid "build through %conf (%prep, then %conf) from <specfile>"
 msgstr "sestavení podle %build (%prep, pak kompilace) podle <spec_soubor>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr "sestavení podle %build (%prep, pak kompilace) podle <spec_soubor>"
 
@@ -87,7 +87,7 @@ msgstr "sestavení podle %build (%prep, pak kompilace) podle <spec_soubor>"
 msgid "check build dependencies <specfile>"
 msgstr "Chybné závislosti při sestavování:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr ""
@@ -118,7 +118,7 @@ msgstr ""
 msgid "<source package>"
 msgstr "<zdrojový balíček>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr "sestavení podle %build (%prep, pak kompilace) podle <spec_soubor>"
 
@@ -126,7 +126,7 @@ msgstr "sestavení podle %build (%prep, pak kompilace) podle <spec_soubor>"
 msgid "check build dependencies <source package>"
 msgstr "vytvoření binárního balíčku ze <zdrojový balíček>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
@@ -159,7 +159,7 @@ msgstr ""
 msgid "<tarball>"
 msgstr "<tar_soubor>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr "sestavení podle %build (%prep, pak kompilace) z <tar_soubor>"
 
@@ -167,7 +167,7 @@ msgstr "sestavení podle %build (%prep, pak kompilace) z <tar_soubor>"
 msgid "check build dependencies <tarball>"
 msgstr "Chybné závislosti při sestavování:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr "sestavení podle %%install (%prep, %build, pak install) z <tar_soubor>"
@@ -192,6 +192,7 @@ msgstr ""
 msgid "build binary package from <source package>"
 msgstr "vytvoření binárního balíčku ze <zdrojový balíček>"
 
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr "sestavení podle %%install (včetně %prep, %build) ze <zdrojový balíček>"
@@ -303,7 +304,8 @@ msgstr "inicializuj databázi"
 msgid "rebuild database inverted lists from installed package headers"
 msgstr "znovu sestav obrácené seznamy z instalovaných hlaviček balíčků"
 
-msgid "verify database files"
+#, fuzzy
+msgid "verify database"
 msgstr "zkontrolovat databázové soubory"
 
 #, fuzzy
@@ -1162,6 +1164,10 @@ msgstr ""
 msgid "Version required"
 msgstr ""
 
+#, fuzzy
+msgid "file trigger conditions must begin with '/'"
+msgstr "přemístění musejí začínat znakem /"
+
 msgid "Only package names are allowed in Obsoletes"
 msgstr ""
 
@@ -1169,9 +1175,6 @@ msgid "It's not recommended to have unversioned Obsoletes"
 msgstr ""
 
 msgid "It's not recommended to use '>' in Obsoletes"
-msgstr ""
-
-msgid "Only absolute paths are allowed in file triggers"
 msgstr ""
 
 msgid "Trigger fired by the same package is already defined in spec file"
@@ -1212,10 +1215,6 @@ msgstr "řádek %d: Druhý %s\n"
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "řádek %d: nepodporovaný interní skript: %s\n"
-
-#, c-format
-msgid "line %d: file trigger condition must begin with '/': %s"
-msgstr ""
 
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
@@ -2003,6 +2002,10 @@ msgstr "dotaz na balíčky aktivované balíčkem"
 msgid "rpm verify mode"
 msgstr "režim kontroly"
 
+#, fuzzy
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr "dotaz/ověření balíčků poskytujících závislost"
+
 msgid "query/verify the package(s) which require a dependency"
 msgstr "dotaz/ověření balíčků vyžadujících závislost"
 
@@ -2597,12 +2600,6 @@ msgstr "Instaluji: %s\n"
 msgid "not an rpm package"
 msgstr "není rpm balíček"
 
-msgid "illegal signature type"
-msgstr "nepovolený typ podpisu"
-
-msgid "unsupported RPM package version"
-msgstr "nepodporovaná verze RPM balíčku"
-
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "čtení selhalo: %s (%d)\n"
@@ -2763,9 +2760,6 @@ msgstr "Prosím kontaktujte %s\n"
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Nemohu otevřít %s pro čtení: %m.\n"
-
-msgid "No exec() called after fork() in lua scriptlet\n"
-msgstr ""
 
 #, c-format
 msgid "Unable to restore current directory: %m"
@@ -3126,6 +3120,9 @@ msgstr ""
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "neplatná syntax v lua skriptletu: %s\n"
 
+msgid "runaway fork() in Lua script\n"
+msgstr ""
+
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "neplatná syntax v lua skriptu: %s\n"
@@ -3302,6 +3299,12 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#~ msgid "illegal signature type"
+#~ msgstr "nepovolený typ podpisu"
+
+#~ msgid "unsupported RPM package version"
+#~ msgstr "nepodporovaná verze RPM balíčku"
 
 #, c-format
 #~ msgid "%s: writeLead failed: %s\n"

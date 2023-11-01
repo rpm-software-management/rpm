@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2023-03-09 11:22+0000\n"
+"POT-Creation-Date: 2023-11-13 10:59+0100\n"
 "PO-Revision-Date: 2020-10-11 06:30+0000\n"
 "Last-Translator: scootergrisen <scootergrisen@gmail.com>\n"
 "Language-Team: Danish <https://translate.fedoraproject.org/projects/rpm/"
@@ -79,14 +79,14 @@ msgstr "<spec-fil>"
 msgid "build through %conf (%prep, then %conf) from <specfile>"
 msgstr "opbyg gennem %build (%prep, så oversæt) ud fra <spec-fil>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr "opbyg gennem %build (%prep, så oversæt) ud fra <spec-fil>"
 
 msgid "check build dependencies <specfile>"
 msgstr ""
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr "opbyg gennem %install (%prep, %build, så installér) ud fra <spec-fil>"
@@ -116,7 +116,7 @@ msgstr ""
 msgid "<source package>"
 msgstr "<kildepakke>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr "opbyg gennem %build (%prep, så oversæt) ud fra <spec-fil>"
 
@@ -124,7 +124,7 @@ msgstr "opbyg gennem %build (%prep, så oversæt) ud fra <spec-fil>"
 msgid "check build dependencies <source package>"
 msgstr "opbyg binærpakke ud fra <kildepakke>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
@@ -156,14 +156,14 @@ msgstr "opbyg gennem %prep (udpak kilder og påfør lapper) ud fra <tararkiv>"
 msgid "<tarball>"
 msgstr "<tararkiv>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr "opbyg gennem %build (%prep, så oversæt) ud fra <tararkiv>"
 
 msgid "check build dependencies <tarball>"
 msgstr ""
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr "opbyg gennem %install (%prep, %build, så installér) ud fra <tararkiv>"
@@ -188,6 +188,7 @@ msgstr ""
 msgid "build binary package from <source package>"
 msgstr "opbyg binærpakke ud fra <kildepakke>"
 
+#, c-format
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
@@ -299,8 +300,9 @@ msgstr "initialisér database"
 msgid "rebuild database inverted lists from installed package headers"
 msgstr "genopbyg omvendte databaselister ud fra installerede pakkehoveder"
 
-msgid "verify database files"
-msgstr ""
+#, fuzzy
+msgid "verify database"
+msgstr "initialisér database"
 
 #, fuzzy
 msgid "salvage database"
@@ -1149,6 +1151,10 @@ msgstr ""
 msgid "Version required"
 msgstr ""
 
+#, fuzzy
+msgid "file trigger conditions must begin with '/'"
+msgstr "omrokeringer skal starte med et /"
+
 msgid "Only package names are allowed in Obsoletes"
 msgstr ""
 
@@ -1156,9 +1162,6 @@ msgid "It's not recommended to have unversioned Obsoletes"
 msgstr ""
 
 msgid "It's not recommended to use '>' in Obsoletes"
-msgstr ""
-
-msgid "Only absolute paths are allowed in file triggers"
 msgstr ""
 
 msgid "Trigger fired by the same package is already defined in spec file"
@@ -1198,10 +1201,6 @@ msgstr "linie %d: Anden %s\n"
 
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
-msgstr ""
-
-#, c-format
-msgid "line %d: file trigger condition must begin with '/': %s"
 msgstr ""
 
 #, c-format
@@ -1994,6 +1993,10 @@ msgstr "forespørg pakke(r), der udløses af pakken"
 msgid "rpm verify mode"
 msgstr "rpm verifikationstilstand"
 
+#, fuzzy
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr "forespørg/verificér pakke(r), der tilfredsstiller et krav"
+
 msgid "query/verify the package(s) which require a dependency"
 msgstr "forespørg/verificér pakke(r), der stiller et krav"
 
@@ -2587,12 +2590,6 @@ msgstr "Installerer %s\n"
 msgid "not an rpm package"
 msgstr ""
 
-msgid "illegal signature type"
-msgstr ""
-
-msgid "unsupported RPM package version"
-msgstr ""
-
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "læsning mislykkedes: %s (%d)\n"
@@ -2755,9 +2752,6 @@ msgstr ""
 
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
-msgstr ""
-
-msgid "No exec() called after fork() in lua scriptlet\n"
 msgstr ""
 
 #, c-format
@@ -3116,6 +3110,9 @@ msgstr ""
 
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
+msgstr ""
+
+msgid "runaway fork() in Lua script\n"
 msgstr ""
 
 #, c-format
