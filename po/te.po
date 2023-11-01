@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2023-03-09 11:22+0000\n"
+"POT-Creation-Date: 2023-11-13 10:59+0100\n"
 "PO-Revision-Date: 2020-03-23 08:39-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/rpm-team/rpm/language/te/)\n"
@@ -79,12 +79,14 @@ msgstr ""
 msgid "build through %conf (%prep, then %conf) from <specfile>"
 msgstr ""
 
+#, c-format
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr ""
 
 msgid "check build dependencies <specfile>"
 msgstr ""
 
+#, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr ""
@@ -114,12 +116,14 @@ msgstr ""
 msgid "<source package>"
 msgstr "<వనరు ప్యాకేజీ>"
 
+#, c-format
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr ""
 
 msgid "check build dependencies <source package>"
 msgstr ""
 
+#, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
@@ -150,12 +154,14 @@ msgstr ""
 msgid "<tarball>"
 msgstr ""
 
+#, c-format
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr ""
 
 msgid "check build dependencies <tarball>"
 msgstr ""
 
+#, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr ""
@@ -180,6 +186,7 @@ msgstr ""
 msgid "build binary package from <source package>"
 msgstr ""
 
+#, c-format
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
@@ -290,7 +297,8 @@ msgstr "డేటాబేసును ఆరంభించు"
 msgid "rebuild database inverted lists from installed package headers"
 msgstr ""
 
-msgid "verify database files"
+#, fuzzy
+msgid "verify database"
 msgstr "డేటాబేసు ఫైళ్ళను సరిచూడు"
 
 #, fuzzy
@@ -1141,6 +1149,9 @@ msgstr ""
 msgid "Version required"
 msgstr ""
 
+msgid "file trigger conditions must begin with '/'"
+msgstr ""
+
 msgid "Only package names are allowed in Obsoletes"
 msgstr ""
 
@@ -1148,9 +1159,6 @@ msgid "It's not recommended to have unversioned Obsoletes"
 msgstr ""
 
 msgid "It's not recommended to use '>' in Obsoletes"
-msgstr ""
-
-msgid "Only absolute paths are allowed in file triggers"
 msgstr ""
 
 msgid "Trigger fired by the same package is already defined in spec file"
@@ -1190,10 +1198,6 @@ msgstr ""
 
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
-msgstr ""
-
-#, c-format
-msgid "line %d: file trigger condition must begin with '/': %s"
 msgstr ""
 
 #, c-format
@@ -1973,6 +1977,9 @@ msgstr ""
 msgid "rpm verify mode"
 msgstr ""
 
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr ""
+
 msgid "query/verify the package(s) which require a dependency"
 msgstr ""
 
@@ -2566,12 +2573,6 @@ msgstr ""
 msgid "not an rpm package"
 msgstr "rpm ప్యాకేజీ కాదు"
 
-msgid "illegal signature type"
-msgstr ""
-
-msgid "unsupported RPM package version"
-msgstr ""
-
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr ""
@@ -2731,9 +2732,6 @@ msgstr ""
 
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
-msgstr ""
-
-msgid "No exec() called after fork() in lua scriptlet\n"
 msgstr ""
 
 #, c-format
@@ -3075,6 +3073,9 @@ msgstr ""
 
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
+msgstr ""
+
+msgid "runaway fork() in Lua script\n"
 msgstr ""
 
 #, c-format

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2023-03-09 11:22+0000\n"
+"POT-Creation-Date: 2023-11-13 10:59+0100\n"
 "PO-Revision-Date: 2020-03-23 08:37-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Catalan (http://www.transifex.com/rpm-team/rpm/language/ca/)\n"
@@ -86,7 +86,7 @@ msgstr ""
 "construeix mitjançant el %build (%prep, després compila) des del <fitxer "
 "spec>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr ""
 "construeix mitjançant el %build (%prep, després compila) des del <fitxer "
@@ -96,7 +96,7 @@ msgstr ""
 msgid "check build dependencies <specfile>"
 msgstr "Han fallat les dependències de la construcció:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr ""
@@ -131,7 +131,7 @@ msgstr ""
 msgid "<source package>"
 msgstr "<paquet de les fonts>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr ""
 "construeix mitjançant el %build (%prep, després compila) des del <paquet de "
@@ -143,7 +143,7 @@ msgstr ""
 "construeix el paquet dels binaris i de les fonts des del <paquet de les "
 "fonts>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
@@ -180,7 +180,7 @@ msgstr ""
 msgid "<tarball>"
 msgstr "<arxiu tar>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr ""
 "construeix mitjançant el %build (%prep, després compila) des de l'<arxiu tar>"
@@ -189,7 +189,7 @@ msgstr ""
 msgid "check build dependencies <tarball>"
 msgstr "Han fallat les dependències de la construcció:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr ""
@@ -217,6 +217,7 @@ msgstr ""
 msgid "build binary package from <source package>"
 msgstr "construeix el paquet dels binaris des del <paquet de les fonts>"
 
+#, c-format
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
@@ -334,7 +335,8 @@ msgstr ""
 "reconstrueix la base de dades de les llistes inverses des de les capçaleres "
 "dels paquets instal·lats"
 
-msgid "verify database files"
+#, fuzzy
+msgid "verify database"
 msgstr "verifica els fitxers de la base de dades"
 
 #, fuzzy
@@ -1227,6 +1229,10 @@ msgstr "dependència no vàlida"
 msgid "Version required"
 msgstr "Es requereix la versió"
 
+#, fuzzy
+msgid "file trigger conditions must begin with '/'"
+msgstr "els trasllats han de començar amb /"
+
 msgid "Only package names are allowed in Obsoletes"
 msgstr ""
 
@@ -1234,9 +1240,6 @@ msgid "It's not recommended to have unversioned Obsoletes"
 msgstr ""
 
 msgid "It's not recommended to use '>' in Obsoletes"
-msgstr ""
-
-msgid "Only absolute paths are allowed in file triggers"
 msgstr ""
 
 msgid "Trigger fired by the same package is already defined in spec file"
@@ -1277,10 +1280,6 @@ msgstr "línia %d: Segon %s\n"
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "línia %d: el script intern no està disponible: %s\n"
-
-#, c-format
-msgid "line %d: file trigger condition must begin with '/': %s"
-msgstr ""
 
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
@@ -2073,6 +2072,10 @@ msgstr "consulta els paquets exigits pel paquet"
 msgid "rpm verify mode"
 msgstr "mode rpm de verificació"
 
+#, fuzzy
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr "consulta o verifica els paquets que proporcionen una dependència"
+
 msgid "query/verify the package(s) which require a dependency"
 msgstr "consulta o verifica els paquets que requereixen una dependència"
 
@@ -2678,12 +2681,6 @@ msgstr "S'està instal·lant %s\n"
 msgid "not an rpm package"
 msgstr "no és un paquet rpm"
 
-msgid "illegal signature type"
-msgstr "tipus de signatura no vàlida"
-
-msgid "unsupported RPM package version"
-msgstr "versió no suportada d'empaquetatge RPM"
-
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "ha fallat la lectura: %s (%d)\n"
@@ -2850,9 +2847,6 @@ msgstr "contacteu amb %s\n"
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "No s'ha pogut obrir %s per a lectura: %m.\n"
-
-msgid "No exec() called after fork() in lua scriptlet\n"
-msgstr "No s'ha cridat cap exec() després del fork() a l'scriptlet de lua\n"
 
 #, c-format
 msgid "Unable to restore current directory: %m"
@@ -3215,6 +3209,10 @@ msgstr ""
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "sintaxi no vàlida en el scriptlet lua: %s\n"
 
+#, fuzzy
+msgid "runaway fork() in Lua script\n"
+msgstr "No s'ha cridat cap exec() després del fork() a l'scriptlet de lua\n"
+
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "sintaxi no vàlida en el script lua: %s\n"
@@ -3392,6 +3390,12 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#~ msgid "illegal signature type"
+#~ msgstr "tipus de signatura no vàlida"
+
+#~ msgid "unsupported RPM package version"
+#~ msgstr "versió no suportada d'empaquetatge RPM"
 
 #, c-format
 #~ msgid "%s: writeLead failed: %s\n"

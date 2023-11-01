@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2023-03-09 11:22+0000\n"
+"POT-Creation-Date: 2023-11-13 10:59+0100\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Portuguese (http://www.transifex.com/rpm-team/rpm/language/"
@@ -79,14 +79,14 @@ msgstr "<fichspec>"
 msgid "build through %conf (%prep, then %conf) from <specfile>"
 msgstr "criar através do %build (%prep e depois compilar) do <fichspec>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr "criar através do %build (%prep e depois compilar) do <fichspec>"
 
 msgid "check build dependencies <specfile>"
 msgstr ""
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr ""
@@ -118,7 +118,7 @@ msgstr ""
 msgid "<source package>"
 msgstr "<pacote de código>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr "criar através do %build (%prep e depois compilar) do <fichspec>"
 
@@ -126,7 +126,7 @@ msgstr "criar através do %build (%prep e depois compilar) do <fichspec>"
 msgid "check build dependencies <source package>"
 msgstr "criar o pacote binário a partir do <pacote de código>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
@@ -161,7 +161,7 @@ msgstr ""
 msgid "<tarball>"
 msgstr "<fichtar>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr "criar através do %build (%prep e depois compilar) do <fichtar>"
 
@@ -169,7 +169,7 @@ msgstr "criar através do %build (%prep e depois compilar) do <fichtar>"
 msgid "check build dependencies <tarball>"
 msgstr "não verificar as dependências de compilação"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr ""
@@ -196,6 +196,7 @@ msgstr "criar só o pacote com código-fonte a partir do <fichtar>"
 msgid "build binary package from <source package>"
 msgstr "criar o pacote binário a partir do <pacote de código>"
 
+#, c-format
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
@@ -310,7 +311,8 @@ msgstr ""
 "reconstruir as listas invertidas da base dados com os cabeçalhos dos pacotes "
 "instalados"
 
-msgid "verify database files"
+#, fuzzy
+msgid "verify database"
 msgstr "verificar ficheiros da base de dados"
 
 #, fuzzy
@@ -1168,6 +1170,10 @@ msgstr ""
 msgid "Version required"
 msgstr ""
 
+#, fuzzy
+msgid "file trigger conditions must begin with '/'"
+msgstr "os novos locais têm de começar por /"
+
 msgid "Only package names are allowed in Obsoletes"
 msgstr ""
 
@@ -1175,9 +1181,6 @@ msgid "It's not recommended to have unversioned Obsoletes"
 msgstr ""
 
 msgid "It's not recommended to use '>' in Obsoletes"
-msgstr ""
-
-msgid "Only absolute paths are allowed in file triggers"
 msgstr ""
 
 msgid "Trigger fired by the same package is already defined in spec file"
@@ -1217,10 +1220,6 @@ msgstr "linha %d: Segundo %s\n"
 
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
-msgstr ""
-
-#, c-format
-msgid "line %d: file trigger condition must begin with '/': %s"
 msgstr ""
 
 #, c-format
@@ -2012,6 +2011,10 @@ msgstr "pesquisar o(s) pacote(s) activados pelo pacote"
 msgid "rpm verify mode"
 msgstr "modo de verificação do rpm"
 
+#, fuzzy
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr "pesquisar/verificar o(s) pacote(s) que precisa duma dependência"
+
 msgid "query/verify the package(s) which require a dependency"
 msgstr "pesquisar/verificar o(s) pacote(s) que precisa duma dependência"
 
@@ -2613,12 +2616,6 @@ msgstr "A instalar o %s\n"
 msgid "not an rpm package"
 msgstr ""
 
-msgid "illegal signature type"
-msgstr ""
-
-msgid "unsupported RPM package version"
-msgstr ""
-
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "a leitura falhou: %s (%d)\n"
@@ -2781,9 +2778,6 @@ msgstr "Por favor contacte o %s\n"
 
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
-msgstr ""
-
-msgid "No exec() called after fork() in lua scriptlet\n"
 msgstr ""
 
 #, c-format
@@ -3143,6 +3137,9 @@ msgstr ""
 
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
+msgstr ""
+
+msgid "runaway fork() in Lua script\n"
 msgstr ""
 
 #, c-format

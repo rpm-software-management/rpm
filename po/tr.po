@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2023-03-09 11:22+0000\n"
+"POT-Creation-Date: 2023-11-13 10:59+0100\n"
 "PO-Revision-Date: 2021-05-06 19:02+0000\n"
 "Last-Translator: Oğuz Ersen <oguzersen@protonmail.com>\n"
 "Language-Team: Turkish <https://translate.fedoraproject.org/projects/rpm/"
@@ -88,7 +88,7 @@ msgstr ""
 "<spec dosyası>ndan %build adımı sayesinde oluşturulur (%prep, sonra da "
 "derlenir)"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr ""
 "<spec dosyası>ndan %build adımı sayesinde oluşturulur (%prep, sonra da "
@@ -98,7 +98,7 @@ msgstr ""
 msgid "check build dependencies <specfile>"
 msgstr "Başarısız oluşturma bağımlılıkları:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr ""
@@ -134,7 +134,7 @@ msgstr ""
 msgid "<source package>"
 msgstr "<kaynak paketi>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr ""
 "<kaynak paketi>nden %build adımı sayesinde oluşturulur (%prep, sonra da "
@@ -144,7 +144,7 @@ msgstr ""
 msgid "check build dependencies <source package>"
 msgstr "kaynak ve çalıştırılabilir paketleri <kaynak paketi>nden oluşturur"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
@@ -181,7 +181,7 @@ msgstr ""
 msgid "<tarball>"
 msgstr "<tar paketi>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr ""
 "<tar paketi>nden %build adımı sayesinde oluşturulur (%prep, sonra da "
@@ -191,7 +191,7 @@ msgstr ""
 msgid "check build dependencies <tarball>"
 msgstr "Başarısız oluşturma bağımlılıkları:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr ""
@@ -220,6 +220,7 @@ msgstr ""
 msgid "build binary package from <source package>"
 msgstr "çalıştırılabilir paketi <kaynak paketi>nden oluşturur"
 
+#, c-format
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
@@ -334,7 +335,8 @@ msgstr "veritabanını başlangıç durumuna getirir"
 msgid "rebuild database inverted lists from installed package headers"
 msgstr "kurulu paket başlıklarından veritabanı listelerini yeniden oluşturur"
 
-msgid "verify database files"
+#, fuzzy
+msgid "verify database"
 msgstr "veri tabanı dosyalarını doğrular"
 
 msgid "salvage database"
@@ -1205,6 +1207,10 @@ msgstr ""
 msgid "Version required"
 msgstr ""
 
+#, fuzzy
+msgid "file trigger conditions must begin with '/'"
+msgstr "yeniden konumlandırma işlemleri / ile başlamalı"
+
 msgid "Only package names are allowed in Obsoletes"
 msgstr ""
 
@@ -1212,9 +1218,6 @@ msgid "It's not recommended to have unversioned Obsoletes"
 msgstr ""
 
 msgid "It's not recommended to use '>' in Obsoletes"
-msgstr ""
-
-msgid "Only absolute paths are allowed in file triggers"
 msgstr ""
 
 msgid "Trigger fired by the same package is already defined in spec file"
@@ -1255,10 +1258,6 @@ msgstr "satır %d: %s saniye\n"
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "satır %d: desteklenmeyen içsel betik: %s\n"
-
-#, c-format
-msgid "line %d: file trigger condition must begin with '/': %s"
-msgstr ""
 
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
@@ -2045,6 +2044,10 @@ msgstr "paket tarafından tetiklenen paketleri sorgular"
 msgid "rpm verify mode"
 msgstr "rpm doğrulama kipi"
 
+#, fuzzy
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr "bir bağımlılığı sağlayan paket(ler)i sorgular/doğrular"
+
 msgid "query/verify the package(s) which require a dependency"
 msgstr "bir bağımlılık gerektiren paket(ler)i sorgular/doğrular"
 
@@ -2641,12 +2644,6 @@ msgstr "%s kuruluyor\n"
 msgid "not an rpm package"
 msgstr "rpm paketi değil"
 
-msgid "illegal signature type"
-msgstr ""
-
-msgid "unsupported RPM package version"
-msgstr "desteklenmeyen RPM paketi sürümü"
-
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "okuma başarısız: %s (%d)\n"
@@ -2806,9 +2803,6 @@ msgstr ""
 
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
-msgstr ""
-
-msgid "No exec() called after fork() in lua scriptlet\n"
 msgstr ""
 
 #, c-format
@@ -3155,6 +3149,9 @@ msgstr ""
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr ""
 
+msgid "runaway fork() in Lua script\n"
+msgstr ""
+
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr ""
@@ -3332,6 +3329,9 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#~ msgid "unsupported RPM package version"
+#~ msgstr "desteklenmeyen RPM paketi sürümü"
 
 #, c-format
 #~ msgid "%s: writeLead failed: %s\n"

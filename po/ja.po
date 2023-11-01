@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2023-03-09 11:22+0000\n"
+"POT-Creation-Date: 2023-11-13 10:59+0100\n"
 "PO-Revision-Date: 2021-12-08 21:16+0000\n"
 "Last-Translator: Tomohiro KATO <tomop@teamgedoh.net>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/rpm/"
@@ -86,7 +86,7 @@ msgstr "<specfile>"
 msgid "build through %conf (%prep, then %conf) from <specfile>"
 msgstr "<specfile> の %build (%prep とコンパイル) まで実行します"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr "<specfile> の %build (%prep とコンパイル) まで実行します"
 
@@ -94,7 +94,7 @@ msgstr "<specfile> の %build (%prep とコンパイル) まで実行します"
 msgid "check build dependencies <specfile>"
 msgstr "ビルド依存性の失敗:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr "<specfile> の %install (%prep, %build, インストール) まで実行します"
@@ -124,7 +124,7 @@ msgstr "<source package> から %prep (ソース展開と patch の適用) ま�
 msgid "<source package>"
 msgstr "<source package>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr "<source package> から %build (%prep, コンパイル) まで実行します"
 
@@ -132,7 +132,7 @@ msgstr "<source package> から %build (%prep, コンパイル) まで実行し�
 msgid "check build dependencies <source package>"
 msgstr "<source package> から ソースとバイナリパッケージを作成します"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
@@ -164,7 +164,7 @@ msgstr "<tarball> から %prep (ソース展開とパッチ適用) まで実行�
 msgid "<tarball>"
 msgstr "<tarball>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr "<tarball> から %build (%prep とコンパイル) まで実行します"
 
@@ -172,7 +172,7 @@ msgstr "<tarball> から %build (%prep とコンパイル) まで実行します
 msgid "check build dependencies <tarball>"
 msgstr "ビルド依存性の失敗:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr "<tarball> から %install (%prep, %build, インストール) まで実行します"
@@ -197,6 +197,7 @@ msgstr ""
 msgid "build binary package from <source package>"
 msgstr "<source package> を元に、 バイナリパッケージを作成します"
 
+#, c-format
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
@@ -312,7 +313,8 @@ msgstr ""
 "インストール済のパッケージヘッダーから、 データベースのインデックスを再構築し"
 "ます"
 
-msgid "verify database files"
+#, fuzzy
+msgid "verify database"
 msgstr "データベースの検証を行います"
 
 msgid "salvage database"
@@ -1182,6 +1184,10 @@ msgstr "無効な依存性"
 msgid "Version required"
 msgstr "バージョン要件"
 
+#, fuzzy
+msgid "file trigger conditions must begin with '/'"
+msgstr "%d 行目: ファイルトリガーは '/' で始まらなければなりません: %s"
+
 msgid "Only package names are allowed in Obsoletes"
 msgstr "Obsoletes にはパッケージ名だけが許可されています"
 
@@ -1190,9 +1196,6 @@ msgstr "バージョン指定のない Obsoletes は推奨されていません"
 
 msgid "It's not recommended to use '>' in Obsoletes"
 msgstr "'>' を使用した Obsoletes は推奨されていません"
-
-msgid "Only absolute paths are allowed in file triggers"
-msgstr "ファイルトリガーには絶対パスだけが許可されています"
 
 msgid "Trigger fired by the same package is already defined in spec file"
 msgstr "同一パッケージによるトリガーが spec ファイル中で既に定義されています"
@@ -1232,10 +1235,6 @@ msgstr "%d 行目: 2番目の %s\n"
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "%d 行目: 未サポートの内部スクリプト: %s\n"
-
-#, c-format
-msgid "line %d: file trigger condition must begin with '/': %s"
-msgstr "%d 行目: ファイルトリガーは '/' で始まらなければなりません: %s"
 
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
@@ -2037,6 +2036,10 @@ msgstr "パッケージによってトリガーされるパッケージを問い
 msgid "rpm verify mode"
 msgstr "RPM 検証モード"
 
+#, fuzzy
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr "置換を要求するパッケージの問い合わせ/検証を行います"
+
 msgid "query/verify the package(s) which require a dependency"
 msgstr "依存性を要求するパッケージの問い合わせ/検証を行います"
 
@@ -2641,12 +2644,6 @@ msgstr "%s をインストール中です\n"
 msgid "not an rpm package"
 msgstr "rpm パッケージではありません"
 
-msgid "illegal signature type"
-msgstr "署名の種類が正しくありません"
-
-msgid "unsupported RPM package version"
-msgstr "サポートしていない RPM パッケージのバージョンです"
-
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "読み込みの失敗: %s (%d)\n"
@@ -2813,9 +2810,6 @@ msgstr "%s へ連絡してください\n"
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "%s を読み込み用に開けません: %m。\n"
-
-msgid "No exec() called after fork() in lua scriptlet\n"
-msgstr "lua スクリプト中で fork() の後に exec() が呼ばれていません\n"
 
 #, c-format
 msgid "Unable to restore current directory: %m"
@@ -3163,6 +3157,10 @@ msgstr "ログへの書き込みエラーが発生しました"
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "lua スクリプトで無効な文法がありました: %s\n"
 
+#, fuzzy
+msgid "runaway fork() in Lua script\n"
+msgstr "lua スクリプト中で fork() の後に exec() が呼ばれていません\n"
+
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "lua スクリプトで無効な文法がありました: %s\n"
@@ -3340,6 +3338,15 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#~ msgid "Only absolute paths are allowed in file triggers"
+#~ msgstr "ファイルトリガーには絶対パスだけが許可されています"
+
+#~ msgid "illegal signature type"
+#~ msgstr "署名の種類が正しくありません"
+
+#~ msgid "unsupported RPM package version"
+#~ msgstr "サポートしていない RPM パッケージのバージョンです"
 
 #, c-format
 #~ msgid "%s: writeLead failed: %s\n"

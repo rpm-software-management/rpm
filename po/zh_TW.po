@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2023-03-09 11:22+0000\n"
+"POT-Creation-Date: 2023-11-13 10:59+0100\n"
 "PO-Revision-Date: 2020-08-29 08:29+0000\n"
 "Last-Translator: Yi-Jyun Pan <pan93412@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://translate.fedoraproject.org/"
@@ -85,7 +85,7 @@ msgstr "<specfile>"
 msgid "build through %conf (%prep, then %conf) from <specfile>"
 msgstr "從 <specfile> 透過 %build (%prep，然後組建) 來組建"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr "從 <specfile> 透過 %build (%prep，然後組建) 來組建"
 
@@ -93,7 +93,7 @@ msgstr "從 <specfile> 透過 %build (%prep，然後組建) 來組建"
 msgid "check build dependencies <specfile>"
 msgstr "依賴關係組建失敗：\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr "從 <specfile> 透過 %install (%prep，%build，然後安裝) 來組建"
@@ -123,7 +123,7 @@ msgstr "從 <source package> 透過 %prep 組建（解開來源和套用補丁�
 msgid "<source package>"
 msgstr "<source package>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr "從 <source package> 透過 %build 組建（%prep，再組建）"
 
@@ -131,7 +131,7 @@ msgstr "從 <source package> 透過 %build 組建（%prep，再組建）"
 msgid "check build dependencies <source package>"
 msgstr "從 <source package> 組建來源與二進位軟體包"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
@@ -162,7 +162,7 @@ msgstr "從 <tarball> 透過 %prep (解包源碼和套用修補檔) 來組建"
 msgid "<tarball>"
 msgstr "<tarball>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr "從 <tarball> 透過 %build (%prep，然後組建) 來組建"
 
@@ -170,7 +170,7 @@ msgstr "從 <tarball> 透過 %build (%prep，然後組建) 來組建"
 msgid "check build dependencies <tarball>"
 msgstr "依賴關係組建失敗：\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr "從 <tarball> 透過 %install (%prep，%build，然後安裝) 來組建"
@@ -195,6 +195,7 @@ msgstr "只從 <tarball> 組建來源軟體包 - 計算動態組建需求"
 msgid "build binary package from <source package>"
 msgstr "從 <source package> 中組建二進位軟體包"
 
+#, c-format
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr "從 <source package> 透過 %install (%prep，%build，然後安裝) 來組建"
@@ -305,7 +306,8 @@ msgstr "初始化資料庫"
 msgid "rebuild database inverted lists from installed package headers"
 msgstr "從安裝的軟體包表頭重建資料庫的反相清單"
 
-msgid "verify database files"
+#, fuzzy
+msgid "verify database"
 msgstr "核驗資料庫檔案"
 
 msgid "salvage database"
@@ -1162,6 +1164,10 @@ msgstr "無效的依賴關係"
 msgid "Version required"
 msgstr "需要版本"
 
+#, fuzzy
+msgid "file trigger conditions must begin with '/'"
+msgstr "第 %d 列：檔案觸發器條件必須以「/」為開頭：%s"
+
 msgid "Only package names are allowed in Obsoletes"
 msgstr "「棄用」中只允許軟體包名稱"
 
@@ -1170,9 +1176,6 @@ msgstr "不建議加入未標上版本的「棄用」"
 
 msgid "It's not recommended to use '>' in Obsoletes"
 msgstr "不建議在「棄用」中使用「>」"
-
-msgid "Only absolute paths are allowed in file triggers"
-msgstr "檔案觸發器中只允許絕對路徑"
 
 msgid "Trigger fired by the same package is already defined in spec file"
 msgstr "觸發器被 spec 檔案內已經指定好的軟體包 fired"
@@ -1212,10 +1215,6 @@ msgstr "列 %d：第二個 %s\n"
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "列 %d：不支援的內部指令小稿：%s\n"
-
-#, c-format
-msgid "line %d: file trigger condition must begin with '/': %s"
-msgstr "第 %d 列：檔案觸發器條件必須以「/」為開頭：%s"
 
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
@@ -2001,6 +2000,10 @@ msgstr "查詢軟體包所觸發的軟體包"
 msgid "rpm verify mode"
 msgstr "rpm 核驗模式"
 
+#, fuzzy
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr "查詢或核驗棄用某個依賴關係的軟體包"
+
 msgid "query/verify the package(s) which require a dependency"
 msgstr "查詢/核驗需要某些依賴軟體包的軟體包"
 
@@ -2595,12 +2598,6 @@ msgstr "正在安裝 %s\n"
 msgid "not an rpm package"
 msgstr "並非 rpm 軟體包"
 
-msgid "illegal signature type"
-msgstr "無效的簽章類型"
-
-msgid "unsupported RPM package version"
-msgstr "未支援的 RPM 軟體包版本"
-
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "讀取失敗：%s (%d)\n"
@@ -2761,9 +2758,6 @@ msgstr "請聯絡 %s\n"
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "無法開啟 %s 以供讀取：%m。\n"
-
-msgid "No exec() called after fork() in lua scriptlet\n"
-msgstr "Lua 指令小稿 沒有任何 exec() 在 fork() 之後呼叫\n"
 
 #, c-format
 msgid "Unable to restore current directory: %m"
@@ -3109,6 +3103,10 @@ msgstr "寫入至紀錄檔時發生錯誤"
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "Lua 指令小稿 包含無效的語法：%s\n"
 
+#, fuzzy
+msgid "runaway fork() in Lua script\n"
+msgstr "Lua 指令小稿 沒有任何 exec() 在 fork() 之後呼叫\n"
+
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "Lua 指令小稿包含無效的語法：%s\n"
@@ -3286,6 +3284,15 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#~ msgid "Only absolute paths are allowed in file triggers"
+#~ msgstr "檔案觸發器中只允許絕對路徑"
+
+#~ msgid "illegal signature type"
+#~ msgstr "無效的簽章類型"
+
+#~ msgid "unsupported RPM package version"
+#~ msgstr "未支援的 RPM 軟體包版本"
 
 #, c-format
 #~ msgid "%s: writeLead failed: %s\n"

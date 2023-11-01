@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2023-03-09 11:22+0000\n"
+"POT-Creation-Date: 2023-11-13 10:59+0100\n"
 "PO-Revision-Date: 2020-09-02 13:29+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/rpm/"
@@ -82,7 +82,7 @@ msgstr "<specfil>"
 msgid "build through %conf (%prep, then %conf) from <specfile>"
 msgstr "bygg till och med %build (%prep, kompilera sedan) från <specfil>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr "bygg till och med %build (%prep, kompilera sedan) från <specfil>"
 
@@ -90,7 +90,7 @@ msgstr "bygg till och med %build (%prep, kompilera sedan) från <specfil>"
 msgid "check build dependencies <specfile>"
 msgstr "Ouppfyllda byggberoenden:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr ""
@@ -123,7 +123,7 @@ msgstr ""
 msgid "<source package>"
 msgstr "<källpaket>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr "bygg till och med %build (%prep, kompilera sedan) från <källpaket>"
 
@@ -131,7 +131,7 @@ msgstr "bygg till och med %build (%prep, kompilera sedan) från <källpaket>"
 msgid "check build dependencies <source package>"
 msgstr "bygg käll- och binärpaket från <källpaket>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
@@ -166,7 +166,7 @@ msgstr ""
 msgid "<tarball>"
 msgstr "<tar-arkiv>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr "bygg till och med %build (%prep, kompilera sedan) från <tar-arkiv>"
 
@@ -174,7 +174,7 @@ msgstr "bygg till och med %build (%prep, kompilera sedan) från <tar-arkiv>"
 msgid "check build dependencies <tarball>"
 msgstr "Ouppfyllda byggberoenden:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr ""
@@ -201,6 +201,7 @@ msgstr ""
 msgid "build binary package from <source package>"
 msgstr "bygg binärpaket från <källpaket>"
 
+#, c-format
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
@@ -312,7 +313,8 @@ msgstr "initiera databas"
 msgid "rebuild database inverted lists from installed package headers"
 msgstr "bygg om databasens inverterade listor från installerade pakets huvuden"
 
-msgid "verify database files"
+#, fuzzy
+msgid "verify database"
 msgstr "verifiera databasfiler"
 
 msgid "salvage database"
@@ -1178,6 +1180,10 @@ msgstr "ogiltigt beroende"
 msgid "Version required"
 msgstr "Version krävs"
 
+#, fuzzy
+msgid "file trigger conditions must begin with '/'"
+msgstr "rad %d: filtriggervillkor måste börja med ”/”: %s"
+
 msgid "Only package names are allowed in Obsoletes"
 msgstr "Endast paketnamn är tillåta i Obsoletes"
 
@@ -1186,9 +1192,6 @@ msgstr "Det rekommenderas inte att ha versionslösa Obsoletes"
 
 msgid "It's not recommended to use '>' in Obsoletes"
 msgstr "Det rekommenderas inte att använda ”>” i Obsoletes"
-
-msgid "Only absolute paths are allowed in file triggers"
-msgstr "Endast absoluta sökvägar är tillåtna i filutlösare"
 
 msgid "Trigger fired by the same package is already defined in spec file"
 msgstr "En utlösare startad av samma paket är redan definierad i spec-filen"
@@ -1228,10 +1231,6 @@ msgstr "rad %d: En andra %s\n"
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "rad %d: ej stött internt skript: %s\n"
-
-#, c-format
-msgid "line %d: file trigger condition must begin with '/': %s"
-msgstr "rad %d: filtriggervillkor måste börja med ”/”: %s"
 
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
@@ -2025,6 +2024,10 @@ msgstr "fråga paket utlösta av paketet"
 msgid "rpm verify mode"
 msgstr "rpm verifieringsläge"
 
+#, fuzzy
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr "fråga/verifiera paket som fasar ut ett beroende"
+
 msgid "query/verify the package(s) which require a dependency"
 msgstr "fråga/verifiera paket som behöver ett beroende"
 
@@ -2620,12 +2623,6 @@ msgstr "Installerar %s\n"
 msgid "not an rpm package"
 msgstr "inte ett rpm-paket"
 
-msgid "illegal signature type"
-msgstr "ogiltig signaturtyp"
-
-msgid "unsupported RPM package version"
-msgstr "ej stödd RPM-paketversion"
-
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "läsning misslyckades: %s (%d)\n"
@@ -2789,9 +2786,6 @@ msgstr "Var god kontakta %s\n"
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Kan inte öppna %s för läsning: %m.\n"
-
-msgid "No exec() called after fork() in lua scriptlet\n"
-msgstr "Ingen exec() anropad efter fork() i lua-skript\n"
 
 #, c-format
 msgid "Unable to restore current directory: %m"
@@ -3139,6 +3133,10 @@ msgstr "Fel när det skrevs till loggen"
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "felaktig syntax i lua-skript: %s\n"
 
+#, fuzzy
+msgid "runaway fork() in Lua script\n"
+msgstr "Ingen exec() anropad efter fork() i lua-skript\n"
+
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "felaktig syntax i lua-skript: %s\n"
@@ -3316,6 +3314,15 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#~ msgid "Only absolute paths are allowed in file triggers"
+#~ msgstr "Endast absoluta sökvägar är tillåtna i filutlösare"
+
+#~ msgid "illegal signature type"
+#~ msgstr "ogiltig signaturtyp"
+
+#~ msgid "unsupported RPM package version"
+#~ msgstr "ej stödd RPM-paketversion"
 
 #, c-format
 #~ msgid "%s: writeLead failed: %s\n"

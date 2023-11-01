@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2023-03-09 11:22+0000\n"
+"POT-Creation-Date: 2023-11-13 10:59+0100\n"
 "PO-Revision-Date: 2021-03-27 10:01+0000\n"
 "Last-Translator: Guillaume Jacob <abun.lp@gmail.com>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/rpm/"
@@ -90,7 +90,7 @@ msgstr ""
 "construction jusqu'à la section %build (%prep, et compilation) du "
 "<fichier_spec>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr ""
 "construction jusqu'à la section %build (%prep, et compilation) du "
@@ -100,7 +100,7 @@ msgstr ""
 msgid "check build dependencies <specfile>"
 msgstr "Dépendances de construction manquantes :\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr ""
@@ -132,7 +132,7 @@ msgstr ""
 msgid "<source package>"
 msgstr "<paquet source>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr ""
 "construction jusqu'à la section %build (%prep, et compilation) du "
@@ -142,7 +142,7 @@ msgstr ""
 msgid "check build dependencies <source package>"
 msgstr "construire le paquet binaire à partir du <paquet source>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
@@ -177,7 +177,7 @@ msgstr ""
 msgid "<tarball>"
 msgstr "<tarball>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr ""
 "construire jusqu'à la section %build (%prep, puis compilation) à partir du "
@@ -187,7 +187,7 @@ msgstr ""
 msgid "check build dependencies <tarball>"
 msgstr "Dépendances de construction manquantes :\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr ""
@@ -214,6 +214,7 @@ msgstr ""
 msgid "build binary package from <source package>"
 msgstr "construire le paquet binaire à partir du <paquet source>"
 
+#, c-format
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
@@ -332,7 +333,8 @@ msgstr ""
 "refaire les listes inversées de la base de données à partir des entêtes des "
 "paquets installés"
 
-msgid "verify database files"
+#, fuzzy
+msgid "verify database"
 msgstr "vérifier les fichiers de la base de données"
 
 #, fuzzy
@@ -1207,6 +1209,10 @@ msgstr "dépendance invalide"
 msgid "Version required"
 msgstr "Version requise"
 
+#, fuzzy
+msgid "file trigger conditions must begin with '/'"
+msgstr "les relogements doivent commencer par un /"
+
 msgid "Only package names are allowed in Obsoletes"
 msgstr ""
 
@@ -1214,9 +1220,6 @@ msgid "It's not recommended to have unversioned Obsoletes"
 msgstr ""
 
 msgid "It's not recommended to use '>' in Obsoletes"
-msgstr ""
-
-msgid "Only absolute paths are allowed in file triggers"
 msgstr ""
 
 msgid "Trigger fired by the same package is already defined in spec file"
@@ -1257,10 +1260,6 @@ msgstr "ligne %d : deuxième %s\n"
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "ligne %d : script interne non pris en charge :%s\n"
-
-#, c-format
-msgid "line %d: file trigger condition must begin with '/': %s"
-msgstr ""
 
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
@@ -2063,6 +2062,10 @@ msgstr "questionner le(s) paquet(s) surveillé(s) par le paquet"
 msgid "rpm verify mode"
 msgstr "mode de vérification de rpm"
 
+#, fuzzy
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr "vérifier/demander le(s) paquet(s) qui fourni(ssen)t une dépendance"
+
 msgid "query/verify the package(s) which require a dependency"
 msgstr "vérifier/demander le(s) paquet(s) qui requier(en)t une dépendance"
 
@@ -2670,12 +2673,6 @@ msgstr "Installation de %s\n"
 msgid "not an rpm package"
 msgstr "pas un paquet rpm"
 
-msgid "illegal signature type"
-msgstr "type de signature illégale"
-
-msgid "unsupported RPM package version"
-msgstr "pas de prise en charge de la version du paquet RPM"
-
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "échec de lecture : %s (%d)\n"
@@ -2845,9 +2842,6 @@ msgid "Unable to open %s for reading: %m.\n"
 msgstr ""
 "Impossible d'ouvrir %s en lecture : %m.\n"
 "\n"
-
-msgid "No exec() called after fork() in lua scriptlet\n"
-msgstr ""
 
 #, c-format
 msgid "Unable to restore current directory: %m"
@@ -3210,6 +3204,9 @@ msgstr ""
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "syntaxe invalide dans le scriptlet lua : %s\n"
 
+msgid "runaway fork() in Lua script\n"
+msgstr ""
+
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "syntaxe invalide dans le script lua : %s\n"
@@ -3387,6 +3384,12 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#~ msgid "illegal signature type"
+#~ msgstr "type de signature illégale"
+
+#~ msgid "unsupported RPM package version"
+#~ msgstr "pas de prise en charge de la version du paquet RPM"
 
 #, c-format
 #~ msgid "%s: writeLead failed: %s\n"

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2023-03-09 11:22+0000\n"
+"POT-Creation-Date: 2023-11-13 10:59+0100\n"
 "PO-Revision-Date: 2021-08-25 11:04+0000\n"
 "Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/rpm/"
@@ -80,7 +80,7 @@ msgstr "<spec-tiedosto>"
 msgid "build through %conf (%prep, then %conf) from <specfile>"
 msgstr "käännä %build-osioon asti (%prep ja %build) spec-tiedostosta"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr "käännä %build-osioon asti (%prep ja %build) spec-tiedostosta"
 
@@ -88,7 +88,7 @@ msgstr "käännä %build-osioon asti (%prep ja %build) spec-tiedostosta"
 msgid "check build dependencies <specfile>"
 msgstr "Puuttuvia käännösriippuvuuksia:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr ""
@@ -122,7 +122,7 @@ msgstr ""
 msgid "<source package>"
 msgstr "<lähdepaketti>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr "rakenna %build:n kautta (%prep, sitten koota) <lähdepaketti>:sta"
 
@@ -130,7 +130,7 @@ msgstr "rakenna %build:n kautta (%prep, sitten koota) <lähdepaketti>:sta"
 msgid "check build dependencies <source package>"
 msgstr "rakenna lähde - ja binaaripaketit <lähdepaketti>:sta"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
@@ -162,7 +162,7 @@ msgstr "käännä %prep-osioon asti tar-tiedostosta"
 msgid "<tarball>"
 msgstr "<tar-tiedosto>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr "käännä %build-osioon asti (%prep ja %build) tar-tiedostosta"
 
@@ -170,7 +170,7 @@ msgstr "käännä %build-osioon asti (%prep ja %build) tar-tiedostosta"
 msgid "check build dependencies <tarball>"
 msgstr "Puuttuvia käännösriippuvuuksia:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr ""
@@ -197,6 +197,7 @@ msgstr ""
 msgid "build binary package from <source package>"
 msgstr "käännä binääripaketti lähdepaketista"
 
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr "käännä %install-osioon asti (%prep, %build ja %install) lähdepaketista"
@@ -309,7 +310,8 @@ msgstr "alusta tietokanta"
 msgid "rebuild database inverted lists from installed package headers"
 msgstr "rakenna tietokanta uudestaan asennettujen pakettien tiedoista"
 
-msgid "verify database files"
+#, fuzzy
+msgid "verify database"
 msgstr "tarkista tietokanta"
 
 msgid "salvage database"
@@ -1180,6 +1182,10 @@ msgstr "virheellinen riippuvuus"
 msgid "Version required"
 msgstr "Versio pakollinen"
 
+#, fuzzy
+msgid "file trigger conditions must begin with '/'"
+msgstr "rivi %d: tiedoston laukaisuehdon on alettava merkillä '/': %s"
+
 msgid "Only package names are allowed in Obsoletes"
 msgstr "Ainoastaan pakettien nimet ovat sallittuja Obsoletes:ssa"
 
@@ -1188,9 +1194,6 @@ msgstr "Ei ole suositeltavaa käyttää versiottomia Obsoletes:ja"
 
 msgid "It's not recommended to use '>' in Obsoletes"
 msgstr "Vanhentumisessa ei ole suositeltavaa käyttää '>' merkkiä"
-
-msgid "Only absolute paths are allowed in file triggers"
-msgstr "Vain absoluuttiset polut ovat sallittuja tiedoston laukaisimissa"
 
 msgid "Trigger fired by the same package is already defined in spec file"
 msgstr "Saman paketin laukaisema laukaisin on jo määritelty spec-tiedostossa"
@@ -1231,10 +1234,6 @@ msgstr "rivi %d: toinen %s\n"
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "rivi %d: sisäinen komentosarja, jota ei tueta: %s\n"
-
-#, c-format
-msgid "line %d: file trigger condition must begin with '/': %s"
-msgstr "rivi %d: tiedoston laukaisuehdon on alettava merkillä '/': %s"
 
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
@@ -2032,6 +2031,10 @@ msgstr "kysy paketin käynnistämistä paketeista"
 msgid "rpm verify mode"
 msgstr "rpm tarkistustila"
 
+#, fuzzy
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr "kysele/tarkista paketteja, jotka vanhentavat jotakin riippuvuutta"
+
 msgid "query/verify the package(s) which require a dependency"
 msgstr "kysele/tarkista paketteja, jotka vaativat ominaisuutta"
 
@@ -2633,12 +2636,6 @@ msgstr "Asennetaan %s\n"
 msgid "not an rpm package"
 msgstr "ei ole RPM paketti"
 
-msgid "illegal signature type"
-msgstr "laiton allekirjoitustyyppi"
-
-msgid "unsupported RPM package version"
-msgstr "RPM pakettiversio ei ole tuettu"
-
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "luku epäonnistui: %s (%d)\n"
@@ -2804,9 +2801,6 @@ msgstr "Ota yhteyttä %s\n"
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "En voi avata %s luettavaksi: %m.\n"
-
-msgid "No exec() called after fork() in lua scriptlet\n"
-msgstr "exec() ei kutsuttu fork() jälkeen lua-komentosarjassa\n"
 
 #, c-format
 msgid "Unable to restore current directory: %m"
@@ -3155,6 +3149,10 @@ msgstr "Virhe kirjoitettaessa lokiin"
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "virheellinen syntaksi lua-skriptissä: %s\n"
 
+#, fuzzy
+msgid "runaway fork() in Lua script\n"
+msgstr "exec() ei kutsuttu fork() jälkeen lua-komentosarjassa\n"
+
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "virheellinen syntaksi lua-skriptissä: %s\n"
@@ -3332,6 +3330,15 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#~ msgid "Only absolute paths are allowed in file triggers"
+#~ msgstr "Vain absoluuttiset polut ovat sallittuja tiedoston laukaisimissa"
+
+#~ msgid "illegal signature type"
+#~ msgstr "laiton allekirjoitustyyppi"
+
+#~ msgid "unsupported RPM package version"
+#~ msgstr "RPM pakettiversio ei ole tuettu"
 
 #, c-format
 #~ msgid "%s: writeLead failed: %s\n"

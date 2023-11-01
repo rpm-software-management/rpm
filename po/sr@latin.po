@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2023-03-09 11:22+0000\n"
+"POT-Creation-Date: 2023-11-13 10:59+0100\n"
 "PO-Revision-Date: 2017-08-10 07:39+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Serbian (Latin) (http://www.transifex.com/rpm-team/rpm/"
@@ -79,7 +79,7 @@ msgstr "<specfile>"
 msgid "build through %conf (%prep, then %conf) from <specfile>"
 msgstr "napravi kroz %build (%prep, onda kompiliraj) iz <specfile>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr "napravi kroz %build (%prep, onda kompiliraj) iz <specfile>"
 
@@ -87,7 +87,7 @@ msgstr "napravi kroz %build (%prep, onda kompiliraj) iz <specfile>"
 msgid "check build dependencies <specfile>"
 msgstr "Neuspelo pravljenje zavisnosti:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr "napravi kroz %install (%prep, %build, zatim instaliraj) iz <specfile>"
@@ -118,7 +118,7 @@ msgstr ""
 msgid "<source package>"
 msgstr "<source package>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr "napravi kroz %build (%prep, onda kompiliraj) iz <specfile>"
 
@@ -126,7 +126,7 @@ msgstr "napravi kroz %build (%prep, onda kompiliraj) iz <specfile>"
 msgid "check build dependencies <source package>"
 msgstr "napravi binarni paket iz <source package>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
@@ -160,7 +160,7 @@ msgstr ""
 msgid "<tarball>"
 msgstr "<tarball>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr "napravi kroz %build (%prep, onda kompiliraj) iz <tarball>"
 
@@ -168,7 +168,7 @@ msgstr "napravi kroz %build (%prep, onda kompiliraj) iz <tarball>"
 msgid "check build dependencies <tarball>"
 msgstr "Neuspelo pravljenje zavisnosti:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr "napravi kroz %install (%prep, %build, onda instaliraj) iz <tarball>"
@@ -194,6 +194,7 @@ msgstr "napravi izvorne pakete samo iz <tarball>"
 msgid "build binary package from <source package>"
 msgstr "napravi binarni paket iz <source package>"
 
+#, c-format
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
@@ -307,7 +308,8 @@ msgstr ""
 "ponovo napravi obrnute spiskove baze podataka iz zaglavlja instaliranih "
 "paketa"
 
-msgid "verify database files"
+#, fuzzy
+msgid "verify database"
 msgstr "provera datoteka baze podataka"
 
 #, fuzzy
@@ -1168,6 +1170,10 @@ msgstr ""
 msgid "Version required"
 msgstr ""
 
+#, fuzzy
+msgid "file trigger conditions must begin with '/'"
+msgstr "premeštanja moraju početi sa /"
+
 msgid "Only package names are allowed in Obsoletes"
 msgstr ""
 
@@ -1175,9 +1181,6 @@ msgid "It's not recommended to have unversioned Obsoletes"
 msgstr ""
 
 msgid "It's not recommended to use '>' in Obsoletes"
-msgstr ""
-
-msgid "Only absolute paths are allowed in file triggers"
 msgstr ""
 
 msgid "Trigger fired by the same package is already defined in spec file"
@@ -1218,10 +1221,6 @@ msgstr "red %d: Drugi %s\n"
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "red %d: nepodržana interna skripta: %s\n"
-
-#, c-format
-msgid "line %d: file trigger condition must begin with '/': %s"
-msgstr ""
 
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
@@ -2012,6 +2011,10 @@ msgstr "ispitaj paket(e) koje je aktivirao ovaj paket"
 msgid "rpm verify mode"
 msgstr "režim rpm provere"
 
+#, fuzzy
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr "ispitaj/proveri paket(e) koji zahtevaju zavisnosti"
+
 msgid "query/verify the package(s) which require a dependency"
 msgstr "ispitaj/proveri paket(e) koji zahtevaju zavisnosti"
 
@@ -2615,12 +2618,6 @@ msgstr "Instaliram %s\n"
 msgid "not an rpm package"
 msgstr "nije rpm paket"
 
-msgid "illegal signature type"
-msgstr "nepravilan tip potpisa"
-
-msgid "unsupported RPM package version"
-msgstr "nepodržana verzija RPM paketa"
-
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "neuspelo čitanje: %s (%d)\n"
@@ -2782,9 +2779,6 @@ msgstr "Molim vas kontaktirajte %s\n"
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Ne mogu da otvorim %s za čitanje: %m.\n"
-
-msgid "No exec() called after fork() in lua scriptlet\n"
-msgstr ""
 
 #, c-format
 msgid "Unable to restore current directory: %m"
@@ -3146,6 +3140,9 @@ msgstr ""
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "nepravilna sintaksa u lua skriptici: %s\n"
 
+msgid "runaway fork() in Lua script\n"
+msgstr ""
+
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "nepravilna sintaksa u lua skripti: %s\n"
@@ -3323,6 +3320,12 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#~ msgid "illegal signature type"
+#~ msgstr "nepravilan tip potpisa"
+
+#~ msgid "unsupported RPM package version"
+#~ msgstr "nepodržana verzija RPM paketa"
 
 #, c-format
 #~ msgid "%s: writeLead failed: %s\n"

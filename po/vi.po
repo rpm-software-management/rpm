@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2023-03-09 11:22+0000\n"
+"POT-Creation-Date: 2023-11-13 10:59+0100\n"
 "PO-Revision-Date: 2020-10-01 10:30+0000\n"
 "Last-Translator: Phu Hung Nguyen <phuhnguyen@disroot.org>\n"
 "Language-Team: Vietnamese <https://translate.fedoraproject.org/projects/rpm/"
@@ -85,7 +85,7 @@ msgstr "<tệp spec>"
 msgid "build through %conf (%prep, then %conf) from <specfile>"
 msgstr "xây qua %build (%prep, rồi biên dịch) từ <tệp spec>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr "xây qua %build (%prep, rồi biên dịch) từ <tệp spec>"
 
@@ -93,7 +93,7 @@ msgstr "xây qua %build (%prep, rồi biên dịch) từ <tệp spec>"
 msgid "check build dependencies <specfile>"
 msgstr "Gặp lỗi khi xây dựng các thành phần phụ thuộc:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr "xây qua %install (%prep, %build, rồi cài đặt) từ <tệp spec>"
@@ -125,7 +125,7 @@ msgstr ""
 msgid "<source package>"
 msgstr "<gói nguồn>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr "xây qua %build (%prep, rồi biên dịch) từ <gói nguồn>"
 
@@ -133,7 +133,7 @@ msgstr "xây qua %build (%prep, rồi biên dịch) từ <gói nguồn>"
 msgid "check build dependencies <source package>"
 msgstr "xây các gói nguồn và nhị phân từ <gói nguồn>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
@@ -165,7 +165,7 @@ msgstr "xây qua %prep (mở gói các nguồn và áp dụng các miếng vá) 
 msgid "<tarball>"
 msgstr "<kho tar>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr "xây qua %build (%prep, rồi biên dịch) từ <kho tar>"
 
@@ -173,7 +173,7 @@ msgstr "xây qua %build (%prep, rồi biên dịch) từ <kho tar>"
 msgid "check build dependencies <tarball>"
 msgstr "Gặp lỗi khi xây dựng các thành phần phụ thuộc:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr "xây qua %install (%prep, %build, rồi cài đặt) từ <kho tar>"
@@ -199,6 +199,7 @@ msgstr ""
 msgid "build binary package from <source package>"
 msgstr "xây gói nhị phân từ <gói nguồn>"
 
+#, c-format
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr "xây qua %install (%prep, %build, rồi cài đặt) từ <gói nguồn>"
@@ -311,7 +312,8 @@ msgstr ""
 "xây dựng lại các danh sách nghịch chuyển cơ sở dữ liệu từ các phần đầu gói "
 "được cài đặt"
 
-msgid "verify database files"
+#, fuzzy
+msgid "verify database"
 msgstr "thẩm tra các tập tin cơ sở dữ liệu"
 
 #, fuzzy
@@ -1200,6 +1202,10 @@ msgstr "phần phụ thuộc không hợp lệ"
 msgid "Version required"
 msgstr "Yêu cầu phiên bản"
 
+#, fuzzy
+msgid "file trigger conditions must begin with '/'"
+msgstr "sự tái định vị phải bắt đầu với dấu sổ chéo “/”"
+
 msgid "Only package names are allowed in Obsoletes"
 msgstr ""
 
@@ -1208,9 +1214,6 @@ msgstr ""
 
 msgid "It's not recommended to use '>' in Obsoletes"
 msgstr ""
-
-msgid "Only absolute paths are allowed in file triggers"
-msgstr "Chỉ có đường dẫn tuyệt đối là cho phép trong bẫy tập tin"
 
 msgid "Trigger fired by the same package is already defined in spec file"
 msgstr "Bẫy bị kích sập bởi cùng một gói đã sẵn được định nghĩa trong tập tin "
@@ -1251,10 +1254,6 @@ msgstr "dòng %d: %s thứ hai\n"
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "dòng %d: văn lệnh nội bộ không được hỗ trợ: %s\n"
-
-#, c-format
-msgid "line %d: file trigger condition must begin with '/': %s"
-msgstr ""
 
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
@@ -2048,6 +2047,10 @@ msgstr "truy vấn (các) gói được gói kích hoạt"
 msgid "rpm verify mode"
 msgstr "chế độ thẩm tra RPM"
 
+#, fuzzy
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr "truy vấn/thẩm tra (các) gói mà thỏa một quan hệ phụ thuộc"
+
 msgid "query/verify the package(s) which require a dependency"
 msgstr "truy vấn/thẩm tra (các) gói mà cần thiết quan hệ phụ thuộc"
 
@@ -2650,12 +2653,6 @@ msgstr "Đang cài đặt %s\n"
 msgid "not an rpm package"
 msgstr "không phải là một gói rpm"
 
-msgid "illegal signature type"
-msgstr "kiểu chữ kí không hợp lệ"
-
-msgid "unsupported RPM package version"
-msgstr "phiên bản gói RPM không được hỗ trợ"
-
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "gặp lỗi khi đọc: %s (%d)\n"
@@ -2816,9 +2813,6 @@ msgstr "Hãy liên lạc %s\n"
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Không thể mở %s để đọc: %m.\n"
-
-msgid "No exec() called after fork() in lua scriptlet\n"
-msgstr "Không có lệnh gọi exec() sau fork() trong lua scriptlet\n"
 
 #, c-format
 msgid "Unable to restore current directory: %m"
@@ -3182,6 +3176,10 @@ msgstr ""
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "có lỗi cú pháp trong lua scriptlet: %s\n"
 
+#, fuzzy
+msgid "runaway fork() in Lua script\n"
+msgstr "Không có lệnh gọi exec() sau fork() trong lua scriptlet\n"
+
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "cú pháp không hợp lệ trong văn lệnh lua: %s\n"
@@ -3359,6 +3357,15 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#~ msgid "Only absolute paths are allowed in file triggers"
+#~ msgstr "Chỉ có đường dẫn tuyệt đối là cho phép trong bẫy tập tin"
+
+#~ msgid "illegal signature type"
+#~ msgstr "kiểu chữ kí không hợp lệ"
+
+#~ msgid "unsupported RPM package version"
+#~ msgstr "phiên bản gói RPM không được hỗ trợ"
 
 #, c-format
 #~ msgid "%s: writeLead failed: %s\n"

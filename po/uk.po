@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2023-03-09 11:22+0000\n"
+"POT-Creation-Date: 2023-11-13 10:59+0100\n"
 "PO-Revision-Date: 2020-08-23 20:29+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/rpm/"
@@ -85,7 +85,7 @@ msgid "build through %conf (%prep, then %conf) from <specfile>"
 msgstr ""
 "виконати аж до команди %build (%prep, потім збирання) з <файла специфікації>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <specfile>"
 msgstr ""
 "виконати аж до команди %build (%prep, потім збирання) з <файла специфікації>"
@@ -94,7 +94,7 @@ msgstr ""
 msgid "check build dependencies <specfile>"
 msgstr "Не вдалося зібрати залежності:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <specfile>"
 msgstr ""
@@ -130,7 +130,7 @@ msgstr ""
 msgid "<source package>"
 msgstr "<пакунок з кодами>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <source package>"
 msgstr ""
 "виконати аж до команди %build (%prep, потім збирання) з <пакунка з "
@@ -142,7 +142,7 @@ msgstr ""
 "зібрати за <пакунком з кодами> пакунок з бінарними файлами та пакунок з "
 "початковим кодом"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <source "
 "package>"
@@ -182,7 +182,7 @@ msgstr ""
 msgid "<tarball>"
 msgstr "<архів tar>"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid "build through %build (%prep, %conf, then compile) from <tarball>"
 msgstr "виконати аж до команди %build (%prep, потім збирання) з <архіву tar>"
 
@@ -190,7 +190,7 @@ msgstr "виконати аж до команди %build (%prep, потім зб
 msgid "check build dependencies <tarball>"
 msgstr "Не вдалося зібрати залежності:\n"
 
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "build through %install (%prep, %conf, %build, then install) from <tarball>"
 msgstr ""
@@ -219,6 +219,7 @@ msgstr ""
 msgid "build binary package from <source package>"
 msgstr "зібрати за <пакунком з кодами> пакунок з бінарними файлами"
 
+#, c-format
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
@@ -335,7 +336,8 @@ msgstr ""
 "перебудувати зворотні списки бази даних на основі заголовків встановлених "
 "пакунків"
 
-msgid "verify database files"
+#, fuzzy
+msgid "verify database"
 msgstr "перевірити файли бази даних"
 
 msgid "salvage database"
@@ -1219,6 +1221,10 @@ msgstr "некоректна залежність"
 msgid "Version required"
 msgstr "Слід вказати версію"
 
+#, fuzzy
+msgid "file trigger conditions must begin with '/'"
+msgstr "рядок %d: запис файла в умові має починатися з «/»: %s"
+
 msgid "Only package names are allowed in Obsoletes"
 msgstr "У Obsoletes можна вказувати лише назви пакунків"
 
@@ -1227,9 +1233,6 @@ msgstr "Не рекомендуємо використовувати Obsoletes �
 
 msgid "It's not recommended to use '>' in Obsoletes"
 msgstr "Не рекомендуємо використовувати «>» у Obsoletes"
-
-msgid "Only absolute paths are allowed in file triggers"
-msgstr "У файлових перемикачах можна використовувати лише абсолютні шляхи"
 
 msgid "Trigger fired by the same package is already defined in spec file"
 msgstr "Перемикач для того самого пакунка вже визначено у файлі специфікації"
@@ -1272,10 +1275,6 @@ msgstr "рядок %d: друге %s\n"
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "рядок %d: непідтримуваний вбудований скрипт: %s\n"
-
-#, c-format
-msgid "line %d: file trigger condition must begin with '/': %s"
-msgstr "рядок %d: запис файла в умові має починатися з «/»: %s"
 
 #, c-format
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
@@ -2086,6 +2085,10 @@ msgstr "опитати пакунки, які пов’язано з пакун�
 msgid "rpm verify mode"
 msgstr "режим перевірки rpm"
 
+#, fuzzy
+msgid "query/verify the package(s) which conflict with a dependency"
+msgstr "опитати/перевірити пакунки, які роблять застарілим залежний пакунок"
+
 msgid "query/verify the package(s) which require a dependency"
 msgstr "опитати/перевірити пакунки, яким потрібні залежні пакунки"
 
@@ -2695,12 +2698,6 @@ msgstr "Встановлення %s\n"
 msgid "not an rpm package"
 msgstr "не є пакунком rpm"
 
-msgid "illegal signature type"
-msgstr "некоректний тип підпису"
-
-msgid "unsupported RPM package version"
-msgstr "непідтримувана версія пакунка RPM"
-
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "помилка читання: %s (%d)\n"
@@ -2862,9 +2859,6 @@ msgstr "Будь ласка, зв’яжіться з %s\n"
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Не вдалося відкрити %s для читання: %m.\n"
-
-msgid "No exec() called after fork() in lua scriptlet\n"
-msgstr "У скрипті Lua не викликано exec() після fork()\n"
 
 #, c-format
 msgid "Unable to restore current directory: %m"
@@ -3215,6 +3209,10 @@ msgstr "Помилка під час запису до журналу"
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "некоректний синтаксис у допоміжному скрипті lua: %s\n"
 
+#, fuzzy
+msgid "runaway fork() in Lua script\n"
+msgstr "У скрипті Lua не викликано exec() після fork()\n"
+
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "некоректний синтаксис у скрипті lua: %s\n"
@@ -3394,6 +3392,15 @@ msgstr ""
 
 msgid "only print what would be done"
 msgstr ""
+
+#~ msgid "Only absolute paths are allowed in file triggers"
+#~ msgstr "У файлових перемикачах можна використовувати лише абсолютні шляхи"
+
+#~ msgid "illegal signature type"
+#~ msgstr "некоректний тип підпису"
+
+#~ msgid "unsupported RPM package version"
+#~ msgstr "непідтримувана версія пакунка RPM"
 
 #, c-format
 #~ msgid "%s: writeLead failed: %s\n"
