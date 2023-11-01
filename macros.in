@@ -1349,8 +1349,10 @@ end
     end
 }
 
+# autobuild defaults
+%autobuild_default_prep() %autosetup -p1
+
 # example autobuild macros for autotools
-%autobuild_autotools_prep() %autosetup -p1
 %autobuild_autotools_conf() %configure
 %autobuild_autotools_build() %make_build
 %autobuild_autotools_install()\

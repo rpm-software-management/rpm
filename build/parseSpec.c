@@ -949,6 +949,8 @@ static rpmRC parseAutobuild(rpmSpec spec)
 
 	for (struct autosect_s *as = autosectList; !rc && as->name; as++) {
 	    rc = parseAutosect(spec, autobuild, as->name, as->sb);
+	    if (!rc && as->sb == NULL)
+		rc = parseAutosect(spec, "default", as->name, as->sb);
 	}
     }
     free(autobuild);
