@@ -900,7 +900,7 @@ static rpmRC parseAutosect(rpmSpec spec,
 
     if (sb == NULL) {
 	char *mn = rstrscat(NULL, "autobuild_", prefix, "_", section, NULL);
-	if (rpmMacroIsParametric(NULL, mn)) {
+	if (rpmMacroIsDefined(NULL, mn)) {
 	    char *path = NULL;
 	    FD_t fd = rpmMkTempFile(NULL, &path);
 	    if (fd) {

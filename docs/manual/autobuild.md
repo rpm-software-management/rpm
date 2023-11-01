@@ -37,6 +37,14 @@ this is why `%conf` is a separate section from the rest of the build, eg:
 %configure --enable-experimental
 ```
 
+However as the autobuild macros could rely on state from a previous step,
+it's better to use the corresponding macro alias instead (XXX not yet
+implemented in this draft):
+```
+%conf
+%autobuild_conf --enable-experimental
+```
+
 3) Complex packages can have things like multiple build systems, in
 which case you might want to invoke the macros manually, eg.
 
@@ -64,3 +72,11 @@ Scriptlet                 | Autobuild macro
 Replace "name" with the buildsystem name, eg `%autobuild_cmake_build`.
 When Autobuild: tag is set, these automatically populate the corresponding
 spec section, unless the spec manually overrides it. 
+
+For example, supporting the classic autotools case could be built on top
+of existing helper macros:
+```
+%autobuild_autotools_conf %configure
+%autobuild_autotools_build %make_build
+%autobuild_autotools_install %make_install
+```
