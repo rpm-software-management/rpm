@@ -966,7 +966,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 %_libexecdir		%{_exec_prefix}/libexec
 %_datadir		%{_prefix}/share
 %_sysconfdir		/etc
-%_sharedstatedir	%{_prefix}/com
+%_sharedstatedir	%{_var}/lib
 %_localstatedir		%{_prefix}/var
 %_lib			lib
 %_libdir		%{_exec_prefix}/%{_lib}
