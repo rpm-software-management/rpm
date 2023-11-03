@@ -1334,14 +1334,14 @@ end
         prefix = 'Provides: '
     end
     if #arg < 2 then
-        error('not enough arguments')
+        macros.error({'not enough arguments'})
     end
     if arg[1] == 'g' then
         type = 'group'
     elseif arg[1] == 'u' then
         type = 'user'
     else
-        error('invalid sysuser type: '..arg[1])
+        macros.error({'invalid sysuser type: '..arg[1]})
     end
     name = arg[2]
     line = table.concat(arg, ' ')
