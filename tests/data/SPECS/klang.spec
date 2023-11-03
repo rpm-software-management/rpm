@@ -28,6 +28,7 @@ Summary: %{SUMMARY} server
 
 %install
 mkdir -p ${RPM_BUILD_ROOT}/var/lib/klangd
+mkdir -p ${RPM_BUILD_ROOT}/var/lib/plongd
 mkdir -p ${RPM_BUILD_ROOT}/usr/bin/
 mkdir -p ${RPM_BUILD_ROOT}/etc
 mkdir -p ${RPM_BUILD_ROOT}/%{_sysusersdir}
@@ -59,5 +60,5 @@ EOF
 %{_sysusersdir}/klangd.conf
 %{_sysusersdir}/plong.conf
 %attr(-,klangd,klangd) /var/lib/klangd
-%attr(-,plong,klong) /var/lib/klangd
+%attr(-,plong,klong) /var/lib/plongd
 /usr/bin/klangd
