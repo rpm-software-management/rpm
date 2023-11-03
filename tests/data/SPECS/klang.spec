@@ -47,6 +47,8 @@ EOF
 cat << EOF > ${RPM_BUILD_ROOT}/%{_sysusersdir}/plong.conf
 u plong - "Plong fu" /var/lib/plong /sbin/nologin
 g klong -
+m ding dong
+r - 123-321
 EOF
 
 %files common
