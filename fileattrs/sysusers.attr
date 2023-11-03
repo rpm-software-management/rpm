@@ -6,6 +6,9 @@
 # For groups created as a side-effect, only provide the group.
 %__sysusers_provides() %{lua:
     for line in io.lines(macros["1"]) do
+        if line:sub(1, 1) == '#' then
+            goto continue
+        end
         fields = {}
         for w in line:gmatch("%S+") do
             table.insert(fields, w)
@@ -14,5 +17,6 @@
             table.insert(fields, 1, '-b')
             print(macros.add_sysuser(fields))
         end
+        ::continue::
     end
 }

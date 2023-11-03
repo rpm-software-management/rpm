@@ -45,7 +45,12 @@ cat << EOF > ${RPM_BUILD_ROOT}/%{_sysusersdir}/klangd.conf
 u klangd - "Klang server" /var/lib/klangd /sbin/nologin
 EOF
 cat << EOF > ${RPM_BUILD_ROOT}/%{_sysusersdir}/plong.conf
+
+# Real life files have all sorts of anomalies
 u plong - "Plong fu" /var/lib/plong /sbin/nologin
+#...such as empty lines
+
+# and comments comments
 g klong -
 m ding dong
 r - 123-321
