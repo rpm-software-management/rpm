@@ -1340,6 +1340,9 @@ end
         type = 'group'
     elseif arg[1] == 'u' then
         type = 'user'
+    elseif arg[1] == 'r' or arg[1] == 'm' then
+        macros.warn({'ignoring unsupported sysuser type: '..arg[1]})
+        return
     else
         macros.error({'invalid sysuser type: '..arg[1]})
     end
