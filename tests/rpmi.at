@@ -1481,7 +1481,14 @@ AT_SETUP([rpm -i sysusers])
 AT_KEYWORDS([install build sysusers])
 RPMDB_INIT
 
+RPMTEST_CHECK([
 runroot rpmbuild -bb --quiet /data/SPECS/klang.spec
+],
+[0],
+[],
+[warning: ignoring unsupported sysuser type: m
+warning: ignoring unsupported sysuser type: r
+])
 
 RPMTEST_CHECK([
 runroot rpm -U /build/RPMS/noarch/klang-client-1.0-1.noarch.rpm
