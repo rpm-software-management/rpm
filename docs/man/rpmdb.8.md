@@ -14,6 +14,8 @@ SYNOPSIS
 
 **rpmdb** {**\--initdb\|\--rebuilddb**}
 
+**rpmdb** {**\--verifydb}
+
 **rpmdb** {**\--exportdb\|\--importdb**}
 
 DESCRIPTION
@@ -27,6 +29,8 @@ The general form of an rpmdb command is
 Use **\--initdb** to create a new database if one doesn\'t already exist
 (existing database is not overwritten), use **\--rebuilddb** to rebuild
 the database indices from the installed package headers.
+
+**\--verifydb** performs a low-level integrity check on the database.
 
 **\--exportdb** exports the database in header-list format, suitable
 for transfporting to another host or database type.
