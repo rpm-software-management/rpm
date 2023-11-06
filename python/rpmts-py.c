@@ -833,12 +833,23 @@ Remove all elements from the transaction set\n" },
 
 static void rpmts_dealloc(rpmtsObject * s)
 {
+    PyObject_GC_UnTrack(s);
 
     s->ts = rpmtsFree(s->ts);
     Py_XDECREF(s->scriptFd);
     Py_XDECREF(s->keyList);
-    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    PyTypeObject *type = Py_TYPE(s);
+    freefunc free = PyType_GetSlot(type, Py_tp_free);
     free(s);
+    Py_DECREF(type);
+}
+
+static int rpmts_traverse(rpmtsObject * s, visitproc visit, void *arg)
+{
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
 }
 
 static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
@@ -1048,6 +1059,7 @@ static PyGetSetDef rpmts_getseters[] = {
 
 static PyType_Slot rpmts_Type_Slots[] = {
     {Py_tp_dealloc, rpmts_dealloc},
+    {Py_tp_traverse, rpmts_traverse},
     {Py_tp_getattro, PyObject_GenericGetAttr},
     {Py_tp_setattro, PyObject_GenericSetAttr},
     {Py_tp_doc, rpmts_doc},
@@ -1062,6 +1074,6 @@ static PyType_Slot rpmts_Type_Slots[] = {
 PyType_Spec rpmts_Type_Spec = {
     .name = "rpm.ts",
     .basicsize = sizeof(rpmtsObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmts_Type_Slots,
 };

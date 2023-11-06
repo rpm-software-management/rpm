@@ -17,11 +17,22 @@ struct rpmarchiveObject_s {
 
 static void rpmarchive_dealloc(rpmarchiveObject * s)
 {
+    PyObject_GC_UnTrack(s);
     rpmfilesFree(s->files);
     rpmfiArchiveClose(s->archive);
     rpmfiFree(s->archive);
-    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    PyTypeObject *type = Py_TYPE(s);
+    freefunc free = PyType_GetSlot(type, Py_tp_free);
     free(s);
+    Py_DECREF(type);
+}
+
+static int rpmarchive_traverse(hdrObject * s, visitproc visit, void *arg)
+{
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
 }
 
 static PyObject *rpmarchive_error(int rc)
@@ -235,6 +246,7 @@ static PyObject *disabled_new(PyTypeObject *type,
 static PyType_Slot rpmarchive_Type_Slots[] = {
     {Py_tp_new, disabled_new},
     {Py_tp_dealloc, rpmarchive_dealloc},
+    {Py_tp_traverse, rpmarchive_traverse},
     {Py_tp_getattro, PyObject_GenericGetAttr},
     {Py_tp_setattro, PyObject_GenericSetAttr},
     {Py_tp_doc, rpmarchive_doc},
@@ -246,7 +258,7 @@ static PyType_Slot rpmarchive_Type_Slots[] = {
 PyType_Spec rpmarchive_Type_Spec = {
     .name = "rpm.archive",
     .basicsize = sizeof(rpmarchiveObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT| Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmarchive_Type_Slots,
 };
 

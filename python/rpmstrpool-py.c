@@ -11,9 +11,20 @@ static char strpool_doc[] = "";
 
 static void strpool_dealloc(rpmstrPoolObject *s)
 {
+    PyObject_GC_UnTrack(s);
     s->pool = rpmstrPoolFree(s->pool);
-    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    PyTypeObject *type = Py_TYPE(s);
+    freefunc free = PyType_GetSlot(type, Py_tp_free);
     free(s);
+    Py_DECREF(type);
+}
+
+static int strpool_traverse(rpmstrPoolObject * s, visitproc visit, void *arg)
+{
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
 }
 
 static PyObject *strpool_new(PyTypeObject *subtype,
@@ -90,6 +101,7 @@ static struct PyMethodDef strpool_methods[] = {
 
 static PyType_Slot rpmstrPool_Type_Slots[] = {
     {Py_tp_dealloc, strpool_dealloc},
+    {Py_tp_traverse, strpool_traverse},
     {Py_mp_length, strpool_length},
     {Py_mp_subscript, strpool_id2str},
     {Py_tp_getattro, PyObject_GenericGetAttr},
@@ -102,7 +114,7 @@ static PyType_Slot rpmstrPool_Type_Slots[] = {
 PyType_Spec rpmstrPool_Type_Spec = {
     .name = "rpm.strpool",
     .basicsize = sizeof(rpmstrPoolObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmstrPool_Type_Slots,
 };
 

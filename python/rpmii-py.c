@@ -104,11 +104,22 @@ static struct PyMethodDef rpmii_methods[] = {
 
 static void rpmii_dealloc(rpmiiObject * s)
 {
+    PyObject_GC_UnTrack(s);
     s->ii = rpmdbIndexIteratorFree(s->ii);
     rpmtdFree(s->keytd);
     Py_DECREF(s->ref);
-    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    PyTypeObject *type = Py_TYPE(s);
+    freefunc free = PyType_GetSlot(type, Py_tp_free);
     free(s);
+    Py_DECREF(type);
+}
+
+static int rpmii_traverse(rpmiiObject * s, visitproc visit, void *arg)
+{
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
 }
 
 static int rpmii_bool(rpmiiObject *s)
@@ -131,6 +142,7 @@ static PyObject *disabled_new(PyTypeObject *type,
 static PyType_Slot rpmii_Type_Slots[] = {
     {Py_tp_new, disabled_new},
     {Py_tp_dealloc, rpmii_dealloc},
+    {Py_tp_traverse, rpmii_traverse},
     {Py_nb_bool, rpmii_bool},
     {Py_tp_getattro, PyObject_GenericGetAttr},
     {Py_tp_setattro, PyObject_GenericSetAttr},
@@ -143,7 +155,7 @@ static PyType_Slot rpmii_Type_Slots[] = {
 PyType_Spec rpmii_Type_Spec = {
     .name = "rpm.ii",
     .basicsize = sizeof(rpmiiObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT  | Py_TPFLAGS_HAVE_GC| Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmii_Type_Slots,
 };
 

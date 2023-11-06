@@ -18,9 +18,20 @@ struct rpmfileObject_s {
 
 static void rpmfile_dealloc(rpmfileObject * s)
 {
+    PyObject_GC_UnTrack(s);
     s->files = rpmfilesFree(s->files);
-    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    PyTypeObject *type = Py_TYPE(s);
+    freefunc free = PyType_GetSlot(type, Py_tp_free);
     free(s);
+    Py_DECREF(type);
+}
+
+static int rpmfile_traverse(rpmfileObject * s, visitproc visit, void *arg)
+{
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
 }
 
 static char rpmfile_doc[] =
@@ -331,6 +342,7 @@ static PyObject *disabled_new(PyTypeObject *type,
 static PyType_Slot rpmfile_Type_Slots[] = {
     {Py_tp_new, disabled_new},
     {Py_tp_dealloc, rpmfile_dealloc},
+    {Py_tp_traverse, rpmfile_traverse},
     {Py_tp_str, rpmfile_name},
     {Py_tp_getattro, PyObject_GenericGetAttr},
     {Py_tp_setattro, PyObject_GenericSetAttr},
@@ -342,7 +354,7 @@ static PyType_Slot rpmfile_Type_Slots[] = {
 PyType_Spec rpmfile_Type_Spec = {
     .name = "rpm.file",
     .basicsize = sizeof(rpmfileObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmfile_Type_Slots,
 };
 
@@ -366,9 +378,20 @@ struct rpmfilesObject_s {
 
 static void rpmfiles_dealloc(rpmfilesObject * s)
 {
+    PyObject_GC_UnTrack(s);
     s->files = rpmfilesFree(s->files);
-    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    PyTypeObject *type = Py_TYPE(s);
+    freefunc free = PyType_GetSlot(type, Py_tp_free);
     free(s);
+    Py_DECREF(type);
+}
+
+static int rpmfiles_traverse(rpmfilesObject * s, visitproc visit, void *arg)
+{
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
 }
 
 static PyObject * rpmfiles_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
@@ -548,6 +571,7 @@ static char rpmfiles_doc[] =
 
 static PyType_Slot rpmfiles_Type_Slots[] = {
     {Py_tp_dealloc, rpmfiles_dealloc},
+    {Py_tp_traverse, rpmfiles_traverse},
     {Py_sq_length, rpmfiles_length},
     {Py_sq_item, rpmfiles_getitem},
     {Py_sq_contains, rpmfiles_contains},
@@ -563,7 +587,7 @@ static PyType_Slot rpmfiles_Type_Slots[] = {
 PyType_Spec rpmfiles_Type_Spec = {
     .name = "rpm.files",
     .basicsize = sizeof(rpmfilesObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmfiles_Type_Slots,
 };
 
