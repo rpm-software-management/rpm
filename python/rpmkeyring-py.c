@@ -2,6 +2,8 @@
 #include <rpm/rpmkeyring.h>
 #include "rpmkeyring-py.h"
 
+extern rpmmodule_state_t *modstate;  // TODO: Remove
+
 struct rpmPubkeyObject_s {
     PyObject_HEAD
     PyObject *md_dict;

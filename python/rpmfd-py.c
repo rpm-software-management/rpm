@@ -4,6 +4,8 @@
 #include "header-py.h"	/* XXX for utf8FromPyObject() only */
 #include "rpmfd-py.h"
 
+extern rpmmodule_state_t *modstate;  // TODO: Remove
+
 struct rpmfdObject_s {
     PyObject_HEAD
     PyObject *md_dict;

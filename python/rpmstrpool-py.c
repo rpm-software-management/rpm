@@ -2,6 +2,8 @@
 #include <rpm/rpmstrpool.h>
 #include "rpmstrpool-py.h"
 
+extern rpmmodule_state_t *modstate;  // TODO: Remove
+
 struct rpmstrPoolObject_s {
     PyObject_HEAD
     PyObject *md_dict;

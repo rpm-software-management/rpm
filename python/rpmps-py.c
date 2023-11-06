@@ -2,6 +2,8 @@
 
 #include "rpmps-py.h"
 
+extern rpmmodule_state_t *modstate;  // TODO: Remove
+
 struct rpmProblemObject_s {
     PyObject_HEAD
     PyObject *md_dict;

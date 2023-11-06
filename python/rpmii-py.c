@@ -7,6 +7,8 @@
 #include "rpmii-py.h"
 #include "header-py.h"
 
+extern rpmmodule_state_t *modstate;  // TODO: Remove
+
 /** \ingroup python
  * \class Rpmii
  * \brief A python rpm.ii key iterator object represents the keys of a
