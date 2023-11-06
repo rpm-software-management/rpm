@@ -6,6 +6,8 @@
 #include "rpmmi-py.h"
 #include "header-py.h"
 
+extern rpmmodule_state_t *modstate;  // TODO: Remove
+
 /** \ingroup python
  * \class Rpmmi
  * \brief A python rpm.mi match iterator object represents the result of a

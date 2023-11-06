@@ -5,6 +5,8 @@
 #include "header-py.h"	/* XXX for pyrpmError, doh */
 #include "rpmmacro-py.h"
 
+extern rpmmodule_state_t *modstate;  // TODO: Remove
+
 PyObject *
 rpmmacro_AddMacro(PyObject * self, PyObject * args, PyObject * kwds)
 {

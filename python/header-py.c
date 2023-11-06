@@ -12,6 +12,8 @@
 #include "rpmtd-py.h"
 #include "rpmver-py.h"
 
+extern rpmmodule_state_t *modstate;  // TODO: Remove
+
 /** \ingroup python
  * \class Rpm
  * \brief START HERE / RPM base module for the Python API
