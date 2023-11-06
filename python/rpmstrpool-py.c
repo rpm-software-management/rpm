@@ -4,7 +4,6 @@
 
 struct rpmstrPoolObject_s {
     PyObject_HEAD
-    PyObject *md_dict;
     rpmstrPool pool;
 };
 

@@ -61,7 +61,6 @@
 
 struct rpmmiObject_s {
     PyObject_HEAD
-    PyObject *md_dict;		/*!< to look like PyModuleObject */
     PyObject *ref;		/* for db/ts refcounting */
     rpmdbMatchIterator mi;
 } ;
