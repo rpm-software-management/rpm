@@ -136,12 +136,23 @@ static PyObject *rpmfd_close(rpmfdObject *s)
 
 static void rpmfd_dealloc(rpmfdObject *s)
 {
+    PyObject_GC_UnTrack(s);
     PyObject *res = do_close(s);
     Py_XDECREF(res);
     free(s->mode);
     free(s->flags);
-    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    PyTypeObject *type = Py_TYPE(s);
+    freefunc free = PyType_GetSlot(type, Py_tp_free);
     free(s);
+    Py_DECREF(type);
+}
+
+static int rpmfd_traverse(hdrObject * s, visitproc visit, void *arg)
+{
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
 }
 
 static PyObject *rpmfd_fileno(rpmfdObject *s)
@@ -346,6 +357,7 @@ static PyGetSetDef rpmfd_getseters[] = {
 
 static PyType_Slot rpmfd_Type_Slots[] = {
     {Py_tp_dealloc, rpmfd_dealloc},
+    {Py_tp_traverse, rpmfd_traverse},
     {Py_tp_getattro, PyObject_GenericGetAttr},
     {Py_tp_setattro, PyObject_GenericSetAttr},
     {Py_tp_doc, rpmfd_doc},
@@ -358,6 +370,6 @@ static PyType_Slot rpmfd_Type_Slots[] = {
 PyType_Spec rpmfd_Type_Spec = {
     .name = "rpm.fd",
     .basicsize = sizeof(rpmfdObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmfd_Type_Slots,
 };

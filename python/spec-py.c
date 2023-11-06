@@ -43,7 +43,20 @@ struct specPkgObject_s {
 
 static void specPkg_dealloc(specPkgObject * s)
 {
+    PyObject_GC_UnTrack(s);
     Py_DECREF(s->source_spec);
+    PyTypeObject *type = Py_TYPE(s);
+    freefunc free = PyType_GetSlot(type, Py_tp_free);
+    free(s);
+    Py_DECREF(type);
+}
+
+static int specPkg_traverse(specPkgObject * s, visitproc visit, void *arg)
+{
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
 }
 
 static PyObject *pkgGetSection(rpmSpecPkg pkg, int section)
@@ -100,6 +113,7 @@ static PyObject *disabled_new(PyTypeObject *type,
 static PyType_Slot specPkg_Type_Slots[] = {
     {Py_tp_new, disabled_new},
     {Py_tp_dealloc, specPkg_dealloc},
+    {Py_tp_traverse, specPkg_traverse},
     {Py_tp_getattro, PyObject_GenericGetAttr},
     {Py_tp_setattro, PyObject_GenericSetAttr},
     {Py_tp_doc, specPkg_doc},
@@ -109,7 +123,7 @@ static PyType_Slot specPkg_Type_Slots[] = {
 PyType_Spec specPkg_Type_Spec = {
     .name = "rpm.specpkg",
     .basicsize = sizeof(specPkgObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = specPkg_Type_Slots,
 };
 
@@ -122,11 +136,22 @@ struct specObject_s {
 static void 
 spec_dealloc(specObject * s) 
 {
+    PyObject_GC_UnTrack(s);
     if (s->spec) {
 	s->spec=rpmSpecFree(s->spec);
     }
-    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    PyTypeObject *type = Py_TYPE(s);
+    freefunc free = PyType_GetSlot(type, Py_tp_free);
     free(s);
+    Py_DECREF(type);
+}
+
+static int spec_traverse(specObject * s, visitproc visit, void *arg)
+{
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
 }
 
 static PyObject * getSection(rpmSpec spec, int section)
@@ -274,6 +299,7 @@ static struct PyMethodDef spec_methods[] = {
 
 static PyType_Slot spec_Type_Slots[] = {
     {Py_tp_dealloc, spec_dealloc},
+    {Py_tp_traverse, spec_traverse},
     {Py_tp_doc, spec_doc},
     {Py_tp_methods, spec_methods},
     {Py_tp_getset, spec_getseters},
@@ -283,7 +309,7 @@ static PyType_Slot spec_Type_Slots[] = {
 PyType_Spec spec_Type_Spec = {
     .name = "rpm.spec",
     .basicsize = sizeof(specObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = spec_Type_Slots,
 };
 

@@ -326,9 +326,20 @@ static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
 
 static void hdr_dealloc(hdrObject * s)
 {
+    PyObject_GC_UnTrack(s);
     if (s->h) headerFree(s->h);
-    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    PyTypeObject *type = Py_TYPE(s);
+    freefunc free = PyType_GetSlot(type, Py_tp_free);
     free(s);
+    Py_DECREF(type);
+}
+
+static int hdr_traverse(hdrObject * s, visitproc visit, void *arg)
+{
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
 }
 
 static PyObject * hdr_iternext(hdrObject *s)
@@ -633,6 +644,7 @@ static char hdr_doc[] =
 
 static PyType_Slot hdr_Type_Slots[] = {
     {Py_tp_dealloc, hdr_dealloc},
+    {Py_tp_traverse, hdr_traverse},
     {Py_sq_contains, hdrContains},
     {Py_mp_subscript, hdr_subscript},
     {Py_mp_ass_subscript, hdr_ass_subscript},
@@ -649,7 +661,7 @@ static PyType_Slot hdr_Type_Slots[] = {
 PyType_Spec hdr_Type_Spec = {
     .name = "rpm.hdr",
     .basicsize = sizeof(hdrObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = hdr_Type_Slots,
 };
 

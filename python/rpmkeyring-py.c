@@ -10,9 +10,20 @@ struct rpmPubkeyObject_s {
 
 static void rpmPubkey_dealloc(rpmPubkeyObject * s)
 {
+    PyObject_GC_UnTrack(s);
     s->pubkey = rpmPubkeyFree(s->pubkey);
-    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    PyTypeObject *type = Py_TYPE(s);
+    freefunc free = PyType_GetSlot(type, Py_tp_free);
     free(s);
+    Py_DECREF(type);
+}
+
+static int rpmPubkey_traverse(rpmPubkeyObject * s, visitproc visit, void *arg)
+{
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
 }
 
 static PyObject *rpmPubkey_new(PyTypeObject *subtype, 
@@ -59,6 +70,7 @@ static char rpmPubkey_doc[] = "";
 
 static PyType_Slot rpmPubkey_Type_Slots[] = {
     {Py_tp_dealloc, rpmPubkey_dealloc},
+    {Py_tp_traverse, rpmPubkey_traverse},
     {Py_tp_getattro, PyObject_GenericGetAttr},
     {Py_tp_setattro, PyObject_GenericSetAttr},
     {Py_tp_doc, rpmPubkey_doc},
@@ -69,7 +81,7 @@ static PyType_Slot rpmPubkey_Type_Slots[] = {
 PyType_Spec rpmPubkey_Type_Spec = {
     .name = "rpm.pubkey",
     .basicsize = sizeof(rpmPubkeyObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmPubkey_Type_Slots,
 };
 
@@ -81,9 +93,20 @@ struct rpmKeyringObject_s {
 
 static void rpmKeyring_dealloc(rpmKeyringObject * s)
 {
+    PyObject_GC_UnTrack(s);
     rpmKeyringFree(s->keyring);
-    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    PyTypeObject *type = Py_TYPE(s);
+    freefunc free = PyType_GetSlot(type, Py_tp_free);
     free(s);
+    Py_DECREF(type);
+}
+
+static int rpmKeyring_traverse(rpmKeyringObject * s, visitproc visit, void *arg)
+{
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
 }
 
 static PyObject *rpmKeyring_new(PyTypeObject *subtype, 
@@ -114,6 +137,7 @@ static char rpmKeyring_doc[] =
 
 static PyType_Slot rpmKeyring_Type_Slots[] = {
     {Py_tp_dealloc, rpmKeyring_dealloc},
+    {Py_tp_traverse, rpmKeyring_traverse},
     {Py_tp_getattro, PyObject_GenericGetAttr},
     {Py_tp_setattro, PyObject_GenericSetAttr},
     {Py_tp_doc, rpmKeyring_doc},
@@ -124,7 +148,7 @@ static PyType_Slot rpmKeyring_Type_Slots[] = {
 PyType_Spec rpmKeyring_Type_Spec = {
     .name = "rpm.keyring",
     .basicsize = sizeof(rpmKeyringObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmKeyring_Type_Slots,
 };
 
