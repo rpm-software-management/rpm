@@ -12,12 +12,14 @@ rpmdb - RPM Database Tool
 SYNOPSIS
 ========
 
-**rpm** {**\--initdb\|\--rebuilddb**}
+**rpmdb** {**\--initdb\|\--rebuilddb**}
+
+**rpmdb** {**\--exportdb\|\--importdb**}
 
 DESCRIPTION
 ===========
 
-The general form of an rpm rebuild database command is
+The general form of an rpmdb command is
 
 **rpm** {**\--initdb\|\--rebuilddb**} \[**-v**\] \[**\--dbpath
 ***DIRECTORY*\] \[**\--root ***DIRECTORY*\]
@@ -25,6 +27,12 @@ The general form of an rpm rebuild database command is
 Use **\--initdb** to create a new database if one doesn\'t already exist
 (existing database is not overwritten), use **\--rebuilddb** to rebuild
 the database indices from the installed package headers.
+
+**\--exportdb** exports the database in header-list format, suitable
+for transfporting to another host or database type.
+
+**\--importdb** imports a database from a header-list format as created
+by **\--exportdb**.
 
 SEE ALSO
 ========
