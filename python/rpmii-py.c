@@ -117,6 +117,7 @@ static void rpmii_dealloc(rpmiiObject * s)
 
 static int rpmii_traverse(rpmiiObject * s, visitproc visit, void *arg)
 {
+    Py_VISIT(s->ref);
     if (python_version >= 0x03090000) {
         Py_VISIT(Py_TYPE(s));
     }

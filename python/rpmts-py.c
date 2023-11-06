@@ -847,6 +847,8 @@ static void rpmts_dealloc(rpmtsObject * s)
 
 static int rpmts_traverse(rpmtsObject * s, visitproc visit, void *arg)
 {
+    Py_VISIT(s->scriptFd);
+    Py_VISIT(s->keyList);
     if (python_version >= 0x03090000) {
         Py_VISIT(Py_TYPE(s));
     }
