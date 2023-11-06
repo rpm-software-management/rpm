@@ -6,6 +6,8 @@
 #include "rpmte-py.h"
 #include "rpmps-py.h"
 
+extern rpmmodule_state_t *modstate;  // TODO: Remove
+
 /** \ingroup python
  * \name Class: Rpmte
  * \class Rpmte

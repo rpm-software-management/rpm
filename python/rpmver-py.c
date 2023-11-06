@@ -3,6 +3,8 @@
 #include <rpm/rpmver.h>
 #include "rpmver-py.h"
 
+extern rpmmodule_state_t *modstate;  // TODO: Remove
+
 struct rpmverObject_s {
     PyObject_HEAD
     rpmver ver;

@@ -8,6 +8,8 @@
 #include "rpmtd-py.h"
 #include "header-py.h"
 
+extern rpmmodule_state_t *modstate;  // TODO: Remove
+
 /*
  * Convert single tag data item to python object of suitable type
  */

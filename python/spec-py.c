@@ -4,6 +4,8 @@
 #include "header-py.h"
 #include "spec-py.h"
 
+extern rpmmodule_state_t *modstate;  // TODO: Remove
+
 /** \ingroup python
  * \name Class: Rpmspec
  * \class Rpmspec

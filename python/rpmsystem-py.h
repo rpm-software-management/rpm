@@ -31,8 +31,6 @@ typedef struct {
     PyObject* pyrpmError;
 } rpmmodule_state_t;
 
-extern rpmmodule_state_t *modstate;
-
 /* Replacement for Py_Version from Python 3.11+
  * version of the Python runtime, packed into an int.
  * For simplicity this only contains "x.y.z", the final byte is 0.

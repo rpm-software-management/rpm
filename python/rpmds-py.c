@@ -8,6 +8,8 @@
 #include "rpmds-py.h"
 #include "rpmstrpool-py.h"
 
+extern rpmmodule_state_t *modstate;  // TODO: Remove
+
 struct rpmdsObject_s {
     PyObject_HEAD
     int		active;
