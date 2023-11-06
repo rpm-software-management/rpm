@@ -45,6 +45,14 @@ struct rpmteObject_s {
     rpmte	te;
 };
 
+static int rpmte_traverse(rpmteObject * s, visitproc visit, void *arg)
+{
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
+}
+
 static PyObject *
 rpmte_TEType(rpmteObject * s, PyObject * unused)
 {
@@ -293,6 +301,7 @@ static PyObject *disabled_new(PyTypeObject *type,
 
 static PyType_Slot rpmte_Type_Slots[] = {
     {Py_tp_new, disabled_new},
+    {Py_tp_traverse, rpmte_traverse},
     {Py_tp_getattro, PyObject_GenericGetAttr},
     {Py_tp_setattro, PyObject_GenericSetAttr},
     {Py_tp_doc, rpmte_doc},
@@ -302,7 +311,7 @@ static PyType_Slot rpmte_Type_Slots[] = {
 PyType_Spec rpmte_Type_Spec = {
     .name = "rpm.te",
     .basicsize = sizeof(rpmteObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmte_Type_Slots,
 };
 

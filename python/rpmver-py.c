@@ -13,9 +13,20 @@ static char ver_doc[] = "";
 
 static void ver_dealloc(rpmverObject *s)
 {
+    PyObject_GC_UnTrack(s);
     s->ver = rpmverFree(s->ver);
-    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    PyTypeObject *type = Py_TYPE(s);
+    freefunc free = PyType_GetSlot(type, Py_tp_free);
     free(s);
+    Py_DECREF(type);
+}
+
+static int ver_traverse(rpmverObject * s, visitproc visit, void *arg)
+{
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
 }
 
 int verFromPyObject(PyObject *o, rpmver *ver)
@@ -128,6 +139,7 @@ static PyGetSetDef ver_getseters[] = {
 
 static PyType_Slot rpmver_Type_Slots[] = {
     {Py_tp_dealloc, ver_dealloc},
+    {Py_tp_traverse, ver_traverse},
     {Py_tp_repr, ver_get_evr},
     {Py_tp_getattro, PyObject_GenericGetAttr},
     {Py_tp_setattro, PyObject_GenericSetAttr},
@@ -140,7 +152,7 @@ static PyType_Slot rpmver_Type_Slots[] = {
 PyType_Spec rpmver_Type_Spec = {
     .name = "rpm.ver",
     .basicsize = sizeof(rpmverObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmver_Type_Slots,
 };
 
