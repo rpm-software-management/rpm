@@ -11,7 +11,6 @@
 
 struct rpmarchiveObject_s {
     PyObject_HEAD
-    PyObject *md_dict;
     rpmfi archive;
     rpmfiles files;
 };

@@ -35,7 +35,6 @@
 
 struct rpmiiObject_s {
     PyObject_HEAD
-    PyObject *md_dict;		/*!< to look like PyModuleObject */
     PyObject *ref;		/* for db/ts refcounting */
     rpmdbIndexIterator ii;
     rpmtd keytd;

@@ -4,7 +4,6 @@
 
 struct rpmProblemObject_s {
     PyObject_HEAD
-    PyObject *md_dict;
     rpmProblem	prob;
 };
 
