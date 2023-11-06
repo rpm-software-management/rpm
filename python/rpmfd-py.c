@@ -6,7 +6,6 @@
 
 struct rpmfdObject_s {
     PyObject_HEAD
-    PyObject *md_dict;
     FD_t fd;
     char *mode;
     char *flags;

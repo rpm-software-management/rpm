@@ -12,7 +12,6 @@
 /* A single file from rpmfiles set, can't be independently instanciated */
 struct rpmfileObject_s {
     PyObject_HEAD
-    PyObject *md_dict;
     rpmfiles files;		/* reference to rpmfiles */
     int ix;			/* index to rpmfiles */
 };
@@ -362,7 +361,6 @@ PyObject * rpmfile_Wrap(rpmfiles files, int ix)
 /* The actual rpmfiles info set */
 struct rpmfilesObject_s {
     PyObject_HEAD
-    PyObject *md_dict;		/*!< to look like PyModuleObject */
     rpmfiles files;
 };
 

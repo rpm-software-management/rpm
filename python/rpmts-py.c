@@ -137,7 +137,6 @@
 
 struct rpmtsObject_s {
     PyObject_HEAD
-    PyObject *md_dict;		/*!< to look like PyModuleObject */
     rpmfdObject *scriptFd;
     PyObject *keyList;
     rpmts	ts;

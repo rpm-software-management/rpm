@@ -4,7 +4,6 @@
 
 struct rpmPubkeyObject_s {
     PyObject_HEAD
-    PyObject *md_dict;
     rpmPubkey pubkey;
 };
 
@@ -77,7 +76,6 @@ PyType_Spec rpmPubkey_Type_Spec = {
 
 struct rpmKeyringObject_s {
     PyObject_HEAD
-    PyObject *md_dict;
     rpmKeyring keyring;
 };
 
