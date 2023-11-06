@@ -230,6 +230,7 @@ static void addRpmTags(PyObject *module)
 static int initModule(PyObject *m);
 
 static int rpmModuleTraverse(PyObject *m, visitproc visit, void *arg) {
+    rpmmodule_state_t *modstate = PyModule_GetState(m);
     Py_VISIT(modstate->hdr_Type);
     Py_VISIT(modstate->rpmarchive_Type);
     Py_VISIT(modstate->rpmds_Type);
@@ -251,28 +252,31 @@ static int rpmModuleTraverse(PyObject *m, visitproc visit, void *arg) {
     return 0;
 }
 
-static int clearer(PyObject *object, void *) {
-    Py_CLEAR(object);
+static int rpmModuleClear(PyObject *m) {
+    rpmmodule_state_t *modstate = PyModule_GetState(m);
+    Py_CLEAR(modstate->hdr_Type);
+    Py_CLEAR(modstate->rpmarchive_Type);
+    Py_CLEAR(modstate->rpmds_Type);
+    Py_CLEAR(modstate->rpmfd_Type);
+    Py_CLEAR(modstate->rpmfile_Type);
+    Py_CLEAR(modstate->rpmfiles_Type);
+    Py_CLEAR(modstate->rpmii_Type);
+    Py_CLEAR(modstate->rpmKeyring_Type);
+    Py_CLEAR(modstate->rpmPubkey_Type);
+    Py_CLEAR(modstate->rpmmi_Type);
+    Py_CLEAR(modstate->rpmProblem_Type);
+    Py_CLEAR(modstate->rpmstrPool_Type);
+    Py_CLEAR(modstate->rpmte_Type);
+    Py_CLEAR(modstate->rpmts_Type);
+    Py_CLEAR(modstate->rpmver_Type);
+    Py_CLEAR(modstate->spec_Type);
+    Py_CLEAR(modstate->specPkg_Type);
+    Py_CLEAR(modstate->pyrpmError);
     return 0;
 }
 
-static int rpmModuleClear(PyObject *m) {
-    /* Do Py_CLEAR on all the types in the module state.
-     * rpmModuleTraverse's Py_VISIT calls the given 'visit' function;
-     * we essentially pass CLEAR as the function to call.
-     */
-    int result = rpmModuleTraverse(m, clearer, NULL);
-    free(modstate);
-    modstate = NULL;
-    return result;
-}
-
-static void rpmModuleFree(void *_state) {
-    if (modstate) {
-        rpmModuleTraverse(NULL, clearer, NULL);
-	free(modstate);
-        modstate = NULL;
-    }
+static void rpmModuleFree(void *m) {
+    (void)rpmModuleClear(m);
 }
 
 static PyModuleDef_Slot module_slots[] = {
@@ -282,17 +286,15 @@ static PyModuleDef_Slot module_slots[] = {
 
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
-    "_rpm",            /* m_name */
-    rpm__doc__,        /* m_doc */
-    0,                 /* m_size */
+    "_rpm",			/* m_name */
+    rpm__doc__,			/* m_doc */
+    sizeof(rpmmodule_state_t),	/* m_size */
     rpmModuleMethods,
     module_slots,      /* m_slots */
     rpmModuleTraverse,
     rpmModuleClear,
     rpmModuleFree
 };
-
-static int moduleInitialized = 0;
 
 /* The init function must be exported as it's called by Python, but it doesn't
  * need a declaration in a header file.
@@ -349,20 +351,6 @@ static unsigned long _get_python_version(void) {
 /* Module initialization: */
 static int initModule(PyObject *m)
 {
-    if (moduleInitialized) {
-        PyErr_SetString(PyExc_ImportError,
-                        "cannot load rpm module more than once per process");
-        return -1;
-    }
-    moduleInitialized = 1;
-
-    modstate = malloc(sizeof(rpmmodule_state_t));
-    if (!modstate) {
-        PyErr_NoMemory();
-        return -1;
-    }
-    memset(modstate, 0, sizeof(rpmmodule_state_t));
-
     PyObject * d;
 
     /* failure to initialize rpm (crypto and all) is rather fatal too... */
@@ -376,6 +364,11 @@ static int initModule(PyObject *m)
 	if (python_version == 0) {
 	    return -1;
 	}
+    }
+
+    modstate = PyModule_GetState(m);
+    if (!modstate) {
+	return -1;
     }
 
     modstate->pyrpmError = PyErr_NewException("_rpm.error", NULL, NULL);
