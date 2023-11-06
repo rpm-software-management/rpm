@@ -16,7 +16,7 @@ expansion of the macro which contains nested macros.
 
 ## Defining a Macro
 
-To define a macro use:
+The macro definition syntax is:
 
 ```
 	%define <name>[(opts)] <body>
@@ -24,14 +24,23 @@ To define a macro use:
 
 All whitespace surrounding `<body>` is removed.  Name may be composed
 of alphanumeric characters and the character `_`, and must be at least
-3 characters in length. A macro without an `(opts)` field is "simple"
-in that only recursive macro expansion is performed. A parameterized
-macro contains an `(opts)` field. Since rpm >= 4.17 `-` as opts disables all option
-processing, otherwise the opts (i.e. string between parentheses) are passed
-exactly as is to getopt(3) for argc/argv processing at the beginning of
-a macro invocation (only short options are supported). `--` can be used
-to separate options from arguments. While a parameterized macro is being
-expanded, the following shell-like macros are available:
+3 characters in length. The body is (re-)expanded on each macro invocation.
+
+### Parametric macros
+A macro which contains an `(opts)` field is called parametric.
+The opts (i.e. string between parentheses) are passed exactly as is
+to to getopt(3) for argc/argv processing at the beginning of
+a macro invocation. Only short options are supported.
+`--` can be used to separate options from arguments.
+Since rpm >= 4.17 `-` as opts disables all option processing.
+
+Macros `%define`d inside a parametric macro have a scope local to the
+macro, otherwise all macros are global.
+
+### Automatic macros
+
+While a parameterized macro is being expanded, the following shell-like
+automatic macros are available:
 
 ```
 	%0	the name of the macro being invoked
@@ -54,6 +63,20 @@ With rpm >= 4.17 and disabled option processing the mentioned macros are defined
 
 At the end of invocation of a parameterized macro, the above macros are
 (at the moment, silently) discarded.
+
+### Global macros
+
+A macro can be declared into the global scope as follows:
+
+```
+	%global <name>[(opts)] <body>
+```
+
+An important and useful feature of `%global` is that the body is expanded
+at the time of definition, as opposed to time of use with regular macros.
+This is important inside parametric macros because otherwise the body could
+be referring to macros that are out of scope at the time of use, but also
+useful to avoid re-expansion of expensive macros.
 
 ## Writing a Macro
 
