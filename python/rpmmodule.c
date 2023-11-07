@@ -707,3 +707,71 @@ static int initModule(PyObject *m)
     return 0;
 }
 
+rpmmodule_state_t *rpmModState_FromModule(PyObject *m) {
+    assert(PyModule_GetDef(m) == &moduledef);
+    rpmmodule_state_t *state = PyModule_GetState(m);
+    if (state == NULL && !PyErr_Occurred()) {
+	PyErr_SetString(PyExc_SystemError, "could not get _rpm module state");
+    }
+    return state;
+}
+
+/* PyType_GetModuleByDef is only in Python 3.11+ */
+static PyObject *
+MyType_GetModuleByDef(PyTypeObject *type, PyModuleDef *def)
+{
+    assert(PyType_Check(type));
+    PyObject *m = PyType_GetModule(type);
+    if (m && PyModule_GetDef(m) == def) {
+	return m;
+    }
+    if (!m && PyErr_Occurred()) {
+	if (PyErr_ExceptionMatches(PyExc_TypeError)) {
+	    PyErr_Clear();
+	} else {
+	    return NULL;
+	}
+    }
+
+    PyObject *mro = PyObject_CallMethod((PyObject*)type, "mro", "");
+    if (!mro) {
+	return NULL;
+    }
+    size_t size = PyList_Size(mro);
+    for (Py_ssize_t i = 1; i < size; i++) {
+        PyObject *super = PyList_GetItem(mro, i); // borrowed reference
+	if (!super) {
+	    Py_DECREF(mro);
+	    return NULL;
+	}
+	m = PyType_GetModule((PyTypeObject*)super);
+	if (m && PyModule_GetDef(m) == def) {
+	    Py_DECREF(mro);
+	    return m;
+	}
+	if (!m && PyErr_Occurred()) {
+	    if (PyErr_ExceptionMatches(PyExc_TypeError)) {
+		PyErr_Clear();
+	    } else {
+		Py_DECREF(mro);
+		return NULL;
+	    }
+	}
+    }
+
+    PyErr_SetString(PyExc_SystemError, "could not get _rpm module state");
+    Py_DECREF(mro);
+    return NULL;
+}
+
+rpmmodule_state_t *rpmModState_FromType(PyTypeObject *t) {
+    PyObject *mod = MyType_GetModuleByDef(t, &moduledef);
+    if (!mod) {
+	return NULL;
+    }
+    return rpmModState_FromModule(mod);
+}
+
+rpmmodule_state_t *rpmModState_FromObject(PyObject *s) {
+    return rpmModState_FromType(Py_TYPE(s));
+}
