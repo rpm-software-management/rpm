@@ -150,6 +150,8 @@ struct rpmSpec_s {
     rpmstrPool pool;
 
     StringBuf sections[NR_SECT]; /*!< spec sections (%prep etc) */
+    ARGV_t buildopts[NR_SECT];	/*!< per-section buildsystem options */
+
     StringBuf parsed;		/*!< parsed spec contents */
 
     Package packages;		/*!< Package list. */
@@ -638,6 +640,10 @@ RPM_GNUC_INTERNAL
 void doSetupMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed);
 RPM_GNUC_INTERNAL
 void doPatchMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed);
+
+/* Return section number, -1 on error */
+RPM_GNUC_INTERNAL
+int getSection(const char *name);
 
 #ifdef __cplusplus
 }

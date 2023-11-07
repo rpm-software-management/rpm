@@ -783,6 +783,20 @@ int addLangTag(rpmSpec spec, Header h, rpmTagVal tag,
     return 0;
 }
 
+static int addBuildOption(rpmSpec spec, const char *sect, const char *opt)
+{
+    rpmRC rc = RPMRC_FAIL;
+    if (*sect == '\0')
+	sect = "conf";
+
+    int sn = getSection(sect);
+    if (sn >= 0) {
+	argvAdd(&(spec->buildopts[sn]), opt);
+	rc = RPMRC_OK;
+    }
+    return rc;
+}
+
 static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 		const char *macro, const char *lang)
 {
@@ -820,6 +834,18 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	multiToken = 1;
 
     switch (tag) {
+    case RPMTAG_BUILDSYSTEM:
+	SINGLE_TOKEN_ONLY;
+	if (rpmCharCheck(spec, field,
+			ALLOWED_CHARS_NAME, ALLOWED_FIRSTCHARS_NAME))
+	{
+	    goto exit;
+	}
+	break;
+    case RPMTAG_BUILDOPTION:
+	if (addBuildOption(spec, lang, field))
+	    goto exit;
+	break;
     case RPMTAG_NAME:
 	SINGLE_TOKEN_ONLY;
 	if (rpmCharCheck(spec, field,
@@ -1077,8 +1103,10 @@ static struct PreambleRec_s const preambleList[] = {
     {RPMTAG_BUILDARCHS,		0, 0, 0, LEN_AND_STR("buildarchitectures")},
     {RPMTAG_BUILDARCHS,		0, 0, 0, LEN_AND_STR("buildarch")},
     {RPMTAG_BUILDCONFLICTS,	0, 0, 0, LEN_AND_STR("buildconflicts")},
+    {RPMTAG_BUILDOPTION,	2, 0, 0, LEN_AND_STR("buildoption")},
     {RPMTAG_BUILDPREREQ,	0, 1, 0, LEN_AND_STR("buildprereq")},
     {RPMTAG_BUILDREQUIRES,	0, 0, 0, LEN_AND_STR("buildrequires")},
+    {RPMTAG_BUILDSYSTEM,	0, 0, 1, LEN_AND_STR("buildsystem")},
     {RPMTAG_AUTOREQPROV,	0, 0, 0, LEN_AND_STR("autoreqprov")},
     {RPMTAG_AUTOREQ,		0, 0, 0, LEN_AND_STR("autoreq")},
     {RPMTAG_AUTOPROV,		0, 0, 0, LEN_AND_STR("autoprov")},
