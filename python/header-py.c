@@ -236,12 +236,21 @@ static PyObject * hdrWrite(hdrObject *s, PyObject *args, PyObject *kwds)
 {
     char *kwlist[] = { "file", "magic", NULL };
     int magic = HEADER_MAGIC_YES;
+    PyObject *fdo_source;
     rpmfdObject *fdo = NULL;
     int rc;
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&|i", kwlist,
-				     rpmfdFromPyObject, &fdo, &magic))
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
 	return NULL;
+    }
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|i", kwlist,
+				     &fdo_source, &magic))
+	return NULL;
+
+    if(!rpmfdFromPyObject(modstate, fdo_source, &fdo)) {
+	return NULL;
+    }
 
     Py_BEGIN_ALLOW_THREADS;
     rc = headerWrite(rpmfdGetFd(fdo), s->h,
@@ -300,6 +309,11 @@ static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
     Header h = NULL;
     char *kwlist[] = { "obj", NULL };
 
+    rpmmodule_state_t *modstate = rpmModState_FromType(subtype);
+    if (!modstate) {
+	return NULL;
+    }
+
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O", kwlist, &obj)) {
 	return NULL;
     }
@@ -313,7 +327,7 @@ static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
 	char *blob = NULL;
 	if (PyBytes_AsStringAndSize(obj, &blob, &len) == 0)
 	    h = headerImport(blob, len, HEADERIMPORT_COPY);
-    } else if (rpmfdFromPyObject(obj, &fdo)) {
+    } else if (rpmfdFromPyObject(modstate, obj, &fdo)) {
 	Py_BEGIN_ALLOW_THREADS;
 	h = headerRead(rpmfdGetFd(fdo), HEADER_MAGIC_YES);
 	Py_END_ALLOW_THREADS;
@@ -324,10 +338,7 @@ static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
     }
 
     if (h == NULL) {
-	rpmmodule_state_t *modstate = rpmModState_FromType(subtype);
-	if (modstate) {
-	    PyErr_SetString(modstate->pyrpmError, "bad header");
-	}
+	PyErr_SetString(modstate->pyrpmError, "bad header");
 	return NULL;
     }
     

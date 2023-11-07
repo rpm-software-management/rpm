@@ -4,8 +4,6 @@
 #include "header-py.h"	/* XXX for utf8FromPyObject() only */
 #include "rpmfd-py.h"
 
-extern rpmmodule_state_t *modstate;  // TODO: Remove
-
 struct rpmfdObject_s {
     PyObject_HEAD
     FD_t fd;
@@ -18,11 +16,11 @@ FD_t rpmfdGetFd(rpmfdObject *fdo)
     return fdo->fd;
 }
 
-int rpmfdFromPyObject(PyObject *obj, rpmfdObject **fdop)
+int rpmfdFromPyObject(rpmmodule_state_t *modstate, PyObject *obj, rpmfdObject **fdop)
 {
     rpmfdObject *fdo = NULL;
 
-    if (rpmfdObject_Check(obj)) {
+    if (obj->ob_type == modstate->rpmfd_Type) {
 	Py_INCREF(obj);
 	fdo = (rpmfdObject *) obj;
     } else {

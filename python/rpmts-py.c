@@ -410,9 +410,13 @@ rpmts_HdrFromFdno(rpmtsObject * s, PyObject *arg)
     rpmfdObject *fdo = NULL;
     Header h;
     rpmRC rpmrc;
+    PyObject *fdo_source;
 
-    if (!PyArg_Parse(arg, "O&:HdrFromFdno", rpmfdFromPyObject, &fdo))
+    if (!PyArg_Parse(arg, "O:HdrFromFdno", &fdo_source))
     	return NULL;
+    if(!rpmfdFromPyObject(modstate, fdo_source, &fdo)) {
+	return NULL;
+    }
 
     Py_BEGIN_ALLOW_THREADS;
     rpmrc = rpmReadPackageFile(s->ts, rpmfdGetFd(fdo), NULL, &h);
@@ -913,9 +917,17 @@ static int rpmts_set_cbstyle(rpmtsObject *s, PyObject *value, void *closure)
 
 static int rpmts_set_scriptFd(rpmtsObject *s, PyObject *value, void *closure)
 {
+    PyObject *fdo_source;
     rpmfdObject *fdo = NULL;
     int rc = 0;
-    if (PyArg_Parse(value, "O&", rpmfdFromPyObject, &fdo)) {
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	return -1;
+    }
+    if (PyArg_Parse(value, "O", &fdo_source)) {
+	if(!rpmfdFromPyObject(modstate, fdo_source, &fdo)) {
+	    return -1;
+	}
 	Py_XDECREF(s->scriptFd);
 	s->scriptFd = fdo;
 	rpmtsSetScriptFd(s->ts, rpmfdGetFd(s->scriptFd));

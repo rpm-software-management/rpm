@@ -142,10 +142,18 @@ static PyObject *rpmarchive_readto(rpmarchiveObject *s,
     int nodigest = 0;
     int rc;
     char *kwlist[] = { "fd", "nodigest", NULL };
+    PyObject *fdo_source;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+        return NULL;
+    }
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&|i", kwlist,
-				 rpmfdFromPyObject, &fdo, &nodigest)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|i", kwlist,
+				 &fdo_source, &nodigest)) {
 	return NULL;
+    }
+    if(!rpmfdFromPyObject(modstate, fdo_source, &fdo)) {
+        return NULL;
     }
 
     if (s->archive == NULL)
@@ -167,10 +175,18 @@ static PyObject *rpmarchive_writeto(rpmarchiveObject *s,
     rpmfdObject *fdo = NULL;
     int rc;
     char *kwlist[] = { "fd", NULL };
+    PyObject *fdo_source;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+        return NULL;
+    }
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&", kwlist,
-				 rpmfdFromPyObject, &fdo)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist,
+				 &fdo_source)) {
 	return NULL;
+    }
+    if(!rpmfdFromPyObject(modstate, fdo_source, &fdo)) {
+        return NULL;
     }
 
     if (s->archive == NULL)
@@ -215,10 +231,15 @@ static char rpmarchive_doc[] =
 static PyObject *rpmarchive_iternext(rpmarchiveObject *s)
 {
     PyObject *next = NULL;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
+
     int fx = rpmfiNext(s->archive);
 
     if (fx >= 0) {
-	next = rpmfile_Wrap(s->files, fx);
+	next = rpmfile_Wrap(modstate, s->files, fx);
     } else if (fx < -1) {
 	next = rpmarchive_error(fx);
     } else {
