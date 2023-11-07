@@ -314,7 +314,7 @@ static int initAndAddType(PyObject *m, PyTypeObject **type, PyType_Spec *spec,
                           char *name)
 {
     if (!*type) {
-        *type = (PyTypeObject *)PyType_FromSpec(spec);
+        *type = (PyTypeObject *)PyType_FromModuleAndSpec(m, spec, NULL);
         if (!*type) return 0;
     }
     /* We intentionally leak a reference to `type` (only once per type per
