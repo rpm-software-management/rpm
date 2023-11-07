@@ -206,6 +206,12 @@ with old packages that might still depend on it.
 
 Do not use in new packages.
 
+#### Buildsystem
+
+Automatically populate the spec build scripts for the given build system,
+such as `Buildsystem: autotools". See [declarative build](buildsystem.md)
+documentation for more details.
+
 #### AutoReqProv
 #### AutoReq
 #### AutoProv
