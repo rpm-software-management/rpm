@@ -8,10 +8,25 @@ typedef struct rpmfilesObject_s rpmfilesObject;
 extern PyType_Spec rpmfile_Type_Spec;
 extern PyType_Spec rpmfiles_Type_Spec;
 
-#define rpmfileObject_Check(v)	((v)->ob_type == modstate->rpmfile_Type)
-#define rpmfilesObject_Check(v)	((v)->ob_type == modstate->rpmfiles_Type)
+static inline int rpmfileObject_Check(PyObject *v) {
+	rpmmodule_state_t *modstate = rpmModState_FromObject(v);
+    if (!modstate) {
+        PyErr_Clear();
+        return 0;
+    }
+    return (v)->ob_type == modstate->rpmfile_Type;
+}
 
-PyObject * rpmfile_Wrap(rpmfiles files, int ix);
+static inline int rpmfilesObject_Check(PyObject *v) {
+	rpmmodule_state_t *modstate = rpmModState_FromObject(v);
+    if (!modstate) {
+        PyErr_Clear();
+        return 0;
+    }
+    return (v)->ob_type == modstate->rpmfiles_Type;
+}
+
+PyObject * rpmfile_Wrap(rpmmodule_state_t *modstate, rpmfiles files, int ix);
 PyObject * rpmfiles_Wrap(PyTypeObject *subtype, rpmfiles files);
 
 #endif

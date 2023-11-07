@@ -17,8 +17,6 @@
 #include "rpmte-py.h"
 #include "rpmts-py.h"
 
-extern rpmmodule_state_t *modstate;  // TODO: Remove
-
 /** \ingroup python
  * \name Class: Rpmts
  * \class Rpmts
@@ -410,9 +408,17 @@ rpmts_HdrFromFdno(rpmtsObject * s, PyObject *arg)
     rpmfdObject *fdo = NULL;
     Header h;
     rpmRC rpmrc;
+    PyObject *fdo_source;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
 
-    if (!PyArg_Parse(arg, "O&:HdrFromFdno", rpmfdFromPyObject, &fdo))
+    if (!PyArg_Parse(arg, "O:HdrFromFdno", &fdo_source))
     	return NULL;
+    if(!rpmfdFromPyObject(modstate, fdo_source, &fdo)) {
+	return NULL;
+    }
 
     Py_BEGIN_ALLOW_THREADS;
     rpmrc = rpmReadPackageFile(s->ts, rpmfdGetFd(fdo), NULL, &h);
@@ -473,8 +479,12 @@ rpmts_PgpImportPubkey(rpmtsObject * s, PyObject * args, PyObject * kwds)
 
 static PyObject *rpmts_setKeyring(rpmtsObject *s, PyObject *arg)
 {
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
     rpmKeyring keyring = NULL;
-    if (arg == Py_None || rpmKeyringFromPyObject(arg, &keyring)) {
+    if (arg == Py_None || rpmKeyringFromPyObject(modstate, arg, &keyring)) {
 	return PyBool_FromLong(rpmtsSetKeyring(s->ts, keyring) == 0);
     } else {
 	PyErr_SetString(PyExc_TypeError, "rpm.keyring or None expected");
@@ -484,6 +494,10 @@ static PyObject *rpmts_setKeyring(rpmtsObject *s, PyObject *arg)
 
 static PyObject *rpmts_getKeyring(rpmtsObject *s, PyObject *args, PyObject *kwds)
 {
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
     rpmKeyring keyring = NULL;
     int autoload = 1;
     char * kwlist[] = { "autoload", NULL };
@@ -514,6 +528,14 @@ rpmtsCallback(const void * arg, const rpmCallbackType what,
 
     PyEval_RestoreThread(cbInfo->_save);
 
+    if (cbInfo->tso == NULL) {
+	PyErr_SetString(PyExc_SystemError, "callback tso not set");
+	return NULL;
+    }
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)cbInfo->tso);
+    if (!modstate) {
+	return NULL;
+    }
 
     if (cbInfo->style == 0) {
 	/* Synthesize a python object for callback (if necessary). */
@@ -577,8 +599,12 @@ rpmtsCallback(const void * arg, const rpmCallbackType what,
 static PyObject *
 rpmts_Problems(rpmtsObject * s)
 {
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
     rpmps ps = rpmtsProblems(s->ts);
-    PyObject *problems = rpmps_AsList(ps);
+    PyObject *problems = rpmps_AsList(modstate, ps);
     rpmpsFree(ps);
     return problems;
 }
@@ -622,6 +648,10 @@ rpmts_iternext(rpmtsObject * s)
 {
     PyObject * result = NULL;
     rpmte te;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
 
     /* Reset iterator on 1st entry. */
     if (s->tsi == NULL) {
@@ -652,6 +682,10 @@ rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
     int len = 0;
     rpmDbiTagVal tag = RPMDBI_PACKAGES;
     char * kwlist[] = {"tagNumber", "key", NULL};
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O&O:Match", kwlist,
 	    tagNumFromPyObject, &tag, &Key))
@@ -696,6 +730,10 @@ rpmts_index(rpmtsObject * s, PyObject * args, PyObject * kwds)
     rpmDbiTagVal tag;
     PyObject *mio = NULL;
     char * kwlist[] = {"tag", NULL};
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&:Keys", kwlist,
               tagNumFromPyObject, &tag))
@@ -913,9 +951,17 @@ static int rpmts_set_cbstyle(rpmtsObject *s, PyObject *value, void *closure)
 
 static int rpmts_set_scriptFd(rpmtsObject *s, PyObject *value, void *closure)
 {
+    PyObject *fdo_source;
     rpmfdObject *fdo = NULL;
     int rc = 0;
-    if (PyArg_Parse(value, "O&", rpmfdFromPyObject, &fdo)) {
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	return -1;
+    }
+    if (PyArg_Parse(value, "O", &fdo_source)) {
+	if(!rpmfdFromPyObject(modstate, fdo_source, &fdo)) {
+	    return -1;
+	}
 	Py_XDECREF(s->scriptFd);
 	s->scriptFd = fdo;
 	rpmtsSetScriptFd(s->ts, rpmfdGetFd(s->scriptFd));
