@@ -6,7 +6,14 @@
 typedef struct hdrObject_s hdrObject;
 extern PyType_Spec hdr_Type_Spec;
 
-#define hdrObject_Check(v)	((v)->ob_type == modstate->hdr_Type)
+static inline int hdrObject_Check(PyObject *v) {
+	rpmmodule_state_t *modstate = rpmModState_FromObject(v);
+    if (!modstate) {
+        PyErr_Clear();
+        return 0;
+    }
+    return (v)->ob_type == modstate->hdr_Type;
+}
 
 #define DEPRECATED_METHOD(_msg) \
     PyErr_WarnEx(PyExc_PendingDeprecationWarning, (_msg), 2);

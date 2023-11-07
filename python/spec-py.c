@@ -4,8 +4,6 @@
 #include "header-py.h"
 #include "spec-py.h"
 
-extern rpmmodule_state_t *modstate;  // TODO: Remove
-
 /** \ingroup python
  * \name Class: Rpmspec
  * \class Rpmspec
@@ -31,7 +29,7 @@ extern rpmmodule_state_t *modstate;  // TODO: Remove
  *
  */
 
-static PyObject *makeHeader(Header h)
+static PyObject *makeHeader(rpmmodule_state_t *modstate, Header h)
 {
     return hdr_Wrap(modstate->hdr_Type, headerLink(h));
 }
@@ -78,7 +76,11 @@ static char specPkg_doc[] =
 
 static PyObject * specpkg_get_header(specPkgObject *s, void *closure)
 {
-    return makeHeader(rpmSpecPkgHeader(s->pkg));
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
+    return makeHeader(modstate, rpmSpecPkgHeader(s->pkg));
 }
 
 static PyObject * specpkg_get_fileFile(specPkgObject *s, void *closure)
@@ -232,6 +234,10 @@ static PyObject * spec_get_packages(specObject *s, void *closure)
     rpmSpecPkg pkg;
     PyObject *pkgList;
     rpmSpecPkgIter iter;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
 
     pkgList = PyList_New(0);
     if (!pkgList) {
@@ -256,7 +262,11 @@ static PyObject * spec_get_packages(specObject *s, void *closure)
 
 static PyObject * spec_get_source_header(specObject *s, void *closure)
 {
-    return makeHeader(rpmSpecSourceHeader(s->spec));
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
+    return makeHeader(modstate, rpmSpecSourceHeader(s->spec));
 }
 
 static char spec_doc[] = "RPM Spec file object";

@@ -12,8 +12,6 @@
 #include "rpmtd-py.h"
 #include "rpmver-py.h"
 
-extern rpmmodule_state_t *modstate;  // TODO: Remove
-
 /** \ingroup python
  * \class Rpm
  * \brief START HERE / RPM base module for the Python API
@@ -164,10 +162,14 @@ static PyObject * hdrAsBytes(hdrObject * s)
 {
     PyObject *res = NULL;
     unsigned int len = 0;
+
     char *buf = headerExport(s->h, &len);
 
     if (buf == NULL || len == 0) {
-	PyErr_SetString(modstate->pyrpmError, "can't unload bad header\n");
+	rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+	if (modstate) {
+	    PyErr_SetString(modstate->pyrpmError, "can't unload bad header\n");
+	}
     } else {
 	res = PyBytes_FromStringAndSize(buf, len);
     }
@@ -193,7 +195,10 @@ static PyObject * hdrFormat(hdrObject * s, PyObject * args, PyObject * kwds)
 
     r = headerFormat(s->h, fmt, &err);
     if (!r) {
-	PyErr_SetString(modstate->pyrpmError, err);
+	rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+	if (modstate) {
+	    PyErr_SetString(modstate->pyrpmError, err);
+	}
 	return NULL;
     }
 
@@ -231,12 +236,21 @@ static PyObject * hdrWrite(hdrObject *s, PyObject *args, PyObject *kwds)
 {
     char *kwlist[] = { "file", "magic", NULL };
     int magic = HEADER_MAGIC_YES;
+    PyObject *fdo_source;
     rpmfdObject *fdo = NULL;
     int rc;
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&|i", kwlist,
-				     rpmfdFromPyObject, &fdo, &magic))
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
 	return NULL;
+    }
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|i", kwlist,
+				     &fdo_source, &magic))
+	return NULL;
+
+    if(!rpmfdFromPyObject(modstate, fdo_source, &fdo)) {
+	return NULL;
+    }
 
     Py_BEGIN_ALLOW_THREADS;
     rc = headerWrite(rpmfdGetFd(fdo), s->h,
@@ -295,6 +309,11 @@ static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
     Header h = NULL;
     char *kwlist[] = { "obj", NULL };
 
+    rpmmodule_state_t *modstate = rpmModState_FromType(subtype);
+    if (!modstate) {
+	return NULL;
+    }
+
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O", kwlist, &obj)) {
 	return NULL;
     }
@@ -308,7 +327,7 @@ static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
 	char *blob = NULL;
 	if (PyBytes_AsStringAndSize(obj, &blob, &len) == 0)
 	    h = headerImport(blob, len, HEADERIMPORT_COPY);
-    } else if (rpmfdFromPyObject(obj, &fdo)) {
+    } else if (rpmfdFromPyObject(modstate, obj, &fdo)) {
 	Py_BEGIN_ALLOW_THREADS;
 	h = headerRead(rpmfdGetFd(fdo), HEADER_MAGIC_YES);
 	Py_END_ALLOW_THREADS;
@@ -406,7 +425,7 @@ int tagNumFromPyObject (PyObject *item, rpmTagVal *tagp)
     return 1;
 }
 
-static PyObject * hdrGetTag(Header h, rpmTagVal tag)
+static PyObject * hdrGetTag(rpmmodule_state_t *modstate, Header h, rpmTagVal tag)
 {
     PyObject *res = NULL;
     struct rpmtd_s td;
@@ -546,14 +565,24 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 {
     rpmTagVal tag;
 
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	return NULL;
+    }
+
     if (!tagNumFromPyObject(item, &tag)) return NULL;
-    return hdrGetTag(s->h, tag);
+    return hdrGetTag(modstate, s->h, tag);
 }
 
 static int hdr_ass_subscript(hdrObject *s, PyObject *key, PyObject *value)
 {
     rpmTagVal tag;
     if (!tagNumFromPyObject(key, &tag)) return -1;
+
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	return -1;
+    }
 
     if (value == NULL) {
 	/* XXX should failure raise key error? */
@@ -566,6 +595,11 @@ static int hdr_ass_subscript(hdrObject *s, PyObject *key, PyObject *value)
 
 static PyObject * hdr_getattro(hdrObject * s, PyObject * n)
 {
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	return NULL;
+    }
+
     PyObject *res = PyObject_GenericGetAttr((PyObject *) s, n);
     if (res == NULL) {
 	PyObject *type, *value, *traceback;
@@ -577,7 +611,7 @@ static PyObject * hdr_getattro(hdrObject * s, PyObject * n)
 	    Py_XDECREF(type);
 	    Py_XDECREF(value);
 	    Py_XDECREF(traceback);
-	    res = hdrGetTag(s->h, tag);
+	    res = hdrGetTag(modstate, s->h, tag);
 	} else {
 	    PyErr_Restore(type, value, traceback);
 	}
@@ -687,11 +721,15 @@ int hdrFromPyObject(PyObject *item, Header *hptr)
     }
 }
 
-PyObject * versionCompare (PyObject * self, PyObject * args, PyObject * kwds)
+PyObject * versionCompare (PyObject *mod, PyObject * args, PyObject * kwds)
 {
     hdrObject * h1, * h2;
     char * kwlist[] = {"version0", "version1", NULL};
 
+    rpmmodule_state_t *modstate = rpmModState_FromModule((PyObject*)mod);
+    if (!modstate) {
+	return NULL;
+    }
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!O!", kwlist, modstate->hdr_Type,
                                      &h1, modstate->hdr_Type, &h2))
 	return NULL;
@@ -699,7 +737,7 @@ PyObject * versionCompare (PyObject * self, PyObject * args, PyObject * kwds)
     return Py_BuildValue("i", rpmVersionCompare(h1->h, h2->h));
 }
 
-PyObject * labelCompare (PyObject * self, PyObject * args)
+PyObject * labelCompare (PyObject *mod, PyObject * args)
 {
     PyObject *rco = NULL;
     rpmver rv1 = NULL;

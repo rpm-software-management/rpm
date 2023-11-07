@@ -2,8 +2,6 @@
 #include <rpm/rpmkeyring.h>
 #include "rpmkeyring-py.h"
 
-extern rpmmodule_state_t *modstate;  // TODO: Remove
-
 struct rpmPubkeyObject_s {
     PyObject_HEAD
     PyObject *md_dict;
@@ -121,6 +119,10 @@ static PyObject *rpmKeyring_new(PyTypeObject *subtype,
 static PyObject *rpmKeyring_addKey(rpmKeyringObject *s, PyObject *arg)
 {
     rpmPubkeyObject *pubkey = NULL;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
 
     if (!PyArg_Parse(arg, "O!", modstate->rpmPubkey_Type, &pubkey))
 	return NULL;
@@ -174,7 +176,7 @@ PyObject * rpmKeyring_Wrap(PyTypeObject *subtype, rpmKeyring keyring)
     return (PyObject*) s;
 }
 
-int rpmKeyringFromPyObject(PyObject *item, rpmKeyring *keyring)
+int rpmKeyringFromPyObject(rpmmodule_state_t *modstate, PyObject *item, rpmKeyring *keyring)
 {
     rpmKeyringObject *kro;
     if (!PyArg_Parse(item, "O!", modstate->rpmKeyring_Type, &kro))

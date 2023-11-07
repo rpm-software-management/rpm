@@ -6,8 +6,6 @@
 #include "rpmte-py.h"
 #include "rpmps-py.h"
 
-extern rpmmodule_state_t *modstate;  // TODO: Remove
-
 /** \ingroup python
  * \name Class: Rpmte
  * \class Rpmte
@@ -124,6 +122,10 @@ rpmte_PkgFileSize(rpmteObject * s, PyObject * unused)
 static PyObject *
 rpmte_Parent(rpmteObject * s, PyObject * unused)
 {
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
     rpmte parent = rpmteParent(s->te);
     if (parent)
 	return rpmte_Wrap(modstate->rpmte_Type, parent);
@@ -138,8 +140,12 @@ static PyObject * rpmte_Failed(rpmteObject * s, PyObject * unused)
 
 static PyObject * rpmte_Problems(rpmteObject * s, PyObject * unused)
 {
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
     rpmps ps = rpmteProblems(s->te);
-    PyObject *problems = rpmps_AsList(ps);
+    PyObject *problems = rpmps_AsList(modstate, ps);
     rpmpsFree(ps);
     return problems;
 }
@@ -191,6 +197,10 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
     rpmds ds;
     rpmTagVal tag;
     char * kwlist[] = {"tag", NULL};
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&:DS", kwlist,
 				tagNumFromPyObject, &tag))
@@ -206,6 +216,10 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 static PyObject *
 rpmte_Files(rpmteObject * s, PyObject * args, PyObject * kwds)
 {
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
     rpmfiles files = rpmteFiles(s->te);
     if (files == NULL) {
 	Py_RETURN_NONE;

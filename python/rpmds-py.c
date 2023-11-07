@@ -8,8 +8,6 @@
 #include "rpmds-py.h"
 #include "rpmstrpool-py.h"
 
-extern rpmmodule_state_t *modstate;  // TODO: Remove
-
 struct rpmdsObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
@@ -122,6 +120,10 @@ static PyObject *
 rpmds_Find(rpmdsObject * s, PyObject * arg)
 {
     rpmdsObject * o;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	return NULL;
+    }
 
     if (!PyArg_Parse(arg, "O!:Find", modstate->rpmds_Type, &o))
 	return NULL;
@@ -136,6 +138,10 @@ static PyObject *
 rpmds_Merge(rpmdsObject * s, PyObject * arg)
 {
     rpmdsObject * o;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	return NULL;
+    }
 
     if (!PyArg_Parse(arg, "O!:Merge", modstate->rpmds_Type, &o))
 	return NULL;
@@ -146,6 +152,10 @@ static PyObject *
 rpmds_Search(rpmdsObject * s, PyObject * arg)
 {
     rpmdsObject * o;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	return NULL;
+    }
 
     if (!PyArg_Parse(arg, "O!:Merge", modstate->rpmds_Type, &o))
         return NULL;
@@ -156,6 +166,10 @@ rpmds_Search(rpmdsObject * s, PyObject * arg)
 static PyObject *rpmds_Compare(rpmdsObject * s, PyObject * o)
 {
     rpmdsObject * ods;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	return NULL;
+    }
 
     if (!PyArg_Parse(o, "O!:Compare", modstate->rpmds_Type, &ods))
 	return NULL;
@@ -170,13 +184,22 @@ static PyObject *rpmds_Instance(rpmdsObject * s)
 
 static PyObject * rpmds_Rpmlib(rpmdsObject * s, PyObject *args, PyObject *kwds)
 {
+    PyObject *pool_source = NULL;
     rpmstrPool pool = NULL;
     rpmds ds = NULL;
     char * kwlist[] = {"pool", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O&:rpmds_Rpmlib", kwlist, 
-		 &poolFromPyObject, &pool))
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
 	return NULL;
+    }
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O:rpmds_Rpmlib", kwlist,
+		 &pool_source))
+	return NULL;
+
+    if(pool_source && !poolFromPyObject(modstate, pool_source, &pool)) {
+	    return NULL;
+    }
 
     /* XXX check return code, permit arg (NULL uses system default). */
     rpmdsRpmlibPool(pool, &ds, NULL);
@@ -322,13 +345,22 @@ static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
     rpmTagVal tagN = RPMTAG_REQUIRENAME;
     rpmds ds = NULL;
     Header h = NULL;
+    PyObject *pool_source = NULL;
     rpmstrPool pool = NULL;
     char * kwlist[] = {"obj", "tag", "pool", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO&|O&:rpmds_new", kwlist, 
-	    	 &obj, tagNumFromPyObject, &tagN,
-		 &poolFromPyObject, &pool))
+    rpmmodule_state_t *modstate = rpmModState_FromType(subtype);
+    if (!modstate) {
 	return NULL;
+    }
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO&|O:rpmds_new", kwlist,
+	    	 &obj, tagNumFromPyObject, &tagN,
+		 &pool_source))
+	return NULL;
+
+    if(pool_source && !poolFromPyObject(modstate, pool_source, &pool)) {
+	return NULL;
+    }
 
     if (PyTuple_Check(obj)) {
 	const char *name = NULL;
