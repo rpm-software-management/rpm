@@ -1837,6 +1837,17 @@ static int defineMacro(rpmMacroContext mc, const char * macro, int level)
     return rc;
 }
 
+static void linenoMacro(rpmMacroBuf mb,
+		    rpmMacroEntry me, ARGV_t margs, size_t *parsed)
+{
+    int *lineno = rpmMacroEntryPriv(me);
+    if (lineno) {
+	char lnobuf[16];
+	snprintf(lnobuf, sizeof(lnobuf), "%d", *lineno);
+	rpmMacroBufAppendStr(mb, lnobuf);
+    }
+}
+
 static int loadMacroFile(rpmMacroContext mc, const char * fn)
 {
     FILE *fd = fopen(fn, "r");
@@ -1851,11 +1862,12 @@ static int loadMacroFile(rpmMacroContext mc, const char * fn)
 	goto exit;
 
     pushMacro(mc, "__file_name", NULL, fn, RMIL_MACROFILES, ME_LITERAL);
+    pushMacroAny(mc, "__file_lineno", NULL, "<aux>", linenoMacro, &lineno, 0,
+			RMIL_MACROFILES, ME_FUNC);
 
     buf[0] = '\0';
     while ((nlines = rdcl(buf, blen, fd)) > 0) {
 	char c, *n;
-	char lnobuf[16];
 
 	lineno += nlines;
 	n = buf;
@@ -1865,14 +1877,12 @@ static int loadMacroFile(rpmMacroContext mc, const char * fn)
 		continue;
 	n++;	/* skip % */
 
-	snprintf(lnobuf, sizeof(lnobuf), "%d", lineno);
-	pushMacro(mc, "__file_lineno", NULL, lnobuf, RMIL_MACROFILES, ME_LITERAL);
 	if (defineMacro(mc, n, RMIL_MACROFILES))
 	    nfailed++;
-	popMacro(mc, "__file_lineno");
     }
     fclose(fd);
     popMacro(mc, "__file_name");
+    popMacro(mc, "__file_lineno");
 
     rc = (nfailed > 0);
 
