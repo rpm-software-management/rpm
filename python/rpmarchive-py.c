@@ -9,8 +9,6 @@
 #include "rpmarchive-py.h"
 #include "rpmstrpool-py.h"
 
-extern rpmmodule_state_t *modstate;  // TODO: Remove
-
 struct rpmarchiveObject_s {
     PyObject_HEAD
     rpmfi archive;
