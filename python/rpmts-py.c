@@ -478,7 +478,7 @@ rpmts_PgpImportPubkey(rpmtsObject * s, PyObject * args, PyObject * kwds)
 static PyObject *rpmts_setKeyring(rpmtsObject *s, PyObject *arg)
 {
     rpmKeyring keyring = NULL;
-    if (arg == Py_None || rpmKeyringFromPyObject(arg, &keyring)) {
+    if (arg == Py_None || rpmKeyringFromPyObject(modstate, arg, &keyring)) {
 	return PyBool_FromLong(rpmtsSetKeyring(s->ts, keyring) == 0);
     } else {
 	PyErr_SetString(PyExc_TypeError, "rpm.keyring or None expected");

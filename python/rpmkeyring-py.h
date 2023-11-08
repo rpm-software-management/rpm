@@ -11,5 +11,5 @@ extern PyType_Spec rpmPubkey_Type_Spec;
 PyObject * rpmPubkey_Wrap(PyTypeObject *subtype, rpmPubkey pubkey);
 PyObject * rpmKeyring_Wrap(PyTypeObject *subtype, rpmKeyring keyring);
 
-int rpmKeyringFromPyObject(PyObject *item, rpmKeyring *keyring);
+int rpmKeyringFromPyObject(rpmmodule_state_t *modstate, PyObject *item, rpmKeyring *keyring);
 #endif
