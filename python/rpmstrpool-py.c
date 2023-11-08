@@ -2,8 +2,6 @@
 #include <rpm/rpmstrpool.h>
 #include "rpmstrpool-py.h"
 
-extern rpmmodule_state_t *modstate;  // TODO: Remove
-
 struct rpmstrPoolObject_s {
     PyObject_HEAD
     rpmstrPool pool;
@@ -132,7 +130,7 @@ PyObject * rpmstrPool_Wrap(PyTypeObject *subtype, rpmstrPool pool)
     return (PyObject *) s;
 }
 
-int poolFromPyObject(PyObject *item, rpmstrPool *pool)
+int poolFromPyObject(rpmmodule_state_t *modstate, PyObject *item, rpmstrPool *pool)
 {
     rpmstrPoolObject *p = NULL;
     if (PyArg_Parse(item, "O!", modstate->rpmstrPool_Type, &p))

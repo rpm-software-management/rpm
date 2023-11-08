@@ -183,6 +183,7 @@ static PyObject *rpmds_Instance(rpmdsObject * s)
 
 static PyObject * rpmds_Rpmlib(rpmdsObject * s, PyObject *args, PyObject *kwds)
 {
+    PyObject *pool_source = NULL;
     rpmstrPool pool = NULL;
     rpmds ds = NULL;
     char * kwlist[] = {"pool", NULL};
@@ -191,9 +192,13 @@ static PyObject * rpmds_Rpmlib(rpmdsObject * s, PyObject *args, PyObject *kwds)
 	return NULL;
     }
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O&:rpmds_Rpmlib", kwlist, 
-		 &poolFromPyObject, &pool))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O:rpmds_Rpmlib", kwlist,
+		 &pool_source))
 	return NULL;
+
+    if(pool_source && !poolFromPyObject(modstate, pool_source, &pool)) {
+	    return NULL;
+    }
 
     /* XXX check return code, permit arg (NULL uses system default). */
     rpmdsRpmlibPool(pool, &ds, NULL);
@@ -339,13 +344,22 @@ static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
     rpmTagVal tagN = RPMTAG_REQUIRENAME;
     rpmds ds = NULL;
     Header h = NULL;
+    PyObject *pool_source = NULL;
     rpmstrPool pool = NULL;
     char * kwlist[] = {"obj", "tag", "pool", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO&|O&:rpmds_new", kwlist, 
-	    	 &obj, tagNumFromPyObject, &tagN,
-		 &poolFromPyObject, &pool))
+    rpmmodule_state_t *modstate = rpmModState_FromType(subtype);
+    if (!modstate) {
 	return NULL;
+    }
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO&|O:rpmds_new", kwlist,
+	    	 &obj, tagNumFromPyObject, &tagN,
+		 &pool_source))
+	return NULL;
+
+    if(pool_source && !poolFromPyObject(modstate, pool_source, &pool)) {
+	return NULL;
+    }
 
     if (PyTuple_Check(obj)) {
 	const char *name = NULL;
