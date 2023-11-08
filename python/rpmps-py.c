@@ -2,8 +2,6 @@
 
 #include "rpmps-py.h"
 
-extern rpmmodule_state_t *modstate;  // TODO: Remove
-
 struct rpmProblemObject_s {
     PyObject_HEAD
     rpmProblem	prob;
@@ -119,7 +117,7 @@ PyObject *rpmprob_Wrap(PyTypeObject *subtype, rpmProblem prob)
     return (PyObject *) s;
 }
 
-PyObject *rpmps_AsList(rpmps ps)
+PyObject *rpmps_AsList(rpmmodule_state_t *modstate, rpmps ps)
 {
     PyObject *problems;
     rpmpsi psi;

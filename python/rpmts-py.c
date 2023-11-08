@@ -582,7 +582,7 @@ static PyObject *
 rpmts_Problems(rpmtsObject * s)
 {
     rpmps ps = rpmtsProblems(s->ts);
-    PyObject *problems = rpmps_AsList(ps);
+    PyObject *problems = rpmps_AsList(modstate, ps);
     rpmpsFree(ps);
     return problems;
 }

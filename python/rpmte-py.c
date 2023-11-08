@@ -138,7 +138,7 @@ static PyObject * rpmte_Failed(rpmteObject * s, PyObject * unused)
 static PyObject * rpmte_Problems(rpmteObject * s, PyObject * unused)
 {
     rpmps ps = rpmteProblems(s->te);
-    PyObject *problems = rpmps_AsList(ps);
+    PyObject *problems = rpmps_AsList(modstate, ps);
     rpmpsFree(ps);
     return problems;
 }

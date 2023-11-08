@@ -10,6 +10,6 @@ extern PyType_Spec rpmProblem_Type_Spec;
 
 PyObject * rpmprob_Wrap(PyTypeObject *subtype, rpmProblem prob);
 
-PyObject *rpmps_AsList(rpmps ps);
+PyObject *rpmps_AsList(rpmmodule_state_t *modstate, rpmps ps);
 
 #endif
