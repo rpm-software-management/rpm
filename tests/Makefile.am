@@ -129,6 +129,7 @@ EXTRA_DIST += data/SOURCES/source_space.tar.gz
 EXTRA_DIST += data/SPECS/fifo.spec
 EXTRA_DIST += data/SPECS/dev.spec
 EXTRA_DIST += data/SPECS/hello-patch.spec
+EXTRA_DIST += data/SPECS/source_date_epoch.spec
 EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.pgp
 EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.pub
 EXTRA_DIST += data/keys/rpm.org-rsa-2048-test.pgp
