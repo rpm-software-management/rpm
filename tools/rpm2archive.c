@@ -54,7 +54,7 @@ static void fill_archive_entry(struct archive_entry * entry, rpmfi fi)
 	archive_entry_set_symlink(entry, rpmfiFLink(fi));
 }
 
-static void write_file_content(struct archive * a, char * buf, rpmfi fi)
+static int write_file_content(struct archive * a, char * buf, rpmfi fi)
 {
     rpm_loff_t left = rpmfiFSize(fi);
     size_t len, read;
@@ -63,13 +63,19 @@ static void write_file_content(struct archive * a, char * buf, rpmfi fi)
 	len = (left > BUFSIZE ? BUFSIZE : left);
 	read = rpmfiArchiveRead(fi, buf, len);
 	if (read==len) {
-	    archive_write_data(a, buf, len);
+	    if (archive_write_data(a, buf, len) < 0) {
+		fprintf(stderr, "Error writing archive: %s\n",
+				archive_error_string(a));
+		break;
+	    }
 	} else {
 	    fprintf(stderr, "Error reading file from rpm payload\n");
 	    break;
 	}
 	left -= len;
     }
+
+    return (left > 0);
 }
 
 static int process_package(rpmts ts, const char * filename)
@@ -205,7 +211,10 @@ static int process_package(rpmts ts, const char * filename)
 	archive_write_header(a, entry);
 
 	if (S_ISREG(mode) && (nlink == 1 || rpmfiArchiveHasContent(fi))) {
-	    write_file_content(a, buf, fi);
+	    if (write_file_content(a, buf, fi)) {
+		rc = ARCHIVE_FAILED;
+		break;
+	    }
 	}
     }
     /* End of iteration is not an error */
@@ -217,7 +226,9 @@ static int process_package(rpmts ts, const char * filename)
 
     Fclose(gzdi);	/* XXX gzdi == fdi */
     archive_entry_free(entry);
-    archive_write_close(a);
+    rc = archive_write_close(a);
+    if (rc != ARCHIVE_OK)
+	fprintf(stderr, "Error writing archive: %s\n", archive_error_string(a));
     archive_write_free(a);
     buf = _free(buf);
     rpmfilesFree(files);
