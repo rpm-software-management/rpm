@@ -3,7 +3,6 @@ add_library(cliutils OBJECT cliutils.c cliutils.h)
 add_executable(rpm rpm.c cliutils)
 add_executable(rpmdb rpmdb.c cliutils)
 add_executable(rpmkeys rpmkeys.c cliutils)
-add_executable(rpm2cpio rpm2cpio.c cliutils)
 add_executable(rpmsign rpmsign.c cliutils)
 add_executable(rpmbuild rpmbuild.c cliutils)
 add_executable(rpmspec rpmspec.c cliutils)
@@ -48,8 +47,15 @@ foreach(cmd rpmverify rpmquery)
 			BYPRODUCTS ${cmd})
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${cmd} TYPE BIN)
 endforeach()
+if (WITH_ARCHIVE)
+	add_custom_target(rpm2cpio ALL COMMAND
+			${CMAKE_COMMAND} -E create_symlink rpm2archive rpm2cpio
+			BYPRODUCTS rpm2cpio)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rpm2cpio TYPE BIN)
+endif()
+
 install(TARGETS
-	rpm rpmdb rpmkeys rpm2cpio rpmsign rpmbuild rpmspec
+	rpm rpmdb rpmkeys rpmsign rpmbuild rpmspec
 	rpmlua rpmgraph rpmsort
 )
 install(TARGETS elfdeps rpmdeps rpmuncompress DESTINATION ${RPM_CONFIGDIR})

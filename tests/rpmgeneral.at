@@ -341,8 +341,8 @@ RPMTEST_CHECK([
 runroot_other rpm2cpio /data/SRPMS/hello-1.0-1.src.rpm | cpio -t --quiet
 ],
 [0],
-[hello-1.0.tar.gz
-hello.spec
+[./hello-1.0.tar.gz
+./hello.spec
 ],
 [])
 RPMTEST_CLEANUP
