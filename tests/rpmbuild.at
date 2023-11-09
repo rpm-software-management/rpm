@@ -812,38 +812,49 @@ RPMTEST_CLEANUP
 
 AT_SETUP([Dependency generation 1])
 AT_KEYWORDS([build])
-RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild -bb --quiet \
 		--define "_binary_payload w9.gzdio" \
 		/data/SPECS/filedep.spec
-echo Requires:
+
+RPMTEST_CHECK([
 runroot rpm  -qp --requires /build/RPMS/noarch/filedep-1.0-1.noarch.rpm
-echo Provides:
-runroot rpm -qp --provides /build/RPMS/noarch/filedep-1.0-1.noarch.rpm
-echo Filerequires:
-runroot rpm -qp --qf '[["%{FILENAMES}\t%{FILEREQUIRE}"\n]]' /build/RPMS/noarch/filedep-1.0-1.noarch.rpm
-echo Fileprovides:
-runroot rpm -qp --qf '[["%{FILENAMES}\t%{FILEPROVIDE}"\n]]' /build/RPMS/noarch/filedep-1.0-1.noarch.rpm
 ],
 [0],
-[Requires:
-/bin/f00f
+[/bin/f00f
 /bin/sh
 rpmlib(CompressedFileNames) <= 3.0.4-1
 rpmlib(FileDigests) <= 4.6.0-1
 rpmlib(PayloadFilesHavePrefix) <= 4.0-1
-Provides:
-filedep = 1.0-1
-Filerequires:
-"/etc/foo.conf	"
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -qp --provides /build/RPMS/noarch/filedep-1.0-1.noarch.rpm
+],
+[0],
+[filedep = 1.0-1
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -qp --qf '[["%{FILENAMES}\t%{FILEREQUIRE}"\n]]' /build/RPMS/noarch/filedep-1.0-1.noarch.rpm
+],
+[0],
+["/etc/foo.conf	"
 "/usr/bin/bar	/bin/f00f"
 "/usr/bin/foo	/bin/sh"
 "/usr/share/doc/filedep	"
 "/usr/share/doc/filedep/README	"
-Fileprovides:
-"/etc/foo.conf	"
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -qp --qf '[["%{FILENAMES}\t%{FILEPROVIDE}"\n]]' /build/RPMS/noarch/filedep-1.0-1.noarch.rpm
+],
+[0],
+["/etc/foo.conf	"
 "/usr/bin/bar	"
 "/usr/bin/foo	"
 "/usr/share/doc/filedep	"
