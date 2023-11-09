@@ -15,16 +15,21 @@
 #include <archive.h>
 #include <archive_entry.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "debug.h"
 
 #define BUFSIZE (128*1024)
 
 int compress = 1;
+const char *format = "pax";
 
 static struct poptOption optionsTable[] = {
     { "nocompression", 'n', POPT_ARG_VAL, &compress, 0,
-        N_("create uncompressed tar file"),
+        N_("create uncompressed archive"),
+        NULL },
+    { "format", 'f', POPT_ARG_STRING, &format, 0,
+	N_("archive format (pax|cpio)"),
         NULL },
     POPT_AUTOHELP
     POPT_TABLEEND
@@ -83,6 +88,7 @@ static int process_package(rpmts ts, const char * filename)
     FD_t gzdi;
     Header h;
     int rc = 0;
+    int format_code = 0;
     char * rpmio_flags = NULL;
     struct archive *a;
     struct archive_entry *entry;
@@ -146,10 +152,20 @@ static int process_package(rpmts ts, const char * filename)
 	    exit(EXIT_FAILURE);
 	}
     }
-    if (archive_write_set_format_pax_restricted(a) != ARCHIVE_OK) {
-	fprintf(stderr, "Error: Format pax restricted is not supported\n");
+
+    if (rstreq(format, "pax")) {
+	format_code = ARCHIVE_FORMAT_TAR_PAX_RESTRICTED;
+    } else if (rstreq(format, "cpio")) {
+	format_code = ARCHIVE_FORMAT_CPIO_SVR4_NOCRC;
+    } else {
+	rc = ARCHIVE_FAILED;
+    }
+
+    if (archive_write_set_format(a, format_code) != ARCHIVE_OK) {
+	fprintf(stderr, "Error: Format %s is not supported\n", format);
 	exit(EXIT_FAILURE);
     }
+
     if (!isatty(STDOUT_FILENO)) {
 	archive_write_open_fd(a, STDOUT_FILENO);
     } else {
@@ -207,7 +223,18 @@ static int process_package(rpmts ts, const char * filename)
 	    }
 	}
 
-	archive_write_header(a, entry);
+	if (archive_write_header(a, entry) != ARCHIVE_OK) {
+	    if (archive_errno(a) == ERANGE) {
+		fprintf(stderr,
+			"Warning: file too large for format, skipping: %s\n",
+			rpmfiFN(fi));
+		continue;
+	    } else {
+		fprintf(stderr, "Error writing archive: %s (%d)\n",
+				archive_error_string(a), archive_errno(a));
+		break;
+	    }
+	}
 
 	if (S_ISREG(mode) && (nlink == 1 || rpmfiArchiveHasContent(fi))) {
 	    if (write_file_content(a, buf, fi)) {
@@ -247,6 +274,12 @@ int main(int argc, const char *argv[])
 
     optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
     poptSetOtherOptionHelp(optCon, "[OPTIONS]* <FILES>");
+
+    if (rstreq(basename(argv[0]), "rpm2cpio")) {
+	format = "cpio";
+	compress = 0;
+    }
+
     while ((rc = poptGetNextOpt(optCon)) != -1) {
 	if (rc < 0) {
 	    fprintf(stderr, "%s: %s\n",
