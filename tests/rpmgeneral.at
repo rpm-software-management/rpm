@@ -362,6 +362,17 @@ runroot_other rpm2archive "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm | tar tz
 [])
 
 RPMTEST_CHECK([
+runroot_other rpm2archive -n --format=cpio "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm | cpio -t --quiet
+],
+[0],
+[./usr/bin/hello
+./usr/share/doc/hello-2.0
+./usr/share/doc/hello-2.0/COPYING
+./usr/share/doc/hello-2.0/FAQ
+./usr/share/doc/hello-2.0/README
+],
+[])
+RPMTEST_CHECK([
 runroot_other rpm2archive "${RPMTEST}"/data/SRPMS/hello-1.0-1.src.rpm | tar tzf -
 ],
 [0],

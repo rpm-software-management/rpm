@@ -12,7 +12,7 @@ rpm2archive - Create tar archive from RPM Package Manager (RPM) package.
 SYNOPSIS
 ========
 
-**rpm2archive** **{-n\|\--nocompression}** *FILES*
+**rpm2archive** **{-n\|\--nocompression}** **{-f\|\--format=pax|cpio}** *FILES*
 
 DESCRIPTION
 ===========
@@ -37,6 +37,12 @@ OPTIONS
 
 :   Generate uncompressed tar archive and use \".tar\" as postfix of the
     file name.
+
+**-f, \--format=pax\|cpio**
+
+:   Generate archive in specified format: **pax** (the default format)
+    or **cpio**. Note that the cpio format cannot host files over
+    4GB in size and is only supported here for backwards compatibility.
 
 EXAMPLES
 ========
