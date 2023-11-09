@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # If using normal root, avoid changing anything.
 if [ -z "$RPM_BUILD_ROOT" ] || [ "$RPM_BUILD_ROOT" = "/" ]; then
