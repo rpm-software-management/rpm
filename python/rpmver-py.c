@@ -3,8 +3,6 @@
 #include <rpm/rpmver.h>
 #include "rpmver-py.h"
 
-extern rpmmodule_state_t *modstate;  // TODO: Remove
-
 struct rpmverObject_s {
     PyObject_HEAD
     rpmver ver;
@@ -79,7 +77,7 @@ static PyObject *ver_richcmp(rpmverObject *s, rpmverObject *o, int op)
 {
     int v;
 
-    if (!(verObject_Check(s) && verObject_Check(o)))
+    if (!(verObject_Check((PyObject*)s) && verObject_Check((PyObject*)o)))
 	Py_RETURN_NOTIMPLEMENTED;
 
     switch (op) {
