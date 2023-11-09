@@ -473,7 +473,7 @@ drwxrwxrwx zoot     zoot     /j/dir
 [])
 
 RPMTEST_CHECK([[
-runroot rpm2cpio /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm | cpio -tv --quiet
+runroot_other rpm2cpio /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm | cpio -tv --quiet
 ]],
 [0],
 [drwx------   1 root     root            0 Feb 20  2020 ./a/dir
@@ -1004,7 +1004,7 @@ RPMDB_INIT
 runroot rpmbuild \
   -bb --quiet /data/SPECS/attrtest.spec
 
-runroot rpm2cpio \
+runroot_other rpm2cpio \
   /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm > "${RPMTEST}"/tmp/attrtest.cpio
 ],
 [0],
