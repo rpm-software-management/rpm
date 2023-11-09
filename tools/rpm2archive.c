@@ -35,22 +35,21 @@ static void fill_archive_entry(struct archive_entry * entry, rpmfi fi)
     archive_entry_clear(entry);
     const char * dn = rpmfiDN(fi);
     if (!strcmp(dn, "")) dn = "/";
+    struct stat sb;
 
     char * filename = rstrscat(NULL, ".", dn, rpmfiBN(fi), NULL);
     archive_entry_copy_pathname(entry, filename);
     _free(filename);
 
+    rpmfiStat(fi, 0, &sb);
+    archive_entry_copy_stat(entry, &sb);
+    /* hardlink sizes are special, see rpmfiStat() */
     archive_entry_set_size(entry, rpmfiFSize(fi));
-    rpm_mode_t mode = rpmfiFMode(fi);
-    archive_entry_set_filetype(entry, mode & S_IFMT);
-    archive_entry_set_perm(entry, mode);
 
     archive_entry_set_uname(entry, rpmfiFUser(fi));
     archive_entry_set_gname(entry, rpmfiFGroup(fi));
-    archive_entry_set_rdev(entry, rpmfiFRdev(fi));
-    archive_entry_set_mtime(entry, rpmfiFMtime(fi), 0);
 
-    if (S_ISLNK(mode))
+    if (S_ISLNK(sb.st_mode))
 	archive_entry_set_symlink(entry, rpmfiFLink(fi));
 }
 
