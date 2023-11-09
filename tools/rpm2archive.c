@@ -35,7 +35,8 @@ static struct poptOption optionsTable[] = {
     POPT_TABLEEND
 };
 
-static void fill_archive_entry(struct archive_entry * entry, rpmfi fi)
+static void fill_archive_entry(struct archive_entry * entry, rpmfi fi,
+				char **hardlink)
 {
     archive_entry_clear(entry);
     const char * dn = rpmfiDN(fi);
@@ -48,14 +49,24 @@ static void fill_archive_entry(struct archive_entry * entry, rpmfi fi)
 
     rpmfiStat(fi, 0, &sb);
     archive_entry_copy_stat(entry, &sb);
-    /* hardlink sizes are special, see rpmfiStat() */
-    archive_entry_set_size(entry, rpmfiFSize(fi));
 
     archive_entry_set_uname(entry, rpmfiFUser(fi));
     archive_entry_set_gname(entry, rpmfiFGroup(fi));
 
     if (S_ISLNK(sb.st_mode))
 	archive_entry_set_symlink(entry, rpmfiFLink(fi));
+
+    if (sb.st_nlink > 1) {
+	/* hardlink sizes are special, see rpmfiStat() */
+	archive_entry_set_size(entry, rpmfiFSize(fi));
+	if (rpmfiArchiveHasContent(fi)) {
+	    _free(*hardlink);
+	    *hardlink = xstrdup(archive_entry_pathname(entry));
+	} else {
+	    archive_entry_set_hardlink(entry, *hardlink);
+	}
+    }
+
 }
 
 static int write_file_content(struct archive * a, char * buf, rpmfi fi)
@@ -209,19 +220,7 @@ static int process_package(rpmts ts, const char * filename)
 	    break;
 	}
 
-	rpm_mode_t mode = rpmfiFMode(fi);
-	int nlink = rpmfiFNlink(fi);
-
-	fill_archive_entry(entry, fi);
-
-	if (nlink > 1) {
-	    if (rpmfiArchiveHasContent(fi)) {
-		_free(hardlink);
-		hardlink = xstrdup(archive_entry_pathname(entry));
-	    } else {
-		archive_entry_set_hardlink(entry, hardlink);
-	    }
-	}
+	fill_archive_entry(entry, fi, &hardlink);
 
 	if (archive_write_header(a, entry) != ARCHIVE_OK) {
 	    if (archive_errno(a) == ERANGE) {
@@ -236,7 +235,7 @@ static int process_package(rpmts ts, const char * filename)
 	    }
 	}
 
-	if (S_ISREG(mode) && (nlink == 1 || rpmfiArchiveHasContent(fi))) {
+	if (S_ISREG(archive_entry_mode(entry)) && rpmfiArchiveHasContent(fi)) {
 	    if (write_file_content(a, buf, fi)) {
 		rc = ARCHIVE_FAILED;
 		break;
