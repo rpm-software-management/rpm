@@ -469,8 +469,9 @@ static void removeSBITS(int dirfd, const char *path)
     struct stat stb;
     int flags = AT_SYMLINK_NOFOLLOW;
     if (fstatat(dirfd, path, &stb, flags) == 0 && S_ISREG(stb.st_mode)) {
+	/* We now know it's not a link so no need to worry about following */
 	if ((stb.st_mode & 06000) != 0) {
-	    (void) fchmodat(dirfd, path, stb.st_mode & 0777, flags);
+	    (void) fchmodat(dirfd, path, stb.st_mode & 0777, 0);
 	}
 #if WITH_CAP
 	if (stb.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)) {
