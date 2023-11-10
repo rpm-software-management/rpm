@@ -25,6 +25,28 @@ missing   d /usr/share/doc/hello-2.0/README
 [])
 RPMTEST_CLEANUP
 
+AT_SETUP([rpm -e suid hardlink])
+AT_KEYWORDS([install erase])
+RPMDB_INIT
+
+runroot rpmbuild -bb --quiet \
+		/data/SPECS/attrtest.spec
+RPMTEST_CHECK([
+# silence "user/group does not exist" messages
+runroot rpm -U --nodeps /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm 2> /dev/null
+runroot_other ln /i/file /if
+runroot_other sh -c 'test -u /if && echo suid'
+runroot rpm -e attrtest
+runroot_other sh -c 'test -f /if && echo exists'
+runroot_other sh -c 'test -u /if && echo suid'
+],
+[1],
+[suid
+exists
+],
+[])
+RPMTEST_CLEANUP
+
 AT_SETUP([rpm reinstall with shared files])
 AT_KEYWORDS([install erase update rpmdb])
 RPMDB_INIT
