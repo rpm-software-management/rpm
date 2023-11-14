@@ -1539,3 +1539,24 @@ plong
 [ignore])
 
 RPMTEST_CLEANUP
+
+AT_SETUP([install on invalid symlinked directory])
+AT_KEYWORDS([install])
+RPMDB_INIT
+
+runroot rpmbuild --quiet -bb \
+          /data/SPECS/replacetest.spec
+
+RPMTEST_CHECK([
+runroot_other mv /opt /opt.was
+runroot_other ln -s /opt.was /opt
+runroot_other chown -h nobody:nobody /opt
+runroot --setenv SOURCE_DATE_EPOCH 1699955855 rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+],
+[1],
+[],
+[error: failed to open dir opt of /opt/: Not a directory
+error: unpacking of archive failed on file /opt/foo;6553448f: cpio: open failed - Not a directory
+error: replacetest-1.0-1.noarch: install failed
+])
+RPMTEST_CLEANUP
