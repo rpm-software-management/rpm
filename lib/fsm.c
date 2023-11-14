@@ -304,6 +304,7 @@ static int fsmOpenat(int dirfd, const char *path, int flags, int dir)
     struct stat lsb, sb;
     int sflags = flags | O_NOFOLLOW;
     int fd = openat(dirfd, path, sflags);
+    int ffd = fd;
 
     /*
      * Only ever follow symlinks by root or target owner. Since we can't
@@ -312,7 +313,7 @@ static int fsmOpenat(int dirfd, const char *path, int flags, int dir)
      * it could've only been the link owner or root.
      */
     if (fd < 0 && errno == ELOOP && flags != sflags) {
-	int ffd = openat(dirfd, path, flags);
+	ffd = openat(dirfd, path, flags);
 	if (ffd >= 0) {
 	    if (fstatat(dirfd, path, &lsb, AT_SYMLINK_NOFOLLOW) == 0) {
 		if (fstat(ffd, &sb) == 0) {
@@ -327,7 +328,7 @@ static int fsmOpenat(int dirfd, const char *path, int flags, int dir)
     }
 
     /* O_DIRECTORY equivalent */
-    if (dir && fd >= 0 && fstat(fd, &sb) == 0 && !S_ISDIR(sb.st_mode)) {
+    if (dir && ((fd != ffd) || (fd >= 0 && fstat(fd, &sb) == 0 && !S_ISDIR(sb.st_mode)))) {
 	errno = ENOTDIR;
 	fsmClose(&fd);
     }
