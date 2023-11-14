@@ -2,6 +2,7 @@
 %{?fixit: %global havepretrans 1}
 %{!?user: %global user root}
 %{!?grp: %global grp root}
+%{!?ver: %global ver 1.0}
 
 Name:		replacetest%{?subpkg:-%{subpkg}}
 Version:	%{ver}
