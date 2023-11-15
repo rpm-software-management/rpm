@@ -320,11 +320,11 @@ int pgpPrtParams2(const uint8_t *pkts, size_t pktlen, unsigned int pkttype,
 		 pgpDigParams * ret, char **lints);
 
 /** \ingroup rpmpgp
- * Parse subkey parameters from OpenPGP packet(s).
+ * Parse signing capable subkeys from OpenPGP packet(s).
  * @param pkts		OpenPGP packet(s)
  * @param pktlen	OpenPGP packet(s) length (no. of bytes)
  * @param mainkey	parameters of main key
- * @param subkeys	array of subkey parameters (alloced)
+ * @param subkeys	array of signing capable subkey parameters (alloced)
  * @param subkeysCount	count of subkeys
  * @return		-1 on error, 0 on success
  */
