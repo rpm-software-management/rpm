@@ -1253,6 +1253,9 @@ static void doGetncpus(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *pa
 	if (mcpus < ncpus)
 	    ncpus = mcpus;
     }
+    /* Ensure at least one CPU, no matter how starved */
+    if (ncpus < 1)
+	ncpus = 1;
 
     sprintf(buf, "%u", ncpus);
     rpmMacroBufAppendStr(mb, buf);
