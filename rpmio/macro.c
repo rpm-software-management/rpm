@@ -1221,7 +1221,7 @@ static unsigned long getmem_proc(int thread)
 static void doGetncpus(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 {
     const char *sizemacro = NULL;
-    const char *arg = argv[1] ? argv[1] : "total";
+    const char *arg = (argv && argv[1]) ? argv[1] : "total";
     char buf[32];
     unsigned int ncpus = getncpus();
     unsigned long mem = 0;
