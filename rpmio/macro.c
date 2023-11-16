@@ -1177,30 +1177,32 @@ static void doShescape(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parse
     mbAppend(mb, '\'');
 }
 
-static unsigned long getmem_total(void)
+static uint64_t getmem_total(void)
 {
-    unsigned long mem = 0;
+    uint64_t mem = 0;
     long int pagesize = sysconf(_SC_PAGESIZE);
     long int pages = sysconf(_SC_PHYS_PAGES);
 
-    if (pagesize < 0)
+    if (pagesize <= 0)
 	pagesize = 4096;
-    if (pages > 0)
-	mem = pages * pagesize;
+    if (pages > 0) {
+	/* Cast needed to force 64bit calculation on 32bit systems */
+	mem = (uint64_t)pages * pagesize;
+    }
 
     return mem;
 }
 
-static unsigned long getmem_proc(int thread)
+static uint64_t getmem_proc(int thread)
 {
-    unsigned long mem = getmem_total();
+    uint64_t mem = getmem_total();
     /*
      * Conservative estimates for thread use on 32bit systems where address
      * space is an issue: 2GB for bare metal, 3GB for a 32bit process
      * on a 64bit system.
      */
     if (thread) {
-	unsigned long vmem = mem;
+	uint64_t vmem = mem;
 #if __WORDSIZE == 32
 	vmem = UINT32_MAX / 2;
 #else
@@ -1224,7 +1226,7 @@ static void doGetncpus(MacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parse
     const char *arg = (argv && argv[1]) ? argv[1] : "total";
     char buf[32];
     unsigned int ncpus = getncpus();
-    unsigned long mem = 0;
+    uint64_t mem = 0;
 
     if (rstreq(arg, "total")) {
 	/* nothing */
