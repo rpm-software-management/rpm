@@ -434,6 +434,8 @@ const char * rpmSpecGetSection(rpmSpec spec, int section)
 	case RPMBUILD_NONE:	return getStringBuf(spec->parsed);
 	case RPMBUILD_PREP:	return getStringBuf(spec->prep);
 	case RPMBUILD_CONF:	return getStringBuf(spec->conf);
+	case RPMBUILD_BUILDREQUIRES:
+				return getStringBuf(spec->buildrequires);
 	case RPMBUILD_BUILD:	return getStringBuf(spec->build);
 	case RPMBUILD_INSTALL:	return getStringBuf(spec->install);
 	case RPMBUILD_CHECK:	return getStringBuf(spec->check);
