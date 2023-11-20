@@ -21,6 +21,18 @@
 #define ALLOWED_CHARS_EVR ALLOWED_CHARS_VERREL "-:"
 #define LEN_AND_STR(_tag) (sizeof(_tag)-1), (_tag)
 
+
+enum sections_e {
+    SECT_PREP		= 0,
+    SECT_CONF		= 1,
+    SECT_BUILDREQUIRES	= 2,
+    SECT_BUILD		= 3,
+    SECT_INSTALL	= 4,
+    SECT_CHECK		= 5,
+    SECT_CLEAN		= 6,
+};
+#define NR_SECT 7
+
 struct TriggerFileEntry {
     int index;
     char * fileName;
@@ -137,14 +149,7 @@ struct rpmSpec_s {
     rpmMacroContext macros;
     rpmstrPool pool;
 
-    StringBuf prep;		/*!< %prep scriptlet. */
-    StringBuf conf;		/*!< %conf scriptlet. */
-    StringBuf buildrequires;	/*!< %buildrequires scriptlet. */
-    StringBuf build;		/*!< %build scriptlet. */
-    StringBuf install;		/*!< %install scriptlet. */
-    StringBuf check;		/*!< %check scriptlet. */
-    StringBuf clean;		/*!< %clean scriptlet. */
-
+    StringBuf sections[NR_SECT]; /*!< spec sections (%prep etc) */
     StringBuf parsed;		/*!< parsed spec contents */
 
     Package packages;		/*!< Package list. */

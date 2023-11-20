@@ -596,7 +596,7 @@ int parseLines(rpmSpec spec, int strip, ARGV_t *avp, StringBuf *sbp)
 
     while (! (nextPart = isPart(spec->line))) {
 	/* HACK: Emit a legible error on the obsolete %patchN form for now */
-	if (sbp == &(spec->prep)) {
+	if (sbp == &(spec->sections[SECT_PREP])) {
 	    size_t slen = strlen(spec->line);
 	    if (slen >= 7 && risdigit(spec->line[6]) &&
 		rstreqn(spec->line, "%patch", 6))
@@ -933,28 +933,34 @@ static rpmRC parseSpecSection(rpmSpec *specptr, int secondary)
 	case PART_PREP:
 	    rpmPushMacroAux(NULL, "setup", "-", doSetupMacro, spec, -1, 0, 0);
 	    rpmPushMacroAux(NULL, "patch", "-", doPatchMacro, spec, -1, 0, 0);
-	    parsePart = parseSimpleScript(spec, "%prep", &(spec->prep));
+	    parsePart = parseSimpleScript(spec, "%prep",
+					&(spec->sections[SECT_PREP]));
 	    rpmPopMacro(NULL, "patch");
 	    rpmPopMacro(NULL, "setup");
 	    break;
 	case PART_CONF:
-	    parsePart = parseSimpleScript(spec, "%conf", &(spec->conf));
+	    parsePart = parseSimpleScript(spec, "%conf",
+					&(spec->sections[SECT_CONF]));
 	    break;
 	case PART_BUILDREQUIRES:
 	    parsePart = parseSimpleScript(spec, "%generate_buildrequires",
-					  &(spec->buildrequires));
+				      &(spec->sections[SECT_BUILDREQUIRES]));
 	    break;
 	case PART_BUILD:
-	    parsePart = parseSimpleScript(spec, "%build", &(spec->build));
+	    parsePart = parseSimpleScript(spec, "%build",
+					&(spec->sections[SECT_BUILD]));
 	    break;
 	case PART_INSTALL:
-	    parsePart = parseSimpleScript(spec, "%install", &(spec->install));
+	    parsePart = parseSimpleScript(spec, "%install",
+					&(spec->sections[SECT_INSTALL]));
 	    break;
 	case PART_CHECK:
-	    parsePart = parseSimpleScript(spec, "%check", &(spec->check));
+	    parsePart = parseSimpleScript(spec, "%check",
+					&(spec->sections[SECT_CHECK]));
 	    break;
 	case PART_CLEAN:
-	    parsePart = parseSimpleScript(spec, "%clean", &(spec->clean));
+	    parsePart = parseSimpleScript(spec, "%clean",
+					&(spec->sections[SECT_CLEAN]));
 	    break;
 	case PART_CHANGELOG:
 	    parsePart = parseChangelog(spec);
@@ -1105,10 +1111,10 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
     if (parseSpecSection(&spec, 0) != RPMRC_OK)
 	goto errxit;
 
-    if (spec->clean == NULL) {
+    if (spec->sections[SECT_CLEAN] == NULL) {
 	char *body = rpmExpand("%{?buildroot: %{__rm} -rf %{buildroot}}", NULL);
-	spec->clean = newStringBuf();
-	appendLineStringBuf(spec->clean, body);
+	spec->sections[SECT_CLEAN] = newStringBuf();
+	appendLineStringBuf(spec->sections[SECT_CLEAN], body);
 	free(body);
     }
 
