@@ -251,18 +251,19 @@ exit:
 static int doBuildRequires(rpmSpec spec, int test)
 {
     StringBuf sb_stdout = NULL;
+    const char *buildrequires = rpmSpecGetSection(spec, RPMBUILD_BUILDREQUIRES);
     int outc;
     ARGV_t output = NULL;
 
     int rc = 1; /* assume failure */
 
-    if (!spec->buildrequires) {
+    if (!buildrequires) {
 	rc = RPMRC_OK;
 	goto exit;
     }
 
     if ((rc = doScript(spec, RPMBUILD_BUILDREQUIRES, "%generate_buildrequires",
-		       getStringBuf(spec->buildrequires), test, &sb_stdout)))
+		       buildrequires, test, &sb_stdout)))
 	goto exit;
 
     /* add results to requires of the srpm */
@@ -368,7 +369,7 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 	int sourceOnly = ((what & RPMBUILD_PACKAGESOURCE) &&
 	   !(what & (RPMBUILD_CONF|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)));
 
-	if (!spec->buildrequires && sourceOnly) {
+	if (!rpmSpecGetSection(spec, RPMBUILD_BUILDREQUIRES) && sourceOnly) {
 		/* don't run prep if not needed for source build */
 		/* with(out) dynamic build requires*/
 	    what &= ~(RPMBUILD_PREP);
@@ -380,7 +381,8 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 
 	if ((what & RPMBUILD_PREP) &&
 	    (rc = doScript(spec, RPMBUILD_PREP, "%prep",
-			   getStringBuf(spec->prep), test, sbp)))
+			   rpmSpecGetSection(spec, RPMBUILD_PREP),
+			   test, sbp)))
 		goto exit;
 
 	if (what & RPMBUILD_BUILDREQUIRES)
@@ -409,17 +411,20 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 
 	if ((what & RPMBUILD_CONF) &&
 	    (rc = doScript(spec, RPMBUILD_BUILD, "%conf",
-			   getStringBuf(spec->conf), test, sbp)))
+			   rpmSpecGetSection(spec, RPMBUILD_CONF),
+			   test, sbp)))
 		goto exit;
 
 	if ((what & RPMBUILD_BUILD) &&
 	    (rc = doScript(spec, RPMBUILD_BUILD, "%build",
-			   getStringBuf(spec->build), test, sbp)))
+			   rpmSpecGetSection(spec, RPMBUILD_BUILD),
+			   test, sbp)))
 		goto exit;
 
 	if ((what & RPMBUILD_INSTALL) &&
 	    (rc = doScript(spec, RPMBUILD_INSTALL, "%install",
-			   getStringBuf(spec->install), test, sbp)))
+			   rpmSpecGetSection(spec, RPMBUILD_INSTALL),
+			   test, sbp)))
 		goto exit;
 
 	if (((what & RPMBUILD_INSTALL) || (what & RPMBUILD_PACKAGEBINARY)) &&
@@ -428,7 +433,8 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 
 	if ((what & RPMBUILD_CHECK) &&
 	    (rc = doScript(spec, RPMBUILD_CHECK, "%check",
-			   getStringBuf(spec->check), test, sbp)))
+			   rpmSpecGetSection(spec, RPMBUILD_CHECK),
+			   test, sbp)))
 		goto exit;
 
 	if ((what & RPMBUILD_PACKAGESOURCE) &&
@@ -455,7 +461,8 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 	
 	if ((what & RPMBUILD_CLEAN) &&
 	    (rc = doScript(spec, RPMBUILD_CLEAN, "%clean",
-			   getStringBuf(spec->clean), test, sbp)))
+			   rpmSpecGetSection(spec, RPMBUILD_CLEAN),
+			   test, sbp)))
 		goto exit;
 
 	if ((what & RPMBUILD_RMBUILD) &&
