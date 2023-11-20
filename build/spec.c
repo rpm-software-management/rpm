@@ -217,13 +217,6 @@ rpmSpec newSpec(void)
     spec->readStack->readable = 1;
 
     spec->rootDir = NULL;
-    spec->prep = NULL;
-    spec->conf = NULL;
-    spec->build = NULL;
-    spec->install = NULL;
-    spec->check = NULL;
-    spec->clean = NULL;
-    spec->parsed = NULL;
 
     spec->sources = NULL;
     spec->packages = NULL;
@@ -258,14 +251,9 @@ rpmSpec rpmSpecFree(rpmSpec spec)
 
     if (spec == NULL) return NULL;
 
-    spec->prep = freeStringBuf(spec->prep);
-    spec->conf = freeStringBuf(spec->conf);
-    spec->build = freeStringBuf(spec->build);
-    spec->install = freeStringBuf(spec->install);
-    spec->check = freeStringBuf(spec->check);
-    spec->clean = freeStringBuf(spec->clean);
-    spec->parsed = freeStringBuf(spec->parsed);
-    spec->buildrequires = freeStringBuf(spec->buildrequires);
+    for (int i = 0; i < NR_SECT; i++)
+	freeStringBuf(spec->sections[i]);
+    freeStringBuf(spec->parsed);
 
     spec->buildRoot = _free(spec->buildRoot);
     spec->specFile = _free(spec->specFile);
@@ -431,15 +419,22 @@ const char * rpmSpecGetSection(rpmSpec spec, int section)
 {
     if (spec) {
 	switch (section) {
-	case RPMBUILD_NONE:	return getStringBuf(spec->parsed);
-	case RPMBUILD_PREP:	return getStringBuf(spec->prep);
-	case RPMBUILD_CONF:	return getStringBuf(spec->conf);
+	case RPMBUILD_NONE:
+	    return getStringBuf(spec->parsed);
+	case RPMBUILD_PREP:
+	    return getStringBuf(spec->sections[SECT_PREP]);
+	case RPMBUILD_CONF:
+	    return getStringBuf(spec->sections[SECT_CONF]);
 	case RPMBUILD_BUILDREQUIRES:
-				return getStringBuf(spec->buildrequires);
-	case RPMBUILD_BUILD:	return getStringBuf(spec->build);
-	case RPMBUILD_INSTALL:	return getStringBuf(spec->install);
-	case RPMBUILD_CHECK:	return getStringBuf(spec->check);
-	case RPMBUILD_CLEAN:	return getStringBuf(spec->clean);
+	    return getStringBuf(spec->sections[SECT_BUILDREQUIRES]);
+	case RPMBUILD_BUILD:
+	    return getStringBuf(spec->sections[SECT_BUILD]);
+	case RPMBUILD_INSTALL:
+	    return getStringBuf(spec->sections[SECT_INSTALL]);
+	case RPMBUILD_CHECK:
+	    return getStringBuf(spec->sections[SECT_CHECK]);
+	case RPMBUILD_CLEAN:
+	    return getStringBuf(spec->sections[SECT_CLEAN]);
 	}
     }
     return NULL;
