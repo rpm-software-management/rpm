@@ -241,6 +241,7 @@ static void rpmtsUpdateDSI(const rpmts ts, dev_t dev, const char *dirName,
 	break;
 
     case FA_CREATE:
+    case FA_REFLINK:
 	dsi->bneeded += bneeded;
 	dsi->ineeded++;
 	if (prevSize) {
@@ -460,7 +461,8 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfiles fi, int fx
 	    rConflicts = handleColorConflict(ts, fs, fi, fx,
 					     NULL, otherFi, ofx);
 	    /* If resolved, we need to adjust in-rpmdb state too */
-	    if (rConflicts == 0 && rpmfsGetAction(fs, fx) == FA_CREATE)
+	    rpmFileAction action = rpmfsGetAction(fs, fx);
+	    if (rConflicts == 0 && (action == FA_CREATE || action == FA_REFLINK))
 		rState = RPMFILE_STATE_WRONGCOLOR;
 	}
 

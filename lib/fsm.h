@@ -31,7 +31,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile);
 
 RPM_GNUC_INTERNAL
-int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm);
+int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm, rpmFileAction action);
 
 RPM_GNUC_INTERNAL
 void rpmpsmNotify(rpmpsm psm, int what, rpm_loff_t amount);

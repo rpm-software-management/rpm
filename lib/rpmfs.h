@@ -54,7 +54,6 @@ rpm_fstate_t * rpmfsGetStates(rpmfs fs);
 RPM_GNUC_INTERNAL
 rpmFileAction rpmfsGetAction(rpmfs fs, unsigned int ix);
 
-RPM_GNUC_INTERNAL
 void rpmfsSetAction(rpmfs fs, unsigned int ix, rpmFileAction action);
 
 RPM_GNUC_INTERNAL

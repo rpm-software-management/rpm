@@ -114,6 +114,7 @@ typedef enum rpmFileAction_e {
     FA_SKIPNETSHARED	= 10,	/*!< ... untouched, state "netshared". */
     FA_SKIPCOLOR	= 11,	/*!< ... untouched, state "wrong color". */
     FA_TOUCH		= 12,	/*!< ... change metadata only. */
+    FA_REFLINK		= 13,	/*!< ... reflink from payload. */
     /* bits 16-31 reserved */
 } rpmFileAction;
 
@@ -121,7 +122,7 @@ typedef enum rpmFileAction_e {
     ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPCOLOR)
 
 #define XFA_CREATING(_a)	\
-    ((_a) == FA_CREATE || (_a) == FA_BACKUP || (_a) == FA_SAVE || (_a) == FA_ALTNAME)
+    ((_a) == FA_CREATE || (_a) == FA_BACKUP || (_a) == FA_SAVE || (_a) == FA_ALTNAME || (_a) == FA_REFLINK)
 
 /**
  * We pass these around as an array with a sentinel.
