@@ -931,7 +931,11 @@ static rpmRC parseSpecSection(rpmSpec *specptr, int secondary)
 	    parsePart = parseList(spec, "%sourcelist", RPMTAG_SOURCE);
 	    break;
 	case PART_PREP:
-	    parsePart = parsePrep(spec);
+	    rpmPushMacroAux(NULL, "setup", "-", doSetupMacro, spec, -1, 0, 0);
+	    rpmPushMacroAux(NULL, "patch", "-", doPatchMacro, spec, -1, 0, 0);
+	    parsePart = parseSimpleScript(spec, "%prep", &(spec->prep));
+	    rpmPopMacro(NULL, "patch");
+	    rpmPopMacro(NULL, "setup");
 	    break;
 	case PART_CONF:
 	    parsePart = parseSimpleScript(spec, "%conf", &(spec->conf));

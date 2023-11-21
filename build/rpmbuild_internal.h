@@ -358,14 +358,6 @@ RPM_GNUC_INTERNAL
 int parsePreamble(rpmSpec spec, int initialPackage);
 
 /** \ingroup rpmbuild
- * Parse %%prep section of a spec file.
- * @param spec		spec file control structure
- * @return		>= 0 next rpmParseState, < 0 on error
- */
-RPM_GNUC_INTERNAL
-int parsePrep(rpmSpec spec);
-
-/** \ingroup rpmbuild
  * Parse %%pre et al scriptlets from a spec file.
  * @param spec		spec file control structure
  * @param parsePart	current rpmParseState
@@ -636,6 +628,11 @@ void fillOutMainPackage(Header h);
 
 RPM_GNUC_INTERNAL
 void copyInheritedTags(Header h, Header fromh);
+
+RPM_GNUC_INTERNAL
+void doSetupMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed);
+RPM_GNUC_INTERNAL
+void doPatchMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed);
 
 #ifdef __cplusplus
 }

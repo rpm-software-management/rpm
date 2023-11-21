@@ -155,7 +155,7 @@ exit:
  * @param line		current line from spec file
  * @return		RPMRC_OK on success
  */
-static void doSetupMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed)
+void doSetupMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed)
 {
     rpmSpec spec = rpmMacroEntryPriv(me);
     char *line = argvJoin(margs, " ");
@@ -317,7 +317,7 @@ exit:
  * @param line		current line from spec file
  * @return		RPMRC_OK on success
  */
-static void doPatchMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed)
+void doPatchMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed)
 {
     rpmSpec spec = rpmMacroEntryPriv(me);
     char *line = argvJoin(margs, " ");
@@ -407,26 +407,4 @@ exit:
     free(argv);
     poptFreeContext(optCon);
     return;
-}
-
-int parsePrep(rpmSpec spec)
-{
-    int res = PART_ERROR;
-
-    if (spec->prep != NULL) {
-	rpmlog(RPMLOG_ERR, _("line %d: second %%prep\n"), spec->lineNum);
-	goto exit;
-    }
-
-    rpmPushMacroAux(NULL, "setup", "-", doSetupMacro, spec, -1, 0, 0);
-    rpmPushMacroAux(NULL, "patch", "-", doPatchMacro, spec, -1, 0, 0);
-
-    res = parseSimpleScript(spec, "prep", &(spec->prep));
-
-    rpmPopMacro(NULL, "patch");
-    rpmPopMacro(NULL, "setup");
-
-exit:
-
-    return res;
 }
