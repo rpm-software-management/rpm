@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
+#include <inttypes.h>
 #include <sys/stat.h>
 
 struct fapolicyd_data {
@@ -231,7 +232,7 @@ static rpmRC fapolicyd_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
     rpm_loff_t size = rpmfiFSize(fi);
     char * sha = rpmfiFDigestHex(fi, NULL);
 
-    snprintf(buffer, 4096, "%s %lu %64s\n", dest, size, sha);
+    snprintf(buffer, 4096, "%s %" PRIu64 " %64s\n", dest, size, sha);
     (void) try_to_write_to_fifo(&fapolicyd_state, buffer);
 
     free(sha);
