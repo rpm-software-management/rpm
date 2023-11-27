@@ -1391,7 +1391,7 @@ static rpmps checkProblems(rpmts ts)
 
     /* The ordering doesn't matter here */
     /* XXX Only added packages need be checked. */
-    rpmlog(RPMLOG_DEBUG, "sanity checking %lu elements\n", npkgs);
+    rpmlog(RPMLOG_DEBUG, "sanity checking %" PRIu64 " elements\n", npkgs);
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, etypes)) != NULL) {
 	switch (rpmteType(p)) {
