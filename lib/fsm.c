@@ -482,14 +482,14 @@ static void removeSBITS(int dirfd, const char *path)
     }
 }
 
-static void fsmDebug(const char *fpath, rpmFileAction action,
+static void fsmDebug(const char *dn, const char *fpath, rpmFileAction action,
 		     const struct stat *st)
 {
-    rpmlog(RPMLOG_DEBUG, "%-10s %06o%3d (%4d,%4d)%6d %s\n",
+    rpmlog(RPMLOG_DEBUG, "%-10s %06o%3d (%4d,%4d)%6d %s%s\n",
 	   fileActionString(action), (int)st->st_mode,
 	   (int)st->st_nlink, (int)st->st_uid,
 	   (int)st->st_gid, (int)st->st_size,
-	    (fpath ? fpath : ""));
+	    (dn ? dn : ""), (fpath ? fpath : ""));
 }
 
 static int fsmSymlink(const char *opath, int dirfd, const char *path)
@@ -910,7 +910,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 		      (fp->sb.st_nlink == 1 || fp->action == FA_TOUCH);
 
 	setFileState(fs, fx);
-	fsmDebug(fp->fpath, fp->action, &fp->sb);
+	fsmDebug(rpmfiDN(fi), fp->fpath, fp->action, &fp->sb);
 
 	fp->stage = FILE_PRE;
     }
@@ -975,7 +975,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 		rpmlog(RPMLOG_DEBUG, "file %s vanished unexpectedly\n",
 			fp->fpath);
 		fp->action = FA_CREATE;
-		fsmDebug(fp->fpath, fp->action, &fp->sb);
+		fsmDebug(rpmfiDN(fi), fp->fpath, fp->action, &fp->sb);
 	    }
 
 	    /* When touching we don't need any of this... */
@@ -1138,7 +1138,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 
 	rc = fsmStat(di.dirfd, fp->fpath, 1, &fp->sb);
 
-	fsmDebug(fp->fpath, fp->action, &fp->sb);
+	fsmDebug(rpmfiDN(fi), fp->fpath, fp->action, &fp->sb);
 
 	/* Run fsm file pre hook for all plugins */
 	rc = rpmpluginsCallFsmFilePre(plugins, fi, fp->fpath,
