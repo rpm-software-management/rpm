@@ -14,6 +14,7 @@
 #include <rpm/rpmbase64.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <inttypes.h>
 
 #include "rpmfi_internal.h"
 #include "rpmte_internal.h"	/* relocations */
@@ -1362,7 +1363,7 @@ static int indexSane(rpmtd xd, rpmtd yd, rpmtd zd)
 	} \
 	if (rpmTagGetTagType(_tag) != RPM_STRING_ARRAY_TYPE && rpmTagGetTagType(_tag) != RPM_I18NSTRING_TYPE && \
 	    (_td)->size < totalfc * sizeof(*(_data))) {		\
-	    rpmlog(RPMLOG_ERR, _("Malformed data for tag %s: %u bytes found but %lu expected.\n"), rpmTagGetName(_tag), (_td)->size, totalfc * sizeof(*(_data))); \
+	    rpmlog(RPMLOG_ERR, _("Malformed data for tag %s: %u bytes found but %" PRIu64 " expected.\n"), rpmTagGetName(_tag), (_td)->size, (uint64_t)totalfc * sizeof(*(_data))); \
 	    goto err;				\
 	} \
 	_data = ((_td)->data); \
@@ -1578,7 +1579,7 @@ static uint8_t *base2bin(Header h, rpmTagVal tag, rpm_count_t num, int *len)
 	if (lengths[i] > maxlen)
 	    maxlen = lengths[i];
 	if (status) {
-	    rpmlog(RPMLOG_DEBUG, _("%s: base64 decode failed, len %li\n"),
+	    rpmlog(RPMLOG_DEBUG, _("%s: base64 decode failed, len %zu\n"),
 		   __func__, lengths[i]);
 	    goto out;
 	}
@@ -1586,7 +1587,7 @@ static uint8_t *base2bin(Header h, rpmTagVal tag, rpm_count_t num, int *len)
     }
 
     if (maxlen) {
-	rpmlog(RPMLOG_DEBUG, _("%s: base64 decode success, len %li\n"),
+	rpmlog(RPMLOG_DEBUG, _("%s: base64 decode success, len %zu\n"),
 	       __func__, maxlen);
 
 	t = bin = xcalloc(num, maxlen);
