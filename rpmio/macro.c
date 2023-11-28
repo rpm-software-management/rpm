@@ -1164,15 +1164,20 @@ static void doVerbose(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *par
 
 static void doShescape(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 {
-    rpmMacroBufAppend(mb, '\'');
-    for (const char *s = argv[1]; *s != '\0'; s++) {
-	if (*s == '\'') {
-	    rpmMacroBufAppendStr(mb, "'\\''");
-	} else {
-	    rpmMacroBufAppend(mb, *s);
+    int i;
+    for (i = 1 ; argv[i]; i++) {
+	if (i != 1)
+	    rpmMacroBufAppend(mb, ' ');
+	rpmMacroBufAppend(mb, '\'');
+	for (const char *s = argv[i]; *s != '\0'; s++) {
+	    if (*s == '\'') {
+		rpmMacroBufAppendStr(mb, "'\\''");
+	    } else {
+		rpmMacroBufAppend(mb, *s);
+	    }
 	}
+	rpmMacroBufAppend(mb, '\'');
     }
-    rpmMacroBufAppend(mb, '\'');
 }
 
 static uint64_t getmem_total(void)

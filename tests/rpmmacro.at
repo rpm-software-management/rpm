@@ -1101,6 +1101,18 @@ runroot rpm \
 [])
 RPMTEST_CLEANUP
 
+AT_SETUP([%shescape macro with multiple arguments])
+AT_KEYWORDS([macros])
+RPMTEST_CHECK([
+runroot rpm \
+	--eval "%{shescape foo bar's}"
+],
+[0],
+['foo' 'bar'\''s'
+],
+[])
+
+RPMTEST_CLEANUP
 AT_SETUP([macro with a line starting by "{"])
 AT_KEYWORDS([macros])
 RPMTEST_CHECK([
