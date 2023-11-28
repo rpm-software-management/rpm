@@ -42,6 +42,7 @@ static int test(struct test *test)
     uint8_t *data = malloc(len);
     if (!data) {
 	fprintf(stderr, "out of memory\n");
+    close(f);
 	return 1;
     }
 
@@ -51,9 +52,10 @@ static int test(struct test *test)
 	fprintf(stderr, "%s: Read error: %s\n",
 		filename, strerror(err));
 	free(data);
+    close(f);
 	return 1;
     }
-
+    close(f);
     uint8_t *fp = NULL;
     size_t fplen = 0;
     int rc = pgpPubkeyFingerprint(data, bytes, &fp, &fplen);
@@ -80,7 +82,6 @@ static int test(struct test *test)
 	return 1;
     }
     free(got);
-
     return 0;
 }
 
