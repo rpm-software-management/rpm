@@ -59,6 +59,8 @@ extern const char * macrofiles;
 
 /* rpm macro expansion flags */
 #define RPMEXPAND_EXPAND_ARGS	(1 << 0)	/*!< expand arguments of parametric macros */
+#define RPMEXPAND_KEEP_QUOTED	(1 << 1)	/*!< do not remove quotes from expanded macros */
+#define RPMEXPAND_HAVE_QUOTED	(1 << 2)	/*!< expanded macros contain quote characters */
 
 typedef enum rpmMacroFlags_e {
     RPMMACRO_DEFAULT	= 0,
