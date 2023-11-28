@@ -39,6 +39,7 @@ enum macroFlags_e {
     ME_LITERAL	= (1 << 2),
     ME_PARSE	= (1 << 3),
     ME_FUNC	= (1 << 4),
+    ME_QUOTED	= (1 << 5),
 };
 
 /*! The structure used to store a macro. */
@@ -133,6 +134,7 @@ static int print_expand_trace = _PRINT_EXPAND_TRACE;
 
 /* forward ref */
 static int expandMacro(rpmMacroBuf mb, const char *src, size_t slen);
+static int expandQuotedMacro(rpmMacroBuf mb, const char *src);
 static void pushMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level, int flags);
 static void popMacro(rpmMacroContext mc, const char * n);
@@ -437,7 +439,7 @@ printExpansion(rpmMacroBuf mb, rpmMacroEntry me, const char * t, const char * te
  * @return		result of expansion
  */
 static int
-expandThis(rpmMacroBuf mb, const char * src, size_t slen, char **target)
+expandThis(rpmMacroBuf mb, const char * src, size_t slen, char **target, int *flagsp)
 {
     struct rpmMacroBuf_s umb;
 
@@ -445,11 +447,15 @@ expandThis(rpmMacroBuf mb, const char * src, size_t slen, char **target)
     umb = *mb;
     umb.buf = NULL;
     umb.error = 0;
+    if (flagsp)
+	umb.flags = *flagsp;
     /* In case of error, flag it in the "parent"... */
     if (expandMacro(&umb, src, slen))
 	mb->error = 1;
     *target = umb.buf;
 
+    if (flagsp)
+	*flagsp = umb.flags;
     /* ...but return code for this operation specifically */
     return umb.error;
 }
@@ -527,6 +533,20 @@ void rpmMacroBufAppendStr(rpmMacroBuf mb, const char *str)
     mb->nb -= len;
 }
 
+static void mbUnquote(rpmMacroBuf mb, size_t off)
+{
+    const int qchar = 0x1f; /* ASCII unit separator */
+    while (off < mb->tpos) {
+	if (mb->buf[off] == qchar) {
+	    memmove(mb->buf + off, mb->buf + off + 1, mb->tpos - off - 1);
+	    mb->tpos--;
+	    mb->nb++;
+	} else {
+	    off++;
+	}
+    }
+}
+
 static void doDnl(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 {
     const char *se = argv[1];
@@ -552,7 +572,7 @@ doShellEscape(rpmMacroBuf mb, const char * cmd, size_t clen)
     FILE *shf;
     int c;
 
-    if (expandThis(mb, cmd, clen, &buf))
+    if (expandThis(mb, cmd, clen, &buf, NULL))
 	goto exit;
 
     if ((shf = popen(buf, "r")) == NULL) {
@@ -670,6 +690,7 @@ doDefine(rpmMacroBuf mb, const char * se, int level, int expandbody, size_t *par
     int oc = ')';
     const char *sbody; /* as-is body start */
     int rc = 1; /* assume failure */
+    int flags = ME_NONE;
 
     /* Copy name */
     COPYNAME(ne, s, c);
@@ -766,14 +787,17 @@ doDefine(rpmMacroBuf mb, const char * se, int level, int expandbody, size_t *par
 	rpmMacroBufErr(mb, 0, _("Macro %%%s needs whitespace before body\n"), n);
 
     if (expandbody) {
-	if (expandThis(mb, b, 0, &ebody)) {
+	int eflags = RPMEXPAND_KEEP_QUOTED;
+	if (expandThis(mb, b, 0, &ebody, &eflags)) {
 	    rpmMacroBufErr(mb, 1, _("Macro %%%s failed to expand\n"), n);
 	    goto exit;
 	}
 	b = ebody;
+	if (eflags & RPMEXPAND_HAVE_QUOTED)
+	    flags |= ME_QUOTED;
     }
 
-    pushMacro(mb->mc, n, o, b, level, ME_NONE);
+    pushMacro(mb->mc, n, o, b, level, flags);
     rc = 0;
 
 exit:
@@ -884,8 +908,8 @@ setupArgs(rpmMacroBuf mb, const rpmMacroEntry me, ARGV_t argv)
      * through for higher level processing (e.g. %description and/or %setup).
      * This is the (potential) justification for %{**} ...
     */
-    args = argvJoin(argv + 1, " ");
-    pushMacro(mb->mc, "**", NULL, args, mb->level, ME_AUTO | ME_LITERAL);
+    args = unsplitQuoted(argv + 1, " ");
+    pushMacro(mb->mc, "**", NULL, args, mb->level, ME_AUTO | ME_LITERAL | ME_QUOTED);
     free(args);
 
     argc = argvCount(argv);
@@ -1036,8 +1060,9 @@ grabArgs(rpmMacroBuf mb, const rpmMacroEntry me, ARGV_t *argvp,
 	argvAddN(argvp, se, lastc - se);
     } else {
 	char *s = NULL;
+	int eflags = mb->flags | (splitargs ? RPMEXPAND_KEEP_QUOTED : 0);
 	/* Expand possible macros in arguments */
-	expandThis(mb, lastc == se ? "" : se, lastc - se, &s);
+	expandThis(mb, lastc == se ? "" : se, lastc - se, &s, &eflags);
 	if (splitargs)
 	    splitQuoted(argvp, s, " \t");
 	else
@@ -1304,7 +1329,17 @@ static void doFoo(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 	*b = 0;
 	b = buf;
     } else if (rstreq("quote", me->name)) {
-	b = buf = unsplitQuoted(argv + 1, " ");
+	if (mb->flags & RPMEXPAND_KEEP_QUOTED) {
+	    b = buf = unsplitQuoted(argv + 1, " ");
+	    if (b && *b)
+		mb->flags |= RPMEXPAND_HAVE_QUOTED;
+	} else {
+	    for (argv++; *argv; argv++) {
+		rpmMacroBufAppendStr(mb, *argv);
+		if (argv[1])
+		    rpmMacroBufAppend(mb, ' ');
+	    }
+	}
     } else if (rstreq("suffix", me->name)) {
 	buf = xstrdup(argv[1]);
 	if ((b = strrchr(buf, '.')) != NULL)
@@ -1453,6 +1488,7 @@ doMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t args, size_t *parsed)
 {
     rpmMacroEntry prevme = mb->me;
     ARGV_t prevarg = mb->args;
+    size_t old_tpos = mb->tpos;
 
     /* Recursively expand body of macro */
     if (me->flags & ME_FUNC) {
@@ -1472,14 +1508,54 @@ doMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t args, size_t *parsed)
 	/* Setup args for "%name " macros with opts */
 	if (args != NULL)
 	    setupArgs(mb, me, args);
-	expandMacro(mb, me->body, 0);
+	if ((me->flags & ME_QUOTED) && (mb->flags & RPMEXPAND_KEEP_QUOTED) != 0)
+	    expandQuotedMacro(mb, me->body);
+	else
+	    expandMacro(mb, me->body, 0);
 	/* Free args for "%name " macros with opts */
 	if (args != NULL)
 	    freeArgs(mb);
     }
+
+    /* postprocess macros that contain quotes */
+    if ((me->flags & ME_QUOTED) != 0) {
+	if ((mb->flags & RPMEXPAND_KEEP_QUOTED) == 0)
+	    mbUnquote(mb, old_tpos);
+	else
+	    mb->flags |= RPMEXPAND_HAVE_QUOTED;
+    }
+
 exit:
     mb->args = prevarg;
     mb->me = prevme;
+}
+
+/**
+ * Expand a string that contains quote characters
+ * @param mb		macro expansion state
+ * @param src		string to expand
+ * @return		0 on success, 1 on failure
+ */
+static int
+expandQuotedMacro(rpmMacroBuf mb, const char *src)
+{
+    const int qchar = 0x1f; /* ASCII unit separator */
+    const char *p, *sp;
+    char *source = xstrdup(src);
+    for (sp = p = source; *p; p++) {
+	if (*p == qchar) {
+	    if (p > sp)
+		expandMacro(mb, sp, p - sp);
+	    rpmMacroBufAppend(mb, qchar);
+	    mb->flags ^= RPMEXPAND_KEEP_QUOTED;
+	    sp = p + 1;
+	}
+    }
+    if (p > sp)
+	expandMacro(mb, sp, p - sp);
+    mb->flags |= RPMEXPAND_KEEP_QUOTED;
+    free(source);
+    return mb->error;
 }
 
 /**
@@ -1710,7 +1786,7 @@ expandThisMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_const_t args, int flags)
 	    ARGV_const_t av = args;
 	    for (av = args; av && *av; av++) {
 		char *s = NULL;
-		expandThis(mb, *av, 0, &s);
+		expandThis(mb, *av, 0, &s, NULL);
 		argvAdd(&optargs, s);
 		free(s);
 	    }
