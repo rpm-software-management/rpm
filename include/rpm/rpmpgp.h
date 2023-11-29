@@ -333,7 +333,7 @@ int pgpPrtParamsSubkeys(const uint8_t *pkts, size_t pktlen,
 			int *subkeysCount);
 
 /** \ingroup rpmpgp
- * Parse armored OpenPGP packets from a file.
+ * Parse the OpenPGP packets from one ASCII-armored block in a file.
  * @param fn		file name
  * @param[out] pkt	dearmored OpenPGP packet(s) (malloced)
  * @param[out] pktlen	dearmored OpenPGP packet(s) length in bytes
@@ -342,7 +342,7 @@ int pgpPrtParamsSubkeys(const uint8_t *pkts, size_t pktlen,
 pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen);
 
 /** \ingroup rpmpgp
- * Parse armored OpenPGP packets from memory.
+ * Parse the OpenPGP packets from one ASCII-armored block in memory.
  * @param armor		armored OpenPGP packet string
  * @param[out] pkt	dearmored OpenPGP packet(s) (malloced)
  * @param[out] pktlen	dearmored OpenPGP packet(s) length in bytes
