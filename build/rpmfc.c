@@ -21,7 +21,6 @@
 #include <rpm/rpmfi.h>
 #include <rpm/rpmstrpool.h>
 
-#include "rpmug.h"
 #include "rpmfi_internal.h"		/* rpmfiles stuff for now */
 #include "rpmbuild_internal.h"
 
@@ -1683,16 +1682,14 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 	    if (rpmExpandNumeric("%{?_use_weak_usergroup_deps}"))
 		deptag = RPMTAG_RECOMMENDNAME;
 
-	    /* filter out root and current user/group */
-	    if (user && !rstreq(user, UID_0_USER) &&
-			!rstreq(user, rpmugUname(getuid()))) {
+	    /* filter out root user/group */
+	    if (user && !rstreq(user, UID_0_USER)) {
 		rpmds ds = rpmdsSingleNS(fc->pool, deptag, "user",
 					user, NULL, ugfl);
 		rpmdsMerge(packageDependencies(pkg, deptag), ds);
 		rpmdsFree(ds);
 	    }
-	    if (group && !rstreq(group, GID_0_GROUP) &&
-			 !rstreq(group, rpmugGname(getgid()))) {
+	    if (group && !rstreq(group, GID_0_GROUP)) {
 		rpmds ds = rpmdsSingleNS(fc->pool, deptag, "group",
 					group, NULL, ugfl);
 		rpmdsMerge(packageDependencies(pkg, deptag), ds);

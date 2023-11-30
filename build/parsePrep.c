@@ -14,7 +14,6 @@
 #include "rpmbuild_internal.h"
 #include "rpmbuild_misc.h"
 #include "rpmmacro_internal.h"
-#include "rpmug.h"
 #include "debug.h"
 
 static void appendMb(rpmMacroBuf mb, const char *s, int nl)
