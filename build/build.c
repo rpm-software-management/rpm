@@ -19,7 +19,6 @@
 #include <rpm/rpmfileutil.h>
 #include "rpmbuild_internal.h"
 #include "rpmbuild_misc.h"
-#include "rpmug.h"
 
 #include "debug.h"
 
@@ -496,7 +495,6 @@ exit:
 	}
     }
 
-    rpmugFree();
     if (missing_buildreqs && !rc) {
 	rc = RPMRC_MISSINGBUILDREQUIRES;
     }

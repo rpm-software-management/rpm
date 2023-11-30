@@ -30,7 +30,6 @@
 #include "rpmio_internal.h"	/* XXX rpmioSlurp */
 #include "rpmfts.h"
 #include "rpmfi_internal.h"	/* XXX fi->apath */
-#include "rpmug.h"
 #include "rpmbuild_internal.h"
 #include "rpmbuild_misc.h"
 
@@ -96,8 +95,6 @@ typedef struct FileListRec_s {
 #define	fl_ino	fl_st.st_ino
 #define	fl_mode	fl_st.st_mode
 #define	fl_nlink fl_st.st_nlink
-#define	fl_uid	fl_st.st_uid
-#define	fl_gid	fl_st.st_gid
 #define	fl_rdev	fl_st.st_rdev
 #define	fl_size	fl_st.st_size
 #define	fl_mtime fl_st.st_mtime
@@ -1143,7 +1140,6 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	    if ((flp[1].specdFlags & (SPECD_UID | SPECD_DEFUID)) <
 		(flp->specdFlags & (SPECD_UID | SPECD_DEFUID)))
 	    {
-		flp[1].fl_uid = flp->fl_uid;
 		flp[1].uname = flp->uname;
 	    }
 
@@ -1151,7 +1147,6 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	    if ((flp[1].specdFlags & (SPECD_GID | SPECD_DEFGID)) <
 		(flp->specdFlags & (SPECD_GID | SPECD_DEFGID)))
 	    {
-		flp[1].fl_gid = flp->fl_gid;
 		flp[1].gname = flp->gname;
 	    }
 
@@ -1402,8 +1397,6 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     const char *cpioPath;
     struct stat statbuf;
     mode_t fileMode;
-    uid_t fileUid;
-    gid_t fileGid;
     const char *fileUname;
     const char *fileGname;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
@@ -1492,8 +1485,6 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     }
 
     fileMode = statp->st_mode;
-    fileUid = statp->st_uid;
-    fileGid = statp->st_gid;
 
     /* Explicit %attr() always wins */
     if (fl->cur.ar.ar_fmodestr) {
@@ -1522,22 +1513,16 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     } else if (fl->def.ar.ar_user) {
 	fileUname = rpmstrPoolStr(fl->pool, fl->def.ar.ar_user);
     } else {
-	fileUname = rpmugUname(fileUid);
+	fileUname = UID_0_USER;
     }
     if (fl->cur.ar.ar_group) {
 	fileGname = rpmstrPoolStr(fl->pool, fl->cur.ar.ar_group);
     } else if (fl->def.ar.ar_group) {
 	fileGname = rpmstrPoolStr(fl->pool, fl->def.ar.ar_group);
     } else {
-	fileGname = rpmugGname(fileGid);
+	fileGname = GID_0_GROUP;
     }
 	
-    /* Default user/group to builder's user/group */
-    if (fileUname == NULL)
-	fileUname = rpmugUname(getuid());
-    if (fileGname == NULL)
-	fileGname = rpmugGname(getgid());
-    
     /* S_XXX macro must be consistent with type in find call at check-files script */
     if (check_fileList && (S_ISREG(fileMode) || S_ISLNK(fileMode))) {
 	appendStringBuf(check_fileList, diskPath);
@@ -1555,8 +1540,6 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 
 	flp->fl_st = *statp;	/* structure assignment */
 	flp->fl_mode = fileMode;
-	flp->fl_uid = fileUid;
-	flp->fl_gid = fileGid;
 	if (S_ISDIR(fileMode))
 	    flp->fl_size = 0;
 
@@ -2780,11 +2763,6 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 
 	if (fl.def.ar.ar_user) {
 	    flp->uname = fl.def.ar.ar_user;
-	} else {
-	    flp->uname = rpmstrPoolId(fl.pool, rpmugUname(flp->fl_uid), 1);
-	}
-	if (! flp->uname) {
-	    flp->uname = rpmstrPoolId(fl.pool, rpmugUname(getuid()), 1);
 	}
 	if (! flp->uname) {
 	    flp->uname = rpmstrPoolId(fl.pool, UID_0_USER, 1);
@@ -2792,11 +2770,6 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 
 	if (fl.def.ar.ar_group) {
 	    flp->gname = fl.def.ar.ar_group;
-	} else {
-	    flp->gname = rpmstrPoolId(fl.pool, rpmugGname(flp->fl_gid), 1);
-	}
-	if (! flp->gname) {
-	    flp->gname = rpmstrPoolId(fl.pool, rpmugGname(getgid()), 1);
 	}
 	if (! flp->gname) {
 	    flp->gname = rpmstrPoolId(fl.pool, GID_0_GROUP, 1);
