@@ -13,7 +13,6 @@
 #include <rpm/rpmfileutil.h>
 #include "rpmbuild_internal.h"
 #include "rpmbuild_misc.h"
-#include "rpmug.h"
 #include "debug.h"
 
 static void appendBuf(rpmSpec spec, const char *s, int nl)
