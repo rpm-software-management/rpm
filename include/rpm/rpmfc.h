@@ -41,14 +41,6 @@ enum FCOLOR_e {
 };
 
 /** \ingroup rpmfc
- */
-typedef	rpmFlags FCOLOR_t;
-
-/** \ingroup rpmfc
- */
-typedef const struct rpmfcTokens_s * rpmfcToken;
-
-/** \ingroup rpmfc
  * Print results of file classification.
  * @param msg		message prefix (NULL for none)
  * @param fc		file classifier

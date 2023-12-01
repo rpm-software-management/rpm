@@ -92,6 +92,7 @@ struct rpmfcTokens_s {
     const char * token;
     rpm_color_t colors;
 };  
+typedef const struct rpmfcTokens_s * rpmfcToken;
 
 static int intCmp(int a, int b)
 {
