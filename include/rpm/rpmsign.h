@@ -22,9 +22,9 @@ enum rpmSignFlags_e {
 typedef rpmFlags rpmSignFlags;
 
 struct rpmSignArgs {
-    char *keyid;
-    pgpHashAlgo hashalgo;
-    rpmSignFlags signflags;
+    char *keyid;		/*!< signer keyid */
+    pgpHashAlgo hashalgo;	/*!< hash algorithm to use */
+    rpmSignFlags signflags;	/*!< flags to control operation */
     /* ... what else? */
 };
 

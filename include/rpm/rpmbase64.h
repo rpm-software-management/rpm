@@ -13,7 +13,8 @@
 extern "C" {
 #endif
 
-/* returns malloced base64 encoded string
+/**
+ * returns malloced base64 encoded string
  * lines are split with \n characters to be nearest lower multiple of linelen
  * if linelen/4 == 0 lines are not split
  * if linelen < 0 default line length (64) is used
@@ -22,7 +23,8 @@ extern "C" {
  */
 char *rpmBase64Encode(const void *data, size_t len, int linelen);
 
-/* decodes from zero terminated base64 encoded string to a newly malloced buffer
+/**
+ * decodes from zero terminated base64 encoded string to a newly malloced buffer
  * ignores whitespace characters in the input string
  * return values:
  *  0 - OK
@@ -33,7 +35,8 @@ char *rpmBase64Encode(const void *data, size_t len, int linelen);
  */
 int rpmBase64Decode(const char *in, void **out, size_t *outlen);
 
-/* counts CRC24 and base64 encodes it in a malloced string
+/**
+ * counts CRC24 and base64 encodes it in a malloced string
  * returns NULL on failures
  */
 char *rpmBase64CRC(const unsigned char *data, size_t len);

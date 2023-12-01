@@ -21,9 +21,8 @@ extern "C" {
 #endif
 
 /** \ingroup rpmio
- */
+*/
 typedef const struct FDIO_s * FDIO_t;
-
 
 /** \ingroup rpmio
  * \name RPMIO Interface.
@@ -152,22 +151,27 @@ const char * Fdescr(FD_t fd);
  */
 
 /** \ingroup rpmio
+ * Return the size of the backing file of the descriptor.
  */
 off_t	fdSize(FD_t fd);
 
 /** \ingroup rpmio
+ * dup(2) clone.
  */
 FD_t fdDup(int fdno);
 
 /** \ingroup rpmio
+ * Reference a file descriptor.
  */
 FD_t fdLink(FD_t fd);
 
 /** \ingroup rpmio
+ * Dereference a file descriptor. This does NOT close the file.
  */
 FD_t fdFree(FD_t fd);
 
 /**
+ * Copy file descriptor into another.
  */
 off_t ufdCopy(FD_t sfd, FD_t tfd);
 
@@ -184,7 +188,7 @@ typedef enum fdOpX_e {
 } fdOpX;
 
 /** \ingroup rpmio
- *
+ * File operation statistics.
  */
 rpmop fdOp(FD_t fd, fdOpX opx);
 
