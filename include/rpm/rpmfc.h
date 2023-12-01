@@ -14,13 +14,18 @@
 extern "C" {
 #endif
 
+/**
+ * Private.
+ */
 extern int _rpmfc_debug;
 
 /** \ingroup rpmfc
+ * File classifier handle.
  */
 typedef struct rpmfc_s * rpmfc;
 
 /** \ingroup rpmfc
+ * File colors.
  */
 enum FCOLOR_e {
     RPMFC_BLACK			= 0,
@@ -28,7 +33,7 @@ enum FCOLOR_e {
     RPMFC_ELF64			= (1 <<  1),
     RPMFC_ELFMIPSN32		= (1 <<  2),
 #define	RPMFC_ELF	(RPMFC_ELF32|RPMFC_ELF64|RPMFC_ELFMIPSN32)
-	/* (1 << 3) leaks into package headers, reserved */
+	/*!< (1 << 3) leaks into package headers, reserved */
 
     RPMFC_WHITE			= (1 << 29),
     RPMFC_INCLUDE		= (1 << 30),

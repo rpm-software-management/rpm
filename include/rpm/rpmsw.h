@@ -33,7 +33,7 @@ struct rpmsw_s {
 	struct timeval tv;
 	unsigned long long int ticks;
 	unsigned long int tocks[2];
-    } u;
+    } u; /*!< Private */
 };
 
 /** \ingroup rpmsw
