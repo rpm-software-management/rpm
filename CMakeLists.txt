@@ -28,6 +28,7 @@ option(WITH_AUDIT "Build with audit support" ON)
 option(WITH_FSVERITY "Build with fsverity support" OFF)
 option(WITH_IMAEVM "Build with IMA support" OFF)
 option(WITH_FAPOLICYD "Build with fapolicyd support" ON)
+option(WITH_INTERNAL_OPENPGP "Use internal OpenPGP parser (DEPRECATED)" OFF)
 
 set(RPM_CONFIGDIR "${CMAKE_INSTALL_PREFIX}/lib/rpm" CACHE PATH "rpm home")
 set(RPM_MACROSDIR "${RPM_CONFIGDIR}/macros.d")

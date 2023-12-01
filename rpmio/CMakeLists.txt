@@ -10,9 +10,8 @@ target_sources(librpmio PRIVATE
 target_compile_definitions(librpmio PRIVATE RPM_CONFIGDIR="${RPM_CONFIGDIR}")
 target_include_directories(librpmio PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-add_subdirectory(rpmpgp_legacy)
-
 if (WITH_INTERNAL_OPENPGP)
+	add_subdirectory(rpmpgp_legacy)
 	target_link_libraries(librpmio PRIVATE rpmpgp_legacy)
 else()
 	pkg_check_modules(RPMSEQUOIA REQUIRED IMPORTED_TARGET rpm-sequoia>=1.4.0)

@@ -2,7 +2,6 @@
 # it can only be built as a part of rpm build tree.
 add_library(rpmpgp_legacy OBJECT)
 
-option(WITH_INTERNAL_OPENPGP "Use internal OpenPGP parser (DEPRECATED)" OFF)
 option(WITH_OPENSSL "Use openssl (instead of libgcrypt) for internal crypto" OFF)
 
 target_sources(rpmpgp_legacy PRIVATE
