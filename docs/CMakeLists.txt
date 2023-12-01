@@ -8,6 +8,7 @@ if (DOXYGEN_FOUND)
 	# XXX API docs should be pre-built in tarballs
 	file(GLOB headers ${CMAKE_SOURCE_DIR}/include/rpm/*.h)
 	set(DOXYGEN_WARN_IF_UNDOCUMENTED NO)
+	set(DOXYGEN_OPTIMIZE_OUTPUT_FOR_C YES)
 	if (ENABLE_WERROR)
 		set(DOXYGEN_WARN_AS_ERROR YES)
 	endif()
