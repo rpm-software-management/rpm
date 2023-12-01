@@ -139,7 +139,7 @@ int	rpmPopMacro	(rpmMacroContext mc, const char * n);
 int	rpmDefineMacro	(rpmMacroContext mc, const char * macro,
 				int level);
 
-/*
+/**
  * Test whether a macro is defined
  * @param mc		macro context (NULL uses global context).
  * @param n		macro name
@@ -147,7 +147,7 @@ int	rpmDefineMacro	(rpmMacroContext mc, const char * macro,
  */
 int rpmMacroIsDefined(rpmMacroContext mc, const char *n);
 
-/*
+/**
  * Test whether a macro is parametric (ie takes arguments)
  * @param mc		macro context (NULL uses global context).
  * @param n		macro name

@@ -77,6 +77,9 @@ unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi);
 int rpmdbGetIteratorCount(rpmdbMatchIterator mi);
 
 /** \ingroup rpmdb
+ * Return index to the array of elements (eg files) being iterated.
+ * @param mi		rpm database iterator
+ * @return		array index
  */
 unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi);
 
