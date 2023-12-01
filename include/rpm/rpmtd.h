@@ -14,6 +14,9 @@
 extern "C" {
 #endif
 
+/**
+ * Flags potentially present in rpmtd struct.
+ */
 enum rpmtdFlags_e {
     RPMTD_NONE		= 0,
     RPMTD_ALLOCED	= (1 << 0),	/* was memory allocated? */
@@ -30,13 +33,13 @@ typedef rpmFlags rpmtdFlags;
  * @todo		Make this opaque (at least outside rpm itself)
  */
 struct rpmtd_s {
-    rpm_tag_t tag;	/* rpm tag of this data entry*/
-    rpm_tagtype_t type;	/* data type */
-    rpm_count_t count;	/* number of entries */
-    rpm_data_t data;	/* pointer to actual data */
-    rpmtdFlags flags;	/* flags on memory allocation etc */
-    int ix;		/* iteration index */
-    rpm_count_t size;	/* size of data (only works for RPMTD_IMMUTABLE atm) */
+    rpm_tag_t tag;	/*!< rpm tag of this data entry*/
+    rpm_tagtype_t type;	/*!< data type */
+    rpm_count_t count;	/*!< number of entries */
+    rpm_data_t data;	/*!< pointer to actual data */
+    rpmtdFlags flags;	/*!< flags on memory allocation etc */
+    int ix;		/*!< iteration index */
+    rpm_count_t size;	/*!< size of data (only works for RPMTD_IMMUTABLE atm) */
 };
 
 /** \ingroup rpmtd
@@ -222,6 +225,9 @@ const char * rpmtdGetString(rpmtd td);
  */
 uint64_t rpmtdGetNumber(rpmtd td);
 
+/**
+ * Formats supported by rpmtdFormat().
+ */
 typedef enum rpmtdFormats_e {
     RPMTD_FORMAT_STRING		= 0,	/* plain string (any type) */
     RPMTD_FORMAT_ARMOR		= 1,	/* ascii armor format (bin types) */

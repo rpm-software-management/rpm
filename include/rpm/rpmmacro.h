@@ -132,6 +132,8 @@ int	rpmPushMacroFlags	(rpmMacroContext mc, const char * n,
  * @param o		macro parameters (or NULL)
  * @param f		macro function
  * @param priv		private user data (or NULL)
+ * @param nargs		number of arguments (0-N for enforced check,
+ *			-1 for optional)
  * @param level		macro recursion level (0 is entry API)
  * @param flags		macro flags
  * @return		0 on success
@@ -189,7 +191,7 @@ int	rpmPopMacro	(rpmMacroContext mc, const char * n);
 int	rpmDefineMacro	(rpmMacroContext mc, const char * macro,
 				int level);
 
-/*
+/**
  * Test whether a macro is defined
  * @param mc		macro context (NULL uses global context).
  * @param n		macro name
@@ -197,7 +199,7 @@ int	rpmDefineMacro	(rpmMacroContext mc, const char * macro,
  */
 int rpmMacroIsDefined(rpmMacroContext mc, const char *n);
 
-/*
+/**
  * Test whether a macro is parametric (ie takes arguments)
  * @param mc		macro context (NULL uses global context).
  * @param n		macro name

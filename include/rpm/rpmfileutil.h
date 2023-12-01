@@ -15,6 +15,7 @@ extern "C" {
 #endif
 
 /** \ingroup rpmfileutil
+ * Compression types detected by rpm (subject to build configuration).
  */
 typedef enum rpmCompressedMagic_e {
     COMPRESSED_NOT		= 0,	/*!< not compressed */
