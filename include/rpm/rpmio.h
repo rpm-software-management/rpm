@@ -21,10 +21,6 @@ extern "C" {
 #endif
 
 /** \ingroup rpmio
-*/
-typedef const struct FDIO_s * FDIO_t;
-
-/** \ingroup rpmio
  * \name RPMIO Interface.
  */
 
