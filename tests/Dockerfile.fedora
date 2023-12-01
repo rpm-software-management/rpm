@@ -1,4 +1,4 @@
-FROM registry.fedoraproject.org/fedora:38 AS base
+FROM registry.fedoraproject.org/fedora:39 AS base
 MAINTAINER rpm-maint@lists.rpm.org
 
 RUN echo -e "deltarpm=0\ninstall_weak_deps=0\ntsflags=nodocs" >> /etc/dnf/dnf.conf
