@@ -21,6 +21,7 @@
 #include "debug.h"
 
 typedef struct FDSTACK_s * FDSTACK_t;
+typedef const struct FDIO_s * FDIO_t;
 
 struct FDSTACK_s {
     FDIO_t		io;
