@@ -7,6 +7,7 @@ find_package(Doxygen)
 if (DOXYGEN_FOUND)
 	# XXX API docs should be pre-built in tarballs
 	file(GLOB headers ${CMAKE_SOURCE_DIR}/include/rpm/*.h)
+	set(DOXYGEN_WARN_IF_UNDOCUMENTED NO)
 	doxygen_add_docs(apidoc librpm/Doxyheader.h ${headers}
 			ALL USE_STAMP_FILE)
 	set(doxsrc ${CMAKE_CURRENT_BINARY_DIR})
