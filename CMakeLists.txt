@@ -422,7 +422,7 @@ install(FILES CONTRIBUTING.md COPYING CREDITS INSTALL README TYPE DOC)
 
 add_custom_target(ChangeLog
 		   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-		   COMMAND git log --no-merges
+		   COMMAND git log --no-merges --no-decorate
 				--output=${CMAKE_BINARY_DIR}/ChangeLog
 )
 
