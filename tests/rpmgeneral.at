@@ -39,16 +39,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpm library version])
 AT_KEYWORDS([basic])
 AT_SKIP_IF(test -f "${RPMTEST}/${RPMLIBDIR}/librpm.a")
-RPMTEST_CHECK([
-cd ${RPMTEST}/${RPMLIBDIR}
-ls lib{rpm,rpmbuild,rpmio,rpmsign}.so.*.*
-],
-[0],
-[librpm.so.10.0.0
-librpmbuild.so.10.0.0
-librpmio.so.10.0.0
-librpmsign.so.10.0.0
-])
+RPMTEST_CHECK_PINNED([rpmlibver])
 RPMTEST_CLEANUP
 
 # ------------------------------

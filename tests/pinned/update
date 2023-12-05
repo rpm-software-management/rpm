@@ -1,0 +1,9 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(dirname $0)"
+mkdir -p pinned
+
+for script in $SCRIPT_DIR/*.sh; do
+    name=$(basename $script)
+    $script > pinned/${name%.sh}.txt
+done
