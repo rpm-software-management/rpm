@@ -83,7 +83,7 @@ case $CMD in
         rpmtests "$@"
     ;;
     atshell)
-        rpmtests --shell
+        rpmtests --shell "$@"
     ;;
     shell)
         rpmtests --shell snapshot shell

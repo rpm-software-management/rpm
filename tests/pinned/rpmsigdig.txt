@@ -1,0 +1,11 @@
+SHA256HEADER: 8ab715bef152a18bef62df29805b9d1b8f2c5d92955a1a7fa2491967cc17c035
+SHA1HEADER: 7a8ad9bdb9b0910fa54724f7bdac8ac49d992d2f
+SIGMD5: 87da99d1993240e2d698f5b3dbcbd44c
+PAYLOADDIGEST: 116ce41ebb72f1877cda3d7dedaf5b78770e202d6389ade4e415d78548d703a8
+PAYLOADDIGESTALT: 116ce41ebb72f1877cda3d7dedaf5b78770e202d6389ade4e415d78548d703a8
+/build/RPMS/noarch/attrtest-1.0-1.noarch.rpm:
+    Header SHA256 digest: OK
+    Header SHA1 digest: OK
+    Payload SHA256 ALT digest: OK
+    Payload SHA256 digest: OK
+    MD5 digest: OK

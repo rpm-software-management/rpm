@@ -61,6 +61,8 @@ foreach(prg ${TESTPROGS})
 endforeach()
 string(REPLACE ";" " " TESTPROG_NAMES "${TESTPROGS}")
 
+set(PINNED_DIR ${CMAKE_CURRENT_SOURCE_DIR}/pinned)
+
 include(ProcessorCount)
 ProcessorCount(nproc)
 if (nproc GREATER 1)
@@ -124,6 +126,14 @@ endif()
 
 add_custom_target(atshell
 	COMMAND ./mktree atshell ||:
+	DEPENDS tree
+)
+
+add_custom_target(pinned
+	COMMAND ./mktree atshell /pinned/update
+	COMMAND cp pinned/*.txt ${PINNED_DIR}/
+	COMMAND git add ${PINNED_DIR}/*.txt
+	COMMAND git diff --staged ${PINNED_DIR}/*.txt
 	DEPENDS tree
 )
 
