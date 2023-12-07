@@ -12,7 +12,7 @@ set(extra
 
 # Build all manuals
 set(manuals ${core} ${extra})
-if (EXISTS ${PANDOC})
+if (PANDOC)
 	foreach(man ${manuals})
 		add_custom_command(OUTPUT ${man} COMMAND ${PANDOC}
 				${CMAKE_CURRENT_SOURCE_DIR}/${man}.md
@@ -48,13 +48,11 @@ if (ENABLE_PLUGINS)
 endif()
 foreach(man ${manuals})
 	unset(fn)
-	if (EXISTS ${PANDOC})
+	if (PANDOC)
 		set(fn ${CMAKE_CURRENT_BINARY_DIR}/${man})
-	else()
+	elseif (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${man})
 		# dist tarballs have pre-built manuals in the source dir
-		if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${man})
-			set(fn ${CMAKE_CURRENT_SOURCE_DIR}/${man})
-		endif()
+		set(fn ${CMAKE_CURRENT_SOURCE_DIR}/${man})
 	endif()
 	if (fn)
 		get_filename_component(ext ${fn} EXT)
