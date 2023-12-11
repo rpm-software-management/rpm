@@ -1174,9 +1174,9 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 
 	    if (rc) {
 		int lvl = strict_erasures ? RPMLOG_ERR : RPMLOG_WARNING;
-		rpmlog(lvl, _("%s %s: remove failed: %s\n"),
+		rpmlog(lvl, _("%s %s%s: remove failed: %s\n"),
 			S_ISDIR(fp->sb.st_mode) ? _("directory") : _("file"),
-			fp->fpath, strerror(errno));
+			rpmfiDN(fi), fp->fpath, strerror(errno));
             }
         }
 
