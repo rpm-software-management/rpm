@@ -12,14 +12,18 @@ add_executable(rpmgraph rpmgraph.c)
 add_executable(rpmlua rpmlua.c)
 add_executable(rpmsort rpmsort.c)
 add_executable(rpmuncompress rpmuncompress.c)
-add_executable(elfdeps elfdeps.c)
 
 target_link_libraries(rpmsign PRIVATE librpmsign)
 target_link_libraries(rpmlua PRIVATE LUA::LUA)
-target_link_libraries(elfdeps PRIVATE PkgConfig::LIBELF)
 target_link_libraries(rpmbuild PRIVATE librpmbuild)
 target_link_libraries(rpmspec PRIVATE librpmbuild)
 target_link_libraries(rpmdeps PRIVATE librpmbuild)
+
+if (LIBELF_FOUND)
+	add_executable(elfdeps elfdeps.c)
+	target_link_libraries(elfdeps PRIVATE PkgConfig::LIBELF)
+	install(TARGETS elfdeps DESTINATION ${RPM_CONFIGDIR})
+endif()
 
 target_include_directories(rpmlua PRIVATE ${CMAKE_SOURCE_DIR}/rpmio)
 target_include_directories(rpmgraph PRIVATE ${CMAKE_SOURCE_DIR}/lib)
@@ -58,5 +62,5 @@ install(TARGETS
 	rpm rpmdb rpmkeys rpmsign rpmbuild rpmspec
 	rpmlua rpmgraph rpmsort
 )
-install(TARGETS elfdeps rpmdeps rpmuncompress DESTINATION ${RPM_CONFIGDIR})
+install(TARGETS rpmdeps rpmuncompress DESTINATION ${RPM_CONFIGDIR})
 
