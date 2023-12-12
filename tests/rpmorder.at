@@ -2,7 +2,6 @@ AT_BANNER([RPM install/erase ordering])
 
 AT_SETUP([basic install/erase order 1])
 AT_KEYWORDS([install erase order])
-RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
@@ -17,26 +16,29 @@ runroot rpmbuild --quiet -bb \
 	--define "pkg three" \
 	/data/SPECS/deptest.spec
 
-echo INSTALL:
+RPMTEST_CHECK([
 runroot rpm -Uv --justdb \
 	/build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm \
 	/build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm \
 	/build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
-echo ERASE:
+],
+[0],
+[Verifying packages...
+Preparing packages...
+deptest-three-1.0-1.noarch
+deptest-two-1.0-1.noarch
+deptest-one-1.0-1.noarch
+],
+[])
+
+RPMTEST_CHECK([
 runroot rpm -ev --justdb \
         deptest-three \
 	deptest-one \
 	deptest-two
 ],
 [0],
-[INSTALL:
-Verifying packages...
-Preparing packages...
-deptest-three-1.0-1.noarch
-deptest-two-1.0-1.noarch
-deptest-one-1.0-1.noarch
-ERASE:
-Preparing packages...
+[Preparing packages...
 deptest-one-1.0-1.noarch
 deptest-two-1.0-1.noarch
 deptest-three-1.0-1.noarch
@@ -47,7 +49,6 @@ RPMTEST_CLEANUP
 # same as above but with weak dependencies
 AT_SETUP([basic install/erase order 2])
 AT_KEYWORDS([install erase order])
-RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
@@ -62,26 +63,29 @@ runroot rpmbuild --quiet -bb \
 	--define "pkg three" \
 	/data/SPECS/deptest.spec
 
-echo INSTALL:
+RPMTEST_CHECK([
 runroot rpm -Uv --justdb \
 	/build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm \
 	/build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm \
 	/build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
-echo ERASE:
+],
+[0],
+[Verifying packages...
+Preparing packages...
+deptest-three-1.0-1.noarch
+deptest-two-1.0-1.noarch
+deptest-one-1.0-1.noarch
+],
+[])
+
+RPMTEST_CHECK([
 runroot rpm -ev --justdb \
         deptest-three \
 	deptest-one \
 	deptest-two
 ],
 [0],
-[INSTALL:
-Verifying packages...
-Preparing packages...
-deptest-three-1.0-1.noarch
-deptest-two-1.0-1.noarch
-deptest-one-1.0-1.noarch
-ERASE:
-Preparing packages...
+[Preparing packages...
 deptest-one-1.0-1.noarch
 deptest-two-1.0-1.noarch
 deptest-three-1.0-1.noarch
@@ -92,7 +96,6 @@ RPMTEST_CLEANUP
 # same as above but with weak reverse dependencies
 AT_SETUP([basic install/erase order 3])
 AT_KEYWORDS([install erase order])
-RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
@@ -107,26 +110,29 @@ runroot rpmbuild --quiet -bb \
 	--define "ens deptest-two" \
 	/data/SPECS/deptest.spec
 
-echo INSTALL:
+RPMTEST_CHECK([
 runroot rpm -Uv --justdb \
 	/build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm \
 	/build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm \
 	/build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
-echo ERASE:
+],
+[0],
+[Verifying packages...
+Preparing packages...
+deptest-three-1.0-1.noarch
+deptest-two-1.0-1.noarch
+deptest-one-1.0-1.noarch
+],
+[])
+
+RPMTEST_CHECK([
 runroot rpm -ev --justdb \
         deptest-three \
 	deptest-one \
 	deptest-two
 ],
 [0],
-[INSTALL:
-Verifying packages...
-Preparing packages...
-deptest-three-1.0-1.noarch
-deptest-two-1.0-1.noarch
-deptest-one-1.0-1.noarch
-ERASE:
-Preparing packages...
+[Preparing packages...
 deptest-one-1.0-1.noarch
 deptest-two-1.0-1.noarch
 deptest-three-1.0-1.noarch
