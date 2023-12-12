@@ -4,7 +4,6 @@ AT_BANNER([RPM scriptlets])
 
 AT_SETUP([basic script failures 1])
 AT_KEYWORDS([script])
-RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
@@ -20,125 +19,208 @@ pkg2="${pkgname}-2.0-1"
 pkgfile1="/build/RPMS/noarch/${pkg1}.noarch.rpm"
 pkgfile2="/build/RPMS/noarch/${pkg2}.noarch.rpm"
 
+RPMTEST_CHECK([
 echo PRETRANSFAIL
 runroot rpm -U --define "exitpretrans 1" ${pkgfile1} 2>&1; echo $?
 runroot rpm -q ${pkgname} 2>&1
-echo PRETRANS
-runroot rpm -U --define "exitpretrans 0" ${pkgfile1} 2>&1; echo $?
-runroot rpm -q ${pkgname} 2>&1
-runroot rpm -e ${pkgname} 2>&1
-echo PREFAIL
-runroot rpm -U --define "exitpre 1" ${pkgfile1} 2>&1; echo $?
-runroot rpm -q ${pkgname} 2>&1
-echo PRE
-runroot rpm -U --define "exitpre 0" ${pkgfile1} 2>&1; echo $?
-runroot rpm -q ${pkgname} 2>&1
-echo PREUNFAIL
-runroot rpm -e --define "exitpreun 1" ${pkgname} 2>&1; echo $?
-runroot rpm -q ${pkgname} 2>&1
-echo PREUNTRANSFAIL
-runroot rpm -e --define "exitpreuntrans 1" ${pkgname} 2>&1; echo $?
-runroot rpm -q ${pkgname} 2>&1
-echo PREUN
-runroot rpm -e --define "exitpreun 0" ${pkgname} 2>&1; echo $?
-runroot rpm -q ${pkgname} 2>&1
-echo POSTFAIL
-runroot rpm -U ${pkgfile1} 2>&1
-runroot rpm -U --define "exitpost 1" ${pkgfile2} 2>&1; echo $?
-runroot rpm -q ${pkgname} 2>&1
-runroot rpm -e ${pkgname} 2>&1
-echo POST
-runroot rpm -U ${pkgfile1} 2>&1
-runroot rpm -U --define "exitpost 0" ${pkgfile2} 2>&1; echo $?
-runroot rpm -q ${pkgname} 2>&1
-runroot rpm -e ${pkgname} 2>&1
-echo POSTTRANSFAIL
-runroot rpm -U --define "exitposttrans 1" ${pkgfile1} 2>&1; echo $?
-runroot rpm -q ${pkgname} 2>&1
-runroot rpm -e ${pkgname} 2>&1
-echo POSTTRANS
-runroot rpm -U --define "exitposttrans 0" ${pkgfile1} 2>&1; echo $?
-runroot rpm -q ${pkgname} 2>&1
-runroot rpm -e ${pkgname} 2>&1
-echo POSTUNFAIL
-runroot rpm -U ${pkgfile1} 2>&1
-runroot rpm -U --define "exitpostun 1" ${pkgfile2} 2>&1; echo $?
-runroot rpm -q ${pkgname} 2>&1
-runroot rpm -e ${pkgname} 2>&1
-echo POSTUNTRANSFAIL
-runroot rpm -U ${pkgfile1} 2>&1
-runroot rpm -U --define "exitpostuntrans 1" ${pkgfile2} 2>&1; echo $?
-runroot rpm -q ${pkgname} 2>&1
-runroot rpm -e ${pkgname} 2>&1
-echo POSTUN
-runroot rpm -U ${pkgfile1} 2>&1
-runroot rpm -U --define "exitpostun 0" ${pkgfile2} 2>&1; echo $?
-runroot rpm -q ${pkgname} 2>&1
-runroot rpm -e ${pkgname} 2>&1
-echo POSTUNTRANS
-runroot rpm -U ${pkgfile1} 2>&1
-runroot rpm -U --define "exitpostuntrans 0" ${pkgfile2} 2>&1; echo $?
-runroot rpm -q ${pkgname} 2>&1
-runroot rpm -e ${pkgname} 2>&1
-
-exit 0
 ],
-[],
+[1],
 [PRETRANSFAIL
 error: %pretrans(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 error: scriptfail-1.0-1.noarch: install skipped
 1
 package scriptfail is not installed
-PRETRANS
+],
+[])
+
+RPMTEST_CHECK([
+echo PRETRANS
+runroot rpm -U --define "exitpretrans 0" ${pkgfile1} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+runroot rpm -e ${pkgname} 2>&1
+],
+[0],
+[PRETRANS
 0
 scriptfail-1.0-1.noarch
-PREFAIL
+],
+[])
+
+RPMTEST_CHECK([
+echo PREFAIL
+runroot rpm -U --define "exitpre 1" ${pkgfile1} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+],
+[1],
+[PREFAIL
 error: %prein(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 error: scriptfail-1.0-1.noarch: install failed
 1
 package scriptfail is not installed
-PRE
+],
+[])
+
+RPMTEST_CHECK([
+echo PRE
+runroot rpm -U --define "exitpre 0" ${pkgfile1} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+],
+[0],
+[PRE
 0
 scriptfail-1.0-1.noarch
-PREUNFAIL
+],
+[])
+
+RPMTEST_CHECK([
+echo PREUNFAIL
+runroot rpm -e --define "exitpreun 1" ${pkgname} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+],
+[0],
+[PREUNFAIL
 error: %preun(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 error: scriptfail-1.0-1.noarch: erase failed
 1
 scriptfail-1.0-1.noarch
-PREUNTRANSFAIL
+],
+[])
+
+RPMTEST_CHECK([
+echo PREUNTRANSFAIL
+runroot rpm -e --define "exitpreuntrans 1" ${pkgname} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+],
+[0],
+[PREUNTRANSFAIL
 error: %preuntrans(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 error: scriptfail-1.0-1.noarch: erase skipped
 1
 scriptfail-1.0-1.noarch
-PREUN
+],
+[])
+
+RPMTEST_CHECK([
+echo PREUN
+runroot rpm -e --define "exitpreun 0" ${pkgname} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+],
+[1],
+[PREUN
 0
 package scriptfail is not installed
-POSTFAIL
+],
+[])
+
+RPMTEST_CHECK([
+echo POSTFAIL
+runroot rpm -U ${pkgfile1} 2>&1
+runroot rpm -U --define "exitpost 1" ${pkgfile2} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+runroot rpm -e ${pkgname} 2>&1
+],
+[0],
+[POSTFAIL
 warning: %post(scriptfail-2.0-1.noarch) scriptlet failed, exit status 1
 0
 scriptfail-2.0-1.noarch
-POST
+],
+[])
+
+RPMTEST_CHECK([
+echo POST
+runroot rpm -U ${pkgfile1} 2>&1
+runroot rpm -U --define "exitpost 0" ${pkgfile2} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+runroot rpm -e ${pkgname} 2>&1
+],
+[0],
+[POST
 0
 scriptfail-2.0-1.noarch
-POSTTRANSFAIL
+],
+[])
+
+RPMTEST_CHECK([
+echo POSTTRANSFAIL
+runroot rpm -U --define "exitposttrans 1" ${pkgfile1} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+runroot rpm -e ${pkgname} 2>&1
+],
+[0],
+[POSTTRANSFAIL
 warning: %posttrans(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 0
 scriptfail-1.0-1.noarch
-POSTTRANS
+],
+[])
+
+RPMTEST_CHECK([
+echo POSTTRANS
+runroot rpm -U --define "exitposttrans 0" ${pkgfile1} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+runroot rpm -e ${pkgname} 2>&1
+],
+[0],
+[POSTTRANS
 0
 scriptfail-1.0-1.noarch
-POSTUNFAIL
+],
+[])
+
+RPMTEST_CHECK([
+echo POSTUNFAIL
+runroot rpm -U ${pkgfile1} 2>&1
+runroot rpm -U --define "exitpostun 1" ${pkgfile2} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+runroot rpm -e ${pkgname} 2>&1
+],
+[0],
+[POSTUNFAIL
 warning: %postun(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 0
 scriptfail-2.0-1.noarch
-POSTUNTRANSFAIL
+],
+[])
+
+RPMTEST_CHECK([
+echo POSTUNTRANSFAIL
+runroot rpm -U ${pkgfile1} 2>&1
+runroot rpm -U --define "exitpostuntrans 1" ${pkgfile2} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+runroot rpm -e ${pkgname} 2>&1
+],
+[0],
+[POSTUNTRANSFAIL
 warning: %postuntrans(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 0
 scriptfail-2.0-1.noarch
-POSTUN
+],
+[])
+
+RPMTEST_CHECK([
+echo POSTUN
+runroot rpm -U ${pkgfile1} 2>&1
+runroot rpm -U --define "exitpostun 0" ${pkgfile2} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+runroot rpm -e ${pkgname} 2>&1
+],
+[0],
+[POSTUN
 0
 scriptfail-2.0-1.noarch
-POSTUNTRANS
+],
+[])
+
+RPMTEST_CHECK([
+echo POSTUNTRANS
+runroot rpm -U ${pkgfile1} 2>&1
+runroot rpm -U --define "exitpostuntrans 0" ${pkgfile2} 2>&1; echo $?
+runroot rpm -q ${pkgname} 2>&1
+runroot rpm -e ${pkgname} 2>&1
+],
+[],
+[POSTUNTRANS
 0
 scriptfail-2.0-1.noarch
 ],
