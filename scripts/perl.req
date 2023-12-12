@@ -102,10 +102,10 @@ sub process_file {
 
   while (<FILE>) {
 
-    # skip the "= <<" block
+    # skip the heredoc block
 
-    if (m/^\s*(?:my\s*)?\$(?:.*)\s*=\s*<<\s*(["'`])(.+?)\1/ ||
-        m/^\s*(?:my\s*)?\$(.*)\s*=\s*<<(\w+)\s*;/) {
+    if (m/^[^'"#]+[\s,=(]<<\s*(["'`])(.+?)\1/ ||
+        m/^[^'"#]+[\s,=(](<<)(\w+)\s*;/) {
       $tag = $2;
       while (<FILE>) {
         chomp;
