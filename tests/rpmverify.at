@@ -219,29 +219,23 @@ done
 RPMTEST_CLEANUP
 
 # Test verify script success & failure behavior
-# Ignoring stderr spew for now
-AT_SETUP([verifyscript failure])
+AT_SETUP([verifyscript])
 AT_KEYWORDS([verify])
-RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/verifyscript.spec
 runroot rpm -U --nodeps /build/RPMS/noarch/verifyscript-1.0-1.noarch.rpm
+
+RPMTEST_CHECK([
 rm -f "${RPMTEST}"/var/checkme
 runroot rpm -V --nodeps verifyscript
 ],
 [1],
 [],
-[ignore])
-RPMTEST_CLEANUP
+[[error: lua script failed: [string "%verify(verifyscript-1.0-1.noarch)"]:2: bad
+]])
 
-AT_SETUP([verifyscript success])
-AT_KEYWORDS([verify])
 RPMTEST_CHECK([
-RPMDB_INIT
-
-runroot rpmbuild --quiet -bb /data/SPECS/verifyscript.spec
-runroot rpm -U --nodeps /build/RPMS/noarch/verifyscript-1.0-1.noarch.rpm
 touch "${RPMTEST}"/var/checkme
 runroot rpm -V --nodeps verifyscript
 ],
