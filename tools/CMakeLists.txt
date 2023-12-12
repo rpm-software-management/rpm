@@ -10,7 +10,6 @@ add_executable(rpmspec rpmspec.c cliutils)
 add_executable(rpmdeps rpmdeps.c)
 add_executable(rpmgraph rpmgraph.c)
 add_executable(rpmlua rpmlua.c)
-add_executable(rpmsort rpmsort.c)
 add_executable(rpmuncompress rpmuncompress.c)
 
 target_link_libraries(rpmsign PRIVATE librpmsign)
@@ -18,6 +17,11 @@ target_link_libraries(rpmlua PRIVATE LUA::LUA)
 target_link_libraries(rpmbuild PRIVATE librpmbuild)
 target_link_libraries(rpmspec PRIVATE librpmbuild)
 target_link_libraries(rpmdeps PRIVATE librpmbuild)
+
+if (HAVE_STRCHRNUL)
+	add_executable(rpmsort rpmsort.c)
+	install(TARGETS rpmsort)
+endif()
 
 if (LIBELF_FOUND)
 	add_executable(elfdeps elfdeps.c)
@@ -60,7 +64,7 @@ endif()
 
 install(TARGETS
 	rpm rpmdb rpmkeys rpmsign rpmbuild rpmspec
-	rpmlua rpmgraph rpmsort
+	rpmlua rpmgraph
 )
 install(TARGETS rpmdeps rpmuncompress DESTINATION ${RPM_CONFIGDIR})
 
