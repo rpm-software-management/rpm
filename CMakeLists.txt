@@ -177,7 +177,7 @@ include(CheckCCompilerFlag)
 set(OPTFUNCS
 	stpcpy stpncpy putenv mempcpy fdatasync lutimes mergesort
 	getauxval setprogname __progname syncfs sched_getaffinity unshare
-	secure_getenv __secure_getenv mremap
+	secure_getenv __secure_getenv mremap strchrnul
 )
 set(REQFUNCS
 	mkstemp getcwd basename dirname realpath setenv unsetenv regcomp
