@@ -247,8 +247,7 @@ scripts-1.0-2 POSTUNTRANS 0
 RPMTEST_CLEANUP
 
 AT_SETUP([basic file trigger scripts])
-AT_KEYWORDS([file trigger script])
-RPMTEST_CHECK([
+AT_KEYWORDS([filetrigger script])
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
@@ -258,15 +257,13 @@ runroot rpmbuild --quiet -bb /data/SPECS/filetriggers.spec
 
 runroot rpm -U /build/RPMS/noarch/fakeshell-1.0-1.noarch.rpm
 runroot rpm -U /build/RPMS/noarch/filetriggers-1.0-1.noarch.rpm
-echo INSTALLATION
+
+RPMTEST_CHECK([
 runroot rpm -U /build/RPMS/noarch/hello-script-1.0-1.noarch.rpm \
-/build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
-echo ERASE
-runroot rpm -e hello-script hlinktest
+		/build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
 ],
 [0],
-[INSTALLATION
-filetriggerin(/foo*):
+[filetriggerin(/foo*):
 /foo/aaaa
 /foo/copyllo
 /foo/hello
@@ -302,8 +299,14 @@ transfiletriggerin(/foo*):
 /foo/hello-world
 /foo/zzzz
 
-ERASE
-transfiletriggerun(/usr/bin*): 0
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -e hello-script hlinktest
+],
+[0],
+[transfiletriggerun(/usr/bin*): 0
 /usr/bin/hello
 
 transfiletriggerun(/foo*):
@@ -349,7 +352,6 @@ RPMTEST_CLEANUP
 
 AT_SETUP([basic file triggers 2])
 AT_KEYWORDS([filetrigger script])
-RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
@@ -363,29 +365,36 @@ runroot rpm -i \
 	/build/RPMS/noarch/parallel-2.0-1.noarch.rpm \
 	/build/RPMS/noarch/parallel-3.0-1.noarch.rpm
 
-echo INSTALL:
+RPMTEST_CHECK([
 runroot rpm -U /build/RPMS/noarch/parallel-trigger-1.0-1.noarch.rpm
-echo UPGRADE:
-runroot rpm -U /build/RPMS/noarch/parallel-trigger-2.0-1.noarch.rpm
-echo ERASE:
-runroot rpm -e parallel-trigger
 
 ],
 [0],
-[INSTALL:
+[%filetriggerin: 0
+36
+%transfiletriggerin: 0
+36
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -U /build/RPMS/noarch/parallel-trigger-2.0-1.noarch.rpm
+],
+[0],
+[%transfiletriggerun: 0
+36
 %filetriggerin: 0
 36
 %transfiletriggerin: 0
 36
-UPGRADE:
-%transfiletriggerun: 0
-36
-%filetriggerin: 0
-36
-%transfiletriggerin: 0
-36
-ERASE:
-%transfiletriggerun: 0
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -e parallel-trigger
+],
+[0],
+[%transfiletriggerun: 0
 36
 ],
 [])
