@@ -14,7 +14,7 @@ SYNOPSIS
 
 **rpmdb** {**\--initdb\|\--rebuilddb**}
 
-**rpmdb** {**\--verifydb}
+**rpmdb** {**\--verifydb**}
 
 **rpmdb** {**\--exportdb\|\--importdb**}
 
