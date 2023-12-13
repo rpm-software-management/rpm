@@ -903,7 +903,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 	fp->fpath = fsmFsPath(fi, fp->suffix);
 
 	/* Remap file perms, owner, and group. */
-	rc = rpmfiStat(fi, 1, &fp->sb);
+	rc = rpmfiStat(fi, (fp->skip == 0), &fp->sb);
 
 	/* Hardlinks are tricky and handled elsewhere for install */
 	fp->setmeta = (fp->skip == 0) &&
