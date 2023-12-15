@@ -1310,13 +1310,12 @@ nil	No such file or directory	2.0
 ],
 [])
 
-# This uses io.stderr:write() because the grue from the previous test 
-# appears to have eaten stdout of the forked child, or something.
 RPMTEST_CHECK([
-runroot_other rpmlua -e 'pid = posix.fork(); if pid == 0 then a,b,c=rpm.redirect2null(-1); io.stderr:write(string.format("%s\t%s\t%s\n", a,b,c)) else posix.wait(pid) end'
+runroot_other rpmlua -e 'pid = posix.fork(); if pid == 0 then a,b,c=rpm.redirect2null(-1); print(string.format("%s\t%s\t%s", a,b,c)); io.flush() else posix.wait(pid) end'
 ],
 [0],
-[],
 [nil	Bad file descriptor	9.0
-])
+],
+[warning: runaway fork() in Lua script]
+)
 RPMTEST_CLEANUP
