@@ -239,17 +239,13 @@ static int luaopt(int c, const char *oarg, int oint, void *data)
 static int rpm_pcall(lua_State *L, int nargs, int nresults, int errfunc)
 {
     pid_t pid = getpid();
-    int status;
 
     int rc = lua_pcall(L, nargs, nresults, errfunc);
 
     /* Terminate unhandled fork from Lua script */
-    if (pid != getpid())
-	_exit(1);
-
-    if (waitpid(0, &status, WNOHANG) == 0) {
-	rpmlog(RPMLOG_WARNING,
-		_("runaway fork() in Lua script\n"));
+    if (pid != getpid()) {
+	rpmlog(RPMLOG_WARNING, _("runaway fork() in Lua script\n"));
+	_exit(EXIT_FAILURE);
     }
 
     return rc;
