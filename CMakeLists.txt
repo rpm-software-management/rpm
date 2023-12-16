@@ -434,17 +434,17 @@ function(add_tarball targetname namever treeish)
 	set(distname ${tarname}.bz2)
 	set(docname ${namever}-doc.${distfmt})
 
-	add_custom_target(${docname}
-		DEPENDS man apidoc
+	file(GLOB man_pages docs/man/*.[1-8])
+	add_custom_command(OUTPUT ${docname}
+		DEPENDS man apidoc docs/html/ ${man_pages}
 		COMMAND tar
 			-C ${CMAKE_BINARY_DIR}
 			--transform 's:^:${namever}/:'
 			-cf ${docname} docs/man/*.[1-8] docs/html/
 	)
 
-	add_custom_target(${distname}
+	add_custom_command(OUTPUT ${distname}
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-		BYPRODUCTS ${distname} ${docname}
 		VERBATIM
 		DEPENDS ChangeLog ${docname} po/rpm.pot
 		COMMAND git archive
