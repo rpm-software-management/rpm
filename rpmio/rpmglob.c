@@ -84,8 +84,10 @@ int rpmGlobPath(const char * pattern, rpmglobFlags flags,
     gflags |= GLOB_BRACE;
     if (home != NULL && strlen(home) > 0) 
 	gflags |= GLOB_TILDE;
+#if HAVE_GLOB_ONLYDIR
     if (dir_only)
 	gflags |= GLOB_ONLYDIR;
+#endif
     if (flags & RPMGLOB_NOCHECK)
 	gflags |= GLOB_NOCHECK;
 
