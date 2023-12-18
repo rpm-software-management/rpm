@@ -350,6 +350,7 @@ if (LIBDW_FOUND)
 	set(HAVE_LIBDW 1)
 endif()
 
+check_symbol_exists(GLOB_ONLYDIR "glob.h" HAVE_GLOB_ONLYDIR)
 check_symbol_exists(major "sys/sysmacros.h" MAJOR_IN_SYSMACROS)
 if (NOT MAJOR_IN_SYSMACROS)
 	check_symbol_exists(major "sys/mkdev.h" MAJOR_IN_MKDEV)

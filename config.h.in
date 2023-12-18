@@ -100,6 +100,7 @@
 #cmakedefine HAVE_ZSTD @HAVE_ZSTD@
 #cmakedefine HAVE___PROGNAME @HAVE___PROGNAME@
 #cmakedefine HAVE___SECURE_GETENV @HAVE___SECURE_GETENV@
+#cmakedefine HAVE_GLOB_ONLYDIR @HAVE_GLOB_ONLYDIR@
 #cmakedefine MAJOR_IN_MKDEV @MAJOR_IN_MKDEV@
 #cmakedefine MAJOR_IN_SYSMACROS @MAJOR_IN_SYSMACROS@
 #cmakedefine RUNDIR @rundir@
