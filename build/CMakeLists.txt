@@ -29,6 +29,10 @@ target_link_libraries(librpmbuild PRIVATE
 	MAGIC::MAGIC
 )
 
+if (Iconv_FOUND)
+	target_link_libraries(librpmbuild PRIVATE Iconv::Iconv)
+endif()
+
 if(WITH_CAP)
 	target_link_libraries(librpmbuild PRIVATE PkgConfig::LIBCAP)
 endif()
