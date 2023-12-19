@@ -23,11 +23,17 @@ target_link_libraries(librpmbuild PUBLIC librpmio librpm)
 target_link_libraries(librpmbuild PRIVATE
 	libmisc
 	PkgConfig::POPT
-	PkgConfig::LIBELF
-	PkgConfig::LIBDW
 	LUA::LUA
 	MAGIC::MAGIC
 )
+
+if (LIBDW_FOUND)
+	target_link_libraries(librpmbuild PRIVATE PkgConfig::LIBDW)
+endif()
+
+if (LIBELF_FOUND)
+	target_link_libraries(librpmbuild PRIVATE PkgConfig::LIBELF)
+endif()
 
 if (Iconv_FOUND)
 	target_link_libraries(librpmbuild PRIVATE Iconv::Iconv)
