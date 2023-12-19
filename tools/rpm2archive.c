@@ -16,6 +16,7 @@
 #include <archive_entry.h>
 #include <unistd.h>
 #include <errno.h>
+#include <libgen.h>
 
 #include "debug.h"
 
@@ -262,7 +263,7 @@ static int process_package(rpmts ts, const char * filename)
     return rc;
 }
 
-int main(int argc, const char *argv[])
+int main(int argc, char *argv[])
 {
     int rc = 0;
     poptContext optCon;
@@ -271,7 +272,7 @@ int main(int argc, const char *argv[])
     xsetprogname(argv[0]);	/* Portability call -- see system.h */
     rpmReadConfigFiles(NULL, NULL);
 
-    optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
+    optCon = poptGetContext(NULL, argc, (const char **)argv, optionsTable, 0);
     poptSetOtherOptionHelp(optCon, "[OPTIONS]* <FILES>");
 
     if (rstreq(basename(argv[0]), "rpm2cpio")) {
