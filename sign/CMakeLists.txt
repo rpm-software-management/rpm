@@ -12,6 +12,7 @@ target_include_directories(librpmsign PRIVATE
 )
 
 target_link_libraries(librpmsign PUBLIC librpmio librpm)
+target_link_libraries(librpmsign PRIVATE PkgConfig::POPT)
 if (WITH_IMAEVM)
 	target_sources(librpmsign PRIVATE rpmsignfiles.c)
 	target_link_libraries(librpmsign PRIVATE IMA::IMA)
