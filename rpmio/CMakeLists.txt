@@ -24,9 +24,10 @@ set_target_properties(librpmio PROPERTIES
 	SOVERSION ${RPM_SOVERSION}
 )
 target_link_libraries(librpmio PRIVATE
-			PkgConfig::POPT
-			LUA::LUA
-			ZLIB::ZLIB)
+	PkgConfig::POPT
+	LUA::LUA
+	ZLIB::ZLIB
+)
 
 if (ZSTD_FOUND)
 	target_link_libraries(librpmio PRIVATE PkgConfig::ZSTD)
