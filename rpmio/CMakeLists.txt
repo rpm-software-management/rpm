@@ -8,7 +8,10 @@ target_sources(librpmio PRIVATE
 	rpmstrpool.c rpmmacro_internal.h rpmlua.c rpmlua.h lposix.c
 )
 target_compile_definitions(librpmio PRIVATE RPM_CONFIGDIR="${RPM_CONFIGDIR}")
-target_include_directories(librpmio PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(librpmio PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}
+	${Intl_INCLUDE_DIRS}
+)
 
 if (WITH_INTERNAL_OPENPGP)
 	target_sources(librpmio PRIVATE rpmpgp_internal.h rpmpgp_internal.c)
@@ -35,6 +38,7 @@ target_link_libraries(librpmio PRIVATE
 	PkgConfig::POPT
 	LUA::LUA
 	ZLIB::ZLIB
+	${Intl_LIBRARIES}
 )
 
 if (ZSTD_FOUND)

@@ -16,6 +16,7 @@ target_include_directories(librpm PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_SOURCE_DIR}/rpmio
 	${CMAKE_CURRENT_BINARY_DIR}
+	${Intl_INCLUDE_DIRS}
 )
 
 target_sources(librpm PRIVATE
@@ -72,6 +73,6 @@ add_custom_command(OUTPUT tagtbl.C
 )
 
 target_link_libraries(librpm PUBLIC librpmio)
-target_link_libraries(librpm PRIVATE PkgConfig::POPT LUA::LUA)
+target_link_libraries(librpm PRIVATE PkgConfig::POPT LUA::LUA ${Intl_LIBRARIES})
 
 install(TARGETS librpm EXPORT rpm-targets)

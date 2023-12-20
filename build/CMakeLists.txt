@@ -17,6 +17,7 @@ target_include_directories(librpmbuild PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_SOURCE_DIR}/rpmio
 	${CMAKE_SOURCE_DIR}/lib
+	${Intl_INCLUDE_DIRS}
 )
 
 target_link_libraries(librpmbuild PUBLIC librpmio librpm)
@@ -25,6 +26,7 @@ target_link_libraries(librpmbuild PRIVATE
 	PkgConfig::POPT
 	LUA::LUA
 	MAGIC::MAGIC
+	${Intl_LIBRARIES}
 )
 
 if (LIBDW_FOUND)
