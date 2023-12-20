@@ -47,6 +47,8 @@ endif()
 get_property(executables DIRECTORY PROPERTY BUILDSYSTEM_TARGETS)
 foreach(exe ${executables})
 	target_link_libraries(${exe} PRIVATE librpmio librpm PkgConfig::POPT)
+	target_link_libraries(${exe} PRIVATE ${Intl_LIBRARIES})
+	target_include_directories(${exe} PRIVATE ${Intl_INCLUDE_DIRS})
 endforeach()
 
 foreach(cmd rpmverify rpmquery)
