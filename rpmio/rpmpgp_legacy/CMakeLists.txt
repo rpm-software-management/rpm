@@ -8,6 +8,7 @@ target_sources(rpmpgp_legacy PRIVATE
 	rpmpgp_internal.h rpmpgp_internal.c
 )
 target_include_directories(rpmpgp_legacy PRIVATE ..)
+target_include_directories(rpmpgp_legacy PRIVATE ${Intl_INCLUDE_DIRS})
 if (WITH_OPENSSL)
 	find_package(OpenSSL 3.0.0 REQUIRED)
 	target_sources(rpmpgp_legacy PRIVATE digest_openssl.c)

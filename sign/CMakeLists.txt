@@ -9,10 +9,11 @@ target_include_directories(librpmsign PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_SOURCE_DIR}/rpmio
 	${CMAKE_SOURCE_DIR}/lib
+	${Intl_INCLUDE_DIRS}
 )
 
 target_link_libraries(librpmsign PUBLIC librpmio librpm)
-target_link_libraries(librpmsign PRIVATE PkgConfig::POPT)
+target_link_libraries(librpmsign PRIVATE PkgConfig::POPT ${Intl_LIBRARIES})
 if (WITH_IMAEVM)
 	target_sources(librpmsign PRIVATE rpmsignfiles.c)
 	target_link_libraries(librpmsign PRIVATE IMA::IMA)
