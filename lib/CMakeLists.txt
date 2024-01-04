@@ -18,6 +18,8 @@ target_include_directories(librpm PRIVATE
 	${CMAKE_CURRENT_BINARY_DIR}
 	${Intl_INCLUDE_DIRS}
 )
+# This is needed for rpmcli.h
+target_include_directories(librpm PUBLIC ${POPT_INCLUDE_DIRS})
 
 target_sources(librpm PRIVATE
 	backend/dbi.c backend/dbi.h backend/dummydb.c
