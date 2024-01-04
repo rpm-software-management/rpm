@@ -6,7 +6,6 @@
  *  This is the *only* module users of librpmbuild should need to include.
  */
 
-#include <rpm/rpmcli.h>
 #include <rpm/rpmds.h>
 #include <rpm/rpmspec.h>
 
