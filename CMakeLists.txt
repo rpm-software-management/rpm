@@ -51,6 +51,7 @@ set(CMAKE_SHARED_LIBRARY_PREFIX "")
 set(CMAKE_SHARED_MODULE_PREFIX "")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 include(GNUInstallDirs)
+include(CheckSymbolExists)
 add_compile_definitions(_GNU_SOURCE)
 add_definitions(-D_FILE_OFFSET_BITS=64)
 
