@@ -8,18 +8,18 @@ PROGRAM=$(basename $0)
 if [ "$PROGRAM" == "mktree" ]; then
     # Running from build directory
     CMAKE=yes
-    NATIVE=@MKTREE_NATIVE@
+    MODE=@MKTREE_MODE@
     PODMAN=@PODMAN@
     CONTEXT=@CMAKE_SOURCE_DIR@
 else
     # Running from source directory
     CMAKE=no
-    NATIVE=no
+    MODE=standalone
     PODMAN=${MKTREE_ENGINE:-podman}
     CONTEXT=..
 fi
 
-if [ $NATIVE == yes ]; then
+if [ $MODE == native ]; then
     FROM="--from @OS_NAME@:@OS_VERSION@"
 else
     FROM=
@@ -56,7 +56,7 @@ rpmtests()
 
 unshared()
 {
-    [ $(id -u) != 0 ] && [ $NATIVE == yes ] || return 0
+    [ $(id -u) != 0 ] && [ $MODE == native ] || return 0
     $PODMAN unshare $0 $CMD "$@"
     exit
 }
@@ -68,16 +68,19 @@ case $CMD in
 
         # Add RPM install on top
         [ -n "$($PODMAN images -q $IMAGE)" ] && $PODMAN rmi $IMAGE
-        if [ $NATIVE == yes ]; then
-            # Native build
-            id=$($PODMAN create $IMAGE/base)
-            trap "$PODMAN rm $id >/dev/null" EXIT
-            make_install $($PODMAN mount $id)
-            $PODMAN commit -q $id $IMAGE
-        else
-            # Standalone build
-            $PODMAN build --target full -t $IMAGE $ARGS
-        fi
+        case $MODE in
+            native)
+                # Native build
+                id=$($PODMAN create $IMAGE/base)
+                trap "$PODMAN rm $id >/dev/null" EXIT
+                make_install $($PODMAN mount $id)
+                $PODMAN commit -q $id $IMAGE
+            ;;
+            standalone)
+                # Standalone build
+                $PODMAN build --target full -t $IMAGE $ARGS
+            ;;
+        esac
     ;;
     check)
         rpmtests "$@"
