@@ -9,7 +9,7 @@ if [ "$PROGRAM" == "mktree" ]; then
     # Running from build directory
     CMAKE=yes
     MODE=@MKTREE_MODE@
-    PODMAN=@PODMAN@
+    PODMAN="@PODMAN@"
     CONTEXT=@CMAKE_SOURCE_DIR@
 else
     # Running from source directory
@@ -64,20 +64,28 @@ unshared()
 case $CMD in
     build) unshared
         # Build base image
-        $PODMAN build --target base -t $IMAGE/base $ARGS
+        if [ $MODE != hybrid ]; then
+            $PODMAN build --target base -t $IMAGE/base $ARGS
+        fi
 
         # Add RPM install on top
         [ -n "$($PODMAN images -q $IMAGE)" ] && $PODMAN rmi $IMAGE
         case $MODE in
             native)
-                # Native build
+                # Native build on the host
                 id=$($PODMAN create $IMAGE/base)
                 trap "$PODMAN rm $id >/dev/null" EXIT
                 make_install $($PODMAN mount $id)
                 $PODMAN commit -q $id $IMAGE
             ;;
+            hybrid)
+                # Containerized build
+                id=$(sh -c '. @CONTAINER_ENV@; echo $id')
+                $PODMAN exec --workdir "$PWD" $id ./mktree.rootfs build
+                $PODMAN commit -q $id $IMAGE
+            ;;
             standalone)
-                # Standalone build
+                # Containerized, standalone build
                 $PODMAN build --target full -t $IMAGE $ARGS
             ;;
         esac
