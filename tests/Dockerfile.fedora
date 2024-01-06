@@ -1,5 +1,6 @@
 FROM registry.fedoraproject.org/fedora:39 AS base
 MAINTAINER rpm-maint@lists.rpm.org
+LABEL com.github.containers.toolbox="true"
 
 RUN echo -e "deltarpm=0\ninstall_weak_deps=0\ntsflags=nodocs" >> /etc/dnf/dnf.conf
 RUN rpm --quiet -q fedora-repos-modular && rpm -e fedora-repos-modular ||:
@@ -51,6 +52,8 @@ RUN dnf -y install \
   pandoc \
   libasan \
   libubsan \
+  flatpak-spawn \
+  passwd \
   && dnf clean all
 RUN echo "%_dbpath $(rpm --eval '%_dbpath')" > /root/.rpmmacros
 
