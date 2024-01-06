@@ -298,22 +298,22 @@ Transfiletriggerversion     | 5081 | string array
 
 ## Signatures and digests
 
-[Signatures](signatures.md) allow to verify the origin of a package.
+[Signatures](signatures_digests.md) allow verifying the origin of a package.
 
 Tag Name          | Value| Type         | Description
 ------------------|------|--------------|------------
-Dsaheader         | 267  | bin          | OpenPGP DSA signature of the header (if thus signed)
-Longsigsize       | 270  | int64        | Header+payload size if > 4GB.
+Dsaheader         | 267  | bin          | OpenPGP DSA or EdDSA signature of the header (if thus signed)
+Rsaheader         | 268  | bin          | OpenPGP RSA signature of the header (if thus signed).
+Sha256header      | 273  | string       | SHA256 digest of the header.
 Payloaddigest     | 5092 | string array | Cryptographic digest of the compressed payload.
 Payloaddigestalgo | 5093 | int32        | ID of the payload digest algorithm.
 Payloaddigestalt  | 5097 | string array | Cryptographic digest of the uncompressed payload.
-Rsaheader         | 268  | bin          | OpenPGP RSA signature of the header (if thus signed).
-Sha1header        | 269  | string       | SHA1 digest of the header.
-Sha256header      | 273  | string       | SHA256 digest of the header.
-Siggpg            | 262  | bin          | OpenPGP DSA signature of the header+payload (if thus signed).
-Sigmd5            | 261  | bin          | MD5 digest of the header+payload.
-Sigpgp            | 259  | bin          | OpenPGP RSA signature of the header+payload (if thus signed).
-Sigsize           | 257  | int32        | Header+payload size.
+Sigsize           | 257  | int32        | Deprecated: Header+payload size.
+Sigpgp            | 259  | bin          | Deprecated: OpenPGP RSA signature of the header+payload (if thus signed).
+Sigmd5            | 261  | bin          | Deprecated: MD5 digest of the header+payload.
+Siggpg            | 262  | bin          | Deprecated: OpenPGP DSA signature of the header+payload (if thus signed).
+Sha1header        | 269  | string       | Deprecated: SHA1 digest of the header.
+Longsigsize       | 270  | int64        | Deprecated: Header+payload size if > 4GB.
 
 ## Installed package headers only
 

@@ -2,13 +2,13 @@
 layout: default
 title: rpm.org - RPM Package format
 ---
+
 # Package format
 
-This document describes the RPM file format version 3.0, which is used
-by RPM versions 2.1 and greater.  The format is subject to change, and
-you should not assume that this document is kept up to date with the
-latest RPM code.  That said, the 3.0 format should not change for
-quite a while, and when it does, it will not be 3.0 anymore :-).
+This document describes the RPM file format version 4.0.  The format
+is subject to change, and you should not assume that this document is
+kept up to date with the latest RPM code. With that said, the basic
+principles have not and are not likely to change significantly over time.
 
 \warning In any case, THE PROPER WAY TO ACCESS THESE STRUCTURES IS THROUGH
 THE RPM LIBRARY!!
@@ -24,16 +24,19 @@ package file is divided in 4 logical sections:
 ```
 
 All 2 and 4 byte "integer" quantities (int16 and int32) are stored in
-network byte order.  When data is presented, the first number is the
-byte number, or address, in hex, followed by the byte values in hex,
-followed by character "translations" (where appropriate).
+network byte order (big-endian).  When data is presented, the first
+number is the byte number, or address, in hex, followed by the byte
+values in hex, followed by character "translations" (where appropriate).
 
 ## Lead
 
 The Lead is basically for file(1).  All the information contained in
 the Lead is duplicated or superceded by information in the Header.
 Much of the info in the Lead was used in old versions of RPM but is
-now ignored.  The Lead is stored as a C structure:
+now ignored.  The details here are left for historical reasons, but
+current and future development should use the Header structure instead.
+
+The Lead is stored as a C structure:
 
 \code
 struct rpmlead {
@@ -48,31 +51,31 @@ struct rpmlead {
 };
 \endcode
 
-and is illustrated with one pulled from the rpm-2.1.2-1.i386.rpm
-package:
+and is illustrated with one pulled from the rpm-2.1.2-1.i386.rpm package:
 
 ```
 00000000: ed ab ee db 03 00 00 00
 ```
 
-The first 4 bytes (0-3) are "magic" used to uniquely identify an RPM
-package.  It is used by RPM and file(1).  The next two bytes (4, 5)
-are int8 quantities denoting the "major" and "minor" RPM file format
-version.  This package is in 3.0 format.  The following 2 bytes (6-7)
-form an int16 which indicates the package type.  As of this writing
-there are only two types: 0 == binary, 1 == source.
+The first 4 bytes (0-3) are the "magic" number used to uniquely
+identify a file as an RPM package.  It is used by RPM and file(1).
+The next two bytes (4, 5) are int8 quantities denoting the "major"
+and "minor" RPM file format version.  For legacy reasons, this
+version is always "3.0" (major version "3", minor version "0"), even
+with packages built by RPM 4.0+ (referred to as RPM v4 packages). The
+following 2 bytes (6-7) form an int16 which indicates the package type.
+As of this writing there are only two types: 0 == binary, 1 == source.
 
 ```
 00000008: 00 01 72 70 6d 2d 32 2e    ..rpm-2.
 ```
 
 The next two bytes (8-9) form an int16 that indicates the architecture
-the package was built for.  While this is used by file(1), the true
-architecture is stored as a string in the Header.  See, lib/misc.c for
-a list of architecture->int16 translations.  In this case, 1 == i386.
-Starting with byte 10 and extending to byte 75, are 65 characters and
-a null byte which contain the familiar "name-version-release" of the
-package, padded with null (0) bytes.
+that the package was built for.  While this is used by file(1), the
+true architecture is stored as a string in the Header. In this case,
+1 == i386. Starting with byte 10 and extending to byte 75, are 65
+characters and a null byte which contain the familiar
+"name-version-release" of the package, padded with null (0) bytes.
 
 ```
 00000010: 31 2e 32 2d 31 00 00 00    1.2-1...
@@ -88,85 +91,74 @@ package, padded with null (0) bytes.
 Bytes 76-77 ("00 01" above) form an int16 that indicates the OS the
 package was built for.  In this case, 1 == Linux.  The next 2 bytes
 (78-79) form an int16 that indicates the signature type.  This tells
-RPM what to expect in the Signature.  For version 3.0 packages, this
-is 5, which indicates the new "Header-style" signatures.
+RPM what to expect in the Signature.  This is generally expected to
+be 5, which indicates the use of "Header-style" signatures.
 
 ```
 00000050: 04 00 00 00 68 e6 ff bf    ........
 00000058: ab ad 00 08 3c eb ff bf    ........
 ```
 
-The remaining 16 bytes (80-95) are currently unused and are reserved
-for future expansion.
+The remaining 16 bytes (80-95) are unused.
 
 ## Signature
 
-A 3.0 format signature (denoted by signature type 5 in the Lead), uses
-the same structure as the Header.  For historical reasons, this
-structure is called a "header structure", which can be confusing since
-it is used for both the Header and the Signature.  The details of the
-header structure are given below, and you'll want to read them so the
-rest of this makes sense.  The tags for the Signature are defined in
-lib/signature.h.
+"Header-style" signatures use the same structure as the Header.  For
+historical reasons, this structure is called a "header structure",
+which can be confusing since it is used for both the Header and the
+Signature.  The details of the header structure are given below, and
+you'll want to read them so the rest of this makes sense.  The tags
+for the Signature are defined in include/rpm/rpmtag.h.
 
-The Signature can contain multiple signatures, of different types.
-There are currently only three types, each with its own tag in the
-header structure:
+The Signature can contain multiple different types of signatures,
+stored under unique tags (just like the Header). Details about these
+tags and the information they store can be found [here](signatures_digests.md).
 
-```
-	Name	Tag	Header Type
-	----	----	-----------
-	SIZE	1000	INT_32
-	MD5	1001	BIN
-	PGP	1002	BIN
-```
+RPM v4 packages are expected to contain at least one of the SHA1HEADER
+or SHA256HEADER tags, providing a cryptographic digest of the main
+header, and may contain one or both of the PAYLOADDIGEST and
+PAYLOADDIGESTALT tags, providing a cryptographic digest of the package
+payload in the compressed and uncompressed forms, respectively.
 
-The MD5 signature is 16 bytes, and the PGP signature varies with
-the size of the PGP key used to sign the package.
+If the package has been cryptographically signed using OpenPGP, an
+RSAHEADER or DSAHEADER tag ought to be present, which contains an
+OpenPGP signature of the package header. Which tag is present
+depends on which of the two (supported) OpenPGP algorithms was used
+at signing time. Using a key based upon the RSA algorithm to sign
+the package will result in the signature being stored in the
+RSAHEADER tag, whereas the use of the EdDSA (ed25519) algorithm will
+use the DSAHEADER tag instead. Older packages may use the
+now-considered-obsolete DSA algorithm, and in that case the signature
+would be stored in the DSAHEADER tag.
 
-As of RPM 2.1, all packages carry at least SIZE and MD5 signatures,
-and the Signature section is padded to a multiple of 8 bytes.
+As the package header itself contains a checksum of the payload (as
+of RPM 4.14+), the header signature is sufficient to establish
+cryptographic provenance of the package.
+
+Other signature tags which may be present are considered legacy and
+their use is discouraged if a more modern option is available.
 
 ## Header
 
 The Header contains all the information about a package: name,
 version, file list, etc.  It uses the same "header structure" as the
-Signature, which is described in detail below.  A complete list of the
-tags for the Header would take too much space to list here, and the
-list grows fairly frequently.  For the complete list see lib/rpmlib.h
-in the RPM sources.
-
-## Payload
-
-The Payload is currently a cpio archive, gzipped by default.  The cpio archive
-type used is SVR4 with a CRC checksum.
-
-As cpio is limited to 4 GB (32 bit unsigned) file sizes RPM since
-version 4.12 uses a stripped down version of cpio for packages with
-files > 4 GB. This format uses `07070X` as magic bytes and the file
-header otherwise only contains the index number of the file in the RPM
-header as 8 byte hex string. The file metadata that is normally found
-in a cpio file header - including the file name - is completely
-omitted as it is stored in the RPM header already.
-
-To use a different compression method when building new packages with
-`rpmbuild(8)`, define the `%_binary_payload` or `%_source_payload` macros for
-the binary or source packages, respectively.  These macros accept an
-[RPM IO mode string](https://ftp.osuosl.org/pub/rpm/api/4.17.0/group__rpmio.html#example-mode-strings)
-(only `w` mode).
+Signature, which is described in further detail below.  A complete
+list of the tags for the Header would take too much space to list
+here, and the list grows fairly frequently. For the complete list
+see include/rpm/rpmtag.h in the RPM sources.
 
 ## The Header Structure
 
 The header structure is a little complicated, but actually performs a
-very simple function.  It acts almost like a small database in that it
-allows you to store and retrieve arbitrary data with a key called a
-"tag".  When a header structure is written to disk, the data is
-written in network byte order, and when it is read from disk, is is
-converted to host byte order.
+very simple function.  It acts almost like a small database in that
+it allows you to store and retrieve arbitrary data with a key called
+a "tag".  When a header structure is written to disk, the data is
+written in network byte order (big-endian), and when it is read from
+disk, is is converted to host byte order.
 
-Along with the tag and the data, a data "type" is stored, which indicates,
-obviously, the type of the data associated with the tag.  There are
-currently 9 types:
+Along with the tag and the data, a data "type" is stored, which 
+indicates, obviously, the type of the data associated with the tag.
+There are currently 9 types:
 
 ```
 	Type		Number
@@ -178,7 +170,7 @@ currently 9 types:
 	INT32		4
 	INT64		5
 	STRING		6
-	BIN		7
+	BIN	        7
 	STRING_ARRAY	8
 	I18NSTRING_TYPE	9
 ```
@@ -264,3 +256,22 @@ could start at byte 589, byte that is an improper boundary for an INT32.
 As a result, 3 null bytes are inserted and the date for the SIZE actually
 starts at byte 592: "00 09 9b 31", which is 629553).
 
+## Payload
+
+The Payload is currently a cpio archive, typically compressed using
+the gzip, zstandard, or LZMA algorithms. The cpio archive type used
+is SVR4 with a CRC checksum.
+
+As cpio is limited to 4 GB (32 bit unsigned) file sizes, RPM (since
+version 4.12) uses a stripped down variant of cpio for packages with
+files > 4 GB. This format uses `07070X` as magic bytes and the file
+header otherwise only contains the index number of the file in the
+RPM header as 8 byte hex string. The file metadata that is normally
+found in a cpio file header - including the file name - is completely
+omitted as it is stored in the RPM header already.
+
+To use a different compression method when building new packages with
+`rpmbuild(8)`, define the `%_binary_payload` or `%_source_payload`
+macros for the binary or source packages, respectively.  These macros
+accept an [RPM IO mode string](https://ftp.osuosl.org/pub/rpm/api/4.17.0/group__rpmio.html#example-mode-strings)
+(only `w` mode).
