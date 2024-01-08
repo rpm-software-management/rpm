@@ -65,6 +65,7 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
 /* Run file triggers in this te other package(s) set off.
  * @param ts		transaction set
  * @param te		transaction entry
+ * @param arg1		scriptlet argument 1 (number of instances of this pkg)
  * @param sense		defines which triggers should be set off (triggerin,
  *			triggerun, triggerpostun)
  * @param tm		trigger mode, (filetrigger/transfiletrigger)
@@ -75,7 +76,7 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
  *			0 to run all triggers
  */
 RPM_GNUC_INTERNAL
-rpmRC runImmedFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
+rpmRC runImmedFileTriggers(rpmts ts, rpmte te, int arg1, rpmsenseFlags sense,
 			    rpmscriptTriggerModes tm, int priorityClass);
 #ifdef __cplusplus
 }

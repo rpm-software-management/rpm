@@ -403,13 +403,13 @@ filetriggerin(/foo*)<lua>:
 /foo/hello-world
 /foo/zzzz
 
-filetriggerin(/usr/bin*): 0
+filetriggerin(/usr/bin*): 1
 /usr/bin/hello
 
-filetriggerin(/usr/bin*)<lua>: 0
+filetriggerin(/usr/bin*)<lua>: 1
 /usr/bin/hello
 
-transfiletriggerin(/usr/bin*): 0
+transfiletriggerin(/usr/bin*): 1
 /usr/bin/hello
 
 transfiletriggerin(/foo*):
@@ -428,7 +428,7 @@ RPMTEST_CHECK([
 runroot rpm -e hello-script hlinktest
 ],
 [0],
-[transfiletriggerun(/usr/bin*): 0
+[transfiletriggerun(/usr/bin*): 1
 /usr/bin/hello
 
 transfiletriggerun(/foo*):
@@ -458,13 +458,13 @@ filetriggerpostun(/foo*):
 /foo/hello-world
 /foo/zzzz
 
-filetriggerun(/usr/bin*): 0
+filetriggerun(/usr/bin*): 1
 /usr/bin/hello
 
-filetriggerpostun(/usr/bin*): 0
+filetriggerpostun(/usr/bin*): 1
 /usr/bin/hello
 
-transfiletriggerpostun(/usr/bin*): 0
+transfiletriggerpostun(/usr/bin*): 1
 
 transfiletriggerpostun(/foo*):
 
@@ -482,19 +482,80 @@ for v in 1.0 2.0 3.0; do
 done
 
 runroot rpm -U /build/RPMS/noarch/fakeshell-1.0-1.noarch.rpm 
+runroot rpm -U /build/RPMS/noarch/parallel-trigger-1.0-1.noarch.rpm
+
+RPMTEST_CHECK([
+runroot rpm -i /build/RPMS/noarch/parallel-1.0-1.noarch.rpm
+],
+[0],
+[%filetriggerin: 1
+12
+%transfiletriggerin: 1
+12
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -U /build/RPMS/noarch/parallel-2.0-1.noarch.rpm
+],
+[0],
+[%transfiletriggerun: 1
+12
+%filetriggerin: 1
+12
+%filetriggerpostun: 1
+11
+%transfiletriggerin: 1
+12
+%transfiletriggerpostun: 1
+0
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -U /build/RPMS/noarch/parallel-trigger-2.0-1.noarch.rpm
+],
+[0],
+[%transfiletriggerun: 1
+12
+%filetriggerin: 2
+12
+%transfiletriggerin: 2
+12
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -e parallel
+],
+[0],
+[%transfiletriggerun: 1
+12
+%filetriggerpostun: 1
+12
+%transfiletriggerpostun: 1
+0
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -e parallel-trigger
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
 runroot rpm -i \
 	/build/RPMS/noarch/parallel-1.0-1.noarch.rpm \
 	/build/RPMS/noarch/parallel-2.0-1.noarch.rpm \
 	/build/RPMS/noarch/parallel-3.0-1.noarch.rpm
-
-RPMTEST_CHECK([
 runroot rpm -U /build/RPMS/noarch/parallel-trigger-1.0-1.noarch.rpm
-
 ],
 [0],
-[%filetriggerin: 0
+[%filetriggerin: 1
 36
-%transfiletriggerin: 0
+%transfiletriggerin: 1
 36
 ],
 [])
@@ -503,11 +564,11 @@ RPMTEST_CHECK([
 runroot rpm -U /build/RPMS/noarch/parallel-trigger-2.0-1.noarch.rpm
 ],
 [0],
-[%transfiletriggerun: 0
+[%transfiletriggerun: 1
 36
-%filetriggerin: 0
+%filetriggerin: 2
 36
-%transfiletriggerin: 0
+%transfiletriggerin: 2
 36
 ],
 [])

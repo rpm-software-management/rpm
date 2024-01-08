@@ -162,6 +162,8 @@ int runPostUnTransFileTrigs(rpmts ts)
 {
     int i;
     Header trigH;
+    const char * trigName = NULL;
+    int arg1 = 0;
     struct rpmtd_s installPrefixes;
     rpmScript script;
     rpmtriggers trigs = ts->trigs2run;
@@ -186,7 +188,11 @@ int runPostUnTransFileTrigs(rpmts ts)
 	headerGet(trigH, RPMTAG_INSTPREFIXES, &installPrefixes,
 		HEADERGET_ALLOC|HEADERGET_ARGV);
 
-	nerrors += runScript(ts, NULL, trigH, installPrefixes.data, script, 0, -1);
+	trigName = headerGetString(trigH, RPMTAG_NAME);
+	arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), trigName);
+
+	nerrors += runScript(ts, NULL, trigH, installPrefixes.data, script,
+			     arg1, -1);
 	rpmtdFreeData(&installPrefixes);
 	rpmScriptFree(script);
 	headerFree(trigH);
@@ -379,7 +385,7 @@ static matchFilesIter matchFilesIteratorFree(matchFilesIter mfi)
  */
 static int runHandleTriggersInPkg(rpmts ts, rpmte te, Header h,
 				rpmsenseFlags sense, rpmscriptTriggerModes tm,
-				int searchMode, int ti)
+				int searchMode, int ti, int arg1)
 {
     int nerrors = 0;
     rpmds rpmdsTriggers, rpmdsTrigger;
@@ -434,7 +440,7 @@ static int runHandleTriggersInPkg(rpmts ts, rpmte te, Header h,
 	    rpmScriptSetNextFileFunc(script, inputFunc, mfi);
 
 	    nerrors += runScript(ts, NULL, h, installPrefixes.data,
-				script, 0, -1);
+				script, arg1, -1);
 	    rpmtdFreeData(&installPrefixes);
 	    rpmScriptFree(script);
 	}
@@ -493,6 +499,8 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
     char *pfx;
     size_t keylen;
     Header trigH;
+    const char * trigName = NULL;
+    int arg1 = 0;
     int (*matchFunc)(rpmts, rpmte, const char*, rpmsenseFlags sense);
     rpmTagVal priorityTag;
     rpmtriggers triggers = rpmtriggersCreate(10);
@@ -564,12 +572,17 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
 	}
 
 	trigH = rpmdbGetHeaderAt(rpmtsGetRdb(ts), triggers->triggerInfo[i].hdrNum);
+	trigName = headerGetString(trigH, RPMTAG_NAME);
+	arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), trigName);
+
 	if (tm == RPMSCRIPT_FILETRIGGER)
 	    nerrors += runHandleTriggersInPkg(ts, te, trigH, sense, tm, 0,
-						triggers->triggerInfo[i].tix);
+						triggers->triggerInfo[i].tix,
+						arg1);
 	else
 	    nerrors += runHandleTriggersInPkg(ts, te, trigH, sense, tm, 1,
-						triggers->triggerInfo[i].tix);
+						triggers->triggerInfo[i].tix,
+						arg1);
 	headerFree(trigH);
     }
     rpmtriggersFree(triggers);
@@ -577,7 +590,7 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
     return (nerrors == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
 
-rpmRC runImmedFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
+rpmRC runImmedFileTriggers(rpmts ts, rpmte te, int arg1, rpmsenseFlags sense,
 			    rpmscriptTriggerModes tm, int priorityClass)
 {
     int nerrors = 0;
@@ -616,7 +629,8 @@ rpmRC runImmedFileTriggers(rpmts ts, rpmte te, rpmsenseFlags sense,
 	}
 
 	nerrors += runHandleTriggersInPkg(ts, te, trigH, sense, tm, 2,
-					    triggers->triggerInfo[i].tix);
+					    triggers->triggerInfo[i].tix,
+					    arg1);
     }
     rpmtriggersFree(triggers);
     headerFree(trigH);
