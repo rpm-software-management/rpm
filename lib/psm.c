@@ -885,7 +885,7 @@ static rpmRC rpmPackageInstall(rpmts ts, rpmpsm psm)
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERIN)) {
 	    /* Run upper file triggers i. e. with higher priorities */
 	    /* Run file triggers in other package(s) this package sets off. */
-	    rc = runFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERIN,
+	    rc = runFileTriggers(psm->ts, psm->te, psm->scriptArg, RPMSENSE_TRIGGERIN,
 				RPMSCRIPT_FILETRIGGER, 1);
 	    if (rc) break;
 
@@ -911,7 +911,7 @@ static rpmRC rpmPackageInstall(rpmts ts, rpmpsm psm)
 
 	    /* Run lower file triggers i. e. with lower priorities */
 	    /* Run file triggers in other package(s) this package sets off. */
-	    rc = runFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERIN,
+	    rc = runFileTriggers(psm->ts, psm->te, psm->scriptArg, RPMSENSE_TRIGGERIN,
 				RPMSCRIPT_FILETRIGGER, 2);
 	    if (rc) break;
 
@@ -944,7 +944,7 @@ static rpmRC rpmPackageErase(rpmts ts, rpmpsm psm)
 	    if (rc) break;
 
 	    /* Run file triggers in other package(s) this package sets off. */
-	    rc = runFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERUN,
+	    rc = runFileTriggers(psm->ts, psm->te, psm->scriptArg, RPMSENSE_TRIGGERUN,
 				RPMSCRIPT_FILETRIGGER, 1);
 	    if (rc) break;
 
@@ -969,7 +969,7 @@ static rpmRC rpmPackageErase(rpmts ts, rpmpsm psm)
 	    if (rc) break;
 
 	    /* Run file triggers in other package(s) this package sets off. */
-	    rc = runFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERUN,
+	    rc = runFileTriggers(psm->ts, psm->te, psm->scriptArg, RPMSENSE_TRIGGERUN,
 				RPMSCRIPT_FILETRIGGER, 2);
 	    if (rc) break;
 	}
@@ -982,7 +982,7 @@ static rpmRC rpmPackageErase(rpmts ts, rpmpsm psm)
 
 	/* Run file triggers in other package(s) this package sets off. */
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPOSTUN)) {
-	    rc = runFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERPOSTUN,
+	    rc = runFileTriggers(psm->ts, psm->te, psm->scriptArg, RPMSENSE_TRIGGERPOSTUN,
 				RPMSCRIPT_FILETRIGGER, 1);
 	}
 
@@ -997,7 +997,7 @@ static rpmRC rpmPackageErase(rpmts ts, rpmpsm psm)
 	    if (rc) break;
 
 	    /* Run file triggers in other package(s) this package sets off. */
-	    rc = runFileTriggers(psm->ts, psm->te, RPMSENSE_TRIGGERPOSTUN,
+	    rc = runFileTriggers(psm->ts, psm->te, psm->scriptArg, RPMSENSE_TRIGGERPOSTUN,
 				RPMSCRIPT_FILETRIGGER, 2);
 	}
 	if (rc) break;

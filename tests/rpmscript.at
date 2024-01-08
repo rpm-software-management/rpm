@@ -403,10 +403,10 @@ filetriggerin(/foo*)<lua>:
 /foo/hello-world
 /foo/zzzz
 
-filetriggerin(/usr/bin*): 1
+filetriggerin(/usr/bin*): 1 1
 /usr/bin/hello
 
-filetriggerin(/usr/bin*)<lua>: 1
+filetriggerin(/usr/bin*)<lua>: 1 1
 /usr/bin/hello
 
 transfiletriggerin(/usr/bin*): 1
@@ -458,10 +458,10 @@ filetriggerpostun(/foo*):
 /foo/hello-world
 /foo/zzzz
 
-filetriggerun(/usr/bin*): 1
+filetriggerun(/usr/bin*): 1 0
 /usr/bin/hello
 
-filetriggerpostun(/usr/bin*): 1
+filetriggerpostun(/usr/bin*): 1 0
 /usr/bin/hello
 
 transfiletriggerpostun(/usr/bin*): 1
@@ -488,7 +488,7 @@ RPMTEST_CHECK([
 runroot rpm -i /build/RPMS/noarch/parallel-1.0-1.noarch.rpm
 ],
 [0],
-[parallel-trigger-1.0-1 FILETRIGGERIN 1 | 12
+[parallel-trigger-1.0-1 FILETRIGGERIN 1 1 | 12
 parallel-trigger-1.0-1 TRANSFILETRIGGERIN 1 | 12
 ],
 [])
@@ -498,8 +498,8 @@ runroot rpm -U /build/RPMS/noarch/parallel-2.0-1.noarch.rpm
 ],
 [0],
 [parallel-trigger-1.0-1 TRANSFILETRIGGERUN 1 | 12
-parallel-trigger-1.0-1 FILETRIGGERIN 1 | 12
-parallel-trigger-1.0-1 FILETRIGGERPOSTUN 1 | 11
+parallel-trigger-1.0-1 FILETRIGGERIN 1 2 | 12
+parallel-trigger-1.0-1 FILETRIGGERPOSTUN 1 1 | 11
 parallel-trigger-1.0-1 TRANSFILETRIGGERIN 1 | 12
 parallel-trigger-1.0-1 TRANSFILETRIGGERPOSTUN 1 | 0
 ],
@@ -510,7 +510,7 @@ runroot rpm -U /build/RPMS/noarch/parallel-trigger-2.0-1.noarch.rpm
 ],
 [0],
 [parallel-trigger-1.0-1 TRANSFILETRIGGERUN 1 | 12
-parallel-trigger-2.0-1 FILETRIGGERIN 2 | 12
+parallel-trigger-2.0-1 FILETRIGGERIN 2 1 | 12
 parallel-trigger-2.0-1 TRANSFILETRIGGERIN 2 | 12
 ],
 [])
@@ -520,7 +520,7 @@ runroot rpm -e parallel
 ],
 [0],
 [parallel-trigger-2.0-1 TRANSFILETRIGGERUN 1 | 12
-parallel-trigger-2.0-1 FILETRIGGERPOSTUN 1 | 12
+parallel-trigger-2.0-1 FILETRIGGERPOSTUN 1 0 | 12
 parallel-trigger-2.0-1 TRANSFILETRIGGERPOSTUN 1 | 0
 ],
 [])
@@ -540,7 +540,7 @@ runroot rpm -i \
 runroot rpm -U /build/RPMS/noarch/parallel-trigger-1.0-1.noarch.rpm
 ],
 [0],
-[parallel-trigger-1.0-1 FILETRIGGERIN 1 | 36
+[parallel-trigger-1.0-1 FILETRIGGERIN 1 3 | 36
 parallel-trigger-1.0-1 TRANSFILETRIGGERIN 1 | 36
 ],
 [])
@@ -550,7 +550,7 @@ runroot rpm -U /build/RPMS/noarch/parallel-trigger-2.0-1.noarch.rpm
 ],
 [0],
 [parallel-trigger-1.0-1 TRANSFILETRIGGERUN 1 | 36
-parallel-trigger-2.0-1 FILETRIGGERIN 2 | 36
+parallel-trigger-2.0-1 FILETRIGGERIN 2 3 | 36
 parallel-trigger-2.0-1 TRANSFILETRIGGERIN 2 | 36
 ],
 [])
