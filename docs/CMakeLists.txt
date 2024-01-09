@@ -33,7 +33,6 @@ install(FILES
 	manual/dynamic_specs.md
 	manual/file_triggers.md
 	manual/format.md
-	manual/hregions.md
 	manual/index.md
 	manual/large_files.md
 	manual/lua.md
