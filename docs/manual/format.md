@@ -23,8 +23,8 @@ package file is divided in 4 logical sections:
 . Payload   -- compressed archive of the file(s) in the package (aka "payload")
 ```
 
-All 2 and 4 byte "integer" quantities (int16 and int32) are stored in
-network byte order (big-endian).  When data is presented, the first
+All multi-byte "integer" quantities (int16, int32 and int64) are stored
+in network byte order (big-endian).  When data is presented, the first
 number is the byte number, or address, in hex, followed by the byte
 values in hex, followed by character "translations" (where appropriate).
 
@@ -156,7 +156,7 @@ a "tag".  When a header structure is written to disk, the data is
 written in network byte order (big-endian), and when it is read from
 disk, is is converted to host byte order.
 
-Along with the tag and the data, a data "type" is stored, which 
+Along with the tag and the data, a data "type" is stored, which
 indicates, obviously, the type of the data associated with the tag.
 There are currently 9 types:
 
@@ -258,33 +258,29 @@ starts at byte 592: "00 09 9b 31", which is 629553).
 
 ### Immutable header regions
 
-The header data structure has changed in rpm-4.0.[12] to preserve the
-original header from a package. The goal is to keep the original
-header intact so that metadata can be verified separately from the
-payload by the RHN up2date client and by the rpm command line verify
-mode using signatures saved in the rpm database. I believe the change
-is entirely forward and backward compatible, and will not require
-any artifacts like changing the version number of packaging or 
-adding an "rpmlib(...)" tracking dependency. We'll see ...
+One useful feature of RPM is the ability to preserve the original
+header from a package, so that metadata can be verified separately
+from the payload, e.g. using signatures saved in the rpm database.
+This ability was added in RPM 4.0.12 with the concept of immutable
+header regions.
 
-Here's a short description of the change. An rpm header has three sections:
+A short description of the implementation is as follows.
+As described above, an rpm header has three sections:
 ```
 	1) intro		(# entries in index, # bytes of data)
 	2) index		16 byte entries, one per tag, big endian
 	3) data			tag values, properly aligned, big endian
 ```
-
 Representing sections in the header (ignoring the intro) with
 ```
 	A,B,C			index entries sorted by tag number
 	a,b,c			variable length entry data
-	| 			boundary between index/data
+	|	  			boundary between index/data
 ```
 a header with 3 tag/value pairs (A,a) can be represented something like
 ```
 	ABC|abc
 ```
-
 The change is to introduce a new tag that keeps track of a contiguous
 region (i.e. the original header). Representing the boundaries with
 square/angle brackets, an "immutable region" in the header thus becomes
@@ -338,11 +334,6 @@ region. PITA, really.
 What made header regions trickier yet is the desire to have an implementation
 that is both backward and forward compatible. I won't bore you with the
 tedious details.
-
-However, even after doing regressions against supported Red Hat releases,
-there's a Great Big Universe of rpm packages out there, and I'm *very*
-interested in hearing (as bug reports against rpm at http://bugzilla.redhat.com)
-about any and all problems with header regions in rpm-4.0.1.
 
 ## Payload
 
