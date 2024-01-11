@@ -80,6 +80,9 @@ static PyObject *ver_richcmp(rpmverObject *s, rpmverObject *o, int op)
     case Py_EQ:
 	v = rpmverCmp(s->ver, o->ver) == 0;
 	break;
+    case Py_NE:
+	v = rpmverCmp(s->ver, o->ver) != 0;
+	break;
     case Py_GE:
 	v = rpmverCmp(s->ver, o->ver) >= 0;
 	break;
