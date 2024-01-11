@@ -748,3 +748,30 @@ for vt in [ (None, "1.0", None), (None, "1.0", "2"), ("1", "1.0", "3") ]:
 1:1.0-3
 ],
 [])
+
+RPMPY_TEST([version objects 3],[
+class Foo(rpm.ver):
+    pass
+f1 = Foo('v1.0')
+v1 = rpm.ver('v1.0')
+f2 = Foo('v2.0')
+myprint('%s > %s: %s' % (f1, f2, f1 > f2))
+myprint('%s < %s: %s' % (f1, f2, f1 < f2))
+myprint('%s < %s: %s' % (f1, v1, f1 < v1))
+myprint('%s > %s: %s' % (f2, v1, f2 > v1))
+myprint('%s > %s: %s' % (v1, f1, v1 > f1))
+myprint('%s < %s: %s' % (v1, f2, v1 < f2))
+myprint('%s == %s: %s' % (v1, f1, v1 == f1))
+myprint('%s == %s: %s' % (f1, f2, f1 == f2))
+myprint('%s != %s: %s' % (f1, f2, f1 != f2))
+],
+[v1.0 > v2.0: False
+v1.0 < v2.0: True
+v1.0 < v1.0: False
+v2.0 > v1.0: True
+v1.0 > v1.0: False
+v1.0 < v2.0: True
+v1.0 == v1.0: True
+v1.0 == v2.0: False
+v1.0 != v2.0: True
+])
