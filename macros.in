@@ -1354,6 +1354,7 @@ end
 
 # Global buildsystem defaults
 %buildsystem_default_prep() %autosetup -p1 %*
+%buildsystem_default_clean() %{__rm} -rf %{buildroot}
 
 # Example buildsystem for autotools
 %buildsystem_autotools_conf() %configure %*

@@ -1214,7 +1214,7 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 	goto errxit;
 
     if (spec->sections[SECT_CLEAN] == NULL) {
-	char *body = rpmExpand("%{?buildroot: %{__rm} -rf %{buildroot}}", NULL);
+	char *body = rpmExpand("%{buildsystem_default_clean}", NULL);
 	spec->sections[SECT_CLEAN] = newStringBuf();
 	appendLineStringBuf(spec->sections[SECT_CLEAN], body);
 	free(body);
