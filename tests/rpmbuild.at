@@ -48,6 +48,8 @@ AT_SETUP([rpmbuild -b buildsystem])
 AT_KEYWORDS([build])
 RPMDB_INIT
 
+cp "${RPMTEST}/data/macros.buildsystem" "${RPMTEST}/${RPM_CONFIGDIR_PATH}/macros.d/"
+
 RPMTEST_CHECK([
 runroot rpmbuild -bb \
 	--define "_prefix /usr" \

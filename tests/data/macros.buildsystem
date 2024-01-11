@@ -1,0 +1,9 @@
+# Example buildsystem for autotools
+%buildsystem_autotools_conf() %configure %*
+%buildsystem_autotools_build() %make_build %*
+%buildsystem_autotools_install() %make_install %*
+
+# Example buildsystem for cmake
+%buildsystem_cmake_conf() cmake %* -B __rpmbuild -S .
+%buildsystem_cmake_build() cmake --build __rpmbuild %{?smp_mflags} %{?verbose:-v} -- %*
+%buildsystem_cmake_install() DESTDIR=${RPM_BUILD_ROOT} cmake --install __rpmbuild %{?verbose:-v} %*
