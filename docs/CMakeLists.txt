@@ -18,7 +18,10 @@ if (DOXYGEN_FOUND)
 elseif (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/html/index.html)
 	set(doxsrc ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
-install(DIRECTORY ${doxsrc}/html/ DESTINATION ${CMAKE_INSTALL_DOCDIR}/API)
+
+if (doxsrc)
+	install(DIRECTORY ${doxsrc}/html/ DESTINATION ${CMAKE_INSTALL_DOCDIR}/API)
+endif()
 
 install(FILES
 	README.md
