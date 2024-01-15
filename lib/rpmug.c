@@ -9,8 +9,16 @@
 #include "rpmug.h"
 #include "debug.h"
 
-static char *pwpath = NULL;
-static char *grppath = NULL;
+struct rpmug_s {
+    char *pwpath;
+    char *grppath;
+    char *lastGname;
+    char *lastUname;
+    uid_t lastUid;
+    gid_t lastGid;
+};
+
+static struct rpmug_s *rpmug = NULL;
 
 static const char *getpath(const char *bn, const char *dfl, char **dest)
 {
@@ -27,12 +35,12 @@ static const char *getpath(const char *bn, const char *dfl, char **dest)
 
 static const char *pwfile(void)
 {
-    return getpath("passwd", "/etc/passwd", &pwpath);
+    return getpath("passwd", "/etc/passwd", &rpmug->pwpath);
 }
 
 static const char *grpfile(void)
 {
-    return getpath("group", "/etc/group", &grppath);
+    return getpath("group", "/etc/group", &rpmug->grppath);
 }
 
 /*
@@ -119,6 +127,12 @@ static int lookup_str(const char *path, long val, int vcol, int rcol,
     return rc;
 }
 
+static void rpmugInit(void)
+{
+    if (rpmug == NULL)
+	rpmug = xcalloc(1, sizeof(*rpmug));
+}
+
 /* 
  * These really ought to use hash tables. I just made the
  * guess that most files would be owned by root or the same person/group
@@ -129,119 +143,103 @@ static int lookup_str(const char *path, long val, int vcol, int rcol,
 
 int rpmugUid(const char * thisUname, uid_t * uid)
 {
-    static char * lastUname = NULL;
-    static uid_t lastUid;
-
-    if (!thisUname) {
-	lastUname = rfree(lastUname);
-	return -1;
-    } else if (rstreq(thisUname, UID_0_USER)) {
+    if (rstreq(thisUname, UID_0_USER)) {
 	*uid = 0;
 	return 0;
     }
 
-    if (lastUname == NULL || !rstreq(thisUname, lastUname)) {
+    rpmugInit();
+
+    if (rpmug->lastUname == NULL || !rstreq(thisUname, rpmug->lastUname)) {
 	long id;
 	if (lookup_num(pwfile(), thisUname, 0, 2, &id))
 	    return -1;
-
-	free(lastUname);
-	lastUname = xstrdup(thisUname);
-	lastUid = id;
+	free(rpmug->lastUname);
+	rpmug->lastUname = xstrdup(thisUname);
+	rpmug->lastUid = id;
     }
 
-    *uid = lastUid;
+    *uid = rpmug->lastUid;
 
     return 0;
 }
 
 int rpmugGid(const char * thisGname, gid_t * gid)
 {
-    static char * lastGname = NULL;
-    static gid_t lastGid;
-
-    if (thisGname == NULL) {
-	lastGname = rfree(lastGname);
-	return -1;
-    } else if (rstreq(thisGname, GID_0_GROUP)) {
+    if (rstreq(thisGname, GID_0_GROUP)) {
 	*gid = 0;
 	return 0;
     }
 
-    if (lastGname == NULL || !rstreq(thisGname, lastGname)) {
+    rpmugInit();
+
+    if (rpmug->lastGname == NULL || !rstreq(thisGname, rpmug->lastGname)) {
 	long id;
 	if (lookup_num(grpfile(), thisGname, 0, 2, &id))
 	    return -1;
-	free(lastGname);
-	lastGname = xstrdup(thisGname);
-	lastGid = id;
+	free(rpmug->lastGname);
+	rpmug->lastGname = xstrdup(thisGname);
+	rpmug->lastGid = id;
     }
 
-    *gid = lastGid;
+    *gid = rpmug->lastGid;
 
     return 0;
 }
 
 const char * rpmugUname(uid_t uid)
 {
-    static uid_t lastUid = (uid_t) -1;
-    static char * lastUname = NULL;
-
-    if (uid == (uid_t) -1) {
-	lastUid = (uid_t) -1;
-	lastUname = rfree(lastUname);
-	return NULL;
-    } else if (uid == (uid_t) 0) {
+    if (uid == (uid_t) 0)
 	return UID_0_USER;
-    } else if (uid == lastUid) {
-	return lastUname;
+
+    rpmugInit();
+
+    if (uid == rpmug->lastUid) {
+	return rpmug->lastUname;
     } else {
 	char *uname = NULL;
 
 	if (lookup_str(pwfile(), uid, 2, 0, &uname))
 	    return NULL;
 
-	lastUid = uid;
-	free(lastUname);
-	lastUname = uname;
+	rpmug->lastUid = uid;
+	free(rpmug->lastUname);
+	rpmug->lastUname = uname;
 
-	return lastUname;
+	return rpmug->lastUname;
     }
 }
 
 const char * rpmugGname(gid_t gid)
 {
-    static gid_t lastGid = (gid_t) -1;
-    static char * lastGname = NULL;
-
-    if (gid == (gid_t) -1) {
-	lastGid = (gid_t) -1;
-	lastGname = rfree(lastGname);
-	return NULL;
-    } else if (gid == (gid_t) 0) {
+    if (gid == (gid_t) 0)
 	return GID_0_GROUP;
-    } else if (gid == lastGid) {
-	return lastGname;
+
+    rpmugInit();
+
+    if (gid == rpmug->lastGid) {
+	return rpmug->lastGname;
     } else {
 	char *gname = NULL;
 
 	if (lookup_str(grpfile(), gid, 2, 0, &gname))
 	    return NULL;
 
-	lastGid = gid;
-	free(lastGname);
-	lastGname = gname;
+	rpmug->lastGid = gid;
+	free(rpmug->lastGname);
+	rpmug->lastGname = gname;
 
-	return lastGname;
+	return rpmug->lastGname;
     }
 }
 
 void rpmugFree(void)
 {
-    rpmugUid(NULL, NULL);
-    rpmugGid(NULL, NULL);
-    rpmugUname(-1);
-    rpmugGname(-1);
-    pwpath = rfree(pwpath);
-    grppath = rfree(grppath);
+    if (rpmug) {
+	free(rpmug->lastUname);
+	free(rpmug->lastGname);
+	free(rpmug->pwpath);
+	free(rpmug->grppath);
+	rpmug = rfree(rpmug);
+    }
 }
