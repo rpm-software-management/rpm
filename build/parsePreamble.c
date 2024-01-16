@@ -1290,6 +1290,19 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	    rpmlog(RPMLOG_ERR, _("%%{buildroot} can not be \"/\"\n"));
 	    goto exit;
 	}
+
+	/* Grab the top builddir on first entry as we'll override _builddir */
+	if (!rpmMacroIsDefined(spec->macros, "_top_builddir")) {
+	    rpmPushMacro(spec->macros, "_top_builddir", NULL, "%{_builddir}",
+			RMIL_GLOBAL);
+	}
+
+	if (!spec->buildDir) {
+	    spec->buildDir = rpmExpand("%{_top_builddir}/%{NAME}-%{VERSION}-PKG", NULL);
+	    /* a user-oriented, unambiguous name for the thing */
+	    rpmPushMacro(spec->macros, "pkgbuilddir", NULL, spec->buildDir, RMIL_SPEC);
+	    rpmPushMacro(spec->macros, "_builddir", NULL, spec->buildDir, RMIL_SPEC);
+	}
     }
 
     /* if we get down here nextPart has been set to non-error */

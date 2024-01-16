@@ -676,6 +676,8 @@ int main(int argc, char *argv[])
 	if (!noDeps) {
 	    ba->buildAmount |= RPMBUILD_CHECKBUILDREQUIRES;
 	}
+	if (!shortCircuit)
+	    ba->buildAmount |= RPMBUILD_BUILDDIR;
 	break;
     case 'l':
 	ba->buildAmount |= RPMBUILD_FILECHECK;
@@ -683,8 +685,10 @@ int main(int argc, char *argv[])
     case 'r':
 	/* fallthrough */
     case 'd':
-	if (!shortCircuit)
+	if (!shortCircuit) {
 	    ba->buildAmount |= RPMBUILD_PREP;
+	    ba->buildAmount |= RPMBUILD_BUILDDIR;
+	}
 	ba->buildAmount |= RPMBUILD_BUILDREQUIRES;
 	ba->buildAmount |= RPMBUILD_DUMPBUILDREQUIRES;
 	if (!noDeps)

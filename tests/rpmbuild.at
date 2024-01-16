@@ -92,7 +92,8 @@ RPMTEST_CHECK([
 runroot rpmbuild -bp /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%prep)
+[Executing(%builddir)
+Executing(%prep)
 ],
 [])
 
@@ -108,7 +109,8 @@ RPMTEST_CHECK([
 runroot rpmbuild -br /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%prep)
+[Executing(%builddir)
+Executing(%prep)
 Executing(%generate_buildrequires)
 ],
 [])
@@ -117,7 +119,8 @@ RPMTEST_CHECK([
 runroot rpmbuild -bd /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%prep)
+[Executing(%builddir)
+Executing(%prep)
 Executing(%generate_buildrequires)
 ],
 [])
@@ -126,7 +129,8 @@ RPMTEST_CHECK([
 runroot rpmbuild -bf /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%prep)
+[Executing(%builddir)
+Executing(%prep)
 Executing(%generate_buildrequires)
 Executing(%conf)
 ],
@@ -135,7 +139,8 @@ RPMTEST_CHECK([
 runroot rpmbuild -bc /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%prep)
+[Executing(%builddir)
+Executing(%prep)
 Executing(%generate_buildrequires)
 Executing(%conf)
 Executing(%build)
@@ -146,7 +151,8 @@ RPMTEST_CHECK([
 runroot rpmbuild -bi /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%prep)
+[Executing(%builddir)
+Executing(%prep)
 Executing(%generate_buildrequires)
 Executing(%conf)
 Executing(%build)
@@ -159,7 +165,8 @@ RPMTEST_CHECK([
 runroot rpmbuild -bb /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%prep)
+[Executing(%builddir)
+Executing(%prep)
 Executing(%generate_buildrequires)
 Executing(%conf)
 Executing(%build)
@@ -174,7 +181,8 @@ RPMTEST_CHECK([
 runroot rpmbuild -ba /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%prep)
+[Executing(%builddir)
+Executing(%prep)
 Executing(%generate_buildrequires)
 Executing(%conf)
 Executing(%build)
@@ -2247,12 +2255,12 @@ runroot rpmbuild -bb --quiet /data/SPECS/filemiss.spec
 [error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/share/doc/filemisstest-1.0/CREDITS
 error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/foo
 error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/bar{a,b}
-cp: cannot stat '/build/BUILD/INSTALL': No such file or directory
-cp: cannot stat '/build/BUILD/README*': No such file or directory
+cp: cannot stat '/build/BUILD/filemisstest-1.0-PKG/INSTALL': No such file or directory
+cp: cannot stat '/build/BUILD/filemisstest-1.0-PKG/README*': No such file or directory
 error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/share/doc/filemisstest-1.0/INSTALL
 error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/share/doc/filemisstest-1.0/README*
-cp: cannot stat '/build/BUILD/LICENSE': No such file or directory
-cp: cannot stat '/build/BUILD/OTHERLICENSE?': No such file or directory
+cp: cannot stat '/build/BUILD/filemisstest-1.0-PKG/LICENSE': No such file or directory
+cp: cannot stat '/build/BUILD/filemisstest-1.0-PKG/OTHERLICENSE?': No such file or directory
 error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/share/licenses/filemisstest-1.0/LICENSE
 error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/share/licenses/filemisstest-1.0/OTHERLICENSE?
 ],

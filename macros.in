@@ -813,6 +813,14 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 # ---- Scriptlet templates.
 #	Macro(s) that expand to a command and script that is executed.
 #
+%__spec_builddir_shell	%{nil}
+%__spec_builddir_args	%{nil}
+%__spec_builddir_cmd	%{nil}
+%__spec_builddir_pre	%{nil}
+%__spec_builddir_body   %{%nil}
+%__spec_builddir_post	%{nil}
+%__spec_builddir_template %{nil}
+
 %__spec_prep_shell	%{___build_shell}
 %__spec_prep_args	%{___build_args}
 %__spec_prep_cmd	%{___build_cmd}

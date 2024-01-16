@@ -121,6 +121,10 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     
     switch (what) {
+    case RPMBUILD_BUILDDIR:
+	mTemplate = "%{__spec_builddir_template}";
+	mPost = "%{__spec_builddir_post}";
+	mCmd = "%{__spec_builddir_cmd}";
     case RPMBUILD_PREP:
 	mTemplate = "%{__spec_prep_template}";
 	mPost = "%{__spec_prep_post}";
@@ -190,7 +194,7 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 
     (void) fputs(buildTemplate, fp);
 
-    if (what != RPMBUILD_PREP && what != RPMBUILD_RMBUILD && buildSubdir[0] != '\0')
+    if (what != RPMBUILD_BUILDDIR && what != RPMBUILD_PREP && what != RPMBUILD_RMBUILD && buildSubdir[0] != '\0')
 	fprintf(fp, "cd '%s'\n", buildSubdir);
 
     if (what == RPMBUILD_RMBUILD) {
@@ -303,6 +307,24 @@ static rpmRC doCheckBuildRequires(rpmts ts, rpmSpec spec, int test)
     return rc;
 }
 
+static rpmRC doBuildDir(rpmSpec spec, int test, StringBuf *sbp)
+{
+    char *doDir = rstrscat(NULL,
+			   "rm -rf ", spec->buildDir, "\n",
+			   "mkdir -p ", spec->buildDir, "\n",
+			   NULL);
+
+    rpmRC rc = doScript(spec, RPMBUILD_BUILDDIR, "%builddir",
+			doDir, test, sbp);
+    if (rc) {
+	rpmlog(RPMLOG_ERR,
+		_("failed to create package build directory %s: %s\n"),
+		spec->buildDir, strerror(errno));
+    }
+    free(doDir);
+    return rc;
+}
+
 static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 {
     rpmRC rc = RPMRC_OK;
@@ -372,11 +394,14 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 	if (!rpmSpecGetSection(spec, RPMBUILD_BUILDREQUIRES) && sourceOnly) {
 		/* don't run prep if not needed for source build */
 		/* with(out) dynamic build requires*/
-	    what &= ~(RPMBUILD_PREP);
+	    what &= ~(RPMBUILD_PREP|RPMBUILD_BUILDDIR);
 	}
 
 	if ((what & RPMBUILD_CHECKBUILDREQUIRES) &&
 	    (rc = doCheckBuildRequires(ts, spec, test)))
+		goto exit;
+
+	if ((what & RPMBUILD_BUILDDIR) && (rc = doBuildDir(spec, test, sbp)))
 		goto exit;
 
 	if ((what & RPMBUILD_PREP) &&
