@@ -504,6 +504,9 @@ can just create the directory. It accepts a number of options:
 -a N        unpack source N after changing to the build directory
 -b N        unpack source N before changing to the build directory
 -c          create the build directory (and change to it) before unpacking
+-C          Create the build directory and ensure the archive contents
+            are unpacked there, stripping the top level directory in the archive
+            if it exists
 -D          do not delete the build directory prior to unpacking (used
             when more than one source is to be unpacked with `-a` or `-b`)
 -n DIR      set the name of build directory (default is `%{name}-%{version}`)
