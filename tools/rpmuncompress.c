@@ -6,6 +6,9 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <archive.h>
+#include <archive_entry.h>
+
 #include <rpm/rpmcli.h>
 #include <rpm/rpmstring.h>
 
@@ -14,6 +17,7 @@
 static int verbose = 0;
 static int extract = 0;
 static int dryrun = 0;
+static char *dstpath = NULL;
 
 static struct poptOption optionsTable[] = {
     { "extract", 'x', POPT_ARG_VAL, &extract, 1,
@@ -22,6 +26,8 @@ static struct poptOption optionsTable[] = {
 	N_("provide more detailed output"), NULL },
     { "dry-run", 'n', POPT_ARG_VAL, &dryrun, 1,
 	N_("only print what would be done"), NULL },
+    { "path", 'C', POPT_ARG_STRING, &dstpath, 0,
+	N_("extract into a specific path"), NULL },
 
     POPT_AUTOALIAS
     POPT_AUTOHELP
@@ -78,16 +84,78 @@ static char *doUncompress(const char *fn)
     return cmd;
 }
 
+/**
+ * Detect if an archive has a single top level entry, and it's a directory.
+ *
+ * @param path	path of the archive
+ * @return	1 if archive as only a directory as top level entry,
+ * 		0 if it contains multiple top level entries or a single file
+ * 		-1 on archive error
+ */
+static int singleRoot(const char *path)
+{
+	struct archive *a;
+	struct archive_entry *entry;
+	int r, ret = -1, rootLen;
+	char *rootName = NULL;
+
+	a = archive_read_new();
+	archive_read_support_filter_all(a);
+	archive_read_support_format_all(a);
+	r = archive_read_open_filename(a, path, 10240);
+	if (r != ARCHIVE_OK) {
+	    goto afree;
+	}
+	if (archive_read_next_header(a, &entry) != ARCHIVE_OK) {
+	    goto afree;
+	}
+	rootName = xstrdup(archive_entry_pathname(entry));
+	rootLen = strlen(rootName);
+	if (archive_entry_filetype(entry) != AE_IFDIR) {
+	    /* Root entry is not a directory */
+	    ret = 0;
+	    goto afree;
+	}
+	while (archive_read_next_header(a, &entry) == ARCHIVE_OK) {
+	    if (strncmp(rootName, archive_entry_pathname(entry), rootLen)) {
+		/* multiple top level entries */
+		ret = 0;
+		goto afree;
+	    }
+	}
+	ret = 1;
+
+afree:
+	free(rootName);
+	r = archive_read_free(a);
+	if (r != ARCHIVE_OK)
+	    ret = -1;
+
+	return ret;
+}
+
 static char *doUntar(const char *fn)
 {
     const struct archiveType_s *at = NULL;
     char *buf = NULL;
     char *tar = NULL;
     const char *taropts = verbose ? "-xvvof" : "-xof";
+    char *mkdir = NULL;
+    char *stripcd = NULL;
 
     if ((at = getArchiver(fn)) == NULL)
 	goto exit;
 
+    if (dstpath) {
+	    int sr = singleRoot(fn);
+
+	    /* the trick is simple, if the archive has multiple entries,
+	     * just extract it into the specified destination path, otherwise
+	     * strip the first path entry and extract in the destination path
+	     */
+	    rasprintf(&mkdir, "mkdir '%s' ; ", dstpath);
+	    rasprintf(&stripcd, " -C '%s' %s", dstpath, sr ? "--strip-components=1" : "");
+    }
     tar = rpmGetPath("%{__tar}", NULL);
     if (at->compressed != COMPRESSED_NOT) {
 	char *zipper = NULL;
@@ -96,7 +164,7 @@ static char *doUntar(const char *fn)
 	zipper = rpmExpand(at->cmd, " ", at->unpack, " ",
 			   verbose ? "" : at->quiet, NULL);
 	if (needtar) {
-	    rasprintf(&buf, "%s '%s' | %s %s -", zipper, fn, tar, taropts);
+	    rasprintf(&buf, "%s %s '%s' | %s %s - %s", mkdir ?: "", zipper, fn, tar, taropts, stripcd ?: "");
 	} else if (at->compressed == COMPRESSED_GEM) {
 	    char *tmp = xstrdup(fn);
 	    const char *bn = basename(tmp);
@@ -119,11 +187,13 @@ static char *doUntar(const char *fn)
 	}
 	free(zipper);
     } else {
-	rasprintf(&buf, "%s %s '%s'", tar, taropts, fn);
+	rasprintf(&buf, "%s %s %s '%s' %s", mkdir ?: "", tar, taropts, fn, stripcd ?: "");
     }
 
 exit:
     free(tar);
+    free(mkdir);
+    free(stripcd);
     return buf;
 }
 

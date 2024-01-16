@@ -17,6 +17,7 @@ target_link_libraries(rpmlua PRIVATE LUA::LUA)
 target_link_libraries(rpmbuild PRIVATE librpmbuild)
 target_link_libraries(rpmspec PRIVATE librpmbuild)
 target_link_libraries(rpmdeps PRIVATE librpmbuild)
+target_link_libraries(rpmuncompress PRIVATE PkgConfig::LIBARCHIVE)
 
 if (HAVE_STRCHRNUL)
 	add_executable(rpmsort rpmsort.c)

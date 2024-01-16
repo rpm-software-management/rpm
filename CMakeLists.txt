@@ -206,6 +206,7 @@ pkg_check_modules(ZSTD IMPORTED_TARGET libzstd>=1.3.8)
 pkg_check_modules(LIBELF IMPORTED_TARGET libelf)
 pkg_check_modules(LIBDW IMPORTED_TARGET libdw)
 pkg_check_modules(LIBLZMA IMPORTED_TARGET liblzma>=5.2.0)
+pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
 
 # Lua module does not ship an IMPORTED target, define our own
 add_library(LUA::LUA INTERFACE IMPORTED)
@@ -264,10 +265,6 @@ endif()
 
 if (WITH_SELINUX)
 	pkg_check_modules(SELINUX REQUIRED IMPORTED_TARGET libselinux)
-endif()
-
-if (WITH_ARCHIVE)
-	pkg_check_modules(LIBARCHIVE REQUIRED IMPORTED_TARGET libarchive)
 endif()
 
 if (WITH_FSVERITY)

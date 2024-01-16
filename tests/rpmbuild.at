@@ -224,6 +224,28 @@ run rpmbuild \
 [ignore])
 RPMTEST_CLEANUP
 
+AT_SETUP([rpmbuild with %autosetup -C])
+AT_KEYWORDS([build])
+RPMDB_INIT
+RPMTEST_CHECK([
+
+run rpmbuild \
+  -bp ${RPMDATA}/SPECS/autosetup-noroot.spec
+],
+[0],
+[ignore],
+[ignore])
+
+RPMTEST_CHECK([
+
+run rpmbuild \
+  -bp ${RPMDATA}/SPECS/autosetup-singleroot.spec
+],
+[0],
+[ignore],
+[ignore])
+RPMTEST_CLEANUP
+
 AT_SETUP([rpmbuild -ba autopatch])
 AT_KEYWORDS([build])
 RPMDB_INIT
