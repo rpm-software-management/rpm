@@ -10,6 +10,7 @@ title: rpm.org - Package Build Process
 * Parse the [spec](spec.md)
   * If  buildarch detected parse spec multiple times - once for each arch with `_target_cpu` macro set
   * Build will iterate over all the spec variants and build multiple versions
+* Execute internal `%mkbuilddir` script to create `%builddir`
 * Check static build requires
 * Execute present [build scriptlets](spec.md#build-scriptlets)
   * `%prep`

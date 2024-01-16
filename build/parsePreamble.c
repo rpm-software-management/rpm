@@ -1280,28 +1280,38 @@ int parsePreamble(rpmSpec spec, int initialPackage, enum parseStages stage)
 	}
     }
 
-    /* 
-     * Expand buildroot one more time to get %{version} and the like
-     * from the main package, validate sanity. The spec->buildRoot could
-     * still contain unexpanded macros but it cannot be empty or '/', and it
-     * can't be messed with by anything spec does beyond this point.
-     */
     if (initialPackage) {
 	if (checkForRequiredForBuild(pkg->header)) {
 	    goto exit;
 	}
 
-	char *buildRoot = rpmGetPath(spec->buildRoot, NULL);
-	free(spec->buildRoot);
-	spec->buildRoot = buildRoot;
-	rpmPushMacro(spec->macros, "buildroot", NULL, spec->buildRoot, RMIL_SPEC);
-	if (*buildRoot == '\0') {
-	    rpmlog(RPMLOG_ERR, _("%%{buildroot} couldn't be empty\n"));
-	    goto exit;
-	}
-	if (rstreq(buildRoot, "/")) {
-	    rpmlog(RPMLOG_ERR, _("%%{buildroot} can not be \"/\"\n"));
-	    goto exit;
+	if (!spec->buildDir) {
+	    /* Grab top builddir on first entry as we'll override _builddir */
+	    if (!rpmMacroIsDefined(spec->macros, "_top_builddir")) {
+		char *top_builddir = rpmExpand("%{_builddir}", NULL);
+		rpmPushMacroFlags(spec->macros, "_top_builddir", NULL,
+				top_builddir, RMIL_GLOBAL, RPMMACRO_LITERAL);
+		free(top_builddir);
+	    }
+
+	    /* Using release here causes a buildid no-recompute test to fail */
+	    spec->buildDir = rpmExpand("%{_top_builddir}/%{NAME}-%{VERSION}-%{_arch}", NULL);
+	    /* Override toplevel _builddir for backwards compatibility */
+	    rpmPushMacroFlags(spec->macros, "_builddir", NULL, spec->buildDir,
+				RMIL_SPEC, RPMMACRO_LITERAL);
+
+	    /* A user-oriented, unambiguous name for the thing */
+	    rpmPushMacroFlags(spec->macros, "builddir", NULL, spec->buildDir,
+				RMIL_SPEC, RPMMACRO_LITERAL);
+
+	    spec->buildRoot = rpmGetPath(spec->buildDir, "/BUILDROOT", NULL);
+	    rpmPushMacroFlags(spec->macros, "buildroot", NULL, spec->buildRoot,
+				RMIL_SPEC, RPMMACRO_LITERAL);
+
+	    char *specparts = rpmGetPath(spec->buildDir, "/SPECPARTS", NULL);
+	    rpmPushMacroFlags(spec->macros, "specpartsdir", NULL, specparts,
+				RMIL_SPEC, RPMMACRO_LITERAL);
+	    free(specparts);
 	}
     }
 

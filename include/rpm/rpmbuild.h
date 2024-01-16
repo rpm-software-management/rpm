@@ -38,6 +38,7 @@ enum rpmBuildFlags_e {
     RPMBUILD_BUILDREQUIRES	= (1 <<  20), /*!< Execute %%buildrequires. */
     RPMBUILD_DUMPBUILDREQUIRES	= (1 <<  21), /*!< Write buildrequires.nosrc.rpm. */
     RPMBUILD_CONF	= (1 << 22),	/*!< Execute %%conf. */
+    RPMBUILD_MKBUILDDIR	= (1 << 23),	/*!< Internal use only */
 
     RPMBUILD_NOBUILD	= (1 << 31)	/*!< Don't execute or package. */
 };
@@ -77,7 +78,7 @@ typedef	struct rpmBuildArguments_s *	BTA_t;
  *
  * @param specFile	path to spec file
  * @param flags		flags to control operation
- * @param buildRoot	buildRoot override or NULL for default
+ * @param buildRoot	unused
  * @return		new spec control structure
  */
 rpmSpec rpmSpecParse(const char *specFile, rpmSpecFlags flags,

@@ -165,7 +165,7 @@
     %{?_find_debuginfo_dwz_opts} \\\
     %{?_find_debuginfo_opts} \\\
     %{?_debugsource_packages:-S debugsourcefiles.list} \\\
-    "%{_builddir}/%{?buildsubdir}"\
+    "%{builddir}/%{?buildsubdir}"\
 %{nil}
 
 #	Template for debug information sub-package.
@@ -266,15 +266,6 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #	The directory where newly built source packages will be written.
 %_srcrpmdir		%{_topdir}/SRPMS
 
-#	The directory where buildroots will be created.
-%_buildrootdir		%{_topdir}/BUILDROOT
-
-#	Build root path, where %install installs the package during build.
-%buildroot		%{_buildrootdir}/%{NAME}-%{VERSION}-%{RELEASE}.%{_arch}
-
-#	Path for spec file snippets generated during build
-%specpartsdir %{_builddir}/%{buildsubdir}-SPECPARTS
-
 #	Directory where temporaray files can be created.
 %_tmppath		%{_var}/tmp
 
@@ -286,7 +277,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #	Macros that are initialized as a side effect of rpmrc and/or spec
 #	file parsing.
 #
-#	The sub-directory (relative to %{_builddir}) where sources are compiled.
+#	The sub-directory (relative to %{builddir}) where sources are compiled.
 #	This macro is set after processing %setup, either explicitly from the
 #	value given to -n or the default name-version.
 #
@@ -752,7 +743,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 %___build_cmd		%{?_sudo:%{_sudo} }%{?_remsh:%{_remsh} %{_remhost} }%{?_remsudo:%{_remsudo} }%{?_remchroot:%{_remchroot} %{_remroot} }%{___build_shell} %{___build_args}
 %___build_pre_env \
   RPM_SOURCE_DIR=\"%{_sourcedir}\"\
-  RPM_BUILD_DIR=\"%{_builddir}\"\
+  RPM_BUILD_DIR=\"%{builddir}\"\
   RPM_OPT_FLAGS=\"%{optflags}\"\
   RPM_LD_FLAGS=\"%{?build_ldflags}\"\
   RPM_ARCH=\"%{_arch}\"\
@@ -782,7 +773,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
   %{___build_pre_env} \
   %[%{verbose}?"set -x":""]\
   umask 022\
-  cd \"%{_builddir}\"\
+  cd \"%{builddir}\"\
 
 
 #%___build_body		%{nil}
@@ -804,6 +795,14 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 # ---- Scriptlet templates.
 #	Macro(s) that expand to a command and script that is executed.
 #
+%__spec_builddir_shell	%{nil}
+%__spec_builddir_args	%{nil}
+%__spec_builddir_cmd	%{nil}
+%__spec_builddir_pre	%{nil}
+%__spec_builddir_body   %{%nil}
+%__spec_builddir_post	%{nil}
+%__spec_builddir_template %{nil}
+
 %__spec_prep_shell	%{___build_shell}
 %__spec_prep_args	%{___build_args}
 %__spec_prep_cmd	%{___build_cmd}

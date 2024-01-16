@@ -13,9 +13,8 @@ build results.
 
 The files need to be placed in the **%{specpartsdir}** (also available
 as **$RPM_SPECPARTS_DIR** in the build scripts) and have a
-**.specpart** postfix. The directory is created by **%setup**. Default
-location is **%{_builddir}/%{buildsubdir}-SPECPARTS** which is beside
-the **%{buildsubdir}**. Scripts must not create it themselves but must
+**.specpart** postfix. The directory is created by **%setup**.
+Scripts must not create it themselves but must
 either fail if it is not present or switch to an alternative that does
 not require the feature. They should give an error message that
 dynamic spec generation is not supported on the given RPM version when
