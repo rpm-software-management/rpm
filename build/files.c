@@ -1655,7 +1655,7 @@ static rpmRC processMetadataFile(Package pkg, FileList fl,
 	fn = rpmGenPath(fl->buildRoot, NULL, fileName);
 	absolute = 1;
     } else
-	fn = rpmGenPath("%{_builddir}", "%{?buildsubdir}", fileName);
+	fn = rpmGenPath("%{builddir}", "%{?buildsubdir}", fileName);
 
     switch (tag) {
     default:
@@ -2245,7 +2245,7 @@ int readManifest(rpmSpec spec, const char *path, const char *descr, int flags,
     if (*path == '/') {
 	fn = rpmGetPath(path, NULL);
     } else {
-	fn = rpmGenPath("%{_builddir}", "%{?buildsubdir}", path);
+	fn = rpmGenPath("%{builddir}", "%{?buildsubdir}", path);
     }
     fd = fopen(fn, "r");
 
@@ -2389,7 +2389,7 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     char *mkdocdir = rpmExpand("%{__mkdir_p} $", sdenv, NULL);
     StringBuf docScript = newStringBuf();
     int count = sd->entriesCount;
-    char *basepath = rpmGenPath(spec->rootDir, "%{_builddir}", "%{?buildsubdir}");
+    char *basepath = rpmGenPath(spec->rootDir, "%{builddir}", "%{?buildsubdir}");
     ARGV_t *files = xmalloc(sizeof(*files) * count);
     int i, j;
 

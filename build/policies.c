@@ -155,7 +155,7 @@ static ModuleRec newModule(const char *path, const char *name,
     ModuleRec mod;
     uint8_t *raw = NULL;
     ssize_t rawlen = 0;
-    const char *buildDir = "%{_builddir}/%{?buildsubdir}/";
+    const char *buildDir = "%{builddir}/%{?buildsubdir}/";
 
     if (!path) {
 	rpmlog(RPMLOG_ERR, _("%%semodule requires a file path\n"));

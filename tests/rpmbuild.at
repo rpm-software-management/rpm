@@ -92,7 +92,8 @@ RPMTEST_CHECK([
 runroot rpmbuild -bp /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%prep)
+[Executing(%mkbuilddir)
+Executing(%prep)
 ],
 [])
 
@@ -108,7 +109,8 @@ RPMTEST_CHECK([
 runroot rpmbuild -br /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%prep)
+[Executing(%mkbuilddir)
+Executing(%prep)
 Executing(%generate_buildrequires)
 ],
 [])
@@ -117,7 +119,8 @@ RPMTEST_CHECK([
 runroot rpmbuild -bd /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%prep)
+[Executing(%mkbuilddir)
+Executing(%prep)
 Executing(%generate_buildrequires)
 ],
 [])
@@ -126,7 +129,8 @@ RPMTEST_CHECK([
 runroot rpmbuild -bf /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%prep)
+[Executing(%mkbuilddir)
+Executing(%prep)
 Executing(%generate_buildrequires)
 Executing(%conf)
 ],
@@ -135,7 +139,8 @@ RPMTEST_CHECK([
 runroot rpmbuild -bc /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%prep)
+[Executing(%mkbuilddir)
+Executing(%prep)
 Executing(%generate_buildrequires)
 Executing(%conf)
 Executing(%build)
@@ -146,7 +151,8 @@ RPMTEST_CHECK([
 runroot rpmbuild -bi /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%prep)
+[Executing(%mkbuilddir)
+Executing(%prep)
 Executing(%generate_buildrequires)
 Executing(%conf)
 Executing(%build)
@@ -159,7 +165,8 @@ RPMTEST_CHECK([
 runroot rpmbuild -bb /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%prep)
+[Executing(%mkbuilddir)
+Executing(%prep)
 Executing(%generate_buildrequires)
 Executing(%conf)
 Executing(%build)
@@ -174,7 +181,8 @@ RPMTEST_CHECK([
 runroot rpmbuild -ba /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%prep)
+[Executing(%mkbuilddir)
+Executing(%prep)
 Executing(%generate_buildrequires)
 Executing(%conf)
 Executing(%build)
@@ -209,6 +217,51 @@ CCC
 DDD
 ],
 [])
+RPMTEST_CLEANUP
+
+AT_SETUP([rpmbuild dir layout])
+AT_KEYWORDS([build])
+RPMDB_INIT
+RPMTEST_CHECK([
+run rpmbuild \
+	-bi --target noarch --quiet \
+	${RPMDATA}/SPECS/simple.spec
+runroot_other find /build/BUILD|sort
+],
+[0],
+[/build/BUILD
+/build/BUILD/simple-1.0-noarch
+/build/BUILD/simple-1.0-noarch/BUILDROOT
+/build/BUILD/simple-1.0-noarch/BUILDROOT/opt
+/build/BUILD/simple-1.0-noarch/BUILDROOT/opt/bin
+/build/BUILD/simple-1.0-noarch/BUILDROOT/opt/bin/simple
+/build/BUILD/simple-1.0-noarch/simple
+],
+[ignore])
+
+RPMTEST_CHECK([
+run rpmbuild \
+	-bi --target noarch --quiet \
+	--with setup \
+	${RPMDATA}/SPECS/simple.spec
+runroot_other find /build/BUILD|sort
+],
+[0],
+[/build/BUILD
+/build/BUILD/simple-1.0-noarch
+/build/BUILD/simple-1.0-noarch/BUILDROOT
+/build/BUILD/simple-1.0-noarch/BUILDROOT/opt
+/build/BUILD/simple-1.0-noarch/BUILDROOT/opt/bin
+/build/BUILD/simple-1.0-noarch/BUILDROOT/opt/bin/simple
+/build/BUILD/simple-1.0-noarch/SPECPARTS
+/build/BUILD/simple-1.0-noarch/simple-1.0
+/build/BUILD/simple-1.0-noarch/simple-1.0/dir1
+/build/BUILD/simple-1.0-noarch/simple-1.0/dir1/file3
+/build/BUILD/simple-1.0-noarch/simple-1.0/file1
+/build/BUILD/simple-1.0-noarch/simple-1.0/file2
+/build/BUILD/simple-1.0-noarch/simple-1.0/simple
+],
+[ignore])
 RPMTEST_CLEANUP
 
 AT_SETUP([rpmbuild -ba autosetup])
@@ -2296,17 +2349,17 @@ runroot rpmbuild -bb --quiet /data/SPECS/filemiss.spec
 ],
 [1],
 [],
-[error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/share/doc/filemisstest-1.0/CREDITS
-error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/foo
-error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/bar{a,b}
-cp: cannot stat '/build/BUILD/INSTALL': No such file or directory
-cp: cannot stat '/build/BUILD/README*': No such file or directory
-error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/share/doc/filemisstest-1.0/INSTALL
-error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/share/doc/filemisstest-1.0/README*
-cp: cannot stat '/build/BUILD/LICENSE': No such file or directory
-cp: cannot stat '/build/BUILD/OTHERLICENSE?': No such file or directory
-error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/share/licenses/filemisstest-1.0/LICENSE
-error: File not found: /build/BUILDROOT/filemisstest-1.0-1.x86_64/opt/share/licenses/filemisstest-1.0/OTHERLICENSE?
+[error: File not found: /build/BUILD/filemisstest-1.0-x86_64/BUILDROOT/opt/share/doc/filemisstest-1.0/CREDITS
+error: File not found: /build/BUILD/filemisstest-1.0-x86_64/BUILDROOT/opt/foo
+error: File not found: /build/BUILD/filemisstest-1.0-x86_64/BUILDROOT/opt/bar{a,b}
+cp: cannot stat '/build/BUILD/filemisstest-1.0-x86_64/INSTALL': No such file or directory
+cp: cannot stat '/build/BUILD/filemisstest-1.0-x86_64/README*': No such file or directory
+error: File not found: /build/BUILD/filemisstest-1.0-x86_64/BUILDROOT/opt/share/doc/filemisstest-1.0/INSTALL
+error: File not found: /build/BUILD/filemisstest-1.0-x86_64/BUILDROOT/opt/share/doc/filemisstest-1.0/README*
+cp: cannot stat '/build/BUILD/filemisstest-1.0-x86_64/LICENSE': No such file or directory
+cp: cannot stat '/build/BUILD/filemisstest-1.0-x86_64/OTHERLICENSE?': No such file or directory
+error: File not found: /build/BUILD/filemisstest-1.0-x86_64/BUILDROOT/opt/share/licenses/filemisstest-1.0/LICENSE
+error: File not found: /build/BUILD/filemisstest-1.0-x86_64/BUILDROOT/opt/share/licenses/filemisstest-1.0/OTHERLICENSE?
 ],
 )
 RPMTEST_CLEANUP

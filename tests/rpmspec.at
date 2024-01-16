@@ -299,6 +299,7 @@ runroot rpmspec --parse \
 	--define "__patch /usr/bin/patch" \
 	--define "__chmod /usr/bin/chmod" \
 	--define "debug_package %{nil}" \
+	--target x86_64 \
 	/data/SPECS/hello.spec
 ],
 [0],
@@ -325,7 +326,7 @@ Prefix: /usr
 Simple rpm demonstration.
 
 %prep
-cd '/build/BUILD'
+cd '/build/BUILD/hello-1.0-x86_64'
 rm -rf 'hello-1.0'
 /usr/lib/rpm/rpmuncompress -x '/build/SOURCES/hello-1.0.tar.gz'
 STATUS=$?
@@ -333,8 +334,8 @@ if [ $STATUS -ne 0 ]; then
   exit $STATUS
 fi
 cd 'hello-1.0'
-rm -rf '/build/BUILD/hello-1.0-SPECPARTS'
-/usr/bin/mkdir -p '/build/BUILD/hello-1.0-SPECPARTS'
+rm -rf '/build/BUILD/hello-1.0-x86_64/SPECPARTS'
+/usr/bin/mkdir -p '/build/BUILD/hello-1.0-x86_64/SPECPARTS'
 /usr/bin/chmod -Rf a+rX,u+w,g-w,o-w .
 
 echo "Patch #0 (hello-1.0-modernize.patch):"
