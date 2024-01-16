@@ -36,6 +36,7 @@
 #include "rpmio_internal.h"	/* XXX for rpmioSlurp */
 #include "misc.h"
 #include "backend/dbi.h"
+#include "rpmug.h"
 
 #include "debug.h"
 
@@ -1872,6 +1873,7 @@ void rpmFreeRpmrc(void)
     rpmFreeCrypto();
     rpmlua lua = rpmluaGetGlobalState();
     rpmluaFree(lua);
+    rpmugFree();
 
     rpmrcCtxRelease(ctx);
     return;
