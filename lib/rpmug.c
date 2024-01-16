@@ -194,9 +194,7 @@ const char * rpmugUname(uid_t uid)
 
     rpmugInit();
 
-    if (uid == rpmug->lastUid) {
-	return rpmug->lastUname;
-    } else {
+    if (uid != rpmug->lastUid) {
 	char *uname = NULL;
 
 	if (lookup_str(pwfile(), uid, 2, 0, &uname))
@@ -205,9 +203,8 @@ const char * rpmugUname(uid_t uid)
 	rpmug->lastUid = uid;
 	free(rpmug->lastUname);
 	rpmug->lastUname = uname;
-
-	return rpmug->lastUname;
     }
+    return rpmug->lastUname;
 }
 
 const char * rpmugGname(gid_t gid)
@@ -217,9 +214,7 @@ const char * rpmugGname(gid_t gid)
 
     rpmugInit();
 
-    if (gid == rpmug->lastGid) {
-	return rpmug->lastGname;
-    } else {
+    if (gid != rpmug->lastGid) {
 	char *gname = NULL;
 
 	if (lookup_str(grpfile(), gid, 2, 0, &gname))
@@ -228,9 +223,8 @@ const char * rpmugGname(gid_t gid)
 	rpmug->lastGid = gid;
 	free(rpmug->lastGname);
 	rpmug->lastGname = gname;
-
-	return rpmug->lastGname;
     }
+    return rpmug->lastGname;
 }
 
 void rpmugFree(void)
