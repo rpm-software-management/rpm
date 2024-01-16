@@ -29,6 +29,7 @@ option(WITH_FSVERITY "Build with fsverity support" OFF)
 option(WITH_IMAEVM "Build with IMA support" OFF)
 option(WITH_FAPOLICYD "Build with fapolicyd support" ON)
 option(WITH_INTERNAL_OPENPGP "Use internal OpenPGP parser (DEPRECATED)" OFF)
+option(WITH_READLINE "Build with readline support" ON)
 
 set(RPM_CONFIGDIR "${CMAKE_INSTALL_PREFIX}/lib/rpm" CACHE PATH "rpm home")
 set(RPM_MACROSDIR "${RPM_CONFIGDIR}/macros.d")
@@ -193,7 +194,11 @@ find_package(BZip2)
 find_package(Iconv)
 
 pkg_check_modules(POPT REQUIRED IMPORTED_TARGET popt)
-pkg_check_modules(READLINE IMPORTED_TARGET readline)
+
+if (WITH_READLINE)
+    pkg_check_modules(READLINE REQUIRED IMPORTED_TARGET readline)
+endif()
+
 pkg_check_modules(ZSTD IMPORTED_TARGET libzstd>=1.3.8)
 pkg_check_modules(LIBELF IMPORTED_TARGET libelf)
 pkg_check_modules(LIBDW IMPORTED_TARGET libdw)
