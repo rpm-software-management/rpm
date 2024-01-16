@@ -18,7 +18,7 @@ struct rpmug_s {
     gid_t lastGid;
 };
 
-static struct rpmug_s *rpmug = NULL;
+static __thread struct rpmug_s *rpmug = NULL;
 
 static const char *getpath(const char *bn, const char *dfl, char **dest)
 {
