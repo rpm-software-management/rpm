@@ -78,7 +78,7 @@ typedef	struct rpmBuildArguments_s *	BTA_t;
  *
  * @param specFile	path to spec file
  * @param flags		flags to control operation
- * @param buildRoot	buildRoot override or NULL for default
+ * @param buildRoot	unused
  * @return		new spec control structure
  */
 rpmSpec rpmSpecParse(const char *specFile, rpmSpecFlags flags,

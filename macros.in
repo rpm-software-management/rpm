@@ -264,12 +264,6 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #	The directory where newly built source packages will be written.
 %_srcrpmdir		%{_topdir}/SRPMS
 
-#	The directory where buildroots will be created.
-%_buildrootdir		%{_topdir}/BUILDROOT
-
-#	Build root path, where %install installs the package during build.
-%buildroot		%{_buildrootdir}/%{NAME}-%{VERSION}-%{RELEASE}.%{_arch}
-
 #	Path for spec file snippets generated during build
 %specpartsdir %{_builddir}/%{buildsubdir}-SPECPARTS
 

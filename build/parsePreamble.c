@@ -1267,27 +1267,8 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	}
     }
 
-    /* 
-     * Expand buildroot one more time to get %{version} and the like
-     * from the main package, validate sanity. The spec->buildRoot could
-     * still contain unexpanded macros but it cannot be empty or '/', and it
-     * can't be messed with by anything spec does beyond this point.
-     */
     if (initialPackage) {
 	if (checkForRequiredForBuild(pkg->header)) {
-	    goto exit;
-	}
-
-	char *buildRoot = rpmGetPath(spec->buildRoot, NULL);
-	free(spec->buildRoot);
-	spec->buildRoot = buildRoot;
-	rpmPushMacro(spec->macros, "buildroot", NULL, spec->buildRoot, RMIL_SPEC);
-	if (*buildRoot == '\0') {
-	    rpmlog(RPMLOG_ERR, _("%%{buildroot} couldn't be empty\n"));
-	    goto exit;
-	}
-	if (rstreq(buildRoot, "/")) {
-	    rpmlog(RPMLOG_ERR, _("%%{buildroot} can not be \"/\"\n"));
 	    goto exit;
 	}
 
@@ -1302,6 +1283,10 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	    /* a user-oriented, unambiguous name for the thing */
 	    rpmPushMacro(spec->macros, "pkgbuilddir", NULL, spec->buildDir, RMIL_SPEC);
 	    rpmPushMacro(spec->macros, "_builddir", NULL, spec->buildDir, RMIL_SPEC);
+
+	    spec->buildRoot = rpmGetPath(spec->buildDir, "/%{_target_platform}-root", NULL);
+	    rpmPushMacro(spec->macros, "buildroot", NULL, spec->buildRoot, RMIL_SPEC
+);
 	}
     }
 
