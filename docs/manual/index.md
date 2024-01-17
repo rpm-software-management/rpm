@@ -18,7 +18,7 @@ title: rpm.org - RPM Reference Manual
 ## Package Building
 * [Build Process](buildprocess.md)
 * [Spec Syntax](spec.md)
-  * [Autobuild](autobuild.md)
+  * [Declarative builds](buildsystem.md)
   * [Autosetup](autosetup.md)
   * Dependencies
     * [Dependencies Basics](dependencies.md)
