@@ -20,6 +20,7 @@ esac
 
 # Below is the explanation of commands in the order of their appearance
 # Ignore /usr/lib/debug entries
+# Ignore all ruby, python, and js source files
 # Ignore all go(guile objects & golang) files
 # Consider files with only single link
 # Run the file command to find relevant non-stripped binaries, with bundle size of 32
@@ -33,6 +34,7 @@ strip_elf_binaries()
 
   find "$RPM_BUILD_ROOT" -type f \
     ! -regex "${RPM_BUILD_ROOT}/*usr/lib/debug.*" \
+    ! -name "*.py" ! -name "*.js" ! -name "*.rb" \
     ! -name "*.go" -links "${nlinks}" -print0 | \
     xargs -0 -r -P${nprocs} -n${MAX_ARGS} sh -c "file \"\$@\" | \
     sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped.*/\1/p' | \
