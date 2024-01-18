@@ -1,17 +1,13 @@
 ---
 layout: default
-title: rpm.org - RPM Package format
+title: rpm.org - RPM V3 Package format
 ---
-# Package format
+# V3 Package format
 
 This document describes the RPM file format version 3.0, which is used
-by RPM versions 2.1 and greater.  The format is subject to change, and
-you should not assume that this document is kept up to date with the
-latest RPM code.  That said, the 3.0 format should not change for
-quite a while, and when it does, it will not be 3.0 anymore :-).
+by RPM versions 2.1 to 3.x and still installable by 4.x.
 
-\warning In any case, THE PROPER WAY TO ACCESS THESE STRUCTURES IS THROUGH
-THE RPM LIBRARY!!
+**THE PROPER WAY TO ACCESS THESE STRUCTURES IS THROUGH THE RPM LIBRARY!!**
 
 The RPM file format covers both source and binary packages.  An RPM
 package file is divided in 4 logical sections:
@@ -23,8 +19,8 @@ package file is divided in 4 logical sections:
 . Payload   -- compressed archive of the file(s) in the package (aka "payload")
 ```
 
-All 2 and 4 byte "integer" quantities (int16 and int32) are stored in
-network byte order.  When data is presented, the first number is the
+All applicaple integer quantities are stored in network byte order
+(big-endian). When data is presented, the first number is the
 byte number, or address, in hex, followed by the byte values in hex,
 followed by character "translations" (where appropriate).
 
@@ -35,7 +31,7 @@ the Lead is duplicated or superceded by information in the Header.
 Much of the info in the Lead was used in old versions of RPM but is
 now ignored.  The Lead is stored as a C structure:
 
-\code
+```
 struct rpmlead {
     unsigned char magic[4];
     unsigned char major, minor;
@@ -46,7 +42,7 @@ struct rpmlead {
     short signature_type;
     char reserved[16];
 };
-\endcode
+```
 
 and is illustrated with one pulled from the rpm-2.1.2-1.i386.rpm
 package:
@@ -68,7 +64,7 @@ there are only two types: 0 == binary, 1 == source.
 
 The next two bytes (8-9) form an int16 that indicates the architecture
 the package was built for.  While this is used by file(1), the true
-architecture is stored as a string in the Header.  See, lib/misc.c for
+architecture is stored as a string in the Header.  See `rpmrc` for
 a list of architecture->int16 translations.  In this case, 1 == i386.
 Starting with byte 10 and extending to byte 75, are 65 characters and
 a null byte which contain the familiar "name-version-release" of the
@@ -107,24 +103,22 @@ structure is called a "header structure", which can be confusing since
 it is used for both the Header and the Signature.  The details of the
 header structure are given below, and you'll want to read them so the
 rest of this makes sense.  The tags for the Signature are defined in
-lib/signature.h.
+`include/rpm/rpmtag.h`.
 
 The Signature can contain multiple signatures, of different types.
 There are currently only three types, each with its own tag in the
 header structure:
 
-```
-	Name	Tag	Header Type
-	----	----	-----------
-	SIZE	1000	INT_32
-	MD5	1001	BIN
-	PGP	1002	BIN
-```
+Name	| Tag   | Header Type
+--------|-------|----
+SIZE	| 1000	| INT_32
+MD5     | 1001	| BIN
+PGP     | 1002	| BIN
 
 The MD5 signature is 16 bytes, and the PGP signature varies with
 the size of the PGP key used to sign the package.
 
-As of RPM 2.1, all packages carry at least SIZE and MD5 signatures,
+All packages carry at least SIZE and MD5 signatures,
 and the Signature section is padded to a multiple of 8 bytes.
 
 ## Header
@@ -133,7 +127,7 @@ The Header contains all the information about a package: name,
 version, file list, etc.  It uses the same "header structure" as the
 Signature, which is described in detail below.  A complete list of the
 tags for the Header would take too much space to list here, and the
-list grows fairly frequently.  For the complete list see lib/rpmlib.h
+list grows fairly frequently.  For the complete list see `include/rpm/rpmtag.h`
 in the RPM sources.
 
 ## Payload
@@ -168,20 +162,18 @@ Along with the tag and the data, a data "type" is stored, which indicates,
 obviously, the type of the data associated with the tag.  There are
 currently 9 types:
 
-```
-	Type		Number
-	----		------
-	NULL		0
-	CHAR		1
-	INT8		2
-	INT16		3
-	INT32		4
-	INT64		5
-	STRING		6
-	BIN		7
-	STRING_ARRAY	8
-	I18NSTRING_TYPE	9
-```
+Type            | Number
+----------------|-------
+NULL    		| 0
+CHAR    		| 1
+INT8    		| 2
+INT16   		| 3
+INT32   		| 4
+INT64   		| 5
+STRING		    | 6
+BIN		        | 7
+STRING_ARRAY    | 8
+I18NSTRING_TYPE	| 9
 
 One final piece of information is a "count" which is stored with each
 tag, and indicates the number of items of the associated type that are
@@ -218,7 +210,7 @@ Following the first 16 bytes is the part of the header called the
 in the header.  Each index entry contains four int32 quantities.  In
 order, they are: tag, type, offset, count.  In the above example, we
 have tag=1000, type=6, offset=0, count=1.  By looking up the the tag
-in lib/rpmlib.h we can see that this entry is for the package name.
+in `include/rpm/rpmtag.h` we can see that this entry is for the package name.
 The type of the entry is a STRING.  The offset is an offset from the
 start of the data part of the header to the data associated with this
 entry.  The count indicates that there is only one string associated
