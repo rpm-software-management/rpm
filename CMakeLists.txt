@@ -173,6 +173,7 @@ include(CheckLibraryExists)
 include(CheckFunctionExists)
 include(CheckIncludeFile)
 include(CheckCCompilerFlag)
+include(CheckVariableExists)
 
 set(OPTFUNCS
 	stpcpy stpncpy putenv mempcpy fdatasync lutimes mergesort
@@ -221,6 +222,7 @@ endif()
 
 if (ENABLE_NLS)
 	find_package(Intl REQUIRED)
+	check_variable_exists(_nl_msg_cat_cntr HAVE_NL_MSG_CAT_CNTR)
 endif()
 
 if (ENABLE_SQLITE)
