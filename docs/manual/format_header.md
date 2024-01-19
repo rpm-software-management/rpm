@@ -5,38 +5,86 @@ title: rpm.org - RPM Package Header format
 
 ## The Header Structure
 
-The header structure is a little complicated, but actually performs a
-very simple function.  It acts almost like a small database in that it
-allows you to store and retrieve arbitrary data with a key called a
-"tag".  When a header structure is written to disk, the data is
-written in network byte order, and when it is read from disk, is is
-converted to host byte order.
+The header structure is a generic key-value data store, supporting multiple
+data types and accessed via integer keys known as tags.
 
-Along with the tag and the data, a data "type" is stored, which indicates,
-obviously, the type of the data associated with the tag.  There are
-currently 9 types:
+The on-disk format of a header consists of three consequtive sections:
+- Intro
+- Index
+- Data
 
-Type            | Number
-----------------|-------
-NULL    		| 0
-CHAR    		| 1
-INT8    		| 2
-INT16   		| 3
-INT32   		| 4
-INT64   		| 5
-STRING		    | 6
-BIN		        | 7
-STRING_ARRAY    | 8
-I18NSTRING_TYPE	| 9
+All integer values is stored in network byte order (big-endian) on disk.
 
-One final piece of information is a "count" which is stored with each
-tag, and indicates the number of items of the associated type that are
-stored.  As a special case, the STRING type is not allowed to have a
-count greater than 1.  To store more than one string you must use a
-STRING_ARRAY.
+**THE PROPER WAY TO ACCESS THESE STRUCTURES IS THROUGH THE RPM LIBRARY!!**
 
-Altogether, the tag, type, count, and data are called an "Entry" or
-"Header Entry".
+### Intro
+
+The header intro can be defined as follows:
+```
+struct header_intro {
+    unsigned char magic[8];
+    uint32_t index_length;
+    uint32_t data_length;
+};
+```
+
+The header magic value is used to indentify the header, and is
+0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00.
+
+The index length contains the number of Index Entries, and the data_length
+is the size of the Data section in bytes.
+
+### Index
+
+The Index is the means to find the data stored in the header.
+It consists of Index Entries which can be defined as follows:
+```
+struct index_entry {
+    uint32_t tag;
+    uint32_t type;
+    int32_t offset;
+    uint32_t count;
+};
+```
+
+The Index Entries are sorted by the tag number.
+
+The tag is the identifier key for the data starting at the given offset in
+the Data section. The following data types are supported:
+
+Type            | Number| Type size
+----------------|-------|----------
+CHAR    		| 1     | 1
+INT8    		| 2     | 1
+INT16   		| 3     | 2
+INT32   		| 4     | 4
+INT64   		| 5     | 8
+STRING		    | 6     | -
+BIN		        | 7     | 1
+STRING_ARRAY    | 8     | -
+I18NSTRING_TYPE	| 9     | -
+
+In addition, each entry has an associated count which denotes the number
+of values in this entry. BIN is effectively the same as CHAR, but denotes
+a contiguous binary blob rather than an array of byte-sized values.
+As a special case, STRING can only have count of one.
+
+## Data
+
+The integer types are aligned to appropriate byte boundaries,
+so that the data of INT64 type starts on an 8 byte boundary, INT32
+type starts on a 4 byte boundary, and an INT16 type starts on a 2 byte
+boundary.
+
+Each string is null terminated, the strings in a STRING_ARRAY are also
+null-terminated and are place one after another.
+
+The size of integral types is a straightforward multiplication based
+on the type size in the above table, but the string sizes must be
+determined by walking the data looking for the null-bytes while taking
+care to stay within bounds.
+
+## A practical example
 
 ```
 00000000: 8e ad e8 01 00 00 00 00    ........
