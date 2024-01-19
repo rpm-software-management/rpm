@@ -158,3 +158,46 @@ could start at byte 589, byte that is an improper boundary for an INT32.
 As a result, 3 null bytes are inserted and the date for the SIZE actually
 starts at byte 592: "00 09 9b 31", which is 629553).
 
+## Immutable regions
+
+RPM v4 introduced the concept of contiguous immutable header regions
+which allow the original header data to be digitally verified even after
+modifying the data. This is done with special tags which keep track
+of a contiguous region (i.e. the original header).
+
+These region tags are technically like any other tag with associated
+binary data and thus fully backwards compatible. The special part is the
+interpretation of the region tag data, called the trailer, which looks
+like a Index Entry despite residing in the Data section,
+
+A region Index Entry looks like this:
+
+Field   | Value
+--------|------
+tag     | 62 or 63 (HEADERIMMUTABLE or HEADERSIGNATURES)
+type    | BIN
+offset  | Offset to the region trailer in the Data section
+count   | 16
+
+And the region trailer in the Data section:
+
+Field   | Value
+--------|------
+tag     | Must equal the Index Entry (ie 62 or 63)
+type    | BIN
+offset  | Size of the region entries in the Index in bytes
+count   | 16
+
+The number of entries in the region (aka region index length) can thus be
+calculated as `ril = -offset / sizeof(struct index_entry)`.
+
+When reading a package from disk, the number of region entries is expected
+to be the same as the index length in the Intro. However when a package
+is installed, extra data such as the install time is added to the header,
+that data falls outside the otherwise invisible region line in the index.
+These tags outside the immutable region are called "dribbles" in the RPM
+lore.
+
+With the aid of regions and dribbles, it's possible to add, modify and
+delete header data but still pull out the original contents at will.
+It gets complicated.
