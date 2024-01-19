@@ -37,7 +37,6 @@ install(FILES
 	manual/file_triggers.md
 	manual/format_v3.md
 	manual/format_v4.md
-	manual/hregions.md
 	manual/index.md
 	manual/large_files.md
 	manual/lua.md
