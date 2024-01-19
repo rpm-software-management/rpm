@@ -4,7 +4,7 @@ title: rpm.org - RPM V3 Package format
 ---
 # V3 Package format
 
-This document describes the RPM file format version 3.0, which is used
+This document describes the RPM file format version 3, which is used
 by RPM versions 2.1 to 3.x and still installable by 4.x.
 
 **THE PROPER WAY TO ACCESS THESE STRUCTURES IS THROUGH THE RPM LIBRARY!!**
@@ -36,25 +36,25 @@ The Lead is always 96 bytes long and starts with a four byte "magic"
 
 ## Signature
 
-A V3 Signature uses the same underlying [data structure](format_header.md)
+The Signature uses the same underlying [data structure](format_header.md)
 as the Header, but is zero-padded to a multiple of 8 bytes.
 
-The Signature can contain multiple signatures, of different types.
-There are currently only three types, each with its own tag in the
-header structure:
+The Signature can contain several tags of different types:
 
 Name	| Tag   | Header Type
 --------|-------|----
 SIZE	| 1000	| INT_32
-MD5     | 1001	| BIN
 PGP     | 1002	| BIN
+MD5     | 1004	| BIN
+GPG     | 1005  | BIN
 
-The MD5 signature is 16 bytes, and the PGP signature varies with
-the size of thekey used to sign the package. 
+All packages carry at least SIZE and MD5 tags. The MD5 binary hash
+is 16 bytes long.
 
-All packages carry at least SIZE and MD5 signatures.
-The PGP tag is present in digitally signed packages and contains an
-OpenPGP RSA signature on the header + payload data.
+On digitally signed packages, one of PGP or GPG tags is present and
+contains an OpenPGP signature on the header + payload data. The PGP
+tag is used for RSA signatures and the GPG tag is used for DSA
+signatures.
 
 ## Header
 
