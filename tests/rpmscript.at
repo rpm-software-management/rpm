@@ -488,10 +488,8 @@ RPMTEST_CHECK([
 runroot rpm -i /build/RPMS/noarch/parallel-1.0-1.noarch.rpm
 ],
 [0],
-[%filetriggerin: 1
-12
-%transfiletriggerin: 1
-12
+[parallel-trigger-1.0-1 FILETRIGGERIN 1 | 12
+parallel-trigger-1.0-1 TRANSFILETRIGGERIN 1 | 12
 ],
 [])
 
@@ -499,16 +497,11 @@ RPMTEST_CHECK([
 runroot rpm -U /build/RPMS/noarch/parallel-2.0-1.noarch.rpm
 ],
 [0],
-[%transfiletriggerun: 1
-12
-%filetriggerin: 1
-12
-%filetriggerpostun: 1
-11
-%transfiletriggerin: 1
-12
-%transfiletriggerpostun: 1
-0
+[parallel-trigger-1.0-1 TRANSFILETRIGGERUN 1 | 12
+parallel-trigger-1.0-1 FILETRIGGERIN 1 | 12
+parallel-trigger-1.0-1 FILETRIGGERPOSTUN 1 | 11
+parallel-trigger-1.0-1 TRANSFILETRIGGERIN 1 | 12
+parallel-trigger-1.0-1 TRANSFILETRIGGERPOSTUN 1 | 0
 ],
 [])
 
@@ -516,12 +509,9 @@ RPMTEST_CHECK([
 runroot rpm -U /build/RPMS/noarch/parallel-trigger-2.0-1.noarch.rpm
 ],
 [0],
-[%transfiletriggerun: 1
-12
-%filetriggerin: 2
-12
-%transfiletriggerin: 2
-12
+[parallel-trigger-1.0-1 TRANSFILETRIGGERUN 1 | 12
+parallel-trigger-2.0-1 FILETRIGGERIN 2 | 12
+parallel-trigger-2.0-1 TRANSFILETRIGGERIN 2 | 12
 ],
 [])
 
@@ -529,12 +519,9 @@ RPMTEST_CHECK([
 runroot rpm -e parallel
 ],
 [0],
-[%transfiletriggerun: 1
-12
-%filetriggerpostun: 1
-12
-%transfiletriggerpostun: 1
-0
+[parallel-trigger-2.0-1 TRANSFILETRIGGERUN 1 | 12
+parallel-trigger-2.0-1 FILETRIGGERPOSTUN 1 | 12
+parallel-trigger-2.0-1 TRANSFILETRIGGERPOSTUN 1 | 0
 ],
 [])
 
@@ -553,10 +540,8 @@ runroot rpm -i \
 runroot rpm -U /build/RPMS/noarch/parallel-trigger-1.0-1.noarch.rpm
 ],
 [0],
-[%filetriggerin: 1
-36
-%transfiletriggerin: 1
-36
+[parallel-trigger-1.0-1 FILETRIGGERIN 1 | 36
+parallel-trigger-1.0-1 TRANSFILETRIGGERIN 1 | 36
 ],
 [])
 
@@ -564,12 +549,9 @@ RPMTEST_CHECK([
 runroot rpm -U /build/RPMS/noarch/parallel-trigger-2.0-1.noarch.rpm
 ],
 [0],
-[%transfiletriggerun: 1
-36
-%filetriggerin: 2
-36
-%transfiletriggerin: 2
-36
+[parallel-trigger-1.0-1 TRANSFILETRIGGERUN 1 | 36
+parallel-trigger-2.0-1 FILETRIGGERIN 2 | 36
+parallel-trigger-2.0-1 TRANSFILETRIGGERIN 2 | 36
 ],
 [])
 
@@ -577,8 +559,7 @@ RPMTEST_CHECK([
 runroot rpm -e parallel-trigger
 ],
 [0],
-[%transfiletriggerun: 0
-36
+[parallel-trigger-2.0-1 TRANSFILETRIGGERUN 0 | 36
 ],
 [])
 RPMTEST_CLEANUP
