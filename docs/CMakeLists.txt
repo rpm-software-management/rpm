@@ -35,7 +35,8 @@ install(FILES
 	manual/devel_documentation.md
 	manual/dynamic_specs.md
 	manual/file_triggers.md
-	manual/format.md
+	manual/format_v3.md
+	manual/format_v4.md
 	manual/hregions.md
 	manual/index.md
 	manual/large_files.md

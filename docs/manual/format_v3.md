@@ -56,6 +56,9 @@ contains an OpenPGP signature on the header + payload data. The PGP
 tag is used for RSA signatures and the GPG tag is used for DSA
 signatures.
 
+Note: the signature tag numbers clash with those of the main header,
+care must be taken not to mix them up.
+
 ## Header
 
 The Header contains all the information about a package: name,
@@ -67,18 +70,4 @@ The complete list of tags is documented [here](tags.md).
 
 The Payload is currently a cpio archive, gzipped by default.  The cpio archive
 type used is SVR4 with a CRC checksum.
-
-As cpio is limited to 4 GB (32 bit unsigned) file sizes RPM since
-version 4.12 uses a stripped down version of cpio for packages with
-files > 4 GB. This format uses `07070X` as magic bytes and the file
-header otherwise only contains the index number of the file in the RPM
-header as 8 byte hex string. The file metadata that is normally found
-in a cpio file header - including the file name - is completely
-omitted as it is stored in the RPM header already.
-
-To use a different compression method when building new packages with
-`rpmbuild(8)`, define the `%_binary_payload` or `%_source_payload` macros for
-the binary or source packages, respectively.  These macros accept an
-[RPM IO mode string](https://ftp.osuosl.org/pub/rpm/api/4.17.0/group__rpmio.html#example-mode-strings)
-(only `w` mode).
 
