@@ -15,23 +15,23 @@ Summary: %{summary}
 %{summary}
 
 %transfiletriggerin trigger -- /opt/parallel
-echo %transfiletriggerin: $*
+echo -n "%{name}-trigger-%{version}-%{release} TRANSFILETRIGGERIN $* | "
 cat | wc -l
 
 %transfiletriggerun trigger -- /opt/parallel
-echo %transfiletriggerun: $*
+echo -n "%{name}-trigger-%{version}-%{release} TRANSFILETRIGGERUN $* | "
 cat | wc -l
 
 %transfiletriggerpostun trigger -- /opt/parallel
-echo %transfiletriggerpostun: $*
+echo -n "%{name}-trigger-%{version}-%{release} TRANSFILETRIGGERPOSTUN $* | "
 cat | wc -l
 
 %filetriggerin trigger -- /opt/parallel
-echo %filetriggerin: $*
+echo -n "%{name}-trigger-%{version}-%{release} FILETRIGGERIN $* | "
 cat | wc -l
 
 %filetriggerpostun trigger -- /opt/parallel
-echo %filetriggerpostun: $*
+echo -n "%{name}-trigger-%{version}-%{release} FILETRIGGERPOSTUN $* | "
 cat | wc -l
 
 
