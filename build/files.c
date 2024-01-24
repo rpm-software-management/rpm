@@ -1033,14 +1033,30 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
     rpm_loff_t totalFileSize = 0;
     Header h = pkg->header; /* just a shortcut */
     int override_date = 0;
+    int warn_on_lower_date = 0;
+    int set_mtime = 0;
     time_t source_date_epoch = 0;
     char *srcdate = getenv("SOURCE_DATE_EPOCH");
+    char *newsrcdate = getenv("NEW_SOURCE_DATE_EPOCH");
+
+    /* To detect mistakes in build scripts warn if we find an mtime that is
+     * lower than new! SOURCE_DATE_EPOCH */
+    if (rpmExpandNumeric("%{?warn_on_mtime_lower_than_source_date_epoch}")) {
+	warn_on_lower_date = 1;
+    }
+
+    /* The new one is for outside the build script */
+    if (newsrcdate != NULL) {
+	srcdate = newsrcdate;
+    }
 
     /* Limit the maximum date to SOURCE_DATE_EPOCH if defined
      * similar to the tar --clamp-mtime option
      * https://reproducible-builds.org/specs/source-date-epoch/
+     * or set it if requested e.g. for use with new SOURCE_DATE_EPOCH
      */
-    if (srcdate && rpmExpandNumeric("%{?clamp_mtime_to_source_date_epoch}")) {
+    if (srcdate && (rpmExpandNumeric("%{?clamp_mtime_to_source_date_epoch}")
+	|| rpmExpandNumeric("%{?set_mtime_to_source_date_epoch}"))) {
 	char *endptr;
 	errno = 0;
 	source_date_epoch = strtol(srcdate, &endptr, 10);
@@ -1049,6 +1065,9 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	    fl->processingFailed = 1;
 	}
 	override_date = 1;
+	if (rpmExpandNumeric("%{?set_mtime_to_source_date_epoch}")) {
+	    set_mtime = 1;
+	}
     }
 
     /*
@@ -1191,8 +1210,13 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 		totalFileSize += flp->fl_size;
 	    }
 	}
-	
-	if (override_date && flp->fl_mtime > source_date_epoch) {
+
+	if (warn_on_lower_date && source_date_epoch > flp->fl_mtime) {
+	    rpmlog(RPMLOG_WARNING, _("mtime of %s is %ld which is lower than "
+		"SOURCE_DATE_EPOCH of %ld\n"),
+		flp->cpioPath, flp->fl_mtime, source_date_epoch);
+	}
+	if (override_date && (flp->fl_mtime > source_date_epoch || set_mtime)) {
 	    flp->fl_mtime = source_date_epoch;
 	}
 	/*

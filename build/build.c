@@ -35,8 +35,11 @@ static rpm_time_t getBuildTime(void)
         epoch = strtol(srcdate, &endptr, 10);
         if (srcdate == endptr || *endptr || errno != 0)
             rpmlog(RPMLOG_ERR, _("unable to parse SOURCE_DATE_EPOCH\n"));
-        else
+        else {
+	    rpmlog(RPMLOG_NOTICE, _("using %s with value %ld as build time\n"),
+		"SOURCE_DATE_EPOCH", epoch);
             buildTime = (uint32_t) epoch;
+	}
     } else
         buildTime = (uint32_t) time(NULL);
 
@@ -342,12 +345,33 @@ static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 	    setenv("SOURCE_DATE_EPOCH", sdestr, 0);
 	    rpmtdFreeData(&td);
 	} else {
-	    rpmlog(RPMLOG_WARNING, _("source_date_epoch_from_changelog set but "
+	    rpmlog(RPMLOG_ERR, _("source_date_epoch_from_changelog set but "
 	        "%%changelog is missing\n"));
+	    rc = RPMRC_FAIL;
+	    goto exit;
 	}
     }
 
     spec->buildTime = getBuildTime();
+
+    if (rpmExpandNumeric("%{?use_old_source_date_epoch}")) {
+	char *newdate = getenv("SOURCE_DATE_EPOCH");
+	char *olddate = getenv("OLD_SOURCE_DATE_EPOCH");
+	if (olddate != NULL && newdate != NULL) {
+	    rpmlog(RPMLOG_NOTICE, _("using OLD_SOURCE_DATE_EPOCH with value %s as "
+		"SOURCE_DATE_EPOCH for build scriptlets (new "
+		"SOURCE_DATE_EPOCH is still used for rpm itself)\n"), olddate);
+	    setenv("SOURCE_DATE_EPOCH", olddate, 1);
+	    setenv("NEW_SOURCE_DATE_EPOCH", newdate, 1);
+	} else {
+	    rpmlog(RPMLOG_ERR, _("rpm macro use_old_source_date_epoch "
+		"enabled but environment variable SOURCE_DATE_EPOCH and/or "
+		"OLD_SOURCE_DATE_EPOCH not set\n"));
+	    rc = RPMRC_FAIL;
+	    goto exit;
+	}
+    }
+
     spec->buildHost = buildHost();
 
     /* XXX TODO: rootDir is only relevant during build, eliminate from spec */
