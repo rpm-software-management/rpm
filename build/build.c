@@ -36,9 +36,9 @@ static rpm_time_t getBuildTime(void)
         if (srcdate == endptr || *endptr || errno != 0)
             rpmlog(RPMLOG_ERR, _("unable to parse SOURCE_DATE_EPOCH\n"));
         else
-            buildTime = (int32_t) epoch;
+            buildTime = (uint32_t) epoch;
     } else
-        buildTime = (int32_t) time(NULL);
+        buildTime = (uint32_t) time(NULL);
 
     return buildTime;
 }
