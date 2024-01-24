@@ -641,6 +641,8 @@ rpmScript rpmScriptFromTriggerTag(Header h, rpmTagVal triggerTag,
 	    headerGet(h, RPMTAG_TRANSFILETRIGGERSCRIPTFLAGS, &tflags, hgflags);
 	    prefix = "transfile";
 	    break;
+	default:
+	    return NULL;
     }
 
     if (rpmtdSetIndex(&tscripts, ix) >= 0 && rpmtdSetIndex(&tprogs, ix) >= 0) {
