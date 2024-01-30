@@ -25,7 +25,8 @@ ts = rpm.ts()
 ts.setFlags(rpm.RPMTRANS_FLAG_NOPLUGINS)
 $1
 EOF
-${PYTHON} test.py
+# Python is such a mess wrt ASAN, ignore it for now
+LD_PRELOAD=${ASANLIB} ASAN_OPTIONS=detect_leaks=0 ${PYTHON} test.py
 ]])
 
 m4_define([RPMTEST_CHECK],[

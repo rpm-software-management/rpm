@@ -15,6 +15,10 @@ DBFORMAT=$(awk '/^%_db_backend/{print $2}' \
            "${RPM_CONFIGDIR_PATH}/macros" 2>/dev/null)
 export DBFORMAT
 
+# this works for gcc, dunno about clang
+ASANLIB=$(ldd "${RPM_CONFIGDIR_PATH}/rpmdeps"|awk '/libasan/{print $3'})
+export ASANLIB
+
 TZ=UTC
 export TZ
 
@@ -41,14 +45,6 @@ if mknod foodev c 123 123 2>/dev/null; then
    rm -f foodev
 else
    MKNOD_DISABLED=true
-fi
-
-MALLOC_DEBUG=libc_malloc_debug.so.0
-if ! LD_PRELOAD=${MALLOC_DEBUG} /bin/true 2>&1 | grep -q ERROR; then
-    MALLOC_PERTURB="$(awk 'BEGIN{srand(); printf "%d\n",(rand()*255)}')"
-    LD_PRELOAD="${MALLOC_DEBUG}"
-    GLIBC_TUNABLES="glibc.malloc.check=1:glibc.malloc.perturb=${MALLOC_PERTURB}"
-    export LD_PRELOAD GLIBC_TUNABLES
 fi
 
 # Manage lightweight Bubblewrap containers on top of OverlayFS

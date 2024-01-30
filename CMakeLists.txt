@@ -18,6 +18,7 @@ option(ENABLE_SQLITE "Enable sqlite rpmdb support" ON)
 option(ENABLE_NDB "Enable ndb rpmdb support" ON)
 option(ENABLE_BDB_RO "Enable read-only Berkeley DB rpmdb support (EXPERIMENTAL)" OFF)
 option(ENABLE_TESTSUITE "Enable test-suite" ON)
+option(ENABLE_ASAN "Enable address-sanitizer" OFF)
 
 option(WITH_CAP "Build with capability support" ON)
 option(WITH_ACL "Build with ACL support" ON)
@@ -371,6 +372,12 @@ add_compile_definitions(HAVE_CONFIG_H)
 add_compile_options(-Wall -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wempty-body)
 if (ENABLE_WERROR)
 	add_compile_options(-Werror)
+endif()
+
+if (ENABLE_ASAN)
+	add_compile_options(-fsanitize=address)
+	add_compile_options(-fno-omit-frame-pointer)
+	add_link_options(-fsanitize=address)
 endif()
 
 # try to ensure some compiler sanity
