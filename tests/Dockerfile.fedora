@@ -49,6 +49,7 @@ RUN dnf -y install \
   dwz \
   fsverity-utils fsverity-utils-devel \
   pandoc \
+  libasan \
   && dnf clean all
 RUN echo "%_dbpath $(rpm --eval '%_dbpath')" > /root/.rpmmacros
 
@@ -77,6 +78,7 @@ WORKDIR /srv/build
 ENV CFLAGS="-Og -g"
 RUN cmake \
 	-DENABLE_WERROR=ON \
+	-DENABLE_ASAN=ON \
 	-DENABLE_BDB_RO=ON \
 	-DWITH_FSVERITY=ON \
 	-DWITH_IMAEVM=ON \

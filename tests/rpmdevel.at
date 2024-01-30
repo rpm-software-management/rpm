@@ -28,7 +28,7 @@ EOF
 cmake . && make
 
 RPMTEST_CHECK([[
-./trpm
+LD_PRELOAD=${ASANLIB} ./trpm
 ]],
 [0],
 [AT_PACKAGE_VERSION: 0]

@@ -54,6 +54,14 @@ rpmPlugins rpmpluginsNew(rpmts ts)
     return plugins;
 }
 
+/* ASAN upstream recommends avoiding dlclose() */
+static void mydlclose(void *handle)
+{
+#ifndef ENABLE_ASAN
+    dlclose(handle);
+#endif
+}
+
 static rpmPlugin rpmPluginNew(const char *name, const char *path,
 			      const char *opts)
 {
@@ -76,7 +84,7 @@ static rpmPlugin rpmPluginNew(const char *name, const char *path,
     if ((error = dlerror()) != NULL) {
 	rpmlog(RPMLOG_ERR, _("Failed to resolve symbol %s: %s\n"),
 	       hooks_name, error);
-	dlclose(handle);
+	mydlclose(handle);
     } else {
 	plugin = xcalloc(1, sizeof(*plugin));
 	plugin->name = xstrdup(name);
@@ -96,7 +104,7 @@ static rpmPlugin rpmPluginFree(rpmPlugin plugin)
 	rpmPluginHooks hooks = plugin->hooks;
 	if (hooks->cleanup)
 	    hooks->cleanup(plugin);
-	dlclose(plugin->handle);
+	mydlclose(plugin->handle);
 	free(plugin->name);
 	free(plugin->opts);
 	free(plugin);
