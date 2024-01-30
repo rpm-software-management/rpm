@@ -300,6 +300,7 @@ exit:
     poptFreeContext(optCon);
     free(dirName);
     free(argv);
+    free(line);
 
     return;
 }
@@ -404,6 +405,7 @@ exit:
     free(opt_d);
     free(opt_o);
     free(argv);
+    free(line);
     poptFreeContext(optCon);
     return;
 }
