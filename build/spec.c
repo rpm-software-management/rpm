@@ -143,6 +143,10 @@ Package freePackage(Package pkg)
     pkg->preUnFile = _free(pkg->preUnFile);
     pkg->postUnFile = _free(pkg->postUnFile);
     pkg->verifyFile = _free(pkg->verifyFile);
+    pkg->preTransFile = _free(pkg->preTransFile);
+    pkg->postTransFile = _free(pkg->postTransFile);
+    pkg->preunTransFile = _free(pkg->preunTransFile);
+    pkg->postunTransFile = _free(pkg->postunTransFile);
 
     pkg->header = headerFree(pkg->header);
     pkg->ds = rpmdsFree(pkg->ds);
