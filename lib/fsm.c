@@ -736,7 +736,7 @@ static int fsmSetmeta(int fd, int dirfd, const char *path,
 		      int nofcaps)
 {
     int rc = 0;
-    const char *dest = rpmfiFN(fi);
+    char *dest = xstrdup(rpmfiFN(fi));
 
     if (!rc && !getuid()) {
 	rc = fsmChown(fd, dirfd, path, st->st_mode, st->st_uid, st->st_gid);
@@ -756,6 +756,7 @@ static int fsmSetmeta(int fd, int dirfd, const char *path,
 					  fd, path, dest,
 					  st->st_mode, action);
     }
+    free(dest);
 
     return rc;
 }
