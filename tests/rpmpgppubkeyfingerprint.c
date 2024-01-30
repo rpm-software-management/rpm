@@ -57,6 +57,7 @@ static int test(struct test *test)
     uint8_t *fp = NULL;
     size_t fplen = 0;
     int rc = pgpPubkeyFingerprint(data, bytes, &fp, &fplen);
+    free(data);
     if (rc) {
 	if (! fpr) {
 	    // This test expects the parser to fail.
@@ -80,6 +81,7 @@ static int test(struct test *test)
 	return 1;
     }
     free(got);
+    free(fp);
 
     return 0;
 }
