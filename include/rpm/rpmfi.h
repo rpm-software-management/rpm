@@ -74,6 +74,7 @@ const char * rpmfiDN(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file name from file info set iterator.
+ * NOTE: the returned pointer is only valid until the next rpmfiFN() call!
  * @param fi		file info set iterator
  * @return		current file name
  */
@@ -105,6 +106,7 @@ const char * rpmfiODN(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current original file name from file info set iterator.
+ * NOTE: the returned pointer is only valid until the next rpmfiOFN() call!
  * @param fi		file info set iterator
  * @return		current file name
  */
