@@ -19,6 +19,7 @@ option(ENABLE_NDB "Enable ndb rpmdb support" ON)
 option(ENABLE_BDB_RO "Enable read-only Berkeley DB rpmdb support (EXPERIMENTAL)" OFF)
 option(ENABLE_TESTSUITE "Enable test-suite" ON)
 option(ENABLE_ASAN "Enable address-sanitizer" OFF)
+option(ENABLE_UBSAN "Enable undefined behavior-sanitizer" OFF)
 
 option(WITH_CAP "Build with capability support" ON)
 option(WITH_ACL "Build with ACL support" ON)
@@ -376,8 +377,16 @@ endif()
 
 if (ENABLE_ASAN)
 	add_compile_options(-fsanitize=address)
-	add_compile_options(-fno-omit-frame-pointer)
 	add_link_options(-fsanitize=address)
+endif()
+
+if (ENABLE_UBSAN)
+	add_compile_options(-fsanitize=undefined)
+	add_link_options(-fsanitize=undefined)
+endif()
+
+if (ENABLE_ASAN OR ENABLE_UBSAN)
+	add_compile_options(-fno-omit-frame-pointer)
 endif()
 
 # try to ensure some compiler sanity
