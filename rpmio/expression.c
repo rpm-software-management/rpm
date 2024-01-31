@@ -274,7 +274,7 @@ static const char *prToken(int val)
 }
 #endif	/* DEBUG_PARSER */
 
-#define RPMEXPR_DISCARD		(1 << 31)	/* internal, discard result */
+#define RPMEXPR_DISCARD	((unsigned)1 << 31)	/* internal, discard result */
 
 static char *getValuebuf(ParseState state, const char *p, size_t size)
 {
