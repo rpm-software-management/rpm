@@ -333,8 +333,8 @@ if [ $STATUS -ne 0 ]; then
   exit $STATUS
 fi
 cd 'hello-1.0'
-rm -rf '/build/BUILD/hello-1.0-PKG/hello-1.0-SPECPARTS'
-/usr/bin/mkdir -p '/build/BUILD/hello-1.0-PKG/hello-1.0-SPECPARTS'
+rm -rf '/build/BUILD/hello-1.0-PKG/SPECPARTS'
+/usr/bin/mkdir -p '/build/BUILD/hello-1.0-PKG/SPECPARTS'
 /usr/bin/chmod -Rf a+rX,u+w,g-w,o-w .
 
 echo "Patch #0 (hello-1.0-modernize.patch):"

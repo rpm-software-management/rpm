@@ -265,7 +265,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 %_srcrpmdir		%{_topdir}/SRPMS
 
 #	Path for spec file snippets generated during build
-%specpartsdir %{_builddir}/%{buildsubdir}-SPECPARTS
+%specpartsdir %{_builddir}/SPECPARTS
 
 #	Directory where temporaray files can be created.
 %_tmppath		%{_var}/tmp
