@@ -201,50 +201,6 @@ int runPostUnTransFileTrigs(rpmts ts)
     return nerrors;
 }
 
-/*
- * Get files from next package from match iterator. If files are
- * available in memory then don't read them from rpmdb.
- */
-static rpmfiles rpmtsNextFiles(rpmts ts, rpmdbMatchIterator mi)
-{
-    Header h;
-    rpmte *te;
-    rpmfiles files = NULL;
-    rpmstrPool pool = ts->members->pool;
-    int ix;
-    unsigned int offset;
-
-    ix = rpmdbGetIteratorIndex(mi);
-    if (ix < rpmdbGetIteratorCount(mi)) {
-	offset = rpmdbGetIteratorOffsetFor(mi, ix);
-	if (packageHashGetEntry(ts->members->removedPackages, offset,
-				&te, NULL, NULL)) {
-	    /* Files are available in memory */
-	    files  = rpmteFiles(te[0]);
-	}
-
-	if (packageHashGetEntry(ts->members->installedPackages, offset,
-				&te, NULL, NULL)) {
-	    /* Files are available in memory */
-	    files  = rpmteFiles(te[0]);
-	}
-    }
-
-    if (files) {
-	rpmdbSetIteratorIndex(mi, ix + 1);
-    } else {
-	/* Files are not available in memory. Read them from rpmdb */
-	h = rpmdbNextIterator(mi);
-	if (h) {
-	    files = rpmfilesNew(pool, h, RPMTAG_BASENAMES,
-				RPMFI_FLAGS_FILETRIGGER);
-	}
-    }
-
-    return files;
-}
-
-
 typedef struct matchFilesIter_s {
     rpmts ts;
     rpmds rpmdsTrigger;
@@ -255,6 +211,49 @@ typedef struct matchFilesIter_s {
     rpmdbMatchIterator pi;
     packageHash tranPkgs;
 } *matchFilesIter;
+
+/*
+ * Get files from next package from match iterator. If files are
+ * available in memory then don't read them from rpmdb.
+ */
+static rpmfiles rpmtsNextFiles(matchFilesIter mfi)
+{
+    Header h;
+    rpmte *te;
+    rpmfiles files = NULL;
+    rpmstrPool pool = mfi->ts->members->pool;
+    int ix;
+    unsigned int offset;
+
+    ix = rpmdbGetIteratorIndex(mfi->pi);
+    if (ix < rpmdbGetIteratorCount(mfi->pi)) {
+	offset = rpmdbGetIteratorOffsetFor(mfi->pi, ix);
+	if (packageHashGetEntry(mfi->ts->members->removedPackages, offset,
+				&te, NULL, NULL)) {
+	    /* Files are available in memory */
+	    files  = rpmteFiles(te[0]);
+	}
+
+	if (packageHashGetEntry(mfi->ts->members->installedPackages, offset,
+				&te, NULL, NULL)) {
+	    /* Files are available in memory */
+	    files  = rpmteFiles(te[0]);
+	}
+    }
+
+    if (files) {
+	rpmdbSetIteratorIndex(mfi->pi, ix + 1);
+    } else {
+	/* Files are not available in memory. Read them from rpmdb */
+	h = rpmdbNextIterator(mfi->pi);
+	if (h) {
+	    files = rpmfilesNew(pool, h, RPMTAG_BASENAMES,
+				RPMFI_FLAGS_FILETRIGGER);
+	}
+    }
+
+    return files;
+}
 
 static matchFilesIter matchFilesIterator(rpmds trigger, rpmfiles files, rpmte te)
 {
@@ -327,7 +326,7 @@ static const char *matchFilesNext(matchFilesIter mfi)
 	    /* If we are done with current mfi->fi, create mfi->fi for next package */
 	    rpmfilesFree(mfi->files);
 	    rpmfiFree(mfi->fi);
-	    mfi->files = rpmtsNextFiles(mfi->ts, mfi->pi);
+	    mfi->files = rpmtsNextFiles(mfi);
 	    mfi->fi = rpmfilesFindPrefix(mfi->files, mfi->pfx);
 	    if (mfi->files)
 		continue;
