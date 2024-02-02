@@ -2389,7 +2389,7 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     char *mkdocdir = rpmExpand("%{__mkdir_p} $", sdenv, NULL);
     StringBuf docScript = newStringBuf();
     int count = sd->entriesCount;
-    char *basepath = rpmGenPath(spec->rootDir, "%{_builddir}", "%{?buildsubdir}");
+    char *basepath = rpmGenPath(spec->rootDir, "%{_builddir}", "%{?sourcesubdir}");
     ARGV_t *files = xmalloc(sizeof(*files) * count);
     int i, j;
 

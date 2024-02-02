@@ -1034,7 +1034,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 # directory structure (--prefix, --libdir etc) and compiler flags
 # such as CFLAGS.
 #
-%_configure ./configure
+%_configure %{_builddir}/%{sourcesubdir}/configure
 %configure \
   %{set_build_flags}; \
   %{_configure} --host=%{_host} --build=%{_build} \\\
@@ -1309,8 +1309,8 @@ end
 #           	usage of git repository and per-patch commits.
 # -N		Disable automatic patch application
 # -p<num>	Use -p<num> for patch application	
-%autosetup(a:b:cCDn:TvNS:p:)\
-%setup %{-a} %{-b} %{-c} %{-C} %{-D} %{-n} %{-T} %{!-v:-q}\
+%autosetup(a:b:cCDn:TvNS:p:s)\
+%setup %{-a} %{-b} %{-c} %{-C} %{-D} %{-n} %{-T} %{!-v:-q} %{-s}\
 %{-S:%global __scm %{-S*}}\
 %{expand:%__scm_setup_%{__scm} %{!-v:-q}}\
 %{!-N:%autopatch %{-v} %{-p:-p%{-p*}}}

@@ -510,6 +510,7 @@ can just create the directory. It accepts a number of options:
 -D          do not delete the build directory prior to unpacking (used
             when more than one source is to be unpacked with `-a` or `-b`)
 -n DIR      set the name of build directory (default is `%{name}-%{version}`)
+-s          use separate source and build directories (aka vpath build)
 -T          skip the default unpacking of the first source (used with
             `-a` or `-b`)
 -q          operate quietly

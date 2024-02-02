@@ -170,7 +170,7 @@ void doSetupMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed
     int xx;
     uint32_t num;
     int leaveDirs = 0, skipDefaultAction = 0;
-    int createDir = 0, quietly = 0, autoPath = 0;
+    int createDir = 0, quietly = 0, autoPath = 0, sourceDir = 0;
     char * dirName = NULL;
     struct poptOption optionsTable[] = {
 	    { NULL, 'a', POPT_ARG_STRING, NULL, 'a',	NULL, NULL},
@@ -181,6 +181,7 @@ void doSetupMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed
 	    { NULL, 'n', POPT_ARG_STRING, &dirName, 0,	NULL, NULL},
 	    { NULL, 'T', 0, &skipDefaultAction, 0,	NULL, NULL},
 	    { NULL, 'q', 0, &quietly, 0,		NULL, NULL},
+	    { NULL, 's', 0, &sourceDir, 0,		NULL, NULL},
 	    { 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
@@ -227,12 +228,14 @@ void doSetupMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed
 
     if (dirName) {
 	rpmPushMacro(spec->macros, "buildsubdir", NULL, dirName, RMIL_SPEC);
+	rpmPushMacro(spec->macros, "sourcesubdir", NULL, dirName, RMIL_SPEC);
     } else {
 	char * buildSubdir = NULL;
 	rasprintf(&buildSubdir, "%s-%s",
 		  headerGetString(spec->packages->header, RPMTAG_NAME),
 		  headerGetString(spec->packages->header, RPMTAG_VERSION));
 	rpmPushMacro(spec->macros, "buildsubdir", NULL, buildSubdir, RMIL_SPEC);
+	rpmPushMacro(spec->macros, "sourcesubdir", NULL, buildSubdir, RMIL_SPEC);
 	free(buildSubdir);
     }
     
@@ -271,6 +274,19 @@ void doSetupMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed
 	free(chptr);
     }
 
+    /* if using a separate build/source dirs, set it up now */
+    if (sourceDir) {
+	char *bsub = rpmExpand("%{_target_cpu}-%{_target_os}", NULL);
+	char *ssub = rpmExpand("%{buildsubdir}", NULL);
+	rpmPushMacro(spec->macros, "buildsubdir", NULL, bsub, RMIL_SPEC);
+	rpmPushMacro(spec->macros, "sourcesubdir", NULL, ssub, RMIL_SPEC);
+	buf = rpmExpand("mkdir -p '%{buildsubdir}'", NULL);
+	appendMb(mb, buf, 1);
+	free(buf);
+	free(bsub);
+	free(ssub);
+    }
+
     if (!createDir) {
 	buf = rpmExpand("cd '%{buildsubdir}'", NULL);
 	appendMb(mb, buf, 1);
@@ -290,7 +306,7 @@ void doSetupMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed
     appendMb(mb, getStringBuf(after), 0);
 
     /* Fix the permissions of the setup build tree */
-    {	char *fix = rpmExpand("%{_fixperms} .", NULL);
+    {	char *fix = rpmExpand("%{_fixperms} %{_builddir}/%{sourcesubdir}", NULL);
 	if (fix && *fix != '%') {
 	    appendMb(mb, fix, 1);
 	}
