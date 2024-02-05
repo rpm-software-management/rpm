@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 
 project(rpm
-	VERSION 4.19.1
+	VERSION 4.19.1.1
 	DESCRIPTION "The RPM Package Manager"
 	HOMEPAGE_URL "http://rpm.org"
 	LANGUAGES C
@@ -43,7 +43,7 @@ set(RPM_VENDOR "vendor" CACHE STRING "rpm vendor string")
 # - incrementing a more significant version segment resets changes to
 #   any less significant segments
 set(RPM_SOVERSION 10)
-set(RPM_LIBVERSION ${RPM_SOVERSION}.0.1)
+set(RPM_LIBVERSION ${RPM_SOVERSION}.0.2)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
