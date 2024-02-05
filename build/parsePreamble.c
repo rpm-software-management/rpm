@@ -1284,7 +1284,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	    rpmPushMacro(spec->macros, "pkgbuilddir", NULL, spec->buildDir, RMIL_SPEC);
 	    rpmPushMacro(spec->macros, "_builddir", NULL, spec->buildDir, RMIL_SPEC);
 
-	    spec->buildRoot = rpmGetPath(spec->buildDir, "/%{_target_platform}-root", NULL);
+	    spec->buildRoot = rpmGetPath(spec->buildDir, "/%{_target_cpu}-%{_target_os}-root", NULL);
 	    rpmPushMacro(spec->macros, "buildroot", NULL, spec->buildRoot, RMIL_SPEC
 );
 	}

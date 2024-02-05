@@ -2252,17 +2252,17 @@ runroot rpmbuild -bb --quiet /data/SPECS/filemiss.spec
 ],
 [1],
 [],
-[error: File not found: /build/BUILD/filemisstest-1.0-PKG/noarch-redhat-linux-root/opt/share/doc/filemisstest-1.0/CREDITS
-error: File not found: /build/BUILD/filemisstest-1.0-PKG/noarch-redhat-linux-root/opt/foo
-error: File not found: /build/BUILD/filemisstest-1.0-PKG/noarch-redhat-linux-root/opt/bar{a,b}
+[error: File not found: /build/BUILD/filemisstest-1.0-PKG/noarch-linux-root/opt/share/doc/filemisstest-1.0/CREDITS
+error: File not found: /build/BUILD/filemisstest-1.0-PKG/noarch-linux-root/opt/foo
+error: File not found: /build/BUILD/filemisstest-1.0-PKG/noarch-linux-root/opt/bar{a,b}
 cp: cannot stat '/build/BUILD/filemisstest-1.0-PKG/INSTALL': No such file or directory
 cp: cannot stat '/build/BUILD/filemisstest-1.0-PKG/README*': No such file or directory
-error: File not found: /build/BUILD/filemisstest-1.0-PKG/noarch-redhat-linux-root/opt/share/doc/filemisstest-1.0/INSTALL
-error: File not found: /build/BUILD/filemisstest-1.0-PKG/noarch-redhat-linux-root/opt/share/doc/filemisstest-1.0/README*
+error: File not found: /build/BUILD/filemisstest-1.0-PKG/noarch-linux-root/opt/share/doc/filemisstest-1.0/INSTALL
+error: File not found: /build/BUILD/filemisstest-1.0-PKG/noarch-linux-root/opt/share/doc/filemisstest-1.0/README*
 cp: cannot stat '/build/BUILD/filemisstest-1.0-PKG/LICENSE': No such file or directory
 cp: cannot stat '/build/BUILD/filemisstest-1.0-PKG/OTHERLICENSE?': No such file or directory
-error: File not found: /build/BUILD/filemisstest-1.0-PKG/noarch-redhat-linux-root/opt/share/licenses/filemisstest-1.0/LICENSE
-error: File not found: /build/BUILD/filemisstest-1.0-PKG/noarch-redhat-linux-root/opt/share/licenses/filemisstest-1.0/OTHERLICENSE?
+error: File not found: /build/BUILD/filemisstest-1.0-PKG/noarch-linux-root/opt/share/licenses/filemisstest-1.0/LICENSE
+error: File not found: /build/BUILD/filemisstest-1.0-PKG/noarch-linux-root/opt/share/licenses/filemisstest-1.0/OTHERLICENSE?
 ],
 )
 RPMTEST_CLEANUP
