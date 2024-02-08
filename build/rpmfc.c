@@ -1220,6 +1220,13 @@ static uint32_t getElfColor(const char *fn)
 		color = RPMFC_ELF32;
 		break;
 	    }
+
+	    /* Exceptions to coloring */
+	    switch (ehdr.e_machine) {
+	    case EM_BPF:
+		color = 0;
+		break;
+	    }
 	}
 	if (elf)
 	    elf_end(elf);
