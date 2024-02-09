@@ -24,3 +24,8 @@ To pin the *.txt files to the current commit, run "make pinned" from the build
 directory.  This will run all the *.sh tests, capture their output and store it
 in the corresponding *.txt files in your source directory, then automatically
 git-stage the changes and print the diff (if any).
+
+MANUALLY SANITY-CHECK ALL CHANGES TO THESE VALUES! Ie. when the values
+change, always ensure you understand WHY before proceeding. And vice
+versa: when you expect a change (such as rpm version change), ensure it
+actually happens.
