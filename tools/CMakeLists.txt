@@ -11,6 +11,7 @@ add_executable(rpmdeps rpmdeps.c)
 add_executable(rpmgraph rpmgraph.c)
 add_executable(rpmlua rpmlua.c)
 add_executable(rpmuncompress rpmuncompress.c)
+add_executable(rpmdump rpmdump.c)
 
 target_link_libraries(rpmsign PRIVATE librpmsign)
 target_link_libraries(rpmlua PRIVATE LUA::LUA)
@@ -69,5 +70,5 @@ install(TARGETS
 	rpm rpmdb rpmkeys rpmsign rpmbuild rpmspec
 	rpmlua rpmgraph
 )
-install(TARGETS rpmdeps rpmuncompress DESTINATION ${RPM_CONFIGDIR})
+install(TARGETS rpmdeps rpmdump rpmuncompress DESTINATION ${RPM_CONFIGDIR})
 
