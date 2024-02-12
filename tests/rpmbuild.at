@@ -2659,3 +2659,15 @@ rpmspec --define "nosuchmacro /bbb" --parse /data/SPECS/badftrigger.spec
 [ignore],
 [])
 RPMTEST_CLEANUP
+
+AT_SETUP([rpmbuild interactive])
+AT_KEYWORDS([build])
+RPMDB_INIT
+
+RPMTEST_CHECK([
+runroot rpmbuild --quiet -bb /data/SPECS/interact.spec
+],
+[1],
+[ignore],
+[ignore])
+RPMTEST_CLEANUP
