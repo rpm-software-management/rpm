@@ -310,9 +310,14 @@ static int getOutputFrom(ARGV_t argv,
     if (child == 0) {
 	close(toProg[1]);
 	close(fromProg[0]);
-	
-	dup2(toProg[0], STDIN_FILENO);   /* Make stdin the in pipe */
-	close(toProg[0]);
+
+	if (writePtr) {
+	    /* Make stdin the in pipe */
+	    dup2(toProg[0], STDIN_FILENO);
+	    close(toProg[0]);
+	} else {
+	    close(STDIN_FILENO);
+	}
 
 	dup2(fromProg[1], STDOUT_FILENO); /* Make stdout the out pipe */
 	close(fromProg[1]);
