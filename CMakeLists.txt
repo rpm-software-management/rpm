@@ -466,7 +466,6 @@ function(add_tarball targetname namever treeish)
 
 	add_custom_target(${distname}
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-		BYPRODUCTS ${distname} ${docname}
 		VERBATIM
 		DEPENDS ChangeLog ${docname} po/rpm.pot
 		COMMAND git archive
