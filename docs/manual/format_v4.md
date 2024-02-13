@@ -64,12 +64,13 @@ MD5                 | 1004	| BIN
 GPG                 | 1005  | BIN
 RESERVEDSPACE       | 1008  | BIN
 
-All packages carry at least (LONG)SIZE, MD5 and SHA1, and since
-rpm >= 4.14, SHA256 tags.
+All packages carry at least HEADERSIGNATURES, (LONG)SIZE, MD5 and SHA1,
+and since rpm >= 4.14, SHA256 tags.
 
-The MD5 binary hash is 16 bytes long.
-The RESERVEDSPACE tag, if present, is used as a space
-reservation for the signature(s) and it's size varies.
+The MD5 binary hash is 16 bytes long. Other binary tag sizes vary
+depending on key parameters and such. As a special case, the
+RESERVEDSPACE tag is used as a space reservation for signatures to
+allow for much faster package signing.
 
 The 64bit size tags are only used in packages 4GB or larger in size,
 but otherwise follow the same behavior as their 32bit counterparts.
