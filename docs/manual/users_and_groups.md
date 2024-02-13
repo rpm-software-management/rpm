@@ -7,9 +7,10 @@ title: rpm.org - Users and Groups
 
 Rpm >= 4.19 has native support for declarative user and group creation
 through integration with systemd's
-[sysusers.d](https://www.freedesktop.org/software/systemd/man/sysusers.d.html).
-Packagers will only need to package a sysusers.d file for their custom users
-and groups in `/usr/lib/sysusers.d` and rpm will take care of the rest.
+[sysusers.d](https://www.freedesktop.org/software/systemd/man/sysusers.d.html)
+format.  Packagers will only need to package a sysusers.d file for
+their custom users and groups in `/usr/lib/sysusers.d` and rpm will
+take care of the rest.
 
 It's also possible to declare sysusers.d entries manually with
 `%add_sysuser` macro in the context of the (sub-)package. The macro
@@ -68,17 +69,19 @@ As systemd-sysusers implicitly creates a matching group for any created
 users, the group provide does not have an EVR here, only explicitly
 created groups will have the encoded sysusers.d line as EVR.
 
-# Non-systemd operating systems
+# Implementation
 
-On non-systemd platforms, it's possible to use either
-systemd-standalone-sysusers as a drop-in solution, or rpm can be configured
-to use a custom script instead of systemd-sysusers for user and group
-creation by overriding `%__systemd_sysusers` macro in the main rpm
-configuration.
+RPM by default does not actually use `systemd-sysusers` but has it's
+own shell script (`sysusers.sh`) that calls out to `useradd` and
+`groupadd`.  The program used can be configured with the
+`%__systemd_sysusers` macro. It is possible to point it to the
+`systemd-sysusers` utility but that may be undesired as it add systemd
+as a dependency to RPM.
 
-Such a script needs to read sysusers.d lines from the standard input
-and interpret these into calls native user and group creation tools as
-appropriate. The script needs to handle `--root <path>` argument for
-chroot installations - the script runs *from outside* of any possible chroot,
-and care must be taken to avoid changing the host in such a case.
-
+On systems that do neither have `useradd` and `groupadd` nor systemd a
+custom script or program can be used. Such a script needs to read
+sysusers.d lines from the standard input and interpret these into
+calls native user and group creation tools as appropriate. The script
+needs to handle `--root <path>` argument for chroot installations -
+the script runs *from outside* of any possible chroot, and care must
+be taken to avoid changing the host in such a case.
