@@ -42,6 +42,7 @@ title: rpm.org - RPM Reference Manual
 * [Plugin API](plugins.md)
 
 ### Package Format
+* [RPM v6 file format (DRAFT)](format_v6.md)
 * [RPM v4 file format](format_v4.md)
 * [RPM v4 signatures and digests](signatures_digests.md)
 * [RPM v3 file format](format_v3.md) (obsolete)
