@@ -1170,11 +1170,10 @@ int rpmfilesConfigConflict(rpmfiles fi, int ix)
     if (!(flags & RPMFILE_CONFIG))
 	return 0;
 
-    /* Only links and regular files can be %config, this is kinda moot */
-    /* XXX: Why are we returning 1 here? */
+    /* Only links and regular files can be %config */
     newWhat = rpmfiWhatis(rpmfilesFMode(fi, ix));
     if (newWhat != LINK && newWhat != REG)
-	return 1;
+	return 0;
 
     /* If it's not on disk, there's nothing to be saved */
     fn = rpmfilesFN(fi, ix);
