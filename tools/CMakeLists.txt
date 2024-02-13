@@ -56,13 +56,13 @@ endforeach()
 foreach(cmd rpmverify rpmquery)
 	add_custom_target(${cmd} ALL COMMAND
 			${CMAKE_COMMAND} -E create_symlink rpm ${cmd}
-			BYPRODUCTS ${cmd})
+			)
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${cmd} TYPE BIN)
 endforeach()
 if (WITH_ARCHIVE)
 	add_custom_target(rpm2cpio ALL COMMAND
 			${CMAKE_COMMAND} -E create_symlink rpm2archive rpm2cpio
-			BYPRODUCTS rpm2cpio)
+			)
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rpm2cpio TYPE BIN)
 endif()
 
