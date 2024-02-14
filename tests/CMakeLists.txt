@@ -81,7 +81,7 @@ if (MKTREE_BACKEND STREQUAL oci)
 		configure_file(${DOCKERFILE} Dockerfile COPYONLY)
 		add_custom_target(ci
 			COMMAND ./mktree.oci build
-			COMMAND ./mktree.oci check ${JOBS} $ENV{TESTOPTS}
+			COMMAND ./mktree.oci check ${JOBS} $(TESTOPTS)
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		)
 	else()
@@ -143,7 +143,7 @@ add_custom_target(shell
 )
 
 add_custom_target(check
-	COMMAND ./mktree check ${JOBS} $ENV{TESTOPTS}
+	COMMAND ./mktree check ${JOBS} $(TESTOPTS)
 	DEPENDS tree
 )
 

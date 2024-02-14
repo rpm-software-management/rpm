@@ -59,11 +59,6 @@ For all available options, see the output of the command:
 By default, tests are executed in parallel using all available cores, pass a
 specific `-jN` value to limit.
 
-Note that when building with Ninja, TESTOPTS must be passed via the
-environment (also works with make):
-
-    TESTOPTS="..." ninja check
-
 ## Interactive testing
 
 To drop into an interactive GNU Autotest shell, run:
