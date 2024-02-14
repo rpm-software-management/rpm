@@ -326,7 +326,6 @@ int rpmfiSetFX(rpmfi fi, int fx)
 
     if (fi != NULL && fx >= 0 && fx < rpmfilesFC(fi->files)) {
 	int dx = fi->j;
-	i = fi->i;
 	fi->i = fx;
 	fi->j = rpmfilesDI(fi->files, fi->i);
 	i = fi->i;
