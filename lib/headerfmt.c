@@ -70,9 +70,20 @@ struct sprintfToken_s {
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
+typedef struct headerSprintfArgs_s *headerSprintfArgs;
+
+struct xformat_s {
+    void (*xHeader)(headerSprintfArgs hsa);
+    void (*xFooter)(headerSprintfArgs hsa);
+    void (*xTagHeader)(headerSprintfArgs hsa, rpmTagVal tag, int nelem);
+    void (*xTagFooter)(headerSprintfArgs hsa, rpmTagVal tag, int nelem);
+    void (*xItemHeader)(headerSprintfArgs hsa, rpmTagVal tag, int n, int nelem);
+    void (*xItemFooter)(headerSprintfArgs hsa, rpmTagVal tag, int n, int nelem);
+};
+
 /**
  */
-typedef struct headerSprintfArgs_s {
+struct headerSprintfArgs_s {
     Header h;
     char * fmt;
     const char * errmsg;
@@ -85,8 +96,8 @@ typedef struct headerSprintfArgs_s {
     int numTokens;
     int i;
     headerGetFlags hgflags;
-} * headerSprintfArgs;
-
+    struct xformat_s xfmt;
+};
 
 static char escapedChar(const char ch)	
 {
@@ -245,6 +256,45 @@ static void hsaError(headerSprintfArgs hsa, const char *fmt, ...)
 	hsa->errmsg = errbuf;
     }
 }
+
+static void xmlHeader(headerSprintfArgs hsa)
+{
+    hsaAppend(hsa, "<rpmHeader>\n");
+}
+
+static void xmlFooter(headerSprintfArgs hsa)
+{
+    hsaAppend(hsa, "</rpmHeader>\n");
+}
+
+static void xmlTagHeader(headerSprintfArgs hsa, rpmTagVal tag, int nelem)
+{
+    const char * tagN = rpmTagGetName(tag);
+    char *tagval = NULL;
+
+    if (rstreq(tagN, "(unknown)")) {
+	rasprintf(&tagval, "[%u]", tag);
+	tagN = tagval;
+    }
+
+    hsaAppend(hsa, "  <rpmTag name=\"");
+    if (tagN != NULL)
+	hsaAppend(hsa, tagN);
+    hsaAppend(hsa, "\">\n");
+    free(tagval);
+}
+
+static void xmlTagFooter(headerSprintfArgs hsa, rpmTagVal tag, int nelem)
+{
+    hsaAppend(hsa, "  </rpmTag>\n");
+}
+
+static struct xformat_s xformat_xml = {
+    .xHeader = xmlHeader,
+    .xFooter = xmlFooter,
+    .xTagHeader = xmlTagHeader,
+    .xTagFooter = xmlTagFooter,
+};
 
 /**
  * Search tags for a name.
@@ -760,43 +810,33 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	}
 
 	if (found) {
-	    int isxml;
-
 	    need = numElements * token->u.array.numTokens * 10;
 	    if (need == 0) break;
 
 	    spft = token->u.array.format;
-	    isxml = (spft->type == PTOK_TAG && spft->u.tag.type != NULL &&
-		    rstreq(spft->u.tag.type, "xml"));
 
-	    if (isxml) {
-		const char * tagN = rpmTagGetName(spft->u.tag.tag);
-		char *tagval = NULL;
-
-		if (rstreq(tagN, "(unknown)")) {
-		    rasprintf(&tagval, "[%u]", spft->u.tag.tag);
-		    tagN = tagval;
-		}
-
-		hsaAppend(hsa, "  <rpmTag name=\"");
-		if (tagN != NULL)
-		    hsaAppend(hsa, tagN);
-		hsaAppend(hsa, "\">\n");
-		free(tagval);
-	    }
+	    if (hsa->xfmt.xTagHeader)
+		hsa->xfmt.xTagHeader(hsa, spft->u.tag.tag, numElements);
 
 	    for (j = 0; j < numElements; j++) {
 		spft = token->u.array.format;
 		for (i = 0; i < token->u.array.numTokens; i++, spft++) {
+		    if (hsa->xfmt.xItemHeader) {
+			hsa->xfmt.xItemHeader(hsa, spft->u.tag.tag,
+						j, numElements);
+		    }
 		    te = singleSprintf(hsa, spft, j);
+		    if (hsa->xfmt.xItemFooter) {
+			hsa->xfmt.xItemFooter(hsa, spft->u.tag.tag,
+						j, numElements);
+		    }
 		    if (te == NULL)
 			return NULL;
 		}
 	    }
 
-	    if (isxml) {
-		hsaAppend(hsa, "  </rpmTag>\n");
-	    }
+	    if (hsa->xfmt.xTagFooter)
+		hsa->xfmt.xTagFooter(hsa, spft->u.tag.tag, numElements);
 
 	}
 	break;
@@ -820,7 +860,6 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
     struct headerSprintfArgs_s hsa;
     sprintfToken nextfmt;
     sprintfTag tag;
-    int isxml;
  
     memset(&hsa, 0, sizeof(hsa));
     hsa.h = headerLink(h);
@@ -839,11 +878,13 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
 	(hsa.format->type == PTOK_ARRAY
 	    ? &hsa.format->u.array.format->u.tag :
 	NULL));
-    isxml = (tag != NULL && tag->tag == -2 && tag->type != NULL && rstreq(tag->type, "xml"));
-
-    if (isxml) {
-	hsaAppend(&hsa, "<rpmHeader>\n");
+    if (tag != NULL && tag->tag == -2 && tag->type != NULL) {
+	if (rstreq(tag->type, "xml"))
+	    hsa.xfmt = xformat_xml; /* struct assignment */
     }
+
+    if (hsa.xfmt.xHeader)
+	hsa.xfmt.xHeader(&hsa);
 
     hsaInit(&hsa);
     while ((nextfmt = hsaNext(&hsa)) != NULL) {
@@ -854,9 +895,8 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
     }
     hsaFini(&hsa);
 
-    if (isxml) {
-	hsaAppend(&hsa, "</rpmHeader>\n");
-    }
+    if (hsa.xfmt.xFooter)
+	hsa.xfmt.xFooter(&hsa);
 
     if (hsa.val != NULL && hsa.vallen < hsa.alloced)
 	hsa.val = xrealloc(hsa.val, hsa.vallen+1);	
