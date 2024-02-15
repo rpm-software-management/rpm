@@ -217,6 +217,16 @@ static char * hsaReserve(headerSprintfArgs hsa, size_t need)
     return hsa->val + hsa->vallen;
 }
 
+static void hsaAppend(headerSprintfArgs hsa, const char *str)
+{
+    size_t len = strlen(str);
+    if (len > 0) {
+	char *t = hsaReserve(hsa, len);
+	stpcpy(t, str);
+	hsa->vallen += len;
+    }
+}
+
 RPM_GNUC_PRINTF(2, 3)
 static void hsaError(headerSprintfArgs hsa, const char *fmt, ...)
 {
@@ -639,8 +649,6 @@ static rpmtd getData(headerSprintfArgs hsa, rpmTagVal tag)
 static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 {
     char * val = NULL;
-    size_t need = 0;
-    char * t, * te;
     rpmtd td;
 
     if ((td = getData(hsa, tag->tag)) && td->count > element) {
@@ -662,12 +670,8 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	val = tval;
     }
 	
-    need = strlen(val);
-
-    if (val && need > 0) {
-	t = hsaReserve(hsa, need);
-	te = stpcpy(t, val);
-	hsa->vallen += (te - t);
+    if (val) {
+	hsaAppend(hsa, val);
     }
     free(val);
 
@@ -684,7 +688,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		int element)
 {
-    char * t, * te;
+    char * te;
     int i, j, found;
     rpm_count_t count, numElements;
     sprintfToken spft;
@@ -700,13 +704,10 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
     case PTOK_STRING:
 	need = token->u.string.len;
 	if (need == 0) break;
-	t = hsaReserve(hsa, need);
-	te = stpcpy(t, token->u.string.string);
-	hsa->vallen += (te - t);
+	hsaAppend(hsa, token->u.string.string);
 	break;
 
     case PTOK_TAG:
-	t = hsa->val + hsa->vallen;
 	te = formatValue(hsa, &token->u.tag,
 			(token->u.tag.justOne ? 0 : element));
 	if (te == NULL)
@@ -726,10 +727,8 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	need = condNumFormats * 20;
 	if (spft == NULL || need == 0) break;
 
-	t = hsaReserve(hsa, need);
 	for (i = 0; i < condNumFormats; i++, spft++) {
-	    te = singleSprintf(hsa, spft, element);
-	    if (te == NULL)
+	    if (singleSprintf(hsa, spft, element) == NULL)
 		return NULL;
 	}
 	break;
@@ -779,20 +778,13 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		    tagN = tagval;
 		}
 
-		need = sizeof("  <rpmTag name=\"\">\n") - 1;
+		hsaAppend(hsa, "  <rpmTag name=\"");
 		if (tagN != NULL)
-		    need += strlen(tagN);
-		t = hsaReserve(hsa, need);
-		te = stpcpy(t, "  <rpmTag name=\"");
-		if (tagN != NULL)
-		    te = stpcpy(te, tagN);
-		te = stpcpy(te, "\">\n");
-		hsa->vallen += (te - t);
-
+		    hsaAppend(hsa, tagN);
+		hsaAppend(hsa, "\">\n");
 		free(tagval);
 	    }
 
-	    t = hsaReserve(hsa, need);
 	    for (j = 0; j < numElements; j++) {
 		spft = token->u.array.format;
 		for (i = 0; i < token->u.array.numTokens; i++, spft++) {
@@ -803,10 +795,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    }
 
 	    if (isxml) {
-		need = sizeof("  </rpmTag>\n") - 1;
-		t = hsaReserve(hsa, need);
-		te = stpcpy(t, "  </rpmTag>\n");
-		hsa->vallen += (te - t);
+		hsaAppend(hsa, "  </rpmTag>\n");
 	    }
 
 	}
@@ -831,9 +820,7 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
     struct headerSprintfArgs_s hsa;
     sprintfToken nextfmt;
     sprintfTag tag;
-    char * t, * te;
     int isxml;
-    size_t need;
  
     memset(&hsa, 0, sizeof(hsa));
     hsa.h = headerLink(h);
@@ -855,16 +842,12 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
     isxml = (tag != NULL && tag->tag == -2 && tag->type != NULL && rstreq(tag->type, "xml"));
 
     if (isxml) {
-	need = sizeof("<rpmHeader>\n") - 1;
-	t = hsaReserve(&hsa, need);
-	te = stpcpy(t, "<rpmHeader>\n");
-	hsa.vallen += (te - t);
+	hsaAppend(&hsa, "<rpmHeader>\n");
     }
 
     hsaInit(&hsa);
     while ((nextfmt = hsaNext(&hsa)) != NULL) {
-	te = singleSprintf(&hsa, nextfmt, 0);
-	if (te == NULL) {
+	if (singleSprintf(&hsa, nextfmt, 0) == NULL) {
 	    hsa.val = _free(hsa.val);
 	    break;
 	}
@@ -872,10 +855,7 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
     hsaFini(&hsa);
 
     if (isxml) {
-	need = sizeof("</rpmHeader>\n") - 1;
-	t = hsaReserve(&hsa, need);
-	te = stpcpy(t, "</rpmHeader>\n");
-	hsa.vallen += (te - t);
+	hsaAppend(&hsa, "</rpmHeader>\n");
     }
 
     if (hsa.val != NULL && hsa.vallen < hsa.alloced)
