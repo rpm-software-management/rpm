@@ -1186,20 +1186,30 @@ static int initAttrs(rpmfc fc)
     ARGV_t files = NULL;
     char * attrPath = rpmExpand("%{_fileattrsdir}/*.attr", NULL);
     int nattrs = 0;
+    ARGV_t all_attrs = NULL;
 
-    /* Discover known attributes from pathnames + initialize them */
+    /* Discover known attributes from pathnames */
     if (rpmGlob(attrPath, NULL, &files) == 0) {
-	nattrs = argvCount(files);
-	fc->atypes = xcalloc(nattrs + 1, sizeof(*fc->atypes));
-	for (int i = 0; i < nattrs; i++) {
+	int nfiles = argvCount(files);
+	for (int i = 0; i < nfiles; i++) {
 	    char *bn = basename(files[i]);
 	    bn[strlen(bn)-strlen(".attr")] = '\0';
-	    fc->atypes[i] = rpmfcAttrNew(bn);
+	    argvAdd(&all_attrs, bn);
 	}
-	fc->atypes[nattrs] = NULL;
 	argvFree(files);
     }
+
+    /* Initialize attr objects */
+    nattrs = argvCount(all_attrs);
+    fc->atypes = xcalloc(nattrs + 1, sizeof(*fc->atypes));
+
+    for (int i = 0; i < nattrs; i++) {
+	fc->atypes[i] = rpmfcAttrNew(all_attrs[i]);
+    }
+    fc->atypes[nattrs] = NULL;
+
     free(attrPath);
+    argvFree(all_attrs);
     return nattrs;
 }
 
