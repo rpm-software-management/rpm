@@ -66,7 +66,7 @@ query-options
 
 General: \[**\--changelog**\] \[**\--changes**\] \[**\--dupes**\]
 \[**-i,\--info**\] \[**\--last**\] \[**\--qf,\--queryformat
-***QUERYFMT*\] \[**\--xml**\]
+***QUERYFMT*\] \[**\--xml**\] \[**\--json**\]
 
 Dependencies: \[**\--conflicts**\] \[**\--enhances**\]
 \[**\--obsoletes**\] \[**\--provides**\] \[**\--recommends**\]
@@ -551,6 +551,10 @@ Alternate output formats may be requested by following the tag with
 
 :   Human readable number (in SI). The suffix K = 1000, M = 1000000,
     \...
+
+**:json**
+
+:   Wrap data in JSON.
 
 **:perms**
 

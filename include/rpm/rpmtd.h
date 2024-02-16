@@ -253,6 +253,7 @@ typedef enum rpmtdFormats_e {
     RPMTD_FORMAT_HUMANIEC	= 21,	/* human readable value, K = 1024 (int types) */
     RPMTD_FORMAT_TAGNAME	= 22,	/* tag name (any type) */
     RPMTD_FORMAT_TAGNUM		= 23,	/* tag number (any type) */
+    RPMTD_FORMAT_JSON		= 24,	/* json format (any type) */
 } rpmtdFormats;
 
 /** \ingroup rpmtd

@@ -301,6 +301,66 @@ static struct xformat_s xformat_xml = {
     .xTagFooter = xmlTagFooter,
 };
 
+static void jsonHeader(headerSprintfArgs hsa)
+{
+    hsaAppend(hsa, "{\n");
+}
+
+static void jsonFooter(headerSprintfArgs hsa)
+{
+    /*
+     * XXX HACK: when iterating through the header tags, we don't know
+     * which element will be the last one. We have to emit ',' for each
+     * tag we process and then delete the last one here.
+     */
+    hsa->vallen -= 2;
+    hsaAppend(hsa, "\n}\n");
+}
+
+static void jsonTagHeader(headerSprintfArgs hsa, rpmTagVal tag, int nelem)
+{
+    char *tagname = tagName(tag);
+    hsaAppend(hsa, "    \"");
+    hsaAppend(hsa, tagname);
+    hsaAppend(hsa, "\": ");
+    if (nelem > 1)
+	hsaAppend(hsa, "[\n");
+    free(tagname);
+}
+
+static void jsonTagFooter(headerSprintfArgs hsa, rpmTagVal tag, int nelem)
+{
+    if (nelem > 1)
+	hsaAppend(hsa, "    ]");
+    hsaAppend(hsa, ",");
+    hsaAppend(hsa, "\n");
+}
+
+static void jsonItemHeader(headerSprintfArgs hsa, rpmTagVal tag,
+				int n, int nelem)
+{
+    hsaAppend(hsa, "\t");
+}
+
+static void jsonItemFooter(headerSprintfArgs hsa, rpmTagVal tag,
+				int n, int nelem)
+{
+    if (nelem > 1) {
+	if (n < nelem-1)
+	    hsaAppend(hsa, ",");
+	hsaAppend(hsa, "\n");
+    }
+}
+
+static struct xformat_s xformat_json = {
+    .xHeader = jsonHeader,
+    .xFooter = jsonFooter,
+    .xTagHeader = jsonTagHeader,
+    .xTagFooter = jsonTagFooter,
+    .xItemHeader = jsonItemHeader,
+    .xItemFooter = jsonItemFooter,
+};
+
 /**
  * Search tags for a name.
  * @param hsa		headerSprintf args
@@ -886,6 +946,8 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
     if (tag != NULL && tag->tag == -2 && tag->type != NULL) {
 	if (rstreq(tag->type, "xml"))
 	    hsa.xfmt = xformat_xml; /* struct assignment */
+	else if (rstreq(tag->type, "json"))
+	    hsa.xfmt = xformat_json; /* struct assignment */
     }
 
     if (hsa.xfmt.xHeader)
