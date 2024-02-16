@@ -943,6 +943,268 @@ runroot rpm -qp --xml  /data/RPMS/hello-2.0-1.x86_64.rpm
 [])
 RPMTEST_CLEANUP
 
+AT_SETUP([json format 1])
+AT_KEYWORDS([query])
+RPMTEST_CHECK([
+RPMDB_INIT
+runroot rpm -qp --json  /data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[0],
+[[{
+    "Headeri18ntable": 	"C",
+    "Sigsize": 	5411,
+    "Sigmd5": 	"E3yh2LNcygKhhUujAcVDLg==",
+    "Sha1header": 	"5cd9874c510b67b44483f9e382a1649ef7743bac",
+    "Sha256header": 	"ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9",
+    "Name": 	"hello",
+    "Version": 	"2.0",
+    "Release": 	"1",
+    "Summary": 	"hello -- hello, world rpm",
+    "Description": 	"Simple rpm demonstration.",
+    "Buildtime": 	1227355200,
+    "Buildhost": 	"localhost",
+    "Size": 	7243,
+    "License": 	"GPL",
+    "Group": 	"Testing",
+    "Os": 	"linux",
+    "Arch": 	"x86_64",
+    "Filesizes": [
+	7120,
+	4096,
+	48,
+	36,
+	39
+    ],
+    "Filemodes": [
+	33257,
+	16877,
+	33188,
+	33188,
+	33188
+    ],
+    "Filerdevs": [
+	0,
+	0,
+	0,
+	0,
+	0
+    ],
+    "Filemtimes": [
+	1489670606,
+	1489670606,
+	908894882,
+	908895030,
+	908884468
+    ],
+    "Filedigests": [
+	"c89fa87aeb1143969c0b6be9334b21d932f77f74e8f60120b5de316406369cf0",
+	"",
+	"fac3b28492ecdc16da172a6f1a432ceed356ca4d9248157b2a962b395e37b3b0",
+	"678b87e217a415f05e43460e2c7b668245b412e2b4f18a75aa7399d9774ed0b4",
+	"d63fdc6c986106f57230f217d36b2395d83ecf491d2b7187af714dc8db9629e9"
+    ],
+    "Filelinktos": [
+	"",
+	"",
+	"",
+	"",
+	""
+    ],
+    "Fileflags": [
+	0,
+	0,
+	2,
+	2,
+	2
+    ],
+    "Fileusername": [
+	"root",
+	"root",
+	"root",
+	"root",
+	"root"
+    ],
+    "Filegroupname": [
+	"root",
+	"root",
+	"root",
+	"root",
+	"root"
+    ],
+    "Sourcerpm": 	"hello-2.0-1.src.rpm",
+    "Fileverifyflags": [
+	4294967295,
+	0,
+	4294967295,
+	4294967295,
+	4294967295
+    ],
+    "Archivesize": 	8060,
+    "Providename": [
+	"hello",
+	"hello(x86-64)"
+    ],
+    "Requireflags": [
+	16384,
+	16384,
+	16777226,
+	16777226,
+	16777226,
+	16384
+    ],
+    "Requirename": [
+	"libc.so.6()(64bit)",
+	"libc.so.6(GLIBC_2.2.5)(64bit)",
+	"rpmlib(CompressedFileNames)",
+	"rpmlib(FileDigests)",
+	"rpmlib(PayloadFilesHavePrefix)",
+	"rtld(GNU_HASH)"
+    ],
+    "Requireversion": [
+	"",
+	"",
+	"3.0.4-1",
+	"4.6.0-1",
+	"4.0-1",
+	""
+    ],
+    "Rpmversion": 	"4.13.90",
+    "Changelogtime": [
+	1227355200,
+	908884800
+    ],
+    "Changelogname": [
+	"Panu Matilainen <pmatilai@redhat.com>",
+	"Jeff Johnson <jbj@redhat.com>"
+    ],
+    "Changelogtext": [
+	"- updated version",
+	"- create."
+    ],
+    "Filedevices": [
+	1,
+	1,
+	1,
+	1,
+	1
+    ],
+    "Fileinodes": [
+	1,
+	2,
+	3,
+	4,
+	5
+    ],
+    "Filelangs": [
+	"",
+	"",
+	"",
+	"",
+	""
+    ],
+    "Prefixes": 	"/usr",
+    "Provideflags": [
+	8,
+	8
+    ],
+    "Provideversion": [
+	"2.0-1",
+	"2.0-1"
+    ],
+    "Dirindexes": [
+	0,
+	1,
+	2,
+	2,
+	2
+    ],
+    "Basenames": [
+	"hello",
+	"hello-2.0",
+	"COPYING",
+	"FAQ",
+	"README"
+    ],
+    "Dirnames": [
+	"/usr/bin/",
+	"/usr/share/doc/",
+	"/usr/share/doc/hello-2.0/"
+    ],
+    "Optflags": 	"-O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -m64 -mtune=generic",
+    "Payloadformat": 	"cpio",
+    "Payloadcompressor": 	"gzip",
+    "Payloadflags": 	"9",
+    "Platform": 	"x86_64-redhat-linux-gnu",
+    "Filecolors": [
+	2,
+	0,
+	0,
+	0,
+	0
+    ],
+    "Fileclass": [
+	0,
+	1,
+	2,
+	2,
+	2
+    ],
+    "Classdict": [
+	"ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=775fdcb927e4300adbe83cfacec3cfeb1f63fe17, stripped",
+	"directory",
+	"ASCII text"
+    ],
+    "Filedependsx": [
+	0,
+	0,
+	0,
+	0,
+	0
+    ],
+    "Filedependsn": [
+	3,
+	0,
+	0,
+	0,
+	0
+    ],
+    "Dependsdict": [
+	1375731713,
+	1375731712,
+	1375731717
+    ],
+    "Filedigestalgo": 	8,
+    "Encoding": 	"utf-8",
+    "Payloaddigest": 	"84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c",
+    "Payloaddigestalgo": 	8
+}
+]],
+[])
+RPMTEST_CLEANUP
+
+AT_SETUP([json format 2])
+AT_KEYWORDS([query])
+RPMDB_INIT
+runroot rpmbuild --quiet -bb /data/SPECS/weirdnames.spec
+
+RPMTEST_CHECK([
+runroot rpm -q --json /build/RPMS/noarch/weirdnames-1.0-1.noarch.rpm
+],
+[0],
+[stdout],
+[])
+
+RPMPY_CHECK([
+import json
+s = open('stdout').read()
+print(len(json.loads(s)))
+],
+[58
+],
+[])
+RPMTEST_CLEANUP
+
+
 AT_SETUP([query file attribute filtering])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([

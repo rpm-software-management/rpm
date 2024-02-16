@@ -119,6 +119,9 @@ rpm	alias --changes --qf '[* %{CHANGELOGTIME:date} %{CHANGELOGNAME}\n%{CHANGELOG
 rpm	alias --xml --qf '[%{*:xml}\n]' \
 	--POPTdesc=$"list metadata in xml"
 
+rpm	alias --json --qf '[%{*:json}]' \
+	--POPTdesc=$"list metadata in JSON"
+
 rpm	alias --triggerscripts --qf '\
 [trigger%{TRIGGERTYPE} scriptlet (using %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\
 %{TRIGGERSCRIPTS}\n]'

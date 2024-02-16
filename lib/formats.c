@@ -339,6 +339,81 @@ exit:
     return val;
 }
 
+static char *jsonEscape(const char *s)
+{
+    char *es = NULL;
+    rstrcat(&es, "\"");
+    for (const char *c = s; *c != '\0'; c++) {
+	const char *ec = NULL;
+	switch (*c) {
+	case '\b':
+	    ec = "\\b";
+	    break;
+	case '\f':
+	    ec = "\\f";
+	    break;
+	case '\n':
+	    ec = "\\n";
+	    break;
+	case '\r':
+	    ec = "\\r";
+	    break;
+	case '\t':
+	    ec = "\\t";
+	    break;
+	case '"':
+	    ec = "\\\"";
+	    break;
+	case '\\':
+	    ec = "\\\\";
+	    break;
+	default:
+	    break;
+	}
+
+	if (ec) {
+	    rstrcat(&es, ec);
+	} else if (*c > 0 && *c < 0x20) {
+	    char *uc = NULL;
+	    rasprintf(&uc, "\\u%04x", *c);
+	    rstrcat(&es, uc);
+	    free(uc);
+	} else {
+	    char t[2] = " ";
+	    *t = *c;
+	    rstrcat(&es, t);
+	}
+    }
+    rstrcat(&es, "\"");
+    return es;
+}
+
+static char *jsonFormat(rpmtd td, char **emsg)
+{
+    int escape = 1;
+    char *val = NULL;
+
+    switch (rpmtdClass(td)) {
+    case RPM_BINARY_CLASS:
+	/* we don't want newlines in the binary output */
+	val = rpmBase64Encode(td->data, td->count, 0);
+	break;
+    case RPM_NUMERIC_CLASS:
+	escape = 0;
+	/* fallthrough */
+    default:
+	val = stringFormat(td, emsg);
+	break;
+    }
+
+    if (escape) {
+	char *s = jsonEscape(val);
+	free(val);
+	val = s;
+    }
+    return val;
+}
+
 /* signature fingerprint and time formatting */
 static char * pgpsigFormat(rpmtd td, char **emsg)
 {
@@ -545,6 +620,8 @@ static const struct headerFmt_s rpmHeaderFormats[] = {
 	RPM_ANY_CLASS,		tagnameFormat },
     { RPMTD_FORMAT_TAGNUM,	"tagnum",
 	RPM_ANY_CLASS,		tagnumFormat },
+    { RPMTD_FORMAT_JSON,	"json",
+	RPM_ANY_CLASS,		jsonFormat },
     { -1,			NULL, 		0,	NULL }
 };
 
