@@ -34,3 +34,14 @@ interpreted right away.
 
 [Example](https://github.com/rpm-software-management/rpm/blob/master/tests/data/SPECS/dynamic.spec)
 from our tests set.
+
+As dynamic spec parts are generate during build they cannot include
+directives that are needed for or influence building. This includes
+all build scripts, sources and patches, Build dependencies, tags
+regarding the build environment (**ExcludeArch**, **ExclusiveArch**,
+**ExcludeOS**, **ExclusiveOS**), **BuildArch** except for declaring
+sub packages **noarch** and **BuildSystem**. These will create an
+error if encountered in a dynamically generated spec part.
+
+While declaring macros used in the build scripts are not an error they
+won't have an influence on the build for obvious reasons.

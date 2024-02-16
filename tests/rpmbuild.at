@@ -2764,6 +2764,40 @@ error: parsing failed
 
 RPMTEST_CLEANUP
 
+# ------------------------------
+# Check failing dynamic spec generation
+AT_SETUP([rpmbuild with dynamic spec generation fail])
+AT_KEYWORDS([build])
+RPMDB_INIT
+RPMTEST_CHECK([
+
+runroot rpmbuild --quiet -D "FULLDYNAMIC 1" -D "FORBIDDENSECTION 1" -ba /data/SPECS/dynamic.spec
+],
+[1],
+[],
+[error: Section %check is not allowed after build is done!
+error: parsing failed
+])
+
+RPMTEST_CLEANUP
+
+# ------------------------------
+# Check failing dynamic spec generation
+AT_SETUP([rpmbuild with dynamic spec generation fail])
+AT_KEYWORDS([build])
+RPMDB_INIT
+RPMTEST_CHECK([
+
+runroot rpmbuild --quiet -D "FULLDYNAMIC 1" -D "FORBIDDENTAG 1" -ba /data/SPECS/dynamic.spec
+],
+[1],
+[],
+[error: line 4: Tag not allowed after build is done: BuildRequires: python3
+error: parsing failed
+])
+
+RPMTEST_CLEANUP
+
 
 # ------------------------------
 # Check source name with space
