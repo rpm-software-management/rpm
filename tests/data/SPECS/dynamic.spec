@@ -41,6 +41,8 @@ echo "LicenseToKill: True" >> %{specpartsdir}/mainpkg.specpart
 echo "%package docs" >> %{specpartsdir}/docs.specpart
 %{?!FAIL:echo "Summary: Documentation for dynamic spec" >> %{specpartsdir}/docs.specpart}
 echo "BuildArch: noarch" >> %{specpartsdir}/docs.specpart
+%{?FORBIDDENTAG:echo "BuildRequires: python3" >> %{specpartsdir}/docs.specpart}
+%{?FORBIDDENSECTION:echo "%check" >> %{specpartsdir}/docs.specpart}
 echo "%description docs" >> %{specpartsdir}/docs.specpart
 echo "Test for dynamically generated spec files" >> %{specpartsdir}/docs.specpart
 echo "%files docs" >> $RPM_SPECPARTS_DIR/docs.specpart
