@@ -257,6 +257,19 @@ static void hsaError(headerSprintfArgs hsa, const char *fmt, ...)
     }
 }
 
+static char *tagName(rpmTagVal tag)
+{
+    const char * tagN = rpmTagGetName(tag);
+    char *tagval = NULL;
+
+    if (rstreq(tagN, "(unknown)")) {
+	rasprintf(&tagval, "[%u]", tag);
+    } else {
+	tagval = xstrdup(tagN);
+    }
+    return tagval;
+}
+
 static void xmlHeader(headerSprintfArgs hsa)
 {
     hsaAppend(hsa, "<rpmHeader>\n");
@@ -269,19 +282,11 @@ static void xmlFooter(headerSprintfArgs hsa)
 
 static void xmlTagHeader(headerSprintfArgs hsa, rpmTagVal tag, int nelem)
 {
-    const char * tagN = rpmTagGetName(tag);
-    char *tagval = NULL;
-
-    if (rstreq(tagN, "(unknown)")) {
-	rasprintf(&tagval, "[%u]", tag);
-	tagN = tagval;
-    }
-
+    char *tagname = tagName(tag);
     hsaAppend(hsa, "  <rpmTag name=\"");
-    if (tagN != NULL)
-	hsaAppend(hsa, tagN);
+    hsaAppend(hsa, tagname);
     hsaAppend(hsa, "\">\n");
-    free(tagval);
+    free(tagname);
 }
 
 static void xmlTagFooter(headerSprintfArgs hsa, rpmTagVal tag, int nelem)
