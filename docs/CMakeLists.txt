@@ -3,7 +3,9 @@ mark_as_advanced(PANDOC)
 
 add_subdirectory(man)
 
-find_package(Doxygen)
+if (WITH_DOXYGEN)
+    find_package(Doxygen REQUIRED)
+endif()
 if (DOXYGEN_FOUND)
 	# XXX API docs should be pre-built in tarballs
 	file(GLOB headers ${CMAKE_SOURCE_DIR}/include/rpm/*.h)
