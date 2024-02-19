@@ -113,6 +113,7 @@ Package newPackage(const char *name, rpmstrPool pool, Package *pkglist)
     p->fileRenameMap = NULL;
     p->pool = rpmstrPoolLink(pool);
     p->dpaths = NULL;
+    p->rpmver = rpmExpandNumeric("%_rpmfilever");
 
     if (name)
 	p->name = rpmstrPoolId(p->pool, name, 1);

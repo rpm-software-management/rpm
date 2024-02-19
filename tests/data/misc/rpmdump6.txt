@@ -8,60 +8,36 @@ Sigtype: 5
 
 Signature:
 Header magic: 1e8ad8e (reserved: 0)
-Index entries: 7 (112 bytes)
-Data size: 4276 bytes
-Header size: 4388 bytes
-Padding: 4 bytes
-Region entries 7
-Region size 128
+Index entries: 3 (48 bytes)
+Data size: 4209 bytes
+Header size: 4257 bytes
+Padding: 7 bytes
+Region entries 3
+Region size 64
 Dribbles: 0
 
 Tag #0 [region]
 	tagno:    62 (Headersignatures)
 	type:      7 (blob)
-	offset: 4260
+	offset: 4193
 	count:    16
 
 	region trailer
 		tagno:    62 (Headersignatures)
 		type:      7 (blob)
-		offset: -112
+		offset:  -48
 		count:    16
 
 Tag #1 [region]
-	tagno:   269 (Sha1)
+	tagno:   273 (Sha256)
 	type:      6 (string)
 	offset:    0
 	count:     1
 
 Tag #2 [region]
-	tagno:   273 (Sha256)
-	type:      6 (string)
-	offset:   41
-	count:     1
-
-Tag #3 [region]
-	tagno:  1000 (Size)
-	type:      4 (int32)
-	offset:  108
-	count:     1
-
-Tag #4 [region]
-	tagno:  1004 (Md5)
-	type:      7 (blob)
-	offset:  112
-	count:    16
-
-Tag #5 [region]
-	tagno:  1007 (Payloadsize)
-	type:      4 (int32)
-	offset:  128
-	count:     1
-
-Tag #6 [region]
 	tagno:  1008 (Reservedspace)
 	type:      7 (blob)
-	offset:  132
+	offset:   65
 	count:  4128
 
 Header:
