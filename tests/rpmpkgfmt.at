@@ -14,3 +14,20 @@ runroot_other ${RPM_CONFIGDIR_PATH}/rpmdump ${pkg}
 [expout],
 [])
 RPMTEST_CLEANUP
+
+AT_SETUP([rpm v6 format])
+AT_KEYWORDS([pkgformat v6])
+RPMDB_INIT
+
+RPMTEST_CHECK([
+cp /data/misc/rpmdump6.txt expout
+ver=6
+pkg=/build/RPMS/6/noarch/attrtest-1.0-1.noarch.rpm
+source /pinned/common/buildrepr.sh
+
+runroot_other ${RPM_CONFIGDIR_PATH}/rpmdump ${pkg}
+],
+[0],
+[expout],
+[])
+RPMTEST_CLEANUP
