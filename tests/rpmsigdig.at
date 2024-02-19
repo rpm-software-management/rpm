@@ -155,9 +155,10 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Reproducably build and verify a package
 AT_SETUP([rpmkeys -Kv <unsigned> 2])
-AT_KEYWORDS([rpmkeys digest])
+AT_KEYWORDS([rpmkeys digest v4 v6])
 RPMDB_INIT
 RPMTEST_CHECK_PINNED([rpmsigdig])
+RPMTEST_CHECK_PINNED([rpmsigdig6])
 RPMTEST_CLEANUP
 
 # ------------------------------

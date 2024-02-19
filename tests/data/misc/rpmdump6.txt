@@ -1,0 +1,400 @@
+Lead magic: edabeedb
+Version 3.0
+Type: 0
+Name: attrtest-1.0-1
+Arch: 1
+OS: 1
+Sigtype: 5
+
+Signature:
+Header magic: 1e8ad8e (reserved: 0)
+Index entries: 7 (112 bytes)
+Data size: 4276 bytes
+Header size: 4388 bytes
+Padding: 4 bytes
+Region entries 7
+Region size 128
+Dribbles: 0
+
+Tag #0 [region]
+	tagno:    62 (Headersignatures)
+	type:      7 (blob)
+	offset: 4260
+	count:    16
+
+	region trailer
+		tagno:    62 (Headersignatures)
+		type:      7 (blob)
+		offset: -112
+		count:    16
+
+Tag #1 [region]
+	tagno:   269 (Sha1)
+	type:      6 (string)
+	offset:    0
+	count:     1
+
+Tag #2 [region]
+	tagno:   273 (Sha256)
+	type:      6 (string)
+	offset:   41
+	count:     1
+
+Tag #3 [region]
+	tagno:  1000 (Size)
+	type:      4 (int32)
+	offset:  108
+	count:     1
+
+Tag #4 [region]
+	tagno:  1004 (Md5)
+	type:      7 (blob)
+	offset:  112
+	count:    16
+
+Tag #5 [region]
+	tagno:  1007 (Payloadsize)
+	type:      4 (int32)
+	offset:  128
+	count:     1
+
+Tag #6 [region]
+	tagno:  1008 (Reservedspace)
+	type:      7 (blob)
+	offset:  132
+	count:  4128
+
+Header:
+Header magic: 1e8ad8e (reserved: 0)
+Index entries: 53 (848 bytes)
+Data size: 2573 bytes
+Header size: 3421 bytes
+
+Region entries 53
+Region size 864
+Dribbles: 0
+
+Tag #0 [region]
+	tagno:    63 (Headerimmutable)
+	type:      7 (blob)
+	offset: 2557
+	count:    16
+
+	region trailer
+		tagno:    63 (Headerimmutable)
+		type:      7 (blob)
+		offset: -848
+		count:    16
+
+Tag #1 [region]
+	tagno:   100 (Headeri18ntable)
+	type:      8 (argv)
+	offset:    0
+	count:     1
+
+Tag #2 [region]
+	tagno:  1000 (Name)
+	type:      6 (string)
+	offset:    2
+	count:     1
+
+Tag #3 [region]
+	tagno:  1001 (Version)
+	type:      6 (string)
+	offset:   11
+	count:     1
+
+Tag #4 [region]
+	tagno:  1002 (Release)
+	type:      6 (string)
+	offset:   15
+	count:     1
+
+Tag #5 [region]
+	tagno:  1004 (Summary)
+	type:      9 (i18nstring)
+	offset:   17
+	count:     1
+
+Tag #6 [region]
+	tagno:  1005 (Description)
+	type:      9 (i18nstring)
+	offset:   44
+	count:     1
+
+Tag #7 [region]
+	tagno:  1006 (Buildtime)
+	type:      4 (int32)
+	offset:   72
+	count:     1
+
+Tag #8 [region]
+	tagno:  1007 (Buildhost)
+	type:      6 (string)
+	offset:   76
+	count:     1
+
+Tag #9 [region]
+	tagno:  1009 (Size)
+	type:      4 (int32)
+	offset:   88
+	count:     1
+
+Tag #10 [region]
+	tagno:  1014 (License)
+	type:      6 (string)
+	offset:   92
+	count:     1
+
+Tag #11 [region]
+	tagno:  1016 (Group)
+	type:      9 (i18nstring)
+	offset:   96
+	count:     1
+
+Tag #12 [region]
+	tagno:  1021 (Os)
+	type:      6 (string)
+	offset:  104
+	count:     1
+
+Tag #13 [region]
+	tagno:  1022 (Arch)
+	type:      6 (string)
+	offset:  110
+	count:     1
+
+Tag #14 [region]
+	tagno:  1028 (Filesizes)
+	type:      4 (int32)
+	offset:  120
+	count:    20
+
+Tag #15 [region]
+	tagno:  1030 (Filemodes)
+	type:      3 (int16)
+	offset:  200
+	count:    20
+
+Tag #16 [region]
+	tagno:  1033 (Filerdevs)
+	type:      3 (int16)
+	offset:  240
+	count:    20
+
+Tag #17 [region]
+	tagno:  1034 (Filemtimes)
+	type:      4 (int32)
+	offset:  280
+	count:    20
+
+Tag #18 [region]
+	tagno:  1035 (Filedigests)
+	type:      8 (argv)
+	offset:  360
+	count:    20
+
+Tag #19 [region]
+	tagno:  1036 (Filelinktos)
+	type:      8 (argv)
+	offset: 1020
+	count:    20
+
+Tag #20 [region]
+	tagno:  1037 (Fileflags)
+	type:      4 (int32)
+	offset: 1040
+	count:    20
+
+Tag #21 [region]
+	tagno:  1039 (Fileusername)
+	type:      8 (argv)
+	offset: 1120
+	count:    20
+
+Tag #22 [region]
+	tagno:  1040 (Filegroupname)
+	type:      8 (argv)
+	offset: 1218
+	count:    20
+
+Tag #23 [region]
+	tagno:  1044 (Sourcerpm)
+	type:      6 (string)
+	offset: 1307
+	count:     1
+
+Tag #24 [region]
+	tagno:  1045 (Fileverifyflags)
+	type:      4 (int32)
+	offset: 1332
+	count:    20
+
+Tag #25 [region]
+	tagno:  1047 (Providename)
+	type:      8 (argv)
+	offset: 1412
+	count:     1
+
+Tag #26 [region]
+	tagno:  1048 (Requireflags)
+	type:      4 (int32)
+	offset: 1424
+	count:    15
+
+Tag #27 [region]
+	tagno:  1049 (Requirename)
+	type:      8 (argv)
+	offset: 1484
+	count:    15
+
+Tag #28 [region]
+	tagno:  1050 (Requireversion)
+	type:      8 (argv)
+	offset: 1697
+	count:    15
+
+Tag #29 [region]
+	tagno:  1064 (Rpmversion)
+	type:      6 (string)
+	offset: 1731
+	count:     1
+
+Tag #30 [region]
+	tagno:  1080 (Changelogtime)
+	type:      4 (int32)
+	offset: 1740
+	count:     1
+
+Tag #31 [region]
+	tagno:  1081 (Changelogname)
+	type:      8 (argv)
+	offset: 1744
+	count:     1
+
+Tag #32 [region]
+	tagno:  1082 (Changelogtext)
+	type:      8 (argv)
+	offset: 1782
+	count:     1
+
+Tag #33 [region]
+	tagno:  1095 (Filedevices)
+	type:      4 (int32)
+	offset: 1800
+	count:    20
+
+Tag #34 [region]
+	tagno:  1096 (Fileinodes)
+	type:      4 (int32)
+	offset: 1880
+	count:    20
+
+Tag #35 [region]
+	tagno:  1097 (Filelangs)
+	type:      8 (argv)
+	offset: 1960
+	count:    20
+
+Tag #36 [region]
+	tagno:  1112 (Provideflags)
+	type:      4 (int32)
+	offset: 1980
+	count:     1
+
+Tag #37 [region]
+	tagno:  1113 (Provideversion)
+	type:      8 (argv)
+	offset: 1984
+	count:     1
+
+Tag #38 [region]
+	tagno:  1116 (Dirindexes)
+	type:      4 (int32)
+	offset: 1992
+	count:    20
+
+Tag #39 [region]
+	tagno:  1117 (Basenames)
+	type:      8 (argv)
+	offset: 2072
+	count:    20
+
+Tag #40 [region]
+	tagno:  1118 (Dirnames)
+	type:      8 (argv)
+	offset: 2162
+	count:    10
+
+Tag #41 [region]
+	tagno:  1122 (Optflags)
+	type:      6 (string)
+	offset: 2202
+	count:     1
+
+Tag #42 [region]
+	tagno:  1124 (Payloadformat)
+	type:      6 (string)
+	offset: 2209
+	count:     1
+
+Tag #43 [region]
+	tagno:  1126 (Payloadflags)
+	type:      6 (string)
+	offset: 2214
+	count:     1
+
+Tag #44 [region]
+	tagno:  1132 (Platform)
+	type:      6 (string)
+	offset: 2215
+	count:     1
+
+Tag #45 [region]
+	tagno:  1140 (Filecolors)
+	type:      4 (int32)
+	offset: 2228
+	count:    20
+
+Tag #46 [region]
+	tagno:  1141 (Fileclass)
+	type:      4 (int32)
+	offset: 2308
+	count:    20
+
+Tag #47 [region]
+	tagno:  1142 (Classdict)
+	type:      8 (argv)
+	offset: 2388
+	count:     2
+
+Tag #48 [region]
+	tagno:  5011 (Filedigestalgo)
+	type:      4 (int32)
+	offset: 2412
+	count:     1
+
+Tag #49 [region]
+	tagno:  5062 (Encoding)
+	type:      6 (string)
+	offset: 2416
+	count:     1
+
+Tag #50 [region]
+	tagno:  5092 (Payloaddigest)
+	type:      8 (argv)
+	offset: 2422
+	count:     1
+
+Tag #51 [region]
+	tagno:  5093 (Payloaddigestalgo)
+	type:      4 (int32)
+	offset: 2488
+	count:     1
+
+Tag #52 [region]
+	tagno:  5097 (Payloaddigestalt)
+	type:      8 (argv)
+	offset: 2492
+	count:     1
+
