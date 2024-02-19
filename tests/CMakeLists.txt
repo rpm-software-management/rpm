@@ -25,34 +25,38 @@ endif()
 set(HAVE_UNSHARE ${HAVE_UNSHARE})
 
 set(TESTSUITE_AT
-	rpmtests.at
+	rpmpgp.at
 	rpmgeneral.at
+	rpmvercmp.at
+	rpmmacro.at
+	rpmdevel.at
+	rpmpython.at
+	rpmdepmatch.at
 	rpmquery.at
+	rpmspec.at
+	rpmvfylevel.at
+	rpmsigdig.at
+	rpmio.at
 	rpmverify.at
 	rpmdb.at
-	rpmbuild.at
-	rpmbuildid.at
 	rpmi.at
 	rpme.at
-	rpmvercmp.at
+	rpmorder.at
+	rpmbuild.at
+	rpmbuildid.at
+	rpmscript.at
 	rpmdeps.at
 	rpmconflict.at
+	rpmreplace.at
 	rpmconfig.at
 	rpmconfig2.at
 	rpmconfig3.at
-	rpmreplace.at
-	rpmmacro.at
-	rpmpython.at
-	rpmdepmatch.at
-	rpmscript.at
-	rpmsigdig.at
-	rpmspec.at
-	rpmio.at
-	rpmorder.at
-	rpmvfylevel.at
-	rpmpgp.at
-	rpmdevel.at
 )
+
+FILE(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/rpmtests.at)
+foreach(at ${TESTSUITE_AT})
+	FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rpmtests.at "m4_include([${at}])\n")
+endforeach()
 
 set(TESTPROGS rpmpgpcheck rpmpgppubkeyfingerprint)
 foreach(prg ${TESTPROGS})
@@ -110,7 +114,7 @@ if (MKTREE_NATIVE)
 	add_custom_command(OUTPUT rpmtests
 		COMMAND ${AUTOTEST} -I ${CMAKE_CURRENT_SOURCE_DIR}
 			-o rpmtests rpmtests.at
-		DEPENDS ${TESTSUITE_AT}
+		DEPENDS ${TESTSUITE_AT} rpmtests.at
 		DEPENDS local.at
 	)
 
