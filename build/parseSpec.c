@@ -25,7 +25,9 @@
 #define ISMACRO(s,m,len) (rstreqn((s), (m), len) && !risalpha((s)[len]))
 #define ISMACROWITHARG(s,m,len) (rstreqn((s), (m), len) && (risblank((s)[len]) || !(s)[len]))
 
-static rpmRC parseSpecParts(rpmSpec spec, const char *pattern);
+
+static rpmRC parseSpecParts(rpmSpec spec, const char *pattern,
+			    enum parseStages stage);
 
 typedef struct OpenFileInfo {
     char * fileName;
@@ -982,7 +984,7 @@ static rpmRC parseBuildsystem(rpmSpec spec)
 	}
 
 	if (!rc)
-	    rc = parseSpecParts(spec, path);
+	    rc = parseSpecParts(spec, path, PARSE_BUILDSYS);
 	if (!rc)
 	    unlink(path);
 	Fclose(fd);
@@ -996,7 +998,7 @@ exit:
 static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 			 const char *buildRoot, int recursing);
 
-static rpmRC parseSpecSection(rpmSpec *specptr, int secondary)
+static rpmRC parseSpecSection(rpmSpec *specptr, enum parseStages stage)
 {
     rpmSpec spec = *specptr;
     int parsePart = PART_PREAMBLE;
@@ -1160,7 +1162,7 @@ static rpmRC parseSpecSection(rpmSpec *specptr, int secondary)
 	}
     }
 
-    if (!secondary && parseBuildsystem(spec))
+    if (stage == PARSE_SPECFILE && parseBuildsystem(spec))
 	goto errxit;
 
     /* Add arch for each package */
@@ -1299,7 +1301,8 @@ rpmSpec rpmSpecParse(const char *specFile, rpmSpecFlags flags,
     return spec;
 }
 
-static rpmRC parseSpecParts(rpmSpec spec, const char *pattern)
+static rpmRC parseSpecParts(rpmSpec spec, const char *pattern,
+			    enum parseStages stage)
 {
     ARGV_t argv = NULL;
     int argc = 0;
@@ -1312,7 +1315,7 @@ static rpmRC parseSpecParts(rpmSpec spec, const char *pattern)
 	    pushOFI(spec, argv[i]);
 	    snprintf(spec->fileStack->readBuf, spec->fileStack->readBufLen,
 		     "# Spec part read from %s\n\n", argv[i]);
-	    if (parseSpecSection(&spec, 1) != RPMRC_OK) {
+	    if (parseSpecSection(&spec, stage) != RPMRC_OK) {
 		rpmlog(RPMLOG_ERR, "parsing failed\n");
 		rc = RPMRC_FAIL;
 		break;
@@ -1326,7 +1329,7 @@ static rpmRC parseSpecParts(rpmSpec spec, const char *pattern)
 rpmRC parseGeneratedSpecs(rpmSpec spec)
 {
     char * specPattern = rpmGenPath("%{specpartsdir}", NULL, "*.specpart");
-    rpmRC rc = parseSpecParts(spec, specPattern);
+    rpmRC rc = parseSpecParts(spec, specPattern, PARSE_GENERATED);
     free(specPattern);
     if (!rc) {
 	rc = finalizeSpec(spec);

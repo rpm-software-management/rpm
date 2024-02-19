@@ -21,6 +21,11 @@
 #define ALLOWED_CHARS_EVR ALLOWED_CHARS_VERREL "-:"
 #define LEN_AND_STR(_tag) (sizeof(_tag)-1), (_tag)
 
+enum parseStages {
+    PARSE_SPECFILE,
+    PARSE_BUILDSYS,
+    PARSE_GENERATED,
+};
 
 enum sections_e {
     SECT_PREP		= 0,
@@ -359,10 +364,11 @@ int parsePolicies(rpmSpec spec);
  * Parse tags from preamble of a spec file.
  * @param spec		spec file control structure
  * @param initialPackage
+ * @param stage
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 RPM_GNUC_INTERNAL
-int parsePreamble(rpmSpec spec, int initialPackage);
+int parsePreamble(rpmSpec spec, int initialPackage, enum parseStages stage);
 
 /** \ingroup rpmbuild
  * Parse %%pre et al scriptlets from a spec file.
