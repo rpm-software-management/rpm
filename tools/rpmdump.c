@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <string.h>
 #include <arpa/inet.h>
 #include <rpm/rpmtag.h>
 
@@ -156,14 +157,15 @@ static int readhdr(int fd, int sighdr, const char *msg)
     
     entry = (struct entryInfo *) (blob + 2);
     uint32_t tag = htonl(entry->tag);
-    struct entryInfo *trailer = NULL;
+    struct entryInfo _trailer, *trailer = &_trailer;
     int32_t toffset = 0;
     uint8_t *regionEnd = NULL;
     uint32_t ril = 0, rdl = 0;
 
+    memset(trailer, 0, sizeof(*trailer));
     if (tag == 62 || tag == 63) {
-	trailer = (struct entryInfo *)
-				    (dataStart + htonl(entry->offset));
+	/* The trailer isn't guaranteed to be aligned, copy required */
+	memcpy(trailer, dataStart + htonl(entry->offset), sizeof(*trailer));
 	toffset = -htonl(trailer->offset);
 	regionEnd = dataStart + toffset + 16;
 	rdl = regionEnd - dataStart;
