@@ -1,0 +1,16 @@
+AT_SETUP([rpm v4 format])
+AT_KEYWORDS([pkgformat v4])
+RPMDB_INIT
+
+RPMTEST_CHECK([
+cp /data/misc/rpmdump4.txt expout
+ver=4
+pkg=/build/RPMS/4/noarch/attrtest-1.0-1.noarch.rpm
+source /pinned/common/buildrepr.sh
+
+runroot_other ${RPM_CONFIGDIR_PATH}/rpmdump ${pkg}
+],
+[0],
+[expout],
+[])
+RPMTEST_CLEANUP
