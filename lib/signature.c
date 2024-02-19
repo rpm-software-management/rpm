@@ -110,7 +110,8 @@ int rpmWriteSignature(FD_t fd, Header sigh)
 }
 
 rpmRC rpmGenerateSignature(char *SHA256, char *SHA1, uint8_t *MD5,
-			rpm_loff_t size, rpm_loff_t payloadSize, FD_t fd)
+			rpm_loff_t size, rpm_loff_t payloadSize, FD_t fd,
+			int rpmver)
 {
     Header sig = headerNew();
     struct rpmtd_s td;
@@ -130,6 +131,10 @@ rpmRC rpmGenerateSignature(char *SHA256, char *SHA1, uint8_t *MD5,
 	td.data = SHA256;
 	headerPut(sig, &td, HEADERPUT_DEFAULT);
     }
+
+    /* Skip all the old stuff v6 doesn't have */
+    if (rpmver >= 6)
+	goto reserve;
 
     if (SHA1) {
 	rpmtdReset(&td);
@@ -193,6 +198,7 @@ rpmRC rpmGenerateSignature(char *SHA256, char *SHA1, uint8_t *MD5,
 	spaceSize -= newsigSize - oldsigSize;
     }
 
+reserve:
     if (gpgSize > 0)
 	spaceSize += gpgSize;
 

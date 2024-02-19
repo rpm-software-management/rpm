@@ -37,9 +37,11 @@ int rpmWriteSignature(FD_t fd, Header h);
  * @param size		size of header
  * @param payloadSize	size of archive
  * @param fd		output file
+ * @param rpmver	rpm format version (4 or 6)
  */
 rpmRC rpmGenerateSignature(char *SHA256, char *SHA1, uint8_t *MD5,
-			rpm_loff_t size, rpm_loff_t payloadSize, FD_t fd);
+			rpm_loff_t size, rpm_loff_t payloadSize, FD_t fd,
+			int rpmver);
 
 #ifdef __cplusplus
 }
