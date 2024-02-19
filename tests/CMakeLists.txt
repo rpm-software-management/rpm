@@ -36,6 +36,7 @@ set(TESTSUITE_AT
 	rpmspec.at
 	rpmvfylevel.at
 	rpmsigdig.at
+	rpmpkgfmt.at
 	rpmio.at
 	rpmverify.at
 	rpmdb.at
