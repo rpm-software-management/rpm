@@ -2,8 +2,8 @@ Lead magic: edabeedb
 Version 3.0
 Type: 0
 Name: attrtest-1.0-1
-Arch: 1
-OS: 1
+Arch: 0
+OS: 0
 Sigtype: 5
 
 Signature:

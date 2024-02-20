@@ -45,18 +45,11 @@ struct rpmlead_s {
 static int rpmLeadFromHeader(Header h, struct rpmlead_s *l)
 {
     if (h != NULL) {
-	int archnum, osnum;
 	char * nevr = headerGetAsString(h, RPMTAG_NEVR);
-
-	/* FIXME: should grab these from header instead (RhBug:717898) */
-	rpmGetArchInfo(NULL, &archnum);
-	rpmGetOsInfo(NULL, &osnum);
 
 	memset(l, 0, sizeof(*l));
 	l->major = 3;
 	l->minor = 0;
-	l->archnum = archnum;
-	l->osnum = osnum;
 	l->signature_type = RPMSIGTYPE_HEADERSIG;
 	l->type = (headerIsSource(h) ? 1 : 0);
 
