@@ -43,8 +43,8 @@ Tag #2 [region]
 Header:
 Header magic: 1e8ad8e (reserved: 0)
 Index entries: 55 (880 bytes)
-Data size: 2592 bytes
-Header size: 3472 bytes
+Data size: 2712 bytes
+Header size: 3592 bytes
 
 Region entries 55
 Region size 896
@@ -53,7 +53,7 @@ Dribbles: 0
 Tag #0 [region]
 	tagno:    63 (Headerimmutable)
 	type:      7 (blob)
-	offset: 2576
+	offset: 2696
 	count:    16
 
 	region trailer
@@ -111,278 +111,278 @@ Tag #8 [region]
 	count:     1
 
 Tag #9 [region]
-	tagno:  1009 (Size)
-	type:      4 (int32)
-	offset:   88
+	tagno:  1014 (License)
+	type:      6 (string)
+	offset:   85
 	count:     1
 
 Tag #10 [region]
-	tagno:  1014 (License)
-	type:      6 (string)
-	offset:   92
+	tagno:  1016 (Group)
+	type:      9 (i18nstring)
+	offset:   89
 	count:     1
 
 Tag #11 [region]
-	tagno:  1016 (Group)
-	type:      9 (i18nstring)
-	offset:   96
+	tagno:  1021 (Os)
+	type:      6 (string)
+	offset:   97
 	count:     1
 
 Tag #12 [region]
-	tagno:  1021 (Os)
+	tagno:  1022 (Arch)
 	type:      6 (string)
-	offset:  104
+	offset:  103
 	count:     1
 
 Tag #13 [region]
-	tagno:  1022 (Arch)
-	type:      6 (string)
+	tagno:  1030 (Filemodes)
+	type:      3 (int16)
 	offset:  110
-	count:     1
+	count:    20
 
 Tag #14 [region]
-	tagno:  1028 (Filesizes)
-	type:      4 (int32)
-	offset:  120
+	tagno:  1033 (Filerdevs)
+	type:      3 (int16)
+	offset:  150
 	count:    20
 
 Tag #15 [region]
-	tagno:  1030 (Filemodes)
-	type:      3 (int16)
-	offset:  200
+	tagno:  1034 (Filemtimes)
+	type:      4 (int32)
+	offset:  192
 	count:    20
 
 Tag #16 [region]
-	tagno:  1033 (Filerdevs)
-	type:      3 (int16)
-	offset:  240
+	tagno:  1035 (Filedigests)
+	type:      8 (argv)
+	offset:  272
 	count:    20
 
 Tag #17 [region]
-	tagno:  1034 (Filemtimes)
-	type:      4 (int32)
-	offset:  280
+	tagno:  1036 (Filelinktos)
+	type:      8 (argv)
+	offset:  932
 	count:    20
 
 Tag #18 [region]
-	tagno:  1035 (Filedigests)
-	type:      8 (argv)
-	offset:  360
+	tagno:  1037 (Fileflags)
+	type:      4 (int32)
+	offset:  952
 	count:    20
 
 Tag #19 [region]
-	tagno:  1036 (Filelinktos)
+	tagno:  1039 (Fileusername)
 	type:      8 (argv)
-	offset: 1020
+	offset: 1032
 	count:    20
 
 Tag #20 [region]
-	tagno:  1037 (Fileflags)
-	type:      4 (int32)
-	offset: 1040
+	tagno:  1040 (Filegroupname)
+	type:      8 (argv)
+	offset: 1130
 	count:    20
 
 Tag #21 [region]
-	tagno:  1039 (Fileusername)
-	type:      8 (argv)
-	offset: 1120
-	count:    20
+	tagno:  1044 (Sourcerpm)
+	type:      6 (string)
+	offset: 1219
+	count:     1
 
 Tag #22 [region]
-	tagno:  1040 (Filegroupname)
-	type:      8 (argv)
-	offset: 1218
+	tagno:  1045 (Fileverifyflags)
+	type:      4 (int32)
+	offset: 1244
 	count:    20
 
 Tag #23 [region]
-	tagno:  1044 (Sourcerpm)
-	type:      6 (string)
-	offset: 1307
+	tagno:  1047 (Providename)
+	type:      8 (argv)
+	offset: 1324
 	count:     1
 
 Tag #24 [region]
-	tagno:  1045 (Fileverifyflags)
-	type:      4 (int32)
-	offset: 1332
-	count:    20
-
-Tag #25 [region]
-	tagno:  1047 (Providename)
-	type:      8 (argv)
-	offset: 1412
-	count:     1
-
-Tag #26 [region]
 	tagno:  1048 (Requireflags)
 	type:      4 (int32)
-	offset: 1424
-	count:    15
+	offset: 1336
+	count:    16
 
-Tag #27 [region]
+Tag #25 [region]
 	tagno:  1049 (Requirename)
 	type:      8 (argv)
-	offset: 1484
-	count:    15
+	offset: 1400
+	count:    16
 
-Tag #28 [region]
+Tag #26 [region]
 	tagno:  1050 (Requireversion)
 	type:      8 (argv)
-	offset: 1697
-	count:    15
+	offset: 1632
+	count:    16
 
-Tag #29 [region]
+Tag #27 [region]
 	tagno:  1064 (Rpmversion)
 	type:      6 (string)
-	offset: 1731
+	offset: 1675
+	count:     1
+
+Tag #28 [region]
+	tagno:  1080 (Changelogtime)
+	type:      4 (int32)
+	offset: 1684
+	count:     1
+
+Tag #29 [region]
+	tagno:  1081 (Changelogname)
+	type:      8 (argv)
+	offset: 1688
 	count:     1
 
 Tag #30 [region]
-	tagno:  1080 (Changelogtime)
-	type:      4 (int32)
-	offset: 1740
+	tagno:  1082 (Changelogtext)
+	type:      8 (argv)
+	offset: 1726
 	count:     1
 
 Tag #31 [region]
-	tagno:  1081 (Changelogname)
-	type:      8 (argv)
-	offset: 1744
-	count:     1
-
-Tag #32 [region]
-	tagno:  1082 (Changelogtext)
-	type:      8 (argv)
-	offset: 1782
-	count:     1
-
-Tag #33 [region]
 	tagno:  1095 (Filedevices)
 	type:      4 (int32)
-	offset: 1800
+	offset: 1744
+	count:    20
+
+Tag #32 [region]
+	tagno:  1096 (Fileinodes)
+	type:      4 (int32)
+	offset: 1824
+	count:    20
+
+Tag #33 [region]
+	tagno:  1097 (Filelangs)
+	type:      8 (argv)
+	offset: 1904
 	count:    20
 
 Tag #34 [region]
-	tagno:  1096 (Fileinodes)
-	type:      4 (int32)
-	offset: 1880
-	count:    20
-
-Tag #35 [region]
-	tagno:  1097 (Filelangs)
-	type:      8 (argv)
-	offset: 1960
-	count:    20
-
-Tag #36 [region]
 	tagno:  1112 (Provideflags)
 	type:      4 (int32)
-	offset: 1980
+	offset: 1924
 	count:     1
 
-Tag #37 [region]
+Tag #35 [region]
 	tagno:  1113 (Provideversion)
 	type:      8 (argv)
-	offset: 1984
+	offset: 1928
 	count:     1
 
-Tag #38 [region]
+Tag #36 [region]
 	tagno:  1116 (Dirindexes)
 	type:      4 (int32)
-	offset: 1992
+	offset: 1936
 	count:    20
 
-Tag #39 [region]
+Tag #37 [region]
 	tagno:  1117 (Basenames)
 	type:      8 (argv)
-	offset: 2072
+	offset: 2016
 	count:    20
 
-Tag #40 [region]
+Tag #38 [region]
 	tagno:  1118 (Dirnames)
 	type:      8 (argv)
-	offset: 2162
+	offset: 2106
 	count:    10
 
-Tag #41 [region]
+Tag #39 [region]
 	tagno:  1122 (Optflags)
 	type:      6 (string)
-	offset: 2202
+	offset: 2146
+	count:     1
+
+Tag #40 [region]
+	tagno:  1124 (Payloadformat)
+	type:      6 (string)
+	offset: 2153
+	count:     1
+
+Tag #41 [region]
+	tagno:  1126 (Payloadflags)
+	type:      6 (string)
+	offset: 2158
 	count:     1
 
 Tag #42 [region]
-	tagno:  1124 (Payloadformat)
+	tagno:  1132 (Platform)
 	type:      6 (string)
-	offset: 2209
+	offset: 2159
 	count:     1
 
 Tag #43 [region]
-	tagno:  1126 (Payloadflags)
-	type:      6 (string)
-	offset: 2214
-	count:     1
-
-Tag #44 [region]
-	tagno:  1132 (Platform)
-	type:      6 (string)
-	offset: 2215
-	count:     1
-
-Tag #45 [region]
 	tagno:  1140 (Filecolors)
 	type:      4 (int32)
-	offset: 2228
+	offset: 2172
 	count:    20
 
-Tag #46 [region]
+Tag #44 [region]
 	tagno:  1141 (Fileclass)
 	type:      4 (int32)
-	offset: 2308
+	offset: 2252
+	count:    20
+
+Tag #45 [region]
+	tagno:  1142 (Classdict)
+	type:      8 (argv)
+	offset: 2332
+	count:     2
+
+Tag #46 [region]
+	tagno:  5008 (Longfilesizes)
+	type:      5 (int64)
+	offset: 2360
 	count:    20
 
 Tag #47 [region]
-	tagno:  1142 (Classdict)
-	type:      8 (argv)
-	offset: 2388
-	count:     2
+	tagno:  5009 (Longsize)
+	type:      5 (int64)
+	offset: 2520
+	count:     1
 
 Tag #48 [region]
 	tagno:  5011 (Filedigestalgo)
 	type:      4 (int32)
-	offset: 2412
+	offset: 2528
 	count:     1
 
 Tag #49 [region]
 	tagno:  5062 (Encoding)
 	type:      6 (string)
-	offset: 2416
+	offset: 2532
 	count:     1
 
 Tag #50 [region]
 	tagno:  5092 (Payloaddigest)
 	type:      8 (argv)
-	offset: 2422
+	offset: 2538
 	count:     1
 
 Tag #51 [region]
 	tagno:  5093 (Payloaddigestalgo)
 	type:      4 (int32)
-	offset: 2488
+	offset: 2604
 	count:     1
 
 Tag #52 [region]
 	tagno:  5097 (Payloaddigestalt)
 	type:      8 (argv)
-	offset: 2492
+	offset: 2608
 	count:     1
 
 Tag #53 [region]
 	tagno:  5112 (Payloadsize)
 	type:      5 (int64)
-	offset: 2560
+	offset: 2680
 	count:     1
 
 Tag #54 [region]
 	tagno:  5113 (Payloadsizealt)
 	type:      5 (int64)
-	offset: 2568
+	offset: 2688
 	count:     1
 
