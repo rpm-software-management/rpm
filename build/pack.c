@@ -476,6 +476,9 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	headerPutString(pkg->header, RPMTAG_COOKIE, *cookie);
     }
 
+    if (pkg->rpmver >= 6)
+	headerPutUint32(pkg->header, RPMTAG_RPMFORMAT, &(pkg->rpmver), 1);
+
     /* Create a dummy payload digests + size to get the header size right */
     pld = nullDigest(pld_algo, 1);
     headerPutUint32(pkg->header, RPMTAG_PAYLOADDIGESTALGO, &pld_algo, 1);
