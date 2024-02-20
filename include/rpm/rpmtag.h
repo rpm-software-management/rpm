@@ -392,6 +392,7 @@ typedef enum rpmTag_e {
     RPMTAG_BUILDOPTION		= 5111, /* internal */
     RPMTAG_PAYLOADSIZE		= 5112, /* l */
     RPMTAG_PAYLOADSIZEALT	= 5113, /* l */
+    RPMTAG_RPMFORMAT		= 5114, /* i */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;
