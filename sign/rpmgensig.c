@@ -565,6 +565,7 @@ static int rpmSign(const char *rpm, int deleting, int flags)
     struct sigTarget_s sigt_v4;
     unsigned int origSigSize;
     int insSig = 0;
+    rpmTagVal reserveTag = RPMSIGTAG_RESERVEDSPACE;
 
     fprintf(stdout, "%s:\n", rpm);
 
@@ -650,8 +651,12 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	res = -1;
     }
 
+    /* Only v6 packages have this */
+    if (headerIsEntry(h, RPMSIGTAG_RESERVED))
+	reserveTag = RPMSIGTAG_RESERVED;
+
     /* Adjust reserved size for added/removed signatures */
-    if (headerGet(sigh, RPMSIGTAG_RESERVEDSPACE, &utd, HEADERGET_MINMEM)) {
+    if (headerGet(sigh, reserveTag, &utd, HEADERGET_MINMEM)) {
 	int diff = headerSizeof(sigh, HEADER_MAGIC_YES) - origSigSize;
 
 	/* diff can be zero if nothing was added or removed */
