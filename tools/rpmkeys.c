@@ -2,6 +2,7 @@
 
 #include <popt.h>
 #include <rpm/rpmcli.h>
+#include <rpm/rpmstring.h>
 #include "cliutils.h"
 #include "debug.h"
 
@@ -22,12 +23,10 @@ static struct poptOption keyOptsTable[] = {
 	N_("import an armored public key"), NULL },
     { "test", '\0', POPT_ARG_NONE, &test, 0,
 	N_("don't import, but tell if it would work or not"), NULL },
-#if 0
-    { "delete-key", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_DELKEY,
+    { "delete", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_DELKEY,
+	N_("delete keys from RPM keyring"), NULL },
+    { "list", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_LISTKEY,
 	N_("list keys from RPM keyring"), NULL },
-    { "list-keys", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_LISTKEY,
-	N_("list keys from RPM keyring"), NULL },
-#endif
     POPT_TABLEEND
 };
 
@@ -41,6 +40,21 @@ static struct poptOption optionsTable[] = {
     POPT_AUTOHELP
     POPT_TABLEEND
 };
+
+static ARGV_t gpgkeyargs(ARGV_const_t args) {
+    ARGV_t gpgargs = NULL;
+    for (char * const * arg = args; *arg; arg++) {
+	if (strncmp(*arg, "gpg-pubkey-", 11)) {
+	    char * gpgarg = NULL;
+	    rstrscat(&gpgarg, "gpg-pubkey-", *arg, NULL);
+	    argvAdd(&gpgargs, gpgarg);
+	    free(gpgarg);
+	} else {
+	    argvAdd(&gpgargs, *arg);
+	}
+    }
+    return gpgargs;
+}
 
 int main(int argc, char *argv[])
 {
@@ -73,9 +87,23 @@ int main(int argc, char *argv[])
 	    rpmtsSetFlags(ts, (rpmtsFlags(ts)|RPMTRANS_FLAG_TEST));
 	ec = rpmcliImportPubkeys(ts, args);
 	break;
-    /* XXX TODO: actually implement these... */
     case MODE_DELKEY:
+	struct rpmInstallArguments_s * ia = &rpmIArgs;
+	ARGV_t gpgargs = gpgkeyargs(args);
+	ec = rpmErase(ts, ia, gpgargs);
+	argvFree(gpgargs);
+	break;
     case MODE_LISTKEY:
+	ARGV_t query = NULL;
+	if (args != NULL) {
+	    query = gpgkeyargs(args);
+	} else {
+	    argvAdd(&query, "gpg-pubkey");
+	}
+	QVA_t qva = &rpmQVKArgs;
+	rstrcat(&qva->qva_queryFormat, "%{version}-%{release}: %{summary}\n");
+	ec = rpmcliQuery(ts, &rpmQVKArgs, (ARGV_const_t) query);
+	query = argvFree(query);
 	break;
     default:
 	argerror(_("only one major mode may be specified"));

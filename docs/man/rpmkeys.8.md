@@ -12,14 +12,18 @@ rpmkeys - RPM Keyring
 SYNOPSIS
 ========
 
-**rpmkeys** {**\--import\|\--checksig**}
+**rpmkeys** {**\--list\|\--import\|\--delete\|\--checksig**}
 
 DESCRIPTION
 ===========
 
 The general forms of rpm digital signature commands are
 
+**rpmkeys** **\--list** \[*KEYHASH \...*\]
+
 **rpmkeys** **\--import** *PUBKEY \...*
+
+**rpmkeys** **\--delete** *KEYHASH \...*
 
 **rpmkeys** {**-K\|\--checksig**} *PACKAGE\_FILE \...*
 
@@ -37,13 +41,21 @@ example, all currently imported public keys can be displayed by:
 
 **rpm -q gpg-pubkey**
 
-Details about a specific public key, when imported, can be displayed by
+A more convenient way to display them is
+
+**rpmkeys** **\--list**
+
+More details about a specific public key, when imported, can be displayed by
 querying. Here\'s information about the Red Hat GPG/DSA key:
 
 **rpm -qi gpg-pubkey-db42a60e**
 
 Finally, public keys can be erased after importing just like packages.
-Here\'s how to remove the Red Hat GPG/DSA key
+Here\'s how to remove the Red Hat GPG/DSA key:
+
+**rpmkeys** **\--delete db42a60e**
+
+Or alternatively:
 
 **rpm -e gpg-pubkey-db42a60e**
 
