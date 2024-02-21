@@ -35,7 +35,7 @@ armored public key can be added to the **rpm** database using
 ring management is performed exactly like package management. For
 example, all currently imported public keys can be displayed by:
 
-**rpm -qa gpg-pubkey\***
+**rpm -q gpg-pubkey**
 
 Details about a specific public key, when imported, can be displayed by
 querying. Here\'s information about the Red Hat GPG/DSA key:
