@@ -56,7 +56,7 @@ runroot rpm \
 [ignore])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -qa 3])
+AT_SETUP([rpm -qa and rpmkeys])
 AT_KEYWORDS([rpmdb query])
 RPMDB_INIT
 
@@ -80,6 +80,39 @@ runroot rpm -qa | sort
 [foo-1.0-1.noarch
 gpg-pubkey-1964c5fc-58e63918
 hello-2.0-1.x86_64
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys --list
+],
+[0],
+[1964c5fc-58e63918: rpm.org RSA testkey <rsa@rpm.org> public key
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys --list 1964c5fc
+],
+[0],
+[1964c5fc-58e63918: rpm.org RSA testkey <rsa@rpm.org> public key
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys --list XXX
+],
+[1],
+[package gpg-pubkey-XXX is not installed
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys --delete 1964c5fc
+runroot rpmkeys --list
+],
+[1],
+[package gpg-pubkey is not installed
 ],
 [])
 RPMTEST_CLEANUP
