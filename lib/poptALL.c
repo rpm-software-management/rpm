@@ -292,7 +292,7 @@ rpmcliFini(poptContext optCon)
 poptContext
 rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 {
-    poptContext optCon;
+    poptContext optCon = NULL;
     int rc;
     const char *ctx, *execPath;
 
@@ -332,14 +332,14 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     while ((rc = poptGetNextOpt(optCon)) > 0) {
 	fprintf(stderr, _("%s: option table misconfigured (%d)\n"),
 		xgetprogname(), rc);
-	exit(EXIT_FAILURE);
+	goto err;
     }
 
     if (rc < -1) {
 	fprintf(stderr, "%s: %s: %s\n", xgetprogname(),
 		poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
 		poptStrerror(rc));
-	exit(EXIT_FAILURE);
+	goto err;
     }
 
     /* Read rpm configuration (if not already read). */
@@ -351,4 +351,9 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     }
 
     return optCon;
+
+err:
+    poptFreeContext(optCon);
+    exit(EXIT_FAILURE);
+    return NULL; /* not reached */
 }
