@@ -732,6 +732,11 @@ space is tight.
 Used to mark and/or install files as licenses. Same as %doc, but 
 cannot be filtered out as licenses must always be present in packages.
 
+#### %missingok (since rpm >= 4.14 in standalone form)
+
+Used to mark file presence optional, ie one whose absence does not
+cause --verify to fail.
+
 #### %readme
 
 Obsolete.
