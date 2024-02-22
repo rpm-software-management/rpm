@@ -26,7 +26,7 @@ target_sources(librpm PRIVATE
 	backend/dbiset.c backend/dbiset.h
 	headerutil.c header.c headerfmt.c header_internal.h
 	rpmdb.c rpmdb_internal.h
-	fprint.c fprint.h tagname.c rpmtd.c tagtbl.C
+	fprint.c fprint.h tagname.c rpmtd.c tagtbl.inc
 	cpio.c cpio.h depends.c order.c formats.c tagexts.c fsm.c fsm.h
 	manifest.c manifest.h package.c
 	poptALL.c poptI.c poptQV.c psm.c query.c
@@ -69,8 +69,8 @@ if(WITH_CAP)
 	target_link_libraries(librpm PRIVATE PkgConfig::LIBCAP)
 endif()
 
-add_custom_command(OUTPUT tagtbl.C
-	COMMAND AWK=${AWK} ${CMAKE_CURRENT_SOURCE_DIR}/gentagtbl.sh ${CMAKE_SOURCE_DIR}/include/rpm/rpmtag.h > tagtbl.C
+add_custom_command(OUTPUT tagtbl.inc
+	COMMAND AWK=${AWK} ${CMAKE_CURRENT_SOURCE_DIR}/gentagtbl.sh ${CMAKE_SOURCE_DIR}/include/rpm/rpmtag.h > tagtbl.inc
 	DEPENDS ${CMAKE_SOURCE_DIR}/include/rpm/rpmtag.h gentagtbl.sh
 )
 
